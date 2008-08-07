@@ -27,5 +27,12 @@ void R_init_IRanges(DllInfo *info)
 	R_RegisterCCallable("IRanges", "_new_CharBuf_from_string", (DL_FUNC) &_new_CharBuf_from_string);
 	R_RegisterCCallable("IRanges", "_new_CharBBuf", (DL_FUNC) &_new_CharBBuf);
 	R_RegisterCCallable("IRanges", "_append_string_to_CharBBuf", (DL_FUNC) &_append_string_to_CharBBuf);
+	R_RegisterCCallable("IRanges", "_get_IRanges_start", (DL_FUNC) &_get_IRanges_start);
+	R_RegisterCCallable("IRanges", "_get_IRanges_width", (DL_FUNC) &_get_IRanges_width);
+	R_RegisterCCallable("IRanges", "_get_IRanges_length", (DL_FUNC) &_get_IRanges_length);
+	R_RegisterCCallable("IRanges", "_set_IRanges_names", (DL_FUNC) &_set_IRanges_names);
+	R_RegisterCCallable("IRanges", "_copy_IRanges_slots", (DL_FUNC) &_copy_IRanges_slots);
+	R_RegisterCCallable("IRanges", "_new_IRanges_from_RoSeqs", (DL_FUNC) &_new_IRanges_from_RoSeqs);
+	R_RegisterCCallable("IRanges", "_alloc_IRanges", (DL_FUNC) &_alloc_IRanges);
 }
 

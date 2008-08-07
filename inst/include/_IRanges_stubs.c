@@ -33,3 +33,80 @@ void append_string_to_CharBBuf(CharBBuf *cbbuf, const char *string)
 	return fun(cbbuf, string);
 }
 
+typedef SEXP (*get_IRanges_start_FUNTYPE)(SEXP x);
+SEXP get_IRanges_start(SEXP x)
+{
+	static get_IRanges_start_FUNTYPE fun = NULL;
+
+	if (fun == NULL)
+		fun = (get_IRanges_start_FUNTYPE)
+			R_GetCCallable("IRanges", "_get_IRanges_start");
+	return fun(x);
+}
+
+typedef SEXP (*get_IRanges_width_FUNTYPE)(SEXP x);
+SEXP get_IRanges_width(SEXP x)
+{
+	static get_IRanges_width_FUNTYPE fun = NULL;
+
+	if (fun == NULL)
+		fun = (get_IRanges_width_FUNTYPE)
+			R_GetCCallable("IRanges", "_get_IRanges_width");
+	return fun(x);
+}
+
+typedef int (*get_IRanges_length_FUNTYPE)(SEXP x);
+int get_IRanges_length(SEXP x)
+{
+	static get_IRanges_length_FUNTYPE fun = NULL;
+
+	if (fun == NULL)
+		fun = (get_IRanges_length_FUNTYPE)
+			R_GetCCallable("IRanges", "_get_IRanges_length");
+	return fun(x);
+}
+
+typedef void (*set_IRanges_names_FUNTYPE)(SEXP x, SEXP names);
+void set_IRanges_names(SEXP x, SEXP names)
+{
+	static set_IRanges_names_FUNTYPE fun = NULL;
+
+	if (fun == NULL)
+		fun = (set_IRanges_names_FUNTYPE)
+			R_GetCCallable("IRanges", "_set_IRanges_names");
+	return fun(x, names);
+}
+
+typedef void (*copy_IRanges_slots_FUNTYPE)(SEXP x, SEXP x0);
+void copy_IRanges_slots(SEXP x, SEXP x0)
+{
+	static copy_IRanges_slots_FUNTYPE fun = NULL;
+
+	if (fun == NULL)
+		fun = (copy_IRanges_slots_FUNTYPE)
+			R_GetCCallable("IRanges", "_copy_IRanges_slots");
+	return fun(x, x0);
+}
+
+typedef SEXP (*new_IRanges_from_RoSeqs_FUNTYPE)(const char *class, RoSeqs seqs);
+SEXP new_IRanges_from_RoSeqs(const char *class, RoSeqs seqs)
+{
+	static new_IRanges_from_RoSeqs_FUNTYPE fun = NULL;
+
+	if (fun == NULL)
+		fun = (new_IRanges_from_RoSeqs_FUNTYPE)
+			R_GetCCallable("IRanges", "_new_IRanges_from_RoSeqs");
+	return fun(class, seqs);
+}
+
+typedef SEXP (*alloc_IRanges_FUNTYPE)(const char *class, int length);
+SEXP alloc_IRanges(const char *class, int length)
+{
+	static alloc_IRanges_FUNTYPE fun = NULL;
+
+	if (fun == NULL)
+		fun = (alloc_IRanges_FUNTYPE)
+			R_GetCCallable("IRanges", "_alloc_IRanges");
+	return fun(class, length);
+}
+

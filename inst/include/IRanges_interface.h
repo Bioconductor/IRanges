@@ -30,3 +30,21 @@ void append_string_to_CharBBuf(
 	const char *string
 );
 
+/*
+ * Low-level manipulation of IRanges objects
+ */
+
+SEXP get_IRanges_start(SEXP x);
+
+SEXP get_IRanges_width(SEXP x);
+
+int get_IRanges_length(SEXP x);
+
+void set_IRanges_names(SEXP x, SEXP names);
+
+void copy_IRanges_slots(SEXP x, SEXP x0);
+
+SEXP new_IRanges_from_RoSeqs(const char *class, RoSeqs seqs);
+
+SEXP alloc_IRanges(const char *class, int length);
+

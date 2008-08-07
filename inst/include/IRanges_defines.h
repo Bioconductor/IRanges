@@ -12,6 +12,9 @@
    package.
 
  *****************************************************************************/
+#ifndef IRANGES_DEFINES_H
+#define IRANGES_DEFINES_H
+
 #include <Rdefines.h>
 #include <R_ext/Rdynload.h>
 
@@ -63,13 +66,11 @@ typedef struct cbbuf {
 
 
 /*
- * Three additional types:
+ * Two additional types:
  *
  *   o RoSeq:  array of const chars (think of this as a pointer to a non
  *               null-terminated sequence of chars);
  *   o RoSeqs: array of arrays of const chars;
- *   o CachedXStringSet: use for fast extraction of the elements of
- *             an XStringSet object in a loop.
  */
 typedef struct roseq {
 	const char *elts;
@@ -81,20 +82,5 @@ typedef struct roseqs {
 	int nelt;
 } RoSeqs;
 
-typedef struct cachedxstringset {
-	int *start;
-	int *width;
-	char *super_elts;
-	int super_nelt;
-	const char *baseClass;
-	const int *enc_chrtrtable;
-	const int *dec_chrtrtable;
-} CachedXStringSet;
 
-
-/*
- * Match reporting modes (more modes will be added soon...)
- */
-#define COUNT_MRMODE	1
-#define START_MRMODE	2
-
+#endif
