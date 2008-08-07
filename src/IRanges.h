@@ -178,11 +178,6 @@ SEXP _new_IRanges(
 	SEXP names
 );
 
-SEXP _new_IRanges_from_RoSeqs(
-	const char *class,
-	RoSeqs seqs
-);
-
 SEXP _alloc_IRanges(
 	const char *class,
 	int length

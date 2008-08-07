@@ -65,22 +65,4 @@ typedef struct cbbuf {
 } CharBBuf; 
 
 
-/*
- * Two additional types:
- *
- *   o RoSeq:  array of const chars (think of this as a pointer to a non
- *               null-terminated sequence of chars);
- *   o RoSeqs: array of arrays of const chars;
- */
-typedef struct roseq {
-	const char *elts;
-	int nelt;
-} RoSeq;
-
-typedef struct roseqs {
-	RoSeq *elts;
-	int nelt;
-} RoSeqs;
-
-
 #endif
