@@ -19,6 +19,7 @@
 \alias{reduce,IRanges-method}
 \alias{gaps}
 \alias{gaps,IRanges-method}
+\alias{summaryIRangesList}
 
 
 \title{IRanges utility functions}

@@ -20,6 +20,7 @@ export(
     reduce,
     toNormalIRanges,
     gaps,
+    summaryIRangesList,
 
     ## Aliases
     desc, "desc<-"
