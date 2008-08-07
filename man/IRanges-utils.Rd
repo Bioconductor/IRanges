@@ -6,6 +6,7 @@
 \alias{intToAdjacentRanges}
 \alias{whichAsRanges}
 \alias{slice}
+\alias{toNormalIRanges}
 \alias{shift}
 \alias{shift,IRanges-method}
 \alias{restrict}
@@ -16,7 +17,6 @@
 \alias{narrow,numeric-method}
 \alias{reduce}
 \alias{reduce,IRanges-method}
-\alias{toNormalIRanges}
 \alias{gaps}
 \alias{gaps,IRanges-method}
 
@@ -28,9 +28,11 @@
 }
 
 \usage{
-  ## Create an IRanges object
+  ## Create an IRanges instance
   intToRanges(x, use.names=TRUE)
   intToAdjacentRanges(x, use.names=TRUE)
+
+  ## Create a NormalIRanges instance
   whichAsRanges(x)
   slice(x, lower=-Inf, upper=Inf, includeLower=TRUE, includeUpper=TRUE)
   toNormalIRanges(x)
@@ -99,8 +101,8 @@
   \code{whichAsRanges} returns an \link{IRanges} object containing all of
   the ranges where \code{x} is \code{TRUE}.
 
-  \code{toNormalIRanges} first reduces \code{x}, then removes the
-  empty ranges. The final result is returned as a \link{NormalIRanges}
+  \code{toNormalIRanges} first reduces \code{x} (see below), then removes
+  the empty ranges. The final result is returned as a \link{NormalIRanges}
   object.
 
   \code{shift} shifts all the ranges in \code{x}.

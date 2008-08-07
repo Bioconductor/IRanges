@@ -178,7 +178,7 @@ SEXP which_as_ranges(SEXP x)
 		prev_elt = *x_elt;
 	}
 
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("IRanges")));
+	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("NormalIRanges")));
 	PROTECT(start = NEW_INTEGER(ans_length));
 	PROTECT(width = NEW_INTEGER(ans_length));
 	SET_SLOT(ans, mkChar("start"), start);

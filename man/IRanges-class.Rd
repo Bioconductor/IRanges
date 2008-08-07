@@ -41,11 +41,6 @@
 % Constructor:
 \alias{IRanges}
 
-% Coercion:
-\alias{coerce,IRanges,NormalIRanges-method}
-\alias{coerce,UnlockedIRanges,NormalIRanges-method}
-\alias{coerce,LockedIRanges,NormalIRanges-method}
-
 % "show" method:
 \alias{as.data.frame,IRanges-method}
 \alias{show,IRanges-method}
@@ -71,6 +66,12 @@
 \alias{names<-,IRanges-method}
 \alias{desc<-}
 \alias{update,UnlockedIRanges-method}
+
+% Coercion:
+\alias{asNormalIRanges}
+\alias{coerce,IRanges,NormalIRanges-method}
+\alias{coerce,UnlockedIRanges,NormalIRanges-method}
+\alias{coerce,LockedIRanges,NormalIRanges-method}
 
 % Deprecated methods:
 \alias{first}
@@ -301,6 +302,24 @@
   }
 }
 
+\section{Coercion}{
+  \describe{
+    \item{}{
+      \code{asNormalIRanges(x, check=TRUE)}:
+      \code{x} must be an IRanges object.
+      Equivalent to \code{as(x, "NormalIRanges")} i.e. if \code{isNormal(x)}
+      is \code{TRUE} then \code{asNormalIRanges} will turn \code{x} into a
+      NormalIRanges instance, otherwise it will fail.
+      Note that, unlike higher level \code{\link{toNormalIRanges}}
+      function, \code{asNormalIRanges} doesn't try to normalize
+      \code{x} by reducing its set of ranges. When successful,
+      \code{asNormalIRanges(x)} will always return a NormalIRanges instance
+      that contains exactly the same set of ranges than \code{x}.
+      See \code{?\link{toNormalIRanges}} for more information.
+    }
+  }
+}
+
 \section{Deprecated methods}{
     \item{}{
       \code{first(x)}:
@@ -383,10 +402,10 @@
   ## Normality:
   isNormal(x16)                        # FALSE
   if (interactive())
-      x16 <- as(x16, "NormalIRanges")  # Error!
+      x16 <- asNormalIRanges(x16)      # Error!
   whichFirstNotNormal(x16)             # 57
   isNormal(x16[1:56])                  # TRUE
-  xx <- as(x16[1:56], "NormalIRanges")
+  xx <- asNormalIRanges(x16[1:56])
   class(xx)
   max(xx)
   min(xx)

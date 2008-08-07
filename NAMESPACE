@@ -9,6 +9,7 @@ exportClasses(
 
 export(
     IRanges,
+    asNormalIRanges,
     intToRanges,
     intToAdjacentRanges,
     whichAsRanges,

@@ -321,11 +321,12 @@ IRanges <- function(start=NULL, end=NULL, width=NULL)
 ### to be a nice S4 "feature"...
 ###
 
-### NOT exported and unsafe: 'from' MUST be an IRanges object.
-asNormalIRanges <- function(from, check=TRUE)
+asNormalIRanges <- function(x, check=TRUE)
 {
-    new("NormalIRanges", start=start(from), width=width(from),
-                         names=names(from), check=check)
+    if (!is(x, "IRanges"))
+        stop("'x' must be an IRanges object")
+    new("NormalIRanges", start=start(x), width=width(x),
+                         names=names(x), check=check)
 }
 
 .asNormalIRanges <- function(from) asNormalIRanges(from, check=TRUE)
