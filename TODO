@@ -1,0 +1,4 @@
+- Add "append" method for IRanges objects.
+
+- Add "unique" method for IRanges objects.
+

@@ -1,0 +1,54 @@
+useDynLib(IRanges)
+
+import(methods)
+import(stats) ## for the "start" and "end" generics
+
+exportClasses(
+    IRanges, UnlockedIRanges, LockedIRanges, NormalIRanges
+)
+
+export(
+    IRanges,
+    intToRanges,
+    intToAdjacentRanges,
+    whichAsRanges,
+    slice,
+    shift,
+    restrict,
+    narrow,
+    reduce,
+    toNormalIRanges,
+    gaps,
+
+    ## Aliases
+    desc, "desc<-"
+)
+
+exportMethods(
+    length,
+    start,
+    width,
+    end,
+    names,
+    isNormal,
+    whichFirstNotNormal,
+    isEmpty,
+    max,
+    min,
+    initialize,
+    coerce,
+    as.data.frame,
+    show,
+    "start<-",
+    "width<-",
+    "end<-",
+    update,
+    "[",
+    rep,
+    duplicated,
+    as.matrix,
+
+    ## Deprecated
+    first, last
+)
+
