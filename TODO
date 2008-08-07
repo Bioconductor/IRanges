@@ -1,3 +1,8 @@
+- Move the "reverse" and "coverage" generics and methods for IRanges objects
+  from the Biostrings package to this package.
+
+- Move the MaskCollection stuff from the Biostrings package to this package.
+
 - Add "append" method for IRanges objects.
 
 - Add "unique" method for IRanges objects.
