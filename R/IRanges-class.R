@@ -252,7 +252,6 @@ setMethod("initialize", "NormalIRanges",
     }
 )
 
-### For internal use only. No need to export.
 newEmptyNormalIRanges <- function() new("NormalIRanges", check=FALSE)
 
 

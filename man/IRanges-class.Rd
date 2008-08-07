@@ -38,7 +38,8 @@
 \alias{initialize,IRanges-method}
 \alias{initialize,NormalIRanges-method}
 
-% Constructor:
+% Constructors:
+\alias{newEmptyNormalIRanges}
 \alias{IRanges}
 
 % "show" method:
