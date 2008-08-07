@@ -88,6 +88,17 @@ void copy_IRanges_slots(SEXP x, SEXP x0)
 	return fun(x, x0);
 }
 
+typedef SEXP (*new_IRanges_FUNTYPE)(const char *class, SEXP start, SEXP width, SEXP names);
+SEXP new_IRanges(const char *class, SEXP start, SEXP width, SEXP names)
+{
+	static new_IRanges_FUNTYPE fun = NULL;
+
+	if (fun == NULL)
+		fun = (new_IRanges_FUNTYPE)
+			R_GetCCallable("IRanges", "_new_IRanges");
+	return fun(class, start, width, names);
+}
+
 typedef SEXP (*alloc_IRanges_FUNTYPE)(const char *class, int length);
 SEXP alloc_IRanges(const char *class, int length)
 {

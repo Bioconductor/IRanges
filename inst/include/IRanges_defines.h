@@ -35,6 +35,10 @@
  * much faster, and (c) they don't require any PROTECT/UNPROTECT mechanism.
  */
 
+#ifndef EXTENDABLE_BUFFERS /* temporary fix, remove when the Extendable buffer typedefs in
+                              Biostrings_defines.h are gone */
+#define EXTENDABLE_BUFFERS
+
 typedef struct ibuf {
 	int buflength;
 	int *elts;
@@ -64,5 +68,7 @@ typedef struct cbbuf {
         int nelt;
 } CharBBuf; 
 
+#endif /* temporary fix, remove when the Extendable buffer typedefs in
+          Biostrings_defines.h are gone */
 
 #endif
