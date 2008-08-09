@@ -14,25 +14,145 @@
 
 /*
  * Low-level manipulation of the Auto-Extending buffers.
+ * (see AEbufs.c)
  */
 
-CharAE new_CharAE_from_string(
-	const char *string
+void IntAE_set_val(
+	const IntAE *int_ae,
+	int val
 );
+
+IntAE new_IntAE(
+	int buflength,
+	int nelt,
+	int val
+);
+
+void IntAE_insert_at(
+	IntAE *int_ae,
+	int at,
+	int val
+);
+
+void IntAE_append(
+	IntAE *int_ae,
+	const int *newvals,
+	int nnewval
+);
+
+void IntAE_delete_at(
+	IntAE *int_ae,
+	int at
+);
+
+void IntAE_sum_val(
+	const IntAE *int_ae,
+	int val
+);
+
+void IntAE_append_shifted_vals(
+	IntAE *int_ae,
+	const int *newvals,
+	int nnewval,
+	int shift
+);
+
+void IntAE_sum_IntAE(
+	const IntAE *int_ae1,
+	const IntAE *int_ae2
+);
+
+void IntAE_qsort(IntAE *int_ae);
+
+void IntAE_delete_adjdups(IntAE *int_ae);
+
+SEXP IntAE_asINTEGER(const IntAE *int_ae);
+
+IntAE INTEGER_asIntAE(SEXP x);
+
+IntAE CHARACTER_asIntAE(
+	SEXP x,
+	int keyshift
+);
+
+IntAEAE new_IntAEAE(
+	int buflength,
+	int nelt
+);
+
+void IntAEAE_insert_at(
+	IntAEAE *int_aeae,
+	int at,
+	const IntAE *int_ae
+);
+
+void IntAEAE_eltwise_append(
+	const IntAEAE *int_aeae1,
+	const IntAEAE *int_aeae2
+);
+
+void IntAEAE_sum_val(
+	const IntAEAE *int_aeae,
+	int val
+);
+
+SEXP IntAEAE_asLIST(
+	const IntAEAE *int_aeae,
+	int mode
+);
+
+IntAEAE LIST_asIntAEAE(SEXP x);
+
+SEXP IntAEAE_toEnvir(
+	const IntAEAE *int_aeae,
+	SEXP envir,
+	int keyshift
+);
+
+RangeAE new_RangeAE(
+	int buflength,
+	int nelt
+);
+
+void RangeAE_insert_at(
+	RangeAE *range_ae,
+	int at,
+	int start,
+	int width
+);
+
+CharAE new_CharAE(int buflength);
+
+CharAE new_CharAE_from_string(const char *string);
+
+void CharAE_insert_at(
+	CharAE *char_ae,
+	int at,
+	char c
+);
+
+SEXP CharAE_asRAW(const CharAE *char_ae);
 
 CharAEAE new_CharAEAE(
 	int buflength,
 	int nelt
 );
 
+void CharAEAE_insert_at(
+	CharAEAE *char_aeae,
+	int at,
+	const CharAE *char_ae
+);
+
 void append_string_to_CharAEAE(
-	CharAEAE *cbbuf,
+	CharAEAE *char_aeae,
 	const char *string
 );
 
 
 /*
- * Low-level manipulation of IRanges objects
+ * Low-level manipulation of IRanges objects.
+ * (see IRanges_class.c)
  */
 
 SEXP get_IRanges_start(SEXP x);
@@ -48,4 +168,3 @@ void copy_IRanges_slots(SEXP x, SEXP x0);
 SEXP new_IRanges(const char *class, SEXP start, SEXP width, SEXP names);
 
 SEXP alloc_IRanges(const char *class, int length);
-

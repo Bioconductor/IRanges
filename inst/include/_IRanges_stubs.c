@@ -1,112 +1,200 @@
 #include "IRanges_interface.h"
 
-typedef CharAE (*new_CharAE_from_string_FUNTYPE)(const char *);
-CharAE new_CharAE_from_string(const char *string)
-{
-	static new_CharAE_from_string_FUNTYPE fun = NULL;
-
-	if (fun == NULL)
-		fun = (new_CharAE_from_string_FUNTYPE)
-			R_GetCCallable("IRanges", "_new_CharAE_from_string");
-	return fun(string);
+#define DEFINE_CCALLABLE_STUB(retT, stubname, Targs, args) \
+retT stubname Targs \
+{ \
+	static retT (*fun)Targs = NULL; \
+	if (fun == NULL) \
+		fun = (retT (*)Targs) R_GetCCallable("IRanges", "_" #stubname); \
+	return stubname args; \
 }
 
-typedef CharAEAE (*new_CharAEAE_FUNTYPE)(int, int);
-CharAEAE new_CharAEAE(int buflength, int nelt)
-{
-	static new_CharAEAE_FUNTYPE fun = NULL;
 
-	if (fun == NULL)
-		fun = (new_CharAEAE_FUNTYPE)
-			R_GetCCallable("IRanges", "_new_CharAEAE");
-	return fun(buflength, nelt);
-}
+/*
+ * Stubs for callables defined in AEbufs.c
+ */
 
-typedef void (*append_string_to_CharAEAE_FUNTYPE)(CharAEAE *, const char *);
-void append_string_to_CharAEAE(CharAEAE *cbbuf, const char *string)
-{
-	static append_string_to_CharAEAE_FUNTYPE fun = NULL;
+DEFINE_CCALLABLE_STUB(void, IntAE_set_val,
+	(const IntAE *int_ae, int val),
+	(             int_ae,     val)
+);
 
-	if (fun == NULL)
-		fun = (append_string_to_CharAEAE_FUNTYPE)
-			R_GetCCallable("IRanges", "_append_string_to_CharAEAE");
-	return fun(cbbuf, string);
-}
+DEFINE_CCALLABLE_STUB(IntAE, new_IntAE,
+	(int buflength, int nelt, int val),
+	(    buflength,     nelt,     val)
+);
 
-typedef SEXP (*get_IRanges_start_FUNTYPE)(SEXP x);
-SEXP get_IRanges_start(SEXP x)
-{
-	static get_IRanges_start_FUNTYPE fun = NULL;
+DEFINE_CCALLABLE_STUB(void, IntAE_insert_at,
+	(IntAE *int_ae, int at, int val),
+	(       int_ae,     at,     val)
+);
 
-	if (fun == NULL)
-		fun = (get_IRanges_start_FUNTYPE)
-			R_GetCCallable("IRanges", "_get_IRanges_start");
-	return fun(x);
-}
+DEFINE_CCALLABLE_STUB(void, IntAE_append,
+	(IntAE *int_ae, const int *newvals, int nnewval),
+	(       int_ae,            newvals,     nnewval)
+);
 
-typedef SEXP (*get_IRanges_width_FUNTYPE)(SEXP x);
-SEXP get_IRanges_width(SEXP x)
-{
-	static get_IRanges_width_FUNTYPE fun = NULL;
+DEFINE_CCALLABLE_STUB(void, IntAE_delete_at,
+	(IntAE *int_ae, int at),
+	(       int_ae,     at)
+);
 
-	if (fun == NULL)
-		fun = (get_IRanges_width_FUNTYPE)
-			R_GetCCallable("IRanges", "_get_IRanges_width");
-	return fun(x);
-}
+DEFINE_CCALLABLE_STUB(void, IntAE_sum_val,
+	(const IntAE *int_ae, int val),
+	(             int_ae,     val)
+);
 
-typedef int (*get_IRanges_length_FUNTYPE)(SEXP x);
-int get_IRanges_length(SEXP x)
-{
-	static get_IRanges_length_FUNTYPE fun = NULL;
+DEFINE_CCALLABLE_STUB(void, IntAE_append_shifted_vals,
+	(IntAE *int_ae, const int *newvals, int nnewval, int shift),
+	(       int_ae,            newvals,     nnewval,     shift)
+);
 
-	if (fun == NULL)
-		fun = (get_IRanges_length_FUNTYPE)
-			R_GetCCallable("IRanges", "_get_IRanges_length");
-	return fun(x);
-}
+DEFINE_CCALLABLE_STUB(void, IntAE_sum_IntAE,
+	(const IntAE *int_ae1, const IntAE *int_ae2),
+	(             int_ae1,              int_ae2)
+);
 
-typedef void (*set_IRanges_names_FUNTYPE)(SEXP x, SEXP names);
-void set_IRanges_names(SEXP x, SEXP names)
-{
-	static set_IRanges_names_FUNTYPE fun = NULL;
+DEFINE_CCALLABLE_STUB(void, IntAE_qsort,
+	(IntAE *int_ae),
+	(       int_ae)
+);
 
-	if (fun == NULL)
-		fun = (set_IRanges_names_FUNTYPE)
-			R_GetCCallable("IRanges", "_set_IRanges_names");
-	return fun(x, names);
-}
+DEFINE_CCALLABLE_STUB(void, IntAE_delete_adjdups,
+	(IntAE *int_ae),
+	(       int_ae)
+);
 
-typedef void (*copy_IRanges_slots_FUNTYPE)(SEXP x, SEXP x0);
-void copy_IRanges_slots(SEXP x, SEXP x0)
-{
-	static copy_IRanges_slots_FUNTYPE fun = NULL;
+DEFINE_CCALLABLE_STUB(SEXP, IntAE_asINTEGER,
+	(const IntAE *int_ae),
+	(             int_ae)
+);
 
-	if (fun == NULL)
-		fun = (copy_IRanges_slots_FUNTYPE)
-			R_GetCCallable("IRanges", "_copy_IRanges_slots");
-	return fun(x, x0);
-}
+DEFINE_CCALLABLE_STUB(IntAE, INTEGER_asIntAE,
+	(SEXP x),
+	(     x)
+);
 
-typedef SEXP (*new_IRanges_FUNTYPE)(const char *class, SEXP start, SEXP width, SEXP names);
-SEXP new_IRanges(const char *class, SEXP start, SEXP width, SEXP names)
-{
-	static new_IRanges_FUNTYPE fun = NULL;
+DEFINE_CCALLABLE_STUB(IntAE, CHARACTER_asIntAE,
+	(SEXP x, int keyshift),
+	(     x,     keyshift)
+);
 
-	if (fun == NULL)
-		fun = (new_IRanges_FUNTYPE)
-			R_GetCCallable("IRanges", "_new_IRanges");
-	return fun(class, start, width, names);
-}
+DEFINE_CCALLABLE_STUB(IntAEAE, new_IntAEAE,
+	(int buflength, int nelt),
+	(    buflength,     nelt)
+);
 
-typedef SEXP (*alloc_IRanges_FUNTYPE)(const char *class, int length);
-SEXP alloc_IRanges(const char *class, int length)
-{
-	static alloc_IRanges_FUNTYPE fun = NULL;
+DEFINE_CCALLABLE_STUB(void, IntAEAE_insert_at,
+	(IntAEAE *int_aeae, int at, const IntAE *int_ae),
+	(         int_aeae,     at,              int_ae)
+);
 
-	if (fun == NULL)
-		fun = (alloc_IRanges_FUNTYPE)
-			R_GetCCallable("IRanges", "_alloc_IRanges");
-	return fun(class, length);
-}
+DEFINE_CCALLABLE_STUB(void, IntAEAE_eltwise_append,
+	(const IntAEAE *int_aeae1, const IntAEAE *int_aeae2),
+	(               int_aeae1,                int_aeae2)
+);
 
+DEFINE_CCALLABLE_STUB(void, IntAEAE_sum_val,
+	(const IntAEAE *int_aeae, int val),
+	(               int_aeae,     val)
+);
+
+DEFINE_CCALLABLE_STUB(SEXP, IntAEAE_asLIST,
+	(const IntAEAE *int_aeae, int mode),
+	(               int_aeae,     mode)
+);
+
+DEFINE_CCALLABLE_STUB(IntAEAE, LIST_asIntAEAE,
+	(SEXP x),
+	(     x)
+);
+
+DEFINE_CCALLABLE_STUB(SEXP, IntAEAE_toEnvir,
+	(const IntAEAE *int_aeae, SEXP envir, int keyshift),
+	(               int_aeae,      envir,     keyshift)
+);
+
+DEFINE_CCALLABLE_STUB(RangeAE, new_RangeAE,
+	(int buflength, int nelt),
+	(    buflength,     nelt)
+);
+
+DEFINE_CCALLABLE_STUB(void, RangeAE_insert_at,
+	(RangeAE *range_ae, int at, int start, int width),
+	(         range_ae,     at,     start,     width)
+);
+
+DEFINE_CCALLABLE_STUB(CharAE, new_CharAE,
+	(int buflength),
+	(    buflength)
+);
+
+DEFINE_CCALLABLE_STUB(CharAE, new_CharAE_from_string,
+	(const char *string),
+	(            string)
+);
+
+DEFINE_CCALLABLE_STUB(void, CharAE_insert_at,
+	(CharAE *char_ae, int at, char c),
+	(        char_ae,     at,      c)
+);
+
+DEFINE_CCALLABLE_STUB(SEXP, CharAE_asRAW,
+	(const CharAE *char_ae),
+	(              char_ae)
+);
+
+DEFINE_CCALLABLE_STUB(CharAEAE, new_CharAEAE,
+	(int buflength, int nelt),
+	(    buflength,     nelt)
+);
+
+DEFINE_CCALLABLE_STUB(void, CharAEAE_insert_at,
+	(CharAEAE *char_aeae, int at, const CharAE *char_ae),
+	(          char_aeae,     at,               char_ae)
+);
+
+DEFINE_CCALLABLE_STUB(void, append_string_to_CharAEAE,
+	(CharAEAE *char_aeae, const char *string),
+	(          char_aeae,             string)
+);
+
+
+/*
+ * Stubs for callables defined in IRanges_class.c
+ */
+
+DEFINE_CCALLABLE_STUB(SEXP, get_IRanges_start,
+	(SEXP x),
+	(     x)
+);
+
+DEFINE_CCALLABLE_STUB(SEXP, get_IRanges_width,
+	(SEXP x),
+	(     x)
+);
+
+DEFINE_CCALLABLE_STUB(int, get_IRanges_length,
+	(SEXP x),
+	(     x)
+);
+
+DEFINE_CCALLABLE_STUB(void, set_IRanges_names,
+	(SEXP x, SEXP names),
+	(     x,      names)
+);
+
+DEFINE_CCALLABLE_STUB(void, copy_IRanges_slots,
+	(SEXP x, SEXP x0),
+	(     x,      x0)
+);
+
+DEFINE_CCALLABLE_STUB(SEXP, new_IRanges,
+	(const char *class, SEXP start, SEXP width, SEXP names),
+	(            class,      start,      width,      names)
+);
+
+DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,
+	(const char *class, int length),
+	(            class,     length)
+);

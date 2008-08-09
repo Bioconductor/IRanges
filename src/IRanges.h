@@ -15,7 +15,7 @@ void _get_intorder(
 );
 
 void _IntAE_set_val(
-	const IntAE *ibuf,
+	const IntAE *int_ae,
 	int val
 );
 
@@ -26,44 +26,44 @@ IntAE _new_IntAE(
 );
 
 void _IntAE_insert_at(
-	IntAE *ibuf,
+	IntAE *int_ae,
 	int at,
 	int val
 );
 
 void _IntAE_append(
-	IntAE *ibuf,
+	IntAE *int_ae,
 	const int *newvals,
 	int nnewval
 );
 
 void _IntAE_delete_at(
-	IntAE *ibuf,
+	IntAE *int_ae,
 	int at
 );
 
 void _IntAE_sum_val(
-	const IntAE *ibuf,
+	const IntAE *int_ae,
 	int val
 );
 
 void _IntAE_append_shifted_vals(
-	IntAE *ibuf,
+	IntAE *int_ae,
 	const int *newvals,
 	int nnewval,
 	int shift
 );
 
 void _IntAE_sum_IntAE(
-	const IntAE *ibuf1,
-	const IntAE *ibuf2
+	const IntAE *int_ae1,
+	const IntAE *int_ae2
 );
 
-void _IntAE_qsort(IntAE *ibuf);
+void _IntAE_qsort(IntAE *int_ae);
 
-void _IntAE_delete_consecutiverepeats(IntAE *ibuf);
+void _IntAE_delete_adjdups(IntAE *int_ae);
 
-SEXP _IntAE_asINTEGER(const IntAE *ibuf);
+SEXP _IntAE_asINTEGER(const IntAE *int_ae);
 
 IntAE _INTEGER_asIntAE(SEXP x);
 
@@ -78,30 +78,30 @@ IntAEAE _new_IntAEAE(
 );
 
 void _IntAEAE_insert_at(
-	IntAEAE *ibbuf,
+	IntAEAE *int_aeae,
 	int at,
-	const IntAE *ibuf
+	const IntAE *int_ae
 );
 
 void _IntAEAE_eltwise_append(
-	const IntAEAE *ibbuf1,
-	const IntAEAE *ibbuf2
+	const IntAEAE *int_aeae1,
+	const IntAEAE *int_aeae2
 );
 
 void _IntAEAE_sum_val(
-	const IntAEAE *ibbuf,
+	const IntAEAE *int_aeae,
 	int val
 );
 
 SEXP _IntAEAE_asLIST(
-	const IntAEAE *ibbuf,
+	const IntAEAE *int_aeae,
 	int mode
 );
 
 IntAEAE _LIST_asIntAEAE(SEXP x);
 
 SEXP _IntAEAE_toEnvir(
-	const IntAEAE *ibbuf,
+	const IntAEAE *int_aeae,
 	SEXP envir,
 	int keyshift
 );
@@ -112,7 +112,7 @@ RangeAE _new_RangeAE(
 );
 
 void _RangeAE_insert_at(
-	RangeAE *rangebuf,
+	RangeAE *range_ae,
 	int at,
 	int start,
 	int width
@@ -123,12 +123,12 @@ CharAE _new_CharAE(int buflength);
 CharAE _new_CharAE_from_string(const char *string);
 
 void _CharAE_insert_at(
-	CharAE *cbuf,
+	CharAE *char_ae,
 	int at,
 	char c
 );
 
-SEXP _CharAE_asRAW(const CharAE *cbuf);
+SEXP _CharAE_asRAW(const CharAE *char_ae);
 
 CharAEAE _new_CharAEAE(
 	int buflength,
@@ -136,13 +136,13 @@ CharAEAE _new_CharAEAE(
 );
 
 void _CharAEAE_insert_at(
-	CharAEAE *cbbuf,
+	CharAEAE *char_aeae,
 	int at,
-	const CharAE *cbuf
+	const CharAE *char_ae
 );
 
 void _append_string_to_CharAEAE(
-	CharAEAE *cbbuf,
+	CharAEAE *char_aeae,
 	const char *string
 );
 
