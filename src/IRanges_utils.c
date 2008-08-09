@@ -209,7 +209,7 @@ SEXP which_as_ranges(SEXP x)
  * Reduction (aka extracting the frame)
  */
 
-static RangeBuf reduced_ranges;
+static RangeAE reduced_ranges;
 static int max_end, inframe_offset;
 
 static void add_to_reduced_ranges(int start, int width)
@@ -219,7 +219,7 @@ static void add_to_reduced_ranges(int start, int width)
 	buf_length = reduced_ranges.start.nelt;
 	end = start + width - 1;
 	if (buf_length == 0 || (gap = start - max_end - 1) > 0) {
-		_RangeBuf_insert_at(&reduced_ranges, buf_length, start, width);
+		_RangeAE_insert_at(&reduced_ranges, buf_length, start, width);
 		if (buf_length == 0)
 			inframe_offset = start - 1;
 		else
@@ -237,11 +237,11 @@ static void add_to_reduced_ranges(int start, int width)
 static void reduce_ranges(int length, const int *start, const int *width, int *inframe_start)
 {
 	int i, j;
-	IntBuf start_order;
+	IntAE start_order;
 
-	start_order = _new_IntBuf(length, 0, 0);
+	start_order = _new_IntAE(length, 0, 0);
 	_get_intorder(length, start, start_order.elts);
-	reduced_ranges = _new_RangeBuf(0, 0);
+	reduced_ranges = _new_RangeAE(0, 0);
 	for (i = 0; i < length; i++) {
 		j = start_order.elts[i];
 		add_to_reduced_ranges(start[j], width[j]);
@@ -279,8 +279,8 @@ SEXP reduce_IRanges(SEXP x, SEXP with_inframe_start)
 	SET_STRING_ELT(ans_names, 2, mkChar("inframe.start"));
 	SET_NAMES(ans, ans_names);
 	UNPROTECT(1);
-	SET_ELEMENT(ans, 0, _IntBuf_asINTEGER(&(reduced_ranges.start)));
-	SET_ELEMENT(ans, 1, _IntBuf_asINTEGER(&(reduced_ranges.width)));
+	SET_ELEMENT(ans, 0, _IntAE_asINTEGER(&(reduced_ranges.start)));
+	SET_ELEMENT(ans, 1, _IntAE_asINTEGER(&(reduced_ranges.width)));
 	if (inframe_start != NULL) {
 		SET_ELEMENT(ans, 2, ans_inframe_start);
 		UNPROTECT(1);

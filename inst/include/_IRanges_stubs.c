@@ -1,35 +1,35 @@
 #include "IRanges_interface.h"
 
-typedef CharBuf (*new_CharBuf_from_string_FUNTYPE)(const char *);
-CharBuf new_CharBuf_from_string(const char *string)
+typedef CharAE (*new_CharAE_from_string_FUNTYPE)(const char *);
+CharAE new_CharAE_from_string(const char *string)
 {
-	static new_CharBuf_from_string_FUNTYPE fun = NULL;
+	static new_CharAE_from_string_FUNTYPE fun = NULL;
 
 	if (fun == NULL)
-		fun = (new_CharBuf_from_string_FUNTYPE)
-			R_GetCCallable("IRanges", "_new_CharBuf_from_string");
+		fun = (new_CharAE_from_string_FUNTYPE)
+			R_GetCCallable("IRanges", "_new_CharAE_from_string");
 	return fun(string);
 }
 
-typedef CharBBuf (*new_CharBBuf_FUNTYPE)(int, int);
-CharBBuf new_CharBBuf(int buflength, int nelt)
+typedef CharAEAE (*new_CharAEAE_FUNTYPE)(int, int);
+CharAEAE new_CharAEAE(int buflength, int nelt)
 {
-	static new_CharBBuf_FUNTYPE fun = NULL;
+	static new_CharAEAE_FUNTYPE fun = NULL;
 
 	if (fun == NULL)
-		fun = (new_CharBBuf_FUNTYPE)
-			R_GetCCallable("IRanges", "_new_CharBBuf");
+		fun = (new_CharAEAE_FUNTYPE)
+			R_GetCCallable("IRanges", "_new_CharAEAE");
 	return fun(buflength, nelt);
 }
 
-typedef void (*append_string_to_CharBBuf_FUNTYPE)(CharBBuf *, const char *);
-void append_string_to_CharBBuf(CharBBuf *cbbuf, const char *string)
+typedef void (*append_string_to_CharAEAE_FUNTYPE)(CharAEAE *, const char *);
+void append_string_to_CharAEAE(CharAEAE *cbbuf, const char *string)
 {
-	static append_string_to_CharBBuf_FUNTYPE fun = NULL;
+	static append_string_to_CharAEAE_FUNTYPE fun = NULL;
 
 	if (fun == NULL)
-		fun = (append_string_to_CharBBuf_FUNTYPE)
-			R_GetCCallable("IRanges", "_append_string_to_CharBBuf");
+		fun = (append_string_to_CharAEAE_FUNTYPE)
+			R_GetCCallable("IRanges", "_append_string_to_CharAEAE");
 	return fun(cbbuf, string);
 }
 

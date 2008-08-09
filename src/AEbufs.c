@@ -1,12 +1,10 @@
 /*
- * Low-level manipulation of the extendable buffers.
+ * Low-level manipulation of the Auto-Extending buffers.
  *
- * Except for debug_bufutils(), the functions defined in
- * this file are NOT .Call methods (but they are used by .Call methods
- * defined in other .c files) so THEY DON'T NEED TO BE REGISTERED in
- * R_init_IRanges.c. They are prefixed with a "_" (underscore) to
- * emphasize the fact that they are used internally within the IRanges
- * shared lib.
+ * Except for debug_AEbufs(), the functions defined in this file are
+ * NOT .Call methods (but they are used by .Call methods defined in other .c
+ * files). They are prefixed with a "_" (underscore) to emphasize the fact that
+ * they are used internally within the IRanges shared lib.
  */
 #include "IRanges.h"
 #include <stdlib.h> /* for qsort() */
@@ -18,13 +16,13 @@
 
 static int debug = 0;
 
-SEXP debug_bufutils()
+SEXP debug_AEbufs()
 {
 #ifdef DEBUG_IRANGES
 	debug = !debug;
-	Rprintf("Debug mode turned %s in 'bufutils.c'\n", debug ? "on" : "off");
+	Rprintf("Debug mode turned %s in 'AEbufs.c'\n", debug ? "on" : "off");
 #else
-	Rprintf("Debug mode not available in 'bufutils.c'\n");
+	Rprintf("Debug mode not available in 'AEbufs.c'\n");
 #endif
 	return R_NilValue;
 }
@@ -79,10 +77,10 @@ static int get_new_buflength(int buflength)
 
 
 /****************************************************************************
- * IntBuf functions
+ * IntAE functions
  */
 
-void _IntBuf_set_val(const IntBuf *ibuf, int val)
+void _IntAE_set_val(const IntAE *ibuf, int val)
 {
 	int i, *elt;
 
@@ -91,9 +89,9 @@ void _IntBuf_set_val(const IntBuf *ibuf, int val)
 	return;
 }
 
-IntBuf _new_IntBuf(int buflength, int nelt, int val)
+IntAE _new_IntAE(int buflength, int nelt, int val)
 {
-	IntBuf ibuf;
+	IntAE ibuf;
 
 	/* No memory leak here, because we use transient storage allocation */
 	if (buflength == 0)
@@ -102,11 +100,11 @@ IntBuf _new_IntBuf(int buflength, int nelt, int val)
 		ibuf.elts = Salloc((long) buflength, int);
 	ibuf.buflength = buflength;
 	ibuf.nelt = nelt;
-	_IntBuf_set_val(&ibuf, val);
+	_IntAE_set_val(&ibuf, val);
 	return ibuf;
 }
 
-static void IntBuf_extend(IntBuf *ibuf)
+static void IntAE_extend(IntAE *ibuf)
 {
 	long new_buflength;
 
@@ -117,14 +115,14 @@ static void IntBuf_extend(IntBuf *ibuf)
 	return;
 }
 
-void _IntBuf_insert_at(IntBuf *ibuf, int at, int val)
+void _IntAE_insert_at(IntAE *ibuf, int at, int val)
 {
 	const int *elt1;
 	int *elt2;
 	int i1;
 
 	if (ibuf->nelt >= ibuf->buflength)
-		IntBuf_extend(ibuf);
+		IntAE_extend(ibuf);
 	elt2 = ibuf->elts + ibuf->nelt;
 	elt1 = elt2 - 1;
 	for (i1 = ibuf->nelt++; i1 > at; i1--)
@@ -133,20 +131,20 @@ void _IntBuf_insert_at(IntBuf *ibuf, int at, int val)
 	return;
 }
 
-void _IntBuf_append(IntBuf *ibuf, const int *newvals, int nnewval)
+void _IntAE_append(IntAE *ibuf, const int *newvals, int nnewval)
 {
 	int new_nelt, *dest;
 
 	new_nelt = ibuf->nelt + nnewval;
 	while (ibuf->buflength < new_nelt)
-		IntBuf_extend(ibuf);
+		IntAE_extend(ibuf);
 	dest = ibuf->elts + ibuf->nelt;
 	memcpy(dest, newvals, nnewval * sizeof(int));
 	ibuf->nelt = new_nelt;
 	return;
 }
 
-void _IntBuf_delete_at(IntBuf *ibuf, int at)
+void _IntAE_delete_at(IntAE *ibuf, int at)
 {
 	int *elt1;
 	const int *elt2;
@@ -160,7 +158,7 @@ void _IntBuf_delete_at(IntBuf *ibuf, int at)
 	return;
 }
 
-void _IntBuf_sum_val(const IntBuf *ibuf, int val)
+void _IntAE_sum_val(const IntAE *ibuf, int val)
 {
 	int i, *elt;
 
@@ -169,14 +167,14 @@ void _IntBuf_sum_val(const IntBuf *ibuf, int val)
 	return;
 }
 
-void _IntBuf_append_shifted_vals(IntBuf *ibuf, const int *newvals, int nnewval, int shift)
+void _IntAE_append_shifted_vals(IntAE *ibuf, const int *newvals, int nnewval, int shift)
 {
 	int new_nelt, i, *elt1;
 	const int *elt2;
 
 	new_nelt = ibuf->nelt + nnewval;
 	while (ibuf->buflength < new_nelt)
-		IntBuf_extend(ibuf);
+		IntAE_extend(ibuf);
 	for (i = 0, elt1 = ibuf->elts + ibuf->nelt, elt2 = newvals;
 	     i < nnewval;
 	     i++, elt1++, elt2++)
@@ -186,10 +184,10 @@ void _IntBuf_append_shifted_vals(IntBuf *ibuf, const int *newvals, int nnewval, 
 }
 
 /*
- * Left and right IntBuf objects must have the same length. This is
+ * Left and right IntAE objects must have the same length. This is
  * NOT checked!
  */
-void _IntBuf_sum_IntBuf(const IntBuf *ibuf1, const IntBuf *ibuf2)
+void _IntAE_sum_IntAE(const IntAE *ibuf1, const IntAE *ibuf2)
 {
 	int i, *elt1, *elt2;
 
@@ -205,13 +203,13 @@ static int cmpintp(const void *p1, const void *p2)
 	return *((const int *) p1) - *((const int *) p2);
 }
 
-void _IntBuf_qsort(IntBuf *ibuf)
+void _IntAE_qsort(IntAE *ibuf)
 {
 	qsort(ibuf->elts, ibuf->nelt, sizeof(int), cmpintp);
 	return;
 }
 
-void _IntBuf_delete_consecutiverepeats(IntBuf *ibuf)
+void _IntAE_delete_consecutiverepeats(IntAE *ibuf)
 {
 	int *elt1;
 	const int *elt2;
@@ -232,7 +230,7 @@ void _IntBuf_delete_consecutiverepeats(IntBuf *ibuf)
 	return;
 }
 
-SEXP _IntBuf_asINTEGER(const IntBuf *ibuf)
+SEXP _IntAE_asINTEGER(const IntAE *ibuf)
 {
 	SEXP ans;
 
@@ -242,29 +240,29 @@ SEXP _IntBuf_asINTEGER(const IntBuf *ibuf)
 	return ans;
 }
 
-IntBuf _INTEGER_asIntBuf(SEXP x)
+IntAE _INTEGER_asIntAE(SEXP x)
 {
-	IntBuf ibuf;
+	IntAE ibuf;
 
-	ibuf = _new_IntBuf(LENGTH(x), 0, 0);
+	ibuf = _new_IntAE(LENGTH(x), 0, 0);
 	memcpy(ibuf.elts, INTEGER(x), sizeof(int) * LENGTH(x));
 	ibuf.nelt = ibuf.buflength;
 	return ibuf;
 }
 
-IntBuf _CHARACTER_asIntBuf(SEXP x, int keyshift)
+IntAE _CHARACTER_asIntAE(SEXP x, int keyshift)
 {
-	IntBuf ibuf;
+	IntAE ibuf;
 	int *elt;
 
 #ifdef DEBUG_IRANGES
 	if (debug) {
-		Rprintf("[DEBUG] _CHARACTER_asIntBuf(): BEGIN ... "
+		Rprintf("[DEBUG] _CHARACTER_asIntAE(): BEGIN ... "
 			"LENGTH(x)=%d keyshift=%d\n",
 			LENGTH(x), keyshift);
 	}
 #endif
-	ibuf = _new_IntBuf(LENGTH(x), 0, 0);
+	ibuf = _new_IntAE(LENGTH(x), 0, 0);
 	for (ibuf.nelt = 0, elt = ibuf.elts;
 	     ibuf.nelt < ibuf.buflength;
 	     ibuf.nelt++, elt++) {
@@ -274,7 +272,7 @@ IntBuf _CHARACTER_asIntBuf(SEXP x, int keyshift)
 		if (debug) {
 			if (ibuf.nelt < 100
 			 || ibuf.nelt >= ibuf.buflength - 100)
-				Rprintf("[DEBUG] _CHARACTER_asIntBuf(): "
+				Rprintf("[DEBUG] _CHARACTER_asIntAE(): "
 					"ibuf.nelt=%d key=%s *elt=%d\n",
 					ibuf.nelt,
 					CHAR(STRING_ELT(x, ibuf.nelt)), *elt);
@@ -283,7 +281,7 @@ IntBuf _CHARACTER_asIntBuf(SEXP x, int keyshift)
 	}
 #ifdef DEBUG_IRANGES
 	if (debug) {
-		Rprintf("[DEBUG] _CHARACTER_asIntBuf(): END\n");
+		Rprintf("[DEBUG] _CHARACTER_asIntAE(): END\n");
 	}
 #endif
 	return ibuf;
@@ -291,45 +289,45 @@ IntBuf _CHARACTER_asIntBuf(SEXP x, int keyshift)
 
 
 /****************************************************************************
- * IntBBuf functions
+ * IntAEAE functions
  */
 
-IntBBuf _new_IntBBuf(int buflength, int nelt)
+IntAEAE _new_IntAEAE(int buflength, int nelt)
 {
-	IntBBuf ibbuf;
-	IntBuf *elt;
+	IntAEAE ibbuf;
+	IntAE *elt;
 
 	/* No memory leak here, because we use transient storage allocation */
 	if (buflength == 0)
 		ibbuf.elts = NULL;
 	else
-		ibbuf.elts = Salloc((long) buflength, IntBuf);
+		ibbuf.elts = Salloc((long) buflength, IntAE);
 	ibbuf.buflength = buflength;
 	for (ibbuf.nelt = 0, elt = ibbuf.elts;
 	     ibbuf.nelt < nelt;
 	     ibbuf.nelt++, elt++)
-		*elt = _new_IntBuf(0, 0, 0);
+		*elt = _new_IntAE(0, 0, 0);
 	return ibbuf;
 }
 
-static void IntBBuf_extend(IntBBuf *ibbuf)
+static void IntAEAE_extend(IntAEAE *ibbuf)
 {
 	long new_buflength;
 
 	new_buflength = get_new_buflength(ibbuf->buflength);
 	ibbuf->elts = Srealloc((char *) ibbuf->elts, new_buflength,
-					(long) ibbuf->buflength, IntBuf);
+					(long) ibbuf->buflength, IntAE);
 	ibbuf->buflength = new_buflength;
 	return;
 }
 
-void _IntBBuf_insert_at(IntBBuf *ibbuf, int at, const IntBuf *ibuf)
+void _IntAEAE_insert_at(IntAEAE *ibbuf, int at, const IntAE *ibuf)
 {
-	IntBuf *elt1, *elt2;
+	IntAE *elt1, *elt2;
 	int i1;
 
 	if (ibbuf->nelt >= ibbuf->buflength)
-		IntBBuf_extend(ibbuf);
+		IntAEAE_extend(ibbuf);
 	elt2 = ibbuf->elts + ibbuf->nelt;
 	elt1 = elt2 - 1;
 	for (i1 = ibbuf->nelt++; i1 > at; i1--)
@@ -339,39 +337,39 @@ void _IntBBuf_insert_at(IntBBuf *ibbuf, int at, const IntBuf *ibuf)
 }
 
 /*
- * Left and right IntBBuf objects must have the same length. This is
+ * Left and right IntAEAE objects must have the same length. This is
  * NOT checked!
  */
-void _IntBBuf_eltwise_append(const IntBBuf *ibbuf1, const IntBBuf *ibbuf2)
+void _IntAEAE_eltwise_append(const IntAEAE *ibbuf1, const IntAEAE *ibbuf2)
 {
 	int i;
-	IntBuf *elt1, *elt2;
+	IntAE *elt1, *elt2;
 
 	for (i = 0, elt1 = ibbuf1->elts, elt2 = ibbuf2->elts;
 	     i < ibbuf1->nelt;
 	     i++, elt1++, elt2++)
-		_IntBuf_append(elt1, elt2->elts, elt2->nelt);
+		_IntAE_append(elt1, elt2->elts, elt2->nelt);
 	return;
 }
 
-void _IntBBuf_sum_val(const IntBBuf *ibbuf, int val)
+void _IntAEAE_sum_val(const IntAEAE *ibbuf, int val)
 {
 	int i;
-	IntBuf *elt;
+	IntAE *elt;
 
 	for (i = 0, elt = ibbuf->elts; i < ibbuf->nelt; i++, elt++)
-		_IntBuf_sum_val(elt, val);
+		_IntAE_sum_val(elt, val);
 	return;
 }
 
 /*
  * mode: 0 -> integer(0), 1-> NULL, 2 -> NA
  */
-SEXP _IntBBuf_asLIST(const IntBBuf *ibbuf, int mode)
+SEXP _IntAEAE_asLIST(const IntAEAE *ibbuf, int mode)
 {
 	SEXP ans, ans_elt;
 	int i;
-	IntBuf *elt;
+	IntAE *elt;
 
 	PROTECT(ans = NEW_LIST(ibbuf->nelt));
 	for (i = 0, elt = ibbuf->elts; i < ibbuf->nelt; i++, elt++) {
@@ -385,7 +383,7 @@ SEXP _IntBBuf_asLIST(const IntBBuf *ibbuf, int mode)
 				PROTECT(ans_elt = NEW_LOGICAL(1));
 			}
 		} else {
-			PROTECT(ans_elt = _IntBuf_asINTEGER(elt));
+			PROTECT(ans_elt = _IntAE_asINTEGER(elt));
 		}
 		SET_ELEMENT(ans, i, ans_elt);
 		UNPROTECT(1);
@@ -394,31 +392,31 @@ SEXP _IntBBuf_asLIST(const IntBBuf *ibbuf, int mode)
 	return ans;
 }
 
-IntBBuf _LIST_asIntBBuf(SEXP x)
+IntAEAE _LIST_asIntAEAE(SEXP x)
 {
-	IntBBuf ibbuf;
-	IntBuf *elt;
+	IntAEAE ibbuf;
+	IntAE *elt;
 
-	ibbuf = _new_IntBBuf(LENGTH(x), 0);
+	ibbuf = _new_IntAEAE(LENGTH(x), 0);
 	for (ibbuf.nelt = 0, elt = ibbuf.elts;
 	     ibbuf.nelt < ibbuf.buflength;
 	     ibbuf.nelt++, elt++) {
-		*elt = _INTEGER_asIntBuf(VECTOR_ELT(x, ibbuf.nelt));
+		*elt = _INTEGER_asIntAE(VECTOR_ELT(x, ibbuf.nelt));
 	}
 	return ibbuf;
 }
 
-SEXP _IntBBuf_toEnvir(const IntBBuf *ibbuf, SEXP envir, int keyshift)
+SEXP _IntAEAE_toEnvir(const IntAEAE *ibbuf, SEXP envir, int keyshift)
 {
 	int i;
-	IntBuf *elt;
+	IntAE *elt;
 	char key[11];
 	SEXP value;
 
 #ifdef DEBUG_IRANGES
 	int nkey = 0, cum_length = 0;
 	if (debug) {
-		Rprintf("[DEBUG] _IntBBuf_toEnvir(): BEGIN ... "
+		Rprintf("[DEBUG] _IntAEAE_toEnvir(): BEGIN ... "
 			"ibbuf->nelt=%d keyshift=%d\n",
 			ibbuf->nelt, keyshift);
 	}
@@ -427,7 +425,7 @@ SEXP _IntBBuf_toEnvir(const IntBBuf *ibbuf, SEXP envir, int keyshift)
 #ifdef DEBUG_IRANGES
 		if (debug) {
 			if (i < 100 || i >= ibbuf->nelt - 100)
-				Rprintf("[DEBUG] _IntBBuf_toEnvir(): "
+				Rprintf("[DEBUG] _IntAEAE_toEnvir(): "
 					"nkey=%d ibbuf->elts[%d].nelt=%d\n",
 					nkey, i, elt->nelt);
 		}
@@ -439,11 +437,11 @@ SEXP _IntBBuf_toEnvir(const IntBBuf *ibbuf, SEXP envir, int keyshift)
 #ifdef DEBUG_IRANGES
 		if (debug) {
 			if (i < 100 || i >= ibbuf->nelt - 100)
-				Rprintf("[DEBUG] _IntBBuf_toEnvir(): "
+				Rprintf("[DEBUG] _IntAEAE_toEnvir(): "
 					"installing key=%s ... ", key);
 		}
 #endif
-		PROTECT(value = _IntBuf_asINTEGER(elt));
+		PROTECT(value = _IntAE_asINTEGER(elt));
 		defineVar(install(key), value, envir);
 		UNPROTECT(1);
 #ifdef DEBUG_IRANGES
@@ -458,7 +456,7 @@ SEXP _IntBBuf_toEnvir(const IntBBuf *ibbuf, SEXP envir, int keyshift)
 	}
 #ifdef DEBUG_IRANGES
 	if (debug) {
-		Rprintf("[DEBUG] _IntBBuf_toEnvir(): END "
+		Rprintf("[DEBUG] _IntAEAE_toEnvir(): END "
 			"(nkey=%d cum_length=%d)\n", nkey, cum_length);
 	}
 #endif
@@ -467,33 +465,33 @@ SEXP _IntBBuf_toEnvir(const IntBBuf *ibbuf, SEXP envir, int keyshift)
 
 
 /****************************************************************************
- * RangeBuf functions
+ * RangeAE functions
  */
 
-RangeBuf _new_RangeBuf(int buflength, int nelt)
+RangeAE _new_RangeAE(int buflength, int nelt)
 {
-	RangeBuf rangebuf;
+	RangeAE rangebuf;
 
-	rangebuf.start = _new_IntBuf(buflength, nelt, 0);
-	rangebuf.width = _new_IntBuf(buflength, nelt, 0);
+	rangebuf.start = _new_IntAE(buflength, nelt, 0);
+	rangebuf.width = _new_IntAE(buflength, nelt, 0);
 	return rangebuf;
 }
 
-void _RangeBuf_insert_at(RangeBuf *rangebuf, int at, int start, int width)
+void _RangeAE_insert_at(RangeAE *rangebuf, int at, int start, int width)
 {
-	_IntBuf_insert_at(&(rangebuf->start), at, start);
-	_IntBuf_insert_at(&(rangebuf->width), at, width);
+	_IntAE_insert_at(&(rangebuf->start), at, start);
+	_IntAE_insert_at(&(rangebuf->width), at, width);
 	return;
 }
 
 
 /****************************************************************************
- * CharBuf functions
+ * CharAE functions
  */
 
-CharBuf _new_CharBuf(int buflength)
+CharAE _new_CharAE(int buflength)
 {
-	CharBuf cbuf;
+	CharAE cbuf;
 
 	/* No memory leak here, because we use transient storage allocation */
 	if (buflength == 0)
@@ -505,19 +503,19 @@ CharBuf _new_CharBuf(int buflength)
 	return cbuf;
 }
 
-CharBuf _new_CharBuf_from_string(const char *string)
+CharAE _new_CharAE_from_string(const char *string)
 {
-	CharBuf cbuf;
+	CharAE cbuf;
 	int buflength;
 
 	buflength = strlen(string);
-	cbuf = _new_CharBuf(buflength);
+	cbuf = _new_CharAE(buflength);
 	memcpy(cbuf.elts, string, buflength);
 	cbuf.nelt = buflength;
 	return cbuf;
 }
 
-static void CharBuf_extend(CharBuf *cbuf)
+static void CharAE_extend(CharAE *cbuf)
 {
 	long new_buflength;
 
@@ -528,13 +526,13 @@ static void CharBuf_extend(CharBuf *cbuf)
 	return;
 }
 
-void _CharBuf_insert_at(CharBuf *cbuf, int at, char c)
+void _CharAE_insert_at(CharAE *cbuf, int at, char c)
 {
 	char *elt1, *elt2;
 	int i1;
 
 	if (cbuf->nelt >= cbuf->buflength)
-		CharBuf_extend(cbuf);
+		CharAE_extend(cbuf);
 	elt2 = cbuf->elts + cbuf->nelt;
 	elt1 = elt2 - 1;
 	for (i1 = cbuf->nelt++; i1 > at; i1--)
@@ -543,12 +541,12 @@ void _CharBuf_insert_at(CharBuf *cbuf, int at, char c)
 	return;
 }
 
-SEXP _CharBuf_asRAW(const CharBuf *cbuf)
+SEXP _CharAE_asRAW(const CharAE *cbuf)
 {
 	SEXP ans;
 
 	if (sizeof(Rbyte) != sizeof(char)) // should never happen!
-		error("_CharBuf_asRAW(): sizeof(Rbyte) != sizeof(char)");
+		error("_CharAE_asRAW(): sizeof(Rbyte) != sizeof(char)");
 	PROTECT(ans = NEW_RAW(cbuf->nelt));
 	memcpy(RAW(ans), cbuf->elts, sizeof(char) * cbuf->nelt);
 	UNPROTECT(1);
@@ -557,64 +555,64 @@ SEXP _CharBuf_asRAW(const CharBuf *cbuf)
 
 
 /****************************************************************************
- * CharBBuf functions
+ * CharAEAE functions
  */
 
-CharBBuf _new_CharBBuf(int buflength, int nelt)
+CharAEAE _new_CharAEAE(int buflength, int nelt)
 {
-	CharBBuf cbbuf;
-	CharBuf *elt;
+	CharAEAE cbbuf;
+	CharAE *elt;
 
 	/* No memory leak here, because we use transient storage allocation */
 	if (buflength == 0)
 		cbbuf.elts = NULL;
 	else
-		cbbuf.elts = Salloc((long) buflength, CharBuf);
+		cbbuf.elts = Salloc((long) buflength, CharAE);
 	cbbuf.buflength = buflength;
 	for (cbbuf.nelt = 0, elt = cbbuf.elts;
 	     cbbuf.nelt < nelt;
 	     cbbuf.nelt++, elt++)
-		*elt = _new_CharBuf(0);
+		*elt = _new_CharAE(0);
 	return cbbuf;
 }
 
-static void CharBBuf_extend(CharBBuf *cbbuf)
+static void CharAEAE_extend(CharAEAE *cbbuf)
 {
 	long new_buflength;
 
 	new_buflength = get_new_buflength(cbbuf->buflength);
 #ifdef DEBUG_IRANGES
 	if (debug) {
-		Rprintf("[DEBUG] CharBBuf_extend(): BEGIN\n");
-		Rprintf("[DEBUG] CharBBuf_extend(): "
+		Rprintf("[DEBUG] CharAEAE_extend(): BEGIN\n");
+		Rprintf("[DEBUG] CharAEAE_extend(): "
 			"cbbuf->elts=%p buflength=%d new_buflength=%d\n",
 			cbbuf->elts, cbbuf->buflength, new_buflength);
 	}
 #endif
 	cbbuf->elts = Srealloc((char *) cbbuf->elts, new_buflength,
-				(long) cbbuf->buflength, CharBuf);
+				(long) cbbuf->buflength, CharAE);
 	cbbuf->buflength = new_buflength;
 #ifdef DEBUG_IRANGES
 	if (debug) {
-		Rprintf("[DEBUG] CharBBuf_extend(): END (cbbuf->elts=%p)\n",
+		Rprintf("[DEBUG] CharAEAE_extend(): END (cbbuf->elts=%p)\n",
 			cbbuf->elts);
 	}
 #endif
 	return;
 }
 
-void _CharBBuf_insert_at(CharBBuf *cbbuf, int at, const CharBuf *cbuf)
+void _CharAEAE_insert_at(CharAEAE *cbbuf, int at, const CharAE *cbuf)
 {
-	CharBuf *elt1, *elt2;
+	CharAE *elt1, *elt2;
 	int i1;
 
 #ifdef DEBUG_IRANGES
 	if (debug) {
-		Rprintf("[DEBUG] _CharBBuf_insert_at(): BEGIN\n");
+		Rprintf("[DEBUG] _CharAEAE_insert_at(): BEGIN\n");
 	}
 #endif
 	if (cbbuf->nelt >= cbbuf->buflength)
-		CharBBuf_extend(cbbuf);
+		CharAEAE_extend(cbbuf);
 	elt2 = cbbuf->elts + cbbuf->nelt;
 	elt1 = elt2 - 1;
 	for (i1 = cbbuf->nelt++; i1 > at; i1--)
@@ -622,18 +620,18 @@ void _CharBBuf_insert_at(CharBBuf *cbbuf, int at, const CharBuf *cbuf)
 	*elt2 = *cbuf;
 #ifdef DEBUG_IRANGES
 	if (debug) {
-		Rprintf("[DEBUG] _CharBBuf_insert_at(): END\n");
+		Rprintf("[DEBUG] _CharAEAE_insert_at(): END\n");
 	}
 #endif
 	return;
 }
 
-void _append_string_to_CharBBuf(CharBBuf *cbbuf, const char *string)
+void _append_string_to_CharAEAE(CharAEAE *cbbuf, const char *string)
 {
-	CharBuf cbuf;
+	CharAE cbuf;
 
-	cbuf = _new_CharBuf_from_string(string);
-	_CharBBuf_insert_at(cbbuf, cbbuf->nelt, &cbuf);
+	cbuf = _new_CharAE_from_string(string);
+	_CharAEAE_insert_at(cbbuf, cbbuf->nelt, &cbuf);
 	return;
 }
 

@@ -13,20 +13,20 @@
 
 
 /*
- * Low-level manipulation of the extendable buffers.
+ * Low-level manipulation of the Auto-Extending buffers.
  */
 
-CharBuf new_CharBuf_from_string(
+CharAE new_CharAE_from_string(
 	const char *string
 );
 
-CharBBuf new_CharBBuf(
+CharAEAE new_CharAEAE(
 	int buflength,
 	int nelt
 );
 
-void append_string_to_CharBBuf(
-	CharBBuf *cbbuf,
+void append_string_to_CharAEAE(
+	CharAEAE *cbbuf,
 	const char *string
 );
 

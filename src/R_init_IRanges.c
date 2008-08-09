@@ -2,8 +2,8 @@
 
 static const R_CallMethodDef callMethods[] = {
 
-/* bufutils.c */
-	{"debug_bufutils", (DL_FUNC) &debug_bufutils, 0},
+/* AEbufs.c */
+	{"debug_AEbufs", (DL_FUNC) &debug_AEbufs, 0},
 
 /* IRanges_class.c */
 	{"debug_IRanges_class", (DL_FUNC) &debug_IRanges_class, 0},
@@ -24,9 +24,9 @@ static const R_CallMethodDef callMethods[] = {
 void R_init_IRanges(DllInfo *info)
 {
 	R_registerRoutines(info, NULL, callMethods, NULL, NULL);
-	R_RegisterCCallable("IRanges", "_new_CharBuf_from_string", (DL_FUNC) &_new_CharBuf_from_string);
-	R_RegisterCCallable("IRanges", "_new_CharBBuf", (DL_FUNC) &_new_CharBBuf);
-	R_RegisterCCallable("IRanges", "_append_string_to_CharBBuf", (DL_FUNC) &_append_string_to_CharBBuf);
+	R_RegisterCCallable("IRanges", "_new_CharAE_from_string", (DL_FUNC) &_new_CharAE_from_string);
+	R_RegisterCCallable("IRanges", "_new_CharAEAE", (DL_FUNC) &_new_CharAEAE);
+	R_RegisterCCallable("IRanges", "_append_string_to_CharAEAE", (DL_FUNC) &_append_string_to_CharAEAE);
 	R_RegisterCCallable("IRanges", "_get_IRanges_start", (DL_FUNC) &_get_IRanges_start);
 	R_RegisterCCallable("IRanges", "_get_IRanges_width", (DL_FUNC) &_get_IRanges_width);
 	R_RegisterCCallable("IRanges", "_get_IRanges_length", (DL_FUNC) &_get_IRanges_length);

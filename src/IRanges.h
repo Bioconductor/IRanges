@@ -4,9 +4,9 @@
 #define DEBUG_IRANGES 1
 
 
-/* bufutils.c */
+/* AEbufs.c */
 
-SEXP debug_bufutils();
+SEXP debug_AEbufs();
 
 void _get_intorder(
 	int len,
@@ -14,135 +14,135 @@ void _get_intorder(
 	int *out
 );
 
-void _IntBuf_set_val(
-	const IntBuf *ibuf,
+void _IntAE_set_val(
+	const IntAE *ibuf,
 	int val
 );
 
-IntBuf _new_IntBuf(
+IntAE _new_IntAE(
 	int buflength,
 	int nelt,
 	int val
 );
 
-void _IntBuf_insert_at(
-	IntBuf *ibuf,
+void _IntAE_insert_at(
+	IntAE *ibuf,
 	int at,
 	int val
 );
 
-void _IntBuf_append(
-	IntBuf *ibuf,
+void _IntAE_append(
+	IntAE *ibuf,
 	const int *newvals,
 	int nnewval
 );
 
-void _IntBuf_delete_at(
-	IntBuf *ibuf,
+void _IntAE_delete_at(
+	IntAE *ibuf,
 	int at
 );
 
-void _IntBuf_sum_val(
-	const IntBuf *ibuf,
+void _IntAE_sum_val(
+	const IntAE *ibuf,
 	int val
 );
 
-void _IntBuf_append_shifted_vals(
-	IntBuf *ibuf,
+void _IntAE_append_shifted_vals(
+	IntAE *ibuf,
 	const int *newvals,
 	int nnewval,
 	int shift
 );
 
-void _IntBuf_sum_IntBuf(
-	const IntBuf *ibuf1,
-	const IntBuf *ibuf2
+void _IntAE_sum_IntAE(
+	const IntAE *ibuf1,
+	const IntAE *ibuf2
 );
 
-void _IntBuf_qsort(IntBuf *ibuf);
+void _IntAE_qsort(IntAE *ibuf);
 
-void _IntBuf_delete_consecutiverepeats(IntBuf *ibuf);
+void _IntAE_delete_consecutiverepeats(IntAE *ibuf);
 
-SEXP _IntBuf_asINTEGER(const IntBuf *ibuf);
+SEXP _IntAE_asINTEGER(const IntAE *ibuf);
 
-IntBuf _INTEGER_asIntBuf(SEXP x);
+IntAE _INTEGER_asIntAE(SEXP x);
 
-IntBuf _CHARACTER_asIntBuf(
+IntAE _CHARACTER_asIntAE(
 	SEXP x,
 	int keyshift
 );
 
-IntBBuf _new_IntBBuf(
+IntAEAE _new_IntAEAE(
 	int buflength,
 	int nelt
 );
 
-void _IntBBuf_insert_at(
-	IntBBuf *ibbuf,
+void _IntAEAE_insert_at(
+	IntAEAE *ibbuf,
 	int at,
-	const IntBuf *ibuf
+	const IntAE *ibuf
 );
 
-void _IntBBuf_eltwise_append(
-	const IntBBuf *ibbuf1,
-	const IntBBuf *ibbuf2
+void _IntAEAE_eltwise_append(
+	const IntAEAE *ibbuf1,
+	const IntAEAE *ibbuf2
 );
 
-void _IntBBuf_sum_val(
-	const IntBBuf *ibbuf,
+void _IntAEAE_sum_val(
+	const IntAEAE *ibbuf,
 	int val
 );
 
-SEXP _IntBBuf_asLIST(
-	const IntBBuf *ibbuf,
+SEXP _IntAEAE_asLIST(
+	const IntAEAE *ibbuf,
 	int mode
 );
 
-IntBBuf _LIST_asIntBBuf(SEXP x);
+IntAEAE _LIST_asIntAEAE(SEXP x);
 
-SEXP _IntBBuf_toEnvir(
-	const IntBBuf *ibbuf,
+SEXP _IntAEAE_toEnvir(
+	const IntAEAE *ibbuf,
 	SEXP envir,
 	int keyshift
 );
 
-RangeBuf _new_RangeBuf(
+RangeAE _new_RangeAE(
 	int buflength,
 	int nelt
 );
 
-void _RangeBuf_insert_at(
-	RangeBuf *rangebuf,
+void _RangeAE_insert_at(
+	RangeAE *rangebuf,
 	int at,
 	int start,
 	int width
 );
 
-CharBuf _new_CharBuf(int buflength);
+CharAE _new_CharAE(int buflength);
 
-CharBuf _new_CharBuf_from_string(const char *string);
+CharAE _new_CharAE_from_string(const char *string);
 
-void _CharBuf_insert_at(
-	CharBuf *cbuf,
+void _CharAE_insert_at(
+	CharAE *cbuf,
 	int at,
 	char c
 );
 
-SEXP _CharBuf_asRAW(const CharBuf *cbuf);
+SEXP _CharAE_asRAW(const CharAE *cbuf);
 
-CharBBuf _new_CharBBuf(
+CharAEAE _new_CharAEAE(
 	int buflength,
 	int nelt
 );
 
-void _CharBBuf_insert_at(
-	CharBBuf *cbbuf,
+void _CharAEAE_insert_at(
+	CharAEAE *cbbuf,
 	int at,
-	const CharBuf *cbuf
+	const CharAE *cbuf
 );
 
-void _append_string_to_CharBBuf(
-	CharBBuf *cbbuf,
+void _append_string_to_CharAEAE(
+	CharAEAE *cbbuf,
 	const char *string
 );
 

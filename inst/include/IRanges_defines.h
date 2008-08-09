@@ -20,55 +20,49 @@
 
 
 /*
- * Extendable buffers used for temporary storage of incoming data whose size
+ * Auto-Extending buffers used for temporary storage of incoming data whose size
  * is not known in advance:
  *
- *   o IntBuf:   extendable buffer of ints;
- *   o IntBBuf:  extendable buffer of extendable buffers of ints;
- *   o RangeBuf: extendable buffer of integer ranges;
- *   o CharBuf:  extendable buffer of chars;
- *   o CharBBuf: extendable buffer of extendable buffers of chars.
+ *   o IntAE:    Auto-Extending buffer of ints;
+ *   o IntAEAE:  Auto-Extending buffer of Auto-Extending buffers of ints;
+ *   o RangeAE:  Auto-Extending buffer of integer ranges;
+ *   o CharAE:   Auto-Extending buffer of chars;
+ *   o CharAEAE: Auto-Extending buffer of Auto-Extending buffers of chars.
  *
- * They are NOT an attempt to reinvent an SEXP subsystem. Some notable
- * differences are: (a) they are extendable (i.e. they are automatically
- * reallocated when more room is needed to add a new element), (b) they are
- * much faster, and (c) they don't require any PROTECT/UNPROTECT mechanism.
+ * Some differences between AE buffers and SEXP: (a) AE buffers auto-extend
+ * i.e. they automatically reallocate when more room is needed to add a new
+ * element, (b) they are faster, and (c) they don't require any
+ * PROTECT/UNPROTECT mechanism.
  */
 
-#ifndef EXTENDABLE_BUFFERS /* temporary fix, remove when the Extendable buffer typedefs in
-                              Biostrings_defines.h are gone */
-#define EXTENDABLE_BUFFERS
-
-typedef struct ibuf {
+typedef struct int_ae {
 	int buflength;
 	int *elts;
 	int nelt;
-} IntBuf;
+} IntAE;
 
-typedef struct ibbuf {
+typedef struct int_aeae {
 	int buflength;
-	IntBuf *elts;
+	IntAE *elts;
 	int nelt;
-} IntBBuf; 
+} IntAEAE; 
 
-typedef struct rangebuf {
-	IntBuf start;
-	IntBuf width;
-} RangeBuf;
+typedef struct range_ae {
+	IntAE start;
+	IntAE width;
+} RangeAE;
 
-typedef struct cbuf {
+typedef struct char_ae {
 	int buflength;
 	char *elts;
 	int nelt;
-} CharBuf; 
+} CharAE; 
 
-typedef struct cbbuf {
+typedef struct char_aeae {
         int buflength;
-        CharBuf *elts;
+        CharAE *elts;
         int nelt;
-} CharBBuf; 
+} CharAEAE; 
 
-#endif /* temporary fix, remove when the Extendable buffer typedefs in
-          Biostrings_defines.h are gone */
 
 #endif
