@@ -1,7 +1,9 @@
 #include "IRanges.h"
 
 #define CALLMETHOD_DEF(fun, numArgs) {#fun, (DL_FUNC) &fun, numArgs}
-#define REGISTER_CCALLABLE(fun) R_RegisterCCallable("IRanges", #fun, (DL_FUNC) &fun)
+
+#define REGISTER_CCALLABLE(fun) \
+	R_RegisterCCallable("IRanges", #fun, (DL_FUNC) &fun)
 
 static const R_CallMethodDef callMethods[] = {
 
@@ -68,5 +70,7 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_copy_IRanges_slots);
 	REGISTER_CCALLABLE(_new_IRanges);
 	REGISTER_CCALLABLE(_alloc_IRanges);
+
+	return;
 }
 
