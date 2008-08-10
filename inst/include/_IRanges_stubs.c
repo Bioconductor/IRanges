@@ -6,7 +6,7 @@ retT stubname Targs \
 	static retT (*fun)Targs = NULL; \
 	if (fun == NULL) \
 		fun = (retT (*)Targs) R_GetCCallable("IRanges", "_" #stubname); \
-	return stubname args; \
+	return fun args; \
 }
 
 
@@ -198,3 +198,4 @@ DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,
 	(const char *class, int length),
 	(            class,     length)
 );
+
