@@ -49,7 +49,7 @@ void _get_intorder(int len, const int *in, int *out)
 
 	inp = (const int **) malloc(len * sizeof(const int *));
 	if (inp == NULL)
-		error("Biostrings internal error in intorder(): malloc failed");
+		error("IRanges internal error in intorder(): malloc failed");
 	for (k = 0, tmp0 = in, tmp1 = inp; k < len; k++, tmp0++, tmp1++)
 		*tmp1 = tmp0;
 	qsort(inp, len, sizeof(int *), cmpintpp);

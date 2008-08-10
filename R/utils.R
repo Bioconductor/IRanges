@@ -20,6 +20,11 @@ isTRUEorFALSE <- function(x)
     is.logical(x) && length(x) == 1 && !is.na(x)
 }
 
+isSingleInteger <- function(x)
+{
+    is.integer(x) && length(x) == 1 && !is.na(x)
+}
+
 isSingleNumber <- function(x)
 {
     is.numeric(x) && length(x) == 1 && !is.na(x)
@@ -33,6 +38,11 @@ isSingleNumberOrNA <- function(x)
 isNumericOrNAs <- function(x)
 {
     is.numeric(x) || (is.atomic(x) && is.vector(x) && all(is.na(x)))
+}
+
+isSingleString <- function(x)
+{
+    is.character(x) && length(x) == 1 && !is.na(x)
 }
 
 numeric2integer <- function(x)
