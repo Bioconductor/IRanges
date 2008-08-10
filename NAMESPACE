@@ -1,13 +1,14 @@
 useDynLib(IRanges)
 
 import(methods)
-import(stats) ## for the "start" and "end" generics
+import(stats) ## for the "start", "end" and "update" generics
 
 exportClasses(
     IRanges, UnlockedIRanges, LockedIRanges, NormalIRanges
 )
 
 export(
+    ## Non-generic functions:
     newEmptyNormalIRanges,
     IRanges,
     asNormalIRanges,
@@ -15,43 +16,63 @@ export(
     intToAdjacentRanges,
     whichAsRanges,
     slice,
+    toNormalIRanges,
+    summaryIRangesList,
+
+    ## Generic functions:
+    width,
+    isNormal,
+    whichFirstNotNormal,
+    isEmpty,
+    "start<-",
+    "width<-",
+    "end<-",
     shift,
     restrict,
     narrow,
     reduce,
-    toNormalIRanges,
     gaps,
-    summaryIRangesList,
 
-    ## Aliases
-    desc, "desc<-"
+    ## Aliases:
+    desc, "desc<-",
+
+    ## Deprecated generics:
+    first, last
 )
 
 exportMethods(
+    ## Methods for generics defined elsewhere:
+    initialize,
+    coerce,
+    show,
     length,
+    names, "names<-",
+    "[", "[<-",
+    duplicated,
+    rep,
     start,
-    width,
     end,
-    names,
+    max,
+    min,
+    as.data.frame,
+    as.matrix,
+    update,
+
+    ## Methods for generics defined in this package:
+    width,
     isNormal,
     whichFirstNotNormal,
     isEmpty,
-    max,
-    min,
-    initialize,
-    coerce,
-    as.data.frame,
-    show,
     "start<-",
     "width<-",
     "end<-",
-    update,
-    "[",
-    rep,
-    duplicated,
-    as.matrix,
+    shift,
+    restrict,
+    narrow,
+    reduce,
+    gaps,
 
-    ## Deprecated
+    ## Deprecated methods:
     first, last
 )
 
