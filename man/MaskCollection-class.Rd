@@ -48,6 +48,7 @@
 \alias{coerce,MaskCollection,NormalIRanges-method}
 
 % "show" method :
+\alias{MaskCollection.show_frame}
 \alias{show,MaskCollection-method}
 
 
