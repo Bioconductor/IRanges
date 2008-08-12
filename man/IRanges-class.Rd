@@ -145,7 +145,7 @@
     \item{}{
       \code{start(x)}:
       The start values of the ranges.
-      This is a vector of positive integers of the same length as \code{x}.
+      This is an integer vector of the same length as \code{x}.
     }
     \item{}{
       \code{width(x)}:
@@ -250,10 +250,10 @@
     (d) not even adjacent (i.e. there must be a non empty gap between 2
         consecutive ranges).
   If \code{x} is an IRanges object with more than one element (i.e.
-  \code{length >= 2}), then \code{x} is normal iff:
+  \code{length(x) >= 2}), then \code{x} is normal iff:
   \preformatted{  start(x)[i] <= end(x)[i] < start(x)[i+1] <= end(x)[i+1]}
   for every 1 <= \code{i} < \code{length(x)}.
-  If \code{length(x) == 1}, then \code{x} is normal iff \code{width(x)[1] >= 1}.
+  If \code{length(x) == 1}, then \code{x} is normal iff \code{width(x) >= 1}.
   If \code{length(x) == 0}, then \code{x} is normal.
 
   An IRanges object can be used to represent an arbitrary finite set of
@@ -272,10 +272,6 @@
   same finite set of integers, only one is normal, and this normal
   representation is minimal in terms of length (and therefore in terms
   of storage space).
-
-  Subsetting \code{x} is currently not supported although it could be but
-  should only accept strictly increasing subscripts in order to preserve
-  normality.
 
   Use the \code{isNormal} method to check whether an IRanges object is
   normal or not. In the code snippet below, \code{x} is an IRanges object.

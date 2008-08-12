@@ -30,13 +30,11 @@
 \alias{maskedratio}
 \alias{maskedratio,MaskCollection-method}
 
-% Subsetting:
+% Subsetting and appending:
 \alias{[[,MaskCollection-method}
 \alias{[[<-,MaskCollection-method}
 \alias{[,MaskCollection-method}
 \alias{[<-,MaskCollection-method}
-
-% "append" method:
 \alias{append,MaskCollection-method}
 
 % Endomorphisms:
@@ -47,7 +45,7 @@
 % Coercion:
 \alias{coerce,MaskCollection,NormalIRanges-method}
 
-% "show" method :
+% "show" method:
 \alias{MaskCollection.show_frame}
 \alias{show,MaskCollection-method}
 
@@ -163,7 +161,8 @@
 }
 
 \section{Subsetting and appending}{
-  In the code snippets below, \code{x} is a MaskCollection object.
+  In the code snippets below,
+  \code{x} and \code{values} are MaskCollection objects.
 
   \describe{
     \item{}{
@@ -173,12 +172,12 @@
       or missing.
     }
     \item{}{
-      \code{append(x, values, after=length(x))}:
-      Add masks to \code{x}.
-    }
-    \item{}{
       \code{x[[i]]}:
       Extract the i-th mask as a \link{NormalIRanges} object.
+    }
+    \item{}{
+      \code{append(x, values, after=length(x))}:
+      Add masks in \code{values} to \code{x}.
     }
   }
 }

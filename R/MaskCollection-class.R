@@ -274,7 +274,7 @@ setReplaceMethod("[", "MaskCollection",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "append" generic and method.
+### The "append" method.
 ###
 
 setMethod("append", "MaskCollection",
