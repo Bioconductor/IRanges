@@ -150,7 +150,14 @@ Mask <- function(mask.width, start=NULL, end=NULL, width=NULL)
 ### The "isEmpty" methods.
 ###
 
-setMethod("isEmpty", "MaskCollection", function(x) sapply(nir_list(x), isEmpty))
+setMethod("isEmpty", "MaskCollection",
+    function(x)
+    {
+        if (length(x) == 0)
+            return(logical(0))
+        sapply(nir_list(x), isEmpty)
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
