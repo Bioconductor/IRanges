@@ -83,6 +83,7 @@ exportMethods(
     narrow,
     reduce,
     gaps,
+    coverage,
     nir_list,
     active, "active<-",
     maskedwidth, maskedratio,

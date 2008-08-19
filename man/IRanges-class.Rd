@@ -265,7 +265,7 @@
   More precisely, if \code{x} is an IRanges object, then it can be seen
   as representing the set of integers obtained by taking the union of
   all its ranges.
-  Inverserly, since any finite set of integers can be obtained by a finite
+  Inversely, since any finite set of integers can be obtained by a finite
   union of ranges, then it can be represented by an IRanges object, but this
   representation is clearly not unique.
   However, among all the IRanges objects that represent (or map) the
