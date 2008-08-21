@@ -4,6 +4,67 @@
 #define DEBUG_IRANGES 1
 
 
+/* utils.c */
+
+SEXP debug_utils();
+
+SEXP IRanges_length_vectors_in_list(SEXP list);
+
+SEXP IRanges_sexp_address(SEXP s);
+
+SEXP IRanges_xp_show(SEXP xp);
+
+SEXP IRanges_xp_new();
+
+int _IRanges_memcmp(
+	const char *a,
+	int ia,
+	const char *b,
+	int ib,
+	int n,
+	size_t size
+);
+
+void _IRanges_memcpy_from_i1i2(
+	int i1,
+	int i2,
+	char *dest,
+	size_t dest_nmemb,
+	const char *src,
+	size_t src_nmemb,
+	size_t size
+);
+
+void _IRanges_memcpy_from_subset(
+	const int *subset,
+	int n,
+	char *dest,
+	size_t dest_nmemb,
+	const char *src,
+	size_t src_nmemb,
+	size_t size
+);
+
+void _IRanges_memcpy_to_i1i2(
+	int i1,
+	int i2,
+	char *dest,
+	size_t dest_nmemb,
+	const char *src,
+	size_t src_nmemb,
+	size_t size
+);
+
+void _IRanges_memcpy_to_subset(
+	const int *subset,
+	int n,
+	char *dest,
+	size_t dest_nmemb,
+	const char *src,
+	size_t src_nmemb,
+	size_t size
+);
+
 /* AEbufs.c */
 
 SEXP debug_AEbufs();
@@ -144,6 +205,98 @@ void _CharAEAE_insert_at(
 void _append_string_to_CharAEAE(
 	CharAEAE *char_aeae,
 	const char *string
+);
+
+
+/* XInteger.c */
+
+SEXP debug_XInteger();
+
+SEXP XInteger_alloc(
+	SEXP xint_xp,
+	SEXP length
+);
+
+SEXP XInteger_get_show_string(SEXP xint_xp);
+
+SEXP XInteger_length(SEXP xint_xp);
+
+SEXP XInteger_memcmp(
+	SEXP xint1_xp,
+	SEXP start1,
+	SEXP xint2_xp,
+	SEXP start2,
+	SEXP width
+);
+
+SEXP XInteger_read_ints_from_i1i2(
+	SEXP src_xint_xp,
+	SEXP imin,
+	SEXP imax
+);
+
+SEXP XInteger_read_ints_from_subset(
+	SEXP src_xint_xp,
+	SEXP subset
+);
+
+SEXP XInteger_write_ints_to_i1i2(
+	SEXP dest_xint_xp,
+	SEXP imin,
+	SEXP imax,
+	SEXP val
+);
+
+SEXP XInteger_write_ints_to_subset(
+	SEXP dest_xint_xp,
+	SEXP subset,
+	SEXP val
+);
+
+
+/* XNumeric.c */
+
+SEXP debug_XNumeric();
+
+SEXP XNumeric_alloc(
+	SEXP xnum_xp,
+	SEXP length
+);
+
+SEXP XNumeric_get_show_string(SEXP xnum_xp);
+
+SEXP XNumeric_length(SEXP xnum_xp);
+
+SEXP XNumeric_memcmp(
+	SEXP xnum1_xp,
+	SEXP start1,
+	SEXP xnum2_xp,
+	SEXP start2,
+	SEXP width
+);
+
+SEXP XNumeric_read_nums_from_i1i2(
+	SEXP src_xnum_xp,
+	SEXP imin,
+	SEXP imax
+);
+
+SEXP XNumeric_read_nums_from_subset(
+	SEXP src_xnum_xp,
+	SEXP subset
+);
+
+SEXP XNumeric_write_nums_to_i1i2(
+	SEXP dest_xnum_xp,
+	SEXP imin,
+	SEXP imax,
+	SEXP val
+);
+
+SEXP XNumeric_write_nums_to_subset(
+	SEXP dest_xnum_xp,
+	SEXP subset,
+	SEXP val
 );
 
 

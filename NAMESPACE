@@ -4,12 +4,15 @@ import(methods)
 import(stats) ## for the "start", "end" and "update" generics
 
 exportClasses(
+    XInteger, XIntegerViews,
     IRanges, UnlockedIRanges, LockedIRanges, NormalIRanges,
     MaskCollection
 )
 
 export(
     ## Non-generic functions:
+    #XInteger.read, XInteger.write, XNumeric, XNumeric.read, XNumeric.write,
+    XInteger,
     newEmptyNormalIRanges,
     IRanges,
     asNormalIRanges,
@@ -45,6 +48,8 @@ export(
     nir_list,
     active, "active<-",
     maskedwidth, maskedratio,
+    subject, views, subviews, trim,
+    XIntegerViews,
 
     ## Aliases:
     desc, "desc<-",
@@ -90,6 +95,8 @@ exportMethods(
     nir_list,
     active, "active<-",
     maskedwidth, maskedratio,
+    subject, views, subviews, trim,
+    XIntegerViews,
 
     ## Deprecated methods:
     first, last

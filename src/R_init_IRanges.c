@@ -10,6 +10,39 @@ static const R_CallMethodDef callMethods[] = {
 /* AEbufs.c */
 	CALLMETHOD_DEF(debug_AEbufs, 0),
 
+/* utils.c */
+	CALLMETHOD_DEF(debug_utils, 0),
+	CALLMETHOD_DEF(IRanges_length_vectors_in_list, 1),
+	CALLMETHOD_DEF(IRanges_sexp_address, 1),
+	CALLMETHOD_DEF(IRanges_xp_show, 1),
+	CALLMETHOD_DEF(IRanges_xp_new, 0),
+
+/* XInteger.c */
+	CALLMETHOD_DEF(debug_XInteger, 0),
+
+	CALLMETHOD_DEF(XInteger_alloc, 2),
+	CALLMETHOD_DEF(XInteger_get_show_string, 1),
+	CALLMETHOD_DEF(XInteger_length, 1),
+	CALLMETHOD_DEF(XInteger_memcmp, 5),
+
+	CALLMETHOD_DEF(XInteger_read_ints_from_i1i2, 3),
+	CALLMETHOD_DEF(XInteger_read_ints_from_subset, 2),
+	CALLMETHOD_DEF(XInteger_write_ints_to_i1i2, 4),
+	CALLMETHOD_DEF(XInteger_write_ints_to_subset, 3),
+
+/* XNumeric.c */
+	CALLMETHOD_DEF(debug_XNumeric, 0),
+
+	CALLMETHOD_DEF(XNumeric_alloc, 2),
+	CALLMETHOD_DEF(XNumeric_get_show_string, 1),
+	CALLMETHOD_DEF(XNumeric_length, 1),
+	CALLMETHOD_DEF(XNumeric_memcmp, 5),
+
+	CALLMETHOD_DEF(XNumeric_read_nums_from_i1i2, 3),
+	CALLMETHOD_DEF(XNumeric_read_nums_from_subset, 2),
+	CALLMETHOD_DEF(XNumeric_write_nums_to_i1i2, 4),
+	CALLMETHOD_DEF(XNumeric_write_nums_to_subset, 3),
+
 /* IRanges_class.c */
 	CALLMETHOD_DEF(debug_IRanges_class, 0),
 
