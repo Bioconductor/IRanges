@@ -50,6 +50,11 @@ static const R_CallMethodDef callMethods[] = {
 /* XIntegerViews.c */
 	CALLMETHOD_DEF(XIntegerViews_slice, 5),
 
+/* XIntegerViews_utils.c */
+	CALLMETHOD_DEF(XIntegerViews_viewMins, 2),
+	CALLMETHOD_DEF(XIntegerViews_viewMaxs, 2),
+	CALLMETHOD_DEF(XIntegerViews_viewSums, 2),
+
 /* IRanges_class.c */
 	CALLMETHOD_DEF(debug_IRanges_class, 0),
 

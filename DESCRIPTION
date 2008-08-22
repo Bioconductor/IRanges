@@ -22,8 +22,10 @@ Collate: utils.R
 	XNumeric.R
 	Views-class.R
 	Views-constructors.R
+	Views-utils.R
 	XIntegerViews-class.R
 	XIntegerViews-constructors.R
+	XIntegerViews-utils.R
 	MaskCollection-class.R
 	read.Mask.R
 	reverse.R

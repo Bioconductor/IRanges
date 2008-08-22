@@ -50,6 +50,7 @@ export(
     maskedwidth, maskedratio,
     subject, views, subviews, trim,
     XIntegerViews,
+    viewMins, viewMaxs, viewSums,
 
     ## Aliases:
     desc, "desc<-",
@@ -97,6 +98,7 @@ exportMethods(
     maskedwidth, maskedratio,
     subject, views, subviews, trim,
     XIntegerViews,
+    viewMins, viewMaxs, viewSums,
 
     ## Deprecated methods:
     first, last

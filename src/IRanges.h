@@ -323,6 +323,23 @@ SEXP XIntegerViews_slice(
 );
 
 
+/* XIntegerViews_utils.c */
+SEXP XIntegerViews_viewMins(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP XIntegerViews_viewMaxs(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP XIntegerViews_viewSums(
+	SEXP x,
+	SEXP na_rm
+);
+
+
 /* IRanges_class.c */
 
 SEXP debug_IRanges_class();
