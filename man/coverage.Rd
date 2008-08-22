@@ -35,13 +35,13 @@
 }
 
 \value{
-  An integer vector indicating the coverage of \code{x} in the interval
-  specified by the \code{start} and \code{end} arguments. An integer value
-  called the "coverage" can be associated to each position in \code{x},
+  An \link{XInteger} object representing the coverage of \code{x} in the
+  interval specified by the \code{start} and \code{end} arguments. An integer
+  value called the "coverage" can be associated to each position in \code{x},
   indicating how many times this position is covered by the ranges stored in
-  \code{x}. Note that the positions in the returned vector are to be
-  interpreted as relative to the interval specified by the \code{start} and
-  \code{end} arguments.
+  \code{x}. Note that the positions in the returned \link{XInteger} object are
+  to be interpreted as relative to the interval specified by the \code{start}
+  and \code{end} arguments.
 }
 
 \seealso{

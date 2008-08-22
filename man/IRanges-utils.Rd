@@ -5,7 +5,6 @@
 \alias{intToRanges}
 \alias{intToAdjacentRanges}
 \alias{whichAsRanges}
-\alias{slice}
 \alias{toNormalIRanges}
 \alias{shift}
 \alias{shift,IRanges-method}
@@ -35,7 +34,6 @@
 
   ## Create a NormalIRanges instance
   whichAsRanges(x)
-  slice(x, lower=-Inf, upper=Inf, includeLower=TRUE, includeUpper=TRUE)
   toNormalIRanges(x)
 
   ## Modify an IRanges object
@@ -50,20 +48,12 @@
   \item{x}{
     An integer vector for \code{intToRanges} and \code{intToAdjacentRanges}.
     A logical vector for \code{whichAsRanges}.
-    A numeric vector for \code{slice}.
     An \link{IRanges} object for \code{shift}, \code{restrict}, \code{reduce},
     \code{toNormalIRanges} and \code{gaps}.
     An \link{IRanges} object or an integer vector for \code{narrow}.
   }
   \item{use.names}{
     \code{TRUE} or \code{FALSE}. Should names be preserved?
-  }
-  \item{lower, upper}{
-    The lower and upper bounds for the slice.
-  }
-  \item{includeLower, includeUpper}{
-    Logical values that indicate whether or not to include the equality in the
-    corresponding bound for the slice.
   }
   \item{shift}{
     A single integer.
@@ -146,10 +136,9 @@
 }
 
 \examples{
-  vec <- c(19, 5, 0, 8, 5)
+  vec <- as.integer(c(19, 5, 0, 8, 5))
   intToRanges(vec)
   whichAsRanges(vec >= 5)
-  slice(vec, lower = 5, upper = 8)
   x <- intToAdjacentRanges(vec)
   x
   shift(x, -3)

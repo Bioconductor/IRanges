@@ -34,6 +34,20 @@ SEXP XInteger_alloc(SEXP xint_xp, SEXP length)
 	return xint_xp;
 }
 
+SEXP XInteger_alloc_initialize(SEXP xint_xp, SEXP length)
+{
+	SEXP tag;
+	int tag_length;
+
+	tag_length = INTEGER(length)[0];
+
+	PROTECT(tag = NEW_INTEGER(tag_length));
+	memset(INTEGER(tag), 0, tag_length * sizeof(int));
+	R_SetExternalPtrTag(xint_xp, tag);
+	UNPROTECT(1);
+	return xint_xp;
+}
+
 /*
  * Return the single string printed by the show method for "XInteger" objects.
  * 'xint_xp' must be the 'xp' slot of a "XInteger" object.
@@ -160,4 +174,36 @@ SEXP XInteger_write_ints_to_subset(SEXP dest_xint_xp, SEXP subset, SEXP val)
 			(char *) INTEGER(dest), LENGTH(dest),
 			(char *) INTEGER(val), LENGTH(val), sizeof(int));
 	return dest_xint_xp;
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+void XInteger_coverage(SEXP x, SEXP weight, SEXP ans_xp)
+{
+	int x_len, ans_len, *ans_elt, i1, i2, j;
+	const int *x_start, *x_width, *weight_elt;
+	SEXP ans;
+
+	ans = R_ExternalPtrTag(ans_xp);
+	ans_len = LENGTH(ans);
+	x_len = _get_IRanges_length(x);
+	for (i1 = 0, x_start = _get_IRanges_start0(x),
+	             x_width = _get_IRanges_width0(x),
+	     i2 = 0, weight_elt = INTEGER(weight);
+	     i1 < x_len;
+	     i1++, x_start++, x_width++, i2++, weight_elt++)
+	{
+		if (i2 >= LENGTH(weight)) {
+			/* recycle */
+			i2 = 0;
+			weight_elt = INTEGER(weight);
+		}
+		for (j = 0, ans_elt = INTEGER(ans) + *x_start - 1;
+		     j < *x_width;
+		     j++, ans_elt++)
+		{
+			*ans_elt += *weight_elt;
+		}
+	}
 }

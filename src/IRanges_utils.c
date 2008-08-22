@@ -292,45 +292,6 @@ SEXP reduce_IRanges(SEXP x, SEXP with_inframe_start)
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP IRanges_coverage(SEXP x, SEXP ans_length, SEXP weight)
-{
-	int x_len, ans_len, *ans_elt, i1, i2, j;
-	const int *x_start, *x_width, *weight_elt;
-	SEXP ans;
-
-	ans_len = INTEGER(ans_length)[0];
-	PROTECT(ans = NEW_INTEGER(ans_len));
-	memset(INTEGER(ans), 0, ans_len * sizeof(int));
-	x_len = _get_IRanges_length(x);
-	for (i1 = 0, x_start = _get_IRanges_start0(x),
-	             x_width = _get_IRanges_width0(x),
-	     i2 = 0, weight_elt = INTEGER(weight);
-	     i1 < x_len;
-	     i1++, x_start++, x_width++, i2++, weight_elt++)
-	{
-		if (i2 >= LENGTH(weight)) {
-			/* recycle */
-			i2 = 0;
-			weight_elt = INTEGER(weight);
-		}
-		if (*weight_elt == NA_INTEGER) {
-			UNPROTECT(1);
-			error("'weight' contains NAs");
-		}
-		for (j = 0, ans_elt = INTEGER(ans) + *x_start - 1;
-		     j < *x_width;
-		     j++, ans_elt++)
-		{
-			*ans_elt += *weight_elt;
-		}
-	}
-	UNPROTECT(1);
-	return ans;
-}
-
-/*
- * --- .Call ENTRY POINT ---
- */
 SEXP summary_IRanges_list(SEXP x)
 {
 	int x_len, *ans1_elt, *ans2_elt, i, j;

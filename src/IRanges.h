@@ -6,9 +6,11 @@
 
 /* utils.c */
 
-SEXP debug_utils();
-
 SEXP IRanges_length_vectors_in_list(SEXP list);
+
+/* X_utils.c */
+
+SEXP debug_X_utils();
 
 SEXP IRanges_sexp_address(SEXP s);
 
@@ -217,6 +219,11 @@ SEXP XInteger_alloc(
 	SEXP length
 );
 
+SEXP XInteger_alloc_initialize(
+	SEXP xint_xp,
+	SEXP length
+);
+
 SEXP XInteger_get_show_string(SEXP xint_xp);
 
 SEXP XInteger_length(SEXP xint_xp);
@@ -251,6 +258,12 @@ SEXP XInteger_write_ints_to_subset(
 	SEXP dest_xint_xp,
 	SEXP subset,
 	SEXP val
+);
+
+void XInteger_coverage(
+	SEXP x,
+	SEXP weight,
+	SEXP ans_xp
 );
 
 
@@ -297,6 +310,16 @@ SEXP XNumeric_write_nums_to_subset(
 	SEXP dest_xnum_xp,
 	SEXP subset,
 	SEXP val
+);
+
+
+/* XIntegerViews.c */
+SEXP XIntegerViews_slice(
+	SEXP xint,
+	SEXP lower,
+	SEXP upper,
+	SEXP include_lower,
+	SEXP include_upper
 );
 
 
@@ -355,12 +378,6 @@ SEXP which_as_ranges(SEXP x);
 SEXP reduce_IRanges(
 	SEXP x,
 	SEXP with_inframe_start
-);
-
-SEXP IRanges_coverage(
-	SEXP x,
-	SEXP ans_length,
-	SEXP weight
 );
 
 SEXP summary_IRanges_list(SEXP x);

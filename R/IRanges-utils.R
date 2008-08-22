@@ -51,32 +51,6 @@ whichAsRanges <- function(x)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "slice" function.
-###
-
-slice <- function(x, lower=-Inf, upper=Inf, includeLower=TRUE, includeUpper=TRUE)
-{
-    if (!is.numeric(x))
-        stop("'x' must be a numeric vector")
-    lowerFun <- ifelse(includeLower, ">=", ">")
-    upperFun <- ifelse(includeUpper, "<=", "<")
-    useLower <- !do.call(lowerFun, list(min(x), lower))
-    useUpper <- !do.call(upperFun, list(max(x), upper))
-    if (useLower && useUpper)
-        keep <-
-          do.call(lowerFun, list(substitute(x), lower)) &
-            do.call(upperFun, list(substitute(x), upper))
-    else if (useLower)
-        keep <- do.call(lowerFun, list(substitute(x), lower))
-    else if (useUpper)
-        keep <- do.call(upperFun, list(substitute(x), upper))
-    else
-        keep <- rep(TRUE, length(x))
-    whichAsRanges(keep)
-}
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "shift" generic and methods.
 ###
 ### Shifting preserves normality.

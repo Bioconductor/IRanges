@@ -17,6 +17,7 @@ License: Artistic-2.0
 Collate: utils.R
 	IRanges-class.R
 	IRanges-utils.R
+	X-utils.R
 	XInteger.R
 	XNumeric.R
 	Views-class.R

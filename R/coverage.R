@@ -24,8 +24,10 @@ setMethod("coverage", "IRanges",
             stop("'weight' must be an integer vector with length 1 or 'length(x)'")
         if (!is.integer(weight))
             weight <- as.integer(weight)
+        ans <- XInteger(width, initialize = TRUE)
         x1 <- shift(restrict(x, start=start, end=end), 1L - start)
-        .Call("IRanges_coverage", x1, width, weight, PACKAGE="IRanges")
+        .Call("XInteger_coverage", x1, weight, ans@xp, PACKAGE="IRanges")
+        ans
     }
 )
 
@@ -56,9 +58,11 @@ setMethod("coverage", "MaskCollection",
                 stop("'length(weight)' must be >= 1 and <= 'length(x)'")
                 weight <- rep(weight, length.out=length(x))
         }
-        ans <- integer(width)
-        for (i in seq_len(length(x)))
-            ans <- ans + coverage(x[[i]], start=start, end=end, weight=weight[i])
+        ans <- XInteger(width, initialize = TRUE)
+        for (i in seq_len(length(x))) {
+            x1 <- shift(restrict(x[[i]], start=start, end=end), 1L - start)
+            .Call("XInteger_coverage", x1, weight[i], ans@xp, PACKAGE="IRanges")
+        }
         ans
     }
 )

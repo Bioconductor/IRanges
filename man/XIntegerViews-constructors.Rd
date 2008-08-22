@@ -19,6 +19,8 @@
 \alias{subviews}
 \alias{subviews,XIntegerViews-method}
 \alias{gaps,XIntegerViews-method}
+\alias{slice}
+\alias{slice,XIntegerViews-method}
 
 
 \title{Basic functions for creating or modifying XIntegerViews objects}
@@ -32,6 +34,7 @@
   XIntegerViews(x, start=NA, end=NA)
   trim(x, use.names=TRUE)
   subviews(x, start=NA, end=NA, width=NA, use.names=TRUE)
+  slice(x, lower=-Inf, upper=Inf, includeLower=TRUE, includeUpper=TRUE)
 }
 
 \arguments{
@@ -48,11 +51,18 @@
     An integer vector containing the widths of the views.
   }
   \item{x}{
-    An \link{XInteger} object or an integer vector for \code{XIntegerViews}.
+    An \link{XInteger} object or an integer vector for \code{XIntegerViews} and \code{slice}.
     An XIntegerViews object for \code{trim} and \code{subviews}.
   }
   \item{use.names}{
     \code{TRUE} or \code{FALSE}. Should names be preserved?
+  }
+  \item{lower, upper}{
+    The lower and upper bounds for the slice.
+  }
+  \item{includeLower, includeUpper}{
+    Logical values that indicate whether or not to include the equality in the
+    corresponding bound for the slice.
   }
 }
 
@@ -93,6 +103,10 @@
   ## Applying gaps() to an XStringViews object
   v2 <- views(1:10, start=c(8, 3), end=c(14, 4))
   gaps(v2)
+
+  ## Views derived by slicing
+  vec <- as.integer(c(19, 5, 0, 8, 5))
+  slice(vec, lower = 5, upper = 8)
 }
 
 \keyword{methods}

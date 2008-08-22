@@ -1,21 +1,3 @@
-### Return the hexadecimal address of any R object in a string.
-address <- function(x)
-{
-    .Call("IRanges_sexp_address", x, PACKAGE="IRanges")
-}
-
-### Helper function (for debugging purpose).
-### Print some obscure info about an "externalptr" object.
-### Typical use:
-###   show(new("externalptr"))
-setMethod("show", "externalptr",
-    function(object)
-    {
-        .Call("IRanges_xp_show", object, PACKAGE="IRanges")
-    }
-)
-
-
 ### =========================================================================
 ### External integer vectors: the "XInteger" class
 ### -------------------------------------------------------------------------
@@ -56,7 +38,7 @@ setClass("XInteger", representation(xp="externalptr"))
 ###   xi <- XInteger(30)
 ### will call this "initialize" method.
 setMethod("initialize", "XInteger",
-    function(.Object, length, verbose=FALSE)
+    function(.Object, length, initialize=FALSE, verbose=FALSE)
     {
         if (isSingleNumber(length)) {
             values <- NULL
@@ -70,7 +52,10 @@ setMethod("initialize", "XInteger",
         xp <- .Call("IRanges_xp_new", PACKAGE="IRanges")
         if (verbose)
             cat("Allocating memory for new", class(.Object), "object...")
-        .Call("XInteger_alloc", xp, length, PACKAGE="IRanges")
+        if (initialize)
+            .Call("XInteger_alloc_initialize", xp, length, PACKAGE="IRanges")
+        else
+            .Call("XInteger_alloc", xp, length, PACKAGE="IRanges")
         if (verbose) {
             cat(" OK\n")
             show_string <- .Call("XInteger_get_show_string", xp, PACKAGE="IRanges")
