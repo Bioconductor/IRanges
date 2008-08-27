@@ -7,6 +7,7 @@
 \alias{views,XInteger-method}
 \alias{XIntegerViews}
 \alias{XIntegerViews,ANY-method}
+\alias{XIntegerViews,integer-method}
 \alias{XIntegerViews,file-method}
 \alias{XIntegerViews,XInteger-method}
 \alias{XIntegerViews,XIntegerViews-method}
@@ -21,6 +22,8 @@
 \alias{gaps,XIntegerViews-method}
 \alias{slice}
 \alias{slice,XIntegerViews-method}
+\alias{slice,XInteger-method}
+\alias{slice,integer-method}
 
 
 \title{Basic functions for creating or modifying XIntegerViews objects}
