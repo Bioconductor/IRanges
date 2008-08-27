@@ -124,10 +124,3 @@ recycleVector <- function(x, length)
 	y[] <- x
 	y
 }
-
-### Does NOT support NAs in 'x'.
-isNotStrictlySorted <- function(x)
-{
-    .Internal(is.unsorted(x)) || any(duplicated(x))
-}
-

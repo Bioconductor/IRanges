@@ -131,7 +131,7 @@
              "for assembly gaps in sequence \"", seqname, "\"")
     if (use.gap.types) {
         names(ranges) <- data$gap_type
-        if (isNotStrictlySorted(start(ranges)))
+        if (is.unsorted(start(ranges), strictly = TRUE))
             ranges <- ranges[order(start(ranges))]
         if (!isNormal(ranges))
             stop("cannot use the gap types when some gaps are adjacent or overlap")
@@ -241,7 +241,7 @@ read.rmMask <- function(file, width, use.IDs=FALSE)
     ranges <- IRanges(start=data$begin_in_query, end=data$end_in_query)
     if (use.IDs) {
         names(ranges) <- data$ID
-        if (isNotStrictlySorted(start(ranges)))
+        if (is.unsorted(start(ranges), strictly = TRUE))
             ranges <- ranges[order(start(ranges))]
         if (!isNormal(ranges))
             stop("cannot use the repeat IDs when some repeats are adjacent or overlap")
