@@ -124,3 +124,33 @@ recycleVector <- function(x, length)
 	y[] <- x
 	y
 }
+
+### isNotStrictlySorted() takes for granted that 'x' contains no NAs (behaviour
+### is undefined if this is not the case). This allows isNotStrictlySorted() to
+### be MUCH faster than is.unsorted() in some situations:
+###   > x <- c(99L, 1:1000000)
+###   > system.time(for (i in 1:1000) isNotStrictlySorted(x))
+###    user  system elapsed 
+###   0.004   0.000   0.003 
+###   > system.time(for (i in 1:1000) is.unsorted(x, strictly=TRUE))
+###    user  system elapsed 
+###   6.925   1.756   8.690 
+### So let's keep it for now! Until someone has enough time and energy to
+### convince the R core team to fix is.unsorted()...
+### Note that is.unsorted() does not only have a performance problem:
+###   a) It also has a semantic problem: is.unsorted(NA) returns NA despite the
+###      man page stating that all objects of length 0 or 1 are sorted (sounds
+###      like a fair statement).
+###   b) The sort()/is.unsorted() APIs and semantics are inconsistent.
+###   c) Why did they choose to have is.unsorted() instead of is.sorted() in the
+###      first place? Having is.unsorted( , strictly=TRUE) being a "looser test"
+###      (or a "weaker condition") than is.unsorted( , strictly=FALSE) is really
+###      counterintuitive!
+###        > is.unsorted(c(5L, 5:8), strictly=FALSE)
+###        [1] FALSE
+###        > is.unsorted(c(5L, 5:8), strictly=TRUE)
+###        [1] TRUE
+###      Common sense would expect to have less objects that are "strictly
+###      something" than objects that are "just something".
+isNotStrictlySorted <- function(x) .Internal(is.unsorted(x, TRUE))
+
