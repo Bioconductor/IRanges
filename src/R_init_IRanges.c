@@ -75,6 +75,10 @@ void R_init_IRanges(DllInfo *info)
 {
 	R_registerRoutines(info, NULL, callMethods, NULL, NULL);
 
+/* sort_utils.c */
+	REGISTER_CCALLABLE(_sort_int_array);
+	REGISTER_CCALLABLE(_get_int_array_order);
+
 /* AEbufs.c */
 	REGISTER_CCALLABLE(_IntAE_set_val);
 	REGISTER_CCALLABLE(_new_IntAE);

@@ -8,6 +8,7 @@
 
 SEXP IRanges_length_vectors_in_list(SEXP list);
 
+
 /* X_utils.c */
 
 SEXP debug_X_utils();
@@ -67,15 +68,24 @@ void _IRanges_memcpy_to_subset(
 	size_t size
 );
 
+
+/* sort_utils.c */
+
+void _sort_int_array(
+	int *x,
+	int x_nelt
+);
+
+void _get_int_array_order(
+	const int *x,
+	int x_nelt,
+	int *order
+);
+
+
 /* AEbufs.c */
 
 SEXP debug_AEbufs();
-
-void _get_intorder(
-	int len,
-	const int *in,
-	int *out
-);
 
 void _IntAE_set_val(
 	const IntAE *int_ae,
@@ -314,6 +324,7 @@ SEXP XNumeric_write_nums_to_subset(
 
 
 /* XIntegerViews.c */
+
 SEXP XIntegerViews_slice(
 	SEXP xint,
 	SEXP lower,
@@ -324,6 +335,7 @@ SEXP XIntegerViews_slice(
 
 
 /* XIntegerViews_utils.c */
+
 SEXP XIntegerViews_viewMins(
 	SEXP x,
 	SEXP na_rm

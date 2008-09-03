@@ -1,13 +1,12 @@
-/*
- * Low-level manipulation of the Auto-Extending buffers.
- *
+/*****************************************************************************
+ * Low-level manipulation of the Auto-Extending buffers
+ * ----------------------------------------------------
  * Except for debug_AEbufs(), the functions defined in this file are
  * NOT .Call methods (but they are used by .Call methods defined in other .c
  * files). They are prefixed with a "_" (underscore) to emphasize the fact that
  * they are used internally within the IRanges shared lib.
  */
 #include "IRanges.h"
-#include <stdlib.h> /* for qsort() */
 #include <S.h> /* for Salloc() and Srealloc() */
 
 #define MAX_BUFLENGTH_INC (128 * 1024 * 1024)
@@ -25,38 +24,6 @@ SEXP debug_AEbufs()
 	Rprintf("Debug mode not available in 'AEbufs.c'\n");
 #endif
 	return R_NilValue;
-}
-
-/*
- * Get the order of an array of ints.
- */
-static int cmpintpp(const void *p1, const void *p2)
-{
-	int *i1, *i2;
-
-	i1 = *((int **) p1);
-	i2 = *((int **) p2);
-	if (*i1 < *i2)
-		return -1;
-	if (*i1 > *i2)
-		return 1;
-	return 0;
-}
-void _get_intorder(int len, const int *in, int *out)
-{
-	const int **inp, *tmp0, **tmp1;
-	int k, *tmp2;
-
-	inp = (const int **) malloc(len * sizeof(const int *));
-	if (inp == NULL)
-		error("IRanges internal error in intorder(): malloc failed");
-	for (k = 0, tmp0 = in, tmp1 = inp; k < len; k++, tmp0++, tmp1++)
-		*tmp1 = tmp0;
-	qsort(inp, len, sizeof(int *), cmpintpp);
-	for (k = 0, tmp1 = inp, tmp2 = out; k < len; k++, tmp1++, tmp2++)
-		*tmp2 = *tmp1 - in;
-	free(inp);
-	return;
 }
 
 static int get_new_buflength(int buflength)
@@ -198,14 +165,9 @@ void _IntAE_sum_IntAE(const IntAE *int_ae1, const IntAE *int_ae2)
 	return;
 }
 
-static int cmpintp(const void *p1, const void *p2)
-{
-	return *((const int *) p1) - *((const int *) p2);
-}
-
 void _IntAE_qsort(IntAE *int_ae)
 {
-	qsort(int_ae->elts, int_ae->nelt, sizeof(int), cmpintp);
+	_sort_int_array(int_ae->elts, int_ae->nelt);
 	return;
 }
 

@@ -11,6 +11,21 @@ retT stubname Targs \
 
 
 /*
+ * Stubs for callables defined in sort_utils.c
+ */
+
+DEFINE_CCALLABLE_STUB(void, sort_int_array,
+	(int *x, int x_nelt),
+	(     x,     x_nelt)
+);
+
+DEFINE_CCALLABLE_STUB(void, get_int_array_order,
+	(const int *x, int x_nelt, int *order),
+	(           x,     x_nelt,      order)
+);
+
+
+/*
  * Stubs for callables defined in AEbufs.c
  */
 

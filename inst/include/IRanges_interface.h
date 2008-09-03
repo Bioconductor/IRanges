@@ -13,6 +13,22 @@
 
 
 /*
+ * Low-level sorting utilities.
+ * (see sort_utils.c)
+ */
+void sort_int_array(
+        int *x,
+        int x_nelt
+);
+
+void get_int_array_order(
+        const int *x,
+        int x_nelt,
+        int *order
+);
+
+
+/*
  * Low-level manipulation of the Auto-Extending buffers.
  * (see AEbufs.c)
  */
