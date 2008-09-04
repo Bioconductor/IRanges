@@ -155,9 +155,9 @@ void _append_string_to_CharAEAE(
 );
 
 
-/* mem_utils.c */
+/* memcpy_utils.c */
 
-SEXP debug_mem_utils();
+SEXP debug_memcpy_utils();
 
 int _IRanges_memcmp(
 	const char *a,
@@ -208,7 +208,7 @@ void _IRanges_memcpy_to_subset(
 	size_t size
 );
 
-void _IRanges_translate_charcpy_from_i1i2(
+void _IRanges_charcpy_from_i1i2_with_lkup(
 	int i1,
 	int i2,
 	char *dest,
@@ -219,7 +219,7 @@ void _IRanges_translate_charcpy_from_i1i2(
 	int lkup_length
 );
 
-void _IRanges_translate_charcpy_from_subset(
+void _IRanges_charcpy_from_subset_with_lkup(
 	const int *subset,
 	int n,
 	char *dest,
@@ -230,7 +230,7 @@ void _IRanges_translate_charcpy_from_subset(
 	int lkup_length
 );
 
-void _IRanges_translate_charcpy_to_i1i2(
+void _IRanges_charcpy_to_i1i2_with_lkup(
 	int i1,
 	int i2,
 	char *dest,
@@ -241,7 +241,7 @@ void _IRanges_translate_charcpy_to_i1i2(
 	int lkup_length
 );
 
-void _IRanges_translate_charcpy_to_subset(
+void _IRanges_charcpy_to_subset_with_lkup(
 	const int *subset,
 	int n,
 	char *dest,
@@ -262,7 +262,7 @@ void _IRanges_reverse_memcpy_from_i1i2(
 	size_t size
 );
 
-void _IRanges_reverse_translate_charcpy_from_i1i2(
+void _IRanges_reverse_charcpy_from_i1i2_with_lkup(
 	int i1,
 	int i2,
 	char *dest,
@@ -273,7 +273,7 @@ void _IRanges_reverse_translate_charcpy_from_i1i2(
 	int lkup_length
 );
 
-void _IRanges_coerce_to_complex_from_i1i2(
+void _IRanges_memcpy_from_i1i2_to_complex(
 	int i1,
 	int i2,
 	Rcomplex *dest,

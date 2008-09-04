@@ -3,13 +3,13 @@
 
 static int debug = 0;
 
-SEXP debug_mem_utils()
+SEXP debug_memcpy_utils()
 {
 #ifdef DEBUG_IRANGES
 	debug = !debug;
-	Rprintf("Debug mode turned %s in 'mem_utils.c'\n", debug ? "on" : "off");
+	Rprintf("Debug mode turned %s in 'memcpy_utils.c'\n", debug ? "on" : "off");
 #else
-	Rprintf("Debug mode not available in 'mem_utils.c'\n");
+	Rprintf("Debug mode not available in 'memcpy_utils.c'\n");
 #endif
 	return R_NilValue;
 }
@@ -216,7 +216,7 @@ void _IRanges_memcpy_to_subset(const int *subset, int n,
  * and comes back to it after it reaches its last member.
  * Don't do anything if i1 > i2.
  */
-void _IRanges_translate_charcpy_from_i1i2(int i1, int i2,
+void _IRanges_charcpy_from_i1i2_with_lkup(int i1, int i2,
 		char *dest, int dest_length,
 		const char *src, int src_length,
 		const int *lkup, int lkup_length)
@@ -258,7 +258,7 @@ void _IRanges_translate_charcpy_from_i1i2(int i1, int i2,
  * Writing is recycled in 'dest': it starts at its first member
  * and comes back to it after it reaches its last member.
  */
-void _IRanges_translate_charcpy_from_subset(const int *subset, int n,
+void _IRanges_charcpy_from_subset_with_lkup(const int *subset, int n,
 		char *dest, int dest_length,
 		const char *src, int src_length,
 		const int *lkup, int lkup_length)
@@ -298,7 +298,7 @@ void _IRanges_translate_charcpy_from_subset(const int *subset, int n,
  * and comes back to it after it reaches its last member.
  * Don't do anything if i1 > i2.
  */
-void _IRanges_translate_charcpy_to_i1i2(int i1, int i2,
+void _IRanges_charcpy_to_i1i2_with_lkup(int i1, int i2,
 		char *dest, int dest_length,
 		const char *src, int src_length,
 		const int *lkup, int lkup_length)
@@ -339,7 +339,7 @@ void _IRanges_translate_charcpy_to_i1i2(int i1, int i2,
  * Reading is recycled in 'src': it starts at its first member
  * and comes back to it after it reaches its last member.
  */
-void _IRanges_translate_charcpy_to_subset(const int *subset, int n,
+void _IRanges_charcpy_to_subset_with_lkup(const int *subset, int n,
 		char *dest, int dest_length,
 		const char *src, int src_length,
 		const int *lkup, int lkup_length)
@@ -419,7 +419,7 @@ void _IRanges_reverse_memcpy_from_i1i2(int i1, int i2,
  * and comes back to it after it reaches its first member.
  * Don't do anything if i1 > i2.
  */
-void _IRanges_reverse_translate_charcpy_from_i1i2(int i1, int i2,
+void _IRanges_reverse_charcpy_from_i1i2_with_lkup(int i1, int i2,
 		char *dest, int dest_length,
 		const char *src, int src_length,
 		const int *lkup, int lkup_length)
@@ -462,7 +462,7 @@ void _IRanges_reverse_translate_charcpy_from_i1i2(int i1, int i2,
  * and comes back to it after it reaches its last member.
  * Don't do anything if i1 > i2.
  */
-void _IRanges_coerce_to_complex_from_i1i2(int i1, int i2,
+void _IRanges_memcpy_from_i1i2_to_complex(int i1, int i2,
 		Rcomplex *dest, int dest_length,
 		const char *src, int src_length,
 		const Rcomplex *lkup, int lkup_length)

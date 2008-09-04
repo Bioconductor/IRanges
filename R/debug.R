@@ -3,8 +3,8 @@
 debug_AEbufs <- function()
     invisible(.Call("debug_AEbufs", PACKAGE="IRanges"))
 
-debug_mem_utils <- function()
-    invisible(.Call("debug_mem_utils", PACKAGE="IRanges"))
+debug_memcpy_utils <- function()
+    invisible(.Call("debug_memcpy_utils", PACKAGE="IRanges"))
 
 debug_IRanges_class <- function()
     invisible(.Call("debug_IRanges_class", PACKAGE="IRanges"))
