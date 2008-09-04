@@ -16,6 +16,7 @@
  * Low-level sorting utilities.
  * (see sort_utils.c)
  */
+
 void sort_int_array(
         int *x,
         int x_nelt
@@ -184,3 +185,4 @@ void copy_IRanges_slots(SEXP x, SEXP x0);
 SEXP new_IRanges(const char *class, SEXP start, SEXP width, SEXP names);
 
 SEXP alloc_IRanges(const char *class, int length);
+

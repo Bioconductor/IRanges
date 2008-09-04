@@ -11,7 +11,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(debug_AEbufs, 0),
 
 /* utils.c */
-	CALLMETHOD_DEF(IRanges_length_vectors_in_list, 1),
+	CALLMETHOD_DEF(sapply_length, 1),
 
 /* X_utils.c */
 	CALLMETHOD_DEF(debug_X_utils, 0),

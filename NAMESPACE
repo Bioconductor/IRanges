@@ -11,6 +11,7 @@ exportClasses(
 
 export(
     ## Non-generic functions:
+    sapplyLength,
     #XInteger.read, XInteger.write, XNumeric, XNumeric.read, XNumeric.write,
     XInteger,
     newEmptyNormalIRanges,

@@ -1,6 +1,8 @@
 \name{IRanges internals}
 \docType{class}
 
+\alias{sapplyLength}
+
 % externalptr methods:
 \alias{show,externalptr-method}
 

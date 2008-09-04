@@ -1,15 +1,20 @@
 #include "IRanges.h"
 
 
-/* This function gets the length of vectors in a list. */
-SEXP IRanges_length_vectors_in_list(SEXP list)
+/*
+ * --- .Call ENTRY POINT ---
+ * A C implementation of sapply(list, length)
+ * Note: maybe the right place for this is in Biobase...
+ */
+SEXP sapply_length(SEXP list)
 {
 	int n = LENGTH(list);
-	SEXP element_lengths;
-	PROTECT(element_lengths = NEW_INTEGER(n));
+	SEXP ans;
+	PROTECT(ans = NEW_INTEGER(n));
 	for (int i = 0; i < n; i++) {
-		INTEGER(element_lengths)[i] = LENGTH(VECTOR_ELT(list, i));
+		INTEGER(ans)[i] = LENGTH(VECTOR_ELT(list, i));
 	}
 	UNPROTECT(1);
-	return element_lengths;
+	return ans;
 }
+

@@ -6,7 +6,7 @@
 
 /* utils.c */
 
-SEXP IRanges_length_vectors_in_list(SEXP list);
+SEXP sapply_length(SEXP list);
 
 
 /* X_utils.c */

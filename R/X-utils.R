@@ -14,3 +14,11 @@ setMethod("show", "externalptr",
         .Call("IRanges_xp_show", object, PACKAGE="IRanges")
     }
 )
+
+sapplyLength <- function(x)
+{
+    if (!is.list(x))
+        stop("'x' must be a list")
+    .Call("sapply_length", x, PACKAGE="IRanges")
+}
+
