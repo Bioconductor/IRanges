@@ -4,71 +4,6 @@
 #define DEBUG_IRANGES 1
 
 
-/* utils.c */
-
-SEXP sapply_length(SEXP list);
-
-
-/* X_utils.c */
-
-SEXP debug_X_utils();
-
-SEXP IRanges_sexp_address(SEXP s);
-
-SEXP IRanges_xp_show(SEXP xp);
-
-SEXP IRanges_xp_new();
-
-int _IRanges_memcmp(
-	const char *a,
-	int ia,
-	const char *b,
-	int ib,
-	int n,
-	size_t size
-);
-
-void _IRanges_memcpy_from_i1i2(
-	int i1,
-	int i2,
-	char *dest,
-	size_t dest_nmemb,
-	const char *src,
-	size_t src_nmemb,
-	size_t size
-);
-
-void _IRanges_memcpy_from_subset(
-	const int *subset,
-	int n,
-	char *dest,
-	size_t dest_nmemb,
-	const char *src,
-	size_t src_nmemb,
-	size_t size
-);
-
-void _IRanges_memcpy_to_i1i2(
-	int i1,
-	int i2,
-	char *dest,
-	size_t dest_nmemb,
-	const char *src,
-	size_t src_nmemb,
-	size_t size
-);
-
-void _IRanges_memcpy_to_subset(
-	const int *subset,
-	int n,
-	char *dest,
-	size_t dest_nmemb,
-	const char *src,
-	size_t src_nmemb,
-	size_t size
-);
-
-
 /* sort_utils.c */
 
 void _sort_int_array(
@@ -220,6 +155,212 @@ void _append_string_to_CharAEAE(
 );
 
 
+/* mem_utils.c */
+
+SEXP debug_mem_utils();
+
+int _IRanges_memcmp(
+	const char *a,
+	int ia,
+	const char *b,
+	int ib,
+	int n,
+	size_t size
+);
+
+void _IRanges_memcpy_from_i1i2(
+	int i1,
+	int i2,
+	char *dest,
+	size_t dest_nmemb,
+	const char *src,
+	size_t src_nmemb,
+	size_t size
+);
+
+void _IRanges_memcpy_from_subset(
+	const int *subset,
+	int n,
+	char *dest,
+	size_t dest_nmemb,
+	const char *src,
+	size_t src_nmemb,
+	size_t size
+);
+
+void _IRanges_memcpy_to_i1i2(
+	int i1,
+	int i2,
+	char *dest,
+	size_t dest_nmemb,
+	const char *src,
+	size_t src_nmemb,
+	size_t size
+);
+
+void _IRanges_memcpy_to_subset(
+	const int *subset,
+	int n,
+	char *dest,
+	size_t dest_nmemb,
+	const char *src,
+	size_t src_nmemb,
+	size_t size
+);
+
+void _IRanges_translate_charcpy_from_i1i2(
+	int i1,
+	int i2,
+	char *dest,
+	int dest_length,
+	const char *src,
+	int src_length,
+	const int *lkup,
+	int lkup_length
+);
+
+void _IRanges_translate_charcpy_from_subset(
+	const int *subset,
+	int n,
+	char *dest,
+	int dest_length,
+	const char *src,
+	int src_length,
+	const int *lkup,
+	int lkup_length
+);
+
+void _IRanges_translate_charcpy_to_i1i2(
+	int i1,
+	int i2,
+	char *dest,
+	int dest_length,
+	const char *src,
+	int src_length,
+	const int *lkup,
+	int lkup_length
+);
+
+void _IRanges_translate_charcpy_to_subset(
+	const int *subset,
+	int n,
+	char *dest,
+	int dest_length,
+	const char *src,
+	int src_length,
+	const int *lkup,
+	int lkup_length
+);
+
+void _IRanges_reverse_memcpy_from_i1i2(
+	int i1,
+	int i2,
+	char *dest,
+	size_t dest_nmemb,
+	const char *src,
+	size_t src_nmemb,
+	size_t size
+);
+
+void _IRanges_reverse_translate_charcpy_from_i1i2(
+	int i1,
+	int i2,
+	char *dest,
+	int dest_length,
+	const char *src,
+	int src_length,
+	const int *lkup,
+	int lkup_length
+);
+
+void _IRanges_coerce_to_complex_from_i1i2(
+	int i1,
+	int i2,
+	Rcomplex *dest,
+	int dest_length,
+	const char *src,
+	int src_length,
+	const Rcomplex *lkup,
+	int lkup_length
+);
+
+
+/* IRanges_class.c */
+
+SEXP debug_IRanges_class();
+
+SEXP _get_IRanges_start(SEXP x);
+
+SEXP _get_IRanges_width(SEXP x);
+
+int _get_IRanges_length(SEXP x);
+
+const int *_get_IRanges_start0(SEXP x);
+
+const int *_get_IRanges_width0(SEXP x);
+
+void _set_IRanges_names(
+	SEXP x,
+	SEXP names
+);
+
+void _copy_IRanges_slots(
+	SEXP x,
+	SEXP x0
+);
+
+SEXP _new_IRanges(
+	const char *class,
+	SEXP start,
+	SEXP width,
+	SEXP names
+);
+
+SEXP _alloc_IRanges(
+	const char *class,
+	int length
+);
+
+
+/* IRanges_utils.c */
+
+SEXP debug_IRanges_utils();
+
+SEXP narrow_IRanges(
+	SEXP x,
+	SEXP start,
+	SEXP end,
+	SEXP width
+);
+
+SEXP int_to_adjacent_ranges(SEXP x);
+
+SEXP which_as_ranges(SEXP x);
+
+SEXP reduce_IRanges(
+	SEXP x,
+	SEXP with_inframe_start
+);
+
+SEXP summary_IRanges_list(SEXP x);
+
+
+/* utils.c */
+
+SEXP sapply_length(SEXP list);
+
+
+/* X_utils.c */
+
+SEXP debug_X_utils();
+
+SEXP IRanges_sexp_address(SEXP s);
+
+SEXP IRanges_xp_show(SEXP xp);
+
+SEXP IRanges_xp_new();
+
+
 /* XInteger.c */
 
 SEXP debug_XInteger();
@@ -350,64 +491,4 @@ SEXP XIntegerViews_viewSums(
 	SEXP x,
 	SEXP na_rm
 );
-
-
-/* IRanges_class.c */
-
-SEXP debug_IRanges_class();
-
-SEXP _get_IRanges_start(SEXP x);
-
-SEXP _get_IRanges_width(SEXP x);
-
-int _get_IRanges_length(SEXP x);
-
-const int *_get_IRanges_start0(SEXP x);
-
-const int *_get_IRanges_width0(SEXP x);
-
-void _set_IRanges_names(
-	SEXP x,
-	SEXP names
-);
-
-void _copy_IRanges_slots(
-	SEXP x,
-	SEXP x0
-);
-
-SEXP _new_IRanges(
-	const char *class,
-	SEXP start,
-	SEXP width,
-	SEXP names
-);
-
-SEXP _alloc_IRanges(
-	const char *class,
-	int length
-);
-
-
-/* IRanges_utils.c */
-
-SEXP debug_IRanges_utils();
-
-SEXP narrow_IRanges(
-	SEXP x,
-	SEXP start,
-	SEXP end,
-	SEXP width
-);
-
-SEXP int_to_adjacent_ranges(SEXP x);
-
-SEXP which_as_ranges(SEXP x);
-
-SEXP reduce_IRanges(
-	SEXP x,
-	SEXP with_inframe_start
-);
-
-SEXP summary_IRanges_list(SEXP x);
 

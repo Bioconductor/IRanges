@@ -10,6 +10,21 @@ static const R_CallMethodDef callMethods[] = {
 /* AEbufs.c */
 	CALLMETHOD_DEF(debug_AEbufs, 0),
 
+/* mem_utils.c */
+	CALLMETHOD_DEF(debug_mem_utils, 0),
+
+/* IRanges_class.c */
+	CALLMETHOD_DEF(debug_IRanges_class, 0),
+
+/* IRanges_utils.c */
+	CALLMETHOD_DEF(debug_IRanges_utils, 0),
+
+	CALLMETHOD_DEF(narrow_IRanges, 4),
+	CALLMETHOD_DEF(int_to_adjacent_ranges, 1),
+	CALLMETHOD_DEF(which_as_ranges, 1),
+	CALLMETHOD_DEF(reduce_IRanges, 2),
+	CALLMETHOD_DEF(summary_IRanges_list, 1),
+
 /* utils.c */
 	CALLMETHOD_DEF(sapply_length, 1),
 
@@ -55,18 +70,6 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(XIntegerViews_viewMaxs, 2),
 	CALLMETHOD_DEF(XIntegerViews_viewSums, 2),
 
-/* IRanges_class.c */
-	CALLMETHOD_DEF(debug_IRanges_class, 0),
-
-/* IRanges_utils.c */
-	CALLMETHOD_DEF(debug_IRanges_utils, 0),
-
-	CALLMETHOD_DEF(narrow_IRanges, 4),
-	CALLMETHOD_DEF(int_to_adjacent_ranges, 1),
-	CALLMETHOD_DEF(which_as_ranges, 1),
-	CALLMETHOD_DEF(reduce_IRanges, 2),
-	CALLMETHOD_DEF(summary_IRanges_list, 1),
-
 	{NULL, NULL, 0}
 };
 
@@ -109,6 +112,20 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_new_CharAEAE);
 	REGISTER_CCALLABLE(_CharAEAE_insert_at);
 	REGISTER_CCALLABLE(_append_string_to_CharAEAE);
+
+/* mem_utils.c */
+	REGISTER_CCALLABLE(_IRanges_memcmp);
+	REGISTER_CCALLABLE(_IRanges_memcpy_from_i1i2);
+	REGISTER_CCALLABLE(_IRanges_memcpy_from_subset);
+	REGISTER_CCALLABLE(_IRanges_memcpy_to_i1i2);
+	REGISTER_CCALLABLE(_IRanges_memcpy_to_subset);
+	REGISTER_CCALLABLE(_IRanges_translate_charcpy_from_i1i2);
+	REGISTER_CCALLABLE(_IRanges_translate_charcpy_from_subset);
+	REGISTER_CCALLABLE(_IRanges_translate_charcpy_to_i1i2);
+	REGISTER_CCALLABLE(_IRanges_translate_charcpy_to_subset);
+	REGISTER_CCALLABLE(_IRanges_reverse_memcpy_from_i1i2);
+	REGISTER_CCALLABLE(_IRanges_reverse_translate_charcpy_from_i1i2);
+	REGISTER_CCALLABLE(_IRanges_coerce_to_complex_from_i1i2);
 
 /* IRanges_class.c */
 	REGISTER_CCALLABLE(_get_IRanges_start);

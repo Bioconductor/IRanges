@@ -18,14 +18,14 @@
  */
 
 void sort_int_array(
-        int *x,
-        int x_nelt
+	int *x,
+	int x_nelt
 );
 
 void get_int_array_order(
-        const int *x,
-        int x_nelt,
-        int *order
+	const int *x,
+	int x_nelt,
+	int *order
 );
 
 
@@ -164,6 +164,136 @@ void CharAEAE_insert_at(
 void append_string_to_CharAEAE(
 	CharAEAE *char_aeae,
 	const char *string
+);
+
+
+/*
+ * mem_utils.c
+ */
+
+int IRanges_memcmp(
+	const char *a,
+	int ia,
+	const char *b,
+	int ib,
+	int n,
+	size_t size
+);
+
+void IRanges_memcpy_from_i1i2(
+	int i1,
+	int i2,
+	char *dest,
+	size_t dest_nmemb,
+	const char *src,
+	size_t src_nmemb,
+	size_t size
+);
+
+void IRanges_memcpy_from_subset(
+	const int *subset,
+	int n,
+	char *dest,
+	size_t dest_nmemb,
+	const char *src,
+	size_t src_nmemb,
+	size_t size
+);
+
+void IRanges_memcpy_to_i1i2(
+	int i1,
+	int i2,
+	char *dest,
+	size_t dest_nmemb,
+	const char *src,
+	size_t src_nmemb,
+	size_t size
+);
+
+void IRanges_memcpy_to_subset(
+	const int *subset,
+	int n,
+	char *dest,
+	size_t dest_nmemb,
+	const char *src,
+	size_t src_nmemb,
+	size_t size
+);
+
+void IRanges_translate_charcpy_from_i1i2(
+	int i1,
+	int i2,
+	char *dest,
+	int dest_length,
+	const char *src,
+	int src_length,
+	const int *lkup,
+	int lkup_length
+);
+
+void IRanges_translate_charcpy_from_subset(
+	const int *subset,
+	int n,
+	char *dest,
+	int dest_length,
+	const char *src,
+	int src_length,
+	const int *lkup,
+	int lkup_length
+);
+
+void IRanges_translate_charcpy_to_i1i2(
+	int i1,
+	int i2,
+	char *dest,
+	int dest_length,
+	const char *src,
+	int src_length,
+	const int *lkup,
+	int lkup_length
+);
+
+void IRanges_translate_charcpy_to_subset(
+	const int *subset,
+	int n,
+	char *dest,
+	int dest_length,
+	const char *src,
+	int src_length,
+	const int *lkup,
+	int lkup_length
+);
+
+void IRanges_reverse_memcpy_from_i1i2(
+	int i1,
+	int i2,
+	char *dest,
+	size_t dest_nmemb,
+	const char *src,
+	size_t src_nmemb,
+	size_t size
+);
+
+void IRanges_reverse_translate_charcpy_from_i1i2(
+	int i1,
+	int i2,
+	char *dest,
+	int dest_length,
+	const char *src,
+	int src_length,
+	const int *lkup,
+	int lkup_length
+);
+
+void IRanges_coerce_to_complex_from_i1i2(
+	int i1,
+	int i2,
+	Rcomplex *dest,
+	int dest_length,
+	const char *src,
+	int src_length,
+	const Rcomplex *lkup,
+	int lkup_length
 );
 
 

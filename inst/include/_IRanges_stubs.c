@@ -176,6 +176,71 @@ DEFINE_CCALLABLE_STUB(void, append_string_to_CharAEAE,
 
 
 /*
+ * Stubs for callables defined in mem_utils.c
+ */
+
+DEFINE_CCALLABLE_STUB(int, IRanges_memcmp,
+	(const char *a, int ia, const char *b, int ib, int n, size_t size),
+	(            a,     ia,             b,     ib,     n,        size)
+);
+
+DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_from_i1i2,
+	(int i1, int i2, char *dest, size_t dest_nmemb, const char *src, size_t src_nmemb, size_t size),
+	(    i1,     i2,       dest,        dest_nmemb,             src,        src_nmemb,        size)
+);
+
+DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_from_subset,
+	(const int *subset, int n, char *dest, size_t dest_nmemb, const char *src, size_t src_nmemb, size_t size),
+	(           subset,     n,       dest,        dest_nmemb,             src,        src_nmemb,        size)
+);
+
+DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_to_i1i2,
+	(int i1, int i2, char *dest, size_t dest_nmemb, const char *src, size_t src_nmemb, size_t size),
+	(    i1,     i2,       dest,        dest_nmemb,             src,        src_nmemb,        size)
+);
+
+DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_to_subset,
+	(const int *subset, int n, char *dest, size_t dest_nmemb, const char *src, size_t src_nmemb, size_t size),
+	(           subset,     n,       dest,        dest_nmemb,             src,        src_nmemb,        size)
+);
+
+DEFINE_CCALLABLE_STUB(void, IRanges_translate_charcpy_from_i1i2,
+	(int i1, int i2, char *dest, int dest_length, const char *src, int src_length, const int *lkup, int lkup_length),
+	(    i1,     i2,       dest,     dest_length,             src,     src_length,            lkup,     lkup_length)
+);
+
+DEFINE_CCALLABLE_STUB(void, IRanges_translate_charcpy_from_subset,
+	(const int *subset, int n, char *dest, int dest_length, const char *src, int src_length, const int *lkup, int lkup_length),
+	(           subset,     n,       dest,     dest_length,             src,     src_length,            lkup,     lkup_length)
+);
+
+DEFINE_CCALLABLE_STUB(void, IRanges_translate_charcpy_to_i1i2,
+	(int i1, int i2, char *dest, int dest_length, const char *src, int src_length, const int *lkup, int lkup_length),
+	(    i1,     i2,       dest,     dest_length,             src,     src_length,            lkup,     lkup_length)
+);
+
+DEFINE_CCALLABLE_STUB(void, IRanges_translate_charcpy_to_subset,
+	(const int *subset, int n, char *dest, int dest_length, const char *src, int src_length, const int *lkup, int lkup_length),
+	(           subset,     n,       dest,     dest_length,             src,     src_length,            lkup,     lkup_length)
+);
+
+DEFINE_CCALLABLE_STUB(void, IRanges_reverse_memcpy_from_i1i2,
+	(int i1, int i2, char *dest, size_t dest_nmemb, const char *src, size_t src_nmemb, size_t size),
+	(    i1,     i2,       dest,        dest_nmemb,             src,        src_nmemb,        size)
+);
+
+DEFINE_CCALLABLE_STUB(void, IRanges_reverse_translate_charcpy_from_i1i2,
+	(int i1, int i2, char *dest, int dest_length, const char *src, int src_length, const int *lkup, int lkup_length),
+	(    i1,     i2,       dest,     dest_length,             src,     src_length,            lkup,     lkup_length)
+);
+
+DEFINE_CCALLABLE_STUB(void, IRanges_coerce_to_complex_from_i1i2,
+	(int i1, int i2, Rcomplex *dest, int dest_length, const char *src, int src_length, const Rcomplex *lkup, int lkup_length),
+	(    i1,     i2,           dest,     dest_length,             src,     src_length,                 lkup,     lkup_length)
+);
+
+
+/*
  * Stubs for callables defined in IRanges_class.c
  */
 
