@@ -45,16 +45,16 @@ int _IRanges_memcmp(const char *a, int ia, const char *b, int ib, int n, size_t 
 
 /* ==========================================================================
  * Memory copy:
- *   dest[(i-i1) % dest_nmemb] <- src[i] for i1 <= i <= i2
+ *   dest[(i-i1) % dest_nelt] <- src[i] for i1 <= i <= i2
  * --------------------------------------------------------------------------
  * Reads a linear subset from 'src' defined by 'i1', 'i2'.
- * Writing is recycled in 'dest': it starts at its first member
- * and comes back to it after it reaches its last member.
+ * Writing is recycled in 'dest': it starts at its first element
+ * and comes back to it after it reaches its last element.
  * Don't do anything if i1 > i2.
  */
 void _IRanges_memcpy_from_i1i2(int i1, int i2,
-		char *dest, size_t dest_nmemb,
-		const char *src, size_t src_nmemb, size_t size)
+		char *dest, size_t dest_nelt,
+		const char *src, size_t src_nelt, size_t size)
 {
 	const char *b;
 	int i2next, i1max, q;
@@ -62,22 +62,22 @@ void _IRanges_memcpy_from_i1i2(int i1, int i2,
 
 	if (i1 > i2)
 		return;
-	if (i1 < 0 || i2 >= src_nmemb)
+	if (i1 < 0 || i2 >= src_nelt)
 		error("subscript out of bounds");
-	if (dest_nmemb == 0)
+	if (dest_nelt == 0)
 		error("no destination to copy to");
 	i2next = i2 + 1;
-	i1max = i2next - dest_nmemb;
+	i1max = i2next - dest_nelt;
 	b = src + i1 * size;
-	dest_size = dest_nmemb * size;
+	dest_size = dest_nelt * size;
 	while (i1 <= i1max) {
 		memcpy(dest, b, dest_size);
 		b += dest_size;
-		i1 += dest_nmemb;
+		i1 += dest_nelt;
 	}
 	q = i2next - i1;
 	if (q > 0) {
-		/* Safe because q is always < dest_nmemb */
+		/* Safe because q is always < dest_nelt */
 		memcpy(dest, b, q * size);
 		warning("number of items to replace is not a multiple "
 			"of replacement length");
@@ -88,28 +88,28 @@ void _IRanges_memcpy_from_i1i2(int i1, int i2,
 
 /* ==========================================================================
  * Memory copy:
- *   dest[k % dest_nmemb] <- src[subset[k] - 1] for 0 <= k <= n
+ *   dest[k % dest_nelt] <- src[subset[k] - 1] for 0 <= k <= n
  * --------------------------------------------------------------------------
- * Reads from the members of 'src' that have the offsets passed in 'subset'.
- * Writing is recycled in 'dest': it starts at its first member
- * and comes back to it after it reaches its last member.
+ * Reads from the elements of 'src' that have the offsets passed in 'subset'.
+ * Writing is recycled in 'dest': it starts at its first element
+ * and comes back to it after it reaches its last element.
  */
 void _IRanges_memcpy_from_subset(const int *subset, int n,
-		char *dest, size_t dest_nmemb,
-		const char *src, size_t src_nmemb, size_t size)
+		char *dest, size_t dest_nelt,
+		const char *src, size_t src_nelt, size_t size)
 {
 	char *a;
 	const char *b;
 	int i, j, k, z;
 
-	if (dest_nmemb == 0 && n != 0)
+	if (dest_nelt == 0 && n != 0)
 		error("no destination to copy to");
 	a = dest;
 	for (i = k = 0; k < n; i++, k++) {
 		j = subset[k] - 1;
-		if (j < 0 || j >= src_nmemb)
+		if (j < 0 || j >= src_nelt)
 			error("subscript out of bounds");
-		if (i >= dest_nmemb) {
+		if (i >= dest_nelt) {
 			i = 0; /* recycle */
 			a = dest;
 		}
@@ -118,7 +118,7 @@ void _IRanges_memcpy_from_subset(const int *subset, int n,
 			*(a++) = *(b++);
 		}
 	}
-	if (i != dest_nmemb)
+	if (i != dest_nelt)
 		warning("number of items to replace is not a multiple "
 			"of replacement length");
 	return;
@@ -127,16 +127,16 @@ void _IRanges_memcpy_from_subset(const int *subset, int n,
 
 /* ==========================================================================
  * Memory copy:
- *   dest[i] <- src[(i-i1) % src_nmemb] for i1 <= i <= i2
+ *   dest[i] <- src[(i-i1) % src_nelt] for i1 <= i <= i2
  * --------------------------------------------------------------------------
  * Writes to a linear subset of 'dest' defined by 'i1', 'i2'.
- * Reading is recycled in 'src': it starts at its first member
- * and comes back to it after it reaches its last member.
+ * Reading is recycled in 'src': it starts at its first element
+ * and comes back to it after it reaches its last element.
  * Don't do anything if i1 > i2.
  */
 void _IRanges_memcpy_to_i1i2(int i1, int i2,
-		char *dest, size_t dest_nmemb,
-		const char *src, size_t src_nmemb, size_t size)
+		char *dest, size_t dest_nelt,
+		const char *src, size_t src_nelt, size_t size)
 {
 	char *a;
 	int i2next, i1max, q;
@@ -144,22 +144,22 @@ void _IRanges_memcpy_to_i1i2(int i1, int i2,
 
 	if (i1 > i2)
 		return;
-	if (i1 < 0 || i2 >= dest_nmemb)
+	if (i1 < 0 || i2 >= dest_nelt)
 		error("subscript out of bounds");
-	if (src_nmemb == 0)
+	if (src_nelt == 0)
 		error("no value provided");
 	i2next = i2 + 1;
-	i1max = i2next - src_nmemb;
+	i1max = i2next - src_nelt;
 	a = dest + i1 * size;
-	src_size = src_nmemb * size;
+	src_size = src_nelt * size;
 	while (i1 <= i1max) {
 		memcpy(a, src, src_size);
 		a += src_size;
-		i1 += src_nmemb;
+		i1 += src_nelt;
 	}
 	q = i2next - i1;
 	if (q > 0) {
-		/* Safe because q is always < src_nmemb */
+		/* Safe because q is always < src_nelt */
 		memcpy(a, src, q * size);
 		warning("number of items to replace is not a multiple "
 			"of replacement length");
@@ -170,28 +170,28 @@ void _IRanges_memcpy_to_i1i2(int i1, int i2,
 
 /* ==========================================================================
  * Memory copy:
- *   dest[subset[k] - 1] <- src[k % src_nmemb] for 0 <= k <= n
+ *   dest[subset[k] - 1] <- src[k % src_nelt] for 0 <= k <= n
  * --------------------------------------------------------------------------
- * Writes to the members of 'dest' that have the offsets passed in 'subset'.
- * Reading is recycled in 'src': it starts at its first member
- * and comes back to it after it reaches its last member.
+ * Writes to the elements of 'dest' that have the offsets passed in 'subset'.
+ * Reading is recycled in 'src': it starts at its first element
+ * and comes back to it after it reaches its last element.
  */
 void _IRanges_memcpy_to_subset(const int *subset, int n,
-		char *dest, size_t dest_nmemb,
-		const char *src, size_t src_nmemb, size_t size)
+		char *dest, size_t dest_nelt,
+		const char *src, size_t src_nelt, size_t size)
 {
 	char *a;
 	const char *b;
 	int i, j, k, z;
 
-	if (src_nmemb == 0 && n != 0)
+	if (src_nelt == 0 && n != 0)
 		error("no value provided");
 	b = src;
 	for (j = k = 0; k < n; j++, k++) {
 		i = subset[k] - 1;
-		if (i < 0 || i >= dest_nmemb)
+		if (i < 0 || i >= dest_nelt)
 			error("subscript out of bounds");
-		if (j >= src_nmemb) {
+		if (j >= src_nelt) {
 			j = 0; /* recycle */
 			b = src;
 		}
@@ -200,7 +200,7 @@ void _IRanges_memcpy_to_subset(const int *subset, int n,
 			*(a++) = *(b++);
 		}
 	}
-	if (j != src_nmemb)
+	if (j != src_nelt)
 		warning("number of items to replace is not a multiple "
 			"of replacement length");
 	return;
@@ -212,8 +212,8 @@ void _IRanges_memcpy_to_subset(const int *subset, int n,
  *   dest[(i-i1) % dest_length] <- tr(src[i]) for i1 <= i <= i2
  * --------------------------------------------------------------------------
  * Reads a linear subset from 'src' defined by 'i1', 'i2'.
- * Writing is recycled in 'dest': it starts at its first member
- * and comes back to it after it reaches its last member.
+ * Writing is recycled in 'dest': it starts at its first element
+ * and comes back to it after it reaches its last element.
  * Don't do anything if i1 > i2.
  */
 void _IRanges_charcpy_from_i1i2_with_lkup(int i1, int i2,
@@ -254,9 +254,9 @@ void _IRanges_charcpy_from_i1i2_with_lkup(int i1, int i2,
  * Memory copy with translation:
  *   dest[k % dest_length] <- tr(src[subset[k] - 1]) for 0 <= k <= n
  * --------------------------------------------------------------------------
- * Reads from the members of 'src' that have the offsets passed in 'subset'.
- * Writing is recycled in 'dest': it starts at its first member
- * and comes back to it after it reaches its last member.
+ * Reads from the elements of 'src' that have the offsets passed in 'subset'.
+ * Writing is recycled in 'dest': it starts at its first element
+ * and comes back to it after it reaches its last element.
  */
 void _IRanges_charcpy_from_subset_with_lkup(const int *subset, int n,
 		char *dest, int dest_length,
@@ -294,8 +294,8 @@ void _IRanges_charcpy_from_subset_with_lkup(const int *subset, int n,
  *   dest[i] <- tr(src[(i-i1) % src_length]) for i1 <= i <= i2
  * --------------------------------------------------------------------------
  * Writes to a linear subset of 'dest' defined by 'i1', 'i2'.
- * Reading is recycled in 'src': it starts at its first member
- * and comes back to it after it reaches its last member.
+ * Reading is recycled in 'src': it starts at its first element
+ * and comes back to it after it reaches its last element.
  * Don't do anything if i1 > i2.
  */
 void _IRanges_charcpy_to_i1i2_with_lkup(int i1, int i2,
@@ -335,9 +335,9 @@ void _IRanges_charcpy_to_i1i2_with_lkup(int i1, int i2,
  * Memory copy with translation:
  *   dest[subset[k] - 1] <- tr(src[k % src_length]) for 0 <= k <= n
  * --------------------------------------------------------------------------
- * Writes to the members of 'dest' that have the offsets passed in 'subset'.
- * Reading is recycled in 'src': it starts at its first member
- * and comes back to it after it reaches its last member.
+ * Writes to the elements of 'dest' that have the offsets passed in 'subset'.
+ * Reading is recycled in 'src': it starts at its first element
+ * and comes back to it after it reaches its last element.
  */
 void _IRanges_charcpy_to_subset_with_lkup(const int *subset, int n,
 		char *dest, int dest_length,
@@ -372,16 +372,16 @@ void _IRanges_charcpy_to_subset_with_lkup(const int *subset, int n,
 
 /* ==========================================================================
  * Memory copy with reverse order:
- *   dest[(dest_nmemb-1-(i-i1)) % dest_nmemb] <- src[i] for i1 <= i <= i2
+ *   dest[(dest_nelt-1-(i-i1)) % dest_nelt] <- src[i] for i1 <= i <= i2
  * --------------------------------------------------------------------------
  * Reads a linear subset from 'src' defined by 'i1', 'i2'.
- * Writing is recycled in 'dest': it starts at its last member
- * and comes back to it after it reaches its first member.
+ * Writing is recycled in 'dest': it starts at its last element
+ * and comes back to it after it reaches its first element.
  * Don't do anything if i1 > i2.
  */
 void _IRanges_reverse_memcpy_from_i1i2(int i1, int i2,
-		char *dest, size_t dest_nmemb,
-		const char *src, size_t src_nmemb, size_t size)
+		char *dest, size_t dest_nelt,
+		const char *src, size_t src_nelt, size_t size)
 {
 	char *a;
 	const char *b;
@@ -389,14 +389,14 @@ void _IRanges_reverse_memcpy_from_i1i2(int i1, int i2,
 
 	if (i1 > i2)
 		return;
-	if (i1 < 0 || i2 >= src_nmemb)
+	if (i1 < 0 || i2 >= src_nelt)
 		error("subscript out of bounds");
-	if (dest_nmemb == 0)
+	if (dest_nelt == 0)
 		error("no destination to copy to");
 	b = src + i1 * size;
-	for (i = i1, j = dest_nmemb - 1; i <= i2; i++, j--) {
+	for (i = i1, j = dest_nelt - 1; i <= i2; i++, j--) {
 		if (j < 0) { /* recycle */
-			j = dest_nmemb - 1;
+			j = dest_nelt - 1;
 		}
 		a = dest + j * size;
 		for (z = 0; z < size; z++) {
@@ -415,8 +415,8 @@ void _IRanges_reverse_memcpy_from_i1i2(int i1, int i2,
  *   dest[(dest_length-1-(i-i1)) % dest_length] <- tr(src[i]) for i1 <= i <= i2
  * --------------------------------------------------------------------------
  * Reads a linear subset from 'src' defined by 'i1', 'i2'.
- * Writing is recycled in 'dest': it starts at its last member
- * and comes back to it after it reaches its first member.
+ * Writing is recycled in 'dest': it starts at its last element
+ * and comes back to it after it reaches its first element.
  * Don't do anything if i1 > i2.
  */
 void _IRanges_reverse_charcpy_from_i1i2_with_lkup(int i1, int i2,
@@ -458,8 +458,8 @@ void _IRanges_reverse_charcpy_from_i1i2_with_lkup(int i1, int i2,
  *   dest[(i-i1) % dest_length] <- toComplex(src[i]) for i1 <= i <= i2
  * --------------------------------------------------------------------------
  * Reads a linear subset from 'src' defined by 'i1', 'i2'.
- * Writing is recycled in 'dest': it starts at its first member
- * and comes back to it after it reaches its last member.
+ * Writing is recycled in 'dest': it starts at its first element
+ * and comes back to it after it reaches its last element.
  * Don't do anything if i1 > i2.
  */
 void _IRanges_memcpy_from_i1i2_to_complex(int i1, int i2,

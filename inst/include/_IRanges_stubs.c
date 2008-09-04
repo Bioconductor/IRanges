@@ -185,23 +185,23 @@ DEFINE_CCALLABLE_STUB(int, IRanges_memcmp,
 );
 
 DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_from_i1i2,
-	(int i1, int i2, char *dest, size_t dest_nmemb, const char *src, size_t src_nmemb, size_t size),
-	(    i1,     i2,       dest,        dest_nmemb,             src,        src_nmemb,        size)
+	(int i1, int i2, char *dest, size_t dest_nelt, const char *src, size_t src_nelt, size_t size),
+	(    i1,     i2,       dest,        dest_nelt,             src,        src_nelt,        size)
 );
 
 DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_from_subset,
-	(const int *subset, int n, char *dest, size_t dest_nmemb, const char *src, size_t src_nmemb, size_t size),
-	(           subset,     n,       dest,        dest_nmemb,             src,        src_nmemb,        size)
+	(const int *subset, int n, char *dest, size_t dest_nelt, const char *src, size_t src_nelt, size_t size),
+	(           subset,     n,       dest,        dest_nelt,             src,        src_nelt,        size)
 );
 
 DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_to_i1i2,
-	(int i1, int i2, char *dest, size_t dest_nmemb, const char *src, size_t src_nmemb, size_t size),
-	(    i1,     i2,       dest,        dest_nmemb,             src,        src_nmemb,        size)
+	(int i1, int i2, char *dest, size_t dest_nelt, const char *src, size_t src_nelt, size_t size),
+	(    i1,     i2,       dest,        dest_nelt,             src,        src_nelt,        size)
 );
 
 DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_to_subset,
-	(const int *subset, int n, char *dest, size_t dest_nmemb, const char *src, size_t src_nmemb, size_t size),
-	(           subset,     n,       dest,        dest_nmemb,             src,        src_nmemb,        size)
+	(const int *subset, int n, char *dest, size_t dest_nelt, const char *src, size_t src_nelt, size_t size),
+	(           subset,     n,       dest,        dest_nelt,             src,        src_nelt,        size)
 );
 
 DEFINE_CCALLABLE_STUB(void, IRanges_charcpy_from_i1i2_with_lkup,
@@ -225,8 +225,8 @@ DEFINE_CCALLABLE_STUB(void, IRanges_charcpy_to_subset_with_lkup,
 );
 
 DEFINE_CCALLABLE_STUB(void, IRanges_reverse_memcpy_from_i1i2,
-	(int i1, int i2, char *dest, size_t dest_nmemb, const char *src, size_t src_nmemb, size_t size),
-	(    i1,     i2,       dest,        dest_nmemb,             src,        src_nmemb,        size)
+	(int i1, int i2, char *dest, size_t dest_nelt, const char *src, size_t src_nelt, size_t size),
+	(    i1,     i2,       dest,        dest_nelt,             src,        src_nelt,        size)
 );
 
 DEFINE_CCALLABLE_STUB(void, IRanges_reverse_charcpy_from_i1i2_with_lkup,
