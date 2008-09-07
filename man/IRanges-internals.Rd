@@ -6,10 +6,6 @@
 % externalptr methods:
 \alias{show,externalptr-method}
 
-% Views class and methods:
-\alias{initialize,Views-method}
-\alias{width<-,Views-method}
-
 % XNumeric class and methods:
 \alias{!=,XNumeric,XNumeric-method}
 \alias{==,XNumeric,XNumeric-method}

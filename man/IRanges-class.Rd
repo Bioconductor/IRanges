@@ -73,7 +73,6 @@
 \alias{coerce,IRanges,NormalIRanges-method}
 \alias{coerce,UnlockedIRanges,NormalIRanges-method}
 \alias{coerce,LockedIRanges,NormalIRanges-method}
-\alias{coerce,Views,NormalIRanges-method}
 
 % Deprecated methods:
 \alias{first}

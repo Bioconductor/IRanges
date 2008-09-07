@@ -16,48 +16,21 @@ setClass("XIntegerViews",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "subject" accessor method (exported).
+### User-friendly constructor.
 ###
 
-setMethod("subject", "XIntegerViews", function(x) x@subject)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Validity.
-###
-
-.valid.XIntegerViews <- function(object)
-{
-    if (!is(subject(object), "XInteger"))
-        return("the subject must be an XInteger object")
-    NULL
-}
-
-setValidity("XIntegerViews",
-    function(object)
+setMethod("Views", "integer",
+    function(subject, start=NA, end=NA, names=NULL)
     {
-        problems <- .valid.XIntegerViews(object)
-        if (is.null(problems)) TRUE else problems
+        xsubject <- XInteger(length(subject))
+        xsubject[] <- subject
+        Views(xsubject, start=start, end=end)
     }
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Initialization and coercion.
-###
-
-### Not intended to be used directly by the user.
-setMethod("initialize", "XIntegerViews",
-    function(.Object, subject, start=integer(0), width=integer(0),
-                               names=NULL, check=TRUE)
-    {
-        .Object <- callNextMethod(.Object, start=start, width=width,
-                                           names=names, check=check)
-        slot(.Object, "subject", check=FALSE) <- subject
-        if (check)
-            stopIfProblems(.valid.XIntegerViews(.Object))
-        .Object
-    }
+setMethod("Views", "XInteger",
+    function(subject, start=NA, end=NA, names=NULL)
+        new("XIntegerViews", subject, start=start, end=end, names=names)
 )
 
 
@@ -294,7 +267,7 @@ setMethod("==", signature(e1="XIntegerViews", e2="XIntegerViews"),
 setMethod("==", signature(e1="XIntegerViews", e2="XInteger"),
     function(e1, e2)
     {
-        XIntegerViews.equal(e1, XIntegerViews(e2))
+        XIntegerViews.equal(e1, Views(e2))
     }
 )
 setMethod("==", signature(e1="XIntegerViews", e2="integer"),
@@ -303,7 +276,7 @@ setMethod("==", signature(e1="XIntegerViews", e2="integer"),
         if (length(e2) == 0 || any(is.na(e2)))
             stop("comparison between an XIntegerViews object and an integer ",
                  "vector of length 0 or with NAs is not supported")
-        XIntegerViews.equal(e1, XIntegerViews(e2))
+        XIntegerViews.equal(e1, Views(e2))
     }
 )
 setMethod("==", signature(e1="XInteger", e2="XIntegerViews"),
@@ -354,3 +327,4 @@ setMethod("as.list", "XIntegerViews",
         ans
     }
 )
+

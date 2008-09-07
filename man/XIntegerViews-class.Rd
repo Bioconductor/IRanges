@@ -4,16 +4,13 @@
 % Classes:
 \alias{class:XIntegerViews}
 \alias{XIntegerViews-class}
+\alias{XIntegerViews}
 
-% Constructor-like functions and generics:
-\alias{initialize,XIntegerViews-method}
+% Constructors:
+\alias{Views,integer-method}
+\alias{Views,XInteger-method}
 
-% Accesor methods:
-\alias{subject}
-\alias{subject,XIntegerViews-method}
-
-% Other methods:
-
+% Methods:
 \alias{show,XIntegerViews-method}
 \alias{[[,XIntegerViews-method}
 \alias{[[<-,XIntegerViews-method}
@@ -47,25 +44,13 @@
   "the subject".
   Each view is defined by its start and end locations: both are integers such
   that start <= end.
-  An XIntegerViews object is in fact a particular case of an \link{IRanges}
-  object (the XIntegerViews class contains the \link{IRanges} class) so it
-  can be manipulated in a similar manner: see \code{?\link{IRanges}} for
+  An XIntegerViews object is in fact a particular case of a \link{Views}
+  object (the XIntegerViews class contains the \link{Views} class) so it
+  can be manipulated in a similar manner: see \code{?\link{Views}} for
   more information.
   Note that two views can overlap and that a view can be "out of limits"
   i.e. it can start before the first element of the subject or/and end
   after its last element.
-}
-
-\section{Accesor methods}{
-  In the code snippets below,
-  \code{x} is an XIntegerViews object.
-
-  \describe{
-    \item{}{
-      \code{subject(x)}:
-      The subject of \code{x}. This is always an \link{XInteger} object.
-    }
-  }
 }
 
 \section{Other methods}{
@@ -109,17 +94,17 @@
 \author{H. Pages}
 
 \seealso{
-  \link{IRanges-class},
-  \link{XIntegerViews-constructors},
-  \link{XInteger-class}
+  \link{Views-class},
+  \link{XInteger-class},
+  \link{XIntegerViews-utils}
 }
 
 \examples{
 
   ## One standard way to create an XIntegerViews object is to use
-  ## the "views" constructor:
+  ## the Views() constructor:
   x1 <- XInteger(c(45, 67, 84, 67, 45, 78))
-  v4 <- views(x1, 3:0, 5:8)
+  v4 <- Views(x1, 3:0, 5:8)
   v4
   subject(v4)
   length(v4)
@@ -143,7 +128,7 @@
   #v4[[3]] # Error!
 
   ## Here the first view doesn't even overlap with the subject:
-  views(XInteger(c(97, 97, 97, 45, 45, 98)), -3:4, -3:4 + c(3:6, 6:3))
+  Views(XInteger(c(97, 97, 97, 45, 45, 98)), -3:4, -3:4 + c(3:6, 6:3))
 }
 
 \keyword{methods}
