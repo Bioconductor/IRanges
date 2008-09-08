@@ -30,13 +30,13 @@ setValidity2 <- function(Class, valid.func)
     setValidity(Class,
         function(object)
         {
+            if (disableValidity())
+                return(TRUE)
             if (debugValidity()) {
                 whoami <- paste("validity method for", Class, "object")
                 cat("[debugValidity] Entering ", whoami, "\n", sep="")
                 on.exit(cat("[debugValidity] Leaving ", whoami, "\n", sep=""))
             }
-            if (disableValidity())
-                return(TRUE)
             problems <- valid.func(object)
             if (isTRUE(problems) || length(problems) == 0)
                 return(TRUE)
