@@ -7,7 +7,6 @@
 
 % Constructor-like functions and generics:
 \alias{XInteger}
-\alias{initialize,XInteger-method}
 
 % Accessor methods:
 \alias{length,XInteger-method}

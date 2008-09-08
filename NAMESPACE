@@ -62,7 +62,6 @@ export(
 
 exportMethods(
     ## Methods for generics defined elsewhere:
-    initialize,
     coerce,
     show,
     length,

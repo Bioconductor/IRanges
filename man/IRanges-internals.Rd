@@ -14,7 +14,6 @@
 \alias{[,XNumeric-method}
 \alias{[<-,XNumeric-method}
 \alias{as.numeric,XNumeric-method}
-\alias{initialize,XNumeric-method}
 \alias{length,XNumeric-method}
 \alias{show,XNumeric-method}
 
