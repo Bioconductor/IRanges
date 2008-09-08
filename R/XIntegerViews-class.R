@@ -24,13 +24,13 @@ setMethod("Views", "integer",
     {
         xsubject <- XInteger(length(subject))
         xsubject[] <- subject
-        Views(xsubject, start=start, end=end)
+        Views(xsubject, start=start, end=end, names=names)
     }
 )
 
 setMethod("Views", "XInteger",
     function(subject, start=NA, end=NA, names=NULL)
-        new("XIntegerViews", subject, start=start, end=end, names=names)
+        as(callNextMethod(), "XIntegerViews")
 )
 
 

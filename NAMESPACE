@@ -12,8 +12,8 @@ exportClasses(
 
 export(
     ## Non-generic functions:
+    setValidity2, new2,
     sapplyLength,
-    newEmptyNormalIRanges,
     IRanges,
     asNormalIRanges,
     intToRanges,

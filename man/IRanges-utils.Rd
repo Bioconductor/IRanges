@@ -29,8 +29,8 @@
 
 \usage{
   ## Create an IRanges instance
-  intToRanges(x, use.names=TRUE)
-  intToAdjacentRanges(x, use.names=TRUE)
+  intToRanges(x)
+  intToAdjacentRanges(x)
 
   ## Create a NormalIRanges instance
   whichAsRanges(x)
@@ -52,11 +52,11 @@
     \code{toNormalIRanges} and \code{gaps}.
     An \link{IRanges} object or an integer vector for \code{narrow}.
   }
-  \item{use.names}{
-    \code{TRUE} or \code{FALSE}. Should names be preserved?
-  }
   \item{shift}{
     A single integer.
+  }
+  \item{use.names}{
+    \code{TRUE} or \code{FALSE}. Should names be preserved?
   }
   \item{start}{
     A single integer or \code{NA}. The \code{narrow} function also excepts an

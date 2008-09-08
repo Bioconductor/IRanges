@@ -29,23 +29,17 @@ setMethod("subject", "Views", function(x) x@subject)
 ### Validity.
 ###
 
-.valid.Views.width <- function(object)
+.valid.Views.width <- function(x)
 {
-    if (length(object) != 0 && any(width(object) == 0))
+    if (length(width(x)) != 0 && min(width(x)) <= 0)
         return("null widths are not allowed")
     NULL
 }
 
-setValidity("Views",
-    function(object)
-    {
-        problems <- .valid.Views.width(object)
-        if (is.null(problems)) TRUE else problems
-    }
-)
+setValidity2("Views", .valid.Views.width)
 
-### Need to override the "width" method for IRanges object because of the need
-### of an extra check.
+### Need to override the "width" method for IRanges object because of the extra
+### check.
 setReplaceMethod("width", "Views",
     function(x, check=TRUE, value)
     {
@@ -58,14 +52,24 @@ setReplaceMethod("width", "Views",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Initialization.
+### The user-friendly "Views" constructor.
+###
+### TODO: - support the 'width' argument;
+###       - remove the 'names' argument (user should call names(x) <- somenames
+###         separately);
+###       - add a 'check.limits' arg (default to TRUE) for raising an error if
+###         some views are "out of limits".
 ###
 
-setMethod("initialize", "Views",
-    function(.Object, subject=NULL, start=integer(0), end=integer(0), names=NULL)
+setGeneric("Views", signature="subject",
+    function(subject, start=NA, end=NA, names=NULL) standardGeneric("Views")
+)
+
+setMethod("Views", "ANY",
+    function(subject, start=NA, end=NA, names=NULL)
     {
         if (!isNumericOrNAs(start) || !isNumericOrNAs(end))
-            stop("'start' and 'end' must be numerics")
+            stop("'start' and 'end' must be numeric vectors")
         if (!is.integer(start))
             start <- as.integer(start)
         start[is.na(start)] <- 1L
@@ -78,23 +82,12 @@ setMethod("initialize", "Views",
             end <- recycleVector(end, length(start))
         if (!all(start <= end))
             stop("'start' and 'end' must verify 'start <= end'")
-        .Object@subject <- subject
-        slot(.Object, "start", check=FALSE) <- start
-        slot(.Object, "width", check=FALSE) <- end - start + 1L
-        names(.Object) <- names
-        .Object
+        width <- end - start + 1L
+        ## 'start' and 'with' are guaranteed to be valid.
+        ans <- new2("Views", subject=subject, start=start, width=width, check=FALSE)
+        names(ans) <- names
+        ans
     }
-)
-
-### User-friendly constructor.
-### TODO: Support the 'width' argument.
-setGeneric("Views", signature="subject",
-    function(subject, start=NA, end=NA, names=NULL) standardGeneric("Views")
-)
-
-setMethod("Views", "ANY",
-    function(subject, start=NA, end=NA, names=NULL)
-        new("Views", subject, start=start, end=end, names=names)
 )
 
 views <- function(...) { .Deprecated("Views"); Views(...) }
@@ -151,6 +144,8 @@ setMethod("narrow", "Views",
     }
 )
 
+### TODO: - add a 'check.limits' arg (default to TRUE) for raising an error if
+###         some views are "out of limits"
 setGeneric("subviews", signature="x",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
         standardGeneric("subviews")

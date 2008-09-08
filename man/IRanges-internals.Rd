@@ -1,6 +1,8 @@
 \name{IRanges internals}
 \docType{class}
 
+\alias{setValidity2}
+\alias{new2}
 \alias{sapplyLength}
 
 % externalptr methods:

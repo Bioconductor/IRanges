@@ -153,112 +153,73 @@ setMethod("min", "NormalIRanges",
 ### 'names' must be NULL or a character vector of the same length as 'start'
 ### (or 'width').
 ###
+### We use 'min(width(x)) < 0L' in .valid.IRanges.width().
+### Note that the 'min(x) <= y' construct is faster and more memory efficent
+### than 'any(x <= y)', especially when 'x' is a big vector (the speedup is
+### around 10x or more when length(x) >= 100000).
+###
 
 ### IRanges objects
-.valid.IRanges.start <- function(object)
+
+.valid.IRanges.start <- function(x)
 {
-    if (!is.integer(start(object)) || any(is.na(start(object))))
+    if (!is.integer(start(x)) || any(is.na(start(x))))
         return("the starts must be non-NA integers")
-    if (length(start(object)) != length(width(object)))
+    if (length(start(x)) != length(width(x)))
         return("number of starts and number of widths differ")
     NULL
 }
-.valid.IRanges.width <- function(object)
+
+.valid.IRanges.width <- function(x)
 {
-    if (!is.integer(width(object)) || any(is.na(width(object))))
+    if (!is.integer(width(x)) || any(is.na(width(x))))
         return("the widths must be non-NA integers")
-    if (length(start(object)) != length(width(object)))
+    if (length(start(x)) != length(width(x)))
         return("number of starts and number of widths differ")
-    if (length(width(object)) != 0 && min(width(object)) < 0L)
+    if (length(width(x)) != 0 && min(width(x)) < 0)
         return("negative widths are not allowed")
     NULL
 }
-.valid.IRanges.names <- function(object)
+
+.valid.IRanges.names <- function(x)
 {
-    if (!is.character(object@NAMES))
+    if (!is.character(x@NAMES))
         return("the 'NAMES' slot must contain a character vector")
-    if (is.null(names(object)))
+    if (is.null(names(x)))
         return(NULL)
-    if (any(is.na(names(object))))
+    if (any(is.na(names(x))))
         return("the names must be non-NA strings")
-    if (length(names(object)) != length(object))
+    if (length(names(x)) != length(x))
         return("number of names and number of elements differ")
     NULL
 }
-.valid.IRanges <- function(object)
+
+.valid.IRanges <- function(x)
 {
-    #cat("validating IRanges object of length", length(object), "...\n")
-    c(.valid.IRanges.start(object),
-      .valid.IRanges.width(object),
-      .valid.IRanges.names(object))
+    c(.valid.IRanges.start(x),
+      .valid.IRanges.width(x),
+      .valid.IRanges.names(x))
 }
-setValidity("IRanges",
-    function(object)
-    {
-        problems <- .valid.IRanges(object)
-        if (is.null(problems)) TRUE else problems
-    }
-)
+
+setValidity2("IRanges", .valid.IRanges)
 
 ### NormalIRanges objects
-.valid.NormalIRanges <- function(object)
+
+.valid.NormalIRanges <- function(x)
 {
-    if (!isNormal(object))
+    if (!isNormal(x))
         return("object is not normal")
     NULL
 }
-setValidity("NormalIRanges",
-    function(object)
-    {
-        problems <- .valid.NormalIRanges(object)
-        if (is.null(problems)) TRUE else problems
-    }
-)
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Initialization.
-###
-### I found that using validObject() in "initialize" doesn't work properly
-### (validation is called too many times and not in an order that makes sense
-### to me...)
-###
-
-.set.IRanges.slots <- function(object, start, width, names, check=TRUE)
-{
-    slot(object, "start", check=FALSE) <- numeric2integer(start)
-    slot(object, "width", check=FALSE) <- numeric2integer(width)
-    slot(object, "NAMES", check=FALSE) <- if (is.null(names)) as.character(NA) else names
-    if (check)
-        stopIfProblems(.valid.IRanges(object))
-    object
-}
-
-setMethod("initialize", "IRanges",
-    function(.Object, start=integer(0), width=integer(0),
-                      names=NULL, check=TRUE)
-        .set.IRanges.slots(.Object, start, width, names, check=check)
-)
-
-setMethod("initialize", "NormalIRanges",
-    function(.Object, start=integer(0), width=integer(0),
-                      names=NULL, check=TRUE)
-    {
-        .Object <- callNextMethod(.Object, start=start, width=width,
-                                           names=names, check=check)
-        if (check)
-            stopIfProblems(.valid.NormalIRanges(.Object))
-        .Object
-    }
-)
-
-newEmptyNormalIRanges <- function() new("NormalIRanges", check=FALSE)
+setValidity2("NormalIRanges", .valid.NormalIRanges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The safe and user-friendly "IRanges" constructor.
 ###
 
+### Return NULL or an integer vector with no NAs.
 .IRanges.normargStartEndWidth <- function(start_end_width, argname)
 {
     if (is.null(start_end_width))
@@ -281,7 +242,7 @@ IRanges <- function(start=NULL, end=NULL, width=NULL)
     width <- .IRanges.normargStartEndWidth(width, "width")
     null_args <- c(is.null(start), is.null(end), is.null(width))
     if (all(null_args))
-        return(new("IRanges", check=FALSE))
+        return(new("IRanges"))
     if (sum(!null_args) != 2)
         stop("exactly two out of the 'start', 'end' and 'width' arguments must be specified")
     if (is.null(width)) { 
@@ -310,25 +271,27 @@ IRanges <- function(start=NULL, end=NULL, width=NULL)
                 stop("cannot recycle zero length 'width'")
         }
     }
-    new("IRanges", start=start, width=width)
+    ## 'start' and 'with' are guaranteed to be valid.
+    new2("IRanges", start=start, width=width, check=FALSE)
 }
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
-### We cannot rely on the implicit "coerce" methods for coercing an arbitrary
-### IRanges object into a NormalIRanges object because they do NOT check that
-### the returned object is valid! Yes, implicit "coerce" methods were supposed
-### to be a nice S4 "feature"...
-###
+### Believe it or not but the implicit "coerce" methods do NOT check that they
+### return a valid object!
+### 
 
 asNormalIRanges <- function(x, check=TRUE)
 {
     if (!is(x, "IRanges"))
         stop("'x' must be an IRanges object")
-    new("NormalIRanges", start=start(x), width=width(x),
-                         names=names(x), check=check)
+    ## Check only what needs to be checked.
+    if (check)
+        stopIfProblems(.valid.NormalIRanges(x))
+    ## Make a "hard copy" of the slots. No need to check anything!
+    new2("NormalIRanges", start=x@start, width=x@width, NAMES=x@NAMES, check=FALSE)
 }
 
 .asNormalIRanges <- function(from) asNormalIRanges(from, check=TRUE)
@@ -454,7 +417,10 @@ unsafe.update <- function(object, ...)
             start <- args$start
             width <- args$width
         }
-        return(.set.IRanges.slots(object, start, width, args$names, check=FALSE))
+        object@start <- numeric2integer(start)
+        object@width <- numeric2integer(width)
+        object@NAMES <- if (is.null(args$names)) as.character(NA) else args$names
+        return(object)
     }
     if ("start" %in% argnames)
         unsafe.start(object) <- args$start

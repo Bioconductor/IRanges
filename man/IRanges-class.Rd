@@ -34,14 +34,6 @@
 \alias{max,NormalIRanges-method}
 \alias{min,NormalIRanges-method}
 
-% Initialization:
-\alias{initialize,IRanges-method}
-\alias{initialize,NormalIRanges-method}
-
-% Constructors:
-\alias{newEmptyNormalIRanges}
-\alias{IRanges}
-
 % "show" method:
 \alias{as.data.frame,IRanges-method}
 \alias{show,IRanges-method}

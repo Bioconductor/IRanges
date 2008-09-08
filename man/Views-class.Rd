@@ -5,7 +5,6 @@
 \alias{subject}
 \alias{subject,Views-method}
 \alias{width<-,Views-method}
-\alias{initialize,Views-method}
 \alias{Views}
 \alias{Views,ANY-method}
 \alias{views}

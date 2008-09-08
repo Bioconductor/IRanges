@@ -7,14 +7,15 @@ Description: The IRanges class and its extensions are low-level containers
 	allow the storage of additional information attached to each
 	chromosome region as well as a hierarchical relationship between
 	these regions.
-Version: 0.99.9
+Version: 0.99.10
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Biocore Team c/o BioC user list <bioconductor@stat.math.ethz.ch>
 biocViews: Infrastructure, Genetics
 Depends: R (>= 2.7.0), methods, stats
 Imports: methods, stats
 License: Artistic-2.0
-Collate: utils.R
+Collate: validity-utils.R
+	utils.R
 	IRanges-class.R
 	IRanges-utils.R
 	MaskCollection-class.R

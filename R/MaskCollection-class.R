@@ -77,60 +77,54 @@ setReplaceMethod("names", "MaskCollection",
 ### Validity.
 ###
 
-.valid.MaskCollection.width <- function(object)
+.valid.MaskCollection.width <- function(x)
 {
-    if (!isSingleInteger(width(object)) || width(object) < 1)
+    if (!isSingleInteger(width(x)) || width(x) < 0)
         return("the width of the collection must be a single non-negative integer")
     NULL
 }
 
-.valid.MaskCollection.nir_list <- function(object)
+.valid.MaskCollection.nir_list <- function(x)
 {
-    if (!is.list(nir_list(object))
-     || !all(sapply(nir_list(object), function(nir) is(nir, "NormalIRanges"))))
+    if (!is.list(nir_list(x))
+     || !all(sapply(nir_list(x), function(nir) is(nir, "NormalIRanges"))))
         return("the 'nir_list' slot must contain a list of NormalIRanges objects")
-    if (!all(1 <= min(object)) || !all(max(object) <= width(object)))
+    if (!all(1 <= min(x)) || !all(max(x) <= width(x)))
         return("the min and max of the masks must be >= 1 and <= width of the collection")
     NULL
 }
 
-.valid.MaskCollection.active <- function(object)
+.valid.MaskCollection.active <- function(x)
 {
-    if (!is.logical(active(object)) || any(is.na(active(object))))
+    if (!is.logical(active(x)) || any(is.na(active(x))))
         return("the 'active' slot must be a logical vector with no NAs")
-    if (length(active(object)) != length(object))
+    if (length(active(x)) != length(x))
         return("the length of the 'active' slot differs from the length of the object")
     NULL
 }
 
-.valid.MaskCollection.names <- function(object)
+.valid.MaskCollection.names <- function(x)
 {
-    if (!is.character(object@NAMES))
+    if (!is.character(x@NAMES))
         return("the 'NAMES' slot must contain a character vector")
-    if (is.null(names(object)))
+    if (is.null(names(x)))
         return(NULL)
-    if (any(is.na(names(object))))
+    if (any(is.na(names(x))))
         return("the names must be non-NA strings")
-    if (length(names(object)) != length(object))
+    if (length(names(x)) != length(x))
         return("number of names and number of elements differ")
     NULL
 }
 
-.valid.MaskCollection <- function(object)
+.valid.MaskCollection <- function(x)
 {
-    c(.valid.MaskCollection.width(object),
-      .valid.MaskCollection.nir_list(object),
-      .valid.MaskCollection.active(object),
-      .valid.MaskCollection.names(object))
+    c(.valid.MaskCollection.width(x),
+      .valid.MaskCollection.nir_list(x),
+      .valid.MaskCollection.active(x),
+      .valid.MaskCollection.names(x))
 }
 
-setValidity("MaskCollection",
-    function(object)
-    {
-        problems <- .valid.MaskCollection(object)
-        if (is.null(problems)) TRUE else problems
-    }
-)
+setValidity2("MaskCollection", .valid.MaskCollection)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -322,7 +316,7 @@ setMethod("append", "MaskCollection",
 setMethod("narrow", "MaskCollection",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
-        limits <- new("IRanges", start=1L, width=width(x), check=FALSE)
+        limits <- new2("IRanges", start=1L, width=width(x), check=FALSE)
         limits <- narrow(limits, start=start, end=end, width=width)
         start <- start(limits)
         end <- end(limits)
@@ -348,11 +342,11 @@ setMethod("reduce", "MaskCollection",
             return(x)
         nir_list <- nir_list(x)
         if (length(nir_list) == 0) {
-            nir1 <- newEmptyNormalIRanges()
+            nir1 <- new("NormalIRanges")
         } else {
             start1 <- unlist(lapply(nir_list, start))
             width1 <- unlist(lapply(nir_list, width))
-            ranges <- new("IRanges", start=start1, width=width1, check=FALSE)
+            ranges <- new2("IRanges", start=start1, width=width1, check=FALSE)
             nir1 <- toNormalIRanges(ranges)
         }
         ## This transformation must be atomic.

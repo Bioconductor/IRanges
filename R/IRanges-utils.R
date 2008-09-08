@@ -7,16 +7,15 @@
 ### The "intToRanges" function.
 ###
 
-intToRanges <- function(x, use.names=TRUE)
+intToRanges <- function(x)
 {
     if (!is.numeric(x))
         stop("'x' must be an integer vector")
     if (!is.integer(x))
         x <- as.integer(x)
-    use.names <- normargUseNames(use.names)
-    if (use.names) ans_names <- names(x) else ans_names <- NULL
-    new("IRanges", start=rep.int(1L, length(x)), width=x,
-                   names=ans_names, check=TRUE)
+    if (min(x) < 0L)
+        stop("'x' cannot contain negative integers")
+    new2("IRanges", start=rep.int(1L, length(x)), width=x, check=FALSE)
 }
 
 
@@ -24,17 +23,16 @@ intToRanges <- function(x, use.names=TRUE)
 ### The "intToAdjacentRanges" function.
 ###
 
-intToAdjacentRanges <- function(x, use.names=TRUE)
+intToAdjacentRanges <- function(x)
 {
     if (!is.numeric(x))
         stop("'x' must be an integer vector")
     if (!is.integer(x))
         x <- as.integer(x)
-    use.names <- normargUseNames(use.names)
+    if (min(x) < 0L)
+        stop("'x' cannot contain negative integers")
     ans_start <- .Call("int_to_adjacent_ranges", x, PACKAGE="IRanges")
-    if (use.names) ans_names <- names(x) else ans_names <- NULL
-    new("IRanges", start=ans_start, width=x,
-                   names=ans_names, check=FALSE)
+    new2("IRanges", start=ans_start, width=x, check=FALSE)
 }
 
 
@@ -182,7 +180,9 @@ setMethod("narrow", "NormalIRanges",
 setMethod("narrow", "numeric",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
-        y <- intToRanges(x, use.names=use.names)
+        y <- intToRanges(x)
+        if (normargUseNames(use.names))
+            names(y) <- names(x)
         narrow(y, start=start, end=end, width=width, use.names=TRUE)
     }
 )
@@ -208,8 +208,8 @@ setMethod("reduce", "IRanges",
                         PACKAGE="IRanges")
         ans <- unsafe.update(x, start=C_ans$start, width=C_ans$width, names=NULL)
         if (with.inframe.attrib) {
-            inframe <- new("IRanges", start=C_ans$inframe.start,
-                                      width=width(x), check=FALSE)
+            inframe <- new2("IRanges", start=C_ans$inframe.start,
+                                       width=width(x), check=FALSE)
             attr(ans, "inframe") <- inframe
         }
         ans

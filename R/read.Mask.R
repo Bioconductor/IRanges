@@ -139,7 +139,8 @@
     } else {
         nir1 <- toNormalIRanges(ranges)
     }
-    new("MaskCollection", nir_list=list(nir1), width=width, active=TRUE, NAMES=mask_name)
+    new2("MaskCollection", nir_list=list(nir1), width=width, active=TRUE,
+                           NAMES=mask_name, check=FALSE)
 }
 
 read.agpMask <- function(file, width, seqname="?", gap.types=NULL, use.gap.types=FALSE)
@@ -249,7 +250,8 @@ read.rmMask <- function(file, width, use.IDs=FALSE)
     } else {
         nir1 <- toNormalIRanges(ranges)
     }
-    new("MaskCollection", nir_list=list(nir1), width=width, active=TRUE, NAMES="rm")
+    new2("MaskCollection", nir_list=list(nir1), width=width, active=TRUE,
+                           NAMES="rm", check=FALSE)
 }
 
 read.trfMask <- function(file, width)
@@ -285,6 +287,7 @@ read.trfMask <- function(file, width)
     ranges <- IRanges(start=data$chromStart+1, end=data$chromEnd)
     nir1 <- toNormalIRanges(ranges)
     #name1 <- "Tandem Repeats Finder [period<=12]"
-    new("MaskCollection", nir_list=list(nir1), width=width, active=TRUE, NAMES="trf")
+    new2("MaskCollection", nir_list=list(nir1), width=width, active=TRUE,
+                           NAMES="trf", check=FALSE)
 }
 
