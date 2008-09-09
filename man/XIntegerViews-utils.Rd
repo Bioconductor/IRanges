@@ -16,9 +16,11 @@
 \title{XIntegerViews utility functions and numeric summary of views}
 
 \description{
-  A \code{slice} function for creating an XIntegerViews object.
+  The \code{slice} function creates an XIntegerViews object that contains
+  the indices where the data are within the specified bounds.
 
-  A set of functions to calculate mins, maxs, and sums on views.
+  The \code{viewMins}, \code{viewMaxs}, \code{viewSums} functions calculate
+  the minimums, maximums, and sums on views respectively.
 }
 
 \usage{
@@ -33,7 +35,8 @@
   \item{x}{
     An \link{XInteger} object or an integer vector for \code{slice}.
 
-    An \link{XIntegerViews} object for \code{viewMins}, \code{viewMaxs} and \code{viewSums}.
+    An \link{XIntegerViews} object for \code{viewMins}, \code{viewMaxs} and
+    \code{viewSums}.
   }
   \item{lower, upper}{
     The lower and upper bounds for the slice.
@@ -48,9 +51,14 @@
 }
 
 \details{
-  [TODO: some details about \code{slice}]
+  The \code{slice} function creates views on \link{XInteger} objects where the
+  data are within the specified bounds. This is useful for finding areas of
+  absolute maxima (peaks), absolute minima (troughs), or fluxuations within a
+  specified limits.
 
-  Fast looping over views to create numeric summaries.
+  The \code{viewMins}, \code{viewMaxs}, and \code{viewSums} functions provide
+  efficient methods for calculating the specified numeric summary by performing
+  the looping in compiled code.
 }
 
 \value{
