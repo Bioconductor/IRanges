@@ -1,16 +1,16 @@
 ### =========================================================================
-### External integer vectors: the "XInteger" class
+### External pointer to an integer vector: the "IntegerPtr" class
 ### -------------------------------------------------------------------------
 ###
-### The "XInteger" class implements the concept of "XRaw" objects but
+### The "IntegerPtr" class implements the concept of "RawPtr" objects but
 ### for integers instead of bytes.
-### Some differences between "integer" and "XInteger":
+### Some differences between "integer" and "IntegerPtr":
 ###
-###   1. XInteger(10) does not initialize its values (integer(10) does)
+###   1. IntegerPtr(10) does not initialize its values (integer(10) does).
 ###
-###   2. XInteger(10)[i] produces an error if i is out of bounds
+###   2. IntegerPtr(10)[i] produces an error if i is out of bounds.
 ###
-###   3. XInteger objects are faster:
+###   3. IntegerPtr objects are faster:
 ###
 ###        > a <- integer(100000000)
 ###        > system.time(tmp <- a[])
@@ -18,27 +18,28 @@
 ###        > system.time(a[] <- 100:1)
 ###        [1] 3.08 0.52 3.61 0.00 0.00
 ###
-###        > ib <- XInteger(100000000)
+###        > ib <- IntegerPtr(100000000)
 ###        > system.time(tmp <- ib[])
 ###        [1] 0.39 0.52 0.91 0.00 0.00
 ###        > system.time(ib[] <- 100:1)
 ###        [1] 0.56 0.00 0.56 0.00 0.00
+###
 
-setClass("XInteger", representation(xp="externalptr"))
+setClass("IntegerPtr", representation(xp="externalptr"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Initialization.
 ###
-### Note that unlike integer vectors, XInteger objects are not initialized
+### Note that unlike integer vectors, IntegerPtr objects are not initialized
 ### with 0's.
 ###
 
 ### This:
-###   xi <- XInteger(30)
+###   xi <- IntegerPtr(30)
 ### will call this "initialize" method.
-setMethod("initialize", "XInteger",
-    function(.Object, length, initialize=FALSE, verbose=FALSE)
+setMethod("initialize", "IntegerPtr",
+    function(.Object, length=0, initialize=FALSE, verbose=FALSE)
     {
         if (isSingleNumber(length)) {
             values <- NULL
@@ -53,12 +54,12 @@ setMethod("initialize", "XInteger",
         if (verbose)
             cat("Allocating memory for new", class(.Object), "object...")
         if (initialize)
-            .Call("XInteger_alloc_initialize", xp, length, PACKAGE="IRanges")
+            .Call("IntegerPtr_alloc_initialize", xp, length, PACKAGE="IRanges")
         else
-            .Call("XInteger_alloc", xp, length, PACKAGE="IRanges")
+            .Call("IntegerPtr_alloc", xp, length, PACKAGE="IRanges")
         if (verbose) {
             cat(" OK\n")
-            show_string <- .Call("XInteger_get_show_string", xp, PACKAGE="IRanges")
+            show_string <- .Call("IntegerPtr_get_show_string", xp, PACKAGE="IRanges")
             cat("New", show_string, "successfully created\n")
         }
         .Object@xp <- xp
@@ -68,44 +69,30 @@ setMethod("initialize", "XInteger",
     }
 )
 
-XInteger <- function(...)
+IntegerPtr <- function(...)
 {
-    new("XInteger", ...)
+    new("IntegerPtr", ...)
 }
 
-toNumSnippet <- function(x, width = getOption("width"))
-{
-    width <- max(0, width - 4)
-    element_length <- format.info(x[seq_len(min(length(x), width %/% 2))])[1] + 1
-    number_of_elements <- min(length(x), width %/% element_length)
-    if (number_of_elements == length(x))
-        ending <- ""
-    else
-        ending <- " ..."
-	paste(paste(format(x[seq_len(number_of_elements)]), collapse = " "), ending, sep = "")
-}
-
-setMethod("show", "XInteger",
+setMethod("show", "IntegerPtr",
     function(object)
     {
-        show_string <- .Call("XInteger_get_show_string", object@xp, PACKAGE="IRanges")
+        show_string <- .Call("IntegerPtr_get_show_string", object@xp, PACKAGE="IRanges")
         cat(show_string, "\n", sep="")
-        cat(" [1] ")
-        cat(toNumSnippet(object, getOption("width") - 4))
-        cat("\n")
         ## What is correct here? The documentation (?show) says that 'show'
         ## should return an invisible 'NULL' but, on the other hand, the 'show'
-        ## method for intergers returns its 'object' argument...
+        ## method for integers returns its 'object' argument...
         invisible(object)
     }
 )
 
-setMethod("length", "XInteger",
+setMethod("length", "IntegerPtr",
     function(x)
     {
-        .Call("XInteger_length", x@xp, PACKAGE="IRanges")
+        .Call("IntegerPtr_length", x@xp, PACKAGE="IRanges")
     }
 )
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Read/write functions.
@@ -114,7 +101,7 @@ setMethod("length", "XInteger",
 ### If length(i) == 0 then the read functions return an empty vector
 ### and the write functions don't do anything.
 
-XInteger.read <- function(x, i, imax=integer(0))
+IntegerPtr.read <- function(x, i, imax=integer(0))
 {
     if (!is.integer(i))
         i <- as.integer(i)
@@ -123,16 +110,16 @@ XInteger.read <- function(x, i, imax=integer(0))
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("XInteger_read_ints_from_i1i2", x@xp, i, imax, PACKAGE="IRanges")
+        .Call("IntegerPtr_read_ints_from_i1i2", x@xp, i, imax, PACKAGE="IRanges")
     } else {
-        .Call("XInteger_read_ints_from_subset", x@xp, i, PACKAGE="IRanges")
+        .Call("IntegerPtr_read_ints_from_subset", x@xp, i, PACKAGE="IRanges")
     }
 }
 
-XInteger.write <- function(x, i, imax=integer(0), value)
+IntegerPtr.write <- function(x, i, imax=integer(0), value)
 {
     if (!is.integer(value))
-        stop("'value' is not an integer vector")
+        stop("'value' must be an integer vector")
     if (!is.integer(i))
         i <- as.integer(i)
     if (length(i) == 1) {
@@ -140,9 +127,9 @@ XInteger.write <- function(x, i, imax=integer(0), value)
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("XInteger_write_ints_to_i1i2", x@xp, i, imax, value, PACKAGE="IRanges")
+        .Call("IntegerPtr_write_ints_to_i1i2", x@xp, i, imax, value, PACKAGE="IRanges")
     } else {
-        .Call("XInteger_write_ints_to_subset", x@xp, i, value, PACKAGE="IRanges")
+        .Call("IntegerPtr_write_ints_to_subset", x@xp, i, value, PACKAGE="IRanges")
     }
     x
 }
@@ -151,10 +138,10 @@ XInteger.write <- function(x, i, imax=integer(0), value)
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### length(as.integer(ib)) is equivalent to length(ib)
 ### but the latter is MUCH faster!
-setMethod("as.integer", "XInteger",
+setMethod("as.integer", "IntegerPtr",
     function(x)
     {
-        XInteger.read(x, 1, length(x))
+        IntegerPtr.read(x, 1, length(x))
     }
 )
 
@@ -162,7 +149,7 @@ setMethod("as.integer", "XInteger",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting
 
-setMethod("[", "XInteger",
+setMethod("[", "IntegerPtr",
     function(x, i, j, ..., drop=TRUE)
     {
         if (!missing(j) || length(list(...)) > 0)
@@ -170,14 +157,14 @@ setMethod("[", "XInteger",
         if (missing(i))
             subset <- as.integer(x)
         else
-            subset <- XInteger.read(x, i)
+            subset <- IntegerPtr.read(x, i)
         if (!drop)
-            subset <- XInteger(subset)
+            subset <- IntegerPtr(subset)
         subset
     }
 )
 
-setReplaceMethod("[", "XInteger",
+setReplaceMethod("[", "IntegerPtr",
     function(x, i, j,..., value)
     {
         if (!missing(j) || length(list(...)) > 0)
@@ -191,12 +178,12 @@ setReplaceMethod("[", "XInteger",
             tmp <- value
             value <- as.integer(value)
             if (value != tmp)
-                stop("'value' is not an integer")
+                stop("'value' must be an integer")
         }
         ## Now 'value' is an integer vector
         if (missing(i))
-            return(XInteger.write(x, 1, length(x), value=value))
-        XInteger.write(x, i, value=value)
+            return(IntegerPtr.write(x, 1, length(x), value=value))
+        IntegerPtr.write(x, i, value=value)
     }
 )
 
@@ -204,13 +191,13 @@ setReplaceMethod("[", "XInteger",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Equality
 
-setMethod("==", signature(e1="XInteger", e2="XInteger"),
+setMethod("==", signature(e1="IntegerPtr", e2="IntegerPtr"),
     function(e1, e2)
     {
         address(e1@xp) == address(e2@xp)
     }
 )
-setMethod("!=", signature(e1="XInteger", e2="XInteger"),
+setMethod("!=", signature(e1="IntegerPtr", e2="IntegerPtr"),
     function(e1, e2)
     {
         address(e1@xp) != address(e2@xp)
@@ -219,13 +206,13 @@ setMethod("!=", signature(e1="XInteger", e2="XInteger"),
 
 ### A wrapper to the very fast memcmp() C-function.
 ### Arguments MUST be the following or it will crash R:
-###   x1, x2: "XInteger" objects
+###   x1, x2: "IntegerPtr" objects
 ###   start1, start2, width: single integers
 ### In addition: 1 <= start1 <= start1+width-1 <= length(x1)
 ###              1 <= start2 <= start2+width-1 <= length(x2)
 ### WARNING: This function is voluntarly unsafe (it doesn't check its
 ### arguments) because we want it to be the fastest possible!
-XInteger.compare <- function(x1, start1, x2, start2, width)
+IntegerPtr.compare <- function(x1, start1, x2, start2, width)
 {
-    .Call("XInteger_memcmp", x1@xp, start1, x2@xp, start2, width, PACKAGE="IRanges")
+    .Call("IntegerPtr_memcmp", x1@xp, start1, x2@xp, start2, width, PACKAGE="IRanges")
 }

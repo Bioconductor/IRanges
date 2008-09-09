@@ -24,9 +24,10 @@ Collate: validity-utils.R
 	coverage.R
 	Views-class.R
 	X-utils.R
-	XInteger.R
+	IntegerPtr-class.R
+	NumericPtr-class.R
+	XInteger-class.R
 	XIntegerViews-class.R
 	XIntegerViews-utils.R
-	XNumeric.R
 	debug.R
 	zzz.R

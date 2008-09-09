@@ -34,33 +34,33 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(IRanges_xp_show, 1),
 	CALLMETHOD_DEF(IRanges_xp_new, 0),
 
-/* XInteger.c */
-	CALLMETHOD_DEF(debug_XInteger, 0),
+/* IntegerPtr_utils.c */
+	CALLMETHOD_DEF(debug_IntegerPtr_utils, 0),
 
-	CALLMETHOD_DEF(XInteger_alloc, 2),
-	CALLMETHOD_DEF(XInteger_alloc_initialize, 2),
-	CALLMETHOD_DEF(XInteger_get_show_string, 1),
-	CALLMETHOD_DEF(XInteger_length, 1),
-	CALLMETHOD_DEF(XInteger_memcmp, 5),
+	CALLMETHOD_DEF(IntegerPtr_alloc, 2),
+	CALLMETHOD_DEF(IntegerPtr_alloc_initialize, 2),
+	CALLMETHOD_DEF(IntegerPtr_get_show_string, 1),
+	CALLMETHOD_DEF(IntegerPtr_length, 1),
+	CALLMETHOD_DEF(IntegerPtr_memcmp, 5),
 
-	CALLMETHOD_DEF(XInteger_read_ints_from_i1i2, 3),
-	CALLMETHOD_DEF(XInteger_read_ints_from_subset, 2),
-	CALLMETHOD_DEF(XInteger_write_ints_to_i1i2, 4),
-	CALLMETHOD_DEF(XInteger_write_ints_to_subset, 3),
-	CALLMETHOD_DEF(XInteger_coverage, 3),
+	CALLMETHOD_DEF(IntegerPtr_read_ints_from_i1i2, 3),
+	CALLMETHOD_DEF(IntegerPtr_read_ints_from_subset, 2),
+	CALLMETHOD_DEF(IntegerPtr_write_ints_to_i1i2, 4),
+	CALLMETHOD_DEF(IntegerPtr_write_ints_to_subset, 3),
+	CALLMETHOD_DEF(IntegerPtr_coverage, 3),
 
-/* XNumeric.c */
-	CALLMETHOD_DEF(debug_XNumeric, 0),
+/* NumericPtr_utils.c */
+	CALLMETHOD_DEF(debug_NumericPtr_utils, 0),
 
-	CALLMETHOD_DEF(XNumeric_alloc, 2),
-	CALLMETHOD_DEF(XNumeric_get_show_string, 1),
-	CALLMETHOD_DEF(XNumeric_length, 1),
-	CALLMETHOD_DEF(XNumeric_memcmp, 5),
+	CALLMETHOD_DEF(NumericPtr_alloc, 2),
+	CALLMETHOD_DEF(NumericPtr_get_show_string, 1),
+	CALLMETHOD_DEF(NumericPtr_length, 1),
+	CALLMETHOD_DEF(NumericPtr_memcmp, 5),
 
-	CALLMETHOD_DEF(XNumeric_read_nums_from_i1i2, 3),
-	CALLMETHOD_DEF(XNumeric_read_nums_from_subset, 2),
-	CALLMETHOD_DEF(XNumeric_write_nums_to_i1i2, 4),
-	CALLMETHOD_DEF(XNumeric_write_nums_to_subset, 3),
+	CALLMETHOD_DEF(NumericPtr_read_nums_from_i1i2, 3),
+	CALLMETHOD_DEF(NumericPtr_read_nums_from_subset, 2),
+	CALLMETHOD_DEF(NumericPtr_write_nums_to_i1i2, 4),
+	CALLMETHOD_DEF(NumericPtr_write_nums_to_subset, 3),
 
 /* XIntegerViews.c */
 	CALLMETHOD_DEF(XIntegerViews_slice, 5),

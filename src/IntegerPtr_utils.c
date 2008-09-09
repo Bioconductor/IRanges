@@ -2,26 +2,26 @@
 
 static int debug = 0;
 
-SEXP debug_XInteger()
+SEXP debug_IntegerPtr_utils()
 {
 #ifdef DEBUG_IRANGES
 	debug = !debug;
-	Rprintf("Debug mode turned %s in 'XInteger.c'\n", debug ? "on" : "off");
+	Rprintf("Debug mode turned %s in 'IntegerPtr_utils.c'\n", debug ? "on" : "off");
 #else
-	Rprintf("Debug mode not available in 'XInteger.c'\n");
+	Rprintf("Debug mode not available in 'IntegerPtr_utils.c'\n");
 #endif
 	return R_NilValue;
 }
 
 
 /****************************************************************************
- * Memory allocation for a "XInteger" object
+ * Memory allocation for a "IntegerPtr" object
  * -----------------------------------------
- * An "XInteger" object stores its data in an "external" integer vector
+ * An "IntegerPtr" object stores its data in an "external" integer vector
  * (INTSXP vector).
  */
 
-SEXP XInteger_alloc(SEXP xint_xp, SEXP length)
+SEXP IntegerPtr_alloc(SEXP intptr_xp, SEXP length)
 {
 	SEXP tag;
 	int tag_length;
@@ -29,12 +29,12 @@ SEXP XInteger_alloc(SEXP xint_xp, SEXP length)
 	tag_length = INTEGER(length)[0];
 
 	PROTECT(tag = NEW_INTEGER(tag_length));
-	R_SetExternalPtrTag(xint_xp, tag);
+	R_SetExternalPtrTag(intptr_xp, tag);
 	UNPROTECT(1);
-	return xint_xp;
+	return intptr_xp;
 }
 
-SEXP XInteger_alloc_initialize(SEXP xint_xp, SEXP length)
+SEXP IntegerPtr_alloc_initialize(SEXP intptr_xp, SEXP length)
 {
 	SEXP tag;
 	int tag_length;
@@ -43,27 +43,27 @@ SEXP XInteger_alloc_initialize(SEXP xint_xp, SEXP length)
 
 	PROTECT(tag = NEW_INTEGER(tag_length));
 	memset(INTEGER(tag), 0, tag_length * sizeof(int));
-	R_SetExternalPtrTag(xint_xp, tag);
+	R_SetExternalPtrTag(intptr_xp, tag);
 	UNPROTECT(1);
-	return xint_xp;
+	return intptr_xp;
 }
 
 /*
- * Return the single string printed by the show method for "XInteger" objects.
- * 'xint_xp' must be the 'xp' slot of a "XInteger" object.
+ * Return the single string printed by the show method for "IntegerPtr" objects.
+ * 'intptr_xp' must be the 'xp' slot of a "IntegerPtr" object.
  * From R:
- *   xint <- XInteger(30)
- *   .Call("XInteger_get_show_string", xint@xp, PACKAGE="IRanges")
+ *   intptr <- IntegerPtr(30)
+ *   .Call("IntegerPtr_get_show_string", intptr@xp, PACKAGE="IRanges")
  */
-SEXP XInteger_get_show_string(SEXP xint_xp)
+SEXP IntegerPtr_get_show_string(SEXP intptr_xp)
 {
 	SEXP tag, ans;
 	int tag_length;
 	char buf[100]; /* should be enough... */
 
-	tag = R_ExternalPtrTag(xint_xp);
+	tag = R_ExternalPtrTag(intptr_xp);
 	tag_length = LENGTH(tag);
-	snprintf(buf, sizeof(buf), "%d-integer XInteger object (data starting at memory address %p)",
+	snprintf(buf, sizeof(buf), "%d-integer IntegerPtr object (data starting at memory address %p)",
 		tag_length, INTEGER(tag));
 	PROTECT(ans = NEW_CHARACTER(1));
 	SET_STRING_ELT(ans, 0, mkChar(buf));
@@ -71,12 +71,12 @@ SEXP XInteger_get_show_string(SEXP xint_xp)
 	return ans;
 }
 
-SEXP XInteger_length(SEXP xint_xp)
+SEXP IntegerPtr_length(SEXP intptr_xp)
 {
 	SEXP tag, ans;
 	int tag_length;
 
-	tag = R_ExternalPtrTag(xint_xp);
+	tag = R_ExternalPtrTag(intptr_xp);
 	tag_length = LENGTH(tag);
 
 	PROTECT(ans = NEW_INTEGER(1));
@@ -87,18 +87,18 @@ SEXP XInteger_length(SEXP xint_xp)
 
 /*
  * From R:
- *   xi <- XInteger(30)
- *   .Call("XInteger_memcmp", xi@xp, 1:1, xi@xp, 10:10, 21:21, PACKAGE="IRanges")
+ *   xi <- IntegerPtr(30)
+ *   .Call("IntegerPtr_memcmp", xi@xp, 1:1, xi@xp, 10:10, 21:21, PACKAGE="IRanges")
  */
-SEXP XInteger_memcmp(SEXP xint1_xp, SEXP start1,
-		 SEXP xint2_xp, SEXP start2, SEXP width)
+SEXP IntegerPtr_memcmp(SEXP intptr1_xp, SEXP start1,
+		 SEXP intptr2_xp, SEXP start2, SEXP width)
 {
 	SEXP tag1, tag2, ans;
 	int i1, i2, n;
 
-	tag1 = R_ExternalPtrTag(xint1_xp);
+	tag1 = R_ExternalPtrTag(intptr1_xp);
 	i1 = INTEGER(start1)[0] - 1;
-	tag2 = R_ExternalPtrTag(xint2_xp);
+	tag2 = R_ExternalPtrTag(intptr2_xp);
 	i2 = INTEGER(start2)[0] - 1;
 	n = INTEGER(width)[0];
 
@@ -111,16 +111,16 @@ SEXP XInteger_memcmp(SEXP xint1_xp, SEXP start1,
 }
 
 /* ==========================================================================
- * Read/write integers to a "XInteger" object
+ * Read/write integers to a "IntegerPtr" object
  * --------------------------------------------------------------------------
  */
 
-SEXP XInteger_read_ints_from_i1i2(SEXP src_xint_xp, SEXP imin, SEXP imax)
+SEXP IntegerPtr_read_ints_from_i1i2(SEXP src_intptr_xp, SEXP imin, SEXP imax)
 {
 	SEXP src, ans;
 	int i1, i2, n;
 
-	src = R_ExternalPtrTag(src_xint_xp);
+	src = R_ExternalPtrTag(src_intptr_xp);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	n = i2 - i1 + 1;
@@ -133,12 +133,12 @@ SEXP XInteger_read_ints_from_i1i2(SEXP src_xint_xp, SEXP imin, SEXP imax)
 	return ans;
 }
 
-SEXP XInteger_read_ints_from_subset(SEXP src_xint_xp, SEXP subset)
+SEXP IntegerPtr_read_ints_from_subset(SEXP src_intptr_xp, SEXP subset)
 {
 	SEXP src, ans;
 	int n;
 
-	src = R_ExternalPtrTag(src_xint_xp);
+	src = R_ExternalPtrTag(src_intptr_xp);
 	n = LENGTH(subset);
 	PROTECT(ans = NEW_INTEGER(n));
 	_IRanges_memcpy_from_subset(INTEGER(subset), n,
@@ -151,35 +151,35 @@ SEXP XInteger_read_ints_from_subset(SEXP src_xint_xp, SEXP subset)
 /*
  * 'val' must be an integer vector.
  */
-SEXP XInteger_write_ints_to_i1i2(SEXP dest_xint_xp, SEXP imin, SEXP imax, SEXP val)
+SEXP IntegerPtr_write_ints_to_i1i2(SEXP dest_intptr_xp, SEXP imin, SEXP imax, SEXP val)
 {
 	SEXP dest;
 	int i1, i2;
 
-	dest = R_ExternalPtrTag(dest_xint_xp);
+	dest = R_ExternalPtrTag(dest_intptr_xp);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	_IRanges_memcpy_to_i1i2(i1, i2,
 			(char *) INTEGER(dest), LENGTH(dest),
 			(char *) INTEGER(val), LENGTH(val), sizeof(int));
-	return dest_xint_xp;
+	return dest_intptr_xp;
 }
 
-SEXP XInteger_write_ints_to_subset(SEXP dest_xint_xp, SEXP subset, SEXP val)
+SEXP IntegerPtr_write_ints_to_subset(SEXP dest_intptr_xp, SEXP subset, SEXP val)
 {
 	SEXP dest;
 
-	dest = R_ExternalPtrTag(dest_xint_xp);
+	dest = R_ExternalPtrTag(dest_intptr_xp);
 	_IRanges_memcpy_to_subset(INTEGER(subset), LENGTH(subset),
 			(char *) INTEGER(dest), LENGTH(dest),
 			(char *) INTEGER(val), LENGTH(val), sizeof(int));
-	return dest_xint_xp;
+	return dest_intptr_xp;
 }
 
 /*
  * --- .Call ENTRY POINT ---
  */
-void XInteger_coverage(SEXP x, SEXP weight, SEXP ans_xp)
+void IntegerPtr_coverage(SEXP x, SEXP weight, SEXP ans_xp)
 {
 	int x_len, ans_len, *ans_elt, i1, i2, j;
 	const int *x_start, *x_width, *weight_elt;
@@ -207,3 +207,4 @@ void XInteger_coverage(SEXP x, SEXP weight, SEXP ans_xp)
 		}
 	}
 }
+

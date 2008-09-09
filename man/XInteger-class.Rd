@@ -4,26 +4,10 @@
 % Classes
 \alias{class:XInteger}
 \alias{XInteger-class}
-
-% Constructor-like functions and generics:
 \alias{XInteger}
-
-% Accessor methods:
-\alias{length,XInteger-method}
-
-% Coercion:
-\alias{as.integer,XInteger-method}
 
 % "show" method:
 \alias{show,XInteger-method}
-
-% subsetting methods:
-\alias{[,XInteger-method}
-\alias{[<-,XInteger-method}
-
-% Equality:
-\alias{==,XInteger,XInteger-method}
-\alias{!=,XInteger,XInteger-method}
 
 
 \title{XInteger objects}
@@ -103,7 +87,7 @@
   }
 }
 
-\author{H. Pages}
+\author{P. Aboyoun}
 
 \seealso{
   \link{XIntegerViews-class}

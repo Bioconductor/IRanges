@@ -60,6 +60,8 @@
   the views.
 }
 
+\author{P. Aboyoun}
+
 \seealso{
   \link{XIntegerViews-class}
 }

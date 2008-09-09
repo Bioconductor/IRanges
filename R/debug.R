@@ -15,9 +15,9 @@ debug_IRanges_utils <- function()
 debug_X_utils <- function()
     invisible(.Call("debug_X_utils", PACKAGE="IRanges"))
 
-debug_XInteger <- function()
-    invisible(.Call("debug_XInteger", PACKAGE="IRanges"))
+debug_IntegerPtr_utils <- function()
+    invisible(.Call("debug_IntegerPtr_utils", PACKAGE="IRanges"))
 
-debug_XNumeric <- function()
-    invisible(.Call("debug_XNumeric", PACKAGE="IRanges"))
+debug_NumericPtr_utils <- function()
+    invisible(.Call("debug_NumericPtr_utils", PACKAGE="IRanges"))
 

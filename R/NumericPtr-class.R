@@ -1,44 +1,33 @@
 ### =========================================================================
-### External numeric vectors: the "XNumeric" class
+### External pointer to a numeric vector: the "NumericPtr" class
 ### -------------------------------------------------------------------------
 ###
-### The "XNumeric" class implements the concept of "XRaw" objects but
+### The "NumericPtr" class implements the concept of "RawPtr" objects but
 ### for numerics instead of bytes.
-### Some differences between "numeric" and "XNumeric":
+### Some differences between "numeric" and "NumericPtr":
 ###
-###   1. XNumeric(10) does not initialize its values (numeric(10) does)
+###   1. NumericPtr(10) does not initialize its values (numeric(10) does).
 ###
-###   2. XNumeric(10)[i] produces an error if i is out of bounds
+###   2. NumericPtr(10)[i] produces an error if i is out of bounds.
 ###
-###   3. XNumeric objects are faster:
+###   3. NumericPtr objects are faster.
 ###
-###        > a <- numeric(100000000)
-###        > system.time(tmp <- a[])
-###        [1] 0.65 0.30 0.95 0.00 0.00
-###        > system.time(a[] <- 100:1)
-###        [1] 3.08 0.52 3.61 0.00 0.00
-###
-###        > b <- XNumeric(100000000)
-###        > system.time(tmp <- b[])
-###        [1] 0.39 0.52 0.91 0.00 0.00
-###        > system.time(b[] <- 100:1)
-###        [1] 0.56 0.00 0.56 0.00 0.00
 
-setClass("XNumeric", representation(xp="externalptr"))
+setClass("NumericPtr", representation(xp="externalptr"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Initialization.
 ###
-### Note that unlike numeric vectors, XNumeric objects are not initialized
+### Note that unlike numeric vectors, NumericPtr objects are not initialized
 ### with 0's.
 ###
 
 ### This:
-###   xn <- XNumeric(30)
+###   xn <- NumericPtr(30)
 ### will call this "initialize" method.
-setMethod("initialize", "XNumeric",
-    function(.Object, length, verbose=FALSE)
+setMethod("initialize", "NumericPtr",
+    function(.Object, length=0, verbose=FALSE)
     {
         if (isSingleNumber(length)) {
             values <- NULL
@@ -52,10 +41,10 @@ setMethod("initialize", "XNumeric",
         xp <- .Call("IRanges_xp_new", PACKAGE="IRanges")
         if (verbose)
             cat("Allocating memory for new", class(.Object), "object...")
-        .Call("XNumeric_alloc", xp, length, PACKAGE="IRanges")
+        .Call("NumericPtr_alloc", xp, length, PACKAGE="IRanges")
         if (verbose) {
             cat(" OK\n")
-            show_string <- .Call("XNumeric_get_show_string", xp, PACKAGE="IRanges")
+            show_string <- .Call("NumericPtr_get_show_string", xp, PACKAGE="IRanges")
             cat("New", show_string, "successfully created\n")
         }
         .Object@xp <- xp
@@ -65,19 +54,16 @@ setMethod("initialize", "XNumeric",
     }
 )
 
-XNumeric <- function(...)
+NumericPtr <- function(...)
 {
-    new("XNumeric", ...)
+    new("NumericPtr", ...)
 }
 
-setMethod("show", "XNumeric",
+setMethod("show", "NumericPtr",
     function(object)
     {
-        show_string <- .Call("XNumeric_get_show_string", object@xp, PACKAGE="IRanges")
+        show_string <- .Call("NumericPtr_get_show_string", object@xp, PACKAGE="IRanges")
         cat(show_string, "\n", sep="")
-        cat(" [1] ")
-        cat(toNumSnippet(object, getOption("width") - 4))
-        cat("\n")
         ## What is correct here? The documentation (?show) says that 'show'
         ## should return an invisible 'NULL' but, on the other hand, the 'show'
         ## method for numerics returns its 'object' argument...
@@ -85,10 +71,10 @@ setMethod("show", "XNumeric",
     }
 )
 
-setMethod("length", "XNumeric",
+setMethod("length", "NumericPtr",
     function(x)
     {
-        .Call("XNumeric_length", x@xp, PACKAGE="IRanges")
+        .Call("NumericPtr_length", x@xp, PACKAGE="IRanges")
     }
 )
 
@@ -99,7 +85,7 @@ setMethod("length", "XNumeric",
 ### If length(i) == 0 then the read functions return an empty vector
 ### and the write functions don't do anything.
 
-XNumeric.read <- function(x, i, imax=integer(0))
+NumericPtr.read <- function(x, i, imax=integer(0))
 {
     if (!is.integer(i))
         i <- as.integer(i)
@@ -108,16 +94,16 @@ XNumeric.read <- function(x, i, imax=integer(0))
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("XNumeric_read_nums_from_i1i2", x@xp, i, imax, PACKAGE="IRanges")
+        .Call("NumericPtr_read_nums_from_i1i2", x@xp, i, imax, PACKAGE="IRanges")
     } else {
-        .Call("XNumeric_read_nums_from_subset", x@xp, i, PACKAGE="IRanges")
+        .Call("NumericPtr_read_nums_from_subset", x@xp, i, PACKAGE="IRanges")
     }
 }
 
-XNumeric.write <- function(x, i, imax=integer(0), value)
+NumericPtr.write <- function(x, i, imax=integer(0), value)
 {
     if (!is.numeric(value))
-        stop("'value' is not a numeric vector")
+        stop("'value' must be a numeric vector")
     if (!is.integer(i))
         i <- as.integer(i)
     if (length(i) == 1) {
@@ -125,9 +111,9 @@ XNumeric.write <- function(x, i, imax=integer(0), value)
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("XNumeric_write_nums_to_i1i2", x@xp, i, imax, value, PACKAGE="IRanges")
+        .Call("NumericPtr_write_nums_to_i1i2", x@xp, i, imax, value, PACKAGE="IRanges")
     } else {
-        .Call("XNumeric_write_nums_to_subset", x@xp, i, value, PACKAGE="IRanges")
+        .Call("NumericPtr_write_nums_to_subset", x@xp, i, value, PACKAGE="IRanges")
     }
     x
 }
@@ -136,10 +122,10 @@ XNumeric.write <- function(x, i, imax=integer(0), value)
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### length(as.numeric(b)) is equivalent to length(b)
 ### but the latter is MUCH faster!
-setMethod("as.numeric", "XNumeric",
+setMethod("as.numeric", "NumericPtr",
     function(x)
     {
-        XNumeric.read(x, 1, length(x))
+        NumericPtr.read(x, 1, length(x))
     }
 )
 
@@ -147,7 +133,7 @@ setMethod("as.numeric", "XNumeric",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting
 
-setMethod("[", "XNumeric",
+setMethod("[", "NumericPtr",
     function(x, i, j, ..., drop=TRUE)
     {
         if (!missing(j) || length(list(...)) > 0)
@@ -155,14 +141,14 @@ setMethod("[", "XNumeric",
         if (missing(i))
             subset <- as.numeric(x)
         else
-            subset <- XNumeric.read(x, i)
+            subset <- NumericPtr.read(x, i)
         if (!drop)
-            subset <- XNumeric(subset)
+            subset <- NumericPtr(subset)
         subset
     }
 )
 
-setReplaceMethod("[", "XNumeric",
+setReplaceMethod("[", "NumericPtr",
     function(x, i, j,..., value)
     {
         if (!missing(j) || length(list(...)) > 0)
@@ -176,12 +162,12 @@ setReplaceMethod("[", "XNumeric",
             tmp <- value
             value <- as.numeric(value)
             if (value != tmp)
-                stop("'value' is not numeric")
+                stop("'value' must be numeric")
         }
         ## Now 'value' is a numeric vector
         if (missing(i))
-            return(XNumeric.write(x, 1, length(x), value=value))
-        XNumeric.write(x, i, value=value)
+            return(NumericPtr.write(x, 1, length(x), value=value))
+        NumericPtr.write(x, i, value=value)
     }
 )
 
@@ -189,13 +175,13 @@ setReplaceMethod("[", "XNumeric",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Equality
 
-setMethod("==", signature(e1="XNumeric", e2="XNumeric"),
+setMethod("==", signature(e1="NumericPtr", e2="NumericPtr"),
     function(e1, e2)
     {
         address(e1@xp) == address(e2@xp)
     }
 )
-setMethod("!=", signature(e1="XNumeric", e2="XNumeric"),
+setMethod("!=", signature(e1="NumericPtr", e2="NumericPtr"),
     function(e1, e2)
     {
         address(e1@xp) != address(e2@xp)
@@ -204,13 +190,13 @@ setMethod("!=", signature(e1="XNumeric", e2="XNumeric"),
 
 ### A wrapper to the very fast memcmp() C-function.
 ### Arguments MUST be the following or it will crash R:
-###   x1, x2: "XNumeric" objects
+###   x1, x2: "NumericPtr" objects
 ###   start1, start2, width: single integers
 ### In addition: 1 <= start1 <= start1+width-1 <= length(x1)
 ###              1 <= start2 <= start2+width-1 <= length(x2)
 ### WARNING: This function is voluntarly unsafe (it doesn't check its
 ### arguments) because we want it to be the fastest possible!
-XNumeric.compare <- function(x1, start1, x2, start2, width)
+NumericPtr.compare <- function(x1, start1, x2, start2, width)
 {
-    .Call("XNumeric_memcmp", x1@xp, start1, x2@xp, start2, width, PACKAGE="IRanges")
+    .Call("NumericPtr_memcmp", x1@xp, start1, x2@xp, start2, width, PACKAGE="IRanges")
 }

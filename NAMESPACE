@@ -29,7 +29,8 @@ export(
     read.liftMask,
     read.rmMask,
     read.trfMask,
-    #XInteger.read, XInteger.write, XNumeric, XNumeric.read, XNumeric.write,
+    #IntegerPtr, IntegerPtr.read, IntegerPtr.write,
+    #NumericPtr, NumericPtr.read, NumericPtr.write,
     XInteger,
 
     ## Generic functions:

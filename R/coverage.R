@@ -26,7 +26,7 @@ setMethod("coverage", "IRanges",
             weight <- as.integer(weight)
         ans <- XInteger(width, initialize = TRUE)
         x1 <- shift(restrict(x, start=start, end=end), 1L - start)
-        .Call("XInteger_coverage", x1, weight, ans@xp, PACKAGE="IRanges")
+        .Call("IntegerPtr_coverage", x1, weight, ans@xp, PACKAGE="IRanges")
         ans
     }
 )
@@ -61,7 +61,7 @@ setMethod("coverage", "MaskCollection",
         ans <- XInteger(width, initialize = TRUE)
         for (i in seq_len(length(x))) {
             x1 <- shift(restrict(x[[i]], start=start, end=end), 1L - start)
-            .Call("XInteger_coverage", x1, weight[i], ans@xp, PACKAGE="IRanges")
+            .Call("IntegerPtr_coverage", x1, weight[i], ans@xp, PACKAGE="IRanges")
         }
         ans
     }

@@ -91,7 +91,7 @@
   }
 }
 
-\author{H. Pages}
+\author{P. Aboyoun}
 
 \seealso{
   \link{Views-class},

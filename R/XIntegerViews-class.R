@@ -61,7 +61,7 @@ XIntegerViews.show_vframe_line <- function(x, i, iW, startW, endW, widthW)
     width <- end - start + 1
     snippetWidth <- getOption("width") - 6 - iW - startW - endW - widthW
     if (width > 0 && lsx > 0 && start <= lsx && end >= 1)
-        snippet <- toNumSnippet(XInteger.read(subject(x), max(min(start,lsx),1), max(min(end,lsx),1)), snippetWidth)
+        snippet <- toNumSnippet(IntegerPtr.read(subject(x), max(min(start,lsx),1), max(min(end,lsx),1)), snippetWidth)
     else
        snippet <- " "
     cat(format(paste("[", i,"]", sep=""), width=iW, justify="right"), " ",
@@ -152,7 +152,7 @@ setMethod("[[", "XIntegerViews",
         end <- end(x)[i]
         if (start < 1L || end > length(subject(x)))
             stop("view is out of limits")
-        XInteger(XInteger.read(subject(x), start, end))
+        XInteger(IntegerPtr.read(subject(x), start, end))
     }
 )
 
@@ -215,8 +215,8 @@ XIntegerViews.view1_equal_view2 <- function(x1, start1, end1, x2, start2, end2)
 
     # At this point, we can trust that 1 <= start1 <= end1 <= lx1
     # and that 1 <= start2 <= end2 <= lx2 so we can call unsafe
-    # function XInteger.read() with no fear...
-    XInteger.read(x1, start1, end1) == XInteger.read(x2, start2, end2)
+    # function IntegerPtr.read() with no fear...
+    IntegerPtr.read(x1, start1, end1) == IntegerPtr.read(x2, start2, end2)
 }
 
 ### 'x' and 'y' must be XIntegerViews objects.
