@@ -1,3 +1,7 @@
+/****************************************************************************
+ *                        Fast NumericPtr utilities                         *
+ *                           Author: Herve Pages                            *
+ ****************************************************************************/
 #include "IRanges.h"
 
 static int debug = 0;
@@ -6,28 +10,27 @@ SEXP debug_NumericPtr_utils()
 {
 #ifdef DEBUG_IRANGES
 	debug = !debug;
-	Rprintf("Debug mode turned %s in 'NumericPtr_utils.c'\n", debug ? "on" : "off");
+	Rprintf("Debug mode turned %s in file %s\n",
+		debug ? "on" : "off", __FILE__);
 #else
-	Rprintf("Debug mode not available in 'NumericPtr_utils.c'\n");
+	Rprintf("Debug mode not available in file %s\n", __FILE__);
 #endif
 	return R_NilValue;
 }
 
 
-/****************************************************************************
- * Memory allocation for a "NumericPtr" object
- * -----------------------------------------
- * An "NumericPtr" object stores its data in an "external" numeric vector
+/*
+ * Memory allocation for a NumericPtr object.
+ * The data of a NumericPtr object are stored in an "external" numeric vector
  * (REALSXP vector).
+ * The allocated memory is NOT initialized!
  */
-
 SEXP NumericPtr_alloc(SEXP numptr_xp, SEXP length)
 {
 	SEXP tag;
 	int tag_length;
 
 	tag_length = INTEGER(length)[0];
-
 	PROTECT(tag = NEW_NUMERIC(tag_length));
 	R_SetExternalPtrTag(numptr_xp, tag);
 	UNPROTECT(1);
@@ -35,8 +38,8 @@ SEXP NumericPtr_alloc(SEXP numptr_xp, SEXP length)
 }
 
 /*
- * Return the single string printed by the show method for "NumericPtr" objects.
- * 'numptr_xp' must be the 'xp' slot of a "NumericPtr" object.
+ * Return the single string printed by the show method for NumericPtr objects.
+ * 'numptr_xp' must be the 'xp' slot of a NumericPtr object.
  * From R:
  *   numptr <- NumericPtr(30)
  *   .Call("NumericPtr_get_show_string", numptr@xp, PACKAGE="IRanges")
@@ -97,7 +100,7 @@ SEXP NumericPtr_memcmp(SEXP numptr1_xp, SEXP start1,
 }
 
 /* ==========================================================================
- * Read/write numerics to a "NumericPtr" object
+ * Read/write numerics to a NumericPtr object
  * --------------------------------------------------------------------------
  */
 

@@ -1,3 +1,7 @@
+/****************************************************************************
+ *                        Fast IntegerPtr utilities                         *
+ *                           Author: Herve Pages                            *
+ ****************************************************************************/
 #include "IRanges.h"
 
 static int debug = 0;
@@ -6,28 +10,27 @@ SEXP debug_IntegerPtr_utils()
 {
 #ifdef DEBUG_IRANGES
 	debug = !debug;
-	Rprintf("Debug mode turned %s in 'IntegerPtr_utils.c'\n", debug ? "on" : "off");
+	Rprintf("Debug mode turned %s in file %s\n",
+		debug ? "on" : "off", __FILE__);
 #else
-	Rprintf("Debug mode not available in 'IntegerPtr_utils.c'\n");
+	Rprintf("Debug mode not available in file %s\n", __FILE__);
 #endif
 	return R_NilValue;
 }
 
 
-/****************************************************************************
- * Memory allocation for a "IntegerPtr" object
- * -----------------------------------------
- * An "IntegerPtr" object stores its data in an "external" integer vector
+/*
+ * Memory allocation for an IntegerPtr object.
+ * The data of an IntegerPtr object are stored in an "external" integer vector
  * (INTSXP vector).
+ * The allocated memory is NOT initialized!
  */
-
 SEXP IntegerPtr_alloc(SEXP intptr_xp, SEXP length)
 {
 	SEXP tag;
 	int tag_length;
 
 	tag_length = INTEGER(length)[0];
-
 	PROTECT(tag = NEW_INTEGER(tag_length));
 	R_SetExternalPtrTag(intptr_xp, tag);
 	UNPROTECT(1);
@@ -49,8 +52,8 @@ SEXP IntegerPtr_alloc_initialize(SEXP intptr_xp, SEXP length)
 }
 
 /*
- * Return the single string printed by the show method for "IntegerPtr" objects.
- * 'intptr_xp' must be the 'xp' slot of a "IntegerPtr" object.
+ * Return the single string printed by the show method for IntegerPtr objects.
+ * 'intptr_xp' must be the 'xp' slot of an IntegerPtr object.
  * From R:
  *   intptr <- IntegerPtr(30)
  *   .Call("IntegerPtr_get_show_string", intptr@xp, PACKAGE="IRanges")
@@ -111,7 +114,7 @@ SEXP IntegerPtr_memcmp(SEXP intptr1_xp, SEXP start1,
 }
 
 /* ==========================================================================
- * Read/write integers to a "IntegerPtr" object
+ * Read/write integers to an IntegerPtr object
  * --------------------------------------------------------------------------
  */
 

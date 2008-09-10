@@ -10,10 +10,10 @@ SEXP debug_IRanges_class()
 {
 #ifdef DEBUG_IRANGES
 	debug = !debug;
-	Rprintf("Debug mode turned %s in 'IRanges_class.c'\n",
-	        debug ? "on" : "off");
+	Rprintf("Debug mode turned %s in file %s\n",
+		debug ? "on" : "off", __FILE__);
 #else
-	Rprintf("Debug mode not available in 'IRanges_class.c'\n");
+	Rprintf("Debug mode not available in file %s\n", __FILE__);
 #endif
 	return R_NilValue;
 }

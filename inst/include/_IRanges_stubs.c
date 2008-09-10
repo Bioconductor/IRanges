@@ -241,6 +241,15 @@ DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_from_i1i2_to_complex,
 
 
 /*
+ * Stubs for callables defined in utils.c
+ */
+
+DEFINE_CCALLABLE_STUB(const char *, get_class,
+	(SEXP x),
+	(     x)
+);
+
+/*
  * Stubs for callables defined in IRanges_class.c
  */
 
@@ -277,5 +286,25 @@ DEFINE_CCALLABLE_STUB(SEXP, new_IRanges,
 DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,
 	(const char *class, int length),
 	(            class,     length)
+);
+
+
+/*
+ * Stubs for callables defined in ExternalPtr_utils.c
+ */
+
+DEFINE_CCALLABLE_STUB(SEXP, new_VectorPtr,
+	(const char *class, SEXP tag),
+	(            class,      tag)
+);
+
+DEFINE_CCALLABLE_STUB(SEXP, get_VectorPtr_tag,
+	(SEXP x),
+	(     x)
+);
+
+DEFINE_CCALLABLE_STUB(int, get_VectorPtr_length,
+	(SEXP x),
+	(     x)
 );
 

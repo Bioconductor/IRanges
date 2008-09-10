@@ -13,6 +13,11 @@ static const R_CallMethodDef callMethods[] = {
 /* memcpy_utils.c */
 	CALLMETHOD_DEF(debug_memcpy_utils, 0),
 
+/* utils.c */
+	CALLMETHOD_DEF(address_asSTRSXP, 1),
+	CALLMETHOD_DEF(sapply_length, 1),
+	CALLMETHOD_DEF(safe_strexplode, 1),
+
 /* IRanges_class.c */
 	CALLMETHOD_DEF(debug_IRanges_class, 0),
 
@@ -25,14 +30,46 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(reduce_IRanges, 2),
 	CALLMETHOD_DEF(summary_IRanges_list, 1),
 
-/* utils.c */
-	CALLMETHOD_DEF(sapply_length, 1),
+/* ExternalPtr_utils.c */
+	CALLMETHOD_DEF(debug_ExternalPtr_utils, 0),
+	CALLMETHOD_DEF(ExternalPtr_show, 1),
+	CALLMETHOD_DEF(ExternalPtr_new, 0),
 
-/* X_utils.c */
-	CALLMETHOD_DEF(debug_X_utils, 0),
-	CALLMETHOD_DEF(IRanges_sexp_address, 1),
-	CALLMETHOD_DEF(IRanges_xp_show, 1),
-	CALLMETHOD_DEF(IRanges_xp_new, 0),
+/* RawPtr_utils.c */
+	CALLMETHOD_DEF(debug_RawPtr_utils, 0),
+
+	CALLMETHOD_DEF(RawPtr_alloc, 2),
+	CALLMETHOD_DEF(RawPtr_get_show_string, 1),
+	CALLMETHOD_DEF(RawPtr_length, 1),
+	CALLMETHOD_DEF(RawPtr_memcmp, 5),
+
+	CALLMETHOD_DEF(RawPtr_memcpy, 5),
+	CALLMETHOD_DEF(RawPtr_copy_from_i1i2, 4),
+	CALLMETHOD_DEF(RawPtr_copy_from_subset, 3),
+
+	CALLMETHOD_DEF(RawPtr_read_chars_from_i1i2, 3),
+	CALLMETHOD_DEF(RawPtr_read_chars_from_subset, 2),
+	CALLMETHOD_DEF(RawPtr_write_chars_to_i1i2, 4),
+	CALLMETHOD_DEF(RawPtr_write_chars_to_subset, 3),
+
+	CALLMETHOD_DEF(RawPtr_read_ints_from_i1i2, 3),
+	CALLMETHOD_DEF(RawPtr_read_ints_from_subset, 2),
+	CALLMETHOD_DEF(RawPtr_write_ints_to_i1i2, 4),
+	CALLMETHOD_DEF(RawPtr_write_ints_to_subset, 3),
+
+	CALLMETHOD_DEF(RawPtr_read_enc_chars_from_i1i2, 4),
+	CALLMETHOD_DEF(RawPtr_read_enc_chars_from_subset, 3),
+	CALLMETHOD_DEF(RawPtr_write_enc_chars_to_i1i2, 5),
+	CALLMETHOD_DEF(RawPtr_write_enc_chars_to_subset, 4),
+
+	CALLMETHOD_DEF(RawPtr_read_complexes_from_i1i2, 4),
+	CALLMETHOD_DEF(RawPtr_read_complexes_from_subset, 3),
+
+	CALLMETHOD_DEF(RawPtr_translate_copy_from_i1i2, 5),
+	CALLMETHOD_DEF(RawPtr_translate_copy_from_subset, 4),
+	CALLMETHOD_DEF(RawPtr_reverse_copy_from_i1i2, 4),
+	CALLMETHOD_DEF(RawPtr_reverse_translate_copy_from_i1i2, 5),
+
 
 /* IntegerPtr_utils.c */
 	CALLMETHOD_DEF(debug_IntegerPtr_utils, 0),
@@ -127,6 +164,9 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_IRanges_reverse_charcpy_from_i1i2_with_lkup);
 	REGISTER_CCALLABLE(_IRanges_memcpy_from_i1i2_to_complex);
 
+/* utils.c */
+	REGISTER_CCALLABLE(_get_class);
+
 /* IRanges_class.c */
 	REGISTER_CCALLABLE(_get_IRanges_start);
 	REGISTER_CCALLABLE(_get_IRanges_width);
@@ -135,6 +175,11 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_copy_IRanges_slots);
 	REGISTER_CCALLABLE(_new_IRanges);
 	REGISTER_CCALLABLE(_alloc_IRanges);
+
+/* ExternalPtr_utils.c */
+	REGISTER_CCALLABLE(_new_VectorPtr);
+	REGISTER_CCALLABLE(_get_VectorPtr_tag);
+	REGISTER_CCALLABLE(_get_VectorPtr_length);
 
 	return;
 }

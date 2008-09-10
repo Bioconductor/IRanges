@@ -8,7 +8,32 @@
 % externalptr methods:
 \alias{show,externalptr-method}
 
-% IntegerPtr class and methods:
+% RawPtr class, functions and methods:
+\alias{class:RawPtr}
+\alias{RawPtr-class}
+\alias{RawPtr}
+\alias{RawPtr.readInts}
+\alias{RawPtr.writeInts}
+\alias{RawPtr.read}
+\alias{RawPtr.write}
+\alias{RawPtr.copy}
+\alias{RawPtr.reverseCopy}
+\alias{RawPtr.readComplexes}
+\alias{RawPtr.append}
+\alias{RawPtr.compare}
+\alias{safeExplode}
+\alias{!=,RawPtr,RawPtr-method}
+\alias{==,RawPtr,RawPtr-method}
+\alias{[,RawPtr-method}
+\alias{[,PrintableRawPtr-method}
+\alias{[<-,RawPtr-method}
+\alias{as.integer,RawPtr-method}
+\alias{length,RawPtr-method}
+\alias{show,RawPtr-method}
+\alias{show,PrintableRawPtr-method}
+\alias{toString,RawPtr-method}
+
+% IntegerPtr functions and methods:
 \alias{!=,IntegerPtr,IntegerPtr-method}
 \alias{==,IntegerPtr,IntegerPtr-method}
 \alias{[,IntegerPtr-method}
@@ -17,7 +42,7 @@
 \alias{length,IntegerPtr-method}
 \alias{show,IntegerPtr-method}
 
-% NumericPtr class and methods:
+% NumericPtr functions and methods:
 \alias{!=,NumericPtr,NumericPtr-method}
 \alias{==,NumericPtr,NumericPtr-method}
 \alias{[,NumericPtr-method}

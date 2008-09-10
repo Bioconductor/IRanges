@@ -298,6 +298,12 @@ void IRanges_memcpy_from_i1i2_to_complex(
 
 
 /*
+ * (see utils.c)
+ */
+const char *get_class(SEXP x);
+
+
+/*
  * Low-level manipulation of IRanges objects.
  * (see IRanges_class.c)
  */
@@ -315,4 +321,15 @@ void copy_IRanges_slots(SEXP x, SEXP x0);
 SEXP new_IRanges(const char *class, SEXP start, SEXP width, SEXP names);
 
 SEXP alloc_IRanges(const char *class, int length);
+
+
+/*
+ * (see ExternalPtr_utils.c)
+ */
+
+SEXP new_VectorPtr(const char *class, SEXP tag);
+
+SEXP get_VectorPtr_tag(SEXP x);
+
+int get_VectorPtr_length(SEXP x);
 

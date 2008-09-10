@@ -1,7 +1,7 @@
 ### Return the hexadecimal address of any R object in a string.
 address <- function(x)
 {
-    .Call("IRanges_sexp_address", x, PACKAGE="IRanges")
+    .Call("address_asSTRSXP", x, PACKAGE="IRanges")
 }
 
 ### Helper function (for debugging purpose).
@@ -11,7 +11,7 @@ address <- function(x)
 setMethod("show", "externalptr",
     function(object)
     {
-        .Call("IRanges_xp_show", object, PACKAGE="IRanges")
+        .Call("ExternalPtr_show", object, PACKAGE="IRanges")
     }
 )
 

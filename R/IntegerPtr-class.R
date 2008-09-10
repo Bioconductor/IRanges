@@ -50,7 +50,7 @@ setMethod("initialize", "IntegerPtr",
         length <- as.integer(length)
         if (length < 0)
             stop("'length' must be a non-negative integer")
-        xp <- .Call("IRanges_xp_new", PACKAGE="IRanges")
+        xp <- .Call("ExternalPtr_new", PACKAGE="IRanges")
         if (verbose)
             cat("Allocating memory for new", class(.Object), "object...")
         if (initialize)

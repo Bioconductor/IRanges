@@ -24,6 +24,7 @@ Collate: validity-utils.R
 	coverage.R
 	Views-class.R
 	X-utils.R
+	RawPtr-class.R
 	IntegerPtr-class.R
 	NumericPtr-class.R
 	XInteger-class.R

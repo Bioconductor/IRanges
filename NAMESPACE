@@ -7,7 +7,7 @@ exportClasses(
     IRanges, UnlockedIRanges, LockedIRanges, NormalIRanges,
     MaskCollection,
     Views,
-    XInteger, XIntegerViews
+    RawPtr, XInteger, XIntegerViews
 )
 
 export(
@@ -29,6 +29,9 @@ export(
     read.liftMask,
     read.rmMask,
     read.trfMask,
+    RawPtr, RawPtr.readInts, RawPtr.writeInts, RawPtr.read, RawPtr.write,
+    RawPtr.copy, RawPtr.reverseCopy, RawPtr.readComplexes, RawPtr.append,
+    RawPtr.compare, safeExplode,
     #IntegerPtr, IntegerPtr.read, IntegerPtr.write,
     #NumericPtr, NumericPtr.read, NumericPtr.write,
     XInteger,
@@ -74,10 +77,13 @@ exportMethods(
     end,
     max,
     min,
+    as.integer,
     as.data.frame,
     as.matrix,
+    toString,
     update,
     append,
+    "==", "!=",
 
     ## Methods for generics defined in this package:
     width,
