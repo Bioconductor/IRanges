@@ -1,7 +1,7 @@
 ### =========================================================================
 ###
 ### Note that the generics defined in this file implement concepts that make
-### sense only for the kind of Views object made of views with a numeric
+### sense only for the kind of Views object where the views have a numeric
 ### content i.e. when subject(x) itself contains values that are or can be
 ### interpreted as numbers.
 ###
@@ -32,7 +32,9 @@ setMethod("slice", "XInteger",
             stop("'upper' must be a single integer")
         if (!is.integer(upper))
             upper <- as.integer(upper)
-        .Call("XIntegerViews_slice", x, lower, upper, includeLower, includeUpper, PACKAGE="IRanges")
+        .Call("XIntegerViews_slice",
+              x, lower, upper, includeLower, includeUpper,
+              PACKAGE="IRanges")
     }
 )
 

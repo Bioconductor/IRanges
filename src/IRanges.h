@@ -639,7 +639,7 @@ SEXP NumericPtr_write_nums_to_subset(
 /* XIntegerViews.c */
 
 SEXP XIntegerViews_slice(
-	SEXP intptr,
+	SEXP xint,
 	SEXP lower,
 	SEXP upper,
 	SEXP include_lower,

@@ -1,59 +1,85 @@
 ### =========================================================================
 ### XInteger objects
 ### -------------------------------------------------------------------------
-
-
-### FIXME: This is a temporary "redirection" of the XInteger class to the
-### IntegerPtr class. Defining the XInteger class this way is broken: if
-### XInteger objects are just this, i.e. IntegerPtr objects, then it's not
-### possible to extract a subvector from an XInteger object and return a new
-### XInteger object without copying the original data!
-### For example, the [[ operator for XIntegerViews objects cannot be made a
-### "no-data-copy" operator: it will be forced to make a partial copy of the
-### original vector (the subject).
-setClass("XInteger", contains="IntegerPtr")
-
-### Temporary constructor.
-XInteger <- function(...) as(IntegerPtr(...), "XInteger")
-
-### The problem described above can be addressed by defining the XInteger
-### class like this (definition analog to the one used for the XString class
-### in the Biostrings package):
 ###
-###   setClass("XInteger",
-###     representation(
-###         xdata="IntegerPtr",   # an external pointer to the "seed" vector
-###         offset="integer",     # a single integer
-###         length="integer"      # a single integer
-###     ),
-###     prototype(
-###         #xdata=IntegerPtr(0), # see newEmptyXInteger() below for why this
-###                               # doesn't work
-###         offset=0L,
-###         length=0L
-###     )
-###   )
+### The XInteger class is a container for storing an external sequence of
+### integers.
+###
+
+setClass("XInteger",
+    contains="XSeq",
+    representation(
+        xdata="IntegerPtr"
+    )
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "newEmptyXInteger" constructor.
-### For internal use only. No need to export.
-###
-### Note that this cannot be made the prototype part of the XInteger class
-### definition (and trying to do so will cause an error at installation time)
-### because the DLL of the package needs to be loaded before IntegerPtr() can
-### be called.
+### Constructor.
 ###
 
-#newEmptyXInteger <- function(class) new(class, xdata=IntegerPtr(0))
+XInteger <- function(length=0L, initialize=FALSE)
+{
+    if (isSingleNumber(length)) {
+        if (!is.integer(length))
+            length <- as.integer(length)
+        if (length < 0)
+            stop("'length' cannot be negative")
+        values <- NULL
+    } else {
+        values <- length
+        if (!is.numeric(values))
+            stop("values must be numeric")
+        if (!is.integer(values))
+            values <- as.integer(values)
+        length <- length(values)
+    }
+    xdata <- IntegerPtr(length=length, initialize=initialize)
+    if (!is.null(values))
+        xdata[] <- values
+    new("XInteger", xdata=xdata, offset=0L, length=length)
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Subsetting.
+###
+
+### FIXME: Take @offset and @length into account!
+### FIXME: Currently return a non initialized XInteger object of length i
+###        if length(i) == 1 and drop=FALSE! 
+setMethod("[", "XInteger",
+    function(x, i, j, ..., drop=TRUE)
+    {
+        if (!missing(j) || length(list(...)) > 0)
+            stop("invalid subsetting")
+        if (missing(i)) {
+            if (!drop)
+                return(x)
+            return(as.integer(x@xdata))
+        }
+        ans <- IntegerPtr.read(x@xdata, i)
+        if (!drop)
+            ans <- XInteger(ans)
+        ans
+    }
+)
+
+setReplaceMethod("[", "XInteger",
+    function(x, i, j,..., value)
+        stop("attempt to modify the value of a ", class(x), " instance")
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
 ###
 
+### FIXME: Take @offset and @length into account!
 toNumSnippet <- function(x, width = getOption("width"))
 {
+    if (is(x, "XInteger"))
+        x <- x@xdata
     width <- max(0, width - 4)
     element_length <- format.info(x[seq_len(min(length(x), width %/% 2))])[1] + 1
     number_of_elements <- min(length(x), width %/% element_length)
@@ -77,5 +103,19 @@ setMethod("show", "XInteger",
         ## method for intergers returns its 'object' argument...
         invisible(object)
     }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Comparison.
+###
+
+### FIXME: Compare the contents, not the addresses!
+setMethod("==", signature(e1="XInteger", e2="XInteger"),
+    function(e1, e2) { e1@xdata == e2@xdata }
+)
+
+setMethod("!=", signature(e1="XInteger", e2="XInteger"),
+    function(e1, e2) { e1@xdata != e2@xdata }
 )
 

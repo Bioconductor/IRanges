@@ -13,7 +13,7 @@ SEXP XIntegerViews_viewMins(SEXP x, SEXP na_rm)
 	int i, j, ans_length, *ans_elt, *subject_elt, *start_elt, *width_elt;
 
 	subject = GET_SLOT(x, install("subject"));
-	subject_xp = R_ExternalPtrTag(GET_SLOT(subject, install("xp")));
+	subject_xp = R_ExternalPtrTag(GET_SLOT(GET_SLOT(subject, install("xdata")), install("xp")));
 	start = GET_SLOT(x, install("start"));
 	width = GET_SLOT(x, install("width"));
 
@@ -46,7 +46,7 @@ SEXP XIntegerViews_viewMaxs(SEXP x, SEXP na_rm)
 	int i, j, ans_length, *ans_elt, *subject_elt, *start_elt, *width_elt;
 
 	subject = GET_SLOT(x, install("subject"));
-	subject_xp = R_ExternalPtrTag(GET_SLOT(subject, install("xp")));
+	subject_xp = R_ExternalPtrTag(GET_SLOT(GET_SLOT(subject, install("xdata")), install("xp")));
 	start = GET_SLOT(x, install("start"));
 	width = GET_SLOT(x, install("width"));
 
@@ -79,7 +79,7 @@ SEXP XIntegerViews_viewSums(SEXP x, SEXP na_rm)
 	int i, j, ans_length, *ans_elt, *subject_elt, *start_elt, *width_elt;
 
 	subject = GET_SLOT(x, install("subject"));
-	subject_xp = R_ExternalPtrTag(GET_SLOT(subject, install("xp")));
+	subject_xp = R_ExternalPtrTag(GET_SLOT(GET_SLOT(subject, install("xdata")), install("xp")));
 	start = GET_SLOT(x, install("start"));
 	width = GET_SLOT(x, install("width"));
 

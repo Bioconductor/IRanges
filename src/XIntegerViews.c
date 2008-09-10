@@ -19,7 +19,7 @@ static int le(int x, int y) {
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP XIntegerViews_slice(SEXP intptr, SEXP lower, SEXP upper, SEXP include_lower, SEXP include_upper)
+SEXP XIntegerViews_slice(SEXP xint, SEXP lower, SEXP upper, SEXP include_lower, SEXP include_upper)
 {
 	SEXP x, ans, start, width;
 	int i, x_length, ans_length;
@@ -34,7 +34,7 @@ SEXP XIntegerViews_slice(SEXP intptr, SEXP lower, SEXP upper, SEXP include_lower
     lower_elt = INTEGER(lower)[0];
     upper_elt = INTEGER(upper)[0];
 
-    x = R_ExternalPtrTag(GET_SLOT(intptr, install("xp")));
+    x = R_ExternalPtrTag(GET_SLOT(GET_SLOT(xint, install("xdata")), install("xp")));
 	x_length = LENGTH(x);
 	ans_length = 0;
 	prev_elt = 0;
@@ -48,7 +48,7 @@ SEXP XIntegerViews_slice(SEXP intptr, SEXP lower, SEXP upper, SEXP include_lower
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("XIntegerViews")));
 	PROTECT(start = NEW_INTEGER(ans_length));
 	PROTECT(width = NEW_INTEGER(ans_length));
-	SET_SLOT(ans, mkChar("subject"), intptr);
+	SET_SLOT(ans, mkChar("subject"), xint);
 	SET_SLOT(ans, mkChar("start"), start);
 	SET_SLOT(ans, mkChar("width"), width);
 	if (ans_length > 0) {

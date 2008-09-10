@@ -39,17 +39,8 @@ setClass("IntegerPtr", representation(xp="externalptr"))
 ###   xi <- IntegerPtr(30)
 ### will call this "initialize" method.
 setMethod("initialize", "IntegerPtr",
-    function(.Object, length=0, initialize=FALSE, verbose=FALSE)
+    function(.Object, length=0L, initialize=FALSE, verbose=FALSE)
     {
-        if (isSingleNumber(length)) {
-            values <- NULL
-        } else {
-            values <- as.integer(length)
-            length <- length(values)
-        }
-        length <- as.integer(length)
-        if (length < 0)
-            stop("'length' must be a non-negative integer")
         xp <- .Call("ExternalPtr_new", PACKAGE="IRanges")
         if (verbose)
             cat("Allocating memory for new", class(.Object), "object...")
@@ -63,16 +54,11 @@ setMethod("initialize", "IntegerPtr",
             cat("New", show_string, "successfully created\n")
         }
         .Object@xp <- xp
-        if (!is.null(values) && (length == length(values)))
-            .Object[] <- values
         .Object
     }
 )
 
-IntegerPtr <- function(...)
-{
-    new("IntegerPtr", ...)
-}
+IntegerPtr <- function(...) new("IntegerPtr", ...)
 
 setMethod("show", "IntegerPtr",
     function(object)
@@ -138,6 +124,8 @@ IntegerPtr.write <- function(x, i, imax=integer(0), value)
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### length(as.integer(ib)) is equivalent to length(ib)
 ### but the latter is MUCH faster!
+###
+
 setMethod("as.integer", "IntegerPtr",
     function(x)
     {
@@ -147,7 +135,8 @@ setMethod("as.integer", "IntegerPtr",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Subsetting
+### Subsetting.
+###
 
 setMethod("[", "IntegerPtr",
     function(x, i, j, ..., drop=TRUE)
@@ -189,19 +178,14 @@ setReplaceMethod("[", "IntegerPtr",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Equality
+### Comparison.
+###
 
 setMethod("==", signature(e1="IntegerPtr", e2="IntegerPtr"),
-    function(e1, e2)
-    {
-        address(e1@xp) == address(e2@xp)
-    }
+    function(e1, e2) address(e1@xp) == address(e2@xp)
 )
 setMethod("!=", signature(e1="IntegerPtr", e2="IntegerPtr"),
-    function(e1, e2)
-    {
-        address(e1@xp) != address(e2@xp)
-    }
+    function(e1, e2) address(e1@xp) != address(e2@xp)
 )
 
 ### A wrapper to the very fast memcmp() C-function.
@@ -216,3 +200,4 @@ IntegerPtr.compare <- function(x1, start1, x2, start2, width)
 {
     .Call("IntegerPtr_memcmp", x1@xp, start1, x2@xp, start2, width, PACKAGE="IRanges")
 }
+

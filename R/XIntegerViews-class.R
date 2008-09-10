@@ -23,7 +23,7 @@ setMethod("Views", "integer",
     function(subject, start=NA, end=NA, names=NULL)
     {
         xsubject <- XInteger(length(subject))
-        xsubject[] <- subject
+        xsubject@xdata[] <- subject
         Views(xsubject, start=start, end=end, names=names)
     }
 )
@@ -61,10 +61,11 @@ XIntegerViews.show_vframe_line <- function(x, i, iW, startW, endW, widthW)
     end <- end(x)[i]
     width <- end - start + 1
     snippetWidth <- getOption("width") - 6 - iW - startW - endW - widthW
-    if (width > 0 && lsx > 0 && start <= lsx && end >= 1)
-        snippet <- toNumSnippet(IntegerPtr.read(subject(x), max(min(start,lsx),1), max(min(end,lsx),1)), snippetWidth)
-    else
+    if (width > 0 && lsx > 0 && start <= lsx && end >= 1) {
+        snippet <- toNumSnippet(IntegerPtr.read(subject(x)@xdata, max(min(start,lsx),1), max(min(end,lsx),1)), snippetWidth)
+    } else {
        snippet <- " "
+    }
     cat(format(paste("[", i,"]", sep=""), width=iW, justify="right"), " ",
         format(start, width=startW, justify="right"), " ",
         format(end, width=endW, justify="right"), " ",
@@ -153,7 +154,7 @@ setMethod("[[", "XIntegerViews",
         end <- end(x)[i]
         if (start < 1L || end > length(subject(x)))
             stop("view is out of limits")
-        XInteger(IntegerPtr.read(subject(x), start, end))
+        XInteger(IntegerPtr.read(subject(x)@xdata, start, end))
     }
 )
 
@@ -217,7 +218,7 @@ XIntegerViews.view1_equal_view2 <- function(x1, start1, end1, x2, start2, end2)
     # At this point, we can trust that 1 <= start1 <= end1 <= lx1
     # and that 1 <= start2 <= end2 <= lx2 so we can call unsafe
     # function IntegerPtr.read() with no fear...
-    IntegerPtr.read(x1, start1, end1) == IntegerPtr.read(x2, start2, end2)
+    IntegerPtr.read(x1@xdata, start1, end1) == IntegerPtr.read(x2@xdata, start2, end2)
 }
 
 ### 'x' and 'y' must be XIntegerViews objects.
