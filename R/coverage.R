@@ -27,6 +27,7 @@ setMethod("coverage", "IRanges",
         ans <- XInteger(width, initialize = TRUE)
         x1 <- shift(restrict(x, start=start, end=end), 1L - start)
         .Call("IRanges_coverage", x1, weight, ans, PACKAGE="IRanges")
+        ans
     }
 )
 
