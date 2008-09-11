@@ -28,12 +28,6 @@
 
 setClass("RawPtr", representation(xp="externalptr"))
 
-### A temporary "redirection" of the XRaw class to the RawPtr class. Only
-### during the time needed to migrate all the BSgenome data packages to the
-### new RawPtr class.
-### TODO: Remove the XRaw class when all the BSgenome data packages are fixed.
-setClass("XRaw", contains="RawPtr")
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Initialization.

@@ -21,23 +21,6 @@ setClass("XSeq",
 )
 
 
-### Move this definition to the upcoming XRaw-class.R
-setClass("XRaw",
-    contains="XSeq",
-    representation(
-        xdata="RawPtr"
-    )
-)
-
-### Move this definition to the upcoming XNumeric-class.R
-setClass("XNumeric",
-    contains="XSeq",
-    representation(
-        xdata="NumericPtr"
-    )
-)
-
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
