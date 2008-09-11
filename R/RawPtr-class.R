@@ -55,13 +55,12 @@ setMethod("initialize", "RawPtr",
         xp <- .Call("ExternalPtr_new", PACKAGE="IRanges")
         if (verbose)
             cat("Allocating memory for new", class(.Object), "object...")
-        .Call("RawPtr_alloc", xp, length, PACKAGE="IRanges")
+        .Object@xp <- .Call("RawPtr_alloc", xp, length, PACKAGE="IRanges")
         if (verbose) {
             cat(" OK\n")
-            show_string <- .Call("RawPtr_get_show_string", xp, PACKAGE="IRanges")
+            show_string <- .Call("RawPtr_get_show_string", .Object, PACKAGE="IRanges")
             cat("New", show_string, "successfully created\n")
         }
-        .Object@xp <- xp
         .Object
     }
 )
@@ -74,7 +73,7 @@ RawPtr <- function(...)
 setMethod("show", "RawPtr",
     function(object)
     {
-        show_string <- .Call("RawPtr_get_show_string", object@xp, PACKAGE="IRanges")
+        show_string <- .Call("RawPtr_get_show_string", object, PACKAGE="IRanges")
         cat(show_string, "\n", sep="")
         ## What is correct here? The documentation (?show) says that 'show'
         ## should return an invisible 'NULL' but, on the other hand, the 'show'
@@ -86,7 +85,7 @@ setMethod("show", "RawPtr",
 setMethod("length", "RawPtr",
     function(x)
     {
-        .Call("RawPtr_length", x@xp, PACKAGE="IRanges")
+        .Call("VectorPtr_length", x, PACKAGE="IRanges")
     }
 )
 
@@ -106,9 +105,9 @@ RawPtr.readInts <- function(x, i, imax=integer(0))
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("RawPtr_read_ints_from_i1i2", x@xp, i, imax, PACKAGE="IRanges")
+        .Call("RawPtr_read_ints_from_i1i2", x, i, imax, PACKAGE="IRanges")
     } else {
-        .Call("RawPtr_read_ints_from_subset", x@xp, i, PACKAGE="IRanges")
+        .Call("RawPtr_read_ints_from_subset", x, i, PACKAGE="IRanges")
     }
 }
 
@@ -123,9 +122,9 @@ RawPtr.writeInts <- function(x, i, imax=integer(0), value)
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("RawPtr_write_ints_to_i1i2", x@xp, i, imax, value, PACKAGE="IRanges")
+        .Call("RawPtr_write_ints_to_i1i2", x, i, imax, value, PACKAGE="IRanges")
     } else {
-        .Call("RawPtr_write_ints_to_subset", x@xp, i, value, PACKAGE="IRanges")
+        .Call("RawPtr_write_ints_to_subset", x, i, value, PACKAGE="IRanges")
     }
     x
 }
@@ -142,17 +141,17 @@ RawPtr.read <- function(x, i, imax=integer(0), dec_lkup=NULL)
             imax <- as.integer(imax)
         if (is.null(dec_lkup))
             .Call("RawPtr_read_chars_from_i1i2",
-                  x@xp, i, imax, PACKAGE="IRanges")
+                  x, i, imax, PACKAGE="IRanges")
         else
             .Call("RawPtr_read_enc_chars_from_i1i2",
-                  x@xp, i, imax, dec_lkup, PACKAGE="IRanges")
+                  x, i, imax, dec_lkup, PACKAGE="IRanges")
     } else {
         if (is.null(dec_lkup))
             .Call("RawPtr_read_chars_from_subset",
-                  x@xp, i, PACKAGE="IRanges")
+                  x, i, PACKAGE="IRanges")
         else
             .Call("RawPtr_read_enc_chars_from_subset",
-                  x@xp, i, dec_lkup, PACKAGE="IRanges")
+                  x, i, dec_lkup, PACKAGE="IRanges")
     }
 }
 
@@ -170,17 +169,17 @@ RawPtr.write <- function(x, i, imax=integer(0), value, enc_lkup=NULL)
             imax <- as.integer(imax)
         if (is.null(enc_lkup))
             .Call("RawPtr_write_chars_to_i1i2",
-                  x@xp, i, imax, value, PACKAGE="IRanges")
+                  x, i, imax, value, PACKAGE="IRanges")
         else
             .Call("RawPtr_write_enc_chars_to_i1i2",
-                  x@xp, i, imax, value, enc_lkup, PACKAGE="IRanges")
+                  x, i, imax, value, enc_lkup, PACKAGE="IRanges")
     } else {
         if (is.null(enc_lkup))
             .Call("RawPtr_write_chars_to_subset",
-                  x@xp, i, value, PACKAGE="IRanges")
+                  x, i, value, PACKAGE="IRanges")
         else
             .Call("RawPtr_write_enc_chars_to_subset",
-                  x@xp, i, value, enc_lkup, PACKAGE="IRanges")
+                  x, i, value, enc_lkup, PACKAGE="IRanges")
     }
     x
 }
@@ -198,18 +197,18 @@ RawPtr.copy <- function(dest, i, imax=integer(0), src, lkup=NULL)
         else
             imax <- as.integer(imax)
         if (is.null(lkup))
-            .Call("RawPtr_copy_from_i1i2", dest@xp, src@xp,
-                  i, imax, PACKAGE="IRanges")
+            .Call("RawPtr_copy_from_i1i2",
+                  dest, src, i, imax, PACKAGE="IRanges")
         else
-            .Call("RawPtr_translate_copy_from_i1i2", dest@xp, src@xp,
-                  i, imax, lkup, PACKAGE="IRanges")
+            .Call("RawPtr_translate_copy_from_i1i2",
+                   dest, src, i, imax, lkup, PACKAGE="IRanges")
     } else {
         if (is.null(lkup))
-            .Call("RawPtr_copy_from_subset", dest@xp, src@xp,
-                  i, PACKAGE="IRanges")
+            .Call("RawPtr_copy_from_subset",
+                  dest, src, i, PACKAGE="IRanges")
         else
-            .Call("RawPtr_translate_copy_from_subset", dest@xp, src@xp,
-                  i, lkup, PACKAGE="IRanges")
+            .Call("RawPtr_translate_copy_from_subset",
+                  dest, src, i, lkup, PACKAGE="IRanges")
     }
     dest
 }
@@ -228,9 +227,11 @@ RawPtr.reverseCopy <- function(dest, i, imax=integer(0), src, lkup=NULL)
     else
         imax <- as.integer(imax)
     if (is.null(lkup))
-        .Call("RawPtr_reverse_copy_from_i1i2", dest@xp, src@xp, i, imax, PACKAGE="IRanges")
+        .Call("RawPtr_reverse_copy_from_i1i2",
+              dest, src, i, imax, PACKAGE="IRanges")
     else
-        .Call("RawPtr_reverse_translate_copy_from_i1i2", dest@xp, src@xp, i, imax, lkup, PACKAGE="IRanges")
+        .Call("RawPtr_reverse_translate_copy_from_i1i2",
+              dest, src, i, imax, lkup, PACKAGE="IRanges")
     dest
 }
 
@@ -245,10 +246,10 @@ RawPtr.readComplexes <- function(x, i, imax=integer(0), lkup)
         else
             imax <- as.integer(imax)
         .Call("RawPtr_read_complexes_from_i1i2",
-              x@xp, i, imax, lkup, PACKAGE="IRanges")
+              x, i, imax, lkup, PACKAGE="IRanges")
     } else {
         .Call("RawPtr_read_complexes_from_subset",
-              x@xp, i, lkup, PACKAGE="IRanges")
+              x, i, lkup, PACKAGE="IRanges")
     }
 }
 
@@ -279,10 +280,8 @@ RawPtr.append <- function(x1, start1, width1, x2, start2, width2)
 
     ans_len <- width1 + width2
     ans <- RawPtr(ans_len)
-    .Call("RawPtr_memcpy",
-          ans@xp, 1L, x1@xp, start1, width1, PACKAGE="IRanges")
-    .Call("RawPtr_memcpy",
-          ans@xp, 1L + width1, x2@xp, start2, width2, PACKAGE="IRanges")
+    .Call("RawPtr_memcpy", ans, 1L, x1, start1, width1, PACKAGE="IRanges")
+    .Call("RawPtr_memcpy", ans, 1L + width1, x2, start2, width2, PACKAGE="IRanges")
     ans
 }
 
@@ -377,26 +376,20 @@ setReplaceMethod("[", "RawPtr",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Equality.
+### Comparison.
 ###
 
-### Be careful to the semantic of the "==" operator:
+### Be careful with the semantic of the "==" operator:
 ###   2 RawPtr objects are equals if their @xp slot is the
 ###   same "externalptr" instance (then they obviously have
 ###   the same length and contain the same data).
-### With this definition, xr1 and xr2 can be 2 different RawPtr objects
-### (xr1 != xr2) and contain the same data.
+### With this definition, e1 and e2 can be different even though they contain
+### the same data.
 setMethod("==", signature(e1="RawPtr", e2="RawPtr"),
-    function(e1, e2)
-    {
-        IRanges:::address(e1@xp) == IRanges:::address(e2@xp)
-    }
+    function(e1, e2) address(e1@xp) == address(e2@xp)
 )
 setMethod("!=", signature(e1="RawPtr", e2="RawPtr"),
-    function(e1, e2)
-    {
-        IRanges:::address(e1@xp) != IRanges:::address(e2@xp)
-    }
+    function(e1, e2) address(e1@xp) != address(e2@xp)
 )
 
 ### A wrapper to the very fast memcmp() C-function.
@@ -409,7 +402,7 @@ setMethod("!=", signature(e1="RawPtr", e2="RawPtr"),
 ### arguments) because we want it to be the fastest possible!
 RawPtr.compare <- function(x1, start1, x2, start2, width)
 {
-    .Call("RawPtr_memcmp", x1@xp, start1, x2@xp, start2, width, PACKAGE="IRanges")
+    .Call("RawPtr_memcmp", x1, start1, x2, start2, width, PACKAGE="IRanges")
 }
 
 

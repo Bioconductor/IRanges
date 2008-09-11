@@ -34,7 +34,7 @@ SEXP XIntegerViews_slice(SEXP xint, SEXP lower, SEXP upper, SEXP include_lower, 
     lower_elt = INTEGER(lower)[0];
     upper_elt = INTEGER(upper)[0];
 
-    x = R_ExternalPtrTag(GET_SLOT(GET_SLOT(xint, install("xdata")), install("xp")));
+    x = _get_VectorPtr_tag(GET_SLOT(xint, install("xdata")));
 	x_length = LENGTH(x);
 	ans_length = 0;
 	prev_elt = 0;

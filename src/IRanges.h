@@ -370,6 +370,8 @@ SEXP _get_VectorPtr_tag(SEXP x);
 
 int _get_VectorPtr_length(SEXP x);
 
+SEXP VectorPtr_length(SEXP x);
+
 
 /* RawPtr_utils.c */
 
@@ -380,102 +382,100 @@ SEXP RawPtr_alloc(
 	SEXP length
 );
 
-SEXP RawPtr_get_show_string(SEXP rawptr_xp);
-
-SEXP RawPtr_length(SEXP rawptr_xp);
+SEXP RawPtr_get_show_string(SEXP x);
 
 SEXP RawPtr_memcmp(
-	SEXP rawptr1_xp,
+	SEXP x1,
 	SEXP start1,
-	SEXP rawptr2_xp,
+	SEXP x2,
 	SEXP start2,
 	SEXP width
 );
 
 SEXP RawPtr_memcpy(
-	SEXP dest_rawptr_xp,
+	SEXP dest,
 	SEXP dest_start,
-	SEXP src_rawptr_xp,
+	SEXP src,
 	SEXP src_start,
 	SEXP width
 );
 
 SEXP RawPtr_copy_from_i1i2(
-	SEXP dest_rawptr_xp,
-	SEXP src_rawptr_xp,
+	SEXP dest,
+	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
 SEXP RawPtr_copy_from_subset(
-	SEXP dest_rawptr_xp,
-	SEXP src_rawptr_xp,
+	SEXP dest,
+	SEXP src,
 	SEXP subset
 );
 
 SEXP RawPtr_read_chars_from_i1i2(
-	SEXP src_rawptr_xp,
+	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
 SEXP RawPtr_read_chars_from_subset(
-	SEXP src_rawptr_xp,
+	SEXP src,
 	SEXP subset
 );
 
 SEXP RawPtr_write_chars_to_i1i2(
-	SEXP dest_rawptr_xp,
+	SEXP dest,
 	SEXP imin,
 	SEXP imax,
 	SEXP string
 );
 
 SEXP RawPtr_write_chars_to_subset(
-	SEXP dest_rawptr_xp,
+	SEXP dest,
 	SEXP subset,
 	SEXP string
 );
 
 SEXP RawPtr_read_ints_from_i1i2(
-	SEXP src_rawptr_xp,
+	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
 SEXP RawPtr_read_ints_from_subset(
-	SEXP src_rawptr_xp,
+	SEXP src,
 	SEXP subset
 );
 
 SEXP RawPtr_write_ints_to_i1i2(
-	SEXP dest_rawptr_xp,
+	SEXP dest,
 	SEXP imin,
 	SEXP imax,
 	SEXP val
 );
 
 SEXP RawPtr_write_ints_to_subset(
-	SEXP dest_rawptr_xp,
+	SEXP dest,
 	SEXP subset,
 	SEXP val
 );
 
 SEXP RawPtr_read_enc_chars_from_i1i2(
-	SEXP src_rawptr_xp,
+	SEXP src,
 	SEXP imin,
 	SEXP imax,
 	SEXP lkup
 );
 
 SEXP RawPtr_read_enc_chars_from_subset(
-	SEXP src_rawptr_xp,
+	SEXP src,
 	SEXP subset,
 	SEXP lkup
 );
 
 SEXP RawPtr_write_enc_chars_to_i1i2(
-	SEXP dest_rawptr_xp,
+	SEXP dest,
 	SEXP imin,
 	SEXP imax,
 	SEXP string,
@@ -483,50 +483,50 @@ SEXP RawPtr_write_enc_chars_to_i1i2(
 );
 
 SEXP RawPtr_write_enc_chars_to_subset(
-	SEXP dest_rawptr_xp,
+	SEXP dest,
 	SEXP subset,
 	SEXP string,
 	SEXP lkup
 );
 
 SEXP RawPtr_read_complexes_from_i1i2(
-	SEXP src_rawptr_xp,
+	SEXP src,
 	SEXP imin,
 	SEXP imax,
 	SEXP lkup
 );
 
 SEXP RawPtr_read_complexes_from_subset(
-	SEXP src_rawptr_xp,
+	SEXP src,
 	SEXP subset,
 	SEXP lkup
 );
 
 SEXP RawPtr_translate_copy_from_i1i2(
-	SEXP dest_rawptr_xp,
-	SEXP src_rawptr_xp,
+	SEXP dest,
+	SEXP src,
 	SEXP imin,
 	SEXP imax,
 	SEXP lkup
 );
 
 SEXP RawPtr_translate_copy_from_subset(
-	SEXP dest_rawptr_xp,
-	SEXP src_rawptr_xp,
+	SEXP dest,
+	SEXP src,
 	SEXP subset,
 	SEXP lkup
 );
 
 SEXP RawPtr_reverse_copy_from_i1i2(
-	SEXP dest_rawptr_xp,
-	SEXP src_rawptr_xp,
+	SEXP dest,
+	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
 SEXP RawPtr_reverse_translate_copy_from_i1i2(
-	SEXP dest_rawptr_xp,
-	SEXP src_rawptr_xp,
+	SEXP dest,
+	SEXP src,
 	SEXP imin,
 	SEXP imax,
 	SEXP lkup
@@ -538,55 +538,47 @@ SEXP RawPtr_reverse_translate_copy_from_i1i2(
 SEXP debug_IntegerPtr_utils();
 
 SEXP IntegerPtr_alloc(
-	SEXP intptr_xp,
+	SEXP x_xp,
 	SEXP length
 );
 
 SEXP IntegerPtr_alloc_initialize(
-	SEXP intptr_xp,
+	SEXP x_xp,
 	SEXP length
 );
 
-SEXP IntegerPtr_get_show_string(SEXP intptr_xp);
-
-SEXP IntegerPtr_length(SEXP intptr_xp);
+SEXP IntegerPtr_get_show_string(SEXP x);
 
 SEXP IntegerPtr_memcmp(
-	SEXP intptr1_xp,
+	SEXP x1,
 	SEXP start1,
-	SEXP intptr2_xp,
+	SEXP x2,
 	SEXP start2,
 	SEXP width
 );
 
 SEXP IntegerPtr_read_ints_from_i1i2(
-	SEXP src_intptr_xp,
+	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
 SEXP IntegerPtr_read_ints_from_subset(
-	SEXP src_intptr_xp,
+	SEXP src,
 	SEXP subset
 );
 
 SEXP IntegerPtr_write_ints_to_i1i2(
-	SEXP dest_intptr_xp,
+	SEXP dest,
 	SEXP imin,
 	SEXP imax,
 	SEXP val
 );
 
 SEXP IntegerPtr_write_ints_to_subset(
-	SEXP dest_intptr_xp,
+	SEXP dest,
 	SEXP subset,
 	SEXP val
-);
-
-void IntegerPtr_coverage(
-	SEXP x,
-	SEXP weight,
-	SEXP ans_xp
 );
 
 
@@ -595,44 +587,51 @@ void IntegerPtr_coverage(
 SEXP debug_NumericPtr_utils();
 
 SEXP NumericPtr_alloc(
-	SEXP numptr_xp,
+	SEXP x_xp,
 	SEXP length
 );
 
-SEXP NumericPtr_get_show_string(SEXP numptr_xp);
-
-SEXP NumericPtr_length(SEXP numptr_xp);
+SEXP NumericPtr_get_show_string(SEXP x);
 
 SEXP NumericPtr_memcmp(
-	SEXP numptr1_xp,
+	SEXP x1,
 	SEXP start1,
-	SEXP numptr2_xp,
+	SEXP x2,
 	SEXP start2,
 	SEXP width
 );
 
 SEXP NumericPtr_read_nums_from_i1i2(
-	SEXP src_numptr_xp,
+	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
 SEXP NumericPtr_read_nums_from_subset(
-	SEXP src_numptr_xp,
+	SEXP src,
 	SEXP subset
 );
 
 SEXP NumericPtr_write_nums_to_i1i2(
-	SEXP dest_numptr_xp,
+	SEXP dest,
 	SEXP imin,
 	SEXP imax,
 	SEXP val
 );
 
 SEXP NumericPtr_write_nums_to_subset(
-	SEXP dest_numptr_xp,
+	SEXP dest,
 	SEXP subset,
 	SEXP val
+);
+
+
+/* coverage */
+
+SEXP IRanges_coverage(
+	SEXP x,
+	SEXP weight,
+	SEXP ans
 );
 
 

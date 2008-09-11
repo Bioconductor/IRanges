@@ -25,69 +25,44 @@ SEXP debug_NumericPtr_utils()
  * (REALSXP vector).
  * The allocated memory is NOT initialized!
  */
-SEXP NumericPtr_alloc(SEXP numptr_xp, SEXP length)
+SEXP NumericPtr_alloc(SEXP x_xp, SEXP length)
 {
 	SEXP tag;
 	int tag_length;
 
 	tag_length = INTEGER(length)[0];
 	PROTECT(tag = NEW_NUMERIC(tag_length));
-	R_SetExternalPtrTag(numptr_xp, tag);
+	R_SetExternalPtrTag(x_xp, tag);
 	UNPROTECT(1);
-	return numptr_xp;
+	return x_xp;
 }
 
-/*
- * Return the single string printed by the show method for NumericPtr objects.
- * 'numptr_xp' must be the 'xp' slot of a NumericPtr object.
- * From R:
- *   numptr <- NumericPtr(30)
- *   .Call("NumericPtr_get_show_string", numptr@xp, PACKAGE="IRanges")
- */
-SEXP NumericPtr_get_show_string(SEXP numptr_xp)
+SEXP NumericPtr_get_show_string(SEXP x)
 {
-	SEXP tag, ans;
+	SEXP tag;
 	int tag_length;
 	char buf[100]; /* should be enough... */
 
-	tag = R_ExternalPtrTag(numptr_xp);
+	tag = _get_VectorPtr_tag(x);
 	tag_length = LENGTH(tag);
 	snprintf(buf, sizeof(buf), "%d-number NumericPtr object (data starting at memory address %p)",
 		tag_length, REAL(tag));
-	PROTECT(ans = NEW_CHARACTER(1));
-	SET_STRING_ELT(ans, 0, mkChar(buf));
-	UNPROTECT(1);
-	return ans;
-}
-
-SEXP NumericPtr_length(SEXP numptr_xp)
-{
-	SEXP tag, ans;
-	int tag_length;
-
-	tag = R_ExternalPtrTag(numptr_xp);
-	tag_length = LENGTH(tag);
-
-	PROTECT(ans = NEW_INTEGER(1));
-	INTEGER(ans)[0] = tag_length;
-	UNPROTECT(1);
-	return ans;
+	return mkString(buf);
 }
 
 /*
  * From R:
- *   xn <- NumericPtr(30)
- *   .Call("NumericPtr_memcmp", xn@xp, 1:1, xn@xp, 10:10, 21:21, PACKAGE="IRanges")
+ *   x <- NumericPtr(30)
+ *   .Call("NumericPtr_memcmp", x, 1L, x, 10L, 21L, PACKAGE="IRanges")
  */
-SEXP NumericPtr_memcmp(SEXP numptr1_xp, SEXP start1,
-		 SEXP numptr2_xp, SEXP start2, SEXP width)
+SEXP NumericPtr_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
 {
 	SEXP tag1, tag2, ans;
 	int i1, i2, n;
 
-	tag1 = R_ExternalPtrTag(numptr1_xp);
+	tag1 = _get_VectorPtr_tag(x1);
 	i1 = INTEGER(start1)[0] - 1;
-	tag2 = R_ExternalPtrTag(numptr2_xp);
+	tag2 = _get_VectorPtr_tag(x2);
 	i2 = INTEGER(start2)[0] - 1;
 	n = INTEGER(width)[0];
 
@@ -104,12 +79,12 @@ SEXP NumericPtr_memcmp(SEXP numptr1_xp, SEXP start1,
  * --------------------------------------------------------------------------
  */
 
-SEXP NumericPtr_read_nums_from_i1i2(SEXP src_numptr_xp, SEXP imin, SEXP imax)
+SEXP NumericPtr_read_nums_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 {
-	SEXP src, ans;
+	SEXP src_tag, ans;
 	int i1, i2, n;
 
-	src = R_ExternalPtrTag(src_numptr_xp);
+	src_tag = _get_VectorPtr_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	n = i2 - i1 + 1;
@@ -117,22 +92,22 @@ SEXP NumericPtr_read_nums_from_i1i2(SEXP src_numptr_xp, SEXP imin, SEXP imax)
 	PROTECT(ans = NEW_NUMERIC(n));
 	_IRanges_memcpy_from_i1i2(i1, i2,
 			(char *) REAL(ans), LENGTH(ans),
-			(char *) REAL(src), LENGTH(src), sizeof(double));
+			(char *) REAL(src_tag), LENGTH(src_tag), sizeof(double));
 	UNPROTECT(1);
 	return ans;
 }
 
-SEXP NumericPtr_read_nums_from_subset(SEXP src_numptr_xp, SEXP subset)
+SEXP NumericPtr_read_nums_from_subset(SEXP src, SEXP subset)
 {
-	SEXP src, ans;
+	SEXP src_tag, ans;
 	int n;
 
-	src = R_ExternalPtrTag(src_numptr_xp);
+	src_tag = _get_VectorPtr_tag(src);
 	n = LENGTH(subset);
 	PROTECT(ans = NEW_NUMERIC(n));
 	_IRanges_memcpy_from_subset(INTEGER(subset), n,
 			(char *) REAL(ans), n,
-			(char *) REAL(src), LENGTH(src), sizeof(double));
+			(char *) REAL(src_tag), LENGTH(src_tag), sizeof(double));
 	UNPROTECT(1);
 	return ans;
 }
@@ -140,27 +115,27 @@ SEXP NumericPtr_read_nums_from_subset(SEXP src_numptr_xp, SEXP subset)
 /*
  * 'val' must be a numeric vector.
  */
-SEXP NumericPtr_write_nums_to_i1i2(SEXP dest_numptr_xp, SEXP imin, SEXP imax, SEXP val)
+SEXP NumericPtr_write_nums_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 {
-	SEXP dest;
+	SEXP dest_tag;
 	int i1, i2;
 
-	dest = R_ExternalPtrTag(dest_numptr_xp);
+	dest_tag = _get_VectorPtr_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	_IRanges_memcpy_to_i1i2(i1, i2,
-			(char *) REAL(dest), LENGTH(dest),
+			(char *) REAL(dest_tag), LENGTH(dest_tag),
 			(char *) REAL(val), LENGTH(val), sizeof(double));
-	return dest_numptr_xp;
+	return dest;
 }
 
-SEXP NumericPtr_write_nums_to_subset(SEXP dest_numptr_xp, SEXP subset, SEXP val)
+SEXP NumericPtr_write_nums_to_subset(SEXP dest, SEXP subset, SEXP val)
 {
-	SEXP dest;
+	SEXP dest_tag;
 
-	dest = R_ExternalPtrTag(dest_numptr_xp);
+	dest_tag = _get_VectorPtr_tag(dest);
 	_IRanges_memcpy_to_subset(INTEGER(subset), LENGTH(subset),
-			(char *) REAL(dest), LENGTH(dest),
+			(char *) REAL(dest_tag), LENGTH(dest_tag),
 			(char *) REAL(val), LENGTH(val), sizeof(double));
-	return dest_numptr_xp;
+	return dest;
 }

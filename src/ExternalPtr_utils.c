@@ -51,7 +51,7 @@ SEXP ExternalPtr_new()
 
 
 /*
- * The remaining functions are NOT .Call() entry points!
+ * The 3 following functions are NOT .Call() entry points!
  * 
  * Do NOT make _new_VectorPtr() or _get_VectorPtr_tag() .Call() entry point!
  * Their argument is NOT duplicated so it would be a disaster if it was
@@ -78,5 +78,11 @@ SEXP _get_VectorPtr_tag(SEXP x)
 int _get_VectorPtr_length(SEXP x)
 {
         return LENGTH(_get_VectorPtr_tag(x));
+}
+
+
+SEXP VectorPtr_length(SEXP x)
+{
+        return ScalarInteger(_get_VectorPtr_length(x));
 }
 

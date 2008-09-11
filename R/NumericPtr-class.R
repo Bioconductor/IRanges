@@ -41,13 +41,12 @@ setMethod("initialize", "NumericPtr",
         xp <- .Call("ExternalPtr_new", PACKAGE="IRanges")
         if (verbose)
             cat("Allocating memory for new", class(.Object), "object...")
-        .Call("NumericPtr_alloc", xp, length, PACKAGE="IRanges")
+        .Object@xp <- .Call("NumericPtr_alloc", xp, length, PACKAGE="IRanges")
         if (verbose) {
             cat(" OK\n")
-            show_string <- .Call("NumericPtr_get_show_string", xp, PACKAGE="IRanges")
+            show_string <- .Call("NumericPtr_get_show_string", .Object, PACKAGE="IRanges")
             cat("New", show_string, "successfully created\n")
         }
-        .Object@xp <- xp
         if (!is.null(values) && (length == length(values)))
             .Object[] <- values
         .Object
@@ -62,7 +61,7 @@ NumericPtr <- function(...)
 setMethod("show", "NumericPtr",
     function(object)
     {
-        show_string <- .Call("NumericPtr_get_show_string", object@xp, PACKAGE="IRanges")
+        show_string <- .Call("NumericPtr_get_show_string", object, PACKAGE="IRanges")
         cat(show_string, "\n", sep="")
         ## What is correct here? The documentation (?show) says that 'show'
         ## should return an invisible 'NULL' but, on the other hand, the 'show'
@@ -74,7 +73,7 @@ setMethod("show", "NumericPtr",
 setMethod("length", "NumericPtr",
     function(x)
     {
-        .Call("NumericPtr_length", x@xp, PACKAGE="IRanges")
+        .Call("VectorPtr_length", x, PACKAGE="IRanges")
     }
 )
 
@@ -94,9 +93,9 @@ NumericPtr.read <- function(x, i, imax=integer(0))
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("NumericPtr_read_nums_from_i1i2", x@xp, i, imax, PACKAGE="IRanges")
+        .Call("NumericPtr_read_nums_from_i1i2", x, i, imax, PACKAGE="IRanges")
     } else {
-        .Call("NumericPtr_read_nums_from_subset", x@xp, i, PACKAGE="IRanges")
+        .Call("NumericPtr_read_nums_from_subset", x, i, PACKAGE="IRanges")
     }
 }
 
@@ -111,9 +110,9 @@ NumericPtr.write <- function(x, i, imax=integer(0), value)
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("NumericPtr_write_nums_to_i1i2", x@xp, i, imax, value, PACKAGE="IRanges")
+        .Call("NumericPtr_write_nums_to_i1i2", x, i, imax, value, PACKAGE="IRanges")
     } else {
-        .Call("NumericPtr_write_nums_to_subset", x@xp, i, value, PACKAGE="IRanges")
+        .Call("NumericPtr_write_nums_to_subset", x, i, value, PACKAGE="IRanges")
     }
     x
 }
@@ -173,19 +172,14 @@ setReplaceMethod("[", "NumericPtr",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Equality
+### Comparison.
+###
 
 setMethod("==", signature(e1="NumericPtr", e2="NumericPtr"),
-    function(e1, e2)
-    {
-        address(e1@xp) == address(e2@xp)
-    }
+    function(e1, e2) address(e1@xp) == address(e2@xp)
 )
 setMethod("!=", signature(e1="NumericPtr", e2="NumericPtr"),
-    function(e1, e2)
-    {
-        address(e1@xp) != address(e2@xp)
-    }
+    function(e1, e2) address(e1@xp) != address(e2@xp)
 )
 
 ### A wrapper to the very fast memcmp() C-function.
@@ -198,5 +192,6 @@ setMethod("!=", signature(e1="NumericPtr", e2="NumericPtr"),
 ### arguments) because we want it to be the fastest possible!
 NumericPtr.compare <- function(x1, start1, x2, start2, width)
 {
-    .Call("NumericPtr_memcmp", x1@xp, start1, x2@xp, start2, width, PACKAGE="IRanges")
+    .Call("NumericPtr_memcmp", x1, start1, x2, start2, width, PACKAGE="IRanges")
 }
+

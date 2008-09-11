@@ -48,12 +48,12 @@ setMethod("initialize", "IntegerPtr",
             .Call("IntegerPtr_alloc_initialize", xp, length, PACKAGE="IRanges")
         else
             .Call("IntegerPtr_alloc", xp, length, PACKAGE="IRanges")
+        .Object@xp <- xp
         if (verbose) {
             cat(" OK\n")
-            show_string <- .Call("IntegerPtr_get_show_string", xp, PACKAGE="IRanges")
+            show_string <- .Call("IntegerPtr_get_show_string", .Object, PACKAGE="IRanges")
             cat("New", show_string, "successfully created\n")
         }
-        .Object@xp <- xp
         .Object
     }
 )
@@ -63,7 +63,7 @@ IntegerPtr <- function(...) new("IntegerPtr", ...)
 setMethod("show", "IntegerPtr",
     function(object)
     {
-        show_string <- .Call("IntegerPtr_get_show_string", object@xp, PACKAGE="IRanges")
+        show_string <- .Call("IntegerPtr_get_show_string", object, PACKAGE="IRanges")
         cat(show_string, "\n", sep="")
         ## What is correct here? The documentation (?show) says that 'show'
         ## should return an invisible 'NULL' but, on the other hand, the 'show'
@@ -74,9 +74,7 @@ setMethod("show", "IntegerPtr",
 
 setMethod("length", "IntegerPtr",
     function(x)
-    {
-        .Call("IntegerPtr_length", x@xp, PACKAGE="IRanges")
-    }
+        .Call("VectorPtr_length", x, PACKAGE="IRanges")
 )
 
 
@@ -96,9 +94,9 @@ IntegerPtr.read <- function(x, i, imax=integer(0))
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("IntegerPtr_read_ints_from_i1i2", x@xp, i, imax, PACKAGE="IRanges")
+        .Call("IntegerPtr_read_ints_from_i1i2", x, i, imax, PACKAGE="IRanges")
     } else {
-        .Call("IntegerPtr_read_ints_from_subset", x@xp, i, PACKAGE="IRanges")
+        .Call("IntegerPtr_read_ints_from_subset", x, i, PACKAGE="IRanges")
     }
 }
 
@@ -113,9 +111,9 @@ IntegerPtr.write <- function(x, i, imax=integer(0), value)
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("IntegerPtr_write_ints_to_i1i2", x@xp, i, imax, value, PACKAGE="IRanges")
+        .Call("IntegerPtr_write_ints_to_i1i2", x, i, imax, value, PACKAGE="IRanges")
     } else {
-        .Call("IntegerPtr_write_ints_to_subset", x@xp, i, value, PACKAGE="IRanges")
+        .Call("IntegerPtr_write_ints_to_subset", x, i, value, PACKAGE="IRanges")
     }
     x
 }
@@ -198,6 +196,6 @@ setMethod("!=", signature(e1="IntegerPtr", e2="IntegerPtr"),
 ### arguments) because we want it to be the fastest possible!
 IntegerPtr.compare <- function(x1, start1, x2, start2, width)
 {
-    .Call("IntegerPtr_memcmp", x1@xp, start1, x2@xp, start2, width, PACKAGE="IRanges")
+    .Call("IntegerPtr_memcmp", x1, start1, x2, start2, width, PACKAGE="IRanges")
 }
 
