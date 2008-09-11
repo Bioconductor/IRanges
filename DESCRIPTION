@@ -28,7 +28,9 @@ Collate: validity-utils.R
 	IntegerPtr-class.R
 	NumericPtr-class.R
 	XSeq-class.R
+	XRaw-class.R
 	XInteger-class.R
+	XNumeric-class.R
 	XIntegerViews-class.R
 	XIntegerViews-utils.R
 	debug.R
