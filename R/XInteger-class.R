@@ -42,6 +42,15 @@ XInteger <- function(length=0L, initialize=FALSE)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion
+###
+
+setMethod("as.integer", "XInteger",
+    function(x) IntegerPtr.read(x@xdata, x@offset + 1L, x@offset + x@length)
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
 ###
 
