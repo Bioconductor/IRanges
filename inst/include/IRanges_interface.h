@@ -324,12 +324,12 @@ SEXP alloc_IRanges(const char *class, int length);
 
 
 /*
- * (see ExternalPtr_utils.c)
+ * (see SequencePtr_class.c)
  */
 
-SEXP new_VectorPtr(const char *class, SEXP tag);
+SEXP new_SequencePtr(const char *class, SEXP tag);
 
-SEXP get_VectorPtr_tag(SEXP x);
+SEXP get_SequencePtr_tag(SEXP x);
 
-int get_VectorPtr_length(SEXP x);
+int get_SequencePtr_length(SEXP x);
 

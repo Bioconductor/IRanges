@@ -13,7 +13,7 @@
 ###   3. NumericPtr objects are faster.
 ###
 
-setClass("NumericPtr", representation(xp="externalptr"))
+setClass("NumericPtr", contains="SequencePtr")
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -70,12 +70,6 @@ setMethod("show", "NumericPtr",
     }
 )
 
-setMethod("length", "NumericPtr",
-    function(x)
-    {
-        .Call("VectorPtr_length", x, PACKAGE="IRanges")
-    }
-)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Read/write functions.
@@ -172,16 +166,8 @@ setReplaceMethod("[", "NumericPtr",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Comparison.
+### Data comparison.
 ###
-
-setMethod("==", signature(e1="NumericPtr", e2="NumericPtr"),
-    function(e1, e2) address(e1@xp) == address(e2@xp)
-)
-setMethod("!=", signature(e1="NumericPtr", e2="NumericPtr"),
-    function(e1, e2) address(e1@xp) != address(e2@xp)
-)
-
 ### A wrapper to the very fast memcmp() C-function.
 ### Arguments MUST be the following or it will crash R:
 ###   x1, x2: "NumericPtr" objects
@@ -190,6 +176,8 @@ setMethod("!=", signature(e1="NumericPtr", e2="NumericPtr"),
 ###              1 <= start2 <= start2+width-1 <= length(x2)
 ### WARNING: This function is voluntarly unsafe (it doesn't check its
 ### arguments) because we want it to be the fastest possible!
+###
+
 NumericPtr.compare <- function(x1, start1, x2, start2, width)
 {
     .Call("NumericPtr_memcmp", x1, start1, x2, start2, width, PACKAGE="IRanges")

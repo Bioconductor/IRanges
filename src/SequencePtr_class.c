@@ -3,7 +3,7 @@
 
 static int debug = 0;
 
-SEXP debug_ExternalPtr_utils()
+SEXP debug_SequencePtr_class()
 {
 #ifdef DEBUG_IRANGES
 	debug = !debug;
@@ -53,13 +53,13 @@ SEXP ExternalPtr_new()
 /*
  * The 3 following functions are NOT .Call() entry points!
  * 
- * Do NOT make _new_VectorPtr() or _get_VectorPtr_tag() .Call() entry point!
+ * Do NOT make _new_SequencePtr() or _get_SequencePtr_tag() .Call() entry point!
  * Their argument is NOT duplicated so it would be a disaster if it was
  * coming from the user space.
  */
 
 /* class can be "RawPtr", "IntegerPtr" or "NumericPtr" */
-SEXP _new_VectorPtr(const char *class, SEXP tag)
+SEXP _new_SequencePtr(const char *class, SEXP tag)
 {
         SEXP class_def, ans;
 
@@ -70,19 +70,19 @@ SEXP _new_VectorPtr(const char *class, SEXP tag)
         return ans;
 }
 
-SEXP _get_VectorPtr_tag(SEXP x)
+SEXP _get_SequencePtr_tag(SEXP x)
 {
         return R_ExternalPtrTag(GET_SLOT(x, install("xp")));
 }
 
-int _get_VectorPtr_length(SEXP x)
+int _get_SequencePtr_length(SEXP x)
 {
-        return LENGTH(_get_VectorPtr_tag(x));
+        return LENGTH(_get_SequencePtr_tag(x));
 }
 
 
-SEXP VectorPtr_length(SEXP x)
+SEXP SequencePtr_length(SEXP x)
 {
-        return ScalarInteger(_get_VectorPtr_length(x));
+        return ScalarInteger(_get_SequencePtr_length(x));
 }
 

@@ -7,7 +7,7 @@
 ###
 
 #setClass("XRaw",
-#    contains="XSeq",
+#    contains="XSequence",
 #    representation(
 #        xdata="RawPtr"
 #    )

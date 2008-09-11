@@ -6,7 +6,7 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP ans)
 	const int *x_start, *x_width, *weight_elt;
 	SEXP tag;
 
-	tag = _get_VectorPtr_tag(GET_SLOT(ans, install("xdata")));
+	tag = _get_SequencePtr_tag(GET_SLOT(ans, install("xdata")));
 	ans_len = LENGTH(tag);
 	x_len = _get_IRanges_length(x);
 	for (i1 = 0, x_start = _get_IRanges_start0(x),

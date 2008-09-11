@@ -1,12 +1,12 @@
-\name{XSeq-class}
+\name{XSequence-class}
 \docType{class}
 
-% XSeq class, functions and methods:
-\alias{class:XSeq}
-\alias{XSeq-class}
-\alias{XSeq}
+% XSequence class, functions and methods:
+\alias{class:XSequence}
+\alias{XSequence-class}
+\alias{XSequence}
 
-\alias{length,XSeq-method}
+\alias{length,XSequence-method}
 
 % XRaw class, functions and methods:
 \alias{class:XRaw}
@@ -31,12 +31,12 @@
 \alias{XNumeric}
 
 
-\title{XSeq objects}
+\title{XSequence objects}
 
 \description{
-  The XSeq virtual class is a general container for storing
+  The XSequence virtual class is a general container for storing
   an "external sequence".
-  The following classes derive directly from the XSeq class.
+  The following classes derive directly from the XSequence class.
 
   The XRaw class is a container for storing an external sequence
   of bytes (stored as char values at the C level).

@@ -12,8 +12,8 @@ debug_IRanges_class <- function()
 debug_IRanges_utils <- function()
     invisible(.Call("debug_IRanges_utils", PACKAGE="IRanges"))
 
-debug_ExternalPtr_utils <- function()
-    invisible(.Call("debug_ExternalPtr_utils", PACKAGE="IRanges"))
+debug_SequencePtr_class <- function()
+    invisible(.Call("debug_SequencePtr_class", PACKAGE="IRanges"))
 
 debug_RawPtr_utils <- function()
     invisible(.Call("debug_RawPtr_utils", PACKAGE="IRanges"))

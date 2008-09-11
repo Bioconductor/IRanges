@@ -11,22 +11,8 @@
 ###      both xr1 and xr2 point to the same place in memory.
 ###      This is achieved by using R predefined type "externalptr".
 ###
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "RawPtr" class.
-### Note: instead of defining the "RawPtr" class with just one slot of type
-### "externalptr" (it HAS an "externalptr", and nothing else), an alternative
-### would be to simply extend the "externalptr" type.
-### After all, an RawPtr object IS an "externalptr" object.
-### However, I tried this but was not able to implement the "initialize" method
-### in such a way that it returns a new instance of the "RawPtr" class (the
-### returned object was ALWAYS the same instance everytime the method was
-### called, I found no workaround).
-###
-
-setClass("RawPtr", representation(xp="externalptr"))
+setClass("RawPtr", contains="SequencePtr")
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -76,12 +62,6 @@ setMethod("show", "RawPtr",
     }
 )
 
-setMethod("length", "RawPtr",
-    function(x)
-    {
-        .Call("VectorPtr_length", x, PACKAGE="IRanges")
-    }
-)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Read/write functions.
@@ -370,22 +350,8 @@ setReplaceMethod("[", "RawPtr",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Comparison.
+### Data comparison.
 ###
-
-### Be careful with the semantic of the "==" operator:
-###   2 RawPtr objects are equals if their @xp slot is the
-###   same "externalptr" instance (then they obviously have
-###   the same length and contain the same data).
-### With this definition, e1 and e2 can be different even though they contain
-### the same data.
-setMethod("==", signature(e1="RawPtr", e2="RawPtr"),
-    function(e1, e2) address(e1@xp) == address(e2@xp)
-)
-setMethod("!=", signature(e1="RawPtr", e2="RawPtr"),
-    function(e1, e2) address(e1@xp) != address(e2@xp)
-)
-
 ### A wrapper to the very fast memcmp() C-function.
 ### Arguments MUST be the following or it will crash R:
 ###   x1, x2: RawPtr objects
@@ -394,6 +360,8 @@ setMethod("!=", signature(e1="RawPtr", e2="RawPtr"),
 ###              1 <= start2 <= start2+width-1 <= length(x2)
 ### WARNING: This function is voluntarly unsafe (it doesn't check its
 ### arguments) because we want it to be the fastest possible!
+###
+
 RawPtr.compare <- function(x1, start1, x2, start2, width)
 {
     .Call("RawPtr_memcmp", x1, start1, x2, start2, width, PACKAGE="IRanges")

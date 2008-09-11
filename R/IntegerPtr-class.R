@@ -25,7 +25,7 @@
 ###        [1] 0.56 0.00 0.56 0.00 0.00
 ###
 
-setClass("IntegerPtr", representation(xp="externalptr"))
+setClass("IntegerPtr", contains="SequencePtr")
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -70,11 +70,6 @@ setMethod("show", "IntegerPtr",
         ## method for integers returns its 'object' argument...
         invisible(object)
     }
-)
-
-setMethod("length", "IntegerPtr",
-    function(x)
-        .Call("VectorPtr_length", x, PACKAGE="IRanges")
 )
 
 
@@ -176,16 +171,8 @@ setReplaceMethod("[", "IntegerPtr",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Comparison.
+### Data comparison.
 ###
-
-setMethod("==", signature(e1="IntegerPtr", e2="IntegerPtr"),
-    function(e1, e2) address(e1@xp) == address(e2@xp)
-)
-setMethod("!=", signature(e1="IntegerPtr", e2="IntegerPtr"),
-    function(e1, e2) address(e1@xp) != address(e2@xp)
-)
-
 ### A wrapper to the very fast memcmp() C-function.
 ### Arguments MUST be the following or it will crash R:
 ###   x1, x2: "IntegerPtr" objects
@@ -194,6 +181,8 @@ setMethod("!=", signature(e1="IntegerPtr", e2="IntegerPtr"),
 ###              1 <= start2 <= start2+width-1 <= length(x2)
 ### WARNING: This function is voluntarly unsafe (it doesn't check its
 ### arguments) because we want it to be the fastest possible!
+###
+
 IntegerPtr.compare <- function(x1, start1, x2, start2, width)
 {
     .Call("IntegerPtr_memcmp", x1, start1, x2, start2, width, PACKAGE="IRanges")

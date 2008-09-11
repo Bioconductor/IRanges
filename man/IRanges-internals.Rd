@@ -5,8 +5,15 @@
 \alias{new2}
 \alias{sapplyLength}
 
-% externalptr methods:
+% SequencePtr class, functions and methods:
+\alias{class:SequencePtr}
+\alias{SequencePtr-class}
+\alias{SequencePtr}
+
 \alias{show,externalptr-method}
+\alias{length,SequencePtr-method}
+\alias{==,SequencePtr,SequencePtr-method}
+\alias{!=,SequencePtr,SequencePtr-method}
 
 % RawPtr class, functions and methods:
 \alias{class:RawPtr}
@@ -23,13 +30,10 @@
 \alias{RawPtr.append}
 \alias{RawPtr.compare}
 \alias{safeExplode}
-\alias{!=,RawPtr,RawPtr-method}
-\alias{==,RawPtr,RawPtr-method}
 \alias{[,RawPtr-method}
 \alias{[,PrintableRawPtr-method}
 \alias{[<-,RawPtr-method}
 \alias{as.integer,RawPtr-method}
-\alias{length,RawPtr-method}
 \alias{show,RawPtr-method}
 \alias{show,PrintableRawPtr-method}
 \alias{toString,RawPtr-method}
@@ -39,12 +43,9 @@
 \alias{IntegerPtr-class}
 \alias{IntegerPtr}
 
-\alias{!=,IntegerPtr,IntegerPtr-method}
-\alias{==,IntegerPtr,IntegerPtr-method}
 \alias{[,IntegerPtr-method}
 \alias{[<-,IntegerPtr-method}
 \alias{as.integer,IntegerPtr-method}
-\alias{length,IntegerPtr-method}
 \alias{show,IntegerPtr-method}
 
 % NumericPtr class, functions and methods:
@@ -52,18 +53,10 @@
 \alias{NumericPtr-class}
 \alias{NumericPtr}
 
-\alias{!=,NumericPtr,NumericPtr-method}
-\alias{==,NumericPtr,NumericPtr-method}
 \alias{[,NumericPtr-method}
 \alias{[<-,NumericPtr-method}
 \alias{as.numeric,NumericPtr-method}
-\alias{length,NumericPtr-method}
 \alias{show,NumericPtr-method}
-
-% VectorPtr class:
-\alias{class:VectorPtr}
-\alias{VectorPtr-class}
-\alias{VectorPtr}
 
 
 \title{IRanges internals}

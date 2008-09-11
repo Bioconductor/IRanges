@@ -356,21 +356,21 @@ SEXP reduce_IRanges(
 SEXP summary_IRanges_list(SEXP x);
 
 
-/* ExternalPtr_utils.c */
+/* SequencePtr_class.c */
 
-SEXP debug_ExternalPtr_utils();
+SEXP debug_SequencePtr_class();
 
 SEXP ExternalPtr_show(SEXP xp);
 
 SEXP ExternalPtr_new();
 
-SEXP _new_VectorPtr(const char *class, SEXP tag);
+SEXP _new_SequencePtr(const char *class, SEXP tag);
 
-SEXP _get_VectorPtr_tag(SEXP x);
+SEXP _get_SequencePtr_tag(SEXP x);
 
-int _get_VectorPtr_length(SEXP x);
+int _get_SequencePtr_length(SEXP x);
 
-SEXP VectorPtr_length(SEXP x);
+SEXP SequencePtr_length(SEXP x);
 
 
 /* RawPtr_utils.c */

@@ -7,7 +7,7 @@
 ###
 
 setClass("XInteger",
-    contains="XSeq",
+    contains="XSequence",
     representation(
         xdata="IntegerPtr"
     )

@@ -30,11 +30,11 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(reduce_IRanges, 2),
 	CALLMETHOD_DEF(summary_IRanges_list, 1),
 
-/* ExternalPtr_utils.c */
-	CALLMETHOD_DEF(debug_ExternalPtr_utils, 0),
+/* SequencePtr_class.c */
+	CALLMETHOD_DEF(debug_SequencePtr_class, 0),
 	CALLMETHOD_DEF(ExternalPtr_show, 1),
 	CALLMETHOD_DEF(ExternalPtr_new, 0),
-	CALLMETHOD_DEF(VectorPtr_length, 1),
+	CALLMETHOD_DEF(SequencePtr_length, 1),
 
 /* RawPtr_utils.c */
 	CALLMETHOD_DEF(debug_RawPtr_utils, 0),
@@ -176,10 +176,10 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_new_IRanges);
 	REGISTER_CCALLABLE(_alloc_IRanges);
 
-/* ExternalPtr_utils.c */
-	REGISTER_CCALLABLE(_new_VectorPtr);
-	REGISTER_CCALLABLE(_get_VectorPtr_tag);
-	REGISTER_CCALLABLE(_get_VectorPtr_length);
+/* SequencePtr_class.c */
+	REGISTER_CCALLABLE(_new_SequencePtr);
+	REGISTER_CCALLABLE(_get_SequencePtr_tag);
+	REGISTER_CCALLABLE(_get_SequencePtr_length);
 
 	return;
 }

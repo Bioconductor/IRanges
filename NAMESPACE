@@ -7,8 +7,8 @@ exportClasses(
     IRanges, UnlockedIRanges, LockedIRanges, NormalIRanges,
     MaskCollection,
     Views,
-    RawPtr, IntegerPtr, NumericPtr, VectorPtr,
-    XSeq, XRaw, XInteger, XNumeric,
+    SequencePtr, RawPtr, IntegerPtr, NumericPtr,
+    XSequence, XRaw, XInteger, XNumeric,
     XIntegerViews
 )
 

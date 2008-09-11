@@ -43,7 +43,7 @@ SEXP RawPtr_get_show_string(SEXP x)
 	int tag_length;
 	char buf[100]; /* should be enough... */
 
-	tag = _get_VectorPtr_tag(x);
+	tag = _get_SequencePtr_tag(x);
 	tag_length = LENGTH(tag);
 	snprintf(buf, sizeof(buf), "%d-byte RawPtr object (data starting at memory address %p)",
 		tag_length, RAW(tag));
@@ -69,9 +69,9 @@ SEXP RawPtr_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
 		Rprintf("[DEBUG] RawPtr_memcmp(): BEGIN\n");
 	}
 #endif
-	tag1 = _get_VectorPtr_tag(x1);
+	tag1 = _get_SequencePtr_tag(x1);
 	i1 = INTEGER(start1)[0] - 1;
-	tag2 = _get_VectorPtr_tag(x2);
+	tag2 = _get_SequencePtr_tag(x2);
 	i2 = INTEGER(start2)[0] - 1;
 	n = INTEGER(width)[0];
 
@@ -154,9 +154,9 @@ SEXP RawPtr_memcpy(SEXP dest, SEXP dest_start, SEXP src, SEXP src_start, SEXP wi
 	SEXP dest_tag, src_tag;
 	int i, j, n;
 
-	dest_tag = _get_VectorPtr_tag(dest);
+	dest_tag = _get_SequencePtr_tag(dest);
 	i = INTEGER(dest_start)[0] - 1;
-	src_tag = _get_VectorPtr_tag(src);
+	src_tag = _get_SequencePtr_tag(src);
 	j = INTEGER(src_start)[0] - 1;
 	n = INTEGER(width)[0];
 	if (i < 0 || i + n > LENGTH(dest_tag)
@@ -172,8 +172,8 @@ SEXP RawPtr_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
 	SEXP dest_tag, src_tag;
 	int i1, i2;
 
-	dest_tag = _get_VectorPtr_tag(dest);
-	src_tag = _get_VectorPtr_tag(src);
+	dest_tag = _get_SequencePtr_tag(dest);
+	src_tag = _get_SequencePtr_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	_IRanges_memcpy_from_i1i2(i1, i2,
@@ -187,8 +187,8 @@ SEXP RawPtr_copy_from_subset(SEXP dest, SEXP src, SEXP subset)
 {
 	SEXP dest_tag, src_tag;
 
-	dest_tag = _get_VectorPtr_tag(dest);
-	src_tag = _get_VectorPtr_tag(src);
+	dest_tag = _get_SequencePtr_tag(dest);
+	src_tag = _get_SequencePtr_tag(src);
 	_IRanges_memcpy_from_subset(INTEGER(subset), LENGTH(subset),
 			(char *) RAW(dest_tag), LENGTH(dest_tag),
 			(char *) RAW(src_tag), LENGTH(src_tag), sizeof(Rbyte));
@@ -215,7 +215,7 @@ SEXP RawPtr_read_chars_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 	int i1, i2, n;
 	CharAE dest;
 
-	src_tag = _get_VectorPtr_tag(src);
+	src_tag = _get_SequencePtr_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	n = i2 - i1 + 1;
@@ -234,7 +234,7 @@ SEXP RawPtr_read_chars_from_subset(SEXP src, SEXP subset)
 	int n;
 	CharAE dest;
 
-	src_tag = _get_VectorPtr_tag(src);
+	src_tag = _get_SequencePtr_tag(src);
 	n = LENGTH(subset);
 	dest = _new_CharAE(n + 1);
 	dest.elts[n] = '\0';
@@ -253,7 +253,7 @@ SEXP RawPtr_write_chars_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP string)
 	SEXP dest_tag, src;
 	int i1, i2;
 
-	dest_tag = _get_VectorPtr_tag(dest);
+	dest_tag = _get_SequencePtr_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	src = STRING_ELT(string, 0);
@@ -268,7 +268,7 @@ SEXP RawPtr_write_chars_to_subset(SEXP dest, SEXP subset, SEXP string)
 {
 	SEXP dest_tag, src;
 
-	dest_tag = _get_VectorPtr_tag(dest);
+	dest_tag = _get_SequencePtr_tag(dest);
 	src = STRING_ELT(string, 0);
 	/* assumes that sizeof(Rbyte) == sizeof(char) */
 	_IRanges_memcpy_to_subset(INTEGER(subset), LENGTH(subset),
@@ -294,7 +294,7 @@ SEXP RawPtr_read_ints_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 	SEXP src_tag, ans;
 	int i1, i2, n, j;
 
-	src_tag = _get_VectorPtr_tag(src);
+	src_tag = _get_SequencePtr_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	if (i1 < 0 || i2 >= LENGTH(src_tag))
@@ -321,7 +321,7 @@ SEXP RawPtr_read_ints_from_subset(SEXP src, SEXP subset)
 	int src_length;
 	int n, i, j;
 
-	src_tag = _get_VectorPtr_tag(src);
+	src_tag = _get_SequencePtr_tag(src);
 	src_length = LENGTH(src_tag);
 	n = LENGTH(subset);
 
@@ -346,7 +346,7 @@ SEXP RawPtr_write_ints_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 	int i1, i2, n, j;
 	int v;
 
-	dest_tag = _get_VectorPtr_tag(dest);
+	dest_tag = _get_SequencePtr_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	if (i1 < 0 || i2 >= LENGTH(dest_tag))
@@ -382,7 +382,7 @@ SEXP RawPtr_write_ints_to_subset(SEXP dest, SEXP subset, SEXP val)
 	n = LENGTH(subset);
 	if (val_length == 0 && n != 0)
 		error("no value provided");
-	dest_tag = _get_VectorPtr_tag(dest);
+	dest_tag = _get_SequencePtr_tag(dest);
 	dest_length = LENGTH(dest_tag);
 
 	for (j = z = 0; z < n; j++, z++) {
@@ -418,7 +418,7 @@ SEXP RawPtr_read_enc_chars_from_i1i2(SEXP src, SEXP imin, SEXP imax, SEXP lkup)
 	int i1, i2, n;
 	CharAE dest;
 
-	src_tag = _get_VectorPtr_tag(src);
+	src_tag = _get_SequencePtr_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	n = i2 - i1 + 1;
@@ -436,7 +436,7 @@ SEXP RawPtr_read_enc_chars_from_subset(SEXP src, SEXP subset, SEXP lkup)
 	int n;
 	CharAE dest;
 
-	src_tag = _get_VectorPtr_tag(src);
+	src_tag = _get_SequencePtr_tag(src);
 	n = LENGTH(subset);
 	dest = _new_CharAE(n + 1);
 	dest.elts[n] = '\0';
@@ -458,7 +458,7 @@ SEXP RawPtr_write_enc_chars_to_i1i2(SEXP dest, SEXP imin, SEXP imax,
 	SEXP dest_tag, src;
 	int i1, i2;
 
-	dest_tag = _get_VectorPtr_tag(dest);
+	dest_tag = _get_SequencePtr_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	src = STRING_ELT(string, 0);
@@ -475,7 +475,7 @@ SEXP RawPtr_write_enc_chars_to_subset(SEXP dest, SEXP subset,
 	SEXP dest_tag, src;
 	int n;
 
-	dest_tag = _get_VectorPtr_tag(dest);
+	dest_tag = _get_SequencePtr_tag(dest);
 	n = LENGTH(subset);
 	src = STRING_ELT(string, 0);
 	_IRanges_charcpy_to_subset_with_lkup(INTEGER(subset), n,
@@ -496,7 +496,7 @@ SEXP RawPtr_read_complexes_from_i1i2(SEXP src, SEXP imin, SEXP imax, SEXP lkup)
 	SEXP dest, src_tag;
 	int i1, i2, n;
 
-	src_tag = _get_VectorPtr_tag(src);
+	src_tag = _get_SequencePtr_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	n = i2 - i1 + 1;
@@ -513,7 +513,7 @@ SEXP RawPtr_read_complexes_from_subset(SEXP src, SEXP subset, SEXP lkup)
 	SEXP dest, src_tag;
 	int n;
 
-	src_tag = _get_VectorPtr_tag(src);
+	src_tag = _get_SequencePtr_tag(src);
 	n = LENGTH(subset);
 	PROTECT(dest = NEW_COMPLEX(n));
 	error("not available yet");
@@ -533,10 +533,10 @@ SEXP RawPtr_translate_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax, 
 	SEXP dest_tag, src_tag;
 	int i1, i2;
 
-	dest_tag = _get_VectorPtr_tag(dest);
+	dest_tag = _get_SequencePtr_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
-	src_tag = _get_VectorPtr_tag(src);
+	src_tag = _get_SequencePtr_tag(src);
 	_IRanges_charcpy_from_i1i2_with_lkup(i1, i2,
 		(char *) RAW(dest_tag), LENGTH(dest_tag),
 		(char *) RAW(src_tag), LENGTH(src_tag),
@@ -548,8 +548,8 @@ SEXP RawPtr_translate_copy_from_subset(SEXP dest, SEXP src, SEXP subset, SEXP lk
 {
 	SEXP dest_tag, src_tag;
 
-	dest_tag = _get_VectorPtr_tag(dest);
-	src_tag = _get_VectorPtr_tag(src);
+	dest_tag = _get_SequencePtr_tag(dest);
+	src_tag = _get_SequencePtr_tag(src);
 	_IRanges_charcpy_from_subset_with_lkup(INTEGER(subset), LENGTH(subset),
 		(char *) RAW(dest_tag), LENGTH(dest_tag),
 		(char *) RAW(src_tag), LENGTH(src_tag), 
@@ -562,10 +562,10 @@ SEXP RawPtr_reverse_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
 	SEXP dest_tag, src_tag;
 	int i1, i2;
 
-	dest_tag = _get_VectorPtr_tag(dest);
+	dest_tag = _get_SequencePtr_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
-	src_tag = _get_VectorPtr_tag(src);
+	src_tag = _get_SequencePtr_tag(src);
 	_IRanges_reverse_memcpy_from_i1i2(i1, i2,
 		(char *) RAW(dest_tag), LENGTH(dest_tag),
 		(char *) RAW(src_tag), LENGTH(src_tag), sizeof(char));
@@ -577,10 +577,10 @@ SEXP RawPtr_reverse_translate_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEX
 	SEXP dest_tag, src_tag;
 	int i1, i2;
 
-	dest_tag = _get_VectorPtr_tag(dest);
+	dest_tag = _get_SequencePtr_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
-	src_tag = _get_VectorPtr_tag(src);
+	src_tag = _get_SequencePtr_tag(src);
 	_IRanges_reverse_charcpy_from_i1i2_with_lkup(i1, i2,
 		(char *) RAW(dest_tag), LENGTH(dest_tag),
 		(char *) RAW(src_tag), LENGTH(src_tag),

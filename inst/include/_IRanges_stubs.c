@@ -290,20 +290,20 @@ DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,
 
 
 /*
- * Stubs for callables defined in ExternalPtr_utils.c
+ * Stubs for callables defined in SequencePtr_class.c
  */
 
-DEFINE_CCALLABLE_STUB(SEXP, new_VectorPtr,
+DEFINE_CCALLABLE_STUB(SEXP, new_SequencePtr,
 	(const char *class, SEXP tag),
 	(            class,      tag)
 );
 
-DEFINE_CCALLABLE_STUB(SEXP, get_VectorPtr_tag,
+DEFINE_CCALLABLE_STUB(SEXP, get_SequencePtr_tag,
 	(SEXP x),
 	(     x)
 );
 
-DEFINE_CCALLABLE_STUB(int, get_VectorPtr_length,
+DEFINE_CCALLABLE_STUB(int, get_SequencePtr_length,
 	(SEXP x),
 	(     x)
 );

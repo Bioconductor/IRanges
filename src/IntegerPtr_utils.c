@@ -57,7 +57,7 @@ SEXP IntegerPtr_get_show_string(SEXP x)
 	int tag_length;
 	char buf[100]; /* should be enough... */
 
-	tag = _get_VectorPtr_tag(x);
+	tag = _get_SequencePtr_tag(x);
 	tag_length = LENGTH(tag);
 	snprintf(buf, sizeof(buf), "%d-integer IntegerPtr object (data starting at memory address %p)",
 		tag_length, INTEGER(tag));
@@ -74,9 +74,9 @@ SEXP IntegerPtr_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
 	SEXP tag1, tag2, tag;
 	int i1, i2, n;
 
-	tag1 = _get_VectorPtr_tag(x1);
+	tag1 = _get_SequencePtr_tag(x1);
 	i1 = INTEGER(start1)[0] - 1;
-	tag2 = _get_VectorPtr_tag(x2);
+	tag2 = _get_SequencePtr_tag(x2);
 	i2 = INTEGER(start2)[0] - 1;
 	n = INTEGER(width)[0];
 
@@ -98,7 +98,7 @@ SEXP IntegerPtr_read_ints_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 	SEXP src_tag, tag;
 	int i1, i2, n;
 
-	src_tag = _get_VectorPtr_tag(src);
+	src_tag = _get_SequencePtr_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	n = i2 - i1 + 1;
@@ -116,7 +116,7 @@ SEXP IntegerPtr_read_ints_from_subset(SEXP src, SEXP subset)
 	SEXP src_tag, tag;
 	int n;
 
-	src_tag = _get_VectorPtr_tag(src);
+	src_tag = _get_SequencePtr_tag(src);
 	n = LENGTH(subset);
 	PROTECT(tag = NEW_INTEGER(n));
 	_IRanges_memcpy_from_subset(INTEGER(subset), n,
@@ -134,7 +134,7 @@ SEXP IntegerPtr_write_ints_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 	SEXP dest_tag;
 	int i1, i2;
 
-	dest_tag = _get_VectorPtr_tag(dest);
+	dest_tag = _get_SequencePtr_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	_IRanges_memcpy_to_i1i2(i1, i2,
@@ -147,7 +147,7 @@ SEXP IntegerPtr_write_ints_to_subset(SEXP dest, SEXP subset, SEXP val)
 {
 	SEXP dest_tag;
 
-	dest_tag = _get_VectorPtr_tag(dest);
+	dest_tag = _get_SequencePtr_tag(dest);
 	_IRanges_memcpy_to_subset(INTEGER(subset), LENGTH(subset),
 			(char *) INTEGER(dest_tag), LENGTH(dest_tag),
 			(char *) INTEGER(val), LENGTH(val), sizeof(int));
