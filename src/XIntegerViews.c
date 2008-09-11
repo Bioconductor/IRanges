@@ -28,13 +28,13 @@ SEXP XIntegerViews_slice(SEXP xint, SEXP lower, SEXP upper, SEXP include_lower, 
 	int (*lower_fun)(int, int);
 	int (*upper_fun)(int, int);
 
-    lower_fun = LOGICAL(include_lower)[0] ? &ge : &gt;
-    upper_fun = LOGICAL(include_upper)[0] ? &le : &lt;
+	lower_fun = LOGICAL(include_lower)[0] ? &ge : &gt;
+	upper_fun = LOGICAL(include_upper)[0] ? &le : &lt;
 
-    lower_elt = INTEGER(lower)[0];
-    upper_elt = INTEGER(upper)[0];
+	lower_elt = INTEGER(lower)[0];
+	upper_elt = INTEGER(upper)[0];
 
-    x = _get_VectorPtr_tag(GET_SLOT(xint, install("xdata")));
+	x = _get_VectorPtr_tag(GET_SLOT(xint, install("xdata")));
 	x_length = LENGTH(x);
 	ans_length = 0;
 	prev_elt = 0;
@@ -45,12 +45,8 @@ SEXP XIntegerViews_slice(SEXP xint, SEXP lower, SEXP upper, SEXP include_lower, 
 		prev_elt = curr_elt;
 	}
 
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("XIntegerViews")));
 	PROTECT(start = NEW_INTEGER(ans_length));
 	PROTECT(width = NEW_INTEGER(ans_length));
-	SET_SLOT(ans, mkChar("subject"), xint);
-	SET_SLOT(ans, mkChar("start"), start);
-	SET_SLOT(ans, mkChar("width"), width);
 	if (ans_length > 0) {
 		start_elt = INTEGER(start) - 1;
 		width_elt = INTEGER(width) - 1;
@@ -70,6 +66,9 @@ SEXP XIntegerViews_slice(SEXP xint, SEXP lower, SEXP upper, SEXP include_lower, 
 			prev_elt = curr_elt;
 		}
 	}
+	PROTECT(ans = _new_IRanges("XIntegerViews", start, width, R_NilValue));
+	SET_SLOT(ans, mkChar("subject"), duplicate(xint));
 	UNPROTECT(3);
 	return ans;
 }
+
