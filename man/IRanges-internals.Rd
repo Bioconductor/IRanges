@@ -12,6 +12,7 @@
 \alias{class:RawPtr}
 \alias{RawPtr-class}
 \alias{RawPtr}
+
 \alias{RawPtr.readInts}
 \alias{RawPtr.writeInts}
 \alias{RawPtr.read}
@@ -33,7 +34,11 @@
 \alias{show,PrintableRawPtr-method}
 \alias{toString,RawPtr-method}
 
-% IntegerPtr functions and methods:
+% IntegerPtr class, functions and methods:
+\alias{class:IntegerPtr}
+\alias{IntegerPtr-class}
+\alias{IntegerPtr}
+
 \alias{!=,IntegerPtr,IntegerPtr-method}
 \alias{==,IntegerPtr,IntegerPtr-method}
 \alias{[,IntegerPtr-method}
@@ -42,7 +47,11 @@
 \alias{length,IntegerPtr-method}
 \alias{show,IntegerPtr-method}
 
-% NumericPtr functions and methods:
+% NumericPtr class, functions and methods:
+\alias{class:NumericPtr}
+\alias{NumericPtr-class}
+\alias{NumericPtr}
+
 \alias{!=,NumericPtr,NumericPtr-method}
 \alias{==,NumericPtr,NumericPtr-method}
 \alias{[,NumericPtr-method}
@@ -51,6 +60,11 @@
 \alias{length,NumericPtr-method}
 \alias{show,NumericPtr-method}
 
+% VectorPtr class:
+\alias{class:VectorPtr}
+\alias{VectorPtr-class}
+\alias{VectorPtr}
+
 
 \title{IRanges internals}
 
@@ -58,8 +72,6 @@
   IRanges objects, classes and methods that are not intended to
   be used directly.
 }
-
-\author{H. Pages}
 
 \keyword{internal}
 \keyword{methods}

@@ -2,8 +2,8 @@
 ### XInteger objects
 ### -------------------------------------------------------------------------
 ###
-### The XInteger class is a container for storing an external sequence of
-### integers.
+### The XInteger class is a container for storing an external sequence
+### of integers (stored as int values at the C level).
 ###
 
 setClass("XInteger",
