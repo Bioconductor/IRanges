@@ -19,22 +19,29 @@ SEXP debug_NumericPtr_utils()
 }
 
 
-/*
- * Memory allocation for a NumericPtr object.
- * The data of a NumericPtr object are stored in an "external" numeric vector
- * (REALSXP vector).
- * The allocated memory is NOT initialized!
- */
-SEXP NumericPtr_alloc(SEXP x_xp, SEXP length)
+SEXP NumericPtr_new(SEXP length, SEXP val)
 {
-	SEXP tag;
-	int tag_length;
+	SEXP tag, ans;
+	int tag_length, i;
+	double val0;
 
 	tag_length = INTEGER(length)[0];
-	PROTECT(tag = NEW_NUMERIC(tag_length));
-	R_SetExternalPtrTag(x_xp, tag);
-	UNPROTECT(1);
-	return x_xp;
+	if (val == R_NilValue) {
+		PROTECT(tag = NEW_NUMERIC(tag_length));
+	} else if (LENGTH(val) == 1) {
+		PROTECT(tag = NEW_NUMERIC(tag_length));
+		val0 = REAL(val)[0];
+		for (i = 0; i < tag_length; i++)
+			REAL(tag)[i] = val0;
+	} else if (LENGTH(val) == tag_length) {
+		PROTECT(tag = duplicate(val));
+	} else {
+		error("when 'val' is not a single value, its length must "
+		      "be equal to the value of the 'length' argument");
+	}
+	PROTECT(ans = _new_SequencePtr("NumericPtr", tag));
+	UNPROTECT(2);
+	return ans;
 }
 
 SEXP NumericPtr_get_show_string(SEXP x)
@@ -45,7 +52,8 @@ SEXP NumericPtr_get_show_string(SEXP x)
 
 	tag = _get_SequencePtr_tag(x);
 	tag_length = LENGTH(tag);
-	snprintf(buf, sizeof(buf), "%d-number NumericPtr object (data starting at memory address %p)",
+	snprintf(buf, sizeof(buf),
+		"%d-number NumericPtr object (data starting at memory address %p)",
 		tag_length, REAL(tag));
 	return mkString(buf);
 }

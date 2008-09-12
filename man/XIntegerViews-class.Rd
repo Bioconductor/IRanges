@@ -103,7 +103,7 @@
 
   ## One standard way to create an XIntegerViews object is to use
   ## the Views() constructor:
-  x1 <- XInteger(c(45, 67, 84, 67, 45, 78))
+  x1 <- XInteger(6, c(45, 67, 84, 67, 45, 78))
   v4 <- Views(x1, 3:0, 5:8)
   v4
   subject(v4)
@@ -128,7 +128,7 @@
   #v4[[3]] # Error!
 
   ## Here the first view doesn't even overlap with the subject:
-  Views(XInteger(c(97, 97, 97, 45, 45, 98)), -3:4, -3:4 + c(3:6, 6:3))
+  Views(XInteger(6, c(97, 97, 97, 45, 45, 98)), -3:4, -3:4 + c(3:6, 6:3))
 }
 
 \keyword{methods}

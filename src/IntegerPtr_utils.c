@@ -19,36 +19,28 @@ SEXP debug_IntegerPtr_utils()
 }
 
 
-/*
- * Memory allocation for an IntegerPtr object.
- * The data of an IntegerPtr object are stored in an "external" integer vector
- * (INTSXP vector).
- * The allocated memory is NOT initialized!
- */
-SEXP IntegerPtr_alloc(SEXP x_xp, SEXP length)
+SEXP IntegerPtr_new(SEXP length, SEXP val)
 {
-	SEXP tag;
-	int tag_length;
+	SEXP tag, ans;
+	int tag_length, i, val0;
 
 	tag_length = INTEGER(length)[0];
-	PROTECT(tag = NEW_INTEGER(tag_length));
-	R_SetExternalPtrTag(x_xp, tag);
-	UNPROTECT(1);
-	return x_xp;
-}
-
-SEXP IntegerPtr_alloc_initialize(SEXP x_xp, SEXP length)
-{
-	SEXP tag;
-	int tag_length;
-
-	tag_length = INTEGER(length)[0];
-
-	PROTECT(tag = NEW_INTEGER(tag_length));
-	memset(INTEGER(tag), 0, tag_length * sizeof(int));
-	R_SetExternalPtrTag(x_xp, tag);
-	UNPROTECT(1);
-	return x_xp;
+	if (val == R_NilValue) {
+		PROTECT(tag = NEW_INTEGER(tag_length));
+	} else if (LENGTH(val) == 1) {
+		PROTECT(tag = NEW_INTEGER(tag_length));
+		val0 = INTEGER(val)[0];
+		for (i = 0; i < tag_length; i++)
+			INTEGER(tag)[i] = val0;
+	} else if (LENGTH(val) == tag_length) {
+		PROTECT(tag = duplicate(val));
+	} else {
+		error("when 'val' is not a single value, its length must "
+		      "be equal to the value of the 'length' argument");
+	}
+	PROTECT(ans = _new_SequencePtr("IntegerPtr", tag));
+	UNPROTECT(2);
+	return ans;
 }
 
 SEXP IntegerPtr_get_show_string(SEXP x)
@@ -59,7 +51,8 @@ SEXP IntegerPtr_get_show_string(SEXP x)
 
 	tag = _get_SequencePtr_tag(x);
 	tag_length = LENGTH(tag);
-	snprintf(buf, sizeof(buf), "%d-integer IntegerPtr object (data starting at memory address %p)",
+	snprintf(buf, sizeof(buf),
+		"%d-integer IntegerPtr object (data starting at memory address %p)",
 		tag_length, INTEGER(tag));
 	return mkString(buf);
 }
@@ -87,6 +80,42 @@ SEXP IntegerPtr_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
 	UNPROTECT(1);
 	return tag;
 }
+
+
+/* ==========================================================================
+ * Copy values from an IntegerPtr object to another IntegerPtr object.
+ * --------------------------------------------------------------------------
+ */
+
+/* Cyclic writing in 'dest' */
+SEXP IntegerPtr_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
+{
+	SEXP dest_tag, src_tag;
+	int i1, i2;
+
+	dest_tag = _get_SequencePtr_tag(dest);
+	src_tag = _get_SequencePtr_tag(src);
+	i1 = INTEGER(imin)[0] - 1;
+	i2 = INTEGER(imax)[0] - 1;
+	_IRanges_memcpy_from_i1i2(i1, i2,
+			(char *) INTEGER(dest_tag), LENGTH(dest_tag),
+			(char *) INTEGER(src_tag), LENGTH(src_tag), sizeof(int));
+	return dest;
+}
+
+/* Cyclic writing in 'dest' */
+SEXP IntegerPtr_copy_from_subset(SEXP dest, SEXP src, SEXP subset)
+{
+	SEXP dest_tag, src_tag;
+
+	dest_tag = _get_SequencePtr_tag(dest);
+	src_tag = _get_SequencePtr_tag(src);
+	_IRanges_memcpy_from_subset(INTEGER(subset), LENGTH(subset),
+			(char *) INTEGER(dest_tag), LENGTH(dest_tag),
+			(char *) INTEGER(src_tag), LENGTH(src_tag), sizeof(int));
+	return dest;
+}
+
 
 /* ==========================================================================
  * Read/write integers to an IntegerPtr object

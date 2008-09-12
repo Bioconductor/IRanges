@@ -2,16 +2,6 @@
 ### External pointer to a numeric vector: the "NumericPtr" class
 ### -------------------------------------------------------------------------
 ###
-### The "NumericPtr" class implements the concept of "RawPtr" objects but
-### for numerics instead of bytes.
-### Some differences between "numeric" and "NumericPtr":
-###
-###   1. NumericPtr(10) does not initialize its values (numeric(10) does).
-###
-###   2. NumericPtr(10)[i] produces an error if i is out of bounds.
-###
-###   3. NumericPtr objects are faster.
-###
 
 setClass("NumericPtr", contains="SequencePtr")
 
@@ -19,44 +9,29 @@ setClass("NumericPtr", contains="SequencePtr")
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Initialization.
 ###
-### Note that unlike numeric vectors, NumericPtr objects are not initialized
-### with 0's.
+### Note that, unlike 'numeric(99)', 'NumericPtr(99)' does NOT initialize its
+### data. Specify the 'val' argument if you want data initialization.
 ###
 
-### This:
-###   xn <- NumericPtr(30)
-### will call this "initialize" method.
 setMethod("initialize", "NumericPtr",
-    function(.Object, length=0, verbose=FALSE)
+    function(.Object, length=0L, val=NULL)
     {
-        if (isSingleNumber(length)) {
-            values <- NULL
-        } else {
-            values <- as.numeric(length)
-            length <- length(values)
+        if (!isSingleNumber(length) || length < 0)
+            stop("'length' must be a single non-negative integer")
+        if (!is.integer(length))
+            length <- as.integer(length)
+        if (!is.null(val)) {
+            if (!is.numeric(val))
+                stop("'val' must be a numeric vector")
+            if (!storage.mode(val) == "double")
+                storage.mode(val) <- "double"
         }
-        length <- as.integer(length)
-        if (length < 0)
-            stop("'length' must be a non-negative integer")
-        xp <- .Call("ExternalPtr_new", PACKAGE="IRanges")
-        if (verbose)
-            cat("Allocating memory for new", class(.Object), "object...")
-        .Object@xp <- .Call("NumericPtr_alloc", xp, length, PACKAGE="IRanges")
-        if (verbose) {
-            cat(" OK\n")
-            show_string <- .Call("NumericPtr_get_show_string", .Object, PACKAGE="IRanges")
-            cat("New", show_string, "successfully created\n")
-        }
-        if (!is.null(values) && (length == length(values)))
-            .Object[] <- values
-        .Object
+        .Call("NumericPtr_new", length, val, PACKAGE="IRanges")
     }
 )
 
-NumericPtr <- function(...)
-{
-    new("NumericPtr", ...)
-}
+NumericPtr <- function(length=0L, val=NULL)
+    new("NumericPtr", length=length, val=val)
 
 setMethod("show", "NumericPtr",
     function(object)
@@ -77,6 +52,7 @@ setMethod("show", "NumericPtr",
 ### they don't check for NAs in their arguments).
 ### If length(i) == 0 then the read functions return an empty vector
 ### and the write functions don't do anything.
+###
 
 NumericPtr.read <- function(x, i, imax=integer(0))
 {
@@ -113,55 +89,11 @@ NumericPtr.write <- function(x, i, imax=integer(0), value)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### length(as.numeric(b)) is equivalent to length(b)
-### but the latter is MUCH faster!
+### Coercion.
+###
+
 setMethod("as.numeric", "NumericPtr",
-    function(x)
-    {
-        NumericPtr.read(x, 1, length(x))
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Subsetting
-
-setMethod("[", "NumericPtr",
-    function(x, i, j, ..., drop=TRUE)
-    {
-        if (!missing(j) || length(list(...)) > 0)
-            stop("invalid subsetting")
-        if (missing(i))
-            subset <- as.numeric(x)
-        else
-            subset <- NumericPtr.read(x, i)
-        if (!drop)
-            subset <- NumericPtr(subset)
-        subset
-    }
-)
-
-setReplaceMethod("[", "NumericPtr",
-    function(x, i, j,..., value)
-    {
-        if (!missing(j) || length(list(...)) > 0)
-            stop("invalid subsetting")
-
-        ## We want to allow this: b[3] <- 4, even if storage.mode(value)
-        ## is not "numeric"
-        if (!is.numeric(value)) {
-            if (length(value) >= 2)
-                stop("'storage.mode(value)' must be \"numeric\"")
-            tmp <- value
-            value <- as.numeric(value)
-            if (value != tmp)
-                stop("'value' must be numeric")
-        }
-        ## Now 'value' is a numeric vector
-        if (missing(i))
-            return(NumericPtr.write(x, 1, length(x), value=value))
-        NumericPtr.write(x, i, value=value)
-    }
+    function(x) NumericPtr.read(x, 1, length(x))
 )
 
 

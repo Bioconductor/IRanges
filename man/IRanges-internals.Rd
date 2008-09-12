@@ -4,6 +4,7 @@
 \alias{setValidity2}
 \alias{new2}
 \alias{sapplyLength}
+\alias{safeExplode}
 
 % SequencePtr class, functions and methods:
 \alias{class:SequencePtr}
@@ -20,6 +21,7 @@
 \alias{RawPtr-class}
 \alias{RawPtr}
 
+\alias{show,RawPtr-method}
 \alias{RawPtr.readInts}
 \alias{RawPtr.writeInts}
 \alias{RawPtr.read}
@@ -29,13 +31,7 @@
 \alias{RawPtr.readComplexes}
 \alias{RawPtr.append}
 \alias{RawPtr.compare}
-\alias{safeExplode}
-\alias{[,RawPtr-method}
-\alias{[,PrintableRawPtr-method}
-\alias{[<-,RawPtr-method}
 \alias{as.integer,RawPtr-method}
-\alias{show,RawPtr-method}
-\alias{show,PrintableRawPtr-method}
 \alias{toString,RawPtr-method}
 
 % IntegerPtr class, functions and methods:
@@ -43,20 +39,16 @@
 \alias{IntegerPtr-class}
 \alias{IntegerPtr}
 
-\alias{[,IntegerPtr-method}
-\alias{[<-,IntegerPtr-method}
-\alias{as.integer,IntegerPtr-method}
 \alias{show,IntegerPtr-method}
+\alias{as.integer,IntegerPtr-method}
 
 % NumericPtr class, functions and methods:
 \alias{class:NumericPtr}
 \alias{NumericPtr-class}
 \alias{NumericPtr}
 
-\alias{[,NumericPtr-method}
-\alias{[<-,NumericPtr-method}
-\alias{as.numeric,NumericPtr-method}
 \alias{show,NumericPtr-method}
+\alias{as.numeric,NumericPtr-method}
 
 
 \title{IRanges internals}

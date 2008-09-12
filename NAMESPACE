@@ -6,16 +6,16 @@ import(stats) ## for the "start", "end" and "update" generics
 exportClasses(
     IRanges, UnlockedIRanges, LockedIRanges, NormalIRanges,
     MaskCollection,
-    Views,
     SequencePtr, RawPtr, IntegerPtr, NumericPtr,
     XSequence, XRaw, XInteger, XNumeric,
-    XIntegerViews
+    Views, XIntegerViews
 )
 
 export(
     ## Non-generic functions:
     setValidity2, new2,
     sapplyLength,
+    safeExplode,
     IRanges,
     asNormalIRanges,
     intToRanges,
@@ -33,10 +33,10 @@ export(
     read.trfMask,
     RawPtr, RawPtr.readInts, RawPtr.writeInts, RawPtr.read, RawPtr.write,
     RawPtr.copy, RawPtr.reverseCopy, RawPtr.readComplexes, RawPtr.append,
-    RawPtr.compare, safeExplode,
+    RawPtr.compare,
     #IntegerPtr, IntegerPtr.read, IntegerPtr.write,
     #NumericPtr, NumericPtr.read, NumericPtr.write,
-    XInteger,
+    XInteger, XNumeric,
 
     ## Generic functions:
     width,
@@ -56,6 +56,7 @@ export(
     nir_list,
     active, "active<-",
     maskedwidth, maskedratio,
+    subseq,
     subject, Views, subviews, trim,
     viewMins, viewMaxs, viewSums,
 
@@ -105,6 +106,7 @@ exportMethods(
     nir_list,
     active, "active<-",
     maskedwidth, maskedratio,
+    subseq,
     subject, Views, subviews, trim,
     viewMins, viewMaxs, viewSums,
 

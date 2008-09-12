@@ -2,28 +2,6 @@
 ### External pointer to an integer vector: the "IntegerPtr" class
 ### -------------------------------------------------------------------------
 ###
-### The "IntegerPtr" class implements the concept of "RawPtr" objects but
-### for integers instead of bytes.
-### Some differences between "integer" and "IntegerPtr":
-###
-###   1. IntegerPtr(10) does not initialize its values (integer(10) does).
-###
-###   2. IntegerPtr(10)[i] produces an error if i is out of bounds.
-###
-###   3. IntegerPtr objects are faster:
-###
-###        > a <- integer(100000000)
-###        > system.time(tmp <- a[])
-###        [1] 0.65 0.30 0.95 0.00 0.00
-###        > system.time(a[] <- 100:1)
-###        [1] 3.08 0.52 3.61 0.00 0.00
-###
-###        > ib <- IntegerPtr(100000000)
-###        > system.time(tmp <- ib[])
-###        [1] 0.39 0.52 0.91 0.00 0.00
-###        > system.time(ib[] <- 100:1)
-###        [1] 0.56 0.00 0.56 0.00 0.00
-###
 
 setClass("IntegerPtr", contains="SequencePtr")
 
@@ -31,34 +9,29 @@ setClass("IntegerPtr", contains="SequencePtr")
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Initialization.
 ###
-### Note that unlike integer vectors, IntegerPtr objects are not initialized
-### with 0's.
+### Note that, unlike 'integer(99)', 'IntegerPtr(99)' does NOT initialize its
+### data. Specify the 'val' argument if you want data initialization.
 ###
 
-### This:
-###   xi <- IntegerPtr(30)
-### will call this "initialize" method.
 setMethod("initialize", "IntegerPtr",
-    function(.Object, length=0L, initialize=FALSE, verbose=FALSE)
+    function(.Object, length=0L, val=NULL)
     {
-        xp <- .Call("ExternalPtr_new", PACKAGE="IRanges")
-        if (verbose)
-            cat("Allocating memory for new", class(.Object), "object...")
-        if (initialize)
-            .Call("IntegerPtr_alloc_initialize", xp, length, PACKAGE="IRanges")
-        else
-            .Call("IntegerPtr_alloc", xp, length, PACKAGE="IRanges")
-        .Object@xp <- xp
-        if (verbose) {
-            cat(" OK\n")
-            show_string <- .Call("IntegerPtr_get_show_string", .Object, PACKAGE="IRanges")
-            cat("New", show_string, "successfully created\n")
+        if (!isSingleNumber(length) || length < 0)
+            stop("'length' must be a single non-negative integer")
+        if (!is.integer(length))
+            length <- as.integer(length)
+        if (!is.null(val)) {
+            if (!is.numeric(val))
+                stop("'val' must be a numeric vector")
+            if (!storage.mode(val) == "integer")
+                storage.mode(val) <- "integer"
         }
-        .Object
+        .Call("IntegerPtr_new", length, val, PACKAGE="IRanges")
     }
 )
 
-IntegerPtr <- function(...) new("IntegerPtr", ...)
+IntegerPtr <- function(length=0L, val=NULL)
+    new("IntegerPtr", length=length, val=val)
 
 setMethod("show", "IntegerPtr",
     function(object)
@@ -79,6 +52,7 @@ setMethod("show", "IntegerPtr",
 ### they don't check for NAs in their arguments).
 ### If length(i) == 0 then the read functions return an empty vector
 ### and the write functions don't do anything.
+###
 
 IntegerPtr.read <- function(x, i, imax=integer(0))
 {
@@ -113,60 +87,33 @@ IntegerPtr.write <- function(x, i, imax=integer(0), value)
     x
 }
 
+IntegerPtr.copy <- function(dest, i, imax=integer(0), src)
+{
+    if (!is(src, "IntegerPtr"))
+        stop("'src' must be an IntegerPtr object")
+    if (!is.integer(i))
+        i <- as.integer(i)
+    if (length(i) == 1) {
+        if (length(imax) == 0) 
+            imax <- i
+        else
+            imax <- as.integer(imax)
+        .Call("IntegerPtr_copy_from_i1i2",
+              dest, src, i, imax, PACKAGE="IRanges")
+    } else {
+        .Call("IntegerPtr_copy_from_subset",
+              dest, src, i, PACKAGE="IRanges")
+    }
+    dest
+}
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### length(as.integer(ib)) is equivalent to length(ib)
-### but the latter is MUCH faster!
+### Coercion.
 ###
 
 setMethod("as.integer", "IntegerPtr",
-    function(x)
-    {
-        IntegerPtr.read(x, 1, length(x))
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Subsetting.
-###
-
-setMethod("[", "IntegerPtr",
-    function(x, i, j, ..., drop=TRUE)
-    {
-        if (!missing(j) || length(list(...)) > 0)
-            stop("invalid subsetting")
-        if (missing(i))
-            subset <- as.integer(x)
-        else
-            subset <- IntegerPtr.read(x, i)
-        if (!drop)
-            subset <- IntegerPtr(subset)
-        subset
-    }
-)
-
-setReplaceMethod("[", "IntegerPtr",
-    function(x, i, j,..., value)
-    {
-        if (!missing(j) || length(list(...)) > 0)
-            stop("invalid subsetting")
-
-        ## We want to allow this: ib[3] <- 4, even if storage.mode(value)
-        ## is not "integer"
-        if (!is.integer(value)) {
-            if (length(value) >= 2)
-                stop("'storage.mode(value)' must be \"integer\"")
-            tmp <- value
-            value <- as.integer(value)
-            if (value != tmp)
-                stop("'value' must be an integer")
-        }
-        ## Now 'value' is an integer vector
-        if (missing(i))
-            return(IntegerPtr.write(x, 1, length(x), value=value))
-        IntegerPtr.write(x, i, value=value)
-    }
+    function(x) IntegerPtr.read(x, 1, length(x))
 )
 
 

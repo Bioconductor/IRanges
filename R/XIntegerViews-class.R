@@ -22,8 +22,7 @@ setClass("XIntegerViews",
 setMethod("Views", "integer",
     function(subject, start=NA, end=NA, names=NULL)
     {
-        xsubject <- XInteger(length(subject))
-        xsubject@xdata[] <- subject
+        xsubject <- XInteger(length(subject), subject)
         Views(xsubject, start=start, end=end, names=names)
     }
 )
@@ -119,49 +118,6 @@ setMethod("show", "XIntegerViews",
         cat("  Views on a ", lsub, "-integer ", class(subject), " subject", sep="")
         cat("\nsubject:", toNumSnippet(subject))
         XIntegerViews.show_vframe(object)
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Subsetting.
-###
-
-### Extract the i-th views of an XIntegerViews object as an XInteger object.
-### Example:
-setMethod("[[", "XIntegerViews",
-    function(x, i, j, ...)
-    {
-        if (!missing(j) || length(list(...)) > 0)
-            stop("invalid subsetting")
-        if (missing(i))
-            stop("subscript is missing")
-        if (is.character(i))
-            stop("cannot subset a ", class(x), " object by names")
-        if (!is.numeric(i))
-            stop("invalid subscript type")
-        if (length(i) < 1L)
-            stop("attempt to select less than one element")
-        if (length(i) > 1L)
-            stop("attempt to select more than one element")
-        if (is.na(i))
-            stop("subscript cannot be NA")
-        if (i == 0)
-            return(subject(x))
-        if (i < 1L || i > length(x))
-            stop("subscript out of bounds")
-        start <- start(x)[i]
-        end <- end(x)[i]
-        if (start < 1L || end > length(subject(x)))
-            stop("view is out of limits")
-        XInteger(IntegerPtr.read(subject(x)@xdata, start, end))
-    }
-)
-
-setReplaceMethod("[[", "XIntegerViews",
-    function(x, i, j,..., value)
-    {
-        stop("attempt to modify the value of a ", class(x), " instance")
     }
 )
 

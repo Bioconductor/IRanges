@@ -15,30 +15,25 @@ setClass("XInteger",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Constructor.
+### Initialization.
 ###
 
-XInteger <- function(length=0L, initialize=FALSE)
-{
-    if (isSingleNumber(length)) {
+setMethod("initialize", "XInteger",
+    function(.Object, length=0L, val=NULL)
+    {
+        if (!isSingleNumber(length) || length < 0)
+            stop("'length' must be a single non-negative integer")
         if (!is.integer(length))
             length <- as.integer(length)
-        if (length < 0)
-            stop("'length' cannot be negative")
-        values <- NULL
-    } else {
-        values <- length
-        if (!is.numeric(values))
-            stop("values must be numeric")
-        if (!is.integer(values))
-            values <- as.integer(values)
-        length <- length(values)
+        .Object@xdata <- IntegerPtr(length=length, val=val)
+        .Object@offset <- 0L
+        .Object@length <- length
+        .Object
     }
-    xdata <- IntegerPtr(length=length, initialize=initialize)
-    if (!is.null(values))
-        xdata[] <- values
-    new("XInteger", xdata=xdata, offset=0L, length=length)
-}
+)
+
+XInteger <- function(length=0L, val=NULL)
+    new("XInteger", length=length, val=val)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -54,9 +49,6 @@ setMethod("as.integer", "XInteger",
 ### Subsetting.
 ###
 
-### FIXME: Take @offset and @length into account!
-### FIXME: Currently return a non initialized XInteger object of length i
-###        if length(i) == 1 and drop=FALSE! 
 setMethod("[", "XInteger",
     function(x, i, j, ..., drop=TRUE)
     {
@@ -67,16 +59,19 @@ setMethod("[", "XInteger",
                 return(x)
             return(as.integer(x@xdata))
         }
-        ans <- IntegerPtr.read(x@xdata, i)
-        if (!drop)
-            ans <- XInteger(ans)
-        ans
+        if (!is.numeric(i) || any(is.na(i)))
+            stop("invalid subsetting")
+        if (any(i < 1) || any(i > length(x)))
+            stop("subscript out of bounds")
+        if (drop)
+            return(IntegerPtr.read(x@xdata, x@offset + i))
+        xdata <- IntegerPtr(length(i))
+        IntegerPtr.copy(xdata, x@offset + i, src=x@xdata)
+        x@xdata <- xdata
+        x@offset <- 0L
+        x@length <- length(xdata)
+        x
     }
-)
-
-setReplaceMethod("[", "XInteger",
-    function(x, i, j,..., value)
-        stop("attempt to modify the value of a ", class(x), " instance")
 )
 
 
@@ -84,11 +79,8 @@ setReplaceMethod("[", "XInteger",
 ### The "show" method.
 ###
 
-### FIXME: Take @offset and @length into account!
 toNumSnippet <- function(x, width = getOption("width"))
 {
-    if (is(x, "XInteger"))
-        x <- x@xdata
     width <- max(0, width - 4)
     element_length <- format.info(x[seq_len(min(length(x), width %/% 2))])[1] + 1
     number_of_elements <- min(length(x), width %/% element_length)
@@ -96,7 +88,7 @@ toNumSnippet <- function(x, width = getOption("width"))
         ending <- ""
     else
         ending <- " ..."
-        paste(paste(format(x[seq_len(number_of_elements)]), collapse = " "), ending, sep = "")
+    paste(paste(format(x[seq_len(number_of_elements)]), collapse = " "), ending, sep = "")
 }
 
 setMethod("show", "XInteger",

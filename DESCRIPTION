@@ -22,8 +22,6 @@ Collate: validity-utils.R
 	read.Mask.R
 	reverse.R
 	coverage.R
-	Views-class.R
-	X-utils.R
 	SequencePtr-class.R
 	RawPtr-class.R
 	IntegerPtr-class.R
@@ -32,6 +30,7 @@ Collate: validity-utils.R
 	XRaw-class.R
 	XInteger-class.R
 	XNumeric-class.R
+	Views-class.R
 	XIntegerViews-class.R
 	XIntegerViews-utils.R
 	debug.R

@@ -7,6 +7,7 @@
 \alias{XSequence}
 
 \alias{length,XSequence-method}
+\alias{[<-,XSequence-method}
 
 % XRaw class, functions and methods:
 \alias{class:XRaw}
@@ -20,7 +21,6 @@
 
 \alias{as.integer,XInteger-method}
 \alias{[,XInteger-method}
-\alias{[<-,XInteger-method}
 \alias{show,XInteger-method}
 \alias{==,XInteger,XInteger-method}
 \alias{!=,XInteger,XInteger-method}
@@ -71,7 +71,7 @@
 }
 
 \examples{
-  x1 <- XInteger(c(-1:10))
+  x1 <- XInteger(12, c(-1:10))
   x1
   length(x1)
 

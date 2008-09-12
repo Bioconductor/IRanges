@@ -39,7 +39,7 @@ static const R_CallMethodDef callMethods[] = {
 /* RawPtr_utils.c */
 	CALLMETHOD_DEF(debug_RawPtr_utils, 0),
 
-	CALLMETHOD_DEF(RawPtr_alloc, 2),
+	CALLMETHOD_DEF(RawPtr_new, 2),
 	CALLMETHOD_DEF(RawPtr_get_show_string, 1),
 	CALLMETHOD_DEF(RawPtr_memcmp, 5),
 
@@ -74,10 +74,12 @@ static const R_CallMethodDef callMethods[] = {
 /* IntegerPtr_utils.c */
 	CALLMETHOD_DEF(debug_IntegerPtr_utils, 0),
 
-	CALLMETHOD_DEF(IntegerPtr_alloc, 2),
-	CALLMETHOD_DEF(IntegerPtr_alloc_initialize, 2),
+	CALLMETHOD_DEF(IntegerPtr_new, 2),
 	CALLMETHOD_DEF(IntegerPtr_get_show_string, 1),
 	CALLMETHOD_DEF(IntegerPtr_memcmp, 5),
+
+	CALLMETHOD_DEF(IntegerPtr_copy_from_i1i2, 4),
+	CALLMETHOD_DEF(IntegerPtr_copy_from_subset, 3),
 
 	CALLMETHOD_DEF(IntegerPtr_read_ints_from_i1i2, 3),
 	CALLMETHOD_DEF(IntegerPtr_read_ints_from_subset, 2),
@@ -87,7 +89,7 @@ static const R_CallMethodDef callMethods[] = {
 /* NumericPtr_utils.c */
 	CALLMETHOD_DEF(debug_NumericPtr_utils, 0),
 
-	CALLMETHOD_DEF(NumericPtr_alloc, 2),
+	CALLMETHOD_DEF(NumericPtr_new, 2),
 	CALLMETHOD_DEF(NumericPtr_get_show_string, 1),
 	CALLMETHOD_DEF(NumericPtr_memcmp, 5),
 

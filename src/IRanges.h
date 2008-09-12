@@ -377,9 +377,9 @@ SEXP SequencePtr_length(SEXP x);
 
 SEXP debug_RawPtr_utils();
 
-SEXP RawPtr_alloc(
-	SEXP rawptr_xp,
-	SEXP length
+SEXP RawPtr_new(
+	SEXP length,
+	SEXP val
 );
 
 SEXP RawPtr_get_show_string(SEXP x);
@@ -537,14 +537,9 @@ SEXP RawPtr_reverse_translate_copy_from_i1i2(
 
 SEXP debug_IntegerPtr_utils();
 
-SEXP IntegerPtr_alloc(
-	SEXP x_xp,
-	SEXP length
-);
-
-SEXP IntegerPtr_alloc_initialize(
-	SEXP x_xp,
-	SEXP length
+SEXP IntegerPtr_new(
+	SEXP length,
+	SEXP val
 );
 
 SEXP IntegerPtr_get_show_string(SEXP x);
@@ -555,6 +550,19 @@ SEXP IntegerPtr_memcmp(
 	SEXP x2,
 	SEXP start2,
 	SEXP width
+);
+
+SEXP IntegerPtr_copy_from_i1i2(
+	SEXP dest,
+	SEXP src,
+	SEXP imin,
+	SEXP imax
+);
+
+SEXP IntegerPtr_copy_from_subset(
+	SEXP dest,
+	SEXP src,
+	SEXP subset
 );
 
 SEXP IntegerPtr_read_ints_from_i1i2(
@@ -586,9 +594,9 @@ SEXP IntegerPtr_write_ints_to_subset(
 
 SEXP debug_NumericPtr_utils();
 
-SEXP NumericPtr_alloc(
-	SEXP x_xp,
-	SEXP length
+SEXP NumericPtr_new(
+	SEXP length,
+	SEXP val
 );
 
 SEXP NumericPtr_get_show_string(SEXP x);

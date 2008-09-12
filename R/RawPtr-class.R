@@ -2,15 +2,6 @@
 ### External pointer to a raw vector: the "RawPtr" class
 ### -------------------------------------------------------------------------
 ###
-### An RawPtr object is a chunk of memory that:
-###   a. Contains bytes (char at the C level).
-###   b. Is readable and writable.
-###   c. Has a passed by address semantic i.e. the data it contains are not
-###      copied on object duplication. For example when doing
-###        xr2 <- xr1
-###      both xr1 and xr2 point to the same place in memory.
-###      This is achieved by using R predefined type "externalptr".
-###
 
 setClass("RawPtr", contains="SequencePtr")
 
@@ -18,37 +9,25 @@ setClass("RawPtr", contains="SequencePtr")
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Initialization.
 ###
-### Note that unlike raw vectors, RawPtr objects are not initialized with 0's.
+### Note that, unlike 'raw(99)', 'RawPtr(99)' does NOT initialize its
+### data. Specify the 'val' argument if you want data initialization.
 ###
 
-### This:
-###   xr <- RawPtr(30)
-### will call this "initialize" method.
 setMethod("initialize", "RawPtr",
-    function(.Object, length=0, verbose=FALSE)
+    function(.Object, length=0L, val=NULL)
     {
-        if (!isSingleNumber(length))
-            stop("'length' must be a single integer")
-        length <- as.integer(length)
-        if (length < 0)
-            stop("'length' must be a non-negative integer")
-        xp <- .Call("ExternalPtr_new", PACKAGE="IRanges")
-        if (verbose)
-            cat("Allocating memory for new", class(.Object), "object...")
-        .Object@xp <- .Call("RawPtr_alloc", xp, length, PACKAGE="IRanges")
-        if (verbose) {
-            cat(" OK\n")
-            show_string <- .Call("RawPtr_get_show_string", .Object, PACKAGE="IRanges")
-            cat("New", show_string, "successfully created\n")
-        }
-        .Object
+        if (!isSingleNumber(length) || length < 0)
+            stop("'length' must be a single non-negative integer")
+        if (!is.integer(length))
+            length <- as.integer(length)
+        if (!is.null(val) && !is.raw(val))
+            stop("'val' must be a raw vector")
+        .Call("RawPtr_new", length, val, PACKAGE="IRanges")
     }
 )
 
-RawPtr <- function(...)
-{
-    new("RawPtr", ...)
-}
+RawPtr <- function(length=0L, val=NULL)
+    new("RawPtr", length=length, val=val)
 
 setMethod("show", "RawPtr",
     function(object)
@@ -261,8 +240,11 @@ RawPtr.append <- function(x1, start1, width1, x2, start2, width2)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### length(as.integer(xr)) is equivalent to length(xr)
-### but the latter is MUCH faster!
+### Coercion.
+###
+### TODO: add the "as.raw" and "as.character" methods.
+###
+
 setMethod("as.integer", "RawPtr",
     function(x)
     {
@@ -271,80 +253,18 @@ setMethod("as.integer", "RawPtr",
 )
 
 ### Typical use:
-###   xr <- RawPtr(15)
-###   xr[] <- 65
-###   toString(xr)
-###   xr[] <- "Hello"
-###   toString(xr)
-### So this should always rewrite the content of an RawPtr object
+###   x <- RawPtr(15, as.raw(65))
+###   toString(x)
+###   x <- RawPtr(5, charToRaw("Hello"))
+###   toString(x)
+### This should always rewrite the content of an RawPtr object
 ### to itself, without any modification:
-###   xr[] <- toString(xr)
-### whatever the content of xr is!
+###   RawPtr.write(x, 1, length(x), value=toString(x))
+### whatever the content of 'x' is!
 setMethod("toString", "RawPtr",
     function(x, ...)
     {
         RawPtr.read(x, 1, length(x))
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Subsetting
-###
-
-### Select bytes from an RawPtr object.
-### Typical use:
-###   xr <- RawPtr(30)
-###   xr[25:20]
-###   xr[25:31] # subscript out of bounds
-### Note: xr[] can be used as a shortcut for as.integer(xr)
-setMethod("[", "RawPtr",
-    function(x, i, j, ..., drop)
-    {
-        if (!missing(j) || length(list(...)) > 0)
-            stop("invalid subsetting")
-        if (missing(i))
-            return(as.integer(x))
-        RawPtr.readInts(x, i)
-    }
-)
-
-### Replace bytes in an RawPtr object.
-### Typical use:
-###   xr <- RawPtr(30)
-###   xr[] <- 12 # fill with 12
-###   xr[3:10] <- 1:-2
-###   xr[3:10] <- "Ab"
-###   xr[0] <- 4 # subscript out of bounds
-###   xr[31] <- 4 # subscript out of bounds
-###   xr[3] <- -12 # subscript out of bounds
-setReplaceMethod("[", "RawPtr",
-    function(x, i, j,..., value)
-    {
-        if (!missing(j) || length(list(...)) > 0)
-            stop("invalid subsetting")
-
-        ## 'value' is a string
-        if (is.character(value)) {
-            if (missing(i))
-                return(RawPtr.write(x, 1, length(x), value=value))
-            return(RawPtr.write(x, i, value=value))
-        }
-
-        ## We want to allow this: xr[3] <- 4, even if storage.mode(value)
-        ## is not "integer"
-        if (!is.integer(value)) {
-            if (length(value) >= 2)
-                stop("'storage.mode(value)' must be \"integer\"")
-            tmp <- value
-            value <- as.integer(value)
-            if (value != tmp)
-                stop("'value' must be an integer")
-        }
-        ## Now 'value' is an integer vector
-        if (missing(i))
-            return(RawPtr.writeInts(x, 1, length(x), value=value))
-        RawPtr.writeInts(x, i, value=value)
     }
 )
 
@@ -367,40 +287,3 @@ RawPtr.compare <- function(x1, start1, x2, start2, width)
     .Call("RawPtr_memcmp", x1, start1, x2, start2, width, PACKAGE="IRanges")
 }
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "PrintableRawPtr" class is a simple extention of the "RawPtr"
-### class (no additional slots)
-
-setClass("PrintableRawPtr", representation("RawPtr"))
-
-setMethod("show", "PrintableRawPtr",
-    function(object)
-    {
-        print(toString(object))
-    }
-)
-
-### Safe alternative to 'strsplit(x, NULL, fixed=TRUE)[[1]]'.
-safeExplode <- function(x)
-{
-    if (!isSingleString(x))
-        stop("'x' must be a single string")
-    .Call("safe_strexplode", x, PACKAGE="IRanges")
-}
-
-### pxr <- new("PrintableRawPtr", 10)
-### pxr[] <- "ab-C."
-### pxr[] == strsplit(toString(pxr), NULL, fixed=TRUE)[[1]]
-setMethod("[", "PrintableRawPtr",
-    function(x, i, j, ..., drop)
-    {
-        if (!missing(j) || length(list(...)) > 0)
-            stop("invalid subsetting")
-        if (missing(i))
-            s <- toString(x)
-        else
-            s <- RawPtr.read(x, i)
-        safeExplode(s)
-    }
-)

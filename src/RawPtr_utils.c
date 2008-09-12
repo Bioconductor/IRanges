@@ -19,22 +19,29 @@ SEXP debug_RawPtr_utils()
 }
 
 
-/*
- * Memory allocation for a RawPtr object.
- * The data of a RawPtr object are stored in an "external" raw vector
- * (RAWSXP vector).
- * The allocated memory is NOT initialized!
- */
-SEXP RawPtr_alloc(SEXP x_xp, SEXP length)
+SEXP RawPtr_new(SEXP length, SEXP val)
 {
-	SEXP tag;
-	int tag_length;
+	SEXP tag, ans;
+	int tag_length, i;
+	Rbyte val0;
 
 	tag_length = INTEGER(length)[0];
-	PROTECT(tag = NEW_RAW(tag_length));
-	R_SetExternalPtrTag(x_xp, tag);
-	UNPROTECT(1);
-	return x_xp;
+	if (val == R_NilValue) {
+		PROTECT(tag = NEW_RAW(tag_length));
+	} else if (LENGTH(val) == 1) {
+		PROTECT(tag = NEW_RAW(tag_length));
+		val0 = RAW(val)[0];
+		for (i = 0; i < tag_length; i++)
+			RAW(tag)[i] = val0;
+	} else if (LENGTH(val) == tag_length) {
+		PROTECT(tag = duplicate(val));
+	} else {
+		error("when 'val' is not a single value, its length must "
+		      "be equal to the value of the 'length' argument");
+	}
+	PROTECT(ans = _new_SequencePtr("RawPtr", tag));
+	UNPROTECT(2);
+	return ans;
 }
 
 SEXP RawPtr_get_show_string(SEXP x)
@@ -49,7 +56,6 @@ SEXP RawPtr_get_show_string(SEXP x)
 		tag_length, RAW(tag));
 	return mkString(buf);
 }
-
 
 /*
  * --- .Call ENTRY POINT ---

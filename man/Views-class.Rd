@@ -53,7 +53,8 @@
 }
 
 \section{Other methods}{
-  In the code snippets below, \code{x} is a Views object.
+  In the code snippets below, \code{x} is a Views object,
+  and \code{i} is a single numeric value (a numeric vector of length 1).
 
   \describe{
     \item{}{
@@ -63,6 +64,13 @@
     \item{}{
       \code{subviews(x, start=NA, end=NA, width=NA, use.names=TRUE)}:
       [TODO]
+    }
+    \item{}{
+      \code{x[[i]]}:
+      Extract the i-th view from \code{x}.
+      Cannot be used for extracting a view that is "out of limits" (raise an
+      error).
+      The returned object belong to the same class as \code{subject(x)}.
     }
   }
 }
@@ -75,8 +83,11 @@
 }
 
 \examples{
-  ## This creates a set of 4 views on a logical vector of length 10:
+  ## Create a set of 4 views on a logical vector of length 10:
   v1 <- Views(logical(10), start=4:1, end=4:7)
+
+  ## Extract the 2nd view:
+  v1[[2]]
 
   ## 'start' and 'end' are recycled
   Views(logical(10), 2:1, 4)
@@ -91,6 +102,12 @@
   ## gaps() 
   v3 <- Views(logical(10), start=c(8, 3), end=c(14, 4))
   gaps(v3)
+
+  ## Views on an XInteger object:
+  v4 <- Views(XInteger(99, sample(99)-50), start=10:20, end=15:25)
+  v4
+  v4[3:1]
+  v4[[3]]
 }
 
 \keyword{methods}

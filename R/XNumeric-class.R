@@ -18,25 +18,20 @@ setClass("XNumeric",
 ### Constructor.
 ###
 
-XNumeric <- function(length=0L, initialize=FALSE)
-{
-    if (isSingleNumber(length)) {
+setMethod("initialize", "XNumeric",
+    function(.Object, length=0L, val=NULL)
+    {
+        if (!isSingleNumber(length) || length < 0)
+            stop("'length' must be a single non-negative integer")
         if (!is.integer(length))
             length <- as.integer(length)
-        if (length < 0)
-            stop("'length' cannot be negative")
-        values <- NULL
-    } else {
-        values <- length
-        if (!is.numeric(values))
-            stop("values must be numeric")
-        if (!storage.mode(values) == "double")
-            storage.mode(values) <- "double"
-        length <- length(values)
+        .Object@xdata <- NumericPtr(length=length, val=val)
+        .Object@offset <- 0L
+        .Object@length <- length
+        .Object
     }
-    xdata <- NumericPtr(length=length, initialize=initialize)
-    if (!is.null(values))
-        xdata[] <- values
-    new("XNumeric", xdata=xdata, offset=0L, length=length)
-}
+)
+
+XNumeric <- function(length=0L, val=NULL)
+    new("XNumeric", length=length, val=val)
 
