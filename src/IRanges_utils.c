@@ -31,7 +31,7 @@ static void normargs_startend(int *start, int *end, int width, const char *prefi
 			*start = 1;
 		if (*end == NA_INTEGER)
 			*end = -1;
-		if ((*end > 0 || *start < 0) && *end < *start)
+		if ((*end > 0 || *start < 0) && *end + 1 < *start)
 			error("invalid ('%sstart','%send') combination",
 			      prefix, prefix);
 	} else if (width < 0) {

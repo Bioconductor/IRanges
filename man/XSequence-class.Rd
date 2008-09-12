@@ -7,6 +7,9 @@
 \alias{XSequence}
 
 \alias{length,XSequence-method}
+\alias{subseq}
+\alias{subseq,XSequence-method}
+\alias{subseq,vector-method}
 \alias{[<-,XSequence-method}
 
 % XRaw class, functions and methods:
@@ -53,21 +56,34 @@
 }
 
 \section{Subsetting}{
-  In the code snippets below, \code{x} is an XInteger object.
+  In the code snippets below, \code{x} is an XSequence object.
 
   \describe{
     \item{}{
-      \code{x[i, drop = TRUE]}:
-      Return a new XInteger object made of the selected elements (subscript
+      \code{subseq(x, start=NA, end=NA, width=NA)}:
+      Provides a very efficient way to extract a linear subsequence
+      from an XSequence object.
+      For example, extracting a 100Mb substring from Human chromosome 1
+      (a \link[Biostrings]{DNAString} object) with \code{subseq} is almost
+      instantaneous and has almost no memory footprint. In fact, the cost in
+      time and memory of a call to \code{subseq} doesn't depend on the length
+      of the original object or on the length of the object to extract.
+      The "trick" behind this "feature" is very simple: \code{subseq}
+      does NOT copy the sequence data.
+    }
+    \item{}{
+      \code{x[i, drop=TRUE]}:
+      Return a new XSequence object made of the selected elements (subscript
       \code{i} must be an NA-free numeric vector specifying the positions of
       the elements to select). The \code{drop} argument specifies whether or
-      not to coerce the subset to an integer vector.
+      not to coerce the returned sequence to a standard vector.
     }
   }
 }
 
 \seealso{
-  \link{XIntegerViews-class}
+  \link{Views-class},
+  \link[Biostrings]{DNAString-class}
 }
 
 \examples{
@@ -76,14 +92,17 @@
   length(x1)
 
   ## Subsetting
+  x2 <- XInteger(99999, sample(99, 99999, replace=TRUE) - 50)
+  x2
+  subseq(x2, start=10)
+  subseq(x2, start=-10)
+  subseq(x2, start=-20, end=-10)
+  subseq(x2, start=10, width=5)
+  subseq(x2, end=10, width=5)
+  subseq(x2, end=10, width=0)
+
   x1[length(x1):1]
-  x1[length(x1):1, drop = FALSE]
-  x2 <- x1[length(x1):1, drop = FALSE]
-
-  x2 == x1
-
-  ## x1[1:length(x1)] is not equal x1!
-  x1 == x1[1:length(x1), drop = FALSE]
+  x1[length(x1):1, drop=FALSE]
 }
 
 \keyword{methods}

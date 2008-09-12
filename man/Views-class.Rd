@@ -16,6 +16,8 @@
 \alias{subviews}
 \alias{subviews,Views-method}
 \alias{gaps,Views-method}
+\alias{[[,Views-method}
+\alias{[[<-,Views-method}
 
 
 \title{Views objects}
@@ -104,10 +106,11 @@
   gaps(v3)
 
   ## Views on an XInteger object:
-  v4 <- Views(XInteger(99, sample(99)-50), start=10:20, end=15:25)
+  subject <- XInteger(99999, sample(99, 99999, replace=TRUE) - 50)
+  v4 <- Views(subject, start=1:99*1000, end=1:99*1001)
   v4
-  v4[3:1]
-  v4[[3]]
+  v4[-1]
+  v4[[5]]
 }
 
 \keyword{methods}
