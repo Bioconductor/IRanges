@@ -61,16 +61,29 @@
   \describe{
     \item{}{
       \code{subseq(x, start=NA, end=NA, width=NA)}:
-      Provides a very efficient way to extract a linear subsequence
-      from an XSequence object.
-      For example, extracting a 100Mb substring from Human chromosome 1
-      (a \link[Biostrings]{DNAString} object) with \code{subseq} is almost
-      instantaneous and has almost no memory footprint. In fact, the cost in
-      time and memory of a call to \code{subseq} doesn't depend on the length
-      of the original object or on the length of the object to extract.
-      The "trick" behind this "feature" is very simple: \code{subseq}
-      does NOT copy the sequence data.
+      Extract the subsequence from \code{x} specified by \code{start},
+      \code{end} and \code{width}.
+      At least one of \code{start}, \code{end} and \code{width} must be
+      \code{NA} and the other ones must be single numeric values.
+      If at least two of them are \code{NA}s, then \code{start=NA} is
+      interpreted as \code{start=1} and \code{end=NA} is interpreted as
+      \code{end=length(x)}.
+      A negative value for \code{start} or \code{end} is interpreted
+      relatively to the end of \code{x} e.g. \code{start=-1} is equivalent
+      to \code{start=length(x)}.
+      Finally, if \code{width} is not \code{NA}, then \code{start} and
+      \code{end} cannot be both \code{NA}s.
+
+      A note about performance: \code{subseq} does NOT copy the sequence data,
+      hence it's very efficient and is the recommended way to extract a
+      linear subsequence (i.e. a set of consecutive elements) from an XSequence
+      object. For example, extracting a 100Mb subsequence from Human chromosome
+      1 (a 250Mb \link[Biostrings]{DNAString} object) with \code{subseq} is
+      (almost) instantaneous and has (almost) no memory footprint (the cost in
+      time and memory does not depend on the length of the original sequence or
+      on the length of the subsequence to extract).
     }
+
     \item{}{
       \code{x[i, drop=TRUE]}:
       Return a new XSequence object made of the selected elements (subscript

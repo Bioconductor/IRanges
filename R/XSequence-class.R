@@ -47,6 +47,12 @@ setMethod("subseq", "vector",
     }
 )
 
+### The only reason for defining the replacement version of the "[" operator
+### is to let the user know that he can't use it:
+###   x <- BString("AbnbIU")
+###   x[2] <- "Z" # provokes an error
+### If we don't define it, then the user can type the above and believe that
+### it actually did something but it didn't.
 setReplaceMethod("[", "XSequence",
     function(x, i, j,..., value)
         stop("attempt to modify the value of a ", class(x), " instance")
