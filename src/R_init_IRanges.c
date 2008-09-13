@@ -25,7 +25,6 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(debug_IRanges_utils, 0),
 
 	CALLMETHOD_DEF(narrow_IRanges, 4),
-	CALLMETHOD_DEF(int_to_adjacent_ranges, 1),
 	CALLMETHOD_DEF(which_as_ranges, 1),
 	CALLMETHOD_DEF(reduce_IRanges, 2),
 	CALLMETHOD_DEF(summary_IRanges_list, 1),

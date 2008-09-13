@@ -94,6 +94,48 @@ views <- function(...) { .Deprecated("Views"); Views(...) }
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Extracting a view.
+###
+
+### Supported 'i' types: numeric vector of length 1.
+setMethod("[[", "Views",
+    function(x, i, j, ...)
+    {
+        if (!missing(j) || length(list(...)) > 0)
+            stop("invalid subsetting")
+        if (missing(i))
+            stop("subscript is missing")
+        if (is.character(i))
+            stop("cannot subset a ", class(x), " object by names")
+        if (!is.numeric(i))
+            stop("invalid subscript type")
+        if (length(i) < 1L)
+            stop("attempt to select less than one element")
+        if (length(i) > 1L)
+            stop("attempt to select more than one element")
+        if (is.na(i))
+            stop("subscript cannot be NA")
+        if (i == 0)
+            return(subject(x))
+        if (i < 1L || i > length(x))
+            stop("subscript out of bounds")
+        start <- start(x)[i]
+        end <- end(x)[i]
+        if (start < 1L || end > length(subject(x)))
+            stop("view is out of limits")
+        subseq(subject(x), start=start, end=end)
+    }
+)
+
+setReplaceMethod("[[", "Views",
+    function(x, i, j,..., value)
+    {
+        stop("attempt to modify the value of a ", class(x), " instance")
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
 
@@ -182,43 +224,12 @@ setMethod("gaps", "Views",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Extracting a view.
+### The "successiveViews" function.
 ###
 
-### Supported 'i' types: numeric vector of length 1.
-setMethod("[[", "Views",
-    function(x, i, j, ...)
-    {
-        if (!missing(j) || length(list(...)) > 0)
-            stop("invalid subsetting")
-        if (missing(i))
-            stop("subscript is missing")
-        if (is.character(i))
-            stop("cannot subset a ", class(x), " object by names")
-        if (!is.numeric(i))
-            stop("invalid subscript type")
-        if (length(i) < 1L)
-            stop("attempt to select less than one element")
-        if (length(i) > 1L)
-            stop("attempt to select more than one element")
-        if (is.na(i))
-            stop("subscript cannot be NA")
-        if (i == 0)
-            return(subject(x))
-        if (i < 1L || i > length(x))
-            stop("subscript out of bounds")
-        start <- start(x)[i]
-        end <- end(x)[i]
-        if (start < 1L || end > length(subject(x)))
-            stop("view is out of limits")
-        subseq(subject(x), start=start, end=end)
-    }
-)
-
-setReplaceMethod("[[", "Views",
-    function(x, i, j,..., value)
-    {
-        stop("attempt to modify the value of a ", class(x), " instance")
-    }
-)
+successiveViews <- function(subject, width, gapwidth=0, from=1)
+{
+    views <- successiveIRanges(width, gapwidth=gapwidth, from=from)
+    Views(subject, start=start(views), end=end(views))
+}
 

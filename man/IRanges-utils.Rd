@@ -3,6 +3,7 @@
 \alias{IRanges-utils}
 
 \alias{intToRanges}
+\alias{successiveIRanges}
 \alias{intToAdjacentRanges}
 \alias{whichAsRanges}
 \alias{toNormalIRanges}
@@ -28,15 +29,15 @@
 }
 
 \usage{
-  ## Create an IRanges instance
+  ## Create an IRanges instance:
   intToRanges(x)
-  intToAdjacentRanges(x)
+  successiveIRanges(width, gapwidth=0, from=1)
 
-  ## Create a NormalIRanges instance
+  ## Create a NormalIRanges instance:
   whichAsRanges(x)
   toNormalIRanges(x)
 
-  ## Modify an IRanges object
+  ## Modify an IRanges object:
   shift(x, shift, use.names=TRUE)
   restrict(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
   narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
@@ -46,11 +47,26 @@
 
 \arguments{
   \item{x}{
-    An integer vector for \code{intToRanges} and \code{intToAdjacentRanges}.
+    An integer vector for \code{intToRanges}.
     A logical vector for \code{whichAsRanges}.
     An \link{IRanges} object for \code{shift}, \code{restrict}, \code{reduce},
     \code{toNormalIRanges} and \code{gaps}.
     An \link{IRanges} object or an integer vector for \code{narrow}.
+  }
+  \item{width}{
+    For \code{successiveIRanges}, must be a vector of non-negative integers
+    (with no NAs) specifying the widths of the ranges to create.
+
+    For \code{narrow}, can be \code{NA}, a single integer, or an integer
+    vector of the same length as \code{x}.
+  }
+  \item{gapwidth}{
+    A single integer or an integer vector with one less element than
+    the \code{width} vector specifying the widths of the gaps separating
+    one range from the next one.
+  }
+  \item{from}{
+    A single integer specifying the starting position of the first range.
   }
   \item{shift}{
     A single integer.
@@ -70,10 +86,6 @@
     \code{TRUE} or \code{FALSE}. Should ranges that become "out of limits"
     after restriction be kept?
   }
-  \item{width}{
-    A single number or \code{NA}. The \code{narrow} function also excepts an
-    integer vector of \code{length(x)}.
-  }
   \item{with.inframe.attrib}{
     \code{TRUE} or \code{FALSE}. For internal use.
   }
@@ -84,10 +96,10 @@
   as \code{x} where each integer in \code{x} has been converted into the
   range that starts at 1 and ends at that integer.
 
-  \code{intToAdjacentRanges} returns an \link{IRanges} object of the same
-  length as \code{x} where the ranges are adjacent and have the width of
-  the corresponding integer in \code{x}. The first range in the returned
-  \link{IRanges} object starts at 1.
+  \code{successiveIRanges} returns an IRanges object containing the ranges on
+  \code{subject} that have the widths specified in the \code{width} vector
+  and are separated by the gaps specified in \code{gapwidth}.
+  The first range starts at position \code{from}.
 
   \code{whichAsRanges} returns an \link{IRanges} object containing all of
   the ranges where \code{x} is \code{TRUE}.
@@ -139,7 +151,7 @@
   vec <- as.integer(c(19, 5, 0, 8, 5))
   intToRanges(vec)
   whichAsRanges(vec >= 5)
-  x <- intToAdjacentRanges(vec)
+  x <- successiveIRanges(vec)
   x
   shift(x, -3)
   restrict(x, start=12, end=34)

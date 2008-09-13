@@ -20,19 +20,55 @@ intToRanges <- function(x)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "intToAdjacentRanges" function.
+### The "successiveIRanges" function.
+###
+### Note that the returned IRanges object is guaranted to be normal in the
+### following cases:
+###   (a) when length(width) == 0
+###   (b) when length(width) == 1 and width > 0
+###   (c) when length(width) >= 2 and all(width > 0) and all(gapwidth > 0)
+### However, the function doesn't try to turn the result into a NormalIRanges
+### object.
 ###
 
-intToAdjacentRanges <- function(x)
+successiveIRanges <- function(width, gapwidth=0, from=1)
 {
-    if (!is.numeric(x))
-        stop("'x' must be an integer vector")
-    if (!is.integer(x))
-        x <- as.integer(x)
-    if (min(x) < 0L)
-        stop("'x' cannot contain negative integers")
-    ans_start <- .Call("int_to_adjacent_ranges", x, PACKAGE="IRanges")
-    new2("IRanges", start=ans_start, width=x, check=FALSE)
+    if (!is.numeric(width))
+        stop("'width' must be an integer vector")
+    if (length(width) == 0)
+        return(IRanges())
+    if (!is.integer(width))
+        width <- as.integer(width)
+    if (any(is.na(width)))
+        stop("'width' cannot contain NAs")
+    if (min(width) < 0L)
+        stop("'width' cannot contain negative values")
+    if (!is.numeric(gapwidth))
+        stop("'gapwidth' must be an integer vector")
+    if (!is.integer(gapwidth))
+        gapwidth <- as.integer(gapwidth)
+    if (any(is.na(gapwidth)))
+        stop("'gapwidth' cannot contain NAs")
+    if (length(gapwidth) != length(width) - 1) {
+        if (length(gapwidth) != 1)
+            stop("'gapwidth' must a single integer or an integer vector ",
+                 "with one less element than the 'width' vector")
+        gapwidth <- rep.int(gapwidth, length(width) - 1)
+    }
+    if (!isSingleNumber(from))
+        stop("'from' must be a single integer")
+    if (!is.integer(from))
+        from <- as.integer(from)
+    ## diffinv() does not preserve the "integer" storage mode!
+    ans_start <- as.integer(diffinv(width))
+    ans_start <- from + ans_start[-length(ans_start)] + as.integer(diffinv(gapwidth))
+    new2("IRanges", start=ans_start, width=width, check=FALSE)
+}
+
+intToAdjacentRanges <- function(...)
+{
+    .Deprecated("successiveIRanges")
+    successiveIRanges(...)
 }
 
 

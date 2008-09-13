@@ -140,30 +140,6 @@ SEXP narrow_IRanges(SEXP x, SEXP start, SEXP end, SEXP width)
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP int_to_adjacent_ranges(SEXP x)
-{
-	SEXP ans;
-	int x_length, i, *x_elt, *ans_elt0, *ans_elt1;
-
-	x_length = LENGTH(x);
-	PROTECT(ans = NEW_INTEGER(x_length));
-	if (x_length >= 1)
-		INTEGER(ans)[0] = 1;
-	if (x_length >= 2)
-		for (i = 1, x_elt = INTEGER(x),
-			    ans_elt0 = INTEGER(ans),
-			    ans_elt1 = INTEGER(ans)+1;
-		     i < x_length;
-		     i++, x_elt++, ans_elt0++, ans_elt1++) {
-			*ans_elt1 = *ans_elt0 + *x_elt;
-		}
-	UNPROTECT(1);
-	return ans;
-}
-
-/*
- * --- .Call ENTRY POINT ---
- */
 SEXP which_as_ranges(SEXP x)
 {
 	SEXP ans, start, width;

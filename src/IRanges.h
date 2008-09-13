@@ -344,8 +344,6 @@ SEXP narrow_IRanges(
 	SEXP width
 );
 
-SEXP int_to_adjacent_ranges(SEXP x);
-
 SEXP which_as_ranges(SEXP x);
 
 SEXP reduce_IRanges(

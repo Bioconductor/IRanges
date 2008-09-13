@@ -8,6 +8,8 @@
 \alias{Views}
 \alias{Views,ANY-method}
 \alias{views}
+\alias{[[,Views-method}
+\alias{[[<-,Views-method}
 \alias{coerce,Views,NormalIRanges-method}
 \alias{restrict,Views-method}
 \alias{trim}
@@ -16,8 +18,7 @@
 \alias{subviews}
 \alias{subviews,Views-method}
 \alias{gaps,Views-method}
-\alias{[[,Views-method}
-\alias{[[<-,Views-method}
+\alias{successiveViews}
 
 
 \title{Views objects}
@@ -33,48 +34,104 @@
   and provide some facilities shared by the more specific containers.
 }
 
-\section{Accesor methods}{
-  In the code snippets below, \code{x} is a Views object.
+\usage{
+## Constructor:
 
-  \describe{
-    \item{}{
-      \code{subject(x)}:
-      The subject of \code{x}.
-    }
+  Views(subject, start=NA, end=NA, names=NULL)
+
+## Accessor:
+
+  subject(x)
+
+## View extraction:
+
+  \S4method{[[}{Views}(x, i, j, ...)
+
+## Utilities:
+
+  \S4method{restrict}{Views}(x, start, end, keep.all.ranges=FALSE, use.names=TRUE)
+
+  trim(x, use.names=TRUE)
+
+  \S4method{narrow}{Views}(x, start=NA, end=NA, width=NA, use.names=TRUE)
+
+  subviews(x, start=NA, end=NA, width=NA, use.names=TRUE)
+
+  \S4method{gaps}{Views}(x, start=NA, end=NA)
+
+  successiveViews(subject, width, gapwidth=0, from=1)
+}
+
+\arguments{
+  \item{subject}{
+    The object on which to create the views.
+  }
+  \item{start, end}{
+    For \code{Views}, they must be integer vectors (eventually with NAs)
+    specifying the starting and ending positions of the views to create.
+
+    For \code{restrict}, they must be single integers specifying the
+    restriction window.
+
+    For \code{narrow} and \code{subviews}, they can be single integers
+    or NAs.
+
+    For \code{gaps}, they can be single integers or NAs.
+    The gap extraction will be restricted to the window specified by
+    \code{start} and \code{end}. \code{start=NA} and \code{end=NA}
+    are interpreted as \code{start=1} and \code{end=length(subject(x))},
+    respectively, so, if \code{start} and \code{end} are not specified,
+    then gaps are extracted from the entire subject.
+  }
+  \item{width}{
+    For \code{narrow} and \code{subviews}, can be \code{NA}, a single
+    integer, or an integer vector of the same length as \code{x}.
+
+    For \code{successiveViews}, must be a vector of positive integers
+    (with no NAs) specifying the widths of the views to create.
+  }
+  \item{names}{
+    If not \code{NULL}, the names to assign to the views.
+  }
+  \item{x}{
+    A Views object.
+  }
+  \item{i, j, ...}{
+    Only one subscript is supported (\code{x[[i]]}).
+  }
+  \item{keep.all.ranges}{
+    Not supported for Views objects (must be \code{FALSE}).
+  }
+  \item{use.names}{
+    \code{TRUE} or \code{FALSE}. Should names be preserved?
+  }
+  \item{gapwidth}{
+    A single integer or an integer vector with one less element than
+    the \code{width} vector specifying the widths of the gaps separating
+    one view from the next one.
+  }
+  \item{from}{
+    A single integer specifying the starting position of the first view.
   }
 }
 
-\section{Constructor}{
-  \describe{
-    \item{}{
-      \code{Views(subject, start=NA, end=NA, names=NULL)}:
-      Return the Views object containing the views on \code{subject}
-      specified by the \code{start} and \code{end} integer vectors.
-    }
-  }
-}
+\details{
+  \code{restrict} will drop the views that don't overlap with the window
+  specified by \code{start} and \code{end} and drop the parts of the
+  remaining views that are outside the window.
 
-\section{Other methods}{
-  In the code snippets below, \code{x} is a Views object,
-  and \code{i} is a single numeric value (a numeric vector of length 1).
+  [TODO: give some details about \code{trim}]
 
-  \describe{
-    \item{}{
-      \code{trim(x, use.names=TRUE)}:
-      [TODO]
-    }
-    \item{}{
-      \code{subviews(x, start=NA, end=NA, width=NA, use.names=TRUE)}:
-      [TODO]
-    }
-    \item{}{
-      \code{x[[i]]}:
-      Extract the i-th view from \code{x}.
-      Cannot be used for extracting a view that is "out of limits" (raise an
-      error).
-      The returned object belong to the same class as \code{subject(x)}.
-    }
-  }
+  [TODO: give some details about \code{subviews}]
+
+  \code{x[[i]]} extracts the i-th view from \code{x}. It cannot be used for
+  extracting a view that is "out of limits" (an error will be raised).
+  The returned object belong to the same class as \code{subject(x)}.
+
+  \code{successiveViews} returns a Views object containing the views on
+  \code{subject} that have the widths specified in the \code{width} vector
+  and are separated by the gaps specified in \code{gapwidth}.
+  The first view starts at position \code{from}.
 }
 
 \seealso{
@@ -111,6 +168,9 @@
   v4
   v4[-1]
   v4[[5]]
+
+  ## 31 adjacent views:
+  successiveViews(subject, 40:10)
 }
 
 \keyword{methods}

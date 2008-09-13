@@ -19,9 +19,9 @@ export(
     IRanges,
     asNormalIRanges,
     intToRanges,
+    successiveIRanges,
     intToAdjacentRanges,
     whichAsRanges,
-    slice,
     toNormalIRanges,
     summaryIRangesList,
     MaskCollection.show_frame,
@@ -37,6 +37,7 @@ export(
     #IntegerPtr, IntegerPtr.read, IntegerPtr.write,
     #NumericPtr, NumericPtr.read, NumericPtr.write,
     XInteger, XNumeric,
+    successiveViews,
 
     ## Generic functions:
     width,
@@ -58,6 +59,7 @@ export(
     maskedwidth, maskedratio,
     subseq,
     subject, Views, subviews, trim,
+    slice,
     viewMins, viewMaxs, viewSums,
 
     ## Aliases:
