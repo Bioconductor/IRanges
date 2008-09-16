@@ -16,7 +16,8 @@ setClass("IRanges",
         start=integer(0),
         width=integer(0),
         NAMES=as.character(NA)
-    )
+    ),
+    "Ranges"
 )
 
 setClass("UnlockedIRanges", contains="IRanges")
@@ -94,12 +95,10 @@ setMethod("whichFirstNotNormal", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "isEmpty" generic and methods.
+### The "isEmpty" methods.
 ###
 ### An IRanges object is considered empty iff all its ranges are empty.
 ### 
-
-setGeneric("isEmpty", function(x) standardGeneric("isEmpty"))
 
 setMethod("isEmpty", "IRanges", function(x) all(width(x) == 0))
 

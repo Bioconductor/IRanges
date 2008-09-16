@@ -225,14 +225,10 @@ setMethod("narrow", "numeric",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "reduce" generic and methods.
+### The "reduce" methods.
 ###
 ### Note that reduce() preserves normality (of course).
 ###
-
-setGeneric("reduce", signature="x",
-    function(x, with.inframe.attrib=FALSE) standardGeneric("reduce")
-)
 
 setMethod("reduce", "IRanges",
     function(x, with.inframe.attrib=FALSE)
@@ -269,16 +265,11 @@ toNormalIRanges <- function(x)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "gaps" generic and methods.
+### The "gaps" methods.
 ###
 ### Note that gaps() will always return a normal IRanges object (so, obviously,
 ### it preserves normality).
 ###
-
-setGeneric("gaps", signature="x",
-    function(x, start=NA, end=NA)
-        standardGeneric("gaps")
-)
 
 setMethod("gaps", "IRanges",
     function(x, start=NA, end=NA)

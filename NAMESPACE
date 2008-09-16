@@ -5,7 +5,7 @@ import(stats) ## for the "start", "end" and "update" generics
 
 exportClasses(
     IRanges, UnlockedIRanges, LockedIRanges, NormalIRanges,
-    MaskCollection,
+    MaskCollection, RangesCollection,
     SequencePtr, RawPtr, IntegerPtr, NumericPtr,
     XSequence, XRaw, XInteger, XNumeric,
     Views, XIntegerViews
@@ -31,6 +31,7 @@ export(
     read.liftMask,
     read.rmMask,
     read.trfMask,
+    RangesCollection,
     RawPtr, RawPtr.readInts, RawPtr.writeInts, RawPtr.read, RawPtr.write,
     RawPtr.copy, RawPtr.reverseCopy, RawPtr.readComplexes, RawPtr.append,
     RawPtr.compare,
@@ -55,6 +56,7 @@ export(
     reverse,
     coverage,
     nir_list,
+    range_list,
     active, "active<-",
     maskedwidth, maskedratio,
     subseq,

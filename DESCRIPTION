@@ -16,8 +16,11 @@ Imports: methods, stats
 License: Artistic-2.0
 Collate: validity-utils.R
 	utils.R
+        Ranges-class.R
+        RangesCollection-class.R
 	IRanges-class.R
 	IRanges-utils.R
+        IRangesCollection-class.R
 	MaskCollection-class.R
 	read.Mask.R
 	reverse.R

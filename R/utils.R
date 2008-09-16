@@ -149,3 +149,4 @@ recycleVector <- function(x, length)
 ###      something" than objects that are "just something".
 isNotStrictlySorted <- function(x) .Internal(is.unsorted(x, TRUE))
 
+setClassUnion("characterORNULL", c("character", "NULL"))

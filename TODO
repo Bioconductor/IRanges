@@ -3,14 +3,14 @@
 
 - Data structures:
   - Ranges, abstract parent of all range structures
-  - RangesImpl partially implements Ranges
-    - contains environment of vectors on ranges, each vector has "gap value"
-    - with optional reference to a tree for searching
+  - IndexedRanges, extend Ranges, adds index slot
+  - AnnotatedRanges, composed of Ranges and a place to store data on the ranges
+    - environment of vectors on ranges, each vector has "gap value"
+    - extends Ranges
+  - DBRanges for representing Ranges in a database
   - RangesCollection as collection of Ranges objects, extends Ranges?
   - RangesMatching, encodes matching between ranges,
     - Extends RangesCollection and maybe graph?
-  - SeqRanges, ranges on a genomic sequence
-    - Extends RangesCollection, element for each chromosome/strand
   - RectRanges, RangesCollection of two Ranges, one for each dimension
   - PolyRanges, list of real-valued matrices, each holding one polygon?
 
@@ -19,7 +19,8 @@
   - "unique" for removing duplicate ranges
   - "findInterval" for points that fall into a normal Ranges
   - "overlap" for finding regions that overlap
-  - "nearest" for finding nearest neighbors 
+  - "nearest" for finding nearest neighbors
+  - "match" and "%in%" for exact matching
   - "intersect" or "&" for finding the completely overlapping subregions
   - "setdiff" or "-" for subtracting the overlap from first argument
   - "!" as alias for "gaps"
@@ -29,14 +30,16 @@
   - "unroll" like "inverse.rle", generates vector from values on ranges
     - if no value specified, could be logical vector, TRUE in range else FALSE
   - "sort" sorts by start or end and returns result as TreeRanges
-
+  - "[[" for getting out a named data object
+  - "[x,y" where 'x' indexes the ranges and 'y' indexes the data objects 
+  
 - RangesCollection methods:
-  - "c", "split", "unsplit", "unlist", ... like other R collections
+  - "c"/"append", "split", "unsplit", "unlist", ...
   - binary ops: "overlap", "nearest", "intersect", "setdiff", "merge"
     - 'y' omitted: become n-ary ops on items in collection
     - 'y' specified: performed element-wise
   - unary ops: "gaps" are vectorized
-  - "rngapply" for applying over each element
+  - "rangeApply" for applying over each element
   
 - RangeMatching methods:
   - "lmatched" and "rmatched", which matched (either side)
@@ -44,13 +47,7 @@
   - "clusters", perhaps delegates to "connComp" to group matched ranges
   - "relations" to extract relationships in terms of Allen's Interval Algebra
     - kind of like "all.equal"
-
-- SeqRanges methods:
-  - "chrapply" for applying over each chromosome (no it's not crap)
-    - "strand" whether to combine strands from same chromosome
-    - "exclude" to skip chromsomes by pattern
-    - "masks" applied to each element
-      - named elements in 'values' combined via expand.grid()
-
+  - "width" for amount of overlap for each match
+    
 - IRanges constructors:
   - From 'rle' object
