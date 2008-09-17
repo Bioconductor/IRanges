@@ -2,7 +2,6 @@
 
 \alias{IRanges-utils}
 
-\alias{intToRanges}
 \alias{successiveIRanges}
 \alias{intToAdjacentRanges}
 \alias{whichAsRanges}
@@ -21,6 +20,9 @@
 \alias{gaps,IRanges-method}
 \alias{summaryIRangesList}
 
+% Deprecated:
+\alias{intToRanges}
+
 
 \title{IRanges utility functions}
 
@@ -30,7 +32,6 @@
 
 \usage{
   ## Create an IRanges instance:
-  intToRanges(x)
   successiveIRanges(width, gapwidth=0, from=1)
 
   ## Create a NormalIRanges instance:
@@ -47,7 +48,6 @@
 
 \arguments{
   \item{x}{
-    An integer vector for \code{intToRanges}.
     A logical vector for \code{whichAsRanges}.
     An \link{IRanges} object for \code{shift}, \code{restrict}, \code{reduce},
     \code{toNormalIRanges} and \code{gaps}.
@@ -92,10 +92,6 @@
 }
 
 \details{
-  \code{intToRanges} returns an \link{IRanges} object of the same length
-  as \code{x} where each integer in \code{x} has been converted into the
-  range that starts at 1 and ends at that integer.
-
   \code{successiveIRanges} returns an IRanges object containing the ranges on
   \code{subject} that have the widths specified in the \code{width} vector
   and are separated by the gaps specified in \code{gapwidth}.
@@ -144,12 +140,12 @@
 \author{H. Pages}
 
 \seealso{
-  \link{IRanges-class}
+  \link{IRanges-class},
+  \code{\link{successiveViews}}
 }
 
 \examples{
   vec <- as.integer(c(19, 5, 0, 8, 5))
-  intToRanges(vec)
   whichAsRanges(vec >= 5)
   x <- successiveIRanges(vec)
   x

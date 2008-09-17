@@ -7,6 +7,7 @@
 ###
 
 setClass("IRanges",
+    contains="Ranges",
     representation(
         start="integer",
         width="integer",
@@ -16,8 +17,7 @@ setClass("IRanges",
         start=integer(0),
         width=integer(0),
         NAMES=as.character(NA)
-    ),
-    "Ranges"
+    )
 )
 
 setClass("UnlockedIRanges", contains="IRanges")
@@ -112,11 +112,11 @@ setMethod("isEmpty", "NormalIRanges", function(x) length(x) == 0)
 ###
 ### Note: defined for NormalIRanges objects only.
 ### For an ordinary IRanges object 'x', it's not clear what the semantic
-### should. In particular, should empty ranges be ignored or not? If not then
-### we could end up with 'min(x)' > 'max(x)' (e.g. when 'x' is made of 1 empty
-### range) which is not nice. Another (and more pragmatic) reason for not
-### defining these methods for IRanges objects is that I don't need them at
-### the moment.
+### should be. In particular, should empty ranges be ignored or not? If not
+### then we could end up with 'min(x)' > 'max(x)' (e.g. when 'x' is made of 1
+### empty range) which is not nice. Another (and more pragmatic) reason for
+### not defining these methods for IRanges objects is that I don't need them
+### at the moment.
 ###
 
 setMethod("max", "NormalIRanges",

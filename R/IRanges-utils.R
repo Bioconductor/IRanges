@@ -9,6 +9,10 @@
 
 intToRanges <- function(x)
 {
+    msg <- paste("'intToRanges' is deprecated.",
+                 "Use 'IRanges(start=rep.int(1L, length(x)), width=x)' instead.",
+                 sep="\n")
+    .Deprecated(msg=msg)
     if (!is.numeric(x))
         stop("'x' must be an integer vector")
     if (!is.integer(x))
@@ -216,7 +220,11 @@ setMethod("narrow", "NormalIRanges",
 setMethod("narrow", "numeric",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
-        y <- intToRanges(x)
+        if (!is.integer(x))
+            x <- as.integer(x)
+        if (min(x) < 0L)
+            stop("'x' cannot contain negative integers")
+        y <- new2("IRanges", start=rep.int(1L, length(x)), width=x, check=FALSE)
         if (normargUseNames(use.names))
             names(y) <- names(x)
         narrow(y, start=start, end=end, width=width, use.names=TRUE)
