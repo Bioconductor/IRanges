@@ -202,7 +202,6 @@ setMethod("[", "RangesCollection",
               stop("invalid subscript type")
             }
             slot(x, "range_list", check=FALSE) <- range_list(x)[i]
-            slot(x, "active", check=FALSE) <- active(x)[i]
             if (!is.null(names(x)))
               slot(x, "NAMES", check=FALSE) <- names(x)[i]
             x
