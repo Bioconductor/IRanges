@@ -148,6 +148,11 @@ void CharAE_insert_at(
 	char c
 );
 
+void append_string_to_CharAE(
+	CharAE *char_ae,
+	const char *string
+);
+
 SEXP CharAE_asRAW(const CharAE *char_ae);
 
 CharAEAE new_CharAEAE(

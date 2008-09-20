@@ -154,6 +154,11 @@ DEFINE_CCALLABLE_STUB(void, CharAE_insert_at,
 	(        char_ae,     at,      c)
 );
 
+DEFINE_CCALLABLE_STUB(void, append_string_to_CharAE,
+	(CharAE *char_ae, const char *string),
+	(        char_ae,             string)
+);
+
 DEFINE_CCALLABLE_STUB(SEXP, CharAE_asRAW,
 	(const CharAE *char_ae),
 	(              char_ae)

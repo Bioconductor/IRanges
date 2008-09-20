@@ -504,6 +504,21 @@ void _CharAE_insert_at(CharAE *char_ae, int at, char c)
 	return;
 }
 
+void _append_string_to_CharAE(CharAE *char_ae, const char *string)
+{
+	int nnewval, new_nelt;
+	char *dest;
+
+	nnewval = strlen(string);
+	new_nelt = char_ae->nelt + nnewval;
+	while (char_ae->buflength < new_nelt)
+		CharAE_extend(char_ae);
+	dest = char_ae->elts + char_ae->nelt;
+	memcpy(dest, string, nnewval * sizeof(char));
+	char_ae->nelt = new_nelt;
+	return;
+}
+
 SEXP _CharAE_asRAW(const CharAE *char_ae)
 {
 	SEXP ans;
