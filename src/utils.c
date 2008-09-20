@@ -13,7 +13,6 @@ const char *_get_class(SEXP x)
  */
 SEXP address_asSTRSXP(SEXP s)
 {
-	SEXP ans;
 	char buf[40]; /* should be enough, even for 128-bit addresses */
 
 	snprintf(buf, sizeof(buf), "%p", s);
