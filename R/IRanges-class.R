@@ -628,3 +628,14 @@ setMethod("first", "IRanges", function(x) {.Deprecated("start"); start(x)})
 setGeneric("last", function(x) standardGeneric("last"))
 setMethod("last", "IRanges", function(x) {.Deprecated("end"); end(x)})
 
+### Lists of IRanges instances
+
+## Only accepts IRanges instances as elements
+setClass("IRangesList", contains = "RangesList")
+
+setMethod("elementClass", "IRangesList", function(x) "IRanges")
+
+### From a RangesList object to a NormalIRanges object.
+setAs("IRangesList", "NormalIRanges",
+      function(from) reduce(from)[[1]]
+      )

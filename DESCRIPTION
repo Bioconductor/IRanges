@@ -16,16 +16,7 @@ Imports: methods, stats
 License: Artistic-2.0
 Collate: validity-utils.R
 	utils.R
-	Ranges-class.R
-	IRanges-class.R
-	IRanges-utils.R
-	RangesCollection-class.R
-	IRangesCollection-class.R
-	MaskCollection-class.R
-	read.Mask.R
-	reverse.R
-	coverage.R
-	SequencePtr-class.R
+        SequencePtr-class.R
 	RawPtr-class.R
 	IntegerPtr-class.R
 	NumericPtr-class.R
@@ -33,8 +24,21 @@ Collate: validity-utils.R
 	XRaw-class.R
 	XInteger-class.R
 	XNumeric-class.R
+        TypedList-class.R
+        XList-class.R
+        XDataFrame-class.R
+	Ranges-class.R
+        RangesList-class.R
+	IRanges-class.R
+	IRanges-utils.R
+        ValuedIRanges-class.R
+	MaskCollection-class.R
+	read.Mask.R
+	reverse.R
+	coverage.R
 	Views-class.R
 	XIntegerViews-class.R
 	XIntegerViews-utils.R
+        GenomicRanges-class.R
 	debug.R
 	zzz.R
