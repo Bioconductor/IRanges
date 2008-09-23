@@ -7,7 +7,7 @@ Description: The IRanges class and its extensions are low-level containers
 	allow the storage of additional information attached to each
 	chromosome region as well as a hierarchical relationship between
 	these regions.
-Version: 0.99.14
+Version: 0.99.15
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Biocore Team c/o BioC user list <bioconductor@stat.math.ethz.ch>
 biocViews: Infrastructure, Genetics
@@ -16,7 +16,7 @@ Imports: methods, stats
 License: Artistic-2.0
 Collate: validity-utils.R
 	utils.R
-        SequencePtr-class.R
+	SequencePtr-class.R
 	RawPtr-class.R
 	IntegerPtr-class.R
 	NumericPtr-class.R
@@ -24,14 +24,14 @@ Collate: validity-utils.R
 	XRaw-class.R
 	XInteger-class.R
 	XNumeric-class.R
-        TypedList-class.R
-        XList-class.R
-        XDataFrame-class.R
+	TypedList-class.R
+	XList-class.R
+	XDataFrame-class.R
 	Ranges-class.R
-        RangesList-class.R
+	RangesList-class.R
 	IRanges-class.R
 	IRanges-utils.R
-        ValuedIRanges-class.R
+	ValuedIRanges-class.R
 	MaskCollection-class.R
 	read.Mask.R
 	reverse.R
@@ -39,6 +39,6 @@ Collate: validity-utils.R
 	Views-class.R
 	XIntegerViews-class.R
 	XIntegerViews-utils.R
-        GenomicRanges-class.R
+	GenomicRanges-class.R
 	debug.R
 	zzz.R
