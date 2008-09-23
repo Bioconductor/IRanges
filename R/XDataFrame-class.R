@@ -259,12 +259,23 @@ setMethod("[", "XDataFrame",
             x
           })
 
-setReplaceMethod("[", c("XDataFrame", value = "XSequence"),
-                 function(x, i, j, ..., value)
-                 {
-                   stop("attempt to modify the value of a ", class(x),
-                        " instance")
-                 })
+## Herve - Sept 23, 2008
+## The method below is not needed (at least in its current form) because it does
+## nothing more than the method defined for superclass "TypedList".
+## Because this method also dispatches on argument 'value', then 'R CMD check'
+## is complaining:
+##   Undocumented S4 methods:
+##     generic '[<-' and siglist 'IRanges,ANY,ANY,ANY'
+##     generic '[<-' and siglist 'MaskCollection,ANY,ANY,ANY'
+##     generic '[<-' and siglist 'XSequence,ANY,ANY,ANY'
+##     etc...
+## ... so I commented it out for now.
+#setReplaceMethod("[", c("XDataFrame", value = "XSequence"),
+#                 function(x, i, j, ..., value)
+#                 {
+#                   stop("attempt to modify the value of a ", class(x),
+#                        " instance")
+#                 })
 
 ## setReplaceMethod("[", "XDataFrame",
 ##                  function(x, i, j, ..., value)
