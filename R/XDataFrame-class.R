@@ -198,7 +198,7 @@ setMethod("[[", "XDataFrame",
               stop("attempt to select less than one element")
             if (length(i) > 1L)
               stop("attempt to select more than one element")
-            if (!is.character(i) && (i < 1L || i > length(x)))
+            if (!is.character(i) && !is.na(i) && (i < 1L || i > length(x)))
               stop("subscript out of bounds")
             callNextMethod(x, i)[rowset(x)]
           }

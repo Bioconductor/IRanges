@@ -39,7 +39,9 @@ ValuedIRanges <- function(ranges = IRanges(), ...) {
   data_list <- list(...)
   if (!all(lapply(data_list, length) == length(ranges)))
     stop("All arguments in '...' must have lengths matching that of 'ranges'")
-  values <- XDataFrame(...)
+  ## row.names are just to ensure the XDataFrame has the correct row count
+  values <- XDataFrame(..., row.names = seq_len(length(ranges)))
+  rownames(values) <- NULL
   new("ValuedIRanges", ranges, values = values)
 }
 
@@ -60,7 +62,7 @@ setMethod("[[", "ValuedIRanges",
               stop("attempt to select less than one element")
             if (length(i) > 1L)
               stop("attempt to select more than one element")
-            if (i < 1L || i > length(x))
+            if (is.numeric(i) && !is.na(i) && (i < 1L || i > length(x)))
               stop("subscript out of bounds")
             values(x)[[i]]
           }
@@ -89,8 +91,8 @@ setReplaceMethod("[[", "ValuedIRanges",
                      ##  stop("data not a multiple of replacement length")
                      ##value <- rep(value, length = length(range(x)))
                    }
-                   values(x)[[i]] <- value
-                   value
+                   x@values[[i]] <- value
+                   x
                  })
 
 ### Supported 'i' types: numeric vector, logical vector, NULL and missing.
@@ -109,7 +111,7 @@ setMethod("[", "ValuedIRanges",
               if (!is.atomic(i))
                 stop("invalid subscript type")
               lx <- length(x)
-              if (any(is.na(i)))
+              if (!is.null(i) && any(is.na(i)))
                 stop("subscript contains NAs")
               if (is.numeric(i)) {
                 if (any(i < -lx) || any(i > lx))
@@ -128,8 +130,8 @@ setMethod("[", "ValuedIRanges",
             }
             checkIndex(i, TRUE)
             checkIndex(j)
-            slot(x, "ranges", check=FALSE) <- ranges(x)[i]
-            x@values <- values(x)[i,j,drop=FALSE]
+            x <- callNextMethod(x, i) # subset the ranges
+            x@values <- values(x)[i,j,drop=FALSE] # subset the data values
             x
           })
 
@@ -143,3 +145,16 @@ setReplaceMethod("[", "ValuedIRanges",
 
 setClass("ValuedIRangesList", contains = "IRangesList")
 setMethod("elementClass", "ValuedIRangesList", function(x) "ValuedIRanges")
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion.
+###
+
+setMethod("as.data.frame", "ValuedIRanges",
+          function(x, row.names=NULL, optional=FALSE, ...)
+          {
+            if (!(is.null(row.names) || is.character(row.names)))
+              stop("'row.names' must be NULL or a character vector")
+
+            cbind(callNextMethod(), as.data.frame(values(x)))
+          })

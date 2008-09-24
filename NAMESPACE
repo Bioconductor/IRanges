@@ -17,6 +17,7 @@ export(
     sapplyLength,
     safeExplode,
     IRanges,
+    ValuedIRanges,
     asNormalIRanges,
     intToRanges,
     successiveIRanges,

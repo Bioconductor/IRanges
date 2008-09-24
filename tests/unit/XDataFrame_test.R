@@ -145,9 +145,6 @@ test_XDataFrame_dimnames_replace <- function() {
   checkException(rownames(sw) <- rn)
 }
 
-library(IRanges)
-library(RUnit)
-
 test_XDataFrame_replacement <- function() {
   score <- c(1L, 3L, NA)
   counts <- c(10L, 2L, NA)
