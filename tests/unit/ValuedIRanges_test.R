@@ -31,7 +31,7 @@ test_ValuedIRanges_construction <- function() {
   checkIdentical(vir[["score...score"]], score + score)
 }
 
-test_RangesCollection_extraction <- function() {
+test_ValuedIRanges_extraction <- function() {
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   filter <- c(TRUE, FALSE, TRUE)
   score <- c(10, 2, NA)
@@ -53,7 +53,7 @@ test_RangesCollection_extraction <- function() {
   checkIdentical(vir[["score"]], score)
 }
 
-test_RangesCollection_data_replace <- function() {
+test_ValuedIRanges_data_replace <- function() {
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   filter <- c(TRUE, FALSE, TRUE)
   score <- c(10, 2, NA)
@@ -85,13 +85,12 @@ test_RangesCollection_data_replace <- function() {
 }
 
 
-test_RangeData_subset <- function() {
+test_ValuedIRanges_subset <- function() {
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   filter <- c(TRUE, FALSE, TRUE)
   score <- c(10, 2, NA)
   vir <- ValuedIRanges(ranges, filter, score = score)
 
-  checkException(vir[1,2])
   checkException(vir[list()])
   checkException(vir[-18])
   checkException(vir[10])
@@ -116,5 +115,32 @@ test_RangeData_subset <- function() {
                  ValuedIRanges(ranges[2:1], filter = filter[2:1],
                                score = score[2:1]))
   checkIdentical(vir[-c(2,3)], fvir)
+
+  ## now test matrix-style
+  
+  checkException(vir[,100]) # out of bounds col
+  checkException(vir[1000,]) # out of bounds row
+  options(warn=2)
+  checkException(vir[1:3, drop=TRUE]) # drop ignored
+  checkException(vir[foo = "bar"]) # invalid argument
+  options(warn=0)
+  checkException(vir["Sion",]) # no subsetting by row name yet
+  checkException(vir[,"Fert"]) # bad column name
+
+  checkIdentical(vir[,], vir) # identity
+
+  checkIdentical(vir[,NULL], ValuedIRanges(ranges)) # empty
+  checkIdentical(vir[NULL,], vir[NULL])
+
+  checkIdentical(vir[,1], ValuedIRanges(ranges, filter)) # column subsetting
+  checkIdentical(vir[,1:2], vir)
+  checkIdentical(vir[,"filter"], vir[,1]) # by name
+
+  checkIdentical(vir[1,], vir[1]) # row subsetting
+  checkIdentical(vir[1:3,], vir) # row subsetting
+  
+  checkIdentical(vir[1:2, 1], ValuedIRanges(ranges, filter)[1:2]) # combined
+  ## repeats
+  checkIdentical(vir[c(1:2,1),], vir[c(1:2,1)])
 }
 

@@ -118,9 +118,28 @@ setMethod("[[", "TypedList",
 setReplaceMethod("[[", "TypedList",
                  function(x, i, j,..., value)
                  {
-                   stop("attempt to modify the value of a ", class(x), " instance")
-                 }
-                 )
+                   if (!missing(j) || length(list(...)) > 0)
+                     warning("arguments beyond 'i' ignored")
+                   if (missing(i))
+                     stop("subscript is missing")
+                   if (!is.character(i) && !is.numeric(i))
+                     stop("invalid subscript type")
+                   if (length(i) < 1L)
+                     stop("attempt to select less than one element")
+                   if (length(i) > 1L)
+                     stop("attempt to select more than one element")
+                   if (is.numeric(i) && (i < 1L || i > length(x)+1))
+                     stop("subscript out of bounds")
+                   if (!canCoerce(value, elementClass(x)))
+                     stop("cannot coerce 'value' to required class")
+                   els <- x@elements
+                   names(els) <- names(x)
+                   els[[i]] <- as(value, elementClass(x))
+                   x@elements <- els
+                   names(x) <- names(els)
+                   names(x@elements) <- NULL
+                   x
+                 })
 
 ### Supported 'i' types: numeric vector, logical vector, NULL and missing.
 setMethod("[", "TypedList",
@@ -169,15 +188,13 @@ setReplaceMethod("[", "TypedList",
 ### The "append" method.
 ###
 
-setMethod("append", "TypedList",
+setMethod("append", c("TypedList", "TypedList"),
           function(x, values, after=length(x))
           {
-            if (!is(values, "TypedList"))
-              stop("'values' must be a TypedList object")
             if (!isSingleNumber(after))
               stop("'after' must be a single number")
             ans_elements <- append(elements(x), elements(values),
-                                     after=after)
+                                   after=after)
             nm1 <- names(x)
             nm2 <- names(values)
             if (is.null(nm1) && is.null(nm2)) {
@@ -200,12 +217,18 @@ setMethod("append", "TypedList",
 ### Coercion.
 ###
 
+.TypedList_asList <- function(from) {
+  ### NOTE: we don't just get the elements slot, because that's internal.
+  ### What is actually visible to the public may be different.
+  to <- lapply(seq_len(length(from)), function(i) from[[i]])
+  names(to) <- names(from)
+  to
+}
+
 ### From an TypedList object to a normal R list.
 setAs("TypedList", "list",
       function(from) {
-        to <- elements(from)
-        names(to) <- names(from)
-        to
+        .TypedList_asList(from)
       })
 
 

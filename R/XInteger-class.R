@@ -40,9 +40,15 @@ XInteger <- function(length=0L, val=NULL)
 ### Coercion
 ###
 
+setAs("integer", "XSequence", function(from) {
+  XInteger(length(from), val = from)
+})
+
 setMethod("as.integer", "XInteger",
-    function(x) IntegerPtr.read(x@xdata, x@offset + 1L, x@offset + x@length)
-)
+    function(x) IntegerPtr.read(x@xdata, x@offset + 1L, x@offset + x@length))
+
+setMethod("as.vector", c("XInteger", "missing"),
+          function(x, mode) as.integer(x))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

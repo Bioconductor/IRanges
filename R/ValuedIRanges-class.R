@@ -24,7 +24,7 @@ setMethod("values", "ValuedIRanges", function(object) object@values)
 {
   ## lengths of objects in 'data' should equal length of Ranges
   if (nrow(values(x)) != length(x))
-    "All data elements must have lengths matching that of the Ranges instance"
+    "the number of ranges must equal the number of rows in the data frame"
 }
 
 setValidity2("ValuedIRanges", .valid.ValuedIRanges)
@@ -39,13 +39,7 @@ ValuedIRanges <- function(ranges = IRanges(), ...) {
   data_list <- list(...)
   if (!all(lapply(data_list, length) == length(ranges)))
     stop("All arguments in '...' must have lengths matching that of 'ranges'")
-  ## TODO: move to XDataFrame()
-  ##mc <- as.list(match.call())[-1]
-  ##mc <- mc[names(mc) != "ranges"]
-  ##argdp <- lapply(mc, deparse)
-  ##emptynames <- nchar(names(data_list)) == 0
-  ##names(data_list)[emptynames] <- make.names(argdp[emptynames], TRUE)
-  values <- do.call("XDataFrame", data_list)
+  values <- XDataFrame(...)
   new("ValuedIRanges", ranges, values = values)
 }
 
@@ -87,13 +81,13 @@ setReplaceMethod("[[", "ValuedIRanges",
                      stop("attempt to select more than one element")
                    if (is.numeric(i) && (i < 1L || i > ncol(values(x))+1))
                      stop("subscript out of bounds")
-                   if (length(range(x)) != length(value)) {
-                     if (length(value) < 1)
-                       stop("data length is positive, 'value' length is 0")
-                     if (length(range(x)) %% length(value) > 0)
-                       stop("data length is zero not a multiple of replacement",
-                            " length")
-                     value <- rep(value, length = length(range(x)))
+                   if (length(x) != length(value)) {
+                     stop("length of 'value' must match the number of ranges")
+                     ##if (length(value) < 1)
+                     ##  stop("data length is positive, 'value' length is 0")
+                     ##if (length(range(x)) %% length(value) > 0)
+                     ##  stop("data not a multiple of replacement length")
+                     ##value <- rep(value, length = length(range(x)))
                    }
                    values(x)[[i]] <- value
                    value
@@ -103,19 +97,17 @@ setReplaceMethod("[[", "ValuedIRanges",
 setMethod("[", "ValuedIRanges",
           function(x, i, j, ..., drop)
           {
+            if (!missing(drop) || length(list(...)) > 0)
+              warning("'drop' and parameters in '...' not supported")
             if (missing(i) && missing(j))
               return(x)
             if (missing(i))
               i <- seq(length(x))
             if (missing(j))
               j <- seq(ncol(values(x)))
-            if (length(list(...)) > 0)
-              stop("parameters in '...' not supported")
-            checkIndex <- function(i) {
+            checkIndex <- function(i, row = FALSE) {
               if (!is.atomic(i))
                 stop("invalid subscript type")
-              if (is.character(i))
-                stop("cannot subset a ", class(x), " object by names")
               lx <- length(x)
               if (any(is.na(i)))
                 stop("subscript contains NAs")
@@ -127,17 +119,19 @@ setMethod("[", "ValuedIRanges",
               } else if (is.logical(i)) {
                 if (length(i) > lx)
                   stop("subscript out of bounds")
+              } else if (is.character(i)) {
+                if (row) 
+                  stop("cannot subset a ", class(x), " object by names")
               } else if (!is.null(i)) {
                 stop("invalid subscript type")
               }
             }
-            checkIndex(i)
+            checkIndex(i, TRUE)
             checkIndex(j)
             slot(x, "ranges", check=FALSE) <- ranges(x)[i]
-            x@values <- values(x)[i,j]
+            x@values <- values(x)[i,j,drop=FALSE]
             x
-          }
-          )
+          })
 
 setReplaceMethod("[", "ValuedIRanges",
                  function(x, i, j,..., value)

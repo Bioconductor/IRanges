@@ -8,7 +8,7 @@ exportClasses(
     RangesList, MaskCollection,
     SequencePtr, RawPtr, IntegerPtr, NumericPtr,
     XSequence, XRaw, XInteger, XNumeric,
-    Views, XIntegerViews
+    Views, XIntegerViews, XDataFrame
 )
 
 export(
@@ -37,7 +37,7 @@ export(
     RawPtr.compare,
     #IntegerPtr, IntegerPtr.read, IntegerPtr.write,
     #NumericPtr, NumericPtr.read, NumericPtr.write,
-    XInteger, XNumeric,
+    XInteger, XNumeric, XDataFrame,
     successiveViews,
 
     ## Generic functions:

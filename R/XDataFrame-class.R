@@ -9,33 +9,34 @@ setClassUnion("XIntegerORNULL", c("XInteger", "NULL"))
 
 ## NOTE: Normal data.frames always have rownames (sometimes as integers),
 ## but we allow the rownames to be NULL for efficiency. This means that we
-## need to store the dimensions ('dim').
+## need to store the number of rows (nrows).
 setClass("XDataFrame",
          representation(
                         rownames = "characterORNULL",
                         ##rownames = "XStringSetORNULL",
                         rowset = "XIntegerORNULL",
-                        DIM = "integer" # R doesn't like 'dim'
+                        nrows = "integer"
                         ),
-         prototype(rownames = NULL, rowset = NULL),
+         prototype(rownames = NULL, rowset = NULL, nrows = 0L),
          contains = "XList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
-setMethod("dim", "XDataFrame", function(x) x@DIM)
+setMethod("dim", "XDataFrame", function(x) as.integer(c(x@nrows, length(x))))
 
 setMethod("dimnames", "XDataFrame",
           function(x) {
-            if (!is.null(rownames(x))) {
-              rownms <- as.character(rownames(x))
-              rownms <- rownms[rowset(x)]
-              rownms[is.na(rownms)] <- "NA"
-              if (any(duplicated(rownms)))
-                rownms <- make.unique(rownms)                
-            } else rownms <- as.character(seq(nrow(x)))
-            list(rownms, names(x))
+            rn <- x@rownames
+            if (!is.null(rn)) {
+              rn <- as.character(rn)
+              rn <- rn[rowset(x)]
+              rn[is.na(rn)] <- "NA"
+              if (any(duplicated(rn)))
+                rn <- make.unique(rn)                
+            }
+            list(rn, names(x))
           })
 
 
@@ -57,6 +58,7 @@ setReplaceMethod("dimnames", "XDataFrame",
                    if (!is.null(cols)) {
                      if (length(cols) > length(x))
                        stop("more column names than columns")
+                     cols <- make.names(cols, unique=TRUE)
                    }
                    x@rownames <- rows
                    names(x) <- cols
@@ -66,9 +68,9 @@ setReplaceMethod("dimnames", "XDataFrame",
 setGeneric("rowset", function(object, ...) standardGeneric("rowset"))
 setMethod("rowset", "XDataFrame",
           function(object) {
-            if (is.null(rowset))
-              seq(nrow(object))
-            else as.integer(x@rowset)
+            if (is.null(object@rowset))
+              seq_len(nrow(object))
+            else as.integer(object@rowset)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -78,9 +80,11 @@ setMethod("rowset", "XDataFrame",
 
 .valid.XDataFrame.dim <- function(x)
 {
-  d <- dim(x)
-  if (!all(d >= 0))
-    return("dimensions must be non-negative")
+  nr <- dim(x)[1]
+  if (!length(nr) == 1)
+    return("length of 'nrows' slot must be 1")
+  if (nr < 0)
+    return("number of rows must be non-negative")
   NULL
 }
 
@@ -89,16 +93,18 @@ setMethod("rowset", "XDataFrame",
   if (is.null(rownames(x)))
     return(NULL)
   if (length(rownames(x)) != nrow(x))
-    return("number of rownames and number of rows differ")
+    return("number of row names and number of rows differ")
   NULL
 }
 
-.valid.XDataFrame.rownames <- function(x)
+.valid.XDataFrame.names <- function(x)
 {
   if (is.null(names(x)))
-    return("column names cannot be NULL")
+    return(NULL)
   if (any(duplicated(names(x))))
     return("duplicate column names")
+  if (length(names(x)) != ncol(x))
+    return("number of columns and number of column names differ")
   NULL
 }
 
@@ -116,32 +122,63 @@ setValidity2("XDataFrame", .valid.XDataFrame)
 ### Constructor.
 ###
 
-### TODO: make this more like data.frame()
-## - accept matrix-like parameters (matrix, data.frame, XDataFrame)
-## - determine row.names from arguments
-## - protection with I()
-
 XDataFrame <- function(..., row.names = NULL)
 {
+  ## build up elements list, with names from arguments
   elements <- list(...)
-  lens <- sapply(elements, length)
-  if (length(lens) > 1 && !all(lens[1] == lens))
-    stop("all columns must have identical lengths")
+  nr <- 0
+  varnames <- NULL
+  varlist <- vector("list", length(elements))
+  if (length(elements)) {
+    if (is.null(names(elements)))
+      names(elements) <- character(length(elements))
+    emptynames <- !nzchar(names(elements))
+    args <- as.list(substitute(list(...)))[-1]
+    argdp <- lapply(args, deparse)
+    varnames <- as.list(names(elements))
+    nrows <- ncols <- integer(length(varnames))
+    for (i in seq_along(elements)) {
+      element <- try(as(elements[[i]], "XDataFrame"), silent = TRUE)
+      if (inherits(element, "try-error"))
+        stop("cannot coerce class \"", class(elements[[i]]),
+           "\" to an XDataFrame")
+      enames <- names(element)
+      if (ncol(element) > 1) {
+        if (is.null(enames))
+          enames <- seq_len(ncol(element))
+        if (emptynames[i])
+          varnames[[i]] <- enames
+        else varnames[[i]] <- paste(varnames[[i]], enames, sep = ".") 
+      } else {
+        if (!is.null(enames))
+          varnames[[i]] <- enames
+        else if (emptynames[i])
+          varnames[[i]] <- argdp[i]
+      }
+      nrows[i] <- nrow(element)
+      ncols[i] <- ncol(element)
+      varlist[[i]] <- elements(element)
+    }
+    nr <- max(nrows)
+    if (!all(nrows == nr))
+      stop("different row counts implied by arguments")
+    varlist <- unlist(varlist, recursive = FALSE, use.names = FALSE)
+    varnames <- make.names(unlist(varnames[ncols > 0L]), unique = TRUE)
+  }
+  
   if (!is.null(row.names)) {
     if (any(is.na(row.names)))
       stop("missing values in 'row.names'")
-    ##row.names <- BStringSet(as.character(row.names))
-    row.names <- as.character(row.names)
+    if (length(varlist) && length(row.names) != nr)
+      stop("invalid length of row names")
     if (any(duplicated(row.names)))
       stop("duplicate row names")
+    ##row.names <- BStringSet(as.character(row.names))
+    row.names <- as.character(row.names)
   }
-  elements <- lapply(elements, as, "XSequence", strict = FALSE)
-  mc <- as.list(match.call())[-1]
-  mc <- mc[names(mc) != "row.names"]
-  argdp <- lapply(mc, deparse)
-  emptynames <- nchar(names(data_list)) == 0
-  names(elements)[emptynames] <- make.names(argdp[emptynames], TRUE)
-  new("XDataFrame", elements=elements, rownames=row.names)
+  
+  new("XDataFrame", elements=varlist, NAMES=varnames, rownames=row.names,
+      nrows=as.integer(max(nr, length(row.names))))
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -161,11 +198,40 @@ setMethod("[[", "XDataFrame",
               stop("attempt to select less than one element")
             if (length(i) > 1L)
               stop("attempt to select more than one element")
-            if (i < 1L || i > length(x))
+            if (!is.character(i) && (i < 1L || i > length(x)))
               stop("subscript out of bounds")
             callNextMethod(x, i)[rowset(x)]
           }
           )
+
+setReplaceMethod("[[", "XDataFrame",
+                 function(x, i, j,..., value)
+                 {
+                   if (!missing(j) || length(list(...)) > 0)
+                     warning("arguments beyond 'i' ignored")
+                   if (missing(i))
+                     stop("subscript is missing")
+                   if (!is.character(i) && !is.numeric(i))
+                     stop("invalid subscript type")
+                   if (length(i) < 1L)
+                     stop("attempt to select less than one element")
+                   if (length(i) > 1L)
+                     stop("attempt to select more than one element")
+                   if (is.numeric(i) && (i < 1L || i > ncol(x)+1))
+                     stop("subscript out of bounds")
+                   if (nrow(x) != length(value)) {
+                     stop("length of data must equal the number of rows")
+                     ##if (length(value) < 1)
+                     ##  stop("data length is positive, 'value' length is 0")
+                     ##if (nrow(x) %% length(value) > 0)
+                     ##  stop("data not a multiple of replacement length")
+                     ##value <- rep(value, length = nrow(x))
+                   }
+                   x <- callNextMethod(x, i, value=value)
+                   ## ensure unique, valid names
+                   names(x) <- make.names(names(x), unique=TRUE)
+                   x
+                 })
 
 setMethod("[", "XDataFrame",
           function(x, i, j, ..., drop)
@@ -183,12 +249,13 @@ setMethod("[", "XDataFrame",
               }
               if (!is.atomic(i))
                 return("invalid subscript type")
-              if (any(is.na(i)))
+              if (!is.null(i) && any(is.na(i)))
                 return("subscript contains NAs")
               if (is.numeric(i)) {
-                if (any(i < -lx) || any(i > lx))
+                nmi <- i[!is.na(i)]
+                if (any(nmi < -lx) || any(nmi > lx))
                   return("subscript out of bounds")
-                if (any(i < 0) && any(i > 0))
+                if (any(nmi < 0) && any(nmi > 0))
                   return("negative and positive indices cannot be mixed")
               } else if (is.logical(i)) {
                 if (length(i) > lx)
@@ -199,7 +266,7 @@ setMethod("[", "XDataFrame",
                 if (row)
                   m <- pmatch(i, nms, duplicates.ok = TRUE)
                 else m <- match(i, nms)
-                if (any(!is.na(nms) & is.na(m)))
+                if (!row && (any(!is.na(nms) & is.na(m))))
                   return("mismatching names")
               } else if (!is.null(i)) {
                 return("invalid subscript type")
@@ -209,12 +276,12 @@ setMethod("[", "XDataFrame",
 
             ## no ',' -- forward to list
             ## NOTE: matrix-style subsetting by logical matrix not supported
-            if (nargs() - !missing(drop) < 3) { 
+            if ((nargs() - !missing(drop)) < 3) { 
               if (!missing(drop))
                 warning("parameter 'drop' ignored by list-style subsetting")
               if (missing(i))
                 return(x)
-              prob <- checkIndex(i, ncol(x), names(x))
+              prob <- checkIndex(i)
               if (!is.null(prob))
                 stop("subsetting as list: ", prob)
               x <- callNextMethod(x, i)
@@ -225,7 +292,7 @@ setMethod("[", "XDataFrame",
 
             dim <- dim(x)
             if (!missing(j)) {
-              prob <- checkIndex(i, ncol(x), names(x))
+              prob <- checkIndex(j)
               if (!is.null(prob))
                 stop("subsetting cols: ", prob)
               x <- callNextMethod(x, j)
@@ -235,15 +302,20 @@ setMethod("[", "XDataFrame",
             }
             
             if (!missing(i)) {
-              prob <- checkIndex(i, dim[1], rownames(x))
+              prob <- checkIndex(i, row = TRUE)
               if (!is.null(prob))
                 stop("subsetting rows: ", prob)
-              x@rowset <- XInteger(rowset(x)[i])
+              if (is.character(i))
+                i <- pmatch(i, rownames(x), duplicates.ok = TRUE)
+              newset <- rowset(x)[i]
+              x@rowset <- XInteger(length(newset), newset)
               ## NOTE: we do not support matrices here
               ##x@elements <- lapply(elements(x), "[", i)
               dim[1] <- length(seq(dim[1])[i]) # may have 0 cols, no rownames 
             }
 
+            x@nrows <- dim[1]
+            
             if (missing(drop)) ## drop by default if only one column left
               drop <- dim[2] == 1
             if (drop) {
@@ -252,48 +324,67 @@ setMethod("[", "XDataFrame",
                 return(x[[1]])
               ## one row left
               if (dim[1] == 1)
-                return(as(x, "XList"))
+                return(as(x, "list"))
             }
             
-            x@DIM <- dim
             x
           })
-
-## Herve - Sept 23, 2008
-## The method below is not needed (at least in its current form) because it does
-## nothing more than the method defined for superclass "TypedList".
-## Because this method also dispatches on argument 'value', then 'R CMD check'
-## is complaining:
-##   Undocumented S4 methods:
-##     generic '[<-' and siglist 'IRanges,ANY,ANY,ANY'
-##     generic '[<-' and siglist 'MaskCollection,ANY,ANY,ANY'
-##     generic '[<-' and siglist 'XSequence,ANY,ANY,ANY'
-##     etc...
-## ... so I commented it out for now.
-#setReplaceMethod("[", c("XDataFrame", value = "XSequence"),
-#                 function(x, i, j, ..., value)
-#                 {
-#                   stop("attempt to modify the value of a ", class(x),
-#                        " instance")
-#                 })
-
-## setReplaceMethod("[", "XDataFrame",
-##                  function(x, i, j, ..., value)
-##                  {
-##                    value <- as(value, "XSequence", FALSE)
-##                    callGeneric()
-##                  })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
 
+##setAs("XDataFrame", "XList",
+ ##     function(from) {
+  ##      l <- as(from, "list")
+   ##     new("XList", elements = l, NAMES = names(l))
+    ##  })
+
 ### Break XDataFrame into a normal R data.frame
 setAs("XDataFrame", "data.frame",
       function(from) {
-        as.data.frame(as(from, "list"))
+        l <- lapply(as(from, "list"), as.vector)
+        df <- as.data.frame(l, row.names = NULL)
+        rn <- rownames(from)
+        if (is.null(rn))
+          rn <- rowset(from)
+        if (any(duplicated(rn)))
+          rn <- make.unique(as.character(rn))
+        attr(df, "row.names") <- rn
+        df
       })
 
+setMethod("as.data.frame", "XDataFrame",
+          function(x, row.names=NULL, optional=FALSE, ...)
+          {
+            if (!missing(row.names))
+              stop("'row.names' argument ignored")
+            if (!missing(optional))
+              stop("'optional' argument ignored")
+            if (length(list(...)))
+              stop("arguments in '...' ignored")
+            as(x, "data.frame")
+          })
+
+## take data.frames to XDataFrames
+setAs("data.frame", "XDataFrame",
+      function(from) {
+        sequences <- lapply(from, as, "XSequence", FALSE)
+        new("XDataFrame", elements = sequences, NAMES = names(from),
+            nrows = nrow(from), rownames = rownames(from))
+      })
+
+setAs("XSequence", "XDataFrame",
+      function(from) {
+        new("XDataFrame", elements = list(from),
+            nrows = as.integer(length(from)))
+      })
+
+## fallback goes throw data.frame
+setAs("ANY", "XDataFrame",
+      function(from) {
+        as(as.data.frame(from, optional = TRUE), "XDataFrame")
+      })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
@@ -302,5 +393,8 @@ setAs("XDataFrame", "data.frame",
 setMethod("show", "XDataFrame",
           function(object)
           {
-            show(as(object, "data.frame"))
+            cat("XDataFrame object with", nrow(object), "rows and",
+                ncol(object), "columns.\n")
+            
+            ##show(as(object, "data.frame"))
           })

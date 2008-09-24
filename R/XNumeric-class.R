@@ -35,3 +35,17 @@ setMethod("initialize", "XNumeric",
 XNumeric <- function(length=0L, val=NULL)
     new("XNumeric", length=length, val=val)
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion
+###
+
+setAs("numeric", "XSequence", function(from) {
+  XNumeric(length(from), val = from)
+})
+
+setMethod("as.numeric", "XNumeric",
+          function(x) NumericPtr.read(x@xdata, x@offset + 1L,
+                                      x@offset + x@length))
+
+setMethod("as.vector", c("XNumeric", "missing"),
+          function(x, mode) as.numeric(x))
