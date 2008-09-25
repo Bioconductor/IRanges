@@ -146,14 +146,12 @@
       file3 <- system.file("extdata", "ce2chrM.fa.out", package="IRanges")
       mask3 <- read.rmMask(file3, mask_width)
       mask3
-      names(mask3) <- "RepeatMasker"
-      mask3
 
       ## Read the Tandem Repeats Finder .bed file for chrM in ce2:
       file4 <- system.file("extdata", "ce2chrM.bed", package="IRanges")
       mask4 <- read.trfMask(file4, mask_width)
       mask4
-      names(mask4) <- "Tandem Repeats Finder [period<=12]"
+      desc(mask4) <- paste(desc(mask4), "[period<=12]")
       mask4
 
       ## Put the 2 masks on chrM:

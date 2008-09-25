@@ -17,6 +17,10 @@
 \alias{active<-,MaskCollection-method}
 \alias{names,MaskCollection-method}
 \alias{names<-,MaskCollection-method}
+\alias{desc}
+\alias{desc,MaskCollection-method}
+\alias{desc<-}
+\alias{desc<-,MaskCollection-method}
 
 % Constructor:
 \alias{Mask}
@@ -35,7 +39,7 @@
 \alias{[[<-,MaskCollection-method}
 \alias{[,MaskCollection-method}
 \alias{[<-,MaskCollection-method}
-\alias{append,MaskCollection-method}
+\alias{append,MaskCollection,MaskCollection-method}
 
 % Endomorphisms:
 \alias{narrow,MaskCollection-method}
@@ -103,6 +107,10 @@
     }
     \item{}{
       \code{names(x)}:
+      \code{NULL} or a character vector of the same length as \code{x}.
+    }
+    \item{}{
+      \code{desc(x)}:
       \code{NULL} or a character vector of the same length as \code{x}.
     }
     \item{}{
@@ -225,10 +233,21 @@
   reduce(mymasks)
   gaps(mymasks)
 
+  ## Names and descriptions:
+  names(mymasks) <- c("A", "B", "C")  # names should be short and unique...
+  mymasks
+  mymasks[c("C", "A")]  # ...to make subsetting by names easier
+  desc(mymasks) <- c("you can be", "more verbose", "here")
+  mymasks[-2]
+
   ## Activate/deactivate masks:
-  active(mymasks)[2] <- FALSE
+  active(mymasks)["B"] <- FALSE
   mymasks
   reduce(mymasks)
+  active(mymasks) <- FALSE  # deactivate all masks
+  mymasks
+  active(mymasks)[-1] <- TRUE  # reactivate all masks except mask 1
+  active(mymasks) <- !active(mymasks)  # toggle all masks
 
   ## Other advanced operations:
   mymasks[[2]]

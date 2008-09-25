@@ -34,7 +34,14 @@ setMethod("width", "MaskCollection", function(x) x@width)
 
 setGeneric("active", function(x) standardGeneric("active"))
 
-setMethod("active", "MaskCollection", function(x) x@active)
+setMethod("active", "MaskCollection",
+    function(x)
+    {
+        ans <- x@active
+        names(ans) <- names(x)
+        ans
+    }
+)
 
 setGeneric("active<-", signature="x",
     function(x, value) standardGeneric("active<-")
@@ -374,11 +381,9 @@ setReplaceMethod("[", "MaskCollection",
     append(nm1, nm2, after=after)
 }
 
-setMethod("append", "MaskCollection",
+setMethod("append", c("MaskCollection", "MaskCollection"),
     function(x, values, after=length(x))
     {
-        if (!is(values, "MaskCollection"))
-            stop("'values' must be a MaskCollection object")
         if (width(values) != width(x))
             stop("'x' and 'values' must have the same width")
         if (!isSingleNumber(after))
