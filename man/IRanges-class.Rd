@@ -22,7 +22,6 @@
 \alias{width,IRanges-method}
 \alias{end,IRanges-method}
 \alias{names,IRanges-method}
-\alias{desc}
 
 \alias{isNormal}
 \alias{isNormal,IRanges-method}
@@ -57,7 +56,6 @@
 \alias{end<-}
 \alias{end<-,UnlockedIRanges-method}
 \alias{names<-,IRanges-method}
-\alias{desc<-}
 \alias{update,UnlockedIRanges-method}
 
 % Coercion:
@@ -151,10 +149,6 @@
     \item{}{
       \code{names(x)}:
       \code{NULL} or a character vector of the same length as \code{x}.
-    }
-    \item{}{
-      \code{desc(x)}:
-      \code{desc} is an alias for \code{names}.
     }
   }
 }

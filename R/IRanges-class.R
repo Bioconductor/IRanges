@@ -61,9 +61,6 @@ setMethod("names", "IRanges",
         if (length(x@NAMES) == 1 && is.na(x@NAMES)) NULL else x@NAMES
 )
 
-### "desc" is an alias for "names". It might be deprecated soon...
-desc <- function(x) names(x)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "isNormal" and "whichFirstNotNormal" generics and methods.
@@ -506,10 +503,6 @@ setReplaceMethod("names", "IRanges",
 )
 
 
-### "desc<-" is an alias for "names<-". It might be deprecated soon...
-`desc<-` <- function(x, value) `names<-`(x, value)
-
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "update" method.
 ###
@@ -560,6 +553,8 @@ setMethod("[", "IRanges",
             if (any(i < -lx) || any(i > lx))
                 stop("subscript out of bounds")
             if (is(x, "NormalIRanges") && all(i >= 0)) {
+                if (!is.integer(i))
+                    i <- as.integer(i)
                 i <- i[i != 0]
                 if (isNotStrictlySorted(i))
                     stop("positive numeric subscript must be strictly increasing ",

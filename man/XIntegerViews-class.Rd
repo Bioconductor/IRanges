@@ -113,13 +113,13 @@
   width(v4)
 
   ## Attach a comment to views #3 and #4:
-  desc(v4)[3:4] <- "out of limits"
-  desc(v4)
+  names(v4)[3:4] <- "out of limits"
+  names(v4)
 
   ## A more programatical way to "tag" the "out of limits" views:
-  desc(v4)[start(v4) < 1 | length(subject(v4)) < end(v4)] <- "out of limits"
+  names(v4)[start(v4) < 1 | length(subject(v4)) < end(v4)] <- "out of limits"
   ## or just:
-  desc(v4)[length(subject(v4)) < width(v4)] <- "out of limits"
+  names(v4)[length(subject(v4)) < width(v4)] <- "out of limits"
 
   ## Extract a view as an XInteger object:
   v4[[2]]

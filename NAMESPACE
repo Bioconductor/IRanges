@@ -64,9 +64,6 @@ export(
     slice,
     viewMins, viewMaxs, viewSums,
 
-    ## Aliases:
-    desc, "desc<-",
-
     ## Deprecated functions:
     first, last, views
 )
@@ -109,6 +106,7 @@ exportMethods(
     coverage,
     nir_list,
     active, "active<-",
+    desc, "desc<-",
     maskedwidth, maskedratio,
     subseq,
     subject, Views, subviews, trim,

@@ -4,25 +4,28 @@
 
 setClass("MaskCollection",
     representation(
-        nir_list="list",   # a list of NormalIRanges objects
+        nir_list="list",    # a list of NormalIRanges objects
         width="integer",
         active="logical",
-        NAMES="character"  # R doesn't like @names !!
+        NAMES="character",  # R doesn't like @names !!
+        desc="character"
     ),
     prototype(
         nir_list=list(),
         width=0L,
         active=logical(0),
-        NAMES=as.character(NA)
+        NAMES=as.character(NA),
+        desc=as.character(NA)
     )
 )
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Accessor methods.
+### The "length" and accessor methods.
 ###
 
 setGeneric("nir_list", function(x) standardGeneric("nir_list"))
+
 setMethod("nir_list", "MaskCollection", function(x) x@nir_list)
 
 setMethod("length", "MaskCollection", function(x) length(nir_list(x)))
@@ -30,11 +33,13 @@ setMethod("length", "MaskCollection", function(x) length(nir_list(x)))
 setMethod("width", "MaskCollection", function(x) x@width)
 
 setGeneric("active", function(x) standardGeneric("active"))
+
 setMethod("active", "MaskCollection", function(x) x@active)
 
 setGeneric("active<-", signature="x",
     function(x, value) standardGeneric("active<-")
 )
+
 setReplaceMethod("active", "MaskCollection",
     function(x, value)
     {
@@ -46,11 +51,9 @@ setReplaceMethod("active", "MaskCollection",
 )
 
 setMethod("names", "MaskCollection",
-    function(x)
-        if (length(x@NAMES) == 1 && is.na(x@NAMES)) NULL else x@NAMES
+    function(x) if (length(x@NAMES) == 1 && is.na(x@NAMES)) NULL else x@NAMES
 )
 
-### The only replacement method for MaskCollection objects!
 setReplaceMethod("names", "MaskCollection",
     function(x, value)
     {
@@ -68,6 +71,37 @@ setReplaceMethod("names", "MaskCollection",
         if (length(value) < length(x))
             value <- c(value, character(length(x) - length(value)))
         x@NAMES <- value
+        x
+    }
+)
+
+setGeneric("desc", function(x) standardGeneric("desc"))
+
+setMethod("desc", "MaskCollection",
+    function(x) if (length(x@desc) == 1 && is.na(x@desc)) NULL else x@desc
+)
+
+setGeneric("desc<-", signature="x",
+    function(x, value) standardGeneric("desc<-")
+)
+
+setReplaceMethod("desc", "MaskCollection",
+    function(x, value)
+    {
+        if (is.null(value)) {
+            x@desc <- as.character(NA)
+            return(x)
+        }
+        if (!is.character(value))
+            stop("'value' must be NULL or a character vector")
+        ii <- is.na(value)
+        if (any(ii))
+            value[ii] <- ""
+        if (length(value) > length(x))
+            stop("too many names")
+        if (length(value) < length(x))
+            value <- c(value, character(length(x) - length(value)))
+        x@desc <- value
         x
     }
 )
@@ -116,12 +150,26 @@ setReplaceMethod("names", "MaskCollection",
     NULL
 }
 
+.valid.MaskCollection.desc <- function(x)
+{
+    if (!is.character(x@desc))
+        return("the 'desc' slot must contain a character vector")
+    if (is.null(desc(x)))
+        return(NULL)
+    if (any(is.na(desc(x))))
+        return("the descriptions must be non-NA strings")
+    if (length(desc(x)) != length(x))
+        return("number of descriptions and number of elements differ")
+    NULL
+}
+
 .valid.MaskCollection <- function(x)
 {
     c(.valid.MaskCollection.width(x),
       .valid.MaskCollection.nir_list(x),
       .valid.MaskCollection.active(x),
-      .valid.MaskCollection.names(x))
+      .valid.MaskCollection.names(x),
+      .valid.MaskCollection.desc(x))
 }
 
 setValidity2("MaskCollection", .valid.MaskCollection)
@@ -201,9 +249,8 @@ setMethod("maskedratio", "MaskCollection", function(x) maskedwidth(x) / width(x)
 ### Subsetting.
 ###
 
-### Extract the i-th element of a MaskCollection object as a NormalIRanges
-### object.
-### Supported 'i' types: numeric vector of length 1.
+### Return a NormalIRanges object.
+### Supported 'i' types: numeric/character vector of length 1.
 setMethod("[[", "MaskCollection",
     function(x, i, j, ...)
     {
@@ -211,9 +258,7 @@ setMethod("[[", "MaskCollection",
             stop("invalid subsetting")
         if (missing(i))
             stop("subscript is missing")
-        if (is.character(i))
-            stop("cannot subset a ", class(x), " object by names")
-        if (!is.numeric(i))
+        if (!is.numeric(i) && !is.character(i))
             stop("invalid subscript type")
         if (length(i) < 1L)
             stop("attempt to select less than one element")
@@ -223,6 +268,18 @@ setMethod("[[", "MaskCollection",
             stop("subscript cannot be NA")
         if (i < 1L || i > length(x))
             stop("subscript out of bounds")
+        if (is.character(i)) {
+            if (is.null(names(x)))
+                stop("cannot subset by names a ", class(x), " object with no names")
+            if (i == "")
+                stop("subscript cannot be the empty string (\"\")")
+            ii <- which(!is.na(match(names(x), i)))
+            if (length(ii) == 0)
+                stop("invalid name \"", i, "\"")
+            if (length(ii) > 1)
+                stop("name \"", i, "\" is not unique")
+            i <- ii
+        }
         nir_list(x)[[i]]
     }
 )
@@ -234,7 +291,11 @@ setReplaceMethod("[[", "MaskCollection",
     }
 )
 
-### Supported 'i' types: numeric vector, logical vector, NULL and missing.
+### Supported 'i' types: numeric/logical/character vector, NULL and missing.
+### Unlike "[[" above, when subsetting by names, only the first match is
+### returned if a name provided by the user matches more than 1 element (note
+### that this kind of problem could be avoided if the unicity of names were
+### enforced by the validity method for MaskCollection objects).
 setMethod("[", "MaskCollection",
     function(x, i, j, ..., drop)
     {
@@ -244,26 +305,42 @@ setMethod("[", "MaskCollection",
             return(x)
         if (!is.atomic(i))
             stop("invalid subscript type")
-        if (is.character(i))
-            stop("cannot subset a ", class(x), " object by names")
         lx <- length(x)
+        if (lx == 0)
+            return(x[FALSE])  # x[0] would work too
+        if (any(is.na(i)))
+            stop("subscript contains NAs")
         if (is.numeric(i)) {
-            if (any(is.na(i)))
-                stop("subscript contains NAs")
+            ## equivalent to, but faster than, any(i < -lx | i > lx)
             if (any(i < -lx) || any(i > lx))
                 stop("subscript out of bounds")
+            if (!is.integer(i))
+                i <- as.integer(i)
+            ipos <- i[i > 0]
+            if (any(duplicated(ipos)))
+                stop("subscript contains duplicated positive values")
         } else if (is.logical(i)) {
-            if (any(is.na(i)))
-                stop("subscript contains NAs")
             if (length(i) > lx)
                 stop("subscript out of bounds")
-        } else if (!is.null(i)) {
+        } else if (is.character(i)) {
+            if (is.null(names(x)))
+                stop("cannot subset by names a ", class(x), " object with no names")
+            if (any(i == ""))
+                stop("subscript contains the empty string (\"\")")
+            if (any(duplicated(i)))
+                stop("subscript contains duplicated names")
+            i <- match(i, names(x))
+            if (any(is.na(i)))
+                stop("subscript contains invalid names")
+        } else {
             stop("invalid subscript type")
         }
         slot(x, "nir_list", check=FALSE) <- nir_list(x)[i]
         slot(x, "active", check=FALSE) <- active(x)[i]
         if (!is.null(names(x)))
             slot(x, "NAMES", check=FALSE) <- names(x)[i]
+        if (!is.null(desc(x)))
+            slot(x, "desc", check=FALSE) <- desc(x)[i]
         x
     }
 )
@@ -277,6 +354,22 @@ setReplaceMethod("[", "MaskCollection",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "append" method.
 ###
+### TODO: Be more consistent with "[" which doesn't allow subscripts with
+### duplicated positive values in order to make it harder for the user to
+### produce a MaskCollection object with duplicated names.
+### The "append" method below makes this too easy (with append(x, x)).
+###
+
+.append.names.or.desc <- function(nm1, l1, nm2, l2, after)
+{
+    if (is.null(nm1) && is.null(nm2))
+        return(as.character(NA))
+    if (is.null(nm1))
+        nm1 <- rep.int("", l1)
+    if (is.null(nm2))
+        nm2 <- rep.int("", l2)
+    append(nm1, nm2, after=after)
+}
 
 setMethod("append", "MaskCollection",
     function(x, values, after=length(x))
@@ -289,21 +382,15 @@ setMethod("append", "MaskCollection",
             stop("'after' must be a single number")
         ans_nir_list <- append(nir_list(x), nir_list(values), after=after)
         ans_active <- append(active(x), active(values), after=after)
-        nm1 <- names(x)
-        nm2 <- names(values)
-        if (is.null(nm1) && is.null(nm2)) {
-            ans_NAMES <- as.character(NA)
-        } else {
-            if (is.null(nm1))
-                nm1 <- rep.int("", length(x))
-            if (is.null(nm2))
-                nm2 <- rep.int("", length(values))
-            ans_NAMES <- append(nm1, nm2, after=after)
-        }
+        l1 <- length(x)
+        l2 <- length(values)
+        ans_NAMES <- .append.names.or.desc(names(x), l1, names(values), l2, after)
+        ans_desc <- .append.names.or.desc(desc(x), l1, desc(values), l2, after)
         ## This transformation must be atomic.
         x@nir_list <- ans_nir_list
         x@active <- ans_active
         x@NAMES <- ans_NAMES
+        x@desc <- ans_desc
         x
     }
 )
@@ -327,10 +414,12 @@ setMethod("narrow", "MaskCollection",
         x@width <- width
         if (!normargUseNames(use.names))
             x@NAMES <- as.character(NA)
+            x@desc <- as.character(NA)
         x
     }
 )
 
+### Always return a MaskCollection object of length 1 where the mask is active.
 ### 'with.inframe.attrib' is ignored.
 setMethod("reduce", "MaskCollection",
     function(x, with.inframe.attrib=FALSE)
@@ -353,6 +442,7 @@ setMethod("reduce", "MaskCollection",
         x@nir_list <- list(nir1)
         x@active <- TRUE
         x@NAMES <- as.character(NA)
+        x@desc <- as.character(NA)
         x
     }
 )
@@ -367,6 +457,7 @@ setMethod("gaps", "MaskCollection",
             function(nir) gaps(nir, start=start, end=end)
         )
         x@NAMES <- as.character(NA)
+        x@desc <- as.character(NA)
         x
     }
 )
@@ -399,6 +490,7 @@ MaskCollection.show_frame <- function(x)
                             active=active(x),
                             check.names=FALSE)
         frame$names <- names(x)
+        frame$desc <- desc(x)
         show(frame)
         if (lx >= 2) {
             margin <- format("", width=nchar(as.character(lx)))
