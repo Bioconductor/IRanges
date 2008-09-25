@@ -266,9 +266,12 @@ setMethod("[[", "MaskCollection",
             stop("attempt to select more than one element")
         if (is.na(i))
             stop("subscript cannot be NA")
-        if (i < 1L || i > length(x))
-            stop("subscript out of bounds")
-        if (is.character(i)) {
+        if (is.numeric(i)) {
+            if (!is.integer(i))
+                i <- as.integer(i)
+            if (i < 1L || i > length(x))
+                stop("subscript out of bounds")
+        } else {
             if (is.null(names(x)))
                 stop("cannot subset by names a ", class(x), " object with no names")
             if (i == "")
@@ -311,11 +314,11 @@ setMethod("[", "MaskCollection",
         if (any(is.na(i)))
             stop("subscript contains NAs")
         if (is.numeric(i)) {
+            if (!is.integer(i))
+                i <- as.integer(i)
             ## equivalent to, but faster than, any(i < -lx | i > lx)
             if (any(i < -lx) || any(i > lx))
                 stop("subscript out of bounds")
-            if (!is.integer(i))
-                i <- as.integer(i)
             ipos <- i[i > 0]
             if (any(duplicated(ipos)))
                 stop("subscript contains duplicated positive values")
