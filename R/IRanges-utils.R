@@ -258,21 +258,6 @@ setMethod("reduce", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "toNormalIRanges" function.
-###
-
-toNormalIRanges <- function(x)
-{
-    if (!is(x, "IRanges"))
-        stop("'x' must be an IRanges object")
-    x1 <- as(x, "IRanges") # downgrade
-    x2 <- reduce(x1)
-    x3 <- x2[width(x2) != 0]
-    asNormalIRanges(x3, check=FALSE)
-}
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "gaps" methods.
 ###
 ### Note that gaps() will always return a normal IRanges object (so, obviously,
@@ -287,7 +272,7 @@ setMethod("gaps", "IRanges",
         ## No matter in what order restricting and normalizing are done, the final
         ## result should always be exactly the same.
         ## Now which order is the most efficient? It depends...
-        xx <- toNormalIRanges(x)
+        xx <- asNormalIRanges(x, force=TRUE)
         xx0 <- restrict(xx, start=start, end=end) # preserves normality
         ans_start <- ans_width <- integer(0)
         if (isEmpty(xx0)) {
@@ -317,6 +302,37 @@ setMethod("gaps", "IRanges",
         unsafe.update(x, start=ans_start, width=ans_width, names=NULL)
     }
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercing an IRanges object to a NormalIRanges object.
+###
+
+asNormalIRanges <- function(x, force=TRUE)
+{
+    if (!is(x, "IRanges"))
+        stop("'x' must be an IRanges object")
+    if (!isTRUEorFALSE(force))
+        stop("'force' must be 'TRUE' or 'FALSE'")
+    if (!force)
+        return(newNormalIRangesFromIRanges(x, check=TRUE))
+    x1 <- as(x, "IRanges") # downgrade
+    x2 <- reduce(x1)
+    x3 <- x2[width(x2) != 0]
+    newNormalIRangesFromIRanges(x3, check=FALSE)
+}
+
+.asNormalIRanges <- function(from) asNormalIRanges(from, force=TRUE)
+
+### No, defining the IRanges->NormalIRanges "coerce" method is not enough and
+### we also need to define the other methods! Otherwise a silly implicit
+### method would be called when calling as(x, "NormalIRanges") on an
+### UnlockedIRanges or LockedIRanges object. Yes, this is another S4
+### "feature":
+###   https://stat.ethz.ch/pipermail/r-devel/2008-April/049027.html
+setAs("IRanges", "NormalIRanges", .asNormalIRanges)
+setAs("UnlockedIRanges", "NormalIRanges", .asNormalIRanges)
+setAs("LockedIRanges", "NormalIRanges", .asNormalIRanges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -38,5 +38,5 @@ test_RangesList_reduce <- function() {
   collection <- RangesList(one = range1, range2)
 
   checkIdentical(reduce(collection),
-                 RangesList(asNormalIRanges(IRanges(c(1,20), c(8, 100)))))
+                 RangesList(asNormalIRanges(IRanges(c(1,20), c(8, 100)), force=FALSE)))
 }

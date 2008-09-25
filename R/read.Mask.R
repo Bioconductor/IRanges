@@ -137,9 +137,9 @@
             ranges <- ranges[order(start(ranges))]
         if (!isNormal(ranges))
             stop("cannot use the gap types when some gaps are adjacent or overlap")
-        nir1 <- asNormalIRanges(ranges)
+        nir1 <- asNormalIRanges(ranges, force=FALSE)
     } else {
-        nir1 <- toNormalIRanges(ranges)
+        nir1 <- asNormalIRanges(ranges, force=TRUE)
     }
     new2("MaskCollection", nir_list=list(nir1), width=width, active=TRUE,
                            NAMES=mask_name, desc=mask_desc, check=FALSE)
@@ -199,7 +199,7 @@ read.liftMask <- function(file, seqname="?", width=NA)
         stop("when specified, 'width' must match the length found ",
              "in the file for sequence \"", seqname, "\"")
     contigs0 <- IRanges(start=data$offset+1, width=data$width)
-    contigs1 <- toNormalIRanges(contigs0)
+    contigs1 <- asNormalIRanges(contigs0, force=TRUE)
     if (length(contigs1) != length(contigs0))
         warning("some contigs are adjacent or overlapping")
     contigs <- Mask(seqlen0, start=start(contigs1), width=width(contigs1))
@@ -250,9 +250,9 @@ read.rmMask <- function(file, width, use.IDs=FALSE)
             ranges <- ranges[order(start(ranges))]
         if (!isNormal(ranges))
             stop("cannot use the repeat IDs when some repeats are adjacent or overlap")
-        nir1 <- asNormalIRanges(ranges)
+        nir1 <- asNormalIRanges(ranges, force=FALSE)
     } else {
-        nir1 <- toNormalIRanges(ranges)
+        nir1 <- asNormalIRanges(ranges, force=TRUE)
     }
     new2("MaskCollection", nir_list=list(nir1), width=width, active=TRUE,
                            NAMES="RM", desc="RepeatMasker", check=FALSE)
@@ -289,7 +289,7 @@ read.trfMask <- function(file, width)
                        colClasses=ALL_COLS,
                        check.names=FALSE)
     ranges <- IRanges(start=data$chromStart+1, end=data$chromEnd)
-    nir1 <- toNormalIRanges(ranges)
+    nir1 <- asNormalIRanges(ranges, force=TRUE)
     #name1 <- "Tandem Repeats Finder [period<=12]"
     new2("MaskCollection", nir_list=list(nir1), width=width, active=TRUE,
                            NAMES="TRF", desc="Tandem Repeats Finder", check=FALSE)

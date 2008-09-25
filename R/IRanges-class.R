@@ -273,13 +273,14 @@ IRanges <- function(start=NULL, end=NULL, width=NULL)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion.
+### The "newNormalIRangesFromIRanges" function (not exported).
 ###
-### Believe it or not but the implicit "coerce" methods do NOT check that they
-### return a valid object!
-### 
+### Helper function used by the "coerce" methods defined in IRanges-utils.R
+### Believe it or not but the implicit "coerce" methods do NOT check that
+### they return a valid object!
+###
 
-asNormalIRanges <- function(x, check=TRUE)
+newNormalIRangesFromIRanges <- function(x, check=TRUE)
 {
     if (!is(x, "IRanges"))
         stop("'x' must be an IRanges object")
@@ -289,18 +290,6 @@ asNormalIRanges <- function(x, check=TRUE)
     ## Make a "hard copy" of the slots. No need to check anything!
     new2("NormalIRanges", start=x@start, width=x@width, NAMES=x@NAMES, check=FALSE)
 }
-
-.asNormalIRanges <- function(from) asNormalIRanges(from, check=TRUE)
-
-### No, defining the IRanges->NormalIRanges "coerce" method is not enough and
-### we also need to define the other methods! Otherwise a silly implicit
-### method would be called when calling as(x, "NormalIRanges") on an
-### UnlockedIRanges or LockedIRanges object. Yes, this is another S4
-### "feature":
-###   https://stat.ethz.ch/pipermail/r-devel/2008-April/049027.html
-setAs("IRanges", "NormalIRanges", .asNormalIRanges)
-setAs("UnlockedIRanges", "NormalIRanges", .asNormalIRanges)
-setAs("LockedIRanges", "NormalIRanges", .asNormalIRanges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

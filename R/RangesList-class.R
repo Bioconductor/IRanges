@@ -76,7 +76,7 @@ setMethod("reduce", "RangesList",
               start1 <- unlist(lapply(elements, start))
               width1 <- unlist(lapply(elements, width))
               ranges <- new2("IRanges", start=start1, width=width1, check=FALSE)
-              nir1 <- toNormalIRanges(ranges)
+              nir1 <- asNormalIRanges(ranges, force=TRUE)
             }
             ## This transformation must be atomic.
             x@elements <- list(nir1)

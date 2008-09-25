@@ -5,7 +5,6 @@
 \alias{successiveIRanges}
 \alias{intToAdjacentRanges}
 \alias{whichAsRanges}
-\alias{toNormalIRanges}
 \alias{shift}
 \alias{shift,IRanges-method}
 \alias{restrict}
@@ -19,6 +18,12 @@
 \alias{gaps}
 \alias{gaps,IRanges-method}
 \alias{summaryIRangesList}
+
+% Coercion:
+\alias{asNormalIRanges}
+\alias{coerce,IRanges,NormalIRanges-method}
+\alias{coerce,UnlockedIRanges,NormalIRanges-method}
+\alias{coerce,LockedIRanges,NormalIRanges-method}
 
 % Deprecated:
 \alias{intToRanges}
@@ -36,7 +41,6 @@
 
   ## Create a NormalIRanges instance:
   whichAsRanges(x)
-  toNormalIRanges(x)
 
   ## Modify an IRanges object:
   shift(x, shift, use.names=TRUE)
@@ -44,13 +48,16 @@
   narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
   reduce(x, with.inframe.attrib=FALSE)
   gaps(x, start=NA, end=NA)
+
+  ## Coercion:
+  asNormalIRanges(x, force=TRUE)
 }
 
 \arguments{
   \item{x}{
     A logical vector for \code{whichAsRanges}.
     An \link{IRanges} object for \code{shift}, \code{restrict}, \code{reduce},
-    \code{toNormalIRanges} and \code{gaps}.
+    \code{gaps} and \code{asNormalIRanges}.
     An \link{IRanges} object or an integer vector for \code{narrow}.
   }
   \item{width}{
@@ -89,6 +96,10 @@
   \item{with.inframe.attrib}{
     \code{TRUE} or \code{FALSE}. For internal use.
   }
+  \item{force}{
+    \code{TRUE} or \code{FALSE}. Should \code{x} be turned into a
+    \link{NormalIRanges} object even if \code{isNormal(x)} is \code{FALSE}?
+  }
 }
 
 \details{
@@ -99,10 +110,6 @@
 
   \code{whichAsRanges} returns an \link{IRanges} object containing all of
   the ranges where \code{x} is \code{TRUE}.
-
-  \code{toNormalIRanges} first reduces \code{x} (see below), then removes
-  the empty ranges. The final result is returned as a \link{NormalIRanges}
-  object.
 
   \code{shift} shifts all the ranges in \code{x}.
 
@@ -135,6 +142,17 @@
   the set of integers obtained by removing the set of integers described
   by \code{x} from the interval specified by the \code{start} and
   \code{end} arguments.
+
+  If \code{force=TRUE} (the default), then \code{asNormalIRanges} will
+  turn \code{x} into a \link{NormalIRanges} instance by reordering and
+  reducing the set of ranges if necessary (i.e. only if \code{isNormal(x)}
+  is \code{FALSE}, otherwise the set of ranges will be untouched).
+  If \code{force=FALSE}, then \code{asNormalIRanges} will turn \code{x}
+  into a \link{NormalIRanges} instance only if \code{isNormal(x)} is
+  \code{TRUE}, otherwise it will raise an error.
+  Note that when \code{force=FALSE}, the returned object is guaranteed
+  to contain exactly the same set of ranges than \code{x}.
+  \code{as(x, "NormalIRanges")} is equivalent to \code{asNormalIRanges(x, force=TRUE)}.
 }
 
 \author{H. Pages}
@@ -160,10 +178,22 @@
   x <- IRanges(start=c(-2L, 6L, 9L, -4L, 1L, 0L, -6L, 10L),
                width=c( 5L, 0L, 6L,  1L, 4L, 3L,  2L,  3L))
   reduce(x)
-  toNormalIRanges(x)   # 3 ranges ordered from left to right and separated by
-                       # gaps of width >= 1.
   gaps(x)
   gaps(x, start=-6, end=20)  # Regions of the -6:20 range that are not masked by 'x'.
+  asNormalIRanges(x)   # 3 ranges ordered from left to right and separated by
+                       # gaps of width >= 1.
+
+  ## More on normality:
+  example(`IRanges-class`)
+  isNormal(x16)                        # FALSE
+  if (interactive())
+      x16 <- asNormalIRanges(x16)      # Error!
+  whichFirstNotNormal(x16)             # 57
+  isNormal(x16[1:56])                  # TRUE
+  xx <- asNormalIRanges(x16[1:56])
+  class(xx)
+  max(xx)
+  min(xx)
 }
 
 \keyword{utilities}

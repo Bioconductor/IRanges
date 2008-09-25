@@ -181,7 +181,7 @@ setValidity2("MaskCollection", .valid.MaskCollection)
 
 Mask <- function(mask.width, start=NULL, end=NULL, width=NULL)
 {
-    nir <- asNormalIRanges(IRanges(start=start, end=end, width=width))
+    nir <- asNormalIRanges(IRanges(start=start, end=end, width=width), force=FALSE)
     new("MaskCollection", nir_list=list(nir),
                           width=numeric2integer(mask.width),
                           active=TRUE)
@@ -439,7 +439,7 @@ setMethod("reduce", "MaskCollection",
             start1 <- unlist(lapply(nir_list, start))
             width1 <- unlist(lapply(nir_list, width))
             ranges <- new2("IRanges", start=start1, width=width1, check=FALSE)
-            nir1 <- toNormalIRanges(ranges)
+            nir1 <- asNormalIRanges(ranges, force=TRUE)
         }
         ## This transformation must be atomic.
         x@nir_list <- list(nir1)

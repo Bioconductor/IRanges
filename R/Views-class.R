@@ -140,7 +140,7 @@ setReplaceMethod("[[", "Views",
 ###
 
 setAs("Views", "NormalIRanges",
-    function(from) asNormalIRanges(from, check=TRUE)
+    function(from) asNormalIRanges(from, force=TRUE)
 )
 
 
