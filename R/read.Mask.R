@@ -28,12 +28,13 @@
 ### -------------------------------------------------------------------------
 
 
-.emptyMaskWithWarning <- function(mask_name, seqname, width)
+.emptyMaskWithWarning <- function(mask_name, mask_desc, seqname, width)
 {
-    warning("no ", mask_name, " for sequence \"", seqname, "\" in this file, ",
+    warning("no ", mask_desc, " for sequence \"", seqname, "\" in this file, ",
             "returning empty mask")
     ans <- Mask(width, start=integer(0), width=integer(0))
-    names(ans) <- paste(mask_name, "(empty)")
+    names(ans) <- mask_name
+    desc(ans) <- paste(mask_desc, "(empty)")
     ans
 }
 
@@ -112,13 +113,14 @@
         found_types <- paste(found_types, collapse=", ")
         stop("gap types found in this file for sequence \"", seqname, "\": ", found_types)
     }
-    mask_name <- "assembly gaps"
+    mask_name <- "AGAPS"
+    mask_desc <- "assembly gaps"
     if (!is.null(gap.types)) {
         data <- data[data$gap_type %in% gap.types, ]
-        mask_name <- paste(mask_name, " [type=", paste(gap.types, collapse="|"), "]", sep="")
+        mask_desc <- paste(mask_desc, " [type=", paste(gap.types, collapse="|"), "]", sep="")
     }
     if (nrow(data) == 0)
-        return(.emptyMaskWithWarning(mask_name, seqname, width))
+        return(.emptyMaskWithWarning(mask_name, mask_desc, seqname, width))
     if (agp_or_gap == "agp")
         ranges_start <- data$chr_start
     else
@@ -140,7 +142,7 @@
         nir1 <- toNormalIRanges(ranges)
     }
     new2("MaskCollection", nir_list=list(nir1), width=width, active=TRUE,
-                           NAMES=mask_name, check=FALSE)
+                           NAMES=mask_name, desc=mask_desc, check=FALSE)
 }
 
 read.agpMask <- function(file, width, seqname="?", gap.types=NULL, use.gap.types=FALSE)
@@ -184,7 +186,8 @@ read.liftMask <- function(file, seqname="?", width=NA)
                  "please specify the width of the empty mask to return")
         warning("unknown sequence \"", seqname, "\", returning empty mask")
         ans <- Mask(width, start=integer(0), width=integer(0))
-        names(ans) <- "inter-contig gaps (empty)"
+        names(ans) <- "AGAPS"
+        desc(ans) <- "assembly gaps (empty)"
         return(ans)
     }
     ## Sanity checks
@@ -201,7 +204,8 @@ read.liftMask <- function(file, seqname="?", width=NA)
         warning("some contigs are adjacent or overlapping")
     contigs <- Mask(seqlen0, start=start(contigs1), width=width(contigs1))
     ans <- gaps(contigs)
-    names(ans) <- "inter-contig gaps"
+    names(ans) <- "AGAPS"
+    desc(ans) <- "assembly gaps"
     ans
 }
 
@@ -251,7 +255,7 @@ read.rmMask <- function(file, width, use.IDs=FALSE)
         nir1 <- toNormalIRanges(ranges)
     }
     new2("MaskCollection", nir_list=list(nir1), width=width, active=TRUE,
-                           NAMES="rm", check=FALSE)
+                           NAMES="RM", desc="RepeatMasker", check=FALSE)
 }
 
 read.trfMask <- function(file, width)
@@ -288,6 +292,6 @@ read.trfMask <- function(file, width)
     nir1 <- toNormalIRanges(ranges)
     #name1 <- "Tandem Repeats Finder [period<=12]"
     new2("MaskCollection", nir_list=list(nir1), width=width, active=TRUE,
-                           NAMES="trf", check=FALSE)
+                           NAMES="TRF", desc="Tandem Repeats Finder", check=FALSE)
 }
 

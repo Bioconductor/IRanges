@@ -13,8 +13,8 @@
 \description{
   Five functions -- \code{read.agpMask}, \code{read.gapMask},
   \code{read.liftMask}, \code{read.rmMask} and \code{read.trfMask} --
-  for extracting a mask from an NCBI "agp" file, an UCSC "gap" file,
-  an UCSC "lift" file (i.e. a file containing offsets of contigs within
+  for extracting a mask from an NCBI "agp" file, a UCSC "gap" file,
+  a UCSC "lift" file (i.e. a file containing offsets of contigs within
   sequences), a RepeatMasker .out file, or a Tandem Repeats Finder .bed file.
 }
 
@@ -76,7 +76,7 @@
 
 \examples{
   ## ---------------------------------------------------------------------
-  ## A. Extract a mask of "assembly gaps" with read.agpMask()
+  ## A. Extract a mask of assembly gaps ("AGAPS" mask) with read.agpMask()
   ## ---------------------------------------------------------------------
   ## Note: The hs_b36v3_chrY.agp file was obtained by downloading,
   ## extracting and renaming the hs_ref_chrY.agp.gz file from
@@ -96,7 +96,7 @@
   mask11[[1]]
 
   ## ---------------------------------------------------------------------
-  ## B. Extract a mask of "inter-contig gaps" with read.liftMask()
+  ## B. Extract a mask of assembly gaps ("AGAPS" mask) with read.liftMask()
   ## ---------------------------------------------------------------------
   ## Note: The hg18liftAll.lft file was obtained by downloading,
   ## extracting and renaming the liftAll.zip file from
@@ -121,8 +121,8 @@
   }
 
   ## ---------------------------------------------------------------------
-  ## C. Extract an "rm" or a "trf" mask with read.rmMask() or
-  ##    read.trfMask()
+  ## C. Extract a RepeatMasker ("RM") or Tandem Repeats Finder ("TRF")
+  ##    mask with read.rmMask() or read.trfMask()
   ## ---------------------------------------------------------------------
   ## Note: The ce2chrM.fa.out and ce2chrM.bed files were obtained by
   ## downloading, extracting and renaming the chromOut.zip and
