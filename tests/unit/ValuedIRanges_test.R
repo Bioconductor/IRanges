@@ -82,6 +82,9 @@ test_ValuedIRanges_data_replace <- function() {
   vir[[2]] <- score
   checkTrue(validObject(vir))
   checkIdentical(vir[[2]], score)
+  vir[[2]] <- NULL
+  checkTrue(validObject(vir))
+  checkIdentical(ncol(values(vir)), 2)
 }
 
 test_ValuedIRanges_subset <- function() {
@@ -146,3 +149,15 @@ test_ValuedIRanges_subset <- function() {
   checkIdenticalVIR(vir[c(1:2,1),], vir[c(1:2,1)])
 }
 
+test_ValuedIRanges_inverse.rle <- function() {
+  ranges <- IRanges(c(1,8,14),c(4,12,16))
+  values <- c(1L, 2L, 3L)
+  vir <- ValuedIRanges(ranges, values)
+  inverse <- c(1L,1L,1L,1L,NA,NA,NA,2L,2L,2L,2L,2L,NA,3L,3L,3L)
+  checkIdentical(inverse.rle(vir)[[1]], inverse)
+  checkIdentical(inverse.rle(vir, 1, 6)[[1]], inverse[1:6])
+  inverse[5:6] <- 0L
+  checkIdentical(inverse.rle(vir, 1, 6, 0)[[1]], inverse[1:6])
+  checkException(inverse.rle(vir, gapvalue=1:2)) # gap value must be length 1
+  checkException(inverse.rle(vir, gapvalue=ranges[1])) # bad gap value
+}

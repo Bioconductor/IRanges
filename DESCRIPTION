@@ -39,6 +39,7 @@ Collate: validity-utils.R
 	Views-class.R
 	XIntegerViews-class.R
 	XIntegerViews-utils.R
+        ChromRanges-class.R
 	GenomicRanges-class.R
 	debug.R
 	zzz.R

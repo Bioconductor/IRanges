@@ -155,6 +155,7 @@ test_XDataFrame_replacement <- function() {
   checkIdentical(xdf[["counts"]], counts)
   xdf[[3]] <- score
   checkIdentical(xdf[["X"]], score)
+  xdf[[3]] <- NULL # deletion
 
   checkException(xdf[[13]] <- counts) # index must be < length+1
   checkException(xdf[["tooshort"]] <- counts[1:2])

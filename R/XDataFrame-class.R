@@ -127,14 +127,14 @@ XDataFrame <- function(..., row.names = NULL)
   ## build up elements list, with names from arguments
   elements <- list(...)
   nr <- 0
-  varnames <- NULL
+  varnames <- character()
   varlist <- vector("list", length(elements))
   if (length(elements)) {
     if (is.null(names(elements)))
       names(elements) <- character(length(elements))
     emptynames <- !nzchar(names(elements))
     args <- as.list(substitute(list(...)))[-1]
-    argdp <- lapply(args, deparse)
+    argdp <- sapply(args, function(arg) deparse(arg)[1])
     varnames <- as.list(names(elements))
     nrows <- ncols <- integer(length(varnames))
     for (i in seq_along(elements)) {
@@ -219,7 +219,7 @@ setReplaceMethod("[[", "XDataFrame",
                      stop("attempt to select more than one element")
                    if (is.numeric(i) && (i < 1L || i > ncol(x)+1))
                      stop("subscript out of bounds")
-                   if (nrow(x) != length(value)) {
+                   if (!is.null(value) && nrow(x) != length(value)) {
                      stop("length of data must equal the number of rows")
                      ##if (length(value) < 1)
                      ##  stop("data length is positive, 'value' length is 0")

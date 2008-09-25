@@ -62,15 +62,16 @@ Initial proposal by Michael.
 - Data structures:
   - Ranges, abstract parent of all range structures
   - IndexedRanges, extend Ranges, adds index slot
-  - AnnotatedRanges, composed of Ranges and a place to store data on the ranges
+  - ValuedRanges, composed of Ranges and a place to store data on the ranges
     - external storage of vectors on ranges, each vector has "gap value"
     - extends Ranges
   - DBRanges for representing Ranges in a database
-  - RangesCollection as collection of Ranges objects, extends Ranges?
+  - RangesList as collection of Ranges objects, extends Ranges?
   - RangesMatching, encodes matching between ranges,
-    - Extends RangesCollection and maybe graph?
-  - RectRanges, RangesCollection of two Ranges, one for each dimension
+    - Extends RangesList and maybe graph?
+  - RectRanges, RangesList of two Ranges, one for each dimension
   - PolyRanges, list of real-valued matrices, each holding one polygon?
+  - ViewsList, extends RangesList but specific to Views
 
 - Ranges methods:
   - "append" or "c" for concatenation
@@ -83,21 +84,28 @@ Initial proposal by Michael.
   - "setdiff" or "-" for subtracting the overlap from first argument
   - "!" as alias for "gaps"
   - "merge" or "|" for merging, i.e. reduce(c(x, y))
+  - "reduce" should take a window argument
   - "split" and "unsplit" for working with categories/clusters
-    - operate on RangesCollection objects, not lists
+    - operate on RangesList objects, not lists
   - "unroll" like "inverse.rle", generates vector from values on ranges
     - if no value specified, could be logical vector, TRUE in range else FALSE
   - "sort" sorts by start or end and returns result as TreeRanges
   - "[[" for getting out a named data object
   - "[x,y" where 'x' indexes the ranges and 'y' indexes the data objects 
   
-- RangesCollection methods:
-  - "c"/"append", "split", "unsplit", "unlist", ...
+- RangesList methods:
+  - "c"/"append", "split", "unsplit", "unlist",  ...
+  - parallel rbind/cbind
+  - "width" gets vector of lengths
   - binary ops: "overlap", "nearest", "intersect", "setdiff", "merge"
     - 'y' omitted: become n-ary ops on items in collection
     - 'y' specified: performed element-wise
-  - unary ops: "gaps" are vectorized
+  - unary ops: "gaps", "coverage", "slice", etc are vectorized
+  - as.data.frame might try to rbind result of per-element as.data.frame
   - "rangeApply" for applying over each element
+
+- ValuedIRangesList methods:
+  - [[<- for setting single (first?) column of one, into another
   
 - RangeMatching methods:
   - "lmatched" and "rmatched", which matched (either side)
@@ -113,5 +121,4 @@ Initial proposal by Michael.
 - External data storage (to be moved to externalVector):
   - XList, a regular R list of XSequence objects
   - XDataFrame, extends XList to be like a data.frame
-    - But how to encode the row subset?=======
   - From 'rle' object

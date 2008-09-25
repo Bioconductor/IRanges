@@ -59,6 +59,8 @@ setGeneric("elementClass", function(x, ...) standardGeneric("elementClass"))
 
 .valid.TypedList.elements <- function(x)
 {
+  ### FIXME: currently this test seems to be broken, because 'x' is
+  ### dropped to TypedList from its original class
   if (!is.list(elements(x))
       || !all(sapply(elements(x), is, elementClass(x))))
     return(paste("the 'elements' slot must contain a list of",
@@ -104,14 +106,12 @@ setMethod("[[", "TypedList",
               stop("attempt to select less than one element")
             if (length(i) > 1L)
               stop("attempt to select more than one element")
-            if (is.character(i)) {
-              if (is.null(names(x)))
-                stop("cannot subscript by character when names are NULL")
-              i <- match(i, names(x))
-            } else if (!is.na(i) && (i < 1L || i > length(x)))
+            else if (!is.character(i) && !is.na(i) && (i<1L || i>length(x)))
               stop("subscript out of bounds")
-            
-            elements(x)[[i]]
+
+            els <- elements(x)
+            names(els) <- names(x)
+            els[[i]]
           }
           )
 
@@ -134,7 +134,9 @@ setReplaceMethod("[[", "TypedList",
                      stop("cannot coerce 'value' to required class")
                    els <- x@elements
                    names(els) <- names(x)
-                   els[[i]] <- as(value, elementClass(x))
+                   if (!is.null(value))
+                     value <- as(value, elementClass(x))
+                   els[[i]] <- value 
                    x@elements <- els
                    names(x) <- names(els)
                    names(x@elements) <- NULL

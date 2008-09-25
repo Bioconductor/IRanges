@@ -19,4 +19,3 @@
 ### TODO: Implement the real XRaw class once all the BSgenome data packages
 ### are fixed.
 setClass("XRaw", contains="RawPtr")
-

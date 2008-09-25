@@ -41,6 +41,10 @@ XInteger <- function(length=0L, val=NULL)
 ###
 
 setAs("integer", "XSequence", function(from) {
+  as(from, "XInteger")
+})
+
+setAs("integer", "XInteger", function(from) {
   XInteger(length(from), val = from)
 })
 
@@ -49,7 +53,6 @@ setMethod("as.integer", "XInteger",
 
 setMethod("as.vector", c("XInteger", "missing"),
           function(x, mode) as.integer(x))
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.

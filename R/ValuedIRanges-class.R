@@ -20,11 +20,15 @@ setMethod("values", "ValuedIRanges", function(object) object@values)
 ### Validity.
 ###
 
-.valid.ValuedIRanges <- function(x)
-{
-  ## lengths of objects in 'data' should equal length of Ranges
+.valid.ValuedIRanges.values <- function(x) {
   if (nrow(values(x)) != length(x))
     "the number of ranges must equal the number of rows in the data frame"
+  else NULL
+}
+
+.valid.ValuedIRanges <- function(x)
+{
+  c(.valid.ValuedIRanges.values(x))
 }
 
 setValidity2("ValuedIRanges", .valid.ValuedIRanges)
@@ -35,7 +39,7 @@ setValidity2("ValuedIRanges", .valid.ValuedIRanges)
 
 ValuedIRanges <- function(ranges = IRanges(), ...) {
   if (!is(ranges, "IRanges"))
-    stop("'ranges' must be an IRanges instance")
+    stop("'ranges' must be an IRanges instance")      
   data_list <- list(...)
   if (!all(lapply(data_list, length) == length(ranges)))
     stop("All arguments in '...' must have lengths matching that of 'ranges'")
@@ -83,7 +87,7 @@ setReplaceMethod("[[", "ValuedIRanges",
                      stop("attempt to select more than one element")
                    if (is.numeric(i) && (i < 1L || i > ncol(values(x))+1))
                      stop("subscript out of bounds")
-                   if (length(x) != length(value)) {
+                   if (!is.null(value) && length(x) != length(value)) {
                      stop("length of 'value' must match the number of ranges")
                      ##if (length(value) < 1)
                      ##  stop("data length is positive, 'value' length is 0")
@@ -157,4 +161,34 @@ setMethod("as.data.frame", "ValuedIRanges",
               stop("'row.names' must be NULL or a character vector")
 
             cbind(callNextMethod(), as.data.frame(values(x)))
+          })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Utilities.
+###
+
+setGeneric("inverse.rle", function(x, ...) standardGeneric("inverse.rle"))
+setMethod("inverse.rle", "ValuedIRanges",
+          function(x, start = NA, end = NA, gapvalue = NA)
+          {
+            if (length(gapvalue) != 1)
+              stop("length of 'gapvalue' must be 1")
+            keep <- rep(TRUE, length(x))
+            if (!is.na(start))
+              keep[end(x) < start] <- FALSE
+            if (!is.na(end))
+              keep[start(x) > end] <- FALSE
+            x <- x[keep]
+            g <- gaps(x, start, end)
+            widths <- c(width(x), width(g))
+            starts <- c(start(x), start(g))
+            startorder <- order(starts)
+            widths <- widths[startorder]
+            do.call("XDataFrame", lapply(seq_len(ncol(values(x))), function(j) {
+              vals <- values(x)[[j]]
+              if (!canCoerce(gapvalue, class(vals)))
+                stop("cannot coerce 'gapvalue' into class of column ", j)
+              vals <- c(vals, rep(as(gapvalue, class(vals)), length(g)))
+              inverse.rle(list(lengths=widths, values=vals[startorder]))
+            }))
           })

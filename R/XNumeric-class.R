@@ -39,8 +39,12 @@ XNumeric <- function(length=0L, val=NULL)
 ### Coercion
 ###
 
-setAs("numeric", "XSequence", function(from) {
+setAs("numeric", "XNumeric", function(from) {
   XNumeric(length(from), val = from)
+})
+
+setAs("numeric", "XSequence", function(from) {
+  as(from, "XNumeric")
 })
 
 setMethod("as.numeric", "XNumeric",

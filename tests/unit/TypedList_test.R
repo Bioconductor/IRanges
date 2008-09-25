@@ -26,8 +26,7 @@ test_TypedList_extraction <- function() {
   checkException(collection[[c(1,2)]])
   checkException(collection[[-1]])
   checkException(collection[[5]])
-  checkException(collection[["one"]])
-
+  
   checkIdentical(collection[[NA_integer_]], NULL)
   checkIdentical(collection[[1]], range1)
   checkIdentical(collection[[2]], range2)
