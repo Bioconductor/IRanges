@@ -3,7 +3,6 @@
 \alias{IRanges-utils}
 
 \alias{successiveIRanges}
-\alias{intToAdjacentRanges}
 \alias{whichAsRanges}
 \alias{shift}
 \alias{shift,IRanges-method}
@@ -27,6 +26,8 @@
 
 % Deprecated:
 \alias{intToRanges}
+\alias{intToAdjacentRanges}
+\alias{toNormalIRanges}
 
 
 \title{IRanges utility functions}

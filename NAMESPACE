@@ -20,9 +20,7 @@ export(
     ValuedIRanges,
     ChromRanges,
     GenomicRanges,
-    intToRanges,
     successiveIRanges,
-    intToAdjacentRanges,
     whichAsRanges,
     asNormalIRanges,
     summaryIRangesList,
@@ -69,7 +67,9 @@ export(
     viewMins, viewMaxs, viewSums,
 
     ## Deprecated functions:
-    first, last, views
+    first, last,
+    intToRanges, intToAdjacentRanges, toNormalIRanges,
+    views
 )
 
 exportMethods(

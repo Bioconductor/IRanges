@@ -4,26 +4,6 @@
 ###
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "intToRanges" function.
-###
-
-intToRanges <- function(x)
-{
-    msg <- paste("'intToRanges' is deprecated.",
-                 "Use 'IRanges(start=rep.int(1L, length(x)), width=x)' instead.",
-                 sep="\n")
-    .Deprecated(msg=msg)
-    if (!is.numeric(x))
-        stop("'x' must be an integer vector")
-    if (!is.integer(x))
-        x <- as.integer(x)
-    if (min(x) < 0L)
-        stop("'x' cannot contain negative integers")
-    new2("IRanges", start=rep.int(1L, length(x)), width=x, check=FALSE)
-}
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "successiveIRanges" function.
 ###
 ### Note that the returned IRanges object is guaranted to be normal in the
@@ -67,12 +47,6 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
     ans_start <- as.integer(diffinv(width))
     ans_start <- from + ans_start[-length(ans_start)] + as.integer(diffinv(gapwidth))
     new2("IRanges", start=ans_start, width=width, check=FALSE)
-}
-
-intToAdjacentRanges <- function(...)
-{
-    .Deprecated("successiveIRanges")
-    successiveIRanges(...)
 }
 
 
@@ -340,4 +314,36 @@ setAs("LockedIRanges", "NormalIRanges", .asNormalIRanges)
 ###
 
 summaryIRangesList <- function(x) .Call("summary_IRanges_list", x, PACKAGE="IRanges")
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Deprecated stuff.
+###
+
+intToRanges <- function(x)
+{
+    msg <- paste("'intToRanges' is deprecated.",
+                 "Use 'IRanges(start=rep.int(1L, length(x)), width=x)' instead.",
+                 sep="\n")
+    .Deprecated(msg=msg)
+    if (!is.numeric(x))
+        stop("'x' must be an integer vector")
+    if (!is.integer(x))
+        x <- as.integer(x)
+    if (min(x) < 0L)
+        stop("'x' cannot contain negative integers")
+    new2("IRanges", start=rep.int(1L, length(x)), width=x, check=FALSE)
+}
+
+intToAdjacentRanges <- function(...)
+{
+    .Deprecated("successiveIRanges")
+    successiveIRanges(...)
+}
+
+toNormalIRanges <- function(x)
+{
+    .Deprecated("asNormalIRanges")
+    asNormalIRanges(x, force=TRUE)
+}
 
