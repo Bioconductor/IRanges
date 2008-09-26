@@ -42,7 +42,7 @@ setClass("NormalIRanges", contains="LockedIRanges")
 ### Accessor methods.
 ###
 
-setMethod("length", "IRanges", function(x) length(x@start))
+setMethod("length", "IRanges", function(x) length(start(x)))
 
 ### The substr() function uses 'start' and 'stop'.
 ### The substring() function uses 'first' and 'last'.

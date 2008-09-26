@@ -13,7 +13,7 @@ static const R_CallMethodDef callMethods[] = {
 /* memcpy_utils.c */
 	CALLMETHOD_DEF(debug_memcpy_utils, 0),
 
-/* utils.c */
+/* SEXP_utils.c */
 	CALLMETHOD_DEF(address_asSTRSXP, 1),
 	CALLMETHOD_DEF(sapply_length, 1),
 	CALLMETHOD_DEF(safe_strexplode, 1),
@@ -166,7 +166,7 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_IRanges_reverse_charcpy_from_i1i2_with_lkup);
 	REGISTER_CCALLABLE(_IRanges_memcpy_from_i1i2_to_complex);
 
-/* utils.c */
+/* SEXP_utils.c */
 	REGISTER_CCALLABLE(_get_class);
 
 /* IRanges_class.c */

@@ -246,7 +246,7 @@ DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_from_i1i2_to_complex,
 
 
 /*
- * Stubs for callables defined in utils.c
+ * Stubs for callables defined in SEXP_utils.c
  */
 
 DEFINE_CCALLABLE_STUB(const char *, get_class,

@@ -7,6 +7,7 @@ const char *_get_class(SEXP x)
 }
 
 /*
+ * --- .Call ENTRY POINT ---
  * From R:
  *   .Call("address_asSTRSXP", 6:4, PACKAGE="IRanges")
  *   .Call("address_asSTRSXP", new("externalptr"), PACKAGE="IRanges")

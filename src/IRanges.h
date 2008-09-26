@@ -290,7 +290,7 @@ void _IRanges_memcpy_from_i1i2_to_complex(
 );
 
 
-/* utils.c */
+/* SEXP_utils.c */
 
 const char *_get_class(SEXP x);
 
