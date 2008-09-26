@@ -41,5 +41,8 @@ Collate: validity-utils.R
 	XIntegerViews-utils.R
         ChromRanges-class.R
 	GenomicRanges-class.R
+        SpatialIndex-class.R
+        IntervalTree-class.R
+        IntervalTree-utils.R
 	debug.R
 	zzz.R
