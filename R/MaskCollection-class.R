@@ -493,9 +493,13 @@ MaskCollection.show_frame <- function(x)
         cat(" NONE\n")
     } else {
         cat("\n")
+        ## Explictely specify 'row.names=NULL' otherwise data.frame() will
+        ## try to use the names of the first component that has suitable
+        ## names, which could be 'active(x)' (3rd component) if 'x' has names.
         frame <- data.frame(maskedwidth=maskedwidth(x),
                             maskedratio=maskedratio(x),
                             active=active(x),
+                            row.names=NULL,
                             check.names=FALSE)
         frame$names <- names(x)
         frame$desc <- desc(x)
