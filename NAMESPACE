@@ -2,6 +2,8 @@ useDynLib(IRanges)
 
 import(methods)
 import(stats) ## for the "start", "end" and "update" generics
+importClassesFrom(Matrix, CsparseMatrix, nsparseMatrix, generalMatrix,
+                  sparseMatrix, Matrix, nMatrix, compMatrix, ngCMatrix)
 
 exportClasses(
     Ranges, IRanges, UnlockedIRanges, LockedIRanges, NormalIRanges,

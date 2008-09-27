@@ -60,19 +60,35 @@ Proposal for a major rework of the Ranges/IRanges class hierarchy and API
 Initial proposal by Michael.
 
 - Data structures:
-  - Ranges, abstract parent of all range structures
-  - IndexedRanges, extend Ranges, adds index slot
-  - ValuedRanges, composed of Ranges and a place to store data on the ranges
-    - external storage of vectors on ranges, each vector has "gap value"
-    - extends Ranges
-  - DBRanges for representing Ranges in a database
+  - Ranges, abstract parent of all native range structures
+  - XRanges, represents an external set of ranges
+    - specific methods can accelerate certain operations
+    - otherwise need to be coerced to Ranges
+  - RangedData, a vector with ranges, instead of / in addition to names
+    - slot for ranges, slot for data
+    - data types
+      - normal vectors: integer, numeric, character, etc
+      - data.frame, XDataFrame
+      - list (but all elements must have consistent lengths)
+        - a more general XDataFrame would work here
   - RangesList as collection of Ranges objects, extends Ranges?
   - RangesMatching, encodes matching between ranges,
-    - Extends RangesList and maybe graph?
-  - RectRanges, RangesList of two Ranges, one for each dimension
+    - Based on Matrix
+  - RectRanges, container of two Ranges, one for each dimension
   - PolyRanges, list of real-valued matrices, each holding one polygon?
   - ViewsList, extends RangesList but specific to Views
-
+  
+- Genomic data structures:
+  - GenomicRanges, qualifying ranges by chromosome (or some other label)
+    - Just a list of ChromRanges, with a genome slot
+  - ChromRanges, an IRanges with a strand
+  - GenomicViews, a list of ChromViews, with genome slot
+  - ChromViews, a Views that is strand-aware (extends ChromRanges)
+  - GenomicData, for storing data on the entire genome
+    - Proposals:
+      - A list of RangedData objects
+      - A RangedData object with a GenomicRanges and a list for data
+  
 - Ranges methods:
   - "append" or "c" for concatenation
   - "unique" for removing duplicate ranges
@@ -103,9 +119,6 @@ Initial proposal by Michael.
   - unary ops: "gaps", "coverage", "slice", etc are vectorized
   - as.data.frame might try to rbind result of per-element as.data.frame
   - "rangeApply" for applying over each element
-
-- ValuedIRangesList methods:
-  - [[<- for setting single (first?) column of one, into another
   
 - RangeMatching methods:
   - "lmatched" and "rmatched", which matched (either side)
