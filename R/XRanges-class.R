@@ -6,6 +6,4 @@
 ## Examples: databases, search trees, etc
 ## All derivatives should support coercion to a native Ranges instance.
 
-setClass("XRanges",
-         representation(rangeMode = "character"), ## storage mode of ranges
-         contains = "VIRTUAL")
+setClass("XRanges", contains = "VIRTUAL")
