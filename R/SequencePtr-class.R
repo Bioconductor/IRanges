@@ -10,7 +10,16 @@
 ### objects with new() would ALWAYS return the SAME instance (its address in
 ### memory will always be the same for a given R session).
 
-setClass("SequencePtr", representation("VIRTUAL", xp="externalptr"))
+setClass("SequencePtr",
+    representation("VIRTUAL",
+        xp="externalptr",
+        ## any object that is never copied on assignment would be fine here,
+        ## we don't do anything with this slot, except calling
+        ## monitorGarbageCollection() on it for the SequencePtr instances that
+        ## we want to monitor.
+        .momitor_me="environment"
+    )
+)
 
 setMethod("length", "SequencePtr",
     function(x) .Call("SequencePtr_length", x, PACKAGE="IRanges")
