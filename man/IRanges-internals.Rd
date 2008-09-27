@@ -3,6 +3,7 @@
 
 \alias{setValidity2}
 \alias{new2}
+\alias{monitorGarbageCollection}
 \alias{sapplyLength}
 \alias{safeExplode}
 

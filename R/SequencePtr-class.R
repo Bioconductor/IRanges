@@ -41,7 +41,7 @@ setMethod("!=", signature(e1="SequencePtr", e2="SequencePtr"),
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Miscellaneous stuff (not SequencePtr related, but I didn't find a better
-### place).
+### place for now).
 ###
 
 ### Helper function (for debugging purpose).
@@ -52,6 +52,25 @@ setMethod("show", "externalptr",
     function(object)
         .Call("ExternalPtr_show", object, PACKAGE="IRanges")
 )
+
+### 'e' must be an environment or external pointer.
+### 'symbol' and 'env' are the name and the location of the variable
+### used for monitoring.
+monitorGarbageCollection <- function(e, symbol, env)
+{
+    if (exists(symbol, envir=env, inherits=FALSE)) 
+        status0 <- get(symbol, envir=env, inherits=FALSE) + 1L
+    else
+        status0 <- 1L
+    reg.finalizer(e,
+        function(e)
+        {
+            status <- get(symbol, envir=env, inherits=FALSE) - 1L
+            assign(symbol, status, envir=env)
+        }
+    )
+    assign(symbol, status0, envir=env)
+}
 
 sapplyLength <- function(x)
 {

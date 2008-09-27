@@ -32,6 +32,7 @@ export(
     read.liftMask,
     read.rmMask,
     read.trfMask,
+    monitorGarbageCollection,
     RawPtr, RawPtr.readInts, RawPtr.writeInts, RawPtr.read, RawPtr.write,
     RawPtr.copy, RawPtr.reverseCopy, RawPtr.readComplexes, RawPtr.append,
     RawPtr.compare,
