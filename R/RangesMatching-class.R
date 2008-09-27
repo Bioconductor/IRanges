@@ -2,6 +2,6 @@
 ### RangesMatching objects
 ### -------------------------------------------------------------------------
 
-setClass("RangesMatching", contains = "ngCMatrix")
+setClass("RangesMatching", representation(matching = "Matrix"))
 
 ### TODO: many convenience methods here
