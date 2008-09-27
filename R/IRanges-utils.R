@@ -277,6 +277,12 @@ setMethod("gaps", "IRanges",
     }
 )
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Overlap tools
+###
+
+## find objects in the index that overlap those in a query set
+setGeneric("overlap", function(object, query, ...) standardGeneric("overlap"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercing an IRanges object to a NormalIRanges object.

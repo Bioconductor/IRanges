@@ -2,11 +2,9 @@
 ### IntervalTree objects
 ### -------------------------------------------------------------------------
 
-setClass("IntervalTree", contains = "SpatialIndex")
-
-setClass("IntegerIntervalTree",
-         representation(ptr = "externalptr"),
-         contains = "IntervalTree")
+setClass("IntervalTree",
+         representation(ptr = "externalptr", mode = "character"),
+         contains = "XRanges")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor
@@ -18,5 +16,5 @@ setGeneric("IntervalTree",
 setMethod("IntervalTree", "IRanges", function(object) {
   validObject(object)
   ptr <- .Call("IntegerIntervalTree_new", object, PACKAGE="IRanges")
-  new("IntegerIntervalTree", ptr = ptr)
+  new("IntervalTree", ptr = ptr, mode = "integer")
 })
