@@ -130,7 +130,7 @@ setReplaceMethod("[[", "TypedList",
                      stop("attempt to select more than one element")
                    if (is.numeric(i) && (i < 1L || i > length(x)+1))
                      stop("subscript out of bounds")
-                   if (!canCoerce(value, elementClass(x)))
+                   if (!is.null(value) && !canCoerce(value, elementClass(x)))
                      stop("cannot coerce 'value' to required class")
                    els <- x@elements
                    names(els) <- names(x)

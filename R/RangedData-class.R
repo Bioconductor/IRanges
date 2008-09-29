@@ -1,59 +1,67 @@
 ### =========================================================================
-### ValuedIRanges objects
+### RangedData objects
 ### -------------------------------------------------------------------------
 
-## For associating data with a Ranges instance
-## Extends IRanges and delegates to an XDataFrame which stores the data
+## For keeping data with your ranges
 
-setClass("ValuedIRanges",
-         representation(values = "XDataFrame"),
-         contains = "IRanges")
+setClass("RangedData",
+         representation(ranges = "RangesORXRanges", values = "ANY"))
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
 setGeneric("values", function(object, ...) standardGeneric("values"))
-setMethod("values", "ValuedIRanges", function(object) object@values)
+setMethod("values", "RangedData", function(object) object@values)
+
+## coerced to internal ranges
+setGeneric("ranges", function(object, ...) standardGeneric("ranges"))
+setMethod("ranges", "RangedData",
+          function(object, asRanges = TRUE) {
+            if (!isTRUEorFALSE(asRanges))
+              stop("'asRanges' should be TRUE or FALSE")
+            if (asRanges)
+              as(object@ranges, "Ranges")
+            else object@ranges
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
 
-.valid.ValuedIRanges.values <- function(x) {
-  if (nrow(values(x)) != length(x))
-    "the number of ranges must equal the number of rows in the data frame"
+.valid.RangedData <- function(x)
+{
+  if (length(ranges(x, FALSE)) != NROW(values(x)))
+    "the number of ranges must equal the number of records in the data"
   else NULL
 }
 
-.valid.ValuedIRanges <- function(x)
-{
-  c(.valid.ValuedIRanges.values(x))
-}
-
-setValidity2("ValuedIRanges", .valid.ValuedIRanges)
+setValidity2("RangedData", .valid.RangedData)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
 ###
 
-ValuedIRanges <- function(ranges = IRanges(), ...) {
-  if (!is(ranges, "IRanges"))
-    stop("'ranges' must be an IRanges instance")      
-  data_list <- list(...)
-  if (!all(lapply(data_list, length) == length(ranges)))
-    stop("All arguments in '...' must have lengths matching that of 'ranges'")
-  ## row.names are just to ensure the XDataFrame has the correct row count
-  values <- XDataFrame(..., row.names = seq_len(length(ranges)))
-  rownames(values) <- NULL
-  new("ValuedIRanges", ranges, values = values)
+RangedData <- function(ranges = IRanges(), values = NULL) {
+  if (!is(ranges, "RangesORXRanges"))
+    stop("'ranges' must be either a Ranges or XRanges instance")
+  if (length(ranges) != NROW(values))
+    stop("lengths of 'ranges' and 'values' must be equal")
+  new("RangedData", ranges = ranges, values = values)
+}
+
+## This is a convenience that sticks the arguments into an XDataFrame
+
+RangedDataFrame <- function(ranges = IRanges(), ...) {
+  RangedData(ranges, XDataFrame(...))
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
 ###
 
-setMethod("[[", "ValuedIRanges",
+setMethod("[[", "RangedData",
           function(x, i, j, ...)
           {
             if (!missing(j) || length(list(...)) > 0)
@@ -66,13 +74,13 @@ setMethod("[[", "ValuedIRanges",
               stop("attempt to select less than one element")
             if (length(i) > 1L)
               stop("attempt to select more than one element")
-            if (is.numeric(i) && !is.na(i) && (i < 1L || i > length(x)))
+            if (is.numeric(i) && !is.na(i) && (i < 1L || i > length(values(x))))
               stop("subscript out of bounds")
             values(x)[[i]]
           }
           )
 
-setReplaceMethod("[[", "ValuedIRanges",
+setReplaceMethod("[[", "RangedData",
                  function(x, i, j,..., value)
                  {
                    if (!missing(j) || length(list(...)) > 0)
@@ -85,36 +93,35 @@ setReplaceMethod("[[", "ValuedIRanges",
                      stop("attempt to select less than one element")
                    if (length(i) > 1L)
                      stop("attempt to select more than one element")
-                   if (is.numeric(i) && (i < 1L || i > ncol(values(x))+1))
+                   if (is.numeric(i) && (i < 1L || i > length(values(x))+1))
                      stop("subscript out of bounds")
-                   if (!is.null(value) && length(x) != length(value)) {
-                     stop("length of 'value' must match the number of ranges")
+                   ##if (!is.null(value) &&
+                   ##    length(values(x)[[1]]) != length(value)) {
+                   ##  stop("invalid replacement length")
                      ##if (length(value) < 1)
                      ##  stop("data length is positive, 'value' length is 0")
                      ##if (length(range(x)) %% length(value) > 0)
                      ##  stop("data not a multiple of replacement length")
                      ##value <- rep(value, length = length(range(x)))
-                   }
+                   ##}
                    x@values[[i]] <- value
                    x
                  })
 
 ### Supported 'i' types: numeric vector, logical vector, NULL and missing.
-setMethod("[", "ValuedIRanges",
+setMethod("[", "RangedData",
           function(x, i, j, ..., drop)
           {
             if (!missing(drop) || length(list(...)) > 0)
-              warning("'drop' and parameters in '...' not supported")
+              stop("'drop' and parameters in '...' not supported")
             if (missing(i) && missing(j))
               return(x)
-            if (missing(i))
-              i <- seq(length(x))
-            if (missing(j))
-              j <- seq(ncol(values(x)))
             checkIndex <- function(i, row = FALSE) {
               if (!is.atomic(i))
                 stop("invalid subscript type")
-              lx <- length(x)
+              if (row)
+                lx <- NROW(values(x))
+              else lx <- NCOL(values(x))
               if (!is.null(i) && any(is.na(i)))
                 stop("subscript contains NAs")
               if (is.numeric(i)) {
@@ -132,63 +139,59 @@ setMethod("[", "ValuedIRanges",
                 stop("invalid subscript type")
               }
             }
-            checkIndex(i, TRUE)
-            checkIndex(j)
-            x <- callNextMethod(x, i) # subset the ranges
-            x@values <- values(x)[i,j,drop=FALSE] # subset the data values
+            values <- values(x)
+            array <- is.array(values) || is.data.frame(values)
+            mstyle <- nargs() == 3
+            if (mstyle && !array)
+              stop("matrix-style subsetting not allowed for non-array values")
+            if (!missing(j))
+              checkIndex(j)
+            if (!missing(i)) {
+              checkIndex(i, TRUE)
+              x@ranges <- ranges(x)[i] ### NOTE: this brings XRanges into R
+              if (!mstyle) {
+                if (array) # subset array data by rows
+                  x@values <- values[i,,drop=FALSE]
+                else x@values <- values[i] # subset non-array data
+              }
+            }
+            if (mstyle) { # subset array data, matrix-style
+              if (missing(i))
+                x@values <- values[,j,drop=FALSE]
+              else if (missing(j))
+                x@values <- values[i,]
+              else x@values <- values[i,j,drop=FALSE]
+            }
             x
           })
 
-setReplaceMethod("[", "ValuedIRanges",
+setReplaceMethod("[", "RangedData",
                  function(x, i, j,..., value)
                  stop("attempt to modify the value of a ", class(x),
                       " instance")
                  )
 
-### Lists of ValuedIRanges instances
+### Lists of RangedData instances
 
-setClass("ValuedIRangesList", contains = "IRangesList")
-setMethod("elementClass", "ValuedIRangesList", function(x) "ValuedIRanges")
+setClass("RangedDataList", contains = "TypedList")
+setMethod("elementClass", "RangedDataList", function(x) "RangedData")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion.
+### Coercion
 ###
 
-setMethod("as.data.frame", "ValuedIRanges",
+setMethod("as.data.frame", "RangedData",
           function(x, row.names=NULL, optional=FALSE, ...)
           {
             if (!(is.null(row.names) || is.character(row.names)))
-              stop("'row.names' must be NULL or a character vector")
-
-            cbind(callNextMethod(), as.data.frame(values(x)))
+              stop("'row.names'  must be NULL or a character vector")
+            if (!missing(optional) || length(list(...)))
+              warning("'optional' and arguments in '...' ignored")
+            r <- ranges(x)
+            data.frame(as.data.frame(r), as.data.frame(values(x)),
+                       row.names = row.names)
           })
 
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Utilities.
-###
-
-setGeneric("inverse.rle", function(x, ...) standardGeneric("inverse.rle"))
-setMethod("inverse.rle", "ValuedIRanges",
-          function(x, start = NA, end = NA, gapvalue = NA)
-          {
-            if (length(gapvalue) != 1)
-              stop("length of 'gapvalue' must be 1")
-            keep <- rep(TRUE, length(x))
-            if (!is.na(start))
-              keep[end(x) < start] <- FALSE
-            if (!is.na(end))
-              keep[start(x) > end] <- FALSE
-            x <- x[keep]
-            g <- gaps(x, start, end)
-            widths <- c(width(x), width(g))
-            starts <- c(start(x), start(g))
-            startorder <- order(starts)
-            widths <- widths[startorder]
-            do.call("XDataFrame", lapply(seq_len(ncol(values(x))), function(j) {
-              vals <- values(x)[[j]]
-              if (!canCoerce(gapvalue, class(vals)))
-                stop("cannot coerce 'gapvalue' into class of column ", j)
-              vals <- c(vals, rep(as(gapvalue, class(vals)), length(g)))
-              inverse.rle(list(lengths=widths, values=vals[startorder]))
-            }))
-          })
+setAs("RangedData", "rle", function(from) {
+  rlencode(from)
+})

@@ -5,15 +5,13 @@
 setMethod("overlap", c("IntervalTree", "IRanges"),
           function(object, query, multiple = TRUE)
           {
-            validObject(object)
             validObject(query)
-            fun <- "IntervalTree_overlap"
+            if (!isTRUEorFALSE(asRanges))
+              stop("'multiple' must be logical of length 1")
+            fun <- "overlap"
             if (multiple)
               fun <- paste(fun, "_multiple", sep = "")
-            if (object@mode == "integer") {
-              fun <- paste("Integer", fun, sep = "")
-              .Call(fun, object@ptr, query)
-            } else stop("unknown interval tree mode: ", object@mode)
+            .IntervalTreeCall(object, fun, query)
           })
 
 setMethod("overlap", c("IRanges", "IRanges"),
@@ -27,6 +25,6 @@ setMethod("overlap", c("IRanges", "missing"),
           })
 
 ## not for exporting, just a debugging utility
-IntegerIntervalTreeDump <- function(tree) {
-  .Call("IntegerIntervalTree_dump", tree@ptr)
+IntervalTreeDump <- function(object) {
+  .IntervalTreeCall(object, "dump")
 }

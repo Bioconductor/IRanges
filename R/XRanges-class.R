@@ -7,3 +7,6 @@
 ## All derivatives should support coercion to a native Ranges instance.
 
 setClass("XRanges", contains = "VIRTUAL")
+
+## Often want to support either internal or external ranges
+setClassUnion("RangesORXRanges", c("Ranges", "XRanges"))

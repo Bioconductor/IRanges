@@ -113,14 +113,14 @@ int _IntegerIntervalTree_overlap(struct rbTree *tree, IntegerInterval *query,
     /* is node on top of stack? */
     Rboolean visited = height && p == tree->stack[height-1];
     /* first, check for overlap */
-    Rprintf("subject: %d,%d,%d / query: %d,%d, stack: %d\n", interval->start,
+    /*Rprintf("subject: %d,%d,%d / query: %d,%d, stack: %d\n", interval->start,
             interval->end, ((IntegerIntervalNode *)interval)->maxEnd,
-            query->start, query->end, height);
+            query->start, query->end, height);*/
     if (!visited &&
         interval->start <= query->end && interval->end >= query->start) {
       int result = ((IntegerIntervalNode *)interval)->index;
       if (results) {
-        Rprintf("hit: %d\n", result);
+        /*Rprintf("hit: %d\n", result);*/
         struct slInt *resultNode = slIntNew(result);
         slAddHead(results, resultNode);
         count++;
@@ -235,6 +235,51 @@ SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges) {
   return r_results;
 }
 
+SEXP IntegerIntervalTree_asRanges(SEXP r_tree) {
+  struct rbTree *tree = R_ExternalPtrAddr(r_tree);
+  struct rbTreeNode *p = tree->root;
+  int count = 0, height = 0;
+  SEXP r_start, r_width, r_ranges;
+
+  PROTECT(r_start = allocVector(INTSXP, tree->n));
+  PROTECT(r_width = allocVector(INTSXP, tree->n));
+
+  if (tree->n)
+    while(1) {
+      /* is node on top of stack? */
+      Rboolean visited = height && p == tree->stack[height-1];
+      /* first, check for overlap */
+      if (!visited && p->left) {
+        /* push current node onto stack */
+        tree->stack[height++] = p;
+        /* go left */
+        p = p->left;
+      } else {       /* can't go left, handle this node */
+        IntegerInterval *interval = (IntegerInterval *)p->item;
+        INTEGER(r_start)[count] = interval->start;
+        INTEGER(r_width)[count] = interval->end - interval->start + 1;
+        count++;
+        if (visited)
+          height--; /* pop handled node if on stack */
+        if (p->right) /* go right if possible */
+          p = p->right;
+        else if (height) /* more on stack */
+          p = tree->stack[height-1];
+        else break; /* nothing left on stack, we're finished */
+      }
+    }
+
+  r_ranges = _new_IRanges("IRanges", r_start, r_width, R_NilValue);
+  
+  UNPROTECT(2);
+  return(r_ranges);
+}
+
+SEXP IntegerIntervalTree_length(SEXP r_tree) {
+  struct rbTree *tree = R_ExternalPtrAddr(r_tree);
+  return(ScalarInteger(tree->n));
+}
+  
 static void _IntegerIntervalTreeNode_dump(void *item, FILE *file) {
   IntegerInterval *node = (IntegerInterval *)item;
   fprintf(file, "%d:%d / %d", node->start, node->end,

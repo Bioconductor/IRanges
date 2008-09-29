@@ -7,6 +7,12 @@ setClass("IntervalTree",
          contains = "XRanges")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Accessors
+###
+
+setMethod("length", "IntervalTree", function(x) .IntervalTreeCall(x, "length"))
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor
 ###
 
@@ -18,3 +24,24 @@ setMethod("IntervalTree", "IRanges", function(object) {
   ptr <- .Call("IntegerIntervalTree_new", object, PACKAGE="IRanges")
   new("IntervalTree", ptr = ptr, mode = "integer")
 })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion
+###
+
+setAs("IntervalTree", "Ranges", function(from) {
+  .IntervalTreeCall(from, "asRanges")
+})
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Low-level utilities
+###
+
+.IntervalTreeCall <- function(object, fun, ...) {
+  validObject(object)
+  fun <- paste("IntervalTree", fun, sep = "_")
+  if (object@mode == "integer") {
+    fun <- paste("Integer", fun, sep = "")
+    .Call(fun, object@ptr, ..., PACKAGE="IRanges")
+  } else stop("unknown interval tree mode: ", object@mode)
+}

@@ -1,27 +1,27 @@
 ### =========================================================================
-### GenomicRanges objects
+### GenomicData objects
 ### -------------------------------------------------------------------------
 
-## A list of ChromRanges
+## A list of ChromData instances, with a genome identifier
 
-setClass("GenomicRanges",
+setClass("GenomicData",
          representation(genome = "character"),
-         contains = "ValuedIRangesList")
+         contains = "RangedDataList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
 setGeneric("genome", function(object, ...) standardGeneric("genome"))
-setMethod("genome", "GenomicRanges", function(object) object@genome)
+setMethod("genome", "GenomicData", function(object) object@genome)
 
-setMethod("elementClass", "GenomicRanges", function(x) "ChromRanges")
+setMethod("elementClass", "GenomicData", function(x) "ChromData")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
 
-.valid.GenomicRanges <- function(x)
+.valid.GenomicData <- function(x)
 {
   ## lengths of objects in 'data' should equal length of Ranges
   if (length(genome) > 1)
@@ -29,18 +29,18 @@ setMethod("elementClass", "GenomicRanges", function(x) "ChromRanges")
   NULL
 }
 
-setValidity2("GenomicRanges", .valid.GenomicRanges)
+setValidity2("GenomicData", .valid.GenomicData)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
 ###
 
-GenomicRanges <- function(..., genome = character()) {
+GenomicData <- function(..., genome = character()) {
   if (!is.character(genome) || length(genome) > 1)
     stop("genome must be a character vector of length 0 or 1")
-  if (!all(sapply(list(...), is, "ChromRanges")))
-    stop("all range elements must be ChromRanges instances")
+  if (!all(sapply(list(...), is, "ChromData")))
+    stop("all range elements must be ChromData instances")
   rl <- RangesList(...)
-  new("GenomicRanges", rl, genome = genome)
+  new("GenomicData", rl, genome = genome)
 }
 

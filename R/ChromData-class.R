@@ -1,29 +1,35 @@
 ### =========================================================================
-### ChromRanges objects
+### ChromData objects
 ### -------------------------------------------------------------------------
 
-setClass("ChromRanges", contains = "ValuedIRanges")
+setClassUnion("factorORNULL", c("factor", "NULL"))
+
+## For storing data on regions in a chromosome
+
+### FIXME: once we have XFactor, should use for 'strand' slot
+setClass("ChromData", representation(strand = "factorORNULL"),
+         contains = "RangedData")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
 
-.valid.ChromRanges <- function(x)
+.valid.ChromData <- function(x)
 {
   strand <- strand(x)
-  if (!is.factor(strand) || levels(strand) != c("+", "-"))
+  if (levels(strand) != c("+", "-"))
     return("strand must be a factor with levels '+' and '-'")
   NULL
 }
 
-setValidity2("ChromRanges", .valid.ChromRanges)
+setValidity2("ChromData", .valid.ChromData)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
 setGeneric("strand", function(object, ...) standardGeneric("strand"))
-setMethod("strand", "ChromRanges", function(object) {
+setMethod("strand", "ChromData", function(object) {
   strand <- object[["strand"]]
   if (is.null(strand))
     strand <- rep(NA, length(object))
@@ -36,15 +42,14 @@ setMethod("strand", "ChromRanges", function(object) {
 ### Constructor.
 ###
 
-ChromRanges <- function(ranges = IRanges(), strand = NULL, ...) {
-  vir <- ValuedIRanges(ranges, ...)
+ChromData <- function(ranges = IRanges(), values = NULL, strand = NULL) {
+  rd <- RangedData(ranges, values)
   if (!is.null(strand)) {
-    if (length(strand) != length(vir))
+    if (length(strand) != length(rd))
       stop("'strand' length must match the number of ranges")
     if (!is.character(strand) && !is.factor(strand))
       stop("'strand' must be a character vector or factor")
     strand <- factor(strand, levels=c("+", "-"))
-    vir[["strand"]] <- XInteger(length(strand), as.integer(strand))
   }
-  new("ChromRanges", vir)
+  new("ChromData", rd, strand = strand)
 }

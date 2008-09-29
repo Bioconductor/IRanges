@@ -334,6 +334,8 @@ setMethod("[", "XDataFrame",
 ### Coercion.
 ###
 
+setMethod("is.array", "XDataFrame", function(x) TRUE)
+
 ##setAs("XDataFrame", "XList",
  ##     function(from) {
   ##      l <- as(from, "list")

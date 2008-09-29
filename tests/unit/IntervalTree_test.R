@@ -49,9 +49,6 @@ test_IntervalTree_overlap <- function() {
   checkIdentical(result, new("RangesMatching", matchmatrix = Matrix::t(dense)))
 
   query <- IRanges(c(1, 4, 9, 11), c(5, 7, 10, 11))
-
-###   tree <- IntervalTree(query)
-###   IRanges:::IntegerIntervalTreeDump(tree)
   
   result <- overlap(query)
   sparse <- new("ngCMatrix", p = c(0L, 2L, 4L, 5L, 6L),
@@ -63,3 +60,18 @@ test_IntervalTree_overlap <- function() {
   checkException(overlap(query, NULL))
 }
 
+test_IntervalTree_asRanges <- function() {
+  ranges <- IRanges(c(1, 4, 9), c(5, 7, 10))
+  tree <- IntervalTree(ranges)
+  checkIdentical(as(tree, "Ranges"), ranges)
+
+  ranges <- IRanges()
+  tree <- IntervalTree(ranges)
+  checkIdentical(as(tree, "Ranges"), ranges)
+}
+
+test_IntervalTree_length <- function() {
+  ranges <- IRanges(c(1, 4, 9), c(5, 7, 10))
+  tree <- IntervalTree(ranges)
+  checkIdentical(length(tree), length(ranges))
+}
