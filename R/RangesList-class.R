@@ -114,3 +114,16 @@ setMethod("show", "RangesList",
           }
           )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "summary" method.
+###
+
+setMethod("summary", "RangesList",
+          function(object)
+          {
+              if (all(unlist(lapply(elements(object), is, "IRanges"))))
+                  .Call("summary_IRangesList", object, PACKAGE="IRanges")
+              else
+                  stop("all elements must be of class 'IRanges' ")
+          })

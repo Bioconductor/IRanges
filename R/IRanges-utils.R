@@ -318,13 +318,6 @@ setAs("LockedIRanges", "NormalIRanges", .asNormalIRanges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "summaryIRangesList" function.
-###
-
-summaryIRangesList <- function(x) .Call("summary_IRanges_list", x, PACKAGE="IRanges")
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Deprecated stuff.
 ###
 

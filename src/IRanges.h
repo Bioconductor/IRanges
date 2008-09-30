@@ -356,7 +356,10 @@ SEXP reduce_IRanges(
 	SEXP with_inframe_start
 );
 
-SEXP summary_IRanges_list(SEXP x);
+
+/* RangesList_class.c */
+
+SEXP summary_IRangesList(SEXP object);
 
 
 /* SequencePtr_class.c */

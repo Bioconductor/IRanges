@@ -26,7 +26,6 @@ export(
     successiveIRanges,
     whichAsRanges,
     asNormalIRanges,
-    summaryIRangesList,
     RangesList,
     MaskCollection.show_frame,
     Mask,
@@ -83,6 +82,7 @@ exportMethods(
     ## Methods for generics defined elsewhere:
     coerce,
     show,
+    summary,
     length,
     names, "names<-",
     "[", "[<-",

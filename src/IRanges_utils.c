@@ -44,7 +44,7 @@ static void normargs_startend(int *start, int *end, int width, const char *prefi
 		if (0 < *end && *end < width)
 			error("invalid ('%send','%swidth') combination",
 			      prefix, prefix);
-		// '*start' will be 0 iff '*end' = -1 and 'width' = 0 
+		// '*start' will be 0 iff '*end' = -1 and 'width' = 0
 		*start = *end - width + 1;
 	} else {
 		// '*end' is NA
@@ -264,40 +264,3 @@ SEXP reduce_IRanges(SEXP x, SEXP with_inframe_start)
 	UNPROTECT(1);
 	return ans;
 }
-
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP summary_IRanges_list(SEXP x)
-{
-	int x_len, *ans1_elt, *ans2_elt, i, j;
-	const int *x_elt_width;
-	SEXP x_elt, ans, ans_names, col_names;
-
-	x_len = LENGTH(x);
-	PROTECT(ans = allocMatrix(INTSXP, x_len, 2));
-	memset(INTEGER(ans), 0, 2 * x_len * sizeof(int));
-	for (i = 0, ans1_elt = INTEGER(ans), ans2_elt = INTEGER(ans) + x_len;
-	     i < x_len;
-	     i++, ans1_elt++, ans2_elt++)
-	{
-		x_elt = VECTOR_ELT(x, i);
-		*ans1_elt = LENGTH(_get_IRanges_width(x_elt));
-		for (j = 0, x_elt_width = _get_IRanges_width0(x_elt);
-		     j < *ans1_elt;
-		     j++, x_elt_width++)
-		{
-			*ans2_elt += *x_elt_width;
-		}
-	}
-	PROTECT(ans_names = NEW_LIST(2));
-	PROTECT(col_names = NEW_CHARACTER(2));
-	SET_STRING_ELT(col_names, 0, mkChar("Length"));
-	SET_STRING_ELT(col_names, 1, mkChar("WidthSum"));
-	SET_ELEMENT(ans_names, 0, R_NilValue);
-	SET_ELEMENT(ans_names, 1, col_names);
-	SET_DIMNAMES(ans, ans_names);
-	UNPROTECT(3);
-	return ans;
-}
-
