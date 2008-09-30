@@ -232,7 +232,7 @@ setMethod("reduce", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "gaps" methods.
+### The "gaps" method.
 ###
 ### Note that gaps() will always return a normal IRanges object (so, obviously,
 ### it preserves normality).
@@ -277,12 +277,14 @@ setMethod("gaps", "IRanges",
     }
 )
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Overlap tools
 ###
 
 ## find objects in the index that overlap those in a query set
 setGeneric("overlap", function(object, query, ...) standardGeneric("overlap"))
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercing an IRanges object to a NormalIRanges object.

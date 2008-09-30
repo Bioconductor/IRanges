@@ -13,11 +13,11 @@
 setClass("SequencePtr",
     representation("VIRTUAL",
         xp="externalptr",
-        ## any object that is never copied on assignment would be fine here,
-        ## we don't do anything with this slot, except calling
-        ## monitorGarbageCollection() on it for the SequencePtr instances that
-        ## we want to monitor.
-        .momitor_me="environment"
+        ## Any object that is never copied on assignment would be fine here.
+        ## See R/BSgenome-class.R in the BSgenome package for how this slot
+        ## is used for automatic uncaching of the sequences of a BSgenome
+        ## object.
+        .link_to_cached_object="environment"
     )
 )
 
@@ -61,25 +61,6 @@ setMethod("show", "externalptr",
     function(object)
         .Call("ExternalPtr_show", object, PACKAGE="IRanges")
 )
-
-### 'e' must be an environment or external pointer.
-### 'symbol' and 'env' are the name and the location of the variable
-### used for monitoring.
-monitorGarbageCollection <- function(e, symbol, env)
-{
-    if (exists(symbol, envir=env, inherits=FALSE)) 
-        status0 <- get(symbol, envir=env, inherits=FALSE) + 1L
-    else
-        status0 <- 1L
-    reg.finalizer(e,
-        function(e)
-        {
-            status <- get(symbol, envir=env, inherits=FALSE) - 1L
-            assign(symbol, status, envir=env)
-        }
-    )
-    assign(symbol, status0, envir=env)
-}
 
 sapplyLength <- function(x)
 {

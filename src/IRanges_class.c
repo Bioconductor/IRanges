@@ -50,7 +50,7 @@ void _set_IRanges_names(SEXP x, SEXP names)
 {
 	SEXP names_slot;
 
-	if (names == R_NilValue) {
+	if (names == R_NilValue || names == NULL) {
 		PROTECT(names_slot = NEW_CHARACTER(1));
 		SET_STRING_ELT(names_slot, 0, NA_STRING);
 		SET_SLOT(x, mkChar("NAMES"), names_slot);

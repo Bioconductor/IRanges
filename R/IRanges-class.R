@@ -11,12 +11,14 @@ setClass("IRanges",
     representation(
         start="integer",
         width="integer",
-        NAMES="character"  # R doesn't like @names !!
+        NAMES="character",  # R doesn't like @names !!
+        is_locked="logical"
     ),
     prototype(
         start=integer(0),
         width=integer(0),
-        NAMES=as.character(NA)
+        NAMES=as.character(NA),
+        is_locked=TRUE
     )
 )
 

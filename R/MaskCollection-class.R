@@ -388,6 +388,8 @@ setMethod("append", c("MaskCollection", "MaskCollection"),
             stop("'x' and 'values' must have the same width")
         if (!isSingleNumber(after))
             stop("'after' must be a single number")
+        if (length(values) == 0)
+            return(x)
         ans_nir_list <- append(nir_list(x), nir_list(values), after=after)
         ans_active <- append(active(x), active(values), after=after)
         l1 <- length(x)
