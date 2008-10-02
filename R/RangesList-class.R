@@ -6,11 +6,17 @@
 
 setClass("RangesList", contains = "TypedList")
 
+setClass("IRangesList", contains = "RangesList")
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
 setMethod("elementClass", "RangesList", function(x) "Ranges")
+
+setMethod("elementClass", "IRangesList", function(x) "IRanges")
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
@@ -127,3 +133,14 @@ setMethod("summary", "RangesList",
               else
                   stop("all elements must be of class 'IRanges' ")
           })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion.
+###
+
+### From an IRangesList object to a NormalIRanges object.
+setAs("IRangesList", "NormalIRanges",
+      function(from) reduce(from)[[1]]
+      )
+

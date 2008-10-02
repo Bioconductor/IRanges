@@ -28,9 +28,9 @@ Collate: validity-utils.R
 	XList-class.R
 	XDataFrame-class.R
 	Ranges-class.R
-	RangesList-class.R
 	IRanges-class.R
 	IRanges-utils.R
+	RangesList-class.R
 	MaskCollection-class.R
 	read.Mask.R
 	reverse.R
