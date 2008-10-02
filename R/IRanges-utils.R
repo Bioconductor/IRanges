@@ -6,7 +6,7 @@
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "successiveIRanges" function.
 ###
-### Note that the returned IRanges object is guaranted to be normal in the
+### Note that the returned IRanges object is guaranteed to be normal in the
 ### following cases:
 ###   (a) when length(width) == 0
 ###   (b) when length(width) == 1 and width > 0
@@ -196,9 +196,7 @@ setMethod("narrow", "numeric",
     {
         if (!is.integer(x))
             x <- as.integer(x)
-        if (min(x) < 0L)
-            stop("'x' cannot contain negative integers")
-        y <- new2("IRanges", start=rep.int(1L, length(x)), width=x, check=FALSE)
+        y <- new("IRanges", start=rep.int(1L, length(x)), width=x)
         if (normargUseNames(use.names))
             names(y) <- names(x)
         narrow(y, start=start, end=end, width=width, use.names=TRUE)
