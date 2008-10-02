@@ -6,7 +6,7 @@ setMethod("overlap", c("IntervalTree", "IRanges"),
           function(object, query, multiple = TRUE)
           {
             validObject(query)
-            if (!isTRUEorFALSE(asRanges))
+            if (!isTRUEorFALSE(multiple))
               stop("'multiple' must be logical of length 1")
             fun <- "overlap"
             if (multiple)

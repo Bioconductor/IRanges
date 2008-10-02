@@ -21,13 +21,16 @@ static
 int compare_interval(void *a, void *b) {
   IntegerInterval *ra = (IntegerInterval *)a;
   IntegerInterval *rb = (IntegerInterval *)b;
-  if (ra->start < rb->start)
-    return -1;
   if (rb->start < ra->start)
     return 1;
+  /*
+  if (ra->start < rb->start)
+    return -1;
   if (rb->start == ra->start && ra->end != rb->end)
     return -1;
   return 0;
+  */
+  return -1;
 }
 
 static
