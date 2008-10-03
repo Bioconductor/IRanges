@@ -51,14 +51,24 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "whichAsRanges" function.
+### The "whichAsIRanges" and "ncharAsIRanges" functions.
+###
+### Note that unlike the standard which() and nchar() functions, the 2
+### functions below drop the names of 'x'.
 ###
 
-whichAsRanges <- function(x)
+whichAsIRanges <- function(x)
 {
     if (!is.logical(x))
         stop("'x' must be a logical vector")
-    .Call("which_as_ranges", x, PACKAGE="IRanges")
+    .Call("which_as_IRanges", x, PACKAGE="IRanges")
+}
+
+ncharAsIRanges <- function(x)
+{
+    if (!is.character(x))
+        stop("'x' must be a character vector")
+    new("IRanges", start=rep.int(1L, length(x)), width=nchar(x, type="bytes"))
 }
 
 
@@ -177,7 +187,7 @@ setMethod("narrow", "IRanges",
         width <- rep(width, length.out = maxLength)
         use.names <- normargUseNames(use.names)
 
-        C_ans <- .Call("narrow_IRanges",
+        C_ans <- .Call("IRanges_narrow",
                        x, start, end, width,
                        PACKAGE="IRanges")
         if (use.names) ans_names <- names(x) else ans_names <- NULL
@@ -189,18 +199,6 @@ setMethod("narrow", "IRanges",
 setMethod("narrow", "NormalIRanges",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
         stop("narrowing a ", class(x), " instance is not supported")
-)
-
-setMethod("narrow", "numeric",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-    {
-        if (!is.integer(x))
-            x <- as.integer(x)
-        y <- new("IRanges", start=rep.int(1L, length(x)), width=x)
-        if (normargUseNames(use.names))
-            names(y) <- names(x)
-        narrow(y, start=start, end=end, width=width, use.names=TRUE)
-    }
 )
 
 
@@ -215,7 +213,7 @@ setMethod("reduce", "IRanges",
     {
         if (!isTRUEorFALSE(with.inframe.attrib))
             stop("'with.inframe.attrib' must be 'TRUE' or 'FALSE'")
-        C_ans <- .Call("reduce_IRanges",
+        C_ans <- .Call("IRanges_reduce",
                         x, with.inframe.attrib,
                         PACKAGE="IRanges")
         ans <- unsafe.update(x, start=C_ans$start, width=C_ans$width, names=NULL)

@@ -33,6 +33,9 @@
 \alias{max,NormalIRanges-method}
 \alias{min,NormalIRanges-method}
 
+% Coercion:
+\alias{as.matrix,IRanges-method}
+
 % "show" method:
 \alias{as.data.frame,IRanges-method}
 \alias{show,IRanges-method}
@@ -44,9 +47,6 @@
 
 % "duplicated" method:
 \alias{duplicated,IRanges-method}
-
-% Other methods:
-\alias{as.matrix,IRanges-method}
 
 % Replacement methods:
 \alias{start<-}
@@ -166,6 +166,17 @@
   }
 }
 
+\section{Coercion}{
+  \describe{
+    \item{}{
+      \code{as.matrix(x, ...)}:
+      Convert IRanges object \code{x} into a 2-column integer matrix
+      containing \code{start(x)} and \code{width(x)}.
+      Extra arguments (\code{...}) are ignored.
+    }
+  }
+}
+
 \section{Subsetting}{
   In the code snippet below, \code{x} is an IRanges object.
 
@@ -179,10 +190,10 @@
       a positive numeric subscript (i.e. a numeric vector of positive
       values), then \code{i} must be strictly increasing.
     }
-  }
-  \item{}{
+    \item{}{
       \code{rep(x, times)}:
       Return a new IRanges object made of the repeated elements.
+    }
   }
 }
 
@@ -210,12 +221,6 @@
       which elements are duplicates.
       It is semantically equivalent to \code{duplicated(as.data.frame(x))}
       (see \code{?\link{duplicated}} for more information).
-    }
-    \item{}{
-      \code{as.matrix(x, ...)}:
-      Converts \code{x} into a 2-column integer matrix containing
-      \code{start(x)} and \code{width(x)}.
-      Extra arguments (\code{...}) are ignored.
     }
   }
 }

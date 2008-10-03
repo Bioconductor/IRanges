@@ -342,16 +342,16 @@ SEXP _alloc_IRanges(
 
 SEXP debug_IRanges_utils();
 
-SEXP narrow_IRanges(
+SEXP which_as_IRanges(SEXP x);
+
+SEXP IRanges_narrow(
 	SEXP x,
 	SEXP start,
 	SEXP end,
 	SEXP width
 );
 
-SEXP which_as_ranges(SEXP x);
-
-SEXP reduce_IRanges(
+SEXP IRanges_reduce(
 	SEXP x,
 	SEXP with_inframe_start
 );

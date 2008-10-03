@@ -3,7 +3,8 @@
 \alias{IRanges-utils}
 
 \alias{successiveIRanges}
-\alias{whichAsRanges}
+\alias{whichAsIRanges}
+\alias{ncharAsIRanges}
 \alias{shift}
 \alias{shift,IRanges-method}
 \alias{restrict}
@@ -11,7 +12,6 @@
 \alias{narrow}
 \alias{narrow,IRanges-method}
 \alias{narrow,NormalIRanges-method}
-\alias{narrow,numeric-method}
 \alias{reduce}
 \alias{reduce,IRanges-method}
 \alias{gaps}
@@ -39,8 +39,9 @@
   ## Create an IRanges instance:
   successiveIRanges(width, gapwidth=0, from=1)
 
-  ## Create a NormalIRanges instance:
-  whichAsRanges(x)
+  ## Turn a logical vector or a character vector into a set of ranges:
+  whichAsIRanges(x)
+  ncharAsIRanges(x)
 
   ## Modify an IRanges object:
   shift(x, shift, use.names=TRUE)
@@ -54,12 +55,6 @@
 }
 
 \arguments{
-  \item{x}{
-    A logical vector for \code{whichAsRanges}.
-    An \link{IRanges} object for \code{shift}, \code{restrict}, \code{reduce},
-    \code{gaps} and \code{asNormalIRanges}.
-    An \link{IRanges} object or an integer vector for \code{narrow}.
-  }
   \item{width}{
     For \code{successiveIRanges}, must be a vector of non-negative integers
     (with no NAs) specifying the widths of the ranges to create.
@@ -74,6 +69,14 @@
   }
   \item{from}{
     A single integer specifying the starting position of the first range.
+  }
+  \item{x}{
+    A logical vector for \code{whichAsIRanges}.
+
+    A character vector for \code{ncharAsIRanges}.
+
+    An \link{IRanges} object for \code{shift}, \code{restrict}, \code{narrow},
+    \code{reduce}, \code{gaps} and \code{asNormalIRanges}.
   }
   \item{shift}{
     A single integer.
@@ -108,8 +111,11 @@
   and are separated by the gaps specified in \code{gapwidth}.
   The first range starts at position \code{from}.
 
-  \code{whichAsRanges} returns an \link{IRanges} object containing all of
+  \code{whichAsIRanges} returns an \link{IRanges} object containing all of
   the ranges where \code{x} is \code{TRUE}.
+
+  \code{ncharAsIRanges} returns the number of letters in each element of
+  \code{x} as a set of ranges.
 
   \code{shift} shifts all the ranges in \code{x}.
 
@@ -164,7 +170,7 @@
 
 \examples{
   vec <- as.integer(c(19, 5, 0, 8, 5))
-  whichAsRanges(vec >= 5)
+  whichAsIRanges(vec >= 5)
   x <- successiveIRanges(vec)
   x
   shift(x, -3)

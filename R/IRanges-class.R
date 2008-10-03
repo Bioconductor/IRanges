@@ -275,13 +275,12 @@ IRanges <- function(start=NULL, end=NULL, width=NULL)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "newNormalIRangesFromIRanges" function (not exported).
-###
-### Helper function used by the "coerce" methods defined in IRanges-utils.R
-### Believe it or not but the implicit "coerce" methods do NOT check that
-### they return a valid object!
+### Coercion.
 ###
 
+### Helper function (not exported) used by the "coerce" methods defined in
+### IRanges-utils.R. Believe it or not but the implicit "coerce" methods do
+### NOT check that they return a valid object!
 newNormalIRangesFromIRanges <- function(x, check=TRUE)
 {
     if (!is(x, "IRanges"))
@@ -292,6 +291,11 @@ newNormalIRangesFromIRanges <- function(x, check=TRUE)
     ## Make a "hard copy" of the slots. No need to check anything!
     new2("NormalIRanges", start=x@start, width=x@width, NAMES=x@NAMES, check=FALSE)
 }
+
+setMethod("as.matrix", "IRanges",
+    function(x, ...)
+        matrix(data=c(start(x), width(x)), ncol=2, dimnames=list(names(x), NULL))
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -592,16 +596,6 @@ setMethod("duplicated", "IRanges",
                               check.names=FALSE,
                               stringsAsFactors=FALSE))
     }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Other methods.
-###
-
-setMethod("as.matrix", "IRanges",
-    function(x, ...)
-        matrix(data=c(start(x), width(x)), ncol=2, dimnames=list(names(x), NULL))
 )
 
 

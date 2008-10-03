@@ -24,9 +24,9 @@ static const R_CallMethodDef callMethods[] = {
 /* IRanges_utils.c */
 	CALLMETHOD_DEF(debug_IRanges_utils, 0),
 
-	CALLMETHOD_DEF(narrow_IRanges, 4),
-	CALLMETHOD_DEF(which_as_ranges, 1),
-	CALLMETHOD_DEF(reduce_IRanges, 2),
+	CALLMETHOD_DEF(which_as_IRanges, 1),
+	CALLMETHOD_DEF(IRanges_narrow, 4),
+	CALLMETHOD_DEF(IRanges_reduce, 2),
 
 /* RangesList_class.c */
 	CALLMETHOD_DEF(summary_IRangesList, 1),

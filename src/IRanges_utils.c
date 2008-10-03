@@ -18,6 +18,55 @@ SEXP debug_IRanges_utils()
 	return R_NilValue;
 }
 
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP which_as_IRanges(SEXP x)
+{
+	SEXP ans, start, width;
+	int i, x_length, ans_length, *x_elt, prev_elt, *start_elt, *width_elt;
+
+	x_length = LENGTH(x);
+	ans_length = 0;
+	prev_elt = 0;
+	for (i = 1, x_elt = LOGICAL(x); i <= x_length; i++, x_elt++) {
+		if (*x_elt && !prev_elt)
+			ans_length++;
+		prev_elt = *x_elt;
+	}
+
+	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("NormalIRanges")));
+	PROTECT(start = NEW_INTEGER(ans_length));
+	PROTECT(width = NEW_INTEGER(ans_length));
+	SET_SLOT(ans, mkChar("start"), start);
+	SET_SLOT(ans, mkChar("width"), width);
+	if (ans_length > 0) {
+		start_elt = INTEGER(start) - 1;
+		width_elt = INTEGER(width) - 1;
+		prev_elt = 0;
+		for (i = 1, x_elt = LOGICAL(x); i <= x_length; i++, x_elt++) {
+			if (*x_elt) {
+				if (prev_elt)
+					*width_elt += 1;
+				else {
+					start_elt++;
+					width_elt++;
+					*start_elt = i;
+					*width_elt = 1;
+				}
+			}
+			prev_elt = *x_elt;
+		}
+	}
+	UNPROTECT(3);
+	return ans;
+}
+
+
+/****************************************************************************
+ * Narrowing.
+ */
+
 static void normargs_startend(int *start, int *end, int width, const char *prefix)
 {
 	if (*start == 0)
@@ -61,7 +110,7 @@ static void normargs_startend(int *start, int *end, int width, const char *prefi
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP narrow_IRanges(SEXP x, SEXP start, SEXP end, SEXP width)
+SEXP IRanges_narrow(SEXP x, SEXP start, SEXP end, SEXP width)
 {
 	int start0, end0, x_length, i, *new_start, *new_width, shift1, shift2, start_length;
 	const int *old_start, *old_width;
@@ -137,49 +186,6 @@ SEXP narrow_IRanges(SEXP x, SEXP start, SEXP end, SEXP width)
 	return ans;
 }
 
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP which_as_ranges(SEXP x)
-{
-	SEXP ans, start, width;
-	int i, x_length, ans_length, *x_elt, prev_elt, *start_elt, *width_elt;
-
-	x_length = LENGTH(x);
-	ans_length = 0;
-	prev_elt = 0;
-	for (i = 1, x_elt = LOGICAL(x); i <= x_length; i++, x_elt++) {
-		if (*x_elt && !prev_elt)
-			ans_length++;
-		prev_elt = *x_elt;
-	}
-
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("NormalIRanges")));
-	PROTECT(start = NEW_INTEGER(ans_length));
-	PROTECT(width = NEW_INTEGER(ans_length));
-	SET_SLOT(ans, mkChar("start"), start);
-	SET_SLOT(ans, mkChar("width"), width);
-	if (ans_length > 0) {
-		start_elt = INTEGER(start) - 1;
-		width_elt = INTEGER(width) - 1;
-		prev_elt = 0;
-		for (i = 1, x_elt = LOGICAL(x); i <= x_length; i++, x_elt++) {
-			if (*x_elt) {
-				if (prev_elt)
-					*width_elt += 1;
-				else {
-					start_elt++;
-					width_elt++;
-					*start_elt = i;
-					*width_elt = 1;
-				}
-			}
-			prev_elt = *x_elt;
-		}
-	}
-	UNPROTECT(3);
-	return ans;
-}
 
 /****************************************************************************
  * Reduction (aka extracting the frame)
@@ -230,7 +236,7 @@ static void reduce_ranges(int length, const int *start, const int *width, int *i
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP reduce_IRanges(SEXP x, SEXP with_inframe_start)
+SEXP IRanges_reduce(SEXP x, SEXP with_inframe_start)
 {
 	int x_length;
 	const int *x_start, *x_width;
@@ -264,3 +270,4 @@ SEXP reduce_IRanges(SEXP x, SEXP with_inframe_start)
 	UNPROTECT(1);
 	return ans;
 }
+
