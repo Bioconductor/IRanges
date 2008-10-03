@@ -184,7 +184,6 @@ SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges) {
   SEXP width = _get_IRanges_width(r_ranges);
 
   PROTECT(r_query_start = allocVector(INTSXP, nranges + 1));
-  
   for (i = 0; i < nranges; i++) {
     IntegerInterval query;
     INTEGER(r_query_start)[i] = next_start;
@@ -195,7 +194,7 @@ SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges) {
   INTEGER(r_query_start)[i] = next_start;
   slReverse(&results);
   
-  if ((next_start+nranges+1) < (tree->n*nranges)) {
+  if ((next_start+nranges+1) < ((double)tree->n*nranges)) {
     SEXP r_subject;
     PROTECT(r_matrix = NEW_OBJECT(MAKE_CLASS("ngCMatrix")));
     SET_SLOT(r_matrix, install("p"), r_query_start);
