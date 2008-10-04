@@ -110,6 +110,9 @@ test_XDataFrame_subset <- function() {
 
   ## duplicate row, unique row names are created
   checkIdentical(as.data.frame(sw[c(1, 1:2),]), swiss[c(1,1:2),])
+  ## need to copy subsetted XDataFrame when placed into another
+  checkIdentical(as.data.frame(XDataFrame(sw[rep(1,nrow(swiss)),])),
+                 swiss[rep(1,nrow(swiss)),])
   ## NOTE: NA subsetting not yet supported for XSequences
   ##checkIdentical(as.data.frame(sw[c(1, NA, 1:2, NA),]), # mixin some NAs
   ##               swiss[c(1, NA, 1:2, NA),])

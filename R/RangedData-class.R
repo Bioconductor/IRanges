@@ -5,8 +5,8 @@
 ## For keeping data with your ranges
 
 setClass("RangedData",
-         representation(ranges = "RangesORXRanges", values = "ANY"))
-
+         representation(ranges = "RangesList", values = "XDataFrame",
+                        design = "XDataFrame", annotation = "characterORNULL"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -15,26 +15,35 @@ setClass("RangedData",
 setGeneric("values", function(object, ...) standardGeneric("values"))
 setMethod("values", "RangedData", function(object) object@values)
 
-## coerced to internal ranges
-setGeneric("ranges", function(object, ...) standardGeneric("ranges"))
-setMethod("ranges", "RangedData",
-          function(object, asRanges = TRUE) {
-            if (!isTRUEorFALSE(asRanges))
-              stop("'asRanges' should be TRUE or FALSE")
-            if (asRanges)
-              as(object@ranges, "Ranges")
-            else object@ranges
-          })
+setGeneric("design", function(object, ...) standardGeneric("design"))
+setMethod("design", "RangedData", function(object) object@design)
+
+setMethod("ranges", "RangedData", function(object) object@ranges)
+
+setGeneric("annotation", function(object) standardGeneric("annotation"))
+setMethod("annotation", "RangedData", function(object) object@annotation)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
 
-.valid.RangedData <- function(x)
+.valid.values <- function(x)
 {
-  if (length(ranges(x, FALSE)) != NROW(values(x)))
-    "the number of ranges must equal the number of records in the data"
+  if (sum(width(ranges(x))) != nrow(values(x)))
+    "the total number of ranges must equal the number of rows in 'values'"
   else NULL
+}
+
+.valid.design <- function(x) {
+  if (nrow(design(x)) != length(ranges(x)))
+    "the number of Ranges instances must equal the number of rows in 'design'"
+  else if (!all(rownames(design(x)) == rownames(ranges(x))))
+    "the rownames of 'design' must match the names of 'ranges'"
+  else NULL
+}
+
+.valid.RangedData <- function(x) {
+  c(.valid.values(x), .valid.design(x))
 }
 
 setValidity2("RangedData", .valid.RangedData)
@@ -43,18 +52,20 @@ setValidity2("RangedData", .valid.RangedData)
 ### Constructor.
 ###
 
-RangedData <- function(ranges = IRanges(), values = NULL) {
-  if (!is(ranges, "RangesORXRanges"))
-    stop("'ranges' must be either a Ranges or XRanges instance")
-  if (length(ranges) != NROW(values))
-    stop("lengths of 'ranges' and 'values' must be equal")
-  new("RangedData", ranges = ranges, values = values)
-}
-
-## This is a convenience that sticks the arguments into an XDataFrame
-
-RangedDataFrame <- function(ranges = IRanges(), ...) {
-  RangedData(ranges, XDataFrame(...))
+RangedData <- function(ranges = RangesList(), ..., design = XDataFrame()) {
+  if (is(ranges, "RangesORXRanges"))
+    ranges <- RangesList(ranges)
+  if (!is(ranges, "RangesList"))
+    stop("'ranges' must be a RangesList instance")
+  if (!canCoerce(design, "XDataFrame"))
+    stop("cannot coerce 'design' to an XDataFrame")
+  design <- XDataFrame(design, row.names = names(ranges))
+  if (nrow(design) != length(ranges))
+    stop("number of rows in 'design' must match the length of 'ranges'")
+  values <- XDataFrame(...)
+  if (length(ranges) != nrow(values))
+    stop("lengths of 'ranges' and elements in '...' must be equal")
+  new("RangedData", ranges = ranges, values = values, design = design)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -95,9 +106,8 @@ setReplaceMethod("[[", "RangedData",
                      stop("attempt to select more than one element")
                    if (is.numeric(i) && (i < 1L || i > length(values(x))+1))
                      stop("subscript out of bounds")
-                   ##if (!is.null(value) &&
-                   ##    length(values(x)[[1]]) != length(value)) {
-                   ##  stop("invalid replacement length")
+                   if (!is.null(value) && nrow(values(x)) != length(value))
+                     stop("invalid replacement length")
                      ##if (length(value) < 1)
                      ##  stop("data length is positive, 'value' length is 0")
                      ##if (length(range(x)) %% length(value) > 0)
@@ -120,8 +130,8 @@ setMethod("[", "RangedData",
               if (!is.atomic(i))
                 stop("invalid subscript type")
               if (row)
-                lx <- NROW(values(x))
-              else lx <- NCOL(values(x))
+                lx <- nrow(values(x))
+              else lx <- ncol(values(x))
               if (!is.null(i) && any(is.na(i)))
                 stop("subscript contains NAs")
               if (is.numeric(i)) {
@@ -133,34 +143,32 @@ setMethod("[", "RangedData",
                 if (length(i) > lx)
                   stop("subscript out of bounds")
               } else if (is.character(i)) {
-                if (row) 
-                  stop("cannot subset a ", class(x), " object by names")
               } else if (!is.null(i)) {
                 stop("invalid subscript type")
               }
             }
             values <- values(x)
-            array <- is.array(values) || is.data.frame(values)
+            ranges <- ranges(x)
             mstyle <- nargs() == 3
-            if (mstyle && !array)
-              stop("matrix-style subsetting not allowed for non-array values")
             if (!missing(j))
               checkIndex(j)
             if (!missing(i)) {
               checkIndex(i, TRUE)
-              x@ranges <- ranges(x)[i] ### NOTE: this brings XRanges into R
-              if (!mstyle) {
-                if (array) # subset array data by rows
-                  x@values <- values[i,,drop=FALSE]
-                else x@values <- values[i] # subset non-array data
-              }
+              rind <- c(1, cumsum(width(ranges)) + 1)
+              names(rind) <- names(ranges)
+              rind <- rind[i]
+              x@ranges <- ranges[i]
+              rw <- width(ranges(x))
+              dind <- rep(rind, rw) + unlist(lapply(rw, seq_len))
+              if (!mstyle)
+                x@values <- values[dind,,drop=FALSE]
             }
             if (mstyle) { # subset array data, matrix-style
               if (missing(i))
                 x@values <- values[,j,drop=FALSE]
               else if (missing(j))
-                x@values <- values[i,]
-              else x@values <- values[i,j,drop=FALSE]
+                x@values <- values[dind,]
+              else x@values <- values[dind,j,drop=FALSE]
             }
             x
           })
@@ -187,10 +195,16 @@ setMethod("as.data.frame", "RangedData",
               stop("'row.names'  must be NULL or a character vector")
             if (!missing(optional) || length(list(...)))
               warning("'optional' and arguments in '...' ignored")
-            r <- ranges(x)
-            data.frame(as.data.frame(r), as.data.frame(values(x)),
-                       row.names = row.names)
+            as.data.frame(XDataFrame(x, row.names = row.names))
           })
+
+setAs("RangedData", "XDataFrame",
+      function(from)
+      {
+        rl <- ranges(from)
+        XDataFrame(unlist(rl), design(from)[rep(seq_len(rl), width(rl))],
+                   values(from))
+      })
 
 setAs("RangedData", "rle", function(from) {
   rlencode(from)

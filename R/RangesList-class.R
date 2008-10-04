@@ -13,10 +13,21 @@ setClass("IRangesList", contains = "RangesList")
 ### Accessor methods.
 ###
 
-setMethod("elementClass", "RangesList", function(x) "Ranges")
+setMethod("elementClass", "RangesList", function(x) "RangesORXRanges")
+
+## coerced to internal ranges
+setGeneric("ranges", function(object, ...) standardGeneric("ranges"))
+setMethod("ranges", "RangesList",
+          function(object, asRanges = TRUE) {
+            if (!isTRUEorFALSE(asRanges))
+              stop("'asRanges' should be TRUE or FALSE")
+            els <- elements(object)
+            if (asRanges)
+              els <- lapply(els, as, "Ranges")
+            els
+          })
 
 setMethod("elementClass", "IRangesList", function(x) "IRanges")
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
@@ -32,7 +43,7 @@ RangesList <- function(...)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "isEmpty" methods.
+### Methods that are vectorized over the ranges
 ###
 
 setMethod("isEmpty", "RangesList",
@@ -41,29 +52,6 @@ setMethod("isEmpty", "RangesList",
             if (length(x) == 0)
               return(logical(0))
             sapply(elements(x), isEmpty)
-          }
-          )
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "max" and "min" methods.
-###
-
-setMethod("max", "RangesList",
-          function(x, ..., na.rm)
-          {
-            if (length(x) == 0)
-              return(integer(0))
-            sapply(elements(x), max)
-          }
-          )
-
-setMethod("min", "RangesList",
-          function(x, ..., na.rm)
-          {
-            if (length(x) == 0)
-              return(integer(0))
-            sapply(elements(x), min)
           }
           )
 
@@ -106,6 +94,13 @@ setMethod("gaps", "RangesList",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
+
+setMethod("unlist", "RangesList",
+          function(x, recursive = TRUE, use.names = TRUE) {
+            if (!missing(recursive) || !missing(use.names))
+              warning("'recursive' and 'use.names' arguments ignored")
+            do.call("rbind", lapply(ranges(x), as.matrix))
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.

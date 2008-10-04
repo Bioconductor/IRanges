@@ -2,20 +2,42 @@
 ### GenomicData objects
 ### -------------------------------------------------------------------------
 
-## A list of ChromData instances, with a genome identifier
+## Extends RangedData to add convenience accessors
 
 setClass("GenomicData",
          representation(genome = "character"),
-         contains = "RangedDataList")
+         contains = "RangedData")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
 setGeneric("genome", function(object, ...) standardGeneric("genome"))
-setMethod("genome", "GenomicData", function(object) object@genome)
+setMethod("genome", "GenomicData", function(object) annotation(object))
 
-setMethod("elementClass", "GenomicData", function(x) "ChromData")
+setGeneric("strand", function(object, ...) standardGeneric("strand"))
+setMethod("strand", "GenomicData", function(object) {
+  strand <- object[["strand"]]
+  if (is.null(strand))
+    strand <- rep(NA, length(object))
+### FIXME: just necessary because we have no XFactor
+  strand <- as.factor(strand)
+  levels(strand) <- c("+", "-")
+  strand
+})
+
+setGeneric("chrom", function(object, ...) standardGeneric("chrom"))
+setMethod("chrom", "GenomicData", function(object) {
+  design <- design(object) 
+  chrom <- design[["chrom"]]
+  if (is.null(chrom)) {
+    chrom <- rownames(design)
+    if (is.null(chrom))
+      chrom <- paste("chr", seq_len(nrow(design)), sep = "")
+    chrom <- factor(chrom, chrom)
+  }
+  rep(chrom, width(ranges(object)))
+})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.

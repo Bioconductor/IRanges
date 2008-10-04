@@ -52,7 +52,6 @@ setMethod("length", "IRanges", function(x) length(start(x)))
 ### Note that the "start" and "end" generics are defined in the stats package.
 setMethod("start", "IRanges", function(x, ...) x@start)
 
-setGeneric("width", function(x) standardGeneric("width"))
 setMethod("width", "IRanges", function(x) x@width)
 
 ### Note that when width(x)[i] is 0, then end(x)[i] is start(x)[i] - 1

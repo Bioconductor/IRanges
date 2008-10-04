@@ -41,8 +41,7 @@ Collate: validity-utils.R
         XRanges-class.R
         RangedData-class.R
         RangedData-utils.R
-        ChromData-class.R
-	GenomicData-class.R
+        GenomicData-class.R
         IntervalTree-class.R
         IntervalTree-utils.R
         RangesMatching-class.R

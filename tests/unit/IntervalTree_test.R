@@ -1,3 +1,6 @@
+library(IRanges)
+library(RUnit)
+
 test_IntervalTree_construction <- function() {
   query <- IRanges(c(1, 3, 9), c(5, 7, 10))
   subject <- IRanges(c(2, 10), c(2, 12))
@@ -55,7 +58,24 @@ test_IntervalTree_overlap <- function() {
                 i = c(0L, 1L, 0L, 1L, 2L, 3L),
                 Dim = as.integer(c(length(query), length(query))))
   checkIdentical(result, new("RangesMatching", matchmatrix=sparse))
-  
+
+  ## check case of identical subjects
+  ## .....
+  ##    .....
+  ##         ..
+  ##  xxxx
+  ##  xxxx
+  ##      xx
+  ##      xxx
+  ##      xx
+  query <- IRanges(c(1, 4, 9), c(5, 7, 10))
+  subject <- IRanges(c(2, 2, 6, 6, 6), c(5, 5, 7, 8, 7))  
+  tree <- IntervalTree(subject)
+  result <- overlap(tree, query)
+  sparse <- new("ngCMatrix", i = as.integer(c(0, 1, 0, 1, 2, 3, 4)),
+                p = as.integer(c(0, 2, 7, 7)), Dim = c(5L, 3L))
+  checkIdentical(result, new("RangesMatching", matchmatrix=sparse))
+
   checkException(overlap(NULL, query))
   checkException(overlap(query, NULL))
 }

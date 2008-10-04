@@ -138,10 +138,16 @@ XDataFrame <- function(..., row.names = NULL)
     varnames <- as.list(names(elements))
     nrows <- ncols <- integer(length(varnames))
     for (i in seq_along(elements)) {
-      element <- try(as(elements[[i]], "XDataFrame"), silent = TRUE)
+      element <- elements[[i]]
+      if (is(element, "XDataFrame") && ## need to copy if subsetted
+          !all(rowset(element) == seq_len(nrow(element)))) {
+        message("copying XDataFrame argument")
+        element <- as.data.frame(element)
+      }
+      element <- try(as(element, "XDataFrame"), silent = TRUE)
       if (inherits(element, "try-error"))
         stop("cannot coerce class \"", class(elements[[i]]),
-           "\" to an XDataFrame")
+             "\" to an XDataFrame")
       enames <- names(element)
       if (ncol(element) > 1) {
         if (is.null(enames))

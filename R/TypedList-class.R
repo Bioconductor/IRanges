@@ -216,6 +216,16 @@ setMethod("append", c("TypedList", "TypedList"),
           )
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Methods that are vectorized over the elements
+###
+
+setGeneric("width", function(x) standardGeneric("width"))
+
+setMethod("width", "TypedList", function(x) {
+  sapply(elements(x), length)
+})
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
 
@@ -233,7 +243,15 @@ setAs("TypedList", "list",
         .TypedList_asList(from)
       })
 
-
+setMethod("as.data.frame", "TypedList",
+          function(x, row.names=NULL, optional=FALSE, ...)
+          {
+            if (!(is.null(row.names) || is.character(row.names)))
+              stop("'row.names'  must be NULL or a character vector")
+            as.data.frame(as(x, "list"), row.names = row.names,
+                          optional = optional, ...)
+          })
+            
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
 ###

@@ -20,8 +20,6 @@ export(
     safeExplode,
     IRanges,
     RangedData,
-    RangedDataFrame,
-    ChromData,
     GenomicData,
     successiveIRanges,
     whichAsIRanges,
