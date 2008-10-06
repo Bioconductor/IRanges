@@ -7,7 +7,7 @@ importClassesFrom(Matrix, CsparseMatrix, nsparseMatrix, generalMatrix,
 
 exportClasses(
     Ranges, IRanges, UnlockedIRanges, LockedIRanges, NormalIRanges,
-    RangesList, MaskCollection,
+    RangesList, IRangesList, MaskCollection,
     SequencePtr, RawPtr, IntegerPtr, NumericPtr,
     XSequence, XRaw, XInteger, XNumeric,
     Views, XIntegerViews, XDataFrame
@@ -26,6 +26,7 @@ export(
     ncharAsIRanges,
     asNormalIRanges,
     RangesList,
+    IRangesList,
     MaskCollection.show_frame,
     Mask,
     read.gapMask,

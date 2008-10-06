@@ -41,6 +41,13 @@ RangesList <- function(...)
   new("RangesList", elements=ranges, NAMES=NAMES)
 }
 
+IRangesList <- function(...)
+{
+    ranges <- list(...)
+    NAMES <- names(ranges)
+    names(ranges) <- NULL
+    new("IRangesList", elements=ranges, NAMES=NAMES)
+}
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Methods that are vectorized over the ranges
