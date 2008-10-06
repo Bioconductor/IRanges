@@ -11,7 +11,7 @@
 ###
 
 setGeneric("slice", signature="x",
-    function(x, lower=-Inf, upper=Inf, includeLower=TRUE, includeUpper=TRUE)
+    function(x, lower=-Inf, upper=Inf, includeLower=TRUE, includeUpper=TRUE, ...)
         standardGeneric("slice")
 )
 

@@ -24,7 +24,7 @@
 }
 
 \usage{
-  slice(x, lower=-Inf, upper=Inf, includeLower=TRUE, includeUpper=TRUE)
+  slice(x, lower=-Inf, upper=Inf, includeLower=TRUE, includeUpper=TRUE, ...)
 
   viewMins(x, na.rm=FALSE)
   viewMaxs(x, na.rm=FALSE)
@@ -47,6 +47,9 @@
   }
   \item{na.rm}{
     Logical indicating whether or not to include missing values in the results.
+  }
+  \item{\dots}{
+    Additional arguments to be passed to or from methods.
   }
 }
 
