@@ -24,7 +24,7 @@
 }
 
 \usage{
-  slice(x, lower=-Inf, upper=Inf, includeLower=TRUE, includeUpper=TRUE, ...)
+  slice(x, lower=-Inf, upper=Inf, ...)
 
   viewMins(x, na.rm=FALSE)
   viewMaxs(x, na.rm=FALSE)
@@ -40,10 +40,6 @@
   }
   \item{lower, upper}{
     The lower and upper bounds for the slice.
-  }
-  \item{includeLower, includeUpper}{
-    Logical values that indicate whether or not to include the equality in the
-    corresponding bound for the slice.
   }
   \item{na.rm}{
     Logical indicating whether or not to include missing values in the results.

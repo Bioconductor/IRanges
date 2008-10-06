@@ -654,9 +654,7 @@ SEXP IRanges_coverage(
 SEXP XIntegerViews_slice(
 	SEXP xint,
 	SEXP lower,
-	SEXP upper,
-	SEXP include_lower,
-	SEXP include_upper
+	SEXP upper
 );
 
 
@@ -677,3 +675,13 @@ SEXP XIntegerViews_viewSums(
 	SEXP na_rm
 );
 
+
+/* XNumericViews.c */
+
+SEXP XNumericViews_slice(
+	SEXP xdouble,
+	SEXP lower,
+	SEXP upper,
+	SEXP include_lower,
+	SEXP include_upper
+);

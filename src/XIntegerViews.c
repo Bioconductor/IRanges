@@ -1,35 +1,14 @@
 #include "IRanges.h"
 
-static int gt(int x, int y) {
-	return x > y;
-}
-
-static int lt(int x, int y) {
-	return x < y;
-}
-
-static int ge(int x, int y) {
-	return x >= y;
-}
-
-static int le(int x, int y) {
-	return x <= y;
-}
-
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP XIntegerViews_slice(SEXP xint, SEXP lower, SEXP upper, SEXP include_lower, SEXP include_upper)
+SEXP XIntegerViews_slice(SEXP xint, SEXP lower, SEXP upper)
 {
 	SEXP x, ans, start, width;
 	int i, x_length, ans_length;
 	int *x_elt, *start_elt, *width_elt;
 	int lower_elt, upper_elt, curr_elt, prev_elt;
-	int (*lower_fun)(int, int);
-	int (*upper_fun)(int, int);
-
-	lower_fun = LOGICAL(include_lower)[0] ? &ge : &gt;
-	upper_fun = LOGICAL(include_upper)[0] ? &le : &lt;
 
 	lower_elt = INTEGER(lower)[0];
 	upper_elt = INTEGER(upper)[0];
@@ -39,7 +18,7 @@ SEXP XIntegerViews_slice(SEXP xint, SEXP lower, SEXP upper, SEXP include_lower, 
 	ans_length = 0;
 	prev_elt = 0;
 	for (i = 1, x_elt = INTEGER(x); i <= x_length; i++, x_elt++) {
-		curr_elt = lower_fun(*x_elt, lower_elt) && upper_fun(*x_elt, upper_elt);
+		curr_elt = (*x_elt >= lower_elt) && (*x_elt <= upper_elt);
 		if (curr_elt && !prev_elt)
 			ans_length++;
 		prev_elt = curr_elt;
@@ -52,7 +31,7 @@ SEXP XIntegerViews_slice(SEXP xint, SEXP lower, SEXP upper, SEXP include_lower, 
 		width_elt = INTEGER(width) - 1;
 		prev_elt = 0;
 		for (i = 1, x_elt = INTEGER(x); i <= x_length; i++, x_elt++) {
-			curr_elt = lower_fun(*x_elt, lower_elt) && upper_fun(*x_elt, upper_elt);
+			curr_elt = (*x_elt >= lower_elt) && (*x_elt <= upper_elt);
 			if (curr_elt) {
 				if (prev_elt)
 					*width_elt += 1;
@@ -71,4 +50,3 @@ SEXP XIntegerViews_slice(SEXP xint, SEXP lower, SEXP upper, SEXP include_lower, 
 	UNPROTECT(3);
 	return ans;
 }
-
