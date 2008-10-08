@@ -19,6 +19,12 @@ setClass("XIntegerViews",
 ### User-friendly constructor.
 ###
 
+setMethod("Views", "XInteger",
+    function(subject, start=NA, end=NA, names=NULL)
+        newViews(subject, start=start, end=end, names=names,
+                 Class="XIntegerViews")
+)
+
 setMethod("Views", "integer",
     function(subject, start=NA, end=NA, names=NULL)
     {

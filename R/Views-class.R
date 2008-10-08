@@ -51,7 +51,7 @@ setReplaceMethod("width", "Views",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The user-friendly "Views" constructor.
+### The low-level "Views" constructor.
 ###
 ### TODO: - support the 'width' argument;
 ###       - remove the 'names' argument (user should call names(x) <- somenames
@@ -60,34 +60,39 @@ setReplaceMethod("width", "Views",
 ###         some views are "out of limits".
 ###
 
+newViews <- function(subject, start=NA, end=NA, names=NULL, Class=NULL)
+{
+    if (!isNumericOrNAs(start) || !isNumericOrNAs(end))
+        stop("'start' and 'end' must be numeric vectors")
+    if (!is.integer(start))
+        start <- as.integer(start)
+    start[is.na(start)] <- 1L
+    if (!is.integer(end))
+        end <- as.integer(end)
+    end[is.na(end)] <- length(subject)
+    if (length(start) < length(end))
+        start <- recycleVector(start, length(end))
+    else if (length(end) < length(start))
+        end <- recycleVector(end, length(start))
+    if (!all(start <= end))
+        stop("'start' and 'end' must verify 'start <= end'")
+    width <- end - start + 1L
+    ## 'start' and 'with' are guaranteed to be valid.
+    if (is.null(Class))
+        Class <- paste(class(subject), "Views", sep="")
+    ans <- new2(Class, subject=subject, start=start, width=width, check=FALSE)
+    names(ans) <- names
+    ans
+}
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The user-friendly "Views" constructor.
+###
+### TODO: Same as for the newViews() function above.
+###
+
 setGeneric("Views", signature="subject",
     function(subject, start=NA, end=NA, names=NULL) standardGeneric("Views")
-)
-
-setMethod("Views", "ANY",
-    function(subject, start=NA, end=NA, names=NULL)
-    {
-        if (!isNumericOrNAs(start) || !isNumericOrNAs(end))
-            stop("'start' and 'end' must be numeric vectors")
-        if (!is.integer(start))
-            start <- as.integer(start)
-        start[is.na(start)] <- 1L
-        if (!is.integer(end))
-            end <- as.integer(end)
-        end[is.na(end)] <- length(subject)
-        if (length(start) < length(end))
-            start <- recycleVector(start, length(end))
-        else if (length(end) < length(start))
-            end <- recycleVector(end, length(start))
-        if (!all(start <= end))
-            stop("'start' and 'end' must verify 'start <= end'")
-        width <- end - start + 1L
-        ## 'start' and 'with' are guaranteed to be valid.
-        ans_class <- paste(class(subject), "Views", sep="")
-        ans <- new2(ans_class, subject=subject, start=start, width=width, check=FALSE)
-        names(ans) <- names
-        ans
-    }
 )
 
 views <- function(...) { .Deprecated("Views"); Views(...) }

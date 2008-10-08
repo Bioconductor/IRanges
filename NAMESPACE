@@ -40,7 +40,7 @@ export(
     #IntegerPtr, IntegerPtr.read, IntegerPtr.write,
     #NumericPtr, NumericPtr.read, NumericPtr.write,
     XInteger, XNumeric, XDataFrame,
-    successiveViews,
+    newViews, successiveViews,
 
     ## Generic functions:
     width,

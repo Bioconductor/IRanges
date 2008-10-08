@@ -5,8 +5,8 @@
 \alias{subject}
 \alias{subject,Views-method}
 \alias{width<-,Views-method}
+\alias{newViews}
 \alias{Views}
-\alias{Views,ANY-method}
 \alias{views}
 \alias{[[,Views-method}
 \alias{[[<-,Views-method}

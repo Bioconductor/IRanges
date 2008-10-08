@@ -7,6 +7,7 @@
 \alias{XIntegerViews}
 
 % Constructors:
+\alias{Views,XInteger-method}
 \alias{Views,integer-method}
 
 % Methods:
