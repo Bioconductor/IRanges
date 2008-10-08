@@ -24,13 +24,13 @@
 \title{Views objects}
 
 \description{
-  The Views class is a general container for representing a set of
-  views on an arbitrary object, called the "subject", and for which there
-  is a notion of length. For example it can be used to store views on a
-  vector or an external vector.
-  Note that more specific containers will typically be defined on top of
-  this container by extending the Views class.
-  The primary purpose of the Views container is to introduce concepts
+  The Views virtual class is a general container for storing a set of
+  views on an arbitrary \link{XSequence} object, called the "subject".
+
+  More specific classes like the \link{XIntegerViews} container derive
+  directly from the Views class.
+
+  The primary purpose of the Views virtual class is to introduce concepts
   and provide some facilities shared by the more specific containers.
 }
 
@@ -64,7 +64,7 @@
 
 \arguments{
   \item{subject}{
-    The object on which to create the views.
+    The \link{XSequence} object on which to create the views.
   }
   \item{start, end}{
     For \code{Views}, they must be integer vectors (eventually with NAs)
@@ -126,7 +126,7 @@
 
   \code{x[[i]]} extracts the i-th view from \code{x}. It cannot be used for
   extracting a view that is "out of limits" (an error will be raised).
-  The returned object belong to the same class as \code{subject(x)}.
+  The returned object belongs to the same class as \code{subject(x)}.
 
   \code{successiveViews} returns a Views object containing the views on
   \code{subject} that have the widths specified in the \code{width} vector
@@ -142,27 +142,28 @@
 }
 
 \examples{
-  ## Create a set of 4 views on a logical vector of length 10:
-  v1 <- Views(logical(10), start=4:1, end=4:7)
+  ## Create a set of 4 views on an XInteger subject of length 10:
+  subject <- XInteger(10, 3:-6)
+  v1 <- Views(subject, start=4:1, end=4:7)
 
   ## Extract the 2nd view:
   v1[[2]]
 
   ## 'start' and 'end' are recycled
-  Views(logical(10), 2:1, 4)
-  Views(logical(10), 5:7, )
-  Views(logical(10), , 5:7)
+  Views(subject, 2:1, 4)
+  Views(subject, 5:7, )
+  Views(subject, , 5:7)
 
   ## Some views can be "out of limits"
-  v2 <- Views(logical(10), 4:-1, 6)
+  v2 <- Views(subject, 4:-1, 6)
   trim(v2)
   subviews(v2, end=-2)
 
   ## gaps() 
-  v3 <- Views(logical(10), start=c(8, 3), end=c(14, 4))
+  v3 <- Views(subject, start=c(8, 3), end=c(14, 4))
   gaps(v3)
 
-  ## Views on an XInteger object:
+  ## Views on a big XInteger subject:
   subject <- XInteger(99999, sample(99, 99999, replace=TRUE) - 50)
   v4 <- Views(subject, start=1:99*1000, end=1:99*1001)
   v4

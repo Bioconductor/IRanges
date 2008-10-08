@@ -2,16 +2,15 @@
 ### Views objects
 ### -------------------------------------------------------------------------
 ###
-### The Views class is a general container for representing a set of
-### views on an arbitrary object, called the "subject", and for which there
-### is a notion of length. For example it can be used to store views on a
-### vector or an external vector.
+### The Views virtual class is a general container for storing a set of views
+### on an arbitrary XSequence object, called the "subject".
 ###
 
 setClass("Views",
     contains="UnlockedIRanges",
     representation(
-        subject="ANY"
+        "VIRTUAL",
+        subject="XSequence"
     )
 )
 
@@ -84,7 +83,8 @@ setMethod("Views", "ANY",
             stop("'start' and 'end' must verify 'start <= end'")
         width <- end - start + 1L
         ## 'start' and 'with' are guaranteed to be valid.
-        ans <- new2("Views", subject=subject, start=start, width=width, check=FALSE)
+        ans_class <- paste(class(subject), "Views", sep="")
+        ans <- new2(ans_class, subject=subject, start=start, width=width, check=FALSE)
         names(ans) <- names
         ans
     }

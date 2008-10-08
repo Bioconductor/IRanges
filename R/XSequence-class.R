@@ -2,8 +2,8 @@
 ### XSequence objects
 ### -------------------------------------------------------------------------
 ###
-### The XSequence class is a general container for storing an "external
-### sequence".
+### The XSequence virtual class is a general container for storing an
+### "external sequence".
 ###
 
 setClass("XSequence",

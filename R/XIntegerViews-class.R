@@ -27,12 +27,6 @@ setMethod("Views", "integer",
     }
 )
 
-setMethod("Views", "XInteger",
-    function(subject, start=NA, end=NA, names=NULL)
-        as(callNextMethod(subject=subject, start=start, end=end, names=names),
-           "XIntegerViews")
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.

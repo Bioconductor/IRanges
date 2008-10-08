@@ -8,7 +8,6 @@
 
 % Constructors:
 \alias{Views,integer-method}
-\alias{Views,XInteger-method}
 
 % Methods:
 \alias{show,XIntegerViews-method}
@@ -100,11 +99,10 @@
 }
 
 \examples{
-
   ## One standard way to create an XIntegerViews object is to use
   ## the Views() constructor:
-  x1 <- XInteger(6, c(45, 67, 84, 67, 45, 78))
-  v4 <- Views(x1, 3:0, 5:8)
+  subject <- XInteger(6, c(45, 67, 84, 67, 45, 78))
+  v4 <- Views(subject, 3:0, 5:8)
   v4
   subject(v4)
   length(v4)
