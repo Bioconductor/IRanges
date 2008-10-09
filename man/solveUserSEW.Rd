@@ -2,7 +2,7 @@
 
 \alias{solveUserSEW}
 
-\title{The start/end/width interface}
+\title{The SEW (Start/End/Width) interface}
 
 \description{
   \code{solveUserSEW} is a utility function that solves a set of
@@ -11,7 +11,8 @@
 
 \usage{
   solveUserSEW(refwidths, start=NA, end=NA, width=NA,
-               if.non.positive.start.or.end="translate")
+               translate.nonpositive.coord=TRUE,
+               allow.nonnarrowing=FALSE)
 }
 
 \arguments{
@@ -22,8 +23,8 @@
     Vectors of integers, eventually with NAs, containing the set of
     user-supplied start/end/width values.
   }
-  \item{if.non.positive.start.or.end}{
-    \code{"translate"}, \code{"keep"} or \code{"error"}
+  \item{translate.nonpositive.coord, allow.nonnarrowing}{
+    \code{TRUE} or \code{FALSE}.
   }
 }
 
@@ -37,27 +38,32 @@
 
   Then each row is "solved" i.e. the 2 following transformations are
   performed (\code{i} is the indice of the row):
-    (1) if \code{if.non.positive.start.or.end="translate"} then a
+    (1) if \code{translate.nonpositive.coord} is TRUE then a
         non-positive value of \code{start[i]} or \code{end[i]} is
-        considered to be \code{refwidths[i]+1}-based so \code{refwidths[i]+1}
-        is added to it to make it 1-based;
+        considered to be a \code{-refwidths[i]}-based coordinate so
+        \code{refwidths[i]+1} is added to it to make it 1-based;
     (2) the NAs in the row are treated as unknowns which values are deduced
         from the known values in the row and from \code{refwidths[i]}.
 
-  The exact rules for (2) are the following. If the row contains at least
-  2 NAs, then \code{width[i]} must be one of them (otherwise an error is
-  returned), and if \code{start[i]} is one of them it is replaced by 1,
-  and if \code{end[i]} is one of them it is replaced by \code{refwidths[i]},
-  and finally \code{width[i]} is replaced by \code{end[i] - start[i] + 1}.
-  If the row contains only 1 NA, then it is replaced by the solution of the
-  \code{width[i] == end[i] - start[i] + 1} equation.
+  The exact rules for (2) are the following.
+  Rule (2a): if the row contains at least 2 NAs, then \code{width[i]} must be
+  one of them (otherwise an error is returned), and if \code{start[i]} is one
+  of them it is replaced by 1, and if \code{end[i]} is one of them it is
+  replaced by \code{refwidths[i]}, and finally \code{width[i]} is replaced by
+  \code{end[i] - start[i] + 1}.
+  Rule (2b): if the row contains only 1 NA, then it is replaced by the solution
+  of the \code{width[i] == end[i] - start[i] + 1} equation.
 
   Finally, the set of solved rows is returned as an \link{IRanges} object.
 }
 
 \value{
   An \link{IRanges} object (with the same number of elements as
-  \code{refwidths}) representing the set of solved start/end/width values.
+  \code{refwidths}) representing the set of solved start/end/width values,
+  or an error if either (1) the set of user-supplied start/end/width values
+  is invalid or (2) \code{allow.nonnarrowing} is FALSE and the ranges
+  represented by the solved start/end/width values are not narrowing
+  the ranges represented by the user-supplied start/end/width values.
 }
 
 \author{H. Pages}

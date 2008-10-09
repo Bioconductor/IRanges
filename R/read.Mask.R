@@ -53,7 +53,7 @@
         stop("'gap.types' must be 'NULL' or a character vector ",
              "with no NAs and no duplicated")
     if (!isTRUEorFALSE(use.gap.types))
-        stop("'use.gap.types' must be 'TRUE' or 'FALSE'")
+        stop("'use.gap.types' must be TRUE or FALSE")
     if (agp_or_gap == "agp") {
         ALL_COLS <- c(
             `chrom`="character",
@@ -216,7 +216,7 @@ read.rmMask <- function(file, width, use.IDs=FALSE)
     if (!is.integer(width))
         width <- as.integer(width)
     if (!isTRUEorFALSE(use.IDs))
-        stop("'use.IDs' must be 'TRUE' or 'FALSE'")
+        stop("'use.IDs' must be TRUE or FALSE")
     ## For a description of RepeatMasker output format:
     ##   http://www.repeatmasker.org/webrepeatmaskerhelp.html
     ALL_COLS <- c(

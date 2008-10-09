@@ -1,18 +1,15 @@
 ### =========================================================================
-### solveUserSEW()
+### The SEW (Start/End/Width) interface
 ### -------------------------------------------------------------------------
 ###
-### Some of the functions that use the start/end/width interface: narrow(),
-### subseq(), Views(), Biostrings:::BStringSet() (and family),
-### BSgenome:::getSeq(), etc...
+### Some of the functions that use the SEW interface: narrow(), subseq(),
+### Views(), Biostrings:::BStringSet() (and family), BSgenome:::getSeq(), etc...
 ###
 
 solveUserSEW <- function(refwidths, start=NA, end=NA, width=NA,
-                         if.non.positive.start.or.end="translate")
+                         translate.nonpositive.coord=TRUE,
+                         allow.nonnarrowing=FALSE)
 {
-    #ranges <- new2("IRanges", start=rep.int(1L, length(refwidths)),
-    #                          width=refwidths, check=FALSE)
-    #narrow(ranges, start=start, end=end, width=width, use.names=FALSE)
     if (!is.numeric(refwidths))
         stop("'refwidths' must be a vector of integers")
     if (!is.integer(refwidths))
@@ -30,12 +27,13 @@ solveUserSEW <- function(refwidths, start=NA, end=NA, width=NA,
         stop("'start', 'end' or 'width' has more elements than 'refwidths'")
     if (min(l1, l2, l3) == 0 && length(refwidths) != 0)
         stop("'start', 'end' or 'width' is empty but 'refwidths' is not")
-    if (!isSingleString(if.non.positive.start.or.end))
-        stop("'if.non.positive.start.or.end' must be a single string")
-    if.non.positive.start.or.end <- match.arg(if.non.positive.start.or.end,
-                                              c("translate", "keep", "error"))
+    if (!isTRUEorFALSE(translate.nonpositive.coord))
+        stop("'translate.nonpositive.coord' must be TRUE or FALSE")
+    if (!isTRUEorFALSE(allow.nonnarrowing))
+        stop("'allow.nonnarrowing' must be TRUE or FALSE")
     .Call("solve_user_SEW",
-          refwidths, start, end, width, if.non.positive.start.or.end,
+          refwidths, start, end, width,
+          translate.nonpositive.coord, allow.nonnarrowing,
           PACKAGE="IRanges")
 }
 

@@ -116,7 +116,7 @@ setMethod("restrict", "IRanges",
         start <- normargSingleStartOrNA(start)
         end <- normargSingleEndOrNA(end)
         if (!isTRUEorFALSE(keep.all.ranges))
-            stop("'keep.all.ranges' must be 'TRUE' or 'FALSE'")
+            stop("'keep.all.ranges' must be TRUE or FALSE")
         use.names <- normargUseNames(use.names)
 
         ans_start <- start(x)
@@ -225,7 +225,7 @@ setMethod("reduce", "IRanges",
     function(x, with.inframe.attrib=FALSE)
     {
         if (!isTRUEorFALSE(with.inframe.attrib))
-            stop("'with.inframe.attrib' must be 'TRUE' or 'FALSE'")
+            stop("'with.inframe.attrib' must be TRUE or FALSE")
         C_ans <- .Call("IRanges_reduce",
                         x, with.inframe.attrib,
                         PACKAGE="IRanges")
@@ -304,7 +304,7 @@ asNormalIRanges <- function(x, force=TRUE)
     if (!is(x, "IRanges"))
         stop("'x' must be an IRanges object")
     if (!isTRUEorFALSE(force))
-        stop("'force' must be 'TRUE' or 'FALSE'")
+        stop("'force' must be TRUE or FALSE")
     if (!force)
         return(newNormalIRangesFromIRanges(x, check=TRUE))
     x1 <- as(x, "IRanges") # downgrade

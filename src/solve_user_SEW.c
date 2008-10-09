@@ -1,45 +1,21 @@
 /****************************************************************************
- *                             solve_user_SEW()                             *
+ *                   The SEW (Start/End/Width) interface                    *
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"
 
-#define TRANSLATE_IFNONPOSITIVE	1
-#define KEEP_IFNONPOSITIVE	2
-#define ERROR_IFNONPOSITIVE	3
-
-static int ifnonpositive_action;
+static int keep_nonpositive_coord;
+static int nonnarrowing_is_OK;
 static char errmsg_buf[200];
 
-static void set_ifnonpositive_action(const char *if_nonpositive_startorend)
+static int translate_nonpositive_startorend(int refwidth, int *startorend)
 {
-	if (strcmp(if_nonpositive_startorend, "translate") == 0)
-		ifnonpositive_action = TRANSLATE_IFNONPOSITIVE;
-	else if (strcmp(if_nonpositive_startorend, "keep") == 0)
-		ifnonpositive_action = KEEP_IFNONPOSITIVE;
-	else if (strcmp(if_nonpositive_startorend, "error") == 0)
-		ifnonpositive_action = ERROR_IFNONPOSITIVE;
-	else
-		error("invalid 'if_nonpositive_startorend' value %s",
-		      if_nonpositive_startorend);
-	return;
-}
-
-static int translate_nonpositive_startorend(int refwidth, int *startorend,
-		const char *argname)
-{
-	if (ifnonpositive_action == KEEP_IFNONPOSITIVE || *startorend > 0)
+	if (*startorend > 0 || keep_nonpositive_coord)
 		return 0;
-	if (ifnonpositive_action == ERROR_IFNONPOSITIVE) {
-		snprintf(errmsg_buf, sizeof(errmsg_buf),
-			 "non-positive values are not allowed in '%s'",
-			 argname);
-		return -1;
-	}
-	// From here, 'ifnonpositive_action' is TRANSLATE_IFNONPOSITIVE
 	if (*startorend == 0) {
 		snprintf(errmsg_buf, sizeof(errmsg_buf),
-		         "0s are not allowed in '%s'", argname);
+		         "0s are not allowed in the supplied start/end "
+			 "when 'translate.nonpositive.coord' is TRUE");
 		return -1;
 	}
 	*startorend += refwidth + 1;
@@ -48,16 +24,18 @@ static int translate_nonpositive_startorend(int refwidth, int *startorend,
 
 static int check_start(int refwidth, int start, const char *what)
 {
-	if (ifnonpositive_action == KEEP_IFNONPOSITIVE)
+	if (nonnarrowing_is_OK)
 		return 0;
 	if (start < 1) {
 		snprintf(errmsg_buf, sizeof(errmsg_buf),
-			 "the %s start (%d) is < 1", what, start);
+			 "'allow.nonnarrowing' is FALSE and the %s start "
+			 "(%d) is < 1", what, start);
 		return -1;
 	}
 	if (start > refwidth + 1) {
 		snprintf(errmsg_buf, sizeof(errmsg_buf),
-			 "the %s start (%d) is > refwidth + 1", what, start);
+			 "'allow.nonnarrowing' is FALSE and the %s start "
+			 "(%d) is > refwidth + 1", what, start);
 		return -1;
 	}
 	return 0;
@@ -65,16 +43,18 @@ static int check_start(int refwidth, int start, const char *what)
 
 static int check_end(int refwidth, int end, const char *what)
 {
-	if (ifnonpositive_action == KEEP_IFNONPOSITIVE)
+	if (nonnarrowing_is_OK)
 		return 0;
 	if (end < 0) {
 		snprintf(errmsg_buf, sizeof(errmsg_buf),
-			 "the %s end (%d) is < 0", what, end);
+			 "'allow.nonnarrowing' is FALSE the %s end "
+			 "(%d) is < 0", what, end);
 		return -1;
 	}
 	if (end > refwidth) {
 		snprintf(errmsg_buf, sizeof(errmsg_buf),
-			 "the %s end (%d) is > refwidth", what, end);
+			 "'allow.nonnarrowing' is FALSE the %s end "
+			 "(%d) is > refwidth", what, end);
 		return -1;
 	}
 	return 0;
@@ -89,13 +69,13 @@ static int solve_user_SEW_row(int refwidth, int start, int end, int width,
 		return -1;
 	}
 	if (start != NA_INTEGER) {
-		if (translate_nonpositive_startorend(refwidth, &start, "start") != 0)
+		if (translate_nonpositive_startorend(refwidth, &start) != 0)
 			return -1;
 		if (check_start(refwidth, start, "supplied") != 0)
 			return -1;
 	}
 	if (end != NA_INTEGER) {
-		if (translate_nonpositive_startorend(refwidth, &end, "end") != 0)
+		if (translate_nonpositive_startorend(refwidth, &end) != 0)
 			return -1;
 		if (check_end(refwidth, end, "supplied") != 0)
 			return -1;
@@ -108,7 +88,7 @@ static int solve_user_SEW_row(int refwidth, int start, int end, int width,
 		width = end - start + 1;
 		if (width < 0) {
 			snprintf(errmsg_buf, sizeof(errmsg_buf),
-				 "the supplied start and end lead to a "
+				 "the supplied start/end lead to a "
 				 "negative width");
 			return -1;
 		}
@@ -119,7 +99,8 @@ static int solve_user_SEW_row(int refwidth, int start, int end, int width,
 	} else if ((start == NA_INTEGER) == (end == NA_INTEGER)) {
 		snprintf(errmsg_buf, sizeof(errmsg_buf),
 			 "either the supplied start or the supplied end "
-			 "(but not both) must be NA when the width is not NA");
+			 "(but not both) must be NA when the supplied width "
+			 "is not NA");
 		return -1;
 	} else {
 		// Either 'start' or 'end' is NA
@@ -142,12 +123,13 @@ static int solve_user_SEW_row(int refwidth, int start, int end, int width,
  * --- .Call ENTRY POINT ---
  */
 SEXP solve_user_SEW(SEXP refwidths, SEXP start, SEXP end, SEXP width,
-		SEXP if_nonpositive_startorend)
+		SEXP translate_nonpositive_coord, SEXP allow_nonnarrowing)
 {
 	SEXP ans, ans_start, ans_width;
 	int ans_length, i0, i1, i2, i3;
 
-	set_ifnonpositive_action(CHAR(STRING_ELT(if_nonpositive_startorend, 0)));
+	keep_nonpositive_coord = !LOGICAL(translate_nonpositive_coord)[0];
+	nonnarrowing_is_OK = LOGICAL(allow_nonnarrowing)[0];
 	ans_length = LENGTH(refwidths);
 	PROTECT(ans_start = NEW_INTEGER(ans_length));
 	PROTECT(ans_width = NEW_INTEGER(ans_length));
