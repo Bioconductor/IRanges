@@ -88,9 +88,9 @@
   \item{start, end}{
     A single integer or \code{NA} for all functions except \code{narrow}.
 
-    For \code{narrow}, a vector of integers, eventually with NAs.
-    See the SEW (Start/End/Width) interface for the details
-    (\code{?solveUserSEW}).
+    For \code{narrow}, the supplied \code{start} and \code{end} arguments must
+    be vectors of integers, eventually with NAs, that contain coordinates
+    relative to the current ranges. See the Details section below.
   }
   \item{keep.all.ranges}{
     \code{TRUE} or \code{FALSE}. Should ranges that become "out of limits"
@@ -130,8 +130,9 @@
   and therefore must be compliant with the rules of the SEW
   (Start/End/Width) interface (see \code{?solveUserSEW} for the
   details).
-  Then each subrange is derived from the original range according to the
-  solved start/end/width values for this range.
+  Then each subrange is derived from the original range according
+  to the solved start/end/width values for this range. Note that those
+  solved values are interpreted relatively to the original range.
 
   \code{reduce} first orders the ranges in \code{x} from left to right,
   then merges the overlapping or adjacent ones.
