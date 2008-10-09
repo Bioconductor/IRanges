@@ -21,6 +21,7 @@ export(
     IRanges,
     RangedData,
     GenomicData,
+    solveUserSEW,
     successiveIRanges,
     whichAsIRanges,
     ncharAsIRanges,

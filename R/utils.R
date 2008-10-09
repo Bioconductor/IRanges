@@ -50,10 +50,10 @@ numeric2integer <- function(x)
     if (is.numeric(x) && !is.integer(x)) as.integer(x) else x
 }
 
-normargIntegerOrNA <- function(x, name)
+normargIntegerOrNA <- function(x, argname)
 {
     if (!isNumericOrNAs(x))
-        stop(paste("'", name, "' must be an integer vector", sep = ""))
+        stop(paste("'", argname, "' must be a vector of integers", sep = ""))
     if (!is.integer(x))
         x <- as.integer(x)
     x

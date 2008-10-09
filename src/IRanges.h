@@ -338,6 +338,17 @@ SEXP _alloc_IRanges(
 );
 
 
+/* solve_user_SEW.c */
+
+SEXP solve_user_SEW(
+	SEXP refwidths,
+	SEXP start,
+	SEXP end,
+	SEXP width,
+	SEXP if_nonpositive_startorend
+);
+
+
 /* IRanges_utils.c */
 
 SEXP debug_IRanges_utils();

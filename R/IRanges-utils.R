@@ -68,7 +68,8 @@ ncharAsIRanges <- function(x)
 {
     if (!is.character(x))
         stop("'x' must be a character vector")
-    new("IRanges", start=rep.int(1L, length(x)), width=nchar(x, type="bytes"))
+    new2("IRanges", start=rep.int(1L, length(x)),
+                    width=nchar(x, type="bytes"), check=FALSE)
 }
 
 
@@ -170,6 +171,18 @@ setGeneric("narrow", signature="x",
         standardGeneric("narrow")
 )
 
+### TODO: Use solveUserSEW() to greatly simplify this method:
+###    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+###    {
+###        solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
+###        unsafe.start(x) <- start(x) + start(solved_SEW) - 1L
+###        unsafe.width(x) <- width(solved_SEW)
+###        if (!normargUseNames(use.names))
+###            names(x) <- NULL
+###        x
+###    }
+### Also, no need to describe the start/end/width interface in the man page
+### for this method. Send the reader to the man page for solveUserSEW() instead.
 setMethod("narrow", "IRanges",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
