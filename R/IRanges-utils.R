@@ -171,41 +171,15 @@ setGeneric("narrow", signature="x",
         standardGeneric("narrow")
 )
 
-### TODO: Use solveUserSEW() to greatly simplify this method:
-###    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-###    {
-###        solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
-###        unsafe.start(x) <- start(x) + start(solved_SEW) - 1L
-###        unsafe.width(x) <- width(solved_SEW)
-###        if (!normargUseNames(use.names))
-###            names(x) <- NULL
-###        x
-###    }
-### Also, no need to describe the start/end/width interface in the man page
-### for this method. Send the reader to the man page for solveUserSEW() instead.
 setMethod("narrow", "IRanges",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
-        start <- normargIntegerOrNA(start, "start")
-        end <- normargIntegerOrNA(end, "end")
-        width <- normargIntegerOrNA(width, "width")
-        lengthStart <- length(start)
-        lengthEnd <- length(end)
-        lengthWidth <- length(width)
-        maxLength <- max(lengthStart, lengthEnd, lengthWidth)
-        if (!all(c(lengthStart, lengthEnd, lengthWidth)) %in% c(1, length(x)))
-            stop("'start', 'end', and 'width' must have length of 1 or 'length(x)'")
-        start <- rep(start, length.out = maxLength)
-        end <- rep(end, length.out = maxLength)
-        width <- rep(width, length.out = maxLength)
-        use.names <- normargUseNames(use.names)
-
-        C_ans <- .Call("IRanges_narrow",
-                       x, start, end, width,
-                       PACKAGE="IRanges")
-        if (use.names) ans_names <- names(x) else ans_names <- NULL
-
-        unsafe.update(x, start=C_ans$start, width=C_ans$width, names=ans_names)
+        solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
+        unsafe.width(x) <- width(solved_SEW)
+        unsafe.start(x) <- start(x) + start(solved_SEW) - 1L
+        if (!normargUseNames(use.names))
+            names(x) <- NULL
+        x
     }
 )
 

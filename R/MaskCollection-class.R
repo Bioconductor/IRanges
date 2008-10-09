@@ -413,15 +413,15 @@ setMethod("append", c("MaskCollection", "MaskCollection"),
 setMethod("narrow", "MaskCollection",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
-        limits <- new2("IRanges", start=1L, width=width(x), check=FALSE)
-        limits <- narrow(limits, start=start, end=end, width=width)
-        start <- start(limits)
-        end <- end(limits)
-        width <- width(limits)
+        solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
+        solved_start <- start(solved_SEW)
+        solved_end <- end(solved_SEW)
+        solved_width <- width(solved_SEW)
         x@nir_list <- lapply(nir_list(x),
-            function(nir) shift(restrict(nir, start=start, end=end), 1L - start(limits))
+            function(nir) shift(restrict(nir, start=solved_start, end=solved_end),
+                                1L - solved_start)
         )
-        x@width <- width
+        x@width <- solved_width
         if (!normargUseNames(use.names))
             x@NAMES <- as.character(NA)
             x@desc <- as.character(NA)

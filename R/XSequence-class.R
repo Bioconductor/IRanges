@@ -30,10 +30,9 @@ setGeneric("subseq", signature="x",
 setMethod("subseq", "XSequence",
     function(x, start=NA, end=NA, width=NA)
     {
-        limits <- new2("IRanges", start=1L, width=length(x), check=FALSE)
-        limits <- narrow(limits, start=start, end=end, width=width)
-        x@offset <- x@offset + start(limits) - 1L
-        x@length <- width(limits)
+        solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
+        x@offset <- x@offset + start(solved_SEW) - 1L
+        x@length <- width(solved_SEW)
         x
     }
 )
@@ -41,9 +40,8 @@ setMethod("subseq", "XSequence",
 setMethod("subseq", "vector",
     function(x, start=NA, end=NA, width=NA)
     {
-        limits <- new2("IRanges", start=1L, width=length(x), check=FALSE)
-        limits <- narrow(limits, start=start, end=end, width=width)
-        x[start(limits) + seq_len(width(limits)) - 1L]
+        solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
+        x[start(solved_SEW) + seq_len(width(solved_SEW)) - 1L]
     }
 )
 

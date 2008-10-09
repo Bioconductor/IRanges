@@ -63,16 +63,11 @@
       \code{subseq(x, start=NA, end=NA, width=NA)}:
       Extract the subsequence from \code{x} specified by \code{start},
       \code{end} and \code{width}.
-      At least one of \code{start}, \code{end} and \code{width} must be
-      \code{NA} and the other ones must be single numeric values.
-      If at least two of them are \code{NA}s, then \code{start=NA} is
-      interpreted as \code{start=1} and \code{end=NA} is interpreted as
-      \code{end=length(x)}.
-      A negative value for \code{start} or \code{end} is interpreted
-      relatively to the end of \code{x} e.g. \code{start=-1} is equivalent
-      to \code{start=length(x)}.
-      Finally, if \code{width} is not \code{NA}, then \code{start} and
-      \code{end} cannot be both \code{NA}s.
+      The supplied start/end/width values are solved by a call to
+      \code{solveUserSEW(length(x), start=start, end=end, width=width)}
+      and therefore must be compliant with the rules of the SEW
+      (Start/End/Width) interface (see \code{?solveUserSEW} for the
+      details).
 
       A note about performance: \code{subseq} does NOT copy the sequence data,
       hence it's very efficient and is the recommended way to extract a
@@ -96,6 +91,7 @@
 
 \seealso{
   \link{Views-class},
+  \code{\link{solveUserSEW}},
   \link[Biostrings]{DNAString-class}
 }
 

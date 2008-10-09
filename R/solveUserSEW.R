@@ -2,7 +2,7 @@
 ### The SEW (Start/End/Width) interface
 ### -------------------------------------------------------------------------
 ###
-### Some of the functions that use the SEW interface: narrow(), subseq(),
+### Some of the functions that support the SEW interface: narrow(), subseq(),
 ### Views(), Biostrings:::BStringSet() (and family), BSgenome:::getSeq(), etc...
 ###
 

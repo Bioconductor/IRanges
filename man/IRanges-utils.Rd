@@ -59,8 +59,9 @@
     For \code{successiveIRanges}, must be a vector of non-negative integers
     (with no NAs) specifying the widths of the ranges to create.
 
-    For \code{narrow}, can be \code{NA}, a single integer, or an integer
-    vector of the same length as \code{x}.
+    For \code{narrow}, a vector of integers, eventually with NAs.
+    See the SEW (Start/End/Width) interface for the details
+    (\code{?solveUserSEW}).
   }
   \item{gapwidth}{
     A single integer or an integer vector with one less element than
@@ -84,13 +85,12 @@
   \item{use.names}{
     \code{TRUE} or \code{FALSE}. Should names be preserved?
   }
-  \item{start}{
-    A single integer or \code{NA}. The \code{narrow} function also excepts an
-    integer vector of \code{length(x)}.
-  }
-  \item{end}{
-    A single integer or \code{NA}. The \code{narrow} function also excepts an
-    integer vector of \code{length(x)}.
+  \item{start, end}{
+    A single integer or \code{NA} for all functions except \code{narrow}.
+
+    For \code{narrow}, a vector of integers, eventually with NAs.
+    See the SEW (Start/End/Width) interface for the details
+    (\code{?solveUserSEW}).
   }
   \item{keep.all.ranges}{
     \code{TRUE} or \code{FALSE}. Should ranges that become "out of limits"
@@ -124,22 +124,14 @@
 
   \code{narrow} narrows the ranges in \code{x} i.e. each range in the
   returned \link{IRanges} object is a subrange of the corresponding
-  range in \code{x}. This subrange is determined by the \code{start},
-  \code{end} and \code{width} arguments.
-  The \code{start}, \code{end}, and \code{width} arguments must be
-  numeric vectors of length 1 or \code{length(x)} with at least one of
-  the corresponding \code{start}, \code{end} and \code{width} values being
-  \code{NA}. If at least two of them are \code{NA}s, then \code{start=NA}
-  means that the starts are unchanged and \code{end=NA} means that the ends
-  are unchanged.
-  A positive \code{start} or \code{end} is interpreted relatively to the
-  start of the original range whereas a negative \code{start} or \code{end}
-  is interpreted relatively to its end.
-  Note that, if \code{width} is \code{NA}, then \code{start=NA} is
-  equivalent to \code{start=1} and \code{end=NA} is equivalent to
-  \code{end=-1}.
-  Finally, if \code{width} is not \code{NA}, then \code{start} and
-  \code{end} cannot be both \code{NA}s.
+  range in \code{x}.
+  The supplied start/end/width values are solved by a call to
+  \code{solveUserSEW(width(x), start=start, end=end, width=width)}
+  and therefore must be compliant with the rules of the SEW
+  (Start/End/Width) interface (see \code{?solveUserSEW} for the
+  details).
+  Then each subrange is derived from the original range according to the
+  solved start/end/width values for this range.
 
   \code{reduce} first orders the ranges in \code{x} from left to right,
   then merges the overlapping or adjacent ones.
@@ -165,6 +157,7 @@
 
 \seealso{
   \link{IRanges-class},
+  \code{\link{solveUserSEW}},
   \code{\link{successiveViews}}
 }
 
