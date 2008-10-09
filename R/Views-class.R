@@ -10,7 +10,7 @@ setClass("Views",
     contains="UnlockedIRanges",
     representation(
         "VIRTUAL",
-        subject="XSequence"
+        subject="Sequence"
     )
 )
 

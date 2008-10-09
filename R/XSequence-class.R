@@ -6,7 +6,10 @@
 ### "external sequence".
 ###
 
+setClass("Sequence", representation("VIRTUAL"))
+
 setClass("XSequence",
+    contains="Sequence",
     representation(
         "VIRTUAL",
         xdata="SequencePtr",  # an external pointer to the "seed" data

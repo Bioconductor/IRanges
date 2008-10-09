@@ -35,7 +35,7 @@
 }
 
 \value{
-  An \link{XInteger} object representing the coverage of \code{x} in the
+  An \link{XRleInteger} object representing the coverage of \code{x} in the
   interval specified by the \code{start} and \code{end} arguments. An integer
   value called the "coverage" can be associated to each position in \code{x},
   indicating how many times this position is covered by the ranges stored in
@@ -45,6 +45,7 @@
 }
 
 \seealso{
+  \link{XRleInteger-class},
   \link{IRanges-class},
   \link{MaskCollection-class}
 }

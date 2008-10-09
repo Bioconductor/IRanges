@@ -1,23 +1,27 @@
-\name{XIntegerViews-utils}
-\alias{XIntegerViews-utils}
+\name{Views-utils}
+\alias{Views-utils}
 
 \alias{slice}
 \alias{slice,integer-method}
 \alias{slice,XInteger-method}
+\alias{slice,XRleInteger-method}
 
 \alias{viewMins}
 \alias{viewMins,XIntegerViews-method}
+\alias{viewMins,XRleIntegerViews-method}
 \alias{viewMaxs}
 \alias{viewMaxs,XIntegerViews-method}
+\alias{viewMaxs,XRleIntegerViews-method}
 \alias{viewSums}
 \alias{viewSums,XIntegerViews-method}
+\alias{viewSums,XRleIntegerViews-method}
 
 
-\title{XIntegerViews utility functions and numeric summary of views}
+\title{Utility functions and numeric summary of Views of numerics}
 
 \description{
-  The \code{slice} function creates an XIntegerViews object that contains
-  the indices where the data are within the specified bounds.
+  The \code{slice} function creates a \link{Views} object that contains the
+  indices where the data are within the specified bounds.
 
   The \code{viewMins}, \code{viewMaxs}, \code{viewSums} functions calculate
   the minimums, maximums, and sums on views respectively.
@@ -33,10 +37,11 @@
 
 \arguments{
   \item{x}{
-    An \link{XInteger} object or an integer vector for \code{slice}.
+    An \link{XRleInteger}, \link{XInteger} object or an integer vector for
+    \code{slice}.
 
-    An \link{XIntegerViews} object for \code{viewMins}, \code{viewMaxs} and
-    \code{viewSums}.
+    An \link{XRleIntegerViews}, \link{XIntegerViews} object for
+    \code{viewMins}, \code{viewMaxs} and \code{viewSums}.
   }
   \item{lower, upper}{
     The lower and upper bounds for the slice.
@@ -50,10 +55,10 @@
 }
 
 \details{
-  The \code{slice} function creates views on \link{XInteger} objects where the
-  data are within the specified bounds. This is useful for finding areas of
-  absolute maxima (peaks), absolute minima (troughs), or fluxuations within a
-  specified limits.
+  The \code{slice} function creates views on \link{XRleInteger} or
+  \link{XInteger} objects where the data are within the specified bounds. This
+  is useful for finding areas of absolute maxima (peaks), absolute minima
+  (troughs), or fluxuations within a specified limits.
 
   The \code{viewMins}, \code{viewMaxs}, and \code{viewSums} functions provide
   efficient methods for calculating the specified numeric summary by performing
@@ -61,7 +66,7 @@
 }
 
 \value{
-  An \link{XIntegerViews} object for \code{slice}.
+  An \link{XRleIntegerViews} or \link{XIntegerViews} object for \code{slice}.
 
   An integer vector of \code{length(x)} containing the numeric summaries for
   the views.
@@ -70,11 +75,11 @@
 \author{P. Aboyoun}
 
 \seealso{
-  \link{XIntegerViews-class}
+  \link{XRleIntegerViews-class}, \link{XIntegerViews-class}
 }
 
 \examples{
-  ## Views derived by slicing
+  ## Views derived from vector
   vec <- as.integer(c(19, 5, 0, 8, 5))
   slice(vec, lower=5, upper=8)
 
@@ -85,6 +90,11 @@
   viewMins(vecViews)
   viewMaxs(vecViews)
   viewSums(vecViews)
+
+  ## Views derived from coverage
+  x <- IRanges(start=c(1L, 9L, 4L, 1L, 5L, 10L),
+               width=c(5L, 6L, 3L, 4L, 3L,  3L))
+  coverage(x, start=1, end=15)
 }
 
 \keyword{methods}

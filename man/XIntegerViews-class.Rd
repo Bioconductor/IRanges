@@ -96,7 +96,7 @@
 \seealso{
   \link{Views-class},
   \link{XInteger-class},
-  \link{XIntegerViews-utils}
+  \link{Views-utils}
 }
 
 \examples{

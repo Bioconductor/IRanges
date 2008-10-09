@@ -48,3 +48,11 @@ setMethod("reverse", "MaskCollection",
         x
     }
 )
+
+setMethod("reverse", "XRle",
+        function(x, times) {
+            x@values <- reverse(x@values)
+            x@lengths <- reverse(x@lengths)
+            x
+        }
+)

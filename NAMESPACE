@@ -9,8 +9,9 @@ exportClasses(
     Ranges, IRanges, UnlockedIRanges, LockedIRanges, NormalIRanges,
     RangesList, IRangesList, MaskCollection,
     SequencePtr, RawPtr, IntegerPtr, NumericPtr,
-    XSequence, XRaw, XInteger, XNumeric,
-    Views, XIntegerViews, XDataFrame
+    Sequence, XSequence, XRaw, XInteger, XNumeric,
+    XRle, XRleInteger,
+    Views, XIntegerViews, XRleIntegerViews, XDataFrame
 )
 
 export(
@@ -41,6 +42,7 @@ export(
     #IntegerPtr, IntegerPtr.read, IntegerPtr.write,
     #NumericPtr, NumericPtr.read, NumericPtr.write,
     XInteger, XNumeric, XDataFrame,
+    XRleInteger,
     newViews, successiveViews,
 
     ## Generic functions:
@@ -97,6 +99,7 @@ exportMethods(
     as.integer,
     as.data.frame,
     as.matrix,
+    as.list,
     toString,
     update,
     append,
