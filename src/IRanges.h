@@ -645,22 +645,7 @@ SEXP NumericPtr_write_nums_to_subset(
 );
 
 
-/* coverage */
-
-SEXP IRanges_coverage(
-	SEXP x,
-	SEXP weight,
-	SEXP order,
-	SEXP width
-);
-
-SEXP XRleInteger_add(
-	SEXP x,
-	SEXP y
-);
-
-
-/* XIntegerViews.c */
+/* XIntegerViews_class.c */
 
 SEXP XIntegerViews_slice(
 	SEXP xint,
@@ -687,7 +672,7 @@ SEXP XIntegerViews_viewSums(
 );
 
 
-/* XNumericViews.c */
+/* XNumericViews_class.c */
 
 SEXP XNumericViews_slice(
 	SEXP xdouble,
@@ -698,7 +683,16 @@ SEXP XNumericViews_slice(
 );
 
 
-/* XRleIntegerViews.c */
+/* XRleInteger_class.c */
+
+SEXP XRleInteger_Arith(
+	SEXP x,
+	SEXP y,
+	SEXP Generic
+);
+
+
+/* XRleIntegerViews_class.c */
 
 SEXP XRleIntegerViews_slice(
 	SEXP x,
@@ -722,4 +716,14 @@ SEXP XRleIntegerViews_viewMaxs(
 SEXP XRleIntegerViews_viewSums(
 	SEXP x,
 	SEXP na_rm
+);
+
+
+/* coverage */
+
+SEXP IRanges_coverage(
+	SEXP x,
+	SEXP weight,
+	SEXP order,
+	SEXP width
 );

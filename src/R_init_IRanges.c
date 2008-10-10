@@ -101,11 +101,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(NumericPtr_write_nums_to_i1i2, 4),
 	CALLMETHOD_DEF(NumericPtr_write_nums_to_subset, 3),
 
-/* coverage */
-	CALLMETHOD_DEF(IRanges_coverage, 4),
-	CALLMETHOD_DEF(XRleInteger_add, 2),
-
-/* XIntegerViews.c */
+/* XIntegerViews_class.c */
 	CALLMETHOD_DEF(XIntegerViews_slice, 3),
 
 /* XIntegerViews_utils.c */
@@ -113,16 +109,22 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(XIntegerViews_viewMaxs, 2),
 	CALLMETHOD_DEF(XIntegerViews_viewSums, 2),
 
-/* XNumericViews.c */
+/* XNumericViews_class.c */
 	CALLMETHOD_DEF(XNumericViews_slice, 5),
 
-/* XRleIntegerViews.c */
+/* XRleIntegerViews_class.c */
 	CALLMETHOD_DEF(XRleIntegerViews_slice, 3),
+
+/* XRleInteger_class.c */
+	CALLMETHOD_DEF(XRleInteger_Arith, 3),
 
 /* XRleIntegerViews_utils.c */
 	CALLMETHOD_DEF(XRleIntegerViews_viewMins, 2),
 	CALLMETHOD_DEF(XRleIntegerViews_viewMaxs, 2),
 	CALLMETHOD_DEF(XRleIntegerViews_viewSums, 2),
+
+/* coverage */
+	CALLMETHOD_DEF(IRanges_coverage, 4),
 
 	{NULL, NULL, 0}
 };

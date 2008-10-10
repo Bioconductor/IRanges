@@ -59,10 +59,8 @@ setMethod("coverage", "MaskCollection",
         ans <- new("XRleInteger", values = XInteger(1, 0L), lengths = XInteger(1, width))
         for (i in seq_len(length(x))) {
             x1 <- shift(restrict(x[[i]], start=start, end=end), 1L - start)
-            ans <-
-              .Call("XRleInteger_add", ans,
-                    .Call("IRanges_coverage", x1, weight[i], order(start(x1)), width,
-                          PACKAGE="IRanges"),
+            ans <- ans +
+              .Call("IRanges_coverage", x1, weight[i], order(start(x1)), width,
                     PACKAGE="IRanges")
         }
         ans

@@ -44,6 +44,51 @@ XRleInteger <- function(x) {
 ### Coercion
 ###
 
+setMethod("Arith", signature(e1 = "XRleInteger", e2 = "XRleInteger"),
+    function (e1, e2)
+    {
+        if (.Generic == '/')
+            stop("'/' is not implemented for objects of class 'XRleInteger' - try '%/%'")
+        if (.Generic == '%/%')
+            .Generic <- '/'
+        else if (.Generic == '%%')
+            .Generic <- '%'
+        .Call("XRleInteger_Arith", e1, e2, .Generic, PACKAGE="IRanges")
+    }
+)
+
+setMethod("Arith", signature(e1 = "XRleInteger", e2 = "integer"),
+    function (e1, e2)
+    {
+        if (length(e2) == 1)
+            e2 <-
+              new("XRleInteger",
+                  values = XInteger(1, val = e2),
+                  lengths = XInteger(1, val = length(e1)))
+        else
+            e2 <- XRleInteger(e2)
+        callNextMethod(e1, e2)
+    }
+)
+
+setMethod("Arith", signature(e1 = "integer", e2 = "XRleInteger"),
+    function (e1, e2)
+    {
+        if (length(e1) == 1)
+            e1 <-
+                new("XRleInteger",
+                    values = XInteger(1, val = e1),
+                    lengths = XInteger(1, val = length(e2)))
+        else
+            e1 <- XRleInteger(e1)
+        callNextMethod(e1, e2)
+    }
+)
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion
+###
+
 setAs("integer", "XRleInteger",
     function(from) XRleInteger(from))
 
