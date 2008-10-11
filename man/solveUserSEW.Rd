@@ -70,7 +70,7 @@
 
 \seealso{
   \link{IRanges-class},
-  \link{narrow}
+  \code{\link{narrow}}
 }
 
 \examples{

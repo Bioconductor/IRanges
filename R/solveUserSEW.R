@@ -23,10 +23,18 @@ solveUserSEW <- function(refwidths, start=NA, end=NA, width=NA,
     l1 <- length(start)
     l2 <- length(end)
     l3 <- length(width)
-    if (max(l1, l2, l3) > length(refwidths))
-        stop("'start', 'end' or 'width' has more elements than 'refwidths'")
-    if (min(l1, l2, l3) == 0 && length(refwidths) != 0)
-        stop("'start', 'end' or 'width' is empty but 'refwidths' is not")
+    min123 <- min(l1, l2, l3)
+    max123 <- max(l1, l2, l3)
+    if (length(refwidths) == 0) {
+        if (max123 != min123 || max123 > 1)
+            stop("'start', 'end' and 'width' must have the same length ",
+                 "and it must be 0 or 1 when 'refwidths' is empty")
+    } else {
+        if (max123 > length(refwidths))
+            stop("'start', 'end' or 'width' has more elements than 'refwidths'")
+        if (min123 == 0)
+            stop("'start', 'end' or 'width' is empty but 'refwidths' is not")
+    }
     if (!isTRUEorFALSE(translate.nonpositive.coord))
         stop("'translate.nonpositive.coord' must be TRUE or FALSE")
     if (!isTRUEorFALSE(allow.nonnarrowing))
