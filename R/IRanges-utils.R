@@ -289,15 +289,7 @@ asNormalIRanges <- function(x, force=TRUE)
 
 .asNormalIRanges <- function(from) asNormalIRanges(from, force=TRUE)
 
-### No, defining the IRanges->NormalIRanges "coerce" method is not enough and
-### we also need to define the other methods! Otherwise a silly implicit
-### method would be called when calling as(x, "NormalIRanges") on an
-### UnlockedIRanges or LockedIRanges object. Yes, this is another S4
-### "feature":
-###   https://stat.ethz.ch/pipermail/r-devel/2008-April/049027.html
 setAs("IRanges", "NormalIRanges", .asNormalIRanges)
-setAs("UnlockedIRanges", "NormalIRanges", .asNormalIRanges)
-setAs("LockedIRanges", "NormalIRanges", .asNormalIRanges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

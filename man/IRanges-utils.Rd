@@ -20,8 +20,6 @@
 % Coercion:
 \alias{asNormalIRanges}
 \alias{coerce,IRanges,NormalIRanges-method}
-\alias{coerce,UnlockedIRanges,NormalIRanges-method}
-\alias{coerce,LockedIRanges,NormalIRanges-method}
 
 % Deprecated:
 \alias{intToRanges}

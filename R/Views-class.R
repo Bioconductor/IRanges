@@ -3,11 +3,11 @@
 ### -------------------------------------------------------------------------
 ###
 ### The Views virtual class is a general container for storing a set of views
-### on an arbitrary XSequence object, called the "subject".
+### on an arbitrary Sequence object, called the "subject".
 ###
 
 setClass("Views",
-    contains="UnlockedIRanges",
+    contains="IRanges",
     representation(
         "VIRTUAL",
         subject="Sequence"
@@ -144,6 +144,13 @@ setReplaceMethod("[[", "Views",
 ### Coercion.
 ###
 
+### Unfortunately, even if we've already defined the IRanges->NormalIRanges
+### "coerce" method to override the silly implicit one, we still need to
+### define the <class>->NormalIRanges ones for every <class> that contains
+### IRanges. Otherwise, again, 'as(x, "NormalIRanges")' would call another
+### silly implicit method when 'x' is a <class> instance.
+### Yes, this is another S4 "feature":
+###   https://stat.ethz.ch/pipermail/r-devel/2008-April/049027.html
 setAs("Views", "NormalIRanges",
     function(from) asNormalIRanges(from, force=TRUE)
 )

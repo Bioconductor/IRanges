@@ -25,7 +25,7 @@
 
 \description{
   The Views virtual class is a general container for storing a set of
-  views on an arbitrary \link{XSequence} object, called the "subject".
+  views on an arbitrary \link{Sequence} object, called the "subject".
 
   More specific classes like the \link{XIntegerViews} container derive
   directly from the Views class.
@@ -64,7 +64,7 @@
 
 \arguments{
   \item{subject}{
-    The \link{XSequence} object on which to create the views.
+    The \link{Sequence} object on which to create the views.
   }
   \item{start, end}{
     For \code{Views}, they must be integer vectors (eventually with NAs)
@@ -137,6 +137,8 @@
 \seealso{
   \link{IRanges-class},
   \link{IRanges-utils},
+  \link{Sequence},
+  \link{XSequence},
   \link{XIntegerViews-class},
   \link[Biostrings]{XStringViews-class}
 }

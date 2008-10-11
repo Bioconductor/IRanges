@@ -11,22 +11,18 @@ setClass("IRanges",
     representation(
         start="integer",
         width="integer",
-        NAMES="character",  # R doesn't like @names !!
-        is_locked="logical"
+        NAMES="character",   # R doesn't like @names !!
+        is_locked="logical"  # no code uses this slot for now!
     ),
     prototype(
         start=integer(0),
         width=integer(0),
         NAMES=as.character(NA),
-        is_locked=TRUE
+        is_locked=FALSE
     )
 )
 
-setClass("UnlockedIRanges", contains="IRanges")
-
-setClass("LockedIRanges", contains="IRanges")
-
-### A NormalIRanges object is a LockedIRanges object where the ranges are:
+### A NormalIRanges object is an IRanges object where the ranges are:
 ###   (a) not empty (i.e. they have a non-null width);
 ###   (b) not overlapping;
 ###   (c) ordered from left to right;
@@ -37,7 +33,7 @@ setClass("LockedIRanges", contains="IRanges")
 ### for every 1 <= i < length(x).
 ### If length(x) == 1, then 'x' is normal iff width(x)[1] >= 1.
 ### If length(x) == 0, then 'x' is normal.
-setClass("NormalIRanges", contains="LockedIRanges")
+setClass("NormalIRanges", contains="IRanges")
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -433,7 +429,7 @@ unsafe.update <- function(object, ...)
 ### Note that we don't call validObject(x) after 'x' has been modified because
 ### we don't need to revalidate the entire object: validating the bits that
 ### have been touched is enough (and faster). However, because of this, when
-### defining a new class that extends the UnlockedIRanges class, if objects of
+### defining a new class that contains the IRanges class, if objects of
 ### the new class must satisfy additional constraints, then some of the
 ### replacement methods below need to be overridden for this new class.
 ###
@@ -442,7 +438,7 @@ setGeneric("start<-", signature="x",
     function(x, check=TRUE, value) standardGeneric("start<-")
 )
 
-setReplaceMethod("start", "UnlockedIRanges",
+setReplaceMethod("start", "IRanges",
     function(x, check=TRUE, value)
     {
         unsafe.start(x) <- value
@@ -456,7 +452,7 @@ setGeneric("width<-", signature="x",
     function(x, check=TRUE, value) standardGeneric("width<-")
 )
 
-setReplaceMethod("width", "UnlockedIRanges",
+setReplaceMethod("width", "IRanges",
     function(x, check=TRUE, value)
     {
         unsafe.width(x) <- value
@@ -470,7 +466,7 @@ setGeneric("end<-", signature="x",
     function(x, check=TRUE, value) standardGeneric("end<-")
 )
 
-setReplaceMethod("end", "UnlockedIRanges",
+setReplaceMethod("end", "IRanges",
     function(x, check=TRUE, value)
     {
         unsafe.end(x) <- value
@@ -510,7 +506,7 @@ setReplaceMethod("names", "IRanges",
 ###       content)
 ###
 
-setMethod("update", "UnlockedIRanges",
+setMethod("update", "IRanges",
     function(object, ...)
     {
         object <- unsafe.update(object, ...)

@@ -5,12 +5,6 @@
 \alias{class:IRanges}
 \alias{IRanges-class}
 \alias{IRanges}
-\alias{class:UnlockedIRanges}
-\alias{UnlockedIRanges-class}
-\alias{UnlockedIRanges}
-\alias{class:LockedIRanges}
-\alias{LockedIRanges-class}
-\alias{LockedIRanges}
 \alias{class:NormalIRanges}
 \alias{NormalIRanges-class}
 \alias{NormalIRanges}
@@ -50,13 +44,13 @@
 
 % Replacement methods:
 \alias{start<-}
-\alias{start<-,UnlockedIRanges-method}
+\alias{start<-,IRanges-method}
 \alias{width<-}
-\alias{width<-,UnlockedIRanges-method}
+\alias{width<-,IRanges-method}
 \alias{end<-}
-\alias{end<-,UnlockedIRanges-method}
+\alias{end<-,IRanges-method}
 \alias{names<-,IRanges-method}
-\alias{update,UnlockedIRanges-method}
+\alias{update,IRanges-method}
 
 % Deprecated methods:
 \alias{first}
@@ -324,7 +318,6 @@
 
   ## Unlock the IRanges instance and use replacement methods to slide
   ## or resize its elements:
-  x <- as(x, "UnlockedIRanges")
   width(x) <- width(x) * 2  + 1  # resize elements
   x
   start(x) <- end(x)             # slide elements
