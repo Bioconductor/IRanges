@@ -25,7 +25,6 @@ export(
     solveUserSEW,
     successiveIRanges,
     whichAsIRanges,
-    ncharAsIRanges,
     asNormalIRanges,
     RangesList,
     IRangesList,

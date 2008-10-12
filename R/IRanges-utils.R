@@ -51,10 +51,10 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "whichAsIRanges" and "ncharAsIRanges" functions.
+### The "whichAsIRanges" function.
 ###
-### Note that unlike the standard which() and nchar() functions, the 2
-### functions below drop the names of 'x'.
+### Note that unlike the standard which() function, whichAsIRanges() drops
+### the names of 'x'.
 ###
 
 whichAsIRanges <- function(x)
@@ -62,14 +62,6 @@ whichAsIRanges <- function(x)
     if (!is.logical(x))
         stop("'x' must be a logical vector")
     .Call("which_as_IRanges", x, PACKAGE="IRanges")
-}
-
-ncharAsIRanges <- function(x)
-{
-    if (!is.character(x))
-        stop("'x' must be a character vector")
-    new2("IRanges", start=rep.int(1L, length(x)),
-                    width=nchar(x, type="bytes"), check=FALSE)
 }
 
 

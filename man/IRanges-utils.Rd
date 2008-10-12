@@ -4,7 +4,6 @@
 
 \alias{successiveIRanges}
 \alias{whichAsIRanges}
-\alias{ncharAsIRanges}
 \alias{shift}
 \alias{shift,IRanges-method}
 \alias{restrict}
@@ -37,9 +36,8 @@
   ## Create an IRanges instance:
   successiveIRanges(width, gapwidth=0, from=1)
 
-  ## Turn a logical vector or a character vector into a set of ranges:
+  ## Turn a logical vector into a set of ranges:
   whichAsIRanges(x)
-  ncharAsIRanges(x)
 
   ## Modify an IRanges object:
   shift(x, shift, use.names=TRUE)
@@ -71,8 +69,6 @@
   }
   \item{x}{
     A logical vector for \code{whichAsIRanges}.
-
-    A character vector for \code{ncharAsIRanges}.
 
     An \link{IRanges} object for \code{shift}, \code{restrict}, \code{narrow},
     \code{reduce}, \code{gaps} and \code{asNormalIRanges}.
@@ -111,9 +107,6 @@
 
   \code{whichAsIRanges} returns an \link{IRanges} object containing all of
   the ranges where \code{x} is \code{TRUE}.
-
-  \code{ncharAsIRanges} returns the number of letters in each element of
-  \code{x} as a set of ranges.
 
   \code{shift} shifts all the ranges in \code{x}.
 
