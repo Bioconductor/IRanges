@@ -2,34 +2,51 @@
 ### RangedData utilities
 ### -------------------------------------------------------------------------
 
-setGeneric("rlencode", function(x, ...) standardGeneric("rlencode"))
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Applying
+###
 
-setMethod("rlencode", "RangedData",
-          function(x, start = NA, end = NA, gapvalue = NA)
+setGeneric("rdapply", function(x, ...) standardGeneric("rdapply"))
+setMethod("rdapply", "RDApplyParams", function(x) {
+  rd <- rangedData(x)
+  applyFun <- applyFun(x)
+  applyParams <- applyParams(x)
+  rules <- filterRules(x)
+  simplify <- simplify(x)
+  reducerFun <- reducerFun(x)
+  reducerParams <- reducerParams(x)
+  enclos <- parent.frame()
+  inds <- seq(length(rd))
+  names(inds) <- names(rd)
+  ##   if (length(excludePattern)) {
+  ##     excludePattern <- grep(excludePattern, names(rd))
+  ##     if (length(excludePattern))
+  ##       inds <- inds[-excludePattern]
+  ##   }
+  ans <- sapply(inds, function(i) {
+    rdi <- rd[i]
+    if (length(rules)) {
+      filter <- eval(rules, rdi, enclos)
+      rdi <- rdi[filter,]
+    }
+    do.call(applyFun, c(list(rdi), applyParams))
+  }, simplify = simplify)
+  if (!is.null(reducerFun))
+    ans <- do.call(reducerFun, c(list(ans), reducerParams))
+  ans
+})
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Evaluating
+###
+
+setMethod("eval", c("expressionORlanguage", "RangedData"),
+          function(expr, envir,
+                   enclos = if(is.list(envir) || is.pairlist(envir))
+                   parent.frame() else baseenv())
           {
-            if (length(gapvalue) != 1)
-              stop("length of 'gapvalue' must be 1")
-            ranges <- ranges(x)
-            keep <- rep(TRUE, length(x))
-            if (!is.na(start))
-              keep[end(ranges) < start] <- FALSE
-            if (!is.na(end))
-              keep[start(ranges) > end] <- FALSE
-            x <- x[keep]
-            g <- gaps(ranges, start, end)
-            ranges <- ranges(x)
-            widths <- c(width(ranges), width(g))
-            starts <- c(start(ranges), start(g))
-            startorder <- order(starts)
-            widths <- widths[startorder]
-            vals <- values(x)
-            if (!canCoerce(vals, "vector"))
-              stop("cannot coerce values of class '", class(vals),
-                   "' to a vector")
-            vals <- as.vector(vals)
-            if (!is.atomic(vals))
-              stop("could not coerce values to an atomic vector")
-            vals <- c(vals, rep(as(gapvalue, class(vals)), length(g)))
-            structure(list(lengths=widths, values=vals[startorder]),
-                      class = "rle")
+            env <- new.env(parent = enclos)
+            makeActiveBinding("ranges", function() unlist(ranges(envir)), env)
+            lockEnvironment(env, TRUE)
+            eval(expr, unlist(values(envir)), env)
           })
