@@ -2,14 +2,14 @@
 ### RangesMatching objects
 ### -------------------------------------------------------------------------
 
-setClass("RangesMatching", representation(matchmatrix = "Matrix"))
+setClass("RangesMatching", representation(matchMatrix = "Matrix"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessors
 ###
 
-setGeneric("matchmatrix", function(object, ...) standardGeneric("matchmatrix"))
-setMethod("matchmatrix", "RangesMatching", function(object) object@matchmatrix)
+setGeneric("matchMatrix", function(object, ...) standardGeneric("matchMatrix"))
+setMethod("matchMatrix", "RangesMatching", function(object) object@matchMatrix)
 
 ### TODO: many convenience methods

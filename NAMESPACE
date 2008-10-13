@@ -6,13 +6,14 @@ importClassesFrom(Matrix, CsparseMatrix, nsparseMatrix, generalMatrix,
                   sparseMatrix, Matrix, nMatrix, compMatrix, ngCMatrix)
 
 exportClasses(
-    Ranges, IRanges, NormalIRanges,
-    RangesList, IRangesList, MaskCollection,
+    Ranges, XRanges, IRanges, NormalIRanges,
+    TypedList, RangesList, IRangesList, MaskCollection,
     SequencePtr, RawPtr, IntegerPtr, NumericPtr,
     Sequence, XSequence, XRaw, XInteger, XNumeric,
     XRle, XRleInteger,
-    Views, XIntegerViews, XRleIntegerViews, XDataFrame, SplitXDataFrame,
-    RangedData, FilterRules, RDApplyParams
+    Views, XIntegerViews, XRleIntegerViews, XList, XDataFrame, SplitXDataFrame,
+    RangedData, RangedDataList, FilterRules, RDApplyParams, GenomicData,
+    IntervalTree
 )
 
 export(
@@ -82,7 +83,8 @@ export(
     reducerFun, "reducerFun<-", reducerParams, "reducerParams<-",
     rdapply,
     annotation, genome, chrom,
-    elements,
+    elements, elementClass,
+    matchMatrix, 
        
     ## Deprecated functions:
     first, last,
