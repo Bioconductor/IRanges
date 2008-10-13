@@ -4,16 +4,16 @@
 
 ## Accepts any type of Ranges instance as an element
 
-setClass("RangesList", contains = "TypedList")
+setClass("RangesList", prototype = prototype(elementClass = "RangesORXRanges"),
+         contains = "TypedList")
 
-setClass("IRangesList", contains = "RangesList")
+setClass("IRangesList", prototype = prototype(elementClass = "IRanges"),
+         contains = "RangesList")
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
-
-setMethod("elementClass", "RangesList", function(x) "RangesORXRanges")
 
 ## coerced to internal ranges
 setGeneric("ranges", function(object, ...) standardGeneric("ranges"))
@@ -27,7 +27,9 @@ setMethod("ranges", "RangesList",
             els
           })
 
-setMethod("elementClass", "IRangesList", function(x) "IRanges")
+setMethod("start", "RangesList", function(x) unlist(lapply(x, start)))
+setMethod("end", "RangesList", function(x) unlist(lapply(x, end)))
+setMethod("width", "RangesList", function(x) unlist(lapply(x, width)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
@@ -90,8 +92,7 @@ setMethod("reduce", "RangesList",
 setMethod("gaps", "RangesList",
           function(x, start=NA, end=NA)
           {
-            x@elements <- lapply(elements(x),
-                                 function(r) gaps(r, start=start, end=end))
+            x@elements <- lapply(x, function(r) gaps(r, start=start, end=end))
             x@NAMES <- NULL
             x
           }
@@ -104,9 +105,24 @@ setMethod("gaps", "RangesList",
 
 setMethod("unlist", "RangesList",
           function(x, recursive = TRUE, use.names = TRUE) {
-            if (!missing(recursive) || !missing(use.names))
-              warning("'recursive' and 'use.names' arguments ignored")
-            do.call("rbind", lapply(ranges(x), as.matrix))
+            if (!missing(recursive))
+              warning("'recursive' argument ignored")
+            ranges <- ranges(x)
+            unlisted <- IRanges(unlist(lapply(ranges, start)),
+                                unlist(lapply(ranges, end)))
+            if (use.names)
+              names(unlisted) <- unlist(lapply(ranges, names))
+            unlisted
+          })
+
+setMethod("as.data.frame", "RangesList",
+          function(x, row.names=NULL, optional=FALSE, ...)
+          {
+            if (!(is.null(row.names) || is.character(row.names)))
+              stop("'row.names'  must be NULL or a character vector")
+            if (!missing(optional) || length(list(...)))
+              warning("'optional' and arguments in '...' ignored")
+            data.frame(as.data.frame(unlist(x)), row.names = row.names)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -130,7 +146,7 @@ setMethod("show", "RangesList",
 setMethod("summary", "RangesList",
           function(object)
           {
-              if (all(unlist(lapply(elements(object), is, "IRanges"))))
+              if (all(unlist(lapply(object, is, "IRanges"))))
                   .Call("summary_IRangesList", object, PACKAGE="IRanges")
               else
                   stop("all elements must be of class 'IRanges' ")
