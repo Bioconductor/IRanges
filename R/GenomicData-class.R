@@ -4,9 +4,7 @@
 
 ## Extends RangedData to add convenience accessors
 
-setClass("GenomicData",
-         representation(genome = "character"),
-         contains = "RangedData")
+setClass("GenomicData", contains = "RangedData")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -19,24 +17,23 @@ setGeneric("strand", function(object, ...) standardGeneric("strand"))
 setMethod("strand", "GenomicData", function(object) {
   strand <- object[["strand"]]
   if (is.null(strand))
-    strand <- rep(NA, length(object))
+    strand <- rep(NA, nrow(object))
 ### FIXME: just necessary because we have no XFactor
-  strand <- as.factor(strand)
-  levels(strand) <- c("+", "-")
-  strand
+  levs <- levels(strand())
+  factor(levs[strand], levs)
 })
 
+setMethod("strand", "missing", function(object) {
+  factor(levels=c("-","+","*"))
+})
+  
 setGeneric("chrom", function(object, ...) standardGeneric("chrom"))
 setMethod("chrom", "GenomicData", function(object) {
-  design <- design(object) 
-  chrom <- design[["chrom"]]
-  if (is.null(chrom)) {
-    chrom <- rownames(design)
-    if (is.null(chrom))
-      chrom <- paste("chr", seq_len(nrow(design)), sep = "")
-    chrom <- factor(chrom, chrom)
-  }
-  rep(chrom, width(ranges(object)))
+  chrom <- names(object)
+  if (is.null(chrom))
+    chrom <- paste("chr", seq_len(length(object)), sep = "")
+  chrom <- factor(chrom, chrom)
+  rep(chrom, sapply(elements(ranges(object)), length))
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -57,12 +54,21 @@ setValidity2("GenomicData", .valid.GenomicData)
 ### Constructor.
 ###
 
-GenomicData <- function(..., genome = character()) {
-  if (!is.character(genome) || length(genome) > 1)
-    stop("genome must be a character vector of length 0 or 1")
-  if (!all(sapply(list(...), is, "ChromData")))
-    stop("all range elements must be ChromData instances")
-  rl <- RangesList(...)
-  new("GenomicData", rl, genome = genome)
+GenomicData <- function(ranges, ..., strand = NULL, chrom = NULL, genome = NULL)
+{
+  if (!is.null(chrom) && length(chrom) != length(ranges))
+    stop("length of 'chrom' (if non-NULL) must match length of 'ranges'")
+  if (!is.null(genome) && !isSingleString(genome))
+    stop("'genome' must be a single string")
+  gd <- new("GenomicData",
+            RangedData(ranges, ..., splitter = chrom, annotation = genome))
+  if (!is.null(strand)) {
+    if (length(strand) != length(ranges))
+      stop("length of 'strand' (if non-NULL) must match length of 'ranges'")
+    if (!all(strand[!is.na(strand)] %in% levels(strand())))
+      stop("strand values should be 'NA', '-', '+' or '*'")
+    gd[["strand"]] <- as.integer(factor(strand, levels(strand())))
+  }
+  gd
 }
 
