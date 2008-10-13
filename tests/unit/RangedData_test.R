@@ -4,39 +4,55 @@ test_RangedData_construction <- function() {
   score <- c(10L, 2L, NA)
 
   checkException(RangedData(c(1,2,3)))
-  checkException(RangedData(ranges))
   checkException(RangedData(ranges, c(1,2,3,4,5)))
 
   rd <- RangedData()
   checkTrue(validObject(rd))
+  rd <- RangedData(ranges)
+  checkTrue(validObject(rd))
+  checkIdentical(ranges(rd), RangesList(ranges))
   rd <- RangedData(ranges, score)
   checkTrue(validObject(rd))
-  checkIdentical(values(rd), score)
-  checkIdentical(ranges(rd), ranges)
-  rd <- RangedDataFrame(ranges, score)
+  checkIdentical(rd[["score"]], score)
+  rd <- RangedData(ranges, score = score)
   checkTrue(validObject(rd))
   checkIdentical(rd[["score"]], score)
-  rd <- RangedDataFrame(ranges, score = score)
-  checkTrue(validObject(rd))
-  checkIdentical(rd[["score"]], score)
-  rd <- RangedDataFrame(ranges, filter, score = score)
+  rd <- RangedData(ranges, filter, score = score)
   checkTrue(validObject(rd))
   checkIdentical(rd[["score"]], score)
   checkIdentical(rd[["filter"]], filter)
-  rd <- RangedDataFrame(ranges, filter = filter, vals = score)
+  rd <- RangedData(ranges, filter = filter, vals = score)
   checkTrue(validObject(rd))
   checkIdentical(rd[["vals"]], score)
   checkIdentical(rd[["filter"]], filter)
-  rd <- RangedDataFrame(ranges, score + score)
+  rd <- RangedData(ranges, score + score)
   checkTrue(validObject(rd))
   checkIdentical(rd[["score...score"]], score + score)
+
+  rd <- RangedData(ranges, annotation = "hg18")
+  checkTrue(validObject(rd))
+  checkIdentical(annotation(rd), "hg18")
+
+  range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
+  both <- c(ranges, range2)
+  score <- c(score, c(0L, 3L, NA, 22L)) 
+  chrom <- paste("chr", rep(c(1,2), c(length(ranges), length(range2))), sep="")
+
+  rd <- RangedData(both, score, splitter = chrom, annotation = "hg18")
+  checkTrue(validObject(rd))
+  checkIdentical(rd[["score"]], score)
+  checkIdentical(rd[1][["score"]], score[1:3])
+
+  checkException(RangedData(ranges, annotation = c("hg18", "mm9")))
+  checkException(RangedData(ranges, annotation = 1))
+  checkException(RangedData(both, splitter = chrom[1:3]))
 }
 
 test_RangedData_extraction <- function() {
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   filter <- c(1L, 0L, 1L)
   score <- c(10L, 2L, NA)
-  rd <- RangedDataFrame(ranges, filter, score = score)
+  rd <- RangedData(ranges, filter, score = score, splitter = c(1, 1, 2))
   
   checkException(rd[[]])
   checkException(rd[[1, 2]])
@@ -53,16 +69,17 @@ test_RangedData_extraction <- function() {
   checkIdentical(rd[["filter"]], filter)
   checkIdentical(rd[["score"]], score)
 
-  rd <- RangedData(ranges, filter)
-  checkIdentical(rd[[1]], filter[1])
+  checkIdentical(rd[1][[1]], filter[1:2])
 }
 
 test_RangedData_data_replace <- function() {
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   filter <- c(1L, 0L, 1L)
   score <- c(10L, 2L, NA)
-  rd <- RangedDataFrame(ranges, filter)
-
+  rd <- RangedData(ranges, filter, splitter = c(1, 2, 1))
+  filter <- filter[c(1, 3, 2)]
+  score <- score[c(1, 3, 2)]
+  
   checkException(rd[[]] <- score)
   checkException(rd[[1, 2]] <- score)
   checkException(rd[[numeric()]] <- score)
@@ -88,19 +105,16 @@ test_RangedData_data_replace <- function() {
   checkIdentical(rd[[2]], score)
   rd[[2]] <- NULL
   checkTrue(validObject(rd))
-  checkIdentical(ncol(values(rd)), 1L)
-
-  rd <- RangedData(ranges, filter)
-  rd[[1]] <- 0L
-  filter[1] <- 0L
-  checkIdentical(values(rd), filter)
+  checkIdentical(ncol(rd), 1L)
 }
 
 test_RangedData_subset <- function() {
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   filter <- c(1L, 0L, 1L)
   score <- c(10L, 2L, NA)
-  rd <- RangedDataFrame(ranges, filter, score = score)
+  rd <- RangedData(ranges, filter, score = score, splitter = c(1, 2, 1))
+  filter <- filter[c(1, 3, 2)]
+  score <- score[c(1, 3, 2)]
 
   checkException(rd[list()])
   checkException(rd[-18])
@@ -110,8 +124,8 @@ test_RangedData_subset <- function() {
   checkException(rd[c(TRUE, TRUE, TRUE, TRUE)])
   checkException(rd[c(-1,2)])
 
-  erd <- RangedDataFrame(IRanges(), filter = integer(), score = integer())
-  frd <- RangedDataFrame(ranges[1], filter = filter[1], score = score[1])
+  erd <- new("RangedData")
+  frd <- RangedData(ranges[c(1,3)], filter = filter[1:2], score = score[1:2])
 
   checkIdenticalRD <- function(a, b)
     checkIdentical(as.data.frame(a), as.data.frame(b))
@@ -121,12 +135,12 @@ test_RangedData_subset <- function() {
   checkIdenticalRD(rd[NULL], erd)
   checkIdenticalRD(rd[], rd)
   checkIdenticalRD(rd[FALSE], erd)
-  checkIdenticalRD(rd[c(FALSE, FALSE, FALSE)], erd)
+  checkIdenticalRD(rd[c(FALSE, FALSE)], erd)
   checkIdenticalRD(rd[TRUE], rd)
-  checkIdenticalRD(rd[c(TRUE, FALSE, FALSE)], frd)
+  checkIdenticalRD(rd[c(TRUE, FALSE)], frd)
   checkIdenticalRD(rd[1], frd)
-  checkIdenticalRD(rd[c(1,2,3)], rd)
-  checkIdenticalRD(rd[-c(2,3)], frd)
+  checkIdenticalRD(rd[c(1,2)], rd)
+  checkIdenticalRD(rd[-2], frd)
 
   ## now test matrix-style
   
@@ -140,37 +154,25 @@ test_RangedData_subset <- function() {
   checkIdenticalRD(rd[,], rd) # identity
 
   ## empty
-  checkIdenticalRD(rd[,NULL], RangedData(ranges, XDataFrame(row.names=1:3)))
-  checkIdenticalRD(rd[NULL,], rd[NULL])
+  nocols <- RangedData(ranges, new("XDataFrame", nrows=3L), splitter=c(1,2,1))
+  checkIdenticalRD(rd[,NULL], nocols)
+  checkIdenticalRD(rd[NULL,], rd[FALSE,])
 
-  checkIdenticalRD(rd[,1], RangedDataFrame(ranges, filter)) # column subsetting
+  ## column subsetting
+  onecol <- RangedData(ranges, filter=filter[c(1,3,2)], splitter=c(1,2,1))
+  checkIdenticalRD(rd[,1], onecol)
   checkIdenticalRD(rd[,1:2], rd)
   checkIdenticalRD(rd[,"filter"], rd[,1]) # by name
 
-  checkIdenticalRD(rd[1,], rd[1]) # row subsetting
-  checkIdenticalRD(rd[1:3,], rd) # row subsetting
+  firstrow <- RangedData(ranges[1], filter = filter[1], score = score[1])
+  checkIdenticalRD(rd[1,], firstrow) # row subsetting
+  splitrow <- RangedData(ranges[1:2], filter = filter[c(1,3)],
+                         score = score[c(1,3)])
+  checkIdenticalRD(rd[c(1,3),], splitrow) # row subsetting
   
-  checkIdenticalRD(rd[1:2, 1], RangedDataFrame(ranges, filter)[1:2]) # combined
+  checkIdenticalRD(rd[1:2, 1], onecol[1:2,]) # combined
   ## repeats
-  checkIdenticalRD(rd[c(1:2,1),], rd[c(1:2,1)])
-
-  ## not allowed for non-array values
-  rd <- RangedData(ranges, filter)
-  checkException(rd[1,1])
-  checkException(rd[1,])
-  checkException(rd[,1])
-}
-
-test_RangedData_rlencode <- function() {
-  ranges <- IRanges(c(1,8,14),c(4,12,16))
-  values <- c(1L, 2L, 3L)
-  rd <- RangedData(ranges, values)
-  inverse <- c(1L,1L,1L,1L,NA,NA,NA,2L,2L,2L,2L,2L,NA,3L,3L,3L)
-  checkIdentical(inverse.rle(rlencode(rd)), inverse)
-  checkIdentical(inverse.rle(rlencode(rd, 1, 6)), inverse[1:6])
-  inverse[5:6] <- 0L
-  checkIdentical(inverse.rle(rlencode(rd, 1, 6, 0)), inverse[1:6])
-  ## gap value must be length 1
-  checkException(inverse.rle(rlencode(rd, gapvalue=1:2))) 
-  checkException(inverse.rle(rlencode(rd, gapvalue=ranges[1]))) # bad gap value
+  repeated <- RangedData(ranges[c(1,3,1,2)], filter=filter[c(1:2,1,3)],
+                         splitter = c(1,1,1,2))
+  checkIdenticalRD(rd[c(1:2,1,3),1], repeated)
 }
