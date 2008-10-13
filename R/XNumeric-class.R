@@ -53,3 +53,33 @@ setMethod("as.numeric", "XNumeric",
 
 setMethod("as.vector", c("XNumeric", "missing"),
           function(x, mode) as.numeric(x))
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Subsetting.
+###
+
+setMethod("[", "XNumeric",
+          function(x, i, j, ..., drop=TRUE)
+          {
+            if (!missing(j) || length(list(...)) > 0)
+              stop("invalid subsetting")
+            if (missing(i)) {
+              if (!drop)
+                return(x)
+              return(as.numeric(x@xdata))
+            }
+            if (!is.numeric(i) || any(is.na(i)))
+              stop("invalid subsetting")
+            if (any(i < 1) || any(i > length(x)))
+              stop("subscript out of bounds")
+            if (drop)
+              return(NumericPtr.read(x@xdata, x@offset + i))
+            xdata <- NumericPtr(length(i))
+            NumericPtr.copy(xdata, x@offset + i, src=x@xdata)
+            x@xdata <- xdata
+            x@offset <- 0L
+            x@length <- length(xdata)
+            x
+          }
+          )
+

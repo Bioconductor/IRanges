@@ -147,3 +147,37 @@ SEXP NumericPtr_write_nums_to_subset(SEXP dest, SEXP subset, SEXP val)
 			(char *) REAL(val), LENGTH(val), sizeof(double));
 	return dest;
 }
+
+/* ==========================================================================
+ * Copy values from an NumericPtr object to another NumericPtr object.
+ * --------------------------------------------------------------------------
+ */
+
+/* Cyclic writing in 'dest' */
+SEXP NumericPtr_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
+{
+  SEXP dest_tag, src_tag;
+  int i1, i2;
+
+  dest_tag = _get_SequencePtr_tag(dest);
+  src_tag = _get_SequencePtr_tag(src);
+  i1 = INTEGER(imin)[0] - 1;
+  i2 = INTEGER(imax)[0] - 1;
+  _IRanges_memcpy_from_i1i2(i1, i2,
+                            (char *) REAL(dest_tag), LENGTH(dest_tag),
+                            (char *) REAL(src_tag), LENGTH(src_tag), sizeof(double));
+  return dest;
+}
+
+/* Cyclic writing in 'dest' */
+SEXP NumericPtr_copy_from_subset(SEXP dest, SEXP src, SEXP subset)
+{
+  SEXP dest_tag, src_tag;
+
+  dest_tag = _get_SequencePtr_tag(dest);
+  src_tag = _get_SequencePtr_tag(src);
+  _IRanges_memcpy_from_subset(INTEGER(subset), LENGTH(subset),
+                              (char *) REAL(dest_tag), LENGTH(dest_tag),
+                              (char *) REAL(src_tag), LENGTH(src_tag), sizeof(double));
+  return dest;
+}

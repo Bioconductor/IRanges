@@ -87,6 +87,25 @@ NumericPtr.write <- function(x, i, imax=integer(0), value)
     x
 }
 
+NumericPtr.copy <- function(dest, i, imax=integer(0), src)
+{
+  if (!is(src, "NumericPtr"))
+    stop("'src' must be an NumericPtr object")
+  if (!is.integer(i))
+    i <- as.integer(i)
+  if (length(i) == 1) {
+    if (length(imax) == 0) 
+      imax <- i
+    else
+      imax <- as.integer(imax)
+    .Call("NumericPtr_copy_from_i1i2",
+          dest, src, i, imax, PACKAGE="IRanges")
+  } else {
+    .Call("NumericPtr_copy_from_subset",
+          dest, src, i, PACKAGE="IRanges")
+  }
+  dest
+}
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
