@@ -11,13 +11,13 @@ setClass("IRanges",
     representation(
         start="integer",
         width="integer",
-        NAMES="character",   # R doesn't like @names !!
-        is_locked="logical"  # no code uses this slot for now!
+        NAMES="characterORNULL",  # R doesn't like @names !!
+        is_locked="logical" # no code uses this slot for now!
     ),
     prototype(
         start=integer(0),
         width=integer(0),
-        NAMES=as.character(NA),
+        NAMES=NULL,
         is_locked=FALSE
     )
 )
@@ -48,15 +48,14 @@ setMethod("length", "IRanges", function(x) length(start(x)))
 ### Note that the "start" and "end" generics are defined in the stats package.
 setMethod("start", "IRanges", function(x, ...) x@start)
 
+setGeneric("width", function(x) standardGeneric("width"))
+
 setMethod("width", "IRanges", function(x) x@width)
 
 ### Note that when width(x)[i] is 0, then end(x)[i] is start(x)[i] - 1
 setMethod("end", "IRanges", function(x, ...) {start(x) + width(x) - 1L})
 
-setMethod("names", "IRanges",
-    function(x)
-        if (length(x@NAMES) == 1 && is.na(x@NAMES)) NULL else x@NAMES
-)
+setMethod("names", "IRanges", function(x) x@NAMES)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -176,12 +175,10 @@ setMethod("min", "NormalIRanges",
 
 .valid.IRanges.names <- function(x)
 {
-    if (!is.character(x@NAMES))
-        return("the 'NAMES' slot must contain a character vector")
     if (is.null(names(x)))
         return(NULL)
-    if (any(is.na(names(x))))
-        return("the names must be non-NA strings")
+    if (!is.character(x@NAMES))
+        return("the 'NAMES' slot must contain a character vector")
     if (length(names(x)) != length(x))
         return("number of names and number of elements differ")
     NULL
@@ -361,17 +358,16 @@ setMethod("show", "IRanges",
 }
 
 ### 'value' is NOT recycled so we stay close to what the standard R "names<-"
-### methods generally do (except that if 'value' is shorter than 'x', we extend
-### it by empty strings, not by character NAs).
+### methods generally do
 `unsafe.names<-` <- function(x, value)
 {
     if (is.null(value))
-        x@NAMES <- as.character(NA)
+        x@NAMES <- NULL
     else {
         if (length(value) > length(x))
             stop("too many names")
         if (length(value) < length(x))
-            value <- c(value, character(length(x) - length(value)))
+            value <- c(value, rep(NA, length(x) - length(value)))
         x@NAMES <- value
     }
     x
@@ -480,11 +476,7 @@ setReplaceMethod("end", "IRanges",
 setReplaceMethod("names", "IRanges",
     function(x, value)
     {
-        if (is.character(value)) {
-            ii <- is.na(value)
-            if (any(ii))
-                value[ii] <- ""
-        } else if (!is.null(value)) {
+        if (!is.character(value) && !is.null(value)) {
             stop("'value' must be NULL or a character vector")
         }
         unsafe.names(x) <- value
@@ -593,6 +585,24 @@ setMethod("duplicated", "IRanges",
     }
 )
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Splitting and combining.
+###
+
+setMethod("split", "IRanges", function(x, f, drop = FALSE, ...) {
+  do.call("RangesList", callNextMethod())
+})
+
+setMethod("c", "IRanges", function(x, ..., recursive = FALSE) {
+  if (recursive)
+    stop("'recursive' mode not supported")
+  if (!all(sapply(list(...), is, "IRanges")))
+    stop("all arguments in '...' must be instances of IRanges")
+  if (!missing(x))
+    rl <- RangesList(x, ...)
+  else rl <- RangesList(...)
+  unlist(rl)
+})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Deprecated generics and methods.
