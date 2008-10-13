@@ -1,135 +1,47 @@
-TODO list
+Immediate TODO list
 ---------
 
 - Rename "narrow" method for MaskCollection objects "subseq" (this reflects
   better what it really does).
 
-
-About renaming/splitting the package
-------------------------------------
-By Hervé.
-
-IMPORTANT NOTE: With the recent addition of the XSequence family of containers
-(triggered by the moving of the XInteger and XNumeric classes from the
-Biostrings package to here), and related classes (XIntegerViews for now,
-XSequenceViews, XRawViews and XNumericViews will follow soon), the IRanges
-package is now made of 3 major components:
-  (1) The Ranges/RangesCollection class hierarchy and API.
-  (2) The XSequence class hierarchy and API.
-  (3) The Views/XSequenceViews class hierarchy and API.
-Components (1) and (2) are independent and could (in theory) be put in packages
-of their own. Component (3) is built on top of components (1) and (2).
-Of course, there are other ways to do it, but keeping the 3 components in the
-same package has at least 2 advantages. The first one is that it acknowledges
-the fact that the 3 components are related. Even if (1) and (2) are not
-directly related one to each other, a very important use case for IRanges
-objects is the representation of a set of ranges on a given sequence (this is
-what XStringViews objects and more generally component (3) are all about).
-The second advantage is related to the fact that each of these 3 components
-have a C interface. The C interface of component (3) is built on top of the C
-interface of components (1) and (2) so keeping the 3 components in the same
-package makes things much easier because there is no need to expose and
-maintain 3 C interfaces in 3 different places. Only 1 C interface in 1 place
-and with a much reduced set of functions to export.
-One problem that remains if we keep the 3 components in the same package is a
-naming problem: the current name of the package (IRanges) doesn't reflect its
-content anymore. Renaming it XSequence would not solve the problem either since
-it would not reflect the presence of component (2), but I think I like it
-better anyway because:
-  - It's a little bit more appealing and less abstract than IRanges.
-  - It has a biological connotation.
-  - I think that the XSequence/XSequenceViews stuff is maybe more central to
-    the package than the Ranges/IRanges stuff. In fact, I introduced the
-    IRanges container some time ago for the purpose of supporting the
-    XStringViews and XStringSet classes (defined in Biostrings). Now they also
-    support the MaskCollection class and are about to support more things like
-    the more general XSequenceViews class (coming soon) or the GFF-like
-    annotations (IRanges with values and a hierarchical relationship between
-    ranges). But even in these new contexts, the IRanges container remains a
-    very low level container.
-
-Anyway, another way to go could be to move components (2) and (3) to a separate
-XSequence package that would depend on the IRanges package.
-
-Also, given Michael's recent introduction of the more general Ranges class,
-the package should at least be renamed Ranges.
-
-
-Proposal for a major rework of the Ranges/IRanges class hierarchy and API
--------------------------------------------------------------------------
-Initial proposal by Michael.
+Long term TODO list
+-------------------
 
 - Data structures:
-  - Ranges, abstract parent of all native range structures
-  - XRanges, represents an external set of ranges
-    - specific methods can accelerate certain operations
-    - otherwise need to be coerced to Ranges
-  - RangedData, combining data with ranges
-    - ranges (RangesList)
-    - data (XDataFrameList)
-  - RangesList as collection of Ranges objects, extends Ranges?
-  - RangesMatching, encodes matching between ranges,
-    - Based on Matrix
   - RectRanges, container of two Ranges, one for each dimension
   - PolyRanges, list of real-valued matrices, each holding one polygon?
   - ViewsList, extends RangesList but specific to Views
-  
-- Genomic data structures:
-  - Each chromosome in a separate Ranges, grouped in a list, but the data?
-    - Data split with the Ranges (i.e. a list of RangedData)
-      - More memory efficient (working with smaller vectors)
-      - Difficult to combine (transform to second option)
-    - Data remains unsplit (i.e. combine a list of Ranges with one data)
-      - More convenient (no need to iterate for pure data ops)
-        - Currently requires duplicating to R vectors
-        - If the user is OK duplicating memory, just use as(x, "XDataFrame")
-      - Easy to split, provide a bsapply-ish interface (becomes first case)
-        - But results need to be combined again, somehow
-  - Two data analysis modes:
-    - Ranges-based preprocessing (prefers split data)
-      - GenomicData?
-    - Ranges-independent (mostly) multivariate analysis (prefers combined data)
-      - XDataFrame/data.frame, with ranges as variables (start, end)?
-  - GenomicData should have a genome identifier
-  - GenomicData useful in higher-level structures
-    - Solexa data: one GenomicData per lane
-    - etc
+  - XDataFrame, add annotations (like AnnotatedDataFrame)
   
 - Ranges methods:
-  - "append" or "c" for concatenation
   - "unique" for removing duplicate ranges
   - "findInterval" for points that fall into a normal Ranges
-  - "overlap" for finding regions that overlap
   - "nearest" for finding nearest neighbors
   - "match" and "%in%" for exact matching
   - "intersect" or "&" for finding the completely overlapping subregions
   - "setdiff" or "-" for subtracting the overlap from first argument
   - "!" as alias for "gaps"
-  - "merge" or "|" for merging, i.e. reduce(c(x, y))
+  - "|" for merging, i.e. reduce(c(x, y))
   - "reduce" should take a window argument
-  - "split" and "unsplit" for working with categories/clusters
-    - operate on RangesList objects, not lists
   - "unroll" like "inverse.rle", generates vector from values on ranges
     - if no value specified, could be logical vector, TRUE in range else FALSE
-  - "sort" sorts by start or end and returns result as TreeRanges
-  - "[[" for getting out a named data object
-  - "[x,y" where 'x' indexes the ranges and 'y' indexes the data objects 
+  - "sort" sorts by start or end
+
+- TypedList methods:
+  - split() for splitting
+  - dim, dim<-, dimnames, dimnames<- for multi-dimensional list (like 'by')
   
 - RangesList methods:
-  - "c"/"append", "split", "unsplit", "unlist",  ...
   - parallel rbind/cbind
-  - "width" gets vector of lengths
   - binary ops: "overlap", "nearest", "intersect", "setdiff", "merge"
     - 'y' omitted: become n-ary ops on items in collection
     - 'y' specified: performed element-wise
   - unary ops: "gaps", "coverage", "slice", etc are vectorized
-  - as.data.frame might try to rbind result of per-element as.data.frame
-  - "rangeApply" for applying over each element
   
 - RangeMatching methods:
   - "lmatched" and "rmatched", which matched (either side)
-  - "as.matrix", perhaps delegates to "edgeMatrix" to extract matches
-  - "clusters", perhaps delegates to "connComp" to group matched ranges
+  - "as.matrix", to extract matches
+  - "clusters", to group matched ranges
   - "relations" to extract relationships in terms of Allen's Interval Algebra
     - kind of like "all.equal"
   - "width" for amount of overlap for each match
@@ -137,7 +49,11 @@ Initial proposal by Michael.
 - IRanges constructors:
   - From 'rle' object
 
-- External data storage (to be moved to externalVector):
-  - XList, a regular R list of XSequence objects
-  - XDataFrame, extends XList to be like a data.frame
-  - From 'rle' object
+- XDataFrame methods
+  - group generics (Math, Ops, Summary)
+  - by, aggregate
+  - with, within
+  - subset
+  
+- XDataFrameList methods
+  - stack: unlist(), but with factors recording source of each row

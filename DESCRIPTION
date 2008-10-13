@@ -11,7 +11,7 @@ Version: 0.99.26
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Biocore Team c/o BioC user list <bioconductor@stat.math.ethz.ch>
 biocViews: Infrastructure, Genetics
-Depends: R (>= 2.7.0), methods, stats
+Depends: R (>= 2.8.0), methods, stats
 Imports: methods, stats, Matrix
 License: Artistic-2.0
 Collate: validity-utils.R
@@ -29,6 +29,8 @@ Collate: validity-utils.R
 	TypedList-class.R
 	XList-class.R
 	XDataFrame-class.R
+        XDataFrame-utils.R
+        SplitXDataFrame-class.R
 	Ranges-class.R
 	IRanges-class.R
 	solveUserSEW.R
@@ -43,12 +45,14 @@ Collate: validity-utils.R
 	XIntegerViews-utils.R
 	XRleIntegerViews-class.R
 	XRleIntegerViews-utils.R
-	XRanges-class.R
-	RangedData-class.R
-	RangedData-utils.R
-	GenomicData-class.R
-	IntervalTree-class.R
-	IntervalTree-utils.R
-	RangesMatching-class.R
+        XRanges-class.R
+        RangedData-class.R
+        FilterRules-class.R
+        RDApplyParams-class.R
+        RangedData-utils.R
+        GenomicData-class.R
+        IntervalTree-class.R
+        IntervalTree-utils.R
+        RangesMatching-class.R
 	debug.R
 	zzz.R

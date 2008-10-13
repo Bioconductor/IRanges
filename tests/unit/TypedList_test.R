@@ -67,14 +67,13 @@ test_TypedList_subset <- function() {
   checkIdentical(collection["one"], RangesList(one = range1))
 }
 
-test_TypedList_append <- function() {
+test_TypedList_combine <- function() {
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   col1 <- RangesList(one = range1, range2)
   col2 <- RangesList(two = range2, one = range1)
   col3 <- RangesList(range2)
 
-  checkException(append(col1, range2))
   checkException(append(col1, col2, c(1,2,3)))
   checkException(append(col1, col2, col3))
 
@@ -90,4 +89,20 @@ test_TypedList_append <- function() {
   checkIdentical(append(append(col1, col2), col3),
                  RangesList(one = range1, range2, two = range2,
                                   one = range1, range2))
+
+  ## for 'c'
+  checkIdentical(c(col1, col2, col3),
+                 RangesList(one = range1, range2, two = range2, one = range1,
+                            range2))
+  checkException(c(col1, range2))
+  checkException(c(col1, col2, recursive=TRUE))
+}
+
+test_TypedList_apply <- function() {
+  range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
+  range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
+  col1 <- RangesList(one = range1, range2)
+
+  checkIdentical(lapply(col1, start), list(start(range1), start(range2)))
+  checkException(lapply(col1, 2))
 }

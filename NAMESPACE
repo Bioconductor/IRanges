@@ -11,7 +11,8 @@ exportClasses(
     SequencePtr, RawPtr, IntegerPtr, NumericPtr,
     Sequence, XSequence, XRaw, XInteger, XNumeric,
     XRle, XRleInteger,
-    Views, XIntegerViews, XRleIntegerViews, XDataFrame
+    Views, XIntegerViews, XRleIntegerViews, XDataFrame, SplitXDataFrame,
+    RangedData, FilterRules, RDApplyParams
 )
 
 export(
@@ -21,6 +22,7 @@ export(
     safeExplode,
     IRanges,
     RangedData,
+    FilterRules, RDApplyParams,
     GenomicData,
     solveUserSEW,
     successiveIRanges,
@@ -40,7 +42,7 @@ export(
     RawPtr.compare,
     #IntegerPtr, IntegerPtr.read, IntegerPtr.write,
     #NumericPtr, NumericPtr.read, NumericPtr.write,
-    XInteger, XNumeric, XDataFrame,
+    XInteger, XNumeric, XDataFrame, SplitXDataFrame,
     XRleInteger,
     newViews, successiveViews,
 
@@ -61,7 +63,6 @@ export(
     gaps,
     IntervalTree,
     reverse,
-    rlencode,
     coverage,
     nir_list,
     active, "active<-",
@@ -73,7 +74,16 @@ export(
     slice,
     values,
     viewMins, viewMaxs, viewSums,
-
+    cbind, rbind,
+    rangedData, "rangedData<-", applyFun, "applyFun<-", applyParams,
+    "applyParams<-", simplify, "simplify<-",
+    ##excludePattern, "excludePattern<-",
+    filterRules, "filterRules<-",
+    reducerFun, "reducerFun<-", reducerParams, "reducerParams<-",
+    rdapply,
+    annotation, genome, chrom,
+    elements,
+       
     ## Deprecated functions:
     first, last,
     intToRanges, intToAdjacentRanges, toNormalIRanges,
@@ -86,6 +96,7 @@ exportMethods(
     coerce,
     show,
     summary,
+    lapply,
     length,
     names, "names<-",
     "[", "[<-",
@@ -95,16 +106,21 @@ exportMethods(
     end,
     max,
     min,
+    as.list,
     as.vector,
     as.integer,
     as.data.frame,
     as.matrix,
     as.list,
     toString,
+    unlist,
     update,
     append,
     "==", "!=",
-
+    c,
+    split,
+    eval,
+    
     ## Methods for generics defined in this package:
     width,
     isNormal,
@@ -131,4 +147,3 @@ exportMethods(
     ## Deprecated methods:
     first, last
 )
-
