@@ -4,6 +4,5 @@
 
 ## A list that holds XSequence objects
 
-setClass("XList", contains = "TypedList")
-
-setMethod("elementClass", "XList", function(x) "XSequence")
+setClass("XList", prototype = prototype(elementClass = "XSequence"),
+         contains = "TypedList")

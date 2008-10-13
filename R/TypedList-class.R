@@ -7,7 +7,8 @@
 setClass("TypedList",
          representation(
                         elements="list",   # a list of R objects
-                        NAMES="characterORNULL"  # R doesn't like @names !!
+                        NAMES="characterORNULL",  # R doesn't like @names !!
+                        elementClass="character"
                         ),
          prototype(
                    elements=list(),
@@ -56,6 +57,7 @@ setReplaceMethod("names", "TypedList",
 ## allow subclasses to provide the required class of elements in the list
 
 setGeneric("elementClass", function(x, ...) standardGeneric("elementClass"))
+setMethod("elementClass", "TypedList", function(x) x@elementClass)
 
 .valid.TypedList.elements <- function(x)
 {
@@ -154,22 +156,22 @@ setMethod("[", "TypedList",
             if (!is.atomic(i))
               stop("invalid subscript type")
             lx <- length(x)
+            nullOK <- extends("NULL", elementClass(x))
             if (is.numeric(i)) {
-              if (any(is.na(i)))
-                stop("subscript contains NAs")
-              if (any(i < -lx) || any(i > lx))
+              if (any(is.na(i)) && !nullOK)
+                stop("cannot subset by NA (NULL elements not allowed)")
+              nna <- i[!is.na(i)]
+              if (any(nna < -lx) || any(nna > lx))
                 stop("subscript out of bounds")
-              if (any(i < 0) && any(i > 0))
+              if (any(nna < 0) && any(nna > 0))
                 stop("negative and positive indices cannot be mixed")
             } else if (is.logical(i)) {
-              if (any(is.na(i)))
-                stop("subscript contains NAs")
-              if (length(i) > lx)
-                stop("subscript out of bounds")
+              if (length(i) > lx && !nullOK)
+                stop("subscript out of bounds (and NULL elements not allowed)")
             } else if (is.character(i)) {
-              if (is.null(names(x)))
-                stop("cannot subscript by character when names are NULL")
               i <- match(i, names(x))
+              if (any(is.na(i)))
+                stop("mismatching names (and NULL elements not allowed)")
             } else if (!is.null(i)) {
               stop("invalid subscript type")
             }
@@ -182,12 +184,13 @@ setMethod("[", "TypedList",
 
 setReplaceMethod("[", "TypedList",
                  function(x, i, j,..., value)
-                 stop("attempt to modify the value of a ", class(x), " instance")
+                 stop("attempt to modify the value of a ", class(x),
+                      " instance")
                  )
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "append" method.
+### Combining and splitting.
 ###
 
 setMethod("append", c("TypedList", "TypedList"),
@@ -215,14 +218,37 @@ setMethod("append", c("TypedList", "TypedList"),
           }
           )
 
+## NOTE: while the 'c' function does not have an 'x', the generic does
+## The weird thing is 'x' can be missing, but dispatch still works
+
+setMethod("c", "TypedList", function(x, ..., recursive = FALSE) {
+  if (recursive)
+    stop("'recursive' mode not supported")
+  if (!missing(x))
+    tls <- list(x, ...)
+  else tls <- list(...)
+  tl <- tls[[1]]
+  if (!all(sapply(tls, is, "TypedList")))
+    stop("all arguments in '...' must be instances of TypedList")
+  elements <- unlist(lapply(tls, function(x) {
+    els <- elements(x)
+    names(els) <- names(x)
+    els
+  }), recursive)
+  tl@NAMES <- names(elements)
+  names(elements) <- NULL
+  tl@elements <- elements
+  tl
+})
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Methods that are vectorized over the elements
+### The "lapply" method.
 ###
 
-setGeneric("width", function(x) standardGeneric("width"))
-
-setMethod("width", "TypedList", function(x) {
-  sapply(elements(x), length)
+setMethod("lapply", c("TypedList", "function"), function(X, FUN, ...) {
+  ans <- lapply(seq_len(length(X)), function(i) FUN(X[[i]], ...))
+  names(ans) <- names(X)
+  ans
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -243,6 +269,10 @@ setAs("TypedList", "list",
         .TypedList_asList(from)
       })
 
+setMethod("as.list", "TypedList", function(x) {
+  .TypedList_asList(x)
+})
+
 setMethod("as.data.frame", "TypedList",
           function(x, row.names=NULL, optional=FALSE, ...)
           {
@@ -251,7 +281,12 @@ setMethod("as.data.frame", "TypedList",
             as.data.frame(as(x, "list"), row.names = row.names,
                           optional = optional, ...)
           })
-            
+
+setMethod("unlist", "TypedList",
+          function(x, recursive = TRUE, use.names = TRUE) {
+            unlist(as.list(x), recursive, use.names)
+          })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
 ###
