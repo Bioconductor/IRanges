@@ -60,7 +60,9 @@ test_XDataFrame_construction <- function() {
 }
 
 test_XDataFrame_subset <- function() {
+  data(swiss)
   sw <- XDataFrame(swiss)
+  rn <- rownames(swiss)
 
   checkException(sw[list()]) # non-atomic
   checkException(sw[NA]) # column indices cannot be NA
@@ -77,9 +79,6 @@ test_XDataFrame_subset <- function() {
   colnames(sw) <- NULL
   checkException(sw[,"Fertility"]) # no column names
 
-  ## FIXME: temporary hack until XNumeric supports subsetting
-  rn <- rownames(swiss)
-  swiss <- data.frame(lapply(swiss, as.integer))
   sw <- XDataFrame(swiss)
   
   checkIdentical(sw[], sw) # identity subset
@@ -87,7 +86,9 @@ test_XDataFrame_subset <- function() {
 
   checkIdentical(sw[NULL], XDataFrame(swiss[NULL])) # NULL subsetting
   checkIdentical(sw[,NULL], XDataFrame(swiss[,NULL]))
-  checkIdentical(as.data.frame(sw[NULL,]), swiss[NULL,])
+  checkIdentical(as.data.frame(sw[NULL,]), data.frame(swiss[NULL,]))
+
+  rownames(sw) <- rn
   
   checkIdentical(as.data.frame(sw[1:3]), swiss[1:3])      # select columns
   checkIdentical(as.data.frame(sw[, 1:3]), swiss[1:3])    # same
@@ -110,15 +111,11 @@ test_XDataFrame_subset <- function() {
 
   ## duplicate row, unique row names are created
   checkIdentical(as.data.frame(sw[c(1, 1:2),]), swiss[c(1,1:2),])
-  ## need to copy subsetted XDataFrame when placed into another
-  checkIdentical(as.data.frame(XDataFrame(sw[rep(1,nrow(swiss)),])),
-                 swiss[rep(1,nrow(swiss)),])
+  
   ## NOTE: NA subsetting not yet supported for XSequences
   ##checkIdentical(as.data.frame(sw[c(1, NA, 1:2, NA),]), # mixin some NAs
   ##               swiss[c(1, NA, 1:2, NA),])
-
-  sw <- XDataFrame(swiss, row.names=rn)
-  rownames(swiss) <- rn
+  
   checkIdentical(as.data.frame(sw["Courtelary",]), swiss["Courtelary",])
   subswiss <- swiss[1:5,1:4]
   subsw <- sw[1:5,1:4]
@@ -131,14 +128,17 @@ test_XDataFrame_subset <- function() {
 }
 
 test_XDataFrame_dimnames_replace <- function() {
-  cn <- paste("X", seq_len(ncol(swiss)))
+  data(swiss)
+  cn <- paste("X", seq_len(ncol(swiss)), sep = ".")
   sw <- XDataFrame(swiss)
   colnames(sw) <- cn
   checkIdentical(colnames(sw), cn)
   cn <- seq_len(ncol(swiss))
   colnames(sw) <- cn
   checkIdentical(colnames(sw), make.names(cn, unique=TRUE))
-  checkException(colnames(sw) <- cn[1])
+  colnames(sw) <- cn[1]
+  colnames(swiss) <- cn[1]
+  checkIdentical(colnames(sw), colnames(swiss))
   rn <- seq(nrow(sw))
   rownames(sw) <- rn
   checkIdentical(rownames(sw), as.character(rn))
@@ -162,4 +162,43 @@ test_XDataFrame_replacement <- function() {
 
   checkException(xdf[[13]] <- counts) # index must be < length+1
   checkException(xdf[["tooshort"]] <- counts[1:2])
+}
+
+## splitting and combining
+test_XDataFrame_combine <- function() {
+  data(swiss)
+  sw <- XDataFrame(swiss, row.names=rownames(swiss))
+  rn <- rownames(swiss)
+  
+  ## split
+  
+  swsplit <- split(sw, sw[["Education"]])
+  checkTrue(validObject(swsplit))
+  swisssplit <- split(swiss, swiss$Education)
+  checkIdentical(as.list(lapply(swsplit, as.data.frame)), swisssplit)
+  
+  ## rbind
+
+  checkIdentical(rbind(XDataFrame(), XDataFrame()), XDataFrame())
+  zr <- sw[FALSE,]
+  checkIdentical(rbind(XDataFrame(), zr, zr[,1:2]), zr)
+  checkIdentical(as.data.frame(rbind(XDataFrame(), zr, sw)), swiss)
+  swissrbind <- do.call("rbind", swisssplit)
+  rownames(swissrbind) <- NULL
+  rownames(sw) <- NULL
+  swsplit <- split(sw, sw[["Education"]])
+  checkIdentical(as.data.frame(do.call("rbind", as.list(swsplit))), swissrbind)
+
+  rownames(sw) <- rn
+  checkIdentical(rownames(rbind(sw, XDataFrame(swiss))), NULL)  
+  swsplit <- split(sw, sw[["Education"]])
+  rownames(swiss) <- rn
+  swisssplit <- split(swiss, swiss$Education)
+  checkIdentical(rownames(do.call("rbind", as.list(swsplit))),
+                 unlist(lapply(swisssplit, rownames), use.names=FALSE))
+
+  checkException(rbind(sw[,1:2], sw))
+  other <- sw
+  colnames(other)[1] <- "foo"
+  checkException(rbind(other, sw))
 }
