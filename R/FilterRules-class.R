@@ -196,7 +196,7 @@ setMethod("eval", "FilterRules",
                    parent.frame() else baseenv())
           {
             result <- TRUE
-            for (rule in elements(expr)) {
+            for (rule in elements(expr)[active(expr)]) {
               if (is.expression(rule))
                 val <- eval(rule, envir, enclos)
               else val <- rule(envir)

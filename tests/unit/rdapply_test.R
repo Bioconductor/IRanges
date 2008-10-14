@@ -166,6 +166,8 @@ test_RDApplyParams_rdapply <- function() {
                        filter = filter > cutoff)
   params <- RDApplyParams(rd, countrows, filterRules = rules)
   checkIdentical(rdapply(params), list(chr1 = 1L, chr2 = 0L))
+  active(filterRules(params))["filter"] <- FALSE
+  checkIdentical(rdapply(params), list(chr1 = 1L, chr2 = 1L))
 
   ## simplify
   params <- RDApplyParams(rd, countrows, simplify = TRUE)
