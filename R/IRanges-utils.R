@@ -252,6 +252,29 @@ setMethod("gaps", "IRanges",
     }
 )
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Binary set operations (union, intersect, setdiff, ...)
+###
+
+setMethod("union", c("IRanges", "IRanges"), function(x, y) {
+  reduce(c(x, y))
+})
+
+setMethod("intersect", c("IRanges", "IRanges"),
+          function(x, y)
+          {
+            start <- min(c(start(x), start(y)))
+            end <- max(c(end(x), end(y)))
+            setdiff(x, gaps(y, start, end))
+          })
+
+setMethod("setdiff", c("IRanges", "IRanges"),
+          function(x, y)
+          {
+            start <- min(c(start(x), start(y)))
+            end <- max(c(end(x), end(y)))
+            gaps(union(gaps(x, start, end), y), start, end)
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Overlap tools
