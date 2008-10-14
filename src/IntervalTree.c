@@ -228,7 +228,7 @@ SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges) {
   SET_SLOT(r_matrix, install("Dim"), r_dims);
   
   r_results = NEW_OBJECT(MAKE_CLASS("RangesMatching"));
-  SET_SLOT(r_results, install("matchmatrix"), r_matrix);
+  SET_SLOT(r_results, install("matchMatrix"), r_matrix);
   
   slFreeList(&results);
   

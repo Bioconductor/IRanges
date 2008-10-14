@@ -32,7 +32,7 @@ test_IntervalTree_overlap <- function() {
   result <- overlap(tree, query)
   sparse <- new("ngCMatrix", p = c(0L, 2L, 2L, 3L), i = c(0L, 1L, 2L),
                 Dim = as.integer(c(length(subject), length(query))))
-  checkIdentical(result, new("RangesMatching", matchmatrix = sparse))
+  checkIdentical(result, new("RangesMatching", matchMatrix = sparse))
 
   ## .....
   ##    ....
@@ -46,10 +46,10 @@ test_IntervalTree_overlap <- function() {
   result <- overlap(tree, query)
   dense <- new("lgeMatrix", x = c(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE),
                Dim = as.integer(c(length(subject), length(query))))
-  checkIdentical(result, new("RangesMatching", matchmatrix = dense))
+  checkIdentical(result, new("RangesMatching", matchMatrix = dense))
 
   result <- overlap(query, subject)
-  checkIdentical(result, new("RangesMatching", matchmatrix = Matrix::t(dense)))
+  checkIdentical(result, new("RangesMatching", matchMatrix = Matrix::t(dense)))
 
   query <- IRanges(c(1, 4, 9, 11), c(5, 7, 10, 11))
   
@@ -57,7 +57,7 @@ test_IntervalTree_overlap <- function() {
   sparse <- new("ngCMatrix", p = c(0L, 2L, 4L, 5L, 6L),
                 i = c(0L, 1L, 0L, 1L, 2L, 3L),
                 Dim = as.integer(c(length(query), length(query))))
-  checkIdentical(result, new("RangesMatching", matchmatrix=sparse))
+  checkIdentical(result, new("RangesMatching", matchMatrix=sparse))
 
   ## check case of identical subjects
   ## .....
@@ -74,7 +74,7 @@ test_IntervalTree_overlap <- function() {
   result <- overlap(tree, query)
   sparse <- new("ngCMatrix", i = as.integer(c(0, 1, 0, 1, 2, 3, 4)),
                 p = as.integer(c(0, 2, 7, 7)), Dim = c(5L, 3L))
-  checkIdentical(result, new("RangesMatching", matchmatrix=sparse))
+  checkIdentical(result, new("RangesMatching", matchMatrix=sparse))
 
   checkException(overlap(NULL, query))
   checkException(overlap(query, NULL))
