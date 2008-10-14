@@ -4,6 +4,7 @@ import(methods)
 import(stats) ## for the "start", "end" and "update" generics
 importClassesFrom(Matrix, CsparseMatrix, nsparseMatrix, generalMatrix,
                   sparseMatrix, Matrix, nMatrix, compMatrix, ngCMatrix)
+importFrom(Matrix, colSums)
 
 exportClasses(
     Ranges, XRanges, IRanges, NormalIRanges,
@@ -84,8 +85,8 @@ export(
     rdapply,
     annotation, genome, chrom,
     elements, elementClass,
-    matchMatrix, 
-       
+    matchMatrix,
+    
     ## Deprecated functions:
     first, last,
     intToRanges, intToAdjacentRanges, toNormalIRanges,
@@ -114,6 +115,7 @@ exportMethods(
     as.data.frame,
     as.matrix,
     as.list,
+    as.table,
     toString,
     unlist,
     update,
@@ -122,6 +124,7 @@ exportMethods(
     c,
     split,
     eval,
+    t,
     
     ## Methods for generics defined in this package:
     width,

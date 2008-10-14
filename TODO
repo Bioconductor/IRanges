@@ -21,9 +21,9 @@ Long term TODO list
   - "intersect" or "&" for finding the completely overlapping subregions
   - "setdiff" or "-" for subtracting the overlap from first argument
   - "!" as alias for "gaps"
-  - "|" for merging, i.e. reduce(c(x, y))
+  - "union" or "|" for merging, i.e. reduce(c(x, y))
   - "reduce" should take a window argument
-  - "unroll" like "inverse.rle", generates vector from values on ranges
+  - "inverse.rle", generates vector from values on ranges
     - if no value specified, could be logical vector, TRUE in range else FALSE
   - "sort" sorts by start or end
 
@@ -39,7 +39,7 @@ Long term TODO list
   - unary ops: "gaps", "coverage", "slice", etc are vectorized
   
 - RangeMatching methods:
-  - "lmatched" and "rmatched", which matched (either side)
+  - "matched" which matched in query
   - "as.matrix", to extract matches
   - "clusters", to group matched ranges
   - "relations" to extract relationships in terms of Allen's Interval Algebra
@@ -54,6 +54,12 @@ Long term TODO list
   - by, aggregate
   - with, within
   - subset
+
+- RangedData methods:
+  - rbind: inner combine
   
 - XDataFrameList methods
   - stack: unlist(), but with factors recording source of each row
+
+- IntervalTree:
+  - instead of dense lgeMatrix, just complement the lgCMatrix
