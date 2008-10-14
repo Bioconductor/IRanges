@@ -27,8 +27,8 @@ test_RangesMatching_matched <- function() {
   tree <- IntervalTree(subject)
   result <- overlap(tree, query)
 
-  checkIdentical(matched(result), c(TRUE, FALSE, TRUE))
-  checkIdentical(matched(t(result)), c(TRUE, TRUE, TRUE))
+  checkIdentical(as.vector(as.table(result)), c(2L, 0L, 1L))
+  checkIdentical(as.vector(as.table(t(result))), c(1L, 1L, 1L))
 
   ## dense
   query <- IRanges(c(1, 4, 9), c(5, 7, 10))
@@ -36,5 +36,5 @@ test_RangesMatching_matched <- function() {
   tree <- IntervalTree(subject)
   result <- overlap(tree, query)
   
-  checkIdentical(matched(result), c(TRUE, TRUE, FALSE))
+  checkIdentical(as.vector(as.table(result)), c(2L, 2L, 0L))
 }

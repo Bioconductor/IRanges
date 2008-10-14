@@ -18,15 +18,6 @@ setMethod("matchMatrix", "RangesMatching", function(object) object@matchMatrix)
 ##   seq_len(nrow(mm)) %in% mm@i
 ## })
 
-setGeneric("matched", function(x, ...) standardGeneric("matched"))
-setMethod("matched", "RangesMatching", function(x) {
-  mm <- matchMatrix(x)
-  if (is(mm, "ngCMatrix"))
-    diff(mm@p) > 0
-  else if (is(mm, "lgeMatrix"))
-    colSums(mm) > 0
-})
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
 ###
@@ -41,6 +32,17 @@ setMethod("as.matrix", "RangesMatching", function(x) {
     mm <- as.matrix(mm)
     cbind(query = col(mm)[mm], subject = row(mm)[mm])
   }
+})
+
+## count up the matches for each query
+
+setMethod("as.table", "RangesMatching", function(x, ...) {
+  mm <- matchMatrix(x)
+  if (is(mm, "ngCMatrix"))
+    counts <- diff(mm@p)
+  else if (is(mm, "lgeMatrix"))
+    counts <- as.integer(colSums(mm))
+  as.table(array(counts, ncol(mm), list(seq_len(ncol(mm)))))
 })
 
 setMethod("t", "RangesMatching", function(x) {
