@@ -125,6 +125,7 @@ exportMethods(
     split,
     eval,
     t,
+    union, intersect, setdiff,
     
     ## Methods for generics defined in this package:
     width,

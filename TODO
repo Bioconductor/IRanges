@@ -7,59 +7,53 @@ Immediate TODO list
 Long term TODO list
 -------------------
 
-- Data structures:
-  - RectRanges, container of two Ranges, one for each dimension
-  - PolyRanges, list of real-valued matrices, each holding one polygon?
-  - ViewsList, extends RangesList but specific to Views
-  - XDataFrame, add annotations (like AnnotatedDataFrame)
-  
-- Ranges methods:
+- Ranges:
   - "unique" for removing duplicate ranges
   - "findInterval" for points that fall into a normal Ranges
   - "nearest" for finding nearest neighbors
   - "match" and "%in%" for exact matching
-  - "intersect" or "&" for finding the completely overlapping subregions
-  - "setdiff" or "-" for subtracting the overlap from first argument
-  - "!" as alias for "gaps"
-  - "union" or "|" for merging, i.e. reduce(c(x, y))
+  - operator aliases ("&", "|", "!", "-", "*", "/")
   - "reduce" should take a window argument
-  - "inverse.rle", generates vector from values on ranges
-    - if no value specified, could be logical vector, TRUE in range else FALSE
+  - "inverse.rle", could be logical vector, TRUE in range else FALSE
   - "sort" sorts by start or end
 
-- TypedList methods:
-  - split() for splitting
+- TypedList:
   - dim, dim<-, dimnames, dimnames<- for multi-dimensional list (like 'by')
   
-- RangesList methods:
-  - parallel rbind/cbind
+- RangesList:
+  - parallel rbind
   - binary ops: "overlap", "nearest", "intersect", "setdiff", "merge"
     - 'y' omitted: become n-ary ops on items in collection
     - 'y' specified: performed element-wise
   - unary ops: "gaps", "coverage", "slice", etc are vectorized
   
-- RangeMatching methods:
-  - "matched" which matched in query
-  - "as.matrix", to extract matches
-  - "clusters", to group matched ranges
+- RangesMatching:
   - "relations" to extract relationships in terms of Allen's Interval Algebra
     - kind of like "all.equal"
   - "width" for amount of overlap for each match
-    
-- IRanges constructors:
-  - From 'rle' object
 
-- XDataFrame methods
+- XDataFrame:
   - group generics (Math, Ops, Summary)
   - by, aggregate
   - with, within
   - subset
 
-- RangedData methods:
+- RangedData:
   - rbind: inner combine
+  - merge for SQL-type join operations based on range overlap
+  - inverse.rle
   
-- XDataFrameList methods
+- SplitXDataFrame:
   - stack: unlist(), but with factors recording source of each row
-
+  - rbind
+  
 - IntervalTree:
   - instead of dense lgeMatrix, just complement the lgCMatrix
+
+- FilterRules:
+  - support subsetting XDataFrame/RangedData directly
+
+- Classes to add:
+  - RectRanges, container of two Ranges, one for each dimension
+  - PolyRanges, list of real-valued matrices, each holding one polygon?
+  - ViewsList, extends RangesList but specific to Views
