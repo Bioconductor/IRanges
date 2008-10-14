@@ -50,3 +50,17 @@ setMethod("eval", c("expressionORlanguage", "RangedData"),
             lockEnvironment(env, TRUE)
             eval(expr, unlist(values(envir)), env)
           })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Merging (TODO, don't export)
+###
+
+setGeneric("merge", function(x, y, ...) standardGeneric("merge"))
+
+setMethod("merge", "RangedData",
+          function(x, y, by = 1, all = FALSE, all.x = all, all.y = all,
+                   resolver = intersect, sort = TRUE, suffixes = c(".x",".y"))
+          {
+            
+          })
