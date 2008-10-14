@@ -25,3 +25,18 @@ test_IRanges_combine <- function() {
                  RangesList(`FALSE` = range[2:3], `TRUE` = range[c(1,4)]))
   checkIdentical(do.call("c", as.list(srange)), IRanges(c(2,3,1,1), c(2,8,5,3)))
 }
+
+test_IRanges_setops <- function() {
+  query <- IRanges(c(1, 4, 9), c(5, 7, 10))
+  subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
+
+  ## union
+  checkIdentical(union(query, subject), IRanges(c(1, 9), c(7, 12)))
+
+  ## setdiff
+  checkIdentical(setdiff(subject, query), IRanges(c(11), c(12)))
+  checkIdentical(setdiff(query, subject), IRanges(c(1,4,9), c(1,7,9)))
+
+  ## intersect
+  checkIdentical(intersect(query, subject), IRanges(c(2,10),c(3,10)))  
+}

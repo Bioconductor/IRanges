@@ -401,7 +401,7 @@ unsafe.update <- function(object, ...)
         }
         object@start <- numeric2integer(start)
         object@width <- numeric2integer(width)
-        object@NAMES <- if (is.null(args$names)) as.character(NA) else args$names
+        object@NAMES <- args$names
         return(object)
     }
     if ("start" %in% argnames)
