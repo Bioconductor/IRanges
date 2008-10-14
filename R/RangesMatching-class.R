@@ -42,7 +42,7 @@ setMethod("as.table", "RangesMatching", function(x, ...) {
     counts <- diff(mm@p)
   else if (is(mm, "lgeMatrix"))
     counts <- as.integer(colSums(mm))
-  as.table(array(counts, ncol(mm), list(seq_len(ncol(mm)))))
+  as.table(array(counts, ncol(mm), list(range = seq_len(ncol(mm)))))
 })
 
 setMethod("t", "RangesMatching", function(x) {
