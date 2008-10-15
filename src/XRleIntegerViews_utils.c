@@ -9,7 +9,7 @@
  */
 SEXP XRleIntegerViews_viewMins(SEXP x, SEXP na_rm)
 {
-	int i, ans_length, index, upper_run, upper_bound;
+	int i, ans_length, index, lower_run, upper_run, upper_bound;
 	int *ans_elt, *values_elt, *lengths_elt, *start_elt, *width_elt;
 	SEXP ans, subject, values, values_tag, lengths, lengths_tag, start, width;
 
@@ -33,10 +33,10 @@ SEXP XRleIntegerViews_viewMins(SEXP x, SEXP na_rm)
 	{
 		*ans_elt = INT_MAX;
 		while (index > 0 && upper_run > *start_elt) {
+			upper_run -= *lengths_elt;
 			values_elt--;
 			lengths_elt--;
 			index--;
-			upper_run -= *lengths_elt;
 		}
 		while (upper_run < *start_elt) {
 			values_elt++;
@@ -44,8 +44,9 @@ SEXP XRleIntegerViews_viewMins(SEXP x, SEXP na_rm)
 			index++;
 			upper_run += *lengths_elt;
 		}
+		lower_run = upper_run - *lengths_elt + 1;
 		upper_bound = *start_elt + *width_elt - 1;
-		while (upper_run <= upper_bound) {
+		while (lower_run <= upper_bound) {
 			if (*values_elt == NA_INTEGER) {
 				if (!LOGICAL(na_rm)[0]) {
 					*ans_elt = NA_INTEGER;
@@ -56,6 +57,7 @@ SEXP XRleIntegerViews_viewMins(SEXP x, SEXP na_rm)
 			values_elt++;
 			lengths_elt++;
 			index++;
+			lower_run = upper_run + 1;
 			upper_run += *lengths_elt;
 		}
 	}
@@ -68,7 +70,7 @@ SEXP XRleIntegerViews_viewMins(SEXP x, SEXP na_rm)
  */
 SEXP XRleIntegerViews_viewMaxs(SEXP x, SEXP na_rm)
 {
-	int i, ans_length, index, upper_run, upper_bound;
+	int i, ans_length, index, lower_run, upper_run, upper_bound;
 	int *ans_elt, *values_elt, *lengths_elt, *start_elt, *width_elt;
 	SEXP ans, subject, values, values_tag, lengths, lengths_tag, start, width;
 
@@ -92,10 +94,10 @@ SEXP XRleIntegerViews_viewMaxs(SEXP x, SEXP na_rm)
 	{
 		*ans_elt = INT_MIN;
 		while (index > 0 && upper_run > *start_elt) {
+			upper_run -= *lengths_elt;
 			values_elt--;
 			lengths_elt--;
 			index--;
-			upper_run -= *lengths_elt;
 		}
 		while (upper_run < *start_elt) {
 			values_elt++;
@@ -103,8 +105,9 @@ SEXP XRleIntegerViews_viewMaxs(SEXP x, SEXP na_rm)
 			index++;
 			upper_run += *lengths_elt;
 		}
+		lower_run = upper_run - *lengths_elt + 1;
 		upper_bound = *start_elt + *width_elt - 1;
-		while (upper_run <= upper_bound) {
+		while (lower_run <= upper_bound) {
 			if (*values_elt == NA_INTEGER) {
 				if (!LOGICAL(na_rm)[0]) {
 					*ans_elt = NA_INTEGER;
@@ -115,6 +118,7 @@ SEXP XRleIntegerViews_viewMaxs(SEXP x, SEXP na_rm)
 			values_elt++;
 			lengths_elt++;
 			index++;
+			lower_run = upper_run + 1;
 			upper_run += *lengths_elt;
 		}
 	}
@@ -151,10 +155,10 @@ SEXP XRleIntegerViews_viewSums(SEXP x, SEXP na_rm)
 	{
 		*ans_elt = 0;
 		while (index > 0 && upper_run > *start_elt) {
+			upper_run -= *lengths_elt;
 			values_elt--;
 			lengths_elt--;
 			index--;
-			upper_run -= *lengths_elt;
 		}
 		while (upper_run < *start_elt) {
 			values_elt++;
@@ -165,7 +169,7 @@ SEXP XRleIntegerViews_viewSums(SEXP x, SEXP na_rm)
 		lower_run = upper_run - *lengths_elt + 1;
 		lower_bound = *start_elt;
 		upper_bound = *start_elt + *width_elt - 1;
-		while (upper_run <= upper_bound) {
+		while (lower_run <= upper_bound) {
 			if (*values_elt == NA_INTEGER) {
 				if (!LOGICAL(na_rm)[0]) {
 					*ans_elt = NA_INTEGER;
