@@ -317,6 +317,8 @@ SEXP get_IRanges_start(SEXP x);
 
 SEXP get_IRanges_width(SEXP x);
 
+SEXP get_IRanges_names(SEXP x);
+
 int get_IRanges_length(SEXP x);
 
 void set_IRanges_names(SEXP x, SEXP names);
