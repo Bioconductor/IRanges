@@ -254,10 +254,6 @@ setAs("RangedData", "XDataFrame",
         XDataFrame(as.data.frame(ranges(from)), values(from))
       })
 
-setAs("RangedData", "rle", function(from) {
-  rlencode(from)
-})
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Show
 ###
