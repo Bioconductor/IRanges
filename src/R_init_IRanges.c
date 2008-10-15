@@ -190,6 +190,7 @@ void R_init_IRanges(DllInfo *info)
 /* IRanges_class.c */
 	REGISTER_CCALLABLE(_get_IRanges_start);
 	REGISTER_CCALLABLE(_get_IRanges_width);
+	REGISTER_CCALLABLE(_get_IRanges_names);
 	REGISTER_CCALLABLE(_get_IRanges_length);
 	REGISTER_CCALLABLE(_set_IRanges_names);
 	REGISTER_CCALLABLE(_copy_IRanges_slots);

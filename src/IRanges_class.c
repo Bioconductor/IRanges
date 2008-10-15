@@ -28,6 +28,11 @@ SEXP _get_IRanges_width(SEXP x)
 	return GET_SLOT(x, install("width"));
 }
 
+SEXP _get_IRanges_names(SEXP x)
+{
+	return GET_SLOT(x, install("NAMES"));
+}
+
 int _get_IRanges_length(SEXP x)
 {
 	return LENGTH(_get_IRanges_start(x));
