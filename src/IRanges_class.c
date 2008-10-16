@@ -53,17 +53,12 @@ const int *_get_IRanges_width0(SEXP x)
  */
 void _set_IRanges_names(SEXP x, SEXP names)
 {
-	SEXP names_slot;
-
 	if (names == R_NilValue || names == NULL) {
-		PROTECT(names_slot = NEW_CHARACTER(1));
-		SET_STRING_ELT(names_slot, 0, NA_STRING);
-		SET_SLOT(x, mkChar("NAMES"), names_slot);
-		UNPROTECT(1);
-	} else {
-		if (LENGTH(names) != _get_IRanges_length(x))
-			error("number of names and number of elements differ");
+		SET_SLOT(x, mkChar("NAMES"), R_NilValue);
+	} else if (LENGTH(names) == _get_IRanges_length(x)) {
 		SET_SLOT(x, mkChar("NAMES"), names);
+	} else {
+		error("number of names and number of elements differ");
 	}
 	return;
 }
