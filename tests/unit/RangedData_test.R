@@ -176,3 +176,20 @@ test_RangedData_subset <- function() {
                          splitter = c(1,1,1,2))
   checkIdenticalRD(rd[c(1:2,1,3),1], repeated)
 }
+
+test_RangedData_combine <- function() {
+  ranges <- IRanges(c(1,2,3),c(4,5,6))
+  filter <- c(1L, 0L, 1L)
+  score <- c(10L, 2L, NA)
+  rd <- RangedData(ranges, score, splitter = filter)
+
+  ## c()
+  checkIdentical(c(rd[1], rd[2]), rd)
+  checkException(c(rd[1], ranges))
+
+  ## split()
+  rd2 <- RangedData(ranges, score)
+  checkIdentical(as.data.frame(unlist(split(rd2, filter))),
+                 as.data.frame(rd))
+  checkException(split(rd2, filter[1:2]))
+}

@@ -23,7 +23,7 @@ export(
     sapplyLength,
     safeExplode,
     IRanges,
-    RangedData,
+    RangedData, RangedDataList,
     FilterRules, RDApplyParams,
     GenomicData,
     solveUserSEW,

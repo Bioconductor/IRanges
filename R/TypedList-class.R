@@ -218,18 +218,10 @@ setMethod("append", c("TypedList", "TypedList"),
           }
           )
 
-## NOTE: while the 'c' function does not have an 'x', the generic does
-## The weird thing is 'x' can be missing, but dispatch still works
-
-setMethod("c", "TypedList", function(x, ..., recursive = FALSE) {
-  if (recursive)
-    stop("'recursive' mode not supported")
-  if (!missing(x))
-    tls <- list(x, ...)
-  else tls <- list(...)
+## unlists a list of TypedList instances
+## this is needed to avoid use of do.call("c", list), which has dispatch issues
+TypedList.unlist <- function(tls, recursive = FALSE) {
   tl <- tls[[1]]
-  if (!all(sapply(tls, is, "TypedList")))
-    stop("all arguments in '...' must be instances of TypedList")
   elements <- unlist(lapply(tls, function(x) {
     els <- elements(x)
     names(els) <- names(x)
@@ -239,6 +231,20 @@ setMethod("c", "TypedList", function(x, ..., recursive = FALSE) {
   names(elements) <- NULL
   tl@elements <- elements
   tl
+}
+
+## NOTE: while the 'c' function does not have an 'x', the generic does
+## The weird thing is 'x' can be missing, but dispatch still works
+
+setMethod("c", "TypedList", function(x, ..., recursive = FALSE) {
+  if (recursive)
+    stop("'recursive' mode not supported")
+  if (!missing(x))
+    tls <- list(x, ...)
+  else tls <- list(...)
+  if (!all(sapply(tls, is, "TypedList")))
+    stop("all arguments in '...' must be instances of TypedList")
+  TypedList.unlist(tls, recursive)
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

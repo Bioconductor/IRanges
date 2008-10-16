@@ -223,13 +223,23 @@ setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
   rd <- rds[[1]]
   if (!all(sapply(rds, is, "RangedData")))
     stop("all arguments in '...' must be instances of RangedData")
-  rd@ranges <- do.call("c", lapply(rds, ranges))
-  rdvalues <- do.call("c", lapply(rds, values))
+  rd@ranges <- TypedList.unlist(lapply(rds, ranges))
+  rd@values <- TypedList.unlist(lapply(rds, values))
+  ## ranges <- ranges(rd)
+##   for (rdi in rds[-1])
+##     ranges <- c(ranges, ranges(rdi))
+##   values <- values(rd)
+##   for (rdi in rds[-1])
+##     values <- c(values, values(rdi))
+##   rd@ranges <- ranges # do.call("c", lapply(rds, ranges))
+##   rd@values <- values # do.call("c", lapply(rds, values))
   rd
 })
 
 setMethod("split", "RangedData", function(x, f, drop = FALSE) {
-  splitInd <- split(seq_len(length(x)), f)
+  if (length(f) > nrow(x) || nrow(x) %% length(f) > 0)
+    stop("nrow(x) is not a multiple of length(f)")
+  splitInd <- split(seq_len(nrow(x)), f)
   do.call("RangedDataList", lapply(splitInd, function(ind) x[ind,]))
 })
 
@@ -277,6 +287,15 @@ RangedDataList <- function(...)
   rds <- list(...)
   NAMES <- names(rds)
   names(rds) <- NULL
-  new("RangedData", elements=rds, NAMES=NAMES)
+  new("RangedDataList", elements=rds, NAMES=NAMES)
 }
 
+setMethod("unlist", "RangedDataList",
+          function(x, recursive = TRUE, use.names = TRUE) {
+            if (!missing(recursive))
+              warning("'recursive' argument ignored")
+            ans <- do.call("c", as.list(x))
+            if (!use.names)
+              names(ans) <- NULL
+            ans
+          })

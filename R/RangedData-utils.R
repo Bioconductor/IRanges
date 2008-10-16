@@ -41,14 +41,21 @@ setMethod("rdapply", "RDApplyParams", function(x) {
 ###
 
 setMethod("eval", c("expressionORlanguage", "RangedData"),
-          function(expr, envir,
-                   enclos = if(is.list(envir) || is.pairlist(envir))
-                   parent.frame() else baseenv())
+          function(expr, envir, enclos = parent.frame())
           {
             env <- new.env(parent = enclos)
-            makeActiveBinding("ranges", function() unlist(ranges(envir)), env)
-            lockEnvironment(env, TRUE)
-            eval(expr, unlist(values(envir)), env)
+            makeActiveBinding("ranges", function() {
+              val <- unlist(ranges(envir))
+              assign("ranges", val, env) ## cache for further use
+              val
+            }, env)
+            for (col in colnames(envir))
+              makeActiveBinding(col, function() {
+                val <- envir[[col]]
+                assign(col, val, env)
+                val
+              }, env)
+            eval(expr, env)
           })
 
 

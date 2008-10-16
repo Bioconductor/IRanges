@@ -201,10 +201,10 @@ setMethod("eval", "FilterRules",
                 val <- eval(rule, envir, enclos)
               else val <- rule(envir)
               if (!is.logical(val))
-                stop("filter rule evaluated to non-logical: ", x)
+                stop("filter rule evaluated to non-logical: ", rule)
               if (max(length(result), length(val)) %%
                   min(length(result), length(val)) != 0)
-                stop("filter rule evaluated to inconsistent length: ", x)
+                stop("filter rule evaluated to inconsistent length: ", rule)
               result <- val & result
             }
             result

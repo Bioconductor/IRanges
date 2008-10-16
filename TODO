@@ -15,7 +15,7 @@ Long term TODO list
   - operator aliases ("&", "|", "!", "-", "*", "/")
   - "reduce" should take a window argument
   - "inverse.rle", could be logical vector, TRUE in range else FALSE
-  - "sort" sorts by start or end
+  - "sort" sorts by start
 
 - TypedList:
   - dim, dim<-, dimnames, dimnames<- for multi-dimensional list (like 'by')

@@ -27,9 +27,9 @@ setMethod("ranges", "RangesList",
             els
           })
 
-setMethod("start", "RangesList", function(x) unlist(lapply(x, start)))
-setMethod("end", "RangesList", function(x) unlist(lapply(x, end)))
-setMethod("width", "RangesList", function(x) unlist(lapply(x, width)))
+setMethod("start", "RangesList", function(x) unlist(lapply(ranges(x), start)))
+setMethod("end", "RangesList", function(x) unlist(lapply(ranges(x), end)))
+setMethod("width", "RangesList", function(x) unlist(lapply(ranges(x), width)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.

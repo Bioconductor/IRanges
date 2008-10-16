@@ -78,7 +78,10 @@ setMethod("eval", c("expressionORlanguage", "XDataFrame"),
           {
             env <- new.env(parent = enclos)
             for (col in colnames(envir))
-              makeActiveBinding(col, function() envir[[col]], env)
-            lockEnvironment(env, TRUE)
+              makeActiveBinding(col, function() {
+                val <- envir[[col]]
+                assign(col, val, env)
+                val
+              }, env)
             eval(expr, env)
           })
