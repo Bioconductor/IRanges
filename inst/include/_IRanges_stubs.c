@@ -268,6 +268,11 @@ DEFINE_CCALLABLE_STUB(SEXP, get_IRanges_width,
 	(     x)
 );
 
+DEFINE_CCALLABLE_STUB(SEXP, get_IRanges_names,
+	(SEXP x),
+	(     x)
+);
+
 DEFINE_CCALLABLE_STUB(int, get_IRanges_length,
 	(SEXP x),
 	(     x)
