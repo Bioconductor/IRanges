@@ -234,7 +234,7 @@ TypedList.unlist <- function(tls, recursive = FALSE) {
 }
 
 ## NOTE: while the 'c' function does not have an 'x', the generic does
-## The weird thing is 'x' can be missing, but dispatch still works
+## c() is a primitive, so 'x' can be missing; dispatch is by position
 
 setMethod("c", "TypedList", function(x, ..., recursive = FALSE) {
   if (recursive)
@@ -288,10 +288,21 @@ setMethod("as.data.frame", "TypedList",
                           optional = optional, ...)
           })
 
+## setMethod("unlist", "TypedList",
+##            function(x, recursive = TRUE, use.names = TRUE) {
+##              unlist(as.list(x), recursive, use.names)
+##           })
+
 setMethod("unlist", "TypedList",
           function(x, recursive = TRUE, use.names = TRUE) {
-            unlist(as.list(x), recursive, use.names)
+            if (!missing(recursive))
+              warning("'recursive' argument currently ignored")
+            ans <- do.call("c", as.list(x))
+            if (!use.names)
+              names(ans) <- NULL
+            ans
           })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.

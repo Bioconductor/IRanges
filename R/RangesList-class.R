@@ -15,21 +15,9 @@ setClass("IRangesList", prototype = prototype(elementClass = "IRanges"),
 ### Accessor methods.
 ###
 
-## coerced to internal ranges
-setGeneric("ranges", function(object, ...) standardGeneric("ranges"))
-setMethod("ranges", "RangesList",
-          function(object, asRanges = TRUE) {
-            if (!isTRUEorFALSE(asRanges))
-              stop("'asRanges' should be TRUE or FALSE")
-            els <- elements(object)
-            if (asRanges)
-              els <- lapply(els, as, "Ranges")
-            els
-          })
-
-setMethod("start", "RangesList", function(x) unlist(lapply(ranges(x), start)))
-setMethod("end", "RangesList", function(x) unlist(lapply(ranges(x), end)))
-setMethod("width", "RangesList", function(x) unlist(lapply(ranges(x), width)))
+setMethod("start", "RangesList", function(x) start(unlist(x)))
+setMethod("end", "RangesList", function(x) end(unlist(x)))
+setMethod("width", "RangesList", function(x) width(unlist(x)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
@@ -103,18 +91,6 @@ setMethod("gaps", "RangesList",
 ### Coercion.
 ###
 
-setMethod("unlist", "RangesList",
-          function(x, recursive = TRUE, use.names = TRUE) {
-            if (!missing(recursive))
-              warning("'recursive' argument ignored")
-            ranges <- ranges(x)
-            unlisted <- IRanges(unlist(lapply(ranges, start)),
-                                unlist(lapply(ranges, end)))
-            if (use.names)
-              names(unlisted) <- unlist(lapply(ranges, names))
-            unlisted
-          })
-
 setMethod("as.data.frame", "RangesList",
           function(x, row.names=NULL, optional=FALSE, ...)
           {
@@ -122,7 +98,7 @@ setMethod("as.data.frame", "RangesList",
               stop("'row.names'  must be NULL or a character vector")
             if (!missing(optional) || length(list(...)))
               warning("'optional' and arguments in '...' ignored")
-            data.frame(as.data.frame(unlist(x)), row.names = row.names)
+            as.data.frame(unlist(x), row.names = row.names)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

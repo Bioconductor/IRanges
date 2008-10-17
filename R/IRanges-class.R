@@ -599,9 +599,10 @@ setMethod("c", "IRanges", function(x, ..., recursive = FALSE) {
   if (!all(sapply(list(...), is, "IRanges")))
     stop("all arguments in '...' must be instances of IRanges")
   if (!missing(x))
-    rl <- RangesList(x, ...)
-  else rl <- RangesList(...)
-  unlist(rl)
+    args <- list(x, ...)
+  else args <- list(...)
+  IRanges(unlist(lapply(args, start), use.names=FALSE),
+          unlist(lapply(args, end), use.names=FALSE))
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

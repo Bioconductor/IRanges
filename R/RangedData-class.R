@@ -15,10 +15,11 @@ setClass("RangedData",
 ### Accessor methods.
 ###
 
-setGeneric("values", function(object, ...) standardGeneric("values"))
-setMethod("values", "RangedData", function(object) object@values)
+setGeneric("values", function(x, ...) standardGeneric("values"))
+setMethod("values", "RangedData", function(x) x@values)
 
-setMethod("ranges", "RangedData", function(object) object@ranges)
+setGeneric("ranges", function(x, ...) standardGeneric("ranges"))
+setMethod("ranges", "RangedData", function(x) x@ranges)
 
 setGeneric("annotation", function(object) standardGeneric("annotation"))
 setMethod("annotation", "RangedData", function(object) object@annotation)
@@ -289,13 +290,3 @@ RangedDataList <- function(...)
   names(rds) <- NULL
   new("RangedDataList", elements=rds, NAMES=NAMES)
 }
-
-setMethod("unlist", "RangedDataList",
-          function(x, recursive = TRUE, use.names = TRUE) {
-            if (!missing(recursive))
-              warning("'recursive' argument ignored")
-            ans <- do.call("c", as.list(x))
-            if (!use.names)
-              names(ans) <- NULL
-            ans
-          })
