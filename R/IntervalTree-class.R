@@ -29,8 +29,8 @@ setMethod("IntervalTree", "IRanges", function(object) {
 ### Coercion
 ###
 
-setAs("IntervalTree", "Ranges", function(from) {
-  .IntervalTreeCall(from, "asRanges")
+setAs("IntervalTree", "IRanges", function(from) {
+  .IntervalTreeCall(from, "asIRanges")
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -4,7 +4,7 @@ setClass("Ranges", contains = "VIRTUAL")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "isEmpty" generic.
-### TODO: default implementation using a 'size' generic
+### TODO: default implementation using width()
 
 setGeneric("isEmpty", function(x) standardGeneric("isEmpty"))
 
@@ -25,3 +25,5 @@ setGeneric("gaps", signature="x",
            function(x, start=NA, end=NA)
            standardGeneric("gaps")
            )
+
+### More generics should be moved here

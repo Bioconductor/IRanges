@@ -4,7 +4,7 @@
 
 ## Accepts any type of Ranges instance as an element
 
-setClass("RangesList", prototype = prototype(elementClass = "RangesORXRanges"),
+setClass("RangesList", prototype = prototype(elementClass = "Ranges"),
          contains = "TypedList")
 
 setClass("IRangesList", prototype = prototype(elementClass = "IRanges"),

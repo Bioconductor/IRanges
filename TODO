@@ -16,6 +16,7 @@ Long term TODO list
   - "reduce" should take a window argument
   - "inverse.rle", could be logical vector, TRUE in range else FALSE
   - "sort" sorts by start
+  - extend to multiple dimensions?
 
 - TypedList:
   - dim, dim<-, dimnames, dimnames<- for multi-dimensional list (like 'by')
@@ -54,6 +55,4 @@ Long term TODO list
   - support subsetting XDataFrame/RangedData directly
 
 - Classes to add:
-  - RectRanges, container of two Ranges, one for each dimension
-  - PolyRanges, list of real-valued matrices, each holding one polygon?
   - ViewsList, extends RangesList but specific to Views

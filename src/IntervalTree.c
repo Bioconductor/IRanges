@@ -237,7 +237,7 @@ SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges) {
   return r_results;
 }
 
-SEXP IntegerIntervalTree_asRanges(SEXP r_tree) {
+SEXP IntegerIntervalTree_asIRanges(SEXP r_tree) {
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
   struct rbTreeNode *p = tree->root;
   int count = 0, height = 0;

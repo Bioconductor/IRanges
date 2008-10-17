@@ -70,7 +70,7 @@ setValidity2("RangedData", .valid.RangedData)
 RangedData <- function(ranges = IRanges(), ..., splitter = NULL,
                        annotation = NULL)
 {
-  if (!is(ranges, "RangesORXRanges"))
+  if (!is(ranges, "Ranges"))
     stop("'ranges' must be a Ranges or XRanges instance")
   if (((nargs() - !missing(splitter)) - !missing(annotation)) > 1) 
     values <- XDataFrame(...) ## at least one column specified
