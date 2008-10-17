@@ -7,7 +7,7 @@ importClassesFrom(Matrix, CsparseMatrix, nsparseMatrix, generalMatrix,
 importFrom(Matrix, colSums)
 
 exportClasses(
-    Ranges, XRanges, RangesORXRanges, IRanges, NormalIRanges,
+    Ranges, XRanges, IRanges, NormalIRanges,
     TypedList, RangesList, IRangesList, MaskCollection,
     SequencePtr, RawPtr, IntegerPtr, NumericPtr,
     Sequence, XSequence, XRaw, XInteger, XNumeric,

@@ -1,6 +1,3 @@
-library(IRanges)
-library(RUnit)
-
 test_IntervalTree_construction <- function() {
   query <- IRanges(c(1, 3, 9), c(5, 7, 10))
   subject <- IRanges(c(2, 10), c(2, 12))

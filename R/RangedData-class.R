@@ -224,16 +224,9 @@ setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
   rd <- rds[[1]]
   if (!all(sapply(rds, is, "RangedData")))
     stop("all arguments in '...' must be instances of RangedData")
-  rd@ranges <- TypedList.unlist(lapply(rds, ranges))
-  rd@values <- TypedList.unlist(lapply(rds, values))
-  ## ranges <- ranges(rd)
-##   for (rdi in rds[-1])
-##     ranges <- c(ranges, ranges(rdi))
-##   values <- values(rd)
-##   for (rdi in rds[-1])
-##     values <- c(values, values(rdi))
-##   rd@ranges <- ranges # do.call("c", lapply(rds, ranges))
-##   rd@values <- values # do.call("c", lapply(rds, values))
+  names(rds) <- NULL # critical for dispatch to work
+  rd@ranges <- do.call("c", lapply(rds, ranges))
+  rd@values <- do.call("c", lapply(rds, values))
   rd
 })
 

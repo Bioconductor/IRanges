@@ -234,7 +234,9 @@ TypedList.unlist <- function(tls, recursive = FALSE) {
 }
 
 ## NOTE: while the 'c' function does not have an 'x', the generic does
-## c() is a primitive, so 'x' can be missing; dispatch is by position
+## c() is a primitive, so 'x' can be missing; dispatch is by position,
+## although sometimes this does not work so well, so it's best to keep
+## names off the parameters whenever feasible.
 
 setMethod("c", "TypedList", function(x, ..., recursive = FALSE) {
   if (recursive)
