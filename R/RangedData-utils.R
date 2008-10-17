@@ -46,12 +46,14 @@ setMethod("eval", c("expressionORlanguage", "RangedData"),
             env <- new.env(parent = enclos)
             makeActiveBinding("ranges", function() {
               val <- unlist(ranges(envir))
+              rm(list="ranges", envir=env)
               assign("ranges", val, env) ## cache for further use
               val
             }, env)
             for (col in colnames(envir))
               makeActiveBinding(col, function() {
                 val <- envir[[col]]
+                rm(list=col, envir=env)
                 assign(col, val, env)
                 val
               }, env)
