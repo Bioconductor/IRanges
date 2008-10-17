@@ -93,7 +93,7 @@ setMethod("whichFirstNotNormal", "IRanges",
 ### An IRanges object is considered empty iff all its ranges are empty.
 ### 
 
-setMethod("isEmpty", "IRanges", function(x) all(width(x) == 0))
+setMethod("isEmpty", "Ranges", function(x) all(width(x) == 0))
 
 ### The "isEmpty" method for IRanges objects would work fine on
 ### NormalIRanges objects but it can be made faster.

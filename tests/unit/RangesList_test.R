@@ -8,6 +8,8 @@ test_RangesList_construction <- function() {
   checkTrue(validObject(named))
   checkIdentical(length(named), 2L)
   checkIdentical(start(named), start(c(range1, range2)))
+  checkIdentical(end(named), end(c(range1, range2)))
+  checkIdentical(width(named), width(c(range1, range2)))
   checkIdentical(names(named), c("one", "two"))
   checkIdentical(range1, named[[1]])
   unnamed <- RangesList(range1, range2)
@@ -37,6 +39,12 @@ test_RangesList_reduce <- function() {
   range2 <- IRanges(start=c(45,20,1), end=c(100,80,5))
   collection <- RangesList(one = range1, range2)
 
+  checkIdentical(reduce(collection),
+                 RangesList(asNormalIRanges(IRanges(c(1,20), c(8, 100)),
+                                            force=FALSE)))
+
+  collection <- RangesList(one = IntervalTree(range1),
+                           two = IntervalTree(range2))
   checkIdentical(reduce(collection),
                  RangesList(asNormalIRanges(IRanges(c(1,20), c(8, 100)),
                                             force=FALSE)))

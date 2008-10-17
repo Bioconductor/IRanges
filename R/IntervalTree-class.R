@@ -33,6 +33,10 @@ setAs("IntervalTree", "IRanges", function(from) {
   .IntervalTreeCall(from, "asIRanges")
 })
 
+setAs("IRanges", "IntervalTree", function(from) {
+  IntervalTree(from)
+})
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Low-level utilities
 ###

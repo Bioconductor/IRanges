@@ -15,9 +15,12 @@ setClass("IRangesList", prototype = prototype(elementClass = "IRanges"),
 ### Accessor methods.
 ###
 
-setMethod("start", "RangesList", function(x) start(unlist(x)))
-setMethod("end", "RangesList", function(x) end(unlist(x)))
-setMethod("width", "RangesList", function(x) width(unlist(x)))
+setMethod("start", "RangesList",
+          function(x) unlist(lapply(x, start), use.names = FALSE))
+setMethod("end", "RangesList",
+          function(x) unlist(lapply(x, end), use.names = FALSE))
+setMethod("width", "RangesList",
+          function(x) unlist(lapply(x, width), use.names = FALSE))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
@@ -64,8 +67,8 @@ setMethod("reduce", "RangesList",
             if (length(elements) == 0) {
               nir1 <- new("NormalIRanges")
             } else {
-              start1 <- unlist(lapply(elements, start))
-              width1 <- unlist(lapply(elements, width))
+              start1 <- start(x)
+              width1 <- width(x)
               ranges <- new2("IRanges", start=start1, width=width1, check=FALSE)
               nir1 <- asNormalIRanges(ranges, force=TRUE)
             }
@@ -80,8 +83,8 @@ setMethod("reduce", "RangesList",
 setMethod("gaps", "RangesList",
           function(x, start=NA, end=NA)
           {
+            names(x) <- NULL
             x@elements <- lapply(x, function(r) gaps(r, start=start, end=end))
-            x@NAMES <- NULL
             x
           }
           )
@@ -98,6 +101,7 @@ setMethod("as.data.frame", "RangesList",
               stop("'row.names'  must be NULL or a character vector")
             if (!missing(optional) || length(list(...)))
               warning("'optional' and arguments in '...' ignored")
+            x <- as(x, "IRangesList")
             as.data.frame(unlist(x), row.names = row.names)
           })
 
@@ -122,10 +126,11 @@ setMethod("show", "RangesList",
 setMethod("summary", "RangesList",
           function(object)
           {
-              if (all(unlist(lapply(object, is, "IRanges"))))
-                  .Call("summary_IRangesList", object, PACKAGE="IRanges")
-              else
-                  stop("all elements must be of class 'IRanges' ")
+            object <- as(object, "IRangesList")
+            if (all(unlist(lapply(object, is, "IRanges"))))
+              .Call("summary_IRangesList", object, PACKAGE="IRanges")
+            else
+              stop("all elements must be of class 'IRanges' ")
           })
 
 
@@ -137,4 +142,12 @@ setMethod("summary", "RangesList",
 setAs("IRangesList", "NormalIRanges",
       function(from) reduce(from)[[1]]
       )
+
+setAs("RangesList", "IRangesList",
+      function(from) {
+        ir <- lapply(from, as, "IRanges")
+        names(ir) <- NULL
+        from@elements <- ir
+        from
+      })
 
