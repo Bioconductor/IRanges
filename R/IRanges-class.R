@@ -42,24 +42,17 @@ setClass("NormalIRanges", contains="IRanges")
 
 setMethod("length", "IRanges", function(x) length(start(x)))
 
-### The substr() function uses 'start' and 'stop'.
-### The substring() function uses 'first' and 'last'.
-### We use 'start' and 'end'.
-### Note that the "start" and "end" generics are defined in the stats package.
 setMethod("start", "IRanges", function(x, ...) x@start)
 
-setGeneric("width", function(x) standardGeneric("width"))
-
 setMethod("width", "IRanges", function(x) x@width)
-
-### Note that when width(x)[i] is 0, then end(x)[i] is start(x)[i] - 1
-setMethod("end", "IRanges", function(x, ...) {start(x) + width(x) - 1L})
 
 setMethod("names", "IRanges", function(x) x@NAMES)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "isNormal" and "whichFirstNotNormal" generics and methods.
+###
+### NOTE: Should they be part of the Ranges API?
 ###
 
 setGeneric("isNormal", function(x) standardGeneric("isNormal"))
@@ -284,32 +277,10 @@ newNormalIRangesFromIRanges <- function(x, check=TRUE)
     new2("NormalIRanges", start=x@start, width=x@width, NAMES=x@NAMES, check=FALSE)
 }
 
-setMethod("as.matrix", "IRanges",
-    function(x, ...)
-        matrix(data=c(start(x), width(x)), ncol=2, dimnames=list(names(x), NULL))
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
 ###
-
-setMethod("as.data.frame", "IRanges",
-    function(x, row.names=NULL, optional=FALSE, ...)
-    {
-        if (!(is.null(row.names) || is.character(row.names)))
-            stop("'row.names'  must be NULL or a character vector")
-        ans <- data.frame(start=start(x),
-                          end=end(x),
-                          width=width(x),
-                          row.names=row.names,
-                          check.rows=TRUE,
-                          check.names=FALSE,
-                          stringsAsFactors=FALSE)
-        ans$names <- names(x)
-        ans
-    }
-)
 
 setMethod("show", "IRanges",
     function(object)
@@ -430,10 +401,6 @@ unsafe.update <- function(object, ...)
 ### replacement methods below need to be overridden for this new class.
 ###
 
-setGeneric("start<-", signature="x",
-    function(x, check=TRUE, value) standardGeneric("start<-")
-)
-
 setReplaceMethod("start", "IRanges",
     function(x, check=TRUE, value)
     {
@@ -444,10 +411,6 @@ setReplaceMethod("start", "IRanges",
     }
 )
 
-setGeneric("width<-", signature="x",
-    function(x, check=TRUE, value) standardGeneric("width<-")
-)
-
 setReplaceMethod("width", "IRanges",
     function(x, check=TRUE, value)
     {
@@ -456,10 +419,6 @@ setReplaceMethod("width", "IRanges",
             stopIfProblems(.valid.IRanges.width(x))
         x
     }
-)
-
-setGeneric("end<-", signature="x",
-    function(x, check=TRUE, value) standardGeneric("end<-")
 )
 
 setReplaceMethod("end", "IRanges",
@@ -558,59 +517,41 @@ setMethod("[", "IRanges",
     }
 )
 
-setReplaceMethod("[", "IRanges",
-    function(x, i, j,..., value)
-        stop("attempt to modify the value of a ", class(x), " instance")
-)
-
-setMethod("rep", "IRanges",
-    function(x, times)
-        x[rep.int(seq_len(length(x)), times)]
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "duplicated" method.
-###
-### TODO: current implementation is very inefficient and needs some C help!
-###
-
-setMethod("duplicated", "IRanges",
-    function(x, incomparables=FALSE, ...)
-    {
-        duplicated(data.frame(start=start(x),
-                              width=width(x),
-                              check.names=FALSE,
-                              stringsAsFactors=FALSE))
-    }
-)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Splitting and combining.
 ###
 
-setMethod("split", "IRanges", function(x, f, drop = FALSE, ...) {
-  do.call("RangesList", callNextMethod())
-})
+setMethod("split", "IRanges",
+    function(x, f, drop = FALSE, ...)
+    {
+        do.call("RangesList", callNextMethod())
+    }
+)
 
-setMethod("c", "IRanges", function(x, ..., recursive = FALSE) {
-  if (recursive)
-    stop("'recursive' mode not supported")
-  if (!all(sapply(list(...), is, "IRanges")))
-    stop("all arguments in '...' must be instances of IRanges")
-  if (!missing(x))
-    args <- list(x, ...)
-  else args <- list(...)
-  IRanges(unlist(lapply(args, start), use.names=FALSE),
-          unlist(lapply(args, end), use.names=FALSE))
-})
+setMethod("c", "IRanges",
+    function(x, ..., recursive = FALSE)
+    {
+        if (recursive)
+            stop("'recursive' mode not supported")
+        if (!all(sapply(list(...), is, "IRanges")))
+            stop("all arguments in '...' must be instances of IRanges")
+        if (!missing(x))
+            args <- list(x, ...)
+        else
+            args <- list(...)
+        IRanges(unlist(lapply(args, start), use.names=FALSE),
+                unlist(lapply(args, end), use.names=FALSE))
+    }
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Deprecated generics and methods.
+### Old stuff (Defunct or Deprecated).
 ###
 
 setGeneric("first", function(x) standardGeneric("first"))
-setMethod("first", "IRanges", function(x) {.Deprecated("start"); start(x)})
+setMethod("first", "IRanges", function(x) {.Defunct("start"); start(x)})
 setGeneric("last", function(x) standardGeneric("last"))
-setMethod("last", "IRanges", function(x) {.Deprecated("end"); end(x)})
+setMethod("last", "IRanges", function(x) {.Defunct("end"); end(x)})
 

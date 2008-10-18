@@ -26,11 +26,6 @@ setMethod("overlap", c("IRanges", "IRanges"),
             overlap(IntervalTree(object), query, multiple)
           })
 
-setMethod("overlap", c("IRanges", "missing"),
-          function(object, query, multiple = TRUE) {
-            overlap(object, object, multiple)
-          })
-
 ## not for exporting, just a debugging utility
 IntervalTreeDump <- function(object) {
   .IntervalTreeCall(object, "dump")

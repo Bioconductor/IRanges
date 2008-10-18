@@ -66,14 +66,10 @@ whichAsIRanges <- function(x)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "shift" generic and methods.
+### The "shift"  method.
 ###
 ### Shifting preserves normality.
 ###
-
-setGeneric("shift", signature="x",
-    function(x, shift, use.names=TRUE) standardGeneric("shift")
-)
 
 setMethod("shift", "IRanges",
     function(x, shift, use.names=TRUE)
@@ -91,16 +87,11 @@ setMethod("shift", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "restrict" generic and methods.
+### The "restrict" method.
 ###
 ### Note that when used with 'keep.all.ranges=FALSE', restrict() preserves
 ### normality.
 ###
-
-setGeneric("restrict", signature="x",
-    function(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
-        standardGeneric("restrict")
-)
 
 setMethod("restrict", "IRanges",
     function(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
@@ -153,15 +144,10 @@ setMethod("restrict", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "narrow" generic and methods.
+### The "narrow" methods.
 ###
 ### Note that in general, narrow() does NOT preserve normality.
 ###
-
-setGeneric("narrow", signature="x",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-        standardGeneric("narrow")
-)
 
 setMethod("narrow", "IRanges",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
@@ -251,37 +237,6 @@ setMethod("gaps", "IRanges",
         unsafe.update(x, start=ans_start, width=ans_width, names=NULL)
     }
 )
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Binary set operations (union, intersect, setdiff, ...)
-###
-
-setMethod("union", c("IRanges", "IRanges"), function(x, y) {
-  reduce(c(x, y))
-})
-
-setMethod("intersect", c("IRanges", "IRanges"),
-          function(x, y)
-          {
-            start <- min(c(start(x), start(y)))
-            end <- max(c(end(x), end(y)))
-            setdiff(x, gaps(y, start, end))
-          })
-
-setMethod("setdiff", c("IRanges", "IRanges"),
-          function(x, y)
-          {
-            start <- min(c(start(x), start(y)))
-            end <- max(c(end(x), end(y)))
-            gaps(union(gaps(x, start, end), y), start, end)
-          })
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Overlap tools
-###
-
-## find objects in the index that overlap those in a query set
-setGeneric("overlap", function(object, query, ...) standardGeneric("overlap"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

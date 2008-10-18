@@ -48,28 +48,30 @@ export(
     XRleInteger,
     newViews, successiveViews,
 
-    ## Generic functions:
+    ## Generic functions in the Ranges API:
     width,
-    isNormal,
-    whichFirstNotNormal,
-    isEmpty,
     "start<-",
     "width<-",
     "end<-",
+    isEmpty,
     shift,
     restrict,
     narrow,
     reduce,
+    gaps,
+    overlap,
+
+    ## Other generic functions:
+    isNormal,
+    whichFirstNotNormal,
     strand,
     genome,
-    gaps,
     IntervalTree,
     reverse,
     coverage,
     nir_list,
     active, "active<-",
     maskedwidth, maskedratio,
-    overlap,
     ranges,
     subseq,
     subject, Views, subviews, trim,
@@ -87,7 +89,7 @@ export(
     elements, elementClass,
     matchMatrix,
     
-    ## Deprecated functions:
+    ## Old stuff (Defunct or Deprecated):
     first, last,
     intToRanges, intToAdjacentRanges, toNormalIRanges,
     views
@@ -129,12 +131,12 @@ exportMethods(
     
     ## Methods for generics defined in this package:
     width,
-    isNormal,
-    whichFirstNotNormal,
-    isEmpty,
     "start<-",
     "width<-",
     "end<-",
+    isEmpty,
+    isNormal,
+    whichFirstNotNormal,
     shift,
     restrict,
     narrow,
@@ -150,6 +152,6 @@ exportMethods(
     subject, Views, subviews, trim,
     viewMins, viewMaxs, viewSums,
 
-    ## Deprecated methods:
+    ## Old stuff (Defunct or Deprecated):
     first, last
 )

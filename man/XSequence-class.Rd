@@ -10,7 +10,7 @@
 \alias{subseq}
 \alias{subseq,XSequence-method}
 \alias{subseq,vector-method}
-\alias{[<-,XSequence-method}
+\alias{[<-,XSequence,ANY,ANY,ANY-method}
 
 % XRaw class, functions and methods:
 \alias{class:XRaw}
@@ -23,7 +23,7 @@
 \alias{XInteger}
 
 \alias{as.integer,XInteger-method}
-\alias{[,XInteger-method}
+\alias{[,XInteger,ANY,ANY,ANY-method}
 \alias{show,XInteger-method}
 \alias{==,XInteger,XInteger-method}
 \alias{!=,XInteger,XInteger-method}

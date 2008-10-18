@@ -14,7 +14,7 @@
 \alias{start,IRanges-method}
 \alias{width}
 \alias{width,IRanges-method}
-\alias{end,IRanges-method}
+\alias{end,Ranges-method}
 \alias{names,IRanges-method}
 
 \alias{isNormal}
@@ -22,25 +22,25 @@
 \alias{whichFirstNotNormal}
 \alias{whichFirstNotNormal,IRanges-method}
 \alias{isEmpty}
-\alias{isEmpty,IRanges-method}
+\alias{isEmpty,Ranges-method}
 \alias{isEmpty,NormalIRanges-method}
 \alias{max,NormalIRanges-method}
 \alias{min,NormalIRanges-method}
 
 % Coercion:
-\alias{as.matrix,IRanges-method}
+\alias{as.matrix,Ranges-method}
 
 % "show" method:
-\alias{as.data.frame,IRanges-method}
+\alias{as.data.frame,Ranges-method}
 \alias{show,IRanges-method}
 
 % Subsetting:
-\alias{[,IRanges-method}
-\alias{[<-,IRanges-method}
-\alias{rep,IRanges-method}
+\alias{[,IRanges,ANY,ANY,ANY-method}
+\alias{[<-,Ranges,ANY,ANY,ANY-method}
+\alias{rep,Ranges-method}
 
 % "duplicated" method:
-\alias{duplicated,IRanges-method}
+\alias{duplicated,Ranges-method}
 
 % Replacement methods:
 \alias{start<-}
