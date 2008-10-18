@@ -13,6 +13,7 @@ setClass("XRanges", contains = "Ranges")
 ###
 
 setMethod("start", "XRanges", function(x) start(as(x, "IRanges")))
+setMethod("end", "XRanges", function(x) end(as(x, "IRanges")))
 setMethod("width", "XRanges", function(x) width(as(x, "IRanges")))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
