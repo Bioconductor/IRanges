@@ -249,7 +249,7 @@ DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_from_i1i2_to_complex,
  * Stubs for callables defined in SEXP_utils.c
  */
 
-DEFINE_CCALLABLE_STUB(const char *, get_class,
+DEFINE_CCALLABLE_STUB(const char *, get_classname,
 	(SEXP x),
 	(     x)
 );
@@ -289,13 +289,13 @@ DEFINE_CCALLABLE_STUB(void, copy_IRanges_slots,
 );
 
 DEFINE_CCALLABLE_STUB(SEXP, new_IRanges,
-	(const char *class, SEXP start, SEXP width, SEXP names),
-	(            class,      start,      width,      names)
+	(const char *classname, SEXP start, SEXP width, SEXP names),
+	(            classname,      start,      width,      names)
 );
 
 DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,
-	(const char *class, int length),
-	(            class,     length)
+	(const char *classname, int length),
+	(            classname,     length)
 );
 
 
@@ -304,8 +304,8 @@ DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,
  */
 
 DEFINE_CCALLABLE_STUB(SEXP, new_SequencePtr,
-	(const char *class, SEXP tag),
-	(            class,      tag)
+	(const char *classname, SEXP tag),
+	(            classname,      tag)
 );
 
 DEFINE_CCALLABLE_STUB(SEXP, get_SequencePtr_tag,

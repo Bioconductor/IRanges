@@ -90,11 +90,11 @@ void _copy_IRanges_slots(SEXP x, SEXP x0)
  * Its arguments are NOT duplicated so it would be a disaster if they were
  * coming from the user space.
  */
-SEXP _new_IRanges(const char *class, SEXP start, SEXP width, SEXP names)
+SEXP _new_IRanges(const char *classname, SEXP start, SEXP width, SEXP names)
 {
 	SEXP class_def, ans;
 
-	class_def = MAKE_CLASS(class);
+	class_def = MAKE_CLASS(classname);
 	PROTECT(ans = NEW_OBJECT(class_def));
 	set_IRanges_slots(ans, start, width, names);
 	UNPROTECT(1);
@@ -105,13 +105,13 @@ SEXP _new_IRanges(const char *class, SEXP start, SEXP width, SEXP names)
  * Allocation WITHOUT initialization.
  * The 'start' and 'width' slots are not initialized (they contain junk).
  */
-SEXP _alloc_IRanges(const char *class, int length)
+SEXP _alloc_IRanges(const char *classname, int length)
 {
         SEXP start, width, ans;
 
         PROTECT(start = NEW_INTEGER(length));
         PROTECT(width = NEW_INTEGER(length));
-        PROTECT(ans = _new_IRanges(class, start, width, R_NilValue));
+        PROTECT(ans = _new_IRanges(classname, start, width, R_NilValue));
         UNPROTECT(3);
         return ans;
 }

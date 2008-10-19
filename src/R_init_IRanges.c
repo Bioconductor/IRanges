@@ -185,7 +185,7 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_IRanges_memcpy_from_i1i2_to_complex);
 
 /* SEXP_utils.c */
-	REGISTER_CCALLABLE(_get_class);
+	REGISTER_CCALLABLE(_get_classname);
 
 /* IRanges_class.c */
 	REGISTER_CCALLABLE(_get_IRanges_start);

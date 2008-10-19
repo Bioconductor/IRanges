@@ -58,31 +58,31 @@ SEXP ExternalPtr_new()
  * coming from the user space.
  */
 
-/* class can be "RawPtr", "IntegerPtr" or "NumericPtr" */
-SEXP _new_SequencePtr(const char *class, SEXP tag)
+/* 'classname' can be "RawPtr", "IntegerPtr" or "NumericPtr" */
+SEXP _new_SequencePtr(const char *classname, SEXP tag)
 {
-        SEXP class_def, ans;
+	SEXP class_def, ans;
 
-	class_def = MAKE_CLASS(class);
-        PROTECT(ans = NEW_OBJECT(class_def));
-        SET_SLOT(ans, mkChar("xp"), R_MakeExternalPtr(NULL, tag, R_NilValue));
-        UNPROTECT(1);
-        return ans;
+	class_def = MAKE_CLASS(classname);
+	PROTECT(ans = NEW_OBJECT(class_def));
+	SET_SLOT(ans, mkChar("xp"), R_MakeExternalPtr(NULL, tag, R_NilValue));
+	UNPROTECT(1);
+	return ans;
 }
 
 SEXP _get_SequencePtr_tag(SEXP x)
 {
-        return R_ExternalPtrTag(GET_SLOT(x, install("xp")));
+	return R_ExternalPtrTag(GET_SLOT(x, install("xp")));
 }
 
 int _get_SequencePtr_length(SEXP x)
 {
-        return LENGTH(_get_SequencePtr_tag(x));
+	return LENGTH(_get_SequencePtr_tag(x));
 }
 
 
 SEXP SequencePtr_length(SEXP x)
 {
-        return ScalarInteger(_get_SequencePtr_length(x));
+	return ScalarInteger(_get_SequencePtr_length(x));
 }
 

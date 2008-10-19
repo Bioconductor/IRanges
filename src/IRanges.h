@@ -292,7 +292,7 @@ void _IRanges_memcpy_from_i1i2_to_complex(
 
 /* SEXP_utils.c */
 
-const char *_get_class(SEXP x);
+const char *_get_classname(SEXP x);
 
 SEXP address_asSTRSXP(SEXP s);
 
@@ -328,14 +328,14 @@ void _copy_IRanges_slots(
 );
 
 SEXP _new_IRanges(
-	const char *class,
+	const char *classname,
 	SEXP start,
 	SEXP width,
 	SEXP names
 );
 
 SEXP _alloc_IRanges(
-	const char *class,
+	const char *classname,
 	int length
 );
 
@@ -377,7 +377,7 @@ SEXP ExternalPtr_show(SEXP xp);
 
 SEXP ExternalPtr_new();
 
-SEXP _new_SequencePtr(const char *class, SEXP tag);
+SEXP _new_SequencePtr(const char *classname, SEXP tag);
 
 SEXP _get_SequencePtr_tag(SEXP x);
 
