@@ -33,3 +33,11 @@ setMethod("reduce", "XRanges",
             g <- reduce(ir, with.inframe.attrib)
             as(g, class(x))
           })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Show.
+###
+
+setMethod("show", "XRanges", function(object) {
+  show(as(object, "IRanges"))
+})
