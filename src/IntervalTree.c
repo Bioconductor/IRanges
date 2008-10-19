@@ -88,9 +88,11 @@ SEXP IntegerIntervalTree_new(SEXP r_ranges) {
   
   
   for (i = 0; i < nranges; i++) {
-    _IntegerIntervalTree_add(tree, INTEGER(start)[i],
-                             INTEGER(start)[i] + INTEGER(width)[i] - 1, i+1);
+    if (INTEGER(width)[i] > 0) /* only add non-empty ranges */
+      _IntegerIntervalTree_add(tree, INTEGER(start)[i],
+                               INTEGER(start)[i] + INTEGER(width)[i] - 1, i+1);
   }
+  tree->n = nranges; /* kind of a hack - includes empty ranges */
   
   _IntegerIntervalTree_calc_max_end(tree);
   r_tree = R_MakeExternalPtr(tree, R_NilValue, R_NilValue);
@@ -99,109 +101,157 @@ SEXP IntegerIntervalTree_new(SEXP r_ranges) {
   return r_tree;
 }
 
-/* if results is NULL, returns index of first overlap, otherwise
-   adds every hit to results and returns hit count */
-/* Running time: O(min(n,k*lg(n))), for tree of size 'n' with 'k' intervals
-   overlapping the query */
-/* A O(lg(n) + k) algorithm exists, but it's a lot more complicated */
-/* and it may be that we achieve that anyway, in our use cases */
-int _IntegerIntervalTree_overlap(struct rbTree *tree, IntegerInterval *query,
-                                 struct slInt **results)
+/* if result_ints is NULL, returns indices of first overlaps, otherwise
+   adds every hit to result_ints and returns index into it for each query */
+/* running time: less than O(mk + mlogn) */
+SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
+                                  struct slRef **result_ints)
 {
-  struct rbTreeNode *p, *nextP;
-  int count = 0, /* stack height */ height = 0;
+  struct rbTreeNode *p = tree->root;
+  struct slRef *active = NULL, *active_head = NULL;
+  int /* stack height */ height = 0, /* query counter */ m;
+  Rboolean hit = FALSE; /* already hit current node? */
   
-  for (p = tree->root; p != NULL; p = nextP) {
-    IntegerInterval *interval = (IntegerInterval *)p->item;
-    /* is node on top of stack? */
-    Rboolean visited = height && p == tree->stack[height-1];
-    /* first, check for overlap */
-    /*Rprintf("subject: %d,%d,%d / query: %d,%d, stack: %d\n", interval->start,
-            interval->end, ((IntegerIntervalNode *)interval)->maxEnd,
-            query->start, query->end, height);*/
-    if (!visited &&
-        interval->start <= query->end && interval->end >= query->start) {
-      int result = ((IntegerIntervalNode *)interval)->index;
-      if (results) {
-        /*Rprintf("hit: %d\n", result);*/
-        struct slInt *resultNode = slIntNew(result);
-        slAddHead(results, resultNode);
-        count++;
-      } else return result;
-    }
-    /* otherwise keep searching */
+  int nranges = _get_IRanges_length(r_ranges);
+  SEXP result_inds = allocVector(INTSXP, nranges + (result_ints != NULL));
+  SEXP starts = _get_IRanges_start(r_ranges);
+  SEXP widths = _get_IRanges_width(r_ranges);
 
-    /* go left if node not yet visited and max end satisfied */
-    if(p->left && !visited && 
-       ((IntegerIntervalNode *)p->left->item)->maxEnd >= query->start) {
-      if (results) /* if tracking multiple results, add to stack */
+  if (nranges)
+    INTEGER(result_inds)[0] = 0;
+  
+  for (m = 0; m < nranges; m++) {
+    int start = INTEGER(starts)[m];
+    int end = INTEGER(widths)[m] + start - 1;
+    if (end < start) { /* empty query range */
+      if (result_inds)
+        INTEGER(result_inds)[m+1] = INTEGER(result_inds)[m];
+      else INTEGER(result_inds)[m] = NA_INTEGER;
+      continue;
+    }
+    int count = 0;
+    /* add hits from previous query, if still valid */
+    /* this trick lets us avoid restarting the search for every query */
+    if (result_ints) { 
+      struct slRef *prev = NULL;
+      for (struct slRef *a = active_head; a != NULL;) {
+        IntegerInterval *interval = a->val;
+        if (interval->end < start) { /* never see this again */
+          /*Rprintf("goodbye: %d\n", ((IntegerIntervalNode*)interval)->index);*/
+          struct slRef *next = a->next;
+          if (prev)
+            prev->next = next;
+          else active_head = next;
+          freeMem(a);
+          a = next;
+        } else {
+          if (interval->start > end) /* no more hits here */
+            break;
+          struct slRef *resultNode = slRefNew(interval);
+          /*Rprintf("p hit: %d\n", ((IntegerIntervalNode*)interval)->index);*/
+          slAddHead(result_ints, resultNode); /* owns Node */
+          count++;
+          prev = a;
+          a = a->next;
+        }
+      }
+      active = prev; /* active is the tail of the list (when it matters) */
+    }
+    while(1) {
+      IntegerInterval *interval = (IntegerInterval *)p->item;
+      /* is node on top of stack? */
+      Rboolean visited = height && p == tree->stack[height-1];
+      /* have to retry nodes on stack after query switch */
+      /*Rprintf("subject: %d,%d,%d / query: %d,%d, stack: %d\n",
+              interval->start, interval->end,
+              ((IntegerIntervalNode *)interval)->maxEnd, start, end, height);*/
+      
+      /* in-order traversal of tree */
+      
+      /* go left if node not yet visited and max end satisfied */
+      if(p->left && !visited && 
+         ((IntegerIntervalNode *)p->left->item)->maxEnd >= start) {
         tree->stack[height++] = p;
-      nextP = p->left; 
-    } else {
-      if (visited) /* pop already visited node */ 
-        height--; 
-      /* go right if  sensible */
-      if (p->right && interval->start < query->end &&
-          ((IntegerIntervalNode *)p->right->item)->maxEnd >= query->start)
-        nextP = p->right; 
-      else if (height) /* return to ancestor if possible */
-        nextP = tree->stack[height-1];
-      else break;
+        p = p->left;
+        /*Rprintf("left\n");*/
+      } else {
+        /* consider current node if not already checked */
+        if (interval->start <= end && interval->end >= start) {
+          /* Rprintf("hit: %d\n", ((IntegerIntervalNode *)interval)->index); */
+          if (result_ints) {
+            if (!hit) {
+              struct slRef *resultNode = slRefNew(interval);
+              slAddHead(result_ints, resultNode);
+              resultNode = slRefNew(interval);
+              if (active == NULL)
+                active_head = resultNode;
+              else active->next = resultNode;
+              active = resultNode;
+              count++;
+            }
+          } else {
+            int result = ((IntegerIntervalNode *)interval)->index;
+            INTEGER(result_inds)[m] = result;
+            break;
+          }
+          hit = TRUE;
+        }
+        if (visited) { /* pop already visited node */ 
+          height--;
+          /*if (dirty) *//* retried this one */
+          /*  dirty_level--;*/
+        }
+        
+        /* go right if sensible */
+        if (p->right && interval->start <= end &&
+            ((IntegerIntervalNode *)p->right->item)->maxEnd >= start) {
+          /* Rprintf("right\n"); */
+          p = p->right;
+          hit = FALSE;
+        }
+        else if (interval->start > end || !height) { /* no more hits */
+          if (visited)
+            height++; /* repush -- don't go left again */
+          if (result_ints)
+            INTEGER(result_inds)[m+1] = INTEGER(result_inds)[m] + count;
+          else INTEGER(result_inds)[m] = NA_INTEGER;
+          break;
+        } else {
+          p = tree->stack[height-1]; /* return to ancestor */
+          hit = FALSE;
+          /* Rprintf("up\n"); */
+        }
+      }
     }
   }
   
-  return count;
+  return result_inds;
 }
 
 SEXP IntegerIntervalTree_overlap(SEXP r_tree, SEXP r_ranges) {
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
-  int i, nranges = _get_IRanges_length(r_ranges);
-  SEXP r_results = allocVector(INTSXP, nranges);
-  
-  SEXP start = _get_IRanges_start(r_ranges);
-  SEXP width = _get_IRanges_width(r_ranges);
-  
-  for (i = 0; i < LENGTH(r_results); i++) {
-    IntegerInterval query;
-    int result;
-    query.start = INTEGER(start)[i];
-    query.end = INTEGER(start)[i] + INTEGER(width)[i] - 1;
-    result = _IntegerIntervalTree_overlap(tree, &query, NULL);
-    if (result == 0)
-      result = NA_INTEGER;
-    INTEGER(r_results)[i] = result;
-  }
-  return r_results;
+  return _IntegerIntervalTree_overlap(tree, r_ranges, NULL);
 }
 
 SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges) {
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
-  struct slInt *results = NULL, *result;
+  struct slRef *results = NULL, *result;
   SEXP r_query_start, r_results, r_dims, r_matrix;
-  int i, next_start = 0, nranges = _get_IRanges_length(r_ranges);
-
-  SEXP start = _get_IRanges_start(r_ranges);
-  SEXP width = _get_IRanges_width(r_ranges);
-
-  PROTECT(r_query_start = allocVector(INTSXP, nranges + 1));
-  for (i = 0; i < nranges; i++) {
-    IntegerInterval query;
-    INTEGER(r_query_start)[i] = next_start;
-    query.start = INTEGER(start)[i];
-    query.end = INTEGER(start)[i] + INTEGER(width)[i] - 1;
-    next_start += _IntegerIntervalTree_overlap(tree, &query, &results);
-  }
-  INTEGER(r_query_start)[i] = next_start;
+  int i, nhits, nranges = _get_IRanges_length(r_ranges);
+  
+  r_query_start = _IntegerIntervalTree_overlap(tree, r_ranges, &results);
+  PROTECT(r_query_start);
+  nhits = INTEGER(r_query_start)[nranges];
   slReverse(&results);
   
-  if ((next_start+nranges+1) < ((double)tree->n*nranges)) {
+  if ((nhits+nranges+1) < ((double)tree->n*nranges)) {
     SEXP r_subject;
     PROTECT(r_matrix = NEW_OBJECT(MAKE_CLASS("ngCMatrix")));
     SET_SLOT(r_matrix, install("p"), r_query_start);
-    r_subject = allocVector(INTSXP, next_start);
+    r_subject = allocVector(INTSXP, nhits);
     SET_SLOT(r_matrix, install("i"), r_subject);
     for (result = results, i = 0; result != NULL; result = result->next, i++) {
-      INTEGER(r_subject)[i] = result->val-1;
+      INTEGER(r_subject)[i] = ((IntegerIntervalNode *)result->val)->index-1;
     }
   } else {
     SEXP r_elements;
@@ -215,7 +265,8 @@ SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges) {
     for (i = 0; i < nranges; i++) {
       int offset = i * tree->n;
       while(j < INTEGER(r_query_start)[i+1]) {
-        LOGICAL(r_elements)[offset + result->val-1] = TRUE;
+        int index = ((IntegerIntervalNode *)result->val)->index;
+        LOGICAL(r_elements)[offset + index - 1] = TRUE;
         result = result->next;
         j++;
       }
