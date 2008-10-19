@@ -146,10 +146,12 @@ setMethod("setdiff", c("Ranges", "Ranges"),
 
 ## Find objects in the index that overlap those in a query set
 setGeneric("overlap", signature=c("object", "query"),
-    function(object, query, multiple = TRUE, ...) standardGeneric("overlap")
+    function(object, query, maxgap = 0, multiple = TRUE, ...)
+           standardGeneric("overlap")
 )
 
 setMethod("overlap", c("Ranges", "missing"),
-    function(object, query, multiple = TRUE) overlap(object, object, multiple)
+    function(object, query, maxgap = 0, multiple = TRUE)
+          overlap(object, object, maxgap, multiple)
 )
 
