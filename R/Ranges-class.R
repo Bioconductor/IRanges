@@ -87,6 +87,14 @@ setMethod("duplicated", "Ranges",
     }
 )
 
+setMethod("show", "Ranges",
+    function(object)
+    {
+        cat(class(object), " object:\n", sep="")
+        show(as.data.frame(object))
+    }
+)
+
 setReplaceMethod("[", "Ranges",
     function(x, i, j,..., value)
         stop("attempt to modify the value of a ", class(x), " instance")

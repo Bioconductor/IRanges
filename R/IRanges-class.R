@@ -279,19 +279,6 @@ newNormalIRangesFromIRanges <- function(x, check=TRUE)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "show" method.
-###
-
-setMethod("show", "IRanges",
-    function(object)
-    {
-        cat(class(object), " object:\n", sep="")
-        show(as.data.frame(object))
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Non-exported (and unsafe) replacement functions for IRanges objects.
 ###
 ### IMPORTANT: They do NOT check their arguments ('x' and 'value'). In

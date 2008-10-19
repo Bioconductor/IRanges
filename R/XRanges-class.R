@@ -34,10 +34,3 @@ setMethod("reduce", "XRanges",
             as(g, class(x))
           })
 
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Show.
-###
-
-setMethod("show", "XRanges", function(object) {
-  show(as(object, "IRanges"))
-})
