@@ -61,10 +61,10 @@ SEXP ExternalPtr_new()
 /* 'classname' can be "RawPtr", "IntegerPtr" or "NumericPtr" */
 SEXP _new_SequencePtr(const char *classname, SEXP tag)
 {
-	SEXP class_def, ans;
+	SEXP classdef, ans;
 
-	class_def = MAKE_CLASS(classname);
-	PROTECT(ans = NEW_OBJECT(class_def));
+	classdef = MAKE_CLASS(classname);
+	PROTECT(ans = NEW_OBJECT(classdef));
 	SET_SLOT(ans, mkChar("xp"), R_MakeExternalPtr(NULL, tag, R_NilValue));
 	UNPROTECT(1);
 	return ans;

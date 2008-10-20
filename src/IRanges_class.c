@@ -92,10 +92,10 @@ void _copy_IRanges_slots(SEXP x, SEXP x0)
  */
 SEXP _new_IRanges(const char *classname, SEXP start, SEXP width, SEXP names)
 {
-	SEXP class_def, ans;
+	SEXP classdef, ans;
 
-	class_def = MAKE_CLASS(classname);
-	PROTECT(ans = NEW_OBJECT(class_def));
+	classdef = MAKE_CLASS(classname);
+	PROTECT(ans = NEW_OBJECT(classdef));
 	set_IRanges_slots(ans, start, width, names);
 	UNPROTECT(1);
 	return ans;
