@@ -8,7 +8,9 @@
 
 \alias{subseq}
 \alias{subseq,SequenceORvector-method}
+\alias{rep,Sequence-method}
 \alias{[<-,Sequence,ANY,ANY,ANY-method}
+\alias{!=,Sequence,Sequence-method}
 
 % XSequence class, functions and methods:
 \alias{class:XSequence}
@@ -32,7 +34,6 @@
 \alias{[,XInteger,ANY,ANY,ANY-method}
 \alias{show,XInteger-method}
 \alias{==,XInteger,XInteger-method}
-\alias{!=,XInteger,XInteger-method}
 
 % XNumeric class, functions and methods:
 \alias{class:XNumeric}
@@ -81,7 +82,7 @@
       details).
 
       A note about performance: \code{subseq} does NOT copy the sequence data
-      of an XSequence object. Hence it's very efficient and is therefor the
+      of an XSequence object. Hence it's very efficient and is therefore the
       recommended way to extract a linear subsequence (i.e. a set of consecutive
       elements) from an XSequence object. For example, extracting a 100Mb
       subsequence from Human chromosome 1 (a 250Mb \link[Biostrings]{DNAString}
@@ -90,13 +91,16 @@
       length of the original sequence or on the length of the subsequence to
       extract).
     }
-
     \item{}{
       \code{x[i, drop=TRUE]}:
-      Return a new XSequence object made of the selected elements (subscript
+      Return a new Sequence object made of the selected elements (subscript
       \code{i} must be an NA-free numeric vector specifying the positions of
       the elements to select). The \code{drop} argument specifies whether or
       not to coerce the returned sequence to a standard vector.
+    }
+    \item{}{
+      \code{rep(x, times)}:
+      Return a new Sequence object made of the repeated elements.
     }
   }
 }
