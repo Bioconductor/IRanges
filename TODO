@@ -1,8 +1,14 @@
 Immediate TODO list
 ---------
 
+- Change the semantic of start<- and end<- for IRanges objects from the sliding
+  to the resizing semantic (i.e. they should not modify the other end anymore).
+
 - Rename "narrow" method for MaskCollection objects "subseq" (this reflects
   better what it really does).
+
+- Fix bug in IRanges() that should not be accepting negative widths (reported
+  by Martin).
 
 Long term TODO list
 -------------------
