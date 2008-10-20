@@ -16,43 +16,44 @@ Imports: methods, stats, Matrix
 License: Artistic-2.0
 Collate: validity-utils.R
 	utils.R
-	SequencePtr-class.R
-	RawPtr-class.R
-	IntegerPtr-class.R
-	NumericPtr-class.R
-	XSequence-class.R
-	XRaw-class.R
-	XInteger-class.R
-	XNumeric-class.R
-	XRle-class.R
-	XRleInteger-class.R
-	TypedList-class.R
-	XList-class.R
-	XDataFrame-class.R
-        XDataFrame-utils.R
-        SplitXDataFrame-class.R
 	Ranges-class.R
 	IRanges-class.R
 	solveUserSEW.R
 	IRanges-utils.R
-	RangesList-class.R
-	MaskCollection-class.R
-	read.Mask.R
-	reverse.R
-	coverage.R
+	XRanges-class.R
+	IntervalTree-class.R
+	IntervalTree-utils.R
+	RangesMatching-class.R
+	SequencePtr-class.R
+	RawPtr-class.R
+	IntegerPtr-class.R
+	NumericPtr-class.R
+	Sequence-class.R
 	Views-class.R
+	XSequence-class.R
+	XRaw-class.R
+	XInteger-class.R
 	XIntegerViews-class.R
 	XIntegerViews-utils.R
+	XNumeric-class.R
+	XRle-class.R
+	XRleInteger-class.R
 	XRleIntegerViews-class.R
 	XRleIntegerViews-utils.R
-        XRanges-class.R
-        RangedData-class.R
-        FilterRules-class.R
-        RDApplyParams-class.R
-        RangedData-utils.R
-        GenomicData-class.R
-        IntervalTree-class.R
-        IntervalTree-utils.R
-        RangesMatching-class.R
+	MaskCollection-class.R
+	read.Mask.R
+	TypedList-class.R
+	RangesList-class.R
+	XList-class.R
+	XDataFrame-class.R
+	XDataFrame-utils.R
+	SplitXDataFrame-class.R
+	RangedData-class.R
+	FilterRules-class.R
+	RDApplyParams-class.R
+	RangedData-utils.R
+	GenomicData-class.R
+	reverse.R
+	coverage.R
 	debug.R
 	zzz.R

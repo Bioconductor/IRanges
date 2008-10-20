@@ -43,9 +43,8 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
         stop("'from' must be a single integer")
     if (!is.integer(from))
         from <- as.integer(from)
-    ## diffinv() does not preserve the "integer" storage mode!
-    ans_start <- as.integer(diffinv(width))
-    ans_start <- from + ans_start[-length(ans_start)] + as.integer(diffinv(gapwidth))
+    ans_start <- cumsum(width[-length(width)] + gapwidth)
+    ans_start <- from + c(0L, ans_start)
     new2("IRanges", start=ans_start, width=width, check=FALSE)
 }
 

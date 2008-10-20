@@ -37,6 +37,15 @@ setMethod("reverse", "NormalIRanges",
     }
 )
 
+setMethod("reverse", "XRle",
+    function(x, times)
+    {
+        x@lengths <- reverse(x@lengths)
+        x@values <- reverse(x@values)
+        x
+    }
+)
+
 setMethod("reverse", "MaskCollection",
     function(x, ...)
     {
@@ -49,10 +58,3 @@ setMethod("reverse", "MaskCollection",
     }
 )
 
-setMethod("reverse", "XRle",
-        function(x, times) {
-            x@values <- reverse(x@values)
-            x@lengths <- reverse(x@lengths)
-            x
-        }
-)

@@ -125,7 +125,3 @@ setMethod("==", signature(e1="XInteger", e2="XInteger"),
     function(e1, e2) { e1@xdata == e2@xdata }
 )
 
-setMethod("!=", signature(e1="XInteger", e2="XInteger"),
-    function(e1, e2) { e1@xdata != e2@xdata }
-)
-

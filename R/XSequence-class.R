@@ -6,8 +6,6 @@
 ### "external sequence".
 ###
 
-setClass("Sequence", representation("VIRTUAL"))
-
 setClass("XSequence",
     contains="Sequence",
     representation(
@@ -24,12 +22,7 @@ setClass("XSequence",
 
 setMethod("length", "XSequence", function(x) x@length)
 
-### Extracts a linear subsequence...
-setGeneric("subseq", signature="x",
-    function(x, start=NA, end=NA, width=NA) standardGeneric("subseq")
-)
-
-### ... without copying the sequence data for an XSequence object!
+### Extracts a linear subsequence without copying the sequence data!
 setMethod("subseq", "XSequence",
     function(x, start=NA, end=NA, width=NA)
     {
@@ -38,24 +31,5 @@ setMethod("subseq", "XSequence",
         x@length <- width(solved_SEW)
         x
     }
-)
-
-setMethod("subseq", "vector",
-    function(x, start=NA, end=NA, width=NA)
-    {
-        solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
-        x[start(solved_SEW) + seq_len(width(solved_SEW)) - 1L]
-    }
-)
-
-### The only reason for defining the replacement version of the "[" operator
-### is to let the user know that he can't use it:
-###   x <- BString("AbnbIU")
-###   x[2] <- "Z" # provokes an error
-### If we don't define it, then the user can type the above and believe that
-### it actually did something but it didn't.
-setReplaceMethod("[", "XSequence",
-    function(x, i, j,..., value)
-        stop("attempt to modify the value of a ", class(x), " instance")
 )
 

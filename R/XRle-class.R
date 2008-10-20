@@ -10,8 +10,9 @@ setClass("XRle",
     contains="Sequence",
     representation(
         "VIRTUAL",
+        vectorLength="integer",
         lengths="XInteger",
-        vectorLength="integer"
+        values="Sequence"
     )
 )
 
@@ -29,19 +30,18 @@ setMethod("[", "XRle",
     }
 )
 
-setMethod("subseq", "XRle",
-    function(x, start=NA, end=NA, width=NA)
-    {
-        limits <- new2("IRanges", start=1L, width=length(x), check=FALSE)
-        limits <- narrow(limits, start=start, end=end, width=width)
-        x[start(limits):end(limits), drop = FALSE]
-    }
-)
-
+### TODO: Maybe consider defaulting to the "rep" method for Sequence objects.
 setMethod("rep", "XRle",
-    function(x, times) {
-        x@values <- rep(x@values, times)
+    function(x, times)
+    {
+        if (!isSingleNumber(times))
+            stop("'times' must be a single integer when 'x' is a ",
+                 class(x), " object")
+        if (!is.integer(times))
+            times <- as.integer(times)
+        x@vectorLength <- x@vectorLength * times
         x@lengths <- rep(x@lengths, times)
+        x@values <- rep(x@values, times)
         x
     }
 )
@@ -51,15 +51,21 @@ setMethod("rep", "XRle",
 ### Comparison.
 ###
 
-### FIXME: Compare the contents, not the addresses!
+### FIXME (maybe): Is an XRle object guaranteed to contain the most compact
+### representation of a sequence? Given the implementation of the "rep"
+### method above it seems that there is no such guarantee, that is, a valid
+### XRle object can contain 2 consecutive runs of the same value (i.e. 2
+### consecutive repeated values in its 'values' slot). If this is the case,
+### then the "==" method below would need to be fixed because it will return
+### FALSE even when 'e1' and 'e2' represent the same sequence but have
+### different internal RLE representations. For example it will return FALSE
+### if 'e1' contains a single run of length 10 with value 3 and 'e2' contains
+### 2 runs of length 5 with value 3.
 setMethod("==", signature(e1="XRle", e2="XRle"),
-        function(e1, e2) {
-            e1@values == e2@values && e1@lenghts == e2@lengths && length(e1) == length(e2)
-        }
+    function(e1, e2)
+    {
+        (length(e1) == length(e2)) &&
+          all(e1@lengths == e2@lengths) && all(e1@values == e2@values)
+    }
 )
 
-setMethod("!=", signature(e1="XInteger", e2="XInteger"),
-        function(e1, e2) {
-            e1@values != e2@values ||  e1@lengths != e2@lengths || length(e1) != length(e2)
-        }
-)

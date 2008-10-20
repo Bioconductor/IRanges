@@ -1,5 +1,14 @@
-\name{XSequence-class}
+\name{Sequence-class}
 \docType{class}
+
+% Sequence class, functions and methods:
+\alias{class:Sequence}
+\alias{Sequence-class}
+\alias{Sequence}
+
+\alias{subseq}
+\alias{subseq,SequenceORvector-method}
+\alias{[<-,Sequence,ANY,ANY,ANY-method}
 
 % XSequence class, functions and methods:
 \alias{class:XSequence}
@@ -7,10 +16,7 @@
 \alias{XSequence}
 
 \alias{length,XSequence-method}
-\alias{subseq}
 \alias{subseq,XSequence-method}
-\alias{subseq,vector-method}
-\alias{[<-,XSequence,ANY,ANY,ANY-method}
 
 % XRaw class, functions and methods:
 \alias{class:XRaw}
@@ -34,9 +40,12 @@
 \alias{XNumeric}
 
 
-\title{XSequence objects}
+\title{Sequence objects}
 
 \description{
+  The Sequence virtual class is a general container for storing
+  a sequence i.e. an ordered set of elements.
+
   The XSequence virtual class is a general container for storing
   an "external sequence".
   The following classes derive directly from the XSequence class.
@@ -50,13 +59,15 @@
   The XNumeric class is a container for storing an external sequence
   of numeric values (stored as double values at the C level).
 
+  Also the \link[Biostrings]{XString} class from the Biostrings package
+  
   The purpose of these containers is to provide a "pass by address"
   semantic and also to avoid the overhead of copying the sequence
   data when a linear subsequence needs to be extracted.
 }
 
 \section{Subsetting}{
-  In the code snippets below, \code{x} is an XSequence object.
+  In the code snippets below, \code{x} is a Sequence object.
 
   \describe{
     \item{}{
@@ -69,14 +80,15 @@
       (Start/End/Width) interface (see \code{?solveUserSEW} for the
       details).
 
-      A note about performance: \code{subseq} does NOT copy the sequence data,
-      hence it's very efficient and is the recommended way to extract a
-      linear subsequence (i.e. a set of consecutive elements) from an XSequence
-      object. For example, extracting a 100Mb subsequence from Human chromosome
-      1 (a 250Mb \link[Biostrings]{DNAString} object) with \code{subseq} is
-      (almost) instantaneous and has (almost) no memory footprint (the cost in
-      time and memory does not depend on the length of the original sequence or
-      on the length of the subsequence to extract).
+      A note about performance: \code{subseq} does NOT copy the sequence data
+      of an XSequence object. Hence it's very efficient and is therefor the
+      recommended way to extract a linear subsequence (i.e. a set of consecutive
+      elements) from an XSequence object. For example, extracting a 100Mb
+      subsequence from Human chromosome 1 (a 250Mb \link[Biostrings]{DNAString}
+      object) with \code{subseq} is (almost) instantaneous and has (almost) no
+      memory footprint (the cost in time and memory does not depend on the
+      length of the original sequence or on the length of the subsequence to
+      extract).
     }
 
     \item{}{

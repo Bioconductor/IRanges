@@ -13,6 +13,7 @@ setClass("XRleInteger",
     )
 )
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Initialization.
 ###
@@ -22,9 +23,9 @@ setMethod("initialize", "XRleInteger",
     {
         if (length(values) != length(lengths))
             stop("'values' and 'lengths' must have the same length")
-        .Object@values <- values
-        .Object@lengths <- lengths
         .Object@vectorLength <- sum(as.integer(lengths))
+        .Object@lengths <- lengths
+        .Object@values <- values
         .Object
     }
 )
@@ -41,7 +42,7 @@ XRleInteger <- function(x) {
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion
+### Arithmetic operations.
 ###
 
 setMethod("Arith", signature(e1 = "XRleInteger", e2 = "XRleInteger"),
