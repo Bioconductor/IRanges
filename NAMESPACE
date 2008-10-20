@@ -7,14 +7,15 @@ importClassesFrom(Matrix, CsparseMatrix, nsparseMatrix, generalMatrix,
 importFrom(Matrix, colSums)
 
 exportClasses(
-    Ranges, XRanges, IRanges, NormalIRanges,
-    TypedList, RangesList, IRangesList, MaskCollection,
+    Ranges, IRanges, NormalIRanges, XRanges, IntervalTree,
     SequencePtr, RawPtr, IntegerPtr, NumericPtr,
-    Sequence, XSequence, XRaw, XInteger, XNumeric,
-    XRle, XRleInteger,
-    Views, XIntegerViews, XRleIntegerViews, XList, XDataFrame, SplitXDataFrame,
-    RangedData, RangedDataList, FilterRules, RDApplyParams, GenomicData,
-    IntervalTree
+    Sequence, SequenceORvector, Views,
+    XSequence, XRaw, XInteger, XIntegerViews, XNumeric,
+    XRle, XRleInteger, XRleIntegerViews,
+    MaskCollection,
+    TypedList, RangesList, IRangesList,
+    XList, XDataFrame, SplitXDataFrame,
+    RangedData, RangedDataList, FilterRules, RDApplyParams, GenomicData
 )
 
 export(

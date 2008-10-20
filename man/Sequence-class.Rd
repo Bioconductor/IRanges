@@ -5,6 +5,9 @@
 \alias{class:Sequence}
 \alias{Sequence-class}
 \alias{Sequence}
+\alias{class:SequenceORvector}
+\alias{SequenceORvector-class}
+\alias{SequenceORvector}
 
 \alias{subseq}
 \alias{subseq,SequenceORvector-method}
