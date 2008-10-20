@@ -34,6 +34,7 @@
 \alias{XInteger}
 
 \alias{as.integer,XInteger-method}
+\alias{as.vector,XInteger,missing-method}
 \alias{[,XInteger,ANY,ANY,ANY-method}
 \alias{show,XInteger-method}
 \alias{==,XInteger,XInteger-method}
@@ -43,12 +44,42 @@
 \alias{XNumeric-class}
 \alias{XNumeric}
 
+\alias{as.numeric,XNumeric-method}
+\alias{as.vector,XNumeric,missing-method}
+\alias{[,XNumeric,ANY,ANY,ANY-method}
+\alias{show,XNumeric-method}
+\alias{==,XNumeric,XNumeric-method}
+
+% XRle class, functions and methods:
+\alias{class:XRle}
+\alias{XRle-class}
+\alias{XRle}
+
+\alias{length,XRle-method}
+\alias{rep,XRle-method}
+\alias{reverse,XRle-method}
+\alias{==,XRle,XRle-method}
+\alias{[,XRle,ANY,ANY,ANY-method}
+
+% XRleInteger class, function and methods:
+\alias{class:XRleInteger}
+\alias{XRleInteger-class}
+\alias{XRleInteger}
+
+\alias{Arith,integer,XRleInteger-method}
+\alias{Arith,XRleInteger,integer-method}
+\alias{Arith,XRleInteger,XRleInteger-method}
+\alias{as.integer,XRleInteger-method}
+\alias{as.vector,XRleInteger,missing-method}
+\alias{show,XRleInteger-method}
+
 
 \title{Sequence objects}
 
 \description{
   The Sequence virtual class is a general container for storing
-  a sequence i.e. an ordered set of elements.
+  a sequence i.e. an ordered set of elements. These containers
+  come in two types:  XSequence and XRle.
 
   The XSequence virtual class is a general container for storing
   an "external sequence".
@@ -65,6 +96,13 @@
 
   Also the \link[Biostrings]{XString} class from the Biostrings package
   
+  The XRle virtual class is a general container for storing
+  an "external sequence" that is stored in a run-time encoding format.
+  The following classes derive directly from the XRle class.
+
+  The XRle class is a container for storing an external run-time encoding
+  of integers (stored as char values at the C level).
+
   The purpose of these containers is to provide a "pass by address"
   semantic and also to avoid the overhead of copying the sequence
   data when a linear subsequence needs to be extracted.
