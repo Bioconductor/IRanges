@@ -32,7 +32,7 @@
 
 % "show" method:
 \alias{as.data.frame,Ranges-method}
-\alias{show,IRanges-method}
+\alias{show,Ranges-method}
 
 % Subsetting:
 \alias{[,IRanges,ANY,ANY,ANY-method}
