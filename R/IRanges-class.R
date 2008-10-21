@@ -514,7 +514,7 @@ setMethod("[", "IRanges",
 ### Splitting and combining.
 ###
 
-setMethod("split", "IRanges",
+setMethod("split", "Ranges",
     function(x, f, drop = FALSE, ...)
     {
         do.call("RangesList", callNextMethod())
