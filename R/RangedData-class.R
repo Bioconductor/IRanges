@@ -233,7 +233,7 @@ setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
 setMethod("split", "RangedData", function(x, f, drop = FALSE) {
   if (length(f) > nrow(x) || nrow(x) %% length(f) > 0)
     stop("nrow(x) is not a multiple of length(f)")
-  splitInd <- split(seq_len(nrow(x)), f)
+  splitInd <- split(seq_len(nrow(x)), f, drop)
   do.call("RangedDataList", lapply(splitInd, function(ind) x[ind,]))
 })
 

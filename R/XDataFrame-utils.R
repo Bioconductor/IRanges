@@ -7,7 +7,7 @@
 ###
 
 setMethod("split", "XDataFrame", function(x, f, drop = FALSE) {
-  splitInd <- split(seq_len(nrow(x)), f)
+  splitInd <- split(seq_len(nrow(x)), f, drop)
   do.call("SplitXDataFrame", lapply(splitInd, function(ind) x[ind,,drop=FALSE]))
 })
 

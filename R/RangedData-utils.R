@@ -15,7 +15,8 @@ setMethod("rdapply", "RDApplyParams", function(x) {
   simplify <- simplify(x)
   reducerFun <- reducerFun(x)
   reducerParams <- reducerParams(x)
-  enclos <- parent.frame()
+  ### FIXME: parent.frame() is useless, so the search will just hit .GlobalEnv
+  enclos <- parent.frame() 
   inds <- seq(length(rd))
   names(inds) <- names(rd)
   ##   if (length(excludePattern)) {

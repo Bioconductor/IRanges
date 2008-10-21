@@ -14,8 +14,9 @@ exportClasses(
     XRle, XRleInteger, XRleIntegerViews,
     MaskCollection,
     TypedList, RangesList, IRangesList,
-    XList, XDataFrame, SplitXDataFrame,
-    RangedData, RangedDataList, FilterRules, RDApplyParams, GenomicData
+    XDataFrame, SplitXDataFrame,
+    RangedData, RangedDataList, FilterRules, RDApplyParams, GenomicData,
+    RangesMatching
 )
 
 export(
