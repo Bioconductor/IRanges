@@ -3,8 +3,8 @@ test_RangedData_construction <- function() {
   filter <- c(1L, 0L, 1L)
   score <- c(10L, 2L, NA)
 
-  checkException(RangedData(c(1,2,3)))
-  checkException(RangedData(ranges, c(1,2,3,4,5)))
+  checkException(RangedData(c(1,2,3)), silent = TRUE)
+  checkException(RangedData(ranges, c(1,2,3,4,5)), silent = TRUE)
 
   rd <- RangedData()
   checkTrue(validObject(rd))
@@ -43,9 +43,9 @@ test_RangedData_construction <- function() {
   checkIdentical(rd[["score"]], score)
   checkIdentical(rd[1][["score"]], score[1:3])
 
-  checkException(RangedData(ranges, annotation = c("hg18", "mm9")))
-  checkException(RangedData(ranges, annotation = 1))
-  checkException(RangedData(both, splitter = chrom[1:3]))
+  checkException(RangedData(ranges, annotation = c("hg18", "mm9")), silent = TRUE)
+  checkException(RangedData(ranges, annotation = 1), silent = TRUE)
+  checkException(RangedData(both, splitter = chrom[1:3]), silent = TRUE)
 }
 
 test_RangedData_extraction <- function() {
@@ -54,13 +54,13 @@ test_RangedData_extraction <- function() {
   score <- c(10L, 2L, NA)
   rd <- RangedData(ranges, filter, score = score, splitter = c(1, 1, 2))
   
-  checkException(rd[[]])
-  checkException(rd[[1, 2]])
-  checkException(rd[[numeric()]])
-  checkException(rd[[NULL]])
-  checkException(rd[[c(1,2)]])
-  checkException(rd[[-1]])
-  checkException(rd[[5]])
+  checkException(rd[[]], silent = TRUE)
+  checkException(rd[[1, 2]], silent = TRUE)
+  checkException(rd[[numeric()]], silent = TRUE)
+  checkException(rd[[NULL]], silent = TRUE)
+  checkException(rd[[c(1,2)]], silent = TRUE)
+  checkException(rd[[-1]], silent = TRUE)
+  checkException(rd[[5]], silent = TRUE)
 
   checkIdentical(rd[["vals"]], NULL)
   checkIdentical(rd[[NA_integer_]], NULL)
@@ -80,15 +80,15 @@ test_RangedData_data_replace <- function() {
   filter <- filter[c(1, 3, 2)]
   score <- score[c(1, 3, 2)]
   
-  checkException(rd[[]] <- score)
-  checkException(rd[[1, 2]] <- score)
-  checkException(rd[[numeric()]] <- score)
-  checkException(rd[[NULL]] <- score)
-  checkException(rd[[c(1,2)]] <- score)
-  checkException(rd[[-1]] <- score)
-  checkException(rd[[5]] <- score)
-  checkException(rd[["score"]] <- numeric())
-  checkException(rd[["score"]] <- score[1:2])
+  checkException(rd[[]] <- score, silent = TRUE)
+  checkException(rd[[1, 2]] <- score, silent = TRUE)
+  checkException(rd[[numeric()]] <- score, silent = TRUE)
+  checkException(rd[[NULL]] <- score, silent = TRUE)
+  checkException(rd[[c(1,2)]] <- score, silent = TRUE)
+  checkException(rd[[-1]] <- score, silent = TRUE)
+  checkException(rd[[5]] <- score, silent = TRUE)
+  checkException(rd[["score"]] <- numeric(), silent = TRUE)
+  checkException(rd[["score"]] <- score[1:2], silent = TRUE)
   
   rd[["score"]] <- score
   checkTrue(validObject(rd))
@@ -116,13 +116,13 @@ test_RangedData_subset <- function() {
   filter <- filter[c(1, 3, 2)]
   score <- score[c(1, 3, 2)]
 
-  checkException(rd[list()])
-  checkException(rd[-18])
-  checkException(rd[10])
-  checkException(rd[c(NA, 2)])
-  checkException(rd["one"])
-  checkException(rd[c(TRUE, TRUE, TRUE, TRUE)])
-  checkException(rd[c(-1,2)])
+  checkException(rd[list()], silent = TRUE)
+  checkException(rd[-18], silent = TRUE)
+  checkException(rd[10], silent = TRUE)
+  checkException(rd[c(NA, 2)], silent = TRUE)
+  checkException(rd["one"], silent = TRUE)
+  checkException(rd[c(TRUE, TRUE, TRUE, TRUE)], silent = TRUE)
+  checkException(rd[c(-1,2)], silent = TRUE)
 
   erd <- new("RangedData")
   frd <- RangedData(ranges[c(1,3)], filter = filter[1:2], score = score[1:2])
@@ -144,12 +144,12 @@ test_RangedData_subset <- function() {
 
   ## now test matrix-style
   
-  checkException(rd[,100]) # out of bounds col
-  checkException(rd[1000,]) # out of bounds row
-  checkException(rd[1:3, drop=TRUE]) # drop ignored
-  checkException(rd[foo = "bar"]) # invalid argument
-  checkException(rd["Sion",]) # no subsetting by row name yet
-  checkException(rd[,"Fert"]) # bad column name
+  checkException(rd[,100], silent = TRUE) # out of bounds col
+  checkException(rd[1000,], silent = TRUE) # out of bounds row
+  checkException(rd[1:3, drop=TRUE], silent = TRUE) # drop ignored
+  checkException(rd[foo = "bar"], silent = TRUE) # invalid argument
+  checkException(rd["Sion",], silent = TRUE) # no subsetting by row name yet
+  checkException(rd[,"Fert"], silent = TRUE) # bad column name
 
   checkIdenticalRD(rd[,], rd) # identity
 
@@ -185,11 +185,11 @@ test_RangedData_combine <- function() {
 
   ## c()
   checkIdentical(c(rd[1], rd[2]), rd)
-  checkException(c(rd[1], ranges))
+  checkException(c(rd[1], ranges), silent = TRUE)
 
   ## split()
   rd2 <- RangedData(ranges, score)
   checkIdentical(as.data.frame(unlist(split(rd2, filter))),
                  as.data.frame(rd))
-  checkException(split(rd2, filter[1:2]))
+  checkException(split(rd2, filter[1:2]), silent = TRUE)
 }

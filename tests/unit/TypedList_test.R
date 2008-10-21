@@ -10,8 +10,7 @@ test_TypedList_replace_names <- function() {
   checkIdentical(names(collection), NULL)
   names(collection) <- "one"
   checkIdentical(names(collection), c("one", NA))
-  checkException(names(collection) <- c("one", "two", "three"))
-  checkException(names(collection) <- 4)
+  checkException(names(collection) <- c("one", "two", "three"), silent = TRUE)
 }
 
 test_TypedList_extraction <- function() {
@@ -19,13 +18,13 @@ test_TypedList_extraction <- function() {
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   collection <- RangesList(range1, range2)
   
-  checkException(collection[[]])
-  checkException(collection[[1, 2]])
-  checkException(collection[[numeric()]])
-  checkException(collection[[NULL]])
-  checkException(collection[[c(1,2)]])
-  checkException(collection[[-1]])
-  checkException(collection[[5]])
+  checkException(collection[[]], silent = TRUE)
+  checkException(collection[[1, 2]], silent = TRUE)
+  checkException(collection[[numeric()]], silent = TRUE)
+  checkException(collection[[NULL]], silent = TRUE)
+  checkException(collection[[c(1,2)]], silent = TRUE)
+  checkException(collection[[-1]], silent = TRUE)
+  checkException(collection[[5]], silent = TRUE)
   
   checkIdentical(collection[[NA_integer_]], NULL)
   checkIdentical(collection[[1]], range1)
@@ -39,15 +38,15 @@ test_TypedList_subset <- function() {
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   collection <- RangesList(one = range1, range2)
 
-  checkException(collection[1,2])
-  checkException(collection[list()])
-  checkException(collection[-3])
-  checkException(collection[5])
-  checkException(collection[c(NA, 2)])
-  checkException(collection[c(TRUE, TRUE, TRUE)])
-  checkException(collection[c(-1,2)])
+  checkException(collection[1,2], silent = TRUE)
+  checkException(collection[list()], silent = TRUE)
+  checkException(collection[-3], silent = TRUE)
+  checkException(collection[5], silent = TRUE)
+  checkException(collection[c(NA, 2)], silent = TRUE)
+  checkException(collection[c(TRUE, TRUE, TRUE)], silent = TRUE)
+  checkException(collection[c(-1,2)], silent = TRUE)
   unnamed <- RangesList(range1, range2)
-  checkException(unnamed["one"])
+  checkException(unnamed["one"], silent = TRUE)
 
   empty <- RangesList()
   names(empty) <- character(0)
@@ -74,8 +73,8 @@ test_TypedList_combine <- function() {
   col2 <- RangesList(two = range2, one = range1)
   col3 <- RangesList(range2)
 
-  checkException(append(col1, col2, c(1,2,3)))
-  checkException(append(col1, col2, col3))
+  checkException(append(col1, col2, c(1,2,3)), silent = TRUE)
+  checkException(append(col1, col2, col3), silent = TRUE)
 
   checkIdentical(append(col1, col2),
                  RangesList(one = range1, range2, two = range2,
@@ -94,8 +93,8 @@ test_TypedList_combine <- function() {
   checkIdentical(c(col1, col2, col3),
                  RangesList(one = range1, range2, two = range2, one = range1,
                             range2))
-  checkException(c(col1, range2))
-  checkException(c(col1, col2, recursive=TRUE))
+  checkException(c(col1, range2), silent = TRUE)
+  checkException(c(col1, col2, recursive=TRUE), silent = TRUE)
 }
 
 test_TypedList_apply <- function() {
@@ -103,6 +102,6 @@ test_TypedList_apply <- function() {
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   col1 <- RangesList(one = range1, range2)
 
-  checkIdentical(lapply(col1, start), list(start(range1), start(range2)))
-  checkException(lapply(col1, 2))
+  checkIdentical(lapply(col1, start), list(one=start(range1), start(range2)))
+  checkException(lapply(col1, 2), silent = TRUE)
 }

@@ -2,11 +2,11 @@ test_XDataFrame_construction <- function() {
   score <- c(1L, 3L, NA)
   counts <- c(10L, 2L, NA)
 
-  checkException(XDataFrame(1, score)) # different lengths (no recycling)
-  checkException(XDataFrame(new.env())) # cannot coerce environments to xdf
-  checkException(XDataFrame(score, row.names = c("a", NA, "b"))) # na in rn
-  checkException(XDataFrame(score, row.names = "a")) # invalid rn length
-  checkException(XDataFrame(score, row.names = c("a", "b", "a"))) # dups in rn
+  checkException(XDataFrame(1, score), silent = TRUE) # different lengths (no recycling, silent = TRUE)
+  checkException(XDataFrame(new.env()), silent = TRUE) # cannot coerce environments to xdf
+  checkException(XDataFrame(score, row.names = c("a", NA, "b")), silent = TRUE) # na in rn
+  checkException(XDataFrame(score, row.names = "a"), silent = TRUE) # invalid rn length
+  checkException(XDataFrame(score, row.names = c("a", "b", "a")), silent = TRUE) # dups in rn
   
   xdf <- XDataFrame() # no args
   checkTrue(validObject(xdf))
@@ -64,20 +64,20 @@ test_XDataFrame_subset <- function() {
   sw <- XDataFrame(swiss)
   rn <- rownames(swiss)
 
-  checkException(sw[list()]) # non-atomic
-  checkException(sw[NA]) # column indices cannot be NA
-  checkException(sw[100]) # out of bounds col
-  checkException(sw[,100])
-  checkException(sw[1000,]) # out of bounds row
+  checkException(sw[list()], silent = TRUE) # non-atomic
+  checkException(sw[NA], silent = TRUE) # column indices cannot be NA
+  checkException(sw[100], silent = TRUE) # out of bounds col
+  checkException(sw[,100], silent = TRUE)
+  checkException(sw[1000,], silent = TRUE) # out of bounds row
   options(warn=2)
-  checkException(sw[1:3, drop=TRUE]) # drop ignored
-  checkException(sw[drop=TRUE])
-  checkException(sw[foo = "bar"]) # invalid argument
+  checkException(sw[1:3, drop=TRUE], silent = TRUE) # drop ignored
+  checkException(sw[drop=TRUE], silent = TRUE)
+  checkException(sw[foo = "bar"], silent = TRUE) # invalid argument
   options(warn=0)
-  checkException(sw["Sion",]) # no row names
-  checkException(sw[,"Fert"]) # bad column name
+  checkException(sw["Sion",], silent = TRUE) # no row names
+  checkException(sw[,"Fert"], silent = TRUE) # bad column name
   colnames(sw) <- NULL
-  checkException(sw[,"Fertility"]) # no column names
+  checkException(sw[,"Fertility"], silent = TRUE) # no column names
 
   sw <- XDataFrame(swiss)
   
@@ -138,14 +138,14 @@ test_XDataFrame_dimnames_replace <- function() {
   checkIdentical(colnames(sw), make.names(cn, unique=TRUE))
   colnames(sw) <- cn[1]
   colnames(swiss) <- cn[1]
-  checkIdentical(colnames(sw), colnames(swiss))
+  checkIdentical(colnames(sw), c("X1", NA, NA, NA, NA, NA))
   rn <- seq(nrow(sw))
   rownames(sw) <- rn
   checkIdentical(rownames(sw), as.character(rn))
-  checkException(rownames(sw) <- rn[1])
-  checkException(rownames(sw) <- rep(rn[1], nrow(sw)))
+  checkException(rownames(sw) <- rn[1], silent = TRUE)
+  checkException(rownames(sw) <- rep(rn[1], nrow(sw)), silent = TRUE)
   rn[1] <- NA
-  checkException(rownames(sw) <- rn)
+  checkException(rownames(sw) <- rn, silent = TRUE)
 }
 
 test_XDataFrame_replacement <- function() {
@@ -160,8 +160,8 @@ test_XDataFrame_replacement <- function() {
   checkIdentical(xdf[["X"]], score)
   xdf[[3]] <- NULL # deletion
 
-  checkException(xdf[[13]] <- counts) # index must be < length+1
-  checkException(xdf[["tooshort"]] <- counts[1:2])
+  checkException(xdf[[13]] <- counts, silent = TRUE) # index must be < length+1
+  checkException(xdf[["tooshort"]] <- counts[1:2], silent = TRUE)
 }
 
 ## splitting and combining
@@ -197,8 +197,8 @@ test_XDataFrame_combine <- function() {
   checkIdentical(rownames(do.call("rbind", as.list(swsplit))),
                  unlist(lapply(swisssplit, rownames), use.names=FALSE))
 
-  checkException(rbind(sw[,1:2], sw))
+  checkException(rbind(sw[,1:2], sw), silent = TRUE)
   other <- sw
   colnames(other)[1] <- "foo"
-  checkException(rbind(other, sw))
+  checkException(rbind(other, sw), silent = TRUE)
 }

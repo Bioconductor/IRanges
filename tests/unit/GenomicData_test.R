@@ -35,10 +35,10 @@ test_GenomicData_construction <- function() {
   checkIdentical(chrom(gr), factor(chrom))
   checkIdentical(gr[1][["score"]], score[1:3])
   
-  checkException(GenomicData())
-  checkException(GenomicData(range1, genome = c("hg18", "mm9")))
-  checkException(GenomicData(range1, genome = 1))
-  checkException(GenomicData(ranges, chrom = chrom[1:3]))
-  checkException(GenomicData(range1, strand = strand[1:2]))
-  checkException(GenomicData(range1, strand = c("+", "-", ".")))
+  checkException(GenomicData(), silent = TRUE)
+  checkException(GenomicData(range1, genome = c("hg18", "mm9")), silent = TRUE)
+  checkException(GenomicData(range1, genome = 1), silent = TRUE)
+  checkException(GenomicData(ranges, chrom = chrom[1:3]), silent = TRUE)
+  checkException(GenomicData(range1, strand = strand[1:2]), silent = TRUE)
+  checkException(GenomicData(range1, strand = c("+", "-", ".")), silent = TRUE)
 }

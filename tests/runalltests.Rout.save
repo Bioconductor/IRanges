@@ -1,0 +1,197 @@
+
+R version 2.8.0 RC (--)
+Copyright (C)  The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library("IRanges")
+
+Attaching package: 'IRanges'
+
+
+	The following object(s) are masked from package:base :
+
+	 cbind,
+	 rbind 
+
+> library("RUnit")
+> 
+> options(warn=1)
+> 
+> dirs <- 'unit'
+> 
+> testFilePat <- ".*_test\\.R$"
+> 
+> allSuite <- defineTestSuite(name="allSuite",
++                             dirs=dirs,
++                             testFileRegexp=testFilePat,
++                             rngKind="default",
++                             rngNormalKind="default")
+> 
+> testData <- runTestSuite(allSuite)
+
+
+Executing test function test_FilterRules_active  ...  done successfully.
+
+
+
+Executing test function test_FilterRules_append  ...  done successfully.
+
+
+
+Executing test function test_FilterRules_construct  ...  done successfully.
+
+
+
+Executing test function test_FilterRules_subset  ...  done successfully.
+
+
+
+Executing test function test_GenomicData_construction  ...  done successfully.
+
+
+
+Executing test function test_IRanges_combine  ...  done successfully.
+
+
+
+Executing test function test_IRanges_names  ...  done successfully.
+
+
+
+Executing test function test_IRanges_setops  ...  done successfully.
+
+
+
+Executing test function test_IntervalTree_asRanges  ...  done successfully.
+
+
+
+Executing test function test_IntervalTree_construction  ...  done successfully.
+
+
+
+Executing test function test_IntervalTree_length  ...  done successfully.
+
+
+
+Executing test function test_IntervalTree_overlap  ...  done successfully.
+
+
+
+Executing test function test_RDApplyParams_construct  ...  done successfully.
+
+
+
+Executing test function test_RDApplyParams_rdapply  ...  done successfully.
+
+
+
+Executing test function test_RangedData_combine  ...  done successfully.
+
+
+
+Executing test function test_RangedData_construction  ...  done successfully.
+
+
+
+Executing test function test_RangedData_data_replace  ...  done successfully.
+
+
+
+Executing test function test_RangedData_extraction  ...  done successfully.
+
+
+
+Executing test function test_RangedData_subset  ...  done successfully.
+
+
+
+Executing test function test_IRangesList_construction  ...  done successfully.
+
+
+
+Executing test function test_RangesList_as_list  ...  done successfully.
+
+
+
+Executing test function test_RangesList_construction  ...  done successfully.
+
+
+
+Executing test function test_RangesList_gaps  ...  done successfully.
+
+
+
+Executing test function test_RangesList_reduce  ...  done successfully.
+
+
+
+Executing test function test_RangesMatching_as_matrix  ...  done successfully.
+
+
+
+Executing test function test_RangesMatching_matched  ...  done successfully.
+
+
+
+Executing test function test_TypedList_apply  ...  done successfully.
+
+
+
+Executing test function test_TypedList_combine  ...  done successfully.
+
+
+
+Executing test function test_TypedList_extraction  ...  done successfully.
+
+
+
+Executing test function test_TypedList_replace_names  ...  done successfully.
+
+
+
+Executing test function test_TypedList_subset  ...  done successfully.
+
+
+
+Executing test function test_XDataFrame_combine  ...  done successfully.
+
+
+
+Executing test function test_XDataFrame_construction  ...  done successfully.
+
+
+
+Executing test function test_XDataFrame_dimnames_replace  ...  done successfully.
+
+
+
+Executing test function test_XDataFrame_replacement  ...  done successfully.
+
+
+
+Executing test function test_XDataFrame_subset  ...  done successfully.
+
+
+
+Executing test function test_XRanges_accessors  ...  done successfully.
+
+
+
+Executing test function test_XRanges_utils  ...  done successfully.
+
+> 
+> 
+> q(runLast=FALSE)

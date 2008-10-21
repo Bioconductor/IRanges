@@ -1,11 +1,12 @@
 test_RDApplyParams_construct <- function() {
+  fun <- function(rd) NULL
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   filter <- c(1L, 0L, 1L)
-  rd <- RangedData(ranges, filter)
-  fun <- function(rd) NULL
   applyParams <- list(x = 2)
   excludePattern <- "[XY]"
-  
+
+  rd <- RangedData(ranges, filter)
+
   ## meaningless defaults
   checkTrue(validObject(RDApplyParams()))
   checkTrue(validObject(RDApplyParams(rd)))
@@ -17,18 +18,21 @@ test_RDApplyParams_construct <- function() {
   checkIdentical(applyFun(params), fun)
 
   ## make sure function and parameters compatible
-  
-  checkException(applyFun(params) <- function() NULL) # applyFun needs 1 param
-  checkException(RDApplyParams(rd, function() NULL))
-  
-  checkException(RDApplyParams(rd, fun, applyParams)) # needs 2 params
-  checkException(applyParams(params) <- applyParams)
+
+  ## applyFun needs 1 param
+  checkException(applyFun(params) <- function() NULL, silent = TRUE) 
+  checkException(RDApplyParams(rd, function() NULL), silent = TRUE)
+
+  ## needs 2 params
+  checkException(RDApplyParams(rd, fun, applyParams), silent = TRUE)
+  checkException(applyParams(params) <- applyParams, silent = TRUE)
 
   ## parameter name mismatch
-  checkException(RDApplyParams(rd, function(rd, y) NULL, applyParams))
+  checkException(RDApplyParams(rd, function(rd, y) NULL, applyParams),
+                 silent = TRUE)
   applyFun(params) <- function(rd, y) NULL
   checkTrue(validObject(params))
-  checkException(applyParams(params) <- applyParams)
+  checkException(applyParams(params) <- applyParams, silent = TRUE)
 
   ## ok with ...
   applyFun(params) <- function(...) NULL 
@@ -42,8 +46,9 @@ test_RDApplyParams_construct <- function() {
   checkIdentical(applyParams(params), applyParams)
 
   ## check for duplicate params
-  checkException(applyParams(params) <- rep(applyParams,2)) 
-  checkException(RDApplyParams(rd, function(...) NULL, rep(applyParams,2)))
+  checkException(applyParams(params) <- rep(applyParams,2), silent = TRUE)
+  checkException(RDApplyParams(rd, function(...) NULL, rep(applyParams,2)),
+                 silent = TRUE)
 
   ## exclude pattern -- length 1 character vector
   ## excludePattern(params) <- excludePattern
@@ -77,14 +82,15 @@ test_RDApplyParams_construct <- function() {
   checkTrue(validObject(params))
   checkIdentical(simplify(params), TRUE)
   checkException(RDApplyParams(rd, function(...) NULL,
-                               simplify = rep(TRUE,2)))
-  checkException(simplify(params) <- rep(FALSE, 2))
+                               simplify = rep(TRUE,2)), silent = TRUE)
+  checkException(simplify(params) <- rep(FALSE, 2), silent = TRUE)
 
   ## reducer
   reducer <- function(rd) NULL
-  checkException(reducerFun(params) <- reducer) # oops, simplify is TRUE
+  ## oops, simplify is TRUE
+  checkException(reducerFun(params) <- reducer, silent = TRUE) 
   checkException(RDApplyParams(rd, function(...) NULL, simplify = TRUE,
-                               reducerFun = reducer))
+                               reducerFun = reducer), silent = TRUE)
   simplify(params) <- FALSE
   reducerFun(params) <- reducer
   checkTrue(validObject(params))
@@ -100,26 +106,28 @@ test_RDApplyParams_construct <- function() {
   ## NOTE: for some reason, new() becomes confused if we use 'applyParams' here
   reducerParams <- applyParams
   checkException(RDApplyParams(rd, function(...) NULL, ## oops, no reducer
-                               reducerParams = reducerParams))
-  checkException(reducerParams(params) <- reducerParams)
+                               reducerParams = reducerParams), silent = TRUE)
+  checkException(reducerParams(params) <- reducerParams, silent = TRUE)
 
   ## conflicts between reducer and its params
-  
-  checkException(reducerFun(params) <- function() NULL) # needs 1 param
-  checkException(RDApplyParams(rd, reducerFun = function() NULL))
+
+  ## needs 1 param
+  checkException(reducerFun(params) <- function() NULL, silent = TRUE) 
+  checkException(RDApplyParams(rd, reducerFun = function() NULL), silent = TRUE)
   
   checkException(RDApplyParams(rd, fun, reducerFun = reducer,
-                               reducerParams = reducerParams)) # needs 2 params
+                               reducerParams = reducerParams),
+                 silent = TRUE) # needs 2 params
   reducerFun(params) <- function(rd) NULL
-  checkException(reducerParams(params) <- reducerParams)
+  checkException(reducerParams(params) <- reducerParams, silent = TRUE)
 
   ## parameter name mismatch
   checkException(RDApplyParams(rd, function(rd) NULL,
                                reducerFun = function(rd, y) NULL,
-                               reducerParams = reducerParams))
+                               reducerParams = reducerParams), silent = TRUE)
   reducerFun(params) <- function(rd, y) NULL
   checkTrue(validObject(params))
-  checkException(reducerParams(params) <- reducerParams)
+  checkException(reducerParams(params) <- reducerParams, silent = TRUE)
 
   ## ok with ...
   reducerFun(params) <- function(...) NULL 
@@ -134,10 +142,11 @@ test_RDApplyParams_construct <- function() {
   checkTrue(validObject(params))
   checkIdentical(reducerParams(params), reducerParams)
 
-  ## check for duplicate params
-  checkException(reducerParams(params) <- rep(reducerParams,2)) 
+  checkException(reducerParams(params) <- rep(reducerParams,2), silent = TRUE)
+  checkException(reducerParams(params) <- rep(reducerParams,2), silent = TRUE) 
   checkException(RDApplyParams(rd, function(...) NULL, reducerFun = reducer,
-                               reducerParams = rep(reducerParams,2)))
+                               reducerParams = rep(reducerParams,2)),
+                 silent = TRUE)
 }
 
 test_RDApplyParams_rdapply <- function() {
@@ -159,11 +168,12 @@ test_RDApplyParams_rdapply <- function() {
 
   ## add a filter
   cutoff <- 0
-  rules <- FilterRules(filter = filter > cutoff)
+  cutoffFun <- function(rd) rd[["filter"]] > cutoff
+  rules <- FilterRules(list(filter = cutoffFun))
   params <- RDApplyParams(rd, countrows, filterRules = rules)
   checkIdentical(rdapply(params), list(chr1 = 2L, chr2 = 0L))
-  rules <- FilterRules(list(fun = function(rd) rd[["filter"]] < 2),
-                       filter = filter > cutoff)
+  rules <- FilterRules(list(fun = function(rd) rd[["filter"]] < 2,
+                            filter = cutoffFun))
   params <- RDApplyParams(rd, countrows, filterRules = rules)
   checkIdentical(rdapply(params), list(chr1 = 1L, chr2 = 0L))
   active(filterRules(params))["filter"] <- FALSE

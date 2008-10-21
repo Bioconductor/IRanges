@@ -14,8 +14,8 @@ test_IRanges_names <- function() {
   checkTrue(validObject(range1))
   checkIdentical(names(range1), c("a", NA, NA))
 
-  checkException(names(range1) <- c("a", "b", "c", "d"))
-  checkException(names(range1) <- 1:3)
+  checkException(names(range1) <- c("a", "b", "c", "d"), silent = TRUE)
+  checkException(names(range1) <- 1:3, silent = TRUE)
 }
 
 test_IRanges_combine <- function() {

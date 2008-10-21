@@ -7,9 +7,9 @@ test_IntervalTree_construction <- function() {
   tree <- IntervalTree(IRanges())
   checkTrue(validObject(tree))
   
-  checkException(IntervalTree())
-  checkException(IntervalTree(subject, query))
-  checkException(IntervalTree(NULL))
+  checkException(IntervalTree(), silent = TRUE)
+  checkException(IntervalTree(subject, query), silent = TRUE)
+  checkException(IntervalTree(NULL), silent = TRUE)
 }
 
 test_IntervalTree_overlap <- function() {
@@ -96,19 +96,19 @@ test_IntervalTree_overlap <- function() {
                 p = as.integer(c(0, 2, 7, 7)), Dim = c(5L, 3L))
   checkOverlap(result, sparse)
 
-  checkException(overlap(NULL, query))
-  checkException(overlap(query, NULL))
-  checkException(overlap(subject, IRanges(c(2,1),c(3,4))))
+  checkException(overlap(NULL, query), silent = TRUE)
+  checkException(overlap(query, NULL), silent = TRUE)
+  checkException(overlap(subject, IRanges(c(2,1),c(3,4))), silent = TRUE)
 }
 
 test_IntervalTree_asRanges <- function() {
   ranges <- IRanges(c(1, 4, 9), c(5, 7, 10))
   tree <- IntervalTree(ranges)
-  checkIdentical(as(tree, "Ranges"), ranges)
+  checkIdentical(as(tree, "IRanges"), ranges)
 
   ranges <- IRanges()
   tree <- IntervalTree(ranges)
-  checkIdentical(as(tree, "Ranges"), ranges)
+  checkIdentical(as(tree, "IRanges"), ranges)
 }
 
 test_IntervalTree_length <- function() {

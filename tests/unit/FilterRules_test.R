@@ -33,11 +33,12 @@ test_FilterRules_construct <- function() {
   checkIdentical(as.list(filters), c(list(diffexp = expression(de)), filts))
   filts <- as.list(filters)
   
-  checkException(FilterRules(c(filts, 1)))
-  checkException(FilterRules(filts, active = filts))
-  checkException(FilterRules(filts, active = rep(TRUE, 5)))
-  checkException(FilterRules(filts, active = rep(TRUE, 2)))
-  checkException(FilterRules(list(find_eboxes = function() NULL)))
+  checkException(FilterRules(c(filts, 1)), silent = TRUE)
+  checkException(FilterRules(filts, active = filts), silent = TRUE)
+  checkException(FilterRules(filts, active = rep(TRUE, 5)), silent = TRUE)
+  checkException(FilterRules(filts, active = rep(TRUE, 2)), silent = TRUE)
+  checkException(FilterRules(list(find_eboxes = function() NULL)),
+                 silent = TRUE)
 }
 
 test_FilterRules_append <- function() {
@@ -52,30 +53,30 @@ test_FilterRules_append <- function() {
   bothFilts <- structure(list(quote(peaks), quote(promoters),
                               quote(introns), quote(exons)),
                          names = c(filts, filts2))
-  checkIdentical(unlist(both), bothFilts)
+  checkIdentical(unlist(as.list(both)), bothFilts)
   bothActive <- structure(c(TRUE, TRUE, FALSE, FALSE), names = names(bothFilts))
   checkIdentical(active(both), bothActive)
   both <- c(filters, filters2)
   checkTrue(validObject(both))
-  checkIdentical(unlist(both), bothFilts)
+  checkIdentical(unlist(as.list(both)), bothFilts)
   checkIdentical(active(both), bothActive)
 
   filters[["cons"]] <- "cons"
   filts <- list(peaks = quote(peaks), promoters = quote(promoters))
   filts <- c(filts, cons = quote(cons))
-  checkIdentical(unlist(filters), filts)
+  checkIdentical(unlist(as.list(filters)), filts)
   filters[["cons"]] <- quote(cons)
-  checkIdentical(unlist(filters), filts)
+  checkIdentical(unlist(as.list(filters)), filts)
   filters[["cons"]] <- expression(cons)
-  checkIdentical(unlist(filters), filts)
+  checkIdentical(unlist(as.list(filters)), filts)
   fun <- function(rd) rep(FALSE, nrow(rd))
   filters[[4]] <- fun
   filts <- c(filts, X = fun)
-  checkIdentical(unlist(filters), filts)
+  checkIdentical(unlist(as.list(filters)), filts)
   
-  checkException(filters[[]] <- "threeprime")
-  checkException(filters[[1]] <- 2)
-  checkException(filters[[1]] <- list(quote(foo), quote(bar)))
+  checkException(filters[[]] <- "threeprime", silent = TRUE)
+  checkException(filters[[1]] <- 2, silent = TRUE)
+  checkException(filters[[1]] <- list(quote(foo), quote(bar)), silent = TRUE)
 }
 
 test_FilterRules_subset <- function() {
@@ -86,7 +87,7 @@ test_FilterRules_subset <- function() {
                  structure(filts[1:2], names = filts[1:2]))
   checkIdentical(sapply(unlist(filters[]),deparse),
                  structure(filts, names = filts))
-  checkException(filters[1,2])
+  checkException(filters[1,2], silent = TRUE)
 }
 
 test_FilterRules_active <- function() {
@@ -105,9 +106,9 @@ test_FilterRules_active <- function() {
   active(filters)["promoters"] <- TRUE
   checkIdentical(active(filters),
                  structure(c(FALSE, TRUE, TRUE), names = filts))
-  checkException(active(filters) <- rep(FALSE, 2))
-  checkException(active(filters) <- rep(FALSE, 5))
-  checkException(active(filters)["introns"] <- NA)
+  checkException(active(filters) <- rep(FALSE, 2), silent = TRUE)
+  checkException(active(filters) <- rep(FALSE, 5), silent = TRUE)
+  checkException(active(filters)["introns"] <- NA, silent = TRUE)
   
   ## toggle the active state by name or index
   
@@ -117,6 +118,6 @@ test_FilterRules_active <- function() {
   active(filters) <- c("peaks", NA) 
   checkIdentical(active(filters),
                  structure(c(TRUE, FALSE, FALSE), names = filts))
-  checkException(active(filters) <- "foo")
-  checkException(active(filters) <- 15)  
+  checkException(active(filters) <- "foo", silent = TRUE)
+  checkException(active(filters) <- 15, silent = TRUE)
 }
