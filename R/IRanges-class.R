@@ -279,24 +279,36 @@ newNormalIRangesFromIRanges <- function(x, check=TRUE)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Non-exported (and unsafe) replacement functions for IRanges objects.
+### Low-level (i.e. non-exported and unsafe) replacement functions for
+### IRanges objects.
+###
+### The choice was made to implement a "resizing" semantic:
+###   (1) changing the start preserves the end (so it changes the width)
+###   (2) changing the end preserves the start (so it changes the width)
+###   (3) changing the width preserves the start (so it changes the end)
 ###
 ### IMPORTANT: They do NOT check their arguments ('x' and 'value'). In
 ### particular they do not check that 'value' is of the expected type (integer
 ### for "unsafe.start<-", "unsafe.width<-", "unsafe.end<-", and character for
-### "unsafe.names<-").
-###
-### The "sliding rules" are:
-###   (1) changing the start preserves the width (so it changes the end)
-###   (2) changing the width preserves the start (so it changes the end)
-###   (3) changing the end preserves the width (so it changes the start)
+### "unsafe.names<-"). Also they don't check that the resulting IRanges object
+### is valid!
 ###
 
 ### 'value' is recycled.
 `unsafe.start<-` <- function(x, value)
 {
+    old_start <- start(x)
     ## Use 'x@start[]' instead of just 'x@start' so the right value is recycled
     x@start[] <- numeric2integer(value)
+    x@width <- width(x) - start(x) + old_start
+    x
+}
+
+### 'value' is recycled.
+`unsafe.end<-` <- function(x, value)
+{
+    ## Use 'x@width[]' instead of just 'x@width' so the right value is recycled
+    x@width[] <- width(x) + numeric2integer(value) - end(x)
     x
 }
 
@@ -305,13 +317,6 @@ newNormalIRangesFromIRanges <- function(x, check=TRUE)
 {
     ## Use 'x@width[]' instead of just 'x@width' so the right value is recycled
     x@width[] <- numeric2integer(value)
-    x
-}
-
-### 'value' is recycled.
-`unsafe.end<-` <- function(x, value)
-{
-    unsafe.start(x) <- numeric2integer(value) - width(x) + 1L
     x
 }
 
@@ -393,7 +398,7 @@ setReplaceMethod("start", "IRanges",
     {
         unsafe.start(x) <- value
         if (check)
-            stopIfProblems(.valid.IRanges.start(x))
+            stopIfProblems(c(.valid.IRanges.start(x), .valid.IRanges.width(x)))
         x
     }
 )
@@ -413,7 +418,7 @@ setReplaceMethod("end", "IRanges",
     {
         unsafe.end(x) <- value
         if (check)
-            stopIfProblems(.valid.IRanges.start(x))
+            stopIfProblems(.valid.IRanges.width(x))
         x
     }
 )

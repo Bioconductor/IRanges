@@ -79,7 +79,7 @@ setMethod("shift", "IRanges",
             shift <- as.integer(shift)
         if (!normargUseNames(use.names))
             names(x) <- NULL
-        unsafe.start(x) <- start(x) + shift
+        x@start <- start(x) + shift
         x
     }
 )
@@ -152,8 +152,8 @@ setMethod("narrow", "IRanges",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
         solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
-        unsafe.width(x) <- width(solved_SEW)
-        unsafe.start(x) <- start(x) + start(solved_SEW) - 1L
+        x@start <- start(x) + start(solved_SEW) - 1L
+        x@width <- width(solved_SEW)
         if (!normargUseNames(use.names))
             names(x) <- NULL
         x

@@ -14,7 +14,12 @@ setMethod("overlap", c("IntervalTree", "Ranges"),
             if (maxgap != 0) {
               if (!isSingleNumber(maxgap) || maxgap < 0)
                 stop("'maxgap' must be a single, non-negative, non-NA number")
-              start(query) <- start(query) - maxgap # shifts to left
+              ## Another option would be to do
+              ##   query <- unsafe.update(start = start(query) - maxgap,
+              ##                          end = end(query) + maxgap)
+              ## instead of the 2 lines below. More readable? (but maybe not as
+              ## efficient)
+              query <- shift(query, -maxgap)
               width(query) <- width(query) + 2*maxgap # adds to end (weird...)
             }
             fun <- "overlap"

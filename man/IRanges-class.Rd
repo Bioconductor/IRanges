@@ -52,7 +52,7 @@
 \alias{names<-,IRanges-method}
 \alias{update,IRanges-method}
 
-% Deprecated methods:
+% Old stuff:
 \alias{first}
 \alias{first,IRanges-method}
 \alias{last}
@@ -278,17 +278,6 @@
   }
 }
 
-\section{Deprecated methods}{
-    \item{}{
-      \code{first(x)}:
-      deprecated. Use \code{start} instead.
-    }
-    \item{}{
-      \code{last(x)}:
-      deprecated. Use \code{end} instead.
-    }
-}
-
 \author{H. Pages}
 
 \seealso{
@@ -316,17 +305,14 @@
   x0 <- x[width(x) == 0]  # 2 ranges
   isEmpty(x0)
 
-  ## Unlock the IRanges instance and use replacement methods to slide
-  ## or resize its elements:
-  width(x) <- width(x) * 2  + 1  # resize elements
+  ## Use the replacement methods to resize the ranges:
+  width(x) <- width(x) * 2 + 1
   x
-  start(x) <- end(x)             # slide elements
+  end(x) <- start(x)            # equivalent to width(x) <- 0
   x
-  start(x)[4] <- end(x)[4]       # slide the 4th element
+  width(x) <- c(2, 0, 4) 
   x
-  end(x)[1] <- start(x)[3]       # slide the first element
-  x
-  width(x) <- c(2, 0)            # resize elements
+  start(x)[3] <- end(x)[3] - 2  # resize the 3rd range
   x
   duplicated(x)
 

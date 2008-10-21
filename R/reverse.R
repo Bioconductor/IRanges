@@ -21,7 +21,7 @@ setGeneric("reverse", signature="x",
     if (!is.na(n2p[3]) && !normargUseNames(args[[n2p[3]]])) {
         unsafe.names(x) <- NULL
     }
-    unsafe.start(x) <- start + end - end(x)
+    x@start <- start + end - end(x)
     x
 }
 
