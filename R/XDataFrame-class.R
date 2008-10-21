@@ -23,7 +23,7 @@ setClass("XDataFrame",
          prototype(rownames = NULL,
                    ##rowset = NULL,
                    nrows = 0L),
-         contains = "XList")
+         contains = "TypedList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -240,6 +240,8 @@ setReplaceMethod("[[", "XDataFrame",
                      ##  stop("data not a multiple of replacement length")
                      ##value <- rep(value, length = nrow(x))
                    }
+                   if (canCoerce(value, "XSequence"))
+                     value <- as(value, "XSequence")
                    x <- callNextMethod(x, i, value=value)
                    ## ensure unique, valid names
                    names(x) <- make.names(names(x), unique=TRUE)
