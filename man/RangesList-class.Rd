@@ -19,6 +19,9 @@
 \alias{show,RangesList-method}
 \alias{summary,RangesList-method}
 
+% split
+\alias{split,Ranges-method}
+
 \title{List of Ranges}
 \description{An extension of \code{\linkS4class{TypedList}} that holds
   only \code{\linkS4class{Ranges}} instances. Useful for storing ranges

@@ -8,23 +8,26 @@ setClass("Ranges", contains = "VIRTUAL")
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The Ranges API (work in progress):
 ###
-###   Various:
+###   Basic get/set methods:
 ###     length
 ###     start, width, end, names
 ###     start<-, width<-, end<-, names<-
+###
+###   More basic stuff:
 ###     isEmpty
 ###     as.matrix, as.data.frame
 ###     duplicated
 ###     show
-###     split, c
 ###
 ###   Endomorphisms:
 ###     update
 ###     [, [<-, rep
 ###     shift, restrict, narrow, reduce, gaps
-###
-###   Binary set operations:
 ###     union, intersect, setdiff
+###
+###   Other operations:
+###     c
+###     split
 ###     overlap
 ###
 ### Note that, except for some default methods provided below (and implemented
@@ -35,7 +38,12 @@ setClass("Ranges", contains = "VIRTUAL")
 ### The "start" and "end" generics are defined in the stats package.
 setGeneric("width", function(x) standardGeneric("width"))
 
+### The 3 default methods below provide a formalization of the relationship
+### between the starts/widths/ends of a Ranges object. Of course Ranges
+### subclasses need to implement at least 2 of them!
 ### Note that when width(x)[i] is 0, then end(x)[i] is start(x)[i] - 1
+setMethod("start", "Ranges", function(x, ...) {end(x) - width(x) + 1L})
+setMethod("width", "Ranges", function(x) {end(x) - start(x) + 1L})
 setMethod("end", "Ranges", function(x, ...) {start(x) + width(x) - 1L})
 
 setGeneric("start<-", signature="x",
@@ -50,8 +58,9 @@ setGeneric("end<-", signature="x",
     function(x, check=TRUE, value) standardGeneric("end<-")
 )
 
-### TODO: default implementation using width()
+### A Ranges object is considered empty iff all its ranges are empty.
 setGeneric("isEmpty", function(x) standardGeneric("isEmpty"))
+setMethod("isEmpty", "Ranges", function(x) all(width(x) == 0))
 
 setMethod("as.matrix", "Ranges",
     function(x, ...)
@@ -153,13 +162,23 @@ setMethod("setdiff", c("Ranges", "Ranges"),
 )
 
 ## Find objects in the index that overlap those in a query set
-setGeneric("overlap", signature=c("object", "query"),
+setGeneric("overlap", signature = c("object", "query"),
     function(object, query, maxgap = 0, multiple = TRUE, ...)
-           standardGeneric("overlap")
+        standardGeneric("overlap")
 )
 
 setMethod("overlap", c("Ranges", "missing"),
     function(object, query, maxgap = 0, multiple = TRUE)
-          overlap(object, object, maxgap, multiple)
+        overlap(object, object, maxgap, multiple)
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Old stuff (Defunct or Deprecated).
+###
+
+setGeneric("first", function(x) standardGeneric("first"))
+setMethod("first", "Ranges", function(x) {.Defunct("start"); start(x)})
+setGeneric("last", function(x) standardGeneric("last"))
+setMethod("last", "Ranges", function(x) {.Defunct("end"); end(x)})
 

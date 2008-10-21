@@ -81,15 +81,11 @@ setMethod("whichFirstNotNormal", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "isEmpty" methods.
+### The "isEmpty" default method for Ranges objects would work just fine on a
+### NormalIRanges object but we can take advantage of the normality to make
+### it slightly more efficient.
 ###
-### An IRanges object is considered empty iff all its ranges are empty.
-### 
 
-setMethod("isEmpty", "Ranges", function(x) all(width(x) == 0))
-
-### The "isEmpty" method for IRanges objects would work fine on
-### NormalIRanges objects but it can be made faster.
 setMethod("isEmpty", "NormalIRanges", function(x) length(x) == 0)
 
 
@@ -511,15 +507,8 @@ setMethod("[", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Splitting and combining.
+### Combining.
 ###
-
-setMethod("split", "Ranges",
-    function(x, f, drop = FALSE, ...)
-    {
-        do.call("RangesList", callNextMethod())
-    }
-)
 
 setMethod("c", "IRanges",
     function(x, ..., recursive = FALSE)
@@ -527,7 +516,7 @@ setMethod("c", "IRanges",
         if (recursive)
             stop("'recursive' mode not supported")
         if (!all(sapply(list(...), is, "IRanges")))
-            stop("all arguments in '...' must be instances of IRanges")
+            stop("all arguments in '...' must be IRanges objects")
         if (!missing(x))
             args <- list(x, ...)
         else
@@ -536,14 +525,4 @@ setMethod("c", "IRanges",
                 unlist(lapply(args, end), use.names=FALSE))
     }
 )
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Old stuff (Defunct or Deprecated).
-###
-
-setGeneric("first", function(x) standardGeneric("first"))
-setMethod("first", "IRanges", function(x) {.Defunct("start"); start(x)})
-setGeneric("last", function(x) standardGeneric("last"))
-setMethod("last", "IRanges", function(x) {.Defunct("end"); end(x)})
 

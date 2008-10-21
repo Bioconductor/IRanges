@@ -15,8 +15,8 @@
 \alias{reduce,IRanges-method}
 \alias{gaps}
 \alias{gaps,IRanges-method}
+\alias{union,Ranges,Ranges-method} 
 \alias{intersect,Ranges,Ranges-method}
-\alias{union,Ranges,Ranges-method}
 \alias{setdiff,Ranges,Ranges-method}
 
 % Coercion:

@@ -1,6 +1,7 @@
 \name{XRanges-class}
 \docType{class}
 \alias{XRanges-class}
+\alias{XRanges}
 
 % accessors
 \alias{end,XRanges-method}

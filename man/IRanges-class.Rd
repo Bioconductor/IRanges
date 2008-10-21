@@ -1,69 +1,43 @@
 \name{IRanges-class}
 \docType{class}
 
-% Classes:
+% IRanges objects:
 \alias{class:IRanges}
 \alias{IRanges-class}
 \alias{IRanges}
-\alias{class:NormalIRanges}
-\alias{NormalIRanges-class}
-\alias{NormalIRanges}
 
-% Accesor methods:
 \alias{length,IRanges-method}
 \alias{start,IRanges-method}
-\alias{width}
 \alias{width,IRanges-method}
-\alias{end,Ranges-method}
 \alias{names,IRanges-method}
-
 \alias{isNormal}
 \alias{isNormal,IRanges-method}
 \alias{whichFirstNotNormal}
 \alias{whichFirstNotNormal,IRanges-method}
-\alias{isEmpty}
-\alias{isEmpty,Ranges-method}
-\alias{isEmpty,NormalIRanges-method}
-\alias{max,NormalIRanges-method}
-\alias{min,NormalIRanges-method}
-
-% Coercion:
-\alias{as.matrix,Ranges-method}
-
-% "show" method:
-\alias{as.data.frame,Ranges-method}
-\alias{show,Ranges-method}
-
-% Subsetting:
-\alias{[,IRanges,ANY,ANY,ANY-method}
-\alias{[<-,Ranges,ANY,ANY,ANY-method}
-\alias{rep,Ranges-method}
-
-% "duplicated" method:
-\alias{duplicated,Ranges-method}
-
-% Replacement methods:
-\alias{start<-}
 \alias{start<-,IRanges-method}
-\alias{width<-}
 \alias{width<-,IRanges-method}
-\alias{end<-}
 \alias{end<-,IRanges-method}
 \alias{names<-,IRanges-method}
 \alias{update,IRanges-method}
+\alias{[,IRanges,ANY,ANY,ANY-method}
+\alias{c,IRanges-method}
 
-% Old stuff:
-\alias{first}
-\alias{first,IRanges-method}
-\alias{last}
-\alias{last,IRanges-method}
+% NormalIRanges objects:
+\alias{class:NormalIRanges}
+\alias{NormalIRanges-class}
+\alias{NormalIRanges}
+
+\alias{isEmpty,NormalIRanges-method}
+\alias{max,NormalIRanges-method}
+\alias{min,NormalIRanges-method}
 
 
 \title{IRanges and NormalIRanges objects}
 
 \description{
-  The IRanges class is a simple container for storing a set of integer
-  ranges.
+  The IRanges class is a simple implementation of the \link{Ranges}
+  container where 2 integer vectors of the same length are used to
+  store the start and width values.
 
   A NormalIRanges object is an IRanges object that is "normal".
   See the Normality section below for the definition and properties
@@ -71,74 +45,8 @@
 }
 
 \details{
-  An IRanges object is a data frame-like object where each row describes
-  a "range" of integers.
-
-  A "range" of integers is a finite set of consecutive integer values.
-  Each range can be fully described with exactly 2 integers which can be
-  arbitrarily picked up among the 3 following integers:
-  its "start" i.e. its smallest (or first, or leftmost) value;
-  its "end" i.e. its greatest (or last, or rightmost) value;
-  and its "width" i.e. the number of values in the range.
-  For example the set of integers that are greater than or equal to -20
-  and less than or equal to 400 is the range of integers that starts
-  at -20 and has a width of 421.
-
-  The start can be any integer (see \code{start} below) but the
-  width must be a nonnegative integer (see \code{width} below).
-  The end of a range is its start plus its width minus one (see
-  \code{end} below).
-  An "empty" range is a range that contains no value i.e. a range that
-  has a null width.
-  Note that for an empty range, the end is smaller than the start.
-
-  Two ranges are considered equal iff they share the same start and width.
-  Note that with this definition, 2 empty ranges are generally
-  not equal (they need to share the same start to be considered equal).
-
-  The length of an IRanges object is the number of ranges in it
-  i.e. the number of rows in the object.
-
-  An IRanges object is considered empty iff all its ranges are empty.
-}
-
-\section{IRanges object vs data frame}{
-  An important difference with standard R data frames is that
-  IRanges objects only support single subscript subsetting i.e.
-  subsetting by row, whereas standard R data frames can be subsetted
-  by row and by column.
-  As a consequence, the length of an IRanges object is its number of rows,
-  whereas the length of a standard R data frame object is its number of
-  columns.
-}
-
-\section{Accesor methods}{
-  In the code snippets below, \code{x} is an IRanges object.
-
-  \describe{
-    \item{}{
-      \code{length(x)}:
-      The number of ranges in \code{x}.
-    }
-    \item{}{
-      \code{start(x)}:
-      The start values of the ranges.
-      This is an integer vector of the same length as \code{x}.
-    }
-    \item{}{
-      \code{width(x)}:
-      The number of integers in each range.
-      This is a vector of nonnegative integers of the same length as \code{x}.
-    }
-    \item{}{
-      \code{end(x)}:
-      \code{start(x) + width(x) - 1L}
-    }
-    \item{}{
-      \code{names(x)}:
-      \code{NULL} or a character vector of the same length as \code{x}.
-    }
-  }
+  See the \link{Ranges} virtual class for a formal definition of
+  \link{Ranges} objects.
 }
 
 \section{Constructor}{
@@ -156,65 +64,6 @@
       are specified, then the length of \code{width} must be <= to the
       length of \code{start} and, if it is <, then \code{width} is expanded
       cyclically to the length of \code{start}.
-    }
-  }
-}
-
-\section{Coercion}{
-  \describe{
-    \item{}{
-      \code{as.matrix(x, ...)}:
-      Convert IRanges object \code{x} into a 2-column integer matrix
-      containing \code{start(x)} and \code{width(x)}.
-      Extra arguments (\code{...}) are ignored.
-    }
-  }
-}
-
-\section{Subsetting}{
-  In the code snippet below, \code{x} is an IRanges object.
-
-  \describe{
-    \item{}{
-      \code{x[i]}:
-      Return a new IRanges object (of the same type as \code{x})
-      made of the selected ranges.
-      \code{i} can be a numeric vector, a logical vector, \code{NULL}
-      or missing. If \code{x} is a NormalIRanges object and \code{i}
-      a positive numeric subscript (i.e. a numeric vector of positive
-      values), then \code{i} must be strictly increasing.
-    }
-    \item{}{
-      \code{rep(x, times)}:
-      Return a new IRanges object made of the repeated elements.
-    }
-  }
-}
-
-\section{Other methods}{
-  In the code snippets below, \code{x} is an IRanges object.
-
-  \describe{
-    \item{}{
-      \code{isEmpty(x)}:
-      Return a logical value indicating whether \code{x} is empty or not.
-    }
-    \item{}{
-      \code{as.data.frame(x, row.names=NULL, optional=FALSE, ...)}:
-      Converts \code{x} into a standard R data frame object.
-      \code{row.names} must be \code{NULL} or a character vector giving
-      the row names for the data frame, and \code{optional} and any
-      additional argument (\code{...}) is ignored.
-      See \code{?\link{as.data.frame}} for more information about these
-      arguments.
-    }
-    \item{}{
-      \code{duplicated(x)}:
-      Determines which elements of \code{x} are equal to elements
-      with smaller subscripts, and returns a logical vector indicating
-      which elements are duplicates.
-      It is semantically equivalent to \code{duplicated(as.data.frame(x))}
-      (see \code{?\link{duplicated}} for more information).
     }
   }
 }
@@ -281,48 +130,11 @@
 \author{H. Pages}
 
 \seealso{
-  \link{IRanges-utils},
-  \code{\link{as.data.frame}},
-  \code{\link{duplicated}},
-  \code{\link{as.matrix}}
+  \link{Ranges-class},
+  \link{IRanges-utils}
 }
 
 \examples{
-  x <- IRanges(start=c(2:-1, 13:15), width=c(0:3, 2:0))
-  x
-  length(x)
-  start(x)
-  width(x)
-  end(x)
-  isEmpty(x)
-  as.data.frame(x)
-  as.matrix(x)
-
-  ## Subsetting:
-  x[4:2]                  # 3 ranges
-  x[-1]                   # 6 ranges
-  x[FALSE]                # 0 range
-  x0 <- x[width(x) == 0]  # 2 ranges
-  isEmpty(x0)
-
-  ## Use the replacement methods to resize the ranges:
-  width(x) <- width(x) * 2 + 1
-  x
-  end(x) <- start(x)            # equivalent to width(x) <- 0
-  x
-  width(x) <- c(2, 0, 4) 
-  x
-  start(x)[3] <- end(x)[3] - 2  # resize the 3rd range
-  x
-  duplicated(x)
-
-  ## Name the elements:
-  names(x)
-  names(x) <- c("range1", "range2")
-  x
-  x[is.na(names(x))]  # 5 ranges
-  x[!is.na(names(x))]  # 2 ranges
-
   ## Using an IRanges object for storing a big set of ranges is more
   ## efficient than using a standard R data frame:
   N <- 2000000L  # nb of ranges

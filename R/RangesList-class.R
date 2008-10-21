@@ -79,7 +79,6 @@ setMethod("reduce", "RangesList",
           }
           )
 
-### 'start' and 'end' are ignored.
 setMethod("gaps", "RangesList",
           function(x, start=NA, end=NA)
           {
@@ -150,4 +149,16 @@ setAs("RangesList", "IRangesList",
         from@elements <- ir
         from
       })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Splitting.
+###
+
+setMethod("split", "Ranges",
+    function(x, f, drop = FALSE, ...)
+    {
+        do.call("RangesList", callNextMethod())
+    }
+)
 
