@@ -12,7 +12,8 @@ setClass("TypedList",
                         ),
          prototype(
                    elements=list(),
-                   NAMES=NULL
+                   NAMES=NULL,
+                   elementClass="ANY"
                    ),
          contains = "VIRTUAL"
          )
@@ -145,7 +146,7 @@ setReplaceMethod("[[", "TypedList",
                    x
                  })
 
-### Supported 'i' types: numeric vector, logical vector, NULL and missing.
+### Supported 'i' types: numeric, character, logical, NULL and missing.
 setMethod("[", "TypedList",
           function(x, i, j, ..., drop)
           {
@@ -198,6 +199,8 @@ setMethod("append", c("TypedList", "TypedList"),
           {
             if (!isSingleNumber(after))
               stop("'after' must be a single number")
+            if (!extends(elementClass(x), elementClass(values)))
+              stop("the element class of 'values' must extend that of 'x'")
             ans_elements <- append(elements(x), elements(values),
                                    after=after)
             nm1 <- names(x)
@@ -246,6 +249,10 @@ setMethod("c", "TypedList", function(x, ..., recursive = FALSE) {
   else tls <- list(...)
   if (!all(sapply(tls, is, "TypedList")))
     stop("all arguments in '...' must be instances of TypedList")
+  ecs <- sapply(tls, elementClass)
+  if (!all(sapply(ecs, extends, ecs[[1]])))
+    stop("all arguments in '...' must have an element class that extends ",
+         "that of the first argument")
   TypedList.unlist(tls, recursive)
 })
 
@@ -281,14 +288,14 @@ setMethod("as.list", "TypedList", function(x) {
   .TypedList_asList(x)
 })
 
-setMethod("as.data.frame", "TypedList",
-          function(x, row.names=NULL, optional=FALSE, ...)
-          {
-            if (!(is.null(row.names) || is.character(row.names)))
-              stop("'row.names'  must be NULL or a character vector")
-            as.data.frame(as(x, "list"), row.names = row.names,
-                          optional = optional, ...)
-          })
+## setMethod("as.data.frame", "TypedList",
+##           function(x, row.names=NULL, optional=FALSE, ...)
+##           {
+##             if (!(is.null(row.names) || is.character(row.names)))
+##               stop("'row.names'  must be NULL or a character vector")
+##             as.data.frame(as(x, "list"), row.names = row.names,
+##                           optional = optional, ...)
+##           })
 
 ## setMethod("unlist", "TypedList",
 ##            function(x, recursive = TRUE, use.names = TRUE) {
