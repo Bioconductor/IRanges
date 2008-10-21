@@ -23,6 +23,9 @@
 \alias{length,XSequence-method}
 \alias{subseq,XSequence-method}
 
+\alias{coerce,integer,XSequence-method}
+\alias{coerce,numeric,XSequence-method}
+
 % XRaw class, functions and methods:
 \alias{class:XRaw}
 \alias{XRaw-class}
@@ -35,6 +38,7 @@
 
 \alias{as.integer,XInteger-method}
 \alias{as.vector,XInteger,missing-method}
+\alias{coerce,integer,XInteger-method}
 \alias{[,XInteger,ANY,ANY,ANY-method}
 \alias{show,XInteger-method}
 \alias{==,XInteger,XInteger-method}
@@ -46,9 +50,11 @@
 
 \alias{as.numeric,XNumeric-method}
 \alias{as.vector,XNumeric,missing-method}
+\alias{coerce,numeric,XNumeric-method}
 \alias{[,XNumeric,ANY,ANY,ANY-method}
 \alias{show,XNumeric-method}
 \alias{==,XNumeric,XNumeric-method}
+
 
 % XRle class, functions and methods:
 \alias{class:XRle}
@@ -71,6 +77,7 @@
 \alias{Arith,XRleInteger,XRleInteger-method}
 \alias{as.integer,XRleInteger-method}
 \alias{as.vector,XRleInteger,missing-method}
+\alias{coerce,integer,XRleInteger-method}
 \alias{show,XRleInteger-method}
 
 
