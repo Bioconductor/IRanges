@@ -110,8 +110,10 @@ setReplaceMethod("reducerParams", "RDApplyParams", function(x, value) {
 RDApplyParams <- function(rangedData, applyFun, applyParams, #excludePattern,
                           filterRules, simplify, reducerFun, reducerParams)
 {
-  mc <- as.list(match.call()[-1])
-  do.call("new", c("RDApplyParams", mc))
+  nms <- names(match.call()[-1])
+  params <- lapply(nms, function(x) get(x))
+  names(params) <- nms
+  do.call("new", c("RDApplyParams", params))
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
