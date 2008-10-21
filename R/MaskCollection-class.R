@@ -407,27 +407,8 @@ setMethod("append", c("MaskCollection", "MaskCollection"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Some useful endomorphisms: "narrow", "reduce" and "gaps".
+### Some useful endomorphisms: "reduce", "gaps" and "subseq".
 ###
-
-setMethod("narrow", "MaskCollection",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-    {
-        solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
-        solved_start <- start(solved_SEW)
-        solved_end <- end(solved_SEW)
-        solved_width <- width(solved_SEW)
-        x@nir_list <- lapply(nir_list(x),
-            function(nir) shift(restrict(nir, start=solved_start, end=solved_end),
-                                1L - solved_start)
-        )
-        x@width <- solved_width
-        if (!normargUseNames(use.names))
-            x@NAMES <- as.character(NA)
-            x@desc <- as.character(NA)
-        x
-    }
-)
 
 ### Always return a MaskCollection object of length 1 where the mask is active.
 ### 'with.inframe.attrib' is ignored.
@@ -468,6 +449,25 @@ setMethod("gaps", "MaskCollection",
         )
         x@NAMES <- as.character(NA)
         x@desc <- as.character(NA)
+        x
+    }
+)
+
+setMethod("subseq", "MaskCollection",
+    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+    {
+        solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
+        solved_start <- start(solved_SEW)
+        solved_end <- end(solved_SEW)
+        solved_width <- width(solved_SEW)
+        x@nir_list <- lapply(nir_list(x),
+            function(nir) shift(restrict(nir, start=solved_start, end=solved_end),
+                                1L - solved_start)
+        )
+        x@width <- solved_width
+        if (!normargUseNames(use.names))
+            x@NAMES <- as.character(NA)
+            x@desc <- as.character(NA)
         x
     }
 )

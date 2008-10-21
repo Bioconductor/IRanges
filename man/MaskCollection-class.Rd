@@ -42,9 +42,9 @@
 \alias{append,MaskCollection,MaskCollection-method}
 
 % Endomorphisms:
-\alias{narrow,MaskCollection-method}
 \alias{reduce,MaskCollection-method}
 \alias{gaps,MaskCollection-method}
+\alias{subseq,MaskCollection-method}
 
 % Coercion:
 \alias{coerce,MaskCollection,NormalIRanges-method}
@@ -195,10 +195,6 @@
 
   \describe{
     \item{}{
-      \code{narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)}:
-      Narrow the masks in \code{x}.
-    }
-    \item{}{
       \code{reduce(x)}:
       Return a MaskCollection object of length 1 made of the union
       (or merging, or collapsing) of all the active masks in \code{x}.
@@ -206,6 +202,14 @@
     \item{}{
       \code{gaps(x)}:
       Invert the masks in \code{x}.
+    }
+    \item{}{
+      \code{subseq(x, start=NA, end=NA, width=NA, use.names=TRUE)}:
+      If \code{y} is a sequence that \code{x} has been put on top of,
+      then \code{subseq} will return the set of submasks that go on top
+      of the subsequence obtained by calling \code{subseq} on \code{y}
+      (\code{subseq} must be called on \code{x} with the same arguments
+      that have been used when called on \code{y}).
     }
   }
 }
@@ -254,7 +258,7 @@
   length(mymasks[[2]])
   mymasks[[2]][-3]
   append(mymasks[-2], gaps(mymasks[2]))
-  mymasks2 <- narrow(mymasks, start=8)
+  mymasks2 <- subseq(mymasks, start=8)
   mymasks2
   mymasks2[[2]]
 }

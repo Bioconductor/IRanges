@@ -1,9 +1,6 @@
 Immediate TODO list
 ---------
 
-- Rename "narrow" method for MaskCollection objects "subseq" (this reflects
-  better what it really does).
-
 - Provide a way to reduce ranges separated by a max distance or a min overlap
   (Michael's suggestion).
 
