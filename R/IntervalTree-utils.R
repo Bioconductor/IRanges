@@ -27,7 +27,7 @@ setMethod("overlap", c("IntervalTree", "Ranges"),
               fun <- paste(fun, "_multiple", sep = "")
             validObject(query)
             result <- .IntervalTreeCall(object, fun, query)
-            validObject(result)
+            validObject(result, complete=TRUE)
             result
           })
 
