@@ -454,7 +454,7 @@ setMethod("gaps", "MaskCollection",
 )
 
 setMethod("subseq", "MaskCollection",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+    function(x, start=NA, end=NA, width=NA)
     {
         solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
         solved_start <- start(solved_SEW)
@@ -465,9 +465,6 @@ setMethod("subseq", "MaskCollection",
                                 1L - solved_start)
         )
         x@width <- solved_width
-        if (!normargUseNames(use.names))
-            x@NAMES <- as.character(NA)
-            x@desc <- as.character(NA)
         x
     }
 )

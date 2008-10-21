@@ -204,7 +204,7 @@
       Invert the masks in \code{x}.
     }
     \item{}{
-      \code{subseq(x, start=NA, end=NA, width=NA, use.names=TRUE)}:
+      \code{subseq(x, start=NA, end=NA, width=NA)}:
       If \code{y} is a sequence that \code{x} has been put on top of,
       then \code{subseq} will return the set of submasks that go on top
       of the subsequence obtained by calling \code{subseq} on \code{y}
