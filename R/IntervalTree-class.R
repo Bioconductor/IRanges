@@ -34,7 +34,7 @@ setAs("IRanges", "IntervalTree", function(from) {
   new("IntervalTree", ptr = ptr, mode = "integer")
 })
 
-setAs("XRanges", "IntervalTree", function(from) {
+setAs("Ranges", "IntervalTree", function(from) {
   as(as(from, "IRanges"), "IntervalTree")
 })
 
