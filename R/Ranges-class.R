@@ -23,12 +23,15 @@ setClass("Ranges", contains = "VIRTUAL")
 ###     update
 ###     [, [<-, rep
 ###     shift, restrict, narrow, reduce, gaps
-###     union, intersect, setdiff
 ###
-###   Other operations:
+###   More operations:
 ###     c
 ###     split
 ###     overlap
+###
+###   Normality and operations on sets:
+###     isNormal, whichFirstNotNormal
+###     union, intersect, setdiff
 ###
 ### Note that, except for some default methods provided below (and implemented
 ### as formal algorithms), Ranges subclasses need to implement their own
@@ -136,31 +139,6 @@ setGeneric("gaps", signature="x",
     function(x, start=NA, end=NA) standardGeneric("gaps")
 )
 
-setMethod("union", c("Ranges", "Ranges"),
-    function(x, y)
-    {
-        reduce(c(x, y))
-    }
-)
-
-setMethod("intersect", c("Ranges", "Ranges"),
-    function(x, y)
-    {
-        start <- min(c(start(x), start(y)))
-        end <- max(c(end(x), end(y)))
-        setdiff(x, gaps(y, start, end))
-    }
-)
-
-setMethod("setdiff", c("Ranges", "Ranges"),
-    function(x, y)
-    {
-        start <- min(c(start(x), start(y)))
-        end <- max(c(end(x), end(y)))
-        gaps(union(gaps(x, start, end), y), start, end)
-    }
-)
-
 ## Find objects in the index that overlap those in a query set
 setGeneric("overlap", signature = c("object", "query"),
     function(object, query, maxgap = 0, multiple = TRUE, ...)
@@ -170,6 +148,55 @@ setGeneric("overlap", signature = c("object", "query"),
 setMethod("overlap", c("Ranges", "missing"),
     function(object, query, maxgap = 0, multiple = TRUE)
         overlap(object, object, maxgap, multiple)
+)
+
+setGeneric("isNormal", function(x) standardGeneric("isNormal"))
+
+setMethod("isNormal", "Ranges",
+    function(x)
+    {
+        all_ok <- all(width(x) >= 1)
+        if (length(x) >= 2)
+            all_ok <- all_ok && all(start(x)[-1] - end(x)[-length(x)] >= 2)
+        all_ok
+    }
+)
+
+setGeneric("whichFirstNotNormal", function(x) standardGeneric("whichFirstNotNormal"))
+
+setMethod("whichFirstNotNormal", "Ranges",
+    function(x)
+    {
+        is_ok <- width(x) >= 1
+        if (length(x) >= 2)
+            is_ok <- is_ok & c(TRUE, start(x)[-1] - end(x)[-length(x)] >= 2)
+        which(!is_ok)[1]
+    }
+)
+
+### union(), intersect() and setdiff() are not endomorphisms.
+setMethod("union", c("Ranges", "Ranges"),
+    function(x, y)
+    {
+        z <- reduce(c(x, y))
+        z[width(z) != 0]
+    }
+)
+setMethod("intersect", c("Ranges", "Ranges"),
+    function(x, y)
+    {
+        start <- min(c(start(x), start(y)))
+        end <- max(c(end(x), end(y)))
+        setdiff(x, gaps(y, start=start, end=end))
+    }
+)
+setMethod("setdiff", c("Ranges", "Ranges"),
+    function(x, y)
+    {
+        start <- min(c(start(x), start(y)))
+        end <- max(c(end(x), end(y)))
+        gaps(union(gaps(x, start=start, end=end), y), start=start, end=end)
+    }
 )
 
 

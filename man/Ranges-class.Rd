@@ -22,6 +22,13 @@
 \alias{show,Ranges-method}
 \alias{[<-,Ranges,ANY,ANY,ANY-method}
 \alias{rep,Ranges-method}
+\alias{isNormal}
+\alias{isNormal,Ranges-method}
+\alias{whichFirstNotNormal}
+\alias{whichFirstNotNormal,Ranges-method}
+\alias{union,Ranges,Ranges-method}
+\alias{intersect,Ranges,Ranges-method}
+\alias{setdiff,Ranges,Ranges-method}
 
 % Old stuff:
 \alias{first}
@@ -85,8 +92,10 @@
   for \link{IRanges} objects.
   Also more operations on Ranges objects are described in the man page
   for \link{IRanges-utils} (\code{\link{shift}}, \code{\link{restrict}},
-  \code{\link{narrow}}, \code{\link{reduce}}, \code{\link{gaps}})
-  and for \link{IntervalTree-class} (\code{\link{overlap}}).
+  \code{\link{narrow}}, \code{\link{reduce}}, \code{\link{gaps}}),
+  for \link{IntervalTree} objects (\code{\link{overlap}})
+  and for \link{RangesList} objects (\code{split} method for Ranges
+  objects).
 
   \describe{
     \item{}{
@@ -161,29 +170,81 @@
       Return a new Ranges object made of the repeated elements.
     }
     \item{}{
-      \code{union(x, y)}:
-    }
-    \item{}{
-      \code{intersect(x, y)}:
-    }
-    \item{}{
-      \code{setdiff(x, y)}:
-    }
-    \item{}{
       \code{c(x, ...)}:
+      Concatenate \code{x} and the Ranges objects in \code{...} together.
+      The result is returned as an \link{IRanges} object.
     }
   }
 }
 
+\section{Normality}{
+  A Ranges object \code{x} is implicitly representing an arbitrary finite
+  set of integers (that are not necessarily consecutive). This set is the
+  set obtained by taking the union of all the values in all the ranges in
+  \code{x}. This representation is clearly not unique: many different
+  Ranges objects can be used to represent the same set of integers.
+  However one and only one of them is guaranteed to be "normal".
+
+  By definition a Ranges object is said to be "normal" when its ranges are:
+    (a) not empty (i.e. they have a non-null width);
+    (b) not overlapping;
+    (c) ordered from left to right;
+    (d) not even adjacent (i.e. there must be a non empty gap between 2
+        consecutive ranges).
+
+  Here is a simple algorithm to determine whether \code{x} is "normal":
+    (1) if \code{length(x) == 0}, then \code{x} is normal;
+    (2) if \code{length(x) == 1}, then \code{x} is normal iff \code{width(x) >= 1};
+    (3) if \code{length(x) >= 2}, then \code{x} is normal iff:
+        \preformatted{  start(x)[i] <= end(x)[i] < start(x)[i+1] <= end(x)[i+1]}
+        for every 1 <= \code{i} < \code{length(x)}.
+
+  The obvious advantage of using a "normal" Ranges object to represent
+  a given finite set of integers is that it is the smallest in terms of
+  of number of ranges and therefore in terms of storage space.
+  Also the fact that we impose its ranges to be ordered from left to
+  right makes it unique for this representation.
+
+  A special container (\link{NormalIRanges}) is provided for holding
+  a "normal" \link{IRanges} object: a \link{NormalIRanges} object is
+  just an \link{IRanges} object that is guaranteed to be "normal".
+
+  Here are some methods related to the notion of "normal" Ranges
+  and to the use of Ranges objects for representing sets of integers
+  (\code{x} and \code{y} are Ranges objects):
+
+  \describe{
+    \item{}{
+      \code{isNormal(x)}:
+      Return a logical value indicating whether \code{x} is "normal" or not.
+    }
+    \item{}{
+      \code{whichFirstNotNormal(x)}:
+      Return \code{NA} if \code{x} is normal, or the smallest valid indice
+      \code{i} in \code{x} for which \code{x[1:i]} is not "normal".
+    }
+    \item{}{
+      \code{union(x, y)}, \code{intersect(x, y)} and \code{setdiff(x, y)}:
+      Return a "normal" \link{IRanges} object representing the union,
+      intersection or (asymmetric!) difference of the sets of integers
+      represented by \code{x} and \code{y}.
+    }
+  }
+}
+
+\author{H. Pages}
+
 \seealso{
   \link{IRanges-class},
-  \link{XRanges-class},
   \link{IRanges-utils},
+  \link{XRanges-class},
   \link{RangedData-class},
   \link{IntervalTree-class},
+  \code{\link{update}},
+  \code{\link{as.matrix}},
   \code{\link{as.data.frame}},
   \code{\link{duplicated}},
-  \code{\link{as.matrix}}
+  \code{\link{rep}}
 }
 
 \examples{

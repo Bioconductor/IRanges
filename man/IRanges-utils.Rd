@@ -15,9 +15,6 @@
 \alias{reduce,IRanges-method}
 \alias{gaps}
 \alias{gaps,IRanges-method}
-\alias{union,Ranges,Ranges-method} 
-\alias{intersect,Ranges,Ranges-method}
-\alias{setdiff,Ranges,Ranges-method}
 
 % Coercion:
 \alias{asNormalIRanges}
@@ -151,6 +148,7 @@
 \author{H. Pages}
 
 \seealso{
+  \link{Ranges-class},
   \link{IRanges-class},
   \code{\link{solveUserSEW}},
   \code{\link{successiveViews}}

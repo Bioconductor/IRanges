@@ -10,10 +10,6 @@
 \alias{start,IRanges-method}
 \alias{width,IRanges-method}
 \alias{names,IRanges-method}
-\alias{isNormal}
-\alias{isNormal,IRanges-method}
-\alias{whichFirstNotNormal}
-\alias{whichFirstNotNormal,IRanges-method}
 \alias{start<-,IRanges-method}
 \alias{width<-,IRanges-method}
 \alias{end<-,IRanges-method}
@@ -38,15 +34,14 @@
   The IRanges class is a simple implementation of the \link{Ranges}
   container where 2 integer vectors of the same length are used to
   store the start and width values.
-
-  A NormalIRanges object is an IRanges object that is "normal".
-  See the Normality section below for the definition and properties
-  of normal IRanges objects.
-}
-
-\details{
   See the \link{Ranges} virtual class for a formal definition of
-  \link{Ranges} objects.
+  \link{Ranges} objects and for their methods (all of them should
+  work for IRanges objects).
+
+  A NormalIRanges object is just an IRanges object that is guaranteed
+  to be "normal". See the Normality section in the man page for
+  \link{Ranges} objects for the definition and properties
+  of "normal" \link{Ranges} objects.
 }
 
 \section{Constructor}{
@@ -68,60 +63,14 @@
   }
 }
 
-\section{Normality}{
-  A NormalIRanges object is an IRanges object that is "normal".
-
-  An IRanges object is said to be "normal" when its ranges are:
-    (a) not empty (i.e. they have a non-null width);
-    (b) not overlapping;
-    (c) ordered from left to right;
-    (d) not even adjacent (i.e. there must be a non empty gap between 2
-        consecutive ranges).
-  If \code{x} is an IRanges object with more than one element (i.e.
-  \code{length(x) >= 2}), then \code{x} is normal iff:
-  \preformatted{  start(x)[i] <= end(x)[i] < start(x)[i+1] <= end(x)[i+1]}
-  for every 1 <= \code{i} < \code{length(x)}.
-  If \code{length(x) == 1}, then \code{x} is normal iff \code{width(x) >= 1}.
-  If \code{length(x) == 0}, then \code{x} is normal.
-
-  An IRanges object can be used to represent an arbitrary finite set of
-  integers (that are not necessarily consecutive).
-  Now the 2 most interesting properties of normal IRanges objects are that:
-  (1) they are the "best" (in terms of storage space) IRanges objects for
-  representing arbitrary finite sets of integers and (2) the mapping between
-  finite sets of integers and normal IRanges objects is one-to-one.
-  More precisely, if \code{x} is an IRanges object, then it can be seen
-  as representing the set of integers obtained by taking the union of
-  all its ranges.
-  Inversely, since any finite set of integers can be obtained by a finite
-  union of ranges, then it can be represented by an IRanges object, but this
-  representation is clearly not unique.
-  However, among all the IRanges objects that represent (or map) the
-  same finite set of integers, only one is normal, and this normal
-  representation is minimal in terms of length (and therefore in terms
-  of storage space).
-
-  Use the \code{isNormal} method to check whether an IRanges object is
-  normal or not. In the code snippet below, \code{x} is an IRanges object.
-
+\section{Methods for NormalIRanges objects}{
   \describe{
     \item{}{
-      \code{isNormal(x)}:
-      Return a logical value indicating whether \code{x} is normal or not.
-    }
-    \item{}{
-      \code{whichFirstNotNormal(x)}:
-      Return \code{NA} if \code{x} is normal, or the smallest valid indice
-      \code{i} in \code{x} for which \code{x[1:i]} is not normal.
-    }
-    \item{}{
       \code{max(x)}:
-      (Defined for NormalIRanges objects only.)
       The maximum value in the finite set of integers represented by \code{x}.
     }
     \item{}{
       \code{min(x)}:
-      (Defined for NormalIRanges objects only.)
       The minimum value in the finite set of integers represented by \code{x}.
     }
   }

@@ -50,37 +50,6 @@ setMethod("names", "IRanges", function(x) x@NAMES)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "isNormal" and "whichFirstNotNormal" generics and methods.
-###
-### NOTE: Should they be part of the Ranges API?
-###
-
-setGeneric("isNormal", function(x) standardGeneric("isNormal"))
-
-setMethod("isNormal", "IRanges",
-    function(x)
-    {
-        all_ok <- all(width(x) >= 1)
-        if (length(x) >= 2)
-            all_ok <- all_ok && all(start(x)[-1] - end(x)[-length(x)] >= 2)
-        all_ok
-    }
-)
-
-setGeneric("whichFirstNotNormal", function(x) standardGeneric("whichFirstNotNormal"))
-
-setMethod("whichFirstNotNormal", "IRanges",
-    function(x)
-    {
-        is_ok <- width(x) >= 1
-        if (length(x) >= 2)
-            is_ok <- is_ok & c(TRUE, start(x)[-1] - end(x)[-length(x)] >= 2)
-        which(!is_ok)[1]
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "isEmpty" default method for Ranges objects would work just fine on a
 ### NormalIRanges object but we can take advantage of the normality to make
 ### it slightly more efficient.
@@ -510,6 +479,7 @@ setMethod("[", "IRanges",
 ### Combining.
 ###
 
+### c() is not an endomorphism.
 setMethod("c", "IRanges",
     function(x, ..., recursive = FALSE)
     {
