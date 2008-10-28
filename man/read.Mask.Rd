@@ -151,20 +151,20 @@
 
       ## Read the RepeatMasker .out file for chrM in ce2:
       file3 <- system.file("extdata", "ce2chrM.fa.out", package="IRanges")
-      RM_mask <- read.rmMask(file3, seqname="chrM", mask.width=chrM_length)
-      RM_mask
+      RMmask <- read.rmMask(file3, seqname="chrM", mask.width=chrM_length)
+      RMmask
 
       ## Read the Tandem Repeats Finder .bed file for chrM in ce2:
       file4 <- system.file("extdata", "ce2chrM.bed", package="IRanges")
-      TRF_mask <- read.trfMask(file4, seqname="chrM", mask.width=chrM_length)
-      TRF_mask
-      desc(TRF_mask) <- paste(desc(TRF_mask), "[period<=12]")
-      TRF_mask
+      TRFmask <- read.trfMask(file4, seqname="chrM", mask.width=chrM_length)
+      TRFmask
+      desc(TRFmask) <- paste(desc(TRFmask), "[period<=12]")
+      TRFmask
 
       ## Put the 2 masks on chrM:
       chrM <- Celegans$chrM
-      masks(chrM) <- RM_mask  # this would drop all current masks, if any
-      masks(chrM) <- append(masks(chrM), TRF_mask)
+      masks(chrM) <- RMmask  # this would drop all current masks, if any
+      masks(chrM) <- append(masks(chrM), TRFmask)
       chrM
   }
 }
