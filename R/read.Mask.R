@@ -5,12 +5,12 @@
 ### From an NCBI "agp" file (for chrY in hs b36v3):
 ###   library(BSgenome.Hsapiens.NCBI.b36v3)
 ###   file1 <- system.file("extdata", "hs_b36v3_chrY.agp", package="IRanges")
-###   mask1 <- read.agpMask(file1, length(Hsapiens$chrY), seqname="chrY")
+###   mask1 <- read.agpMask(file1, seqname="chrY", mask.width=length(Hsapiens$chrY))
 ###
 ### From an UCSC "gap" file (for chrY in hg18):
 ###   library(BSgenome.Hsapiens.UCSC.hg18)
 ###   file2 <- system.file("extdata", "chrY_gap.txt", package="IRanges")
-###   mask2 <- read.gapMask(file2, length(Hsapiens$chrY), seqname="chrY")
+###   mask2 <- read.gapMask(file2, seqname="chrY", mask.width=length(Hsapiens$chrY))
 ###
 ### From an UCSC "lift" file (for hg18):
 ###   file3 <- system.file("extdata", "hg18liftAll.lft", package="IRanges")
@@ -19,43 +19,47 @@
 ### From a RepeatMasker .out file (for chrM in ce2):
 ###   library(BSgenome.Celegans.UCSC.ce2)
 ###   file4 <- system.file("extdata", "ce2chrM.fa.out", package="IRanges")
-###   mask4 <- read.rmMask(file4, length(Celegans$chrM)) 
+###   mask4 <- read.rmMask(file4, seqname="chrM", mask.width=length(Celegans$chrM)) 
 ###
 ### From a Tandem Repeats Finder .bed file (for chrM in ce2):
 ###   file5 <- system.file("extdata", "ce2chrM.bed", package="IRanges")
-###   mask5 <- read.trfMask(file5, length(Celegans$chrM)) 
+###   mask5 <- read.trfMask(file5, seqname="chrM", mask.width=length(Celegans$chrM)) 
 ###
 ### -------------------------------------------------------------------------
 
 
-.emptyMaskWithWarning <- function(mask_name, mask_desc, seqname, width)
+.showDistinctSeqnamesAndStop <- function(seqnames)
 {
-    warning("no ", mask_desc, " for sequence \"", seqname, "\" in this file, ",
-            "returning empty mask")
-    ans <- Mask(width, start=integer(0), width=integer(0))
-    names(ans) <- mask_name
-    desc(ans) <- paste(mask_desc, "(empty)")
+    distinct_seqnames <- paste("\"", unique(seqnames), "\"", sep="")
+    distinct_seqnames <- paste(distinct_seqnames, collapse=", ")
+    stop(length(distinct_seqnames), " distinct seqnames found in this file: ", distinct_seqnames)
+}
+
+.newEmptyMask <- function(seqname, mask.width, mask.name, mask.desc, nofound_what="information")
+{
+    msg <- paste("No ", nofound_what, " found for sequence \"",
+                 seqname, "\" in this file. ", sep="")
+    if (is.na(mask.width))
+        stop(msg, "Please use the\n",
+             "  'mask.width' argument to specify the width of the empty mask to\n",
+             "  return (i.e. the length of the sequence this mask will be put on).")
+    warning(msg, "returning empty mask")
+    ans <- Mask(mask.width)  # empty mask
+    names(ans) <- mask.name
+    desc(ans) <- paste(mask.desc, "(empty)")
     ans
 }
 
-.read.MaskFromAgpOrGap <- function(agp_or_gap, file, width, seqname,
-                                   gap.types, use.gap.types)
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### read.agpMask() and read.gapMask() extract the AGAPS mask from an NCBI
+### "agp" file or a UCSC "gap" file, respectively.
+###
+
+.read.agpORgapFile <- function(agp_or_gap, file)
 {
-    if (!isSingleNumber(width))
-        stop("'width' must be a single integer")
-    if (!is.integer(width))
-        width <- as.integer(width)
-    if (!isSingleString(seqname))
-        stop("'seqname' must be a single string")
-    if (!is.null(gap.types) && (!is.character(gap.types)
-                                || any(is.na(gap.types))
-                                || any(duplicated(gap.types))))
-        stop("'gap.types' must be 'NULL' or a character vector ",
-             "with no NAs and no duplicated")
-    if (!isTRUEorFALSE(use.gap.types))
-        stop("'use.gap.types' must be TRUE or FALSE")
-    if (agp_or_gap == "agp") {
-        ALL_COLS <- c(
+    if (agp_or_gap == "agp")
+        COL2CLASS <- c(
             `chrom`="character",
             `chr_start`="integer",
             `chr_stop`="integer",
@@ -66,8 +70,8 @@
             `linkage`="character",
             `empty`="character"
         )
-    } else if (agp_or_gap == "gap") {
-        ALL_COLS <- c(
+    else if (agp_or_gap == "gap")
+        COL2CLASS <- c(
             `bin`="integer",
             `chrom`="character",
             `chr_start`="integer",
@@ -78,9 +82,8 @@
             `gap_type`="character",
             `bridge`="character"
         )
-    } else {
-        stop("IRanges internal error: please report")
-    }
+    else
+        stop("read.Mask internal error: please report")
     COLS <- c(
         "chrom",
         "chr_start",
@@ -89,18 +92,34 @@
         "gap_len",
         "gap_type"
     )
-    ALL_COLS[!(names(ALL_COLS) %in% COLS)] <- "NULL"
+    COL2CLASS[!(names(COL2CLASS) %in% COLS)] <- "NULL"
     data <- read.table(file,
                        sep="\t",
-                       col.names=names(ALL_COLS),
-                       colClasses=ALL_COLS,
+                       col.names=names(COL2CLASS),
+                       colClasses=COL2CLASS,
                        check.names=FALSE,
                        fill=TRUE)
-    if (seqname == "?") {
-        found_seqnames <- paste("\"", unique(data$chrom), "\"", sep="")
-        found_seqnames <- paste(found_seqnames, collapse=", ")
-        stop("seqnames found in this file: ", found_seqnames)
-    }
+}
+
+.read.agpORgapMask <- function(agp_or_gap, file, seqname, mask.width,
+                               gap.types, use.gap.types)
+{
+    if (!isSingleString(seqname))
+        stop("'seqname' must be a single string")
+    if (!isSingleNumberOrNA(mask.width))
+        stop("'mask.width' must be a single integer or 'NA'")
+    if (!is.integer(mask.width))
+        mask.width <- as.integer(mask.width)
+    if (!is.null(gap.types) && (!is.character(gap.types)
+                                || any(is.na(gap.types))
+                                || any(duplicated(gap.types))))
+        stop("'gap.types' must be 'NULL' or a character vector ",
+             "with no NAs and no duplicated")
+    if (!isTRUEorFALSE(use.gap.types))
+        stop("'use.gap.types' must be TRUE or FALSE")
+    data <- .read.agpORgapFile(agp_or_gap, file)
+    if (seqname == "?")
+        .showDistinctSeqnamesAndStop(data$chrom)
     data <- data[data$chrom == seqname, ]
     ii <- data$part_type == "N"
     if (agp_or_gap == "agp") {
@@ -113,14 +132,14 @@
         found_types <- paste(found_types, collapse=", ")
         stop("gap types found in this file for sequence \"", seqname, "\": ", found_types)
     }
-    mask_name <- "AGAPS"
-    mask_desc <- "assembly gaps"
+    mask.name <- "AGAPS"
+    mask.desc <- "assembly gaps"
     if (!is.null(gap.types)) {
         data <- data[data$gap_type %in% gap.types, ]
-        mask_desc <- paste(mask_desc, " [type=", paste(gap.types, collapse="|"), "]", sep="")
+        mask.desc <- paste(mask.desc, " [type=", paste(gap.types, collapse="|"), "]", sep="")
     }
     if (nrow(data) == 0)
-        return(.emptyMaskWithWarning(mask_name, mask_desc, seqname, width))
+        return(.newEmptyMask(seqname, mask.width, mask.name, mask.desc, mask.desc))
     if (agp_or_gap == "agp")
         ranges_start <- data$chr_start
     else
@@ -141,62 +160,58 @@
     } else {
         nir1 <- asNormalIRanges(ranges, force=TRUE)
     }
-    new2("MaskCollection", nir_list=list(nir1), width=width, active=TRUE,
-                           NAMES=mask_name, desc=mask_desc, check=FALSE)
+    ## Don't use new2(): the validity of the new mask needs to be checked!
+    new("MaskCollection", nir_list=list(nir1), width=mask.width, active=TRUE,
+                          NAMES=mask.name, desc=mask.desc)
 }
 
-read.agpMask <- function(file, width, seqname="?", gap.types=NULL, use.gap.types=FALSE)
-{
-    .read.MaskFromAgpOrGap("agp", file, width, seqname, gap.types, use.gap.types)
-}
+read.agpMask <- function(file, seqname="?", mask.width=NA, gap.types=NULL, use.gap.types=FALSE)
+    .read.agpORgapMask("agp", file, seqname, mask.width, gap.types, use.gap.types)
 
-read.gapMask <- function(file, width, seqname="?", gap.types=NULL, use.gap.types=FALSE)
-{
-    .read.MaskFromAgpOrGap("gap", file, width, seqname, gap.types, use.gap.types)
-}
+read.gapMask <- function(file, seqname="?", mask.width=NA, gap.types=NULL, use.gap.types=FALSE)
+    .read.agpORgapMask("gap", file, seqname, mask.width, gap.types, use.gap.types)
 
-read.liftMask <- function(file, seqname="?", width=NA)
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### read.liftMask() extracts the AGAPS mask from a UCSC "lift" file.
+###
+
+.read.liftFile <- function(file)
 {
-    if (!isSingleString(seqname))
-        stop("'seqname' must be a single string")
-    if (!isSingleNumberOrNA(width))
-        stop("'width' must be a single integer or 'NA'")
-    if (!is.integer(width))
-        width <- as.integer(width)
-    ALL_COLS <- c(
+    COL2CLASS <- c(
         `offset`="integer",
         `xxxx`="NULL",  # not sure how to call this
         `width`="integer",
         `seqname`="character",
         `seqlen`="integer"
     )
-    data <- read.table(file,
-                       col.names=names(ALL_COLS),
-                       colClasses=ALL_COLS,
-                       check.names=FALSE)
-    if (seqname == "?") {
-        found_seqnames <- paste("\"", unique(data$seqname), "\"", sep="")
-        found_seqnames <- paste(found_seqnames, collapse=", ")
-        stop("seqnames found in this file: ", found_seqnames)
-    }
-    data <- data[data$seqname %in% seqname, ]
-    if (nrow(data) == 0) {
-        if (is.na(width))
-            stop("unknown sequence \"", seqname, "\", ",
-                 "please specify the width of the empty mask to return")
-        warning("unknown sequence \"", seqname, "\", returning empty mask")
-        ans <- Mask(width, start=integer(0), width=integer(0))
-        names(ans) <- "AGAPS"
-        desc(ans) <- "assembly gaps (empty)"
-        return(ans)
-    }
+    read.table(file,
+               col.names=names(COL2CLASS),
+               colClasses=COL2CLASS,
+               check.names=FALSE)
+}
+
+read.liftMask <- function(file, seqname="?", mask.width=NA)
+{
+    if (!isSingleString(seqname))
+        stop("'seqname' must be a single string")
+    if (!isSingleNumberOrNA(mask.width))
+        stop("'mask.width' must be a single integer or 'NA'")
+    if (!is.integer(mask.width))
+        mask.width <- as.integer(mask.width)
+    data <- .read.liftFile(file)
+    if (seqname == "?")
+        .showDistinctSeqnamesAndStop(data$seqname)
+    data <- data[data$seqname == seqname, ]
+    if (nrow(data) == 0)
+        return(.newEmptyMask(seqname, mask.width, "AGAPS", "assembly gaps"))
     ## Sanity checks
     seqlen0 <- unique(data$seqlen)
     if (length(seqlen0) != 1)
         stop("broken \"lift\" file: contains different lengths ",
              "for sequence \"", seqname, "\"")
-    if (!is.na(width) && width != seqlen0)
-        stop("when specified, 'width' must match the length found ",
+    if (!is.na(mask.width) && mask.width != seqlen0)
+        stop("when specified, 'mask.width' must match the length found ",
              "in the file for sequence \"", seqname, "\"")
     contigs0 <- IRanges(start=data$offset+1, width=data$width)
     contigs1 <- asNormalIRanges(contigs0, force=TRUE)
@@ -209,17 +224,17 @@ read.liftMask <- function(file, seqname="?", width=NA)
     ans
 }
 
-read.rmMask <- function(file, width, use.IDs=FALSE)
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### read.rmMask() extracts the RM mask from a RepeatMasker .out file.
+###
+### See http://www.repeatmasker.org/webrepeatmaskerhelp.html for a
+### description of the RepeatMasker output format.
+###
+
+.read.rmFile <- function(file)
 {
-    if (!isSingleNumber(width))
-        stop("'width' must be a single integer")
-    if (!is.integer(width))
-        width <- as.integer(width)
-    if (!isTRUEorFALSE(use.IDs))
-        stop("'use.IDs' must be TRUE or FALSE")
-    ## For a description of RepeatMasker output format:
-    ##   http://www.repeatmasker.org/webrepeatmaskerhelp.html
-    ALL_COLS <- c(
+    COL2CLASS <- c(
         `SW_score`="integer",
         `perc_div`="numeric",
         `perc_del`="numeric",
@@ -236,13 +251,31 @@ read.rmMask <- function(file, width, use.IDs=FALSE)
         `left_in_repeat`="character",
         `ID`="character"
     )
-    COLS <- c("begin_in_query", "end_in_query", "ID")
-    ALL_COLS[!(names(ALL_COLS) %in% COLS)] <- "NULL"
-    data <- read.table(file,
-                       col.names=names(ALL_COLS),
-                       colClasses=ALL_COLS,
-                       skip=3,
-                       check.names=FALSE)
+    COLS <- c("query_sequence", "begin_in_query", "end_in_query", "ID")
+    COL2CLASS[!(names(COL2CLASS) %in% COLS)] <- "NULL"
+    read.table(file,
+               col.names=names(COL2CLASS),
+               colClasses=COL2CLASS,
+               skip=3,
+               check.names=FALSE)
+}
+
+read.rmMask <- function(file, seqname="?", mask.width=NA, use.IDs=FALSE)
+{
+    if (!isSingleString(seqname))
+        stop("'seqname' must be a single string")
+    if (!isSingleNumberOrNA(mask.width))
+        stop("'mask.width' must be a single integer or 'NA'")
+    if (!is.integer(mask.width))
+        mask.width <- as.integer(mask.width)
+    if (!isTRUEorFALSE(use.IDs))
+        stop("'use.IDs' must be TRUE or FALSE")
+    data <- .read.rmFile(file)
+    if (seqname == "?")
+        .showDistinctSeqnamesAndStop(data$query_sequence)
+    data <- data[data$query_sequence == seqname, ]
+    if (nrow(data) == 0)
+        return(.newEmptyMask(seqname, mask.width, "RM", "RepeatMasker"))
     ranges <- IRanges(start=data$begin_in_query, end=data$end_in_query)
     if (use.IDs) {
         names(ranges) <- data$ID
@@ -254,17 +287,20 @@ read.rmMask <- function(file, width, use.IDs=FALSE)
     } else {
         nir1 <- asNormalIRanges(ranges, force=TRUE)
     }
-    new2("MaskCollection", nir_list=list(nir1), width=width, active=TRUE,
-                           NAMES="RM", desc="RepeatMasker", check=FALSE)
+    ## Don't use new2(): the validity of the new mask needs to be checked!
+    new("MaskCollection", nir_list=list(nir1), width=mask.width, active=TRUE,
+                          NAMES="RM", desc="RepeatMasker")
 }
 
-read.trfMask <- function(file, width)
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### read.trfMask() extracts the TRF mask from a Tandem Repeats Finder .bed
+### file.
+###
+
+.read.trfFile <- function(file)
 {
-    if (!isSingleNumber(width))
-        stop("'width' must be a single integer")
-    if (!is.integer(width))
-        width <- as.integer(width)
-    ALL_COLS <- c(
+    COL2CLASS <- c(
         `chrom`="character",
         `chromStart`="integer",
         `chromEnd`="integer",
@@ -282,16 +318,32 @@ read.trfMask <- function(file, width)
         `entropy`="numeric",
         `sequence`="character"
     )
-    COLS <- c("chromStart", "chromEnd")
-    ALL_COLS[!(names(ALL_COLS) %in% COLS)] <- "NULL"
-    data <- read.table(file,
-                       col.names=names(ALL_COLS),
-                       colClasses=ALL_COLS,
-                       check.names=FALSE)
+    COLS <- c("chrom", "chromStart", "chromEnd")
+    COL2CLASS[!(names(COL2CLASS) %in% COLS)] <- "NULL"
+    read.table(file,
+               col.names=names(COL2CLASS),
+               colClasses=COL2CLASS,
+               check.names=FALSE)
+}
+
+read.trfMask <- function(file, seqname="?", mask.width=NA)
+{
+    if (!isSingleString(seqname))
+        stop("'seqname' must be a single string")
+    if (!isSingleNumberOrNA(mask.width))
+        stop("'mask.width' must be a single integer or 'NA'")
+    if (!is.integer(mask.width))
+        mask.width <- as.integer(mask.width)
+    data <- .read.trfFile(file)
+    if (seqname == "?")
+        .showDistinctSeqnamesAndStop(data$chrom)
+    data <- data[data$chrom == seqname, ]
+    if (nrow(data) == 0)
+        return(.newEmptyMask(seqname, mask.width, "TRF", "Tandem Repeats Finder"))
     ranges <- IRanges(start=data$chromStart+1, end=data$chromEnd)
     nir1 <- asNormalIRanges(ranges, force=TRUE)
-    #name1 <- "Tandem Repeats Finder [period<=12]"
-    new2("MaskCollection", nir_list=list(nir1), width=width, active=TRUE,
-                           NAMES="TRF", desc="Tandem Repeats Finder", check=FALSE)
+    ## Don't use new2(): the validity of the new mask needs to be checked!
+    new("MaskCollection", nir_list=list(nir1), width=mask.width, active=TRUE,
+                          NAMES="TRF", desc="Tandem Repeats Finder")
 }
 

@@ -172,8 +172,13 @@ setReplaceMethod("desc", "MaskCollection",
 
 .valid.MaskCollection <- function(x)
 {
-    c(.valid.MaskCollection.width(x),
-      .valid.MaskCollection.nir_list(x),
+    ## The 'width' slot needs to be checked separately and we must return
+    ## if it's invalid. This is because .valid.MaskCollection.nir_list()
+    ## won't work properly if 'x@width' is NA.
+    problems <- .valid.MaskCollection.width(x)
+    if (!is.null(problems))
+        return(problems)
+    c(.valid.MaskCollection.nir_list(x),
       .valid.MaskCollection.active(x),
       .valid.MaskCollection.names(x),
       .valid.MaskCollection.desc(x))

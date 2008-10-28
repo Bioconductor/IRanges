@@ -11,19 +11,24 @@
 \title{Read a mask from a file}
 
 \description{
-  Five functions -- \code{read.agpMask}, \code{read.gapMask},
-  \code{read.liftMask}, \code{read.rmMask} and \code{read.trfMask} --
-  for extracting a mask from an NCBI "agp" file, a UCSC "gap" file,
-  a UCSC "lift" file (i.e. a file containing offsets of contigs within
-  sequences), a RepeatMasker .out file, or a Tandem Repeats Finder .bed file.
+  \code{read.agpMask} and \code{read.gapMask} extract the AGAPS mask from an
+  NCBI "agp" file or a UCSC "gap" file, respectively.
+
+  \code{read.liftMask} extracts the AGAPS mask from a UCSC "lift" file
+  (i.e. a file containing offsets of contigs within sequences).
+
+  \code{read.rmMask} extracts the RM mask from a RepeatMasker .out file.
+
+  \code{read.trfMask} extracts the TRF mask from a Tandem Repeats Finder .bed
+  file.
 }
 
 \usage{
-  read.agpMask(file, width, seqname="?", gap.types=NULL, use.gap.types=FALSE)
-  read.gapMask(file, width, seqname="?", gap.types=NULL, use.gap.types=FALSE)
-  read.liftMask(file, seqname="?", width=NA)
-  read.rmMask(file, width, use.IDs=FALSE)
-  read.trfMask(file, width)
+  read.agpMask(file, seqname="?", mask.width=NA, gap.types=NULL, use.gap.types=FALSE)
+  read.gapMask(file, seqname="?", mask.width=NA, gap.types=NULL, use.gap.types=FALSE)
+  read.liftMask(file, seqname="?", mask.width=NA)
+  read.rmMask(file, seqname="?", mask.width=NA, use.IDs=FALSE)
+  read.trfMask(file, seqname="?", mask.width=NA)
 }
 
 \arguments{
@@ -31,18 +36,19 @@
     Either a character string naming a file or a connection open
     for reading.
   }
-  \item{width}{
-    The width of the mask to return.
-    See \code{?`\link{MaskCollection-class}`} for more information about
-    the width of a \link{MaskCollection} object.
-  }
   \item{seqname}{
     The name of the sequence for which the mask must be extracted.
     If no sequence is specified (i.e. \code{seqname="?"}) then an error is
     raised and the sequence names found in the file are displayed.
     If the file doesn't contain any information for the specified sequence,
-    then a warning is issued and an empty mask of width \code{width}
+    then a warning is issued and an empty mask of width \code{mask.width}
     is returned.
+  }
+  \item{mask.width}{
+    The width of the mask to return i.e. the length of the sequence this
+    mask will be put on.
+    See \code{?`\link{MaskCollection-class}`} for more information about
+    the width of a \link{MaskCollection} object.
   }
   \item{gap.types}{
     \code{NULL} or a character vector containing gap types.
@@ -86,12 +92,14 @@
   ##
   ## on May 9, 2008.
 
+  chrY_length <- 57772954
   file1 <- system.file("extdata", "hs_b36v3_chrY.agp", package="IRanges")
-  mask1 <- read.agpMask(file1, 57772954, seqname="chrY", use.gap.types=TRUE)
+  mask1 <- read.agpMask(file1, seqname="chrY", mask.width=chrY_length,
+                        use.gap.types=TRUE)
   mask1
   mask1[[1]]
 
-  mask11 <- read.agpMask(file1, 57772954, seqname="chrY",
+  mask11 <- read.agpMask(file1, seqname="chrY", mask.width=chrY_length,
                          gap.types=c("centromere", "heterochromatin"))
   mask11[[1]]
 
@@ -117,7 +125,7 @@
       read.liftMask(file2)
 
       ## specify an unknown sequence name
-      read.liftMask(file2, seqname="chrZ", width=300)
+      read.liftMask(file2, seqname="chrZ", mask.width=300)
   }
 
   ## ---------------------------------------------------------------------
@@ -139,24 +147,24 @@
   ## mask on:
   if (interactive()) {
       library(BSgenome.Celegans.UCSC.ce2)
-      chrM <- Celegans$chrM
-      mask_width <- length(chrM)
+      chrM_length <- seqlengths(Celegans)[["chrM"]]
 
       ## Read the RepeatMasker .out file for chrM in ce2:
       file3 <- system.file("extdata", "ce2chrM.fa.out", package="IRanges")
-      mask3 <- read.rmMask(file3, mask_width)
-      mask3
+      RM_mask <- read.rmMask(file3, seqname="chrM", mask.width=chrM_length)
+      RM_mask
 
       ## Read the Tandem Repeats Finder .bed file for chrM in ce2:
       file4 <- system.file("extdata", "ce2chrM.bed", package="IRanges")
-      mask4 <- read.trfMask(file4, mask_width)
-      mask4
-      desc(mask4) <- paste(desc(mask4), "[period<=12]")
-      mask4
+      TRF_mask <- read.trfMask(file4, seqname="chrM", mask.width=chrM_length)
+      TRF_mask
+      desc(TRF_mask) <- paste(desc(TRF_mask), "[period<=12]")
+      TRF_mask
 
       ## Put the 2 masks on chrM:
-      masks(chrM) <- mask3  # this would drop all current masks, if any
-      masks(chrM) <- append(masks(chrM), mask4)
+      chrM <- Celegans$chrM
+      masks(chrM) <- RM_mask  # this would drop all current masks, if any
+      masks(chrM) <- append(masks(chrM), TRF_mask)
       chrM
   }
 }
