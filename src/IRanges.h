@@ -647,6 +647,22 @@ SEXP NumericPtr_write_nums_to_subset(
 );
 
 
+/* XSequence_class.c */
+
+SEXP _get_XSequence_xdata(SEXP x);
+
+SEXP _get_XSequence_offset(SEXP x);
+
+SEXP _get_XSequence_length(SEXP x);
+
+SEXP _new_XSequence(
+	const char *classname,
+	SEXP xdata,
+	int offset,
+	int length
+);
+
+
 /* XIntegerViews_class.c */
 
 SEXP XIntegerViews_slice(

@@ -24,3 +24,7 @@ debug_IntegerPtr_utils <- function()
 debug_NumericPtr_utils <- function()
     invisible(.Call("debug_NumericPtr_utils", PACKAGE="IRanges"))
 
+debug_XSequence_class <- function()
+    invisible(.Call("debug_XSequence_class", PACKAGE="IRanges"))
+
+

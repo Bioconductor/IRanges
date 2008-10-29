@@ -1,5 +1,8 @@
+/****************************************************************************
+ *              Low-level manipulation of SequencePtr objects               *
+ *                           Author: Herve Pages                            *
+ ****************************************************************************/
 #include "IRanges.h"
-
 
 static int debug = 0;
 

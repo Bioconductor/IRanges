@@ -1,5 +1,5 @@
 /****************************************************************************
- *                  Basic manipulation of IRanges objects                   *
+ *                Low-level manipulation of IRanges objects                 *
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"

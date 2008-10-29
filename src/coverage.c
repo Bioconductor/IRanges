@@ -4,9 +4,8 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP order, SEXP width)
 {
 	int i, j, weight_elt;
 	int index, index_start, index_end;
-	SEXP ans, ans_values, ans_lengths, ans_vectorLength;
-	SEXP ans_values_xdata, ans_values_offset, ans_values_length;
-	SEXP ans_lengths_xdata, ans_lengths_offset, ans_lengths_length;
+	SEXP ans, ans_lengths, ans_lengths_xdata, ans_lengths_tag,
+	          ans_values, ans_values_xdata, ans_values_tag;
 
 	int prev_index = 0;
 	int sparse_data_length = 0;
@@ -83,83 +82,66 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP order, SEXP width)
 		values_length += (sparse_index[sparse_data_length - 1] != INTEGER(width)[0]);
 	}
 
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("XRleInteger")));
-	PROTECT(ans_vectorLength = NEW_INTEGER(1));
-	INTEGER(ans_vectorLength)[0] = INTEGER(width)[0];
-
-	PROTECT(ans_values = NEW_OBJECT(MAKE_CLASS("XInteger")));
-	PROTECT(ans_values_length = NEW_INTEGER(1));
-	INTEGER(ans_values_length)[0] = values_length;
-	PROTECT(ans_values_xdata = IntegerPtr_new(ans_values_length, R_NilValue));
-	PROTECT(ans_values_offset = NEW_INTEGER(1));
-	INTEGER(ans_values_offset)[0] = 0;
-	SET_SLOT(ans_values, mkChar("xdata"), ans_values_xdata);
-	SET_SLOT(ans_values, mkChar("offset"), ans_values_offset);
-	SET_SLOT(ans_values, mkChar("length"), ans_values_length);
-
-	PROTECT(ans_lengths = NEW_OBJECT(MAKE_CLASS("XInteger")));
-	PROTECT(ans_lengths_length = NEW_INTEGER(1));
-	INTEGER(ans_lengths_length)[0] = values_length;
-	PROTECT(ans_lengths_xdata = IntegerPtr_new(ans_lengths_length, R_NilValue));
-	PROTECT(ans_lengths_offset = NEW_INTEGER(1));
-	INTEGER(ans_lengths_offset)[0] = 0;
-	SET_SLOT(ans_lengths, mkChar("xdata"), ans_lengths_xdata);
-	SET_SLOT(ans_lengths, mkChar("offset"), ans_lengths_offset);
-	SET_SLOT(ans_lengths, mkChar("length"), ans_lengths_length);
-
-    SET_SLOT(ans, mkChar("values"), ans_values);
-    SET_SLOT(ans, mkChar("lengths"), ans_lengths);
-    SET_SLOT(ans, mkChar("vectorLength"), ans_vectorLength);
-
-	int *values_tag = INTEGER(_get_SequencePtr_tag(GET_SLOT(ans_values, install("xdata"))));
-	int *lengths_tag = INTEGER(_get_SequencePtr_tag(GET_SLOT(ans_lengths, install("xdata"))));
-	memset(values_tag, 0, values_length * sizeof(int));
-	memset(lengths_tag, 0, values_length * sizeof(int));
+	PROTECT(ans_lengths_tag = NEW_INTEGER(values_length));
+	PROTECT(ans_values_tag = NEW_INTEGER(values_length));
+	int *ans_lengths_ptr = INTEGER(ans_lengths_tag);
+	int *ans_values_ptr = INTEGER(ans_values_tag);
+	memset(ans_lengths_ptr, 0, values_length * sizeof(int));
+	memset(ans_values_ptr, 0, values_length * sizeof(int));
 
 	if (values_length == 0) {
-		*values_tag = 0;
-		*lengths_tag = INTEGER(width)[0];
+		*ans_values_ptr = 0;
+		*ans_lengths_ptr = INTEGER(width)[0];
 	} else {
 		if (*sparse_index != 1) {
-			*values_tag = 0;
-			*lengths_tag = *sparse_index - 1;
-			values_tag++;
-			lengths_tag++;
+			*ans_values_ptr = 0;
+			*ans_lengths_ptr = *sparse_index - 1;
+			ans_values_ptr++;
+			ans_lengths_ptr++;
 		}
-		*values_tag = *sparse_data;
-		*lengths_tag = 1;
+		*ans_values_ptr = *sparse_data;
+		*ans_lengths_ptr = 1;
 		for (i = 1, prev_sdata = sparse_data, curr_sdata = (sparse_data + 1),
 			 prev_sindex = sparse_index, curr_sindex = (sparse_index + 1);
 		     i < sparse_data_length;
 		     i++, prev_sdata++, curr_sdata++, prev_sindex++, curr_sindex++)
 		{
 			if ((*prev_sindex + 1) != *curr_sindex) {
-				values_tag++;
-				lengths_tag++;
-				*values_tag = 0;
-				*lengths_tag = *curr_sindex - *prev_sindex - 1;
+				ans_values_ptr++;
+				ans_lengths_ptr++;
+				*ans_values_ptr = 0;
+				*ans_lengths_ptr = *curr_sindex - *prev_sindex - 1;
 
-				values_tag++;
-				lengths_tag++;
-				*values_tag = *curr_sdata;
-				*lengths_tag = 1;
+				ans_values_ptr++;
+				ans_lengths_ptr++;
+				*ans_values_ptr = *curr_sdata;
+				*ans_lengths_ptr = 1;
 			} else if (*prev_sdata != *curr_sdata) {
-				values_tag++;
-				lengths_tag++;
-				*values_tag = *curr_sdata;
-				*lengths_tag = 1;
+				ans_values_ptr++;
+				ans_lengths_ptr++;
+				*ans_values_ptr = *curr_sdata;
+				*ans_lengths_ptr = 1;
 			} else {
-				*lengths_tag += 1;
+				*ans_lengths_ptr += 1;
 			}
 		}
 		if (sparse_index[sparse_data_length - 1] != INTEGER(width)[0]) {
-			values_tag++;
-			lengths_tag++;
-			*values_tag = 0;
-			*lengths_tag = INTEGER(width)[0] - sparse_index[sparse_data_length - 1];
+			ans_values_ptr++;
+			ans_lengths_ptr++;
+			*ans_values_ptr = 0;
+			*ans_lengths_ptr = INTEGER(width)[0] - sparse_index[sparse_data_length - 1];
 		}
 	}
-	UNPROTECT(10);
 
+	PROTECT(ans_lengths_xdata = _new_SequencePtr("IntegerPtr", ans_lengths_tag));
+	PROTECT(ans_lengths = _new_XSequence("XInteger", ans_lengths_xdata, 0, values_length));
+	PROTECT(ans_values_xdata = _new_SequencePtr("IntegerPtr", ans_values_tag));
+	PROTECT(ans_values = _new_XSequence("XInteger", ans_values_xdata, 0, values_length));
+	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("XRleInteger")));
+	SET_SLOT(ans, mkChar("vectorLength"), ScalarInteger(INTEGER(width)[0]));
+	SET_SLOT(ans, mkChar("lengths"), ans_lengths);
+	SET_SLOT(ans, mkChar("values"), ans_values);
+	UNPROTECT(7);
 	return ans;
 }
+

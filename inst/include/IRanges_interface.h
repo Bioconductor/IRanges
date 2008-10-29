@@ -303,7 +303,7 @@ void IRanges_memcpy_from_i1i2_to_complex(
 
 
 /*
- * (see SEXP_utils.c)
+ * SEXP_utils.c
  */
 const char *get_classname(SEXP x);
 
@@ -331,6 +331,7 @@ SEXP alloc_IRanges(const char *classname, int length);
 
 
 /*
+ * Low-level manipulation of SequencePtr objects.
  * (see SequencePtr_class.c)
  */
 
@@ -339,4 +340,18 @@ SEXP new_SequencePtr(const char *classname, SEXP tag);
 SEXP get_SequencePtr_tag(SEXP x);
 
 int get_SequencePtr_length(SEXP x);
+
+
+/*
+ * Low-level manipulation of XSequence objects.
+ * (see XSequence_class.c)
+ */
+
+SEXP get_XSequence_xdata(SEXP x);
+
+SEXP get_XSequence_offset(SEXP x);
+
+SEXP get_XSequence_length(SEXP x);
+
+SEXP new_XSequence(const char *classname, SEXP xdata, int offset, int length);
 

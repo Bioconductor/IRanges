@@ -318,3 +318,28 @@ DEFINE_CCALLABLE_STUB(int, get_SequencePtr_length,
 	(     x)
 );
 
+
+/*
+ * Stubs for callables defined in XSequence_class.c
+ */
+
+DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_xdata,
+	(SEXP x),
+	(     x)
+);
+
+DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_offset,
+	(SEXP x),
+	(     x)
+);
+
+DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_length,
+	(SEXP x),
+	(     x)
+);
+
+DEFINE_CCALLABLE_STUB(SEXP, new_XSequence,
+	(const char *classname, SEXP xdata, int offset, int length),
+	(            classname,      xdata,     offset,     length)
+);
+

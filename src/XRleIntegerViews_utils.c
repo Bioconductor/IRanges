@@ -15,9 +15,9 @@ SEXP XRleIntegerViews_viewMins(SEXP x, SEXP na_rm)
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
-	values_tag = _get_SequencePtr_tag(GET_SLOT(values, install("xdata")));
+	values_tag = _get_SequencePtr_tag(_get_XSequence_xdata(values));
 	lengths = GET_SLOT(subject, install("lengths"));
-	lengths_tag = _get_SequencePtr_tag(GET_SLOT(lengths, install("xdata")));
+	lengths_tag = _get_SequencePtr_tag(_get_XSequence_xdata(lengths));
 	start = GET_SLOT(x, install("start"));
 	width = GET_SLOT(x, install("width"));
 
@@ -76,9 +76,9 @@ SEXP XRleIntegerViews_viewMaxs(SEXP x, SEXP na_rm)
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
-	values_tag = _get_SequencePtr_tag(GET_SLOT(values, install("xdata")));
+	values_tag = _get_SequencePtr_tag(_get_XSequence_xdata(values));
 	lengths = GET_SLOT(subject, install("lengths"));
-	lengths_tag = _get_SequencePtr_tag(GET_SLOT(lengths, install("xdata")));
+	lengths_tag = _get_SequencePtr_tag(_get_XSequence_xdata(lengths));
 	start = GET_SLOT(x, install("start"));
 	width = GET_SLOT(x, install("width"));
 
@@ -137,9 +137,9 @@ SEXP XRleIntegerViews_viewSums(SEXP x, SEXP na_rm)
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
-	values_tag = _get_SequencePtr_tag(GET_SLOT(values, install("xdata")));
+	values_tag = _get_SequencePtr_tag(_get_XSequence_xdata(values));
 	lengths = GET_SLOT(subject, install("lengths"));
-	lengths_tag = _get_SequencePtr_tag(GET_SLOT(lengths, install("xdata")));
+	lengths_tag = _get_SequencePtr_tag(_get_XSequence_xdata(lengths));
 	start = GET_SLOT(x, install("start"));
 	width = GET_SLOT(x, install("width"));
 
