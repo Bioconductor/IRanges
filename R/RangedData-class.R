@@ -224,9 +224,14 @@ setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
   rd <- rds[[1]]
   if (!all(sapply(rds, is, "RangedData")))
     stop("all arguments in '...' must be instances of RangedData")
+  nms <- names(rds)
   names(rds) <- NULL # critical for dispatch to work
-  rd@ranges <- do.call("c", lapply(rds, ranges))
-  rd@values <- do.call("c", lapply(rds, values))
+  ranges <- do.call("c", lapply(rds, ranges))
+  names(ranges) <- nms
+  rd@ranges <- ranges
+  values <- do.call("c", lapply(rds, values))
+  names(values) <- nms
+  rd@values <- values
   rd
 })
 
@@ -256,6 +261,21 @@ setAs("RangedData", "XDataFrame",
       function(from)
       {
         XDataFrame(as.data.frame(ranges(from)), values(from))
+      })
+
+setAs("XRle", "RangedData",
+      function(from)
+      {
+        RangedData(successiveIRanges(as.integer(from@lengths)),
+                   XDataFrame(score = from@values))
+      })
+
+setAs("RangesList", "RangedData",
+      function(from)
+      {
+        empty <- lapply(from, function(x) new("XDataFrame", nrows = length(x)))
+        new("RangedData", ranges = from,
+            values = do.call("SplitXDataFrame", empty))
       })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
