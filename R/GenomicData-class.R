@@ -10,30 +10,45 @@ setClass("GenomicData", contains = "RangedData")
 ### Accessor methods.
 ###
 
-setGeneric("genome", function(object, ...) standardGeneric("genome"))
-setMethod("genome", "GenomicData", function(object) annotation(object))
+setGeneric("genome", function(x, ...) standardGeneric("genome"))
+setMethod("genome", "GenomicData", function(x) annotation(x))
 
-setGeneric("strand", function(object, ...) standardGeneric("strand"))
-setMethod("strand", "GenomicData", function(object) {
-  strand <- object[["strand"]]
+setGeneric("strand", function(x, ...) standardGeneric("strand"))
+setMethod("strand", "GenomicData", function(x) {
+  strand <- x[["strand"]]
   if (is.null(strand))
-    strand <- rep(NA, nrow(object))
+    strand <- rep(NA, nrow(x))
 ### FIXME: just necessary because we have no XFactor
   levs <- levels(strand())
   factor(levs[strand], levs)
 })
 
-setMethod("strand", "missing", function(object) {
+setMethod("strand", "missing", function(x) {
   factor(levels=c("-","+","*"))
 })
   
-setGeneric("chrom", function(object, ...) standardGeneric("chrom"))
-setMethod("chrom", "GenomicData", function(object) {
-  chrom <- names(object)
+setGeneric("chrom", function(x, ...) standardGeneric("chrom"))
+setMethod("chrom", "GenomicData", function(x) {
+  chrom <- names(x)
   if (is.null(chrom))
-    chrom <- paste("chr", seq_len(length(object)), sep = "")
+    chrom <- paste("chr", seq_len(length(x)), sep = "")
   chrom <- factor(chrom, chrom)
-  rep(chrom, sapply(elements(ranges(object)), length))
+  rep(chrom, sapply(elements(ranges(x)), length))
+})
+
+## score: a common track column
+
+setGeneric("score", function(x, ...) standardGeneric("score"))
+setGeneric("score<-", function(x, ..., value) standardGeneric("score<-"))
+
+setMethod("score", "GenomicData", function(x) x[["score"]])
+setReplaceMethod("score", "GenomicData", function(x, value) {
+  if (!is.numeric(value))
+    stop("score must be numeric")
+  if (length(value) != nrow(x))
+    stop("number of scores must equal the number of rows")
+  x[["score"]] <- value
+  x
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
