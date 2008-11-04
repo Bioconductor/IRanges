@@ -448,6 +448,18 @@ void _RangeAE_insert_at(RangeAE *range_ae, int at, int start, int width)
 }
 
 
+SEXP _RangeAE_asIRanges(const RangeAE *range_ae)
+{
+  SEXP ans, start, width;
+
+  PROTECT(start = _IntAE_asINTEGER(&(range_ae->start)));
+  PROTECT(width = _IntAE_asINTEGER(&(range_ae->width)));
+  ans = _new_IRanges("IRanges", start, width, R_NilValue);
+  UNPROTECT(2);
+  return ans;
+}
+
+
 /****************************************************************************
  * CharAE functions
  */
@@ -613,3 +625,15 @@ void _append_string_to_CharAEAE(CharAEAE *char_aeae, const char *string)
 	return;
 }
 
+SEXP _CharAEAE_asCHARACTER(const CharAEAE *char_aeae)
+{
+  int i;
+  SEXP ans;
+
+  PROTECT(ans = NEW_CHARACTER(char_aeae->nelt));
+  for (i = 0; i < char_aeae->nelt; i++)
+    SET_STRING_ELT(ans, i,
+                   mkCharLen(char_aeae->elts[i].elts, char_aeae->elts[i].nelt));
+  UNPROTECT(1);
+  return ans;
+}
