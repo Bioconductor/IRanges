@@ -50,4 +50,11 @@ setMethod("t", "RangesMatching", function(x) {
   x
 })
 
+setMethod("ranges", "RangesMatching", function(x, query, subject) {
+  m <- as.matrix(x)
+  q <- query[m[,1]]
+  s <- subject[m[,2]]
+  IRanges(pmax(start(q), start(s)), pmin(end(s), end(q)))
+})
+
 ### TODO: many convenience methods
