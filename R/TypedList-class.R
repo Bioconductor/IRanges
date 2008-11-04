@@ -261,9 +261,11 @@ setMethod("c", "TypedList", function(x, ..., recursive = FALSE) {
 ###
 
 setMethod("lapply", c("TypedList", "function"), function(X, FUN, ...) {
-  ans <- lapply(seq_len(length(X)), function(i) FUN(X[[i]], ...))
-  names(ans) <- names(X)
-  ans
+  ### we coerce to list immediately, subclasses should optimize if needed
+  lapply(as(X, "list"), FUN, ...)
+  ##ans <- lapply(seq_len(length(X)), function(i) FUN(X[[i]], ...))
+  ##names(ans) <- names(X)
+  ##ans
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -271,9 +273,11 @@ setMethod("lapply", c("TypedList", "function"), function(X, FUN, ...) {
 ###
 
 .TypedList_asList <- function(from) {
-  ### NOTE: we don't just get the elements slot, because that's internal.
-  ### What is actually visible to the public may be different.
-  to <- lapply(seq_len(length(from)), function(i) from[[i]])
+  ### While we want to use [[ directly on the TypedList, rather than
+  ### rely on elements(), the dispatch for [[ is just too slow
+  ### thus, we optimize for the common use case
+  ## to <- lapply(seq_len(length(from)), function(i) from[[i]])
+  to <- elements(from)
   names(to) <- names(from)
   to
 }
@@ -281,9 +285,10 @@ setMethod("lapply", c("TypedList", "function"), function(X, FUN, ...) {
 ### From an TypedList object to a normal R list.
 setAs("TypedList", "list",
       function(from) {
-        .TypedList_asList(from)
+        as.list(from)
       })
 
+### Subclasses should override this for customized list coercion
 setMethod("as.list", "TypedList", function(x) {
   .TypedList_asList(x)
 })

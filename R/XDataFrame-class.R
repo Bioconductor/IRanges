@@ -412,6 +412,12 @@ setAs("ANY", "XDataFrame",
         as(as.data.frame(from, optional = TRUE), "XDataFrame")
       })
 
+## pull the external vectors into R
+setMethod("as.list", "XDataFrame",
+          function(x) {
+            lapply(callNextMethod(x), `[`)
+          })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
 ###
