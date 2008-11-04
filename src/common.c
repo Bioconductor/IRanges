@@ -2155,3 +2155,64 @@ char *splitOffNumber(char *db)
 {
 return cloneString(skipToNumeric(db));
 }
+
+int digitsBaseTwo(unsigned long x)
+/* Return base two # of digits. */
+{
+  int digits = 0;
+  while (x)
+    {
+      digits += 1;
+      x >>= 1;
+    }
+  return digits;
+}
+
+int digitsBaseTen(int x)
+/* Return number of digits base 10. */
+{
+  int digCount = 1;
+  if (x < 0)
+    {
+      digCount = 2;
+      x = -x;
+    }
+  while (x >= 10)
+    {
+      digCount += 1;
+      x /= 10;
+    }
+  return digCount;
+}
+
+void *intToPt(int i)
+/* Convert integer to pointer. Use when really want to store an
+ * int in a pointer field. */
+{
+  char *pt = NULL;
+  return pt+i;
+}
+
+int ptToInt(void *pt)
+/* Convert pointer to integer.  Use when really want to store a
+ * pointer in an int. */
+{
+  char *a = NULL, *b = pt;
+  return b - a;
+}
+
+void *sizetToPt(size_t i)
+/* Convert size_t to pointer. Use when really want to store a
+ * size_t in a pointer. */
+{
+  char *pt = NULL;
+  return pt+i;
+}
+
+size_t ptToSizet(void *pt)
+/* Convert pointer to size_t.  Use when really want to store a
+ * pointer in a size_t. */
+{
+  char *a = NULL, *b = pt;
+  return b - a;
+}

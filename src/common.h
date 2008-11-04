@@ -1033,4 +1033,28 @@ char *splitOffNonNumeric(char *s);
 char *splitOffNumber(char *db);
 /* Split off number part, e.g. 8 of mm8. Result should be freed when done */
 
+int digitsBaseTwo(unsigned long x);
+/* Return base two # of digits. */
+
+int digitsBaseTen(int x);
+/* Return number of digits base 10. */
+
+void *intToPt(int i);
+/* Convert integer to pointer. Use when really want to store an
+ * int in a pointer field. */
+
+int ptToInt(void *pt);
+/* Convert pointer to integer.  Use when really want to store a
+ * pointer in an int. */
+
+void *sizetToPt(size_t i);
+/* Convert size_t to pointer. Use when really want to store a
+ * size_t in a pointer. */
+
+size_t ptToSizet(void *pt);
+/* Convert pointer to size_t.  Use when really want to store a
+ * pointer in a size_t. */
+
+
 #endif /* COMMON_H */
+
