@@ -16,9 +16,11 @@ Long term TODO list
   - "nearest" for finding nearest neighbors
   - "match" and "%in%" for exact matching
   - operator aliases ("&", "|", "!", "-", "*", "/")
-  - "reduce" should take a window argument
   - "inverse.rle", could be logical vector, TRUE in range else FALSE
   - "sort" sorts by start
+  - "flank" for getting left/right flanking regions of given size
+    - special method for GenomicRanges optionally considers strand
+  - permute or something to create a random mimic
   - extend to multiple dimensions?
 
 - TypedList:
@@ -35,6 +37,7 @@ Long term TODO list
   - "relations" to extract relationships in terms of Allen's Interval Algebra
     - kind of like "all.equal"
   - "width" for amount of overlap for each match
+  - "resolve" for getting intersections of matches
 
 - XDataFrame:
   - group generics (Math, Ops, Summary)
@@ -46,6 +49,7 @@ Long term TODO list
   - rbind: inner combine
   - merge for SQL-type join operations based on range overlap
   - inverse.rle
+  - "aggregate", max/min/etc over overlapping intervals
   
 - SplitXDataFrame:
   - stack: unlist(), but with factors recording source of each row
@@ -53,9 +57,14 @@ Long term TODO list
   
 - IntervalTree:
   - instead of dense lgeMatrix, just complement the lgCMatrix
+  - look into nested containment lists
 
 - FilterRules:
   - support subsetting XDataFrame/RangedData directly
 
 - Classes to add:
   - ViewsList, extends RangesList but specific to Views
+  - Alignment, like PairwiseAlignment, but no sequences
+    - Look at "chain" file format for encoding
+    - Elements coercible to IRanges for overlap computation
+    - Biostrings could have parsers for formats like 'chain'

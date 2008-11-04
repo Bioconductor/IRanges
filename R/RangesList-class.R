@@ -101,7 +101,10 @@ setMethod("as.data.frame", "RangesList",
             if (!missing(optional) || length(list(...)))
               warning("'optional' and arguments in '...' ignored")
             x <- as(x, "IRangesList")
-            as.data.frame(unlist(x), row.names = row.names)
+            df <- as.data.frame(unlist(x), row.names = row.names)
+            if (!is.null(names(x)))
+              df <- cbind(space = rep(names(x), unlist(lapply(x, length))), df)
+            df
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -23,7 +23,6 @@ Collate: validity-utils.R
 	XRanges-class.R
 	IntervalTree-class.R
 	IntervalTree-utils.R
-	RangesMatching-class.R
 	SequencePtr-class.R
 	RawPtr-class.R
 	IntegerPtr-class.R
@@ -53,6 +52,8 @@ Collate: validity-utils.R
 	RDApplyParams-class.R
 	RangedData-utils.R
 	GenomicData-class.R
+        RangesMatching-class.R
+        Alignment-class.R
 	reverse.R
 	coverage.R
 	debug.R

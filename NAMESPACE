@@ -41,6 +41,7 @@ export(
     read.liftMask,
     read.rmMask,
     read.trfMask,
+    read.chain,
     RawPtr, RawPtr.readInts, RawPtr.writeInts, RawPtr.read, RawPtr.write,
     RawPtr.copy, RawPtr.reverseCopy, RawPtr.readComplexes, RawPtr.append,
     RawPtr.compare,
