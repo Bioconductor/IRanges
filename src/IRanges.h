@@ -145,6 +145,8 @@ void _append_string_to_CharAE(
 
 SEXP _CharAE_asRAW(const CharAE *char_ae);
 
+SEXP _CharAE_asLOGICAL(const CharAE *char_ae);
+
 CharAEAE _new_CharAEAE(
 	int buflength,
 	int nelt

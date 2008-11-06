@@ -543,6 +543,19 @@ SEXP _CharAE_asRAW(const CharAE *char_ae)
 	return ans;
 }
 
+/* only until we have a bitset or something smaller than char */
+SEXP _CharAE_asLOGICAL(const CharAE *char_ae)
+{
+  SEXP ans;
+  int i;
+  
+  PROTECT(ans = NEW_LOGICAL(char_ae->nelt));
+  for (i = 0; i < char_ae->nelt; i++)
+    LOGICAL(ans)[i] = char_ae->elts[i];
+  UNPROTECT(1);
+  return ans;
+}
+
 
 /****************************************************************************
  * CharAEAE functions
