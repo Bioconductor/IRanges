@@ -3,6 +3,7 @@ setClass("AlignmentSpace",
                         offset = "integer", # offset to start in B
                         score = "integer", # rl-encoded scores
                         space = "character", # rl-encoded spaces
+                        rev = "logical", # sequences match if one reversed
                         length = "integer")) # lengths for rle scores/spaces
 
 setClass("Alignment",

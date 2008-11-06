@@ -12,6 +12,7 @@ typedef struct _ChainBlock {
   IntAE offset; /* starts in the other sequence */
   /* rle of spaces and scores */
   IntAE length, score;
+  CharAE rev; /* use CharAE until we have a bitset */
   CharAEAE space; 
 } ChainBlock;
 
@@ -77,6 +78,7 @@ ChainBlock **read_chain_file(FILE *stream, const char *exclude, int *nblocks) {
       header_line = line;
       trc = strcmp("+", header[4]);
       qrc = strcmp("+", header[9]);
+      _CharAE_insert_at(&block->rev, block->rev.nelt, trc != qrc);
       tstart = atoi(header[5]) + 1; /* 0-based -> 1-based */
       if (trc)
         tstart = atoi(header[3]) - tstart + 2; /* start one too high */
@@ -152,6 +154,7 @@ SEXP readChain(SEXP r_path, SEXP r_exclude) {
     SET_SLOT(block, install("length"), _IntAE_asINTEGER(&chains[i]->length));
     SET_SLOT(block, install("score"), _IntAE_asINTEGER(&chains[i]->score));
     SET_SLOT(block, install("space"), _CharAEAE_asCHARACTER(&chains[i]->space));
+    SET_SLOT(block, install("rev"), _CharAE_asLOGICAL(&chains[i]->rev));
     SET_STRING_ELT(ans_names, i, mkChar(chains[i]->name));
   }
 
