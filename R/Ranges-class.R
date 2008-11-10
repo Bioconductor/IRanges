@@ -150,6 +150,10 @@ setMethod("overlap", c("Ranges", "missing"),
         overlap(object, object, maxgap, multiple)
 )
 
+setMethod("%in%", c("Ranges", "Ranges"),
+          function(x, table)
+          !is.na(overlap(reduce(table), x, multiple = FALSE)))
+
 setGeneric("isNormal", function(x) standardGeneric("isNormal"))
 
 setMethod("isNormal", "Ranges",

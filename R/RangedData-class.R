@@ -224,7 +224,9 @@ setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
   rd <- rds[[1]]
   if (!all(sapply(rds, is, "RangedData")))
     stop("all arguments in '...' must be instances of RangedData")
-  nms <- names(rds)
+  nms <- lapply(rds, ## figure out names like 'c' on an ordinary vector
+                function(rd) structure(logical(length(rd)), names = names(rd)))
+  nms <- names(do.call("c", nms))
   names(rds) <- NULL # critical for dispatch to work
   ranges <- do.call("c", lapply(rds, ranges))
   names(ranges) <- nms

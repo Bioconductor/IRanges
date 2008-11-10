@@ -18,6 +18,7 @@
 \alias{overlap,IntervalTree,Ranges-method}
 \alias{overlap,Ranges,Ranges-method}
 \alias{overlap,Ranges,missing-method}
+\alias{\%in\%,Ranges,Ranges-method}
 
 \title{Interval Search Trees}
 \description{
@@ -73,6 +74,13 @@
       length \code{length(query)}, with \code{NA} indicating intervals
       that did not overlap any intervals in \code{object}. This is
       analogous to the return value of the \code{\link{match}} function.
+    }
+    \item{}{
+      \code{x \%in\% table}:
+      Shortcut for finding the ranges in \code{x} that overlap any of
+      the ranges in \code{table}. Both \code{x} and \code{table} should
+      be \code{Ranges} instances. The result is a \code{logical} vector
+      of the same length as \code{x}.
     }
   }
   

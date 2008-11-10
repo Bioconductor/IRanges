@@ -3,7 +3,6 @@ test_XDataFrame_construction <- function() {
   counts <- c(10L, 2L, NA)
 
   checkException(XDataFrame(1, score), silent = TRUE) # different lengths (no recycling, silent = TRUE)
-  checkException(XDataFrame(new.env()), silent = TRUE) # cannot coerce environments to xdf
   checkException(XDataFrame(score, row.names = c("a", NA, "b")), silent = TRUE) # na in rn
   checkException(XDataFrame(score, row.names = "a"), silent = TRUE) # invalid rn length
   checkException(XDataFrame(score, row.names = c("a", "b", "a")), silent = TRUE) # dups in rn
@@ -45,7 +44,7 @@ test_XDataFrame_construction <- function() {
   colnames(mat) <- NULL
   xdf <- XDataFrame(mat) # two column matrix without col names
   checkTrue(validObject(xdf))
-  checkIdentical(xdf[["X1"]], score)
+  checkIdentical(xdf[["V1"]], score)
 
   sw <- XDataFrame(swiss, row.names = rownames(swiss)) # a data.frame
   checkIdentical(as.data.frame(sw), swiss)

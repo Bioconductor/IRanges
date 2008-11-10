@@ -87,3 +87,14 @@ GenomicData <- function(ranges, ..., strand = NULL, chrom = NULL, genome = NULL)
   gd
 }
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Combining and splitting.
+###
+
+## It is common for people to use do.call("c", l), but dispatch does
+## not work so well when the arguments are named (inheritance not considered).
+setMethod("c", "GenomicData", function(x, ..., recursive = FALSE) {
+  if (missing(x))
+    callNextMethod(...)
+  else callNextMethod(x, ...)
+})

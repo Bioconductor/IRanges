@@ -391,26 +391,41 @@ setAs("data.frame", "XDataFrame",
             nrows = nrow(from), rownames = rownames(from))
       })
 
-setAs("XSequence", "XDataFrame",
+setAs("matrix", "XDataFrame", # matrices just go through data.frame
+      function(from) as(as.data.frame(from), "XDataFrame"))
+
+## everything else
+setAs("ANY", "XDataFrame",
       function(from) {
+        if (canCoerce(from, "XSequence"))
+          from <- as(from, "XSequence")
         new("XDataFrame", elements = list(from),
             nrows = as.integer(length(from)))
       })
 
-setAs("numeric", "XDataFrame",
-      function(from) {
-        as(as(from, "XSequence"), "XDataFrame")
-      })
+## setAs("XSequence", "XDataFrame",
+##       function(from) {
+##         new("XDataFrame", elements = list(from),
+##             nrows = as.integer(length(from)))
+##       })
+
+## setAs("numeric", "XDataFrame",
+##       function(from) {
+##         as(as(from, "XSequence"), "XDataFrame")
+##       })
+
+### FIXME: only exists due to annoying S4 warning due to its caching of
+### coerce methods.
 setAs("integer", "XDataFrame",
       function(from) {
         as(as(from, "XSequence"), "XDataFrame")
       })
 
 ## fallback goes throw data.frame
-setAs("ANY", "XDataFrame",
-      function(from) {
-        as(as.data.frame(from, optional = TRUE), "XDataFrame")
-      })
+## setAs("ANY", "XDataFrame",
+##       function(from) {
+##         as(as.data.frame(from, optional = TRUE), "XDataFrame")
+##       })
 
 ## pull the external vectors into R
 setMethod("as.list", "XDataFrame",

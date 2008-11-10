@@ -14,6 +14,9 @@
 \alias{strand,GenomicData-method}
 \alias{strand,missing-method}
 
+% hidden workaround
+\alias{c,GenomicData-method}
+
 \title{Data on a Genome}
 \description{\code{GenomicData} extends \code{RangedData} to more
   conveniently manipulate data

@@ -18,10 +18,9 @@
 % coerce
 \alias{as.data.frame,XDataFrame-method}
 \alias{coerce,ANY,XDataFrame-method}
+\alias{coerce,matrix,XDataFrame-method}
 \alias{coerce,integer,XDataFrame-method}
-\alias{coerce,numeric,XDataFrame-method}
 \alias{coerce,data.frame,XDataFrame-method}
-\alias{coerce,XSequence,XDataFrame-method}
 \alias{coerce,XDataFrame,data.frame-method}
 
 % splitting and combining
@@ -145,13 +144,16 @@
 \section{Coercion}{
   \describe{
     \item{}{\code{as(from, "XDataFrame")}:
-      In rought terms, coerces any \code{from} that is coercible to a
-      \code{data.frame} to an \code{XDataFrame}. The following classes
-      are coerced directly: \code{integer}, \code{numeric},
-      \code{XSequence}, and \code{data.frame}. All other objects (unless
-      a coerce method is defined elsewhere) are first converted to a
-      \code{data.frame} (i.e. they are copied) and then converted to an
-      \code{XDataFrame}. It is recommended to use the \code{XDataFrame}
+      By default, constructs a new \code{XDataFrame} with \code{from} as
+      its only column. If \code{from} is a \code{matrix} or
+      \code{data.frame}, all of 
+      its columns are placed into the new \code{XDataFrame}. In either
+      case, there is an attempt to coerce 
+      columns to \code{XSequence} before inserting them into the
+      \code{XDataFrame}. Note that for the \code{XDataFrame} to behave
+      correctly, each column object must support element-wise subsetting via
+      the \code{[} method and return the number of elements with
+      \code{length}. It is recommended to use the \code{XDataFrame} 
       constructor, rather than this interface.
     }
     \item{}{\code{as.data.frame(x, row.names=NULL, optional=FALSE)}:
