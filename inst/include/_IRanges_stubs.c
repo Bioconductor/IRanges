@@ -139,6 +139,11 @@ DEFINE_CCALLABLE_STUB(void, RangeAE_insert_at,
 	(         range_ae,     at,     start,     width)
 );
 
+DEFINE_CCALLABLE_STUB(SEXP, RangeAE_asIRanges,
+	(const RangeAE *range_ae),
+	(               range_ae)
+);
+
 DEFINE_CCALLABLE_STUB(CharAE, new_CharAE,
 	(int buflength),
 	(    buflength)
@@ -177,6 +182,11 @@ DEFINE_CCALLABLE_STUB(void, CharAEAE_insert_at,
 DEFINE_CCALLABLE_STUB(void, append_string_to_CharAEAE,
 	(CharAEAE *char_aeae, const char *string),
 	(          char_aeae,             string)
+);
+
+DEFINE_CCALLABLE_STUB(SEXP, CharAEAE_asCHARACTER,
+	(const CharAEAE *char_aeae),
+	(                char_aeae)
 );
 
 

@@ -138,6 +138,8 @@ void RangeAE_insert_at(
 	int width
 );
 
+SEXP RangeAE_asIRanges(const RangeAE *range_ae);
+
 CharAE new_CharAE(int buflength);
 
 CharAE new_CharAE_from_string(const char *string);
@@ -170,6 +172,8 @@ void append_string_to_CharAEAE(
 	CharAEAE *char_aeae,
 	const char *string
 );
+
+SEXP CharAEAE_asCHARACTER(const CharAEAE *char_aeae);
 
 
 /*

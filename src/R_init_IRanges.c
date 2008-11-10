@@ -161,6 +161,7 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_IntAEAE_toEnvir);
 	REGISTER_CCALLABLE(_new_RangeAE);
 	REGISTER_CCALLABLE(_RangeAE_insert_at);
+	REGISTER_CCALLABLE(_RangeAE_asIRanges);
 	REGISTER_CCALLABLE(_new_CharAE);
 	REGISTER_CCALLABLE(_new_CharAE_from_string);
 	REGISTER_CCALLABLE(_CharAE_insert_at);
@@ -169,6 +170,7 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_new_CharAEAE);
 	REGISTER_CCALLABLE(_CharAEAE_insert_at);
 	REGISTER_CCALLABLE(_append_string_to_CharAEAE);
+	REGISTER_CCALLABLE(_CharAEAE_asCHARACTER);
 
 /* memcpy_utils.c */
 	REGISTER_CCALLABLE(_IRanges_memcmp);
