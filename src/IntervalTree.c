@@ -117,6 +117,14 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
   SEXP starts = _get_IRanges_start(r_ranges);
   SEXP widths = _get_IRanges_width(r_ranges);
 
+  if (!p) { /* tree is empty */
+    int fill = result_ints ? 0 : NA_INTEGER;
+    for (m = 0; m < LENGTH(result_inds); m++) {
+      INTEGER(result_inds)[m] = fill;
+    }
+    return(result_inds);
+  }
+  
   if (nranges)
     INTEGER(result_inds)[0] = 0;
   
@@ -244,9 +252,21 @@ SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges) {
   nhits = INTEGER(r_query_start)[nranges];
   slReverse(&results);
   
-  if ((nhits+nranges+1) < ((double)tree->n*nranges)) {
-    SEXP r_subject;
+  if (2*nhits < ((double)tree->n*nranges)) {
+    SEXP r_subject, r_query;
     PROTECT(r_matrix = NEW_OBJECT(MAKE_CLASS("ngCMatrix")));
+    /* thinking about going to a doublet matrix, rather than sparse */
+    /*
+    r_query = allocVector(INTSXP, nhits);
+    for (i = 1; i < LENGTH(r_query_start); i++) {
+      int prev = INTEGER(r_query_start)[i-1];
+      int cur = INTEGER(r_query_start)[i] + prev;
+      for (int j = prev; j < nj; j++) {
+        INTEGER(r_query)[j] = i-1;
+      }
+    }
+    SET_SLOT(r_matrix, install("j"), r_query);
+    */
     SET_SLOT(r_matrix, install("p"), r_query_start);
     r_subject = allocVector(INTSXP, nhits);
     SET_SLOT(r_matrix, install("i"), r_subject);
