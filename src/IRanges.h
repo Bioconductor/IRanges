@@ -694,6 +694,16 @@ SEXP XIntegerViews_viewSums(
 	SEXP na_rm
 );
 
+SEXP XIntegerViews_viewWhichMins(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP XIntegerViews_viewWhichMaxs(
+	SEXP x,
+	SEXP na_rm
+);
+
 
 /* XNumericViews_class.c */
 
@@ -737,6 +747,16 @@ SEXP XRleIntegerViews_viewMaxs(
 );
 
 SEXP XRleIntegerViews_viewSums(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP XRleIntegerViews_viewWhichMins(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP XRleIntegerViews_viewWhichMaxs(
 	SEXP x,
 	SEXP na_rm
 );

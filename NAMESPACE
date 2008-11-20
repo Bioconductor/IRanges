@@ -80,7 +80,7 @@ export(
     subject, Views, subviews, trim,
     slice,
     values,
-    viewMins, viewMaxs, viewSums,
+    viewMins, viewMaxs, viewSums, viewWhichMins, viewWhichMaxs,
     cbind, rbind,
     rangedData, "rangedData<-", applyFun, "applyFun<-", applyParams,
     "applyParams<-", simplify, "simplify<-",
@@ -154,7 +154,7 @@ exportMethods(
     maskedwidth, maskedratio,
     subseq,
     subject, Views, subviews, trim,
-    viewMins, viewMaxs, viewSums,
+    viewMins, viewMaxs, viewSums, viewWhichMins, viewWhichMaxs,
 
     ## Old stuff (Defunct or Deprecated):
     first, last

@@ -37,7 +37,8 @@ setMethod("slice", "XInteger",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "viewMins", "viewMaxs" and "viewSums" generics and methods.
+### The "viewMins", "viewMaxs", "viewSums", "viewWhichMins", and
+### "viewWhichMaxs" generics and methods.
 ###
 
 setGeneric("viewMins", signature="x",
@@ -67,3 +68,20 @@ setMethod("viewSums", "XIntegerViews",
         .Call("XIntegerViews_viewSums", x, na.rm, PACKAGE="IRanges")
 )
 
+setGeneric("viewWhichMins", signature="x",
+    function(x, na.rm=FALSE) standardGeneric("viewWhichMins")
+)
+
+setMethod("viewWhichMins", "XIntegerViews",
+    function(x, na.rm=FALSE)
+        .Call("XIntegerViews_viewWhichMins", x, na.rm, PACKAGE="IRanges")
+)
+
+setGeneric("viewWhichMaxs", signature="x",
+    function(x, na.rm=FALSE) standardGeneric("viewWhichMaxs")
+)
+
+setMethod("viewWhichMaxs", "XIntegerViews",
+    function(x, na.rm=FALSE)
+        .Call("XIntegerViews_viewWhichMaxs", x, na.rm, PACKAGE="IRanges")
+)

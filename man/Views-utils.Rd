@@ -15,6 +15,12 @@
 \alias{viewSums}
 \alias{viewSums,XIntegerViews-method}
 \alias{viewSums,XRleIntegerViews-method}
+\alias{viewWhichMins}
+\alias{viewWhichMins,XIntegerViews-method}
+\alias{viewWhichMins,XRleIntegerViews-method}
+\alias{viewWhichMaxs}
+\alias{viewWhichMaxs,XIntegerViews-method}
+\alias{viewWhichMaxs,XRleIntegerViews-method}
 
 
 \title{Utility functions and numeric summary of Views of numerics}
@@ -33,6 +39,9 @@
   viewMins(x, na.rm=FALSE)
   viewMaxs(x, na.rm=FALSE)
   viewSums(x, na.rm=FALSE)
+
+  viewWhichMins(x, na.rm=FALSE)
+  viewWhichMaxs(x, na.rm=FALSE)
 }
 
 \arguments{
@@ -41,7 +50,8 @@
     \code{slice}.
 
     An \link{XRleIntegerViews}, \link{XIntegerViews} object for
-    \code{viewMins}, \code{viewMaxs} and \code{viewSums}.
+    \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewWhichMins},
+    and \code{viewWhichMaxs}.
   }
   \item{lower, upper}{
     The lower and upper bounds for the slice.
@@ -60,9 +70,9 @@
   is useful for finding areas of absolute maxima (peaks), absolute minima
   (troughs), or fluxuations within a specified limits.
 
-  The \code{viewMins}, \code{viewMaxs}, and \code{viewSums} functions provide
-  efficient methods for calculating the specified numeric summary by performing
-  the looping in compiled code.
+  The \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewWhichMins},
+  and \code{viewWhichMaxs} functions provide efficient methods for calculating
+  the specified numeric summary by performing the looping in compiled code.
 }
 
 \value{
@@ -75,7 +85,8 @@
 \author{P. Aboyoun}
 
 \seealso{
-  \link{XRleIntegerViews-class}, \link{XIntegerViews-class}
+  \link{XRleIntegerViews-class}, \link{XIntegerViews-class}, \code{\link{which.min}},
+  \code{\link{colSums}}
 }
 
 \examples{
@@ -90,6 +101,8 @@
   viewMins(vecViews)
   viewMaxs(vecViews)
   viewSums(vecViews)
+  viewWhichMins(vecViews)
+  viewWhichMaxs(vecViews)
 
   ## Views derived from coverage
   x <- IRanges(start=c(1L, 9L, 4L, 1L, 5L, 10L),

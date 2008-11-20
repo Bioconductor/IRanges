@@ -27,7 +27,8 @@ setMethod("slice", "XRleInteger",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "viewMins", "viewMaxs" and "viewSums" methods.
+### The "viewMins", "viewMaxs", "viewSums", "viewWhichMins", and
+### "viewWhichMaxs" methods.
 ###
 
 setMethod("viewMins", "XRleIntegerViews",
@@ -43,4 +44,14 @@ setMethod("viewMaxs", "XRleIntegerViews",
 setMethod("viewSums", "XRleIntegerViews",
     function(x, na.rm=FALSE)
         .Call("XRleIntegerViews_viewSums", x, na.rm, PACKAGE="IRanges")
+)
+
+setMethod("viewWhichMins", "XRleIntegerViews",
+    function(x, na.rm=FALSE)
+       .Call("XRleIntegerViews_viewWhichMins", x, na.rm, PACKAGE="IRanges")
+)
+
+setMethod("viewWhichMaxs", "XRleIntegerViews",
+    function(x, na.rm=FALSE)
+       .Call("XRleIntegerViews_viewWhichMaxs", x, na.rm, PACKAGE="IRanges")
 )
