@@ -46,9 +46,20 @@ setMethod("rbind", "XDataFrame", function(..., deparse.level=1) {
   
   cn <- colnames(xdf)
   cl <- sapply(elements(xdf), class)
+  factors <- sapply(elements(xdf), is.factor)
   cols <- lapply(seq_len(length(xdf)), function(i) {
-### TODO: handle factor levels (c() drops factors to vectors)
-    as(do.call("c", lapply(args, `[[`, cn[i])), cl[i])
+    cols <- lapply(args, `[[`, cn[i])
+    if (factors[i]) { # combine factor levels, coerce to character
+      levs <- unique(do.call("c", lapply(cols, levels)))
+      cols <- lapply(cols, as.character)
+    }
+    combined <- do.call("c", cols)
+    if (factors[i])
+      combined <- factor(combined, levs)
+    ## this coercion needed only because we extracted ([[) above
+    ## which brings external -> internal
+    ## external objects should support external combination (c)
+    as(combined, cl[i])
   })
   names(cols) <- colnames(xdf)
   ans <- do.call("XDataFrame", cols)

@@ -281,7 +281,7 @@ setMethod("[", "XDataFrame",
                 if (row)
                   m <- pmatch(i, nms, duplicates.ok = TRUE)
                 else m <- match(i, nms)
-                if (!row && (any(!is.na(nms) & is.na(m))))
+                if (!row && any(is.na(m)))
                   return("mismatching names")
               } else if (!is.null(i)) {
                 return("invalid subscript type")
@@ -367,16 +367,12 @@ setMethod("as.data.frame", "XDataFrame",
           {
             if (length(list(...)))
               stop("arguments in '...' ignored")
-            l <- lapply(as(x, "list"), as.vector)
+            l <- as(x, "list")
             if (is.null(row.names))
               row.names <- rownames(x)
-            if (length(l)) # as.data.frame.list does not handle 0 col case
-              as.data.frame(l, row.names, optional)
-            else {
-              if (is.null(row.names))
-                row.names <- seq_len(nrow(x))
-              data.frame(row.names = row.names)
-            }
+            if (!length(l) && is.null(row.names))
+              row.names <- seq_len(nrow(x))
+            do.call("data.frame", c(l, row.names = row.names))
           })
 
 ## take data.frames to XDataFrames
@@ -430,7 +426,12 @@ setAs("integer", "XDataFrame",
 ## pull the external vectors into R
 setMethod("as.list", "XDataFrame",
           function(x) {
-            lapply(callNextMethod(x), `[`)
+            lapply(callNextMethod(x),
+                   function(xi) {
+                     if (is(xi, "XSequence"))
+                       xi[]
+                     else xi
+                   })
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
