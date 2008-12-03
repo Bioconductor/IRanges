@@ -1,10 +1,10 @@
 setClass("AlignmentSpace",
          representation(ranges = "IRanges", # start in A, width
                         offset = "integer", # offset to start in B
-                        score = "integer", # rl-encoded scores
-                        space = "character", # rl-encoded spaces
-                        rev = "logical", # sequences match if one reversed
-                        length = "integer")) # lengths for rle scores/spaces
+                        score = "integer", # rle scores
+                        space = "character", # rle spaces
+                        rev = "logical", # rle reversal
+                        length = "integer")) # lengths for rle slots
 
 setClass("Alignment",
          prototype = prototype(elementClass = "AlignmentSpace"),
@@ -13,3 +13,27 @@ setClass("Alignment",
 read.chain <- function(path, exclude = "_") {
   .Call("readChain", path, exclude, PACKAGE="IRanges")
 }
+
+setGeneric("map", function(x, alignment, ...) standardGeneric("map"))
+setMethod("map", c("RangesList", "Alignment"),
+          function(x, alignment)
+          {
+            r <- IRanges()
+            s <- character()
+            for (space in names(x)) {
+              ranges <- x[[space]]
+              align <- alignment[[space]]
+              ol <- overlap(ranges(align), ranges)
+              hits <- as.matrix(ol)
+              ranges <- ranges(ol, ranges, ranges(align))
+              starts <- ifelse(reversed(align)[hits[,2]],
+                               start(reflect(ranges, ranges(align)[hits[,2]])),
+                               start(ranges))
+              ranges <- IRanges(starts, width=width(ranges))
+              offsets <- offset(align)[hits[,2]]
+              spaces <- space(align)[hits[,2]]
+              r <- c(r, IRanges(start(ranges) - offsets, end(ranges) - offsets))
+              s <- c(s, spaces)
+            } ### FIXME: need some more efficient way of bundling result
+            split(r, s)
+          })
