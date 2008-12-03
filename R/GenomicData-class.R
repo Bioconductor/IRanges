@@ -4,14 +4,20 @@
 
 ## Extends RangedData to add convenience accessors
 
-setClass("GenomicData", contains = "RangedData")
+setClass("GenomicData", representation(ranges = "GenomicRanges"),
+         contains = "RangedData")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
-setGeneric("genome", function(x, ...) standardGeneric("genome"))
-setMethod("genome", "GenomicData", function(x) annotation(x))
+setMethod("genome", "GenomicData", function(x) universe(x))
+
+setReplaceMethod("genome", "GenomicData",
+                 function(x, value) {
+                   genome(x@ranges) <- value
+                   x
+                 })
 
 setGeneric("strand", function(x, ...) standardGeneric("strand"))
 setMethod("strand", "GenomicData", function(x) {
@@ -27,13 +33,8 @@ setMethod("strand", "missing", function(x) {
   factor(levels=c("-","+","*"))
 })
   
-setGeneric("chrom", function(x, ...) standardGeneric("chrom"))
 setMethod("chrom", "GenomicData", function(x) {
-  chrom <- names(x)
-  if (is.null(chrom))
-    chrom <- paste("chr", seq_len(length(x)), sep = "")
-  chrom <- factor(chrom, chrom)
-  rep(chrom, sapply(elements(ranges(x)), length))
+  chrom(ranges(x))
 })
 
 ## score: a common track column
@@ -41,7 +42,12 @@ setMethod("chrom", "GenomicData", function(x) {
 setGeneric("score", function(x, ...) standardGeneric("score"))
 setGeneric("score<-", function(x, ..., value) standardGeneric("score<-"))
 
-setMethod("score", "GenomicData", function(x) x[["score"]])
+setMethod("score", "GenomicData", function(x) {
+  score <- x[["score"]]
+  if (is.null(score) && ncol(x) > 0)
+    score <- x[[1]]
+  score
+})
 setReplaceMethod("score", "GenomicData", function(x, value) {
   if (!is.numeric(value))
     stop("score must be numeric")
@@ -71,12 +77,15 @@ setValidity2("GenomicData", .valid.GenomicData)
 
 GenomicData <- function(ranges, ..., strand = NULL, chrom = NULL, genome = NULL)
 {
-  if (!is.null(chrom) && length(chrom) != length(ranges))
-    stop("length of 'chrom' (if non-NULL) must match length of 'ranges'")
+  if (length(chrom) > length(ranges))
+    stop("length of 'chrom' greater than length of 'ranges'")
+  if (length(chrom) > 0 && (length(ranges) %% length(chrom) != 0))
+    stop("length of 'ranges' not a multiple of 'chrom' length")
   if (!is.null(genome) && !isSingleString(genome))
     stop("'genome' must be a single string")
-  gd <- new("GenomicData",
-            RangedData(ranges, ..., splitter = chrom, annotation = genome))
+  rd <- RangedData(ranges, ..., space = chrom, universe = genome)
+  rd@ranges <- as(ranges(rd), "GenomicRanges")
+  gd <- new("GenomicData", rd)
   if (!is.null(strand)) {
     if (length(strand) != length(ranges))
       stop("length of 'strand' (if non-NULL) must match length of 'ranges'")
@@ -86,6 +95,30 @@ GenomicData <- function(ranges, ..., strand = NULL, chrom = NULL, genome = NULL)
   }
   gd
 }
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion
+###
+
+setAs("RangedData", "GenomicData",
+      function(from) {
+        ## casting RangedData up to GenomicData not automatic
+        ## 'ranges' needs to be cast up to a GenomicRanges
+        new("GenomicData", ranges = as(ranges(from), "GenomicRanges"),
+            values = values(from))
+      })
+
+setAs("XRle", "GenomicData",
+      function(from)
+      {
+        as(as(from, "RangedData"), "GenomicData")
+      })
+
+setAs("RangesList", "GenomicData",
+      function(from)
+      {
+        as(as(from, "RangedData"), "GenomicData")
+      })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.
