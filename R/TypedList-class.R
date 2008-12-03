@@ -62,10 +62,12 @@ setMethod("elementClass", "TypedList", function(x) x@elementClass)
 
 .valid.TypedList.elements <- function(x)
 {
-  ### FIXME: currently this test seems to be broken, because 'x' is
-  ### dropped to TypedList from its original class
+  ### NOTE: we do not use is() here, because it uses S3 inheritance
+  ### for S3 objects, while we want S4 inheritance (i.e. "ANY" should
+  ### mean any type of object)
   if (!is.list(elements(x))
-      || !all(sapply(elements(x), is, elementClass(x))))
+      || !all(sapply(elements(x),
+                     function(xi) extends(class(xi), elementClass(x)))))
     return(paste("the 'elements' slot must contain a list of",
                  elementClass(x), "objects"))
   NULL
@@ -118,6 +120,8 @@ setMethod("[[", "TypedList",
           }
           )
 
+setMethod("$", "TypedList", function(x, name) x[[name]])
+
 setReplaceMethod("[[", "TypedList",
                  function(x, i, j,..., value)
                  {
@@ -133,18 +137,24 @@ setReplaceMethod("[[", "TypedList",
                      stop("attempt to select more than one element")
                    if (is.numeric(i) && (i < 1L || i > length(x)+1))
                      stop("subscript out of bounds")
-                   if (!is.null(value) && !canCoerce(value, elementClass(x)))
-                     stop("cannot coerce 'value' to required class")
                    els <- x@elements
                    names(els) <- names(x)
-                   if (!is.null(value))
-                     value <- as(value, elementClass(x))
+                   if (!is.null(value)) {
+                     value <- try(as(value, elementClass(x)), silent = TRUE)
+                     if (inherits(value, "try-error"))
+                       stop("cannot coerce 'value' to 'elementClass' instance")
+                   }
                    els[[i]] <- value 
                    x@elements <- els
                    names(x) <- names(els)
                    names(x@elements) <- NULL
                    x
                  })
+
+setReplaceMethod("$", "TypedList", function(x, name, value) {
+  x[[name]] <- value
+  x
+})
 
 ### Supported 'i' types: numeric, character, logical, NULL and missing.
 setMethod("[", "TypedList",
@@ -311,7 +321,7 @@ setMethod("unlist", "TypedList",
           function(x, recursive = TRUE, use.names = TRUE) {
             if (!missing(recursive))
               warning("'recursive' argument currently ignored")
-            ans <- do.call("c", as.list(x))
+            ans <- do.call("c", elements(x))
             if (!use.names)
               names(ans) <- NULL
             ans
