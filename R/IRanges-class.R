@@ -440,7 +440,7 @@ setMethod("[", "IRanges",
             stop("invalid subsetting")
         if (missing(i))
             return(x)
-        if (!is.atomic(i))
+        if (!is(i, "Ranges") && !is.atomic(i))
             stop("invalid subscript type")
         if (is.character(i))
             stop("cannot subset a ", class(x), " object by names")
@@ -463,6 +463,8 @@ setMethod("[", "IRanges",
                 stop("subscript contains NAs")
             if (length(i) > lx)
                 stop("subscript out of bounds")
+        } else if (is(i, "Ranges")) {
+            i <- x %in% i
         } else if (!is.null(i)) {
             stop("invalid subscript type")
         }
