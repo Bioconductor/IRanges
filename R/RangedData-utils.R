@@ -6,7 +6,16 @@
 ### Applying
 ###
 
+setMethod("lapply", "RangedData", function(X, FUN, ...) {
+  inds <- seq(length(X))
+  names(inds) <- names(X)
+  lapply(inds, function(i) {
+    FUN(X[i], ...)
+  })
+})
+
 setGeneric("rdapply", function(x, ...) standardGeneric("rdapply"))
+
 setMethod("rdapply", "RDApplyParams", function(x) {
   rd <- rangedData(x)
   applyFun <- applyFun(x)
