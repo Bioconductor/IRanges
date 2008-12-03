@@ -4,7 +4,8 @@
 
 ## Accepts any type of Ranges instance as an element
 
-setClass("RangesList", prototype = prototype(elementClass = "Ranges"),
+setClass("RangesList", representation(universe = "characterORNULL"),
+         prototype(elementClass = "Ranges"),
          contains = "TypedList")
 
 setClass("IRangesList", prototype = prototype(elementClass = "IRanges"),
@@ -22,25 +23,74 @@ setMethod("end", "RangesList",
 setMethod("width", "RangesList",
           function(x) unlist(lapply(x, width), use.names = FALSE))
 
+setGeneric("space", function(x, ...) standardGeneric("space"))
+setMethod("space", "RangesList",
+          function(x) {
+            space <- names(x)
+            if (!is.null(space))
+              space <- rep(space, sapply(elements(x), length))
+            space
+          })
+
+setGeneric("universe", function(x) standardGeneric("universe"))
+setMethod("universe", "RangesList", function(x) x@universe)
+
+setGeneric("universe<-", function(x, value) standardGeneric("universe<-"))
+setReplaceMethod("universe", "RangesList",
+                 function(x, value) {
+                   if (!is.null(value) && !isSingleString(value))
+                     stop("'value' must be a single string or NULL")
+                   x@universe <- value
+                   x
+                 })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
 ###
 
-RangesList <- function(...)
+RangesList <- function(..., universe = NULL)
 {
+  if (!is.null(universe) && !isSingleString(universe))
+    stop("'universe' must be a single string or NULL")
   ranges <- list(...)
+  if (!all(sapply(ranges, is, "Ranges")))
+    stop("all elements in '...' must be instances of 'Ranges'")
   NAMES <- names(ranges)
   names(ranges) <- NULL
-  new("RangesList", elements=ranges, NAMES=NAMES)
+  new("RangesList", elements=ranges, NAMES=NAMES, universe=universe)
 }
 
-IRangesList <- function(...)
+IRangesList <- function(..., universe = NULL)
 {
-    ranges <- list(...)
-    NAMES <- names(ranges)
-    names(ranges) <- NULL
-    new("IRangesList", elements=ranges, NAMES=NAMES)
+  ranges <- list(...)
+  if (!all(sapply(ranges, is, "IRanges")))
+    stop("all elements in '...' must be instances of 'IRanges'")
+  new("IRangesList", RangesList(..., universe = universe))
 }
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Subsetting.
+###
+
+### Support subsetting by another RangesList
+setMethod("[", "RangesList",
+          function(x, i, j, ..., drop)
+          {
+            if (!missing(j) || length(list(...)) > 0)
+              stop("invalid subsetting")
+            if (missing(i))
+              return(x)
+            if (is(i, "RangesList")) {
+              ol <- overlap(i, x, multiple = FALSE)
+              els <- elements(x)
+              for (j in seq_len(length(x))) {
+                els[[j]] <- els[[j]][!is.na(ol[[j]])]
+              }
+              x@elements <- els
+              x
+            } else callNextMethod(x, i)
+          }
+          )
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Methods that are vectorized over the ranges
@@ -88,6 +138,48 @@ setMethod("gaps", "RangesList",
           }
           )
 
+setMethod("range", "RangesList",
+          function(x, ..., na.rm) {
+            args <- list(x, ...)
+            if (!all(sapply(sapply(args, universe), identical, universe(x))))
+              stop("All args in '...' must have the same universe as 'x'")
+            spaceList <- lapply(args, names)
+            names <- spaces <- unique(do.call("c", spaceList))
+            if (any(sapply(spaceList, is.null))) {
+              if (!all(sapply(args, length) == length(x)))
+                stop("If any args are missing names, all must have same length")
+              spaces <- seq_len(length(x))
+            }
+            ranges <- lapply(spaces, function(space) {
+              r <- lapply(args, `[[`, space)
+              do.call("range", r[!sapply(r, is.null)])
+            })
+            initialize(x, elements = ranges, NAMES = names)
+          })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Overlap.
+###
+
+setMethod("overlap", c("RangesList", "RangesList"),
+          function(object, query, maxgap = 0, multiple = TRUE)
+          {
+            query <- as.list(query)
+            subject <- as.list(object)
+            if (!is.null(names(subject)) && !is.null(names(query)))
+              subject <- subject[names(query)]
+            else subject <- subject[seq_along(query)]
+            ## NULL's are introduced where they do not match
+            ## We replace those with empty IRanges
+            subject[sapply(subject, is.null)] <- IRanges()
+            ans <- lapply(seq_len(length(subject)), function(i) {
+              overlap(subject[[i]], query[[i]], maxgap, multiple)
+            })
+            names(ans) <- names(subject)
+            if (multiple)
+              ans <- do.call("RangesMatchingList", ans)
+            ans
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
@@ -140,6 +232,30 @@ setMethod("summary", "RangesList",
 ### Coercion.
 ###
 
+setMethod("as.data.frame", "RangesList",
+          function(x, row.names=NULL, optional=FALSE, ...)
+          {
+            if (!(is.null(row.names) || is.character(row.names)))
+              stop("'row.names'  must be NULL or a character vector")
+            if (!missing(optional) || length(list(...)))
+              warning("'optional' and arguments in '...' ignored")
+            x <- as(x, "IRangesList")
+            df <- as.data.frame(unlist(x), row.names = row.names)
+            if (!is.null(names(x)))
+              df <- cbind(space = rep(names(x), unlist(lapply(x, length))), df)
+            df
+          })
+
+setMethod("unlist", "IRangesList",
+          function(x, recursive = TRUE, use.names = TRUE) {
+            if (!missing(recursive))
+              warning("'recursive' argument currently ignored")
+            ans <- callNextMethod()
+            if (is.null(ans))
+              ans <- IRanges()
+            ans
+          })
+
 ### From an IRangesList object to a NormalIRanges object.
 setAs("IRangesList", "NormalIRanges",
       function(from) reduce(from)[[1]]
@@ -149,8 +265,7 @@ setAs("RangesList", "IRangesList",
       function(from) {
         ir <- lapply(from, as, "IRanges")
         names(ir) <- NULL
-        from@elements <- ir
-        from
+        new("IRangesList", from, elements = ir)
       })
 
 
