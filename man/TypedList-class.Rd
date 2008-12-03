@@ -136,6 +136,7 @@
       \code{c}. Returns \code{NULL} if there are no elements in \code{x},
       which may not be what is expected in many cases.
       Subclasses should implement their own logic.
+    }
   }
 }
 
