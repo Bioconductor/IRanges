@@ -2,10 +2,14 @@ test_XDataFrame_construction <- function() {
   score <- c(1L, 3L, NA)
   counts <- c(10L, 2L, NA)
 
-  checkException(XDataFrame(1, score), silent = TRUE) # different lengths (no recycling, silent = TRUE)
-  checkException(XDataFrame(score, row.names = c("a", NA, "b")), silent = TRUE) # na in rn
-  checkException(XDataFrame(score, row.names = "a"), silent = TRUE) # invalid rn length
-  checkException(XDataFrame(score, row.names = c("a", "b", "a")), silent = TRUE) # dups in rn
+  ## different lengths (no recycling)
+  checkException(XDataFrame(1, score), silent = TRUE) 
+  ## na in rn
+  checkException(XDataFrame(score, row.names = c("a", NA, "b")), silent = TRUE)
+  ## invalid rn length
+  checkException(XDataFrame(score, row.names = "a"), silent = TRUE)
+  ## dups in rn
+  checkException(XDataFrame(score, row.names = c("a", "b", "a")), silent = TRUE)
   
   xdf <- XDataFrame() # no args
   checkTrue(validObject(xdf))
@@ -158,7 +162,11 @@ test_XDataFrame_replacement <- function() {
   xdf[[3]] <- score
   checkIdentical(xdf[["X"]], score)
   xdf[[3]] <- NULL # deletion
-
+  xdf[["counts"]] <- NULL
+  xdf$counts <- counts
+  checkIdentical(xdf$counts, counts)
+  
+  
   checkException(xdf[[13]] <- counts, silent = TRUE) # index must be < length+1
   checkException(xdf[["tooshort"]] <- counts[1:2], silent = TRUE)
 }
@@ -188,6 +196,15 @@ test_XDataFrame_combine <- function() {
   swsplit <- split(sw, sw[["Education"]])
   checkIdentical(as.data.frame(do.call("rbind", as.list(swsplit))), swissrbind)
 
+  ## combining factors
+  df1 <- data.frame(species = c("Mouse", "Chicken"), n = c(5, 6))
+  xdf1 <- XDataFrame(df1)
+  df2 <- data.frame(species = c("Human", "Chimp"), n = c(1, 2))
+  xdf2 <- XDataFrame(df2)
+  df12 <- rbind(df1, df2)
+  rownames(df12) <- NULL
+  checkIdentical(as.data.frame(rbind(xdf1, xdf2)), df12)
+  
   rownames(sw) <- rn
   checkIdentical(rownames(rbind(sw, XDataFrame(swiss))), NULL)  
   swsplit <- split(sw, sw[["Education"]])

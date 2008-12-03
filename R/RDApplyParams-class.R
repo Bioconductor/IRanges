@@ -110,11 +110,21 @@ setReplaceMethod("reducerParams", "RDApplyParams", function(x, value) {
 RDApplyParams <- function(rangedData, applyFun, applyParams, #excludePattern,
                           filterRules, simplify, reducerFun, reducerParams)
 {
-  nms <- names(match.call()[-1])
-  params <- lapply(nms, function(x) get(x))
-  names(params) <- nms
-  do.call("new", c("RDApplyParams", params))
+  params <- new("RDApplyParams", applyFun = applyFun,
+                applyParams = applyParams, filterRules = filterRules,
+                simplify = simplify, reducerFun = reducerFun,
+                reducerParams = reducerParams)
+  params@rangedData <- rangedData ## set rangedData last for efficiency
+  params
 }
+
+## get the defaults from the class prototype
+formals(RDApplyParams) <- structure(lapply(slotNames("RDApplyParams"),
+                                           function(x) {
+                                             slot(new("RDApplyParams"), x)
+                                           }),
+                                    names = slotNames("RDApplyParams")) 
+                                    
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.

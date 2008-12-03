@@ -21,7 +21,7 @@
 \description{\code{GenomicData} extends \code{RangedData} to more
   conveniently manipulate data
   on genomic ranges. The spaces are now called chromosomes (but could
-  still refer to some other type of sequence). The annotation refers to
+  still refer to some other type of sequence). The universe refers to
   the genome and there is formal treatment of an optional \code{strand}
   variable.}
 
@@ -37,7 +37,7 @@
     }
     \item{}{
       \code{genome(x)}: Gets the genome for the ranges in \code{x}; a simple
-      wrapper around \code{annotation(x)}.
+      wrapper around \code{universe(x)}.
     }
     \item{}{
       \code{strand(x)}: Gets the strand factor in \code{x}, or,
@@ -68,7 +68,7 @@
       variables and strand should be split up 
       across the chromosomes. The \code{genome} argument should be a
       scalar string and is treated as the \code{RangedData}
-      annotation. See the examples.
+      universe. See the examples.
     }
   }
 }
@@ -86,7 +86,7 @@
   ## just ranges
   gr <- GenomicData(range1) 
 
-  ## with a genome (annotation)
+  ## with a genome (universe)
   gr <- GenomicData(range1, genome = "hg18")
   genome(gr) ## "hg18"
 

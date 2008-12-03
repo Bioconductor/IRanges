@@ -40,3 +40,9 @@ test_IRanges_setops <- function() {
   ## intersect
   checkIdentical(intersect(query, subject), IRanges(c(2,10),c(3,10)))  
 }
+
+test_IRanges_subset <- function() { # by range
+  query <- IRanges(c(1, 4, 9), c(5, 7, 10))
+  subject <- IRanges(c(6, 8, 10), c(7, 12, 14))
+  checkIdentical(query[subject], query[2:3])
+}

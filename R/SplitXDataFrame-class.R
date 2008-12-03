@@ -21,7 +21,7 @@ setMethod("dim", "SplitXDataFrame",
 
 setMethod("dimnames", "SplitXDataFrame",
           function(x) {
-            list(unlist(lapply(x, rownames)),
+            list(unlist(lapply(x, rownames), use.names=FALSE),
                  if (length(x)) colnames(x[[1]]) else NULL)
           })
 

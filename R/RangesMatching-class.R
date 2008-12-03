@@ -9,8 +9,12 @@ setClass("RangesMatching", representation(matchMatrix = "Matrix"))
 ### Accessors
 ###
 
-setGeneric("matchMatrix", function(object, ...) standardGeneric("matchMatrix"))
-setMethod("matchMatrix", "RangesMatching", function(object) object@matchMatrix)
+setGeneric("matchMatrix", function(x, ...) standardGeneric("matchMatrix"))
+setMethod("matchMatrix", "RangesMatching", function(x) x@matchMatrix)
+
+setMethod("dim", "RangesMatching", function(x) {
+  dim(matchMatrix(x))
+})
 
 ## setGeneric("rmatched", function(x, ...) standardGeneric("rmatched"))
 ## setMethod("rmatched", "RangesMatching", function(x) {
@@ -51,6 +55,10 @@ setMethod("t", "RangesMatching", function(x) {
 })
 
 setMethod("ranges", "RangesMatching", function(x, query, subject) {
+  if (!is(query, "Ranges") || length(query) != ncol(x))
+    stop("'query' must be a Ranges of length equal to number of queries")
+  if (!is(subject, "Ranges") || length(subject) != nrow(x))
+    stop("'subject' must be a Ranges of length equal to number of subjects")
   m <- as.matrix(x)
   q <- query[m[,1]]
   s <- subject[m[,2]]

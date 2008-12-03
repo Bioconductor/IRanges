@@ -4,8 +4,8 @@
 \alias{RangedData-class}
 
 % Accessors:
-\alias{annotation}
-\alias{annotation,RangedData-method}
+\alias{universe}
+\alias{universe,RangedData-method}
 \alias{dim,RangedData-method}
 \alias{dimnames,RangedData-method}
 \alias{end,RangedData-method}
@@ -52,7 +52,7 @@
   A \code{RangedData} object consists of two primary components:
   a \code{\linkS4class{RangesList}} holding the ranges over multiple
   spaces and a parallel \code{\linkS4class{SplitXDataFrame}},
-  holding the split data. There is also an \code{annotation} slot
+  holding the split data. There is also an \code{universe} slot
   for denoting the source (e.g. the genome) of the ranges and/or
   data.
 
@@ -144,7 +144,7 @@
   Other accessors:
   \describe{
     \item{}{
-      \code{annotation(object)}: Here, \code{object} is a
+      \code{universe(object)}: Here, \code{object} is a
       \code{RangedData} object. Get the scalar string
       identifying the source of the data in some way (e.g. genome,
       experimental platform, etc). 
@@ -164,7 +164,7 @@
   \describe{
     \item{}{
       \code{RangedData(ranges = IRanges(), ..., splitter = NULL,
-        annotation = NULL)}:
+        universe = NULL)}:
       Creates a \code{RangedData} with the ranges in \code{ranges} and
       variables given by the arguments in \code{...}.  See the
       constructor \code{\link{XDataFrame}} for how the \code{...}
@@ -173,8 +173,8 @@
       in a single-space (length one) \code{RangedData}. Otherwise, the
       ranges and values are split into spaces according to
       \code{splitter}, which is treated as a factor, like the \code{f}
-      argument in \code{\link{split}}. The annotation may be specified
-      as a scalar string by the \code{annotation} argument.
+      argument in \code{\link{split}}. The universe may be specified
+      as a scalar string by the \code{universe} argument.
     }
   }
 }
@@ -283,9 +283,9 @@
   rd[["filter"]]
   rd <- RangedData(ranges, score + score)
   rd[["score...score"]] # names made valid
-  ## use an annotation
-  rd <- RangedData(ranges, annotation = "hg18")
-  annotation(rd)
+  ## use a universe
+  rd <- RangedData(ranges, universe = "hg18")
+  universe(rd)
 
   ## split some data over chromosomes
 
@@ -295,7 +295,7 @@
   filter <- c(filter, c(0L, 1L, NA, 0L)) 
   chrom <- paste("chr", rep(c(1,2), c(length(ranges), length(range2))), sep="")
 
-  rd <- RangedData(both, score, filter, splitter = chrom, annotation = "hg18")
+  rd <- RangedData(both, score, filter, splitter = chrom, universe = "hg18")
   rd[["score"]] # identical to score
   rd[1][["score"]] # identical to score[1:3]
 

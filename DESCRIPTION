@@ -1,5 +1,5 @@
 Package: IRanges
-Title: Low-level containers for storing sets of integer ranges
+Title: Infrastructure for manipulating intervals on sequences
 Description: The IRanges class and its extensions are low-level containers
 	for storing sets of integer ranges. A typical use of these containers
 	in biology is for representing a set of chromosome regions.
@@ -51,9 +51,11 @@ Collate: validity-utils.R
 	FilterRules-class.R
 	RDApplyParams-class.R
 	RangedData-utils.R
+        GenomicRanges-class.R
 	GenomicData-class.R
-    RangesMatching-class.R
-    Alignment-class.R
+        RangesMatching-class.R
+        RangesMatchingList-class.R
+        Alignment-class.R
 	reverse.R
 	coverage.R
 	debug.R

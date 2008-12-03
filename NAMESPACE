@@ -16,7 +16,7 @@ exportClasses(
     TypedList, RangesList, IRangesList,
     XDataFrame, SplitXDataFrame,
     RangedData, RangedDataList, FilterRules, RDApplyParams, GenomicData,
-    RangesMatching
+    GenomicRanges, RangesMatching
 )
 
 export(
@@ -63,12 +63,17 @@ export(
     reduce,
     gaps,
     overlap,
+    reflect,
+    flank,
+    map,
 
     ## Other generic functions:
     isNormal,
+    isDisjoint,
     whichFirstNotNormal,
     strand,
-    genome,
+    score, "score<-",
+    genome, "genome<-",
     IntervalTree,
     reverse,
     coverage,
@@ -88,7 +93,7 @@ export(
     filterRules, "filterRules<-",
     reducerFun, "reducerFun<-", reducerParams, "reducerParams<-",
     rdapply,
-    annotation, genome, chrom,
+    universe, "universe<-", space, genome, chrom,
     elements, elementClass,
     matchMatrix,
     
@@ -114,6 +119,7 @@ exportMethods(
     end,
     max,
     min,
+    range,
     as.list,
     as.vector,
     as.integer,
@@ -132,6 +138,7 @@ exportMethods(
     t,
     union, intersect, setdiff,
     "%in%",
+    order, sort,
     
     ## Methods for generics defined in this package:
     width,
@@ -140,6 +147,7 @@ exportMethods(
     "end<-",
     isEmpty,
     isNormal,
+    isDisjoint,
     whichFirstNotNormal,
     shift,
     restrict,

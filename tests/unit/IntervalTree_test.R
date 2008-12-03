@@ -96,6 +96,10 @@ test_IntervalTree_overlap <- function() {
                 p = as.integer(c(0, 2, 7, 7)), Dim = c(5L, 3L))
   checkOverlap(result, sparse)
 
+  subject <- IRanges(c(1, 6, 13), c(4, 9, 14)) # single points
+  checkIdentical(overlap(subject, c(3L, 7L, 10L), multiple=FALSE),
+                 c(1L, 2L, NA))
+                 
   checkException(overlap(NULL, query), silent = TRUE)
   checkException(overlap(query, NULL), silent = TRUE)
   checkException(overlap(subject, IRanges(c(2,1),c(3,4))), silent = TRUE)

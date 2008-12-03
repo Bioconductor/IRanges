@@ -4,6 +4,7 @@
 
 % coercion
 \alias{coerce,IRangesList,NormalIRanges-method}
+\alias{unlist,IRangesList-method}
 
 % constructor
 \alias{IRangesList}
@@ -27,6 +28,11 @@
     \item{}{\code{as(from, "NormalIRanges")}: Merges each of the
       elements into a single \code{\linkS4class{NormalIRanges}} through
       \code{\link{reduce}}.
+    }
+    \item{}{\code{unlist(x)}: Unlists \code{x}, an \code{IRangesList},
+      by concatenating all of the ranges into a single \code{IRanges}
+      instance. If the length of \code{x} is zero, an empty \code{IRanges}
+      is returned.
     }
   }
 }

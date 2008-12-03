@@ -132,9 +132,10 @@
     }
     \item{}{\code{unlist(x)}: Combines all of the elements in this list
       into a single element via the \code{c} function and returns the
-      result. Will not work if the elements have no method for \code{c};
-      subclasses should implement their own logic.
-    }
+      result. Will not work if the elements have no method for
+      \code{c}. Returns \code{NULL} if there are no elements in \code{x},
+      which may not be what is expected in many cases.
+      Subclasses should implement their own logic.
   }
 }
 

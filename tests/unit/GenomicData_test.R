@@ -32,8 +32,11 @@ test_GenomicData_construction <- function() {
   gr <- GenomicData(ranges, score, chrom = chrom, genome = "hg18")
   checkTrue(validObject(gr))
   checkIdentical(gr[["score"]], score)
+  checkIdentical(score(gr), score)
   checkIdentical(chrom(gr), factor(chrom))
   checkIdentical(gr[1][["score"]], score[1:3])
+  gr <- GenomicData(ranges, foo = score, chrom = chrom, genome = "hg18")
+  checkIdentical(score(gr), score) ## if no score, gets first col
   
   checkException(GenomicData(), silent = TRUE)
   checkException(GenomicData(range1, genome = c("hg18", "mm9")), silent = TRUE)

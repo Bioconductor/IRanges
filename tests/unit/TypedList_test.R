@@ -30,7 +30,9 @@ test_TypedList_extraction <- function() {
   checkIdentical(collection[[1]], range1)
   checkIdentical(collection[[2]], range2)
   checkIdentical(collection[["1"]], NULL)
+  checkIdentical(collection$foo, NULL)
   checkIdentical(RangesList(one=range1, range2)[["one"]], range1)
+  checkIdentical(RangesList(one=range1, range2)$one, range1)
 }
 
 test_TypedList_subset <- function() {

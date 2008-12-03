@@ -104,11 +104,12 @@
   Also the \link[Biostrings]{XString} class from the Biostrings package
   
   The XRle virtual class is a general container for storing
-  an "external sequence" that is stored in a run-time encoding format.
+  an "external sequence" that is stored in a run-length encoding format.
   The following classes derive directly from the XRle class.
 
-  The XRle class is a container for storing an external run-time encoding
-  of integers (stored as char values at the C level).
+  The XRleInteger class is a container for storing an external
+  run-length encoding of integers (stored as char values at the C
+  level).
 
   The purpose of these containers is to provide a "pass by address"
   semantic and also to avoid the overhead of copying the sequence
