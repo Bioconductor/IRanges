@@ -22,7 +22,7 @@ setClass("Ranges", contains = "VIRTUAL")
 ###   Endomorphisms:
 ###     update
 ###     [, [<-, rep
-###     shift, restrict, narrow, reduce, gaps
+###     shift, restrict, narrow, reduce, gaps, reflect, flank
 ###
 ###   More operations:
 ###     c
@@ -99,6 +99,39 @@ setMethod("duplicated", "Ranges",
     }
 )
 
+setGeneric("order", signature="...",
+           function (..., na.last=TRUE, decreasing=FALSE)
+           standardGeneric("order"))
+
+setMethod("order", "Ranges", function (..., na.last = TRUE, decreasing = FALSE)
+          {
+            if (!is.na(na.last) && !isTRUEorFALSE(na.last))
+              stop("'na.last' must be TRUE, FALSE or NA")
+            if (!isTRUEorFALSE(decreasing)) 
+              stop("'decreasing' must be TRUE or FALSE")
+            args <- list(...)
+            if (!all(sapply(args, is, "Ranges")))
+              stop("all arguments in '...' must be Ranges instances")
+            starts <- lapply(args, start)
+            do.call("order",
+                    c(starts, na.last = na.last, decreasing = decreasing))
+          })
+
+setMethod("sort", "Ranges", function (x, decreasing = FALSE, ...) 
+          {
+            if (!isTRUEorFALSE(decreasing))
+              stop("'decreasing' must be TRUE or FALSE")
+            x[order(x, decreasing = decreasing)]
+          })
+
+setMethod("range", "Ranges", function(x, ..., na.rm) {
+  args <- list(x, ...)
+  if (!all(sapply(args, is, "Ranges")))
+    stop("all arguments in '...' must be Ranges instances")
+  x <- do.call("c", args)
+  IRanges(min(start(x)), max(end(x)))
+})
+
 setMethod("show", "Ranges",
     function(object)
     {
@@ -113,8 +146,8 @@ setReplaceMethod("[", "Ranges",
 )
 
 setMethod("rep", "Ranges",
-    function(x, times)
-        x[rep.int(seq_len(length(x)), times)]
+    function(x, ...)
+        x[rep(seq_len(length(x)), ...)]
 )
 
 setGeneric("shift", signature="x",
@@ -139,6 +172,46 @@ setGeneric("gaps", signature="x",
     function(x, start=NA, end=NA) standardGeneric("gaps")
 )
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "reflect" method.
+###
+### |   xxx |
+### to
+### | xxx   |
+###
+
+setGeneric("reflect",
+    function(x, ...) standardGeneric("reflect")
+)
+
+setMethod("reflect", "Ranges", function(x, bounds) {
+  if (!is(bounds, "Ranges") || length(bounds) != length(x))
+    stop("'bounds' must be a Ranges instance of length equal to that of 'x'")
+  IRanges(end(bounds) - (end(x) - start(bounds)), width = width(x))
+})
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "flank" method.
+###
+
+setGeneric("flank", function(x, ...) standardGeneric("flank"))
+setMethod("flank", "Ranges", function(x, length, start = TRUE, both = FALSE) {
+  if (!is.numeric(length))
+    stop("'length' must be numeric")
+  if (!is.logical(start) || any(is.na(start)))
+    stop("'start' must be logical without NA's")
+  if (!isTRUEorFALSE(both))
+    stop("'both' must be TRUE or FALSE")
+  start <- recycleVector(start, length(x))
+  length <- recycleVector(length, length(x))
+  if (both)
+    IRanges(ifelse(start, start(x) - abs(length), end(x) - abs(length) + 1),
+            width = abs(length)*2)
+  else IRanges(ifelse(start, ifelse(length < 0, start(x), start(x) - length),
+                      ifelse(length < 0, end(x) + length + 1, end(x) + 1)),
+               width = abs(length))
+})
+
 ## Find objects in the index that overlap those in a query set
 setGeneric("overlap", signature = c("object", "query"),
     function(object, query, maxgap = 0, multiple = TRUE, ...)
@@ -149,6 +222,11 @@ setMethod("overlap", c("Ranges", "missing"),
     function(object, query, maxgap = 0, multiple = TRUE)
         overlap(object, object, maxgap, multiple)
 )
+
+setMethod("overlap", c("Ranges", "integer"),
+          function(object, query, maxgap = 0, multiple = TRUE)
+          overlap(object, IRanges(query, query), maxgap, multiple)
+          )
 
 setMethod("%in%", c("Ranges", "Ranges"),
           function(x, table)
@@ -165,6 +243,18 @@ setMethod("isNormal", "Ranges",
         all_ok
     }
 )
+
+setGeneric("isDisjoint", function(x) standardGeneric("isDisjoint"))
+
+setMethod("isDisjoint", "Ranges",
+          function(x) {
+            x <- x[width(x) > 0]
+            if (length(x) < 2)
+              return(TRUE)
+            starts <- start(x)
+            startord <- order(starts)
+            all(starts[startord][-1] - end(x)[startord][-length(x)] >= 1)
+          })
 
 setGeneric("whichFirstNotNormal", function(x) standardGeneric("whichFirstNotNormal"))
 
