@@ -338,6 +338,11 @@ DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_xdata,
 	(     x)
 );
 
+DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_tag,
+	(SEXP x),
+	(     x)
+);
+
 DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_offset,
 	(SEXP x),
 	(     x)

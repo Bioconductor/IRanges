@@ -13,7 +13,7 @@ SEXP XIntegerViews_viewMins(SEXP x, SEXP na_rm)
 	int i, j, ans_length, *ans_elt, *subject_elt, *start_elt, *width_elt;
 
 	subject = GET_SLOT(x, install("subject"));
-	subject_tag = _get_SequencePtr_tag(_get_XSequence_xdata(subject));
+	subject_tag = _get_XSequence_tag(subject);
 	start = GET_SLOT(x, install("start"));
 	width = GET_SLOT(x, install("width"));
 
@@ -48,7 +48,7 @@ SEXP XIntegerViews_viewMaxs(SEXP x, SEXP na_rm)
 	int i, j, ans_length, *ans_elt, *subject_elt, *start_elt, *width_elt;
 
 	subject = GET_SLOT(x, install("subject"));
-	subject_tag = _get_SequencePtr_tag(_get_XSequence_xdata(subject));
+	subject_tag = _get_XSequence_tag(subject);
 	start = GET_SLOT(x, install("start"));
 	width = GET_SLOT(x, install("width"));
 
@@ -83,7 +83,7 @@ SEXP XIntegerViews_viewSums(SEXP x, SEXP na_rm)
 	int i, j, ans_length, *ans_elt, *subject_elt, *start_elt, *width_elt;
 
 	subject = GET_SLOT(x, install("subject"));
-	subject_tag = _get_SequencePtr_tag(_get_XSequence_xdata(subject));
+	subject_tag = _get_XSequence_tag(subject);
 	start = GET_SLOT(x, install("start"));
 	width = GET_SLOT(x, install("width"));
 
@@ -121,7 +121,7 @@ SEXP XIntegerViews_viewWhichMins(SEXP x, SEXP na_rm)
 	int i, j, ans_length, cur_min, *ans_elt, *subject_elt, *start_elt, *width_elt;
 
 	subject = GET_SLOT(x, install("subject"));
-	subject_tag = _get_SequencePtr_tag(_get_XSequence_xdata(subject));
+	subject_tag = _get_XSequence_tag(subject);
 	start = GET_SLOT(x, install("start"));
 	width = GET_SLOT(x, install("width"));
 
@@ -159,7 +159,7 @@ SEXP XIntegerViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 	int i, j, ans_length, cur_max, *ans_elt, *subject_elt, *start_elt, *width_elt;
 
 	subject = GET_SLOT(x, install("subject"));
-	subject_tag = _get_SequencePtr_tag(_get_XSequence_xdata(subject));
+	subject_tag = _get_XSequence_tag(subject);
 	start = GET_SLOT(x, install("start"));
 	width = GET_SLOT(x, install("width"));
 

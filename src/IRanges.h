@@ -656,6 +656,8 @@ SEXP NumericPtr_write_nums_to_subset(
 
 SEXP _get_XSequence_xdata(SEXP x);
 
+SEXP _get_XSequence_tag(SEXP x);
+
 SEXP _get_XSequence_offset(SEXP x);
 
 SEXP _get_XSequence_length(SEXP x);

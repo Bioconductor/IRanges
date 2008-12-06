@@ -13,7 +13,7 @@ SEXP XIntegerViews_slice(SEXP xint, SEXP lower, SEXP upper)
 	lower_elt = INTEGER(lower)[0];
 	upper_elt = INTEGER(upper)[0];
 
-	x = _get_SequencePtr_tag(_get_XSequence_xdata(xint));
+	x = _get_XSequence_tag(xint);
 	x_length = LENGTH(x);
 	ans_length = 0;
 	prev_elt = 0;

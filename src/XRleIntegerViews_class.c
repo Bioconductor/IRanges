@@ -17,8 +17,8 @@ SEXP XRleIntegerViews_slice(SEXP x, SEXP lower, SEXP upper)
 
 	x_values = GET_SLOT(x, install("values"));
 	x_lengths = GET_SLOT(x, install("lengths"));
-	x_values_tag = _get_SequencePtr_tag(_get_XSequence_xdata(x_values));
-	x_lengths_tag = _get_SequencePtr_tag(_get_XSequence_xdata(x_lengths));
+	x_values_tag = _get_XSequence_tag(x_values);
+	x_lengths_tag = _get_XSequence_tag(x_lengths);
 
 	x_len = LENGTH(x_values_tag);
 	ans_length = 0;

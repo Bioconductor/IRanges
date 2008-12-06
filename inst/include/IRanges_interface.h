@@ -353,6 +353,8 @@ int get_SequencePtr_length(SEXP x);
 
 SEXP get_XSequence_xdata(SEXP x);
 
+SEXP get_XSequence_tag(SEXP x);
+
 SEXP get_XSequence_offset(SEXP x);
 
 SEXP get_XSequence_length(SEXP x);

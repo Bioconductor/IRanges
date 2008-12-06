@@ -65,13 +65,13 @@ SEXP XRleInteger_Arith(SEXP x, SEXP y, SEXP Generic)
 
 	x_values = GET_SLOT(x, install("values"));
 	x_lengths = GET_SLOT(x, install("lengths"));
-	x_values_tag = _get_SequencePtr_tag(_get_XSequence_xdata(x_values));
-	x_lengths_tag = _get_SequencePtr_tag(_get_XSequence_xdata(x_lengths));
+	x_values_tag = _get_XSequence_tag(x_values);
+	x_lengths_tag = _get_XSequence_tag(x_lengths);
 
 	y_values = GET_SLOT(y, install("values"));
 	y_lengths = GET_SLOT(y, install("lengths"));
-	y_values_tag = _get_SequencePtr_tag(_get_XSequence_xdata(y_values));
-	y_lengths_tag = _get_SequencePtr_tag(_get_XSequence_xdata(y_lengths));
+	y_values_tag = _get_XSequence_tag(y_values);
+	y_lengths_tag = _get_XSequence_tag(y_lengths);
 
 	x_i = 0;
 	y_i = 0;

@@ -34,7 +34,7 @@ SEXP XNumericViews_slice(SEXP xdouble, SEXP lower, SEXP upper, SEXP include_lowe
 	lower_elt = REAL(lower)[0];
 	upper_elt = REAL(upper)[0];
 
-	x = _get_SequencePtr_tag(_get_XSequence_xdata(xdouble));
+	x = _get_XSequence_tag(xdouble);
 	x_length = LENGTH(x);
 	ans_length = 0;
 	prev_elt = 0;

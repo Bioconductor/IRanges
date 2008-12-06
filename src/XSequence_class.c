@@ -23,6 +23,11 @@ SEXP _get_XSequence_xdata(SEXP x)
 	return GET_SLOT(x, install("xdata"));
 }
 
+SEXP _get_XSequence_tag(SEXP x)
+{
+	return _get_SequencePtr_tag(_get_XSequence_xdata(x));
+}
+
 SEXP _get_XSequence_offset(SEXP x)
 {
 	return GET_SLOT(x, install("offset"));

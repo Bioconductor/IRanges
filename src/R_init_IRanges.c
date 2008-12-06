@@ -210,6 +210,7 @@ void R_init_IRanges(DllInfo *info)
 
 /* XSequence_class.c */
 	REGISTER_CCALLABLE(_get_XSequence_xdata);
+	REGISTER_CCALLABLE(_get_XSequence_tag);
 	REGISTER_CCALLABLE(_get_XSequence_offset);
 	REGISTER_CCALLABLE(_get_XSequence_length);
 	REGISTER_CCALLABLE(_new_XSequence);
