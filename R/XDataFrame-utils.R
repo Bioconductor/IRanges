@@ -26,7 +26,7 @@ setGeneric("rbind", function(..., deparse.level=1) standardGeneric("rbind"),
 
 setMethod("rbind", "XDataFrame", function(..., deparse.level=1) {
   args <- list(...)
-  args <- args[sapply(args, length) > 0] ## drop zero column args
+  args <- args[unlist(lapply(args, length)) > 0] ## drop zero column args
   if (length(args)) {
     haverows <- sapply(args, nrow) > 0
     if (any(haverows))

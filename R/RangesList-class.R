@@ -28,7 +28,7 @@ setMethod("space", "RangesList",
           function(x) {
             space <- names(x)
             if (!is.null(space))
-              space <- rep(space, sapply(elements(x), length))
+              space <- rep(space, unlist(lapply(elements(x), length)))
             space
           })
 
@@ -146,7 +146,7 @@ setMethod("range", "RangesList",
             spaceList <- lapply(args, names)
             names <- spaces <- unique(do.call("c", spaceList))
             if (any(sapply(spaceList, is.null))) {
-              if (!all(sapply(args, length) == length(x)))
+              if (!all(unlist(lapply(args, length)) == length(x)))
                 stop("If any args are missing names, all must have same length")
               spaces <- seq_len(length(x))
             }

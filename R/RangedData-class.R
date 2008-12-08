@@ -320,7 +320,7 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
   df <- dfs[[1]]
   nmsList <- lapply(args, names)
   if (any(sapply(nmsList, is.null))) {
-    if (!all(sapply(args, length) == length(args[[1]])))
+    if (!all(unlist(lapply(args, length)) == length(args[[1]])))
       stop("If any args are missing names, all must have same length")
     nms <- seq_len(length(args[[1]]))
   } else nms <- unique(unlist(nmsList))

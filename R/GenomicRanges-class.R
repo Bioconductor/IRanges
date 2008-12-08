@@ -24,7 +24,7 @@ setGeneric("chrom", function(x, ...) standardGeneric("chrom"))
 setMethod("chrom", "GenomicRanges", function(x) {
   chrom <- names(x)
   if (!is.null(chrom))
-    chrom <- rep(factor(chrom, chrom), sapply(elements(x), length))
+    chrom <- rep(factor(chrom, chrom), unlist(lapply(elements(x), length)))
   chrom
 })
 
