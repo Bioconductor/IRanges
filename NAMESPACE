@@ -14,6 +14,7 @@ exportClasses(
     XRle, XRleInteger, XRleIntegerViews,
     MaskCollection,
     TypedList, RangesList, IRangesList,
+    RaggedArray, RangesArray, IRangesArray,
     XDataFrame, SplitXDataFrame,
     RangedData, RangedDataList, FilterRules, RDApplyParams, RangesMatching
 )
@@ -63,6 +64,7 @@ export(
     overlap,
     reflect,
     flank,
+    score,
     map,
 
     ## Other generic functions:
@@ -89,7 +91,7 @@ export(
     reducerFun, "reducerFun<-", reducerParams, "reducerParams<-",
     rdapply,
     universe, "universe<-", space,
-    elements, elementClass,
+    elements, elementClass, elementLengths,
     matchMatrix,
     
     ## Old stuff (Defunct or Deprecated):

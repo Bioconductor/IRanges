@@ -14,6 +14,9 @@ read.chain <- function(path, exclude = "_") {
   .Call("readChain", path, exclude, PACKAGE="IRanges")
 }
 
+setGeneric("score", function(x, ...) standardGeneric("score"))
+setMethod("score", "AlignmentSpace", function(x) x@score)
+
 setGeneric("map", function(x, alignment, ...) standardGeneric("map"))
 setMethod("map", c("RangesList", "Alignment"),
           function(x, alignment)
