@@ -1,12 +1,6 @@
 Immediate TODO list
 ---------
 
-- Provide a way to reduce ranges separated by a max distance or a min overlap
-  (Michael's suggestion).
-
-- Fix bug in IRanges() that should not be accepting negative widths (reported
-  by Martin).
-
 Long term TODO list
 -------------------
 
@@ -44,7 +38,6 @@ Long term TODO list
   - subset
 
 - RangedData:
-  * rbind: inner combine
   - merge for SQL-type join operations based on range overlap
   - inverse.rle
   * "aggregate", generalization of coverage for max/min/etc
@@ -59,6 +52,7 @@ Long term TODO list
   - look into nested containment lists
 
 - FilterRules:
+  - refactor, using ShortRead filter framework (becomes FilterList)
   - support subsetting XDataFrame/RangedData directly
 
 - rdapply:
@@ -66,3 +60,7 @@ Long term TODO list
   
 - Classes to add:
   - ViewsList, extends RangesList but specific to Views
+
+- IO:
+  - xscan() - read data directly into XSequence objects
+  - move chain reading to rtracklayer

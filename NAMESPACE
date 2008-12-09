@@ -15,8 +15,7 @@ exportClasses(
     MaskCollection,
     TypedList, RangesList, IRangesList,
     XDataFrame, SplitXDataFrame,
-    RangedData, RangedDataList, FilterRules, RDApplyParams, GenomicData,
-    GenomicRanges, RangesMatching
+    RangedData, RangedDataList, FilterRules, RDApplyParams, RangesMatching
 )
 
 export(
@@ -27,7 +26,6 @@ export(
     IRanges,
     RangedData, RangedDataList,
     FilterRules, RDApplyParams,
-    GenomicData,
     solveUserSEW,
     successiveIRanges,
     whichAsIRanges,
@@ -71,9 +69,6 @@ export(
     isNormal,
     isDisjoint,
     whichFirstNotNormal,
-    strand,
-    score, "score<-",
-    genome, "genome<-",
     IntervalTree,
     reverse,
     coverage,
@@ -93,7 +88,7 @@ export(
     filterRules, "filterRules<-",
     reducerFun, "reducerFun<-", reducerParams, "reducerParams<-",
     rdapply,
-    universe, "universe<-", space, genome, chrom,
+    universe, "universe<-", space,
     elements, elementClass,
     matchMatrix,
     
