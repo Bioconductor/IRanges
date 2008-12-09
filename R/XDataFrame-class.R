@@ -171,6 +171,13 @@ XDataFrame <- function(..., row.names = NULL)
       varlist[[i]] <- elements(element)
     }
     nr <- max(nrows)
+    for (i in seq_along(elements)) {
+      if (nrows[i] < nr && nrows[i] && (nr %% nrows[i]) == 0) {
+        recycle <- rep(seq_len(nrows[i]), length = nr)
+        varlist[[i]] <- lapply(varlist[[i]], `[`, recycle, drop=FALSE)
+        nrows[i] <- nr
+      }
+    }
     if (!all(nrows == nr))
       stop("different row counts implied by arguments")
     varlist <- unlist(varlist, recursive = FALSE, use.names = FALSE)
@@ -372,7 +379,7 @@ setMethod("as.data.frame", "XDataFrame",
               row.names <- rownames(x)
             if (!length(l) && is.null(row.names))
               row.names <- seq_len(nrow(x))
-            do.call("data.frame", c(l, row.names = row.names))
+            do.call("data.frame", c(l, list(row.names = row.names)))
           })
 
 ## take data.frames to XDataFrames

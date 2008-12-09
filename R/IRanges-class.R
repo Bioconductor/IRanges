@@ -493,8 +493,12 @@ setMethod("c", "IRanges",
             args <- list(x, ...)
         else
             args <- list(...)
-        IRanges(unlist(lapply(args, start), use.names=FALSE),
-                unlist(lapply(args, end), use.names=FALSE))
+        ir <- IRanges(unlist(lapply(args, start), use.names=FALSE),
+                      unlist(lapply(args, end), use.names=FALSE))
+        nms <- unlist(lapply(args, names))
+        if (length(nms) == length(ir))
+          names(ir) <- nms
+        ir
     }
 )
 

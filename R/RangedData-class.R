@@ -88,7 +88,8 @@ setReplaceMethod("dimnames", "RangedData",
 {
   if (!identical(lapply(ranges(x), length), lapply(values(x), nrow)))
     "'ranges' and 'values' must be of the same length and have the same names"
-  else if (!identical(unlist(lapply(ranges(x), names)), rownames(x)))
+  else if (!identical(unlist(lapply(ranges(x), names), use.names=FALSE),
+                      rownames(x)))
     "the names of the ranges must equal the rownames"
   else NULL
 }
@@ -103,7 +104,7 @@ setValidity2("RangedData", .valid.RangedData)
 ### Constructor.
 ###
 
-## creates a single-element RangedData (unless splitter is specified)
+## creates a single-element RangedData (unless splitter (space) is specified)
 
 RangedData <- function(ranges = IRanges(), ..., space = NULL,
                        universe = NULL)
@@ -161,7 +162,7 @@ setMethod("[[", "RangedData",
               stop("subscript out of bounds")
             col <- lapply(values(x), `[[`, i)
             names(col) <- NULL
-            do.call("c", col)
+            do.call("c", col) ## FIXME: broken for e.g. factors
           })
 
 setMethod("$", "RangedData", function(x, name) x[[name]])
