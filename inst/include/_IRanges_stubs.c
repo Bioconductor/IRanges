@@ -359,17 +359,17 @@ DEFINE_CCALLABLE_STUB(SEXP, new_XSequence,
 );
 
 DEFINE_CCALLABLE_STUB(SEXP, new_XRaw_from_tag,
-	(SEXP tag),
-	(     tag)
+	(const char *classname, SEXP tag),
+	(            classname,      tag)
 );
 
 DEFINE_CCALLABLE_STUB(SEXP, new_XInteger_from_tag,
-	(SEXP tag),
-	(     tag)
+	(const char *classname, SEXP tag),
+	(            classname,      tag)
 );
 
 DEFINE_CCALLABLE_STUB(SEXP, new_XNumeric_from_tag,
-	(SEXP tag),
-	(     tag)
+	(const char *classname, SEXP tag),
+	(            classname,      tag)
 );
 

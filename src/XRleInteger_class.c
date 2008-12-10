@@ -168,8 +168,8 @@ SEXP XRleInteger_Arith(SEXP x, SEXP y, SEXP Generic)
 		}
 	}
 
-	PROTECT(ans_lengths = _new_XInteger_from_tag(ans_lengths_tag));
-	PROTECT(ans_values = _new_XInteger_from_tag(ans_values_tag));
+	PROTECT(ans_lengths = _new_XInteger_from_tag("XInteger", ans_lengths_tag));
+	PROTECT(ans_values = _new_XInteger_from_tag("XInteger", ans_values_tag));
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("XRleInteger")));
 	SET_SLOT(ans, mkChar("vectorLength"), ScalarInteger(INTEGER(x_vectorLength)[0]));
 	SET_SLOT(ans, mkChar("lengths"), ans_lengths);

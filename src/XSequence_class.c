@@ -68,7 +68,7 @@ SEXP _new_XSequence(const char *classname, SEXP xdata, int offset, int length)
 	return ans;
 }
 
-SEXP _new_XRaw_from_tag(SEXP tag)
+SEXP _new_XRaw_from_tag(const char *classname, SEXP tag)
 {
 	SEXP xdata, ans;
 
@@ -76,12 +76,12 @@ SEXP _new_XRaw_from_tag(SEXP tag)
 		error("IRanges internal error in _new_XRaw_from_tag(): "
 		      "'tag' is not RAW");
 	PROTECT(xdata = _new_SequencePtr("RawPtr", tag));
-	PROTECT(ans = _new_XSequence("XRaw", xdata, 0, LENGTH(tag)));
+	PROTECT(ans = _new_XSequence(classname, xdata, 0, LENGTH(tag)));
 	UNPROTECT(2);
 	return ans;
 }
 
-SEXP _new_XInteger_from_tag(SEXP tag)
+SEXP _new_XInteger_from_tag(const char *classname, SEXP tag)
 {
 	SEXP xdata, ans;
 
@@ -89,12 +89,12 @@ SEXP _new_XInteger_from_tag(SEXP tag)
 		error("IRanges internal error in _new_XInteger_from_tag(): "
 		      "'tag' is not INTEGER");
 	PROTECT(xdata = _new_SequencePtr("IntegerPtr", tag));
-	PROTECT(ans = _new_XSequence("XInteger", xdata, 0, LENGTH(tag)));
+	PROTECT(ans = _new_XSequence(classname, xdata, 0, LENGTH(tag)));
 	UNPROTECT(2);
 	return ans;
 }
 
-SEXP _new_XNumeric_from_tag(SEXP tag)
+SEXP _new_XNumeric_from_tag(const char *classname, SEXP tag)
 {
 	SEXP xdata, ans;
 
@@ -102,7 +102,7 @@ SEXP _new_XNumeric_from_tag(SEXP tag)
 		error("IRanges internal error in _new_XNumeric_from_tag(): "
 		      "'tag' is not NUMERIC");
 	PROTECT(xdata = _new_SequencePtr("NumericPtr", tag));
-	PROTECT(ans = _new_XSequence("XNumeric", xdata, 0, LENGTH(tag)));
+	PROTECT(ans = _new_XSequence(classname, xdata, 0, LENGTH(tag)));
 	UNPROTECT(2);
 	return ans;
 }

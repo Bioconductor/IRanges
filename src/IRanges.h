@@ -669,11 +669,20 @@ SEXP _new_XSequence(
 	int length
 );
 
-SEXP _new_XRaw_from_tag(SEXP tag);
+SEXP _new_XRaw_from_tag(
+	const char *classname,
+	SEXP tag
+);
 
-SEXP _new_XInteger_from_tag(SEXP tag);
+SEXP _new_XInteger_from_tag(
+	const char *classname,
+	SEXP tag
+);
 
-SEXP _new_XNumeric_from_tag(SEXP tag);
+SEXP _new_XNumeric_from_tag(
+	const char *classname,
+	SEXP tag
+);
 
 
 /* XIntegerViews_class.c */

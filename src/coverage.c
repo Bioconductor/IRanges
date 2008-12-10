@@ -132,8 +132,8 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP order, SEXP width)
 		}
 	}
 
-	PROTECT(ans_lengths = _new_XInteger_from_tag(ans_lengths_tag));
-	PROTECT(ans_values = _new_XInteger_from_tag(ans_values_tag));
+	PROTECT(ans_lengths = _new_XInteger_from_tag("XInteger", ans_lengths_tag));
+	PROTECT(ans_values = _new_XInteger_from_tag("XInteger", ans_values_tag));
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("XRleInteger")));
 	SET_SLOT(ans, mkChar("vectorLength"), ScalarInteger(INTEGER(width)[0]));
 	SET_SLOT(ans, mkChar("lengths"), ans_lengths);
