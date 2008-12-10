@@ -358,3 +358,18 @@ DEFINE_CCALLABLE_STUB(SEXP, new_XSequence,
 	(            classname,      xdata,     offset,     length)
 );
 
+DEFINE_CCALLABLE_STUB(SEXP, new_XRaw_from_tag,
+	(SEXP tag),
+	(     tag)
+);
+
+DEFINE_CCALLABLE_STUB(SEXP, new_XInteger_from_tag,
+	(SEXP tag),
+	(     tag)
+);
+
+DEFINE_CCALLABLE_STUB(SEXP, new_XNumeric_from_tag,
+	(SEXP tag),
+	(     tag)
+);
+

@@ -361,3 +361,9 @@ SEXP get_XSequence_length(SEXP x);
 
 SEXP new_XSequence(const char *classname, SEXP xdata, int offset, int length);
 
+SEXP new_XRaw_from_tag(SEXP tag);
+
+SEXP new_XInteger_from_tag(SEXP tag);
+
+SEXP new_XNumeric_from_tag(SEXP tag);
+

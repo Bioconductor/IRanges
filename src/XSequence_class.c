@@ -18,6 +18,14 @@ SEXP debug_XSequence_class()
 	return R_NilValue;
 }
 
+
+/****************************************************************************
+ * C-level accessor functions for XSequence objects.
+ *
+ * Be careful that these functions do NOT copy the returned slot! (this
+ * prevents them from being made .Call() entry points)
+ */
+
 SEXP _get_XSequence_xdata(SEXP x)
 {
 	return GET_SLOT(x, install("xdata"));
@@ -39,11 +47,14 @@ SEXP _get_XSequence_length(SEXP x)
 }
 
 
-/*
- * Do NOT try to make this a .Call() entry point!
- * Its arguments are NOT duplicated so it would be a disaster if they were
- * coming from the user space.
+/****************************************************************************
+ * C-level constructor functions for XSequence objects.
+ *
+ * Be careful that these functions do NOT copy their arguments before they
+ * put them in the slots of the returned objects! (this prevents them from
+ * being made .Call() entry points)
  */
+
 SEXP _new_XSequence(const char *classname, SEXP xdata, int offset, int length)
 {
 	SEXP classdef, ans;
@@ -54,6 +65,45 @@ SEXP _new_XSequence(const char *classname, SEXP xdata, int offset, int length)
 	SET_SLOT(ans, mkChar("offset"), ScalarInteger(offset));
 	SET_SLOT(ans, mkChar("length"), ScalarInteger(length));
 	UNPROTECT(1);
+	return ans;
+}
+
+SEXP _new_XRaw_from_tag(SEXP tag)
+{
+	SEXP xdata, ans;
+
+	if (!IS_RAW(tag))
+		error("IRanges internal error in _new_XRaw_from_tag(): "
+		      "'tag' is not RAW");
+	PROTECT(xdata = _new_SequencePtr("RawPtr", tag));
+	PROTECT(ans = _new_XSequence("XRaw", xdata, 0, LENGTH(tag)));
+	UNPROTECT(2);
+	return ans;
+}
+
+SEXP _new_XInteger_from_tag(SEXP tag)
+{
+	SEXP xdata, ans;
+
+	if (!IS_INTEGER(tag))
+		error("IRanges internal error in _new_XInteger_from_tag(): "
+		      "'tag' is not INTEGER");
+	PROTECT(xdata = _new_SequencePtr("IntegerPtr", tag));
+	PROTECT(ans = _new_XSequence("XInteger", xdata, 0, LENGTH(tag)));
+	UNPROTECT(2);
+	return ans;
+}
+
+SEXP _new_XNumeric_from_tag(SEXP tag)
+{
+	SEXP xdata, ans;
+
+	if (!IS_NUMERIC(tag))
+		error("IRanges internal error in _new_XNumeric_from_tag(): "
+		      "'tag' is not NUMERIC");
+	PROTECT(xdata = _new_SequencePtr("NumericPtr", tag));
+	PROTECT(ans = _new_XSequence("XNumeric", xdata, 0, LENGTH(tag)));
+	UNPROTECT(2);
 	return ans;
 }
 

@@ -33,8 +33,7 @@ SEXP XRleInteger_Arith(SEXP x, SEXP y, SEXP Generic)
 	int *x_values_ptr, *x_lengths_ptr, *y_values_ptr, *y_lengths_ptr;
 	SEXP x_values_tag, x_lengths_tag, y_values_tag, y_lengths_tag;
 	SEXP x_values, x_lengths, x_vectorLength, y_values, y_lengths, y_vectorLength;
-	SEXP ans, ans_lengths, ans_lengths_xdata, ans_lengths_tag,
-	          ans_values, ans_values_xdata, ans_values_tag;
+	SEXP ans, ans_lengths, ans_lengths_tag, ans_values, ans_values_tag;
 
 	switch(CHAR(STRING_ELT(Generic, 0))[0]) {
 		case '+':
@@ -169,14 +168,12 @@ SEXP XRleInteger_Arith(SEXP x, SEXP y, SEXP Generic)
 		}
 	}
 
-	PROTECT(ans_lengths_xdata = _new_SequencePtr("IntegerPtr", ans_lengths_tag));
-	PROTECT(ans_lengths = _new_XSequence("XInteger", ans_lengths_xdata, 0, values_length));
-	PROTECT(ans_values_xdata = _new_SequencePtr("IntegerPtr", ans_values_tag));
-	PROTECT(ans_values = _new_XSequence("XInteger", ans_values_xdata, 0, values_length));
+	PROTECT(ans_lengths = _new_XInteger_from_tag(ans_lengths_tag));
+	PROTECT(ans_values = _new_XInteger_from_tag(ans_values_tag));
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("XRleInteger")));
 	SET_SLOT(ans, mkChar("vectorLength"), ScalarInteger(INTEGER(x_vectorLength)[0]));
 	SET_SLOT(ans, mkChar("lengths"), ans_lengths);
 	SET_SLOT(ans, mkChar("values"), ans_values);
-	UNPROTECT(7);
+	UNPROTECT(5);
 	return ans;
 }
