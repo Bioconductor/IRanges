@@ -12,6 +12,7 @@ test_Ranges_range <- function() {
   ir2 <- IRanges(c(5,2,0), c(6,3,1))
   checkIdentical(range(ir1), IRanges(1, 7))
   checkIdentical(range(ir1, ir2), IRanges(0, 7))
+  checkIdentical(range(IRanges()), IRanges())
   checkException(range(ir1, c(2,3)))
 }
 
