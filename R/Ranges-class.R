@@ -129,7 +129,9 @@ setMethod("range", "Ranges", function(x, ..., na.rm) {
   if (!all(sapply(args, is, "Ranges")))
     stop("all arguments in '...' must be Ranges instances")
   x <- do.call("c", args)
-  IRanges(min(start(x)), max(end(x)))
+  if (!length(x))
+    IRanges()
+  else IRanges(min(start(x)), max(end(x)))
 })
 
 setMethod("show", "Ranges",
