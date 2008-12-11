@@ -397,6 +397,8 @@ setAs("data.frame", "XDataFrame",
 setAs("matrix", "XDataFrame", # matrices just go through data.frame
       function(from) as(as.data.frame(from), "XDataFrame"))
 
+setAs("list", "XDataFrame", function(from) do.call("XDataFrame", from))
+
 ## everything else
 setAs("ANY", "XDataFrame",
       function(from) {
