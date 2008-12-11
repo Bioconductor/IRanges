@@ -10,6 +10,12 @@
 \alias{isEmpty,RangesList-method}
 \alias{width,RangesList-method}
 \alias{start,RangesList-method}
+\alias{space}
+\alias{space,RangesList-method}
+\alias{universe,RangesList-method}
+\alias{universe<-,RangesList-method}
+\alias{universe}
+\alias{universe<-}
 
 % coercion
 \alias{as.data.frame,RangesList-method}
@@ -26,29 +32,47 @@
 \description{An extension of \code{\linkS4class{TypedList}} that holds
   only \code{\linkS4class{Ranges}} instances. Useful for storing ranges
   over a set of spaces (e.g. chromosomes), each of which requires a separate
-  \code{Ranges} instance.
+  \code{Ranges} instance. A \code{RangesList} may be assigned a
+  particular universe (e.g. a genome) in which all of its spaces exist.
 }
 
 \section{Accessors}{
   In the code snippets below, \code{x} is a \code{RangesList}
-  object. All accessors collapse over the spaces.
+  object. 
 
+  All of these accessors collapse over the spaces:
   \describe{
     \item{}{\code{start(x)}: Get the starts of the ranges.}
     \item{}{\code{end(x)}: Get the ends of the ranges.}
     \item{}{\code{width(x)}: Get the widths of the ranges.}
     \item{}{\code{isEmpty(x)}: Gets a logical vector indicating
       which elements are empty (length zero).}
-   }
+    \item{}{\code{space(x)}: Gets the spaces of the ranges as a
+      character vector. This is equivalent to \code{names(x)}, except each
+      name is repeated according to the length of its element.
+    }
+  }
+
+  These accessors are for the \code{universe} identifier:
+  \describe{
+    \item{}{\code{universe(x)}: gets the name of the universe as a
+      single string, if one has been specified, \code{NULL} otherwise.
+    }
+    \item{}{\code{universe(x) <- value}: sets the name of the universe
+      to \code{value}, a single string or \code{NULL}.
+    }
+  }
 }
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{RangesList(...)}:
+    \item{}{\code{RangesList(..., universe = NULL)}:
       Each \code{Ranges} in \code{...}
       becomes an element in the new \code{RangesList}, in the same
       order. This is analogous to the \code{\link{list}} constructor,
-      except every argument in \code{...} must be derived from \code{Ranges}. 
+      except every argument in \code{...} must be derived from
+      \code{Ranges}. The universe is specified by the \code{universe}
+      parameter, which should be a single string or NULL, to leave unspecified. 
     }
   }
 }
@@ -88,6 +112,11 @@
 
   # coerce to data.frame
   as.data.frame(named)
+
+  # set the universe
+  universe(named) <- "hg18"
+  universe(named)
+  RangesList(range1, range2, universe = "hg18")
 }
 \keyword{methods}
 \keyword{classes}

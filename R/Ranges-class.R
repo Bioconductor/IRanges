@@ -197,21 +197,21 @@ setMethod("reflect", "Ranges", function(x, bounds) {
 ###
 
 setGeneric("flank", function(x, ...) standardGeneric("flank"))
-setMethod("flank", "Ranges", function(x, length, start = TRUE, both = FALSE) {
-  if (!is.numeric(length))
-    stop("'length' must be numeric")
+setMethod("flank", "Ranges", function(x, width, start = TRUE, both = FALSE) {
+  if (!is.numeric(width))
+    stop("'width' must be numeric")
   if (!is.logical(start) || any(is.na(start)))
     stop("'start' must be logical without NA's")
   if (!isTRUEorFALSE(both))
     stop("'both' must be TRUE or FALSE")
   start <- recycleVector(start, length(x))
-  length <- recycleVector(length, length(x))
+  width <- recycleVector(width, length(x))
   if (both)
-    IRanges(ifelse(start, start(x) - abs(length), end(x) - abs(length) + 1),
-            width = abs(length)*2)
-  else IRanges(ifelse(start, ifelse(length < 0, start(x), start(x) - length),
-                      ifelse(length < 0, end(x) + length + 1, end(x) + 1)),
-               width = abs(length))
+    IRanges(ifelse(start, start(x) - abs(width), end(x) - abs(width) + 1),
+            width = abs(width)*2)
+  else IRanges(ifelse(start, ifelse(width < 0, start(x), start(x) - width),
+                      ifelse(width < 0, end(x) + width + 1, end(x) + 1)),
+               width = abs(width))
 })
 
 ## Find objects in the index that overlap those in a query set

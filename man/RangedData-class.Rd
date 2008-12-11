@@ -4,7 +4,6 @@
 \alias{RangedData-class}
 
 % Accessors:
-\alias{universe}
 \alias{universe,RangedData-method}
 \alias{dim,RangedData-method}
 \alias{dimnames,RangedData-method}
@@ -17,6 +16,9 @@
 \alias{values}
 \alias{values,RangedData-method}
 \alias{width,RangedData-method}
+\alias{space,RangedData-method}
+\alias{universe,RangedData-method}
+\alias{universe<-,RangedData-method}
 
 % Constructor:
 \alias{RangedData}
@@ -144,14 +146,16 @@
   Other accessors:
   \describe{
     \item{}{
-      \code{universe(object)}: Here, \code{object} is a
-      \code{RangedData} object. Get the scalar string
-      identifying the source of the data in some way (e.g. genome,
-      experimental platform, etc). 
+      \code{universe(x)}, \code{universe(x) <- value}: Get or set the
+      scalar string identifying the scope of the data in some way (e.g. genome,
+      experimental platform, etc). The universe may be \code{NULL}.
     }
     \item{}{
       \code{ranges(x)}: Gets the ranges in \code{x} as a
       \code{\linkS4class{RangesList}}.
+    }
+    \item{}{
+      \code{space(x)}: Gets the spaces from \code{ranges(x)}.
     }
     \item{}{
       \code{values(x)}: Gets the data values in \code{x} as a
@@ -295,7 +299,7 @@
   filter <- c(filter, c(0L, 1L, NA, 0L)) 
   chrom <- paste("chr", rep(c(1,2), c(length(ranges), length(range2))), sep="")
 
-  rd <- RangedData(both, score, filter, splitter = chrom, universe = "hg18")
+  rd <- RangedData(both, score, filter, space = chrom, universe = "hg18")
   rd[["score"]] # identical to score
   rd[1][["score"]] # identical to score[1:3]
 
@@ -330,7 +334,7 @@
   ## variable replacement
 
   count <- c(1L, 0L, 2L)
-  rd <- RangedData(ranges, count, splitter = c(1, 2, 1))
+  rd <- RangedData(ranges, count, space = c(1, 2, 1))
   ## adding a variable
   score <- c(10L, 2L, NA)
   rd[["score"]] <- score
@@ -347,7 +351,7 @@
 
   ## combining/splitting
 
-  rd <- RangedData(ranges, score, splitter = c(1, 2, 1))
+  rd <- RangedData(ranges, score, space = c(1, 2, 1))
   c(rd[1], rd[2]) # equal to 'rd'
   rd2 <- RangedData(ranges, score)
   unlist(split(rd2, c(1, 2, 1))) # same as 'rd'

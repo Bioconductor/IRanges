@@ -243,6 +243,10 @@ setAs("IRangesList", "NormalIRanges",
       function(from) reduce(from)[[1]]
       )
 
+### FIXME: Not clear why this is needed
+setAs("IRangesList", "list",
+      function(from) as(as(from, "RangesList"), "list"))
+
 setAs("RangesList", "IRangesList",
       function(from) {
         ir <- lapply(from, as, "IRanges")

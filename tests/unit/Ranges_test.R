@@ -4,7 +4,7 @@ test_Ranges_order <- function() {
   ir1.rev <- IRanges(c(5,2,1), c(7,3,3))
   checkIdentical(sort(ir1), ir1.sort)
   checkIdentical(sort(ir1, decreasing=TRUE), ir1.rev)
-  checkException(sort(ir1, decreasing=NA))
+  checkException(sort(ir1, decreasing=NA), silent = TRUE)
 }
 
 test_Ranges_range <- function() {
@@ -13,7 +13,7 @@ test_Ranges_range <- function() {
   checkIdentical(range(ir1), IRanges(1, 7))
   checkIdentical(range(ir1, ir2), IRanges(0, 7))
   checkIdentical(range(IRanges()), IRanges())
-  checkException(range(ir1, c(2,3)))
+  checkException(range(ir1, c(2,3)), silent = TRUE)
 }
 
 test_Ranges_reflect <- function() {
@@ -21,7 +21,7 @@ test_Ranges_reflect <- function() {
   bounds <- IRanges(c(0, 5, 3), c(10, 6, 9))
   checkIdentical(reflect(ir1, bounds),
                  IRanges(c(7, 4, 9), c(8, 6, 11)))
-  checkException(reflect(ir1, IRanges(0, 10)))
+  checkException(reflect(ir1, IRanges(0, 10)), silent = TRUE)
 }
 
 test_Ranges_flank <- function() {
@@ -34,9 +34,10 @@ test_Ranges_flank <- function() {
   checkIdentical(flank(ir1, 2, both = TRUE), IRanges(c(0, 3, -1), c(3, 6, 2)))
   checkIdentical(flank(ir1, 2, FALSE, TRUE), IRanges(c(2, 6, 2), c(5, 9, 5)))
   checkIdentical(flank(ir1, -2, FALSE, TRUE), IRanges(c(2, 6, 2), c(5, 9, 5)))
-  checkException(flank(ir1, 2, both = c(TRUE, FALSE, TRUE))) # not vectorized
-  checkException(flank(ir1, 2, c(FALSE, TRUE, NA)))
-  checkException(flank(ir1, NA))
+  checkException(flank(ir1, 2, both = c(TRUE, FALSE, TRUE)),
+                 silent = TRUE) # not vectorized
+  checkException(flank(ir1, 2, c(FALSE, TRUE, NA)), silent = TRUE)
+  checkException(flank(ir1, NA), silent = TRUE)
 }
 
 test_Ranges_isDisjoint <- function() {

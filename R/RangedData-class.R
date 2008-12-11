@@ -159,7 +159,7 @@ setMethod("[[", "RangedData",
               stop("attempt to select more than one element")
             if (is.numeric(i) && !is.na(i) && (i < 1L || i > ncol(x)))
               stop("subscript out of bounds")
-            if (is.character(i) && !(i %in% colnames(x)))
+            if (is.na(i) || (is.character(i) && !(i %in% colnames(x))))
               return(NULL)
             col <- lapply(values(x), `[`, i)
             names(col) <- NULL ## use rbind() to handle factor levels

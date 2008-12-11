@@ -15,6 +15,10 @@
 \alias{reduce,IRanges-method}
 \alias{gaps}
 \alias{gaps,IRanges-method}
+\alias{reflect}
+\alias{reflect,Ranges-method}
+\alias{flank}
+\alias{flank,Ranges-method}
 
 % Coercion:
 \alias{asNormalIRanges}
@@ -45,6 +49,8 @@
   narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
   reduce(x, with.inframe.attrib=FALSE)
   gaps(x, start=NA, end=NA)
+  \S4method{reflect}{Ranges}(x, bounds)
+  \S4method{flank}{Ranges}(x, width, start = TRUE, both = FALSE)
 
   ## Coercion:
   asNormalIRanges(x, force=TRUE)
@@ -58,6 +64,11 @@
     For \code{narrow}, a vector of integers, eventually with NAs.
     See the SEW (Start/End/Width) interface for the details
     (\code{?solveUserSEW}).
+
+    For \code{flank}, the width of the flanking regions. Note that if
+    \code{both} is \code{TRUE}, this is effectively doubled. Recycled as
+    necessary so that each element
+    corresponds to a range in \code{x}.
   }
   \item{gapwidth}{
     A single integer or an integer vector with one less element than
@@ -85,6 +96,11 @@
     For \code{narrow}, the supplied \code{start} and \code{end} arguments must
     be vectors of integers, eventually with NAs, that contain coordinates
     relative to the current ranges. See the Details section below.
+
+    For \code{flank}, \code{start} is a logical indicating whether
+    \code{x} should be flanked at the start (\code{TRUE}) or the end
+    (\code{FALSE}). Recycled as necessary so that each element
+    corresponds to a range in \code{x}.
   }
   \item{keep.all.ranges}{
     \code{TRUE} or \code{FALSE}. Should ranges that become "out of limits"
@@ -92,6 +108,15 @@
   }
   \item{with.inframe.attrib}{
     \code{TRUE} or \code{FALSE}. For internal use.
+  }
+  \item{bounds}{
+    An \link{IRanges} object to serve as the reference bounds for the
+    reflection, see below.
+  }
+  \item{both}{
+    If \code{TRUE}, extends the flanking region \code{width} positions
+    \emph{into} the range. The resulting range thus straddles the end
+    point, with \code{width} positions on either side.
   }
   \item{force}{
     \code{TRUE} or \code{FALSE}. Should \code{x} be turned into a
@@ -133,6 +158,50 @@
   by \code{x} from the interval specified by the \code{start} and
   \code{end} arguments.
 
+  \code{reflect} "reflects" or reverses each range in \code{x} relative to
+  the corresponding range in \code{bounds}, which is recycled as
+  necessary. Reflection preserves the width of a range, but shifts it
+  such the distance from the left bound to the start of the range
+  becomes the distance from the end of the range to the right
+  bound. This is illustrated below, where \code{x} represents
+  a range in \code{x} and \code{[} and \code{]} indicate the bounds:
+  \preformatted{
+    [..xxx.....]
+    becomes
+    [.....xxx..]
+  }
+
+  \code{flank} generates flanking ranges for each range in \code{x}. If
+  \code{start} is \code{TRUE} for a given range, the flanking occurs at
+  the start, otherwise the end. The widths of the flanks are given by
+  the \code{width} parameter. The widths can be negative, in which case
+  the flanking region is reversed so that it represents a prefix or
+  suffix of the range in \code{x}. The \code{flank} operation is
+  illustrated below for a call of the form \code{flank(x, 3, TRUE)},
+  where \code{x} indicates a range in \code{x} and \code{-} indicates
+  the resulting flanking region:
+  \preformatted{
+    ---xxxxxxx
+  }
+  If \code{start} were \code{FALSE}:
+  \preformatted{
+       xxxxxxx---
+  }
+  For negative width, i.e. \code{flank(x, -3, FALSE)}, where \code{*}
+  indicates the overlap between \code{x} and the result:
+  \preformatted{
+       xxxx***
+  }
+  If \code{both} is \code{TRUE}, then, for
+  all ranges in \code{x}, the flanking regions are extended \emph{into}
+  (or out of, if width is negative)
+  the range, so that the result straddles the given endpoint and has
+  twice the width given by \code{width}. This is illustrated below for
+  \code{flank(x, 3, both=TRUE)}:
+  \preformatted{
+    ---***xxxx
+  }
+  
   If \code{force=TRUE} (the default), then \code{asNormalIRanges} will
   turn \code{x} into a \link{NormalIRanges} instance by reordering and
   reducing the set of ranges if necessary (i.e. only if \code{isNormal(x)}
@@ -145,7 +214,7 @@
   \code{as(x, "NormalIRanges")} is equivalent to \code{asNormalIRanges(x, force=TRUE)}.
 }
 
-\author{H. Pages}
+\author{H. Pages and M. Lawrence}
 
 \seealso{
   \link{Ranges-class},
@@ -172,6 +241,21 @@
   reduce(x)
   gaps(x)
   gaps(x, start=-6, end=20)  # Regions of the -6:20 range that are not masked by 'x'.
+
+
+  ir1 <- IRanges(c(2,5,1), c(3,7,3))
+
+  bounds <- IRanges(c(0, 5, 3), c(10, 6, 9))
+  reflect(ir1, bounds)
+
+  flank(ir1, 2)
+  flank(ir1, 2, FALSE)
+  flank(ir1, 2, c(FALSE, TRUE, FALSE))
+  flank(ir1, c(2, -2, 2))
+  flank(ir1, 2, both = TRUE)
+  flank(ir1, 2, FALSE, TRUE)
+  flank(ir1, -2, FALSE, TRUE)
+  
   asNormalIRanges(x)   # 3 ranges ordered from left to right and separated by
                        # gaps of width >= 1.
 

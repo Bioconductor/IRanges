@@ -69,7 +69,7 @@ test_RangedData_extraction <- function() {
   checkIdentical(rd[[2]], score)
   checkIdentical(rd[["filter"]], filter)
   checkIdentical(rd[["score"]], score)
-  checkIdentical(rd$score, NULL)
+  checkIdentical(rd$score, score)
 
   checkIdentical(rd[1][[1]], filter[1:2])
 }
@@ -129,7 +129,9 @@ test_RangedData_subset <- function() {
   checkException(rd[c(-1,2)], silent = TRUE)
 
   erd <- new("RangedData")
-  frd <- RangedData(ranges[c(1,3)], filter = filter[1:2], score = score[1:2])
+  names(erd) <- character(0)
+  frd <- RangedData(ranges[c(1,3)], filter = filter[1:2], score = score[1:2],
+                    space = 1)
 
   checkIdenticalRD <- function(a, b)
     checkIdentical(as.data.frame(a), as.data.frame(b))
@@ -168,10 +170,11 @@ test_RangedData_subset <- function() {
   checkIdenticalRD(rd[,1:2], rd)
   checkIdenticalRD(rd[,"filter"], rd[,1]) # by name
 
-  firstrow <- RangedData(ranges[1], filter = filter[1], score = score[1])
+  firstrow <- RangedData(ranges[1], filter = filter[1], score = score[1],
+                         space = 1)
   checkIdenticalRD(rd[1,], firstrow) # row subsetting
   splitrow <- RangedData(ranges[1:2], filter = filter[c(1,3)],
-                         score = score[c(1,3)])
+                         score = score[c(1,3)], space = c(1,2))
   checkIdenticalRD(rd[c(1,3),], splitrow) # row subsetting
   
   checkIdenticalRD(rd[1:2, 1], onecol[1:2,]) # combined
@@ -206,8 +209,13 @@ test_RangedData_combine <- function() {
   rd <- RangedData(c(ranges, ranges2), score=c(score,score2),
                    space=c(filter, space2))
   checkIdentical(as.data.frame(rbind(rd1, rd2)), as.data.frame(rd))
+
+  rd1 <- RangedData(ranges, score)
+  rd2 <- RangedData(ranges2, score = score2)
+  rbind(rd1, rd2)
+  
   universe(rd2) <- "foo"
-  checkException(rbind(rd1, rd2))
+  checkException(rbind(rd1, rd2), silent=TRUE)
 }
 
 test_RangedData_lapply <- function() {
@@ -223,7 +231,7 @@ test_RangedData_range <- function() {
   rd2 <- RangedData(IRanges(c(5,2,0), c(6,3,1)))
   checkIdentical(range(rd1), RangesList(IRanges(1, 7)))
   checkIdentical(range(rd1, rd2), RangesList(IRanges(0, 7)))
-  checkException(range(rd1, c(2,3)))
+  checkException(range(rd1, c(2,3)), silent = TRUE)
 }
 
 test_RangedData_dimnames <- function() {

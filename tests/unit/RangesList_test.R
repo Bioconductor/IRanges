@@ -69,9 +69,10 @@ test_RangesList_range <- function() {
   checkIdentical(range(rl, rl2), ans)
   names(rl2) <- NULL
   ans <- RangesList(a = IRanges(0,5), b = IRanges(4,10))
-  checkIdentical(range(rl, rl2), ans)  
+  checkIdentical(range(rl, rl2), ans)
+  ## must be same length
   checkException(range(RangesList(IRanges(c(1,2),c(4,3)), IRanges(3,5)),
-                       RangesList(IRanges(2,6)))) ## must be same length
+                       RangesList(IRanges(2,6))), silent=TRUE) 
 }
 
 test_IRangesList_construction <- function() {

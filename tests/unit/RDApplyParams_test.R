@@ -152,7 +152,7 @@ test_RDApplyParams_construct <- function() {
 test_RDApplyParams_rdapply <- function() {
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   filter <- c(2L, 0L, 1L)
-  rd <- RangedData(ranges, filter, splitter = c("chr1","chr2","chr1"))
+  rd <- RangedData(ranges, filter, space = c("chr1","chr2","chr1"))
   fun <- function(rd) NULL
   countrows <- function(rd) nrow(rd)
   applyParams <- list(x = 2)

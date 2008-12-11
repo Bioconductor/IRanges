@@ -321,7 +321,7 @@ setMethod("unlist", "TypedList",
           function(x, recursive = TRUE, use.names = TRUE) {
             if (!missing(recursive))
               warning("'recursive' argument currently ignored")
-            ans <- do.call("c", elements(x))
+            ans <- do.call("c", as.list(x))
             if (!use.names)
               names(ans) <- NULL
             ans

@@ -1,5 +1,5 @@
-library("IRanges")
-library("RUnit")
+suppressMessages(library("IRanges"))
+suppressMessages(library("RUnit"))
 
 options(warn=1)
 
@@ -13,7 +13,6 @@ allSuite <- defineTestSuite(name="allSuite",
                             rngKind="default",
                             rngNormalKind="default")
 
-testData <- runTestSuite(allSuite)
-
+results <- capture.output(runTestSuite(allSuite))
 
 q(runLast=FALSE)

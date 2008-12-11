@@ -2,8 +2,6 @@ test_XDataFrame_construction <- function() {
   score <- c(1L, 3L, NA)
   counts <- c(10L, 2L, NA)
 
-  ## different lengths (no recycling)
-  checkException(XDataFrame(1, score), silent = TRUE) 
   ## na in rn
   checkException(XDataFrame(score, row.names = c("a", NA, "b")), silent = TRUE)
   ## invalid rn length
@@ -60,6 +58,10 @@ test_XDataFrame_construction <- function() {
   sw <- XDataFrame(score = score, swiss = swiss[1:3,]) # named data.frame/matrix
   checkIdentical(as.data.frame(sw),
                  data.frame(score = score, swiss = swiss[1:3,]))
+
+  ## recycling
+  xdf <- XDataFrame(1, score)
+  checkIdentical(xdf[[1]], rep(1, 3)) 
 }
 
 test_XDataFrame_subset <- function() {

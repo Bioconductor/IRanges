@@ -16,9 +16,14 @@
 \alias{end<-}
 \alias{isEmpty}
 \alias{isEmpty,Ranges-method}
+\alias{isDisjoint}
+\alias{isDisjoint,Ranges-method}
 \alias{as.matrix,Ranges-method}
 \alias{as.data.frame,Ranges-method}
 \alias{duplicated,Ranges-method}
+\alias{order}
+\alias{order,Ranges-method}
+\alias{sort,Ranges-method}
 \alias{show,Ranges-method}
 \alias{[<-,Ranges,ANY,ANY,ANY-method}
 \alias{rep,Ranges-method}
@@ -134,6 +139,11 @@
       Return a logical value indicating whether \code{x} is empty or not.
     }
     \item{}{
+      \code{isDisjoint(x)}:
+      Return a logical value indicating whether the ranges \code{x} are
+      disjoint (i.e. non-overlapping).
+    }
+    \item{}{
       \code{as.matrix(x, ...)}:
       Convert \code{x} into a 2-column integer matrix
       containing \code{start(x)} and \code{width(x)}.
@@ -155,6 +165,17 @@
       which elements are duplicates.
       It is semantically equivalent to \code{duplicated(as.data.frame(x))}
       (see \code{?\link{duplicated}} for more information).
+    }
+    \item{}{
+      \code{order(..., na.last = TRUE, decreasing = FALSE)}:
+      Gets the integer order permutations for the start positions of
+      each of the \code{IRanges} instances in \code{...}. See
+      \code{\link[base]{order}} in the base package for more details.
+    }
+    \item{}{
+      \code{sort(x, decreasing = FALSE)}: Sorts \code{x} by start
+      position in increasing order, unless \code{decreasing} is
+      \code{TRUE}.
     }
     \item{}{
       \code{x[i]}:
@@ -232,7 +253,7 @@
   }
 }
 
-\author{H. Pages}
+\author{H. Pages and M. Lawrence}
 
 \seealso{
   \link{IRanges-class},
@@ -282,6 +303,11 @@
   x
   x[is.na(names(x))]  # 5 ranges
   x[!is.na(names(x))]  # 2 ranges
+
+  ## Check for disjointedness
+  isDisjoint(IRanges(c(2,5,1), c(3,7,3))) ## FALSE
+  isDisjoint(IRanges(c(2,9,5), c(3,9,6))) ## TRUE
+  isDisjoint(IRanges(1, 5)) ## TRUE
 }
 
 \keyword{methods}
