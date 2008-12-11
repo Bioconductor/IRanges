@@ -60,7 +60,6 @@ setMethod("dimnames", "RangedData",
           })
 setReplaceMethod("dimnames", "RangedData",
           function(x, value) {
-            browser()
             rn <- as.character(value[[1]])
             cn <- as.character(value[[2]])
             inds <- rep(seq_len(length(x@ranges)),
@@ -160,9 +159,11 @@ setMethod("[[", "RangedData",
               stop("attempt to select more than one element")
             if (is.numeric(i) && !is.na(i) && (i < 1L || i > ncol(x)))
               stop("subscript out of bounds")
-            col <- lapply(values(x), `[[`, i)
-            names(col) <- NULL
-            do.call("c", col) ## FIXME: broken for e.g. factors
+            if (is.character(i) && !(i %in% colnames(x)))
+              return(NULL)
+            col <- lapply(values(x), `[`, i)
+            names(col) <- NULL ## use rbind() to handle factor levels
+            do.call("rbind", col)[[1]]
           })
 
 setMethod("$", "RangedData", function(x, name) x[[name]])
@@ -326,8 +327,10 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
     nms <- seq_len(length(args[[1]]))
   } else nms <- unique(unlist(nmsList))
   for (nm in nms) {
-    rl[[nm]] <- do.call("c", lapply(rls, `[[`, nm))
-    df[[nm]] <- do.call("rbind", lapply(dfs, `[[`, nm))
+    rli <- lapply(rls, `[[`, nm)
+    rl[[nm]] <- do.call("c", rli[!sapply(rli, is.null)])
+    dfi <- lapply(dfs, `[[`, nm)
+    df[[nm]] <- do.call("rbind", dfi[!sapply(dfi, is.null)])
   }
   initialize(args[[1]], ranges = rl, values = df)
 })
