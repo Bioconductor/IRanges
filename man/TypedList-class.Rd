@@ -16,6 +16,8 @@
 \alias{[<-,TypedList,ANY,ANY,ANY-method} % hidden
 \alias{[[,TypedList-method}
 \alias{[[<-,TypedList-method}
+\alias{$,TypedList-method}
+\alias{$<-,TypedList-method}
 
 % splitting and combining
 \alias{append,TypedList,TypedList-method}
@@ -70,12 +72,20 @@
       \code{i}, which may be a scalar number or string. The behavior is
       nearly identical to that of an ordinary \code{list}.
     }
+    \item{}{
+      \code{x$name}: similar to above, where \code{name} is taken
+      literally as an element name.
+    }
     \item{}{\code{x[[i]] <- value}: Replace the element at index
       \code{i} (a scalar number or string) with \code{value}. The behavior is
       very similar to that of an ordinary \code{list}, except
       \code{value} must be coercible (and is coerced) to the required
       element class.
-    } 
+    }
+    \item{}{
+      \code{x$name <- value}: similar to above, where \code{name} is taken
+      literally as an element name.
+    }
   }
 }
 
@@ -183,6 +193,11 @@
   collection[2] # second element
   collection[c(2,1)] # reversed
   collection[-1] # drop first
+  collection$one
+
+  ## replacement
+  collection$one <- range2
+  collection[[2]] <- range1
 
   ## combining
   col1 <- RangesList(one = range1, range2)

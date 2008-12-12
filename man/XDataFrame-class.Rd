@@ -19,9 +19,11 @@
 \alias{as.data.frame,XDataFrame-method}
 \alias{coerce,ANY,XDataFrame-method}
 \alias{coerce,matrix,XDataFrame-method}
+\alias{coerce,list,XDataFrame-method}
 \alias{coerce,integer,XDataFrame-method}
 \alias{coerce,data.frame,XDataFrame-method}
 \alias{coerce,XDataFrame,data.frame-method}
+\alias{as.list,XDataFrame-method}
 
 % splitting and combining
 \alias{cbind}
@@ -147,14 +149,20 @@
       By default, constructs a new \code{XDataFrame} with \code{from} as
       its only column. If \code{from} is a \code{matrix} or
       \code{data.frame}, all of 
-      its columns are placed into the new \code{XDataFrame}. In either
+      its columns become columns in the new \code{XDataFrame}. In any
       case, there is an attempt to coerce 
       columns to \code{XSequence} before inserting them into the
-      \code{XDataFrame}. Note that for the \code{XDataFrame} to behave
+      \code{XDataFrame}. If \code{from} is a \code{list}, its elements
+      become columns in the same way. Note that for the
+      \code{XDataFrame} to behave 
       correctly, each column object must support element-wise subsetting via
       the \code{[} method and return the number of elements with
       \code{length}. It is recommended to use the \code{XDataFrame} 
       constructor, rather than this interface.
+    }
+    \item{}{\code{as.list(x)}: Coerces \code{x}, an \code{XDataFrame},
+      to a \code{list}, converting any \code{XSequence} objects to vectors
+      along the way.
     }
     \item{}{\code{as.data.frame(x, row.names=NULL, optional=FALSE)}:
       Coerces \code{x}, an \code{XDataFrame}, to a \code{data.frame}.

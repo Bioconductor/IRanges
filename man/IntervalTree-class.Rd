@@ -18,6 +18,8 @@
 \alias{overlap,IntervalTree,Ranges-method}
 \alias{overlap,Ranges,Ranges-method}
 \alias{overlap,Ranges,missing-method}
+\alias{overlap,Ranges,integer-method}
+\alias{overlap,RangesList,RangesList-method}
 \alias{\%in\%,Ranges,Ranges-method}
 
 \title{Interval Search Trees}
@@ -58,14 +60,16 @@
     \item{}{
       \code{overlap(object, query = object, maxgap = 0, multiple = TRUE)}:
 
-      Find the intervals in \code{query}, a \code{Ranges} instance, that
+      Find the intervals in \code{query}, a \code{Ranges} or
+      \code{integer} vector to be converted to length-one ranges, that
       overlap with the intervals \code{object}, an \code{IntervalTree}
       or, for convenience, a \code{Ranges} coercible to a
       \code{IntervalTree}. If \code{query} is omitted, \code{object} is
-      queried against itself. Intervals with a separation of \code{maxgap}
-      or less are considered to be overlapping. \code{maxgap} should be
-      a scalar, non-negative, non-NA number. When \code{multiple} (a
-      scalar non-NA logical) is \code{TRUE}, the results are returned as a
+      queried against itself. Intervals with a separation of
+      \code{maxgap} or less are considered to be
+      overlapping. \code{maxgap} should be a scalar, non-negative,
+      non-NA number. When \code{multiple} (a scalar non-NA logical) is
+      \code{TRUE}, the results are returned as a
       \code{\linkS4class{RangesMatching}} object.
 
       If \code{multiple} is \code{FALSE}, at most one overlapping
@@ -74,6 +78,17 @@
       length \code{length(query)}, with \code{NA} indicating intervals
       that did not overlap any intervals in \code{object}. This is
       analogous to the return value of the \code{\link{match}} function.
+
+      \code{query} may also be a \code{\linkS4class{RangesList}}, in
+      which case \code{object} must also be a \code{RangesList}. If both
+      lists have names, each element from the subject is paired with the
+      element from the query with the matching name, if any. Otherwise,
+      elements are paired by position. The overlap is then computed
+      between the pairs as described above. If \code{multiple} is
+      \code{TRUE}, a \code{\linkS4class{RangesMatchingList}} is
+      returned, otherwise a list of integer vectors. Each element of the
+      result corresponds to a space in \code{query}. For spaces that did
+      not exist in \code{object}, the overlap is nil.
     }
     \item{}{
       \code{x \%in\% table}:
@@ -185,6 +200,10 @@
 
   ## one Ranges with itself
   overlap(query)
+
+  ## single points as query
+  subject <- IRanges(c(1, 6, 13), c(4, 9, 14))
+  overlap(subject, c(3L, 7L, 10L), multiple=FALSE)
 }
 
 \keyword{classes}

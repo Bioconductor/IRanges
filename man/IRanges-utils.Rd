@@ -19,6 +19,7 @@
 \alias{reflect,Ranges-method}
 \alias{flank}
 \alias{flank,Ranges-method}
+\alias{range,Ranges-method}
 
 % Coercion:
 \alias{asNormalIRanges}
@@ -51,7 +52,7 @@
   gaps(x, start=NA, end=NA)
   \S4method{reflect}{Ranges}(x, bounds)
   \S4method{flank}{Ranges}(x, width, start = TRUE, both = FALSE)
-
+  \S4method{range}{Ranges}(x, ..., na.rm = FALSE)
   ## Coercion:
   asNormalIRanges(x, force=TRUE)
 }
@@ -118,6 +119,10 @@
     \emph{into} the range. The resulting range thus straddles the end
     point, with \code{width} positions on either side.
   }
+  \item{...}{
+    Additional \code{Ranges} to consider.
+  }
+  \item{na.rm}{Ignored}
   \item{force}{
     \code{TRUE} or \code{FALSE}. Should \code{x} be turned into a
     \link{NormalIRanges} object even if \code{isNormal(x)} is \code{FALSE}?
@@ -201,6 +206,10 @@
   \preformatted{
     ---***xxxx
   }
+
+  \code{range} returns an \code{IRanges} instance with a single range,
+  from the minimum start to the maximum end in the combined ranges of
+  \code{x} and the arguments in \code{...}.
   
   If \code{force=TRUE} (the default), then \code{asNormalIRanges} will
   turn \code{x} into a \link{NormalIRanges} instance by reordering and

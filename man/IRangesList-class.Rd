@@ -4,6 +4,7 @@
 
 % coercion
 \alias{coerce,IRangesList,NormalIRanges-method}
+\alias{coerce,IRangesList,list-method} % undocumented
 \alias{unlist,IRangesList-method}
 
 % constructor

@@ -66,7 +66,11 @@ setReplaceMethod("dimnames", "RangedData",
                         unlist(lapply(x@ranges, length)))
             if (is.null(value[[1]]))
               rns <- vector("list", length(inds))
-            else rns <- split(rn, inds)
+            else {
+              if (length(rn) != nrow(x))
+                stop("invalid rownames length")
+              rns <- split(rn, inds)
+            }
             values <- elements(values(x))
             ranges <- elements(ranges(x))
             for(i in seq_len(length(x@ranges))) {

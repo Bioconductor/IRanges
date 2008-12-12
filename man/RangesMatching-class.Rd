@@ -5,6 +5,8 @@
 % accessors
 \alias{matchMatrix}
 \alias{matchMatrix,RangesMatching-method}
+\alias{dim,RangesMatching-method}
+\alias{ranges,RangesMatching-method}
 
 % coercion
 \alias{as.matrix,RangesMatching-method}
@@ -33,9 +35,12 @@
   The \code{as.table} method counts the number of matchings for each
   query range and outputs the counts as a \code{table}.
 
-  To transpose a \code{RangesMatrix} \code{x}, so that the subject and query
+  To transpose a \code{RangesMatching} \code{x}, so that the subject and query
   are interchanged, call \code{t(x)}. This allows, for example, counting
   the number of subjects that matched using \code{as.table}.
+
+  To get the actual regions of intersection between the overlapping
+  ranges, use the \code{ranges} accessor.
 }
 
 \section{Coercion}{
@@ -65,6 +70,19 @@
       columns corresponding to query ranges and rows corresponding to
       subject ranges. It is not recommended to work with this matrix
       directly, unless the coercion methods above are inadequate.
+    }
+    \item{}{\code{ranges(x, query, subject)}: returns a \code{Ranges}
+      holding the intersection of the ranges in the
+      \code{Ranges} instances \code{query} and \code{subject}, which
+      should be the same subject and query used to generate
+      \code{x}. Eventually, we might store the query and subject inside
+      \code{x}, in which case the arguments would be redundant.
+    }
+    \item{}{\code{nrow(x)}: get the number of subjects in the matching}
+    \item{}{\code{ncol(x)}: get the number of queries in the matching}
+    \item{}{
+      \code{dim(x)}: get a two-element integer vector, essentially
+      \code{c(nrow(x), ncol(x))}.
     }
   }
 }

@@ -17,6 +17,9 @@
 \alias{universe}
 \alias{universe<-}
 
+% subset
+\alias{[,RangesList,ANY,ANY,ANY-method}
+
 % coercion
 \alias{as.data.frame,RangesList-method}
 \alias{coerce,RangesList,IRangesList-method}
@@ -77,6 +80,21 @@
   }
 }
 
+\section{Subsetting}{
+  In the code snippets below, \code{x} is a \code{RangesList} object.
+
+  \describe{
+    \item{}{
+      \code{x[i]}: Subset \code{x} by index \code{i}, with the
+      same semantics as a basic \code{\linkS4class{TypedList}}, except
+      \code{i} may itself be a \code{RangesList}, in which case only the
+      ranges in \code{x} that overlap with those in \code{i} are kept. See
+      the \code{\link[=overlap,RangesList,RangesList-method]{overlap}}
+      method for more details.
+    }
+  }
+}
+
 \section{Coercion}{
   In the code snippets below, \code{x} is a \code{RangesList} object.
 
@@ -106,6 +124,14 @@
   named[[1]] # range1
   unnamed <- RangesList(range1, range2)
   names(unnamed) # NULL
+
+  # subset by RangesList
+  range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
+  range2 <- IRanges(start=c(1,15,20,45), end=c(5,15,100,80))
+  collection <- RangesList(one = range1, range2)
+  collection[RangesList()] # empty elements
+  collection[RangesList(IRanges(4, 6), IRanges(50, 70))]
+  collection[RangesList(IRanges(50, 70), one=IRanges(4, 6))]
 
   # same as list(range1, range2)
   as.list(RangesList(range1, range2))

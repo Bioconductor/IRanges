@@ -7,9 +7,11 @@
 \alias{universe,RangedData-method}
 \alias{dim,RangedData-method}
 \alias{dimnames,RangedData-method}
+\alias{dimnames<-,RangedData,ANY-method}
 \alias{end,RangedData-method}
 \alias{length,RangedData-method}
 \alias{names,RangedData-method}
+\alias{names<-,RangedData-method}
 \alias{ranges}
 \alias{ranges,RangedData-method}
 \alias{start,RangedData-method}
@@ -26,9 +28,11 @@
 % Coercion:
 \alias{as.data.frame,RangedData-method}
 \alias{coerce,RangedData,XDataFrame-method}
+\alias{coerce,XRle,RangedData-method}
 
 % Combining and splitting
 \alias{c,RangedData-method}
+\alias{rbind,RangedData-method}
 \alias{split,RangedData-method}
 
 % Subsetting:
@@ -36,6 +40,11 @@
 \alias{[<-,RangedData,ANY,ANY,ANY-method}
 \alias{[[,RangedData-method}
 \alias{[[<-,RangedData-method}
+\alias{$,RangedData-method}
+\alias{$<-,RangedData-method}
+
+% Applying:
+\alias{lapply,RangedData,ANY-method}
 
 % Show:
 \alias{show,RangedData-method}
@@ -102,14 +111,20 @@
           \code{c(nrow(x), ncol(x))}.
         }
         \item{}{
-          \code{rownames(x)}: Gets the names of the ranges in \code{x}.
+          \code{rownames(x)}, \code{rownames(x) <- value}: Gets or sets
+          the names of the ranges in \code{x}.
         }
         \item{}{
-          \code{colnames(x)}: Gets the names of the variables in \code{x}.
+          \code{colnames(x)}, \code{colnames(x) <- value}: Gets the
+          names of the variables in \code{x}.
         }
         \item{}{
           \code{dimnames(x)}: A list with two elements, essentially
           \code{list(rownames(x), colnames(x))}.
+        }
+        \item{}{
+          \code{dimnames(x) <- value}: Sets the row and column names,
+          where value is a list as described above.
         }
       }
     }
@@ -138,7 +153,8 @@
       The number of spaces (e.g. chromosomes) in \code{x}.
     }
     \item{}{
-      \code{names(x)}: The names of the spaces (e.g. \code{"chr1"}).
+      \code{names(x)}, \code{names(x) <- value}: Get or set the names of
+      the spaces (e.g. \code{"chr1"}). 
       \code{NULL} or a character vector of the same length as \code{x}.
     }
   }
@@ -198,6 +214,11 @@
       probably involves less copying, especially if there is only a
       single space.
     }
+    \item{}{
+      \code{as(from, "RangedData")}: Coerce a \code{\linkS4class{XRle}}
+      to a \code{RangedData} by converting each run to a range and storing
+      the run values in a column named "score".
+    }
   }
 }
 
@@ -225,12 +246,20 @@
       columns. The variable is unlisted over the spaces.
     }
     \item{}{
+      \code{x$name}: similar to above, where \code{name} is taken
+      literally as a column name in the data.
+    }
+    \item{}{
       \code{x[[i]] <- value}:
       Sets value as column \code{i} in \code{x}, where \code{i} can be
       a character, numeric, or logical scalar that indexes into the
       columns. The length of \code{value} should equal
       \code{nrow(x)}. \code{x[[i]]} should be identical to \code{value}
       after this operation.
+    }
+    \item{}{
+      \code{x$name <- value}: similar to above, where \code{name} is taken
+      literally as a column name in the data.
     }
   }
 }
@@ -248,6 +277,12 @@
       space.
     }
     \item{}{
+      \code{rbind(...)}: Matches the spaces from
+      the \code{RangedData} instances in \code{...} by name and combines
+      them row-wise. In a way, this is the reverse of the \code{split}
+      operation described above.
+    }
+    \item{}{
       \code{c(x, ..., recursive = FALSE)}: Combines \code{x} with
       arguments specified in \code{...}, which must all be
       \code{RangedData} instances. This combination acts as if \code{x} is
@@ -256,6 +291,19 @@
       on. This function is useful when creating \code{RangedData}
       instances on a space-by-space basis and then needing to
       combine them.
+    }
+  }
+}
+
+\section{Applying}{
+  There are two ways explicitly supported ways to apply a function over
+  the spaces of a \code{RangedData}. The richest interface is
+  \code{\link{rdapply}}, which is described in its own man page. The
+  simpler interface is an \code{lapply} method:
+  \describe{
+    \item{}{\code{lapply(X, FUN, ...)}:
+      Applies \code{FUN} to each space in \code{X} with extra parameters
+      in \code{...}.
     }
   }
 }
@@ -284,6 +332,7 @@
   ## multiple variables
   rd <- RangedData(ranges, filter, vals = score)
   rd[["vals"]] # same as rd[["score"]] above
+  rd$vals
   rd[["filter"]]
   rd <- RangedData(ranges, score + score)
   rd[["score...score"]] # names made valid
@@ -302,7 +351,7 @@
   rd <- RangedData(both, score, filter, space = chrom, universe = "hg18")
   rd[["score"]] # identical to score
   rd[1][["score"]] # identical to score[1:3]
-
+  
   ## subsetting
 
   ## list style: [i]
@@ -331,6 +380,18 @@
   rd[1:2, 1] # row and column
   rd[c(1:2,1,3),1] ## repeating rows
 
+  ## dimnames
+
+  colnames(rd)[2] <- "foo"
+  colnames(rd)
+  rownames(rd) <- head(letters, nrow(rd))
+  rownames(rd)
+
+  ## space names
+
+  names(rd)
+  names(rd)[1] <- "chr1"
+
   ## variable replacement
 
   count <- c(1L, 0L, 2L)
@@ -348,13 +409,18 @@
   ## removing a variable
   rd[[2]] <- NULL
   ncol(rd) # is only 1
-
+  rd$score2 <- score
+  
   ## combining/splitting
 
   rd <- RangedData(ranges, score, space = c(1, 2, 1))
   c(rd[1], rd[2]) # equal to 'rd'
   rd2 <- RangedData(ranges, score)
   unlist(split(rd2, c(1, 2, 1))) # same as 'rd'
+
+  ## applying
+
+  lapply(rd, `[[`, 1) # get first column in each space
 }
 
 \keyword{methods}

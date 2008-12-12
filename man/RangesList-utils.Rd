@@ -3,6 +3,7 @@
 % utilities
 \alias{reduce,RangesList-method}
 \alias{gaps,RangesList-method}
+\alias{range,RangesList-method}
 
 \title{RangesList utility functions}
 
@@ -14,6 +15,7 @@
 \usage{
 \S4method{gaps}{RangesList}(x, start=NA, end=NA)
 \S4method{reduce}{RangesList}(x, with.inframe.attrib = FALSE)
+\S4method{range}{RangesList}(x, ..., na.rm = FALSE)
 }
 
 \arguments{
@@ -25,6 +27,8 @@
     \code{NA}, use the maximum end position in the \code{Ranges}
     instance.}
   \item{with.inframe.attrib}{Ignored.}
+  \item{...}{Additional \code{RangesList} instances}
+  \item{na.rm}{Ignored}
 }
 
 \details{
@@ -35,11 +39,19 @@
   The \code{reduce} method merges (via \code{\link{reduce}}) all of the
   elements into a single \code{Ranges} instance and returns the result
   as a length-one \code{RangesList}.
+
+  \code{range} finds the \code{\link[=range,Ranges-method]{range}}, i.e.
+  a \code{Ranges} with one range, from the minimum start to the maximum
+  end, on each element in \code{x} and returns the result as a
+  \code{RangesList}. If there are additional \code{RangesList} instances
+  in \code{...}, they are merged into \code{x} by name, if all instances
+  have names, otherwise, if they are all of the same length, by
+  position. Else, an exception is thrown.
 }
 
 \value{
-  A \code{RangesList} instance. For \code{gaps}, length is the same as
-  that of \code{x}. For \code{reduce}, length is one.
+  A \code{RangesList} instance. For \code{gaps} and \code{range}, length
+  is the same as that of \code{x}. For \code{reduce}, length is one.
 }
 
 \author{Michael Lawrence, H. Pages}
@@ -65,6 +77,13 @@
   # and these two are the same
   reduce(collection)
   RangesList(asNormalIRanges(IRanges(c(1,20), c(8, 100)), force=FALSE))
+
+  # 'range'
+  rl <- RangesList(a = IRanges(c(1,2),c(4,3)), b = IRanges(c(4,6),c(10,7)))
+  rl2 <- RangesList(c = IRanges(c(0,2),c(4,5)), a = IRanges(c(4,5),c(6,7)))
+  range(rl, rl2) # matched by names
+  names(rl2) <- NULL
+  range(rl, rl2) # now by position
 }
 
 \keyword{utilities}
