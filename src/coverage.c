@@ -81,17 +81,19 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP order, SEXP width)
 		values_length += (sparse_index[sparse_data_length - 1] != INTEGER(width)[0]);
 	}
 
-	PROTECT(ans_lengths_tag = NEW_INTEGER(values_length));
-	PROTECT(ans_values_tag = NEW_INTEGER(values_length));
-	int *ans_lengths_ptr = INTEGER(ans_lengths_tag);
-	int *ans_values_ptr = INTEGER(ans_values_tag);
-	memset(ans_lengths_ptr, 0, values_length * sizeof(int));
-	memset(ans_values_ptr, 0, values_length * sizeof(int));
-
 	if (values_length == 0) {
-		*ans_values_ptr = 0;
-		*ans_lengths_ptr = INTEGER(width)[0];
+		PROTECT(ans_lengths_tag = NEW_INTEGER(1));
+		PROTECT(ans_values_tag = NEW_INTEGER(1));
+		INTEGER(ans_values_tag)[0] = 0;
+		INTEGER(ans_lengths_tag)[0] = INTEGER(width)[0];
 	} else {
+		PROTECT(ans_lengths_tag = NEW_INTEGER(values_length));
+		PROTECT(ans_values_tag = NEW_INTEGER(values_length));
+		int *ans_lengths_ptr = INTEGER(ans_lengths_tag);
+		int *ans_values_ptr = INTEGER(ans_values_tag);
+		memset(ans_lengths_ptr, 0, values_length * sizeof(int));
+		memset(ans_values_ptr, 0, values_length * sizeof(int));
+
 		if (*sparse_index != 1) {
 			*ans_values_ptr = 0;
 			*ans_lengths_ptr = *sparse_index - 1;
@@ -141,4 +143,3 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP order, SEXP width)
 	UNPROTECT(5);
 	return ans;
 }
-
