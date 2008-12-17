@@ -6,10 +6,10 @@
 ### Splitting and combining.
 ###
 
-setMethod("split", "XDataFrame", function(x, f, drop = FALSE) {
-  splitInd <- split(seq_len(nrow(x)), f, drop)
-  do.call("SplitXDataFrame", lapply(splitInd, function(ind) x[ind,,drop=FALSE]))
-})
+setMethod("split", "XDataFrame",
+          function(x, f, drop = FALSE) {
+            TypedList("XDataFrameList", elements = x, splitFactor = f)
+          })
 
 ## we define generics here with just '...' as this is possible in R 2.8
 ## note that if we omit 'deparse.level' from the formals, things break
@@ -26,43 +26,52 @@ setGeneric("rbind", function(..., deparse.level=1) standardGeneric("rbind"),
 
 setMethod("rbind", "XDataFrame", function(..., deparse.level=1) {
   args <- list(...)
-  args <- args[unlist(lapply(args, length)) > 0] ## drop zero column args
-  if (length(args)) {
-    haverows <- sapply(args, nrow) > 0
-    if (any(haverows))
-      args <- args[haverows] ## drop zero row args
-    else return(args[[1]]) ## if none have rows, return first with columns
-  } else return(XDataFrame()) ## if none have cols, return empty
-  
+  hasrows <- unlist(lapply(args, nrow)) > 0
+  hascols <- unlist(lapply(args, ncol)) > 0
+
+  if (!any(hasrows | hascols)) {
+    return(XDataFrame())
+  } else if (!any(hasrows)) {
+    return(args[[which(hascols)[1]]])
+  } else if (sum(hasrows) == 1) {
+    return(args[[which(hasrows)]])
+  } else {
+    args <- args[hasrows]
+  }
+
   xdf <- args[[1]]
-  if (length(args) == 1)
-    return(xdf)
-  
-  for (i in seq(length(args))) {
-    argi <- args[[i]]
-    if (!identical(colnames(xdf), colnames(argi)))
+
+  for (i in 2:length(args)) {
+    if (ncol(xdf) != ncol(args[[i]]))
+      stop("number of columns for arg ", i, " do not match those of first arg")
+    if (!identical(colnames(xdf), colnames(args[[i]])))
       stop("column names for arg ", i, " do not match those of first arg")
   }
-  
-  cn <- colnames(xdf)
-  cl <- sapply(elements(xdf), class)
-  factors <- sapply(elements(xdf), is.factor)
-  cols <- lapply(seq_len(length(xdf)), function(i) {
-    cols <- lapply(args, `[[`, cn[i])
-    if (factors[i]) { # combine factor levels, coerce to character
-      levs <- unique(do.call("c", lapply(cols, levels)))
-      cols <- lapply(cols, as.character)
-    }
-    combined <- do.call("c", cols)
-    if (factors[i])
-      combined <- factor(combined, levs)
-    ## this coercion needed only because we extracted ([[) above
-    ## which brings external -> internal
-    ## external objects should support external combination (c)
-    as(combined, cl[i])
-  })
-  names(cols) <- colnames(xdf)
-  ans <- do.call("XDataFrame", cols)
+
+  if (ncol(xdf) == 0) {
+    ans <- XDataFrame()
+    ans@nrows <- sum(unlist(lapply(args, nrow)))
+  } else {
+    cn <- colnames(xdf)
+    cl <- unlist(lapply(as.list(xdf, use.names = FALSE), class))
+    factors <- unlist(lapply(as.list(xdf, use.names = FALSE), is.factor))
+    cols <- lapply(seq_len(length(xdf)), function(i) {
+      cols <- lapply(args, `[[`, cn[i])
+      if (factors[i]) { # combine factor levels, coerce to character
+        levs <- unique(do.call(c, lapply(cols, levels)))
+        cols <- lapply(cols, as.character)
+      }
+      combined <- do.call(c, cols)
+      if (factors[i])
+        combined <- factor(combined, levs)
+      ## this coercion needed only because we extracted ([[) above
+      ## which brings external -> internal
+      ## external objects should support external combination (c)
+      as(combined, cl[i])
+    })
+    names(cols) <- colnames(xdf)
+    ans <- do.call(XDataFrame, cols)
+  }
 
   rn <- unlist(lapply(args, rownames))
   if (!is.null(rn)) {
@@ -72,7 +81,7 @@ setMethod("rbind", "XDataFrame", function(..., deparse.level=1) {
       rn <- make.unique(rn)
   }
   rownames(ans) <- rn
-  
+
   ans
 })
 

@@ -22,7 +22,8 @@ setClass("XDataFrame",
                         ),
          prototype(rownames = NULL,
                    ##rowset = NULL,
-                   nrows = 0L),
+                   nrows = 0L,
+                   compressible = FALSE),
          contains = "TypedList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -134,7 +135,7 @@ XDataFrame <- function(..., row.names = NULL)
   nr <- 0
   varnames <- character()
   varlist <- vector("list", length(elements))
-  if (length(elements)) {
+  if (length(elements) > 0) {
     if (is.null(names(elements)))
       names(elements) <- character(length(elements))
     emptynames <- !nzchar(names(elements))
@@ -168,7 +169,7 @@ XDataFrame <- function(..., row.names = NULL)
       }
       nrows[i] <- nrow(element)
       ncols[i] <- ncol(element)
-      varlist[[i]] <- elements(element)
+      varlist[[i]] <- as.list(element, use.names = FALSE)
     }
     nr <- max(nrows)
     for (i in seq_along(elements)) {
@@ -218,7 +219,7 @@ setMethod("[[", "XDataFrame",
               stop("attempt to select more than one element")
             if (!is.character(i) && !is.na(i) && (i < 1L || i > length(x)))
               stop("subscript out of bounds")
-            els <- elements(x)
+            els <- as.list(x, use.names = FALSE)
             names(els) <- names(x)
             els[[i]][]#[rowset(x)]
           }
@@ -260,7 +261,7 @@ setMethod("[", "XDataFrame",
           {
             if (length(list(...)) > 0)
               warning("parameters in '...' not supported")
-            
+
             checkIndex <- function(i, row = FALSE) {
               if (row) {
                 nms <- rownames(x)
@@ -287,7 +288,8 @@ setMethod("[", "XDataFrame",
                   return("cannot subset by character when names are NULL")
                 if (row)
                   m <- pmatch(i, nms, duplicates.ok = TRUE)
-                else m <- match(i, nms)
+                else
+                  m <- match(i, nms)
                 if (!row && any(is.na(m)))
                   return("mismatching names")
               } else if (!is.null(i)) {
@@ -333,11 +335,11 @@ setMethod("[", "XDataFrame",
                 i <- which(i)
               if (is.null(i))
                 i <- integer()
-              x@elements <- lapply(elements(x), `[`, i, drop = FALSE)
+              x@elements <- lapply(as.list(x, use.names = FALSE), `[`, i, drop = FALSE)
               ## newset <- rowset(x)[i]
               ## x@rowset <- XInteger(length(newset), newset)
               ## NOTE: we do not support matrices here
-              ##x@elements <- lapply(elements(x), "[", i)
+              ##x@elements <- lapply(as.list(x, use.names = FALSE), "[", i)
               dim[1] <- length(seq(dim[1])[i]) # may have 0 cols, no rownames
               x@nrows <- dim[1]
               x@rownames <- rownames(x)[i]
@@ -379,7 +381,7 @@ setMethod("as.data.frame", "XDataFrame",
               row.names <- rownames(x)
             if (!length(l) && is.null(row.names))
               row.names <- seq_len(nrow(x))
-            do.call("data.frame", c(l, list(row.names = row.names)))
+            do.call(data.frame, c(l, list(row.names = row.names)))
           })
 
 ## take data.frames to XDataFrames
@@ -397,7 +399,7 @@ setAs("data.frame", "XDataFrame",
 setAs("matrix", "XDataFrame", # matrices just go through data.frame
       function(from) as(as.data.frame(from), "XDataFrame"))
 
-setAs("list", "XDataFrame", function(from) do.call("XDataFrame", from))
+setAs("list", "XDataFrame", function(from) do.call(XDataFrame, from))
 
 ## everything else
 setAs("ANY", "XDataFrame",
@@ -434,12 +436,13 @@ setAs("integer", "XDataFrame",
 
 ## pull the external vectors into R
 setMethod("as.list", "XDataFrame",
-          function(x) {
-            lapply(callNextMethod(x),
+          function(x, use.names = TRUE) {
+            lapply(callNextMethod(x, use.names = use.names),
                    function(xi) {
                      if (is(xi, "XSequence"))
                        xi[]
-                     else xi
+                     else 
+                       xi
                    })
           })
 
@@ -455,10 +458,3 @@ setMethod("show", "XDataFrame",
             
             ##show(as(object, "data.frame"))
           })
-
-### =========================================================================
-### List of XDataFrame objects
-### -------------------------------------------------------------------------
-
-setClass("XDataFrameList", prototype = prototype(elementClass="XDataFrame"),
-         contains = "TypedList")

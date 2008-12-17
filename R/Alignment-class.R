@@ -7,7 +7,7 @@ setClass("AlignmentSpace",
                         length = "integer")) # lengths for rle slots
 
 setClass("Alignment",
-         prototype = prototype(elementClass = "AlignmentSpace"),
+         prototype = prototype(elementClass = "AlignmentSpace", compressible = FALSE),
          contains = "TypedList")
 
 read.chain <- function(path, exclude = "_") {

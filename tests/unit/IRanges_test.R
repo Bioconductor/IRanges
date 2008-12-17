@@ -23,7 +23,7 @@ test_IRanges_combine <- function() {
   srange <- split(range, start(range) == 1)
   checkIdentical(srange,
                  RangesList(`FALSE` = range[2:3], `TRUE` = range[c(1,4)]))
-  checkIdentical(do.call("c", as.list(srange)), IRanges(c(2,3,1,1), c(2,8,5,3)))
+  checkIdentical(do.call(c, as.list(srange)), IRanges(c(2,3,1,1), c(2,8,5,3)))
 }
 
 test_IRanges_setops <- function() {

@@ -1,18 +1,17 @@
-\name{SplitXDataFrame-class}
+\name{XDataFrameList-class}
 \docType{class}
-\alias{SplitXDataFrame-class}
+\alias{XDataFrameList-class}
 
 % accessors
-\alias{dim,SplitXDataFrame-method}
-\alias{dimnames,SplitXDataFrame-method}
+\alias{dim,XDataFrameList-method}
+\alias{dimnames,XDataFrameList-method}
 
 % constructor
-\alias{SplitXDataFrame}
+\alias{XDataFrameList}
 
 % coercion
-\alias{as.data.frame,SplitXDataFrame-method}
-\alias{unlist,SplitXDataFrame-method}
-\alias{coerce,SplitXDataFrame,XDataFrame-method}
+\alias{as.data.frame,XDataFrameList-method}
+\alias{coerce,XDataFrameList,XDataFrame-method}
 
 \title{Split XDataFrame}
 \description{Represents an \code{\linkS4class{XDataFrame}} split along
@@ -26,7 +25,7 @@
 }
 
 \section{Accessors}{
-  In the following code snippets, \code{x} is a \code{SplitXDataFrame}.
+  In the following code snippets, \code{x} is a \code{XDataFrameList}.
   \describe{
     \item{}{\code{dim(x)}: Get the two element integer vector indicating
       the number of rows and columns over the entire dataset.}
@@ -39,23 +38,20 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{SplitXDataFrame(...)}: Concatenates the
+    \item{}{\code{XDataFrameList(..., compress = TRUE)}: Concatenates the
       \code{XDataFrame} instances in \code{...} into a new
-      \code{SplitXDataFrame}. Note that all arguments should have the same
-      number and names of columns.}
+      \code{XDataFrameList}. Note that all arguments should have the same
+      number and names of columns. If \code{compress}, the internal storage
+      of the data is compressed.}
   }
 }
 
 \section{Coercion}{
-  In the following code snippets, \code{x} is a \code{SplitXDataFrame}.
+  In the following code snippets, \code{x} is a \code{XDataFrameList}.
   \describe{
     \item{}{\code{as(from, "XDataFrame")}: Coerces a
-      \code{SplitXDataFrame} to an \code{XDataFrame} by combining the
+      \code{XDataFrameList} to an \code{XDataFrame} by combining the
       rows of the elements. This essentially unsplits the \code{XDataFrame}.
-    }
-    \item{}{\code{unlist(x, recursive = TRUE, use.names = TRUE)}:
-      Same as above, except specifying \code{use.names} to \code{FALSE}
-      drops the row names. \code{recursive} is ignored.
     }
     \item{}{\code{as.data.frame(x, row.names=NULL, optional=FALSE, ...)}:
       Unsplits the \code{XDataFrame} and coerces it to a
@@ -68,7 +64,7 @@
 \author{ Michael Lawrence }
 \seealso{
   \code{\linkS4class{XDataFrame}}, \code{\linkS4class{RangedData}},
-  which uses a \code{SplitXDataFrame} to split the data by the spaces.
+  which uses a \code{XDataFrameList} to split the data by the spaces.
 }
 \keyword{methods}
 \keyword{classes}

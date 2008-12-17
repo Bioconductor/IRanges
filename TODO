@@ -43,7 +43,7 @@ Long term TODO list
   * "aggregate", generalization of coverage for max/min/etc
   - as a subset specification for BSGenome objects (get sequences out) 
 
-- SplitXDataFrame:
+- XDataFrameList:
   - stack: unlist(), but with factors recording source of each row
   - rbind
   

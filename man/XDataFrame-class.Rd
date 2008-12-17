@@ -119,7 +119,7 @@
   
   \describe{
     \item{}{\code{split(x, f, drop = FALSE)}:
-      Splits \code{x} into a \code{\linkS4class{SplitXDataFrame}},
+      Splits \code{x} into a \code{\linkS4class{XDataFrameList}},
       according to \code{f}, dropping elements corresponding to
       unrepresented levels if \code{drop} is \code{TRUE}.
     }
@@ -262,7 +262,7 @@
   
   ## rbind
 
-  do.call("rbind", as.list(swsplit))
+  do.call(rbind, as.list(swsplit))
 
   ## cbind
 

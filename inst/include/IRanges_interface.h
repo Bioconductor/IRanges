@@ -335,6 +335,14 @@ SEXP alloc_IRanges(const char *classname, int length);
 
 
 /*
+ * Low-level manipulation of IRanges objects.
+ * (see IRangesList_class.c)
+ */
+
+SEXP get_IRangesList_elt(SEXP x, int at);
+
+
+/*
  * Low-level manipulation of SequencePtr objects.
  * (see SequencePtr_class.c)
  */

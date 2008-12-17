@@ -43,7 +43,7 @@ test_RangesList_gaps <- function() {
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   collection <- RangesList(one = range1, range2)
 
-  checkIdentical(gaps(collection), RangesList(gaps(range1), gaps(range2)))
+  checkIdentical(gaps(collection), RangesList(one = gaps(range1), gaps(range2)))
 }
 
 test_RangesList_reduce <- function() {

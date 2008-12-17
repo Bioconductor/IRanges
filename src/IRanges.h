@@ -369,7 +369,9 @@ SEXP IRanges_reduce(
 );
 
 
-/* RangesList_class.c */
+/* IRangesList_class.c */
+
+SEXP _get_IRangesList_elt(SEXP x, int at);
 
 SEXP summary_IRangesList(SEXP object);
 

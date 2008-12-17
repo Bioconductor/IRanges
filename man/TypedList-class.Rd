@@ -5,11 +5,12 @@
 % accessors
 \alias{elementClass}
 \alias{elementClass,TypedList-method}
-\alias{elements}
-\alias{elements,TypedList-method}
+\alias{elementLengths}
+\alias{elementLengths,TypedList-method}
 \alias{length,TypedList-method}
 \alias{names,TypedList-method}
 \alias{names<-,TypedList-method}
+\alias{isEmpty,TypedList-method}
 
 % subsetting
 \alias{[,TypedList,ANY,ANY,ANY-method}
@@ -101,11 +102,11 @@
     \item{}{\code{elementClass(x)}: Get the scalar string naming the
       class from which all elements must derive.
     }
-    \item{}{\code{elements(x)}: Returns the internal \code{list} holding
-      the elements. It is not recommended to access the elements this
-      way, as for some subclasses of \code{TypedList} this may be an
-      internal representation that is not consistent with what is
-      extracted with, for example, the \code{[[} method.
+    \item{}{\code{elementLengths(x)}: Get the 'length' of each of the
+      elements.
+    }
+    \item{}{\code{isEmpty(x)}: Gets a logical vector indicating
+      which elements are empty (length zero).
     }
   }
 }
@@ -165,11 +166,11 @@
 \seealso{\code{\linkS4class{RangesList}} for an example implementation}
 
 \examples{
-  ## demonstrated on RangesList, as TypedList is virtual
+  ## demonstrated on IntegerList objects, as TypedList is virtual
 
-  range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
-  range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
-  collection <- RangesList(range1, range2)
+  int1 <- c(1L,2L,3L,5L,2L,8L)
+  int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)
+  collection <- IntegerList(int1, int2)
 
   ## names
   names(collection) <- c("one", "two")
@@ -196,19 +197,19 @@
   collection$one
 
   ## replacement
-  collection$one <- range2
-  collection[[2]] <- range1
+  collection$one <- int2
+  collection[[2]] <- int1
 
   ## combining
-  col1 <- RangesList(one = range1, range2)
-  col2 <- RangesList(two = range2, one = range1)
-  col3 <- RangesList(range2)
+  col1 <- IntegerList(one = int1, int2)
+  col2 <- IntegerList(two = int2, one = int1)
+  col3 <- IntegerList(int2)
   append(col1, col2, 1)
   append(col1, col2, -5)
   c(col1, col2, col3)
 
-  ## get the starts of each Ranges
-  lapply(col1, start)
+  ## get the mean for each element
+  lapply(col1, mean)
 }
 \keyword{methods}
 \keyword{classes}

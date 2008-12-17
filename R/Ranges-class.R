@@ -113,7 +113,7 @@ setMethod("order", "Ranges", function (..., na.last = TRUE, decreasing = FALSE)
             if (!all(sapply(args, is, "Ranges")))
               stop("all arguments in '...' must be Ranges instances")
             starts <- lapply(args, start)
-            do.call("order",
+            do.call(order,
                     c(starts, na.last = na.last, decreasing = decreasing))
           })
 
@@ -128,7 +128,7 @@ setMethod("range", "Ranges", function(x, ..., na.rm) {
   args <- list(x, ...)
   if (!all(sapply(args, is, "Ranges")))
     stop("all arguments in '...' must be Ranges instances")
-  x <- do.call("c", args)
+  x <- do.call(c, args)
   if (!length(x))
     IRanges()
   else IRanges(min(start(x)), max(end(x)))

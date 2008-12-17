@@ -8,7 +8,7 @@
 ## 1) Efficiency when data is large (i.e. apply by chromosome)
 ## 2) Convenience when data is not so large (i.e. unrolling the data)
 setClass("RangedData",
-         representation(ranges = "RangesList", values = "SplitXDataFrame"))
+         representation(ranges = "RangesList", values = "XDataFrameList"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -46,7 +46,7 @@ setReplaceMethod("universe", "RangedData",
 setMethod("range", "RangedData", function(x, ..., na.rm) {
   args <- list(x, ...)
   rangeLists <- lapply(args, ranges)
-  do.call("range", rangeLists)
+  do.call(range, rangeLists)
 })
 
 ## values delegates
@@ -71,8 +71,8 @@ setReplaceMethod("dimnames", "RangedData",
                 stop("invalid rownames length")
               rns <- split(rn, inds)
             }
-            values <- elements(values(x))
-            ranges <- elements(ranges(x))
+            values <- as.list(values(x))
+            ranges <- as.list(ranges(x))
             for(i in seq_len(length(x@ranges))) {
               dimnames(values[[i]]) <- list(rns[[i]], cn)
               names(ranges[[i]]) <- rns[[i]]
@@ -132,7 +132,7 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
     values <- split(values, space)
   } else {
     ranges <- RangesList(ranges)
-    values <- SplitXDataFrame(values)
+    values <- XDataFrameList(values)
     if (length(space))
       names(ranges) <- names(values) <- space
   }
@@ -167,7 +167,7 @@ setMethod("[[", "RangedData",
               return(NULL)
             col <- lapply(values(x), `[`, i)
             names(col) <- NULL ## use rbind() to handle factor levels
-            do.call("rbind", col)[[1]]
+            do.call(rbind, col)[[1]]
           })
 
 setMethod("$", "RangedData", function(x, name) x[[name]])
@@ -189,17 +189,17 @@ setReplaceMethod("[[", "RangedData",
                      stop("subscript out of bounds")
                    if (!is.null(value) && nrow(x) != length(value))
                      stop("invalid replacement length")
-                   values <- elements(values(x))
-                   nrows <- sapply(values, nrow)
+                   values <- as.list(values(x))
+                   nrows <- elementLengths(values(x))
                    inds <- seq_len(length(x))
-                   spaces <- factor(rep(inds, nrows), inds)
+                   spaces <- factor(rep.int(inds, nrows), inds)
                    svalues <- NULL
                    if (!is.null(value))
                      svalues <- split(value, spaces)
                    for (j in seq_len(length(x))) {
                      values[[j]][[i]] <- svalues[[j]]
                    }
-                   x@values <- initialize(x@values, elements = values)
+                   x@values <- initialize(values(x), elements = values)
                    x
                  })
 
@@ -213,10 +213,10 @@ setReplaceMethod("$", "RangedData", function(x, name, value) {
 ## - list style ([i]):  subsets by range space (e.g. chromosome)
 ## - matrix style ([i,j]): subsets the data frame
 setMethod("[", "RangedData",
-          function(x, i, j, ..., drop)
+          function(x, i, j, ..., drop=FALSE)
           {
-            if (!missing(drop) || length(list(...)) > 0)
-              stop("'drop' and parameters in '...' not supported")
+            if (length(list(...)) > 0)
+              stop("parameters in '...' not supported")
             if (missing(i) && missing(j))
               return(x)
             checkIndex <- function(i, lx) {
@@ -239,11 +239,12 @@ setMethod("[", "RangedData",
             }
             values <- values(x)
             ranges <- ranges(x)
-            mstyle <- nargs() == 3
+            mstyle <- nargs() > 2
             if (mstyle) {
               if (!missing(j))
                 checkIndex(j, ncol(x))
-              else j <- seq_len(ncol(x))
+              else
+                j <- seq_len(ncol(x))
               if (!missing(i)) {
                 if (is(i, "RangesList")) {
                   ### FIXME: not sure about this at all
@@ -257,14 +258,23 @@ setMethod("[", "RangedData",
                 i <- dummy[i]
                 if (any(is.na(i))) ## cannot subset by NAs yet
                   stop("invalid rownames specified")
-              } else i <- seq_len(nrow(x))
-              values <- elements(values(x))
-              ranges <- elements(ranges(x))
+              } else {
+                i <- seq_len(nrow(x))
+              }
+              values <- as.list(values(x))
+              ranges <- as.list(ranges(x))
               w <- cumsum(c(1, sapply(values, nrow)))
               si <- split(i, factor(findInterval(i, w), seq_along(w)))
               for (k in seq_len(length(x))) {
                 values[[k]] <- values[[k]][si[[k]] - w[k] + 1, j, drop=FALSE]
                 ranges[[k]] <- ranges[[k]][si[[k]] - w[k] + 1]
+              }
+              if (drop) {
+                whichDrop <- which(unlist(lapply(ranges, function(x) length(x) == 0)))
+                if (length(whichDrop) > 0) {
+                  values <- values[-whichDrop]
+                  ranges <- ranges[-whichDrop]
+                }
               }
               ranges <- initialize(x@ranges, elements = ranges)
               values <- initialize(x@values, elements = values)
@@ -298,12 +308,12 @@ setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
     stop("all arguments in '...' must be instances of RangedData")
   nms <- lapply(rds, ## figure out names like 'c' on an ordinary vector
                 function(rd) structure(logical(length(rd)), names = names(rd)))
-  nms <- names(do.call("c", nms))
+  nms <- names(do.call(c, nms))
   names(rds) <- NULL # critical for dispatch to work
-  ranges <- do.call("c", lapply(rds, ranges))
+  ranges <- do.call(c, lapply(rds, ranges))
   names(ranges) <- nms
   rd@ranges <- ranges
-  values <- do.call("c", lapply(rds, values))
+  values <- do.call(c, lapply(rds, values))
   names(values) <- nms
   rd@values <- values
   rd
@@ -313,7 +323,7 @@ setMethod("split", "RangedData", function(x, f, drop = FALSE) {
   if (length(f) > nrow(x) || nrow(x) %% length(f) > 0)
     stop("nrow(x) is not a multiple of length(f)")
   splitInd <- split(seq_len(nrow(x)), f, drop)
-  do.call("RangedDataList", lapply(splitInd, function(ind) x[ind,]))
+  do.call(RangedDataList, lapply(splitInd, function(ind) x[ind,]))
 })
 
 setMethod("rbind", "RangedData", function(..., deparse.level=1) {
@@ -332,9 +342,9 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
   } else nms <- unique(unlist(nmsList))
   for (nm in nms) {
     rli <- lapply(rls, `[[`, nm)
-    rl[[nm]] <- do.call("c", rli[!sapply(rli, is.null)])
+    rl[[nm]] <- do.call(c, rli[!sapply(rli, is.null)])
     dfi <- lapply(dfs, `[[`, nm)
-    df[[nm]] <- do.call("rbind", dfi[!sapply(dfi, is.null)])
+    df[[nm]] <- do.call(rbind, dfi[!sapply(dfi, is.null)])
   }
   initialize(args[[1]], ranges = rl, values = df)
 })
@@ -383,13 +393,21 @@ setMethod("show", "RangedData", function(object) {
 
 ### Lists of RangedData instances
 
-setClass("RangedDataList", prototype = prototype(elementClass = "RangedData"),
+setClass("RangedDataList",
+         prototype = prototype(elementClass = "RangedData", compressible = TRUE),
          contains = "TypedList")
 
-RangedDataList <- function(...)
+RangedDataList <- function(..., compress = TRUE)
 {
-  rds <- list(...)
-  NAMES <- names(rds)
-  names(rds) <- NULL
-  new("RangedDataList", elements=rds, NAMES=NAMES)
+  TypedList("RangedDataList", elements = list(...), compress = compress)
 }
+
+setMethod("unlist", "RangedDataList",
+          function(x, recursive = TRUE, use.names = TRUE) {
+            if (!missing(recursive))
+              warning("'recursive' argument currently ignored")
+            ans <- do.call(c, as.list(x))
+            if (!use.names)
+              names(ans) <- NULL
+            ans
+          })

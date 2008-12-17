@@ -308,6 +308,14 @@ DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,
 	(            classname,     length)
 );
 
+/*
+ * Stubs for callables defined in IRangesList_class.c
+ */
+
+DEFINE_CCALLABLE_STUB(SEXP, get_IRangesList_elt,
+	(SEXP x, int at),
+	(     x,     at)
+);
 
 /*
  * Stubs for callables defined in SequencePtr_class.c

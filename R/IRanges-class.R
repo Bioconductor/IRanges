@@ -478,6 +478,17 @@ setMethod("[", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "summary" method.
+###
+
+setMethod("summary", "IRangesList",
+         function(object)
+         {
+             .Call("summary_IRangesList", object, PACKAGE="IRanges")
+         })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining.
 ###
 

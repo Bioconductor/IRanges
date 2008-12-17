@@ -7,7 +7,6 @@
 
 % accessors
 \alias{end,RangesList-method}
-\alias{isEmpty,RangesList-method}
 \alias{width,RangesList-method}
 \alias{start,RangesList-method}
 \alias{space}
@@ -26,7 +25,6 @@
 
 % show
 \alias{show,RangesList-method}
-\alias{summary,RangesList-method}
 
 % split
 \alias{split,Ranges-method}
@@ -48,8 +46,6 @@
     \item{}{\code{start(x)}: Get the starts of the ranges.}
     \item{}{\code{end(x)}: Get the ends of the ranges.}
     \item{}{\code{width(x)}: Get the widths of the ranges.}
-    \item{}{\code{isEmpty(x)}: Gets a logical vector indicating
-      which elements are empty (length zero).}
     \item{}{\code{space(x)}: Gets the spaces of the ranges as a
       character vector. This is equivalent to \code{names(x)}, except each
       name is repeated according to the length of its element.

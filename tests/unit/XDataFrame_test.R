@@ -192,11 +192,11 @@ test_XDataFrame_combine <- function() {
   zr <- sw[FALSE,]
   checkIdentical(rbind(XDataFrame(), zr, zr[,1:2]), zr)
   checkIdentical(as.data.frame(rbind(XDataFrame(), zr, sw)), swiss)
-  swissrbind <- do.call("rbind", swisssplit)
+  swissrbind <- do.call(rbind, swisssplit)
   rownames(swissrbind) <- NULL
   rownames(sw) <- NULL
   swsplit <- split(sw, sw[["Education"]])
-  checkIdentical(as.data.frame(do.call("rbind", as.list(swsplit))), swissrbind)
+  checkIdentical(as.data.frame(do.call(rbind, as.list(swsplit))), swissrbind)
 
   ## combining factors
   df1 <- data.frame(species = c("Mouse", "Chicken"), n = c(5, 6))
@@ -212,7 +212,7 @@ test_XDataFrame_combine <- function() {
   swsplit <- split(sw, sw[["Education"]])
   rownames(swiss) <- rn
   swisssplit <- split(swiss, swiss$Education)
-  checkIdentical(rownames(do.call("rbind", as.list(swsplit))),
+  checkIdentical(rownames(do.call(rbind, as.list(swsplit))),
                  unlist(lapply(swisssplit, rownames), use.names=FALSE))
 
   checkException(rbind(sw[,1:2], sw), silent = TRUE)

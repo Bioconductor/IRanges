@@ -7,6 +7,8 @@
 \alias{coerce,IRangesList,list-method} % undocumented
 \alias{unlist,IRangesList-method}
 
+\alias{summary,IRangesList-method}
+
 % constructor
 \alias{IRangesList}
 
@@ -16,10 +18,11 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{IRangesList(...)}: Each \code{IRanges} in \code{...}
-      becomes an element in the new \code{IRangesList}, in the same
+    \item{}{\code{IRangesList(..., compress = TRUE)}: Each \code{IRanges} in
+      \code{...} becomes an element in the new \code{IRangesList}, in the same
       order. This is analogous to the \code{\link{list}} constructor,
       except every argument in \code{...} must be derived from \code{IRanges}. 
+      If \code{compress}, the internal storage of the data is compressed.
     }
   }
 }

@@ -5,7 +5,7 @@
 setClassUnion("expressionORfunction", c("expression", "function"))
 
 setClass("FilterRules", representation(active = "logical"),
-         prototype(elementClass = "expressionORfunction"),
+         prototype(elementClass = "expressionORfunction", compressible = FALSE),
          contains = "TypedList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -28,7 +28,7 @@ setReplaceMethod("active", "FilterRules", function(x, value) {
   if (is.character(value)) {
     value <- value[!is.na(value)] ## NA's are dropped
     filterNames <- names(x)
-    if (is.null(filterNames))
+    if (length(filterNames) == 0)
       stop("there are no filter names")
     if (any(!(value %in% filterNames)))
       stop("'value' contains invalid filter names")
@@ -68,29 +68,29 @@ FilterRules.parseRule <- function(expr) {
 
 FilterRules <- function(exprs = list(), ..., active = TRUE) {
   exprs <- c(as.list(substitute(list(...)))[-1], exprs)
-  if (is.null(names(exprs))) {
+  if (length(names(exprs)) == 0) {
     names(exprs) <- unlist(lapply(exprs, deparse))
     chars <- unlist(sapply(exprs, is.character))
     names(exprs)[chars] <- unlist(exprs[chars])
   }
   names(exprs) <- make.names(names(exprs), unique = TRUE)
-  
+
   exprs <- lapply(exprs, FilterRules.parseRule)
 
   if (missing(active))
     active <- rep(TRUE, length(exprs))
-  
+
   if (!is.logical(active) || any(is.na(active)))
     stop("'active' must be logical without any missing values")
   if (length(active) > length(exprs))
     stop("length of 'active' is greater than number of rules")
   if (length(exprs) && length(exprs) %% length(active) > 0)
     stop("number of rules must be a multiple of length of 'active'")
-  
-  rules <- new("FilterRules", elements = exprs,
-               NAMES = names(exprs), active = rep(TRUE, length(exprs)))
-  if (length(exprs))
+
+  rules <- TypedList("FilterRules", elements = exprs, compress = FALSE)
+  if (length(exprs) > 0)
     active(rules) <- active
+  validObject(rules)
   rules
 }
 
@@ -166,19 +166,38 @@ setMethod("append", c("FilterRules", "FilterRules"),
           {
             if (!isSingleNumber(after))
               stop("'after' must be a single number")
-            x <- callNextMethod(x, values, after)
-            active(x) <- append(x@active, active(values), after)
-            names(x) <- make.names(names(x), unique = TRUE)
-            x
+            ans <-
+              FilterRules(append(as.list(x, use.names = TRUE),
+                                 as.list(values, use.names = TRUE),
+                                 after = after))
+            active(ans) <-
+              structure(append(active(x), active(values), after),
+                        names = names(ans))
+            ans
           })
 
-setMethod("c", "FilterRules", function(x, ..., recursive = FALSE) {
-  args <- if (!missing(x)) list(x, ...) else list(...)
-  ans <- do.call("callNextMethod", args)
-  active(ans) <- unlist(lapply(args, active), use.names = FALSE)
-  names(x) <- make.names(names(x), unique = TRUE)
-  ans
-})
+setMethod("c", "FilterRules",
+          function(x, ..., recursive = FALSE) {
+            if (recursive)
+              stop("'recursive' mode is not supported")
+            if (!missing(x))
+              args <- list(x, ...)
+            else
+              args <- list(...)
+            if (!all(sapply(args, is, "FilterRules")))
+              stop("all arguments in '...' must be instances of 'FilterRules'")
+            ans <-
+              FilterRules(unlist(lapply(args,
+                                        function(x) {
+                                          elts <- as.list(x)
+                                          names(elts) <- names(x)
+                                          elts
+                                        }), recursive = FALSE))
+            active(ans) <-
+              structure(unlist(lapply(args, active), use.names = FALSE),
+                        names = names(ans))
+            ans
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Evaluating
@@ -196,7 +215,7 @@ setMethod("eval", "FilterRules",
                    parent.frame() else baseenv())
           {
             result <- TRUE
-            for (rule in elements(expr)[active(expr)]) {
+            for (rule in as.list(expr)[active(expr)]) {
               if (is.expression(rule))
                 val <- eval(rule, envir, enclos)
               else val <- rule(envir)

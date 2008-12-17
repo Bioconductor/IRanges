@@ -1,6 +1,7 @@
 \name{RangedDataList-class}
 \docType{class}
 \alias{RangedDataList-class}
+\alias{unlist,RangedDataList-method}
 
 % Constructor
 \alias{RangedDataList}
@@ -15,9 +16,9 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{RangedDataList(...)}: Contatenates the
-      \code{RangedData} instances in \code{...} into a new
-      \code{RangedDataList}.
+    \item{}{\code{RangedDataList(..., compress = TRUE)}: Concatenates the
+      \code{RangedData} instances in \code{...} into a new \code{RangedDataList}.
+      If \code{compress}, the internal storage of the data is compressed.
     }
   }
 }

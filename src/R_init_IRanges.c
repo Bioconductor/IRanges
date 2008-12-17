@@ -30,7 +30,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(which_as_IRanges, 1),
 	CALLMETHOD_DEF(IRanges_reduce, 2),
 
-/* RangesList_class.c */
+/* IRangesList_class.c */
 	CALLMETHOD_DEF(summary_IRangesList, 1),
 
 /* SequencePtr_class.c */
@@ -202,6 +202,9 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_copy_IRanges_slots);
 	REGISTER_CCALLABLE(_new_IRanges);
 	REGISTER_CCALLABLE(_alloc_IRanges);
+
+/* IRangesList_class.c */
+	REGISTER_CCALLABLE(_get_IRangesList_elt);
 
 /* SequencePtr_class.c */
 	REGISTER_CCALLABLE(_new_SequencePtr);

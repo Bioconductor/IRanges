@@ -5,12 +5,12 @@
 ## Accepts any type of Ranges instance as an element
 
 setClass("RangesList", representation(universe = "characterORNULL"),
-         prototype(elementClass = "Ranges"),
+         prototype = prototype(elementClass = "Ranges", compressible = FALSE),
          contains = "TypedList")
 
-setClass("IRangesList", prototype = prototype(elementClass = "IRanges"),
+setClass("IRangesList",
+         prototype = prototype(elementClass = "IRanges", compressible = TRUE),
          contains = "RangesList")
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -28,7 +28,7 @@ setMethod("space", "RangesList",
           function(x) {
             space <- names(x)
             if (!is.null(space))
-              space <- rep(space, unlist(lapply(elements(x), length)))
+              space <- rep(space, elementLengths(x))
             space
           })
 
@@ -55,17 +55,21 @@ RangesList <- function(..., universe = NULL)
   ranges <- list(...)
   if (!all(sapply(ranges, is, "Ranges")))
     stop("all elements in '...' must be instances of 'Ranges'")
-  NAMES <- names(ranges)
-  names(ranges) <- NULL
-  new("RangesList", elements=ranges, NAMES=NAMES, universe=universe)
+  ans <- TypedList("RangesList", ranges, compress = FALSE)
+  ans@universe <- universe
+  ans
 }
 
-IRangesList <- function(..., universe = NULL)
+IRangesList <- function(..., universe = NULL, compress = TRUE)
 {
+  if (!is.null(universe) && !isSingleString(universe))
+    stop("'universe' must be a single string or NULL")
   ranges <- list(...)
   if (!all(sapply(ranges, is, "IRanges")))
     stop("all elements in '...' must be instances of 'IRanges'")
-  new("IRangesList", RangesList(..., universe = universe))
+  ans <- TypedList("IRangesList", ranges, compress = compress)
+  ans@universe <- universe
+  ans
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -82,28 +86,16 @@ setMethod("[", "RangesList",
               return(x)
             if (is(i, "RangesList")) {
               ol <- overlap(i, x, multiple = FALSE)
-              els <- elements(x)
+              els <- as.list(x)
               for (j in seq_len(length(x))) {
                 els[[j]] <- els[[j]][!is.na(ol[[j]])]
               }
-              x@elements <- els
-              x
-            } else callNextMethod(x, i)
-          }
-          )
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Methods that are vectorized over the ranges
-###
-
-setMethod("isEmpty", "RangesList",
-          function(x)
-          {
-            if (length(x) == 0)
-              return(logical(0))
-            sapply(elements(x), isEmpty)
-          }
-          )
+              ans <- do.call(class(x), els)
+            } else {
+              ans <- callNextMethod(x, i)
+            }
+            ans
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Some useful endomorphisms: "reduce" and "gaps".
@@ -113,30 +105,21 @@ setMethod("isEmpty", "RangesList",
 setMethod("reduce", "RangesList",
           function(x, with.inframe.attrib=FALSE)
           {
-            elements <- elements(x)
-            if (length(elements) == 0) {
-              nir1 <- new("NormalIRanges")
+            if (length(x) == 0) {
+              nirl <- list(new("NormalIRanges"))
             } else {
-              start1 <- start(x)
-              width1 <- width(x)
-              ranges <- new2("IRanges", start=start1, width=width1, check=FALSE)
-              nir1 <- asNormalIRanges(ranges, force=TRUE)
+              ranges <- new2("IRanges", start=start(x), width=width(x), check=FALSE)
+              nirl <- list(asNormalIRanges(ranges, force=TRUE))
             }
             ## This transformation must be atomic.
-            x@elements <- list(nir1)
-            x@NAMES <- NULL
-            x
-          }
-          )
+            do.call(class(x), nirl)
+          })
 
 setMethod("gaps", "RangesList",
           function(x, start=NA, end=NA)
           {
-            names(x) <- NULL
-            x@elements <- lapply(x, function(r) gaps(r, start=start, end=end))
-            x
-          }
-          )
+            do.call(class(x), lapply(x, gaps, start = start, end = end))
+          })
 
 setMethod("range", "RangesList",
           function(x, ..., na.rm) {
@@ -144,7 +127,7 @@ setMethod("range", "RangesList",
             if (!all(sapply(sapply(args, universe), identical, universe(x))))
               stop("All args in '...' must have the same universe as 'x'")
             spaceList <- lapply(args, names)
-            names <- spaces <- unique(do.call("c", spaceList))
+            names <- spaces <- unique(do.call(c, spaceList))
             if (any(sapply(spaceList, is.null))) {
               if (!all(unlist(lapply(args, length)) == length(x)))
                 stop("If any args are missing names, all must have same length")
@@ -152,9 +135,10 @@ setMethod("range", "RangesList",
             }
             ranges <- lapply(spaces, function(space) {
               r <- lapply(args, `[[`, space)
-              do.call("range", r[!sapply(r, is.null)])
+              do.call(range, r[!sapply(r, is.null)])
             })
-            initialize(x, elements = ranges, NAMES = names)
+            names(ranges) <- names
+            do.call(class(x), ranges)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -177,7 +161,7 @@ setMethod("overlap", c("RangesList", "RangesList"),
             })
             names(ans) <- names(subject)
             if (multiple)
-              ans <- do.call("RangesMatchingList", ans)
+              ans <- do.call(RangesMatchingList, ans)
             ans
           })
 
@@ -191,24 +175,7 @@ setMethod("show", "RangesList",
             lo <- length(object)
             cat("  A ", class(object), " instance of length ", lo, "\n", sep="")
             ### TODO: show (some of the) ranges here
-          }
-          )
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "summary" method.
-###
-
-setMethod("summary", "RangesList",
-          function(object)
-          {
-            object <- as(object, "IRangesList")
-            if (all(unlist(lapply(object, is, "IRanges"))))
-              .Call("summary_IRangesList", object, PACKAGE="IRanges")
-            else
-              stop("all elements must be of class 'IRanges' ")
           })
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
@@ -223,25 +190,14 @@ setMethod("as.data.frame", "RangesList",
               warning("'optional' and arguments in '...' ignored")
             x <- as(x, "IRangesList")
             df <- as.data.frame(unlist(x), row.names = row.names)
-            if (!is.null(names(x)))
-              df <- cbind(space = rep(names(x), unlist(lapply(x, length))), df)
+            if (length(names(x)) > 0)
+              df <- cbind(space = rep(names(x), elementLengths(x)), df)
             df
-          })
-
-setMethod("unlist", "IRangesList",
-          function(x, recursive = TRUE, use.names = TRUE) {
-            if (!missing(recursive))
-              warning("'recursive' argument currently ignored")
-            ans <- callNextMethod()
-            if (is.null(ans))
-              ans <- IRanges()
-            ans
           })
 
 ### From an IRangesList object to a NormalIRanges object.
 setAs("IRangesList", "NormalIRanges",
-      function(from) reduce(from)[[1]]
-      )
+      function(from) reduce(from)[[1]])
 
 ### FIXME: Not clear why this is needed
 setAs("IRangesList", "list",
@@ -251,9 +207,12 @@ setAs("RangesList", "IRangesList",
       function(from) {
         ir <- lapply(from, as, "IRanges")
         names(ir) <- NULL
-        new("IRangesList", from, elements = ir)
+        ans <- new("IRangesList")
+        for (i in slotNames(ans))
+          slot(ans, i, check = FALSE) <- slot(from, i)
+        slot(ans, "elements", check = FALSE) <- ir
+        ans
       })
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Splitting.
@@ -262,7 +221,5 @@ setAs("RangesList", "IRangesList",
 setMethod("split", "Ranges",
     function(x, f, drop = FALSE, ...)
     {
-        do.call("RangesList", callNextMethod())
-    }
-)
-
+        do.call(RangesList, callNextMethod())
+    })

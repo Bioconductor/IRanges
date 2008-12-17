@@ -133,9 +133,11 @@ test_RangedData_subset <- function() {
   frd <- RangedData(ranges[c(1,3)], filter = filter[1:2], score = score[1:2],
                     space = 1)
 
-  checkIdenticalRD <- function(a, b)
-    checkIdentical(as.data.frame(a), as.data.frame(b))
-  
+  checkIdenticalRD <- function(a, b) {
+    checkIdentical(ranges(a), ranges(b))
+    checkIdentical(as.data.frame(values(a)), as.data.frame(values(b)))
+  }
+
   checkIdenticalRD(rd[numeric()], erd)
   checkIdenticalRD(rd[logical()], erd)
   checkIdenticalRD(rd[NULL], erd)
@@ -152,7 +154,6 @@ test_RangedData_subset <- function() {
   
   checkException(rd[,100], silent = TRUE) # out of bounds col
   checkException(rd[1000,], silent = TRUE) # out of bounds row
-  checkException(rd[1:3, drop=TRUE], silent = TRUE) # drop ignored
   checkException(rd[foo = "bar"], silent = TRUE) # invalid argument
   checkException(rd["Sion",], silent = TRUE) # no subsetting by row name yet
   checkException(rd[,"Fert"], silent = TRUE) # bad column name
@@ -172,7 +173,7 @@ test_RangedData_subset <- function() {
 
   firstrow <- RangedData(ranges[1], filter = filter[1], score = score[1],
                          space = 1)
-  checkIdenticalRD(rd[1,], firstrow) # row subsetting
+  checkIdenticalRD(rd[1,,drop=TRUE], firstrow) # row subsetting
   splitrow <- RangedData(ranges[1:2], filter = filter[c(1,3)],
                          score = score[c(1,3)], space = c(1,2))
   checkIdenticalRD(rd[c(1,3),], splitrow) # row subsetting
@@ -191,7 +192,9 @@ test_RangedData_combine <- function() {
   rd <- RangedData(ranges, score, space = filter)
 
   ## c()
-  checkIdentical(c(rd[1], rd[2]), rd)
+  checkIdentical(ranges(c(rd[1], rd[2])), ranges(rd))
+  checkIdentical(as.data.frame(values(c(rd[1], rd[2]))),
+                 as.data.frame(values(rd)))
   checkException(c(rd[1], ranges), silent = TRUE)
 
   ## split()
