@@ -343,7 +343,8 @@ setReplaceMethod("[[", "TypedList",
                      nameValue <- ""
                    }
                    if (is.null(value)) {
-                     x <- x[-i]
+                     if (i <= length(x)) # if name did not exist, could be +1
+                       x <- x[-i]
                    } else {
                      value <- try(as(value, elementClass(x)), silent = TRUE)
                      if (inherits(value, "try-error"))
