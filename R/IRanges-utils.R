@@ -48,6 +48,13 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
     new2("IRanges", start=ans_start, width=width, check=FALSE)
 }
 
+centeredIRanges <- function(center, flank) {
+  if (!is.numeric(center))
+    stop("'center' must be a numeric vector")
+  if (!is.numeric(flank))
+    stop("'flank' must be a numeric vector")
+  IRanges(center - flank, center + flank)
+}
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "whichAsIRanges" function.

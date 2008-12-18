@@ -27,7 +27,13 @@ setMethod("overlap", c("IntervalTree", "Ranges"),
               fun <- paste(fun, "_multiple", sep = "")
             validObject(query)
             result <- .IntervalTreeCall(object, fun, query)
-            validObject(result, complete=TRUE)
+            if (is(result, "ngCMatrix")) {
+              mm <- matchMatrix(result)
+              iord <- order(mm@i)
+              p <- rep(seq_len(ncol(result)), diff(mm@p))
+              mm@i <- mm@i[iord][order(p[iord])]
+              result@matchMatrix <- mm
+            }
             result
           })
 

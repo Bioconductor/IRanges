@@ -52,7 +52,7 @@
   gaps(x, start=NA, end=NA)
   \S4method{reflect}{Ranges}(x, bounds)
   \S4method{flank}{Ranges}(x, width, start = TRUE, both = FALSE)
-  \S4method{range}{Ranges}(x, ..., na.rm = FALSE)
+  range(x, ..., na.rm = FALSE)
   ## Coercion:
   asNormalIRanges(x, force=TRUE)
 }

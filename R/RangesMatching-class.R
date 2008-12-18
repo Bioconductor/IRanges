@@ -42,6 +42,8 @@ setMethod("as.matrix", "RangesMatching", function(x) {
 
 setMethod("as.table", "RangesMatching", function(x, ...) {
   mm <- matchMatrix(x)
+  if (!ncol(mm)) ## as.table does not work for empty arrays
+    return(table(integer(), dnn="ranges"))
   if (is(mm, "ngCMatrix"))
     counts <- diff(mm@p)
   else if (is(mm, "lgeMatrix"))

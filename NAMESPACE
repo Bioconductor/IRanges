@@ -17,8 +17,7 @@ exportClasses(
     LogicalList, IntegerList, NumericList, ComplexList, CharacterList, RawList,
     RangesList, IRangesList,
     XDataFrame, XDataFrameList,
-    RangedData, RangedDataList, FilterRules, RDApplyParams, RangesMatching
-)
+    RangedData, RangedDataList, FilterRules, RDApplyParams, RangesMatching)
 
 export(
     ## Non-generic functions:

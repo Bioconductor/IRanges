@@ -150,8 +150,10 @@ setMethod("overlap", c("RangesList", "RangesList"),
           {
             query <- as.list(query)
             subject <- as.list(object)
-            if (!is.null(names(subject)) && !is.null(names(query)))
+            if (!is.null(names(subject)) && !is.null(names(query))) {
               subject <- subject[names(query)]
+              names(subject) <- names(query) # get rid of NA's in names
+            }
             else subject <- subject[seq_along(query)]
             ## NULL's are introduced where they do not match
             ## We replace those with empty IRanges

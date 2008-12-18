@@ -442,8 +442,6 @@ setMethod("[", "IRanges",
             return(x)
         if (!is(i, "Ranges") && !is.atomic(i))
             stop("invalid subscript type")
-        if (is.character(i))
-            stop("cannot subset a ", class(x), " object by names")
         lx <- length(x)
         if (is.numeric(i)) {
             if (any(is.na(i)))
@@ -463,6 +461,12 @@ setMethod("[", "IRanges",
                 stop("subscript contains NAs")
             if (length(i) > lx)
                 stop("subscript out of bounds")
+        } else if (is.character(i)) {
+          if (is.null(names(x)))
+            stop("cannot subset by character when names are NULL")
+          i <- match(i, names(x))
+          if (any(is.na(i)))
+            stop("subsetting by character would result in NA's")
         } else if (is(i, "Ranges")) {
             i <- x %in% i
         } else if (!is.null(i)) {
