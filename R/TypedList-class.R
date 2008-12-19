@@ -137,6 +137,8 @@ TypedList <- function(listClass, elements = list(), splitFactor = NULL,
     compressedIndices <- NULL
     NAMES <- names(elements)
   } else {
+    if (is.factor(splitFactor))
+      splitFactor <- as.character(splitFactor)
     orderElts <- order(splitFactor)
     if (length(dim(elements)) < 2)
       elements <- list(elements[orderElts])
