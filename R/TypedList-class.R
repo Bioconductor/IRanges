@@ -36,6 +36,7 @@ setMethod("initialize", "TypedList",
               stop("all elements must be instances of '", elementClass, "'")
             if (is.null(elementCumLengths) != is.null(compressedIndices))
               stop("must supply either both 'elementCumLengths' and 'compressedIndices' or neither")
+            elements <- lapply(elements, as, elementClass)
             if (is.null(elementCumLengths)) {
               if (length(elements) == 0) {
                 elementCumLengths <- 1L
