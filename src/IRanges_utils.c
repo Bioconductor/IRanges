@@ -23,7 +23,7 @@ SEXP debug_IRanges_utils()
  */
 SEXP which_as_IRanges(SEXP x)
 {
-	SEXP ans, start, width;
+	SEXP ans, ans_start, ans_width;
 	int i, x_length, ans_length, *x_elt, prev_elt, *start_elt, *width_elt;
 
 	x_length = LENGTH(x);
@@ -35,14 +35,11 @@ SEXP which_as_IRanges(SEXP x)
 		prev_elt = *x_elt;
 	}
 
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("NormalIRanges")));
-	PROTECT(start = NEW_INTEGER(ans_length));
-	PROTECT(width = NEW_INTEGER(ans_length));
-	SET_SLOT(ans, mkChar("start"), start);
-	SET_SLOT(ans, mkChar("width"), width);
+	PROTECT(ans_start = NEW_INTEGER(ans_length));
+	PROTECT(ans_width = NEW_INTEGER(ans_length));
 	if (ans_length > 0) {
-		start_elt = INTEGER(start) - 1;
-		width_elt = INTEGER(width) - 1;
+		start_elt = INTEGER(ans_start) - 1;
+		width_elt = INTEGER(ans_width) - 1;
 		prev_elt = 0;
 		for (i = 1, x_elt = LOGICAL(x); i <= x_length; i++, x_elt++) {
 			if (*x_elt) {
@@ -58,6 +55,7 @@ SEXP which_as_IRanges(SEXP x)
 			prev_elt = *x_elt;
 		}
 	}
+	PROTECT(ans = _new_IRanges("NormalIRanges", ans_start, ans_width, R_NilValue));
 	UNPROTECT(3);
 	return ans;
 }

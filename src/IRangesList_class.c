@@ -22,7 +22,6 @@ SEXP _get_IRangesList_elt(SEXP x, int at)
 
 	ans_len = INTEGER(cum_len)[at+1] - INTEGER(cum_len)[at];
 
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("IRanges")));
 	PROTECT(ans_start = NEW_INTEGER(ans_len));
 	PROTECT(ans_width = NEW_INTEGER(ans_len));
 	if (ans_len == 0) {
@@ -52,9 +51,7 @@ SEXP _get_IRangesList_elt(SEXP x, int at)
 			}
 		}
 	}
-	SET_SLOT(ans, mkChar("start"), ans_start);
-	SET_SLOT(ans, mkChar("width"), ans_width);
-	SET_SLOT(ans, mkChar("NAMES"), ans_names);
+	PROTECT(ans = _new_IRanges("IRanges", ans_start, ans_width, ans_names));
 	UNPROTECT(4);
 	return ans;
 }
@@ -105,7 +102,7 @@ SEXP summary_IRangesList(SEXP object)
 	PROTECT(col_names = NEW_CHARACTER(2));
 	SET_STRING_ELT(col_names, 0, mkChar("Length"));
 	SET_STRING_ELT(col_names, 1, mkChar("WidthSum"));
-	SET_ELEMENT(ans_names, 0, duplicate(_get_IRanges_names(object)));
+	SET_ELEMENT(ans_names, 0, duplicate(GET_SLOT(object, install("NAMES"))));
 	SET_ELEMENT(ans_names, 1, col_names);
 	SET_DIMNAMES(ans, ans_names);
 	UNPROTECT(3);
