@@ -18,10 +18,10 @@ SEXP XRleIntegerViews_viewMins(SEXP x, SEXP na_rm)
 	values_tag = _get_XSequence_tag(values);
 	lengths = GET_SLOT(subject, install("lengths"));
 	lengths_tag = _get_XSequence_tag(lengths);
-	start = GET_SLOT(x, install("start"));
-	width = GET_SLOT(x, install("width"));
+	start = _get_IRanges_start(x);
+	width = _get_IRanges_width(x);
 
-	ans_length = LENGTH(start);
+	ans_length = _get_IRanges_length(x);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	values_elt = INTEGER(values_tag);
 	lengths_elt = INTEGER(lengths_tag);
@@ -77,10 +77,10 @@ SEXP XRleIntegerViews_viewMaxs(SEXP x, SEXP na_rm)
 	values_tag = _get_XSequence_tag(values);
 	lengths = GET_SLOT(subject, install("lengths"));
 	lengths_tag = _get_XSequence_tag(lengths);
-	start = GET_SLOT(x, install("start"));
-	width = GET_SLOT(x, install("width"));
+	start = _get_IRanges_start(x);
+	width = _get_IRanges_width(x);
 
-	ans_length = LENGTH(start);
+	ans_length = _get_IRanges_length(x);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	values_elt = INTEGER(values_tag);
 	lengths_elt = INTEGER(lengths_tag);
@@ -136,10 +136,10 @@ SEXP XRleIntegerViews_viewSums(SEXP x, SEXP na_rm)
 	values_tag = _get_XSequence_tag(values);
 	lengths = GET_SLOT(subject, install("lengths"));
 	lengths_tag = _get_XSequence_tag(lengths);
-	start = GET_SLOT(x, install("start"));
-	width = GET_SLOT(x, install("width"));
+	start = _get_IRanges_start(x);
+	width = _get_IRanges_width(x);
 
-	ans_length = LENGTH(start);
+	ans_length = _get_IRanges_length(x);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	values_elt = INTEGER(values_tag);
 	lengths_elt = INTEGER(lengths_tag);
@@ -201,10 +201,10 @@ SEXP XRleIntegerViews_viewWhichMins(SEXP x, SEXP na_rm)
 	values_tag = _get_XSequence_tag(values);
 	lengths = GET_SLOT(subject, install("lengths"));
 	lengths_tag = _get_XSequence_tag(lengths);
-	start = GET_SLOT(x, install("start"));
-	width = GET_SLOT(x, install("width"));
+	start = _get_IRanges_start(x);
+	width = _get_IRanges_width(x);
 
-	ans_length = LENGTH(start);
+	ans_length = _get_IRanges_length(x);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	values_elt = INTEGER(values_tag);
 	lengths_elt = INTEGER(lengths_tag);
@@ -265,10 +265,10 @@ SEXP XRleIntegerViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 	values_tag = _get_XSequence_tag(values);
 	lengths = GET_SLOT(subject, install("lengths"));
 	lengths_tag = _get_XSequence_tag(lengths);
-	start = GET_SLOT(x, install("start"));
-	width = GET_SLOT(x, install("width"));
+	start = _get_IRanges_start(x);
+	width = _get_IRanges_width(x);
 
-	ans_length = LENGTH(start);
+	ans_length = _get_IRanges_length(x);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	values_elt = INTEGER(values_tag);
 	lengths_elt = INTEGER(lengths_tag);

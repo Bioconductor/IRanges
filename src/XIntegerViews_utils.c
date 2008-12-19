@@ -14,10 +14,10 @@ SEXP XIntegerViews_viewMins(SEXP x, SEXP na_rm)
 
 	subject = GET_SLOT(x, install("subject"));
 	subject_tag = _get_XSequence_tag(subject);
-	start = GET_SLOT(x, install("start"));
-	width = GET_SLOT(x, install("width"));
+	start = _get_IRanges_start(x);
+	width = _get_IRanges_width(x);
 
-	ans_length = LENGTH(start);
+	ans_length = _get_IRanges_length(x);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	for (i = 0, ans_elt = INTEGER(ans), start_elt = INTEGER(start), width_elt = INTEGER(width);
 	     i < ans_length;
@@ -49,10 +49,10 @@ SEXP XIntegerViews_viewMaxs(SEXP x, SEXP na_rm)
 
 	subject = GET_SLOT(x, install("subject"));
 	subject_tag = _get_XSequence_tag(subject);
-	start = GET_SLOT(x, install("start"));
-	width = GET_SLOT(x, install("width"));
+	start = _get_IRanges_start(x);
+	width = _get_IRanges_width(x);
 
-	ans_length = LENGTH(start);
+	ans_length = _get_IRanges_length(x);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	for (i = 0, ans_elt = INTEGER(ans), start_elt = INTEGER(start), width_elt = INTEGER(width);
 	     i < ans_length;
@@ -84,10 +84,10 @@ SEXP XIntegerViews_viewSums(SEXP x, SEXP na_rm)
 
 	subject = GET_SLOT(x, install("subject"));
 	subject_tag = _get_XSequence_tag(subject);
-	start = GET_SLOT(x, install("start"));
-	width = GET_SLOT(x, install("width"));
+	start = _get_IRanges_start(x);
+	width = _get_IRanges_width(x);
 
-	ans_length = LENGTH(start);
+	ans_length = _get_IRanges_length(x);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	for (i = 0, ans_elt = INTEGER(ans), start_elt = INTEGER(start), width_elt = INTEGER(width);
 	     i < ans_length;
@@ -122,10 +122,10 @@ SEXP XIntegerViews_viewWhichMins(SEXP x, SEXP na_rm)
 
 	subject = GET_SLOT(x, install("subject"));
 	subject_tag = _get_XSequence_tag(subject);
-	start = GET_SLOT(x, install("start"));
-	width = GET_SLOT(x, install("width"));
+	start = _get_IRanges_start(x);
+	width = _get_IRanges_width(x);
 
-	ans_length = LENGTH(start);
+	ans_length = _get_IRanges_length(x);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	for (i = 0, ans_elt = INTEGER(ans), start_elt = INTEGER(start), width_elt = INTEGER(width);
 	     i < ans_length;
@@ -160,10 +160,10 @@ SEXP XIntegerViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 
 	subject = GET_SLOT(x, install("subject"));
 	subject_tag = _get_XSequence_tag(subject);
-	start = GET_SLOT(x, install("start"));
-	width = GET_SLOT(x, install("width"));
+	start = _get_IRanges_start(x);
+	width = _get_IRanges_width(x);
 
-	ans_length = LENGTH(start);
+	ans_length = _get_IRanges_length(x);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	for (i = 0, ans_elt = INTEGER(ans), start_elt = INTEGER(start), width_elt = INTEGER(width);
 	     i < ans_length;

@@ -105,7 +105,7 @@ SEXP summary_IRangesList(SEXP object)
 	PROTECT(col_names = NEW_CHARACTER(2));
 	SET_STRING_ELT(col_names, 0, mkChar("Length"));
 	SET_STRING_ELT(col_names, 1, mkChar("WidthSum"));
-	SET_ELEMENT(ans_names, 0, GET_SLOT(object, install("NAMES")));
+	SET_ELEMENT(ans_names, 0, duplicate(_get_IRanges_names(object)));
 	SET_ELEMENT(ans_names, 1, col_names);
 	SET_DIMNAMES(ans, ans_names);
 	UNPROTECT(3);
