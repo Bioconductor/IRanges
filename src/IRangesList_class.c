@@ -1,8 +1,6 @@
 #include "IRanges.h"
 
-/*
- * --- .Call ENTRY POINT ---
- */
+
 SEXP _get_IRangesList_elt(SEXP x, int at)
 {
 	int x_len, list_index, shift, ans_len;
