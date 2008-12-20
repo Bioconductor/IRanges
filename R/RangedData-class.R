@@ -8,7 +8,7 @@
 ## 1) Efficiency when data is large (i.e. apply by chromosome)
 ## 2) Convenience when data is not so large (i.e. unrolling the data)
 setClass("RangedData",
-         representation(ranges = "RangesList", values = "XDataFrameList"))
+         representation(ranges = "RangesList", values = "SplitXDataFrameList"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -132,7 +132,7 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
     values <- split(values, space)
   } else {
     ranges <- RangesList(ranges)
-    values <- XDataFrameList(values)
+    values <- SplitXDataFrameList(values)
     if (length(space))
       names(ranges) <- names(values) <- space
   }
@@ -394,12 +394,12 @@ setMethod("show", "RangedData", function(object) {
 ### Lists of RangedData instances
 
 setClass("RangedDataList",
-         prototype = prototype(elementClass = "RangedData", compressible = TRUE),
+         prototype = prototype(elementClass = "RangedData", compressible = FALSE),
          contains = "TypedList")
 
-RangedDataList <- function(..., compress = TRUE)
+RangedDataList <- function(...)
 {
-  TypedList("RangedDataList", elements = list(...), compress = compress)
+  TypedList("RangedDataList", elements = list(...), compress = FALSE)
 }
 
 setMethod("unlist", "RangedDataList",

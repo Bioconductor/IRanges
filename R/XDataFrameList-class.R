@@ -3,8 +3,12 @@
 ### -------------------------------------------------------------------------
 
 setClass("XDataFrameList",
-         prototype = prototype(elementClass="XDataFrame", compressible = TRUE),
+         prototype = prototype(elementClass="XDataFrame", compressible = FALSE),
          contains = "TypedList")
+
+setClass("SplitXDataFrameList",
+         prototype = prototype(elementClass="XDataFrame", compressible = TRUE),
+         contains = "XDataFrameList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -28,7 +32,7 @@ setMethod("dimnames", "XDataFrameList",
 ### Validity.
 ###
 
-.valid.XDataFrameList <- function(x) {
+.valid.SplitXDataFrameList <- function(x) {
   if (length(x)) {
     firstNames <- colnames(x[[1]])
     if (!all(sapply(as.list(x, use.names = FALSE),
@@ -38,22 +42,29 @@ setMethod("dimnames", "XDataFrameList",
   NULL
 }
 
+setValidity2("SplitXDataFrameList", .valid.SplitXDataFrameList)
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
 ###
 
-XDataFrameList <- function(..., compress = TRUE)
+XDataFrameList <- function(...)
 {
-  TypedList("XDataFrameList", elements = list(...), compress = compress)
+  TypedList("XDataFrameList", elements = list(...), compress = FALSE)
+}
+
+SplitXDataFrameList <- function(..., compress = TRUE)
+{
+  TypedList("SplitXDataFrameList", elements = list(...), compress = compress)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
 ###
 
-setAs("XDataFrameList", "XDataFrame", function(from) unlist(from))
+setAs("SplitXDataFrameList", "XDataFrame", function(from) unlist(from))
 
-setMethod("as.data.frame", "XDataFrameList",
+setMethod("as.data.frame", "SplitXDataFrameList",
           function(x, row.names=NULL, optional=FALSE, ...)
           {
             if (!(is.null(row.names) || is.character(row.names)))

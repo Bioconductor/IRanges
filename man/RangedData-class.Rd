@@ -62,7 +62,7 @@
 \details{
   A \code{RangedData} object consists of two primary components:
   a \code{\linkS4class{RangesList}} holding the ranges over multiple
-  spaces and a parallel \code{\linkS4class{XDataFrameList}},
+  spaces and a parallel \code{\linkS4class{SplitXDataFrameList}},
   holding the split data. There is also an \code{universe} slot
   for denoting the source (e.g. the genome) of the ranges and/or
   data.
@@ -175,7 +175,7 @@
     }
     \item{}{
       \code{values(x)}: Gets the data values in \code{x} as a
-      \code{\linkS4class{XDataFrameList}}.
+      \code{\linkS4class{SplitXDataFrameList}}.
     }
   }
 }

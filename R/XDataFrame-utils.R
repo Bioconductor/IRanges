@@ -8,7 +8,7 @@
 
 setMethod("split", "XDataFrame",
           function(x, f, drop = FALSE) {
-            TypedList("XDataFrameList", elements = x, splitFactor = f)
+            TypedList("SplitXDataFrameList", elements = x, splitFactor = f)
           })
 
 ## we define generics here with just '...' as this is possible in R 2.8

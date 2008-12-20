@@ -16,7 +16,7 @@ exportClasses(
     TypedList,
     LogicalList, IntegerList, NumericList, ComplexList, CharacterList, RawList,
     RangesList, IRangesList,
-    XDataFrame, XDataFrameList,
+    XDataFrame, XDataFrameList, SplitXDataFrameList,
     RangedData, RangedDataList, FilterRules, RDApplyParams, RangesMatching)
 
 export(
@@ -44,13 +44,13 @@ export(
     RawPtr, RawPtr.readInts, RawPtr.writeInts, RawPtr.read, RawPtr.write,
     RawPtr.copy, RawPtr.reverseCopy, RawPtr.readComplexes, RawPtr.append,
     RawPtr.compare,
-    LogicalList, IntegerList, NumericList, ComplexList, CharacterList, RawList,
-    XDataFrameList,
     #IntegerPtr, IntegerPtr.read, IntegerPtr.write,
     #NumericPtr, NumericPtr.read, NumericPtr.write,
-    XInteger, XNumeric, XDataFrame, XDataFrameList,
+    XInteger, XNumeric, XDataFrame,
     XRleInteger,
     newViews, successiveViews,
+    LogicalList, IntegerList, NumericList, ComplexList, CharacterList, RawList,
+    XDataFrameList, SplitXDataFrameList,
 
     ## Generic functions in the Ranges API:
     width,

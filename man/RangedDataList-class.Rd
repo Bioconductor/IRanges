@@ -16,9 +16,8 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{RangedDataList(..., compress = TRUE)}: Concatenates the
+    \item{}{\code{RangedDataList(...)}: Concatenates the
       \code{RangedData} instances in \code{...} into a new \code{RangedDataList}.
-      If \code{compress}, the internal storage of the data is compressed.
     }
   }
 }

@@ -1,6 +1,7 @@
 \name{XDataFrameList-class}
 \docType{class}
 \alias{XDataFrameList-class}
+\alias{SplitXDataFrameList-class}
 
 % accessors
 \alias{dim,XDataFrameList-method}
@@ -8,20 +9,21 @@
 
 % constructor
 \alias{XDataFrameList}
+\alias{SplitXDataFrameList}
 
 % coercion
-\alias{as.data.frame,XDataFrameList-method}
-\alias{coerce,XDataFrameList,XDataFrame-method}
+\alias{as.data.frame,SplitXDataFrameList-method}
+\alias{coerce,SplitXDataFrameList,XDataFrame-method}
 
-\title{Split XDataFrame}
-\description{Represents an \code{\linkS4class{XDataFrame}} split along
-  some factor. Internally a list of \code{XDataFrame} instances and
-  extends \code{\linkS4class{TypedList}}. Asserts all elements have the
-  same number and names of columns.
-}
+\title{List of XDataFrames}
+\description{Represents a list of \code{\linkS4class{XDataFrame}} instances.
+  The \code{SplitXDataFrameList} class contains the additional restriction
+  that all the columns be of the same name and type. Internally it is stored
+  as a list of \code{XDataFrame} instances and extends
+  \code{\linkS4class{TypedList}}.}
 \note{
-  The \code{\linkS4class{RangedData}} drove the development of this
-  class. It is not clear if it is of general use and might disappear.
+  The \code{\linkS4class{RangedData}} drove the development of these
+  classes. It is not clear if they are of general use and might disappear.
 }
 
 \section{Accessors}{
@@ -38,16 +40,18 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{XDataFrameList(..., compress = TRUE)}: Concatenates the
+    \item{}{\code{XDataFrameList(...)}: Concatenates the \code{XDataFrame}
+      instances in \code{...} into a new \code{XDataFrameList}.}
+    \item{}{\code{SplitXDataFrameList(..., compress = TRUE)}: Concatenates the
       \code{XDataFrame} instances in \code{...} into a new
-      \code{XDataFrameList}. Note that all arguments should have the same
+      \code{SplitXDataFrameList}. Note that all arguments should have the same
       number and names of columns. If \code{compress}, the internal storage
       of the data is compressed.}
   }
 }
 
 \section{Coercion}{
-  In the following code snippets, \code{x} is a \code{XDataFrameList}.
+  In the following code snippets, \code{x} is a \code{SplitXDataFrameList}.
   \describe{
     \item{}{\code{as(from, "XDataFrame")}: Coerces a
       \code{XDataFrameList} to an \code{XDataFrame} by combining the
