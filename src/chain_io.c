@@ -130,9 +130,9 @@ ChainBlock **read_chain_file(FILE *stream, const char *exclude, int *nblocks) {
 SEXP readChain(SEXP r_path, SEXP r_exclude) {
   const char *path, *exclude;
   FILE *stream;
-  SEXP ans, ans_names, ans_elements;
+  SEXP ans, ans_names, ans_elements, ans_cumsum, ans_inds;
   ChainBlock **chains;
-  int i, nblocks;
+  int i, nblocks, cumsum = 1;
   
   path = translateChar(STRING_ELT(r_path, 0));
   if ((stream = fopen(path, "r")) == NULL)
@@ -158,6 +158,19 @@ SEXP readChain(SEXP r_path, SEXP r_exclude) {
     SET_STRING_ELT(ans_names, i, mkChar(chains[i]->name));
   }
 
+  ans_cumsum = allocVector(INTSXP, nblocks+1);
+  INTEGER(ans_cumsum)[0] = 1;
+  for (i = 0; i < nblocks; i++) {
+    INTEGER(ans_cumsum)[i+1] = INTEGER(ans_cumsum)[i] + chains[i]->offset.nelt;
+  }
+  SET_SLOT(ans, install("elementCumLengths"), ans_cumsum);
+
+  ans_inds = allocVector(INTSXP, nblocks+1);
+  for (i = 0; i < nblocks+1; i++) {
+    INTEGER(ans_inds)[i] = i+1;
+  }
+  SET_SLOT(ans, install("compressedIndices"), ans_inds);
+  
   UNPROTECT(1);
   
   return ans;
