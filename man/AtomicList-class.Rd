@@ -86,8 +86,8 @@
   col1 <- IntegerList(one = int1, int2)
   col2 <- IntegerList(two = int2, one = int1)
   col3 <- IntegerList(int2)
-  append(col1, col2, 1)
-  append(col1, col2, -5)
+  append(col1, col2)
+  append(col1, col2, 0)
   c(col1, col2, col3)
 
   ## get the mean for each element

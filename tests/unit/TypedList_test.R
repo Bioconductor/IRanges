@@ -84,7 +84,7 @@ test_TypedList_combine <- function() {
   checkIdentical(append(col1, col2, 1),
                  IntegerList(one = int1, two = int2, one = int1,
                              int2))
-  checkIdentical(append(col1, col2, -5),
+  checkIdentical(append(col1, col2, 0),
                  IntegerList(two = int2, one = int1, one = int1,
                              int2))
   checkIdentical(append(append(col1, col2), col3),
