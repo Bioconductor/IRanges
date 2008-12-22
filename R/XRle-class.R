@@ -21,12 +21,28 @@ setMethod("length", "XRle", function(x) x@vectorLength)
 setMethod("[", "XRle",
     function(x, i, j, ..., drop=TRUE)
     {
-        breaks <- c(0, cumsum(as.integer(x@lengths)))
+        breaks <- c(0L, cumsum(as.integer(x@lengths)))
         group <- findInterval(i - 1e-6, breaks)
         output <- x@values[group, drop = TRUE]
         if (!drop)
             output <- as(output, class(x))
         output
+    }
+)
+
+setMethod("subseq", "XRle",
+    function(x, start=NA, end=NA, width=NA)
+    {
+        solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
+        breaks <- c(0L, cumsum(as.integer(x@lengths)))
+        rangeGroups <- findInterval(c(start(solved_SEW), end(solved_SEW)) - 1e-6, breaks)
+        lengths <- as.integer(subseq(x@lengths, rangeGroups[1], rangeGroups[2]))
+        lengths[1] <- breaks[rangeGroups[1] + 1L, drop = TRUE] - start(solved_SEW) + 1L
+        lengths[length(lengths)] <- end(solved_SEW) - breaks[rangeGroups[2], drop = TRUE]
+        x@vectorLength <- width(solved_SEW)
+        x@lengths <- as(lengths, class(x@lengths))
+        x@values <- subseq(x@values, rangeGroups[1], rangeGroups[2])
+        x
     }
 )
 

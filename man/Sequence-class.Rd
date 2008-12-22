@@ -66,6 +66,7 @@
 \alias{reverse,XRle-method}
 \alias{==,XRle,XRle-method}
 \alias{[,XRle,ANY,ANY,ANY-method}
+\alias{subseq,XRle-method}
 
 % XRleInteger class, function and methods:
 \alias{class:XRleInteger}
