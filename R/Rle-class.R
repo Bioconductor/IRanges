@@ -1,0 +1,172 @@
+### =========================================================================
+### Rle objects
+### -------------------------------------------------------------------------
+###
+### Class definitions
+###
+
+setClass("Rle",
+         representation(lengths = "integer"),
+         contains = c("Sequence", "vector"),
+         validity = function(object)
+         {
+             if (length(object@.Data) != length(object@lengths))
+                 "'.Data' and 'lengths' must have the same length"
+             else
+                 TRUE
+         })
+
+Rle <- function(x) {
+    rleOutput <- rle(x)
+    new("Rle", rleOutput[["values"]], lengths = rleOutput[["lengths"]])
+}
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion
+###
+
+setAs("vector", "Rle", function(from) Rle(from))
+
+setAs("Rle", "vector", function(from) as.vector(from))
+setAs("Rle","logical",  function(from) as.logical(from))
+setAs("Rle", "integer", function(from) as.integer(from))
+setAs("Rle", "numeric", function(from) as.numeric(from))
+setAs("Rle", "complex", function(from) as.complex(from))
+setAs("Rle", "character", function(from) as.character(from))
+setAs("Rle", "raw", function(from) as.raw(from))
+
+setMethod("as.vector", c("Rle", "missing"), function(x, mode) rep(x@.Data, x@lengths))
+setMethod("as.logical", "Rle", function(x) rep(as.logical(x@.Data), x@lengths))
+setMethod("as.integer", "Rle", function(x) rep.int(as.integer(x@.Data), x@lengths))
+setMethod("as.numeric", "Rle", function(x) rep(as.numeric(x@.Data), x@lengths))
+setMethod("as.complex", "Rle", function(x) rep(as.complex(x@.Data), x@lengths))
+setMethod("as.character", "Rle", function(x) rep(as.character(x@.Data), x@lengths))
+setMethod("as.raw", "Rle", function(x) rep(as.raw(x@.Data), x@lengths))
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Basic methods
+###
+
+setMethod("length", "Rle", function(x) sum(x@lengths))
+
+setMethod("[", "Rle",
+          function(x, i, j, ..., drop=FALSE)
+          {
+              breaks <- c(0L, cumsum(x@lengths))
+              group <- findInterval(i - 1e-6, breaks)
+              output <- x@.Data[group]
+              if (!drop)
+                  output <- Rle(output)
+              output
+          })
+
+setMethod("subseq", "Rle",
+          function(x, start=NA, end=NA, width=NA)
+          {
+              solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
+              if (start(solved_SEW) > 1 || end(solved_SEW) < length(x)) {
+                  breaks <- c(0L, cumsum(x@lengths))
+                  rangeGroups <- findInterval(c(start(solved_SEW), end(solved_SEW)) - 1e-6, breaks)
+                  lengths <- subseq(x@lengths, rangeGroups[1], rangeGroups[2])
+                  lengths[1] <- breaks[rangeGroups[1] + 1L, drop = TRUE] - start(solved_SEW) + 1L
+                  lengths[length(lengths)] <- end(solved_SEW) - breaks[rangeGroups[2], drop = TRUE]
+                  x@lengths <- lengths
+                  x@.Data <- subseq(x@.Data, rangeGroups[1], rangeGroups[2])
+              }
+              x
+          })
+
+.compressToRle <- function(lengths, values)
+{
+    n <- length(values)
+    y <- values[-1L] != values[-n]
+    i <- c(which(y | is.na(y)), n)
+    new("Rle", values[i], lengths = diff(c(0L, cumsum(lengths)[i])))
+}
+
+setMethod("rep", "Rle",
+          function(x, times, length.out, each)
+          {
+              if (!missing(each) && length(each) > 0) {
+                  x@lengths <- x@lengths * as.integer(each[1])
+              } else if (!missing(times) && length(times) > 0) {
+                  times <- as.integer(times)
+                  if (length(times) == length(x)) {
+                      x@lengths <- x@lengths + diff(c(0L, cumsum(times)[cumsum(x@lengths)])) - 1L
+                  } else if (length(times) == 1) {
+                      x <- .compressToRle(lengths = rep(x@lengths, times = times),
+                                          values =  rep(x@.Data, times = times))
+                  } else {
+                      stop("invalid 'times' argument")
+                  }
+              } else if (!missing(length.out) && length(length.out) > 0) {
+                  n <- length(x)
+                  length.out <- as.integer(length.out[1])
+                  if (length.out == 0) {
+                      x <- new("Rle")
+                  } else if (length.out < n) {
+                      x <- subseq(x, 1, length.out)
+                  } else if (length.out > n) {
+                      x <- subseq(rep(x, times = ceiling(length.out / n)), 1, length.out)
+                  }
+              }
+              x
+          })
+
+setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
+          function(e1, e2)
+          {
+              n1 <- length(e1)
+              n2 <- length(e2)
+              n <- max(n1, n2)
+              if (max(n1, n2) %% min(n1, n2) != 0)
+                  warning("longer object length is not a multiple of shorter object length")
+              e1 <- rep(e1, length.out = n)
+              e2 <- rep(e2, length.out = n)
+              ends1 <- unique(c(cumsum(e1@lengths), n))
+              ends2 <- unique(c(cumsum(e2@lengths), n))
+              allEnds <- sort(union(ends1, ends2))
+              lengths <- diff(c(0L, allEnds))
+              values <- do.call(.Generic, list(e1[allEnds, drop = TRUE], e2[allEnds, drop = TRUE]))
+              .compressToRle(lengths = lengths, values = values)
+          })
+
+setMethod("Ops", signature(e1 = "Rle", e2 = "vector"),
+          function(e1, e2) callNextMethod(e1, Rle(e2)))
+
+setMethod("Ops", signature(e1 = "vector", e2 = "Rle"),
+          function(e1, e2) callNextMethod(Rle(e1), e2))
+
+setMethod("Math", "Rle", function(x)
+          .compressToRle(lengths = x@lengths, values = callNextMethod(x@.Data)))
+
+setMethod("Math2", "Rle", function(x, digits)
+          {
+              if (missing(digits))
+                  digits <- ifelse(.Generic == "round", 0, 6)
+              .compressToRle(lengths = x@lengths, values = callNextMethod(x@.Data, digits = digits))
+          })
+
+setMethod("Summary", "Rle",
+          function(x, ..., na.rm = FALSE)
+          {
+              switch(.Generic,
+                     all=, any=, min=, max=, range=
+                     do.call(.Generic, list(x@.Data, ..., na.rm = na.rm)),
+                     sum = sum(x@.Data * x@lengths, ..., na.rm = na.rm),
+                     prod = prod(x@.Data ^ x@lengths, ..., na.rm = na.rm))
+          })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "show" method.
+###
+
+setMethod("show", "Rle",
+          function(object)
+          {
+              cat("  An Rle instance of length ", length(object),"\n", sep = "")
+              cat("  Lengths:  ")
+              utils::str(object@lengths, give.head = FALSE)
+              cat("  Values :  ")
+              utils::str(object@.Data, give.head = FALSE)
+          })
