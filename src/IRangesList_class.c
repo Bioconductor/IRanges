@@ -59,7 +59,7 @@ SEXP _get_IRangesList_elt(SEXP x, int at)
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP summary_IRangesList(SEXP object)
+SEXP IRangesList_summary(SEXP object)
 {
 	int i, j, list_index, shift, ans_len, *ans1_elt, *ans2_elt;
 	const int *list_elt_width, *cum_len_elt, *comp_ind_elt;

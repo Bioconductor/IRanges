@@ -373,7 +373,7 @@ SEXP IRanges_reduce(
 
 SEXP _get_IRangesList_elt(SEXP x, int at);
 
-SEXP summary_IRangesList(SEXP object);
+SEXP IRangesList_summary(SEXP object);
 
 
 /* SequencePtr_class.c */

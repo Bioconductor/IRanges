@@ -216,6 +216,18 @@ setAs("RangesList", "IRangesList",
         ans
       })
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "summary" method.
+###
+
+setMethod("summary", "IRangesList",
+         function(object)
+         {
+             .Call("IRangesList_summary", object, PACKAGE="IRanges")
+         })
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Splitting.
 ###
@@ -225,3 +237,4 @@ setMethod("split", "Ranges",
     {
         do.call(RangesList, callNextMethod())
     })
+
