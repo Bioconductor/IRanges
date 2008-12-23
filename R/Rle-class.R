@@ -22,17 +22,33 @@ setClass("Rle",
 
 setGeneric("Rle", signature = c("values", "lengths"),
            function(values, lengths) standardGeneric("Rle"))
+
 setMethod("Rle", signature = c(values = "vector", lengths = "missing"),
           function(values, lengths) {
               rleOutput <- rle(unname(values))
               new("Rle", rleOutput[["values"]], lengths = rleOutput[["lengths"]])
           })
+
 setMethod("Rle", signature = c(values = "vector", lengths = "integer"),
           function(values, lengths) {
+              if (length(values) != length(lengths))
+                  stop("'values' and 'lengths' must have the same length")
+              if (any(is.na(lengths)) || any(lengths < 0))
+                  stop("'lengths' must contain all positive integers")
+              zeros <- which(lengths == 0)
+              if (length(zeros) > 0) {
+                  values <- values[-zeros]
+                  lengths <- lengths[-zeros]
+              }
               n <- length(values)
               y <- values[-1L] != values[-n]
               i <- c(which(y | is.na(y)), n)
               new("Rle", values[i], lengths = diff(c(0L, cumsum(lengths)[i])))
+          })
+
+setMethod("Rle", signature = c(values = "vector", lengths = "numeric"),
+          function(values, lengths) {
+              Rle(values = values, lengths = as.integer(lengths))
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

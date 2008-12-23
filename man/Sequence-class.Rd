@@ -55,44 +55,6 @@
 \alias{show,XNumeric-method}
 \alias{==,XNumeric,XNumeric-method}
 
-% Rle class, functions and methods:
-\alias{class:Rle}
-\alias{Rle-class}
-\alias{Rle}
-\alias{Rle,vector,missing-method}
-\alias{Rle,vector,integer-method}
-
-\alias{as.vector,Rle,missing-method}
-\alias{as.logical,Rle-method}
-\alias{as.integer,Rle-method}
-\alias{as.numeric,Rle-method}
-\alias{as.complex,Rle-method}
-\alias{as.character,Rle-method}
-\alias{as.raw,Rle-method}
-\alias{coerce,vector,Rle-method}
-\alias{coerce,Rle,vector-method}
-\alias{coerce,Rle,logical-method}
-\alias{coerce,Rle,integer-method}
-\alias{coerce,Rle,numeric-method}
-\alias{coerce,Rle,complex-method}
-\alias{coerce,Rle,character-method}
-\alias{coerce,Rle,raw-method}
-
-\alias{length,Rle-method}
-\alias{c,Rle-method}
-\alias{[,Rle,ANY,ANY,ANY-method}
-\alias{subseq,Rle-method}
-\alias{rep,Rle-method}
-
-\alias{Ops,Rle,Rle-method}
-\alias{Ops,Rle,vector-method}
-\alias{Ops,vector,Rle-method}
-\alias{Math,Rle-method}
-\alias{Math2,Rle-method}
-\alias{Summary,Rle-method}
-
-\alias{show,Rle-method}
-
 % XRle class, functions and methods:
 \alias{class:XRle}
 \alias{XRle-class}
@@ -140,10 +102,6 @@
   of numeric values (stored as double values at the C level).
 
   Also the \link[Biostrings]{XString} class from the Biostrings package
-  
-  The Rle class is a general container for storing an atomic vector that
-  is stored in a run-length encoding format. It is based on the
-  \code{\link[base]{rle}} function from the base package.
 
   The XRle virtual class is a general container for storing
   an "external sequence" that is stored in a run-length encoding format.
