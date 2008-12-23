@@ -41,7 +41,7 @@
 \alias{mean,Rle-method}
 \alias{median,Rle-method}
 \alias{var,Rle,missing-method}
-\alias{sd,Rle,missing-method}
+\alias{sd,Rle-method}
 
 
 \title{Rle objects}
