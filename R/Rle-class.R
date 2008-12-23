@@ -204,24 +204,24 @@ setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
               e2 <- rep(e2, length.out = n)
               allEnds <- sort(unique(c(cumsum(e1@lengths), cumsum(e2@lengths))))
               lengths <- diff(c(0L, allEnds))
-              values <- do.call(.Generic, list(e1[allEnds, drop = TRUE], e2[allEnds, drop = TRUE]))
+              values <- callGeneric(e1[allEnds, drop = TRUE], e2[allEnds, drop = TRUE])
               Rle(values = values, lengths = lengths)
           })
 
 setMethod("Ops", signature(e1 = "Rle", e2 = "vector"),
-          function(e1, e2) callNextMethod(e1, Rle(e2)))
+          function(e1, e2) callGeneric(e1, Rle(e2)))
 
 setMethod("Ops", signature(e1 = "vector", e2 = "Rle"),
-          function(e1, e2) callNextMethod(Rle(e1), e2))
+          function(e1, e2) callGeneric(Rle(e1), e2))
 
 setMethod("Math", "Rle", function(x)
-          Rle(values = callNextMethod(x@.Data), lengths = x@lengths))
+          Rle(values = callGeneric(x@.Data), lengths = x@lengths))
 
 setMethod("Math2", "Rle", function(x, digits)
           {
               if (missing(digits))
                   digits <- ifelse(.Generic == "round", 0, 6)
-              Rle(values = callNextMethod(x@.Data, digits = digits), lengths = x@lengths)
+              Rle(values = callGeneric(x@.Data, digits = digits), lengths = x@lengths)
           })
 
 setMethod("Summary", "Rle",
@@ -229,7 +229,7 @@ setMethod("Summary", "Rle",
           {
               switch(.Generic,
                      all=, any=, min=, max=, range=
-                     do.call(.Generic, list(x@.Data, ..., na.rm = na.rm)),
+                     callGeneric(x@.Data, ..., na.rm = na.rm),
                      sum = sum(x@.Data * x@lengths, ..., na.rm = na.rm),
                      prod = prod(x@.Data ^ x@lengths, ..., na.rm = na.rm))
           })
