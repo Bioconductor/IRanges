@@ -235,7 +235,59 @@ setMethod("Summary", "Rle",
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "show" method.
+### Data manipulation methods
+###
+
+setMethod("mean", "Rle",
+          function(x, na.rm = FALSE)
+          {
+            if (na.rm)
+                n <- length(x) - sum(x@lengths[is.na(x@.Data)])
+            else
+                n <- length(x)
+            sum(x, na.rm = na.rm) / n
+          })
+
+setMethod("median", signature = c(x = "Rle"),
+          function(x, na.rm = FALSE)
+          {
+              nas <- which(is.na(x@.Data))
+              if (length(nas) > 0) {
+                  if (na.rm) {
+                      x@.Data <- x@.Data[-nas]
+                      x@lengths <- x@lengths[-nas]
+                  } else {
+                      return(as(NA, class(x@.Data)))
+                  }
+              }
+              n <- length(x)
+              if (n == 0L) 
+                  return(as(NA, class(x@.Data)))
+              ord <- order(x@.Data)
+              x@.Data <- x@.Data[ord]
+              x@lengths <- x@lengths[ord]
+              half <- (n + 1L) %/% 2L
+              if (n %% 2L == 1L) 
+                  x[half, drop = TRUE]
+              else
+                  sum(as.vector(subseq(x, half, half + 1L)))/2
+          })
+
+setMethod("var", signature = c(x = "Rle", y = "missing"),
+          function(x, y = NULL, na.rm = FALSE, use)
+          {
+              if (na.rm)
+                  n <- length(x) - sum(x@lengths[is.na(x@.Data)])
+              else
+                  n <- length(x)
+              sum((x - mean(x, na.rm = na.rm))^2, na.rm = na.rm) / (n - 1)
+          })
+
+setMethod("sd", signature = c(x = "Rle"),
+          function(x, na.rm = FALSE) sqrt(var(x, na.rm = na.rm)))
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "show" method
 ###
 
 setMethod("show", "Rle",

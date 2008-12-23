@@ -1,7 +1,7 @@
 useDynLib(IRanges)
 
 import(methods)
-importFrom(stats, "start", "end", "update")
+importFrom(stats, "start", "end", "update", "median", "var", "sd")
 importClassesFrom(Matrix, CsparseMatrix, nsparseMatrix, generalMatrix,
                   sparseMatrix, Matrix, nMatrix, compMatrix, ngCMatrix)
 importFrom(Matrix, colSums)
@@ -107,6 +107,7 @@ export(
 exportMethods(
     ## Methods for generics defined elsewhere:
     Arith,
+    Ops, Math, Math2, Summary,
     coerce,
     show,
     summary,
@@ -121,6 +122,7 @@ exportMethods(
     max,
     min,
     range,
+    mean, median, var, sd,
     as.list,
     as.vector,
     as.integer,

@@ -38,6 +38,11 @@
 \alias{Math2,Rle-method}
 \alias{Summary,Rle-method}
 
+\alias{mean,Rle-method}
+\alias{median,Rle-method}
+\alias{var,Rle,missing-method}
+\alias{sd,Rle,missing-method}
+
 
 \title{Rle objects}
 
@@ -155,6 +160,31 @@
   for more details.
 }
 
+\section{Data Manipulation}{
+  In the code snippets below, \code{x} is an \code{Rle} objects:
+
+  \item{}{
+    \code{mean(x, na.rm = FALSE)}:
+    Calculates the mean of \code{x}. Removes \code{NA}s when
+    \code{na.rm = TRUE}.
+  }
+  \item{}{
+    \code{median(x, na.rm = FALSE)}:
+    Calculates the median of \code{x}. Removes \code{NA}s when
+    \code{na.rm = TRUE}.
+  }
+  \item{}{
+    \code{var(x, na.rm = FALSE)}:
+    Calculates the variance of \code{x}. Removes \code{NA}s when
+    \code{na.rm = TRUE}.
+  }
+  \item{}{
+    \code{sd(x, na.rm = FALSE)}:
+    Calculates the standard deviation of \code{x}. Removes \code{NA}s
+    when \code{na.rm = TRUE}.
+  }
+}
+
 \author{Patrick Aboyoun}
 
 \seealso{
@@ -171,6 +201,7 @@
   x[c(1,3,5,7,9)]
   subseq(x, 4, 14)
   sum(x)
+  mean(x)
   x > 4
 
   y <- Rle(c(TRUE,TRUE,FALSE,FALSE,TRUE,FALSE,TRUE,TRUE,TRUE))
