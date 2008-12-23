@@ -17,7 +17,7 @@ setClass("Rle",
          })
 
 Rle <- function(x) {
-    rleOutput <- rle(x)
+    rleOutput <- rle(unname(x))
     new("Rle", rleOutput[["values"]], lengths = rleOutput[["lengths"]])
 }
 
@@ -52,6 +52,31 @@ setMethod("length", "Rle", function(x) sum(x@lengths))
 setMethod("[", "Rle",
           function(x, i, j, ..., drop=FALSE)
           {
+              if (!missing(j) || length(list(...)) > 0)
+                  stop("invalid subsetting")
+              if (missing(i))
+                  return(x)
+              if (!is.atomic(i))
+                  stop("invalid subscript type")
+              lx <- length(x)
+              if (is.numeric(i)) {
+                  i <- as.integer(i[!is.na(i)])
+                  if (any(i < -lx) || any(i > lx))
+                      stop("subscript out of bounds")
+                  if (any(i < 0)) {
+                      if (any(i > 0))
+                          stop("negative and positive indices cannot be mixed")
+                      i <- seq_len(lx)[i]
+                  }
+              } else if (is.logical(i)) {
+                  if (lx %% length(i) != 0)
+                      warning("length of x is not a multiple of the length of i")
+                  i <- which(rep(i, length.out = lx))
+              } else if (is.null(i)) {
+                  i <- integer(0)
+              } else {
+                  stop("invalid subscript type")
+              }
               breaks <- c(0L, cumsum(x@lengths))
               group <- findInterval(i - 1e-6, breaks)
               output <- x@.Data[group]
