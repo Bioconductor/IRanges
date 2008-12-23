@@ -48,7 +48,6 @@ export(
     #IntegerPtr, IntegerPtr.read, IntegerPtr.write,
     #NumericPtr, NumericPtr.read, NumericPtr.write,
     XInteger, XNumeric, XDataFrame,
-    Rle,
     XRleInteger,
     newViews, successiveViews,
     LogicalList, IntegerList, NumericList, ComplexList, CharacterList, RawList,
@@ -70,6 +69,7 @@ export(
     flank,
     ##map,
     score,
+    Rle,
 
     ## Other generic functions:
     isNormal,
@@ -163,6 +163,7 @@ exportMethods(
     maskedwidth, maskedratio,
     subseq,
     subject, Views, subviews, trim,
+    Rle,
     viewMins, viewMaxs, viewSums, viewWhichMins, viewWhichMaxs,
 
     ## Old stuff (Defunct or Deprecated):

@@ -16,10 +16,24 @@ setClass("Rle",
                  TRUE
          })
 
-Rle <- function(x) {
-    rleOutput <- rle(unname(x))
-    new("Rle", rleOutput[["values"]], lengths = rleOutput[["lengths"]])
-}
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Constructors
+###
+
+setGeneric("Rle", signature = c("values", "lengths"),
+           function(values, lengths) standardGeneric("Rle"))
+setMethod("Rle", signature = c(values = "vector", lengths = "missing"),
+          function(values, lengths) {
+              rleOutput <- rle(unname(values))
+              new("Rle", rleOutput[["values"]], lengths = rleOutput[["lengths"]])
+          })
+setMethod("Rle", signature = c(values = "vector", lengths = "integer"),
+          function(values, lengths) {
+              n <- length(values)
+              y <- values[-1L] != values[-n]
+              i <- c(which(y | is.na(y)), n)
+              new("Rle", values[i], lengths = diff(c(0L, cumsum(lengths)[i])))
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
@@ -101,14 +115,6 @@ setMethod("subseq", "Rle",
               x
           })
 
-.compressToRle <- function(lengths, values)
-{
-    n <- length(values)
-    y <- values[-1L] != values[-n]
-    i <- c(which(y | is.na(y)), n)
-    new("Rle", values[i], lengths = diff(c(0L, cumsum(lengths)[i])))
-}
-
 setMethod("rep", "Rle",
           function(x, times, length.out, each)
           {
@@ -119,8 +125,8 @@ setMethod("rep", "Rle",
                   if (length(times) == length(x)) {
                       x@lengths <- x@lengths + diff(c(0L, cumsum(times)[cumsum(x@lengths)])) - 1L
                   } else if (length(times) == 1) {
-                      x <- .compressToRle(lengths = rep(x@lengths, times = times),
-                                          values =  rep(x@.Data, times = times))
+                      x <- Rle(values  = rep(x@.Data, times = times),
+                               lengths = rep(x@lengths, times = times))
                   } else {
                       stop("invalid 'times' argument")
                   }
@@ -153,7 +159,7 @@ setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
               allEnds <- sort(union(ends1, ends2))
               lengths <- diff(c(0L, allEnds))
               values <- do.call(.Generic, list(e1[allEnds, drop = TRUE], e2[allEnds, drop = TRUE]))
-              .compressToRle(lengths = lengths, values = values)
+              Rle(values = values, lengths = lengths)
           })
 
 setMethod("Ops", signature(e1 = "Rle", e2 = "vector"),
@@ -163,13 +169,13 @@ setMethod("Ops", signature(e1 = "vector", e2 = "Rle"),
           function(e1, e2) callNextMethod(Rle(e1), e2))
 
 setMethod("Math", "Rle", function(x)
-          .compressToRle(lengths = x@lengths, values = callNextMethod(x@.Data)))
+          Rle(values = callNextMethod(x@.Data), lengths = x@lengths))
 
 setMethod("Math2", "Rle", function(x, digits)
           {
               if (missing(digits))
                   digits <- ifelse(.Generic == "round", 0, 6)
-              .compressToRle(lengths = x@lengths, values = callNextMethod(x@.Data, digits = digits))
+              Rle(values = callNextMethod(x@.Data, digits = digits), lengths = x@lengths)
           })
 
 setMethod("Summary", "Rle",

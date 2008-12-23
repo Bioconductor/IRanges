@@ -59,6 +59,8 @@
 \alias{class:Rle}
 \alias{Rle-class}
 \alias{Rle}
+\alias{Rle,vector,missing-method}
+\alias{Rle,vector,integer-method}
 
 \alias{as.vector,Rle,missing-method}
 \alias{as.logical,Rle-method}
