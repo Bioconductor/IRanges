@@ -58,10 +58,25 @@ setMethod("as.character", "Rle", function(x) rep(as.character(x@.Data), x@length
 setMethod("as.raw", "Rle", function(x) rep(as.raw(x@.Data), x@lengths))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Basic methods
+### General methods
 ###
 
 setMethod("length", "Rle", function(x) sum(x@lengths))
+
+setMethod("c", "Rle", 
+          function(x, ..., recursive = FALSE) {
+            if (recursive)
+              stop("'recursive' mode is not supported")
+            args <- list(x, ...)
+            if (!all(unlist(lapply(args, is, "Rle"))))
+                stop("all arguments in '...' must be instances of 'Rle'")
+            Rle(values  = unlist(lapply(args, slot, ".Data")),
+                lengths = unlist(lapply(args, slot, "lengths")))
+          })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Subscript methods
+###
 
 setMethod("[", "Rle",
           function(x, i, j, ..., drop=FALSE)
@@ -70,32 +85,45 @@ setMethod("[", "Rle",
                   stop("invalid subsetting")
               if (missing(i))
                   return(x)
-              if (!is.atomic(i))
-                  stop("invalid subscript type")
               lx <- length(x)
-              if (is.numeric(i)) {
-                  i <- as.integer(i[!is.na(i)])
-                  if (any(i < -lx) || any(i > lx))
-                      stop("subscript out of bounds")
-                  if (any(i < 0)) {
-                      if (any(i > 0))
-                          stop("negative and positive indices cannot be mixed")
-                      i <- seq_len(lx)[i]
+              if (is(i, "Rle") && is.logical(i@.Data) && length(x) == length(i)) {
+                  if (!any(i@.Data)) {
+                      output <- new("Rle")
+                  } else {
+                      starts <- cumsum(c(1L, i@lengths))[i@.Data]
+                      ends <- cumsum(i@lengths)[i@.Data]
+                      output <-
+                        do.call(c,
+                                lapply(seq_len(length(starts)),
+                                       function(k) subseq(x, starts[k], ends[k])))
                   }
-              } else if (is.logical(i)) {
-                  if (lx %% length(i) != 0)
-                      warning("length of x is not a multiple of the length of i")
-                  i <- which(rep(i, length.out = lx))
-              } else if (is.null(i)) {
-                  i <- integer(0)
+                  if (drop)
+                      output <- as.vector(output)
               } else {
-                  stop("invalid subscript type")
+                  if (is.numeric(i)) {
+                      i <- as.integer(i[!is.na(i)])
+                      if (any(i < -lx) || any(i > lx))
+                          stop("subscript out of bounds")
+                      if (any(i < 0)) {
+                          if (any(i > 0))
+                              stop("negative and positive indices cannot be mixed")
+                          i <- seq_len(lx)[i]
+                      }
+                  } else if (is.logical(i)) {
+                      if (lx %% length(i) != 0)
+                          warning("length of x is not a multiple of the length of i")
+                      i <- which(rep(i, length.out = lx))
+                  } else if (is.null(i)) {
+                      i <- integer(0)
+                  } else {
+                      stop("invalid subscript type")
+                  }
+                  breaks <- c(0L, cumsum(x@lengths))
+                  group <- findInterval(i - 1e-6, breaks)
+                  output <- x@.Data[group]
+                  if (!drop)
+                      output <- Rle(output)
               }
-              breaks <- c(0L, cumsum(x@lengths))
-              group <- findInterval(i - 1e-6, breaks)
-              output <- x@.Data[group]
-              if (!drop)
-                  output <- Rle(output)
               output
           })
 
@@ -143,6 +171,10 @@ setMethod("rep", "Rle",
               }
               x
           })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Group generic methods
+###
 
 setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
           function(e1, e2)

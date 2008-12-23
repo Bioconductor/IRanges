@@ -79,6 +79,7 @@
 \alias{coerce,Rle,raw-method}
 
 \alias{length,Rle-method}
+\alias{c,Rle-method}
 \alias{[,Rle,ANY,ANY,ANY-method}
 \alias{subseq,Rle-method}
 \alias{rep,Rle-method}
