@@ -15,7 +15,8 @@ exportClasses(
     XRle, XRleInteger, XRleIntegerViews,
     MaskCollection,
     TypedList,
-    LogicalList, IntegerList, NumericList, ComplexList, CharacterList, RawList,
+    LogicalList, IntegerList, NumericList, ComplexList,
+    CharacterList, RawList, RleList,
     RangesList, IRangesList,
     XDataFrame, XDataFrameList, SplitXDataFrameList,
     RangedData, RangedDataList, FilterRules, RDApplyParams, RangesMatching)
@@ -50,7 +51,8 @@ export(
     XInteger, XNumeric, XDataFrame,
     XRleInteger,
     newViews, successiveViews,
-    LogicalList, IntegerList, NumericList, ComplexList, CharacterList, RawList,
+    LogicalList, IntegerList, NumericList, ComplexList,
+    CharacterList, RawList, RleList,
     XDataFrameList, SplitXDataFrameList,
 
     ## Generic functions in the Ranges API:

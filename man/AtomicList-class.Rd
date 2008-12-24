@@ -12,15 +12,18 @@
 \alias{CharacterList-class}
 \alias{RawList}
 \alias{RawList-class}
+\alias{RleList}
+\alias{RleList-class}
 
-\title{Lists of Atomic Vectors}
+\title{Lists of Atomic Vectors in Natural and Rle Form}
 \description{An extension of \code{\linkS4class{TypedList}} that holds
-  only atomic vectors.}
+  only atomic vectors in either a natural or run-length encoded form.}
 
 \details{
   The lists of atomic vectors are \code{LogicalList}, \code{IntegerList},
   \code{NumericList}, \code{ComplexList}, \code{CharacterList}, and
-  \code{RawList}.
+  \code{RawList}. There is also an \code{RleList} class for
+  run-length encoded versions of these atomic vector types.
 }
 
 \section{Constructors}{
@@ -42,6 +45,10 @@
       If \code{compress}, the internal storage of the data is compressed.}
     \item{}{\code{RawList(..., compress = TRUE)}: Concatenates the
       \code{raw} vectors in \code{...} into a new \code{RawList}.
+      If \code{compress}, the internal storage of the data is compressed.}
+    \item{}{\code{RleList(..., compress = TRUE)}: Concatenates the
+      run-length encoded atomic vectors in \code{...} into a new
+      \code{RleList}.
       If \code{compress}, the internal storage of the data is compressed.}
   }
 }

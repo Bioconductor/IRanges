@@ -28,6 +28,10 @@ setClass("RawList",
          prototype = prototype(elementClass = "raw", compressible = TRUE),
          contains = "TypedList")
 
+setClass("RleList",
+         prototype = prototype(elementClass = "Rle", compressible = TRUE),
+         contains = "TypedList")
+
 LogicalList <- function(..., compress = TRUE)
 {
   TypedList("LogicalList", elements = lapply(list(...), as.logical),
@@ -61,5 +65,11 @@ CharacterList <- function(..., compress = TRUE)
 RawList <- function(..., compress = TRUE)
 {
   TypedList("RawList", elements = lapply(list(...), as.raw),
+            compress = compress)
+}
+
+RleList <- function(..., compress = TRUE)
+{
+  TypedList("RleList", elements = lapply(list(...), as, "Rle"),
             compress = compress)
 }
