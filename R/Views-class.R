@@ -245,3 +245,21 @@ successiveViews <- function(subject, width, gapwidth=0, from=1)
     Views(subject, start=start(views), end=end(views))
 }
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "viewApply" function.
+###
+
+setGeneric("viewApply", signature="X",
+           function(X, FUN, ..., simplify = TRUE) standardGeneric("viewApply"))
+
+setMethod("viewApply", "Views",
+    function(X, FUN, ..., simplify = TRUE)
+    {
+        X <- trim(X)
+        sapply(seq_len(length(X)),
+               function(i)
+                   FUN(subseq(subject(X), start = start(X)[i], width = width(X)[i]),
+                       ...),
+               simplify = simplify)
+    })

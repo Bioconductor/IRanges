@@ -6,6 +6,8 @@
 \alias{slice,XInteger-method}
 \alias{slice,XRleInteger-method}
 
+\alias{viewApply}
+\alias{viewApply,Views-method}
 \alias{viewMins}
 \alias{viewMins,XIntegerViews-method}
 \alias{viewMins,XRleIntegerViews-method}
@@ -34,6 +36,8 @@
 }
 
 \usage{
+  viewApply(X, FUN, ..., simplify = TRUE)
+
   slice(x, lower=-Inf, upper=Inf, ...)
 
   viewMins(x, na.rm=FALSE)
@@ -45,6 +49,19 @@
 }
 
 \arguments{
+  \item{X}{
+    A Views object.
+  }
+  \item{FUN}{
+    The function to be applied to each view in \code{X}.
+  }
+  \item{\dots}{
+    Additional arguments to be passed on.
+  }
+  \item{simplify}{
+    A logical value specifying whether or not the result should be simplified
+    to a vector or matrix if possible.
+  }
   \item{x}{
     An \link{XRleInteger}, \link{XInteger} object or an integer vector for
     \code{slice}.
@@ -58,9 +75,6 @@
   }
   \item{na.rm}{
     Logical indicating whether or not to include missing values in the results.
-  }
-  \item{\dots}{
-    Additional arguments to be passed to or from methods.
   }
 }
 
@@ -98,6 +112,7 @@
   vec <- sample(24)
   vecViews <- slice(vec, lower=4, upper=16)
   vecViews
+  viewApply(vecViews, function(x) diff(as.integer(x)))
   viewMins(vecViews)
   viewMaxs(vecViews)
   viewSums(vecViews)
