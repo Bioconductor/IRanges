@@ -251,7 +251,8 @@ successiveViews <- function(subject, width, gapwidth=0, from=1)
 ###
 
 setGeneric("viewApply", signature="X",
-           function(X, FUN, ..., simplify = TRUE) standardGeneric("viewApply"))
+    function(X, FUN, ..., simplify = TRUE) standardGeneric("viewApply")
+)
 
 setMethod("viewApply", "Views",
     function(X, FUN, ..., simplify = TRUE)
