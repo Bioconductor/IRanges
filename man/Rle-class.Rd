@@ -8,6 +8,11 @@
 \alias{Rle,vector,integer-method}
 \alias{Rle,vector,numeric-method}
 
+\alias{runLength}
+\alias{runLength,Rle-method}
+\alias{runValue}
+\alias{runValue,Rle-method}
+
 \alias{as.vector,Rle,missing-method}
 \alias{as.logical,Rle-method}
 \alias{as.integer,Rle-method}
@@ -77,6 +82,21 @@
   }
 }
 
+\section{Accessors}{
+  In the code snippets below, \code{x} is an \code{Rle} object:
+
+  \describe{
+    \item{}{
+      \code{runLength(x)}:
+      Returns the run lengths for \code{x}.
+    }
+    \item{}{
+      \code{runValue(x)}:
+      Returns the run values for \code{x}.
+    }
+  }
+}
+
 \section{Coercion}{
   In the code snippets below, \code{x} and \code{from} are \code{Rle} objects:
 
@@ -113,7 +133,7 @@
 }
 
 \section{General Methods}{
-  In the code snippets below, \code{x} is an \code{Rle} objects:
+  In the code snippets below, \code{x} is an \code{Rle} object:
 
   \describe{
     \item{}{
@@ -168,7 +188,7 @@
 }
 
 \section{Data Manipulation}{
-  In the code snippets below, \code{x} is an \code{Rle} objects:
+  In the code snippets below, \code{x} is an \code{Rle} object:
 
   \item{}{
     \code{!x}:

@@ -10,11 +10,23 @@ setClass("Rle",
          contains = c("Sequence", "vector"),
          validity = function(object)
          {
-             if (length(object@.Data) != length(object@lengths))
-                 "'.Data' and 'lengths' must have the same length"
+             if (length(runValue(object)) != length(runLength(object)))
+                 "run values and run lengths must have the same length"
              else
                  TRUE
          })
+ 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Accessor methods.
+###
+
+setGeneric("runLength", signature = "x",
+           function(x) standardGeneric("runLength"))
+setMethod("runLength", "Rle", function(x) x@lengths)
+ 
+setGeneric("runValue", signature = "x",
+           function(x) standardGeneric("runValue"))
+setMethod("runValue", "Rle", function(x) x@.Data)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructors
@@ -65,19 +77,19 @@ setAs("Rle", "complex", function(from) as.complex(from))
 setAs("Rle", "character", function(from) as.character(from))
 setAs("Rle", "raw", function(from) as.raw(from))
 
-setMethod("as.vector", c("Rle", "missing"), function(x, mode) rep(x@.Data, x@lengths))
-setMethod("as.logical", "Rle", function(x) rep(as.logical(x@.Data), x@lengths))
-setMethod("as.integer", "Rle", function(x) rep.int(as.integer(x@.Data), x@lengths))
-setMethod("as.numeric", "Rle", function(x) rep(as.numeric(x@.Data), x@lengths))
-setMethod("as.complex", "Rle", function(x) rep(as.complex(x@.Data), x@lengths))
-setMethod("as.character", "Rle", function(x) rep(as.character(x@.Data), x@lengths))
-setMethod("as.raw", "Rle", function(x) rep(as.raw(x@.Data), x@lengths))
+setMethod("as.vector", c("Rle", "missing"), function(x, mode) rep(runValue(x), runLength(x)))
+setMethod("as.logical", "Rle", function(x) rep(as.logical(runValue(x)), runLength(x)))
+setMethod("as.integer", "Rle", function(x) rep.int(as.integer(runValue(x)), runLength(x)))
+setMethod("as.numeric", "Rle", function(x) rep(as.numeric(runValue(x)), runLength(x)))
+setMethod("as.complex", "Rle", function(x) rep(as.complex(runValue(x)), runLength(x)))
+setMethod("as.character", "Rle", function(x) rep(as.character(runValue(x)), runLength(x)))
+setMethod("as.raw", "Rle", function(x) rep(as.raw(runValue(x)), runLength(x)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### General methods
 ###
 
-setMethod("length", "Rle", function(x) sum(x@lengths))
+setMethod("length", "Rle", function(x) sum(runLength(x)))
 
 setMethod("c", "Rle", 
           function(x, ..., recursive = FALSE) {
@@ -102,12 +114,12 @@ setMethod("[", "Rle",
               lx <- length(x)
               if (missing(i) || lx == 0)
                   return(x)
-              if (is(i, "Rle") && is.logical(i@.Data) && lx == length(i)) {
-                  if (!any(i@.Data)) {
+              if (is(i, "Rle") && is.logical(runValue(i)) && lx == length(i)) {
+                  if (!any(runValue(i))) {
                       output <- new("Rle")
                   } else {
-                      starts <- cumsum(c(1L, i@lengths))[i@.Data]
-                      widths <- i@lengths[i@.Data]
+                      starts <- cumsum(c(1L, runLength(i)))[runValue(i)]
+                      widths <- runLength(i)[runValue(i)]
                       output <-
                         do.call(c,
                                 lapply(seq_len(length(starts)),
@@ -150,9 +162,9 @@ setMethod("[", "Rle",
                   } else {
                       stop("invalid subscript type")
                   }
-                  breaks <- c(0L, cumsum(x@lengths))
+                  breaks <- c(0L, cumsum(runLength(x)))
                   group <- findInterval(i - 1e-6, breaks)
-                  output <- x@.Data[group]
+                  output <- runValue(x)[group]
                   if (!drop)
                       output <- Rle(output)
               }
@@ -164,13 +176,13 @@ setMethod("subseq", "Rle",
           {
               solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
               if (start(solved_SEW) > 1 || end(solved_SEW) < length(x)) {
-                  breaks <- c(0L, cumsum(x@lengths))
+                  breaks <- c(0L, cumsum(runLength(x)))
                   rangeGroups <- findInterval(c(start(solved_SEW), end(solved_SEW)) - 1e-6, breaks)
-                  lengths <- subseq(x@lengths, rangeGroups[1], rangeGroups[2])
+                  lengths <- subseq(runLength(x), rangeGroups[1], rangeGroups[2])
                   lengths[1] <- breaks[rangeGroups[1] + 1L, drop = TRUE] - start(solved_SEW) + 1L
                   lengths[length(lengths)] <- end(solved_SEW) - breaks[rangeGroups[2], drop = TRUE]
                   x@lengths <- lengths
-                  x@.Data <- subseq(x@.Data, rangeGroups[1], rangeGroups[2])
+                  x@.Data <- subseq(runValue(x), rangeGroups[1], rangeGroups[2])
               }
               x
           })
@@ -178,8 +190,8 @@ setMethod("subseq", "Rle",
 setMethod("rev", "Rle",
           function(x)
           {
-              x@lengths <- rev(x@lengths)
-              x@.Data <- rev(x@.Data)
+              x@lengths <- rev(runLength(x))
+              x@.Data <- rev(runValue(x))
               x
           })
 
@@ -187,14 +199,14 @@ setMethod("rep", "Rle",
           function(x, times, length.out, each)
           {
               if (!missing(each) && length(each) > 0) {
-                  x@lengths <- x@lengths * as.integer(each[1])
+                  x@lengths <- runLength(x) * as.integer(each[1])
               } else if (!missing(times) && length(times) > 0) {
                   times <- as.integer(times)
                   if (length(times) == length(x)) {
-                      x@lengths <- x@lengths + diff(c(0L, cumsum(times)[cumsum(x@lengths)])) - 1L
+                      x@lengths <- runLength(x) + diff(c(0L, cumsum(times)[cumsum(runLength(x))])) - 1L
                   } else if (length(times) == 1) {
-                      x <- Rle(values  = rep(x@.Data, times = times),
-                               lengths = rep(x@lengths, times = times))
+                      x <- Rle(values  = rep(runValue(x), times = times),
+                               lengths = rep(runLength(x), times = times))
                   } else {
                       stop("invalid 'times' argument")
                   }
@@ -226,7 +238,7 @@ setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
                   warning("longer object length is not a multiple of shorter object length")
               e1 <- rep(e1, length.out = n)
               e2 <- rep(e2, length.out = n)
-              allEnds <- sort(unique(c(cumsum(e1@lengths), cumsum(e2@lengths))))
+              allEnds <- sort(unique(c(cumsum(runLength(e1)), cumsum(runLength(e2)))))
               lengths <- diff(c(0L, allEnds))
               values <- callGeneric(e1[allEnds, drop = TRUE], e2[allEnds, drop = TRUE])
               Rle(values = values, lengths = lengths)
@@ -239,13 +251,13 @@ setMethod("Ops", signature(e1 = "vector", e2 = "Rle"),
           function(e1, e2) callGeneric(Rle(e1), e2))
 
 setMethod("Math", "Rle", function(x)
-          Rle(values = callGeneric(x@.Data), lengths = x@lengths))
+          Rle(values = callGeneric(runValue(x)), lengths = runLength(x)))
 
 setMethod("Math2", "Rle", function(x, digits)
           {
               if (missing(digits))
                   digits <- ifelse(.Generic == "round", 0, 6)
-              Rle(values = callGeneric(x@.Data, digits = digits), lengths = x@lengths)
+              Rle(values = callGeneric(runValue(x), digits = digits), lengths = runLength(x))
           })
 
 setMethod("Summary", "Rle",
@@ -253,22 +265,22 @@ setMethod("Summary", "Rle",
           {
               switch(.Generic,
                      all=, any=, min=, max=, range=
-                     callGeneric(x@.Data, ..., na.rm = na.rm),
-                     sum = sum(x@.Data * x@lengths, ..., na.rm = na.rm),
-                     prod = prod(x@.Data ^ x@lengths, ..., na.rm = na.rm))
+                     callGeneric(runValue(x), ..., na.rm = na.rm),
+                     sum = sum(runValue(x) * runLength(x), ..., na.rm = na.rm),
+                     prod = prod(runValue(x) ^ runLength(x), ..., na.rm = na.rm))
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Data manipulation methods
 ###
 
-setMethod("!", "Rle", function(x) Rle(values = !x@.Data, lengths = x@lengths))
+setMethod("!", "Rle", function(x) Rle(values = !runValue(x), lengths = runLength(x)))
 
 setMethod("mean", "Rle",
           function(x, na.rm = FALSE)
           {
             if (na.rm)
-                n <- length(x) - sum(x@lengths[is.na(x@.Data)])
+                n <- length(x) - sum(runLength(x)[is.na(runValue(x))])
             else
                 n <- length(x)
             sum(x, na.rm = na.rm) / n
@@ -277,21 +289,21 @@ setMethod("mean", "Rle",
 setMethod("median", signature = c(x = "Rle"),
           function(x, na.rm = FALSE)
           {
-              nas <- which(is.na(x@.Data))
+              nas <- which(is.na(runValue(x)))
               if (length(nas) > 0) {
                   if (na.rm) {
-                      x@.Data <- x@.Data[-nas]
-                      x@lengths <- x@lengths[-nas]
+                      x@.Data <- runValue(x)[-nas]
+                      x@lengths <- runLength(x)[-nas]
                   } else {
-                      return(as(NA, class(x@.Data)))
+                      return(as(NA, class(runValue(x))))
                   }
               }
               n <- length(x)
               if (n == 0L) 
-                  return(as(NA, class(x@.Data)))
-              ord <- order(x@.Data)
-              x@.Data <- x@.Data[ord]
-              x@lengths <- x@lengths[ord]
+                  return(as(NA, class(runValue(x))))
+              ord <- order(runValue(x))
+              x@.Data <- runValue(x)[ord]
+              x@lengths <- runLength(x)[ord]
               half <- (n + 1L) %/% 2L
               if (n %% 2L == 1L) 
                   x[half, drop = TRUE]
@@ -303,7 +315,7 @@ setMethod("var", signature = c(x = "Rle", y = "missing"),
           function(x, y = NULL, na.rm = FALSE, use)
           {
               if (na.rm)
-                  n <- length(x) - sum(x@lengths[is.na(x@.Data)])
+                  n <- length(x) - sum(runLength(x)[is.na(runValue(x))])
               else
                   n <- length(x)
               sum((x - mean(x, na.rm = na.rm))^2, na.rm = na.rm) / (n - 1)
@@ -321,7 +333,7 @@ setMethod("show", "Rle",
           {
               cat("  An Rle instance of length ", length(object),"\n", sep = "")
               cat("  Lengths:  ")
-              utils::str(object@lengths, give.head = FALSE)
+              utils::str(runLength(object), give.head = FALSE)
               cat("  Values :  ")
-              utils::str(object@.Data, give.head = FALSE)
+              utils::str(runValue(object), give.head = FALSE)
           })
