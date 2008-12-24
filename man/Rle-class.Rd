@@ -38,6 +38,7 @@
 \alias{Math2,Rle-method}
 \alias{Summary,Rle-method}
 
+\alias{!,Rle-method}
 \alias{mean,Rle-method}
 \alias{median,Rle-method}
 \alias{var,Rle,missing-method}
@@ -164,6 +165,10 @@
   In the code snippets below, \code{x} is an \code{Rle} objects:
 
   \item{}{
+    \code{!x}:
+     Returns logical negation (NOT) of \code{x}.
+  }
+  \item{}{
     \code{mean(x, na.rm = FALSE)}:
     Calculates the mean of \code{x}. Removes \code{NA}s when
     \code{na.rm = TRUE}.
@@ -200,6 +205,7 @@
   x^2 + 2 * x + 1
   x[c(1,3,5,7,9)]
   subseq(x, 4, 14)
+  range(x)
   sum(x)
   mean(x)
   x > 4

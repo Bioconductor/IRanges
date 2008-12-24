@@ -238,6 +238,8 @@ setMethod("Summary", "Rle",
 ### Data manipulation methods
 ###
 
+setMethod("!", "Rle", function(x) Rle(values = !x@.Data, lengths = x@lengths))
+
 setMethod("mean", "Rle",
           function(x, na.rm = FALSE)
           {

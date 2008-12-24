@@ -36,6 +36,7 @@ Collate: validity-utils.R
 	XIntegerViews-utils.R
 	XNumeric-class.R
 	Rle-class.R
+	RleViews-class.R
 	XRle-class.R
 	XRleInteger-class.R
 	XRleIntegerViews-class.R
