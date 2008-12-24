@@ -37,8 +37,6 @@ setMethod("reverse", "NormalIRanges",
     }
 )
 
-setMethod("reverse", "Rle", function(x, ...) rev(x))
-
 setMethod("reverse", "XRle",
     function(x, ...)
     {

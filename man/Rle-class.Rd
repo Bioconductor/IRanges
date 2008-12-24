@@ -34,7 +34,6 @@
 \alias{[,Rle,ANY,ANY,ANY-method}
 \alias{subseq,Rle-method}
 \alias{rev,Rle-method}
-\alias{reverse,Rle-method}
 \alias{rep,Rle-method}
 \alias{show,Rle-method}
 
@@ -158,7 +157,7 @@
       is more efficient for extracting consecutive values than \code{[}.
     }
     \item{}{
-      \code{rev(x)}, \code{reverse(x)}:
+      \code{rev(x)}:
       Reverses the order of the values in \code{x}.
     }
     \item{}{
