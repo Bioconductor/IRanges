@@ -126,8 +126,8 @@
       \code{x[i]}:
       Subsets \code{x} by index \code{i}, where \code{i} can be positive
       integers, negative integers, a logical vector of the same length as
-      \code{x}, or an \code{Rle} object of the same length as \code{x}
-      containing logical values.
+      \code{x}, an \code{Rle} object of the same length as \code{x}
+      containing logical values, or an \code{IRanges} object.
     }
     \item{}{
       \code{subseq(x, start=NA, end=NA, width=NA)}:

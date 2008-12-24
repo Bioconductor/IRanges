@@ -99,19 +99,35 @@ setMethod("[", "Rle",
           {
               if (!missing(j) || length(list(...)) > 0)
                   stop("invalid subsetting")
-              if (missing(i))
-                  return(x)
               lx <- length(x)
-              if (is(i, "Rle") && is.logical(i@.Data) && length(x) == length(i)) {
+              if (missing(i) || lx == 0)
+                  return(x)
+              if (is(i, "Rle") && is.logical(i@.Data) && lx == length(i)) {
                   if (!any(i@.Data)) {
                       output <- new("Rle")
                   } else {
                       starts <- cumsum(c(1L, i@lengths))[i@.Data]
-                      ends <- cumsum(i@lengths)[i@.Data]
+                      widths <- i@lengths[i@.Data]
                       output <-
                         do.call(c,
                                 lapply(seq_len(length(starts)),
-                                       function(k) subseq(x, starts[k], ends[k])))
+                                       function(k)
+                                       subseq(x, start = starts[k], width = widths[k])))
+                  }
+                  if (drop)
+                      output <- as.vector(output)
+              } else  if (is(i, "IRanges")) {
+                  i <- restrict(i, start = 1, end = lx)
+                  if (length(i) == 0) {
+                      output <- new("Rle")
+                  } else {
+                      starts <- start(i)
+                      widths <- width(i)
+                      output <-
+                        do.call(c,
+                                lapply(seq_len(length(starts)),
+                                       function(k)
+                                       subseq(x, start = starts[k], width = widths[k])))
                   }
                   if (drop)
                       output <- as.vector(output)
