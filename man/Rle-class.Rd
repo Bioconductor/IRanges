@@ -28,6 +28,8 @@
 \alias{c,Rle-method}
 \alias{[,Rle,ANY,ANY,ANY-method}
 \alias{subseq,Rle-method}
+\alias{rev,Rle-method}
+\alias{reverse,Rle-method}
 \alias{rep,Rle-method}
 \alias{show,Rle-method}
 
@@ -134,6 +136,10 @@
       Extract the subsequence from \code{x} specified by two of the three
       following values:  \code{start}, \code{end}, and \code{width}. This
       is more efficient for extracting consecutive values than \code{[}.
+    }
+    \item{}{
+      \code{rev(x)}, \code{reverse(x)}:
+      Reverses the order of the values in \code{x}.
     }
     \item{}{
       \code{rep(x, times, length.out, each)}:

@@ -175,6 +175,14 @@ setMethod("subseq", "Rle",
               x
           })
 
+setMethod("rev", "Rle",
+          function(x)
+          {
+              x@lengths <- rev(x@lengths)
+              x@.Data <- rev(x@.Data)
+              x
+          })
+
 setMethod("rep", "Rle",
           function(x, times, length.out, each)
           {

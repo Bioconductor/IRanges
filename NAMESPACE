@@ -116,6 +116,7 @@ exportMethods(
     names, "names<-",
     "[", "[<-",
     duplicated,
+    rev,
     rep,
     start,
     end,
