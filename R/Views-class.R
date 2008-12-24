@@ -263,4 +263,5 @@ setMethod("viewApply", "Views",
                    FUN(subseq(subject(X), start = start(X)[i], width = width(X)[i]),
                        ...),
                simplify = simplify)
-    })
+    }
+)
