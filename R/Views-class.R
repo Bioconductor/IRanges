@@ -62,6 +62,15 @@ setReplaceMethod("width", "Views",
 
 newViews <- function(subject, start=NA, end=NA, names=NULL, Class=NULL)
 {
+    if (is(start, "IRanges")) {
+        end <- end(start)
+        start <- start(start)
+    } else if (is(start, "Rle") && length(start) > 0 &&
+               is.logical(runValue(start))) {
+        whichValues <- which(runValue(start))
+        end <- cumsum(runLength(start))[whichValues]
+        start <- cumsum(c(1L, runLength(start)))[whichValues]
+    }
     if (!isNumericOrNAs(start) || !isNumericOrNAs(end))
         stop("'start' and 'end' must be numeric vectors")
     if (!is.integer(start))

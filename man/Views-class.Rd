@@ -67,8 +67,10 @@
     The \link{Sequence} object on which to create the views.
   }
   \item{start, end}{
-    For \code{Views}, they must be integer vectors (eventually with NAs)
-    specifying the starting and ending positions of the views to create.
+    For \code{Views}, they can be either integer vectors (eventually
+    with NAs) specifying the starting and ending positions of the views
+    to create, or \code{end} can be missing with \code{start} being an
+    IRanges object or an Rle object containing logical values.
 
     For \code{restrict}, they must be single integers specifying the
     restriction window.

@@ -43,8 +43,6 @@
 }
 
 \examples{
-  ## One standard way to create an RleViews object is to use
-  ## the Views() constructor:
   subject <- Rle(rep(c(3L, 2L, 18L, 0L), c(3,2,1,5)))
   myViews <- Views(subject, 3:0, 5:8)
   myViews
@@ -55,8 +53,10 @@
   width(myViews)
   myViews[[2]]
 
-  ## Here the first view doesn't even overlap with the subject:
-  Views(Rle(as.integer(c(97, 97, 97, 45, 45, 98))), -3:4, -3:4 + c(3:6, 6:3))
+  set.seed(0)
+  vec <- Rle(sample(0:2, 20, replace = TRUE))
+  vec
+  Views(vec, vec > 0)
 }
 
 \keyword{methods}
