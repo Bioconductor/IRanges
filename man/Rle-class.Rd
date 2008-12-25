@@ -46,6 +46,7 @@
 \alias{Summary,Rle-method}
 
 \alias{!,Rle-method}
+\alias{\%in\%,Rle,ANY-method}
 \alias{mean,Rle-method}
 \alias{median,Rle-method}
 \alias{var,Rle,missing-method}
@@ -202,12 +203,17 @@
   for more details.
 }
 
-\section{Data Manipulation}{
+\section{Additional Methods}{
   In the code snippets below, \code{x} is an \code{Rle} object:
 
   \item{}{
     \code{!x}:
      Returns logical negation (NOT) of \code{x}.
+  }
+  \item{}{
+    \code{x \%in\% table}:
+     Returns a logical \code{Rle} representing set membership in
+     \code{table}.
   }
   \item{}{
     \code{mean(x, na.rm = FALSE)}:

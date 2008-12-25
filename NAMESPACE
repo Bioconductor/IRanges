@@ -99,7 +99,7 @@ export(
     universe, "universe<-", space,
     elementClass, elementLengths,
     matchMatrix,
-    
+
     ## Old stuff (Defunct or Deprecated):
     first, last,
     intToRanges, intToAdjacentRanges, toNormalIRanges,

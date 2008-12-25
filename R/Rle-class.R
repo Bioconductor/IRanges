@@ -282,6 +282,11 @@ setMethod("Summary", "Rle",
 
 setMethod("!", "Rle", function(x) Rle(values = !runValue(x), lengths = runLength(x)))
 
+setMethod("%in%", "Rle",
+          function(x, table) {
+              Rle(values = runValue(x) %in% table, lengths = runLength(x))
+          })
+
 setMethod("mean", "Rle",
           function(x, na.rm = FALSE)
           {
