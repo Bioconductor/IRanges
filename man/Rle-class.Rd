@@ -34,6 +34,7 @@
 \alias{[,Rle,ANY,ANY,ANY-method}
 \alias{subseq,Rle-method}
 \alias{rev,Rle-method}
+\alias{sort,Rle-method}
 \alias{rep,Rle-method}
 \alias{show,Rle-method}
 
@@ -136,6 +137,10 @@
 
   \describe{
     \item{}{
+      \code{FUN(x, ...)}, where \code{FUN} is any function where
+      \code{FUN(x, ...)} = \code{FUN(runValue(x))}.
+    }
+    \item{}{
       \code{length(x)}:
       Returns the underlying vector length of \code{x}.
     }
@@ -161,16 +166,27 @@
       Reverses the order of the values in \code{x}.
     }
     \item{}{
+      \code{sort(x, decreasing = FALSE, na.last = NA)}:
+      Sorts the values in \code{x}.
+      \describe{
+        \item{\code{decreasing}}{If \code{TRUE}, sort values in decreasing
+          order. If \code{FALSE}, sort values in increasing order.}
+        \item{\code{na.last}}{If \code{TRUE}, missing values are placed last.
+          If \code{FALSE}, they are placed first. If \code{NA}, they are
+          removed.}
+      }
+    }
+    \item{}{
       \code{rep(x, times, length.out, each)}:
       Repeats the values in \code{x} through one of the following conventions:
       \describe{
         \item{\code{times}}{vector giving the number of times to repeat each
-        element if of length \code{length(x)}, or to repeat the whole vector if
-        of length 1.}
+          element if of length \code{length(x)}, or to repeat the whole vector
+          if of length 1.}
         \item{\code{length.out}}{non-negative integer. The desired length of
-        the output vector.}
+          the output vector.}
         \item{\code{each}}{non-negative integer.  Each element of \code{x} is
-        repeated \code{each} times.}
+          repeated \code{each} times.}
       }
     }
     \item{}{
@@ -226,6 +242,8 @@
 \examples{
   x <- Rle(10:1, 1:10)
   x
+  unique(x)
+  sort(x)
   sqrt(x)
   x^2 + 2 * x + 1
   x[c(1,3,5,7,9)]

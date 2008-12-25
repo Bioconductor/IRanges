@@ -195,6 +195,12 @@ setMethod("rev", "Rle",
               x
           })
 
+setMethod("sort", "Rle",
+          function(x, decreasing = FALSE, na.last = NA, ...) {
+              ord <- order(runValue(x), decreasing = decreasing, na.last = na.last)
+              Rle(values = runValue(x)[ord], lengths = runLength(x)[ord])
+          })
+
 setMethod("rep", "Rle",
           function(x, times, length.out, each)
           {
