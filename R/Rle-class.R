@@ -118,8 +118,9 @@ setMethod("[", "Rle",
                   if (!any(runValue(i))) {
                       output <- new("Rle")
                   } else {
-                      starts <- cumsum(c(1L, runLength(i)))[runValue(i)]
-                      widths <- runLength(i)[runValue(i)]
+                      whichValues <- which(runValue(i))
+                      starts <- cumsum(c(1L, runLength(i)))[whichValues]
+                      widths <- runLength(i)[whichValues]
                       output <-
                         do.call(c,
                                 lapply(seq_len(length(starts)),
