@@ -237,7 +237,7 @@
   }
 }
 
-\author{Patrick Aboyoun}
+\author{P. Aboyoun}
 
 \seealso{
   \code{\link[base]{rle}},

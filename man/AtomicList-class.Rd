@@ -53,7 +53,7 @@
   }
 }
 
-\author{Patrick Aboyoun}
+\author{P. Aboyoun}
 \seealso{\code{\linkS4class{TypedList}} for the applicable methods.}
 
 \examples{
