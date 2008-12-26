@@ -196,7 +196,8 @@ setMethod("subseq", "Rle",
                   rangeGroups <- findInterval(c(start(solved_SEW), end(solved_SEW)) - 1e-6, breaks)
                   lengths <- subseq(runLength(x), rangeGroups[1], rangeGroups[2])
                   lengths[1] <- breaks[rangeGroups[1] + 1L, drop = TRUE] - start(solved_SEW) + 1L
-                  lengths[length(lengths)] <- end(solved_SEW) - breaks[rangeGroups[2], drop = TRUE]
+                  if (length(lengths) > 1)
+                      lengths[length(lengths)] <- end(solved_SEW) - breaks[rangeGroups[2], drop = TRUE]
                   x@lengths <- lengths
                   x@.Data <- subseq(runValue(x), rangeGroups[1], rangeGroups[2])
               }
@@ -246,6 +247,11 @@ setMethod("rep", "Rle",
               x
           })
 
+setMethod("%in%", "Rle",
+          function(x, table) {
+              Rle(values = runValue(x) %in% table, lengths = runLength(x))
+          })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Group generic methods
 ###
@@ -293,15 +299,6 @@ setMethod("Summary", "Rle",
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Other general data methods
-###
-
-setMethod("%in%", "Rle",
-          function(x, table) {
-              Rle(values = runValue(x) %in% table, lengths = runLength(x))
-          })
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other logical data methods
 ###
 
@@ -336,9 +333,7 @@ setMethod("median", signature = c(x = "Rle"),
               n <- length(x)
               if (n == 0L) 
                   return(as(NA, class(runValue(x))))
-              ord <- order(runValue(x))
-              x@.Data <- runValue(x)[ord]
-              x@lengths <- runLength(x)[ord]
+              x <- sort(x)
               half <- (n + 1L) %/% 2L
               if (n %% 2L == 1L) 
                   x[half, drop = TRUE]
