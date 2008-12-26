@@ -361,16 +361,16 @@ setMethod("sd", signature = c(x = "Rle"),
 setMethod("nchar", "Rle",
           function(x, type = "chars", allowNA = FALSE)
               Rle(values = nchar(runValue(x), type = type, allowNA = allowNA),
-                  lengths = runLengths(x)))
+                  lengths = runLength(x)))
 
 setMethod("substr", "Rle",
           function(x, start, stop)
               Rle(values = substr(runValue(x), start = start, stop = stop),
-                  lengths = runLengths(x)))
+                  lengths = runLength(x)))
 setMethod("substring", "Rle",
           function(text, first, last = 1000000L)
               Rle(values = substring(runValue(text), first = first, last = last),
-                  lengths = runLengths(text)))
+                  lengths = runLength(text)))
 
 setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle"),
           function(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
