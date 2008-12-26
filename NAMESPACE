@@ -126,6 +126,7 @@ exportMethods(
     min,
     range,
     mean, median, var, sd,
+    nchar, substr, substring, gsub,
     as.list,
     as.vector,
     as.integer,

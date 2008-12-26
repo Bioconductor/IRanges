@@ -35,12 +35,12 @@ setMethod("runValue", "Rle", function(x) x@.Data)
 setGeneric("runLength<-", signature="x",
            function(x, value) standardGeneric("runLength<-"))
 setReplaceMethod("runLength", "Rle",
-                 function(x, value) Rle(runValue(x), value))
+                 function(x, value) Rle(values = runValue(x), lengths = value))
          
 setGeneric("runValue<-", signature="x",
            function(x, value) standardGeneric("runValue<-"))
 setReplaceMethod("runValue", "Rle",
-                 function(x, value) Rle(value, runLength(x)))
+                 function(x, value) Rle(values = value, lengths = runLength(x)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -363,6 +363,28 @@ setMethod("sd", signature = c(x = "Rle"),
 ### Other character data methods
 ###
 
+setMethod("nchar", "Rle",
+          function(x, type = "chars", allowNA = FALSE)
+              Rle(values = nchar(runValue(x), type = type, allowNA = allowNA),
+                  lengths = runLengths(x)))
+
+setMethod("substr", "Rle",
+          function(x, start, stop)
+              Rle(values = substr(runValue(x), start = start, stop = stop),
+                  lengths = runLengths(x)))
+setMethod("substring", "Rle",
+          function(text, first, last = 1000000L)
+              Rle(values = substring(runValue(text), first = first, last = last),
+                  lengths = runLengths(text)))
+
+setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle"),
+          function(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
+                   perl = FALSE, fixed = FALSE, useBytes = FALSE)
+              Rle(values = gsub(pattern = pattern, replacement = replacement,
+                                x = runValue(x), ignore.case = ignore.case,
+                                extended = extended, perl = perl, fixed = fixed,
+                                useBytes = useBytes),
+                  lengths = runLength(x)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method

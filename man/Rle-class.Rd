@@ -57,6 +57,11 @@
 \alias{var,Rle,missing-method}
 \alias{sd,Rle-method}
 
+\alias{nchar,Rle-method}
+\alias{substr,Rle-method}
+\alias{substring,Rle-method}
+\alias{gsub,ANY,ANY,Rle-method}
+
 
 \title{Rle objects}
 
@@ -155,6 +160,12 @@
   }
 }
 
+\section{Group Generics}{
+  \code{Rle} objects have support for Ops, Math, Math2, and Summary
+  S4 group generic functionality. See \link[methods]{S4groupGeneric}
+  for more details.
+}
+
 \section{General Methods}{
   In the code snippets below, \code{x} is an \code{Rle} object:
 
@@ -213,29 +224,18 @@
       }
     }
     \item{}{
+      \code{x \%in\% table}:
+      Returns a logical \code{Rle} representing set membership in
+      \code{table}.
+    }
+    \item{}{
       \code{show(object)}:
       Prints out the \code{Rle} object in a user-friendly way.
     }
   }
 }
 
-\section{Group Generics}{
-  \code{Rle} objects have support for Ops, Math, Math2, and Summary
-  S4 group generic functionality. See \link[methods]{S4groupGeneric}
-  for more details.
-}
-
-\section{Additional General Data Methods}{
-  In the code snippets below, \code{x} is an \code{Rle} object:
-
-  \item{}{
-    \code{x \%in\% table}:
-     Returns a logical \code{Rle} representing set membership in
-     \code{table}.
-  }
-}
-
-\section{Additional Logical Data Methods}{
+\section{Logical Data Methods}{
   In the code snippets below, \code{x} is an \code{Rle} object:
 
   \item{}{
@@ -244,7 +244,7 @@
   }
 }
 
-\section{Additional Numerical Data Methods}{
+\section{Numerical Data Methods}{
   In the code snippets below, \code{x} is an \code{Rle} object:
 
   \item{}{
@@ -266,6 +266,33 @@
     \code{sd(x, na.rm = FALSE)}:
     Calculates the standard deviation of \code{x}. Removes \code{NA}s
     when \code{na.rm = TRUE}.
+  }
+}
+
+\section{Character Data Methods}{
+  In the code snippets below, \code{x} is an \code{Rle} object:
+
+  \item{}{
+    \code{nchar(x, type = "chars", allowNA = FALSE)}:
+    Returns an integer Rle representing the number of characters in the
+    corresponding values of \code{x}.
+    \describe{
+       \item{\code{type}}{One of \code{c("bytes", "chars", "width")}.}
+       \item{allowNA}{Should \code{NA} be returned for invalid multibyte
+         strings rather than throwing an error?}
+    }
+  }
+  \item{}{
+    \code{substr(x, start, stop)}, \code{substring(text, first, last = 1000000L)}:
+    Returns a character Rle containing the specified substrings beginning at
+    \code{start}/\code{first} and ending at \code{stop}/\code{last}.
+  }
+  \item{}{
+    \code{gsub(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
+               perl = FALSE, fixed = FALSE, useBytes = FALSE)}:
+    Returns a character Rle with replacements based on matches determined by
+    regular expression matching. See \code{\link{gsub}} for a description of the
+    arguments.
   }
 }
 
