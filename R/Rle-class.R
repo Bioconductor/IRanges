@@ -29,6 +29,21 @@ setGeneric("runValue", signature = "x",
 setMethod("runValue", "Rle", function(x) x@.Data)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Replace methods.
+###
+
+setGeneric("runLength<-", signature="x",
+           function(x, value) standardGeneric("runLength<-"))
+setReplaceMethod("runLength", "Rle",
+                 function(x, value) Rle(runValue(x), value))
+         
+setGeneric("runValue<-", signature="x",
+           function(x, value) standardGeneric("runValue<-"))
+setReplaceMethod("runValue", "Rle",
+                 function(x, value) Rle(value, runLength(x)))
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructors
 ###
 
@@ -278,15 +293,23 @@ setMethod("Summary", "Rle",
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Data manipulation methods
+### Other general data methods
 ###
-
-setMethod("!", "Rle", function(x) Rle(values = !runValue(x), lengths = runLength(x)))
 
 setMethod("%in%", "Rle",
           function(x, table) {
               Rle(values = runValue(x) %in% table, lengths = runLength(x))
           })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Other logical data methods
+###
+
+setMethod("!", "Rle", function(x) Rle(values = !runValue(x), lengths = runLength(x)))
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Other numerical data methods
+###
 
 setMethod("mean", "Rle",
           function(x, na.rm = FALSE)
@@ -335,6 +358,11 @@ setMethod("var", signature = c(x = "Rle", y = "missing"),
 
 setMethod("sd", signature = c(x = "Rle"),
           function(x, na.rm = FALSE) sqrt(var(x, na.rm = na.rm)))
+  
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Other character data methods
+###
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method

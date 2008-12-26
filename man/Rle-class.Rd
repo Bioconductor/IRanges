@@ -13,6 +13,11 @@
 \alias{runValue}
 \alias{runValue,Rle-method}
 
+\alias{runLength<-}
+\alias{runLength<-,Rle-method}
+\alias{runValue<-}
+\alias{runValue<-,Rle-method}
+
 \alias{as.vector,Rle,missing-method}
 \alias{as.logical,Rle-method}
 \alias{as.integer,Rle-method}
@@ -94,6 +99,23 @@
     \item{}{
       \code{runValue(x)}:
       Returns the run values for \code{x}.
+    }
+  }
+}
+
+\section{Replacers}{
+  In the code snippets below, \code{x} is an \code{Rle} object:
+
+  \describe{
+    \item{}{
+      \code{runLength(x) <- value}:
+      Replaces \code{x} with a new Rle object using run values
+      \code{runValue(x)} and run lengths \code{value}.
+    }
+    \item{}{
+      \code{runValue(x) <- value}:
+      Replaces \code{x} with a new Rle object using run values
+      \code{value} and run lengths \code{runLength(x)}.
     }
   }
 }
@@ -203,18 +225,28 @@
   for more details.
 }
 
-\section{Additional Methods}{
+\section{Additional General Data Methods}{
+  In the code snippets below, \code{x} is an \code{Rle} object:
+
+  \item{}{
+    \code{x \%in\% table}:
+     Returns a logical \code{Rle} representing set membership in
+     \code{table}.
+  }
+}
+
+\section{Additional Logical Data Methods}{
   In the code snippets below, \code{x} is an \code{Rle} object:
 
   \item{}{
     \code{!x}:
      Returns logical negation (NOT) of \code{x}.
   }
-  \item{}{
-    \code{x \%in\% table}:
-     Returns a logical \code{Rle} representing set membership in
-     \code{table}.
-  }
+}
+
+\section{Additional Numerical Data Methods}{
+  In the code snippets below, \code{x} is an \code{Rle} object:
+
   \item{}{
     \code{mean(x, na.rm = FALSE)}:
     Calculates the mean of \code{x}. Removes \code{NA}s when
