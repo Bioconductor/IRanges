@@ -388,7 +388,9 @@ setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle")
 setMethod("show", "Rle",
           function(object)
           {
-              cat("  An Rle instance of length ", length(object),"\n", sep = "")
+              cat("  '", class(runValue(object)), "' Rle instance of length ", length(object),
+                  " with ", length(runValue(object)), ifelse(length(runValue(object)) == 1,
+                  " run\n", " runs\n"), sep = "")
               cat("  Lengths:  ")
               utils::str(runLength(object), give.head = FALSE)
               cat("  Values :  ")
