@@ -23,6 +23,9 @@
 \alias{as.data.frame,RangesList-method}
 \alias{coerce,RangesList,IRangesList-method}
 
+% operations
+\alias{Ops,RangesList,ANY-method}
+
 % show
 \alias{show,RangesList-method}
 
@@ -109,6 +112,13 @@
   }
 }
 
+\section{Arithmetic Operations}{
+  Any arithmetic operation, such as \code{x + y}, \code{x * y}, etc,
+  where \code{x} is a \code{RangesList}, is performed identically on each
+  element. Currently, \code{Ranges} supports only the \code{*} operator,
+  which zooms the ranges by a numeric factor.
+}
+
 \author{ Michael Lawrence }
 \examples{
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
@@ -139,6 +149,9 @@
   universe(named) <- "hg18"
   universe(named)
   RangesList(range1, range2, universe = "hg18")
+
+  ## zoom in 2X
+  collection * 2
 }
 \keyword{methods}
 \keyword{classes}

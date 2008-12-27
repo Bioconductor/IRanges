@@ -295,6 +295,21 @@ setMethod("setdiff", c("Ranges", "Ranges"),
     }
 )
 
+## zooming (symmetrically scales the width)
+setMethod("*", c("Ranges", "numeric"), function(e1, e2) {
+  if (any(is.na(e2)))
+    stop("NA not allowed as zoom factor")
+  if (length(e1) < length(e2) || (length(e1) && !length(e2)) ||
+      length(e1) %% length(e2) != 0)
+    stop("zoom factor length not a multiple of number of ranges")
+  e2 <- ifelse(e2 < 0, abs(1/e2), e2)
+  r <- e1
+  mid <- (start(r)+end(r))/2
+  w <- width(r)/e2
+  start(r) <- ceiling(mid - w/2)
+  width(r) <- floor(w)
+  r
+})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Old stuff (Defunct or Deprecated).

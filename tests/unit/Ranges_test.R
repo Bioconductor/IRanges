@@ -48,3 +48,14 @@ test_Ranges_isDisjoint <- function() {
   checkIdentical(isDisjoint(ir2), TRUE)
   checkIdentical(isDisjoint(ir3), TRUE)
 }
+
+test_Ranges_zoom <- function() {
+  ir <- IRanges(c(1,5), c(3,10))
+  checkIdentical(ir*1, ir)
+  checkIdentical(ir*c(1,2), IRanges(c(1,6), c(3, 8)))
+  checkIdentical(ir*-2, IRanges(c(-1,2), c(4, 13)))
+  checkException(ir*NA_integer_, silent = TRUE)
+  checkException(ir*numeric(), silent = TRUE)
+  checkException(ir*c(1,2,1), silent = TRUE)
+  checkException(ir[rep(1,3)]*c(1,2), silent = TRUE)
+}

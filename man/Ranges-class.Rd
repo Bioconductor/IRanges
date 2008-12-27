@@ -195,6 +195,17 @@
       Concatenate \code{x} and the Ranges objects in \code{...} together.
       The result is returned as an \link{IRanges} object.
     }
+    \item{}{
+      \code{x * y}:
+      The arithmetic operation \code{x * y} is for centered zooming. It
+      symmetrically scales the width of \code{x} by \code{1/y}, where
+      \code{y} is a numeric vector that is recycled as necessary. For
+      example, \code{x * 2} results in ranges with half their previous width
+      but with approximately the same midpoint. The ranges have been
+      \dQuote{zoomed in}. If \code{y} is negative, it is equivalent to
+      \code{x * (1/abs(y))}. Thus, \code{x * -2} would double the widths in
+      \code{x}. In other words, \code{x} has been \dQuote{zoomed out}.
+    }
   }
 }
 
@@ -308,6 +319,11 @@
   isDisjoint(IRanges(c(2,5,1), c(3,7,3))) ## FALSE
   isDisjoint(IRanges(c(2,9,5), c(3,9,6))) ## TRUE
   isDisjoint(IRanges(1, 5)) ## TRUE
+
+  ir <- IRanges(c(1,5), c(3,10))
+  ir*1 # no change
+  ir*c(1,2) # zoom second range by 2X
+  ir*-2 # zoom out 2X  
 }
 
 \keyword{methods}

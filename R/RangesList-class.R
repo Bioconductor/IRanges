@@ -168,15 +168,33 @@ setMethod("overlap", c("RangesList", "RangesList"),
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Arithmetic Operations
+###
+
+setMethod("Ops", c("RangesList", "ANY"),
+          function(e1, e2) {
+            for (i in seq_len(length(e1)))
+              e1[[i]] <- callGeneric(e1[[i]], e2)
+            e1
+          })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
 ###
 
 setMethod("show", "RangesList",
           function(object)
           {
+            
             lo <- length(object)
-            cat("  A ", class(object), " instance of length ", lo, "\n", sep="")
-            ### TODO: show (some of the) ranges here
+            cat("  A ", class(object), " instance with ", lo, " range", sep="")
+            if (lo != 1) cat("s")
+            if (!is.null(universe(object)))
+              cat(" in '", universe(object), "'", sep = "") 
+            cat("\n")
+            show(head(as.data.frame(object)))
+            if (lo > 6)
+              cat("...\n")
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -190,8 +208,9 @@ setMethod("as.data.frame", "RangesList",
               stop("'row.names'  must be NULL or a character vector")
             if (!missing(optional) || length(list(...)))
               warning("'optional' and arguments in '...' ignored")
-            x <- as(x, "IRangesList")
-            df <- as.data.frame(unlist(x), row.names = row.names)
+            xi <- as(x, "IRangesList")
+            names(xi) <- NULL
+            df <- as.data.frame(unlist(xi), row.names = row.names)
             if (length(names(x)) > 0)
               df <- cbind(space = rep(names(x), elementLengths(x)), df)
             df

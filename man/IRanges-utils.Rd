@@ -20,6 +20,7 @@
 \alias{flank}
 \alias{flank,Ranges-method}
 \alias{range,Ranges-method}
+\alias{*,Ranges,numeric-method}
 
 % Coercion:
 \alias{asNormalIRanges}
@@ -29,7 +30,6 @@
 \alias{intToRanges}
 \alias{intToAdjacentRanges}
 \alias{toNormalIRanges}
-
 
 \title{IRanges utility functions}
 
@@ -264,7 +264,7 @@
   flank(ir1, 2, both = TRUE)
   flank(ir1, 2, FALSE, TRUE)
   flank(ir1, -2, FALSE, TRUE)
-  
+
   asNormalIRanges(x)   # 3 ranges ordered from left to right and separated by
                        # gaps of width >= 1.
 

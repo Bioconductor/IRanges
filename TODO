@@ -42,7 +42,7 @@ Long term TODO list
   - inverse.rle
   * "aggregate", generalization of coverage for max/min/etc
   - as a subset specification for BSGenome objects (get sequences out)
-  - think about reimplementing as extension of XDataFrameList with Ranges col
+  - think about making ranges() and values() unlist before returning
 
 - XDataFrameList:
   - stack: unlist(), but with factors recording source of each row
