@@ -60,6 +60,14 @@
 
 \alias{!,Rle-method}
 
+\alias{pmax}
+\alias{pmax,Rle-method}
+\alias{pmin}
+\alias{pmin,Rle-method}
+\alias{pmax.int}
+\alias{pmax.int,Rle-method}
+\alias{pmin.int}
+\alias{pmin.int,Rle-method}
 \alias{diff,Rle-method}
 \alias{mean,Rle-method}
 \alias{median,Rle-method}
@@ -279,6 +287,26 @@
 \section{Numerical Data Methods}{
   In the code snippets below, \code{x} is an \code{Rle} object:
 
+  \item{}{
+     \code{pmax(..., na.rm = FALSE)}:
+     Parallel maxima of the Rle input values. Removes \code{NA}s when
+     \code{na.rm = TRUE}.
+  }
+  \item{}{
+     \code{pmin(..., na.rm = FALSE)}:
+     Parallel minima of the Rle input values. Removes \code{NA}s when
+     \code{na.rm = TRUE}.
+  }
+  \item{}{
+     \code{pmax.int(..., na.rm = FALSE)}:
+     Parallel maxima of the integer Rle input values. Removes \code{NA}s when
+     \code{na.rm = TRUE}.
+  }
+  \item{}{
+     \code{pmin.int(..., na.rm = FALSE)}:
+     Parallel minima of the integer Rle input values. Removes \code{NA}s when
+     \code{na.rm = TRUE}.
+  }
   \item{}{
     \code{diff(x, lag = 1, differences = 1}:
     Returns suitably lagged and iterated differences of \code{x}.

@@ -342,6 +342,46 @@ setMethod("diff", "Rle",
               x
           })
 
+setGeneric("pmax", signature = "...",
+           function(..., na.rm = FALSE) standardGeneric("pmax"))
+setMethod("pmax", "Rle",
+          function(..., na.rm = FALSE) {
+              rlist <- RleList(..., compress = FALSE)
+              ends <- sort(unique(unlist(lapply(rlist, end))))
+              Rle(values =  do.call(pmax, lapply(rlist, "[", ends, drop = TRUE)),
+                  lengths = diff(c(0L, ends)))
+          })
+
+setGeneric("pmin", signature = "...",
+           function(..., na.rm = FALSE) standardGeneric("pmin"))
+setMethod("pmin", "Rle",
+          function(..., na.rm = FALSE) {
+              rlist <- RleList(..., compress = FALSE)
+              ends <- sort(unique(unlist(lapply(rlist, end))))
+              Rle(values =  do.call(pmin, lapply(rlist, "[", ends, drop = TRUE)),
+                  lengths = diff(c(0L, ends)))
+          })
+
+setGeneric("pmax.int", signature = "...",
+           function(..., na.rm = FALSE) standardGeneric("pmax.int"))
+setMethod("pmax.int", "Rle",
+          function(..., na.rm = FALSE) {
+              rlist <- RleList(..., compress = FALSE)
+              ends <- sort(unique(unlist(lapply(rlist, end))))
+              Rle(values =  do.call(pmax.int, lapply(rlist, "[", ends, drop = TRUE)),
+                  lengths = diff(c(0L, ends)))
+          })
+
+setGeneric("pmin.int", signature = "...",
+           function(..., na.rm = FALSE) standardGeneric("pmin.int"))
+setMethod("pmin.int", "Rle",
+          function(..., na.rm = FALSE) {
+              rlist <- RleList(..., compress = FALSE)
+              ends <- sort(unique(unlist(lapply(rlist, end))))
+              Rle(values =  do.call(pmin.int, lapply(rlist, "[", ends, drop = TRUE)),
+                  lengths = diff(c(0L, ends)))
+          })
+
 setMethod("mean", "Rle",
           function(x, na.rm = FALSE)
           {

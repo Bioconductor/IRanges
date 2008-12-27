@@ -71,6 +71,10 @@ test_Rle_logical <- function() {
 test_Rle_numerical <- function() {
     x <- cumsum(cumsum(1:10))
     xRle <- Rle(x)
+    checkIdentical(pmax(x, rev(x)), as.vector(pmax(xRle, rev(xRle))))
+    checkIdentical(pmin(x, rev(x)), as.vector(pmin(xRle, rev(xRle))))
+    checkIdentical(pmax.int(x, rev(x)), as.vector(pmax.int(xRle, rev(xRle))))
+    checkIdentical(pmin.int(x, rev(x)), as.vector(pmin.int(xRle, rev(xRle))))
     checkIdentical(diff(x), as.vector(diff(xRle)))
     checkIdentical(diff(x, lag = 2), as.vector(diff(xRle, lag = 2)))
     checkIdentical(diff(x, differences = 2), as.vector(diff(xRle, differences = 2)))
