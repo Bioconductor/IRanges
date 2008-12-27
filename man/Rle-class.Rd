@@ -12,6 +12,8 @@
 \alias{runLength,Rle-method}
 \alias{runValue}
 \alias{runValue,Rle-method}
+\alias{nrun}
+\alias{nrun,Rle-method}
 
 \alias{runLength<-}
 \alias{runLength<-,Rle-method}
@@ -108,6 +110,10 @@
     \item{}{
       \code{runValue(x)}:
       Returns the run values for \code{x}.
+    }
+    \item{}{
+      \code{nrun(x)}:
+      Returns the number of runs in \code{x}.
     }
   }
 }
@@ -324,6 +330,11 @@
 \examples{
   x <- Rle(10:1, 1:10)
   x
+
+  runLength(x)
+  runValue(x)
+  nrun(x)
+
   diff(x)
   unique(x)
   sort(x)

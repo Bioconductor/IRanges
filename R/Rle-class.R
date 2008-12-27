@@ -28,6 +28,9 @@ setGeneric("runValue", signature = "x",
            function(x) standardGeneric("runValue"))
 setMethod("runValue", "Rle", function(x) x@.Data)
 
+setGeneric("nrun", signature = "x", function(x) standardGeneric("nrun"))
+setMethod("nrun", "Rle", function(x) length(runLength(x)))
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Replace methods.
 ###
@@ -253,7 +256,7 @@ setGeneric("table", signature = "...",
 setMethod("table", "Rle",
           function(...) {
               x <- sort(...)
-              structure(array(runLength(x), dim = length(runLength(x)),
+              structure(array(runLength(x), dim = nrun(x),
                               dimnames = structure(list(as.character(runValue(x))), 
                                                    names = "")),
                         class = "table")
@@ -417,8 +420,8 @@ setMethod("show", "Rle",
           function(object)
           {
               cat("  '", class(runValue(object)), "' Rle instance of length ", length(object),
-                  " with ", length(runValue(object)), ifelse(length(runValue(object)) == 1,
-                  " run\n", " runs\n"), sep = "")
+                  " with ", nrun(object), ifelse(nrun(object) == 1, " run\n", " runs\n"),
+                  sep = "")
               cat("  Lengths:  ")
               utils::str(runLength(object), give.head = FALSE)
               cat("  Values :  ")
