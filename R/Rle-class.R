@@ -235,7 +235,7 @@ setMethod("rep", "Rle",
                       x@lengths <- runLength(x) + diff(c(0L, cumsum(times)[end(x)])) - 1L
                   } else if (length(times) == 1) {
                       x <- Rle(values  = rep(runValue(x), times = times),
-                               lengths = rep(runLength(x), times = times))
+                               lengths = rep.int(runLength(x), times = times))
                   } else {
                       stop("invalid 'times' argument")
                   }
@@ -249,6 +249,25 @@ setMethod("rep", "Rle",
                   } else if (length.out > n) {
                       x <- subseq(rep(x, times = ceiling(length.out / n)), 1, length.out)
                   }
+              }
+              x
+          })
+
+setGeneric("rep.int", signature = "x",
+           function(x, ...) standardGeneric("rep.int"),
+           useAsDefault = function(x, ...) base::rep.int(x, ...))
+
+setMethod("rep.int", "Rle",
+          function(x, times)
+          {
+              times <- as.integer(times)
+              if (length(times) == length(x)) {
+                  x@lengths <- runLength(x) + diff(c(0L, cumsum(times)[end(x)])) - 1L
+              } else if (length(times) == 1) {
+                  x <- Rle(values  = rep.int(runValue(x), times = times),
+                           lengths = rep.int(runLength(x), times = times))
+              } else {
+                  stop("invalid 'times' argument")
               }
               x
           })

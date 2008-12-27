@@ -119,7 +119,7 @@ exportMethods(
     "[", "[<-",
     duplicated,
     rev,
-    rep,
+    rep, rep.int,
     start,
     end,
     max,

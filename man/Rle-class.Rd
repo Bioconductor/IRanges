@@ -46,6 +46,8 @@
 \alias{rev,Rle-method}
 \alias{sort,Rle-method}
 \alias{rep,Rle-method}
+\alias{rep.int}
+\alias{rep.int,Rle-method}
 \alias{table}
 \alias{table,Rle-method}
 \alias{\%in\%,Rle,ANY-method}
@@ -247,7 +249,7 @@
       }
     }
     \item{}{
-      \code{rep(x, times, length.out, each)}:
+      \code{rep(x, times, length.out, each)}, \code{rep.int(x, times)}:
       Repeats the values in \code{x} through one of the following conventions:
       \describe{
         \item{\code{times}}{vector giving the number of times to repeat each
