@@ -89,7 +89,7 @@ export(
     slice,
     values,
     viewApply, viewMins, viewMaxs, viewSums, viewWhichMins, viewWhichMaxs,
-    cbind, rbind,
+    cbind, rbind, table,
     rangedData, "rangedData<-", applyFun, "applyFun<-", applyParams,
     "applyParams<-", simplify, "simplify<-",
     ##excludePattern, "excludePattern<-",

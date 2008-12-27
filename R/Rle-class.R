@@ -247,6 +247,18 @@ setMethod("rep", "Rle",
               x
           })
 
+setGeneric("table", signature = "...",
+           function(...) standardGeneric("table"),
+           useAsDefault = function(...) base::table(...))
+setMethod("table", "Rle",
+          function(...) {
+              x <- sort(...)
+              structure(array(runLength(x), dim = length(runLength(x)),
+                              dimnames = structure(list(as.character(runValue(x))), 
+                                                   names = "")),
+                        class = "table")
+          })
+
 setMethod("%in%", "Rle",
           function(x, table) {
               Rle(values = runValue(x) %in% table, lengths = runLength(x))

@@ -41,6 +41,8 @@
 \alias{rev,Rle-method}
 \alias{sort,Rle-method}
 \alias{rep,Rle-method}
+\alias{table}
+\alias{table,Rle-method}
 \alias{\%in\%,Rle,ANY-method}
 \alias{show,Rle-method}
 
@@ -226,6 +228,10 @@
       }
     }
     \item{}{
+      \code{table(...)}:
+      Returns a table containing the counts of the unique values.
+    }
+    \item{}{
       \code{x \%in\% table}:
       Returns a logical \code{Rle} representing set membership in
       \code{table}.
@@ -326,6 +332,7 @@
   x[c(1,3,5,7,9)]
   subseq(x, 4, 14)
   range(x)
+  table(x)
   sum(x)
   mean(x)
   x > 4
