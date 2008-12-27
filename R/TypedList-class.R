@@ -496,6 +496,11 @@ setMethod("lapply", c("TypedList", "function"),
             lapply(as.list(X), FUN, ...)
           })
 
+setMethod("lapply", c("TypedList", "character"),
+          function(X, FUN, ...) {
+            lapply(as.list(X), FUN, ...)
+          })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###

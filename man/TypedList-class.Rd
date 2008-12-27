@@ -31,6 +31,7 @@
 
 % utilities
 \alias{lapply,TypedList,function-method}
+\alias{lapply,TypedList,character-method}
 
 % show
 \alias{show,TypedList-method}
