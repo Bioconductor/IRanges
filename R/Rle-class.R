@@ -31,6 +31,10 @@ setMethod("runValue", "Rle", function(x) x@.Data)
 setGeneric("nrun", signature = "x", function(x) standardGeneric("nrun"))
 setMethod("nrun", "Rle", function(x) length(runLength(x)))
 
+setMethod("start", "Rle", function(x) cumsum(c(1L, runLength(x))[seq_len(nrun(x))]))
+setMethod("end", "Rle", function(x) cumsum(runLength(x)))
+setMethod("width", "Rle", function(x) runLength(x))
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Replace methods.
 ###
@@ -44,7 +48,6 @@ setGeneric("runValue<-", signature="x",
            function(x, value) standardGeneric("runValue<-"))
 setReplaceMethod("runValue", "Rle",
                  function(x, value) Rle(values = value, lengths = runLength(x)))
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructors
@@ -137,8 +140,8 @@ setMethod("[", "Rle",
                       output <- new("Rle")
                   } else {
                       whichValues <- which(runValue(i))
-                      starts <- cumsum(c(1L, runLength(i)))[whichValues]
-                      widths <- runLength(i)[whichValues]
+                      starts <- start(i)[whichValues]
+                      widths <- width(i)[whichValues]
                       output <-
                         do.call(c,
                                 lapply(seq_len(length(starts)),
@@ -181,7 +184,7 @@ setMethod("[", "Rle",
                   } else {
                       stop("invalid subscript type")
                   }
-                  breaks <- c(0L, cumsum(runLength(x)))
+                  breaks <- c(0L, end(x))
                   group <- findInterval(i - 1e-6, breaks)
                   output <- runValue(x)[group]
                   if (!drop)
@@ -195,7 +198,7 @@ setMethod("subseq", "Rle",
           {
               solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
               if (start(solved_SEW) > 1 || end(solved_SEW) < length(x)) {
-                  breaks <- c(0L, cumsum(runLength(x)))
+                  breaks <- c(0L, end(x))
                   rangeGroups <- findInterval(c(start(solved_SEW), end(solved_SEW)) - 1e-6, breaks)
                   lengths <- subseq(runLength(x), rangeGroups[1], rangeGroups[2])
                   lengths[1] <- breaks[rangeGroups[1] + 1L, drop = TRUE] - start(solved_SEW) + 1L
@@ -229,7 +232,7 @@ setMethod("rep", "Rle",
               } else if (!missing(times) && length(times) > 0) {
                   times <- as.integer(times)
                   if (length(times) == length(x)) {
-                      x@lengths <- runLength(x) + diff(c(0L, cumsum(times)[cumsum(runLength(x))])) - 1L
+                      x@lengths <- runLength(x) + diff(c(0L, cumsum(times)[end(x)])) - 1L
                   } else if (length(times) == 1) {
                       x <- Rle(values  = rep(runValue(x), times = times),
                                lengths = rep(runLength(x), times = times))
@@ -281,7 +284,7 @@ setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
                   warning("longer object length is not a multiple of shorter object length")
               e1 <- rep(e1, length.out = n)
               e2 <- rep(e2, length.out = n)
-              allEnds <- sort(unique(c(cumsum(runLength(e1)), cumsum(runLength(e2)))))
+              allEnds <- sort(unique(c(end(e1), end(e2))))
               lengths <- diff(c(0L, allEnds))
               values <- callGeneric(e1[allEnds, drop = TRUE], e2[allEnds, drop = TRUE])
               Rle(values = values, lengths = lengths)

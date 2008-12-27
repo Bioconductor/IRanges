@@ -14,6 +14,9 @@
 \alias{runValue,Rle-method}
 \alias{nrun}
 \alias{nrun,Rle-method}
+\alias{start,Rle-method}
+\alias{end,Rle-method}
+\alias{width,Rle-method}
 
 \alias{runLength<-}
 \alias{runLength<-,Rle-method}
@@ -117,6 +120,18 @@
     \item{}{
       \code{nrun(x)}:
       Returns the number of runs in \code{x}.
+    }
+    \item{}{
+      \code{start(x)}:
+      Returns the starts of the runs for \code{x}.
+    }
+    \item{}{
+      \code{end(x)}:
+      Returns the ends of the runs for \code{x}.
+    }
+    \item{}{
+      \code{width(x)}:
+      Same as \code{runLength(x)}.
     }
   }
 }

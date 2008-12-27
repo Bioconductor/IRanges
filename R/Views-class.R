@@ -68,8 +68,8 @@ newViews <- function(subject, start=NA, end=NA, names=NULL, Class=NULL)
     } else if (is(start, "Rle") && length(start) > 0 &&
                is.logical(runValue(start))) {
         whichValues <- which(runValue(start))
-        end <- cumsum(runLength(start))[whichValues]
-        start <- cumsum(c(1L, runLength(start)))[whichValues]
+        end <- end(start)[whichValues]
+        start <- start(start)[whichValues]
     }
     if (!isNumericOrNAs(start) || !isNumericOrNAs(end))
         stop("'start' and 'end' must be numeric vectors")
