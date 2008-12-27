@@ -66,6 +66,9 @@
 \alias{nchar,Rle-method}
 \alias{substr,Rle-method}
 \alias{substring,Rle-method}
+\alias{chartr,ANY,ANY,Rle-method}
+\alias{tolower,Rle-method}
+\alias{toupper,Rle-method}
 \alias{gsub,ANY,ANY,Rle-method}
 
 
@@ -311,6 +314,23 @@
     \code{start}/\code{first} and ending at \code{stop}/\code{last}.
   }
   \item{}{
+    \code{chartr(old, new, x)}:
+    Returns a character translated version of \code{x}.
+    \describe{
+       \item{\code{old}}{A character string specifying the characters to be
+         translated.}
+       \item{\code{new}}{A character string specifying the translations.}
+    }
+  }
+  \item{}{
+    \code{tolower(x)}:
+    Returns a lower case version of \code{x}.
+  }
+  \item{}{
+    \code{toupper(x)}:
+    Returns an upper case version of \code{x}.
+  }
+  \item{}{
     \code{gsub(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
                perl = FALSE, fixed = FALSE, useBytes = FALSE)}:
     Returns a character Rle with replacements based on matches determined by
@@ -354,7 +374,10 @@
   rep(y, 10)
   c(y, x > 5)
 
-  Rle(letters, 1:26)
+  z <- c("the", "quick", "red", "fox", "jumps", "over", "the", "lazy", "brown", "dog")
+  z <- Rle(z, seq_len(length(z)))
+  chartr("a", "@", z)
+  toupper(z)
 }
 
 \keyword{methods}

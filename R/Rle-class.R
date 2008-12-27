@@ -403,6 +403,15 @@ setMethod("substring", "Rle",
               Rle(values = substring(runValue(text), first = first, last = last),
                   lengths = runLength(text)))
 
+setMethod("chartr", c(old = "ANY", new = "ANY", x = "Rle"),
+          function(old, new, x)
+              Rle(values = chartr(old = old, new = new, x = runValue(x)),
+                  lengths = runLength(x)))
+setMethod("tolower", "Rle",
+          function(x) Rle(values = tolower(runValue(x)), lengths = runLength(x)))
+setMethod("toupper", "Rle",
+         function(x) Rle(values = toupper(runValue(x)), lengths = runLength(x)))
+
 setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle"),
           function(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
                    perl = FALSE, fixed = FALSE, useBytes = FALSE)

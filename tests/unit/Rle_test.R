@@ -103,5 +103,8 @@ test_Rle_character <- function() {
      checkIdentical(nchar(txt), as.vector(nchar(txt)))
      checkIdentical(substr(txt, 3, 7), as.vector(substr(txt, 3, 7)))
      checkIdentical(substring(txt, 4, 9), as.vector(substring(txt, 4, 9)))
+     checkIdentical(chartr("@!*", "alo", txt), as.vector(chartr("@!*", "alo", txt)))
+     checkIdentical(tolower(txt), as.vector(tolower(txt)))
+     checkIdentical(toupper(txt), as.vector(toupper(txt)))
      checkIdentical(gsub("[b-e]",".", txt), as.vector(gsub("[b-e]",".", txtRle)))
 }
