@@ -535,9 +535,13 @@ setMethod("unlist", "TypedList",
             if (!missing(recursive))
               warning("'recursive' argument currently ignored")
             ans <- .TypedList.compress.list(x@elements, as.list = FALSE)
-            if (length(dim(ans)) < 2) {
-              if (use.names && !is.null(names(x)))
-                names(ans) <- rep(names(x), elementLengths(x))
+            if (length(dim(ans)) < 2 && use.names) {
+              nms <- rep(names(x), elementLengths(x))
+              if (!is.null(nms) && !is.null(names(ans)))
+                nms <- paste(nms, names(ans), sep = ".")
+              else if (is.null(nms))
+                nms <- names(ans)
+              names(ans) <- nms
             } else {
               if (!use.names)
                 rownames(ans) <- NULL
