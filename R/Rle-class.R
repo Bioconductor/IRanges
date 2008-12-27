@@ -308,6 +308,22 @@ setMethod("!", "Rle", function(x) Rle(values = !runValue(x), lengths = runLength
 ### Other numerical data methods
 ###
 
+setMethod("diff", "Rle",
+          function(x, lag = 1, differences = 1) {
+              if (!isSingleNumber(lag) || lag < 1L ||
+                  !isSingleNumber(differences) || differences < 1L) 
+                  stop("'lag' and 'differences' must be integers >= 1")
+              lag <- as.integer(lag)
+              differences <- as.integer(differences)
+              if (lag * differences >= length(x))
+                  return(Rle(vector(class(runValues(x)))))
+              for (i in seq_len(differences)) {
+                  n <- length(x)
+                  x <- subseq(x, 1L + lag, n) - subseq(x, 1L, n - lag)
+              }
+              x
+          })
+
 setMethod("mean", "Rle",
           function(x, na.rm = FALSE)
           {

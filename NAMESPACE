@@ -125,7 +125,7 @@ exportMethods(
     max,
     min,
     range,
-    mean, median, var, sd,
+    diff, mean, median, var, sd,
     nchar, substr, substring, gsub,
     as.list,
     as.vector,

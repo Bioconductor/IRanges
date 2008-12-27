@@ -41,6 +41,7 @@
 \alias{rev,Rle-method}
 \alias{sort,Rle-method}
 \alias{rep,Rle-method}
+\alias{\%in\%,Rle,ANY-method}
 \alias{show,Rle-method}
 
 \alias{Ops,Rle,Rle-method}
@@ -51,7 +52,8 @@
 \alias{Summary,Rle-method}
 
 \alias{!,Rle-method}
-\alias{\%in\%,Rle,ANY-method}
+
+\alias{diff,Rle-method}
 \alias{mean,Rle-method}
 \alias{median,Rle-method}
 \alias{var,Rle,missing-method}
@@ -248,6 +250,15 @@
   In the code snippets below, \code{x} is an \code{Rle} object:
 
   \item{}{
+    \code{diff(x, lag = 1, differences = 1}:
+    Returns suitably lagged and iterated differences of \code{x}.
+    \describe{
+       \item{\code{lag}}{An integer indicating which lag to use.}
+       \item{\code{differences}}{An integer indicating the order of the
+         difference.}
+    }
+  }
+  \item{}{
     \code{mean(x, na.rm = FALSE)}:
     Calculates the mean of \code{x}. Removes \code{NA}s when
     \code{na.rm = TRUE}.
@@ -278,7 +289,7 @@
     corresponding values of \code{x}.
     \describe{
        \item{\code{type}}{One of \code{c("bytes", "chars", "width")}.}
-       \item{allowNA}{Should \code{NA} be returned for invalid multibyte
+       \item{\code{allowNA}}{Should \code{NA} be returned for invalid multibyte
          strings rather than throwing an error?}
     }
   }
@@ -307,6 +318,7 @@
 \examples{
   x <- Rle(10:1, 1:10)
   x
+  diff(x)
   unique(x)
   sort(x)
   sqrt(x)
