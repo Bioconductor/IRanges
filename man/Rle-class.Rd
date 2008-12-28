@@ -99,26 +99,26 @@
   \describe{
     \item{}{
       \code{Rle(values)}:
-      This constructor creates an \code{Rle} instances out of an atomic
+      This constructor creates an Rle instances out of an atomic
       vector \code{values}.
     }
     \item{}{
       \code{Rle(values, lengths)}:
-      This constructor creates an \code{Rle} instances out of an atomic
+      This constructor creates an Rle instances out of an atomic
       vector \code{values} and an integer or numeric vector \code{lengths}
       with all positive elements that represent how many times each value
       is repeated. The length of these two vectors must be the same.
     }
     \item{}{
       \code{as(from, "Rle")}:
-      This constructor creates an \code{Rle} instances out of an atomic
+      This constructor creates an Rle instances out of an atomic
       vector \code{from}.
     }
   }
 }
 
 \section{Accessors}{
-  In the code snippets below, \code{x} is an \code{Rle} object:
+  In the code snippets below, \code{x} is an Rle object:
 
   \describe{
     \item{}{
@@ -149,7 +149,7 @@
 }
 
 \section{Replacers}{
-  In the code snippets below, \code{x} is an \code{Rle} object:
+  In the code snippets below, \code{x} is an Rle object:
 
   \describe{
     \item{}{
@@ -166,7 +166,7 @@
 }
 
 \section{Coercion}{
-  In the code snippets below, \code{x} and \code{from} are \code{Rle} objects:
+  In the code snippets below, \code{x} and \code{from} are Rle objects:
 
   \describe{
     \item{}{
@@ -201,13 +201,13 @@
 }
 
 \section{Group Generics}{
-  \code{Rle} objects have support for Ops, Math, Math2, and Summary
+  Rle objects have support for Ops, Math, Math2, and Summary
   S4 group generic functionality. See \link[methods]{S4groupGeneric}
   for more details.
 }
 
 \section{General Methods}{
-  In the code snippets below, \code{x} is an \code{Rle} object:
+  In the code snippets below, \code{x} is an Rle object:
 
   \describe{
     \item{}{
@@ -220,13 +220,13 @@
     }
     \item{}{
       \code{c(x, ...)}:
-      Combines a set of \code{Rle} objects.
+      Combines a set of Rle objects.
     }
     \item{}{
       \code{x[i, drop = !is.null(getOption("dropRle")) && getOption("dropRle")]}:
       Subsets \code{x} by index \code{i}, where \code{i} can be positive
       integers, negative integers, a logical vector of the same length as
-      \code{x}, an \code{Rle} object of the same length as \code{x}
+      \code{x}, an Rle object of the same length as \code{x}
       containing logical values, or an \code{IRanges} object.
       When \code{drop = FALSE} returns an Rle object. When \code{drop = TRUE},
       returns an atomic vector.
@@ -275,18 +275,18 @@
     }
     \item{}{
       \code{x \%in\% table}:
-      Returns a logical \code{Rle} representing set membership in
+      Returns a logical Rle representing set membership in
       \code{table}.
     }
     \item{}{
       \code{show(object)}:
-      Prints out the \code{Rle} object in a user-friendly way.
+      Prints out the Rle object in a user-friendly way.
     }
   }
 }
 
 \section{Logical Data Methods}{
-  In the code snippets below, \code{x} is an \code{Rle} object:
+  In the code snippets below, \code{x} is an Rle object:
 
   \item{}{
     \code{!x}:
@@ -295,7 +295,7 @@
 }
 
 \section{Numerical Data Methods}{
-  In the code snippets below, \code{x} is an \code{Rle} object:
+  In the code snippets below, \code{x} is an Rle object:
 
   \item{}{
      \code{pmax(..., na.rm = FALSE)}:
@@ -364,7 +364,7 @@
 }
 
 \section{Character Data Methods}{
-  In the code snippets below, \code{x} is an \code{Rle} object:
+  In the code snippets below, \code{x} is an Rle object:
 
   \item{}{
     \code{nchar(x, type = "chars", allowNA = FALSE)}:
