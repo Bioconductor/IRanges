@@ -64,6 +64,8 @@ test_Rle_groupGeneric <- function() {
     checkIdentical(range(x), range(xRle))
     checkIdentical(sum(x), sum(xRle))
     checkIdentical(prod(x), prod(xRle))
+    checkIdentical(round(x + .25), as.vector(round(xRle + .25)))
+    checkIdentical(signif(x + .25), as.vector(signif(xRle + .25)))
 }
 
 test_Rle_logical <- function() {
@@ -87,8 +89,6 @@ test_Rle_numerical <- function() {
 
     x <- rep(c(1.2, 3.4, NA, 7.8, 9.0), 1:5)
     xRle <- Rle(x)
-    checkIdentical(round(x), as.vector(round(xRle)))
-    checkIdentical(signif(x), as.vector(signif(xRle)))
     checkIdentical(mean(x), mean(xRle))
     checkIdentical(mean(x, na.rm = TRUE), mean(xRle, na.rm = TRUE))
     checkIdentical(var(x), median(xRle))
