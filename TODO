@@ -8,7 +8,11 @@ Long term TODO list
   - "unique" for removing duplicate ranges
   * "nearest" for finding nearest neighbors
   - "match" for exact matching
-  - operator aliases ("&", "|", "!", "-", "*", "/")
+  - operator aliases
+    - ranges & ranges (intersection)
+    - ranges | ranges (union)
+    - !ranges (complement/gaps)
+    - ranges - ranges (setdiff)
   - "inverse.rle", opposite of whichAsIRanges
   - "range" returns a single element IRanges with bounds of entire set
   - permute or something to create a random mimic
@@ -42,10 +46,9 @@ Long term TODO list
   - inverse.rle
   * "aggregate", generalization of coverage for max/min/etc
   - as a subset specification for BSGenome objects (get sequences out)
-  - think about making ranges() and values() unlist before returning
 
-- XDataFrameList:
-  - stack: unlist(), but with factors recording source of each row
+- SplitXDataFrame:
+  - unlist() should add a factor column recording source of each row
   - rbind
   
 - IntervalTree:

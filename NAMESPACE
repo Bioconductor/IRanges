@@ -14,7 +14,7 @@ exportClasses(
     Rle, RleViews,
     XRle, XRleInteger, XRleIntegerViews,
     MaskCollection,
-    TypedList,
+    TypedList, AnnotatedList,
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList,
     RangesList, IRangesList,
@@ -98,6 +98,7 @@ export(
     rdapply,
     universe, "universe<-", space,
     elementClass, elementLengths,
+    annotation, elementMetadata, "annotation<-", "elementMetadata<-",
     matchMatrix,
 
     ## Old stuff (Defunct or Deprecated):

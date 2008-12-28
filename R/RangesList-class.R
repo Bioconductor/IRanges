@@ -4,9 +4,9 @@
 
 ## Accepts any type of Ranges instance as an element
 
-setClass("RangesList", representation(universe = "characterORNULL"),
+setClass("RangesList",
          prototype = prototype(elementClass = "Ranges", compressible = FALSE),
-         contains = "TypedList")
+         contains = "AnnotatedList")
 
 setClass("IRangesList",
          prototype = prototype(elementClass = "IRanges", compressible = TRUE),
@@ -33,14 +33,14 @@ setMethod("space", "RangesList",
           })
 
 setGeneric("universe", function(x) standardGeneric("universe"))
-setMethod("universe", "RangesList", function(x) x@universe)
+setMethod("universe", "RangesList", function(x) x@annotation)
 
 setGeneric("universe<-", function(x, value) standardGeneric("universe<-"))
 setReplaceMethod("universe", "RangesList",
                  function(x, value) {
                    if (!is.null(value) && !isSingleString(value))
                      stop("'value' must be a single string or NULL")
-                   x@universe <- value
+                   x@annotation <- value
                    x
                  })
 
@@ -55,8 +55,8 @@ RangesList <- function(..., universe = NULL)
   ranges <- list(...)
   if (!all(sapply(ranges, is, "Ranges")))
     stop("all elements in '...' must be instances of 'Ranges'")
-  ans <- TypedList("RangesList", ranges, compress = FALSE)
-  ans@universe <- universe
+  ans <- AnnotatedList("RangesList", ranges, compress = FALSE,
+                       annotation = universe)
   ans
 }
 
@@ -67,8 +67,8 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
   ranges <- list(...)
   if (!all(sapply(ranges, is, "IRanges")))
     stop("all elements in '...' must be instances of 'IRanges'")
-  ans <- TypedList("IRangesList", ranges, compress = compress)
-  ans@universe <- universe
+  ans <- AnnotatedList("IRangesList", ranges, compress = compress,
+                       annotation = universe)
   ans
 }
 

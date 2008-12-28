@@ -16,15 +16,15 @@ setClassUnion("XIntegerORNULL", c("XInteger", "NULL"))
 setClass("XDataFrame",
          representation(
                         rownames = "characterORNULL",
-                        ##rownames = "XStringSetORNULL",
-                        ##rowset = "XIntegerORNULL",
                         nrows = "integer"
                         ),
          prototype(rownames = NULL,
                    ##rowset = NULL,
                    nrows = 0L,
                    compressible = FALSE),
-         contains = "TypedList")
+         contains = "AnnotatedList")
+
+setClassUnion("XDataFrameORNULL", c("XDataFrame", "NULL"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
