@@ -460,10 +460,9 @@ setMethod("quantile", "Rle",
                    type = 7, ...) {
                oldOption <- getOption("dropRle")
                options("dropRle" = TRUE)
-               output <- stats::quantile(x, probs = probs, na.rm = na.rm,
-                                         names = names, type = type, ...)
-               options("dropRle" = oldOption)
-               output
+               on.exit(options("dropRle" = oldOption))
+               stats::quantile(x, probs = probs, na.rm = na.rm, names = names,
+                               type = type, ...)
            })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
