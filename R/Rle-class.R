@@ -128,7 +128,8 @@ setMethod("c", "Rle",
 ###
 
 setMethod("[", "Rle",
-          function(x, i, j, ..., drop=FALSE)
+          function(x, i, j, ...,
+                   drop = !is.null(getOption("dropRle")) && getOption("dropRle"))
           {
               if (!missing(j) || length(list(...)) > 0)
                   stop("invalid subsetting")
@@ -414,6 +415,19 @@ setMethod("mean", "Rle",
             sum(x, na.rm = na.rm) / n
           })
 
+setMethod("var", signature = c(x = "Rle", y = "missing"),
+          function(x, y = NULL, na.rm = FALSE, use)
+          {
+              if (na.rm)
+                  n <- length(x) - sum(runLength(x)[is.na(runValue(x))])
+              else
+                  n <- length(x)
+              sum((x - mean(x, na.rm = na.rm))^2, na.rm = na.rm) / (n - 1)
+          })
+
+setMethod("sd", signature = c(x = "Rle"),
+          function(x, na.rm = FALSE) sqrt(var(x, na.rm = na.rm)))
+
 setMethod("median", signature = c(x = "Rle"),
           function(x, na.rm = FALSE)
           {
@@ -437,19 +451,17 @@ setMethod("median", signature = c(x = "Rle"),
                   sum(as.vector(subseq(x, half, half + 1L)))/2
           })
 
-setMethod("var", signature = c(x = "Rle", y = "missing"),
-          function(x, y = NULL, na.rm = FALSE, use)
-          {
-              if (na.rm)
-                  n <- length(x) - sum(runLength(x)[is.na(runValue(x))])
-              else
-                  n <- length(x)
-              sum((x - mean(x, na.rm = na.rm))^2, na.rm = na.rm) / (n - 1)
-          })
+setMethod("quantile", "Rle",
+          function(x, probs = seq(0, 1, 0.25), na.rm = FALSE, names = TRUE, 
+                   type = 7, ...) {
+               oldOption <- getOption("dropRle")
+               options("dropRle" = TRUE)
+               output <- stats::quantile(x, probs = probs, na.rm = na.rm,
+                                         names = names, type = type, ...)
+               options("dropRle" = oldOption)
+               output
+           })
 
-setMethod("sd", signature = c(x = "Rle"),
-          function(x, na.rm = FALSE) sqrt(var(x, na.rm = na.rm)))
-  
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other character data methods
 ###

@@ -35,6 +35,7 @@ test_Rle_coersion <- function() {
 test_Rle_general <- function() {
     x <- rep(6:10, 1:5)
     xRle <- Rle(x)
+    checkIdentical(unique(x), unique(xRle))
     checkIdentical(length(x), length(xRle))
     checkIdentical(c(x, x), as.vector(c(xRle, xRle)))
     checkIdentical(x[c(3,2,4,6)], as.vector(xRle[c(3,2,4,6)]))
@@ -84,16 +85,19 @@ test_Rle_numerical <- function() {
     checkIdentical(diff(x, lag = 2, differences = 2), 
                    as.vector(diff(xRle, lag = 2, differences = 2)))
 
-    x <- rep(c(1, 3, NA, 7, 9), 1:5)
+    x <- rep(c(1.2, 3.4, NA, 7.8, 9.0), 1:5)
     xRle <- Rle(x)
+    checkIdentical(round(x), as.vector(round(xRle)))
+    checkIdentical(signif(x), as.vector(signif(xRle)))
     checkIdentical(mean(x), mean(xRle))
     checkIdentical(mean(x, na.rm = TRUE), mean(xRle, na.rm = TRUE))
+    checkIdentical(var(x), median(xRle))
+    checkEqualsNumeric(var(x, na.rm = TRUE), var(xRle, na.rm = TRUE))
+    checkIdentical(sd(x), sd(xRle))
+    checkEqualsNumeric(sd(x, na.rm = TRUE), sd(xRle, na.rm = TRUE))
     checkIdentical(median(x), median(xRle))
     checkIdentical(median(x, na.rm = TRUE), median(xRle, na.rm = TRUE))
-    checkIdentical(var(x), median(xRle))
-    checkIdentical(var(x, na.rm = TRUE), var(xRle, na.rm = TRUE))
-    checkIdentical(sd(x), sd(xRle))
-    checkIdentical(sd(x, na.rm = TRUE), sd(xRle, na.rm = TRUE))
+    checkIdentical(quantile(x, na.rm = TRUE), quantile(xRle, na.rm = TRUE))
 }
 
 test_Rle_character <- function() {

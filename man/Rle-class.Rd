@@ -73,9 +73,10 @@
 \alias{pmin.int,Rle-method}
 \alias{diff,Rle-method}
 \alias{mean,Rle-method}
-\alias{median,Rle-method}
 \alias{var,Rle,missing-method}
 \alias{sd,Rle-method}
+\alias{median,Rle-method}
+\alias{quantile,Rle-method}
 
 \alias{nchar,Rle-method}
 \alias{substr,Rle-method}
@@ -222,11 +223,13 @@
       Combines a set of \code{Rle} objects.
     }
     \item{}{
-      \code{x[i]}:
+      \code{x[i, drop = !is.null(getOption("dropRle")) && getOption("dropRle")]}:
       Subsets \code{x} by index \code{i}, where \code{i} can be positive
       integers, negative integers, a logical vector of the same length as
       \code{x}, an \code{Rle} object of the same length as \code{x}
       containing logical values, or an \code{IRanges} object.
+      When \code{drop = FALSE} returns an Rle object. When \code{drop = TRUE},
+      returns an atomic vector.
     }
     \item{}{
       \code{subseq(x, start=NA, end=NA, width=NA)}:
@@ -329,11 +332,6 @@
     \code{na.rm = TRUE}.
   }
   \item{}{
-    \code{median(x, na.rm = FALSE)}:
-    Calculates the median of \code{x}. Removes \code{NA}s when
-    \code{na.rm = TRUE}.
-  }
-  \item{}{
     \code{var(x, na.rm = FALSE)}:
     Calculates the variance of \code{x}. Removes \code{NA}s when
     \code{na.rm = TRUE}.
@@ -342,6 +340,26 @@
     \code{sd(x, na.rm = FALSE)}:
     Calculates the standard deviation of \code{x}. Removes \code{NA}s
     when \code{na.rm = TRUE}.
+  }
+  \item{}{
+    \code{median(x, na.rm = FALSE)}:
+    Calculates the median of \code{x}. Removes \code{NA}s when
+    \code{na.rm = TRUE}.
+  }
+  \item{}{
+    \code{quantile(x, probs = seq(0, 1, 0.25), na.rm = FALSE, names = TRUE, type = 7, ...)}:
+    Calculates the specified quantiles of \code{x}.
+    \describe{
+      \item{\code{probs}}{A numeric vector of probabilities with values in
+        [0,1].}
+      \item{\code{na.rm}}{If \code{TRUE}, removes \code{NA}s from \code{x}
+        before the quantiles are computed.}
+      \item{\code{names}}{If \code{TRUE}, the result has names describing the
+        quantiles.}
+      \item{\code{type}}{An integer between 1 and 9 selecting one of the nine
+        quantile algorithms detailed in \code{\link[stats]{quantile}}.}
+      \item{\dots}{Further arguments passed to or from other methods.}
+    }
   }
 }
 
