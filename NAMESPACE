@@ -145,7 +145,7 @@ exportMethods(
     eval,
     t,
     union, intersect, setdiff,
-    "%in%",
+    is.na, "%in%",
     order, sort,
     
     ## Methods for generics defined in this package:

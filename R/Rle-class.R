@@ -284,6 +284,9 @@ setMethod("table", "Rle",
                         class = "table")
           })
 
+setMethod("is.na", "Rle",
+          function(x) Rle(values = is.na(runValue(x)), lengths = runLength(x)))
+
 setMethod("%in%", "Rle",
           function(x, table) {
               Rle(values = runValue(x) %in% table, lengths = runLength(x))

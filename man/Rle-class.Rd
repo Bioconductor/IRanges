@@ -50,6 +50,7 @@
 \alias{rep.int,Rle-method}
 \alias{table}
 \alias{table,Rle-method}
+\alias{is.na,Rle-method}
 \alias{\%in\%,Rle,ANY-method}
 \alias{show,Rle-method}
 
@@ -264,6 +265,10 @@
     \item{}{
       \code{table(...)}:
       Returns a table containing the counts of the unique values.
+    }
+    \item{}{
+      \code{is.na(x)}:
+      Returns a logical Rle indicating with values are \code{NA}.
     }
     \item{}{
       \code{x \%in\% table}:
