@@ -52,6 +52,7 @@
 \alias{table,Rle-method}
 \alias{is.na,Rle-method}
 \alias{\%in\%,Rle,ANY-method}
+\alias{summary,Rle-method}
 \alias{show,Rle-method}
 
 \alias{Ops,Rle,Rle-method}
@@ -297,6 +298,12 @@
       \code{x \%in\% table}:
       Returns a logical Rle representing set membership in
       \code{table}.
+    }
+    \item{}{
+      \code{summary(object, ..., digits = max(3, getOption("digits") - 3))}:
+      Summarizes the Rle object using an atomic vector convention. The
+      \code{digits} argument is used for number formatting with
+      \code{signif()}.
     }
     \item{}{
       \code{show(object)}:

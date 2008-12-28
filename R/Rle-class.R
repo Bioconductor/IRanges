@@ -291,6 +291,36 @@ setMethod("is.na", "Rle",
 setMethod("%in%", "Rle",
           function(x, table) Rle(values = runValue(x) %in% table, lengths = runLength(x)))
 
+setMethod("summary", "Rle",
+          function (object, ..., digits = max(3, getOption("digits") - 3)) 
+          {
+              value <-
+                if (is.logical(runValue(object))) 
+                    c(ValueMode = "logical", {
+                          tb <- table(object, exclude = NULL)
+                          if (!is.null(n <- dimnames(tb)[[1L]]) && any(iN <- is.na(n)))
+                              dimnames(tb)[[1L]][iN] <- "NA's"
+                          tb
+                      })
+                else if (is.numeric(object)) {
+                    nas <- is.na(object)
+                    object <- object[!nas]
+                    qq <- quantile(object)
+                    qq <- signif(c(qq[1L:3L], mean(object), qq[4L:5L]), digits)
+                    names(qq) <- c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.")
+                    if (any(nas)) 
+                        c(qq, `NA's` = sum(nas))
+                    else
+                        qq
+                }
+                else
+                    c(Length = length(object),
+                      Class = class(object),
+                      ValueMode = mode(runValue(object)))
+              class(value) <- "table"
+              value
+          })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Group generic methods
 ###

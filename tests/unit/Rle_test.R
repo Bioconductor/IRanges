@@ -51,6 +51,7 @@ test_Rle_general <- function() {
     checkIdentical(is.na(c(NA, x, NA, NA, NA, x, NA)),
                    as.vector(is.na(c(Rle(NA), xRle, Rle(NA, 3), xRle, Rle(NA)))))
     checkIdentical(c(x,x) %in% c(7:9), as.vector(c(xRle,xRle)) %in% c(7:9))
+    checkIdentical(summary(x), summary(xRle))
 }
 
 test_Rle_groupGeneric <- function() {
