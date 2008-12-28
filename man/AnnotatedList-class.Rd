@@ -13,7 +13,7 @@
 \alias{elementMetadata<-,AnnotatedList,XDataFrameORNULL-method}
 
 \title{Annotated Lists}
-\description{The virtual class \code{AnnotatedList} extends
+\description{The class \code{AnnotatedList} extends
   \code{\linkS4class{TypedList}} to contain two optional metadata elements: an
   annotation string, referring to a separate metadata resource, and a
   data frame with local metadata on each element.}
@@ -70,7 +70,7 @@
   \code{\linkS4class{XDataFrame}} both extend this class.}
 
 \examples{
-  ## demonstrated on RangesList objects, as AnnotatedList is virtual
+  ## demonstrated on RangesList objects, a subtype of AnnotatedList
 
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))

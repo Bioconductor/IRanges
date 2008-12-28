@@ -8,7 +8,7 @@
 setClass("AnnotatedList",
          representation(annotation = "characterORNULL",
                         elementMetadata = "XDataFrameORNULL"),
-         contains = c("TypedList", "VIRTUAL"))
+         contains = "TypedList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
