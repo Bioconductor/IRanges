@@ -77,6 +77,7 @@
 \alias{sd,Rle-method}
 \alias{median,Rle-method}
 \alias{quantile,Rle-method}
+\alias{mad,Rle-method}
 
 \alias{nchar,Rle-method}
 \alias{substr,Rle-method}
@@ -378,6 +379,18 @@
       \item{\code{type}}{An integer between 1 and 9 selecting one of the nine
         quantile algorithms detailed in \code{\link[stats]{quantile}}.}
       \item{\dots}{Further arguments passed to or from other methods.}
+    }
+  }
+  \item{}{
+    \code{mad(x, center = median(x), constant = 1.4826, na.rm = FALSE, low = FALSE, high = FALSE)}:
+    Calculates the median absolute deviation of \code{x}.
+    \describe{
+      \item{\code{center}}{The center to calculate the deviation from.}
+      \item{\code{constant}}{The scale factor.}
+      \item{\code{na.rm}}{If \code{TRUE}, removes \code{NA}s from \code{x}
+        before the mad is computed.}
+      \item{\code{low}}{If \code{TRUE}, compute the 'lo-median'.}
+      \item{\code{high}}{If \code{TRUE}, compute the 'hi-median'.}
     }
   }
 }

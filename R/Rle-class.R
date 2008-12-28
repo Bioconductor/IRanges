@@ -432,37 +432,45 @@ setMethod("var", signature = c(x = "Rle", y = "missing"),
 setMethod("sd", signature = c(x = "Rle"),
           function(x, na.rm = FALSE) sqrt(var(x, na.rm = na.rm)))
 
-setMethod("median", signature = c(x = "Rle"),
+.medianDefault <- stats::median.default
+environment(.medianDefault) <- globalenv()
+setMethod("median", "Rle",
           function(x, na.rm = FALSE)
           {
-              nas <- which(is.na(runValue(x)))
-              if (length(nas) > 0) {
-                  if (na.rm) {
-                      x@.Data <- runValue(x)[-nas]
-                      x@lengths <- runLength(x)[-nas]
-                  } else {
-                      return(as(NA, class(runValue(x))))
-                  }
-              }
-              n <- length(x)
-              if (n == 0L) 
-                  return(as(NA, class(runValue(x))))
-              x <- sort(x)
-              half <- (n + 1L) %/% 2L
-              if (n %% 2L == 1L) 
-                  x[half, drop = TRUE]
-              else
-                  sum(as.vector(subseq(x, half, half + 1L)))/2
+              if (na.rm)
+                  x <- x[!is.na(x)]
+              oldOption <- getOption("dropRle")
+              options("dropRle" = TRUE)
+              on.exit(options("dropRle" = oldOption))
+              .medianDefault(x, na.rm = FALSE)
           })
 
+.quantileDefault <- stats::quantile.default
+environment(.quantileDefault) <- globalenv()
 setMethod("quantile", "Rle",
           function(x, probs = seq(0, 1, 0.25), na.rm = FALSE, names = TRUE, 
                    type = 7, ...) {
+               if (na.rm)
+                   x <- x[!is.na(x)]
                oldOption <- getOption("dropRle")
                options("dropRle" = TRUE)
                on.exit(options("dropRle" = oldOption))
-               stats::quantile(x, probs = probs, na.rm = na.rm, names = names,
-                               type = type, ...)
+               .quantileDefault(x, probs = probs, na.rm = FALSE, names = names,
+                                type = type, ...)
+           })
+
+.madDefault <- stats::mad
+environment(.madDefault) <- globalenv()
+setMethod("mad", "Rle",
+          function(x, center = median(x), constant = 1.4826, na.rm = FALSE,
+                   low = FALSE, high = FALSE) {
+               if (na.rm)
+                   x <- x[!is.na(x)]
+               oldOption <- getOption("dropRle")
+               options("dropRle" = TRUE)
+               on.exit(options("dropRle" = oldOption))
+               .madDefault(x, center = center, constant = constant, na.rm = FALSE, 
+                           low = low, high = high)
            })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

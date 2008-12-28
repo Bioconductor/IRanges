@@ -1,7 +1,7 @@
 useDynLib(IRanges)
 
 import(methods)
-importFrom(stats, "start", "end", "update", "var", "sd", "median", "quantile")
+importFrom(stats, start, end, update, var, sd, median, quantile, mad)
 importClassesFrom(Matrix, CsparseMatrix, nsparseMatrix, generalMatrix,
                   sparseMatrix, Matrix, nMatrix, compMatrix, ngCMatrix)
 importFrom(Matrix, colSums)
@@ -127,7 +127,7 @@ exportMethods(
     min,
     range,
     pmax, pmin, pmax.int, pmin.int, diff,
-    mean, var, sd, median, quantile,
+    mean, var, sd, median, quantile, mad,
     nchar, substr, substring, chartr, tolower, toupper, gsub,
     as.list,
     as.vector,

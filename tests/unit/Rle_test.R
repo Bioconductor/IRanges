@@ -100,6 +100,8 @@ test_Rle_numerical <- function() {
     checkIdentical(median(x), median(xRle))
     checkIdentical(median(x, na.rm = TRUE), median(xRle, na.rm = TRUE))
     checkIdentical(quantile(x, na.rm = TRUE), quantile(xRle, na.rm = TRUE))
+    checkIdentical(mad(x), mad(xRle))
+    checkIdentical(mad(x, na.rm = TRUE), mad(xRle, na.rm = TRUE))
 }
 
 test_Rle_character <- function() {
