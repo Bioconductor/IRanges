@@ -289,9 +289,7 @@ setMethod("is.na", "Rle",
           function(x) Rle(values = is.na(runValue(x)), lengths = runLength(x)))
 
 setMethod("%in%", "Rle",
-          function(x, table) {
-              Rle(values = runValue(x) %in% table, lengths = runLength(x))
-          })
+          function(x, table) Rle(values = runValue(x) %in% table, lengths = runLength(x)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Group generic methods
@@ -319,11 +317,11 @@ setMethod("Ops", signature(e1 = "Rle", e2 = "vector"),
 setMethod("Ops", signature(e1 = "vector", e2 = "Rle"),
           function(e1, e2) callGeneric(Rle(e1), e2))
 
-setMethod("Math", "Rle", function(x) {
-            if (.Generic %in% c("cumsum", "cumprod"))
-                callGeneric(as.vector(x))
-            else
-                Rle(values = callGeneric(runValue(x)), lengths = runLength(x))
+setMethod("Math", "Rle",
+          function(x) {
+              switch(.Generic,
+                     cumsum =, cumprod = callGeneric(as.vector(x)),
+                     Rle(values = callGeneric(runValue(x)), lengths = runLength(x)))
           })
 
 setMethod("Math2", "Rle", function(x, digits)
@@ -337,7 +335,7 @@ setMethod("Summary", "Rle",
           function(x, ..., na.rm = FALSE)
           {
               switch(.Generic,
-                     all=, any=, min=, max=, range=
+                     all =, any =, min =, max =, range =
                      callGeneric(runValue(x), ..., na.rm = na.rm),
                      sum = sum(runValue(x) * runLength(x), ..., na.rm = na.rm),
                      prod = prod(runValue(x) ^ runLength(x), ..., na.rm = na.rm))
