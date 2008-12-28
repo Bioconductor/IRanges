@@ -201,9 +201,28 @@
 }
 
 \section{Group Generics}{
-  Rle objects have support for Ops, Math, Math2, and Summary
-  S4 group generic functionality. See \link[methods]{S4groupGeneric}
-  for more details.
+  Rle objects have support for \code{Ops}, \code{Math}, \code{Math2}, and
+  \code{Summary} S4 group generic functionality:
+  \describe{
+    \item{\code{Arith}}{\code{"+"}, \code{"-"}, \code{"*"}, \code{"^"},
+      \code{"\%\%"}, \code{"\%/\%"}, \code{"/"}}
+    \item{\code{Compare}}{\code{"=="}, \code{">"}, \code{"<"}, \code{"!="}, 
+      \code{"<="}, \code{">="}}
+    \item{\code{Logic}}{\code{"&"}, \code{"|"}}
+    \item{\code{Ops}}{\code{"Arith"}, \code{"Compare"}, \code{"Logic"}}
+    \item{\code{Math}}{\code{"abs"}, \code{"sign"}, \code{"sqrt"},
+      \code{"ceiling"}, \code{"floor"}, \code{"trunc"}, \code{"cummax"},
+      \code{"cummin"}, \code{"cumprod"}, \code{"cumsum"}, \code{"log"},
+      \code{"log10"}, \code{"log2"}, \code{"log1p"}, \code{"acos"},
+      \code{"acosh"}, \code{"asin"}, \code{"asinh"}, \code{"atan"},
+      \code{"atanh"}, \code{"exp"}, \code{"expm1"}, \code{"cos"},
+      \code{"cosh"}, \code{"sin"}, \code{"sinh"}, \code{"tan"}, \code{"tanh"},
+      \code{"gamma"}, \code{"lgamma"}, \code{"digamma"}, \code{"trigamma"}}
+    \item{\code{Math2}}{\code{"round"}, \code{"signif"}}
+    \item{\code{Summary}}{\code{"max"}, \code{"min"}, \code{"range"},
+      \code{"prod"}, \code{"sum"}, \code{"any"}, \code{"all"}}
+  }
+  See \link[methods]{S4groupGeneric} for more details.
 }
 
 \section{General Methods}{

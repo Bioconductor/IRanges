@@ -319,8 +319,12 @@ setMethod("Ops", signature(e1 = "Rle", e2 = "vector"),
 setMethod("Ops", signature(e1 = "vector", e2 = "Rle"),
           function(e1, e2) callGeneric(Rle(e1), e2))
 
-setMethod("Math", "Rle", function(x)
-          Rle(values = callGeneric(runValue(x)), lengths = runLength(x)))
+setMethod("Math", "Rle", function(x) {
+            if (.Generic %in% c("cumsum", "cumprod"))
+                callGeneric(as.vector(x))
+            else
+                Rle(values = callGeneric(runValue(x)), lengths = runLength(x))
+          })
 
 setMethod("Math2", "Rle", function(x, digits)
           {
