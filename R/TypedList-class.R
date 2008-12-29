@@ -255,9 +255,9 @@ function(x, i, use.names = TRUE, compress = x@compressible) {
       whichToLoop <- which(elementLengths(x)[i] > 0)
     }
     if (length(dim(elt)) < 2)
-        emptyElt <- x@elements[[1]][numeric(0)]
+        emptyElt <- x@elements[[1]][integer(0)]
     else
-        emptyElt <- x@elements[[1]][numeric(0), , drop = FALSE]
+        emptyElt <- x@elements[[1]][integer(0), , drop = FALSE]
     elts <- rep(list(emptyElt), length(runStarts))
     if (length(whichToLoop) > 0) {
       elts[whichToLoop] <-
