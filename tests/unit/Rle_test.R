@@ -69,6 +69,7 @@ test_Rle_groupGeneric <- function() {
     checkIdentical(cumprod(x), cumprod(xRle))
     checkIdentical(round(x + .25), as.vector(round(xRle + .25)))
     checkIdentical(signif(x + .25), as.vector(signif(xRle + .25)))
+    checkIdentical(Im(x + 5i), as.vector(Im(xRle + 5i)))
 }
 
 test_Rle_logical <- function() {

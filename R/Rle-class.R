@@ -367,6 +367,9 @@ setMethod("Summary", "Rle",
                      prod = prod(runValue(x) ^ runLength(x), ..., na.rm = na.rm))
           })
 
+setMethod("Complex", "Rle",
+          function(z) Rle(values = callGeneric(runValue(z)), lengths = runLength(z)))
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other logical data methods
 ###

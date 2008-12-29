@@ -110,7 +110,7 @@ export(
 exportMethods(
     ## Methods for generics defined elsewhere:
     Arith,
-    Ops, Math, Math2, Summary,
+    Ops, Math, Math2, Summary, Complex,
     coerce,
     show,
     summary,

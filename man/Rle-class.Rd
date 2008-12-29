@@ -39,6 +39,14 @@
 \alias{coerce,Rle,character-method}
 \alias{coerce,Rle,raw-method}
 
+\alias{Ops,Rle,Rle-method}
+\alias{Ops,Rle,vector-method}
+\alias{Ops,vector,Rle-method}
+\alias{Math,Rle-method}
+\alias{Math2,Rle-method}
+\alias{Summary,Rle-method}
+\alias{Complex,Rle-method}
+
 \alias{[,Rle,ANY,ANY,ANY-method}
 \alias{\%in\%,Rle,ANY-method}
 \alias{c,Rle-method}
@@ -54,13 +62,6 @@
 \alias{summary,Rle-method}
 \alias{table}
 \alias{table,Rle-method}
-
-\alias{Ops,Rle,Rle-method}
-\alias{Ops,Rle,vector-method}
-\alias{Ops,vector,Rle-method}
-\alias{Math,Rle-method}
-\alias{Math2,Rle-method}
-\alias{Summary,Rle-method}
 
 \alias{!,Rle-method}
 
@@ -203,8 +204,7 @@
 }
 
 \section{Group Generics}{
-  Rle objects have support for \code{Ops}, \code{Math}, \code{Math2}, and
-  \code{Summary} S4 group generic functionality:
+  Rle objects have support for S4 group generic functionality:
   \describe{
     \item{\code{Arith}}{\code{"+"}, \code{"-"}, \code{"*"}, \code{"^"},
       \code{"\%\%"}, \code{"\%/\%"}, \code{"/"}}
@@ -223,6 +223,8 @@
     \item{\code{Math2}}{\code{"round"}, \code{"signif"}}
     \item{\code{Summary}}{\code{"max"}, \code{"min"}, \code{"range"},
       \code{"prod"}, \code{"sum"}, \code{"any"}, \code{"all"}}
+    \item{\code{Complex}}{\code{"Arg"}, \code{"Conj"}, \code{"Im"},
+      \code{"Mod"}, \code{"Re"}}
   }
   See \link[methods]{S4groupGeneric} for more details.
 }
