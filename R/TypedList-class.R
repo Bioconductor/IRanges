@@ -254,7 +254,7 @@ function(x, i, use.names = TRUE, compress = x@compressible) {
       runOffsets <- rep.int(0L, k)
       whichToLoop <- which(elementLengths(x)[i] > 0)
     }
-    if (length(dim(x@elements)) < 2)
+    if (length(dim(x@elements[[1]])) < 2)
         zeroLengthElt <- x@elements[[1]][integer(0)]
     else
         zeroLengthElt <- x@elements[[1]][integer(0), , drop = FALSE]
