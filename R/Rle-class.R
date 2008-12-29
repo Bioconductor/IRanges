@@ -107,6 +107,57 @@ setMethod("as.character", "Rle", function(x) rep(as.character(runValue(x)), runL
 setMethod("as.raw", "Rle", function(x) rep(as.raw(runValue(x)), runLength(x)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Group generic methods
+###
+
+setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
+          function(e1, e2)
+          {
+              n1 <- length(e1)
+              n2 <- length(e2)
+              n <- max(n1, n2)
+              if (max(n1, n2) %% min(n1, n2) != 0)
+                  warning("longer object length is not a multiple of shorter object length")
+              e1 <- rep(e1, length.out = n)
+              e2 <- rep(e2, length.out = n)
+              ends <- sort(unique(c(end(e1), end(e2))))
+              lengths <- diff(c(0L, ends))
+              values <- callGeneric(e1[ends, drop = TRUE], e2[ends, drop = TRUE])
+              Rle(values = values, lengths = lengths)
+          })
+
+setMethod("Ops", signature(e1 = "Rle", e2 = "vector"),
+          function(e1, e2) callGeneric(e1, Rle(e2)))
+
+setMethod("Ops", signature(e1 = "vector", e2 = "Rle"),
+          function(e1, e2) callGeneric(Rle(e1), e2))
+
+setMethod("Math", "Rle",
+          function(x)
+              switch(.Generic,
+                     cumsum =, cumprod = callGeneric(as.vector(x)),
+                     Rle(values = callGeneric(runValue(x)), lengths = runLength(x))))
+
+setMethod("Math2", "Rle",
+          function(x, digits)
+          {
+              if (missing(digits))
+                  digits <- ifelse(.Generic == "round", 0, 6)
+              Rle(values = callGeneric(runValue(x), digits = digits), lengths = runLength(x))
+          })
+
+setMethod("Summary", "Rle",
+          function(x, ..., na.rm = FALSE)
+              switch(.Generic,
+                     all =, any =, min =, max =, range =
+                     callGeneric(runValue(x), ..., na.rm = na.rm),
+                     sum = sum(runValue(x) * runLength(x), ..., na.rm = na.rm),
+                     prod = prod(runValue(x) ^ runLength(x), ..., na.rm = na.rm)))
+
+setMethod("Complex", "Rle",
+          function(z) Rle(values = callGeneric(runValue(z)), lengths = runLength(z)))
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### General methods
 ###
 
@@ -316,59 +367,6 @@ setMethod("table", "Rle",
                                       names = "")),
                       class = "table")
           })
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Group generic methods
-###
-
-setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
-          function(e1, e2)
-          {
-              n1 <- length(e1)
-              n2 <- length(e2)
-              n <- max(n1, n2)
-              if (max(n1, n2) %% min(n1, n2) != 0)
-                  warning("longer object length is not a multiple of shorter object length")
-              e1 <- rep(e1, length.out = n)
-              e2 <- rep(e2, length.out = n)
-              allEnds <- sort(unique(c(end(e1), end(e2))))
-              lengths <- diff(c(0L, allEnds))
-              values <- callGeneric(e1[allEnds, drop = TRUE], e2[allEnds, drop = TRUE])
-              Rle(values = values, lengths = lengths)
-          })
-
-setMethod("Ops", signature(e1 = "Rle", e2 = "vector"),
-          function(e1, e2) callGeneric(e1, Rle(e2)))
-
-setMethod("Ops", signature(e1 = "vector", e2 = "Rle"),
-          function(e1, e2) callGeneric(Rle(e1), e2))
-
-setMethod("Math", "Rle",
-          function(x) {
-              switch(.Generic,
-                     cumsum =, cumprod = callGeneric(as.vector(x)),
-                     Rle(values = callGeneric(runValue(x)), lengths = runLength(x)))
-          })
-
-setMethod("Math2", "Rle", function(x, digits)
-          {
-              if (missing(digits))
-                  digits <- ifelse(.Generic == "round", 0, 6)
-              Rle(values = callGeneric(runValue(x), digits = digits), lengths = runLength(x))
-          })
-
-setMethod("Summary", "Rle",
-          function(x, ..., na.rm = FALSE)
-          {
-              switch(.Generic,
-                     all =, any =, min =, max =, range =
-                     callGeneric(runValue(x), ..., na.rm = na.rm),
-                     sum = sum(runValue(x) * runLength(x), ..., na.rm = na.rm),
-                     prod = prod(runValue(x) ^ runLength(x), ..., na.rm = na.rm))
-          })
-
-setMethod("Complex", "Rle",
-          function(z) Rle(values = callGeneric(runValue(z)), lengths = runLength(z)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other logical data methods
