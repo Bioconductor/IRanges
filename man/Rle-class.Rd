@@ -39,21 +39,21 @@
 \alias{coerce,Rle,character-method}
 \alias{coerce,Rle,raw-method}
 
-\alias{length,Rle-method}
-\alias{c,Rle-method}
 \alias{[,Rle,ANY,ANY,ANY-method}
-\alias{subseq,Rle-method}
-\alias{rev,Rle-method}
-\alias{sort,Rle-method}
+\alias{\%in\%,Rle,ANY-method}
+\alias{c,Rle-method}
+\alias{is.na,Rle-method}
+\alias{length,Rle-method}
 \alias{rep,Rle-method}
 \alias{rep.int}
 \alias{rep.int,Rle-method}
+\alias{rev,Rle-method}
+\alias{show,Rle-method}
+\alias{sort,Rle-method}
+\alias{subseq,Rle-method}
+\alias{summary,Rle-method}
 \alias{table}
 \alias{table,Rle-method}
-\alias{is.na,Rle-method}
-\alias{\%in\%,Rle,ANY-method}
-\alias{summary,Rle-method}
-\alias{show,Rle-method}
 
 \alias{Ops,Rle,Rle-method}
 \alias{Ops,Rle,vector-method}
@@ -236,14 +236,6 @@
       \code{FUN(x, ...)} = \code{FUN(runValue(x))}.
     }
     \item{}{
-      \code{length(x)}:
-      Returns the underlying vector length of \code{x}.
-    }
-    \item{}{
-      \code{c(x, ...)}:
-      Combines a set of Rle objects.
-    }
-    \item{}{
       \code{x[i, drop = !is.null(getOption("dropRle")) && getOption("dropRle")]}:
       Subsets \code{x} by index \code{i}, where \code{i} can be positive
       integers, negative integers, a logical vector of the same length as
@@ -253,25 +245,21 @@
       returns an atomic vector.
     }
     \item{}{
-      \code{subseq(x, start=NA, end=NA, width=NA)}:
-      Extract the subsequence from \code{x} specified by two of the three
-      following values:  \code{start}, \code{end}, and \code{width}. This
-      is more efficient for extracting consecutive values than \code{[}.
+      \code{x \%in\% table}:
+      Returns a logical Rle representing set membership in
+      \code{table}.
     }
     \item{}{
-      \code{rev(x)}:
-      Reverses the order of the values in \code{x}.
+      \code{c(x, ...)}:
+      Combines a set of Rle objects.
     }
     \item{}{
-      \code{sort(x, decreasing = FALSE, na.last = NA)}:
-      Sorts the values in \code{x}.
-      \describe{
-        \item{\code{decreasing}}{If \code{TRUE}, sort values in decreasing
-          order. If \code{FALSE}, sort values in increasing order.}
-        \item{\code{na.last}}{If \code{TRUE}, missing values are placed last.
-          If \code{FALSE}, they are placed first. If \code{NA}, they are
-          removed.}
-      }
+      \code{is.na(x)}:
+      Returns a logical Rle indicating with values are \code{NA}.
+    }
+    \item{}{
+      \code{length(x)}:
+      Returns the underlying vector length of \code{x}.
     }
     \item{}{
       \code{rep(x, times, length.out, each)}, \code{rep.int(x, times)}:
@@ -287,17 +275,29 @@
       }
     }
     \item{}{
-      \code{table(...)}:
-      Returns a table containing the counts of the unique values.
+      \code{rev(x)}:
+      Reverses the order of the values in \code{x}.
     }
     \item{}{
-      \code{is.na(x)}:
-      Returns a logical Rle indicating with values are \code{NA}.
+      \code{show(object)}:
+      Prints out the Rle object in a user-friendly way.
     }
     \item{}{
-      \code{x \%in\% table}:
-      Returns a logical Rle representing set membership in
-      \code{table}.
+      \code{sort(x, decreasing = FALSE, na.last = NA)}:
+      Sorts the values in \code{x}.
+      \describe{
+        \item{\code{decreasing}}{If \code{TRUE}, sort values in decreasing
+          order. If \code{FALSE}, sort values in increasing order.}
+        \item{\code{na.last}}{If \code{TRUE}, missing values are placed last.
+          If \code{FALSE}, they are placed first. If \code{NA}, they are
+          removed.}
+      }
+    }
+    \item{}{
+      \code{subseq(x, start=NA, end=NA, width=NA)}:
+      Extract the subsequence from \code{x} specified by two of the three
+      following values:  \code{start}, \code{end}, and \code{width}. This
+      is more efficient for extracting consecutive values than \code{[}.
     }
     \item{}{
       \code{summary(object, ..., digits = max(3, getOption("digits") - 3))}:
@@ -306,8 +306,8 @@
       \code{signif()}.
     }
     \item{}{
-      \code{show(object)}:
-      Prints out the Rle object in a user-friendly way.
+      \code{table(...)}:
+      Returns a table containing the counts of the unique values.
     }
   }
 }

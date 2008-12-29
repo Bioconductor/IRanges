@@ -110,23 +110,6 @@ setMethod("as.raw", "Rle", function(x) rep(as.raw(runValue(x)), runLength(x)))
 ### General methods
 ###
 
-setMethod("length", "Rle", function(x) sum(runLength(x)))
-
-setMethod("c", "Rle", 
-          function(x, ..., recursive = FALSE) {
-            if (recursive)
-              stop("'recursive' mode is not supported")
-            args <- list(x, ...)
-            if (!all(unlist(lapply(args, is, "Rle"))))
-                stop("all arguments in '...' must be instances of 'Rle'")
-            Rle(values  = unlist(lapply(args, slot, ".Data")),
-                lengths = unlist(lapply(args, slot, "lengths")))
-          })
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Subscript methods
-###
-
 setMethod("[", "Rle",
           function(x, i, j, ...,
                    drop = !is.null(getOption("dropRle")) && getOption("dropRle"))
@@ -194,36 +177,24 @@ setMethod("[", "Rle",
               output
           })
 
-setMethod("subseq", "Rle",
-          function(x, start=NA, end=NA, width=NA)
-          {
-              solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
-              if (start(solved_SEW) > 1 || end(solved_SEW) < length(x)) {
-                  breaks <- c(0L, end(x))
-                  rangeGroups <- findInterval(c(start(solved_SEW), end(solved_SEW)) - 1e-6, breaks)
-                  lengths <- subseq(runLength(x), rangeGroups[1], rangeGroups[2])
-                  lengths[1] <- breaks[rangeGroups[1] + 1L, drop = TRUE] - start(solved_SEW) + 1L
-                  if (length(lengths) > 1)
-                      lengths[length(lengths)] <- end(solved_SEW) - breaks[rangeGroups[2], drop = TRUE]
-                  x@lengths <- lengths
-                  x@.Data <- subseq(runValue(x), rangeGroups[1], rangeGroups[2])
-              }
-              x
+setMethod("%in%", "Rle",
+          function(x, table) Rle(values = runValue(x) %in% table, lengths = runLength(x)))
+
+setMethod("c", "Rle", 
+          function(x, ..., recursive = FALSE) {
+              if (recursive)
+                  stop("'recursive' mode is not supported")
+              args <- list(x, ...)
+              if (!all(unlist(lapply(args, is, "Rle"))))
+                  stop("all arguments in '...' must be instances of 'Rle'")
+              Rle(values  = unlist(lapply(args, slot, ".Data")),
+                  lengths = unlist(lapply(args, slot, "lengths")))
           })
 
-setMethod("rev", "Rle",
-          function(x)
-          {
-              x@lengths <- rev(runLength(x))
-              x@.Data <- rev(runValue(x))
-              x
-          })
+setMethod("is.na", "Rle",
+          function(x) Rle(values = is.na(runValue(x)), lengths = runLength(x)))
 
-setMethod("sort", "Rle",
-          function(x, decreasing = FALSE, na.last = NA, ...) {
-              ord <- order(runValue(x), decreasing = decreasing, na.last = na.last)
-              Rle(values = runValue(x)[ord], lengths = runLength(x)[ord])
-          })
+setMethod("length", "Rle", function(x) sum(runLength(x)))
 
 setMethod("rep", "Rle",
           function(x, times, length.out, each)
@@ -273,23 +244,36 @@ setMethod("rep.int", "Rle",
               x
           })
 
-setGeneric("table", signature = "...",
-           function(...) standardGeneric("table"),
-           useAsDefault = function(...) base::table(...))
-setMethod("table", "Rle",
-          function(...) {
-              x <- sort(...)
-              structure(array(runLength(x), dim = nrun(x),
-                              dimnames = structure(list(as.character(runValue(x))), 
-                                                   names = "")),
-                        class = "table")
+setMethod("rev", "Rle",
+          function(x)
+          {
+              x@lengths <- rev(runLength(x))
+              x@.Data <- rev(runValue(x))
+              x
           })
 
-setMethod("is.na", "Rle",
-          function(x) Rle(values = is.na(runValue(x)), lengths = runLength(x)))
+setMethod("sort", "Rle",
+          function(x, decreasing = FALSE, na.last = NA, ...) {
+              ord <- order(runValue(x), decreasing = decreasing, na.last = na.last)
+              Rle(values = runValue(x)[ord], lengths = runLength(x)[ord])
+          })
 
-setMethod("%in%", "Rle",
-          function(x, table) Rle(values = runValue(x) %in% table, lengths = runLength(x)))
+setMethod("subseq", "Rle",
+          function(x, start=NA, end=NA, width=NA)
+          {
+              solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
+              if (start(solved_SEW) > 1 || end(solved_SEW) < length(x)) {
+                  breaks <- c(0L, end(x))
+                  rangeGroups <- findInterval(c(start(solved_SEW), end(solved_SEW)) - 1e-6, breaks)
+                  lengths <- subseq(runLength(x), rangeGroups[1], rangeGroups[2])
+                  lengths[1] <- breaks[rangeGroups[1] + 1L, drop = TRUE] - start(solved_SEW) + 1L
+                  if (length(lengths) > 1)
+                      lengths[length(lengths)] <- end(solved_SEW) - breaks[rangeGroups[2], drop = TRUE]
+                  x@lengths <- lengths
+                  x@.Data <- subseq(runValue(x), rangeGroups[1], rangeGroups[2])
+              }
+              x
+          })
 
 setMethod("summary", "Rle",
           function (object, ..., digits = max(3, getOption("digits") - 3)) 
@@ -319,6 +303,18 @@ setMethod("summary", "Rle",
                       ValueMode = mode(runValue(object)))
               class(value) <- "table"
               value
+          })
+
+setGeneric("table", signature = "...",
+          function(...) standardGeneric("table"),
+              useAsDefault = function(...) base::table(...))
+setMethod("table", "Rle",
+          function(...) {
+              x <- sort(...)
+              structure(array(runLength(x), dim = nrun(x),
+                              dimnames = structure(list(as.character(runValue(x))), 
+                                      names = "")),
+                      class = "table")
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
