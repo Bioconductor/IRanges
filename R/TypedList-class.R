@@ -237,6 +237,11 @@ function(x, i, use.names = TRUE, compress = x@compressible) {
   k <- length(i)
   if (k == 0) {
     elts <- list()
+  } else if (!x@compressible) {
+    elts <- x@elements[i]
+    if (use.names) {
+      names(elts) <- names(x)[i]
+    }
   } else {
     listIndices <- findInterval(i, x@compressedIndices)
     if (compress) {
