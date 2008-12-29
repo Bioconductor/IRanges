@@ -13,9 +13,15 @@ setGeneric("subseq", signature="x",
     function(x, start=NA, end=NA, width=NA) standardGeneric("subseq")
 )
 
-setClassUnion("SequenceORvector", c("Sequence", "vector"))
+setMethod("subseq", "vector",
+    function(x, start=NA, end=NA, width=NA)
+    {
+        solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
+        .Call("vector_subseq", x, start(solved_SEW), width(solved_SEW))
+    }
+)
 
-setMethod("subseq", "SequenceORvector",
+setMethod("subseq", "Sequence",
     function(x, start=NA, end=NA, width=NA)
     {
         solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)

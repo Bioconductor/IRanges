@@ -33,6 +33,9 @@ static const R_CallMethodDef callMethods[] = {
 /* IRangesList_class.c */
 	CALLMETHOD_DEF(IRangesList_summary, 1),
 
+/* Sequence_class.c */
+	CALLMETHOD_DEF(vector_subseq, 3),
+
 /* SequencePtr_class.c */
 	CALLMETHOD_DEF(debug_SequencePtr_class, 0),
 	CALLMETHOD_DEF(ExternalPtr_show, 1),

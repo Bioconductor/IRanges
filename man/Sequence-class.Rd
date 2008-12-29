@@ -5,12 +5,10 @@
 \alias{class:Sequence}
 \alias{Sequence-class}
 \alias{Sequence}
-\alias{class:SequenceORvector}
-\alias{SequenceORvector-class}
-\alias{SequenceORvector}
 
 \alias{subseq}
-\alias{subseq,SequenceORvector-method}
+\alias{subseq,vector-method}
+\alias{subseq,Sequence-method}
 \alias{rep,Sequence-method}
 \alias{[<-,Sequence,ANY,ANY,ANY-method}
 \alias{!=,Sequence,Sequence-method}

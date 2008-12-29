@@ -9,7 +9,7 @@ importFrom(Matrix, colSums)
 exportClasses(
     Ranges, IRanges, NormalIRanges, XRanges, IntervalTree,
     SequencePtr, RawPtr, IntegerPtr, NumericPtr,
-    Sequence, SequenceORvector, Views,
+    Sequence, Views,
     XSequence, XRaw, XInteger, XIntegerViews, XNumeric,
     Rle, RleViews,
     XRle, XRleInteger, XRleIntegerViews,
