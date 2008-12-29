@@ -32,6 +32,24 @@ test_Rle_coersion <- function() {
     checkIdentical(as.raw(y), as.raw(yRle))
 }
 
+test_Rle_groupGeneric <- function() {
+    set.seed(0)
+    x <- sample(0:3, 50, replace = TRUE)
+    xRle <- Rle(x)
+    checkIdentical(x + 1, as.vector(xRle + 1))
+    checkIdentical(2 * x + 3, as.vector(2 * xRle + 3))    
+    checkIdentical(x[(x > 0) & (x < 3)], as.vector(xRle[(xRle > 0) & (xRle < 3)]))
+    checkIdentical(log(x), as.vector(log(xRle)))
+    checkIdentical(range(x), range(xRle))
+    checkIdentical(sum(x), sum(xRle))
+    checkIdentical(prod(x), prod(xRle))
+    checkIdentical(cumsum(x), cumsum(xRle))
+    checkIdentical(cumprod(x), cumprod(xRle))
+    checkIdentical(round(x + .25), as.vector(round(xRle + .25)))
+    checkIdentical(signif(x + .25), as.vector(signif(xRle + .25)))
+    checkIdentical(Im(x + 5i), as.vector(Im(xRle + 5i)))
+}
+
 test_Rle_general <- function() {
     x <- rep(6:10, 1:5)
     xRle <- Rle(x)
@@ -52,24 +70,6 @@ test_Rle_general <- function() {
     checkIdentical(x[14:15], as.vector(subseq(xRle,14,15)))
     checkIdentical(summary(x), summary(xRle))
     checkIdentical(table(as.vector(x)), table(xRle))
-}
-
-test_Rle_groupGeneric <- function() {
-    set.seed(0)
-    x <- sample(0:3, 50, replace = TRUE)
-    xRle <- Rle(x)
-    checkIdentical(x + 1, as.vector(xRle + 1))
-    checkIdentical(2 * x + 3, as.vector(2 * xRle + 3))    
-    checkIdentical(x[(x > 0) & (x < 3)], as.vector(xRle[(xRle > 0) & (xRle < 3)]))
-    checkIdentical(log(x), as.vector(log(xRle)))
-    checkIdentical(range(x), range(xRle))
-    checkIdentical(sum(x), sum(xRle))
-    checkIdentical(prod(x), prod(xRle))
-    checkIdentical(cumsum(x), cumsum(xRle))
-    checkIdentical(cumprod(x), cumprod(xRle))
-    checkIdentical(round(x + .25), as.vector(round(xRle + .25)))
-    checkIdentical(signif(x + .25), as.vector(signif(xRle + .25)))
-    checkIdentical(Im(x + 5i), as.vector(Im(xRle + 5i)))
 }
 
 test_Rle_logical <- function() {
