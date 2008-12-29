@@ -254,7 +254,11 @@ function(x, i, use.names = TRUE, compress = x@compressible) {
       runOffsets <- rep.int(0L, k)
       whichToLoop <- which(elementLengths(x)[i] > 0)
     }
-    elts <- rep(list(new(class(x@elements[[1]]))), length(runStarts))
+    if (length(dim(elt)) < 2)
+        emptyElt <- x@elements[[1]][numeric(0)]
+    else
+        emptyElt <- x@elements[[1]][numeric(0), , drop = FALSE]
+    elts <- rep(list(emptyElt), length(runStarts))
     if (length(whichToLoop) > 0) {
       elts[whichToLoop] <-
         lapply(whichToLoop,
