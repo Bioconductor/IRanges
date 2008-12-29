@@ -280,7 +280,9 @@ function(x, i, use.names = TRUE, compress = x@compressible) {
                      eltEnd <-
                        x@elementCumLengths[endIndex] -
                          x@elementCumLengths[firstInListElt]
-                     if (length(dim(elt)) < 2)
+                     if (is.vector(elt))
+                       elt <- subseq(elt, start = eltStart, end = eltEnd)
+                     else if (length(dim(elt)) < 2)
                        elt <- elt[eltStart:eltEnd]
                      else
                        elt <- elt[eltStart:eltEnd, , drop = FALSE]
