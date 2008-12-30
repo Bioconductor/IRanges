@@ -6,8 +6,8 @@ SEXP vector_subseq(SEXP x, SEXP start, SEXP width)
 	SEXP ans, names;
 
 	if (!IS_INTEGER(start) || LENGTH(start) != 1 ||
-		INTEGER(start)[0] == NA_INTEGER || INTEGER(start)[0] < 0)
-		error("'start' must be a non-negative integer");
+		INTEGER(start)[0] == NA_INTEGER || INTEGER(start)[0] < 1)
+		error("'start' must be a positive integer");
 
 	if (!IS_INTEGER(width) || LENGTH(width) != 1 ||
 		INTEGER(width)[0] == NA_INTEGER || INTEGER(width)[0] < 0)
