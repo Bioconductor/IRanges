@@ -312,16 +312,7 @@ setMethod("subseq", "Rle",
           function(x, start=NA, end=NA, width=NA)
           {
               solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
-              if (start(solved_SEW) > 1 || end(solved_SEW) < length(x)) {
-                  rangeGroups <- findInterval(c(start(solved_SEW), end(solved_SEW)), start(x))
-                  lengths <- subseq(runLength(x), rangeGroups[1], rangeGroups[2])
-                  lengths[1] <- end(x)[rangeGroups[1]] - start(solved_SEW) + 1L
-                  if (length(lengths) > 1)
-                      lengths[length(lengths)] <- end(solved_SEW) - start(x)[rangeGroups[2]] + 1L
-                  x@lengths <- lengths
-                  x@.Data <- subseq(runValue(x), rangeGroups[1], rangeGroups[2])
-              }
-              x
+              .Call("Rle_subseq", x, start(solved_SEW), width(solved_SEW), PACKAGE = "IRanges")
           })
 
 setMethod("summary", "Rle",

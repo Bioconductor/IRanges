@@ -376,6 +376,11 @@ SEXP _get_IRangesList_elt(SEXP x, int at);
 SEXP IRangesList_summary(SEXP object);
 
 
+/* Rle_class.c */
+
+SEXP Rle_subseq(SEXP x, SEXP start, SEXP width);
+
+
 /* Sequence_class.c */
 
 SEXP vector_subseq(SEXP x, SEXP start, SEXP width);
