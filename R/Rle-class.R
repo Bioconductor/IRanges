@@ -219,8 +219,7 @@ setMethod("[", "Rle",
                   } else {
                       stop("invalid subscript type")
                   }
-                  breaks <- c(0L, end(x))
-                  group <- findInterval(i - 1e-6, breaks)
+                  group <- findInterval(i, start(x))
                   output <- runValue(x)[group]
                   if (!drop)
                       output <- Rle(output)
@@ -314,12 +313,11 @@ setMethod("subseq", "Rle",
           {
               solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
               if (start(solved_SEW) > 1 || end(solved_SEW) < length(x)) {
-                  breaks <- c(0L, end(x))
-                  rangeGroups <- findInterval(c(start(solved_SEW), end(solved_SEW)) - 1e-6, breaks)
+                  rangeGroups <- findInterval(c(start(solved_SEW), end(solved_SEW)), start(x))
                   lengths <- subseq(runLength(x), rangeGroups[1], rangeGroups[2])
-                  lengths[1] <- breaks[rangeGroups[1] + 1L, drop = TRUE] - start(solved_SEW) + 1L
+                  lengths[1] <- end(x)[rangeGroups[1]] - start(solved_SEW) + 1L
                   if (length(lengths) > 1)
-                      lengths[length(lengths)] <- end(solved_SEW) - breaks[rangeGroups[2], drop = TRUE]
+                      lengths[length(lengths)] <- end(solved_SEW) - start(x)[rangeGroups[2]] + 1L
                   x@lengths <- lengths
                   x@.Data <- subseq(runValue(x), rangeGroups[1], rangeGroups[2])
               }
