@@ -237,7 +237,7 @@ function(x, i, use.names = TRUE, compress = x@compressible) {
   k <- length(i)
   if (k == 0) {
     elts <- list()
-  } else if (!x@compressible) {
+  } else if (length(x) == length(x@elements)) {
     elts <- x@elements[i]
     if (use.names) {
       names(elts) <- names(x)[i]
