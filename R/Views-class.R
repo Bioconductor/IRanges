@@ -267,10 +267,11 @@ setMethod("viewApply", "Views",
     function(X, FUN, ..., simplify = TRUE)
     {
         X <- trim(X)
-        ## Use direct slot access for faster performance
+        Xsubject <- subject(X)
+        ## Use direct start, width slot access for faster performance
         sapply(seq_len(length(X)),
                function(i)
-                   FUN(subseq(X@subject, start = X@start[i], width = X@width[i]),
+                   FUN(subseq(Xsubject, start = X@start[i], width = X@width[i]),
                        ...),
                simplify = simplify)
     }
