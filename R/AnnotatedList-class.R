@@ -64,7 +64,7 @@ setReplaceMethod("elementMetadata", c("AnnotatedList", "XDataFrameORNULL"),
 
 .valid.AnnotatedList.annotation <- function(x) {
   ann <- annotation(x)
-  if (!is.null(ann) && !isSingleString(x))
+  if (!is.null(ann) && !isSingleString(ann))
     "annotation(x) must be NULL or a single string"
   else NULL
 }
@@ -80,19 +80,14 @@ setValidity2("AnnotatedList", .valid.AnnotatedList)
 ### Constructor.
 ###
 
-AnnotatedList <- function(listClass, elements = list(), splitFactor = NULL,
-                          compress = FALSE, annotation = NULL,
+AnnotatedList <- function(elements = list(), annotation = NULL,
                           elementMetadata = NULL)
 {
-  if (!extends(listClass, "AnnotatedList"))
-    stop("cannot create a ", listClass, " as an 'AnnotatedList'")
   if (!is.null(annotation) && !isSingleString(annotation))
     stop("'annotation' must be a single string or NULL")
   if (!is.null(elementMetadata) && length(elements) != nrow(elementMetadata))
     stop("the number of rows in 'elementMetadata' ",
          "(if non-NULL) must match the number of list 'elements'")
-  tl <- TypedList(listClass, elements, splitFactor, compress)
-  annotation(tl) <- annotation
-  elementMetadata(tl) <- elementMetadata
-  tl
+  new("AnnotatedList", elements = elements, annotation = annotation,
+      elementMetadata = elementMetadata)
 }

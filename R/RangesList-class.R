@@ -55,8 +55,8 @@ RangesList <- function(..., universe = NULL)
   ranges <- list(...)
   if (!all(sapply(ranges, is, "Ranges")))
     stop("all elements in '...' must be instances of 'Ranges'")
-  ans <- AnnotatedList("RangesList", ranges, compress = FALSE,
-                       annotation = universe)
+  ans <- new("RangesList", elements = ranges, compress = FALSE,
+             annotation = universe)
   ans
 }
 
@@ -67,8 +67,8 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
   ranges <- list(...)
   if (!all(sapply(ranges, is, "IRanges")))
     stop("all elements in '...' must be instances of 'IRanges'")
-  ans <- AnnotatedList("IRangesList", ranges, compress = compress,
-                       annotation = universe)
+  ans <- new("IRangesList", elements = ranges, compress = compress,
+             annotation = universe)
   ans
 }
 
@@ -185,9 +185,11 @@ setMethod("Ops", c("RangesList", "ANY"),
 setMethod("show", "RangesList",
           function(object)
           {
-            
+            tlo <- length(start(object))
             lo <- length(object)
-            cat("  A ", class(object), " instance with ", lo, " range", sep="")
+            cat("  A ", class(object), " instance with ", tlo, " range", sep="")
+            if (tlo != 1) cat("s")
+            cat(" across ", lo, " space")
             if (lo != 1) cat("s")
             if (!is.null(universe(object)))
               cat(" in '", universe(object), "'", sep = "") 

@@ -12,6 +12,8 @@
 \alias{elementMetadata<-}
 \alias{elementMetadata<-,AnnotatedList,XDataFrameORNULL-method}
 
+\alias{AnnotatedList}
+
 \title{Annotated Lists}
 \description{The class \code{AnnotatedList} extends
   \code{\linkS4class{TypedList}} to contain two optional metadata elements: an
@@ -61,6 +63,18 @@
       \code{\linkS4class{XDataFrame}} holding local metadata on each
       element. The rows are named according to the names of the
       elements. Optional, may be \code{NULL}.
+    }
+  }
+}
+
+\section{Constructor}{
+  \describe{
+    \item{}{\code{AnnotatedList(elements = list(), annotation = NULL,
+        elementMetadata = NULL)}:
+      Constructs an instance of an \code{AnnotatedList} containing the
+      elements in the ordinary list \code{elements}. The parameters
+      \code{annotation} and \code{elementMetadata} correspond to the
+      components described above.
     }
   }
 }

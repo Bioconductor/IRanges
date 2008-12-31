@@ -58,6 +58,10 @@
   \code{seq_len(nrow(x))}, but returning \code{NULL} informs, for
   example, combination functions that no row names are desired (they are
   often a luxury when dealing with large data).
+
+  As \code{XDataFrame} derives from \code{\linkS4class{AnnotatedList}},
+  it is possible to set an \code{annotaiton} string. Also, another
+  \code{XDataFrame} can hold metadata on the columns.
 }
 
 \note{ In the future, the general data frame functionality will probably

@@ -35,6 +35,7 @@ export(
     asNormalIRanges,
     RangesList,
     IRangesList,
+    AnnotatedList,
     MaskCollection.show_frame,
     Mask,
     read.gapMask,

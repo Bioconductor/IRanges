@@ -33,11 +33,12 @@
 \alias{split,Ranges-method}
 
 \title{List of Ranges}
-\description{An extension of \code{\linkS4class{TypedList}} that holds
+\description{An extension of \code{\linkS4class{AnnotatedList}} that holds
   only \code{\linkS4class{Ranges}} instances. Useful for storing ranges
   over a set of spaces (e.g. chromosomes), each of which requires a separate
-  \code{Ranges} instance. A \code{RangesList} may be assigned a
-  particular universe (e.g. a genome) in which all of its spaces exist.
+  \code{Ranges} instance. As an \code{AnnotatedList}, \code{RangesList}
+  may be assigned an annotation that indicates its universe (e.g. a
+  genome) in which all of its spaces exist.
 }
 
 \section{Accessors}{
