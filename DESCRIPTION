@@ -37,6 +37,7 @@ Collate: validity-utils.R
 	XNumeric-class.R
 	Rle-class.R
 	RleViews-class.R
+	RleViews-utils.R
 	XRle-class.R
 	XRleInteger-class.R
 	XRleIntegerViews-class.R
@@ -44,12 +45,12 @@ Collate: validity-utils.R
 	MaskCollection-class.R
 	read.Mask.R
 	TypedList-class.R
-        AnnotatedList-class.R
+    AnnotatedList-class.R
 	AtomicList-class.R
 	XDataFrame-class.R
 	XDataFrame-utils.R
 	XDataFrameList-class.R
-        RangesList-class.R
+    RangesList-class.R
 	RangedData-class.R
 	FilterRules-class.R
 	RDApplyParams-class.R

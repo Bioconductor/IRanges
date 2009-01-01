@@ -107,6 +107,11 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(NumericPtr_write_nums_to_i1i2, 4),
 	CALLMETHOD_DEF(NumericPtr_write_nums_to_subset, 3),
 
+/* RleViews_utils.c */
+	CALLMETHOD_DEF(RleViews_viewMins, 2),
+	CALLMETHOD_DEF(RleViews_viewMaxs, 2),
+	CALLMETHOD_DEF(RleViews_viewSums, 2),
+
 /* XIntegerViews_class.c */
 	CALLMETHOD_DEF(XIntegerViews_slice, 3),
 

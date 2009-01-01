@@ -664,6 +664,24 @@ SEXP NumericPtr_write_nums_to_subset(
 );
 
 
+/* RleViews_utils.c */
+
+SEXP RleViews_viewMins(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP RleViews_viewMaxs(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP RleViews_viewSums(
+	SEXP x,
+	SEXP na_rm
+);
+
+
 /* XSequence_class.c */
 
 SEXP _get_XSequence_xdata(SEXP x);

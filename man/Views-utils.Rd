@@ -9,12 +9,15 @@
 \alias{viewApply}
 \alias{viewApply,Views-method}
 \alias{viewMins}
+\alias{viewMins,RleViews-method}
 \alias{viewMins,XIntegerViews-method}
 \alias{viewMins,XRleIntegerViews-method}
 \alias{viewMaxs}
+\alias{viewMaxs,RleViews-method}
 \alias{viewMaxs,XIntegerViews-method}
 \alias{viewMaxs,XRleIntegerViews-method}
 \alias{viewSums}
+\alias{viewSums,RleViews-method}
 \alias{viewSums,XIntegerViews-method}
 \alias{viewSums,XRleIntegerViews-method}
 \alias{viewWhichMins}
@@ -66,9 +69,11 @@
     An \link{XRleInteger}, \link{XInteger} object or an integer vector for
     \code{slice}.
 
+    An \link{RleViews}, \link{XRleIntegerViews}, \link{XIntegerViews} object for
+    \code{viewMins}, \code{viewMaxs}, and \code{viewSums}.
+
     An \link{XRleIntegerViews}, \link{XIntegerViews} object for
-    \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewWhichMins},
-    and \code{viewWhichMaxs}.
+    \code{viewWhichMins} and \code{viewWhichMaxs}.
   }
   \item{lower, upper}{
     The lower and upper bounds for the slice.
@@ -92,15 +97,14 @@
 \value{
   An \link{XRleIntegerViews} or \link{XIntegerViews} object for \code{slice}.
 
-  An integer vector of \code{length(x)} containing the numeric summaries for
-  the views.
+  A vector of \code{length(x)} containing the numeric summaries for the views.
 }
 
 \author{P. Aboyoun}
 
 \seealso{
-  \link{XRleIntegerViews-class}, \link{XIntegerViews-class}, \code{\link{which.min}},
-  \code{\link{colSums}}
+  \link{RleViews-class}, \link{XRleIntegerViews-class}, \link{XIntegerViews-class},
+  \code{\link{which.min}}, \code{\link{colSums}}
 }
 
 \examples{
