@@ -16,8 +16,13 @@ setGeneric("subseq", signature="x",
 setMethod("subseq", "vector",
     function(x, start=NA, end=NA, width=NA)
     {
-        solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
-        .Call("vector_subseq", x, start(solved_SEW), width(solved_SEW))
+        if (!missing(end)) {
+            if (missing(start))
+                start <- end - width + 1L
+            else if (missing(width))
+                width <- end - start + 1L
+        }
+        .Call("vector_subseq", x, as.integer(start), as.integer(width))
     }
 )
 

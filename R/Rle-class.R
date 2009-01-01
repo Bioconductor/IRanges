@@ -311,8 +311,13 @@ setMethod("sort", "Rle",
 setMethod("subseq", "Rle",
           function(x, start=NA, end=NA, width=NA)
           {
-              solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
-              .Call("Rle_subseq", x, start(solved_SEW), width(solved_SEW), PACKAGE = "IRanges")
+              if (!missing(end)) {
+                  if (missing(start))
+                      start <- end - width + 1L
+                  else if (missing(width))
+                      width <- end - start + 1L
+              }
+              .Call("Rle_subseq", x, as.integer(start), as.integer(width), PACKAGE = "IRanges")
           })
 
 setMethod("summary", "Rle",
