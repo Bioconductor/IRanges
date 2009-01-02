@@ -402,7 +402,7 @@ setMethod("window", "Rle",
           function(x, start = NA, end = NA, width = NA,
                    frequency = NULL, delta = NULL, ...)
           {
-              if (!is.null(frequency) && !is.null(delta)) {
+              if (is.null(frequency) && is.null(delta)) {
                   subseq(x, start = start, end = end, width = width)
               } else {
                   if (!missing(width)) {
