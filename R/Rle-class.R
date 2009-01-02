@@ -6,8 +6,9 @@
 ###
 
 setClass("Rle",
-         representation(lengths = "integer"),
-         contains = c("Sequence", "vector"),
+         representation(values = "vector",
+                        lengths = "integer"),
+         contains = "Sequence",
          validity = function(object)
          {
              if (length(runValue(object)) != length(runLength(object)))
@@ -26,7 +27,7 @@ setMethod("runLength", "Rle", function(x) x@lengths)
  
 setGeneric("runValue", signature = "x",
            function(x) standardGeneric("runValue"))
-setMethod("runValue", "Rle", function(x) x@.Data)
+setMethod("runValue", "Rle", function(x) x@values)
 
 setGeneric("nrun", signature = "x", function(x) standardGeneric("nrun"))
 setMethod("nrun", "Rle", function(x) length(runLength(x)))
@@ -59,7 +60,7 @@ setGeneric("Rle", signature = c("values", "lengths"),
 setMethod("Rle", signature = c(values = "vector", lengths = "missing"),
           function(values, lengths) {
               rleOutput <- rle(unname(values))
-              new("Rle", rleOutput[["values"]], lengths = rleOutput[["lengths"]])
+              new("Rle", values = rleOutput[["values"]], lengths = rleOutput[["lengths"]])
           })
 
 setMethod("Rle", signature = c(values = "vector", lengths = "integer"),
@@ -76,7 +77,7 @@ setMethod("Rle", signature = c(values = "vector", lengths = "integer"),
               n <- length(values)
               y <- values[-1L] != values[-n]
               i <- c(which(y | is.na(y)), n)
-              new("Rle", values[i], lengths = diff(c(0L, cumsum(lengths)[i])))
+              new("Rle", values = values[i], lengths = diff(c(0L, cumsum(lengths)[i])))
           })
 
 setMethod("Rle", signature = c(values = "vector", lengths = "numeric"),
@@ -237,7 +238,7 @@ setMethod("c", "Rle",
               args <- list(x, ...)
               if (!all(unlist(lapply(args, is, "Rle"))))
                   stop("all arguments in '...' must be instances of 'Rle'")
-              Rle(values  = unlist(lapply(args, slot, ".Data")),
+              Rle(values  = unlist(lapply(args, slot, "values")),
                   lengths = unlist(lapply(args, slot, "lengths")))
           })
 
@@ -297,8 +298,8 @@ setMethod("rep.int", "Rle",
 setMethod("rev", "Rle",
           function(x)
           {
+              x@values <- rev(runValue(x))
               x@lengths <- rev(runLength(x))
-              x@.Data <- rev(runValue(x))
               x
           })
 
@@ -331,7 +332,7 @@ setMethod("summary", "Rle",
                               dimnames(tb)[[1L]][iN] <- "NA's"
                           tb
                       })
-                else if (is.numeric(object)) {
+                else if (is.numeric(runValue(object))) {
                     nas <- is.na(object)
                     object <- object[!nas]
                     qq <- quantile(object)
@@ -360,6 +361,11 @@ setMethod("table", "Rle",
                               dimnames = structure(list(as.character(runValue(x))), 
                                       names = "")),
                       class = "table")
+          })
+
+setMethod("unique", "Rle",
+          function(x, incomparables = FALSE, ...) {
+              unique(runValue(x), incomparables = incomparables, ...)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

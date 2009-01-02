@@ -62,6 +62,7 @@
 \alias{summary,Rle-method}
 \alias{table}
 \alias{table,Rle-method}
+\alias{unique,Rle-method}
 
 \alias{!,Rle-method}
 
@@ -234,10 +235,6 @@
 
   \describe{
     \item{}{
-      \code{FUN(x, ...)}, where \code{FUN} is any function where
-      \code{FUN(x, ...)} = \code{FUN(runValue(x))}.
-    }
-    \item{}{
       \code{x[i, drop = !is.null(getOption("dropRle")) && getOption("dropRle")]}:
       Subsets \code{x} by index \code{i}, where \code{i} can be positive
       integers, negative integers, a logical vector of the same length as
@@ -310,6 +307,12 @@
     \item{}{
       \code{table(...)}:
       Returns a table containing the counts of the unique values.
+    }
+    \item{}{
+      \code{unique(x, incomparables = FALSE, ...)}:
+      Returns the unique run values. The \code{incomparables} argument takes a
+      vector of values that cannot be compared with \code{FALSE} being a special
+      value that means that all values can be compared. 
     }
   }
 }

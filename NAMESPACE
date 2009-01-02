@@ -146,7 +146,7 @@ exportMethods(
     split,
     eval,
     t,
-    union, intersect, setdiff,
+    unique, union, intersect, setdiff,
     is.na, "%in%",
     order, sort,
     

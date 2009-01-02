@@ -15,7 +15,7 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 	SEXP ans, subject, values, lengths, start, width;
 
 	subject = GET_SLOT(x, install("subject"));
-	values = GET_SLOT(subject, install(".Data"));
+	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
 	start = _get_IRanges_start(x);
 	width = _get_IRanges_width(x);
@@ -104,7 +104,7 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 	SEXP ans, subject, values, lengths, start, width;
 
 	subject = GET_SLOT(x, install("subject"));
-	values = GET_SLOT(subject, install(".Data"));
+	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
 	start = _get_IRanges_start(x);
 	width = _get_IRanges_width(x);
@@ -193,7 +193,7 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 	SEXP ans, subject, values, lengths, start, width;
 
 	subject = GET_SLOT(x, install("subject"));
-	values = GET_SLOT(subject, install(".Data"));
+	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
 	start = _get_IRanges_start(x);
 	width = _get_IRanges_width(x);
