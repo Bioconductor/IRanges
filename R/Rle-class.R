@@ -231,6 +231,34 @@ setMethod("[", "Rle",
 setMethod("%in%", "Rle",
           function(x, table) Rle(values = runValue(x) %in% table, lengths = runLength(x)))
 
+setMethod("aggregate", "Rle",
+          function(x, by, FUN, start = NA, end = NA, width = NA,
+                   frequency = NULL, delta = NULL, ..., simplify = TRUE)
+          {
+              if (!missing(by)) {
+                  start <- start(by)
+                  width <- width(by)
+              } else {
+                  if (!missing(end)) {
+                      if (missing(start))
+                          start <- end - width + 1L
+                      else if (missing(width))
+                          width <- end - start + 1L
+                  }
+              }
+              if (length(start) != length(width))
+                  stop("'start', 'end', and 'width' arguments have unequal length")
+              n <- length(start)
+              frequency <- rep(frequency, length.out = n)
+              delta <- rep(delta, length.out = n)
+              sapply(seq_len(n),
+                     function(i)
+                         FUN(window(x, start = start[i], width = width[i],
+                                    frequency = frequency[i], delta = delta[i]),
+                             ...),
+                     simplify = simplify)
+          })
+
 setMethod("c", "Rle", 
           function(x, ..., recursive = FALSE)
           {
@@ -371,15 +399,21 @@ setMethod("unique", "Rle",
               unique(runValue(x), incomparables = incomparables, ...))
 
 setMethod("window", "Rle",
-          function(x, start = NULL, end = NULL, frequency = NULL,
-                   deltat = NULL, ...)
+          function(x, start = NA, end = NA, width = NA,
+                   frequency = NULL, delta = NULL, ...)
           {
-              if (missing(frequency) && missing(deltat)) {
-                  subseq(x, start = start, end = end)
+              if (!is.null(frequency) && !is.null(delta)) {
+                  subseq(x, start = start, end = end, width = width)
               } else {
+                  if (!missing(width)) {
+                      if (missing(start))
+                          start <- end - width + 1L
+                      else if (missing(end))
+                          end <- start + width - 1L
+                  }
                   idx <-
                     window(seq_len(length(x)), start = start, end = end,
-                           frequency = frequency, deltat = deltat, ...)
+                           frequency = frequency, deltat = delta, ...)
                   attributes(idx) <- NULL
                   x[idx]
               }

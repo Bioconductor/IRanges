@@ -49,6 +49,7 @@
 
 \alias{[,Rle,ANY,ANY,ANY-method}
 \alias{\%in\%,Rle,ANY-method}
+\alias{aggregate,Rle-method}
 \alias{c,Rle-method}
 \alias{is.na,Rle-method}
 \alias{length,Rle-method}
@@ -250,6 +251,25 @@
       \code{table}.
     }
     \item{}{
+      \code{aggregate(x, by, FUN, start = NA, end = NA, width = NA,
+                      frequency = NULL, delta = NULL, ..., simplify = TRUE))}:
+      Generates summaries on the specified windows and returns the result in a
+      convenient form:
+      \describe{
+        \item{\code{by}}{An object with \code{start}, \code{end}, and
+          \code{width} methods.}
+        \item{\code{FUN}}{The function to be applied to each window of
+          \code{x}.}
+        \item{\code{start}, \code{end}, \code{width}}{the start, end, or width
+          of the window. If \code{by} is missing, then must supply two of the
+          three.}
+        \item{\code{frequency}, \code{delta}}{Optional arguments that specify
+          the sampling frequency and increment within the window.}
+        \item{\code{simplify}}{A logical value specifying whether or not the
+          result should be simplified to a vector or matrix if possible.}
+      }
+    }
+    \item{}{
       \code{c(x, ...)}:
       Combines a set of Rle objects.
     }
@@ -265,12 +285,12 @@
       \code{rep(x, times, length.out, each)}, \code{rep.int(x, times)}:
       Repeats the values in \code{x} through one of the following conventions:
       \describe{
-        \item{\code{times}}{vector giving the number of times to repeat each
+        \item{\code{times}}{Vector giving the number of times to repeat each
           element if of length \code{length(x)}, or to repeat the whole vector
           if of length 1.}
-        \item{\code{length.out}}{non-negative integer. The desired length of
+        \item{\code{length.out}}{Non-negative integer. The desired length of
           the output vector.}
-        \item{\code{each}}{non-negative integer.  Each element of \code{x} is
+        \item{\code{each}}{Non-negative integer.  Each element of \code{x} is
           repeated \code{each} times.}
       }
     }
@@ -316,14 +336,14 @@
       value that means that all values can be compared. 
     }
     \item{}{
-      \code{window(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, ...)}:
+      \code{window(x, start = NA, end = NA, width = NA, frequency = NULL, delta = NULL, ...)}:
       Extract the subsequence window from \code{x} specified by:
       \describe{
-        \item{\code{start}}{the start of the window.}
-        \item{\code{end}}{the end of the window.}
-        \item{\code{frequency}, \code{deltat}}{an optional argument that
-          specifies the sampling frequency within the window.}
-      }      
+        \item{\code{start}, \code{end}, \code{width}}{The start, end, or width
+          of the window. Two of the three are required.}
+        \item{\code{frequency}, \code{delta}}{Optional arguments that specify
+          the sampling frequency and increment within the window.}
+      }
     }
   }
 }
@@ -490,6 +510,8 @@
   sum(x)
   mean(x)
   x > 4
+  aggregate(x, x > 4, mean)
+  aggregate(x, FUN = mean, start = 1:(length(x) - 50), end = 51:length(x))
 
   y <- Rle(c(TRUE,TRUE,FALSE,FALSE,TRUE,FALSE,TRUE,TRUE,TRUE))
   y

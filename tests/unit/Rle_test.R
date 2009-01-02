@@ -55,6 +55,14 @@ test_Rle_general <- function() {
     xRle <- Rle(x)
     checkIdentical(unique(x), unique(xRle))
     checkIdentical(x[c(3,2,4,6)], as.vector(xRle[c(3,2,4,6)]))
+    checkIdentical(aggregate(xRle, IRanges(start = 3:6, end = 13:10), FUN = mean),
+                   aggregate(xRle, FUN = mean, start = 3:6, width = seq(11, 5, by = -2)))
+    checkEquals(c(mean(x[3:13]), mean(x[4:12]), mean(x[5:11]), mean(x[6:10])),
+                aggregate(xRle, FUN = mean, start = 3:6, end = 13:10))
+    checkEquals(as.vector(aggregate.ts(x, FUN = mean, nfrequency = 1/5)),
+                aggregate(xRle, FUN = mean, start = c(1, 6, 11), end = c(5, 10, 15)))
+    checkEquals(as.vector(aggregate.ts(x, FUN = mean, ndelta = 5)),
+                aggregate(xRle, FUN = mean, start = c(1, 6, 11), end = c(5, 10, 15)))
     checkIdentical(c(x,x) %in% c(7:9), as.vector(c(xRle,xRle)) %in% c(7:9))
     checkIdentical(c(x, x), as.vector(c(xRle, xRle)))
     checkIdentical(is.na(c(NA, x, NA, NA, NA, x, NA)),
@@ -74,8 +82,8 @@ test_Rle_general <- function() {
                    as.vector(window(xRle, start = 3, end = 13)))
     checkIdentical(as.vector(window(x, start = 3, end = 13, frequency = 1/2)),
                    as.vector(window(xRle, start = 3, end = 13, frequency = 1/2)))
-    checkIdentical(as.vector(window(x, start = 3, end = 13, deltat = 3)),
-                   as.vector(window(xRle, start = 3, end = 13, deltat = 3)))
+    checkIdentical(as.vector(window(x, start = 3, end = 13, delta = 3)),
+                   as.vector(window(xRle, start = 3, end = 13, delta = 3)))
 }
 
 test_Rle_logical <- function() {
