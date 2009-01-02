@@ -70,6 +70,12 @@ test_Rle_general <- function() {
     checkIdentical(x[14:15], as.vector(subseq(xRle,14,15)))
     checkIdentical(summary(x), summary(xRle))
     checkIdentical(table(as.vector(x)), table(xRle))
+    checkIdentical(as.vector(window(x, start = 3, end = 13)),
+                   as.vector(window(xRle, start = 3, end = 13)))
+    checkIdentical(as.vector(window(x, start = 3, end = 13, frequency = 1/2)),
+                   as.vector(window(xRle, start = 3, end = 13, frequency = 1/2)))
+    checkIdentical(as.vector(window(x, start = 3, end = 13, deltat = 3)),
+                   as.vector(window(xRle, start = 3, end = 13, deltat = 3)))
 }
 
 test_Rle_logical <- function() {

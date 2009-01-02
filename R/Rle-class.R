@@ -58,13 +58,15 @@ setGeneric("Rle", signature = c("values", "lengths"),
            function(values, lengths) standardGeneric("Rle"))
 
 setMethod("Rle", signature = c(values = "vector", lengths = "missing"),
-          function(values, lengths) {
+          function(values, lengths)
+          {
               rleOutput <- rle(unname(values))
               new("Rle", values = rleOutput[["values"]], lengths = rleOutput[["lengths"]])
           })
 
 setMethod("Rle", signature = c(values = "vector", lengths = "integer"),
-          function(values, lengths) {
+          function(values, lengths)
+          {
               if (length(values) != length(lengths))
                   stop("'values' and 'lengths' must have the same length")
               if (any(is.na(lengths)) || any(lengths < 0))
@@ -81,9 +83,7 @@ setMethod("Rle", signature = c(values = "vector", lengths = "integer"),
           })
 
 setMethod("Rle", signature = c(values = "vector", lengths = "numeric"),
-          function(values, lengths) {
-              Rle(values = values, lengths = as.integer(lengths))
-          })
+          function(values, lengths) Rle(values = values, lengths = as.integer(lengths)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
@@ -232,7 +232,8 @@ setMethod("%in%", "Rle",
           function(x, table) Rle(values = runValue(x) %in% table, lengths = runLength(x)))
 
 setMethod("c", "Rle", 
-          function(x, ..., recursive = FALSE) {
+          function(x, ..., recursive = FALSE)
+          {
               if (recursive)
                   stop("'recursive' mode is not supported")
               args <- list(x, ...)
@@ -304,7 +305,8 @@ setMethod("rev", "Rle",
           })
 
 setMethod("sort", "Rle",
-          function(x, decreasing = FALSE, na.last = NA, ...) {
+          function(x, decreasing = FALSE, na.last = NA, ...)
+          {
               ord <- order(runValue(x), decreasing = decreasing, na.last = na.last)
               Rle(values = runValue(x)[ord], lengths = runLength(x)[ord])
           })
@@ -355,7 +357,8 @@ setGeneric("table", signature = "...",
           function(...) standardGeneric("table"),
               useAsDefault = function(...) base::table(...))
 setMethod("table", "Rle",
-          function(...) {
+          function(...)
+          {
               x <- sort(...)
               structure(array(runLength(x), dim = nrun(x),
                               dimnames = structure(list(as.character(runValue(x))), 
@@ -364,8 +367,22 @@ setMethod("table", "Rle",
           })
 
 setMethod("unique", "Rle",
-          function(x, incomparables = FALSE, ...) {
-              unique(runValue(x), incomparables = incomparables, ...)
+          function(x, incomparables = FALSE, ...)
+              unique(runValue(x), incomparables = incomparables, ...))
+
+setMethod("window", "Rle",
+          function(x, start = NULL, end = NULL, frequency = NULL,
+                   deltat = NULL, ...)
+          {
+              if (missing(frequency) && missing(deltat)) {
+                  subseq(x, start = start, end = end)
+              } else {
+                  idx <-
+                    window(seq_len(length(x)), start = start, end = end,
+                           frequency = frequency, deltat = deltat, ...)
+                  attributes(idx) <- NULL
+                  x[idx]
+              }
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -379,7 +396,8 @@ setMethod("!", "Rle", function(x) Rle(values = !runValue(x), lengths = runLength
 ###
 
 setMethod("diff", "Rle",
-          function(x, lag = 1, differences = 1) {
+          function(x, lag = 1, differences = 1)
+          {
               if (!isSingleNumber(lag) || lag < 1L ||
                   !isSingleNumber(differences) || differences < 1L) 
                   stop("'lag' and 'differences' must be integers >= 1")
@@ -397,7 +415,8 @@ setMethod("diff", "Rle",
 setGeneric("pmax", signature = "...",
            function(..., na.rm = FALSE) standardGeneric("pmax"))
 setMethod("pmax", "Rle",
-          function(..., na.rm = FALSE) {
+          function(..., na.rm = FALSE)
+          {
               rlist <- RleList(..., compress = FALSE)
               ends <- sort(unique(unlist(lapply(rlist, end))))
               Rle(values =  do.call(pmax, lapply(rlist, "[", ends, drop = TRUE)),
@@ -407,7 +426,8 @@ setMethod("pmax", "Rle",
 setGeneric("pmin", signature = "...",
            function(..., na.rm = FALSE) standardGeneric("pmin"))
 setMethod("pmin", "Rle",
-          function(..., na.rm = FALSE) {
+          function(..., na.rm = FALSE)
+          {
               rlist <- RleList(..., compress = FALSE)
               ends <- sort(unique(unlist(lapply(rlist, end))))
               Rle(values =  do.call(pmin, lapply(rlist, "[", ends, drop = TRUE)),
@@ -417,7 +437,8 @@ setMethod("pmin", "Rle",
 setGeneric("pmax.int", signature = "...",
            function(..., na.rm = FALSE) standardGeneric("pmax.int"))
 setMethod("pmax.int", "Rle",
-          function(..., na.rm = FALSE) {
+          function(..., na.rm = FALSE)
+          {
               rlist <- RleList(..., compress = FALSE)
               ends <- sort(unique(unlist(lapply(rlist, end))))
               Rle(values =  do.call(pmax.int, lapply(rlist, "[", ends, drop = TRUE)),
@@ -427,7 +448,8 @@ setMethod("pmax.int", "Rle",
 setGeneric("pmin.int", signature = "...",
            function(..., na.rm = FALSE) standardGeneric("pmin.int"))
 setMethod("pmin.int", "Rle",
-          function(..., na.rm = FALSE) {
+          function(..., na.rm = FALSE)
+          {
               rlist <- RleList(..., compress = FALSE)
               ends <- sort(unique(unlist(lapply(rlist, end))))
               Rle(values =  do.call(pmin.int, lapply(rlist, "[", ends, drop = TRUE)),
@@ -474,29 +496,31 @@ setMethod("median", "Rle",
 environment(.quantileDefault) <- globalenv()
 setMethod("quantile", "Rle",
           function(x, probs = seq(0, 1, 0.25), na.rm = FALSE, names = TRUE, 
-                   type = 7, ...) {
-               if (na.rm)
-                   x <- x[!is.na(x)]
-               oldOption <- getOption("dropRle")
-               options("dropRle" = TRUE)
-               on.exit(options("dropRle" = oldOption))
-               .quantileDefault(x, probs = probs, na.rm = FALSE, names = names,
-                                type = type, ...)
-           })
+                   type = 7, ...)
+          {
+              if (na.rm)
+                  x <- x[!is.na(x)]
+              oldOption <- getOption("dropRle")
+              options("dropRle" = TRUE)
+              on.exit(options("dropRle" = oldOption))
+              .quantileDefault(x, probs = probs, na.rm = FALSE, names = names,
+                               type = type, ...)
+          })
 
 .madDefault <- stats::mad
 environment(.madDefault) <- globalenv()
 setMethod("mad", "Rle",
           function(x, center = median(x), constant = 1.4826, na.rm = FALSE,
-                   low = FALSE, high = FALSE) {
-               if (na.rm)
-                   x <- x[!is.na(x)]
-               oldOption <- getOption("dropRle")
-               options("dropRle" = TRUE)
-               on.exit(options("dropRle" = oldOption))
-               .madDefault(x, center = center, constant = constant, na.rm = FALSE, 
-                           low = low, high = high)
-           })
+                   low = FALSE, high = FALSE)
+          {
+              if (na.rm)
+                  x <- x[!is.na(x)]
+              oldOption <- getOption("dropRle")
+              options("dropRle" = TRUE)
+              on.exit(options("dropRle" = oldOption))
+              .madDefault(x, center = center, constant = constant, na.rm = FALSE, 
+                          low = low, high = high)
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other character data methods

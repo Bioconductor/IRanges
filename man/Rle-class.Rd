@@ -63,6 +63,7 @@
 \alias{table}
 \alias{table,Rle-method}
 \alias{unique,Rle-method}
+\alias{window,Rle-method}
 
 \alias{!,Rle-method}
 
@@ -313,6 +314,16 @@
       Returns the unique run values. The \code{incomparables} argument takes a
       vector of values that cannot be compared with \code{FALSE} being a special
       value that means that all values can be compared. 
+    }
+    \item{}{
+      \code{window(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, ...)}:
+      Extract the subsequence window from \code{x} specified by:
+      \describe{
+        \item{\code{start}}{the start of the window.}
+        \item{\code{end}}{the end of the window.}
+        \item{\code{frequency}, \code{deltat}}{an optional argument that
+          specifies the sampling frequency within the window.}
+      }      
     }
   }
 }
