@@ -79,6 +79,7 @@
 \alias{diff,Rle-method}
 \alias{mean,Rle-method}
 \alias{var,Rle,missing-method}
+\alias{var,Rle,Rle-method}
 \alias{sd,Rle-method}
 \alias{median,Rle-method}
 \alias{quantile,Rle-method}
@@ -251,7 +252,7 @@
       \code{table}.
     }
     \item{}{
-      \code{aggregate(x, by, FUN, start = NA, end = NA, width = NA,
+      \code{aggregate(x, by, FUN, start = NULL, end = NULL, width = NULL,
                       frequency = NULL, delta = NULL, ..., simplify = TRUE))}:
       Generates summaries on the specified windows and returns the result in a
       convenient form:
@@ -314,7 +315,7 @@
       }
     }
     \item{}{
-      \code{subseq(x, start=NA, end=NA, width=NA)}:
+      \code{subseq(x, start = NULL, end = NULL, width = NULL)}:
       Extract the subsequence from \code{x} specified by two of the three
       following values:  \code{start}, \code{end}, and \code{width}. This
       is more efficient for extracting consecutive values than \code{[}.
@@ -336,7 +337,7 @@
       value that means that all values can be compared. 
     }
     \item{}{
-      \code{window(x, start = NA, end = NA, width = NA, frequency = NULL, delta = NULL, ...)}:
+      \code{window(x, start = NULL, end = NULL, width = NULL, frequency = NULL, delta = NULL, ...)}:
       Extract the subsequence window from \code{x} specified by:
       \describe{
         \item{\code{start}, \code{end}, \code{width}}{The start, end, or width
@@ -395,9 +396,9 @@
     \code{na.rm = TRUE}.
   }
   \item{}{
-    \code{var(x, na.rm = FALSE)}:
-    Calculates the variance of \code{x}. Removes \code{NA}s when
-    \code{na.rm = TRUE}.
+    \code{var(x, y = NULL, na.rm = FALSE)}:
+    Calculates the variance of \code{x} or covariance of \code{x} and \code{y}
+    if both are supplied. Removes \code{NA}s when \code{na.rm = TRUE}.
   }
   \item{}{
     \code{sd(x, na.rm = FALSE)}:

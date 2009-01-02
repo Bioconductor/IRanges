@@ -232,17 +232,17 @@ setMethod("%in%", "Rle",
           function(x, table) Rle(values = runValue(x) %in% table, lengths = runLength(x)))
 
 setMethod("aggregate", "Rle",
-          function(x, by, FUN, start = NA, end = NA, width = NA,
+          function(x, by, FUN, start = NULL, end = NULL, width = NULL,
                    frequency = NULL, delta = NULL, ..., simplify = TRUE)
           {
               if (!missing(by)) {
                   start <- start(by)
                   width <- width(by)
               } else {
-                  if (!missing(end)) {
-                      if (missing(start))
+                  if (!is.null(end)) {
+                      if (is.null(start))
                           start <- end - width + 1L
-                      else if (missing(width))
+                      else if (is.null(width))
                           width <- end - start + 1L
                   }
               }
@@ -340,12 +340,12 @@ setMethod("sort", "Rle",
           })
 
 setMethod("subseq", "Rle",
-          function(x, start=NA, end=NA, width=NA)
+          function(x, start = NULL, end = NULL, width = NULL)
           {
-              if (!missing(end)) {
-                  if (missing(start))
+              if (!is.null(end)) {
+                  if (is.null(start))
                       start <- end - width + 1L
-                  else if (missing(width))
+                  else if (is.null(width))
                       width <- end - start + 1L
               }
               .Call("Rle_subseq", x, as.integer(start), as.integer(width), PACKAGE = "IRanges")
@@ -399,16 +399,16 @@ setMethod("unique", "Rle",
               unique(runValue(x), incomparables = incomparables, ...))
 
 setMethod("window", "Rle",
-          function(x, start = NA, end = NA, width = NA,
+          function(x, start = NULL, end = NULL, width = NULL,
                    frequency = NULL, delta = NULL, ...)
           {
               if (is.null(frequency) && is.null(delta)) {
                   subseq(x, start = start, end = end, width = width)
               } else {
-                  if (!missing(width)) {
-                      if (missing(start))
+                  if (!is.null(width)) {
+                      if (is.null(start))
                           start <- end - width + 1L
-                      else if (missing(end))
+                      else if (is.null(end))
                           end <- start + width - 1L
                   }
                   idx <-
@@ -508,6 +508,17 @@ setMethod("var", signature = c(x = "Rle", y = "missing"),
               else
                   n <- length(x)
               sum((x - mean(x, na.rm = na.rm))^2, na.rm = na.rm) / (n - 1)
+          })
+
+setMethod("var", signature = c(x = "Rle", y = "Rle"),
+          function(x, y = NULL, na.rm = FALSE, use)
+          {
+              z <- (x - mean(x, na.rm = na.rm)) * (y - mean(y, na.rm = na.rm))
+              if (na.rm)
+                  n <- length(z) - sum(runLength(z)[is.na(runValue(z))])
+              else
+                  n <- length(z)
+              sum(z, na.rm = na.rm) / (n - 1)
           })
 
 setMethod("sd", signature = c(x = "Rle"),
