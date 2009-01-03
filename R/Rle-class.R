@@ -521,6 +521,49 @@ setMethod("var", signature = c(x = "Rle", y = "Rle"),
               sum(z, na.rm = na.rm) / (n - 1)
           })
 
+setMethod("cov", signature = c(x = "Rle", y = "Rle"),
+          function(x, y = NULL, use = "everything",
+                   method = c("pearson", "kendall", "spearman"))
+          {
+              use <-
+                match.arg(use,
+                          c("all.obs", "complete.obs", "pairwise.complete.obs",
+                            "everything", "na.or.complete"))
+              method <- match.arg(method)
+              if (method != "pearson")
+                  stop("only 'pearson' method is supported for Rle objects")
+              na.rm <-
+                use %in% c("complete.obs", "pairwise.complete.obs", "na.or.complete")
+              if (use == "all.obs" && (any(is.na(x)) || any(is.na(y))))
+                  stop("missing observations in cov/cor")
+              var(x, y, na.rm = na.rm)
+          })
+
+setMethod("cor", signature = c(x = "Rle", y = "Rle"),
+          function(x, y = NULL, use = "everything",
+                   method = c("pearson", "kendall", "spearman"))
+          {
+              use <-
+                match.arg(use,
+                          c("all.obs", "complete.obs", "pairwise.complete.obs",
+                            "everything", "na.or.complete"))
+              method <- match.arg(method)
+              if (method != "pearson")
+                  stop("only 'pearson' method is supported for Rle objects")
+              na.rm <-
+                use %in% c("complete.obs", "pairwise.complete.obs", "na.or.complete")
+              isMissing <- is.na(x) | is.na(y)
+              if (any(isMissing)) {
+                  if (use == "all.obs") {
+                      stop("missing observations in cov/cor")
+                  } else if (na.rm) {
+                      x <- x[!isMissing]
+                      y <- y[!isMissing]
+                  }
+              }
+              var(x, y) / (sd(x) * sd(y))
+          })
+
 setMethod("sd", signature = c(x = "Rle"),
           function(x, na.rm = FALSE) sqrt(var(x, na.rm = na.rm)))
 

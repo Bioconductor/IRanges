@@ -80,6 +80,8 @@
 \alias{mean,Rle-method}
 \alias{var,Rle,missing-method}
 \alias{var,Rle,Rle-method}
+\alias{cov,Rle,Rle-method}
+\alias{cor,Rle,Rle-method}
 \alias{sd,Rle-method}
 \alias{median,Rle-method}
 \alias{quantile,Rle-method}
@@ -399,6 +401,16 @@
     \code{var(x, y = NULL, na.rm = FALSE)}:
     Calculates the variance of \code{x} or covariance of \code{x} and \code{y}
     if both are supplied. Removes \code{NA}s when \code{na.rm = TRUE}.
+  }
+  \item{}{
+    \code{cov(x, y, use = "everything")}, \code{cor(x, y, use = "everything")}:
+    Calculates the covariance and correlation respectively of Rle objects
+    \code{x} and \code{y}.
+    The \code{use} argument is an optional character string giving a method for
+    computing covariances in the presence of missing values. This must be
+    (an abbreviation of) one of the strings \code{"everything"},
+    \code{"all.obs"}, \code{"complete.obs"}, \code{"na.or.complete"}, or
+    \code{"pairwise.complete.obs"}.
   }
   \item{}{
     \code{sd(x, na.rm = FALSE)}:

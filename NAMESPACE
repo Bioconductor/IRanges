@@ -1,7 +1,7 @@
 useDynLib(IRanges)
 
 import(methods)
-importFrom(stats, start, end, update, var, sd, median, quantile, mad,
+importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
            window, aggregate)
 importClassesFrom(Matrix, CsparseMatrix, nsparseMatrix, generalMatrix,
                   sparseMatrix, Matrix, nMatrix, compMatrix, ngCMatrix)
@@ -129,7 +129,7 @@ exportMethods(
     min,
     range,
     pmax, pmin, pmax.int, pmin.int, diff,
-    mean, var, sd, median, quantile, mad, window, aggregate,
+    mean, var, cov, cor, sd, median, quantile, mad, window, aggregate,
     nchar, substr, substring, chartr, tolower, toupper, gsub,
     as.list,
     as.vector,
