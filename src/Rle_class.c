@@ -67,10 +67,10 @@ SEXP Rle_subseq(SEXP x, SEXP start, SEXP width)
 
 	PROTECT(ans_values = vector_subseq(values, ans_start, ans_width));
     PROTECT(ans_lengths = vector_subseq(lengths, ans_start, ans_width));
-	INTEGER(ans_lengths)[0] -= diff_start;
 	if (INTEGER(ans_width)[0] > 1) {
-		INTEGER(ans_lengths)[INTEGER(ans_width)[0] - 1] -= diff_end;
+		INTEGER(ans_lengths)[0] -= diff_start;
 	}
+	INTEGER(ans_lengths)[INTEGER(ans_width)[0] - 1] -= diff_end;
 
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
 	SET_SLOT(ans, mkChar("values"), ans_values);
