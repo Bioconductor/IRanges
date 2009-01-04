@@ -249,14 +249,22 @@ setMethod("aggregate", "Rle",
               if (length(start) != length(width))
                   stop("'start', 'end', and 'width' arguments have unequal length")
               n <- length(start)
-              frequency <- rep(frequency, length.out = n)
-              delta <- rep(delta, length.out = n)
-              sapply(seq_len(n),
-                     function(i)
-                         FUN(window(x, start = start[i], width = width[i],
-                                    frequency = frequency[i], delta = delta[i]),
-                             ...),
-                     simplify = simplify)
+              if (is.null(frequency) && is.null(delta)) {
+                  sapply(seq_len(n),
+                         function(i)
+                             FUN(subseq(x, start = start[i], width = width[i]),
+                                 ...),
+                         simplify = simplify)
+              } else {
+                  frequency <- rep(frequency, length.out = n)
+                  delta <- rep(delta, length.out = n)
+                  sapply(seq_len(n),
+                         function(i)
+                             FUN(window(x, start = start[i], width = width[i],
+                                        frequency = frequency[i], delta = delta[i]),
+                                 ...),
+                         simplify = simplify)
+              }
           })
 
 setMethod("c", "Rle", 
