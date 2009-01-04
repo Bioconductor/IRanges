@@ -250,9 +250,11 @@ setMethod("aggregate", "Rle",
                   stop("'start', 'end', and 'width' arguments have unequal length")
               n <- length(start)
               if (is.null(frequency) && is.null(delta)) {
+                  start <- as.integer(start)
+                  width <- as.integer(width)
                   sapply(seq_len(n),
                          function(i)
-                             FUN(subseq(x, start = start[i], width = width[i]),
+                             FUN(.Call("Rle_subseq", x, start[i], width[i], PACKAGE = "IRanges"),
                                  ...),
                          simplify = simplify)
               } else {
