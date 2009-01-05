@@ -8,6 +8,7 @@
 
 \alias{viewApply}
 \alias{viewApply,Views-method}
+\alias{viewApply,RleViews-method}
 \alias{viewMins}
 \alias{viewMins,RleViews-method}
 \alias{viewMins,XIntegerViews-method}
