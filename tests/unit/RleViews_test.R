@@ -6,11 +6,17 @@ test_RleViews <- function() {
       lapply(seq_len(length(xRleViews)),
              function(i) subseq(x, start = start(xRleViews)[i], end = end(xRleViews)[i]))
     checkEqualsNumeric(sapply(xList, min), viewMins(xRleViews))
+    checkEqualsNumeric(sapply(xList, min), viewApply(xRleViews, min))
     checkEqualsNumeric(sapply(xList, min, na.rm = TRUE), viewMins(xRleViews, na.rm = TRUE))
+    checkEqualsNumeric(sapply(xList, min, na.rm = TRUE), viewApply(xRleViews, min, na.rm = TRUE))
     checkEqualsNumeric(sapply(xList, max), viewMaxs(xRleViews))
+    checkEqualsNumeric(sapply(xList, max), viewApply(xRleViews, max))
     checkEqualsNumeric(sapply(xList, max, na.rm = TRUE), viewMaxs(xRleViews, na.rm = TRUE))
+    checkEqualsNumeric(sapply(xList, max, na.rm = TRUE), viewApply(xRleViews, max, na.rm = TRUE))
     checkEqualsNumeric(sapply(xList, sum), viewSums(xRleViews))
+    checkEqualsNumeric(sapply(xList, sum), viewApply(xRleViews, sum))
     checkEqualsNumeric(sapply(xList, sum, na.rm = TRUE), viewSums(xRleViews, na.rm = TRUE))
+    checkEqualsNumeric(sapply(xList, sum, na.rm = TRUE), viewApply(xRleViews, sum, na.rm = TRUE))
 
     y <- rep(c(1.2, 3.4, NA, 7.8, 9.0), 1:5)
     yRle <- Rle(y)
@@ -19,11 +25,17 @@ test_RleViews <- function() {
       lapply(seq_len(length(yRleViews)),
              function(i) subseq(y, start = start(yRleViews)[i], end = end(yRleViews)[i]))
     checkEqualsNumeric(sapply(yList, min), viewMins(yRleViews))
-    suppressWarnings(checkEqualsNumeric(sapply(yList, min, na.rm = TRUE), viewMins(yRleViews, na.rm = TRUE)))
+    checkEqualsNumeric(sapply(yList, min), viewApply(yRleViews, min))
+    checkEqualsNumeric(sapply(yList, min, na.rm = TRUE), viewMins(yRleViews, na.rm = TRUE))
+    checkEqualsNumeric(sapply(yList, min, na.rm = TRUE), viewApply(yRleViews, min, na.rm = TRUE))
     checkEqualsNumeric(sapply(yList, max), viewMaxs(yRleViews))
-    suppressWarnings(checkEqualsNumeric(sapply(yList, max, na.rm = TRUE), viewMaxs(yRleViews, na.rm = TRUE)))
+    checkEqualsNumeric(sapply(yList, max), viewApply(yRleViews, max))
+    checkEqualsNumeric(sapply(yList, max, na.rm = TRUE), viewMaxs(yRleViews, na.rm = TRUE))
+    checkEqualsNumeric(sapply(yList, max, na.rm = TRUE), viewApply(yRleViews, max, na.rm = TRUE))
     checkEqualsNumeric(sapply(yList, sum), viewSums(yRleViews))
+    checkEqualsNumeric(sapply(yList, sum), viewApply(yRleViews, sum))
     checkEqualsNumeric(sapply(yList, sum, na.rm = TRUE), viewSums(yRleViews, na.rm = TRUE))
+    checkEqualsNumeric(sapply(yList, sum, na.rm = TRUE), viewApply(yRleViews, sum, na.rm = TRUE))
 
     z <- rep(c(1+1i, 3.4-1i, NA, 7.8+3i, 9.0-2i), 1:5)
     zRle <- Rle(z)
@@ -32,5 +44,7 @@ test_RleViews <- function() {
       lapply(seq_len(length(zRleViews)),
              function(i) subseq(z, start = start(zRleViews)[i], end = end(zRleViews)[i]))
     checkEqualsNumeric(sapply(zList, sum), viewSums(zRleViews))
+    checkEqualsNumeric(sapply(zList, sum), viewApply(zRleViews, sum))
     checkEqualsNumeric(sapply(zList, sum, na.rm = TRUE), viewSums(zRleViews, na.rm = TRUE))
+    checkEqualsNumeric(sapply(zList, sum, na.rm = TRUE), viewApply(zRleViews, sum, na.rm = TRUE))
 }
