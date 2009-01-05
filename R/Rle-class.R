@@ -220,8 +220,7 @@ setMethod("[", "Rle",
                   } else {
                       stop("invalid subscript type")
                   }
-                  group <- findInterval(i, start(x))
-                  output <- runValue(x)[group]
+                  output <- runValue(x)[findInterval(i, start(x))]
                   if (!drop)
                       output <- Rle(output)
               }
@@ -237,24 +236,33 @@ setMethod("aggregate", "Rle",
           {
               if (!missing(by)) {
                   start <- start(by)
-                  width <- width(by)
+                  end <- end(by)
               } else {
-                  if (!is.null(end)) {
+                  if (!is.null(width)) {
                       if (is.null(start))
                           start <- end - width + 1L
-                      else if (is.null(width))
-                          width <- end - start + 1L
+                      else if (is.null(end))
+                          end <- start + width - 1L
                   }
+                  start <- as.integer(start)
+                  end <- as.integer(end)
               }
-              if (length(start) != length(width))
+              if (length(start) != length(end))
                   stop("'start', 'end', and 'width' arguments have unequal length")
               n <- length(start)
               if (is.null(frequency) && is.null(delta)) {
-                  start <- as.integer(start)
-                  width <- as.integer(width)
+                  startX <- start(x)
+                  endX <- end(x)
+                  runStart <- findInterval(start, startX)
+                  runEnd <- findInterval(end, startX)
+                  offsetStart <- start - startX[runStart]
+                  offsetEnd <- endX[runEnd] - end
                   sapply(seq_len(n),
                          function(i)
-                             FUN(.Call("Rle_subseq", x, start[i], width[i], PACKAGE = "IRanges"),
+                             FUN(.Call("Rle_run_subseq",
+                                       x, runStart[i], runEnd[i],
+                                       offsetStart[i], offsetEnd[i],
+                                       PACKAGE = "IRanges"),
                                  ...),
                          simplify = simplify)
               } else {
@@ -262,7 +270,7 @@ setMethod("aggregate", "Rle",
                   delta <- rep(delta, length.out = n)
                   sapply(seq_len(n),
                          function(i)
-                             FUN(window(x, start = start[i], width = width[i],
+                             FUN(window(x, start = start[i], end = end[i],
                                         frequency = frequency[i], delta = delta[i]),
                                  ...),
                          simplify = simplify)

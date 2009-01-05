@@ -34,6 +34,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(IRangesList_summary, 1),
 
 /* Rle_class.c */
+	CALLMETHOD_DEF(Rle_run_subseq, 5),
 	CALLMETHOD_DEF(Rle_subseq, 3),
 
 /* Sequence_class.c */

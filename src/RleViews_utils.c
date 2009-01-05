@@ -95,7 +95,9 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 	return ans;
 }
 
-
+/*
+ * --- .Call ENTRY POINT ---
+ */
 SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 {
 	char type = '?';
@@ -184,7 +186,9 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 	return ans;
 }
 
-
+/*
+ * --- .Call ENTRY POINT ---
+ */
 SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 {
 	char type = '?';

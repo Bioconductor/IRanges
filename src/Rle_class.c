@@ -1,12 +1,52 @@
 #include "IRanges.h"
 
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP Rle_run_subseq(SEXP x, SEXP runStart, SEXP runEnd,
+		            SEXP offsetStart, SEXP offsetEnd)
+{
+	SEXP values, lengths, runWidth, ans, ans_values, ans_lengths;
+
+	values = GET_SLOT(x, install("values"));
+	lengths = GET_SLOT(x, install("lengths"));
+
+	if (!IS_INTEGER(runStart) || LENGTH(runStart) != 1 ||
+		INTEGER(runStart)[0] == NA_INTEGER || INTEGER(runStart)[0] < 1)
+		error("invalid 'runStart' argument");
+
+	if (!IS_INTEGER(runEnd) || LENGTH(runEnd) != 1 ||
+		INTEGER(runEnd)[0] == NA_INTEGER ||
+		INTEGER(runEnd)[0] < INTEGER(runStart)[0] ||
+		INTEGER(runEnd)[0] > LENGTH(values))
+		error("invalid 'runWidth' argument");
+
+	PROTECT(runWidth = NEW_INTEGER(1));
+	INTEGER(runWidth)[0] = INTEGER(runEnd)[0] - INTEGER(runStart)[0] + 1;
+
+	PROTECT(ans_values = vector_subseq(values, runStart, runWidth));
+    PROTECT(ans_lengths = vector_subseq(lengths, runStart, runWidth));
+
+    INTEGER(ans_lengths)[0] -= INTEGER(offsetStart)[0];
+	INTEGER(ans_lengths)[INTEGER(runWidth)[0] - 1] -= INTEGER(offsetEnd)[0];
+
+	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
+	SET_SLOT(ans, mkChar("values"), ans_values);
+	SET_SLOT(ans, mkChar("lengths"), ans_lengths);
+    UNPROTECT(4);
+
+	return ans;
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
 SEXP Rle_subseq(SEXP x, SEXP start, SEXP width)
 {
-	int i, x_length, more;
-	int cumlen, diff_start, diff_end;
+	int i, x_length, cumlen, more;
 	int seq_start, seq_width, seq_end;
 	int *lengths_elt;
-	SEXP values, lengths, ans, ans_start, ans_width, ans_values, ans_lengths;
+	SEXP values, lengths, ans, run_start, run_end, offset_start, offset_end;
 
 	if (!IS_INTEGER(start) || LENGTH(start) != 1 ||
 		INTEGER(start)[0] == NA_INTEGER || INTEGER(start)[0] < 1)
@@ -32,8 +72,10 @@ SEXP Rle_subseq(SEXP x, SEXP start, SEXP width)
 	if (x_length < seq_end)
 		error("subseq exceeds bounds of 'x'");
 
-	PROTECT(ans_start = NEW_INTEGER(1));
-	PROTECT(ans_width = NEW_INTEGER(1));
+	PROTECT(run_start = NEW_INTEGER(1));
+	PROTECT(run_end = NEW_INTEGER(1));
+	PROTECT(offset_start = NEW_INTEGER(1));
+	PROTECT(offset_end = NEW_INTEGER(1));
 
 	i = 1;
 	more = 1;
@@ -42,22 +84,21 @@ SEXP Rle_subseq(SEXP x, SEXP start, SEXP width)
 	while (more) {
 		cumlen += *lengths_elt;
 		if (seq_start <= cumlen) {
-			INTEGER(ans_start)[0] = i;
+			INTEGER(run_start)[0] = i;
 			cumlen -= *lengths_elt;
-			diff_start = seq_start - cumlen - 1;
+			INTEGER(offset_start)[0] = seq_start - cumlen - 1;
 			more = 0;
 		} else {
 			i++;
 			lengths_elt++;
 		}
 	}
-	i = 1;
 	more = 1;
 	while (more) {
 		cumlen += *lengths_elt;
 		if (seq_end <= cumlen) {
-			INTEGER(ans_width)[0] = i;
-			diff_end = cumlen - seq_end;
+			INTEGER(run_end)[0] = i;
+			INTEGER(offset_end)[0] = cumlen - seq_end;
 			more = 0;
 		} else {
 			i++;
@@ -65,18 +106,7 @@ SEXP Rle_subseq(SEXP x, SEXP start, SEXP width)
 		}
 	}
 
-	PROTECT(ans_values = vector_subseq(values, ans_start, ans_width));
-    PROTECT(ans_lengths = vector_subseq(lengths, ans_start, ans_width));
-	if (INTEGER(ans_width)[0] == 1) {
-		INTEGER(ans_lengths)[0] = seq_width;
-	} else {
-		INTEGER(ans_lengths)[0] -= diff_start;
-		INTEGER(ans_lengths)[INTEGER(ans_width)[0] - 1] -= diff_end;
-	}
-
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, mkChar("values"), ans_values);
-	SET_SLOT(ans, mkChar("lengths"), ans_lengths);
+	PROTECT(ans = Rle_run_subseq(x, run_start, run_end, offset_start, offset_end));
     UNPROTECT(5);
 
 	return ans;

@@ -378,6 +378,14 @@ SEXP IRangesList_summary(SEXP object);
 
 /* Rle_class.c */
 
+SEXP Rle_run_subseq(
+	SEXP x,
+	SEXP runStart,
+	SEXP runEnd,
+	SEXP offsetStart,
+	SEXP offsetEnd
+);
+
 SEXP Rle_subseq(SEXP x, SEXP start, SEXP width);
 
 
