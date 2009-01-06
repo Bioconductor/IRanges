@@ -3,10 +3,15 @@
 /*
  * --- .Call ENTRY POINT ---
  */
+
+/*
+ * Rle_run_subseq accepts an Rle object to support fast R-level aggregate usage
+ */
 SEXP Rle_run_subseq(SEXP x, SEXP runStart, SEXP runEnd,
-		            SEXP offsetStart, SEXP offsetEnd)
+		            SEXP offsetStart, SEXP offsetEnd,
+		            SEXP ans)
 {
-	SEXP values, lengths, runWidth, ans, ans_values, ans_lengths;
+	SEXP values, lengths, runWidth, ans_values, ans_lengths;
 
 	values = GET_SLOT(x, install("values"));
 	lengths = GET_SLOT(x, install("lengths"));
@@ -30,10 +35,9 @@ SEXP Rle_run_subseq(SEXP x, SEXP runStart, SEXP runEnd,
     INTEGER(ans_lengths)[0] -= INTEGER(offsetStart)[0];
 	INTEGER(ans_lengths)[INTEGER(runWidth)[0] - 1] -= INTEGER(offsetEnd)[0];
 
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
 	SET_SLOT(ans, mkChar("values"), ans_values);
 	SET_SLOT(ans, mkChar("lengths"), ans_lengths);
-    UNPROTECT(4);
+    UNPROTECT(3);
 
 	return ans;
 }
@@ -106,7 +110,8 @@ SEXP Rle_subseq(SEXP x, SEXP start, SEXP width)
 		}
 	}
 
-	PROTECT(ans = Rle_run_subseq(x, run_start, run_end, offset_start, offset_end));
+	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
+	ans = Rle_run_subseq(x, run_start, run_end, offset_start, offset_end, ans);
     UNPROTECT(5);
 
 	return ans;

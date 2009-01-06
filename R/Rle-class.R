@@ -257,12 +257,15 @@ setMethod("aggregate", "Rle",
                   runEnd <- findInterval(end, startX)
                   offsetStart <- start - startX[runStart]
                   offsetEnd <- endX[runEnd] - end
+                  ## Performance Optimization
+                  ## Use a stripped down loop with empty Rle object
+                  newRle <- new("Rle")
                   sapply(seq_len(n),
                          function(i)
                              FUN(.Call("Rle_run_subseq",
                                        x, runStart[i], runEnd[i],
                                        offsetStart[i], offsetEnd[i],
-                                       PACKAGE = "IRanges"),
+                                       newRle, PACKAGE = "IRanges"),
                                  ...),
                          simplify = simplify)
               } else {

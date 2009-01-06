@@ -383,7 +383,8 @@ SEXP Rle_run_subseq(
 	SEXP runStart,
 	SEXP runEnd,
 	SEXP offsetStart,
-	SEXP offsetEnd
+	SEXP offsetEnd,
+	SEXP ans
 );
 
 SEXP Rle_subseq(SEXP x, SEXP start, SEXP width);
