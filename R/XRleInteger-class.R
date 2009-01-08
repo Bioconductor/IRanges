@@ -31,6 +31,7 @@ setMethod("initialize", "XRleInteger",
 )
 
 XRleInteger <- function(x) {
+    .Deprecated("Rle")
     if (is(x, "XInteger"))
         x <- as.integer(x)
     if (!is.integer(x))

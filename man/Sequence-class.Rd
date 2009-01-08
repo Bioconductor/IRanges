@@ -84,7 +84,7 @@
 \description{
   The Sequence virtual class is a general container for storing
   a sequence i.e. an ordered set of elements. These containers
-  come in two types:  XSequence and XRle.
+  come in three types:  XSequence, XRle [DEPRECATED], and Rle.
 
   The XSequence virtual class is a general container for storing
   an "external sequence".
@@ -101,17 +101,19 @@
 
   Also the \link[Biostrings]{XString} class from the Biostrings package
 
-  The XRle virtual class is a general container for storing
-  an "external sequence" that is stored in a run-length encoding format.
-  The following classes derive directly from the XRle class.
+  The XRle [DEPRECATED -- use Rle] virtual class is a general container for
+  storing an "external sequence" that is stored in a run-length encoding
+  format. The following classes derive directly from the XRle class.
 
-  The XRleInteger class is a container for storing an external
-  run-length encoding of integers (stored as char values at the C
+  The XRleInteger [DEPRECATED -- use Rle] class is a container for storing an
+  external run-length encoding of integers (stored as int values at the C
   level).
 
-  The purpose of these containers is to provide a "pass by address"
+  The purpose of the X* containers is to provide a "pass by address"
   semantic and also to avoid the overhead of copying the sequence
   data when a linear subsequence needs to be extracted.
+
+  For information on the Rle class, type \code{help(Rle)}.
 }
 
 \section{Subsetting}{
@@ -153,6 +155,7 @@
 }
 
 \seealso{
+  \link{Rle-class},
   \link{Views-class},
   \code{\link{solveUserSEW}},
   \link[Biostrings]{DNAString-class}

@@ -56,7 +56,7 @@ setMethod("coverage", "MaskCollection",
                 stop("'length(weight)' must be >= 1 and <= 'length(x)'")
                 weight <- rep(weight, length.out=length(x))
         }
-        ans <- new("XRleInteger", values = XInteger(1, 0L), lengths = XInteger(1, width))
+        ans <- new("Rle", values = 0L, lengths = width)
         for (i in seq_len(length(x))) {
             x1 <- shift(restrict(x[[i]], start=start, end=end), 1L - start)
             ans <- ans +

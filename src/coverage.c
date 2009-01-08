@@ -4,7 +4,7 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP order, SEXP width)
 {
 	int i, j, weight_elt;
 	int index, index_start, index_end;
-	SEXP ans, ans_lengths, ans_lengths_tag, ans_values, ans_values_tag;
+	SEXP ans, ans_lengths, ans_values;
 
 	int prev_index = 0;
 	int sparse_data_length = 0;
@@ -82,15 +82,15 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP order, SEXP width)
 	}
 
 	if (values_length == 0) {
-		PROTECT(ans_lengths_tag = NEW_INTEGER(1));
-		PROTECT(ans_values_tag = NEW_INTEGER(1));
-		INTEGER(ans_values_tag)[0] = 0;
-		INTEGER(ans_lengths_tag)[0] = INTEGER(width)[0];
+		PROTECT(ans_lengths = NEW_INTEGER(1));
+		PROTECT(ans_values = NEW_INTEGER(1));
+		INTEGER(ans_values)[0] = 0;
+		INTEGER(ans_lengths)[0] = INTEGER(width)[0];
 	} else {
-		PROTECT(ans_lengths_tag = NEW_INTEGER(values_length));
-		PROTECT(ans_values_tag = NEW_INTEGER(values_length));
-		int *ans_lengths_ptr = INTEGER(ans_lengths_tag);
-		int *ans_values_ptr = INTEGER(ans_values_tag);
+		PROTECT(ans_lengths = NEW_INTEGER(values_length));
+		PROTECT(ans_values = NEW_INTEGER(values_length));
+		int *ans_lengths_ptr = INTEGER(ans_lengths);
+		int *ans_values_ptr = INTEGER(ans_values);
 		memset(ans_lengths_ptr, 0, values_length * sizeof(int));
 		memset(ans_values_ptr, 0, values_length * sizeof(int));
 
@@ -134,12 +134,10 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP order, SEXP width)
 		}
 	}
 
-	PROTECT(ans_lengths = _new_XInteger_from_tag("XInteger", ans_lengths_tag));
-	PROTECT(ans_values = _new_XInteger_from_tag("XInteger", ans_values_tag));
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("XRleInteger")));
+	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
 	SET_SLOT(ans, mkChar("vectorLength"), ScalarInteger(INTEGER(width)[0]));
 	SET_SLOT(ans, mkChar("lengths"), ans_lengths);
 	SET_SLOT(ans, mkChar("values"), ans_values);
-	UNPROTECT(5);
+	UNPROTECT(3);
 	return ans;
 }

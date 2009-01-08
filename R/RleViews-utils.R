@@ -18,3 +18,11 @@ setMethod("viewMaxs", "RleViews",
 setMethod("viewSums", "RleViews",
           function(x, na.rm = FALSE)
           .Call("RleViews_viewSums", x, na.rm, PACKAGE="IRanges"))
+
+setMethod("viewWhichMins", "RleViews",
+          function(x, na.rm=FALSE)
+          .Call("RleViews_viewWhichMins", x, na.rm, PACKAGE="IRanges"))
+
+setMethod("viewWhichMaxs", "RleViews",
+          function(x, na.rm=FALSE)
+          .Call("RleViews_viewWhichMaxs", x, na.rm, PACKAGE="IRanges"))

@@ -690,6 +690,16 @@ SEXP RleViews_viewSums(
 	SEXP na_rm
 );
 
+SEXP RleViews_viewWhichMins(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP RleViews_viewWhichMaxs(
+	SEXP x,
+	SEXP na_rm
+);
+
 
 /* XSequence_class.c */
 

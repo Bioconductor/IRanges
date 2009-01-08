@@ -99,6 +99,7 @@
 }
 
 \examples{
+\dontrun{
   ## One standard way to create an XIntegerViews object is to use
   ## the Views() constructor:
   subject <- XRleInteger(rep(c(3L, 2L, 18L, 0L), c(3,2,1,5)))
@@ -113,6 +114,7 @@
 
   ## Here the first view doesn't even overlap with the subject:
   Views(XRleInteger(as.integer(c(97, 97, 97, 45, 45, 98))), -3:4, -3:4 + c(3:6, 6:3))
+}
 }
 
 \keyword{methods}

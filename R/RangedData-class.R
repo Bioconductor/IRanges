@@ -370,6 +370,13 @@ setAs("RangedData", "XDataFrame",
         XDataFrame(as.data.frame(ranges(from)), values(from))
       })
 
+setAs("Rle", "RangedData",
+      function(from)
+      {
+          RangedData(successiveIRanges(runLength(from)),
+                     XDataFrame(score = runValue(from)))
+      })
+
 setAs("XRle", "RangedData",
       function(from)
       {

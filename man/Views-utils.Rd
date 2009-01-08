@@ -3,6 +3,7 @@
 
 \alias{slice}
 \alias{slice,integer-method}
+\alias{slice,Rle-method}
 \alias{slice,XInteger-method}
 \alias{slice,XRleInteger-method}
 
@@ -22,9 +23,11 @@
 \alias{viewSums,XIntegerViews-method}
 \alias{viewSums,XRleIntegerViews-method}
 \alias{viewWhichMins}
+\alias{viewWhichMins,RleViews-method}
 \alias{viewWhichMins,XIntegerViews-method}
 \alias{viewWhichMins,XRleIntegerViews-method}
 \alias{viewWhichMaxs}
+\alias{viewWhichMaxs,RleViews-method}
 \alias{viewWhichMaxs,XIntegerViews-method}
 \alias{viewWhichMaxs,XRleIntegerViews-method}
 
@@ -43,6 +46,8 @@
   viewApply(X, FUN, ..., simplify = TRUE)
 
   slice(x, lower=-Inf, upper=Inf, ...)
+  \S4method{slice}{Rle}(x, lower=-Inf, upper=Inf,
+                        includeLower=TRUE, includeUpper=TRUE)
 
   viewMins(x, na.rm=FALSE)
   viewMaxs(x, na.rm=FALSE)
@@ -67,17 +72,20 @@
     to a vector or matrix if possible.
   }
   \item{x}{
-    An \link{XRleInteger}, \link{XInteger} object or an integer vector for
-    \code{slice}.
+    An \link{Rle}, \link{XRleInteger}, \link{XInteger} object or an integer
+    vector for \code{slice}.
 
     An \link{RleViews}, \link{XRleIntegerViews}, \link{XIntegerViews} object for
     \code{viewMins}, \code{viewMaxs}, and \code{viewSums}.
 
-    An \link{XRleIntegerViews}, \link{XIntegerViews} object for
+    An \link{Rle}, \link{XRleIntegerViews}, \link{XIntegerViews} object for
     \code{viewWhichMins} and \code{viewWhichMaxs}.
   }
   \item{lower, upper}{
     The lower and upper bounds for the slice.
+  }
+  \item{includeLower, includeUpper}{
+    Logical indicating whether or not the specified boundary is open or closed.
   }
   \item{na.rm}{
     Logical indicating whether or not to include missing values in the results.

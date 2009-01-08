@@ -315,3 +315,193 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 	UNPROTECT(1);
 	return ans;
 }
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
+{
+	char type = '?';
+	int i, ans_length, index, lower_run, upper_run, lower_bound, upper_bound;
+	int *ans_elt, *lengths_elt, *start_elt, *width_elt;
+	SEXP curr, ans, subject, values, lengths, start, width;
+
+	subject = GET_SLOT(x, install("subject"));
+	values = GET_SLOT(subject, install("values"));
+	lengths = GET_SLOT(subject, install("lengths"));
+	start = _get_IRanges_start(x);
+	width = _get_IRanges_width(x);
+	ans_length = _get_IRanges_length(x);
+
+	switch (TYPEOF(values)) {
+    case LGLSXP:
+    case INTSXP:
+		type = 'i';
+		PROTECT(curr = NEW_INTEGER(1));
+		break;
+    case REALSXP:
+		type = 'r';
+		PROTECT(curr = NEW_NUMERIC(1));
+		break;
+    default:
+		error("Rle must contain either 'integer' or 'numeric' values");
+    }
+
+	PROTECT(ans = NEW_INTEGER(ans_length));
+	lengths_elt = INTEGER(lengths);
+	index = 0;
+	upper_run = *lengths_elt;
+	for (i = 0, ans_elt = INTEGER(ans), start_elt = INTEGER(start), width_elt = INTEGER(width);
+	     i < ans_length;
+	     i++, ans_elt++, start_elt++, width_elt++)
+	{
+		if (type == 'i') {
+			INTEGER(curr)[0] = INT_MAX;
+		} else if (type == 'r') {
+			REAL(curr)[0] = R_PosInf;
+		}
+		while (index > 0 && upper_run > *start_elt) {
+			upper_run -= *lengths_elt;
+			lengths_elt--;
+			index--;
+		}
+		while (upper_run < *start_elt) {
+			lengths_elt++;
+			index++;
+			upper_run += *lengths_elt;
+		}
+		lower_run = upper_run - *lengths_elt + 1;
+		lower_bound = *start_elt;
+		upper_bound = *start_elt + *width_elt - 1;
+		if (type == 'i') {
+			while (lower_run <= upper_bound) {
+				if (INTEGER(values)[index] == NA_INTEGER) {
+					if (!LOGICAL(na_rm)[0]) {
+						*ans_elt = NA_INTEGER;
+						break;
+					}
+				} else if (INTEGER(values)[index] < INTEGER(curr)[0]) {
+					*ans_elt = lower_bound;
+				}
+				lengths_elt++;
+				index++;
+				lower_run = upper_run + 1;
+				lower_bound = lower_run;
+				upper_run += *lengths_elt;
+			}
+		} else if (type == 'r') {
+			while (lower_run <= upper_bound) {
+				if (ISNAN(REAL(values)[index])) {
+					if (!LOGICAL(na_rm)[0]) {
+						*ans_elt = NA_REAL;
+						break;
+					}
+				} else if (REAL(values)[index] < REAL(curr)[0]) {
+					*ans_elt = lower_bound;
+				}
+				lengths_elt++;
+				index++;
+				lower_run = upper_run + 1;
+				lower_bound = lower_run;
+				upper_run += *lengths_elt;
+			}
+		}
+	}
+	UNPROTECT(2);
+	return ans;
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
+{
+	char type = '?';
+	int i, ans_length, index, lower_run, upper_run, lower_bound, upper_bound;
+	int *ans_elt, *lengths_elt, *start_elt, *width_elt;
+	SEXP curr, ans, subject, values, lengths, start, width;
+
+	subject = GET_SLOT(x, install("subject"));
+	values = GET_SLOT(subject, install("values"));
+	lengths = GET_SLOT(subject, install("lengths"));
+	start = _get_IRanges_start(x);
+	width = _get_IRanges_width(x);
+	ans_length = _get_IRanges_length(x);
+
+	switch (TYPEOF(values)) {
+    case LGLSXP:
+    case INTSXP:
+		type = 'i';
+		PROTECT(curr = NEW_INTEGER(1));
+		break;
+    case REALSXP:
+		type = 'r';
+		PROTECT(curr = NEW_NUMERIC(1));
+		break;
+    default:
+		error("Rle must contain either 'integer' or 'numeric' values");
+    }
+
+	PROTECT(ans = NEW_INTEGER(ans_length));
+	lengths_elt = INTEGER(lengths);
+	index = 0;
+	upper_run = *lengths_elt;
+	for (i = 0, ans_elt = INTEGER(ans), start_elt = INTEGER(start), width_elt = INTEGER(width);
+	     i < ans_length;
+	     i++, ans_elt++, start_elt++, width_elt++)
+	{
+		if (type == 'i') {
+			INTEGER(curr)[0] = R_INT_MIN;
+		} else if (type == 'r') {
+			REAL(curr)[0] = R_NegInf;
+		}
+		while (index > 0 && upper_run > *start_elt) {
+			upper_run -= *lengths_elt;
+			lengths_elt--;
+			index--;
+		}
+		while (upper_run < *start_elt) {
+			lengths_elt++;
+			index++;
+			upper_run += *lengths_elt;
+		}
+		lower_run = upper_run - *lengths_elt + 1;
+		lower_bound = *start_elt;
+		upper_bound = *start_elt + *width_elt - 1;
+		if (type == 'i') {
+			while (lower_run <= upper_bound) {
+				if (INTEGER(values)[index] == NA_INTEGER) {
+					if (!LOGICAL(na_rm)[0]) {
+						*ans_elt = NA_INTEGER;
+						break;
+					}
+				} else if (INTEGER(values)[index] > INTEGER(curr)[0]) {
+					*ans_elt = lower_bound;
+				}
+				lengths_elt++;
+				index++;
+				lower_run = upper_run + 1;
+				lower_bound = lower_run;
+				upper_run += *lengths_elt;
+			}
+		} else if (type == 'r') {
+			while (lower_run <= upper_bound) {
+				if (ISNAN(REAL(values)[index])) {
+					if (!LOGICAL(na_rm)[0]) {
+						*ans_elt = NA_REAL;
+						break;
+					}
+				} else if (REAL(values)[index] > REAL(curr)[0]) {
+					*ans_elt = lower_bound;
+				}
+				lengths_elt++;
+				index++;
+				lower_run = upper_run + 1;
+				lower_bound = lower_run;
+				upper_run += *lengths_elt;
+			}
+		}
+	}
+	UNPROTECT(2);
+	return ans;
+}

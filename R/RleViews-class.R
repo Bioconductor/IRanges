@@ -16,7 +16,7 @@ setClass("RleViews",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### User-friendly constructor.
+### User-friendly constructors.
 ###
 
 setMethod("Views", "Rle",
@@ -24,6 +24,27 @@ setMethod("Views", "Rle",
         newViews(subject, start=start, end=end, names=names,
                  Class="RleViews")
 )
+
+setMethod("slice", "Rle",
+          function(x, lower = -Inf, upper = Inf,
+                   includeLower = TRUE, includeUpper = TRUE)
+          {
+              if (lower == -Inf) {
+                  ranges <- Rle(TRUE, length(x))
+              } else if (includeLower) {
+                  ranges <- (x >= lower)
+              } else {
+                  ranges <- (x > lower)
+              }
+              if (upper < Inf) {
+                  if (includeUpper) {
+                      ranges <- ranges & (x <= upper)
+                  } else {
+                      ranges <- ranges & (x < upper)
+                  }
+              }
+              Views(x, ranges)
+          })
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
