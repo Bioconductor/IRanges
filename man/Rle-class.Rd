@@ -354,99 +354,103 @@
 \section{Logical Data Methods}{
   In the code snippets below, \code{x} is an Rle object:
 
-  \item{}{
-    \code{!x}:
-     Returns logical negation (NOT) of \code{x}.
+  \describe{
+    \item{}{
+      \code{!x}:
+       Returns logical negation (NOT) of \code{x}.
+    }
   }
 }
 
 \section{Numerical Data Methods}{
   In the code snippets below, \code{x} is an Rle object:
 
-  \item{}{
-     \code{pmax(..., na.rm = FALSE)}:
-     Parallel maxima of the Rle input values. Removes \code{NA}s when
-     \code{na.rm = TRUE}.
-  }
-  \item{}{
-     \code{pmin(..., na.rm = FALSE)}:
-     Parallel minima of the Rle input values. Removes \code{NA}s when
-     \code{na.rm = TRUE}.
-  }
-  \item{}{
-     \code{pmax.int(..., na.rm = FALSE)}:
-     Parallel maxima of the integer Rle input values. Removes \code{NA}s when
-     \code{na.rm = TRUE}.
-  }
-  \item{}{
-     \code{pmin.int(..., na.rm = FALSE)}:
-     Parallel minima of the integer Rle input values. Removes \code{NA}s when
-     \code{na.rm = TRUE}.
-  }
-  \item{}{
-    \code{diff(x, lag = 1, differences = 1}:
-    Returns suitably lagged and iterated differences of \code{x}.
-    \describe{
-       \item{\code{lag}}{An integer indicating which lag to use.}
-       \item{\code{differences}}{An integer indicating the order of the
-         difference.}
+  \describe{
+    \item{}{
+       \code{pmax(..., na.rm = FALSE)}:
+       Parallel maxima of the Rle input values. Removes \code{NA}s when
+       \code{na.rm = TRUE}.
     }
-  }
-  \item{}{
-    \code{mean(x, na.rm = FALSE)}:
-    Calculates the mean of \code{x}. Removes \code{NA}s when
-    \code{na.rm = TRUE}.
-  }
-  \item{}{
-    \code{var(x, y = NULL, na.rm = FALSE)}:
-    Calculates the variance of \code{x} or covariance of \code{x} and \code{y}
-    if both are supplied. Removes \code{NA}s when \code{na.rm = TRUE}.
-  }
-  \item{}{
-    \code{cov(x, y, use = "everything")}, \code{cor(x, y, use = "everything")}:
-    Calculates the covariance and correlation respectively of Rle objects
-    \code{x} and \code{y}.
-    The \code{use} argument is an optional character string giving a method for
-    computing covariances in the presence of missing values. This must be
-    (an abbreviation of) one of the strings \code{"everything"},
-    \code{"all.obs"}, \code{"complete.obs"}, \code{"na.or.complete"}, or
-    \code{"pairwise.complete.obs"}.
-  }
-  \item{}{
-    \code{sd(x, na.rm = FALSE)}:
-    Calculates the standard deviation of \code{x}. Removes \code{NA}s
-    when \code{na.rm = TRUE}.
-  }
-  \item{}{
-    \code{median(x, na.rm = FALSE)}:
-    Calculates the median of \code{x}. Removes \code{NA}s when
-    \code{na.rm = TRUE}.
-  }
-  \item{}{
-    \code{quantile(x, probs = seq(0, 1, 0.25), na.rm = FALSE, names = TRUE, type = 7, ...)}:
-    Calculates the specified quantiles of \code{x}.
-    \describe{
-      \item{\code{probs}}{A numeric vector of probabilities with values in
-        [0,1].}
-      \item{\code{na.rm}}{If \code{TRUE}, removes \code{NA}s from \code{x}
-        before the quantiles are computed.}
-      \item{\code{names}}{If \code{TRUE}, the result has names describing the
-        quantiles.}
-      \item{\code{type}}{An integer between 1 and 9 selecting one of the nine
-        quantile algorithms detailed in \code{\link[stats]{quantile}}.}
-      \item{\dots}{Further arguments passed to or from other methods.}
+    \item{}{
+       \code{pmin(..., na.rm = FALSE)}:
+       Parallel minima of the Rle input values. Removes \code{NA}s when
+       \code{na.rm = TRUE}.
     }
-  }
-  \item{}{
-    \code{mad(x, center = median(x), constant = 1.4826, na.rm = FALSE, low = FALSE, high = FALSE)}:
-    Calculates the median absolute deviation of \code{x}.
-    \describe{
-      \item{\code{center}}{The center to calculate the deviation from.}
-      \item{\code{constant}}{The scale factor.}
-      \item{\code{na.rm}}{If \code{TRUE}, removes \code{NA}s from \code{x}
-        before the mad is computed.}
-      \item{\code{low}}{If \code{TRUE}, compute the 'lo-median'.}
-      \item{\code{high}}{If \code{TRUE}, compute the 'hi-median'.}
+    \item{}{
+       \code{pmax.int(..., na.rm = FALSE)}:
+       Parallel maxima of the integer Rle input values. Removes \code{NA}s when
+       \code{na.rm = TRUE}.
+    }
+    \item{}{
+       \code{pmin.int(..., na.rm = FALSE)}:
+       Parallel minima of the integer Rle input values. Removes \code{NA}s when
+       \code{na.rm = TRUE}.
+    }
+    \item{}{
+      \code{diff(x, lag = 1, differences = 1}:
+      Returns suitably lagged and iterated differences of \code{x}.
+      \describe{
+         \item{\code{lag}}{An integer indicating which lag to use.}
+         \item{\code{differences}}{An integer indicating the order of the
+           difference.}
+      }
+    }
+    \item{}{
+      \code{mean(x, na.rm = FALSE)}:
+      Calculates the mean of \code{x}. Removes \code{NA}s when
+      \code{na.rm = TRUE}.
+    }
+    \item{}{
+      \code{var(x, y = NULL, na.rm = FALSE)}:
+      Calculates the variance of \code{x} or covariance of \code{x} and \code{y}
+      if both are supplied. Removes \code{NA}s when \code{na.rm = TRUE}.
+    }
+    \item{}{
+      \code{cov(x, y, use = "everything")}, \code{cor(x, y, use = "everything")}:
+      Calculates the covariance and correlation respectively of Rle objects
+      \code{x} and \code{y}.
+      The \code{use} argument is an optional character string giving a method for
+      computing covariances in the presence of missing values. This must be
+      (an abbreviation of) one of the strings \code{"everything"},
+      \code{"all.obs"}, \code{"complete.obs"}, \code{"na.or.complete"}, or
+      \code{"pairwise.complete.obs"}.
+    }
+    \item{}{
+      \code{sd(x, na.rm = FALSE)}:
+      Calculates the standard deviation of \code{x}. Removes \code{NA}s
+      when \code{na.rm = TRUE}.
+    }
+    \item{}{
+      \code{median(x, na.rm = FALSE)}:
+      Calculates the median of \code{x}. Removes \code{NA}s when
+      \code{na.rm = TRUE}.
+    }
+    \item{}{
+      \code{quantile(x, probs = seq(0, 1, 0.25), na.rm = FALSE, names = TRUE, type = 7, ...)}:
+      Calculates the specified quantiles of \code{x}.
+      \describe{
+        \item{\code{probs}}{A numeric vector of probabilities with values in
+          [0,1].}
+        \item{\code{na.rm}}{If \code{TRUE}, removes \code{NA}s from \code{x}
+          before the quantiles are computed.}
+        \item{\code{names}}{If \code{TRUE}, the result has names describing the
+          quantiles.}
+        \item{\code{type}}{An integer between 1 and 9 selecting one of the nine
+          quantile algorithms detailed in \code{\link[stats]{quantile}}.}
+        \item{\dots}{Further arguments passed to or from other methods.}
+      }
+    }
+    \item{}{
+      \code{mad(x, center = median(x), constant = 1.4826, na.rm = FALSE, low = FALSE, high = FALSE)}:
+      Calculates the median absolute deviation of \code{x}.
+      \describe{
+        \item{\code{center}}{The center to calculate the deviation from.}
+        \item{\code{constant}}{The scale factor.}
+        \item{\code{na.rm}}{If \code{TRUE}, removes \code{NA}s from \code{x}
+          before the mad is computed.}
+        \item{\code{low}}{If \code{TRUE}, compute the 'lo-median'.}
+        \item{\code{high}}{If \code{TRUE}, compute the 'hi-median'.}
+      }
     }
   }
 }
@@ -454,44 +458,46 @@
 \section{Character Data Methods}{
   In the code snippets below, \code{x} is an Rle object:
 
-  \item{}{
-    \code{nchar(x, type = "chars", allowNA = FALSE)}:
-    Returns an integer Rle representing the number of characters in the
-    corresponding values of \code{x}.
-    \describe{
-       \item{\code{type}}{One of \code{c("bytes", "chars", "width")}.}
-       \item{\code{allowNA}}{Should \code{NA} be returned for invalid multibyte
-         strings rather than throwing an error?}
+  \describe{
+    \item{}{
+      \code{nchar(x, type = "chars", allowNA = FALSE)}:
+      Returns an integer Rle representing the number of characters in the
+      corresponding values of \code{x}.
+      \describe{
+         \item{\code{type}}{One of \code{c("bytes", "chars", "width")}.}
+         \item{\code{allowNA}}{Should \code{NA} be returned for invalid multibyte
+           strings rather than throwing an error?}
+      }
     }
-  }
-  \item{}{
-    \code{substr(x, start, stop)}, \code{substring(text, first, last = 1000000L)}:
-    Returns a character Rle containing the specified substrings beginning at
-    \code{start}/\code{first} and ending at \code{stop}/\code{last}.
-  }
-  \item{}{
-    \code{chartr(old, new, x)}:
-    Returns a character translated version of \code{x}.
-    \describe{
-       \item{\code{old}}{A character string specifying the characters to be
-         translated.}
-       \item{\code{new}}{A character string specifying the translations.}
+    \item{}{
+      \code{substr(x, start, stop)}, \code{substring(text, first, last = 1000000L)}:
+      Returns a character Rle containing the specified substrings beginning at
+      \code{start}/\code{first} and ending at \code{stop}/\code{last}.
     }
-  }
-  \item{}{
-    \code{tolower(x)}:
-    Returns a lower case version of \code{x}.
-  }
-  \item{}{
-    \code{toupper(x)}:
-    Returns an upper case version of \code{x}.
-  }
-  \item{}{
-    \code{gsub(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
-               perl = FALSE, fixed = FALSE, useBytes = FALSE)}:
-    Returns a character Rle with replacements based on matches determined by
-    regular expression matching. See \code{\link{gsub}} for a description of the
-    arguments.
+    \item{}{
+      \code{chartr(old, new, x)}:
+      Returns a character translated version of \code{x}.
+      \describe{
+         \item{\code{old}}{A character string specifying the characters to be
+           translated.}
+         \item{\code{new}}{A character string specifying the translations.}
+      }
+    }
+    \item{}{
+      \code{tolower(x)}:
+      Returns a lower case version of \code{x}.
+    }
+    \item{}{
+      \code{toupper(x)}:
+      Returns an upper case version of \code{x}.
+    }
+    \item{}{
+      \code{gsub(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
+                 perl = FALSE, fixed = FALSE, useBytes = FALSE)}:
+      Returns a character Rle with replacements based on matches determined by
+      regular expression matching. See \code{\link{gsub}} for a description of the
+      arguments.
+    }
   }
 }
 
