@@ -55,7 +55,7 @@ setMethod("initialize", "TypedList",
               } else {
                 compressedIndices <- seq_len(length(elements) + 1L)
               }
-            } else if(compress) {
+            } else if(compress && length(compressedIndices) > 2) {
               warning("cannot compress object since 'compressedIndices' is supplied")
             }
             slot(.Object, "elements", check = check) <- unname(elements)
@@ -131,7 +131,7 @@ setMethod("isEmpty", "TypedList",
 }
 
 TypedList <- function(listClass, elements = list(), splitFactor = NULL,
-                      compress = FALSE) {
+                      compress = !is.null(splitFactor)) {
   if (!extends(listClass, "TypedList"))
     stop("cannot create a ", listClass, " as a 'TypedList'")
   if (length(splitFactor) == 0) {
@@ -139,14 +139,18 @@ TypedList <- function(listClass, elements = list(), splitFactor = NULL,
     compressedIndices <- NULL
     NAMES <- names(elements)
   } else {
-    if (is.factor(splitFactor))
-      splitFactor <- as.character(splitFactor)
-    orderElts <- order(splitFactor)
-    if (length(dim(elements)) < 2)
-      elements <- list(elements[orderElts])
-    else
-      elements <- list(elements[orderElts, , drop = FALSE])
-    splitFactor <- splitFactor[orderElts]
+    if (is.unsorted(splitFactor)) {
+      if (is.factor(splitFactor))
+        splitFactor <- as.character(splitFactor)
+      orderElts <- order(splitFactor)
+      if (length(dim(elements)) < 2)
+        elements <- list(elements[orderElts])
+      else
+        elements <- list(elements[orderElts, , drop = FALSE])
+      splitFactor <- splitFactor[orderElts]
+    } else {
+      elements <- list(elements)
+    }
     splitRle <- rle(splitFactor)
     NAMES <- as.character(splitRle[["values"]])
     elementCumLengths <- cumsum(c(1L, splitRle[["lengths"]]))
