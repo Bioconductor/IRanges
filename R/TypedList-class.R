@@ -140,8 +140,6 @@ TypedList <- function(listClass, elements = list(), splitFactor = NULL,
     NAMES <- names(elements)
   } else {
     if (is.unsorted(splitFactor)) {
-      if (is.factor(splitFactor))
-        splitFactor <- as.character(splitFactor)
       orderElts <- order(splitFactor)
       if (length(dim(elements)) < 2)
         elements <- list(elements[orderElts])
@@ -151,7 +149,17 @@ TypedList <- function(listClass, elements = list(), splitFactor = NULL,
     } else {
       elements <- list(elements)
     }
-    splitRle <- rle(splitFactor)
+    if (is.factor(splitFactor)) {
+      splitRle <- rle(as.character(splitFactor))
+      fullValues <- levels(splitFactor)
+      fullLengths <- rep.int(0L, length(fullValues))
+      fullLengths[match(splitRle[["values"]], fullValues)] <-
+        splitRle[["lengths"]]
+      splitRle[["values"]] <- fullValues
+      splitRle[["lengths"]] <- fullLengths
+    } else {
+      splitRle <- rle(splitFactor)
+    }
     NAMES <- as.character(splitRle[["values"]])
     elementCumLengths <- cumsum(c(1L, splitRle[["lengths"]]))
     compressedIndices <- c(1L, length(splitRle[["lengths"]]) + 1L)
