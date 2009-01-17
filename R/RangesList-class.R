@@ -187,9 +187,9 @@ setMethod("show", "RangesList",
           {
             tlo <- length(start(object))
             lo <- length(object)
-            cat("  A ", class(object), " instance with ", tlo, " range", sep="")
+            cat(tlo, " range", sep="")
             if (tlo != 1) cat("s")
-            cat(" across ", lo, " space")
+            cat(" across", lo, "space")
             if (lo != 1) cat("s")
             if (!is.null(universe(object)))
               cat(" in '", universe(object), "'", sep = "") 

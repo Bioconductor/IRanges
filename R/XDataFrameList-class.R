@@ -22,6 +22,8 @@ setMethod("dim", "XDataFrameList",
             as.integer(c(sum(unlist(lapply(as.list(x, use.names = FALSE), nrow))), ncol))
           })
 
+### FIXME: make separate rownames, colnames methods, because the
+### rownames calculation can be _very_ slow
 setMethod("dimnames", "XDataFrameList",
           function(x) {
             list(unlist(lapply(x, rownames), use.names=FALSE),
