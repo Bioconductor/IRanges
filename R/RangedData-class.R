@@ -113,12 +113,18 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
                        universe = NULL)
 {
   if (!is(ranges, "Ranges"))
-    stop("'ranges' must be a Ranges or XRanges instance")
+    stop("'ranges' must be a Ranges instance")
   if (((nargs() - !missing(space)) - !missing(universe)) > 1) 
     values <- XDataFrame(...) ## at least one column specified
   else values <- new("XDataFrame", nrows = length(ranges))
-  if (length(ranges) != nrow(values))
-    stop("lengths of 'ranges' and elements in '...' must be equal")
+  if (length(ranges) != nrow(values)) {
+    if (nrow(values) > length(ranges))
+      stop("length of value(s) in '...' greater than length of 'ranges'")
+    if (nrow(values) == 0 || length(ranges) %% nrow(values) != 0)
+      stop("length of 'ranges' not a multiple of length of value(s) in '...'")
+    rind <- recycleVector(seq_len(nrow(values)), length(ranges))
+    values <- values[rind,,drop=FALSE]
+  } 
   rownames(values) <- names(ranges) ## ensure these are identical
   if (length(space) > 1) {
     if (length(space) != length(ranges)) {
