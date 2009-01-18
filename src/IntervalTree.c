@@ -114,6 +114,7 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
   
   int nranges = _get_IRanges_length(r_ranges);
   SEXP result_inds = allocVector(INTSXP, nranges + (result_ints != NULL));
+  Rprintf("result_inds: %d\n", nranges + (result_ints != NULL));
   SEXP starts = _get_IRanges_start(r_ranges);
   SEXP widths = _get_IRanges_width(r_ranges);
 
@@ -268,6 +269,7 @@ SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges) {
     SET_SLOT(r_matrix, install("j"), r_query);
     */
     SET_SLOT(r_matrix, install("p"), r_query_start);
+    //Rprintf("r_subject: %d\n", nhits);
     r_subject = allocVector(INTSXP, nhits);
     SET_SLOT(r_matrix, install("i"), r_subject);
     for (result = results, i = 0; result != NULL; result = result->next, i++) {
@@ -278,6 +280,7 @@ SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges) {
     int j = 0;
     PROTECT(r_matrix = NEW_OBJECT(MAKE_CLASS("lgeMatrix")));
     r_elements = allocVector(LGLSXP, tree->n*nranges);
+    //    Rprintf("r_elements: %d\n", tree->n*nranges);
     for (i = 0; i < LENGTH(r_elements); i++)
       LOGICAL(r_elements)[i] = FALSE;
     SET_SLOT(r_matrix, install("x"), r_elements);
@@ -306,6 +309,54 @@ SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges) {
   UNPROTECT(2);
   
   return r_results;
+}
+
+// finds the node to the right of each element of sorted query
+/*
+struct rbTreeNode**
+_IntegerIntervalTree_nearest(struct rbTree *tree, int *query, int len,
+                             Rboolean self)
+{
+  struct rbTreeNode *p, *nextP;
+  int i = 0;
+  rbTreeNode **result = R_alloc(len, sizeof(struct rbTreeNode *));
+  for (i = 0, p = tree->root; p != NULL && i < len; p = nextP) {
+    IntegerInterval *subject = (IntegerInterval *)p->item;
+    Rboolean visited = height && p == tree->stack[height-1];  
+    int sep = subject->start - query[i];
+    nextP = NULL;
+    if(sep > 0 && !visited) { // can go left
+      tree->stack[height++] = p;
+      nextP = p->left;
+    } else {
+      if (visited)
+        height--; // pop handled node if on stack
+      if(sep <= 0)
+        nextP = p->right; 
+    }
+    if (!nextP) {
+      nextP = height ? tree->stack[height-1] : p;
+      IntegerInterval *other = (IntegerInterval *)nextP->item;
+      result[i++] = other->start;
+    }
+  }
+  
+  return(result_ind);
+}
+*/
+
+SEXP IntegerIntervalTree_nearest(SEXP r_tree, SEXP r_ranges, SEXP r_self) {
+  struct rbTree *tree = R_ExternalPtrAddr(r_tree);
+  int nranges = _get_IRanges_length(r_ranges);
+  
+
+  SEXP start = _get_IRanges_start(r_ranges);
+  SEXP width = _get_IRanges_width(r_ranges);
+  int *end = R_alloc(GET_LENGTH(start), sizeof(int));
+    
+  for (i = 0; i < GET_LENGTH(start); i++)
+    end[i] = INTEGER(start)[i] + INTEGER(width)[i] - 1;
+  
 }
 
 SEXP IntegerIntervalTree_asIRanges(SEXP r_tree) {

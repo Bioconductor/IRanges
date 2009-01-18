@@ -6,7 +6,6 @@ Long term TODO list
 
 - Ranges:
   - "unique" for removing duplicate ranges
-  * "nearest" for finding nearest neighbors
   - "match" for exact matching
   - operator aliases
     - ranges & ranges (intersection)
@@ -16,12 +15,12 @@ Long term TODO list
   - "inverse.rle", opposite of whichAsIRanges
   - "range" returns a single element IRanges with bounds of entire set
   - permute or something to create a random mimic
-  - extend to multiple dimensions?
 
 - IRanges:
   - should probably use XIntegers for start/width
   
 - TypedList:
+  - refactor to simplify internals
   - dim, dim<-, dimnames, dimnames<- for multi-dimensional list (like 'by')
   
 - RangesList:
@@ -30,11 +29,7 @@ Long term TODO list
     - 'y' omitted: become n-ary ops on items in collection
     - 'y' specified: performed element-wise
   - unary ops: "gaps", "coverage", "slice", etc are vectorized
-  
-- RangesMatching:
-  - "relations" to extract relationships in terms of Allen's Interval Algebra
-    - kind of like "all.equal"
-  
+    
 - XDataFrame:
   - group generics (Math, Ops, Summary)
   - by, aggregate
@@ -44,7 +39,7 @@ Long term TODO list
 - RangedData:
   - merge for SQL-type join operations based on range overlap
   - inverse.rle
-  * "aggregate", generalization of coverage for max/min/etc
+  - "aggregate", generalization of coverage for max/min/etc
   - as a subset specification for BSGenome objects (get sequences out)
 
 - SplitXDataFrame:
@@ -62,9 +57,6 @@ Long term TODO list
 - rdapply:
   - probably need to add 'excludePattern' parameter
   
-- Classes to add:
-  - ViewsList, extends RangesList but specific to Views
-
 - IO:
   - xscan() - read data directly into XSequence objects
   - move chain reading to rtracklayer

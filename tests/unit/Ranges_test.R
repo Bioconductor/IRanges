@@ -59,3 +59,26 @@ test_Ranges_zoom <- function() {
   checkException(ir*c(1,2,1), silent = TRUE)
   checkException(ir[rep(1,3)]*c(1,2), silent = TRUE)
 }
+
+test_Ranges_adjacency <- function() {
+  query <- IRanges(c(1, 3, 9), c(3, 7, 10))
+  subject <- IRanges(c(3, 2, 10), c(3, 13, 12))
+  
+  checkIdentical(precede(query, subject), c(3L, 3L, NA))
+  checkIdentical(precede(IRanges(), subject), integer())
+  checkIdentical(precede(query, IRanges()), rep(NA_integer_, 3))
+  checkIdentical(precede(query), c(2L, 3L, NA))
+  
+  checkIdentical(follow(query, subject), c(NA, NA, 1L))
+  checkIdentical(follow(IRanges(), subject), integer())
+  checkIdentical(follow(query, IRanges()), rep(NA_integer_, 3))
+  checkIdentical(follow(query), c(NA, 1L, 2L))
+}
+
+test_Ranges_nearest <- function() {
+  query <- IRanges(c(1, 3, 9), c(2, 7, 10))
+  subject <- IRanges(c(3, 5, 12), c(3, 6, 12))
+
+  checkIdentical(nearest(query, subject), c(1L, 1L, 3L))
+  checkIdentical(nearest(query), c(2L, 1L, 2L))
+}

@@ -234,6 +234,64 @@ setMethod("%in%", c("Ranges", "Ranges"),
           function(x, table)
           !is.na(overlap(reduce(table), x, multiple = FALSE)))
 
+setClassUnion("RangesORmissing", c("Ranges", "missing"))
+
+setGeneric("precede", function(x, subject = x, ...) standardGeneric("precede"))
+setMethod("precede", c("Ranges", "RangesORmissing"), function(x, subject) {
+  s <- start(subject)
+  ord <- NULL
+  if (is.unsorted(s)) {
+    ord <- order(s)
+    s <- s[ord]
+  }
+  i <- findInterval(end(x), s) + 1L
+  if (!is.null(ord)) {
+    invord <- integer(length(ord))
+    invord[ord] <- seq_along(ord)
+    i <- invord[i]
+  }
+  i[i > length(subject)] <- NA
+  i
+})
+
+setGeneric("follow", function(x, subject = x, ...) standardGeneric("follow"))
+setMethod("follow", c("Ranges", "RangesORmissing"), function(x, subject) {
+  e <- end(subject)
+  ord <- NULL
+  if (is.unsorted(e)) {
+    ord <- order(e)
+    e <- e[ord]
+  }
+  i <- findInterval(start(x) - 1L, e)
+  i[i == 0] <- NA
+  if (!is.null(ord)) {
+    invord <- integer(length(ord))
+    invord[ord] <- seq_along(ord)
+    i <- invord[i]
+  }
+  i
+})
+
+setGeneric("nearest",
+           function(x, subject, ...) standardGeneric("nearest"))
+setMethod("nearest", c("Ranges", "RangesORmissing"), function(x, subject) {
+  if (!missing(subject))
+    ol <- overlap(subject, x, multiple = FALSE)
+  else { ## avoid overlapping with self
+    subject <- x
+    olm <- as.matrix(overlap(subject, x))
+    olm <- olm[olm[,1] != olm[,2],]
+    ol <- olm[,2][match(seq_len(length(subject)), olm[,1])]
+  }
+  x <- x[is.na(ol)]
+  before <- precede(x, subject)
+  after <- follow(x, subject)
+  pre <- (start(subject)[before] - end(x)) < (start(x) - end(subject)[after])
+  pre[is.na(pre)] <- is.na(after)[is.na(pre)]
+  ol[is.na(ol)] <- ifelse(pre, before, after)
+  ol
+})
+
 setGeneric("isNormal", function(x) standardGeneric("isNormal"))
 
 setMethod("isNormal", "Ranges",
