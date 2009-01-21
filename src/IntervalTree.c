@@ -114,7 +114,7 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
   
   int nranges = _get_IRanges_length(r_ranges);
   SEXP result_inds = allocVector(INTSXP, nranges + (result_ints != NULL));
-  Rprintf("result_inds: %d\n", nranges + (result_ints != NULL));
+  //Rprintf("result_inds: %d\n", nranges + (result_ints != NULL));
   SEXP starts = _get_IRanges_start(r_ranges);
   SEXP widths = _get_IRanges_width(r_ranges);
 
