@@ -345,6 +345,7 @@ _IntegerIntervalTree_nearest(struct rbTree *tree, int *query, int len,
 }
 */
 
+ /*
 SEXP IntegerIntervalTree_nearest(SEXP r_tree, SEXP r_ranges, SEXP r_self) {
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
   int nranges = _get_IRanges_length(r_ranges);
@@ -358,6 +359,7 @@ SEXP IntegerIntervalTree_nearest(SEXP r_tree, SEXP r_ranges, SEXP r_self) {
     end[i] = INTEGER(start)[i] + INTEGER(width)[i] - 1;
   
 }
+ */
 
 SEXP IntegerIntervalTree_asIRanges(SEXP r_tree) {
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
