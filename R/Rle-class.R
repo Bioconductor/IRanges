@@ -57,6 +57,9 @@ setReplaceMethod("runValue", "Rle",
 setGeneric("Rle", signature = c("values", "lengths"),
            function(values, lengths) standardGeneric("Rle"))
 
+setMethod("Rle", signature = c(values = "missing", lengths = "missing"),
+          function(values, lengths) new("Rle", values = vector(), lengths = integer()))
+
 setMethod("Rle", signature = c(values = "vector", lengths = "missing"),
           function(values, lengths)
           {

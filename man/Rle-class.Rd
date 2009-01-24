@@ -4,6 +4,7 @@
 \alias{class:Rle}
 \alias{Rle-class}
 \alias{Rle}
+\alias{Rle,missing,missing-method}
 \alias{Rle,vector,missing-method}
 \alias{Rle,vector,integer-method}
 \alias{Rle,vector,numeric-method}
