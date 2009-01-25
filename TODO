@@ -5,6 +5,9 @@ Long term TODO list
 -------------------
 
 - Ranges:
+  * reduce: add options for min/max overlap before merging
+  * disjoin: like reduce, but breaks wherever there was a start/end
+  - set operations: must they return normal ranges?
   - "unique" for removing duplicate ranges
   - "match" for exact matching
   - operator aliases

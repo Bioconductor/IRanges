@@ -245,37 +245,39 @@ SEXP IntegerIntervalTree_overlap(SEXP r_tree, SEXP r_ranges) {
 SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges) {
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
   struct slRef *results = NULL, *result;
-  SEXP r_query_start, r_results, r_dims, r_matrix;
+  SEXP r_query_start, r_results, r_dims, r_matrix, r_dimnames, r_colnames;
   int i, nhits, nranges = _get_IRanges_length(r_ranges);
   
   r_query_start = _IntegerIntervalTree_overlap(tree, r_ranges, &results);
   PROTECT(r_query_start);
   nhits = INTEGER(r_query_start)[nranges];
   slReverse(&results);
-  
-  if (2*nhits < ((double)tree->n*nranges)) {
+  /*if (2*nhits < ((double)tree->n*nranges)) {
     SEXP r_subject, r_query;
-    PROTECT(r_matrix = NEW_OBJECT(MAKE_CLASS("ngCMatrix")));
+    PROTECT(r_matrix = NEW_OBJECT(MAKE_CLASS("ngCMatrix")));*/
     /* thinking about going to a doublet matrix, rather than sparse */
-    /*
-    r_query = allocVector(INTSXP, nhits);
-    for (i = 1; i < LENGTH(r_query_start); i++) {
-      int prev = INTEGER(r_query_start)[i-1];
-      int cur = INTEGER(r_query_start)[i] + prev;
-      for (int j = prev; j < nj; j++) {
-        INTEGER(r_query)[j] = i-1;
-      }
+
+  PROTECT(r_results = NEW_OBJECT(MAKE_CLASS("RangesMatching")));
+  
+  r_matrix = allocMatrix(INTSXP, nhits, 2);
+  SET_SLOT(r_results, install("matchMatrix"), r_matrix);
+  for (i = 1; i < LENGTH(r_query_start); i++) {
+    int prev = INTEGER(r_query_start)[i-1];
+    int cur = INTEGER(r_query_start)[i];
+    for (int j = prev; j < cur; j++) {
+      INTEGER(r_matrix)[j] = i /*-1*/;
     }
-    SET_SLOT(r_matrix, install("j"), r_query);
-    */
-    SET_SLOT(r_matrix, install("p"), r_query_start);
+  }
+    
+    //SET_SLOT(r_matrix, install("p"), r_query_start);
     //Rprintf("r_subject: %d\n", nhits);
-    r_subject = allocVector(INTSXP, nhits);
-    SET_SLOT(r_matrix, install("i"), r_subject);
-    for (result = results, i = 0; result != NULL; result = result->next, i++) {
-      INTEGER(r_subject)[i] = ((IntegerIntervalNode *)result->val)->index-1;
-    }
-  } else {
+    //r_subject = allocVector(INTSXP, nhits);
+    //SET_SLOT(r_matrix, install("i"), r_subject);
+
+  for (result = results, i = nhits; result != NULL;
+       result = result->next, i++)
+    INTEGER(r_matrix)[i] = ((IntegerIntervalNode *)result->val)->index/*-1*/;
+    /*} else {
     SEXP r_elements;
     int j = 0;
     PROTECT(r_matrix = NEW_OBJECT(MAKE_CLASS("lgeMatrix")));
@@ -295,14 +297,20 @@ SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges) {
       }
     }
   }
+    */
 
   r_dims = allocVector(INTSXP, 2);
   INTEGER(r_dims)[0] = tree->n;
   INTEGER(r_dims)[1] = nranges;
-  SET_SLOT(r_matrix, install("Dim"), r_dims);
-  
-  r_results = NEW_OBJECT(MAKE_CLASS("RangesMatching"));
-  SET_SLOT(r_results, install("matchMatrix"), r_matrix);
+  SET_SLOT(r_results, install("DIM"), r_dims);
+
+  r_dimnames = allocVector(VECSXP, 2);
+  dimnamesgets(r_matrix, r_dimnames);
+  r_colnames = allocVector(STRSXP, 2);
+  SET_VECTOR_ELT(r_dimnames, 0, R_NilValue);
+  SET_VECTOR_ELT(r_dimnames, 1, r_colnames);
+  SET_STRING_ELT(r_colnames, 0, mkChar("query"));
+  SET_STRING_ELT(r_colnames, 1, mkChar("subject"));
   
   slFreeList(&results);
   

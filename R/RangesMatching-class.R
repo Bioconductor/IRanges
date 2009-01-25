@@ -2,7 +2,8 @@
 ### RangesMatching objects
 ### -------------------------------------------------------------------------
 
-setClass("RangesMatching", representation(matchMatrix = "Matrix"))
+setClass("RangesMatching",
+         representation(matchMatrix = "matrix", DIM = "integer"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -13,7 +14,7 @@ setGeneric("matchMatrix", function(x, ...) standardGeneric("matchMatrix"))
 setMethod("matchMatrix", "RangesMatching", function(x) x@matchMatrix)
 
 setMethod("dim", "RangesMatching", function(x) {
-  dim(matchMatrix(x))
+  x@DIM
 })
 
 ## setGeneric("rmatched", function(x, ...) standardGeneric("rmatched"))
@@ -30,29 +31,31 @@ setMethod("dim", "RangesMatching", function(x) {
 
 setMethod("as.matrix", "RangesMatching", function(x) {
   mm <- matchMatrix(x)
-  if (is(mm, "ngCMatrix")) { ## 'i' holds non-zero rows, 'p' delimits cols
-    cbind(query = rep(seq_len(ncol(mm)), diff(mm@p)), subject = mm@i+1L)
-  } else if (is(mm, "lgeMatrix")) {
-    mm <- as.matrix(mm)
-    cbind(query = col(mm)[mm], subject = row(mm)[mm])
-  }
+  ## if (is(mm, "ngCMatrix")) { ## 'i' holds non-zero rows, 'p' delimits cols
+  ##   cbind(query = rep(seq_len(ncol(mm)), diff(mm@p)), subject = mm@i+1L)
+  ## } else if (is(mm, "lgeMatrix")) {
+  ##   mm <- as.matrix(mm)
+  ##   cbind(query = col(mm)[mm], subject = row(mm)[mm])
+  ## }
+  mm
 })
 
 ## count up the matches for each query
 
 setMethod("as.table", "RangesMatching", function(x, ...) {
   mm <- matchMatrix(x)
-  if (!ncol(mm)) ## as.table does not work for empty arrays
-    return(table(integer(), dnn="ranges"))
-  if (is(mm, "ngCMatrix"))
-    counts <- diff(mm@p)
-  else if (is(mm, "lgeMatrix"))
-    counts <- as.integer(colSums(mm))
-  as.table(array(counts, ncol(mm), list(range = seq_len(ncol(mm)))))
+  table(factor(mm[,1], seq_len(ncol(x))))
+  ## if (!ncol(mm)) ## as.table does not work for empty arrays
+  ##   return(table(integer(), dnn="ranges"))
+  ## if (is(mm, "ngCMatrix"))
+  ##   counts <- diff(mm@p)
+  ## else if (is(mm, "lgeMatrix"))
+  ##   counts <- as.integer(colSums(mm))
+  ## as.table(array(counts, ncol(mm), list(range = seq_len(ncol(mm)))))
 })
 
 setMethod("t", "RangesMatching", function(x) {
-  x@matchMatrix <- t(matchMatrix(x))
+  x@matchMatrix <- matchMatrix(x)[,2:1]
   x
 })
 

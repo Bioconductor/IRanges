@@ -21,16 +21,12 @@
   operations are imaginable.}
 
 \details{
-  The matchings between the ranges are stored as a
-  \code{\link[Matrix]{Matrix-class}} instance. While that structure is
-  accessible, it is usually more convenient to coerce the
-  \code{RangesMatching} instance to a more amenable representation.
-
   The \code{as.matrix} method coerces a \code{RangesMatching} to a two
   column \code{matrix} with one row for each matching, where the value
   in the first column is the index of a range in the first (query)
   \code{Ranges} and the index of the matched subject range is in the
-  second column.
+  second column. The \code{matchMatrix} function returns the same thing,
+  but use of \code{as.matrix} is preferred.
 
   The \code{as.table} method counts the number of matchings for each
   query range and outputs the counts as a \code{table}.
@@ -63,13 +59,7 @@
 
 \section{Accessors}{
   \describe{
-    \item{}{\code{matchMatrix(x)}: Get the \code{\link[Matrix]{Matrix-class}},
-      which may be a dense logical matrix
-      (\code{\link[Matrix]{lgeMatrix-class}}) or sparse non-zero pattern matrix
-      (\code{\link[Matrix]{ngCMatrix-class}}), that encodes the matchings, with
-      columns corresponding to query ranges and rows corresponding to
-      subject ranges. It is not recommended to work with this matrix
-      directly, unless the coercion methods above are inadequate.
+    \item{}{\code{matchMatrix(x)}: A synonym for \code{as.matrix}, above.
     }
     \item{}{\code{ranges(x, query, subject)}: returns a \code{Ranges}
       holding the intersection of the ranges in the

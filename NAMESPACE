@@ -3,9 +3,6 @@ useDynLib(IRanges)
 import(methods)
 importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
            window, aggregate)
-importClassesFrom(Matrix, CsparseMatrix, nsparseMatrix, generalMatrix,
-                  sparseMatrix, Matrix, nMatrix, compMatrix, ngCMatrix)
-importFrom(Matrix, colSums)
 
 exportClasses(
     Ranges, IRanges, NormalIRanges, XRanges, IntervalTree,
