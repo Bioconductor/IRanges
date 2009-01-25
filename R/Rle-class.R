@@ -5,8 +5,10 @@
 ### Class definitions
 ###
 
+setClassUnion("vectorORfactor", c("vector", "factor"))
+
 setClass("Rle",
-         representation(values = "vector",
+         representation(values = "vectorORfactor",
                         lengths = "integer"),
          contains = "Sequence",
          validity = function(object)
@@ -60,14 +62,22 @@ setGeneric("Rle", signature = c("values", "lengths"),
 setMethod("Rle", signature = c(values = "missing", lengths = "missing"),
           function(values, lengths) new("Rle", values = vector(), lengths = integer()))
 
-setMethod("Rle", signature = c(values = "vector", lengths = "missing"),
+setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "missing"),
           function(values, lengths)
           {
-              rleOutput <- rle(unname(values))
+              if (is.factor(values)) {
+                  rleOutput <- rle(as.integer(values))
+                  rleOutput[["values"]] <-
+                    factor(rleOutput[["values"]],
+                           levels = seq_len(length(levels(values))),
+                           labels = levels(values))
+              } else {
+                  rleOutput <- rle(unname(values))
+              }
               new("Rle", values = rleOutput[["values"]], lengths = rleOutput[["lengths"]])
           })
 
-setMethod("Rle", signature = c(values = "vector", lengths = "integer"),
+setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "integer"),
           function(values, lengths)
           {
               if (length(values) != length(lengths))
@@ -85,7 +95,7 @@ setMethod("Rle", signature = c(values = "vector", lengths = "integer"),
               new("Rle", values = values[i], lengths = diff(c(0L, cumsum(lengths)[i])))
           })
 
-setMethod("Rle", signature = c(values = "vector", lengths = "numeric"),
+setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "numeric"),
           function(values, lengths) Rle(values = values, lengths = as.integer(lengths)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -93,6 +103,7 @@ setMethod("Rle", signature = c(values = "vector", lengths = "numeric"),
 ###
 
 setAs("vector", "Rle", function(from) Rle(from))
+setAs("factor", "Rle", function(from) Rle(from))
 
 setAs("Rle", "vector", function(from) as.vector(from))
 setAs("Rle","logical",  function(from) as.logical(from))
@@ -101,6 +112,7 @@ setAs("Rle", "numeric", function(from) as.numeric(from))
 setAs("Rle", "complex", function(from) as.complex(from))
 setAs("Rle", "character", function(from) as.character(from))
 setAs("Rle", "raw", function(from) as.raw(from))
+setAs("Rle", "factor", function(from) as.factor(from))
 
 setMethod("as.vector", c("Rle", "missing"), function(x, mode) rep(runValue(x), runLength(x)))
 setMethod("as.logical", "Rle", function(x) rep(as.logical(runValue(x)), runLength(x)))
@@ -109,6 +121,7 @@ setMethod("as.numeric", "Rle", function(x) rep(as.numeric(runValue(x)), runLengt
 setMethod("as.complex", "Rle", function(x) rep(as.complex(runValue(x)), runLength(x)))
 setMethod("as.character", "Rle", function(x) rep(as.character(runValue(x)), runLength(x)))
 setMethod("as.raw", "Rle", function(x) rep(as.raw(runValue(x)), runLength(x)))
+setMethod("as.factor", "Rle", function(x) rep(as.factor(runValue(x)), runLength(x)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Group generic methods
@@ -659,8 +672,16 @@ setMethod("chartr", c(old = "ANY", new = "ANY", x = "Rle"),
 setMethod("tolower", "Rle",
           function(x) Rle(values = tolower(runValue(x)), lengths = runLength(x)))
 setMethod("toupper", "Rle",
-         function(x) Rle(values = toupper(runValue(x)), lengths = runLength(x)))
+          function(x) Rle(values = toupper(runValue(x)), lengths = runLength(x)))
 
+setMethod("sub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle"),
+          function(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
+                   perl = FALSE, fixed = FALSE, useBytes = FALSE)
+              Rle(values = sub(pattern = pattern, replacement = replacement,
+                               x = runValue(x), ignore.case = ignore.case,
+                               extended = extended, perl = perl, fixed = fixed,
+                               useBytes = useBytes),
+                  lengths = runLength(x)))
 setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle"),
           function(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
                    perl = FALSE, fixed = FALSE, useBytes = FALSE)
@@ -683,5 +704,5 @@ setMethod("show", "Rle",
               cat("  Lengths:  ")
               utils::str(runLength(object), give.head = FALSE)
               cat("  Values :  ")
-              utils::str(runValue(object), give.head = FALSE)
+              utils::str(as.vector(runValue(object)), give.head = FALSE)
           })

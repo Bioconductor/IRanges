@@ -5,9 +5,9 @@
 \alias{Rle-class}
 \alias{Rle}
 \alias{Rle,missing,missing-method}
-\alias{Rle,vector,missing-method}
-\alias{Rle,vector,integer-method}
-\alias{Rle,vector,numeric-method}
+\alias{Rle,vectorORfactor,missing-method}
+\alias{Rle,vectorORfactor,integer-method}
+\alias{Rle,vectorORfactor,numeric-method}
 
 \alias{runLength}
 \alias{runLength,Rle-method}
@@ -31,7 +31,9 @@
 \alias{as.complex,Rle-method}
 \alias{as.character,Rle-method}
 \alias{as.raw,Rle-method}
+\alias{as.factor,Rle-method}
 \alias{coerce,vector,Rle-method}
+\alias{coerce,factor,Rle-method}
 \alias{coerce,Rle,vector-method}
 \alias{coerce,Rle,logical-method}
 \alias{coerce,Rle,integer-method}
@@ -39,6 +41,7 @@
 \alias{coerce,Rle,complex-method}
 \alias{coerce,Rle,character-method}
 \alias{coerce,Rle,raw-method}
+\alias{coerce,Rle,factor-method}
 
 \alias{Ops,Rle,Rle-method}
 \alias{Ops,Rle,vector-method}
@@ -94,6 +97,7 @@
 \alias{chartr,ANY,ANY,Rle-method}
 \alias{tolower,Rle-method}
 \alias{toupper,Rle-method}
+\alias{sub,ANY,ANY,Rle-method}
 \alias{gsub,ANY,ANY,Rle-method}
 
 
@@ -115,9 +119,9 @@
     \item{}{
       \code{Rle(values, lengths)}:
       This constructor creates an Rle instances out of an atomic
-      vector \code{values} and an integer or numeric vector \code{lengths}
-      with all positive elements that represent how many times each value
-      is repeated. The length of these two vectors must be the same.
+      vector or factor object \code{values} and an integer or numeric vector
+      \code{lengths} with all positive elements that represent how many times
+      each value is repeated. The length of these two vectors must be the same.
     }
     \item{}{
       \code{as(from, "Rle")}:
@@ -206,6 +210,10 @@
     \item{}{
       \code{as.raw(x)}, \code{as(from, "raw")}: Creates a raw
       vector based on the values contained in \code{x}.
+    }
+    \item{}{
+      \code{as.factor(x)}, \code{as(from, "factor")}: Creates a factor object
+      based on the values contained in \code{x}.
     }
   }
 }
@@ -491,6 +499,13 @@
     \item{}{
       \code{toupper(x)}:
       Returns an upper case version of \code{x}.
+    }
+    \item{}{
+      \code{sub(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
+                perl = FALSE, fixed = FALSE, useBytes = FALSE)}:
+      Returns a character Rle with replacements based on matches determined by
+      regular expression matching. See \code{\link{sub}} for a description of the
+      arguments.
     }
     \item{}{
       \code{gsub(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,

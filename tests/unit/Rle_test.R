@@ -1,10 +1,13 @@
 test_Rle_construction <- function() {
-    empty <- Rle(integer(0))
+    empty <- Rle()
     checkTrue(validObject(empty))
     checkIdentical(length(empty), 0L)
     x <- Rle(rep(6:10, 1:5))
     checkTrue(validObject(x))
     checkIdentical(x, Rle(6:10, 1:5))
+    y <- Rle(factor(rep(letters, 1:26)))
+    checkTrue(validObject(y))
+    checkIdentical(y, Rle(factor(letters), 1:26))
 }
 
 test_Rle_replace <- function() {
@@ -26,10 +29,12 @@ test_Rle_coersion <- function() {
     checkIdentical(as.integer(x), as.integer(xRle))
     checkIdentical(as.numeric(x), as.numeric(xRle))
     checkIdentical(as.complex(x), as.complex(xRle))
+    checkIdentical(as.factor(x), as.factor(xRle))
     checkIdentical(y, as.vector(yRle))
     checkIdentical(as.logical(y), as.logical(yRle))
     checkIdentical(as.character(y), as.character(yRle))
     checkIdentical(as.raw(y), as.raw(yRle))
+    checkIdentical(as.factor(y), as.factor(yRle))
 }
 
 test_Rle_groupGeneric <- function() {
@@ -146,5 +151,6 @@ test_Rle_character <- function() {
      checkIdentical(chartr("@!*", "alo", txt), as.vector(chartr("@!*", "alo", txt)))
      checkIdentical(tolower(txt), as.vector(tolower(txt)))
      checkIdentical(toupper(txt), as.vector(toupper(txt)))
+     checkIdentical(sub("[b-e]",".", txt), as.vector(sub("[b-e]",".", txtRle)))
      checkIdentical(gsub("[b-e]",".", txt), as.vector(gsub("[b-e]",".", txtRle)))
 }
