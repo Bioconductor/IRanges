@@ -150,3 +150,53 @@ recycleVector <- function(x, length)
 isNotStrictlySorted <- function(x) .Internal(is.unsorted(x, TRUE))
 
 setClassUnion("characterORNULL", c("character", "NULL"))
+
+### Pretty printing
+
+labeledLine <- function(label, els, count = TRUE, sep = " ", ellipsis = "...") {
+  if (count)
+    label <- paste(label, "(", length(els), ")", sep = "")
+  label <- paste(label, ": ", sep = "")
+  width <- getOption("width") - nchar(label)
+  line <- ellipsize(els, width, sep, ellipsis)
+  paste(label, line, "\n", sep = "")
+}
+
+ellipsize <- function(obj, width = getOption("width"), sep = " ",
+                      ellipsis = "...")
+{
+  str <- encodeString(obj)
+  ## get order selectSome() would print
+  half <- seq_len(ceiling(length(obj) / 2))
+  ind <- t(cbind(half, length(obj) - half + 1))[seq_along(obj)]
+  nc <- cumsum(nchar(str[ind]) + nchar(sep)) - nchar(sep)
+  last <- findInterval(width, nc)
+  if (length(obj) > last) {
+    ## make sure ellipsis fits
+    while (last && (nc[last] + nchar(sep)*2^(last>1) + nchar(ellipsis)) > width)
+      last <- last - 1
+    if (last == 0) ## have to truncate the first element
+      str <- paste(substring(str[1], 1, width - nchar(ellipsis)), ellipsis,
+                   sep = "")
+    else if (last == 1) ## can only show the first
+      str <- c(str[1], "...")
+    else str <- selectSome(str, last+1)
+  }
+  paste(str, collapse = sep)
+}
+
+## taken directly from Biobase
+selectSome <- function (obj, maxToShow = 5) 
+{
+  len <- length(obj)
+  if (maxToShow < 3) 
+    maxToShow <- 3
+  if (len > maxToShow) {
+    maxToShow <- maxToShow - 1
+    bot <- ceiling(maxToShow/2)
+    top <- len - (maxToShow - bot - 1)
+    nms <- obj[c(1:bot, top:len)]
+    c(as.character(nms[1:bot]), "...", as.character(nms[-c(1:bot)]))
+  }
+  else obj
+}

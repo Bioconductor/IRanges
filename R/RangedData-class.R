@@ -395,9 +395,10 @@ setAs("XRle", "RangedData",
 ###
 
 setMethod("show", "RangedData", function(object) {
-  nr <- nrow(object)
-  cat("A", class(object), "object with", ncol(object), "cols on", nr,
-      "ranges in", length(object), "sequences\n")
+  cat(class(object), ": ", nrow(object), " ranges by ", ncol(object),
+      " columns\n", sep = "")
+  cat(labeledLine("columns", colnames(object)))
+  cat(labeledLine("sequences", names(object)))
 })
 
 ### =========================================================================

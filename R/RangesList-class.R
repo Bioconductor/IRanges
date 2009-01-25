@@ -185,18 +185,22 @@ setMethod("Ops", c("RangesList", "ANY"),
 setMethod("show", "RangesList",
           function(object)
           {
-            tlo <- length(start(object))
-            lo <- length(object)
-            cat(tlo, " range", sep="")
-            if (tlo != 1) cat("s")
-            cat(" across", lo, "space")
-            if (lo != 1) cat("s")
-            if (!is.null(universe(object)))
-              cat(" in '", universe(object), "'", sep = "") 
+            nranges <- length(start(object))
+            cat(class(object), ": ", nranges, " range", sep = "")
+            if (nranges > 1)
+              cat("s")
             cat("\n")
-            show(head(as.data.frame(object)))
-            if (lo > 6)
-              cat("...\n")
+            if (length(object)) {
+              if (length(object) > 1) {
+                cat(labeledLine("sequences", names(object)))
+              } else {
+                ranges <- object[[1]]
+                if (length(ranges)) {
+                  str <- paste(start(ranges), ":", end(ranges), sep = "")
+                  cat(labeledLine(names(object), str, count = FALSE))
+                }
+              }
+            }
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
