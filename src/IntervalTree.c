@@ -126,7 +126,7 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
     return(result_inds);
   }
   
-  if (nranges)
+  if (nranges || result_ints)
     INTEGER(result_inds)[0] = 0;
   
   for (m = 0; m < nranges; m++) {

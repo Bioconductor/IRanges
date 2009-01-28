@@ -55,7 +55,7 @@ setMethod("as.table", "RangesMatching", function(x, ...) {
 })
 
 setMethod("t", "RangesMatching", function(x) {
-  x@matchMatrix <- matchMatrix(x)[,2:1]
+  x@matchMatrix <- matchMatrix(x)[,2:1,drop=FALSE]
   x
 })
 
