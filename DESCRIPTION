@@ -45,19 +45,19 @@ Collate: validity-utils.R
 	MaskCollection-class.R
 	read.Mask.R
 	TypedList-class.R
-    AnnotatedList-class.R
+	AnnotatedList-class.R
 	AtomicList-class.R
 	XDataFrame-class.R
 	XDataFrame-utils.R
 	XDataFrameList-class.R
-    RangesList-class.R
+	RangesList-class.R
 	RangedData-class.R
 	FilterRules-class.R
 	RDApplyParams-class.R
 	RangedData-utils.R
-    RangesMatching-class.R
-    RangesMatchingList-class.R
-    Alignment-class.R
+	RangesMatching-class.R
+	RangesMatchingList-class.R
+	Alignment-class.R
 	reverse.R
 	coverage.R
 	debug.R

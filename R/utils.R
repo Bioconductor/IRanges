@@ -53,7 +53,7 @@ numeric2integer <- function(x)
 normargIntegerOrNA <- function(x, argname)
 {
     if (!isNumericOrNAs(x))
-        stop(paste("'", argname, "' must be a vector of integers", sep = ""))
+        stop("'", argname, "' must be a vector of integers")
     if (!is.integer(x))
         x <- as.integer(x)
     x
@@ -93,15 +93,6 @@ normargSingleEndOrNA <- function(end)
     if (!is.integer(end)) 
         end <- as.integer(end)
     end
-}
-
-normargSingleWidthOrNA <- function(width)
-{
-    if (!isSingleNumberOrNA(width))
-        stop("'width' must be a single integer or NA")
-    if (!is.integer(width))    
-        width <- as.integer(width)
-    width
 }
 
 normargUseNames <- function(use.names)
