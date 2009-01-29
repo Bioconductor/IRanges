@@ -48,13 +48,19 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
     new2("IRanges", start=ans_start, width=width, check=FALSE)
 }
 
-centeredIRanges <- function(center, flank) {
-  if (!is.numeric(center))
-    stop("'center' must be a numeric vector")
-  if (!is.numeric(flank))
-    stop("'flank' must be a numeric vector")
-  IRanges(center - flank, center + flank)
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "centeredIRanges" function.
+###
+
+centeredIRanges <- function(center, flank)
+{
+    if (!is.numeric(center))
+        stop("'center' must be a numeric vector")
+    if (!is.numeric(flank))
+        stop("'flank' must be a numeric vector")
+    IRanges(start=center-flank, end=center+flank)
 }
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "whichAsIRanges" function.
@@ -72,7 +78,7 @@ whichAsIRanges <- function(x)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "shift"  method.
+### The "shift" method (endomorphism).
 ###
 ### Shifting preserves normality.
 ###
@@ -93,7 +99,7 @@ setMethod("shift", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "restrict" method.
+### The "restrict" method (endomorphism).
 ###
 ### Note that when used with 'keep.all.ranges=FALSE', restrict() preserves
 ### normality.
@@ -150,7 +156,7 @@ setMethod("restrict", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "narrow" methods.
+### The "narrow" methods (endomorphisms).
 ###
 ### Note that in general, narrow() does NOT preserve normality.
 ###
@@ -174,7 +180,7 @@ setMethod("narrow", "NormalIRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "reduce" methods.
+### The "reduce" method (endomorphism).
 ###
 ### Note that reduce() preserves normality (of course).
 ###
@@ -199,7 +205,7 @@ setMethod("reduce", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "gaps" method.
+### The "gaps" method (endomorphism).
 ###
 ### Note that gaps() will always return a normal IRanges object (so, obviously,
 ### it preserves normality).

@@ -22,7 +22,9 @@ setClass("Ranges", contains = "VIRTUAL")
 ###   Endomorphisms:
 ###     update
 ###     [, [<-, rep
-###     shift, restrict, narrow, reduce, gaps, reflect, flank
+###     shift, restrict, narrow, reduce, gaps,
+###     reflect (currently not an endomorphism),
+###     flank (currently not an endomorphism)
 ###
 ###   More operations:
 ###     c
@@ -175,16 +177,20 @@ setGeneric("gaps", signature="x",
 )
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "reflect" method.
+### The "reflect" generic and method (should be made an endomorphism).
 ###
 ### |   xxx |
 ### to
 ### | xxx   |
 ###
+### NOTE for Michael (HP-01/28/09): "reflect" and "flank" are listed in the
+### endomorphism section of The Ranges API (at the top of this file) but they
+### are not implemented as such (you're calling the IRanges() constructor).
+### So for example "flank" called on a Views object won't return a Views
+### object, which is sad ;-)
+### TODO: Make it an endomorphism and move to Ranges-endo.R
 
-setGeneric("reflect",
-    function(x, ...) standardGeneric("reflect")
-)
+setGeneric("reflect", function(x, ...) standardGeneric("reflect"))
 
 setMethod("reflect", "Ranges", function(x, bounds) {
   if (!is(bounds, "Ranges") || length(bounds) != length(x))
@@ -192,11 +198,14 @@ setMethod("reflect", "Ranges", function(x, bounds) {
   IRanges(end(bounds) - (end(x) - start(bounds)), width = width(x))
 })
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "flank" method.
+### The "flank" generic and method (should be made an endomorphism).
 ###
+### TODO: Make it an endomorphism and move to Ranges-endo.R
 
 setGeneric("flank", function(x, ...) standardGeneric("flank"))
+
 setMethod("flank", "Ranges", function(x, width, start = TRUE, both = FALSE) {
   if (!is.numeric(width))
     stop("'width' must be numeric")
@@ -214,21 +223,16 @@ setMethod("flank", "Ranges", function(x, width, start = TRUE, both = FALSE) {
                width = abs(width))
 })
 
-## Find objects in the index that overlap those in a query set
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### More operations.
+###
+
+### Find objects in the index that overlap those in a query set.
 setGeneric("overlap", signature = c("object", "query"),
     function(object, query, maxgap = 0, multiple = TRUE, ...)
         standardGeneric("overlap")
 )
-
-setMethod("overlap", c("Ranges", "missing"),
-    function(object, query, maxgap = 0, multiple = TRUE)
-        overlap(object, object, maxgap, multiple)
-)
-
-setMethod("overlap", c("Ranges", "integer"),
-          function(object, query, maxgap = 0, multiple = TRUE)
-          overlap(object, IRanges(query, query), maxgap, multiple)
-          )
 
 setMethod("%in%", c("Ranges", "Ranges"),
           function(x, table)
@@ -237,6 +241,7 @@ setMethod("%in%", c("Ranges", "Ranges"),
 setClassUnion("RangesORmissing", c("Ranges", "missing"))
 
 setGeneric("precede", function(x, subject = x, ...) standardGeneric("precede"))
+
 setMethod("precede", c("Ranges", "RangesORmissing"), function(x, subject) {
   s <- start(subject)
   ord <- NULL
@@ -255,6 +260,7 @@ setMethod("precede", c("Ranges", "RangesORmissing"), function(x, subject) {
 })
 
 setGeneric("follow", function(x, subject = x, ...) standardGeneric("follow"))
+
 setMethod("follow", c("Ranges", "RangesORmissing"), function(x, subject) {
   e <- end(subject)
   ord <- NULL
@@ -274,6 +280,7 @@ setMethod("follow", c("Ranges", "RangesORmissing"), function(x, subject) {
 
 setGeneric("nearest",
            function(x, subject, ...) standardGeneric("nearest"))
+
 setMethod("nearest", c("Ranges", "RangesORmissing"), function(x, subject) {
   if (!missing(subject))
     ol <- overlap(subject, x, multiple = FALSE)
