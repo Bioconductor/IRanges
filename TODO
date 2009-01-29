@@ -1,5 +1,15 @@
 Immediate TODO list
----------
+-------------------
+
+- Provide a way to reduce ranges separated by a max distance or a min overlap
+  (Michael's suggestion).
+
+- Fix bug in IRanges() that should not be accepting negative widths (reported
+  by Martin).
+
+- Add pairwiseIntersect(), pairwiseUnion() and pairwiseSubtract().
+  See https://stat.ethz.ch/pipermail/bioconductor/2009-January/026059.html
+
 
 Long term TODO list
 -------------------
