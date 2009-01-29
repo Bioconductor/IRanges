@@ -37,18 +37,6 @@ setMethod("subject", "Views", function(x) x@subject)
 
 setValidity2("Views", .valid.Views.width)
 
-### Need to override the "width" method for IRanges object because of the extra
-### check.
-setReplaceMethod("width", "Views",
-    function(x, check=TRUE, value)
-    {
-        x <- callNextMethod()
-        if (check)
-            stopIfProblems(.valid.Views.width(x))
-        x
-    }
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The low-level "Views" constructor.

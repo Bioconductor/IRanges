@@ -363,7 +363,7 @@ setReplaceMethod("start", "IRanges",
     {
         unsafe.start(x) <- value
         if (check)
-            stopIfProblems(c(.valid.IRanges.start(x), .valid.IRanges.width(x)))
+            validObject(x)
         x
     }
 )
@@ -373,7 +373,7 @@ setReplaceMethod("width", "IRanges",
     {
         unsafe.width(x) <- value
         if (check)
-            stopIfProblems(.valid.IRanges.width(x))
+            validObject(x)
         x
     }
 )
@@ -383,12 +383,11 @@ setReplaceMethod("end", "IRanges",
     {
         unsafe.end(x) <- value
         if (check)
-            stopIfProblems(.valid.IRanges.width(x))
+            validObject(x)
         x
     }
 )
 
-### Yes, for IRanges objects!
 setReplaceMethod("names", "IRanges",
     function(x, value)
     {

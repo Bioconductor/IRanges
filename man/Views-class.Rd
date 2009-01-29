@@ -4,7 +4,6 @@
 \alias{Views-class}
 \alias{subject}
 \alias{subject,Views-method}
-\alias{width<-,Views-method}
 \alias{newViews}
 \alias{Views}
 \alias{views}
