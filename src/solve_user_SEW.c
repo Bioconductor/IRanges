@@ -47,13 +47,13 @@ static int check_end(int refwidth, int end, const char *what)
 		return 0;
 	if (end < 0) {
 		snprintf(errmsg_buf, sizeof(errmsg_buf),
-			 "'allow.nonnarrowing' is FALSE the %s end "
+			 "'allow.nonnarrowing' is FALSE and the %s end "
 			 "(%d) is < 0", what, end);
 		return -1;
 	}
 	if (end > refwidth) {
 		snprintf(errmsg_buf, sizeof(errmsg_buf),
-			 "'allow.nonnarrowing' is FALSE the %s end "
+			 "'allow.nonnarrowing' is FALSE and the %s end "
 			 "(%d) is > refwidth", what, end);
 		return -1;
 	}

@@ -29,7 +29,11 @@ setMethod("subseq", "vector",
 setMethod("subseq", "Sequence",
     function(x, start=NA, end=NA, width=NA)
     {
-        solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
+        solved_SEW <- try(solveUserSEW(length(x), start=start, end=end, width=width))
+        if (is(solved_SEW, "try-error"))
+            stop("Invalid sequence coordinates.\n",
+                 "  Are you sure the supplied 'start', 'end' and 'width' arguments\n",
+                 "  are defining a region that is within the limits of the sequence?")
         x[start(solved_SEW) + seq_len(width(solved_SEW)) - 1L]
     }
 )
