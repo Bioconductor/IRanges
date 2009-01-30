@@ -7,6 +7,7 @@
 \alias{Ranges}
 
 % Generics and methods:
+\alias{length,Ranges-method}
 \alias{width}
 \alias{start,Ranges-method}
 \alias{width,Ranges-method}
@@ -31,9 +32,6 @@
 \alias{isNormal,Ranges-method}
 \alias{whichFirstNotNormal}
 \alias{whichFirstNotNormal,Ranges-method}
-\alias{union,Ranges,Ranges-method}
-\alias{intersect,Ranges,Ranges-method}
-\alias{setdiff,Ranges,Ranges-method}
 
 % Old stuff:
 \alias{first}
@@ -241,9 +239,7 @@
   a "normal" \link{IRanges} object: a \link{NormalIRanges} object is
   just an \link{IRanges} object that is guaranteed to be "normal".
 
-  Here are some methods related to the notion of "normal" Ranges
-  and to the use of Ranges objects for representing sets of integers
-  (\code{x} and \code{y} are Ranges objects):
+  Here are some methods related to the notion of "normal" Ranges:
 
   \describe{
     \item{}{
@@ -255,12 +251,6 @@
       Return \code{NA} if \code{x} is normal, or the smallest valid indice
       \code{i} in \code{x} for which \code{x[1:i]} is not "normal".
     }
-    \item{}{
-      \code{union(x, y)}, \code{intersect(x, y)} and \code{setdiff(x, y)}:
-      Return a "normal" \link{IRanges} object representing the union,
-      intersection or (asymmetric!) difference of the sets of integers
-      represented by \code{x} and \code{y}.
-    }
   }
 }
 
@@ -269,6 +259,7 @@
 \seealso{
   \link{IRanges-class},
   \link{IRanges-utils},
+  \link{IRanges-setops},
   \link{XRanges-class},
   \link{RangedData-class},
   \link{IntervalTree-class},

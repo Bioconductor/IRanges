@@ -6,7 +6,6 @@
 \alias{IRanges-class}
 \alias{IRanges}
 
-\alias{length,IRanges-method}
 \alias{start,IRanges-method}
 \alias{width,IRanges-method}
 \alias{names,IRanges-method}
@@ -80,7 +79,8 @@
 
 \seealso{
   \link{Ranges-class},
-  \link{IRanges-utils}
+  \link{IRanges-utils},
+  \link{IRanges-setops}
 }
 
 \examples{

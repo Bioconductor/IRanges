@@ -44,7 +44,7 @@
   ## Turn a logical vector into a set of ranges:
   whichAsIRanges(x)
 
-  ## Modify an IRanges object:
+  ## Modify an IRanges object (endomorphisms):
   shift(x, shift, use.names=TRUE)
   restrict(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
   narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
@@ -53,6 +53,7 @@
   \S4method{reflect}{Ranges}(x, bounds)
   \S4method{flank}{Ranges}(x, width, start = TRUE, both = FALSE)
   \S4method{range}{Ranges}(x, ..., na.rm = FALSE)
+
   ## Coercion:
   asNormalIRanges(x, force=TRUE)
 }
@@ -228,6 +229,7 @@
 \seealso{
   \link{Ranges-class},
   \link{IRanges-class},
+  \link{IRanges-setops},
   \code{\link{solveUserSEW}},
   \code{\link{successiveViews}}
 }

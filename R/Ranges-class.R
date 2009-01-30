@@ -1,12 +1,17 @@
+### =========================================================================
+### Ranges objects
+### -------------------------------------------------------------------------
+###
 ### Ranges is a virtual class that serves as the base for all range containers
 ### Conceptually Ranges are closed, one-dimensional intervals with integer end
 ### points and on the domain of integers.
+###
 
 setClass("Ranges", contains = "VIRTUAL")
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The Ranges API (work in progress):
+### The Ranges API (work still very much in progress):
 ###
 ###   Basic get/set methods:
 ###     length
@@ -14,26 +19,34 @@ setClass("Ranges", contains = "VIRTUAL")
 ###     start<-, width<-, end<-, names<-
 ###
 ###   More basic stuff:
-###     isEmpty
 ###     as.matrix, as.data.frame
-###     duplicated
 ###     show
 ###
-###   Endomorphisms:
+###   Uniqueness, ordering and related methods:
+###     duplicated
+###     unique (not implemented yet)
+###     order
+###     sort
+###     rank (not implemented yet)
+###
+###   Testing a Ranges object:
+###     isEmpty
+###     isDisjoint
+###     isNormal, whichFirstNotNormal
+###
+###   Core endomorphisms:
 ###     update
 ###     [, [<-, rep
+###
+###   More endomorphisms:
 ###     shift, restrict, narrow, reduce, gaps,
 ###     reflect (currently not an endomorphism),
 ###     flank (currently not an endomorphism)
 ###
 ###   More operations:
-###     c
 ###     split
 ###     overlap
-###
-###   Normality and operations on sets:
-###     isNormal, whichFirstNotNormal
-###     union, intersect, setdiff
+###     (some are missing, list them all here)
 ###
 ### Note that, except for some default methods provided below (and implemented
 ### as formal algorithms), Ranges subclasses need to implement their own
@@ -51,6 +64,8 @@ setMethod("start", "Ranges", function(x, ...) {end(x) - width(x) + 1L})
 setMethod("width", "Ranges", function(x) {end(x) - start(x) + 1L})
 setMethod("end", "Ranges", function(x, ...) {start(x) + width(x) - 1L})
 
+setMethod("length", "Ranges", function(x) length(start(x)))
+
 setGeneric("start<-", signature="x",
     function(x, check=TRUE, value) standardGeneric("start<-")
 )
@@ -62,10 +77,6 @@ setGeneric("width<-", signature="x",
 setGeneric("end<-", signature="x",
     function(x, check=TRUE, value) standardGeneric("end<-")
 )
-
-### A Ranges object is considered empty iff all its ranges are empty.
-setGeneric("isEmpty", function(x) standardGeneric("isEmpty"))
-setMethod("isEmpty", "Ranges", function(x) all(width(x) == 0))
 
 setMethod("as.matrix", "Ranges",
     function(x, ...)
@@ -88,6 +99,19 @@ setMethod("as.data.frame", "Ranges",
         ans
     }
 )
+
+setMethod("show", "Ranges",
+    function(object)
+    {
+        cat(class(object), " object:\n", sep="")
+        show(as.data.frame(object))
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Uniqueness, ordering and related methods.
+###
 
 ### Note that this default method is very inefficient so efficient methods for
 ### the Ranges subclasses need to be implemented.
@@ -126,23 +150,56 @@ setMethod("sort", "Ranges", function (x, decreasing = FALSE, ...)
             x[order(x, decreasing = decreasing)]
           })
 
-setMethod("range", "Ranges", function(x, ..., na.rm) {
-  args <- list(x, ...)
-  if (!all(sapply(args, is, "Ranges")))
-    stop("all arguments in '...' must be Ranges instances")
-  x <- do.call(c, args)
-  if (!length(x))
-    IRanges()
-  else IRanges(min(start(x)), max(end(x)))
-})
 
-setMethod("show", "Ranges",
-    function(object)
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Testing a Ranges object.
+###
+
+### A Ranges object is considered empty iff all its ranges are empty.
+setGeneric("isEmpty", function(x) standardGeneric("isEmpty"))
+
+setMethod("isEmpty", "Ranges", function(x) all(width(x) == 0))
+
+setGeneric("isDisjoint", function(x) standardGeneric("isDisjoint"))
+
+setMethod("isDisjoint", "Ranges",
+          function(x) {
+            x <- x[width(x) > 0]
+            if (length(x) < 2)
+              return(TRUE)
+            starts <- start(x)
+            startord <- order(starts)
+            all(starts[startord][-1] - end(x)[startord][-length(x)] >= 1)
+          })
+
+setGeneric("isNormal", function(x) standardGeneric("isNormal"))
+
+setMethod("isNormal", "Ranges",
+    function(x)
     {
-        cat(class(object), " object:\n", sep="")
-        show(as.data.frame(object))
+        all_ok <- all(width(x) >= 1)
+        if (length(x) >= 2)
+            all_ok <- all_ok && all(start(x)[-1] - end(x)[-length(x)] >= 2)
+        all_ok
     }
 )
+
+setGeneric("whichFirstNotNormal", function(x) standardGeneric("whichFirstNotNormal"))
+
+setMethod("whichFirstNotNormal", "Ranges",
+    function(x)
+    {
+        is_ok <- width(x) >= 1
+        if (length(x) >= 2)
+            is_ok <- is_ok & c(TRUE, start(x)[-1] - end(x)[-length(x)] >= 2)
+        which(!is_ok)[1]
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Core endomorphisms.
+###
 
 setReplaceMethod("[", "Ranges",
     function(x, i, j,..., value)
@@ -153,6 +210,11 @@ setMethod("rep", "Ranges",
     function(x, ...)
         x[rep(seq_len(length(x)), ...)]
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### More endomorphisms.
+###
 
 setGeneric("shift", signature="x",
     function(x, shift, use.names=TRUE) standardGeneric("shift")
@@ -175,6 +237,7 @@ setGeneric("reduce", signature="x",
 setGeneric("gaps", signature="x",
     function(x, start=NA, end=NA) standardGeneric("gaps")
 )
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "reflect" generic and method (should be made an endomorphism).
@@ -227,6 +290,16 @@ setMethod("flank", "Ranges", function(x, width, start = TRUE, both = FALSE) {
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### More operations.
 ###
+
+setMethod("range", "Ranges", function(x, ..., na.rm) {
+  args <- list(x, ...)
+  if (!all(sapply(args, is, "Ranges")))
+    stop("all arguments in '...' must be Ranges instances")
+  x <- do.call(c, args)
+  if (!length(x))
+    IRanges()
+  else IRanges(min(start(x)), max(end(x)))
+})
 
 ### Find objects in the index that overlap those in a query set.
 setGeneric("overlap", signature = c("object", "query"),
@@ -298,67 +371,6 @@ setMethod("nearest", c("Ranges", "RangesORmissing"), function(x, subject) {
   ol[is.na(ol)] <- ifelse(pre, before, after)
   ol
 })
-
-setGeneric("isNormal", function(x) standardGeneric("isNormal"))
-
-setMethod("isNormal", "Ranges",
-    function(x)
-    {
-        all_ok <- all(width(x) >= 1)
-        if (length(x) >= 2)
-            all_ok <- all_ok && all(start(x)[-1] - end(x)[-length(x)] >= 2)
-        all_ok
-    }
-)
-
-setGeneric("isDisjoint", function(x) standardGeneric("isDisjoint"))
-
-setMethod("isDisjoint", "Ranges",
-          function(x) {
-            x <- x[width(x) > 0]
-            if (length(x) < 2)
-              return(TRUE)
-            starts <- start(x)
-            startord <- order(starts)
-            all(starts[startord][-1] - end(x)[startord][-length(x)] >= 1)
-          })
-
-setGeneric("whichFirstNotNormal", function(x) standardGeneric("whichFirstNotNormal"))
-
-setMethod("whichFirstNotNormal", "Ranges",
-    function(x)
-    {
-        is_ok <- width(x) >= 1
-        if (length(x) >= 2)
-            is_ok <- is_ok & c(TRUE, start(x)[-1] - end(x)[-length(x)] >= 2)
-        which(!is_ok)[1]
-    }
-)
-
-### union(), intersect() and setdiff() are not endomorphisms.
-setMethod("union", c("Ranges", "Ranges"),
-    function(x, y)
-    {
-        z <- reduce(c(x, y))
-        z[width(z) != 0]
-    }
-)
-setMethod("intersect", c("Ranges", "Ranges"),
-    function(x, y)
-    {
-        start <- min(c(start(x), start(y)))
-        end <- max(c(end(x), end(y)))
-        setdiff(x, gaps(y, start=start, end=end))
-    }
-)
-setMethod("setdiff", c("Ranges", "Ranges"),
-    function(x, y)
-    {
-        start <- min(c(start(x), start(y)))
-        end <- max(c(end(x), end(y)))
-        gaps(union(gaps(x, start=start, end=end), y), start=start, end=end)
-    }
-)
 
 ## zooming (symmetrically scales the width)
 setMethod("*", c("Ranges", "numeric"), function(e1, e2) {

@@ -250,6 +250,7 @@ setMethod("gaps", "IRanges",
     }
 )
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercing an IRanges object to a NormalIRanges object.
 ###

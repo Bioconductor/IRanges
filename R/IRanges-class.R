@@ -40,8 +40,6 @@ setClass("NormalIRanges", contains="IRanges")
 ### Accessor methods.
 ###
 
-setMethod("length", "IRanges", function(x) length(start(x)))
-
 setMethod("start", "IRanges", function(x, ...) x@start)
 
 setMethod("width", "IRanges", function(x) x@width)
@@ -483,8 +481,10 @@ setMethod("[", "IRanges",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining.
 ###
+### Take 1, 2 or more IRanges *objects* and return an IRanges *instance*.
+### Hence this is NOT an endomorphism.
+###
 
-### c() is not an endomorphism.
 setMethod("c", "IRanges",
     function(x, ..., recursive = FALSE)
     {
