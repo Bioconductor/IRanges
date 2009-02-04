@@ -12,18 +12,16 @@ Long term TODO list
 -------------------
 
 - Ranges:
-  * reduce: add options for min/max overlap before merging
-  * disjoin: like reduce, but breaks wherever there was a start/end
-  - set operations: must they return normal ranges?
+  * collapse: like reduce, but breaks wherever there was a start/end
   - "unique" for removing duplicate ranges
   - "match" for exact matching
   - operator aliases
-    - ranges & ranges (intersection)
-    - ranges | ranges (union)
-    - !ranges (complement/gaps)
-    - ranges - ranges (setdiff)
+    - ranges & ranges (pintersect)
+    - ranges | ranges (punion)
+    - !ranges (gaps)
+    - ranges - ranges (psetdiff)
+    - ranges +/- x (shift)
   - "inverse.rle", opposite of whichAsIRanges
-  - "range" returns a single element IRanges with bounds of entire set
   - permute or something to create a random mimic
 
 - IRanges:
@@ -47,7 +45,7 @@ Long term TODO list
   - subset
 
 - RangedData:
-  - merge for SQL-type join operations based on range overlap
+  - 'merge' for SQL-type join operations based on range overlap
   - inverse.rle
   - "aggregate", generalization of coverage for max/min/etc
   - as a subset specification for BSGenome objects (get sequences out)
@@ -56,10 +54,6 @@ Long term TODO list
   - unlist() should add a factor column recording source of each row
   - rbind
   
-- IntervalTree:
-  - overlap: consider returning a doublet matrix instead of non-zero pattern
-  - look into nested containment lists
-
 - FilterRules:
   - refactor, using ShortRead filter framework (becomes FilterList)
   - support subsetting XDataFrame/RangedData directly
@@ -70,3 +64,115 @@ Long term TODO list
 - IO:
   - xscan() - read data directly into XSequence objects
   - move chain reading to rtracklayer
+
+-------------------------------------
+Conceptual framework
+-------------------------------------
+
+We need to construct a conceptual framework around the current
+functionality in IRanges, so that we can eliminate redundancies and
+better plan for the future.
+
+Basic problem: We have lots of (long) data series and need a way to
+efficiently represent and manipulate them.
+
+A series is a vector, except that the positions of the elements are
+meaningful. That is, we often expect strong auto-correlation. We have
+an abstraction called "Sequence" (should be renamed to "Series") for
+representing these series, and probably need to generalize this
+further to "Vector". This may seem like a question of semantics and
+naming, but eventually Vector and some of its subclasses could be
+split out into a separate package, for more general uses, while Series
+stays in IRanges. As of yet, there is no clear need for the split, as
+most long vectors in our data are series.
+
+There are currently two optimized means of storing long series:
+
+1) Externally, currently only in memory, in XSequence
+derivatives. These would generalize to external vectors, so they would
+all derive from an XVector class. The main benefit here is avoiding
+unnecessary copying, though there is potential for vectors stored in
+databases and flat files on disk (but this is outside our use case).
+
+2) Run-length encoding (Rle class). This is a classic means of
+compressing discrete-valued series. It is very efficient, as long as
+there are long runs of equal value.
+
+Rle, so far, is far ahead of XSequence in terms of direct
+usefulness. If XSequence were implemented with an environment, rather
+than an external pointer, adding functionality would be easier. Could
+carry some things over from externalVector.
+
+As the sequence of observations in a series is important, we often
+want to manipulate specific regions of the series. We can use the
+subseq() function to select a particular region from a Sequence, and a
+logical Rle can represent a selection of multiple regions. A slightly
+more general representation, that supports overlapping regions, is the
+Ranges class. (Is there a function for converting a logical Rle to a
+Ranges? Would be a quick way to reimplement slice().)
+
+A Ranges instance holds any number of start,width pairs that describe
+closed intervals representing the set of integers that fall within the
+endpoints. The primary implementation is IRanges, which stores the
+information as two integer vectors. The IntervalTree class is an
+external representation, and thus is derived from XRanges (but do we
+really need XRanges in here? Why not extend Ranges directly?).
+
+Often the endpoints of the intervals are interesting independent of
+the underlying sequence. Many utilities are implemented for
+manipulating and analyzing Ranges. These include:
+
+1) overlap detection, using an interval tree
+2) nearest neighbors: precede, follow, nearest
+3) set operations: (p)union, (p)intersect, (p)setdiff, gaps
+4) coverage, too bio specific? rename to 'table'?
+5) resolving overlap: reduce and (soon) collapse
+6) transformations: flank, reflect, restrict, narrow...
+7) (soon) mapping/alignment
+
+There are two ways to explicitly pair a Ranges instance with a
+Sequence/Series:
+
+1) Masking, as in MaskedXString, where only the elements outside of
+the Ranges are considered by an operation.
+
+2) Views, which are essentially lists of subsequences. This
+relies in the fly-weight pattern for efficiency. Several fast paths,
+like viewSums and viewMaxs, are implemented. There is an RleViews
+and an XIntegerViews (is this one currently used at all?).
+
+Views are limited to subsequences derived from a single sequence. For
+more general lists of sequences, we have a separate framework, based
+on the TypedList class (rename to List?). The TypedList optionally
+ensures that all of its elements are derived from a specified type,
+and it also aims to efficiently represent a major use case of lists:
+splitting a vector by a factor. The indices of the elements with each
+factor level are stored, but there is no physical split of the vector
+into separate list elements. It may be that (Typed)List and general
+derivatives like AnnotatedList, which adds metadata on the elements,
+belong in the "Vector" package proposed above.
+
+A special case that often occurs in data analysis is a list containing
+a set of variables in the same dataset. This problem is solved by
+'data.frame' in base R, and we have an equivalent XDataFrame class
+(rename to DataFrame?) that can hold any type of R object, as long as
+it has a vector semantic. This probably also belongs in the Vector
+package.
+
+Many of the important data structures have TypedList analogs. These
+include all atomic types, as well as:
+
+  * SplitXDataFrameList: a list of XDataFrames that have the same
+    columns (usually the result of a split), could be in Vector
+    
+  * RangesList: Essentially just a list of Ranges instances, but often
+    used for splitting Ranges by their "space" (e.g. chromosome)
+
+Note that MaskCollection (a set of Ranges used to mask the same
+series) is not a TypedList, but probably should be.
+
+When working with series, the records correspond to subseries of some
+larger series. The RangedData class associates variables with a set of
+subseries encoded by a RangesList instance. Thus, it stores data on
+intervals across multiple spaces. It can be said that RangedData sits at
+the top of the IRanges infrastructure.
