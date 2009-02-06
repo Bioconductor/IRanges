@@ -5,7 +5,7 @@ importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
            window, aggregate)
 
 exportClasses(
-    Ranges, IRanges, NormalIRanges, XRanges, IntervalTree,
+    Ranges, RangesORmissing, IRanges, NormalIRanges, XRanges, IntervalTree,
     SequencePtr, RawPtr, IntegerPtr, NumericPtr,
     Sequence, Views,
     XSequence, XRaw, XInteger, XIntegerViews, XNumeric,
