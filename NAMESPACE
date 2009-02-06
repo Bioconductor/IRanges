@@ -65,6 +65,7 @@ export(
     narrow,
     reduce,
     gaps,
+    overlap, nearest, precede, follow,
     reflect,
     flank,
     punion, pintersect, psetdiff,

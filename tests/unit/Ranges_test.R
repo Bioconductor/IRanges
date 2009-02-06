@@ -67,12 +67,12 @@ test_Ranges_adjacency <- function() {
   checkIdentical(precede(query, subject), c(3L, 3L, NA))
   checkIdentical(precede(IRanges(), subject), integer())
   checkIdentical(precede(query, IRanges()), rep(NA_integer_, 3))
-  checkIdentical(precede(query), c(2L, 3L, NA))
+  checkIdentical(precede(query), c(3L, 3L, NA))
   
   checkIdentical(follow(query, subject), c(NA, NA, 1L))
   checkIdentical(follow(IRanges(), subject), integer())
   checkIdentical(follow(query, IRanges()), rep(NA_integer_, 3))
-  checkIdentical(follow(query), c(NA, 1L, 2L))
+  checkIdentical(follow(query), c(NA, NA, 2L))
 }
 
 test_Ranges_nearest <- function() {
