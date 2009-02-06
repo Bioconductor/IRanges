@@ -171,7 +171,7 @@ setMethod("[[", "RangedData",
               stop("subscript out of bounds")
             if (is.na(i) || (is.character(i) && !(i %in% colnames(x))))
               return(NULL)
-            col <- lapply(values(x), `[`, i)
+            col <- lapply(values(x), function(v) v[i])
             names(col) <- NULL ## use rbind() to handle factor levels
             do.call(rbind, col)[[1]]
           })
@@ -276,7 +276,7 @@ setMethod("[", "RangedData",
                 ranges[[k]] <- ranges[[k]][si[[k]] - w[k] + 1]
               }
               if (drop) {
-                whichDrop <- which(unlist(lapply(ranges, function(x) length(x) == 0)))
+                whichDrop <- which(unlist(lapply(ranges, length)) == 0)
                 if (length(whichDrop) > 0) {
                   values <- values[-whichDrop]
                   ranges <- ranges[-whichDrop]
