@@ -55,7 +55,7 @@ XDataFrameList <- function(...)
   TypedList("XDataFrameList", elements = list(...), compress = FALSE)
 }
 
-SplitXDataFrameList <- function(..., compress = TRUE)
+SplitXDataFrameList <- function(..., compress = FALSE)
 {
   TypedList("SplitXDataFrameList", elements = list(...), compress = compress)
 }
