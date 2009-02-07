@@ -51,7 +51,7 @@
 \examples{
   score <- c(10L, 2L, NA)
   rd <- XDataFrame(score)
-  evalq(score > 3, rd)
+  #evalq(score > 3, rd)  ## FIXME!
 }
 
 \keyword{utilities}
