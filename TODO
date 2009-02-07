@@ -1,11 +1,14 @@
 Immediate TODO list
 -------------------
 
-- Provide a way to reduce ranges separated by a max distance or a min overlap
-  (Michael's suggestion).
+- Michael: Fix evalq() problems in examples section of RangedData-utils.Rd
+  and XDataFrame-utils.Rd
 
-- Fix bug in IRanges() that should not be accepting negative widths (reported
-  by Martin).
+- Herve or Michael: Provide a way to reduce ranges separated by a max
+  distance or a min overlap (Michael's suggestion).
+
+- Herve: Fix bug in IRanges() that should not be accepting negative widths
+  (reported by Martin).
 
 
 Long term TODO list
