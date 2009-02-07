@@ -180,6 +180,24 @@ setMethod("narrow", "NormalIRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "threebands" method.
+###
+
+setMethod("threebands", "IRanges",
+    function(x, start=NA, end=NA, width=NA)
+    {
+        middle <- narrow(x, start=start, end=end, width=width, use.names=FALSE)
+        left <- right <- middle
+        left@start <- start(x)
+        left@width <- start(middle) - start(x)
+        right@start <- end(middle) + 1L
+        right@width <- end(x) - end(middle)
+        list(left=left, middle=middle, right=right)
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "reduce" method (endomorphism).
 ###
 ### Note that reduce() preserves normality (of course).

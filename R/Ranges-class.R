@@ -44,6 +44,7 @@ setClass("Ranges", contains = "VIRTUAL")
 ###     flank (currently not an endomorphism)
 ###
 ###   More operations:
+###     threebands,
 ###     split
 ###     overlap
 ###     (some are missing, list them all here)
@@ -228,6 +229,11 @@ setGeneric("restrict", signature="x",
 setGeneric("narrow", signature="x",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
         standardGeneric("narrow")
+)
+
+setGeneric("threebands", signature="x",
+    function(x, start=NA, end=NA, width=NA)
+        standardGeneric("threebands")
 )
 
 setGeneric("reduce", signature="x",

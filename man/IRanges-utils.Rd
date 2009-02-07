@@ -11,6 +11,8 @@
 \alias{narrow}
 \alias{narrow,IRanges-method}
 \alias{narrow,NormalIRanges-method}
+\alias{threebands}
+\alias{threebands,IRanges-method}
 \alias{reduce}
 \alias{reduce,IRanges-method}
 \alias{gaps}
@@ -48,6 +50,7 @@
   shift(x, shift, use.names=TRUE)
   restrict(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
   narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
+  threebands(x, start=NA, end=NA, width=NA)
   reduce(x, with.inframe.attrib=FALSE)
   gaps(x, start=NA, end=NA)
   \S4method{reflect}{Ranges}(x, bounds)
@@ -63,8 +66,8 @@
     For \code{successiveIRanges}, must be a vector of non-negative integers
     (with no NAs) specifying the widths of the ranges to create.
 
-    For \code{narrow}, a vector of integers, eventually with NAs.
-    See the SEW (Start/End/Width) interface for the details
+    For \code{narrow} and \code{threebands}, a vector of integers, eventually
+    with NAs. See the SEW (Start/End/Width) interface for the details
     (\code{?solveUserSEW}).
 
     For \code{flank}, the width of the flanking regions. Note that if
@@ -84,7 +87,7 @@
     A logical vector for \code{whichAsIRanges}.
 
     An \link{IRanges} object for \code{shift}, \code{restrict}, \code{narrow},
-    \code{reduce}, \code{gaps} and \code{asNormalIRanges}.
+    \code{threebands}, \code{reduce}, \code{gaps} and \code{asNormalIRanges}.
   }
   \item{shift}{
     A single integer.
@@ -93,11 +96,13 @@
     \code{TRUE} or \code{FALSE}. Should names be preserved?
   }
   \item{start, end}{
-    A single integer or \code{NA} for all functions except \code{narrow}.
+    A single integer or \code{NA} for all functions except \code{narrow}
+    and \code{threebands}.
 
-    For \code{narrow}, the supplied \code{start} and \code{end} arguments must
-    be vectors of integers, eventually with NAs, that contain coordinates
-    relative to the current ranges. See the Details section below.
+    For \code{narrow} and \code{threebands}, the supplied \code{start}
+    and \code{end} arguments must be vectors of integers, eventually with NAs,
+    that contain coordinates relative to the current ranges.
+    See the Details section below.
 
     For \code{flank}, \code{start} is a logical indicating whether
     \code{x} should be flanked at the start (\code{TRUE}) or the end
@@ -155,6 +160,19 @@
   Then each subrange is derived from the original range according
   to the solved start/end/width values for this range. Note that those
   solved values are interpreted relatively to the original range.
+
+  \code{threebands} extends the capability of \code{narrow} by returning
+  the 3 ranges objects associated to the narrowing operation.
+  The returned value \code{y} is a list of 3 ranges objects named
+  \code{"left"}, \code{"middle"} and \code{"right"}.
+  The middle component is obtained by calling \code{narrow} with the
+  same arguments (except that names are dropped). The left and right
+  components are also instances of the same class as \code{x} and they
+  contain what has been removed on the left and right sides (respectively)
+  of the original ranges during the narrowing.
+
+  Note that original object \code{x} can be reconstructed from the
+  left and right bands with \code{punion(y$left, y$right, fill.gap=TRUE)}.
 
   \code{reduce} first orders the ranges in \code{x} from left to right,
   then merges the overlapping or adjacent ones.
@@ -246,6 +264,11 @@
   narrow(y, start=-4, end=-2)
   narrow(y, end=5, width=3)
   narrow(y, start = c(3, 4, 2, 3), end = c(12, 5, 7, 4))
+
+  z <- threebands(y, start=4, end=-2)
+  y0 <- punion(z$left, z$right, fill.gap=TRUE)
+  identical(y, y0)  # TRUE
+  threebands(y, start=-5)
 
   x <- IRanges(start=c(-2L, 6L, 9L, -4L, 1L, 0L, -6L, 10L),
                width=c( 5L, 0L, 6L,  1L, 4L, 3L,  2L,  3L))
