@@ -65,7 +65,7 @@ parent.frame())
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   score <- c(10L, 2L, NA)
   rd <- RangedData(ranges, score)
-  #evalq(score > 3, rd)  ## FIXME!
+  eval(quote(score > 3), rd)
 
   range(rd)
   rd2 <- RangedData(IRanges(c(5,2,0), c(6,3,1)))
