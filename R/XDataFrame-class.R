@@ -387,11 +387,7 @@ setMethod("as.data.frame", "XDataFrame",
 ## take data.frames to XDataFrames
 setAs("data.frame", "XDataFrame",
       function(from) {
-        sequences <- lapply(from, function(x) {
-          if (canCoerce(x, "XSequence"))
-            as(x, "XSequence", FALSE)
-          else x
-        })
+        sequences <- from
         new("XDataFrame", elements = sequences, NAMES = names(from),
             nrows = nrow(from), rownames = rownames(from))
       })
@@ -404,8 +400,6 @@ setAs("list", "XDataFrame", function(from) do.call(XDataFrame, from))
 ## everything else
 setAs("ANY", "XDataFrame",
       function(from) {
-        if (canCoerce(from, "XSequence"))
-          from <- as(from, "XSequence")
         new("XDataFrame", elements = list(from),
             nrows = as.integer(length(from)))
       })
@@ -416,7 +410,7 @@ setAs("ANY", "XDataFrame",
 ##             nrows = as.integer(length(from)))
 ##       })
 
-## setAs("numeric", "XDataFrame",
+#setAs("numeric", "XDataFrame",
 ##       function(from) {
 ##         as(as(from, "XSequence"), "XDataFrame")
 ##       })
@@ -425,7 +419,7 @@ setAs("ANY", "XDataFrame",
 ### coerce methods.
 setAs("integer", "XDataFrame",
       function(from) {
-        as(as(from, "XSequence"), "XDataFrame")
+        selectMethod("coerce", c("ANY", "XDataFrame"))(from)
       })
 
 ## fallback goes throw data.frame
