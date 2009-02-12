@@ -141,7 +141,7 @@ setMethod("order", "Ranges", function (..., na.last = TRUE, decreasing = FALSE)
               stop("'decreasing' must be TRUE or FALSE")
             args <- list(...)
             if (!all(sapply(args, is, "Ranges")))
-              stop("all arguments in '...' must be Ranges instances")
+              stop("all arguments in '...' must be Ranges objects")
             starts <- lapply(args, start)
             do.call(order,
                     c(starts, na.last = na.last, decreasing = decreasing))
@@ -266,7 +266,7 @@ setGeneric("reflect", function(x, ...) standardGeneric("reflect"))
 
 setMethod("reflect", "Ranges", function(x, bounds) {
   if (!is(bounds, "Ranges") || length(bounds) != length(x))
-    stop("'bounds' must be a Ranges instance of length equal to that of 'x'")
+    stop("'bounds' must be a Ranges object of length equal to that of 'x'")
   IRanges(end(bounds) - (end(x) - start(bounds)), width = width(x))
 })
 
@@ -303,7 +303,7 @@ setMethod("flank", "Ranges", function(x, width, start = TRUE, both = FALSE) {
 setMethod("range", "Ranges", function(x, ..., na.rm) {
   args <- list(x, ...)
   if (!all(sapply(args, is, "Ranges")))
-    stop("all arguments in '...' must be Ranges instances")
+    stop("all arguments in '...' must be Ranges objects")
   x <- do.call(c, args)
   if (!length(x))
     IRanges()

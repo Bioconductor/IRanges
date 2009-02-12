@@ -22,12 +22,12 @@
   \item{x}{A \code{RangesList}}
   \item{start}{The start of the range over which to calculate the
     gaps. If \code{NA}, use the minimum start position in the
-    \code{Ranges} instance.}
+    \code{Ranges} object.}
   \item{end}{The end of the range over which to calculate the gaps. If
     \code{NA}, use the maximum end position in the \code{Ranges}
-    instance.}
+    object.}
   \item{with.inframe.attrib}{Ignored.}
-  \item{...}{Additional \code{RangesList} instances}
+  \item{...}{Additional \code{RangesList} objects}
   \item{na.rm}{Ignored}
 }
 
@@ -37,20 +37,20 @@
   \code{RangesList}.
 
   The \code{reduce} method merges (via \code{\link{reduce}}) all of the
-  elements into a single \code{Ranges} instance and returns the result
+  elements into a single \code{Ranges} object and returns the result
   as a length-one \code{RangesList}.
 
   \code{range} finds the \code{\link[=range,Ranges-method]{range}}, i.e.
   a \code{Ranges} with one range, from the minimum start to the maximum
   end, on each element in \code{x} and returns the result as a
-  \code{RangesList}. If there are additional \code{RangesList} instances
-  in \code{...}, they are merged into \code{x} by name, if all instances
+  \code{RangesList}. If there are additional \code{RangesList} objects
+  in \code{...}, they are merged into \code{x} by name, if all objects
   have names, otherwise, if they are all of the same length, by
   position. Else, an exception is thrown.
 }
 
 \value{
-  A \code{RangesList} instance. For \code{gaps} and \code{range}, length
+  A \code{RangesList} object. For \code{gaps} and \code{range}, length
   is the same as that of \code{x}. For \code{reduce}, length is one.
 }
 

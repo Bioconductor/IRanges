@@ -23,8 +23,8 @@ parent.frame())
   \item{enclos}{The \code{environment} in which to look for symbols that
     do not exist in the environment formed from
     \code{RangedData}.}
-  \item{x}{A \code{RangedData} instance}
-  \item{...}{Additional \code{RangedData} instances}
+  \item{x}{A \code{RangedData} object}
+  \item{...}{Additional \code{RangedData} objects}
   \item{na.rm}{Ignored}
 }
 

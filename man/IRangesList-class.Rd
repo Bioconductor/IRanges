@@ -14,7 +14,7 @@
 
 \title{List of IRanges}
 \description{A \code{\linkS4class{RangesList}} that only stores
-  \code{\linkS4class{IRanges}} instances.}
+  \code{\linkS4class{IRanges}} objects.}
 
 \section{Constructor}{
   \describe{

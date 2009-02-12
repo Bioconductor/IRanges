@@ -129,7 +129,7 @@
     }
     \item{}{
       \code{rbind(...)}: Creates a new \code{XDataFrame} by
-      combining the rows of the \code{XDataFrame} instances in
+      combining the rows of the \code{XDataFrame} objects in
       \code{...}. Very similar to \code{\link{rbind.data.frame}}, except
       in the handling of row names. If all elements have row names, they
       are concatenated and made unique. Otherwise, the result does not
@@ -139,7 +139,7 @@
     }
     \item{}{
       \code{cbind(...)}: Creates a new \code{XDataFrame} by
-      combining the columns of the \code{XDataFrame} instances in
+      combining the columns of the \code{XDataFrame} objects in
       \code{...}. Very similar to \code{\link{cbind.data.frame}}, except
       row names, if any, are dropped. Consider the \code{XDataFrame}
       as an alternative that allows one to specify row names.

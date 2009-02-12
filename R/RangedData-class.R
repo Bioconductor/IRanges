@@ -113,7 +113,7 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
                        universe = NULL)
 {
   if (!is(ranges, "Ranges"))
-    stop("'ranges' must be a Ranges instance")
+    stop("'ranges' must be a Ranges object")
   if (((nargs() - !missing(space)) - !missing(universe)) > 1) 
     values <- XDataFrame(...) ## at least one column specified
   else values <- new("XDataFrame", nrows = length(ranges))
@@ -311,7 +311,7 @@ setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
     rds <- c(list(x), rds)
   rd <- rds[[1]]
   if (!all(sapply(rds, is, "RangedData")))
-    stop("all arguments in '...' must be instances of RangedData")
+    stop("all arguments in '...' must be RangedData objects")
   nms <- lapply(rds, ## figure out names like 'c' on an ordinary vector
                 function(rd) structure(logical(length(rd)), names = names(rd)))
   nms <- names(do.call(c, nms))
@@ -405,7 +405,7 @@ setMethod("show", "RangedData", function(object) {
 ### RangedDataList objects
 ### -------------------------------------------------------------------------
 
-### Lists of RangedData instances
+### Lists of RangedData objects
 
 setClass("RangedDataList",
          prototype = prototype(elementClass = "RangedData", compressible = FALSE),

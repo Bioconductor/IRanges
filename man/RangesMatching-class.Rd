@@ -15,7 +15,7 @@
 
 \title{Matchings between Ranges}
 \description{The \code{RangesMatching} class stores a set of matchings
-  between the ranges in one \code{\linkS4class{Ranges}} instance and the
+  between the ranges in one \code{\linkS4class{Ranges}} object and the
   ranges in another. Currently, \code{RangesMatching} are used to represent the
   result of an \code{\link{overlap}} query, though other matching
   operations are imaginable.}
@@ -63,7 +63,7 @@
     }
     \item{}{\code{ranges(x, query, subject)}: returns a \code{Ranges}
       holding the intersection of the ranges in the
-      \code{Ranges} instances \code{query} and \code{subject}, which
+      \code{Ranges} objects \code{query} and \code{subject}, which
       should be the same subject and query used to generate
       \code{x}. Eventually, we might store the query and subject inside
       \code{x}, in which case the arguments would be redundant.

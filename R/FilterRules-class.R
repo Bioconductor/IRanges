@@ -185,7 +185,7 @@ setMethod("c", "FilterRules",
             else
               args <- list(...)
             if (!all(sapply(args, is, "FilterRules")))
-              stop("all arguments in '...' must be instances of 'FilterRules'")
+              stop("all arguments in '...' must be FilterRules objects")
             ans <-
               FilterRules(unlist(lapply(args,
                                         function(x) {

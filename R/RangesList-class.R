@@ -2,7 +2,7 @@
 ### RangesList objects
 ### -------------------------------------------------------------------------
 
-## Accepts any type of Ranges instance as an element
+## Accepts any type of Ranges object as an element
 
 setClass("RangesList",
          prototype = prototype(elementClass = "Ranges", compressible = FALSE),
@@ -54,7 +54,7 @@ RangesList <- function(..., universe = NULL)
     stop("'universe' must be a single string or NULL")
   ranges <- list(...)
   if (!all(sapply(ranges, is, "Ranges")))
-    stop("all elements in '...' must be instances of 'Ranges'")
+    stop("all elements in '...' must be Ranges objects")
   ans <- new("RangesList", elements = ranges, compress = FALSE,
              annotation = universe)
   ans
@@ -66,7 +66,7 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
     stop("'universe' must be a single string or NULL")
   ranges <- list(...)
   if (!all(sapply(ranges, is, "IRanges")))
-    stop("all elements in '...' must be instances of 'IRanges'")
+    stop("all elements in '...' must be IRanges objects")
   ans <- new("IRangesList", elements = ranges, compress = compress,
              annotation = universe)
   ans

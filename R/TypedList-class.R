@@ -33,7 +33,7 @@ setMethod("initialize", "TypedList",
             if (!is.list(elements))
               stop("'elements' must be a list object")
             if (!all(unlist(lapply(elements, is, elementClass))))
-              stop("all elements must be instances of '", elementClass, "'")
+              stop("all elements must be ", elementClass, " objects")
             if (is.null(elementCumLengths) != is.null(compressedIndices))
               stop("must supply either both 'elementCumLengths' and 'compressedIndices' or neither")
             if (.Object@compressible)
@@ -375,7 +375,7 @@ setReplaceMethod("[[", "TypedList",
                    } else {
                      value <- try(as(value, elementClass(x)), silent = TRUE)
                      if (inherits(value, "try-error"))
-                       stop("cannot coerce 'value' to 'elementClass' instance")
+                       stop("cannot coerce 'value' to a ", elementClass(x), " instance")
                      elts <- as.list(x, use.names = FALSE)
                      elts[[i]] <- value
                      elementLengths <- elementLengths(x)
@@ -495,7 +495,7 @@ setMethod("c", "TypedList",
             else
               tls <- list(...)
             if (!all(sapply(tls, is, "TypedList")))
-              stop("all arguments in '...' must be instances of 'TypedList'")
+              stop("all arguments in '...' must be TypedList objects")
             ecs <- sapply(tls, elementClass)
             if (!all(sapply(ecs, extends, ecs[[1]])))
               stop("all arguments in '...' must have an element class that extends ",
@@ -589,7 +589,7 @@ setGeneric("compress", function(x, ...) standardGeneric("compress"))
 setMethod("compress", "TypedList",
           function(x) {
             if (!x@compressible)
-              stop("cannot compress an instance of a ", class(x), " object")
+              stop("cannot compress this ", class(x), " instance")
             if (!isCompressed(x)) {
               if (length(x) == 0)
                 slot(x, "compressedIndices", check=FALSE) <- 1L

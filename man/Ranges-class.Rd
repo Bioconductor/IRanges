@@ -167,7 +167,7 @@
     \item{}{
       \code{order(..., na.last = TRUE, decreasing = FALSE)}:
       Gets the integer order permutations for the start positions of
-      each of the \code{IRanges} instances in \code{...}. See
+      each of the \code{IRanges} objects in \code{...}. See
       \code{\link[base]{order}} in the base package for more details.
     }
     \item{}{

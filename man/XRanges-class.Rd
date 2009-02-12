@@ -23,7 +23,7 @@
   is coercible to \code{\linkS4class{IRanges}}, so that the data may be
   imported into R. Several of the most important accessors
   (\code{start}, \code{end}, \code{width}) and utilities (\code{reduce},
-  \code{gaps}) have default implementations for \code{XRanges} instances
+  \code{gaps}) have default implementations for \code{XRanges} objects
   that simply coerce the \code{XRanges} to an \code{IRanges} and
   delegate. Subclasses are responsible for optimized implementations of
   those methods and should generally attempt to implement as much of the

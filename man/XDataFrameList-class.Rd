@@ -16,10 +16,10 @@
 \alias{coerce,SplitXDataFrameList,XDataFrame-method}
 
 \title{List of XDataFrames}
-\description{Represents a list of \code{\linkS4class{XDataFrame}} instances.
+\description{Represents a list of \code{\linkS4class{XDataFrame}} objects.
   The \code{SplitXDataFrameList} class contains the additional restriction
   that all the columns be of the same name and type. Internally it is stored
-  as a list of \code{XDataFrame} instances and extends
+  as a list of \code{XDataFrame} objects and extends
   \code{\linkS4class{TypedList}}.}
 \note{
   The \code{\linkS4class{RangedData}} drove the development of these
@@ -41,9 +41,9 @@
 \section{Constructor}{
   \describe{
     \item{}{\code{XDataFrameList(...)}: Concatenates the \code{XDataFrame}
-      instances in \code{...} into a new \code{XDataFrameList}.}
+      objects in \code{...} into a new \code{XDataFrameList}.}
     \item{}{\code{SplitXDataFrameList(..., compress = TRUE)}: Concatenates the
-      \code{XDataFrame} instances in \code{...} into a new
+      \code{XDataFrame} objects in \code{...} into a new
       \code{SplitXDataFrameList}. Note that all arguments should have the same
       number and names of columns. If \code{compress}, the internal storage
       of the data is compressed.}

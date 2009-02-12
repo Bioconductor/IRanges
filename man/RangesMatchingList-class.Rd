@@ -13,8 +13,8 @@
 
 \title{List of Matchings between Ranges}
 \description{The \code{RangesMatchingList} class stores a set of
-  matchings, represented as \code{\linkS4class{RangesMatching}} instances,
-  between the ranges in one \code{\linkS4class{RangesList}} instance and the
+  matchings, represented as \code{\linkS4class{RangesMatching}} objects,
+  between the ranges in one \code{\linkS4class{RangesList}} object and the
   ranges in another.}
 
 \details{
@@ -66,7 +66,7 @@
     }
     \item{}{\code{ranges(x, query, subject)}: returns a \code{RangesList}
       holding the intersection of the ranges in the
-      \code{RangesList} instances \code{query} and \code{subject}, which
+      \code{RangesList} objects \code{query} and \code{subject}, which
       should be the same subject and query used to generate
       \code{x}. Eventually, we might store the query and subject inside
       \code{x}, in which case the arguments would be redundant.

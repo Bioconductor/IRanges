@@ -114,7 +114,7 @@ more general representation, that supports overlapping regions, is the
 Ranges class. (Is there a function for converting a logical Rle to a
 Ranges? Would be a quick way to reimplement slice().)
 
-A Ranges instance holds any number of start,width pairs that describe
+A Ranges object holds any number of start,width pairs that describe
 closed intervals representing the set of integers that fall within the
 endpoints. The primary implementation is IRanges, which stores the
 information as two integer vectors. The IntervalTree class is an
@@ -133,7 +133,7 @@ manipulating and analyzing Ranges. These include:
 6) transformations: flank, reflect, restrict, narrow...
 7) (soon) mapping/alignment
 
-There are two ways to explicitly pair a Ranges instance with a
+There are two ways to explicitly pair a Ranges object with a
 Sequence/Series:
 
 1) Masking, as in MaskedXString, where only the elements outside of
@@ -168,7 +168,7 @@ include all atomic types, as well as:
   * SplitXDataFrameList: a list of XDataFrames that have the same
     columns (usually the result of a split), could be in Vector
     
-  * RangesList: Essentially just a list of Ranges instances, but often
+  * RangesList: Essentially just a list of Ranges objects, but often
     used for splitting Ranges by their "space" (e.g. chromosome)
 
 Note that MaskCollection (a set of Ranges used to mask the same
@@ -176,6 +176,6 @@ series) is not a TypedList, but probably should be.
 
 When working with series, the records correspond to subseries of some
 larger series. The RangedData class associates variables with a set of
-subseries encoded by a RangesList instance. Thus, it stores data on
+subseries encoded by a RangesList object. Thus, it stores data on
 intervals across multiple spaces. It can be said that RangedData sits at
 the top of the IRanges infrastructure.

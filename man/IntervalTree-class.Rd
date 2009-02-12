@@ -24,7 +24,7 @@
 
 \title{Interval Search Trees}
 \description{
-  An \code{IntervalTree} instance is an external
+  An \code{IntervalTree} object is an external
   representation of ranges (i.e. it is derived from
   \code{\linkS4class{XRanges}}) that is optimized for overlap queries.
 }
@@ -46,7 +46,7 @@
   \describe{
     \item{}{IntervalTree(ranges): Creates an \code{IntervalTree} from the
       ranges in \code{ranges}, an object coercible to
-      \code{IntervalTree}, such as an \code{\linkS4class{IRanges}} instance.
+      \code{IntervalTree}, such as an \code{\linkS4class{IRanges}} object.
     }
   }
 }
@@ -94,7 +94,7 @@
       \code{x \%in\% table}:
       Shortcut for finding the ranges in \code{x} that overlap any of
       the ranges in \code{table}. Both \code{x} and \code{table} should
-      be \code{Ranges} instances. The result is a \code{logical} vector
+      be \code{Ranges} objects. The result is a \code{logical} vector
       of the same length as \code{x}.
     }
   }
@@ -108,7 +108,7 @@
       \code{\linkS4class{IRanges}}.}
     \item{}{\code{as(from, "IntervalTree")}: Constructs an
       \code{IntervalTree} representing \code{from}, a \code{Ranges}
-      instance that is coercible to \code{IRanges}.
+      object that is coercible to \code{IRanges}.
     }
   }
 }

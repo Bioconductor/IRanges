@@ -124,7 +124,7 @@
       that extends that of \code{x}.
     }
     \item{}{\code{c(x, ..., recursive = FALSE)}: Appends the
-      \code{TypedList} instances in \code{...} onto the end of
+      \code{TypedList} objects in \code{...} onto the end of
       \code{x}. All arguments must have an element class that extends that
       of \code{x}.
     }

@@ -17,7 +17,7 @@
 \section{Constructor}{
   \describe{
     \item{}{\code{RangedDataList(...)}: Concatenates the
-      \code{RangedData} instances in \code{...} into a new \code{RangedDataList}.
+      \code{RangedData} objects in \code{...} into a new \code{RangedDataList}.
     }
   }
 }

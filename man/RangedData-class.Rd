@@ -279,18 +279,18 @@
     }
     \item{}{
       \code{rbind(...)}: Matches the spaces from
-      the \code{RangedData} instances in \code{...} by name and combines
+      the \code{RangedData} objects in \code{...} by name and combines
       them row-wise. In a way, this is the reverse of the \code{split}
       operation described above.
     }
     \item{}{
       \code{c(x, ..., recursive = FALSE)}: Combines \code{x} with
       arguments specified in \code{...}, which must all be
-      \code{RangedData} instances. This combination acts as if \code{x} is
+      \code{RangedData} objects. This combination acts as if \code{x} is
       a list of spaces, meaning that the result will contain the spaces
       of the first concatenated with the spaces of the second, and so
       on. This function is useful when creating \code{RangedData}
-      instances on a space-by-space basis and then needing to
+      objects on a space-by-space basis and then needing to
       combine them.
     }
   }
