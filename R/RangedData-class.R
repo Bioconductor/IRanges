@@ -390,6 +390,17 @@ setAs("XRle", "RangedData",
                    XDataFrame(score = from@values))
       })
 
+setAs("RangesList", "RangedData",
+      function(from)
+      {
+        xdfs <- do.call("SplitXDataFrameList", lapply(from, function(x) {
+          xdf <- new("XDataFrame", nrows = length(x))
+          rownames(xdf) <- names(x)
+          xdf
+        }))
+        new("RangedData", ranges = from, values = xdfs)
+      })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Show
 ###
