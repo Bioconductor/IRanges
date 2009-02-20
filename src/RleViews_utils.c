@@ -382,6 +382,7 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 					}
 				} else if (INTEGER(values)[index] < INTEGER(curr)[0]) {
 					*ans_elt = lower_bound;
+					INTEGER(curr)[0] = INTEGER(values)[index];
 				}
 				lengths_elt++;
 				index++;
@@ -398,6 +399,7 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 					}
 				} else if (REAL(values)[index] < REAL(curr)[0]) {
 					*ans_elt = lower_bound;
+					REAL(curr)[0] = REAL(values)[index];
 				}
 				lengths_elt++;
 				index++;
@@ -477,6 +479,7 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 					}
 				} else if (INTEGER(values)[index] > INTEGER(curr)[0]) {
 					*ans_elt = lower_bound;
+					INTEGER(curr)[0] = INTEGER(values)[index];
 				}
 				lengths_elt++;
 				index++;
@@ -493,6 +496,7 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 					}
 				} else if (REAL(values)[index] > REAL(curr)[0]) {
 					*ans_elt = lower_bound;
+					REAL(curr)[0] = REAL(values)[index];
 				}
 				lengths_elt++;
 				index++;
