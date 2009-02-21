@@ -71,6 +71,7 @@
 \alias{window,Rle-method}
 
 \alias{!,Rle-method}
+\alias{which,Rle-method}
 
 \alias{pmax}
 \alias{pmax,Rle-method}
@@ -367,6 +368,11 @@
     \item{}{
       \code{!x}:
        Returns logical negation (NOT) of \code{x}.
+    }
+    \item{}{
+      \code{which(x)}:
+       Returns an integer vector representing the \code{TRUE} indices of
+       \code{x}.
     }
   }
 }

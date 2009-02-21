@@ -96,6 +96,7 @@ test_Rle_logical <- function() {
     x <- c(TRUE,TRUE,FALSE,FALSE,TRUE,FALSE,TRUE,TRUE,TRUE)
     xRle <- Rle(x)
     checkIdentical(!x, as.vector(!x))
+    checkIdentical(which(x), as.vector(which(x)))
 }
 
 test_Rle_numerical <- function() {

@@ -142,7 +142,7 @@ exportMethods(
     unlist,
     update,
     append,
-    "==", "!=", "!",
+    "==", "!=", "!", which,
     c,
     union, intersect, setdiff,
     split,

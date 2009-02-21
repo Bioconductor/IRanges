@@ -462,6 +462,22 @@ setMethod("window", "Rle",
 
 setMethod("!", "Rle", function(x) Rle(values = !runValue(x), lengths = runLength(x)))
 
+setMethod("which", "Rle",
+          function(x, arr.ind = FALSE) {
+              if (!is.logical(runValue(x)))
+                  stop("argument to 'which' is not logical")
+              ok <- runValue(x)
+              from <- start(x)[ok]
+              to <- end(x)[ok]
+              if (length(from) == 0)
+                  integer(0)
+              else
+                  eval(parse(text =
+                             paste("c(",
+                                   paste(from, ":", to, sep = "", collapse = ","),
+                                   ")")))
+          })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other numerical data methods
 ###
