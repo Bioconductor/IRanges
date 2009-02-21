@@ -270,7 +270,7 @@ setMethod("[", "XDataFrame",
                 nms <- names(x)
                 lx <- length(x)
               }
-              if (!is.atomic(i))
+              if (!is.atomic(i) && !is(i, "Rle"))
                 return("invalid subscript type")
               if (!is.null(i) && any(is.na(i)))
                 return("subscript contains NAs")
@@ -292,6 +292,9 @@ setMethod("[", "XDataFrame",
                   m <- match(i, nms)
                 if (!row && any(is.na(m)))
                   return("mismatching names")
+              } else if (is(i, "Rle")) {
+                if (length(i) > lx)
+                  return("subscript out of bounds")
               } else if (!is.null(i)) {
                 return("invalid subscript type")
               }
@@ -331,10 +334,12 @@ setMethod("[", "XDataFrame",
                 stop("subsetting rows: ", prob)
               if (is.character(i))
                 i <- pmatch(i, rownames(x), duplicates.ok = TRUE)
-              if (is.logical(i))
+              else if (is.logical(i))
                 i <- which(i)
-              if (is.null(i))
+              else if (is.null(i))
                 i <- integer()
+              else if (is(i, "Rle"))
+                i <- which(i)
               x@elements <- lapply(as.list(x, use.names = FALSE), `[`, i, drop = FALSE)
               ## newset <- rowset(x)[i]
               ## x@rowset <- XInteger(length(newset), newset)
@@ -344,7 +349,7 @@ setMethod("[", "XDataFrame",
               x@nrows <- dim[1]
               x@rownames <- rownames(x)[i]
             }
-            
+
             if (missing(drop)) ## drop by default if only one column left
               drop <- dim[2] == 1
             if (drop) {
@@ -355,7 +360,7 @@ setMethod("[", "XDataFrame",
               if (dim[1] == 1)
                 return(as(x, "list"))
             }
-            
+
             x
           })
 

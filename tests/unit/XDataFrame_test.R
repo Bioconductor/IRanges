@@ -85,7 +85,7 @@ test_XDataFrame_subset <- function() {
   checkException(sw[,"Fertility"], silent = TRUE) # no column names
 
   sw <- XDataFrame(swiss)
-  
+
   checkIdentical(sw[], sw) # identity subset
   checkIdentical(sw[,], sw)
 
@@ -94,12 +94,20 @@ test_XDataFrame_subset <- function() {
   checkIdentical(as.data.frame(sw[NULL,]), data.frame(swiss[NULL,]))
 
   rownames(sw) <- rn
-  
-  checkIdentical(as.data.frame(sw[1:3]), swiss[1:3])      # select columns
-  checkIdentical(as.data.frame(sw[, 1:3]), swiss[1:3])    # same
+
+  ## select columns
+  checkIdentical(as.data.frame(sw[1:3]), swiss[1:3])
+  checkIdentical(as.data.frame(sw[, 1:3]), swiss[1:3])
+  ## select rows
+  checkIdentical(as.data.frame(sw[1:3,]), swiss[1:3,])
+  checkIdentical(as.data.frame(sw[1:3,]), swiss[1:3,])
+  checkIdentical(as.data.frame(sw[sw[["Education"]] == 7,]),
+                 swiss[swiss[["Education"]] == 7,])
+  checkIdentical(as.data.frame(sw[Rle(sw[["Education"]] == 7),]),
+                 swiss[swiss[["Education"]] == 7,])
   ## select rows and columns
   checkIdentical(as.data.frame(sw[4:5, 1:3]), swiss[4:5,1:3])
-  
+
   checkIdentical(as.data.frame(sw[1]), swiss[1])  # a one-column data frame
   checkIdentical(sw[,"Fertility"], swiss[,"Fertility"])
   ## the same
@@ -110,17 +118,17 @@ test_XDataFrame_subset <- function() {
   checkIdentical(sw[["Fert"]], swiss[["Fert"]]) # should return 'NULL'
   checkIdentical(sw[,c(TRUE, FALSE, FALSE, FALSE, FALSE, FALSE)],
                  swiss[,c(TRUE, FALSE, FALSE, FALSE, FALSE, FALSE)])
-  
+
   checkIdentical(as.data.frame(sw[1,]), swiss[1,])       # a one-row data frame
   checkIdentical(sw[1,, drop=TRUE], swiss[1,, drop=TRUE]) # a list
 
   ## duplicate row, unique row names are created
   checkIdentical(as.data.frame(sw[c(1, 1:2),]), swiss[c(1,1:2),])
-  
+
   ## NOTE: NA subsetting not yet supported for XSequences
   ##checkIdentical(as.data.frame(sw[c(1, NA, 1:2, NA),]), # mixin some NAs
   ##               swiss[c(1, NA, 1:2, NA),])
-  
+
   checkIdentical(as.data.frame(sw["Courtelary",]), swiss["Courtelary",])
   subswiss <- swiss[1:5,1:4]
   subsw <- sw[1:5,1:4]

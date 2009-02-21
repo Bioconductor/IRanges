@@ -87,11 +87,12 @@
 \section{Subsetting}{
   In the following code snippets, \code{x} is an \code{XDataFrame}.
   \describe{
-    \item{}{\code{x[i,j,drop]}: Behaves very similarly to
-      the \code{\link{[.data.frame}} method, except subsetting by
-      \code{matrix} indices is not supported. Due to temporary limitations in
-      the subsetting \code{XSequence} objects, indices containing
-      \code{NA}'s are not yet supported.
+    \item{}{\code{x[i,j,drop]}: Behaves very similarly to the
+      \code{\link{[.data.frame}} method, except \code{i} can be a
+      logical \code{Rle} object and subsetting by \code{matrix} indices
+      is not supported. Due to limitations in the subsetting of
+      \code{XSequence} objects, indices containing \code{NA}'s are not
+      supported.
     }
     \item{}{\code{x[[i]]}: Behaves very similarly to the
       \code{\link{[[.data.frame}} method, except arguments \code{j}
