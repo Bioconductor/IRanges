@@ -37,8 +37,8 @@
 \alias{split,RangedData-method}
 
 % Subsetting:
-\alias{[,RangedData,ANY,ANY,ANY-method}
-\alias{[<-,RangedData,ANY,ANY,ANY-method}
+\alias{[,RangedData-method}
+\alias{[<-,RangedData-method}
 \alias{[[,RangedData-method}
 \alias{[[<-,RangedData-method}
 \alias{$,RangedData-method}

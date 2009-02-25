@@ -11,7 +11,7 @@
 \alias{XDataFrame}
 
 % subsetting
-\alias{[,XDataFrame,ANY,ANY,ANY-method}
+\alias{[,XDataFrame-method}
 \alias{[[,XDataFrame-method}
 \alias{[[<-,XDataFrame-method}
 

@@ -14,7 +14,7 @@
 \alias{end<-,IRanges-method}
 \alias{names<-,IRanges-method}
 \alias{update,IRanges-method}
-\alias{[,IRanges,ANY,ANY,ANY-method}
+\alias{[,IRanges-method}
 \alias{c,IRanges-method}
 
 % NormalIRanges objects:

@@ -10,7 +10,7 @@
 \alias{subseq,vector-method}
 \alias{subseq,Sequence-method}
 \alias{rep,Sequence-method}
-\alias{[<-,Sequence,ANY,ANY,ANY-method}
+\alias{[<-,Sequence-method}
 \alias{!=,Sequence,Sequence-method}
 
 % XSequence class, functions and methods:
@@ -37,7 +37,7 @@
 \alias{as.integer,XInteger-method}
 \alias{as.vector,XInteger,missing-method}
 \alias{coerce,integer,XInteger-method}
-\alias{[,XInteger,ANY,ANY,ANY-method}
+\alias{[,XInteger-method}
 \alias{show,XInteger-method}
 \alias{==,XInteger,XInteger-method}
 
@@ -49,7 +49,7 @@
 \alias{as.numeric,XNumeric-method}
 \alias{as.vector,XNumeric,missing-method}
 \alias{coerce,numeric,XNumeric-method}
-\alias{[,XNumeric,ANY,ANY,ANY-method}
+\alias{[,XNumeric-method}
 \alias{show,XNumeric-method}
 \alias{==,XNumeric,XNumeric-method}
 
@@ -62,7 +62,7 @@
 \alias{rep,XRle-method}
 \alias{reverse,XRle-method}
 \alias{==,XRle,XRle-method}
-\alias{[,XRle,ANY,ANY,ANY-method}
+\alias{[,XRle-method}
 \alias{subseq,XRle-method}
 
 % XRleInteger class, function and methods:

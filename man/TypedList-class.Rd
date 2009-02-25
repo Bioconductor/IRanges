@@ -13,8 +13,8 @@
 \alias{isEmpty,TypedList-method}
 
 % subsetting
-\alias{[,TypedList,ANY,ANY,ANY-method}
-\alias{[<-,TypedList,ANY,ANY,ANY-method} % hidden
+\alias{[,TypedList-method}
+\alias{[<-,TypedList-method} % hidden
 \alias{[[,TypedList-method}
 \alias{[[<-,TypedList-method}
 \alias{$,TypedList-method}

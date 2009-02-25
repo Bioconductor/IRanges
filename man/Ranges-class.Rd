@@ -26,7 +26,7 @@
 \alias{order,Ranges-method}
 \alias{sort,Ranges-method}
 \alias{show,Ranges-method}
-\alias{[<-,Ranges,ANY,ANY,ANY-method}
+\alias{[<-,Ranges-method}
 \alias{rep,Ranges-method}
 \alias{isNormal}
 \alias{isNormal,Ranges-method}

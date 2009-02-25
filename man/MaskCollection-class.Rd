@@ -37,8 +37,8 @@
 % Subsetting and appending:
 \alias{[[,MaskCollection-method}
 \alias{[[<-,MaskCollection-method}
-\alias{[,MaskCollection,ANY,ANY,ANY-method}
-\alias{[<-,MaskCollection,ANY,ANY,ANY-method}
+\alias{[,MaskCollection-method}
+\alias{[<-,MaskCollection-method}
 \alias{append,MaskCollection,MaskCollection-method}
 
 % Endomorphisms:

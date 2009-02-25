@@ -51,7 +51,7 @@
 \alias{Summary,Rle-method}
 \alias{Complex,Rle-method}
 
-\alias{[,Rle,ANY,ANY,ANY-method}
+\alias{[,Rle-method}
 \alias{\%in\%,Rle,ANY-method}
 \alias{aggregate,Rle-method}
 \alias{c,Rle-method}

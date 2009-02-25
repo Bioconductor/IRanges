@@ -7,7 +7,7 @@
 \alias{active<-,FilterRules-method}
 
 % subsetting
-\alias{[,FilterRules,ANY,ANY,ANY-method}
+\alias{[,FilterRules-method}
 \alias{[[<-,FilterRules-method}
 
 % splitting and combining

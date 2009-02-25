@@ -17,7 +17,7 @@
 \alias{universe<-}
 
 % subset
-\alias{[,RangesList,ANY,ANY,ANY-method}
+\alias{[,RangesList-method}
 
 % coercion
 \alias{as.data.frame,RangesList-method}
