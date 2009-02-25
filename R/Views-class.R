@@ -7,7 +7,7 @@
 ###
 
 setClass("Views",
-    contains="IRanges",
+    contains=c("IRanges", "ListLike"),
     representation(
         "VIRTUAL",
         subject="Sequence"

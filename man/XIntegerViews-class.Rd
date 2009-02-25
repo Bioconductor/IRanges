@@ -28,7 +28,6 @@
 \alias{!=,integer,XIntegerViews-method}
 
 \alias{as.integer,XIntegerViews-method}
-\alias{as.list,XIntegerViews-method}
 
 
 \title{The XIntegerViews class}
@@ -81,11 +80,6 @@
       \code{as.integer(x, use.names, check.limits)}:
       Convert \code{x} to a list of integer vectors of the same length as
       \code{x}.
-      Can't be used if \code{x} has "out of limits" views (raise an error).
-    }
-    \item{}{
-      \code{as.list(x)}:
-      Convert \code{x} to a list of \link{XInteger} objects.
       Can't be used if \code{x} has "out of limits" views (raise an error).
     }
   }

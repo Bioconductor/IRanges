@@ -3,6 +3,7 @@
 ### -------------------------------------------------------------------------
 
 setClass("MaskCollection",
+    contains="ListLike",
     representation(
         nir_list="list",    # a list of NormalIRanges objects
         width="integer",

@@ -27,7 +27,6 @@
 \alias{!=,integer,XRleIntegerViews-method}
 
 \alias{as.integer,XRleIntegerViews-method}
-\alias{as.list,XRleIntegerViews-method}
 
 
 \title{The XRleIntegerViews class}
@@ -80,11 +79,6 @@
       \code{as.integer(x, use.names, check.limits)}:
       Convert \code{x} to a list of integer vectors of the same length as
       \code{x}.
-      Can't be used if \code{x} has "out of limits" views (raise an error).
-    }
-    \item{}{
-      \code{as.list(x)}:
-      Convert \code{x} to a list of \link{XRleInteger} objects.
       Can't be used if \code{x} has "out of limits" views (raise an error).
     }
   }

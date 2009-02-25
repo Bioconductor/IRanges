@@ -6,6 +6,16 @@
 \alias{sapplyLength}
 \alias{safeExplode}
 
+% ListLike VIRTUAL class, functions and methods:
+\alias{class:ListLike}
+\alias{ListLike-class}
+\alias{ListLike}
+
+\alias{lapply,ListLike,ANY-method}
+\alias{sapply}
+\alias{sapply,ListLike,ANY-method}
+\alias{as.list,ListLike-method}
+
 % SequencePtr class, functions and methods:
 \alias{class:SequencePtr}
 \alias{SequencePtr-class}

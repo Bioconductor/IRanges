@@ -5,6 +5,7 @@ importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
            window, aggregate)
 
 exportClasses(
+    ListLike,
     Ranges, RangesORmissing, IRanges, NormalIRanges, XRanges, IntervalTree,
     SequencePtr, RawPtr, IntegerPtr, NumericPtr,
     Sequence, Views,
@@ -53,6 +54,9 @@ export(
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList,
     XDataFrameList, SplitXDataFrameList,
+
+    ## Generic functions in the ListLike API:
+    sapply,
 
     ## Generic functions in the Ranges API:
     width,
@@ -116,7 +120,6 @@ exportMethods(
     coerce,
     show,
     summary,
-    lapply,
     length,
     names, "names<-",
     "[", "[<-",
@@ -152,6 +155,7 @@ exportMethods(
     order, sort,
     
     ## Methods for generics defined in this package:
+    lapply, sapply,
     width,
     "start<-",
     "width<-",
