@@ -13,7 +13,7 @@
 
 \alias{lapply,ListLike,ANY-method}
 \alias{sapply}
-\alias{sapply,ListLike,ANY-method}
+\alias{sapply,ListLike-method}
 \alias{as.list,ListLike-method}
 
 % SequencePtr class, functions and methods:

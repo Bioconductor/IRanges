@@ -20,12 +20,12 @@ setMethod("lapply", c("ListLike", "ANY"),
 
 ### The implicit generic would dispatch on the X, FUN, simplify and USE.NAMES
 ### args but we don't want that.
-setGeneric("sapply", signature=c("X", "FUN"),
+setGeneric("sapply", signature="X",
     function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
         standardGeneric("sapply")
 )
 
-setMethod("sapply", c("ListLike", "ANY"),
+setMethod("sapply", "ListLike",
     function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
     {
         ii <- seq_len(length(X))
