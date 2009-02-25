@@ -211,7 +211,7 @@ read.liftMask <- function(file, seqname="?", mask.width=NA)
         stop("broken \"lift\" file: contains different lengths ",
              "for sequence \"", seqname, "\"")
     if (!is.na(mask.width) && mask.width != seqlen0)
-        stop("when specified, 'mask.width' must match the length found ",
+        stop("when supplied, 'mask.width' must match the length found ",
              "in the file for sequence \"", seqname, "\"")
     contigs0 <- IRanges(start=data$offset+1, width=data$width)
     contigs1 <- asNormalIRanges(contigs0, force=TRUE)

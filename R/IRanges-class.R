@@ -189,39 +189,42 @@ IRanges <- function(start=NULL, end=NULL, width=NULL)
     null_args <- c(is.null(start), is.null(end), is.null(width))
     if (all(null_args))
         return(new("IRanges"))
-    if (sum(!null_args) != 2)
-        stop("exactly two out of the 'start', 'end' and 'width' arguments must be specified")
-    if (is.null(width)) { 
+    if (sum(null_args) != 1)
+        stop("exactly two out of the 'start', 'end' and 'width' arguments must be supplied")
+    if (is.null(width)) {
+        ## 'start' and 'end' were supplied by user
         if (length(start) != length(end))
             stop("'start' and 'end' must have the same length")
-        if (length(start) != 0)
-            width <- end - start + 1L
-        else
-            width <- integer(0)
+        if (length(start) == 0)
+            return(new("IRanges"))
+        width <- end - start + 1L
     } else if (is.null(start)) {
+        ## 'width' and 'end' were supplied by user
         if (length(width) > length(end))
             stop("'width' has more elements than 'end'")
-        if (length(width) < length(end)) {
-            if (length(width) != 0)
-                width <- rep(width, length.out=length(end))
-            else
-                stop("cannot recycle zero length 'width'")
+        if (length(width) == 0) {
+            if (length(end) == 0)
+                return(new("IRanges"))
+            stop("cannot recycle zero-length 'width'")
         }
-        if (length(width) != 0)
-            start <- end - width + 1L
-        else if (length(end) == 0)
-            start <- integer(0)
+        if (length(width) < length(end))
+            width <- rep(width, length.out=length(end))
+        start <- end - width + 1L
     } else {
+        ## 'width' and 'start' were supplied by user
         if (length(width) > length(start))
             stop("'width' has more elements than 'start'")
-        if (length(width) < length(start)) {
-            if (length(width) != 0)
-                width <- rep(width, length.out=length(start))
-            else
-                stop("cannot recycle zero length 'width'")
+        if (length(width) == 0) {
+            if (length(start) == 0)
+                return(new("IRanges"))
+            stop("cannot recycle zero-length 'width'")
         }
+        if (length(width) < length(start))
+            width <- rep(width, length.out=length(start))
     }
-    ## 'start' and 'with' are guaranteed to be valid.
+    if (min(width) < 0)
+        stop("negative widths are not allowed")
+    ## 'start' and 'with' are guaranteed to be valid
     new2("IRanges", start=start, width=width, check=FALSE)
 }
 
@@ -311,9 +314,9 @@ unsafe.update <- function(object, ...)
     sew <- c("start", "end", "width")
     narg_in_sew <- sum(sew %in% argnames)
     if (narg_in_sew == 3)
-        stop("only two of the ",
+        stop("only two out of the ",
              paste("'", sew, "'", sep="", collapse=", "),
-             " arguments can be specified")
+             " arguments can be supplied")
     do_atomic_update <- narg_in_sew == 2 && (is.null(names(object))
                                              || ("names" %in% argnames))
     if (do_atomic_update) {

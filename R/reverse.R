@@ -13,10 +13,10 @@ setGeneric("reverse", signature="x",
     argnames <- names(args)
     n2p <- match(c("start", "end", "use.names"), argnames)
     if (is.na(n2p[1]))
-        stop("'start' must be specified for \"reverse\" method for IRanges objects")
+        stop("'start' must be supplied for \"reverse\" method for IRanges objects")
     start <- normargSingleStart(args[[n2p[1]]])
     if (is.na(n2p[2]))
-        stop("'end' must be specified for \"reverse\" method for IRanges objects")
+        stop("'end' must be supplied for \"reverse\" method for IRanges objects")
     end <- normargSingleEnd(args[[n2p[2]]])
     if (!is.na(n2p[3]) && !normargUseNames(args[[n2p[3]]])) {
         unsafe.names(x) <- NULL

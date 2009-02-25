@@ -49,13 +49,13 @@
       \code{IRanges(start=NULL, end=NULL, width=NULL)}:
       Return the IRanges object containing the ranges specified by \code{start},
       \code{end} and \code{width}.
-      Exactly two of the \code{start}, \code{end} and \code{width}
-      arguments must be specified as integer vectors (with no \code{NA}s)
+      Exactly two out of the \code{start}, \code{end} and \code{width}
+      arguments must be supplied as integer vectors (with no \code{NA}s)
       and the other argument must be \code{NULL}.
-      If \code{start} and \code{end} are specified, then they must be
+      If \code{start} and \code{end} are supplied, then they must be
       vectors of the same length.
       If \code{start} and \code{width} (or \code{end} and \code{width})
-      are specified, then the length of \code{width} must be <= to the
+      are supplied, then the length of \code{width} must be <= to the
       length of \code{start} and, if it is <, then \code{width} is expanded
       cyclically to the length of \code{start}.
     }
