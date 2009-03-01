@@ -550,15 +550,6 @@ setMethod("as.list", "TypedList",
             ans
           })
 
-## setMethod("as.data.frame", "TypedList",
-##           function(x, row.names=NULL, optional=FALSE, ...)
-##           {
-##             if (!(is.null(row.names) || is.character(row.names)))
-##               stop("'row.names'  must be NULL or a character vector")
-##             as.data.frame(as(x, "list"), row.names = row.names,
-##                           optional = optional, ...)
-##           })
-
 setMethod("unlist", "TypedList",
           function(x, recursive = TRUE, use.names = TRUE) {
             if (!missing(recursive))
@@ -576,37 +567,6 @@ setMethod("unlist", "TypedList",
                 rownames(ans) <- NULL
             }
             ans
-          })
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Methods for compression
-###
-
-setGeneric("isCompressed", function(x) standardGeneric("isCompressed"))
-setMethod("isCompressed", "TypedList",
-          function(x) length(x@compressedIndices) == ifelse(length(x) == 0, 1L, 2L))
-
-setGeneric("compress", function(x, ...) standardGeneric("compress"))
-setMethod("compress", "TypedList",
-          function(x) {
-            if (!x@compressible)
-              stop("cannot compress this ", class(x), " instance")
-            if (!isCompressed(x)) {
-              if (length(x) == 0)
-                slot(x, "compressedIndices", check=FALSE) <- 1L
-              else
-                slot(x, "compressedIndices", check=FALSE) <- c(1L, length(x) + 1L)
-              slot(x, "elements", check=FALSE) <- unlist(x)
-            }
-            x
-          })
-
-setGeneric("uncompress", function(x, ...) standardGeneric("uncompress"))
-setMethod("uncompress", "TypedList",
-          function(x) {
-            slot(x, "compressedIndices", check=FALSE) <- seq_len(length(x) + 1L)
-            slot(x, "elements", check=FALSE) <- as.list(x, use.names = FALSE)
-            x
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
