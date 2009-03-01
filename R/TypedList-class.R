@@ -10,7 +10,7 @@ setClass("TypedList",
                         elements="list",   # a list of R objects
                         NAMES="characterORNULL",  # R doesn't like @names !!
                         elementClass="character",
-                        elementCumLengths="integer", # cumsum(c(1L, sapply(as.list(x), length)))
+                        elementLengths="integer",
                         compressedIndices="integer",  # length(x) + 1 vector
                         compressible="logical"
                         ),
@@ -18,7 +18,7 @@ setClass("TypedList",
                    elements=list(),
                    NAMES=NULL,
                    elementClass="ANYTHING",
-                   elementCumLengths=integer(0),
+                   elementLengths=integer(0),
                    compressedIndices=1L,
                    compressible=FALSE
                    ),
@@ -28,23 +28,23 @@ setClass("TypedList",
 setMethod("initialize", "TypedList",
           function(.Object, elements = list(), NAMES = names(elements),
                    elementClass = .Object@elementClass,
-                   elementCumLengths = NULL, compressedIndices = NULL,
+                   elementLengths = NULL, compressedIndices = NULL,
                    compress = FALSE, check = TRUE, ...) {
             if (!is.list(elements))
               stop("'elements' must be a list object")
             if (!all(unlist(lapply(elements, is, elementClass))))
               stop("all elements must be ", elementClass, " objects")
-            if (is.null(elementCumLengths) != is.null(compressedIndices))
-              stop("must supply either both 'elementCumLengths' and 'compressedIndices' or neither")
+            if (is.null(elementLengths) != is.null(compressedIndices))
+              stop("must supply either both 'elementLengths' and 'compressedIndices' or neither")
             if (.Object@compressible)
               elements <- lapply(elements, as, elementClass)
-            if (is.null(elementCumLengths)) {
+            if (is.null(elementLengths)) {
               if (length(elements) == 0) {
-                elementCumLengths <- 1L
+                elementLengths <- integer(0)
               } else if (length(dim(elements[[1]])) < 2) {
-                elementCumLengths <- cumsum(c(1L, unlist(lapply(elements, length), use.names = FALSE)))
+                elementLengths <- unlist(lapply(elements, length), use.names = FALSE)
               } else {
-                elementCumLengths <- cumsum(c(1L, unlist(lapply(elements, nrow), use.names = FALSE)))
+                elementLengths <- unlist(lapply(elements, nrow), use.names = FALSE)
               }
             }
             slot(.Object, "NAMES", check = check) <- NAMES
@@ -60,7 +60,7 @@ setMethod("initialize", "TypedList",
             }
             slot(.Object, "elements", check = check) <- unname(elements)
             slot(.Object, "elementClass", check = check) <- elementClass
-            slot(.Object, "elementCumLengths", check = check) <- elementCumLengths
+            slot(.Object, "elementLengths", check = check) <- elementLengths
             slot(.Object, "compressedIndices", check = check) <- compressedIndices
             slot(.Object, "compressible", check = check) <- compress
             callNextMethod(.Object, ...)
@@ -74,9 +74,9 @@ setGeneric("elementClass", function(x, ...) standardGeneric("elementClass"))
 setMethod("elementClass", "TypedList", function(x) x@elementClass)
 
 setGeneric("elementLengths", function(x) standardGeneric("elementLengths"))
-setMethod("elementLengths", "TypedList", function(x) diff(x@elementCumLengths))
+setMethod("elementLengths", "TypedList", function(x) x@elementLengths)
 
-setMethod("length", "TypedList", function(x) length(x@elementCumLengths) - 1L)
+setMethod("length", "TypedList", function(x) length(x@elementLengths))
 
 setMethod("names", "TypedList", function(x) x@NAMES)
 
@@ -136,7 +136,7 @@ TypedList <- function(listClass, elements = list(), splitFactor = NULL,
   if (!extends(listClass, "TypedList"))
     stop("cannot create a ", listClass, " as a 'TypedList'")
   if (length(splitFactor) == 0) {
-    elementCumLengths <- NULL
+    elementLengths <- NULL
     compressedIndices <- NULL
     NAMES <- names(elements)
   } else {
@@ -162,11 +162,11 @@ TypedList <- function(listClass, elements = list(), splitFactor = NULL,
       splitRle <- rle(splitFactor)
     }
     NAMES <- as.character(splitRle[["values"]])
-    elementCumLengths <- cumsum(c(1L, splitRle[["lengths"]]))
+    elementLengths <- splitRle[["lengths"]]
     compressedIndices <- c(1L, length(splitRle[["lengths"]]) + 1L)
   }
   new(listClass, elements = elements, NAMES = NAMES,
-      elementCumLengths = elementCumLengths,
+      elementLengths = elementLengths,
       compressedIndices = compressedIndices, compress = compress)
 }
 
@@ -202,28 +202,34 @@ TypedList <- function(listClass, elements = list(), splitFactor = NULL,
 
 .valid.TypedList.compression <- function(x)
 {
-  if (length(x) > 0) {
-    if (length(dim(x@elements[[1]])) < 2) {
-      nRagged <- unlist(lapply(x@elements, length))
-    } else {
-      nRagged <- unlist(lapply(x@elements, nrow))
-    }
-    if (!all(cumsum(c(1L, nRagged)) == x@elementCumLengths[x@compressedIndices]))
-      return("ill-formed element lengths")
-  }
   if ((length(x@compressible) != 1) || is.na(x@compressible))
     return("compressible status is unknown")
-  if ((length(x@compressedIndices) > length(x@elementCumLengths)) ||
+  if ((length(x@compressedIndices) > length(x@elementLengths) + 1) ||
       (x@compressedIndices[1] != 1) ||
       (tail(x@compressedIndices, 1) != (length(x) + 1)) ||
       is.unsorted(x@compressedIndices))
     return("ill-formed 'compressedIndices'")
+  if (x@compressible && length(x) > 0) {
+    if (length(dim(x@elements[[1]])) < 2) {
+      nRagged1 <- unlist(lapply(x@elements, length))
+    } else {
+      nRagged1 <- unlist(lapply(x@elements, nrow))
+    }
+    nRagged2 <- unlist(lapply(seq_len(length(x@elements)),
+                              function(i) {
+                                sum(subseq(x@elementLengths,
+                                           x@compressedIndices[i],
+                                           x@compressedIndices[i+1] - 1))
+                              }))
+    if (!all(nRagged1 == nRagged2))
+      return("ill-formed element lengths")
+  }
   NULL
 }
 
 .valid.TypedList.slot.names <- function(x)
 {
-  for (i in c("elements","NAMES", "elementClass", "elementCumLengths",
+  for (i in c("elements","NAMES", "elementClass", "elementLengths",
               "compressedIndices", "compressible")) {
     if (length(names(slot(x, i))) != 0)
       stop("slot '", i, "' should not have names")
@@ -273,6 +279,7 @@ function(x, i, use.names = TRUE, compress = x@compressible) {
         zeroLengthElt <- x@elements[[1]][integer(0), , drop = FALSE]
     elts <- rep(list(zeroLengthElt), length(runStarts))
     if (length(whichToLoop) > 0) {
+      elementCumLengths <- cumsum(c(1L, x@elementLengths))
       elts[whichToLoop] <-
         lapply(whichToLoop,
                function(j) {
@@ -287,16 +294,16 @@ function(x, i, use.names = TRUE, compress = x@compressible) {
                  eltLength <-
                    x@compressedIndices[listIndex+1L] - firstInListElt
                  if (eltLength > abs(endIndex - startIndex)) {
-                   if (abs(x@elementCumLengths[startIndex] -
-                           x@elementCumLengths[endIndex]) == 0) {
+                   if (abs(elementCumLengths[startIndex] -
+                           elementCumLengths[endIndex]) == 0) {
                      elt <- new(elementClass(x))
                    } else {
                      eltStart <-
-                       x@elementCumLengths[startIndex] -
-                         x@elementCumLengths[firstInListElt] + 1L
+                       elementCumLengths[startIndex] -
+                         elementCumLengths[firstInListElt] + 1L
                      eltEnd <-
-                       x@elementCumLengths[endIndex] -
-                         x@elementCumLengths[firstInListElt]
+                       elementCumLengths[endIndex] -
+                         elementCumLengths[firstInListElt]
                      if (is.vector(elt))
                        elt <- subseq(elt, start = eltStart, end = eltEnd)
                      else if (length(dim(elt)) < 2)
@@ -391,7 +398,7 @@ setReplaceMethod("[[", "TypedList",
                        slot(x, "NAMES", check=FALSE) <- NAMES
                      }
                      slot(x, "elements", check=FALSE) <- elts
-                     slot(x, "elementCumLengths", check=FALSE) <- cumsum(c(1L, elementLengths))
+                     slot(x, "elementLengths", check=FALSE) <- elementLengths
                      slot(x, "compressedIndices", check=FALSE) <- seq_len(length(elementLengths) + 1L)
                    }
                    x
@@ -447,7 +454,7 @@ setMethod("[", "TypedList",
             if (!is.null(names(x)))
               slot(x, "NAMES", check=FALSE) <- names(x)[i]
             slot(x, "elements", check=FALSE) <- elts
-            slot(x, "elementCumLengths", check=FALSE) <- cumsum(c(1L, elementLengths))
+            slot(x, "elementLengths", check=FALSE) <- elementLengths
             if (x@compressible) {
               if (length(i) == 0)
                 slot(x, "compressedIndices", check=FALSE) <- 1L
