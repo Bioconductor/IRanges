@@ -62,6 +62,7 @@ setMethod("initialize", "TypedList",
             slot(.Object, "elementClass", check = check) <- elementClass
             slot(.Object, "elementCumLengths", check = check) <- elementCumLengths
             slot(.Object, "compressedIndices", check = check) <- compressedIndices
+            slot(.Object, "compressible", check = check) <- compress
             callNextMethod(.Object, ...)
           })
 

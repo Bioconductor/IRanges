@@ -42,11 +42,10 @@
   \describe{
     \item{}{\code{XDataFrameList(...)}: Concatenates the \code{XDataFrame}
       objects in \code{...} into a new \code{XDataFrameList}.}
-    \item{}{\code{SplitXDataFrameList(..., compress = TRUE)}: Concatenates the
+    \item{}{\code{SplitXDataFrameList(...)}: Concatenates the
       \code{XDataFrame} objects in \code{...} into a new
-      \code{SplitXDataFrameList}. Note that all arguments should have the same
-      number and names of columns. If \code{compress}, the internal storage
-      of the data is compressed.}
+      \code{SplitXDataFrameList}. Note that all arguments must have the same
+      number and names of columns.}
   }
 }
 

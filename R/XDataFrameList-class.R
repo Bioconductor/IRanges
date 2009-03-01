@@ -7,7 +7,7 @@ setClass("XDataFrameList",
          contains = "TypedList")
 
 setClass("SplitXDataFrameList",
-         prototype = prototype(elementClass="XDataFrame", compressible = TRUE),
+         prototype = prototype(elementClass="XDataFrame", compressible = FALSE),
          contains = "XDataFrameList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -55,9 +55,9 @@ XDataFrameList <- function(...)
   TypedList("XDataFrameList", elements = list(...), compress = FALSE)
 }
 
-SplitXDataFrameList <- function(..., compress = FALSE)
+SplitXDataFrameList <- function(...)
 {
-  TypedList("SplitXDataFrameList", elements = list(...), compress = compress)
+  TypedList("SplitXDataFrameList", elements = list(...), compress = FALSE)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
