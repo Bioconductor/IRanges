@@ -21,7 +21,7 @@ setClass("XDataFrame",
          prototype(rownames = NULL,
                    ##rowset = NULL,
                    nrows = 0L,
-                   compressible = FALSE),
+                   compress = FALSE),
          contains = "AnnotatedList")
 
 setClassUnion("XDataFrameORNULL", c("XDataFrame", "NULL"))

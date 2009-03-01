@@ -5,7 +5,7 @@
 setClassUnion("expressionORfunction", c("expression", "function"))
 
 setClass("FilterRules", representation(active = "logical"),
-         prototype(elementClass = "expressionORfunction", compressible = FALSE),
+         prototype(elementClass = "expressionORfunction", compress = FALSE),
          contains = "TypedList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

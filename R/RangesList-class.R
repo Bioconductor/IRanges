@@ -5,11 +5,11 @@
 ## Accepts any type of Ranges object as an element
 
 setClass("RangesList",
-         prototype = prototype(elementClass = "Ranges", compressible = FALSE),
+         prototype = prototype(elementClass = "Ranges", compress = FALSE),
          contains = "AnnotatedList")
 
 setClass("IRangesList",
-         prototype = prototype(elementClass = "IRanges", compressible = TRUE),
+         prototype = prototype(elementClass = "IRanges", compress = TRUE),
          contains = "RangesList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

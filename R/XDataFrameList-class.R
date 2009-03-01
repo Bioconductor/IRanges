@@ -3,11 +3,11 @@
 ### -------------------------------------------------------------------------
 
 setClass("XDataFrameList",
-         prototype = prototype(elementClass="XDataFrame", compressible = FALSE),
+         prototype = prototype(elementClass="XDataFrame", compress = FALSE),
          contains = "TypedList")
 
 setClass("SplitXDataFrameList",
-         prototype = prototype(elementClass="XDataFrame", compressible = FALSE),
+         prototype = prototype(elementClass="XDataFrame", compress = FALSE),
          contains = "XDataFrameList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

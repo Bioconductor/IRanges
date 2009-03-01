@@ -3,7 +3,7 @@
 ### -------------------------------------------------------------------------
 
 setClass("RangesMatchingList",
-         prototype = prototype(elementClass = "RangesMatching", compressible = FALSE),
+         prototype = prototype(elementClass = "RangesMatching", compress = FALSE),
          contains = "TypedList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

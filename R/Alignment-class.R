@@ -10,7 +10,7 @@ setClass("AlignmentSpace",
 
 setClass("Alignment",
          prototype = prototype(elementClass = "AlignmentSpace",
-           compressible = FALSE),
+           compress = FALSE),
          contains = "TypedList")
 
 read.chain <- function(path, exclude = "_") {

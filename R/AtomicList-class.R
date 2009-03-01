@@ -5,31 +5,31 @@
 ## A list that holds atomic objects
 
 setClass("LogicalList",
-         prototype = prototype(elementClass = "logical", compressible = TRUE),
+         prototype = prototype(elementClass = "logical", compress = TRUE),
          contains = "TypedList")
  
 setClass("IntegerList",
-         prototype = prototype(elementClass = "integer", compressible = TRUE),
+         prototype = prototype(elementClass = "integer", compress = TRUE),
          contains = "TypedList")
 
 setClass("NumericList",
-         prototype = prototype(elementClass = "numeric", compressible = TRUE),
+         prototype = prototype(elementClass = "numeric", compress = TRUE),
          contains = "TypedList")
 
 setClass("ComplexList",
-         prototype = prototype(elementClass = "complex", compressible = TRUE),
+         prototype = prototype(elementClass = "complex", compress = TRUE),
          contains = "TypedList")
 
 setClass("CharacterList",
-         prototype = prototype(elementClass = "character", compressible = TRUE),
+         prototype = prototype(elementClass = "character", compress = TRUE),
          contains = "TypedList")
 
 setClass("RawList",
-         prototype = prototype(elementClass = "raw", compressible = TRUE),
+         prototype = prototype(elementClass = "raw", compress = TRUE),
          contains = "TypedList")
 
 setClass("RleList",
-         prototype = prototype(elementClass = "Rle", compressible = TRUE),
+         prototype = prototype(elementClass = "Rle", compress = TRUE),
          contains = "TypedList")
 
 LogicalList <- function(..., compress = TRUE)

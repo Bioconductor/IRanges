@@ -12,7 +12,7 @@ setClass("TypedList",
                         elementClass="character",
                         elementLengths="integer",
                         compressedIndices="integer",  # length(x) + 1 vector
-                        compressible="logical"
+                        compress="logical"
                         ),
          prototype(
                    elements=list(),
@@ -20,7 +20,7 @@ setClass("TypedList",
                    elementClass="ANYTHING",
                    elementLengths=integer(0),
                    compressedIndices=1L,
-                   compressible=FALSE
+                   compress=FALSE
                    ),
          contains = "VIRTUAL"
          )
@@ -36,7 +36,7 @@ setMethod("initialize", "TypedList",
               stop("all elements must be ", elementClass, " objects")
             if (is.null(elementLengths) != is.null(compressedIndices))
               stop("must supply either both 'elementLengths' and 'compressedIndices' or neither")
-            if (.Object@compressible)
+            if (.Object@compress)
               elements <- lapply(elements, as, elementClass)
             if (is.null(elementLengths)) {
               if (length(elements) == 0) {
@@ -62,7 +62,7 @@ setMethod("initialize", "TypedList",
             slot(.Object, "elementClass", check = check) <- elementClass
             slot(.Object, "elementLengths", check = check) <- elementLengths
             slot(.Object, "compressedIndices", check = check) <- compressedIndices
-            slot(.Object, "compressible", check = check) <- compress
+            slot(.Object, "compress", check = check) <- compress
             callNextMethod(.Object, ...)
           })
 
@@ -202,14 +202,14 @@ TypedList <- function(listClass, elements = list(), splitFactor = NULL,
 
 .valid.TypedList.compression <- function(x)
 {
-  if ((length(x@compressible) != 1) || is.na(x@compressible))
-    return("compressible status is unknown")
+  if ((length(x@compress) != 1) || is.na(x@compress))
+    return("compress status is unknown")
   if ((length(x@compressedIndices) > length(x@elementLengths) + 1) ||
       (x@compressedIndices[1] != 1) ||
       (tail(x@compressedIndices, 1) != (length(x) + 1)) ||
       is.unsorted(x@compressedIndices))
     return("ill-formed 'compressedIndices'")
-  if (x@compressible && length(x) > 0) {
+  if (x@compress && length(x) > 0) {
     if (length(dim(x@elements[[1]])) < 2) {
       nRagged1 <- unlist(lapply(x@elements, length))
     } else {
@@ -230,7 +230,7 @@ TypedList <- function(listClass, elements = list(), splitFactor = NULL,
 .valid.TypedList.slot.names <- function(x)
 {
   for (i in c("elements","NAMES", "elementClass", "elementLengths",
-              "compressedIndices", "compressible")) {
+              "compressedIndices", "compress")) {
     if (length(names(slot(x, i))) != 0)
       stop("slot '", i, "' should not have names")
   }
@@ -252,7 +252,7 @@ setValidity2("TypedList", .valid.TypedList)
 ###
 
 .TypedList.list.subscript <-
-function(x, i, use.names = TRUE, compress = x@compressible) {
+function(x, i, use.names = TRUE, compress = x@compress) {
   k <- length(i)
   if (k == 0) {
     elts <- list()
@@ -449,13 +449,13 @@ setMethod("[", "TypedList",
               stop("invalid subscript type")
             }
             elts <-
-              .TypedList.list.subscript(x, i, use.names = FALSE, compress = x@compressible)
+              .TypedList.list.subscript(x, i, use.names = FALSE, compress = x@compress)
             elementLengths <- elementLengths(x)[i]
             if (!is.null(names(x)))
               slot(x, "NAMES", check=FALSE) <- names(x)[i]
             slot(x, "elements", check=FALSE) <- elts
             slot(x, "elementLengths", check=FALSE) <- elementLengths
-            if (x@compressible) {
+            if (x@compress) {
               if (length(i) == 0)
                 slot(x, "compressedIndices", check=FALSE) <- 1L
               else
@@ -486,7 +486,7 @@ setMethod("append", c("TypedList", "TypedList"),
                       append(as.list(x, use.names = TRUE),
                              as.list(values, use.names = TRUE),
                              after = after),
-                      compress = x@compressible)
+                      compress = x@compress)
           })
 
 ## NOTE: while the 'c' function does not have an 'x', the generic does
@@ -515,7 +515,7 @@ setMethod("c", "TypedList",
                        names(elts) <- names(x)
                        elts
                      }), recursive = FALSE)
-            TypedList(class(tls[[1]]), elts, compress = tls[[1]]@compressible)
+            TypedList(class(tls[[1]]), elts, compress = tls[[1]]@compress)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

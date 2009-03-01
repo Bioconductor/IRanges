@@ -419,7 +419,7 @@ setMethod("show", "RangedData", function(object) {
 ### Lists of RangedData objects
 
 setClass("RangedDataList",
-         prototype = prototype(elementClass = "RangedData", compressible = FALSE),
+         prototype = prototype(elementClass = "RangedData", compress = FALSE),
          contains = "TypedList")
 
 RangedDataList <- function(...)
