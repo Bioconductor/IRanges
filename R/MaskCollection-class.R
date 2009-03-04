@@ -262,40 +262,10 @@ setMethod("maskedratio", "MaskCollection", function(x) maskedwidth(x) / width(x)
 ### Subsetting.
 ###
 
-### Return a NormalIRanges object.
-### Supported 'i' types: numeric/character vector of length 1.
 setMethod("[[", "MaskCollection",
     function(x, i, j, ...)
     {
-        if (!missing(j) || length(list(...)) > 0)
-            stop("invalid subsetting")
-        if (missing(i))
-            stop("subscript is missing")
-        if (!is.numeric(i) && !is.character(i))
-            stop("invalid subscript type")
-        if (length(i) < 1L)
-            stop("attempt to select less than one element")
-        if (length(i) > 1L)
-            stop("attempt to select more than one element")
-        if (is.na(i))
-            stop("subscript cannot be NA")
-        if (is.numeric(i)) {
-            if (!is.integer(i))
-                i <- as.integer(i)
-            if (i < 1L || i > length(x))
-                stop("subscript out of bounds")
-        } else {
-            if (is.null(names(x)))
-                stop("cannot subset by names a ", class(x), " object with no names")
-            if (i == "")
-                stop("subscript cannot be the empty string (\"\")")
-            ii <- which(!is.na(match(names(x), i)))
-            if (length(ii) == 0)
-                stop("invalid name \"", i, "\"")
-            if (length(ii) > 1)
-                stop("name \"", i, "\" is not unique")
-            i <- ii
-        }
+        i <- callNextMethod()
         nir_list(x)[[i]]
     }
 )

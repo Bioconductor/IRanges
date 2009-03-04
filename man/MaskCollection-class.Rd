@@ -176,12 +176,12 @@
     \item{}{
       \code{x[i]}:
       Return a new MaskCollection object made of the selected masks.
-      \code{i} can be a numeric vector, a logical vector, \code{NULL}
-      or missing.
+      Subscript \code{i} can be a numeric, logical or character vector.
     }
     \item{}{
-      \code{x[[i]]}:
-      Extract the i-th mask as a \link{NormalIRanges} object.
+      \code{x[[i, exact=TRUE]]}:
+      Extract the mask selected by \code{i} as a \link{NormalIRanges} object.
+      Subscript \code{i} can be a single integer or a character string.
     }
     \item{}{
       \code{append(x, values, after=length(x))}:

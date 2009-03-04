@@ -99,28 +99,10 @@ views <- function(...) { .Deprecated("Views"); Views(...) }
 ### Extracting a view.
 ###
 
-### Supported 'i' types: numeric vector of length 1.
 setMethod("[[", "Views",
     function(x, i, j, ...)
     {
-        if (!missing(j) || length(list(...)) > 0)
-            stop("invalid subsetting")
-        if (missing(i))
-            stop("subscript is missing")
-        if (is.character(i))
-            stop("cannot subset a ", class(x), " object by names")
-        if (!is.numeric(i))
-            stop("invalid subscript type")
-        if (length(i) < 1L)
-            stop("attempt to select less than one element")
-        if (length(i) > 1L)
-            stop("attempt to select more than one element")
-        if (is.na(i))
-            stop("subscript cannot be NA")
-        if (i == 0)
-            return(subject(x))
-        if (i < 1L || i > length(x))
-            stop("subscript out of bounds")
+        i <- callNextMethod()
         start <- start(x)[i]
         end <- end(x)[i]
         if (start < 1L || end > length(subject(x)))

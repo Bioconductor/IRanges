@@ -98,7 +98,7 @@
     A Views object.
   }
   \item{i, j, ...}{
-    Only one subscript is supported (\code{x[[i]]}).
+    Only one subscript is allowed (\code{x[[i]]}).
   }
   \item{keep.all.ranges}{
     Not supported for Views objects (must be \code{FALSE}).
@@ -125,9 +125,11 @@
 
   [TODO: give some details about \code{subviews}]
 
-  \code{x[[i]]} extracts the i-th view from \code{x}. It cannot be used for
-  extracting a view that is "out of limits" (an error will be raised).
-  The returned object belongs to the same class as \code{subject(x)}.
+  \code{x[[i, exact=TRUE]]} extracts the view selected by \code{i}.
+  Subscript \code{i} can be a single integer or a character string.
+  It cannot be used for extracting a view that is "out of limits"
+  (an error will be raised). The returned object belongs to the same
+  class as \code{subject(x)}.
 
   \code{successiveViews} returns a Views object containing the views on
   \code{subject} that have the widths specified in the \code{width} vector
