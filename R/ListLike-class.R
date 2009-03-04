@@ -4,8 +4,8 @@
 ###
 ### A class can be considered to have a "list semantic" if the "length", "[[",
 ### and "names" methods are defined for it. In that case it can contain
-### the "ListLike" no-slot virtual class in order to inherit the "lapply",
-### "sapply" and "as.list" methods defined below.
+### the "ListLike" no-slot virtual class in order to inherit the "[[", "$",
+### "lapply", "sapply" and "as.list" methods defined below.
 
 setClass("ListLike", representation("VIRTUAL"))
 
@@ -77,6 +77,7 @@ checkAndTranslateDbleBracketSubscript <- function(x, i, j, ...)
     ans
 }
 setMethod("[[", "ListLike", checkAndTranslateDbleBracketSubscript)
+setMethod("$", "ListLike", function(x, name) x[[name, exact=FALSE]])
 
 setMethod("lapply", c("ListLike", "ANY"),
     function(X, FUN, ...)
