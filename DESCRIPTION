@@ -13,6 +13,7 @@ Maintainer: Biocore Team c/o BioC user list <bioconductor@stat.math.ethz.ch>
 biocViews: Infrastructure, Genetics
 Depends: R (>= 2.8.0), methods, stats
 Imports: methods, stats
+Suggests: RUnit
 License: Artistic-2.0
 Collate: validity-utils.R
 	utils.R
