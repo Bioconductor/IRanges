@@ -24,14 +24,18 @@ setClass("TypedList",
          )
 
 setMethod("initialize", "TypedList",
-          function(.Object, elements = list(), NAMES = names(elements),
-                   elementClass = .Object@elementClass, elementLengths = NULL,
-                   compress = FALSE, check = TRUE, ...) {
+          function(.Object,
+                   elements = .Object@elements,
+                   NAMES = names(elements),
+                   elementClass = .Object@elementClass,
+                   elementLengths = integer(0),
+                   compress = .Object@compress,
+                   check = TRUE, ...) {
             if (!is.list(elements))
               stop("'elements' must be a list object")
             if (!all(unlist(lapply(elements, is, elementClass))))
               stop("all elements must be ", elementClass, " objects")
-            if (is.null(elementLengths)) {
+            if (length(elementLengths) == 0) {
               if (length(elements) == 0) {
                 elementLengths <- integer(0)
               } else if (length(dim(elements[[1]])) < 2) {
@@ -41,7 +45,7 @@ setMethod("initialize", "TypedList",
               }
             }
             slot(.Object, "NAMES", check = check) <- NAMES
-            if (.Object@compress) {
+            if (compress) {
               elements <-
                 .TypedList.compress.list(lapply(elements, as, elementClass))
             } else {
