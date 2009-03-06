@@ -57,7 +57,7 @@ setReplaceMethod("runValue", "Rle",
 ###
 
 setGeneric("Rle", signature = c("values", "lengths"),
-           function(values, lengths) standardGeneric("Rle"))
+           function(values, lengths, ...) standardGeneric("Rle"))
 
 setMethod("Rle", signature = c(values = "missing", lengths = "missing"),
           function(values, lengths) new("Rle", values = vector(), lengths = integer()))
@@ -78,16 +78,18 @@ setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "missing"),
           })
 
 setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "integer"),
-          function(values, lengths)
+          function(values, lengths, check = TRUE)
           {
-              if (length(values) != length(lengths))
-                  stop("'values' and 'lengths' must have the same length")
-              if (any(is.na(lengths)) || any(lengths < 0))
-                  stop("'lengths' must contain all positive integers")
-              zeros <- which(lengths == 0)
-              if (length(zeros) > 0) {
-                  values <- values[-zeros]
-                  lengths <- lengths[-zeros]
+              if (check) {
+                  if (length(values) != length(lengths))
+                      stop("'values' and 'lengths' must have the same length")
+                  if (any(is.na(lengths)) || any(lengths < 0L))
+                      stop("'lengths' must contain all positive integers")
+                  zeros <- which(lengths == 0L)
+                  if (length(zeros) > 0L) {
+                      values <- values[-zeros]
+                      lengths <- lengths[-zeros]
+                  }
               }
               n <- length(values)
               y <- values[-1L] != values[-n]
@@ -96,7 +98,9 @@ setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "integer"),
           })
 
 setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "numeric"),
-          function(values, lengths) Rle(values = values, lengths = as.integer(lengths)))
+          function(values, lengths, check = TRUE)
+              Rle(values = values, lengths = as.integer(lengths),
+                  check = check))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
@@ -135,12 +139,16 @@ setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
               n <- max(n1, n2)
               if (max(n1, n2) %% min(n1, n2) != 0)
                   warning("longer object length is not a multiple of shorter object length")
-              e1 <- rep(e1, length.out = n)
-              e2 <- rep(e2, length.out = n)
-              ends <- sort(unique(c(end(e1), end(e2))))
-              lengths <- diff(c(0L, ends))
-              values <- callGeneric(e1[ends, drop = TRUE], e2[ends, drop = TRUE])
-              Rle(values = values, lengths = lengths)
+              if (n1 < n)
+                  e1 <- rep(e1, length.out = n)
+              if (n2 < n)
+                  e2 <- rep(e2, length.out = n)
+              # ends <- sort(unique(c(end(e1), end(e2))))
+              ends <- .Call("Integer_sorted_merge", end(e1), end(e2), PACKAGE="IRanges")
+              which1 <- .Call("Integer_sorted_findInterval", ends, start(e1), PACKAGE="IRanges")
+              which2 <- .Call("Integer_sorted_findInterval", ends, start(e2), PACKAGE="IRanges")
+              Rle(values = callGeneric(runValue(e1)[which1], runValue(e2)[which2]),
+                  lengths = diff(c(0L, ends)), check = FALSE)
           })
 
 setMethod("Ops", signature(e1 = "Rle", e2 = "vector"),
@@ -153,14 +161,16 @@ setMethod("Math", "Rle",
           function(x)
               switch(.Generic,
                      cumsum =, cumprod = callGeneric(as.vector(x)),
-                     Rle(values = callGeneric(runValue(x)), lengths = runLength(x))))
+                     Rle(values = callGeneric(runValue(x)),
+                         lengths = runLength(x), check = FALSE)))
 
 setMethod("Math2", "Rle",
           function(x, digits)
           {
               if (missing(digits))
                   digits <- ifelse(.Generic == "round", 0, 6)
-              Rle(values = callGeneric(runValue(x), digits = digits), lengths = runLength(x))
+              Rle(values = callGeneric(runValue(x), digits = digits),
+                  lengths = runLength(x), check = FALSE)
           })
 
 setMethod("Summary", "Rle",
@@ -172,7 +182,9 @@ setMethod("Summary", "Rle",
                      prod = prod(runValue(x) ^ runLength(x), ..., na.rm = na.rm)))
 
 setMethod("Complex", "Rle",
-          function(z) Rle(values = callGeneric(runValue(z)), lengths = runLength(z)))
+          function(z)
+              Rle(values = callGeneric(runValue(z)), lengths = runLength(z),
+                  check = FALSE))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### General methods
@@ -244,7 +256,9 @@ setMethod("[", "Rle",
           })
 
 setMethod("%in%", "Rle",
-          function(x, table) Rle(values = runValue(x) %in% table, lengths = runLength(x)))
+          function(x, table)
+              Rle(values = runValue(x) %in% table, lengths = runLength(x),
+                  check = FALSE))
 
 setMethod("aggregate", "Rle",
           function(x, by, FUN, start = NULL, end = NULL, width = NULL,
@@ -305,11 +319,14 @@ setMethod("c", "Rle",
               if (!all(unlist(lapply(args, is, "Rle"))))
                   stop("all arguments in '...' must be Rle objects")
               Rle(values  = unlist(lapply(args, slot, "values")),
-                  lengths = unlist(lapply(args, slot, "lengths")))
+                  lengths = unlist(lapply(args, slot, "lengths")),
+                  check = FALSE)
           })
 
 setMethod("is.na", "Rle",
-          function(x) Rle(values = is.na(runValue(x)), lengths = runLength(x)))
+          function(x)
+              Rle(values = is.na(runValue(x)), lengths = runLength(x),
+                  check = FALSE))
 
 setMethod("length", "Rle", function(x) sum(runLength(x)))
 
@@ -324,7 +341,8 @@ setMethod("rep", "Rle",
                       x@lengths <- runLength(x) + diff(c(0L, cumsum(times)[end(x)])) - 1L
                   } else if (length(times) == 1) {
                       x <- Rle(values  = rep(runValue(x), times = times),
-                               lengths = rep.int(runLength(x), times = times))
+                               lengths = rep.int(runLength(x), times = times),
+                               check = FALSE)
                   } else {
                       stop("invalid 'times' argument")
                   }
@@ -354,7 +372,8 @@ setMethod("rep.int", "Rle",
                   x@lengths <- runLength(x) + diff(c(0L, cumsum(times)[end(x)])) - 1L
               } else if (length(times) == 1) {
                   x <- Rle(values  = rep.int(runValue(x), times = times),
-                           lengths = rep.int(runLength(x), times = times))
+                           lengths = rep.int(runLength(x), times = times),
+                           check = FALSE)
               } else {
                   stop("invalid 'times' argument")
               }
@@ -373,7 +392,8 @@ setMethod("sort", "Rle",
           function(x, decreasing = FALSE, na.last = NA, ...)
           {
               ord <- order(runValue(x), decreasing = decreasing, na.last = na.last)
-              Rle(values = runValue(x)[ord], lengths = runLength(x)[ord])
+              Rle(values = runValue(x)[ord], lengths = runLength(x)[ord],
+                  check = FALSE)
           })
 
 setMethod("subseq", "Rle",
@@ -460,7 +480,9 @@ setMethod("window", "Rle",
 ### Other logical data methods
 ###
 
-setMethod("!", "Rle", function(x) Rle(values = !runValue(x), lengths = runLength(x)))
+setMethod("!", "Rle",
+          function(x)
+              Rle(values = !runValue(x), lengths = runLength(x), check = FALSE))
 
 setMethod("which", "Rle",
           function(x, arr.ind = FALSE) {
@@ -507,7 +529,7 @@ setMethod("pmax", "Rle",
               rlist <- RleList(..., compress = FALSE)
               ends <- sort(unique(unlist(lapply(rlist, end))))
               Rle(values =  do.call(pmax, lapply(rlist, "[", ends, drop = TRUE)),
-                  lengths = diff(c(0L, ends)))
+                  lengths = diff(c(0L, ends)), check = FALSE)
           })
 
 setGeneric("pmin", signature = "...",
@@ -518,7 +540,7 @@ setMethod("pmin", "Rle",
               rlist <- RleList(..., compress = FALSE)
               ends <- sort(unique(unlist(lapply(rlist, end))))
               Rle(values =  do.call(pmin, lapply(rlist, "[", ends, drop = TRUE)),
-                  lengths = diff(c(0L, ends)))
+                  lengths = diff(c(0L, ends)), check = FALSE)
           })
 
 setGeneric("pmax.int", signature = "...",
@@ -529,7 +551,7 @@ setMethod("pmax.int", "Rle",
               rlist <- RleList(..., compress = FALSE)
               ends <- sort(unique(unlist(lapply(rlist, end))))
               Rle(values =  do.call(pmax.int, lapply(rlist, "[", ends, drop = TRUE)),
-                  lengths = diff(c(0L, ends)))
+                  lengths = diff(c(0L, ends)), check = FALSE)
           })
 
 setGeneric("pmin.int", signature = "...",
@@ -540,7 +562,7 @@ setMethod("pmin.int", "Rle",
               rlist <- RleList(..., compress = FALSE)
               ends <- sort(unique(unlist(lapply(rlist, end))))
               Rle(values =  do.call(pmin.int, lapply(rlist, "[", ends, drop = TRUE)),
-                  lengths = diff(c(0L, ends)))
+                  lengths = diff(c(0L, ends)), check = FALSE)
           })
 
 setMethod("mean", "Rle",
@@ -670,25 +692,29 @@ setMethod("mad", "Rle",
 setMethod("nchar", "Rle",
           function(x, type = "chars", allowNA = FALSE)
               Rle(values = nchar(runValue(x), type = type, allowNA = allowNA),
-                  lengths = runLength(x)))
+                  lengths = runLength(x), check = FALSE))
 
 setMethod("substr", "Rle",
           function(x, start, stop)
               Rle(values = substr(runValue(x), start = start, stop = stop),
-                  lengths = runLength(x)))
+                  lengths = runLength(x), check = FALSE))
 setMethod("substring", "Rle",
           function(text, first, last = 1000000L)
               Rle(values = substring(runValue(text), first = first, last = last),
-                  lengths = runLength(text)))
+                  lengths = runLength(text), check = FALSE))
 
 setMethod("chartr", c(old = "ANY", new = "ANY", x = "Rle"),
           function(old, new, x)
               Rle(values = chartr(old = old, new = new, x = runValue(x)),
-                  lengths = runLength(x)))
+                  lengths = runLength(x), check = FALSE))
 setMethod("tolower", "Rle",
-          function(x) Rle(values = tolower(runValue(x)), lengths = runLength(x)))
+          function(x)
+              Rle(values = tolower(runValue(x)), lengths = runLength(x),
+                  check = FALSE))
 setMethod("toupper", "Rle",
-          function(x) Rle(values = toupper(runValue(x)), lengths = runLength(x)))
+          function(x)
+              Rle(values = toupper(runValue(x)), lengths = runLength(x),
+                  check = FALSE))
 
 setMethod("sub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle"),
           function(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
@@ -697,7 +723,7 @@ setMethod("sub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle"),
                                x = runValue(x), ignore.case = ignore.case,
                                extended = extended, perl = perl, fixed = fixed,
                                useBytes = useBytes),
-                  lengths = runLength(x)))
+                  lengths = runLength(x), check = FALSE))
 setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle"),
           function(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
                    perl = FALSE, fixed = FALSE, useBytes = FALSE)
@@ -705,7 +731,7 @@ setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle")
                                 x = runValue(x), ignore.case = ignore.case,
                                 extended = extended, perl = perl, fixed = fixed,
                                 useBytes = useBytes),
-                  lengths = runLength(x)))
+                  lengths = runLength(x), check = FALSE))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method

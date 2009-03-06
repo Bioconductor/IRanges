@@ -305,6 +305,16 @@ SEXP sapply_length(SEXP list);
 
 SEXP safe_strexplode(SEXP s);
 
+SEXP Integer_sorted_merge(
+	SEXP x,
+	SEXP y
+);
+
+SEXP Integer_sorted_findInterval(
+	SEXP x,
+	SEXP vec
+);
+
 
 /* IRanges_class.c */
 

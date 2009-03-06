@@ -70,3 +70,105 @@ SEXP safe_strexplode(SEXP s)
 	return ans;
 }
 
+/*
+ * --- .Call ENTRY POINT ---
+ * Creates the (sorted) union of two sorted integer vectors
+ */
+SEXP Integer_sorted_merge(SEXP x, SEXP y)
+{
+	int x_i, y_i, x_len, y_len, ans_len;
+	const int *x_ptr, *y_ptr;
+	int *ans_ptr;
+	SEXP ans;
+
+	x_len = LENGTH(x);
+	y_len = LENGTH(y);
+
+	x_i = 0;
+	y_i = 0;
+	x_ptr = INTEGER(x);
+	y_ptr = INTEGER(y);
+	ans_len = 0;
+	while (x_i < x_len && y_i < y_len) {
+		if (*x_ptr == *y_ptr) {
+			x_ptr++;
+			x_i++;
+			y_ptr++;
+			y_i++;
+		} else if (*x_ptr < *y_ptr) {
+			x_ptr++;
+			x_i++;
+		} else {
+			y_ptr++;
+			y_i++;
+		}
+		ans_len++;
+	}
+	if (x_i < x_len) {
+		ans_len += x_len - x_i;
+	} else if (y_i < y_len) {
+		ans_len += y_len - y_i;
+	}
+
+	PROTECT(ans = NEW_INTEGER(ans_len));
+	x_i = 0;
+	y_i = 0;
+	x_ptr = INTEGER(x);
+	y_ptr = INTEGER(y);
+	ans_ptr = INTEGER(ans);
+	while (x_i < x_len && y_i < y_len) {
+		if (*x_ptr == *y_ptr) {
+			*ans_ptr = *x_ptr;
+			x_ptr++;
+			x_i++;
+			y_ptr++;
+			y_i++;
+		} else if (*x_ptr < *y_ptr) {
+			*ans_ptr = *x_ptr;
+			x_ptr++;
+			x_i++;
+		} else {
+			*ans_ptr = *y_ptr;
+			y_ptr++;
+			y_i++;
+		}
+		ans_ptr++;
+	}
+	if (x_i < x_len) {
+		memcpy(ans_ptr, x_ptr, (x_len - x_i) * sizeof(int));
+	} else if (y_i < y_len) {
+		memcpy(ans_ptr, y_ptr, (y_len - y_i) * sizeof(int));
+	}
+	UNPROTECT(1);
+
+	return ans;
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ * findInterval for when x is a sorted integer vector
+ */
+SEXP Integer_sorted_findInterval(SEXP x, SEXP vec)
+{
+	int i, x_len, vec_len, index;
+	const int *x_ptr, *vec_ptr;
+	int *ans_ptr;
+	SEXP ans;
+
+	x_len = LENGTH(x);
+	vec_len = LENGTH(vec);
+	vec_ptr = INTEGER(vec) + 1;
+	PROTECT(ans = NEW_INTEGER(x_len));
+	index = 1;
+	for (i = 0, x_ptr = INTEGER(x), ans_ptr = INTEGER(ans); i < x_len;
+	     i++, x_ptr++, ans_ptr++) {
+		while (index < vec_len && *x_ptr >= *vec_ptr) {
+			vec_ptr++;
+			index++;
+		}
+		*ans_ptr = index;
+	}
+	UNPROTECT(1);
+
+	return ans;
+}
