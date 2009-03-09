@@ -1,19 +1,6 @@
-### Some low-level (not exported) helper functions
-
-extraArgsAsList <- function(.valid.argnames, ...)
-{
-    args <- list(...)
-    argnames <- names(args)
-    if (length(args) != 0
-        && (is.null(argnames) || any(argnames %in% c("", NA))))
-        stop("all extra arguments must be named")
-    if (!is.null(.valid.argnames) && !all(argnames %in% .valid.argnames))
-        stop("valid extra argument names are ",
-             paste("'", .valid.argnames, "'", sep="", collapse=", "))
-    if (any(duplicated(argnames)))
-        stop("argument names must be unique")
-    args
-}
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Some low-level (exported) helper functions and classes.
+###
 
 isTRUEorFALSE <- function(x)
 {
@@ -30,19 +17,37 @@ isSingleNumber <- function(x)
     is.numeric(x) && length(x) == 1 && !is.na(x)
 }
 
+isSingleString <- function(x)
+{
+    is.character(x) && length(x) == 1 && !is.na(x)
+}
+
+### We want these functions to return TRUE when passed an NA of whatever type.
+isSingleIntegerOrNA <- function(x)
+{
+    is.atomic(x) && length(x) == 1 && (is.integer(x) || is.na(x))
+}
+
 isSingleNumberOrNA <- function(x)
 {
-    is.vector(x) && is.atomic(x) && length(x) == 1 && (is.numeric(x) || is.na(x))
+    is.atomic(x) && length(x) == 1 && (is.numeric(x) || is.na(x))
 }
+
+isSingleStringOrNA <- function(x)
+{
+    is.atomic(x) && length(x) == 1 && (is.character(x) || is.na(x))
+}
+
+setClassUnion("characterORNULL", c("character", "NULL"))
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Other low-level (not exported) helper functions.
+###
 
 isNumericOrNAs <- function(x)
 {
     is.numeric(x) || (is.atomic(x) && is.vector(x) && all(is.na(x)))
-}
-
-isSingleString <- function(x)
-{
-    is.character(x) && length(x) == 1 && !is.na(x)
 }
 
 numeric2integer <- function(x)
@@ -104,13 +109,6 @@ normargUseNames <- function(use.names)
     use.names
 }
 
-recycleVector <- function(x, length)
-{
-	y <- vector(storage.mode(x), length)
-	y[] <- x
-	y
-}
-
 ### isNotStrictlySorted() takes for granted that 'x' contains no NAs (behaviour
 ### is undefined if this is not the case). This allows isNotStrictlySorted() to
 ### be MUCH faster than is.unsorted() in some situations:
@@ -140,7 +138,31 @@ recycleVector <- function(x, length)
 ###      something" than objects that are "just something".
 isNotStrictlySorted <- function(x) .Internal(is.unsorted(x, TRUE))
 
-setClassUnion("characterORNULL", c("character", "NULL"))
+extraArgsAsList <- function(.valid.argnames, ...)
+{
+    args <- list(...)
+    argnames <- names(args)
+    if (length(args) != 0
+        && (is.null(argnames) || any(argnames %in% c("", NA))))
+        stop("all extra arguments must be named")
+    if (!is.null(.valid.argnames) && !all(argnames %in% .valid.argnames))
+        stop("valid extra argument names are ",
+             paste("'", .valid.argnames, "'", sep="", collapse=", "))
+    if (any(duplicated(argnames)))
+        stop("argument names must be unique")
+    args
+}
+
+### recycleVector() vs rep(x, length.out=length):
+###   - The former seems a little bit faster (1.5x - 2x).
+###   - The former will issue a warning that "number of items to replace is not
+###     a multiple of replacement length". The latter will always remain silent.
+recycleVector <- function(x, length)
+{
+    ans <- vector(storage.mode(x), length)
+    ans[] <- x
+    ans
+}
 
 ### Pretty printing
 
@@ -191,3 +213,4 @@ selectSome <- function (obj, maxToShow = 5)
   }
   else obj
 }
+

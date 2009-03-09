@@ -5,6 +5,7 @@ importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
            window, aggregate)
 
 exportClasses(
+    characterORNULL,
     ListLike,
     Ranges, RangesORmissing, IRanges, NormalIRanges, XRanges, IntervalTree,
     SequencePtr, RawPtr, IntegerPtr, NumericPtr,
@@ -23,6 +24,8 @@ exportClasses(
 export(
     ## Non-generic functions:
     setValidity2, new2,
+    isTRUEorFALSE, isSingleInteger, isSingleNumber, isSingleString,
+    isSingleIntegerOrNA, isSingleNumberOrNA, isSingleStringOrNA,
     sapplyLength,
     safeExplode,
     IRanges,

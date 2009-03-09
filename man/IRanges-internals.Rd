@@ -6,6 +6,19 @@
 \alias{sapplyLength}
 \alias{safeExplode}
 
+% Some low-level helper functions and classes (from R/utils.R):
+\alias{isTRUEorFALSE}
+\alias{isSingleInteger}
+\alias{isSingleNumber}
+\alias{isSingleString}
+\alias{isSingleIntegerOrNA}
+\alias{isSingleNumberOrNA}
+\alias{isSingleStringOrNA}
+
+\alias{class:characterORNULL}
+\alias{characterORNULL-class}
+\alias{characterORNULL}
+
 % ListLike VIRTUAL class, functions and methods:
 \alias{class:ListLike}
 \alias{ListLike-class}
