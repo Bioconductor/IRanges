@@ -21,10 +21,6 @@
 \alias{isDisjoint,Ranges-method}
 \alias{as.matrix,Ranges-method}
 \alias{as.data.frame,Ranges-method}
-\alias{duplicated,Ranges-method}
-\alias{order}
-\alias{order,Ranges-method}
-\alias{sort,Ranges-method}
 \alias{show,Ranges-method}
 \alias{[<-,Ranges-method}
 \alias{rep,Ranges-method}
@@ -70,10 +66,6 @@
   An "empty" range is a range that contains no value i.e. a range that
   has a null width.
   Note that for an empty range, the end is smaller than the start.
-
-  Two ranges are considered equal iff they share the same start and width.
-  Note that with this definition, 2 empty ranges are generally
-  not equal (they need to share the same start to be considered equal).
 
   The length of a Ranges object is the number of ranges in it, not the
   number of integer values in its ranges.
@@ -157,25 +149,6 @@
       arguments.
     }
     \item{}{
-      \code{duplicated(x)}:
-      Determine which elements of \code{x} are equal to elements
-      with smaller subscripts, and returns a logical vector indicating
-      which elements are duplicates.
-      It is semantically equivalent to \code{duplicated(as.data.frame(x))}
-      (see \code{?\link{duplicated}} for more information).
-    }
-    \item{}{
-      \code{order(..., na.last = TRUE, decreasing = FALSE)}:
-      Gets the integer order permutations for the start positions of
-      each of the \code{IRanges} objects in \code{...}. See
-      \code{\link[base]{order}} in the base package for more details.
-    }
-    \item{}{
-      \code{sort(x, decreasing = FALSE)}: Sorts \code{x} by start
-      position in increasing order, unless \code{decreasing} is
-      \code{TRUE}.
-    }
-    \item{}{
       \code{x[i]}:
       Return a new Ranges object (of the same type as \code{x}) made of
       the selected ranges.
@@ -257,6 +230,7 @@
 \author{H. Pages and M. Lawrence}
 
 \seealso{
+  \link{Ranges-comparison},
   \link{IRanges-class},
   \link{IRanges-utils},
   \link{IRanges-setops},
@@ -266,7 +240,6 @@
   \code{\link{update}},
   \code{\link{as.matrix}},
   \code{\link{as.data.frame}},
-  \code{\link{duplicated}},
   \code{\link{rep}}
 }
 
@@ -297,7 +270,6 @@
   x
   start(x)[3] <- end(x)[3] - 2  # resize the 3rd range
   x
-  duplicated(x)
 
   ## Name the elements:
   names(x)

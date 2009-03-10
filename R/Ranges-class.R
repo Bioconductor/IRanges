@@ -22,13 +22,6 @@ setClass("Ranges", contains = "VIRTUAL")
 ###     as.matrix, as.data.frame
 ###     show
 ###
-###   Uniqueness, ordering and related methods:
-###     duplicated
-###     unique (not implemented yet)
-###     order
-###     sort
-###     rank (not implemented yet)
-###
 ###   Testing a Ranges object:
 ###     isEmpty
 ###     isDisjoint
@@ -108,51 +101,6 @@ setMethod("show", "Ranges",
         show(as.data.frame(object))
     }
 )
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Uniqueness, ordering and related methods.
-###
-
-### Note that this default method is very inefficient so efficient methods for
-### the Ranges subclasses need to be implemented.
-setMethod("duplicated", "Ranges",
-    function(x, incomparables=FALSE, ...)
-    {
-        duplicated(data.frame(start=start(x),
-                              width=width(x),
-                              check.names=FALSE,
-                              stringsAsFactors=FALSE))
-    }
-)
-
-### We want to dispatch on ... (only possible starting with R 2.8.0).
-### The implicit generic in package "base" would dispatch on the (na.last,
-### decreasing) arguments which is of course not what we want.
-setGeneric("order", signature="...",
-           function (..., na.last=TRUE, decreasing=FALSE)
-           standardGeneric("order"))
-
-setMethod("order", "Ranges", function (..., na.last = TRUE, decreasing = FALSE)
-          {
-            if (!is.logical(na.last) || length(na.last) != 1)
-              stop("'na.last' must be TRUE, FALSE or NA")
-            if (!isTRUEorFALSE(decreasing)) 
-              stop("'decreasing' must be TRUE or FALSE")
-            args <- list(...)
-            if (!all(sapply(args, is, "Ranges")))
-              stop("all arguments in '...' must be Ranges objects")
-            starts <- lapply(args, start)
-            do.call(order,
-                    c(starts, na.last = na.last, decreasing = decreasing))
-          })
-
-setMethod("sort", "Ranges", function (x, decreasing = FALSE, ...) 
-          {
-            if (!isTRUEorFALSE(decreasing))
-              stop("'decreasing' must be TRUE or FALSE")
-            x[order(x, decreasing = decreasing)]
-          })
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
