@@ -177,7 +177,7 @@ setValidity2("NormalIRanges", .valid.NormalIRanges)
     if (!is.integer(start_end_width))
         start_end_width <- as.integer(start_end_width)
     if (any(is.na(start_end_width)))
-        stop("'", argname,, "' cannot contain NAs")
+        stop("'", argname, "' cannot contain NAs")
     start_end_width
 }
 
