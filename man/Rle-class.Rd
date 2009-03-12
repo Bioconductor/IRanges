@@ -61,6 +61,8 @@
 \alias{rep.int}
 \alias{rep.int,Rle-method}
 \alias{rev,Rle-method}
+\alias{shiftApply}
+\alias{shiftApply,Rle,Rle-method}
 \alias{show,Rle-method}
 \alias{sort,Rle-method}
 \alias{subseq,Rle-method}
@@ -278,6 +280,7 @@
           three.}
         \item{\code{frequency}, \code{delta}}{Optional arguments that specify
           the sampling frequency and increment within the window.}
+        \item{\dots}{Further arguments for \code{FUN}.}
         \item{\code{simplify}}{A logical value specifying whether or not the
           result should be simplified to a vector or matrix if possible.}
       }
@@ -310,6 +313,25 @@
     \item{}{
       \code{rev(x)}:
       Reverses the order of the values in \code{x}.
+    }
+    \item{}{
+      \code{shiftApply(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE))}:
+      Let \code{i} be the indices in \code{SHIFT},
+      \code{X_i = subseq(X, 1 + OFFSET, length(X) - SHIFT[i])}, and
+      \code{Y_i = subseq(Y, 1 + SHIFT[i], length(Y) - OFFSET)}. Calculates
+      the set of \code{FUN(X_i, Y_i, ...)} values and return the results in a
+      convenient form:
+      \describe{
+        \item{\code{SHIFT}}{A non-negative integer vector of shift values.}
+        \item{\code{X}, \code{Y}}{The Rle objects to shift.}
+        \item{\code{FUN}}{The function to be applied to each set of shifted
+          vectors.}
+        \item{\dots}{Further arguments for \code{FUN}.}
+        \item{OFFSET}{A non-negative integer offset to maintain throughout
+          the shift operations.}
+        \item{\code{simplify}}{A logical value specifying whether or not the
+          result should be simplified to a vector or matrix if possible.}
+      }
     }
     \item{}{
       \code{show(object)}:

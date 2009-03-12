@@ -388,6 +388,65 @@ setMethod("rev", "Rle",
               x
           })
 
+setGeneric("shiftApply", signature = c("X", "Y"),
+           function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE)
+           standardGeneric("shiftApply"))
+
+setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
+          function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE)
+          {
+              N <- length(X)
+              if (N != length(Y))
+                  stop("'X' and 'Y' must be of equal length")
+
+              if (length(SHIFT) == 0 || !is.numeric(SHIFT) ||
+                  any(is.na(SHIFT)) || any(SHIFT < 0))
+                  stop("all 'SHIFT' values must be non-negative")
+              SHIFT <- as.integer(SHIFT)
+
+              if (length(OFFSET) == 0 || !is.numeric(OFFSET) ||
+                  any(is.na(OFFSET)) || any(OFFSET < 0))
+                  stop("'OFFSET' must be non-negative")
+              OFFSET <- as.integer(OFFSET)
+              
+              ## Perform X setup
+              shiftedStartX <- rep.int(1L + OFFSET, length(SHIFT))
+              shiftedEndX <- N - SHIFT
+              startX <- start(X)
+              endX <- end(X)
+              runStartX <- findInterval(shiftedStartX, startX)
+              runEndX <- findInterval(shiftedEndX, startX)
+              offsetStartX <- shiftedStartX - startX[runStartX]
+              offsetEndX <- endX[runEndX] - shiftedEndX
+
+              ## Perform Y setup
+              shiftedStartY <- 1L + SHIFT
+              shiftedEndY <- rep.int(N - OFFSET, length(SHIFT))
+              startY <- start(Y)
+              endY <- end(Y)
+              runStartY <- findInterval(shiftedStartY, startY)
+              runEndY <- findInterval(shiftedEndY, startY)
+              offsetStartY <- shiftedStartY - startY[runStartY]
+              offsetEndY <- endY[runEndY] - shiftedEndY
+
+              ## Performance Optimization
+              ## Use a stripped down loop with empty Rle object
+              newX <- new("Rle")
+              newY <- new("Rle")
+              sapply(seq_len(length(SHIFT)),
+                     function(i)
+                         FUN(.Call("Rle_run_subseq",
+                                   X, runStartX[i], runEndX[i],
+                                   offsetStartX[i], offsetEndX[i],
+                                   newX, PACKAGE = "IRanges"),
+                             .Call("Rle_run_subseq",
+                                   Y, runStartY[i], runEndY[i],
+                                   offsetStartY[i], offsetEndY[i],
+                                   newY, PACKAGE = "IRanges"),
+                             ...),
+                     simplify = simplify)
+          })
+
 setMethod("sort", "Rle",
           function(x, decreasing = FALSE, na.last = NA, ...)
           {

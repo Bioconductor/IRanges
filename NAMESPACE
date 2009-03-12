@@ -80,7 +80,7 @@ export(
     overlap,
     ##map,
     score,
-    Rle, runLength, runValue, nrun, "runLength<-", "runValue<-",
+    Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
 
     ## Other generic functions:
     isNormal,
@@ -182,7 +182,7 @@ exportMethods(
     maskedwidth, maskedratio,
     subseq,
     subject, Views, subviews, trim,
-    Rle, runLength, runValue, nrun, "runLength<-", "runValue<-",
+    Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
     viewApply, viewMins, viewMaxs, viewSums, viewWhichMins, viewWhichMaxs,
 
     ## Old stuff (Defunct or Deprecated):
