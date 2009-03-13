@@ -315,7 +315,7 @@
       Reverses the order of the values in \code{x}.
     }
     \item{}{
-      \code{shiftApply(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE))}:
+      \code{shiftApply(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE))}:
       Let \code{i} be the indices in \code{SHIFT},
       \code{X_i = subseq(X, 1 + OFFSET, length(X) - SHIFT[i])}, and
       \code{Y_i = subseq(Y, 1 + SHIFT[i], length(Y) - OFFSET)}. Calculates
@@ -331,6 +331,8 @@
           the shift operations.}
         \item{\code{simplify}}{A logical value specifying whether or not the
           result should be simplified to a vector or matrix if possible.}
+        \item{\code{verbose}}{A logical value specifying whether or not to
+          print the \code{i} indices to track the iterations.}
       }
     }
     \item{}{

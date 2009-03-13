@@ -389,11 +389,13 @@ setMethod("rev", "Rle",
           })
 
 setGeneric("shiftApply", signature = c("X", "Y"),
-           function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE)
+           function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
+                    verbose = FALSE)
            standardGeneric("shiftApply"))
 
 setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
-          function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE)
+          function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
+                   verbose = FALSE)
           {
               N <- length(X)
               if (N != length(Y))
@@ -433,18 +435,39 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
               ## Use a stripped down loop with empty Rle object
               newX <- new("Rle")
               newY <- new("Rle")
-              sapply(seq_len(length(SHIFT)),
-                     function(i)
-                         FUN(.Call("Rle_run_subseq",
-                                   X, runStartX[i], runEndX[i],
-                                   offsetStartX[i], offsetEndX[i],
-                                   newX, PACKAGE = "IRanges"),
-                             .Call("Rle_run_subseq",
-                                   Y, runStartY[i], runEndY[i],
-                                   offsetStartY[i], offsetEndY[i],
-                                   newY, PACKAGE = "IRanges"),
-                             ...),
-                     simplify = simplify)
+              if (verbose) {
+                  maxI <- length(SHIFT)
+                  ans <-
+                    sapply(seq_len(length(SHIFT)),
+                           function(i) {
+                               cat("\r", i, "/", maxI)
+                               FUN(.Call("Rle_run_subseq",
+                                         X, runStartX[i], runEndX[i],
+                                         offsetStartX[i], offsetEndX[i],
+                                         newX, PACKAGE = "IRanges"),
+                                   .Call("Rle_run_subseq",
+                                         Y, runStartY[i], runEndY[i],
+                                         offsetStartY[i], offsetEndY[i],
+                                         newY, PACKAGE = "IRanges"),
+                                              ...)
+                           }, simplify = simplify)
+                  cat("\n")
+              } else {
+                  ans <-
+                    sapply(seq_len(length(SHIFT)),
+                           function(i)
+                               FUN(.Call("Rle_run_subseq",
+                                         X, runStartX[i], runEndX[i],
+                                         offsetStartX[i], offsetEndX[i],
+                                         newX, PACKAGE = "IRanges"),
+                                   .Call("Rle_run_subseq",
+                                         Y, runStartY[i], runEndY[i],
+                                         offsetStartY[i], offsetEndY[i],
+                                         newY, PACKAGE = "IRanges"),
+                                   ...),
+                               simplify = simplify)
+              }
+              ans
           })
 
 setMethod("sort", "Rle",
