@@ -44,6 +44,6 @@ setMethod("viewRangeMins", "RleViews",
 ## can this become a general utility?
 findRun <- function(x, rle) {
   starts <- start(rle)
-  runs <- match(x, starts) # or findInterval to be more general
+  runs <- findInterval(x, starts)
   IRanges(starts[runs], width=width(rle)[runs])
 }
