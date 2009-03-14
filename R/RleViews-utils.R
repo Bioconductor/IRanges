@@ -26,3 +26,24 @@ setMethod("viewWhichMins", "RleViews",
 setMethod("viewWhichMaxs", "RleViews",
           function(x, na.rm=FALSE)
           .Call("RleViews_viewWhichMaxs", x, na.rm, PACKAGE="IRanges"))
+
+setGeneric("viewRangeMaxs", function(x, ...) standardGeneric("viewRangeMaxs"))
+setMethod("viewRangeMaxs", "RleViews",
+          function(x) {
+            maxs <- viewWhichMaxs(x, TRUE)
+            findRun(maxs, subject(x))
+          })
+
+setGeneric("viewRangeMins", function(x, ...) standardGeneric("viewRangeMins"))
+setMethod("viewRangeMins", "RleViews",
+          function(x) {
+            mins <- viewWhichMins(x, TRUE)
+            findRun(mins, subject(x))
+          })
+
+## can this become a general utility?
+findRun <- function(x, rle) {
+  starts <- start(rle)
+  runs <- match(x, starts) # or findInterval to be more general
+  IRanges(starts[runs], width=width(rle)[runs])
+}

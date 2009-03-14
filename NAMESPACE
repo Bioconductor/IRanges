@@ -98,6 +98,7 @@ export(
     slice,
     values,
     viewApply, viewMins, viewMaxs, viewSums, viewWhichMins, viewWhichMaxs,
+    viewRangeMins, viewRangeMaxs,
     cbind, rbind, table,
     rangedData, "rangedData<-", applyFun, "applyFun<-", applyParams,
     "applyParams<-", simplify, "simplify<-",
@@ -107,7 +108,7 @@ export(
     rdapply,
     universe, "universe<-", space,
     elementClass, elementLengths,
-    annotation, elementMetadata, "annotation<-", "elementMetadata<-",
+    annotation, elementMetadata, "resource<-", "elementMetadata<-",
     matchMatrix,
 
     ## Old stuff (Defunct or Deprecated):
