@@ -30,6 +30,10 @@
 \alias{viewWhichMaxs,RleViews-method}
 \alias{viewWhichMaxs,XIntegerViews-method}
 \alias{viewWhichMaxs,XRleIntegerViews-method}
+\alias{viewRangeMins}
+\alias{viewRangeMins,RleViews-method}
+\alias{viewRangeMaxs}
+\alias{viewRangeMaxs,RleViews-method}
 
 
 \title{Utility functions and numeric summary of Views of numerics}
@@ -55,6 +59,9 @@
 
   viewWhichMins(x, na.rm=FALSE)
   viewWhichMaxs(x, na.rm=FALSE)
+
+  viewRangeMins(x, ...)
+  viewRangeMaxs(x, ...)
 }
 
 \arguments{
@@ -98,15 +105,24 @@
   is useful for finding areas of absolute maxima (peaks), absolute minima
   (troughs), or fluxuations within a specified limits.
 
-  The \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewWhichMins},
-  and \code{viewWhichMaxs} functions provide efficient methods for calculating
-  the specified numeric summary by performing the looping in compiled code.
+  The \code{viewMins}, \code{viewMaxs}, and \code{viewSums} functions provide
+  efficient methods for calculating the specified numeric summary by performing
+  the looping in compiled code.
+
+  The \code{viewWhichMins}, \code{viewWhichMaxs}, \code{viewRangeMins}, and
+  \code{viewRangeMaxs} functions provide efficient methods for finding the
+  location of the minimums and maximums.
 }
 
 \value{
   An \link{XRleIntegerViews} or \link{XIntegerViews} object for \code{slice}.
 
-  A vector of \code{length(x)} containing the numeric summaries for the views.
+  A vector of \code{length(x)} containing the numeric summaries for the views
+  for \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewWhichMins},
+  and \code{viewWhichMaxs}.
+
+  A \link{IRanges} object containing the location ranges for
+  \code{viewRangeMins} and \code{viewRangeMaxs}.
 }
 
 \author{P. Aboyoun}

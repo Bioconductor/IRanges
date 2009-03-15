@@ -42,6 +42,7 @@
 \alias{coerce,Rle,character-method}
 \alias{coerce,Rle,raw-method}
 \alias{coerce,Rle,factor-method}
+\alias{coerce,Rle,IRanges-method}
 
 \alias{Ops,Rle,Rle-method}
 \alias{Ops,Rle,vector-method}
@@ -55,6 +56,8 @@
 \alias{\%in\%,Rle,ANY-method}
 \alias{aggregate,Rle-method}
 \alias{c,Rle-method}
+\alias{findRange}
+\alias{findRange,Rle-method}
 \alias{is.na,Rle-method}
 \alias{length,Rle-method}
 \alias{rep,Rle-method}
@@ -218,6 +221,9 @@
       \code{as.factor(x)}, \code{as(from, "factor")}: Creates a factor object
       based on the values contained in \code{x}.
     }
+    \item{}{
+      \code{as(from, "IRanges")}: Creates an IRanges object from a logical Rle.
+    }
   }
 }
 
@@ -288,6 +294,11 @@
     \item{}{
       \code{c(x, ...)}:
       Combines a set of Rle objects.
+    }
+    \item{}{
+      \code{findRange(x, vec)}:
+      Returns an IRanges object representing the ranges in Rle \code{vec}
+      that are referenced by the indices in the integer vector \code{x}.
     }
     \item{}{
       \code{is.na(x)}:

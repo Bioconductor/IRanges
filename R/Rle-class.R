@@ -117,6 +117,13 @@ setAs("Rle", "complex", function(from) as.complex(from))
 setAs("Rle", "character", function(from) as.character(from))
 setAs("Rle", "raw", function(from) as.raw(from))
 setAs("Rle", "factor", function(from) as.factor(from))
+setAs("Rle", "IRanges",
+      function(from) {
+          if (!is.logical(runValue(from))) 
+              stop("cannot coerce a non-logical 'Rle' to an IRanges object")
+          keep <- runValue(from)
+          IRanges(start = start(from)[keep], width = runLength(from)[keep])
+      })
 
 setMethod("as.vector", c("Rle", "missing"), function(x, mode) rep(runValue(x), runLength(x)))
 setMethod("as.logical", "Rle", function(x) rep(as.logical(runValue(x)), runLength(x)))
@@ -321,6 +328,20 @@ setMethod("c", "Rle",
               Rle(values  = unlist(lapply(args, slot, "values")),
                   lengths = unlist(lapply(args, slot, "lengths")),
                   check = FALSE)
+          })
+
+setGeneric("findRange", signature = "vec",
+           function(x, vec) standardGeneric("findRange"))
+
+setMethod("findRange", signature = c(vec = "Rle"),
+          function(x, vec) {
+              rangeX <- range(x)
+              if (any(is.na(rangeX)) || (rangeX[1] < 0) ||
+                  (rangeX[2] > length(vec)))
+                  stop("all 'x' values must be between 0 and 'length(vec)'")
+              starts <- start(vec)
+              runs <- findInterval(x, starts)
+              IRanges(start = starts[runs], width = width(vec)[runs])
           })
 
 setMethod("is.na", "Rle",

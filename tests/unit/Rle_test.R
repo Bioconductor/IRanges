@@ -70,6 +70,7 @@ test_Rle_general <- function() {
                 aggregate(xRle, FUN = mean, start = c(1, 6, 11), end = c(5, 10, 15)))
     checkIdentical(c(x,x) %in% c(7:9), as.vector(c(xRle,xRle)) %in% c(7:9))
     checkIdentical(c(x, x), as.vector(c(xRle, xRle)))
+    checkIdentical(findRange(c(1, 3, 5), xRle), IRanges(start = c(1,2,4), width = 1:3))
     checkIdentical(is.na(c(NA, x, NA, NA, NA, x, NA)),
                    as.vector(is.na(c(Rle(NA), xRle, Rle(NA, 3), xRle, Rle(NA)))))
     checkIdentical(length(x), length(xRle))
@@ -97,6 +98,8 @@ test_Rle_logical <- function() {
     xRle <- Rle(x)
     checkIdentical(!x, as.vector(!x))
     checkIdentical(which(x), as.vector(which(x)))
+    checkIdentical(as(xRle, "IRanges"),
+                   IRanges(start = c(1,5,7), width = c(2, 1, 3)))
 }
 
 test_Rle_numerical <- function() {

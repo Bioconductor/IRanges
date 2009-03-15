@@ -81,6 +81,7 @@ export(
     ##map,
     score,
     Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
+    findRange,
 
     ## Other generic functions:
     isNormal,
@@ -108,7 +109,7 @@ export(
     rdapply,
     universe, "universe<-", space,
     elementClass, elementLengths,
-    annotation, elementMetadata, "resource<-", "elementMetadata<-",
+    annotation, elementMetadata, "annotation<-", "elementMetadata<-",
     matchMatrix,
 
     ## Old stuff (Defunct or Deprecated):
@@ -184,6 +185,7 @@ exportMethods(
     subseq,
     subject, Views, subviews, trim,
     Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
+    findRange,
     viewApply, viewMins, viewMaxs, viewSums, viewWhichMins, viewWhichMaxs,
 
     ## Old stuff (Defunct or Deprecated):

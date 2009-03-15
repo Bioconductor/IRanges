@@ -31,19 +31,12 @@ setGeneric("viewRangeMaxs", function(x, ...) standardGeneric("viewRangeMaxs"))
 setMethod("viewRangeMaxs", "RleViews",
           function(x) {
             maxs <- viewWhichMaxs(x, TRUE)
-            findRun(maxs, subject(x))
+            findRange(maxs, subject(x))
           })
 
 setGeneric("viewRangeMins", function(x, ...) standardGeneric("viewRangeMins"))
 setMethod("viewRangeMins", "RleViews",
           function(x) {
             mins <- viewWhichMins(x, TRUE)
-            findRun(mins, subject(x))
+            findRange(mins, subject(x))
           })
-
-## can this become a general utility?
-findRun <- function(x, rle) {
-  starts <- start(rle)
-  runs <- findInterval(x, starts)
-  IRanges(starts[runs], width=width(rle)[runs])
-}
