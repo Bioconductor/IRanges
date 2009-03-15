@@ -145,3 +145,28 @@ SEXP IRanges_reduce(SEXP x, SEXP with_inframe_start)
 	return ans;
 }
 
+/*
+ * --- .Call ENTRY POINT ---
+ */
+
+/* Worst case complexity of O(n^2) :(, but in practice very fast */
+SEXP Ranges_segregate(SEXP r_start, SEXP r_width)
+{
+  SEXP ans;
+  IntAE bin_ends = _new_IntAE(128, 0, 0);
+
+  PROTECT(ans = allocVector(INTSXP, length(r_start)));
+  
+  for (int i = 0; i < length(r_start); i++) {
+    // find a bin, starting at first
+    int j = 0;
+    for (; j < bin_ends.nelt && bin_ends.elts[j] >= INTEGER(r_start)[i]; j++);
+    // remember when this bin will be open
+    _IntAE_insert_at(&bin_ends, j, INTEGER(r_start)[i]+INTEGER(r_width)[i]-1);
+    // store the bin for this range
+    INTEGER(ans)[i] = j + 1;
+  }
+
+  UNPROTECT(1);
+  return ans;
+}

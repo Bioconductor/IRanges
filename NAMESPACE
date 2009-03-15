@@ -78,6 +78,7 @@ export(
     flank,
     punion, pintersect, psetdiff,
     overlap,
+    collapse, segregate,
     ##map,
     score,
     Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,

@@ -248,6 +248,10 @@ setMethod("flank", "Ranges", function(x, width, start = TRUE, both = FALSE) {
 ### More operations.
 ###
 
+## Question: should these be IRanges methods since they always return
+## an IRanges? Or should they use initialize() or some type of
+## coercion to become endomorphisms?
+
 setMethod("range", "Ranges", function(x, ..., na.rm) {
   args <- list(x, ...)
   if (!all(sapply(args, is, "Ranges")))
@@ -343,6 +347,47 @@ setMethod("*", c("Ranges", "numeric"), function(e1, e2) {
   start(r) <- ceiling(mid - w/2)
   width(r) <- floor(w)
   r
+})
+
+## make intervals disjoint by taking the union of the endpoints
+setGeneric("collapse", function(x, ...) standardGeneric("collapse"))
+setMethod("collapse", "Ranges", function(x) {
+  ## starts: original starts and end+1 when inside another interval
+  ## ends: original ends and start-1 when inside another interval
+
+  ### This is a failed attempt to optimize (twice as slow)
+  ## endpoints <- c(unique(start(x)), unique(end(x)))
+  ## ep_order <- order(endpoints)
+  ## endpoints <- endpoints[ep_order]
+  ## ep_int <- c(-table(start(x)), table(end(x)))[ep_order]
+  ## ep_sum <- cumsum(ep_int)
+  ## inside <- ifelse(ep_int < 0, ep_sum - ep_int, ep_sum) < 0
+  ## starts <- ep_int < 0 | inside
+  ## col_starts <- endpoints[starts]
+  ## col_starts[ep_int[starts] > 0] <- col_starts[ep_int[starts] > 0] + 1
+  ## ends <- ep_int > 0 | inside
+  ## col_ends <- endpoints[ends]
+  ## col_ends[ep_int[ends] < 0] <- col_ends[ep_int[ends] < 0] - 1
+  ## IRanges(unique(col_starts), unique(col_ends))
+  
+  starts <- unique(start(x))
+  ends <- unique(end(x))
+  adj_start <- sort(unique(c(starts, ends + 1)))
+  adj_end <- sort(unique(c(ends, starts - 1)))
+  adj <- IRanges(head(adj_start, -1), tail(adj_end, -1))
+  adj[adj %in% x]
+})
+
+## make intervals disjoint by segregating them into separate Ranges
+setGeneric("segregate", function(x, ...) standardGeneric("segregate"))
+setMethod("segregate", "Ranges", function(x) {
+  x_ord <- NULL
+  if (is.unsorted(start(x))) { # minimize work for sorted ranges (common)
+    x_ord <- order(x)
+    x <- x[x_ord]
+  }
+  bins <- .Call("Ranges_segregate", start(x), width(x), PACKAGE="IRanges")
+  unname(split(x, bins))
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
