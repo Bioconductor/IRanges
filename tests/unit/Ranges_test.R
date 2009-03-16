@@ -83,19 +83,18 @@ test_Ranges_nearest <- function() {
   checkIdentical(nearest(query), c(2L, 1L, 2L))
 }
 
-test_Ranges_collapse <- function() {
-  checkIdentical(collapse(IRanges()), IRanges())
+test_Ranges_disjoin <- function() {
+  checkIdentical(disjoin(IRanges()), IRanges())
   ir <- IRanges(c(1, 1, 4, 10), c(6, 3, 8, 10))
-  checkIdentical(collapse(ir), IRanges(c(1, 4, 7, 10), c(3, 6, 8, 10)))
+  checkIdentical(disjoin(ir), IRanges(c(1, 4, 7, 10), c(3, 6, 8, 10)))
 }
 
-test_Ranges_segregate <- function() {
-  checkIdentical(segregate(IRanges()), RangesList())
-  checkIdentical(segregate(IRanges(1, 5)), RangesList(IRanges(1, 5)))
-  checkIdentical(segregate(IRanges(c(1, 3), c(5, 12))),
-                 RangesList(IRanges(1, 5), IRanges(3, 12)))
-  checkIdentical(segregate(IRanges(c(1, 3, 10), c(5, 12, 13))),
-                 RangesList(IRanges(c(1, 10), c(5, 13)), IRanges(3, 12)))
-  checkIdentical(segregate(IRanges(c(3, 1, 10), c(5, 12, 13))),
-                 RangesList(IRanges(1, 12), IRanges(c(3, 10), c(5, 13))))
+test_Ranges_disjointBins <- function() {
+  checkIdentical(disjointBins(IRanges()), integer())
+  checkIdentical(disjointBins(IRanges(1, 5)), 1L)
+  checkIdentical(disjointBins(IRanges(c(1, 3), c(5, 12))), c(1L, 2L))
+  checkIdentical(disjointBins(IRanges(c(1, 3, 10), c(5, 12, 13))),
+                 c(1L, 2L, 1L))
+  checkIdentical(disjointBins(IRanges(c(3, 1, 10), c(5, 12, 13))),
+                 c(2L, 1L, 2L))
 }

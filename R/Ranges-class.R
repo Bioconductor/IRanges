@@ -350,8 +350,8 @@ setMethod("*", c("Ranges", "numeric"), function(e1, e2) {
 })
 
 ## make intervals disjoint by taking the union of the endpoints
-setGeneric("collapse", function(x, ...) standardGeneric("collapse"))
-setMethod("collapse", "Ranges", function(x) {
+setGeneric("disjoin", function(x, ...) standardGeneric("disjoin"))
+setMethod("disjoin", "Ranges", function(x) {
   ## starts: original starts and end+1 when inside another interval
   ## ends: original ends and start-1 when inside another interval
 
@@ -379,15 +379,20 @@ setMethod("collapse", "Ranges", function(x) {
 })
 
 ## make intervals disjoint by segregating them into separate Ranges
-setGeneric("segregate", function(x, ...) standardGeneric("segregate"))
-setMethod("segregate", "Ranges", function(x) {
+setGeneric("disjointBins", function(x, ...) standardGeneric("disjointBins"))
+setMethod("disjointBins", "Ranges", function(x) {
   x_ord <- NULL
   if (is.unsorted(start(x))) { # minimize work for sorted ranges (common)
     x_ord <- order(x)
     x <- x[x_ord]
   }
-  bins <- .Call("Ranges_segregate", start(x), width(x), PACKAGE="IRanges")
-  unname(split(x, bins))
+  bins <- .Call("Ranges_disjointBins", start(x), width(x), PACKAGE="IRanges")
+  if (!is.null(x_ord)) {
+    rev_ord <- integer(length(x_ord))
+    rev_ord[x_ord] <- seq_along(rev_ord)
+    bins <- bins[rev_ord]
+  }
+  bins
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

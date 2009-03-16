@@ -150,7 +150,7 @@ SEXP IRanges_reduce(SEXP x, SEXP with_inframe_start)
  */
 
 /* Worst case complexity of O(n^2) :(, but in practice very fast */
-SEXP Ranges_segregate(SEXP r_start, SEXP r_width)
+SEXP Ranges_disjointBins(SEXP r_start, SEXP r_width)
 {
   SEXP ans;
   IntAE bin_ends = _new_IntAE(128, 0, 0);
