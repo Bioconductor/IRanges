@@ -59,12 +59,12 @@ SEXP _new_XSequence(const char *classname, SEXP xdata, int offset, int length)
 {
 	SEXP classdef, ans;
 
-	classdef = MAKE_CLASS(classname);
+	PROTECT(classdef = MAKE_CLASS(classname));
 	PROTECT(ans = NEW_OBJECT(classdef));
 	SET_SLOT(ans, mkChar("xdata"), xdata);
 	SET_SLOT(ans, mkChar("offset"), ScalarInteger(offset));
 	SET_SLOT(ans, mkChar("length"), ScalarInteger(length));
-	UNPROTECT(1);
+	UNPROTECT(2);
 	return ans;
 }
 

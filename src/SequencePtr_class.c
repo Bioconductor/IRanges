@@ -66,10 +66,10 @@ SEXP _new_SequencePtr(const char *classname, SEXP tag)
 {
 	SEXP classdef, ans;
 
-	classdef = MAKE_CLASS(classname);
+	PROTECT(classdef = MAKE_CLASS(classname));
 	PROTECT(ans = NEW_OBJECT(classdef));
 	SET_SLOT(ans, mkChar("xp"), R_MakeExternalPtr(NULL, tag, R_NilValue));
-	UNPROTECT(1);
+	UNPROTECT(2);
 	return ans;
 }
 

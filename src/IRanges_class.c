@@ -94,10 +94,10 @@ SEXP _new_IRanges(const char *classname, SEXP start, SEXP width, SEXP names)
 {
 	SEXP classdef, ans;
 
-	classdef = MAKE_CLASS(classname);
+	PROTECT(classdef = MAKE_CLASS(classname));
 	PROTECT(ans = NEW_OBJECT(classdef));
 	set_IRanges_slots(ans, start, width, names);
-	UNPROTECT(1);
+	UNPROTECT(2);
 	return ans;
 }
 
