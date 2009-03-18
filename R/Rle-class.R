@@ -271,6 +271,7 @@ setMethod("aggregate", "Rle",
           function(x, by, FUN, start = NULL, end = NULL, width = NULL,
                    frequency = NULL, delta = NULL, ..., simplify = TRUE)
           {
+              FUN <- match.fun(FUN)
               if (!missing(by)) {
                   start <- start(by)
                   end <- end(by)
@@ -418,6 +419,7 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
           function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
                    verbose = FALSE)
           {
+              FUN <- match.fun(FUN)
               N <- length(X)
               if (N != length(Y))
                   stop("'X' and 'Y' must be of equal length")

@@ -279,8 +279,8 @@
       \describe{
         \item{\code{by}}{An object with \code{start}, \code{end}, and
           \code{width} methods.}
-        \item{\code{FUN}}{The function to be applied to each window of
-          \code{x}.}
+        \item{\code{FUN}}{The function, found via \code{match.fun}, to be
+          applied to each window of \code{x}.}
         \item{\code{start}, \code{end}, \code{width}}{the start, end, or width
           of the window. If \code{by} is missing, then must supply two of the
           three.}
@@ -335,8 +335,8 @@
       \describe{
         \item{\code{SHIFT}}{A non-negative integer vector of shift values.}
         \item{\code{X}, \code{Y}}{The Rle objects to shift.}
-        \item{\code{FUN}}{The function to be applied to each set of shifted
-          vectors.}
+        \item{\code{FUN}}{The function, found via \code{match.fun}, to be
+          applied to each set of shifted vectors.}
         \item{\dots}{Further arguments for \code{FUN}.}
         \item{OFFSET}{A non-negative integer offset to maintain throughout
           the shift operations.}
