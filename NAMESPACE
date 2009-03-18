@@ -54,6 +54,7 @@ export(
     XInteger, XNumeric, XDataFrame,
     XRleInteger,
     newViews, successiveViews,
+    updateTypedList,
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList,
     XDataFrameList, SplitXDataFrameList,

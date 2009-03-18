@@ -59,6 +59,36 @@ setMethod("initialize", "TypedList",
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Updating old TypedList objects.
+###
+
+updateTypedList <- function(object) {
+    if (!is(object, "TypedList"))
+        stop("'object' must inherit from 'TypedList'")
+
+    objectSlots <- attributes(object)
+    objectSlots$class <- NULL
+    classSlots <- slotNames(class(object))
+    if (identical(names(objectSlots), classSlots)) {
+        ans <- object
+    } else {
+        objectSlots$elements <-
+          lapply(objectSlots$elements, function(x)
+                 if (is(x, "TypedList")) updateTypedList(x) else x)
+        nulls <-
+          sapply(names(objectSlots), function(slt) is.null(slot(object, slt)))
+        objectSlots[nulls] <- NULL
+        if ("elementCumLengths" %in% names(objectSlots)) {
+            objectSlots$elementLengths <-
+              diff(slot(object, "elementCumLengths"))
+        }
+        keep <- intersect(names(objectSlots), classSlots)
+        ans <- do.call(new, c(list(class(object)), objectSlots[keep]))
+    }
+    ans
+}
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 

@@ -2,6 +2,8 @@
 \docType{class}
 \alias{TypedList-class}
 
+\alias{updateTypedList}
+
 % accessors
 \alias{elementClass}
 \alias{elementClass,TypedList-method}
@@ -58,6 +60,14 @@
   operation specific to the element type. Using this approach, the
   convention is for the prototype of the subclass to set the
   \code{elementClass} slot and to leave it unchanged.
+}
+
+\section{Object Updating}{
+  \describe{
+    \item{}{updateTypedObject(object): Updates instances of objects the inherit
+      from an older TypedList class definition to match the current TypedList
+      class definition.}
+  }
 }
 
 \section{Subsetting}{
