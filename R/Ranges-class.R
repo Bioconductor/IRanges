@@ -98,7 +98,64 @@ setMethod("show", "Ranges",
     function(object)
     {
         cat(class(object), " object:\n", sep="")
-        show(as.data.frame(object))
+        n <- length(object)
+        if (n < 20) {
+            if (is.null(names(object))) {
+                values <-
+                  data.frame(start=start(object),
+                             end=end(object),
+                             width=width(object),
+                             row.names=paste("[", 1:n, "]", sep=""),
+                             check.rows=TRUE,
+                             check.names=FALSE,
+                             stringsAsFactors=FALSE)
+            } else {
+                values <-
+                  data.frame(start=start(object),
+                             end=end(object),
+                             width=width(object),
+                             names=names(object),
+                             row.names=paste("[", 1:n, "]", sep=""),
+                             check.rows=TRUE,
+                             check.names=FALSE,
+                             stringsAsFactors=FALSE)
+            }
+        } else {
+            starts <- start(object)
+            widths <- width(object)
+            ends <- end(object)
+            NAMES <- names(object)
+            if (is.null(NAMES)) {
+                values <-
+                  data.frame(start=c(subseq(starts, 1, 9), "...",
+                                     subseq(starts, n - 8, n)),
+                             end=c(subseq(ends, 1, 9), "...",
+                                   subseq(ends, n - 8, n)),
+                             width=c(subseq(widths, 1, 9), "...",
+                                     subseq(widths, n - 8, n)),
+                             row.names=c(paste("[", 1:9, "]", sep=""), "...",
+                                         paste("[", (n-8):n, "]", sep="")),
+                             check.rows=TRUE,
+                             check.names=FALSE,
+                             stringsAsFactors=FALSE)
+            } else {
+                values <-
+                  data.frame(start=c(subseq(starts, 1, 9), "...",
+                                     subseq(starts, n - 8, n)),
+                             end=c(subseq(ends, 1, 9), "...",
+                                   subseq(ends, n - 8, n)),
+                             width=c(subseq(widths, 1, 9), "...",
+                                     subseq(widths, n - 8, n)),
+                             names=c(subseq(NAMES, 1, 9), "...",
+                                     subseq(NAMES, n - 8, n)),
+                             row.names=c(paste("[", 1:9, "]", sep=""), "...",
+                                         paste("[", (n-8):n, "]", sep="")),
+                             check.rows=TRUE,
+                             check.names=FALSE,
+                             stringsAsFactors=FALSE)
+            }
+        }
+        show(values)
     }
 )
 
