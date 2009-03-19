@@ -183,6 +183,9 @@ setValidity2("NormalIRanges", .valid.NormalIRanges)
 
 IRanges <- function(start=NULL, end=NULL, width=NULL)
 {
+    if (is(start, "Rle"))
+        return(as(start, "IRanges"))
+
     start <- .IRanges.normargStartEndWidth(start, "start")
     end <- .IRanges.normargStartEndWidth(end, "end")
     width <- .IRanges.normargStartEndWidth(width, "width")

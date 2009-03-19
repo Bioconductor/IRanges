@@ -49,6 +49,9 @@
       \code{IRanges(start=NULL, end=NULL, width=NULL)}:
       Return the IRanges object containing the ranges specified by \code{start},
       \code{end} and \code{width}.
+      Input falls into one of two categories:
+      \describe{
+      \item{Category 1}{
       Exactly two out of the \code{start}, \code{end} and \code{width}
       arguments must be supplied as integer vectors (with no \code{NA}s)
       and the other argument must be \code{NULL}.
@@ -58,6 +61,12 @@
       are supplied, then the length of \code{width} must be <= to the
       length of \code{start} and, if it is <, then \code{width} is expanded
       cyclically to the length of \code{start}.
+      }
+      \item{Category 2}{
+      The \code{start} argument is a logical Rle object and produces the same
+      result as \code{as(start, "IRanges")}.
+      }
+      }
     }
   }
 }
