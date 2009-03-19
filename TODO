@@ -18,23 +18,21 @@ Long term TODO list
     - !ranges (gaps)
     - ranges - ranges (psetdiff)
     - ranges +/- x (shift)
-  - "inverse.rle", opposite of whichAsIRanges
   - permute or something to create a random mimic
 
 - IRanges:
   - should probably use XIntegers for start/width
-  
+
 - TypedList:
-  - refactor to simplify internals
   - dim, dim<-, dimnames, dimnames<- for multi-dimensional list (like 'by')
-  
+
 - RangesList:
   - parallel rbind
   - binary ops: "overlap", "nearest", "intersect", "setdiff", "merge"
     - 'y' omitted: become n-ary ops on items in collection
     - 'y' specified: performed element-wise
   - unary ops: "gaps", "coverage", "slice", etc are vectorized
-    
+
 - XDataFrame:
   - group generics (Math, Ops, Summary)
   - by, aggregate
@@ -43,21 +41,20 @@ Long term TODO list
 
 - RangedData:
   - 'merge' for SQL-type join operations based on range overlap
-  - inverse.rle
   - "aggregate", generalization of coverage for max/min/etc
   - as a subset specification for BSGenome objects (get sequences out)
 
 - SplitXDataFrame:
   - unlist() should add a factor column recording source of each row
   - rbind
-  
+
 - FilterRules:
   - refactor, using ShortRead filter framework (becomes FilterList)
   - support subsetting XDataFrame/RangedData directly
 
 - rdapply:
   - probably need to add 'excludePattern' parameter
-  
+
 - IO:
   - xscan() - read data directly into XSequence objects
   - move chain reading to rtracklayer
