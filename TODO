@@ -9,7 +9,6 @@ Long term TODO list
 -------------------
 
 - Ranges:
-  * collapse: like reduce, but breaks wherever there was a start/end
   - "unique" for removing duplicate ranges
   - "match" for exact matching
   - operator aliases
