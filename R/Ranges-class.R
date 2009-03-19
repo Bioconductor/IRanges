@@ -99,13 +99,17 @@ setMethod("show", "Ranges",
     {
         cat(class(object), " object:\n", sep="")
         n <- length(object)
-        if (n < 20) {
+        if (n == 0) {
+            values <- data.frame(start=integer(0),
+                                 end=integer(0),
+                                 width=integer(0))
+        } else if (n < 20) {
             if (is.null(names(object))) {
                 values <-
                   data.frame(start=start(object),
                              end=end(object),
                              width=width(object),
-                             row.names=paste("[", 1:n, "]", sep=""),
+                             row.names=paste("[", seq_len(n), "]", sep=""),
                              check.rows=TRUE,
                              check.names=FALSE,
                              stringsAsFactors=FALSE)
@@ -115,7 +119,7 @@ setMethod("show", "Ranges",
                              end=end(object),
                              width=width(object),
                              names=names(object),
-                             row.names=paste("[", 1:n, "]", sep=""),
+                             row.names=paste("[", seq_len(n), "]", sep=""),
                              check.rows=TRUE,
                              check.names=FALSE,
                              stringsAsFactors=FALSE)
