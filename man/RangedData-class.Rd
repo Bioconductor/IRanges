@@ -7,7 +7,7 @@
 \alias{universe,RangedData-method}
 \alias{dim,RangedData-method}
 \alias{dimnames,RangedData-method}
-\alias{dimnames<-,RangedData,ANY-method}
+\alias{dimnames<-,RangedData-method}
 \alias{end,RangedData-method}
 \alias{length,RangedData-method}
 \alias{names,RangedData-method}

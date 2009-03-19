@@ -5,7 +5,7 @@
 % accessor
 \alias{dim,XDataFrame-method}
 \alias{dimnames,XDataFrame-method}
-\alias{dimnames<-,XDataFrame,ANY-method}
+\alias{dimnames<-,XDataFrame-method}
 
 % constructor
 \alias{XDataFrame}
