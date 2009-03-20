@@ -362,7 +362,7 @@
       }
     }
     \item{}{
-      \code{subseq(x, start = NULL, end = NULL, width = NULL)}:
+      \code{subseq(x, start = NA, end = NA, width = NA)}:
       Extract the subsequence from \code{x} specified by two of the three
       following values:  \code{start}, \code{end}, and \code{width}. This
       is more efficient for extracting consecutive values than \code{[}.

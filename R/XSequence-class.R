@@ -26,11 +26,7 @@ setMethod("length", "XSequence", function(x) x@length)
 setMethod("subseq", "XSequence",
     function(x, start=NA, end=NA, width=NA)
     {
-        solved_SEW <- try(solveUserSEW(length(x), start=start, end=end, width=width))
-        if (is(solved_SEW, "try-error"))
-            stop("Invalid sequence coordinates.\n",
-                 "  Are you sure the supplied 'start', 'end' and 'width' arguments\n",
-                 "  are defining a region that is within the limits of the sequence?")
+        solved_SEW <- solveSubseqSEW(length(x), start, end, width)
         x@offset <- x@offset + start(solved_SEW) - 1L
         x@length <- width(solved_SEW)
         x

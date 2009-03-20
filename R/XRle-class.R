@@ -33,7 +33,7 @@ setMethod("[", "XRle",
 setMethod("subseq", "XRle",
     function(x, start=NA, end=NA, width=NA)
     {
-        solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
+        solved_SEW <- solveSubseqSEW(length(x), start, end, width)
         breaks <- c(0L, cumsum(as.integer(x@lengths)))
         rangeGroups <- findInterval(c(start(solved_SEW), end(solved_SEW)) - 1e-6, breaks)
         lengths <- as.integer(subseq(x@lengths, rangeGroups[1], rangeGroups[2]))

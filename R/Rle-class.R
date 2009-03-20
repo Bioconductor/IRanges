@@ -502,15 +502,10 @@ setMethod("sort", "Rle",
           })
 
 setMethod("subseq", "Rle",
-          function(x, start = NULL, end = NULL, width = NULL)
+          function(x, start = NA, end = NA, width = NA)
           {
-              if (!is.null(end)) {
-                  if (is.null(start))
-                      start <- end - width + 1L
-                  else if (is.null(width))
-                      width <- end - start + 1L
-              }
-              .Call("Rle_subseq", x, as.integer(start), as.integer(width), PACKAGE = "IRanges")
+              solved_SEW <- solveSubseqSEW(length(x), start, end, width)
+              .Call("Rle_subseq", x, start(solved_SEW), width(solved_SEW), PACKAGE = "IRanges")
           })
 
 setMethod("summary", "Rle",

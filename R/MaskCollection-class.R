@@ -432,7 +432,7 @@ setMethod("gaps", "MaskCollection",
 setMethod("subseq", "MaskCollection",
     function(x, start=NA, end=NA, width=NA)
     {
-        solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
+        solved_SEW <- solveSubseqSEW(width(x), start, end, width)
         solved_start <- start(solved_SEW)
         solved_end <- end(solved_SEW)
         solved_width <- width(solved_SEW)

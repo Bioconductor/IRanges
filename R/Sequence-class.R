@@ -13,27 +13,31 @@ setGeneric("subseq", signature="x",
     function(x, start=NA, end=NA, width=NA) standardGeneric("subseq")
 )
 
+### Returns an IRanges instance of length 1.
+### Not exported.
+solveSubseqSEW <- function(seq_length, start, end, width)
+{
+    solved_SEW <- try(solveUserSEW(seq_length, start=start, end=end, width=width))
+    if (is(solved_SEW, "try-error"))
+        stop("Invalid sequence coordinates.\n",
+             "  Please make sure the supplied 'start', 'end' and 'width' arguments\n",
+             "  are defining a region that is within the limits of the sequence.")
+    solved_SEW
+}
+
 setMethod("subseq", "vector",
     function(x, start=NA, end=NA, width=NA)
     {
-        if (!missing(end)) {
-            if (missing(start))
-                start <- end - width + 1L
-            else if (missing(width))
-                width <- end - start + 1L
-        }
-        .Call("vector_subseq", x, as.integer(start), as.integer(width))
+        solved_SEW <- solveSubseqSEW(length(x), start, end, width)
+        .Call("vector_subseq", x, start(solved_SEW), width(solved_SEW),
+              PACKAGE="IRanges")
     }
 )
 
 setMethod("subseq", "Sequence",
     function(x, start=NA, end=NA, width=NA)
     {
-        solved_SEW <- try(solveUserSEW(length(x), start=start, end=end, width=width))
-        if (is(solved_SEW, "try-error"))
-            stop("Invalid sequence coordinates.\n",
-                 "  Are you sure the supplied 'start', 'end' and 'width' arguments\n",
-                 "  are defining a region that is within the limits of the sequence?")
+        solved_SEW <- solveSubseqSEW(length(x), start, end, width)
         x[start(solved_SEW) + seq_len(width(solved_SEW)) - 1L]
     }
 )

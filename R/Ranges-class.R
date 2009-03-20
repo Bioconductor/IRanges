@@ -81,7 +81,7 @@ setMethod("as.data.frame", "Ranges",
     function(x, row.names=NULL, optional=FALSE, ...)
     {
         if (!(is.null(row.names) || is.character(row.names)))
-            stop("'row.names'  must be NULL or a character vector")
+            stop("'row.names' must be NULL or a character vector")
         ans <- data.frame(start=start(x),
                           end=end(x),
                           width=width(x),
@@ -100,66 +100,26 @@ setMethod("show", "Ranges",
         cat(class(object), " object:\n", sep="")
         n <- length(object)
         if (n == 0) {
-            values <- data.frame(start=integer(0),
-                                 end=integer(0),
-                                 width=integer(0))
+            showme <- as.data.frame(object)
         } else if (n < 20) {
-            if (is.null(names(object))) {
-                values <-
-                  data.frame(start=start(object),
-                             end=end(object),
-                             width=width(object),
-                             row.names=paste("[", seq_len(n), "]", sep=""),
-                             check.rows=TRUE,
-                             check.names=FALSE,
-                             stringsAsFactors=FALSE)
-            } else {
-                values <-
-                  data.frame(start=start(object),
-                             end=end(object),
-                             width=width(object),
-                             names=names(object),
-                             row.names=paste("[", seq_len(n), "]", sep=""),
-                             check.rows=TRUE,
-                             check.names=FALSE,
-                             stringsAsFactors=FALSE)
-            }
+            showme <- as.data.frame(object, row.names=paste("[", seq_len(n), "]", sep=""))
         } else {
-            starts <- start(object)
-            widths <- width(object)
-            ends <- end(object)
+            sketch <- function(x)
+                c(subseq(x, 1, 9), "...", subseq(x, length(x)-8, length(x)))
+            showme <-
+                  data.frame(start=sketch(start(object)),
+                             end=sketch(end(object)),
+                             width=sketch(width(object)),
+                             row.names=c(paste("[", 1:9, "]", sep=""), "...",
+                                         paste("[", (n-8):n, "]", sep="")),
+                             check.rows=TRUE,
+                             check.names=FALSE,
+                             stringsAsFactors=FALSE)
             NAMES <- names(object)
-            if (is.null(NAMES)) {
-                values <-
-                  data.frame(start=c(subseq(starts, 1, 9), "...",
-                                     subseq(starts, n - 8, n)),
-                             end=c(subseq(ends, 1, 9), "...",
-                                   subseq(ends, n - 8, n)),
-                             width=c(subseq(widths, 1, 9), "...",
-                                     subseq(widths, n - 8, n)),
-                             row.names=c(paste("[", 1:9, "]", sep=""), "...",
-                                         paste("[", (n-8):n, "]", sep="")),
-                             check.rows=TRUE,
-                             check.names=FALSE,
-                             stringsAsFactors=FALSE)
-            } else {
-                values <-
-                  data.frame(start=c(subseq(starts, 1, 9), "...",
-                                     subseq(starts, n - 8, n)),
-                             end=c(subseq(ends, 1, 9), "...",
-                                   subseq(ends, n - 8, n)),
-                             width=c(subseq(widths, 1, 9), "...",
-                                     subseq(widths, n - 8, n)),
-                             names=c(subseq(NAMES, 1, 9), "...",
-                                     subseq(NAMES, n - 8, n)),
-                             row.names=c(paste("[", 1:9, "]", sep=""), "...",
-                                         paste("[", (n-8):n, "]", sep="")),
-                             check.rows=TRUE,
-                             check.names=FALSE,
-                             stringsAsFactors=FALSE)
-            }
+            if (!is.null(NAMES))
+                showme$names <- sketch(NAMES)
         }
-        show(values)
+        show(showme)
     }
 )
 
