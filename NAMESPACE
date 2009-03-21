@@ -29,7 +29,7 @@ export(
     sapplyLength,
     safeExplode,
     IRanges,
-    RangedData, RangedDataList,
+    RangedData, updateRangedData, RangedDataList,
     FilterRules, RDApplyParams,
     solveUserSEW,
     successiveIRanges,

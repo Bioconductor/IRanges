@@ -148,6 +148,14 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
   new("RangedData", ranges = ranges, values = values)
 }
 
+updateRangedData <- function(object) {
+    if (!is(object, "RangedData"))
+        stop("'object' must inherit from 'RangedData'")
+    return(new("RangedData",
+               ranges = updateTypedList(object@ranges),
+               values = updateTypedList(object@values)))
+}
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
 ###
