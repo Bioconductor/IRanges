@@ -560,7 +560,10 @@ setMethod("window", "Rle",
                    frequency = NULL, delta = NULL, ...)
           {
               if (is.null(frequency) && is.null(delta)) {
-                  subseq(x, start = start, end = end, width = width)
+                  subseq(x,
+                         start = ifelse(is.null(start), NA, start),
+                         end = ifelse(is.null(end), NA, end),
+                         width = ifelse(is.null(width), NA, width))
               } else {
                   if (!is.null(width)) {
                       if (is.null(start))
