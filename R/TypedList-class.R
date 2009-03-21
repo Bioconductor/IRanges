@@ -267,25 +267,26 @@ function(x, i, use.names = TRUE, compress = x@compress) {
   } else {
     if (compress) {
       runStarts <- which(c(TRUE, diff(i) != 1L))
-      runOffsets <- diff(c(runStarts, k+1L)) - 1L
       whichToLoop <- seq_len(length(runStarts))
+      startIndices <- i[runStarts]
+      endIndices <- startIndices + (diff(c(runStarts, k+1L)) - 1L)
     } else {
       runStarts <- seq_len(k)
-      runOffsets <- rep.int(0L, k)
       whichToLoop <- which(elementLengths(x)[i] > 0)
+      startIndices <- i[runStarts[whichToLoop]]
+      endIndices <- startIndices
     }
     if (length(dim(x@elements[[1]])) < 2)
         zeroLengthElt <- x@elements[[1]][integer(0)]
     else
         zeroLengthElt <- x@elements[[1]][integer(0), , drop = FALSE]
     elts <- rep(list(zeroLengthElt), length(runStarts))
-    if (length(whichToLoop) > 0) {
+    loopCount <- length(whichToLoop)
+    if (loopCount > 0) {
       elementCumLengths <- cumsum(subseq(elementLengths(x), 1, max(i)))
       allData <- x@elements[[1]]
-      startIndices <- i[runStarts[whichToLoop]]
-      endIndices <- startIndices + runOffsets[whichToLoop]
       elts[whichToLoop] <-
-        lapply(whichToLoop,
+        lapply(seq_len(loopCount),
                function(j) {
                  startIndex <- startIndices[j]
                  endIndex <- endIndices[j]
