@@ -62,6 +62,16 @@ setMethod("initialize", "TypedList",
 ### Updating old TypedList objects.
 ###
 
+isOldTypedList <- function(object) {
+    if (!is(object, "TypedList"))
+        stop("'object' must inherit from 'TypedList'")
+
+    objectSlots <- attributes(object)
+    objectSlots$class <- NULL
+    classSlots <- slotNames(class(object))
+    !all(classSlots %in% names(objectSlots))
+}
+
 updateTypedList <- function(object) {
     if (!is(object, "TypedList"))
         stop("'object' must inherit from 'TypedList'")
@@ -69,7 +79,7 @@ updateTypedList <- function(object) {
     objectSlots <- attributes(object)
     objectSlots$class <- NULL
     classSlots <- slotNames(class(object))
-    if (identical(names(objectSlots), classSlots)) {
+    if (all(classSlots %in% names(objectSlots))) {
         ans <- object
     } else {
         objectSlots$elements <-
@@ -96,9 +106,19 @@ setGeneric("elementClass", function(x, ...) standardGeneric("elementClass"))
 setMethod("elementClass", "TypedList", function(x) x@elementClass)
 
 setGeneric("elementLengths", function(x) standardGeneric("elementLengths"))
-setMethod("elementLengths", "TypedList", function(x) x@elementLengths)
+setMethod("elementLengths", "TypedList",
+          function(x) {
+            if (isOldTypedList(x))
+              x <- updateTypedList(x)
+            x@elementLengths
+          })
 
-setMethod("length", "TypedList", function(x) length(x@elementLengths))
+setMethod("length", "TypedList",
+          function(x) {
+            if (isOldTypedList(x))
+              x <- updateTypedList(x)
+            length(x@elementLengths)
+          })
 
 setMethod("names", "TypedList", function(x) x@NAMES)
 
@@ -106,6 +126,8 @@ setMethod("names", "TypedList", function(x) x@NAMES)
 setReplaceMethod("names", "TypedList",
                  function(x, value)
                  {
+                   if (isOldTypedList(x))
+                     x <- updateTypedList(x)
                    if (is.null(value)) {
                      x@NAMES <- NULL
                      return(x)
@@ -193,6 +215,13 @@ TypedList <- function(listClass, elements = list(), splitFactor = NULL,
 ### Validity.
 ###
 
+.valid.TypedList.classdef <- function(x)
+{
+  if (isOldTypedList(x))
+    return("object uses old class definition; use 'updateTypedList'")
+    
+}
+
 ## allow subclasses to provide the required class of elements in the list
 .valid.TypedList.elements <- function(x)
 {
@@ -242,7 +271,8 @@ TypedList <- function(listClass, elements = list(), splitFactor = NULL,
 
 .valid.TypedList <- function(x)
 {
-  c(.valid.TypedList.elements(x),
+  c(.valid.TypedList.classdef(x),
+    .valid.TypedList.elements(x),
     .valid.TypedList.names(x),
     .valid.TypedList.compression(x),
     .valid.TypedList.slot.names(x))
@@ -324,6 +354,8 @@ function(x, i, use.names = TRUE, compress = x@compress) {
 setMethod("[[", "TypedList",
           function(x, i, j, ...)
           {
+            if (isOldTypedList(x))
+              x <- updateTypedList(x)
             if (!missing(j) || length(list(...)) > 0)
               stop("invalid subsetting")
             if (missing(i))
@@ -352,6 +384,8 @@ setMethod("$", "TypedList", function(x, name) x[[name]])
 setReplaceMethod("[[", "TypedList",
                  function(x, i, j,..., value)
                  {
+                   if (isOldTypedList(x))
+                     x <- updateTypedList(x)
                    if (!missing(j) || length(list(...)) > 0)
                      warning("arguments beyond 'i' ignored")
                    if (missing(i))
@@ -400,6 +434,8 @@ setReplaceMethod("[[", "TypedList",
 
 setReplaceMethod("$", "TypedList",
                  function(x, name, value) {
+                   if (isOldTypedList(x))
+                     x <- updateTypedList(x)
                    x[[name]] <- value
                    x
                  })
@@ -408,6 +444,8 @@ setReplaceMethod("$", "TypedList",
 setMethod("[", "TypedList",
           function(x, i, j, ..., drop)
           {
+            if (isOldTypedList(x))
+              x <- updateTypedList(x)
             if (!missing(j) || length(list(...)) > 0)
               stop("invalid subsetting")
             if (missing(i))
@@ -464,6 +502,10 @@ setReplaceMethod("[", "TypedList",
 
 setMethod("append", c("TypedList", "TypedList"),
           function(x, values, after=length(x)) {
+            if (isOldTypedList(x))
+              x <- updateTypedList(x)
+            if (isOldTypedList(values))
+              values <- updateTypedList(values)
             if (!isSingleNumber(after))
               stop("'after' must be a single number")
             if (!extends(elementClass(x), elementClass(values)))
@@ -531,7 +573,9 @@ setAs("TypedList", "list",
 ### Subclasses should override this for customized list coercion
 setMethod("as.list", "TypedList",
           function(x, use.names = TRUE) {
-            if (length(x@elements) < length(x)) {
+              if (isOldTypedList(x))
+                x <- updateTypedList(x)
+              if (length(x@elements) < length(x)) {
               ans <-
                 .TypedList.list.subscript(x, seq_len(length(x)), use.names = use.names,
                                           compress = FALSE)
@@ -545,6 +589,8 @@ setMethod("as.list", "TypedList",
 
 setMethod("unlist", "TypedList",
           function(x, recursive = TRUE, use.names = TRUE) {
+            if (isOldTypedList(x))
+              x <- updateTypedList(x)
             if (!missing(recursive))
               warning("'recursive' argument currently ignored")
             ans <- .TypedList.compress.list(x@elements, as.list = FALSE)
