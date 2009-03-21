@@ -4,6 +4,7 @@
 % Classes:
 \alias{class:Ranges}
 \alias{Ranges-class}
+\alias{RangesORmissing-class}
 \alias{Ranges}
 
 % Generics and methods:

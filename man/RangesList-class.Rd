@@ -22,6 +22,7 @@
 % coercion
 \alias{as.data.frame,RangesList-method}
 \alias{coerce,RangesList,IRangesList-method}
+\alias{coerce,RangesList,RangedData-method}
 
 % operations
 \alias{Ops,RangesList,ANY-method}
@@ -96,15 +97,20 @@
 }
 
 \section{Coercion}{
-  In the code snippets below, \code{x} is a \code{RangesList} object.
+  In the code snippets below, \code{x} and \code{from} are a
+  \code{RangesList} object.
 
   \describe{
     \item{}{\code{as.data.frame(x, row.names = NULL, optional = FALSE)}:
       Coerces \code{x} to a \code{data.frame}. Essentially the same as
       calling \code{as.data.frame(unlist(x))}.
     }
-    \item{}{\code{as(from, "IRangesList")}: Coerces \code{from}, a
-      \code{RangesList}, to an \code{\linkS4class{IRangesList}}, requiring
+    \item{}{\code{as(from, "RangedData")}: Coerces \code{from} to a
+      \code{\linkS4class{RangedData}} with zero columns and the same
+      ranges as in \code{from}.
+    }
+    \item{}{\code{as(from, "IRangesList")}: Coerces \code{from}, to an
+      \code{\linkS4class{IRangesList}}, requiring
       that all \code{Ranges} elements are coerced to internal
       \code{IRanges} elements. This is a convenient way to ensure that all
       \code{Ranges} have been imported into R (and that there is no
