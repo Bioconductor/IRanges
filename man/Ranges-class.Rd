@@ -13,6 +13,8 @@
 \alias{start,Ranges-method}
 \alias{width,Ranges-method}
 \alias{end,Ranges-method}
+\alias{mid}
+\alias{mid,Ranges-method}
 \alias{start<-}
 \alias{width<-}
 \alias{end<-}
@@ -111,6 +113,10 @@
     \item{}{
       \code{end(x)}:
       \code{start(x) + width(x) - 1L}
+    }
+    \item{}{
+      \code{mid(x)}: returns the midpoint of the range,
+      \code{start(x) + floor((width(x) - 1)/2)}.
     }
     \item{}{
       \code{names(x)}:

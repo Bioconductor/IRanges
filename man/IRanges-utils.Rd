@@ -53,6 +53,8 @@
   threebands(x, start=NA, end=NA, width=NA)
   reduce(x, with.inframe.attrib=FALSE)
   gaps(x, start=NA, end=NA)
+
+  ## Other utilities
   \S4method{reflect}{Ranges}(x, bounds)
   \S4method{flank}{Ranges}(x, width, start = TRUE, both = FALSE)
   \S4method{range}{Ranges}(x, ..., na.rm = FALSE)

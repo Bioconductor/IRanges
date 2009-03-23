@@ -64,6 +64,7 @@ export(
 
     ## Generic functions in the Ranges API:
     width,
+    mid,
     "start<-",
     "width<-",
     "end<-",
@@ -77,7 +78,7 @@ export(
     overlap, nearest, precede, follow,
     reflect,
     flank,
-    punion, pintersect, psetdiff,
+    punion, pintersect, psetdiff, pgap,
     overlap,
     disjoin, disjointBins,
     ##map,

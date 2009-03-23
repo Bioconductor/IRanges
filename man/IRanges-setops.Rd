@@ -11,7 +11,8 @@
 \alias{pintersect,IRanges,IRanges-method}
 \alias{psetdiff}
 \alias{psetdiff,IRanges,IRanges-method}
-
+\alias{pgap}
+\alias{pgap,IRanges,IRanges-method}
 
 \title{Set operations on IRanges objects}
 
@@ -29,6 +30,7 @@
   punion(x, y, ...)
   pintersect(x, y, ...)
   psetdiff(x, y, ...)
+  pgap(x, y, ...)
 }
 
 \arguments{
@@ -68,6 +70,10 @@
   by filling the gap. This happens to \code{psetdiff} when a range
   in \code{y} has its end points strictly inside the corresponding
   range in \code{x}. In that case, \code{psetdiff} will simply fail.
+
+  \code{pgap} returns the gap between each element in \code{x} and
+  its corresponding element in \code{y}, in parallel fashion, returning
+  an \code{IRanges} instance. If two ranges overlap, the gap is empty.
 }
 
 \author{H. Pages and M. Lawrence}
@@ -98,6 +104,7 @@
   start(x)[4] <- -99
   end(y)[4] <- 99
   psetdiff(x, y)
+  pgap(x, y)
 }
 
 \keyword{utilities}
