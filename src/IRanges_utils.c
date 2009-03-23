@@ -159,10 +159,12 @@ SEXP Ranges_disjointBins(SEXP r_start, SEXP r_width)
   
   for (int i = 0; i < length(r_start); i++) {
     // find a bin, starting at first
-    int j = 0;
+    int j = 0, end = INTEGER(r_start)[i] + INTEGER(r_width)[i] - 1;
     for (; j < bin_ends.nelt && bin_ends.elts[j] >= INTEGER(r_start)[i]; j++);
     // remember when this bin will be open
-    _IntAE_insert_at(&bin_ends, j, INTEGER(r_start)[i]+INTEGER(r_width)[i]-1);
+    if (j == bin_ends.nelt)
+      _IntAE_append(&bin_ends, &end, 1);
+    else bin_ends.elts[j] = end;
     // store the bin for this range
     INTEGER(ans)[i] = j + 1;
   }
