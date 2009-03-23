@@ -58,6 +58,9 @@ setMethod("start", "Ranges", function(x, ...) {end(x) - width(x) + 1L})
 setMethod("width", "Ranges", function(x) {end(x) - start(x) + 1L})
 setMethod("end", "Ranges", function(x, ...) {start(x) + width(x) - 1L})
 
+setGeneric("mid", function(x, ...) standardGeneric("mid"))
+setMethod("mid", "Ranges", function(x) start(x) + as.integer((width(x)-1) / 2))
+
 setMethod("length", "Ranges", function(x) length(start(x)))
 
 setGeneric("start<-", signature="x",
@@ -375,22 +378,6 @@ setGeneric("disjoin", function(x, ...) standardGeneric("disjoin"))
 setMethod("disjoin", "Ranges", function(x) {
   ## starts: original starts and end+1 when inside another interval
   ## ends: original ends and start-1 when inside another interval
-
-  ### This is a failed attempt to optimize (twice as slow)
-  ## endpoints <- c(unique(start(x)), unique(end(x)))
-  ## ep_order <- order(endpoints)
-  ## endpoints <- endpoints[ep_order]
-  ## ep_int <- c(-table(start(x)), table(end(x)))[ep_order]
-  ## ep_sum <- cumsum(ep_int)
-  ## inside <- ifelse(ep_int < 0, ep_sum - ep_int, ep_sum) < 0
-  ## starts <- ep_int < 0 | inside
-  ## col_starts <- endpoints[starts]
-  ## col_starts[ep_int[starts] > 0] <- col_starts[ep_int[starts] > 0] + 1
-  ## ends <- ep_int > 0 | inside
-  ## col_ends <- endpoints[ends]
-  ## col_ends[ep_int[ends] < 0] <- col_ends[ep_int[ends] < 0] - 1
-  ## IRanges(unique(col_starts), unique(col_ends))
-  
   starts <- unique(start(x))
   ends <- unique(end(x))
   adj_start <- sort(unique(c(starts, ends + 1)))
@@ -413,6 +400,7 @@ setMethod("disjointBins", "Ranges", function(x) {
     rev_ord[x_ord] <- seq_along(rev_ord)
     bins <- bins[rev_ord]
   }
+  names(bins) <- names(x)
   bins
 })
 
