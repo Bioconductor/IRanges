@@ -102,3 +102,19 @@ setMethod("psetdiff", c("IRanges", "IRanges"),
     }
 )
 
+setGeneric("pgap", signature=c("x", "y"),
+           function(x, y, ...) standardGeneric("pgap")
+           )
+
+setMethod("pgap", c("IRanges", "IRanges"),
+          function(x, y, ...)
+          {
+            if (length(x) != length(y))
+              stop("'x' and 'y' must have the same length")
+            ans_start <- pmax.int(start(x), start(y))
+            ans_end <- pmin.int(end(x), end(y)) + 1L
+            ans_width <- ans_start - ans_end
+            ans_width[ans_width < 0L] <- 0L
+            IRanges(start=ans_end, width=ans_width)
+          }
+          )
