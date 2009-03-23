@@ -45,7 +45,7 @@ void _IntegerIntervalTree_free(SEXP r_tree) {
 
 void _IntegerIntervalTree_add(struct rbTree *tree, int start, int end,
                        unsigned int index) {
-  IntegerIntervalNode tmpInterval = { start, end, index, 0 };
+  IntegerIntervalNode tmpInterval = { { start, end }, index, 0 };
   IntegerIntervalNode *interval =
     lmCloneMem(tree->lm, &tmpInterval, sizeof(tmpInterval));
   rbTreeAdd(tree, interval);
