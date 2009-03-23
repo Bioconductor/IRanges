@@ -336,6 +336,8 @@ setGeneric("findRange", signature = "vec",
 
 setMethod("findRange", signature = c(vec = "Rle"),
           function(x, vec) {
+              if (!length(x))
+                return(IRanges())
               rangeX <- range(x)
               if (any(is.na(rangeX)) || (rangeX[1] < 0) ||
                   (rangeX[2] > length(vec)))
