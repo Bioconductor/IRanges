@@ -11,7 +11,7 @@
 
 \usage{
   solveUserSEW(refwidths, start=NA, end=NA, width=NA,
-               translate.nonpositive.coord=TRUE,
+               translate.negative.coord=TRUE,
                allow.nonnarrowing=FALSE)
 }
 
@@ -23,7 +23,7 @@
     Vectors of integers, eventually with NAs, containing the set of
     user-supplied start/end/width values.
   }
-  \item{translate.nonpositive.coord, allow.nonnarrowing}{
+  \item{translate.negative.coord, allow.nonnarrowing}{
     \code{TRUE} or \code{FALSE}.
   }
 }
@@ -38,8 +38,8 @@
 
   Then each row is "solved" i.e. the 2 following transformations are
   performed (\code{i} is the indice of the row):
-    (1) if \code{translate.nonpositive.coord} is TRUE then a
-        non-positive value of \code{start[i]} or \code{end[i]} is
+    (1) if \code{translate.negative.coord} is TRUE then a
+        negative value of \code{start[i]} or \code{end[i]} is
         considered to be a \code{-refwidths[i]}-based coordinate so
         \code{refwidths[i]+1} is added to it to make it 1-based;
     (2) the NAs in the row are treated as unknowns which values are deduced

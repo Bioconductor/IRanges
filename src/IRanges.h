@@ -362,7 +362,7 @@ SEXP solve_user_SEW(
 	SEXP start,
 	SEXP end,
 	SEXP width,
-	SEXP translate_nonpositive_coord,
+	SEXP translate_negative_coord,
 	SEXP allow_nonnarrowing
 );
 

@@ -7,7 +7,9 @@
 \alias{Sequence}
 
 \alias{subseq}
+\alias{subseq<-}
 \alias{subseq,vector-method}
+\alias{subseq<-,vector-method}
 \alias{subseq,Sequence-method}
 \alias{rep,Sequence-method}
 \alias{[<-,Sequence-method}
@@ -141,6 +143,21 @@
       extract).
     }
     \item{}{
+      \code{subseq(x, start=NA, end=NA, width=NA) <- value}:
+      Replace the subsequence specified on the left (i.e. the subsequence
+      in \code{x} specified by \code{start}, \code{end} and \code{width})
+      by \code{value}. \code{value} must belong to \code{class(x)}, or a
+      subclass of \code{class(x)} (in this case, it is first downgraded
+      to an object of class \code{class(x)} with \code{value <- as(value,
+      class(x))}), or can be \code{NULL}.
+      This replacement method can modify the length of \code{x}, depending
+      on how the length of the left subsequence compares to the length of
+      \code{value}.
+      It can be used for inserting elements in \code{x} (specify an empty
+      left subsequence for this) or deleting elements from \code{x} (use
+      a \code{NULL} rigth value for this).
+    }
+    \item{}{
       \code{x[i, drop=TRUE]}:
       Return a new Sequence object made of the selected elements (subscript
       \code{i} must be an NA-free numeric vector specifying the positions of
@@ -178,6 +195,12 @@
 
   x1[length(x1):1]
   x1[length(x1):1, drop=FALSE]
+
+  x3 <- LETTERS
+  subseq(x3, 8, 11) <- x3[11:8]  # swap 8<->11 and 9<->10 elements
+  subseq(x3, start=1, width=0) <- c("xx", "yyy")  # insert 2 elements at the beginning
+  subseq(x3, end=-1, width=0) <- letters[1:3]  # insert 3 elements at the end
+  subseq(x3, end=-4, width=5) <- NULL  # remove 5 elements before the just added ones
 }
 
 \keyword{methods}

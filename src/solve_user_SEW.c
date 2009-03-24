@@ -4,22 +4,15 @@
  ****************************************************************************/
 #include "IRanges.h"
 
-static int keep_nonpositive_coord;
+static int translate_negative_coord0;
 static int nonnarrowing_is_OK;
 static char errmsg_buf[200];
 
-static int translate_nonpositive_startorend(int refwidth, int *startorend)
+static int translate_negative_startorend(int refwidth, int startorend)
 {
-	if (*startorend > 0 || keep_nonpositive_coord)
-		return 0;
-	if (*startorend == 0) {
-		snprintf(errmsg_buf, sizeof(errmsg_buf),
-		         "0s are not allowed in the supplied start/end "
-			 "when 'translate.nonpositive.coord' is TRUE");
-		return -1;
-	}
-	*startorend += refwidth + 1;
-	return 0;
+	if (startorend < 0)
+		startorend += refwidth + 1;
+	return startorend;
 }
 
 static int check_start(int refwidth, int start, const char *what)
@@ -69,14 +62,14 @@ static int solve_user_SEW_row(int refwidth, int start, int end, int width,
 		return -1;
 	}
 	if (start != NA_INTEGER) {
-		if (translate_nonpositive_startorend(refwidth, &start) != 0)
-			return -1;
+		if (translate_negative_coord0)
+			start = translate_negative_startorend(refwidth, start);
 		if (check_start(refwidth, start, "supplied") != 0)
 			return -1;
 	}
 	if (end != NA_INTEGER) {
-		if (translate_nonpositive_startorend(refwidth, &end) != 0)
-			return -1;
+		if (translate_negative_coord0)
+			end = translate_negative_startorend(refwidth, end);
 		if (check_end(refwidth, end, "supplied") != 0)
 			return -1;
 	}
@@ -123,12 +116,12 @@ static int solve_user_SEW_row(int refwidth, int start, int end, int width,
  * --- .Call ENTRY POINT ---
  */
 SEXP solve_user_SEW(SEXP refwidths, SEXP start, SEXP end, SEXP width,
-		SEXP translate_nonpositive_coord, SEXP allow_nonnarrowing)
+		SEXP translate_negative_coord, SEXP allow_nonnarrowing)
 {
 	SEXP ans, ans_start, ans_width;
 	int ans_length, i0, i1, i2, i3;
 
-	keep_nonpositive_coord = !LOGICAL(translate_nonpositive_coord)[0];
+	translate_negative_coord0 = LOGICAL(translate_negative_coord)[0];
 	nonnarrowing_is_OK = LOGICAL(allow_nonnarrowing)[0];
 	ans_length = LENGTH(refwidths);
 	PROTECT(ans_start = NEW_INTEGER(ans_length));

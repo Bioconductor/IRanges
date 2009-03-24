@@ -7,7 +7,7 @@
 ###
 
 solveUserSEW <- function(refwidths, start=NA, end=NA, width=NA,
-                         translate.nonpositive.coord=TRUE,
+                         translate.negative.coord=TRUE,
                          allow.nonnarrowing=FALSE)
 {
     if (!is.numeric(refwidths))
@@ -35,13 +35,13 @@ solveUserSEW <- function(refwidths, start=NA, end=NA, width=NA,
         if (min123 == 0)
             stop("'start', 'end' or 'width' is empty but 'refwidths' is not")
     }
-    if (!isTRUEorFALSE(translate.nonpositive.coord))
-        stop("'translate.nonpositive.coord' must be TRUE or FALSE")
+    if (!isTRUEorFALSE(translate.negative.coord))
+        stop("'translate.negative.coord' must be TRUE or FALSE")
     if (!isTRUEorFALSE(allow.nonnarrowing))
         stop("'allow.nonnarrowing' must be TRUE or FALSE")
     .Call("solve_user_SEW",
           refwidths, start, end, width,
-          translate.nonpositive.coord, allow.nonnarrowing,
+          translate.negative.coord, allow.nonnarrowing,
           PACKAGE="IRanges")
 }
 

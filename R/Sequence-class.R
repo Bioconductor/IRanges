@@ -13,6 +13,11 @@ setGeneric("subseq", signature="x",
     function(x, start=NA, end=NA, width=NA) standardGeneric("subseq")
 )
 
+## Replace a linear subsequence.
+setGeneric("subseq<-", signature="x",
+    function(x, start=NA, end=NA, width=NA, value) standardGeneric("subseq<-")
+)
+
 ### Returns an IRanges instance of length 1.
 ### Not exported.
 solveSubseqSEW <- function(seq_length, start, end, width)
@@ -31,6 +36,22 @@ setMethod("subseq", "vector",
         solved_SEW <- solveSubseqSEW(length(x), start, end, width)
         .Call("vector_subseq", x, start(solved_SEW), width(solved_SEW),
               PACKAGE="IRanges")
+    }
+)
+
+setReplaceMethod("subseq", "vector",
+    function(x, start=NA, end=NA, width=NA, value)
+    {
+        solved_SEW <- solveSubseqSEW(length(x), start, end, width)
+        if (!is.null(value)) {
+            if (!is(value, class(x)))
+                stop("'value' must be a ", class(x), " vector or NULL")
+            if (class(value) != class(x))
+                value <- as(value, class(x))
+        }
+        c(subseq(x, end=start(solved_SEW)-1L),
+          value,
+          subseq(x, start=end(solved_SEW)+1L))
     }
 )
 
