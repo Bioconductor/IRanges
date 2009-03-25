@@ -42,8 +42,10 @@ setMethod("as.numeric", "XSequence",
 ### Not exported.
 toNumSnippet <- function(x, max.width)
 {
-    if (length(x) == 0)
-        return("")
+    if (length(x) <= 2L)
+        return(paste(format(as.numeric(x)), collapse=" "))
+    if (max.width < 0L)
+        max.width <- 0L
     ## Elt width and nb of elt to display if they were all 0.
     elt_width0 <- 1L
     nelt_to_display0 <- min(length(x), (max.width+1L) %/% (elt_width0+1L))
