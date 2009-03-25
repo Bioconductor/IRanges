@@ -10,7 +10,7 @@
 \alias{subseq<-}
 \alias{subseq,vector-method}
 \alias{subseq,Sequence-method}
-\alias{subseq<-,Sequence-method}
+\alias{subseq<-,ANY-method}
 \alias{rep,Sequence-method}
 \alias{[<-,Sequence-method}
 \alias{!=,Sequence,Sequence-method}
