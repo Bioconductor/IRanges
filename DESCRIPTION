@@ -15,6 +15,10 @@ Depends: R (>= 2.8.0), methods, stats
 Imports: methods, stats
 Suggests: RUnit
 License: Artistic-2.0
+ExtraLicenses: The following files in the 'src' directory are licensed for all
+  use by Jim Kent, in a manner compatible with the Artistic 2.0 license:
+  common.c/h, memalloc.c/h, localmem.c/h, hash.c/h, errabort.c/h, rbTree.c/h,
+  dlist.c/h, errCatch.h 
 Collate: validity-utils.R
 	utils.R
 	ListLike-class.R
