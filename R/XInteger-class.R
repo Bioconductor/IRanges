@@ -37,22 +37,25 @@ XInteger <- function(length=0L, val=NULL)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion
+### Coercion.
 ###
 
-setAs("integer", "XSequence", function(from) {
-  as(from, "XInteger")
-})
+setAs("integer", "XSequence",
+    function(from) as(from, "XInteger")
+)
 
-setAs("integer", "XInteger", function(from) {
-  XInteger(length(from), val = from)
-})
+setAs("integer", "XInteger",
+    function(from) XInteger(length(from), val=from)
+)
 
 setMethod("as.integer", "XInteger",
-    function(x) IntegerPtr.read(x@xdata, x@offset + 1L, x@offset + x@length))
+    function(x) IntegerPtr.read(x@xdata, x@offset + 1L, x@offset + x@length)
+)
 
 setMethod("as.vector", c("XInteger", "missing"),
-          function(x, mode) as.integer(x))
+    function(x, mode) as.integer(x)
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
@@ -80,38 +83,6 @@ setMethod("[", "XInteger",
         x@offset <- 0L
         x@length <- length(xdata)
         x
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "show" method.
-###
-
-toNumSnippet <- function(x, width = getOption("width"))
-{
-    width <- max(0, width - 4)
-    element_length <- format.info(x[seq_len(min(length(x), width %/% 2))])[1] + 1
-    number_of_elements <- min(length(x), width %/% element_length)
-    if (number_of_elements == length(x))
-        ending <- ""
-    else
-        ending <- " ..."
-    paste(paste(format(x[seq_len(number_of_elements)]), collapse = " "), ending, sep = "")
-}
-
-setMethod("show", "XInteger",
-    function(object)
-    {
-        lo <- length(object)
-        cat("  ", lo, "-integer \"", class(object), "\" instance\n", sep="")
-        cat(" [1] ")
-        cat(toNumSnippet(object, getOption("width") - 4))
-        cat("\n")
-        ## What is correct here? The documentation (?show) says that 'show'
-        ## should return an invisible 'NULL' but, on the other hand, the 'show'
-        ## method for intergers returns its 'object' argument...
-        invisible(object)
     }
 )
 

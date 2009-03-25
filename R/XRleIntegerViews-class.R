@@ -116,7 +116,7 @@ setMethod("show", "XRleIntegerViews",
         subject <- subject(object)
         lsub <- length(subject)
         cat("  Views on a ", lsub, "-integer ", class(subject), " subject", sep="")
-        cat("\nsubject:", toNumSnippet(subject))
+        cat("\nsubject: ", toNumSnippet(subject, getOption("width")-9), sep="")
         XRleIntegerViews.show_vframe(object)
     }
 )

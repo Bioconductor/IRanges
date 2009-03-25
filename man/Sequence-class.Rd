@@ -22,6 +22,8 @@
 
 \alias{length,XSequence-method}
 \alias{subseq,XSequence-method}
+\alias{as.numeric,XSequence-method}
+\alias{show,XSequence-method}
 
 \alias{coerce,integer,XSequence-method}
 \alias{coerce,numeric,XSequence-method}
@@ -30,6 +32,10 @@
 \alias{class:XRaw}
 \alias{XRaw-class}
 \alias{XRaw}
+
+\alias{as.integer,XRaw-method}
+\alias{[,XRaw-method}
+\alias{c,XRaw-method}
 
 % XInteger class, functions and methods:
 \alias{class:XInteger}
@@ -40,7 +46,6 @@
 \alias{as.vector,XInteger,missing-method}
 \alias{coerce,integer,XInteger-method}
 \alias{[,XInteger-method}
-\alias{show,XInteger-method}
 \alias{==,XInteger,XInteger-method}
 
 % XNumeric class, functions and methods:
@@ -171,6 +176,19 @@
   }
 }
 
+\section{Combining}{
+  In the code snippets below, \code{x} is a Sequence object.
+
+  \describe{
+    \item{}{
+      \code{c(x, ...)}:
+      Combine \code{x} and the Sequence objects in \code{...} together.
+      The result is returned as a Sequence object.
+      NOTE: Only works for XRaw objects for now.
+    }
+  }
+}
+
 \seealso{
   \link{Rle-class},
   \link{Views-class},
@@ -201,6 +219,12 @@
   subseq(x3, start=1, width=0) <- c("xx", "yyy")  # insert 2 elements at the beginning
   subseq(x3, end=-1, width=0) <- letters[1:3]  # insert 3 elements at the end
   subseq(x3, end=-4, width=5) <- NULL  # remove 5 elements before the just added ones
+
+  x4 <- XRaw(4)
+  x4
+  x5 <- XRaw(5)
+  x5
+  c(x4, x5, NULL, x5)  # NULLs are ignored
 }
 
 \keyword{methods}

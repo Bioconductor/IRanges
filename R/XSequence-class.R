@@ -33,3 +33,48 @@ setMethod("subseq", "XSequence",
     }
 )
 
+### Works as long as as.integer() works on 'x'.
+setMethod("as.numeric", "XSequence",
+    function(x) as.numeric(as.integer(x))
+)
+
+### Works as long as subseq() and as.numeric() work on 'x'.
+### Not exported.
+toNumSnippet <- function(x, max.width)
+{
+    if (length(x) == 0)
+        return("")
+    ## Elt width and nb of elt to display if they were all 0.
+    elt_width0 <- 1L
+    nelt_to_display0 <- min(length(x), (max.width+1L) %/% (elt_width0+1L))
+    ## Effective elt width and nb of elt to display
+    elt_width <- format.info(c(
+                   as.numeric(subseq(x, end=nelt_to_display0 %/% 2L)),
+                   as.numeric(subseq(x, start=-(nelt_to_display0 %/% 2L)))
+                 ))[1]
+    nelt_to_display <- min(length(x), (max.width+1L) %/% (elt_width+1L))
+    if (nelt_to_display == length(x))
+        return(paste(format(as.numeric(x), width=elt_width), collapse=" "))
+    head <- format(as.numeric(subseq(x, end=(nelt_to_display+1L) %/% 2L)), width=elt_width)
+    tail <- format(as.numeric(subseq(x, start=-(nelt_to_display %/% 2L))), width=elt_width)
+    ans <- paste(paste(head, collapse=" "), "...", paste(tail, collapse=" "))
+    if (nchar(ans) <= max.width || length(head) == 0L)
+        return(ans)
+    head <- head[-length(head)]
+    paste(paste(head, collapse=" "), "...", paste(tail, collapse=" "))
+}
+
+setMethod("show", "XSequence",
+    function(object)
+    {
+        lo <- length(object)
+        cat("  ", class(object), " instance of length ", lo, "\n", sep="")
+        if (lo != 0L)
+            cat(" [1] ", toNumSnippet(object, getOption("width")-5), "\n", sep="")
+        ## What is correct here? The documentation (?show) says that 'show'
+        ## should return an invisible 'NULL' but, on the other hand, the 'show'
+        ## method for intergers returns its 'object' argument...
+        invisible(object)
+    }
+)
+

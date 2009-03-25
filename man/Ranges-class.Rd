@@ -170,7 +170,7 @@
     }
     \item{}{
       \code{c(x, ...)}:
-      Concatenate \code{x} and the Ranges objects in \code{...} together.
+      Combine \code{x} and the Ranges objects in \code{...} together.
       The result is returned as an \link{IRanges} object.
     }
     \item{}{

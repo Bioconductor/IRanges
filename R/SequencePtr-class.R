@@ -27,6 +27,16 @@ setMethod("length", "SequencePtr",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion.
+###
+
+### Works as long as as.integer() works on 'x'.
+setMethod("as.numeric", "SequencePtr",
+    function(x) as.numeric(as.integer(x))
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Comparison.
 ###
 ### Be careful with the semantic of the "==" operator: the addresses are

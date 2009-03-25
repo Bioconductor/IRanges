@@ -36,6 +36,7 @@
 \alias{SequencePtr-class}
 \alias{SequencePtr}
 
+\alias{as.numeric,SequencePtr-method}
 \alias{show,externalptr-method}
 \alias{length,SequencePtr-method}
 \alias{==,SequencePtr,SequencePtr-method}

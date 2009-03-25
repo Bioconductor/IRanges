@@ -109,9 +109,8 @@ setMethod("show", "XRleInteger",
     {
         lo <- length(object)
         cat("  ", lo, "-integer \"", class(object), "\" instance\n", sep="")
-        cat(" [1] ")
-        cat(toNumSnippet(object, getOption("width") - 4))
-        cat("\n")
+        if (lo != 0L)
+            cat(" [1] ", toNumSnippet(object, getOption("width")-5), "\n", sep="")
         invisible(object)
     }
 )

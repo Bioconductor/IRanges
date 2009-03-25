@@ -51,7 +51,7 @@ export(
     RawPtr.compare,
     #IntegerPtr, IntegerPtr.read, IntegerPtr.write,
     #NumericPtr, NumericPtr.read, NumericPtr.write,
-    XInteger, XNumeric, XDataFrame,
+    XRaw, XInteger, XNumeric, XDataFrame,
     XRleInteger,
     newViews, successiveViews,
     updateTypedList,
