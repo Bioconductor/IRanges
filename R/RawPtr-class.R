@@ -20,8 +20,15 @@ setMethod("initialize", "RawPtr",
             stop("'length' must be a single non-negative integer")
         if (!is.integer(length))
             length <- as.integer(length)
-        if (!is.null(val) && !is.raw(val))
-            stop("'val' must be a raw vector")
+        if (!is.null(val) && !is.raw(val)) {
+            if (is.numeric(val)) {
+                val <- as.raw(val)
+            } else if (isSingleString(val)) {
+                val <- charToRaw(val)
+            } else {
+                stop("don't know how to turn 'val' into a raw vector")
+            }
+        }
         .Call("RawPtr_new", length, val, PACKAGE="IRanges")
     }
 )

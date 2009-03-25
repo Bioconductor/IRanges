@@ -9,8 +9,8 @@
 \alias{subseq}
 \alias{subseq<-}
 \alias{subseq,vector-method}
-\alias{subseq<-,vector-method}
 \alias{subseq,Sequence-method}
+\alias{subseq<-,Sequence-method}
 \alias{rep,Sequence-method}
 \alias{[<-,Sequence-method}
 \alias{!=,Sequence,Sequence-method}
@@ -123,6 +123,21 @@
   For information on the Rle class, type \code{help(Rle)}.
 }
 
+\section{Combining}{
+  In the code snippets below, \code{x} is a Sequence object.
+
+  \describe{
+    \item{}{
+      \code{c(x, ...)}:
+      Combine \code{x} and the Sequence objects in \code{...} together.
+      Any object in \code{...} must belong to the same class as \code{x},
+      or to one of its subclasses, or must be \code{NULL}.
+      The result is an object of the same class as \code{x}.
+      NOTE: Only works for XRaw (and derived) objects for now.
+    }
+  }
+}
+
 \section{Subsetting}{
   In the code snippets below, \code{x} is a Sequence object.
 
@@ -151,16 +166,18 @@
       \code{subseq(x, start=NA, end=NA, width=NA) <- value}:
       Replace the subsequence specified on the left (i.e. the subsequence
       in \code{x} specified by \code{start}, \code{end} and \code{width})
-      by \code{value}. \code{value} must belong to \code{class(x)}, or a
-      subclass of \code{class(x)} (in this case, it is first downgraded
-      to an object of class \code{class(x)} with \code{value <- as(value,
-      class(x))}), or can be \code{NULL}.
+      by \code{value}.
+      \code{value} must belong to the same class as \code{x}, or to one of
+      its subclasses, or must be \code{NULL}.
       This replacement method can modify the length of \code{x}, depending
       on how the length of the left subsequence compares to the length of
       \code{value}.
       It can be used for inserting elements in \code{x} (specify an empty
       left subsequence for this) or deleting elements from \code{x} (use
       a \code{NULL} rigth value for this).
+      Unlike the extraction method above, this replacement method always
+      copies the sequence data of \code{x} (even for XSequence objects).
+      NOTE: Only works for XRaw (and derived) objects for now.
     }
     \item{}{
       \code{x[i, drop=TRUE]}:
@@ -176,19 +193,6 @@
   }
 }
 
-\section{Combining}{
-  In the code snippets below, \code{x} is a Sequence object.
-
-  \describe{
-    \item{}{
-      \code{c(x, ...)}:
-      Combine \code{x} and the Sequence objects in \code{...} together.
-      The result is returned as a Sequence object.
-      NOTE: Only works for XRaw objects for now.
-    }
-  }
-}
-
 \seealso{
   \link{Rle-class},
   \link{Views-class},
@@ -197,34 +201,46 @@
 }
 
 \examples{
-  x1 <- XInteger(12, c(-1:10))
+  ## ---------------------------------------------------------------------
+  ## A. XRaw OBJECTS
+  ## ---------------------------------------------------------------------
+
+  x1 <- XRaw(4)  # values are not initialized
   x1
-  length(x1)
+  x2 <- XRaw(3, val=c(255, 255, 199))
+  x2
+  y <- c(x1, x2, NULL, x1)  # NULLs are ignored
+  y
+  subseq(y, start=-4)
+  subseq(y, start=-4) <- x2
+  y
+
+  ## ---------------------------------------------------------------------
+  ## B. XInteger OBJECTS
+  ## ---------------------------------------------------------------------
+
+  x3 <- XInteger(12, val=c(-1:10))
+  x3
+  length(x3)
 
   ## Subsetting
-  x2 <- XInteger(99999, sample(99, 99999, replace=TRUE) - 50)
-  x2
-  subseq(x2, start=10)
-  subseq(x2, start=-10)
-  subseq(x2, start=-20, end=-10)
-  subseq(x2, start=10, width=5)
-  subseq(x2, end=10, width=5)
-  subseq(x2, end=10, width=0)
-
-  x1[length(x1):1]
-  x1[length(x1):1, drop=FALSE]
-
-  x3 <- LETTERS
-  subseq(x3, 8, 11) <- x3[11:8]  # swap 8<->11 and 9<->10 elements
-  subseq(x3, start=1, width=0) <- c("xx", "yyy")  # insert 2 elements at the beginning
-  subseq(x3, end=-1, width=0) <- letters[1:3]  # insert 3 elements at the end
-  subseq(x3, end=-4, width=5) <- NULL  # remove 5 elements before the just added ones
-
-  x4 <- XRaw(4)
+  x4 <- XInteger(99999, val=sample(99, 99999, replace=TRUE) - 50)
   x4
-  x5 <- XRaw(5)
-  x5
-  c(x4, x5, NULL, x5)  # NULLs are ignored
+  subseq(x4, start=10)
+  subseq(x4, start=-10)
+  subseq(x4, start=-20, end=-10)
+  subseq(x4, start=10, width=5)
+  subseq(x4, end=10, width=5)
+  subseq(x4, end=10, width=0)
+
+  x3[length(x3):1]
+  x3[length(x3):1, drop=FALSE]
+
+  x5 <- LETTERS
+  subseq(x5, 8, 11) <- x5[11:8]  # swap 8<->11 and 9<->10 elements
+  subseq(x5, start=1, width=0) <- c("xx", "yyy")  # insert 2 elements at the beginning
+  subseq(x5, end=-1, width=0) <- letters[1:3]  # insert 3 elements at the end
+  subseq(x5, end=-4, width=5) <- NULL  # remove 5 elements before the just added ones
 }
 
 \keyword{methods}

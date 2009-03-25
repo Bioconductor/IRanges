@@ -66,16 +66,16 @@ setMethod("[", "XRaw",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining.
 ###
-### Take 1, 2 or more XRaw *objects* and return an XRaw *instance*.
-### Hence this is NOT an endomorphism.
+### Should work as an endomorphism (e.g. will return a DNAString instance if
+### 'x' is a DNAString instance).
 ###
 
 setMethod("c", "XRaw",
     function(x, ..., recursive=FALSE)
     {
         if (!all(sapply(list(...),
-                        function(arg) {is.null(arg) || is(arg, "XRaw")})))
-            stop("all arguments in '...' must be XRaw objects or NULLs")
+                        function(arg) {is.null(arg) || is(arg, class(x))})))
+            stop("all arguments in '...' must be ", class(x), " objects or NULLs")
         args <- list(x, ...)
         ans_length <- sum(sapply(args, length))
         ans_xdata <- RawPtr(ans_length)
@@ -92,7 +92,7 @@ setMethod("c", "XRaw",
                   PACKAGE="IRanges")
             dest_start <- dest_start + width
         }
-        new("XRaw", xdata=ans_xdata, length=ans_length)
+        new(class(x), xdata=ans_xdata, length=ans_length)
     }
 )
 

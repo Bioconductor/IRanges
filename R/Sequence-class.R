@@ -39,27 +39,27 @@ setMethod("subseq", "vector",
     }
 )
 
-setReplaceMethod("subseq", "vector",
-    function(x, start=NA, end=NA, width=NA, value)
-    {
-        solved_SEW <- solveSubseqSEW(length(x), start, end, width)
-        if (!is.null(value)) {
-            if (!is(value, class(x)))
-                stop("'value' must be a ", class(x), " vector or NULL")
-            if (class(value) != class(x))
-                value <- as(value, class(x))
-        }
-        c(subseq(x, end=start(solved_SEW)-1L),
-          value,
-          subseq(x, start=end(solved_SEW)+1L))
-    }
-)
-
 setMethod("subseq", "Sequence",
     function(x, start=NA, end=NA, width=NA)
     {
         solved_SEW <- solveSubseqSEW(length(x), start, end, width)
         x[start(solved_SEW) + seq_len(width(solved_SEW)) - 1L]
+    }
+)
+
+### Works as long as subseq() works on 'x' and "c" works on objects of the
+### same class as 'x'.
+setReplaceMethod("subseq", "ANY",
+    function(x, start=NA, end=NA, width=NA, value)
+    {
+        solved_SEW <- solveSubseqSEW(length(x), start, end, width)
+        if (!is.null(value)) {
+            if (!is(value, class(x)))
+                stop("'value' must be a ", class(x), " object or NULL")
+        }
+        c(subseq(x, end=start(solved_SEW)-1L),
+          value,
+          subseq(x, start=end(solved_SEW)+1L))
     }
 )
 
