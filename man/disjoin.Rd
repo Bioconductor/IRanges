@@ -47,6 +47,11 @@
 }
 
 \examples{
+  ir <- IRanges(c(1, 1, 4, 10), c(6, 3, 8, 10))
+  disjoin(ir) # IRanges(c(1, 4, 7, 10), c(3, 6, 8, 10))
+
+  disjointBins(IRanges(1, 5)) # 1L
+  disjointBins(IRanges(c(3, 1, 10), c(5, 12, 13))) # c(2L, 1L, 2L)
 }
 
 \keyword{utilities}
