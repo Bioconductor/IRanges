@@ -6,7 +6,7 @@
 ## must be defined after this, since it is itself an AnnotatedList. As
 ## long as NULL is allowed, infinite recursion is avoided.
 setClass("AnnotatedList",
-         representation(annotation = "characterORNULL",
+         representation(annotation = "list",
                         elementMetadata = "XDataFrameORNULL"),
          contains = "TypedList")
 
@@ -14,15 +14,19 @@ setClass("AnnotatedList",
 ### Accessor methods.
 ###
 
-setGeneric("annotation", function(x, ...) standardGeneric("annotation"))
-setMethod("annotation", "AnnotatedList", function(x) x@annotation)
+setGeneric("metadata", function(x, ...) standardGeneric("metadata"))
+setMethod("metadata", "AnnotatedList", function(x) {
+  if (is.null(x@annotation) || is.character(x@annotation))
+    list(annotation = x@annotation)
+  else x@annotation
+})
 
-setGeneric("annotation<-",
-           function(x, ..., value) standardGeneric("annotation<-"))
-setReplaceMethod("annotation", c("AnnotatedList", "characterORNULL"),
+setGeneric("metadata<-",
+           function(x, ..., value) standardGeneric("metadata<-"))
+setReplaceMethod("metadata", c("AnnotatedList", "list"),
           function(x, value) {
-            if (!is.null(value) && !isSingleString(value))
-              stop("annotation 'value' must be a single string or NULL")
+            if (!length(value))
+              names(value) <- NULL # instead of character()
             x@annotation <- value
             x
           })
@@ -62,16 +66,8 @@ setReplaceMethod("elementMetadata", c("AnnotatedList", "XDataFrameORNULL"),
   else NULL
 }
 
-.valid.AnnotatedList.annotation <- function(x) {
-  ann <- annotation(x)
-  if (!is.null(ann) && !isSingleString(ann))
-    "annotation(x) must be NULL or a single string"
-  else NULL
-}
-
 .valid.AnnotatedList <- function(x) {
-  c(.valid.AnnotatedList.elementMetadata(x),
-    .valid.AnnotatedList.annotation(x))
+  .valid.AnnotatedList.elementMetadata(x)
 }
 
 setValidity2("AnnotatedList", .valid.AnnotatedList)
@@ -80,14 +76,14 @@ setValidity2("AnnotatedList", .valid.AnnotatedList)
 ### Constructor.
 ###
 
-AnnotatedList <- function(elements = list(), annotation = NULL,
+AnnotatedList <- function(elements = list(), metadata = list(),
                           elementMetadata = NULL)
 {
-  if (!is.null(annotation) && !isSingleString(annotation))
-    stop("'annotation' must be a single string or NULL")
+  if (!is.list(metadata))
+    stop("'metadata' must be a list")
   if (!is.null(elementMetadata) && length(elements) != nrow(elementMetadata))
     stop("the number of rows in 'elementMetadata' ",
          "(if non-NULL) must match the number of list 'elements'")
-  new("AnnotatedList", elements = elements, annotation = annotation,
+  new("AnnotatedList", elements = elements, annotation = metadata,
       elementMetadata = elementMetadata)
 }

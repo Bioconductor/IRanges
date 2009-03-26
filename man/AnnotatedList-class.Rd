@@ -3,12 +3,12 @@
 \alias{AnnotatedList-class}
 
 % accessors
-\alias{annotation}
-\alias{annotation,AnnotatedList-method}
+\alias{metadata}
+\alias{metadata,AnnotatedList-method}
 \alias{elementMetadata}
 \alias{elementMetadata,AnnotatedList-method}
-\alias{annotation<-}
-\alias{annotation<-,AnnotatedList,characterORNULL-method}
+\alias{metadata<-}
+\alias{metadata<-,AnnotatedList,list-method}
 \alias{elementMetadata<-}
 \alias{elementMetadata<-,AnnotatedList,XDataFrameORNULL-method}
 
@@ -16,8 +16,8 @@
 
 \title{Annotated Lists}
 \description{The class \code{AnnotatedList} extends
-  \code{\linkS4class{TypedList}} to contain two optional metadata elements: an
-  annotation string, referring to a separate metadata resource, and a
+  \code{\linkS4class{TypedList}} to contain two optional metadata
+  elements: a list with arbitrary annotations, and a
   data frame with local metadata on each element.}
 
 \details{
@@ -35,10 +35,10 @@
   This is implemented by adding two optional components on top of the
   underlying \code{TypedList}:
   \describe{
-    \item{annotation}{
-      A single string (or \code{NULL}) referring to
-      external annotation resources. For example, the name of a genome
-      or a microarray chip.
+    \item{metadata}{
+      A list, possibly empty, containing arbitrary annotations.
+      For example, the name of the genome might be stored in a character
+      vector as an element named "genome".
     }
     \item{elementMetadata}{
       A data frame of class \code{\linkS4class{XDataFrame}} (or
@@ -54,9 +54,9 @@
   In the following code snippets, \code{x} is a \code{TypedList} object.
   
   \describe{
-    \item{}{\code{annotation(x)}, \code{annotation(x) <- value}: Get or set the
-      the single string referring to a separate metadata
-      resource. Optional, may be \code{NULL}. 
+    \item{}{\code{metadata(x)}, \code{metadata(x) <- value}: Get or set the
+      list holding arbitary R objects as annotations. May be, and often
+      is, empty.
     }
     \item{}{\code{elementMetadata(x), elementMetadata(x) <- value}:
       Get or set the
@@ -69,11 +69,11 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{AnnotatedList(elements = list(), annotation = NULL,
+    \item{}{\code{AnnotatedList(elements = list(), metadata = NULL,
         elementMetadata = NULL)}:
       Constructs an instance of an \code{AnnotatedList} containing the
       elements in the ordinary list \code{elements}. The parameters
-      \code{annotation} and \code{elementMetadata} correspond to the
+      \code{metadata} and \code{elementMetadata} correspond to the
       components described above.
     }
   }
@@ -90,9 +90,9 @@
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   collection <- RangesList(range1, range2)
 
-  ## access 'annotation' slot
-  annotation(collection) <- "hg18"
-  annotation(collection)
+  ## access 'metadata' component
+  metadata(collection)$genome <- "hg18"
+  metadata(collection)
 
   ## set some element metadata
   elementMetadata(collection) <- XDataFrame(chrom = c("chr1", "chr2"))

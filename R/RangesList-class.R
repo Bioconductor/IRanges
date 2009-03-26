@@ -33,14 +33,19 @@ setMethod("space", "RangesList",
           })
 
 setGeneric("universe", function(x) standardGeneric("universe"))
-setMethod("universe", "RangesList", function(x) x@annotation)
+setMethod("universe", "RangesList", function(x) {
+  ### FIXME: for compatibility with older versions, eventually emit warning
+  if (is.null(x@annotation) || is.character(x@annotation))
+    x@annotation
+  else metadata(x)$universe
+})
 
 setGeneric("universe<-", function(x, value) standardGeneric("universe<-"))
 setReplaceMethod("universe", "RangesList",
                  function(x, value) {
                    if (!is.null(value) && !isSingleString(value))
                      stop("'value' must be a single string or NULL")
-                   x@annotation <- value
+                   metadata(x)$universe <- value
                    x
                  })
 
@@ -55,8 +60,8 @@ RangesList <- function(..., universe = NULL)
   ranges <- list(...)
   if (!all(sapply(ranges, is, "Ranges")))
     stop("all elements in '...' must be Ranges objects")
-  ans <- new("RangesList", elements = ranges, compress = FALSE,
-             annotation = universe)
+  ans <- new("RangesList", elements = ranges, compress = FALSE)
+  universe(ans) <- universe
   ans
 }
 
@@ -67,8 +72,8 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
   ranges <- list(...)
   if (!all(sapply(ranges, is, "IRanges")))
     stop("all elements in '...' must be IRanges objects")
-  ans <- new("IRangesList", elements = ranges, compress = compress,
-             annotation = universe)
+  ans <- new("IRangesList", elements = ranges, compress = compress)
+  universe(ans) <- universe
   ans
 }
 

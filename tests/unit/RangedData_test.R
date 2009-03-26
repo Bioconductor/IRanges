@@ -184,7 +184,8 @@ test_RangedData_subset <- function() {
                          space = c(1,1,1,2))
   checkIdenticalRD(rd[c(1:2,1,3),1], repeated)
 }
-
+library(IRanges)
+library(RUnit)
 test_RangedData_combine <- function() {
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   filter <- c(1L, 0L, 1L)
