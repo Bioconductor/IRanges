@@ -16,6 +16,7 @@ static int cmpintp(const void *p1, const void *p2)
 void _sort_int_array(int *x, int x_nelt)
 {
 	qsort(x, x_nelt, sizeof(int), cmpintp);
+	return;
 }
 
 /*
