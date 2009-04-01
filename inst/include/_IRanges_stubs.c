@@ -12,7 +12,7 @@ retT stubname Targs \
 
 /*
  * Using the above macro when retT (the returned type) is void will make Sun
- * Studio 12 C compilers unhappy. So we need to use the following macro to
+ * Studio 12 C compiler unhappy. So we need to use the following macro to
  * handle that case.
  */
 #define DEFINE_NOVALUE_CCALLABLE_STUB(stubname, Targs, args) \
