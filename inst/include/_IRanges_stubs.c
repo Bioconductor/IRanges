@@ -10,6 +10,11 @@ retT stubname Targs \
 	return fun args; \
 }
 
+/*
+ * Using the above macro when retT (the returned type) is void will make Sun
+ * Studio 12 C compilers unhappy. So we need to use the following macro to
+ * handle that case.
+ */
 #define DEFINE_NOVALUE_CCALLABLE_STUB(stubname, Targs, args) \
 typedef void(*__ ## stubname ## _funtype__)Targs; \
 void stubname Targs \
