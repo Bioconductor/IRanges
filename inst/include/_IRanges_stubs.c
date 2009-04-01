@@ -1,12 +1,24 @@
 #include "IRanges_interface.h"
 
 #define DEFINE_CCALLABLE_STUB(retT, stubname, Targs, args) \
+typedef retT(*__ ## stubname ## _funtype__)Targs; \
 retT stubname Targs \
 { \
-	static retT (*fun)Targs = NULL; \
+	static __ ## stubname ## _funtype__ fun = NULL; \
 	if (fun == NULL) \
-		fun = (retT (*)Targs) R_GetCCallable("IRanges", "_" #stubname); \
+		fun = (__ ## stubname ## _funtype__) R_GetCCallable("IRanges", "_" #stubname); \
 	return fun args; \
+}
+
+#define DEFINE_NOVALUE_CCALLABLE_STUB(stubname, Targs, args) \
+typedef void(*__ ## stubname ## _funtype__)Targs; \
+void stubname Targs \
+{ \
+	static __ ## stubname ## _funtype__ fun = NULL; \
+	if (fun == NULL) \
+		fun = (__ ## stubname ## _funtype__) R_GetCCallable("IRanges", "_" #stubname); \
+	fun args; \
+	return; \
 }
 
 
@@ -14,180 +26,180 @@ retT stubname Targs \
  * Stubs for callables defined in sort_utils.c
  */
 
-DEFINE_CCALLABLE_STUB(void, sort_int_array,
+DEFINE_NOVALUE_CCALLABLE_STUB(sort_int_array,
 	(int *x, int x_nelt),
 	(     x,     x_nelt)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, get_int_array_order,
+DEFINE_NOVALUE_CCALLABLE_STUB(get_int_array_order,
 	(const int *x, int x_nelt, int *order),
 	(           x,     x_nelt,      order)
-);
+)
 
 
 /*
  * Stubs for callables defined in AEbufs.c
  */
 
-DEFINE_CCALLABLE_STUB(void, IntAE_set_val,
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_set_val,
 	(const IntAE *int_ae, int val),
 	(             int_ae,     val)
-);
+)
 
 DEFINE_CCALLABLE_STUB(IntAE, new_IntAE,
 	(int buflength, int nelt, int val),
 	(    buflength,     nelt,     val)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IntAE_insert_at,
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_insert_at,
 	(IntAE *int_ae, int at, int val),
 	(       int_ae,     at,     val)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IntAE_append,
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_append,
 	(IntAE *int_ae, const int *newvals, int nnewval),
 	(       int_ae,            newvals,     nnewval)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IntAE_delete_at,
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_delete_at,
 	(IntAE *int_ae, int at),
 	(       int_ae,     at)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IntAE_sum_val,
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_sum_val,
 	(const IntAE *int_ae, int val),
 	(             int_ae,     val)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IntAE_append_shifted_vals,
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_append_shifted_vals,
 	(IntAE *int_ae, const int *newvals, int nnewval, int shift),
 	(       int_ae,            newvals,     nnewval,     shift)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IntAE_sum_IntAE,
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_sum_IntAE,
 	(const IntAE *int_ae1, const IntAE *int_ae2),
 	(             int_ae1,              int_ae2)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IntAE_qsort,
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_qsort,
 	(IntAE *int_ae),
 	(       int_ae)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IntAE_delete_adjdups,
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_delete_adjdups,
 	(IntAE *int_ae),
 	(       int_ae)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, IntAE_asINTEGER,
 	(const IntAE *int_ae),
 	(             int_ae)
-);
+)
 
 DEFINE_CCALLABLE_STUB(IntAE, INTEGER_asIntAE,
 	(SEXP x),
 	(     x)
-);
+)
 
 DEFINE_CCALLABLE_STUB(IntAE, CHARACTER_asIntAE,
 	(SEXP x, int keyshift),
 	(     x,     keyshift)
-);
+)
 
 DEFINE_CCALLABLE_STUB(IntAEAE, new_IntAEAE,
 	(int buflength, int nelt),
 	(    buflength,     nelt)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IntAEAE_insert_at,
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAEAE_insert_at,
 	(IntAEAE *int_aeae, int at, const IntAE *int_ae),
 	(         int_aeae,     at,              int_ae)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IntAEAE_eltwise_append,
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAEAE_eltwise_append,
 	(const IntAEAE *int_aeae1, const IntAEAE *int_aeae2),
 	(               int_aeae1,                int_aeae2)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IntAEAE_sum_val,
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAEAE_sum_val,
 	(const IntAEAE *int_aeae, int val),
 	(               int_aeae,     val)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, IntAEAE_asLIST,
 	(const IntAEAE *int_aeae, int mode),
 	(               int_aeae,     mode)
-);
+)
 
 DEFINE_CCALLABLE_STUB(IntAEAE, LIST_asIntAEAE,
 	(SEXP x),
 	(     x)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, IntAEAE_toEnvir,
 	(const IntAEAE *int_aeae, SEXP envir, int keyshift),
 	(               int_aeae,      envir,     keyshift)
-);
+)
 
 DEFINE_CCALLABLE_STUB(RangeAE, new_RangeAE,
 	(int buflength, int nelt),
 	(    buflength,     nelt)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, RangeAE_insert_at,
+DEFINE_NOVALUE_CCALLABLE_STUB(RangeAE_insert_at,
 	(RangeAE *range_ae, int at, int start, int width),
 	(         range_ae,     at,     start,     width)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, RangeAE_asIRanges,
 	(const RangeAE *range_ae),
 	(               range_ae)
-);
+)
 
 DEFINE_CCALLABLE_STUB(CharAE, new_CharAE,
 	(int buflength),
 	(    buflength)
-);
+)
 
 DEFINE_CCALLABLE_STUB(CharAE, new_CharAE_from_string,
 	(const char *string),
 	(            string)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, CharAE_insert_at,
+DEFINE_NOVALUE_CCALLABLE_STUB(CharAE_insert_at,
 	(CharAE *char_ae, int at, char c),
 	(        char_ae,     at,      c)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, append_string_to_CharAE,
+DEFINE_NOVALUE_CCALLABLE_STUB(append_string_to_CharAE,
 	(CharAE *char_ae, const char *string),
 	(        char_ae,             string)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, CharAE_asRAW,
 	(const CharAE *char_ae),
 	(              char_ae)
-);
+)
 
 DEFINE_CCALLABLE_STUB(CharAEAE, new_CharAEAE,
 	(int buflength, int nelt),
 	(    buflength,     nelt)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, CharAEAE_insert_at,
+DEFINE_NOVALUE_CCALLABLE_STUB(CharAEAE_insert_at,
 	(CharAEAE *char_aeae, int at, const CharAE *char_ae),
 	(          char_aeae,     at,               char_ae)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, append_string_to_CharAEAE,
+DEFINE_NOVALUE_CCALLABLE_STUB(append_string_to_CharAEAE,
 	(CharAEAE *char_aeae, const char *string),
 	(          char_aeae,             string)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, CharAEAE_asCHARACTER,
 	(const CharAEAE *char_aeae),
 	(                char_aeae)
-);
+)
 
 
 /*
@@ -197,62 +209,62 @@ DEFINE_CCALLABLE_STUB(SEXP, CharAEAE_asCHARACTER,
 DEFINE_CCALLABLE_STUB(int, IRanges_memcmp,
 	(const char *a, int ia, const char *b, int ib, int n, size_t size),
 	(            a,     ia,             b,     ib,     n,        size)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_from_i1i2,
+DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_memcpy_from_i1i2,
 	(int i1, int i2, char *dest, size_t dest_nelt, const char *src, size_t src_nelt, size_t size),
 	(    i1,     i2,       dest,        dest_nelt,             src,        src_nelt,        size)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_from_subset,
+DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_memcpy_from_subset,
 	(const int *subset, int n, char *dest, size_t dest_nelt, const char *src, size_t src_nelt, size_t size),
 	(           subset,     n,       dest,        dest_nelt,             src,        src_nelt,        size)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_to_i1i2,
+DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_memcpy_to_i1i2,
 	(int i1, int i2, char *dest, size_t dest_nelt, const char *src, size_t src_nelt, size_t size),
 	(    i1,     i2,       dest,        dest_nelt,             src,        src_nelt,        size)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_to_subset,
+DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_memcpy_to_subset,
 	(const int *subset, int n, char *dest, size_t dest_nelt, const char *src, size_t src_nelt, size_t size),
 	(           subset,     n,       dest,        dest_nelt,             src,        src_nelt,        size)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IRanges_charcpy_from_i1i2_with_lkup,
+DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_charcpy_from_i1i2_with_lkup,
 	(int i1, int i2, char *dest, int dest_length, const char *src, int src_length, const int *lkup, int lkup_length),
 	(    i1,     i2,       dest,     dest_length,             src,     src_length,            lkup,     lkup_length)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IRanges_charcpy_from_subset_with_lkup,
+DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_charcpy_from_subset_with_lkup,
 	(const int *subset, int n, char *dest, int dest_length, const char *src, int src_length, const int *lkup, int lkup_length),
 	(           subset,     n,       dest,     dest_length,             src,     src_length,            lkup,     lkup_length)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IRanges_charcpy_to_i1i2_with_lkup,
+DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_charcpy_to_i1i2_with_lkup,
 	(int i1, int i2, char *dest, int dest_length, const char *src, int src_length, const int *lkup, int lkup_length),
 	(    i1,     i2,       dest,     dest_length,             src,     src_length,            lkup,     lkup_length)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IRanges_charcpy_to_subset_with_lkup,
+DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_charcpy_to_subset_with_lkup,
 	(const int *subset, int n, char *dest, int dest_length, const char *src, int src_length, const int *lkup, int lkup_length),
 	(           subset,     n,       dest,     dest_length,             src,     src_length,            lkup,     lkup_length)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IRanges_reverse_memcpy_from_i1i2,
+DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_reverse_memcpy_from_i1i2,
 	(int i1, int i2, char *dest, size_t dest_nelt, const char *src, size_t src_nelt, size_t size),
 	(    i1,     i2,       dest,        dest_nelt,             src,        src_nelt,        size)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IRanges_reverse_charcpy_from_i1i2_with_lkup,
+DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_reverse_charcpy_from_i1i2_with_lkup,
 	(int i1, int i2, char *dest, int dest_length, const char *src, int src_length, const int *lkup, int lkup_length),
 	(    i1,     i2,       dest,     dest_length,             src,     src_length,            lkup,     lkup_length)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_from_i1i2_to_complex,
+DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_memcpy_from_i1i2_to_complex,
 	(int i1, int i2, Rcomplex *dest, int dest_length, const char *src, int src_length, const Rcomplex *lkup, int lkup_length),
 	(    i1,     i2,           dest,     dest_length,             src,     src_length,                 lkup,     lkup_length)
-);
+)
 
 
 /*
@@ -262,7 +274,7 @@ DEFINE_CCALLABLE_STUB(void, IRanges_memcpy_from_i1i2_to_complex,
 DEFINE_CCALLABLE_STUB(const char *, get_classname,
 	(SEXP x),
 	(     x)
-);
+)
 
 /*
  * Stubs for callables defined in IRanges_class.c
@@ -271,42 +283,42 @@ DEFINE_CCALLABLE_STUB(const char *, get_classname,
 DEFINE_CCALLABLE_STUB(SEXP, get_IRanges_start,
 	(SEXP x),
 	(     x)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, get_IRanges_width,
 	(SEXP x),
 	(     x)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, get_IRanges_names,
 	(SEXP x),
 	(     x)
-);
+)
 
 DEFINE_CCALLABLE_STUB(int, get_IRanges_length,
 	(SEXP x),
 	(     x)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, set_IRanges_names,
+DEFINE_NOVALUE_CCALLABLE_STUB(set_IRanges_names,
 	(SEXP x, SEXP names),
 	(     x,      names)
-);
+)
 
-DEFINE_CCALLABLE_STUB(void, copy_IRanges_slots,
+DEFINE_NOVALUE_CCALLABLE_STUB(copy_IRanges_slots,
 	(SEXP x, SEXP x0),
 	(     x,      x0)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, new_IRanges,
 	(const char *classname, SEXP start, SEXP width, SEXP names),
 	(            classname,      start,      width,      names)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,
 	(const char *classname, int length),
 	(            classname,     length)
-);
+)
 
 /*
  * Stubs for callables defined in IRangesList_class.c
@@ -315,7 +327,7 @@ DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,
 DEFINE_CCALLABLE_STUB(SEXP, get_IRangesList_elt,
 	(SEXP x, int at),
 	(     x,     at)
-);
+)
 
 /*
  * Stubs for callables defined in SequencePtr_class.c
@@ -324,17 +336,17 @@ DEFINE_CCALLABLE_STUB(SEXP, get_IRangesList_elt,
 DEFINE_CCALLABLE_STUB(SEXP, new_SequencePtr,
 	(const char *classname, SEXP tag),
 	(            classname,      tag)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, get_SequencePtr_tag,
 	(SEXP x),
 	(     x)
-);
+)
 
 DEFINE_CCALLABLE_STUB(int, get_SequencePtr_length,
 	(SEXP x),
 	(     x)
-);
+)
 
 
 /*
@@ -344,40 +356,40 @@ DEFINE_CCALLABLE_STUB(int, get_SequencePtr_length,
 DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_xdata,
 	(SEXP x),
 	(     x)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_tag,
 	(SEXP x),
 	(     x)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_offset,
 	(SEXP x),
 	(     x)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_length,
 	(SEXP x),
 	(     x)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, new_XSequence,
 	(const char *classname, SEXP xdata, int offset, int length),
 	(            classname,      xdata,     offset,     length)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, new_XRaw_from_tag,
 	(const char *classname, SEXP tag),
 	(            classname,      tag)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, new_XInteger_from_tag,
 	(const char *classname, SEXP tag),
 	(            classname,      tag)
-);
+)
 
 DEFINE_CCALLABLE_STUB(SEXP, new_XNumeric_from_tag,
 	(const char *classname, SEXP tag),
 	(            classname,      tag)
-);
+)
 
