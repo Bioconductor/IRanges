@@ -594,6 +594,7 @@ setMethod("which", "Rle",
               if (!is.logical(runValue(x)))
                   stop("argument to 'which' is not logical")
               ok <- runValue(x)
+              ok[is.na(ok)] <- FALSE
               from <- start(x)[ok]
               to <- end(x)[ok]
               if (length(from) == 0)
