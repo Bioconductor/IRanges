@@ -86,7 +86,7 @@
   object.
 }
 
-\section{Basic accesor methods}{
+\section{Basic accessor methods}{
   In the code snippets below, \code{x} is a MaskCollection object.
 
   \describe{

@@ -102,7 +102,7 @@
   }
 }
 
-\section{Accesor methods}{
+\section{Accessor methods}{
   In the code snippets below, \code{x} is a \code{RangedData} object.
 
   The following accessors treat the data as a contiguous dataset,
