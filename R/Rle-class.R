@@ -221,18 +221,23 @@ setMethod("[", "Rle",
                   }
                   if (drop)
                       output <- as.vector(output)
-              } else  if (is(i, "IRanges")) {
-                  i <- restrict(i, start = 1, end = lx)
+              } else if (is(i, "Ranges")) {
+                  if (any(start(i) <= 0) || any(end(i) > length(x)))
+                    stop("range index out of bounds")
                   if (length(i) == 0) {
                       output <- new("Rle")
                   } else {
-                      starts <- start(i)
-                      widths <- width(i)
-                      output <-
-                        do.call(c,
-                                lapply(seq_len(length(starts)),
-                                       function(k)
-                                       subseq(x, start = starts[k], width = widths[k])))
+                      xstart <- start(x)
+                      from <- findInterval(start(i), xstart)
+                      to <- findInterval(end(i), xstart)
+                      runseq <- mseq(from, to)
+                      lens <- runLength(x)[runseq]
+                      breaks <- cumsum(c(1L, to - from + 1L))
+                      lens[head(breaks, -1)] <-
+                        pmin(end(i), end(x)[from]) - start(i) + 1L
+                      lens[tail(breaks - 1L, -1)] <-
+                        end(i) - pmax(start(i), start[to]) + 1L
+                      output <- Rle(runValue(x)[runseq], lens)
                   }
                   if (drop)
                       output <- as.vector(output)
@@ -599,11 +604,7 @@ setMethod("which", "Rle",
               to <- end(x)[ok]
               if (length(from) == 0)
                   integer(0)
-              else
-                  eval(parse(text =
-                             paste("c(",
-                                   paste(from, ":", to, sep = "", collapse = ","),
-                                   ")")))
+              else mseq(from, to)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

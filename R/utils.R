@@ -214,3 +214,12 @@ selectSome <- function (obj, maxToShow = 5)
   else obj
 }
 
+mseq <- function(from, to) {
+  from <- as.integer(from)
+  to <- as.integer(to)
+  if (length(from) != length(to))
+    stop("lengths of 'from' and 'to' must be equal")
+  if (any(to < from))
+    stop("every element in 'to' must be >= corresponding element in 'from'")
+  .Call("Integer_mseq", from, to, PACKAGE="IRanges")
+}
