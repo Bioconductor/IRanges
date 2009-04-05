@@ -24,6 +24,7 @@
 \alias{isDisjoint,Ranges-method}
 \alias{as.matrix,Ranges-method}
 \alias{as.data.frame,Ranges-method}
+\alias{as.integer,Ranges-method}
 \alias{show,Ranges-method}
 \alias{[<-,Ranges-method}
 \alias{rep,Ranges-method}
@@ -154,6 +155,11 @@
       additional argument (\code{...}) is ignored.
       See \code{?\link{as.data.frame}} for more information about these
       arguments.
+    }
+    \item{}{
+      \code{as.integer(x)}: Convert \code{x} into an integer vector, by
+      converting each range into the integer sequence formed by
+      \code{from:to} and concatenating them together.
     }
     \item{}{
       \code{x[i]}:

@@ -97,6 +97,11 @@ setMethod("as.data.frame", "Ranges",
     }
 )
 
+setMethod("as.integer", "Ranges", function(x) {
+  x <- x[width(x) > 0]
+  mseq(start(x), end(x))
+})
+
 setMethod("show", "Ranges",
     function(object)
     {
