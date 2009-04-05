@@ -58,6 +58,8 @@
 \alias{c,Rle-method}
 \alias{findRange}
 \alias{findRange,Rle-method}
+\alias{findRun}
+\alias{findRun,Rle-method}
 \alias{is.na,Rle-method}
 \alias{length,Rle-method}
 \alias{rep,Rle-method}
@@ -294,6 +296,11 @@
     \item{}{
       \code{c(x, ...)}:
       Combines a set of Rle objects.
+    }
+    \item{}{
+      \code{findRun(x, vec)}:
+      Returns an integer vector indicating the run indices in Rle \code{vec}
+      that are referenced by the indices in the integer vector \code{x}.
     }
     \item{}{
       \code{findRange(x, vec)}:

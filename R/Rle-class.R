@@ -341,15 +341,21 @@ setGeneric("findRange", signature = "vec",
 
 setMethod("findRange", signature = c(vec = "Rle"),
           function(x, vec) {
-              if (!length(x))
-                return(IRanges())
-              rangeX <- range(x)
-              if (any(is.na(rangeX)) || (rangeX[1] < 0) ||
-                  (rangeX[2] > length(vec)))
-                  stop("all 'x' values must be between 0 and 'length(vec)'")
-              starts <- start(vec)
-              runs <- findInterval(x, starts)
-              IRanges(start = starts[runs], width = width(vec)[runs])
+              run <- findRun(x, vec)
+              if (any(is.na(run)))
+                stop("all 'x' values must be in [1, 'length(vec)']")
+              IRanges(start = start(vec)[run], width = width(vec)[run])
+          })
+
+setGeneric("findRun", signature = "vec",
+           function(x, vec) standardGeneric("findRun"))
+
+setMethod("findRun", signature = c(vec = "Rle"),
+          function(x, vec) {
+            starts <- start(vec)
+            runs <- findInterval(x, starts)
+            runs[x == 0 | x > length(vec)] <- NA
+            runs
           })
 
 setMethod("is.na", "Rle",
