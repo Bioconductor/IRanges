@@ -9,7 +9,7 @@
 setMethod("union", c("IRanges", "IRanges"),
     function(x, y)
     {
-        z <- reduce(c(x, y))
+        z <- reduce(c(as(x, "IRanges"), y))
         z[width(z) != 0]
     }
 )

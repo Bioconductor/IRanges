@@ -177,7 +177,10 @@
     \item{}{
       \code{c(x, ...)}:
       Combine \code{x} and the Ranges objects in \code{...} together.
-      The result is returned as an \link{IRanges} object.
+      Any object in \code{...} must belong to the same class as \code{x},
+      or to one of its subclasses, or must be \code{NULL}.
+      The result is an object of the same class as \code{x}.
+      NOTE: Only works for \link{IRanges} (and derived) objects for now.
     }
     \item{}{
       \code{x * y}:

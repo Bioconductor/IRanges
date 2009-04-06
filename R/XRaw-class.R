@@ -73,10 +73,22 @@ setMethod("[", "XRaw",
 setMethod("c", "XRaw",
     function(x, ..., recursive=FALSE)
     {
-        if (!all(sapply(list(...),
-                        function(arg) {is.null(arg) || is(arg, class(x))})))
-            stop("all arguments in '...' must be ", class(x), " objects or NULLs")
-        args <- list(x, ...)
+        if (!identical(recursive, FALSE))
+            stop("'recursive' mode not supported")
+        if (missing(x)) {
+            args <- list(...)
+            x <- args[[1]]
+        } else {
+            args <- list(x, ...)
+        }
+        if (length(args) == 1L)
+            return(x)
+        arg_is_null <- sapply(args, is.null)
+        if (any(arg_is_null))
+            args[arg_is_null] <- NULL  # remove NULL elements by setting them to NULL!
+        if (!all(sapply(args, is, class(x))))
+            stop("all arguments in '...' must be ", class(x), " objects (or NULLs)")
+        args <- c(list(x), args)
         ans_length <- sum(sapply(args, length))
         ans_xdata <- RawPtr(ans_length)
         dest_start <- 1L

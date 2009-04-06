@@ -491,27 +491,91 @@ setMethod("[", "IRanges",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining.
 ###
-### Take 1, 2 or more IRanges *objects* and return an IRanges *instance*.
-### Hence this is NOT an endomorphism.
+### The "c" method for IRanges objects is implemented to behave like an
+### endomorphism i.e. to return an object of the same class as 'x'. In
+### particular 'c(x)' now returns 'x' and not 'as(x, IRanges)'.
+### It's easy to implement specific "c" methods for IRanges subclasses:
+### typically they just need to call 'x <- callNextMethod()' (the 'x' they
+### get is already of the same class as the original 'x') and to take care
+### of the additional slots (aka the class-specific slots). If there aren't
+### any additional slots (e.g. NormalIRanges) or if they don't need to be
+### modified (e.g. Views), then no need to implement a specific method at all.
+### In the case of NormalIRanges objects, 'c(x1, x2)' will fail if the result
+### is not normal, but 'c(as(x1, "IRanges"), x2)' or 'c(IRanges(), x1, x2)'
+### would work. Note that, in general, 'c(IRanges(), x)' is not the same as
+### 'c(x, IRanges())' (the former is equivalent to 'as(x, IRanges)' and the
+### latter to 'c(x)' or 'x').
+### Also note that the user needs to be carefull when passing named arguments
+### to c() (there is no good reason to do this in the first place) because of
+### the following pitfalls:
+###  (1) If all the arguments are named (e.g. 'c(a=x1, b=x2)') then the first
+###      argument must be an IRanges *instance* otherwise dispatch will fail.
+###      It's not clear why dispatch works when 'x1' is an IRanges instance
+###      because, in that case, formal argument 'x' is missing. It's even
+###      less clear why it fails when 'x1' is an IRanges object without being
+###      an IRanges instance. For example:
+###        x1 <- IRanges(1, 11)
+###        x2 <- IRanges(22, 33)
+###        ## works as expected:
+###        c(a=x1, b=x2)
+###        ## works as expected:
+###        c(a=x1, asNormalIRanges(x2))
+###        ## dispatch fails (the default "c" method is selected)
+###        c(a=asNormalIRanges(x1), b=x2))
+###  (2) When named and unnamed arguments are mixed and no named argument has
+###      name 'x' (e.g. 'c(a=x1, x2)'), then, following the standard rules of
+###      argument matching in R, one would expect that the first unnamed
+###      argument will match formal argument 'x'. This is more or less what
+###      happens:
+###        > c(a=x1, x2)
+###        IRanges object:
+###            start end width
+###        [1]     2  22    21
+###        [2]     1  11    11
+###      but there are some surprises:
+###        > c(a=x1, TRUE)
+###        Error in c(a = x1, TRUE) : 
+###          all arguments in '...' must be logical objects (or NULLs)
+###        > c(a=asNormalIRanges(x1), TRUE)
+###        $a
+###        NormalIRanges object:
+###            start end width
+###        [1]     1  11    11
+###
+###        [[2]]
+###        [1] TRUE
 ###
 
 setMethod("c", "IRanges",
-    function(x, ..., recursive = FALSE)
+    function(x, ..., recursive=FALSE)
     {
-        if (recursive)
+        if (!identical(recursive, FALSE))
             stop("'recursive' mode not supported")
-        if (!all(sapply(list(...), is, "IRanges")))
-            stop("all arguments in '...' must be IRanges objects")
-        if (!missing(x))
-            args <- list(x, ...)
-        else
+        if (missing(x)) {
             args <- list(...)
-        ir <- IRanges(unlist(lapply(args, start), use.names=FALSE),
-                      unlist(lapply(args, end), use.names=FALSE))
-        nms <- unlist(lapply(args, names))
-        if (length(nms) == length(ir))
-          names(ir) <- nms
-        ir
+            x <- args[[1]]
+        } else {
+            args <- list(x, ...)
+        }
+        if (length(args) == 1L)
+            return(x)
+        arg_is_null <- sapply(args, is.null)
+        if (any(arg_is_null))
+            args[arg_is_null] <- NULL  # remove NULL elements by setting them to NULL!
+        if (!all(sapply(args, is, class(x))))
+            stop("all arguments in '...' must be ", class(x), " objects (or NULLs)")
+        new_start <- unlist(lapply(args, start), use.names=FALSE)
+        new_width <- unlist(lapply(args, width), use.names=FALSE)
+        names_list <- lapply(args, names)
+        arg_has_no_names <- sapply(names_list, is.null)
+        if (all(arg_has_no_names)) {
+            new_names <- NULL
+        } else {
+            names_list[arg_has_no_names] <- lapply(args[arg_has_no_names],
+                                                   function(arg) character(length(arg)))
+            new_names <- unlist(names_list, use.names=FALSE)
+        }
+        update(x, start=new_start, width=new_width, names=new_names)
     }
 )
 
