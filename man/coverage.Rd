@@ -10,21 +10,49 @@
 }
 
 \usage{
-  coverage(x, start=NA, end=NA, \dots)
-  \S4method{coverage}{IRanges}(x, start=NA, end=NA, weight=1L)
+  ## Old interface (IRanges < 1.1.58):
+  #coverage(x, start=NA, end=NA, \dots)
+
+  ## Transitional interface (the current one):
+  coverage(x, start=NA, end=NA, shift=0L, width=NULL, weight=1L, \dots)
+
+  ## New interface (in the near future):
+  #coverage(x, shift=0L, width=NULL, weight=1L, \dots)
+}
+
+\note{
+  The interface of the \code{coverage} generic is currently being migrated
+  from "start/end" to "shift/width".
+  In the near future, the \code{start} and \code{end} arguments will be
+  dropped and the remaining arguments will be:
+    \code{coverage(x, shift=0L, width=NULL, weight=1L, ...)}
+  The "shift/width" interface is more intuitive, more convenient and
+  offers slighty more control than the "start/end" interface.
+  Also it makes sense to add the \code{weight} argument to the generic
+  (vs having it supported only by some methods) since weighting the
+  elements in \code{x} can be considered part of the concept of coverage
+  in general.
 }
 
 \arguments{
   \item{x}{
-    An \link{IRanges} or \link{MaskCollection} object.
+    An \link{IRanges} or \link{MaskCollection} object, or any object for
+    which a \code{coverage} method is defined.
   }
-  \item{start}{
-    A single integer specifying the position in \code{x} where to start the
-    extraction of the coverage.
+  \item{start, end}{
+    Single integers specifying the position in \code{x} where to start
+    and end the extraction of the coverage.
+    IMPORTANT NOTE: Please do not use these arguments (use the shift/width
+    arguments below). They are temporarily kept for backward compatibility
+    with existing code and will be dropped in the near future.
   }
-  \item{end}{
-    A single integer specifying the position in \code{x} where to end the
-    extraction of the coverage.
+  \item{shift}{
+    An integer vector (recycled to the length of \code{x}) specifying how
+    each element in \code{x} should be (horizontally) shifted before
+    the coverage is computed.
+  }
+  \item{width}{
+    The length of the returned coverage vector.
   }
   \item{weight}{
     An integer vector specifying how much each element in \code{x} counts.
@@ -35,30 +63,29 @@
 }
 
 \value{
-  An \link{Rle} object representing the coverage of \code{x} in the interval
-  specified by the \code{start} and \code{end} arguments. An integer value
-  called the "coverage" can be associated to each position in \code{x},
-  indicating how many times this position is covered by the ranges stored in
-  \code{x}. Note that the positions in the returned \link{XInteger} object are
-  to be interpreted as relative to the interval specified by the \code{start}
-  and \code{end} arguments.
+  An \link{Rle} object representing the coverage of \code{x}.
+  An integer value called the "coverage" can be associated to each position
+  in \code{x}, indicating how many times this position is covered by the
+  elements contained in \code{x}.
 }
 
+\author{H. Pages and P. Aboyoun}
+
 \seealso{
-  \link{Rle-class},
   \link{IRanges-class},
+  \link{Rle-class},
   \link{MaskCollection-class}
 }
 
 \examples{
   x <- IRanges(start=c(-2L, 6L, 9L, -4L, 1L, 0L, -6L, 10L),
                width=c( 5L, 0L, 6L,  1L, 4L, 3L,  2L,  3L))
-  coverage(x, start=-6, end=20)  # 'start' and 'end' must be specified for
-                                 # an IRanges object.
-  coverage(shift(x, 2), start=-6, end=20)
-  coverage(restrict(x, 1, 10), start=-6, end=20)
-  coverage(reduce(x), start=-6, end=20)
-  coverage(gaps(x, start=-6, end=20), start=-6, end=20)
+  coverage(x)
+  coverage(x, shift=7)
+  coverage(x, shift=7, width=27)
+  coverage(restrict(x, 1, 10))
+  coverage(reduce(x), shift=7)
+  coverage(gaps(shift(x, 7), start=1, end=27))
 
   mask1 <- Mask(mask.width=29, start=c(11, 25, 28), width=c(5, 2, 2))
   mask2 <- Mask(mask.width=29, start=c(3, 10, 27), width=c(5, 8, 1))

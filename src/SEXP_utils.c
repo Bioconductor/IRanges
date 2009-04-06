@@ -175,7 +175,6 @@ SEXP Integer_sorted_findInterval(SEXP x, SEXP vec)
 
 /*
  * --- .Call ENTRY POINT ---
- * findInterval for when x is a sorted integer vector
  */
 SEXP Integer_mseq(SEXP from, SEXP to) {
   int k = 0;

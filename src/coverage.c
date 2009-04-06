@@ -1,5 +1,8 @@
 #include "IRanges.h"
 
+/*
+ * --- .Call ENTRY POINT ---
+ */
 SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP order, SEXP width)
 {
 	int i, j, weight_elt;

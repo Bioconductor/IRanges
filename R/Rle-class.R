@@ -13,10 +13,18 @@ setClass("Rle",
          contains = "Sequence",
          validity = function(object)
          {
-             if (length(runValue(object)) != length(runLength(object)))
-                 "run values and run lengths must have the same length"
-             else
-                 TRUE
+             msg <- NULL
+             run_values <- runValue(object)
+             run_lengths <- runLength(object)
+             if (length(run_values) != length(run_lengths))
+                 msg <- c(msg, "run values and run lengths must have the same length")
+             if (!all(run_lengths > 0L))
+                 msg <- c(msg, "all run lengths must be positive")
+             ## TODO: Fix the following test.
+             #if (length(run_lengths) >= 2 && is.atomic(run_values)
+             #      && any(run_values[-1] == run_values[-length(run_values)]))
+             #    msg <- c(msg, "consecutive runs must have different values")
+             if (is.null(msg)) TRUE else msg
          })
  
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

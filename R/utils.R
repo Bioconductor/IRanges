@@ -109,6 +109,27 @@ normargUseNames <- function(use.names)
     use.names
 }
 
+normargShift <- function(shift, nseq)
+{
+    if (!is.numeric(shift))
+        stop("'shift' must be a vector of integers")
+    if (!is.integer(shift))
+        shift <- as.integer(shift)
+    if (nseq == 0L) {
+        shift <- integer()
+    } else {
+        if (length(shift) == 0L)
+            stop("'shift' has no elements")
+        if (length(shift) > nseq)
+            stop("'shift' is longer than 'x'")
+        if (any(is.na(shift)))
+            stop("'shift' contains NAs")
+        if (length(shift) < nseq)
+            shift <- recycleVector(shift, nseq)
+    }
+    shift
+}
+
 ### isNotStrictlySorted() takes for granted that 'x' contains no NAs (behaviour
 ### is undefined if this is not the case). This allows isNotStrictlySorted() to
 ### be MUCH faster than is.unsorted() in some situations:

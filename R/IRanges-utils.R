@@ -86,13 +86,10 @@ whichAsIRanges <- function(x)
 setMethod("shift", "IRanges",
     function(x, shift, use.names=TRUE)
     {
-        if (!isSingleNumber(shift))
-            stop("'shift' must be a single integer")
-        if (!is.integer(shift))
-            shift <- as.integer(shift)
+        shift <- normargShift(shift, length(x))
         if (!normargUseNames(use.names))
             names(x) <- NULL
-        x@start <- start(x) + shift
+        x@start <- x@start + shift
         x
     }
 )
