@@ -12,6 +12,7 @@
 \alias{coverage}
 \alias{coverage,numeric-method}
 \alias{coverage,IRanges-method}
+\alias{coverage,Views-method}
 \alias{coverage,MaskCollection-method}
 
 \title{Coverage across a set of ranges}
@@ -78,6 +79,8 @@
   An integer value called the "coverage" can be associated to each position
   in \code{x}, indicating how many times this position is covered by the
   elements contained in \code{x}.
+  For example, if \code{x} is an \link{XStringViews} object, the coverage of
+  a given position in \code{subject(x)} is the number of views it belongs to.
 }
 
 \author{H. Pages and P. Aboyoun}

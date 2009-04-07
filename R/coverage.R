@@ -183,6 +183,19 @@ setMethod("coverage", "IRanges",
     }
 )
 
+setMethod("coverage", "Views",
+    function(x, start=NA, end=NA, shift=0L, width=NULL, weight=1L)
+    {
+        if (coverage.isCalledWithStartEndInterface(start, end, shift, width)) {
+            ## From here, 'start' and 'end' cannot be single NAs
+            shift <- coverage.getShift0FromStartEnd(start)
+        }
+        if (is.null(width))
+            width <- length(subject(x)) + max(shift)
+        coverage(as(x, "IRanges"), start=start, end=end, shift=shift, width=width, weight=weight)
+    }
+)
+
 ### TODO: Implementation below could be made more efficient and simpler by
 ### just calling coverage() on the single IRanges object resulting from
 ### unlisting 'x' ('shift' and 'weight' must be modified consequently).
