@@ -48,8 +48,8 @@
 
 \arguments{
   \item{x}{
-    An \link{IRanges} or \link{MaskCollection} object, or any object for
-    which a \code{coverage} method is defined.
+    An \link{IRanges}, \link{Views} or \link{MaskCollection} object,
+    or any object for which a \code{coverage} method is defined.
   }
   \item{start, end}{
     Single integers specifying the position in \code{x} where to start
@@ -65,12 +65,23 @@
   }
   \item{width}{
     The length of the returned coverage vector.
-    If \code{width=NULL} (the default), then the returned vector will
-    have just enough elements so that its last element will be aligned
-    with the rightmost end of the elements in \code{x} after they
-    have been shifted (see the \code{shift} argument above).
-    This ensures that any longer coverage vector would be a "right
-    padded with zeros" version of the vector returned when \code{width=NULL}.
+
+    If \code{width=NULL} (the default), then the specific \code{coverage}
+    method that is actually selected will choose the length of the returned
+    vector "in a way that makes sense".
+
+    For example, when \code{width=NULL}, the method for \link{IRanges} objects
+    returns a vector that has just enough elements to have its last
+    element aligned with the rightmost end of all the ranges in \code{x} after
+    those ranges have been shifted (see the \code{shift} argument above).
+    This ensures that any longer coverage vector would be a "padded with zeros"
+    version of the vector returned when \code{width=NULL}.
+
+    When \code{width=NULL}, the method for \link{Views} objects
+    returns a vector with \code{length(subject(x))} elements.
+
+    When \code{width=NULL}, the method for \link{MaskCollection} objects
+    returns a vector with \code{width(x)} elements.
   }
   \item{weight}{
     An integer vector specifying how much each element in \code{x} counts.
