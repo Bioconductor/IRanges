@@ -27,6 +27,7 @@ export(
     setValidity2, new2,
     isTRUEorFALSE, isSingleInteger, isSingleNumber, isSingleString,
     isSingleIntegerOrNA, isSingleNumberOrNA, isSingleStringOrNA,
+    normargShift,
     sapplyLength,
     safeExplode,
     IRanges,
@@ -59,6 +60,14 @@ export(
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList,
     XDataFrameList, SplitXDataFrameList,
+    coverage.normargWidth,
+    coverage.normargWeight,
+
+    ## Functions to help migrating the interface of coverage() from "start/end"
+    ## to "shift/width" (remove when migration is over):
+    coverage.isCalledWithStartEndInterface,
+    coverage.getShift0FromStartEnd,
+    coverage.getWidthFromStartEnd,
 
     ## Generic functions in the ListLike API:
     sapply,

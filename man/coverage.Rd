@@ -1,4 +1,14 @@
 \name{coverage}
+
+% Functions to help migrating the interface of coverage() from "start/end"
+% to "shift/width" (remove when migration is over):
+\alias{coverage.isCalledWithStartEndInterface}
+\alias{coverage.getShift0FromStartEnd}
+\alias{coverage.getWidthFromStartEnd}
+
+\alias{coverage.normargWidth}
+\alias{coverage.normargWeight}
+
 \alias{coverage}
 \alias{coverage,numeric-method}
 \alias{coverage,IRanges-method}

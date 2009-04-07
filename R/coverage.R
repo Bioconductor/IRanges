@@ -29,7 +29,8 @@ setGeneric("coverage", signature="x",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Argument checking.
+### Functions to help migrating from the "start/end" to the "shift/width"
+### interface (remove when migration is over).
 ###
 
 coverage.isCalledWithStartEndInterface <- function(start, end, shift, width)
@@ -69,6 +70,11 @@ coverage.getWidthFromStartEnd <- function(end, shift0)
         stop("when specified, 'end' must be >= 'start' - 1")
     width
 }
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Argument checking.
+###
 
 coverage.normargWidth <- function(width, nseq)
 {

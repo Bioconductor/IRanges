@@ -14,6 +14,7 @@
 \alias{isSingleIntegerOrNA}
 \alias{isSingleNumberOrNA}
 \alias{isSingleStringOrNA}
+\alias{normargShift}
 
 \alias{class:characterORNULL}
 \alias{characterORNULL-class}
