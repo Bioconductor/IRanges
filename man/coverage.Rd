@@ -65,6 +65,12 @@
   }
   \item{width}{
     The length of the returned coverage vector.
+    If \code{width=NULL} (the default), then the returned vector will
+    have just enough elements so that its last element will be aligned
+    with the rightmost end of the elements in \code{x} after they
+    have been shifted (see the \code{shift} argument above).
+    This ensures that any longer coverage vector would be a "right
+    padded with zeros" version of the vector returned when \code{width=NULL}.
   }
   \item{weight}{
     An integer vector specifying how much each element in \code{x} counts.
@@ -79,7 +85,7 @@
   An integer value called the "coverage" can be associated to each position
   in \code{x}, indicating how many times this position is covered by the
   elements contained in \code{x}.
-  For example, if \code{x} is an \link{XStringViews} object, the coverage of
+  For example, if \code{x} is a \link{Views} object, the coverage of
   a given position in \code{subject(x)} is the number of views it belongs to.
 }
 
@@ -87,6 +93,7 @@
 
 \seealso{
   \link{IRanges-class},
+  \link{Views-class},
   \link{Rle-class},
   \link{MaskCollection-class}
 }
