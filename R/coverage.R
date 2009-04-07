@@ -192,17 +192,9 @@ setMethod("coverage", "MaskCollection",
         }
         shift <- normargShift(shift, length(x))
         weight <- coverage.normargWeight(weight, length(x))
-        if (is.null(width)) {
-            width <- max(sapply(seq_len(length(x)),
-                                function(i)
-                                {
-                                    nir <- x[[i]]
-                                    if (isEmpty(nir))
-                                        return(0L)
-                                    max(end(nir)) + shift[i]
-                                }))
-        }
-        if (width <= 0L)  # could be < 0 now if supplied width was NULL
+        if (is.null(width))
+            width <- width(mymasks)
+        if (width <= 0L)  # should never be < 0
             return(Rle())
         ans <- new("Rle", values=0L, lengths=width)
         for (i in seq_len(length(x))) {
