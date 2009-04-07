@@ -366,6 +366,19 @@ setMethod("findRun", signature = c(vec = "Rle"),
             runs
           })
 
+setMethod("head", "Rle",
+          function(x, n = 6L, ...) {
+            stopifnot(length(n) == 1L)
+            if (n < 0L)
+                n <- max(length(x) + n, 0L)
+            else
+                n <- min(n, length(x))
+            if (n == 0L)
+              x[integer(0)]
+            else
+              subseq(x, 1L, n)
+          })
+
 setMethod("is.na", "Rle",
           function(x)
               Rle(values = is.na(runValue(x)), lengths = runLength(x),
@@ -570,6 +583,19 @@ setMethod("table", "Rle",
                               dimnames = structure(list(as.character(runValue(x))), 
                                       names = "")),
                       class = "table")
+          })
+
+setMethod("tail", "Rle",
+          function(x, n = 6L, ...) {
+            stopifnot(length(n) == 1L)
+            xlen <- length(x)
+            if (n < 0L) 
+              n <- max(xlen + n, 0L)
+            else
+              n <- min(n, xlen)
+            if (n == 0L)
+              x[integer(0)]
+            subseq(x, xlen - n + 1L, xlen)
           })
 
 setMethod("unique", "Rle",

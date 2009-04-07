@@ -1,6 +1,7 @@
 useDynLib(IRanges)
 
 import(methods)
+importFrom(utils, head, tail)
 importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
            window, aggregate)
 
@@ -135,6 +136,7 @@ exportMethods(
     "<=", ">=", "<", ">", order, sort, rank,
     rev,
     rep, rep.int,
+    head, tail,
     start,
     end,
     max,

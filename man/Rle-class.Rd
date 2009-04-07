@@ -60,6 +60,7 @@
 \alias{findRange,Rle-method}
 \alias{findRun}
 \alias{findRun,Rle-method}
+\alias{head,Rle-method}
 \alias{is.na,Rle-method}
 \alias{length,Rle-method}
 \alias{rep,Rle-method}
@@ -74,6 +75,7 @@
 \alias{summary,Rle-method}
 \alias{table}
 \alias{table,Rle-method}
+\alias{tail,Rle-method}
 \alias{unique,Rle-method}
 \alias{window,Rle-method}
 
@@ -308,6 +310,12 @@
       that are referenced by the indices in the integer vector \code{x}.
     }
     \item{}{
+      \code{head(x, n = 6L)}:
+      If \code{n} is non-negative, returns the first n elements of \code{x}.
+      If \code{n} is negative, returns all but the last \code{abs(n)} elements
+      of \code{x}.
+    }
+    \item{}{
       \code{is.na(x)}:
       Returns a logical Rle indicating with values are \code{NA}.
     }
@@ -383,6 +391,12 @@
     \item{}{
       \code{table(...)}:
       Returns a table containing the counts of the unique values.
+    }
+    \item{}{
+      \code{tail(x, n = 6L)}:
+      If \code{n} is non-negative, returns the last n elements of \code{x}.
+      If \code{n} is negative, returns all but the first \code{abs(n)} elements
+      of \code{x}.
     }
     \item{}{
       \code{unique(x, incomparables = FALSE, ...)}:

@@ -71,6 +71,8 @@ test_Rle_general <- function() {
     checkIdentical(c(x,x) %in% c(7:9), as.vector(c(xRle,xRle)) %in% c(7:9))
     checkIdentical(c(x, x), as.vector(c(xRle, xRle)))
     checkIdentical(findRange(c(1, 3, 5), xRle), IRanges(start = c(1,2,4), width = 1:3))
+    checkIdentical(head(x, 8), as.vector(head(xRle, 8)))
+    checkIdentical(head(x, -3), as.vector(head(xRle, -3)))
     checkIdentical(is.na(c(NA, x, NA, NA, NA, x, NA)),
                    as.vector(is.na(c(Rle(NA), xRle, Rle(NA, 3), xRle, Rle(NA)))))
     checkIdentical(length(x), length(xRle))
@@ -85,6 +87,8 @@ test_Rle_general <- function() {
     checkIdentical(x[14:15], as.vector(subseq(xRle,14,15)))
     checkIdentical(summary(x), summary(xRle))
     checkIdentical(table(as.vector(x)), table(xRle))
+    checkIdentical(tail(x, 8), as.vector(tail(xRle, 8)))
+    checkIdentical(tail(x, -3), as.vector(tail(xRle, -3)))
     checkIdentical(as.vector(window(x, start = 3, end = 13)),
                    as.vector(window(xRle, start = 3, end = 13)))
     checkIdentical(as.vector(window(x, start = 3, end = 13, frequency = 1/2)),
