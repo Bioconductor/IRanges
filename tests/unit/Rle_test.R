@@ -41,6 +41,7 @@ test_Rle_groupGeneric <- function() {
     set.seed(0)
     x <- sample(0:3, 50, replace = TRUE)
     xRle <- Rle(x)
+    checkIdentical(numeric(0) + 1, as.vector(Rle(numeric(0)) + 1))
     checkIdentical(x + 1, as.vector(xRle + 1))
     checkIdentical(2 * x + 3, as.vector(2 * xRle + 3))    
     checkIdentical(x[(x > 0) & (x < 3)], as.vector(xRle[(xRle > 0) & (xRle < 3)]))
