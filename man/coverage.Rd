@@ -1,5 +1,6 @@
 \name{coverage}
 \alias{coverage}
+\alias{coverage,numeric-method}
 \alias{coverage,IRanges-method}
 \alias{coverage,MaskCollection-method}
 

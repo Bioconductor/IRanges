@@ -111,6 +111,45 @@ coverage.normargWeight <- function(weight, nseq)
 ### Methods.
 ###
 
+setMethod("coverage", "numeric",
+    function(x, start=NA, end=NA, shift=0L, width=NULL, weight=1L)
+    {
+        if (coverage.isCalledWithStartEndInterface(start, end, shift, width)) {
+            ## From here, 'start' and 'end' cannot be single NAs
+            shift <- coverage.getShift0FromStartEnd(start)
+            width <- coverage.getWidthFromStartEnd(end, shift)
+        } else {
+            width <- coverage.normargWidth(width, length(x))
+        }
+        shift <- normargShift(shift, length(x))
+        weight <- coverage.normargWeight(weight, length(x))
+        if (!is.integer(x))
+            x <- as.integer(x)
+        if (any(is.na(x)))
+            stop("'x' contains NAs")
+        sx <- x + shift
+        if (is.null(width)) {
+            width <- max(sx)
+            ii <- which(1L <= sx)
+        } else {
+            ii <- which(1L <= sx & sx <= width)
+        }
+        if (width <= 0L)  # could be < 0 now if supplied width was NULL
+            return(Rle())
+        ## Restrict 'sx' (i.e. keep >= 1 and <= width values only)
+        rsx <- sx[ii]
+        rw <- weight[ii]
+        Rle(sapply(seq_len(width), function(i) sum(rw[rsx == i])))
+    }
+)
+
+.IRanges.coverage <- function(x, width, weight)
+{
+    .Call("IRanges_coverage",
+          x, weight, order(start(x)), width,
+          PACKAGE="IRanges")
+}
+
 setMethod("coverage", "IRanges",
     function(x, start=NA, end=NA, shift=0L, width=NULL, weight=1L)
     {
@@ -126,11 +165,15 @@ setMethod("coverage", "IRanges",
         sx <- shift(x, shift)
         if (is.null(width)) {
             width <- max(end(sx))
-            rsx <- restrict(sx, start=1L)
+            ## By keeping all ranges, 'rsx' and 'weight' remain of the same
+            ## length and the pairing between their elements is preserved.
+            rsx <- restrict(sx, start=1L, keep.all.ranges=TRUE)
         } else {
-            rsx <- restrict(sx, start=1L, end=width)
+            rsx <- restrict(sx, start=1L, end=width, keep.all.ranges=TRUE)
         }
-        .Call("IRanges_coverage", rsx, weight, order(start(rsx)), width, PACKAGE="IRanges")
+        if (width <= 0L)  # could be < 0 now if supplied width was NULL
+            return(Rle())
+        .IRanges.coverage(rsx, width, weight)
     }
 )
 
@@ -149,15 +192,26 @@ setMethod("coverage", "MaskCollection",
         }
         shift <- normargShift(shift, length(x))
         weight <- coverage.normargWeight(weight, length(x))
-        if (is.null(width))
-            width <- max(sapply(seq_len(length(x)), function(i) {max(end(x[[i]])) + shift[i]}))
-        ans <- new("Rle", values = 0L, lengths = width)
+        if (is.null(width)) {
+            width <- max(sapply(seq_len(length(x)),
+                                function(i)
+                                {
+                                    nir <- x[[i]]
+                                    if (isEmpty(nir))
+                                        return(0L)
+                                    max(end(nir)) + shift[i]
+                                }))
+        }
+        if (width <= 0L)  # could be < 0 now if supplied width was NULL
+            return(Rle())
+        ans <- new("Rle", values=0L, lengths=width)
         for (i in seq_len(length(x))) {
-            sx <- shift(x[[i]], shift[i])
-            rsx <- restrict(sx, start=1L, end=width)
-            ans <- ans +
-              .Call("IRanges_coverage", rsx, weight[i], order(start(rsx)), width,
-                    PACKAGE="IRanges")
+            nir <- x[[i]]
+            if (isEmpty(nir))
+                next()
+            snir <- shift(nir, shift[i])
+            rsnir <- restrict(snir, start=1L, end=width)
+            ans <- ans + .IRanges.coverage(rsnir, width, weight[i])
         }
         ans
     }

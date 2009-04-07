@@ -151,7 +151,7 @@
   ## Views derived from coverage
   x <- IRanges(start=c(1L, 9L, 4L, 1L, 5L, 10L),
                width=c(5L, 6L, 3L, 4L, 3L,  3L))
-  coverage(x, start=1, end=15)
+  slice(coverage(x), lower=2)
 }
 
 \keyword{methods}

@@ -116,7 +116,7 @@ setMethod("restrict", "IRanges",
         if (use.names) ans_names <- names(x) else ans_names <- NULL
 
         if (!is.na(start)) {
-            far_too_left <- ans_end < start
+            far_too_left <- ans_end < start - 1L
             if (keep.all.ranges) {
                 ans_end[far_too_left] <- start - 1L
             } else {
@@ -131,7 +131,7 @@ setMethod("restrict", "IRanges",
             ans_start[too_left] <- start
         }
         if (!is.na(end)) {
-            far_too_right <- end < ans_start
+            far_too_right <- ans_start > end + 1L
             if (keep.all.ranges) {
                 ans_start[far_too_right] <- end + 1L
             } else {

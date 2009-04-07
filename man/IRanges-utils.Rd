@@ -112,8 +112,13 @@
     corresponds to a range in \code{x}.
   }
   \item{keep.all.ranges}{
-    \code{TRUE} or \code{FALSE}. Should ranges that become "out of limits"
-    after restriction be kept?
+    \code{TRUE} or \code{FALSE}. Should ranges that don't overlap with
+    the interval specified by \code{start} and \code{end} be kept?
+    Note that "don't overlap" means that they end strictly before
+    \code{start - 1} or start strictly after \code{end + 1}.
+    Ranges that end at \code{start - 1} or start at \code{end + 1}
+    are always kept and their width is set to zero in the returned
+    \link{IRanges} object.
   }
   \item{with.inframe.attrib}{
     \code{TRUE} or \code{FALSE}. For internal use.
@@ -180,9 +185,9 @@
   then merges the overlapping or adjacent ones.
 
   \code{gaps} returns the normal \link{IRanges} object describing
-  the set of integers obtained by removing the set of integers described
-  by \code{x} from the interval specified by the \code{start} and
-  \code{end} arguments.
+  the set of integers that remain after the set of integers described
+  by \code{x} has been removed from the interval specified by the
+  \code{start} and \code{end} arguments.
 
   \code{reflect} "reflects" or reverses each range in \code{x} relative to
   the corresponding range in \code{bounds}, which is recycled as
@@ -261,6 +266,10 @@
   x
   shift(x, -3)
   restrict(x, start=12, end=34)
+  restrict(x, start=20)
+  restrict(x, start=21)
+  restrict(x, start=21, keep.all.ranges=TRUE)
+
   y <- x[width(x) != 0]
   narrow(y, start=4, end=-2)
   narrow(y, start=-4, end=-2)
