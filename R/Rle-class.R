@@ -595,7 +595,8 @@ setMethod("tail", "Rle",
               n <- min(n, xlen)
             if (n == 0L)
               x[integer(0)]
-            subseq(x, xlen - n + 1L, xlen)
+            else
+              subseq(x, xlen - n + 1L, xlen)
           })
 
 setMethod("unique", "Rle",
