@@ -69,6 +69,9 @@ export(
     coverage.getShift0FromStartEnd,
     coverage.getWidthFromStartEnd,
 
+    ## Generic functions in the ListLike API:
+    sapply,
+
     ## Generic functions in the Ranges API:
     width,
     mid,
@@ -130,7 +133,7 @@ export(
 
 exportMethods(
     ## Methods for generics defined elsewhere:
-    lapply, sapply,
+    lapply,
     Arith,
     Ops, Math, Math2, Summary, Complex,
     coerce,
@@ -172,6 +175,7 @@ exportMethods(
     is.na, "%in%",
     
     ## Methods for generics defined in this package:
+    sapply,
     width,
     "start<-",
     "width<-",
