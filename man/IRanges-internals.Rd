@@ -28,7 +28,6 @@
 \alias{[[,ListLike-method}
 \alias{$,ListLike-method}
 \alias{lapply,ListLike,ANY-method}
-\alias{sapply}
 \alias{sapply,ListLike-method}
 \alias{as.list,ListLike-method}
 
