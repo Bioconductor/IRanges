@@ -5,9 +5,9 @@
 \alias{Rle-class}
 \alias{Rle}
 \alias{Rle,missing,missing-method}
-\alias{Rle,vectorORfactor,missing-method}
-\alias{Rle,vectorORfactor,integer-method}
-\alias{Rle,vectorORfactor,numeric-method}
+\alias{Rle,vector,missing-method}
+\alias{Rle,vector,integer-method}
+\alias{Rle,vector,numeric-method}
 
 \alias{runLength}
 \alias{runLength,Rle-method}

@@ -5,10 +5,8 @@
 ### Class definitions
 ###
 
-setClassUnion("vectorORfactor", c("vector", "factor"))
-
 setClass("Rle",
-         representation(values = "vectorORfactor",
+         representation(values = "vector",
                         lengths = "integer"),
          contains = "Sequence",
          validity = function(object)
@@ -70,7 +68,7 @@ setGeneric("Rle", signature = c("values", "lengths"),
 setMethod("Rle", signature = c(values = "missing", lengths = "missing"),
           function(values, lengths) new("Rle", values = vector(), lengths = integer()))
 
-setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "missing"),
+setMethod("Rle", signature = c(values = "vector", lengths = "missing"),
           function(values, lengths)
           {
               if (is.factor(values)) {
@@ -85,7 +83,7 @@ setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "missing"),
               new("Rle", values = rleOutput[["values"]], lengths = rleOutput[["lengths"]])
           })
 
-setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "integer"),
+setMethod("Rle", signature = c(values = "vector", lengths = "integer"),
           function(values, lengths, check = TRUE)
           {
               if (check) {
@@ -105,7 +103,7 @@ setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "integer"),
               new("Rle", values = values[i], lengths = diff(c(0L, cumsum(lengths)[i])))
           })
 
-setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "numeric"),
+setMethod("Rle", signature = c(values = "vector", lengths = "numeric"),
           function(values, lengths, check = TRUE)
               Rle(values = values, lengths = as.integer(lengths),
                   check = check))
