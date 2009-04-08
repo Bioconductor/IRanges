@@ -27,6 +27,7 @@ export(
     setValidity2, new2,
     isTRUEorFALSE, isSingleInteger, isSingleNumber, isSingleString,
     isSingleIntegerOrNA, isSingleNumberOrNA, isSingleStringOrNA,
+    isConstant,
     normargShift,
     sapplyLength,
     safeExplode,

@@ -38,6 +38,39 @@ isSingleStringOrNA <- function(x)
     is.atomic(x) && length(x) == 1 && (is.character(x) || is.na(x))
 }
 
+### The fastest implementation of isConstant() is hard to guess:
+###   isConstant1 <- function(x) {length(x) != 0L && all(x == x[1L])}
+###   isConstant2 <- function(x) {length(unique(x)) == 1L}
+###   isConstant3 <- function(x) {sum(duplicated(x)) == length(x) - 1L}
+###   isConstant4 <- function(x) {length(x) != 0L && min(x) == max(x)}
+###   isConstant5 <- function(x) {length(x) != 0L && {rx <- range(x); rx[1] == rx[2]}}
+### And the winner is... isConstant4()! It's 2x faster than isConstant1()
+### and isConstant5(), 4x faster than isConstant2(), and 9x faster than
+### isConstant3(). Results obtained on 'x0 <- rep.int(112L, 999999L)' with
+### R-2.9 Under development (unstable) (2009-01-26 r47727).
+isConstant <- function(x) {length(x) != 0L && min(x) == max(x)}
+
+normargShift <- function(shift, nseq)
+{
+    if (!is.numeric(shift))
+        stop("'shift' must be a vector of integers")
+    if (!is.integer(shift))
+        shift <- as.integer(shift)
+    if (nseq == 0L) {
+        shift <- integer()
+    } else {
+        if (length(shift) == 0L)
+            stop("'shift' has no elements")
+        if (length(shift) > nseq)
+            stop("'shift' is longer than 'x'")
+        if (any(is.na(shift)))
+            stop("'shift' contains NAs")
+        if (length(shift) < nseq)
+            shift <- recycleVector(shift, nseq)
+    }
+    shift
+}
+
 setClassUnion("characterORNULL", c("character", "NULL"))
 
 
@@ -107,27 +140,6 @@ normargUseNames <- function(use.names)
     if (!isTRUEorFALSE(use.names))
         stop("'use.names' must be TRUE or FALSE")
     use.names
-}
-
-normargShift <- function(shift, nseq)
-{
-    if (!is.numeric(shift))
-        stop("'shift' must be a vector of integers")
-    if (!is.integer(shift))
-        shift <- as.integer(shift)
-    if (nseq == 0L) {
-        shift <- integer()
-    } else {
-        if (length(shift) == 0L)
-            stop("'shift' has no elements")
-        if (length(shift) > nseq)
-            stop("'shift' is longer than 'x'")
-        if (any(is.na(shift)))
-            stop("'shift' contains NAs")
-        if (length(shift) < nseq)
-            shift <- recycleVector(shift, nseq)
-    }
-    shift
 }
 
 ### isNotStrictlySorted() takes for granted that 'x' contains no NAs (behaviour
