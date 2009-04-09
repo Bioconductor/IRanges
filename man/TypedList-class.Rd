@@ -117,7 +117,7 @@
       elements.
     }
     \item{}{\code{isEmpty(x)}: Gets a logical vector indicating
-      which elements are empty (length zero).
+      which elements are empty.
     }
   }
 }

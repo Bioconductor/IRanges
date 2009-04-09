@@ -143,13 +143,20 @@ setReplaceMethod("names", "TypedList",
                    x
                  })
 
+### The "isEmpty" method for TypedList objects relies on isEmpty() working on
+### objects of class elementClass, e.g.:
+###   > ir1 <- IRanges(1:3, width=0)
+###   > ir2 <- IRanges(-2, 2)
+###   > isEmpty(ir1)
+###   [1] TRUE
+###   > isEmpty(IRangesList(ir1, ir2))
+###   [1]  TRUE FALSE
+### Note that it would not be necessary to define this method if the TypedList
+### class was made a ListLike class.
 setMethod("isEmpty", "TypedList",
           function(x)
           {
-            if (length(x) == 0)
-              logical(0)
-            else
-              (elementLengths(x) == 0)
+            sapply(seq_len(length(x)), function(i) all(isEmpty(x[[i]])))
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -261,10 +268,9 @@ TypedList <- function(listClass, elements = list(), splitFactor = NULL,
 
 .valid.TypedList.slot.names <- function(x)
 {
-  for (i in c("elements","NAMES", "elementClass", "elementLengths",
-              "compress")) {
+  for (i in slotNames("TypedList")) {
     if (length(names(slot(x, i))) != 0)
-      stop("slot '", i, "' should not have names")
+      return(paste("slot '", i, "' should not have names", sep=""))
   }
   NULL
 }

@@ -137,9 +137,7 @@ setMethod("show", "Ranges",
 ###
 
 ### A Ranges object is considered empty iff all its ranges are empty.
-setGeneric("isEmpty", function(x) standardGeneric("isEmpty"))
-
-setMethod("isEmpty", "Ranges", function(x) all(width(x) == 0))
+setMethod("isEmpty", "Ranges", function(x) all(width(x) == 0L))
 
 setGeneric("isDisjoint", function(x) standardGeneric("isDisjoint"))
 

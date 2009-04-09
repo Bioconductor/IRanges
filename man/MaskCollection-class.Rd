@@ -26,7 +26,6 @@
 \alias{Mask}
 
 % Other methods:
-\alias{isEmpty,MaskCollection-method}
 \alias{max,MaskCollection-method}
 \alias{min,MaskCollection-method}
 \alias{maskedwidth}

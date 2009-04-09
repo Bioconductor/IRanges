@@ -21,18 +21,6 @@
 \alias{characterORNULL-class}
 \alias{characterORNULL}
 
-% ListLike VIRTUAL class, functions and methods:
-\alias{class:ListLike}
-\alias{ListLike-class}
-\alias{ListLike}
-
-\alias{[[,ListLike-method}
-\alias{$,ListLike-method}
-\alias{lapply,ListLike,ANY-method}
-\alias{sapply}
-\alias{sapply,ListLike-method}
-\alias{as.list,ListLike-method}
-
 % SequencePtr class, functions and methods:
 \alias{class:SequencePtr}
 \alias{SequencePtr-class}

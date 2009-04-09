@@ -18,7 +18,6 @@
 \alias{start<-}
 \alias{width<-}
 \alias{end<-}
-\alias{isEmpty}
 \alias{isEmpty,Ranges-method}
 \alias{isDisjoint}
 \alias{isDisjoint,Ranges-method}

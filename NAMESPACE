@@ -72,6 +72,7 @@ export(
 
     ## Generic functions in the ListLike API:
     sapply,
+    isEmpty,
 
     ## Generic functions in the Ranges API:
     width,
@@ -79,7 +80,6 @@ export(
     "start<-",
     "width<-",
     "end<-",
-    isEmpty,
     shift,
     restrict,
     narrow,
@@ -177,11 +177,11 @@ exportMethods(
     
     ## Methods for generics defined in this package:
     sapply,
+    isEmpty,
     width,
     "start<-",
     "width<-",
     "end<-",
-    isEmpty,
     isNormal,
     isDisjoint,
     whichFirstNotNormal,

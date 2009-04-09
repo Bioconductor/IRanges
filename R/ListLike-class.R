@@ -126,3 +126,23 @@ setMethod("as.list", "ListLike",
     function(x, ...) lapply(x, identity)
 )
 
+### Using isEmpty() on a nested list:
+### > isEmpty(list(integer(4), numeric(0), NULL, list(logical(0), NULL)))
+### [1] FALSE  TRUE  TRUE  TRUE
+
+setGeneric("isEmpty", function(x) standardGeneric("isEmpty"))
+
+setMethod("isEmpty", "ANY",
+    function(x)
+    {
+        if (is.atomic(x))
+            return(length(x) == 0L)
+        if (!is.list(x) && !is(x, "ListLike"))
+            stop("isEmpty() is not defined for objects of class ", class(x))
+        ## Recursive definition
+        if (length(x) == 0)
+            return(logical(0))
+        sapply(x, function(xx) all(isEmpty(xx)))
+    }
+)
+
