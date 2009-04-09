@@ -15,8 +15,8 @@ setClass("IRanges",
         is_locked="logical" # no code uses this slot for now!
     ),
     prototype(
-        start=integer(0),
-        width=integer(0),
+        start=integer(),
+        width=integer(),
         NAMES=NULL,
         is_locked=FALSE
     )
@@ -53,7 +53,7 @@ setMethod("names", "IRanges", function(x) x@NAMES)
 ### it slightly more efficient.
 ###
 
-setMethod("isEmpty", "NormalIRanges", function(x) length(x) == 0)
+setMethod("isEmpty", "NormalIRanges", function(x) length(x) == 0L)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -87,7 +87,7 @@ setMethod("min", "NormalIRanges",
             warning("empty ", class(x), " object; returning Inf")
             Inf
         } else {
-            start(x)[1]
+            start(x)[1L]
         }
     }
 )
@@ -124,7 +124,7 @@ setMethod("min", "NormalIRanges",
         return("the widths must be non-NA integers")
     if (length(start(x)) != length(width(x)))
         return("number of starts and number of widths differ")
-    if (length(width(x)) != 0 && min(width(x)) < 0)
+    if (length(width(x)) != 0L && min(width(x)) < 0L)
         return("negative widths are not allowed")
     NULL
 }
@@ -172,7 +172,7 @@ setValidity2("NormalIRanges", .valid.NormalIRanges)
         return(start_end_width)
     if (!is.numeric(start_end_width))
         stop("'", argname, "' must be a numeric vector (or NULL)")
-#    if (length(start_end_width) == 0)
+#    if (length(start_end_width) == 0L)
 #        stop("'", argname, "' must contain at least one integer value")
     if (!is.integer(start_end_width))
         start_end_width <- as.integer(start_end_width)
@@ -192,21 +192,21 @@ IRanges <- function(start=NULL, end=NULL, width=NULL)
     null_args <- c(is.null(start), is.null(end), is.null(width))
     if (all(null_args))
         return(new("IRanges"))
-    if (sum(null_args) != 1)
+    if (sum(null_args) != 1L)
         stop("exactly two out of the 'start', 'end' and 'width' arguments must be supplied")
     if (is.null(width)) {
         ## 'start' and 'end' were supplied by user
         if (length(start) != length(end))
             stop("'start' and 'end' must have the same length")
-        if (length(start) == 0)
+        if (length(start) == 0L)
             return(new("IRanges"))
         width <- end - start + 1L
     } else if (is.null(start)) {
         ## 'width' and 'end' were supplied by user
         if (length(width) > length(end))
             stop("'width' has more elements than 'end'")
-        if (length(width) == 0) {
-            if (length(end) == 0)
+        if (length(width) == 0L) {
+            if (length(end) == 0L)
                 return(new("IRanges"))
             stop("cannot recycle zero-length 'width'")
         }
@@ -217,15 +217,15 @@ IRanges <- function(start=NULL, end=NULL, width=NULL)
         ## 'width' and 'start' were supplied by user
         if (length(width) > length(start))
             stop("'width' has more elements than 'start'")
-        if (length(width) == 0) {
-            if (length(start) == 0)
+        if (length(width) == 0L) {
+            if (length(start) == 0L)
                 return(new("IRanges"))
             stop("cannot recycle zero-length 'width'")
         }
         if (length(width) < length(start))
             width <- rep(width, length.out=length(start))
     }
-    if (min(width) < 0)
+    if (min(width) < 0L)
         stop("negative widths are not allowed")
     ## 'start' and 'with' are guaranteed to be valid
     new2("IRanges", start=start, width=width, check=FALSE)
@@ -443,7 +443,7 @@ setMethod("update", "IRanges",
 setMethod("[", "IRanges",
     function(x, i, j, ..., drop)
     {
-        if (!missing(j) || length(list(...)) > 0)
+        if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
         if (missing(i))
             return(x)
@@ -458,7 +458,7 @@ setMethod("[", "IRanges",
             if (is(x, "NormalIRanges") && all(i >= 0)) {
                 if (!is.integer(i))
                     i <- as.integer(i)
-                i <- i[i != 0]
+                i <- i[i != 0L]
                 if (isNotStrictlySorted(i))
                     stop("positive numeric subscript must be strictly increasing ",
                          "for NormalIRanges objects")
@@ -553,7 +553,7 @@ setMethod("c", "IRanges",
             stop("'recursive' mode not supported")
         if (missing(x)) {
             args <- list(...)
-            x <- args[[1]]
+            x <- args[[1L]]
         } else {
             args <- list(x, ...)
         }

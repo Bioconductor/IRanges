@@ -65,6 +65,13 @@
   }
 }
 
+\author{H. Pages}
+
+\seealso{
+  \link{RleViews-class},
+  \link{MaskCollection-class}
+}
+
 \examples{
   showClass("ListLike")  # see known subclasses ("ListLike classes")
 }
