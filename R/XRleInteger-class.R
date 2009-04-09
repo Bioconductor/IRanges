@@ -38,8 +38,8 @@ XRleInteger <- function(x) {
         stop("'x' must be an integer vector")
     xRle <- rle(x)
     new("XRleInteger", 
-        values = XInteger(length(xRle$values), val = xRle$values),
-        lengths = XInteger(length(xRle$lengths), val = xRle$lengths))
+        values = as(xRle$values, "XInteger"),
+        lengths = as(xRle$lengths, "XInteger"))
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -65,8 +65,8 @@ setMethod("Arith", signature(e1 = "XRleInteger", e2 = "integer"),
         if (length(e2) == 1)
             e2 <-
               new("XRleInteger",
-                  values = XInteger(1, val = e2),
-                  lengths = XInteger(1, val = length(e1)))
+                  values = as(e2, "XInteger"),
+                  lengths = as(e1, "XInteger"))
         else
             e2 <- XRleInteger(e2)
         callNextMethod(e1, e2)
@@ -78,9 +78,9 @@ setMethod("Arith", signature(e1 = "integer", e2 = "XRleInteger"),
     {
         if (length(e1) == 1)
             e1 <-
-                new("XRleInteger",
-                    values = XInteger(1, val = e1),
-                    lengths = XInteger(1, val = length(e2)))
+              new("XRleInteger",
+                  values = as(e1, "XInteger"),
+                  lengths = as(e2, "XInteger"))
         else
             e1 <- XRleInteger(e1)
         callNextMethod(e1, e2)

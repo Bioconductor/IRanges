@@ -45,6 +45,7 @@
 \alias{as.integer,XInteger-method}
 \alias{as.vector,XInteger,missing-method}
 \alias{coerce,integer,XInteger-method}
+\alias{coerce,numeric,XInteger-method}
 \alias{[,XInteger-method}
 \alias{==,XInteger,XInteger-method}
 

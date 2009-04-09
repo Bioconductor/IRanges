@@ -340,7 +340,7 @@ setMethod("[", "XDataFrame",
                 i <- which(i)
               x@elements <- lapply(as.list(x, use.names = FALSE), `[`, i, drop = FALSE)
               ## newset <- rowset(x)[i]
-              ## x@rowset <- XInteger(length(newset), newset)
+              ## x@rowset <- as(newset, "XInteger")
               ## NOTE: we do not support matrices here
               ##x@elements <- lapply(as.list(x, use.names = FALSE), "[", i)
               dim[1] <- length(seq(dim[1])[i]) # may have 0 cols, no rownames

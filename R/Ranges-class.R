@@ -412,7 +412,7 @@ setMethod("disjointBins", "Ranges", function(x) {
 ###
 
 setGeneric("first", function(x) standardGeneric("first"))
-setMethod("first", "Ranges", function(x) {.Defunct("start"); start(x)})
+setMethod("first", "Ranges", function(x) .Defunct("start"))
 setGeneric("last", function(x) standardGeneric("last"))
-setMethod("last", "Ranges", function(x) {.Defunct("end"); end(x)})
+setMethod("last", "Ranges", function(x) .Defunct("end"))
 

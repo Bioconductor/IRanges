@@ -20,16 +20,17 @@ setClass("XIntegerViews",
 ###
 
 setMethod("Views", "XInteger",
-    function(subject, start=NA, end=NA, names=NULL)
-        newViews(subject, start=start, end=end, names=names,
+    function(subject, start=NULL, end=NULL, width=NULL, names=NULL)
+        newViews(subject,
+                 start=start, end=end, width=width, names=names,
                  Class="XIntegerViews")
 )
 
 setMethod("Views", "integer",
-    function(subject, start=NA, end=NA, names=NULL)
+    function(subject, start=NULL, end=NULL, width=NULL, names=NULL)
     {
-        xsubject <- XInteger(length(subject), subject)
-        Views(xsubject, start=start, end=end, names=names)
+        xsubject <- as(subject, "XInteger")
+        Views(xsubject, start=start, end=end, width=width, names=names)
     }
 )
 
@@ -225,7 +226,7 @@ setMethod("==", signature(e1="XIntegerViews", e2="XIntegerViews"),
 setMethod("==", signature(e1="XIntegerViews", e2="XInteger"),
     function(e1, e2)
     {
-        XIntegerViews.equal(e1, Views(e2))
+        XIntegerViews.equal(e1, as(e2, "Views"))
     }
 )
 setMethod("==", signature(e1="XIntegerViews", e2="integer"),
@@ -234,7 +235,7 @@ setMethod("==", signature(e1="XIntegerViews", e2="integer"),
         if (length(e2) == 0 || any(is.na(e2)))
             stop("comparison between an XIntegerViews object and an integer ",
                  "vector of length 0 or with NAs is not supported")
-        XIntegerViews.equal(e1, Views(e2))
+        XIntegerViews.equal(e1, as(e2, "Views"))
     }
 )
 setMethod("==", signature(e1="XInteger", e2="XIntegerViews"),

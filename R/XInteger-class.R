@@ -48,6 +48,10 @@ setAs("integer", "XInteger",
     function(from) XInteger(length(from), val=from)
 )
 
+setAs("numeric", "XInteger",
+    function(from) XInteger(length(from), val=from)
+)
+
 setMethod("as.integer", "XInteger",
     function(x) IntegerPtr.read(x@xdata, x@offset + 1L, x@offset + x@length)
 )

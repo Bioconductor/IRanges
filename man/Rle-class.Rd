@@ -227,10 +227,12 @@
       based on the values contained in \code{x}.
     }
     \item{}{
-      \code{as(from, "IRanges")}: Creates an \link{IRanges} object from a logical Rle.
+      \code{as(from, "IRanges")}: Creates an \link{IRanges} instance
+      from a logical Rle. Note that this instance is guaranteed to be normal.
     }
     \item{}{
-      \code{as(from, "NormalIRanges")}: Creates a \link{NormalIRanges} object from a logical Rle.
+      \code{as(from, "NormalIRanges")}: Creates a \link{NormalIRanges} instance
+      from a logical Rle.
     }
   }
 }

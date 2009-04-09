@@ -20,17 +20,10 @@ setClass("XRleIntegerViews",
 ###
 
 setMethod("Views", "XRleInteger",
-    function(subject, start=NA, end=NA, names=NULL)
-        newViews(subject, start=start, end=end, names=names,
+    function(subject, start=NULL, end=NULL, width=NULL, names=NULL)
+        newViews(subject,
+                 start=start, end=end, width=width, names=names,
                  Class="XRleIntegerViews")
-)
-
-setMethod("Views", "integer",
-    function(subject, start=NA, end=NA, names=NULL)
-    {
-        xsubject <- XRleInteger(subject)
-        Views(xsubject, start=start, end=end, names=names)
-    }
 )
 
 
@@ -225,7 +218,7 @@ setMethod("==", signature(e1="XRleIntegerViews", e2="XRleIntegerViews"),
 setMethod("==", signature(e1="XRleIntegerViews", e2="XRleInteger"),
     function(e1, e2)
     {
-        XRleIntegerViews.equal(e1, Views(e2))
+        XRleIntegerViews.equal(e1, as(e2, "Views"))
     }
 )
 setMethod("==", signature(e1="XRleIntegerViews", e2="integer"),
@@ -234,7 +227,7 @@ setMethod("==", signature(e1="XRleIntegerViews", e2="integer"),
         if (length(e2) == 0 || any(is.na(e2)))
             stop("comparison between an XRleIntegerViews object and an integer ",
                  "vector of length 0 or with NAs is not supported")
-        XRleIntegerViews.equal(e1, Views(e2))
+        XRleIntegerViews.equal(e1, as(e2, "Views"))
     }
 )
 setMethod("==", signature(e1="XRleInteger", e2="XRleIntegerViews"),

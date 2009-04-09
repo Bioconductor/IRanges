@@ -17,7 +17,7 @@ setGeneric("slice", signature="x",
 
 setMethod("slice", "integer",
     function(x, lower=-.Machine$integer.max, upper=.Machine$integer.max)
-        slice(XInteger(length(x), x), lower=lower, upper=upper)
+        slice(as(x, "XInteger"), lower=lower, upper=upper)
 )
 
 setMethod("slice", "XInteger",

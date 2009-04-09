@@ -7,7 +7,7 @@
 \alias{subject,Views-method}
 \alias{newViews}
 \alias{Views}
-\alias{views}
+\alias{coerce,Sequence,Views-method}
 \alias{[[,Views-method}
 \alias{[[<-,Views-method}
 \alias{coerce,Views,NormalIRanges-method}
@@ -19,6 +19,9 @@
 \alias{subviews,Views-method}
 \alias{gaps,Views-method}
 \alias{successiveViews}
+
+% Old stuff:
+\alias{views}
 
 
 \title{Views objects}
@@ -38,17 +41,21 @@
 \section{Constructor}{
   \describe{
     \item{}{
-      \code{Views(subject, start=NA, end=NA, names=NULL)}:
+      \code{Views(subject, start=NULL, end=NULL, width=NULL, names=NULL)}:
       This constructor is a generic function with dispatch on argument
       \code{subject}. Specific methods must be defined for the subclasses
       of the Views class. For example a method for \link[Biostrings]{XString}
       subjects is defined that returns an \link[Biostrings]{XStringViews}
       object. There is no default method.
 
-      \code{start} and \code{end} can be either integer vectors (eventually
-      with NAs) specifying the starting and ending positions of the views
-      to create, or \code{end} can be missing with \code{start} being an
-      IRanges object or an Rle object containing logical values.
+      The treatment of the \code{start}, \code{end} and \code{width}
+      arguments is the same as with the \code{\link{IRanges}} constructor,
+      except that, in addition, \code{Views} allows \code{start} to be an
+      \link{IRanges} object. This ensures that
+      \code{Views(subject, IRanges(mystarts, myends, mywidths, mynames))}
+      and \code{Views(subject, mystarts, myends, mywidths, mynames)}
+      are equivalent (except when \code{mystarts} is itself an
+      \link{IRanges} object).
     }
   }
 }
@@ -150,13 +157,8 @@
   ## Extract the 2nd view:
   v1[[2]]
 
-  ## 'start' and 'end' are recycled
-  Views(subject, 2:1, 4)
-  Views(subject, 5:7, )
-  Views(subject, , 5:7)
-
   ## Some views can be "out of limits"
-  v2 <- Views(subject, 4:-1, 6)
+  v2 <- Views(subject, start=4:-1, end=6)
   trim(v2)
   subviews(v2, end=-2)
 

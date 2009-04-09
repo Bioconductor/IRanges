@@ -133,8 +133,8 @@ setMethod("min", "NormalIRanges",
 {
     if (is.null(names(x)))
         return(NULL)
-    if (!is.character(x@NAMES))
-        return("the 'NAMES' slot must contain a character vector")
+    if (!is.character(names(x)))
+        return("the names must be a character vector or NULL")
     if (length(names(x)) != length(x))
         return("number of names and number of elements differ")
     NULL
@@ -165,78 +165,72 @@ setValidity2("NormalIRanges", .valid.NormalIRanges)
 ### The safe and user-friendly "IRanges" constructor.
 ###
 
-### Return NULL or an integer vector with no NAs.
 .IRanges.normargStartEndWidth <- function(start_end_width, argname)
 {
     if (is.null(start_end_width))
-        return(start_end_width)
-    if (!is.numeric(start_end_width))
+        return(integer())
+    if (!is.numeric(start_end_width)
+     && !(is.atomic(start_end_width) && all(is.na(start_end_width))))
         stop("'", argname, "' must be a numeric vector (or NULL)")
-#    if (length(start_end_width) == 0L)
-#        stop("'", argname, "' must contain at least one integer value")
     if (!is.integer(start_end_width))
         start_end_width <- as.integer(start_end_width)
-    if (any(is.na(start_end_width)))
-        stop("'", argname, "' cannot contain NAs")
     start_end_width
 }
 
-IRanges <- function(start=NULL, end=NULL, width=NULL)
+.IRanges.build_swm_col <- function(s, e, w)
 {
-    if (is(start, "logical") || is(start, "Rle")) {
-        ## Not sure this is good design. Why would one want to use 'IRanges(x)'
-        ## for turning a logical vector or logical Rle into an IRanges object
-        ## when 'as(x, "IRanges")' is available and is the right thing to use?
+    nb_of_unknowns <- sum(is.na(s), is.na(e), is.na(w))
+    if (nb_of_unknowns >= 2L)
+        return(c(NA_integer_, NA_integer_))
+    if (is.na(w))
+        return(c(s, e - s + 1L))
+    if (is.na(s))
+        return(c(e - w + 1L, w))
+    if (!is.na(e) && e != s + w - 1L)
+        return(c(NA_integer_, NA_integer_))
+    return(c(s, w))
+}
+
+IRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL)
+{
+    if ((is(start, "logical") && !all(is.na(start))) || is(start, "Rle")) {
         if (is(start, "Rle") && !is(runValue(start), "logical"))
             stop("'start' is an Rle, but not a logical Rle object")
         if (!is.null(end) || !is.null(width))
-            stop("'end' and 'width' must be NULLs when 'start' is a logical\n",
-                 "  vector or logical Rle")
-        return(as(start, "IRanges"))
+            stop("'end' and 'width' must be NULLs when 'start' is a logical ",
+                 "vector or logical Rle")
+        ## The returned IRanges instance is guaranteed to be normal.
+        ans <- as(start, "IRanges")
+        names(ans) <- names
+        return(ans)
     }
     start <- .IRanges.normargStartEndWidth(start, "start")
     end <- .IRanges.normargStartEndWidth(end, "end")
     width <- .IRanges.normargStartEndWidth(width, "width")
-    null_args <- c(is.null(start), is.null(end), is.null(width))
-    if (all(null_args))
-        return(new("IRanges"))
-    if (sum(null_args) != 1L)
-        stop("exactly two out of the 'start', 'end' and 'width' arguments must be supplied")
-    if (is.null(width)) {
-        ## 'start' and 'end' were supplied by user
-        if (length(start) != length(end))
-            stop("'start' and 'end' must have the same length")
-        if (length(start) == 0L)
-            return(new("IRanges"))
-        width <- end - start + 1L
-    } else if (is.null(start)) {
-        ## 'width' and 'end' were supplied by user
-        if (length(width) > length(end))
-            stop("'width' has more elements than 'end'")
-        if (length(width) == 0L) {
-            if (length(end) == 0L)
-                return(new("IRanges"))
-            stop("cannot recycle zero-length 'width'")
-        }
-        if (length(width) < length(end))
-            width <- rep(width, length.out=length(end))
-        start <- end - width + 1L
-    } else {
-        ## 'width' and 'start' were supplied by user
-        if (length(width) > length(start))
-            stop("'width' has more elements than 'start'")
-        if (length(width) == 0L) {
-            if (length(start) == 0L)
-                return(new("IRanges"))
-            stop("cannot recycle zero-length 'width'")
-        }
-        if (length(width) < length(start))
-            width <- rep(width, length.out=length(start))
-    }
-    if (min(width) < 0L)
+    arg_lengths <- c(length(start), length(end), length(width))
+    if (max(arg_lengths) == 0L)
+        return(new("IRanges", NAMES=names))
+    ## Need to do this otherwise mapply() won't be able to recycle its
+    ## arguments (and will fail with an obscure error message).
+    if (length(start) == 0L)
+        start <- NA_integer_
+    if (length(end) == 0L)
+        end <- NA_integer_
+    if (length(width) == 0L)
+        width <- NA_integer_
+    ## Build the start/width matrix (swm).
+    swm <- mapply(.IRanges.build_swm_col, start, end, width)
+    ans_start <- swm[1L, ]
+    ans_width <- swm[2L, ]
+    ii <- which(is.na(ans_start))
+    if (length(ii) != 0L)
+        stop("range ", ii[1L], " cannot be determined from the supplied arguments")
+    if (min(ans_width) < 0L)
         stop("negative widths are not allowed")
-    ## 'start' and 'with' are guaranteed to be valid
-    new2("IRanges", start=start, width=width, check=FALSE)
+    ## 'ans_start' and 'ans_width' are guaranteed to be valid.
+    ans <- new2("IRanges", start=ans_start, width=ans_width, check=FALSE)
+    names(ans) <- names
+    return(ans)
 }
 
 
@@ -258,6 +252,7 @@ newNormalIRangesFromIRanges <- function(x, check=TRUE)
     new2("NormalIRanges", start=x@start, width=x@width, NAMES=x@NAMES, check=FALSE)
 }
 
+### The returned IRanges instance is guaranteed to be normal.
 setAs("logical", "IRanges",
     function(from) as(Rle(from), "IRanges")
 )

@@ -20,8 +20,9 @@ setClass("RleViews",
 ###
 
 setMethod("Views", "Rle",
-    function(subject, start=NA, end=NA, names=NULL)
-        newViews(subject, start=start, end=end, names=names,
+    function(subject, start=NULL, end=NULL, width=NULL, names=NULL)
+        newViews(subject,
+                 start=start, end=end, width=width, names=names,
                  Class="RleViews")
 )
 

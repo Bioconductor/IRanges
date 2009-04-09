@@ -30,7 +30,7 @@ setMethod("subject", "Views", function(x) x@subject)
 
 .valid.Views.width <- function(x)
 {
-    if (length(width(x)) != 0 && min(width(x)) <= 0)
+    if (length(width(x)) != 0L && min(width(x)) <= 0L)
         return("null widths are not allowed")
     NULL
 }
@@ -41,46 +41,30 @@ setValidity2("Views", .valid.Views.width)
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The low-level "Views" constructor.
 ###
-### TODO: - support the 'width' argument;
-###       - remove the 'names' argument (user should call names(x) <- somenames
-###         separately);
-###       - add a 'check.limits' arg (default to TRUE) for raising an error if
+### TODO: - add a 'check.limits' arg (default to TRUE) for raising an error if
 ###         some views are "out of limits".
 ###
 
-newViews <- function(subject, start=NA, end=NA, names=NULL, Class=NULL)
+newViews <- function(subject, start=NULL, end=NULL, width=NULL, names=NULL, Class=NULL)
 {
     if (is(start, "IRanges")) {
-        end <- end(start)
-        start <- start(start)
-    } else if (is(start, "Rle") && length(start) > 0 &&
-               is.logical(runValue(start))) {
-        whichValues <- which(runValue(start))
-        end <- end(start)[whichValues]
-        start <- start(start)[whichValues]
+        if (!is.null(end) || !is.null(width))
+            stop("'end' and 'width' must be NULLs when 'start' is an IRanges object")
+        ir <- start
+        ## Keep names in 'ir' unless 'names' is specified.
+        if (!is.null(names))
+            names(ir) <- names
+    } else {
+        ir <- IRanges(start=start, end=end, width=width, names=names)
     }
-    if (!isNumericOrNAs(start) || !isNumericOrNAs(end))
-        stop("'start' and 'end' must be numeric vectors")
-    if (!is.integer(start))
-        start <- as.integer(start)
-    start[is.na(start)] <- 1L
-    if (!is.integer(end))
-        end <- as.integer(end)
-    end[is.na(end)] <- length(subject)
-    if (length(start) < length(end))
-        start <- recycleVector(start, length(end))
-    else if (length(end) < length(start))
-        end <- recycleVector(end, length(start))
-    if (!all(start <= end))
-        stop("'start' and 'end' must verify 'start <= end'")
-    width <- end - start + 1L
-    ## 'start' and 'with' are guaranteed to be valid.
+    if (length(width(ir)) != 0L && min(width(ir)) <= 0L)
+        stop("null widths are not allowed")
     if (is.null(Class))
         Class <- paste(class(subject), "Views", sep="")
-    ans <- new2(Class, subject=subject, start=start, width=width, check=FALSE)
-    names(ans) <- names
-    ans
+    #new2(Class, ir, subject=subject, check=FALSE)  # gives me an infinite recursion!
+    new2(Class, subject=subject, start=start(ir), width=width(ir), NAMES=names(ir), check=FALSE)
 }
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The user-friendly "Views" constructor.
@@ -89,10 +73,19 @@ newViews <- function(subject, start=NA, end=NA, names=NULL, Class=NULL)
 ###
 
 setGeneric("Views", signature="subject",
-    function(subject, start=NA, end=NA, names=NULL) standardGeneric("Views")
+    function(subject, start=NULL, end=NULL, width=NULL, names=NULL)
+        standardGeneric("Views")
 )
 
-views <- function(...) { .Deprecated("Views"); Views(...) }
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion.
+###
+
+### Returns a single view covering the entire sequence.
+setAs("Sequence", "Views",
+    function(from) Views(from, start=1L, width=length(from))
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -247,3 +240,11 @@ setMethod("viewApply", "Views",
                simplify = simplify)
     }
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Old stuff (Defunct or Deprecated).
+###
+
+views <- function(...) .Defunct("Views")
+
