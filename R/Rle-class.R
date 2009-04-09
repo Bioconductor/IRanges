@@ -40,7 +40,7 @@ setMethod("runValue", "Rle", function(x) x@values)
 setGeneric("nrun", signature = "x", function(x) standardGeneric("nrun"))
 setMethod("nrun", "Rle", function(x) length(runLength(x)))
 
-setMethod("start", "Rle", function(x) cumsum(c(1L, runLength(x))[seq_len(nrun(x))]))
+setMethod("start", "Rle", function(x) cumsum(c(1L, runLength(x)))[-(nrun(x)+1L)])
 setMethod("end", "Rle", function(x) cumsum(runLength(x)))
 setMethod("width", "Rle", function(x) runLength(x))
 
@@ -130,6 +130,8 @@ setAs("Rle", "IRanges",
           keep <- runValue(from)
           IRanges(start = start(from)[keep], width = runLength(from)[keep])
       })
+setAs("Rle", "NormalIRanges",
+      function(from) newNormalIRangesFromIRanges(as(from, "IRanges"), check=FALSE))
 
 setMethod("as.vector", c("Rle", "missing"), function(x, mode) rep(runValue(x), runLength(x)))
 setMethod("as.logical", "Rle", function(x) rep(as.logical(runValue(x)), runLength(x)))

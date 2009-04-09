@@ -43,6 +43,7 @@
 \alias{coerce,Rle,raw-method}
 \alias{coerce,Rle,factor-method}
 \alias{coerce,Rle,IRanges-method}
+\alias{coerce,Rle,NormalIRanges-method}
 
 \alias{Ops,Rle,Rle-method}
 \alias{Ops,Rle,vector-method}
@@ -226,7 +227,10 @@
       based on the values contained in \code{x}.
     }
     \item{}{
-      \code{as(from, "IRanges")}: Creates an IRanges object from a logical Rle.
+      \code{as(from, "IRanges")}: Creates an \link{IRanges} object from a logical Rle.
+    }
+    \item{}{
+      \code{as(from, "NormalIRanges")}: Creates a \link{NormalIRanges} object from a logical Rle.
     }
   }
 }
@@ -266,7 +270,7 @@
       Subsets \code{x} by index \code{i}, where \code{i} can be positive
       integers, negative integers, a logical vector of the same length as
       \code{x}, an Rle object of the same length as \code{x}
-      containing logical values, or an \code{IRanges} object.
+      containing logical values, or an \link{IRanges} object.
       When \code{drop = FALSE} returns an Rle object. When \code{drop = TRUE},
       returns an atomic vector.
     }
@@ -306,7 +310,7 @@
     }
     \item{}{
       \code{findRange(x, vec)}:
-      Returns an IRanges object representing the ranges in Rle \code{vec}
+      Returns an \link{IRanges} object representing the ranges in Rle \code{vec}
       that are referenced by the indices in the integer vector \code{x}.
     }
     \item{}{
@@ -584,7 +588,8 @@
 \seealso{
   \code{\link[base]{rle}},
   \link{Sequence-class},
-  \link[methods]{S4groupGeneric}
+  \link[methods]{S4groupGeneric},
+  \link{IRanges-class}
 }
 
 \examples{

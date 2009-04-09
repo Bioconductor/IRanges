@@ -183,9 +183,17 @@ setValidity2("NormalIRanges", .valid.NormalIRanges)
 
 IRanges <- function(start=NULL, end=NULL, width=NULL)
 {
-    if (is(start, "Rle"))
+    if (is(start, "logical") || is(start, "Rle")) {
+        ## Not sure this is good design. Why would one want to use 'IRanges(x)'
+        ## for turning a logical vector or logical Rle into an IRanges object
+        ## when 'as(x, "IRanges")' is available and is the right thing to use?
+        if (is(start, "Rle") && !is(runValue(start), "logical"))
+            stop("'start' is an Rle, but not a logical Rle object")
+        if (!is.null(end) || !is.null(width))
+            stop("'end' and 'width' must be NULLs when 'start' is a logical\n",
+                 "  vector or logical Rle")
         return(as(start, "IRanges"))
-
+    }
     start <- .IRanges.normargStartEndWidth(start, "start")
     end <- .IRanges.normargStartEndWidth(end, "end")
     width <- .IRanges.normargStartEndWidth(width, "width")
@@ -249,6 +257,14 @@ newNormalIRangesFromIRanges <- function(x, check=TRUE)
     ## Make a "hard copy" of the slots. No need to check anything!
     new2("NormalIRanges", start=x@start, width=x@width, NAMES=x@NAMES, check=FALSE)
 }
+
+setAs("logical", "IRanges",
+    function(from) as(Rle(from), "IRanges")
+)
+
+setAs("logical", "NormalIRanges",
+    function(from) as(Rle(from), "NormalIRanges")
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

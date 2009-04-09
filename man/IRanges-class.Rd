@@ -26,6 +26,10 @@
 \alias{max,NormalIRanges-method}
 \alias{min,NormalIRanges-method}
 
+% Coercion:
+\alias{coerce,logical,IRanges-method}
+\alias{coerce,logical,NormalIRanges-method}
+
 
 \title{IRanges and NormalIRanges objects}
 
@@ -63,8 +67,9 @@
       cyclically to the length of \code{start}.
       }
       \item{Category 2}{
-      The \code{start} argument is a logical Rle object and produces the same
-      result as \code{as(start, "IRanges")}.
+      The \code{start} argument is a logical vector or logical Rle object
+      and \code{IRanges(start)} produces the same result as
+      \code{as(start, "IRanges")}.
       }
       }
     }
