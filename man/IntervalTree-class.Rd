@@ -65,7 +65,9 @@
       overlap with the intervals \code{object}, an \code{IntervalTree}
       or, for convenience, a \code{Ranges} coercible to a
       \code{IntervalTree}. If \code{query} is omitted, \code{object} is
-      queried against itself. Intervals with a separation of
+      queried against itself. if \code{query} is unsorted, it is sorted
+      first, so it is usually better to sort up-front, to avoid a sort
+      with each \code{overlap} call. Intervals with a separation of
       \code{maxgap} or less are considered to be
       overlapping. \code{maxgap} should be a scalar, non-negative,
       non-NA number. When \code{multiple} (a scalar non-NA logical) is
