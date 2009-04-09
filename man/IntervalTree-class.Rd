@@ -138,7 +138,7 @@
   \code{mk}. Note that when the \code{multiple} parameter is set to
   \code{FALSE}, \code{k} is fixed to 1 and drops out of this
   analysis. We also assume here that the query is sorted by start
-  position, which is an assertion of the \code{overlap} method.
+  position (the \code{overlap} function sorts the query if it is unsorted).
   
   An upper bound for finding overlaps is
   \code{O(min(mk*lg(n),n+mk))}. The fastest interval tree algorithm

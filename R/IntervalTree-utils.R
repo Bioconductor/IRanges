@@ -6,8 +6,10 @@ setMethod("overlap", c("IntervalTree", "Ranges"),
           function(object, query, maxgap = 0, multiple = TRUE)
           {
             query <- as(query, "IRanges")
+            query_ord <- NULL
             if (is.unsorted(start(query))) { ## query must be sorted
-              stop("query must be in sorted order by start position")
+              query_ord <- order(query)
+              query <- query[query_ord]
             }
             if (!isTRUEorFALSE(multiple))
               stop("'multiple' must be logical of length 1")
@@ -27,15 +29,17 @@ setMethod("overlap", c("IntervalTree", "Ranges"),
               fun <- paste(fun, "_multiple", sep = "")
             validObject(query)
             result <- .IntervalTreeCall(object, fun, query)
-            ## if (multiple) {
-            ##   mm <- matchMatrix(result)
-            ##   if (is(mm, "ngCMatrix")) {
-            ##     iord <- order(mm@i)
-            ##     p <- rep(seq_len(ncol(mm)), diff(mm@p))
-            ##     mm@i <- mm@i[iord][order(p[iord])]
-            ##     result@matchMatrix <- mm
-            ##   }
-            ## }
+            if (!is.null(query_ord)) {
+              if (multiple) {
+                mat <- matchMatrix(result)
+                mat[,1] <- query_ord[mat[,1]]
+                result@matchMatrix <- mat
+              } else {
+                query_rev_ord <- integer(length(query_ord))
+                query_rev_ord[query_ord] <- seq_along(query_ord)
+                result <- result[query_rev_ord]
+              }
+            }
             result
           })
 
