@@ -46,20 +46,21 @@
 
 \details{
   The \code{union}, \code{intersect} and \code{setdiff} methods
-  for \link{IRanges} objects return a "normal" \link{IRanges} instance
-  representing the union, intersection and (asymmetric!) difference
-  of the sets of integers represented by \code{x} and \code{y}.
+  for \link{IRanges} objects return a "normal" \link{IRanges}
+  object (of the same class as \code{x}) representing the union,
+  intersection and (asymmetric!) difference of the sets of integers
+  represented by \code{x} and \code{y}.
 
-  \code{punion}, \code{pintersect} and \code{psetdiff}
-  are generic functions that perform the element-wise (aka "parallel")
-  union, intersection and (asymmetric!) difference of \code{x}
-  and \code{y}.
+  \code{punion}, \code{pintersect}, \code{psetdiff} and \code{pgap}
+  are generic functions that compute the element-wise (aka "parallel")
+  union, intersection, (asymmetric!) difference and gap between
+  each element in \code{x} and its corresponding element in \code{y}.
   Methods for \link{IRanges} objects are defined. For these methods,
   \code{x} and \code{y} must have the same length (i.e. same number
   of ranges) and they return an \link{IRanges} instance of the
   same length as \code{x} and \code{y} where each range represents
-  the union/intersection/difference of the corresponding ranges in
-  \code{x} and \code{y}.
+  the union/intersection/difference/gap of/between the corresponding
+  ranges in \code{x} and \code{y}.
 
   Note that the union or difference of 2 ranges cannot always
   be represented by a single range so \code{punion} and \code{psetdiff}
@@ -71,9 +72,7 @@
   in \code{y} has its end points strictly inside the corresponding
   range in \code{x}. In that case, \code{psetdiff} will simply fail.
 
-  \code{pgap} returns the gap between each element in \code{x} and
-  its corresponding element in \code{y}, in parallel fashion, returning
-  an \code{IRanges} instance. If two ranges overlap, the gap is empty.
+  If two ranges overlap, then the gap between them is empty.
 }
 
 \author{H. Pages and M. Lawrence}
@@ -86,11 +85,15 @@
 
 \examples{
   x <- IRanges(c(1, 5, -2, 0, 14), c(10, 9, 3, 11, 17))
-  y <- IRanges(c(14, 0, -5, 6, 18), c(20, 2, 2, 8, 20)) 
+  y <- Views(as(4:-17, "XInteger"), start=c(14, 0, -5, 6, 18), end=c(20, 2, 2, 8, 20))
 
   ## Vector-wise operations:
   union(x, y)
+  union(y, x)
+
   intersect(x, y)
+  intersect(y, x)
+
   setdiff(x, y)
   setdiff(y, x)
 

@@ -41,6 +41,9 @@
   \link{Ranges} objects and for their methods (all of them should
   work for IRanges objects).
 
+  Some subclasses of the IRanges class are: NormalIRanges,
+  \link{Views}, etc...
+
   A NormalIRanges object is just an IRanges object that is guaranteed
   to be "normal". See the Normality section in the man page for
   \link{Ranges} objects for the definition and properties
@@ -94,10 +97,15 @@
 \seealso{
   \link{Ranges-class},
   \link{IRanges-utils},
-  \link{IRanges-setops}
+  \link{IRanges-setops}.
+
+  Some direct subclasses of the IRanges class (other than NormalIRanges):
+  \link{Views-class}.
 }
 
 \examples{
+  showClass("IRanges")  # shows (some of) the known subclasses
+
   ## Using an IRanges object for storing a big set of ranges is more
   ## efficient than using a standard R data frame:
   N <- 2000000L  # nb of ranges

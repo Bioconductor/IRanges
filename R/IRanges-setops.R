@@ -2,15 +2,30 @@
 ### Set operations on IRanges objects
 ### -------------------------------------------------------------------------
 ###
-### All these functions take 2 IRanges *objects* and return an IRanges
-### *instance*. Hence they are NOT endomorphisms.
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Vector-wise operations.
+###
+### These operations are implemented to behave like endomorphisms with
+### respect to their first element.
 ###
 
 setMethod("union", c("IRanges", "IRanges"),
     function(x, y)
     {
-        z <- reduce(c(as(x, "IRanges"), y))
-        z[width(z) != 0]
+        ## We need to downgrade 'x' to an IRanges instance 'x0' so 'c(x0, y)'
+        ## is guaranteed to work (even e.g. if 'x' is a NormalIRanges object).
+        x0 <- as(x, "IRanges")  # downgrade x to IRanges
+        x0 <- reduce(c(x0, y))
+        x0 <- x0[width(x0) != 0]
+        ## Maybe the call to update() below could be replaced by
+        ## 'as(x, "IRanges") <- x0' but I was not lucky with my first
+        ## attempt to use this construct:
+        ##   > v <- Views(XInteger(18), 2:5, 13:10)
+        ##   > as(v, "IRanges") <- IRanges(3, 8)
+        ##   Error: evaluation nested too deeply: infinite recursion / options(expressions=)?
+        update(x, start=start(x0), width=width(x0), names=names(x0))
     }
 )
 
@@ -31,6 +46,14 @@ setMethod("setdiff", c("IRanges", "IRanges"),
         gaps(union(gaps(x, start=start, end=end), y), start=start, end=end)
     }
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Element-wise (aka "parallel") operations.
+###
+### The functions below take 2 IRanges *objects* and return an IRanges
+### *instance*. Hence they are NOT endomorphisms.
+###
 
 setGeneric("punion", signature=c("x", "y"),
     function(x, y, ...) standardGeneric("punion")
@@ -103,18 +126,19 @@ setMethod("psetdiff", c("IRanges", "IRanges"),
 )
 
 setGeneric("pgap", signature=c("x", "y"),
-           function(x, y, ...) standardGeneric("pgap")
-           )
+    function(x, y, ...) standardGeneric("pgap")
+)
 
 setMethod("pgap", c("IRanges", "IRanges"),
-          function(x, y, ...)
-          {
-            if (length(x) != length(y))
-              stop("'x' and 'y' must have the same length")
-            ans_start <- pmax.int(start(x), start(y))
-            ans_end <- pmin.int(end(x), end(y)) + 1L
-            ans_width <- ans_start - ans_end
-            ans_width[ans_width < 0L] <- 0L
-            IRanges(start=ans_end, width=ans_width)
-          }
-          )
+    function(x, y, ...)
+    {
+        if (length(x) != length(y))
+            stop("'x' and 'y' must have the same length")
+        ans_start <- pmax.int(start(x), start(y))
+        ans_end <- pmin.int(end(x), end(y)) + 1L
+        ans_width <- ans_start - ans_end
+        ans_width[ans_width < 0L] <- 0L
+        IRanges(start=ans_end, width=ans_width)
+    }
+)
+

@@ -19,15 +19,20 @@
 
 \description{
   The ListLike class is just an interface i.e. a virtual class with no slots.
-  "ListLike classes" (i.e. classes that contain the ListLike interface)
+  ListLike subclasses (i.e. classes that contain the ListLike class)
   must define the following minimal set of functions/operators:
   \code{length}, \code{"[["} and \code{names}.
-  Then instances of these classes can be considered to have the shape
-  of a list and the methods described below can be applied to them.
+  Then, instances of these subclasses can be considered to have the shape
+  of a list, and the methods described below apply to them.
+
+  Some direct subclasses of the ListLike class are: \link{Views},
+  \link{MaskCollection}, \link[Biostrings]{XStringSet} (defined in the
+  Biostrings package), etc...
 }
 
 \section{Methods}{
   In the code snippets below, \code{x} and \code{X} are ListLike objects.
+
   \describe{
     \item{}{
       \code{x$name}:
@@ -68,12 +73,18 @@
 \author{H. Pages}
 
 \seealso{
-  \link{RleViews-class},
-  \link{MaskCollection-class}
+  \code{\link[base]{lapply}},
+  \code{\link[base]{sapply}},
+  \code{\link[base]{as.list}}.
+
+  Some direct subclasses of the ListLike class:
+  \link{Views-class},
+  \link{MaskCollection-class},
+  \link[Biostrings]{XStringSet-class}.
 }
 
 \examples{
-  showClass("ListLike")  # see known subclasses ("ListLike classes")
+  showClass("ListLike")  # shows (some of) the known subclasses
 }
 
 \keyword{methods}
