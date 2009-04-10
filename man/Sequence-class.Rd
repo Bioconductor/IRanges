@@ -25,15 +25,17 @@
 \alias{as.numeric,XSequence-method}
 \alias{show,XSequence-method}
 
-\alias{coerce,integer,XSequence-method}
-\alias{coerce,numeric,XSequence-method}
-
 % XRaw class, functions and methods:
 \alias{class:XRaw}
 \alias{XRaw-class}
 \alias{XRaw}
 
+\alias{coerce,raw,XRaw-method}
+\alias{coerce,raw,XSequence-method}
+\alias{coerce,numeric,XRaw-method}
+\alias{as.raw,XRaw-method}
 \alias{as.integer,XRaw-method}
+\alias{as.vector,XRaw,missing-method}
 \alias{[,XRaw-method}
 \alias{c,XRaw-method}
 
@@ -42,10 +44,10 @@
 \alias{XInteger-class}
 \alias{XInteger}
 
+\alias{coerce,numeric,XInteger-method}
+\alias{coerce,integer,XSequence-method}
 \alias{as.integer,XInteger-method}
 \alias{as.vector,XInteger,missing-method}
-\alias{coerce,integer,XInteger-method}
-\alias{coerce,numeric,XInteger-method}
 \alias{[,XInteger-method}
 \alias{==,XInteger,XInteger-method}
 
@@ -54,9 +56,10 @@
 \alias{XNumeric-class}
 \alias{XNumeric}
 
+\alias{coerce,numeric,XNumeric-method}
+\alias{coerce,numeric,XSequence-method}
 \alias{as.numeric,XNumeric-method}
 \alias{as.vector,XNumeric,missing-method}
-\alias{coerce,numeric,XNumeric-method}
 \alias{[,XNumeric-method}
 \alias{show,XNumeric-method}
 \alias{==,XNumeric,XNumeric-method}
@@ -208,7 +211,7 @@
 
   x1 <- XRaw(4)  # values are not initialized
   x1
-  x2 <- XRaw(3, val=c(255, 255, 199))
+  x2 <- as(c(255, 255, 199), "XRaw")
   x2
   y <- c(x1, x2, NULL, x1)  # NULLs are ignored
   y

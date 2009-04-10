@@ -32,8 +32,20 @@ XRaw <- function(length=0L, val=NULL)
 ### Coercion.
 ###
 
+### From standard vectors to XRaw objects:
+setAs("raw", "XRaw", function(from) XRaw(length(from), val=from))
+setAs("raw", "XSequence", function(from) as(from, "XRaw"))
+setAs("numeric", "XRaw", function(from) XRaw(length(from), val=from))
+
+### From XRaw objects to standard vectors:
+### TODO: Modify RawPtr.read() so it returns a raw vector instead of a
+### character string, and use it here.
+setMethod("as.raw", "XRaw", function(x) as.raw(as.integer(x)))
 setMethod("as.integer", "XRaw",
-    function(x) RawPtr.readInts(x@xdata, x@offset + 1L, x@offset + x@length)
+    function(x, ...) RawPtr.readInts(x@xdata, x@offset + 1L, x@offset + x@length)
+)
+setMethod("as.vector", c("XRaw", "missing"),
+    function(x, mode) as.raw(x)
 )
 
 

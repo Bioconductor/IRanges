@@ -35,7 +35,7 @@ setMethod("subseq", "XSequence",
 
 ### Works as long as as.integer() works on 'x'.
 setMethod("as.numeric", "XSequence",
-    function(x) as.numeric(as.integer(x))
+    function(x, ...) as.numeric(as.integer(x))
 )
 
 ### Works as long as subseq() and as.numeric() work on 'x'.

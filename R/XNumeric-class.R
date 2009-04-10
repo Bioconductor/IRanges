@@ -35,24 +35,23 @@ setMethod("initialize", "XNumeric",
 XNumeric <- function(length=0L, val=NULL)
     new("XNumeric", length=length, val=val)
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
 ###
 
-setAs("numeric", "XNumeric", function(from) {
-  XNumeric(length(from), val = from)
-})
+### From standard vectors to XNumeric objects:
+setAs("numeric", "XNumeric", function(from) XNumeric(length(from), val=from))
+setAs("numeric", "XSequence", function(from) as(from, "XNumeric"))
 
-setAs("numeric", "XSequence", function(from) {
-  as(from, "XNumeric")
-})
-
+### From XNumeric objects to standard vectors:
 setMethod("as.numeric", "XNumeric",
-          function(x) NumericPtr.read(x@xdata, x@offset + 1L,
-                                      x@offset + x@length))
-
+    function(x, ...) NumericPtr.read(x@xdata, x@offset + 1L, x@offset + x@length)
+)
 setMethod("as.vector", c("XNumeric", "missing"),
-          function(x, mode) as.numeric(x))
+    function(x, mode) as.numeric(x)
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.

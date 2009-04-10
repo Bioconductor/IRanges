@@ -26,8 +26,6 @@
 \alias{!=,XRleInteger,XRleIntegerViews-method}
 \alias{!=,integer,XRleIntegerViews-method}
 
-\alias{as.integer,XRleIntegerViews-method}
-
 
 \title{The XRleIntegerViews class}
 
@@ -74,12 +72,6 @@
     \item{}{
       \code{e1 != e2}:
       Equivalent to \code{!(e1 == e2)}.
-    }
-    \item{}{
-      \code{as.integer(x, use.names, check.limits)}:
-      Convert \code{x} to a list of integer vectors of the same length as
-      \code{x}.
-      Can't be used if \code{x} has "out of limits" views (raise an error).
     }
   }
 }

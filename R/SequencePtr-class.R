@@ -32,7 +32,7 @@ setMethod("length", "SequencePtr",
 
 ### Works as long as as.integer() works on 'x'.
 setMethod("as.numeric", "SequencePtr",
-    function(x) as.numeric(as.integer(x))
+    function(x, ...) as.numeric(as.integer(x))
 )
 
 

@@ -21,6 +21,8 @@
 \alias{characterORNULL-class}
 \alias{characterORNULL}
 
+\alias{coerce,ANY,vector-method}
+
 % SequencePtr class, functions and methods:
 \alias{class:SequencePtr}
 \alias{SequencePtr-class}

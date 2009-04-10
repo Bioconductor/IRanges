@@ -253,9 +253,9 @@ RawPtr.append <- function(x1, start1, width1, x2, start2, width2)
 ###
 
 setMethod("as.integer", "RawPtr",
-    function(x)
+    function(x, ...)
     {
-        RawPtr.readInts(x, 1, length(x))
+        RawPtr.readInts(x, 1L, length(x))
     }
 )
 

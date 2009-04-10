@@ -95,7 +95,7 @@ setAs("integer", "XRleInteger",
     function(from) XRleInteger(from))
 
 setMethod("as.integer", "XRleInteger",
-    function(x) rep.int(as.integer(x@values), as.integer(x@lengths)))
+    function(x, ...) rep.int(as.integer(x@values), as.integer(x@lengths)))
 
 setMethod("as.vector", c("XRleInteger", "missing"),
     function(x, mode) as.integer(x))

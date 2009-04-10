@@ -261,15 +261,3 @@ setMethod("!=", signature(e1="integer", e2="XIntegerViews"),
     function(e1, e2) !(e1 == e2)
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Other standard generic methods.
-###
-
-setMethod("as.integer", "XIntegerViews",
-    function(x)
-    {
-        lapply(as.list(x), as.integer)
-    }
-)
-

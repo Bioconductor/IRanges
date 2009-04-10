@@ -113,7 +113,7 @@ IntegerPtr.copy <- function(dest, i, imax=integer(0), src)
 ###
 
 setMethod("as.integer", "IntegerPtr",
-    function(x) IntegerPtr.read(x, 1, length(x))
+    function(x, ...) IntegerPtr.read(x, 1L, length(x))
 )
 
 

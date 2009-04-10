@@ -73,6 +73,39 @@ normargShift <- function(shift, nseq)
 
 setClassUnion("characterORNULL", c("character", "NULL"))
 
+### We define the coercion method below as a workaround to the following
+### bug in R:
+###
+###   setClass("A", representation(stuff="numeric"))
+###   setMethod("as.vector", c("A", "missing"), function(x, mode) x@stuff)
+###
+###   a <- new("A", stuff=3:-5)
+###   > as.vector(a)
+###   [1]  3  2  1  0 -1 -2 -3 -4 -5
+###   > as(a, "vector")
+###   Error in as.vector(from) : 
+###     no method for coercing this S4 class to a vector
+###   > selectMethod("coerce", c("A", "vector"))
+###   Method Definition:
+###
+###   function (from, to, strict = TRUE) 
+###   {
+###       value <- as.vector(from)
+###       if (strict) 
+###           attributes(value) <- NULL
+###       value
+###   }
+###   <environment: namespace:methods>
+###
+###   Signatures:
+###           from  to      
+###   target  "A"   "vector"
+###   defined "ANY" "vector"
+###   > setAs("ANY", "vector", function(from) as.vector(from))
+###   > as(a, "vector")
+###   [1]  3  2  1  0 -1 -2 -3 -4 -5
+setAs("ANY", "vector", function(from) as.vector(from))
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other low-level (not exported) helper functions.

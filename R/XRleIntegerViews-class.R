@@ -253,15 +253,3 @@ setMethod("!=", signature(e1="integer", e2="XRleIntegerViews"),
     function(e1, e2) !(e1 == e2)
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Other standard generic methods.
-###
-
-setMethod("as.integer", "XRleIntegerViews",
-    function(x)
-    {
-        lapply(as.list(x), as.integer)
-    }
-)
-

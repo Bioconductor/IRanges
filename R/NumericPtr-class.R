@@ -112,7 +112,7 @@ NumericPtr.copy <- function(dest, i, imax=integer(0), src)
 ###
 
 setMethod("as.numeric", "NumericPtr",
-    function(x) NumericPtr.read(x, 1, length(x))
+    function(x, ...) NumericPtr.read(x, 1L, length(x))
 )
 
 
