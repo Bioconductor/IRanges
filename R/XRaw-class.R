@@ -100,7 +100,6 @@ setMethod("c", "XRaw",
             args[arg_is_null] <- NULL  # remove NULL elements by setting them to NULL!
         if (!all(sapply(args, is, class(x))))
             stop("all arguments in '...' must be ", class(x), " objects (or NULLs)")
-        args <- c(list(x), args)
         ans_length <- sum(sapply(args, length))
         ans_xdata <- RawPtr(ans_length)
         dest_start <- 1L
