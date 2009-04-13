@@ -79,9 +79,10 @@ checkAndTranslateDbleBracketSubscript <- function(x, i, j, ...)
 setMethod("[[", "ListLike", checkAndTranslateDbleBracketSubscript)
 setMethod("$", "ListLike", function(x, name) x[[name, exact=FALSE]])
 
-setMethod("lapply", c("ListLike", "ANY"),
+setMethod("lapply", "ListLike",
     function(X, FUN, ...)
     {
+        FUN <- match.fun(FUN)
         ii <- seq_len(length(X))
         names(ii) <- names(X)
         lapply(ii, function(i) FUN(X[[i]], ...))
@@ -98,6 +99,7 @@ setGeneric("sapply", signature="X",
 setMethod("sapply", "ListLike",
     function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
     {
+        FUN <- match.fun(FUN)
         ii <- seq_len(length(X))
         names(ii) <- names(X)
         sapply(ii, function(i) FUN(X[[i]], ...), simplify=simplify, USE.NAMES=USE.NAMES)
@@ -116,7 +118,7 @@ setMethod("sapply", "ListLike",
 ###         }
 ###     )
 ###
-###     setMethod("lapply", c("ListLike", "ANY"),
+###     setMethod("lapply", "ListLike",
 ###         function(X, FUN, ...) lapply(as.list(X), FUN, ...)
 ###     )
 ###

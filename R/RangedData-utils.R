@@ -7,11 +7,10 @@
 ###
 
 setMethod("lapply", "RangedData", function(X, FUN, ...) {
+  FUN <- match.fun(FUN)
   inds <- seq(length(X))
   names(inds) <- names(X)
-  lapply(inds, function(i) {
-    FUN(X[i], ...)
-  })
+  lapply(inds, function(i) FUN(X[i], ...))
 })
 
 setGeneric("rdapply", function(x, ...) standardGeneric("rdapply"))

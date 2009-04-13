@@ -12,14 +12,12 @@
 \alias{length,TypedList-method}
 \alias{names,TypedList-method}
 \alias{names<-,TypedList-method}
-\alias{isEmpty,TypedList-method}
 
 % subsetting
 \alias{[,TypedList-method}
 \alias{[<-,TypedList-method} % hidden
 \alias{[[,TypedList-method}
 \alias{[[<-,TypedList-method}
-\alias{$,TypedList-method}
 \alias{$<-,TypedList-method}
 
 % splitting and combining
@@ -30,10 +28,6 @@
 \alias{as.list,TypedList-method}
 \alias{coerce,TypedList,list-method}
 \alias{unlist,TypedList-method}
-
-% utilities
-\alias{lapply,TypedList,function-method}
-\alias{lapply,TypedList,character-method}
 
 % show
 \alias{show,TypedList-method}
@@ -164,17 +158,26 @@
 
 \section{Applying}{
   \describe{
-    \item{}{\code{lapply(X, FUN, ...)}: Applies the \code{function}
-      \code{FUN} over the \code{TypedList} \code{X}, with arguments in
-      \code{...} passed on to \code{FUN}. Returns a \code{list}, with
-      each element resulting from invoking \code{FUN} on the corresponding
-      element of \code{X}. Same semantics as the default \code{\link{lapply}}.
+    \item{}{
+      \code{lapply(X, FUN, ...)}:
+      Like the standard \code{\link[base]{lapply}} function defined in the
+      base package, the \code{lapply} method for TypedLike objects returns
+      a list of the same length as \code{X}, each element of which is the
+      result of applying \code{FUN} to the corresponding element of \code{X}.
+    }
+    \item{}{
+      \code{sapply(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)}:
+      Like the standard \code{\link[base]{sapply}} function defined in the
+      base package, the \code{sapply} method for TypedList objects is a
+      user-friendly version of \code{lapply} by default returning a vector
+      or matrix if appropriate.
     }
   }
 }
 
 \author{Michael Lawrence}
-\seealso{\code{\linkS4class{RangesList}} for an example implementation}
+\seealso{\code{\linkS4class{ListLike}},
+         \code{\linkS4class{RangesList}} for an example implementation}
 
 \examples{
   ## demonstrated on IntegerList objects, as TypedList is virtual

@@ -165,7 +165,10 @@ updateRangedData <- function(object) {
 setMethod("[[", "RangedData",
           function(x, i, j, ...)
           {
-            if (!missing(j) || length(list(...)) > 0)
+            dotArgs <- list(...)
+            if (length(dotArgs) > 0)
+                dotArgs <- dotArgs[names(dotArgs) != "exact"]
+            if (!missing(j) || length(dotArgs) > 0)
               stop("invalid subsetting")
             if (missing(i))
               stop("subscript is missing")

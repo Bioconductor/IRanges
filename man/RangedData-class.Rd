@@ -46,7 +46,7 @@
 \alias{$<-,RangedData-method}
 
 % Applying:
-\alias{lapply,RangedData,ANY-method}
+\alias{lapply,RangedData-method}
 
 % Show:
 \alias{show,RangedData-method}

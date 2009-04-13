@@ -7,7 +7,7 @@
 
 \alias{[[,ListLike-method}
 \alias{$,ListLike-method}
-\alias{lapply,ListLike,ANY-method}
+\alias{lapply,ListLike-method}
 \alias{sapply}
 \alias{sapply,ListLike-method}
 \alias{as.list,ListLike-method}
@@ -78,6 +78,7 @@
   \code{\link[base]{as.list}}.
 
   Some direct subclasses of the ListLike class:
+  \link{TypedList-class},
   \link{Views-class},
   \link{MaskCollection-class},
   \link[Biostrings]{XStringSet-class}.

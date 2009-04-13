@@ -6,7 +6,9 @@
 setClassUnion("ANYTHING", methods:::.BasicClasses)
 
 setClass("TypedList",
+         contains="ListLike",
          representation(
+                       "VIRTUAL",
                         elements="list",   # a list of R objects
                         NAMES="characterORNULL",  # R doesn't like @names !!
                         elementClass="character",
@@ -19,8 +21,7 @@ setClass("TypedList",
                    elementClass="ANYTHING",
                    elementLengths=integer(0),
                    compress=FALSE
-                   ),
-         contains = "VIRTUAL"
+                   )
          )
 
 setMethod("initialize", "TypedList",
@@ -66,10 +67,14 @@ isOldTypedList <- function(object) {
     if (!is(object, "TypedList"))
         stop("'object' must inherit from 'TypedList'")
 
-    objectSlots <- attributes(object)
-    objectSlots$class <- NULL
-    classSlots <- slotNames(class(object))
-    !all(classSlots %in% names(objectSlots))
+    if (!is(object, "ListLike")) {
+        TRUE
+    } else {
+        objectSlots <- attributes(object)
+        objectSlots$class <- NULL
+        classSlots <- slotNames(class(object))
+        !all(classSlots %in% names(objectSlots))
+    }
 }
 
 updateTypedList <- function(object) {
@@ -142,22 +147,6 @@ setReplaceMethod("names", "TypedList",
                    x@NAMES <- value
                    x
                  })
-
-### The "isEmpty" method for TypedList objects relies on isEmpty() working on
-### objects of class elementClass, e.g.:
-###   > ir1 <- IRanges(1:3, width=0)
-###   > ir2 <- IRanges(-2, 2)
-###   > isEmpty(ir1)
-###   [1] TRUE
-###   > isEmpty(IRangesList(ir1, ir2))
-###   [1]  TRUE FALSE
-### Note that it would not be necessary to define this method if the TypedList
-### class was made a ListLike class.
-setMethod("isEmpty", "TypedList",
-          function(x)
-          {
-            sapply(seq_len(length(x)), function(i) all(isEmpty(x[[i]])))
-          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
@@ -362,30 +351,17 @@ setMethod("[[", "TypedList",
           {
             if (isOldTypedList(x))
               x <- updateTypedList(x)
-            if (!missing(j) || length(list(...)) > 0)
-              stop("invalid subsetting")
-            if (missing(i))
-              stop("subscript is missing")
-            if (!is.character(i) && !is.numeric(i))
-              stop("invalid subscript type")
-            if (length(i) < 1L)
-              stop("attempt to select less than one element")
-            if (length(i) > 1L)
-              stop("attempt to select more than one element")
-            if (!is.character(i) && !is.na(i) && (i<1L || i>length(x)))
-              stop("subscript out of bounds")
-            if (is.character(i)) {
-              i <- match(i, names(x))
-            }
-            if (is.na(i)) {
-              ans <- NULL
+            index <- try(callNextMethod(), silent = TRUE)
+            if (inherits(index, "try-error")) {
+              if (length(i) == 1 && (is.na(i) || is.character(i)))
+                ans <- NULL
+              else
+                stop(index)
             } else {
-              ans <- .TypedList.list.subscript(x, i, use.names = FALSE)[[1]]
+              ans <- .TypedList.list.subscript(x, index, use.names = FALSE)[[1]]
             }
             ans
           })
-
-setMethod("$", "TypedList", function(x, name) x[[name]])
 
 setReplaceMethod("[[", "TypedList",
                  function(x, i, j,..., value)
@@ -553,20 +529,6 @@ setMethod("c", "TypedList",
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "lapply" method.
-###
-
-setMethod("lapply", c("TypedList", "function"),
-          function(X, FUN, ...) {
-            lapply(as.list(X), FUN, ...)
-          })
-
-setMethod("lapply", c("TypedList", "character"),
-          function(X, FUN, ...) {
-            lapply(as.list(X), FUN, ...)
-          })
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
 
@@ -582,15 +544,15 @@ setMethod("as.list", "TypedList",
               if (isOldTypedList(x))
                 x <- updateTypedList(x)
               if (length(x@elements) < length(x)) {
-              ans <-
-                .TypedList.list.subscript(x, seq_len(length(x)), use.names = use.names,
-                                          compress = FALSE)
-            } else {
-              ans <- x@elements
-              if (use.names)
-                names(ans) <- names(x)
-            }
-            ans
+                ans <-
+                  .TypedList.list.subscript(x, seq_len(length(x)), use.names = use.names,
+                                            compress = FALSE)
+              } else {
+                ans <- x@elements
+                if (use.names)
+                  names(ans) <- names(x)
+              }
+              ans
           })
 
 setMethod("unlist", "TypedList",
