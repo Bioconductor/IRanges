@@ -84,7 +84,7 @@ setMethod("lapply", c("ListLike", "ANY"),
     {
         ii <- seq_len(length(X))
         names(ii) <- names(X)
-        lapply(ii, function(i) FUN(X[[i]]), ...)
+        lapply(ii, function(i) FUN(X[[i]], ...))
     }
 )
 
@@ -100,7 +100,7 @@ setMethod("sapply", "ListLike",
     {
         ii <- seq_len(length(X))
         names(ii) <- names(X)
-        sapply(ii, function(i) FUN(X[[i]]), ..., simplify=simplify, USE.NAMES=USE.NAMES)
+        sapply(ii, function(i) FUN(X[[i]], ...), simplify=simplify, USE.NAMES=USE.NAMES)
     }
 )
 
