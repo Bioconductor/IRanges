@@ -106,10 +106,12 @@ test_IntervalTree_overlap <- function() {
   subject <- IRanges(c(1, 6, 13), c(4, 9, 14)) # single points
   checkIdentical(overlap(subject, c(3L, 7L, 10L), multiple=FALSE),
                  c(1L, 2L, NA))
-                 
+  checkIdentical(overlap(subject, IRanges(c(2,1),c(3,4))),
+                 new("RangesMatching",
+                     matchMatrix = cbind(query=2:1, subject=c(1L,1L)), DIM = 3:2))
+
   checkException(overlap(NULL, query), silent = TRUE)
   checkException(overlap(query, NULL), silent = TRUE)
-  checkException(overlap(subject, IRanges(c(2,1),c(3,4))), silent = TRUE)
 }
 
 test_IntervalTree_asRanges <- function() {
