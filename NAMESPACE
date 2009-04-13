@@ -95,7 +95,7 @@ export(
     ##map,
     score,
     Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
-    findRange,
+    findRange, findRun,
 
     ## Other generic functions:
     isNormal,
