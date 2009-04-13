@@ -49,9 +49,17 @@ setMethod("overlap", c("Ranges", "Ranges"),
           })
 
 setMethod("overlap", c("Ranges", "missing"),
-    function(object, query, maxgap = 0, multiple = TRUE)
-        overlap(object, object, maxgap, multiple)
-)
+          function(object, query, maxgap = 0, multiple = TRUE)
+          {
+            result <- overlap(object, object, maxgap, TRUE)
+            ### FIXME: perhaps support a "simplify" option that does this:
+            ## mat <- matchMatrix(result)            
+            ## mat <- mat[mat[,1] != mat[,2],]
+            ## norm_mat <- cbind(pmin(mat[,1], mat[,2]), pmax(mat[,1], mat[,2]))
+            ## mat <- mat[!duplicated(norm_mat),]
+            ## result@matchMatrix <- mat
+            result
+          })
 
 setMethod("overlap", c("Ranges", "integer"),
           function(object, query, maxgap = 0, multiple = TRUE)

@@ -242,6 +242,7 @@ setMethod("[", "Rle",
               } else if (is(i, "Ranges")) {
                   if (any(start(i) <= 0) || any(end(i) > length(x)))
                     stop("range index out of bounds")
+                  i <- i[width(i) > 0]
                   if (length(i) == 0) {
                       output <- new("Rle")
                   } else {
@@ -254,7 +255,7 @@ setMethod("[", "Rle",
                       lens[head(breaks, -1)] <-
                         pmin(end(i), end(x)[from]) - start(i) + 1L
                       lens[tail(breaks - 1L, -1)] <-
-                        end(i) - pmax(start(i), start[to]) + 1L
+                        end(i) - pmax(start(i), start(x)[to]) + 1L
                       output <- Rle(runValue(x)[runseq], lens)
                   }
                   if (drop)
