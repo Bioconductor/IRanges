@@ -16,6 +16,7 @@
 \alias{isSingleStringOrNA}
 \alias{isConstant}
 \alias{normargShift}
+\alias{normargWeight}
 
 \alias{class:characterORNULL}
 \alias{characterORNULL-class}

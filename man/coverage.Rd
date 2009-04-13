@@ -7,7 +7,6 @@
 \alias{coverage.getWidthFromStartEnd}
 
 \alias{coverage.normargWidth}
-\alias{coverage.normargWeight}
 
 \alias{coverage}
 \alias{coverage,numeric-method}

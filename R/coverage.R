@@ -91,24 +91,12 @@ coverage.normargWidth <- function(width, nseq)
 }
 
 ### Implements the same logic as normargShift().
+### TODO: Support non-integer weights in coverage().
 coverage.normargWeight <- function(weight, nseq)
 {
-    if (!is.numeric(weight))
-        stop("'weight' must be a vector of integers")
+    weight <- normargWeight(weight, nseq)
     if (!is.integer(weight))
         weight <- as.integer(weight)
-    if (nseq == 0L) {
-        weight <- integer()
-    } else {
-        if (length(weight) == 0L)
-            stop("'weight' has no elements")
-        if (length(weight) > nseq)
-            stop("'weight' is longer than 'x'")
-        if (any(is.na(weight)))
-            stop("'weight' contains NAs")
-        if (length(weight) < nseq)
-            weight <- recycleVector(weight, nseq)
-    }
     weight
 }
 

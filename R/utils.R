@@ -56,19 +56,36 @@ normargShift <- function(shift, nseq)
         stop("'shift' must be a vector of integers")
     if (!is.integer(shift))
         shift <- as.integer(shift)
-    if (nseq == 0L) {
-        shift <- integer()
-    } else {
-        if (length(shift) == 0L)
-            stop("'shift' has no elements")
-        if (length(shift) > nseq)
-            stop("'shift' is longer than 'x'")
-        if (any(is.na(shift)))
-            stop("'shift' contains NAs")
-        if (length(shift) < nseq)
-            shift <- recycleVector(shift, nseq)
-    }
+    if (nseq == 0L)
+        return(integer())
+    if (length(shift) == 0L)
+        stop("'shift' has no elements")
+    if (length(shift) > nseq)
+        stop("'shift' is longer than 'x'")
+    if (any(is.na(shift)))
+        stop("'shift' contains NAs")
+    if (length(shift) < nseq)
+        shift <- recycleVector(shift, nseq)
     shift
+}
+
+### Implements the same logic as normargShift() (except for the coercion to an
+### integer vector).
+normargWeight <- function(weight, nseq)
+{
+    if (!is.numeric(weight))
+        stop("'weight' must be a numeric vector")
+    if (nseq == 0L)
+        return(integer())
+    if (length(weight) == 0L)
+        stop("'weight' has no elements")
+    if (length(weight) > nseq)
+        stop("'weight' is longer than 'x'")
+    if (any(is.na(weight)))
+        stop("'weight' contains NAs")
+    if (length(weight) < nseq)
+        weight <- recycleVector(weight, nseq)
+    weight
 }
 
 setClassUnion("characterORNULL", c("character", "NULL"))
