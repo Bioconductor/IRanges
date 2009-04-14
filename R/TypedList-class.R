@@ -308,24 +308,22 @@ function(x, i, use.names = TRUE, compress = x@compress) {
     elts <- rep(list(zeroLengthElt), length(runStarts))
     loopCount <- length(whichToLoop)
     if (loopCount > 0) {
-      elementCumLengths <- cumsum(subseq(elementLengths(x), 1, max(i)))
+      elementCumLengths <- cumsum(subseq(elementLengths(x), 1L, max(i)))
       allData <- x@elements[[1]]
       elts[whichToLoop] <-
         lapply(seq_len(loopCount),
                function(j) {
                  startIndex <- startIndices[j]
                  endIndex <- endIndices[j]
-                 eltLength <-
-                   sum(subseq(elementLengths(x), startIndex, endIndex))
-                 if (eltLength == 0L) {
+                 if (startIndex == 1L)
+                   eltStart <- 1L
+                 else
+                   eltStart <- elementCumLengths[startIndex - 1L] + 1L
+                 eltEnd <- elementCumLengths[endIndex]
+                 if (eltStart > eltEnd) {
                    elt <- zeroLengthElt
                  } else {
-                   if (startIndex == 1L)
-                     eltStart <- 1L
-                   else
-                     eltStart <- elementCumLengths[startIndex - 1L] + 1L
-                   eltEnd <- elementCumLengths[endIndex]
-                   if (is.vector(allData) && (eltStart <= eltEnd))
+                   if (is.vector(allData))
                      elt <- subseq(allData, start = eltStart, end = eltEnd)
                    else if (length(dim(allData)) < 2)
                      elt <- allData[eltStart:eltEnd]
