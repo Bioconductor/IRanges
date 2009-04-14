@@ -280,63 +280,62 @@ setValidity2("TypedList", .valid.TypedList)
 ###
 
 .TypedList.list.subscript <-
-function(x, i, use.names = TRUE, compress = x@compress) {
-  k <- length(i)
+function(X, INDEX, USE.NAMES = TRUE, COMPRESS = X@compress && missing(FUN),
+         FUN = identity, ...) {
+  k <- length(INDEX)
   if (k == 0) {
     elts <- list()
-  } else if (length(x) == length(x@elements)) {
-    elts <- x@elements[i]
-    if (use.names) {
-      names(elts) <- names(x)[i]
+  } else if (length(X) == length(X@elements)) {
+    elts <- lapply(INDEX, function(i) FUN(X@elements[[i]], ...))
+    if (USE.NAMES) {
+      names(elts) <- names(X)[INDEX]
     }
   } else {
-    if (compress) {
-      runStarts <- which(c(TRUE, diff(i) != 1L))
+    if (COMPRESS) {
+      runStarts <- which(c(TRUE, diff(INDEX) != 1L))
       whichToLoop <- seq_len(length(runStarts))
-      startIndices <- i[runStarts]
+      startIndices <- INDEX[runStarts]
       endIndices <- startIndices + (diff(c(runStarts, k+1L)) - 1L)
     } else {
       runStarts <- seq_len(k)
-      whichToLoop <- which(elementLengths(x)[i] > 0)
-      startIndices <- i[runStarts[whichToLoop]]
+      whichToLoop <- which(elementLengths(X)[INDEX] > 0)
+      startIndices <- INDEX[runStarts[whichToLoop]]
       endIndices <- startIndices
     }
-    if (length(dim(x@elements[[1]])) < 2)
-        zeroLengthElt <- x@elements[[1]][integer(0)]
+    if (length(dim(X@elements[[1]])) < 2)
+      zeroLengthElt <- FUN(X@elements[[1]][integer(0)], ...)
     else
-        zeroLengthElt <- x@elements[[1]][integer(0), , drop = FALSE]
+      zeroLengthElt <- FUN(X@elements[[1]][integer(0), , drop = FALSE], ...)
     elts <- rep(list(zeroLengthElt), length(runStarts))
     loopCount <- length(whichToLoop)
     if (loopCount > 0) {
-      elementCumLengths <- cumsum(subseq(elementLengths(x), 1L, max(i)))
-      allData <- x@elements[[1]]
-      elts[whichToLoop] <-
-        lapply(seq_len(loopCount),
-               function(j) {
-                 startIndex <- startIndices[j]
-                 endIndex <- endIndices[j]
-                 if (startIndex == 1L)
-                   eltStart <- 1L
-                 else
-                   eltStart <- elementCumLengths[startIndex - 1L] + 1L
-                 eltEnd <- elementCumLengths[endIndex]
-                 if (eltStart > eltEnd) {
-                   elt <- zeroLengthElt
-                 } else {
-                   if (is.vector(allData))
-                     elt <- subseq(allData, start = eltStart, end = eltEnd)
-                   else if (length(dim(allData)) < 2)
-                     elt <- allData[eltStart:eltEnd]
-                   else
-                     elt <- allData[eltStart:eltEnd, , drop = FALSE]
-                 }
-                 elt
-               })
+      elementCumLengths <- cumsum(subseq(elementLengths(X), 1L, max(INDEX)))
+      allData <- X@elements[[1]]
+      eltStarts <- rep.int(1L, loopCount)
+      offsetStart <- startIndices > 1L
+      eltStarts[offsetStart] <-
+        elementCumLengths[startIndices[offsetStart] - 1L] + 1L
+      eltEnds <- elementCumLengths[endIndices]
+      if (is.vector(allData)) {
+        eltWidths <- eltEnds - eltStarts + 1L
+        elts[whichToLoop] <-
+          lapply(seq_len(loopCount), function(j)
+                 FUN(.Call("vector_subseq", allData, eltStarts[j], eltWidths[j],
+                           PACKAGE="IRanges"), ...))
+      } else if (length(dim(allData)) < 2) {
+        elts[whichToLoop] <-
+          lapply(seq_len(loopCount), function(j)
+                 FUN(allData[eltStarts[j]:eltEnds[j]], ...))
+      } else {
+        elts[whichToLoop] <-
+          lapply(seq_len(loopCount), function(j)
+                 FUN(allData[eltStarts[j]:eltEnds[j], , drop = FALSE], ...))
+      }
     }
-    if (compress) {
+    if (COMPRESS) {
       elts <- .TypedList.compress.list(elts)
-    } else if (use.names) {
-      names(elts) <- names(x)[i]
+    } else if (USE.NAMES) {
+      names(elts) <- names(X)[INDEX]
     }
   }
   elts
@@ -356,7 +355,10 @@ setMethod("[[", "TypedList",
               else
                 stop(index)
             } else {
-              ans <- .TypedList.list.subscript(x, index, use.names = FALSE)[[1]]
+              ans <-
+                .TypedList.list.subscript(X = x, INDEX = index,
+                                          USE.NAMES = FALSE, 
+                                          COMPRESS = FALSE)[[1]]
             }
             ans
           })
@@ -461,7 +463,8 @@ setMethod("[", "TypedList",
               stop("invalid subscript type")
             }
             elts <-
-              .TypedList.list.subscript(x, i, use.names = FALSE, compress = x@compress)
+              .TypedList.list.subscript(X = x, INDEX = i, USE.NAMES = FALSE,
+                                        COMPRESS = x@compress)
             elementLengths <- elementLengths(x)[i]
             if (!is.null(names(x)))
               slot(x, "NAMES", check=FALSE) <- names(x)[i]
@@ -527,6 +530,30 @@ setMethod("c", "TypedList",
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Looping.
+###
+  
+setMethod("lapply", "TypedList",
+          function(X, FUN, ...)
+          {
+            if (isOldTypedList(X))
+              X <- updateTypedList(X)
+            FUN <- match.fun(FUN)
+            .TypedList.list.subscript(X = X, INDEX = seq_len(length(X)),
+                                      USE.NAMES = TRUE, COMPRESS = FALSE,
+                                      FUN = FUN, ...)
+          })
+
+.sapplyDefault <- base::sapply
+environment(.sapplyDefault) <- globalenv()
+setMethod("sapply", "TypedList",
+          function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
+          {
+            .sapplyDefault(X = X, FUN = FUN, ..., simplify = simplify,
+                           USE.NAMES = USE.NAMES)
+          })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
 
@@ -543,8 +570,9 @@ setMethod("as.list", "TypedList",
                 x <- updateTypedList(x)
               if (length(x@elements) < length(x)) {
                 ans <-
-                  .TypedList.list.subscript(x, seq_len(length(x)), use.names = use.names,
-                                            compress = FALSE)
+                  .TypedList.list.subscript(X = x, INDEX = seq_len(length(x)),
+                                            USE.NAMES = use.names,
+                                            COMPRESS = FALSE)
               } else {
                 ans <- x@elements
                 if (use.names)

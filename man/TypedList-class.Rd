@@ -29,6 +29,10 @@
 \alias{coerce,TypedList,list-method}
 \alias{unlist,TypedList-method}
 
+% looping
+\alias{lapply,TypedList-method}
+\alias{sapply,TypedList-method}
+
 % show
 \alias{show,TypedList-method}
 
@@ -156,7 +160,7 @@
   }
 }
 
-\section{Applying}{
+\section{Looping}{
   \describe{
     \item{}{
       \code{lapply(X, FUN, ...)}:
