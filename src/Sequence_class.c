@@ -1,5 +1,9 @@
 #include "IRanges.h"
 
+/*
+ * --- .Call ENTRY POINT ---
+ */
+
 SEXP vector_subseq(SEXP x, SEXP start, SEXP width)
 {
 	int i, j, ans_start, ans_width;
