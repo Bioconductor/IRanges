@@ -307,29 +307,38 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = X@compress && missing(FUN),
     else
       zeroLengthElt <- FUN(X@elements[[1]][integer(0), , drop = FALSE], ...)
     elts <- rep(list(zeroLengthElt), length(runStarts))
-    loopCount <- length(whichToLoop)
-    if (loopCount > 0) {
+    prelimLoopCount <- length(whichToLoop)
+    if (prelimLoopCount > 0) {
       elementCumLengths <- cumsum(subseq(elementLengths(X), 1L, max(INDEX)))
       allData <- X@elements[[1]]
-      eltStarts <- rep.int(1L, loopCount)
+      eltStarts <- rep.int(1L, prelimLoopCount)
       offsetStart <- startIndices > 1L
       eltStarts[offsetStart] <-
         elementCumLengths[startIndices[offsetStart] - 1L] + 1L
       eltEnds <- elementCumLengths[endIndices]
-      if (is.vector(allData)) {
-        eltWidths <- eltEnds - eltStarts + 1L
-        elts[whichToLoop] <-
-          lapply(seq_len(loopCount), function(j)
-                 FUN(.Call("vector_subseq", allData, eltStarts[j], eltWidths[j],
-                           PACKAGE="IRanges"), ...))
-      } else if (length(dim(allData)) < 2) {
-        elts[whichToLoop] <-
-          lapply(seq_len(loopCount), function(j)
-                 FUN(allData[eltStarts[j]:eltEnds[j]], ...))
-      } else {
-        elts[whichToLoop] <-
-          lapply(seq_len(loopCount), function(j)
-                 FUN(allData[eltStarts[j]:eltEnds[j], , drop = FALSE], ...))
+      okToLoop <- eltStarts <= eltEnds
+      loopCount <- sum(okToLoop)
+      if (loopCount > 0) {
+        if (loopCount < prelimLoopCount) {
+          eltStarts <- eltStarts[okToLoop]
+          eltEnds <- eltStarts[okToLoop]
+          whichToLoop <- whichToLoop[okToLoop]
+        }
+        if (is.vector(allData)) {
+          eltWidths <- eltEnds - eltStarts + 1L
+          elts[whichToLoop] <-
+            lapply(seq_len(loopCount), function(j)
+                   FUN(.Call("vector_subseq", allData, eltStarts[j], eltWidths[j],
+                             PACKAGE="IRanges"), ...))
+        } else if (length(dim(allData)) < 2) {
+          elts[whichToLoop] <-
+            lapply(seq_len(loopCount), function(j)
+                   FUN(allData[eltStarts[j]:eltEnds[j]], ...))
+        } else {
+          elts[whichToLoop] <-
+            lapply(seq_len(loopCount), function(j)
+                   FUN(allData[eltStarts[j]:eltEnds[j], , drop = FALSE], ...))
+        }
       }
     }
     if (COMPRESS) {
