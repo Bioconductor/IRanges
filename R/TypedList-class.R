@@ -321,7 +321,7 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = X@compress && missing(FUN),
       if (loopCount > 0) {
         if (loopCount < prelimLoopCount) {
           eltStarts <- eltStarts[okToLoop]
-          eltEnds <- eltStarts[okToLoop]
+          eltEnds <- eltEnds[okToLoop]
           whichToLoop <- whichToLoop[okToLoop]
         }
         if (is.vector(allData)) {
