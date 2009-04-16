@@ -153,7 +153,6 @@ setMethod("as.factor", "Rle", function(x) rep(as.factor(runValue(x)), runLength(
 setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
           function(e1, e2)
           {
-            browser()
               n1 <- length(e1)
               n2 <- length(e2)
               if (n1 == 0 || n2 == 0) {
