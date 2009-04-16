@@ -146,66 +146,31 @@ SEXP Integer_sorted_merge(SEXP x, SEXP y)
 
 /*
  * --- .Call ENTRY POINT ---
- * findInterval for when x is a sorted integer vector
+ * findInterval for when x is a sorted integer vector,
+ * and 'vec' are the run lengths, not breaks
  */
 
 SEXP Integer_sorted_findInterval(SEXP x, SEXP vec)
 {
-        int i, x_len, vec_len/*, index*/, first, last, mid;
-        int stack[length(vec)], *stack_ptr;
+        int i, x_len, vec_len, index, vec_sum;
 	const int *x_ptr, *vec_ptr;
 	int *ans_ptr;
 	SEXP ans;
-
-        stack_ptr = stack;
+        
 	x_len = LENGTH(x);
 	vec_len = LENGTH(vec);
-	vec_ptr = INTEGER(vec); //+ 1;
-        first = 0;
-        last = vec_len;
-	PROTECT(ans = NEW_INTEGER(x_len));
-	//index = 1;
+	vec_ptr = INTEGER(vec);
+        vec_sum = *vec_ptr + 1;
+        PROTECT(ans = NEW_INTEGER(x_len));
+	index = 1;
 	for (i = 0, x_ptr = INTEGER(x), ans_ptr = INTEGER(ans); i < x_len;
 	     i++, x_ptr++, ans_ptr++) {
-          //printf("i = %d, first = %d, last = %d\n", i, first, last);
-          while(1) {
-            mid = first + (last - first) / 2;
-            //printf("mid: %d\n", mid);
-            if (*x_ptr >= vec_ptr[mid]) { // possible hit
-              //printf("possible hit for %d at: %d\n", *x_ptr, mid);
-              if (mid == vec_len - 1 || *x_ptr < vec_ptr[mid+1]) { // hit
-                //printf("**hit for %d at: %d\n", *x_ptr, mid);
-                *ans_ptr = mid + 1;
-                break;
-              }
-              //printf("missed, going right, first = %d\n", mid + 1);
-              first = mid + 1; // go right
-            } else { // want to go left, 
-              if (mid == 0) { // but if already at beginning...
-                //printf("found prefix!\n");
-                *ans_ptr = 0;
-                break;
-              }
-              //printf("going left, last = %d\n", mid - 1);
-              *stack_ptr = last; // remember on stack
-              stack_ptr++;
-              last = mid - 1;
-            }
-            if (last < first) { // need to pop off stack
-              while(stack_ptr > stack && *x_ptr >= vec_ptr[last]) {
-                stack_ptr--;
-                last = *stack_ptr;
-                //printf("popping off stack, last = %d\n", last);
-              }
-            }
-          }
-          /*
-		while (index < vec_len && *x_ptr >= *vec_ptr) {
+		while (index < vec_len && *x_ptr >= vec_sum) {
 			vec_ptr++;
+                        vec_sum += *vec_ptr;
 			index++;
 		}
                 *ans_ptr = index;
-          */		
 	}
 	UNPROTECT(1);
 

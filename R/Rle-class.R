@@ -153,6 +153,7 @@ setMethod("as.factor", "Rle", function(x) rep(as.factor(runValue(x)), runLength(
 setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
           function(e1, e2)
           {
+            browser()
               n1 <- length(e1)
               n2 <- length(e2)
               if (n1 == 0 || n2 == 0) {
@@ -169,8 +170,8 @@ setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
                       e2 <- rep(e2, length.out = n)
                   # ends <- sort(unique(c(end(e1), end(e2))))
                   ends <- .Call("Integer_sorted_merge", end(e1), end(e2), PACKAGE="IRanges")
-                  which1 <- .Call("Integer_sorted_findInterval", ends, start(e1), PACKAGE="IRanges")
-                  which2 <- .Call("Integer_sorted_findInterval", ends, start(e2), PACKAGE="IRanges")
+                  which1 <- .Call("Integer_sorted_findInterval", ends, runLength(e1), PACKAGE="IRanges")
+                  which2 <- .Call("Integer_sorted_findInterval", ends, runLength(e2), PACKAGE="IRanges")
               }
               Rle(values = callGeneric(runValue(e1)[which1], runValue(e2)[which2]),
                   lengths = diff(c(0L, ends)), check = FALSE)
