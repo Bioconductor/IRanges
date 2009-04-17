@@ -1,0 +1,160 @@
+%\VignetteIndexEntry{An introduction to IRanges}
+%\VignetteDepends{}
+%\VignetteKeywords{Ranges}
+%\VignettePackage{IRanges}
+\documentclass[10pt]{article}
+
+\usepackage{times}
+\usepackage{hyperref}
+
+\textwidth=6.5in
+\textheight=8.5in
+%\parskip=.3cm
+\oddsidemargin=-.1in
+\evensidemargin=-.1in
+\headheight=-.3in
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\texttt{#1}}}
+\newcommand{\Rfunarg}[1]{{\texttt{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rcode}[1]{{\texttt{#1}}}
+
+\newcommand{\software}[1]{\textsf{#1}}
+\newcommand{\R}{\software{R}}
+\newcommand{\IRanges}{\Rpackage{IRanges}}
+
+\title{An Introduction to \Rpackage{IRanges}}
+\author{Patrick Aboyoun, Michael Lawrence, Herv\'e Pag\`es}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+<<options,echo=FALSE>>=
+options(width=60)
+@
+
+\section{Introduction}
+
+The \IRanges{} package is designed to represent
+
+
+Sequence Values
+Sequence Ranges
+Sequence Views
+
+
+
+\section{Sequence Values}
+
+\Rclass{Sequence}
+
+\subsection{Run Length Encoding}
+
+\Rclass{Rle}
+
+\subsection{External Pointer Hooks for Sequences}
+
+\Rclass{XSequence}
+\Rclass{XRaw}
+
+
+\section{Lists}
+
+\Rclass{ListLike}
+\Rclass{TypedList}
+
+\subsection{Simple Lists}
+
+\Rclass{LogicalList}
+\Rclass{IntegerList}
+\Rclass{NumericList}
+\Rclass{ComplexList}
+\Rclass{CharacterList}
+\Rclass{RawList}
+\Rclass{RleList}
+
+\subsection{Annotated Lists}
+
+\Rclass{AnnotatedList}
+
+
+\section{Sequence Ranges}
+
+\Rclass{Ranges}
+\Rclass{IRanges}
+\Rclass{NormalIRanges}
+\Rclass{RangesList}
+\Rclass{IRangesList}
+
+\Rclass{XRanges}
+\Rclass{IntervalTree}
+
+
+\section{Sequence Views}
+
+\Rclass{Views}
+
+\subsection{Views on RLE Sequences}
+
+\Rclass{RleViews}
+
+
+\section{Data Sets}
+
+\Rclass{XDataFrame}
+\Rclass{XDataFrameList}
+\Rclass{SplitXDataFrameList}
+
+\section{Sequence Ranges with Data Sets}
+
+\Rclass{RangedData}
+\Rclass{RangedDataList}
+
+
+%% Classes Not Covered (25)
+%%\Rclass{Alignment}
+%%\Rclass{AlignmentSpace}
+%%\Rclass{ANYTHING}
+%%\Rclass{characterORNULL}
+%%\Rclass{expressionORfunction}
+%%\Rclass{expressionORlanguage}
+%%\Rclass{FilterRules}
+%%\Rclass{functionORNULL}
+%%\Rclass{IntegerPtr}
+%%\Rclass{MaskCollection}
+%%\Rclass{NumericPtr}
+%%\Rclass{RangesMatching}
+%%\Rclass{RangesMatchingList}
+%%\Rclass{RangesORmissing}
+%%\Rclass{RawPtr}
+%%\Rclass{RDApplyParams}
+%%\Rclass{SequencePtr}
+%%\Rclass{XDataFrameORNULL}
+%%\Rclass{XInteger}
+%%\Rclass{XIntegerORNULL}
+%%\Rclass{XIntegerViews}
+%%\Rclass{XNumeric}
+%%\Rclass{XRle}
+%%\Rclass{XRleInteger}
+%%\Rclass{XRleIntegerViews}
+
+
+
+
+\begin{table*}[tbp]
+\begin{minipage}{\textwidth}
+<<sessionInfo, results=tex, print=TRUE>>=
+toLatex(sessionInfo())
+@ 
+\end{minipage}
+\caption{\label{tab:sessioninfo}%
+The output of \Rfunction{sessionInfo} on the build system 
+after running this vignette.}
+\end{table*}
+
+\end{document}
