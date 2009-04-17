@@ -4,7 +4,7 @@
 
 setClass("XDataFrameList",
          prototype = prototype(elementClass="XDataFrame", compress = FALSE),
-         contains = "TypedList")
+         contains = "AnnotatedList")
 
 setClass("SplitXDataFrameList",
          prototype = prototype(elementClass="XDataFrame", compress = FALSE),

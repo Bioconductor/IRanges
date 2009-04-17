@@ -431,7 +431,7 @@ setMethod("show", "RangedData", function(object) {
 
 setClass("RangedDataList",
          prototype = prototype(elementClass = "RangedData", compress = FALSE),
-         contains = "TypedList")
+         contains = "AnnotatedList")
 
 RangedDataList <- function(...)
 {
