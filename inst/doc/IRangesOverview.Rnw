@@ -40,13 +40,8 @@ options(width=60)
 
 \section{Introduction}
 
-The \IRanges{} package is designed to represent
-
-
-Sequence Values
-Sequence Ranges
-Sequence Views
-
+The \IRanges{} package is designed to represent sequences, ranges representing
+indices along those sequences, and data related to those ranges.
 
 
 \section{Sequence Values}
