@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{An introduction to IRanges}
+%\VignetteIndexEntry{An Introduction to IRanges}
 %\VignetteDepends{}
 %\VignetteKeywords{Ranges}
 %\VignettePackage{IRanges}
