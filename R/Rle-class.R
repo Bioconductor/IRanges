@@ -5,9 +5,11 @@
 ### Class definitions
 ###
 
+setClassUnion("vectorORfactor", c("vector", "factor"))
+
 setClass("Rle",
-         representation(values = "vector",
-                        lengths = "integer"),
+        representation(values = "vectorORfactor",
+                lengths = "integer"),
          contains = "Sequence",
          validity = function(object)
          {
@@ -68,25 +70,13 @@ setGeneric("Rle", signature = c("values", "lengths"),
 setMethod("Rle", signature = c(values = "missing", lengths = "missing"),
           function(values, lengths) new("Rle", values = vector(), lengths = integer()))
 
-setMethod("Rle", signature = c(values = "vector", lengths = "missing"),
-          function(values, lengths)
-          {
-              if (is.factor(values)) {
-                  rleOutput <- rle(as.integer(values))
-                  rleOutput[["values"]] <-
-                    factor(rleOutput[["values"]],
-                           levels = seq_len(length(levels(values))),
-                           labels = levels(values))
-              } else {
-                  rleOutput <- rle(unname(values))
-              }
-              new("Rle", values = rleOutput[["values"]], lengths = rleOutput[["lengths"]])
-          })
+setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "missing"),
+          function(values, lengths) Rle(values, integer(0), check = FALSE))
 
-setMethod("Rle", signature = c(values = "vector", lengths = "integer"),
+setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "integer"),
           function(values, lengths, check = TRUE)
           {
-              if (check) {
+              if (check && length(lengths) > 0) {
                   if (length(values) != length(lengths))
                       stop("'values' and 'lengths' must have the same length")
                   if (any(is.na(lengths)) || any(lengths < 0L))
@@ -97,13 +87,22 @@ setMethod("Rle", signature = c(values = "vector", lengths = "integer"),
                       lengths <- lengths[-zeros]
                   }
               }
-              n <- length(values)
-              y <- values[-1L] != values[-n]
-              i <- c(which(y | is.na(y)), n)
-              new("Rle", values = values[i], lengths = diff(c(0L, cumsum(lengths)[i])))
+              if (is.factor(values)) {
+                  ans <-
+                    .Call("Rle_constructor", as.integer(values), lengths,
+                          PACKAGE="IRanges")
+                  ans@values <-
+                    factor(ans@values,
+                           levels = seq_len(length(levels(values))),
+                           labels = levels(values))
+              } else {
+                  ans <-
+                   .Call("Rle_constructor", values, lengths, PACKAGE="IRanges")
+              }
+              ans
           })
 
-setMethod("Rle", signature = c(values = "vector", lengths = "numeric"),
+setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "numeric"),
           function(values, lengths, check = TRUE)
               Rle(values = values, lengths = as.integer(lengths),
                   check = check))

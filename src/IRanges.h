@@ -388,6 +388,8 @@ SEXP IRangesList_summary(SEXP object);
 
 /* Rle_class.c */
 
+SEXP Rle_constructor(SEXP x, SEXP count);
+
 SEXP Rle_run_subseq(
 	SEXP x,
 	SEXP runStart,
