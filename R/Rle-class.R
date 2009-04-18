@@ -172,7 +172,8 @@ setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
                   which2 <- .Call("Integer_sorted_findInterval", ends, runLength(e2), PACKAGE="IRanges")
               }
               Rle(values = callGeneric(runValue(e1)[which1], runValue(e2)[which2]),
-                  lengths = diff(c(0L, ends)), check = FALSE)
+                  lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
+                  check = FALSE)
           })
 
 setMethod("Ops", signature(e1 = "Rle", e2 = "vector"),
@@ -404,7 +405,10 @@ setMethod("rep", "Rle",
               } else if (!missing(times) && length(times) > 0) {
                   times <- as.integer(times)
                   if (length(times) == length(x)) {
-                      x@lengths <- runLength(x) + diff(c(0L, cumsum(times)[end(x)])) - 1L
+                      x@lengths <-
+                        runLength(x) +
+                          .Call("Integer_diff_with_0", cumsum(times)[end(x)],
+                                PACKAGE="IRanges") - 1L
                   } else if (length(times) == 1) {
                       x <- Rle(values  = rep(runValue(x), times = times),
                                lengths = rep.int(runLength(x), times = times),
@@ -435,7 +439,10 @@ setMethod("rep.int", "Rle",
           {
               times <- as.integer(times)
               if (length(times) == length(x)) {
-                  x@lengths <- runLength(x) + diff(c(0L, cumsum(times)[end(x)])) - 1L
+                  x@lengths <-
+                    runLength(x) +
+                      .Call("Integer_diff_with_0", cumsum(times)[end(x)],
+                            PACKAGE="IRanges") - 1L
               } else if (length(times) == 1) {
                   x <- Rle(values  = rep.int(runValue(x), times = times),
                            lengths = rep.int(runLength(x), times = times),
@@ -687,7 +694,8 @@ setMethod("pmax", "Rle",
               rlist <- RleList(..., compress = FALSE)
               ends <- sort(unique(unlist(lapply(rlist, end))))
               Rle(values =  do.call(pmax, lapply(rlist, "[", ends, drop = TRUE)),
-                  lengths = diff(c(0L, ends)), check = FALSE)
+                  lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
+                  check = FALSE)
           })
 
 setGeneric("pmin", signature = "...",
@@ -698,7 +706,8 @@ setMethod("pmin", "Rle",
               rlist <- RleList(..., compress = FALSE)
               ends <- sort(unique(unlist(lapply(rlist, end))))
               Rle(values =  do.call(pmin, lapply(rlist, "[", ends, drop = TRUE)),
-                  lengths = diff(c(0L, ends)), check = FALSE)
+                  lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
+                  check = FALSE)
           })
 
 setGeneric("pmax.int", signature = "...",
@@ -709,7 +718,8 @@ setMethod("pmax.int", "Rle",
               rlist <- RleList(..., compress = FALSE)
               ends <- sort(unique(unlist(lapply(rlist, end))))
               Rle(values =  do.call(pmax.int, lapply(rlist, "[", ends, drop = TRUE)),
-                  lengths = diff(c(0L, ends)), check = FALSE)
+                  lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
+                  check = FALSE)
           })
 
 setGeneric("pmin.int", signature = "...",
@@ -720,7 +730,8 @@ setMethod("pmin.int", "Rle",
               rlist <- RleList(..., compress = FALSE)
               ends <- sort(unique(unlist(lapply(rlist, end))))
               Rle(values =  do.call(pmin.int, lapply(rlist, "[", ends, drop = TRUE)),
-                  lengths = diff(c(0L, ends)), check = FALSE)
+                  lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
+                  check = FALSE)
           })
 
 setMethod("mean", "Rle",

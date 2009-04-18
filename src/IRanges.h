@@ -305,6 +305,8 @@ SEXP sapply_length(SEXP list);
 
 SEXP safe_strexplode(SEXP s);
 
+SEXP Integer_diff_with_0(SEXP x);
+
 SEXP Integer_sorted_merge(
 	SEXP x,
 	SEXP y

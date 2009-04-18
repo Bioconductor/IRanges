@@ -72,6 +72,31 @@ SEXP safe_strexplode(SEXP s)
 
 /*
  * --- .Call ENTRY POINT ---
+ * diff(c(0L, x))
+ */
+SEXP Integer_diff_with_0(SEXP x)
+{
+	int i, len, *x_ptr1, *x_ptr2, *ans_ptr;
+	SEXP ans;
+
+	len = LENGTH(x);
+	PROTECT(ans = NEW_INTEGER(len));
+	if (len > 0) {
+		INTEGER(ans)[0] = INTEGER(x)[0];
+		if (len > 1) {
+			for (i = 1, x_ptr1 = INTEGER(x), x_ptr2 = INTEGER(x) + 1,
+				 ans_ptr = INTEGER(ans) + 1; i < len;
+				 i++, x_ptr1++, x_ptr2++, ans_ptr++) {
+				*ans_ptr = *x_ptr2 - *x_ptr1;
+			}
+		}
+	}
+	UNPROTECT(1);
+	return ans;
+}
+
+/*
+ * --- .Call ENTRY POINT ---
  * Creates the (sorted) union of two sorted integer vectors
  */
 SEXP Integer_sorted_merge(SEXP x, SEXP y)
@@ -152,25 +177,25 @@ SEXP Integer_sorted_merge(SEXP x, SEXP y)
 
 SEXP Integer_sorted_findInterval(SEXP x, SEXP vec)
 {
-        int i, x_len, vec_len, index, vec_sum;
+	int i, x_len, vec_len, index, vec_sum;
 	const int *x_ptr, *vec_ptr;
 	int *ans_ptr;
 	SEXP ans;
-        
+
 	x_len = LENGTH(x);
 	vec_len = LENGTH(vec);
 	vec_ptr = INTEGER(vec);
-        vec_sum = *vec_ptr + 1;
-        PROTECT(ans = NEW_INTEGER(x_len));
+	vec_sum = *vec_ptr + 1;
+	PROTECT(ans = NEW_INTEGER(x_len));
 	index = 1;
 	for (i = 0, x_ptr = INTEGER(x), ans_ptr = INTEGER(ans); i < x_len;
 	     i++, x_ptr++, ans_ptr++) {
 		while (index < vec_len && *x_ptr >= vec_sum) {
 			vec_ptr++;
-                        vec_sum += *vec_ptr;
+			vec_sum += *vec_ptr;
 			index++;
 		}
-                *ans_ptr = index;
+		*ans_ptr = index;
 	}
 	UNPROTECT(1);
 

@@ -17,6 +17,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(address_asSTRSXP, 1),
 	CALLMETHOD_DEF(sapply_length, 1),
 	CALLMETHOD_DEF(safe_strexplode, 1),
+	CALLMETHOD_DEF(Integer_diff_with_0, 1),
 	CALLMETHOD_DEF(Integer_sorted_merge, 2),
 	CALLMETHOD_DEF(Integer_sorted_findInterval, 2),
 
