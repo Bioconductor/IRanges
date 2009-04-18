@@ -444,23 +444,13 @@
 
   \describe{
     \item{}{
-       \code{pmax(..., na.rm = FALSE)}:
+       \code{pmax(..., na.rm = FALSE)}, \code{pmax.int(..., na.rm = FALSE)}:
        Parallel maxima of the Rle input values. Removes \code{NA}s when
        \code{na.rm = TRUE}.
     }
     \item{}{
-       \code{pmin(..., na.rm = FALSE)}:
+       \code{pmin(..., na.rm = FALSE)}, \code{pmin.int(..., na.rm = FALSE)}:
        Parallel minima of the Rle input values. Removes \code{NA}s when
-       \code{na.rm = TRUE}.
-    }
-    \item{}{
-       \code{pmax.int(..., na.rm = FALSE)}:
-       Parallel maxima of the integer Rle input values. Removes \code{NA}s when
-       \code{na.rm = TRUE}.
-    }
-    \item{}{
-       \code{pmin.int(..., na.rm = FALSE)}:
-       Parallel minima of the integer Rle input values. Removes \code{NA}s when
        \code{na.rm = TRUE}.
     }
     \item{}{
