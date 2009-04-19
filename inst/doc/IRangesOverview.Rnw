@@ -38,29 +38,51 @@
 options(width=60)
 @
 
+% outline may need tweaking to be more example-oriented
+
 \section{Introduction}
 
 The \IRanges{} package is designed to represent sequences, ranges representing
 indices along those sequences, and data related to those ranges.
 
+% introduce our example here, perhaps CTCF data? Probably need to use
+% Biostrings and/or ShortRead, just to have a realistic example.
 
-\section{Sequence Values}
+\section{Sequences}
 
 \Rclass{Sequence}
 
+% discuss what we mean by a sequence, conceptually, perhaps using a
+% biological sequence (short read, chromosome, ...?) as an example.
+
+% we have two sequence implementations, both designed to handle large data
+
+% should we also have a VectorSequence, that would extend 'vector' and
+% add subset-by-Ranges functionality?
+
 \subsection{Run Length Encoding}
+
+% sparse representation, and more (manipulating runs is useful)
 
 \Rclass{Rle}
 
-\subsection{External Pointer Hooks for Sequences}
+\subsection{External Sequences}
+
+% external pointers to avoid copying
+% not for end-user
 
 \Rclass{XSequence}
 \Rclass{XRaw}
 
-
 \section{Lists}
 
+% need to segway from Rle to RleList, then explain general list concepts
+
+% basic list operations (basically same as R list)
+
 \Rclass{ListLike}
+
+% TypedList features: type validation, compression
 \Rclass{TypedList}
 
 \subsection{Simple Lists}
@@ -80,17 +102,58 @@ indices along those sequences, and data related to those ranges.
 
 \section{Sequence Ranges}
 
+% encode subsequences
+% entire object could encode subsequence, eg subsetting Rle
+% or, each range encodes a subsequence, resulting in many (Views)
+
+% introduce basic ranges functionality, eg starts, widths, subsetting
+
 \Rclass{Ranges}
 \Rclass{IRanges}
 \Rclass{NormalIRanges}
 \Rclass{RangesList}
 \Rclass{IRangesList}
+\Rclass{MaskCollection} % make distinction with RangesList
 
 \Rclass{XRanges}
 \Rclass{IntervalTree}
+% need an IntervalTreeList?
 
+\subsection{Transforming Ranges}
+
+% most utilities fall in here
+\Rfunction{reduce}
+\Rfunction{shift}
+\Rfunction{restrict}
+\Rfunction{narrow}
+\Rfunction{reflect}
+\Rfunction{flank}
+\Rfunction{*} % zooming
+
+\Rfunction{disjoin}, \Rfunction{disjointBins}
+
+\subsection{Set Operations}
+
+\Rfunction{gaps}, \Rfunction{pgaps}
+\Rfunction{setdiff}, \Rfunction{psetdiff}
+\Rfunction{union}, \Rfunction{punion}
+\Rfunction{intersect}, \Rfunction{pintersect}
+
+\subsection{Finding Overlapping Ranges}
+
+\Rclass{RangesMatching}
+\Rclass{RangesMatchingList}
+
+\Rfunction{overlap}, \Rfunction{\%in\%}
+
+\subsection{Finding Neighboring Ranges}
+
+\Rfunction{nearest}, \Rfunction{precede}, \Rfunction{follow}
 
 \section{Sequence Views}
+
+% when each range in a Ranges encodes a subsequence, need to
+% manipulate many, possibly overlapping, subsequences
 
 \Rclass{Views}
 
@@ -110,24 +173,23 @@ indices along those sequences, and data related to those ranges.
 \Rclass{RangedData}
 \Rclass{RangedDataList}
 
+\subsection{Applying Over Spaces}
 
-%% Classes Not Covered (25)
+\Rclass{RDApplyParams}
+\Rclass{FilterRules}
+
+%% Classes Not Covered (20)
 %%\Rclass{Alignment}
 %%\Rclass{AlignmentSpace}
 %%\Rclass{ANYTHING}
 %%\Rclass{characterORNULL}
 %%\Rclass{expressionORfunction}
 %%\Rclass{expressionORlanguage}
-%%\Rclass{FilterRules}
 %%\Rclass{functionORNULL}
 %%\Rclass{IntegerPtr}
-%%\Rclass{MaskCollection}
 %%\Rclass{NumericPtr}
-%%\Rclass{RangesMatching}
-%%\Rclass{RangesMatchingList}
 %%\Rclass{RangesORmissing}
 %%\Rclass{RawPtr}
-%%\Rclass{RDApplyParams}
 %%\Rclass{SequencePtr}
 %%\Rclass{XDataFrameORNULL}
 %%\Rclass{XInteger}
