@@ -200,9 +200,6 @@ indices along those sequences, and data related to those ranges.
 %%\Rclass{XRleInteger}
 %%\Rclass{XRleIntegerViews}
 
-
-
-
 \begin{table*}[tbp]
 \begin{minipage}{\textwidth}
 <<sessionInfo, results=tex, print=TRUE>>=
