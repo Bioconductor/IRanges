@@ -75,6 +75,10 @@ setGeneric("end<-", signature="x",
     function(x, check=TRUE, value) standardGeneric("end<-")
 )
 
+setMethod("update", "Ranges", function(object, ...) {
+  as(update(as(object, "IRanges"), ...), class(object))
+})
+
 setMethod("as.matrix", "Ranges",
     function(x, ...)
         matrix(data=c(start(x), width(x)), ncol=2, dimnames=list(names(x), NULL))
@@ -227,32 +231,26 @@ setGeneric("gaps", signature="x",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "reflect" generic and method (should be made an endomorphism).
+### The "reflect" generic and method
 ###
 ### |   xxx |
 ### to
 ### | xxx   |
 ###
-### NOTE for Michael (HP-01/28/09): "reflect" and "flank" are listed in the
-### endomorphism section of The Ranges API (at the top of this file) but they
-### are not implemented as such (you're calling the IRanges() constructor).
-### So for example "flank" called on a Views object won't return a Views
-### object, which is sad ;-)
-### TODO: Make it an endomorphism and move to Ranges-endo.R
 
 setGeneric("reflect", function(x, ...) standardGeneric("reflect"))
 
 setMethod("reflect", "Ranges", function(x, bounds) {
   if (!is(bounds, "Ranges") || length(bounds) != length(x))
     stop("'bounds' must be a Ranges object of length equal to that of 'x'")
-  IRanges(end(bounds) - (end(x) - start(bounds)), width = width(x))
+  update(x, start = end(bounds) - (end(x) - start(bounds)), width = width(x),
+         check = FALSE)
 })
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "flank" generic and method (should be made an endomorphism).
+### The "flank" generic and method
 ###
-### TODO: Make it an endomorphism and move to Ranges-endo.R
 
 setGeneric("flank", function(x, ...) standardGeneric("flank"))
 
@@ -266,11 +264,27 @@ setMethod("flank", "Ranges", function(x, width, start = TRUE, both = FALSE) {
   start <- recycleVector(start, length(x))
   width <- recycleVector(width, length(x))
   if (both)
-    IRanges(ifelse(start, start(x) - abs(width), end(x) - abs(width) + 1),
-            width = abs(width)*2)
-  else IRanges(ifelse(start, ifelse(width < 0, start(x), start(x) - width),
-                      ifelse(width < 0, end(x) + width + 1, end(x) + 1)),
-               width = abs(width))
+    update(x, start = ifelse(start, start(x) - abs(width),
+                end(x) - abs(width) + 1),
+           width = abs(width)*2, check = FALSE)
+  else update(x, start = ifelse(start,
+                   ifelse(width < 0, start(x), start(x) - width),
+                   ifelse(width < 0, end(x) + width + 1, end(x) + 1)),
+              width = abs(width), check = FALSE)
+})
+
+## make intervals disjoint by taking the union of the endpoints
+setGeneric("disjoin", function(x, ...) standardGeneric("disjoin"))
+setMethod("disjoin", "Ranges", function(x) {
+  ## starts: original starts and end+1 when inside another interval
+  ## ends: original ends and start-1 when inside another interval
+  starts <- unique(start(x))
+  ends <- unique(end(x))
+  adj_start <- sort(unique(c(starts, ends + 1)))
+  adj_end <- sort(unique(c(ends, starts - 1)))
+  adj <- update(x, start = head(adj_start, -1), end = tail(adj_end, -1),
+                check = FALSE)
+  adj[adj %in% x]
 })
 
 
@@ -278,10 +292,7 @@ setMethod("flank", "Ranges", function(x, width, start = TRUE, both = FALSE) {
 ### More operations.
 ###
 
-## Question: should these be IRanges methods since they always return
-## an IRanges? Or should they use initialize() or some type of
-## coercion to become endomorphisms?
-
+## this one is probably fine not being an endomorphism
 setMethod("range", "Ranges", function(x, ..., na.rm) {
   args <- list(x, ...)
   if (!all(sapply(args, is, "Ranges")))
@@ -314,11 +325,8 @@ setMethod("precede", c("Ranges", "RangesORmissing"), function(x, subject) {
     s <- s[ord]
   }
   i <- findInterval(end(x), s) + 1L
-  if (!is.null(ord)) {
-    invord <- integer(length(ord))
-    invord[ord] <- seq_along(ord)
-    i <- invord[i]
-  }
+  if (!is.null(ord))
+    i <- ord[i]
   i[i > length(subject)] <- NA
   i
 })
@@ -334,11 +342,8 @@ setMethod("follow", c("Ranges", "RangesORmissing"), function(x, subject) {
   }
   i <- findInterval(start(x) - 1L, e)
   i[i == 0] <- NA
-  if (!is.null(ord)) {
-    invord <- integer(length(ord))
-    invord[ord] <- seq_along(ord)
-    i <- invord[i]
-  }
+  if (!is.null(ord))
+    i <- ord[i]
   i
 })
 
@@ -377,19 +382,6 @@ setMethod("*", c("Ranges", "numeric"), function(e1, e2) {
   start(r) <- ceiling(mid - w/2)
   width(r) <- floor(w)
   r
-})
-
-## make intervals disjoint by taking the union of the endpoints
-setGeneric("disjoin", function(x, ...) standardGeneric("disjoin"))
-setMethod("disjoin", "Ranges", function(x) {
-  ## starts: original starts and end+1 when inside another interval
-  ## ends: original ends and start-1 when inside another interval
-  starts <- unique(start(x))
-  ends <- unique(end(x))
-  adj_start <- sort(unique(c(starts, ends + 1)))
-  adj_end <- sort(unique(c(ends, starts - 1)))
-  adj <- IRanges(head(adj_start, -1), tail(adj_end, -1))
-  adj[adj %in% x]
 })
 
 ## make intervals disjoint by segregating them into separate Ranges

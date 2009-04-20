@@ -432,13 +432,13 @@ setReplaceMethod("names", "IRanges",
 ###       content)
 ###
 
+### FIXME: need some way of specifying the extent of validity
+### checking, like giving the class up to which the object is
+### assumed valid.
 setMethod("update", "IRanges",
-    function(object, ...)
+    function(object, ..., check = TRUE)
     {
         object <- unsafe.update(object, ...)
-        check <- list(...)$check
-        if (is.null(check))
-            check <- TRUE
         if (check)
             validObject(object)
         object
