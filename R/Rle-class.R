@@ -678,7 +678,7 @@ setMethod("diff", "Rle",
               lag <- as.integer(lag)
               differences <- as.integer(differences)
               if (lag * differences >= length(x))
-                  return(Rle(vector(class(runValues(x)))))
+                  return(Rle(vector(class(runValue(x)))))
               for (i in seq_len(differences)) {
                   n <- length(x)
                   x <- subseq(x, 1L + lag, n) - subseq(x, 1L, n - lag)
