@@ -306,13 +306,13 @@
       Combines a set of Rle objects.
     }
     \item{}{
-      \code{findRun(x, vec)}:
-      Returns an integer vector indicating the run indices in Rle \code{vec}
+      \code{findRange(x, vec)}:
+      Returns an \link{IRanges} object representing the ranges in Rle \code{vec}
       that are referenced by the indices in the integer vector \code{x}.
     }
     \item{}{
-      \code{findRange(x, vec)}:
-      Returns an \link{IRanges} object representing the ranges in Rle \code{vec}
+      \code{findRun(x, vec)}:
+      Returns an integer vector indicating the run indices in Rle \code{vec}
       that are referenced by the indices in the integer vector \code{x}.
     }
     \item{}{
