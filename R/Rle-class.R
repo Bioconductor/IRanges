@@ -547,6 +547,11 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
 setMethod("sort", "Rle",
           function(x, decreasing = FALSE, na.last = NA, ...)
           {
+              if (is.na(na.last)) {
+                  na.last <- TRUE
+                  if (any(is.na(x)))
+                      x <- x[!is.na(x)]
+              }
               ord <- order(runValue(x), decreasing = decreasing, na.last = na.last)
               Rle(values = runValue(x)[ord], lengths = runLength(x)[ord],
                   check = FALSE)
