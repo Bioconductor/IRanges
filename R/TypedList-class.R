@@ -175,7 +175,7 @@ TypedList <- function(listClass, elements = list(), splitFactor = NULL,
                       compress = !is.null(splitFactor)) {
   if (!extends(listClass, "TypedList"))
     stop("cannot create a ", listClass, " as a 'TypedList'")
-  if (length(splitFactor) == 0) {
+  if (is.null(splitFactor)) {
     elementLengths <- NULL
     NAMES <- names(elements)
   } else {
