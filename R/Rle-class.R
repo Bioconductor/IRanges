@@ -185,7 +185,30 @@ setMethod("Ops", signature(e1 = "vector", e2 = "Rle"),
 setMethod("Math", "Rle",
           function(x)
               switch(.Generic,
-                     cumsum =, cumprod = callGeneric(as.vector(x)),
+                     cumsum =
+                     {
+                         whichZero <- which(runValue(x) == 0)
+                         widthZero <- runLength(x)[whichZero]
+                         startZero <- cumsum(c(1L, runLength(x)))[whichZero]
+                         y <- x
+                         y@lengths[y@values == 0] <- 1L
+                         values <- cumsum(as.vector(y))
+                         lengths <- rep.int(1L, length(values))
+                         lengths[startZero - c(0L, cumsum(head(widthZero, -1) - 1L))] <- widthZero
+                         Rle(values = values, lengths = lengths, check = FALSE)
+                     },
+                     cumprod =
+                     {
+                         whichOne <- which(runValue(x) == 0)
+                         widthOne <- runLength(x)[whichOne]
+                         startOne <- cumsum(c(1L, runLength(x)))[whichOne]
+                         y <- x
+                         y@lengths[y@values == 0] <- 1L
+                         values <- cumprod(as.vector(y))
+                         lengths <- rep.int(1L, length(values))
+                         lengths[startOne - c(0L, cumsum(head(widthOne, -1) - 1L))] <- widthOne
+                         Rle(values = values, lengths = lengths, check = FALSE)
+                     },
                      Rle(values = callGeneric(runValue(x)),
                          lengths = runLength(x), check = FALSE)))
 
