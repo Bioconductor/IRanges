@@ -7,6 +7,19 @@
 ## There are two design aims:
 ## 1) Efficiency when data is large (i.e. apply by chromosome)
 ## 2) Convenience when data is not so large (i.e. unrolling the data)
+
+## The ranges are stored in a RangesList, while the data is stored in
+## a SplitXDataFrameList. The RangesList is uncompressed, because
+## users will likely want to apply over each Ranges separately, as
+## they are usually in separate spaces. Also, it is difficult to
+## compress RangesLists, as lists containing Views or IntervalTrees
+## are uncompressible. The SplitXDataFrameList should be compressed,
+## because it's cheap to create from a split factor and, more
+## importantly, cheap to get and set columns along the entire dataset,
+## which is common. Usually the data columns are atomic vectors and
+## thus trivially compressed. It does, however, incur a slight
+## performance penalty when applying over the RangedData.
+
 setClass("RangedData",
          representation(ranges = "RangesList", values = "SplitXDataFrameList"))
 
@@ -71,13 +84,15 @@ setReplaceMethod("dimnames", "RangedData",
                 stop("invalid rownames length")
               rns <- split(rn, inds)
             }
-            values <- as.list(values(x))
+            values <- unlist(values(x))
+            dimnames(values) <- value
             ranges <- as.list(ranges(x))
             for(i in seq_len(length(x@ranges))) {
-              dimnames(values[[i]]) <- list(rns[[i]], cn)
+              ##dimnames(values[[i]]) <- list(rns[[i]], cn)
               names(ranges[[i]]) <- rns[[i]]
             }
-            x@values <- initialize(x@values, elements = values)
+            x@values <- split(values, inds)
+            names(x@values) <- names(x)
             x@ranges <- initialize(x@ranges, elements = ranges)
             x
           })
@@ -138,7 +153,7 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
     values <- split(values, space)
   } else {
     ranges <- RangesList(ranges)
-    values <- SplitXDataFrameList(values)
+    values <- SplitXDataFrameList(values, compress = TRUE)
     if (length(space))
       names(ranges) <- names(values) <- space
   }
@@ -182,9 +197,10 @@ setMethod("[[", "RangedData",
               stop("subscript out of bounds")
             if (is.na(i) || (is.character(i) && !(i %in% colnames(x))))
               return(NULL)
-            col <- lapply(values(x), function(v) v[i])
-            names(col) <- NULL ## use rbind() to handle factor levels
-            do.call(rbind, col)[[1]]
+            ##col <- lapply(values(x), function(v) v[i])
+            ##names(col) <- NULL ## use rbind() to handle factor levels
+            ##do.call(rbind, col)[[1]]
+            unlist(values(x))[[i]] # very fast if 'values' is compressed
           })
 
 setMethod("$", "RangedData", function(x, name) x[[name]])
@@ -206,17 +222,21 @@ setReplaceMethod("[[", "RangedData",
                      stop("subscript out of bounds")
                    if (!is.null(value) && nrow(x) != length(value))
                      stop("invalid replacement length")
-                   values <- as.list(values(x))
+                   ##values <- as.list(values(x))
                    nrows <- elementLengths(values(x))
                    inds <- seq_len(length(x))
                    spaces <- factor(rep.int(inds, nrows), inds)
-                   svalues <- NULL
-                   if (!is.null(value))
-                     svalues <- split(value, spaces)
-                   for (j in seq_len(length(x))) {
-                     values[[j]][[i]] <- svalues[[j]]
-                   }
-                   x@values <- initialize(values(x), elements = values)
+                   ##svalues <- NULL
+                   ##if (!is.null(value))
+                   ##  svalues <- split(value, spaces)
+                   ##for (j in seq_len(length(x))) {
+                   ##  values[[j]][[i]] <- svalues[[j]]
+                   ##}
+                   ##x@values <- initialize(values(x), elements = values)
+                   values <- unlist(values(x))
+                   values[[i]] <- value
+                   x@values <- split(values, spaces)
+                   names(x@values) <- names(x)
                    x
                  })
 
@@ -278,23 +298,28 @@ setMethod("[", "RangedData",
               } else {
                 i <- seq_len(nrow(x))
               }
-              values <- as.list(values(x))
+              ##values <- as.list(values(x))
+              values <- unlist(values(x))
               ranges <- as.list(ranges(x))
-              w <- cumsum(c(1, sapply(values, nrow)))
-              si <- split(i, factor(findInterval(i, w), seq_along(w)))
+              w <- cumsum(c(1, sapply(ranges, length)))
+              sf <- factor(findInterval(i, w), seq_along(w))
+              si <- split(i, sf)
+              values <- values[i, j, drop=FALSE]
+              values <- split(values, sf)
+              names(values) <- names(x)
               for (k in seq_len(length(x))) {
-                values[[k]] <- values[[k]][si[[k]] - w[k] + 1, j, drop=FALSE]
+                ##values[[k]] <- values[[k]][si[[k]] - w[k] + 1, j, drop=FALSE]
                 ranges[[k]] <- ranges[[k]][si[[k]] - w[k] + 1]
               }
               if (drop) {
                 whichDrop <- which(unlist(lapply(ranges, length)) == 0)
                 if (length(whichDrop) > 0) {
-                  values <- values[-whichDrop]
+                  ##values <- values[-whichDrop]
                   ranges <- ranges[-whichDrop]
                 }
               }
               ranges <- initialize(x@ranges, elements = ranges)
-              values <- initialize(x@values, elements = values)
+              ##values <- initialize(x@values, elements = values)
             } else if (!missing(i)) {
               checkIndex(i, length(x))
               ranges <- ranges[i]
