@@ -190,7 +190,7 @@ setMethod("Ops", c("RangesList", "ANY"),
 setMethod("show", "RangesList",
           function(object)
           {
-            nranges <- length(object)
+            nranges <- length(start(object))
             cat(class(object), ": ", nranges, " range", sep = "")
             if (nranges != 1)
               cat("s")
