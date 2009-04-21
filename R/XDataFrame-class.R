@@ -322,7 +322,7 @@ setMethod("[", "XDataFrame",
             if (!missing(j)) {
               prob <- checkIndex(j)
               if (!is.null(prob))
-                stop("subsetting cols: ", prob)
+                stop("selecting cols: ", prob)
               x <- callNextMethod(x, j)
               if (any(duplicated(names(x))))
                 names(x) <- make.unique(names(x))
@@ -332,7 +332,7 @@ setMethod("[", "XDataFrame",
             if (!missing(i)) {
               prob <- checkIndex(i, row = TRUE)
               if (!is.null(prob))
-                stop("subsetting rows: ", prob)
+                stop("selecting rows: ", prob)
               if (is.character(i))
                 i <- pmatch(i, rownames(x), duplicates.ok = TRUE)
               else if (is.logical(i))

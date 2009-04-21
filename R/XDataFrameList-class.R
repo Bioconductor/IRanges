@@ -16,18 +16,25 @@ setClass("SplitXDataFrameList",
 
 setMethod("dim", "XDataFrameList",
           function(x) {
-            ncol <- 0
-            if (length(x))
-              ncol <- ncol(x[[1]])
-            as.integer(c(sum(unlist(lapply(as.list(x, use.names = FALSE), nrow))), ncol))
+            if (x@compress)
+              dim(unlist(x))
+            else {
+              ncol <- 0
+              if (length(x))
+                ncol <- ncol(x[[1]])
+              nrow <- sum(unlist(lapply(as.list(x, use.names = FALSE), nrow)))
+              as.integer(c(nrow, ncol))
+            }
           })
 
 ### FIXME: make separate rownames, colnames methods, because the
 ### rownames calculation can be _very_ slow
 setMethod("dimnames", "XDataFrameList",
           function(x) {
-            list(unlist(lapply(x, rownames), use.names=FALSE),
-                 if (length(x)) colnames(x[[1]]) else NULL)
+            if (x@compress)
+              dimnames(unlist(x))
+            else list(unlist(lapply(x, rownames), use.names=FALSE),
+                      if (length(x)) colnames(x[[1]]) else NULL)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -50,14 +57,14 @@ setValidity2("SplitXDataFrameList", .valid.SplitXDataFrameList)
 ### Constructor.
 ###
 
-XDataFrameList <- function(...)
+XDataFrameList <- function(..., compress = FALSE)
 {
-  TypedList("XDataFrameList", elements = list(...), compress = FALSE)
+  TypedList("XDataFrameList", elements = list(...), compress = compress)
 }
 
-SplitXDataFrameList <- function(...)
+SplitXDataFrameList <- function(..., compress = FALSE)
 {
-  TypedList("SplitXDataFrameList", elements = list(...), compress = FALSE)
+  TypedList("SplitXDataFrameList", elements = list(...), compress = compress)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -40,9 +40,12 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{XDataFrameList(...)}: Concatenates the \code{XDataFrame}
-      objects in \code{...} into a new \code{XDataFrameList}.}
-    \item{}{\code{SplitXDataFrameList(...)}: Concatenates the
+    \item{}{\code{XDataFrameList(..., compress = FALSE)}:
+      Concatenates the \code{XDataFrame}
+      objects in \code{...} into a new \code{XDataFrameList}, optionally
+      compressing them, which is only possible if the elements can be
+      combined via \code{rbind}, see \code{\linkS4class{TypedList}}.}
+    \item{}{\code{SplitXDataFrameList(..., compress = FALSE)}: Concatenates the
       \code{XDataFrame} objects in \code{...} into a new
       \code{SplitXDataFrameList}. Note that all arguments must have the same
       number and names of columns.}
