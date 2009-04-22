@@ -60,11 +60,114 @@ indices along those sequences, and data related to those ranges.
 % should we also have a VectorSequence, that would extend 'vector' and
 % add subset-by-Ranges functionality?
 
+The \IRanges{} packages represents sequences through its virtual class
+\Rclass{Sequence} with two main subclasses: \Rclass{Rle} and \Rclass{XSequence}.
+
+<<initialize>>=
+suppressMessages(library(IRanges))
+@
+
 \subsection{Run Length Encoding}
 
 % sparse representation, and more (manipulating runs is useful)
 
-\Rclass{Rle}
+The \Rclass{Rle} class represents a run-length encoded (compressed) sequence of
+\Rclass{logical}, \Rclass{integer}, \Rclass{numeric}, \Rclass{complex}, 
+\Rclass{character}, or \Rclass{raw} values.
+
+<<Rle-construction>>=
+set.seed(0)
+lambda <- c(rep(0.001, 4500), seq(0.001, 10, length = 500), seq(10,0.001, length = 500))
+x <- Rle(rpois(1e7, lambda))
+y <- Rle(rpois(1e7, lambda[c(251:length(lambda), 1:250)]))
+x
+y
+@
+
+<<Rle-accessors>>=
+head(runValue(x))
+head(runLength(x))
+@
+
+<<Rle-ops>>=
+x > 0
+x + y
+x > 0 | y > 0
+@
+
+
+<<Rle-summary>>=
+range(x)
+sum(x > 0 | y > 0)
+@
+
+<<Rle-math>>=
+log1p(x)
+@
+
+
+<<Rle-cor>>=
+cor(x, y)
+shiftApply(249:251, y, x, FUN = function(x, y) var(x, y) / (sd(x) * sd(y)))
+@
+
+
+<<Rle-rollmean>>=
+rollmeanRle <- function (x, k)
+{
+    n <- length(x)
+    cumsum(c(Rle(sum(subseq(x, 1, k))), subseq(x, k + 1, n) - subseq(x, 1, n - k))) / k
+}
+@
+
+
+<<Rle-rollvar>>=
+rollvarRle <- function(x, k)
+{
+    n <- length(x)
+    means <- rollmeanRle(x, k)
+    nextMean <- subseq(means, 2, n - k + 1)
+    cumsum(c(Rle(sum((subseq(x, 1, k) - means[1])^2)),
+             k * diff(means)^2 -
+               (subseq(x, 1, n - k) - nextMean)^2 +
+                 (subseq(x, k + 1, n) - nextMean)^2)) / (k - 1)
+}
+@
+
+
+<<Rle-rollcov>>=
+rollcovRle <- function(x, y, k)
+{
+    n <- length(x)
+    meanX <- rollmeanRle(x, k)
+    meanY <- rollmeanRle(y, k)
+    nextMeanX <- subseq(meanX, 2, n - k + 1)
+    nextMeanY <- subseq(meanY, 2, n - k + 1)
+    cumsum(c(Rle(sum((subseq(x, 1, k) - meanX[1]) * (subseq(y, 1, k) - meanY[1]))),
+             k * diff(meanX) * diff(meanY) -
+               (subseq(x, 1, n - k) - nextMeanX) * (subseq(y, 1, n - k) - nextMeanY) +
+                 (subseq(x, k + 1, n) - nextMeanX) * (subseq(y, k + 1, n) - nextMeanY))) / (k - 1)
+}
+@
+
+
+<<Rle-rollsd>>=
+rollsdRle <- function(x, k)
+{
+    sqrt(rollvarRle(x, k))
+}
+@
+
+
+<<Rle-rollcor>>=
+rollcorRle <- function(x, y, k)
+{
+    rollcovRle(x, y, k) / (rollsdRle(x, k) * rollsdRle(y, k))
+}
+@
+
+
+
 
 \subsection{External Sequences}
 
@@ -178,7 +281,7 @@ indices along those sequences, and data related to those ranges.
 \Rclass{RDApplyParams}
 \Rclass{FilterRules}
 
-%% Classes Not Covered (20)
+%% Classes Not Covered (21)
 %%\Rclass{Alignment}
 %%\Rclass{AlignmentSpace}
 %%\Rclass{ANYTHING}
@@ -191,6 +294,7 @@ indices along those sequences, and data related to those ranges.
 %%\Rclass{RangesORmissing}
 %%\Rclass{RawPtr}
 %%\Rclass{SequencePtr}
+%%\Rclass{vectorORfactor}
 %%\Rclass{XDataFrameORNULL}
 %%\Rclass{XInteger}
 %%\Rclass{XIntegerORNULL}
