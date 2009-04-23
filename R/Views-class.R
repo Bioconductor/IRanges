@@ -243,7 +243,7 @@ setMethod("viewApply", "Views",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Old stuff (Defunct or Deprecated).
+### Old stuff (Deprecated or Defunct).
 ###
 
 views <- function(...) .Defunct("Views")

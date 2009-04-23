@@ -427,7 +427,7 @@ setMethod("disjointBins", "Ranges", function(x) {
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Old stuff (Defunct or Deprecated).
+### Old stuff (Deprecated or Defunct).
 ###
 
 setGeneric("first", function(x) standardGeneric("first"))
