@@ -64,38 +64,13 @@
 \alias{show,XNumeric-method}
 \alias{==,XNumeric,XNumeric-method}
 
-% XRle class, functions and methods:
-\alias{class:XRle}
-\alias{XRle-class}
-\alias{XRle}
-
-\alias{length,XRle-method}
-\alias{rep,XRle-method}
-\alias{reverse,XRle-method}
-\alias{==,XRle,XRle-method}
-\alias{[,XRle-method}
-\alias{subseq,XRle-method}
-
-% XRleInteger class, function and methods:
-\alias{class:XRleInteger}
-\alias{XRleInteger-class}
-\alias{XRleInteger}
-
-\alias{Arith,integer,XRleInteger-method}
-\alias{Arith,XRleInteger,integer-method}
-\alias{Arith,XRleInteger,XRleInteger-method}
-\alias{as.integer,XRleInteger-method}
-\alias{as.vector,XRleInteger,missing-method}
-\alias{coerce,integer,XRleInteger-method}
-\alias{show,XRleInteger-method}
-
 
 \title{Sequence objects}
 
 \description{
   The Sequence virtual class is a general container for storing
   a sequence i.e. an ordered set of elements. These containers
-  come in three types:  XSequence, XRle [DEPRECATED], and Rle.
+  come in two types:  XSequence and Rle.
 
   The XSequence virtual class is a general container for storing
   an "external sequence".
@@ -111,14 +86,6 @@
   of numeric values (stored as double values at the C level).
 
   Also the \link[Biostrings]{XString} class from the Biostrings package
-
-  The XRle [DEPRECATED -- use Rle] virtual class is a general container for
-  storing an "external sequence" that is stored in a run-length encoding
-  format. The following classes derive directly from the XRle class.
-
-  The XRleInteger [DEPRECATED -- use Rle] class is a container for storing an
-  external run-length encoding of integers (stored as int values at the C
-  level).
 
   The purpose of the X* containers is to provide a "pass by address"
   semantic and also to avoid the overhead of copying the sequence

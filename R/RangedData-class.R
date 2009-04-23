@@ -419,13 +419,6 @@ setAs("Rle", "RangedData",
                      XDataFrame(score = runValue(from)))
       })
 
-setAs("XRle", "RangedData",
-      function(from)
-      {
-        RangedData(successiveIRanges(as.integer(from@lengths)),
-                   XDataFrame(score = from@values))
-      })
-
 setAs("RangesList", "RangedData",
       function(from)
       {

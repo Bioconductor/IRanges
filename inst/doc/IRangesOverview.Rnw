@@ -276,7 +276,7 @@ rollcorRle <- function(x, y, k)
 \Rclass{RDApplyParams}
 \Rclass{FilterRules}
 
-%% Classes Not Covered (21)
+%% Classes Not Covered (18)
 %%\Rclass{Alignment}
 %%\Rclass{AlignmentSpace}
 %%\Rclass{ANYTHING}
@@ -295,9 +295,6 @@ rollcorRle <- function(x, y, k)
 %%\Rclass{XIntegerORNULL}
 %%\Rclass{XIntegerViews}
 %%\Rclass{XNumeric}
-%%\Rclass{XRle}
-%%\Rclass{XRleInteger}
-%%\Rclass{XRleIntegerViews}
 
 \begin{table*}[tbp]
 \begin{minipage}{\textwidth}

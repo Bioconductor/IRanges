@@ -30,7 +30,6 @@
 \alias{as.data.frame,RangedData-method}
 \alias{coerce,RangedData,XDataFrame-method}
 \alias{coerce,Rle,RangedData-method}
-\alias{coerce,XRle,RangedData-method}
 
 % Combining and splitting
 \alias{c,RangedData-method}
@@ -225,9 +224,9 @@
       single space.
     }
     \item{}{
-      \code{as(from, "RangedData")}: Coerce an \code{\linkS4class{Rle}} or an
-      \code{\linkS4class{XRle}} to a \code{RangedData} by converting each run
-      to a range and storing the run values in a column named "score".
+      \code{as(from, "RangedData")}: Coerce an \code{\linkS4class{Rle}}
+      to a \code{RangedData} by converting each run to a range and storing
+      the run values in a column named "score".
     }
   }
 }

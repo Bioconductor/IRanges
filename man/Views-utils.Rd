@@ -5,7 +5,6 @@
 \alias{slice,integer-method}
 \alias{slice,Rle-method}
 \alias{slice,XInteger-method}
-\alias{slice,XRleInteger-method}
 
 \alias{viewApply}
 \alias{viewApply,Views-method}
@@ -13,23 +12,18 @@
 \alias{viewMins}
 \alias{viewMins,RleViews-method}
 \alias{viewMins,XIntegerViews-method}
-\alias{viewMins,XRleIntegerViews-method}
 \alias{viewMaxs}
 \alias{viewMaxs,RleViews-method}
 \alias{viewMaxs,XIntegerViews-method}
-\alias{viewMaxs,XRleIntegerViews-method}
 \alias{viewSums}
 \alias{viewSums,RleViews-method}
 \alias{viewSums,XIntegerViews-method}
-\alias{viewSums,XRleIntegerViews-method}
 \alias{viewWhichMins}
 \alias{viewWhichMins,RleViews-method}
 \alias{viewWhichMins,XIntegerViews-method}
-\alias{viewWhichMins,XRleIntegerViews-method}
 \alias{viewWhichMaxs}
 \alias{viewWhichMaxs,RleViews-method}
 \alias{viewWhichMaxs,XIntegerViews-method}
-\alias{viewWhichMaxs,XRleIntegerViews-method}
 \alias{viewRangeMins}
 \alias{viewRangeMins,RleViews-method}
 \alias{viewRangeMaxs}
@@ -79,14 +73,13 @@
     to a vector or matrix if possible.
   }
   \item{x}{
-    An \link{Rle}, \link{XRleInteger}, \link{XInteger} object or an integer
-    vector for \code{slice}.
+    An \link{Rle}, \link{XInteger} object or an integer vector for \code{slice}.
 
-    An \link{RleViews}, \link{XRleIntegerViews}, \link{XIntegerViews} object for
-    \code{viewMins}, \code{viewMaxs}, and \code{viewSums}.
+    An \link{RleViews}, \link{XIntegerViews} object for \code{viewMins},
+    \code{viewMaxs}, and \code{viewSums}.
 
-    An \link{Rle}, \link{XRleIntegerViews}, \link{XIntegerViews} object for
-    \code{viewWhichMins} and \code{viewWhichMaxs}.
+    An \link{Rle}, \link{XIntegerViews} object for \code{viewWhichMins} and
+    \code{viewWhichMaxs}.
   }
   \item{lower, upper}{
     The lower and upper bounds for the slice.
@@ -100,10 +93,10 @@
 }
 
 \details{
-  The \code{slice} function creates views on \link{XRleInteger} or
-  \link{XInteger} objects where the data are within the specified bounds. This
-  is useful for finding areas of absolute maxima (peaks), absolute minima
-  (troughs), or fluxuations within a specified limits.
+  The \code{slice} function creates views on \link{Rle} or \link{XInteger}
+  objects where the data are within the specified bounds. This is useful for
+  finding areas of absolute maxima (peaks), absolute minima (troughs), or
+  fluxuations within a specified limits.
 
   The \code{viewMins}, \code{viewMaxs}, and \code{viewSums} functions provide
   efficient methods for calculating the specified numeric summary by performing
@@ -115,7 +108,7 @@
 }
 
 \value{
-  An \link{XRleIntegerViews} or \link{XIntegerViews} object for \code{slice}.
+  An \link{RleViews} or \link{XIntegerViews} object for \code{slice}.
 
   A vector of \code{length(x)} containing the numeric summaries for the views
   for \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewWhichMins},
@@ -128,8 +121,8 @@
 \author{P. Aboyoun}
 
 \seealso{
-  \link{RleViews-class}, \link{XRleIntegerViews-class}, \link{XIntegerViews-class},
-  \code{\link{which.min}}, \code{\link{colSums}}
+  \link{RleViews-class}, \link{XIntegerViews-class}, \code{\link{which.min}},
+  \code{\link{colSums}}
 }
 
 \examples{

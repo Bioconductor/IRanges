@@ -132,19 +132,6 @@ static const R_CallMethodDef callMethods[] = {
 /* XNumericViews_class.c */
 	CALLMETHOD_DEF(XNumericViews_slice, 5),
 
-/* XRleIntegerViews_class.c */
-	CALLMETHOD_DEF(XRleIntegerViews_slice, 3),
-
-/* XRleInteger_class.c */
-	CALLMETHOD_DEF(XRleInteger_Arith, 3),
-
-/* XRleIntegerViews_utils.c */
-	CALLMETHOD_DEF(XRleIntegerViews_viewMins, 2),
-	CALLMETHOD_DEF(XRleIntegerViews_viewMaxs, 2),
-	CALLMETHOD_DEF(XRleIntegerViews_viewSums, 2),
-	CALLMETHOD_DEF(XRleIntegerViews_viewWhichMins, 2),
-	CALLMETHOD_DEF(XRleIntegerViews_viewWhichMaxs, 2),
-
 /* coverage */
 	CALLMETHOD_DEF(IRanges_coverage, 4),
 

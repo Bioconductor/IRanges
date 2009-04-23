@@ -46,10 +46,6 @@ Collate: validity-utils.R
 	Rle-class.R
 	RleViews-class.R
 	RleViews-utils.R
-	XRle-class.R
-	XRleInteger-class.R
-	XRleIntegerViews-class.R
-	XRleIntegerViews-utils.R
 	MaskCollection-class.R
 	read.Mask.R
 	TypedList-class.R

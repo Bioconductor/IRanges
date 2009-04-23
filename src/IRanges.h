@@ -796,52 +796,6 @@ SEXP XNumericViews_slice(
 );
 
 
-/* XRleInteger_class.c */
-
-SEXP XRleInteger_Arith(
-	SEXP x,
-	SEXP y,
-	SEXP Generic
-);
-
-
-/* XRleIntegerViews_class.c */
-
-SEXP XRleIntegerViews_slice(
-	SEXP x,
-	SEXP lower,
-	SEXP upper
-);
-
-
-/* XRleIntegerViews_utils.c */
-
-SEXP XRleIntegerViews_viewMins(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP XRleIntegerViews_viewMaxs(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP XRleIntegerViews_viewSums(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP XRleIntegerViews_viewWhichMins(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP XRleIntegerViews_viewWhichMaxs(
-	SEXP x,
-	SEXP na_rm
-);
-
-
 /* coverage */
 
 SEXP IRanges_coverage(
