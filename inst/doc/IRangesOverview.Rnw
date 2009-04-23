@@ -45,20 +45,15 @@ options(width=60)
 The \IRanges{} package is designed to represent sequences, ranges representing
 indices along those sequences, and data related to those ranges.
 
-% introduce our example here, perhaps CTCF data? Probably need to use
-% Biostrings and/or ShortRead, just to have a realistic example.
+% introduce our example here, some simple, illustrative dataset
 
 \section{Sequences}
 
 \Rclass{Sequence}
 
-% discuss what we mean by a sequence, conceptually, perhaps using a
-% biological sequence (short read, chromosome, ...?) as an example.
+% discuss what we mean by a sequence, conceptually
 
 % we have two sequence implementations, both designed to handle large data
-
-% should we also have a VectorSequence, that would extend 'vector' and
-% add subset-by-Ranges functionality?
 
 The \IRanges{} packages represents sequences through its virtual class
 \Rclass{Sequence} with two main subclasses: \Rclass{Rle} and \Rclass{XSequence}.
@@ -218,7 +213,6 @@ rollcorRle <- function(x, y, k)
 \Rclass{IRangesList}
 \Rclass{MaskCollection} % make distinction with RangesList
 
-\Rclass{XRanges}
 \Rclass{IntervalTree}
 % need an IntervalTreeList?
 
@@ -259,10 +253,11 @@ rollcorRle <- function(x, y, k)
 % manipulate many, possibly overlapping, subsequences
 
 \Rclass{Views}
-
-\subsection{Views on RLE Sequences}
-
 \Rclass{RleViews}
+
+\subsection{Manipulating Views}
+
+\subsection{Aggregating Views}
 
 
 \section{Data Sets}
