@@ -4,13 +4,16 @@
 
 setClass("IntervalTree",
          representation(ptr = "externalptr", mode = "character"),
-         contains = "XRanges")
+         contains = "Ranges")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessors
 ###
 
 setMethod("length", "IntervalTree", function(x) .IntervalTreeCall(x, "length"))
+
+setMethod("start", "IntervalTree", function(x) .IntervalTreeCall(x, "start"))
+setMethod("end", "IntervalTree", function(x) .IntervalTreeCall(x, "end"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor

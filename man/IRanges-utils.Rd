@@ -15,8 +15,10 @@
 \alias{threebands,IRanges-method}
 \alias{reduce}
 \alias{reduce,IRanges-method}
+\alias{reduce,Ranges-method}
 \alias{gaps}
 \alias{gaps,IRanges-method}
+\alias{gaps,Ranges-method}
 \alias{reflect}
 \alias{reflect,Ranges-method}
 \alias{flank}

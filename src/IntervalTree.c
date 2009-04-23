@@ -4,6 +4,8 @@
 #include "rbTree.h"
 #include "localmem.h"
 
+#include <S.h> /* for Salloc() */
+
 #define MAX(a, b)  (((a) > (b)) ? (a) : (b))
 
 typedef struct _IntegerInterval {
@@ -369,15 +371,12 @@ SEXP IntegerIntervalTree_nearest(SEXP r_tree, SEXP r_ranges, SEXP r_self) {
 }
  */
 
-SEXP IntegerIntervalTree_asIRanges(SEXP r_tree) {
-  struct rbTree *tree = R_ExternalPtrAddr(r_tree);
+ /* Traverses the tree, pulling out the intervals, in order */
+IntegerInterval **_IntegerIntervalTree_intervals(struct rbTree *tree) {
   struct rbTreeNode *p = tree->root;
   int count = 0, height = 0;
-  SEXP r_start, r_width, r_ranges;
-
-  PROTECT(r_start = allocVector(INTSXP, tree->n));
-  PROTECT(r_width = allocVector(INTSXP, tree->n));
-
+  IntegerInterval **intervals = Salloc(tree->n, IntegerInterval *);
+  
   if (tree->n)
     while(1) {
       /* is node on top of stack? */
@@ -389,10 +388,7 @@ SEXP IntegerIntervalTree_asIRanges(SEXP r_tree) {
         /* go left */
         p = p->left;
       } else {       /* can't go left, handle this node */
-        IntegerInterval *interval = (IntegerInterval *)p->item;
-        INTEGER(r_start)[count] = interval->start;
-        INTEGER(r_width)[count] = interval->end - interval->start + 1;
-        count++;
+        intervals[count++] = (IntegerInterval *)p->item;
         if (visited)
           height--; /* pop handled node if on stack */
         if (p->right) /* go right if possible */
@@ -403,10 +399,52 @@ SEXP IntegerIntervalTree_asIRanges(SEXP r_tree) {
       }
     }
 
+  return intervals;
+}
+
+SEXP IntegerIntervalTree_asIRanges(SEXP r_tree) {
+  SEXP r_start, r_width, r_ranges;
+  struct rbTree *tree = R_ExternalPtrAddr(r_tree);
+  IntegerInterval **intervals = _IntegerIntervalTree_intervals(tree);
+  
+  PROTECT(r_start = allocVector(INTSXP, tree->n));
+  PROTECT(r_width = allocVector(INTSXP, tree->n));
+
+  for(int i = 0; i < tree->n; i++) {
+    INTEGER(r_start)[i] = intervals[i]->start;
+    INTEGER(r_width)[i] = intervals[i]->end - intervals[i]->start + 1;
+  }
+
   r_ranges = _new_IRanges("IRanges", r_start, r_width, R_NilValue);
   
   UNPROTECT(2);
   return(r_ranges);
+}
+
+SEXP IntegerIntervalTree_start(SEXP r_tree) {
+  SEXP r_start;
+  struct rbTree *tree = R_ExternalPtrAddr(r_tree);
+  IntegerInterval **intervals = _IntegerIntervalTree_intervals(tree);
+  
+  r_start = allocVector(INTSXP, tree->n);
+
+  for(int i = 0; i < tree->n; i++)
+    INTEGER(r_start)[i] = intervals[i]->start;
+
+  return r_start;
+}
+
+SEXP IntegerIntervalTree_end(SEXP r_tree) {
+  SEXP r_end;
+  struct rbTree *tree = R_ExternalPtrAddr(r_tree);
+  IntegerInterval **intervals = _IntegerIntervalTree_intervals(tree);
+  
+  r_end = allocVector(INTSXP, tree->n);
+  
+  for(int i = 0; i < tree->n; i++)
+    INTEGER(r_end)[i] = intervals[i]->end;
+  
+  return r_end;
 }
 
 SEXP IntegerIntervalTree_length(SEXP r_tree) {

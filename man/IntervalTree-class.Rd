@@ -24,9 +24,9 @@
 
 \title{Interval Search Trees}
 \description{
-  An \code{IntervalTree} object is an external
+  An \code{IntervalTree} object is a tree
   representation of ranges (i.e. it is derived from
-  \code{\linkS4class{XRanges}}) that is optimized for overlap queries.
+  \code{\linkS4class{Ranges}}) that is optimized for overlap queries.
 }
 \details{
   A common type of query that arises when working with intervals is finding
@@ -172,7 +172,7 @@
 
 \author{Michael Lawrence}
 \seealso{
-  \code{\linkS4class{XRanges}}, the parent of this class,
+  \code{\linkS4class{Ranges}}, the parent of this class,
   \code{\linkS4class{RangesMatching}}, the result of an overlap query.
 }
 \examples{

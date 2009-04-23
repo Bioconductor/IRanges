@@ -174,7 +174,7 @@ rdapply(x, ...)
 \examples{
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   score <- c(2L, 0L, 1L)
-  rd <- RangedData(ranges, score, splitter = c("chr1","chr2","chr1"))
+  rd <- RangedData(ranges, score, space = c("chr1","chr2","chr1"))
   
   ## a single function
   countrows <- function(rd) nrow(rd)

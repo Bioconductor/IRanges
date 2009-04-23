@@ -28,7 +28,6 @@ Collate: validity-utils.R
 	solveUserSEW.R
 	IRanges-utils.R
 	IRanges-setops.R
-	XRanges-class.R
 	IntervalTree-class.R
 	IntervalTree-utils.R
 	Partitioning-class.R

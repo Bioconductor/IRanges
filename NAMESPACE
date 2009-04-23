@@ -10,7 +10,7 @@ exportClasses(
     ListLike,
     Ranges, RangesORmissing,
     IRanges, NormalIRanges,
-    XRanges, IntervalTree,
+    IntervalTree,
     Partitioning, IPartitioning,
     SequencePtr, RawPtr, IntegerPtr, NumericPtr,
     Sequence, Views,

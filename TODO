@@ -4,6 +4,7 @@ Immediate TODO list
 - Herve or Michael: Provide a way to reduce ranges separated by a max
   distance or a min overlap (Michael's suggestion).
 
+- Extend subseq() for Ranges (essentially vectorized to/from)
 
 Long term TODO list
 -------------------
@@ -19,19 +20,15 @@ Long term TODO list
     - ranges +/- x (shift)
   - permute or something to create a random mimic
 
-- IRanges:
-  - should probably use XIntegers for start/width
-
-- TypedList:
-  - dim, dim<-, dimnames, dimnames<- for multi-dimensional list (like 'by')
-
 - RangesList:
   - parallel rbind
-  - binary ops: "overlap", "nearest", "intersect", "setdiff", "merge"
+  - binary ops: "nearest", "intersect", "setdiff", "merge"
     - 'y' omitted: become n-ary ops on items in collection
     - 'y' specified: performed element-wise
   - unary ops: "gaps", "coverage", "slice", etc are vectorized
-
+  * as a subset specification for BSGenome objects (get sequences out)
+    - as XStringSet?
+    
 - XDataFrame:
   - group generics (Math, Ops, Summary)
   - by, aggregate
@@ -40,11 +37,9 @@ Long term TODO list
 
 - RangedData:
   - 'merge' for SQL-type join operations based on range overlap
-  - "aggregate", generalization of coverage for max/min/etc
-  - as a subset specification for BSGenome objects (get sequences out)
+  - "rangeMins", "rangeMaxs", "rangeSums"
 
 - SplitXDataFrame:
-  - unlist() should add a factor column recording source of each row
   - rbind
 
 - FilterRules:
@@ -107,9 +102,8 @@ Ranges? Would be a quick way to reimplement slice().)
 A Ranges object holds any number of start,width pairs that describe
 closed intervals representing the set of integers that fall within the
 endpoints. The primary implementation is IRanges, which stores the
-information as two integer vectors. The IntervalTree class is an
-external representation, and thus is derived from XRanges (but do we
-really need XRanges in here? Why not extend Ranges directly?).
+information as two integer vectors. The IntervalTree class is a
+tree representation of Ranges.
 
 Often the endpoints of the intervals are interesting independent of
 the underlying sequence. Many utilities are implemented for

@@ -26,11 +26,13 @@
 \alias{as.integer,Ranges-method}
 \alias{show,Ranges-method}
 \alias{[<-,Ranges-method}
+\alias{[,Ranges-method}
 \alias{rep,Ranges-method}
 \alias{isNormal}
 \alias{isNormal,Ranges-method}
 \alias{whichFirstNotNormal}
 \alias{whichFirstNotNormal,Ranges-method}
+\alias{update,Ranges-method}
 
 % Old stuff:
 \alias{first}
@@ -80,7 +82,7 @@
   can be subsetted by row and by column).
 
   The Ranges class itself is a virtual class. The following classes derive
-  directly from the Ranges class: \link{IRanges} and \link{XRanges}.
+  directly from the Ranges class: \link{IRanges} and \link{IntervalTree}.
 }
 
 \section{Methods}{
@@ -249,7 +251,6 @@
   \link{IRanges-class},
   \link{IRanges-utils},
   \link{IRanges-setops},
-  \link{XRanges-class},
   \link{RangedData-class},
   \link{IntervalTree-class},
   \code{\link{update}},

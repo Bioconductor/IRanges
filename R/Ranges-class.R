@@ -192,6 +192,14 @@ setReplaceMethod("[", "Ranges",
         stop("attempt to modify the value of a ", class(x), " instance")
 )
 
+### FIXME: hopefully temporary
+setMethod("[", "Ranges", function(x, i, j, ..., drop) {
+  cl <- class(x)
+  mc <- match.call()
+  mc$x <- as(x, "IRanges")
+  as(eval(mc), cl)
+})
+
 setMethod("rep", "Ranges",
     function(x, ...)
         x[rep(seq_len(length(x)), ...)]
@@ -201,6 +209,11 @@ setMethod("rep", "Ranges",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### More endomorphisms.
 ###
+
+### FIXME: Most of these are only defined for IRanges. Need to fix up
+### the update mechanism, so that they can be defined on 'Ranges'. A
+### couple have been implemented as wrappers that coerce to IRanges,
+### which is not a general, long-term solution.
 
 setGeneric("shift", signature="x",
     function(x, shift, use.names=TRUE) standardGeneric("shift")
@@ -225,10 +238,23 @@ setGeneric("reduce", signature="x",
     function(x, with.inframe.attrib=FALSE) standardGeneric("reduce")
 )
 
+setMethod("reduce", "Ranges",
+          function(x, with.inframe.attrib=FALSE) {
+            ir <- as(x, "IRanges")
+            g <- reduce(ir, with.inframe.attrib)
+            as(g, class(x))
+          })
+
 setGeneric("gaps", signature="x",
     function(x, start=NA, end=NA) standardGeneric("gaps")
 )
 
+setMethod("gaps", "Ranges",
+          function(x, start=NA, end=NA) {
+            ir <- as(x, "IRanges")
+            g <- gaps(ir, start, end)
+            as(g, class(x))
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "reflect" generic and method
@@ -379,9 +405,7 @@ setMethod("*", c("Ranges", "numeric"), function(e1, e2) {
   r <- e1
   mid <- (start(r)+end(r))/2
   w <- width(r)/e2
-  start(r) <- ceiling(mid - w/2)
-  width(r) <- floor(w)
-  r
+  update(r, start = ceiling(mid - w/2), width = floor(w), check = FALSE)
 })
 
 ## make intervals disjoint by segregating them into separate Ranges
