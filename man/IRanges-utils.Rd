@@ -143,12 +143,15 @@
 }
 
 \details{
-  \code{successiveIRanges} returns an IRanges object containing the ranges on
-  \code{subject} that have the widths specified in the \code{width} vector
+  \code{successiveIRanges} returns an IRanges instance containing the
+  ranges that have the widths specified in the \code{width} vector
   and are separated by the gaps specified in \code{gapwidth}.
   The first range starts at position \code{from}.
+  When \code{gapwidth=0} and \code{from=1} (the defaults), the returned
+  IRanges can be seen as a partitioning of the 1:sum(width) interval.
+  See \code{?IPartitioning} for more details on this.
 
-  \code{whichAsIRanges} returns an \link{IRanges} object containing all of
+  \code{whichAsIRanges} returns an \link{IRanges} instance containing all of
   the ranges where \code{x} is \code{TRUE}.
 
   \code{shift} shifts all the ranges in \code{x}.

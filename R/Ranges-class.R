@@ -7,7 +7,7 @@
 ### points and on the domain of integers.
 ###
 
-setClass("Ranges", contains = "VIRTUAL")
+setClass("Ranges", contains="VIRTUAL")
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

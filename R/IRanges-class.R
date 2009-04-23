@@ -238,6 +238,12 @@ IRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL)
 ### Coercion.
 ###
 
+### Any Ranges object can be turned into an IRanges instance.
+setAs("Ranges", "IRanges",
+    function(from)
+        new2("IRanges", start=start(from), width=width(from), check=FALSE)
+)
+
 ### Helper function (not exported) used by the "coerce" methods defined in
 ### IRanges-utils.R. Believe it or not but the implicit "coerce" methods do
 ### NOT check that they return a valid object!
@@ -410,9 +416,8 @@ setReplaceMethod("end", "IRanges",
 setReplaceMethod("names", "IRanges",
     function(x, value)
     {
-        if (!is.character(value) && !is.null(value)) {
-            stop("'value' must be NULL or a character vector")
-        }
+        if (!is(value, "characterORNULL"))
+            stop("'value' must be a character vector or NULL")
         unsafe.names(x) <- value
         x
     }
