@@ -30,7 +30,7 @@ Collate: validity-utils.R
 	IRanges-setops.R
 	IntervalTree-class.R
 	IntervalTree-utils.R
-	Partitioning-class.R
+	Grouping-class.R
 	SequencePtr-class.R
 	RawPtr-class.R
 	IntegerPtr-class.R

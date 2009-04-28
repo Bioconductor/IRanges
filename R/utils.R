@@ -249,6 +249,40 @@ recycleVector <- function(x, length)
 
 ### Pretty printing
 
+### Works as long as length(), "[" and as.numeric() work on 'x'.
+### Not exported.
+toNumSnippet <- function(x, max.width)
+{
+    if (length(x) <= 2L)
+        return(paste(format(as.numeric(x)), collapse=" "))
+    if (max.width < 0L)
+        max.width <- 0L
+    ## Elt width and nb of elt to display if they were all 0.
+    elt_width0 <- 1L
+    nelt_to_display0 <- min(length(x), (max.width+1L) %/% (elt_width0+1L))
+    head_ii0 <- seq_len(nelt_to_display0 %/% 2L)
+    tail_ii0 <- length(x) + head_ii0 - length(head_ii0)
+    ii0 <- c(head_ii0, tail_ii0)
+    ## Effective elt width and nb of elt to display
+    elt_width <- format.info(as.numeric(x[ii0]))[1]
+    nelt_to_display <- min(length(x), (max.width+1L) %/% (elt_width+1L))
+    if (nelt_to_display == length(x))
+        return(paste(format(as.numeric(x), width=elt_width), collapse=" "))
+    head_ii <- seq_len((nelt_to_display+1L) %/% 2L)
+    tail_ii <- length(x) + seq_len(nelt_to_display %/% 2L) - nelt_to_display %/% 2L
+    ans_head <- format(as.numeric(x[head_ii]), width=elt_width)
+    ans_tail <- format(as.numeric(x[tail_ii]), width=elt_width)
+    ans <- paste(paste(ans_head, collapse=" "), "...", paste(ans_tail, collapse=" "))
+    if (nchar(ans) <= max.width || length(ans_head) == 0L)
+        return(ans)
+    ans_head <- ans_head[-length(ans_head)]
+    ans <- paste(paste(ans_head, collapse=" "), "...", paste(ans_tail, collapse=" "))
+    if (nchar(ans) <= max.width || length(ans_tail) == 0L)
+        return(ans)
+    ans_tail <- ans_tail[-length(ans_tail)]
+    paste(paste(ans_head, collapse=" "), "...", paste(ans_tail, collapse=" "))
+}
+
 labeledLine <- function(label, els, count = TRUE, sep = " ", ellipsis = "...") {
   if (count)
     label <- paste(label, "(", length(els), ")", sep = "")

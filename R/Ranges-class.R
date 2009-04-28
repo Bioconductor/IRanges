@@ -112,21 +112,21 @@ setMethod("as.integer", "Ranges",
 setMethod("show", "Ranges",
     function(object)
     {
-        cat(class(object), " object:\n", sep="")
+        cat(class(object), " instance:\n", sep="")
         n <- length(object)
-        if (n == 0) {
+        if (n == 0L) {
             showme <- as.data.frame(object)
-        } else if (n < 20) {
+        } else if (n < 20L) {
             showme <- as.data.frame(object, row.names=paste("[", seq_len(n), "]", sep=""))
         } else {
             sketch <- function(x)
-                c(subseq(x, 1, 9), "...", subseq(x, length(x)-8, length(x)))
+                c(subseq(x, 1L, 9L), "...", subseq(x, length(x)-8L, length(x)))
             showme <-
                   data.frame(start=sketch(start(object)),
                              end=sketch(end(object)),
                              width=sketch(width(object)),
                              row.names=c(paste("[", 1:9, "]", sep=""), "...",
-                                         paste("[", (n-8):n, "]", sep="")),
+                                         paste("[", (n-8L):n, "]", sep="")),
                              check.rows=TRUE,
                              check.names=FALSE,
                              stringsAsFactors=FALSE)

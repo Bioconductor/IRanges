@@ -151,7 +151,7 @@
   The first range starts at position \code{from}.
   When \code{gapwidth=0} and \code{from=1} (the defaults), the returned
   IRanges can be seen as a partitioning of the 1:sum(width) interval.
-  See \code{?IPartitioning} for more details on this.
+  See \code{?Partitioning} for more details on this.
 
   \code{whichAsIRanges} returns an \link{IRanges} instance containing all of
   the ranges where \code{x} is \code{TRUE}.
