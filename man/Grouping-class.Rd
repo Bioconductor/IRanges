@@ -124,6 +124,16 @@
       Equivalent to \code{grouplength(x, togroup(x, j))}.
     }
   }
+
+  Given that \code{length}, \code{names} and \code{[[} are defined
+  for Grouping objects, those objects can be considered \link{ListLike}
+  objects. In particular, \code{as.list} works out-of-the-box on them.
+
+  One important property of any Grouping object \code{x} is
+  that \code{unlist(as.list(x))} is always a permutation of 
+  \code{seq_len(nobj(x))}. This is a direct consequence of the fact
+  that every object in the grouping belongs to one group and only
+  one.
 }
 
 \section{The H2LGrouping and Dups subclasses}{
@@ -172,6 +182,7 @@
 \author{H. Pages}
 
 \seealso{
+  \link{ListLike-class},
   \link{Ranges-class},
   \link{IRanges-class},
   \link{successiveIRanges},
@@ -198,19 +209,21 @@
   x[[5]]
   togroup(x)
   togroup(x, 5:3)
-  grouplength(x)  # same as 'sapply(x, length)'
+  grouplength(x)  # same as 'unname(sapply(x, length))'
   grouplength(x, 5:3)
-  togrouplength(x)
+  togrouplength(x)  # same as 'grouplength(x, togroup(x))'
   togrouplength(x, 5:3)
 
+  ## The ListLike API:
   as.list(x)
+  sapply(x, length)
 
   ## ---------------------------------------------------------------------
   ## B. Dups OBJECTS
   ## ---------------------------------------------------------------------
   dups <- as(x, "Dups")
   dups
-  duplicated(dups)
+  duplicated(dups)  # same as 'duplicated(togroup(dups))'
 
   ## ---------------------------------------------------------------------
   ## C. Partitioning OBJECTS
@@ -225,13 +238,18 @@
   x[[2]]
   x[[3]]
   togroup(x)
-  grouplength(x)  # same as 'sapply(x, length)' and 'width(x)'
+  grouplength(x)  # same as 'unname(sapply(x, length))' and 'width(x)'
+  togrouplength(x)  # same as 'grouplength(x, togroup(x))'
   names(x)
 
   ## The Ranges core API:
   start(x)
   end(x)
   width(x)
+
+  ## The ListLike API:
+  as.list(x)
+  sapply(x, length)
 
   ## Replacing the names:
   names(x)[3] <- "empty partition"

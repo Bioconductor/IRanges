@@ -6,12 +6,6 @@
 ### NG groups (some of them eventually empty). The Grouping class and
 ### subclasses are containers for representing groupings.
 ###
-### Given that "length", "names" and "[[" are defined for Grouping objects,
-### those objects can be considered ListLike objects. Therefore 'as.list(x)'
-### works out-of-the-box on them. One important property of Grouping objects
-### is that 'sort(unlist(as.list(x)))' and 'seq_len(nobj(x))' are always
-### identical (a consequence of the fact that every object belongs to one
-### group and only one).
 
 setClass("Grouping", contains=c("ListLike", "VIRTUAL"))
 
