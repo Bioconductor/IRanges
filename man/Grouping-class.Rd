@@ -69,7 +69,7 @@
 
   Groups G_i are indexed from 1 to NG (1 <= i <= NG).
 
-  Object O_j are indexed from 1 to NO (1 <= i <= NO).
+  Object O_j are indexed from 1 to NO (1 <= j <= NO).
 
   Every object must belong to one group and only one.
 
@@ -96,30 +96,32 @@
     \item{}{
       \code{x[[i]]}:
       Returns the indices of the objects (the j's) that belong to G_i.
-      The j's are returned in ascending order. This provides the mapping from
-      groups to objects (one-to-many mapping).
+      The j's are returned in ascending order.
+      This provides the mapping from groups to objects (one-to-many mapping).
     }
     \item{}{
       \code{togroup(x, j=NULL)}:
-      Returns the index i of the group that O_j belongs to. This provides the
-      mapping from objects to groups (many-to-one mapping). Expected to work
-      in a vectorized fashion. \code{togroup(x)} is equivalent to
+      Returns the index i of the group that O_j belongs to.
+      This provides the mapping from objects to groups (many-to-one mapping).
+      Works in a vectorized fashion. \code{togroup(x)} is equivalent to
       \code{togroup(x, seq_len(nobj(x)))}: both return the entire mapping in
-      an integer vector of length NO. In fact \code{togroup(x, j)} is
-      equivalent to \code{y <- togroup(x); y[j]}.
+      an integer vector of length NO.
+      If \code{j} is not NULL, \code{togroup(x, j)} is equivalent to
+      \code{y <- togroup(x); y[j]}.
     }
     \item{}{
       \code{grouplength(x, i=NULL)}:
-      Returns the number of objects in G_i. Expected to work in a vectorized
-      fashion (unlike \code{x[[i]]}). \code{grouplength(x)} is equivalent to
-      \code{grouplength(x, seq_len(length(x)))}. If \code{i} is not NULL,
-      \code{grouplength(x, i)} is equivalent to
+      Returns the number of objects in G_i.
+      Works in a vectorized fashion (unlike \code{x[[i]]}).
+      \code{grouplength(x)} is equivalent to \code{grouplength(x, seq_len(length(x)))}.
+      If \code{i} is not NULL, \code{grouplength(x, i)} is equivalent to
       \code{sapply(i, function(ii) length(x[[i]]))}.
     }
     \item{}{
       \code{togrouplength(x, j=NULL)}:
       Returns the nb of objects that belong to the same group as O_j
-      (including O_j itself). Equivalent to \code{grouplength(x, togroup(x, j))}.
+      (including O_j itself).
+      Equivalent to \code{grouplength(x, togroup(x, j))}.
     }
   }
 }
@@ -131,11 +133,13 @@
 \section{The Partitioning subclass}{
   The Partitioning container represents block-groupings i.e. groupings
   where each group contains objects that are contiguous in the original
-  collection of objects. In other words, \code{x} is a Partitioning object
-  iff \code{togroup(x)} is sorted. In addition, a Partitioning object can
-  be seen (and manipulated) as a \link{Ranges} object where all the ranges
-  are adjacent starting at 1 (i.e. it covers the 1:NO interval with no
-  overlap between the ranges).
+  collection of objects. In other words, a grouping \code{x} is a
+  block-grouping iff \code{togroup(x)} is sorted in increasing order
+  (not necessarily strictly increasing).
+
+  A block-grouping object can also be seen (and manipulated) as a
+  \link{Ranges} object where all the ranges are adjacent starting at 1
+  (i.e. it covers the 1:NO interval with no overlap between the ranges).
 
   Note that a Partitioning object is both: a particular type of Grouping
   object and a particular type of \link{Ranges} object. Therefore all the
@@ -148,6 +152,10 @@
   \describe{
     \item{}{
       \code{H2LGrouping(high2low)}:
+      [DOCUMENT ME]
+    }
+    \item{}{
+      \code{Dups(high2low)}:
       [DOCUMENT ME]
     }
     \item{}{
@@ -177,23 +185,68 @@
   ## ---------------------------------------------------------------------
   ## A. H2LGrouping OBJECTS
   ## ---------------------------------------------------------------------
-  ## TODO: Put some examples here.
+  high2low <- c(NA, NA, 2, 2, NA, NA, NA, 6, NA, 1, 2, NA, 6, NA, NA, 2)
+  x <- H2LGrouping(high2low)
+  x
+
+  ## The Grouping core API:
+  length(x)
+  nobj(x)  # same as 'length(x)' for H2LGrouping objects
+  x[[1]]
+  x[[2]]
+  x[[3]]
+  x[[5]]
+  togroup(x)
+  togroup(x, 5:3)
+  grouplength(x)  # same as 'sapply(x, length)'
+  grouplength(x, 5:3)
+  togrouplength(x)
+  togrouplength(x, 5:3)
+
+  as.list(x)
 
   ## ---------------------------------------------------------------------
-  ## B. Partitioning OBJECTS
+  ## B. Dups OBJECTS
   ## ---------------------------------------------------------------------
-  x <- Partitioning(end=c(4, 7, 7, 8, 15))
+  dups <- as(x, "Dups")
+  dups
+  duplicated(dups)
+
+  ## ---------------------------------------------------------------------
+  ## C. Partitioning OBJECTS
+  ## ---------------------------------------------------------------------
+  x <- Partitioning(end=c(4, 7, 7, 8, 15), names=LETTERS[1:5])
   x  # the 3rd partition is empty
-  names(x)[3] <- "empty partition" 
+
+  ## The Grouping core API:
+  length(x)
+  nobj(x)
+  x[[1]]
+  x[[2]]
+  x[[3]]
+  togroup(x)
+  grouplength(x)  # same as 'sapply(x, length)' and 'width(x)'
+  names(x)
+
+  ## The Ranges core API:
+  start(x)
+  end(x)
+  width(x)
+
+  ## Replacing the names:
+  names(x)[3] <- "empty partition"
+  x
+
+  ## Coercion to an IRanges object:
   as(x, "IRanges")
 
-
+  ## Other examples:
   Partitioning(end=c(0, 0, 19), names=LETTERS[1:3])
   Partitioning()  # no partition
   Partitioning(end=integer(9))  # all partitions are empty
 
   ## ---------------------------------------------------------------------
-  ## C. RELATIONSHIP BETWEEN Partitioning OBJECTS AND successiveIRanges()
+  ## D. RELATIONSHIP BETWEEN Partitioning OBJECTS AND successiveIRanges()
   ## ---------------------------------------------------------------------
   mywidths <- c(4, 3, 0, 1, 7)
 

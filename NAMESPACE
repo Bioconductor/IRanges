@@ -39,7 +39,7 @@ export(
     successiveIRanges,
     whichAsIRanges,
     asNormalIRanges,
-    H2LGrouping, Partitioning,
+    H2LGrouping, Dups, Partitioning,
     RangedData, updateRangedData, RangedDataList,
     FilterRules, RDApplyParams,
     RangesList,

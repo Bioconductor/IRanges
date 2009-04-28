@@ -27,11 +27,13 @@ SEXP address_asSTRSXP(SEXP s)
  */
 SEXP sapply_length(SEXP list)
 {
+	SEXP ans, list_elt;
 	int n = LENGTH(list);
-	SEXP ans;
+
 	PROTECT(ans = NEW_INTEGER(n));
 	for (int i = 0; i < n; i++) {
-		INTEGER(ans)[i] = LENGTH(VECTOR_ELT(list, i));
+		list_elt = VECTOR_ELT(list, i);
+		INTEGER(ans)[i] = list_elt == R_NilValue ? 0 : LENGTH(list_elt);
 	}
 	UNPROTECT(1);
 	return ans;

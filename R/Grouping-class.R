@@ -10,7 +10,7 @@
 ### -------------------------------------------
 ###
 ### Groups G_i are indexed from 1 to NG (1 <= i <= NG).
-### Object O_j are indexed from 1 to NO (1 <= i <= NO).
+### Object O_j are indexed from 1 to NO (1 <= j <= NO).
 ### Every object must belong to one group and only one.
 ### Given that empty groups are allowed, NG can be greater than NO.
 ### Grouping an empty collection of objects (NO = 0) is supported. In that
@@ -153,14 +153,17 @@ setGeneric("low2high", function(x) standardGeneric("low2high"))
 setMethod("low2high", "H2LGrouping", function(x) x@low2high)
 
 ### 'length(x)' and 'nobj(x)' are the same.
-setMethod("length", "H2LGrouping", function(x) length(x@group2object))
-setMethod("nobj", "H2LGrouping", function(x) length(x@object2group))
+setMethod("length", "H2LGrouping", function(x) length(x@low2high))
+setMethod("nobj", "H2LGrouping", function(x) length(x@high2low))
 
 setMethod("[[", "H2LGrouping",
     function(x, i, j, ...)
     {
         i <- callNextMethod()  # calls "[[" method for ListLike objects
-        c(i, x@low2high[[i]])
+        if (is.na(x@high2low[i]))
+            c(i, x@low2high[[i]])
+        else
+            integer()
     }
 )
 
@@ -235,19 +238,25 @@ setMethod("grouplength", "H2LGrouping",
         return("the 'high2low' slot must contain an integer vector")
     if (!all(x@high2low >= 1L, na.rm=TRUE))
         return("the 'high2low' slot must contain integer values >= 1")
-    if (!all(x@high2low < seq_along(x@high2low), na.rm=TRUE))
-        return("when mapped, values in the 'high2low' slot must be mapped ",
-               "to lower values")
-    if (!all(is.na(x@high2low[x@high2low])))
-        return("when mapped, values in the 'high2low' slot must be mapped ",
-               "to unmapped values")
+    if (!all(x@high2low < seq_along(x@high2low), na.rm=TRUE)) {
+        problem <- c("when mapped, elements in the 'high2low' slot must be mapped ",
+                     "to elements at a lower position")
+        return(paste(problem, collapse=""))
+    }
+    if (!all(is.na(x@high2low[x@high2low]))) {
+        problem <- c("when mapped, elements in the 'high2low' slot must be mapped ",
+                     "to unmapped elements")
+        return(paste(problem, collapse=""))
+    }
     if (!is.list(x@low2high))
         return("the 'low2high' slot must contain a list")
     if (length(x@high2low) != length(x@low2high))
         return("the 'high2low' and 'low2high' slots must have the same length")
-    if (!identical(.makeLow2highFromHigh2low(x@high2low), x@low2high))
-        return("the 'low2high' slot must contain the reverse mapping ",
-               "of the 'high2low' slot")
+    if (!identical(.makeLow2highFromHigh2low(x@high2low), x@low2high)) {
+        problem <- c("the 'low2high' slot must contain the reverse mapping ",
+                     "of the 'high2low' slot")
+        return(paste(problem, collapse=""))
+    }
     NULL
 }
 
@@ -265,8 +274,14 @@ setValidity("H2LGrouping",
 ###
 
 H2LGrouping <- function(high2low)
+{
+    if (!is.numeric(high2low))
+        stop("'high2low' must be a vector of integers")
+    if (!is.integer(high2low))
+        high2low <- as.integer(high2low)
     new("H2LGrouping", high2low=high2low,
         low2high=.makeLow2highFromHigh2low(high2low))
+}
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -290,6 +305,20 @@ setMethod("show", "Dups",
             " (", percentage, "% of duplicates)\n", sep="")
     }
 )
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Constructor.
+###
+
+Dups <- function(high2low)
+{
+    if (!is.numeric(high2low))
+        stop("'high2low' must be a vector of integers")
+    if (!is.integer(high2low))
+        high2low <- as.integer(high2low)
+    new("Dups", high2low=high2low,
+        low2high=.makeLow2highFromHigh2low(high2low))
+}
 
 
 
@@ -369,7 +398,7 @@ setMethod("[[", "Partitioning",
 setMethod("togroup", "Partitioning",
     function(x, j=NULL)
     {
-        to_group <- rep(seq_len(length(x)), each=width(x))
+        to_group <- rep(seq_len(length(x)), times=width(x))
         if (is.null(j))
             return(to_group)
         if (!is.numeric(j))
