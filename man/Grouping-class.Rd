@@ -121,6 +121,7 @@
       Returns the nb of objects that belong to the same group as O_j
       (including O_j itself). Equivalent to \code{grouplength(x, togroup(x, j))}.
     }
+  }
 }
 
 \section{The H2LGrouping and Dups subclasses}{
