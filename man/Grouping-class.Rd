@@ -69,7 +69,7 @@
 
   Groups G_i are indexed from 1 to NG (1 <= i <= NG).
 
-  Object O_j are indexed from 1 to NO (1 <= j <= NO).
+  Objects O_j are indexed from 1 to NO (1 <= j <= NO).
 
   Every object must belong to one group and only one.
 
@@ -115,7 +115,7 @@
       Works in a vectorized fashion (unlike \code{x[[i]]}).
       \code{grouplength(x)} is equivalent to \code{grouplength(x, seq_len(length(x)))}.
       If \code{i} is not NULL, \code{grouplength(x, i)} is equivalent to
-      \code{sapply(i, function(ii) length(x[[i]]))}.
+      \code{sapply(i, function(ii) length(x[[ii]]))}.
     }
     \item{}{
       \code{togrouplength(x, j=NULL)}:
@@ -151,11 +151,11 @@
 \section{Constructors}{
   \describe{
     \item{}{
-      \code{H2LGrouping(high2low)}:
+      \code{H2LGrouping(high2low=integer())}:
       [DOCUMENT ME]
     }
     \item{}{
-      \code{Dups(high2low)}:
+      \code{Dups(high2low=integer())}:
       [DOCUMENT ME]
     }
     \item{}{

@@ -6,55 +6,11 @@
 ### NG groups (some of them eventually empty). The Grouping class and
 ### subclasses are containers for representing groupings.
 ###
-### Formal description of the Grouping core API
-### -------------------------------------------
-###
-### Groups G_i are indexed from 1 to NG (1 <= i <= NG).
-### Object O_j are indexed from 1 to NO (1 <= j <= NO).
-### Every object must belong to one group and only one.
-### Given that empty groups are allowed, NG can be greater than NO.
-### Grouping an empty collection of objects (NO = 0) is supported. In that
-### case, all the groups are empty. And only in that case, NG can be zero
-### too (no group).
-### If 'x' is a Grouping object:
-###
-### Primitives (no default method):
-###
-### - length(x): returns the number of groups (NG).
-###
-### - names(x): returns the names of the groups.
-###
-### - nobj(x): returns the number of objects (NO). Equivalent to
-###   'length(togroup(x))'.
-###
-### - x[[i]]: returns the indices of the objects (the j's) that belong to
-###   G_i. The j's must be returned in ascending order. This provides the
-###   mapping from groups to objects (one-to-many mapping).
-###
-### - togroup(x, j=NULL): returns the index i of the group that O_j belongs
-###   to. This provides the mapping from objects to groups (many-to-one
-###   mapping). Expected to work in a vectorized fashion. 'togroup(x)' is
-###   equivalent to 'togroup(x, seq_len(nobj(x)))': both return the entire
-###   mapping in an integer vector of length NO. In fact 'togroup(x, j)' is
-###   equivalent to 'y <- togroup(x); y[j]'.
-###
-### Not primitives (default method provided, based on primitives):
-###
-### - grouplength(x, i=NULL): returns the number of objects in G_i. Expected
-###   to work in a vectorized fashion (unlike 'x[[i]]'). 'grouplength(x)' is
-###   equivalent to 'grouplength(x, seq_len(length(x)))'. If 'i' is not NULL,
-###   'grouplength(x, i)' is equivalent to:
-###       sapply(i, function(ii) length(x[[i]]))
-###
-### - togrouplength(x, j=NULL): returns the nb of objects that belong to the
-###   same group as O_j (including O_j itself). Equivalent to:
-###       grouplength(x, togroup(x, j))
-###
 ### Given that "length", "names" and "[[" are defined for Grouping objects,
-### they can be considered ListLike objects. Therefore 'as.list(x)' works
-### out-of-the-box on them. One important property of Grouping objects is
-### that 'sort(unlist(as.list(x)))' and 'seq_len(nobj(x))' should always
-### be identical (a consequence of the fact that every object belongs to one
+### those objects can be considered ListLike objects. Therefore 'as.list(x)'
+### works out-of-the-box on them. One important property of Grouping objects
+### is that 'sort(unlist(as.list(x)))' and 'seq_len(nobj(x))' are always
+### identical (a consequence of the fact that every object belongs to one
 ### group and only one).
 
 setClass("Grouping", contains=c("ListLike", "VIRTUAL"))
@@ -132,8 +88,8 @@ setMethod("show", "Grouping",
 
 
 ### -------------------------------------------------------------------------
-### H2LGrouping objects
-### ------------------
+### H2LGrouping and Dups objects
+### ----------------------------
 ###
 ### High-to-Low Index Grouping objects.
 ###
@@ -145,6 +101,10 @@ setClass("H2LGrouping",
         low2high="list"
     )
 )
+
+### For storing the grouping implicitly defined by the "duplicated"
+### relationship between elements of an arbitrary vector.
+setClass("Dups", contains="H2LGrouping")
 
 ### Two additional accessors for H2LGrouping objects.
 setGeneric("high2low", function(x) standardGeneric("high2low"))
@@ -268,35 +228,12 @@ setValidity("H2LGrouping",
     }
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Constructor.
-###
-
-H2LGrouping <- function(high2low)
-{
-    if (!is.numeric(high2low))
-        stop("'high2low' must be a vector of integers")
-    if (!is.integer(high2low))
-        high2low <- as.integer(high2low)
-    new("H2LGrouping", high2low=high2low,
-        low2high=.makeLow2highFromHigh2low(high2low))
-}
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Dups objects.
-###
-### For storing the grouping implicitly defined by the "duplicated"
-### relationship between elements of an arbitrary vector.
-###
-
-setClass("Dups", contains="H2LGrouping")
-
+### For Dups objects only.
 setMethod("duplicated", "Dups",
     function(x, incomparables=FALSE, ...) !is.na(high2low(x))
 )
 
+### For Dups objects only.
 setMethod("show", "Dups",
     function(object)
     {
@@ -306,19 +243,26 @@ setMethod("show", "Dups",
     }
 )
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Constructor.
+### Constructors.
 ###
 
-Dups <- function(high2low)
+.newH2LGrouping <- function(Class, high2low)
 {
     if (!is.numeric(high2low))
         stop("'high2low' must be a vector of integers")
     if (!is.integer(high2low))
         high2low <- as.integer(high2low)
-    new("Dups", high2low=high2low,
+    new(Class, high2low=high2low,
         low2high=.makeLow2highFromHigh2low(high2low))
 }
+
+H2LGrouping <- function(high2low=integer())
+    .newH2LGrouping("H2LGrouping", high2low)
+
+Dups <- function(high2low=integer())
+    .newH2LGrouping("Dups", high2low)
 
 
 
