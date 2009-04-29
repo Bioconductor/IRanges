@@ -43,23 +43,33 @@ options(width=60)
 \section{Introduction}
 
 The \IRanges{} package is designed to represent sequences, ranges representing
-indices along those sequences, and data related to those ranges.
-
-% introduce our example here, some simple, illustrative dataset
+indices along those sequences, and data related to those ranges. In
+this vignette, we will rely on simple, illustrative example datasets,
+rather than large, real-world data, so that each data structure and
+algorithm can be explained in an intuitive, graphical manner.  We
+expect that packages that apply IRanges to a particular problem domain
+will provide vignettes with relevant, realistic examples.
 
 \section{Sequences}
 
-\Rclass{Sequence}
+The \Rpackage{IRanges} package is primarily interested in the
+representation, manipulation and analysis of sequences. A
+\textit{sequence} is mathematically defined as an ordered list of
+objects, or elements. It differs from a \textit{set} in that order
+matters and the same element can appear multiple times. 
 
-% discuss what we mean by a sequence, conceptually
+\Rpackage{IRanges} supports the use of R vectors to represent
+sequences, and we also formally define a virtual class
+\Rclass{Sequence}, the derivatives of which convey the sequence
+semantic of ordered elements. There are currently two
+\Rclass{Sequence} implementations in \Rpackage{IRanges}: \Rclass{Rle},
+which compresses a sequence through run-length encoding, and
+\Rclass{XSequence}, which refers to its data through an external
+pointer.
 
-% we have two sequence implementations, both designed to handle large data
-
-The \IRanges{} packages represents sequences through its virtual class
-\Rclass{Sequence} with two main subclasses: \Rclass{Rle} and \Rclass{XSequence}.
-
-<<initialize>>=
-suppressMessages(library(IRanges))
+We begin our demonstration by loading the \Rpackage{IRanges} package.
+<<initialize, output=hide>>=
+library(IRanges)
 @
 
 \subsection{Run Length Encoding}
