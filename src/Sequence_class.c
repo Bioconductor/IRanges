@@ -6,59 +6,72 @@
 
 SEXP vector_subseq(SEXP x, SEXP start, SEXP width)
 {
-	int i, j, ans_start, ans_width;
-	SEXP ans, names;
-
-	if (!IS_INTEGER(start) || LENGTH(start) != 1 ||
-		INTEGER(start)[0] == NA_INTEGER || INTEGER(start)[0] < 1)
-		error("'start' must be a positive integer");
-
-	if (!IS_INTEGER(width) || LENGTH(width) != 1 ||
-		INTEGER(width)[0] == NA_INTEGER || INTEGER(width)[0] < 0)
-		error("'width' must be a non-negative integer");
-
-	ans_start = INTEGER(start)[0] - 1;
-	ans_width = INTEGER(width)[0];
-
-	if (LENGTH(x) < ans_start + ans_width)
-		error("subseq exceeds bounds of 'x'");
-
-    PROTECT(ans = allocVector(TYPEOF(x), ans_width));
-	switch (TYPEOF(x)) {
+  int i, j, ans_width = 0, ans_off = 0;
+  SEXP ans, names;
+  
+  if (!IS_INTEGER(start))
+    error("'start' must be an integer vector");
+  if (!IS_INTEGER(width))
+    error("'width' must be an integer vector");
+  if (LENGTH(start) != LENGTH(width))
+    error("length of 'start' must equal 'length' of width");
+  
+  for (i = 0; i < LENGTH(start); i++) {
+    int s = INTEGER(start)[i];
+    int w = INTEGER(width)[i];
+    if (s == NA_INTEGER || s < 1)
+      error("each element in 'start' must be a positive integer");
+    if (w == NA_INTEGER || w < 0)
+      error("each element in 'width' must be a non-negative integer");
+    ans_width += w;
+    if (LENGTH(x) < s + w - 1)
+      error("subseq exceeds bounds of 'x'");
+  }
+        
+  PROTECT(ans = allocVector(TYPEOF(x), ans_width));
+  
+  for (i = 0; i < LENGTH(start); i++) {
+    int s = INTEGER(start)[i] - 1;
+    int w = INTEGER(width)[i];
+    switch (TYPEOF(x)) {
     case LGLSXP:
     case INTSXP:
-    	memcpy(INTEGER(ans), INTEGER(x) + ans_start, ans_width * sizeof(int));
-        break;
+      memcpy(INTEGER(ans) + ans_off, INTEGER(x) + s, w * sizeof(int));
+      break;
     case REALSXP:
-    	memcpy(REAL(ans), REAL(x) + ans_start, ans_width * sizeof(double));
-        break;
+      memcpy(REAL(ans) + ans_off, REAL(x) + s, w * sizeof(double));
+      break;
     case CPLXSXP:
-    	for (i = 0, j = ans_start; i < ans_width; i++, j++) {
-            COMPLEX(ans)[i].r = COMPLEX(x)[j].r;
-            COMPLEX(ans)[i].i = COMPLEX(x)[j].i;
+      memcpy(COMPLEX(ans) + ans_off, COMPLEX(x) + s, w * sizeof(Rcomplex));
+      /*
+    	for (i = 0, j = s; i < w; i++, j++) {
+        COMPLEX(ans)[i].r = COMPLEX(x)[j].r;
+        COMPLEX(ans)[i].i = COMPLEX(x)[j].i;
     	}
-        break;
+      */
+      break;
     case STRSXP:
-    	for (i = 0, j = ans_start; i < ans_width; i++, j++)
-    		SET_STRING_ELT(ans, i, STRING_ELT(x, j));
-        break;
+      for (i = ans_off, j = s; i < w + ans_off; i++, j++)
+        SET_STRING_ELT(ans, i, STRING_ELT(x, j));
+      break;
     case VECSXP:
-    	for (i = 0, j = ans_start; i < ans_width; i++, j++)
-            SET_VECTOR_ELT(ans, i, VECTOR_ELT(x, j));
-        break;
+      for (i = ans_off, j = s; i < w + ans_off; i++, j++)
+        SET_VECTOR_ELT(ans, i, VECTOR_ELT(x, j));
+      break;
     case RAWSXP:
-    	memcpy(RAW(ans), RAW(x) + ans_start, ans_width * sizeof(char));
-        break;
+      memcpy(RAW(ans) + ans_off, RAW(x) + s, w * sizeof(char));
+      break;
     default:
-        error("unrecognized vector type");
+      error("unrecognized vector type");
     }
-
-    names = getAttrib(x, R_NamesSymbol);
-    if (names != R_NilValue) {
-    	setAttrib(ans, R_NamesSymbol, vector_subseq(names, start, width));
-    }
-
-    UNPROTECT(1);
-
-	return ans;
+    ans_off += w;
+  }
+  names = getAttrib(x, R_NamesSymbol);
+  if (names != R_NilValue) {
+    setAttrib(ans, R_NamesSymbol, vector_subseq(names, start, width));
+  }
+  
+  UNPROTECT(1);
+  
+  return ans;
 }

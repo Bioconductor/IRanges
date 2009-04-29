@@ -10,7 +10,7 @@ setClass("Sequence", representation("VIRTUAL"))
 
 ### Extracts a linear subsequence.
 setGeneric("subseq", signature="x",
-    function(x, start=NA, end=NA, width=NA) standardGeneric("subseq")
+    function(x, start=NULL, end=NULL, width=NULL) standardGeneric("subseq")
 )
 
 ## Replace a linear subsequence.
@@ -18,22 +18,33 @@ setGeneric("subseq<-", signature="x",
     function(x, start=NA, end=NA, width=NA, value) standardGeneric("subseq<-")
 )
 
-### Returns an IRanges instance of length 1.
-### Not exported.
-solveSubseqSEW <- function(seq_length, start, end, width)
+### Returns an IRanges instance of length 1 (when vectorized is FALSE)
+solveSubseqSEW <- function(seq_length, start, end, width, vectorized = FALSE)
 {
-    solved_SEW <- try(solveUserSEW(seq_length, start=start, end=end, width=width))
+  if (is(start, "Ranges"))
+    solved_SEW <- start
+  else {
+    sew <- list(start, end, width)
+    sew_len <- sapply(sew, length)
+    if (any(sew_len == 0) && all(sew_len == 0 | is.na(sew)))
+      return(IRanges())
+    seq_length <- rep(seq_length, length = max(sew_len))
+    solved_SEW <- try(solveUserSEW(seq_length, start=start, end=end,
+                                   width=width))
     if (is(solved_SEW, "try-error"))
-        stop("Invalid sequence coordinates.\n",
-             "  Please make sure the supplied 'start', 'end' and 'width' arguments\n",
-             "  are defining a region that is within the limits of the sequence.")
-    solved_SEW
+      stop("Invalid sequence coordinates.\n  Please make sure the supplied",
+           " 'start', 'end' and 'width' arguments\n",
+           "  are defining a region that is within the limits of the sequence.")
+  }
+  if (!vectorized && length(solved_SEW) != 1)
+    stop("number of ranges must equal 1")
+  solved_SEW
 }
 
 setMethod("subseq", "vector",
     function(x, start=NA, end=NA, width=NA)
     {
-        solved_SEW <- solveSubseqSEW(length(x), start, end, width)
+        solved_SEW <- solveSubseqSEW(length(x), start, end, width, TRUE)
         .Call("vector_subseq", x, start(solved_SEW), width(solved_SEW),
               PACKAGE="IRanges")
     }
@@ -43,7 +54,7 @@ setMethod("subseq", "Sequence",
     function(x, start=NA, end=NA, width=NA)
     {
         solved_SEW <- solveSubseqSEW(length(x), start, end, width)
-        x[start(solved_SEW) + seq_len(width(solved_SEW)) - 1L]
+        x[mseq(start(solved_SEW), end(solved_SEW))]
     }
 )
 

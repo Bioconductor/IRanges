@@ -110,7 +110,8 @@
 }
 
 \section{Subsetting}{
-  In the code snippets below, \code{x} is a Sequence object.
+  In the code snippets below, \code{x} is a Sequence object, except
+  \code{subseq}, which also accepts a regular R vector object.
 
   \describe{
     \item{}{
@@ -121,7 +122,11 @@
       \code{solveUserSEW(length(x), start=start, end=end, width=width)}
       and therefore must be compliant with the rules of the SEW
       (Start/End/Width) interface (see \code{?solveUserSEW} for the
-      details).
+      details). If \code{x} is an \code{XSequence},
+      the start/end/width must be of length 1. For base R vectors and
+      possibly other derivates of \code{Sequence}, if multiple
+      subsequences are requested, they are concatenated. If the
+      concatenation is undesirable, consider using \code{\link{Views}}.
 
       A note about performance: \code{subseq} does NOT copy the sequence data
       of an XSequence object. Hence it's very efficient and is therefore the
