@@ -381,6 +381,13 @@ SEXP IRanges_reduce(
 );
 
 
+/* Grouping_class.c */
+
+SEXP _get_H2LGrouping_high2low(SEXP x);
+
+SEXP _get_H2LGrouping_low2high(SEXP x);
+
+
 /* IRangesList_class.c */
 
 SEXP _get_IRangesList_elt(SEXP x, int at);

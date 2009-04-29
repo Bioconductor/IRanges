@@ -208,6 +208,10 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_new_IRanges);
 	REGISTER_CCALLABLE(_alloc_IRanges);
 
+/* Grouping_class.c */
+	REGISTER_CCALLABLE(_get_H2LGrouping_high2low);
+	REGISTER_CCALLABLE(_get_H2LGrouping_low2high);
+
 /* IRangesList_class.c */
 	REGISTER_CCALLABLE(_get_IRangesList_elt);
 

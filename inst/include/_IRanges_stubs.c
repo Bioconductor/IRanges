@@ -326,6 +326,20 @@ DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,
 )
 
 /*
+ * Stubs for callables defined in Grouping_class.c
+ */
+
+DEFINE_CCALLABLE_STUB(SEXP, get_H2LGrouping_high2low,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, get_H2LGrouping_low2high,
+	(SEXP x),
+	(     x)
+)
+
+/*
  * Stubs for callables defined in IRangesList_class.c
  */
 

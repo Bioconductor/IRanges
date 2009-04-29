@@ -18,6 +18,14 @@ SEXP debug_IRanges_class()
 	return R_NilValue;
 }
 
+
+/****************************************************************************
+ * C-level accessor functions for IRanges objects.
+ *
+ * Be careful that these functions do NOT duplicate the returned slot.
+ * Thus they cannot be made .Call() entry points!
+ */
+
 SEXP _get_IRanges_start(SEXP x)
 {
 	return GET_SLOT(x, install("start"));
@@ -32,6 +40,11 @@ SEXP _get_IRanges_names(SEXP x)
 {
 	return GET_SLOT(x, install("NAMES"));
 }
+
+
+/****************************************************************************
+ * Other functions.
+ */
 
 int _get_IRanges_length(SEXP x)
 {
@@ -85,11 +98,15 @@ void _copy_IRanges_slots(SEXP x, SEXP x0)
 	return;
 }
 
-/*
- * Never try to make this a .Call() entry point!
- * Its arguments are NOT duplicated so it would be a disaster if they were
- * coming from the user space.
+
+/****************************************************************************
+ * C-level constructor functions for IRanges objects.
+ *
+ * Be careful that these functions do NOT duplicate their arguments before
+ * they put them in the slots of the returned objects.
+ * Thus they cannot be made .Call() entry points!
  */
+
 SEXP _new_IRanges(const char *classname, SEXP start, SEXP width, SEXP names)
 {
 	SEXP classdef, ans;

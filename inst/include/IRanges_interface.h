@@ -335,7 +335,17 @@ SEXP alloc_IRanges(const char *classname, int length);
 
 
 /*
- * Low-level manipulation of IRanges objects.
+ * Low-level manipulation of Grouping objects.
+ * (see Grouping_class.c)
+ */
+
+SEXP get_H2LGrouping_high2low(SEXP x);
+
+SEXP get_H2LGrouping_low2high(SEXP x);
+
+
+/*
+ * Low-level manipulation of IRangesList objects.
  * (see IRangesList_class.c)
  */
 

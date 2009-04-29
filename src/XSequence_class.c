@@ -22,8 +22,8 @@ SEXP debug_XSequence_class()
 /****************************************************************************
  * C-level accessor functions for XSequence objects.
  *
- * Be careful that these functions do NOT copy the returned slot! (this
- * prevents them from being made .Call() entry points)
+ * Be careful that these functions do NOT duplicate the returned slot.
+ * Thus they cannot be made .Call() entry points!
  */
 
 SEXP _get_XSequence_xdata(SEXP x)
@@ -50,9 +50,9 @@ SEXP _get_XSequence_length(SEXP x)
 /****************************************************************************
  * C-level constructor functions for XSequence objects.
  *
- * Be careful that these functions do NOT copy their arguments before they
- * put them in the slots of the returned objects! (this prevents them from
- * being made .Call() entry points)
+ * Be careful that these functions do NOT duplicate their arguments before
+ * they put them in the slots of the returned objects.
+ * Thus they cannot be made .Call() entry points!
  */
 
 SEXP _new_XSequence(const char *classname, SEXP xdata, int offset, int length)
