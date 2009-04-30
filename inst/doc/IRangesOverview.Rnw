@@ -175,11 +175,18 @@ rollcorRle <- function(x, y, k)
 
 \section{Lists}
 
+\subsection{Basic operations}
+
 One often wants to organize and manipulate multiple sequences
 simultaneously. We could place multiple \Rclass{Rle} instances, for
-example, into a list. However, as we strive to operate within the
-formal S4 class system, we define a special collection class,
-\Rclass{RleList}, for storing \Rclass{Rle} objects.
+example, into a list. However, a list is too generic; it does not
+confer any information about the specific class of its elements. There
+is no type-safety, and it is not possible to define methods
+specifically for homogeneous lists with elements of a particular
+class. For example, for a list of \Rclass{Rle} objects, we may wish to
+define a method that retrieves the run values for each element,
+without special type checking. To enable this, we define a specific
+collection class, \Rclass{RleList}, for storing \Rclass{Rle} objects.
 
 %% EXAMPLE (construct RleList)
 
@@ -193,12 +200,35 @@ length retrieval.
 
 Most collection types, including \Rclass{RleList}, derive from
 \Rclass{TypedList}, a \Rclass{ListLike} derivative that implements
-those functions, as well as a number of additional features.
+the requisite operations, as well as a number of additional
+features. These include familiar list functions, such as
+\Rfunction{c} and \Rfunction{lapply}.
 
-% basic list operations (basically same as R list)
+%% EXAMPLE (c, lapply)
 
-% TypedList features: type validation, compression
-\Rclass{TypedList}
+\subsection{Advanced Notes}
+
+%% Perhaps this belongs in a separate advanced vignette or the paper?
+
+\Rclass{TypedList} also provides some more advanced features. First,
+as its name suggests, subclasses of \Rclass{TypedList} can specify a
+type from which the class of each of its elements must inherit. For
+example, \Rclass{RleList} directs \Rclass{TypedList} to ensure that
+all of its elements are \Rclass{Rle} objects. One benefit of this type
+safety is that it allows methods dispatching on \Rclass{RleList} to
+assume that all of the elements are really of class \Rclass{Rle}.
+
+A second advanced feature of \Rclass{TypedList} relates to its
+internal representation. Behind the scenes, \Rclass{TypedList} is
+simply an R \Rclass{list}. By default, there is a one-to-one mapping
+between elements of the \Rclass{TypedList} and elements in the
+\Rclass{list}. This is a simple design; however, it is not always
+ideal. If one has many, small objects, the storage overhead,
+especially for S4 objects, would be relatively high.
+
+For example, assume we need to represent a million sequences. We might
+then construct a million \Rclass{Rle} objects and place them into an
+\Rclass{RleList}. 
 
 \subsection{Simple Lists}
 
