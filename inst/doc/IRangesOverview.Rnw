@@ -65,7 +65,9 @@ semantic of ordered elements. There are currently two
 \Rclass{Sequence} implementations in \Rpackage{IRanges}: \Rclass{Rle},
 which compresses a sequence through run-length encoding, and
 \Rclass{XSequence}, which refers to its data through an external
-pointer.
+pointer. \Rclass{XSequence} and its derivatives are considered
+low-level infrastructure and, as such, will not be covered by this
+vignette.
 
 We begin our demonstration by loading the \Rpackage{IRanges} package.
 <<initialize, output=hide>>=
@@ -171,24 +173,29 @@ rollcorRle <- function(x, y, k)
 }
 @
 
-
-
-
-\subsection{External Sequences}
-
-% external pointers to avoid copying
-% not for end-user
-
-\Rclass{XSequence}
-\Rclass{XRaw}
-
 \section{Lists}
 
-% need to segway from Rle to RleList, then explain general list concepts
+One often wants to organize and manipulate multiple sequences
+simultaneously. We could place multiple \Rclass{Rle} instances, for
+example, into a list. However, as we strive to operate within the
+formal S4 class system, we define a special collection class,
+\Rclass{RleList}, for storing \Rclass{Rle} objects.
+
+%% EXAMPLE (construct RleList)
+
+In fact, we have done the same for many of the other classes in
+\Rpackage{IRanges}, and all of the collection classes derive from the
+virtual class \Rclass{ListLike}, the derivatives of which are all
+obligated to support two basic list operations: element extraction and
+length retrieval. 
+
+%% EXAMPLE (element extraction, length)
+
+Most collection types, including \Rclass{RleList}, derive from
+\Rclass{TypedList}, a \Rclass{ListLike} derivative that implements
+those functions, as well as a number of additional features.
 
 % basic list operations (basically same as R list)
-
-\Rclass{ListLike}
 
 % TypedList features: type validation, compression
 \Rclass{TypedList}
