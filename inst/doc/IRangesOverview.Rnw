@@ -118,60 +118,26 @@ cor(x, y)
 shiftApply(249:251, y, x, FUN = function(x, y) var(x, y) / (sd(x) * sd(y)))
 @
 
+\subsection{Sequence Extraction}
 
-<<Rle-rollmean>>=
-rollmeanRle <- function (x, k)
-{
-    n <- length(x)
-    cumsum(c(Rle(sum(subseq(x, 1, k))), subseq(x, k + 1, n) - subseq(x, 1, n - k))) / k
-}
-@
+It is often necessary to extract a sequence from another, in
+analogous manner to ordinary vector extraction or
+subsetting. Mathematically, sequence extraction is a generalization of
+taking a subsequence, the difference being that, in sequence
+extraction, the original ordering of the elements need not be
+maintained. Regardless, we will use the term \textit{subsequence} to
+represent the result of sequence extraction, as the order constraint
+is rarely broken. The most general way to describe a subsequence would
+be a vector of integer indices into the sequence. As it is common to
+extract consecutive values from the sequence, the indices are usually
+more efficiently encoded as a list of ranges, i.e. a vector of start
+positions and a parallel vector of widths. 
 
+The general interface for extracting subsequences is
+\Rfunction{subseq}, which is supported by all \Rclass{Sequence}
+objects, as well as ordinary vectors.
 
-<<Rle-rollvar>>=
-rollvarRle <- function(x, k)
-{
-    n <- length(x)
-    means <- rollmeanRle(x, k)
-    nextMean <- subseq(means, 2, n - k + 1)
-    cumsum(c(Rle(sum((subseq(x, 1, k) - means[1])^2)),
-             k * diff(means)^2 -
-               (subseq(x, 1, n - k) - nextMean)^2 +
-                 (subseq(x, k + 1, n) - nextMean)^2)) / (k - 1)
-}
-@
-
-
-<<Rle-rollcov>>=
-rollcovRle <- function(x, y, k)
-{
-    n <- length(x)
-    meanX <- rollmeanRle(x, k)
-    meanY <- rollmeanRle(y, k)
-    nextMeanX <- subseq(meanX, 2, n - k + 1)
-    nextMeanY <- subseq(meanY, 2, n - k + 1)
-    cumsum(c(Rle(sum((subseq(x, 1, k) - meanX[1]) * (subseq(y, 1, k) - meanY[1]))),
-             k * diff(meanX) * diff(meanY) -
-               (subseq(x, 1, n - k) - nextMeanX) * (subseq(y, 1, n - k) - nextMeanY) +
-                 (subseq(x, k + 1, n) - nextMeanX) * (subseq(y, k + 1, n) - nextMeanY))) / (k - 1)
-}
-@
-
-
-<<Rle-rollsd>>=
-rollsdRle <- function(x, k)
-{
-    sqrt(rollvarRle(x, k))
-}
-@
-
-
-<<Rle-rollcor>>=
-rollcorRle <- function(x, y, k)
-{
-    rollcovRle(x, y, k) / (rollsdRle(x, k) * rollsdRle(y, k))
-}
-@
+%% EXAMPLE: subseq(), [
 
 \section{Lists}
 
@@ -250,9 +216,9 @@ segments, or consecutive subsequences, of the sequence. It is not
 uncommon for an analysis task to focus only on the segments
 themselves, while ignoring the underlying sequence values. A
 consecutive list of indices would be a simple way to select a
-consecutive subsequence. However, a sparser representation would be
-the pairing of start position and a width. We call this pairing a
-\textit{range}. 
+consecutive subsequence. However, a sparser representation would be a
+a range, a pairing of a start position and a width, as used when
+extracting subsequences with \Rfunction{subseq}, above.
 
 When analyzing subsequences in \IRanges{}, each range is treated as an
 observation. The \IRanges{} package represents lists of ranges with
@@ -274,22 +240,10 @@ vectors of ranges.
 
 \subsection{Sequence Extraction}
 
-It is often necessary to extract a sequence from another, in
-analogous manner to ordinary vector extraction or
-subsetting. Mathematically, sequence extraction is a generalization of
-taking a subsequence, the difference being that, in sequence
-extraction, the original ordering of the elements need not be
-maintained. Regardless, we will use the term \textit{subsequence} to
-represent the result of sequence extraction, as the order constraint
-is rarely broken. The most general way to describe a subsequence would
-be a vector of integer indices into the sequence. As it is common to
-extract consecutive values from the sequence, the indices are usually
-more efficiently encoded as a list of ranges, i.e. a \Rclass{Ranges}
-object.
+As \Rclass{Ranges} objects encode subsequences, they may be used
+directly in subsequence extraction.
 
-The general interface for extracting subsequences is
-\Rfunction{subseq}, which is supported by all \Rclass{Sequence}
-objects, as well as ordinary vectors.
+%% EXAMPLE: subseq() and [ with Ranges
 
 \subsection{Transforming Ranges}
 
