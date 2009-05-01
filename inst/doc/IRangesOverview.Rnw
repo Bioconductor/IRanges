@@ -47,18 +47,18 @@ indices along those sequences, and data related to those ranges. In
 this vignette, we will rely on simple, illustrative example datasets,
 rather than large, real-world data, so that each data structure and
 algorithm can be explained in an intuitive, graphical manner.  We
-expect that packages that apply IRanges to a particular problem domain
+expect that packages that apply \IRanges{} to a particular problem domain
 will provide vignettes with relevant, realistic examples.
 
 \section{Sequences}
 
-The \Rpackage{IRanges} package is primarily interested in the
+The \IRanges{} package is primarily interested in the
 representation, manipulation and analysis of sequences. A
 \textit{sequence} is mathematically defined as an ordered list of
 objects, or elements. It differs from a \textit{set} in that order
 matters and the same element can appear multiple times. 
 
-\Rpackage{IRanges} supports the use of R vectors to represent
+\IRanges{} supports the use of R vectors to represent
 sequences, and we also formally define a virtual class
 \Rclass{Sequence}, the derivatives of which convey the sequence
 semantic of ordered elements. There are currently two
@@ -69,7 +69,7 @@ pointer. \Rclass{XSequence} and its derivatives are considered
 low-level infrastructure and, as such, will not be covered by this
 vignette.
 
-We begin our demonstration by loading the \Rpackage{IRanges} package.
+We begin our demonstration by loading the \IRanges{} package.
 <<initialize, results=hide>>=
 library(IRanges)
 @
@@ -181,7 +181,7 @@ One often wants to organize and manipulate multiple sequences
 simultaneously. We could place multiple \Rclass{Rle} instances, for
 example, into a list. However, a list is too generic; it does not
 confer any information about the specific class of its elements. There
-is no type-safety, and it is not possible to define methods
+is no type safety, and it is not possible to define methods
 specifically for homogeneous lists with elements of a particular
 class. For example, for a list of \Rclass{Rle} objects, we may wish to
 define a method that retrieves the run values for each element,
@@ -191,10 +191,11 @@ collection class, \Rclass{RleList}, for storing \Rclass{Rle} objects.
 %% EXAMPLE (construct RleList)
 
 In fact, we have done the same for many of the other classes in
-\Rpackage{IRanges}, and all of the collection classes derive from the
-virtual class \Rclass{ListLike}, the derivatives of which are all
-obligated to support two basic list operations: element extraction and
-length retrieval. 
+\Rpackage{IRanges}, as well as the base atomic vectors (raw, logical,
+integer, numeric, complex and character). All of the collection
+classes derive from the virtual class \Rclass{ListLike}, the
+derivatives of which are all obligated to support two basic list
+operations: element extraction and length retrieval.
 
 %% EXAMPLE (element extraction, length)
 
@@ -205,6 +206,17 @@ features. These include familiar list functions, such as
 \Rfunction{c} and \Rfunction{lapply}.
 
 %% EXAMPLE (c, lapply)
+
+\subsection{Annotated Lists} 
+
+Often when one has a collection of objects, there is a need to attach
+metadata that describes the collection in some way. The
+\Rclass{AnnotatedList} class extends \Rclass{TypedList} to add two
+metadata components: an ordinary \Rclass{list} to hold arbitary
+objects, called \Robject{metadata}, and \Robject{elementMetadata}, a
+data frame with one row per element and any number of columns. Many of
+the high-level list objects in \IRanges{} (described later) are
+\Rclass{AnnotatedList} objects.
 
 \subsection{Advanced Notes}
 
@@ -224,32 +236,29 @@ simply an R \Rclass{list}. By default, there is a one-to-one mapping
 between elements of the \Rclass{TypedList} and elements in the
 \Rclass{list}. This is a simple design; however, it is not always
 ideal. If one has many, small objects, the storage overhead,
-especially for S4 objects, would be relatively high.
-
-For example, assume we need to represent a million sequences. We might
-then construct a million \Rclass{Rle} objects and place them into an
-\Rclass{RleList}. 
-
-\subsection{Simple Lists}
-
-\Rclass{LogicalList}
-\Rclass{IntegerList}
-\Rclass{NumericList}
-\Rclass{ComplexList}
-\Rclass{CharacterList}
-\Rclass{RawList}
-\Rclass{RleList}
-
-\subsection{Annotated Lists}
-
-\Rclass{AnnotatedList}
-
+especially for S4 objects, would be relatively high. Our solution is
+to \textit{compress} the list by concatenating the elements together,
+if possible. This forms a single, long element that is virtually split
+by the \Rclass{TypedList} interface. A beneficial side effect of this
+approach is that unlisting (concatenating all of the elements)
+is cheap, as it reduces to returning the internal representation.
 
 \section{Sequence Ranges}
 
-% encode subsequences
-% entire object could encode subsequence, eg subsetting Rle
-% or, each range encodes a subsequence, resulting in many (Views)
+When analyzing sequences, we are often interested in specific
+segments, or consecutive subsequences, of the sequence. It is not
+uncommon for an analysis task to focus only on the segments
+themselves, while ignoring the underlying sequence values. A
+consecutive list of indices would be a simple way to select a
+consecutive subsequence. However, a sparser representation would be
+the pairing of start position and a width. We call this pairing a
+\textit{range}. 
+
+When analyzing subsequences in \IRanges{}, each range is treated as an
+observation. The \IRanges{} package represents lists of ranges with
+the \Rclass{Ranges} class. Just as with ordinary vectors, there is no
+way in \IRanges{} to represent a scalar range; we always work with
+vectors of ranges.
 
 % introduce basic ranges functionality, eg starts, widths, subsetting
 
@@ -262,6 +271,25 @@ then construct a million \Rclass{Rle} objects and place them into an
 
 \Rclass{IntervalTree}
 % need an IntervalTreeList?
+
+\subsection{Sequence Extraction}
+
+It is often necessary to extract a sequence from another, in
+analogous manner to ordinary vector extraction or
+subsetting. Mathematically, sequence extraction is a generalization of
+taking a subsequence, the difference being that, in sequence
+extraction, the original ordering of the elements need not be
+maintained. Regardless, we will use the term \textit{subsequence} to
+represent the result of sequence extraction, as the order constraint
+is rarely broken. The most general way to describe a subsequence would
+be a vector of integer indices into the sequence. As it is common to
+extract consecutive values from the sequence, the indices are usually
+more efficiently encoded as a list of ranges, i.e. a \Rclass{Ranges}
+object.
+
+The general interface for extracting subsequences is
+\Rfunction{subseq}, which is supported by all \Rclass{Sequence}
+objects, as well as ordinary vectors.
 
 \subsection{Transforming Ranges}
 
