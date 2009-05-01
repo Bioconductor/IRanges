@@ -1,0 +1,97 @@
+\documentclass{article}
+
+% \VignetteIndexEntry{Rle Tips and Tricks}
+% \VignetteDepends{}
+% \VignetteKeywords{Rle}
+% \VignettePackage{IRanges}
+
+\usepackage{times}
+\usepackage{hyperref}
+
+\textwidth=6.5in
+\textheight=8.5in
+% \parskip=.3cm
+\oddsidemargin=-.1in
+\evensidemargin=-.1in
+\headheight=-.3in
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\texttt{#1}}}
+\newcommand{\Rfunarg}[1]{{\texttt{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rcode}[1]{{\texttt{#1}}}
+
+\newcommand{\software}[1]{\textsf{#1}}
+\newcommand{\R}{\software{R}}
+\newcommand{\IRanges}{\Rpackage{IRanges}}
+
+\title{Rle Tips and Tricks}
+\author{Patrick Aboyoun}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+<<options,echo=FALSE>>=
+options(width=60)
+@
+
+<<Rle-rollmean>>=
+rollmeanRle <- function (x, k)
+{
+  n <- length(x)
+  cumsum(c(Rle(sum(subseq(x, 1, k))), subseq(x, k + 1, n) - subseq(x, 1, n - k))) / k
+}
+@
+
+
+<<Rle-rollvar>>=
+rollvarRle <- function(x, k)
+{
+  n <- length(x)
+  means <- rollmeanRle(x, k)
+  nextMean <- subseq(means, 2, n - k + 1)
+  cumsum(c(Rle(sum((subseq(x, 1, k) - means[1])^2)),
+  k * diff(means)^2 -
+  (subseq(x, 1, n - k) - nextMean)^2 +
+  (subseq(x, k + 1, n) - nextMean)^2)) / (k - 1)
+}
+@
+
+
+<<Rle-rollcov>>=
+rollcovRle <- function(x, y, k)
+{
+  n <- length(x)
+  meanX <- rollmeanRle(x, k)
+  meanY <- rollmeanRle(y, k)
+  nextMeanX <- subseq(meanX, 2, n - k + 1)
+  nextMeanY <- subseq(meanY, 2, n - k + 1)
+  cumsum(c(Rle(sum((subseq(x, 1, k) - meanX[1]) * (subseq(y, 1, k) - meanY[1]))),
+  k * diff(meanX) * diff(meanY) -
+  (subseq(x, 1, n - k) - nextMeanX) * (subseq(y, 1, n - k) - nextMeanY) +
+  (subseq(x, k + 1, n) - nextMeanX) * (subseq(y, k + 1, n) - nextMeanY))) / (k - 1)
+}
+@
+
+
+<<Rle-rollsd>>=
+rollsdRle <- function(x, k)
+{
+  sqrt(rollvarRle(x, k))
+}
+@
+
+
+<<Rle-rollcor>>=
+rollcorRle <- function(x, y, k)
+{
+  rollcovRle(x, y, k) / (rollsdRle(x, k) * rollsdRle(y, k))
+}
+@
+
+\end{document}
+
