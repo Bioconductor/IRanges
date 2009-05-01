@@ -70,7 +70,7 @@ low-level infrastructure and, as such, will not be covered by this
 vignette.
 
 We begin our demonstration by loading the \Rpackage{IRanges} package.
-<<initialize, output=hide>>=
+<<initialize, results=hide>>=
 library(IRanges)
 @
 
