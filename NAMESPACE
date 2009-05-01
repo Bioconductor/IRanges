@@ -100,7 +100,7 @@ export(
     findRange, findRun,
 
     ## Generic functions in the Grouping API:
-    nobj, togroup, grouplength, togrouplength,
+    nobj, grouplength, members, vmembers, togroup, togrouplength,
     high2low, low2high,
 
     ## Other generic functions:
@@ -200,7 +200,7 @@ exportMethods(
     punion, pintersect, psetdiff,
     reverse,
     coverage,
-    nobj, togroup, grouplength, togrouplength,
+    nobj, grouplength, members, vmembers, togroup, togrouplength,
     high2low, low2high,
     nir_list,
     active, "active<-",

@@ -7,9 +7,13 @@
 \alias{Grouping}
 
 \alias{nobj}
-\alias{togroup}
 \alias{grouplength}
 \alias{grouplength,Grouping-method}
+\alias{members}
+\alias{members,Grouping-method}
+\alias{vmembers}
+\alias{vmembers,Grouping-method}
+\alias{togroup}
 \alias{togrouplength}
 \alias{togrouplength,Grouping-method}
 \alias{[[<-,Grouping-method}
@@ -27,8 +31,10 @@
 \alias{length,H2LGrouping-method}
 \alias{nobj,H2LGrouping-method}
 \alias{[[,H2LGrouping-method}
-\alias{togroup,H2LGrouping-method}
 \alias{grouplength,H2LGrouping-method}
+\alias{members,H2LGrouping-method}
+\alias{vmembers,H2LGrouping-method}
+\alias{togroup,H2LGrouping-method}
 
 \alias{class:Dups}
 \alias{Dups-class}
@@ -93,12 +99,40 @@
       \code{nobj(x)}:
       Returns the number of objects (NO). Equivalent to \code{length(togroup(x))}.
     }
+  }
+  
+  Going from groups to objects:
+  \describe{
     \item{}{
       \code{x[[i]]}:
       Returns the indices of the objects (the j's) that belong to G_i.
       The j's are returned in ascending order.
       This provides the mapping from groups to objects (one-to-many mapping).
     }
+    \item{}{
+      \code{grouplength(x, i=NULL)}:
+      Returns the number of objects in G_i.
+      Works in a vectorized fashion (unlike \code{x[[i]]}).
+      \code{grouplength(x)} is equivalent to \code{grouplength(x, seq_len(length(x)))}.
+      If \code{i} is not NULL, \code{grouplength(x, i)} is equivalent to
+      \code{sapply(i, function(ii) length(x[[ii]]))}.
+    }
+    \item{}{
+      \code{members(x, i)}:
+      Equivalent to \code{x[[i]]} if \code{i} is a single integer.
+      Otherwise, if \code{i} is an integer vector of arbitrary length, it's
+      equivalent to \code{sort(unlist(sapply(i, function(ii) x[[ii]])))}.
+    }
+    \item{}{
+      \code{vmembers(x, L)}:
+      A version of \code{members} that works in a vectorized fashion with
+      respect to the \code{L} argument (\code{L} must be a list of integer
+      vectors). Returns \code{lapply(L, function(i) members(x, i))}.
+    }
+  }
+
+  Going from objects to groups:
+  \describe{
     \item{}{
       \code{togroup(x, j=NULL)}:
       Returns the index i of the group that O_j belongs to.
@@ -108,14 +142,6 @@
       an integer vector of length NO.
       If \code{j} is not NULL, \code{togroup(x, j)} is equivalent to
       \code{y <- togroup(x); y[j]}.
-    }
-    \item{}{
-      \code{grouplength(x, i=NULL)}:
-      Returns the number of objects in G_i.
-      Works in a vectorized fashion (unlike \code{x[[i]]}).
-      \code{grouplength(x)} is equivalent to \code{grouplength(x, seq_len(length(x)))}.
-      If \code{i} is not NULL, \code{grouplength(x, i)} is equivalent to
-      \code{sapply(i, function(ii) length(x[[ii]]))}.
     }
     \item{}{
       \code{togrouplength(x, j=NULL)}:
@@ -206,13 +232,15 @@
   x[[1]]
   x[[2]]
   x[[3]]
+  x[[4]]
   x[[5]]
-  togroup(x)
-  togroup(x, 5:3)
   grouplength(x)  # same as 'unname(sapply(x, length))'
-  grouplength(x, 5:3)
+  grouplength(x, 5:2)
+  members(x, 5:2)  # all the members are put together and sorted
+  togroup(x)
+  togroup(x, 5:2)
   togrouplength(x)  # same as 'grouplength(x, togroup(x))'
-  togrouplength(x, 5:3)
+  togrouplength(x, 5:2)
 
   ## The ListLike API:
   as.list(x)
@@ -237,8 +265,8 @@
   x[[1]]
   x[[2]]
   x[[3]]
-  togroup(x)
   grouplength(x)  # same as 'unname(sapply(x, length))' and 'width(x)'
+  togroup(x)
   togrouplength(x)  # same as 'grouplength(x, togroup(x))'
   names(x)
 

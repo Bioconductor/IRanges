@@ -11,10 +11,6 @@ setClass("Grouping", contains=c("ListLike", "VIRTUAL"))
 
 setGeneric("nobj", function(x) standardGeneric("nobj"))
 
-setGeneric("togroup", signature="x",
-    function(x, j=NULL) standardGeneric("togroup")
-)
-
 setGeneric("grouplength", signature="x",
     function(x, i=NULL) standardGeneric("grouplength")
 )
@@ -26,6 +22,38 @@ setMethod("grouplength", "Grouping",
             i <- seq_len(length(x))
         sapply(i, function(ii) length(x[[i]]))
     }
+)
+
+setGeneric("members", signature="x",
+    function(x, i) standardGeneric("members")
+)
+
+setMethod("members", "Grouping",
+    function(x, i)
+    {
+        if (!is.numeric(i))
+            stop("subscript 'i' must be a vector of integers")
+        if (!is.integer(i))
+            i <- as.integer(i)
+        sort(unlist(sapply(i, function(ii) x[[ii]])))
+    }
+)
+
+setGeneric("vmembers", signature="x",
+    function(x, L) standardGeneric("vmembers")
+)
+
+setMethod("vmembers", "Grouping",
+    function(x, L)
+    {
+        if (!is.list(L))
+            stop("'L' must be a list of integer vectors") 
+        lapply(L, function(i) members(x, i))
+    }
+)
+
+setGeneric("togroup", signature="x",
+    function(x, j=NULL) standardGeneric("togroup")
 )
 
 setGeneric("togrouplength", signature="x",
@@ -121,25 +149,6 @@ setMethod("[[", "H2LGrouping",
     }
 )
 
-setMethod("togroup", "H2LGrouping",
-    function(x, j=NULL)
-    {
-        to_group <- x@high2low
-        to_group[is.na(to_group)] <- which(is.na(to_group))
-        if (is.null(j))
-            return(to_group)
-        if (!is.numeric(j))
-            stop("subscript 'j' must be a vector of integers or NULL")
-        if (!is.integer(j))
-            j <- as.integer(j)
-        if (any(is.na(j)))
-            stop("subscript 'j' contains NAs")
-        if (any(j < -length(to_group)) || any(j > length(to_group)))
-            stop("subscript out of bounds")
-        to_group[j]
-    }
-)
-
 setMethod("grouplength", "H2LGrouping",
     function(x, i=NULL)
     {
@@ -156,6 +165,46 @@ setMethod("grouplength", "H2LGrouping",
         if (any(i < -length(group_length)) || any(i > length(group_length)))
             stop("subscript out of bounds")
         group_length[i]
+    }
+)
+
+setMethod("members", "H2LGrouping",
+    function(x, i)
+    {
+        if (!is.numeric(i))
+            stop("subscript 'i' must be a vector of integers")
+        if (!is.integer(i))
+            i <- as.integer(i)
+        ## NAs and "subscript out of bounds" are checked at the C level
+        .Call("H2LGrouping_members", x, i, PACKAGE="IRanges")
+    }
+)
+
+setMethod("vmembers", "H2LGrouping",
+    function(x, L)
+    {
+        if (!is.list(L))
+            stop("'L' must be a list of integer vectors") 
+        .Call("H2LGrouping_vmembers", x, L, PACKAGE="IRanges")
+    }
+)
+
+setMethod("togroup", "H2LGrouping",
+    function(x, j=NULL)
+    {
+        to_group <- x@high2low
+        to_group[is.na(to_group)] <- which(is.na(to_group))
+        if (is.null(j))
+            return(to_group)
+        if (!is.numeric(j))
+            stop("subscript 'j' must be a vector of integers or NULL")
+        if (!is.integer(j))
+            j <- as.integer(j)
+        if (any(is.na(j)))
+            stop("subscript 'j' contains NAs")
+        if (any(j < -length(to_group)) || any(j > length(to_group)))
+            stop("subscript out of bounds")
+        to_group[j]
     }
 )
 

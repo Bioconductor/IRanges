@@ -383,9 +383,21 @@ SEXP IRanges_reduce(
 
 /* Grouping_class.c */
 
+SEXP debug_Grouping_class();
+
 SEXP _get_H2LGrouping_high2low(SEXP x);
 
 SEXP _get_H2LGrouping_low2high(SEXP x);
+
+SEXP H2LGrouping_members(
+	SEXP x,
+	SEXP group_ids
+);
+
+SEXP H2LGrouping_vmembers(
+	SEXP x,
+	SEXP group_ids_list
+);
 
 
 /* IRangesList_class.c */

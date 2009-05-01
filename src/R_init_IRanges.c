@@ -33,6 +33,12 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(which_as_IRanges, 1),
 	CALLMETHOD_DEF(IRanges_reduce, 2),
 
+/* Grouping_class.c */
+	CALLMETHOD_DEF(debug_Grouping_class, 0),
+
+	CALLMETHOD_DEF(H2LGrouping_members, 2),
+	CALLMETHOD_DEF(H2LGrouping_vmembers, 2),
+
 /* IRangesList_class.c */
 	CALLMETHOD_DEF(IRangesList_summary, 1),
 
