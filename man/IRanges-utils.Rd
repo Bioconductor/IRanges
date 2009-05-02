@@ -257,8 +257,13 @@
 \author{H. Pages and M. Lawrence}
 
 \seealso{
+  \code{\link{pintersect}} is similar to \code{narrow}, except the end
+  points are absolute, not relative. \code{threebands} could be
+  described as a parallel variant of
+  \code{\link{disjoin}}. \code{\link{intersect}} is a generalization of
+  \code{restrict} where a \code{Ranges} specifies the restriction.
+  
   \link{Ranges-class},
-  \link{IRanges-class},
   \link{IRanges-setops},
   \code{\link{solveUserSEW}},
   \code{\link{successiveViews}}
