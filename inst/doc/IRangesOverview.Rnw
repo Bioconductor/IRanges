@@ -38,8 +38,6 @@
 options(width=60)
 @
 
-% outline may need tweaking to be more example-oriented
-
 \section{Introduction}
 
 The \IRanges{} package is designed to represent sequences, ranges representing
@@ -128,7 +126,7 @@ extraction, the original ordering of the elements need not be
 maintained. Regardless, we will use the term \textit{subsequence} to
 represent the result of sequence extraction, as the order constraint
 is rarely broken. The most general way to describe a subsequence would
-be a vector of integer indices into the sequence. As it is common to
+be a vector of indices into the sequence. As it is common to
 extract consecutive values from the sequence, the indices are usually
 more efficiently encoded as a list of ranges, i.e. a vector of start
 positions and a parallel vector of widths. 
@@ -222,41 +220,72 @@ extracting subsequences with \Rfunction{subseq}, above.
 
 When analyzing subsequences in \IRanges{}, each range is treated as an
 observation. The \IRanges{} package represents lists of ranges with
-the \Rclass{Ranges} class. Just as with ordinary vectors, there is no
+the \Rclass{Ranges} virtual class. Just as with ordinary vectors, there is no
 way in \IRanges{} to represent a scalar range; we always work with
-vectors of ranges.
+vectors of ranges. 
 
-% introduce basic ranges functionality, eg starts, widths, subsetting
+The most commonly used implementation of \Rclass{Ranges} is
+\Rclass{IRanges}, which stores the starts and widths as ordinary
+integer vectors. To construct an \Rclass{IRanges} instance, we call
+the \Rfunction{IRanges} constructor. Ranges are normally specified by
+passing two out of the three parameters: start, end and width (see
+\Sexpr{help(IRanges)} for more information).
 
-\Rclass{Ranges}
-\Rclass{IRanges}
+%% Example: IRanges() with different SEW combinations
+
+Accessing the starts, widths and ends is supported by every
+\Rclass{Ranges} implementation.
+
+%% Example: start(), width(), end()
+
+For \Rclass{IRanges} and some other \Rclass{Ranges} derivatives,
+subsetting is also supported.
+
+%% Example: Ranges subsetting
+
+\subsection{Normality}
+
 \Rclass{NormalIRanges}
+
+\subsection{Lists of Ranges}
+
 \Rclass{RangesList}
 \Rclass{IRangesList}
 \Rclass{MaskCollection} % make distinction with RangesList
 
-\Rclass{IntervalTree}
-% need an IntervalTreeList?
-
 \subsection{Sequence Extraction}
 
 As \Rclass{Ranges} objects encode subsequences, they may be used
-directly in subsequence extraction.
+directly in subsequence extraction. Note that when a \textit{normal}
+\Rclass{Ranges} is given as the index, the result is a true
+subsequence, in the mathematical sense.
 
 %% EXAMPLE: subseq() and [ with Ranges
 
 \subsection{Transforming Ranges}
 
 % most utilities fall in here
+
+\paragraph{Making ranges normal}
+
 \Rfunction{reduce}
-\Rfunction{shift}
-\Rfunction{restrict}
-\Rfunction{narrow}
-\Rfunction{reflect}
-\Rfunction{flank}
-\Rfunction{*} % zooming
+
+\paragraph{Making ranges disjoint}
 
 \Rfunction{disjoin}, \Rfunction{disjointBins}
+
+\paragraph{Adjusting starts, ends and widths}
+
+\Rfunction{shift}
+\Rfunction{*} % zooming
+\Rfunction{narrow} % like 'pintersect'
+\Rfunction{threebands} % like 'pdisjoin', if it existed
+
+\paragraph{Other transformations}
+
+\Rfunction{restrict} % like 'intersect'
+\Rfunction{reflect}
+\Rfunction{flank}
 
 \subsection{Set Operations}
 
@@ -269,12 +298,19 @@ directly in subsequence extraction.
 
 \Rclass{RangesMatching}
 \Rclass{RangesMatchingList}
+\Rclass{IntervalTree}
+% need an IntervalTreeList?
 
 \Rfunction{overlap}, \Rfunction{\%in\%}
 
 \subsection{Finding Neighboring Ranges}
 
 \Rfunction{nearest}, \Rfunction{precede}, \Rfunction{follow}
+
+\subsection{Mapping Ranges Between Sequences}
+
+\Rclass{RangesMapping}
+\Rfunction{map}
 
 \section{Sequence Views}
 
@@ -305,9 +341,7 @@ directly in subsequence extraction.
 \Rclass{RDApplyParams}
 \Rclass{FilterRules}
 
-%% Classes Not Covered (18)
-%%\Rclass{Alignment}
-%%\Rclass{AlignmentSpace}
+%% Classes Not Covered (16)
 %%\Rclass{ANYTHING}
 %%\Rclass{characterORNULL}
 %%\Rclass{expressionORfunction}
