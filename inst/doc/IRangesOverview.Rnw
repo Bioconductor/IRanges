@@ -314,11 +314,30 @@ subsequence, in the mathematical sense.
 
 \section{Sequence Views}
 
-% when each range in a Ranges encodes a subsequence, need to
-% manipulate many, possibly overlapping, subsequences
+When we extract a subsequence with \Rfunction{subseq}, we can pass
+multiple ranges, each selecting a single consecutive
+subsequence. Those subsequences are extracted and concatenated into a
+single sequence. There are many cases where the user wishes to avoid
+the concatenation step and instead treat each consecutive subsequence
+as a separate element in a list.  
 
-\Rclass{Views}
-\Rclass{RleViews}
+While one could simply store each extracted sequence as an element in
+a list object like a \Rclass{TypedList}, this is undesirable for a
+couple of reasons. First, the user often wants to preserve the
+original sequence and declare a set of interesting regions as an
+overlay. This allows retrieving sequence values even after the ranges
+have been adjusted. Another benefit of an overlay approach is
+performance: the sequence values need not be copied.
+
+For representing such an overlay, the \IRanges{} package provides the
+virtual \Rclass{Views} class, which derives from \Rclass{Ranges} but
+also stores a sequence. Each range is said to represent a
+\textit{view} onto the sequence.
+
+Here, we will demonstrate the \Rclass{RleViews} class, where the
+sequence is of class \Rclass{Rle}. Other \Rclass{Views}
+implementations exist, such as \Rclass{XStringViews} in the
+\Rpackage{Biostrings} package.
 
 \subsection{Manipulating Views}
 
