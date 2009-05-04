@@ -48,18 +48,33 @@
 \alias{Partitioning-class}
 \alias{Partitioning}
 
-\alias{end,Partitioning-method}
-\alias{length,Partitioning-method}
-\alias{nobj,Partitioning-method}
-\alias{start,Partitioning-method}
-\alias{width,Partitioning-method}
 \alias{[[,Partitioning-method}
 \alias{togroup,Partitioning-method}
 \alias{grouplength,Partitioning-method}
 \alias{names,Partitioning-method}
 \alias{names<-,Partitioning-method}
 
-\alias{coerce,Ranges,Partitioning-method}
+\alias{class:PartitioningByEnd}
+\alias{PartitioningByEnd-class}
+\alias{PartitioningByEnd}
+
+\alias{end,PartitioningByEnd-method}
+\alias{length,PartitioningByEnd-method}
+\alias{nobj,PartitioningByEnd-method}
+\alias{start,PartitioningByEnd-method}
+\alias{width,PartitioningByEnd-method}
+\alias{coerce,Ranges,PartitioningByEnd-method}
+
+\alias{class:PartitioningByWidth}
+\alias{PartitioningByWidth-class}
+\alias{PartitioningByWidth}
+
+\alias{width,PartitioningByWidth-method}
+\alias{length,PartitioningByWidth-method}
+\alias{end,PartitioningByWidth-method}
+\alias{nobj,PartitioningByWidth-method}
+\alias{start,PartitioningByWidth-method}
+\alias{coerce,Ranges,PartitioningByWidth-method}
 
 
 \title{Grouping objects}
@@ -167,9 +182,9 @@
 }
 
 \section{The Partitioning subclass}{
-  The Partitioning container represents block-groupings i.e. groupings
-  where each group contains objects that are contiguous in the original
-  collection of objects. In other words, a grouping \code{x} is a
+  A Partitioning container represents a block-grouping i.e. a grouping
+  where each group contains objects that are neighbors in the original
+  collection of objects. More formally, a grouping \code{x} is a
   block-grouping iff \code{togroup(x)} is sorted in increasing order
   (not necessarily strictly increasing).
 
@@ -182,6 +197,11 @@
   methods that are defined for Grouping and \link{Ranges} objects can also
   be used on a Partitioning object. See \code{?Ranges} for a description of
   the \link{Ranges} API.
+
+  The Partitioning class is virtual with 2 concrete subclasses:
+  PartitioningByEnd (only stores the end of the groups, allowing fast
+  mapping from groups to objects), and PartitioningByWidth (only stores
+  the width of the groups).
 }
 
 \section{Constructors}{
@@ -195,17 +215,24 @@
       [DOCUMENT ME]
     }
     \item{}{
-      \code{Partitioning(end=integer(), names=NULL)}:
-      Return the Partitioning object made of the partitions ending
+      \code{PartitioningByEnd(end=integer(), names=NULL)}:
+      Return the PartitioningByEnd object made of the partitions ending
       at the values specified by \code{end}. \code{end} must contain
       sorted non-negative integer values.
-      Note that the \code{names} argument is never recycled (to remain
-      consistent with what \code{`names<-`} does on standard vectors).
+    }
+    \item{}{
+      \code{PartitioningByWidth(width=integer(), names=NULL)}:
+      Return the PartitioningByWidth object made of the partitions with
+      the widths specified by \code{width}. \code{width} must contain
+      non-negative integer values.
     }
   }
+  Note that these constructors don't recycle their \code{names} argument
+  (to remain consistent with what \code{`names<-`} does on standard
+  vectors).
 }
 
-\author{H. Pages}
+\author{H. Pages and P. Aboyoun}
 
 \seealso{
   \link{ListLike-class},
@@ -256,7 +283,7 @@
   ## ---------------------------------------------------------------------
   ## C. Partitioning OBJECTS
   ## ---------------------------------------------------------------------
-  x <- Partitioning(end=c(4, 7, 7, 8, 15), names=LETTERS[1:5])
+  x <- PartitioningByEnd(end=c(4, 7, 7, 8, 15), names=LETTERS[1:5])
   x  # the 3rd partition is empty
 
   ## The Grouping core API:
@@ -287,19 +314,21 @@
   as(x, "IRanges")
 
   ## Other examples:
-  Partitioning(end=c(0, 0, 19), names=LETTERS[1:3])
-  Partitioning()  # no partition
-  Partitioning(end=integer(9))  # all partitions are empty
+  PartitioningByEnd(end=c(0, 0, 19), names=LETTERS[1:3])
+  PartitioningByEnd()  # no partition
+  PartitioningByEnd(end=integer(9))  # all partitions are empty
 
   ## ---------------------------------------------------------------------
   ## D. RELATIONSHIP BETWEEN Partitioning OBJECTS AND successiveIRanges()
   ## ---------------------------------------------------------------------
   mywidths <- c(4, 3, 0, 1, 7)
 
-  ## The two following calls produce the same ranges:
+  ## The 3 following calls produce the same ranges:
   x1 <- successiveIRanges(mywidths)  # IRanges instance.
-  x2 <- Partitioning(end=cumsum(mywidths))  # Partitioning instance.
-  stopifnot(identical(as(x1, "Partitioning"), x2))
+  x2 <- PartitioningByEnd(end=cumsum(mywidths))  # PartitioningByEnd instance.
+  x3 <- PartitioningByWidth(width=mywidths)  # PartitioningByWidth instance.
+  stopifnot(identical(as(x1, "PartitioningByEnd"), x2))
+  stopifnot(identical(as(x1, "PartitioningByWidth"), x3))
 }
 
 \keyword{methods}

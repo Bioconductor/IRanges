@@ -149,6 +149,7 @@ setMethod("[[", "H2LGrouping",
     }
 )
 
+### Should be more efficient than the default method for Grouping objects.
 setMethod("grouplength", "H2LGrouping",
     function(x, i=NULL)
     {
@@ -313,59 +314,35 @@ Dups <- function(high2low=integer())
 ### Partitioning objects
 ### --------------------
 ###
-### The Partitioning container represents block-groupings i.e. groupings
-### where each group contains objects that are contiguous in the original
-### collection of objects. In other words, 'x' is a Partitioning object iff
-### 'togroup(x)' is sorted. In addition, a Partitioning object can be seen
-### (and manipulated) as a Ranges object where all the ranges are adjacent
-### starting at 1 (i.e. it covers an integer interval starting at 1 and with
-### no overlap between the ranges). Therefore the "start/end/width" API is
-### implemented on Partitioning objects (in addition to the Grouping API).
+### A Partitioning container represents a block-grouping i.e. a grouping
+### where each group contains objects that are neighbors in the original
+### collection of objects. More formally, a grouping 'x' is a block-grouping
+### iff 'togroup(x)' is sorted in increasing order (not necessarily strictly
+### increasing). In addition, a Partitioning object can be seen (and
+### manipulated) as a Ranges object where all the ranges are adjacent
+### starting at 1 (i.e. it covers an integer interval starting at 1
+### and with no overlap between the ranges). Therefore the "start/end/width"
+### API is implemented on Partitioning objects (in addition to the Grouping
+### API).
 ###
-
-### This implementation of the Partitioning uses a compact internal
-### representation:
-###   - strength: compactness, fast mapping from groups to objects;
-###   - weakness: inefficient mapping from objects to groups.
+### The Partitioning class is virtual with 2 concrete subclasses:
+### PartitioningByEnd and PartitioningByWidth.
 ### Note that we put Ranges before Grouping in order to have Partitioning
 ### objects inherit the "show" method for Ranges objects.
+
 setClass("Partitioning",
     contains=c("Ranges", "Grouping"),
     representation(
-        end="integer",
+        "VIRTUAL",
         NAMES="characterORNULL"  # R doesn't like @names !!
     ),
     prototype(
-        end=integer(),
         NAMES=NULL
     )
 )
 
-setMethod("end", "Partitioning", function(x) x@end)
-
-setMethod("length", "Partitioning", function(x) length(end(x)))
-
-setMethod("nobj", "Partitioning",
-    function(x)
-    {
-        x_end <- end(x)
-        if (length(x_end) == 0L)
-            return(0L)
-        x_end[length(x_end)]
-    }
-)
-
-setMethod("start", "Partitioning",
-    function(x)
-    {
-        x_end <- end(x)
-        if (length(x_end) == 0L)
-            return(integer())
-        c(1L, x_end[-length(x_end)] + 1L)
-    }
-)
-
-setMethod("width", "Partitioning", function(x) diff(c(0L, end(x))))
+### The default methods below assume that the "length + start/end/width" API
+### is already implemented.
 
 setMethod("[[", "Partitioning",
     function(x, i, j, ...)
@@ -400,7 +377,7 @@ setMethod("togroup", "Partitioning",
     }
 )
 
-### Should be more efficient than the default method (hopefully).
+### Should be more efficient than the default method for Grouping objects.
 setMethod("grouplength", "Partitioning",
     function(x, i=NULL)
     {
@@ -434,12 +411,63 @@ setReplaceMethod("names", "Partitioning",
     }
 )
 
+.valid.Partitioning <- function(x)
+{
+    if (is.null(names(x)))
+        return(NULL)
+    if (!is.character(names(x)))
+        return("the names must be a character vector or NULL")
+    if (length(names(x)) != length(x))
+        return("number of names and number of elements differ")
+    NULL
+}
+
+setValidity2("Partitioning", .valid.Partitioning)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Validity.
+### PartitioningByEnd uses a compact internal representation that allows
+### fast mapping from groups to objects. However, it is not efficient for
+### mapping from objects to groups.
 ###
 
-.valid.Partitioning.end <- function(x)
+setClass("PartitioningByEnd",
+    contains="Partitioning",
+    representation(
+        end="integer"
+    ),
+    prototype(
+        end=integer()
+    )
+)
+
+setMethod("end", "PartitioningByEnd", function(x) x@end)
+
+setMethod("length", "PartitioningByEnd", function(x) length(end(x)))
+
+setMethod("nobj", "PartitioningByEnd",
+    function(x)
+    {
+        x_end <- end(x)
+        if (length(x_end) == 0L)
+            return(0L)
+        x_end[length(x_end)]
+    }
+)
+
+setMethod("start", "PartitioningByEnd",
+    function(x)
+    {
+        x_end <- end(x)
+        if (length(x_end) == 0L)
+            return(integer())
+        c(1L, x_end[-length(x_end)] + 1L)
+    }
+)
+
+setMethod("width", "PartitioningByEnd", function(x) diff(c(0L, end(x))))
+
+.valid.PartitioningByEnd <- function(x)
 {
     if (!is.integer(end(x)))
         return("the ends must be integers")
@@ -454,50 +482,101 @@ setReplaceMethod("names", "Partitioning",
     NULL
 }
 
-.valid.Partitioning.names <- function(x)
-{
-    if (is.null(names(x)))
-        return(NULL)
-    if (!is.character(names(x)))
-        return("the names must be a character vector or NULL")
-    if (length(names(x)) != length(x))
-        return("number of names and number of elements differ")
-    NULL
-}
+setValidity2("PartitioningByEnd", .valid.PartitioningByEnd)
 
-.valid.Partitioning <- function(x)
-{
-    c(.valid.Partitioning.end(x),
-      .valid.Partitioning.names(x))
-}
-
-setValidity2("Partitioning", .valid.Partitioning)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Constructor.
-###
-
-Partitioning <- function(end=integer(), names=NULL)
+PartitioningByEnd <- function(end=integer(), names=NULL)
 {
     if (!is.numeric(end))
         stop("'end' must contain integer values")
     if (!is.integer(end))
         end <- as.integer(end)
-    new("Partitioning", end=end, NAMES=names)
+    new("PartitioningByEnd", end=end, NAMES=names)
 }
+
+setAs("Ranges", "PartitioningByEnd",
+    function(from)
+    {
+        ans <- PartitioningByEnd(end(from), names(from))
+        if (!identical(start(ans), start(from)))
+            stop("the Ranges object to coerce does not represent a partitioning")
+        ans
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion.
+### PartitioningByWidth uses a compact internal representation too. Storing
+### the widths instead of the ends would allow the total number of objects
+### (nobj(x)) to be greater than 2^31-1 but note that some methods will break
+### when this happens, e.g. nobj, end, etc...
 ###
 
-setAs("Ranges", "Partitioning",
+setClass("PartitioningByWidth",
+    contains="Partitioning",
+    representation(
+        width="integer"
+    ),
+    prototype(
+        width=integer()
+    )
+)
+
+setMethod("width", "PartitioningByWidth", function(x) x@width)
+
+setMethod("length", "PartitioningByWidth", function(x) length(width(x)))
+
+setMethod("end", "PartitioningByWidth", function(x) cumsum(width(x)))
+
+setMethod("nobj", "PartitioningByWidth",
+    function(x)
+    {
+        x_end <- end(x)
+        if (length(x_end) == 0L)
+            return(0L)
+        x_end[length(x_end)]
+    }
+)
+
+setMethod("start", "PartitioningByWidth",
+    function(x)
+    {
+        x_width <- width(x)
+        if (length(x_width) == 0L)
+            return(integer())
+        c(1L, cumsum(x_width[-length(x_width)]) + 1L)
+    }
+)
+
+.valid.PartitioningByWidth <- function(x)
+{
+    if (!is.integer(width(x)))
+        return("the widths must be integers")
+    if (length(x) == 0L)
+        return(NULL)
+    if (any(is.na(width(x))))
+        return("the widths cannot be NAs")
+    if (any(width(x) < 0L))
+        return("the widths cannot be negative")
+    NULL
+}
+
+setValidity2("PartitioningByWidth", .valid.PartitioningByWidth)
+
+PartitioningByWidth <- function(width=integer(), names=NULL)
+{
+    if (!is.numeric(width))
+        stop("'width' must contain integer values")
+    if (!is.integer(width))
+        width <- as.integer(width)
+    new("PartitioningByWidth", width=width, NAMES=names)
+}
+
+setAs("Ranges", "PartitioningByWidth",
     function(from)
     {
-        ans <- Partitioning(end(from), names(from))
+        ans <- PartitioningByWidth(width(from), names(from))
         if (!identical(start(ans), start(from)))
-            stop("'from' does not represent a partitioning")
+            stop("the Ranges object to coerce does not represent a partitioning")
         ans
     }
 )
