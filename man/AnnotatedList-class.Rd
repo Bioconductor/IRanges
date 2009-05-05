@@ -3,13 +3,13 @@
 \alias{AnnotatedList-class}
 
 % accessors
-\alias{metadata}
+%\alias{metadata}
 \alias{metadata,AnnotatedList-method}
-\alias{elementMetadata}
+%\alias{elementMetadata}
 \alias{elementMetadata,AnnotatedList-method}
-\alias{metadata<-}
+%\alias{metadata<-}
 \alias{metadata<-,AnnotatedList,list-method}
-\alias{elementMetadata<-}
+%\alias{elementMetadata<-}
 \alias{elementMetadata<-,AnnotatedList,XDataFrameORNULL-method}
 
 \alias{AnnotatedList}

@@ -4,25 +4,71 @@
 
 ## Accepts any type of Ranges object as an element
 
-setClass("RangesList",
-         prototype = prototype(elementClass = "Ranges", compress = FALSE),
-         contains = "AnnotatedList")
+setClass("RangesList", representation("VIRTUAL"),
+         prototype = prototype(elementType = "Ranges"),
+         contains = "TypedListV2")
+setClass("SimpleRangesList",
+         prototype = prototype(elementType = "Ranges"),
+         contains = c("SimpleTypedList", "RangesList"))
 
-setClass("IRangesList",
-         prototype = prototype(elementClass = "IRanges", compress = TRUE),
+setClass("IRangesList", representation("VIRTUAL"),
+         prototype = prototype(elementType = "IRanges"),
          contains = "RangesList")
+setClass("CompressedIRangesList",
+         prototype = prototype(elementType = "IRanges",
+                               unlistData = new("IRanges")),
+         contains = c("CompressedTypedList", "IRangesList"))
+setClass("SimpleIRangesList",
+         prototype = prototype(elementType = "IRanges"),
+         contains = c("SimpleRangesList", "IRangesList"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
 setMethod("start", "RangesList",
-          function(x) unlist(lapply(x, start), use.names = FALSE))
+          function(x) {
+            if (length(x) == 0)
+              integer(0)
+            else
+              unlist(lapply(x, start), use.names = FALSE)
+          })
 setMethod("end", "RangesList",
-          function(x) unlist(lapply(x, end), use.names = FALSE))
+          function(x) {
+            if (length(x) == 0)
+              integer(0)
+            else
+              unlist(lapply(x, end), use.names = FALSE)
+          })
 setMethod("width", "RangesList",
-          function(x) unlist(lapply(x, width), use.names = FALSE))
+          function(x) {
+            if (length(x) == 0)
+              integer(0)
+            else
+              unlist(lapply(x, width), use.names = FALSE)
+          })
 
+setMethod("start", "CompressedIRangesList",
+          function(x) {
+            if (length(x) == 0)
+              integer(0)
+            else
+              start(unlist(x))
+          })
+setMethod("end", "CompressedIRangesList",
+          function(x) {
+            if (length(x) == 0)
+              integer(0)
+            else
+              end(unlist(x))
+          })
+setMethod("width", "CompressedIRangesList",
+          function(x) {
+            if (length(x) == 0)
+              integer(0)
+            else
+              width(unlist(x))
+          })
 setGeneric("space", function(x, ...) standardGeneric("space"))
 setMethod("space", "RangesList",
           function(x) {
@@ -35,8 +81,8 @@ setMethod("space", "RangesList",
 setGeneric("universe", function(x) standardGeneric("universe"))
 setMethod("universe", "RangesList", function(x) {
   ### FIXME: for compatibility with older versions, eventually emit warning
-  if (is.null(x@annotation) || is.character(x@annotation))
-    x@annotation
+  if (is.null(x@metadata) || is.character(x@metadata))
+    x@metadata
   else metadata(x)$universe
 })
 
@@ -60,7 +106,7 @@ RangesList <- function(..., universe = NULL)
   ranges <- list(...)
   if (!all(sapply(ranges, is, "Ranges")))
     stop("all elements in '...' must be Ranges objects")
-  ans <- new("RangesList", elements = ranges, compress = FALSE)
+  ans <- TypedListV2("SimpleRangesList", ranges)
   universe(ans) <- universe
   ans
 }
@@ -72,7 +118,11 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
   ranges <- list(...)
   if (!all(sapply(ranges, is, "IRanges")))
     stop("all elements in '...' must be IRanges objects")
-  ans <- new("IRangesList", elements = ranges, compress = compress)
+  if (compress)
+    listClass <- "CompressedIRangesList"
+  else
+    listClass <- "SimpleIRangesList"
+  ans <- TypedListV2(listClass, ranges)
   universe(ans) <- universe
   ans
 }
@@ -82,25 +132,27 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
 ###
 
 ### Support subsetting by another RangesList
-setMethod("[", "RangesList",
-          function(x, i, j, ..., drop)
-          {
-            if (!missing(j) || length(list(...)) > 0)
-              stop("invalid subsetting")
-            if (missing(i))
-              return(x)
-            if (is(i, "RangesList")) {
-              ol <- overlap(i, x, multiple = FALSE)
-              els <- as.list(x)
-              for (j in seq_len(length(x))) {
-                els[[j]] <- els[[j]][!is.na(ol[[j]])]
-              }
-              ans <- do.call(class(x), els)
-            } else {
-              ans <- callNextMethod(x, i)
-            }
-            ans
-          })
+rangesListSingleSquareBracket <- function(x, i, j, ..., drop)
+{
+  if (!missing(j) || length(list(...)) > 0)
+    stop("invalid subsetting")
+  if (missing(i))
+    return(x)
+  if (is(i, "RangesList")) {
+    ol <- overlap(i, x, multiple = FALSE)
+    els <- as.list(x)
+    for (j in seq_len(length(x))) {
+        els[[j]] <- els[[j]][!is.na(ol[[j]])]
+    }
+    ans <- TypedListV2(class(x), els)
+  } else {
+    ans <- callNextMethod(x, i)
+  }
+  ans
+}
+setMethod("[", "SimpleRangesList", rangesListSingleSquareBracket)
+setMethod("[", "CompressedIRangesList", rangesListSingleSquareBracket)
+setMethod("[", "SimpleIRangesList", rangesListSingleSquareBracket)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Some useful endomorphisms: "reduce" and "gaps".
@@ -117,13 +169,13 @@ setMethod("reduce", "RangesList",
               nirl <- list(asNormalIRanges(ranges, force=TRUE))
             }
             ## This transformation must be atomic.
-            do.call(class(x), nirl)
+            TypedListV2(class(x), nirl)
           })
 
 setMethod("gaps", "RangesList",
           function(x, start=NA, end=NA)
           {
-            do.call(class(x), lapply(x, gaps, start = start, end = end))
+            TypedListV2(class(x), lapply(x, gaps, start = start, end = end))
           })
 
 setMethod("range", "RangesList",
@@ -143,7 +195,7 @@ setMethod("range", "RangesList",
               do.call(range, r[!sapply(r, is.null)])
             })
             names(ranges) <- names
-            do.call(class(x), ranges)
+            TypedListV2(class(x), ranges)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -222,7 +274,7 @@ setMethod("as.data.frame", "RangesList",
               stop("'row.names'  must be NULL or a character vector")
             if (!missing(optional) || length(list(...)))
               warning("'optional' and arguments in '...' ignored")
-            xi <- as(x, "IRangesList")
+            xi <- as(x, "CompressedIRangesList")
             names(xi) <- NULL
             df <- as.data.frame(unlist(xi), row.names = row.names)
             if (length(names(x)) > 0)
@@ -238,26 +290,28 @@ setAs("IRangesList", "NormalIRanges",
 setAs("IRangesList", "list",
       function(from) as(as(from, "RangesList"), "list"))
 
-setAs("RangesList", "IRangesList",
+setAs("RangesList", "CompressedIRangesList",
       function(from) {
-        ir <- lapply(from, as, "IRanges")
-        names(ir) <- NULL
-        ans <- new("IRangesList")
-        for (i in slotNames(ans))
-          slot(ans, i, check = FALSE) <- slot(from, i)
-        slot(ans, "elements", check = FALSE) <- ir
-        ans
+        TypedListV2("CompressedIRangesList", lapply(from, as, "IRanges"),
+                    metadata = from@metadata,
+                    elementMetadata = from@elementMetadata)
       })
 
+setAs("RangesList", "SimpleIRangesList",
+      function(from) {
+        TypedListV2("SimpleIRangesList", lapply(from, as, "IRanges"),
+                    metadata = from@metadata,
+                    elementMetadata = from@elementMetadata)
+      })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "summary" method.
 ###
 
-setMethod("summary", "IRangesList",
+setMethod("summary", "CompressedIRangesList",
          function(object)
          {
-             .Call("IRangesList_summary", object, PACKAGE="IRanges")
+             .Call("CompressedIRangesList_summary", object, PACKAGE="IRanges")
          })
 
 
@@ -266,8 +320,8 @@ setMethod("summary", "IRangesList",
 ###
 
 setMethod("split", "Ranges",
-    function(x, f, drop = FALSE, ...)
-    {
-        do.call(RangesList, callNextMethod())
-    })
+          function(x, f, drop = FALSE, ...)
+          {
+            do.call(RangesList, callNextMethod())
+          })
 

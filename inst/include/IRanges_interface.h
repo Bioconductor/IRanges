@@ -335,6 +335,14 @@ SEXP alloc_IRanges(const char *classname, int length);
 
 
 /*
+ * Low-level manipulation of CompressedIRangesList objects.
+ * (see CompressedIRangesList_class.c)
+ */
+
+SEXP get_CompressedIRangesList_elt(SEXP x, int at);
+
+
+/*
  * Low-level manipulation of Grouping objects.
  * (see Grouping_class.c)
  */
@@ -342,14 +350,6 @@ SEXP alloc_IRanges(const char *classname, int length);
 SEXP get_H2LGrouping_high2low(SEXP x);
 
 SEXP get_H2LGrouping_low2high(SEXP x);
-
-
-/*
- * Low-level manipulation of IRangesList objects.
- * (see IRangesList_class.c)
- */
-
-SEXP get_IRangesList_elt(SEXP x, int at);
 
 
 /*

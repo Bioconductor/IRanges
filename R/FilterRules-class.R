@@ -5,8 +5,8 @@
 setClassUnion("expressionORfunction", c("expression", "function"))
 
 setClass("FilterRules", representation(active = "logical"),
-         prototype(elementClass = "expressionORfunction", compress = FALSE),
-         contains = "TypedList")
+         prototype(elementType = "expressionORfunction"),
+         contains = "SimpleTypedList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessors.
@@ -77,8 +77,7 @@ FilterRules <- function(exprs = list(), ..., active = TRUE) {
 
   exprs <- lapply(exprs, FilterRules.parseRule)
 
-  if (missing(active))
-    active <- rep(TRUE, length(exprs))
+  active <- rep(active, length.out = length(exprs))
 
   if (!is.logical(active) || any(is.na(active)))
     stop("'active' must be logical without any missing values")
@@ -87,11 +86,7 @@ FilterRules <- function(exprs = list(), ..., active = TRUE) {
   if (length(exprs) && length(exprs) %% length(active) > 0)
     stop("number of rules must be a multiple of length of 'active'")
 
-  rules <- TypedList("FilterRules", elements = exprs, compress = FALSE)
-  if (length(exprs) > 0)
-    active(rules) <- active
-  validObject(rules)
-  rules
+  TypedListV2("FilterRules", exprs, active = active)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

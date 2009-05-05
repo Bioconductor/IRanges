@@ -401,11 +401,8 @@ setMethod("names", "Partitioning", function(x) x@NAMES)
 setReplaceMethod("names", "Partitioning",
     function(x, value)
     {
-        if (!is(value, "characterORNULL"))
-            stop("'value' must a character vector or NULL")
-        ## This works only "by chance" i.e. just because, like IRanges, the
-        ## names of a Partitioning object are stored in a slot called "NAMES",
-        ## which is what `unsafe.names<-` expects.
+        if (!is.null(value))
+            value <- as.character(value)
         unsafe.names(x) <- value
         x
     }

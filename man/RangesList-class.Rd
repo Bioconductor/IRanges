@@ -1,14 +1,18 @@
 \name{RangesList-class}
 \docType{class}
 \alias{RangesList-class}
+\alias{SimpleRangesList-class}
 
 % constructor
 \alias{RangesList}
 
 % accessors
 \alias{end,RangesList-method}
+\alias{end,CompressedIRangesList-method}
 \alias{width,RangesList-method}
+\alias{width,CompressedIRangesList-method}
 \alias{start,RangesList-method}
+\alias{start,CompressedIRangesList-method}
 \alias{space}
 \alias{space,RangesList-method}
 \alias{universe,RangesList-method}
@@ -18,10 +22,14 @@
 
 % subset
 \alias{[,RangesList-method}
+\alias{[,SimpleRangesList-method}
+\alias{[,SimpleIRangesList-method}
+\alias{[,CompressedIRangesList-method}
 
 % coercion
 \alias{as.data.frame,RangesList-method}
-\alias{coerce,RangesList,IRangesList-method}
+\alias{coerce,RangesList,CompressedIRangesList-method}
+\alias{coerce,RangesList,SimpleIRangesList-method}
 \alias{coerce,RangesList,RangedData-method}
 
 % operations
@@ -87,7 +95,7 @@
   \describe{
     \item{}{
       \code{x[i]}: Subset \code{x} by index \code{i}, with the
-      same semantics as a basic \code{\linkS4class{TypedList}}, except
+      same semantics as a basic \code{\linkS4class{TypedListV2}}, except
       \code{i} may itself be a \code{RangesList}, in which case only the
       ranges in \code{x} that overlap with those in \code{i} are kept. See
       the \code{\link[=overlap,RangesList,RangesList-method]{overlap}}
@@ -109,8 +117,15 @@
       \code{\linkS4class{RangedData}} with zero columns and the same
       ranges as in \code{from}.
     }
-    \item{}{\code{as(from, "IRangesList")}: Coerces \code{from}, to an
-      \code{\linkS4class{IRangesList}}, requiring
+    \item{}{\code{as(from, "SimpleIRangesList")}: Coerces \code{from},
+      to a \code{\linkS4class{SimpleIRangesList}}, requiring
+      that all \code{Ranges} elements are coerced to internal
+      \code{IRanges} elements. This is a convenient way to ensure that all
+      \code{Ranges} have been imported into R (and that there is no
+      unwanted overhead when accessing them).
+    }
+    \item{}{\code{as(from, "CompressedIRangesList")}: Coerces \code{from},
+      to a \code{\linkS4class{CompressedIRangesList}}, requiring
       that all \code{Ranges} elements are coerced to internal
       \code{IRanges} elements. This is a convenient way to ensure that all
       \code{Ranges} have been imported into R (and that there is no

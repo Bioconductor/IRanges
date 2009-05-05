@@ -21,7 +21,9 @@
 ## performance penalty when applying over the RangedData.
 
 setClass("RangedData",
-         representation(ranges = "RangesList", values = "SplitXDataFrameList"))
+         representation(ranges = "RangesList", values = "SplitXDataFrameList"),
+         prototype = prototype(ranges = new("SimpleRangesList"),
+                               values = new("CompressedSplitXDataFrameList")))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -93,7 +95,7 @@ setReplaceMethod("dimnames", "RangedData",
             }
             x@values <- split(values, inds)
             names(x@values) <- names(x)
-            x@ranges <- initialize(x@ranges, elements = ranges)
+            x@ranges <- TypedListV2(class(x@ranges), ranges)
             x
           })
 
@@ -306,7 +308,6 @@ setMethod("[", "RangedData",
               si <- split(i, sf)
               values <- values[i, j, drop=FALSE]
               values <- split(values, sf)
-              names(values) <- names(x)
               for (k in seq_len(length(x))) {
                 ##values[[k]] <- values[[k]][si[[k]] - w[k] + 1, j, drop=FALSE]
                 ranges[[k]] <- ranges[[k]][si[[k]] - w[k] + 1]
@@ -318,7 +319,7 @@ setMethod("[", "RangedData",
                   ranges <- ranges[-whichDrop]
                 }
               }
-              ranges <- initialize(x@ranges, elements = ranges)
+              ranges <- TypedListV2(class(x@ranges), ranges)
               ##values <- initialize(x@values, elements = values)
             } else if (!missing(i)) {
               checkIndex(i, length(x))
@@ -448,12 +449,12 @@ setMethod("show", "RangedData", function(object) {
 ### Lists of RangedData objects
 
 setClass("RangedDataList",
-         prototype = prototype(elementClass = "RangedData", compress = FALSE),
-         contains = "AnnotatedList")
+         prototype = prototype(elementType = "RangedData"),
+         contains = "SimpleTypedList")
 
 RangedDataList <- function(...)
 {
-  TypedList("RangedDataList", elements = list(...), compress = FALSE)
+  TypedListV2("RangedDataList", list(...))
 }
 
 setMethod("unlist", "RangedDataList",

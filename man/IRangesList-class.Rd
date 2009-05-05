@@ -1,13 +1,15 @@
 \name{IRangesList-class}
 \docType{class}
 \alias{IRangesList-class}
+\alias{CompressedIRangesList-class}
+\alias{SimpleIRangesList-class}
 
 % coercion
 \alias{coerce,IRangesList,NormalIRanges-method}
 \alias{coerce,IRangesList,list-method} % undocumented
 \alias{unlist,IRangesList-method}
 
-\alias{summary,IRangesList-method}
+\alias{summary,CompressedIRangesList-method}
 
 % constructor
 \alias{IRangesList}

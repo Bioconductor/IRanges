@@ -3,7 +3,7 @@
 ### -------------------------------------------------------------------------
 
 ## Wrapper around a list that ensures all elements extend from a certain type
-setClassUnion("ANYTHING", methods:::.BasicClasses)
+#setClassUnion("ANYTHING", methods:::.BasicClasses)
 
 setClass("TypedList",
          contains="ListLike",
@@ -110,7 +110,7 @@ updateTypedList <- function(object) {
 setGeneric("elementClass", function(x, ...) standardGeneric("elementClass"))
 setMethod("elementClass", "TypedList", function(x) x@elementClass)
 
-setGeneric("elementLengths", function(x) standardGeneric("elementLengths"))
+#setGeneric("elementLengths", function(x) standardGeneric("elementLengths"))
 setMethod("elementLengths", "TypedList",
           function(x) {
             if (isOldTypedList(x))

@@ -416,8 +416,8 @@ setReplaceMethod("end", "IRanges",
 setReplaceMethod("names", "IRanges",
     function(x, value)
     {
-        if (!is(value, "characterORNULL"))
-            stop("'value' must be a character vector or NULL")
+        if (!is.null(value))
+            value <- as.character(value)
         unsafe.names(x) <- value
         x
     }

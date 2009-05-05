@@ -3,8 +3,8 @@
 ### -------------------------------------------------------------------------
 
 setClass("RangesMatchingList",
-         prototype = prototype(elementClass = "RangesMatching", compress = FALSE),
-         contains = "TypedList")
+         prototype = prototype(elementType = "RangesMatching"),
+         contains = "SimpleTypedList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessors
@@ -24,7 +24,7 @@ setMethod("space", "RangesMatchingList",
 
 RangesMatchingList <- function(...)
 {
-  TypedList("RangesMatchingList", elements = list(...), compress = FALSE)
+  TypedListV2("RangesMatchingList", list(...))
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -14,15 +14,15 @@ setClass("AnnotatedList",
 ### Accessor methods.
 ###
 
-setGeneric("metadata", function(x, ...) standardGeneric("metadata"))
+#setGeneric("metadata", function(x, ...) standardGeneric("metadata"))
 setMethod("metadata", "AnnotatedList", function(x) {
   if (is.null(x@annotation) || is.character(x@annotation))
     list(annotation = x@annotation)
   else x@annotation
 })
 
-setGeneric("metadata<-",
-           function(x, ..., value) standardGeneric("metadata<-"))
+#setGeneric("metadata<-",
+#           function(x, ..., value) standardGeneric("metadata<-"))
 setReplaceMethod("metadata", c("AnnotatedList", "list"),
           function(x, value) {
             if (!length(value))
@@ -31,8 +31,8 @@ setReplaceMethod("metadata", c("AnnotatedList", "list"),
             x
           })
 
-setGeneric("elementMetadata",
-           function(x, ...) standardGeneric("elementMetadata"))
+#setGeneric("elementMetadata",
+#           function(x, ...) standardGeneric("elementMetadata"))
 setMethod("elementMetadata", "AnnotatedList", function(x) {
   emd <- x@elementMetadata
   if (!is.null(emd) && !is.null(names(x)))
@@ -40,8 +40,8 @@ setMethod("elementMetadata", "AnnotatedList", function(x) {
   emd
 })
 
-setGeneric("elementMetadata<-",
-           function(x, ..., value) standardGeneric("elementMetadata<-"))
+#setGeneric("elementMetadata<-",
+#           function(x, ..., value) standardGeneric("elementMetadata<-"))
 setReplaceMethod("elementMetadata", c("AnnotatedList", "XDataFrameORNULL"),
           function(x, value) {
             if (!is.null(value) && length(x) != nrow(value))

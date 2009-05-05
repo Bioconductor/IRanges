@@ -130,7 +130,7 @@ ChainBlock **read_chain_file(FILE *stream, const char *exclude, int *nblocks) {
 SEXP readChain(SEXP r_path, SEXP r_exclude) {
   const char *path, *exclude;
   FILE *stream;
-  SEXP ans, ans_names, ans_elements, ans_lengths;
+  SEXP ans, ans_names, ans_listData;
   ChainBlock **chains;
   int i, nblocks;
 
@@ -141,14 +141,14 @@ SEXP readChain(SEXP r_path, SEXP r_exclude) {
   chains = read_chain_file(stream, exclude, &nblocks);
 
   PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Alignment")));
-  ans_elements = allocVector(VECSXP, nblocks);
-  SET_SLOT(ans, install("elements"), ans_elements);
+  ans_listData = allocVector(VECSXP, nblocks);
+  SET_SLOT(ans, install("listData"), ans_listData);
   ans_names = allocVector(STRSXP, nblocks);
   SET_SLOT(ans, install("NAMES"), ans_names);
   for (i = 0; i < nblocks; i++) {
     SEXP block;
     block = NEW_OBJECT(MAKE_CLASS("AlignmentSpace"));
-    SET_VECTOR_ELT(ans_elements, i, block);
+    SET_VECTOR_ELT(ans_listData, i, block);
     SET_SLOT(block, install("ranges"), _RangeAE_asIRanges(&chains[i]->ranges));
     SET_SLOT(block, install("offset"), _IntAE_asINTEGER(&chains[i]->offset));
     SET_SLOT(block, install("length"), _IntAE_asINTEGER(&chains[i]->length));
@@ -157,12 +157,6 @@ SEXP readChain(SEXP r_path, SEXP r_exclude) {
     SET_SLOT(block, install("rev"), _CharAE_asLOGICAL(&chains[i]->rev));
     SET_STRING_ELT(ans_names, i, mkChar(chains[i]->name));
   }
-
-  ans_lengths = allocVector(INTSXP, nblocks);
-  for (i = 0; i < nblocks; i++) {
-    INTEGER(ans_lengths)[i] = chains[i]->offset.nelt;
-  }
-  SET_SLOT(ans, install("elementLengths"), ans_lengths);
 
   UNPROTECT(1);
 

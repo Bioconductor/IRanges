@@ -9,9 +9,8 @@ setClass("AlignmentSpace",
 ##setMethod("length", "AlignmentSpace", function(x) length(x@offset))
 
 setClass("Alignment",
-         prototype = prototype(elementClass = "AlignmentSpace",
-           compress = FALSE),
-         contains = "TypedList")
+         prototype = prototype(elementType = "AlignmentSpace"),
+         contains = "SimpleTypedList")
 
 read.chain <- function(path, exclude = "_") {
   .Call("readChain", path, exclude, PACKAGE="IRanges")

@@ -78,7 +78,7 @@
   \code{\link[base]{as.list}}.
 
   Some direct subclasses of the ListLike class:
-  \link{TypedList-class},
+  \link{TypedListV2-class},
   \link{Views-class},
   \link{MaskCollection-class},
   \link[Biostrings]{XStringSet-class}.

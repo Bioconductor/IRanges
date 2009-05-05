@@ -35,8 +35,6 @@ test_FilterRules_construct <- function() {
   
   checkException(FilterRules(c(filts, 1)), silent = TRUE)
   checkException(FilterRules(filts, active = filts), silent = TRUE)
-  checkException(FilterRules(filts, active = rep(TRUE, 5)), silent = TRUE)
-  checkException(FilterRules(filts, active = rep(TRUE, 2)), silent = TRUE)
   checkException(FilterRules(list(find_eboxes = function() NULL)),
                  silent = TRUE)
 }

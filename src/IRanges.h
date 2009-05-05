@@ -381,6 +381,13 @@ SEXP IRanges_reduce(
 );
 
 
+/* CompressedIRangesList_class.c */
+
+SEXP _get_CompressedIRangesList_elt(SEXP x, int at);
+
+SEXP CompressedIRangesList_summary(SEXP object);
+
+
 /* Grouping_class.c */
 
 SEXP debug_Grouping_class();
@@ -398,13 +405,6 @@ SEXP H2LGrouping_vmembers(
 	SEXP x,
 	SEXP group_ids_list
 );
-
-
-/* IRangesList_class.c */
-
-SEXP _get_IRangesList_elt(SEXP x, int at);
-
-SEXP IRangesList_summary(SEXP object);
 
 
 /* Rle_class.c */

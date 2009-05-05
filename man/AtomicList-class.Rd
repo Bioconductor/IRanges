@@ -2,21 +2,49 @@
 \docType{class}
 \alias{LogicalList}
 \alias{LogicalList-class}
+\alias{CompressedLogicalList}
+\alias{CompressedLogicalList-class}
+\alias{SimpleLogicalList}
+\alias{SimpleLogicalList-class}
 \alias{IntegerList}
 \alias{IntegerList-class}
+\alias{CompressedIntegerList}
+\alias{CompressedIntegerList-class}
+\alias{SimpleIntegerList}
+\alias{SimpleIntegerList-class}
 \alias{NumericList}
 \alias{NumericList-class}
+\alias{CompressedNumericList}
+\alias{CompressedNumericList-class}
+\alias{SimpleNumericList}
+\alias{SimpleNumericList-class}
 \alias{ComplexList}
 \alias{ComplexList-class}
+\alias{CompressedComplexList}
+\alias{CompressedComplexList-class}
+\alias{SimpleComplexList}
+\alias{SimpleComplexList-class}
 \alias{CharacterList}
 \alias{CharacterList-class}
+\alias{CompressedCharacterList}
+\alias{CompressedCharacterList-class}
+\alias{SimpleCharacterList}
+\alias{SimpleCharacterList-class}
 \alias{RawList}
 \alias{RawList-class}
+\alias{CompressedRawList}
+\alias{CompressedRawList-class}
+\alias{SimpleRawList}
+\alias{SimpleRawList-class}
 \alias{RleList}
 \alias{RleList-class}
+\alias{CompressedRleList}
+\alias{CompressedRleList-class}
+\alias{SimpleRleList}
+\alias{SimpleRleList-class}
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}
-\description{An extension of \code{\linkS4class{TypedList}} that holds
+\description{An extension of \code{\linkS4class{TypedListV2}} that holds
   only atomic vectors in either a natural or run-length encoded form.}
 
 \details{
@@ -24,6 +52,9 @@
   \code{NumericList}, \code{ComplexList}, \code{CharacterList}, and
   \code{RawList}. There is also an \code{RleList} class for
   run-length encoded versions of these atomic vector types.
+
+  Each of the above mentioned classes is virtual with Compressed* and Simple*
+  non-virtual representations.
 }
 
 \section{Constructors}{
@@ -54,7 +85,7 @@
 }
 
 \author{P. Aboyoun}
-\seealso{\code{\linkS4class{TypedList}} for the applicable methods.}
+\seealso{\code{\linkS4class{TypedListV2}} for the applicable methods.}
 
 \examples{
   int1 <- c(1L,2L,3L,5L,2L,8L)

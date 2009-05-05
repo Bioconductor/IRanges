@@ -326,6 +326,15 @@ DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,
 )
 
 /*
+ * Stubs for callables defined in CompressedIRangesList_class.c
+ */
+
+DEFINE_CCALLABLE_STUB(SEXP, get_CompressedIRangesList_elt,
+	(SEXP x, int at),
+	(     x,     at)
+)
+
+/*
  * Stubs for callables defined in Grouping_class.c
  */
 
@@ -337,15 +346,6 @@ DEFINE_CCALLABLE_STUB(SEXP, get_H2LGrouping_high2low,
 DEFINE_CCALLABLE_STUB(SEXP, get_H2LGrouping_low2high,
 	(SEXP x),
 	(     x)
-)
-
-/*
- * Stubs for callables defined in IRangesList_class.c
- */
-
-DEFINE_CCALLABLE_STUB(SEXP, get_IRangesList_elt,
-	(SEXP x, int at),
-	(     x,     at)
 )
 
 /*

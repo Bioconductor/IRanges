@@ -33,14 +33,14 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(which_as_IRanges, 1),
 	CALLMETHOD_DEF(IRanges_reduce, 2),
 
+/* CompressedIRangesList_class.c */
+	CALLMETHOD_DEF(CompressedIRangesList_summary, 1),
+
 /* Grouping_class.c */
 	CALLMETHOD_DEF(debug_Grouping_class, 0),
 
 	CALLMETHOD_DEF(H2LGrouping_members, 2),
 	CALLMETHOD_DEF(H2LGrouping_vmembers, 2),
-
-/* IRangesList_class.c */
-	CALLMETHOD_DEF(IRangesList_summary, 1),
 
 /* Rle_class.c */
 	CALLMETHOD_DEF(Rle_constructor, 2),
@@ -214,12 +214,12 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_new_IRanges);
 	REGISTER_CCALLABLE(_alloc_IRanges);
 
+/* CompressedIRangesList_class.c */
+	REGISTER_CCALLABLE(_get_CompressedIRangesList_elt);
+
 /* Grouping_class.c */
 	REGISTER_CCALLABLE(_get_H2LGrouping_high2low);
 	REGISTER_CCALLABLE(_get_H2LGrouping_low2high);
-
-/* IRangesList_class.c */
-	REGISTER_CCALLABLE(_get_IRangesList_elt);
 
 /* SequencePtr_class.c */
 	REGISTER_CCALLABLE(_new_SequencePtr);

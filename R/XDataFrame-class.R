@@ -7,9 +7,6 @@
 ## drops them down to vectors again during extraction. Should probably give
 ## user control over this.
 
-##setClassUnion("XStringSetORNULL", c("XStringSet", "NULL"))
-setClassUnion("XIntegerORNULL", c("XInteger", "NULL"))
-
 ## NOTE: Normal data.frames always have rownames (sometimes as integers),
 ## but we allow the rownames to be NULL for efficiency. This means that we
 ## need to store the number of rows (nrows).
@@ -19,10 +16,8 @@ setClass("XDataFrame",
                         nrows = "integer"
                         ),
          prototype(rownames = NULL,
-                   ##rowset = NULL,
-                   nrows = 0L,
-                   compress = FALSE),
-         contains = "AnnotatedList")
+                   nrows = 0L),
+         contains = "SimpleTypedList")
 
 setClassUnion("XDataFrameORNULL", c("XDataFrame", "NULL"))
 
@@ -37,7 +32,6 @@ setMethod("dimnames", "XDataFrame",
             rn <- x@rownames
             if (!is.null(rn)) {
               rn <- as.character(rn)
-              ##rn <- rn[rowset(x)]
               rn[is.na(rn)] <- "NA"
               if (any(duplicated(rn)))
                 rn <- make.unique(rn)                
@@ -57,7 +51,6 @@ setReplaceMethod("dimnames", "XDataFrame",
                      if (any(duplicated(rows)))
                        stop("duplicate rownames not allowed")
                      if (!is(rows, "XStringSet"))
-                       ##rows <- BStringSet(as.character(rows))
                        rows <- as.character(rows)
                    }
                    cols <- value[[2]]
@@ -70,14 +63,6 @@ setReplaceMethod("dimnames", "XDataFrame",
                    names(x) <- cols
                    x
                  })
-
-## setGeneric("rowset", function(object, ...) standardGeneric("rowset"))
-## setMethod("rowset", "XDataFrame",
-##           function(object) {
-##             if (is.null(object@rowset))
-##               seq_len(nrow(object))
-##             else as.integer(object@rowset)
-##           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
@@ -130,29 +115,24 @@ setValidity2("XDataFrame", .valid.XDataFrame)
 
 XDataFrame <- function(..., row.names = NULL)
 {
-  ## build up elements list, with names from arguments
-  elements <- list(...)
+  ## build up listData, with names from arguments
+  listData <- list(...)
   nr <- 0
   varnames <- character()
-  varlist <- vector("list", length(elements))
-  if (length(elements) > 0) {
-    if (is.null(names(elements)))
-      names(elements) <- character(length(elements))
-    emptynames <- !nzchar(names(elements))
+  varlist <- vector("list", length(listData))
+  if (length(listData) > 0) {
+    if (is.null(names(listData)))
+      names(listData) <- character(length(listData))
+    emptynames <- !nzchar(names(listData))
     args <- as.list(substitute(list(...)))[-1]
     argdp <- sapply(args, function(arg) deparse(arg)[1])
-    varnames <- as.list(names(elements))
+    varnames <- as.list(names(listData))
     nrows <- ncols <- integer(length(varnames))
-    for (i in seq_along(elements)) {
-      element <- elements[[i]]
-      ## if (is(element, "XDataFrame") && ## need to copy if subsetted
-##           !all(rowset(element) == seq_len(nrow(element)))) {
-##         message("copying XDataFrame argument")
-##         element <- as.data.frame(element)
-##       }
+    for (i in seq_along(listData)) {
+      element <- listData[[i]]
       element <- try(as(element, "XDataFrame"), silent = TRUE)
       if (inherits(element, "try-error"))
-        stop("cannot coerce class \"", class(elements[[i]]),
+        stop("cannot coerce class \"", class(listData[[i]]),
              "\" to an XDataFrame")
       enames <- names(element)
       if (ncol(element) > 1) {
@@ -172,7 +152,7 @@ XDataFrame <- function(..., row.names = NULL)
       varlist[[i]] <- as.list(element, use.names = FALSE)
     }
     nr <- max(nrows)
-    for (i in seq_along(elements)) {
+    for (i in seq_along(listData)) {
       if (nrows[i] < nr && nrows[i] && (nr %% nrows[i]) == 0) {
         recycle <- rep(seq_len(nrows[i]), length = nr)
         varlist[[i]] <- lapply(varlist[[i]], `[`, recycle, drop=FALSE)
@@ -182,7 +162,7 @@ XDataFrame <- function(..., row.names = NULL)
     if (!all(nrows == nr))
       stop("different row counts implied by arguments")
     varlist <- unlist(varlist, recursive = FALSE, use.names = FALSE)
-    varnames <- make.names(unlist(varnames[ncols > 0L]), unique = TRUE)
+    names(varlist) <- make.names(unlist(varnames[ncols > 0L]), unique = TRUE)
   }
   
   if (!is.null(row.names)) {
@@ -192,11 +172,10 @@ XDataFrame <- function(..., row.names = NULL)
       stop("invalid length of row names")
     if (any(duplicated(row.names)))
       stop("duplicate row names")
-    ##row.names <- BStringSet(as.character(row.names))
     row.names <- as.character(row.names)
   }
   
-  new("XDataFrame", elements=varlist, NAMES=varnames, rownames=row.names,
+  new("XDataFrame", listData=varlist, rownames=row.names,
       nrows=as.integer(max(nr, length(row.names))))
 }
 
@@ -224,7 +203,7 @@ setMethod("[[", "XDataFrame",
               stop("subscript out of bounds")
             els <- as.list(x, use.names = FALSE)
             names(els) <- names(x)
-            els[[i]][]#[rowset(x)]
+            els[[i]][]
           }
           )
 
@@ -245,11 +224,6 @@ setReplaceMethod("[[", "XDataFrame",
                      stop("subscript out of bounds")
                    if (!is.null(value) && nrow(x) != length(value)) {
                      stop("length of data must equal the number of rows")
-                     ##if (length(value) < 1)
-                     ##  stop("data length is positive, 'value' length is 0")
-                     ##if (nrow(x) %% length(value) > 0)
-                     ##  stop("data not a multiple of replacement length")
-                     ##value <- rep(value, length = nrow(x))
                    }
                    x <- callNextMethod(x, i, value=value)
                    ## ensure unique, valid names
@@ -328,7 +302,7 @@ setMethod("[", "XDataFrame",
                 names(x) <- make.unique(names(x))
               dim[2] <- length(x)
             }
-            
+
             if (!missing(i)) {
               prob <- checkIndex(i, row = TRUE)
               if (!is.null(prob))
@@ -341,11 +315,7 @@ setMethod("[", "XDataFrame",
                 i <- integer()
               else if (is(i, "Rle"))
                 i <- which(i)
-              x@elements <- lapply(as.list(x, use.names = FALSE), `[`, i, drop = FALSE)
-              ## newset <- rowset(x)[i]
-              ## x@rowset <- as(newset, "XInteger")
-              ## NOTE: we do not support matrices here
-              ##x@elements <- lapply(as.list(x, use.names = FALSE), "[", i)
+              x@listData <- lapply(as.list(x), `[`, i, drop = FALSE)
               dim[1] <- length(seq(dim[1])[i]) # may have 0 cols, no rownames
               x@nrows <- dim[1]
               x@rownames <- rownames(x)[i]
@@ -393,8 +363,7 @@ setMethod("as.data.frame", "XDataFrame",
 ## take data.frames to XDataFrames
 setAs("data.frame", "XDataFrame",
       function(from) {
-        sequences <- from
-        new("XDataFrame", elements = sequences, NAMES = names(from),
+        new("XDataFrame", listData = from,
             nrows = nrow(from), rownames = rownames(from))
       })
 
@@ -406,20 +375,9 @@ setAs("list", "XDataFrame", function(from) do.call(XDataFrame, from))
 ## everything else
 setAs("ANY", "XDataFrame",
       function(from) {
-        new("XDataFrame", elements = list(from),
+        new("XDataFrame", listData = list(from),
             nrows = as.integer(length(from)))
       })
-
-## setAs("XSequence", "XDataFrame",
-##       function(from) {
-##         new("XDataFrame", elements = list(from),
-##             nrows = as.integer(length(from)))
-##       })
-
-#setAs("numeric", "XDataFrame",
-##       function(from) {
-##         as(as(from, "XSequence"), "XDataFrame")
-##       })
 
 ### FIXME: only exists due to annoying S4 warning due to its caching of
 ### coerce methods.
@@ -427,12 +385,6 @@ setAs("integer", "XDataFrame",
       function(from) {
         selectMethod("coerce", c("ANY", "XDataFrame"))(from)
       })
-
-## fallback goes throw data.frame
-## setAs("ANY", "XDataFrame",
-##       function(from) {
-##         as(as.data.frame(from, optional = TRUE), "XDataFrame")
-##       })
 
 ## pull the external vectors into R
 setMethod("as.list", "XDataFrame",
@@ -455,6 +407,4 @@ setMethod("show", "XDataFrame",
           {
             cat("XDataFrame object with", nrow(object), "rows and",
                 ncol(object), "columns.\n")
-            
-            ##show(as(object, "data.frame"))
           })

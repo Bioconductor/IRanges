@@ -7,7 +7,7 @@
 % accessors
 \alias{elementClass}
 \alias{elementClass,TypedList-method}
-\alias{elementLengths}
+%\alias{elementLengths}
 \alias{elementLengths,TypedList-method}
 \alias{length,TypedList-method}
 \alias{names,TypedList-method}

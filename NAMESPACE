@@ -18,10 +18,19 @@ exportClasses(
     Rle, RleViews,
     MaskCollection,
     TypedList, AnnotatedList,
-    LogicalList, IntegerList, NumericList, ComplexList,
-    CharacterList, RawList, RleList,
-    RangesList, IRangesList,
-    XDataFrame, XDataFrameList, SplitXDataFrameList,
+    TypedListV2, CompressedTypedList, SimpleTypedList,
+    LogicalList, CompressedLogicalList, SimpleLogicalList,
+    IntegerList, CompressedIntegerList, SimpleIntegerList,
+    NumericList, CompressedNumericList, SimpleNumericList,
+    ComplexList, CompressedComplexList, SimpleComplexList,
+    CharacterList, CompressedCharacterList, SimpleCharacterList,
+    RawList, CompressedRawList, SimpleRawList,
+    RleList, CompressedRleList, SimpleRleList,
+    RangesList, SimpleRangesList,
+    IRangesList, CompressedIRangesList, SimpleIRangesList,
+    XDataFrame,
+    XDataFrameList, SimpleXDataFrameList,
+    SplitXDataFrameList, CompressedSplitXDataFrameList, SimpleSplitXDataFrameList,
     RangedData, RangedDataList, FilterRules, RDApplyParams, RangesMatching)
 
 export(
@@ -96,6 +105,8 @@ export(
     disjoin, disjointBins,
     ##map,
     score,
+
+    ## Generic functions in the Rle API:
     Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
     findRange, findRun,
 
@@ -128,7 +139,7 @@ export(
     reducerFun, "reducerFun<-", reducerParams, "reducerParams<-",
     rdapply,
     universe, "universe<-", space,
-    elementClass, elementLengths,
+    elementType, elementClass, elementLengths,
     metadata, elementMetadata, "metadata<-", "elementMetadata<-",
     matchMatrix,
 

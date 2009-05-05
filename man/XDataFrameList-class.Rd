@@ -1,11 +1,16 @@
 \name{XDataFrameList-class}
 \docType{class}
 \alias{XDataFrameList-class}
+\alias{SimpleXDataFrameList-class}
 \alias{SplitXDataFrameList-class}
+\alias{CompressedSplitXDataFrameList-class}
+\alias{SimpleSplitXDataFrameList-class}
 
 % accessors
-\alias{dim,XDataFrameList-method}
-\alias{dimnames,XDataFrameList-method}
+\alias{dim,SimpleXDataFrameList-method}
+\alias{dim,CompressedSplitXDataFrameList-method}
+\alias{dimnames,SimpleXDataFrameList-method}
+\alias{dimnames,CompressedSplitXDataFrameList-method}
 
 % constructor
 \alias{XDataFrameList}
@@ -20,11 +25,7 @@
   The \code{SplitXDataFrameList} class contains the additional restriction
   that all the columns be of the same name and type. Internally it is stored
   as a list of \code{XDataFrame} objects and extends
-  \code{\linkS4class{TypedList}}.}
-\note{
-  The \code{\linkS4class{RangedData}} drove the development of these
-  classes. It is not clear if they are of general use and might disappear.
-}
+  \code{\linkS4class{TypedListV2}}.}
 
 \section{Accessors}{
   In the following code snippets, \code{x} is a \code{XDataFrameList}.
@@ -44,7 +45,7 @@
       Concatenates the \code{XDataFrame}
       objects in \code{...} into a new \code{XDataFrameList}, optionally
       compressing them, which is only possible if the elements can be
-      combined via \code{rbind}, see \code{\linkS4class{TypedList}}.}
+      combined via \code{rbind}, see \code{\linkS4class{TypedListV2}}.}
     \item{}{\code{SplitXDataFrameList(..., compress = FALSE)}: Concatenates the
       \code{XDataFrame} objects in \code{...} into a new
       \code{SplitXDataFrameList}. Note that all arguments must have the same

@@ -68,9 +68,9 @@ setReplaceMethod("names", "MaskCollection",
         if (is.null(value)) {
             x@NAMES <- as.character(NA)
             return(x)
+        } else {
+            value <- as.character(value)
         }
-        if (!is.character(value))
-            stop("'value' must be NULL or a character vector")
         ii <- is.na(value)
         if (any(ii))
             value[ii] <- ""
