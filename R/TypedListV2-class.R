@@ -601,28 +601,35 @@ setGeneric("unlistData", function(x) standardGeneric("unlistData"))
 setMethod("unlistData", "CompressedTypedList",
           function(x) {
               if (length(x) == 0)
-                  list()
+                  NULL
               else
                   x@unlistData
           })
 setMethod("unlistData", "SimpleTypedList",
-          function(x) .TypedListV2.compress.list(as.list(x)))
+          function(x) {
+              if (length(x) == 0)
+                  NULL
+              else
+                  .TypedListV2.compress.list(as.list(x))
+          })
 
 setMethod("unlist", "TypedListV2",
           function(x, recursive = TRUE, use.names = TRUE) {
               if (!missing(recursive))
                   warning("'recursive' argument currently ignored")
               ans <- unlistData(x)
-              if (length(dim(ans)) < 2 && use.names) {
-                  nms <- rep(names(x), elementLengths(x))
-                  if (!is.null(nms) && !is.null(names(ans)))
-                      nms <- paste(nms, names(ans), sep = ".")
-                  else if (is.null(nms))
-                      nms <- names(ans)
-                  names(ans) <- nms
-              } else {
-                  if (!use.names)
-                      rownames(ans) <- NULL
+              if (!is.null(ans)) {
+                  if (length(dim(ans)) < 2 && use.names) {
+                      nms <- rep(names(x), elementLengths(x))
+                      if (!is.null(nms) && !is.null(names(ans)))
+                          nms <- paste(nms, names(ans), sep = ".")
+                      else if (is.null(nms))
+                          nms <- names(ans)
+                      names(ans) <- nms
+                  } else {
+                      if (!use.names)
+                          rownames(ans) <- NULL
+                  }
               }
               ans
           })
