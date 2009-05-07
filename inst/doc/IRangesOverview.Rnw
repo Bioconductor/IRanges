@@ -120,22 +120,28 @@ shiftApply(249:251, y, x, FUN = function(x, y) var(x, y) / (sd(x) * sd(y)))
 
 It is often necessary to extract a sequence from another, in
 analogous manner to ordinary vector extraction or
-subsetting. Mathematically, sequence extraction is a generalization of
-taking a subsequence, the difference being that, in sequence
-extraction, the original ordering of the elements need not be
-maintained. Regardless, we will use the term \textit{subsequence} to
-represent the result of sequence extraction, as the order constraint
-is rarely broken. The most general way to describe a subsequence would
-be a vector of indices into the sequence. As it is common to
-extract consecutive values from the sequence, the indices are usually
-more efficiently encoded as a list of ranges, i.e. a vector of start
-positions and a parallel vector of widths. 
+subsetting. A simple operation is to select a list
+of consecutive elements from a sequence. This is the purpose of the
+\Rfunction{subseq} function.
+
+%% EXAMPLE: subseq()
+
+Mathematically, a subsequence is slightly more general: selected
+elements need only to be in the same order, not consecutive. We can
+generalize this further to sequence extraction, where the order of the
+elements is no longer fixed. As the order constraint is rarely
+broken, we will use the term \textit{subsequence} to represent the
+result of sequence extraction. The most general way to describe such a
+subsequence would be a vector of indices into the sequence. As it is
+common to extract consecutive values from the sequence, the indices
+are usually more efficiently encoded as a list of ranges, i.e. a
+vector of start positions and a parallel vector of widths.
 
 The general interface for extracting subsequences is
-\Rfunction{subseq}, which is supported by all \Rclass{Sequence}
+\Rfunction{seqextract}, which is supported by all \Rclass{Sequence}
 objects, as well as ordinary vectors.
 
-%% EXAMPLE: subseq(), [
+%% EXAMPLE: seqextract(), [
 
 \section{Lists}
 
@@ -216,18 +222,16 @@ themselves, while ignoring the underlying sequence values. A
 consecutive list of indices would be a simple way to select a
 consecutive subsequence. However, a sparser representation would be a
 a range, a pairing of a start position and a width, as used when
-extracting subsequences with \Rfunction{subseq}, above.
+extracting sequences with \Rfunction{subseq} and
+\Rfunction{seqextract}, above.
 
 When analyzing subsequences in \IRanges{}, each range is treated as an
-observation. The \IRanges{} package represents lists of ranges with
-the \Rclass{Ranges} virtual class. Just as with ordinary vectors, there is no
-way in \IRanges{} to represent a scalar range; we always work with
-vectors of ranges. 
-
-The most commonly used implementation of \Rclass{Ranges} is
-\Rclass{IRanges}, which stores the starts and widths as ordinary
-integer vectors. To construct an \Rclass{IRanges} instance, we call
-the \Rfunction{IRanges} constructor. Ranges are normally specified by
+observation. The virtual \Rclass{Ranges} class represents lists of
+ranges, or, equivalently, sequences of consecutive integers. The most
+commonly used implementation of \Rclass{Ranges} is \Rclass{IRanges},
+which stores the starts and widths as ordinary integer vectors. To
+construct an \Rclass{IRanges} instance, we call the
+\Rfunction{IRanges} constructor. Ranges are normally specified by
 passing two out of the three parameters: start, end and width (see
 \Sexpr{help(IRanges)} for more information).
 
@@ -256,7 +260,7 @@ subsetting is also supported.
 \subsection{Sequence Extraction}
 
 As \Rclass{Ranges} objects encode subsequences, they may be used
-directly in subsequence extraction. Note that when a \textit{normal}
+directly in sequence extraction. Note that when a \textit{normal}
 \Rclass{Ranges} is given as the index, the result is a true
 subsequence, in the mathematical sense.
 
@@ -314,7 +318,7 @@ subsequence, in the mathematical sense.
 
 \section{Sequence Views}
 
-When we extract a subsequence with \Rfunction{subseq}, we can pass
+When we extract a sequence with \Rfunction{seqextract}, we can pass
 multiple ranges, each selecting a single consecutive
 subsequence. Those subsequences are extracted and concatenated into a
 single sequence. There are many cases where the user wishes to avoid
