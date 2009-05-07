@@ -27,7 +27,7 @@
 \newcommand{\IRanges}{\Rpackage{IRanges}}
 
 \title{An Introduction to \Rpackage{IRanges}}
-\author{Patrick Aboyoun, Michael Lawrence, Herv\'e Pag\`es}
+\author{Michael Lawrence, Patrick Aboyoun, Herv\'e Pag\`es}
 \date{\today}
 
 \begin{document}
