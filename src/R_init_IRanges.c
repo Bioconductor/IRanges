@@ -24,7 +24,8 @@ static const R_CallMethodDef callMethods[] = {
 /* IRanges_class.c */
 	CALLMETHOD_DEF(debug_IRanges_class, 0),
 
-/* solve_user_SEW.c */
+/* IRanges_constructor.c */
+	CALLMETHOD_DEF(solve_user_SEW0, 3),
 	CALLMETHOD_DEF(solve_user_SEW, 6),
 
 /* IRanges_utils.c */

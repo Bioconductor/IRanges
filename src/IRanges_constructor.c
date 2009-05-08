@@ -1,12 +1,77 @@
 /****************************************************************************
- *                   The SEW (Start/End/Width) interface                    *
- *                           Author: Herve Pages                            *
+ *               Support functions for the IRanges constructor              *
  ****************************************************************************/
 #include "IRanges.h"
 
+
+static char errmsg_buf[200];
+
+
+/****************************************************************************
+ * solve_user_SEW0()
+ */
+
+static int solve_user_SEW0_row(int start, int end, int width,
+		int *solved_start, int *solved_width)
+{
+	int nb_of_unknowns;
+
+	nb_of_unknowns = (start == NA_INTEGER) + (end == NA_INTEGER) + (width == NA_INTEGER);
+	if (nb_of_unknowns >= 2) {
+		snprintf(errmsg_buf, sizeof(errmsg_buf),
+			 "range cannot be determined from the supplied arguments (too many NAs)");
+		return -1;
+	}
+	if (start == NA_INTEGER) {
+		start = end - width + 1;
+	} else if (width == NA_INTEGER) {
+		width = end - start + 1;
+	} else if (end != NA_INTEGER && end != start + width - 1) {
+		snprintf(errmsg_buf, sizeof(errmsg_buf),
+			 "supplied arguments are incompatible");
+		return -1;
+	}
+	if (width < 0) {
+		snprintf(errmsg_buf, sizeof(errmsg_buf),
+			 "negative widths are not allowed");
+		return -1;
+	}
+	*solved_start = start;
+	*solved_width = width;
+	return 0;
+}
+
+SEXP solve_user_SEW0(SEXP start, SEXP end, SEXP width)
+{
+	SEXP ans, ans_start, ans_width;
+	int ans_length, i;
+
+	ans_length = LENGTH(start);
+	PROTECT(ans_start = NEW_INTEGER(ans_length));
+	PROTECT(ans_width = NEW_INTEGER(ans_length));
+	for (i = 0; i < ans_length; i++) {
+		if (solve_user_SEW0_row(INTEGER(start)[i],
+					INTEGER(end)[i],
+					INTEGER(width)[i],
+					INTEGER(ans_start) + i,
+					INTEGER(ans_width) + i) != 0)
+		{
+			UNPROTECT(2);
+			error("solving row %d: %s", i + 1, errmsg_buf);
+		}
+	}
+	PROTECT(ans = _new_IRanges("IRanges", ans_start, ans_width, R_NilValue));
+	UNPROTECT(3);
+	return ans;
+}
+
+
+/****************************************************************************
+ * solve_user_SEW()
+ */
+
 static int translate_negative_coord0;
 static int nonnarrowing_is_OK;
-static char errmsg_buf[200];
 
 static int translate_negative_startorend(int refwidth, int startorend)
 {

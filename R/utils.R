@@ -128,23 +128,14 @@ setAs("ANY", "vector", function(from) as.vector(from))
 ### Other low-level (not exported) helper functions.
 ###
 
-isNumericOrNAs <- function(x)
-{
-    is.numeric(x) || (is.atomic(x) && is.vector(x) && all(is.na(x)))
-}
-
 numeric2integer <- function(x)
 {
     if (is.numeric(x) && !is.integer(x)) as.integer(x) else x
 }
 
-normargIntegerOrNA <- function(x, argname)
+isNumericOrNAs <- function(x)
 {
-    if (!isNumericOrNAs(x))
-        stop("'", argname, "' must be a vector of integers")
-    if (!is.integer(x))
-        x <- as.integer(x)
-    x
+    is.numeric(x) || (is.atomic(x) && is.vector(x) && all(is.na(x)))
 }
 
 normargSingleStart <- function(start)

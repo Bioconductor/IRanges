@@ -357,7 +357,13 @@ SEXP _alloc_IRanges(
 );
 
 
-/* solve_user_SEW.c */
+/* IRanges_constructor.c */
+
+SEXP solve_user_SEW0(
+	SEXP start,
+	SEXP end,
+	SEXP width
+);
 
 SEXP solve_user_SEW(
 	SEXP refwidths,
