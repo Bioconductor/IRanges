@@ -46,35 +46,35 @@
   }
 }
 
-\details{
+\section{IRanges constructor}{
+  Return the IRanges object containing the ranges specified by
+  \code{start}, \code{end} and \code{width}.
+  Input falls into one of two categories:
   \describe{
-    \item{}{
-      \code{IRanges(start=NULL, end=NULL, width=NULL, names=NULL)}:
-      Return the IRanges object containing the ranges specified by
-      \code{start}, \code{end} and \code{width}.
-      Input falls into one of two categories:
-      \describe{
-        \item{Category 1}{
-          \code{start}, \code{end} and \code{width} are numeric vectors
-          (or NULLs). If necessary they are expanded cyclically to the
-          length of the longest (NULL arguments are filled with NAs).
-          After this expansion, each row in the 3-column matrix obtained
-          by binding those 3 vectors together is "solved" i.e. NAs are
-          treated as unknown in the equation \code{end = start + width - 1}.
-          Finally, the solved matrix is returned as an \link{IRanges}
-          instance.
-        }
-        \item{Category 2}{
-          The \code{start} argument is a logical vector or logical Rle object
-          and \code{IRanges(start)} produces the same result as
-          \code{as(start, "IRanges")}.
-          Note that, in that case, the returned IRanges instance is guaranteed
-          to be normal.
-        }
-      }
-      Note that the \code{names} argument is never recycled (to remain
-      consistent with what \code{`names<-`} does on standard vectors).
+    \item{Category 1}{
+      \code{start}, \code{end} and \code{width} are numeric vectors
+      (or NULLs). If necessary they are expanded cyclically to the
+      length of the longest (NULL arguments are filled with NAs).
+      After this expansion, each row in the 3-column matrix obtained
+      by binding those 3 vectors together is "solved" i.e. NAs are
+      treated as unknown in the equation \code{end = start + width - 1}.
+      Finally, the solved matrix is returned as an \link{IRanges}
+      instance.
     }
+    \item{Category 2}{
+      The \code{start} argument is a logical vector or logical Rle object
+      and \code{IRanges(start)} produces the same result as
+      \code{as(start, "IRanges")}.
+      Note that, in that case, the returned IRanges instance is guaranteed
+      to be normal.
+    }
+  }
+  Note that the \code{names} argument is never recycled (to remain
+  consistent with what \code{`names<-`} does on standard vectors).
+}
+
+\section{Supporting functions}{
+  \describe{
     \item{}{
       \code{solveUserSEW0(start=NULL, end=NULL, width=NULL)}:
     }
@@ -107,18 +107,16 @@
       Rule (2b): if the row contains only 1 NA, then it is replaced by the solution
       of the \code{width[i] == end[i] - start[i] + 1} equation.
 
-      Finally, the set of solved rows is returned as an \link{IRanges} object.
+      Finally, the set of solved rows is returned as an \link{IRanges} object
+      (with the same number of elements as \code{refwidths}).
+
+      Note that an error is raised if either (1) the set of
+      user-supplied start/end/width values is invalid or (2)
+      \code{allow.nonnarrowing} is FALSE and the ranges represented by the
+      solved start/end/width values are not narrowing
+      the ranges represented by the user-supplied start/end/width values.
     }
   }
-}
-
-\value{
-  An \link{IRanges} object (with the same number of elements as
-  \code{refwidths}) representing the set of solved start/end/width values,
-  or an error if either (1) the set of user-supplied start/end/width values
-  is invalid or (2) \code{allow.nonnarrowing} is FALSE and the ranges
-  represented by the solved start/end/width values are not narrowing
-  the ranges represented by the user-supplied start/end/width values.
 }
 
 \author{H. Pages}
