@@ -107,21 +107,55 @@ setMethod("seqextract", "vector",
 ### Other methods.
 ###
 
-### The only reason for defining the replacement version of the "[" operator
-### is to let the user know that he can't use it:
-###   x <- BString("AbnbIU")
-###   x[2] <- "Z" # provokes an error
-### If we don't define it, then the user can type the above and believe that
-### it actually did something but it didn't.
-setReplaceMethod("[", "Sequence",
-    function(x, i, j,..., value)
-        stop("attempt to modify the value of a ", class(x), " instance")
-)
+setMethod("[", "Sequence", function(x, i, j, ..., drop = FALSE)
+          stop("missing '[' method for Sequence class", class(x)))
 
-setMethod("rep", "Sequence",
-    function(x, times)
-        x[rep.int(seq_len(length(x)), times)]
-)
+setReplaceMethod("[", "Sequence", function(x, i, j,..., value)
+                 stop("attempt to modify the value of a ", class(x), " instance"))
+
+setMethod("c", "Sequence", function(x, ..., recursive = FALSE)
+          stop("missing 'c' method for Sequence class", class(x)))
+
+setMethod("head", "Sequence",
+          function(x, n = 6L, ...) {
+              stopifnot(length(n) == 1L)
+              if (n < 0L)
+                  n <- max(length(x) + n, 0L)
+              else
+                  n <- min(n, length(x))
+              if (n == 0L)
+                  x[integer(0)]
+              else
+                  subseq(x, 1L, n)
+          })
+
+setMethod("length", "Sequence", function(x)
+          stop("missing 'length' method for Sequence class", class(x)))
+
+setMethod("rep", "Sequence", function(x, times)
+          x[rep.int(seq_len(length(x)), times)])
+
+setMethod("rev", "Sequence",
+          function(x) {
+              if (length(x) == 0)
+                  x
+              else
+                  x[length(x):1]  
+          })
+
+setMethod("tail", "Sequence",
+          function(x, n = 6L, ...) {
+              stopifnot(length(n) == 1L)
+              xlen <- length(x)
+              if (n < 0L) 
+                  n <- max(xlen + n, 0L)
+              else
+                  n <- min(n, xlen)
+              if (n == 0L)
+                  x[integer(0)]
+              else
+                  subseq(x, xlen - n + 1L, xlen)
+          })
 
 ### Maybe this is how `!=` should have been defined in the base package so
 ### nobody would ever need to bother implementing such an obvious thing.

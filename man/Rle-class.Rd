@@ -61,7 +61,6 @@
 \alias{findRange,Rle-method}
 \alias{findRun}
 \alias{findRun,Rle-method}
-\alias{head,Rle-method}
 \alias{is.na,Rle-method}
 \alias{length,Rle-method}
 \alias{rep,Rle-method}
@@ -77,7 +76,6 @@
 \alias{summary,Rle-method}
 \alias{table}
 \alias{table,Rle-method}
-\alias{tail,Rle-method}
 \alias{unique,Rle-method}
 \alias{window,Rle-method}
 

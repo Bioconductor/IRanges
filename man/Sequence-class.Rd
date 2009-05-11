@@ -14,8 +14,14 @@
 \alias{seqextract}
 \alias{seqextract,Sequence-method}
 \alias{seqextract,vector-method}
-\alias{rep,Sequence-method}
+\alias{[,Sequence-method}
 \alias{[<-,Sequence-method}
+\alias{c,Sequence-method}
+\alias{head,Sequence-method}
+\alias{length,Sequence-method}
+\alias{rep,Sequence-method}
+\alias{rev,Sequence-method}
+\alias{tail,Sequence-method}
 \alias{!=,Sequence,Sequence-method}
 
 % XSequence class, functions and methods:
@@ -173,8 +179,31 @@
       not to coerce the returned sequence to a standard vector.
     }
     \item{}{
+      \code{head(x, n = 6L)}:
+      If \code{n} is non-negative, returns the first n elements of the Sequence
+      object.
+      If \code{n} is negative, returns all but the last \code{abs(n)} elements
+      of the Sequence object.
+    }
+    \item{}{
+      \code{length(x)}:
+      Return the number of elements in the Sequence object.
+    }
+    \item{}{
       \code{rep(x, times)}:
       Return a new Sequence object made of the repeated elements.
+    }
+    \item{}{
+      \code{rev(x)}:
+      Return a new Sequence object made of the original elements in the reverse
+      order.
+    }
+    \item{}{
+      \code{tail(x, n = 6L)}:
+      If \code{n} is non-negative, returns the last n elements of the Sequence
+      object.
+      If \code{n} is negative, returns all but the first \code{abs(n)} elements
+      of the Sequence object.
     }
   }
 }
