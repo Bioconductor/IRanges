@@ -72,7 +72,7 @@
 \alias{shiftApply,Rle,Rle-method}
 \alias{show,Rle-method}
 \alias{sort,Rle-method}
-\alias{subseq,Rle-method}
+\alias{seqextract,Rle-method}
 \alias{summary,Rle-method}
 \alias{table}
 \alias{table,Rle-method}
@@ -347,10 +347,10 @@
       Reverses the order of the values in \code{x}.
     }
     \item{}{
-      \code{shiftApply(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE))}:
+      \code{shiftApply(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)}:
       Let \code{i} be the indices in \code{SHIFT},
-      \code{X_i = subseq(X, 1 + OFFSET, length(X) - SHIFT[i])}, and
-      \code{Y_i = subseq(Y, 1 + SHIFT[i], length(Y) - OFFSET)}. Calculates
+      \code{X_i = seqextract(X, 1 + OFFSET, length(X) - SHIFT[i])}, and
+      \code{Y_i = seqextract(Y, 1 + SHIFT[i], length(Y) - OFFSET)}. Calculates
       the set of \code{FUN(X_i, Y_i, ...)} values and return the results in a
       convenient form:
       \describe{
@@ -383,10 +383,13 @@
       }
     }
     \item{}{
-      \code{subseq(x, start = NA, end = NA, width = NA)}:
+      \code{seqextract(x, start = NULL, end = NULL, width = NULL)}:
       Extract the subsequence from \code{x} specified by two of the three
       following values:  \code{start}, \code{end}, and \code{width}. This
       is more efficient for extracting consecutive values than \code{[}.
+      See \link{seqextract} for more details. Note that for now, the
+      \code{seqextract} method for Rle objects only supports extraction
+      of a single subsequence.
     }
     \item{}{
       \code{summary(object, ..., digits = max(3, getOption("digits") - 3))}:
@@ -598,7 +601,7 @@
   sqrt(x)
   x^2 + 2 * x + 1
   x[c(1,3,5,7,9)]
-  subseq(x, 4, 14)
+  seqextract(x, 4, 14)
   range(x)
   table(x)
   sum(x)

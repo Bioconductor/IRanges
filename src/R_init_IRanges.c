@@ -43,13 +43,8 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(H2LGrouping_members, 2),
 	CALLMETHOD_DEF(H2LGrouping_vmembers, 2),
 
-/* Rle_class.c */
-	CALLMETHOD_DEF(Rle_constructor, 2),
-	CALLMETHOD_DEF(Rle_run_subseq, 6),
-	CALLMETHOD_DEF(Rle_subseq, 3),
-
 /* Sequence_class.c */
-	CALLMETHOD_DEF(vector_subseq, 3),
+	CALLMETHOD_DEF(vector_subsetbyranges, 3),
 
 /* SequencePtr_class.c */
 	CALLMETHOD_DEF(debug_SequencePtr_class, 0),
@@ -119,13 +114,6 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(NumericPtr_write_nums_to_i1i2, 4),
 	CALLMETHOD_DEF(NumericPtr_write_nums_to_subset, 3),
 
-/* RleViews_utils.c */
-	CALLMETHOD_DEF(RleViews_viewMins, 2),
-	CALLMETHOD_DEF(RleViews_viewMaxs, 2),
-	CALLMETHOD_DEF(RleViews_viewSums, 2),
-	CALLMETHOD_DEF(RleViews_viewWhichMins, 2),
-	CALLMETHOD_DEF(RleViews_viewWhichMaxs, 2),
-
 /* XIntegerViews_class.c */
 	CALLMETHOD_DEF(XIntegerViews_slice, 3),
 
@@ -138,6 +126,18 @@ static const R_CallMethodDef callMethods[] = {
 
 /* XNumericViews_class.c */
 	CALLMETHOD_DEF(XNumericViews_slice, 5),
+
+/* Rle_class.c */
+	CALLMETHOD_DEF(Rle_constructor, 2),
+	CALLMETHOD_DEF(Rle_run_seqextract, 6),
+	CALLMETHOD_DEF(Rle_seqextract, 3),
+
+/* RleViews_utils.c */
+	CALLMETHOD_DEF(RleViews_viewMins, 2),
+	CALLMETHOD_DEF(RleViews_viewMaxs, 2),
+	CALLMETHOD_DEF(RleViews_viewSums, 2),
+	CALLMETHOD_DEF(RleViews_viewWhichMins, 2),
+	CALLMETHOD_DEF(RleViews_viewWhichMaxs, 2),
 
 /* coverage */
 	CALLMETHOD_DEF(IRanges_coverage, 4),

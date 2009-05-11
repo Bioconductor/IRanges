@@ -33,6 +33,16 @@ setMethod("subseq", "XSequence",
     }
 )
 
+### Works as long as c() works on objects of the same class as 'x'.
+setMethod("seqextract", "XSequence",
+    function(x, start=NULL, end=NULL, width=NULL)
+    {
+        xv <- Views(x, start=start, end=end, width=width)
+        ## TODO: Implement a fast "unlist" method for Views objects.
+        do.call(c, as.list(xv))  # i.e. 'unlist(xv)'
+    }
+)
+
 ### Works as long as as.integer() works on 'x'.
 setMethod("as.numeric", "XSequence",
     function(x, ...) as.numeric(as.integer(x))

@@ -328,7 +328,7 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = X@compress && missing(FUN),
           eltWidths <- eltEnds - eltStarts + 1L
           elts[whichToLoop] <-
             lapply(seq_len(loopCount), function(j)
-                   FUN(.Call("vector_subseq", allData, eltStarts[j], eltWidths[j],
+                   FUN(.Call("vector_subsetbyranges", allData, eltStarts[j], eltWidths[j],
                              PACKAGE="IRanges"), ...))
         } else if (length(dim(allData)) < 2) {
           elts[whichToLoop] <-

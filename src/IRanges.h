@@ -413,25 +413,9 @@ SEXP H2LGrouping_vmembers(
 );
 
 
-/* Rle_class.c */
-
-SEXP Rle_constructor(SEXP x, SEXP count);
-
-SEXP Rle_run_subseq(
-	SEXP x,
-	SEXP runStart,
-	SEXP runEnd,
-	SEXP offsetStart,
-	SEXP offsetEnd,
-	SEXP ans
-);
-
-SEXP Rle_subseq(SEXP x, SEXP start, SEXP width);
-
-
 /* Sequence_class.c */
 
-SEXP vector_subseq(SEXP x, SEXP start, SEXP width);
+SEXP vector_subsetbyranges(SEXP x, SEXP start, SEXP width);
 
 
 /* SequencePtr_class.c */
@@ -712,34 +696,6 @@ SEXP NumericPtr_write_nums_to_subset(
 );
 
 
-/* RleViews_utils.c */
-
-SEXP RleViews_viewMins(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP RleViews_viewMaxs(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP RleViews_viewSums(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP RleViews_viewWhichMins(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP RleViews_viewWhichMaxs(
-	SEXP x,
-	SEXP na_rm
-);
-
-
 /* XSequence_class.c */
 
 SEXP _get_XSequence_xdata(SEXP x);
@@ -821,6 +777,50 @@ SEXP XNumericViews_slice(
 );
 
 
+/* Rle_class.c */
+
+SEXP Rle_constructor(SEXP x, SEXP count);
+
+SEXP Rle_run_seqextract(
+	SEXP x,
+	SEXP runStart,
+	SEXP runEnd,
+	SEXP offsetStart,
+	SEXP offsetEnd,
+	SEXP ans
+);
+
+SEXP Rle_seqextract(SEXP x, SEXP start, SEXP width);
+
+
+/* RleViews_utils.c */
+
+SEXP RleViews_viewMins(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP RleViews_viewMaxs(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP RleViews_viewSums(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP RleViews_viewWhichMins(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP RleViews_viewWhichMaxs(
+	SEXP x,
+	SEXP na_rm
+);
+
+
 /* coverage */
 
 SEXP IRanges_coverage(
@@ -829,3 +829,4 @@ SEXP IRanges_coverage(
 	SEXP order,
 	SEXP width
 );
+
