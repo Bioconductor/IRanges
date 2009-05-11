@@ -73,6 +73,7 @@
 \alias{show,Rle-method}
 \alias{sort,Rle-method}
 \alias{seqextract,Rle-method}
+\alias{subseq,Rle-method}
 \alias{summary,Rle-method}
 \alias{table}
 \alias{table,Rle-method}
@@ -349,8 +350,8 @@
     \item{}{
       \code{shiftApply(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)}:
       Let \code{i} be the indices in \code{SHIFT},
-      \code{X_i = seqextract(X, 1 + OFFSET, length(X) - SHIFT[i])}, and
-      \code{Y_i = seqextract(Y, 1 + SHIFT[i], length(Y) - OFFSET)}. Calculates
+      \code{X_i = subseq(X, 1 + OFFSET, length(X) - SHIFT[i])}, and
+      \code{Y_i = subseq(Y, 1 + SHIFT[i], length(Y) - OFFSET)}. Calculates
       the set of \code{FUN(X_i, Y_i, ...)} values and return the results in a
       convenient form:
       \describe{
@@ -384,12 +385,18 @@
     }
     \item{}{
       \code{seqextract(x, start = NULL, end = NULL, width = NULL)}:
-      Extract the subsequence from \code{x} specified by two of the three
-      following values:  \code{start}, \code{end}, and \code{width}. This
-      is more efficient for extracting consecutive values than \code{[}.
-      See \link{seqextract} for more details. Note that for now, the
-      \code{seqextract} method for Rle objects only supports extraction
-      of a single subsequence.
+      Creates a new sequence using consecutive subsequences from \code{x}
+      specified by two of the three following values:  \code{start}, \code{end},
+      and \code{width}. See \link{seqextract} for more details.
+      Note that for now, the \code{seqextract} method for Rle objects only
+      supports extraction of a single consecutive subsequence.
+    }
+    \item{}{
+      \code{subseq(x, start = NULL, end = NULL, width = NULL)}:
+      Extracts the consecutive subsequence from \code{x} denoted by the
+      \code{start}, \code{end}, \code{width} arguments, which are processed
+      by \link{solveUserSEW}. This is more efficient for extracting consecutive
+      values than \code{[}.
     }
     \item{}{
       \code{summary(object, ..., digits = max(3, getOption("digits") - 3))}:
@@ -601,7 +608,7 @@
   sqrt(x)
   x^2 + 2 * x + 1
   x[c(1,3,5,7,9)]
-  seqextract(x, 4, 14)
+  subseq(x, 4, 14)
   range(x)
   table(x)
   sum(x)

@@ -258,7 +258,7 @@ setMethod("[", "Rle",
                         do.call(c,
                                 lapply(seq_len(length(starts)),
                                        function(k)
-                                       seqextract(x, start = starts[k], width = widths[k])))
+                                       subseq(x, start = starts[k], width = widths[k])))
                   }
                   if (drop)
                       output <- as.vector(output)
@@ -410,7 +410,7 @@ setMethod("head", "Rle",
             if (n == 0L)
               x[integer(0)]
             else
-              seqextract(x, 1L, n)
+              subseq(x, 1L, n)
           })
 
 setMethod("is.na", "Rle",
@@ -445,9 +445,9 @@ setMethod("rep", "Rle",
                   if (length.out == 0) {
                       x <- new("Rle")
                   } else if (length.out < n) {
-                      x <- seqextract(x, 1, length.out)
+                      x <- subseq(x, 1, length.out)
                   } else if (length.out > n) {
-                      x <- seqextract(rep(x, times = ceiling(length.out / n)), 1, length.out)
+                      x <- subseq(rep(x, times = ceiling(length.out / n)), 1, length.out)
                   }
               }
               x
@@ -592,6 +592,13 @@ setMethod("seqextract", "Rle",
               .Call("Rle_seqextract", x, start(ir), width(ir), PACKAGE = "IRanges")
           })
 
+setMethod("subseq", "Rle",
+          function(x, start=NA, end=NA, width=NA)
+          {
+              solved_SEW <- solveSubseqSEW(length(x), start, end, width)
+              .Call("Rle_seqextract", x, start(solved_SEW), width(solved_SEW), PACKAGE = "IRanges")
+          })
+
 setMethod("summary", "Rle",
           function (object, ..., digits = max(3, getOption("digits") - 3)) 
           {
@@ -646,7 +653,7 @@ setMethod("tail", "Rle",
             if (n == 0L)
               x[integer(0)]
             else
-              seqextract(x, xlen - n + 1L, xlen)
+              subseq(x, xlen - n + 1L, xlen)
           })
 
 setMethod("unique", "Rle",
@@ -658,10 +665,10 @@ setMethod("window", "Rle",
                    frequency = NULL, delta = NULL, ...)
           {
               if (is.null(frequency) && is.null(delta)) {
-                  seqextract(x,
-                             start = ifelse(is.null(start), NA, start),
-                             end = ifelse(is.null(end), NA, end),
-                             width = ifelse(is.null(width), NA, width))
+                  subseq(x,
+                         start = ifelse(is.null(start), NA, start),
+                         end = ifelse(is.null(end), NA, end),
+                         width = ifelse(is.null(width), NA, width))
               } else {
                   if (!is.null(width)) {
                       if (is.null(start))
@@ -714,7 +721,7 @@ setMethod("diff", "Rle",
                   return(Rle(vector(class(runValue(x)))))
               for (i in seq_len(differences)) {
                   n <- length(x)
-                  x <- seqextract(x, 1L + lag, n) - seqextract(x, 1L, n - lag)
+                  x <- subseq(x, 1L + lag, n) - subseq(x, 1L, n - lag)
               }
               x
           })
