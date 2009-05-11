@@ -51,9 +51,9 @@ Collate: validity-utils.R
 	TypedListV2-class.R
 	TypedList-class.R
 	AnnotatedList-class.R
-	AtomicList-class.R
 	XDataFrame-class.R
 	XDataFrame-utils.R
+	AtomicList-class.R
 	XDataFrameList-class.R
 	RangesList-class.R
 	RangedData-class.R
