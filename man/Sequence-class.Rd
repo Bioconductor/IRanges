@@ -25,6 +25,9 @@
 \alias{window,Sequence-method}
 \alias{!=,Sequence,Sequence-method}
 \alias{aggregate,Sequence-method}
+\alias{shiftApply}
+\alias{shiftApply,Sequence,Sequence-method}
+\alias{shiftApply,vector,vector-method}
 
 % XSequence class, functions and methods:
 \alias{class:XSequence}
@@ -242,6 +245,27 @@
         \item{\dots}{Further arguments for \code{FUN}.}
         \item{\code{simplify}}{A logical value specifying whether or not the
           result should be simplified to a vector or matrix if possible.}
+      }
+    }
+    \item{}{
+      \code{shiftApply(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)}:
+      Let \code{i} be the indices in \code{SHIFT},
+      \code{X_i = subseq(X, 1 + OFFSET, length(X) - SHIFT[i])}, and
+      \code{Y_i = subseq(Y, 1 + SHIFT[i], length(Y) - OFFSET)}. Calculates
+      the set of \code{FUN(X_i, Y_i, ...)} values and return the results in a
+      convenient form:
+      \describe{
+        \item{\code{SHIFT}}{A non-negative integer vector of shift values.}
+        \item{\code{X}, \code{Y}}{The Sequence or R vector objects to shift.}
+        \item{\code{FUN}}{The function, found via \code{match.fun}, to be
+          applied to each set of shifted vectors.}
+        \item{\dots}{Further arguments for \code{FUN}.}
+        \item{OFFSET}{A non-negative integer offset to maintain throughout
+          the shift operations.}
+        \item{\code{simplify}}{A logical value specifying whether or not the
+          result should be simplified to a vector or matrix if possible.}
+        \item{\code{verbose}}{A logical value specifying whether or not to
+          print the \code{i} indices to track the iterations.}
       }
     }
   }

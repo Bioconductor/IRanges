@@ -229,3 +229,75 @@ setMethod("aggregate", "Sequence",
                        simplify = simplify)
             }
         })
+
+setGeneric("shiftApply", signature = c("X", "Y"),
+           function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
+                    verbose = FALSE)
+           standardGeneric("shiftApply"))
+
+.shiftApplyInternal <-
+function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)
+{
+    FUN <- match.fun(FUN)
+    N <- length(X)
+    if (N != length(Y))
+        stop("'X' and 'Y' must be of equal length")
+    
+    if (length(SHIFT) == 0 || !is.numeric(SHIFT) ||
+            any(is.na(SHIFT)) || any(SHIFT < 0))
+        stop("all 'SHIFT' values must be non-negative")
+    SHIFT <- as.integer(SHIFT)
+    
+    if (length(OFFSET) == 0 || !is.numeric(OFFSET) ||
+            any(is.na(OFFSET)) || any(OFFSET < 0))
+        stop("'OFFSET' must be non-negative")
+    OFFSET <- as.integer(OFFSET)
+    
+    ## Perform X setup
+    shiftedStartX <- rep.int(1L + OFFSET, length(SHIFT))
+    shiftedEndX <- N - SHIFT
+    
+    ## Perform Y setup
+    shiftedStartY <- 1L + SHIFT
+    shiftedEndY <- rep.int(N - OFFSET, length(SHIFT))
+    
+    if (verbose) {
+        maxI <- length(SHIFT)
+        ans <-
+          sapply(seq_len(length(SHIFT)),
+                 function(i) {
+                     cat("\r", i, "/", maxI)
+                     FUN(subseq(X, start = shiftedStartX[i], end = shiftedEndX[i]),
+                         subseq(Y, start = shiftedStartY[i], end = shiftedEndY[i]),
+                         ...)
+                 }, simplify = simplify)
+        cat("\n")
+    } else {
+        ans <-
+          sapply(seq_len(length(SHIFT)),
+                 function(i)
+                     FUN(subseq(X, start = shiftedStartX[i], end = shiftedEndX[i]),
+                         subseq(Y, start = shiftedStartY[i], end = shiftedEndY[i]),
+                         ...),
+                 simplify = simplify)
+    }
+    ans
+}
+
+setMethod("shiftApply", signature(X = "Sequence", Y = "Sequence"),
+          function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
+                verbose = FALSE)
+          {
+              .shiftApplyInternal(SHIFT = SHIFT, X = X, Y = Y, FUN = FUN, ...,
+                                  OFFSET = OFFSET, simplify = simplify,
+                                  verbose = verbose)
+          })
+
+setMethod("shiftApply", signature(X = "vector", Y = "vector"),
+          function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
+                   verbose = FALSE)
+          {
+              .shiftApplyInternal(SHIFT = SHIFT, X = X, Y = Y, FUN = FUN, ...,
+                                  OFFSET = OFFSET, simplify = simplify,
+                                  verbose = verbose)
+          })

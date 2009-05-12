@@ -471,11 +471,6 @@ setMethod("rev", "Rle",
               x
           })
 
-setGeneric("shiftApply", signature = c("X", "Y"),
-           function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
-                    verbose = FALSE)
-           standardGeneric("shiftApply"))
-
 setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
           function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
                    verbose = FALSE)

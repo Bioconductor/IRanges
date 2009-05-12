@@ -67,7 +67,6 @@
 \alias{rep.int}
 \alias{rep.int,Rle-method}
 \alias{rev,Rle-method}
-\alias{shiftApply}
 \alias{shiftApply,Rle,Rle-method}
 \alias{show,Rle-method}
 \alias{sort,Rle-method}
