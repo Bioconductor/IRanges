@@ -104,7 +104,7 @@ setMethod("seqextract", "vector",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Other methods.
+### Basic methods.
 ###
 
 setMethod("[", "Sequence", function(x, i, j, ..., drop = FALSE)
@@ -189,3 +189,43 @@ setMethod("!=", signature(e1="Sequence", e2="Sequence"),
     function(e1, e2) !(e1 == e2)
 )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Looping methods.
+###
+
+setMethod("aggregate", "Sequence",
+        function(x, by, FUN, start = NULL, end = NULL, width = NULL,
+                frequency = NULL, delta = NULL, ..., simplify = TRUE)
+        {
+            FUN <- match.fun(FUN)
+            if (!missing(by)) {
+                start <- start(by)
+                end <- end(by)
+            } else {
+                if (!is.null(width)) {
+                    if (is.null(start))
+                        start <- end - width + 1L
+                    else if (is.null(end))
+                        end <- start + width - 1L
+                }
+                start <- as.integer(start)
+                end <- as.integer(end)
+            }
+            if (length(start) != length(end))
+                stop("'start', 'end', and 'width' arguments have unequal length")
+            n <- length(start)
+            if (is.null(frequency) && is.null(delta)) {
+                sapply(seq_len(n), function(i)
+                       FUN(subseq(x, start = start[i], end = end[i]), ...),
+                       simplify = simplify)
+            } else {
+                frequency <- rep(frequency, length.out = n)
+                delta <- rep(delta, length.out = n)
+                sapply(seq_len(n), function(i)
+                       FUN(window(x, start = start[i], end = end[i],
+                                  frequency = frequency[i], delta = delta[i]),
+                       ...),
+                       simplify = simplify)
+            }
+        })

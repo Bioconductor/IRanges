@@ -24,6 +24,7 @@
 \alias{tail,Sequence-method}
 \alias{window,Sequence-method}
 \alias{!=,Sequence,Sequence-method}
+\alias{aggregate,Sequence-method}
 
 % XSequence class, functions and methods:
 \alias{class:XSequence}
@@ -121,9 +122,9 @@
 }
 
 \section{Subsetting}{
-  In the code snippets below, \code{x} is a Sequence object, except
-  for \code{subseq} and \code{seqextract}, which also accepts a
-  regular R vector object.
+  In the code snippets below, \code{x} is a Sequence object or regular R vector
+  object. The R vector object methods for \code{subseq} and \code{seqextract}
+  are defined in this package and the remaining methods are defined in base R.
 
   \describe{
     \item{}{
@@ -214,6 +215,33 @@
           of the window. Two of the three are required.}
         \item{\code{frequency}, \code{delta}}{Optional arguments that specify
           the sampling frequency and increment within the window.}
+      }
+    }
+  }
+}
+
+\section{Looping}{
+  In the code snippets below, \code{x} is a Sequence object.
+
+  \describe{
+    \item{}{
+      \code{aggregate(x, by, FUN, start = NULL, end = NULL, width = NULL,
+                      frequency = NULL, delta = NULL, ..., simplify = TRUE))}:
+      Generates summaries on the specified windows and returns the result in a
+      convenient form:
+      \describe{
+        \item{\code{by}}{An object with \code{start}, \code{end}, and
+          \code{width} methods.}
+        \item{\code{FUN}}{The function, found via \code{match.fun}, to be
+          applied to each window of \code{x}.}
+        \item{\code{start}, \code{end}, \code{width}}{the start, end, or width
+          of the window. If \code{by} is missing, then must supply two of the
+          three.}
+        \item{\code{frequency}, \code{delta}}{Optional arguments that specify
+          the sampling frequency and increment within the window.}
+        \item{\dots}{Further arguments for \code{FUN}.}
+        \item{\code{simplify}}{A logical value specifying whether or not the
+          result should be simplified to a vector or matrix if possible.}
       }
     }
   }
