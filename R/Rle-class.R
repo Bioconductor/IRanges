@@ -633,30 +633,6 @@ setMethod("unique", "Rle",
           function(x, incomparables = FALSE, ...)
               unique(runValue(x), incomparables = incomparables, ...))
 
-setMethod("window", "Rle",
-          function(x, start = NULL, end = NULL, width = NULL,
-                   frequency = NULL, delta = NULL, ...)
-          {
-              if (is.null(frequency) && is.null(delta)) {
-                  subseq(x,
-                         start = ifelse(is.null(start), NA, start),
-                         end = ifelse(is.null(end), NA, end),
-                         width = ifelse(is.null(width), NA, width))
-              } else {
-                  if (!is.null(width)) {
-                      if (is.null(start))
-                          start <- end - width + 1L
-                      else if (is.null(end))
-                          end <- start + width - 1L
-                  }
-                  idx <-
-                    window(seq_len(length(x)), start = start, end = end,
-                           frequency = frequency, deltat = delta, ...)
-                  attributes(idx) <- NULL
-                  x[idx]
-              }
-          })
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other logical data methods
 ###

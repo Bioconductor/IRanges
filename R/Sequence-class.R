@@ -117,7 +117,8 @@ setMethod("c", "Sequence", function(x, ..., recursive = FALSE)
           stop("missing 'c' method for Sequence class", class(x)))
 
 setMethod("head", "Sequence",
-          function(x, n = 6L, ...) {
+          function(x, n = 6L, ...)
+          {
               stopifnot(length(n) == 1L)
               if (n < 0L)
                   n <- max(length(x) + n, 0L)
@@ -144,7 +145,8 @@ setMethod("rev", "Sequence",
           })
 
 setMethod("tail", "Sequence",
-          function(x, n = 6L, ...) {
+          function(x, n = 6L, ...)
+          {
               stopifnot(length(n) == 1L)
               xlen <- length(x)
               if (n < 0L) 
@@ -155,6 +157,30 @@ setMethod("tail", "Sequence",
                   x[integer(0)]
               else
                   subseq(x, xlen - n + 1L, xlen)
+          })
+
+setMethod("window", "Sequence",
+          function(x, start = NULL, end = NULL, width = NULL,
+                  frequency = NULL, delta = NULL, ...)
+          {
+              if (is.null(frequency) && is.null(delta)) {
+                  subseq(x,
+                         start = ifelse(is.null(start), NA, start),
+                         end = ifelse(is.null(end), NA, end),
+                         width = ifelse(is.null(width), NA, width))
+              } else {
+                  if (!is.null(width)) {
+                      if (is.null(start))
+                          start <- end - width + 1L
+                      else if (is.null(end))
+                          end <- start + width - 1L
+                  }
+                  idx <-
+                    window(seq_len(length(x)), start = start, end = end,
+                           frequency = frequency, deltat = delta, ...)
+                  attributes(idx) <- NULL
+                  x[idx]
+              }
           })
 
 ### Maybe this is how `!=` should have been defined in the base package so

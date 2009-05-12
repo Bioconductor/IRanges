@@ -22,6 +22,7 @@
 \alias{rep,Sequence-method}
 \alias{rev,Sequence-method}
 \alias{tail,Sequence-method}
+\alias{window,Sequence-method}
 \alias{!=,Sequence,Sequence-method}
 
 % XSequence class, functions and methods:
@@ -204,6 +205,16 @@
       object.
       If \code{n} is negative, returns all but the first \code{abs(n)} elements
       of the Sequence object.
+    }
+    \item{}{
+      \code{window(x, start = NULL, end = NULL, width = NULL, frequency = NULL, delta = NULL, ...)}:
+      Extract the subsequence window from the Sequence object using:
+      \describe{
+        \item{\code{start}, \code{end}, \code{width}}{The start, end, or width
+          of the window. Two of the three are required.}
+        \item{\code{frequency}, \code{delta}}{Optional arguments that specify
+          the sampling frequency and increment within the window.}
+      }
     }
   }
 }

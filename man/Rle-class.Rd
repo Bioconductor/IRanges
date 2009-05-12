@@ -77,7 +77,6 @@
 \alias{table}
 \alias{table,Rle-method}
 \alias{unique,Rle-method}
-\alias{window,Rle-method}
 
 \alias{!,Rle-method}
 \alias{which,Rle-method}
