@@ -35,42 +35,104 @@
 \maketitle
 
 <<options,echo=FALSE>>=
-options(width=60)
+options(width=72)
 @
 
 \section{Introduction}
 
-The \IRanges{} package is designed to represent sequences, ranges representing
-indices along those sequences, and data related to those ranges. In
-this vignette, we will rely on simple, illustrative example datasets,
-rather than large, real-world data, so that each data structure and
-algorithm can be explained in an intuitive, graphical manner.  We
+The \IRanges{} package is designed to represent sequences, ranges
+representing indices along those sequences, and data related to those
+ranges. In this vignette, we will rely on simple, illustrative example
+datasets, rather than large, real-world data, so that each data structure
+and algorithm can be explained in an intuitive, graphical manner. We
 expect that packages that apply \IRanges{} to a particular problem domain
 will provide vignettes with relevant, realistic examples.
 
 \section{Sequences}
 
-The \IRanges{} package is primarily interested in the
-representation, manipulation and analysis of sequences. A
-\textit{sequence} is mathematically defined as an ordered list of
-objects, or elements. It differs from a \textit{set} in that order
-matters and the same element can appear multiple times. 
+The \IRanges{} package is primarily interested in the representation,
+manipulation and analysis of sequences. A \textit{sequence} is
+mathematically defined as an ordered list of objects or elements. It
+differs from a \textit{set} in that order matters and the same element
+can appear multiple times.
 
-\IRanges{} supports the use of R vectors to represent
-sequences, and we also formally define a virtual class
-\Rclass{Sequence}, the derivatives of which convey the sequence
-semantic of ordered elements. There are currently two
-\Rclass{Sequence} implementations in \Rpackage{IRanges}: \Rclass{Rle},
-which compresses a sequence through run-length encoding, and
-\Rclass{XSequence}, which refers to its data through an external
-pointer. \Rclass{XSequence} and its derivatives are considered
-low-level infrastructure and, as such, will not be covered by this
-vignette.
+\IRanges{} supports the use of R vectors to represent sequences, and we
+also formally define a virtual class \Rclass{Sequence}, the derivatives
+of which convey the sequence semantic of ordered elements. There are
+currently two \Rclass{Sequence} implementations in \Rpackage{IRanges}:
+\Rclass{Rle}, which compresses a sequence through run-length encoding,
+and \Rclass{XSequence}, which refers to its data through an external
+pointer. \Rclass{XSequence} and its derivatives are considered low-level
+infrastructure and, as such, will not be covered by this vignette.
 
-We begin our demonstration by loading the \IRanges{} package.
+We begin our demonstration by loading the \IRanges{} package and creating
+two R integer vectors that we will treat as sequences for illustration
+purposes.
 <<initialize, results=hide>>=
 library(IRanges)
+set.seed(0)
+lambda <- c(rep(0.001, 4500), seq(0.001, 10, length = 500), seq(10, 0.001, length = 500))
+xVector <- rpois(1e7, lambda)
+yVector <- rpois(1e7, lambda[c(251:length(lambda), 1:250)])
 @
+
+All objects that inherit from the \Rclass{Sequence} virtual class or R
+vectors that represent sequences have three main properties: (1) a notion
+of length or number of elements, (2) the ability to extract elements to
+create new sequences, and (3) the ability to be combined with one or more
+sequences to form larger sequences. The main functions for these three
+operations are \Rfunction{length}, \Rfunction{[}, and \Rfunction{c}.
+<<basic-ops>>=
+length(xVector)
+xVector[1]
+zVector <- c(xVector, yVector)
+@
+
+While these three methods may seem trivial, they provide a great deal of
+power and many sequence manipulations can be constructed using them.
+
+\subsection{Sequence Extraction}
+
+As with ordinary R vectors, it is often necessary to extract one sequence
+from another. When this extraction doesn't change the order of the
+elements being extracted, the result is called a \textit{subsequence}. In
+general, the \Rfunction{[} function can be used to construct a new
+sequence or extract a subsequence, but often times it isn't convenient or
+performant enough for the use case at hand. To compensate for this, the
+\Rpackage{IRanges} package supports seven additional functions for sequence
+extraction:
+
+\begin{enumerate}
+\item \Rfunction{window} - Produces a subsequence over a specified region
+  with or without regular interval subsampling.
+\item \Rfunction{subseq} - Produces a consecutive subsequence, a special
+  case of \Rfunction{window}.
+\item \Rfunction{seqextract} - Concatenates multiple consecutive
+  subsequences into a new subsequence. The result may or may not be a
+  subsequence.
+\item \Rfunction{head} - Extracts a consecutive subsequence containing
+  the first n elements.
+\item \Rfunction{tail} - Extracts a consecutive subsequence containing
+  the last n elements.
+\item \Rfunction{rev} - Creates a new sequence with the elements in the
+  reverse order.
+\item \Rfunction{rep} - Creates a new sequence by repeating sequence
+  elements.
+\end{enumerate}
+
+The following code illustrates how these functions are used on an
+ordinary R integer vector:
+
+<<seq-extraction>>=
+xSnippet <- as.vector(window(xVector, start = 4751, end = 4760))
+xSnippet
+head(xSnippet)
+rev(xSnippet)
+as.vector(window(xSnippet, delta = 2))
+seqextract(xSnippet, start = c(6,1), end = c(10, 5))
+rep(xSnippet, 2)
+@
+
 
 \subsection{Run Length Encoding}
 
@@ -81,67 +143,38 @@ The \Rclass{Rle} class represents a run-length encoded (compressed) sequence of
 \Rclass{character}, or \Rclass{raw} values.
 
 <<Rle-construction>>=
-set.seed(0)
-lambda <- c(rep(0.001, 4500), seq(0.001, 10, length = 500), seq(10,0.001, length = 500))
-x <- Rle(rpois(1e7, lambda))
-y <- Rle(rpois(1e7, lambda[c(251:length(lambda), 1:250)]))
-x
-y
+xRle <- Rle(xVector)
+yRle <- Rle(yVector)
+xRle
+yRle
 @
 
 <<Rle-accessors>>=
-head(runValue(x))
-head(runLength(x))
+head(runValue(xRle))
+head(runLength(xRle))
 @
 
 <<Rle-ops>>=
-x > 0
-x + y
-x > 0 | y > 0
+xRle > 0
+xRle + yRle
+xRle > 0 | yRle > 0
 @
 
 
 <<Rle-summary>>=
-range(x)
-sum(x > 0 | y > 0)
+range(xRle)
+sum(xRle > 0 | yRle > 0)
 @
 
 <<Rle-math>>=
-log1p(x)
+log1p(xRle)
 @
 
 
 <<Rle-cor>>=
-cor(x, y)
-shiftApply(249:251, y, x, FUN = function(x, y) var(x, y) / (sd(x) * sd(y)))
+cor(xRle, yRle)
+shiftApply(249:251, yRle, xRle, FUN = function(x, y) var(x, y) / (sd(x) * sd(y)))
 @
-
-\subsection{Sequence Extraction}
-
-It is often necessary to extract a sequence from another, in
-analogous manner to ordinary vector extraction or
-subsetting. A simple operation is to select a list
-of consecutive elements from a sequence. This is the purpose of the
-\Rfunction{subseq} function.
-
-%% EXAMPLE: subseq()
-
-Mathematically, a subsequence is slightly more general: selected
-elements need only to be in the same order, not consecutive. We can
-generalize this further to sequence extraction, where the order of the
-elements is no longer fixed. As the order constraint is rarely
-broken, we will use the term \textit{subsequence} to represent the
-result of sequence extraction. The most general way to describe such a
-subsequence would be a vector of indices into the sequence. As it is
-common to extract consecutive values from the sequence, the indices
-are usually more efficiently encoded as a list of ranges, i.e. a
-vector of start positions and a parallel vector of widths.
-
-The general interface for extracting subsequences is
-\Rfunction{seqextract}, which is supported by all \Rclass{Sequence}
-objects, as well as ordinary vectors.
-
-%% EXAMPLE: seqextract(), [
 
 \section{Lists}
 
