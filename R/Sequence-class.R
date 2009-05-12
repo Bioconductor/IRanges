@@ -159,29 +159,33 @@ setMethod("tail", "Sequence",
                   subseq(x, xlen - n + 1L, xlen)
           })
 
-setMethod("window", "Sequence",
-          function(x, start = NULL, end = NULL, width = NULL,
-                  frequency = NULL, delta = NULL, ...)
-          {
-              if (is.null(frequency) && is.null(delta)) {
-                  subseq(x,
-                         start = ifelse(is.null(start), NA, start),
-                         end = ifelse(is.null(end), NA, end),
-                         width = ifelse(is.null(width), NA, width))
-              } else {
-                  if (!is.null(width)) {
-                      if (is.null(start))
-                          start <- end - width + 1L
-                      else if (is.null(end))
-                          end <- start + width - 1L
-                  }
-                  idx <-
-                    window(seq_len(length(x)), start = start, end = end,
-                           frequency = frequency, deltat = delta, ...)
-                  attributes(idx) <- NULL
-                  x[idx]
-              }
-          })
+.windowInternal <-
+function(x, start = NULL, end = NULL, width = NULL,
+         frequency = NULL, delta = NULL, ...)
+{
+    if (is.null(frequency) && is.null(delta)) {
+        subseq(x,
+               start = ifelse(is.null(start), NA, start),
+               end = ifelse(is.null(end), NA, end),
+               width = ifelse(is.null(width), NA, width))
+    } else {
+        if (!is.null(width)) {
+            if (is.null(start))
+                start <- end - width + 1L
+            else if (is.null(end))
+                end <- start + width - 1L
+        }
+        idx <-
+          stats:::window.default(seq_len(length(x)), start = start, end = end,
+                                 frequency = frequency, deltat = delta, ...)
+        attributes(idx) <- NULL
+        x[idx]
+    }
+}
+
+setMethod("window", "Sequence", .windowInternal)
+
+setMethod("window", "vector", .windowInternal)
 
 ### Maybe this is how `!=` should have been defined in the base package so
 ### nobody would ever need to bother implementing such an obvious thing.
@@ -194,46 +198,45 @@ setMethod("!=", signature(e1="Sequence", e2="Sequence"),
 ### Looping methods.
 ###
 
-setMethod("aggregate", "Sequence",
-        function(x, by, FUN, start = NULL, end = NULL, width = NULL,
-                frequency = NULL, delta = NULL, ..., simplify = TRUE)
-        {
-            FUN <- match.fun(FUN)
-            if (!missing(by)) {
-                start <- start(by)
-                end <- end(by)
-            } else {
-                if (!is.null(width)) {
-                    if (is.null(start))
-                        start <- end - width + 1L
-                    else if (is.null(end))
-                        end <- start + width - 1L
-                }
-                start <- as.integer(start)
-                end <- as.integer(end)
-            }
-            if (length(start) != length(end))
-                stop("'start', 'end', and 'width' arguments have unequal length")
-            n <- length(start)
-            if (is.null(frequency) && is.null(delta)) {
-                sapply(seq_len(n), function(i)
-                       FUN(subseq(x, start = start[i], end = end[i]), ...),
-                       simplify = simplify)
-            } else {
-                frequency <- rep(frequency, length.out = n)
-                delta <- rep(delta, length.out = n)
-                sapply(seq_len(n), function(i)
-                       FUN(window(x, start = start[i], end = end[i],
-                                  frequency = frequency[i], delta = delta[i]),
-                       ...),
-                       simplify = simplify)
-            }
-        })
+.aggregateInternal <-
+function(x, by, FUN, start = NULL, end = NULL, width = NULL,
+         frequency = NULL, delta = NULL, ..., simplify = TRUE)
+{
+    FUN <- match.fun(FUN)
+    if (!missing(by)) {
+        start <- start(by)
+        end <- end(by)
+    } else {
+        if (!is.null(width)) {
+            if (is.null(start))
+                start <- end - width + 1L
+            else if (is.null(end))
+                end <- start + width - 1L
+        }
+        start <- as.integer(start)
+        end <- as.integer(end)
+    }
+    if (length(start) != length(end))
+        stop("'start', 'end', and 'width' arguments have unequal length")
+    n <- length(start)
+    if (is.null(frequency) && is.null(delta)) {
+        sapply(seq_len(n), function(i)
+               FUN(subseq(x, start = start[i], end = end[i]), ...),
+               simplify = simplify)
+    } else {
+        frequency <- rep(frequency, length.out = n)
+        delta <- rep(delta, length.out = n)
+        sapply(seq_len(n), function(i)
+               FUN(window(x, start = start[i], end = end[i],
+                   frequency = frequency[i], delta = delta[i]),
+                   ...),
+               simplify = simplify)
+    }
+}
 
-setGeneric("shiftApply", signature = c("X", "Y"),
-           function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
-                    verbose = FALSE)
-           standardGeneric("shiftApply"))
+setMethod("aggregate", "Sequence", .aggregateInternal)
+
+setMethod("aggregate", "vector", .aggregateInternal)
 
 .shiftApplyInternal <-
 function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)
@@ -284,20 +287,13 @@ function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)
     ans
 }
 
+setGeneric("shiftApply", signature = c("X", "Y"),
+           function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
+                    verbose = FALSE)
+           standardGeneric("shiftApply"))
+
 setMethod("shiftApply", signature(X = "Sequence", Y = "Sequence"),
-          function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
-                verbose = FALSE)
-          {
-              .shiftApplyInternal(SHIFT = SHIFT, X = X, Y = Y, FUN = FUN, ...,
-                                  OFFSET = OFFSET, simplify = simplify,
-                                  verbose = verbose)
-          })
+          .shiftApplyInternal)
 
 setMethod("shiftApply", signature(X = "vector", Y = "vector"),
-          function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
-                   verbose = FALSE)
-          {
-              .shiftApplyInternal(SHIFT = SHIFT, X = X, Y = Y, FUN = FUN, ...,
-                                  OFFSET = OFFSET, simplify = simplify,
-                                  verbose = verbose)
-          })
+          .shiftApplyInternal)

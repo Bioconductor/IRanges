@@ -23,8 +23,10 @@
 \alias{rev,Sequence-method}
 \alias{tail,Sequence-method}
 \alias{window,Sequence-method}
+\alias{window,vector-method}
 \alias{!=,Sequence,Sequence-method}
 \alias{aggregate,Sequence-method}
+\alias{aggregate,vector-method}
 \alias{shiftApply}
 \alias{shiftApply,Sequence,Sequence-method}
 \alias{shiftApply,vector,vector-method}
