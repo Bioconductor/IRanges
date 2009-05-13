@@ -468,6 +468,9 @@ setMethod("[", "CompressedTypedList",
                 new("PartitioningByEnd",
                     end = cumsum(elementLengths(x)[i]),
                     NAMES = names(x)[i])
+              if (!is.null(elementMetadata(x)))
+                  slot(x, "elementMetadata", check=FALSE) <-
+                          elementMetadata(x)[i,,drop=FALSE]
               x
           })
 
@@ -476,8 +479,12 @@ setMethod("[", "SimpleTypedList",
           {
               if (!missing(j) || length(list(...)) > 0)
                   stop("invalid subsetting")
-              if (!missing(i))
+              if (!missing(i)) {
                   slot(x, "listData", check=FALSE) <- as.list(x)[i]
+                  if (!is.null(elementMetadata(x)))
+                      slot(x, "elementMetadata", check=FALSE) <-
+                        elementMetadata(x)[i,,drop=FALSE]
+              }
               x
           })
 
