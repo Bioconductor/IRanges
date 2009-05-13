@@ -7,6 +7,7 @@
 \alias{matchMatrix,RangesMatching-method}
 \alias{dim,RangesMatching-method}
 \alias{ranges,RangesMatching-method}
+\alias{length,RangesMatching-method}
 
 % coercion
 \alias{as.matrix,RangesMatching-method}
@@ -68,6 +69,7 @@
       \code{x}. Eventually, we might store the query and subject inside
       \code{x}, in which case the arguments would be redundant.
     }
+    \item{}{\code{length(x)}: get the number of matches}
     \item{}{\code{nrow(x)}: get the number of subjects in the matching}
     \item{}{\code{ncol(x)}: get the number of queries in the matching}
     \item{}{

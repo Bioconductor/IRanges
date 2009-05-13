@@ -44,14 +44,16 @@
   object.
   
   \describe{
-    \item{}{\code{as.matrix(x)}: Coerces \code{x} to a three
-      column integer matrix, with each row representing a matching
-      between a query index (second column) and subject index (third
-      column). The first column indicates the space in the query
-      \code{RangesList}.
+    \item{}{\code{as.matrix(x)}: calls \code{as.matrix} on each
+      \code{RangesMatching}, combines them row-wise and offsets the
+      indices so that they are aligned with the result of calling
+      \code{unlist} on the query and subject (as long as the names on
+      each, if any, are in the same order).
     }
     \item{}{\code{as.table(x)}: counts the number of matchings for each
-      query range in \code{x} and outputs the counts as a \code{table}.
+      query range in \code{x} and outputs the counts as a \code{table},
+      which is aligned with the result of calling \code{unlist}
+      on the query.
     }
     \item{}{\code{t(x)}: Interchange the query and subject in each space
       of \code{x}, returns a transposed \code{RangesMatchingList}.}

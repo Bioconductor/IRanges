@@ -17,6 +17,10 @@ setMethod("dim", "RangesMatching", function(x) {
   x@DIM
 })
 
+setMethod("length", "RangesMatching", function(x) {
+  nrow(as.matrix(x))
+})
+
 ## setGeneric("rmatched", function(x, ...) standardGeneric("rmatched"))
 ## setMethod("rmatched", "RangesMatching", function(x) {
 ##   mm <- matchMatrix(x)
