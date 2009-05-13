@@ -26,7 +26,7 @@
 \newcommand{\R}{\software{R}}
 \newcommand{\IRanges}{\Rpackage{IRanges}}
 
-\title{An Introduction to \Rpackage{IRanges}}
+\title{An Introduction to \IRanges{}}
 \author{Michael Lawrence, Patrick Aboyoun, Herv\'e Pag\`es}
 \date{\today}
 
@@ -59,7 +59,7 @@ can appear multiple times.
 \IRanges{} supports the use of R vectors to represent sequences, and we
 also formally define a virtual class \Rclass{Sequence}, the derivatives
 of which convey the sequence semantic of ordered elements. There are
-currently two \Rclass{Sequence} implementations in \Rpackage{IRanges}:
+currently two \Rclass{Sequence} implementations in \IRanges{}:
 \Rclass{Rle}, which compresses a sequence through run-length encoding,
 and \Rclass{XSequence}, which refers to its data through an external
 pointer. \Rclass{XSequence} and its derivatives are considered low-level
@@ -99,7 +99,7 @@ elements being extracted, the result is called a \textit{subsequence}. In
 general, the \Rfunction{[} function can be used to construct a new
 sequence or extract a subsequence, but often times it isn't convenient or
 performant enough for the use case at hand. To compensate for this, the
-\Rpackage{IRanges} package supports seven additional functions for sequence
+\IRanges{} package supports seven additional functions for sequence
 extraction:
 
 \begin{enumerate}
@@ -124,23 +124,61 @@ The following code illustrates how these functions are used on an
 ordinary R integer vector:
 
 <<seq-extraction>>=
-xSnippet <- as.vector(window(xVector, start = 4751, end = 4760))
+xSnippet <- window(xVector, start = 4751, end = 4760)
 xSnippet
 head(xSnippet)
 rev(xSnippet)
-as.vector(window(xSnippet, delta = 2))
+window(xSnippet, delta = 2)
 seqextract(xSnippet, start = c(6,1), end = c(10, 5))
 rep(xSnippet, 2)
+@
+
+\subsection{Looping over Subsequences}
+
+Since in R, looping can be an expensive operation two functions
+\Rfunction{aggregate} and \Rfunction{shiftApply} are available to
+perform calculations over subsequences of \Rclass{Sequence}-derived
+classes and R vectors that represent sequences. The \Rfunction{aggregate}
+function combines with sequence extraction functionality of the
+\Rfunction{window} function with looping capabilities of the
+\Rfunction{sapply} function. For example, here is some code to generate
+medians across a moving window of width 3 using the \Rfunction{aggregate}:
+
+<<aggregate>>=
+xSnippet
+aggregate(xSnippet, start = 1:8, width = 3, FUN = median)
+@
+
+The \Rfunction{shiftApply} function is a looping operation involving two
+sequences whose elements are lined up via a shift operation. For example,
+the elements of \Robject{xVector} and \Robject{yVector} were simulated
+from Poisson distributions with the mean of element i from
+\Robject{yVector} being equivalent to the mean of element i + 250 from
+\Robject{xVector}. This amount of the shift can be estimated by finding
+the shift that maximizes the correction between \Robject{xVector} and
+\Robject{yVector}.
+
+<<shiftApply-cor>>=
+cor(xVector, yVector)
+shiftApply(249:251, yVector, xVector, FUN = cor)
 @
 
 
 \subsection{Run Length Encoding}
 
-% sparse representation, and more (manipulating runs is useful)
+Up until this point we have used ordinary R vector to represent sequences,
+but there are time when these object become too large to manage in memory.
+When the there are lots of consecutive repeats in the data, the data can
+be compressed and managed in memory through a run-length encoding where a
+data value is pair with a run length. For example, the sequence \{1, 1, 1,
+2, 3,  3\} can be represented as values = \{1, 2, 3\}, lengths = \{3, 1,
+2\}.
 
-The \Rclass{Rle} class represents a run-length encoded (compressed) sequence of
-\Rclass{logical}, \Rclass{integer}, \Rclass{numeric}, \Rclass{complex}, 
-\Rclass{character}, or \Rclass{raw} values.
+The \Rclass{Rle} class in \IRanges{} is used to represent a run-length
+encoded (compressed) sequence of \Rclass{logical}, \Rclass{integer},
+\Rclass{numeric}, \Rclass{complex},  \Rclass{character}, or \Rclass{raw}
+values. One way to construct an \Rclass{Rle} object through the
+\Rclass{Rle} constructor function:
 
 <<Rle-construction>>=
 xRle <- Rle(xVector)
@@ -149,10 +187,28 @@ xRle
 yRle
 @
 
+Where there are lots of consecutive repeats, the memory savings through
+an RLE can be quite dramatic. For example, the \Robject{xRle} object
+occupies less than one quarter the space of the original \Robject{xVector}
+object, while storing the same information:
+
+<<Rle-vector-compare>>=
+as.vector(object.size(xRle) / object.size(xVector))
+identical(as.vector(xRle), xVector)
+@
+
+The functions \Rfunction{runValue} and \Rfunction{runLength} extract
+the run values and run lengths from an \Rclass{Rle} object respectively:
+
 <<Rle-accessors>>=
 head(runValue(xRle))
 head(runLength(xRle))
 @
+
+The \Rclass{Rle} class supports many of the basic methods associated with
+R vectors including the Ops, Math, Math2, Summary, and Complex group
+generics. Here is a example of manipulating \Rclass{Rle} objects using
+methods from the Ops group:
 
 <<Rle-ops>>=
 xRle > 0
@@ -160,21 +216,29 @@ xRle + yRle
 xRle > 0 | yRle > 0
 @
 
+Here are some from the Summary group:
 
 <<Rle-summary>>=
 range(xRle)
 sum(xRle > 0 | yRle > 0)
 @
 
+And here is one from the Math group:
+
 <<Rle-math>>=
 log1p(xRle)
 @
 
+Since \Rclass{Rle} objects adhere to the \Rclass{Sequence} virtual class,
+it also supports sequence related operations like \Rclass{shiftApply}.
 
 <<Rle-cor>>=
 cor(xRle, yRle)
 shiftApply(249:251, yRle, xRle, FUN = function(x, y) var(x, y) / (sd(x) * sd(y)))
 @
+
+For more information on the methods supported by the \Rclass{Rle} class,
+consult the \Rcode{Rle} man page.
 
 \section{Lists}
 
@@ -194,7 +258,7 @@ collection class, \Rclass{RleList}, for storing \Rclass{Rle} objects.
 %% EXAMPLE (construct RleList)
 
 In fact, we have done the same for many of the other classes in
-\Rpackage{IRanges}, as well as the base atomic vectors (raw, logical,
+\IRanges{}, as well as the base atomic vectors (raw, logical,
 integer, numeric, complex and character). All of the collection
 classes derive from the virtual class \Rclass{ListLike}, the
 derivatives of which are all obligated to support two basic list
