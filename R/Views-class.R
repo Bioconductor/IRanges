@@ -100,7 +100,7 @@ setMethod("[[", "Views",
         end <- end(x)[i]
         if (start < 1L || end > length(subject(x)))
             stop("view is out of limits")
-        subseq(subject(x), start=start, end=end)
+        window(subject(x), start=start, end=end)
     }
 )
 
@@ -235,7 +235,7 @@ setMethod("viewApply", "Views",
         Xwidth <- width(X)
         sapply(seq_len(length(X)),
                function(i)
-                   FUN(subseq(Xsubject, start = Xstart[i], width = Xwidth[i]),
+                   FUN(window(Xsubject, start = Xstart[i], width = Xwidth[i]),
                        ...),
                simplify = simplify)
     }

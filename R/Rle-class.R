@@ -258,7 +258,7 @@ setMethod("[", "Rle",
                         do.call(c,
                                 lapply(seq_len(length(starts)),
                                        function(k)
-                                       subseq(x, start = starts[k], width = widths[k])))
+                                       window(x, start = starts[k], width = widths[k])))
                   }
                   if (drop)
                       output <- as.vector(output)
@@ -347,7 +347,7 @@ setMethod("aggregate", "Rle",
                   newRle <- new("Rle")
                   sapply(seq_len(n),
                          function(i)
-                             FUN(.Call("Rle_run_seqextract",
+                             FUN(.Call("Rle_run_seqblock",
                                        x, runStart[i], runEnd[i],
                                        offsetStart[i], offsetEnd[i],
                                        newRle, PACKAGE = "IRanges"),
@@ -432,9 +432,9 @@ setMethod("rep", "Rle",
                   if (length.out == 0) {
                       x <- new("Rle")
                   } else if (length.out < n) {
-                      x <- subseq(x, 1, length.out)
+                      x <- window(x, 1, length.out)
                   } else if (length.out > n) {
-                      x <- subseq(rep(x, times = ceiling(length.out / n)), 1, length.out)
+                      x <- window(rep(x, times = ceiling(length.out / n)), 1, length.out)
                   }
               }
               x
@@ -520,11 +520,11 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
                     sapply(seq_len(length(SHIFT)),
                            function(i) {
                                cat("\r", i, "/", maxI)
-                               FUN(.Call("Rle_run_seqextract",
+                               FUN(.Call("Rle_run_seqblock",
                                          X, runStartX[i], runEndX[i],
                                          offsetStartX[i], offsetEndX[i],
                                          newX, PACKAGE = "IRanges"),
-                                   .Call("Rle_run_seqextract",
+                                   .Call("Rle_run_seqblock",
                                          Y, runStartY[i], runEndY[i],
                                          offsetStartY[i], offsetEndY[i],
                                          newY, PACKAGE = "IRanges"),
@@ -535,11 +535,11 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
                   ans <-
                     sapply(seq_len(length(SHIFT)),
                            function(i)
-                               FUN(.Call("Rle_run_seqextract",
+                               FUN(.Call("Rle_run_seqblock",
                                          X, runStartX[i], runEndX[i],
                                          offsetStartX[i], offsetEndX[i],
                                          newX, PACKAGE = "IRanges"),
-                                   .Call("Rle_run_seqextract",
+                                   .Call("Rle_run_seqblock",
                                          Y, runStartY[i], runEndY[i],
                                          offsetStartY[i], offsetEndY[i],
                                          newY, PACKAGE = "IRanges"),
@@ -571,14 +571,7 @@ setMethod("seqextract", "Rle",
               ## TODO: Support extraction of multiple subsequences.
               if (length(IRanges) != 1L)
                   stop("only 1 subsequence can be extracted when 'x' is an Rle object")
-              .Call("Rle_seqextract", x, start(ir), width(ir), PACKAGE = "IRanges")
-          })
-
-setMethod("subseq", "Rle",
-          function(x, start=NA, end=NA, width=NA)
-          {
-              solved_SEW <- solveSubseqSEW(length(x), start, end, width)
-              .Call("Rle_seqextract", x, start(solved_SEW), width(solved_SEW), PACKAGE = "IRanges")
+              .Call("Rle_seqblock", x, start(ir), width(ir), PACKAGE = "IRanges")
           })
 
 setMethod("summary", "Rle",
@@ -628,6 +621,33 @@ setMethod("unique", "Rle",
           function(x, incomparables = FALSE, ...)
               unique(runValue(x), incomparables = incomparables, ...))
 
+setMethod("window", "Rle",
+          function(x, start = NULL, end = NULL, width = NULL,
+                   frequency = NULL, delta = NULL, ...)
+          {
+              if (is.null(frequency) && is.null(delta)) {
+                  solved_SEW <-
+                    solveWindowSEW(length(x),
+                                   start = ifelse(is.null(start), NA, start),
+                                   end = ifelse(is.null(end), NA, end),
+                                   width = ifelse(is.null(width), NA, width))
+                  .Call("Rle_seqblock", x, start(solved_SEW), width(solved_SEW),
+                        PACKAGE = "IRanges")
+              } else {
+                  if (!is.null(width)) {
+                      if (is.null(start))
+                          start <- end - width + 1L
+                      else if (is.null(end))
+                          end <- start + width - 1L
+                  }
+                  idx <-
+                    stats:::window.default(seq_len(length(x)), start = start, end = end,
+                                           frequency = frequency, deltat = delta, ...)
+                  attributes(idx) <- NULL
+                  x[idx]
+              }
+          })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other logical data methods
 ###
@@ -665,7 +685,7 @@ setMethod("diff", "Rle",
                   return(Rle(vector(class(runValue(x)))))
               for (i in seq_len(differences)) {
                   n <- length(x)
-                  x <- subseq(x, 1L + lag, n) - subseq(x, 1L, n - lag)
+                  x <- window(x, 1L + lag, n) - window(x, 1L, n - lag)
               }
               x
           })

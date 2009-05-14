@@ -6,14 +6,6 @@
 \alias{Sequence-class}
 \alias{Sequence}
 
-\alias{subseq}
-\alias{subseq<-}
-\alias{subseq,Sequence-method}
-\alias{subseq,vector-method}
-\alias{subseq<-,ANY-method}
-\alias{seqextract}
-\alias{seqextract,Sequence-method}
-\alias{seqextract,vector-method}
 \alias{[,Sequence-method}
 \alias{[<-,Sequence-method}
 \alias{c,Sequence-method}
@@ -21,6 +13,9 @@
 \alias{length,Sequence-method}
 \alias{rep,Sequence-method}
 \alias{rev,Sequence-method}
+\alias{seqextract}
+\alias{seqextract,Sequence-method}
+\alias{seqextract,vector-method}
 \alias{tail,Sequence-method}
 \alias{window,Sequence-method}
 \alias{window,vector-method}
@@ -37,8 +32,13 @@
 \alias{XSequence}
 
 \alias{length,XSequence-method}
+\alias{subseq}
+\alias{subseq<-}
 \alias{subseq,XSequence-method}
+\alias{subseq,vector-method}
+\alias{subseq<-,ANY-method}
 \alias{seqextract,XSequence-method}
+\alias{window,XSequence-method}
 \alias{as.numeric,XSequence-method}
 \alias{show,XSequence-method}
 
@@ -126,10 +126,68 @@
   }
 }
 
-\section{Subsetting}{
+\section{Subsetting (Both Sequence and XSequence)}{
   In the code snippets below, \code{x} is a Sequence object or regular R vector
-  object. The R vector object methods for \code{subseq} and \code{seqextract}
+  object. The R vector object methods for \code{window} and \code{seqextract}
   are defined in this package and the remaining methods are defined in base R.
+
+  \describe{
+    \item{}{
+      \code{x[i, drop=TRUE]}:
+      Return a new Sequence object made of the selected elements (subscript
+      \code{i} must be an NA-free numeric vector specifying the positions of
+      the elements to select). The \code{drop} argument specifies whether or
+      not to coerce the returned sequence to a standard vector.
+    }
+    \item{}{
+      \code{head(x, n = 6L)}:
+      If \code{n} is non-negative, returns the first n elements of the Sequence
+      object.
+      If \code{n} is negative, returns all but the last \code{abs(n)} elements
+      of the Sequence object.
+    }
+    \item{}{
+      \code{length(x)}:
+      Return the number of elements in the Sequence object.
+    }
+    \item{}{
+      \code{rep(x, times)}:
+      Return a new Sequence object made of the repeated elements.
+    }
+    \item{}{
+      \code{rev(x)}:
+      Return a new Sequence object made of the original elements in the reverse
+      order.
+    }
+    \item{}{
+      \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:
+      Like \code{window}, except that multiple subsequences can be requested.
+      The requested subsequences are concatenated. If the concatenation is
+      undesirable, consider using \code{\link{Views}}.
+    }
+    \item{}{
+      \code{tail(x, n = 6L)}:
+      If \code{n} is non-negative, returns the last n elements of the Sequence
+      object.
+      If \code{n} is negative, returns all but the first \code{abs(n)} elements
+      of the Sequence object.
+    }
+    \item{}{
+      \code{window(x, start = NULL, end = NULL, width = NULL, frequency = NULL, delta = NULL, ...)}:
+      Extract the subsequence window from the Sequence object using:
+      \describe{
+        \item{\code{start}, \code{end}, \code{width}}{The start, end, or width
+          of the window. Two of the three are required.}
+        \item{\code{frequency}, \code{delta}}{Optional arguments that specify
+          the sampling frequency and increment within the window.}
+      }
+      In general, this is more efficient than using \code{"["} operator.
+    }
+  }
+}
+
+\section{Subsetting (XSequence ONLY)}{
+  In the code snippets below, \code{x} is an XSequence object.
 
   \describe{
     \item{}{
@@ -169,59 +227,6 @@
       copies the sequence data of \code{x} (even for XSequence objects).
       NOTE: Only works for XRaw (and derived) objects for now.
     }
-    \item{}{
-      \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:
-      Like \code{subseq}, except that multiple subsequences can be requested.
-      The requested subsequences are concatenated. If the concatenation is
-      undesirable, consider using \code{\link{Views}}.
-
-      Note that, unlike with \code{subseq}, the sequence data are always
-      copied, even for an XSequence object.
-    }
-    \item{}{
-      \code{x[i, drop=TRUE]}:
-      Return a new Sequence object made of the selected elements (subscript
-      \code{i} must be an NA-free numeric vector specifying the positions of
-      the elements to select). The \code{drop} argument specifies whether or
-      not to coerce the returned sequence to a standard vector.
-    }
-    \item{}{
-      \code{head(x, n = 6L)}:
-      If \code{n} is non-negative, returns the first n elements of the Sequence
-      object.
-      If \code{n} is negative, returns all but the last \code{abs(n)} elements
-      of the Sequence object.
-    }
-    \item{}{
-      \code{length(x)}:
-      Return the number of elements in the Sequence object.
-    }
-    \item{}{
-      \code{rep(x, times)}:
-      Return a new Sequence object made of the repeated elements.
-    }
-    \item{}{
-      \code{rev(x)}:
-      Return a new Sequence object made of the original elements in the reverse
-      order.
-    }
-    \item{}{
-      \code{tail(x, n = 6L)}:
-      If \code{n} is non-negative, returns the last n elements of the Sequence
-      object.
-      If \code{n} is negative, returns all but the first \code{abs(n)} elements
-      of the Sequence object.
-    }
-    \item{}{
-      \code{window(x, start = NULL, end = NULL, width = NULL, frequency = NULL, delta = NULL, ...)}:
-      Extract the subsequence window from the Sequence object using:
-      \describe{
-        \item{\code{start}, \code{end}, \code{width}}{The start, end, or width
-          of the window. Two of the three are required.}
-        \item{\code{frequency}, \code{delta}}{Optional arguments that specify
-          the sampling frequency and increment within the window.}
-      }
-    }
   }
 }
 
@@ -252,8 +257,8 @@
     \item{}{
       \code{shiftApply(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)}:
       Let \code{i} be the indices in \code{SHIFT},
-      \code{X_i = subseq(X, 1 + OFFSET, length(X) - SHIFT[i])}, and
-      \code{Y_i = subseq(Y, 1 + SHIFT[i], length(Y) - OFFSET)}. Calculates
+      \code{X_i = window(X, 1 + OFFSET, length(X) - SHIFT[i])}, and
+      \code{Y_i = window(Y, 1 + SHIFT[i], length(Y) - OFFSET)}. Calculates
       the set of \code{FUN(X_i, Y_i, ...)} values and return the results in a
       convenient form:
       \describe{

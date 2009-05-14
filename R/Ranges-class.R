@@ -120,7 +120,7 @@ setMethod("show", "Ranges",
             showme <- as.data.frame(object, row.names=paste("[", seq_len(n), "]", sep=""))
         } else {
             sketch <- function(x)
-                c(subseq(x, 1L, 9L), "...", subseq(x, length(x)-8L, length(x)))
+                c(window(x, 1L, 9L), "...", window(x, length(x)-8L, length(x)))
             showme <-
                   data.frame(start=sketch(start(object)),
                              end=sketch(end(object)),

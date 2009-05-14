@@ -4,7 +4,7 @@ test_RleViews <- function() {
     xRleViews <- Views(xRle, start = c(1, 3, 5, 7, 9), end = c(1, 13, 11, 10, 9))
     xList <-
       lapply(seq_len(length(xRleViews)),
-             function(i) subseq(x, start = start(xRleViews)[i], end = end(xRleViews)[i]))
+             function(i) window(x, start = start(xRleViews)[i], end = end(xRleViews)[i]))
     checkEqualsNumeric(sapply(xList, min), viewMins(xRleViews))
     checkEqualsNumeric(sapply(xList, min), viewApply(xRleViews, min))
     checkEqualsNumeric(sapply(xList, min, na.rm = TRUE), viewMins(xRleViews, na.rm = TRUE))
@@ -23,7 +23,7 @@ test_RleViews <- function() {
     yRleViews <- Views(yRle, start = c(1, 3, 5, 7, 9), end = c(1, 13, 11, 10, 9))
     yList <-
       lapply(seq_len(length(yRleViews)),
-             function(i) subseq(y, start = start(yRleViews)[i], end = end(yRleViews)[i]))
+             function(i) window(y, start = start(yRleViews)[i], end = end(yRleViews)[i]))
     checkEqualsNumeric(sapply(yList, min), viewMins(yRleViews))
     checkEqualsNumeric(sapply(yList, min), viewApply(yRleViews, min))
     checkEqualsNumeric(sapply(yList, min, na.rm = TRUE), viewMins(yRleViews, na.rm = TRUE))
@@ -42,7 +42,7 @@ test_RleViews <- function() {
     zRleViews <- Views(zRle, start = c(1, 3, 5, 7, 9), end = c(1, 13, 11, 10, 9))
     zList <-
       lapply(seq_len(length(zRleViews)),
-             function(i) subseq(z, start = start(zRleViews)[i], end = end(zRleViews)[i]))
+             function(i) window(z, start = start(zRleViews)[i], end = end(zRleViews)[i]))
     checkEqualsNumeric(sapply(zList, sum), viewSums(zRleViews))
     checkEqualsNumeric(sapply(zList, sum), viewApply(zRleViews, sum))
     checkEqualsNumeric(sapply(zList, sum, na.rm = TRUE), viewSums(zRleViews, na.rm = TRUE))

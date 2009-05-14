@@ -93,7 +93,7 @@ carry some things over from externalVector.
 
 As the sequence of observations in a series is important, we often
 want to manipulate specific regions of the series. We can use the
-subseq() function to select a particular region from a Sequence, and a
+window() function to select a particular region from a Sequence, and a
 logical Rle can represent a selection of multiple regions. A slightly
 more general representation, that supports overlapping regions, is the
 Ranges class. (Is there a function for converting a logical Rle to a

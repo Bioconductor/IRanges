@@ -231,7 +231,7 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
         elts <- rep(list(zeroLengthElt), length(runStarts))
         prelimLoopCount <- length(whichToLoop)
         if (prelimLoopCount > 0) {
-            elementCumLengths <- cumsum(subseq(elementLengths(X), 1L, max(INDEX)))
+            elementCumLengths <- cumsum(window(elementLengths(X), 1L, max(INDEX)))
             allData <- X@unlistData
             eltStarts <- rep.int(1L, prelimLoopCount)
             offsetStart <- startIndices > 1L

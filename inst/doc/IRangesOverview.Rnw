@@ -99,14 +99,11 @@ elements being extracted, the result is called a \textit{subsequence}. In
 general, the \Rfunction{[} function can be used to construct a new
 sequence or extract a subsequence, but often times it isn't convenient or
 performant enough for the use case at hand. To compensate for this, the
-\IRanges{} package supports seven additional functions for sequence
-extraction:
+\IRanges{} package supports six additional functions for sequence extraction:
 
 \begin{enumerate}
 \item \Rfunction{window} - Produces a subsequence over a specified region
   with or without regular interval subsampling.
-\item \Rfunction{subseq} - Produces a consecutive subsequence, a special
-  case of \Rfunction{window}.
 \item \Rfunction{seqextract} - Concatenates multiple consecutive
   subsequences into a new subsequence. The result may or may not be a
   subsequence.
@@ -319,7 +316,7 @@ themselves, while ignoring the underlying sequence values. A
 consecutive list of indices would be a simple way to select a
 consecutive subsequence. However, a sparser representation would be a
 a range, a pairing of a start position and a width, as used when
-extracting sequences with \Rfunction{subseq} and
+extracting sequences with \Rfunction{window} and
 \Rfunction{seqextract}, above.
 
 When analyzing subsequences in \IRanges{}, each range is treated as an
@@ -361,7 +358,7 @@ directly in sequence extraction. Note that when a \textit{normal}
 \Rclass{Ranges} is given as the index, the result is a true
 subsequence, in the mathematical sense.
 
-%% EXAMPLE: subseq() and [ with Ranges
+%% EXAMPLE: window() and [ with Ranges
 
 \subsection{Transforming Ranges}
 

@@ -781,7 +781,7 @@ SEXP XNumericViews_slice(
 
 SEXP Rle_constructor(SEXP x, SEXP count);
 
-SEXP Rle_run_seqextract(
+SEXP Rle_run_seqblock(
 	SEXP x,
 	SEXP runStart,
 	SEXP runEnd,
@@ -790,7 +790,7 @@ SEXP Rle_run_seqextract(
 	SEXP ans
 );
 
-SEXP Rle_seqextract(SEXP x, SEXP start, SEXP width);
+SEXP Rle_seqblock(SEXP x, SEXP start, SEXP width);
 
 
 /* RleViews_utils.c */

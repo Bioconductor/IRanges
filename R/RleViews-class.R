@@ -76,7 +76,7 @@ RleViews.show_vframe_line <- function(x, i, iW, startW, endW, widthW)
     snippetWidth <- getOption("width") - 10 - iW - startW - endW - widthW
     if (width > 0 && lsx > 0 && start <= lsx && end >= 1) {
         snippet <-
-          format(as.vector(subseq(subject(x), max(min(start,lsx),1),
+          format(as.vector(window(subject(x), max(min(start,lsx),1),
                                   max(min(end,lsx,start + snippetWidth),1))))
         snippet <- snippet[cumsum(nchar(snippet) + 1L) < snippetWidth]
         if (length(snippet) < width) {

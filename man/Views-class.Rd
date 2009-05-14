@@ -85,7 +85,7 @@
       as \code{subject(x)}. Subscript \code{i} can be a single integer
       or a character string.
       The result is the subsequence of \code{subject(x)} defined by
-      \code{subseq(subject(x), start=start(x)[i], end=end(x)[i])}
+      \code{window(subject(x), start=start(x)[i], end=end(x)[i])}
       or an error if the view is "out of limits" (i.e. \code{start(x)[i] < 1}
       or \code{end(x)[i] > length(subject(x))}).
     }

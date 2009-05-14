@@ -470,11 +470,10 @@ SEXP Rle_constructor(SEXP x, SEXP counts)
  */
 
 /*
- * Rle_run_seqextract accepts an Rle object to support fast R-level aggregate usage
+ * Rle_run_seqblock accepts an Rle object to support fast R-level aggregate usage
  */
-SEXP Rle_run_seqextract(SEXP x, SEXP runStart, SEXP runEnd,
-		            SEXP offsetStart, SEXP offsetEnd,
-		            SEXP ans)
+SEXP Rle_run_seqblock(SEXP x, SEXP runStart, SEXP runEnd,
+		              SEXP offsetStart, SEXP offsetEnd, SEXP ans)
 {
 	SEXP values, lengths, runWidth, ans_values, ans_lengths;
 
@@ -510,7 +509,7 @@ SEXP Rle_run_seqextract(SEXP x, SEXP runStart, SEXP runEnd,
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP Rle_seqextract(SEXP x, SEXP start, SEXP width)
+SEXP Rle_seqblock(SEXP x, SEXP start, SEXP width)
 {
 	int i, x_length, cumlen, more;
 	int seq_start, seq_width, seq_end;
@@ -539,7 +538,7 @@ SEXP Rle_seqextract(SEXP x, SEXP start, SEXP width)
 	}
 
 	if (x_length < seq_end)
-		error("subseq exceeds bounds of 'x'");
+		error("window exceeds bounds of 'x'");
 
 	PROTECT(run_start = NEW_INTEGER(1));
 	PROTECT(run_end = NEW_INTEGER(1));
@@ -576,7 +575,7 @@ SEXP Rle_seqextract(SEXP x, SEXP start, SEXP width)
 	}
 
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	ans = Rle_run_seqextract(x, run_start, run_end, offset_start, offset_end, ans);
+	ans = Rle_run_seqblock(x, run_start, run_end, offset_start, offset_end, ans);
     UNPROTECT(5);
 
 	return ans;

@@ -43,7 +43,7 @@ options(width=60)
 rollmeanRle <- function (x, k)
 {
   n <- length(x)
-  cumsum(c(Rle(sum(subseq(x, 1, k))), subseq(x, k + 1, n) - subseq(x, 1, n - k))) / k
+  cumsum(c(Rle(sum(window(x, 1, k))), window(x, k + 1, n) - window(x, 1, n - k))) / k
 }
 @
 
@@ -53,11 +53,11 @@ rollvarRle <- function(x, k)
 {
   n <- length(x)
   means <- rollmeanRle(x, k)
-  nextMean <- subseq(means, 2, n - k + 1)
-  cumsum(c(Rle(sum((subseq(x, 1, k) - means[1])^2)),
+  nextMean <- window(means, 2, n - k + 1)
+  cumsum(c(Rle(sum((window(x, 1, k) - means[1])^2)),
   k * diff(means)^2 -
-  (subseq(x, 1, n - k) - nextMean)^2 +
-  (subseq(x, k + 1, n) - nextMean)^2)) / (k - 1)
+  (window(x, 1, n - k) - nextMean)^2 +
+  (window(x, k + 1, n) - nextMean)^2)) / (k - 1)
 }
 @
 
@@ -68,12 +68,12 @@ rollcovRle <- function(x, y, k)
   n <- length(x)
   meanX <- rollmeanRle(x, k)
   meanY <- rollmeanRle(y, k)
-  nextMeanX <- subseq(meanX, 2, n - k + 1)
-  nextMeanY <- subseq(meanY, 2, n - k + 1)
-  cumsum(c(Rle(sum((subseq(x, 1, k) - meanX[1]) * (subseq(y, 1, k) - meanY[1]))),
+  nextMeanX <- window(meanX, 2, n - k + 1)
+  nextMeanY <- window(meanY, 2, n - k + 1)
+  cumsum(c(Rle(sum((window(x, 1, k) - meanX[1]) * (window(y, 1, k) - meanY[1]))),
   k * diff(meanX) * diff(meanY) -
-  (subseq(x, 1, n - k) - nextMeanX) * (subseq(y, 1, n - k) - nextMeanY) +
-  (subseq(x, k + 1, n) - nextMeanX) * (subseq(y, k + 1, n) - nextMeanY))) / (k - 1)
+  (window(x, 1, n - k) - nextMeanX) * (window(y, 1, n - k) - nextMeanY) +
+  (window(x, k + 1, n) - nextMeanX) * (window(y, k + 1, n) - nextMeanY))) / (k - 1)
 }
 @
 
