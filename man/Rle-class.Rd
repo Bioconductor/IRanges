@@ -384,8 +384,6 @@
       Creates a new sequence using consecutive subsequences from \code{x}
       specified by two of the three following values:  \code{start}, \code{end},
       and \code{width}. See \link{seqextract} for more details.
-      Note that for now, the \code{seqextract} method for Rle objects only
-      supports extraction of a single consecutive subsequence.
     }
     \item{}{
       \code{summary(object, ..., digits = max(3, getOption("digits") - 3))}:

@@ -568,10 +568,12 @@ setMethod("seqextract", "Rle",
               ir <- IRanges(start=start, end=end, width=width, names=NULL)
               if (any(start(ir) < 1L) || any(end(ir) > length(x)))
                   stop("some ranges are out of bounds")
-              ## TODO: Support extraction of multiple subsequences.
-              if (length(IRanges) != 1L)
-                  stop("only 1 subsequence can be extracted when 'x' is an Rle object")
-              .Call("Rle_seqblock", x, start(ir), width(ir), PACKAGE = "IRanges")
+              do.call(c,
+                      lapply(seq_len(length(ir)),
+                             function(i)
+                                 .Call("Rle_seqblock",
+                                       x, start(ir)[i], width(ir)[i],
+                                       PACKAGE = "IRanges")))
           })
 
 setMethod("summary", "Rle",
