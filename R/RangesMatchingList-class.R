@@ -3,7 +3,8 @@
 ### -------------------------------------------------------------------------
 
 setClass("RangesMatchingList",
-         prototype = prototype(elementType = "RangesMatching"),
+         representation(subjectToQuery = "integer"),
+         prototype(elementType = "RangesMatching"),
          contains = "SimpleTypedList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -22,9 +23,12 @@ setMethod("space", "RangesMatchingList",
 ### Constructor
 ###
 
-RangesMatchingList <- function(...)
+RangesMatchingList <- function(matchings, subjectNames = NULL)
 {
-  TypedListV2("RangesMatchingList", list(...))
+  subjectToQuery <- seq_along(matchings)
+  if (!is.null(names(matchings)) && !is.null(subjectNames))
+    subjectToQuery <- match(names(matchings), subjectNames)
+  TypedListV2("RangesMatchingList", matchings, subjectToQuery = subjectToQuery)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -36,7 +40,7 @@ RangesMatchingList <- function(...)
 setMethod("as.matrix", "RangesMatchingList", function(x) {
   mats <- lapply(x, as.matrix)
   mat <- do.call(rbind, mats)
-  rows <- c(0, head(cumsum(lapply(x, nrow)), -1))
+  rows <- c(0, head(cumsum(lapply(x, nrow)), -1))[x@subjectToQuery]
   cols <- c(0, head(cumsum(lapply(x, ncol)), -1))
   nr <- sapply(mats, nrow)
   mat + cbind(rep(cols, nr), rep(rows, nr))

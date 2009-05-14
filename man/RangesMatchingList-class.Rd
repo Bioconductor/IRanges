@@ -47,8 +47,7 @@
     \item{}{\code{as.matrix(x)}: calls \code{as.matrix} on each
       \code{RangesMatching}, combines them row-wise and offsets the
       indices so that they are aligned with the result of calling
-      \code{unlist} on the query and subject (as long as the names on
-      each, if any, are in the same order).
+      \code{unlist} on the query and subject.
     }
     \item{}{\code{as.table(x)}: counts the number of matchings for each
       query range in \code{x} and outputs the counts as a \code{table},

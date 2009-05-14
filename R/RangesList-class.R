@@ -207,7 +207,8 @@ setMethod("overlap", c("RangesList", "RangesList"),
           {
             query <- as.list(query)
             subject <- as.list(object)
-            if (!is.null(names(subject)) && !is.null(names(query))) {
+            subjectNames <- names(subject)
+            if (!is.null(subjectNames) && !is.null(names(query))) {
               subject <- subject[names(query)]
               names(subject) <- names(query) # get rid of NA's in names
             }
@@ -220,7 +221,7 @@ setMethod("overlap", c("RangesList", "RangesList"),
             })
             names(ans) <- names(subject)
             if (multiple)
-              ans <- do.call(RangesMatchingList, ans)
+              ans <- RangesMatchingList(ans, subjectNames)
             ans
           })
 
