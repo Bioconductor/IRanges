@@ -17,7 +17,7 @@ setClass("XDataFrame",
                         ),
          prototype(rownames = NULL,
                    nrows = 0L),
-         contains = "SimpleTypedList")
+         contains = "AnnotatedSimpleTypedList")
 
 setClassUnion("XDataFrameORNULL", c("XDataFrame", "NULL"))
 

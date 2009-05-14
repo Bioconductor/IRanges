@@ -21,7 +21,7 @@
 ## performance penalty when applying over the RangedData.
 
 ### FIXME: probably needs own metadata slot
-setClass("RangedData",
+setClass("RangedData", contains = "Annotated",
          representation(ranges = "RangesList", values = "SplitXDataFrameList"),
          prototype = prototype(ranges = new("SimpleRangesList"),
                                values = new("CompressedSplitXDataFrameList")))
@@ -458,7 +458,7 @@ setMethod("show", "RangedData", function(object) {
 
 setClass("RangedDataList",
          prototype = prototype(elementType = "RangedData"),
-         contains = "SimpleTypedList")
+         contains = "AnnotatedSimpleTypedList")
 
 RangedDataList <- function(...)
 {

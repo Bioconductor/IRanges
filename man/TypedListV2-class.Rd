@@ -7,17 +7,21 @@
 \alias{SimpleTypedList}
 \alias{SimpleTypedList-class}
 
+\alias{AnnotatedTypedListV2}
+\alias{AnnotatedTypedListV2-class}
+\alias{AnnotatedCompressedTypedList}
+\alias{AnnotatedCompressedTypedList-class}
+\alias{AnnotatedSimpleTypedList}
+\alias{AnnotatedSimpleTypedList-class}
+
+
 % accessors
 \alias{elementType}
 \alias{elementType,TypedListV2-method}
-\alias{metadata}
-\alias{metadata,TypedListV2-method}
 \alias{elementMetadata}
-\alias{elementMetadata,TypedListV2-method}
-\alias{metadata<-}
-\alias{metadata<-,TypedListV2,list-method}
+\alias{elementMetadata,AnnotatedTypedListV2-method}
 \alias{elementMetadata<-}
-\alias{elementMetadata<-,TypedListV2,XDataFrameORNULL-method}
+\alias{elementMetadata<-,AnnotatedTypedListV2,XDataFrameORNULL-method}
 \alias{elementLengths}
 \alias{elementLengths,CompressedTypedList-method}
 \alias{elementLengths,SimpleTypedList-method}
@@ -36,13 +40,19 @@
 \alias{$<-,TypedListV2-method}
 \alias{[,CompressedTypedList-method}
 \alias{[,SimpleTypedList-method}
+\alias{[,AnnotatedCompressedTypedList-method}
+\alias{[,AnnotatedSimpleTypedList-method}
 \alias{[<-,TypedListV2-method} % hidden
 
 % splitting and combining
 \alias{append,CompressedTypedList,CompressedTypedList-method}
 \alias{append,SimpleTypedList,SimpleTypedList-method}
+\alias{append,AnnotatedCompressedTypedList,AnnotatedCompressedTypedList-method}
+\alias{append,AnnotatedSimpleTypedList,AnnotatedSimpleTypedList-method}
 \alias{c,CompressedTypedList-method}
 \alias{c,SimpleTypedList-method}
+\alias{c,AnnotatedCompressedTypedList-method}
+\alias{c,AnnotatedSimpleTypedList-method}
 
 % looping
 \alias{lapply,CompressedTypedList-method}
@@ -58,11 +68,12 @@
 % show
 \alias{show,TypedListV2-method}
 
-\title{Typed Lists (Version 2)}
+\title{Typed Lists and Annotated Typed Lists (Version 2)}
 \description{The virtual class \code{TypedListV2} is an emulation of an ordinary
   \code{list}, except all of the elements must derive from a particular type.
   This is useful for validity checking and for implementing vectorized
-  type-specific operations.}
+  type-specific operations. The virtual class \code{AnnotatedTypeListV2} extends
+  \code{TypedListV2} by including annotation information.}
 
 \details{
   In general, a \code{TypedListV2} may be treated as any ordinary \code{list},
@@ -80,23 +91,27 @@
   element type. Using this approach, the convention is for the prototype of the
   subclass to set the \code{elementType} slot and to leave it unchanged.
 
-  There are two virtual subclasses of \code{TypedListV2} (\code{SimpleTypedList}
-  and \code{CompressedTypedList}) that use different methods for storing the
-  elements of the typed list. Classes derived from \code{SimpleTypedList}
-  represent their data using an ordinary \code{list} object while classes
-  derived from \code{CompressedTypedList} represent their data in a compressed
-  ``unlisted" form whose partitioning is described in a \code{PartitioningByEnd}
-  object. The latter form is useful when many of the elements store zero length
-  objects (e.g. a list containing mostly length 0 integer vectors) or to avoid
-  the overhead of storing multiple S4 objects (e.g. a list containing thousands
-  of IRanges objects).
+  Two virtual subclasses of \code{TypedListV2}, \code{SimpleTypedList} and
+  \code{CompressedTypedList}, are used to represent different methods for
+  storing the elements of the typed list. Classes derived from
+  \code{SimpleTypedList} represent their data using an ordinary \code{list}
+  object while classes derived from \code{CompressedTypedList} represent their
+  data in a compressed ``unlisted" form whose partitioning is described in a
+  \code{PartitioningByEnd} object. The latter form is useful when many of the
+  elements store zero length objects (e.g. a list containing mostly length 0
+  integer vectors) or to avoid the overhead of storing multiple S4 objects (e.g.
+  a list containing thousands of IRanges objects).
 
-  In addition to storing data, the \code{TypedListV2} class supports the storage
-  of global and element-wise metadata. In particular, the \code{metadata} slot
-  contains a list of metadata pertaining to the whole object and the
-  \code{elementMetadata} slot contains an \code{\linkS4class{XDataFrame}} (or
-  \code{NULL}) for element-wise metadata with a row for each element and a
-  column for each metadata variable.
+  The \code{AnnotatedTypedListV2} class extends \code{TypedListV2} by supporting 
+  the storage of global and element-wise metadata. In particular, the
+  \code{metadata} slot contains a list of metadata pertaining to the whole
+  object and the \code{elementMetadata} slot contains an
+  \code{\linkS4class{XDataFrame}} (or \code{NULL}) for element-wise metadata
+  with a row for each element and a column for each metadata variable. As with
+  the \code{TypedListV2} virtual class, two virtual subclasses of
+  \code{AnnotatedTypedListV2}, \code{AnnotatedSimpleTypedList} and
+  \code{AnnotatedCompressedTypedList}, are used to represent different methods
+  for storing the elements of the annotated typed list.
 }
 
 \section{Subsetting}{
@@ -129,7 +144,8 @@
 }
 
 \section{Accessors}{
-  In the following code snippets, \code{x} is a \code{TypedListV2} object.
+  In the following code snippets, \code{x} is a \code{TypedListV2} object,
+  unless otherwise noted.
   
   \describe{
     \item{}{\code{length(x)}: Get the number of elements in \code{x}}
@@ -145,10 +161,13 @@
     \item{}{\code{isEmpty(x)}: Gets a logical vector indicating which elements
       are empty.
     }
-    \item{}{\code{metadata(x)}, \code{metadata(x) <- value}: Get or set the list
-      holding arbitrary R objects as annotations. May be, and often is, empty.
+    \item{}{\code{metadata(x)}, \code{metadata(x) <- value}:
+      FOR \code{AnnotatedTypedListV2} OBJECTS ONLY.
+      Get or set the list holding arbitrary R objects as annotations. May be,
+      and often is, empty.
     }
     \item{}{\code{elementMetadata(x), elementMetadata(x) <- value}:
+      FOR \code{AnnotatedTypedListV2} OBJECTS ONLY.
       Get or set the \code{\linkS4class{XDataFrame}} holding local metadata on
       each element. The rows are named according to the names of the elements.
       Optional, may be \code{NULL}.
@@ -214,6 +233,7 @@
 
 \author{Michael Lawrence, Patrick Aboyoun}
 \seealso{\code{\linkS4class{ListLike}},
+         \code{\linkS4class{Annotated}},
          \code{\linkS4class{IntegerList}} and
          \code{\linkS4class{RangesList}} for example implementations}
 

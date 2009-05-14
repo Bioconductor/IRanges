@@ -6,10 +6,10 @@
 
 setClass("RangesList", representation("VIRTUAL"),
          prototype = prototype(elementType = "Ranges"),
-         contains = "TypedListV2")
+         contains = "AnnotatedTypedListV2")
 setClass("SimpleRangesList",
          prototype = prototype(elementType = "Ranges"),
-         contains = c("SimpleTypedList", "RangesList"))
+         contains = c("AnnotatedSimpleTypedList", "RangesList"))
 
 setClass("IRangesList", representation("VIRTUAL"),
          prototype = prototype(elementType = "IRanges"),
@@ -17,10 +17,10 @@ setClass("IRangesList", representation("VIRTUAL"),
 setClass("CompressedIRangesList",
          prototype = prototype(elementType = "IRanges",
                                unlistData = new("IRanges")),
-         contains = c("CompressedTypedList", "IRangesList"))
+         contains = c("IRangesList", "AnnotatedCompressedTypedList"))
 setClass("SimpleIRangesList",
          prototype = prototype(elementType = "IRanges"),
-         contains = c("SimpleRangesList", "IRangesList"))
+         contains = c("IRangesList", "SimpleRangesList"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.

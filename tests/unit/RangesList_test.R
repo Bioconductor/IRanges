@@ -63,13 +63,13 @@ test_RangesList_reduce <- function() {
 }
 
 test_RangesList_range <- function() {
-  rl <- RangesList(a = IRanges(c(1,2),c(4,3)), b = IRanges(c(4,6),c(10,7)))
+  rl1 <- RangesList(a = IRanges(c(1,2),c(4,3)), b = IRanges(c(4,6),c(10,7)))
   rl2 <- RangesList(c = IRanges(c(0,2),c(4,5)), a = IRanges(c(4,5),c(6,7)))
   ans <- RangesList(a = IRanges(1,7), b = IRanges(4,10), c = IRanges(0,5))
-  checkIdentical(range(rl, rl2), ans)
+  checkIdentical(range(rl1, rl2), ans)
   names(rl2) <- NULL
   ans <- RangesList(a = IRanges(0,5), b = IRanges(4,10))
-  checkIdentical(range(rl, rl2), ans)
+  checkIdentical(range(rl1, rl2), ans)
   ## must be same length
   checkException(range(RangesList(IRanges(c(1,2),c(4,3)), IRanges(3,5)),
                        RangesList(IRanges(2,6))), silent=TRUE) 
@@ -78,13 +78,28 @@ test_RangesList_range <- function() {
 test_IRangesList_construction <- function() {
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
-  named <- IRangesList(one = range1, two = range2)
-  checkIdentical(length(named), 2L)
-  checkIdentical(names(named), c("one", "two"))
-  checkIdentical(range1, named[[1]])
-  unnamed <- IRangesList(range1, range2)
-  checkTrue(validObject(unnamed))
-  checkIdentical(length(unnamed), 2L)
-  checkIdentical(range2, unnamed[[2]])
-  checkIdentical(names(unnamed), NULL)
+  for (compress in c(TRUE, FALSE)) {
+    named <- IRangesList(one = range1, two = range2, compress = compress)
+    checkIdentical(length(named), 2L)
+    checkIdentical(names(named), c("one", "two"))
+    checkIdentical(range1, named[[1]])
+    unnamed <- IRangesList(range1, range2)
+    checkTrue(validObject(unnamed))
+    checkIdentical(length(unnamed), 2L)
+    checkIdentical(range2, unnamed[[2]])
+    checkIdentical(names(unnamed), NULL)
+  }
+}
+
+test_IRangesList_annotation <- function() {
+  range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
+  range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
+  for (compress in c(TRUE, FALSE)) {
+    rl <- IRangesList(range1, range2, compress = compress)
+    elementMetadata(rl) <- XDataFrame(a = 1:2)
+    checkIdentical(elementMetadata(rl)[,1], 1:2)
+    checkIdentical(elementMetadata(rl[2:1])[,1], 2:1)
+    checkIdentical(elementMetadata(c(rl,rl))[,1], rep(1:2,2))
+    checkIdentical(elementMetadata(append(rl,rl))[,1], rep(1:2,2))
+  }
 }

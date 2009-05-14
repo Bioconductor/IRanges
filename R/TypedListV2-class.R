@@ -5,16 +5,11 @@
 ## Wrapper around a list that ensures all elements extend from a certain type
 setClassUnion("ANYTHING", methods:::.BasicClasses)
 
-## NOTE: this will throw warnings, because we use XDataFrame, which
-## must be defined after this, since it is itself an AnnotatedList. As
-## long as NULL is allowed, infinite recursion is avoided.
 setClass("TypedListV2",
          contains="ListLike",
          representation(
                         "VIRTUAL",
-                        elementType="character",
-                        metadata = "list",
-                        elementMetadata = "XDataFrameORNULL"
+                        elementType="character"
                         ),
          prototype(elementType="ANYTHING")
          )
@@ -42,48 +37,6 @@ setClass("SimpleTypedList",
 
 setGeneric("elementType", function(x, ...) standardGeneric("elementType"))
 setMethod("elementType", "TypedListV2", function(x) x@elementType)
-
-setGeneric("metadata", function(x, ...) standardGeneric("metadata"))
-setMethod("metadata", "TypedListV2",
-          function(x) {
-              if (is.null(x@metadata) || is.character(x@metadata))
-                  list(metadata = x@metadata)
-              else
-                  x@metadata
-          })
-
-setGeneric("metadata<-",
-           function(x, ..., value) standardGeneric("metadata<-"))
-setReplaceMethod("metadata", c("TypedListV2", "list"),
-                 function(x, value) {
-                     if (!length(value))
-                         names(value) <- NULL # instead of character()
-                     x@metadata <- value
-                     x
-                 })
-
-setGeneric("elementMetadata",
-           function(x, ...) standardGeneric("elementMetadata"))
-setMethod("elementMetadata", "TypedListV2",
-          function(x) {
-              emd <- x@elementMetadata
-              if (!is.null(emd) && !is.null(names(x)))
-                  rownames(emd) <- names(x)
-              emd
-          })
-
-setGeneric("elementMetadata<-",
-           function(x, ..., value) standardGeneric("elementMetadata<-"))
-setReplaceMethod("elementMetadata", c("TypedListV2", "XDataFrameORNULL"),
-                 function(x, value) {
-                     if (!is.null(value) && length(x) != nrow(value))
-                         stop("the number of rows in elementMetadata 'value' ",
-                                 "(if non-NULL) must match the length of 'x'")
-                     if (!is.null(value))
-                         rownames(value) <- NULL
-                     x@elementMetadata <- value
-                     x
-                 })
 
 setGeneric("elementLengths", function(x) standardGeneric("elementLengths"))
 setMethod("elementLengths", "CompressedTypedList",
@@ -206,15 +159,6 @@ TypedListV2 <- function(listClass, ...) {
 ### Validity.
 ###
 
-.valid.TypedListV2.elementMetadata <- function(x) {
-    emd <- elementMetadata(x)
-    if (!is.null(emd) && nrow(emd) != length(x))
-        "number of rows in non-NULL 'elementMetadata(x)' must match length of 'x'"
-    else if (!is.null(emd) && !identical(rownames(emd), names(x)))
-        "the rownames of non-NULL 'elementMetadata(x)' must match the names of 'x'"
-    else NULL
-}
-
 .valid.CompressedTypedList.partitioning <- function(x)
 {
     if (length(dim(x@unlistData)) < 2) {
@@ -235,8 +179,7 @@ TypedListV2 <- function(listClass, ...) {
 }
 .valid.CompressedTypedList <- function(x)
 {
-    c(.valid.TypedListV2.elementMetadata(x),
-      .valid.CompressedTypedList.unlistData(x),
+    c(.valid.CompressedTypedList.unlistData(x),
       .valid.CompressedTypedList.partitioning(x))
 }
 setValidity2("CompressedTypedList", .valid.CompressedTypedList)
@@ -252,8 +195,7 @@ setValidity2("CompressedTypedList", .valid.CompressedTypedList)
 }
 .valid.SimpleTypedList <- function(x)
 {
-    c(.valid.TypedListV2.elementMetadata(x),
-      .valid.SimpleTypedList.listData(x))
+    c(.valid.SimpleTypedList.listData(x))
 }
 setValidity2("SimpleTypedList", .valid.SimpleTypedList)
 
@@ -468,9 +410,6 @@ setMethod("[", "CompressedTypedList",
                 new("PartitioningByEnd",
                     end = cumsum(elementLengths(x)[i]),
                     NAMES = names(x)[i])
-              if (!is.null(elementMetadata(x)))
-                  slot(x, "elementMetadata", check=FALSE) <-
-                          elementMetadata(x)[i,,drop=FALSE]
               x
           })
 
@@ -481,9 +420,6 @@ setMethod("[", "SimpleTypedList",
                   stop("invalid subsetting")
               if (!missing(i)) {
                   slot(x, "listData", check=FALSE) <- as.list(x)[i]
-                  if (!is.null(elementMetadata(x)))
-                      slot(x, "elementMetadata", check=FALSE) <-
-                        elementMetadata(x)[i,,drop=FALSE]
               }
               x
           })

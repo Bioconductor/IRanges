@@ -10,8 +10,8 @@
 \description{
   A formal list of \code{\linkS4class{RangedData}}
   objects. Extends and inherits all its methods from
-  \code{\linkS4class{TypedListV2}}. One use case is to group together all
-  of the samples from an experiment generating data on ranges.
+  \code{\linkS4class{AnnotatedTypedListV2}}. One use case is to group together
+  all of the samples from an experiment generating data on ranges.
 }
 
 \section{Constructor}{
@@ -26,7 +26,7 @@
 
 \seealso{
   \code{\linkS4class{RangedData}}, the element type of this
-  \code{\linkS4class{TypedListV2}}.
+  \code{\linkS4class{AnnotatedTypedListV2}}.
 }
 \examples{
   ranges <- IRanges(c(1,2,3),c(4,5,6))

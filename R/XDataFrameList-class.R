@@ -4,21 +4,21 @@
 
 setClass("XDataFrameList", representation("VIRTUAL"),
          prototype = prototype(elementType = "XDataFrame"),
-         contains = "TypedListV2")
+         contains = "AnnotatedTypedListV2")
 setClass("SimpleXDataFrameList",
          prototype = prototype(elementType = "XDataFrame"),
-         contains = c("SimpleTypedList", "XDataFrameList"))
+         contains = c("AnnotatedSimpleTypedList", "XDataFrameList"))
 
 setClass("SplitXDataFrameList", representation("VIRTUAL"),
          prototype = prototype(elementType = "XDataFrame"),
          contains = "XDataFrameList")
 setClass("SimpleSplitXDataFrameList",
          prototype = prototype(elementType = "XDataFrame"),
-         contains = c("SimpleXDataFrameList", "SplitXDataFrameList"))
+         contains = c("SplitXDataFrameList", "SimpleXDataFrameList"))
 setClass("CompressedSplitXDataFrameList",
          prototype = prototype(elementType = "XDataFrame",
                                unlistData = new("XDataFrame")),
-         contains = c("CompressedTypedList", "SplitXDataFrameList"))
+         contains = c("SplitXDataFrameList", "AnnotatedCompressedTypedList"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.

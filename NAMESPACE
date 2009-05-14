@@ -19,6 +19,7 @@ exportClasses(
     MaskCollection,
     TypedList, AnnotatedList,
     TypedListV2, CompressedTypedList, SimpleTypedList,
+    AnnotatedTypedListV2, AnnotatedCompressedTypedList, AnnotatedSimpleTypedList,
     LogicalList, CompressedLogicalList, SimpleLogicalList,
     IntegerList, CompressedIntegerList, SimpleIntegerList,
     NumericList, CompressedNumericList, SimpleNumericList,
