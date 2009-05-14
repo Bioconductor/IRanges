@@ -20,6 +20,7 @@
 ## thus trivially compressed. It does, however, incur a slight
 ## performance penalty when applying over the RangedData.
 
+### FIXME: probably needs own metadata slot
 setClass("RangedData",
          representation(ranges = "RangesList", values = "SplitXDataFrameList"),
          prototype = prototype(ranges = new("SimpleRangesList"),
@@ -375,8 +376,9 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
   rl <- rls[[1]]
   if (!all(sapply(sapply(rls, universe), identical, universe(rl))))
     stop("All args in '...' must have the same universe as 'x'")
-  dfs <- lapply(args, values)
-  df <- dfs[[1]]
+  ##dfs <- lapply(args, values)
+  ##df <- dfs[[1]]
+  df <- do.call("rbind", lapply(args, function(x) unlist(values(x))))
   nmsList <- lapply(args, names)
   if (any(sapply(nmsList, is.null))) {
     if (!all(unlist(lapply(args, length)) == length(args[[1]])))
@@ -386,9 +388,15 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
   for (nm in nms) {
     rli <- lapply(rls, `[[`, nm)
     rl[[nm]] <- do.call(c, rli[!sapply(rli, is.null)])
-    dfi <- lapply(dfs, `[[`, nm)
-    df[[nm]] <- do.call(rbind, dfi[!sapply(dfi, is.null)])
+    ##dfi <- lapply(dfs, `[[`, nm)
+    ##df[[nm]] <- do.call(rbind, dfi[!sapply(dfi, is.null)])
   }
+  counts <- unlist(lapply(rls, function(x) lapply(x, length)))
+  if (is.numeric(nms))
+    f <- rep(rep(nms, length(args)), counts)
+  else f <- factor(rep(unlist(nmsList), counts), names(rl))
+  df <- split(df, f)
+  names(df) <- names(rl)
   initialize(args[[1]], ranges = rl, values = df)
 })
 
