@@ -59,7 +59,12 @@ setMethod("seqextract", "Sequence",
               ir <- IRanges(start=start, end=end, width=width, names=NULL)
               if (any(start(ir) < 1L) || any(end(ir) > length(x)))
                   stop("some ranges are out of bounds")
-              x[as.integer(ir)]
+              do.call(c,
+                      lapply(seq_len(length(ir)),
+                             function(i)
+                                 window(x,
+                                        start = start(ir)[i],
+                                        width = width(ir)[i])))
           })
 
 setMethod("seqextract", "vector",
