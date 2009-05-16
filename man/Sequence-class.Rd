@@ -121,7 +121,6 @@
       Any object in \code{...} must belong to the same class as \code{x},
       or to one of its subclasses, or must be \code{NULL}.
       The result is an object of the same class as \code{x}.
-      NOTE: Only works for XRaw (and derived) objects for now.
     }
   }
 }
