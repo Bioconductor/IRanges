@@ -8,21 +8,10 @@
 
 setMethod("split", "XDataFrame",
           function(x, f, drop = FALSE) {
-            TypedListV2("CompressedSplitXDataFrameList", x, splitFactor = f)
+            TypedListLike("CompressedSplitXDataFrameList", x, splitFactor = f)
           })
 
-## we define generics here with just '...' as this is possible in R 2.8
-## note that if we omit 'deparse.level' from the formals, things break
-
-setGeneric("cbind", function(..., deparse.level=1) standardGeneric("cbind"),
-           signature = "...")
-
-setMethod("cbind", "XDataFrame", function(..., deparse.level=1) {
-  XDataFrame(...)
-})
-
-setGeneric("rbind", function(..., deparse.level=1) standardGeneric("rbind"),
-           signature = "...")
+setMethod("cbind", "XDataFrame", function(..., deparse.level=1) XDataFrame(...))
 
 setMethod("rbind", "XDataFrame", function(..., deparse.level=1) {
   args <- list(...)

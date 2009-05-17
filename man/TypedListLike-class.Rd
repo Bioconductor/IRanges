@@ -1,89 +1,85 @@
-\name{TypedListV2-class}
+\name{TypedListLike-class}
 \docType{class}
-\alias{TypedListV2}
-\alias{TypedListV2-class}
-\alias{CompressedTypedList}
-\alias{CompressedTypedList-class}
-\alias{SimpleTypedList}
-\alias{SimpleTypedList-class}
+\alias{TypedListLike}
+\alias{TypedListLike-class}
+\alias{CompressedTypedListLike}
+\alias{CompressedTypedListLike-class}
+\alias{SimpleTypedListLike}
+\alias{SimpleTypedListLike-class}
 
-\alias{AnnotatedTypedListV2}
-\alias{AnnotatedTypedListV2-class}
-\alias{AnnotatedCompressedTypedList}
-\alias{AnnotatedCompressedTypedList-class}
-\alias{AnnotatedSimpleTypedList}
-\alias{AnnotatedSimpleTypedList-class}
-
+\alias{AnnotatedTypedListLike}
+\alias{AnnotatedTypedListLike-class}
+\alias{AnnotatedCompressedTypedListLike}
+\alias{AnnotatedCompressedTypedListLike-class}
+\alias{AnnotatedSimpleTypedListLike}
+\alias{AnnotatedSimpleTypedListLike-class}
 
 % accessors
 \alias{elementType}
-\alias{elementType,TypedListV2-method}
+\alias{elementType,TypedListLike-method}
 \alias{elementMetadata}
-\alias{elementMetadata,AnnotatedTypedListV2-method}
+\alias{elementMetadata,AnnotatedTypedListLike-method}
 \alias{elementMetadata<-}
-\alias{elementMetadata<-,AnnotatedTypedListV2,XDataFrameORNULL-method}
+\alias{elementMetadata<-,AnnotatedTypedListLike,DataFrameORNULL-method}
 \alias{elementLengths}
-\alias{elementLengths,CompressedTypedList-method}
-\alias{elementLengths,SimpleTypedList-method}
-\alias{length,CompressedTypedList-method}
-\alias{length,SimpleTypedList-method}
-\alias{names,CompressedTypedList-method}
-\alias{names,SimpleTypedList-method}
-\alias{names<-,CompressedTypedList-method}
-\alias{names<-,SimpleTypedList-method}
+\alias{elementLengths,CompressedTypedListLike-method}
+\alias{elementLengths,SimpleTypedListLike-method}
+\alias{length,CompressedTypedListLike-method}
+\alias{length,SimpleTypedListLike-method}
+\alias{names,CompressedTypedListLike-method}
+\alias{names,SimpleTypedListLike-method}
+\alias{names<-,CompressedTypedListLike-method}
+\alias{names<-,SimpleTypedListLike-method}
 
 % subsetting
-\alias{[[,TypedListV2-method}
-\alias{$,TypedListV2-method}
-\alias{[[<-,CompressedTypedList-method}
-\alias{[[<-,SimpleTypedList-method}
-\alias{$<-,TypedListV2-method}
-\alias{[,CompressedTypedList-method}
-\alias{[,SimpleTypedList-method}
-\alias{[,AnnotatedCompressedTypedList-method}
-\alias{[,AnnotatedSimpleTypedList-method}
-\alias{[<-,TypedListV2-method} % hidden
+\alias{[[,TypedListLike-method}
+\alias{$,TypedListLike-method}
+\alias{[[<-,CompressedTypedListLike-method}
+\alias{[[<-,SimpleTypedListLike-method}
+\alias{$<-,TypedListLike-method}
+\alias{[,CompressedTypedListLike-method}
+\alias{[,SimpleTypedListLike-method}
+\alias{[,AnnotatedCompressedTypedListLike-method}
+\alias{[,AnnotatedSimpleTypedListLike-method}
+\alias{[<-,TypedListLike-method} % hidden
 
 % splitting and combining
-\alias{append,CompressedTypedList,CompressedTypedList-method}
-\alias{append,SimpleTypedList,SimpleTypedList-method}
-\alias{append,AnnotatedCompressedTypedList,AnnotatedCompressedTypedList-method}
-\alias{append,AnnotatedSimpleTypedList,AnnotatedSimpleTypedList-method}
-\alias{c,CompressedTypedList-method}
-\alias{c,SimpleTypedList-method}
-\alias{c,AnnotatedCompressedTypedList-method}
-\alias{c,AnnotatedSimpleTypedList-method}
+\alias{append,CompressedTypedListLike,CompressedTypedListLike-method}
+\alias{append,SimpleTypedListLike,SimpleTypedListLike-method}
+\alias{append,AnnotatedCompressedTypedListLike,AnnotatedCompressedTypedListLike-method}
+\alias{append,AnnotatedSimpleTypedListLike,AnnotatedSimpleTypedListLike-method}
+\alias{c,CompressedTypedListLike-method}
+\alias{c,SimpleTypedListLike-method}
+\alias{c,AnnotatedCompressedTypedListLike-method}
+\alias{c,AnnotatedSimpleTypedListLike-method}
 
 % looping
-\alias{lapply,CompressedTypedList-method}
-\alias{lapply,SimpleTypedList-method}
-\alias{sapply,TypedListV2-method}
+\alias{lapply,CompressedTypedListLike-method}
+\alias{lapply,SimpleTypedListLike-method}
+\alias{sapply,TypedListLike-method}
 
 % coercion
-\alias{coerce,TypedListV2,list-method}
-\alias{as.list,CompressedTypedList-method}
-\alias{as.list,SimpleTypedList-method}
-\alias{unlist,TypedListV2-method}
+\alias{coerce,TypedListLike,list-method}
+\alias{as.list,CompressedTypedListLike-method}
+\alias{as.list,SimpleTypedListLike-method}
+\alias{unlist,TypedListLike-method}
 
 % show
-\alias{show,TypedListV2-method}
+\alias{show,TypedListLike-method}
 
-\title{Typed Lists and Annotated Typed Lists (Version 2)}
-\description{The virtual class \code{TypedListV2} is an emulation of an ordinary
-  \code{list}, except all of the elements must derive from a particular type.
-  This is useful for validity checking and for implementing vectorized
-  type-specific operations. The virtual class \code{AnnotatedTypeListV2} extends
-  \code{TypedListV2} by including annotation information.}
+\title{Typed List-Like and Annotated Typed List-Like Classes}
+\description{The virtual class \code{TypedListLike} is an extension of the
+  ListLike virtual class with all of the elements deriving from a particular
+  type. This is useful for validity checking and for implementing vectorized
+  type-specific operations. The virtual class \code{AnnotatedTypeListLike}
+  extends \code{TypedListLike} by including annotation information.}
 
 \details{
-  In general, a \code{TypedListV2} may be treated as any ordinary \code{list},
-  except with regard to the element type restriction.
-  
   The required element type is indicated by the \code{elementType} slot, a
   scalar string naming the class from which all elements must derive. This slot
   should never be set after initialization.
 
-  \code{TypedListV2} is a virtual class, so a subclass must be derived for a
+  \code{TypedListLike} is a virtual class, so a subclass must be derived for a
   particular element type. This turns out to be useful in almost all cases, as
   the explicit class can be used as the type of a slot in a class that requires
   a homogeneous list of elements. Also, methods may be implemented for the
@@ -91,31 +87,31 @@
   element type. Using this approach, the convention is for the prototype of the
   subclass to set the \code{elementType} slot and to leave it unchanged.
 
-  Two virtual subclasses of \code{TypedListV2}, \code{SimpleTypedList} and
-  \code{CompressedTypedList}, are used to represent different methods for
+  Two virtual subclasses of \code{TypedListLike}, \code{SimpleTypedListLike} and
+  \code{CompressedTypedListLike}, are used to represent different methods for
   storing the elements of the typed list. Classes derived from
-  \code{SimpleTypedList} represent their data using an ordinary \code{list}
-  object while classes derived from \code{CompressedTypedList} represent their
-  data in a compressed ``unlisted" form whose partitioning is described in a
-  \code{PartitioningByEnd} object. The latter form is useful when many of the
+  \code{SimpleTypedListLike} represent their data using an ordinary \code{list}
+  object while classes derived from \code{CompressedTypedListLike} represent
+  their data in a compressed ``unlisted" form whose partitioning is described in
+  a \code{PartitioningByEnd} object. The latter form is useful when many of the
   elements store zero length objects (e.g. a list containing mostly length 0
   integer vectors) or to avoid the overhead of storing multiple S4 objects (e.g.
   a list containing thousands of IRanges objects).
 
-  The \code{AnnotatedTypedListV2} class extends \code{TypedListV2} by supporting 
-  the storage of global and element-wise metadata. In particular, the
-  \code{metadata} slot contains a list of metadata pertaining to the whole
+  The \code{AnnotatedTypedListLike} class extends \code{TypedListLike} by
+  supporting  the storage of global and element-wise metadata. In particular,
+  the \code{metadata} slot contains a list of metadata pertaining to the whole
   object and the \code{elementMetadata} slot contains an
-  \code{\linkS4class{XDataFrame}} (or \code{NULL}) for element-wise metadata
+  \code{\linkS4class{DataFrame}} (or \code{NULL}) for element-wise metadata
   with a row for each element and a column for each metadata variable. As with
-  the \code{TypedListV2} virtual class, two virtual subclasses of
-  \code{AnnotatedTypedListV2}, \code{AnnotatedSimpleTypedList} and
-  \code{AnnotatedCompressedTypedList}, are used to represent different methods
-  for storing the elements of the annotated typed list.
+  the \code{TypedListLike} virtual class, two virtual subclasses of
+  \code{AnnotatedTypedListLike}, \code{AnnotatedSimpleTypedListLike} and
+  \code{AnnotatedCompressedTypedListLike}, are used to represent different
+  methods for storing the elements of the annotated typed list.
 }
 
 \section{Subsetting}{
-  In the following code snippets, \code{x} is a \code{TypedListV2} object.
+  In the following code snippets, \code{x} is a \code{TypedListLike} object.
 
   \describe{
     \item{}{\code{x[i]}: Get a subset of \code{x} containing the elements
@@ -144,7 +140,7 @@
 }
 
 \section{Accessors}{
-  In the following code snippets, \code{x} is a \code{TypedListV2} object,
+  In the following code snippets, \code{x} is a \code{TypedListLike} object,
   unless otherwise noted.
   
   \describe{
@@ -162,13 +158,13 @@
       are empty.
     }
     \item{}{\code{metadata(x)}, \code{metadata(x) <- value}:
-      FOR \code{AnnotatedTypedListV2} OBJECTS ONLY.
+      FOR \code{AnnotatedTypedListLike} OBJECTS ONLY.
       Get or set the list holding arbitrary R objects as annotations. May be,
       and often is, empty.
     }
     \item{}{\code{elementMetadata(x), elementMetadata(x) <- value}:
-      FOR \code{AnnotatedTypedListV2} OBJECTS ONLY.
-      Get or set the \code{\linkS4class{XDataFrame}} holding local metadata on
+      FOR \code{AnnotatedTypedListLike} OBJECTS ONLY.
+      Get or set the \code{\linkS4class{DataFrame}} holding local metadata on
       each element. The rows are named according to the names of the elements.
       Optional, may be \code{NULL}.
     }
@@ -176,30 +172,30 @@
 }
 
 \section{Splitting and Combining}{
-  The following are methods for combining \code{TypedListV2} elements. In the
-  signatures, \code{x} is a \code{TypedListV2} object. 
+  The following are methods for combining \code{TypedListLike} elements. In the
+  signatures, \code{x} is a \code{TypedListLike} object. 
 
   \describe{
     \item{}{\code{append(x, values, after = length(x))}: Insert the
-      \code{TypedListV2} \code{values} onto \code{x} at the position given by
+      \code{TypedListLike} \code{values} onto \code{x} at the position given by
       \code{after}. \code{values} must have an \code{elementType} that extends
       that of \code{x}.
     }
-    \item{}{\code{c(x, ..., recursive = FALSE)}: Appends the \code{TypedListV2}
-      objects in \code{...} onto the end of \code{x}. All arguments must have an
-      element class that extends that of \code{x}.
+    \item{}{\code{c(x, ..., recursive = FALSE)}: Appends the
+      \code{TypedListLike} objects in \code{...} onto the end of \code{x}. All
+      arguments must have an element class that extends that of \code{x}.
     }
   }
 
   Note that the default \code{\link{split}} method happens to work on
-  \code{TypedListV2} objects. 
+  \code{TypedListLike} objects. 
 }
 
 \section{Coercion}{
-  In the following code snippets, \code{x} is a \code{TypedListV2} object.
+  In the following code snippets, \code{x} is a \code{TypedListLike} object.
   \describe{
     \item{}{\code{as.list(x)}, \code{as(from, "list")}: Coerces a
-      \code{TypedListV2} to an ordinary \code{list}. Note that this is
+      \code{TypedListLike} to an ordinary \code{list}. Note that this is
       preferred over the \code{elements} accessor for getting a \code{list} of
       the elements.
     }
@@ -217,14 +213,14 @@
     \item{}{
       \code{lapply(X, FUN, ...)}:
       Like the standard \code{\link[base]{lapply}} function defined in the
-      base package, the \code{lapply} method for TypedListV2 objects returns
+      base package, the \code{lapply} method for TypedListLike objects returns
       a list of the same length as \code{X}, each element of which is the
       result of applying \code{FUN} to the corresponding element of \code{X}.
     }
     \item{}{
       \code{sapply(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)}:
       Like the standard \code{\link[base]{sapply}} function defined in the
-      base package, the \code{sapply} method for TypedListV2 objects is a
+      base package, the \code{sapply} method for TypedListLike objects is a
       user-friendly version of \code{lapply} by default returning a vector
       or matrix if appropriate.
     }
@@ -238,7 +234,7 @@
          \code{\linkS4class{RangesList}} for example implementations}
 
 \examples{
-  ## demonstrated on IntegerList objects, as TypedListV2 is virtual
+  ## demonstrated on IntegerList objects, as TypedListLike is virtual
 
   int1 <- c(1L,2L,3L,5L,2L,8L)
   int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)

@@ -1,26 +1,23 @@
 ### =========================================================================
-### AnnotatedTypedListV2 objects
+### AnnotatedTypedListLike objects
 ### -------------------------------------------------------------------------
 
-## NOTE: this will throw warnings, because we use XDataFrame, which
-## must be defined after this, since it is itself an AnnotatedList. As
-## long as NULL is allowed, infinite recursion is avoided.
-setClass("AnnotatedTypedListV2",
-        contains=c("Annotated", "TypedListV2"),
+setClass("AnnotatedTypedListLike",
+        contains=c("Annotated", "TypedListLike"),
         representation(
                        "VIRTUAL",
-                       elementMetadata = "XDataFrameORNULL"
+                       elementMetadata = "DataFrameORNULL"
         ),
         prototype(elementType="ANYTHING")
 )
 
-setClass("AnnotatedCompressedTypedList",
-        contains=c("AnnotatedTypedListV2", "CompressedTypedList"),
+setClass("AnnotatedCompressedTypedListLike",
+        contains=c("AnnotatedTypedListLike", "CompressedTypedListLike"),
         representation("VIRTUAL")
 )
 
-setClass("AnnotatedSimpleTypedList",
-        contains=c("AnnotatedTypedListV2", "SimpleTypedList"),
+setClass("AnnotatedSimpleTypedListLike",
+        contains=c("AnnotatedTypedListLike", "SimpleTypedListLike"),
         representation("VIRTUAL")
 )
 
@@ -30,7 +27,7 @@ setClass("AnnotatedSimpleTypedList",
 
 setGeneric("elementMetadata",
            function(x, ...) standardGeneric("elementMetadata"))
-setMethod("elementMetadata", "AnnotatedTypedListV2",
+setMethod("elementMetadata", "AnnotatedTypedListLike",
           function(x) {
               emd <- x@elementMetadata
               if (!is.null(emd) && !is.null(names(x)))
@@ -40,7 +37,7 @@ setMethod("elementMetadata", "AnnotatedTypedListV2",
 
 setGeneric("elementMetadata<-",
            function(x, ..., value) standardGeneric("elementMetadata<-"))
-setReplaceMethod("elementMetadata", c("AnnotatedTypedListV2", "XDataFrameORNULL"),
+setReplaceMethod("elementMetadata", c("AnnotatedTypedListLike", "DataFrameORNULL"),
                  function(x, value) {
                      if (!is.null(value) && length(x) != nrow(value))
                          stop("the number of rows in elementMetadata 'value' ",
@@ -55,7 +52,7 @@ setReplaceMethod("elementMetadata", c("AnnotatedTypedListV2", "XDataFrameORNULL"
 ### Validity.
 ###
 
-.valid.AnnotatedTypedListV2.elementMetadata <- function(x) {
+.valid.AnnotatedTypedListLike.elementMetadata <- function(x) {
     emd <- elementMetadata(x)
     if (!is.null(emd) && nrow(emd) != length(x))
         "number of rows in non-NULL 'elementMetadata(x)' must match length of 'x'"
@@ -63,17 +60,17 @@ setReplaceMethod("elementMetadata", c("AnnotatedTypedListV2", "XDataFrameORNULL"
         "the rownames of non-NULL 'elementMetadata(x)' must match the names of 'x'"
     else NULL
 }
-.valid.AnnotatedTypedListV2 <- function(x)
+.valid.AnnotatedTypedListLike <- function(x)
 {
-    c(.valid.AnnotatedTypedListV2.elementMetadata(x))
+    c(.valid.AnnotatedTypedListLike.elementMetadata(x))
 }
-setValidity2("AnnotatedTypedListV2", .valid.AnnotatedTypedListV2)
+setValidity2("AnnotatedTypedListLike", .valid.AnnotatedTypedListLike)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
 ###
 
-setMethod("[", "AnnotatedCompressedTypedList",
+setMethod("[", "AnnotatedCompressedTypedListLike",
           function(x, i, j, ..., drop)
           {
               ans <- callNextMethod()
@@ -82,7 +79,7 @@ setMethod("[", "AnnotatedCompressedTypedList",
               ans
           })
 
-setMethod("[", "AnnotatedSimpleTypedList",
+setMethod("[", "AnnotatedSimpleTypedListLike",
           function(x, i, j, ..., drop)
           {
               ans <- callNextMethod()
@@ -95,7 +92,8 @@ setMethod("[", "AnnotatedSimpleTypedList",
 ### Combining and splitting.
 ###
 
-setMethod("append", c("AnnotatedCompressedTypedList", "AnnotatedCompressedTypedList"),
+setMethod("append",
+          c("AnnotatedCompressedTypedListLike", "AnnotatedCompressedTypedListLike"),
           function(x, values, after=length(x)) {
               ans <- callNextMethod()
               if (!is.null(elementMetadata(x)))
@@ -104,7 +102,8 @@ setMethod("append", c("AnnotatedCompressedTypedList", "AnnotatedCompressedTypedL
               ans
           })
   
-setMethod("append", c("AnnotatedSimpleTypedList", "AnnotatedSimpleTypedList"),
+setMethod("append",
+          c("AnnotatedSimpleTypedListLike", "AnnotatedSimpleTypedListLike"),
           function(x, values, after=length(x)) {
               ans <- callNextMethod()
               if (!is.null(elementMetadata(x)))
@@ -113,7 +112,7 @@ setMethod("append", c("AnnotatedSimpleTypedList", "AnnotatedSimpleTypedList"),
               ans
           })
 
-setMethod("c", "AnnotatedCompressedTypedList",
+setMethod("c", "AnnotatedCompressedTypedListLike",
           function(x, ..., recursive = FALSE) {
               ans <- callNextMethod(x, ...)
               if (!is.null(elementMetadata(x)))
@@ -122,7 +121,7 @@ setMethod("c", "AnnotatedCompressedTypedList",
               ans
           })
 
-setMethod("c", "AnnotatedSimpleTypedList",
+setMethod("c", "AnnotatedSimpleTypedListLike",
           function(x, ..., recursive = FALSE) {
               ans <- callNextMethod(x, ...)
               if (!is.null(elementMetadata(x)))

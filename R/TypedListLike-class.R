@@ -1,11 +1,11 @@
 ### =========================================================================
-### TypedListV2 objects
+### TypedListLike objects
 ### -------------------------------------------------------------------------
 
 ## Wrapper around a list that ensures all elements extend from a certain type
 setClassUnion("ANYTHING", methods:::.BasicClasses)
 
-setClass("TypedListV2",
+setClass("TypedListLike",
          contains="ListLike",
          representation(
                         "VIRTUAL",
@@ -14,8 +14,8 @@ setClass("TypedListV2",
          prototype(elementType="ANYTHING")
          )
 
-setClass("CompressedTypedList",
-         contains="TypedListV2",
+setClass("CompressedTypedListLike",
+         contains="TypedListLike",
          representation(
                         "VIRTUAL",
                         partitioning="PartitioningByEnd",
@@ -23,8 +23,8 @@ setClass("CompressedTypedList",
                        )
          )
 
-setClass("SimpleTypedList",
-         contains=c("TypedListV2"),
+setClass("SimpleTypedListLike",
+         contains=c("TypedListLike"),
          representation(
                         "VIRTUAL",
                         listData="list"
@@ -36,12 +36,12 @@ setClass("SimpleTypedList",
 ###
 
 setGeneric("elementType", function(x, ...) standardGeneric("elementType"))
-setMethod("elementType", "TypedListV2", function(x) x@elementType)
+setMethod("elementType", "TypedListLike", function(x) x@elementType)
 
 setGeneric("elementLengths", function(x) standardGeneric("elementLengths"))
-setMethod("elementLengths", "CompressedTypedList",
+setMethod("elementLengths", "CompressedTypedListLike",
           function(x) width(x@partitioning))
-setMethod("elementLengths", "SimpleTypedList",
+setMethod("elementLengths", "SimpleTypedListLike",
           function(x) {
               listData <- as.list(x)
               if (length(listData) == 0) {
@@ -53,13 +53,13 @@ setMethod("elementLengths", "SimpleTypedList",
               }
           })
 
-setMethod("length", "CompressedTypedList", function(x) length(x@partitioning))
-setMethod("length", "SimpleTypedList", function(x) length(as.list(x)))
+setMethod("length", "CompressedTypedListLike", function(x) length(x@partitioning))
+setMethod("length", "SimpleTypedListLike", function(x) length(as.list(x)))
 
-setMethod("names", "CompressedTypedList", function(x) names(x@partitioning))
-setMethod("names", "SimpleTypedList", function(x) names(as.list(x)))
+setMethod("names", "CompressedTypedListLike", function(x) names(x@partitioning))
+setMethod("names", "SimpleTypedListLike", function(x) names(as.list(x)))
 
-setReplaceMethod("names", "CompressedTypedList",
+setReplaceMethod("names", "CompressedTypedListLike",
                  function(x, value)
                  {
                      partitions <- x@partitioning
@@ -67,7 +67,7 @@ setReplaceMethod("names", "CompressedTypedList",
                      slot(x, "partitioning") <- partitions
                      x
                  })
-setReplaceMethod("names", "SimpleTypedList",
+setReplaceMethod("names", "SimpleTypedListLike",
                  function(x, value) {
                      listData <- as.list(x)
                      names(listData) <- value
@@ -79,7 +79,7 @@ setReplaceMethod("names", "SimpleTypedList",
 ### Constructor.
 ###
 
-.TypedListV2.compress.list <- function(x) {
+.TypedListLike.compress.list <- function(x) {
     if (length(x) > 0) {
         if (length(dim(x[[1]])) < 2) {
             x <- do.call(c, unname(x))
@@ -93,7 +93,7 @@ setReplaceMethod("names", "SimpleTypedList",
 CompressedTypedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
                                 splitFactor=NULL, ...)
 {
-    if (!extends(listClass, "CompressedTypedList"))
+    if (!extends(listClass, "CompressedTypedListLike"))
         stop("cannot create a ", listClass, " as a 'CompressedTypedList'")
     elementTypeData <- elementType(new(listClass))
     if (is.list(unlistData)) {
@@ -111,7 +111,7 @@ CompressedTypedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
                   cumsum(unlist(lapply(unlistData, nrow), use.names = FALSE))
             }
             unlistData <-
-              .TypedListV2.compress.list(lapply(unlistData, as,
+              .TypedListLike.compress.list(lapply(unlistData, as,
                                                 elementTypeData))
         }
     } else if (!extends(class(unlistData), elementTypeData)) {
@@ -138,7 +138,7 @@ CompressedTypedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
 SimpleTypedList <- function(listClass, listData, ...) {
     if (!is.list(listData))
         stop("'listData' must be a list object")
-    if (!extends(listClass, "SimpleTypedList"))
+    if (!extends(listClass, "SimpleTypedListLike"))
         stop("cannot create a ", listClass, " as a 'SimpleTypedList'")
     elementTypeData <- elementType(new(listClass))
     if (!all(unlist(lapply(listData, is, elementTypeData))))
@@ -146,13 +146,13 @@ SimpleTypedList <- function(listClass, listData, ...) {
     new(listClass, listData = listData, ...)
 }
 
-TypedListV2 <- function(listClass, ...) {
-    if (extends(listClass, "CompressedTypedList"))
+TypedListLike <- function(listClass, ...) {
+    if (extends(listClass, "CompressedTypedListLike"))
         CompressedTypedList(listClass, ...)
-    else if (extends(listClass, "SimpleTypedList"))
+    else if (extends(listClass, "SimpleTypedListLike"))
         SimpleTypedList(listClass, ...)
     else
-        stop("unknown 'TypedListV2' class")
+        stop("unknown 'TypedListLike' class")
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -182,7 +182,7 @@ TypedListV2 <- function(listClass, ...) {
     c(.valid.CompressedTypedList.unlistData(x),
       .valid.CompressedTypedList.partitioning(x))
 }
-setValidity2("CompressedTypedList", .valid.CompressedTypedList)
+setValidity2("CompressedTypedListLike", .valid.CompressedTypedList)
 
 .valid.SimpleTypedList.listData <- function(x)
 {
@@ -197,7 +197,7 @@ setValidity2("CompressedTypedList", .valid.CompressedTypedList)
 {
     c(.valid.SimpleTypedList.listData(x))
 }
-setValidity2("SimpleTypedList", .valid.SimpleTypedList)
+setValidity2("SimpleTypedListLike", .valid.SimpleTypedList)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
@@ -264,7 +264,7 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
             }
         }
         if (COMPRESS) {
-            elts <- .TypedListV2.compress.list(elts)
+            elts <- .TypedListLike.compress.list(elts)
         } else if (USE.NAMES) {
             names(elts) <- names(X)[INDEX]
         }
@@ -275,12 +275,12 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
 ### Extract the i-th element of a TypedList object.
 ### Supported 'i' types: numeric vector of length 1.
 setGeneric("getElement", function(x, i) standardGeneric("getElement"))
-setMethod("getElement", "CompressedTypedList", function(x, i)
+setMethod("getElement", "CompressedTypedListLike", function(x, i)
           .CompressedTypedList.list.subscript(X = x, INDEX = i,
                                               USE.NAMES = FALSE))
-setMethod("getElement", "SimpleTypedList", function(x, i) as.list(x)[[i]])
+setMethod("getElement", "SimpleTypedListLike", function(x, i) as.list(x)[[i]])
 
-setMethod("[[", "TypedListV2",
+setMethod("[[", "TypedListLike",
           function(x, i, j, ...)
           {
               index <- try(callNextMethod(), silent = TRUE)
@@ -295,9 +295,9 @@ setMethod("[[", "TypedListV2",
               ans
           })
 
-setMethod("$", "TypedListV2", function(x, name) x[[name]])
+setMethod("$", "TypedListLike", function(x, name) x[[name]])
 
-setReplaceMethod("[[", "CompressedTypedList",
+setReplaceMethod("[[", "CompressedTypedListLike",
                  function(x, i, j,..., value)
                  {
                      if (!missing(j) || length(list(...)) > 0)
@@ -342,7 +342,7 @@ setReplaceMethod("[[", "CompressedTypedList",
                              NAMES <- names(x)
                          }
                          slot(x, "unlistData", check=FALSE) <-
-                           .TypedListV2.compress.list(listData)
+                           .TypedListLike.compress.list(listData)
                          slot(x, "partitioning", check=FALSE) <-
                            new("PartitioningByEnd", end = cumsum(widths),
                                NAMES = NAMES)
@@ -350,7 +350,7 @@ setReplaceMethod("[[", "CompressedTypedList",
                      }
                  })
          
-setReplaceMethod("[[", "SimpleTypedList",
+setReplaceMethod("[[", "SimpleTypedListLike",
                  function(x, i, j,..., value)
                  {
                      listData <- as.list(x)
@@ -359,14 +359,14 @@ setReplaceMethod("[[", "SimpleTypedList",
                      x
                  })
 
-setReplaceMethod("$", "TypedListV2",
+setReplaceMethod("$", "TypedListLike",
                  function(x, name, value) {
                      x[[name]] <- value
                      x
                  })
 
 ### Supported 'i' types: numeric, character, logical, NULL and missing.
-setMethod("[", "CompressedTypedList",
+setMethod("[", "CompressedTypedListLike",
           function(x, i, j, ..., drop)
           {
               if (!missing(j) || length(list(...)) > 0)
@@ -413,7 +413,7 @@ setMethod("[", "CompressedTypedList",
               x
           })
 
-setMethod("[", "SimpleTypedList",
+setMethod("[", "SimpleTypedListLike",
           function(x, i, j, ..., drop)
           {
               if (!missing(j) || length(list(...)) > 0)
@@ -424,7 +424,7 @@ setMethod("[", "SimpleTypedList",
               x
           })
 
-setReplaceMethod("[", "TypedListV2",
+setReplaceMethod("[", "TypedListLike",
                  function(x, i, j,..., value)
                  stop("attempt to modify the value of a ", class(x),
                       " instance")
@@ -434,7 +434,7 @@ setReplaceMethod("[", "TypedListV2",
 ### Combining and splitting.
 ###
 
-setMethod("append", c("CompressedTypedList", "CompressedTypedList"),
+setMethod("append", c("CompressedTypedListLike", "CompressedTypedListLike"),
           function(x, values, after=length(x)) {
               if (!isSingleNumber(after))
                   stop("'after' must be a single number")
@@ -446,7 +446,7 @@ setMethod("append", c("CompressedTypedList", "CompressedTypedList"),
                                   after = after))
           })
 
-setMethod("append", c("SimpleTypedList", "SimpleTypedList"),
+setMethod("append", c("SimpleTypedListLike", "SimpleTypedListLike"),
           function(x, values, after=length(x)) {
               slot(x, "listData") <-
                 append(as.list(x), as.list(values), after=after)
@@ -458,7 +458,7 @@ setMethod("append", c("SimpleTypedList", "SimpleTypedList"),
 ## although sometimes this does not work so well, so it's best to keep
 ## names off the parameters whenever feasible.
 
-setMethod("c", "CompressedTypedList",
+setMethod("c", "CompressedTypedListLike",
           function(x, ..., recursive = FALSE) {
               if (recursive)
                   stop("'recursive' mode is not supported")
@@ -466,7 +466,7 @@ setMethod("c", "CompressedTypedList",
                   tls <- list(x, ...)
               else
                   tls <- list(...)
-              if (!all(sapply(tls, is, "CompressedTypedList")))
+              if (!all(sapply(tls, is, "CompressedTypedListLike")))
                   stop("all arguments in '...' must be CompressedTypedList objects")
               ecs <- sapply(tls, elementType)
               if (!all(sapply(ecs, extends, ecs[[1]])))
@@ -482,7 +482,7 @@ setMethod("c", "CompressedTypedList",
               CompressedTypedList(class(tls[[1]]), elts)
           })
 
-setMethod("c", "SimpleTypedList",
+setMethod("c", "SimpleTypedListLike",
           function(x, ..., recursive = FALSE) {
               slot(x, "listData") <- do.call("c", lapply(list(x, ...), as.list))
               x
@@ -492,7 +492,7 @@ setMethod("c", "SimpleTypedList",
 ### Looping.
 ###
 
-setMethod("lapply", "CompressedTypedList",
+setMethod("lapply", "CompressedTypedListLike",
           function(X, FUN, ...)
           {
               .CompressedTypedList.list.subscript(X = X,
@@ -501,7 +501,7 @@ setMethod("lapply", "CompressedTypedList",
                                                   FUN = match.fun(FUN), ...)
           })
 
-setMethod("lapply", "SimpleTypedList",
+setMethod("lapply", "SimpleTypedListLike",
           function(X, FUN, ...)
           {
               lapply(as.list(X), FUN = FUN, ...)
@@ -509,7 +509,7 @@ setMethod("lapply", "SimpleTypedList",
 
 .sapplyDefault <- base::sapply
 environment(.sapplyDefault) <- globalenv()
-setMethod("sapply", "TypedListV2",
+setMethod("sapply", "TypedListLike",
           function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
           {
               .sapplyDefault(X = X, FUN = FUN, ..., simplify = simplify,
@@ -520,11 +520,11 @@ setMethod("sapply", "TypedListV2",
 ### Coercion.
 ###
 
-### From an TypedListV2 object to a normal R list.
-setAs("TypedListV2", "list", function(from) as.list(from))
+### From an TypedListLike object to a normal R list.
+setAs("TypedListLike", "list", function(from) as.list(from))
 
 ### Subclasses should override this for customized list coercion
-setMethod("as.list", "CompressedTypedList",
+setMethod("as.list", "CompressedTypedListLike",
           function(x, use.names = TRUE) {
               .CompressedTypedList.list.subscript(X = x,
                                                   INDEX = seq_len(length(x)),
@@ -532,7 +532,7 @@ setMethod("as.list", "CompressedTypedList",
                                                   COMPRESS = FALSE)
           })
 
-setMethod("as.list", "SimpleTypedList",
+setMethod("as.list", "SimpleTypedListLike",
           function(x, use.names = TRUE) {
               ans <- x@listData
               if (!use.names)
@@ -541,22 +541,22 @@ setMethod("as.list", "SimpleTypedList",
           })
 
 setGeneric("unlistData", function(x) standardGeneric("unlistData"))
-setMethod("unlistData", "CompressedTypedList",
+setMethod("unlistData", "CompressedTypedListLike",
           function(x) {
               if (length(x) == 0)
                   NULL
               else
                   x@unlistData
           })
-setMethod("unlistData", "SimpleTypedList",
+setMethod("unlistData", "SimpleTypedListLike",
           function(x) {
               if (length(x) == 0)
                   NULL
               else
-                  .TypedListV2.compress.list(as.list(x))
+                  .TypedListLike.compress.list(as.list(x))
           })
 
-setMethod("unlist", "TypedListV2",
+setMethod("unlist", "TypedListLike",
           function(x, recursive = TRUE, use.names = TRUE) {
               if (!missing(recursive))
                   warning("'recursive' argument currently ignored")
@@ -581,7 +581,7 @@ setMethod("unlist", "TypedListV2",
 ### The "show" method.
 ###
 
-setMethod("show", "TypedListV2",
+setMethod("show", "TypedListLike",
           function(object)
           {
             lo <- length(object)

@@ -10,7 +10,7 @@
 %\alias{metadata<-}
 \alias{metadata<-,AnnotatedList,list-method}
 %\alias{elementMetadata<-}
-\alias{elementMetadata<-,AnnotatedList,XDataFrameORNULL-method}
+\alias{elementMetadata<-,AnnotatedList,DataFrameORNULL-method}
 
 \alias{AnnotatedList}
 
@@ -41,7 +41,7 @@
       vector as an element named "genome".
     }
     \item{elementMetadata}{
-      A data frame of class \code{\linkS4class{XDataFrame}} (or
+      A data frame of class \code{\linkS4class{DataFrame}} (or
       \code{NULL}) with a row for each element and a column for each
       metadata variable. This is for storing metadata local to the
       experiment, such as experimental design, or chromosome-wide
@@ -60,7 +60,7 @@
     }
     \item{}{\code{elementMetadata(x), elementMetadata(x) <- value}:
       Get or set the
-      \code{\linkS4class{XDataFrame}} holding local metadata on each
+      \code{\linkS4class{DataFrame}} holding local metadata on each
       element. The rows are named according to the names of the
       elements. Optional, may be \code{NULL}.
     }

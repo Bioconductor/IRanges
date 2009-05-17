@@ -17,9 +17,7 @@ setClass("XDataFrame",
                         ),
          prototype(rownames = NULL,
                    nrows = 0L),
-         contains = "AnnotatedSimpleTypedList")
-
-setClassUnion("XDataFrameORNULL", c("XDataFrame", "NULL"))
+         contains = c("AnnotatedSimpleTypedListLike", "DataFrame"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -338,8 +336,6 @@ setMethod("[", "XDataFrame",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
-
-setMethod("is.array", "XDataFrame", function(x) TRUE)
 
 ## Break XDataFrame into a normal R data.frame
 setAs("XDataFrame", "data.frame",

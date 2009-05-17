@@ -14,13 +14,13 @@ setClass("Sequence", representation("VIRTUAL"))
 ###
 
 setMethod("[", "Sequence", function(x, i, j, ..., drop = FALSE)
-          stop("missing '[' method for Sequence class", class(x)))
+          stop("missing '[' method for Sequence class ", class(x)))
 
 setReplaceMethod("[", "Sequence", function(x, i, j,..., value)
                  stop("attempt to modify the value of a ", class(x), " instance"))
 
 setMethod("c", "Sequence", function(x, ..., recursive = FALSE)
-          stop("missing 'c' method for Sequence class", class(x)))
+          stop("missing 'c' method for Sequence class ", class(x)))
 
 setMethod("head", "Sequence",
           function(x, n = 6L, ...)
@@ -35,9 +35,6 @@ setMethod("head", "Sequence",
               else
                   window(x, 1L, n)
           })
-
-setMethod("length", "Sequence", function(x)
-          stop("missing 'length' method for Sequence class", class(x)))
 
 setMethod("rep", "Sequence", function(x, times)
           x[rep.int(seq_len(length(x)), times)])

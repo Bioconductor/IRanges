@@ -5,7 +5,7 @@
 setClass("RangesMatchingList",
          representation(subjectToQuery = "integer"),
          prototype(elementType = "RangesMatching"),
-         contains = "SimpleTypedList")
+         contains = c("SimpleTypedListLike", "Sequence"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessors
@@ -28,7 +28,8 @@ RangesMatchingList <- function(matchings, subjectNames = NULL)
   subjectToQuery <- seq_along(matchings)
   if (!is.null(names(matchings)) && !is.null(subjectNames))
     subjectToQuery <- match(names(matchings), subjectNames)
-  TypedListV2("RangesMatchingList", matchings, subjectToQuery = subjectToQuery)
+  TypedListLike("RangesMatchingList", matchings,
+                subjectToQuery = subjectToQuery)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

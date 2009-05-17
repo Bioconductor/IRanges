@@ -10,7 +10,7 @@
 \description{
   A formal list of \code{\linkS4class{RangedData}}
   objects. Extends and inherits all its methods from
-  \code{\linkS4class{AnnotatedTypedListV2}}. One use case is to group together
+  \code{\linkS4class{AnnotatedTypedListLike}}. One use case is to group together
   all of the samples from an experiment generating data on ranges.
 }
 
@@ -26,7 +26,7 @@
 
 \seealso{
   \code{\linkS4class{RangedData}}, the element type of this
-  \code{\linkS4class{AnnotatedTypedListV2}}.
+  \code{\linkS4class{AnnotatedTypedListLike}}.
 }
 \examples{
   ranges <- IRanges(c(1,2,3),c(4,5,6))

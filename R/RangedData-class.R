@@ -96,7 +96,7 @@ setReplaceMethod("dimnames", "RangedData",
             }
             x@values <- split(values, inds)
             names(x@values) <- names(x)
-            x@ranges <- TypedListV2(class(x@ranges), ranges)
+            x@ranges <- TypedListLike(class(x@ranges), ranges)
             x
           })
 
@@ -320,7 +320,7 @@ setMethod("[", "RangedData",
                   ranges <- ranges[-whichDrop]
                 }
               }
-              ranges <- TypedListV2(class(x@ranges), ranges)
+              ranges <- TypedListLike(class(x@ranges), ranges)
               ##values <- initialize(x@values, elements = values)
             } else if (!missing(i)) {
               checkIndex(i, length(x))
@@ -458,11 +458,11 @@ setMethod("show", "RangedData", function(object) {
 
 setClass("RangedDataList",
          prototype = prototype(elementType = "RangedData"),
-         contains = "AnnotatedSimpleTypedList")
+         contains = c("AnnotatedSimpleTypedListLike", "Sequence"))
 
 RangedDataList <- function(...)
 {
-  TypedListV2("RangedDataList", list(...))
+  TypedListLike("RangedDataList", list(...))
 }
 
 setMethod("unlist", "RangedDataList",

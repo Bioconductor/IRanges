@@ -10,7 +10,6 @@
 \alias{[<-,Sequence-method}
 \alias{c,Sequence-method}
 \alias{head,Sequence-method}
-\alias{length,Sequence-method}
 \alias{rep,Sequence-method}
 \alias{rev,Sequence-method}
 \alias{seqextract}

@@ -6,7 +6,7 @@ setClassUnion("expressionORfunction", c("expression", "function"))
 
 setClass("FilterRules", representation(active = "logical"),
          prototype(elementType = "expressionORfunction"),
-         contains = "SimpleTypedList")
+         contains = "SimpleTypedListLike")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessors.
@@ -86,7 +86,7 @@ FilterRules <- function(exprs = list(), ..., active = TRUE) {
   if (length(exprs) && length(exprs) %% length(active) > 0)
     stop("number of rules must be a multiple of length of 'active'")
 
-  TypedListV2("FilterRules", exprs, active = active)
+  TypedListLike("FilterRules", exprs, active = active)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

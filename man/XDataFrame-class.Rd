@@ -26,17 +26,12 @@
 \alias{as.list,XDataFrame-method}
 
 % splitting and combining
-\alias{cbind}
 \alias{cbind,XDataFrame-method}
-\alias{rbind}
 \alias{rbind,XDataFrame-method}
 \alias{split,XDataFrame-method}
 
 % show
 \alias{show,XDataFrame-method}
-
-% other
-\alias{is.array,XDataFrame-method}
 
 \title{External Data Frame}
 \description{

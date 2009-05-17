@@ -6,80 +6,80 @@
 
 setClass("LogicalList", representation("VIRTUAL"),
          prototype = prototype(elementType = "logical"),
-         contains="TypedListV2")
+         contains = c("TypedListLike", "Sequence"))
 setClass("CompressedLogicalList",
          prototype = prototype(elementType = "logical",
                                unlistData = logical()),
-         contains = c("CompressedTypedList", "LogicalList"))
+         contains = c("CompressedTypedListLike", "LogicalList"))
 setClass("SimpleLogicalList",
          prototype = prototype(elementType = "logical"),
-         contains = c("SimpleTypedList", "LogicalList"))
+         contains = c("SimpleTypedListLike", "LogicalList"))
 
 setClass("IntegerList", representation("VIRTUAL"),
          prototype = prototype(elementType = "integer"),
-         contains="TypedListV2")
+         contains = c("TypedListLike", "Sequence"))
 setClass("CompressedIntegerList",
          prototype = prototype(elementType = "integer",
                                unlistData = integer()),
-         contains = c("CompressedTypedList", "IntegerList"))
+         contains = c("CompressedTypedListLike", "IntegerList"))
 setClass("SimpleIntegerList",
          prototype = prototype(elementType = "integer"),
-         contains = c("SimpleTypedList", "IntegerList"))
+         contains = c("SimpleTypedListLike", "IntegerList"))
 
 setClass("NumericList", representation("VIRTUAL"),
          prototype = prototype(elementType = "numeric"),
-         contains="TypedListV2")
+         contains = c("TypedListLike", "Sequence"))
 setClass("CompressedNumericList",
          prototype = prototype(elementType = "numeric",
                                unlistData = numeric()),
-         contains = c("CompressedTypedList", "NumericList"))
+         contains = c("CompressedTypedListLike", "NumericList"))
 setClass("SimpleNumericList",
          prototype = prototype(elementType = "numeric"),
-         contains = c("SimpleTypedList", "NumericList"))
+         contains = c("SimpleTypedListLike", "NumericList"))
 
 setClass("ComplexList", representation("VIRTUAL"),
          prototype = prototype(elementType = "complex"),
-         contains="TypedListV2")
+         contains = c("TypedListLike", "Sequence"))
 setClass("CompressedComplexList",
          prototype = prototype(elementType = "complex",
                                unlistData = complex()),
-         contains = c("CompressedTypedList", "ComplexList"))
+         contains = c("CompressedTypedListLike", "ComplexList"))
 setClass("SimpleComplexList",
          prototype = prototype(elementType = "complex"),
-         contains = c("SimpleTypedList", "ComplexList"))
+         contains = c("SimpleTypedListLike", "ComplexList"))
 
 setClass("CharacterList", representation("VIRTUAL"),
          prototype = prototype(elementType = "character"),
-         contains="TypedListV2")
+         contains = c("TypedListLike", "Sequence"))
 setClass("CompressedCharacterList",
          prototype = prototype(elementType = "character",
                                unlistData = character()),
-         contains = c("CompressedTypedList", "CharacterList"))
+         contains = c("CompressedTypedListLike", "CharacterList"))
 setClass("SimpleCharacterList",
          prototype = prototype(elementType = "character"),
-         contains = c("SimpleTypedList", "CharacterList"))
+         contains = c("SimpleTypedListLike", "CharacterList"))
 
 setClass("RawList", representation("VIRTUAL"),
          prototype = prototype(elementType = "raw"),
-         contains="TypedListV2")
+         contains = c("TypedListLike", "Sequence"))
 setClass("CompressedRawList",
          prototype = prototype(elementType = "raw",
                                unlistData = raw()),
-         contains = c("CompressedTypedList", "RawList"))
+         contains = c("CompressedTypedListLike", "RawList"))
 setClass("SimpleRawList",
          prototype = prototype(elementType = "raw"),
-         contains = c("SimpleTypedList", "RawList"))
+         contains = c("SimpleTypedListLike", "RawList"))
 
 setClass("RleList", representation("VIRTUAL"),
          prototype = prototype(elementType = "Rle"),
-         contains="TypedListV2")
+         contains = c("TypedListLike", "Sequence"))
 setClass("CompressedRleList",
          prototype = prototype(elementType = "Rle",
                                unlistData = new("Rle")),
-         contains = c("CompressedTypedList", "RleList"))
+         contains = c("CompressedTypedListLike", "RleList"))
 setClass("SimpleRleList",
          prototype = prototype(elementType = "Rle"),
-         contains = c("SimpleTypedList", "RleList"))
+         contains = c("SimpleTypedListLike", "RleList"))
 
 LogicalList <- function(..., compress = TRUE)
 {
@@ -87,7 +87,7 @@ LogicalList <- function(..., compress = TRUE)
         listClass <- "CompressedLogicalList"
     else
         listClass <- "SimpleLogicalList"
-    TypedListV2(listClass, lapply(list(...), as.logical))
+    TypedListLike(listClass, lapply(list(...), as.logical))
 }
 
 IntegerList <- function(..., compress = TRUE)
@@ -96,7 +96,7 @@ IntegerList <- function(..., compress = TRUE)
         listClass <- "CompressedIntegerList"
     else
         listClass <- "SimpleIntegerList"
-    TypedListV2(listClass, lapply(list(...), as.integer))
+    TypedListLike(listClass, lapply(list(...), as.integer))
 }
 
 NumericList <- function(..., compress = TRUE)
@@ -105,7 +105,7 @@ NumericList <- function(..., compress = TRUE)
         listClass <- "CompressedNumericList"
     else
         listClass <- "SimpleNumericList"
-    TypedListV2(listClass, lapply(list(...), as.numeric))
+    TypedListLike(listClass, lapply(list(...), as.numeric))
 }
 
 ComplexList <- function(..., compress = TRUE)
@@ -114,7 +114,7 @@ ComplexList <- function(..., compress = TRUE)
         listClass <- "CompressedComplexList"
     else
         listClass <- "SimpleComplexList"
-    TypedListV2(listClass, lapply(list(...), as.complex))
+    TypedListLike(listClass, lapply(list(...), as.complex))
 }
 
 CharacterList <- function(..., compress = TRUE)
@@ -123,7 +123,7 @@ CharacterList <- function(..., compress = TRUE)
         listClass <- "CompressedCharacterList"
     else
         listClass <- "SimpleCharacterList"
-    TypedListV2(listClass, lapply(list(...), as.character))
+    TypedListLike(listClass, lapply(list(...), as.character))
 }
 
 RawList <- function(..., compress = TRUE)
@@ -132,7 +132,7 @@ RawList <- function(..., compress = TRUE)
         listClass <- "CompressedRawList"
     else
         listClass <- "SimpleRawList"
-    TypedListV2(listClass, lapply(list(...), as.raw))
+    TypedListLike(listClass, lapply(list(...), as.raw))
 }
 
 RleList <- function(..., compress = TRUE)
@@ -141,5 +141,5 @@ RleList <- function(..., compress = TRUE)
         listClass <- "CompressedRleList"
     else
         listClass <- "SimpleRleList"
-    TypedListV2(listClass, lapply(list(...), as, "Rle"))
+    TypedListLike(listClass, lapply(list(...), as, "Rle"))
 }

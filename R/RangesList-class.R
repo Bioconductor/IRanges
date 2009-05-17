@@ -6,10 +6,10 @@
 
 setClass("RangesList", representation("VIRTUAL"),
          prototype = prototype(elementType = "Ranges"),
-         contains = "AnnotatedTypedListV2")
+         contains = c("AnnotatedTypedListLike", "Sequence"))
 setClass("SimpleRangesList",
          prototype = prototype(elementType = "Ranges"),
-         contains = c("AnnotatedSimpleTypedList", "RangesList"))
+         contains = c("AnnotatedSimpleTypedListLike", "RangesList"))
 
 setClass("IRangesList", representation("VIRTUAL"),
          prototype = prototype(elementType = "IRanges"),
@@ -17,7 +17,7 @@ setClass("IRangesList", representation("VIRTUAL"),
 setClass("CompressedIRangesList",
          prototype = prototype(elementType = "IRanges",
                                unlistData = new("IRanges")),
-         contains = c("IRangesList", "AnnotatedCompressedTypedList"))
+         contains = c("IRangesList", "AnnotatedCompressedTypedListLike"))
 setClass("SimpleIRangesList",
          prototype = prototype(elementType = "IRanges"),
          contains = c("IRangesList", "SimpleRangesList"))
@@ -106,7 +106,7 @@ RangesList <- function(..., universe = NULL)
   ranges <- list(...)
   if (!all(sapply(ranges, is, "Ranges")))
     stop("all elements in '...' must be Ranges objects")
-  ans <- TypedListV2("SimpleRangesList", ranges)
+  ans <- TypedListLike("SimpleRangesList", ranges)
   universe(ans) <- universe
   ans
 }
@@ -122,7 +122,7 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
     listClass <- "CompressedIRangesList"
   else
     listClass <- "SimpleIRangesList"
-  ans <- TypedListV2(listClass, ranges)
+  ans <- TypedListLike(listClass, ranges)
   universe(ans) <- universe
   ans
 }
@@ -144,7 +144,7 @@ rangesListSingleSquareBracket <- function(x, i, j, ..., drop)
     for (j in seq_len(length(x))) {
         els[[j]] <- els[[j]][!is.na(ol[[j]])]
     }
-    ans <- TypedListV2(class(x), els)
+    ans <- TypedListLike(class(x), els)
   } else {
     ans <- callNextMethod(x, i)
   }
@@ -169,13 +169,13 @@ setMethod("reduce", "RangesList",
               nirl <- list(asNormalIRanges(ranges, force=TRUE))
             }
             ## This transformation must be atomic.
-            TypedListV2(class(x), nirl)
+            TypedListLike(class(x), nirl)
           })
 
 setMethod("gaps", "RangesList",
           function(x, start=NA, end=NA)
           {
-            TypedListV2(class(x), lapply(x, gaps, start = start, end = end))
+            TypedListLike(class(x), lapply(x, gaps, start = start, end = end))
           })
 
 setMethod("range", "RangesList",
@@ -195,7 +195,7 @@ setMethod("range", "RangesList",
               do.call(range, r[!sapply(r, is.null)])
             })
             names(ranges) <- names
-            TypedListV2(class(x), ranges)
+            TypedListLike(class(x), ranges)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -293,16 +293,16 @@ setAs("IRangesList", "list",
 
 setAs("RangesList", "CompressedIRangesList",
       function(from) {
-        TypedListV2("CompressedIRangesList", lapply(from, as, "IRanges"),
-                    metadata = from@metadata,
-                    elementMetadata = from@elementMetadata)
+        TypedListLike("CompressedIRangesList", lapply(from, as, "IRanges"),
+                      metadata = from@metadata,
+                      elementMetadata = from@elementMetadata)
       })
 
 setAs("RangesList", "SimpleIRangesList",
       function(from) {
-        TypedListV2("SimpleIRangesList", lapply(from, as, "IRanges"),
-                    metadata = from@metadata,
-                    elementMetadata = from@elementMetadata)
+        TypedListLike("SimpleIRangesList", lapply(from, as, "IRanges"),
+                      metadata = from@metadata,
+                      elementMetadata = from@elementMetadata)
       })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

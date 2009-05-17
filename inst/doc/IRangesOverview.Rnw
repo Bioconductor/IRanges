@@ -470,7 +470,7 @@ implementations exist, such as \Rclass{XStringViews} in the
 %%\Rclass{RawPtr}
 %%\Rclass{SequencePtr}
 %%\Rclass{vectorORfactor}
-%%\Rclass{XDataFrameORNULL}
+%%\Rclass{DataFrameORNULL}
 %%\Rclass{XInteger}
 %%\Rclass{XIntegerORNULL}
 %%\Rclass{XIntegerViews}

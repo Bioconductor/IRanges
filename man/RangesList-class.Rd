@@ -42,10 +42,10 @@
 \alias{split,Ranges-method}
 
 \title{List of Ranges}
-\description{An extension of \code{\linkS4class{AnnotatedTypedListV2}} that
+\description{An extension of \code{\linkS4class{AnnotatedTypedListLike}} that
   holds only \code{\linkS4class{Ranges}} objects. Useful for storing ranges
   over a set of spaces (e.g. chromosomes), each of which requires a separate
-  \code{Ranges} object. As an \code{AnnotatedTypedListV2}, \code{RangesList}
+  \code{Ranges} object. As an \code{AnnotatedTypedListLike}, \code{RangesList}
   may be annotated with its universe identifier (e.g. a genome) in which all
   of its spaces exist.
 }
@@ -95,7 +95,7 @@
   \describe{
     \item{}{
       \code{x[i]}: Subset \code{x} by index \code{i}, with the
-      same semantics as a basic \code{\linkS4class{AnnotatedTypedListV2}},
+      same semantics as a basic \code{\linkS4class{AnnotatedTypedListLike}},
       except \code{i} may itself be a \code{RangesList}, in which case only the
       ranges in \code{x} that overlap with those in \code{i} are kept. See
       the \code{\link[=overlap,RangesList,RangesList-method]{overlap}}

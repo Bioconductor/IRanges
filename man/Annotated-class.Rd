@@ -30,6 +30,6 @@
 }
 
 \author{Patrick Aboyoun}
-\seealso{\code{\linkS4class{AnnotatedTypedListV2}} for example implementations}
+\seealso{\code{\linkS4class{AnnotatedTypedListLike}} for example implementations}
 \keyword{methods}
 \keyword{classes}

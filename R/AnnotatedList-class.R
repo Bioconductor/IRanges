@@ -2,12 +2,9 @@
 ### AnnotatedList objects
 ### -------------------------------------------------------------------------
 
-## NOTE: this will throw warnings, because we use XDataFrame, which
-## must be defined after this, since it is itself an AnnotatedList. As
-## long as NULL is allowed, infinite recursion is avoided.
 setClass("AnnotatedList",
          representation(annotation = "list",
-                        elementMetadata = "XDataFrameORNULL"),
+                        elementMetadata = "DataFrameORNULL"),
          contains = "TypedList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -42,7 +39,7 @@ setMethod("elementMetadata", "AnnotatedList", function(x) {
 
 #setGeneric("elementMetadata<-",
 #           function(x, ..., value) standardGeneric("elementMetadata<-"))
-setReplaceMethod("elementMetadata", c("AnnotatedList", "XDataFrameORNULL"),
+setReplaceMethod("elementMetadata", c("AnnotatedList", "DataFrameORNULL"),
           function(x, value) {
             if (!is.null(value) && length(x) != nrow(value))
               stop("the number of rows in elementMetadata 'value' ",
