@@ -8,7 +8,6 @@
 
 \alias{[,DataFrame-method}
 \alias{[<-,DataFrame-method}
-\alias{c,DataFrame-method}
 \alias{cbind}
 \alias{cbind,DataFrame-method}
 \alias{dim,DataFrame-method}
@@ -16,8 +15,6 @@
 \alias{is.array,DataFrame-method}
 \alias{rbind}
 \alias{rbind,DataFrame-method}
-\alias{rep,DataFrame-method}
-\alias{rev,DataFrame-method}
 \alias{seqextract,DataFrame-method}
 \alias{tail,DataFrame-method}
 \alias{window,DataFrame-method}
@@ -47,11 +44,6 @@
   In the code snippets below, \code{x} is a DataFrame object.
 
   \describe{
-    \item{}{
-      \code{c(x, ...)}:
-      This is the same as \code{cbind(x, ...)}. It differs from the behavior of
-      \code{c} for data.frame objects, since that produces a list.
-    }
     \item{}{
       \code{cbind(...)}: Creates a new \code{DataFrame} by combining the columns
       of the \code{DataFrame} objects in \code{...}.
@@ -83,15 +75,6 @@
     \item{}{
       \code{length(x)}:
       Return the number of columns in the DataFrame object.
-    }
-    \item{}{
-      \code{rep(x, times)}:
-      Return a new DataFrame object made of the repeated rows.
-    }
-    \item{}{
-      \code{rev(x)}:
-      Return a new DataFrame object made of the original rows in the reverse
-      order.
     }
     \item{}{
       \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:

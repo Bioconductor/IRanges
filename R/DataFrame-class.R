@@ -21,8 +21,6 @@ setMethod("[", "DataFrame", function(x, i, j, ..., drop = FALSE)
 setReplaceMethod("[", "DataFrame", function(x, i, j,..., value)
                  stop("attempt to modify the value of a ", class(x), " instance"))
 
-setMethod("c", "DataFrame", function(x, ..., recursive = FALSE) cbind(x, ...))
-
 setGeneric("cbind", function(..., deparse.level=1) standardGeneric("cbind"),
            signature = "...")
 
@@ -60,17 +58,6 @@ setGeneric("rbind", function(..., deparse.level=1) standardGeneric("rbind"),
 setMethod("rbind", "DataFrame", function(..., deparse.level=1)
           stop("missing 'rbind' method for DataFrame class ",
                class(list(...)[[1]])))
-
-setMethod("rep", "DataFrame", function(x, times)
-          x[rep.int(seq_len(nrow(x)), times),,drop = FALSE])
-
-setMethod("rev", "DataFrame",
-          function(x) {
-              if (nrow(x) == 0)
-                  x
-              else
-                  x[nrow(x):1,,drop = FALSE]  
-          })
   
 setMethod("seqextract", "DataFrame",
           function(x, start=NULL, end=NULL, width=NULL)
