@@ -20,6 +20,7 @@ exportClasses(
     TypedList, AnnotatedList,
     TypedListLike, AnnotatedTypedListLike,
     CompressedTypedListLike, SimpleTypedListLike,
+    AnnotatedCompressedTypedListLike, AnnotatedSimpleTypedListLike,
     LogicalList, CompressedLogicalList, SimpleLogicalList,
     IntegerList, CompressedIntegerList, SimpleIntegerList,
     NumericList, CompressedNumericList, SimpleNumericList,
