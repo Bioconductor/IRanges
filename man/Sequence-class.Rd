@@ -34,8 +34,7 @@
 \alias{subseq}
 \alias{subseq<-}
 \alias{subseq,XSequence-method}
-\alias{subseq,vector-method}
-\alias{subseq<-,ANY-method}
+\alias{subseq<-,XSequence-method}
 \alias{seqextract,XSequence-method}
 \alias{window,XSequence-method}
 \alias{as.numeric,XSequence-method}
@@ -318,12 +317,6 @@
 
   x3[length(x3):1]
   x3[length(x3):1, drop=FALSE]
-
-  x5 <- LETTERS
-  subseq(x5, 8, 11) <- x5[11:8]  # swap 8<->11 and 9<->10 elements
-  subseq(x5, start=1, width=0) <- c("xx", "yyy")  # insert 2 elements at the beginning
-  subseq(x5, end=-1, width=0) <- letters[1:3]  # insert 3 elements at the end
-  subseq(x5, end=-4, width=5) <- NULL  # remove 5 elements before the just added ones
 }
 
 \keyword{methods}

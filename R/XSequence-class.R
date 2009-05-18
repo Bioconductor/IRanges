@@ -54,18 +54,7 @@ setMethod("subseq", "XSequence",
     }
 )
 
-setMethod("subseq", "vector",
-    function(x, start=NA, end=NA, width=NA)
-    {
-        solved_SEW <- solveSubseqSEW(length(x), start, end, width)
-        .Call("vector_subsetbyranges", x, start(solved_SEW), width(solved_SEW),
-              PACKAGE="IRanges")
-    }
-)
-
-### Works as long as subseq() works on 'x' and c() works on objects of the
-### same class as 'x'.
-setReplaceMethod("subseq", "ANY",
+setReplaceMethod("subseq", "XSequence",
     function(x, start=NA, end=NA, width=NA, value)
     {
         solved_SEW <- solveSubseqSEW(length(x), start, end, width)
