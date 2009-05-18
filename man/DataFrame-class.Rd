@@ -35,7 +35,7 @@
     \item{}{\code{dim(x)}:
       Get the length two integer vector indicating in the first and second
       element the number of rows and columns, respectively. This implies the
-      existence of \code{cbind(x)} and \code{rbind(x)}.
+      existence of \code{nrow(x)} and \code{ncol(x)}.
     }
   }
 }
