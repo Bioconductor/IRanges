@@ -341,6 +341,28 @@ setClass("Partitioning",
     )
 )
 
+### The default methods below assume that the "length + start/end/width" API
+### is already implemented.
+
+setMethod("[[", "Partitioning",
+    function(x, i, j, ...)
+    {
+        i <- checkAndTranslateDbleBracketSubscript(x, i)
+        ## The purpose of the code below is to extract 'start(x)[i] - 1'
+        ## (stored in 'ans_shift') and 'width(x)[i]' (stored in 'ans_length')
+        ## in the fastest possible way. Looks like a convoluted way to
+        ## extract those 2 values but it is actually 1000x faster than the
+        ## naive way.
+        ans_shift <- 0L
+        ans_length <- end(x)[i]
+        if (i >= 2L) {
+            ans_shift <- end(x)[i - 1L]
+            ans_length <- ans_length - ans_shift
+        }
+        seq_len(ans_length) + ans_shift
+    }
+)
+
 ### Pretty inefficient.
 setMethod("togroup", "Partitioning",
     function(x, j=NULL)

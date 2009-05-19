@@ -95,7 +95,7 @@ setAs("Sequence", "Views",
 setMethod("[[", "Views",
     function(x, i, j, ...)
     {
-        i <- checkAndTranslateDbleBracketSubscript(x = x, i = i)
+        i <- checkAndTranslateDbleBracketSubscript(x, i)
         start <- start(x)[i]
         end <- end(x)[i]
         if (start < 1L || end > length(subject(x)))

@@ -48,6 +48,7 @@
 \alias{Partitioning-class}
 \alias{Partitioning}
 
+\alias{[[,Partitioning-method}
 \alias{togroup,Partitioning-method}
 \alias{grouplength,Partitioning-method}
 \alias{names,Partitioning-method}
