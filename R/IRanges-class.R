@@ -168,7 +168,8 @@ setValidity2("NormalIRanges", .valid.NormalIRanges)
 ### Any Ranges object can be turned into an IRanges instance.
 setAs("Ranges", "IRanges",
     function(from)
-        new2("IRanges", start=start(from), width=width(from), check=FALSE)
+        new2("IRanges", start=start(from), width=width(from),
+             NAMES = names(from), check=FALSE)
 )
 
 ### Helper function (not exported) used by the "coerce" methods defined in
