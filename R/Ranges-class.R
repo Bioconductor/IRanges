@@ -7,7 +7,7 @@
 ### points and on the domain of integers.
 ###
 
-setClass("Ranges", contains="VIRTUAL")
+setClass("Ranges", representation("VIRTUAL"), contains="ListLike")
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -106,6 +106,17 @@ setMethod("as.integer", "Ranges",
     {
         x <- x[width(x) > 0]
         mseq(start(x), end(x))
+    }
+)
+
+setMethod("[[", "Ranges",
+    function(x, i, j, ...)
+    {
+        i <- checkAndTranslateDbleBracketSubscript(x = x, i = i)
+        if (width(x)[i] == 0L)
+            integer(0)
+        else
+            start(x)[i]:end(x)[i]
     }
 )
 

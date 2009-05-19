@@ -24,6 +24,7 @@
 \alias{as.matrix,Ranges-method}
 \alias{as.data.frame,Ranges-method}
 \alias{as.integer,Ranges-method}
+\alias{[[,Ranges-method}
 \alias{show,Ranges-method}
 \alias{[<-,Ranges-method}
 \alias{[,Ranges-method}
@@ -161,6 +162,11 @@
       \code{as.integer(x)}: Convert \code{x} into an integer vector, by
       converting each range into the integer sequence formed by
       \code{from:to} and concatenating them together.
+    }
+    \item{}{
+      \code{x[[i]]}:
+      Return integer vector \code{start(x[i]):end(x[i])} denoted by \code{i}.
+      Subscript \code{i} can be a single integer or a character string.
     }
     \item{}{
       \code{x[i]}:

@@ -341,23 +341,6 @@ setClass("Partitioning",
     )
 )
 
-### The default methods below assume that the "length + start/end/width" API
-### is already implemented.
-
-setMethod("[[", "Partitioning",
-    function(x, i, j, ...)
-    {
-        i <- callNextMethod()  # calls "[[" method for ListLike objects
-        ans_shift <- 0L
-        ans_length <- end(x)[i]
-        if (i >= 2L) {
-            ans_shift <- end(x)[i - 1L]
-            ans_length <- ans_length - ans_shift
-        }
-        seq_len(ans_length) + ans_shift
-    }
-)
-
 ### Pretty inefficient.
 setMethod("togroup", "Partitioning",
     function(x, j=NULL)
