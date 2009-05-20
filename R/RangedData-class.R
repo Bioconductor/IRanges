@@ -36,6 +36,14 @@ setMethod("values", "RangedData", function(x) x@values)
 setGeneric("ranges", function(x, ...) standardGeneric("ranges"))
 setMethod("ranges", "RangedData", function(x) x@ranges)
 
+setGeneric("ranges<-", function(x, ..., value) standardGeneric("ranges<-"))
+setReplaceMethod("ranges", "RangedData", function(x, value) {
+  if (!identical(lapply(ranges(x), names), lapply(value, names)))
+    stop("'value' must have same length and names as current 'ranges'")
+  x@ranges <- value
+  x
+})
+
 ## range delegates
 setMethod("start", "RangedData", function(x) start(ranges(x)))
 setMethod("end", "RangedData", function(x) end(ranges(x)))
@@ -445,9 +453,10 @@ setAs("RangesList", "RangedData",
 
 setMethod("show", "RangedData", function(object) {
   cat(class(object), ": ", nrow(object), " ranges by ", ncol(object),
-      " columns\n", sep = "")
+      " column(s) on ", length(object), " sequence(s)\n", sep = "")
   cat(labeledLine("columns", colnames(object)))
-  cat(labeledLine("sequences", names(object)))
+  if (!is.null(names))
+    cat(labeledLine("sequences", names(object)))
 })
 
 ### =========================================================================

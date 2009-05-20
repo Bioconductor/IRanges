@@ -125,7 +125,7 @@ export(
     nir_list,
     active, "active<-",
     maskedwidth, maskedratio,
-    ranges,
+    ranges, "ranges<-",
     subseq, "subseq<-",
     seqextract,
     subject, Views, subviews, trim,
