@@ -7,7 +7,7 @@ setClass("AnnotatedTypedListLike",
         representation(
                        "VIRTUAL",
                        elementMetadata = "DataFrameORNULL"
-        ),
+                       ),
         prototype(elementType="ANYTHING")
 )
 

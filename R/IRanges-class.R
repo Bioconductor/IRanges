@@ -169,7 +169,7 @@ setValidity2("NormalIRanges", .valid.NormalIRanges)
 setAs("Ranges", "IRanges",
     function(from)
         new2("IRanges", start=start(from), width=width(from),
-             NAMES = names(from), check=FALSE)
+             NAMES=names(from), check=FALSE)
 )
 
 ### Helper function (not exported) used by the "coerce" methods defined in
