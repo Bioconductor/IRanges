@@ -381,9 +381,14 @@
     }
     \item{}{
       \code{seqextract(x, start = NULL, end = NULL, width = NULL)}:
-      Creates a new sequence using consecutive subsequences from \code{x}
+      Creates a new Rle object using consecutive subsequences from \code{x}
       specified by two of the three following values:  \code{start}, \code{end},
       and \code{width}. See \link{seqextract} for more details.
+    }
+    \item{}{
+      \code{subset(x, subset)}:
+      Return a new Rle object made of the subset using logical vector
+      \code{subset}.
     }
     \item{}{
       \code{summary(object, ..., digits = max(3, getOption("digits") - 3))}:

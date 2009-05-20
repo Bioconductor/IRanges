@@ -15,6 +15,7 @@
 \alias{seqextract}
 \alias{seqextract,Sequence-method}
 \alias{seqextract,vector-method}
+\alias{subset,Sequence-method}
 \alias{tail,Sequence-method}
 \alias{window,Sequence-method}
 \alias{window,vector-method}
@@ -161,6 +162,11 @@
       Like \code{window}, except that multiple subsequences can be requested.
       The requested subsequences are concatenated. If the concatenation is
       undesirable, consider using \code{\link{Views}}.
+    }
+    \item{}{
+      \code{subset(x, subset)}:
+      Return a new Sequence object made of the subset using logical vector
+      \code{subset}.
     }
     \item{}{
       \code{tail(x, n = 6L)}:

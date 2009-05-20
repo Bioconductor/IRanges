@@ -84,6 +84,8 @@ test_Rle_general <- function() {
     checkIdentical(rev(x), as.vector(rev(xRle)))
     checkIdentical(as.vector(seqextract(xRle, start = 1:3, width = 1:3)),
                    x[c(1,2,3,3,4,5)])
+    checkIdentical(as.vector(subset(xRle, rep(c(TRUE, FALSE), length.out = length(x)))),
+                   subset(x, rep(c(TRUE, FALSE), length.out = length(x))))
     checkIdentical(sort(c(x,x)), as.vector(sort(c(xRle,xRle))))
     checkIdentical(summary(x), summary(xRle))
     checkIdentical(table(as.vector(x)), table(xRle))

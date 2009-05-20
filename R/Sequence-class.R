@@ -71,6 +71,14 @@ setMethod("seqextract", "vector",
               .Call("vector_subsetbyranges", x, start(ir), width(ir), PACKAGE="IRanges")
           })
 
+setMethod("subset", "Sequence",
+          function (x, subset, ...) 
+          {
+              if (!is.logical(subset)) 
+                  stop("'subset' must be logical")
+              x[subset & !is.na(subset)]
+          })
+
 setMethod("tail", "Sequence",
           function(x, n = 6L, ...)
           {
