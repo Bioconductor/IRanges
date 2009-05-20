@@ -301,22 +301,34 @@ setMethod("[", "XDataFrame",
               dim[2] <- length(x)
             }
 
-            if (!missing(i) && (!is.logical(i) || (is.logical(i) && !all(i)))) {
+            if (!missing(i)) {
+              useI <- TRUE
               prob <- checkIndex(i, row = TRUE)
               if (!is.null(prob))
                 stop("selecting rows: ", prob)
-              if (is.character(i))
+              if (is.character(i)) {
                 i <- pmatch(i, rownames(x), duplicates.ok = TRUE)
-              else if (is.logical(i))
-                i <- which(i)
-              else if (is.null(i))
+              } else if (is.logical(i)) {
+                if (all(i)) {
+                  useI <- FALSE
+                } else {
+                  i <- which(i)
+                }
+              } else if (is.null(i)) {
                 i <- integer()
-              else if (is(i, "Rle"))
-                i <- which(i)
-              x@listData <- lapply(as.list(x), `[`, i, drop = FALSE)
-              dim[1] <- length(seq(dim[1])[i]) # may have 0 cols, no rownames
-              x@nrows <- dim[1]
-              x@rownames <- rownames(x)[i]
+              } else if (is(i, "Rle")) {
+                if (all(runValue(i))) {
+                  useI <- FALSE
+                } else {
+                  i <- which(i)
+                }
+              }
+              if (useI) {
+                x@listData <- lapply(as.list(x), `[`, i, drop = FALSE)
+                dim[1] <- length(seq(dim[1])[i]) # may have 0 cols, no rownames
+                x@nrows <- dim[1]
+                x@rownames <- rownames(x)[i]
+              }
             }
 
             if (missing(drop)) ## drop by default if only one column left
