@@ -191,7 +191,7 @@ exportMethods(
     c,
     union, intersect, setdiff,
     split,
-    eval,
+    eval, with,
     t,
     is.na, "%in%",
     

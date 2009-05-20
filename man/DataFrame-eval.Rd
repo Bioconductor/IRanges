@@ -1,15 +1,17 @@
 \name{DataFrame-eval}
 \alias{DataFrame-eval}
 \alias{eval,expressionORlanguage,DataFrame-method}
+\alias{with,DataFrame-method}
 
-\title{DataFrame eval functions}
+\title{Evaluations of expressions on DataFrame objects}
 
 \description{
-  Utility functions for manipulating \code{\linkS4class{DataFrame}} objects.
+  Functions to evaluate expressions on \code{\linkS4class{DataFrame}} objects.
 }
 
 \usage{
 \S4method{eval}{expressionORlanguage,DataFrame}(expr, envir, enclos = parent.frame())
+\S4method{with}{DataFrame}(data, expr, \dots)
 }
 
 \arguments{
@@ -19,6 +21,9 @@
     \code{expr}.}
   \item{enclos}{The \code{environment} in which to look for symbols that
     do not exist in the environment formed from \code{DataFrame}.}
+  \item{data}{The \code{DataFrame} object in which to evaluate
+    \code{expr}.}
+  \item{\dots}{arguments to be passed to future methods.}
 }
 
 \value{The result of expression evaluation.}
@@ -47,8 +52,9 @@
 
 \examples{
   score <- c(10L, 2L, NA)
-  rd <- XDataFrame(score)
-  eval(quote(score > 3), rd)
+  x <- XDataFrame(score)
+  eval(quote(score > 3), x)
+  with(x, score > 3)
 }
 
 \keyword{utilities}
