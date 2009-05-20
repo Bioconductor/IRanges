@@ -4,11 +4,16 @@ Immediate TODO list
 - Herve or Michael: Provide a way to reduce ranges separated by a max
   distance or a min overlap (Michael's suggestion).
 
+- Alignment data structure and lift-over functionality
+
+- Clean up endomorphisms
+
 Long term TODO list
 -------------------
 
 - Ranges:
-  - "unique" for removing duplicate ranges
+  - "unique" for removing duplicate ranges, or should this be an alias for
+    disjoin (every integer in the set is unique)
   - "match" for exact matching
   - operator aliases
     - ranges & ranges (pintersect)
@@ -35,7 +40,8 @@ Long term TODO list
 
 - RangedData:
   - 'merge' for SQL-type join operations based on range overlap
-  - "rangeMins", "rangeMaxs", "rangeSums"
+  - "rangeQuantiles", "rangeMins", "rangeMaxs", "rangeSums"
+    - could support radius for smoothing
 
 - SplitXDataFrame:
   - rbind
