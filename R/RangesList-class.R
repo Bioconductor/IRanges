@@ -225,6 +225,10 @@ setMethod("overlap", c("RangesList", "RangesList"),
             ans
           })
 
+setMethod("%in%", c("RangesList", "RangesList"),
+          function(x, table)
+          !is.na(unlist(overlap(table, x, multiple = FALSE), use.names=FALSE)))
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Arithmetic Operations
 ###

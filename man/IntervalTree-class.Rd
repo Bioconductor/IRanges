@@ -23,6 +23,7 @@
 \alias{overlap,Ranges,integer-method}
 \alias{overlap,RangesList,RangesList-method}
 \alias{\%in\%,Ranges,Ranges-method}
+\alias{\%in\%,RangesList,RangesList-method}
 \alias{countOverlap}
 \alias{countOverlap,Ranges,Ranges-method}
 
@@ -100,8 +101,9 @@
       \code{x \%in\% table}:
       Shortcut for finding the ranges in \code{x} that overlap any of
       the ranges in \code{table}. Both \code{x} and \code{table} should
-      be \code{Ranges} objects. The result is a \code{logical} vector
-      of the same length as \code{x}.
+      be \code{Ranges} or \code{RangesList} objects. The result is a
+      \code{logical} vector of the same length as \code{x} (unlisted if
+      a \code{RangesList}).
     }
     \item{}{
       \code{countOverlap(subject, query)}: Return the count of the
