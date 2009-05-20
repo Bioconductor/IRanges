@@ -166,7 +166,7 @@
     \item{}{
       \code{subset(x, subset)}:
       Return a new Sequence object made of the subset using logical vector
-      \code{subset}.
+      \code{subset}, where missing values are taken as FALSE.
     }
     \item{}{
       \code{tail(x, n = 6L)}:

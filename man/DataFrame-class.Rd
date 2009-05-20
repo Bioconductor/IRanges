@@ -86,8 +86,9 @@
       \code{subset(x, subset, select, drop = FALSE)}:
       Return a new DataFrame object using:
       \describe{
-        \item{subset}{logical expression indicating rows to keep}
-        \item{select}{expression indicating columns to keep}
+        \item{subset}{logical expression indicating rows to keep, where missing
+          values are taken as FALSE.}
+        \item{select}{expression indicating columns to keep.}
         \item{drop}{passed on to \code{[} indexing operator.}
       }
     }

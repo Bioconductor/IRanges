@@ -77,22 +77,21 @@ setMethod("subset", "DataFrame",
           function (x, subset, select, drop = FALSE, ...) 
           {
               if (missing(subset)) 
-                  r <- TRUE
+                  i <- TRUE
               else {
-                  e <- substitute(subset)
-                  r <- eval(e, x, parent.frame())
-                  if (!is.logical(r)) 
+                  i <- eval(substitute(subset), x, parent.frame())
+                  if (!is.logical(i)) 
                       stop("'subset' must evaluate to logical")
-                  r <- r & !is.na(r)
+                  i <- i & !is.na(i)
               }
               if (missing(select)) 
-                  vars <- TRUE
+                  j <- TRUE
               else {
                   nl <- as.list(seq_len(ncol(x)))
                   names(nl) <- names(x)
-                  vars <- eval(substitute(select), nl, parent.frame())
+                  j <- eval(substitute(select), nl, parent.frame())
               }
-              x[r, vars, drop = drop]
+              x[i, j, drop = drop]
           })
 
 setMethod("tail", "DataFrame",
