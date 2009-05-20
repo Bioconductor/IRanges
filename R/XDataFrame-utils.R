@@ -15,8 +15,8 @@ setMethod("cbind", "XDataFrame", function(..., deparse.level=1) XDataFrame(...))
 
 setMethod("rbind", "XDataFrame", function(..., deparse.level=1) {
   args <- list(...)
-  hasrows <- unlist(lapply(args, nrow)) > 0
-  hascols <- unlist(lapply(args, ncol)) > 0
+  hasrows <- unlist(lapply(args, nrow), use.names=FALSE) > 0
+  hascols <- unlist(lapply(args, ncol), use.names=FALSE) > 0
 
   if (!any(hasrows | hascols)) {
     return(XDataFrame())
@@ -39,7 +39,7 @@ setMethod("rbind", "XDataFrame", function(..., deparse.level=1) {
 
   if (ncol(xdf) == 0) {
     ans <- XDataFrame()
-    ans@nrows <- sum(unlist(lapply(args, nrow)))
+    ans@nrows <- sum(unlist(lapply(args, nrow), use.names=FALSE))
   } else {
     cn <- colnames(xdf)
     cl <- unlist(lapply(as.list(xdf, use.names = FALSE), class))
@@ -47,7 +47,7 @@ setMethod("rbind", "XDataFrame", function(..., deparse.level=1) {
     cols <- lapply(seq_len(length(xdf)), function(i) {
       cols <- lapply(args, `[[`, cn[i])
       if (factors[i]) { # combine factor levels, coerce to character
-        levs <- unique(do.call(c, lapply(cols, levels)))
+        levs <- unique(unlist(lapply(cols, levels), use.names=FALSE))
         cols <- lapply(cols, as.character)
       }
       combined <- do.call(c, cols)
@@ -62,7 +62,7 @@ setMethod("rbind", "XDataFrame", function(..., deparse.level=1) {
     ans <- do.call(XDataFrame, cols)
   }
 
-  rn <- unlist(lapply(args, rownames))
+  rn <- unlist(lapply(args, rownames), use.names=FALSE)
   if (!is.null(rn)) {
     if (length(rn) != nrow(ans)) {
       rn <- NULL
