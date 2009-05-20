@@ -154,3 +154,27 @@ setMethod("aggregate", "DataFrame",
                          simplify = simplify)
               }
           })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Evaluating
+###
+
+setClassUnion("expressionORlanguage", c("expression", "language"))
+
+setMethod("eval", c("expressionORlanguage", "DataFrame"),
+          function(expr, envir,
+                   enclos = if(is.list(envir) || is.pairlist(envir))
+                   parent.frame() else baseenv())
+          {
+              env <- new.env(parent = enclos)
+              for (col in colnames(envir))
+                  makeActiveBinding(col, function()
+                                    {
+                                        val <- envir[[col]]
+                                        rm(list=col, envir=env)
+                                        assign(col, val, env)
+                                        val
+                                    }, env)
+              eval(expr, env)
+          })
