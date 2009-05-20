@@ -48,53 +48,6 @@ and algorithm can be explained in an intuitive, graphical manner. We
 expect that packages that apply \IRanges{} to a particular problem domain
 will provide vignettes with relevant, realistic examples.
 
-\section{Definitions}
-
-The \IRanges{} package uses the terms \textit{sequence}, \textit{list-like},
-\textit{list}, \textit{ranges}, and \textit{views} in a very particular manner.
-This section provides their definitions.
-
-\subsection{Sequence}
-\begin{enumerate}
-\item A sequence is an indexed and ordered collection of elements.
-\item Any two similarly typed sequences can be combined to form a larger
-  sequence whose element values are identical to the original element values.
-  (In \R{} terminology, there is a standard \Rfunction{c} method for the
-   sequence.)
-\item Any collection of sequence elements can be extracted to form a new
-  sequence containing element values identical to the elements selected. (In
-  \R{} terminology, there is a standard \Rfunction{[} method for the sequence.)
-\item The \Rclass{vector} virtual class and its descendants provide examples of
-  sequences in \R{}. 
-\end{enumerate}
-
-\subsection{List-Like}
-\begin{enumerate}
-\item An object is list-like if it represents an indexed collection of
-  non-atomic elements.
-\item Any non-atomic element can be extracted from a list-like object. (In \R{}
-  terminology, there is a standard \Rfunction{[[} method for the list-like
-  class.)
-\item The \Rclass{list} class in \R{} is an example of a list-like class.
-\end{enumerate}
-
-\subsection{List}
-\begin{enumerate}
-\item A list is both a sequence and list-like.
-\item The \Rclass{list} class in \R{} is an example.
-\end{enumerate}
-
-\subsection{Ranges}
-\begin{enumerate}
-\item A range is an integer interval.
-\item The values in a range are typically interpreted as indices in a sequence.
-\end{enumerate}
-
-\subsection{Views}
-\begin{enumerate}
-\item A view is the mapping of a range on to a sequence.
-\end{enumerate}
-
 \section{Sequences}
 
 The \IRanges{} package is primarily interested in the representation,
@@ -522,6 +475,53 @@ implementations exist, such as \Rclass{XStringViews} in the
 %%\Rclass{XIntegerORNULL}
 %%\Rclass{XIntegerViews}
 %%\Rclass{XNumeric}
+
+\section{Glossary}
+
+The \IRanges{} package uses the terms \textit{sequence}, \textit{list-like},
+\textit{list}, \textit{ranges}, and \textit{views} in a very particular manner.
+This section provides their definitions.
+
+\subsection{Sequence}
+\begin{enumerate}
+\item A sequence is an indexed and ordered collection of elements.
+\item Any two similarly typed sequences can be combined to form a larger
+  sequence whose element values are identical to the original element values.
+  (In \R{} terminology, there is a standard \Rfunction{c} method for the
+   sequence.)
+\item Any collection of sequence elements can be extracted to form a new
+  sequence containing element values identical to the elements selected. (In
+  \R{} terminology, there is a standard \Rfunction{[} method for the sequence.)
+\item The \Rclass{vector} virtual class and its descendants provide examples of
+  sequences in \R{}. 
+\end{enumerate}
+
+\subsection{List-Like}
+\begin{enumerate}
+\item An object is list-like if it represents an indexed collection of
+  non-atomic elements.
+\item Any non-atomic element can be extracted from a list-like object. (In \R{}
+  terminology, there is a standard \Rfunction{[[} method for the list-like
+  class.)
+\item The \Rclass{list} class in \R{} is an example of a list-like class.
+\end{enumerate}
+
+\subsection{List}
+\begin{enumerate}
+\item A list is both a sequence and list-like.
+\item The \Rclass{list} class in \R{} is an example.
+\end{enumerate}
+
+\subsection{Ranges}
+\begin{enumerate}
+\item Ranges are a collection of integer intervals.
+\item The values in a range are typically interpreted as indices in a sequence.
+\end{enumerate}
+
+\subsection{Views}
+\begin{enumerate}
+\item Views are ranges with sequence information.
+\end{enumerate}
 
 \begin{table*}[tbp]
 \begin{minipage}{\textwidth}
