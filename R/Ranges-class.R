@@ -345,6 +345,15 @@ setGeneric("overlap", signature = c("object", "query"),
         standardGeneric("overlap")
 )
 
+setGeneric("countOverlap", signature = c("object", "query"),
+           function(object, query, ...) standardGeneric("countOverlap"))
+
+setMethod("countOverlap", c("Ranges", "Ranges"),
+          function(object, query)
+          { ## might be faster someday
+            sum(query %in% object)
+          })
+
 setMethod("%in%", c("Ranges", "Ranges"),
           function(x, table)
           !is.na(overlap(reduce(table), x, multiple = FALSE)))

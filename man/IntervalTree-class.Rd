@@ -23,6 +23,8 @@
 \alias{overlap,Ranges,integer-method}
 \alias{overlap,RangesList,RangesList-method}
 \alias{\%in\%,Ranges,Ranges-method}
+\alias{countOverlap}
+\alias{countOverlap,Ranges,Ranges-method}
 
 \title{Interval Search Trees}
 \description{
@@ -100,6 +102,10 @@
       the ranges in \code{table}. Both \code{x} and \code{table} should
       be \code{Ranges} objects. The result is a \code{logical} vector
       of the same length as \code{x}.
+    }
+    \item{}{
+      \code{countOverlap(subject, query)}: Return the count of the
+      number of ranges in \code{query} that overlap a range in \code{subject}.
     }
   }
   
