@@ -1,7 +1,6 @@
 \name{DataFrame-eval}
 \alias{DataFrame-eval}
 \alias{eval,expressionORlanguage,DataFrame-method}
-\alias{eval,expressionORlanguage,XDataFrame-method}
 
 \title{DataFrame eval functions}
 

@@ -59,13 +59,16 @@ setMethod("eval", c("expressionORlanguage", "RangedData"),
               assign("ranges", val, env) ## cache for further use
               val
             }, env)
-            for (col in colnames(envir))
-              makeActiveBinding(col, function() {
-                val <- envir[[col]]
-                rm(list=col, envir=env)
-                assign(col, val, env)
-                val
-              }, env)
+            for (col in colnames(envir)) {
+              colFun <-
+                eval(parse(text = paste("function() {
+                  val <- envir[[\"", col, "\"]]
+                  rm(list=\"", col, "\", envir=env)
+                  assign(\"", col, "\", val, env)
+                  val
+                }", sep = "")))
+                makeActiveBinding(col, colFun, env)
+            }
             eval(expr, env)
           })
 

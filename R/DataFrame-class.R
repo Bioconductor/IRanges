@@ -189,7 +189,15 @@ setMethod("eval", c("expressionORlanguage", "DataFrame"),
                    parent.frame() else baseenv())
           {
               env <- new.env(parent = enclos)
-              for (col in colnames(envir))
-                  env[[col]] <- envir[[col]]
+              for (col in colnames(envir)) {
+                  colFun <-
+                    eval(parse(text = paste("function() {
+                      val <- envir[[\"", col, "\"]]
+                      rm(list=\"", col, "\", envir=env)
+                      assign(\"", col, "\", val, env)
+                      val
+                    }", sep = "")))
+                  makeActiveBinding(col, colFun, env)
+              }
               eval(expr, env)
           })
