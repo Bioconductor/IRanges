@@ -201,7 +201,7 @@ setMethod("[[", "XDataFrame",
               stop("subscript out of bounds")
             els <- as.list(x, use.names = FALSE)
             names(els) <- names(x)
-            els[[i]][]
+            els[[i]]
           }
           )
 
@@ -365,7 +365,9 @@ setMethod("as.data.frame", "XDataFrame",
               row.names <- rownames(x)
             if (!length(l) && is.null(row.names))
               row.names <- seq_len(nrow(x))
-            do.call(data.frame, c(l, list(row.names = row.names)))
+            ## we call as.data.frame here, because data.frame uses S3 dispatch
+            do.call(data.frame, c(lapply(l, as.data.frame, optional = TRUE),
+                                  list(row.names = row.names)))
           })
 
 ## take data.frames to XDataFrames
