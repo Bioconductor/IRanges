@@ -35,13 +35,12 @@
 
 \title{External Data Frame}
 \description{
-  The \code{XDataFrame} emulates the interface of
-  \code{data.frame}, but it supports the storage of any type of object as a
-  column, as long as the \code{length} and \code{[} methods are
-  implemented. The \dQuote{X} in its name indicates that it attempts to coerce
-  its columns to external \code{\linkS4class{XSequence}} objects in a
-  way that is completely transparent to the user. This helps to avoid
-  unncessary copying.
+  The \code{XDataFrame} extends the \code{\linkS4class{DataFrame}} virtual
+  class and supports the storage of any type of object with \code{length}
+  and \code{[} methods as columns. The \dQuote{X} in its name indicates
+  that it attempts to coerce its columns to external
+  \code{\linkS4class{XSequence}} objects in a way that is completely
+  transparent to the user. This helps to avoid unnecessary copying.
 }
 
 \details{
@@ -54,15 +53,11 @@
   example, combination functions that no row names are desired (they are
   often a luxury when dealing with large data).
 
-  As \code{XDataFrame} derives from \code{\linkS4class{AnnotatedList}},
-  it is possible to set an \code{annotaiton} string. Also, another
-  \code{XDataFrame} can hold metadata on the columns.
+  As \code{XDataFrame} derives from
+  \code{\linkS4class{AnnotatedSimpleTypedListLike}}, it is possible to set
+  an \code{annotation} string. Also, another \code{XDataFrame} can hold
+  metadata on the columns.
 }
-
-\note{ In the future, the general data frame functionality will probably
-  be moved to a \code{DataFrame} class. \code{XDataFrame} will derive
-  from \code{DataFrame} and encapsulate the behavior of attempting to
-  coerce or even requiring columns to be \code{XSequence}.  }
 
 \section{Accessors}{
   In the following code snippets, \code{x} is an \code{XDataFrame}.
@@ -179,6 +174,8 @@
 
 \author{ Michael Lawrence }
 \seealso{
+  \code{\linkS4class{DataFrame}},
+  \code{\linkS4class{AnnotatedSimpleTypedListLike}}, and
   \code{\linkS4class{RangedData}}, which makes heavy use of this class.
 }
 \examples{

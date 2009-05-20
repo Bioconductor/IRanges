@@ -301,7 +301,7 @@ setMethod("[", "XDataFrame",
               dim[2] <- length(x)
             }
 
-            if (!missing(i)) {
+            if (!missing(i) && (!is.logical(i) || (is.logical(i) && !all(i)))) {
               prob <- checkIndex(i, row = TRUE)
               if (!is.null(prob))
                 stop("selecting rows: ", prob)

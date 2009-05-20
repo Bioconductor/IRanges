@@ -58,7 +58,7 @@ setGeneric("rbind", function(..., deparse.level=1) standardGeneric("rbind"),
 setMethod("rbind", "DataFrame", function(..., deparse.level=1)
           stop("missing 'rbind' method for DataFrame class ",
                class(list(...)[[1]])))
-  
+
 setMethod("seqextract", "DataFrame",
           function(x, start=NULL, end=NULL, width=NULL)
           {
@@ -71,6 +71,28 @@ setMethod("seqextract", "DataFrame",
                                  window(x,
                                         start = start(ir)[i],
                                         width = width(ir)[i])))
+          })
+
+setMethod("subset", "DataFrame",
+          function (x, subset, select, drop = FALSE, ...) 
+          {
+              if (missing(subset)) 
+                  r <- TRUE
+              else {
+                  e <- substitute(subset)
+                  r <- eval(e, x, parent.frame())
+                  if (!is.logical(r)) 
+                      stop("'subset' must evaluate to logical")
+                  r <- r & !is.na(r)
+              }
+              if (missing(select)) 
+                  vars <- TRUE
+              else {
+                  nl <- as.list(seq_len(ncol(x)))
+                  names(nl) <- names(x)
+                  vars <- eval(substitute(select), nl, parent.frame())
+              }
+              x[r, vars, drop = drop]
           })
 
 setMethod("tail", "DataFrame",
@@ -169,12 +191,6 @@ setMethod("eval", c("expressionORlanguage", "DataFrame"),
           {
               env <- new.env(parent = enclos)
               for (col in colnames(envir))
-                  makeActiveBinding(col, function()
-                                    {
-                                        val <- envir[[col]]
-                                        rm(list=col, envir=env)
-                                        assign(col, val, env)
-                                        val
-                                    }, env)
+                  env[[col]] <- envir[[col]]
               eval(expr, env)
           })

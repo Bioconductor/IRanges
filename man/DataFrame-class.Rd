@@ -16,6 +16,7 @@
 \alias{rbind}
 \alias{rbind,DataFrame-method}
 \alias{seqextract,DataFrame-method}
+\alias{subset,DataFrame-method}
 \alias{tail,DataFrame-method}
 \alias{window,DataFrame-method}
 \alias{!=,DataFrame,DataFrame-method}
@@ -80,6 +81,15 @@
       \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:
       Like \code{window}, except that multiple subsequences can be requested.
       The requested subsequences are concatenated.
+    }
+    \item{}{
+      \code{subset(x, subset, select, drop = FALSE)}:
+      Return a new DataFrame object using:
+      \describe{
+        \item{subset}{logical expression indicating rows to keep}
+        \item{select}{expression indicating columns to keep}
+        \item{drop}{passed on to \code{[} indexing operator.}
+      }
     }
     \item{}{
       \code{tail(x, n = 6L)}:

@@ -13,3 +13,15 @@ test_DataFrame_basic <- function() {
   checkIdentical(as.data.frame(rbind(x,x)), rbind(y,y))
 #  checkIdentical(as.data.frame(tail(x)), tail(y))
 }
+
+test_DataFrame_subset <- function() {
+  y <- airquality
+  rownames(y) <- as.character(seq_len(nrow(y)))
+  x <- as(y, "XDataFrame")
+  checkIdentical(as.data.frame(subset(x, Temp > 80, select = c(Ozone, Temp))),
+                 subset(y, Temp > 80, select = c(Ozone, Temp)))
+  checkIdentical(as.data.frame(subset(x, Day == 1, select = -Temp)),
+                 subset(y, Day == 1, select = -Temp))
+  checkIdentical(as.data.frame(subset(x, select = Ozone:Wind)),
+                 subset(y, select = Ozone:Wind))
+}
