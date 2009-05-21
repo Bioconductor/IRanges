@@ -324,7 +324,7 @@ setMethod("[", "XDataFrame",
                 }
               }
               if (useI) {
-                x@listData <- lapply(as.list(x), `[`, i, drop = FALSE)
+                x@listData <- lapply(as.list(x), function(y) y[i, drop = FALSE])
                 dim[1] <- length(seq(dim[1])[i]) # may have 0 cols, no rownames
                 x@nrows <- dim[1]
                 x@rownames <- rownames(x)[i]

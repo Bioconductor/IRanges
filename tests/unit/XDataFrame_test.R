@@ -193,6 +193,8 @@ test_XDataFrame_combine <- function() {
   checkTrue(validObject(swsplit))
   swisssplit <- split(swiss, swiss$Education)
   checkIdentical(as.list(lapply(swsplit, as.data.frame)), swisssplit)
+  checkTrue(validObject(split(XDataFrame(IRanges(1:26, 1:26), LETTERS),
+                              letters)))
   
   ## rbind
 
