@@ -1,6 +1,6 @@
-### NOTE: TypedList is an abstract type, so we just test with IntegerList
+### NOTE: List is an abstract type, so we just test with IntegerList
 
-test_TypedList_replace_names <- function() {
+test_List_replace_names <- function() {
   int1 <- c(1L,2L,3L,5L,2L,8L)
   int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)
   for (compress in c(TRUE, FALSE)) {
@@ -16,7 +16,7 @@ test_TypedList_replace_names <- function() {
   }
 }
 
-test_TypedList_extraction <- function() {
+test_List_extraction <- function() {
   int1 <- c(1L,2L,3L,5L,2L,8L)
   int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)
   for (compress in c(TRUE, FALSE)) {
@@ -42,7 +42,7 @@ test_TypedList_extraction <- function() {
   }
 }
 
-test_TypedList_subset <- function() {
+test_List_subset <- function() {
   int1 <- c(1L,2L,3L,5L,2L,8L)
   int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)
   for (compress in c(TRUE, FALSE)) {
@@ -82,7 +82,7 @@ test_TypedList_subset <- function() {
   }
 }
 
-test_TypedList_combine <- function() {
+test_List_combine <- function() {
   int1 <- c(1L,2L,3L,5L,2L,8L)
   int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)
   for (compress in c(TRUE, FALSE)) {
@@ -118,7 +118,7 @@ test_TypedList_combine <- function() {
   }
 }
 
-test_TypedList_apply <- function() {
+test_List_apply <- function() {
   int1 <- c(1L,2L,3L,5L,2L,8L)
   int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)
   for (compress in c(TRUE, FALSE)) {

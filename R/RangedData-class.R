@@ -104,7 +104,10 @@ setReplaceMethod("dimnames", "RangedData",
             }
             x@values <- split(values, inds)
             names(x@values) <- names(x)
-            x@ranges <- TypedListLike(class(x@ranges), ranges)
+              if (is(x@ranges, "CompressedList"))
+                x@ranges <- CompressedList(class(x@ranges), ranges)
+              else
+                x@ranges <- SimpleList(class(x@ranges), ranges)
             x
           })
 
@@ -172,14 +175,6 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
     stop("'universe' must be a single string")
   universe(ranges) <- universe
   new("RangedData", ranges = ranges, values = values)
-}
-
-updateRangedData <- function(object) {
-    if (!is(object, "RangedData"))
-        stop("'object' must inherit from 'RangedData'")
-    return(new("RangedData",
-               ranges = updateTypedList(object@ranges),
-               values = updateTypedList(object@values)))
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -309,7 +304,6 @@ setMethod("[", "RangedData",
               } else {
                 i <- seq_len(nrow(x))
               }
-              ##values <- as.list(values(x))
               values <- unlist(values(x))
               ranges <- as.list(ranges(x))
               w <- cumsum(c(1, sapply(ranges, length)))
@@ -318,18 +312,18 @@ setMethod("[", "RangedData",
               values <- values[i, j, drop=FALSE]
               values <- split(values, sf)
               for (k in seq_len(length(x))) {
-                ##values[[k]] <- values[[k]][si[[k]] - w[k] + 1, j, drop=FALSE]
                 ranges[[k]] <- ranges[[k]][si[[k]] - w[k] + 1]
               }
               if (drop) {
                 whichDrop <- which(unlist(lapply(ranges, length)) == 0)
                 if (length(whichDrop) > 0) {
-                  ##values <- values[-whichDrop]
                   ranges <- ranges[-whichDrop]
                 }
               }
-              ranges <- TypedListLike(class(x@ranges), ranges)
-              ##values <- initialize(x@values, elements = values)
+              if (is(x@ranges, "CompressedList"))
+                ranges <- CompressedList(class(x@ranges), ranges)
+              else
+                ranges <- SimpleList(class(x@ranges), ranges)
             } else if (!missing(i)) {
               checkIndex(i, length(x))
               ranges <- ranges[i]
@@ -467,11 +461,11 @@ setMethod("show", "RangedData", function(object) {
 
 setClass("RangedDataList",
          prototype = prototype(elementType = "RangedData"),
-         contains = c("AnnotatedSimpleTypedListLike", "Sequence"))
+         contains = "SimpleList")
 
 RangedDataList <- function(...)
 {
-  TypedListLike("RangedDataList", list(...))
+  SimpleList("RangedDataList", list(...))
 }
 
 setMethod("unlist", "RangedDataList",

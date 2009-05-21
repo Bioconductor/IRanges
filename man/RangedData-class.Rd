@@ -24,7 +24,6 @@
 
 % Constructor:
 \alias{RangedData}
-\alias{updateRangedData}
 
 % Coercion:
 \alias{as.data.frame,RangedData-method}
@@ -91,14 +90,6 @@
   mode is helpful when ranges from different spaces must be treated
   separately or when the data is too large to process over all spaces at
   once.
-}
-
-\section{Object Updating}{
-  \describe{
-    \item{}{updateRangedData(object): Updates instances of objects the inherit
-      from an older RangedData class definition to match the current RangedData
-      class definition.}
-  }
 }
 
 \section{Accessor methods}{

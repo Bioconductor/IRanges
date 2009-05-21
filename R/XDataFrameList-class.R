@@ -4,10 +4,10 @@
 
 setClass("XDataFrameList", representation("VIRTUAL"),
          prototype = prototype(elementType = "XDataFrame"),
-         contains = c("AnnotatedTypedListLike", "Sequence"))
+         contains = "Sequence")
 setClass("SimpleXDataFrameList",
          prototype = prototype(elementType = "XDataFrame"),
-         contains = c("AnnotatedSimpleTypedListLike", "XDataFrameList"))
+         contains = c("SimpleList", "XDataFrameList"))
 
 setClass("SplitXDataFrameList", representation("VIRTUAL"),
          prototype = prototype(elementType = "XDataFrame"),
@@ -18,7 +18,7 @@ setClass("SimpleSplitXDataFrameList",
 setClass("CompressedSplitXDataFrameList",
          prototype = prototype(elementType = "XDataFrame",
                                unlistData = new("XDataFrame")),
-         contains = c("SplitXDataFrameList", "AnnotatedCompressedTypedListLike"))
+         contains = c("SplitXDataFrameList", "CompressedList"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -84,16 +84,15 @@ setValidity2("SplitXDataFrameList", .valid.SplitXDataFrameList)
 
 XDataFrameList <- function(...)
 {
-  TypedListLike("SimpleXDataFrameList", list(...))
+  SimpleList("SimpleXDataFrameList", list(...))
 }
 
 SplitXDataFrameList <- function(..., compress = FALSE)
 {
   if (compress)
-    listClass <- "CompressedSplitXDataFrameList"
+    CompressedList("CompressedSplitXDataFrameList", list(...))
   else
-    listClass <- "SimpleSplitXDataFrameList"
-  TypedListLike(listClass, list(...))
+    SimpleList("SimpleSplitXDataFrameList", list(...))
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

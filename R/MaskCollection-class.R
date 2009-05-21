@@ -3,7 +3,7 @@
 ### -------------------------------------------------------------------------
 
 setClass("MaskCollection",
-    contains="ListLike",
+    contains="RangesList",
     representation(
         nir_list="list",    # a list of NormalIRanges objects
         width="integer",
@@ -251,7 +251,7 @@ setMethod("maskedratio", "MaskCollection", function(x) maskedwidth(x) / width(x)
 setMethod("[[", "MaskCollection",
     function(x, i, j, ...)
     {
-        i <- callNextMethod()
+        i <- checkAndTranslateDbleBracketSubscript(x, i)
         nir_list(x)[[i]]
     }
 )
@@ -313,7 +313,7 @@ setMethod("[", "MaskCollection",
             slot(x, "NAMES", check=FALSE) <- names(x)[i]
         if (!is.null(desc(x)))
             slot(x, "desc", check=FALSE) <- desc(x)[i]
-        x
+        callNextMethod(x, i)
     }
 )
 

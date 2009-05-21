@@ -135,7 +135,9 @@ test_RangedData_subset <- function() {
 
   checkIdenticalRD <- function(a, b) {
     checkIdentical(ranges(a), ranges(b))
-    checkIdentical(as.data.frame(values(a)), as.data.frame(values(b)))
+    checkIdentical(length(values(a)), length(values(b)))
+    if (length(values(a)) > 0)
+        checkIdentical(as.data.frame(values(a)), as.data.frame(values(b)))
   }
 
   checkIdenticalRD(rd[numeric()], erd)

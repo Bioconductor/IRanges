@@ -96,15 +96,15 @@
   \describe{
     \item{}{
       \code{x[i]}: Subsets the filter rules using the
-      same interface as for \code{\linkS4class{TypedListLike}}.
+      same interface as for \code{\linkS4class{Sequence}}.
     }
     \item{}{
       \code{x[[i]]}: Extracts an expression or function via the same
-      interface as for \code{\linkS4class{TypedListLike}}.
+      interface as for \code{\linkS4class{Sequence}}.
     }
     \item{}{
       \code{x[[i]] <- value}: The same interface as for
-      \code{\linkS4class{TypedListLike}}. The default active state for new
+      \code{\linkS4class{Sequence}}. The default active state for new
       rules is \code{TRUE}.
     }
   }

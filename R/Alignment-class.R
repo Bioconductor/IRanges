@@ -10,7 +10,7 @@ setClass("AlignmentSpace",
 
 setClass("Alignment",
          prototype = prototype(elementType = "AlignmentSpace"),
-         contains = "SimpleTypedListLike")
+         contains = "SimpleList")
 
 read.chain <- function(path, exclude = "_") {
   .Call("readChain", path, exclude, PACKAGE="IRanges")

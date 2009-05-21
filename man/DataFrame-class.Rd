@@ -6,7 +6,6 @@
 \alias{DataFrame-class}
 \alias{DataFrame}
 
-\alias{[,DataFrame-method}
 \alias{[<-,DataFrame-method}
 \alias{cbind}
 \alias{cbind,DataFrame-method}
@@ -26,8 +25,8 @@
 \title{DataFrame objects}
 
 \description{
-  The DataFrame virtual class provides an interface for the storing parallel/
-  aligned sequences, like a basic data.frame object. It extends \code{ListLike}.
+  The DataFrame virtual class provides an interface for the storing rectangular
+  data sets, like a basic data.frame object. It extends \code{Sequence}.
 }
 
 \section{Accessors}{
@@ -137,17 +136,17 @@
           result should be simplified to a vector or matrix if possible.}
       }
     }
-  }
-  \item{}{
-    \code{by(data, INDICES, FUN, ..., simplify = TRUE)}:
-    Apply \code{FUN} to each group of \code{data}, an \code{XDataFrame},
-    formed by the factor (or list of factors) \code{INDICES}. Exactly 
-    the same contract as \code{\link{as.data.frame}}.
+    \item{}{
+      \code{by(data, INDICES, FUN, ..., simplify = TRUE)}:
+      Apply \code{FUN} to each group of \code{data}, an \code{DataFrame},
+      formed by the factor (or list of factors) \code{INDICES}. Exactly 
+      the same contract as \code{\link{as.data.frame}}.
+    }
   }
 }
 
 \seealso{
-  \link{ListLike-class},
+  \link{Sequence-class},
   \link{XDataFrame-class},
   \code{\link{solveUserSEW}}
 }

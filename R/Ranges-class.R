@@ -1,4 +1,4 @@
-### =========================================================================
+c### =========================================================================
 ### Ranges objects
 ### -------------------------------------------------------------------------
 ###
@@ -7,7 +7,7 @@
 ### points and on the domain of integers.
 ###
 
-setClass("Ranges", contains="ListLike", representation("VIRTUAL"))
+setClass("Ranges", contains="IntegerList", representation("VIRTUAL"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -130,16 +130,16 @@ setMethod("show", "Ranges",
             showme <- as.data.frame(object, row.names=paste("[", seq_len(n), "]", sep=""))
         } else {
             sketch <- function(x)
-                c(window(x, 1L, 9L), "...", window(x, length(x)-8L, length(x)))
+              c(window(x, 1L, 9L), "...", window(x, length(x)-8L, length(x)))
             showme <-
-                  data.frame(start=sketch(start(object)),
-                             end=sketch(end(object)),
-                             width=sketch(width(object)),
-                             row.names=c(paste("[", 1:9, "]", sep=""), "...",
-                                         paste("[", (n-8L):n, "]", sep="")),
-                             check.rows=TRUE,
-                             check.names=FALSE,
-                             stringsAsFactors=FALSE)
+              data.frame(start=sketch(start(object)),
+                         end=sketch(end(object)),
+                         width=sketch(width(object)),
+                         row.names=c(paste("[", 1:9, "]", sep=""), "...",
+                                     paste("[", (n-8L):n, "]", sep="")),
+                         check.rows=TRUE,
+                         check.names=FALSE,
+                         stringsAsFactors=FALSE)
             NAMES <- names(object)
             if (!is.null(NAMES))
                 showme$names <- sketch(NAMES)
@@ -203,12 +203,18 @@ setReplaceMethod("[", "Ranges",
 )
 
 ### FIXME: hopefully temporary
-setMethod("[", "Ranges", function(x, i, j, ..., drop) {
-  cl <- class(x)
-  mc <- match.call()
-  mc$x <- as(x, "IRanges")
-  as(eval(mc), cl)
-})
+setMethod("[", "Ranges",
+    function(x, i, j, ..., drop) {
+        if (is(x, "IRanges"))
+            callNextMethod()
+        else {
+            cl <- class(x)
+            mc <- match.call()
+            mc$x <- as(x, "IRanges")
+            as(eval(mc), cl)
+        }
+    }
+)
 
 setMethod("rep", "Ranges",
     function(x, ...)

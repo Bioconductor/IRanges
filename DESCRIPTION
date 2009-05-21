@@ -7,7 +7,7 @@ Description: The IRanges class and its extensions are low-level containers
 	allow the storage of additional information attached to each
 	chromosome region as well as a hierarchical relationship between
 	these regions.
-Version: 1.3.14
+Version: 1.3.15
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Biocore Team c/o BioC user list <bioconductor@stat.math.ethz.ch>
 biocViews: Infrastructure, Genetics
@@ -22,9 +22,9 @@ ExtraLicenses: The following files in the 'src' directory are licensed for all
 Collate: validity-utils.R
 	utils.R
 	Annotated-class.R
-	ListLike-class.R
 	Sequence-class.R
 	DataFrame-class.R
+	AtomicList-class.R
 	Ranges-class.R
 	Ranges-comparison.R
 	IRanges-class.R
@@ -34,31 +34,28 @@ Collate: validity-utils.R
 	IntervalTree-class.R
 	IntervalTree-utils.R
 	Grouping-class.R
+	Views-class.R
+	Rle-class.R
+	RleViews-class.R
+	RleViews-utils.R
 	SequencePtr-class.R
 	RawPtr-class.R
 	IntegerPtr-class.R
 	NumericPtr-class.R
-	Views-class.R
 	XSequence-class.R
 	XRaw-class.R
 	XInteger-class.R
 	XIntegerViews-class.R
 	XIntegerViews-utils.R
 	XNumeric-class.R
-	Rle-class.R
-	RleViews-class.R
-	RleViews-utils.R
-	MaskCollection-class.R
-	read.Mask.R
-	TypedListLike-class.R
-	AnnotatedTypedListLike-class.R
-	TypedList-class.R
-	AnnotatedList-class.R
+	SimpleList-class.R
+	CompressedList-class.R
+	AtomicList-impl.R
 	XDataFrame-class.R
 	XDataFrame-utils.R
-	AtomicList-class.R
 	XDataFrameList-class.R
 	RangesList-class.R
+	MaskCollection-class.R
 	RangedData-class.R
 	FilterRules-class.R
 	RDApplyParams-class.R
@@ -66,6 +63,7 @@ Collate: validity-utils.R
 	RangesMatching-class.R
 	RangesMatchingList-class.R
 	Alignment-class.R
+	read.Mask.R
 	reverse.R
 	coverage.R
 	debug.R

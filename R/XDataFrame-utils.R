@@ -8,7 +8,7 @@
 
 setMethod("split", "XDataFrame",
           function(x, f, drop = FALSE) {
-            TypedListLike("CompressedSplitXDataFrameList", x, splitFactor = f)
+            CompressedList("CompressedSplitXDataFrameList", x, splitFactor = f)
           })
 
 setMethod("cbind", "XDataFrame", function(..., deparse.level=1) XDataFrame(...))

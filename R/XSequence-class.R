@@ -36,7 +36,9 @@ setGeneric("subseq<-", signature="x",
 ### Not exported.
 solveSubseqSEW <- function(seq_length, start, end, width)
 {
-    solved_SEW <- try(solveUserSEW(seq_length, start=start, end=end, width=width))
+    solved_SEW <-
+      try(solveUserSEW(seq_length, start=start, end=end, width=width),
+          silent = TRUE)
     if (is(solved_SEW, "try-error"))
         stop("Invalid sequence coordinates.\n",
              "  Please make sure the supplied 'start', 'end' and 'width' arguments\n",

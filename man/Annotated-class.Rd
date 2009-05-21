@@ -29,7 +29,7 @@
   }
 }
 
-\author{Patrick Aboyoun}
-\seealso{\code{\linkS4class{AnnotatedTypedListLike}} for example implementations}
+\author{P. Aboyoun}
+\seealso{\code{\linkS4class{Sequence}} for example implementations}
 \keyword{methods}
 \keyword{classes}

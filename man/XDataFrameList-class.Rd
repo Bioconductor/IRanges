@@ -25,7 +25,7 @@
   The \code{SplitXDataFrameList} class contains the additional restriction
   that all the columns be of the same name and type. Internally it is stored
   as a list of \code{XDataFrame} objects and extends
-  \code{\linkS4class{AnnotatedTypedListLike}}.}
+  \code{\linkS4class{Sequence}}.}
 
 \section{Accessors}{
   In the following code snippets, \code{x} is a \code{XDataFrameList}.
@@ -45,8 +45,7 @@
       Concatenates the \code{XDataFrame}
       objects in \code{...} into a new \code{XDataFrameList}, optionally
       compressing them, which is only possible if the elements can be
-      combined via \code{rbind}, see
-      \code{\linkS4class{AnnotatedTypedListLike}}.}
+      combined via \code{rbind}, see \code{\linkS4class{Sequence}}.}
     \item{}{\code{SplitXDataFrameList(..., compress = FALSE)}: Concatenates the
       \code{XDataFrame} objects in \code{...} into a new
       \code{SplitXDataFrameList}. Note that all arguments must have the same

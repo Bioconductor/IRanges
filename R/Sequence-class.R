@@ -6,21 +6,212 @@
 ### i.e. an ordered set of elements.
 ###
 
-setClass("Sequence", representation("VIRTUAL"))
+setClassUnion("ANYTHING", methods:::.BasicClasses)
 
+setClass("Sequence",
+         contains="Annotated",
+         representation(
+                        "VIRTUAL",
+                        elementMetadata = "DataFrameORNULL",
+                        elementType = "character"
+                        ),
+         prototype(elementType="ANYTHING")
+)
+
+
+### [[ operation
+checkAndTranslateDbleBracketSubscript <- function(x, i, j, ...)
+{
+    subscripts <- list(...)
+    if ("exact" %in% names(subscripts)) {
+        exact <- subscripts[["exact"]]
+        subscripts[["exact"]] <- NULL
+    } else {
+        exact <- TRUE  # default
+    }
+    if (!missing(i))
+        subscripts$i <- i
+    if (!missing(j))
+        subscripts$j <- j
+    if (length(subscripts) != 1L)
+        stop("incorrect number of subscripts")
+    subscript <- subscripts[[1]]
+    if (!is.character(subscript) && !is.numeric(subscript))
+        stop("invalid subscript type '", class(subscript), "'")
+    if (length(subscript) < 1L)
+        stop("attempt to extract less than one element")
+    if (length(subscript) > 1L)
+        stop("attempt to extract more than one element")
+    if (is.na(subscript))
+        stop("invalid subscript NA")
+    if (is.numeric(subscript)) {
+        if (!is.integer(subscript))
+            subscript <- as.integer(subscript)
+        if (subscript < 1L || length(x) < subscript)
+            stop("subscript out of bounds")
+        return(subscript)
+    }
+    ## 'subscript' is a character string
+    names_x <- names(x)
+    if (is.null(names_x))
+        stop("attempt to extract by name when elements have no names")
+    #if (subscript == "")
+    #    stop("invalid subscript \"\"")
+    ans <- charmatch(subscript, names_x)
+    if (is.na(ans))
+        stop("subscript \"", subscript, "\" matches no name")
+    if (ans == 0L) {
+        if (isTRUE(exact))
+            stop("subscript \"", subscript, "\" matches no name or more than one name")
+        stop("subscript \"", subscript, "\" matches more than one name")
+    }
+    if (isTRUE(exact) && nchar(subscript) != nchar(names_x[ans]))
+        stop("subscript \"", subscript, "\" matches no name")
+    ans
+}
+setMethod("[[", "Sequence", function(x, i, j, ...)
+          stop("missing '[[' method for Sequence class ", class(x)))
+setMethod("$", "Sequence", function(x, name) x[[name, exact=FALSE]])
+
+setMethod("lapply", "Sequence",
+          function(X, FUN, ...)
+          {
+              FUN <- match.fun(FUN)
+              ii <- seq_len(length(X))
+              names(ii) <- names(X)
+              lapply(ii, function(i) FUN(X[[i]], ...))
+          })
+
+### The implicit generic would dispatch on the X, FUN, simplify and USE.NAMES
+### args but we don't want that.
+setGeneric("sapply", signature="X",
+           function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
+           standardGeneric("sapply"))
+
+setMethod("sapply", "Sequence",
+          function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
+          {
+              FUN <- match.fun(FUN)
+              ii <- seq_len(length(X))
+              names(ii) <- names(X)
+              sapply(ii, function(i) FUN(X[[i]], ...), simplify=simplify,
+                     USE.NAMES=USE.NAMES)
+          })
+
+setAs("Sequence", "list", function(from) as.list(from))
+
+setMethod("as.list", "Sequence", function(x, ...) lapply(x, identity))
+
+setGeneric("isEmpty", function(x) standardGeneric("isEmpty"))
+
+setMethod("isEmpty", "ANY",
+          function(x)
+          {
+              if (is.atomic(x))
+                  return(length(x) == 0L)
+              if (!is.list(x) && !is(x, "Sequence"))
+                  stop("isEmpty() is not defined for objects of class ", class(x))
+              ## Recursive definition
+              if (length(x) == 0)
+                  return(logical(0))
+              sapply(x, function(xx) all(isEmpty(xx)))
+          })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Accessor methods.
+###
+
+setGeneric("elementLengths", function(x) standardGeneric("elementLengths"))
+
+setGeneric("elementType", function(x, ...) standardGeneric("elementType"))
+setMethod("elementType", "Sequence", function(x) x@elementType)
+
+setGeneric("elementMetadata",
+           function(x, ...) standardGeneric("elementMetadata"))
+setMethod("elementMetadata", "Sequence",
+          function(x) {
+              if ("elementMetadata" %in% names(attributes(x))) {
+                  emd <- x@elementMetadata
+                  if (!is.null(emd) && !is.null(names(x)))
+                      rownames(emd) <- names(x)
+              } else {
+                  emd <- NULL
+              }
+              emd
+          })
+
+setGeneric("elementMetadata<-",
+           function(x, ..., value) standardGeneric("elementMetadata<-"))
+setReplaceMethod("elementMetadata", c("Sequence", "DataFrameORNULL"),
+                 function(x, value) {
+                     if ("elementMetadata" %in% names(attributes(x))) {
+                         if (!is.null(value) && length(x) != nrow(value))
+                             stop("the number of rows in elementMetadata 'value' ",
+                                     "(if non-NULL) must match the length of 'x'")
+                         if (!is.null(value))
+                             rownames(value) <- NULL
+                         x@elementMetadata <- value
+                     }
+                     x
+                 })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Validity.
+###
+
+.valid.Sequence.elementMetadata <- function(x) {
+    emd <- elementMetadata(x)
+    if (!is.null(emd) && nrow(emd) != length(x))
+        "number of rows in non-NULL 'elementMetadata(x)' must match length of 'x'"
+    else if (!is.null(emd) && !identical(rownames(emd), names(x)))
+        "the rownames of non-NULL 'elementMetadata(x)' must match the names of 'x'"
+    else NULL
+}
+.valid.Sequence <- function(x)
+{
+    c(.valid.Sequence.elementMetadata(x))
+}
+setValidity2("Sequence", .valid.Sequence)
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Subsetting.
+###
+
+setMethod("[", "Sequence",
+          function(x, i, j, ..., drop)
+          {
+              if (!is.null(elementMetadata(x)))
+                  elementMetadata(x) <- elementMetadata(x)[i,,drop=FALSE]
+              x
+          })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Combining and splitting.
+###
+
+setMethod("append", c("Sequence", "Sequence"),
+          function(x, values, after=length(x)) {
+              if (!is.null(elementMetadata(x)))
+                  elementMetadata(x) <-
+                    rbind(elementMetadata(x), elementMetadata(values))
+              x
+          })
+
+setMethod("c", "Sequence",
+          function(x, ..., recursive = FALSE) {
+              if (!is.null(elementMetadata(x)))
+                  elementMetadata(x) <-
+                    do.call(rbind, lapply(c(list(x), ...), elementMetadata))
+              x
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Basic methods.
 ###
 
-setMethod("[", "Sequence", function(x, i, j, ..., drop = FALSE)
-          stop("missing '[' method for Sequence class ", class(x)))
-
 setReplaceMethod("[", "Sequence", function(x, i, j,..., value)
                  stop("attempt to modify the value of a ", class(x), " instance"))
-
-setMethod("c", "Sequence", function(x, ..., recursive = FALSE)
-          stop("missing 'c' method for Sequence class ", class(x)))
 
 setMethod("head", "Sequence",
           function(x, n = 6L, ...)
@@ -98,7 +289,9 @@ setMethod("tail", "Sequence",
 ### Not exported.
 solveWindowSEW <- function(seq_length, start, end, width)
 {
-    solved_SEW <- try(solveUserSEW(seq_length, start=start, end=end, width=width))
+    solved_SEW <-
+      try(solveUserSEW(seq_length, start=start, end=end, width=width),
+          silent = TRUE)
     if (is(solved_SEW, "try-error"))
         stop("Invalid sequence coordinates.\n",
              "  Please make sure the supplied 'start', 'end' and 'width' arguments\n",

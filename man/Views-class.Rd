@@ -136,9 +136,8 @@
 
 \seealso{
   \link{IRanges-class},
-  \link{ListLike-class},
+  \link{Sequence-class},
   \link{IRanges-utils},
-  \link{Sequence},
   \link{XSequence}.
 
   Some direct subclasses of the Views class:

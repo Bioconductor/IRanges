@@ -7,7 +7,7 @@
 ### subclasses are containers for representing groupings.
 ###
 
-setClass("Grouping", contains=c("ListLike", "VIRTUAL"))
+setClass("Grouping", contains=c("IntegerList", "VIRTUAL"))
 
 setGeneric("nobj", function(x) standardGeneric("nobj"))
 
@@ -141,7 +141,7 @@ setMethod("nobj", "H2LGrouping", function(x) length(x@high2low))
 setMethod("[[", "H2LGrouping",
     function(x, i, j, ...)
     {
-        i <- callNextMethod()  # calls "[[" method for ListLike objects
+        i <- checkAndTranslateDbleBracketSubscript(x, i)
         if (is.na(x@high2low[i]))
             c(i, x@low2high[[i]])
         else

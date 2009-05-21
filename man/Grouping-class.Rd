@@ -167,7 +167,7 @@
   }
 
   Given that \code{length}, \code{names} and \code{[[} are defined
-  for Grouping objects, those objects can be considered \link{ListLike}
+  for Grouping objects, those objects can be considered \link{Sequence}
   objects. In particular, \code{as.list} works out-of-the-box on them.
 
   One important property of any Grouping object \code{x} is
@@ -235,7 +235,7 @@
 \author{H. Pages and P. Aboyoun}
 
 \seealso{
-  \link{ListLike-class},
+  \link{Sequence-class},
   \link{Ranges-class},
   \link{IRanges-class},
   \link{successiveIRanges},
@@ -269,7 +269,7 @@
   togrouplength(x)  # same as 'grouplength(x, togroup(x))'
   togrouplength(x, 5:2)
 
-  ## The ListLike API:
+  ## The Sequence API:
   as.list(x)
   sapply(x, length)
 
@@ -302,7 +302,7 @@
   end(x)
   width(x)
 
-  ## The ListLike API:
+  ## The Sequence API:
   as.list(x)
   sapply(x, length)
 

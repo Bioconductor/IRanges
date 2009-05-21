@@ -9,7 +9,7 @@ setClassUnion("vectorORfactor", c("vector", "factor"))
 
 setClass("Rle",
         representation(values = "vectorORfactor",
-                lengths = "integer"),
+                       lengths = "integer"),
          contains = "Sequence",
          validity = function(object)
          {
@@ -818,7 +818,7 @@ setMethod("sd", signature = c(x = "Rle"),
           function(x, na.rm = FALSE) sqrt(var(x, na.rm = na.rm)))
 
 .medianDefault <- stats::median.default
-environment(.medianDefault) <- globalenv()
+environment(.medianDefault) <- topenv()
 setMethod("median", "Rle",
           function(x, na.rm = FALSE)
           {
@@ -831,7 +831,7 @@ setMethod("median", "Rle",
           })
 
 .quantileDefault <- stats::quantile.default
-environment(.quantileDefault) <- globalenv()
+environment(.quantileDefault) <- topenv()
 setMethod("quantile", "Rle",
           function(x, probs = seq(0, 1, 0.25), na.rm = FALSE, names = TRUE, 
                    type = 7, ...)
@@ -846,7 +846,7 @@ setMethod("quantile", "Rle",
           })
 
 .madDefault <- stats::mad
-environment(.madDefault) <- globalenv()
+environment(.madDefault) <- topenv()
 setMethod("mad", "Rle",
           function(x, center = median(x), constant = 1.4826, na.rm = FALSE,
                    low = FALSE, high = FALSE)

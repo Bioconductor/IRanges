@@ -160,7 +160,6 @@ cor(xVector, yVector)
 shiftApply(249:251, yVector, xVector, FUN = cor)
 @
 
-
 \subsection{Run Length Encoding}
 
 Up until this point we have used ordinary R vector to represent sequences,
@@ -257,14 +256,14 @@ collection class, \Rclass{RleList}, for storing \Rclass{Rle} objects.
 In fact, we have done the same for many of the other classes in
 \IRanges{}, as well as the base atomic vectors (raw, logical,
 integer, numeric, complex and character). All of the collection
-classes derive from the virtual class \Rclass{ListLike}, the
+classes derive from the virtual class \Rclass{Sequence}, the
 derivatives of which are all obligated to support two basic list
 operations: element extraction and length retrieval.
 
 %% EXAMPLE (element extraction, length)
 
 Most collection types, including \Rclass{RleList}, derive from
-\Rclass{TypedList}, a \Rclass{ListLike} derivative that implements
+\Rclass{TypedList}, a \Rclass{Sequence} derivative that implements
 the requisite operations, as well as a number of additional
 features. These include familiar list functions, such as
 \Rfunction{c} and \Rfunction{lapply}.

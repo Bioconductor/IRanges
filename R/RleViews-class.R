@@ -26,6 +26,9 @@ setMethod("Views", "Rle",
                  Class="RleViews")
 )
 
+setGeneric("slice", signature="x",
+           function(x, lower=-Inf, upper=Inf, ...) standardGeneric("slice"))
+
 setMethod("slice", "Rle",
           function(x, lower = -Inf, upper = Inf,
                    includeLower = TRUE, includeUpper = TRUE)

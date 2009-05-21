@@ -17,7 +17,7 @@ setClass("XDataFrame",
                         ),
          prototype(rownames = NULL,
                    nrows = 0L),
-         contains = c("AnnotatedSimpleTypedListLike", "DataFrame"))
+         contains = c("DataFrame", "SimpleList"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.

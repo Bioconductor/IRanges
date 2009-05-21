@@ -6,7 +6,7 @@
 ### sequences.
 ###
 
-setClass("DataFrame", contains = "ListLike", representation("VIRTUAL"))
+setClass("DataFrame", contains = "Sequence", representation("VIRTUAL"))
 
 setClassUnion("DataFrameORNULL", c("DataFrame", "NULL"))
 
@@ -14,9 +14,6 @@ setClassUnion("DataFrameORNULL", c("DataFrame", "NULL"))
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Basic methods.
 ###
-
-setMethod("[", "DataFrame", function(x, i, j, ..., drop = FALSE)
-          stop("missing '[' method for DataFrame class ", class(x)))
 
 setReplaceMethod("[", "DataFrame", function(x, i, j,..., value)
                  stop("attempt to modify the value of a ", class(x), " instance"))

@@ -53,10 +53,9 @@
   example, combination functions that no row names are desired (they are
   often a luxury when dealing with large data).
 
-  As \code{XDataFrame} derives from
-  \code{\linkS4class{AnnotatedSimpleTypedListLike}}, it is possible to set
-  an \code{annotation} string. Also, another \code{XDataFrame} can hold
-  metadata on the columns.
+  As \code{XDataFrame} derives from \code{\linkS4class{Sequence}}, it is
+  possible to set an \code{annotation} string. Also, another
+  \code{XDataFrame} can hold metadata on the columns.
 }
 
 \section{Accessors}{
@@ -175,7 +174,7 @@
 \author{ Michael Lawrence }
 \seealso{
   \code{\linkS4class{DataFrame}},
-  \code{\linkS4class{AnnotatedSimpleTypedListLike}}, and
+  \code{\linkS4class{Sequence}}, and
   \code{\linkS4class{RangedData}}, which makes heavy use of this class.
 }
 \examples{

@@ -8,10 +8,26 @@
 
 \alias{[,Sequence-method}
 \alias{[<-,Sequence-method}
+\alias{[[,Sequence-method}
+\alias{$,Sequence-method}
+\alias{append,Sequence,Sequence-method}
+\alias{as.list,Sequence-method}
 \alias{c,Sequence-method}
+\alias{coerce,Sequence,list-method}
+\alias{elementType}
+\alias{elementType,Sequence-method}
+\alias{elementMetadata}
+\alias{elementMetadata,Sequence-method}
+\alias{elementMetadata<-}
+\alias{elementMetadata<-,Sequence,DataFrameORNULL-method}
 \alias{head,Sequence-method}
+\alias{isEmpty}
+\alias{isEmpty,ANY-method}
+\alias{lapply,Sequence-method}
 \alias{rep,Sequence-method}
 \alias{rev,Sequence-method}
+\alias{sapply}
+\alias{sapply,Sequence-method}
 \alias{seqextract}
 \alias{seqextract,Sequence-method}
 \alias{seqextract,vector-method}
@@ -26,94 +42,73 @@
 \alias{shiftApply,Sequence,Sequence-method}
 \alias{shiftApply,vector,vector-method}
 
-% XSequence class, functions and methods:
-\alias{class:XSequence}
-\alias{XSequence-class}
-\alias{XSequence}
-
-\alias{length,XSequence-method}
-\alias{subseq}
-\alias{subseq<-}
-\alias{subseq,XSequence-method}
-\alias{subseq<-,XSequence-method}
-\alias{seqextract,XSequence-method}
-\alias{window,XSequence-method}
-\alias{as.numeric,XSequence-method}
-\alias{show,XSequence-method}
-
-% XRaw class, functions and methods:
-\alias{class:XRaw}
-\alias{XRaw-class}
-\alias{XRaw}
-
-\alias{coerce,raw,XRaw-method}
-\alias{coerce,raw,XSequence-method}
-\alias{coerce,numeric,XRaw-method}
-\alias{as.raw,XRaw-method}
-\alias{as.integer,XRaw-method}
-\alias{as.vector,XRaw,missing-method}
-\alias{[,XRaw-method}
-\alias{c,XRaw-method}
-
-% XInteger class, functions and methods:
-\alias{class:XInteger}
-\alias{XInteger-class}
-\alias{XInteger}
-
-\alias{coerce,numeric,XInteger-method}
-\alias{coerce,integer,XSequence-method}
-\alias{as.integer,XInteger-method}
-\alias{as.vector,XInteger,missing-method}
-\alias{[,XInteger-method}
-\alias{==,XInteger,XInteger-method}
-
-% XNumeric class, functions and methods:
-\alias{class:XNumeric}
-\alias{XNumeric-class}
-\alias{XNumeric}
-
-\alias{coerce,numeric,XNumeric-method}
-\alias{coerce,numeric,XSequence-method}
-\alias{as.numeric,XNumeric-method}
-\alias{as.vector,XNumeric,missing-method}
-\alias{[,XNumeric-method}
-\alias{show,XNumeric-method}
-\alias{==,XNumeric,XNumeric-method}
-
 
 \title{Sequence objects}
 
 \description{
-  The Sequence virtual class is a general container for storing
-  a sequence i.e. an ordered set of elements. These containers
-  come in two types:  XSequence and Rle.
+  The Sequence virtual class serves as the heart of the IRanges package
+  and has over 80 subclasses. It serves a similar role as \link[base]{vector}
+  in base R. The Sequence class includes three slots: \code{elementType},
+  \code{metadata} (via extension of the \linkS4class{Annotated} class), and
+  \code{elementMetadata}. Their purpose is defined below.
 
-  The XSequence virtual class is a general container for storing
-  an "external sequence".
-  The following classes derive directly from the XSequence class.
+  The \code{elementType} slot is the preferred location for Sequence
+  subclasses to store the type of data represented in the sequence. It is
+  designed to take a character of length 1 representing the class of the
+  sequence elements. While the Sequence class performs no validity checking
+  based on \code{elementType}, if a subclass expects elements to be of a
+  given type, that subclass is expected to perform the necessary validity
+  checking. For example, the subclass \link{IntegerList} has
+  \code{elementType = "integer"} and its validity method checks if this
+  condition is TRUE.
 
-  The XRaw class is a container for storing an external sequence
-  of bytes (stored as char values at the C level).
+  The Sequence class supports the storage of global and element-wise metadata
+  with its \code{metadata} and \code{elementMetadata} slots. The
+  \code{metadata} slot can store a list of metadata pertaining to the whole
+  object and the \code{elementMetadata} slot can store a
+  \linkS4class{DataFrame} (or \code{NULL}) for element-wise metadata with a
+  row for each element and a column for each metadata variable.
 
-  The XInteger class is a container for storing an external sequence
-  of integer values (stored as int values at the C level).
+  To be functional, a class that inherits from Sequence must define a
+  \code{length} and \code{names} methods as well as one or both of the
+  subscript methods \code{"[["} and \code{"["}.
+}
 
-  The XNumeric class is a container for storing an external sequence
-  of numeric values (stored as double values at the C level).
-
-  Also the \link[Biostrings]{XString} class from the Biostrings package
-
-  The purpose of the X* containers is to provide a "pass by address"
-  semantic and also to avoid the overhead of copying the sequence
-  data when a linear subsequence needs to be extracted.
-
-  For information on the Rle class, type \code{help(Rle)}.
+\section{Accessors}{
+  In the following code snippets, \code{x} is a Sequence object.
+  
+  \describe{
+    \item{}{\code{length(x)}: Get the number of elements in \code{x}}
+    \item{}{\code{names(x)}, \code{names(x) <- value}: Get or set the names of
+      the elements in the Sequence.
+    }
+    \item{}{\code{elementType(x)}: Get the scalar string naming the class from
+      which all elements must derive.
+    }
+    \item{}{\code{isEmpty(x)}: Gets a logical vector indicating which elements
+      are empty.
+    }
+    \item{}{\code{metadata(x)}, \code{metadata(x) <- value}:
+      Get or set the list holding arbitrary R objects as annotations. May be,
+      and often is, empty.
+    }
+    \item{}{\code{elementMetadata(x), elementMetadata(x) <- value}:
+      Get or set the \linkS4class{DataFrame} holding local metadata on each
+      element. The rows are named according to the names of the elements.
+      Optional, may be \code{NULL}.
+    }
+  }
 }
 
 \section{Combining}{
   In the code snippets below, \code{x} is a Sequence object.
 
   \describe{
+    \item{}{\code{append(x, values, after = length(x))}: Insert the
+      \code{Sequence} \code{values} onto \code{x} at the position given by
+      \code{after}. \code{values} must have an \code{elementType} that extends
+      that of \code{x}.
+    }
     \item{}{
       \code{c(x, ...)}:
       Combine \code{x} and the Sequence objects in \code{...} together.
@@ -124,7 +119,7 @@
   }
 }
 
-\section{Subsetting (Both Sequence and XSequence)}{
+\section{Subsetting}{
   In the code snippets below, \code{x} is a Sequence object or regular R vector
   object. The R vector object methods for \code{window} and \code{seqextract}
   are defined in this package and the remaining methods are defined in base R.
@@ -132,10 +127,20 @@
   \describe{
     \item{}{
       \code{x[i, drop=TRUE]}:
-      Return a new Sequence object made of the selected elements (subscript
-      \code{i} must be an NA-free numeric vector specifying the positions of
-      the elements to select). The \code{drop} argument specifies whether or
-      not to coerce the returned sequence to a standard vector.
+      If defined, return a new Sequence object made of the selected elements
+      (subscript \code{i} must be an NA-free numeric vector specifying the
+      positions of the elements to select). The \code{drop} argument specifies
+      whether or not to coerce the returned sequence to a standard vector.
+    }
+    \item{}{
+      \code{x[[i]]}:
+      If defined, return the selected element \code{i}, where \code{i} is an
+      integer or character vector of length 1.
+    }
+    \item{}{
+      \code{x$name}:
+      Similar to \code{x[[name]]}, but \code{name} is taken literally as an
+      element name.
     }
     \item{}{
       \code{head(x, n = 6L)}:
@@ -189,46 +194,13 @@
   }
 }
 
-\section{Subsetting (XSequence ONLY)}{
-  In the code snippets below, \code{x} is an XSequence object.
+\section{Coersion}{
+  In the code snippets below, \code{x} is a Sequence object.
 
   \describe{
     \item{}{
-      \code{subseq(x, start=NA, end=NA, width=NA)}:
-      Extract the subsequence from \code{x} specified by \code{start},
-      \code{end} and \code{width}.
-      The supplied start/end/width values are solved by a call to
-      \code{solveUserSEW(length(x), start=start, end=end, width=width)}
-      and therefore must be compliant with the rules of the SEW
-      (Start/End/Width) interface (see \code{?solveUserSEW} for the
-      details).
-
-      A note about performance: \code{subseq} does NOT copy the sequence data
-      of an XSequence object. Hence it's very efficient and is therefore the
-      recommended way to extract a linear subsequence (i.e. a set of consecutive
-      elements) from an XSequence object. For example, extracting a 100Mb
-      subsequence from Human chromosome 1 (a 250Mb \link[Biostrings]{DNAString}
-      object) with \code{subseq} is (almost) instantaneous and has (almost) no
-      memory footprint (the cost in time and memory does not depend on the
-      length of the original sequence or on the length of the subsequence to
-      extract).
-    }
-    \item{}{
-      \code{subseq(x, start=NA, end=NA, width=NA) <- value}:
-      Replace the subsequence specified on the left (i.e. the subsequence
-      in \code{x} specified by \code{start}, \code{end} and \code{width})
-      by \code{value}.
-      \code{value} must belong to the same class as \code{x}, or to one of
-      its subclasses, or must be \code{NULL}.
-      This replacement method can modify the length of \code{x}, depending
-      on how the length of the left subsequence compares to the length of
-      \code{value}.
-      It can be used for inserting elements in \code{x} (specify an empty
-      left subsequence for this) or deleting elements from \code{x} (use
-      a \code{NULL} rigth value for this).
-      Unlike the extraction method above, this replacement method always
-      copies the sequence data of \code{x} (even for XSequence objects).
-      NOTE: Only works for XRaw (and derived) objects for now.
+      \code{as.list(x, ...)}, \code{as(from, "list")}:
+      Turns \code{x} into a standard list.
     }
   }
 }
@@ -258,6 +230,20 @@
       }
     }
     \item{}{
+      \code{lapply(X, FUN, ...)}:
+      Like the standard \code{\link[base]{lapply}} function defined in the
+      base package, the \code{lapply} method for Sequence objects returns
+      a list of the same length as \code{X}, with each element being the
+      result of applying \code{FUN} to the corresponding element of \code{X}.
+    }
+    \item{}{
+      \code{sapply(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)}:
+      Like the standard \code{\link[base]{sapply}} function defined in the
+      base package, the \code{sapply} method for Sequence objects is a
+      user-friendly version of \code{lapply} by default returning a vector
+      or matrix if appropriate.
+    }
+    \item{}{
       \code{shiftApply(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)}:
       Let \code{i} be the indices in \code{SHIFT},
       \code{X_i = window(X, 1 + OFFSET, length(X) - SHIFT[i])}, and
@@ -281,48 +267,19 @@
   }
 }
 
+\author{P. Aboyoun}
+
 \seealso{
-  \link{Rle-class},
-  \link{Views-class},
-  \code{\link{solveUserSEW}},
-  \link[Biostrings]{DNAString-class}
+  \linkS4class{Annotated},
+  \linkS4class{DataFrame},
+  \linkS4class{SimpleList},
+  \linkS4class{Ranges},
+  \linkS4class{Rle},
+  \linkS4class{XSequence} for example implementations
 }
 
 \examples{
-  ## ---------------------------------------------------------------------
-  ## A. XRaw OBJECTS
-  ## ---------------------------------------------------------------------
-
-  x1 <- XRaw(4)  # values are not initialized
-  x1
-  x2 <- as(c(255, 255, 199), "XRaw")
-  x2
-  y <- c(x1, x2, NULL, x1)  # NULLs are ignored
-  y
-  subseq(y, start=-4)
-  subseq(y, start=-4) <- x2
-  y
-
-  ## ---------------------------------------------------------------------
-  ## B. XInteger OBJECTS
-  ## ---------------------------------------------------------------------
-
-  x3 <- XInteger(12, val=c(-1:10))
-  x3
-  length(x3)
-
-  ## Subsetting
-  x4 <- XInteger(99999, val=sample(99, 99999, replace=TRUE) - 50)
-  x4
-  subseq(x4, start=10)
-  subseq(x4, start=-10)
-  subseq(x4, start=-20, end=-10)
-  subseq(x4, start=10, width=5)
-  subseq(x4, end=10, width=5)
-  subseq(x4, end=10, width=0)
-
-  x3[length(x3):1]
-  x3[length(x3):1, drop=FALSE]
+  showClass("Sequence")  # shows (some of) the known subclasses
 }
 
 \keyword{methods}
