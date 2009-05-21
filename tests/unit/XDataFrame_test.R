@@ -228,3 +228,12 @@ test_XDataFrame_combine <- function() {
   colnames(other)[1] <- "foo"
   checkException(rbind(other, sw), silent = TRUE)
 }
+
+test_XDataFrame_looping <- function() {
+  data(iris)
+  actual <- by(iris, iris$Species, nrow)
+  ## a bit tricky because of the 'call' attribute
+  attr(actual, "call")[[1]] <- as.name("by")
+  iris <- XDataFrame(iris, row.names=rownames(iris))
+  checkIdentical(actual, by(iris, iris$Species, nrow))
+}

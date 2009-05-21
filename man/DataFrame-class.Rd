@@ -21,7 +21,7 @@
 \alias{window,DataFrame-method}
 \alias{!=,DataFrame,DataFrame-method}
 \alias{aggregate,DataFrame-method}
-
+\alias{by,DataFrame-method}
 
 \title{DataFrame objects}
 
@@ -137,6 +137,12 @@
           result should be simplified to a vector or matrix if possible.}
       }
     }
+  }
+  \item{}{
+    \code{by(data, INDICES, FUN, ..., simplify = TRUE)}:
+    Apply \code{FUN} to each group of \code{data}, an \code{XDataFrame},
+    formed by the factor (or list of factors) \code{INDICES}. Exactly 
+    the same contract as \code{\link{as.data.frame}}.
   }
 }
 

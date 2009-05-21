@@ -192,7 +192,7 @@ exportMethods(
     split,
     eval, with,
     t,
-    is.na, "%in%",
+    is.na, "%in%", by,
     
     ## Methods for generics defined in this package:
     sapply,

@@ -176,6 +176,19 @@ setMethod("aggregate", "DataFrame",
               }
           })
 
+setGeneric("by", function(data, INDICES, FUN, ..., simplify = TRUE)
+           standardGeneric("by"))
+
+.by.data.frame <- by.data.frame # so it will find our generic
+environment(.by.data.frame) <- topenv()
+setMethod("by", "DataFrame",
+          function(data, INDICES, FUN, ..., simplify = TRUE) {
+            .mc <- mc <- match.call()
+            .mc[[1]] <- .by.data.frame
+            ans <- eval(.mc)
+            attr(ans, "call") <- mc
+            ans
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Evaluating
