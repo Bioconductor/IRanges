@@ -510,6 +510,7 @@ setMethod("c", "IRanges",
             stop("all arguments in '...' must be ", class(x), " objects (or NULLs)")
         new_start <- unlist(lapply(args, start), use.names=FALSE)
         new_width <- unlist(lapply(args, width), use.names=FALSE)
+        new_elementMetadata <- do.call(rbind, lapply(args, elementMetadata))
         names_list <- lapply(args, names)
         arg_has_no_names <- sapply(names_list, is.null)
         if (all(arg_has_no_names)) {
@@ -519,7 +520,11 @@ setMethod("c", "IRanges",
                                                    function(arg) character(length(arg)))
             new_names <- unlist(names_list, use.names=FALSE)
         }
-        update(x, start=new_start, width=new_width, names=new_names)
+        ans <-
+          update(x, start=new_start, width=new_width, names=new_names, check=FALSE)
+        elementMetadata(ans) <- new_elementMetadata
+        validObject(ans)
+        ans
     }
 )
 

@@ -45,3 +45,11 @@ test_IRanges_subset <- function() { # by range
   subject <- IRanges(c(6, 8, 10), c(7, 12, 14))
   checkIdentical(query[subject], query[2:3])
 }
+
+test_IRanges_annotation <- function() {
+  range <- IRanges(c(1, 4), c(5, 7))
+  elementMetadata(range) <- XDataFrame(a = 1:2)
+  checkIdentical(elementMetadata(range)[,1], 1:2)
+  checkIdentical(elementMetadata(range[2:1])[,1], 2:1)
+  checkIdentical(elementMetadata(c(range,range))[,1], rep(1:2,2))
+}
