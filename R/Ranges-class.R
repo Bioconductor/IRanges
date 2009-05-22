@@ -205,14 +205,10 @@ setReplaceMethod("[", "Ranges",
 ### FIXME: hopefully temporary
 setMethod("[", "Ranges",
     function(x, i, j, ..., drop) {
-        if (is(x, "IRanges"))
-            callNextMethod()
-        else {
-            cl <- class(x)
-            mc <- match.call()
-            mc$x <- as(x, "IRanges")
-            as(eval(mc), cl)
-        }
+        cl <- class(x)
+        mc <- match.call()
+        mc$x <- as(x, "IRanges")
+        as(eval(mc), cl)
     }
 )
 

@@ -120,7 +120,7 @@ setMethod("[", "SimpleList",
               if (!missing(i)) {
                   slot(x, "listData", check=FALSE) <- as.list(x)[i]
               }
-              callNextMethod(x, i)
+              .bracket.Sequence(x, i)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

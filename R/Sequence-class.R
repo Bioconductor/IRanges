@@ -178,13 +178,15 @@ setValidity2("Sequence", .valid.Sequence)
 ### Subsetting.
 ###
 
-setMethod("[", "Sequence",
-          function(x, i, j, ..., drop)
-          {
-              if (!is.null(elementMetadata(x)))
-                  elementMetadata(x) <- elementMetadata(x)[i,,drop=FALSE]
-              x
-          })
+.bracket.Sequence <-
+function(x, i, j, ..., drop)
+{
+    if (!is.null(elementMetadata(x)))
+        elementMetadata(x) <- elementMetadata(x)[i,,drop=FALSE]
+    x
+}
+setMethod("[", "Sequence", function(x, i, j, ..., drop)
+          stop("missing '[' method for Sequence class ", class(x)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.

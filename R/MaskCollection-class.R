@@ -313,7 +313,7 @@ setMethod("[", "MaskCollection",
             slot(x, "NAMES", check=FALSE) <- names(x)[i]
         if (!is.null(desc(x)))
             slot(x, "desc", check=FALSE) <- desc(x)[i]
-        callNextMethod(x, i)
+        .bracket.Sequence(x, i)
     }
 )
 

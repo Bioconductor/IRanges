@@ -317,7 +317,7 @@ setMethod("[", "CompressedList",
                 new("PartitioningByEnd",
                     end = cumsum(elementLengths(x)[i]),
                     NAMES = names(x)[i])
-              callNextMethod(x, i)
+              .bracket.Sequence(x, i)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
