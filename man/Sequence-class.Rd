@@ -10,6 +10,9 @@
 \alias{[<-,Sequence-method}
 \alias{[[,Sequence-method}
 \alias{$,Sequence-method}
+\alias{!=,Sequence,Sequence-method}
+\alias{aggregate,Sequence-method}
+\alias{aggregate,vector-method}
 \alias{append,Sequence,Sequence-method}
 \alias{as.list,Sequence-method}
 \alias{c,Sequence-method}
@@ -31,16 +34,13 @@
 \alias{seqextract}
 \alias{seqextract,Sequence-method}
 \alias{seqextract,vector-method}
+\alias{shiftApply}
+\alias{shiftApply,Sequence,Sequence-method}
+\alias{shiftApply,vector,vector-method}
 \alias{subset,Sequence-method}
 \alias{tail,Sequence-method}
 \alias{window,Sequence-method}
 \alias{window,vector-method}
-\alias{!=,Sequence,Sequence-method}
-\alias{aggregate,Sequence-method}
-\alias{aggregate,vector-method}
-\alias{shiftApply}
-\alias{shiftApply,Sequence,Sequence-method}
-\alias{shiftApply,vector,vector-method}
 
 
 \title{Sequence objects}
