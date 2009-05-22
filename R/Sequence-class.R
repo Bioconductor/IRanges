@@ -192,13 +192,6 @@ setMethod("[", "Sequence", function(x, i, j, ..., drop)
 ### Combining and splitting.
 ###
 
-setMethod("append", c("Sequence", "Sequence"),
-          function(x, values, after=length(x)) {
-              if (!is.null(elementMetadata(x)))
-                  elementMetadata(x) <-
-                    rbind(elementMetadata(x), elementMetadata(values))
-              x
-          })
 
 .c.Sequence <-
 function(x, ..., recursive = FALSE) {
@@ -217,6 +210,19 @@ setMethod("c", "Sequence",
 
 setReplaceMethod("[", "Sequence", function(x, i, j,..., value)
                  stop("attempt to modify the value of a ", class(x), " instance"))
+
+setMethod("append", c("Sequence", "Sequence"),
+          function(x, values, after=length(x)) {
+              if (!isSingleNumber(after))
+                  stop("'after' must be a single number")
+              xlen <- length(x)
+              if (after == 0L)
+                  c(values, x)
+              else if (after >= xlen)
+                  c(x, values)
+              else
+                  c(x[1L:after], values, x[(after + 1L):xlen])
+             })
 
 setMethod("head", "Sequence",
           function(x, n = 6L, ...)

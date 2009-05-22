@@ -324,22 +324,6 @@ setMethod("[", "CompressedList",
 ### Combining and splitting.
 ###
 
-setMethod("append", c("CompressedList", "CompressedList"),
-          function(x, values, after=length(x)) {
-              if (!isSingleNumber(after))
-                  stop("'after' must be a single number")
-              if (!extends(elementType(x), elementType(values)))
-                  stop("the element class of 'values' must extend that of 'x'")
-              eltmetaX <- elementMetadata(x)
-              x <-
-                CompressedList(class(x),
-                               append(as.list(x, use.names = TRUE),
-                               as.list(values, use.names = TRUE),
-                               after = after))
-              slot(x, "elementMetadata", check=FALSE) <- eltmetaX
-              callNextMethod(x, values, after)
-          })
-
 ## NOTE: while the 'c' function does not have an 'x', the generic does
 ## c() is a primitive, so 'x' can be missing; dispatch is by position,
 ## although sometimes this does not work so well, so it's best to keep

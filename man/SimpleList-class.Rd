@@ -27,8 +27,6 @@
 \alias{$<-,SimpleList-method}
 
 % splitting and combining
-\alias{append,CompressedList,CompressedList-method}
-\alias{append,SimpleList,SimpleList-method}
 \alias{c,CompressedList-method}
 \alias{c,SimpleList-method}
 

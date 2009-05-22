@@ -299,6 +299,15 @@
       }
     }
     \item{}{
+      \code{append(x, values, after = length(x))}:
+      Insert one Rle into another Rle.
+      \describe{
+        \item{\code{values}}{the Rle to insert.}
+        \item{\code{after}}{the subscript in \code{x} after which the values
+          are to be inserted.}
+      }
+    }
+    \item{}{
       \code{c(x, ...)}:
       Combines a set of Rle objects.
     }

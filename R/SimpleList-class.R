@@ -127,13 +127,6 @@ setMethod("[", "SimpleList",
 ### Combining and splitting.
 ###
 
-setMethod("append", c("SimpleList", "SimpleList"),
-          function(x, values, after=length(x)) {
-              slot(x, "listData") <-
-                append(as.list(x), as.list(values), after=after)
-              callNextMethod(x, values, after)
-          })
-
 ## NOTE: while the 'c' function does not have an 'x', the generic does
 ## c() is a primitive, so 'x' can be missing; dispatch is by position,
 ## although sometimes this does not work so well, so it's best to keep
