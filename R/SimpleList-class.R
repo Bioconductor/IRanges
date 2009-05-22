@@ -143,7 +143,7 @@ setMethod("c", "SimpleList",
           function(x, ..., recursive = FALSE) {
               slot(x, "listData") <-
                 do.call("c", lapply(list(x, ...), as.list))
-              callNextMethod(x, ...)
+              .c.Sequence(x, ...)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

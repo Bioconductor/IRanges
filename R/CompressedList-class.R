@@ -369,7 +369,7 @@ setMethod("c", "CompressedList",
               eltmetaX <- elementMetadata(x)
               x <- CompressedList(class(tls[[1]]), elts)
               slot(x, "elementMetadata", check=FALSE) <- eltmetaX
-              callNextMethod(x, ...)
+              .c.Sequence(x, ...)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

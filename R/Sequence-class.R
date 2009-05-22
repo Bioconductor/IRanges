@@ -200,13 +200,16 @@ setMethod("append", c("Sequence", "Sequence"),
               x
           })
 
+.c.Sequence <-
+function(x, ..., recursive = FALSE) {
+    if (!is.null(elementMetadata(x)))
+        elementMetadata(x) <-
+          do.call(rbind, lapply(c(list(x), ...), elementMetadata))
+    x
+}
 setMethod("c", "Sequence",
-          function(x, ..., recursive = FALSE) {
-              if (!is.null(elementMetadata(x)))
-                  elementMetadata(x) <-
-                    do.call(rbind, lapply(c(list(x), ...), elementMetadata))
-              x
-          })
+          function(x, ..., recursive = FALSE)
+          stop("missing 'c' method for Sequence class ", class(x)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Basic methods.
