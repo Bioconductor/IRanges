@@ -11,7 +11,13 @@ setMethod("split", "XDataFrame",
             CompressedList("CompressedSplitXDataFrameList", x, splitFactor = f)
           })
 
-setMethod("cbind", "XDataFrame", function(..., deparse.level=1) XDataFrame(...))
+setMethod("cbind", "XDataFrame",
+          function(..., deparse.level=1) {
+            ans <- XDataFrame(...)
+            elementMetadata(ans) <-
+              do.call(rbind, lapply(list(...), elementMetadata))
+            ans
+          })
 
 setMethod("rbind", "XDataFrame", function(..., deparse.level=1) {
   args <- list(...)

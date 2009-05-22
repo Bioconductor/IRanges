@@ -239,3 +239,11 @@ test_XDataFrame_looping <- function() {
   iris <- XDataFrame(iris, row.names=rownames(iris))
   checkIdentical(actual, by(iris, iris$Species, nrow))
 }
+
+test_XDataFrame_annotation <- function() {
+  df <- XDataFrame(c(1L, 3L, NA), c(10L, 2L, NA))
+  elementMetadata(df) <- XDataFrame(a = 1:2)
+  checkIdentical(elementMetadata(df)[,1], 1:2)
+  checkIdentical(elementMetadata(df[2:1])[,1], 2:1)
+  checkIdentical(elementMetadata(cbind(df,df))[,1], rep(1:2,2))
+}
