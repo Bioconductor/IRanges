@@ -119,3 +119,13 @@ test_FilterRules_active <- function() {
   checkException(active(filters) <- "foo", silent = TRUE)
   checkException(active(filters) <- 15, silent = TRUE)
 }
+
+test_FilterRules_annotation <- function() {
+    filts <- c("peaks", "promoters")
+    filters <- FilterRules(filts)
+    elementMetadata(filters) <- XDataFrame(a = 1:2)
+    checkIdentical(elementMetadata(filters)[,1], 1:2)
+    checkIdentical(elementMetadata(filters[2:1])[,1], 2:1)
+    checkIdentical(elementMetadata(c(filters,filters))[,1], rep(1:2,2))
+    checkIdentical(elementMetadata(append(filters,filters))[,1], rep(1:2,2))
+}
