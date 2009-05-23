@@ -69,9 +69,10 @@ library(IRanges)
 \section{Sequences}
 
 The \IRanges{} packages represents three types of objects as sequences:
-mathematical sequences, lists, and data sets. The following subsections
-describe each in turn. All \IRanges{}-derived sequences inherit from the
-\Rclass{Sequence} virtual class.
+mathematical sequences, lists, and data sets (so they behave like \R{}'s
+\Rclass{data.frame} objects). The following subsections describe each in
+turn. All \IRanges{}-derived sequences inherit from the \Rclass{Sequence}
+virtual class.
 
 \subsection{Mathematical Sequences}
 
