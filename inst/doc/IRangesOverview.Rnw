@@ -27,7 +27,7 @@
 \newcommand{\IRanges}{\Rpackage{IRanges}}
 
 \title{An Introduction to \IRanges{}}
-\author{Michael Lawrence, Patrick Aboyoun, Herv\'e Pag\`es}
+\author{Patrick Aboyoun, Michael Lawrence, Herv\'e Pag\`es}
 \date{\today}
 
 \begin{document}
@@ -48,40 +48,57 @@ and algorithm can be explained in an intuitive, graphical manner. We
 expect that packages that apply \IRanges{} to a particular problem domain
 will provide vignettes with relevant, realistic examples.
 
+The term \textit{sequence} in the \IRanges{} package is used rather loosely,
+much like the term \textit{vector} is in \R{}. We use sequence to mean an
+indexed collection of elements or objects. This differs from the standard
+mathematical definition of a logically ordered collection of elements. We
+will refer to the latter definition as a \textit{mathematical sequence} to
+minimize the confusion.
+
+The \IRanges{} package is available at bioconductor.org and can be
+downloaded via \Rfunction{biocLite}:
+
+<<biocLite, eval=FALSE>>=
+source("http://bioconductor.org/biocLite.R")
+biocLite("IRanges")
+@
+<<initialize, results=hide>>=
+library(IRanges)
+@
+
 \section{Sequences}
 
-The \IRanges{} package is primarily interested in the representation,
-manipulation and analysis of sequences. A \textit{sequence} is
-mathematically defined as an ordered list of objects or elements. It
-differs from a \textit{set} in that order matters and the same element
-can appear multiple times.
+The \IRanges{} packages represents three types of objects as sequences:
+mathematical sequences, lists, and data sets. The following subsections
+describe each in turn. All \IRanges{}-derived sequences inherit from the
+\Rclass{Sequence} virtual class.
 
-\IRanges{} supports the use of R vectors to represent sequences, and we
-also formally define a virtual class \Rclass{Sequence}, the derivatives
-of which convey the sequence semantic of ordered elements. There are
-currently two \Rclass{Sequence} implementations in \IRanges{}:
-\Rclass{Rle}, which compresses a sequence through run-length encoding,
-and \Rclass{XSequence}, which refers to its data through an external
+\subsection{Mathematical Sequences}
+
+As mentioned in the introduction, a mathematical sequence is a logically
+ordered collection of elements. In \R{}, mathematical sequences are
+typically stored in atomic vectors. The \IRanges{} package includes two
+additional mathematical sequence object types:  \Rclass{Rle}, which
+compresses a mathematical sequence through run-length encoding, and
+\Rclass{XSequence}, which refers to its data through an external
 pointer. \Rclass{XSequence} and its derivatives are considered low-level
 infrastructure and, as such, will not be covered by this vignette.
 
-We begin our demonstration by loading the \IRanges{} package and creating
-two R integer vectors that we will treat as sequences for illustration
-purposes.
-<<initialize, results=hide>>=
-library(IRanges)
+We begin our discussion of mathematical sequences using two \R{} 
+\Rclass{integer} vectors.
+<<initialize>>=
 set.seed(0)
 lambda <- c(rep(0.001, 4500), seq(0.001, 10, length = 500), seq(10, 0.001, length = 500))
 xVector <- rpois(1e7, lambda)
 yVector <- rpois(1e7, lambda[c(251:length(lambda), 1:250)])
 @
 
-All objects that inherit from the \Rclass{Sequence} virtual class or R
-vectors that represent sequences have three main properties: (1) a notion
-of length or number of elements, (2) the ability to extract elements to
-create new sequences, and (3) the ability to be combined with one or more
-sequences to form larger sequences. The main functions for these three
-operations are \Rfunction{length}, \Rfunction{[}, and \Rfunction{c}.
+All mathematical sequences in \R{} have three main properties: (1) a
+notion of length or number of elements, (2) the ability to extract
+elements to create new mathematical sequences, and (3) the ability to be
+combined with one or more mathematical sequences to form larger
+mathematical sequences. The main functions for these three operations are
+\Rfunction{length}, \Rfunction{[}, and \Rfunction{c}.
 <<basic-ops>>=
 length(xVector)
 xVector[1]
@@ -89,36 +106,39 @@ zVector <- c(xVector, yVector)
 @
 
 While these three methods may seem trivial, they provide a great deal of
-power and many sequence manipulations can be constructed using them.
+power and many mathematical sequence manipulations can be constructed
+using them.
 
-\subsection{Sequence Extraction}
+\subsubsection{Mathematical Sequence Extraction}
 
-As with ordinary R vectors, it is often necessary to extract one sequence
-from another. When this extraction doesn't change the order of the
-elements being extracted, the result is called a \textit{subsequence}. In
-general, the \Rfunction{[} function can be used to construct a new
-sequence or extract a subsequence, but often times it isn't convenient or
+As with ordinary \R{} atomic vectors, it is often necessary to extract one
+mathematical sequence from another. When this extraction doesn't change the
+order of the elements being extracted, the result is called a
+mathematical \textit{subsequence}. In general, the \Rfunction{[} function
+can be used to construct a new mathematical sequence or extract a
+mathematical subsequence, but often times it isn't convenient or
 performant enough for the use case at hand. To compensate for this, the
-\IRanges{} package supports six additional functions for sequence extraction:
+\IRanges{} package supports six additional functions for mathematical
+sequence extraction:
 
 \begin{enumerate}
-\item \Rfunction{window} - Produces a subsequence over a specified region
-  with or without regular interval subsampling.
+\item \Rfunction{window} - Produces a mathematical subsequence over a
+  specified region with or without regular interval subsampling.
 \item \Rfunction{seqextract} - Concatenates multiple consecutive
-  subsequences into a new subsequence. The result may or may not be a
-  subsequence.
-\item \Rfunction{head} - Extracts a consecutive subsequence containing
-  the first n elements.
-\item \Rfunction{tail} - Extracts a consecutive subsequence containing
-  the last n elements.
-\item \Rfunction{rev} - Creates a new sequence with the elements in the
-  reverse order.
-\item \Rfunction{rep} - Creates a new sequence by repeating sequence
-  elements.
+  mathematical subsequences into a new mathematical subsequence. The result
+  may or may not be a mathematical subsequence.
+\item \Rfunction{head} - Extracts a consecutive mathematical subsequence
+  containing the first n elements.
+\item \Rfunction{tail} - Extracts a consecutive mathematical subsequence
+  containing the last n elements.
+\item \Rfunction{rev} - Creates a new mathematical sequence with the
+  elements in the reverse order.
+\item \Rfunction{rep} - Creates a new mathematical sequence by repeating
+  mathematical sequence elements.
 \end{enumerate}
 
 The following code illustrates how these functions are used on an
-ordinary R integer vector:
+ordinary \R{} \Rclass{integer} vector:
 
 <<seq-extraction>>=
 xSnippet <- window(xVector, start = 4751, end = 4760)
@@ -130,16 +150,16 @@ seqextract(xSnippet, start = c(6,1), end = c(10, 5))
 rep(xSnippet, 2)
 @
 
-\subsection{Looping over Subsequences}
+\subsubsection{Looping over Mathematical Subsequences}
 
-Since in R, looping can be an expensive operation two functions
-\Rfunction{aggregate} and \Rfunction{shiftApply} are available to
-perform calculations over subsequences of \Rclass{Sequence}-derived
-classes and R vectors that represent sequences. The \Rfunction{aggregate}
-function combines with sequence extraction functionality of the
-\Rfunction{window} function with looping capabilities of the
-\Rfunction{sapply} function. For example, here is some code to generate
-medians across a moving window of width 3 using the \Rfunction{aggregate}:
+In \R{}, \Rfunction{for} looping can be an expensive operation. To
+compensate for this, \IRanges{} provides two functions,
+\Rfunction{aggregate} and \Rfunction{shiftApply}, to perform calculations
+over mathematical subsequences. The \Rfunction{aggregate} function combines
+mathematical sequence extraction functionality of the \Rfunction{window}
+function with looping capabilities of the \Rfunction{sapply} function. For
+example, here is some code to generate medians across a moving window of
+width 3 using the \Rfunction{aggregate}:
 
 <<aggregate>>=
 xSnippet
@@ -147,34 +167,34 @@ aggregate(xSnippet, start = 1:8, width = 3, FUN = median)
 @
 
 The \Rfunction{shiftApply} function is a looping operation involving two
-sequences whose elements are lined up via a shift operation. For example,
-the elements of \Robject{xVector} and \Robject{yVector} were simulated
-from Poisson distributions with the mean of element i from
-\Robject{yVector} being equivalent to the mean of element i + 250 from
-\Robject{xVector}. This amount of the shift can be estimated by finding
-the shift that maximizes the correction between \Robject{xVector} and
-\Robject{yVector}.
+mathematical sequences whose elements are lined up via a positional shift
+operation. For example, the elements of \Robject{xVector} and
+\Robject{yVector} were simulated from Poisson distributions with the mean
+of element i from \Robject{yVector} being equivalent to the mean of element
+i + 250 from \Robject{xVector}. This amount of the shift can be estimated
+by finding the shift that maximizes the correction between
+\Robject{xVector} and \Robject{yVector}.
 
 <<shiftApply-cor>>=
 cor(xVector, yVector)
 shiftApply(249:251, yVector, xVector, FUN = cor)
 @
 
-\subsection{Run Length Encoding}
+\subsubsection{Run Length Encoding}
 
-Up until this point we have used ordinary R vector to represent sequences,
-but there are time when these object become too large to manage in memory.
-When the there are lots of consecutive repeats in the data, the data can
-be compressed and managed in memory through a run-length encoding where a
-data value is pair with a run length. For example, the sequence \{1, 1, 1,
-2, 3,  3\} can be represented as values = \{1, 2, 3\}, lengths = \{3, 1,
-2\}.
+Up until this point we have used \R{} atomic vectors to represent
+mathematical sequences, but there are times when these object become too
+large to manage in memory. When there are lots of consecutive repeats in
+the mathematical sequence, the data can be compressed and managed in memory
+through a run-length encoding where a data value is paired with a run
+length. For example, the sequence \{1, 1, 1, 2, 3,  3\} can be represented
+as values = \{1, 2, 3\}, lengths = \{3, 1, 2\}.
 
 The \Rclass{Rle} class in \IRanges{} is used to represent a run-length
-encoded (compressed) sequence of \Rclass{logical}, \Rclass{integer},
-\Rclass{numeric}, \Rclass{complex},  \Rclass{character}, or \Rclass{raw}
-values. One way to construct an \Rclass{Rle} object through the
-\Rclass{Rle} constructor function:
+encoded (compressed) mathematical sequence of \Rclass{logical},
+\Rclass{integer}, \Rclass{numeric}, \Rclass{complex},  \Rclass{character},
+or \Rclass{raw} values. One way to construct an \Rclass{Rle} object is
+through the \Rclass{Rle} constructor function:
 
 <<Rle-construction>>=
 xRle <- Rle(xVector)
@@ -183,7 +203,7 @@ xRle
 yRle
 @
 
-Where there are lots of consecutive repeats, the memory savings through
+When there are lots of consecutive repeats, the memory savings through
 an RLE can be quite dramatic. For example, the \Robject{xRle} object
 occupies less than one quarter the space of the original \Robject{xVector}
 object, while storing the same information:
@@ -202,9 +222,9 @@ head(runLength(xRle))
 @
 
 The \Rclass{Rle} class supports many of the basic methods associated with
-R vectors including the Ops, Math, Math2, Summary, and Complex group
-generics. Here is a example of manipulating \Rclass{Rle} objects using
-methods from the Ops group:
+\R{} atomic vectors including the Ops, Math, Math2, Summary, and Complex
+group generics. Here is a example of manipulating \Rclass{Rle} objects
+using methods from the Ops group:
 
 <<Rle-ops>>=
 xRle > 0
@@ -225,8 +245,8 @@ And here is one from the Math group:
 log1p(xRle)
 @
 
-Since \Rclass{Rle} objects adhere to the \Rclass{Sequence} virtual class,
-it also supports sequence related operations like \Rclass{shiftApply}.
+As with the atomic vectors, the \Rfunction{cor} and \Rfunction{shiftApply}
+functions operate on \Rclass{Rle} objects:
 
 <<Rle-cor>>=
 cor(xRle, yRle)
@@ -236,9 +256,9 @@ shiftApply(249:251, yRle, xRle, FUN = function(x, y) var(x, y) / (sd(x) * sd(y))
 For more information on the methods supported by the \Rclass{Rle} class,
 consult the \Rcode{Rle} man page.
 
-\section{Lists}
+\subsection{Lists}
 
-\subsection{Basic operations}
+\subsubsection{Basic operations}
 
 One often wants to organize and manipulate multiple sequences
 simultaneously. We could place multiple \Rclass{Rle} instances, for
@@ -270,7 +290,7 @@ features. These include familiar list functions, such as
 
 %% EXAMPLE (c, lapply)
 
-\subsection{Annotated Lists} 
+\subsubsection{Annotated Lists} 
 
 Often when one has a collection of objects, there is a need to attach
 metadata that describes the collection in some way. The
@@ -281,7 +301,7 @@ data frame with one row per element and any number of columns. Many of
 the high-level list objects in \IRanges{} (described later) are
 \Rclass{AnnotatedList} objects.
 
-\subsection{Advanced Notes}
+\subsubsection{Advanced Notes}
 
 %% Perhaps this belongs in a separate advanced vignette or the paper?
 
@@ -305,6 +325,13 @@ if possible. This forms a single, long element that is virtually split
 by the \Rclass{TypedList} interface. A beneficial side effect of this
 approach is that unlisting (concatenating all of the elements)
 is cheap, as it reduces to returning the internal representation.
+
+
+\subsection{Data Sets}
+
+\Rclass{XDataFrame}
+\Rclass{XDataFrameList}
+\Rclass{SplitXDataFrameList}
 
 \section{Sequence Ranges}
 
@@ -441,12 +468,6 @@ implementations exist, such as \Rclass{XStringViews} in the
 \subsection{Aggregating Views}
 
 
-\section{Data Sets}
-
-\Rclass{XDataFrame}
-\Rclass{XDataFrameList}
-\Rclass{SplitXDataFrameList}
-
 \section{Sequence Ranges with Data Sets}
 
 \Rclass{RangedData}
@@ -474,53 +495,6 @@ implementations exist, such as \Rclass{XStringViews} in the
 %%\Rclass{XIntegerORNULL}
 %%\Rclass{XIntegerViews}
 %%\Rclass{XNumeric}
-
-\section{Glossary}
-
-The \IRanges{} package uses the terms \textit{sequence}, \textit{list-like},
-\textit{list}, \textit{ranges}, and \textit{views} in a very particular manner.
-This section provides their definitions.
-
-\subsection{Sequence}
-\begin{enumerate}
-\item A sequence is an indexed and ordered collection of elements.
-\item Any two similarly typed sequences can be combined to form a larger
-  sequence whose element values are identical to the original element values.
-  (In \R{} terminology, there is a standard \Rfunction{c} method for the
-   sequence.)
-\item Any collection of sequence elements can be extracted to form a new
-  sequence containing element values identical to the elements selected. (In
-  \R{} terminology, there is a standard \Rfunction{[} method for the sequence.)
-\item The \Rclass{vector} virtual class and its descendants provide examples of
-  sequences in \R{}. 
-\end{enumerate}
-
-\subsection{List-Like}
-\begin{enumerate}
-\item An object is list-like if it represents an indexed collection of
-  non-atomic elements.
-\item Any non-atomic element can be extracted from a list-like object. (In \R{}
-  terminology, there is a standard \Rfunction{[[} method for the list-like
-  class.)
-\item The \Rclass{list} class in \R{} is an example of a list-like class.
-\end{enumerate}
-
-\subsection{List}
-\begin{enumerate}
-\item A list is both a sequence and list-like.
-\item The \Rclass{list} class in \R{} is an example.
-\end{enumerate}
-
-\subsection{Ranges}
-\begin{enumerate}
-\item Ranges are a collection of integer intervals.
-\item The values in a range are typically interpreted as indices in a sequence.
-\end{enumerate}
-
-\subsection{Views}
-\begin{enumerate}
-\item Views are ranges with sequence information.
-\end{enumerate}
 
 \begin{table*}[tbp]
 \begin{minipage}{\textwidth}
