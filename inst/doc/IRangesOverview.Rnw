@@ -69,7 +69,7 @@ library(IRanges)
 \section{Sequences}
 
 The \IRanges{} packages represents three types of objects as sequences:
-mathematical sequences, lists, and data sets (so they behave like \R{}'s
+mathematical sequences, lists, and data tables (so they behave like \R{}'s
 \Rclass{data.frame} objects). The following subsections describe each in
 turn. All \IRanges{}-derived sequences inherit from the \Rclass{Sequence}
 virtual class.
@@ -328,7 +328,7 @@ approach is that unlisting (concatenating all of the elements)
 is cheap, as it reduces to returning the internal representation.
 
 
-\subsection{Data Sets}
+\subsection{Data Tables}
 
 \Rclass{DataFrame}
 \Rclass{DataFrameList}
@@ -469,7 +469,7 @@ implementations exist, such as \Rclass{XStringViews} in the
 \subsection{Aggregating Views}
 
 
-\section{Sequence Ranges with Data Sets}
+\section{Sequence Ranges with Data Tables}
 
 \Rclass{RangedData}
 \Rclass{RangedDataList}
