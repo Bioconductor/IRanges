@@ -24,6 +24,7 @@ Collate: validity-utils.R
 	Annotated-class.R
 	Sequence-class.R
 	DataFrame-class.R
+        DataFrame-stats.R
 	AtomicList-class.R
 	Ranges-class.R
 	Ranges-comparison.R

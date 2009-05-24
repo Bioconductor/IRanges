@@ -1,5 +1,5 @@
 \name{DataFrame-stats}
-
+\alias{DataFrame-stats}
 \alias{xtabs,ANY,DataFrame-method}
 
 \title{Statistical modeling with DataFrame}

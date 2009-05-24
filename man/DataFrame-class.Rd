@@ -21,6 +21,8 @@
 \alias{!=,DataFrame,DataFrame-method}
 \alias{aggregate,DataFrame-method}
 \alias{by,DataFrame-method}
+\alias{as.env}
+\alias{as.env,DataFrame-method}
 
 \title{DataFrame objects}
 

@@ -13,7 +13,9 @@
 \alias{names,RangedData-method}
 \alias{names<-,RangedData-method}
 \alias{ranges}
+\alias{ranges<-}
 \alias{ranges,RangedData-method}
+\alias{ranges<-,RangedData-method}
 \alias{start,RangedData-method}
 \alias{values}
 \alias{values,RangedData-method}
@@ -168,8 +170,8 @@
       experimental platform, etc). The universe may be \code{NULL}.
     }
     \item{}{
-      \code{ranges(x)}: Gets the ranges in \code{x} as a
-      \code{\linkS4class{RangesList}}.
+      \code{ranges(x), ranges(x) <- value}: Gets or sets the ranges in
+      \code{x} as a \code{\linkS4class{RangesList}}.
     }
     \item{}{
       \code{space(x)}: Gets the spaces from \code{ranges(x)}.
@@ -219,6 +221,11 @@
       \code{as(from, "RangedData")}: Coerce an \code{\linkS4class{Rle}}
       to a \code{RangedData} by converting each run to a range and storing
       the run values in a column named "score".
+    }
+    \item{}{\code{as.env(x, enclos = parent.frame())}:
+      Creates an \code{environment} with a symbol for each variable in
+      the frame, as well as a \code{ranges} symbol for
+      the ranges. This is efficient, as no copying is performed.
     }
   }
 }
