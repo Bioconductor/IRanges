@@ -163,7 +163,7 @@ test_RangedData_subset <- function() {
   checkIdenticalRD(rd[,], rd) # identity
 
   ## empty
-  nocols <- RangedData(ranges, new("XDataFrame", nrows=3L), space=c(1,2,1))
+  nocols <- RangedData(ranges, new("DataFrame", nrows=3L), space=c(1,2,1))
   checkIdenticalRD(rd[,NULL], nocols)
   checkIdenticalRD(rd[NULL,], rd[FALSE,])
 

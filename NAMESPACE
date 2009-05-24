@@ -7,7 +7,7 @@ importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
 
 exportClasses(
     characterORNULL,
-    Annotated, Sequence, DataFrame,
+    Annotated, Sequence, DataTable,
     SimpleList, CompressedList,
     Ranges, RangesORmissing,
     IRanges, NormalIRanges,
@@ -27,9 +27,9 @@ exportClasses(
     RleList, CompressedRleList, SimpleRleList,
     RangesList, SimpleRangesList,
     IRangesList, CompressedIRangesList, SimpleIRangesList,
-    XDataFrame,
-    XDataFrameList, SimpleXDataFrameList,
-    SplitXDataFrameList, CompressedSplitXDataFrameList, SimpleSplitXDataFrameList,
+    DataFrame,
+    DataFrameList, SimpleDataFrameList,
+    SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
     RangedData, RangedDataList, FilterRules, RDApplyParams, RangesMatching)
 
 export(
@@ -64,11 +64,11 @@ export(
     RawPtr.compare,
     #IntegerPtr, IntegerPtr.read, IntegerPtr.write,
     #NumericPtr, NumericPtr.read, NumericPtr.write,
-    XRaw, XInteger, XNumeric, XDataFrame,
+    XRaw, XInteger, XNumeric, DataFrame,
     newViews, successiveViews,
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList,
-    XDataFrameList, SplitXDataFrameList,
+    DataFrameList, SplitDataFrameList,
     coverage.normargWidth,
 
     ## Functions to help migrating the interface of coverage() from "start/end"
@@ -109,7 +109,7 @@ export(
     nobj, grouplength, members, vmembers, togroup, togrouplength,
     high2low, low2high,
 
-    ## Generic functions in the DataFrame API:
+    ## Generic functions in the DataTable API:
     as.env,
     
     ## Other generic functions:

@@ -1,38 +1,38 @@
-\name{DataFrame-class}
+\name{DataTable-class}
 \docType{class}
 
-% DataFrame class, functions and methods:
-\alias{class:DataFrame}
-\alias{DataFrame-class}
-\alias{DataFrame}
+% DataTable class, functions and methods:
+\alias{class:DataTable}
+\alias{DataTable-class}
+\alias{DataTable}
 
-\alias{[<-,DataFrame-method}
+\alias{[<-,DataTable-method}
 \alias{cbind}
-\alias{cbind,DataFrame-method}
-\alias{dim,DataFrame-method}
-\alias{head,DataFrame-method}
-\alias{is.array,DataFrame-method}
+\alias{cbind,DataTable-method}
+\alias{dim,DataTable-method}
+\alias{head,DataTable-method}
+\alias{is.array,DataTable-method}
 \alias{rbind}
-\alias{rbind,DataFrame-method}
-\alias{seqextract,DataFrame-method}
-\alias{subset,DataFrame-method}
-\alias{tail,DataFrame-method}
-\alias{window,DataFrame-method}
-\alias{!=,DataFrame,DataFrame-method}
-\alias{aggregate,DataFrame-method}
-\alias{by,DataFrame-method}
+\alias{rbind,DataTable-method}
+\alias{seqextract,DataTable-method}
+\alias{subset,DataTable-method}
+\alias{tail,DataTable-method}
+\alias{window,DataTable-method}
+\alias{!=,DataTable,DataTable-method}
+\alias{aggregate,DataTable-method}
+\alias{by,DataTable-method}
 \alias{as.env}
-\alias{as.env,DataFrame-method}
+\alias{as.env,DataTable-method}
 
-\title{DataFrame objects}
+\title{DataTable objects}
 
 \description{
-  The DataFrame virtual class provides an interface for the storing rectangular
+  The DataTable virtual class provides an interface for the storing rectangular
   data sets, like a basic data.frame object. It extends \code{Sequence}.
 }
 
 \section{Accessors}{
-  In the following code snippets, \code{x} is an \code{DataFrame}.
+  In the following code snippets, \code{x} is an \code{DataTable}.
   \describe{
     \item{}{\code{dim(x)}:
       Get the length two integer vector indicating in the first and second
@@ -43,40 +43,40 @@
 }
 
 \section{Combining}{
-  In the code snippets below, \code{x} is a DataFrame object.
+  In the code snippets below, \code{x} is a DataTable object.
 
   \describe{
     \item{}{
-      \code{cbind(...)}: Creates a new \code{DataFrame} by combining the columns
-      of the \code{DataFrame} objects in \code{...}.
+      \code{cbind(...)}: Creates a new \code{DataTable} by combining the columns
+      of the \code{DataTable} objects in \code{...}.
     }
     \item{}{
-      \code{rbind(...)}: Creates a new \code{DataFrame} by combining the rows of
-      the \code{DataFrame} objects in \code{...}.
+      \code{rbind(...)}: Creates a new \code{DataTable} by combining the rows of
+      the \code{DataTable} objects in \code{...}.
     }
   }
 }
 
 \section{Subsetting}{
-  In the code snippets below, \code{x} is a DataFrame object.
+  In the code snippets below, \code{x} is a DataTable object.
 
   \describe{
     \item{}{
       \code{x[i, j, drop=TRUE]}:
-      Return a new DataFrame object made of the selected rows and columns. For
+      Return a new DataTable object made of the selected rows and columns. For
       single column selection, the \code{drop} argument specifies whether or not
       to coerce the returned sequence to a standard vector.
     }
     \item{}{
       \code{head(x, n = 6L)}:
-      If \code{n} is non-negative, returns the first n rows of the DataFrame
+      If \code{n} is non-negative, returns the first n rows of the DataTable
       object.
       If \code{n} is negative, returns all but the last \code{abs(n)} rows of
-      the DataFrame object.
+      the DataTable object.
     }
     \item{}{
       \code{length(x)}:
-      Return the number of columns in the DataFrame object.
+      Return the number of columns in the DataTable object.
     }
     \item{}{
       \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:
@@ -85,7 +85,7 @@
     }
     \item{}{
       \code{subset(x, subset, select, drop = FALSE)}:
-      Return a new DataFrame object using:
+      Return a new DataTable object using:
       \describe{
         \item{subset}{logical expression indicating rows to keep, where missing
           values are taken as FALSE.}
@@ -95,14 +95,14 @@
     }
     \item{}{
       \code{tail(x, n = 6L)}:
-      If \code{n} is non-negative, returns the last n rows of the DataFrame
+      If \code{n} is non-negative, returns the last n rows of the DataTable
       object.
       If \code{n} is negative, returns all but the first \code{abs(n)} rows of
-      the DataFrame object.
+      the DataTable object.
     }
     \item{}{
       \code{window(x, start = NULL, end = NULL, width = NULL, frequency = NULL, delta = NULL, ...)}:
-      Extract the subsequence window from the DataFrame object using:
+      Extract the subsequence window from the DataTable object using:
       \describe{
         \item{\code{start}, \code{end}, \code{width}}{The start, end, or width
           of the window. Two of the three are required.}
@@ -115,7 +115,7 @@
 }
 
 \section{Looping}{
-  In the code snippets below, \code{x} is a DataFrame object.
+  In the code snippets below, \code{x} is a DataTable object.
 
   \describe{
     \item{}{
@@ -140,7 +140,7 @@
     }
     \item{}{
       \code{by(data, INDICES, FUN, ..., simplify = TRUE)}:
-      Apply \code{FUN} to each group of \code{data}, an \code{DataFrame},
+      Apply \code{FUN} to each group of \code{data}, an \code{DataTable},
       formed by the factor (or list of factors) \code{INDICES}. Exactly 
       the same contract as \code{\link{as.data.frame}}.
     }
@@ -150,7 +150,7 @@
 \section{Coercion}{
   \describe{
     \item{}{\code{as.env(x, enclos = parent.frame())}:
-      Creates an \code{environment} from the \code{DataFrame}
+      Creates an \code{environment} from the \code{DataTable}
       \code{x}. There is a symbol for each variable in the frame. This
       is efficient, as no copying is performed.
     }
@@ -158,17 +158,17 @@
 }
   
 \seealso{
-  \link{DataFrame-eval} for evaluating expressions referring to
+  \link{DataTable-eval} for evaluating expressions referring to
   variables in the data,
-  \link{DataFrame-stats} for statistical functionality, like fitting
+  \link{DataTable-stats} for statistical functionality, like fitting
   regression models,
-  \link{XDataFrame-class} for an implementation that mimics
+  \link{DataFrame-class} for an implementation that mimics
   \code{data.frame},
   \link{Sequence-class}
 }
 
 \examples{
-  showClass("DataFrame")  # shows (some of) the known subclasses
+  showClass("DataTable")  # shows (some of) the known subclasses
 }
 
 \keyword{methods}

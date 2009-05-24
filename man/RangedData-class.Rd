@@ -29,8 +29,9 @@
 
 % Coercion:
 \alias{as.data.frame,RangedData-method}
-\alias{coerce,RangedData,XDataFrame-method}
+\alias{coerce,RangedData,DataFrame-method}
 \alias{coerce,Rle,RangedData-method}
+\alias{as.env,RangedData-method}
 
 % Combining and splitting
 \alias{c,RangedData-method}
@@ -56,7 +57,7 @@
   \code{RangedData} supports storing data, i.e. a set of variables, on a
   set of ranges spanning multiple spaces (e.g. chromosomes). Although
   the data is split across spaces, it can still be treated as one
-  cohesive dataset when desired and extends \code{\linkS4class{DataFrame}}. In
+  cohesive dataset when desired and extends \code{\linkS4class{DataTable}}. In
   order to handle large datasets, the data values are stored externally
   to avoid copying, and the \code{\link{rdapply}} function facilitates
   the processing of each space separately (divide and conquer).
@@ -65,7 +66,7 @@
 \details{
   A \code{RangedData} object consists of two primary components:
   a \code{\linkS4class{RangesList}} holding the ranges over multiple
-  spaces and a parallel \code{\linkS4class{SplitXDataFrameList}},
+  spaces and a parallel \code{\linkS4class{SplitDataFrameList}},
   holding the split data. There is also an \code{universe} slot
   for denoting the source (e.g. the genome) of the ranges and/or
   data.
@@ -84,7 +85,7 @@
   small and there is no need to distinguish the ranges by their space.
 
   The other mode is to treat the \code{RangedData} as a list, with an
-  element (a virtual \code{Ranges}/\code{XDataFrame} pair) for each
+  element (a virtual \code{Ranges}/\code{DataFrame} pair) for each
   space. The length of the object is defined as the number of spaces and
   the value returned by the \code{names} accessor gives the names of
   the spaces. The list-style \code{[} subset function behaves
@@ -178,7 +179,7 @@
     }
     \item{}{
       \code{values(x)}: Gets the data values in \code{x} as a
-      \code{\linkS4class{SplitXDataFrameList}}.
+      \code{\linkS4class{SplitDataFrameList}}.
     }
   }
 }
@@ -190,7 +191,7 @@
         universe = NULL)}:
       Creates a \code{RangedData} with the ranges in \code{ranges} and
       variables given by the arguments in \code{...}.  See the
-      constructor \code{\link{XDataFrame}} for how the \code{...}
+      constructor \code{\link{DataFrame}} for how the \code{...}
       arguments are interpreted. If \code{splitter} is \code{NULL}, all
       of the ranges and values are placed into the same space, resulting
       in a single-space (length one) \code{RangedData}. Otherwise, the
@@ -212,8 +213,8 @@
       is large. Note that \code{optional} and \code{...} are ignored.
     }
     \item{}{
-      \code{as(from, "XDataFrame")}: Like \code{as.data.frame} above,
-      except the result is an \code{\linkS4class{XDataFrame}} and it
+      \code{as(from, "DataFrame")}: Like \code{as.data.frame} above,
+      except the result is an \code{\linkS4class{DataFrame}} and it
       probably involves less copying, especially if there is only a
       single space.
     }
@@ -319,7 +320,7 @@
 \author{ Michael Lawrence }
 
 \seealso{
-  \linkS4class{DataFrame}, the parent of this class, with more utilites.
+  \linkS4class{DataTable}, the parent of this class, with more utilites.
   \link{RangedData-utils} for utlities and the \code{\link{rdapply}}
   function for applying a function to each space separately.
 }

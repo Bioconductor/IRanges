@@ -1,30 +1,30 @@
 ### =========================================================================
-### XDataFrameList objects
+### DataFrameList objects
 ### -------------------------------------------------------------------------
 
-setClass("XDataFrameList", representation("VIRTUAL"),
-         prototype = prototype(elementType = "XDataFrame"),
+setClass("DataFrameList", representation("VIRTUAL"),
+         prototype = prototype(elementType = "DataFrame"),
          contains = "Sequence")
-setClass("SimpleXDataFrameList",
-         prototype = prototype(elementType = "XDataFrame"),
-         contains = c("SimpleList", "XDataFrameList"))
+setClass("SimpleDataFrameList",
+         prototype = prototype(elementType = "DataFrame"),
+         contains = c("SimpleList", "DataFrameList"))
 
-setClass("SplitXDataFrameList", representation("VIRTUAL"),
-         prototype = prototype(elementType = "XDataFrame"),
-         contains = "XDataFrameList")
-setClass("SimpleSplitXDataFrameList",
-         prototype = prototype(elementType = "XDataFrame"),
-         contains = c("SplitXDataFrameList", "SimpleXDataFrameList"))
-setClass("CompressedSplitXDataFrameList",
-         prototype = prototype(elementType = "XDataFrame",
-                               unlistData = new("XDataFrame")),
-         contains = c("SplitXDataFrameList", "CompressedList"))
+setClass("SplitDataFrameList", representation("VIRTUAL"),
+         prototype = prototype(elementType = "DataFrame"),
+         contains = "DataFrameList")
+setClass("SimpleSplitDataFrameList",
+         prototype = prototype(elementType = "DataFrame"),
+         contains = c("SplitDataFrameList", "SimpleDataFrameList"))
+setClass("CompressedSplitDataFrameList",
+         prototype = prototype(elementType = "DataFrame",
+                               unlistData = new("DataFrame")),
+         contains = c("SplitDataFrameList", "CompressedList"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
-setMethod("dim", "SimpleXDataFrameList",
+setMethod("dim", "SimpleDataFrameList",
           function(x) {
             if (length(x) == 0L)
               c(0L, 0L)
@@ -35,7 +35,7 @@ setMethod("dim", "SimpleXDataFrameList",
             }
           })
   
-setMethod("dim", "CompressedSplitXDataFrameList",
+setMethod("dim", "CompressedSplitDataFrameList",
           function(x) {
             if (length(x) == 0L)
               c(0L, 0L)
@@ -45,7 +45,7 @@ setMethod("dim", "CompressedSplitXDataFrameList",
 
 ### FIXME: make separate rownames, colnames methods, because the
 ### rownames calculation can be _very_ slow
-setMethod("dimnames", "SimpleXDataFrameList",
+setMethod("dimnames", "SimpleDataFrameList",
           function(x) {
             if (length(x) == 0L)
               list(character(), character())
@@ -54,7 +54,7 @@ setMethod("dimnames", "SimpleXDataFrameList",
                    colnames(x[[1]]))
           })
 
-setMethod("dimnames", "CompressedSplitXDataFrameList",
+setMethod("dimnames", "CompressedSplitDataFrameList",
           function(x) {
             if (length(x) == 0L)
               list(character(), character())
@@ -66,7 +66,7 @@ setMethod("dimnames", "CompressedSplitXDataFrameList",
 ### Validity.
 ###
 
-.valid.SplitXDataFrameList <- function(x) {
+.valid.SplitDataFrameList <- function(x) {
   if (length(x)) {
     firstNames <- colnames(x[[1]])
     if (!all(sapply(as.list(x, use.names = FALSE),
@@ -76,37 +76,37 @@ setMethod("dimnames", "CompressedSplitXDataFrameList",
   NULL
 }
 
-setValidity2("SplitXDataFrameList", .valid.SplitXDataFrameList)
+setValidity2("SplitDataFrameList", .valid.SplitDataFrameList)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
 ###
 
-XDataFrameList <- function(...)
+DataFrameList <- function(...)
 {
-  SimpleList("SimpleXDataFrameList", list(...))
+  SimpleList("SimpleDataFrameList", list(...))
 }
 
-SplitXDataFrameList <- function(..., compress = FALSE)
+SplitDataFrameList <- function(..., compress = FALSE)
 {
   if (compress)
-    CompressedList("CompressedSplitXDataFrameList", list(...))
+    CompressedList("CompressedSplitDataFrameList", list(...))
   else
-    SimpleList("SimpleSplitXDataFrameList", list(...))
+    SimpleList("SimpleSplitDataFrameList", list(...))
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
 ###
 
-setAs("SplitXDataFrameList", "XDataFrame", function(from) unlist(from))
+setAs("SplitDataFrameList", "DataFrame", function(from) unlist(from))
 
-setMethod("as.data.frame", "SplitXDataFrameList",
+setMethod("as.data.frame", "SplitDataFrameList",
           function(x, row.names=NULL, optional=FALSE, ...)
           {
             if (!(is.null(row.names) || is.character(row.names)))
               stop("'row.names'  must be NULL or a character vector")
             if (!missing(optional) || length(list(...)))
               warning("'optional' and arguments in '...' ignored")
-            as.data.frame(as(x, "XDataFrame"), row.names = row.names)
+            as.data.frame(as(x, "DataFrame"), row.names = row.names)
           })

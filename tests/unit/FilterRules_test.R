@@ -123,7 +123,7 @@ test_FilterRules_active <- function() {
 test_FilterRules_annotation <- function() {
   filts <- c("peaks", "promoters")
   filters <- FilterRules(filts)
-  elementMetadata(filters) <- XDataFrame(a = 1:2)
+  elementMetadata(filters) <- DataFrame(a = 1:2)
   checkIdentical(elementMetadata(filters)[,1], 1:2)
   checkIdentical(elementMetadata(filters[2:1])[,1], 2:1)
   checkIdentical(elementMetadata(c(filters,filters))[,1], rep(1:2,2))

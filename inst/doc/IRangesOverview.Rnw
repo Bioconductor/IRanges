@@ -330,8 +330,8 @@ is cheap, as it reduces to returning the internal representation.
 
 \subsection{Data Sets}
 
-\Rclass{XDataFrame}
-\Rclass{XDataFrameList}
+\Rclass{DataFrame}
+\Rclass{DataFrameList}
 \Rclass{SplitXDataFrameList}
 
 \section{Sequence Ranges}

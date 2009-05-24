@@ -1,31 +1,31 @@
 ### =========================================================================
-### DataFrame objects
+### DataTable objects
 ### -------------------------------------------------------------------------
 ###
-### The DataFrame virtual class is a general container for storing a list of
+### The DataTable virtual class is a general container for storing a list of
 ### sequences.
 ###
 
-setClass("DataFrame", contains = "Sequence", representation("VIRTUAL"))
+setClass("DataTable", contains = "Sequence", representation("VIRTUAL"))
 
-setClassUnion("DataFrameORNULL", c("DataFrame", "NULL"))
+setClassUnion("DataTableORNULL", c("DataTable", "NULL"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Basic methods.
 ###
 
-setReplaceMethod("[", "DataFrame", function(x, i, j,..., value)
+setReplaceMethod("[", "DataTable", function(x, i, j,..., value)
                  stop("attempt to modify the value of a ", class(x), " instance"))
 
 setGeneric("cbind", function(..., deparse.level=1) standardGeneric("cbind"),
            signature = "...")
 
-setMethod("cbind", "DataFrame", function(..., deparse.level=1)
-          stop("missing 'cbind' method for DataFrame class ",
+setMethod("cbind", "DataTable", function(..., deparse.level=1)
+          stop("missing 'cbind' method for DataTable class ",
                class(list(...)[[1]])))
 
-setMethod("dim", "DataFrame",
+setMethod("dim", "DataTable",
           function(x) {
               if (length(x) == 0L)
                   c(0L, 0L)
@@ -33,7 +33,7 @@ setMethod("dim", "DataFrame",
                   c(length(x[[1]]), length(x))
           })
 
-setMethod("head", "DataFrame",
+setMethod("head", "DataTable",
           function(x, n = 6L, ...)
           {
               stopifnot(length(n) == 1L)
@@ -47,16 +47,16 @@ setMethod("head", "DataFrame",
                   window(x, 1L, n)
           })
 
-setMethod("is.array", "DataFrame", function(x) TRUE)
+setMethod("is.array", "DataTable", function(x) TRUE)
 
 setGeneric("rbind", function(..., deparse.level=1) standardGeneric("rbind"),
            signature = "...")
 
-setMethod("rbind", "DataFrame", function(..., deparse.level=1)
-          stop("missing 'rbind' method for DataFrame class ",
+setMethod("rbind", "DataTable", function(..., deparse.level=1)
+          stop("missing 'rbind' method for DataTable class ",
                class(list(...)[[1]])))
 
-setMethod("seqextract", "DataFrame",
+setMethod("seqextract", "DataTable",
           function(x, start=NULL, end=NULL, width=NULL)
           {
               ir <- IRanges(start=start, end=end, width=width, names=NULL)
@@ -70,7 +70,7 @@ setMethod("seqextract", "DataFrame",
                                         width = width(ir)[i])))
           })
 
-setMethod("subset", "DataFrame",
+setMethod("subset", "DataTable",
           function (x, subset, select, drop = FALSE, ...) 
           {
               if (missing(subset)) 
@@ -91,7 +91,7 @@ setMethod("subset", "DataFrame",
               x[i, j, drop = drop]
           })
 
-setMethod("tail", "DataFrame",
+setMethod("tail", "DataTable",
           function(x, n = 6L, ...)
           {
               stopifnot(length(n) == 1L)
@@ -106,7 +106,7 @@ setMethod("tail", "DataFrame",
                   window(x, xlen - n + 1L, xlen)
           })
 
-setMethod("window", "DataFrame",
+setMethod("window", "DataTable",
           function(x, start = NULL, end = NULL, width = NULL,
                    frequency = NULL, delta = NULL, ...)
           {
@@ -139,7 +139,7 @@ setMethod("window", "DataFrame",
 
 ### FIXME: this is not the same signature/contract as for data.frame
 
-setMethod("aggregate", "DataFrame",
+setMethod("aggregate", "DataTable",
           function(x, by, FUN, start = NULL, end = NULL, width = NULL,
                    frequency = NULL, delta = NULL, ..., simplify = TRUE)
           {
@@ -180,7 +180,7 @@ setGeneric("by", function(data, INDICES, FUN, ..., simplify = TRUE)
 
 .by.data.frame <- by.data.frame # so it will find our generic
 environment(.by.data.frame) <- topenv()
-setMethod("by", "DataFrame",
+setMethod("by", "DataTable",
           function(data, INDICES, FUN, ..., simplify = TRUE) {
             .mc <- mc <- match.call()
             .mc[[1]] <- .by.data.frame
@@ -195,7 +195,7 @@ setMethod("by", "DataFrame",
 
 setClassUnion("expressionORlanguage", c("expression", "language"))
 
-setMethod("eval", c("expressionORlanguage", "DataFrame"),
+setMethod("eval", c("expressionORlanguage", "DataTable"),
           function(expr, envir,
                    enclos = if(is.list(envir) || is.pairlist(envir))
                    parent.frame() else baseenv())
@@ -203,7 +203,7 @@ setMethod("eval", c("expressionORlanguage", "DataFrame"),
             eval(expr, as.env(envir))
           })
 
-setMethod("with", "DataFrame",
+setMethod("with", "DataTable",
           function(data, expr, ...)
           {
               eval(substitute(expr), data, enclos = parent.frame())
@@ -215,7 +215,7 @@ setMethod("with", "DataFrame",
 
 setGeneric("as.env", function(x, ...) standardGeneric("as.env"))
 
-setMethod("as.env", "DataFrame", function(x, enclos = parent.frame()) {
+setMethod("as.env", "DataTable", function(x, enclos = parent.frame()) {
   env <- new.env(parent = enclos)
   lapply(colnames(x), function(col) {
     colFun <- function() {

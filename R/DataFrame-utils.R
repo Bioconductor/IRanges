@@ -1,31 +1,31 @@
 ### =========================================================================
-### XDataFrame utilities
+### DataFrame utilities
 ### -------------------------------------------------------------------------
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Splitting and combining.
 ###
 
-setMethod("split", "XDataFrame",
+setMethod("split", "DataFrame",
           function(x, f, drop = FALSE) {
-            CompressedList("CompressedSplitXDataFrameList", x, splitFactor = f)
+            CompressedList("CompressedSplitDataFrameList", x, splitFactor = f)
           })
 
-setMethod("cbind", "XDataFrame",
+setMethod("cbind", "DataFrame",
           function(..., deparse.level=1) {
-            ans <- XDataFrame(...)
+            ans <- DataFrame(...)
             elementMetadata(ans) <-
               do.call(rbind, lapply(list(...), elementMetadata))
             ans
           })
 
-setMethod("rbind", "XDataFrame", function(..., deparse.level=1) {
+setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
   args <- list(...)
   hasrows <- unlist(lapply(args, nrow), use.names=FALSE) > 0
   hascols <- unlist(lapply(args, ncol), use.names=FALSE) > 0
 
   if (!any(hasrows | hascols)) {
-    return(XDataFrame())
+    return(DataFrame())
   } else if (!any(hasrows)) {
     return(args[[which(hascols)[1]]])
   } else if (sum(hasrows) == 1) {
@@ -44,7 +44,7 @@ setMethod("rbind", "XDataFrame", function(..., deparse.level=1) {
   }
 
   if (ncol(xdf) == 0) {
-    ans <- XDataFrame()
+    ans <- DataFrame()
     ans@nrows <- sum(unlist(lapply(args, nrow), use.names=FALSE))
   } else {
     cn <- colnames(xdf)
@@ -65,7 +65,7 @@ setMethod("rbind", "XDataFrame", function(..., deparse.level=1) {
       as(combined, cl[i])
     })
     names(cols) <- colnames(xdf)
-    ans <- do.call(XDataFrame, cols)
+    ans <- do.call(DataFrame, cols)
   }
 
   rn <- unlist(lapply(args, rownames), use.names=FALSE)

@@ -22,7 +22,7 @@
 \alias{elementMetadata}
 \alias{elementMetadata,Sequence-method}
 \alias{elementMetadata<-}
-\alias{elementMetadata<-,Sequence,DataFrameORNULL-method}
+\alias{elementMetadata<-,Sequence,DataTableORNULL-method}
 \alias{head,Sequence-method}
 \alias{isEmpty}
 \alias{isEmpty,ANY-method}
@@ -66,7 +66,7 @@
   with its \code{metadata} and \code{elementMetadata} slots. The
   \code{metadata} slot can store a list of metadata pertaining to the whole
   object and the \code{elementMetadata} slot can store a
-  \linkS4class{DataFrame} (or \code{NULL}) for element-wise metadata with a
+  \linkS4class{DataTable} (or \code{NULL}) for element-wise metadata with a
   row for each element and a column for each metadata variable.
 
   To be functional, a class that inherits from Sequence must define a
@@ -93,7 +93,7 @@
       and often is, empty.
     }
     \item{}{\code{elementMetadata(x), elementMetadata(x) <- value}:
-      Get or set the \linkS4class{DataFrame} holding local metadata on each
+      Get or set the \linkS4class{DataTable} holding local metadata on each
       element. The rows are named according to the names of the elements.
       Optional, may be \code{NULL}.
     }
@@ -271,7 +271,7 @@
 
 \seealso{
   \linkS4class{Annotated},
-  \linkS4class{DataFrame},
+  \linkS4class{DataTable},
   \linkS4class{SimpleList},
   \linkS4class{Ranges},
   \linkS4class{Rle},

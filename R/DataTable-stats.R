@@ -9,7 +9,7 @@ setGeneric("xtabs",
                     exclude = c(NA, NaN), drop.unused.levels = FALSE)
            standardGeneric("xtabs"))
 
-setMethod("xtabs", signature(data = "DataFrame"),
+setMethod("xtabs", signature(data = "DataTable"),
           function(formula, data, subset, na.action, exclude,
                    drop.unused.levels)
           {

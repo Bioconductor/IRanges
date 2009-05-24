@@ -30,7 +30,7 @@ Long term TODO list
   * as a subset specification for BSGenome objects (get sequences out)
     - as XStringSet?
     
-- DataFrame:
+- DataTable:
   - group generics (Math, Ops, Summary)
   
 - RangedData:
@@ -38,12 +38,12 @@ Long term TODO list
   - "rangeQuantiles", "rangeMins", "rangeMaxs", "rangeSums"
     - could support radius for smoothing
 
-- SplitXDataFrameList:
+- SplitDataFrameList:
   - rbind
 
 - FilterRules:
   - refactor, using ShortRead filter framework (becomes FilterList)
-  - support subsetting XDataFrame/RangedData directly
+  - support subsetting DataFrame/RangedData directly
 
 - rdapply:
   - probably need to add 'excludePattern' parameter
@@ -140,7 +140,7 @@ belong in the "Vector" package proposed above.
 
 A special case that often occurs in data analysis is a list containing
 a set of variables in the same dataset. This problem is solved by
-'data.frame' in base R, and we have an equivalent XDataFrame class
+'data.frame' in base R, and we have an equivalent DataFrame class
 (rename to DataFrame?) that can hold any type of R object, as long as
 it has a vector semantic. This probably also belongs in the Vector
 package.
@@ -148,7 +148,7 @@ package.
 Many of the important data structures have TypedList analogs. These
 include all atomic types, as well as:
 
-  * SplitXDataFrameList: a list of XDataFrames that have the same
+  * SplitDataFrameList: a list of DataFrames that have the same
     columns (usually the result of a split), could be in Vector
     
   * RangesList: Essentially just a list of Ranges objects, but often

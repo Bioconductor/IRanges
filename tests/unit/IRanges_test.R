@@ -48,7 +48,7 @@ test_IRanges_subset <- function() { # by range
 
 test_IRanges_annotation <- function() {
   range <- IRanges(c(1, 4), c(5, 7))
-  elementMetadata(range) <- XDataFrame(a = 1:2)
+  elementMetadata(range) <- DataFrame(a = 1:2)
   checkIdentical(elementMetadata(range)[,1], 1:2)
   checkIdentical(elementMetadata(range[2:1])[,1], 2:1)
   checkIdentical(elementMetadata(c(range,range))[,1], rep(1:2,2))

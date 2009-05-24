@@ -23,8 +23,8 @@ Collate: validity-utils.R
 	utils.R
 	Annotated-class.R
 	Sequence-class.R
-	DataFrame-class.R
-        DataFrame-stats.R
+	DataTable-class.R
+        DataTable-stats.R
 	AtomicList-class.R
 	Ranges-class.R
 	Ranges-comparison.R
@@ -52,9 +52,9 @@ Collate: validity-utils.R
 	SimpleList-class.R
 	CompressedList-class.R
 	AtomicList-impl.R
-	XDataFrame-class.R
-	XDataFrame-utils.R
-	XDataFrameList-class.R
+	DataFrame-class.R
+	DataFrame-utils.R
+	DataFrameList-class.R
 	RangesList-class.R
 	MaskCollection-class.R
 	RangedData-class.R

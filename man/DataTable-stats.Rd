@@ -1,12 +1,12 @@
-\name{DataFrame-stats}
-\alias{DataFrame-stats}
-\alias{xtabs,ANY,DataFrame-method}
+\name{DataTable-stats}
+\alias{DataTable-stats}
+\alias{xtabs,ANY,DataTable-method}
 
-\title{Statistical modeling with DataFrame}
+\title{Statistical modeling with DataTable}
 
 \description{
   A number of wrappers are implemented for performing statistical
-  procedures, such as model fitting, with \code{\linkS4class{DataFrame}}
+  procedures, such as model fitting, with \code{\linkS4class{DataTable}}
   objects.
 }
 
@@ -18,18 +18,18 @@
     \item{}{\code{xtabs(formula = ~., data, subset, na.action, 
         exclude = c(NA, NaN), drop.unused.levels = FALSE)}:
       Like the original \code{\link{xtabs}}, except \code{data} is a
-      \code{DataFrame}.
+      \code{DataTable}.
     }
   }
 }
 
 \seealso{
-  \code{\linkS4class{DataFrame}} for general manipulation,
-  \code{\linkS4class{XDataFrame}} for an implementation that mimics
+  \code{\linkS4class{DataTable}} for general manipulation,
+  \code{\linkS4class{DataFrame}} for an implementation that mimics
   \code{data.frame}.
 }
 
 \examples{
-  xdf <- XDataFrame(as.data.frame(UCBAdmissions))
+  xdf <- DataFrame(as.data.frame(UCBAdmissions))
   xtabs(Freq ~ Gender + Admit, xdf)
 }

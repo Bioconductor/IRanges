@@ -9,11 +9,11 @@
 ## 2) Convenience when data is not so large (i.e. unrolling the data)
 
 ## The ranges are stored in a RangesList, while the data is stored in
-## a SplitXDataFrameList. The RangesList is uncompressed, because
+## a SplitDataFrameList. The RangesList is uncompressed, because
 ## users will likely want to apply over each Ranges separately, as
 ## they are usually in separate spaces. Also, it is difficult to
 ## compress RangesLists, as lists containing Views or IntervalTrees
-## are uncompressible. The SplitXDataFrameList should be compressed,
+## are uncompressible. The SplitDataFrameList should be compressed,
 ## because it's cheap to create from a split factor and, more
 ## importantly, cheap to get and set columns along the entire dataset,
 ## which is common. Usually the data columns are atomic vectors and
@@ -21,10 +21,10 @@
 ## performance penalty when applying over the RangedData.
 
 ### FIXME: probably needs own metadata slot
-setClass("RangedData", contains = "DataFrame",
-         representation(ranges = "RangesList", values = "SplitXDataFrameList"),
+setClass("RangedData", contains = "DataTable",
+         representation(ranges = "RangesList", values = "SplitDataFrameList"),
          prototype = prototype(ranges = new("SimpleRangesList"),
-                               values = new("CompressedSplitXDataFrameList")))
+                               values = new("CompressedSplitDataFrameList")))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -144,8 +144,8 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
   if (!is(ranges, "Ranges"))
     stop("'ranges' must be a Ranges object")
   if (((nargs() - !missing(space)) - !missing(universe)) > 1) 
-    values <- XDataFrame(...) ## at least one column specified
-  else values <- new("XDataFrame", nrows = length(ranges))
+    values <- DataFrame(...) ## at least one column specified
+  else values <- new("DataFrame", nrows = length(ranges))
   if (length(ranges) != nrow(values)) {
     if (nrow(values) > length(ranges))
       stop("length of value(s) in '...' greater than length of 'ranges'")
@@ -167,7 +167,7 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
     values <- split(values, space)
   } else {
     ranges <- RangesList(ranges)
-    values <- SplitXDataFrameList(values, compress = TRUE)
+    values <- SplitDataFrameList(values, compress = TRUE)
     if (length(space))
       names(ranges) <- names(values) <- space
   }
@@ -418,24 +418,24 @@ setMethod("as.data.frame", "RangedData",
                        as.data.frame(values(x)), row.names = row.names)
           })
 
-setAs("RangedData", "XDataFrame",
+setAs("RangedData", "DataFrame",
       function(from)
       {
-        XDataFrame(as.data.frame(ranges(from)), values(from))
+        DataFrame(as.data.frame(ranges(from)), values(from))
       })
 
 setAs("Rle", "RangedData",
       function(from)
       {
           RangedData(successiveIRanges(runLength(from)),
-                     XDataFrame(score = runValue(from)))
+                     DataFrame(score = runValue(from)))
       })
 
 setAs("RangesList", "RangedData",
       function(from)
       {
-        xdfs <- do.call("SplitXDataFrameList", lapply(from, function(x) {
-          xdf <- new("XDataFrame", nrows = length(x))
+        xdfs <- do.call("SplitDataFrameList", lapply(from, function(x) {
+          xdf <- new("DataFrame", nrows = length(x))
           rownames(xdf) <- names(x)
           xdf
         }))

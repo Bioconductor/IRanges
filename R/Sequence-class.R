@@ -12,7 +12,7 @@ setClass("Sequence",
          contains="Annotated",
          representation(
                         "VIRTUAL",
-                        elementMetadata = "DataFrameORNULL",
+                        elementMetadata = "DataTableORNULL",
                         elementType = "character"
                         ),
          prototype(elementType="ANYTHING")
@@ -143,7 +143,7 @@ setMethod("elementMetadata", "Sequence",
 
 setGeneric("elementMetadata<-",
            function(x, ..., value) standardGeneric("elementMetadata<-"))
-setReplaceMethod("elementMetadata", c("Sequence", "DataFrameORNULL"),
+setReplaceMethod("elementMetadata", c("Sequence", "DataTableORNULL"),
                  function(x, value) {
                      if ("elementMetadata" %in% names(attributes(x))) {
                          if (!is.null(value) && length(x) != nrow(value))
