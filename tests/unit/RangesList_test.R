@@ -103,3 +103,25 @@ test_IRangesList_annotation <- function() {
     checkIdentical(elementMetadata(append(rl,rl))[,1], rep(1:2,2))
   }
 }
+
+## test_RangesList_overlap <- function() {
+##   rl1 <- RangesList(a = IRanges(c(1,2),c(4,3)), b = IRanges(c(4,6),c(10,7)))
+##   rl2 <- RangesList(b = IRanges(c(0,2),c(4,5)), a = IRanges(c(4,5),c(6,7)))
+##   overlap(rl1, rl2)
+##   overlap(rl1, rl2, multiple = FALSE)
+##   overlap(rl1, rl2, multiple = FALSE, drop = TRUE)
+##   names(rl2)[1] <- "c"
+##   overlap(rl1, rl2)
+##   overlap(rl1, rl2, multiple = FALSE)
+##   overlap(rl1, rl2, multiple = FALSE, drop = TRUE)
+##   names(rl2) <- NULL
+##   overlap(rl1, rl2)
+##   overlap(rl1, rl2, multiple = FALSE)
+##   overlap(rl1, rl2, multiple = FALSE, drop = TRUE)
+##   overlap(rl1, rl2[1])
+##   overlap(rl1, rl2[1], multiple = FALSE)
+##   overlap(rl1, rl2[1], multiple = FALSE, drop = TRUE)
+##   overlap(rl1[1], rl2)
+##   overlap(rl1[1], rl2, multiple = FALSE)
+##   overlap(rl1[1], rl2, multiple = FALSE, drop = TRUE)
+## }

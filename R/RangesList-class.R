@@ -216,12 +216,12 @@ setMethod("range", "RangesList",
 ###
 
 setMethod("overlap", c("RangesList", "RangesList"),
-          function(object, query, maxgap = 0, multiple = TRUE)
+          function(object, query, maxgap = 0, multiple = TRUE, drop = FALSE)
           {
             query <- as.list(query)
             subject <- as.list(object)
-            subjectNames <- names(subject)
-            if (!is.null(subjectNames) && !is.null(names(query))) {
+            origSubject <- subject
+            if (!is.null(names(subject)) && !is.null(names(query))) {
               subject <- subject[names(query)]
               names(subject) <- names(query) # get rid of NA's in names
             }
@@ -234,13 +234,33 @@ setMethod("overlap", c("RangesList", "RangesList"),
             })
             names(ans) <- names(subject)
             if (multiple)
-              ans <- RangesMatchingList(ans, subjectNames)
+              ans <- RangesMatchingList(ans, names(origSubject))
+            else if (drop) {
+              off <- head(c(0, cumsum(sapply(origSubject, length))), -1)
+              names(off) <- names(origSubject)
+              if (is.null(names(ans)))
+                off <- off[seq_along(ans)]
+              else off <- off[names(ans)]
+              ans <- unlist(ans, use.names=FALSE) +
+                rep(unname(off), sapply(ans, length))
+            }
             ans
           })
 
 setMethod("%in%", c("RangesList", "RangesList"),
           function(x, table)
           !is.na(unlist(overlap(table, x, multiple = FALSE), use.names=FALSE)))
+
+setMethod("match", c("RangesList", "RangesList"),
+          function(x, table, nomatch = NA_integer_, incomparables = NULL)
+          {
+            if (length(nomatch) != 1)
+              stop("'nomatch' must be of length 1") 
+            ans <- overlap(table, x, multiple=FALSE, drop=TRUE)
+            if (!is.na(nomatch))
+              ans[is.na(ans)] <- as.integer(nomatch)
+            ans
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Arithmetic Operations

@@ -24,6 +24,8 @@
 \alias{overlap,RangesList,RangesList-method}
 \alias{\%in\%,Ranges,Ranges-method}
 \alias{\%in\%,RangesList,RangesList-method}
+\alias{match,Ranges,Ranges-method}
+\alias{match,RangesList,RangesList-method}
 \alias{countOverlap}
 \alias{countOverlap,Ranges,Ranges-method}
 
@@ -63,7 +65,8 @@
 
   \describe{
     \item{}{
-      \code{overlap(object, query = object, maxgap = 0, multiple = TRUE)}:
+      \code{overlap(object, query = object, maxgap = 0, multiple = TRUE,
+        drop = FALSE)}:
 
       Find the intervals in \code{query}, a \code{Ranges} or
       \code{integer} vector to be converted to length-one ranges, that
@@ -93,9 +96,12 @@
       elements are paired by position. The overlap is then computed
       between the pairs as described above. If \code{multiple} is
       \code{TRUE}, a \code{\linkS4class{RangesMatchingList}} is
-      returned, otherwise a list of integer vectors. Each element of the
-      result corresponds to a space in \code{query}. For spaces that did
-      not exist in \code{object}, the overlap is nil.
+      returned, otherwise a list of integer vectors or, if \code{drop}
+      is \code{TRUE}, an integer vector with indices offset to align
+      with the unlisted \code{query}. When \code{drop} is \code{FALSE},
+      each element of the result corresponds to a space in
+      \code{query}. For spaces that did not exist in \code{object}, the
+      overlap is nil.
     }
     \item{}{
       \code{x \%in\% table}:
@@ -104,6 +110,18 @@
       be \code{Ranges} or \code{RangesList} objects. The result is a
       \code{logical} vector of the same length as \code{x} (unlisted if
       a \code{RangesList}).
+    }
+    \item{}{
+      \code{match(x, table, nomatch = NA_integer_, incomparables =
+        NULL)}:
+      Returns an integer vector of length \code{length(x)}, containing
+      the index of the first overlapping range in \code{table} for each
+      range in \code{x}. If a range in \code{x} does not overlap any
+      ranges in \code{table}, its value is \code{nomatch}. The \code{x}
+      and \code{table} arguments should either be both \code{Ranges}
+      objects or both \code{RangesList} objects, in which case the
+      indices are into the unlisted \code{table}. The
+      \code{incomparables} argument is currently ignored.
     }
     \item{}{
       \code{countOverlap(subject, query)}: Return the count of the
