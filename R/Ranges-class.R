@@ -357,8 +357,22 @@ setMethod("countOverlap", c("Ranges", "Ranges"),
           })
 
 setMethod("%in%", c("Ranges", "Ranges"),
-          function(x, table)
-          !is.na(overlap(reduce(table), x, multiple = FALSE)))
+          function(x, table) !is.na(match(x, table)))
+
+setGeneric("match",
+           function(x, table, nomatch = NA_integer_, incomparables = NULL)
+           standardGeneric("match"))
+
+setMethod("match", c("Ranges", "Ranges"),
+          function(x, table, nomatch = NA_integer_, incomparables = NULL)
+          {
+            if (length(nomatch) != 1)
+              stop("'nomatch' must be of length 1") 
+            ans <- overlap(table, x, multiple=FALSE)
+            if (!is.na(nomatch))
+              ans[is.na(ans)] <- nomatch
+            ans
+          })
 
 setClassUnion("RangesORmissing", c("Ranges", "missing"))
 
