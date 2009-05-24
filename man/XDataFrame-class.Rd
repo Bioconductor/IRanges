@@ -23,7 +23,6 @@
 \alias{coerce,integer,XDataFrame-method}
 \alias{coerce,data.frame,XDataFrame-method}
 \alias{coerce,XDataFrame,data.frame-method}
-\alias{as.list,XDataFrame-method}
 
 % splitting and combining
 \alias{cbind,XDataFrame-method}
@@ -36,11 +35,8 @@
 \title{External Data Frame}
 \description{
   The \code{XDataFrame} extends the \code{\linkS4class{DataFrame}} virtual
-  class and supports the storage of any type of object with \code{length}
-  and \code{[} methods as columns. The \dQuote{X} in its name indicates
-  that it attempts to coerce its columns to external
-  \code{\linkS4class{XSequence}} objects in a way that is completely
-  transparent to the user. This helps to avoid unnecessary copying.
+  class and supports the storage of any type of object (with \code{length}
+  and \code{[} methods) as columns.
 }
 
 \details{
@@ -85,7 +81,7 @@
     }
     \item{}{\code{x[[i]]}: Behaves very similarly to the
       \code{\link{[[.data.frame}} method, except arguments \code{j}
-      (why?) and \code{exact} are not supported. Column name matching is
+      and \code{exact} are not supported. Column name matching is
       always exact. Subsetting by matrices is not supported.
     }
     \item{}{\code{x[[i]] <- value}: Behaves very similarly to the

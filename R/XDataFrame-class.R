@@ -3,9 +3,6 @@
 ### -------------------------------------------------------------------------
 
 ## A data.frame-like interface for S4 objects that implement length() and `[`
-## Currently tries to coerce objects to XSequence for storage, and
-## drops them down to vectors again during extraction. Should probably give
-## user control over this.
 
 ## NOTE: Normal data.frames always have rownames (sometimes as integers),
 ## but we allow the rownames to be NULL for efficiency. This means that we
@@ -395,18 +392,6 @@ setAs("integer", "XDataFrame",
       function(from) {
         selectMethod("coerce", c("ANY", "XDataFrame"))(from)
       })
-
-## pull the external vectors into R
-setMethod("as.list", "XDataFrame",
-          function(x, use.names = TRUE) {
-            lapply(callNextMethod(x, use.names = use.names),
-                   function(xi) {
-                     if (is(xi, "XSequence"))
-                       xi[]
-                     else 
-                       xi
-                   })
-          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
