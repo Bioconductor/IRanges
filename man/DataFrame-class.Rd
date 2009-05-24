@@ -145,10 +145,24 @@
   }
 }
 
+\section{Coercion}{
+  \describe{
+    \item{}{\code{as.env(x, enclos = parent.frame())}:
+      Creates an \code{environment} from the \code{DataFrame}
+      \code{x}. There is a symbol for each variable in the frame. This
+      is efficient, as no copying is performed.
+    }
+  }
+}
+  
 \seealso{
-  \link{Sequence-class},
-  \link{XDataFrame-class},
-  \code{\link{solveUserSEW}}
+  \link{DataFrame-eval} for evaluating expressions referring to
+  variables in the data,
+  \link{DataFrame-stats} for statistical functionality, like fitting
+  regression models,
+  \link{XDataFrame-class} for an implementation that mimics
+  \code{data.frame},
+  \link{Sequence-class}
 }
 
 \examples{

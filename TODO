@@ -12,38 +12,33 @@ Long term TODO list
 -------------------
 
 - Ranges:
-  - "unique" for removing duplicate ranges, or should this be an alias for
-    disjoin (every integer in the set is unique)
   - "match" for exact matching
   - operator aliases
     - ranges & ranges (pintersect)
     - ranges | ranges (punion)
     - !ranges (gaps)
     - ranges - ranges (psetdiff)
-    - ranges +/- x (shift)
+    - ranges +/- x (vectorized shift)
   - permute or something to create a random mimic
 
 - RangesList:
   - parallel rbind
-  - binary ops: "nearest", "intersect", "setdiff", "merge"
+  - binary ops: "nearest", "intersect", "setdiff", "union"
     - 'y' omitted: become n-ary ops on items in collection
     - 'y' specified: performed element-wise
-  - unary ops: "gaps", "coverage", "slice", etc are vectorized
+  - unary ops: "coverage" etc are vectorized
   * as a subset specification for BSGenome objects (get sequences out)
     - as XStringSet?
     
-- XDataFrame:
+- DataFrame:
   - group generics (Math, Ops, Summary)
-  - by, aggregate
-  - with, within
-  - subset
-
+  
 - RangedData:
   - 'merge' for SQL-type join operations based on range overlap
   - "rangeQuantiles", "rangeMins", "rangeMaxs", "rangeSums"
     - could support radius for smoothing
 
-- SplitXDataFrame:
+- SplitXDataFrameList:
   - rbind
 
 - FilterRules:

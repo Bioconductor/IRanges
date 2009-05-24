@@ -21,7 +21,7 @@
 ## performance penalty when applying over the RangedData.
 
 ### FIXME: probably needs own metadata slot
-setClass("RangedData", contains = "Annotated",
+setClass("RangedData", contains = "DataFrame",
          representation(ranges = "RangesList", values = "SplitXDataFrameList"),
          prototype = prototype(ranges = new("SimpleRangesList"),
                                values = new("CompressedSplitXDataFrameList")))
@@ -290,8 +290,9 @@ setMethod("[", "RangedData",
                 j <- seq_len(ncol(x))
               if (!missing(i)) {
                 if (is(i, "RangesList")) {
-                  ### FIXME: not sure about this at all
                   i <- !is.na(unlist(overlap(i,ranges,multiple=FALSE)))
+### FIXME: could do this if Ranges supported NAs, then ordering is possible
+                  ##i <- overlap(ranges, i, multiple=FALSE, drop=TRUE)
                 }
                 checkIndex(i, nrow(x))
                 dummy <- seq_len(nrow(x))
@@ -440,6 +441,18 @@ setAs("RangesList", "RangedData",
         }))
         new("RangedData", ranges = from, values = xdfs)
       })
+
+setMethod("as.env", "RangedData", function(x, enclos = parent.frame()) {
+  env <- callNextMethod()
+  makeActiveBinding("ranges", function() {
+    val <- unlist(ranges(envir))
+    rm(list="ranges", envir=env)
+    assign("ranges", val, env) ## cache for further use
+    val
+  }, env)
+  env
+})
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Show

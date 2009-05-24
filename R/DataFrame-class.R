@@ -137,6 +137,8 @@ setMethod("window", "DataFrame",
 ### Looping methods.
 ###
 
+### FIXME: this is not the same signature/contract as for data.frame
+
 setMethod("aggregate", "DataFrame",
           function(x, by, FUN, start = NULL, end = NULL, width = NULL,
                    frequency = NULL, delta = NULL, ..., simplify = TRUE)
@@ -198,18 +200,7 @@ setMethod("eval", c("expressionORlanguage", "DataFrame"),
                    enclos = if(is.list(envir) || is.pairlist(envir))
                    parent.frame() else baseenv())
           {
-              env <- new.env(parent = enclos)
-              for (col in colnames(envir)) {
-                  colFun <-
-                    eval(parse(text = paste("function() {
-                      val <- envir[[\"", col, "\"]]
-                      rm(list=\"", col, "\", envir=env)
-                      assign(\"", col, "\", val, env)
-                      val
-                    }", sep = "")))
-                  makeActiveBinding(col, colFun, env)
-              }
-              eval(expr, env)
+            eval(expr, as.env(envir))
           })
 
 setMethod("with", "DataFrame",
@@ -217,3 +208,23 @@ setMethod("with", "DataFrame",
           {
               eval(substitute(expr), data, enclos = parent.frame())
           })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion
+###
+
+setGeneric("as.env", function(x, ...) standardGeneric("as.env"))
+
+setMethod("as.env", "DataFrame", function(x, enclos = parent.frame()) {
+  env <- new.env(parent = enclos)
+  lapply(colnames(x), function(col) {
+    colFun <- function() {
+      val <- x[[col]]
+      rm(list=col, envir=env)
+      assign(col, val, env)
+      val
+    }
+    makeActiveBinding(col, colFun, env)
+  })
+  env
+})

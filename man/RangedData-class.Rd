@@ -50,14 +50,15 @@
 \alias{show,RangedData-method}
 
 \title{Data on ranges}
-\description{\code{RangedData} supports storing data, i.e. a set of
-  variables, on a set of ranges spanning multiple spaces
-  (e.g. chromosomes). Although the data is split across spaces, it can
-  still be treated as one cohesive dataset when
-  desired. In order to handle large datasets, the data values are
-  stored externally to avoid copying, and the \code{\link{rdapply}}
-  function facilitates the processing of each space separately (divide and
-  conquer).} 
+\description{
+  \code{RangedData} supports storing data, i.e. a set of variables, on a
+  set of ranges spanning multiple spaces (e.g. chromosomes). Although
+  the data is split across spaces, it can still be treated as one
+  cohesive dataset when desired and extends \code{\linkS4class{DataFrame}}. In
+  order to handle large datasets, the data values are stored externally
+  to avoid copying, and the \code{\link{rdapply}} function facilitates
+  the processing of each space separately (divide and conquer).
+}
 
 \details{
   A \code{RangedData} object consists of two primary components:
@@ -311,6 +312,7 @@
 \author{ Michael Lawrence }
 
 \seealso{
+  \linkS4class{DataFrame}, the parent of this class, with more utilites.
   \link{RangedData-utils} for utlities and the \code{\link{rdapply}}
   function for applying a function to each space separately.
 }

@@ -3,7 +3,7 @@ useDynLib(IRanges)
 import(methods)
 importFrom(utils, head, tail)
 importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
-           window, aggregate)
+           window, aggregate, xtabs)
 
 exportClasses(
     characterORNULL,
@@ -109,6 +109,9 @@ export(
     nobj, grouplength, members, vmembers, togroup, togrouplength,
     high2low, low2high,
 
+    ## Generic functions in the DataFrame API:
+    as.env,
+    
     ## Other generic functions:
     isNormal,
     isDisjoint,
@@ -127,7 +130,7 @@ export(
     values,
     viewApply, viewMins, viewMaxs, viewSums, viewWhichMins, viewWhichMaxs,
     viewRangeMins, viewRangeMaxs,
-    cbind, rbind, table,
+    cbind, rbind, table, xtabs,
     rangedData, "rangedData<-", applyFun, "applyFun<-", applyParams,
     "applyParams<-", simplify, "simplify<-",
     ##excludePattern, "excludePattern<-",
@@ -187,7 +190,7 @@ exportMethods(
     split,
     eval, with,
     t,
-    is.na, "%in%", by,
+    is.na, "%in%", by, match,
     
     ## Methods for generics defined in this package:
     sapply,
