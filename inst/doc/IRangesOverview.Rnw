@@ -159,8 +159,8 @@ compensate for this, \IRanges{} provides two functions,
 over mathematical subsequences. The \Rfunction{aggregate} function combines
 mathematical sequence extraction functionality of the \Rfunction{window}
 function with looping capabilities of the \Rfunction{sapply} function. For
-example, here is some code to generate medians across a moving window of
-width 3 using the \Rfunction{aggregate}:
+example, here is some code to compute medians across a moving window of
+width 3 using the function \Rfunction{aggregate}:
 
 <<aggregate>>=
 xSnippet
@@ -172,14 +172,30 @@ mathematical sequences whose elements are lined up via a positional shift
 operation. For example, the elements of \Robject{xVector} and
 \Robject{yVector} were simulated from Poisson distributions with the mean
 of element i from \Robject{yVector} being equivalent to the mean of element
-i + 250 from \Robject{xVector}. This amount of the shift can be estimated
-by finding the shift that maximizes the correction between
-\Robject{xVector} and \Robject{yVector}.
+i + 250 from \Robject{xVector}. If we did not know the size of the shift,
+we could estimate it by finding the shift that maximizes the correlation 
+between \Robject{xVector} and \Robject{yVector}.
 
 <<shiftApply-cor>>=
 cor(xVector, yVector)
-shiftApply(249:251, yVector, xVector, FUN = cor)
+shifts = seq(235, 265, by=3)
+corrs  = shiftApply(shifts, yVector, xVector, FUN = cor)
 @
+%
+<<figshiftcorrs, fig=TRUE, include=FALSE, eps=FALSE, width=5, height=5>>=
+plot(shifts, corrs)
+@ 
+
+The result is shown in Fig.~\ref{figshiftcorrs}.
+\begin{figure}[tb]
+  \begin{center}
+     \includegraphics[width=0.5\textwidth]{IRangesOverview-figshiftcorrs}  
+     \caption{\label{figshiftcorrs}%
+      Correlation between \Robject{xVector} and \Robject{yVector} for various
+      shifts.}
+  \end{center}
+\end{figure}
+
 
 \subsubsection{Run Length Encoding}
 
@@ -189,7 +205,7 @@ large to manage in memory. When there are lots of consecutive repeats in
 the mathematical sequence, the data can be compressed and managed in memory
 through a run-length encoding where a data value is paired with a run
 length. For example, the sequence \{1, 1, 1, 2, 3,  3\} can be represented
-as values = \{1, 2, 3\}, lengths = \{3, 1, 2\}.
+as values = \{1, 2, 3\}, run lengths = \{3, 1, 2\}.
 
 The \Rclass{Rle} class in \IRanges{} is used to represent a run-length
 encoded (compressed) mathematical sequence of \Rclass{logical},
@@ -206,7 +222,7 @@ yRle
 
 When there are lots of consecutive repeats, the memory savings through
 an RLE can be quite dramatic. For example, the \Robject{xRle} object
-occupies less than one quarter the space of the original \Robject{xVector}
+occupies less than one quarter of the space of the original \Robject{xVector}
 object, while storing the same information:
 
 <<Rle-vector-compare>>=
@@ -301,6 +317,8 @@ objects, called \Robject{metadata}, and \Robject{elementMetadata}, a
 data frame with one row per element and any number of columns. Many of
 the high-level list objects in \IRanges{} (described later) are
 \Rclass{AnnotatedList} objects.
+% FIXME (wh 26.5.09): this description does not seem to correspond to the
+% current implementation of the package?
 
 \subsubsection{Advanced Notes}
 
@@ -327,11 +345,17 @@ by the \Rclass{TypedList} interface. A beneficial side effect of this
 approach is that unlisting (concatenating all of the elements)
 is cheap, as it reduces to returning the internal representation.
 
+% FIXME (wh 26.5.09): the above paragraph seems self-contradictory as 
+% to what is actually done:
+% - 'Behind the scenes, TypedList is simply an R list'. 
+% - 'Our solution is to compress the list by concatenating the elements 
+%    together'
 
 \subsection{Data Tables}
 
-\Rclass{DataFrame}
-\Rclass{DataFrameList}
+To Do:
+\Rclass{DataFrame},
+\Rclass{DataFrameList},
 \Rclass{SplitXDataFrameList}
 
 \section{Sequence Ranges}
@@ -345,6 +369,12 @@ consecutive subsequence. However, a sparser representation would be a
 a range, a pairing of a start position and a width, as used when
 extracting sequences with \Rfunction{window} and
 \Rfunction{seqextract}, above.
+
+% FIXME (wh 26.5.09): the term 'segments' would merit either
+% a more precise definition, or perhaps better even introduction by
+% way of example(s).
+% Not clear what is meant by 'consecutive subsequences', 
+% 'consecutive list of indices'. 
 
 When analyzing subsequences in \IRanges{}, each range is treated as an
 observation. The virtual \Rclass{Ranges} class represents lists of
