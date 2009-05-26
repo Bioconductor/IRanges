@@ -11,14 +11,12 @@ setClass("IRanges",
     representation(
         start="integer",
         width="integer",
-        NAMES="characterORNULL",  # R doesn't like @names !!
-        is_locked="logical" # no code uses this slot for now!
+        NAMES="characterORNULL"  # R doesn't like @names !!
     ),
     prototype(
         start=integer(),
         width=integer(),
-        NAMES=NULL,
-        is_locked=FALSE
+        NAMES=NULL
     )
 )
 
