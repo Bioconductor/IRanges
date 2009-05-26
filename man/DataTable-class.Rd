@@ -4,6 +4,7 @@
 % DataTable class, functions and methods:
 \alias{class:DataTable}
 \alias{DataTable-class}
+\alias{DataTableORNULL-class}
 \alias{DataTable}
 
 \alias{[<-,DataTable-method}
