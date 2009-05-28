@@ -445,7 +445,7 @@ setAs("RangesList", "RangedData",
 setMethod("as.env", "RangedData", function(x, enclos = parent.frame()) {
   env <- callNextMethod()
   makeActiveBinding("ranges", function() {
-    val <- unlist(ranges(envir))
+    val <- ranges(x)
     rm(list="ranges", envir=env)
     assign("ranges", val, env) ## cache for further use
     val
@@ -462,7 +462,7 @@ setMethod("show", "RangedData", function(object) {
   cat(class(object), ": ", nrow(object), " ranges by ", ncol(object),
       " column(s) on ", length(object), " sequence(s)\n", sep = "")
   cat(labeledLine("columns", colnames(object)))
-  if (!is.null(names))
+  if (!is.null(names(object)))
     cat(labeledLine("sequences", names(object)))
 })
 
