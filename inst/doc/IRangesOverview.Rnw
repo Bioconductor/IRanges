@@ -345,116 +345,155 @@ by the \Rclass{TypedList} interface. A beneficial side effect of this
 approach is that unlisting (concatenating all of the elements)
 is cheap, as it reduces to returning the internal representation.
 
-% FIXME (wh 26.5.09): the above paragraph seems self-contradictory as 
-% to what is actually done:
-% - 'Behind the scenes, TypedList is simply an R list'. 
-% - 'Our solution is to compress the list by concatenating the elements 
-%    together'
-
 \subsection{Data Tables}
 
 To Do:
 \Rclass{DataFrame},
 \Rclass{DataFrameList},
-\Rclass{SplitXDataFrameList}
+\Rclass{SplitDataFrameList}
 
 \section{Sequence Ranges}
 
-When analyzing sequences, we are often interested in specific
-segments, or consecutive subsequences, of the sequence. It is not
-uncommon for an analysis task to focus only on the segments
-themselves, while ignoring the underlying sequence values. A
-consecutive list of indices would be a simple way to select a
-consecutive subsequence. However, a sparser representation would be a
-a range, a pairing of a start position and a width, as used when
-extracting sequences with \Rfunction{window} and
-\Rfunction{seqextract}, above.
-
-% FIXME (wh 26.5.09): the term 'segments' would merit either
-% a more precise definition, or perhaps better even introduction by
-% way of example(s).
-% Not clear what is meant by 'consecutive subsequences', 
-% 'consecutive list of indices'. 
+When analyzing sequences, we are often interested in particular
+contiguous subsequences. For example, the \Sexpr{letters} vector could
+be considered a sequence of lower-case letters, in alphabetical order.
+We would call the first five letters (\textit{a} to \textit{e}) a
+contiguous subsequence, while the subsequence containing only the
+vowels would not be contiguous. It is not uncommon for an analysis
+task to focus only on the geometry of the regions, while
+ignoring the underlying sequence values. A list of indices would be a
+simple way to select a subsequence. However, a sparser representation
+for consecutive subsequences would be a range, a pairing of a start
+position and a width, as used when extracting sequences with
+\Rfunction{window} and \Rfunction{seqextract}, above.
 
 When analyzing subsequences in \IRanges{}, each range is treated as an
 observation. The virtual \Rclass{Ranges} class represents lists of
-ranges, or, equivalently, sequences of consecutive integers. The most
-commonly used implementation of \Rclass{Ranges} is \Rclass{IRanges},
-which stores the starts and widths as ordinary integer vectors. To
-construct an \Rclass{IRanges} instance, we call the
-\Rfunction{IRanges} constructor. Ranges are normally specified by
-passing two out of the three parameters: start, end and width (see
-\Sexpr{help(IRanges)} for more information).
-
-%% Example: IRanges() with different SEW combinations
+ranges, or, equivalently and as a derivative \Rclass{IntegerList},
+sequences of consecutive integers. The most commonly used
+implementation of \Rclass{Ranges} is \Rclass{IRanges}, which stores
+the starts and widths as ordinary integer vectors. To construct an
+\Rclass{IRanges} instance, we call the \Rfunction{IRanges}
+constructor. Ranges are normally specified by passing two out of the
+three parameters: start, end and width (see \Sexpr{help(IRanges)} for
+more information).
+%
+<<iranges-constructor>>=
+ir1 <- IRanges(start = 1:10, width = 10:1)
+ir2 <- IRanges(start = 1:10, end = 11)
+ir3 <- IRanges(end = 11, width = 10:1)
+identical(ir1, ir2) & identical(ir2, ir3)
+@ 
+%
+All of the above calls construct an \Rclass{IRanges} instance with the
+same ranges, using different combinations of the \Rfunarg{start},
+\Rfunarg{end} and \Rfunarg{width} parameters.
 
 Accessing the starts, widths and ends is supported by every
 \Rclass{Ranges} implementation.
-
-%% Example: start(), width(), end()
+<<iranges-start>>=
+start(ir1)
+@ 
+<<iranges-end>>=
+end(ir1)
+@ 
+<<iranges-width>>=
+width(ir1)
+@ 
 
 For \Rclass{IRanges} and some other \Rclass{Ranges} derivatives,
-subsetting is also supported.
+subsetting is also supported, by numeric and logical indices.
+<<iranges-subset-numeric>>=
+ir <- ir1[1:5]
+ir
+@ 
+<<iranges-subset-logical>>=
+ir1[start(ir1) <= 5]
+@ 
 
-%% Example: Ranges subsetting
+One may think of each range as a sequence of integer ranges, and
+\Rclass{Ranges} is, in fact, derived from \Rclass{IntegerList}.
+<<ranges-extraction>>=
+ir1[[1]]
+@ 
 
 \subsection{Normality}
 
-\Rclass{NormalIRanges}
+Sometimes, it is necessary to formally represent a true mathematical
+subsequence, where no elements are repeated and order is
+preserved. Also, it is occasionally useful to think of a
+\Rclass{Ranges} object as a set, where no elements are repeated and
+order does not matter. While every \Rclass{Ranges} object, as a
+\Rclass{Sequence} derivative, has an implicit ordering, one can
+enforce the same ordering for all such objects, so that ordering
+becomes inconsequential within that context. 
 
-\subsection{Lists of Ranges}
+The \Rclass{NormalIRanges} class formally represents either a
+mathematical subsequence encoding or a set of integers. By definition
+a Ranges object is said to be \textit{normal} when its ranges are: (a)
+not empty (i.e. they have a non-null width); (b) not overlapping; (c)
+ordered from left to right; (d) not even adjacent (i.e. there must be
+a non empty gap between 2 consecutive ranges).
 
-\Rclass{RangesList}
-\Rclass{IRangesList}
-\Rclass{MaskCollection} % make distinction with RangesList
+There are three main advantages of using a \textit{normal}
+\Rclass{Ranges} object: (1) it guarantees a mathematical subsequence
+encoding or set of integers, (2) it is compact in terms of the number
+of ranges, and (3) it uniquely identifies its information, which
+simplifies comparisons.
+
+The \Rfunction{reduce} function reduces any \Rclass{Ranges} object to
+a \Rclass{NormalIRanges} by merging redundant ranges.
+<<ranges-reduce>>=
+reduce(ir1)
+@ 
+
+\subsection{Lists of \Rclass{Ranges} objects}
+
+As with \Rclass{Sequence} objects, it is common to manipulate
+collections of \Rclass{Ranges} objects during an analysis. Thus, the
+\IRanges{} package defines some specific classes for working with
+multiple \Rclass{Ranges} objects.
+
+The \Rclass{RangesList} class asserts that each element is a
+\Rclass{Ranges} object and provides convenience methods, such as
+\Rfunction{start}, \Rfunction{end} and \Rfunction{width} accessors
+that return flat integer vectors, aligning with the unlisted form of
+the \Rclass{RangesList}. To explicitly construct a
+\Rclass{RangesList}, use the \Rfunction{RangesList} function.
+<<rangeslist-contructor>>=
+rl <- RangesList(ir, rev(ir))
+@ 
+%
+<<rangeslist-start>>=
+start(rl)
+@ 
 
 \subsection{Sequence Extraction}
 
 As \Rclass{Ranges} objects encode subsequences, they may be used
 directly in sequence extraction. Note that when a \textit{normal}
 \Rclass{Ranges} is given as the index, the result is a true
-subsequence, in the mathematical sense.
-
-%% EXAMPLE: window() and [ with Ranges
-
-\subsection{Transforming Ranges}
-
-% most utilities fall in here
-
-\paragraph{Making ranges normal}
-
-\Rfunction{reduce}
-
-\paragraph{Making ranges disjoint}
-
-\Rfunction{disjoin}, \Rfunction{disjointBins}
-
-\paragraph{Adjusting starts, ends and widths}
-
-\Rfunction{shift}
-\Rfunction{*} % zooming
-\Rfunction{narrow} % like 'pintersect'
-\Rfunction{threebands} % like 'pdisjoin', if it existed
-
-\paragraph{Other transformations}
-
-\Rfunction{restrict} % like 'intersect'
-\Rfunction{reflect}
-\Rfunction{flank}
-
-\subsection{Set Operations}
-
-\Rfunction{gaps}, \Rfunction{pgaps}
-\Rfunction{setdiff}, \Rfunction{psetdiff}
-\Rfunction{union}, \Rfunction{punion}
-\Rfunction{intersect}, \Rfunction{pintersect}
+subsequence, in the mathematical sense, as no elements are repeated or
+reordered.
+%
+<<seqextract-ranges>>=
+seqextract(xRle, ir1[1:2])
+@
+%
+If the sequence is a \Rclass{Sequence} derivative (i.e. not an
+ordinary \Rclass{vector}), the canonical \Rfunction{[} function also
+accepts a \Rclass{Ranges} instance.
+%
+<<bracket-ranges>>=
+xRle[ir1[1:2]]
+@ 
+%
 
 \subsection{Finding Overlapping Ranges}
 
 \Rclass{RangesMatching}
 \Rclass{RangesMatchingList}
 \Rclass{IntervalTree}
-% need an IntervalTreeList?
 
 \Rfunction{overlap}, \Rfunction{\%in\%}
 
@@ -462,10 +501,153 @@ subsequence, in the mathematical sense.
 
 \Rfunction{nearest}, \Rfunction{precede}, \Rfunction{follow}
 
-\subsection{Mapping Ranges Between Sequences}
+\subsection{Transforming Ranges}
 
-\Rclass{RangesMapping}
-\Rfunction{map}
+Utilities are available for transforming a \Rclass{Ranges} object in a
+variety of ways. Some transformations, like \Rfunction{reduce}
+introduced above, can be dramatic, while others are simple per-range
+adjustments of the starts, ends or widths.
+
+\subsubsection{Adjusting starts, ends and widths}
+
+Perhaps the simplest transformation is to adjust the start values by a
+scalar offset, as performed by the \Rfunction{shift} function. Below,
+we shift all ranges forward 10 positions.
+%
+<<ranges-shift>>=
+shift(ir, 10)
+@
+
+The arithmetic functions \Rfunction{+}, \Rfunction{-} and
+\Rfunction{*} change both the start and the end/width by symetrically
+expanding or contracting each range.  Adding or subtracting a numeric
+(integer) vector to a \Rclass{Ranges} causes each range to be expanded
+or contracted on each side by the corresponding value in the numeric
+vector.
+<<ranges-plus>>=
+ir + 1:5
+@ 
+%
+The \Rfunction{*} operator symetrically magnifies a \Rclass{Ranges}
+object by a factor, where positive contracts (zooms in) and negative
+expands (zooms out).
+%
+<<ranges-asterisk>>=
+ir * -2 # half the width
+@
+
+There are several other ways to form subranges, besides symmetric
+contraction.  These include \Rfunction{narrow}, \Rfunction{threebands}
+and \Rfunction{restrict}.  \Rfunction{narrow} supports the adjustment
+of start, end and width values, which should be relative to each
+range. Unlike \Rfunction{shift}, these adjustments are vectorized over
+the ranges. As its name suggests, the ranges can only be narrowed.
+% 
+<<ranges-narrow>>=
+narrow(ir, start=1:5, width=2)
+@
+% 
+The \Rfunction{threebands} function extends \Rfunction{narrow} so that
+the remaining left and right regions adjacent to the narrowed region
+are also returned in separate \Rclass{Ranges} objects.
+<<ranges-threebands>>=
+threebands(ir, start=1:5, width=2)
+@ 
+
+The \Rfunction{restrict} function ensures every range falls within a
+set of bounds. Ranges are contracted as necessary, and the ranges that
+fall completely outside of but not adjacent to the bounds are dropped,
+by default.
+<<ranges-restrict>>=
+restrict(ir, start=2, end=3)
+@ 
+
+\subsubsection{Making ranges disjoint}
+
+A more complex type of operation is making a set of ranges disjoint,
+\textit{i.e.} non-overlapping. For example, \Rfunction{threebands}
+returns a disjoint set of three ranges for each input range.
+
+The \Rfunction{disjoin} function makes a \Rclass{Ranges} object
+disjoint by fragmenting it into the widest ranges where the set of
+overlapping ranges is the same.
+<<ranges-disjoin>>=
+disjoin(ir)
+@ 
+A variant of \Rfunction{disjoin} is \Rfunction{disjointBins}, which
+divides the ranges into bins, such that the ranges in each bin are
+disjoint. The return value is an integer vector of the bins.
+<<ranges-disjointBins>>=
+disjointBins(ir)
+@ 
+
+\subsubsection{Other transformations}
+
+Other transformations include \Rfunction{reflect} and
+\Rfunction{flank}. The former ``flips'' each range within a set of common
+reference bounds.
+<<ranges-reflect>>=
+reflect(ir, IRanges(start(ir), width=width(ir)*2))
+@ 
+%
+The \Rfunction{flank} returns ranges of a specified width that flank,
+to the left (default) or right, each input range. One use case of this
+is forming promoter regions for a set of genes.
+<<ranges-flank>>=
+flank(ir, width = 1:5)
+@ 
+%
+
+\subsection{Set Operations}
+
+Sometimes, it is useful to consider a \Rclass{Ranges} object as a set
+of integers, although there is always an implicit ordering. This is
+formalized by \Rclass{NormalIRanges}, above, and we now present
+versions of the traditional mathematical set operations
+\textit{complement}, \textit{union}, \textit{intersect}, and
+\textit{difference} for \Rclass{Ranges} objects. There are two
+variants for each operation. The first treats each \Rclass{Ranges}
+object as a set and returns a \textit{normal} value, while the other
+has a ``parallel'' semantic like \Rfunction{pmin}/\Rfunction{pmax} and
+performs the operation for each range pairing separately.
+
+The \textit{complement} operation is implemented by the
+\Rfunction{gaps} and \Rfunction{pgap} functions. By default,
+\Rfunction{gaps} will return the ranges that fall between the ranges
+in the (normalized) input. It is possible to specify a set of bounds,
+so that flanking ranges are included.
+<<ranges-gaps>>=
+gaps(ir, start=1, end=20)
+@ 
+\Rfunction{pgap} considers each parallel pairing between two
+\Rclass{Ranges} objects and finds the range, if any, between
+them. Note that the function name is singular, suggesting that only
+one range is returned per range in the input.
+<<ranges-pgap>>=
+pgap(ir, ir2)
+@ 
+
+The remaining operations, \textit{union}, \textit{intersect} and
+\textit{difference} are implemented by the \Rfunction{[p]union},
+\Rfunction{[p]intersect} and \Rfunction{[p]setdiff} functions,
+respectively. These are relatively self-explanatory.
+<<ranges-union>>=
+@ 
+<<ranges-punion>>=
+@ 
+<<ranges-intersect>>=
+@ 
+<<ranges-pintersect>>=
+@ 
+<<ranges-setdiff>>=
+@ 
+<<ranges-psetdiff>>=
+@ 
+
+% \subsection{Mapping Ranges Between Sequences}
+
+% \Rclass{RangesMapping}
+% \Rfunction{map}
 
 \section{Sequence Views}
 
@@ -499,15 +681,103 @@ implementations exist, such as \Rclass{XStringViews} in the
 \subsection{Aggregating Views}
 
 
-\section{Sequence Ranges with Data Tables}
+\section{Data on Ranges}
 
-\Rclass{RangedData}
-\Rclass{RangedDataList}
+When analyzing ranges, there are often additional variables of
+interest, besides the geometry (starts, ends and widths). To formally
+represent a dataset where the ranges are the observations, \IRanges{}
+defines the \Rclass{RangedData} class.
 
-\subsection{Applying Over Spaces}
+%\subsection{Manipulating \Rclass{RangedData}}
 
-\Rclass{RDApplyParams}
-\Rclass{FilterRules}
+To create a \Rclass{RangedData} instance, one needs to provide a
+\Rclass{Ranges} object and, optionally, any number of variables on
+those ranges. The variable objects need not be vectors, but they must
+satisfy the contract of \Rclass{DataFrame}.
+<<RangedData-construct>>=
+values <- rnorm(5)
+rd <- RangedData(ir, name = letters[1:5], values)
+rd
+@
+
+One might notice the term ``sequence'' in the above output. This
+refers to an important feature of \Rclass{RangedData}: the ability to
+segregate ranges by their sequence (or space). For example, when
+analyzing genomic data, one is often working with ranges on different
+chromosomes. In many cases, such as when calculating overlap, one
+needs to separately treat ranges from different spaces, and
+\Rclass{RangedData} aims to facilitate this mode of operation. The
+segregation may be performed at construction time.
+<<RangedData-construct-space>>=
+rd <- RangedData(ir, name = letters[1:5], values, 
+                 space = rep(c("chr1", "chr2"), c(2, 3)))
+rd
+@ 
+
+With the knowledge that the data is split into spaces, it should not
+be surprising that the \Rfunction{ranges} accessor returns a
+\Rclass{RangesList} and \Rfunction{values} returns a
+\Rclass{SplitDataFrameList}.
+<<RangedData-ranges>>=
+ranges(rd)
+@
+<<RangedData-values>>=
+values(rd)
+@ 
+
+To obtain a \Rclass{RangedData} for a specific set of spaces, one should
+use the \Rfunction{[} function, which accepts logical, numeric and
+character indices.
+<<RangedData-subspace>>=
+rd["chr1"]
+@
+%
+<<RangedData-subspace-2>>=
+all(identical(rd["chr1"], rd[1]),
+    identical(rd[1], rd[c(TRUE, FALSE)]))
+@ 
+The \Rfunction{names} and \Rfunction{length} functions return the
+names and number of spaces, respectively.
+<<RangedData-names>>=
+names(rd)
+@ 
+<<RangedData-length>>=
+length(rd)
+@ 
+
+The \Rfunction{lapply} function operates over the spaces. The object
+passed to the user function is a subset \Rclass{RangedData}.
+<<RangedData-lapply>>=
+lapply(rd, names)
+@ 
+
+The above would suggest that \Rclass{RangedData} is a sequence of
+spaces. However, \Rclass{RangedData} also inherits from
+\Rclass{DataTable}, so it in some ways behaves like a sequence of
+columns. For example, one can extract a column via \Rfunction{\$} or
+\Rfunction{\[\[}.
+<<RangedData-extract>>=
+rd[[2]]
+@
+<<RangedData-dollar>>=
+rd$values
+@ 
+Note that the extracted columns are ``unlisted'' over the spaces,
+which is usually much more convenient than obtaining them as lists. It
+is important to note that the elements have been sorted by
+the space factor and thus may not have the same order as the
+objects passed to the constructor.
+
+The two dimensional matrix-style subsetting is also supported. The
+rows are indexed globally, independent of space.
+<<RangedData-subset-2d>>=
+rd[1:3, "name"]
+@ 
+
+% \subsection{Applying Over Spaces}
+
+% \Rclass{RDApplyParams}
+% \Rclass{FilterRules}
 
 %% Classes Not Covered (16)
 %%\Rclass{ANYTHING}

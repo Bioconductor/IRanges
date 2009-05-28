@@ -18,7 +18,7 @@ Long term TODO list
     - ranges | ranges (punion)
     - !ranges (gaps)
     - ranges - ranges (psetdiff)
-    - ranges +/- x (vectorized shift)
+    - ranges +/- x (expand both sides)
   - permute or something to create a random mimic
 
 - RangesList:
