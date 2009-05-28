@@ -34,6 +34,7 @@
 \alias{whichFirstNotNormal}
 \alias{whichFirstNotNormal,Ranges-method}
 \alias{update,Ranges-method}
+\alias{Ops,Ranges,numeric-method}
 
 % Old stuff:
 \alias{first}
@@ -199,6 +200,10 @@
       \dQuote{zoomed in}. If \code{y} is negative, it is equivalent to
       \code{x * (1/abs(y))}. Thus, \code{x * -2} would double the widths in
       \code{x}. In other words, \code{x} has been \dQuote{zoomed out}.
+    }
+    \item{}{
+      \code{x + y}: Expands the ranges in \code{x} on either side by the
+      corresponding value in the numeric vector \code{y}.
     }
   }
 }

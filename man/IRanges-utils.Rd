@@ -24,7 +24,6 @@
 \alias{flank}
 \alias{flank,Ranges-method}
 \alias{range,Ranges-method}
-\alias{*,Ranges,numeric-method}
 
 % Coercion:
 \alias{asNormalIRanges}
@@ -258,10 +257,10 @@
 
 \seealso{
   \code{\link{pintersect}} is similar to \code{narrow}, except the end
-  points are absolute, not relative. \code{threebands} could be
-  described as a parallel variant of
-  \code{\link{disjoin}}. \code{\link{intersect}} is a generalization of
-  \code{restrict} where a \code{Ranges} specifies the restriction.
+  points are absolute, not relative. \code{\link{pintersect}} is also
+  similar to \code{restrict}, except ranges outside of the restriction
+  become empty and are not discarded. \code{threebands} could be
+  described as a parallel variant of \code{\link{disjoin}}.
   
   \link{Ranges-class},
   \link{IRanges-setops},

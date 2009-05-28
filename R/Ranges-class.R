@@ -430,19 +430,31 @@ setMethod("nearest", c("Ranges", "RangesORmissing"), function(x, subject) {
 })
 
 ## zooming (symmetrically scales the width)
-setMethod("*", c("Ranges", "numeric"), function(e1, e2) {
+setMethod("Ops", c("Ranges", "numeric"), function(e1, e2) {
   if (any(is.na(e2)))
     stop("NA not allowed as zoom factor")
   if ((length(e1) < length(e2) && length(e1)) || (length(e1) && !length(e2)) ||
       length(e1) %% length(e2) != 0)
     stop("zoom factor length not a multiple of number of ranges")
-  e2 <- ifelse(e2 < 0, abs(1/e2), e2)
-  r <- e1
-  mid <- (start(r)+end(r))/2
-  w <- width(r)/e2
-  update(r, start = ceiling(mid - w/2), width = floor(w), check = FALSE)
+  if (.Generic == "*") {
+    e2 <- ifelse(e2 < 0, abs(1/e2), e2)
+    r <- e1
+    mid <- (start(r)+end(r))/2
+    w <- width(r)/e2
+    update(r, start = ceiling(mid - w/2), width = floor(w), check = FALSE)
+  } else {
+    if (.Generic == "-") {
+      e2 <- -e2
+      .Generic <- "+"
+    }
+    if (.Generic == "+") {
+      if (any(-e2*2 > width(e1)))
+        stop("adjustment would result in ranges with negative widths")
+      update(e1, start = start(e1) - e2, end = end(e1) + e2, check = FALSE)
+    }
+  }
 })
-
+  
 ## make intervals disjoint by segregating them into separate Ranges
 setGeneric("disjointBins", function(x, ...) standardGeneric("disjointBins"))
 setMethod("disjointBins", "Ranges", function(x) {
