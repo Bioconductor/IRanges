@@ -8,6 +8,10 @@
 \alias{dim,RangesMatching-method}
 \alias{ranges,RangesMatching-method}
 \alias{length,RangesMatching-method}
+\alias{subjectHits}
+\alias{subjectHits,RangesMatching-method}
+\alias{queryHits}
+\alias{queryHits,RangesMatching-method}
 
 % coercion
 \alias{as.matrix,RangesMatching-method}
@@ -60,6 +64,12 @@
 
 \section{Accessors}{
   \describe{
+    \item{}{\code{queryHits(x)}: Gets the indices of overlapping
+      ranges in the query, equivalent to \code{as.matrix(x)[,1]}.
+    }
+    \item{}{\code{subjectHits(x)}: Gets the indices of overlapping
+      ranges in the subject, equivalent to \code{as.matrix(x)[,2]}.
+    }
     \item{}{\code{matchMatrix(x)}: A synonym for \code{as.matrix}, above.
     }
     \item{}{\code{ranges(x, query, subject)}: returns a \code{Ranges}

@@ -10,6 +10,8 @@
 % accessors
 \alias{space,RangesMatchingList-method}
 \alias{ranges,RangesMatchingList-method}
+\alias{subjectHits,RangesMatchingList-method}
+\alias{queryHits,RangesMatchingList-method}
 
 \title{List of Matchings between Ranges}
 \description{The \code{RangesMatchingList} class stores a set of
@@ -61,6 +63,12 @@
 
 \section{Accessors}{
   \describe{
+    \item{}{\code{queryHits(x)}: Gets the indices of overlapping
+      ranges in the query, equivalent to \code{as.matrix(x)[,1]}.
+    }
+    \item{}{\code{subjectHits(x)}: Gets the indices of overlapping
+      ranges in the subject, equivalent to \code{as.matrix(x)[,2]}.
+    }
     \item{}{\code{space(x)}: gets the character vector naming the space
       in the query \code{RangesList} for each match, or \code{NULL} if the
       query did not have any names.

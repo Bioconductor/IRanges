@@ -21,11 +21,17 @@ setMethod("length", "RangesMatching", function(x) {
   nrow(as.matrix(x))
 })
 
-## setGeneric("rmatched", function(x, ...) standardGeneric("rmatched"))
-## setMethod("rmatched", "RangesMatching", function(x) {
-##   mm <- matchMatrix(x)
-##   seq_len(nrow(mm)) %in% mm@i
-## })
+setGeneric("subjectHits", function(x, ...) standardGeneric("subjectHits"))
+
+setMethod("subjectHits", "RangesMatching", function(x) {
+  matchMatrix(x)[,2]
+})
+
+setGeneric("queryHits", function(x, ...) standardGeneric("queryHits"))
+
+setMethod("queryHits", "RangesMatching", function(x) {
+  matchMatrix(x)[,1]
+})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion

@@ -140,7 +140,7 @@ export(
     universe, "universe<-", space,
     elementType, elementLengths,
     metadata, elementMetadata, "metadata<-", "elementMetadata<-",
-    matchMatrix,
+    matchMatrix, queryHits, subjectHits,
 
     ## Old stuff (Defunct or Deprecated):
     first, last,

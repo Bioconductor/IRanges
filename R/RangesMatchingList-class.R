@@ -19,6 +19,14 @@ setMethod("space", "RangesMatchingList",
             space
           })
 
+setMethod("subjectHits", "RangesMatchingList", function(x) {
+  as.matrix(x)[,2]
+})
+
+setMethod("queryHits", "RangesMatchingList", function(x) {
+  as.matrix(x)[,1]
+})
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor
 ###
