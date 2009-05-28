@@ -24,7 +24,7 @@ Collate: validity-utils.R
 	Annotated-class.R
 	Sequence-class.R
 	DataTable-class.R
-        DataTable-stats.R
+    DataTable-stats.R
 	AtomicList-class.R
 	Ranges-class.R
 	Ranges-comparison.R
@@ -67,5 +67,6 @@ Collate: validity-utils.R
 	read.Mask.R
 	reverse.R
 	coverage.R
+	updateObject.R
 	debug.R
 	zzz.R
