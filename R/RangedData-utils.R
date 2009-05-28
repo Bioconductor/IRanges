@@ -45,6 +45,37 @@ setMethod("rdapply", "RDApplyParams", function(x) {
   ans
 })
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Overlap.
+###
+
+setMethod("overlap", c("RangedData", "RangedData"),
+          function(object, query, maxgap = 0, multiple = TRUE)
+          {
+            object <- ranges(object)
+            query <- ranges(query)
+            callGeneric()
+          })
+setMethod("overlap", c("RangesList", "RangedData"),
+          function(object, query, maxgap = 0, multiple = TRUE)
+          {
+            query <- ranges(query)
+            callGeneric()
+          })
+setMethod("overlap", c("RangedData", "RangesList"),
+          function(object, query, maxgap = 0, multiple = TRUE)
+          {
+            object <- ranges(object)
+            callGeneric()
+          })
+
+setMethod("%in%", c("RangedData", "RangedData"),
+          function(x, table) ranges(x) %in% ranges(table))
+setMethod("%in%", c("RangesList", "RangedData"),
+          function(x, table) x %in% ranges(table))
+setMethod("%in%", c("RangedData", "RangesList"),
+          function(x, table) ranges(x) %in% table)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Merging (TODO, don't export)
@@ -58,3 +89,4 @@ setMethod("merge", "RangedData",
           {
             
           })
+

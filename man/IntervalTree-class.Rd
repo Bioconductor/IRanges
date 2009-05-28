@@ -22,8 +22,14 @@
 \alias{overlap,Ranges,missing-method}
 \alias{overlap,Ranges,integer-method}
 \alias{overlap,RangesList,RangesList-method}
+\alias{overlap,RangedData,RangedData-method}
+\alias{overlap,RangedData,RangesList-method}
+\alias{overlap,RangesList,RangedData-method}
 \alias{\%in\%,Ranges,Ranges-method}
 \alias{\%in\%,RangesList,RangesList-method}
+\alias{\%in\%,RangedData,RangedData-method}
+\alias{\%in\%,RangedData,RangesList-method}
+\alias{\%in\%,RangesList,RangedData-method}
 \alias{match,Ranges,Ranges-method}
 \alias{match,RangesList,RangesList-method}
 \alias{countOverlap}
@@ -31,31 +37,26 @@
 
 \title{Interval Search Trees}
 \description{
-  An \code{IntervalTree} object is a tree
-  representation of ranges (i.e. it is derived from
-  \code{\linkS4class{Ranges}}) that is optimized for overlap queries.
+  Efficiently perform overlap queries with an interval tree.
 }
 \details{
-  A common type of query that arises when working with intervals is finding
-  which intervals in one set overlap those in another. An efficient
-  family of algorithms for answering such queries is known as the
-  Interval Tree. This class makes use of the augmented tree algorithm
-  from the reference below, but heavily adapts it for the use case of
-  large, sorted query sets.
+  A common type of query that arises when working with intervals is
+  finding which intervals in one set overlap those in another. An
+  efficient family of algorithms for answering such queries is known as
+  the Interval Tree. This implementation makes use of the augmented tree
+  algorithm from the reference below, but heavily adapts it for the use
+  case of large, sorted query sets.
 
-  The usual workflow is to create an \code{IntervalTree} using the
-  constructor described below and then perform overlap queries using the
-  \code{overlap} method. The results of the query are returned as a
-  \code{\linkS4class{RangesMatching}} object. 
-}
+  The simplest approach is to call the \code{overlap} function on a
+  \code{Ranges} or other object with range information, as described in
+  the following section.
 
-\section{Constructor}{
-  \describe{
-    \item{}{IntervalTree(ranges): Creates an \code{IntervalTree} from the
-      ranges in \code{ranges}, an object coercible to
-      \code{IntervalTree}, such as an \code{\linkS4class{IRanges}} object.
-    }
-  }
+  An \code{IntervalTree} object is a derivative of
+  \code{\linkS4class{Ranges}} and stores its ranges as a tree that is
+  optimized for overlap queries. Thus, for repeated queries against the
+  same subject, it is more efficient to create an \code{IntervalTree}
+  once for the subject using the constructor described below and then
+  perform the queries against the \code{IntervalTree} instance.
 }
 
 \section{Finding Overlaps}{
@@ -68,11 +69,11 @@
       \code{overlap(object, query = object, maxgap = 0, multiple = TRUE,
         drop = FALSE)}:
 
-      Find the intervals in \code{query}, a \code{Ranges} or
-      \code{integer} vector to be converted to length-one ranges, that
-      overlap with the intervals \code{object}, an \code{IntervalTree}
-      or, for convenience, a \code{Ranges} coercible to a
-      \code{IntervalTree}. If \code{query} is omitted, \code{object} is
+      Find the intervals in \code{query}, a \code{Ranges},
+      \code{RangesList}, \code{RangedData} or \code{integer} vector (to
+      be converted to length-one ranges), that overlap with the
+      intervals \code{object}, a \code{Ranges}, \code{RangesList}, or
+      \code{RangedData}. If \code{query} is omitted, \code{object} is
       queried against itself. if \code{query} is unsorted, it is sorted
       first, so it is usually better to sort up-front, to avoid a sort
       with each \code{overlap} call. Intervals with a separation of
@@ -87,29 +88,30 @@
       \code{query}. The matchings are returned as an integer vector of
       length \code{length(query)}, with \code{NA} indicating intervals
       that did not overlap any intervals in \code{object}. This is
-      analogous to the return value of the \code{\link{match}} function.
+      analogous to the default behavior of the \code{\link{match}}
+      function.
 
-      \code{query} may also be a \code{\linkS4class{RangesList}}, in
-      which case \code{object} must also be a \code{RangesList}. If both
-      lists have names, each element from the subject is paired with the
-      element from the query with the matching name, if any. Otherwise,
-      elements are paired by position. The overlap is then computed
-      between the pairs as described above. If \code{multiple} is
-      \code{TRUE}, a \code{\linkS4class{RangesMatchingList}} is
-      returned, otherwise a list of integer vectors or, if \code{drop}
-      is \code{TRUE}, an integer vector with indices offset to align
-      with the unlisted \code{query}. When \code{drop} is \code{FALSE},
-      each element of the result corresponds to a space in
-      \code{query}. For spaces that did not exist in \code{object}, the
-      overlap is nil.
+      If \code{query} is a \code{\linkS4class{RangesList}} or
+      \code{\linkS4class{RangedData}}, \code{object} must be a
+      \code{RangesList} or \code{RangedData}.  If both lists have names,
+      each element from the subject is paired with the element from the
+      query with the matching name, if any. Otherwise, elements are
+      paired by position. The overlap is then computed between the pairs
+      as described above. If \code{multiple} is \code{TRUE}, a
+      \code{\linkS4class{RangesMatchingList}} is returned, otherwise a
+      list of integer vectors or, if \code{drop} is \code{TRUE}, an
+      integer vector with indices offset to align with the unlisted
+      \code{query}. When \code{drop} is \code{FALSE}, each element of
+      the result corresponds to a space in \code{query}. For spaces that
+      did not exist in \code{object}, the overlap is nil.
     }
     \item{}{
       \code{x \%in\% table}:
       Shortcut for finding the ranges in \code{x} that overlap any of
       the ranges in \code{table}. Both \code{x} and \code{table} should
-      be \code{Ranges} or \code{RangesList} objects. The result is a
-      \code{logical} vector of the same length as \code{x} (unlisted if
-      a \code{RangesList}).
+      be \code{Ranges}, \code{RangesList} or \code{RangedData}
+      objects. The result is a \code{logical} vector of length equal to
+      the number of ranges in \code{x}.
     }
     \item{}{
       \code{match(x, table, nomatch = NA_integer_, incomparables =
@@ -129,6 +131,15 @@
     }
   }
   
+}
+
+\section{Constructor}{
+  \describe{
+    \item{}{IntervalTree(ranges): Creates an \code{IntervalTree} from the
+      ranges in \code{ranges}, an object coercible to
+      \code{IntervalTree}, such as an \code{\linkS4class{IRanges}} object.
+    }
+  }
 }
 
 \section{Coercion}{
