@@ -37,7 +37,7 @@
   indices where the data are within the specified bounds.
 
   The \code{viewMins}, \code{viewMaxs}, \code{viewSums} functions calculate
-  the minimums, maximums, and sums on views respectively.
+  the minima, maxima and sums on views respectively.
 }
 
 \usage{
@@ -96,7 +96,7 @@
   The \code{slice} function creates views on \link{Rle} or \link{XInteger}
   objects where the data are within the specified bounds. This is useful for
   finding areas of absolute maxima (peaks), absolute minima (troughs), or
-  fluxuations within a specified limits.
+  fluctuations within a specified limits.
 
   The \code{viewMins}, \code{viewMaxs}, and \code{viewSums} functions provide
   efficient methods for calculating the specified numeric summary by performing
@@ -104,7 +104,7 @@
 
   The \code{viewWhichMins}, \code{viewWhichMaxs}, \code{viewRangeMins}, and
   \code{viewRangeMaxs} functions provide efficient methods for finding the
-  location of the minimums and maximums.
+  locations of the minima and maxima.
 }
 
 \value{
