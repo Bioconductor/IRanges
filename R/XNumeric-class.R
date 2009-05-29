@@ -15,7 +15,7 @@ setClass("XNumeric",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Constructor.
+### Initialization.
 ###
 
 setMethod("initialize", "XNumeric",
@@ -32,12 +32,12 @@ setMethod("initialize", "XNumeric",
     }
 )
 
-XNumeric <- function(length=0L, val=NULL)
+XNumeric <- function(length=base::length(val), val=NULL)
     new("XNumeric", length=length, val=val)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion
+### Coercion.
 ###
 
 ### From standard vectors to XNumeric objects:
@@ -58,27 +58,37 @@ setMethod("as.vector", c("XNumeric", "missing"),
 ###
 
 setMethod("[", "XNumeric",
-          function(x, i, j, ..., drop=TRUE)
-          {
-            if (!missing(j) || length(list(...)) > 0)
-              stop("invalid subsetting")
-            if (missing(i)) {
-              if (!drop)
+    function(x, i, j, ..., drop=TRUE)
+    {
+        if (!missing(j) || length(list(...)) > 0)
+            stop("invalid subsetting")
+        if (missing(i)) {
+            if (!drop)
                 return(x)
-              return(as.numeric(x@xdata))
-            }
-            if (!is.numeric(i) || any(is.na(i)))
-              stop("invalid subsetting")
-            if (any(i < 1) || any(i > length(x)))
-              stop("subscript out of bounds")
-            if (drop)
-              return(NumericPtr.read(x@xdata, x@offset + i))
-            xdata <- NumericPtr(length(i))
-            NumericPtr.copy(xdata, x@offset + i, src=x@xdata)
-            x@xdata <- xdata
-            x@offset <- 0L
-            x@length <- length(xdata)
-            x
-          }
-          )
+            return(as.numeric(x@xdata))
+        }
+        if (!is.numeric(i) || any(is.na(i)))
+            stop("invalid subsetting")
+        if (any(i < 1) || any(i > length(x)))
+            stop("subscript out of bounds")
+        if (drop)
+            return(NumericPtr.read(x@xdata, x@offset + i))
+        xdata <- NumericPtr(length(i))
+        NumericPtr.copy(xdata, x@offset + i, src=x@xdata)
+        x@xdata <- xdata
+        x@offset <- 0L
+        x@length <- length(xdata)
+        x
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Comparison.
+###
+
+### FIXME: Compare the contents, not the addresses!
+setMethod("==", signature(e1="XNumeric", e2="XNumeric"),
+    function(e1, e2) { e1@xdata == e2@xdata }
+)
 

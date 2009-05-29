@@ -32,7 +32,7 @@ setMethod("initialize", "XInteger",
     }
 )
 
-XInteger <- function(length=0L, val=NULL)
+XInteger <- function(length=base::length(val), val=NULL)
     new("XInteger", length=length, val=val)
 
 
