@@ -616,7 +616,6 @@ gaps(ir, start=1, end=20)
 them. Note that the function name is singular, suggesting that only
 one range is returned per range in the input.
 <<ranges-pgap>>=
-pgap(ir, ir2)
 @ 
 
 The remaining operations, \textit{union}, \textit{intersect} and
@@ -747,7 +746,7 @@ The above would suggest that \Rclass{RangedData} is a sequence of
 spaces. However, \Rclass{RangedData} also inherits from
 \Rclass{DataTable}, so it in some ways behaves like a sequence of
 columns. For example, one can extract a column via \Rfunction{\$} or
-\Rfunction{\[\[}.
+\Rfunction{[[}.
 <<RangedData-extract>>=
 rd[[2]]
 @
