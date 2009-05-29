@@ -48,13 +48,6 @@ and algorithm can be explained in an intuitive, graphical manner. We
 expect that packages that apply \IRanges{} to a particular problem domain
 will provide vignettes with relevant, realistic examples.
 
-The term \textit{sequence} in the \IRanges{} package is used rather loosely,
-much like the term \textit{vector} is in \R{}. We use sequence to mean an
-indexed collection of elements or objects. This differs from the standard
-mathematical definition of a logically ordered collection of elements. We
-will refer to the latter definition as a \textit{mathematical sequence} to
-minimize the confusion.
-
 The \IRanges{} package is available at bioconductor.org and can be
 downloaded via \Rfunction{biocLite}:
 
@@ -69,23 +62,23 @@ library(IRanges)
 \section{Sequences}
 
 The \IRanges{} packages represents three types of objects as sequences:
-mathematical sequences, lists, and data tables (so they behave like \R{}'s
+atomic sequences, lists, and data tables (so they behave like \R{}'s
 \Rclass{data.frame} objects). The following subsections describe each in
 turn. All \IRanges{}-derived sequences inherit from the \Rclass{Sequence}
 virtual class.
 
-\subsection{Mathematical Sequences}
+\subsection{Atomic Sequences}
 
-As mentioned in the introduction, a mathematical sequence is a logically
-ordered collection of elements. In \R{}, mathematical sequences are
+As mentioned in the introduction, an atomic sequence is a logically
+ordered collection of elements. In \R{}, atomic sequences are
 typically stored in atomic vectors. The \IRanges{} package includes two
-additional mathematical sequence object types:  \Rclass{Rle}, which
-compresses a mathematical sequence through run-length encoding, and
+additional atomic sequence object types:  \Rclass{Rle}, which
+compresses an atomic sequence through run-length encoding, and
 \Rclass{XSequence}, which refers to its data through an external
 pointer. \Rclass{XSequence} and its derivatives are considered low-level
 infrastructure and, as such, will not be covered by this vignette.
 
-We begin our discussion of mathematical sequences using two \R{} 
+We begin our discussion of atomic sequences using two \R{} 
 \Rclass{integer} vectors.
 <<initialize>>=
 set.seed(0)
@@ -94,11 +87,11 @@ xVector <- rpois(1e7, lambda)
 yVector <- rpois(1e7, lambda[c(251:length(lambda), 1:250)])
 @
 
-All mathematical sequences in \R{} have three main properties: (1) a
+All atomic sequences in \R{} have three main properties: (1) a
 notion of length or number of elements, (2) the ability to extract
-elements to create new mathematical sequences, and (3) the ability to be
-combined with one or more mathematical sequences to form larger
-mathematical sequences. The main functions for these three operations are
+elements to create new atomic sequences, and (3) the ability to be
+combined with one or more atomic sequences to form larger
+atomic sequences. The main functions for these three operations are
 \Rfunction{length}, \Rfunction{[}, and \Rfunction{c}.
 <<basic-ops>>=
 length(xVector)
@@ -107,35 +100,34 @@ zVector <- c(xVector, yVector)
 @
 
 While these three methods may seem trivial, they provide a great deal of
-power and many mathematical sequence manipulations can be constructed
+power and many atomic sequence manipulations can be constructed
 using them.
 
-\subsubsection{Mathematical Sequence Extraction}
+\subsubsection{Sequence Extraction}
 
-As with ordinary \R{} atomic vectors, it is often necessary to extract one
-mathematical sequence from another. When this extraction doesn't change the
-order of the elements being extracted, the result is called a
-mathematical \textit{subsequence}. In general, the \Rfunction{[} function
-can be used to construct a new mathematical sequence or extract a
-mathematical subsequence, but often times it isn't convenient or
-performant enough for the use case at hand. To compensate for this, the
-\IRanges{} package supports six additional functions for mathematical
-sequence extraction:
+As with ordinary \R{} atomic vectors, it is often necessary to extract
+one sequence from another. When this extraction does not duplicate or
+reorder the elements being extracted, the result is called a
+mathematical \textit{subsequence}. In general, the \Rfunction{[}
+function can be used to construct a new sequence or extract a
+mathematical subsequence, but its interface is often inconvenient and
+not amenable to optimization. To compensate for this, the \IRanges{}
+package supports six additional functions for sequence extraction:
 
 \begin{enumerate}
 \item \Rfunction{window} - Produces a mathematical subsequence over a
   specified region with or without regular interval subsampling.
 \item \Rfunction{seqextract} - Concatenates multiple consecutive
-  mathematical subsequences into a new mathematical subsequence. The result
+  mathematical subsequences into a new sequence. The result
   may or may not be a mathematical subsequence.
 \item \Rfunction{head} - Extracts a consecutive mathematical subsequence
   containing the first n elements.
 \item \Rfunction{tail} - Extracts a consecutive mathematical subsequence
   containing the last n elements.
-\item \Rfunction{rev} - Creates a new mathematical sequence with the
+\item \Rfunction{rev} - Creates a new sequence with the
   elements in the reverse order.
-\item \Rfunction{rep} - Creates a new mathematical sequence by repeating
-  mathematical sequence elements.
+\item \Rfunction{rep} - Creates a new sequence by repeating
+  sequence elements.
 \end{enumerate}
 
 The following code illustrates how these functions are used on an
@@ -168,7 +160,7 @@ aggregate(xSnippet, start = 1:8, width = 3, FUN = median)
 @
 
 The \Rfunction{shiftApply} function is a looping operation involving two
-mathematical sequences whose elements are lined up via a positional shift
+sequences whose elements are lined up via a positional shift
 operation. For example, the elements of \Robject{xVector} and
 \Robject{yVector} were simulated from Poisson distributions with the mean
 of element i from \Robject{yVector} being equivalent to the mean of element
@@ -200,15 +192,15 @@ The result is shown in Fig.~\ref{figshiftcorrs}.
 \subsubsection{Run Length Encoding}
 
 Up until this point we have used \R{} atomic vectors to represent
-mathematical sequences, but there are times when these object become too
+atomic sequences, but there are times when these object become too
 large to manage in memory. When there are lots of consecutive repeats in
-the mathematical sequence, the data can be compressed and managed in memory
+the sequence, the data can be compressed and managed in memory
 through a run-length encoding where a data value is paired with a run
 length. For example, the sequence \{1, 1, 1, 2, 3,  3\} can be represented
 as values = \{1, 2, 3\}, run lengths = \{3, 1, 2\}.
 
 The \Rclass{Rle} class in \IRanges{} is used to represent a run-length
-encoded (compressed) mathematical sequence of \Rclass{logical},
+encoded (compressed) sequence of \Rclass{logical},
 \Rclass{integer}, \Rclass{numeric}, \Rclass{complex},  \Rclass{character},
 or \Rclass{raw} values. One way to construct an \Rclass{Rle} object is
 through the \Rclass{Rle} constructor function:
