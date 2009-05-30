@@ -69,14 +69,13 @@ virtual class.
 
 \subsection{Atomic Sequences}
 
-As mentioned in the introduction, an atomic sequence is a logically
-ordered collection of elements. In \R{}, atomic sequences are
-typically stored in atomic vectors. The \IRanges{} package includes two
-additional atomic sequence object types:  \Rclass{Rle}, which
-compresses an atomic sequence through run-length encoding, and
-\Rclass{XSequence}, which refers to its data through an external
-pointer. \Rclass{XSequence} and its derivatives are considered low-level
-infrastructure and, as such, will not be covered by this vignette.
+In \R{}, atomic sequences are typically stored in atomic vectors. The
+\IRanges{} package includes two additional atomic sequence object types:
+\Rclass{Rle}, which compresses an atomic sequence through run-length
+encoding, and \Rclass{XSequence}, which refers to its data through an
+external pointer. \Rclass{XSequence} and its derivatives are considered
+low-level infrastructure and, as such, will not be covered by this
+vignette.
 
 We begin our discussion of atomic sequences using two \R{} 
 \Rclass{integer} vectors.
