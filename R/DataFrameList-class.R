@@ -84,15 +84,15 @@ setValidity2("SplitDataFrameList", .valid.SplitDataFrameList)
 
 DataFrameList <- function(...)
 {
-  SimpleList("SimpleDataFrameList", list(...))
+  newSimpleList("SimpleDataFrameList", list(...))
 }
 
 SplitDataFrameList <- function(..., compress = FALSE)
 {
   if (compress)
-    CompressedList("CompressedSplitDataFrameList", list(...))
+    newCompressedList("CompressedSplitDataFrameList", list(...))
   else
-    SimpleList("SimpleSplitDataFrameList", list(...))
+    newSimpleList("SimpleSplitDataFrameList", list(...))
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

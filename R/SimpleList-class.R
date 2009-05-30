@@ -5,7 +5,6 @@
 setClass("SimpleList",
          contains=c("Sequence"),
          representation(
-                        "VIRTUAL",
                         listData="list"
                         )
          )
@@ -42,7 +41,11 @@ setReplaceMethod("names", "SimpleList",
 ### Constructor.
 ###
 
-SimpleList <- function(listClass, listData, ...) {
+SimpleList <- function(...) {
+    new("SimpleList", listData = list(...))
+}
+
+newSimpleList <- function(listClass, listData, ...) {
     if (!is.list(listData))
         stop("'listData' must be a list object")
     if (!extends(listClass, "SimpleList"))

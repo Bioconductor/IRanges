@@ -107,7 +107,7 @@ RangesList <- function(..., universe = NULL)
   ranges <- list(...)
   if (!all(sapply(ranges, is, "Ranges")))
     stop("all elements in '...' must be Ranges objects")
-  ans <- SimpleList("SimpleRangesList", ranges)
+  ans <- newSimpleList("SimpleRangesList", ranges)
   universe(ans) <- universe
   ans
 }
@@ -120,9 +120,9 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
   if (!all(sapply(ranges, is, "IRanges")))
     stop("all elements in '...' must be IRanges objects")
   if (compress)
-    ans <- CompressedList("CompressedIRangesList", ranges)
+    ans <- newCompressedList("CompressedIRangesList", ranges)
   else
-    ans <- SimpleList("SimpleIRangesList", ranges)
+    ans <- newSimpleList("SimpleIRangesList", ranges)
   universe(ans) <- universe
   ans
 }
@@ -145,9 +145,9 @@ rangesListSingleSquareBracket <- function(x, i, j, ..., drop)
       els[[j]] <- els[[j]][!is.na(ol[[j]])]
     }
     if (is(x, "CompressedList"))
-      ans <- CompressedList(class(x), els)
+      ans <- newCompressedList(class(x), els)
     else
-      ans <- SimpleList(class(x), els)
+      ans <- newSimpleList(class(x), els)
   } else {
     ans <- callNextMethod(x, i)
   }
@@ -173,19 +173,19 @@ setMethod("reduce", "RangesList",
             }
             ## This transformation must be atomic.
             if (is(x, "CompressedList"))
-              CompressedList(class(x), nirl)
+              newCompressedList(class(x), nirl)
             else
-              SimpleList(class(x), nirl)
+              newSimpleList(class(x), nirl)
         })
 
 setMethod("gaps", "RangesList",
           function(x, start=NA, end=NA)
           {
             if (is(x, "CompressedList"))
-              CompressedList(class(x),
-                             lapply(x, gaps, start = start, end = end))
+              newCompressedList(class(x),
+                                lapply(x, gaps, start = start, end = end))
             else
-              SimpleList(class(x), lapply(x, gaps, start = start, end = end))
+              newSimpleList(class(x), lapply(x, gaps, start = start, end = end))
           })
 
 setMethod("range", "RangesList",
@@ -206,9 +206,9 @@ setMethod("range", "RangesList",
             })
             names(ranges) <- names
             if (is(x, "CompressedList"))
-              CompressedList(class(x), ranges)
+              newCompressedList(class(x), ranges)
             else
-              SimpleList(class(x), ranges)
+              newSimpleList(class(x), ranges)
         })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -330,16 +330,16 @@ setAs("IRangesList", "list",
 
 setAs("RangesList", "CompressedIRangesList",
       function(from) {
-        CompressedList("CompressedIRangesList", lapply(from, as, "IRanges"),
-                       metadata = metadata(from),
-                       elementMetadata = elementMetadata(from))
+        newCompressedList("CompressedIRangesList", lapply(from, as, "IRanges"),
+                          metadata = metadata(from),
+                          elementMetadata = elementMetadata(from))
       })
 
 setAs("RangesList", "SimpleIRangesList",
       function(from) {
-        SimpleList("SimpleIRangesList", lapply(from, as, "IRanges"),
-                   metadata = metadata(from),
-                   elementMetadata = elementMetadata(from))
+        newSimpleList("SimpleIRangesList", lapply(from, as, "IRanges"),
+                      metadata = metadata(from),
+                      elementMetadata = elementMetadata(from))
       })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

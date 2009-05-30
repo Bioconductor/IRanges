@@ -46,8 +46,8 @@
 
 
 \title{Simple and Compressed List Classes}
-\description{The SimpleList and CompressedList virtual classes extend the
-  \linkS4class{Sequence} virtual class.}
+\description{The (non-virtual) SimpleList and (virtual) CompressedList classes
+  extend the \linkS4class{Sequence} virtual class.}
 
 \details{
   The SimpleList and CompressedList classes provide an implementation that
@@ -65,6 +65,24 @@
     }
   }
 }
+\section{Additional Accessors}{
+  In the following code snippets, \code{x} is a \code{SimpleList} or
+  \code{CompressedList} object.
+  
+  \describe{
+    \item{}{\code{elementLengths(x)}: Get the 'length' of each of the elements.
+    }
+  }
+}
+\section{Constructor}{
+  The SimpleList class constructor is used to create SimpleList objects:
+  
+  \describe{
+    \item{}{\code{SimpleList(...)}: takes possibly named objects as elements
+    for the new SimpleList object.
+    }
+  }
+}
 
 \author{P. Aboyoun}
 \seealso{\linkS4class{Sequence},
@@ -72,50 +90,7 @@
          \linkS4class{RangesList} for example implementations}
 
 \examples{
-  ## demonstrated on IntegerList objects, as TypedListLike is virtual
-
-  int1 <- c(1L,2L,3L,5L,2L,8L)
-  int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)
-  collection <- IntegerList(int1, int2)
-
-  ## names
-  names(collection) <- c("one", "two")
-  names(collection)
-  names(collection) <- NULL # clear names
-  names(collection)
-  names(collection) <- "one"
-  names(collection) # c("one", NA)
-
-  ## extraction
-  collection[[1]] # range1
-  collection[["1"]] # NULL, does not exist
-  collection[["one"]] # range1
-  collection[[NA_integer_]] # NULL
-
-  ## subsetting
-  collection[numeric()] # empty
-  collection[NULL] # empty
-  collection[] # identity
-  collection[c(TRUE, FALSE)] # first element
-  collection[2] # second element
-  collection[c(2,1)] # reversed
-  collection[-1] # drop first
-  collection$one
-
-  ## replacement
-  collection$one <- int2
-  collection[[2]] <- int1
-
-  ## combining
-  col1 <- IntegerList(one = int1, int2)
-  col2 <- IntegerList(two = int2, one = int1)
-  col3 <- IntegerList(int2)
-  append(col1, col2)
-  append(col1, col2, 0)
-  c(col1, col2, col3)
-
-  ## get the mean for each element
-  lapply(col1, mean)
+SimpleList(a = letters, ranges = IRanges(1:10, 1:10))
 }
 \keyword{methods}
 \keyword{classes}

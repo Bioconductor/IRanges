@@ -45,8 +45,8 @@ setReplaceMethod("names", "CompressedList",
     x
 }
 
-CompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
-                           splitFactor=NULL, ...)
+newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
+                              splitFactor=NULL, ...)
 {
     if (!extends(listClass, "CompressedList"))
         stop("cannot create a ", listClass, " as a 'CompressedList'")
@@ -351,7 +351,7 @@ setMethod("c", "CompressedList",
                            elts
                        }), recursive = FALSE)
               eltmetaX <- elementMetadata(x)
-              x <- CompressedList(class(tls[[1]]), elts)
+              x <- newCompressedList(class(tls[[1]]), elts)
               slot(x, "elementMetadata", check=FALSE) <- eltmetaX
               .c.Sequence(x, ...)
           })

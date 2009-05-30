@@ -105,9 +105,9 @@ setReplaceMethod("dimnames", "RangedData",
             x@values <- split(values, inds)
             names(x@values) <- names(x)
               if (is(x@ranges, "CompressedList"))
-                x@ranges <- CompressedList(class(x@ranges), ranges)
+                x@ranges <- newCompressedList(class(x@ranges), ranges)
               else
-                x@ranges <- SimpleList(class(x@ranges), ranges)
+                x@ranges <- newSimpleList(class(x@ranges), ranges)
             x
           })
 
@@ -322,9 +322,9 @@ setMethod("[", "RangedData",
                 }
               }
               if (is(x@ranges, "CompressedList"))
-                ranges <- CompressedList(class(x@ranges), ranges)
+                ranges <- newCompressedList(class(x@ranges), ranges)
               else
-                ranges <- SimpleList(class(x@ranges), ranges)
+                ranges <- newSimpleList(class(x@ranges), ranges)
             } else if (!missing(i)) {
               checkIndex(i, length(x))
               ranges <- ranges[i]
@@ -478,7 +478,7 @@ setClass("RangedDataList",
 
 RangedDataList <- function(...)
 {
-  SimpleList("RangedDataList", list(...))
+  newSimpleList("RangedDataList", list(...))
 }
 
 setMethod("unlist", "RangedDataList",

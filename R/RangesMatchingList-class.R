@@ -36,7 +36,7 @@ RangesMatchingList <- function(matchings, subjectNames = NULL)
   subjectToQuery <- seq_along(matchings)
   if (!is.null(names(matchings)) && !is.null(subjectNames))
     subjectToQuery <- match(names(matchings), subjectNames)
-  SimpleList("RangesMatchingList", matchings, subjectToQuery = subjectToQuery)
+  newSimpleList("RangesMatchingList", matchings, subjectToQuery = subjectToQuery)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
