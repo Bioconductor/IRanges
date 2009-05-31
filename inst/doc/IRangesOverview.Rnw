@@ -311,8 +311,16 @@ type.
 
 <<list-construct>>=
 args(IntegerList)
-cIntList <- IntegerList(x = xVector, y = yVector)
-sIntList <- IntegerList(x = xVector, y = yVector, compress = FALSE)
+cIntList1 <- IntegerList(x = xVector, y = yVector)
+cIntList1
+sIntList2 <- IntegerList(x = xVector, y = yVector, compress = FALSE)
+sIntList2
+## sparse integer list
+xExploded <- lapply(xVector[1:5000], function(x) seq_len(x))
+cIntList2 <- do.call(IntegerList, xExploded)
+sIntList2 <- do.call(IntegerList, c(xExploded, compress = FALSE))
+object.size(cIntList2)
+object.size(sIntList2)
 @
 
 %% EXAMPLE (element extraction, length)
