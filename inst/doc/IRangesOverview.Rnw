@@ -278,66 +278,55 @@ for lists with homogeneous object types. For example, for a list of atomic
 sequences like \Rclass{integer} vectors or \Rclass{Rle} objects, we may
 wish to define a method that retrieves the length of each element, without
 special type checking. To enable this, we define collection classes such
-as \Rclass{SimpleIntegerList} and \Rclass{SimpleRleList}, which inherit
-from the \Rclass{Sequence} virtual class, for storing \Rclass{integer}
-vectors and \Rclass{Rle} objects respectively.
+as \Rclass{IntegerList} and \Rclass{RleList}, which inherit from the
+\Rclass{Sequence} virtual class, for representing lists of
+\Rclass{integer} vectors and \Rclass{Rle} objects respectively.
 
-%% EXAMPLE (construct RleList)
+<<list-intro>>=
+getClassDef("RleList")
+@
 
-In fact, we have done the same for many of the other classes in
-\IRanges{}, as well as the base atomic vectors (raw, logical,
-integer, numeric, complex and character). All of the collection
-classes derive from the virtual class \Rclass{Sequence}, the
-derivatives of which are all obligated to support two basic list
-operations: element extraction and length retrieval.
+As the class definition above shows, the \Rclass{RleList} class is virtual
+with subclasses \Rclass{SimpleRleList} and \Rclass{CompressedRleList}. A
+\Rclass{SimpleRleList} class uses a regular \R{} list to store the
+underlying elements and the \Rclass{CompressedRleList} class stores the
+elements in an unlisted form and keeps track of where the element breaks
+are. The former ``simple list" class is useful when the Rle elements are
+long and the latter ``compressed list" class is useful when the list is
+sparse, i.e. a number of the list elements have length 0.
+
+In fact, all of the atomic vector types (raw, logical, integer, numeric,
+complex, and character) have similar list classes that derive from the
+\Rclass{Sequence} virtual class. For example, there is an
+\Rclass{IntegerList} virtual class with subclasses
+\Rclass{SimpleIntegerList} and \Rclass{CompressedIntegerList}.
+
+Each of the list classes for atomic sequences, be they stored as vectors
+or \Rclass{Rle} objects, have a constructor function with a name of the
+appropriate list virtual class, such as \Rclass{IntegerList}, and an
+optional argument \Rfunarg{compress} that takes an argument to specify
+whether or not to create the simple list object type or the compressed
+list object type. The default is to create the compressed list object
+type.
+
+<<list-construct>>=
+args(IntegerList)
+cIntList <- IntegerList(x = xVector, y = yVector)
+sIntList <- IntegerList(x = xVector, y = yVector, compress = FALSE)
+@
 
 %% EXAMPLE (element extraction, length)
 
-Most collection types, including \Rclass{RleList}, derive from
-\Rclass{TypedList}, a \Rclass{Sequence} derivative that implements
-the requisite operations, as well as a number of additional
-features. These include familiar list functions, such as
-\Rfunction{c} and \Rfunction{lapply}.
-
 %% EXAMPLE (c, lapply)
-
-\subsubsection{Annotated Lists} 
 
 Often when one has a collection of objects, there is a need to attach
 metadata that describes the collection in some way. The
-\Rclass{AnnotatedList} class extends \Rclass{TypedList} to add two
-metadata components: an ordinary \Rclass{list} to hold arbitary
-objects, called \Robject{metadata}, and \Robject{elementMetadata}, a
-data frame with one row per element and any number of columns. Many of
-the high-level list objects in \IRanges{} (described later) are
-\Rclass{AnnotatedList} objects.
-% FIXME (wh 26.5.09): this description does not seem to correspond to the
-% current implementation of the package?
-
-\subsubsection{Advanced Notes}
-
-%% Perhaps this belongs in a separate advanced vignette or the paper?
-
-\Rclass{TypedList} also provides some more advanced features. First,
-as its name suggests, subclasses of \Rclass{TypedList} can specify a
-type from which the class of each of its elements must inherit. For
-example, \Rclass{RleList} directs \Rclass{TypedList} to ensure that
-all of its elements are \Rclass{Rle} objects. One benefit of this type
-safety is that it allows methods dispatching on \Rclass{RleList} to
-assume that all of the elements are really of class \Rclass{Rle}.
-
-A second advanced feature of \Rclass{TypedList} relates to its
-internal representation. Behind the scenes, \Rclass{TypedList} is
-simply an R \Rclass{list}. By default, there is a one-to-one mapping
-between elements of the \Rclass{TypedList} and elements in the
-\Rclass{list}. This is a simple design; however, it is not always
-ideal. If one has many, small objects, the storage overhead,
-especially for S4 objects, would be relatively high. Our solution is
-to \textit{compress} the list by concatenating the elements together,
-if possible. This forms a single, long element that is virtually split
-by the \Rclass{TypedList} interface. A beneficial side effect of this
-approach is that unlisting (concatenating all of the elements)
-is cheap, as it reduces to returning the internal representation.
+\Rclass{Sequence} class definition contains two slots for storing
+metadata: the \Robject{metadata} slot, which stores an ordinary
+\Rclass{list} for storing metadata about the whole object, and
+\Robject{elementMetadata}, which can store and object that inherits
+from \Rclass{DataTable} whose rows annotate the corresponding element
+of the \Rclass{Sequence} object.
 
 \subsection{Data Tables}
 
