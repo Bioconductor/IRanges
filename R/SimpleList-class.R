@@ -25,6 +25,8 @@ setMethod("elementLengths", "SimpleList",
               }
           })
 
+setMethod("isEmpty", "SimpleList", function(x) elementLengths(x) == 0L)
+
 setMethod("length", "SimpleList", function(x) length(as.list(x)))
 
 setMethod("names", "SimpleList", function(x) names(as.list(x)))

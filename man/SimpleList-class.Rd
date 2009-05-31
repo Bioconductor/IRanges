@@ -9,6 +9,8 @@
 \alias{elementLengths}
 \alias{elementLengths,CompressedList-method}
 \alias{elementLengths,SimpleList-method}
+\alias{isEmpty,CompressedList-method}
+\alias{isEmpty,SimpleList-method}
 \alias{length,CompressedList-method}
 \alias{length,SimpleList-method}
 \alias{names,CompressedList-method}

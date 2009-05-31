@@ -17,6 +17,8 @@ setClass("CompressedList",
 
 setMethod("elementLengths", "CompressedList", function(x) width(x@partitioning))
 
+setMethod("isEmpty", "CompressedList", function(x) elementLengths(x) == 0L)
+
 setMethod("length", "CompressedList", function(x) length(x@partitioning))
 
 setMethod("names", "CompressedList", function(x) names(x@partitioning))
