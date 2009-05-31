@@ -88,14 +88,13 @@ setGeneric("sapply", signature="X",
            function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
            standardGeneric("sapply"))
 
+.sapplyDefault <- base::sapply
+environment(.sapplyDefault) <- topenv()
 setMethod("sapply", "Sequence",
           function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
           {
-              FUN <- match.fun(FUN)
-              ii <- seq_len(length(X))
-              names(ii) <- names(X)
-              sapply(ii, function(i) FUN(X[[i]], ...), simplify=simplify,
-                     USE.NAMES=USE.NAMES)
+              .sapplyDefault(X, FUN = FUN, ..., simplify = simplify,
+                             USE.NAMES = USE.NAMES)
           })
 
 setAs("Sequence", "list", function(from) as.list(from))
