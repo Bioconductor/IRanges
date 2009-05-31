@@ -107,26 +107,26 @@ using them.
 As with ordinary \R{} atomic vectors, it is often necessary to extract
 one sequence from another. When this extraction does not duplicate or
 reorder the elements being extracted, the result is called a
-mathematical \textit{subsequence}. In general, the \Rfunction{[}
-function can be used to construct a new sequence or extract a
-mathematical subsequence, but its interface is often inconvenient and
-not amenable to optimization. To compensate for this, the \IRanges{}
-package supports six additional functions for sequence extraction:
+\textit{subsequence}. In general, the \Rfunction{[} function can be used
+to construct a new sequence or extract a subsequence, but its interface
+is often inconvenient and not amenable to optimization. To compensate for
+this, the \IRanges{} package supports six additional functions for
+sequence extraction:
 
 \begin{enumerate}
-\item \Rfunction{window} - Produces a mathematical subsequence over a
-  specified region with or without regular interval subsampling.
+\item \Rfunction{window} - Produces a subsequence over a specified region
+  with or without regular interval subsampling.
 \item \Rfunction{seqextract} - Concatenates multiple consecutive
-  mathematical subsequences into a new sequence. The result
-  may or may not be a mathematical subsequence.
-\item \Rfunction{head} - Extracts a consecutive mathematical subsequence
-  containing the first n elements.
-\item \Rfunction{tail} - Extracts a consecutive mathematical subsequence
-  containing the last n elements.
-\item \Rfunction{rev} - Creates a new sequence with the
-  elements in the reverse order.
-\item \Rfunction{rep} - Creates a new sequence by repeating
-  sequence elements.
+  subsequences into a new sequence. The result may or may not be a
+  subsequence.
+\item \Rfunction{head} - Extracts a consecutive subsequence containing the
+  first n elements.
+\item \Rfunction{tail} - Extracts a consecutive subsequence containing the
+  last n elements.
+\item \Rfunction{rev} - Creates a new sequence with the elements in the
+  reverse order.
+\item \Rfunction{rep} - Creates a new sequence by repeating sequence
+  elements.
 \end{enumerate}
 
 The following code illustrates how these functions are used on an
@@ -142,16 +142,16 @@ seqextract(xSnippet, start = c(6,1), end = c(10, 5))
 rep(xSnippet, 2)
 @
 
-\subsubsection{Looping over Mathematical Subsequences}
+\subsubsection{Looping over Subsequences}
 
 In \R{}, \Rfunction{for} looping can be an expensive operation. To
 compensate for this, \IRanges{} provides two functions,
 \Rfunction{aggregate} and \Rfunction{shiftApply}, to perform calculations
-over mathematical subsequences. The \Rfunction{aggregate} function combines
-mathematical sequence extraction functionality of the \Rfunction{window}
-function with looping capabilities of the \Rfunction{sapply} function. For
-example, here is some code to compute medians across a moving window of
-width 3 using the function \Rfunction{aggregate}:
+over subsequences. The \Rfunction{aggregate} function combines sequence
+extraction functionality of the \Rfunction{window} function with looping
+capabilities of the \Rfunction{sapply} function. For example, here is some
+code to compute medians across a moving window of width 3 using the
+function \Rfunction{aggregate}:
 
 <<aggregate>>=
 xSnippet
@@ -159,13 +159,13 @@ aggregate(xSnippet, start = 1:8, width = 3, FUN = median)
 @
 
 The \Rfunction{shiftApply} function is a looping operation involving two
-sequences whose elements are lined up via a positional shift
-operation. For example, the elements of \Robject{xVector} and
-\Robject{yVector} were simulated from Poisson distributions with the mean
-of element i from \Robject{yVector} being equivalent to the mean of element
-i + 250 from \Robject{xVector}. If we did not know the size of the shift,
-we could estimate it by finding the shift that maximizes the correlation 
-between \Robject{xVector} and \Robject{yVector}.
+sequences whose elements are lined up via a positional shift operation.
+For example, the elements of \Robject{xVector} and \Robject{yVector} were
+simulated from Poisson distributions with the mean of element i from
+\Robject{yVector} being equivalent to the mean of element i + 250 from
+\Robject{xVector}. If we did not know the size of the shift, we could
+estimate it by finding the shift that maximizes the correlation between
+\Robject{xVector} and \Robject{yVector}.
 
 <<shiftApply-cor>>=
 cor(xVector, yVector)
@@ -193,16 +193,16 @@ The result is shown in Fig.~\ref{figshiftcorrs}.
 Up until this point we have used \R{} atomic vectors to represent
 atomic sequences, but there are times when these object become too
 large to manage in memory. When there are lots of consecutive repeats in
-the sequence, the data can be compressed and managed in memory
-through a run-length encoding where a data value is paired with a run
-length. For example, the sequence \{1, 1, 1, 2, 3,  3\} can be represented
-as values = \{1, 2, 3\}, run lengths = \{3, 1, 2\}.
+the sequence, the data can be compressed and managed in memory through a
+run-length encoding where a data value is paired with a run length. For
+example, the sequence \{1, 1, 1, 2, 3,  3\} can be represented as
+values = \{1, 2, 3\}, run lengths = \{3, 1, 2\}.
 
 The \Rclass{Rle} class in \IRanges{} is used to represent a run-length
-encoded (compressed) sequence of \Rclass{logical},
-\Rclass{integer}, \Rclass{numeric}, \Rclass{complex},  \Rclass{character},
-or \Rclass{raw} values. One way to construct an \Rclass{Rle} object is
-through the \Rclass{Rle} constructor function:
+encoded (compressed) sequence of \Rclass{logical}, \Rclass{integer},
+\Rclass{numeric}, \Rclass{complex},  \Rclass{character}, or \Rclass{raw}
+values. One way to construct an \Rclass{Rle} object is through the
+\Rclass{Rle} constructor function:
 
 <<Rle-construction>>=
 xRle <- Rle(xVector)
