@@ -17,7 +17,8 @@ setClass("CompressedList",
 
 setMethod("elementLengths", "CompressedList", function(x) width(x@partitioning))
 
-setMethod("isEmpty", "CompressedList", function(x) elementLengths(x) == 0L)
+### A CompressedList object is considered empty iff all its elements are empty.
+setMethod("isEmpty", "CompressedList", function(x) all(elementLengths(x) == 0L))
 
 setMethod("length", "CompressedList", function(x) length(x@partitioning))
 

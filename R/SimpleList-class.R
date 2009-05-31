@@ -25,7 +25,8 @@ setMethod("elementLengths", "SimpleList",
               }
           })
 
-setMethod("isEmpty", "SimpleList", function(x) elementLengths(x) == 0L)
+### A SimpleList object is considered empty iff all its elements are empty.
+setMethod("isEmpty", "SimpleList", function(x) all(elementLengths(x) == 0L))
 
 setMethod("length", "SimpleList", function(x) length(as.list(x)))
 
