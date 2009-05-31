@@ -85,8 +85,8 @@
     \item{}{\code{elementType(x)}: Get the scalar string naming the class from
       which all elements must derive.
     }
-    \item{}{\code{isEmpty(x)}: Returns a logical indicating if the list either
-      has no elements or all its elements are empty.
+    \item{}{\code{isEmpty(x)}: Returns a logical indicating either if the
+      sequence has no elements or if all its elements are empty.
     }
     \item{}{\code{metadata(x)}, \code{metadata(x) <- value}:
       Get or set the list holding arbitrary R objects as annotations. May be,
