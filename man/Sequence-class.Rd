@@ -150,10 +150,6 @@
       of the Sequence object.
     }
     \item{}{
-      \code{length(x)}:
-      Return the number of elements in the Sequence object.
-    }
-    \item{}{
       \code{rep(x, times)}:
       Return a new Sequence object made of the repeated elements.
     }
