@@ -18,91 +18,13 @@ setClass("Sequence",
          prototype(elementType="ANYTHING")
 )
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Accessor methods.
+###
 
-### [[ operation
-checkAndTranslateDbleBracketSubscript <- function(x, i, j, ...)
-{
-    subscripts <- list(...)
-    if ("exact" %in% names(subscripts)) {
-        exact <- subscripts[["exact"]]
-        subscripts[["exact"]] <- NULL
-    } else {
-        exact <- TRUE  # default
-    }
-    if (!missing(i))
-        subscripts$i <- i
-    if (!missing(j))
-        subscripts$j <- j
-    if (length(subscripts) != 1L)
-        stop("incorrect number of subscripts")
-    subscript <- subscripts[[1]]
-    if (!is.character(subscript) && !is.numeric(subscript))
-        stop("invalid subscript type '", class(subscript), "'")
-    if (length(subscript) < 1L)
-        stop("attempt to extract less than one element")
-    if (length(subscript) > 1L)
-        stop("attempt to extract more than one element")
-    if (is.na(subscript))
-        stop("invalid subscript NA")
-    if (is.numeric(subscript)) {
-        if (!is.integer(subscript))
-            subscript <- as.integer(subscript)
-        if (subscript < 1L || length(x) < subscript)
-            stop("subscript out of bounds")
-        return(subscript)
-    }
-    ## 'subscript' is a character string
-    names_x <- names(x)
-    if (is.null(names_x))
-        stop("attempt to extract by name when elements have no names")
-    #if (subscript == "")
-    #    stop("invalid subscript \"\"")
-    ans <- charmatch(subscript, names_x)
-    if (is.na(ans))
-        stop("subscript \"", subscript, "\" matches no name")
-    if (ans == 0L) {
-        if (isTRUE(exact))
-            stop("subscript \"", subscript, "\" matches no name or more than one name")
-        stop("subscript \"", subscript, "\" matches more than one name")
-    }
-    if (isTRUE(exact) && nchar(subscript) != nchar(names_x[ans]))
-        stop("subscript \"", subscript, "\" matches no name")
-    ans
-}
-setMethod("[[", "Sequence", function(x, i, j, ...)
-          stop("missing '[[' method for Sequence class ", class(x)))
-setMethod("$", "Sequence", function(x, name) x[[name, exact=FALSE]])
-
-setMethod("lapply", "Sequence",
-          function(X, FUN, ...)
-          {
-              FUN <- match.fun(FUN)
-              ii <- seq_len(length(X))
-              names(ii) <- names(X)
-              lapply(ii, function(i) FUN(X[[i]], ...))
-          })
-
-### The implicit generic would dispatch on the X, FUN, simplify and USE.NAMES
-### args but we don't want that.
-setGeneric("sapply", signature="X",
-           function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
-           standardGeneric("sapply"))
-
-.sapplyDefault <- base::sapply
-environment(.sapplyDefault) <- topenv()
-setMethod("sapply", "Sequence",
-          function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
-          {
-              .sapplyDefault(X, FUN = FUN, ..., simplify = simplify,
-                             USE.NAMES = USE.NAMES)
-          })
-
-setAs("Sequence", "list", function(from) as.list(from))
-
-setMethod("as.list", "Sequence", function(x, ...) lapply(x, identity))
+setGeneric("elementLengths", function(x) standardGeneric("elementLengths"))
 
 setGeneric("isEmpty", function(x) standardGeneric("isEmpty"))
-
 setMethod("isEmpty", "ANY",
           function(x)
           {
@@ -115,13 +37,6 @@ setMethod("isEmpty", "ANY",
                   return(logical(0))
               sapply(x, function(xx) all(isEmpty(xx)))
           })
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Accessor methods.
-###
-
-setGeneric("elementLengths", function(x) standardGeneric("elementLengths"))
 
 setGeneric("elementType", function(x, ...) standardGeneric("elementType"))
 setMethod("elementType", "Sequence", function(x) x@elementType)
@@ -187,10 +102,12 @@ function(x, i, j, ..., drop)
 setMethod("[", "Sequence", function(x, i, j, ..., drop)
           stop("missing '[' method for Sequence class ", class(x)))
 
+setReplaceMethod("[", "Sequence", function(x, i, j,..., value)
+                 stop("attempt to modify the value of a ", class(x), " instance"))
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.
 ###
-
 
 .c.Sequence <-
 function(x, ..., recursive = FALSE) {
@@ -204,11 +121,65 @@ setMethod("c", "Sequence",
           stop("missing 'c' method for Sequence class ", class(x)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Basic methods.
+### Element extraction.
 ###
 
-setReplaceMethod("[", "Sequence", function(x, i, j,..., value)
-                 stop("attempt to modify the value of a ", class(x), " instance"))
+checkAndTranslateDbleBracketSubscript <- function(x, i, j, ...)
+{
+    subscripts <- list(...)
+    if ("exact" %in% names(subscripts)) {
+        exact <- subscripts[["exact"]]
+        subscripts[["exact"]] <- NULL
+    } else {
+        exact <- TRUE  # default
+    }
+    if (!missing(i))
+        subscripts$i <- i
+    if (!missing(j))
+        subscripts$j <- j
+    if (length(subscripts) != 1L)
+        stop("incorrect number of subscripts")
+    subscript <- subscripts[[1]]
+    if (!is.character(subscript) && !is.numeric(subscript))
+        stop("invalid subscript type '", class(subscript), "'")
+    if (length(subscript) < 1L)
+        stop("attempt to extract less than one element")
+    if (length(subscript) > 1L)
+        stop("attempt to extract more than one element")
+    if (is.na(subscript))
+        stop("invalid subscript NA")
+    if (is.numeric(subscript)) {
+        if (!is.integer(subscript))
+            subscript <- as.integer(subscript)
+        if (subscript < 1L || length(x) < subscript)
+            stop("subscript out of bounds")
+        return(subscript)
+    }
+    ## 'subscript' is a character string
+    names_x <- names(x)
+    if (is.null(names_x))
+        stop("attempt to extract by name when elements have no names")
+    #if (subscript == "")
+    #    stop("invalid subscript \"\"")
+    ans <- charmatch(subscript, names_x)
+    if (is.na(ans))
+        stop("subscript \"", subscript, "\" matches no name")
+    if (ans == 0L) {
+        if (isTRUE(exact))
+            stop("subscript \"", subscript, "\" matches no name or more than one name")
+        stop("subscript \"", subscript, "\" matches more than one name")
+    }
+    if (isTRUE(exact) && nchar(subscript) != nchar(names_x[ans]))
+        stop("subscript \"", subscript, "\" matches no name")
+    ans
+}
+setMethod("[[", "Sequence", function(x, i, j, ...)
+          stop("missing '[[' method for Sequence class ", class(x)))
+setMethod("$", "Sequence", function(x, name) x[[name, exact=FALSE]])
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Basic methods.
+###
 
 setMethod("append", c("Sequence", "Sequence"),
           function(x, values, after=length(x)) {
@@ -369,10 +340,33 @@ setMethod("!=", signature(e1="Sequence", e2="Sequence"),
     function(e1, e2) !(e1 == e2)
 )
 
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping methods.
 ###
+
+setMethod("lapply", "Sequence",
+          function(X, FUN, ...)
+          {
+              FUN <- match.fun(FUN)
+              ii <- seq_len(length(X))
+              names(ii) <- names(X)
+              lapply(ii, function(i) FUN(X[[i]], ...))
+          })
+
+### The implicit generic would dispatch on the X, FUN, simplify and USE.NAMES
+### args, but we don't want that.
+setGeneric("sapply", signature="X",
+           function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
+           standardGeneric("sapply"))
+
+.sapplyDefault <- base::sapply
+environment(.sapplyDefault) <- topenv()
+setMethod("sapply", "Sequence",
+          function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
+          {
+              .sapplyDefault(X, FUN = FUN, ..., simplify = simplify,
+                             USE.NAMES = USE.NAMES)
+          })
 
 .aggregateInternal <-
 function(x, by, FUN, start = NULL, end = NULL, width = NULL,
@@ -473,3 +467,10 @@ setMethod("shiftApply", signature(X = "Sequence", Y = "Sequence"),
 
 setMethod("shiftApply", signature(X = "vector", Y = "vector"),
           .shiftApplyInternal)
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coersion.
+###
+
+setAs("Sequence", "list", function(from) as.list(from))
+setMethod("as.list", "Sequence", function(x, ...) lapply(x, identity))
