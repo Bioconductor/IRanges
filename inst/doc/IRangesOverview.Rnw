@@ -268,16 +268,19 @@ consult the \Rcode{Rle} man page.
 
 \subsubsection{Basic operations}
 
-One often wants to organize and manipulate multiple sequences
-simultaneously. We could place multiple \Rclass{Rle} instances, for
-example, into a list. However, a list is too generic; it does not
-confer any information about the specific class of its elements. There
-is no type safety, and it is not possible to define methods
-specifically for homogeneous lists with elements of a particular
-class. For example, for a list of \Rclass{Rle} objects, we may wish to
-define a method that retrieves the run values for each element,
-without special type checking. To enable this, we define a specific
-collection class, \Rclass{RleList}, for storing \Rclass{Rle} objects.
+In many data analysis situation there is a desire to organize and
+manipulate multiple objects simultaneously. Typically this is done in
+\R{} through the usage of a list. While a list serves as a generic
+container, it does not confer any information about the specific class
+of its elements, provides no infrastructure to ensure type safety, and
+the S3 and S4 method dispatch mechanisms do not support method selection
+for lists with homogeneous object types. For example, for a list of atomic
+sequences like \Rclass{integer} vectors or \Rclass{Rle} objects, we may
+wish to define a method that retrieves the length of each element, without
+special type checking. To enable this, we define collection classes such
+as \Rclass{SimpleIntegerList} and \Rclass{SimpleRleList}, which inherit
+from the \Rclass{Sequence} virtual class, for storing \Rclass{integer}
+vectors and \Rclass{Rle} objects respectively.
 
 %% EXAMPLE (construct RleList)
 
