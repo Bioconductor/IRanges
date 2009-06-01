@@ -81,7 +81,7 @@
 
 \description{
   In this man page, we call "grouping" the action of dividing a collection of
-  NO objects into NG groups (some of them eventually empty). The Grouping class
+  NO objects into NG groups (some of which may be empty). The Grouping class
   and subclasses are containers for representing groupings.
 }
 
@@ -98,7 +98,7 @@
 
   Grouping an empty collection of objects (NO = 0) is supported. In that
   case, all the groups are empty. And only in that case, NG can be zero
-  too (no group).
+  too (meaning there are no groups).
 
   If \code{x} is a Grouping object:
   \describe{
@@ -160,7 +160,7 @@
     }
     \item{}{
       \code{togrouplength(x, j=NULL)}:
-      Returns the nb of objects that belong to the same group as O_j
+      Returns the number of objects that belong to the same group as O_j
       (including O_j itself).
       Equivalent to \code{grouplength(x, togroup(x, j))}.
     }
