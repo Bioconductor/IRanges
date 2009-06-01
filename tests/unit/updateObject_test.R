@@ -31,7 +31,13 @@ test_update_FilterRules <- function() {
     load(file.path("unit", "oldObjects", "oldFilterRules.rda"))
     checkIdentical(newFilterRules, updateObject(oldFilterRules))
 }
+
 ## "IRanges" -> "IRanges"
+test_update_IRanges <- function() {
+    newIRanges <- IRanges(1:26, 1:26, names = letters)
+    load(file.path("unit", "oldObjects", "oldIRanges.rda"))
+    checkIdentical(newIRanges, updateObject(oldIRanges))
+}
 ## "NormalIRanges" -> "NormalIRanges"
 ## "IntervalTree" -> "IntervalTree"
 ## "MaskCollection" -> "MaskCollection"
