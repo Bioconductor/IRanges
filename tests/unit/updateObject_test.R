@@ -105,6 +105,12 @@ test_update_IRangesList <- function() {
 ## "Rle" -> "Rle"
 ## "RleViews" -> "RleViews"
 ## "XDataFrame" -> "DataFrame"
+test_update_XDataFrame <- function() {
+    newDataFrame <- DataFrame(swiss)
+    load(file.path("unit", "oldObjects", "oldXDataFrame.rda"))
+    checkIdentical(newDataFrame, updateObject(oldXDataFrame))
+}
+
 ## "XDataFrameList" -> "SimpleDataFrameList"
 ## "SplitXDataFrameList" -> "SimpleSplitDataFrameList" or "CompressedSplitDataFrameList"
 ## "XInteger" -> "XInteger"
