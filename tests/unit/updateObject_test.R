@@ -35,6 +35,14 @@ test_update_NumericList <- function() {
 }
 
 ## "ComplexList" -> "SimpleComplexList" or "CompressedComplexList"
+test_update_ComplexList <- function() {
+    newSimpleList <- ComplexList(a = c(1+1i, 2+2i, 3+3i), b = complex(), c = 4+4i, compress = FALSE)
+    newCompressedList <- ComplexList(a = c(1+1i, 2+2i, 3+3i), b = complex(), c = 4+4i, compress = TRUE)
+    load(file.path("unit", "oldObjects", "oldComplexLists.rda"))
+    checkIdentical(newSimpleList, updateObject(oldSimpleList))
+    checkIdentical(newCompressedList, updateObject(oldCompressedList))
+}
+
 ## "CharacterList" -> "SimpleCharacterList" or "CompressedCharacterList"
 ## "RawList" -> "SimpleRawList" or "CompressedRawList"
 ## "RleList" -> "SimpleRleList" or "CompressedRleList"
