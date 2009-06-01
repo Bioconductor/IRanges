@@ -73,6 +73,15 @@ test_update_RangedData <- function() {
 }
 
 ## "RangedDataList" -> "RangedDataList"
+test_update_RangedDataList <- function() {
+    ranges <- IRanges(c(1,2,3),c(4,5,6))
+    a <- RangedData(IRanges(c(1,2,3),c(4,5,6)), score = c(10L, 2L, NA))
+    b <- RangedData(IRanges(c(1,2,4),c(4,7,5)), score = c(3L, 5L, 7L))
+    newRangedDataList <- RangedDataList(sample1 = a, sample2 = b)
+    load(file.path("unit", "oldObjects", "oldRangedDataList.rda"))
+    checkIdentical(newRangedDataList, updateObject(oldRangedDataList))
+}
+
 ## "RangesList" -> "SimpleRangesList"
 ## "IRangesList" -> "SimpleIRangesList" or "CompressedIRangesList"
 ## "RangesMatchingList" -> "RangesMatchingList"
