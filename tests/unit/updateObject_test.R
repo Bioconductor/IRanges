@@ -22,7 +22,15 @@ test_update_IntegerList <- function() {
 ## "CharacterList" -> "SimpleCharacterList" or "CompressedCharacterList"
 ## "RawList" -> "SimpleRawList" or "CompressedRawList"
 ## "RleList" -> "SimpleRleList" or "CompressedRleList"
+
 ## "FilterRules" -> "FilterRules"
+test_update_FilterRules <- function() {
+    filts <- list(peaks = expression(peaks), promoters = expression(promoters),
+                  find_eboxes = function(rd) rep(FALSE, nrow(rd)))
+    newFilterRules <- FilterRules(filts, active = FALSE)
+    load(file.path("unit", "oldObjects", "oldFilterRules.rda"))
+    checkIdentical(newFilterRules, updateObject(oldFilterRules))
+}
 ## "IRanges" -> "IRanges"
 ## "NormalIRanges" -> "NormalIRanges"
 ## "IntervalTree" -> "IntervalTree"

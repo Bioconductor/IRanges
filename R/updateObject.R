@@ -159,7 +159,8 @@ setMethod("updateObject", signature(object="FilterRules"),
               if (!("metadata" %in% names(attributes(object)))) {
                   object <-
                     toSimpleList(asS4(object), "FilterRules",
-                                 "expressionORfunction")
+                                 "expressionORfunction",
+                                 active = slot(object, "active"))
               }
               object
           })
