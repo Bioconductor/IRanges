@@ -8,6 +8,14 @@ test_update_AnnotatedList <- function() {
 }
 
 ## "LogicalList" -> "SimpleLogicalList" or "CompressedLogicalList"
+test_update_LogicalList <- function() {
+    newSimpleList <- IntegerList(a = c(TRUE, FALSE, TRUE), b = logical(), c = FALSE, compress = FALSE)
+    newCompressedList <- IntegerList(a = c(TRUE, FALSE, TRUE), b = logical(), c = FALSE, compress = TRUE)
+    load(file.path("unit", "oldObjects", "oldLogicalLists.rda"))
+    checkIdentical(newSimpleList, updateObject(oldSimpleList))
+    checkIdentical(newCompressedList, updateObject(oldCompressedList))
+}
+
 ## "IntegerList" -> "SimpleIntegerList" or "CompressedIntegerList"
 test_update_IntegerList <- function() {
     newSimpleList <- IntegerList(a = 1:10, b = integer(), c = 0L, compress = FALSE)
