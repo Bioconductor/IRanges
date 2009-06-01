@@ -173,6 +173,17 @@ test_update_XDataFrame <- function() {
 }
 
 ## "XDataFrameList" -> "SimpleDataFrameList"
+test_update_XDataFrameList <- function() {
+    score <- c(1L, 3L, NA)
+    counts <- c(10L, 2L, NA)
+    row.names <- c("one", "two", "three")
+    newDataFrameList <-
+      DataFrameList(DataFrame(vals = score, counts, row.names = row.names),
+                    DataFrame(swiss))
+    load(file.path("unit", "oldObjects", "oldXDataFrameList.rda"))
+    checkIdentical(newDataFrameList, updateObject(oldXDataFrameList))
+}
+
 ## "SplitXDataFrameList" -> "SimpleSplitDataFrameList" or "CompressedSplitDataFrameList"
 test_update_SplitXDataFrameList <- function() {
     sw <- DataFrame(swiss)
