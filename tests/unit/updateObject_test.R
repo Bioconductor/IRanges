@@ -53,6 +53,14 @@ test_update_CharacterList <- function() {
 }
 
 ## "RawList" -> "SimpleRawList" or "CompressedRawList"
+test_update_RawList <- function() {
+    newSimpleList <- RawList(a = charToRaw(paste(letters, collapse = "")), b = raw(), c = charToRaw("A"), compress = FALSE)
+    newCompressedList <- RawList(a = charToRaw(paste(letters, collapse = "")), b = raw(), c = charToRaw("A"), compress = TRUE)
+    load(file.path("unit", "oldObjects", "oldRawLists.rda"))
+    checkIdentical(newSimpleList, updateObject(oldSimpleList))
+    checkIdentical(newCompressedList, updateObject(oldCompressedList))
+}
+
 ## "RleList" -> "SimpleRleList" or "CompressedRleList"
 
 ## "FilterRules" -> "FilterRules"
