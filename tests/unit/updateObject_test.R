@@ -103,6 +103,7 @@ test_update_IRangesList <- function() {
 }
 
 ## "RangesMatchingList" -> "RangesMatchingList"
+
 ## "Rle" -> "Rle"
 test_update_Rle <- function() {
     newRle <- Rle(1:10, 10:1)
@@ -111,6 +112,12 @@ test_update_Rle <- function() {
 }
 
 ## "RleViews" -> "RleViews"
+test_update_RleViews <- function() {
+    newRleViews <- Views(Rle(1:10, 10:1), start = c(1,25,33), end = c(7, 28, 49))
+    load(file.path("unit", "oldObjects", "oldRle.rda"))
+    checkIdentical(newRle, updateObject(oldRle))
+}
+
 ## "XDataFrame" -> "DataFrame"
 test_update_XDataFrame <- function() {
     newDataFrame <- DataFrame(swiss)
