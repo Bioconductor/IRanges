@@ -38,10 +38,22 @@ test_update_IRanges <- function() {
     load(file.path("unit", "oldObjects", "oldIRanges.rda"))
     checkIdentical(newIRanges, updateObject(oldIRanges))
 }
+
 ## "NormalIRanges" -> "NormalIRanges"
 ## "IntervalTree" -> "IntervalTree"
 ## "MaskCollection" -> "MaskCollection"
+test_update_MaskCollection <- function() {
+    mask1 <- Mask(mask.width=29, start=c(11, 25, 28), width=c(5, 2, 2))
+    mask2 <- Mask(mask.width=29, start=c(3, 10, 27), width=c(5, 8, 1))
+    mask3 <- Mask(mask.width=29, start=c(7, 12), width=c(2, 4))
+    newMaskCollection <- append(append(mask1, mask2), mask3)
+    load(file.path("unit", "oldObjects", "oldMaskCollection.rda"))
+    checkIdentical(newMaskCollection, updateObject(oldMaskCollection))
+}
+
 ## "RDApplyParams" -> "RDApplyParams"
+
+
 ## "RangedData" -> "RangedData"
 ## "RangedDataList" -> "RangedDataList"
 ## "RangesList" -> "SimpleRangesList"
