@@ -25,10 +25,11 @@ test_update_IntegerList <- function() {
 
 ## "FilterRules" -> "FilterRules"
 test_update_FilterRules <- function() {
-    filts <- list(peaks = expression(peaks), promoters = expression(promoters),
-                  find_eboxes = function(rd) rep(FALSE, nrow(rd)))
-    newFilterRules <- FilterRules(filts, active = FALSE)
     load(file.path("unit", "oldObjects", "oldFilterRules.rda"))
+    findeboxes <- updateObject(oldFilterRules)@listData$find_eboxes
+    filts <- list(peaks = expression(peaks), promoters = expression(promoters),
+                  find_eboxes = findeboxes)
+    newFilterRules <- FilterRules(filts, active = FALSE)
     checkIdentical(newFilterRules, updateObject(oldFilterRules))
 }
 
@@ -53,12 +54,12 @@ test_update_MaskCollection <- function() {
 
 ## "RDApplyParams" -> "RDApplyParams"
 test_update_RDApplyParams <- function() {
+    load(file.path("unit", "oldObjects", "oldRDApplyParams.rda"))
     ranges <- IRanges(c(1,2,3),c(4,5,6))
     score <- c(2L, 0L, 1L)
     rd <- RangedData(ranges, score, splitter = c("chr1","chr2","chr1"))
-    countrows <- function(rd) nrow(rd)
+    countrows <- updateObject(oldRDApplyParams)@applyFun
     newRDApplyParams <- RDApplyParams(rd, countrows)
-    load(file.path("unit", "oldObjects", "oldRDApplyParams.rda"))
     checkIdentical(newRDApplyParams, updateObject(oldRDApplyParams))
 }
 
