@@ -9,8 +9,8 @@ test_update_AnnotatedList <- function() {
 
 ## "LogicalList" -> "SimpleLogicalList" or "CompressedLogicalList"
 test_update_LogicalList <- function() {
-    newSimpleList <- IntegerList(a = c(TRUE, FALSE, TRUE), b = logical(), c = FALSE, compress = FALSE)
-    newCompressedList <- IntegerList(a = c(TRUE, FALSE, TRUE), b = logical(), c = FALSE, compress = TRUE)
+    newSimpleList <- LogicalList(a = c(TRUE, FALSE, TRUE), b = logical(), c = FALSE, compress = FALSE)
+    newCompressedList <- LogicalList(a = c(TRUE, FALSE, TRUE), b = logical(), c = FALSE, compress = TRUE)
     load(file.path("unit", "oldObjects", "oldLogicalLists.rda"))
     checkIdentical(newSimpleList, updateObject(oldSimpleList))
     checkIdentical(newCompressedList, updateObject(oldCompressedList))
@@ -26,6 +26,14 @@ test_update_IntegerList <- function() {
 }
 
 ## "NumericList" -> "SimpleNumericList" or "CompressedNumericList"
+test_update_NumericList <- function() {
+    newSimpleList <- NumericList(a = c(1, 2, 3), b = numeric(), c = 4, compress = FALSE)
+    newCompressedList <- NumericList(a = c(1, 2, 3), b = numeric(), c = 4, compress = TRUE)
+    load(file.path("unit", "oldObjects", "oldNumericLists.rda"))
+    checkIdentical(newSimpleList, updateObject(oldSimpleList))
+    checkIdentical(newCompressedList, updateObject(oldCompressedList))
+}
+
 ## "ComplexList" -> "SimpleComplexList" or "CompressedComplexList"
 ## "CharacterList" -> "SimpleCharacterList" or "CompressedCharacterList"
 ## "RawList" -> "SimpleRawList" or "CompressedRawList"
