@@ -58,13 +58,12 @@ toNewTypeList <- function(object, simpleclass, compressedclass, newtype) {
 ## "AlignmentSpace" -> "AlignmentSpace"
 ## "Alignment" -> "Alignment"
 
-## "AnnotatedList" -> "SimpleList" or "CompressedList"
+## "AnnotatedList" -> "SimpleList"
 setClass("AnnotatedList", representation("VIRTUAL"))
 setMethod("updateObject", signature(object="AnnotatedList"),
           function(object, ..., verbose=FALSE) {
               if (verbose) message("updateObject(object = 'AnnotatedList')")
-              toNewTypeList(asS4(object), "SimpleList", "CompressedList",
-                            "ANYTHING")
+              toSimpleList(asS4(object), "SimpleList", "ANYTHING")
           })
 
 ## "LogicalList" -> "SimpleLogicalList" or "CompressedLogicalList"
