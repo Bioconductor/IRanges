@@ -114,6 +114,13 @@ test_update_XDataFrame <- function() {
 
 ## "XDataFrameList" -> "SimpleDataFrameList"
 ## "SplitXDataFrameList" -> "SimpleSplitDataFrameList" or "CompressedSplitDataFrameList"
+test_update_SplitXDataFrameList <- function() {
+    sw <- DataFrame(swiss)
+    newCompressedSplitDataFrameList <- split(sw, sw[["Education"]])
+    load(file.path("unit", "oldObjects", "oldSplitXDataFrameList.rda"))
+    checkIdentical(newCompressedSplitDataFrameList, updateObject(oldSplitXDataFrameList))
+}
+
 ## "XInteger" -> "XInteger"
 ## "XIntegerViews" -> "XIntegerViews"
 ## "XNumeric" -> "XNumeric"
