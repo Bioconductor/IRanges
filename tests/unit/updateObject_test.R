@@ -62,6 +62,13 @@ test_update_RawList <- function() {
 }
 
 ## "RleList" -> "SimpleRleList" or "CompressedRleList"
+test_update_RleList <- function() {
+    newSimpleList <- RleList(a = Rle(1:10, 10:1), b = Rle(), c = Rle(1:10), compress = FALSE)
+    newCompressedList <- RleList(a = Rle(1:10, 10:1), b = Rle(), c = Rle(1:10), compress = TRUE)
+    load(file.path("unit", "oldObjects", "oldRleLists.rda"))
+    checkIdentical(newSimpleList, updateObject(oldSimpleList))
+    checkIdentical(newCompressedList, updateObject(oldCompressedList))
+}
 
 ## "FilterRules" -> "FilterRules"
 test_update_FilterRules <- function() {
