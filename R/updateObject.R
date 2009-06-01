@@ -22,8 +22,8 @@ toSimpleList <- function(object, newclass, newtype, ...)
                          names = slot(object, "NAMES")),
                updateObject),
         elementMetadata =
-        tryCatch(updateObject(slot(object, "elementMetadata")),
-                 error = function(e) NULL),
+        updateObject(tryCatch(slot(object, "elementMetadata"),
+                              error = function(e) NULL)),
         elementType = newtype,
         metadata = tryCatch(slot(object, "annotation"),
                             error = function(e) list()),
@@ -38,8 +38,8 @@ toCompressedList <- function(object, newclass, newtype, ...)
                            NAMES = slot(object, "NAMES")),
         unlistData = updateObject(slot(object, "elements")[[1]]),
         elementMetadata =
-        tryCatch(updateObject(slot(object, "elementMetadata")),
-                 error = function(e) NULL),
+        updateObject(tryCatch(slot(object, "elementMetadata"),
+                              error = function(e) NULL)),
         elementType = newtype,
         metadata = tryCatch(slot(object, "annotation"),
                             error = function(e) list()),
