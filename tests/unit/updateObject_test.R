@@ -52,6 +52,15 @@ test_update_MaskCollection <- function() {
 }
 
 ## "RDApplyParams" -> "RDApplyParams"
+test_update_RDApplyParams <- function() {
+    ranges <- IRanges(c(1,2,3),c(4,5,6))
+    score <- c(2L, 0L, 1L)
+    rd <- RangedData(ranges, score, splitter = c("chr1","chr2","chr1"))
+    countrows <- function(rd) nrow(rd)
+    newRDApplyParams <- RDApplyParams(rd, countrows)
+    load(file.path("unit", "oldObjects", "oldRDApplyParams.rda"))
+    checkIdentical(newRDApplyParams, updateObject(oldRDApplyParams))
+}
 
 
 ## "RangedData" -> "RangedData"
