@@ -110,7 +110,7 @@ reorder the elements being extracted, the result is called a
 \textit{subsequence}. In general, the \Rfunction{[} function can be used
 to construct a new sequence or extract a subsequence, but its interface
 is often inconvenient and not amenable to optimization. To compensate for
-this, the \IRanges{} package supports six additional functions for
+this, the \IRanges{} package supports seven additional functions for
 sequence extraction:
 
 \begin{enumerate}
@@ -119,6 +119,8 @@ sequence extraction:
 \item \Rfunction{seqextract} - Concatenates multiple consecutive
   subsequences into a new sequence. The result may or may not be a
   subsequence.
+\item \Rfunction{subset} - Extracts the subsequence specified by a logical
+  vector.
 \item \Rfunction{head} - Extracts a consecutive subsequence containing the
   first n elements.
 \item \Rfunction{tail} - Extracts a consecutive subsequence containing the
@@ -136,22 +138,41 @@ ordinary \R{} \Rclass{integer} vector:
 xSnippet <- window(xVector, start = 4751, end = 4760)
 xSnippet
 head(xSnippet)
+tail(xSnippet)
 rev(xSnippet)
+rep(xSnippet, 2)
 window(xSnippet, delta = 2)
 seqextract(xSnippet, start = c(6,1), end = c(10, 5))
-rep(xSnippet, 2)
+subset(xSnippet, xSnippet >= 5L)
 @
 
-\subsubsection{Looping over Subsequences}
+\subsubsection{Combining Sequences}
+
+The \IRanges{} package uses two generic functions, \Rfunction{c} and
+\Rfunction{append}, for combining two \Rclass{Sequence} objects. The methods
+for \Rclass{Sequence} objects follow the definition that these two functions
+are given the the \Rpackage{base} package.
+
+<<seq-combine>>=
+c(xSnippet, rev(xSnippet))
+append(xSnippet, xSnippet, after = 3)
+@
+
+\subsubsection{Looping over Sequences and Subsequences}
 
 In \R{}, \Rfunction{for} looping can be an expensive operation. To
-compensate for this, \IRanges{} provides two functions,
+compensate for this, \IRanges{} uses two generics, \Rfunction{lapply} and
+\Rfunction{sapply}, for looping over sequences and two generics,
 \Rfunction{aggregate} and \Rfunction{shiftApply}, to perform calculations
-over subsequences. The \Rfunction{aggregate} function combines sequence
-extraction functionality of the \Rfunction{window} function with looping
-capabilities of the \Rfunction{sapply} function. For example, here is some
-code to compute medians across a moving window of width 3 using the
-function \Rfunction{aggregate}:
+over subsequences. The \Rfunction{lapply} and \Rfunction{sapply} functions
+are familiar to many \R{} users since they are the standard functions for
+looping over the elements of an \R{} \Rclass{list} object. More will be
+given on these two functions in the List subsection.
+
+The \Rfunction{aggregate} function combines sequence extraction functionality
+of the \Rfunction{window} function with looping capabilities of the
+\Rfunction{sapply} function. For example, here is some code to compute medians
+across a moving window of width 3 using the function \Rfunction{aggregate}:
 
 <<aggregate>>=
 xSnippet
@@ -169,8 +190,8 @@ estimate it by finding the shift that maximizes the correlation between
 
 <<shiftApply-cor>>=
 cor(xVector, yVector)
-shifts = seq(235, 265, by=3)
-corrs  = shiftApply(shifts, yVector, xVector, FUN = cor)
+shifts <- seq(235, 265, by=3)
+corrs  <- shiftApply(shifts, yVector, xVector, FUN = cor)
 @
 %
 <<figshiftcorrs, fig=TRUE, include=FALSE, eps=FALSE, width=5, height=5>>=
@@ -266,20 +287,22 @@ consult the \Rcode{Rle} man page.
 
 \subsection{Lists}
 
-\subsubsection{Basic operations}
-
 In many data analysis situation there is a desire to organize and
 manipulate multiple objects simultaneously. Typically this is done in
 \R{} through the usage of a list. While a list serves as a generic
 container, it does not confer any information about the specific class
 of its elements, provides no infrastructure to ensure type safety, and
 the S3 and S4 method dispatch mechanisms do not support method selection
-for lists with homogeneous object types. For example, for a list of atomic
-sequences like \Rclass{integer} vectors or \Rclass{Rle} objects, we may
-wish to define a method that retrieves the length of each element, without
-special type checking. To enable this, we define collection classes such
-as \Rclass{IntegerList} and \Rclass{RleList}, which inherit from the
-\Rclass{Sequence} virtual class, for representing lists of
+for lists with homogeneous object types.
+
+\subsubsection{Lists of Atomic Sequences}
+
+The first type of lists we consider are those containing atomic sequences
+such as \Rclass{integer} vectors or \Rclass{Rle} objects. We may wish to
+define a method that retrieves the length of each atomic sequence element,
+without special type checking. To enable this, we define collection
+classes such as \Rclass{IntegerList} and \Rclass{RleList}, which inherit
+from the \Rclass{Sequence} virtual class, for representing lists of
 \Rclass{integer} vectors and \Rclass{Rle} objects respectively.
 
 <<list-intro>>=
@@ -323,9 +346,40 @@ object.size(cIntList2)
 object.size(sIntList2)
 @
 
-%% EXAMPLE (element extraction, length)
+The \Rfunction{length} function returns the number of elements in a
+\Rclass{Sequence}-derived object and, for ``simple lists" and
+``compressed lists", the \Rfunction{elementLengths} function returns
+an integer vector containing the lengths of each of the elements:
 
-%% EXAMPLE (c, lapply)
+<<list-length>>=
+length(cIntList2)
+Rle(elementLengths(cIntList2))
+@
+
+Just as with ordinary \R{} \Rclass{list} objects, \Rclass{Sequence}-derived
+list classes support the \Rfunction{[[} for element extraction \Rfunction{c}
+for combining, and \Rfunction{lapply}/\Rfunction{sapply} for looping. When
+looping over sparse lists, the ``compressed list" classes can be much faster
+during computations since only the non-empty elements are looped over during
+the \Rfunction{lapply}/\Rfunction{sapply} computation and all the empty
+elements are assigned the appropriate value based on their status.
+
+<<list-lapply>>=
+system.time(sapply(xExploded, mean))
+system.time(sapply(sIntList2, mean))
+system.time(sapply(cIntList2, mean))
+identical(sapply(xExploded, mean), sapply(sIntList2, mean))
+identical(sapply(xExploded, mean), sapply(cIntList2, mean))
+@
+
+\subsection{Data Tables}
+
+To Do:
+\Rclass{DataFrame},
+\Rclass{DataFrameList},
+\Rclass{SplitDataFrameList}
+
+\section{Sequence Annotations}
 
 Often when one has a collection of objects, there is a need to attach
 metadata that describes the collection in some way. The
@@ -335,13 +389,6 @@ metadata: the \Robject{metadata} slot, which stores an ordinary
 \Robject{elementMetadata}, which can store and object that inherits
 from \Rclass{DataTable} whose rows annotate the corresponding element
 of the \Rclass{Sequence} object.
-
-\subsection{Data Tables}
-
-To Do:
-\Rclass{DataFrame},
-\Rclass{DataFrameList},
-\Rclass{SplitDataFrameList}
 
 \section{Sequence Ranges}
 
@@ -461,19 +508,19 @@ start(rl)
 
 \subsection{Sequence Extraction}
 
-As \Rclass{Ranges} objects encode subsequences, they may be used
-directly in sequence extraction. Note that when a \textit{normal}
-\Rclass{Ranges} is given as the index, the result is a true
-subsequence, in the mathematical sense, as no elements are repeated or
-reordered.
+As the elements of \Rclass{Ranges} objects encode consecutive
+subsequences, they may be used directly in sequence extraction. Note
+that when a \textit{normal} \Rclass{Ranges} is given as the index,
+the result is a true subsequence, in the mathematical sense, as no
+elements are repeated or reordered.
 %
 <<seqextract-ranges>>=
 seqextract(xRle, ir1[1:2])
 @
 %
-If the sequence is a \Rclass{Sequence} derivative (i.e. not an
-ordinary \Rclass{vector}), the canonical \Rfunction{[} function also
-accepts a \Rclass{Ranges} instance.
+If the sequence is a \Rclass{Sequence} subclass (i.e. not an ordinary
+\Rclass{vector}), the canonical \Rfunction{[} function also accepts a
+\Rclass{Ranges} instance.
 %
 <<bracket-ranges>>=
 xRle[ir1[1:2]]
@@ -510,7 +557,7 @@ shift(ir, 10)
 @
 
 The arithmetic functions \Rfunction{+}, \Rfunction{-} and
-\Rfunction{*} change both the start and the end/width by symetrically
+\Rfunction{*} change both the start and the end/width by symmetrically
 expanding or contracting each range.  Adding or subtracting a numeric
 (integer) vector to a \Rclass{Ranges} causes each range to be expanded
 or contracted on each side by the corresponding value in the numeric
@@ -519,7 +566,7 @@ vector.
 ir + 1:5
 @ 
 %
-The \Rfunction{*} operator symetrically magnifies a \Rclass{Ranges}
+The \Rfunction{*} operator symmetrically magnifies a \Rclass{Ranges}
 object by a factor, where positive contracts (zooms in) and negative
 expands (zooms out).
 %
@@ -768,24 +815,6 @@ rd[1:3, "name"]
 
 % \Rclass{RDApplyParams}
 % \Rclass{FilterRules}
-
-%% Classes Not Covered (16)
-%%\Rclass{ANYTHING}
-%%\Rclass{characterORNULL}
-%%\Rclass{expressionORfunction}
-%%\Rclass{expressionORlanguage}
-%%\Rclass{functionORNULL}
-%%\Rclass{IntegerPtr}
-%%\Rclass{NumericPtr}
-%%\Rclass{RangesORmissing}
-%%\Rclass{RawPtr}
-%%\Rclass{SequencePtr}
-%%\Rclass{vectorORfactor}
-%%\Rclass{DataFrameORNULL}
-%%\Rclass{XInteger}
-%%\Rclass{XIntegerORNULL}
-%%\Rclass{XIntegerViews}
-%%\Rclass{XNumeric}
 
 \begin{table*}[tbp]
 \begin{minipage}{\textwidth}
