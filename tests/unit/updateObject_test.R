@@ -161,8 +161,8 @@ test_update_Rle <- function() {
 ## "RleViews" -> "RleViews"
 test_update_RleViews <- function() {
     newRleViews <- Views(Rle(1:10, 10:1), start = c(1,25,33), end = c(7, 28, 49))
-    load(file.path("unit", "oldObjects", "oldRle.rda"))
-    checkIdentical(newRle, updateObject(oldRle))
+    load(file.path("unit", "oldObjects", "oldRleViews.rda"))
+    checkIdentical(newRleViews, updateObject(oldRleViews))
 }
 
 ## "XDataFrame" -> "DataFrame"
