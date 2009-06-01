@@ -44,6 +44,14 @@ test_update_ComplexList <- function() {
 }
 
 ## "CharacterList" -> "SimpleCharacterList" or "CompressedCharacterList"
+test_update_CharacterList <- function() {
+    newSimpleList <- CharacterList(a = letters, b = character(), c = "A", compress = FALSE)
+    newCompressedList <- CharacterList(a = letters, b = character(), c = "A", compress = TRUE)
+    load(file.path("unit", "oldObjects", "oldCharacterLists.rda"))
+    checkIdentical(newSimpleList, updateObject(oldSimpleList))
+    checkIdentical(newCompressedList, updateObject(oldCompressedList))
+}
+
 ## "RawList" -> "SimpleRawList" or "CompressedRawList"
 ## "RleList" -> "SimpleRleList" or "CompressedRleList"
 
