@@ -92,6 +92,15 @@ test_update_RangesList <- function() {
 }
 
 ## "IRangesList" -> "SimpleIRangesList" or "CompressedIRangesList"
+test_update_IRangesList <- function() {
+    range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
+    range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
+    newIRangesList <- IRangesList(one = range1, two = range2, compress = TRUE,
+                                  universe = "test")
+    load(file.path("unit", "oldObjects", "oldIRangesList.rda"))
+    checkIdentical(newIRangesList, updateObject(oldIRangesList))
+}
+
 ## "RangesMatchingList" -> "RangesMatchingList"
 ## "Rle" -> "Rle"
 ## "RleViews" -> "RleViews"
