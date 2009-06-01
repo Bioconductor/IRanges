@@ -14,22 +14,23 @@ setMethod("updateObject", signature(object="ANY"),
           })
 
 ## Functions for updating old TypedList to new infrastructure
-toSimpleList <- function(object, newclass, newtype)
+toSimpleList <- function(object, newclass, newtype, ...)
 {
     new(newclass,
         listData =
         lapply(structure(slot(object, "elements"),
                          names = slot(object, "NAMES")),
-               updateObject),  
+               updateObject),
         elementMetadata =
         tryCatch(updateObject(slot(object, "elementMetadata")),
                  error = function(e) NULL),
         elementType = newtype,
         metadata = tryCatch(slot(object, "annotation"),
-                            error = function(e) list()))
+                            error = function(e) list()),
+        ...)
 }
 
-toCompressedList <- function(object, newclass, newtype)
+toCompressedList <- function(object, newclass, newtype, ...)
 {
     new(newclass,
         partitioning = new("PartitioningByEnd",
@@ -41,7 +42,8 @@ toCompressedList <- function(object, newclass, newtype)
                  error = function(e) NULL),
         elementType = newtype,
         metadata = tryCatch(slot(object, "annotation"),
-                            error = function(e) list()))
+                            error = function(e) list()),
+        ...)
 }
 
 toNewTypeList <- function(object, simpleclass, compressedclass, newtype) {
@@ -329,7 +331,9 @@ setClass("XDataFrame", representation("VIRTUAL"))
 setMethod("updateObject", signature(object="XDataFrame"),
           function(object, ..., verbose=FALSE) {
               if (verbose) message("updateObject(object = 'XDataFrame')")
-              toSimpleList(asS4(object), "DataFrame", "ANYTHING")
+              toSimpleList(asS4(object), "DataFrame", "ANYTHING",
+                           rownames = slot(object, "rownames"),
+                           nrows = slot(object, "nrows"))
           })
 
 ## "XDataFrameList" -> "SimpleDataFrameList"

@@ -192,7 +192,8 @@ exportMethods(
     eval, with,
     t,
     is.na, "%in%", by, match,
-    
+    updateObject,
+
     ## Methods for generics defined in this package:
     sapply,
     isEmpty,
