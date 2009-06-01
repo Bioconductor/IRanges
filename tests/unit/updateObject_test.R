@@ -86,7 +86,7 @@ test_update_RangedDataList <- function() {
 test_update_RangesList <- function() {
     range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
     range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
-    newRangesList <- RangesList(one = range1, two = range2)
+    newRangesList <- RangesList(one = range1, two = range2, universe = "test")
     load(file.path("unit", "oldObjects", "oldRangesList.rda"))
     checkIdentical(newRangesList, updateObject(oldRangesList))
 }
