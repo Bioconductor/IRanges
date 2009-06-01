@@ -62,8 +62,16 @@ test_update_RDApplyParams <- function() {
     checkIdentical(newRDApplyParams, updateObject(oldRDApplyParams))
 }
 
-
 ## "RangedData" -> "RangedData"
+test_update_RangedData <- function() {
+    ranges <- IRanges(c(1,2,3),c(4,5,6))
+    filter <- c(1L, 0L, 1L)
+    score <- c(10L, 2L, NA)
+    newRangedData <- RangedData(ranges, filter, vals = score, universe = "hg18")
+    load(file.path("unit", "oldObjects", "oldRangedData.rda"))
+    checkIdentical(newRangedData, updateObject(oldRangedData))
+}
+
 ## "RangedDataList" -> "RangedDataList"
 ## "RangesList" -> "SimpleRangesList"
 ## "IRangesList" -> "SimpleIRangesList" or "CompressedIRangesList"
