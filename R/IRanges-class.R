@@ -185,8 +185,11 @@ newNormalIRangesFromIRanges <- function(x, check=TRUE)
 }
 
 ### The returned IRanges instance is guaranteed to be normal.
+setAs("logical", "Ranges",
+    function(from) as(Rle(from), "Ranges")
+)
 setAs("logical", "IRanges",
-    function(from) as(Rle(from), "IRanges")
+      function(from) as(Rle(from), "IRanges")
 )
 
 setAs("logical", "NormalIRanges",

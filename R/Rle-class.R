@@ -122,17 +122,19 @@ setAs("Rle", "complex", function(from) as.complex(from))
 setAs("Rle", "character", function(from) as.character(from))
 setAs("Rle", "raw", function(from) as.raw(from))
 setAs("Rle", "factor", function(from) as.factor(from))
-setAs("Rle", "IRanges",
-      function(from) {
-          if (!is.logical(runValue(from)) || any(is.na(runValue(from))))
-              stop("cannot coerce a non-logical 'Rle' or a logical 'Rle' ",
-                   "with NAs to an IRanges object")
-          keep <- runValue(from)
-          ## The returned IRanges instance is guaranteed to be normal.
-          ans_start <- start(from)[keep]
-          ans_width <- runLength(from)[keep]
-          new2("IRanges", start=ans_start, width=ans_width, check=FALSE)
-      })
+.RleToRanges <- function(from) {
+  if (!is.logical(runValue(from)) || any(is.na(runValue(from))))
+    stop("cannot coerce a non-logical 'Rle' or a logical 'Rle' ",
+         "with NAs to an IRanges object")
+  keep <- runValue(from)
+  ## The returned IRanges instance is guaranteed to be normal.
+  ans_start <- start(from)[keep]
+  ans_width <- runLength(from)[keep]
+  new2("IRanges", start=ans_start, width=ans_width, check=FALSE)
+}
+setAs("Rle", "Ranges", .RleToRanges)
+setAs("Rle", "IRanges", .RleToRanges)
+
 setAs("Rle", "NormalIRanges",
       function(from) newNormalIRangesFromIRanges(as(from, "IRanges"), check=FALSE))
 

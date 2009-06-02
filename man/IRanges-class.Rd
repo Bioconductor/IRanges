@@ -27,6 +27,7 @@
 
 % Coercion:
 \alias{coerce,Ranges,IRanges-method}
+\alias{coerce,logical,Ranges-method}
 \alias{coerce,logical,IRanges-method}
 \alias{coerce,logical,NormalIRanges-method}
 
