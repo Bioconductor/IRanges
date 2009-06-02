@@ -61,11 +61,12 @@ library(IRanges)
 
 \section{Sequences}
 
-The \IRanges{} packages represents three types of objects as sequences:
-atomic sequences, lists, and data tables (so they behave like \R{}'s
-\Rclass{data.frame} objects). The following subsections describe each in
-turn. All \IRanges{}-derived sequences inherit from the \Rclass{Sequence}
-virtual class.
+A sequence is an ordered collection of elements. The \IRanges{}
+packages represents three types of objects as sequences: atomic
+sequences, lists (or non-atomic sequences), and data tables (similar
+to \Rclass{data.frame}). The following subsections describe each in
+turn. All \IRanges{}-derived sequences inherit from the
+\Rclass{Sequence} virtual class.
 
 \subsection{Atomic Sequences}
 
@@ -81,7 +82,8 @@ We begin our discussion of atomic sequences using two \R{}
 \Rclass{integer} vectors.
 <<initialize>>=
 set.seed(0)
-lambda <- c(rep(0.001, 4500), seq(0.001, 10, length = 500), seq(10, 0.001, length = 500))
+lambda <- c(rep(0.001, 4500), seq(0.001, 10, length = 500), 
+            seq(10, 0.001, length = 500))
 xVector <- rpois(1e7, lambda)
 yVector <- rpois(1e7, lambda[c(251:length(lambda), 1:250)])
 @
@@ -375,6 +377,7 @@ identical(sapply(xExploded, mean), sapply(cIntList2, mean))
 \subsection{Data Tables}
 
 To Do:
+\Rclass{DataTable},
 \Rclass{DataFrame},
 \Rclass{DataFrameList},
 \Rclass{SplitDataFrameList}
@@ -393,11 +396,11 @@ of the \Rclass{Sequence} object.
 \section{Sequence Ranges}
 
 When analyzing sequences, we are often interested in particular
-contiguous subsequences. For example, the \Sexpr{letters} vector could
+consecutive subsequences. For example, the \Sexpr{letters} vector could
 be considered a sequence of lower-case letters, in alphabetical order.
 We would call the first five letters (\textit{a} to \textit{e}) a
-contiguous subsequence, while the subsequence containing only the
-vowels would not be contiguous. It is not uncommon for an analysis
+consecutive subsequence, while the subsequence containing only the
+vowels would not be consecutive. It is not uncommon for an analysis
 task to focus only on the geometry of the regions, while
 ignoring the underlying sequence values. A list of indices would be a
 simple way to select a subsequence. However, a sparser representation
@@ -457,7 +460,7 @@ ir1[[1]]
 
 \subsection{Normality}
 
-Sometimes, it is necessary to formally represent a true mathematical
+Sometimes, it is necessary to formally represent a
 subsequence, where no elements are repeated and order is
 preserved. Also, it is occasionally useful to think of a
 \Rclass{Ranges} object as a set, where no elements are repeated and
@@ -467,14 +470,14 @@ enforce the same ordering for all such objects, so that ordering
 becomes inconsequential within that context. 
 
 The \Rclass{NormalIRanges} class formally represents either a
-mathematical subsequence encoding or a set of integers. By definition
+subsequence encoding or a set of integers. By definition
 a Ranges object is said to be \textit{normal} when its ranges are: (a)
 not empty (i.e. they have a non-null width); (b) not overlapping; (c)
 ordered from left to right; (d) not even adjacent (i.e. there must be
 a non empty gap between 2 consecutive ranges).
 
 There are three main advantages of using a \textit{normal}
-\Rclass{Ranges} object: (1) it guarantees a mathematical subsequence
+\Rclass{Ranges} object: (1) it guarantees a subsequence
 encoding or set of integers, (2) it is compact in terms of the number
 of ranges, and (3) it uniquely identifies its information, which
 simplifies comparisons.
@@ -510,9 +513,8 @@ start(rl)
 
 As the elements of \Rclass{Ranges} objects encode consecutive
 subsequences, they may be used directly in sequence extraction. Note
-that when a \textit{normal} \Rclass{Ranges} is given as the index,
-the result is a true subsequence, in the mathematical sense, as no
-elements are repeated or reordered.
+that when a \textit{normal} \Rclass{Ranges} is given as the index, the
+result a subsequence, as no elements are repeated or reordered.
 %
 <<seqextract-ranges>>=
 seqextract(xRle, ir1[1:2])
@@ -713,10 +715,11 @@ sequence is of class \Rclass{Rle}. Other \Rclass{Views}
 implementations exist, such as \Rclass{XStringViews} in the
 \Rpackage{Biostrings} package.
 
-\subsection{Manipulating Views}
+\subsection{Creating Views}
 
 \subsection{Aggregating Views}
 
+\Rfunction{viewMaxs}, \Rfunction{viewMins}, \Rfunction{viewSums}
 
 \section{Data on Ranges}
 
