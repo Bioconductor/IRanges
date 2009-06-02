@@ -442,6 +442,12 @@ setAs("RangesList", "RangedData",
         new("RangedData", ranges = from, values = xdfs)
       })
 
+setAs("Ranges", "RangedData",
+      function(from)
+      {
+        RangedData(from)
+      })
+
 setMethod("as.env", "RangedData", function(x, enclos = parent.frame()) {
   env <- callNextMethod()
   makeActiveBinding("ranges", function() {
