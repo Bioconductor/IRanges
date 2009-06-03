@@ -43,7 +43,6 @@
 \alias{[<-,RangedData-method}
 \alias{[[,RangedData-method}
 \alias{[[<-,RangedData-method}
-\alias{$,RangedData-method}
 \alias{$<-,RangedData-method}
 
 % Applying:

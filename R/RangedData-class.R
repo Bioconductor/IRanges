@@ -209,8 +209,6 @@ setMethod("[[", "RangedData",
             unlist(values(x))[[i]] # very fast if 'values' is compressed
           })
 
-setMethod("$", "RangedData", function(x, name) x[[name]])
-
 setReplaceMethod("[[", "RangedData",
                  function(x, i, j,..., value)
                  {
