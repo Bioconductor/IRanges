@@ -16,6 +16,14 @@ setMethod("updateObject", signature(object="ANY"),
 ## Functions for updating old TypedList to new infrastructure
 toSimpleList <- function(object, newclass, newtype, ...)
 {
+    annotation <-
+      tryCatch(slot(object, "annotation"), error = function(e) list())
+    if (!is.list(annotation)) {
+        if (is.null(annotation))
+            annotation <- list()
+        else
+            annotation <- list(annotation)
+    }
     new(newclass,
         listData =
         lapply(structure(slot(object, "elements"),
@@ -25,13 +33,20 @@ toSimpleList <- function(object, newclass, newtype, ...)
         updateObject(tryCatch(slot(object, "elementMetadata"),
                               error = function(e) NULL)),
         elementType = newtype,
-        metadata = tryCatch(slot(object, "annotation"),
-                            error = function(e) list()),
+        metadata = annotation,
         ...)
 }
 
 toCompressedList <- function(object, newclass, newtype, ...)
 {
+    annotation <-
+      tryCatch(slot(object, "annotation"), error = function(e) list())
+    if (!is.list(annotation)) {
+        if (is.null(annotation))
+            annotation <- list()
+        else
+            annotation <- list(annotation)
+    }
     new(newclass,
         partitioning = new("PartitioningByEnd",
                            end = cumsum(slot(object, "elementLengths")),
@@ -41,8 +56,7 @@ toCompressedList <- function(object, newclass, newtype, ...)
         updateObject(tryCatch(slot(object, "elementMetadata"),
                               error = function(e) NULL)),
         elementType = newtype,
-        metadata = tryCatch(slot(object, "annotation"),
-                            error = function(e) list()),
+        metadata = annotation,
         ...)
 }
 
