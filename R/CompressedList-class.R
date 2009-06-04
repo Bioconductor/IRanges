@@ -49,7 +49,7 @@ setReplaceMethod("names", "CompressedList",
 }
 
 newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
-                              splitFactor=NULL, ...)
+                              splitFactor=NULL, drop=FALSE, ...)
 {
     if (!extends(listClass, "CompressedList"))
         stop("cannot create a ", listClass, " as a 'CompressedList'")
@@ -82,9 +82,18 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
                 unlistData <- unlistData[orderElts, , drop = FALSE]
             splitFactor <- splitFactor[orderElts]
         }
+        if (is.factor(splitFactor) && drop)
+            splitFactor <- splitFactor[drop = TRUE]
         splitRle <- Rle(splitFactor)
-        NAMES <- as.character(runValue(splitRle))
-        end <- cumsum(runLength(splitRle))
+        if (is.factor(splitFactor) && !drop) {
+            NAMES <- levels(splitFactor)
+            width <- structure(rep(0L, length(NAMES)), names = NAMES)
+            width[as.character(runValue(splitRle))] <- runLength(splitRle)
+            end <- cumsum(unname(width))
+        } else {
+            NAMES <- as.character(runValue(splitRle))
+            end <- cumsum(runLength(splitRle))
+        }
     }
 
     new(listClass, unlistData = unlistData,

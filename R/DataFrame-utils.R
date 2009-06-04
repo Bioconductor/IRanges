@@ -7,8 +7,9 @@
 ###
 
 setMethod("split", "DataFrame",
-          function(x, f, drop = FALSE) {
-            newCompressedList("CompressedSplitDataFrameList", x, splitFactor = f)
+          function(x, f, drop=FALSE) {
+            newCompressedList("CompressedSplitDataFrameList", x,
+                              splitFactor = f, drop = drop)
           })
 
 setMethod("cbind", "DataFrame",

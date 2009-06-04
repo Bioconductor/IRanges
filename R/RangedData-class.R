@@ -309,7 +309,7 @@ setMethod("[", "RangedData",
               sf <- factor(findInterval(i, w), seq_along(w))
               si <- split(i, sf)
               values <- values[i, j, drop=FALSE]
-              values <- split(values, sf)
+              values <- split(values, sf, drop=TRUE)
               for (k in seq_len(length(x))) {
                 ranges[[k]] <- ranges[[k]][si[[k]] - w[k] + 1]
               }
