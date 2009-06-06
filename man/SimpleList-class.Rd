@@ -6,9 +6,6 @@
 \alias{CompressedList-class}
 
 % accessors
-\alias{elementLengths}
-\alias{elementLengths,CompressedList-method}
-\alias{elementLengths,SimpleList-method}
 \alias{isEmpty,CompressedList-method}
 \alias{isEmpty,SimpleList-method}
 \alias{length,CompressedList-method}
@@ -57,24 +54,6 @@
   subclass is a list object. The underlying storage in a CompressedList
   object is a virtually partitioned vector-like object. For more information
   on the available methods, see the \linkS4class{Sequence} man page.
-}
-\section{Additional Accessors}{
-  In the following code snippets, \code{x} is a \code{SimpleList} or
-  \code{CompressedList} object.
-  
-  \describe{
-    \item{}{\code{elementLengths(x)}: Get the 'length' of each of the elements.
-    }
-  }
-}
-\section{Additional Accessors}{
-  In the following code snippets, \code{x} is a \code{SimpleList} or
-  \code{CompressedList} object.
-  
-  \describe{
-    \item{}{\code{elementLengths(x)}: Get the 'length' of each of the elements.
-    }
-  }
 }
 \section{Constructor}{
   The SimpleList class constructor is used to create SimpleList objects:

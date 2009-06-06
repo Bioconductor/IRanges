@@ -301,7 +301,7 @@ const char *_get_classname(SEXP x);
 
 SEXP address_asSTRSXP(SEXP s);
 
-SEXP sapply_length(SEXP list);
+SEXP listofvectors_lengths(SEXP x);
 
 SEXP safe_strexplode(SEXP s);
 

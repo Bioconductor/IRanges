@@ -40,7 +40,6 @@ export(
     isConstant,
     normargShift,
     normargWeight,
-    sapplyLength,
     safeExplode,
     solveUserSEW0, IRanges, solveUserSEW,
     successiveIRanges,

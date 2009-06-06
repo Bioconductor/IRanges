@@ -153,7 +153,7 @@ setMethod("[[", "H2LGrouping",
 setMethod("grouplength", "H2LGrouping",
     function(x, i=NULL)
     {
-        group_length <- sapplyLength(x@low2high) + 1L
+        group_length <- elementLengths(x@low2high) + 1L
         group_length[!is.na(x@high2low)] <- 0L
         if (is.null(i))
             return(group_length)

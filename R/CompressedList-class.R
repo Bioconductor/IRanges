@@ -15,7 +15,14 @@ setClass("CompressedList",
 ### Accessor methods.
 ###
 
-setMethod("elementLengths", "CompressedList", function(x) width(x@partitioning))
+setMethod("elementLengths", "CompressedList",
+    function(x)
+    {
+        ans <- width(x@partitioning)
+        names(ans) <- names(x)
+        ans
+    }
+)
 
 ### A CompressedList object is considered empty iff all its elements are empty.
 setMethod("isEmpty", "CompressedList", function(x) all(elementLengths(x) == 0L))

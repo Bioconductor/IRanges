@@ -72,13 +72,6 @@ setMethod("show", "externalptr",
         .Call("ExternalPtr_show", object, PACKAGE="IRanges")
 )
 
-sapplyLength <- function(x)
-{
-    if (!is.list(x))
-        stop("'x' must be a list")
-    .Call("sapply_length", x, PACKAGE="IRanges")
-}
-
 ### Safe alternative to 'strsplit(x, NULL, fixed=TRUE)[[1]]'.
 safeExplode <- function(x)
 {

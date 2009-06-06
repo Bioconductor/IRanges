@@ -13,18 +13,6 @@ setClass("SimpleList",
 ### Accessor methods.
 ###
 
-setMethod("elementLengths", "SimpleList",
-          function(x) {
-              listData <- as.list(x)
-              if (length(listData) == 0) {
-                  integer(0)
-              } else if (length(dim(listData[[1]])) < 2) {
-                  unlist(lapply(listData, length))
-              } else {
-                  unlist(lapply(listData, nrow))
-              }
-          })
-
 ### A SimpleList object is considered empty iff all its elements are empty.
 setMethod("isEmpty", "SimpleList", function(x) all(elementLengths(x) == 0L))
 

@@ -19,6 +19,10 @@
 \alias{coerce,Sequence,list-method}
 \alias{elementType}
 \alias{elementType,Sequence-method}
+\alias{elementLengths}
+\alias{elementLengths,list-method}
+\alias{elementLengths,Sequence-method}
+\alias{elementLengths,CompressedList-method}
 \alias{elementMetadata}
 \alias{elementMetadata,Sequence-method}
 \alias{elementMetadata<-}
@@ -84,6 +88,8 @@
     }
     \item{}{\code{elementType(x)}: Get the scalar string naming the class from
       which all elements must derive.
+    }
+    \item{}{\code{elementLengths(x)}: Get the 'length' of each of the elements.
     }
     \item{}{\code{isEmpty(x)}: Returns a logical indicating either if the
       sequence has no elements or if all its elements are empty.

@@ -3,7 +3,6 @@
 
 \alias{setValidity2}
 \alias{new2}
-\alias{sapplyLength}
 \alias{safeExplode}
 
 % Some low-level helper functions and classes (from R/utils.R):

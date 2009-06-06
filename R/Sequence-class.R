@@ -24,6 +24,35 @@ setClass("Sequence",
 
 setGeneric("elementLengths", function(x) standardGeneric("elementLengths"))
 
+setMethod("elementLengths", "list",
+    function(x)
+    {
+        ans <- try(.Call("listofvectors_lengths", x, PACKAGE="IRanges"), silent=TRUE)
+        if (!is(ans, "try-error")) {
+            names(ans) <- names(x)
+            return(ans)
+        }
+        ## From here, 'length(x)' is guaranteed to be != 0
+        return(sapply(x, length))
+    }
+)
+
+setMethod("elementLengths", "Sequence",
+    function(x)
+    {
+        y <- as.list(x)
+        if (length(y) == 0L) {
+            ans <- integer(0)
+            ## We must return a named integer(0) if 'x' is named
+            names(ans) <- names(x)
+            return(ans)
+        }
+        if (length(dim(y[[1L]])) < 2L)
+            return(elementLengths(y))
+        return(sapply(y, nrow))
+    }
+)
+
 setGeneric("isEmpty", function(x) standardGeneric("isEmpty"))
 setMethod("isEmpty", "ANY",
           function(x)
