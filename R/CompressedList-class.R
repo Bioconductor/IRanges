@@ -34,9 +34,7 @@ setMethod("names", "CompressedList", function(x) names(x@partitioning))
 setReplaceMethod("names", "CompressedList",
                  function(x, value)
                  {
-                     partitions <- x@partitioning
-                     names(partitions) <- value
-                     slot(x, "partitioning") <- partitions
+                     names(x@partitioning) <- value
                      x
                  })
 
@@ -265,6 +263,7 @@ setReplaceMethod("[[", "CompressedList",
                          listData <- as.list(x, use.names = FALSE)
                          listData[[i]] <- value
                          widths <- elementLengths(x)
+                         names(widths) <- NULL
                          widths[i] <-
                            ifelse(length(dim(value)) < 2, length(value), nrow(value))
                          if ((i == length(x) + 1L) &&
@@ -329,12 +328,14 @@ setMethod("[", "CompressedList",
               } else {
                   stop("invalid subscript type")
               }
+              ends <- cumsum(elementLengths(x)[i])
+              names(ends) <- NULL
               slot(x, "unlistData", check=FALSE) <-
                 .CompressedList.list.subscript(X = x, INDEX = i,
                                                USE.NAMES = FALSE)
               slot(x, "partitioning", check=FALSE) <- 
                 new("PartitioningByEnd",
-                    end = cumsum(elementLengths(x)[i]),
+                    end = ends,
                     NAMES = names(x)[i])
               .bracket.Sequence(x, i)
           })

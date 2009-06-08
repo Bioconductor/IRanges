@@ -22,9 +22,7 @@ setMethod("names", "SimpleList", function(x) names(as.list(x)))
 
 setReplaceMethod("names", "SimpleList",
                  function(x, value) {
-                     listData <- as.list(x)
-                     names(listData) <- value
-                     slot(x, "listData") <- listData
+                     names(x@listData) <- value
                      x
                  })
 
