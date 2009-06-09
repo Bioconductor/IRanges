@@ -407,6 +407,10 @@ setAs("integer", "DataFrame",
 setMethod("show", "DataFrame",
           function(object)
           {
-            cat("DataFrame object with", nrow(object), "rows and",
-                ncol(object), "columns.\n")
+            dimObject <- dim(object)
+            cat("  A ", class(object), " instance with ", dimObject[1],
+                ifelse(dimObject[1] == 1, " row and ", " rows and "),
+                dimObject[2],
+                ifelse(dimObject[2] == 1, " column\n", " columns\n"),
+                sep="")
           })

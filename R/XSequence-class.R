@@ -119,7 +119,7 @@ setMethod("show", "XSequence",
     function(object)
     {
         lo <- length(object)
-        cat("  ", class(object), " instance of length ", lo, "\n", sep="")
+        cat("  A ", class(object), " instance of length ", lo, "\n", sep="")
         if (lo != 0L)
             cat(" [1] ", toNumSnippet(object, getOption("width")-5), "\n", sep="")
         ## What is correct here? The documentation (?show) says that 'show'
