@@ -30,9 +30,6 @@
 \alias{rbind,DataFrame-method}
 \alias{split,DataFrame-method}
 
-% show
-\alias{show,DataFrame-method}
-
 \title{External Data Frame}
 \description{
   The \code{DataFrame} extends the \code{\linkS4class{DataTable}} virtual

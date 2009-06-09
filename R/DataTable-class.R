@@ -215,16 +215,33 @@ setMethod("with", "DataTable",
 
 setGeneric("as.env", function(x, ...) standardGeneric("as.env"))
 
-setMethod("as.env", "DataTable", function(x, enclos = parent.frame()) {
-  env <- new.env(parent = enclos)
-  lapply(colnames(x), function(col) {
-    colFun <- function() {
-      val <- x[[col]]
-      rm(list=col, envir=env)
-      assign(col, val, env)
-      val
-    }
-    makeActiveBinding(col, colFun, env)
-  })
-  env
-})
+setMethod("as.env", "DataTable",
+          function(x, enclos = parent.frame()) {
+              env <- new.env(parent = enclos)
+              lapply(colnames(x),
+                     function(col) {
+                         colFun <- function() {
+                             val <- x[[col]]
+                             rm(list=col, envir=env)
+                             assign(col, val, env)
+                             val
+                         }
+                         makeActiveBinding(col, colFun, env)
+                     })
+              env
+          })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "show" method.
+###
+
+setMethod("show", "DataTable",
+    function(object)
+    {
+        dimObject <- dim(object)
+        cat("  A ", class(object), " instance with ", dimObject[1],
+                ifelse(dimObject[1] == 1, " row and ", " rows and "),
+                dimObject[2],
+                ifelse(dimObject[2] == 1, " column\n", " columns\n"),
+                sep="")
+    })

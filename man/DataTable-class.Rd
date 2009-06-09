@@ -16,6 +16,7 @@
 \alias{rbind}
 \alias{rbind,DataTable-method}
 \alias{seqextract,DataTable-method}
+\alias{show,DataTable-method}
 \alias{subset,DataTable-method}
 \alias{tail,DataTable-method}
 \alias{window,DataTable-method}

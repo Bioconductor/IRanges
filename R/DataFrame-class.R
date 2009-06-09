@@ -399,18 +399,3 @@ setAs("integer", "DataFrame",
       function(from) {
         selectMethod("coerce", c("ANY", "DataFrame"))(from)
       })
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "show" method.
-###
-
-setMethod("show", "DataFrame",
-          function(object)
-          {
-            dimObject <- dim(object)
-            cat("  A ", class(object), " instance with ", dimObject[1],
-                ifelse(dimObject[1] == 1, " row and ", " rows and "),
-                dimObject[2],
-                ifelse(dimObject[2] == 1, " column\n", " columns\n"),
-                sep="")
-          })
