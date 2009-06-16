@@ -126,12 +126,27 @@ void _IntAE_delete_at(IntAE *int_ae, int at)
 	return;
 }
 
-void _IntAE_sum_val(const IntAE *int_ae, int val)
+void _IntAE_shift(const IntAE *int_ae, int shift)
 {
 	int i, *elt;
 
 	for (i = 0, elt = int_ae->elts; i < int_ae->nelt; i++, elt++)
-		*elt += val;
+		*elt += shift;
+	return;
+}
+
+/*
+ * Left and right IntAE objects must have the same length. This is
+ * NOT checked!
+ */
+void _IntAE_sum_and_shift(const IntAE *int_ae1, const IntAE *int_ae2, int shift)
+{
+	int i, *elt1, *elt2;
+
+	for (i = 0, elt1 = int_ae1->elts, elt2 = int_ae2->elts;
+	     i < int_ae1->nelt;
+	     i++, elt1++, elt2++)
+		*elt1 += *elt2 + shift;
 	return;
 }
 
@@ -148,21 +163,6 @@ void _IntAE_append_shifted_vals(IntAE *int_ae, const int *newvals, int nnewval, 
 	     i++, elt1++, elt2++)
 		*elt1 = *elt2 + shift;
 	int_ae->nelt = new_nelt;
-	return;
-}
-
-/*
- * Left and right IntAE objects must have the same length. This is
- * NOT checked!
- */
-void _IntAE_sum_IntAE(const IntAE *int_ae1, const IntAE *int_ae2)
-{
-	int i, *elt1, *elt2;
-
-	for (i = 0, elt1 = int_ae1->elts, elt2 = int_ae2->elts;
-	     i < int_ae1->nelt;
-	     i++, elt1++, elt2++)
-		*elt1 += *elt2;
 	return;
 }
 
@@ -315,13 +315,29 @@ void _IntAEAE_eltwise_append(const IntAEAE *int_aeae1, const IntAEAE *int_aeae2)
 	return;
 }
 
-void _IntAEAE_sum_val(const IntAEAE *int_aeae, int val)
+void _IntAEAE_shift(const IntAEAE *int_aeae, int shift)
 {
 	int i;
 	IntAE *elt;
 
 	for (i = 0, elt = int_aeae->elts; i < int_aeae->nelt; i++, elt++)
-		_IntAE_sum_val(elt, val);
+		_IntAE_shift(elt, shift);
+	return;
+}
+
+/*
+ * Left and right IntAEAE objects must have the same length. This is
+ * NOT checked!
+ */
+void _IntAEAE_sum_and_shift(const IntAEAE *int_aeae1, const IntAEAE *int_aeae2, int shift)
+{
+	int i;
+	IntAE *elt1, *elt2;
+
+	for (i = 0, elt1 = int_aeae1->elts, elt2 = int_aeae2->elts;
+	     i < int_aeae1->nelt;
+	     i++, elt1++, elt2++)
+		_IntAE_sum_and_shift(elt1, elt2, shift);
 	return;
 }
 

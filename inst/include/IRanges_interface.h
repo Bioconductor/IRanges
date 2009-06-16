@@ -62,9 +62,15 @@ void IntAE_delete_at(
 	int at
 );
 
-void IntAE_sum_val(
+void IntAE_shift(
 	const IntAE *int_ae,
-	int val
+	int shift
+);
+
+void IntAE_sum_and_shift(
+	const IntAE *int_ae1,
+	const IntAE *int_ae2,
+	int shift
 );
 
 void IntAE_append_shifted_vals(
@@ -72,11 +78,6 @@ void IntAE_append_shifted_vals(
 	const int *newvals,
 	int nnewval,
 	int shift
-);
-
-void IntAE_sum_IntAE(
-	const IntAE *int_ae1,
-	const IntAE *int_ae2
 );
 
 void IntAE_qsort(IntAE *int_ae);
@@ -108,9 +109,15 @@ void IntAEAE_eltwise_append(
 	const IntAEAE *int_aeae2
 );
 
-void IntAEAE_sum_val(
+void IntAEAE_shift(
 	const IntAEAE *int_aeae,
-	int val
+	int shift
+);
+
+void IntAEAE_sum_and_shift(
+	const IntAEAE *int_aeae1,
+	const IntAEAE *int_aeae2,
+	int shift
 );
 
 SEXP IntAEAE_asLIST(

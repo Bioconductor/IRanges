@@ -71,19 +71,19 @@ DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_delete_at,
 	(       int_ae,     at)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_sum_val,
-	(const IntAE *int_ae, int val),
-	(             int_ae,     val)
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_shift,
+	(const IntAE *int_ae, int shift),
+	(             int_ae,     shift)
+)
+
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_sum_and_shift,
+	(const IntAE *int_ae1, const IntAE *int_ae2, int shift),
+	(             int_ae1,              int_ae2,     shift)
 )
 
 DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_append_shifted_vals,
 	(IntAE *int_ae, const int *newvals, int nnewval, int shift),
 	(       int_ae,            newvals,     nnewval,     shift)
-)
-
-DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_sum_IntAE,
-	(const IntAE *int_ae1, const IntAE *int_ae2),
-	(             int_ae1,              int_ae2)
 )
 
 DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_qsort,
@@ -126,9 +126,14 @@ DEFINE_NOVALUE_CCALLABLE_STUB(IntAEAE_eltwise_append,
 	(               int_aeae1,                int_aeae2)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(IntAEAE_sum_val,
-	(const IntAEAE *int_aeae, int val),
-	(               int_aeae,     val)
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAEAE_shift,
+	(const IntAEAE *int_aeae, int shift),
+	(               int_aeae,     shift)
+)
+
+DEFINE_NOVALUE_CCALLABLE_STUB(IntAEAE_sum_and_shift,
+	(const IntAEAE *int_aeae1, const IntAEAE *int_aeae2, int shift),
+	(               int_aeae1,                int_aeae2,     shift)
 )
 
 DEFINE_CCALLABLE_STUB(SEXP, IntAEAE_asLIST,
