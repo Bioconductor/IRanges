@@ -68,10 +68,11 @@
 \alias{rep.int}
 \alias{rep.int,Rle-method}
 \alias{rev,Rle-method}
+\alias{seqextract,Rle-method}
 \alias{shiftApply,Rle,Rle-method}
 \alias{show,Rle-method}
 \alias{sort,Rle-method}
-\alias{seqextract,Rle-method}
+\alias{split,Rle-method}
 \alias{summary,Rle-method}
 \alias{table}
 \alias{table,Rle-method}
@@ -354,6 +355,12 @@
       Reverses the order of the values in \code{x}.
     }
     \item{}{
+      \code{seqextract(x, start = NULL, end = NULL, width = NULL)}:
+      Creates a new Rle object using consecutive subsequences from \code{x}
+      specified by two of the three following values:  \code{start}, \code{end},
+      and \code{width}. See \link{seqextract} for more details.
+    }
+    \item{}{
       \code{shiftApply(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)}:
       Let \code{i} be the indices in \code{SHIFT},
       \code{X_i = window(X, 1 + OFFSET, length(X) - SHIFT[i])}, and
@@ -390,10 +397,10 @@
       }
     }
     \item{}{
-      \code{seqextract(x, start = NULL, end = NULL, width = NULL)}:
-      Creates a new Rle object using consecutive subsequences from \code{x}
-      specified by two of the three following values:  \code{start}, \code{end},
-      and \code{width}. See \link{seqextract} for more details.
+      \code{split(x, f, drop = FALSE)}:
+      Splits \code{x} according to \code{f} to create a
+      \linkS4class{CompressedRleList} object. Empty list elements are removed
+      if \code{drop} is \code{TRUE}.
     }
     \item{}{
       \code{subset(x, subset)}:

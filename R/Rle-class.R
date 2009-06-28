@@ -473,6 +473,20 @@ setMethod("rev", "Rle",
               x
           })
 
+setMethod("seqextract", "Rle",
+          function(x, start = NULL, end = NULL, width = NULL)
+          {
+              ir <- IRanges(start=start, end=end, width=width, names=NULL)
+              if (any(start(ir) < 1L) || any(end(ir) > length(x)))
+                  stop("some ranges are out of bounds")
+              do.call(c,
+                      lapply(seq_len(length(ir)),
+                             function(i)
+                                 .Call("Rle_seqblock",
+                                       x, start(ir)[i], width(ir)[i],
+                                       PACKAGE = "IRanges")))
+          })
+
 setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
           function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
                    verbose = FALSE)
@@ -564,18 +578,10 @@ setMethod("sort", "Rle",
                   check = FALSE)
           })
 
-setMethod("seqextract", "Rle",
-          function(x, start = NULL, end = NULL, width = NULL)
-          {
-              ir <- IRanges(start=start, end=end, width=width, names=NULL)
-              if (any(start(ir) < 1L) || any(end(ir) > length(x)))
-                  stop("some ranges are out of bounds")
-              do.call(c,
-                      lapply(seq_len(length(ir)),
-                             function(i)
-                                 .Call("Rle_seqblock",
-                                       x, start(ir)[i], width(ir)[i],
-                                       PACKAGE = "IRanges")))
+setMethod("split", "Rle",
+          function(x, f, drop=FALSE) {
+              newCompressedList("CompressedRleList", x, splitFactor = f,
+                                drop = drop)
           })
 
 setMethod("summary", "Rle",
