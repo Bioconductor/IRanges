@@ -161,7 +161,6 @@
       R.}
     \item{}{\code{start(x)}: Get the starts of the ranges.}
     \item{}{\code{end(x)}: Get the ends of the ranges.}
-    }
   }
 }
 
