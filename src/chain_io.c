@@ -144,7 +144,7 @@ SEXP readChain(SEXP r_path, SEXP r_exclude) {
   ans_listData = allocVector(VECSXP, nblocks);
   SET_SLOT(ans, install("listData"), ans_listData);
   ans_names = allocVector(STRSXP, nblocks);
-  SET_SLOT(ans, install("NAMES"), ans_names);
+  SET_NAMES(ans_listData, ans_names);
   for (i = 0; i < nblocks; i++) {
     SEXP block;
     block = NEW_OBJECT(MAKE_CLASS("AlignmentSpace"));
