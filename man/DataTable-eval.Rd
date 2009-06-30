@@ -10,7 +10,8 @@
 }
 
 \usage{
-\S4method{eval}{expressionORlanguage,DataTable}(expr, envir, enclos = parent.frame())
+\S4method{eval}{expressionORlanguage,DataTable}(expr, envir = parent.frame(),
+     enclos = if(is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())
 \S4method{with}{DataTable}(data, expr, \dots)
 }
 
@@ -30,7 +31,7 @@
 
 \details{  
   The \code{eval} method converts the \code{DataTable} object specified in
-  \code{envir} to an \code{environmnent}, with \code{enclos} as its parent,
+  \code{envir} to an \code{environment}, with \code{enclos} as its parent,
   and then evaluates \code{expr} within that environment. As when evaluating
   within an ordinary \code{data.frame}, the environment formed from an
   \code{DataTable} contains a symbol for each column name which refers
