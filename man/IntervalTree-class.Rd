@@ -158,7 +158,7 @@
   \describe{
     \item{}{\code{length(x)}: Gets the number of ranges stored in the
       tree. This is a fast operation that does not bring the ranges into
-      R.
+      R.}
     \item{}{\code{start(x)}: Get the starts of the ranges.}
     \item{}{\code{end(x)}: Get the ends of the ranges.}
     }
