@@ -140,9 +140,13 @@ setValidity2("RangedData", .valid.RangedData)
 
 RangedData <- function(ranges = IRanges(), ..., space = NULL,
                        universe = NULL)
-{
-  if (!is(ranges, "Ranges"))
-    stop("'ranges' must be a Ranges object")
+{    
+  if (!is(ranges, "Ranges")) {
+    coerced <- try(as(ranges, "RangedData"), silent=TRUE)
+    if (is(coerced, "RangedData"))
+      return(coerced)
+    stop("'ranges' must be a Ranges or directly coercible to RangedData")
+  }
   if (((nargs() - !missing(space)) - !missing(universe)) > 1) 
     values <- DataFrame(...) ## at least one column specified
   else values <- new("DataFrame", nrows = length(ranges))
@@ -457,6 +461,17 @@ setMethod("as.env", "RangedData", function(x, enclos = parent.frame()) {
   env
 })
 
+.RangedData_fromDataFrame <- function(from) {
+  required <- c("start", "end")
+  if (!all(required %in% colnames(from)))
+    stop("'from' must at least include a 'start' and 'end' column")
+  datacols <- setdiff(colnames(from), c(required, "space", "width"))
+  RangedData(IRanges(from$start, from$end), from[,datacols,drop=FALSE],
+             space = from$space)
+}
+
+setAs("data.frame", "RangedData", .RangedData_fromDataFrame)
+setAs("DataTable", "RangedData", .RangedData_fromDataFrame)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Show

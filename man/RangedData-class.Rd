@@ -32,6 +32,9 @@
 \alias{coerce,RangedData,DataFrame-method}
 \alias{coerce,Rle,RangedData-method}
 \alias{as.env,RangedData-method}
+\alias{coerce,DataTable,RangedData-method}
+\alias{coerce,Ranges,RangedData-method}
+\alias{coerce,data.frame,RangedData-method}
 
 % Combining and splitting
 \alias{c,RangedData-method}
@@ -198,6 +201,10 @@
       \code{splitter}, which is treated as a factor, like the \code{f}
       argument in \code{\link{split}}. The universe may be specified
       as a scalar string by the \code{universe} argument.
+
+      If \code{ranges} is not a \code{Ranges} object, this function
+      calls \code{as(ranges, "RangedData")} and returns the result if
+      successful.
     }
   }
 }
@@ -218,9 +225,22 @@
       single space.
     }
     \item{}{
-      \code{as(from, "RangedData")}: Coerce an \code{\linkS4class{Rle}}
-      to a \code{RangedData} by converting each run to a range and storing
-      the run values in a column named "score".
+      \code{as(from, "RangedData")}: Coerce \code{from} to
+      a \code{RangedData}, according to the type of \code{from}:
+      \describe{
+        \item{\code{\linkS4class{Rle}}}{Converts each run to a
+          range and stores the run values in a column named "score".
+        }
+        \item{\code{Ranges}}{Creates a \code{RangedData} with only the
+          ranges in \code{from}; no data columns.
+        }
+        \item{\code{data.frame} or \code{DataTable}}{Constructs a
+          \code{RangedData}, using the columns \dQuote{start},
+          \dQuote{end}, and, optionally, \dQuote{space} columns in
+          \code{from}. The other columns become data columns in the
+          result. Any \dQuote{width} column is ignored.
+        }
+      }
     }
     \item{}{\code{as.env(x, enclos = parent.frame())}:
       Creates an \code{environment} with a symbol for each variable in

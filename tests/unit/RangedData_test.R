@@ -249,3 +249,15 @@ test_RangedData_dimnames <- function() {
   rownames(rd) <- c("a", "b", "c")
   checkIdentical(rownames(rd), c("a", "b", "c"))
 }
+
+test_RangedData_fromDataFrame <- function() {
+  df <- data.frame(start = c(1, 2, 3), end = c(4, 2, 3))
+  rd <- RangedData(IRanges(c(1,2,3), c(4,2,3)), df[,NULL])
+  checkIdentical(as(df, "RangedData"), rd)
+  checkException(as(df[,1,drop=FALSE], "RangedData"), rd, silent=TRUE)
+  df <- data.frame(start = c(1, 2, 3), end = c(4, 2, 3), space = c(1, 1, 2),
+                   foo = c("a", "b", "c"))
+  rd <- RangedData(IRanges(c(1,2,3), c(4,2,3)), df[,"foo",drop=FALSE],
+                   space = c(1,1,2))
+  checkIdentical(as(df, "RangedData"), rd)
+}
