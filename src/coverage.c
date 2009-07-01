@@ -1,34 +1,63 @@
 #include "IRanges.h"
+#include <stdlib.h> /* for qsort() */
+
+static const int *base_start;
+
+static int cmp_start_indices_for_ordering(const void *p1, const void *p2)
+{
+	int i1, i2, ret;
+
+	i1 = *((const int *) p1);
+	i2 = *((const int *) p2);
+	ret = *(base_start + i1) - *(base_start + i2);
+	return ret != 0 ? ret : i1 - i2;
+}
+
 
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP order, SEXP width)
+SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP width)
 {
 	int i, j, weight_elt;
-	int index, index_start, index_end;
+	int index_start, index_end;
+	const int *index_elt;
 	SEXP ans, ans_lengths, ans_values;
 
-	int prev_index = 0;
-	int sparse_data_length = 0;
 	int x_length = _get_IRanges_length(x);
-	const int *order_elt;
 	const int *x_start = _get_IRanges_start0(x);
 	const int *x_width = _get_IRanges_width0(x);
-	for (i = 0, order_elt = INTEGER(order); i < x_length; i++, order_elt++)
-	{
-		index = *order_elt - 1;
-		if (x_width[index] == 0)
-			continue;
-		if (index >= LENGTH(weight)) {
-			weight_elt = INTEGER(weight)[0];
-		} else {
-			weight_elt = INTEGER(weight)[index];
+
+	// order start values
+	int *wd, *wt, order_length = 0;
+	int *order_start = (int *) R_alloc((long) x_length, sizeof(int));
+	memset(order_start, -1, x_length * sizeof(int));
+	if (LENGTH(weight) == 1) {
+		for (i = 0, wd = (int*) x_width; i < x_length; i++, wd++) {
+			if (*wd > 0) {
+				order_start[order_length] = i;
+				order_length++;
+			}
 		}
-		if (weight_elt == 0)
-			continue;
-		index_start = (x_start[index] > prev_index ? x_start[index] : prev_index);
-		index_end = x_start[index] + x_width[index] - 1;
+	} else {
+		for (i = 0, wd = (int *) x_width, wt = INTEGER(weight); i < x_length;
+		     i++, wd++, wt++) {
+			if (*wd > 0 && *wt != 0) {
+				order_start[order_length] = i;
+				order_length++;
+			}
+		}
+	}
+	base_start = x_start;
+	qsort(order_start, order_length, sizeof(int), cmp_start_indices_for_ordering);
+
+	// find buffer size
+	int prev_index = 0;
+	int sparse_data_length = 0;
+	for (i = 0, index_elt = order_start; i < order_length; i++, index_elt++)
+	{
+		index_start = x_start[*index_elt] > prev_index ? x_start[*index_elt] : prev_index;
+		index_end = x_start[*index_elt] + x_width[*index_elt] - 1;
 		int shift = index_end - index_start + 1;
 		if (shift > 0) {
 			sparse_data_length += shift;
@@ -40,24 +69,20 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP order, SEXP width)
 	memset(sparse_data, 0, sparse_data_length * sizeof(int));
 	memset(sparse_index, 0, sparse_data_length * sizeof(int));
 
+	// perform coverage calculation
 	int values_length = 0;
 	int *prev_sdata, *curr_sdata, *prev_sindex, *curr_sindex;
 	if (sparse_data_length > 0) {
 		int *sparse_data_elt = sparse_data;
 		int *sparse_index_elt = sparse_index;
-		for (i = 0, order_elt = INTEGER(order); i < x_length; i++, order_elt++)
+		for (i = 0, index_elt = order_start; i < order_length; i++, index_elt++)
 		{
-			index = *order_elt - 1;
-			if (x_width[index] == 0)
-				continue;
-			if (index >= LENGTH(weight)) {
+			if (*index_elt >= LENGTH(weight)) {
 				weight_elt = INTEGER(weight)[0];
 			} else {
-				weight_elt = INTEGER(weight)[index];
+				weight_elt = INTEGER(weight)[*index_elt];
 			}
-			if (weight_elt == 0)
-				continue;
-			index_start = x_start[index];
+			index_start = x_start[*index_elt];
 			while (*sparse_index_elt > index_start) {
 				sparse_index_elt--;
 				sparse_data_elt--;
@@ -66,7 +91,7 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP order, SEXP width)
 				sparse_index_elt++;
 				sparse_data_elt++;
 			}
-			for (j = 0; j < x_width[index]; j++, sparse_index_elt++, sparse_data_elt++, index_start++)
+			for (j = 0; j < x_width[*index_elt]; j++, sparse_index_elt++, sparse_data_elt++, index_start++)
 			{
 				*sparse_index_elt = index_start;
 				*sparse_data_elt += weight_elt;
@@ -88,6 +113,7 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP order, SEXP width)
 		values_length += (sparse_index[sparse_data_length - 1] != INTEGER(width)[0]);
 	}
 
+	// create output object
 	if (values_length == 0) {
 		PROTECT(ans_lengths = NEW_INTEGER(1));
 		PROTECT(ans_values = NEW_INTEGER(1));

@@ -833,7 +833,6 @@ SEXP RleViews_viewWhichMaxs(
 SEXP IRanges_coverage(
 	SEXP x,
 	SEXP weight,
-	SEXP order,
 	SEXP width
 );
 

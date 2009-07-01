@@ -139,9 +139,7 @@ setMethod("coverage", "numeric",
 
 .IRanges.coverage <- function(x, width, weight)
 {
-    .Call("IRanges_coverage",
-          x, weight, order(start(x)), width,
-          PACKAGE="IRanges")
+    .Call("IRanges_coverage", x, weight, width, PACKAGE="IRanges")
 }
 
 setMethod("coverage", "IRanges",

@@ -140,7 +140,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(RleViews_viewWhichMaxs, 2),
 
 /* coverage */
-	CALLMETHOD_DEF(IRanges_coverage, 4),
+	CALLMETHOD_DEF(IRanges_coverage, 3),
 
 	{NULL, NULL, 0}
 };
