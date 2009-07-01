@@ -20,7 +20,7 @@ static int cmp_start_indices_for_ordering(const void *p1, const void *p2)
 SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP width)
 {
 	int i, j, weight_elt;
-	int index_start, index_end;
+	int index_start, index_end, index_width;
 	const int *index_elt;
 	SEXP ans, ans_lengths, ans_values;
 
@@ -56,8 +56,10 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP width)
 	int sparse_data_length = 0;
 	for (i = 0, index_elt = order_start; i < order_length; i++, index_elt++)
 	{
-		index_start = x_start[*index_elt] > prev_index ? x_start[*index_elt] : prev_index;
-		index_end = x_start[*index_elt] + x_width[*index_elt] - 1;
+		int curr_start = x_start[*index_elt];
+		int curr_width = x_width[*index_elt];
+		index_start = curr_start > prev_index ? curr_start : prev_index;
+		index_end = curr_start + curr_width - 1;
 		int shift = index_end - index_start + 1;
 		if (shift > 0) {
 			sparse_data_length += shift;
@@ -70,7 +72,7 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP width)
 	memset(sparse_index, 0, sparse_data_length * sizeof(int));
 
 	// perform coverage calculation
-	int values_length = 0;
+	int values_length = 0, prev_width = 0;
 	int *prev_sdata, *curr_sdata, *prev_sindex, *curr_sindex;
 	if (sparse_data_length > 0) {
 		int *sparse_data_elt = sparse_data;
@@ -83,21 +85,23 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP width)
 				weight_elt = INTEGER(weight)[*index_elt];
 			}
 			index_start = x_start[*index_elt];
-			while (*sparse_index_elt > index_start) {
-				sparse_index_elt--;
-				sparse_data_elt--;
+			index_width = x_width[*index_elt];
+			if (*sparse_index_elt < index_start) {
+				int ptr_shift = index_start - *sparse_index_elt;
+				ptr_shift = ptr_shift < prev_width ? ptr_shift : prev_width;
+				if (ptr_shift > 0) {
+					sparse_index_elt += ptr_shift;
+					sparse_data_elt += ptr_shift;
+				}
 			}
-			while ((*sparse_index_elt > 0) && (*sparse_index_elt < index_start)) {
-				sparse_index_elt++;
-				sparse_data_elt++;
-			}
-			for (j = 0; j < x_width[*index_elt]; j++, sparse_index_elt++, sparse_data_elt++, index_start++)
+			for (j = 0; j < index_width; j++, sparse_index_elt++, sparse_data_elt++, index_start++)
 			{
 				*sparse_index_elt = index_start;
 				*sparse_data_elt += weight_elt;
 			}
-			sparse_index_elt--;
-			sparse_data_elt--;
+			sparse_index_elt -= index_width;
+			sparse_data_elt -= index_width;
+			prev_width = index_width;
 		}
 		values_length = 1 + (*sparse_index != 1);
 		for (i = 1, prev_sdata = sparse_data, curr_sdata = (sparse_data + 1),
