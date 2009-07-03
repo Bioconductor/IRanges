@@ -193,6 +193,7 @@ exportMethods(
     eval, with,
     t,
     is.na, "%in%", by, match,
+    Reduce, Filter, Find, Position,
     updateObject,
 
     ## Methods for generics defined in this package:

@@ -223,6 +223,14 @@ setMethod("append", c("Sequence", "Sequence"),
                   c(x[1L:after], values, x[(after + 1L):xlen])
              })
 
+.FilterDefault <- base::Filter
+environment(.FilterDefault) <- topenv()
+setMethod("Filter", signature(x = "Sequence"), .FilterDefault)
+
+.FindDefault <- base::Find
+environment(.FindDefault) <- topenv()
+setMethod("Find", signature(x = "Sequence"), .FindDefault)
+
 setMethod("head", "Sequence",
           function(x, n = 6L, ...)
           {
@@ -237,6 +245,83 @@ setMethod("head", "Sequence",
                   window(x, 1L, n)
           })
 
+.PositionDefault <- base::Position
+environment(.PositionDefault) <- topenv()
+setMethod("Position", signature(x = "Sequence"), .PositionDefault)
+
+#.ReduceDefault <- base::Reduce
+#environment(.ReduceDefault) <- topenv()
+.ReduceDefault <- function (f, x, init, right = FALSE, accumulate = FALSE) 
+{
+    mis <- missing(init)
+    len <- length(x)
+    if (len == 0L) 
+        return(if (mis) NULL else init)
+    f <- match.fun(f)
+#    if (!is.vector(x) || is.object(x)) 
+#        x <- as.list(x)
+    ind <- seq_len(len)
+    if (mis) {
+        if (right) {
+            init <- x[[len]]
+            ind <- ind[-len]
+        }
+        else {
+            init <- x[[1L]]
+            ind <- ind[-1L]
+        }
+    }
+    if (!accumulate) {
+        if (right) {
+            for (i in rev(ind)) init <- f(x[[i]], init)
+        }
+        else {
+            for (i in ind) init <- f(init, x[[i]])
+        }
+        init
+    }
+    else {
+        len <- length(ind) + 1L
+        out <- vector("list", len)
+        if (mis) {
+            if (right) {
+                out[[len]] <- init
+                for (i in rev(ind)) {
+                    init <- f(x[[i]], init)
+                    out[[i]] <- init
+                }
+            }
+            else {
+                out[[1L]] <- init
+                for (i in ind) {
+                    init <- f(init, x[[i]])
+                    out[[i]] <- init
+                }
+            }
+        }
+        else {
+            if (right) {
+                out[[len]] <- init
+                for (i in rev(ind)) {
+                    init <- f(x[[i]], init)
+                    out[[i]] <- init
+                }
+            }
+            else {
+                for (i in ind) {
+                    out[[i]] <- init
+                    init <- f(init, x[[i]])
+                }
+                out[[len]] <- init
+            }
+        }
+        if (all(sapply(out, length) == 1L)) 
+            out <- unlist(out, recursive = FALSE)
+        out
+    }
+}
+setMethod("Reduce", signature(x = "Sequence"), .ReduceDefault)
+  
 setMethod("rep", "Sequence", function(x, times)
           x[rep.int(seq_len(length(x)), times)])
 
@@ -390,12 +475,7 @@ setGeneric("sapply", signature="X",
 
 .sapplyDefault <- base::sapply
 environment(.sapplyDefault) <- topenv()
-setMethod("sapply", "Sequence",
-          function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
-          {
-              .sapplyDefault(X, FUN = FUN, ..., simplify = simplify,
-                             USE.NAMES = USE.NAMES)
-          })
+setMethod("sapply", "Sequence", .sapplyDefault)
 
 .aggregateInternal <-
 function(x, by, FUN, start = NULL, end = NULL, width = NULL,

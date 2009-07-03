@@ -128,6 +128,21 @@ test_List_apply <- function() {
   }
 }
 
+test_List_funcprog <- function() {
+  int1 <- c(1L,2L,3L,5L,2L,8L)
+  int2 <- c(15L,45L,20L,1L,15L,100L)
+  for (compress in c(TRUE, FALSE)) {
+    collection <- IntegerList(int1, int2, int1, compress = compress)
+    checkIdentical(Reduce("+", collection), Reduce("+", list(int1, int2, int1)))
+    checkIdentical(as.list(Filter(function(x) mean(x) > 10, collection)),
+                   Filter(function(x) mean(x) > 10, list(int1, int2, int1)))
+    checkIdentical(Find(function(x) mean(x) > 10, collection),
+                   Find(function(x) mean(x) > 10, list(int1, int2, int1)))
+    checkIdentical(Position(function(x) mean(x) > 10, collection),
+                   Position(function(x) mean(x) > 10, list(int1, int2, int1)))
+  }
+}
+
 test_List_annotation <- function() {
   int1 <- c(1L,2L,3L,5L,2L,8L)
   int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)

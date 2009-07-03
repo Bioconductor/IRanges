@@ -27,10 +27,14 @@
 \alias{elementMetadata,Sequence-method}
 \alias{elementMetadata<-}
 \alias{elementMetadata<-,Sequence,DataTableORNULL-method}
+\alias{Filter,ANY,Sequence-method}
+\alias{Find,ANY,Sequence-method}
 \alias{head,Sequence-method}
 \alias{isEmpty}
 \alias{isEmpty,ANY-method}
 \alias{lapply,Sequence-method}
+\alias{Position,ANY,Sequence-method}
+\alias{Reduce,ANY,Sequence-method}
 \alias{rep,Sequence-method}
 \alias{rev,Sequence-method}
 \alias{sapply}
@@ -149,11 +153,53 @@
       element name.
     }
     \item{}{
+      \code{Filter(f, x)}:
+      Extracts the elements of \code{x} for which function \code{f} is TRUE.
+      \describe{
+        \item{f}{A unary argument function.}
+      }
+    }
+    \item{}{
+      \code{Find(f, x, right = FALSE, nomatch = NULL)}:
+      Extracts the first or last such element in \code{x}.
+      \describe{
+        \item{f}{A unary argument function.}
+        \item{right}{A logical indicating whether to proceed from left to right
+          (default) or from right to left.}
+        \item{nomatch}{The value to be returned in the case when "no match" (no
+          element satisfying the predicate) is found.}
+      }
+    }
+    \item{}{
       \code{head(x, n = 6L)}:
       If \code{n} is non-negative, returns the first n elements of the Sequence
       object.
       If \code{n} is negative, returns all but the last \code{abs(n)} elements
       of the Sequence object.
+    }
+    \item{}{
+      \code{Position(f, x, right = FALSE, nomatch = NA_integer_)}:
+      Extracts the first or last such position in \code{x}.
+      \describe{
+        \item{f}{A unary argument function.}
+        \item{right}{A logical indicating whether to proceed from left to right
+          (default) or from right to left.}
+        \item{nomatch}{The value to be returned in the case when "no match" (no
+          element satisfying the predicate) is found.}
+      }
+    }
+    \item{}{
+      \code{Reduce(f, x, init, right = FALSE, accumulate = FALSE)}:
+      Uses a binary function to successively combine the elements of \code{x}
+      and a possibly given initial value.
+      \describe{
+        \item{f}{A binary argument function.}
+        \item{init}{An R object of the same kind as the elements of \code{x}.}
+        \item{right}{A logical indicating whether to proceed from left to right
+          (default) or from right to left.}
+        \item{nomatch}{The value to be returned in the case when "no match" (no
+          element satisfying the predicate) is found.}
+      }
     }
     \item{}{
       \code{rep(x, times)}:
