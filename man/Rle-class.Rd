@@ -110,6 +110,9 @@
 \alias{sub,ANY,ANY,Rle-method}
 \alias{gsub,ANY,ANY,Rle-method}
 
+\alias{levels,Rle-method}
+\alias{levels<-,Rle-method}
+
 
 \title{Rle objects}
 
@@ -590,6 +593,17 @@
       Returns a character Rle with replacements based on matches determined by
       regular expression matching. See \code{\link{gsub}} for a description of the
       arguments.
+    }
+  }
+}
+
+\section{Factor Data Methods}{
+  In the code snippets below, \code{x} is an Rle object:
+
+  \describe{
+    \item{}{
+      \code{levels(x)}, \code{levels(x) <- value}:
+      Gets and sets to the levels attribute of a variable, respectively.
     }
   }
 }

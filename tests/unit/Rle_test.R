@@ -168,3 +168,12 @@ test_Rle_character <- function() {
      checkIdentical(sub("[b-e]",".", txt), as.vector(sub("[b-e]",".", txtRle)))
      checkIdentical(gsub("[b-e]",".", txt), as.vector(gsub("[b-e]",".", txtRle)))
 }
+
+test_Rle_factor <- function() {
+    x <- factor(rep(letters, 1:26))
+    xRle <- Rle(x)
+    checkIdentical(levels(x), levels(xRle))
+    levels(x) <- LETTERS
+    levels(xRle) <- LETTERS
+    checkIdentical(levels(x), levels(xRle))
+}

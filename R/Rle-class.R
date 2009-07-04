@@ -917,6 +917,18 @@ setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle")
                   lengths = runLength(x), check = FALSE))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Other factor data methods
+###
+
+setMethod("levels", "Rle", function(x) levels(runValue(x)))
+
+setReplaceMethod("levels", "Rle",
+                 function(x, value) {
+                     levels(runValue(x)) <- value
+                     x
+                 })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method
 ###
 
