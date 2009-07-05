@@ -245,6 +245,12 @@ setMethod("head", "Sequence",
                   window(x, 1L, n)
           })
 
+setGeneric("Map", function (f, ...) standardGeneric("Map"), signature = "...")
+
+.MapDefault <- base::Map
+environment(.MapDefault) <- topenv()
+setMethod("Map", "Sequence", .MapDefault)
+  
 .PositionDefault <- base::Position
 environment(.PositionDefault) <- topenv()
 setMethod("Position", signature(x = "Sequence"), .PositionDefault)
@@ -476,6 +482,28 @@ setGeneric("sapply", signature="X",
 .sapplyDefault <- base::sapply
 environment(.sapplyDefault) <- topenv()
 setMethod("sapply", "Sequence", .sapplyDefault)
+
+setGeneric("mapply",
+           function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
+                    USE.NAMES = TRUE) standardGeneric("mapply"),
+           signature = "...")
+
+setMethod("mapply", "Sequence",
+          function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
+                   USE.NAMES = TRUE)
+          {
+              seqs <- list(...)
+              if (any(!sapply(seqs, is, "Sequence")))
+                  stop("all objects in ... should inherit from 'Sequence'")
+              N <- unique(sapply(seqs, length))
+              if (length(N) != 1)
+                  stop("not all objects in ... have the same length")
+              FUNprime <- function(.__INDEX__, ...) {
+                  do.call(FUN, c(lapply(seqs, "[[", .__INDEX__), ...))
+              }
+              mapply(FUNprime, seq_len(N), MoreArgs = MoreArgs,
+                     SIMPLIFY = SIMPLIFY, USE.NAMES = USE.NAMES)
+          })
 
 .aggregateInternal <-
 function(x, by, FUN, start = NULL, end = NULL, width = NULL,

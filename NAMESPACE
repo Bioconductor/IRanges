@@ -81,6 +81,8 @@ export(
 
     ## Generic functions in the Sequence API:
     sapply,
+    mapply,
+    Map,
     isEmpty,
 
     ## Generic functions in the Ranges API:
@@ -199,6 +201,8 @@ exportMethods(
 
     ## Methods for generics defined in this package:
     sapply,
+    mapply,
+    Map,
     isEmpty,
     width,
     "start<-",

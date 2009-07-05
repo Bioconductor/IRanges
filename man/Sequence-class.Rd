@@ -33,6 +33,10 @@
 \alias{isEmpty}
 \alias{isEmpty,ANY-method}
 \alias{lapply,Sequence-method}
+\alias{Map}
+\alias{Map,Sequence-method}
+\alias{mapply}
+\alias{mapply,Sequence-method}
 \alias{Position,ANY,Sequence-method}
 \alias{Reduce,ANY,Sequence-method}
 \alias{rep,Sequence-method}
@@ -178,6 +182,11 @@
       of the Sequence object.
     }
     \item{}{
+      \code{Map(f, ...)}:
+      Applies a function to the corresponding elements of given Sequence
+      objects.
+    }
+    \item{}{
       \code{Position(f, x, right = FALSE, nomatch = NA_integer_)}:
       Extracts the first or last such position in \code{x}.
       \describe{
@@ -283,6 +292,12 @@
       base package, the \code{lapply} method for Sequence objects returns
       a list of the same length as \code{X}, with each element being the
       result of applying \code{FUN} to the corresponding element of \code{X}.
+    }
+    \item{}{
+      \code{mapply(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = TRUE)}:
+      Like the standard \code{\link[base]{mapply}} function defined in the
+      base package, the \code{mapply} method for Sequence objects is a
+      multivariate version of \code{sapply}.
     }
     \item{}{
       \code{sapply(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)}:
