@@ -501,8 +501,9 @@ setMethod("mapply", "Sequence",
               FUNprime <- function(.__INDEX__, ...) {
                   do.call(FUN, c(lapply(seqs, "[[", .__INDEX__), ...))
               }
-              mapply(FUNprime, seq_len(N), MoreArgs = MoreArgs,
-                     SIMPLIFY = SIMPLIFY, USE.NAMES = USE.NAMES)
+              mapply(FUNprime, structure(seq_len(N), names = names(seqs[[1]])),
+                     MoreArgs = MoreArgs, SIMPLIFY = SIMPLIFY,
+                     USE.NAMES = USE.NAMES)
           })
 
 .aggregateInternal <-
