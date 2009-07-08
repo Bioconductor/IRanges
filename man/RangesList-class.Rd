@@ -40,6 +40,7 @@
 
 % split
 \alias{split,Ranges-method}
+\alias{split,IRanges-method}
 
 \title{List of Ranges}
 \description{An extension of \code{\linkS4class{Sequence}} that holds only

@@ -363,3 +363,9 @@ setMethod("split", "Ranges",
             do.call(RangesList, callNextMethod())
           })
 
+setMethod("split", "IRanges",
+          function(x, f, drop = FALSE, ...)
+          {
+            newCompressedList("CompressedIRangesList", x,
+                              splitFactor = f, drop = drop)
+          })

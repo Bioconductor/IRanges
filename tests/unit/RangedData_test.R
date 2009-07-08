@@ -134,7 +134,8 @@ test_RangedData_subset <- function() {
                     space = 1)
 
   checkIdenticalRD <- function(a, b) {
-    checkIdentical(ranges(a), ranges(b))
+    checkIdentical(as(ranges(a), "CompressedIRangesList"),
+                   as(ranges(b), "CompressedIRangesList"))
     checkIdentical(length(values(a)), length(values(b)))
     if (length(values(a)) > 0)
         checkIdentical(as.data.frame(values(a)), as.data.frame(values(b)))
