@@ -386,6 +386,7 @@ setMethod("lapply", "CompressedList",
               .CompressedList.list.subscript(X = X,
                                              INDEX = seq_len(length(X)),
                                              USE.NAMES = TRUE,
+                                             COMPRESS = FALSE,
                                              FUN = match.fun(FUN), ...)
           })
 
