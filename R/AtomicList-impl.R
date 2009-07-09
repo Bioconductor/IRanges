@@ -62,56 +62,77 @@ setClass("SimpleRleList",
 
 LogicalList <- function(..., compress = TRUE)
 {
+    listData <- list(...)
+    if (length(listData) == 1 && is.list(listData[[1]]))
+        listData <- listData[[1]]
     if (compress)
-        newCompressedList("CompressedLogicalList", lapply(list(...), as.logical))
+        newCompressedList("CompressedLogicalList", lapply(listData, as.logical))
     else
-        newSimpleList("SimpleLogicalList", lapply(list(...), as.logical))
+        newSimpleList("SimpleLogicalList", lapply(listData, as.logical))
 }
 
 IntegerList <- function(..., compress = TRUE)
 {
+    listData <- list(...)
+    if (length(listData) == 1 && is.list(listData[[1]]))
+        listData <- listData[[1]]
     if (compress)
-        newCompressedList("CompressedIntegerList", lapply(list(...), as.integer))
+        newCompressedList("CompressedIntegerList", lapply(listData, as.integer))
     else
-        newSimpleList("SimpleIntegerList", lapply(list(...), as.integer))
+        newSimpleList("SimpleIntegerList", lapply(listData, as.integer))
 }
 
 NumericList <- function(..., compress = TRUE)
 {
+    listData <- list(...)
+    if (length(listData) == 1 && is.list(listData[[1]]))
+        listData <- listData[[1]]
     if (compress)
-        newCompressedList("CompressedNumericList", lapply(list(...), as.numeric))
+        newCompressedList("CompressedNumericList", lapply(listData, as.numeric))
     else
-        newSimpleList("SimpleNumericList", lapply(list(...), as.numeric))
+        newSimpleList("SimpleNumericList", lapply(listData, as.numeric))
 }
 
 ComplexList <- function(..., compress = TRUE)
 {
+    listData <- list(...)
+    if (length(listData) == 1 && is.list(listData[[1]]))
+        listData <- listData[[1]]
     if (compress)
-        newCompressedList("CompressedComplexList", lapply(list(...), as.complex))
+        newCompressedList("CompressedComplexList", lapply(listData, as.complex))
     else
-        newSimpleList("SimpleComplexList", lapply(list(...), as.complex))
+        newSimpleList("SimpleComplexList", lapply(listData, as.complex))
 }
 
 CharacterList <- function(..., compress = TRUE)
 {
+    listData <- list(...)
+    if (length(listData) == 1 && is.list(listData[[1]]))
+        listData <- listData[[1]]
     if (compress)
-        newCompressedList("CompressedCharacterList", lapply(list(...), as.character))
+        newCompressedList("CompressedCharacterList", lapply(listData, as.character))
     else
-        newSimpleList("SimpleCharacterList", lapply(list(...), as.character))
+        newSimpleList("SimpleCharacterList", lapply(listData, as.character))
 }
 
 RawList <- function(..., compress = TRUE)
 {
+    listData <- list(...)
+    if (length(listData) == 1 && is.list(listData[[1]]))
+        listData <- listData[[1]]
     if (compress)
-        newCompressedList("CompressedRawList", lapply(list(...), as.raw))
+        newCompressedList("CompressedRawList", lapply(listData, as.raw))
     else
-        newSimpleList("SimpleRawList", lapply(list(...), as.raw))
+        newSimpleList("SimpleRawList", lapply(listData, as.raw))
 }
 
 RleList <- function(..., compress = TRUE)
 {
+    listData <- list(...)
+    if (length(listData) == 1 && is.list(listData[[1]]))
+        listData <- listData[[1]]
     if (compress)
-        newCompressedList("CompressedRleList", lapply(list(...),  as, "Rle"))
+        newCompressedList("CompressedRleList", lapply(listData,  as, "Rle"))
     else
-        newSimpleList("SimpleRleList", lapply(list(...), as, "Rle"))
+        newSimpleList("SimpleRleList", lapply(listData, as, "Rle"))
 }
