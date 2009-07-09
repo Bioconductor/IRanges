@@ -234,7 +234,8 @@ setMethod("coverage", "RangesList",
                                          shift = shift[[i]], width = width[[i]],
                                          weight = weight[[i]])
                              }),
-                      metadata = metadata(x))
+                      metadata = metadata(x),
+                      elementMetadata = elementMetadata(x))
     }
 )
 
@@ -249,6 +250,8 @@ setMethod("coverage", "RangedData",
         ranges <- ranges(x)
         if (length(metadata(x)) > 0)
             metadata(ranges) <- metadata(x)
+        if (!is.null(elementMetadata(x)))
+            elementMetadata(x) <- elementMetadata(x)
         coverage(ranges, start = start, end = end, shift = shift,
                  width = width, weight = weight)
     }
