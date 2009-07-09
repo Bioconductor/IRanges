@@ -226,6 +226,8 @@ setMethod("coverage", "RangesList",
         indices <- names(x)
         if (is.null(indices))
             indices <- seq_len(length(x))
+        else
+            names(indices) <- indices
         newSimpleList("SimpleRleList",
                       lapply(indices,
                              function(i) {
