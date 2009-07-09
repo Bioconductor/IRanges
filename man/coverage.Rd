@@ -13,6 +13,8 @@
 \alias{coverage,IRanges-method}
 \alias{coverage,Views-method}
 \alias{coverage,MaskCollection-method}
+\alias{coverage,RangesList-method}
+\alias{coverage,RangedData-method}
 
 \title{Coverage across a set of ranges}
 
@@ -26,6 +28,12 @@
 
   ## Transitional interface (the current one):
   coverage(x, start=NA, end=NA, shift=0L, width=NULL, weight=1L, \dots)
+  \S4method{coverage}{RangesList}(x,
+       start = structure(rep(list(NA), length(x)), names = names(x)),
+       end = structure(rep(list(NA), length(x)), names = names(x)),
+       shift = structure(rep(list(0L), length(x)), names = names(x)),
+       width = structure(rep(list(NULL), length(x)), names = names(x)),
+       weight = structure(rep(list(1L), length(x)), names = names(x)))
 
   ## New interface (in the near future):
   #coverage(x, shift=0L, width=NULL, weight=1L, \dots)
@@ -38,32 +46,42 @@
   dropped and the remaining arguments will be:
     \code{coverage(x, shift=0L, width=NULL, weight=1L, ...)}
   The "shift/width" interface is more intuitive, more convenient and
-  offers slighty more control than the "start/end" interface.
+  offers slightly more control than the "start/end" interface.
   Also it makes sense to add the \code{weight} argument to the generic
-  (vs having it supported only by some methods) since weighting the
+  (versus having it supported only by some methods) since weighting the
   elements in \code{x} can be considered part of the concept of coverage
   in general.
 }
 
 \arguments{
   \item{x}{
-    An \link{IRanges}, \link{Views} or \link{MaskCollection} object,
-    or any object for which a \code{coverage} method is defined.
+    An \link{IRanges}, \link{Views}, \link{MaskCollection}, 
+    \link{RangesList}, \link{RangedData} object, or any object for which a
+    \code{coverage} method is defined.
   }
   \item{start, end}{
-    Single integers specifying the position in \code{x} where to start
-    and end the extraction of the coverage.
+    For most methods, single integers specifying the position in \code{x}
+    where to start and end the extraction of the coverage. For
+    \link{RangesList} and \link{RangedData} objects, a list or vector of
+    the same length as \code{x} to be used for the corresponding element
+    in \code{x}.
     IMPORTANT NOTE: Please do not use these arguments (use the shift/width
     arguments below). They are temporarily kept for backward compatibility
     with existing code and will be dropped in the near future.
   }
   \item{shift}{
-    An integer vector (recycled to the length of \code{x}) specifying how
-    each element in \code{x} should be (horizontally) shifted before
-    the coverage is computed.
+    For most methods, an integer vector (recycled to the length of
+    \code{x}) specifying how each element in \code{x} should be
+    (horizontally) shifted before the coverage is computed. For
+    \link{RangesList} and \link{RangedData} objects, a list or vector of
+    the same length as \code{x} to be used for the corresponding element
+    in \code{x}.
   }
   \item{width}{
-    The length of the returned coverage vector.
+    For most methods, the length of the returned coverage vector. For
+    \link{RangesList} and \link{RangedData} objects, a list or vector of
+    the same length as \code{x} to be used for the corresponding element
+    in \code{x}.
 
     If \code{width=NULL} (the default), then the specific \code{coverage}
     method that is actually selected will choose the length of the returned
@@ -83,7 +101,10 @@
     returns a vector with \code{width(x)} elements.
   }
   \item{weight}{
-    An integer vector specifying how much each element in \code{x} counts.
+    For most methods, an integer vector specifying how much each element in
+    \code{x} counts. For \link{RangesList} and \link{RangedData} objects, a
+    list or vector of the same length as \code{x} to be used for the
+    corresponding element in \code{x}.
   }
   \item{\dots}{
     Further arguments to be passed to or from other methods.
@@ -91,7 +112,10 @@
 }
 
 \value{
-  An \link{Rle} object representing the coverage of \code{x}.
+  For most methods, an \link{Rle} object representing the coverage of
+  \code{x}. For \link{RangesList} and \link{RangedData} objects, a
+  \link{SimpleRleList} object representing a list of coverage vectors.
+
   An integer value called the "coverage" can be associated to each position
   in \code{x}, indicating how many times this position is covered by the
   elements contained in \code{x}.

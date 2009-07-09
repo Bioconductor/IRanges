@@ -214,3 +214,42 @@ setMethod("coverage", "MaskCollection",
     }
 )
 
+
+setMethod("coverage", "RangesList",
+    function(x,
+             start = structure(rep(list(NA), length(x)), names = names(x)),
+             end = structure(rep(list(NA), length(x)), names = names(x)),
+             shift = structure(rep(list(0L), length(x)), names = names(x)),
+             width = structure(rep(list(NULL), length(x)), names = names(x)),
+             weight = structure(rep(list(1L), length(x)), names = names(x)))
+    {
+        indices <- names(x)
+        if (is.null(indices))
+            indices <- seq_len(length(x))
+        newSimpleList("SimpleRleList",
+                      lapply(indices,
+                             function(i) {
+                                 coverage(as(x[[i]], "IRanges"),
+                                         start = start[[i]], end = end[[i]],
+                                         shift = shift[[i]], width = width[[i]],
+                                         weight = weight[[i]])
+                             }),
+                      metadata = metadata(x))
+    }
+)
+
+setMethod("coverage", "RangedData",
+    function(x,
+             start = structure(rep(list(NA), length(x)), names = names(x)),
+             end = structure(rep(list(NA), length(x)), names = names(x)),
+             shift = structure(rep(list(0L), length(x)), names = names(x)),
+             width = structure(rep(list(NULL), length(x)), names = names(x)),
+             weight = structure(rep(list(1L), length(x)), names = names(x)))
+    {
+        ranges <- ranges(x)
+        if (length(metadata(x)) > 0)
+            metadata(ranges) <- metadata(x)
+        coverage(ranges, start = start, end = end, shift = shift,
+                 width = width, weight = weight)
+    }
+)
