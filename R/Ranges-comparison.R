@@ -55,7 +55,7 @@ setGeneric("unique", signature="x",
 setMethod("unique", "Ranges",
     function(x, incomparables=FALSE, fromLast=FALSE, ...)
     {
-        x[-which(duplicated(x, incomparables=incomparables, fromLast=fromLast))]
+        x[!duplicated(x, incomparables=incomparables, fromLast=fromLast)]
     }
 )
 
