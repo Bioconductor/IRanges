@@ -31,7 +31,7 @@ setMethod("initialize", "IntegerPtr",
 )
 
 IntegerPtr <- function(length=0L, val=NULL)
-    new("IntegerPtr", length=length, val=val)
+    new2("IntegerPtr", length=length, val=val, check=FALSE)
 
 setMethod("show", "IntegerPtr",
     function(object)

@@ -195,9 +195,9 @@ setValidity2("MaskCollection", .valid.MaskCollection)
 Mask <- function(mask.width, start=NULL, end=NULL, width=NULL)
 {
     nir <- asNormalIRanges(IRanges(start=start, end=end, width=width), force=FALSE)
-    new("MaskCollection", nir_list=list(nir),
-                          width=numeric2integer(mask.width),
-                          active=TRUE)
+    new2("MaskCollection", nir_list=list(nir),
+                           width=numeric2integer(mask.width),
+                           active=TRUE, check=FALSE)
 }
 
 

@@ -34,7 +34,7 @@ setAs("IntervalTree", "IRanges", function(from) {
 setAs("IRanges", "IntervalTree", function(from) {
   validObject(from)
   ptr <- .Call("IntegerIntervalTree_new", from, PACKAGE="IRanges")
-  new("IntervalTree", ptr = ptr, mode = "integer")
+  new2("IntervalTree", ptr = ptr, mode = "integer", check=FALSE)
 })
 
 setAs("Ranges", "IntervalTree", function(from) {

@@ -201,7 +201,7 @@ setMethod("coverage", "MaskCollection",
             width <- width(mymasks)
         if (width <= 0L)  # should never be < 0
             return(Rle())
-        ans <- new("Rle", values=0L, lengths=width)
+        ans <- new2("Rle", values=0L, lengths=width, check=FALSE)
         for (i in seq_len(length(x))) {
             nir <- x[[i]]
             if (isEmpty(nir))

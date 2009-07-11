@@ -300,8 +300,9 @@ setMethod("show", "Dups",
         stop("'high2low' must be a vector of integers")
     if (!is.integer(high2low))
         high2low <- as.integer(high2low)
-    new(Class, high2low=high2low,
-        low2high=.makeLow2highFromHigh2low(high2low))
+    new2(Class, high2low=high2low,
+         low2high=.makeLow2highFromHigh2low(high2low),
+         check=FALSE)
 }
 
 H2LGrouping <- function(high2low=integer())
@@ -494,7 +495,7 @@ PartitioningByEnd <- function(end=integer(), names=NULL)
         stop("'end' must contain integer values")
     if (!is.integer(end))
         end <- as.integer(end)
-    new("PartitioningByEnd", end=end, NAMES=names)
+    new2("PartitioningByEnd", end=end, NAMES=names, check=FALSE)
 }
 
 setAs("Ranges", "PartitioningByEnd",
@@ -572,7 +573,7 @@ PartitioningByWidth <- function(width=integer(), names=NULL)
         stop("'width' must contain integer values")
     if (!is.integer(width))
         width <- as.integer(width)
-    new("PartitioningByWidth", width=width, NAMES=names)
+    new2("PartitioningByWidth", width=width, NAMES=names, check=FALSE)
 }
 
 setAs("Ranges", "PartitioningByWidth",
@@ -687,7 +688,7 @@ Binning <- function(group=integer(), names=NULL)
             names <- levels(group)
         bins <- do.call(IntegerList, split(seq_len(length(group)), group))
         names(bins) <- names
-        ans <- new("Binning", bins=bins)
+        ans <- new2("Binning", bins=bins, check=FALSE)
     }
     ans
 }

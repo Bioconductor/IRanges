@@ -31,7 +31,7 @@ setReplaceMethod("names", "SimpleList",
 ###
 
 SimpleList <- function(...) {
-    new("SimpleList", listData = list(...))
+    new2("SimpleList", listData = list(...), check=FALSE)
 }
 
 newSimpleList <- function(listClass, listData, ...) {
@@ -40,9 +40,10 @@ newSimpleList <- function(listClass, listData, ...) {
     if (!extends(listClass, "SimpleList"))
         stop("cannot create a ", listClass, " as a 'SimpleList'")
     elementTypeData <- elementType(new(listClass))
-    if (!all(unlist(lapply(listData, is, elementTypeData))))
+    if (!all(sapply(listData,
+                    function(x) extends(class(x), elementTypeData))))
         stop("all elements in 'listData' must be ", elementTypeData, " objects")
-    new(listClass, listData = listData, ...)
+    new2(listClass, listData = listData, ..., check=FALSE)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -138,6 +139,17 @@ setMethod("c", "SimpleList",
 setMethod("lapply", "SimpleList",
           function(X, FUN, ...)
               lapply(as.list(X), FUN = FUN, ...))
+
+setMethod("endomorph", "SimpleList",
+          function(X, FUN, ...) {
+              listData <- lapply(X, FUN = FUN, ...)
+              elementTypeX <- elementType(X)
+              if (!all(sapply(listData,
+                              function(Xi) extends(class(Xi), elementTypeX))))
+                  stop("all results must be of class '", elementTypeX, "'")
+              slot(X, "listData", check=FALSE) <- listData
+              X
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.

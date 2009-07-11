@@ -595,6 +595,22 @@ function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)
     ans
 }
 
+setGeneric("endomorph", function(X, FUN, ...) standardGeneric("endomorph"))
+setMethod("endomorph", "Sequence",
+          function(X, FUN, ...) {
+              elementTypeX <- elementType(X)
+              FUN <- match.fun(FUN)
+              ii <- seq_len(length(X))
+              names(ii) <- names(X)
+              for (i in ii) {
+                  elt <- FUN(X[[i]], ...)
+                  if (!extends(class(elt), elementTypeX))
+                      stop("'FUN' must return elements of class ", elementTypeX)
+                  X[[i]] <- elt
+              }
+              X
+          })
+
 setGeneric("shiftApply", signature = c("X", "Y"),
            function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
                     verbose = FALSE)

@@ -33,7 +33,7 @@ setMethod("initialize", "XNumeric",
 )
 
 XNumeric <- function(length=base::length(val), val=NULL)
-    new("XNumeric", length=length, val=val)
+    new2("XNumeric", length=length, val=val, check=FALSE)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

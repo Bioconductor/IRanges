@@ -161,8 +161,8 @@
         nir1 <- asNormalIRanges(ranges, force=TRUE)
     }
     ## Don't use new2(): the validity of the new mask needs to be checked!
-    new("MaskCollection", nir_list=list(nir1), width=mask.width, active=TRUE,
-                          NAMES=mask.name, desc=mask.desc)
+    new2("MaskCollection", nir_list=list(nir1), width=mask.width, active=TRUE,
+                           NAMES=mask.name, desc=mask.desc, check=FALSE)
 }
 
 read.agpMask <- function(file, seqname="?", mask.width=NA, gap.types=NULL, use.gap.types=FALSE)
@@ -288,8 +288,8 @@ read.rmMask <- function(file, seqname="?", mask.width=NA, use.IDs=FALSE)
         nir1 <- asNormalIRanges(ranges, force=TRUE)
     }
     ## Don't use new2(): the validity of the new mask needs to be checked!
-    new("MaskCollection", nir_list=list(nir1), width=mask.width, active=TRUE,
-                          NAMES="RM", desc="RepeatMasker")
+    new2("MaskCollection", nir_list=list(nir1), width=mask.width, active=TRUE,
+                           NAMES="RM", desc="RepeatMasker", check=FALSE)
 }
 
 
@@ -343,7 +343,7 @@ read.trfMask <- function(file, seqname="?", mask.width=NA)
     ranges <- IRanges(start=data$chromStart+1, end=data$chromEnd)
     nir1 <- asNormalIRanges(ranges, force=TRUE)
     ## Don't use new2(): the validity of the new mask needs to be checked!
-    new("MaskCollection", nir_list=list(nir1), width=mask.width, active=TRUE,
-                          NAMES="TRF", desc="Tandem Repeats Finder")
+    new2("MaskCollection", nir_list=list(nir1), width=mask.width, active=TRUE,
+                           NAMES="TRF", desc="Tandem Repeats Finder", check=FALSE)
 }
 

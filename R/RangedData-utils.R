@@ -13,6 +13,21 @@ setMethod("lapply", "RangedData", function(X, FUN, ...) {
   lapply(inds, function(i) FUN(X[i], ...))
 })
 
+setMethod("endomorph", "RangedData",
+          function(X, FUN, ...) {
+              elementTypeX <- elementType(X)
+              FUN <- match.fun(FUN)
+              ii <- seq_len(length(X))
+              names(ii) <- names(X)
+              for (i in ii) {
+                  elt <- FUN(X[i], ...)
+                  if (!extends(class(elt), elementTypeX))
+                      stop("'FUN' must return elements of class ", elementTypeX)
+                  X[i] <- elt
+              }
+              X
+          })
+
 setGeneric("rdapply", function(x, ...) standardGeneric("rdapply"))
 
 setMethod("rdapply", "RDApplyParams", function(x) {

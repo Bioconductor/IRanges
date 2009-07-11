@@ -30,6 +30,8 @@
 \alias{c,SimpleList-method}
 
 % looping
+\alias{endomorph,CompressedList-method}
+\alias{endomorph,SimpleList-method}
 \alias{lapply,CompressedList-method}
 \alias{lapply,SimpleList-method}
 

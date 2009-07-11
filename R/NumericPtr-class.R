@@ -31,7 +31,7 @@ setMethod("initialize", "NumericPtr",
 )
 
 NumericPtr <- function(length=0L, val=NULL)
-    new("NumericPtr", length=length, val=val)
+    new2("NumericPtr", length=length, val=val, check=FALSE)
 
 setMethod("show", "NumericPtr",
     function(object)

@@ -82,6 +82,7 @@ export(
     ## Generic functions in the Sequence API:
     sapply,
     mapply,
+    endomorph,
     Map,
     isEmpty,
 
@@ -202,6 +203,7 @@ exportMethods(
     ## Methods for generics defined in this package:
     sapply,
     mapply,
+    endomorph,
     Map,
     isEmpty,
     width,

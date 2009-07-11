@@ -34,7 +34,7 @@ setMethod("initialize", "RawPtr",
 )
 
 RawPtr <- function(length=0L, val=NULL)
-    new("RawPtr", length=length, val=val)
+    new2("RawPtr", length=length, val=val, check=FALSE)
 
 setMethod("show", "RawPtr",
     function(object)

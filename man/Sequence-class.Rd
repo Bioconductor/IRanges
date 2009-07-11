@@ -27,6 +27,8 @@
 \alias{elementMetadata,Sequence-method}
 \alias{elementMetadata<-}
 \alias{elementMetadata<-,Sequence,DataTableORNULL-method}
+\alias{endomorph}
+\alias{endomorph,Sequence-method}
 \alias{Filter,ANY,Sequence-method}
 \alias{Find,ANY,Sequence-method}
 \alias{head,Sequence-method}
@@ -285,6 +287,11 @@
         \item{\code{simplify}}{A logical value specifying whether or not the
           result should be simplified to a vector or matrix if possible.}
       }
+    }
+    \item{}{
+      \code{endomorph(X, FUN, ...)}:
+      Similar to \code{\link[base]{lapply}}, but performs an endomorphism,
+      i.e. returns an object of \code{class(X)}.
     }
     \item{}{
       \code{lapply(X, FUN, ...)}:

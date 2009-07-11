@@ -24,7 +24,8 @@ XRaw <- function(length=0L, val=NULL)
         stop("'length' must be a single non-negative integer")
     if (!is.integer(length))
         length <- as.integer(length)
-    new("XRaw", xdata=RawPtr(length=length, val=val), length=length)
+    new2("XRaw", xdata=RawPtr(length=length, val=val), length=length,
+         check=FALSE)
 }
 
 
@@ -115,7 +116,7 @@ setMethod("c", "XRaw",
                   PACKAGE="IRanges")
             dest_start <- dest_start + width
         }
-        new(class(x), xdata=ans_xdata, length=ans_length)
+        new2(class(x), xdata=ans_xdata, length=ans_length, check=FALSE)
     }
 )
 

@@ -170,8 +170,8 @@ DataFrame <- function(..., row.names = NULL)
     row.names <- as.character(row.names)
   }
   
-  new("DataFrame", listData=varlist, rownames=row.names,
-      nrows=as.integer(max(nr, length(row.names))))
+  new2("DataFrame", listData=varlist, rownames=row.names,
+       nrows=as.integer(max(nr, length(row.names))), check=FALSE)
 }
 
 XDataFrame <- function(..., row.names = NULL) {
@@ -377,8 +377,8 @@ setMethod("as.data.frame", "DataFrame",
 ## take data.frames to DataFrames
 setAs("data.frame", "DataFrame",
       function(from) {
-        new("DataFrame", listData = from,
-            nrows = nrow(from), rownames = rownames(from))
+        new2("DataFrame", listData = from,
+             nrows = nrow(from), rownames = rownames(from), check=FALSE)
       })
 
 setAs("matrix", "DataFrame", # matrices just go through data.frame
@@ -389,8 +389,8 @@ setAs("list", "DataFrame", function(from) do.call(DataFrame, from))
 ## everything else
 setAs("ANY", "DataFrame",
       function(from) {
-        new("DataFrame", listData = list(from),
-            nrows = as.integer(length(from)))
+        new2("DataFrame", listData = list(from),
+             nrows = as.integer(length(from)), check=FALSE)
       })
 
 ### FIXME: only exists due to annoying S4 warning due to its caching of

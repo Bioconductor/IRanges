@@ -77,7 +77,7 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
               .compress.list(lapply(unlistData, as, elementTypeData))
         }
     } else if (!extends(class(unlistData), elementTypeData)) {
-        stop("'unlistData' not of class 'elementType'")
+        stop("'unlistData' not of class ", elementTypeData)
     } else if (!is.null(splitFactor)) {
         if (is.unsorted(splitFactor)) {
             orderElts <- order(splitFactor)
@@ -101,9 +101,10 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
         }
     }
 
-    new(listClass, unlistData = unlistData,
-        partitioning = new("PartitioningByEnd", end = end, NAMES = NAMES),
-        ...)
+    new2(listClass, unlistData = unlistData,
+         partitioning =
+         new2("PartitioningByEnd", end = end, NAMES = NAMES, check=FALSE),
+         ..., check=FALSE)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -278,8 +279,8 @@ setReplaceMethod("[[", "CompressedList",
                          slot(x, "unlistData", check=FALSE) <-
                            .compress.list(listData)
                          slot(x, "partitioning", check=FALSE) <-
-                           new("PartitioningByEnd", end = cumsum(widths),
-                               NAMES = NAMES)
+                           new2("PartitioningByEnd", end = cumsum(widths),
+                                NAMES = NAMES, check=FALSE)
                          x
                      }
                  })
@@ -334,9 +335,8 @@ setMethod("[", "CompressedList",
                 .CompressedList.list.subscript(X = x, INDEX = i,
                                                USE.NAMES = FALSE)
               slot(x, "partitioning", check=FALSE) <- 
-                new("PartitioningByEnd",
-                    end = ends,
-                    NAMES = names(x)[i])
+                new2("PartitioningByEnd", end = ends, NAMES = names(x)[i],
+                     check=FALSE)
               .bracket.Sequence(x, i)
           })
 
@@ -389,6 +389,36 @@ setMethod("lapply", "CompressedList",
                                              COMPRESS = FALSE,
                                              FUN = match.fun(FUN), ...)
           })
+
+setMethod("endomorph", "CompressedList",
+          function(X, FUN, ...) {
+              listData <-
+                .CompressedList.list.subscript(X = X,
+                                               INDEX = seq_len(length(X)),
+                                               USE.NAMES = FALSE,
+                                               COMPRESS = FALSE,
+                                               FUN = match.fun(FUN), ...)
+              elementTypeX <- elementType(X)
+              if (!all(sapply(listData,
+                              function(Xi) extends(class(Xi), elementTypeX))))
+                  stop("'FUN' must return elements of class ", elementTypeX)
+              if (length(listData) == 0) {
+                  end <- integer(0)
+              } else {
+                  if (length(dim(listData[[1]])) < 2) {
+                      end <-
+                        cumsum(unlist(lapply(listData, length), use.names = FALSE))
+                  } else {
+                      end <-
+                        cumsum(unlist(lapply(listData, nrow), use.names = FALSE))
+                  }
+              }
+              initialize(X,
+                         unlistData = .compress.list(listData),
+                         partitioning = 
+                           new2("PartitioningByEnd", end = end, NAMES = names(X),
+                                check=FALSE))
+             })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.

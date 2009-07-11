@@ -149,7 +149,7 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
   }
   if (((nargs() - !missing(space)) - !missing(universe)) > 1) 
     values <- DataFrame(...) ## at least one column specified
-  else values <- new("DataFrame", nrows = length(ranges))
+  else values <- new2("DataFrame", nrows = length(ranges), check=FALSE)
   if (length(ranges) != nrow(values)) {
     if (nrow(values) > length(ranges))
       stop("length of value(s) in '...' greater than length of 'ranges'")
@@ -178,7 +178,7 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
   if (!is.null(universe) && !isSingleString(universe))
     stop("'universe' must be a single string")
   universe(ranges) <- universe
-  new("RangedData", ranges = ranges, values = values)
+  new2("RangedData", ranges = ranges, values = values, check=FALSE)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -437,11 +437,11 @@ setAs("RangesList", "RangedData",
       function(from)
       {
         xdfs <- do.call("SplitDataFrameList", lapply(from, function(x) {
-          xdf <- new("DataFrame", nrows = length(x))
+          xdf <- new2("DataFrame", nrows = length(x), check=FALSE)
           rownames(xdf) <- names(x)
           xdf
         }))
-        new("RangedData", ranges = from, values = xdfs)
+        new2("RangedData", ranges = from, values = xdfs, check=FALSE)
       })
 
 setAs("Ranges", "RangedData",

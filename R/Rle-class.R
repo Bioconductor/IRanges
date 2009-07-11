@@ -68,7 +68,8 @@ setGeneric("Rle", signature = c("values", "lengths"),
            function(values, lengths, ...) standardGeneric("Rle"))
 
 setMethod("Rle", signature = c(values = "missing", lengths = "missing"),
-          function(values, lengths) new("Rle", values = vector(), lengths = integer()))
+          function(values, lengths)
+              new2("Rle", values = vector(), lengths = integer(), check=FALSE))
 
 setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "missing"),
           function(values, lengths) Rle(values, integer(0), check = FALSE))

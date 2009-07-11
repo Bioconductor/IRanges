@@ -49,6 +49,7 @@
 \alias{$<-,RangedData-method}
 
 % Applying:
+\alias{endomorph,RangedData-method}
 \alias{lapply,RangedData-method}
 
 % Show:
