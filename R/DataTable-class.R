@@ -239,9 +239,10 @@ setMethod("show", "DataTable",
     function(object)
     {
         dimObject <- dim(object)
-        cat("  A ", class(object), " instance with ", dimObject[1],
-                ifelse(dimObject[1] == 1, " row and ", " rows and "),
-                dimObject[2],
-                ifelse(dimObject[2] == 1, " column\n", " columns\n"),
-                sep="")
+        cat(class(object), ": ", dimObject[1],
+            ifelse(dimObject[1] == 1, " row and ", " rows and "),
+            dimObject[2],
+            ifelse(dimObject[2] == 1, " column\n", " columns\n"),
+            sep="")
+        cat(labeledLine("colnames", colnames(object)))
     })

@@ -430,7 +430,9 @@ setMethod("unlist", "CompressedList",
 setMethod("show", "CompressedList",
           function(object)
           {
-            lo <- length(object)
-            cat("  A ", class(object), " instance of length ", lo, "\n", sep="")
-### TODO: show (some of the) elements here
+              lo <- length(object)
+              cat(class(object), ": ", lo,
+                  ifelse(lo == 1, " element\n", " elements\n"), sep = "")
+              if (!is.null(names(object)))
+                  cat(labeledLine("names", names(object)))
           })

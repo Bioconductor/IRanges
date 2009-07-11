@@ -478,11 +478,16 @@ setAs("DataTable", "RangedData", .RangedData_fromDataFrame)
 ###
 
 setMethod("show", "RangedData", function(object) {
-  cat(class(object), ": ", nrow(object), " ranges by ", ncol(object),
-      " column(s) on ", length(object), " sequence(s)\n", sep = "")
-  cat(labeledLine("columns", colnames(object)))
+  nr <- nrow(object)
+  nc <- ncol(object)
+  lo <- length(object)
+  cat(class(object), ": ",
+      nr, ifelse(nr == 1, " range by ", " ranges by "),
+      nc, ifelse(nc == 1, " column on ", " columns on "),
+      lo, ifelse(lo == 1, " sequence\n", " sequences\n"), sep = "")
+  cat(labeledLine("colnames", colnames(object)))
   if (!is.null(names(object)))
-    cat(labeledLine("sequences", names(object)))
+    cat(labeledLine("names", names(object)))
 })
 
 ### =========================================================================
