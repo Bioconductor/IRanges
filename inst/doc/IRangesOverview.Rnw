@@ -163,13 +163,16 @@ append(xSnippet, xSnippet, after = 3)
 \subsubsection{Looping over Sequences and Subsequences}
 
 In \R{}, \Rfunction{for} looping can be an expensive operation. To
-compensate for this, \IRanges{} uses two generics, \Rfunction{lapply} and
-\Rfunction{sapply}, for looping over sequences and two generics,
-\Rfunction{aggregate} and \Rfunction{shiftApply}, to perform calculations
-over subsequences. The \Rfunction{lapply} and \Rfunction{sapply} functions
-are familiar to many \R{} users since they are the standard functions for
-looping over the elements of an \R{} \Rclass{list} object. More will be
-given on these two functions in the List subsection.
+compensate for this, \IRanges{} uses three generics, \Rfunction{endomorph},
+\Rfunction{lapply}, and \Rfunction{sapply}, for looping over sequences and
+two generics, \Rfunction{aggregate} and \Rfunction{shiftApply}, to perform
+calculations over subsequences. The \Rfunction{lapply} and \Rfunction{sapply}
+functions are familiar to many \R{} users since they are the standard
+functions for looping over the elements of an \R{} \Rclass{list} object.
+The \Rfunction{endomorph} function performs an endomorphism equivalent to
+\Rfunction{lapply}, i.e. returns a \Rclass{Sequence} object of the same class
+as the input rather than a \Rclass{list} object. More will be given on these
+three functions in the List subsection.
 
 The \Rfunction{aggregate} function combines sequence extraction functionality
 of the \Rfunction{window} function with looping capabilities of the
@@ -342,8 +345,8 @@ sIntList2 <- IntegerList(x = xVector, y = yVector, compress = FALSE)
 sIntList2
 ## sparse integer list
 xExploded <- lapply(xVector[1:5000], function(x) seq_len(x))
-cIntList2 <- do.call(IntegerList, xExploded)
-sIntList2 <- do.call(IntegerList, c(xExploded, compress = FALSE))
+cIntList2 <- IntegerList(xExploded)
+sIntList2 <- IntegerList(xExploded, compress = FALSE)
 object.size(cIntList2)
 object.size(sIntList2)
 @
@@ -372,6 +375,16 @@ system.time(sapply(sIntList2, mean))
 system.time(sapply(cIntList2, mean))
 identical(sapply(xExploded, mean), sapply(sIntList2, mean))
 identical(sapply(xExploded, mean), sapply(cIntList2, mean))
+@
+
+Since these atomic lists inherit from \Rclass{Sequence}, they can also use
+the looping function \Rfunction{endomorph} to perform endomorphisms.
+
+<<list-endomorph>>=
+safe.max <- function(x) { if(length(x)) max(x) else integer(0) }
+endomorph(sIntList2, safe.max)
+endomorph(cIntList2, safe.max)
+endomorph(sIntList2, safe.max)[[1]]
 @
 
 \subsection{Data Tables}

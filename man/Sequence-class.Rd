@@ -39,6 +39,8 @@
 \alias{Map,Sequence-method}
 \alias{mapply}
 \alias{mapply,Sequence-method}
+\alias{mendomorph}
+\alias{mendomorph,Sequence-method}
 \alias{Position,ANY,Sequence-method}
 \alias{Reduce,ANY,Sequence-method}
 \alias{rep,Sequence-method}
@@ -305,6 +307,12 @@
       Like the standard \code{\link[base]{mapply}} function defined in the
       base package, the \code{mapply} method for Sequence objects is a
       multivariate version of \code{sapply}.
+    }
+    \item{}{
+      \code{mendomorph(FUN, ..., MoreArgs = NULL)}:
+      Similar to \code{\link[base]{mapply}}, but performs an endomorphism
+      across multiple objects, i.e. returns an object of
+      \code{class(list(...)[[1]])}.
     }
     \item{}{
       \code{sapply(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)}:

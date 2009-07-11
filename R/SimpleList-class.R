@@ -151,6 +151,18 @@ setMethod("endomorph", "SimpleList",
               X
           })
 
+setMethod("mendomorph", "SimpleList",
+          function(FUN, ..., MoreArgs = NULL) {
+              X <- list(...)[[1]]
+              elementTypeX <- elementType(X)
+              listData <- mapply(FUN = FUN, ..., MoreArgs = MoreArgs)
+              if (!all(sapply(listData,
+                              function(Xi) extends(class(Xi), elementTypeX))))
+                  stop("all results must be of class '", elementTypeX, "'")
+              slot(X, "listData", check=FALSE) <- listData
+              X
+          })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###

@@ -34,6 +34,8 @@
 \alias{endomorph,SimpleList-method}
 \alias{lapply,CompressedList-method}
 \alias{lapply,SimpleList-method}
+\alias{mendomorph,CompressedList-method}
+\alias{mendomorph,SimpleList-method}
 
 % coercion
 \alias{as.list,CompressedList-method}

@@ -390,35 +390,42 @@ setMethod("lapply", "CompressedList",
                                              FUN = match.fun(FUN), ...)
           })
 
+.updateCompressedList <- function(X, listData) {
+    elementTypeX <- elementType(X)
+    if (!all(sapply(listData,
+                    function(Xi) extends(class(Xi), elementTypeX))))
+        stop("'FUN' must return elements of class ", elementTypeX)
+    if (length(listData) == 0) {
+        end <- integer(0)
+    } else {
+        if (length(dim(listData[[1]])) < 2) {
+            end <- cumsum(unlist(lapply(listData, length), use.names = FALSE))
+        } else {
+            end <- cumsum(unlist(lapply(listData, nrow), use.names = FALSE))
+        }
+    }
+    initialize(X,
+               unlistData = .compress.list(listData),
+               partitioning = 
+               new2("PartitioningByEnd", end = end, NAMES = names(X),
+                    check=FALSE))
+}
+
 setMethod("endomorph", "CompressedList",
           function(X, FUN, ...) {
-              listData <-
-                .CompressedList.list.subscript(X = X,
-                                               INDEX = seq_len(length(X)),
-                                               USE.NAMES = FALSE,
-                                               COMPRESS = FALSE,
-                                               FUN = match.fun(FUN), ...)
-              elementTypeX <- elementType(X)
-              if (!all(sapply(listData,
-                              function(Xi) extends(class(Xi), elementTypeX))))
-                  stop("'FUN' must return elements of class ", elementTypeX)
-              if (length(listData) == 0) {
-                  end <- integer(0)
-              } else {
-                  if (length(dim(listData[[1]])) < 2) {
-                      end <-
-                        cumsum(unlist(lapply(listData, length), use.names = FALSE))
-                  } else {
-                      end <-
-                        cumsum(unlist(lapply(listData, nrow), use.names = FALSE))
-                  }
-              }
-              initialize(X,
-                         unlistData = .compress.list(listData),
-                         partitioning = 
-                           new2("PartitioningByEnd", end = end, NAMES = names(X),
-                                check=FALSE))
-             })
+              .updateCompressedList(X,
+                                    .CompressedList.list.subscript(X = X,
+                                              INDEX = seq_len(length(X)),
+                                              USE.NAMES = FALSE,
+                                              COMPRESS = FALSE,
+                                              FUN = match.fun(FUN), ...))
+          })
+
+setMethod("mendomorph", "CompressedList",
+          function(FUN, ..., MoreArgs = NULL) {
+              .updateCompressedList(list(...)[[1]],
+                                    mapply(FUN = FUN, ..., MoreArgs = MoreArgs))
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.

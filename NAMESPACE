@@ -84,6 +84,7 @@ export(
     mapply,
     endomorph,
     Map,
+    mendomorph,
     isEmpty,
 
     ## Generic functions in the Ranges API:
@@ -205,6 +206,7 @@ exportMethods(
     mapply,
     endomorph,
     Map,
+    mendomorph,
     isEmpty,
     width,
     "start<-",
