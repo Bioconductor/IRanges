@@ -707,7 +707,12 @@ setMethod("pmax", "Rle",
           function(..., na.rm = FALSE)
           {
               rlist <- RleList(..., compress = FALSE)
-              ends <- sort(unique(unlist(lapply(rlist, end))))
+              ends <- end(rlist[[1]])
+              if (length(rlist) > 1) {
+                  for (i in 2:length(rlist))
+                      ends <- .Call("Integer_sorted_merge", ends, end(rlist[[i]]),
+                                    PACKAGE="IRanges")
+              }
               Rle(values =  do.call(pmax, lapply(rlist, "[", ends, drop = TRUE)),
                   lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
                   check = FALSE)
@@ -719,7 +724,12 @@ setMethod("pmin", "Rle",
           function(..., na.rm = FALSE)
           {
               rlist <- RleList(..., compress = FALSE)
-              ends <- sort(unique(unlist(lapply(rlist, end))))
+              ends <- end(rlist[[1]])
+              if (length(rlist) > 1) {
+                  for (i in 2:length(rlist))
+                      ends <- .Call("Integer_sorted_merge", ends, end(rlist[[i]]),
+                              PACKAGE="IRanges")
+              }
               Rle(values =  do.call(pmin, lapply(rlist, "[", ends, drop = TRUE)),
                   lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
                   check = FALSE)
@@ -731,7 +741,12 @@ setMethod("pmax.int", "Rle",
           function(..., na.rm = FALSE)
           {
               rlist <- RleList(..., compress = FALSE)
-              ends <- sort(unique(unlist(lapply(rlist, end))))
+              ends <- end(rlist[[1]])
+              if (length(rlist) > 1) {
+                  for (i in 2:length(rlist))
+                      ends <- .Call("Integer_sorted_merge", ends, end(rlist[[i]]),
+                              PACKAGE="IRanges")
+              }
               Rle(values =  do.call(pmax.int, lapply(rlist, "[", ends, drop = TRUE)),
                   lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
                   check = FALSE)
@@ -743,7 +758,12 @@ setMethod("pmin.int", "Rle",
           function(..., na.rm = FALSE)
           {
               rlist <- RleList(..., compress = FALSE)
-              ends <- sort(unique(unlist(lapply(rlist, end))))
+              ends <- end(rlist[[1]])
+              if (length(rlist) > 1) {
+                  for (i in 2:length(rlist))
+                      ends <- .Call("Integer_sorted_merge", ends, end(rlist[[i]]),
+                              PACKAGE="IRanges")
+              }
               Rle(values =  do.call(pmin.int, lapply(rlist, "[", ends, drop = TRUE)),
                   lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
                   check = FALSE)
