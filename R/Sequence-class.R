@@ -595,7 +595,7 @@ function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)
     ans
 }
 
-setMethod("endomorph", "Sequence",
+setMethod("endoapply", "Sequence",
           function(X, FUN, ...) {
               elementTypeX <- elementType(X)
               FUN <- match.fun(FUN)
@@ -608,7 +608,7 @@ setMethod("endomorph", "Sequence",
               X
           })
 
-setMethod("mendomorph", "Sequence",
+setMethod("mendoapply", "Sequence",
           function(FUN, ..., MoreArgs = NULL) {
               X <- list(...)[[1]]
               elementTypeX <- elementType(X)

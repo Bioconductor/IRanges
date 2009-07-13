@@ -80,8 +80,8 @@ export(
     coverage.getWidthFromStartEnd,
 
     ## Generic endomorphism functions
-    endomorph,
-    mendomorph,
+    endoapply,
+    mendoapply,
 
     ## Generic functions in the Sequence API:
     sapply,
@@ -204,8 +204,8 @@ exportMethods(
     updateObject,
 
     ## Methods for generics defined in this package:
-    endomorph,
-    mendomorph,
+    endoapply,
+    mendoapply,
     sapply,
     mapply,
     Map,

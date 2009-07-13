@@ -30,12 +30,12 @@
 \alias{c,SimpleList-method}
 
 % looping
-\alias{endomorph,CompressedList-method}
-\alias{endomorph,SimpleList-method}
+\alias{endoapply,CompressedList-method}
+\alias{endoapply,SimpleList-method}
 \alias{lapply,CompressedList-method}
 \alias{lapply,SimpleList-method}
-\alias{mendomorph,CompressedList-method}
-\alias{mendomorph,SimpleList-method}
+\alias{mendoapply,CompressedList-method}
+\alias{mendoapply,SimpleList-method}
 
 % coercion
 \alias{as.list,CompressedList-method}

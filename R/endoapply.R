@@ -1,27 +1,27 @@
 ### =========================================================================
-### endomorph()
+### endoapply()
 ### -------------------------------------------------------------------------
 ###
 
-setGeneric("endomorph", signature = "X",
-           function(X, FUN, ...) standardGeneric("endomorph"))
+setGeneric("endoapply", signature = "X",
+           function(X, FUN, ...) standardGeneric("endoapply"))
 
-setMethod("endomorph", "list",
+setMethod("endoapply", "list",
           function(X, FUN, ...) lapply(X = X, FUN = FUN, ...))
 
-setMethod("endomorph", "data.frame",
+setMethod("endoapply", "data.frame",
           function(X, FUN, ...) as.data.frame(lapply(X = X, FUN = FUN, ...)))
 
 ### =========================================================================
-### mendomorph()
+### mendoapply()
 ### -------------------------------------------------------------------------
 ###
 
-setGeneric("mendomorph", signature = "...",
-           function(FUN, ..., MoreArgs = NULL) standardGeneric("mendomorph"))
+setGeneric("mendoapply", signature = "...",
+           function(FUN, ..., MoreArgs = NULL) standardGeneric("mendoapply"))
 
-setMethod("mendomorph", "list", function(FUN, ..., MoreArgs = NULL)
+setMethod("mendoapply", "list", function(FUN, ..., MoreArgs = NULL)
           mapply(FUN = FUN, ..., MoreArgs = MoreArgs))
 
-setMethod("mendomorph", "data.frame", function(FUN, ..., MoreArgs = NULL)
+setMethod("mendoapply", "data.frame", function(FUN, ..., MoreArgs = NULL)
           as.data.frame(mapply(FUN = FUN, ..., MoreArgs = MoreArgs)))

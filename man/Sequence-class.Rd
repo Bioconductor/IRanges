@@ -27,7 +27,7 @@
 \alias{elementMetadata,Sequence-method}
 \alias{elementMetadata<-}
 \alias{elementMetadata<-,Sequence,DataTableORNULL-method}
-\alias{endomorph,Sequence-method}
+\alias{endoapply,Sequence-method}
 \alias{Filter,ANY,Sequence-method}
 \alias{Find,ANY,Sequence-method}
 \alias{head,Sequence-method}
@@ -38,7 +38,7 @@
 \alias{Map,Sequence-method}
 \alias{mapply}
 \alias{mapply,Sequence-method}
-\alias{mendomorph,Sequence-method}
+\alias{mendoapply,Sequence-method}
 \alias{Position,ANY,Sequence-method}
 \alias{Reduce,ANY,Sequence-method}
 \alias{rep,Sequence-method}
@@ -289,7 +289,7 @@
       }
     }
     \item{}{
-      \code{endomorph(X, FUN, ...)}:
+      \code{endoapply(X, FUN, ...)}:
       Similar to \code{\link[base]{lapply}}, but performs an endomorphism,
       i.e. returns an object of \code{class(X)}.
     }
@@ -307,7 +307,7 @@
       multivariate version of \code{sapply}.
     }
     \item{}{
-      \code{mendomorph(FUN, ..., MoreArgs = NULL)}:
+      \code{mendoapply(FUN, ..., MoreArgs = NULL)}:
       Similar to \code{\link[base]{mapply}}, but performs an endomorphism
       across multiple objects, i.e. returns an object of
       \code{class(list(...)[[1]])}.

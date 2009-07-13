@@ -13,7 +13,7 @@ setMethod("lapply", "RangedData", function(X, FUN, ...) {
   lapply(inds, function(i) FUN(X[i], ...))
 })
 
-setMethod("endomorph", "RangedData",
+setMethod("endoapply", "RangedData",
           function(X, FUN, ...) {
               elementTypeX <- elementType(X)
               FUN <- match.fun(FUN)

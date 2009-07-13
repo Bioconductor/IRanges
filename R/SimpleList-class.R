@@ -140,7 +140,7 @@ setMethod("lapply", "SimpleList",
           function(X, FUN, ...)
               lapply(as.list(X), FUN = FUN, ...))
 
-setMethod("endomorph", "SimpleList",
+setMethod("endoapply", "SimpleList",
           function(X, FUN, ...) {
               listData <- lapply(X, FUN = FUN, ...)
               elementTypeX <- elementType(X)
@@ -151,7 +151,7 @@ setMethod("endomorph", "SimpleList",
               X
           })
 
-setMethod("mendomorph", "SimpleList",
+setMethod("mendoapply", "SimpleList",
           function(FUN, ..., MoreArgs = NULL) {
               X <- list(...)[[1]]
               elementTypeX <- elementType(X)

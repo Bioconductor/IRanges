@@ -411,7 +411,7 @@ setMethod("lapply", "CompressedList",
                     check=FALSE))
 }
 
-setMethod("endomorph", "CompressedList",
+setMethod("endoapply", "CompressedList",
           function(X, FUN, ...) {
               .updateCompressedList(X,
                                     .CompressedList.list.subscript(X = X,
@@ -421,7 +421,7 @@ setMethod("endomorph", "CompressedList",
                                               FUN = match.fun(FUN), ...))
           })
 
-setMethod("mendomorph", "CompressedList",
+setMethod("mendoapply", "CompressedList",
           function(FUN, ..., MoreArgs = NULL) {
               .updateCompressedList(list(...)[[1]],
                                     mapply(FUN = FUN, ..., MoreArgs = MoreArgs))
