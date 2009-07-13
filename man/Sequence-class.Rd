@@ -27,7 +27,6 @@
 \alias{elementMetadata,Sequence-method}
 \alias{elementMetadata<-}
 \alias{elementMetadata<-,Sequence,DataTableORNULL-method}
-\alias{endomorph}
 \alias{endomorph,Sequence-method}
 \alias{Filter,ANY,Sequence-method}
 \alias{Find,ANY,Sequence-method}
@@ -39,7 +38,6 @@
 \alias{Map,Sequence-method}
 \alias{mapply}
 \alias{mapply,Sequence-method}
-\alias{mendomorph}
 \alias{mendomorph,Sequence-method}
 \alias{Position,ANY,Sequence-method}
 \alias{Reduce,ANY,Sequence-method}

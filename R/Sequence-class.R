@@ -595,8 +595,6 @@ function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)
     ans
 }
 
-setGeneric("endomorph", function(X, FUN, ...) standardGeneric("endomorph"))
-
 setMethod("endomorph", "Sequence",
           function(X, FUN, ...) {
               elementTypeX <- elementType(X)
@@ -609,9 +607,6 @@ setMethod("endomorph", "Sequence",
               }
               X
           })
-
-setGeneric("mendomorph", signature = "...",
-           function(FUN, ..., MoreArgs = NULL) standardGeneric("mendomorph"))
 
 setMethod("mendomorph", "Sequence",
           function(FUN, ..., MoreArgs = NULL) {
