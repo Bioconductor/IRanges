@@ -47,6 +47,44 @@ setMethod("width", "RangesList",
             else
               unlist(lapply(x, width), use.names = FALSE)
           })
+setGeneric(".SEW<-", signature="x",
+           function(x, FUN, check=TRUE, value) standardGeneric(".SEW<-"))
+setReplaceMethod(".SEW", "RangesList",
+                 function(x, FUN, check=TRUE, value) {
+                   if (extends(class(value), "IntegerList")) {
+                       if (!identical(lapply(x, names), lapply(value, names)) &&
+                           !all(elementLengths(x) == elementLengths(value)))
+                         stop("'value' must have same length and names as current 'ranges'")
+                   } else if (is.numeric(value)) {
+                     lelts <- sum(elementLengths(x))
+                     if (lelts != length(value))
+                       value <- rep(value, length.out = lelts)
+                     if (!is.integer(value))
+                       value <- as.integer(value)
+                     values <- split(value, space(x))
+                   } else {
+                     stop("'value' must extend class IntegerList or integer")
+                   }
+                   FUN <- match.fun(FUN)
+                   for (i in seq_len(length(x)))
+                     x[[i]] <- FUN(x[[i]], check = check, value = value[[i]])
+                   x
+                 })
+setReplaceMethod("start", "RangesList",
+                 function(x, check=TRUE, value) {
+                   .SEW(x, FUN = "start<-", check = check) <- value
+                   x
+                 })
+setReplaceMethod("end", "RangesList",
+                 function(x, check=TRUE, value) {
+                   .SEW(x, FUN = "end<-", check = check) <- value
+                   x
+                 })
+setReplaceMethod("width", "RangesList",
+                 function(x, check=TRUE, value) {
+                   .SEW(x, FUN = "width<-", check = check) <- value
+                   x
+                 })
 
 setMethod("start", "CompressedIRangesList",
           function(x) {
@@ -69,6 +107,28 @@ setMethod("width", "CompressedIRangesList",
             else
               width(unlist(x))
           })
+setReplaceMethod(".SEW", "CompressedIRangesList",
+                 function(x, FUN, check=TRUE, value) {
+                   if (extends(class(value), "IntegerList")) {
+                     if (!identical(lapply(x, names), lapply(value, names)) &&
+                         !all(elementLengths(x) == elementLengths(value)))
+                       stop("'value' must have same length and names as current 'ranges'")
+                     value <- unlist(value)
+                   } else if (is.numeric(value)) {
+                     lelts <- sum(elementLengths(x))
+                     if (lelts != length(value))
+                       value <- rep(value, length.out = lelts)
+                     if (!is.integer(value))
+                       value <- as.integer(value)
+                   } else {
+                     stop("'value' must extend class IntegerList or integer")
+                   }
+                   FUN <- match.fun(FUN)
+                   slot(x, "unlistData", check=FALSE) <-
+                     FUN(x@unlistData, check = check, value = value)
+                   x
+                 })
+
 setGeneric("space", function(x, ...) standardGeneric("space"))
 setMethod("space", "RangesList",
           function(x) {

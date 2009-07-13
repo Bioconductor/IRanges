@@ -37,17 +37,39 @@ setGeneric("ranges", function(x, ...) standardGeneric("ranges"))
 setMethod("ranges", "RangedData", function(x) x@ranges)
 
 setGeneric("ranges<-", function(x, ..., value) standardGeneric("ranges<-"))
-setReplaceMethod("ranges", "RangedData", function(x, value) {
-  if (!identical(lapply(ranges(x), names), lapply(value, names)))
-    stop("'value' must have same length and names as current 'ranges'")
-  x@ranges <- value
-  x
-})
+setReplaceMethod("ranges", "RangedData",
+                 function(x, value) {
+                   if (extends(class(value), "RangesList")) {
+                     if (!identical(lapply(ranges(x), names), lapply(value, names)))
+                       stop("'value' must have same length and names as current 'ranges'")
+                   } else if (extends(class(value), "IRanges")) {
+                     values <- split(value, space(x))
+                   } else {
+                     stop("'value' must extend class RangesList or IRanges")
+                   }
+                   x@ranges <- value
+                   x
+                 })
 
 ## range delegates
 setMethod("start", "RangedData", function(x) start(ranges(x)))
 setMethod("end", "RangedData", function(x) end(ranges(x)))
 setMethod("width", "RangedData", function(x) width(ranges(x)))
+setReplaceMethod("start", "RangedData",
+                 function(x, check=TRUE, value) {
+                   start(ranges(x), check=check) <- value
+                   x
+                 })
+setReplaceMethod("end", "RangedData",
+                 function(x, check=TRUE, value) {
+                   end(ranges(x), check=check) <- value
+                   x
+                 })
+setReplaceMethod("width", "RangedData",
+                 function(x, check=TRUE, value) {
+                   width(ranges(x), check=check) <- value
+                   x
+                 })
 setMethod("length", "RangedData", function(x) length(ranges(x)))
 setMethod("names", "RangedData", function(x) names(ranges(x)))
 setReplaceMethod("names", "RangedData",

@@ -9,10 +9,13 @@
 % accessors
 \alias{end,RangesList-method}
 \alias{end,CompressedIRangesList-method}
+\alias{end<-,RangesList-method}
 \alias{width,RangesList-method}
 \alias{width,CompressedIRangesList-method}
+\alias{width<-,RangesList-method}
 \alias{start,RangesList-method}
 \alias{start,CompressedIRangesList-method}
+\alias{start<-,RangesList-method}
 \alias{space}
 \alias{space,RangesList-method}
 \alias{universe,RangesList-method}
@@ -57,9 +60,18 @@
 
   All of these accessors collapse over the spaces:
   \describe{
-    \item{}{\code{start(x)}: Get the starts of the ranges.}
-    \item{}{\code{end(x)}: Get the ends of the ranges.}
-    \item{}{\code{width(x)}: Get the widths of the ranges.}
+    \item{}{\code{start(x), start(x) <- value}: Get or set the starts of the
+      ranges. When setting the starts, \code{value} can be an integer vector
+      of \code{length(sum(elementLengths(x)))} or an IntegerList object of
+      length \code{length(x)} and names \code{names(x)}.}
+    \item{}{\code{end(x), end(x) <- value}: Get or set the ends of the
+      ranges. When setting the starts, \code{value} can be an integer vector
+      of \code{length(sum(elementLengths(x)))} or an IntegerList object of
+      length \code{length(x)} and names \code{names(x)}.}
+    \item{}{\code{width(x), width(x) <- value}: Get or set the widths of the
+      ranges. When setting the starts, \code{value} can be an integer vector
+      of \code{length(sum(elementLengths(x)))} or an IntegerList object of
+      length \code{length(x)} and names \code{names(x)}.}
     \item{}{\code{space(x)}: Gets the spaces of the ranges as a
       character vector. This is equivalent to \code{names(x)}, except each
       name is repeated according to the length of its element.
@@ -154,6 +166,11 @@
   named[[1]] # range1
   unnamed <- RangesList(range1, range2)
   names(unnamed) # NULL
+
+  # edit the width of the ranges in the list
+  edited <- named
+  width(edited) <- rep(c(3,2), elementLengths(named))
+  edited
 
   # subset by RangesList
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))

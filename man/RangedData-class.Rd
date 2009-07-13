@@ -9,6 +9,7 @@
 \alias{dimnames,RangedData-method}
 \alias{dimnames<-,RangedData-method}
 \alias{end,RangedData-method}
+\alias{end<-,RangedData-method}
 \alias{length,RangedData-method}
 \alias{names,RangedData-method}
 \alias{names<-,RangedData-method}
@@ -17,9 +18,11 @@
 \alias{ranges,RangedData-method}
 \alias{ranges<-,RangedData-method}
 \alias{start,RangedData-method}
+\alias{start<-,RangedData-method}
 \alias{values}
 \alias{values,RangedData-method}
 \alias{width,RangedData-method}
+\alias{width<-,RangedData-method}
 \alias{space,RangedData-method}
 \alias{universe,RangedData-method}
 \alias{universe<-,RangedData-method}
@@ -141,13 +144,25 @@
       \code{nrow(x)}.
       \describe{
         \item{}{
-          \code{start(x)}: The start value of each range.
+          \code{start(x), start(x) <- value}: Get or set the starts of the
+           ranges. When setting the starts, \code{value} can be an integer
+           vector of \code{length(sum(elementLengths(ranges(x))))} or an
+           IntegerList object of length \code{length(ranges(x))} and names
+           \code{names(ranges(x))}.
         }
         \item{}{
-          \code{width(x)}: The width of each range.
+          \code{end(x), end(x) <- value}: Get or set the ends of the
+           ranges. When setting the ends, \code{value} can be an integer
+           vector of \code{length(sum(elementLengths(ranges(x))))} or an
+           IntegerList object of length \code{length(ranges(x))} and names
+           \code{names(ranges(x))}.
         }
         \item{}{
-          \code{end(x)}: The end value of each range.
+          \code{width(x), width(x) <- value}: Get or set the widths of the
+           ranges. When setting the widths, \code{value} can be an integer
+           vector of \code{length(sum(elementLengths(ranges(x))))} or an
+           IntegerList object of length \code{length(ranges(x))} and names
+           \code{names(ranges(x))}.
         }
       }
     }
