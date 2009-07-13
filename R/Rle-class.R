@@ -701,73 +701,45 @@ setMethod("diff", "Rle",
               x
           })
 
+.psummary.Rle <- function(FUN, ..., MoreArgs = NULL) {
+    rlist <- RleList(..., compress = FALSE)
+    ends <- end(rlist[[1]])
+    if (length(rlist) > 1) {
+        for (i in 2:length(rlist))
+            ends <- .Call("Integer_sorted_merge", ends, end(rlist[[i]]),
+                    PACKAGE="IRanges")
+    }
+    Rle(values =
+        do.call(FUN,
+                c(lapply(rlist,
+                         function(x)
+                             runValue(x)[.Call("Integer_sorted_findInterval",
+                                               ends, runLength(x),
+                                               PACKAGE="IRanges")]),
+                 MoreArgs)),
+        lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
+        check = FALSE)
+}
+
 setGeneric("pmax", signature = "...",
            function(..., na.rm = FALSE) standardGeneric("pmax"))
-setMethod("pmax", "Rle",
-          function(..., na.rm = FALSE)
-          {
-              rlist <- RleList(..., compress = FALSE)
-              ends <- end(rlist[[1]])
-              if (length(rlist) > 1) {
-                  for (i in 2:length(rlist))
-                      ends <- .Call("Integer_sorted_merge", ends, end(rlist[[i]]),
-                                    PACKAGE="IRanges")
-              }
-              Rle(values =  do.call(pmax, lapply(rlist, "[", ends, drop = TRUE)),
-                  lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
-                  check = FALSE)
-          })
+setMethod("pmax", "Rle", function(..., na.rm = FALSE)
+            .psummary.Rle(pmax, ..., MoreArgs = list(na.rm = na.rm)))
 
 setGeneric("pmin", signature = "...",
            function(..., na.rm = FALSE) standardGeneric("pmin"))
-setMethod("pmin", "Rle",
-          function(..., na.rm = FALSE)
-          {
-              rlist <- RleList(..., compress = FALSE)
-              ends <- end(rlist[[1]])
-              if (length(rlist) > 1) {
-                  for (i in 2:length(rlist))
-                      ends <- .Call("Integer_sorted_merge", ends, end(rlist[[i]]),
-                              PACKAGE="IRanges")
-              }
-              Rle(values =  do.call(pmin, lapply(rlist, "[", ends, drop = TRUE)),
-                  lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
-                  check = FALSE)
-          })
+setMethod("pmin", "Rle", function(..., na.rm = FALSE)
+            .psummary.Rle(pmin, ..., MoreArgs = list(na.rm = na.rm)))
 
 setGeneric("pmax.int", signature = "...",
            function(..., na.rm = FALSE) standardGeneric("pmax.int"))
-setMethod("pmax.int", "Rle",
-          function(..., na.rm = FALSE)
-          {
-              rlist <- RleList(..., compress = FALSE)
-              ends <- end(rlist[[1]])
-              if (length(rlist) > 1) {
-                  for (i in 2:length(rlist))
-                      ends <- .Call("Integer_sorted_merge", ends, end(rlist[[i]]),
-                              PACKAGE="IRanges")
-              }
-              Rle(values =  do.call(pmax.int, lapply(rlist, "[", ends, drop = TRUE)),
-                  lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
-                  check = FALSE)
-          })
+setMethod("pmax.int", "Rle", function(..., na.rm = FALSE)
+            .psummary.Rle(pmax.int, ..., MoreArgs = list(na.rm = na.rm)))
 
 setGeneric("pmin.int", signature = "...",
            function(..., na.rm = FALSE) standardGeneric("pmin.int"))
-setMethod("pmin.int", "Rle",
-          function(..., na.rm = FALSE)
-          {
-              rlist <- RleList(..., compress = FALSE)
-              ends <- end(rlist[[1]])
-              if (length(rlist) > 1) {
-                  for (i in 2:length(rlist))
-                      ends <- .Call("Integer_sorted_merge", ends, end(rlist[[i]]),
-                              PACKAGE="IRanges")
-              }
-              Rle(values =  do.call(pmin.int, lapply(rlist, "[", ends, drop = TRUE)),
-                  lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
-                  check = FALSE)
-          })
+setMethod("pmin.int", "Rle", function(..., na.rm = FALSE)
+            .psummary.Rle(pmin.int, ..., MoreArgs = list(na.rm = na.rm)))
 
 setMethod("mean", "Rle",
           function(x, na.rm = FALSE)
