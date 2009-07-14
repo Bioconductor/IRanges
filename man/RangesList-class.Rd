@@ -49,7 +49,7 @@
 \description{An extension of \code{\linkS4class{Sequence}} that holds only
   \code{\linkS4class{Ranges}} objects. Useful for storing ranges over a set
   of spaces (e.g. chromosomes), each of which requires a separate
-  \code{Ranges} object. As an \code{Sequence}, \code{RangesList} may be
+  \code{Ranges} object. As a \code{Sequence}, \code{RangesList} may be
   annotated with its universe identifier (e.g. a genome) in which all of its
   spaces exist.
 }

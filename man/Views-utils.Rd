@@ -9,25 +9,33 @@
 \alias{viewApply}
 \alias{viewApply,Views-method}
 \alias{viewApply,RleViews-method}
+\alias{viewApply,RleViewsList-method}
 \alias{viewMins}
 \alias{viewMins,RleViews-method}
+\alias{viewMins,RleViewsList-method}
 \alias{viewMins,XIntegerViews-method}
 \alias{viewMaxs}
 \alias{viewMaxs,RleViews-method}
+\alias{viewMaxs,RleViewsList-method}
 \alias{viewMaxs,XIntegerViews-method}
 \alias{viewSums}
 \alias{viewSums,RleViews-method}
+\alias{viewSums,RleViewsList-method}
 \alias{viewSums,XIntegerViews-method}
 \alias{viewWhichMins}
 \alias{viewWhichMins,RleViews-method}
+\alias{viewWhichMins,RleViewsList-method}
 \alias{viewWhichMins,XIntegerViews-method}
 \alias{viewWhichMaxs}
 \alias{viewWhichMaxs,RleViews-method}
+\alias{viewWhichMaxs,RleViewsList-method}
 \alias{viewWhichMaxs,XIntegerViews-method}
 \alias{viewRangeMins}
 \alias{viewRangeMins,RleViews-method}
+\alias{viewRangeMins,RleViewsList-method}
 \alias{viewRangeMaxs}
 \alias{viewRangeMaxs,RleViews-method}
+\alias{viewRangeMaxs,RleViewsList-method}
 
 
 \title{Utility functions and numeric summary of Views of numerics}
@@ -54,8 +62,8 @@
   viewWhichMins(x, na.rm=FALSE)
   viewWhichMaxs(x, na.rm=FALSE)
 
-  viewRangeMins(x, ...)
-  viewRangeMaxs(x, ...)
+  viewRangeMins(x, na.rm=FALSE)
+  viewRangeMaxs(x, na.rm=FALSE)
 }
 
 \arguments{
@@ -75,11 +83,11 @@
   \item{x}{
     An \link{Rle}, \link{XInteger} object or an integer vector for \code{slice}.
 
-    An \link{RleViews}, \link{XIntegerViews} object for \code{viewMins},
-    \code{viewMaxs}, and \code{viewSums}.
+    An \link{RleViews}, \link{RleViewsList}, \link{XIntegerViews} object for
+    \code{viewMins}, \code{viewMaxs}, and \code{viewSums}.
 
-    An \link{Rle}, \link{XIntegerViews} object for \code{viewWhichMins} and
-    \code{viewWhichMaxs}.
+    An \link{Rle}, \link{RleViewsList}, \link{XIntegerViews} object for
+    \code{viewWhichMins} and \code{viewWhichMaxs}.
   }
   \item{lower, upper}{
     The lower and upper bounds for the slice.
@@ -110,19 +118,22 @@
 \value{
   An \link{RleViews} or \link{XIntegerViews} object for \code{slice}.
 
-  A vector of \code{length(x)} containing the numeric summaries for the views
+  A vector of \code{length(x)} for \link{RleViews} and \link{XIntegerViews}
+  objects or a \link{SimpleList} object of \code{length(x)} for
+  \link{RleViewsList} objects containing the numeric summaries for the views
   for \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewWhichMins},
   and \code{viewWhichMaxs}.
 
-  A \link{IRanges} object containing the location ranges for
-  \code{viewRangeMins} and \code{viewRangeMaxs}.
+  A \link{IRanges} object for \link{RleViews} objects or a
+  \linkS4class{SimpleIRangesList} for \link{RleViewsList} objects containing
+  the location ranges for \code{viewRangeMins} and \code{viewRangeMaxs}.
 }
 
 \author{P. Aboyoun}
 
 \seealso{
-  \link{RleViews-class}, \link{XIntegerViews-class}, \code{\link{which.min}},
-  \code{\link{colSums}}
+  \link{RleViews-class}, \link{RleViewsList-class}, \link{XIntegerViews-class},
+  \code{\link{which.min}}, \code{\link{colSums}}
 }
 
 \examples{
