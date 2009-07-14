@@ -64,7 +64,9 @@
     where to start and end the extraction of the coverage. For
     \link{RangesList} and \link{RangedData} objects, a list or vector of
     the same length as \code{x} to be used for the corresponding element
-    in \code{x}.
+    in \code{x}. In addition for \link{RangedData} objects, can also be
+    a character vector of length 1 denoting the column to use in
+    \code{values(x)}.
     IMPORTANT NOTE: Please do not use these arguments (use the shift/width
     arguments below). They are temporarily kept for backward compatibility
     with existing code and will be dropped in the near future.
@@ -75,13 +77,17 @@
     (horizontally) shifted before the coverage is computed. For
     \link{RangesList} and \link{RangedData} objects, a list or vector of
     the same length as \code{x} to be used for the corresponding element
-    in \code{x}.
+    in \code{x}. In addition for \link{RangedData} objects, can also be
+    a character vector of length 1 denoting the column to use in
+    \code{values(x)}.
   }
   \item{width}{
     For most methods, the length of the returned coverage vector. For
     \link{RangesList} and \link{RangedData} objects, a list or vector of
     the same length as \code{x} to be used for the corresponding element
-    in \code{x}.
+    in \code{x}. In addition for \link{RangedData} objects, can also be
+    a character vector of length 1 denoting the column to use in
+    \code{values(x)}.
 
     If \code{width=NULL} (the default), then the specific \code{coverage}
     method that is actually selected will choose the length of the returned
