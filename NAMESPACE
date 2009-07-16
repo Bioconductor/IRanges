@@ -20,6 +20,7 @@ exportClasses(
     XSequence, XRaw, XInteger, XIntegerViews, XNumeric,
     Rle, RleViews,
     MaskCollection,
+    AtomicList,
     LogicalList, CompressedLogicalList, SimpleLogicalList,
     IntegerList, CompressedIntegerList, SimpleIntegerList,
     NumericList, CompressedNumericList, SimpleNumericList,

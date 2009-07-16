@@ -1,5 +1,5 @@
 ### =========================================================================
-### AtomicTypedList object implementations
+### AtomicList object implementations
 ### -------------------------------------------------------------------------
 
 ## A list that holds atomic objects

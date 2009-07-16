@@ -224,8 +224,11 @@
     \item{}{
       \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:
       Like \code{window}, except that multiple subsequences can be requested.
-      The requested subsequences are concatenated. If the concatenation is
-      undesirable, consider using \code{\link{Views}}.
+      As such \code{start} can take a \code{Ranges} object in addition to an
+      integer vector. When \code{start} is an integer object, the \code{end}
+      and \code{width} arguments are ignored. The requested subsequences are
+      concatenated. If the concatenation is undesirable, consider using
+      \code{\link{Views}}.
     }
     \item{}{
       \code{subset(x, subset)}:

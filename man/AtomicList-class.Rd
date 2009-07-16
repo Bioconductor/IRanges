@@ -1,5 +1,9 @@
 \name{AtomicList}
 \docType{class}
+
+% AtomicList classes
+\alias{AtomicList}
+\alias{AtomicList-class}
 \alias{LogicalList}
 \alias{LogicalList-class}
 \alias{CompressedLogicalList}
@@ -43,6 +47,11 @@
 \alias{SimpleRleList}
 \alias{SimpleRleList-class}
 
+% Additional methods
+\alias{seqextract,AtomicList-method}
+\alias{aggregate,AtomicList-method}
+
+
 \title{Lists of Atomic Vectors in Natural and Rle Form}
 \description{An extension of \code{\linkS4class{Sequence}} that holds
   only atomic vectors in either a natural or run-length encoded form.}
@@ -81,6 +90,35 @@
       run-length encoded atomic vectors in \code{...} into a new
       \code{RleList}.
       If \code{compress}, the internal storage of the data is compressed.}
+  }
+}
+
+\section{Subsetting}{
+  In addition to the normal subsetting methods for Sequence objects,
+  AtomicList object have enhanced capabilities in the following functions.
+
+  \describe{
+    \item{}{
+      \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:
+      In addition to normal usage, the \code{start} parameter can be a
+      \code{RangesList} to perform sequence extraction within the list
+      elements rather than across them.
+    }
+  }
+}
+
+\section{Looping}{
+  In addition to the normal looping methods for Sequence objects,
+  AtomicList object have enhanced capabilities in the following functions.
+
+  \describe{
+    \item{}{
+      \code{aggregate(x, by, FUN, start = NULL, end = NULL, width = NULL,
+                      frequency = NULL, delta = NULL, ..., simplify = TRUE))}:
+      In addition to normal usage, the \code{by} parameter can be a
+      \code{RangesList} to aggregate within the list elements rather
+      than across them.
+    }
   }
 }
 

@@ -341,11 +341,14 @@ setMethod("rev", "Sequence",
 
 setGeneric("seqextract", signature="x",
            function(x, start=NULL, end=NULL, width=NULL) standardGeneric("seqextract"))
-  
+
 setMethod("seqextract", "Sequence",
           function(x, start=NULL, end=NULL, width=NULL)
           {
-              ir <- IRanges(start=start, end=end, width=width, names=NULL)
+              if (!missing(start) && is(start, "Ranges"))
+                  ir <- start
+              else
+                  ir <- IRanges(start=start, end=end, width=width, names=NULL)
               if (any(start(ir) < 1L) || any(end(ir) > length(x)))
                   stop("some ranges are out of bounds")
               do.call(c,
@@ -359,7 +362,10 @@ setMethod("seqextract", "Sequence",
 setMethod("seqextract", "vector",
           function(x, start=NULL, end=NULL, width=NULL)
           {
-              ir <- IRanges(start=start, end=end, width=width, names=NULL)
+              if (!missing(start) && is(start, "Ranges"))
+                  ir <- start
+              else
+                  ir <- IRanges(start=start, end=end, width=width, names=NULL)
               .Call("vector_subsetbyranges", x, start(ir), width(ir), PACKAGE="IRanges")
           })
 
