@@ -162,39 +162,56 @@ setValidity2("RangedData", .valid.RangedData)
 
 RangedData <- function(ranges = IRanges(), ..., space = NULL,
                        universe = NULL)
-{    
-  if (!is(ranges, "Ranges")) {
+{
+  hasDots <- (((nargs() - !missing(space)) - !missing(universe)) > 1)
+  if (is(ranges, "RangesList")) {
+    if (!is.null(space))
+      warning("since 'class(ranges)' extends RangesList, 'space' argument is ignored")
+    if (is.null(names(ranges)))
+      space <- rep(as.character(seq_len(length(ranges))),
+                   each = elementLengths(ranges))
+    else
+      space <- rep(names(ranges), each = elementLengths(ranges))
+    N <- sum(elementLengths(ranges))
+    NAMES <- unlist(lapply(ranges, names))
+  } else if (!is(ranges, "Ranges")) {
     coerced <- try(as(ranges, "RangedData"), silent=TRUE)
     if (is(coerced, "RangedData"))
       return(coerced)
     stop("'ranges' must be a Ranges or directly coercible to RangedData")
+  } else {
+    N <- length(ranges)
+    NAMES <- names(ranges)
   }
-  if (((nargs() - !missing(space)) - !missing(universe)) > 1) 
+  if (hasDots) 
     values <- DataFrame(...) ## at least one column specified
-  else values <- new2("DataFrame", nrows = length(ranges), check=FALSE)
-  if (length(ranges) != nrow(values)) {
-    if (nrow(values) > length(ranges))
+  else
+    values <- new2("DataFrame", nrows = N, check=FALSE)
+  if (N != nrow(values)) {
+    if (nrow(values) > N)
       stop("length of value(s) in '...' greater than length of 'ranges'")
-    if (nrow(values) == 0 || length(ranges) %% nrow(values) != 0)
+    if (nrow(values) == 0 || N %% nrow(values) != 0)
       stop("length of 'ranges' not a multiple of length of value(s) in '...'")
-    rind <- recycleVector(seq_len(nrow(values)), length(ranges))
+    rind <- recycleVector(seq_len(nrow(values)), N)
     values <- values[rind,,drop=FALSE]
-  } 
-  rownames(values) <- names(ranges) ## ensure these are identical
+  }
+  rownames(values) <- NAMES ## ensure these are identical
   if (length(space) > 1) {
-    if (length(space) != length(ranges)) {
-      if (length(space) > length(ranges))
+    if (length(space) != N) {
+      if (length(space) > N)
         stop("length of 'space' greater than length of 'ranges'")
-      if (length(ranges) %% length(space) != 0)
+      if (N %% length(space) != 0)
         stop("length of 'ranges' not a multiple of 'space' length")
-      space <- recycleVector(space, length(ranges))
+      space <- recycleVector(space, N)
     }
-    ranges <- split(ranges, space)
+    if (!is(ranges, "RangesList"))
+      ranges <- split(ranges, space)
     values <- split(values, space)
   } else {
-    ranges <- RangesList(ranges)
+    if (!is(ranges, "RangesList"))
+      ranges <- RangesList(ranges)
     values <- SplitDataFrameList(values, compress = TRUE)
-    if (length(space))
+    if (length(space) == 1)
       names(ranges) <- names(values) <- space
   }
   if (!is.null(universe) && !isSingleString(universe))

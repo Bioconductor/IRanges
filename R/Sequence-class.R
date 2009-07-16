@@ -521,20 +521,24 @@ function(x, by, FUN, start = NULL, end = NULL, width = NULL,
             else if (is.null(end))
                 end <- start + width - 1L
         }
-        start <- as.integer(start)
-        end <- as.integer(end)
+        start <- as(start, "integer")
+        end <- as(end, "integer")
     }
     if (length(start) != length(end))
         stop("'start', 'end', and 'width' arguments have unequal length")
     n <- length(start)
+    if (!is.null(names(start)))
+        indices <- structure(seq_len(n), names = names(start))
+    else
+        indices <- structure(seq_len(n), names = names(end))
     if (is.null(frequency) && is.null(delta)) {
-        sapply(seq_len(n), function(i)
+        sapply(indices, function(i)
                FUN(window(x, start = start[i], end = end[i]), ...),
                simplify = simplify)
     } else {
         frequency <- rep(frequency, length.out = n)
         delta <- rep(delta, length.out = n)
-        sapply(seq_len(n), function(i)
+        sapply(indices, function(i)
                FUN(window(x, start = start[i], end = end[i],
                    frequency = frequency[i], delta = delta[i]),
                    ...),

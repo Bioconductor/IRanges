@@ -1,10 +1,20 @@
 test_RleViews <- function() {
     x <- rep(c(1L, 3L, NA, 7L, 9L), 1:5)
     xRle <- Rle(x)
-    xRleViews <- Views(xRle, start = c(1, 3, 5, 7, 9), end = c(1, 13, 11, 10, 9))
+    xRleViews <-
+      Views(xRle, start = c(1, 3, 5, 7, 9), end = c(1, 13, 11, 10, 9), names = letters[1:5])
     xList <-
-      lapply(seq_len(length(xRleViews)),
+      lapply(structure(seq_len(length(xRleViews)), names = letters[1:5]),
              function(i) window(x, start = start(xRleViews)[i], end = end(xRleViews)[i]))
+    checkIdentical(letters[1:5], names(viewApply(xRleViews, min)))
+    checkIdentical(letters[1:5], names(viewMins(xRleViews)))
+    checkIdentical(letters[1:5], names(viewMaxs(xRleViews)))
+    checkIdentical(letters[1:5], names(viewSums(xRleViews)))
+    checkIdentical(letters[1:5], names(viewWhichMins(xRleViews)))
+    checkIdentical(letters[1:5], names(viewWhichMaxs(xRleViews)))
+    checkIdentical(letters[1:5], names(viewRangeMins(xRleViews, na.rm = TRUE)))
+    checkIdentical(letters[1:5], names(viewRangeMaxs(xRleViews, na.rm = TRUE)))
+
     checkEqualsNumeric(sapply(xList, min), viewMins(xRleViews))
     checkEqualsNumeric(sapply(xList, min), viewApply(xRleViews, min))
     checkEqualsNumeric(sapply(xList, min, na.rm = TRUE), viewMins(xRleViews, na.rm = TRUE))

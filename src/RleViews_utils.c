@@ -12,7 +12,7 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 	char type = '?';
 	int i, ans_length, index, lower_run, upper_run, upper_bound;
 	int *lengths_elt, *start_elt, *width_elt;
-	SEXP ans, subject, values, lengths, start, width;
+	SEXP ans, subject, values, lengths, start, width, names;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
@@ -91,7 +91,9 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	UNPROTECT(1);
+	PROTECT(names = duplicate(GET_SLOT(x, install("NAMES"))));
+	SET_NAMES(ans, names);
+	UNPROTECT(2);
 	return ans;
 }
 
@@ -103,7 +105,7 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 	char type = '?';
 	int i, ans_length, index, lower_run, upper_run, upper_bound;
 	int *lengths_elt, *start_elt, *width_elt;
-	SEXP ans, subject, values, lengths, start, width;
+	SEXP ans, subject, values, lengths, start, width, names;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
@@ -182,7 +184,9 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	UNPROTECT(1);
+	PROTECT(names = duplicate(GET_SLOT(x, install("NAMES"))));
+	SET_NAMES(ans, names);
+	UNPROTECT(2);
 	return ans;
 }
 
@@ -194,7 +198,7 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 	char type = '?';
 	int i, ans_length, index, lower_run, upper_run, lower_bound, upper_bound;
 	int *lengths_elt, *start_elt, *width_elt;
-	SEXP ans, subject, values, lengths, start, width;
+	SEXP ans, subject, values, lengths, start, width, names;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
@@ -312,7 +316,9 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	UNPROTECT(1);
+	PROTECT(names = duplicate(GET_SLOT(x, install("NAMES"))));
+	SET_NAMES(ans, names);
+	UNPROTECT(2);
 	return ans;
 }
 
@@ -324,7 +330,7 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 	char type = '?';
 	int i, ans_length, index, lower_run, upper_run, lower_bound, upper_bound;
 	int *ans_elt, *lengths_elt, *start_elt, *width_elt;
-	SEXP curr, ans, subject, values, lengths, start, width;
+	SEXP curr, ans, subject, values, lengths, start, width, names;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
@@ -409,7 +415,9 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	UNPROTECT(2);
+	PROTECT(names = duplicate(GET_SLOT(x, install("NAMES"))));
+	SET_NAMES(ans, names);
+	UNPROTECT(3);
 	return ans;
 }
 
@@ -421,7 +429,7 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 	char type = '?';
 	int i, ans_length, index, lower_run, upper_run, lower_bound, upper_bound;
 	int *ans_elt, *lengths_elt, *start_elt, *width_elt;
-	SEXP curr, ans, subject, values, lengths, start, width;
+	SEXP curr, ans, subject, values, lengths, start, width, names;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
@@ -506,6 +514,8 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	UNPROTECT(2);
+	PROTECT(names = duplicate(GET_SLOT(x, install("NAMES"))));
+	SET_NAMES(ans, names);
+	UNPROTECT(3);
 	return ans;
 }

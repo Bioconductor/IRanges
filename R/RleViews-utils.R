@@ -4,9 +4,16 @@
 ###
 
 setMethod("viewApply", "RleViews",
-          function(X, FUN, ..., simplify = TRUE)
-          aggregate(subject(X), start = start(X), end = end(X), FUN = FUN, ...,
-                    simplify = simplify))
+          function(X, FUN, ..., simplify = TRUE) {
+              ans <-
+                aggregate(subject(X), start = structure(start(X), names = names(X)),
+                          end = end(X), FUN = FUN, ..., simplify = simplify)
+              if (!simplify) {
+                  ans <- newSimpleList("SimpleList", ans, metadata = metadata(X),
+                                       elementMetadata = elementMetadata(X))
+              }
+              ans
+          })
 
 setGeneric("viewMins", signature="x",
            function(x, na.rm = FALSE) standardGeneric("viewMins"))

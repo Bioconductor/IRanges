@@ -6,12 +6,24 @@
 setMethod("viewApply", "RleViewsList",
           function(X, FUN, ..., simplify = TRUE)
           newSimpleList("SimpleList",
-                        lapply(seq_len(length(X)), function(i)
-                               aggregate(subject(X[[i]]),
-                                         start = start(X[[i]]),
-                                         end = end(X[[i]]),
-                                         FUN = FUN, ...,
-                                         simplify = simplify)),
+                        lapply(structure(seq_len(length(X)), names = names(X)),
+                               function(i) {
+                                   ans <-
+                                     aggregate(subject(X[[i]]),
+                                               start = structure(start(X[[i]]),
+                                                  names = names(start(X[[i]]))),
+                                               end = end(X[[i]]),
+                                               FUN = FUN, ...,
+                                               simplify = simplify)
+                                   if (!simplify) {
+                                       ans <-
+                                         newSimpleList("SimpleList", ans,
+                                                       metadata = metadata(X[[i]]),
+                                                       elementMetadata =
+                                                           elementMetadata(X[[i]]))
+                                   }
+                                   ans
+                               }),
                         metadata = metadata(X),
                         elementMetadata = elementMetadata(X)))
 
@@ -32,7 +44,8 @@ setMethod("viewApply", "RleViewsList",
                 stop("cannot compute numeric summary over a non-numeric Rle")
         }
         listData <-
-          lapply(seq_len(length(x)), function(i) FUN(x[[i]], na.rm = na.rm))
+          lapply(structure(seq_len(length(x)), names = names(x)),
+                 function(i) FUN(x[[i]], na.rm = na.rm))
     }
     newSimpleList(outputListType, listData, metadata = metadata(x),
                   elementMetadata = elementMetadata(x))

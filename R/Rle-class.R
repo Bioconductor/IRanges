@@ -332,12 +332,16 @@ setMethod("aggregate", "Rle",
                       else if (is.null(end))
                           end <- start + width - 1L
                   }
-                  start <- as.integer(start)
-                  end <- as.integer(end)
+                  start <- as(start, "integer")
+                  end <- as(end, "integer")
               }
               if (length(start) != length(end))
                   stop("'start', 'end', and 'width' arguments have unequal length")
               n <- length(start)
+              if (!is.null(names(start)))
+                  indices <- structure(seq_len(n), names = names(start))
+              else
+                  indices <- structure(seq_len(n), names = names(end))
               if (is.null(frequency) && is.null(delta)) {
                   startX <- start(x)
                   endX <- end(x)
@@ -348,7 +352,7 @@ setMethod("aggregate", "Rle",
                   ## Performance Optimization
                   ## Use a stripped down loop with empty Rle object
                   newRle <- new("Rle")
-                  sapply(seq_len(n),
+                  sapply(indices,
                          function(i)
                              FUN(.Call("Rle_run_seqblock",
                                        x, runStart[i], runEnd[i],
@@ -359,7 +363,7 @@ setMethod("aggregate", "Rle",
               } else {
                   frequency <- rep(frequency, length.out = n)
                   delta <- rep(delta, length.out = n)
-                  sapply(seq_len(n),
+                  sapply(indices,
                          function(i)
                              FUN(window(x, start = start[i], end = end[i],
                                         frequency = frequency[i], delta = delta[i]),
@@ -389,7 +393,8 @@ setMethod("findRange", signature = c(vec = "Rle"),
               run <- findRun(x, vec)
               if (any(is.na(run)))
                 stop("all 'x' values must be in [1, 'length(vec)']")
-              IRanges(start = start(vec)[run], width = width(vec)[run])
+              IRanges(start = start(vec)[run], width = width(vec)[run],
+                      names = names(x))
           })
 
 setGeneric("findRun", signature = "vec",

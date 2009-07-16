@@ -8,14 +8,23 @@ test_RleViewsList <- function() {
     checkIdentical(RleViewsList(Views(x1Rle, x1Ranges), Views(x2Rle, x2Ranges)),
                    RleViewsList(rleList = RleList(x1Rle, x2Rle),
                                 rangesList = IRangesList(x1Ranges, x2Ranges)))
-    xRleViewsList <- RleViewsList(Views(x1Rle, x1Ranges), Views(x2Rle, x2Ranges))
+    xRleViewsList <- RleViewsList(a = Views(x1Rle, x1Ranges), b = Views(x2Rle, x2Ranges))
     xList <-
-      list(lapply(seq_len(length(xRleViewsList[[1]])),
-                  function(i) window(x1, start = start(x1Ranges)[i],
-                                     end = end(x1Ranges)[i])),
-           lapply(seq_len(length(xRleViewsList[[2]])),
-                  function(i) window(x2, start = start(x2Ranges)[i],
-                                     end = end(x2Ranges)[i])))
+      list(a = lapply(seq_len(length(xRleViewsList[[1]])),
+                      function(i) window(x1, start = start(x1Ranges)[i],
+                                         end = end(x1Ranges)[i])),
+           b = lapply(seq_len(length(xRleViewsList[[2]])),
+                      function(i) window(x2, start = start(x2Ranges)[i],
+                                         end = end(x2Ranges)[i])))
+    checkIdentical(c("a", "b"), names(viewApply(xRleViewsList, min)))
+    checkIdentical(c("a", "b"), names(viewMins(xRleViewsList)))
+    checkIdentical(c("a", "b"), names(viewMaxs(xRleViewsList)))
+    checkIdentical(c("a", "b"), names(viewSums(xRleViewsList)))
+    checkIdentical(c("a", "b"), names(viewWhichMins(xRleViewsList)))
+    checkIdentical(c("a", "b"), names(viewWhichMaxs(xRleViewsList)))
+    checkIdentical(c("a", "b"), names(viewRangeMins(xRleViewsList, na.rm = TRUE)))
+    checkIdentical(c("a", "b"), names(viewRangeMaxs(xRleViewsList, na.rm = TRUE)))
+
     checkEqualsNumeric(unlist(lapply(xList, lapply, min)), unlist(viewMins(xRleViewsList)))
     checkEqualsNumeric(unlist(lapply(xList, lapply, min)), unlist(viewApply(xRleViewsList, min)))
     checkEqualsNumeric(unlist(lapply(xList, lapply, min, na.rm = TRUE)), unlist(viewMins(xRleViewsList, na.rm = TRUE)))

@@ -233,11 +233,17 @@ setMethod("viewApply", "Views",
         Xsubject <- subject(X)
         Xstart <- start(X)
         Xwidth <- width(X)
-        sapply(seq_len(length(X)),
-               function(i)
-                   FUN(window(Xsubject, start = Xstart[i], width = Xwidth[i]),
-                       ...),
-               simplify = simplify)
+        ans <-
+          sapply(structure(seq_len(length(X)), names = names(X)),
+                 function(i)
+                     FUN(window(Xsubject, start = Xstart[i], width = Xwidth[i]),
+                         ...),
+                 simplify = simplify)
+        if (!simplify) {
+            ans <- newSimpleList("SimpleList", ans, metadata = metadata(X),
+                                 elementMetadata = elementMetadata(X))
+        }
+        ans
     }
 )
 

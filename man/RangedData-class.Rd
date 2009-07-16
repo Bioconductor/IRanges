@@ -205,22 +205,31 @@
 \section{Constructor}{
   \describe{
     \item{}{
-      \code{RangedData(ranges = IRanges(), ..., splitter = NULL,
+      \code{RangedData(ranges = IRanges(), ..., space = NULL,
         universe = NULL)}:
       Creates a \code{RangedData} with the ranges in \code{ranges} and
       variables given by the arguments in \code{...}.  See the
       constructor \code{\link{DataFrame}} for how the \code{...}
-      arguments are interpreted. If \code{splitter} is \code{NULL}, all
-      of the ranges and values are placed into the same space, resulting
-      in a single-space (length one) \code{RangedData}. Otherwise, the
-      ranges and values are split into spaces according to
-      \code{splitter}, which is treated as a factor, like the \code{f}
-      argument in \code{\link{split}}. The universe may be specified
-      as a scalar string by the \code{universe} argument.
+      arguments are interpreted.
 
-      If \code{ranges} is not a \code{Ranges} object, this function
-      calls \code{as(ranges, "RangedData")} and returns the result if
-      successful.
+      If \code{ranges} is a \code{Ranges} object, the \code{space}
+      argument is used to split of the data into spaces. If \code{space}
+      is \code{NULL}, all of the ranges and values are placed into the
+      same space, resulting in a single-space (length one) \code{RangedData}
+      object. Otherwise, the ranges and values are split into spaces
+      according to \code{space}, which is treated as a factor, like the
+      \code{f} argument in \code{\link{split}}.
+
+      If \code{ranges} is a \code{RangesList} object, then the supplied
+      \code{space} argument is ignored and its value is derived from
+      \code{ranges}.
+
+      If \code{ranges} is not a \code{Ranges} or \code{RangesList} object,
+      this function calls \code{as(ranges, "RangedData")} and returns the
+      result if successful.
+
+      The universe may be specified as a scalar string by the \code{universe}
+      argument.
     }
   }
 }
@@ -384,6 +393,11 @@
   ## use a universe
   rd <- RangedData(ranges, universe = "hg18")
   universe(rd)
+  rd <- RangedData(
+      RangesList(
+        chrA = IRanges(start = c(1, 4, 6), width=c(3, 2, 4)),
+        chrB = IRanges(start = c(1, 3, 6), width=c(3, 3, 4))),
+      score = c(2, 7, 3, 1, 1, 1))
 
   ## split some data over chromosomes
 
