@@ -349,7 +349,8 @@ setMethod("[", "RangedData",
               values <- unlist(values(x))
               ranges <- as.list(ranges(x))
               w <- cumsum(c(1, sapply(ranges, length)))
-              sf <- factor(findInterval(i, w), seq_along(w))
+              sf <- factor(findInterval(i, w), levels = seq_along(w),
+                           labels = c(names(ranges(x)), ""))
               si <- split(i, sf)
               values <- values[i, j, drop=FALSE]
               values <- split(values, sf, drop=TRUE)
