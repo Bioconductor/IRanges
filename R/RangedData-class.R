@@ -303,31 +303,35 @@ setMethod("[", "RangedData",
               stop("parameters in '...' not supported")
             if (missing(i) && missing(j))
               return(x)
-            checkIndex <- function(i, lx) {
+            checkIndex <- function(i, lx, nms) {
               if (!is.atomic(i))
-                stop("invalid subscript type")
+                return("invalid subscript type")
               if (!is.null(i) && any(is.na(i)))
-                stop("subscript contains NAs")
+                return("subscript contains NAs")
               if (is.numeric(i)) {
                 if (any(i < -lx) || any(i > lx))
-                  stop("subscript out of bounds")
+                  return("subscript out of bounds")
                 if (any(i < 0) && any(i > 0))
-                  stop("negative and positive indices cannot be mixed")
+                  return("negative and positive indices cannot be mixed")
               } else if (is.logical(i)) {
                 if (length(i) > lx)
-                  stop("subscript out of bounds")
-              } else if (is.character(i) || is.factor(i)) {
+                  return("subscript out of bounds")
+              } else if ((is.character(i) || is.factor(i))) {
+                  i <- match(i, nms)
+                  if (any(is.na(i)))
+                    return("mismatching names")
               } else if (!is.null(i)) {
-                stop("invalid subscript type")
+                return("invalid subscript type")
               }
+              NULL
             }
-            values <- values(x)
-            ranges <- ranges(x)
             mstyle <- nargs() > 2
             if (mstyle) {
-              if (!missing(j))
-                checkIndex(j, ncol(x))
-              else
+              if (!missing(j)) {
+                prob <- checkIndex(j, ncol(x), colnames(x))
+                if (!is.null(prob))
+                  stop("selecting cols: ", prob)
+              } else
                 j <- seq_len(ncol(x))
               if (!missing(i)) {
                 if (is(i, "RangesList")) {
@@ -335,7 +339,9 @@ setMethod("[", "RangedData",
 ### FIXME: could do this if Ranges supported NAs, then ordering is possible
                   ##i <- overlap(ranges, i, multiple=FALSE, drop=TRUE)
                 }
-                checkIndex(i, nrow(x))
+                prob <- checkIndex(i, nrow(x), rownames(x))
+                if (!is.null(prob))
+                  stop("selecting rows: ", prob)
                 dummy <- seq_len(nrow(x))
                 names(dummy) <- rownames(x)
                 if (is.factor(i))
@@ -350,7 +356,7 @@ setMethod("[", "RangedData",
               ranges <- as.list(ranges(x))
               w <- cumsum(c(1, sapply(ranges, length)))
               sf <- factor(findInterval(i, w), levels = seq_along(w),
-                           labels = c(names(ranges(x)), ""))
+                           labels = c(names(ranges), ""))
               si <- split(i, sf)
               values <- values[i, j, drop=FALSE]
               values <- split(values, sf, drop=TRUE)
@@ -367,10 +373,16 @@ setMethod("[", "RangedData",
                 ranges <- newCompressedList(class(x@ranges), ranges)
               else
                 ranges <- newSimpleList(class(x@ranges), ranges)
-            } else if (!missing(i)) {
-              checkIndex(i, length(x))
-              ranges <- ranges[i]
-              values <- values[i]
+            } else {
+              values <- values(x)
+              ranges <- ranges(x)
+              if (!missing(i)) {
+                prob <- checkIndex(i, length(x), names(x))
+                if (!is.null(prob))
+                  stop("selecting spaces: ", prob)
+                ranges <- ranges[i]
+                values <- values[i]
+              }
             }
             x@ranges <- ranges
             x@values <- values
