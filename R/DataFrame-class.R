@@ -260,7 +260,7 @@ setMethod("[", "DataFrame",
               } else if (is.logical(i)) {
                 if (length(i) > lx)
                   return("subscript out of bounds")
-              } else if (is.character(i)) {
+              } else if (is.character(i) || is.factor(i)) {
                 if (is.null(nms))
                   return("cannot subset by character when names are NULL")
                 if (row)

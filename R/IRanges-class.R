@@ -413,7 +413,7 @@ setMethod("[", "IRanges",
                 stop("subscript contains NAs")
             if (length(i) > lx)
                 stop("subscript out of bounds")
-        } else if (is.character(i)) {
+        } else if (is.character(i) || is.factor(i)) {
           if (is.null(names(x)))
             stop("cannot subset by character when names are NULL")
           i <- match(i, names(x))

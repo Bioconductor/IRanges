@@ -294,7 +294,7 @@ setMethod("[", "MaskCollection",
         } else if (is.logical(i)) {
             if (length(i) > lx)
                 stop("subscript out of bounds")
-        } else if (is.character(i)) {
+        } else if (is.character(i) || is.factor(i)) {
             if (is.null(names(x)))
                 stop("cannot subset by names a ", class(x), " object with no names")
             if (any(i == ""))

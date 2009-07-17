@@ -320,8 +320,11 @@ setMethod("[", "CompressedList",
                   if (length(i) > lx && !nullOK)
                       stop("subscript out of bounds (and NULL elements not allowed)")
                   i <- which(rep(i, length.out = lx))
-              } else if (is.character(i)) {
-                  i <- match(i, names(x))
+              } else if (is.character(i) || is.factor(i)) {
+                  nms <- names(x)
+                  if (is.null(nms))
+                      stop("cannot subset by character when names are NULL")
+                  i <- match(i, nms)
                   if (any(is.na(i)))
                       stop("mismatching names (and NULL elements not allowed)")
               } else if (is.null(i)) {
