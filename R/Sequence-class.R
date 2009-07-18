@@ -643,8 +643,47 @@ setMethod("shiftApply", signature(X = "vector", Y = "vector"),
           .shiftApplyInternal)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Evaluating
+###
+  
+setClassUnion("expressionORlanguage", c("expression", "language"))
+
+setMethod("eval", c("expressionORlanguage", "Sequence"),
+          function(expr, envir, enclos = parent.frame())
+          {
+              eval(expr, as.env(envir), enclos)
+          })
+
+setMethod("with", "Sequence",
+          function(data, expr, ...)
+          {
+              eval(substitute(expr), data, parent.frame())
+          })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coersion.
 ###
 
 setAs("Sequence", "list", function(from) as.list(from))
 setMethod("as.list", "Sequence", function(x, ...) lapply(x, identity))
+
+setGeneric("as.env", function(x, ...) standardGeneric("as.env"))
+
+setMethod("as.env", "Sequence",
+          function(x, enclos = parent.frame()) {
+              nms <- names(x)
+              if (is.null(nms))
+                  stop("cannot convert to environment when names are NULL")
+              env <- new.env(parent = enclos)
+              lapply(nms,
+                     function(col) {
+                         colFun <- function() {
+                             val <- x[[col]]
+                             rm(list=col, envir=env)
+                             assign(col, val, env)
+                             val
+                         }
+                         makeActiveBinding(col, colFun, env)
+                     })
+              env
+          })

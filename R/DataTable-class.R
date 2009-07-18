@@ -195,34 +195,8 @@ setMethod("by", "DataTable",
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Evaluating
-###
-
-setClassUnion("expressionORlanguage", c("expression", "language"))
-
-setMethod("eval", c("expressionORlanguage", "DataTable"),
-          function(expr, envir, enclos = parent.frame())
-          {
-              eval(expr, as.env(envir), enclos)
-          })
-
-setMethod("evalq", signature(envir="DataTable"),
-          function(expr, envir, enclos = parent.frame())
-          {
-              eval(substitute(expr), envir, enclos)
-          })
-  
-setMethod("with", "DataTable",
-          function(data, expr, ...)
-          {
-              eval(substitute(expr), data, parent.frame())
-          })
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
 ###
-
-setGeneric("as.env", function(x, ...) standardGeneric("as.env"))
 
 setMethod("as.env", "DataTable",
           function(x, enclos = parent.frame()) {

@@ -23,7 +23,6 @@
 \alias{!=,DataTable,DataTable-method}
 \alias{aggregate,DataTable-method}
 \alias{by,DataTable-method}
-\alias{as.env}
 \alias{as.env,DataTable-method}
 
 \title{DataTable objects}
@@ -152,16 +151,18 @@
 \section{Coercion}{
   \describe{
     \item{}{\code{as.env(x, enclos = parent.frame())}:
-      Creates an \code{environment} from the \code{DataTable}
-      \code{x}. There is a symbol for each variable in the frame. This
-      is efficient, as no copying is performed.
+      Creates an environment from \code{x} with a symbol for each
+      \code{colnames(x)}. The values are not actually copied into the
+      environment. Rather, they are dynamically bound using
+      \code{\link{makeActiveBinding}}. This prevents unnecessary copying
+      of the data from the external vectors into R vectors. The values
+      are cached, so that the data is not copied every time the symbol
+      is accessed.
     }
   }
 }
   
 \seealso{
-  \link{DataTable-eval} for evaluating expressions referring to
-  variables in the data,
   \link{DataTable-stats} for statistical functionality, like fitting
   regression models,
   \link{DataFrame-class} for an implementation that mimics

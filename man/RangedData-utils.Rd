@@ -27,7 +27,7 @@
 \author{Michael Lawrence}
 
 \seealso{
-  \link{RangedData}, \link{DataTable-class}, \link{DataTable-eval}
+  \link{RangedData}, \link{DataTable-class}, \link{Sequence-class}
 }
 
 \examples{

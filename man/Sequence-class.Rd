@@ -14,6 +14,8 @@
 \alias{aggregate,Sequence-method}
 \alias{aggregate,vector-method}
 \alias{append,Sequence,Sequence-method}
+\alias{as.env}
+\alias{as.env,Sequence-method}
 \alias{as.list,Sequence-method}
 \alias{c,Sequence-method}
 \alias{coerce,Sequence,list-method}
@@ -28,6 +30,7 @@
 \alias{elementMetadata<-}
 \alias{elementMetadata<-,Sequence,DataTableORNULL-method}
 \alias{endoapply,Sequence-method}
+\alias{eval,expressionORlanguage,Sequence-method}
 \alias{Filter,ANY,Sequence-method}
 \alias{Find,ANY,Sequence-method}
 \alias{head,Sequence-method}
@@ -55,6 +58,7 @@
 \alias{tail,Sequence-method}
 \alias{window,Sequence-method}
 \alias{window,vector-method}
+\alias{with,Sequence-method}
 
 
 \title{Sequence objects}
@@ -256,10 +260,34 @@
   }
 }
 
+\section{Evaluating}{
+  In the code snippets below, \code{envir} and \code{data} is a Sequence object.
+
+  \describe{
+    \item{}{\code{eval(expr, envir, enclos = parent.frame())}:
+      Converts the Sequence object specified in \code{envir} to an
+      environment using \code{as.env}, with \code{enclos} as its parent,
+      and then evaluates \code{expr} within that environment.
+    }
+    \item{}{\code{with(data, expr, \dots)}:
+      Equivalent to \code{eval(quote(expr), data, ...)}.
+    }
+  }
+}
+
 \section{Coersion}{
   In the code snippets below, \code{x} is a Sequence object.
 
   \describe{
+    \item{}{\code{as.env(x, enclos = parent.frame())}:
+      Creates an environment from \code{x} with a symbol for each
+      \code{names(x)}. The values are not actually copied into the
+      environment. Rather, they are dynamically bound using
+      \code{\link{makeActiveBinding}}. This prevents unnecessary copying
+      of the data from the external vectors into R vectors. The values
+      are cached, so that the data is not copied every time the symbol
+      is accessed.
+    }
     \item{}{
       \code{as.list(x, ...)}, \code{as(from, "list")}:
       Turns \code{x} into a standard list.
