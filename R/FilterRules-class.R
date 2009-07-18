@@ -204,13 +204,7 @@ setMethod("c", "FilterRules",
 ### Evaluating
 ###
 
-setGeneric("eval",
-           function(expr, envir = parent.frame(),
-                    enclos = if(is.list(envir) || is.pairlist(envir))
-                    parent.frame() else baseenv())
-           standardGeneric("eval"))
-
-setMethod("eval", "FilterRules",
+setMethod("eval", signature(expr="FilterRules", envir="ANY"),
           function(expr, envir = parent.frame(),
                    enclos = if(is.list(envir) || is.pairlist(envir))
                    parent.frame() else baseenv())

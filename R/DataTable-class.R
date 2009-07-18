@@ -204,7 +204,7 @@ setMethod("eval", c("expressionORlanguage", "DataTable"),
                    enclos = if(is.list(envir) || is.pairlist(envir))
                    parent.frame() else baseenv())
           {
-            eval(expr, as.env(envir))
+            eval(expr, as.env(envir), enclos)
           })
 
 setMethod("with", "DataTable",
