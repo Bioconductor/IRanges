@@ -200,7 +200,7 @@ exportMethods(
     c,
     union, intersect, setdiff,
     split,
-    eval, with,
+    eval, evalq, with,
     t,
     is.na, "%in%", by, match,
     Reduce, Filter, Find, Position,

@@ -185,12 +185,13 @@ setGeneric("by", function(data, INDICES, FUN, ..., simplify = TRUE)
 .by.data.frame <- by.data.frame # so it will find our generic
 environment(.by.data.frame) <- topenv()
 setMethod("by", "DataTable",
-          function(data, INDICES, FUN, ..., simplify = TRUE) {
-            .mc <- mc <- match.call()
-            .mc[[1]] <- .by.data.frame
-            ans <- eval(.mc)
-            attr(ans, "call") <- mc
-            ans
+          function(data, INDICES, FUN, ..., simplify = TRUE)
+          {
+              .mc <- mc <- match.call()
+              .mc[[1]] <- .by.data.frame
+              ans <- eval(.mc)
+              attr(ans, "call") <- mc
+              ans
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -200,17 +201,21 @@ setMethod("by", "DataTable",
 setClassUnion("expressionORlanguage", c("expression", "language"))
 
 setMethod("eval", c("expressionORlanguage", "DataTable"),
-          function(expr, envir,
-                   enclos = if(is.list(envir) || is.pairlist(envir))
-                   parent.frame() else baseenv())
+          function(expr, envir, enclos = parent.frame())
           {
-            eval(expr, as.env(envir), enclos)
+              eval(expr, as.env(envir), enclos)
           })
 
+setMethod("evalq", signature(envir="DataTable"),
+          function(expr, envir, enclos = parent.frame())
+          {
+              eval(substitute(expr), envir, enclos)
+          })
+  
 setMethod("with", "DataTable",
           function(data, expr, ...)
           {
-              eval(substitute(expr), data, enclos = parent.frame())
+              eval(substitute(expr), data, parent.frame())
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

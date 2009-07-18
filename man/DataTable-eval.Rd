@@ -1,6 +1,7 @@
 \name{DataTable-eval}
 \alias{DataTable-eval}
 \alias{eval,expressionORlanguage,DataTable-method}
+\alias{evalq,ANY,DataTable-method}
 \alias{with,DataTable-method}
 
 \title{Evaluations of expressions on DataTable objects}
@@ -10,8 +11,8 @@
 }
 
 \usage{
-\S4method{eval}{expressionORlanguage,DataTable}(expr, envir = parent.frame(),
-     enclos = if(is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())
+\S4method{eval}{expressionORlanguage,DataTable}(expr, envir, enclos = parent.frame())
+\S4method{evalq}{ANY,DataTable}(expr, envir, enclos = parent.frame())
 \S4method{with}{DataTable}(data, expr, \dots)
 }
 
@@ -42,6 +43,9 @@
   unnecessary copying of the data from the external vectors into R vectors.
   The values are cached, so that the data is not copied every time the symbol
   is accessed.
+
+  The \code{evalq} method is equivalent to \code{eval(quote(expr), envir, ...)}
+  and the \code{with} methods is equivalent to \code{eval(quote(expr), data, ...)}.
 }
 
 \author{Michael Lawrence}
@@ -54,7 +58,7 @@
 \examples{
   score <- c(10L, 2L, NA)
   x <- DataFrame(score)
-  eval(quote(score > 3), x)
+  evalq(score > 3, x)
   with(x, score > 3)
 }
 
