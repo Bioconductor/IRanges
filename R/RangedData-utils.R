@@ -6,26 +6,20 @@
 ### Applying
 ###
 
-setMethod("lapply", "RangedData", function(X, FUN, ...) {
-  FUN <- match.fun(FUN)
-  inds <- seq(length(X))
-  names(inds) <- names(X)
-  lapply(inds, function(i) FUN(X[i], ...))
-})
+setMethod("lapply", "RangedData",
+          function(X, FUN, ...)
+          {
+            FUN <- match.fun(FUN)
+            inds <- structure(seq(length(X)), names = names(X))
+            lapply(inds, function(i) FUN(X[i], ...))
+          })
 
 setMethod("endoapply", "RangedData",
           function(X, FUN, ...) {
-              elementTypeX <- elementType(X)
-              FUN <- match.fun(FUN)
-              ii <- seq_len(length(X))
-              names(ii) <- names(X)
-              for (i in ii) {
-                  elt <- FUN(X[i], ...)
-                  if (!extends(class(elt), elementTypeX))
-                      stop("'FUN' must return elements of class ", elementTypeX)
-                  X[i] <- elt
-              }
-              X
+            ans <- try(do.call(c, lapply(X, FUN, ...)), silent = TRUE)
+            if ((class(ans) == c("try-error")) || (class(ans) != class(X)))
+              stop("'FUN' did not produce an endomorphism")
+            ans
           })
 
 setGeneric("rdapply", function(x, ...) standardGeneric("rdapply"))
