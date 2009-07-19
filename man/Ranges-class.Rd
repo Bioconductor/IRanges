@@ -24,6 +24,7 @@
 \alias{as.matrix,Ranges-method}
 \alias{as.data.frame,Ranges-method}
 \alias{as.integer,Ranges-method}
+\alias{unlist,Ranges-method}
 \alias{[[,Ranges-method}
 \alias{show,Ranges-method}
 \alias{[<-,Ranges-method}
@@ -160,9 +161,14 @@
       arguments.
     }
     \item{}{
-      \code{as.integer(x)}: Convert \code{x} into an integer vector, by
-      converting each range into the integer sequence formed by
-      \code{from:to} and concatenating them together.
+      \code{as.integer(x)}:
+      Convert \code{x} into an integer vector, by converting each range
+      into the integer sequence formed by \code{from:to} and concatenating
+      them together.
+    }
+    \item{}{
+      \code{unlist(x, recursive = TRUE, use.names = TRUE)}:
+      Similar to \code{as.integer(x)} except can add names to elements.
     }
     \item{}{
       \code{x[[i]]}:
