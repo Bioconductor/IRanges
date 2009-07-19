@@ -148,7 +148,9 @@ setMethod("show", "Ranges",
         if (n == 0L) {
             showme <- as.data.frame(object)
         } else if (n < 20L) {
-            showme <- as.data.frame(object, row.names=paste("[", seq_len(n), "]", sep=""))
+            showme <-
+              as.data.frame(object,
+                            row.names=paste("[", seq_len(n), "]", sep=""))
         } else {
             sketch <- function(x)
               c(window(x, 1L, 9L), "...", window(x, length(x)-8L, length(x)))
@@ -203,7 +205,9 @@ setMethod("isNormal", "Ranges",
     }
 )
 
-setGeneric("whichFirstNotNormal", function(x) standardGeneric("whichFirstNotNormal"))
+setGeneric("whichFirstNotNormal",
+    function(x) standardGeneric("whichFirstNotNormal")
+)
 
 setMethod("whichFirstNotNormal", "Ranges",
     function(x)
