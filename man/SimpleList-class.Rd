@@ -59,12 +59,27 @@
   object is a virtually partitioned vector-like object. For more information
   on the available methods, see the \linkS4class{Sequence} man page.
 }
+
 \section{Constructor}{
   The SimpleList class constructor is used to create SimpleList objects:
   
   \describe{
     \item{}{\code{SimpleList(...)}: takes possibly named objects as elements
     for the new SimpleList object.
+    }
+  }
+}
+
+\section{Coercion}{
+  In the following code snippets, \code{x} is a SimpleList or CompressedList
+  object.
+
+  \describe{
+    \item{}{\code{as.list(x)}: Copies the elements of \code{x} into a new R
+      list object.
+    }
+    \item{}{\code{unlist(x, recursive = TRUE, use.names = TRUE)}: Concatenates
+      the elements of \code{x} into a single \code{elementType(x)} object.
     }
   }
 }
