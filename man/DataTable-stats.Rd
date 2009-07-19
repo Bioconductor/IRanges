@@ -1,5 +1,6 @@
 \name{DataTable-stats}
 \alias{DataTable-stats}
+\alias{xtabs,ANY,DataTable-method}
 \alias{xtabs,ANY,DataTable,ANY,missing-method}
 
 \title{Statistical modeling with DataTable}
