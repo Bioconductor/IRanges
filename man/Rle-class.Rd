@@ -42,7 +42,6 @@
 \alias{coerce,Rle,character-method}
 \alias{coerce,Rle,raw-method}
 \alias{coerce,Rle,factor-method}
-\alias{coerce,Rle,Ranges-method}
 \alias{coerce,Rle,IRanges-method}
 \alias{coerce,Rle,NormalIRanges-method}
 
@@ -229,7 +228,7 @@
       based on the values contained in \code{x}.
     }
     \item{}{
-      \code{as(from, "Ranges")}: Creates an \link{IRanges} instance
+      \code{as(from, "IRanges")}: Creates an \link{IRanges} instance
       from a logical Rle. Note that this instance is guaranteed to be normal.
     }
     \item{}{

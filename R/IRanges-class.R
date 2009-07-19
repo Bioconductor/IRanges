@@ -185,9 +185,6 @@ newNormalIRangesFromIRanges <- function(x, check=TRUE)
 }
 
 ### The returned IRanges instance is guaranteed to be normal.
-setAs("logical", "Ranges",
-    function(from) as(Rle(from), "Ranges")
-)
 setAs("logical", "IRanges",
       function(from) as(Rle(from), "IRanges")
 )
@@ -195,6 +192,23 @@ setAs("logical", "IRanges",
 setAs("logical", "NormalIRanges",
     function(from) as(Rle(from), "NormalIRanges")
 )
+
+### coersion from integer
+setAs("integer", "IRanges",
+    function(from)
+    {
+        if (any(is.na(from)))
+            stop("cannot covert integer with NAs into IRanges")
+        if (length(from) == 0)
+            return(IRanges())
+        diffs <- diff(from)
+        starts <- c(TRUE, diffs != 1L)
+        IRanges(start = from[starts],
+                width = diff(c(which(starts), length(from) + 1L)))
+    }
+)
+
+setAs("numeric", "IRanges", function(from) as(as.integer(from), "IRanges"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

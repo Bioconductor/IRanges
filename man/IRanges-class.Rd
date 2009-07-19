@@ -27,9 +27,10 @@
 
 % Coercion:
 \alias{coerce,Ranges,IRanges-method}
-\alias{coerce,logical,Ranges-method}
 \alias{coerce,logical,IRanges-method}
 \alias{coerce,logical,NormalIRanges-method}
+\alias{coerce,integer,IRanges-method}
+\alias{coerce,numeric,IRanges-method}
 
 
 \title{IRanges and NormalIRanges objects}
@@ -53,6 +54,22 @@
 
 \section{Constructor}{
   See \code{?`\link{IRanges-constructor}`}.
+}
+
+\section{Coercion}{
+  \describe{
+    \item{}{
+      \code{as(from, "IRanges")}: Creates an IRanges instance from a Ranges
+      object, logical vector, or integer vector. When \code{from} is a logical
+      vector, the resulting IRanges object contains the indices for the runs
+      of \code{TRUE} values. When \code{from} is an integer vector, the
+      elements are either singletons or "increase by 1" sequences.
+    }
+    \item{}{
+      \code{as(from, "NormalIRanges")}: Creates a NormalIRanges instance
+      from a logical vector.
+    }
+  }
 }
 
 \section{Methods for NormalIRanges objects}{
