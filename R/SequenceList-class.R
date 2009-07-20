@@ -1,8 +1,13 @@
 ### =========================================================================
-### AtomicList object utilties
+### SequenceList object class
 ### -------------------------------------------------------------------------
 
-setMethod("seqextract", "AtomicList",
+setClass("SequenceList", representation("VIRTUAL"),
+         prototype = prototype(elementType = "vector"),
+         contains = "Sequence")
+
+
+setMethod("seqextract", "SequenceList",
           function(x, start=NULL, end=NULL, width=NULL)
           {
               if (!missing(start) && is(start, "RangesList")) {
@@ -15,7 +20,7 @@ setMethod("seqextract", "AtomicList",
               ans
           })
 
-setMethod("aggregate", "AtomicList",
+setMethod("aggregate", "SequenceList",
           function(x, by, FUN, start = NULL, end = NULL, width = NULL,
                    frequency = NULL, delta = NULL, ..., simplify = TRUE)
           {

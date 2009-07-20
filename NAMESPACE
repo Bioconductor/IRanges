@@ -7,7 +7,9 @@ importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
 
 exportClasses(
     characterORNULL,
-    Annotated, Sequence, DataTable, DataTableORNULL,
+    Annotated,
+    Sequence, SequenceList,
+    DataTable, DataTableORNULL,
     SimpleList, CompressedList,
     Ranges, RangesORmissing,
     IRanges, NormalIRanges,
@@ -20,7 +22,6 @@ exportClasses(
     XSequence, XRaw, XInteger, XIntegerViews, XNumeric,
     Rle, RleViews,
     MaskCollection,
-    AtomicList,
     LogicalList, CompressedLogicalList, SimpleLogicalList,
     IntegerList, CompressedIntegerList, SimpleIntegerList,
     NumericList, CompressedNumericList, SimpleNumericList,

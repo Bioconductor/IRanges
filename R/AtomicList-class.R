@@ -4,34 +4,30 @@
 
 ## A list that holds atomic objects
 
-setClass("AtomicList", representation("VIRTUAL"),
-        prototype = prototype(elementType = "vector"),
-        contains = "Sequence")
-
 setClass("LogicalList", representation("VIRTUAL"),
          prototype = prototype(elementType = "logical"),
-         contains = "AtomicList")
+         contains = "SequenceList")
 
 setClass("IntegerList", representation("VIRTUAL"),
          prototype = prototype(elementType = "integer"),
-         contains = "AtomicList")
+         contains = "SequenceList")
 
 setClass("NumericList", representation("VIRTUAL"),
          prototype = prototype(elementType = "numeric"),
-         contains = "AtomicList")
+         contains = "SequenceList")
 
 setClass("ComplexList", representation("VIRTUAL"),
          prototype = prototype(elementType = "complex"),
-         contains = "AtomicList")
+         contains = "SequenceList")
 
 setClass("CharacterList", representation("VIRTUAL"),
          prototype = prototype(elementType = "character"),
-         contains = "AtomicList")
+         contains = "SequenceList")
 
 setClass("RawList", representation("VIRTUAL"),
          prototype = prototype(elementType = "raw"),
-         contains = "AtomicList")
+         contains = "SequenceList")
 
 setClass("RleList", representation("VIRTUAL"),
          prototype = prototype(elementType = "Rle"),
-         contains = "AtomicList")
+         contains = "SequenceList")

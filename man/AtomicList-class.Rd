@@ -2,8 +2,6 @@
 \docType{class}
 
 % AtomicList classes
-\alias{AtomicList}
-\alias{AtomicList-class}
 \alias{LogicalList}
 \alias{LogicalList-class}
 \alias{CompressedLogicalList}
@@ -47,13 +45,9 @@
 \alias{SimpleRleList}
 \alias{SimpleRleList-class}
 
-% Additional methods
-\alias{seqextract,AtomicList-method}
-\alias{aggregate,AtomicList-method}
-
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}
-\description{An extension of \code{\linkS4class{Sequence}} that holds
+\description{An extension of \code{\linkS4class{SequenceList}} that holds
   only atomic vectors in either a natural or run-length encoded form.}
 
 \details{
@@ -93,37 +87,8 @@
   }
 }
 
-\section{Subsetting}{
-  In addition to the normal subsetting methods for Sequence objects,
-  AtomicList object have enhanced capabilities in the following functions.
-
-  \describe{
-    \item{}{
-      \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:
-      In addition to normal usage, the \code{start} parameter can be a
-      \code{RangesList} to perform sequence extraction within the list
-      elements rather than across them.
-    }
-  }
-}
-
-\section{Looping}{
-  In addition to the normal looping methods for Sequence objects,
-  AtomicList object have enhanced capabilities in the following functions.
-
-  \describe{
-    \item{}{
-      \code{aggregate(x, by, FUN, start = NULL, end = NULL, width = NULL,
-                      frequency = NULL, delta = NULL, ..., simplify = TRUE))}:
-      In addition to normal usage, the \code{by} parameter can be a
-      \code{RangesList} to aggregate within the list elements rather
-      than across them.
-    }
-  }
-}
-
 \author{P. Aboyoun}
-\seealso{\code{\linkS4class{Sequence}} for the applicable methods.}
+\seealso{\code{\linkS4class{SequenceList}} for the applicable methods.}
 
 \examples{
   int1 <- c(1L,2L,3L,5L,2L,8L)

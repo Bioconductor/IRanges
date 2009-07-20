@@ -24,10 +24,10 @@ Collate: validity-utils.R
 	endoapply.R
 	Annotated-class.R
 	Sequence-class.R
+	SequenceList-class.R
 	DataTable-class.R
     DataTable-stats.R
 	AtomicList-class.R
-	AtomicList-utils.R
 	Ranges-class.R
 	Ranges-comparison.R
 	IRanges-class.R

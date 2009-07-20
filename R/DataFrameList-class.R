@@ -4,7 +4,7 @@
 
 setClass("DataFrameList", representation("VIRTUAL"),
          prototype = prototype(elementType = "DataFrame"),
-         contains = "Sequence")
+         contains = "SequenceList")
 setClass("SimpleDataFrameList",
          prototype = prototype(elementType = "DataFrame"),
          contains = c("SimpleList", "DataFrameList"))
