@@ -218,10 +218,11 @@ SEXP Integer_mseq(SEXP from, SEXP to) {
   SEXP ans;
   for (int i = 0; i < length(from); i++)
     k += INTEGER(to)[i] - INTEGER(from)[i] + 1;
-  ans = allocVector(INTSXP, k);
+  PROTECT(ans = NEW_INTEGER(k));
   k = 0;
   for (int i = 0; i < length(from); i++)
     for (int j = INTEGER(from)[i]; j <= INTEGER(to)[i]; j++)
       INTEGER(ans)[k++] = j;
+  UNPROTECT(1);
   return ans;
 }
