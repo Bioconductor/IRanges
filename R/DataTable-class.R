@@ -59,7 +59,14 @@ setMethod("rbind", "DataTable", function(..., deparse.level=1)
 setMethod("seqextract", "DataTable",
           function(x, start=NULL, end=NULL, width=NULL)
           {
-              ir <- IRanges(start=start, end=end, width=width, names=NULL)
+              if (!is.null(start) && is.null(end) && is.null(width)) {
+                  if (is(start, "Ranges"))
+                      ir <- start
+                  else
+                      ir <- as(start, "IRanges")
+              } else {
+                  ir <- IRanges(start=start, end=end, width=width, names=NULL)
+              }
               if (any(start(ir) < 1L) || any(end(ir) > nrow(x)))
                   stop("some ranges are out of bounds")
               do.call(c,

@@ -227,11 +227,13 @@
     }
     \item{}{
       \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:
-      Like \code{window}, except that multiple subsequences can be requested.
-      As such \code{start} can take a \code{Ranges} object in addition to an
-      integer vector. When \code{start} is an integer object, the \code{end}
-      and \code{width} arguments are ignored. The requested subsequences are
-      concatenated. If the concatenation is undesirable, consider using
+      Like \code{window}, except that multiple consecutive subsequences can be
+      requested for concatenation. As such two of the three \code{start},
+      \code{end}, and \code{width} arguments can be used to specify the
+      consecutive subsequences. Alternatively, \code{start} can take a Ranges
+      object or something that can be converted to a Ranges object like an
+      integer vector, logical vector or logical Rle. If the concatenation of
+      the consecutive subsequences is undesirable, consider using
       \code{\link{Views}}.
     }
     \item{}{
