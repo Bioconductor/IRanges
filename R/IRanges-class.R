@@ -195,18 +195,7 @@ setAs("logical", "NormalIRanges",
 
 ### coersion from integer
 setAs("integer", "IRanges",
-    function(from)
-    {
-        if (any(is.na(from)))
-            stop("cannot covert integer with NAs into IRanges")
-        if (length(from) == 0)
-            return(IRanges())
-        diffs <- diff(from)
-        starts <- c(TRUE, diffs != 1L)
-        new2("IRanges", start=from[starts],
-             width=diff(c(which(starts), length(from) + 1L)),
-             check=FALSE)
-    }
+    function(from) .Call("IRanges_from_integer", from, PACKAGE="IRanges")
 )
 
 setAs("numeric", "IRanges", function(from) as(as.integer(from), "IRanges"))

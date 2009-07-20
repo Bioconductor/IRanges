@@ -133,3 +133,52 @@ SEXP _alloc_IRanges(const char *classname, int length)
         return ans;
 }
 
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP IRanges_from_integer(SEXP x)
+{
+	SEXP ans, ans_start, ans_width;
+	int i, x_length, ans_length;
+	int *start_buf, *width_buf;
+	int *x_elt, *start_elt, *width_elt, prev_plus1;
+
+	x_length = LENGTH(x);
+	if (x_length == 0) {
+		PROTECT(ans_start = NEW_INTEGER(0));
+		PROTECT(ans_width = NEW_INTEGER(0));
+	} else {
+		ans_length = 1;
+		start_buf = (int *) R_alloc((long) x_length, sizeof(int));
+		width_buf = (int *) R_alloc((long) x_length, sizeof(int));
+		start_buf[0] = INTEGER(x)[0];
+		width_buf[0] = 1;
+		prev_plus1 = start_buf[0] + 1;
+		start_elt = start_buf;
+		width_elt = width_buf;
+		for (i = 1, x_elt = (INTEGER(x)+1); i < x_length; i++, x_elt++) {
+			if (*x_elt == NA_INTEGER)
+				error("cannot create an IRanges object from an integer vector with missing values");
+			if (*x_elt == prev_plus1) {
+				*width_elt += 1;
+			} else {
+				ans_length++;
+				start_elt++;
+				width_elt++;
+				*start_elt = *x_elt;
+				*width_elt = 1;
+				prev_plus1 = *x_elt;
+			}
+			prev_plus1++;
+		}
+		PROTECT(ans_start = NEW_INTEGER(ans_length));
+		PROTECT(ans_width = NEW_INTEGER(ans_length));
+		memcpy(INTEGER(ans_start), start_buf, sizeof(int) * ans_length);
+		memcpy(INTEGER(ans_width), width_buf, sizeof(int) * ans_length);
+	}
+
+	PROTECT(ans = _new_IRanges("IRanges", ans_start, ans_width, R_NilValue));
+	UNPROTECT(3);
+	return ans;
+}

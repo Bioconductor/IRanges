@@ -363,6 +363,8 @@ SEXP _alloc_IRanges(
 	int length
 );
 
+SEXP IRanges_from_integer(SEXP x);
+
 
 /* IRanges_constructor.c */
 
