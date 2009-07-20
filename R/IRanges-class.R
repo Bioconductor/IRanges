@@ -203,8 +203,9 @@ setAs("integer", "IRanges",
             return(IRanges())
         diffs <- diff(from)
         starts <- c(TRUE, diffs != 1L)
-        IRanges(start = from[starts],
-                width = diff(c(which(starts), length(from) + 1L)))
+        new2("IRanges", start=from[starts],
+             width=diff(c(which(starts), length(from) + 1L)),
+             check=FALSE)
     }
 )
 
