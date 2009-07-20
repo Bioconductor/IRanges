@@ -155,8 +155,8 @@ SEXP Ranges_disjointBins(SEXP r_start, SEXP r_width)
   SEXP ans;
   IntAE bin_ends = _new_IntAE(128, 0, 0);
 
-  PROTECT(ans = allocVector(INTSXP, length(r_start)));
-  
+  PROTECT(ans = NEW_INTEGER(length(r_start)));
+
   for (int i = 0; i < length(r_start); i++) {
     // find a bin, starting at first
     int j = 0, end = INTEGER(r_start)[i] + INTEGER(r_width)[i] - 1;
