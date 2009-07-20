@@ -570,6 +570,32 @@ setMethod("aggregate", "Sequence", .aggregateInternal)
 
 setMethod("aggregate", "vector", .aggregateInternal)
 
+setMethod("endoapply", "Sequence",
+        function(X, FUN, ...) {
+            elementTypeX <- elementType(X)
+            FUN <- match.fun(FUN)
+            for (i in seq_len(length(X))) {
+                elt <- FUN(X[[i]], ...)
+                if (!extends(class(elt), elementTypeX))
+                    stop("'FUN' must return elements of class ", elementTypeX)
+                X[[i]] <- elt
+            }
+            X
+        })
+
+setMethod("mendoapply", "Sequence",
+        function(FUN, ..., MoreArgs = NULL) {
+            X <- list(...)[[1]]
+            elementTypeX <- elementType(X)
+            listData <- mapply(FUN = FUN, ..., MoreArgs = MoreArgs)
+            for (i in seq_len(length(listData))) {
+                if (!extends(class(listData[[i]]), elementTypeX))
+                    stop("'FUN' must return elements of class ", elementTypeX)
+                X[[i]] <- listData[[i]]
+            }
+            X
+        })
+
 .shiftApplyInternal <-
 function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)
 {
@@ -618,32 +644,6 @@ function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)
     }
     ans
 }
-
-setMethod("endoapply", "Sequence",
-          function(X, FUN, ...) {
-              elementTypeX <- elementType(X)
-              FUN <- match.fun(FUN)
-              for (i in seq_len(length(X))) {
-                  elt <- FUN(X[[i]], ...)
-                  if (!extends(class(elt), elementTypeX))
-                      stop("'FUN' must return elements of class ", elementTypeX)
-                  X[[i]] <- elt
-              }
-              X
-          })
-
-setMethod("mendoapply", "Sequence",
-          function(FUN, ..., MoreArgs = NULL) {
-              X <- list(...)[[1]]
-              elementTypeX <- elementType(X)
-              listData <- mapply(FUN = FUN, ..., MoreArgs = MoreArgs)
-              for (i in seq_len(length(listData))) {
-                  if (!extends(class(listData[[i]]), elementTypeX))
-                      stop("'FUN' must return elements of class ", elementTypeX)
-                  X[[i]] <- listData[[i]]
-              }
-              X
-          })
 
 setGeneric("shiftApply", signature = c("X", "Y"),
            function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
