@@ -14,6 +14,8 @@
 \alias{names<-,IRanges-method}
 \alias{update,IRanges-method}
 \alias{[,IRanges-method}
+\alias{seqextract,IRanges-method}
+\alias{window,IRanges-method}
 \alias{c,IRanges-method}
 
 % NormalIRanges objects:

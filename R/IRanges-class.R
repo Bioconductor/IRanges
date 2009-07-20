@@ -388,7 +388,8 @@ setMethod("update", "IRanges",
 ### Subsetting.
 ###
 
-### Supported 'i' types: numeric vector, logical vector, NULL and missing.
+### Supported 'i' types: numeric vector, logical vector, character vector,
+### Ranges object, NULL and missing.
 setMethod("[", "IRanges",
     function(x, i, j, ..., drop)
     {
@@ -433,6 +434,38 @@ setMethod("[", "IRanges",
         if (!is.null(names(x)))
             slot(x, "NAMES", check=FALSE) <- names(x)[i]
         .bracket.Sequence(x, i)
+    }
+)
+
+setMethod("seqextract", "IRanges",
+    function(x, start=NULL, end=NULL, width=NULL)
+    {
+        slot(x, "start", check=FALSE) <-
+          seqextract(start(x), start = start, end = end, width = width)
+        slot(x, "width", check=FALSE) <-
+          seqextract(width(x), start = start, end = end, width = width)
+        if (!is.null(names(x)))
+            slot(x, "NAMES", check=FALSE) <-
+              seqextract(names(x), start = start, end = end, width = width)
+        x
+    }
+)
+
+setMethod("window", "IRanges",
+    function(x, start = NULL, end = NULL, width = NULL,
+             frequency = NULL, delta = NULL, ...)
+    {
+        slot(x, "start", check=FALSE) <-
+          window(start(x), start = start, end = end, width = width,
+                 frequency = frequency, delta = delta)
+        slot(x, "width", check=FALSE) <-
+          window(width(x), start = start, end = end, width = width,
+                 frequency = frequency, delta = delta)
+        if (!is.null(names(x)))
+            slot(x, "NAMES", check=FALSE) <-
+              window(names(x), start = start, end = end, width = width,
+                     frequency = frequency, delta = delta)
+        x
     }
 )
 
