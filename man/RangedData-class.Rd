@@ -4,10 +4,10 @@
 \alias{RangedData-class}
 
 % Accessors:
-\alias{universe,RangedData-method}
 \alias{dim,RangedData-method}
 \alias{dimnames,RangedData-method}
 \alias{dimnames<-,RangedData-method}
+\alias{elementLengths,RangedData-method}
 \alias{end,RangedData-method}
 \alias{end<-,RangedData-method}
 \alias{length,RangedData-method}

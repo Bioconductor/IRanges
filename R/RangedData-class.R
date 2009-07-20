@@ -80,6 +80,7 @@ setReplaceMethod("names", "RangedData",
                    names(x@values) <- value
                    x
                  })
+setMethod("elementLengths", "RangedData", function(x) elementLengths(ranges(x)))
 
 setMethod("space", "RangedData", function(x) space(ranges(x)))
 setMethod("universe", "RangedData", function(x) universe(ranges(x)))
@@ -317,8 +318,7 @@ setMethod("[", "RangedData",
                 if (length(i) > lx)
                   return("subscript out of bounds")
               } else if ((is.character(i) || is.factor(i))) {
-                  i <- match(i, nms)
-                  if (any(is.na(i)))
+                  if (any(is.na(match(i, nms))))
                     return("mismatching names")
               } else if (!is.null(i)) {
                 return("invalid subscript type")
@@ -327,12 +327,8 @@ setMethod("[", "RangedData",
             }
             mstyle <- nargs() > 2
             if (mstyle) {
-              if (!missing(j)) {
-                prob <- checkIndex(j, ncol(x), colnames(x))
-                if (!is.null(prob))
-                  stop("selecting cols: ", prob)
-              } else
-                j <- seq_len(ncol(x))
+              ranges <- ranges(x)
+              values <- values(x)
               if (!missing(i)) {
                 if (is(i, "RangesList")) {
                   i <- !is.na(unlist(overlap(i,ranges,multiple=FALSE)))
@@ -342,46 +338,57 @@ setMethod("[", "RangedData",
                 prob <- checkIndex(i, nrow(x), rownames(x))
                 if (!is.null(prob))
                   stop("selecting rows: ", prob)
-                dummy <- seq_len(nrow(x))
-                names(dummy) <- rownames(x)
-                if (is.factor(i))
-                  i <- as.character(i)
-                i <- dummy[i]
-                if (any(is.na(i))) ## cannot subset by NAs yet
-                  stop("invalid rownames specified")
-              } else {
-                i <- seq_len(nrow(x))
-              }
-              values <- unlist(values(x))
-              ranges <- as.list(ranges(x))
-              w <- cumsum(c(1, sapply(ranges, length)))
-              sf <- factor(findInterval(i, w), levels = seq_along(w),
-                           labels = c(names(ranges), ""))
-              si <- split(i, sf)
-              values <- values[i, j, drop=FALSE]
-              values <- split(values, sf, drop=TRUE)
-              for (k in seq_len(length(x))) {
-                ranges[[k]] <- ranges[[k]][si[[k]] - w[k] + 1]
-              }
-              if (drop) {
-                whichDrop <- which(unlist(lapply(ranges, length)) == 0)
-                if (length(whichDrop) > 0) {
-                  ranges <- ranges[-whichDrop]
+                if (is.logical(i)) {
+                  igroup <-
+                    factor(rep(seq_len(length(x)), elementLengths(x)),
+                           levels = seq_len(length(x)))
+                  if (length(i) < nrow(x))
+                    i <- rep(i, length.out = nrow(x))
+                } else {
+                  if (is.null(i))
+                    i <- integer(0)
+                  if (is.factor(i))
+                    i <- as.character(i)
+                  if (is.character(i)) {
+                    dummy <- seq_len(nrow(x))
+                    names(dummy) <- rownames(x)
+                    i <- dummy[i]
+                    if (any(is.na(i))) ## cannot subset by NAs yet
+                      stop("invalid rownames specified")
+                  }
+                  starts <- cumsum(c(1L, head(elementLengths(x), -1)))
+                  igroup <-
+                    factor(findInterval(i, starts), levels = seq_len(length(x)))
+                  if (any(duplicated(runValue(Rle(igroup)))))
+                    stop("cannot combine 'i' row values from different spaces")
+                  i <- i - (starts - 1L)[as.integer(igroup)]
+                }
+                isplit <- split(i, igroup)
+                names(isplit) <- names(x)
+                ranges <- seqextract(ranges, isplit)
+                values <- seqextract(values, isplit)
+                if (drop) {
+                  ok <- (elementLengths(ranges) > 0)
+                  ranges <- ranges[ok]
+                  values <- values[ok]
                 }
               }
-              if (is(x@ranges, "CompressedList"))
-                ranges <- newCompressedList(class(x@ranges), ranges)
-              else
-                ranges <- newSimpleList(class(x@ranges), ranges)
+              if (!missing(j)) {
+                prob <- checkIndex(j, ncol(x), colnames(x))
+                if (!is.null(prob))
+                  stop("selecting cols: ", prob)
+                if (is(values, "CompressedList"))
+                  values@unlistData <- values@unlistData[j]
+                else
+                  values@listData <- lapply(values@listData, "[", j)
+              }
             } else {
-              values <- values(x)
-              ranges <- ranges(x)
               if (!missing(i)) {
                 prob <- checkIndex(i, length(x), names(x))
                 if (!is.null(prob))
                   stop("selecting spaces: ", prob)
-                ranges <- ranges[i]
-                values <- values[i]
+                ranges <- ranges(x)[i]
+                values <- values(x)[i]
               }
             }
             x@ranges <- ranges
