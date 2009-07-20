@@ -1,58 +1,15 @@
 #include "IRanges.h"
 
-
-SEXP _get_CompressedIRangesList_elt(SEXP x, int at)
+cachedIRanges _cache_CompressedIRangesList_elt(SEXP x, int i)
 {
-	int i, j, x_len, ans_len, shift;
-	int *part_end_elt;
-	SEXP part_end, unlistData, unlistData_names;
-	SEXP ans, ans_start, ans_width, ans_names;
+	SEXP x_part_end, x_unlistData;
+	int offset, length;
 
-	part_end = GET_SLOT(GET_SLOT(x, install("partitioning")),
-			                     install("end"));
-	x_len = LENGTH(part_end);
-
-	if (at < 0 || at >= x_len) {
-		error("CompressedIRangesList element selection out of bounds");
-	}
-
-	unlistData = GET_SLOT(x, install("unlistData"));
-	part_end_elt = INTEGER(part_end);
-
-	if (at == 0)
-		shift = 0;
-	else
-		shift = part_end_elt[at - 1];
-	ans_len = part_end_elt[at] - shift;
-
-	PROTECT(ans_start = NEW_INTEGER(ans_len));
-	PROTECT(ans_width = NEW_INTEGER(ans_len));
-	if (ans_len == 0) {
-		PROTECT(ans_names = R_NilValue);
-	} else {
-		if (at == 0)
-		shift = 0;
-		for (i = 0; i < at; i++) {
-
-		}
-		memcpy(INTEGER(ans_start), (_get_IRanges_start0(unlistData) + shift),
-			   ans_len * sizeof(int));
-		memcpy(INTEGER(ans_width), (_get_IRanges_width0(unlistData) + shift),
-			   ans_len * sizeof(int));
-
-		unlistData_names = GET_SLOT(unlistData, install("NAMES"));
-		if (unlistData_names == R_NilValue) {
-			PROTECT(ans_names = R_NilValue);
-		} else {
-			PROTECT(ans_names = NEW_CHARACTER(ans_len));
-			for (i = 0, j = shift; i < ans_len; i++, j++) {
-				SET_STRING_ELT(ans_names, i, STRING_ELT(unlistData_names, j));
-			}
-		}
-	}
-	PROTECT(ans = _new_IRanges("IRanges", ans_start, ans_width, ans_names));
-	UNPROTECT(4);
-	return ans;
+	x_part_end = GET_SLOT(GET_SLOT(x, install("partitioning")), install("end"));
+	x_unlistData = GET_SLOT(x, install("unlistData"));
+	offset = i == 0 ? 0 : INTEGER(x_part_end)[i - 1];
+	length = INTEGER(x_part_end)[i] - offset;
+	return _cache_subIRanges(x_unlistData, offset, length);
 }
 
 /*

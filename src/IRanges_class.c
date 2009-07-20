@@ -31,6 +31,11 @@ SEXP _get_IRanges_start(SEXP x)
 	return GET_SLOT(x, install("start"));
 }
 
+int _get_IRanges_length(SEXP x)
+{
+	return LENGTH(_get_IRanges_start(x));
+}
+
 SEXP _get_IRanges_width(SEXP x)
 {
 	return GET_SLOT(x, install("width"));
@@ -43,13 +48,59 @@ SEXP _get_IRanges_names(SEXP x)
 
 
 /****************************************************************************
- * Other functions.
+ * Abstract accessors.
  */
 
-int _get_IRanges_length(SEXP x)
+cachedIRanges _cache_subIRanges(SEXP x, int offset, int length)
 {
-	return LENGTH(_get_IRanges_start(x));
+	cachedIRanges cached_x;
+
+	cached_x.classname = _get_classname(x);
+	cached_x.is_constant_width = 0;
+	cached_x.offset = offset;
+	cached_x.length = length;
+	cached_x.start = INTEGER(_get_IRanges_start(x)) + offset;
+	cached_x.width = INTEGER(_get_IRanges_width(x)) + offset;
+	cached_x.names = _get_IRanges_names(x);
+	return cached_x;
 }
+
+cachedIRanges _cache_IRanges(SEXP x)
+{
+	return _cache_subIRanges(x, 0, _get_IRanges_length(x));
+}
+
+int _get_cachedIRanges_length(const cachedIRanges *cached_x)
+{
+	return cached_x->length;
+}
+
+int _get_cachedIRanges_elt_start(const cachedIRanges *cached_x, int i)
+{
+	return cached_x->start[i];
+}
+
+int _get_cachedIRanges_elt_width(const cachedIRanges *cached_x, int i)
+{
+	return cached_x->is_constant_width ?
+	       cached_x->width[0] : cached_x->width[i];
+}
+
+int _get_cachedIRanges_elt_end(const cachedIRanges *cached_x, int i)
+{
+	return _get_cachedIRanges_elt_start(cached_x, i) +
+	       _get_cachedIRanges_elt_width(cached_x, i) - 1;
+}
+
+SEXP _get_cachedIRanges_elt_name(const cachedIRanges *cached_x, int i)
+{
+	return STRING_ELT(cached_x->names, cached_x->offset + i);
+}
+
+
+/****************************************************************************
+ * Other functions.
+ */
 
 const int *_get_IRanges_start0(SEXP x)
 {

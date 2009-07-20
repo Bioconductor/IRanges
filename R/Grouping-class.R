@@ -7,7 +7,7 @@
 ### subclasses are containers for representing groupings.
 ###
 
-setClass("Grouping", contains=c("IntegerList", "VIRTUAL"))
+setClass("Grouping", contains="IntegerList", representation("VIRTUAL"))
 
 setGeneric("nobj", function(x) standardGeneric("nobj"))
 

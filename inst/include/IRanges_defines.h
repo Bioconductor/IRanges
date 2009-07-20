@@ -65,4 +65,18 @@ typedef struct char_aeae {
 } CharAEAE; 
 
 
+/*
+ * Use the cachedIRanges struct for fast access to the data stored in
+ * an IRanges object thru the abstract accessors.
+ */
+typedef struct cached_iranges {
+	const char *classname;
+	int is_constant_width;
+	int offset;
+	int length;
+	const int *start;
+	const int *width;
+	SEXP names;
+} cachedIRanges;
+
 #endif
