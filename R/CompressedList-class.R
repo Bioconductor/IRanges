@@ -343,6 +343,67 @@ setMethod("[", "CompressedList",
               .bracket.Sequence(x, i)
           })
 
+setMethod("seqextract", "CompressedList",
+          function(x, start=NULL, end=NULL, width=NULL)
+          {
+              if (!is.null(start) && is.null(end) && is.null(width) &&
+                  (length(x) > 0)) {
+                  if (length(x) != length(start))
+                      stop("'length(start)' must equal 'length(x)' when ",
+                           "'end' and 'width' are NULL")
+                  if (is.list(start)) {
+                      if (is.logical(start[[1]]))
+                          start <- LogicalList(start)
+                      else if (is.numeric(start[[1]]))
+                          start <- IntegerList(start)
+                  }
+                  if (is(start, "RangesList")) {
+                      unlistData <-
+                        seqextract(x@unlistData,
+                                   shift(unlist(start),
+                                         rep(start(x@partitioning) - 1L,
+                                             elementLengths(start))))
+                      partitionEnd <-
+                        cumsum(unlist(lapply(start, function(x) sum(width(x))),
+                                      use.names = FALSE))
+                  } else if (is(start, "LogicalList")) {
+                      xeltlen <- elementLengths(x)
+                      whichRep <-
+                        which(xeltlen != elementLengths(start))
+                      for (i in whichRep)
+                          start[[i]] <- rep(start[[i]], length.out = xeltlen[i])
+                      if (length(dim(x@unlistData)) < 2)
+                          unlistData <- x@unlistData[unlist(start)]
+                      else
+                          unlistData <- x@unlistData[unlist(start), , drop = FALSE]
+                      partitionEnd <-
+                        cumsum(unlist(lapply(start, sum), use.names = FALSE))
+                  } else if (is(start, "IntegerList")) {
+                      i <-
+                        unlist(Map("+", start,
+                          IntegerList(as.list(start(x@partitioning) - 1L))))
+                      if (length(dim(x@unlistData)) < 2)
+                          unlistData <- x@unlistData[i]
+                      else
+                          unlistData <- x@unlistData[i, , drop = FALSE]
+                      partitionEnd <-
+                        cumsum(unlist(lapply(start, length), use.names = FALSE))
+                  } else {
+                      stop("unrecognized 'start' type")
+                  }
+                  ans <-
+                    initialize(x,
+                               unlistData = unlistData,
+                               partitioning = 
+                                 new2("PartitioningByEnd",
+                                      end = partitionEnd, NAMES = names(x),
+                                      check=FALSE))
+              } else {
+                  ans <- callNextMethod()
+              }
+              ans
+          })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.
 ###

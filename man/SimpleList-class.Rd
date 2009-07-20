@@ -24,6 +24,8 @@
 \alias{[[<-,SimpleList-method}
 \alias{$<-,CompressedList-method}
 \alias{$<-,SimpleList-method}
+\alias{seqextract,CompressedList-method}
+\alias{seqextract,SimpleList-method}
 
 % splitting and combining
 \alias{c,CompressedList-method}

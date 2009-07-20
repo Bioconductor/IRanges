@@ -115,6 +115,45 @@ setMethod("[", "SimpleList",
               }
               .bracket.Sequence(x, i)
           })
+  
+setMethod("seqextract", "SimpleList",
+          function(x, start=NULL, end=NULL, width=NULL)
+          {
+              if (!is.null(start) && is.null(end) && is.null(width) &&
+                  (length(x) > 0)) {
+                  if (length(x) != length(start))
+                      stop("'length(start)' must equal 'length(x)' when ",
+                           "'end' and 'width' are NULL")
+                  if (is.list(start)) {
+                      if (is.logical(start[[1]]))
+                          start <- LogicalList(start)
+                      else if (is.numeric(start[[1]]))
+                          start <- IntegerList(start)
+                  }
+                  indices <- structure(seq_len(length(x)), names = names(x))
+                  if (is(start, "RangesList")) {
+                      listData <-
+                        lapply(indices, function(i)
+                               seqextract(x@listData[[i]], start[[i]]))
+                  } else if (is(start, "LogicalList") ||
+                             is(start, "IntegerList")) {
+                      if (length(dim(x@listData[[1]])) < 2)
+                          listData <-
+                            lapply(indices,
+                                   function(i) x@listData[[i]][start[[i]]])
+                      else
+                          listData <-
+                            lapply(indices, function(i)
+                                   x@listData[[i]][start[[i]], , drop = FALSE])
+                  } else {
+                      stop("unrecognized 'start' type")
+                  }
+                  slot(x, "listData", check=FALSE) <- listData
+              } else {
+                  x <- callNextMethod()
+              }
+              x
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.
