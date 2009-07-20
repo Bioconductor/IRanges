@@ -10,10 +10,23 @@ setClass("SequenceList", representation("VIRTUAL"),
 setMethod("seqextract", "SequenceList",
           function(x, start=NULL, end=NULL, width=NULL)
           {
-              if (is(start, "RangesList")) {
+              if (!is.null(start) && is.null(end) && is.null(width) &&
+                  (length(x) > 0)) {
                   if (length(x) != length(start))
-                      stop("for Ranges 'start', 'length(x) != length(start)'")
-                  ans <- mendoapply(seqextract, x, start)
+                      stop("'length(start)' must equal 'length(x)' when ",
+                           "'end' and 'width' are NULL")
+                  if (is.list(start)) {
+                      if (is.logical(start[[1]]))
+                          start <- LogicalList(start)
+                      else if (is.numeric(start[[1]]))
+                          start <- IntegerList(start)
+                  }
+                  if (is(start, "RangesList") || is(start, "LogicalList") ||
+                      is(start, "IntegerList")) {
+                      ans <- mendoapply(seqextract, x, start)
+                  } else {
+                      stop("unrecognized 'start' type")
+                  }
               } else {
                   ans <- callNextMethod()
               }

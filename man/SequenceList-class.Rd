@@ -29,8 +29,9 @@
     \item{}{
       \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:
       In addition to normal usage, the \code{start} parameter can be a
-      \code{RangesList} to perform sequence extraction within the list
-      elements rather than across them.
+      \code{RangesList}, \code{LogicalList}, or \code{IntegerList} object
+      to perform sequence extraction within the list elements rather than
+      across them.
     }
   }
 }
