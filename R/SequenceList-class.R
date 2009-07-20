@@ -10,7 +10,7 @@ setClass("SequenceList", representation("VIRTUAL"),
 setMethod("seqextract", "SequenceList",
           function(x, start=NULL, end=NULL, width=NULL)
           {
-              if (!missing(start) && is(start, "RangesList")) {
+              if (is(start, "RangesList")) {
                   if (length(x) != length(start))
                       stop("for Ranges 'start', 'length(x) != length(start)'")
                   ans <- mendoapply(seqextract, x, start)
