@@ -190,7 +190,7 @@ setAs("logical", "IRanges",
 )
 
 setAs("logical", "NormalIRanges",
-    function(from) as(Rle(from), "NormalIRanges")
+    function(from) .Call("IRanges_from_logical", from, PACKAGE="IRanges")
 )
 
 ### coersion from integer

@@ -223,3 +223,54 @@ SEXP IRanges_from_integer(SEXP x)
 	UNPROTECT(3);
 	return ans;
 }
+
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP IRanges_from_logical(SEXP x)
+{
+	SEXP ans, ans_start, ans_width;
+	int i, x_length, ans_length;
+	int *start_buf, *width_buf;
+	int *x_elt, *start_elt, *width_elt, prev;
+
+	x_length = LENGTH(x);
+	if (x_length == 0) {
+		PROTECT(ans_start = NEW_INTEGER(0));
+		PROTECT(ans_width = NEW_INTEGER(0));
+	} else {
+		ans_length = 0;
+		start_buf = (int *) R_alloc((long) x_length, sizeof(int));
+		width_buf = (int *) R_alloc((long) x_length, sizeof(int));
+		prev = 0;
+		start_elt = start_buf - 1;
+		width_elt = width_buf - 1;
+		for (i = 0, x_elt = LOGICAL(x); i < x_length; i++, x_elt++) {
+			if (*x_elt == NA_LOGICAL)
+				error("cannot create an IRanges object from a logical vector with missing values");
+			if (*x_elt == 1) {
+				if (prev) {
+					*width_elt += 1;
+				} else {
+					ans_length++;
+					start_elt++;
+					width_elt++;
+					*start_elt = i + 1;
+					*width_elt = 1;
+				}
+				prev = 1;
+			} else {
+				prev = 0;
+			}
+		}
+		PROTECT(ans_start = NEW_INTEGER(ans_length));
+		PROTECT(ans_width = NEW_INTEGER(ans_length));
+		memcpy(INTEGER(ans_start), start_buf, sizeof(int) * ans_length);
+		memcpy(INTEGER(ans_width), width_buf, sizeof(int) * ans_length);
+	}
+
+	PROTECT(ans = _new_IRanges("IRanges", ans_start, ans_width, R_NilValue));
+	UNPROTECT(3);
+	return ans;
+}
