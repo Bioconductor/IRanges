@@ -391,7 +391,7 @@ SEXP _alloc_IRanges(
 
 SEXP IRanges_from_integer(SEXP x);
 
-SEXP IRanges_from_logical(SEXP x);
+SEXP NormalIRanges_from_logical(SEXP x);
 
 
 /* IRanges_constructor.c */

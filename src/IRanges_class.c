@@ -236,7 +236,7 @@ SEXP IRanges_from_integer(SEXP x)
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP IRanges_from_logical(SEXP x)
+SEXP NormalIRanges_from_logical(SEXP x)
 {
 	SEXP ans, ans_start, ans_width;
 	int i, x_length, ans_length;

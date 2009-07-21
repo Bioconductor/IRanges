@@ -73,7 +73,7 @@ whichAsIRanges <- function(x)
 {
     if (!is.logical(x))
         stop("'x' must be a logical vector")
-    .Call("IRanges_from_logical", x, PACKAGE="IRanges")
+    as(x, "NormalIRanges")
 }
 
 

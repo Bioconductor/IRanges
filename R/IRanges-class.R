@@ -186,11 +186,11 @@ newNormalIRangesFromIRanges <- function(x, check=TRUE)
 
 ### The returned IRanges instance is guaranteed to be normal.
 setAs("logical", "IRanges",
-      function(from) as(Rle(from), "IRanges")
+      function(from) as(as(from, "NormalIRanges"), "IRanges")
 )
 
 setAs("logical", "NormalIRanges",
-    function(from) .Call("IRanges_from_logical", from, PACKAGE="IRanges")
+    function(from) .Call("NormalIRanges_from_logical", from, PACKAGE="IRanges")
 )
 
 ### coersion from integer
