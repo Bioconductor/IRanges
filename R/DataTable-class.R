@@ -63,8 +63,8 @@ setMethod("seqextract", "DataTable",
                   if (is(start, "Ranges"))
                       ir <- start
                   else {
-                      if (is.logical(start))
-                          start <- rep(start, length.out = length(x))
+                      if (is.logical(start) && length(start) != nrow(x))
+                          start <- rep(start, length.out = nrow(x))
                       ir <- as(start, "IRanges")
                   }
               } else {

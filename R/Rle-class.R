@@ -487,7 +487,7 @@ setMethod("seqextract", "Rle",
                   if (is(start, "Ranges"))
                       ir <- start
                   else {
-                      if (is.logical(start))
+                      if (is.logical(start) && length(start) != length(x))
                           start <- rep(start, length.out = length(x))
                       ir <- as(start, "IRanges")
                   }
