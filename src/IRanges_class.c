@@ -51,23 +51,18 @@ SEXP _get_IRanges_names(SEXP x)
  * C-level abstract accessor functions.
  */
 
-cachedIRanges _cache_subIRanges(SEXP x, int offset, int length)
+cachedIRanges _cache_IRanges(SEXP x)
 {
 	cachedIRanges cached_x;
 
 	cached_x.classname = _get_classname(x);
 	cached_x.is_constant_width = 0;
-	cached_x.offset = offset;
-	cached_x.length = length;
-	cached_x.start = INTEGER(_get_IRanges_start(x)) + offset;
-	cached_x.width = INTEGER(_get_IRanges_width(x)) + offset;
+	cached_x.offset = 0;
+	cached_x.length = _get_IRanges_length(x);
+	cached_x.start = INTEGER(_get_IRanges_start(x));
+	cached_x.width = INTEGER(_get_IRanges_width(x));
 	cached_x.names = _get_IRanges_names(x);
 	return cached_x;
-}
-
-cachedIRanges _cache_IRanges(SEXP x)
-{
-	return _cache_subIRanges(x, 0, _get_IRanges_length(x));
 }
 
 int _get_cachedIRanges_length(const cachedIRanges *cached_x)
@@ -95,6 +90,19 @@ int _get_cachedIRanges_elt_end(const cachedIRanges *cached_x, int i)
 SEXP _get_cachedIRanges_elt_name(const cachedIRanges *cached_x, int i)
 {
 	return STRING_ELT(cached_x->names, cached_x->offset + i);
+}
+
+cachedIRanges _sub_cachedIRanges(const cachedIRanges *cached_x, int offset, int length)
+{
+	cachedIRanges cached_y;
+
+	cached_y = *cached_x;
+	cached_y.offset += offset;
+	cached_y.length = length;
+	cached_y.start += offset;
+	if (!cached_y.is_constant_width)
+		cached_y.width += offset;
+	return cached_y;
 }
 
 

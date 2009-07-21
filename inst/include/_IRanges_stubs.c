@@ -310,11 +310,6 @@ DEFINE_CCALLABLE_STUB(SEXP, get_IRanges_names,
 	(     x)
 )
 
-DEFINE_CCALLABLE_STUB(cachedIRanges, cache_subIRanges,
-	(SEXP x, int offset, int length),
-	(     x,     offset,     length)
-)
-
 DEFINE_CCALLABLE_STUB(cachedIRanges, cache_IRanges,
 	(SEXP x),
 	(     x)
@@ -345,6 +340,11 @@ DEFINE_CCALLABLE_STUB(SEXP, get_cachedIRanges_elt_name,
 	(                     cached_x,     i)
 )
 
+DEFINE_CCALLABLE_STUB(cachedIRanges, sub_cachedIRanges,
+	(const cachedIRanges *cached_x, int offset, int length),
+	(                     cached_x,     offset,     length)
+)
+
 DEFINE_NOVALUE_CCALLABLE_STUB(set_IRanges_names,
 	(SEXP x, SEXP names),
 	(     x,      names)
@@ -369,9 +369,14 @@ DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,
  * Stubs for callables defined in CompressedIRangesList_class.c
  */
 
-DEFINE_CCALLABLE_STUB(cachedIRanges, cache_CompressedIRangesList_elt,
-	(SEXP x, int i),
-	(     x,     i)
+DEFINE_CCALLABLE_STUB(cachedCompressedIRangesList, cache_CompressedIRangesList,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(cachedIRanges, get_cachedCompressedIRangesList_elt,
+	(const cachedCompressedIRangesList *cached_x, int i),
+	(                                   cached_x,     i)
 )
 
 /*

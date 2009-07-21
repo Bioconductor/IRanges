@@ -337,12 +337,6 @@ SEXP _get_IRanges_width(SEXP x);
 
 SEXP _get_IRanges_names(SEXP x);
 
-cachedIRanges _cache_subIRanges(
-	SEXP x,
-	int offset,
-	int length
-);
-
 cachedIRanges _cache_IRanges(SEXP x);
 
 int _get_cachedIRanges_length(const cachedIRanges *cached_x);
@@ -365,6 +359,12 @@ int _get_cachedIRanges_elt_end(
 SEXP _get_cachedIRanges_elt_name(
 	const cachedIRanges *cached_x,
 	int i
+);
+
+cachedIRanges _sub_cachedIRanges(
+	const cachedIRanges *cached_x,
+	int offset,
+	int length
 );
 
 void _set_IRanges_names(
@@ -426,8 +426,10 @@ SEXP IRanges_reduce(
 
 /* CompressedIRangesList_class.c */
 
-cachedIRanges _cache_CompressedIRangesList_elt(
-	SEXP x,
+cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x);
+
+cachedIRanges _get_cachedCompressedIRangesList_elt(
+	const cachedCompressedIRangesList *cached_x,
 	int i
 );
 

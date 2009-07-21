@@ -1,16 +1,28 @@
 #include "IRanges.h"
 
-cachedIRanges _cache_CompressedIRangesList_elt(SEXP x, int i)
+cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x)
 {
-	SEXP x_part_end, x_unlistData;
+	cachedCompressedIRangesList cached_x;
+	SEXP x_end;
+
+	cached_x.classname = _get_classname(x);
+	x_end = GET_SLOT(GET_SLOT(x, install("partitioning")), install("end"));
+	cached_x.length = LENGTH(x_end);
+	cached_x.end = INTEGER(x_end);
+	cached_x.cached_unlistData = _cache_IRanges(GET_SLOT(x, install("unlistData")));
+	return cached_x;
+}
+
+cachedIRanges _get_cachedCompressedIRangesList_elt(
+		const cachedCompressedIRangesList *cached_x, int i)
+{
 	int offset, length;
 
-	x_part_end = GET_SLOT(GET_SLOT(x, install("partitioning")), install("end"));
-	x_unlistData = GET_SLOT(x, install("unlistData"));
-	offset = i == 0 ? 0 : INTEGER(x_part_end)[i - 1];
-	length = INTEGER(x_part_end)[i] - offset;
-	return _cache_subIRanges(x_unlistData, offset, length);
+	offset = i == 0 ? 0 : cached_x->end[i - 1];
+	length = cached_x->end[i] - offset;
+	return _sub_cachedIRanges(&(cached_x->cached_unlistData), offset, length);
 }
+
 
 /*
  * --- .Call ENTRY POINT ---
