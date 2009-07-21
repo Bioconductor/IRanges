@@ -125,7 +125,7 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
     for (m = 0; m < LENGTH(result_inds); m++) {
       INTEGER(result_inds)[m] = fill;
     }
-    return(result_inds);
+    return result_inds;
   }
   
   if (nranges || result_ints)
@@ -351,7 +351,7 @@ _IntegerIntervalTree_nearest(struct rbTree *tree, int *query, int len,
     }
   }
   
-  return(result_ind);
+  return result_ind;
 }
 */
 
@@ -417,7 +417,7 @@ SEXP IntegerIntervalTree_asIRanges(SEXP r_tree) {
   r_ranges = _new_IRanges("IRanges", r_start, r_width, R_NilValue);
   
   UNPROTECT(2);
-  return(r_ranges);
+  return r_ranges;
 }
 
 SEXP IntegerIntervalTree_start(SEXP r_tree) {
@@ -448,7 +448,7 @@ SEXP IntegerIntervalTree_end(SEXP r_tree) {
 
 SEXP IntegerIntervalTree_length(SEXP r_tree) {
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
-  return(ScalarInteger(tree->n));
+  return ScalarInteger(tree->n);
 }
   
 static void _IntegerIntervalTreeNode_dump(void *item, FILE *file) {
@@ -460,5 +460,5 @@ static void _IntegerIntervalTreeNode_dump(void *item, FILE *file) {
 SEXP IntegerIntervalTree_dump(SEXP r_tree) {
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
   rbTreeDump(tree, stdout, _IntegerIntervalTreeNode_dump);
-  return(R_NilValue);
+  return R_NilValue;
 }
