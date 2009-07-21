@@ -367,10 +367,6 @@ SEXP _get_cachedIRanges_elt_name(
 	int i
 );
 
-const int *_get_IRanges_start0(SEXP x);
-
-const int *_get_IRanges_width0(SEXP x);
-
 void _set_IRanges_names(
 	SEXP x,
 	SEXP names

@@ -31,7 +31,7 @@ SEXP CompressedIRangesList_summary(SEXP object)
 		int *ans1_elt, *ans2_elt;
 		const int *part_end_elt, *ranges_width;
 		SEXP unlistData = GET_SLOT(object, install("unlistData"));
-		ranges_width = _get_IRanges_width0(unlistData);
+		ranges_width = INTEGER(_get_IRanges_width(unlistData));
 		for (i = 0, ans1_elt = INTEGER(ans), ans2_elt = (INTEGER(ans) + ans_len),
 			 part_end_elt = INTEGER(part_end);
 		     i < ans_len; i++, ans1_elt++, ans2_elt++, part_end_elt++)

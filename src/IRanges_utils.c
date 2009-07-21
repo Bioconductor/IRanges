@@ -112,21 +112,19 @@ static void reduce_ranges(int length, const int *start, const int *width, int *i
  */
 SEXP IRanges_reduce(SEXP x, SEXP with_inframe_start)
 {
-	int x_length;
-	const int *x_start, *x_width;
-	SEXP ans, ans_names, ans_inframe_start;
-	int *inframe_start;
+	int x_length, *inframe_start;
+	SEXP x_start, x_width, ans, ans_names, ans_inframe_start;
 
 	x_length = _get_IRanges_length(x);
-	x_start = _get_IRanges_start0(x);
-	x_width = _get_IRanges_width0(x);
+	x_start = _get_IRanges_start(x);
+	x_width = _get_IRanges_width(x);
 	if (LOGICAL(with_inframe_start)[0]) {
 		PROTECT(ans_inframe_start = NEW_INTEGER(x_length));
 		inframe_start = INTEGER(ans_inframe_start);
 	} else {
 		inframe_start = NULL;
 	}
-	reduce_ranges(x_length, x_start, x_width, inframe_start);
+	reduce_ranges(x_length, INTEGER(x_start), INTEGER(x_width), inframe_start);
 
 	PROTECT(ans = NEW_LIST(3));
 	PROTECT(ans_names = NEW_CHARACTER(3));

@@ -10,16 +10,16 @@
 SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 {
 	char type = '?';
-	int i, ans_length, index, lower_run, upper_run, upper_bound;
-	int *lengths_elt, *start_elt, *width_elt;
-	SEXP ans, subject, values, lengths, start, width, names;
+	int i, start, width, ans_length, index, lower_run, upper_run, upper_bound;
+	int *lengths_elt;
+	SEXP ans, subject, values, lengths, names;
+	cachedIRanges cached_x;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
-	start = _get_IRanges_start(x);
-	width = _get_IRanges_width(x);
-	ans_length = _get_IRanges_length(x);
+	cached_x = _cache_IRanges(x);
+	ans_length = _get_cachedIRanges_length(&cached_x);
 
 	switch (TYPEOF(values)) {
     case LGLSXP:
@@ -38,27 +38,26 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 	lengths_elt = INTEGER(lengths);
 	index = 0;
 	upper_run = *lengths_elt;
-	for (i = 0, start_elt = INTEGER(start), width_elt = INTEGER(width);
-	     i < ans_length;
-	     i++, start_elt++, width_elt++)
-	{
+	for (i = 0; i < ans_length; i++) {
+		start = _get_cachedIRanges_elt_start(&cached_x, i);
+		width = _get_cachedIRanges_elt_width(&cached_x, i);
 		if (type == 'i') {
 			INTEGER(ans)[i] = INT_MAX;
 		} else if (type == 'r') {
 			REAL(ans)[i] = R_PosInf;
 		}
-		while (index > 0 && upper_run > *start_elt) {
+		while (index > 0 && upper_run > start) {
 			upper_run -= *lengths_elt;
 			lengths_elt--;
 			index--;
 		}
-		while (upper_run < *start_elt) {
+		while (upper_run < start) {
 			lengths_elt++;
 			index++;
 			upper_run += *lengths_elt;
 		}
 		lower_run = upper_run - *lengths_elt + 1;
-		upper_bound = *start_elt + *width_elt - 1;
+		upper_bound = start + width - 1;
 		if (type == 'i') {
 			while (lower_run <= upper_bound) {
 				if (INTEGER(values)[index] == NA_INTEGER) {
@@ -91,7 +90,7 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	PROTECT(names = duplicate(GET_SLOT(x, install("NAMES"))));
+	PROTECT(names = duplicate(_get_IRanges_names(x)));
 	SET_NAMES(ans, names);
 	UNPROTECT(2);
 	return ans;
@@ -103,16 +102,16 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 {
 	char type = '?';
-	int i, ans_length, index, lower_run, upper_run, upper_bound;
-	int *lengths_elt, *start_elt, *width_elt;
-	SEXP ans, subject, values, lengths, start, width, names;
+	int i, start, width, ans_length, index, lower_run, upper_run, upper_bound;
+	int *lengths_elt;
+	SEXP ans, subject, values, lengths, names;
+	cachedIRanges cached_x;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
-	start = _get_IRanges_start(x);
-	width = _get_IRanges_width(x);
-	ans_length = _get_IRanges_length(x);
+	cached_x = _cache_IRanges(x);
+	ans_length = _get_cachedIRanges_length(&cached_x);
 
 	switch (TYPEOF(values)) {
     case LGLSXP:
@@ -131,27 +130,26 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 	lengths_elt = INTEGER(lengths);
 	index = 0;
 	upper_run = *lengths_elt;
-	for (i = 0, start_elt = INTEGER(start), width_elt = INTEGER(width);
-	     i < ans_length;
-	     i++, start_elt++, width_elt++)
-	{
+	for (i = 0; i < ans_length; i++) {
+		start = _get_cachedIRanges_elt_start(&cached_x, i);
+		width = _get_cachedIRanges_elt_width(&cached_x, i);
 		if (type == 'i') {
 			INTEGER(ans)[i] = R_INT_MIN;
 		} else if (type == 'r') {
 			REAL(ans)[i] = R_NegInf;
 		}
-		while (index > 0 && upper_run > *start_elt) {
+		while (index > 0 && upper_run > start) {
 			upper_run -= *lengths_elt;
 			lengths_elt--;
 			index--;
 		}
-		while (upper_run < *start_elt) {
+		while (upper_run < start) {
 			lengths_elt++;
 			index++;
 			upper_run += *lengths_elt;
 		}
 		lower_run = upper_run - *lengths_elt + 1;
-		upper_bound = *start_elt + *width_elt - 1;
+		upper_bound = start + width - 1;
 		if (type == 'i') {
 			while (lower_run <= upper_bound) {
 				if (INTEGER(values)[index] == NA_INTEGER) {
@@ -184,7 +182,7 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	PROTECT(names = duplicate(GET_SLOT(x, install("NAMES"))));
+	PROTECT(names = duplicate(_get_IRanges_names(x)));
 	SET_NAMES(ans, names);
 	UNPROTECT(2);
 	return ans;
@@ -196,16 +194,17 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 {
 	char type = '?';
-	int i, ans_length, index, lower_run, upper_run, lower_bound, upper_bound;
-	int *lengths_elt, *start_elt, *width_elt;
-	SEXP ans, subject, values, lengths, start, width, names;
+	int i, start, width, ans_length, index,
+	    lower_run, upper_run, lower_bound, upper_bound;
+	int *lengths_elt;
+	SEXP ans, subject, values, lengths, names;
+	cachedIRanges cached_x;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
-	start = _get_IRanges_start(x);
-	width = _get_IRanges_width(x);
-	ans_length = _get_IRanges_length(x);
+	cached_x = _cache_IRanges(x);
+	ans_length = _get_cachedIRanges_length(&cached_x);
 
 	switch (TYPEOF(values)) {
     case LGLSXP:
@@ -228,10 +227,9 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 	lengths_elt = INTEGER(lengths);
 	index = 0;
 	upper_run = *lengths_elt;
-	for (i = 0, start_elt = INTEGER(start), width_elt = INTEGER(width);
-	     i < ans_length;
-	     i++, start_elt++, width_elt++)
-	{
+	for (i = 0; i < ans_length; i++) {
+		start = _get_cachedIRanges_elt_start(&cached_x, i);
+		width = _get_cachedIRanges_elt_width(&cached_x, i);
 		if (type == 'i') {
 			INTEGER(ans)[i] = 0;
 		} else if (type == 'r') {
@@ -240,19 +238,19 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 			COMPLEX(ans)[i].r = 0;
 			COMPLEX(ans)[i].i = 0;
 		}
-		while (index > 0 && upper_run > *start_elt) {
+		while (index > 0 && upper_run > start) {
 			upper_run -= *lengths_elt;
 			lengths_elt--;
 			index--;
 		}
-		while (upper_run < *start_elt) {
+		while (upper_run < start) {
 			lengths_elt++;
 			index++;
 			upper_run += *lengths_elt;
 		}
 		lower_run = upper_run - *lengths_elt + 1;
-		lower_bound = *start_elt;
-		upper_bound = *start_elt + *width_elt - 1;
+		lower_bound = start;
+		upper_bound = start + width - 1;
 		if (type == 'i') {
 			while (lower_run <= upper_bound) {
 				if (INTEGER(values)[index] == NA_INTEGER) {
@@ -316,7 +314,7 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	PROTECT(names = duplicate(GET_SLOT(x, install("NAMES"))));
+	PROTECT(names = duplicate(_get_IRanges_names(x)));
 	SET_NAMES(ans, names);
 	UNPROTECT(2);
 	return ans;
@@ -328,16 +326,17 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 {
 	char type = '?';
-	int i, ans_length, index, lower_run, upper_run, lower_bound, upper_bound;
-	int *ans_elt, *lengths_elt, *start_elt, *width_elt;
-	SEXP curr, ans, subject, values, lengths, start, width, names;
+	int i, start, width, ans_length, index,
+	    lower_run, upper_run, lower_bound, upper_bound;
+	int *ans_elt, *lengths_elt;
+	SEXP curr, ans, subject, values, lengths, names;
+	cachedIRanges cached_x;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
-	start = _get_IRanges_start(x);
-	width = _get_IRanges_width(x);
-	ans_length = _get_IRanges_length(x);
+	cached_x = _cache_IRanges(x);
+	ans_length = _get_cachedIRanges_length(&cached_x);
 
 	switch (TYPEOF(values)) {
     case LGLSXP:
@@ -357,28 +356,27 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 	lengths_elt = INTEGER(lengths);
 	index = 0;
 	upper_run = *lengths_elt;
-	for (i = 0, ans_elt = INTEGER(ans), start_elt = INTEGER(start), width_elt = INTEGER(width);
-	     i < ans_length;
-	     i++, ans_elt++, start_elt++, width_elt++)
-	{
+	for (i = 0, ans_elt = INTEGER(ans); i < ans_length; i++, ans_elt++) {
+		start = _get_cachedIRanges_elt_start(&cached_x, i);
+		width = _get_cachedIRanges_elt_width(&cached_x, i);
 		if (type == 'i') {
 			INTEGER(curr)[0] = INT_MAX;
 		} else if (type == 'r') {
 			REAL(curr)[0] = R_PosInf;
 		}
-		while (index > 0 && upper_run > *start_elt) {
+		while (index > 0 && upper_run > start) {
 			upper_run -= *lengths_elt;
 			lengths_elt--;
 			index--;
 		}
-		while (upper_run < *start_elt) {
+		while (upper_run < start) {
 			lengths_elt++;
 			index++;
 			upper_run += *lengths_elt;
 		}
 		lower_run = upper_run - *lengths_elt + 1;
-		lower_bound = *start_elt;
-		upper_bound = *start_elt + *width_elt - 1;
+		lower_bound = start;
+		upper_bound = start + width - 1;
 		if (type == 'i') {
 			while (lower_run <= upper_bound) {
 				if (INTEGER(values)[index] == NA_INTEGER) {
@@ -415,7 +413,7 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	PROTECT(names = duplicate(GET_SLOT(x, install("NAMES"))));
+	PROTECT(names = duplicate(_get_IRanges_names(x)));
 	SET_NAMES(ans, names);
 	UNPROTECT(3);
 	return ans;
@@ -427,16 +425,17 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 {
 	char type = '?';
-	int i, ans_length, index, lower_run, upper_run, lower_bound, upper_bound;
-	int *ans_elt, *lengths_elt, *start_elt, *width_elt;
-	SEXP curr, ans, subject, values, lengths, start, width, names;
+	int i, start, width, ans_length, index,
+	    lower_run, upper_run, lower_bound, upper_bound;
+	int *ans_elt, *lengths_elt;
+	SEXP curr, ans, subject, values, lengths, names;
+	cachedIRanges cached_x;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
-	start = _get_IRanges_start(x);
-	width = _get_IRanges_width(x);
-	ans_length = _get_IRanges_length(x);
+	cached_x = _cache_IRanges(x);
+	ans_length = _get_cachedIRanges_length(&cached_x);
 
 	switch (TYPEOF(values)) {
     case LGLSXP:
@@ -456,28 +455,27 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 	lengths_elt = INTEGER(lengths);
 	index = 0;
 	upper_run = *lengths_elt;
-	for (i = 0, ans_elt = INTEGER(ans), start_elt = INTEGER(start), width_elt = INTEGER(width);
-	     i < ans_length;
-	     i++, ans_elt++, start_elt++, width_elt++)
-	{
+	for (i = 0, ans_elt = INTEGER(ans); i < ans_length; i++, ans_elt++) {
+		start = _get_cachedIRanges_elt_start(&cached_x, i);
+		width = _get_cachedIRanges_elt_width(&cached_x, i);
 		if (type == 'i') {
 			INTEGER(curr)[0] = R_INT_MIN;
 		} else if (type == 'r') {
 			REAL(curr)[0] = R_NegInf;
 		}
-		while (index > 0 && upper_run > *start_elt) {
+		while (index > 0 && upper_run > start) {
 			upper_run -= *lengths_elt;
 			lengths_elt--;
 			index--;
 		}
-		while (upper_run < *start_elt) {
+		while (upper_run < start) {
 			lengths_elt++;
 			index++;
 			upper_run += *lengths_elt;
 		}
 		lower_run = upper_run - *lengths_elt + 1;
-		lower_bound = *start_elt;
-		upper_bound = *start_elt + *width_elt - 1;
+		lower_bound = start;
+		upper_bound = start + width - 1;
 		if (type == 'i') {
 			while (lower_run <= upper_bound) {
 				if (INTEGER(values)[index] == NA_INTEGER) {
@@ -514,7 +512,7 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	PROTECT(names = duplicate(GET_SLOT(x, install("NAMES"))));
+	PROTECT(names = duplicate(_get_IRanges_names(x)));
 	SET_NAMES(ans, names);
 	UNPROTECT(3);
 	return ans;

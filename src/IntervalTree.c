@@ -45,7 +45,7 @@ void _IntegerIntervalTree_free(SEXP r_tree) {
 }
 
 
-void _IntegerIntervalTree_add(struct rbTree *tree, int start, int end,
+static void _IntegerIntervalTree_add(struct rbTree *tree, int start, int end,
                        unsigned int index) {
   IntegerIntervalNode tmpInterval = { { start, end }, index, 0 };
   IntegerIntervalNode *interval =
@@ -83,16 +83,17 @@ struct rbTree *_IntegerIntervalTree_new(void) {
 
 SEXP IntegerIntervalTree_new(SEXP r_ranges) {
   struct rbTree *tree = _IntegerIntervalTree_new();
-  int i, nranges = _get_IRanges_length(r_ranges);
+  cachedIRanges cached_r_ranges = _cache_IRanges(r_ranges);
+  int nranges = _get_cachedIRanges_length(&cached_r_ranges);
+  int i, start, end;
   SEXP r_tree;
-  SEXP start = _get_IRanges_start(r_ranges);
-  SEXP width = _get_IRanges_width(r_ranges);
   
   
   for (i = 0; i < nranges; i++) {
-    if (INTEGER(width)[i] > 0) /* only add non-empty ranges */
-      _IntegerIntervalTree_add(tree, INTEGER(start)[i],
-                               INTEGER(start)[i] + INTEGER(width)[i] - 1, i+1);
+    start = _get_cachedIRanges_elt_start(&cached_r_ranges, i);
+    end = _get_cachedIRanges_elt_end(&cached_r_ranges, i);
+    if (end >= start) /* only add non-empty ranges */
+      _IntegerIntervalTree_add(tree, start, end, i+1);
   }
   tree->n = nranges; /* kind of a hack - includes empty ranges */
   
@@ -114,11 +115,10 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
   int /* stack height */ height = 0, /* query counter */ m;
   Rboolean hit = FALSE; /* already hit current node? */
   
-  int nranges = _get_IRanges_length(r_ranges);
+  cachedIRanges cached_r_ranges = _cache_IRanges(r_ranges);
+  int nranges = _get_cachedIRanges_length(&cached_r_ranges);
   SEXP result_inds = allocVector(INTSXP, nranges + (result_ints != NULL));
   //Rprintf("result_inds: %d\n", nranges + (result_ints != NULL));
-  SEXP starts = _get_IRanges_start(r_ranges);
-  SEXP widths = _get_IRanges_width(r_ranges);
 
   if (!p) { /* tree is empty */
     int fill = result_ints ? 0 : NA_INTEGER;
@@ -132,8 +132,8 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
     INTEGER(result_inds)[0] = 0;
   
   for (m = 0; m < nranges; m++) {
-    int start = INTEGER(starts)[m];
-    int end = INTEGER(widths)[m] + start - 1;
+    int start = _get_cachedIRanges_elt_start(&cached_r_ranges, m);
+    int end = _get_cachedIRanges_elt_end(&cached_r_ranges, m);
     if (end < start) { /* empty query range */
       if (result_inds)
         INTEGER(result_inds)[m+1] = INTEGER(result_inds)[m];
@@ -358,15 +358,14 @@ _IntegerIntervalTree_nearest(struct rbTree *tree, int *query, int len,
  /*
 SEXP IntegerIntervalTree_nearest(SEXP r_tree, SEXP r_ranges, SEXP r_self) {
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
-  int nranges = _get_IRanges_length(r_ranges);
-  
+  cachedIRanges cached_r_ranges = _cache_IRanges(r_ranges);
+  int nranges = _get_cachedIRanges_length(&cached_r_ranges);
 
-  SEXP start = _get_IRanges_start(r_ranges);
-  SEXP width = _get_IRanges_width(r_ranges);
-  int *end = R_alloc(GET_LENGTH(start), sizeof(int));
+
+  int *end = R_alloc(nranges, sizeof(int));
     
-  for (i = 0; i < GET_LENGTH(start); i++)
-    end[i] = INTEGER(start)[i] + INTEGER(width)[i] - 1;
+  for (i = 0; i < nranges; i++)
+    end[i] = _get_cachedIRanges_elt_end(&cached_r_ranges, i);
   
 }
  */

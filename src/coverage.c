@@ -25,22 +25,23 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP width)
 	SEXP ans, ans_lengths, ans_values;
 
 	int x_length = _get_IRanges_length(x);
-	const int *x_start = _get_IRanges_start0(x);
-	const int *x_width = _get_IRanges_width0(x);
+	const int *x_start = INTEGER(_get_IRanges_start(x));
+	const int *x_width = INTEGER(_get_IRanges_width(x));
 
 	// order start values
-	int *wd, *wt, order_length = 0;
+	const int *wd, *wt;
+	int order_length = 0;
 	int *order_start = (int *) R_alloc((long) x_length, sizeof(int));
 	memset(order_start, -1, x_length * sizeof(int));
 	if (LENGTH(weight) == 1) {
-		for (i = 0, wd = (int*) x_width; i < x_length; i++, wd++) {
+		for (i = 0, wd = x_width; i < x_length; i++, wd++) {
 			if (*wd > 0) {
 				order_start[order_length] = i;
 				order_length++;
 			}
 		}
 	} else {
-		for (i = 0, wd = (int *) x_width, wt = INTEGER(weight); i < x_length;
+		for (i = 0, wd = x_width, wt = INTEGER(weight); i < x_length;
 		     i++, wd++, wt++) {
 			if (*wd > 0 && *wt != 0) {
 				order_start[order_length] = i;

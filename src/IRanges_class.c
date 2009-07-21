@@ -20,7 +20,7 @@ SEXP debug_IRanges_class()
 
 
 /****************************************************************************
- * C-level accessor functions for IRanges objects.
+ * C-level slot accessor functions.
  *
  * Be careful that these functions do NOT duplicate the returned slot.
  * Thus they cannot be made .Call() entry points!
@@ -48,7 +48,7 @@ SEXP _get_IRanges_names(SEXP x)
 
 
 /****************************************************************************
- * Abstract accessors.
+ * C-level abstract accessor functions.
  */
 
 cachedIRanges _cache_subIRanges(SEXP x, int offset, int length)
@@ -99,18 +99,8 @@ SEXP _get_cachedIRanges_elt_name(const cachedIRanges *cached_x, int i)
 
 
 /****************************************************************************
- * Other functions.
+ * Setting the slots of an IRanges object.
  */
-
-const int *_get_IRanges_start0(SEXP x)
-{
-	return INTEGER(_get_IRanges_start(x));
-}
-
-const int *_get_IRanges_width0(SEXP x)
-{
-	return INTEGER(_get_IRanges_width(x));
-}
 
 /*
  * Does NOT duplicate 'x'. The @NAMES slot is modified in place!
