@@ -18,48 +18,6 @@ SEXP debug_IRanges_utils()
 	return R_NilValue;
 }
 
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP which_as_IRanges(SEXP x)
-{
-	SEXP ans, ans_start, ans_width;
-	int i, x_length, ans_length, *x_elt, prev_elt, *start_elt, *width_elt;
-
-	x_length = LENGTH(x);
-	ans_length = 0;
-	prev_elt = 0;
-	for (i = 1, x_elt = LOGICAL(x); i <= x_length; i++, x_elt++) {
-		if (*x_elt && !prev_elt)
-			ans_length++;
-		prev_elt = *x_elt;
-	}
-
-	PROTECT(ans_start = NEW_INTEGER(ans_length));
-	PROTECT(ans_width = NEW_INTEGER(ans_length));
-	if (ans_length > 0) {
-		start_elt = INTEGER(ans_start) - 1;
-		width_elt = INTEGER(ans_width) - 1;
-		prev_elt = 0;
-		for (i = 1, x_elt = LOGICAL(x); i <= x_length; i++, x_elt++) {
-			if (*x_elt) {
-				if (prev_elt)
-					*width_elt += 1;
-				else {
-					start_elt++;
-					width_elt++;
-					*start_elt = i;
-					*width_elt = 1;
-				}
-			}
-			prev_elt = *x_elt;
-		}
-	}
-	PROTECT(ans = _new_IRanges("NormalIRanges", ans_start, ans_width, R_NilValue));
-	UNPROTECT(3);
-	return ans;
-}
-
 
 /****************************************************************************
  * Reduction (aka extracting the frame)

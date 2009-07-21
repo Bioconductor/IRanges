@@ -416,8 +416,6 @@ SEXP solve_user_SEW(
 
 SEXP debug_IRanges_utils();
 
-SEXP which_as_IRanges(SEXP x);
-
 SEXP IRanges_reduce(
 	SEXP x,
 	SEXP with_inframe_start

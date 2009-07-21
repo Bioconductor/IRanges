@@ -191,7 +191,7 @@ SEXP IRanges_from_integer(SEXP x)
 	SEXP ans, ans_start, ans_width;
 	int i, x_length, ans_length;
 	int *start_buf, *width_buf;
-	int *x_elt, *start_elt, *width_elt, prev_plus1;
+	int *x_elt, *start_elt, *width_elt, prev_elt_plus1;
 
 	x_length = LENGTH(x);
 	if (x_length == 0) {
@@ -203,13 +203,13 @@ SEXP IRanges_from_integer(SEXP x)
 		width_buf = (int *) R_alloc((long) x_length, sizeof(int));
 		start_buf[0] = INTEGER(x)[0];
 		width_buf[0] = 1;
-		prev_plus1 = start_buf[0] + 1;
+		prev_elt_plus1 = start_buf[0] + 1;
 		start_elt = start_buf;
 		width_elt = width_buf;
 		for (i = 1, x_elt = (INTEGER(x)+1); i < x_length; i++, x_elt++) {
 			if (*x_elt == NA_INTEGER)
 				error("cannot create an IRanges object from an integer vector with missing values");
-			if (*x_elt == prev_plus1) {
+			if (*x_elt == prev_elt_plus1) {
 				*width_elt += 1;
 			} else {
 				ans_length++;
@@ -217,9 +217,9 @@ SEXP IRanges_from_integer(SEXP x)
 				width_elt++;
 				*start_elt = *x_elt;
 				*width_elt = 1;
-				prev_plus1 = *x_elt;
+				prev_elt_plus1 = *x_elt;
 			}
-			prev_plus1++;
+			prev_elt_plus1++;
 		}
 		PROTECT(ans_start = NEW_INTEGER(ans_length));
 		PROTECT(ans_width = NEW_INTEGER(ans_length));
@@ -241,7 +241,7 @@ SEXP IRanges_from_logical(SEXP x)
 	SEXP ans, ans_start, ans_width;
 	int i, x_length, ans_length;
 	int *start_buf, *width_buf;
-	int *x_elt, *start_elt, *width_elt, prev;
+	int *x_elt, *start_elt, *width_elt, prev_elt;
 
 	x_length = LENGTH(x);
 	if (x_length == 0) {
@@ -251,26 +251,24 @@ SEXP IRanges_from_logical(SEXP x)
 		ans_length = 0;
 		start_buf = (int *) R_alloc((long) x_length, sizeof(int));
 		width_buf = (int *) R_alloc((long) x_length, sizeof(int));
-		prev = 0;
+		prev_elt = 0;
 		start_elt = start_buf - 1;
 		width_elt = width_buf - 1;
-		for (i = 0, x_elt = LOGICAL(x); i < x_length; i++, x_elt++) {
+		for (i = 1, x_elt = LOGICAL(x); i <= x_length; i++, x_elt++) {
 			if (*x_elt == NA_LOGICAL)
 				error("cannot create an IRanges object from a logical vector with missing values");
 			if (*x_elt == 1) {
-				if (prev) {
+				if (prev_elt) {
 					*width_elt += 1;
 				} else {
 					ans_length++;
 					start_elt++;
 					width_elt++;
-					*start_elt = i + 1;
+					*start_elt = i;
 					*width_elt = 1;
 				}
-				prev = 1;
-			} else {
-				prev = 0;
 			}
+			prev_elt = *x_elt;
 		}
 		PROTECT(ans_start = NEW_INTEGER(ans_length));
 		PROTECT(ans_width = NEW_INTEGER(ans_length));
@@ -278,7 +276,7 @@ SEXP IRanges_from_logical(SEXP x)
 		memcpy(INTEGER(ans_width), width_buf, sizeof(int) * ans_length);
 	}
 
-	PROTECT(ans = _new_IRanges("IRanges", ans_start, ans_width, R_NilValue));
+	PROTECT(ans = _new_IRanges("NormalIRanges", ans_start, ans_width, R_NilValue));
 	UNPROTECT(3);
 	return ans;
 }
