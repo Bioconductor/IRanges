@@ -1,7 +1,7 @@
 useDynLib(IRanges)
 
 import(methods)
-importFrom(utils, head, tail)
+importFrom(utils, head, read.table, tail)
 importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
            window, aggregate, xtabs)
 
