@@ -179,6 +179,31 @@ setMethod("lapply", "SimpleList",
           function(X, FUN, ...)
               lapply(as.list(X), FUN = FUN, ...))
 
+setMethod("aggregate", "SimpleList",
+          function(x, by, FUN, start = NULL, end = NULL, width = NULL,
+                   frequency = NULL, delta = NULL, ..., simplify = TRUE)
+          {
+              if (!missing(by) && is(by, "RangesList")) {
+                  if (length(x) != length(by))
+                      stop("for Ranges 'by', 'length(x) != length(by)'")
+                  ans <-
+                    newSimpleList("SimpleList",
+                                  lapply(structure(seq_len(length(x)),
+                                                   names = names(x)),
+                                         function(i)
+                                         aggregate(x[[i]], by = by[[i]],
+                                                   FUN = FUN,
+                                                   frequency = frequency,
+                                                   delta = delta, ...,
+                                                   simplify = simplify)),
+                                  metadata = metadata(x),
+                                  elementMetadata = elementMetadata(x))
+              } else {
+                  ans <- callNextMethod()
+              }
+              ans
+          })
+
 setMethod("endoapply", "SimpleList",
           function(X, FUN, ...) {
               listData <- lapply(X, FUN = FUN, ...)

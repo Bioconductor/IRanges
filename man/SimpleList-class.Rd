@@ -32,6 +32,8 @@
 \alias{c,SimpleList-method}
 
 % looping
+\alias{aggregate,CompressedList-method}
+\alias{aggregate,SimpleList-method}
 \alias{endoapply,CompressedList-method}
 \alias{endoapply,SimpleList-method}
 \alias{lapply,CompressedList-method}
@@ -82,6 +84,36 @@
     }
     \item{}{\code{unlist(x, recursive = TRUE, use.names = TRUE)}: Concatenates
       the elements of \code{x} into a single \code{elementType(x)} object.
+    }
+  }
+}
+
+\section{Subsetting}{
+  In the following code snippets, \code{x} is a SimpleList or CompressedList
+  object.
+
+  \describe{
+    \item{}{
+      \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:
+      In addition to normal usage, the \code{start} parameter can be a
+      \code{RangesList}, \code{LogicalList}, or \code{IntegerList} object
+      to perform sequence extraction within the list elements rather than
+      across them.
+    }
+  }
+}
+
+\section{Looping}{
+  In the following code snippets, \code{x} is a SimpleList or CompressedList
+  object.
+
+  \describe{
+    \item{}{
+      \code{aggregate(x, by, FUN, start = NULL, end = NULL, width = NULL,
+                      frequency = NULL, delta = NULL, ..., simplify = TRUE))}:
+      In addition to normal usage, the \code{by} parameter can be a
+      \code{RangesList} to aggregate within the list elements rather
+      than across them.
     }
   }
 }

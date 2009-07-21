@@ -6,28 +6,28 @@
 
 setClass("LogicalList", representation("VIRTUAL"),
          prototype = prototype(elementType = "logical"),
-         contains = "SequenceList")
+         contains = "Sequence")
 
 setClass("IntegerList", representation("VIRTUAL"),
          prototype = prototype(elementType = "integer"),
-         contains = "SequenceList")
+         contains = "Sequence")
 
 setClass("NumericList", representation("VIRTUAL"),
          prototype = prototype(elementType = "numeric"),
-         contains = "SequenceList")
+         contains = "Sequence")
 
 setClass("ComplexList", representation("VIRTUAL"),
          prototype = prototype(elementType = "complex"),
-         contains = "SequenceList")
+         contains = "Sequence")
 
 setClass("CharacterList", representation("VIRTUAL"),
          prototype = prototype(elementType = "character"),
-         contains = "SequenceList")
+         contains = "Sequence")
 
 setClass("RawList", representation("VIRTUAL"),
          prototype = prototype(elementType = "raw"),
-         contains = "SequenceList")
+         contains = "Sequence")
 
 setClass("RleList", representation("VIRTUAL"),
          prototype = prototype(elementType = "Rle"),
-         contains = "SequenceList")
+         contains = "Sequence")
