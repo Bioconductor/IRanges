@@ -341,12 +341,12 @@ cachedIRanges _cache_IRanges(SEXP x);
 
 int _get_cachedIRanges_length(const cachedIRanges *cached_x);
 
-int _get_cachedIRanges_elt_start(
+int _get_cachedIRanges_elt_width(
 	const cachedIRanges *cached_x,
 	int i
 );
 
-int _get_cachedIRanges_elt_width(
+int _get_cachedIRanges_elt_start(
 	const cachedIRanges *cached_x,
 	int i
 );

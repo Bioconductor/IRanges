@@ -214,8 +214,8 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_get_IRanges_names);
 	REGISTER_CCALLABLE(_cache_IRanges);
 	REGISTER_CCALLABLE(_get_cachedIRanges_length);
-	REGISTER_CCALLABLE(_get_cachedIRanges_elt_start);
 	REGISTER_CCALLABLE(_get_cachedIRanges_elt_width);
+	REGISTER_CCALLABLE(_get_cachedIRanges_elt_start);
 	REGISTER_CCALLABLE(_get_cachedIRanges_elt_end);
 	REGISTER_CCALLABLE(_get_cachedIRanges_elt_name);
 	REGISTER_CCALLABLE(_sub_cachedIRanges);

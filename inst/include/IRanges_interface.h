@@ -336,9 +336,9 @@ cachedIRanges cache_IRanges(SEXP x);
 
 int get_cachedIRanges_length(const cachedIRanges *cached_x);
 
-int get_cachedIRanges_elt_start(const cachedIRanges *cached_x, int i);
-
 int get_cachedIRanges_elt_width(const cachedIRanges *cached_x, int i);
+
+int get_cachedIRanges_elt_start(const cachedIRanges *cached_x, int i);
 
 int get_cachedIRanges_elt_end(const cachedIRanges *cached_x, int i);
 

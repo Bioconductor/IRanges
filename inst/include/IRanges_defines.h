@@ -74,8 +74,9 @@ typedef struct cached_iranges {
 	int is_constant_width;
 	int offset;
 	int length;
-	const int *start;
 	const int *width;
+	const int *start;
+	const int *end;
 	SEXP names;
 } cachedIRanges;
 

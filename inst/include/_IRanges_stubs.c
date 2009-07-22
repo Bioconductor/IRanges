@@ -320,12 +320,12 @@ DEFINE_CCALLABLE_STUB(int, get_cachedIRanges_length,
 	(                     cached_x)
 )
 
-DEFINE_CCALLABLE_STUB(int, get_cachedIRanges_elt_start,
+DEFINE_CCALLABLE_STUB(int, get_cachedIRanges_elt_width,
 	(const cachedIRanges *cached_x, int i),
 	(                     cached_x,     i)
 )
 
-DEFINE_CCALLABLE_STUB(int, get_cachedIRanges_elt_width,
+DEFINE_CCALLABLE_STUB(int, get_cachedIRanges_elt_start,
 	(const cachedIRanges *cached_x, int i),
 	(                     cached_x,     i)
 )

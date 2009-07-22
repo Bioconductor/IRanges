@@ -59,8 +59,9 @@ cachedIRanges _cache_IRanges(SEXP x)
 	cached_x.is_constant_width = 0;
 	cached_x.offset = 0;
 	cached_x.length = _get_IRanges_length(x);
-	cached_x.start = INTEGER(_get_IRanges_start(x));
 	cached_x.width = INTEGER(_get_IRanges_width(x));
+	cached_x.start = INTEGER(_get_IRanges_start(x));
+	cached_x.end = NULL;
 	cached_x.names = _get_IRanges_names(x);
 	return cached_x;
 }
@@ -70,21 +71,24 @@ int _get_cachedIRanges_length(const cachedIRanges *cached_x)
 	return cached_x->length;
 }
 
-int _get_cachedIRanges_elt_start(const cachedIRanges *cached_x, int i)
-{
-	return cached_x->start[i];
-}
-
 int _get_cachedIRanges_elt_width(const cachedIRanges *cached_x, int i)
 {
 	return cached_x->is_constant_width ?
 	       cached_x->width[0] : cached_x->width[i];
 }
 
+int _get_cachedIRanges_elt_start(const cachedIRanges *cached_x, int i)
+{
+	if (cached_x->start)
+		return cached_x->start[i];
+	return cached_x->end[i] - _get_cachedIRanges_elt_width(cached_x, i) + 1;
+}
+
 int _get_cachedIRanges_elt_end(const cachedIRanges *cached_x, int i)
 {
-	return _get_cachedIRanges_elt_start(cached_x, i) +
-	       _get_cachedIRanges_elt_width(cached_x, i) - 1;
+	if (cached_x->end)
+		return cached_x->end[i];
+	return cached_x->start[i] + _get_cachedIRanges_elt_width(cached_x, i) - 1;
 }
 
 SEXP _get_cachedIRanges_elt_name(const cachedIRanges *cached_x, int i)
