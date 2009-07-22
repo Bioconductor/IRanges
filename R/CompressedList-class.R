@@ -183,12 +183,11 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
                     eltEnds <- eltEnds[okToLoop]
                     whichToLoop <- whichToLoop[okToLoop]
                 }
-                if (is.vector(allData)) {
-                    eltWidths <- eltEnds - eltStarts + 1L
+                if (is.vector(allData) || is(allData, "Sequence")) {
                     elts[whichToLoop] <-
                       lapply(seq_len(loopCount), function(j)
-                             FUN(.Call("vector_subsetbyranges", allData, eltStarts[j], eltWidths[j],
-                                       PACKAGE="IRanges"), ...))
+                             FUN(window(allData,
+                                        start = eltStarts[j], end = eltEnds[j]), ...))
                 } else if (length(dim(allData)) < 2) {
                     elts[whichToLoop] <-
                       lapply(seq_len(loopCount), function(j)
