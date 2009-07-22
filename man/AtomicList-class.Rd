@@ -2,6 +2,7 @@
 \docType{class}
 
 % AtomicList classes
+\alias{AtomicList-class}
 \alias{CompressedAtomicList-class}
 \alias{SimpleAtomicList-class}
 \alias{LogicalList}
@@ -51,6 +52,8 @@
 \alias{Ops,SimpleAtomicList,SimpleAtomicList-method}
 \alias{Ops,SimpleAtomicList,CompressedAtomicList-method}
 \alias{Ops,CompressedAtomicList,SimpleAtomicList-method}
+\alias{Ops,AtomicList,atomic-method}
+\alias{Ops,atomic,AtomicList-method}
 
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}

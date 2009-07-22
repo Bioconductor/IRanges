@@ -2,12 +2,17 @@
 ### AtomicList object implementations
 ### -------------------------------------------------------------------------
 
+setClassUnion("atomic",
+              c("raw", "logical", "integer", "numeric", "character", "complex"))
+
 ## A list that holds atomic objects
 
-setClass("CompressedAtomicList", contains =  "CompressedList",
+setClass("CompressedAtomicList",
+         contains =  c("CompressedList", "AtomicList"),
          representation("VIRTUAL"))
 
-setClass("SimpleAtomicList", contains =  "SimpleList",
+setClass("SimpleAtomicList",
+         contains =  c("SimpleList", "AtomicList"),
          representation("VIRTUAL"))
  
 setClass("CompressedLogicalList",
@@ -252,7 +257,8 @@ setMethod("Ops",
           })
 
 
-setMethod("Ops", signature(e1 = "CompressedAtomicList", e2 = "SimpleAtomicList"),
+setMethod("Ops",
+          signature(e1 = "CompressedAtomicList", e2 = "SimpleAtomicList"),
           function(e1, e2)
           {
               classMap <-
@@ -268,5 +274,21 @@ setMethod("Ops", signature(e1 = "CompressedAtomicList", e2 = "SimpleAtomicList")
                   e1 <-
                     do.call(classMap[e1@elementType],
                             c(as.list(e1), compress = FALSE))
+              callGeneric(e1, e2)
+          })
+
+setMethod("Ops",
+          signature(e1 = "AtomicList", e2 = "atomic"),
+          function(e1, e2)
+          {
+              e2 <- SimpleAtomicList(rep(list(e2), length(e1)))
+              callGeneric(e1, e2)
+          })
+
+setMethod("Ops",
+          signature(e1 = "atomic", e2 = "AtomicList"),
+          function(e1, e2)
+          {
+              e1 <- SimpleAtomicList(rep(list(e1), length(e2)))
               callGeneric(e1, e2)
           })
