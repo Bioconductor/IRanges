@@ -54,6 +54,13 @@
 \alias{Ops,CompressedAtomicList,SimpleAtomicList-method}
 \alias{Ops,AtomicList,atomic-method}
 \alias{Ops,atomic,AtomicList-method}
+\alias{Math,CompressedAtomicList-method}
+\alias{Math,SimpleAtomicList-method}
+\alias{Math2,CompressedAtomicList-method}
+\alias{Math2,SimpleAtomicList-method}
+\alias{Summary,AtomicList-method}
+\alias{Complex,CompressedAtomicList-method}
+\alias{Complex,SimpleAtomicList-method}
 
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}
@@ -107,6 +114,19 @@
       \code{"<="}, \code{">="}}
     \item{\code{Logic}}{\code{"&"}, \code{"|"}}
     \item{\code{Ops}}{\code{"Arith"}, \code{"Compare"}, \code{"Logic"}}
+    \item{\code{Math}}{\code{"abs"}, \code{"sign"}, \code{"sqrt"},
+      \code{"ceiling"}, \code{"floor"}, \code{"trunc"}, \code{"cummax"},
+      \code{"cummin"}, \code{"cumprod"}, \code{"cumsum"}, \code{"log"},
+      \code{"log10"}, \code{"log2"}, \code{"log1p"}, \code{"acos"},
+      \code{"acosh"}, \code{"asin"}, \code{"asinh"}, \code{"atan"},
+      \code{"atanh"}, \code{"exp"}, \code{"expm1"}, \code{"cos"},
+      \code{"cosh"}, \code{"sin"}, \code{"sinh"}, \code{"tan"}, \code{"tanh"},
+      \code{"gamma"}, \code{"lgamma"}, \code{"digamma"}, \code{"trigamma"}}
+    \item{\code{Math2}}{\code{"round"}, \code{"signif"}}
+    \item{\code{Summary}}{\code{"max"}, \code{"min"}, \code{"range"},
+      \code{"prod"}, \code{"sum"}, \code{"any"}, \code{"all"}}
+    \item{\code{Complex}}{\code{"Arg"}, \code{"Conj"}, \code{"Im"},
+      \code{"Mod"}, \code{"Re"}}
   }
   See \link[methods]{S4groupGeneric} for more details.
 }
@@ -155,8 +175,15 @@
   append(col1, col2, 0)
   c(col1, col2, col3)
 
+  ## group generics
+  2 * col1
+  col1 + col1
+  col1 > 2
+  log(col1)
+  sum(col1)
+
   ## get the mean for each element
-  lapply(col1, mean)
+  sapply(col1, mean)
 }
 \keyword{methods}
 \keyword{classes}

@@ -292,3 +292,39 @@ setMethod("Ops",
               e1 <- SimpleAtomicList(rep(list(e1), length(e2)))
               callGeneric(e1, e2)
           })
+
+setMethod("Math", "CompressedAtomicList",
+          function(x)
+              CompressedAtomicList(callGeneric(x@unlistData),
+                                   partitioning = x@partitioning))
+
+setMethod("Math", "SimpleAtomicList",
+          function(x) SimpleAtomicList(lapply(x@listData, .Generic)))
+
+setMethod("Math2", "CompressedAtomicList",
+          function(x, digits)
+          {
+              if (missing(digits))
+                  digits <- ifelse(.Generic == "round", 0, 6)
+              CompressedAtomicList(callGeneric(x@unlistData, digits = digits),
+                                   partitioning = x@partitioning)
+          })
+
+setMethod("Math2", "SimpleAtomicList",
+          function(x, digits)
+          {
+              if (missing(digits))
+                  digits <- ifelse(.Generic == "round", 0, 6)
+              SimpleAtomicList(lapply(x@listData, .Generic, digits = digits))
+          })
+
+setMethod("Summary", "AtomicList",
+          function(x, ..., na.rm = FALSE) sapply(x, .Generic, na.rm = na.rm))
+
+setMethod("Complex", "CompressedAtomicList",
+          function(z)
+              CompressedAtomicList(callGeneric(z@unlistData),
+                                   partitioning = z@partitioning))
+               
+setMethod("Complex", "SimpleAtomicList",
+          function(z) SimpleAtomicList(lapply(z@listData, .Generic)))
