@@ -437,6 +437,11 @@ DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_length,
 	(     x)
 )
 
+DEFINE_CCALLABLE_STUB(cachedCharSeq, cache_XRaw,
+	(SEXP x),
+	(     x)
+)
+
 DEFINE_CCALLABLE_STUB(SEXP, new_XSequence,
 	(const char *classname, SEXP xdata, int offset, int length),
 	(            classname,      xdata,     offset,     length)

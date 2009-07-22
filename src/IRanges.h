@@ -746,6 +746,8 @@ SEXP _get_XSequence_offset(SEXP x);
 
 SEXP _get_XSequence_length(SEXP x);
 
+cachedCharSeq _cache_XRaw(SEXP x);
+
 SEXP _new_XSequence(
 	const char *classname,
 	SEXP xdata,

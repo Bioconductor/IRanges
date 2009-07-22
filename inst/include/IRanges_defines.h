@@ -86,4 +86,9 @@ typedef struct cached_compressedirangeslist {
 	cachedIRanges cached_unlistData;
 } cachedCompressedIRangesList;
 
+typedef struct cached_charseq {
+	const char *seq;
+	int length;
+} cachedCharSeq;
+
 #endif

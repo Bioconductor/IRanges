@@ -400,6 +400,8 @@ SEXP get_XSequence_offset(SEXP x);
 
 SEXP get_XSequence_length(SEXP x);
 
+cachedCharSeq cache_XRaw(SEXP x);
+
 SEXP new_XSequence(const char *classname, SEXP xdata, int offset, int length);
 
 SEXP new_XRaw_from_tag(const char *classname, SEXP tag);

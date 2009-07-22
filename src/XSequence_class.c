@@ -20,7 +20,7 @@ SEXP debug_XSequence_class()
 
 
 /****************************************************************************
- * C-level accessor functions for XSequence objects.
+ * C-level slot accessor functions.
  *
  * Be careful that these functions do NOT duplicate the returned slot.
  * Thus they cannot be made .Call() entry points!
@@ -44,6 +44,24 @@ SEXP _get_XSequence_offset(SEXP x)
 SEXP _get_XSequence_length(SEXP x)
 {
 	return GET_SLOT(x, install("length"));
+}
+
+
+/****************************************************************************
+ * Caching.
+ */
+
+cachedCharSeq _cache_XRaw(SEXP x)
+{
+	cachedCharSeq cached_x;
+	SEXP tag;
+	int offset;
+
+	tag = _get_XSequence_tag(x);
+	offset = INTEGER(_get_XSequence_offset(x))[0];
+	cached_x.seq = (const char *) (RAW(tag) + offset);
+	cached_x.length = INTEGER(_get_XSequence_length(x))[0];
+	return cached_x;
 }
 
 
