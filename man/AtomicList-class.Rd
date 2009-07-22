@@ -2,6 +2,8 @@
 \docType{class}
 
 % AtomicList classes
+\alias{CompressedAtomicList-class}
+\alias{SimpleAtomicList-class}
 \alias{LogicalList}
 \alias{LogicalList-class}
 \alias{CompressedLogicalList}
@@ -45,6 +47,11 @@
 \alias{SimpleRleList}
 \alias{SimpleRleList-class}
 
+\alias{Ops,CompressedAtomicList,CompressedAtomicList-method}
+\alias{Ops,SimpleAtomicList,SimpleAtomicList-method}
+\alias{Ops,SimpleAtomicList,CompressedAtomicList-method}
+\alias{Ops,CompressedAtomicList,SimpleAtomicList-method}
+
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}
 \description{An extension of \code{\linkS4class{Sequence}} that holds
@@ -85,6 +92,20 @@
       \code{RleList}.
       If \code{compress}, the internal storage of the data is compressed.}
   }
+}
+
+\section{Group Generics}{
+  AtomicList objects have support for S4 group generic functionality to operate
+  within elements across objects:
+  \describe{
+    \item{\code{Arith}}{\code{"+"}, \code{"-"}, \code{"*"}, \code{"^"},
+      \code{"\%\%"}, \code{"\%/\%"}, \code{"/"}}
+    \item{\code{Compare}}{\code{"=="}, \code{">"}, \code{"<"}, \code{"!="}, 
+      \code{"<="}, \code{">="}}
+    \item{\code{Logic}}{\code{"&"}, \code{"|"}}
+    \item{\code{Ops}}{\code{"Arith"}, \code{"Compare"}, \code{"Logic"}}
+  }
+  See \link[methods]{S4groupGeneric} for more details.
 }
 
 \author{P. Aboyoun}

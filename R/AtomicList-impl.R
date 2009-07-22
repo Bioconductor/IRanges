@@ -4,61 +4,71 @@
 
 ## A list that holds atomic objects
 
+setClass("CompressedAtomicList", contains =  "CompressedList",
+         representation("VIRTUAL"))
+
+setClass("SimpleAtomicList", contains =  "SimpleList",
+         representation("VIRTUAL"))
+ 
 setClass("CompressedLogicalList",
          prototype = prototype(elementType = "logical",
                                unlistData = logical()),
-         contains = c("CompressedList", "LogicalList"))
+         contains = c("CompressedAtomicList", "LogicalList"))
 setClass("SimpleLogicalList",
          prototype = prototype(elementType = "logical"),
-         contains = c("SimpleList", "LogicalList"))
+         contains = c("SimpleAtomicList", "LogicalList"))
 
 setClass("CompressedIntegerList",
          prototype = prototype(elementType = "integer",
                                unlistData = integer()),
-         contains = c("CompressedList", "IntegerList"))
+         contains = c("CompressedAtomicList", "IntegerList"))
 setClass("SimpleIntegerList",
          prototype = prototype(elementType = "integer"),
-         contains = c("SimpleList", "IntegerList"))
+         contains = c("SimpleAtomicList", "IntegerList"))
 
 setClass("CompressedNumericList",
          prototype = prototype(elementType = "numeric",
                                unlistData = numeric()),
-         contains = c("CompressedList", "NumericList"))
+         contains = c("CompressedAtomicList", "NumericList"))
 setClass("SimpleNumericList",
          prototype = prototype(elementType = "numeric"),
-         contains = c("SimpleList", "NumericList"))
+         contains = c("SimpleAtomicList", "NumericList"))
 
 setClass("CompressedComplexList",
          prototype = prototype(elementType = "complex",
                                unlistData = complex()),
-         contains = c("CompressedList", "ComplexList"))
+         contains = c("CompressedAtomicList", "ComplexList"))
 setClass("SimpleComplexList",
          prototype = prototype(elementType = "complex"),
-         contains = c("SimpleList", "ComplexList"))
+         contains = c("SimpleAtomicList", "ComplexList"))
 
 setClass("CompressedCharacterList",
          prototype = prototype(elementType = "character",
                                unlistData = character()),
-         contains = c("CompressedList", "CharacterList"))
+         contains = c("CompressedAtomicList", "CharacterList"))
 setClass("SimpleCharacterList",
          prototype = prototype(elementType = "character"),
-         contains = c("SimpleList", "CharacterList"))
+         contains = c("SimpleAtomicList", "CharacterList"))
 
 setClass("CompressedRawList",
          prototype = prototype(elementType = "raw",
                                unlistData = raw()),
-         contains = c("CompressedList", "RawList"))
+         contains = c("CompressedAtomicList", "RawList"))
 setClass("SimpleRawList",
          prototype = prototype(elementType = "raw"),
-         contains = c("SimpleList", "RawList"))
+         contains = c("SimpleAtomicList", "RawList"))
 
 setClass("CompressedRleList",
          prototype = prototype(elementType = "Rle",
                                unlistData = new("Rle")),
-         contains = c("CompressedList", "RleList"))
+         contains = c("CompressedAtomicList", "RleList"))
 setClass("SimpleRleList",
          prototype = prototype(elementType = "Rle"),
-         contains = c("SimpleList", "RleList"))
+         contains = c("SimpleAtomicList", "RleList"))
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Constructors
+###
 
 LogicalList <- function(..., compress = TRUE)
 {
@@ -136,3 +146,127 @@ RleList <- function(..., compress = TRUE)
     else
         newSimpleList("SimpleRleList", lapply(listData, as, "Rle"))
 }
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Group generic methods
+###
+
+atomicElementListClass <- function(x) {
+    if (is(x, "Rle"))
+        ans <- "RleList"
+    else if (is.raw(x))
+        ans <- "RawList"
+    else if (is.logical(x))
+        ans <- "LogicalList"
+    else if (is.integer(x))
+        ans <- "IntegerList"
+    else if (is.numeric(x))
+        ans <- "NumericList"
+    else if (is.complex(x))
+        ans <- "ComplexList"
+    else if (is.character(x))
+        ans <- "CharacterList"
+    else
+        ans <- "OTHER"
+    ans
+}
+
+SimpleAtomicList <- function(listData) {
+    classOrder <-
+      c("CharacterList", "ComplexList", "NumericList", "IntegerList",
+        "LogicalList", "RawList", "RleList", "OTHER")
+    uniqueClasses <- unique(unlist(lapply(listData, atomicElementListClass)))
+    baseClass <- classOrder[min(match(uniqueClasses, classOrder))]
+    do.call(baseClass, c(listData, compress = FALSE))
+}
+
+CompressedAtomicList <- function(unlistData, partitioning) {
+    classOrder <-
+      c("CharacterList", "ComplexList", "NumericList", "IntegerList", 
+        "LogicalList", "RawList", "RleList", "OTHER")
+    baseClass <- atomicElementListClass(unlistData)
+    new2(paste("Compressed", baseClass, sep = ""), unlistData = unlistData,
+         partitioning = partitioning, check = FALSE)
+}
+
+setMethod("Ops",
+          signature(e1 = "SimpleAtomicList", e2 = "SimpleAtomicList"),
+          function(e1, e2)
+          {
+              n <- length(e1)
+              if (n != length(e2))
+                  stop("cannot perform Ops on unequal length lists")
+              if (n == 0)
+                  return(e1)
+              SimpleAtomicList(Map(.Generic, e1, e2))
+          })
+
+setMethod("Ops",
+          signature(e1 = "CompressedAtomicList", e2 = "CompressedAtomicList"),
+          function(e1, e2)
+          {
+              n <- length(e1)
+              if (n != length(e2))
+                  stop("cannot perform Ops on unequal length lists")
+              if (n == 0)
+                  return(e1)
+              nms <- names(e1)
+              if (is.null(nms))
+                  nms <- names(e2)
+              partitioning <- e1@partitioning
+              names(partitioning) <- nms
+              n1 <- elementLengths(e1)
+              n2 <- elementLengths(e2)
+              for (i in which(n2 == 0))
+                  e1[[i]] <- e1[[i]][integer(0)]
+              for (i in which(n1 == 0))
+                  e2[[i]] <- e2[[i]][integer(0)]
+              n1 <- elementLengths(e1)
+              n2 <- elementLengths(e2)
+              for (i in which(n1 < n2))
+                  e1[[i]] <- rep(e1[[i]], length.out = n2[i])
+              for (i in which(n2 < n1))
+                  e2[[i]] <- rep(e2[[i]], length.out = n1[i])
+              CompressedAtomicList(callGeneric(e1@unlistData, e2@unlistData),
+                                   partitioning = partitioning)
+          })
+
+setMethod("Ops",
+          signature(e1 = "SimpleAtomicList", e2 = "CompressedAtomicList"),
+          function(e1, e2)
+          {
+              classMap <-
+                c("character" = "CharacterList", "complex" = "ComplexList",
+                  "numeric" = "NumericList", "integer" = "IntegerList",
+                  "logical" = "LogicalList", "raw" = "RawList",
+                  "Rle" = "RleList")
+              if (sum(elementLengths(e1)) < .Machine$integer.max)
+                  e1 <-
+                    do.call(classMap[e1@elementType],
+                            c(e1@listData, compress = TRUE))
+              else
+                  e2 <-
+                    do.call(classMap[e2@elementType],
+                            c(as.list(e2), compress = FALSE))
+              callGeneric(e1, e2)
+          })
+
+
+setMethod("Ops", signature(e1 = "CompressedAtomicList", e2 = "SimpleAtomicList"),
+          function(e1, e2)
+          {
+              classMap <-
+                c("character" = "CharacterList", "complex" = "ComplexList",
+                  "numeric" = "NumericList", "integer" = "IntegerList",
+                  "logical" = "LogicalList", "raw" = "RawList",
+                  "Rle" = "RleList")
+              if (sum(elementLengths(e2)) < .Machine$integer.max)
+                  e2 <-
+                    do.call(classMap[e2@elementType],
+                            c(e2@listData, compress = TRUE))
+              else
+                  e1 <-
+                    do.call(classMap[e1@elementType],
+                            c(as.list(e1), compress = FALSE))
+              callGeneric(e1, e2)
+          })
