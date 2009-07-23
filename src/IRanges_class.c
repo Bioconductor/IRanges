@@ -145,11 +145,14 @@ static void set_IRanges_names(SEXP x, SEXP value)
 	return;
 }
 
+/* WARNING: Use only AFTER 'x@start' has been set! This is because this
+ * setter is trying to figure out what the length of 'x' is. */
 void _set_IRanges_names(SEXP x, SEXP names)
 {
 	if (names == NULL)
 		names = R_NilValue;
-	else if (LENGTH(names) != _get_IRanges_length(x))
+	else if (names != R_NilValue
+	      && LENGTH(names) != _get_IRanges_length(x))
 		error("_set_IRanges_names(): "
 		      "number of names and number of elements differ");
 	set_IRanges_names(x, names);
@@ -173,9 +176,19 @@ static void set_IRanges_slots(SEXP x, SEXP start, SEXP width, SEXP names)
 
 void _copy_IRanges_slots(SEXP x, SEXP x0)
 {
-	set_IRanges_start(x, duplicate(_get_IRanges_start(x0)));
-	set_IRanges_width(x, duplicate(_get_IRanges_width(x0)));
-	set_IRanges_names(x, duplicate(_get_IRanges_names(x0)));
+	SEXP slot;
+
+	PROTECT(slot = duplicate(_get_IRanges_start(x0)));
+	set_IRanges_start(x, slot);
+	UNPROTECT(1);
+
+	PROTECT(slot = duplicate(_get_IRanges_width(x0)));
+	set_IRanges_width(x, slot);
+	UNPROTECT(1);
+
+	PROTECT(slot = duplicate(_get_IRanges_names(x0)));
+	set_IRanges_names(x, slot);
+	UNPROTECT(1);
 	return;
 }
 
