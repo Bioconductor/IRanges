@@ -72,7 +72,7 @@ setMethod("seqextract", "DataTable",
               }
               if (any(start(ir) < 1L) || any(end(ir) > nrow(x)))
                   stop("some ranges are out of bounds")
-              do.call(c,
+              do.call(rbind,
                       lapply(seq_len(length(ir)),
                              function(i)
                                  window(x,
