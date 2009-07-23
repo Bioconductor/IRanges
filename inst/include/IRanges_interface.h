@@ -326,11 +326,11 @@ const char *get_classname(SEXP x);
 
 SEXP get_IRanges_start(SEXP x);
 
-int get_IRanges_length(SEXP x);
-
 SEXP get_IRanges_width(SEXP x);
 
 SEXP get_IRanges_names(SEXP x);
+
+int get_IRanges_length(SEXP x);
 
 cachedIRanges cache_IRanges(SEXP x);
 
@@ -394,11 +394,11 @@ int get_SequencePtr_length(SEXP x);
 
 SEXP get_XSequence_xdata(SEXP x);
 
-SEXP get_XSequence_tag(SEXP x);
-
 SEXP get_XSequence_offset(SEXP x);
 
 SEXP get_XSequence_length(SEXP x);
+
+SEXP get_XSequence_tag(SEXP x);
 
 cachedCharSeq cache_XRaw(SEXP x);
 

@@ -337,11 +337,11 @@ SEXP debug_IRanges_class();
 
 SEXP _get_IRanges_start(SEXP x);
 
-int _get_IRanges_length(SEXP x);
-
 SEXP _get_IRanges_width(SEXP x);
 
 SEXP _get_IRanges_names(SEXP x);
+
+int _get_IRanges_length(SEXP x);
 
 cachedIRanges _cache_IRanges(SEXP x);
 
@@ -746,11 +746,11 @@ SEXP NumericPtr_write_nums_to_subset(
 
 SEXP _get_XSequence_xdata(SEXP x);
 
-SEXP _get_XSequence_tag(SEXP x);
-
 SEXP _get_XSequence_offset(SEXP x);
 
 SEXP _get_XSequence_length(SEXP x);
+
+SEXP _get_XSequence_tag(SEXP x);
 
 cachedCharSeq _cache_XRaw(SEXP x);
 

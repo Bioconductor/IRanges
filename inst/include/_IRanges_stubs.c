@@ -295,17 +295,17 @@ DEFINE_CCALLABLE_STUB(SEXP, get_IRanges_start,
 	(     x)
 )
 
-DEFINE_CCALLABLE_STUB(int, get_IRanges_length,
-	(SEXP x),
-	(     x)
-)
-
 DEFINE_CCALLABLE_STUB(SEXP, get_IRanges_width,
 	(SEXP x),
 	(     x)
 )
 
 DEFINE_CCALLABLE_STUB(SEXP, get_IRanges_names,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(int, get_IRanges_length,
 	(SEXP x),
 	(     x)
 )
@@ -422,17 +422,17 @@ DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_xdata,
 	(     x)
 )
 
-DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_tag,
-	(SEXP x),
-	(     x)
-)
-
 DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_offset,
 	(SEXP x),
 	(     x)
 )
 
 DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_length,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_tag,
 	(SEXP x),
 	(     x)
 )

@@ -37,11 +37,6 @@ SEXP _get_XSequence_xdata(SEXP x)
 	return GET_SLOT(x, xdata_symbol);
 }
 
-SEXP _get_XSequence_tag(SEXP x)
-{
-	return _get_SequencePtr_tag(_get_XSequence_xdata(x));
-}
-
 SEXP _get_XSequence_offset(SEXP x)
 {
 	INIT_STATIC_SYMBOL(offset);
@@ -52,6 +47,12 @@ SEXP _get_XSequence_length(SEXP x)
 {
 	INIT_STATIC_SYMBOL(length);
 	return GET_SLOT(x, length_symbol);
+}
+
+/* Not a strict "slot getter" but very much "slot getter" like. */
+SEXP _get_XSequence_tag(SEXP x)
+{
+	return _get_SequencePtr_tag(_get_XSequence_xdata(x));
 }
 
 

@@ -37,11 +37,6 @@ SEXP _get_IRanges_start(SEXP x)
 	return GET_SLOT(x, start_symbol);
 }
 
-int _get_IRanges_length(SEXP x)
-{
-	return LENGTH(_get_IRanges_start(x));
-}
-
 SEXP _get_IRanges_width(SEXP x)
 {
 	INIT_STATIC_SYMBOL(width);
@@ -52,6 +47,12 @@ SEXP _get_IRanges_names(SEXP x)
 {
 	INIT_STATIC_SYMBOL(NAMES);
 	return GET_SLOT(x, NAMES_symbol);
+}
+
+/* Not a strict "slot getter" but very much "slot getter" like. */
+int _get_IRanges_length(SEXP x)
+{
+	return LENGTH(_get_IRanges_start(x));
 }
 
 

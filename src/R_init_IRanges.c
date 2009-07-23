@@ -209,9 +209,9 @@ void R_init_IRanges(DllInfo *info)
 
 /* IRanges_class.c */
 	REGISTER_CCALLABLE(_get_IRanges_start);
-	REGISTER_CCALLABLE(_get_IRanges_length);
 	REGISTER_CCALLABLE(_get_IRanges_width);
 	REGISTER_CCALLABLE(_get_IRanges_names);
+	REGISTER_CCALLABLE(_get_IRanges_length);
 	REGISTER_CCALLABLE(_cache_IRanges);
 	REGISTER_CCALLABLE(_get_cachedIRanges_length);
 	REGISTER_CCALLABLE(_get_cachedIRanges_elt_width);
@@ -239,9 +239,9 @@ void R_init_IRanges(DllInfo *info)
 
 /* XSequence_class.c */
 	REGISTER_CCALLABLE(_get_XSequence_xdata);
-	REGISTER_CCALLABLE(_get_XSequence_tag);
 	REGISTER_CCALLABLE(_get_XSequence_offset);
 	REGISTER_CCALLABLE(_get_XSequence_length);
+	REGISTER_CCALLABLE(_get_XSequence_tag);
 	REGISTER_CCALLABLE(_cache_XRaw);
 	REGISTER_CCALLABLE(_new_XSequence);
 	REGISTER_CCALLABLE(_new_XRaw_from_tag);
