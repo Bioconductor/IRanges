@@ -173,9 +173,9 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP width)
 	}
 
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, mkChar("vectorLength"), ScalarInteger(INTEGER(width)[0]));
-	SET_SLOT(ans, mkChar("lengths"), ans_lengths);
-	SET_SLOT(ans, mkChar("values"), ans_values);
+	SET_SLOT(ans, install("vectorLength"), ScalarInteger(INTEGER(width)[0]));
+	SET_SLOT(ans, install("lengths"), ans_lengths);
+	SET_SLOT(ans, install("values"), ans_values);
 	UNPROTECT(3);
 	return ans;
 }

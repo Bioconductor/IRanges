@@ -67,7 +67,7 @@ SEXP XNumericViews_slice(SEXP xdouble, SEXP lower, SEXP upper, SEXP include_lowe
 		}
 	}
 	PROTECT(ans = _new_IRanges("XNumericViews", start, width, R_NilValue));
-	SET_SLOT(ans, mkChar("subject"), duplicate(xdouble));
+	SET_SLOT(ans, install("subject"), duplicate(xdouble));
 	UNPROTECT(3);
 	return ans;
 }

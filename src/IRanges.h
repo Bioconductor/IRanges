@@ -3,6 +3,12 @@
 
 #define DEBUG_IRANGES 1
 
+#define INIT_STATIC_SYMBOL(NAME) \
+{ \
+	if (NAME ## _symbol == NULL) \
+		NAME ## _symbol = install(# NAME); \
+}
+
 
 /* sort_utils.c */
 

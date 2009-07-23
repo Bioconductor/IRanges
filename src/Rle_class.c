@@ -62,8 +62,8 @@ SEXP Rle_logical_constructor(SEXP x, SEXP counts) {
     }
 
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, mkChar("values"), ans_values);
-	SET_SLOT(ans, mkChar("lengths"), ans_lengths);
+	SET_SLOT(ans, install("values"), ans_values);
+	SET_SLOT(ans, install("lengths"), ans_lengths);
 	UNPROTECT(unpro);
 
 	return ans;
@@ -130,8 +130,8 @@ SEXP Rle_integer_constructor(SEXP x, SEXP counts) {
     }
 
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, mkChar("values"), ans_values);
-	SET_SLOT(ans, mkChar("lengths"), ans_lengths);
+	SET_SLOT(ans, install("values"), ans_values);
+	SET_SLOT(ans, install("lengths"), ans_lengths);
 	UNPROTECT(unpro);
 
 	return ans;
@@ -198,8 +198,8 @@ SEXP Rle_real_constructor(SEXP x, SEXP counts) {
     }
 
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, mkChar("values"), ans_values);
-	SET_SLOT(ans, mkChar("lengths"), ans_lengths);
+	SET_SLOT(ans, install("values"), ans_values);
+	SET_SLOT(ans, install("lengths"), ans_lengths);
 	UNPROTECT(unpro);
 
 	return ans;
@@ -277,8 +277,8 @@ SEXP Rle_complex_constructor(SEXP x, SEXP counts) {
     }
 
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, mkChar("values"), ans_values);
-	SET_SLOT(ans, mkChar("lengths"), ans_lengths);
+	SET_SLOT(ans, install("values"), ans_values);
+	SET_SLOT(ans, install("lengths"), ans_lengths);
 	UNPROTECT(unpro);
 
 	return ans;
@@ -351,8 +351,8 @@ SEXP Rle_string_constructor(SEXP x, SEXP counts) {
     }
 
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, mkChar("values"), ans_values);
-	SET_SLOT(ans, mkChar("lengths"), ans_lengths);
+	SET_SLOT(ans, install("values"), ans_values);
+	SET_SLOT(ans, install("lengths"), ans_lengths);
 	UNPROTECT(unpro);
 
 	return ans;
@@ -419,8 +419,8 @@ SEXP Rle_raw_constructor(SEXP x, SEXP counts) {
     }
 
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, mkChar("values"), ans_values);
-	SET_SLOT(ans, mkChar("lengths"), ans_lengths);
+	SET_SLOT(ans, install("values"), ans_values);
+	SET_SLOT(ans, install("lengths"), ans_lengths);
 	UNPROTECT(unpro);
 
 	return ans;
@@ -499,8 +499,8 @@ SEXP Rle_run_seqblock(SEXP x, SEXP runStart, SEXP runEnd,
     INTEGER(ans_lengths)[0] -= INTEGER(offsetStart)[0];
 	INTEGER(ans_lengths)[INTEGER(runWidth)[0] - 1] -= INTEGER(offsetEnd)[0];
 
-	SET_SLOT(ans, mkChar("values"), ans_values);
-	SET_SLOT(ans, mkChar("lengths"), ans_lengths);
+	SET_SLOT(ans, install("values"), ans_values);
+	SET_SLOT(ans, install("lengths"), ans_lengths);
     UNPROTECT(3);
 
 	return ans;

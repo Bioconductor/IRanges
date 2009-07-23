@@ -20,20 +20,26 @@ SEXP debug_Grouping_class()
 
 
 /****************************************************************************
- * C-level accessor functions for H2LGrouping objects.
+ * C-level slot getters.
  *
  * Be careful that these functions do NOT duplicate the returned slot.
  * Thus they cannot be made .Call() entry points!
  */
 
+static SEXP
+	high2low_symbol = NULL,
+	low2high_symbol = NULL;
+
 SEXP _get_H2LGrouping_high2low(SEXP x)
 {
-	return GET_SLOT(x, install("high2low"));
+	INIT_STATIC_SYMBOL(high2low);
+	return GET_SLOT(x, high2low_symbol);
 }
 
 SEXP _get_H2LGrouping_low2high(SEXP x)
 {
-	return GET_SLOT(x, install("low2high"));
+	INIT_STATIC_SYMBOL(low2high);
+	return GET_SLOT(x, low2high_symbol);
 }
 
 

@@ -20,15 +20,21 @@ SEXP debug_IRanges_class()
 
 
 /****************************************************************************
- * C-level slot accessor functions.
+ * C-level slot getters.
  *
  * Be careful that these functions do NOT duplicate the returned slot.
  * Thus they cannot be made .Call() entry points!
  */
 
+static SEXP
+	start_symbol = NULL,
+	width_symbol = NULL,
+	NAMES_symbol = NULL;
+
 SEXP _get_IRanges_start(SEXP x)
 {
-	return GET_SLOT(x, install("start"));
+	INIT_STATIC_SYMBOL(start);
+	return GET_SLOT(x, start_symbol);
 }
 
 int _get_IRanges_length(SEXP x)
@@ -38,17 +44,19 @@ int _get_IRanges_length(SEXP x)
 
 SEXP _get_IRanges_width(SEXP x)
 {
-	return GET_SLOT(x, install("width"));
+	INIT_STATIC_SYMBOL(width);
+	return GET_SLOT(x, width_symbol);
 }
 
 SEXP _get_IRanges_names(SEXP x)
 {
-	return GET_SLOT(x, install("NAMES"));
+	INIT_STATIC_SYMBOL(NAMES);
+	return GET_SLOT(x, NAMES_symbol);
 }
 
 
 /****************************************************************************
- * C-level abstract accessor functions.
+ * C-level abstract getters.
  */
 
 cachedIRanges _cache_IRanges(SEXP x)
@@ -111,21 +119,40 @@ cachedIRanges _sub_cachedIRanges(const cachedIRanges *cached_x, int offset, int 
 
 
 /****************************************************************************
- * Setting the slots of an IRanges object.
+ * C-level slot setters.
+ *
+ * Be careful that these functions do NOT duplicate the assigned value!
  */
 
-/*
- * Does NOT duplicate 'x'. The @NAMES slot is modified in place!
- */
+static void set_IRanges_start(SEXP x, SEXP value)
+{
+	INIT_STATIC_SYMBOL(start);
+	SET_SLOT(x, start_symbol, value);
+	return;
+}
+
+static void set_IRanges_width(SEXP x, SEXP value)
+{
+	INIT_STATIC_SYMBOL(width);
+	SET_SLOT(x, width_symbol, value);
+	return;
+}
+
+static void set_IRanges_names(SEXP x, SEXP value)
+{
+	INIT_STATIC_SYMBOL(NAMES);
+	SET_SLOT(x, NAMES_symbol, value);
+	return;
+}
+
 void _set_IRanges_names(SEXP x, SEXP names)
 {
-	if (names == R_NilValue || names == NULL) {
-		SET_SLOT(x, mkChar("NAMES"), R_NilValue);
-	} else if (LENGTH(names) == _get_IRanges_length(x)) {
-		SET_SLOT(x, mkChar("NAMES"), names);
-	} else {
-		error("number of names and number of elements differ");
-	}
+	if (names == NULL)
+		names = R_NilValue;
+	else if (LENGTH(names) != _get_IRanges_length(x))
+		error("_set_IRanges_names(): "
+		      "number of names and number of elements differ");
+	set_IRanges_names(x, names);
 	return;
 }
 
@@ -136,27 +163,28 @@ void _set_IRanges_names(SEXP x, SEXP names)
 static void set_IRanges_slots(SEXP x, SEXP start, SEXP width, SEXP names)
 {
 	if (LENGTH(width) != LENGTH(start))
-		error("number of starts and number of widths differ");
-	SET_SLOT(x, mkChar("start"), start);
-	SET_SLOT(x, mkChar("width"), width);
+		error("set_IRanges_slots(): "
+		      "number of starts and number of widths differ");
+	set_IRanges_start(x, start);
+	set_IRanges_width(x, width);
 	_set_IRanges_names(x, names);
 	return;
 }
 
 void _copy_IRanges_slots(SEXP x, SEXP x0)
 {
-	SET_SLOT(x, mkChar("start"), duplicate(GET_SLOT(x0, install("start"))));
-	SET_SLOT(x, mkChar("width"), duplicate(GET_SLOT(x0, install("width"))));
-	SET_SLOT(x, mkChar("NAMES"), duplicate(GET_SLOT(x0, install("NAMES"))));
+	set_IRanges_start(x, duplicate(_get_IRanges_start(x0)));
+	set_IRanges_width(x, duplicate(_get_IRanges_width(x0)));
+	set_IRanges_names(x, duplicate(_get_IRanges_names(x0)));
 	return;
 }
 
 
 /****************************************************************************
- * C-level constructor functions for IRanges objects.
+ * C-level constructors.
  *
  * Be careful that these functions do NOT duplicate their arguments before
- * they put them in the slots of the returned objects.
+ * putting them in the slots of the returned object.
  * Thus they cannot be made .Call() entry points!
  */
 

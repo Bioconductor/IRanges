@@ -53,29 +53,20 @@ SEXP ExternalPtr_new()
 }
 
 
-/*
- * The 3 following functions are NOT .Call() entry points!
- * 
- * Do NOT make _new_SequencePtr() or _get_SequencePtr_tag() .Call() entry point!
- * Their argument is NOT duplicated so it would be a disaster if it was
- * coming from the user space.
+/****************************************************************************
+ * C-level getters.
  */
 
-/* 'classname' can be "RawPtr", "IntegerPtr" or "NumericPtr" */
-SEXP _new_SequencePtr(const char *classname, SEXP tag)
-{
-	SEXP classdef, ans;
+static SEXP xp_symbol = NULL;
 
-	PROTECT(classdef = MAKE_CLASS(classname));
-	PROTECT(ans = NEW_OBJECT(classdef));
-	SET_SLOT(ans, mkChar("xp"), R_MakeExternalPtr(NULL, tag, R_NilValue));
-	UNPROTECT(2);
-	return ans;
-}
-
+/*
+ * Be careful that this function does NOT duplicate the returned SEXP.
+ * Thus it cannot be made a .Call() entry point!
+ */
 SEXP _get_SequencePtr_tag(SEXP x)
 {
-	return R_ExternalPtrTag(GET_SLOT(x, install("xp")));
+	INIT_STATIC_SYMBOL(xp);
+	return R_ExternalPtrTag(GET_SLOT(x, xp_symbol));
 }
 
 int _get_SequencePtr_length(SEXP x)
@@ -87,5 +78,44 @@ int _get_SequencePtr_length(SEXP x)
 SEXP SequencePtr_length(SEXP x)
 {
 	return ScalarInteger(_get_SequencePtr_length(x));
+}
+
+
+/****************************************************************************
+ * C-level setters.
+ *
+ * Be careful that these functions do NOT duplicate the assigned value!
+ */
+
+static void set_SequencePtr_tag(SEXP x, SEXP value)
+{
+	SEXP xp;
+
+	PROTECT(xp = R_MakeExternalPtr(NULL, value, R_NilValue));
+	INIT_STATIC_SYMBOL(xp);
+	SET_SLOT(x, xp_symbol, xp);
+	UNPROTECT(1);
+	return;
+}
+
+
+/****************************************************************************
+ * C-level constructors.
+ *
+ * Be careful that these functions do NOT duplicate their arguments before
+ * putting them in the slots of the returned object.
+ * Thus they cannot be made .Call() entry points!
+ */
+
+/* 'classname' can be "RawPtr", "IntegerPtr" or "NumericPtr" */
+SEXP _new_SequencePtr(const char *classname, SEXP tag)
+{
+	SEXP classdef, ans;
+
+	PROTECT(classdef = MAKE_CLASS(classname));
+	PROTECT(ans = NEW_OBJECT(classdef));
+	set_SequencePtr_tag(ans, tag);
+	UNPROTECT(2);
+	return ans;
 }
 

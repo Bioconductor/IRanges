@@ -46,7 +46,7 @@ SEXP XIntegerViews_slice(SEXP xint, SEXP lower, SEXP upper)
 		}
 	}
 	PROTECT(ans = _new_IRanges("XIntegerViews", start, width, R_NilValue));
-	SET_SLOT(ans, mkChar("subject"), duplicate(xint));
+	SET_SLOT(ans, install("subject"), duplicate(xint));
 	UNPROTECT(3);
 	return ans;
 }
