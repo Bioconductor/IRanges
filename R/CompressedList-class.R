@@ -144,11 +144,25 @@ setValidity2("CompressedList", .valid.CompressedList)
 function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
          ...) {
     k <- length(INDEX)
+    useFastSubset <- (is.vector(X@unlistData) || is(X@unlistData, "Sequence"))
     if (k == 0) {
         if (length(dim(X@unlistData)) < 2)
             elts <- X@unlistData[integer(0)]
         else
             elts <- X@unlistData[integer(0), , drop = FALSE]
+    } else if (COMPRESS && missing(FUN) && useFastSubset) {
+        INDEX <- INDEX[elementLengths(X)[INDEX] > 0]
+        if (length(INDEX) == 0) {
+            if (length(dim(X@unlistData)) < 2)
+                elts <- X@unlistData[integer(0)]
+            else
+                elts <- X@unlistData[integer(0), , drop = FALSE]
+        } else {
+            elts <-
+              seqextract(X@unlistData,
+                         start = start(X@partitioning)[INDEX],
+                         width = width(X@partitioning)[INDEX])
+        }
     } else {
         if (COMPRESS) {
             runStarts <- which(c(TRUE, diff(INDEX) != 1L))
@@ -173,7 +187,7 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
             eltStarts <- rep.int(1L, prelimLoopCount)
             offsetStart <- startIndices > 1L
             eltStarts[offsetStart] <-
-            elementCumLengths[startIndices[offsetStart] - 1L] + 1L
+              elementCumLengths[startIndices[offsetStart] - 1L] + 1L
             eltEnds <- elementCumLengths[endIndices]
             okToLoop <- eltStarts <= eltEnds
             loopCount <- sum(okToLoop)
@@ -183,7 +197,7 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
                     eltEnds <- eltEnds[okToLoop]
                     whichToLoop <- whichToLoop[okToLoop]
                 }
-                if (is.vector(allData) || is(allData, "Sequence")) {
+                if (useFastSubset) {
                     elts[whichToLoop] <-
                       lapply(seq_len(loopCount), function(j)
                              FUN(window(allData,
