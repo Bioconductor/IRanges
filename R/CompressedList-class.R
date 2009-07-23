@@ -144,73 +144,42 @@ setValidity2("CompressedList", .valid.CompressedList)
 function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
          ...) {
     k <- length(INDEX)
-    useFastSubset <- (is.vector(X@unlistData) || is(X@unlistData, "Sequence"))
-    if (k == 0) {
-        if (length(dim(X@unlistData)) < 2)
-            elts <- X@unlistData[integer(0)]
-        else
-            elts <- X@unlistData[integer(0), , drop = FALSE]
-    } else if (COMPRESS && missing(FUN) && useFastSubset) {
-        INDEX <- INDEX[elementLengths(X)[INDEX] > 0]
-        if (length(INDEX) == 0) {
-            if (length(dim(X@unlistData)) < 2)
-                elts <- X@unlistData[integer(0)]
-            else
-                elts <- X@unlistData[integer(0), , drop = FALSE]
-        } else {
-            elts <-
-              seqextract(X@unlistData,
-                         start = start(X@partitioning)[INDEX],
-                         width = width(X@partitioning)[INDEX])
-        }
+    whichNonZeroLength <- which(elementLengths(X)[INDEX] > 0)
+    kOK <- length(whichNonZeroLength)
+    if (length(dim(X@unlistData)) < 2) {
+        zeroLengthElt <- FUN(X@unlistData[integer(0)], ...)
     } else {
-        if (COMPRESS) {
-            runStarts <- which(c(TRUE, diff(INDEX) != 1L))
-            whichToLoop <- seq_len(length(runStarts))
-            startIndices <- INDEX[runStarts]
-            endIndices <- startIndices + (diff(c(runStarts, k+1L)) - 1L)
-        } else {
-            runStarts <- seq_len(k)
-            whichToLoop <- which(elementLengths(X)[INDEX] > 0)
-            startIndices <- INDEX[runStarts[whichToLoop]]
-            endIndices <- startIndices
-        }
-        if (length(dim(X@unlistData)) < 2)
-            zeroLengthElt <- FUN(X@unlistData[integer(0)], ...)
-        else
-            zeroLengthElt <- FUN(X@unlistData[integer(0), , drop = FALSE], ...)
-        elts <- rep(list(zeroLengthElt), length(runStarts))
-        prelimLoopCount <- length(whichToLoop)
-        if (prelimLoopCount > 0) {
-            elementCumLengths <- cumsum(window(elementLengths(X), 1L, max(INDEX)))
-            allData <- X@unlistData
-            eltStarts <- rep.int(1L, prelimLoopCount)
-            offsetStart <- startIndices > 1L
-            eltStarts[offsetStart] <-
-              elementCumLengths[startIndices[offsetStart] - 1L] + 1L
-            eltEnds <- elementCumLengths[endIndices]
-            okToLoop <- eltStarts <= eltEnds
-            loopCount <- sum(okToLoop)
-            if (loopCount > 0) {
-                if (loopCount < prelimLoopCount) {
-                    eltStarts <- eltStarts[okToLoop]
-                    eltEnds <- eltEnds[okToLoop]
-                    whichToLoop <- whichToLoop[okToLoop]
-                }
-                if (useFastSubset) {
-                    elts[whichToLoop] <-
-                      lapply(seq_len(loopCount), function(j)
-                             FUN(window(allData,
-                                        start = eltStarts[j], end = eltEnds[j]), ...))
-                } else if (length(dim(allData)) < 2) {
-                    elts[whichToLoop] <-
-                      lapply(seq_len(loopCount), function(j)
-                             FUN(allData[eltStarts[j]:eltEnds[j]], ...))
-                } else {
-                    elts[whichToLoop] <-
-                      lapply(seq_len(loopCount), function(j)
-                             FUN(allData[eltStarts[j]:eltEnds[j], , drop = FALSE], ...))
-                }
+        zeroLengthElt <- FUN(X@unlistData[integer(0), , drop = FALSE], ...)
+    }
+    useFastSubset <- (is.vector(X@unlistData) || is(X@unlistData, "Sequence"))
+    if ((k == 0) || ((kOK == 0) && COMPRESS)) {
+        elts <- zeroLengthElt
+    } else if (COMPRESS && missing(FUN) && useFastSubset) {
+        INDEX <- INDEX[whichNonZeroLength]
+        elts <-
+          seqextract(X@unlistData,
+                     start = start(X@partitioning)[INDEX],
+                     width = width(X@partitioning)[INDEX])
+    } else {
+        elts <- rep(list(zeroLengthElt), k)
+        if (kOK > 0) {
+            INDEX <- INDEX[whichNonZeroLength]
+            eltStarts <- start(X@partitioning)[INDEX]
+            eltEnds <- end(X@partitioning)[INDEX]
+            if (useFastSubset) {
+                elts[whichNonZeroLength] <-
+                  lapply(seq_len(kOK), function(j)
+                         FUN(window(X@unlistData, start = eltStarts[j],
+                                    end = eltEnds[j]), ...))
+            } else if (length(dim(X@unlistData)) < 2) {
+                elts[whichNonZeroLength] <-
+                  lapply(seq_len(kOK), function(j)
+                         FUN(X@unlistData[eltStarts[j]:eltEnds[j]], ...))
+            } else {
+                elts[whichNonZeroLength] <-
+                  lapply(seq_len(kOK), function(j)
+                         FUN(X@unlistData[eltStarts[j]:eltEnds[j], ,
+                                          drop = FALSE], ...))
             }
         }
         if (COMPRESS) {
