@@ -49,7 +49,7 @@ SEXP _get_XSequence_length(SEXP x)
 	return GET_SLOT(x, length_symbol);
 }
 
-/* Not a strict "slot getter" but very much "slot getter" like. */
+/* Not a strict "slot getter" but very much like. */
 SEXP _get_XSequence_tag(SEXP x)
 {
 	return _get_SequencePtr_tag(_get_XSequence_xdata(x));

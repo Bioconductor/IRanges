@@ -49,7 +49,7 @@ SEXP _get_IRanges_names(SEXP x)
 	return GET_SLOT(x, NAMES_symbol);
 }
 
-/* Not a strict "slot getter" but very much "slot getter" like. */
+/* Not a strict "slot getter" but very much like. */
 int _get_IRanges_length(SEXP x)
 {
 	return LENGTH(_get_IRanges_start(x));
@@ -146,8 +146,8 @@ static void set_IRanges_names(SEXP x, SEXP value)
 	return;
 }
 
-/* WARNING: Use only AFTER 'x@start' has been set! This is because this
- * setter is trying to figure out what the length of 'x' is. */
+/* WARNING: Use only AFTER 'x@start' has been set! Because this setter
+   is trying to figure out what the length of 'x' is. */
 void _set_IRanges_names(SEXP x, SEXP names)
 {
 	if (names == NULL)
@@ -160,10 +160,8 @@ void _set_IRanges_names(SEXP x, SEXP names)
 	return;
 }
 
-/*
- * Note that 'start' and 'width' must NOT contain NAs.
- * set_IRanges_slots() trusts the caller and does NOT check this!
- */
+/* Note that 'start' and 'width' must NOT contain NAs.
+   set_IRanges_slots() trusts the caller and does NOT check this! */
 static void set_IRanges_slots(SEXP x, SEXP start, SEXP width, SEXP names)
 {
 	if (LENGTH(width) != LENGTH(start))
@@ -196,12 +194,11 @@ void _copy_IRanges_slots(SEXP x, SEXP x0)
 
 /****************************************************************************
  * C-level constructors.
- *
- * Be careful that these functions do NOT duplicate their arguments before
- * putting them in the slots of the returned object.
- * Thus they cannot be made .Call() entry points!
  */
 
+/* Be careful that this constructor does NOT duplicate its arguments before
+   putting them in the slots of the returned object.
+   So don't try to make it a .Call() entry point! */
 SEXP _new_IRanges(const char *classname, SEXP start, SEXP width, SEXP names)
 {
 	SEXP classdef, ans;
@@ -213,10 +210,8 @@ SEXP _new_IRanges(const char *classname, SEXP start, SEXP width, SEXP names)
 	return ans;
 }
 
-/*
- * Allocation WITHOUT initialization.
- * The 'start' and 'width' slots are not initialized (they contain junk).
- */
+/* Allocation WITHOUT initialization.
+   The 'start' and 'width' slots are not initialized (they contain junk). */
 SEXP _alloc_IRanges(const char *classname, int length)
 {
         SEXP start, width, ans;
@@ -229,9 +224,11 @@ SEXP _alloc_IRanges(const char *classname, int length)
 }
 
 
-/*
- * --- .Call ENTRY POINT ---
+/****************************************************************************
+ * Other functions.
  */
+
+/* --- .Call ENTRY POINT --- */
 SEXP IRanges_from_integer(SEXP x)
 {
 	SEXP ans, ans_start, ans_width;
@@ -278,10 +275,7 @@ SEXP IRanges_from_integer(SEXP x)
 	return ans;
 }
 
-
-/*
- * --- .Call ENTRY POINT ---
- */
+/* --- .Call ENTRY POINT --- */
 SEXP NormalIRanges_from_logical(SEXP x)
 {
 	SEXP ans, ans_start, ans_width;
@@ -326,3 +320,4 @@ SEXP NormalIRanges_from_logical(SEXP x)
 	UNPROTECT(3);
 	return ans;
 }
+
