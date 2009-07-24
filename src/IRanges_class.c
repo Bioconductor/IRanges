@@ -33,19 +33,19 @@ static SEXP
 
 SEXP _get_IRanges_start(SEXP x)
 {
-	INIT_STATIC_SYMBOL(start);
+	INIT_STATIC_SYMBOL(start)
 	return GET_SLOT(x, start_symbol);
 }
 
 SEXP _get_IRanges_width(SEXP x)
 {
-	INIT_STATIC_SYMBOL(width);
+	INIT_STATIC_SYMBOL(width)
 	return GET_SLOT(x, width_symbol);
 }
 
 SEXP _get_IRanges_names(SEXP x)
 {
-	INIT_STATIC_SYMBOL(NAMES);
+	INIT_STATIC_SYMBOL(NAMES)
 	return GET_SLOT(x, NAMES_symbol);
 }
 
@@ -127,21 +127,21 @@ cachedIRanges _sub_cachedIRanges(const cachedIRanges *cached_x, int offset, int 
 
 static void set_IRanges_start(SEXP x, SEXP value)
 {
-	INIT_STATIC_SYMBOL(start);
+	INIT_STATIC_SYMBOL(start)
 	SET_SLOT(x, start_symbol, value);
 	return;
 }
 
 static void set_IRanges_width(SEXP x, SEXP value)
 {
-	INIT_STATIC_SYMBOL(width);
+	INIT_STATIC_SYMBOL(width)
 	SET_SLOT(x, width_symbol, value);
 	return;
 }
 
 static void set_IRanges_names(SEXP x, SEXP value)
 {
-	INIT_STATIC_SYMBOL(NAMES);
+	INIT_STATIC_SYMBOL(NAMES)
 	SET_SLOT(x, NAMES_symbol, value);
 	return;
 }

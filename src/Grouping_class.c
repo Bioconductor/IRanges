@@ -32,13 +32,13 @@ static SEXP
 
 SEXP _get_H2LGrouping_high2low(SEXP x)
 {
-	INIT_STATIC_SYMBOL(high2low);
+	INIT_STATIC_SYMBOL(high2low)
 	return GET_SLOT(x, high2low_symbol);
 }
 
 SEXP _get_H2LGrouping_low2high(SEXP x)
 {
-	INIT_STATIC_SYMBOL(low2high);
+	INIT_STATIC_SYMBOL(low2high)
 	return GET_SLOT(x, low2high_symbol);
 }
 

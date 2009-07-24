@@ -33,19 +33,19 @@ static SEXP
 
 SEXP _get_XSequence_xdata(SEXP x)
 {
-	INIT_STATIC_SYMBOL(xdata);
+	INIT_STATIC_SYMBOL(xdata)
 	return GET_SLOT(x, xdata_symbol);
 }
 
 SEXP _get_XSequence_offset(SEXP x)
 {
-	INIT_STATIC_SYMBOL(offset);
+	INIT_STATIC_SYMBOL(offset)
 	return GET_SLOT(x, offset_symbol);
 }
 
 SEXP _get_XSequence_length(SEXP x)
 {
-	INIT_STATIC_SYMBOL(length);
+	INIT_STATIC_SYMBOL(length)
 	return GET_SLOT(x, length_symbol);
 }
 
@@ -82,21 +82,21 @@ cachedCharSeq _cache_XRaw(SEXP x)
 
 static void set_XSequence_xdata(SEXP x, SEXP value)
 {
-	INIT_STATIC_SYMBOL(xdata);
+	INIT_STATIC_SYMBOL(xdata)
 	SET_SLOT(x, xdata_symbol, value);
 	return;
 }
 
 static void set_XSequence_offset(SEXP x, SEXP value)
 {
-	INIT_STATIC_SYMBOL(offset);
+	INIT_STATIC_SYMBOL(offset)
 	SET_SLOT(x, offset_symbol, value);
 	return;
 }
 
 static void set_XSequence_length(SEXP x, SEXP value)
 {
-	INIT_STATIC_SYMBOL(length);
+	INIT_STATIC_SYMBOL(length)
 	SET_SLOT(x, length_symbol, value);
 	return;
 }

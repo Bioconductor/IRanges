@@ -65,7 +65,7 @@ static SEXP xp_symbol = NULL;
  */
 SEXP _get_SequencePtr_tag(SEXP x)
 {
-	INIT_STATIC_SYMBOL(xp);
+	INIT_STATIC_SYMBOL(xp)
 	return R_ExternalPtrTag(GET_SLOT(x, xp_symbol));
 }
 
@@ -92,7 +92,7 @@ static void set_SequencePtr_tag(SEXP x, SEXP value)
 	SEXP xp;
 
 	PROTECT(xp = R_MakeExternalPtr(NULL, value, R_NilValue));
-	INIT_STATIC_SYMBOL(xp);
+	INIT_STATIC_SYMBOL(xp)
 	SET_SLOT(x, xp_symbol, xp);
 	UNPROTECT(1);
 	return;
