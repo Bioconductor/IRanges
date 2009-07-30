@@ -99,11 +99,3 @@ test_Ranges_disjointBins <- function() {
   checkIdentical(disjointBins(IRanges(c(3, 1, 10), c(5, 12, 13))),
                  c(2L, 1L, 2L))
 }
-
-test_Ranges_coverage <- function() {
-  ir <- IRanges(c(1, 8, 14, 15, 19, 34, 40),
-                width = c(12, 6, 6, 15, 6, 2, 7))
-  checkIdentical(as.vector(coverage(ir)),
-                 rep(c(1L, 2L, 1L, 2L, 3L, 2L, 1L, 0L, 1L, 0L, 1L),
-                     c(7, 5, 2, 4, 1, 5, 5, 4, 2, 4, 7)))
-}
