@@ -53,6 +53,7 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP width)
 	const int *order_elt;
 	int weight_elt, index_start, index_end;
 
+	// find reasonable buffer length
 	int *sparse_data;
 	int *sparse_index;
 	int sparse_data_length = 0;
@@ -62,8 +63,6 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP width)
 		qsort(order, order_length, sizeof(int), cmp_start_indices_for_ordering);
 
 		int prev_index = 0;
-		const int *x_start = INTEGER(_get_IRanges_start(x));
-		const int *x_width = INTEGER(_get_IRanges_width(x));
 		for (i = 0, order_elt = order; i < x_length; i++, order_elt++)
 		{
 			if (x_width[*order_elt] == 0)
@@ -116,7 +115,8 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP width)
 				sparse_index_elt++;
 				sparse_data_elt++;
 			}
-			for (j = 0; j < x_width[*order_elt]; j++, sparse_index_elt++, sparse_data_elt++, index_start++)
+			for (j = 0; j < x_width[*order_elt];
+			     j++, sparse_index_elt++, sparse_data_elt++, index_start++)
 			{
 				*sparse_index_elt = index_start;
 				*sparse_data_elt += weight_elt;
