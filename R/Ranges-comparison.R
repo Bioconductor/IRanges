@@ -101,12 +101,25 @@ setGeneric("order", signature="...",
 setMethod("order", "Ranges",
     function(..., na.last=TRUE, decreasing=FALSE)
     {
+        if (!isTRUEorFALSE(decreasing))
+            stop("'decreasing' must be TRUE or FALSE")
         ## all arguments in '...' are guaranteed to be Ranges objects
         args <- list(...)
-        order_args <- vector("list", 2L*length(args))
-        order_args[2L*seq_len(length(args)) - 1L] <- lapply(args, start)
-        order_args[2L*seq_len(length(args))] <- lapply(args, end)
-        do.call(order, c(order_args, na.last=na.last, decreasing=decreasing))
+        if (length(args) == 1) {
+            ans <-
+              .Call("Ranges_order", start(args[[1]]), width(args[[1]]),
+                    PACKAGE="IRanges")
+            if (decreasing)
+                ans <- rev(ans)
+        } else {
+            order_args <- vector("list", 2L*length(args))
+            order_args[2L*seq_len(length(args)) - 1L] <- lapply(args, start)
+            order_args[2L*seq_len(length(args))] <- lapply(args, end)
+            ans <-
+              do.call(order,
+                      c(order_args, na.last=na.last, decreasing=decreasing))
+        }
+        ans
     }
 )
 
@@ -120,8 +133,6 @@ setGeneric("sort", signature="x",
 setMethod("sort", "Ranges",
     function(x, decreasing=FALSE, ...) 
     {
-        if (!isTRUEorFALSE(decreasing))
-            stop("'decreasing' must be TRUE or FALSE")
         x[order(x, decreasing=decreasing)]
     }
 )

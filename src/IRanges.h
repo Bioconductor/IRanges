@@ -459,6 +459,18 @@ SEXP H2LGrouping_vmembers(
 );
 
 
+/* Ranges_comparison.c */
+void _get_Ranges_order(
+	const int *start,
+	const int *width,
+	int nelt,
+	int *order,
+	int base1
+);
+
+SEXP Ranges_order(SEXP start, SEXP width);
+
+
 /* Sequence_class.c */
 
 SEXP vector_subsetbyranges(SEXP x, SEXP start, SEXP width);

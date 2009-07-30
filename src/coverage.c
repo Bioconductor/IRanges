@@ -4,7 +4,7 @@
 static const int *base_start;
 static const int *base_width;
 
-static int cmp_start_indices_for_ordering(const void *p1, const void *p2)
+static int cmp_sw_subset_for_ordering(const void *p1, const void *p2)
 {
 	int i1, i2, ret1, ret2;
 
@@ -61,7 +61,7 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP width)
 	if (order_length > 0) {
 		base_start = x_start;
 		base_width = x_width;
-		qsort(order, order_length, sizeof(int), cmp_start_indices_for_ordering);
+		qsort(order, order_length, sizeof(int), cmp_sw_subset_for_ordering);
 
 		int prev_index = 0;
 		for (i = 0, order_elt = order; i < order_length; i++, order_elt++)
