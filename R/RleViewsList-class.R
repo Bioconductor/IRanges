@@ -39,3 +39,46 @@ RleViewsList <- function(..., rleList, rangesList, universe = NULL)
     universe(ans) <- universe
     ans
 }
+
+setMethod("slice", "RleList",
+          function(x, lower = -Inf, upper = Inf,
+                   includeLower = TRUE, includeUpper = TRUE)
+          {
+              if (!isSingleNumber(lower)) {
+                  stop("'lower' must be a single number")
+              }
+              if (!isSingleNumber(upper)) {
+                  stop("'upper' must be a single number")
+              }
+              if (!isTRUEorFALSE(includeLower)) {
+                  stop("'includeLower' must be TRUE or FALSE")
+              }
+              if (!isTRUEorFALSE(includeUpper)) {
+                  stop("'includeUpper' must be TRUE or FALSE")
+              }
+              indices <- seq_len(length(x))
+              if (lower == -Inf) {
+                  ranges <-
+                    lapply(indices, function(i) Rle(TRUE, length(x[[i]])))
+              } else if (includeLower) {
+                  ranges <- lapply(indices, function(i) x[[i]] >= lower)
+              } else {
+                  ranges <- lapply(indices, function(i) x[[i]] > lower)
+              }
+              if (upper < Inf) {
+                  if (includeUpper) {
+                      ranges <-
+                        lapply(indices,
+                               function(i) ranges[[i]] & (x[[i]] <= upper))
+                  } else {
+                      ranges <-
+                        lapply(indices,
+                                function(i) ranges[[i]] & (x[[i]] < upper))
+                  }
+              }
+              RleViewsList(rleList = x,
+                           rangesList =
+                           do.call(IRangesList,
+                                   c(lapply(ranges, "IRanges"),
+                                     compress = FALSE)))
+          })

@@ -131,6 +131,12 @@ sequence extraction:
   reverse order.
 \item \Rfunction{rep} - Creates a new sequence by repeating sequence
   elements.
+\item \Rfunction{Filter} - Extracts the elements for which a function evaluates
+  to TRUE.
+\item \Rfunction{Find} - Extracts the first or last such element specified by
+  a function.
+\item \Rfunction{Position} - Extracts the first or last such position specified
+  by a function.
 \end{enumerate}
 
 The following code illustrates how these functions are used on an
@@ -201,7 +207,7 @@ corrs  <- shiftApply(shifts, yVector, xVector, FUN = cor)
 %
 <<figshiftcorrs, fig=TRUE, include=FALSE, eps=FALSE, width=5, height=5>>=
 plot(shifts, corrs)
-@ 
+@
 
 The result is shown in Fig.~\ref{figshiftcorrs}.
 \begin{figure}[tb]
@@ -377,6 +383,21 @@ identical(sapply(xExploded, mean), sapply(sIntList2, mean))
 identical(sapply(xExploded, mean), sapply(cIntList2, mean))
 @
 
+Unlist ordinary \R{} \Rclass{list} objects, \Rclass{AtomicList} objects support
+the \Rfunction{Ops} (e.g. \Rfunction{+}, \Rfunction{==}, \Rfunction{\&}),
+\Rfunction{Math} (e.g. \Rfunction{log}, \Rfunction{sqrt}),
+\Rfunction{Math2} (e.g. \Rfunction{round}, \Rfunction{signif}),
+\Rfunction{Summary} (e.g. \Rfunction{min}, \Rfunction{max}, \Rfunction{sum}),
+and \Rfunction{Complex} (e.g. \Rfunction{Re}, \Rfunction{Im}) group generics.
+
+<<list-groupgenerics>>=
+xRleList <- RleList(xRle, 2L * rev(xRle))
+yRleList <- RleList(yRle, 2L * rev(yRle))
+xRleList > 0
+xRleList + yRleList
+sum(xRleList > 0 | yRleList > 0)
+@
+
 Since these atomic lists inherit from \Rclass{Sequence}, they can also use
 the looping function \Rfunction{endoapply} to perform endomorphisms.
 
@@ -429,7 +450,7 @@ implementation of \Rclass{Ranges} is \Rclass{IRanges}, which stores
 the starts and widths as ordinary integer vectors. To construct an
 \Rclass{IRanges} instance, we call the \Rfunction{IRanges}
 constructor. Ranges are normally specified by passing two out of the
-three parameters: start, end and width (see \Sexpr{help(IRanges)} for
+three parameters: start, end and width (see \Rcode{help(IRanges)} for
 more information).
 %
 <<iranges-constructor>>=
@@ -437,7 +458,9 @@ ir1 <- IRanges(start = 1:10, width = 10:1)
 ir2 <- IRanges(start = 1:10, end = 11)
 ir3 <- IRanges(end = 11, width = 10:1)
 identical(ir1, ir2) & identical(ir2, ir3)
-@ 
+ir <- IRanges(c(1, 8, 14, 15, 19, 34, 40),
+  width = c(12, 6, 6, 15, 6, 2, 7))
+@
 %
 All of the above calls construct an \Rclass{IRanges} instance with the
 same ranges, using different combinations of the \Rfunarg{start},
@@ -446,30 +469,60 @@ same ranges, using different combinations of the \Rfunarg{start},
 Accessing the starts, widths and ends is supported by every
 \Rclass{Ranges} implementation.
 <<iranges-start>>=
-start(ir1)
-@ 
+start(ir)
+@
 <<iranges-end>>=
-end(ir1)
-@ 
+end(ir)
+@
 <<iranges-width>>=
-width(ir1)
-@ 
+width(ir)
+@
 
 For \Rclass{IRanges} and some other \Rclass{Ranges} derivatives,
 subsetting is also supported, by numeric and logical indices.
 <<iranges-subset-numeric>>=
-ir <- ir1[1:5]
-ir
-@ 
+ir[1:4]
+@
 <<iranges-subset-logical>>=
-ir1[start(ir1) <= 5]
-@ 
+ir[start(ir) <= 15]
+@
 
 One may think of each range as a sequence of integer ranges, and
 \Rclass{Ranges} is, in fact, derived from \Rclass{IntegerList}.
 <<ranges-extraction>>=
-ir1[[1]]
-@ 
+ir[[1]]
+@
+
+In order to illustrate range operations, we'll create a function to plot ranges.
+
+<<plotRanges>>=
+plotRanges <- function(x, xlim = x, main = deparse(substitute(x)),
+                       col = "black", sep = 0.5, ...) 
+{
+  height <- 1
+  if (is(xlim, "Ranges"))
+    xlim <- c(min(start(xlim)), max(end(xlim)))
+  bins <- disjointBins(IRanges(start(x), end(x) + 1))
+  plot.new()
+  plot.window(xlim, c(0, max(bins)*(height + sep)))
+  ybottom <- bins * (sep + height) - height
+  rect(start(x)-0.5, ybottom, end(x)+0.5, ybottom + height, col = col, ...)
+  title(main)
+  axis(1)
+}
+@
+
+<<ir-plotRanges, fig=TRUE, include=FALSE, eps=FALSE, height=2.25>>=
+plotRanges(ir)
+@
+
+\begin{figure}[tb]
+  \begin{center}
+     \includegraphics[width=0.5\textwidth]{IRangesOverview-ir-plotRanges}  
+     \caption{\label{fig-ir-plotRanges}%
+      Plot of original ranges.}
+  \end{center}
+\end{figure}
 
 \subsection{Normality}
 
@@ -497,9 +550,18 @@ simplifies comparisons.
 
 The \Rfunction{reduce} function reduces any \Rclass{Ranges} object to
 a \Rclass{NormalIRanges} by merging redundant ranges.
-<<ranges-reduce>>=
-reduce(ir1)
-@ 
+<<ranges-reduce, fig=TRUE, include=FALSE, eps=FALSE, height=2.25>>=
+reduce(ir)
+plotRanges(reduce(ir))
+@
+
+\begin{figure}[tb]
+  \begin{center}
+     \includegraphics[width=0.5\textwidth]{IRangesOverview-ranges-reduce}  
+     \caption{\label{fig-ranges-reduce}%
+      Plot of reduced ranges.}
+  \end{center}
+\end{figure}
 
 \subsection{Lists of \Rclass{Ranges} objects}
 
@@ -516,11 +578,11 @@ the \Rclass{RangesList}. To explicitly construct a
 \Rclass{RangesList}, use the \Rfunction{RangesList} function.
 <<rangeslist-contructor>>=
 rl <- RangesList(ir, rev(ir))
-@ 
+@
 %
 <<rangeslist-start>>=
 start(rl)
-@ 
+@
 
 \subsection{Sequence Extraction}
 
@@ -530,7 +592,8 @@ that when a \textit{normal} \Rclass{Ranges} is given as the index, the
 result a subsequence, as no elements are repeated or reordered.
 %
 <<seqextract-ranges>>=
-seqextract(xRle, ir1[1:2])
+irextract <- IRanges(start = c(4501, 4901) , width = 100)
+seqextract(xRle, irextract)
 @
 %
 If the sequence is a \Rclass{Sequence} subclass (i.e. not an ordinary
@@ -538,21 +601,50 @@ If the sequence is a \Rclass{Sequence} subclass (i.e. not an ordinary
 \Rclass{Ranges} instance.
 %
 <<bracket-ranges>>=
-xRle[ir1[1:2]]
-@ 
+xRle[irextract]
+@
 %
 
 \subsection{Finding Overlapping Ranges}
 
-\Rclass{RangesMatching}
-\Rclass{RangesMatchingList}
-\Rclass{IntervalTree}
+The functions \Rfunction{overlap} and \Rfunction{\%in\%} detect overlaps
+between two \Rclass{Ranges} objects.
 
-\Rfunction{overlap}, \Rfunction{\%in\%}
+<<overlap-ranges>>=
+ol <- overlap(reduce(ir), ir)
+as.matrix(ol)
+@
+
+\subsection{Counting Overlapping Ranges}
+
+The function \Rfunction{coverage} counts the number of ranges over each
+position.
+
+<<ranges-coverage, fig=TRUE, include=FALSE, eps=FALSE, height=2.25>>=
+cov <- coverage(ir)
+plotRanges(ir)
+cov <- as.vector(cov)
+mat <- cbind(seq_along(cov)-0.5, cov)
+d <- diff(cov) != 0
+mat <- rbind(cbind(mat[d,1]+1, mat[d,2]), mat)
+mat <- mat[order(mat[,1]),]
+lines(mat, col="red", lwd=4)
+axis(2)
+@
+
+\begin{figure}[tb]
+  \begin{center}
+     \includegraphics[width=0.5\textwidth]{IRangesOverview-ranges-coverage}  
+     \caption{\label{fig-ranges-coverage}%
+      Plot of ranges with accumulated coverage.}
+  \end{center}
+\end{figure}
 
 \subsection{Finding Neighboring Ranges}
 
-\Rfunction{nearest}, \Rfunction{precede}, \Rfunction{follow}
+The \Rfunction{nearest} function finds the nearest neighbor ranges (overlapping
+is zero distance). The \Rfunction{precede} and \Rfunction{follow} functions
+find the non-overlapping nearest neighbors on a specific side.
 
 \subsection{Transforming Ranges}
 
@@ -578,8 +670,8 @@ expanding or contracting each range.  Adding or subtracting a numeric
 or contracted on each side by the corresponding value in the numeric
 vector.
 <<ranges-plus>>=
-ir + 1:5
-@ 
+ir + seq_len(length(ir))
+@
 %
 The \Rfunction{*} operator symmetrically magnifies a \Rclass{Ranges}
 object by a factor, where positive contracts (zooms in) and negative
@@ -605,7 +697,7 @@ the remaining left and right regions adjacent to the narrowed region
 are also returned in separate \Rclass{Ranges} objects.
 <<ranges-threebands>>=
 threebands(ir, start=1:5, width=2)
-@ 
+@
 
 The \Rfunction{restrict} function ensures every range falls within a
 set of bounds. Ranges are contracted as necessary, and the ranges that
@@ -613,7 +705,7 @@ fall completely outside of but not adjacent to the bounds are dropped,
 by default.
 <<ranges-restrict>>=
 restrict(ir, start=2, end=3)
-@ 
+@
 
 \subsubsection{Making ranges disjoint}
 
@@ -624,15 +716,26 @@ returns a disjoint set of three ranges for each input range.
 The \Rfunction{disjoin} function makes a \Rclass{Ranges} object
 disjoint by fragmenting it into the widest ranges where the set of
 overlapping ranges is the same.
-<<ranges-disjoin>>=
+
+<<ranges-disjoin, fig=TRUE, include=FALSE, eps=FALSE, height=2.25>>=
 disjoin(ir)
-@ 
+plotRanges(disjoin(ir))
+@
+
+\begin{figure}[tb]
+  \begin{center}
+     \includegraphics[width=0.5\textwidth]{IRangesOverview-ranges-disjoin}  
+     \caption{\label{fig-ranges-disjoin}%
+      Plot of disjoined ranges.}
+  \end{center}
+\end{figure}
+
 A variant of \Rfunction{disjoin} is \Rfunction{disjointBins}, which
 divides the ranges into bins, such that the ranges in each bin are
 disjoint. The return value is an integer vector of the bins.
 <<ranges-disjointBins>>=
 disjointBins(ir)
-@ 
+@
 
 \subsubsection{Other transformations}
 
@@ -641,14 +744,14 @@ Other transformations include \Rfunction{reflect} and
 reference bounds.
 <<ranges-reflect>>=
 reflect(ir, IRanges(start(ir), width=width(ir)*2))
-@ 
+@
 %
 The \Rfunction{flank} returns ranges of a specified width that flank,
 to the left (default) or right, each input range. One use case of this
 is forming promoter regions for a set of genes.
 <<ranges-flank>>=
-flank(ir, width = 1:5)
-@ 
+flank(ir, width = seq_len(length(ir)))
+@
 %
 
 \subsection{Set Operations}
@@ -669,32 +772,43 @@ The \textit{complement} operation is implemented by the
 \Rfunction{gaps} will return the ranges that fall between the ranges
 in the (normalized) input. It is possible to specify a set of bounds,
 so that flanking ranges are included.
-<<ranges-gaps>>=
-gaps(ir, start=1, end=20)
-@ 
+<<ranges-gaps, fig=TRUE, include=FALSE, eps=FALSE, height=2.25>>=
+gaps(ir, start=1, end=50)
+plotRanges(gaps(ir, start=1, end=50), c(1,50))
+@
+
+\begin{figure}[tb]
+  \begin{center}
+     \includegraphics[width=0.5\textwidth]{IRangesOverview-ranges-gaps}  
+     \caption{\label{fig-ranges-gap}%
+      Plot of gaps from ranges.}
+  \end{center}
+\end{figure}
+
+
 \Rfunction{pgap} considers each parallel pairing between two
 \Rclass{Ranges} objects and finds the range, if any, between
 them. Note that the function name is singular, suggesting that only
 one range is returned per range in the input.
 <<ranges-pgap>>=
-@ 
+@
 
 The remaining operations, \textit{union}, \textit{intersect} and
 \textit{difference} are implemented by the \Rfunction{[p]union},
 \Rfunction{[p]intersect} and \Rfunction{[p]setdiff} functions,
 respectively. These are relatively self-explanatory.
 <<ranges-union>>=
-@ 
+@
 <<ranges-punion>>=
-@ 
+@
 <<ranges-intersect>>=
-@ 
+@
 <<ranges-pintersect>>=
-@ 
+@
 <<ranges-setdiff>>=
-@ 
+@
 <<ranges-psetdiff>>=
-@ 
+@
 
 % \subsection{Mapping Ranges Between Sequences}
 
@@ -730,9 +844,28 @@ implementations exist, such as \Rclass{XStringViews} in the
 
 \subsection{Creating Views}
 
+There are two basic constructors for creating views: the \Rfunction{Views}
+function based on indicators and the \Rfunction{slice} based on numeric
+boundaries.
+
+<<Views-constructors>>=
+xViews <- Views(xRle, xRle >= 1)
+xViews <- slice(xRle, 1)
+xViewsList <- slice(xRleList, 1)
+@
+
 \subsection{Aggregating Views}
 
-\Rfunction{viewMaxs}, \Rfunction{viewMins}, \Rfunction{viewSums}
+While \Rfunction{sapply} can be used to loop over each window, the native
+functions \Rfunction{viewMaxs}, \Rfunction{viewMins}, and \Rfunction{viewSums}
+provide fast looping to calculate their respective statistical summaries.
+
+<<views-looping>>=
+head(viewSums(xViews))
+viewSums(xViewsList)
+head(viewMaxs(xViews))
+viewMaxs(xViewsList)
+@
 
 \section{Data on Ranges}
 
@@ -748,8 +881,8 @@ To create a \Rclass{RangedData} instance, one needs to provide a
 those ranges. The variable objects need not be vectors, but they must
 satisfy the contract of \Rclass{DataFrame}.
 <<RangedData-construct>>=
-values <- rnorm(5)
-rd <- RangedData(ir, name = letters[1:5], values)
+values <- rnorm(length(ir))
+rd <- RangedData(ir, name = letters[seq_len(length(ir))], values)
 rd
 @
 
@@ -762,10 +895,10 @@ needs to separately treat ranges from different spaces, and
 \Rclass{RangedData} aims to facilitate this mode of operation. The
 segregation may be performed at construction time.
 <<RangedData-construct-space>>=
-rd <- RangedData(ir, name = letters[1:5], values, 
-                 space = rep(c("chr1", "chr2"), c(2, 3)))
+rd <- RangedData(ir, name = letters[seq_len(length(ir))], values, 
+                 space = rep(c("chr1", "chr2"), c(3, length(ir) - 3)))
 rd
-@ 
+@
 
 With the knowledge that the data is split into spaces, it should not
 be surprising that the \Rfunction{ranges} accessor returns a
@@ -776,7 +909,7 @@ ranges(rd)
 @
 <<RangedData-values>>=
 values(rd)
-@ 
+@
 
 To obtain a \Rclass{RangedData} for a specific set of spaces, one should
 use the \Rfunction{[} function, which accepts logical, numeric and
@@ -788,21 +921,21 @@ rd["chr1"]
 <<RangedData-subspace-2>>=
 all(identical(rd["chr1"], rd[1]),
     identical(rd[1], rd[c(TRUE, FALSE)]))
-@ 
+@
 The \Rfunction{names} and \Rfunction{length} functions return the
 names and number of spaces, respectively.
 <<RangedData-names>>=
 names(rd)
-@ 
+@
 <<RangedData-length>>=
 length(rd)
-@ 
+@
 
 The \Rfunction{lapply} function operates over the spaces. The object
 passed to the user function is a subset \Rclass{RangedData}.
 <<RangedData-lapply>>=
 lapply(rd, names)
-@ 
+@
 
 The above would suggest that \Rclass{RangedData} is a sequence of
 spaces. However, \Rclass{RangedData} also inherits from
@@ -814,7 +947,7 @@ rd[[2]]
 @
 <<RangedData-dollar>>=
 rd$values
-@ 
+@
 Note that the extracted columns are ``unlisted'' over the spaces,
 which is usually much more convenient than obtaining them as lists. It
 is important to note that the elements have been sorted by
@@ -825,18 +958,22 @@ The two dimensional matrix-style subsetting is also supported. The
 rows are indexed globally, independent of space.
 <<RangedData-subset-2d>>=
 rd[1:3, "name"]
-@ 
+@
 
 % \subsection{Applying Over Spaces}
 
 % \Rclass{RDApplyParams}
 % \Rclass{FilterRules}
 
+\pagebreak[4]
+
+\section{Session Information}
+
 \begin{table*}[tbp]
 \begin{minipage}{\textwidth}
 <<sessionInfo, results=tex, print=TRUE>>=
 toLatex(sessionInfo())
-@ 
+@
 \end{minipage}
 \caption{\label{tab:sessioninfo}%
 The output of \Rfunction{sessionInfo} on the build system 

@@ -33,6 +33,18 @@ setMethod("slice", "Rle",
           function(x, lower = -Inf, upper = Inf,
                    includeLower = TRUE, includeUpper = TRUE)
           {
+              if (!isSingleNumber(lower)) {
+                  stop("'lower' must be a single number")
+              }
+              if (!isSingleNumber(upper)) {
+                  stop("'upper' must be a single number")
+              }
+              if (!isTRUEorFALSE(includeLower)) {
+                  stop("'includeLower' must be TRUE or FALSE")
+              }
+              if (!isTRUEorFALSE(includeUpper)) {
+                  stop("'includeUpper' must be TRUE or FALSE")
+              }
               if (lower == -Inf) {
                   ranges <- Rle(TRUE, length(x))
               } else if (includeLower) {

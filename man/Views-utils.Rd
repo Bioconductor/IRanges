@@ -4,6 +4,7 @@
 \alias{slice}
 \alias{slice,integer-method}
 \alias{slice,Rle-method}
+\alias{slice,RleList-method}
 \alias{slice,XInteger-method}
 
 \alias{viewApply}
@@ -81,7 +82,8 @@
     to a vector or matrix if possible.
   }
   \item{x}{
-    An \link{Rle}, \link{XInteger} object or an integer vector for \code{slice}.
+    An \link{Rle}, \link{RleList}, \link{XInteger} object or an integer vector
+    for \code{slice}.
 
     An \link{RleViews}, \link{RleViewsList}, \link{XIntegerViews} object for
     \code{viewMins}, \code{viewMaxs}, and \code{viewSums}.
