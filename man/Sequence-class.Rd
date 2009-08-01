@@ -188,28 +188,10 @@
       of the Sequence object.
     }
     \item{}{
-      \code{Map(f, ...)}:
-      Applies a function to the corresponding elements of given Sequence
-      objects.
-    }
-    \item{}{
       \code{Position(f, x, right = FALSE, nomatch = NA_integer_)}:
       Extracts the first or last such position in \code{x}.
       \describe{
         \item{f}{A unary argument function.}
-        \item{right}{A logical indicating whether to proceed from left to right
-          (default) or from right to left.}
-        \item{nomatch}{The value to be returned in the case when "no match" (no
-          element satisfying the predicate) is found.}
-      }
-    }
-    \item{}{
-      \code{Reduce(f, x, init, right = FALSE, accumulate = FALSE)}:
-      Uses a binary function to successively combine the elements of \code{x}
-      and a possibly given initial value.
-      \describe{
-        \item{f}{A binary argument function.}
-        \item{init}{An R object of the same kind as the elements of \code{x}.}
         \item{right}{A logical indicating whether to proceed from left to right
           (default) or from right to left.}
         \item{nomatch}{The value to be returned in the case when "no match" (no
@@ -334,6 +316,11 @@
       result of applying \code{FUN} to the corresponding element of \code{X}.
     }
     \item{}{
+      \code{Map(f, ...)}:
+      Applies a function to the corresponding elements of given Sequence
+      objects.
+    }
+    \item{}{
       \code{mapply(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = TRUE)}:
       Like the standard \code{\link[base]{mapply}} function defined in the
       base package, the \code{mapply} method for Sequence objects is a
@@ -344,6 +331,19 @@
       Similar to \code{\link[base]{mapply}}, but performs an endomorphism
       across multiple objects, i.e. returns an object of
       \code{class(list(...)[[1]])}.
+    }
+    \item{}{
+      \code{Reduce(f, x, init, right = FALSE, accumulate = FALSE)}:
+      Uses a binary function to successively combine the elements of \code{x}
+      and a possibly given initial value.
+      \describe{
+        \item{f}{A binary argument function.}
+        \item{init}{An R object of the same kind as the elements of \code{x}.}
+        \item{right}{A logical indicating whether to proceed from left to right
+          (default) or from right to left.}
+        \item{nomatch}{The value to be returned in the case when "no match" (no
+          element satisfying the predicate) is found.}
+      }
     }
     \item{}{
       \code{sapply(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)}:
