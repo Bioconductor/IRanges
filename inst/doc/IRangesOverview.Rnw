@@ -965,6 +965,29 @@ rd[1:3, "name"]
 % \Rclass{RDApplyParams}
 % \Rclass{FilterRules}
 
+\section{IRanges in Biological Sequence Analysis}
+
+The \IRanges{} packages was primarily designed with biological sequence
+analysis in mind and Table \ref{table:bioseq} shows how some biological
+sequence analysis concepts are represented in the \IRanges{} class system.
+
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{l|l}
+\hline
+Biological Entity                        & \Rclass{Sequence} Subclass \\
+\hline
+Genome browser track(s)                  & \Rclass{RangedData}/\Rclass{RangedDataList} \\
+Coverage across chromosomes/contigs      & \Rclass{RleList} \\
+Mapped ranges to genome                  & \Rclass{CompressedIRangesList} \\
+Data (sans ranges) across chroms/contigs & \Rclass{SplitDataFrameList} \\
+\hline
+\end{tabular}
+\end{center}
+\caption{\Rclass{Sequence} subclasses for Biological Sequence Analysis}
+\label{table:bioseq}
+\end{table}
+
 \pagebreak[4]
 
 \section{Session Information}
