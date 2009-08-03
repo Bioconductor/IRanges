@@ -259,14 +259,56 @@ setGeneric("shift", signature="x",
     function(x, shift, use.names=TRUE) standardGeneric("shift")
 )
 
+setMethod("shift", "Ranges",
+    function(x, shift, use.names=TRUE)
+    {
+        ir <- as(x, "IRanges")
+        y <- shift(ir, shift=shift, use.names=use.names)
+        as(y, class(x))
+    }
+)
+
 setGeneric("restrict", signature="x",
     function(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
         standardGeneric("restrict")
 )
 
+setMethod("restrict", "Ranges",
+    function(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
+    {
+        ir <- as(x, "IRanges")
+        y <- restrict(ir, start=start, end=end, keep.all.ranges=keep.all.ranges,
+                      use.names=use.names)
+        as(y, class(x))
+    }
+)
+
 setGeneric("narrow", signature="x",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
         standardGeneric("narrow")
+)
+
+setMethod("narrow", "Ranges",
+    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+    {
+        ir <- as(x, "IRanges")
+        y <- narrow(ir, start=start, end=end, width=width, use.names=use.names)
+        as(y, class(x))
+    }
+)
+
+setGeneric("resize", signature="x",
+    function(x, width, fixed.start=TRUE, use.names=TRUE)
+      standardGeneric("resize")
+)
+
+setMethod("resize", "Ranges",
+    function(x, width, fixed.start=TRUE, use.names=TRUE)
+    {
+        ir <- as(x, "IRanges")
+        y <- resize(ir, width=width, fixed.start=fixed.start, use.names=use.names)
+        as(y, class(x))
+    }
 )
 
 setGeneric("threebands", signature="x",
@@ -282,8 +324,8 @@ setMethod("reduce", "Ranges",
     function(x, with.inframe.attrib=FALSE)
     {
         ir <- as(x, "IRanges")
-        g <- reduce(ir, with.inframe.attrib)
-        as(g, class(x))
+        y <- reduce(ir, with.inframe.attrib)
+        as(y, class(x))
     }
 )
 
@@ -295,8 +337,8 @@ setMethod("gaps", "Ranges",
     function(x, start=NA, end=NA)
     {
         ir <- as(x, "IRanges")
-        g <- gaps(ir, start, end)
-        as(g, class(x))
+        y <- gaps(ir, start=start, end=end)
+        as(y, class(x))
     }
 )
 

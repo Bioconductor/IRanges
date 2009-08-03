@@ -245,11 +245,7 @@ setMethod("reduce", "RangesList",
 setMethod("gaps", "RangesList",
           function(x, start=NA, end=NA)
           {
-            if (is(x, "CompressedList"))
-              newCompressedList(class(x),
-                                lapply(x, gaps, start = start, end = end))
-            else
-              newSimpleList(class(x), lapply(x, gaps, start = start, end = end))
+            endoapply(x, gaps, start = start, end = end)
           })
 
 setMethod("range", "RangesList",

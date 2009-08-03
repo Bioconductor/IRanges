@@ -6,11 +6,18 @@
 \alias{whichAsIRanges}
 \alias{shift}
 \alias{shift,IRanges-method}
+\alias{shift,Ranges-method}
 \alias{restrict}
 \alias{restrict,IRanges-method}
+\alias{restrict,Ranges-method}
 \alias{narrow}
 \alias{narrow,IRanges-method}
 \alias{narrow,NormalIRanges-method}
+\alias{narrow,Ranges-method}
+\alias{resize}
+\alias{resize,IRanges-method}
+\alias{resize,NormalIRanges-method}
+\alias{resize,Ranges-method}
 \alias{threebands}
 \alias{threebands,IRanges-method}
 \alias{reduce}
@@ -51,6 +58,7 @@
   shift(x, shift, use.names=TRUE)
   restrict(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
   narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
+  resize(x, width, fixed.start=TRUE, use.names=TRUE)
   threebands(x, start=NA, end=NA, width=NA)
   reduce(x, with.inframe.attrib=FALSE)
   gaps(x, start=NA, end=NA)
@@ -66,8 +74,9 @@
 
 \arguments{
   \item{width}{
-    For \code{successiveIRanges}, must be a vector of non-negative integers
-    (with no NAs) specifying the widths of the ranges to create.
+    For \code{successiveIRanges} and \code{resize}, must be a vector of
+    non-negative integers (with no NAs) specifying the widths of the ranges to
+    create.
 
     For \code{narrow} and \code{threebands}, a vector of integers, eventually
     with NAs. See the SEW (Start/End/Width) interface for the details
@@ -94,6 +103,10 @@
   }
   \item{shift}{
     A single integer.
+  }
+  \item{fixed.start}{
+    \code{TRUE} or \code{FALSE}. Should the start be fixed in the resize
+    operation? If not, the end is fixed.
   }
   \item{use.names}{
     \code{TRUE} or \code{FALSE}. Should names be preserved?
@@ -171,6 +184,9 @@
   Then each subrange is derived from the original range according
   to the solved start/end/width values for this range. Note that those
   solved values are interpreted relatively to the original range.
+
+  \code{resize} resized the ranges to the specified width where either the
+  start or end is used as an anchor.
 
   \code{threebands} extends the capability of \code{narrow} by returning
   the 3 ranges objects associated to the narrowing operation.
@@ -284,6 +300,9 @@
   narrow(y, start=-4, end=-2)
   narrow(y, end=5, width=3)
   narrow(y, start = c(3, 4, 2, 3), end = c(12, 5, 7, 4))
+
+  resize(y, width = 200)
+  resize(y, width = 2, fixed.start=FALSE)
 
   z <- threebands(y, start=4, end=-2)
   y0 <- punion(z$left, z$right, fill.gap=TRUE)

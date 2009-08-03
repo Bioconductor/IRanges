@@ -177,6 +177,31 @@ setMethod("narrow", "NormalIRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "resize" methods (endomorphisms).
+###
+
+setMethod("resize", "IRanges",
+    function(x, width, fixed.start=TRUE, use.names=TRUE)
+    {
+        if (!isTRUEorFALSE(use.names))
+            stop("'fixed.start' must be TRUE or FALSE")
+        if (fixed.start)
+            end(x) <- start(x) + (width - 1L)
+        else
+            start(x) <- end(x) - (width - 1L)
+        if (!normargUseNames(use.names))
+            names(x) <- NULL
+        x
+    }
+)
+
+setMethod("resize", "NormalIRanges",
+    function(x, width, fixed.start=TRUE, use.names=TRUE)
+        stop("resizing a ", class(x), " instance is not supported")
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "threebands" method.
 ###
 
