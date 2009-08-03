@@ -198,15 +198,16 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
   }
   rownames(values) <- NAMES ## ensure these are identical
   if (length(space) > 1) {
-    if (length(space) != N) {
-      if (length(space) > N)
-        stop("length of 'space' greater than length of 'ranges'")
-      if (N %% length(space) != 0)
-        stop("length of 'ranges' not a multiple of 'space' length")
-      space <- recycleVector(space, N)
-    }
-    if (!is(ranges, "RangesList"))
+    if (!is(ranges, "RangesList")) {
+      if (length(space) != N) {
+        if (length(space) > N)
+          stop("length of 'space' greater than length of 'ranges'")
+        if (N %% length(space) != 0)
+          stop("length of 'ranges' not a multiple of 'space' length")
+        space <- recycleVector(space, N)
+      }
       ranges <- split(ranges, space)
+    }
     values <- split(values, space)
   } else {
     if (!is(ranges, "RangesList"))
