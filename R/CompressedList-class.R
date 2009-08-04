@@ -314,14 +314,14 @@ setMethod("[", "CompressedList",
               } else {
                   stop("invalid subscript type")
               }
-              ends <- cumsum(elementLengths(x)[i])
-              names(ends) <- NULL
+              partitionEnd <- cumsum(elementLengths(x)[i])
+              names(partitionEnd) <- NULL
               slot(x, "unlistData", check=FALSE) <-
                 .CompressedList.list.subscript(X = x, INDEX = i,
                                                USE.NAMES = FALSE)
               slot(x, "partitioning", check=FALSE) <- 
-                new2("PartitioningByEnd", end = ends, NAMES = names(x)[i],
-                     check=FALSE)
+                new2("PartitioningByEnd", end = partitionEnd,
+                     NAMES = names(x)[i], check=FALSE)
               .bracket.Sequence(x, i)
           })
 
@@ -409,15 +409,30 @@ setMethod("c", "CompressedList",
               if (!all(sapply(ecs, extends, ecs[[1]])))
                   stop("all arguments in '...' must have an element class that extends ",
                        "that of the first argument")
-              elts <-
-                unlist(lapply(tls,
-                       function(x) {
-                           elts <- as.list(x)
-                           names(elts) <- names(x)
-                           elts
-                       }), recursive = FALSE)
+              if (length(dim(tls[[1]]@unlistData)) < 2)
+                  unlistData <- do.call(c, lapply(tls, slot, "unlistData"))
+              else
+                  unlistData <- do.call(rbind, lapply(tls, slot, "unlistData"))
+              partitionEnd <-
+                cumsum(do.call(c,
+                               lapply(tls, function(y) {
+                                          z <- elementLengths(y)
+                                          names(z) <- NULL
+                                          z
+                                      })))
+              NAMES <-
+                do.call(c,
+                        lapply(tls, function(y) {
+                                   nms <- names(y)
+                                   if (is.null(nms))
+                                       nms <- rep("", length(y))
+                                   nms
+                               }))
+              if (all(nchar(NAMES) == 0L))
+                  NAMES <- NULL
               eltmetaX <- elementMetadata(x)
-              x <- newCompressedList(class(tls[[1]]), elts)
+              x <- newCompressedList(class(tls[[1]]), unlistData,
+                                     end = partitionEnd, NAMES = NAMES)
               slot(x, "elementMetadata", check=FALSE) <- eltmetaX
               .c.Sequence(x, ...)
           })
