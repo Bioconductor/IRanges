@@ -308,7 +308,7 @@ setMethod("flank", "CompressedIRangesList",
             slot(x, "unlistData", check=FALSE) <-
               flank(x@unlistData, width = width, start = start, both = both,
                     use.names = use.names)
-              x
+            x
           })
 
 setMethod("gaps", "RangesList",
