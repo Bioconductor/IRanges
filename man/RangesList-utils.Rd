@@ -12,6 +12,7 @@
 \alias{flank,RangesList-method}
 \alias{flank,CompressedIRangesList-method}
 \alias{gaps,RangesList-method}
+\alias{disjoin,RangesList-method}
 \alias{reduce,RangesList-method}
 \alias{range,RangesList-method}
 
@@ -29,6 +30,7 @@
 \S4method{resize}{RangesList}(x, width, start=TRUE, use.names=TRUE)
 \S4method{flank}{RangesList}(x, width, start=TRUE, both=FALSE, use.names=TRUE)
 \S4method{gaps}{RangesList}(x, start=NA, end=NA)
+\S4method{disjoin}{RangesList}(x)
 \S4method{reduce}{RangesList}(x, with.inframe.attrib=FALSE)
 \S4method{range}{RangesList}(x, ..., na.rm = FALSE)
 }
@@ -87,26 +89,29 @@
 }
 
 \details{
-  The \code{shift} function shifts all the ranges in \code{x}.
+  The \code{shift} method shifts all the ranges in \code{x}.
 
-  The \code{restrict} function restricts the ranges in \code{x} to the
+  The \code{restrict} method restricts the ranges in \code{x} to the
   interval specified by the \code{start} and \code{end} arguments.
 
-  The \code{narrow} function narrows the ranges in \code{x} i.e. each range
+  The \code{narrow} method narrows the ranges in \code{x} i.e. each range
   in the returned \link{RangesList} object is a subrange of the corresponding
   range in \code{x}.
 
-  The \code{resize} function resizes the ranges to the specified width where
+  The \code{resize} method resizes the ranges to the specified width where
   either the start or end is used as an anchor.
 
-  The  \code{flank} function generates flanking ranges for each range in
+  The  \code{flank} method generates flanking ranges for each range in
   \code{x}.
 
-  The \code{gaps} function takes the complement (the \code{\link{gaps}})
+  The \code{gaps} method takes the complement (the \code{\link{gaps}})
   of each element in the list and returns the result as a
   \code{RangesList}.
 
-  The \code{reduce} function merges (via \code{\link{reduce}}) all of the
+  The \code{disjoin} method returns disjoint ranges by finding the 
+  within element union of the end points of \code{x}.
+
+  The \code{reduce} method merges (via \code{\link{reduce}}) all of the
   elements into a single \code{Ranges} object and returns the result
   as a length-one \code{RangesList}.
 
@@ -141,6 +146,7 @@
   restrict(collection, start=2, end=8)
   resize(collection, width=200)
   flank(collection, width=10)
+  disjoin(collection)
 
   # these two are the same
   RangesList(gaps(range1), gaps(range2))

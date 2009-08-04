@@ -317,6 +317,8 @@ setMethod("gaps", "RangesList",
             endoapply(x, gaps, start = start, end = end)
           })
 
+setMethod("disjoin", "RangesList", function(x) endoapply(x, disjoin))
+
 ### 'with.inframe.attrib' is ignored.
 setMethod("reduce", "RangesList",
           function(x, with.inframe.attrib=FALSE)
