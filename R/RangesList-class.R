@@ -222,8 +222,49 @@ setMethod("[", "CompressedIRangesList", rangesListSingleSquareBracket)
 setMethod("[", "SimpleIRangesList", rangesListSingleSquareBracket)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Some useful endomorphisms: "reduce" and "gaps".
+### Some useful endomorphisms: "shift", "restrict", "narrow", "resize",
+### "flank", "reflect", "reduce" and "gaps".
 ###
+
+setMethod("shift", "RangesList",
+          function(x, shift, use.names = TRUE)
+          {
+            endoapply(x, "shift", shift = shift, use.names = use.names)
+          })
+
+setMethod("restrict", "RangesList",
+          function(x, start = NA, end = NA, keep.all.ranges = FALSE, use.names = TRUE)
+          {
+            endoapply(x, restrict, start = start, end = end,
+                      keep.all.ranges = keep.all.ranges, use.names = use.names)
+          })
+
+setMethod("narrow", "RangesList",
+          function(x, start = NA, end = NA, width = NA, use.names = TRUE)
+          {
+            endoapply(x, narrow, start = start, end = end, width = width,
+                      use.names = use.names)
+          })
+
+setMethod("resize", "RangesList",
+          function(x, width, start = TRUE, use.names = TRUE)
+          {
+            endoapply(x, resize, width = width, start = start,
+                      use.names = use.names)
+          })
+
+setMethod("flank", "RangesList",
+          function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
+          {
+            endoapply(x, flank, width = width, start = start, both = both,
+                      use.names = use.names)
+          })
+
+setMethod("gaps", "RangesList",
+          function(x, start=NA, end=NA)
+          {
+            endoapply(x, gaps, start = start, end = end)
+          })
 
 ### 'with.inframe.attrib' is ignored.
 setMethod("reduce", "RangesList",
@@ -240,12 +281,6 @@ setMethod("reduce", "RangesList",
               newCompressedList(class(x), nirl)
             else
               newSimpleList(class(x), nirl)
-        })
-
-setMethod("gaps", "RangesList",
-          function(x, start=NA, end=NA)
-          {
-            endoapply(x, gaps, start = start, end = end)
           })
 
 setMethod("range", "RangesList",
@@ -269,7 +304,7 @@ setMethod("range", "RangesList",
               newCompressedList(class(x), ranges)
             else
               newSimpleList(class(x), ranges)
-        })
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Overlap.

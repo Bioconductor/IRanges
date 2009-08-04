@@ -181,14 +181,24 @@ setMethod("narrow", "NormalIRanges",
 ###
 
 setMethod("resize", "IRanges",
-    function(x, width, fixed.start=TRUE, use.names=TRUE)
+    function(x, width, start=TRUE, use.names=TRUE)
     {
-        if (!isTRUEorFALSE(use.names))
-            stop("'fixed.start' must be TRUE or FALSE")
-        if (fixed.start)
-            end(x) <- start(x) + (width - 1L)
-        else
-            start(x) <- end(x) - (width - 1L)
+        if (!is.numeric(width))
+            stop("'width' must be numeric")
+        if (!is.logical(start) || any(is.na(start)))
+            stop("'start' must be logical without NA's")
+        lx <- length(x)
+        offset <- recycleVector(width - 1L, lx)
+        if (length(start) == 1) {
+            if (start)
+                end(x) <- start(x) + offset
+            else
+                start(x) <- end(x) - offset
+        } else {
+            start <- recycleVector(start, lx)
+            end(x)[start] <- start(x)[start] + offset[start]
+            start(x)[!start] <- end(x)[!start] - offset[!start]
+        }
         if (!normargUseNames(use.names))
             names(x) <- NULL
         x
@@ -196,7 +206,7 @@ setMethod("resize", "IRanges",
 )
 
 setMethod("resize", "NormalIRanges",
-    function(x, width, fixed.start=TRUE, use.names=TRUE)
+    function(x, width, start=TRUE, use.names=TRUE)
         stop("resizing a ", class(x), " instance is not supported")
 )
 

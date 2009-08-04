@@ -58,14 +58,14 @@
   shift(x, shift, use.names=TRUE)
   restrict(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
   narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
-  resize(x, width, fixed.start=TRUE, use.names=TRUE)
+  resize(x, width, start=TRUE, use.names=TRUE)
+  \S4method{flank}{Ranges}(x, width, start=TRUE, both=FALSE, use.names=TRUE)
+  \S4method{reflect}{Ranges}(x, bounds, use.names=TRUE)
   threebands(x, start=NA, end=NA, width=NA)
   reduce(x, with.inframe.attrib=FALSE)
   gaps(x, start=NA, end=NA)
 
   ## Other utilities
-  \S4method{reflect}{Ranges}(x, bounds)
-  \S4method{flank}{Ranges}(x, width, start = TRUE, both = FALSE)
   \S4method{range}{Ranges}(x, ..., na.rm = FALSE)
 
   ## Coercion:
@@ -74,18 +74,17 @@
 
 \arguments{
   \item{width}{
-    For \code{successiveIRanges} and \code{resize}, must be a vector of
-    non-negative integers (with no NAs) specifying the widths of the ranges to
-    create.
+    For \code{successiveIRanges}, must be a vector of non-negative integers
+    (with no NAs) specifying the widths of the ranges to create.
 
     For \code{narrow} and \code{threebands}, a vector of integers, eventually
     with NAs. See the SEW (Start/End/Width) interface for the details
     (\code{?solveUserSEW}).
 
-    For \code{flank}, the width of the flanking regions. Note that if
-    \code{both} is \code{TRUE}, this is effectively doubled. Recycled as
-    necessary so that each element
-    corresponds to a range in \code{x}.
+    For \code{resize} and \code{flank}, the width of the resized or flanking
+    regions. Note that if \code{both} is \code{TRUE}, this is effectively
+    doubled. Recycled as necessary so that each element corresponds to a range
+    in \code{x}.
   }
   \item{gapwidth}{
     A single integer or an integer vector with one less element than
@@ -104,24 +103,20 @@
   \item{shift}{
     A single integer.
   }
-  \item{fixed.start}{
-    \code{TRUE} or \code{FALSE}. Should the start be fixed in the resize
-    operation? If not, the end is fixed.
-  }
   \item{use.names}{
     \code{TRUE} or \code{FALSE}. Should names be preserved?
   }
   \item{start, end}{
-    A single integer or \code{NA} for all functions except \code{narrow}
-    and \code{threebands}.
+    A single integer or \code{NA} for all functions except \code{narrow},
+    \code{threebands}, \code{resize}, and \code{flank}.
 
     For \code{narrow} and \code{threebands}, the supplied \code{start}
     and \code{end} arguments must be vectors of integers, eventually with NAs,
     that contain coordinates relative to the current ranges.
     See the Details section below.
 
-    For \code{flank}, \code{start} is a logical indicating whether
-    \code{x} should be flanked at the start (\code{TRUE}) or the end
+    For \code{resize} and \code{flank}, \code{start} is a logical indicating
+    whether \code{x} should be flanked at the start (\code{TRUE}) or the end
     (\code{FALSE}). Recycled as necessary so that each element
     corresponds to a range in \code{x}.
   }
@@ -174,7 +169,7 @@
   specified by the \code{start} and \code{end} arguments.
 
   \code{narrow} narrows the ranges in \code{x} i.e. each range in the
-  returned \link{IRanges} object is a subrange of the corresponding
+  returned \link{Ranges} object is a subrange of the corresponding
   range in \code{x}.
   The supplied start/end/width values are solved by a call to
   \code{solveUserSEW(width(x), start=start, end=end, width=width)}
@@ -185,7 +180,7 @@
   to the solved start/end/width values for this range. Note that those
   solved values are interpreted relatively to the original range.
 
-  \code{resize} resized the ranges to the specified width where either the
+  \code{resize} resizes the ranges to the specified width where either the
   start or end is used as an anchor.
 
   \code{threebands} extends the capability of \code{narrow} by returning
@@ -302,7 +297,7 @@
   narrow(y, start = c(3, 4, 2, 3), end = c(12, 5, 7, 4))
 
   resize(y, width = 200)
-  resize(y, width = 2, fixed.start=FALSE)
+  resize(y, width = 2, start=FALSE)
 
   z <- threebands(y, start=4, end=-2)
   y0 <- punion(z$left, z$right, fill.gap=TRUE)

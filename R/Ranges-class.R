@@ -298,15 +298,15 @@ setMethod("narrow", "Ranges",
 )
 
 setGeneric("resize", signature="x",
-    function(x, width, fixed.start=TRUE, use.names=TRUE)
+    function(x, width, start=TRUE, use.names=TRUE)
       standardGeneric("resize")
 )
 
 setMethod("resize", "Ranges",
-    function(x, width, fixed.start=TRUE, use.names=TRUE)
+    function(x, width, start=TRUE, use.names=TRUE)
     {
         ir <- as(x, "IRanges")
-        y <- resize(ir, width=width, fixed.start=fixed.start, use.names=use.names)
+        y <- resize(ir, width=width, start=start, use.names=use.names)
         as(y, class(x))
     }
 )
@@ -353,12 +353,15 @@ setMethod("gaps", "Ranges",
 setGeneric("reflect", function(x, ...) standardGeneric("reflect"))
 
 setMethod("reflect", "Ranges",
-    function(x, bounds)
+    function(x, bounds, use.names = TRUE)
     {
         if (!is(bounds, "Ranges") || length(bounds) != length(x))
             stop("'bounds' must be a Ranges object of length equal to that of 'x'")
-        update(x, start = end(bounds) - (end(x) - start(bounds)), width = width(x),
-               check = FALSE)
+        x <- update(x, start = end(bounds) - (end(x) - start(bounds)),
+                    width = width(x), check = FALSE)
+        if (!normargUseNames(use.names))
+            names(x) <- NULL
+        x
     }
 )
 
@@ -370,7 +373,7 @@ setMethod("reflect", "Ranges",
 setGeneric("flank", function(x, ...) standardGeneric("flank"))
 
 setMethod("flank", "Ranges",
-    function(x, width, start = TRUE, both = FALSE)
+    function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
     {
         if (!is.numeric(width))
             stop("'width' must be numeric")
@@ -381,15 +384,20 @@ setMethod("flank", "Ranges",
         start <- recycleVector(start, length(x))
         width <- recycleVector(width, length(x))
         if (both)
-            update(x, start = ifelse(start, start(x) - abs(width),
-                                     end(x) - abs(width) + 1),
-                   width = 2 * abs(width), check = FALSE)
+            x <-
+              update(x, start = ifelse(start, start(x) - abs(width),
+                                       end(x) - abs(width) + 1),
+                     width = 2 * abs(width), check = FALSE)
         else
-            update(x,
-                   start = ifelse(start,
+            x <-
+              update(x,
+                     start = ifelse(start,
                              ifelse(width < 0, start(x), start(x) - width),
                              ifelse(width < 0, end(x) + width + 1, end(x) + 1)),
-                   width = abs(width), check = FALSE)
+                     width = abs(width), check = FALSE)
+        if (!normargUseNames(use.names))
+            names(x) <- NULL
+        x
     }
 )
 
