@@ -369,13 +369,14 @@ setMethod("append", c("MaskCollection", "MaskCollection"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Some useful endomorphisms: "reduce", "gaps" and "subseq".
+### Some useful endomorphisms: "collapse", "gaps" and "subseq".
 ###
 
+setGeneric("collapse", function(x) standardGeneric("collapse"))
+
 ### Always return a MaskCollection object of length 1 where the mask is active.
-### 'with.inframe.attrib' is ignored.
-setMethod("reduce", "MaskCollection",
-    function(x, with.inframe.attrib=FALSE)
+setMethod("collapse", "MaskCollection",
+    function(x)
     {
         keep_it <- active(x)
         if (!all(keep_it))
@@ -438,7 +439,7 @@ setMethod("subseq", "MaskCollection",
 
 ### From a MaskCollection object to a NormalIRanges object.
 setAs("MaskCollection", "NormalIRanges",
-    function(from) reduce(from)[[1]]
+    function(from) collapse(from)[[1]]
 )
 
 
@@ -468,7 +469,7 @@ MaskCollection.show_frame <- function(x)
         if (lx >= 2) {
             margin <- format("", width=nchar(as.character(lx)))
             cat("all masks together:\n")
-            mask0 <- reduce(`active<-`(x, TRUE))
+            mask0 <- collapse(`active<-`(x, TRUE))
             frame <- data.frame(maskedwidth=maskedwidth(mask0),
                                 maskedratio=maskedratio(mask0),
                                 check.names=FALSE)
@@ -476,7 +477,7 @@ MaskCollection.show_frame <- function(x)
             show(frame)
             if (sum(active(x)) < lx) {
                 cat("all active masks together:\n")
-                mask1 <- reduce(x)
+                mask1 <- collapse(x)
                 frame <- data.frame(maskedwidth=maskedwidth(mask1),
                                     maskedratio=maskedratio(mask1),
                                     check.names=FALSE)

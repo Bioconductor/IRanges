@@ -41,7 +41,8 @@
 \alias{append,MaskCollection,MaskCollection-method}
 
 % Endomorphisms:
-\alias{reduce,MaskCollection-method}
+\alias{collapse}
+\alias{collapse,MaskCollection-method}
 \alias{gaps,MaskCollection-method}
 \alias{subseq,MaskCollection-method}
 
@@ -194,9 +195,9 @@
 
   \describe{
     \item{}{
-      \code{reduce(x)}:
-      Return a MaskCollection object of length 1 made of the union
-      (or merging, or collapsing) of all the active masks in \code{x}.
+      \code{collapse(x)}:
+      Return a MaskCollection object of length 1 obtained by collapsing
+      all the active masks in \code{x}.
     }
     \item{}{
       \code{gaps(x)}:
@@ -233,7 +234,7 @@
   mymasks
   length(mymasks)
   width(mymasks)
-  reduce(mymasks)
+  collapse(mymasks)
   gaps(mymasks)
 
   ## Names and descriptions:
@@ -246,7 +247,7 @@
   ## Activate/deactivate masks:
   active(mymasks)["B"] <- FALSE
   mymasks
-  reduce(mymasks)
+  collapse(mymasks)
   active(mymasks) <- FALSE  # deactivate all masks
   mymasks
   active(mymasks)[-1] <- TRUE  # reactivate all masks except mask 1
