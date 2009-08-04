@@ -232,11 +232,34 @@ setMethod("shift", "RangesList",
             endoapply(x, "shift", shift = shift, use.names = use.names)
           })
 
+setMethod("shift", "CompressedIRangesList",
+          function(x, shift, use.names = TRUE)
+          {
+            slot(x, "unlistData", check=FALSE) <-
+              shift(x@unlistData, shift = shift, use.names = use.names)
+            x
+          })
+
 setMethod("restrict", "RangesList",
           function(x, start = NA, end = NA, keep.all.ranges = FALSE, use.names = TRUE)
           {
             endoapply(x, restrict, start = start, end = end,
                       keep.all.ranges = keep.all.ranges, use.names = use.names)
+          })
+
+setMethod("restrict", "CompressedIRangesList",
+          function(x, start = NA, end = NA, keep.all.ranges = FALSE, use.names = TRUE)
+          {
+            if (!isTRUEorFALSE(keep.all.ranges))
+              stop("'keep.all.ranges' must be TRUE or FALSE")
+            if (keep.all.ranges)
+              slot(x, "unlistData", check=FALSE) <-
+                restrict(x@unlistData, start = start, end = end,
+                         keep.all.ranges = keep.all.ranges,
+                         use.names = use.names)
+            else
+              x <- callNextMethod()
+            x
           })
 
 setMethod("narrow", "RangesList",
@@ -246,6 +269,15 @@ setMethod("narrow", "RangesList",
                       use.names = use.names)
           })
 
+setMethod("narrow", "CompressedIRangesList",
+          function(x, start = NA, end = NA, width = NA, use.names = TRUE)
+          {
+            slot(x, "unlistData", check=FALSE) <-
+              narrow(x@unlistData, start = start, end = end, width = width,
+                     use.names = use.names)
+            x
+          })
+
 setMethod("resize", "RangesList",
           function(x, width, start = TRUE, use.names = TRUE)
           {
@@ -253,11 +285,30 @@ setMethod("resize", "RangesList",
                       use.names = use.names)
           })
 
+setMethod("resize", "CompressedIRangesList",
+          function(x, width, start = TRUE, use.names = TRUE)
+          {
+            slot(x, "unlistData", check=FALSE) <-
+              resize(x@unlistData, width = width, start = start,
+                     use.names = use.names)
+            x
+          })
+
 setMethod("flank", "RangesList",
           function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
           {
             endoapply(x, flank, width = width, start = start, both = both,
                       use.names = use.names)
+          })
+
+  
+setMethod("flank", "CompressedIRangesList",
+          function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
+          {
+            slot(x, "unlistData", check=FALSE) <-
+              flank(x@unlistData, width = width, start = start, both = both,
+                    use.names = use.names)
+              x
           })
 
 setMethod("gaps", "RangesList",

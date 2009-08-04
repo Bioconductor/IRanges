@@ -2,10 +2,15 @@
 \alias{RangesList-utils}
 % utilities
 \alias{shift,RangesList-method}
+\alias{shift,CompressedIRangesList-method}
 \alias{restrict,RangesList-method}
+\alias{restrict,CompressedIRangesList-method}
 \alias{narrow,RangesList-method}
+\alias{narrow,CompressedIRangesList-method}
 \alias{resize,RangesList-method}
+\alias{resize,CompressedIRangesList-method}
 \alias{flank,RangesList-method}
+\alias{flank,CompressedIRangesList-method}
 \alias{gaps,RangesList-method}
 \alias{reduce,RangesList-method}
 \alias{range,RangesList-method}
