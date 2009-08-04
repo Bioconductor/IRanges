@@ -301,7 +301,6 @@ setMethod("flank", "RangesList",
                       use.names = use.names)
           })
 
-  
 setMethod("flank", "CompressedIRangesList",
           function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
           {
