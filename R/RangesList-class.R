@@ -390,13 +390,15 @@ setMethod("overlap", c("RangesList", "RangesList"),
               else off <- off[names(ans)]
               ans <- unlist(ans, use.names=FALSE) +
                 rep(unname(off), sapply(ans, length))
-            }
+            } else
+              ans <- IntegerList(ans)
             ans
           })
 
 setMethod("%in%", c("RangesList", "RangesList"),
           function(x, table)
-          !is.na(unlist(overlap(table, x, multiple = FALSE), use.names=FALSE)))
+          LogicalList(lapply(overlap(table, x, multiple = FALSE),
+                             function(y) !is.na(y))))
 
 setMethod("match", c("RangesList", "RangesList"),
           function(x, table, nomatch = NA_integer_, incomparables = NULL)

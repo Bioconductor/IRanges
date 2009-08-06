@@ -77,11 +77,11 @@
       queried against itself. if \code{query} is unsorted, it is sorted
       first, so it is usually better to sort up-front, to avoid a sort
       with each \code{overlap} call. Intervals with a separation of
-      \code{maxgap} or less are considered to be
-      overlapping. \code{maxgap} should be a scalar, non-negative,
-      non-NA number. When \code{multiple} (a scalar non-NA logical) is
-      \code{TRUE}, the results are returned as a
-      \code{\linkS4class{RangesMatching}} object.
+      \code{maxgap} or less are considered to be overlapping.
+      \code{maxgap} should be a scalar, non-negative, non-NA number.
+      When \code{multiple} (a scalar non-NA logical) is \code{TRUE}, 
+      the results are returned as a \code{\linkS4class{RangesMatching}}
+      object.
 
       If \code{multiple} is \code{FALSE}, at most one overlapping
       interval in \code{object} is returned for each interval in
@@ -101,17 +101,21 @@
       \code{\linkS4class{RangesMatchingList}} is returned, otherwise a
       list of integer vectors or, if \code{drop} is \code{TRUE}, an
       integer vector with indices offset to align with the unlisted
-      \code{query}. When \code{drop} is \code{FALSE}, each element of
-      the result corresponds to a space in \code{query}. For spaces that
-      did not exist in \code{object}, the overlap is nil.
+      \code{query}. When \code{drop} is \code{FALSE}, an
+      \code{\linkS4class{IntegerList}} is returned, where each element
+      of the result corresponds to a space in \code{query}. For spaces
+      that did not exist in \code{object}, the overlap is nil.
     }
     \item{}{
       \code{x \%in\% table}:
       Shortcut for finding the ranges in \code{x} that overlap any of
       the ranges in \code{table}. Both \code{x} and \code{table} should
       be \code{Ranges}, \code{RangesList} or \code{RangedData}
-      objects. The result is a \code{logical} vector of length equal to
-      the number of ranges in \code{x}.
+      objects. For \code{Ranges} objects, the result is a \code{logical}
+      vector of length equal to the number of ranges in \code{x}. For
+      \code{RangesList} and \code{RangedData} objects, the result is a
+      \code{\linkS4class{LogicalList}} object, where each element of the
+      result corresponds to a space in \code{x}.
     }
     \item{}{
       \code{match(x, table, nomatch = NA_integer_, incomparables =
