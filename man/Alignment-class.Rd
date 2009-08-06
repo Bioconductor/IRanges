@@ -3,7 +3,6 @@
 
 \title{Alignments between sequences}
 
-\alias{score}
 \alias{score,AlignmentSpace-method}
 
 \description{

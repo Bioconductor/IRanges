@@ -113,7 +113,6 @@ export(
     punion, pintersect, psetdiff, pgap,
     disjoin, disjointBins,
     ##map,
-    score,
 
     ## Generic functions in the Rle API:
     Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
@@ -152,7 +151,7 @@ export(
     filterRules, "filterRules<-",
     reducerFun, "reducerFun<-", reducerParams, "reducerParams<-",
     rdapply,
-    universe, "universe<-", space,
+    universe, "universe<-", space, score, "score<-",
     elementType, elementLengths,
     metadata, elementMetadata, "metadata<-", "elementMetadata<-",
     matchMatrix, queryHits, subjectHits,

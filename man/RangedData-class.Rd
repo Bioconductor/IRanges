@@ -26,6 +26,8 @@
 \alias{space,RangedData-method}
 \alias{universe,RangedData-method}
 \alias{universe<-,RangedData-method}
+\alias{score,RangedData-method}
+\alias{score<-,RangedData-method}
 
 % Constructor:
 \alias{RangedData}
@@ -185,8 +187,8 @@
   \describe{
     \item{}{
       \code{universe(x)}, \code{universe(x) <- value}: Get or set the
-      scalar string identifying the scope of the data in some way (e.g. genome,
-      experimental platform, etc). The universe may be \code{NULL}.
+      scalar string identifying the scope of the data in some way (e.g.
+      genome, experimental platform, etc). The universe may be \code{NULL}.
     }
     \item{}{
       \code{ranges(x), ranges(x) <- value}: Gets or sets the ranges in
@@ -198,6 +200,13 @@
     \item{}{
       \code{values(x)}: Gets the data values in \code{x} as a
       \code{\linkS4class{SplitDataFrameList}}.
+    }
+    \item{}{
+      \code{score(x), score(x) <- value}: Gets or sets the column
+      representing a "score" in \code{x}, as a vector. This is the column
+      named \code{score}, or, if this does not exist, the first column, if it
+      is numeric. The get method return \code{NULL} if no suitable score
+      column is found. The set method takes a numeric vector as its value.
     }
   }
 }

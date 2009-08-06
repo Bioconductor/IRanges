@@ -90,6 +90,26 @@ setReplaceMethod("universe", "RangedData",
                    x
                  })
 
+setGeneric("score", function(x, ...) standardGeneric("score"))
+setMethod("score", "RangedData",
+          function(x) {
+              score <- x[["score"]]
+              if (is.null(score) && ncol(x) > 0 && is.numeric(x[[1]]))
+                  score <- x[[1]]
+              score
+          })
+
+setGeneric("score<-", function(x, ..., value) standardGeneric("score<-"))
+setReplaceMethod("score", "RangedData",
+                 function(x, value) {
+                     if (!is.numeric(value))
+                         stop("score must be numeric")
+                     if (length(value) != nrow(x))
+                         stop("number of scores must equal the number of rows")
+                     x[["score"]] <- value
+                     x
+                 })
+
 setMethod("range", "RangedData", function(x, ..., na.rm) {
   args <- list(x, ...)
   rangeLists <- lapply(args, ranges)
