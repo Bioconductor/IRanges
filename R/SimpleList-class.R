@@ -31,7 +31,7 @@ setReplaceMethod("names", "SimpleList",
 ###
 
 SimpleList <- function(...) {
-    new2("SimpleList", listData = list(...), check=FALSE)
+    new("SimpleList", listData = list(...))
 }
 
 newSimpleList <- function(listClass, listData, ...) {
