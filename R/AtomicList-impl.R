@@ -293,6 +293,18 @@ setMethod("Ops",
               callGeneric(e1, e2)
           })
 
+setMethod("!", "SimpleLogicalList",
+          function(x) {
+              x@listData <- lapply(x@listData, "!")
+              x
+          })
+
+setMethod("!", "CompressedLogicalList",
+          function(x) {
+              x@unlistData <- !x@unlistData
+              x
+          })
+
 setMethod("Math", "CompressedAtomicList",
           function(x)
               CompressedAtomicList(callGeneric(x@unlistData),
