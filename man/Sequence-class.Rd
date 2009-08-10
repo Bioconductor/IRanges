@@ -13,6 +13,9 @@
 \alias{!=,Sequence,Sequence-method}
 \alias{aggregate,Sequence-method}
 \alias{aggregate,vector-method}
+\alias{aggregate,matrix-method}
+\alias{aggregate,data.frame-method}
+\alias{aggregate,ts-method}
 \alias{append,Sequence,Sequence-method}
 \alias{as.env}
 \alias{as.env,Sequence-method}
