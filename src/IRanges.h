@@ -460,15 +460,21 @@ SEXP H2LGrouping_vmembers(
 
 
 /* Ranges_comparison.c */
+
 void _get_Ranges_order(
+	int *order,
+	int nelt,
 	const int *start,
 	const int *width,
-	int nelt,
-	int *order,
+	int decreasing,
 	int base1
 );
 
-SEXP Ranges_order(SEXP start, SEXP width);
+SEXP Ranges_order(
+	SEXP start,
+	SEXP width,
+	SEXP decreasing
+);
 
 
 /* Sequence_class.c */

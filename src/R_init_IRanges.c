@@ -45,7 +45,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(H2LGrouping_vmembers, 2),
 
 /* Ranges_comparison.c */
-	CALLMETHOD_DEF(Ranges_order, 2),
+	CALLMETHOD_DEF(Ranges_order, 3),
 
 /* Sequence_class.c */
 	CALLMETHOD_DEF(vector_subsetbyranges, 3),

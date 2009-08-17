@@ -94,6 +94,11 @@ setMethod(">", signature(e1="Ranges", e2="Ranges"),
 ### Need to explicitly define this generic otherwise the implicit generic in
 ### package "base" would dispatch on (na.last, decreasing).
 ### Note that dispatching on ... is supported starting with R 2.8.0 only.
+### WARNING: Here are 2 common pitfalls when implementing an "order" method:
+###   - order(x, decreasing=TRUE) is NOT equivalent to rev(order(x));
+###   - It should be made stable for consistent behavior across platforms and
+###     consistency with base::order(). Note that C qsort() is NOT stable so
+###     qsort-based implementations need extra code in order to be stable.
 setGeneric("order", signature="...",
     function(..., na.last=TRUE, decreasing=FALSE) standardGeneric("order")
 )
@@ -106,20 +111,16 @@ setMethod("order", "Ranges",
         ## all arguments in '...' are guaranteed to be Ranges objects
         args <- list(...)
         if (length(args) == 1) {
-            ans <-
-              .Call("Ranges_order", start(args[[1]]), width(args[[1]]),
-                    PACKAGE="IRanges")
-            if (decreasing)
-                ans <- rev(ans)
-        } else {
-            order_args <- vector("list", 2L*length(args))
-            order_args[2L*seq_len(length(args)) - 1L] <- lapply(args, start)
-            order_args[2L*seq_len(length(args))] <- lapply(args, end)
-            ans <-
-              do.call(order,
-                      c(order_args, na.last=na.last, decreasing=decreasing))
+            ans <- .Call("Ranges_order",
+                         start(args[[1]]), width(args[[1]]),
+                         decreasing=decreasing,
+                         PACKAGE="IRanges")
+            return(ans)
         }
-        ans
+        order_args <- vector("list", 2L*length(args))
+        order_args[2L*seq_len(length(args)) - 1L] <- lapply(args, start)
+        order_args[2L*seq_len(length(args))] <- lapply(args, end)
+        do.call(order, c(order_args, na.last=na.last, decreasing=decreasing))
     }
 )
 
