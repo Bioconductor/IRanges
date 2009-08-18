@@ -273,17 +273,17 @@ setMethod("gaps", "IRanges",
         xx0 <- restrict(xx, start=start, end=end) # preserves normality
         ans_start <- ans_width <- integer(0)
         if (isEmpty(xx0)) {
-            if (length(x) == 0) {
-                ans_start <- integer()
-                ans_end <- integer()
-            } else {
-                if (is.na(start) || is.na(end))
+            if (is.na(start) || is.na(end) || start > end) {
+                if (length(x) == 0) {
+                    ans_start <- integer()
+                    ans_end <- integer()
+                } else {
                     stop("'x' is not overlapping with the unbounded region ",
                          "represented by 'start' and 'end'")
-                if (start <= end) {
-                    ans_start <- start
-                    ans_width <- end - start + 1L
                 }
+            } else {
+                ans_start <- start
+                ans_width <- end - start + 1L
             }
         } else {
             start0 <- start(xx0)

@@ -26,6 +26,12 @@ test_IRanges_combine <- function() {
   checkIdentical(do.call(c, as.list(srange)), IRanges(c(2,3,1,1), c(2,8,5,3)))
 }
 
+test_IRanges_gaps <- function() {
+  checkIdentical(gaps(IRanges()), IRanges())
+  checkIdentical(gaps(IRanges(), start = 1, end = 4),
+                 IRanges(start = 1, end = 4))
+}
+
 test_IRanges_setops <- function() {
   query <- IRanges(c(1, 4, 9), c(5, 7, 10))
   subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
