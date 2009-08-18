@@ -23,9 +23,6 @@
 \alias{reduce}
 \alias{reduce,IRanges-method}
 \alias{reduce,Ranges-method}
-\alias{gaps}
-\alias{gaps,IRanges-method}
-\alias{gaps,Ranges-method}
 \alias{reflect}
 \alias{reflect,Ranges-method}
 \alias{flank}
@@ -63,7 +60,6 @@
   \S4method{reflect}{Ranges}(x, bounds, use.names=TRUE)
   threebands(x, start=NA, end=NA, width=NA)
   reduce(x, with.inframe.attrib=FALSE)
-  gaps(x, start=NA, end=NA)
 
   ## Other utilities
   \S4method{range}{Ranges}(x, ..., na.rm = FALSE)
@@ -98,7 +94,7 @@
     A logical vector for \code{whichAsIRanges}.
 
     An \link{IRanges} object for \code{shift}, \code{restrict}, \code{narrow},
-    \code{threebands}, \code{reduce}, \code{gaps} and \code{asNormalIRanges}.
+    \code{threebands}, \code{reduce} and \code{asNormalIRanges}.
   }
   \item{shift}{
     A single integer.
@@ -199,11 +195,6 @@
   \code{reduce} first orders the ranges in \code{x} from left to right,
   then merges the overlapping or adjacent ones.
 
-  \code{gaps} returns the normal \link{IRanges} object describing
-  the set of integers that remain after the set of integers described
-  by \code{x} has been removed from the interval specified by the
-  \code{start} and \code{end} arguments.
-
   \code{reflect} "reflects" or reverses each range in \code{x} relative to
   the corresponding range in \code{bounds}, which is recycled as
   necessary. Reflection preserves the width of a range, but shifts it
@@ -267,11 +258,8 @@
 \author{H. Pages and M. Lawrence}
 
 \seealso{
-  \code{\link{pintersect}} is similar to \code{narrow}, except the end
-  points are absolute, not relative. \code{\link{pintersect}} is also
-  similar to \code{restrict}, except ranges outside of the restriction
-  become empty and are not discarded. \code{threebands} could be
-  described as a parallel variant of \code{\link{disjoin}}.
+  \code{threebands} could be described as a parallel variant
+  of \code{\link{disjoin}}.
   
   \link{Ranges-class},
   \link{IRanges-setops},
@@ -304,12 +292,9 @@
   identical(y, y0)  # TRUE
   threebands(y, start=-5)
 
-  x <- IRanges(start=c(-2L, 6L, 9L, -4L, 1L, 0L, -6L, 10L),
-               width=c( 5L, 0L, 6L,  1L, 4L, 3L,  2L,  3L))
+  x <- IRanges(start=c(-2, 6, 9, -4, 1, 0, -6, 10),
+               width=c( 5, 0, 6,  1, 4, 3,  2,  3))
   reduce(x)
-  gaps(x)
-  gaps(x, start=-6, end=20)  # Regions of the -6:20 range that are not masked by 'x'.
-
 
   ir1 <- IRanges(c(2,5,1), c(3,7,3))
 

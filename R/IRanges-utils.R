@@ -255,58 +255,6 @@ setMethod("reduce", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "gaps" method (endomorphism).
-###
-### gaps() interprets the input IRanges object 'x' as a set of integer values.
-### So if 2 IRanges objects 'x1' and 'x2' represent the same set of integers,
-### then 'gaps(x1)' and 'gaps(x2)' must be the same. This can be formalized
-### by the following property:
-###     for any IRanges object 'x', gaps(x) should be equivalent
-###     to gaps(asNormalIRanges(x))
-###
-### Note that gaps() will always return a normal IRanges object (so, obviously,
-### it preserves normality).
-###
-
-setMethod("gaps", "IRanges",
-    function(x, start=NA, end=NA)
-    {
-        start <- normargSingleStartOrNA(start)
-        end <- normargSingleEndOrNA(end)
-        ## No matter in what order restricting and normalizing are done, the final
-        ## result should always be exactly the same.
-        ## Now which order is the most efficient? It depends...
-        xx <- asNormalIRanges(x, force=TRUE)
-        xx0 <- restrict(xx, start=start, end=end) # preserves normality
-        ans_start <- ans_width <- integer(0)
-        if (!isEmpty(xx0)) {
-            start0 <- start(xx0)
-            end0 <- end(xx0)
-            if (!is.na(start) && start < min(xx0)) {
-                start0 <- c(start, start0)
-                end0 <- c(start - 1L, end0)
-            }
-            if (!is.na(end) && max(xx0) < end) {
-                start0 <- c(start0, end + 1L)
-                end0 <- c(end0, end)
-            }
-            if (length(start0) >= 2) {
-                ans_start <- end0[-length(start0)] + 1L
-                ans_width <- start0[-1] - ans_start
-            }
-        } else if (!is.na(start) || !is.na(end)) {
-            if (is.na(start) || is.na(end))
-                stop("'x' is not overlapping with the unbounded region ",
-                     "represented by 'start' and 'end'")
-            ans_start <- start
-            ans_width <- end - start + 1L
-        }
-        unsafe.update(x, start=ans_start, width=ans_width, names=NULL)
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercing an IRanges object to a NormalIRanges object.
 ###
 
