@@ -36,6 +36,7 @@
 \alias{as.data.frame,RangedData-method}
 \alias{coerce,RangedData,DataFrame-method}
 \alias{coerce,Rle,RangedData-method}
+\alias{coerce,RleList,RangedData-method}
 \alias{as.env,RangedData-method}
 \alias{coerce,DataTable,RangedData-method}
 \alias{coerce,Ranges,RangedData-method}
@@ -262,11 +263,13 @@
       \code{as(from, "RangedData")}: Coerce \code{from} to
       a \code{RangedData}, according to the type of \code{from}:
       \describe{
-        \item{\code{\linkS4class{Rle}}}{Converts each run to a
-          range and stores the run values in a column named "score".
+        \item{\code{\linkS4class{Rle}}, \code{\linkS4class{RleList}}}{
+          Converts each run to a range and stores the run values in a
+          column named "score".
         }
-        \item{\code{Ranges}}{Creates a \code{RangedData} with only the
-          ranges in \code{from}; no data columns.
+        \item{\code{\linkS4class{Ranges}}, \code{\linkS4class{RangesList}}}{
+          Creates a \code{RangedData} with only the ranges in \code{from};
+          no data columns.
         }
         \item{\code{data.frame} or \code{DataTable}}{Constructs a
           \code{RangedData}, using the columns \dQuote{start},

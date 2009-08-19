@@ -509,25 +509,36 @@ setAs("RangedData", "DataFrame",
 setAs("Rle", "RangedData",
       function(from)
       {
-          RangedData(successiveIRanges(runLength(from)),
-                     DataFrame(score = runValue(from)))
+        RangedData(successiveIRanges(runLength(from)),
+                   DataFrame(score = runValue(from)))
       })
 
-setAs("RangesList", "RangedData",
+setAs("RleList", "RangedData",
       function(from)
       {
-        xdfs <- do.call("SplitDataFrameList", lapply(from, function(x) {
-          xdf <- new2("DataFrame", nrows = length(x), check=FALSE)
-          rownames(xdf) <- names(x)
-          xdf
-        }))
-        new2("RangedData", ranges = from, values = xdfs, check=FALSE)
+        ans <- do.call(c, lapply(from, as, "RangedData"))
+        if (length(metadata(from)) > 0)
+          metadata(ans) <- metadata(from)
+        if (!is.null(elementMetadata(from)))
+          elementMetadata(ans) <- elementMetadata(from)
+        ans
       })
 
 setAs("Ranges", "RangedData",
       function(from)
       {
         RangedData(from)
+      })
+
+setAs("RangesList", "RangedData",
+      function(from)
+      {
+        dfs <- do.call("SplitDataFrameList", lapply(from, function(x) {
+          df <- new2("DataFrame", nrows = length(x), check=FALSE)
+          rownames(df) <- names(x)
+          df
+        }))
+        new2("RangedData", ranges = from, values = dfs, check=FALSE)
       })
 
 setMethod("as.env", "RangedData", function(x, enclos = parent.frame()) {
