@@ -28,7 +28,7 @@ setMethod("dimnames", "DataFrame",
             if (!is.null(rn)) {
               rn <- as.character(rn)
               rn[is.na(rn)] <- "NA"
-              if (any(duplicated(rn)))
+              if (anyDuplicated(rn))
                 rn <- make.unique(rn)                
             }
             list(rn, names(x))
@@ -43,7 +43,7 @@ setReplaceMethod("dimnames", "DataFrame",
                        stop("missing values not allowed in rownames")
                      if (length(rows) != nrow(x))
                        stop("invalid rownames length")
-                     if (any(duplicated(rows)))
+                     if (anyDuplicated(rows))
                        stop("duplicate rownames not allowed")
                      if (!is(rows, "XStringSet"))
                        rows <- as.character(rows)
@@ -87,7 +87,7 @@ setReplaceMethod("dimnames", "DataFrame",
 {
   if (is.null(names(x)))
     return(NULL)
-  if (any(duplicated(names(x))))
+  if (anyDuplicated(names(x)))
     return("duplicate column names")
   if (length(names(x)) != ncol(x))
     return("number of columns and number of column names differ")
@@ -165,7 +165,7 @@ DataFrame <- function(..., row.names = NULL)
       stop("missing values in 'row.names'")
     if (length(varlist) && length(row.names) != nr)
       stop("invalid length of row names")
-    if (any(duplicated(row.names)))
+    if (anyDuplicated(row.names))
       stop("duplicate row names")
     row.names <- as.character(row.names)
   }
@@ -289,7 +289,7 @@ setMethod("[", "DataFrame",
               if (!is.null(prob))
                 stop("subsetting as list: ", prob)
               x <- callNextMethod(x, i)
-              if (any(duplicated(names(x))))
+              if (anyDuplicated(names(x)))
                 names(x) <- make.names(names(x))
               return(x)
             }
@@ -300,7 +300,7 @@ setMethod("[", "DataFrame",
               if (!is.null(prob))
                 stop("selecting cols: ", prob)
               x <- callNextMethod(x, j)
-              if (any(duplicated(names(x))))
+              if (anyDuplicated(names(x)))
                 names(x) <- make.unique(names(x))
               dim[2] <- length(x)
             }

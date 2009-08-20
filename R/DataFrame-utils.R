@@ -73,8 +73,8 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
   if (!is.null(rn)) {
     if (length(rn) != nrow(ans)) {
       rn <- NULL
-    } else if (any(duplicated(rn)))
-      rn <- make.unique(rn)
+    } else if (anyDuplicated(rn))
+      rn <- make.unique(rn, sep = "")
   }
   rownames(ans) <- rn
 

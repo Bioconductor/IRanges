@@ -289,7 +289,7 @@ setMethod("[", "MaskCollection",
             if (any(i < -lx) || any(i > lx))
                 stop("subscript out of bounds")
             ipos <- i[i > 0]
-            if (any(duplicated(ipos)))
+            if (anyDuplicated(ipos))
                 stop("subscript contains duplicated positive values")
         } else if (is.logical(i)) {
             if (length(i) > lx)
@@ -299,7 +299,7 @@ setMethod("[", "MaskCollection",
                 stop("cannot subset by names a ", class(x), " object with no names")
             if (any(i == ""))
                 stop("subscript contains the empty string (\"\")")
-            if (any(duplicated(i)))
+            if (anyDuplicated(i))
                 stop("subscript contains duplicated names")
             i <- match(i, names(x))
             if (any(is.na(i)))

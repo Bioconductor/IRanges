@@ -132,7 +132,7 @@ formals(RDApplyParams) <- structure(lapply(slotNames("RDApplyParams"),
 
 .valid.RDApplyParams.applyFun <- function(x) {
   formals <- formals(applyFun(x))
-  if (any(duplicated(names(applyParams(x)))))
+  if (anyDuplicated(names(applyParams(x))))
     "apply parameters have duplicated names"
   else if (!("..." %in% names(formals))) {
     if (length(formals) < (length(applyParams(x)) + 1))
@@ -163,7 +163,7 @@ formals(RDApplyParams) <- structure(lapply(slotNames("RDApplyParams"),
 .valid.RDApplyParams.reducerParams <- function(x) {
   if (length(reducerParams(x)) && is.null(reducerFun(x)))
     return("there must be a 'reducerFun' for there to be 'reducerParams'")
-  else if (any(duplicated(names(reducerParams(x)))))
+  else if (anyDuplicated(names(reducerParams(x))))
     return("reducer parameters have duplicated names")
   else if (!is.null(reducerFun(x))) {
     formals <- formals(reducerFun(x))

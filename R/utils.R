@@ -222,7 +222,7 @@ extraArgsAsList <- function(.valid.argnames, ...)
     if (!is.null(.valid.argnames) && !all(argnames %in% .valid.argnames))
         stop("valid extra argument names are ",
              paste("'", .valid.argnames, "'", sep="", collapse=", "))
-    if (any(duplicated(argnames)))
+    if (anyDuplicated(argnames))
         stop("argument names must be unique")
     args
 }

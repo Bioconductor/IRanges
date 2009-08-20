@@ -380,7 +380,7 @@ setMethod("[", "RangedData",
                   starts <- cumsum(c(1L, head(elementLengths(x), -1)))
                   igroup <-
                     factor(findInterval(i, starts), levels = seq_len(length(x)))
-                  if (any(duplicated(runValue(Rle(igroup)))))
+                  if (anyDuplicated(runValue(Rle(igroup))))
                     stop("cannot combine 'i' row values from different spaces")
                   i <- i - (starts - 1L)[as.integer(igroup)]
                 }
@@ -469,17 +469,23 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
     if (!all(unlist(lapply(args, length)) == length(args[[1]])))
       stop("If any args are missing names, all must have same length")
     nms <- seq_len(length(args[[1]]))
-  } else nms <- unique(unlist(nmsList))
+  } else {
+    nms <- unique(unlist(nmsList))
+  }
   for (nm in nms) {
     rli <- lapply(rls, `[[`, nm)
     rl[[nm]] <- do.call(c, rli[!sapply(rli, is.null)])
+    if (anyDuplicated(names(rl[[nm]])))
+      names(rl[[nm]]) <- make.unique(names(rl[[nm]]), sep = "")
     ##dfi <- lapply(dfs, `[[`, nm)
     ##df[[nm]] <- do.call(rbind, dfi[!sapply(dfi, is.null)])
   }
   counts <- unlist(lapply(rls, function(x) lapply(x, length)))
-  if (is.numeric(nms))
+  if (is.numeric(nms)) {
     f <- rep(rep(nms, length(args)), counts)
-  else f <- factor(rep(unlist(nmsList), counts), names(rl))
+  } else {
+    f <- factor(rep(unlist(nmsList), counts), names(rl))
+  }
   df <- split(df, f)
   names(df) <- names(rl)
   initialize(args[[1]], ranges = rl, values = df)
