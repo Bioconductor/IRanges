@@ -225,6 +225,44 @@ setMethod("togroup", "H2LGrouping",
 #    }
 #)
 
+### The rank of group G_i is the number of non-empty groups that have a group
+### index <= i.
+setGeneric("grouprank", signature="x",
+    function(x, i=NULL) standardGeneric("grouprank")
+)
+setMethod("grouprank", "H2LGrouping",
+    function(x, i=NULL)
+    {
+        ans <- cumsum(is.na(high2low(x)))
+        if (!is.null(i))
+            ans <- ans[i]
+        return(ans)
+    }
+)
+
+### togrouprank() returns the mapping from objects to group ranks.
+### An important property of togrouprank() is that:
+###   togrouprank(x, neg_idx)
+### and
+###   seq_len(length(neg_idx))
+### are identical, where 'neg_idx' is the vector of the indices of
+### the non-empty groups i.e.
+###   neg_idx <- which(grouplength(x) != 0L)
+setGeneric("togrouprank", signature="x",
+     function(x, j=NULL) standardGeneric("togrouprank")
+)
+setMethod("togrouprank", "H2LGrouping",
+    function(x, j=NULL)
+    {
+        to_group <- togroup(x)
+        group_rank <- grouprank(x)
+        ans <- group_rank[to_group]
+        if (!is.null(j))
+            ans <- ans[j]
+        return(ans)
+    }
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.

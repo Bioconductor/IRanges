@@ -120,7 +120,7 @@ export(
 
     ## Generic functions in the Grouping API:
     nobj, grouplength, members, vmembers, togroup, togrouplength,
-    high2low, low2high,
+    high2low, low2high, grouprank, togrouprank,
 
     ## Generic functions in the DataTable API:
     as.env,
@@ -234,7 +234,7 @@ exportMethods(
     reverse,
     coverage,
     nobj, grouplength, members, vmembers, togroup, togrouplength,
-    high2low, low2high,
+    high2low, low2high, grouprank, togrouprank,
     nir_list,
     active, "active<-",
     desc, "desc<-",

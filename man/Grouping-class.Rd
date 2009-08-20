@@ -35,6 +35,10 @@
 \alias{members,H2LGrouping-method}
 \alias{vmembers,H2LGrouping-method}
 \alias{togroup,H2LGrouping-method}
+\alias{grouprank}
+\alias{grouprank,H2LGrouping-method}
+\alias{togrouprank}
+\alias{togrouprank,H2LGrouping-method}
 
 \alias{class:Dups}
 \alias{Dups-class}
