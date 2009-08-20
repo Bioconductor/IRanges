@@ -516,12 +516,17 @@ setAs("Rle", "RangedData",
 setAs("RleList", "RangedData",
       function(from)
       {
-        ans <- do.call(c, lapply(from, as, "RangedData"))
-        if (length(metadata(from)) > 0)
-          metadata(ans) <- metadata(from)
-        if (!is.null(elementMetadata(from)))
-          elementMetadata(ans) <- elementMetadata(from)
-        ans
+        ranges <-
+          IRangesList(lapply(from, function(x)
+                             successiveIRanges(runLength(x))))
+        values <-
+          SplitDataFrameList(lapply(from, function(x)
+                                    DataFrame(score = runValue(x))))
+        new2("RangedData",
+             ranges = ranges, values = values,
+             metadata = metadata(from),
+             elementMetadata = elementMetadata(from),
+             check = FALSE)
       })
 
 setAs("Ranges", "RangedData",
