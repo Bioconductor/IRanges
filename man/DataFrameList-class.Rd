@@ -41,12 +41,11 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{DataFrameList(..., compress = FALSE)}:
-      Concatenates the \code{DataFrame}
+    \item{}{\code{DataFrameList(...)}: Concatenates the \code{DataFrame}
       objects in \code{...} into a new \code{DataFrameList}, optionally
       compressing them, which is only possible if the elements can be
       combined via \code{rbind}, see \code{\linkS4class{Sequence}}.}
-    \item{}{\code{SplitDataFrameList(..., compress = FALSE)}: Concatenates the
+    \item{}{\code{SplitDataFrameList(..., compress = TRUE)}: Concatenates the
       \code{DataFrame} objects in \code{...} into a new
       \code{SplitDataFrameList}. Note that all arguments must have the same
       number and names of columns.}

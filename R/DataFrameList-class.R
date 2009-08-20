@@ -90,7 +90,7 @@ DataFrameList <- function(...)
   newSimpleList("SimpleDataFrameList", listData)
 }
 
-SplitDataFrameList <- function(..., compress = FALSE)
+SplitDataFrameList <- function(..., compress = TRUE)
 {
   listData <- list(...)
   if (length(listData) == 1 && is.list(listData[[1]]))
