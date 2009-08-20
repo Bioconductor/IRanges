@@ -509,8 +509,11 @@ setAs("RangedData", "DataFrame",
 setAs("Rle", "RangedData",
       function(from)
       {
-        RangedData(successiveIRanges(runLength(from)),
-                   DataFrame(score = runValue(from)))
+        new2("RangedData",
+             ranges = IRangesList(successiveIRanges(runLength(from))),
+             values = SplitDataFrameList(DataFrame(score = runValue(from))),
+             metadata = metadata(from),
+             check = FALSE)
       })
 
 setAs("RleList", "RangedData",
@@ -543,7 +546,10 @@ setAs("RangesList", "RangedData",
           rownames(df) <- names(x)
           df
         }))
-        new2("RangedData", ranges = from, values = dfs, check=FALSE)
+        new2("RangedData", ranges = from, values = dfs,
+             metadata = metadata(from),
+             elementMetadata = elementMetadata(from),
+             check = FALSE)
       })
 
 setMethod("as.env", "RangedData", function(x, enclos = parent.frame()) {
