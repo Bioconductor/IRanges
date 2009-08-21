@@ -135,7 +135,7 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
     int start = _get_cachedIRanges_elt_start(&cached_r_ranges, m);
     int end = _get_cachedIRanges_elt_end(&cached_r_ranges, m);
     if (end < start) { /* empty query range */
-      if (result_inds)
+      if (result_ints)
         INTEGER(result_inds)[m+1] = INTEGER(result_inds)[m];
       else INTEGER(result_inds)[m] = NA_INTEGER;
       continue;
