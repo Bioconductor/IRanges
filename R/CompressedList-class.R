@@ -155,17 +155,17 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
     if ((k == 0) || ((kOK == 0) && COMPRESS)) {
         elts <- zeroLengthElt
     } else if (COMPRESS && missing(FUN) && useFastSubset) {
-        INDEX <- INDEX[whichNonZeroLength]
+        nzINDEX <- INDEX[whichNonZeroLength]
         elts <-
           seqextract(X@unlistData,
-                     start = start(X@partitioning)[INDEX],
-                     width = width(X@partitioning)[INDEX])
+                     start = start(X@partitioning)[nzINDEX],
+                     width = width(X@partitioning)[nzINDEX])
     } else {
         elts <- rep(list(zeroLengthElt), k)
         if (kOK > 0) {
-            INDEX <- INDEX[whichNonZeroLength]
-            eltStarts <- start(X@partitioning)[INDEX]
-            eltEnds <- end(X@partitioning)[INDEX]
+            nzINDEX <- INDEX[whichNonZeroLength]
+            eltStarts <- start(X@partitioning)[nzINDEX]
+            eltEnds <- end(X@partitioning)[nzINDEX]
             if (useFastSubset) {
                 elts[whichNonZeroLength] <-
                   lapply(seq_len(kOK), function(j)
