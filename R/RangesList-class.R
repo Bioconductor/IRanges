@@ -61,7 +61,7 @@ setReplaceMethod(".SEW", "RangesList",
                        value <- rep(value, length.out = lelts)
                      if (!is.integer(value))
                        value <- as.integer(value)
-                     values <- split(value, space(x))
+                     value <- split(value, factor(space(x), names(x)))
                    } else {
                      stop("'value' must extend class IntegerList or integer")
                    }
