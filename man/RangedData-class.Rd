@@ -53,6 +53,7 @@
 \alias{[[,RangedData-method}
 \alias{[[<-,RangedData-method}
 \alias{$<-,RangedData-method}
+\alias{seqextract,RangedData-method}
 
 % Applying:
 \alias{endoapply,RangedData-method}
