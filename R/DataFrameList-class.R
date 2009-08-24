@@ -95,6 +95,11 @@ SplitDataFrameList <- function(..., compress = TRUE)
   listData <- list(...)
   if (length(listData) == 1 && is.list(listData[[1]]))
     listData <- listData[[1]]
+  if (length(listData) > 0 && !is(listData[[1]], "DataFrame")) {
+    if (is.null(names(listData)))
+      names(listData) <- paste("X", seq_len(length(listData)), sep = "")
+    listData <- do.call(Map, c(list(DataFrame), listData))
+  }
   if (compress)
     newCompressedList("CompressedSplitDataFrameList", listData)
   else

@@ -42,13 +42,14 @@
 \section{Constructor}{
   \describe{
     \item{}{\code{DataFrameList(...)}: Concatenates the \code{DataFrame}
-      objects in \code{...} into a new \code{DataFrameList}, optionally
-      compressing them, which is only possible if the elements can be
-      combined via \code{rbind}, see \code{\linkS4class{Sequence}}.}
-    \item{}{\code{SplitDataFrameList(..., compress = TRUE)}: Concatenates the
-      \code{DataFrame} objects in \code{...} into a new
-      \code{SplitDataFrameList}. Note that all arguments must have the same
-      number and names of columns.}
+      objects in \code{...} into a new \code{DataFrameList}.}
+    \item{}{\code{SplitDataFrameList(..., compress = TRUE)}:
+      The \code{...} arguments can either be a set of \code{DataFrame}
+      objects with the same number and names of columns or a set of objects
+      (e.g. \code{AtomicList}) that represent split columns that will be
+      column bound to form \code{DataFrame} objects. If \code{compress = TRUE},
+      returns a \code{CompressedSplitDataFrameList}; else returns a
+      \code{SimpleSplitDataFrameList}.}
   }
 }
 
