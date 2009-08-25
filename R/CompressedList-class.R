@@ -279,50 +279,56 @@ setMethod("[", "CompressedList",
           {
               if (!missing(j) || length(list(...)) > 0)
                   stop("invalid subsetting")
-              if (missing(i))
-                  return(x)
-              if (!is.atomic(i))
-                  stop("invalid subscript type")
-              lx <- length(x)
-              nullOK <- extends("NULL", elementType(x))
-              if (is.numeric(i)) {
-                  if (any(is.na(i)) && !nullOK)
-                      stop("cannot subset by NA (NULL elements not allowed)")
-                  nna <- i[!is.na(i)]
-                  if (any(nna < -lx) || any(nna > lx))
-                      stop("subscript out of bounds")
-                  if (any(nna < 0)) {
-                      if (any(nna > 0))
-                          stop("negative and positive indices cannot be mixed")
-                      if (length(nna) < length(i))
-                          stop("NAs cannot be mixed with negative subscripts")
-                      i <- seq_len(lx)[nna]
+              if (!missing(i)) {
+                  if (is(i, "RangesList") || is(i, "LogicalList") ||
+                      is(i, "IntegerList")) {
+                      x <- seqextract(x, i)
+                  } else if (!is.atomic(i)) {
+                      stop("invalid subscript type")
+                  } else {
+                      lx <- length(x)
+                      nullOK <- extends("NULL", elementType(x))
+                      if (is.numeric(i)) {
+                          if (any(is.na(i)) && !nullOK)
+                              stop("cannot subset by NA (NULL elements not allowed)")
+                          nna <- i[!is.na(i)]
+                          if (any(nna < -lx) || any(nna > lx))
+                              stop("subscript out of bounds")
+                          if (any(nna < 0)) {
+                              if (any(nna > 0))
+                                  stop("negative and positive indices cannot be mixed")
+                              if (length(nna) < length(i))
+                                  stop("NAs cannot be mixed with negative subscripts")
+                              i <- seq_len(lx)[nna]
+                          }
+                      } else if (is.logical(i)) {
+                          if (length(i) > lx && !nullOK)
+                              stop("subscript out of bounds (and NULL elements not allowed)")
+                          i <- which(rep(i, length.out = lx))
+                      } else if (is.character(i) || is.factor(i)) {
+                          nms <- names(x)
+                          if (is.null(nms))
+                              stop("cannot subset by character when names are NULL")
+                          i <- match(i, nms)
+                          if (any(is.na(i)))
+                              stop("mismatching names (and NULL elements not allowed)")
+                      } else if (is.null(i)) {
+                          i <- integer(0)
+                      } else {
+                          stop("invalid subscript type")
+                      }
+                      partitionEnd <- cumsum(elementLengths(x)[i])
+                      names(partitionEnd) <- NULL
+                      slot(x, "unlistData", check=FALSE) <-
+                        .CompressedList.list.subscript(X = x, INDEX = i,
+                                                       USE.NAMES = FALSE)
+                      slot(x, "partitioning", check=FALSE) <- 
+                        new2("PartitioningByEnd", end = partitionEnd,
+                             NAMES = names(x)[i], check=FALSE)
+                      x <- .bracket.Sequence(x, i)
                   }
-              } else if (is.logical(i)) {
-                  if (length(i) > lx && !nullOK)
-                      stop("subscript out of bounds (and NULL elements not allowed)")
-                  i <- which(rep(i, length.out = lx))
-              } else if (is.character(i) || is.factor(i)) {
-                  nms <- names(x)
-                  if (is.null(nms))
-                      stop("cannot subset by character when names are NULL")
-                  i <- match(i, nms)
-                  if (any(is.na(i)))
-                      stop("mismatching names (and NULL elements not allowed)")
-              } else if (is.null(i)) {
-                  i <- integer(0)
-              } else {
-                  stop("invalid subscript type")
               }
-              partitionEnd <- cumsum(elementLengths(x)[i])
-              names(partitionEnd) <- NULL
-              slot(x, "unlistData", check=FALSE) <-
-                .CompressedList.list.subscript(X = x, INDEX = i,
-                                               USE.NAMES = FALSE)
-              slot(x, "partitioning", check=FALSE) <- 
-                new2("PartitioningByEnd", end = partitionEnd,
-                     NAMES = names(x)[i], check=FALSE)
-              .bracket.Sequence(x, i)
+              x
           })
 
 setMethod("seqextract", "CompressedList",

@@ -94,6 +94,12 @@
 
   \describe{
     \item{}{
+      \code{x[i]}:
+      In addition to normal usage, the \code{i} parameter can be a
+      \code{RangesList}, \code{LogicalList}, or \code{IntegerList} object
+      to perform subsetting within the list elements rather than across them.
+    }
+    \item{}{
       \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:
       In addition to normal usage, the \code{start} parameter can be a
       \code{RangesList}, \code{LogicalList}, or \code{IntegerList} object

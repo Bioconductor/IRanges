@@ -111,11 +111,17 @@ setMethod("[", "SimpleList",
               if (!missing(j) || length(list(...)) > 0)
                   stop("invalid subsetting")
               if (!missing(i)) {
-                  slot(x, "listData", check=FALSE) <- as.list(x)[i]
+                  if (is(i, "RangesList") || is(i, "LogicalList") ||
+                      is(i, "IntegerList")) {
+                      x <- seqextract(x, i)
+                  } else {
+                      slot(x, "listData", check=FALSE) <- as.list(x)[i]
+                      x <- .bracket.Sequence(x, i)
+                  }
               }
-              .bracket.Sequence(x, i)
+              x
           })
-  
+
 setMethod("seqextract", "SimpleList",
           function(x, start=NULL, end=NULL, width=NULL)
           {
