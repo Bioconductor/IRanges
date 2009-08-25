@@ -16,6 +16,10 @@
 \alias{DataFrameList}
 \alias{SplitDataFrameList}
 
+% subsetting
+\alias{[,SimpleSplitDataFrameList-method}
+\alias{[,CompressedSplitDataFrameList-method}
+
 % coercion
 \alias{as.data.frame,SplitDataFrameList-method}
 \alias{coerce,SplitDataFrameList,DataFrame-method}

@@ -350,6 +350,12 @@ setMethod("[", "RangedData",
             if (mstyle) {
               ranges <- ranges(x)
               values <- values(x)
+              if (!missing(j)) {
+                prob <- checkIndex(j, ncol(x), colnames(x))
+                if (!is.null(prob))
+                  stop("selecting cols: ", prob)
+                values <- values[, j, drop=FALSE]
+              }
               if (!missing(i)) {
                 if (is(i, "RangesList")) {
                   i <- !is.na(unlist(overlap(i,ranges,multiple=FALSE)))
@@ -393,15 +399,6 @@ setMethod("[", "RangedData",
                   ranges <- ranges[ok]
                   values <- values[ok]
                 }
-              }
-              if (!missing(j)) {
-                prob <- checkIndex(j, ncol(x), colnames(x))
-                if (!is.null(prob))
-                  stop("selecting cols: ", prob)
-                if (is(values, "CompressedList"))
-                  values@unlistData <- values@unlistData[j]
-                else
-                  values@listData <- lapply(values@listData, "[", j)
               }
             } else {
               if (!missing(i)) {

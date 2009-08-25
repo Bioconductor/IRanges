@@ -16,7 +16,7 @@
 \alias{[[,DataFrame-method}
 \alias{[[<-,DataFrame-method}
 
-% coerce
+% coercion
 \alias{as.data.frame,DataFrame-method}
 \alias{coerce,ANY,DataFrame-method}
 \alias{coerce,matrix,DataFrame-method}

@@ -107,6 +107,52 @@ SplitDataFrameList <- function(..., compress = TRUE)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Subsetting.
+###
+
+setMethod("[", "SimpleSplitDataFrameList",
+          function(x, i, j, ..., drop)
+          {
+            if (!missing(j))
+              x@listData <- lapply(x@listData, function(y) y[,j,drop=FALSE])
+            if (!missing(i))
+              x <- callNextMethod(x, i)
+
+            if (((nargs() - !missing(drop)) > 2) &&
+                (length(x@listData) > 0) && (ncol(x@listData[[1]]) == 1) &&
+                (missing(drop) || drop)) {
+              simplifed <-
+                try(SimpleAtomicList(lapply(x@listData, "[[", 1)),
+                    silent = TRUE)
+                if (class(simplifed) != "try-error")
+                  x <- simplifed
+            }
+
+            x
+          })
+
+setMethod("[", "CompressedSplitDataFrameList",
+          function(x, i, j, ..., drop)
+          {
+            if (!missing(j))
+              x@unlistData <- x@unlistData[, j, drop=FALSE]
+            if (!missing(i))
+              x <- callNextMethod(x, i)
+
+            if (((nargs() - !missing(drop)) > 2) &&
+                (ncol(x@unlistData) == 1) && (missing(drop) || drop)) {
+              simplifed <-
+                try(CompressedAtomicList(x@unlistData[[1]],
+                                         partitioning = x@partitioning),
+                    silent = TRUE)
+              if (class(simplifed) != "try-error")
+                x <- simplifed
+            }
+
+            x
+          })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
 ###
 

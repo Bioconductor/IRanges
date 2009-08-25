@@ -172,15 +172,17 @@ atomicElementListClass <- function(x) {
     else if (is.character(x))
         ans <- "CharacterList"
     else
-        ans <- "OTHER"
+        ans <- NA_character_
     ans
 }
 
 SimpleAtomicList <- function(listData) {
     classOrder <-
       c("CharacterList", "ComplexList", "NumericList", "IntegerList",
-        "LogicalList", "RawList", "RleList", "OTHER")
+        "LogicalList", "RawList", "RleList")
     uniqueClasses <- unique(unlist(lapply(listData, atomicElementListClass)))
+    if (any(is.na(uniqueClasses)))
+        stop("cannot create a SimpleAtomicList with non-atomic elements")
     baseClass <- classOrder[min(match(uniqueClasses, classOrder))]
     do.call(baseClass, c(listData, compress = FALSE))
 }
@@ -188,8 +190,10 @@ SimpleAtomicList <- function(listData) {
 CompressedAtomicList <- function(unlistData, partitioning) {
     classOrder <-
       c("CharacterList", "ComplexList", "NumericList", "IntegerList", 
-        "LogicalList", "RawList", "RleList", "OTHER")
+        "LogicalList", "RawList", "RleList")
     baseClass <- atomicElementListClass(unlistData)
+    if (is.na(baseClass))
+        stop("cannot create a CompressedAtomicList with non-atomic elements")
     new2(paste("Compressed", baseClass, sep = ""), unlistData = unlistData,
          partitioning = partitioning, check = FALSE)
 }
