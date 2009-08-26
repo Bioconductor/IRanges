@@ -53,7 +53,7 @@
 }
 
 \section{Accessors}{
-  In the following code snippets, \code{x} is an \code{DataFrame}.
+  In the following code snippets, \code{x} is a \code{DataFrame}.
   \describe{
     \item{}{\code{dim(x)}:
       Get the length two integer vector indicating in the first and
@@ -68,7 +68,7 @@
 }
 
 \section{Subsetting}{
-  In the following code snippets, \code{x} is an \code{DataFrame}.
+  In the following code snippets, \code{x} is a \code{DataFrame}.
   \describe{
     \item{}{\code{x[i,j,drop]}: Behaves very similarly to the
       \code{\link{[.data.frame}} method, except \code{i} can be a
@@ -103,7 +103,7 @@
 }
 
 \section{Splitting and Combining}{
-  In the following code snippets, \code{x} is an \code{DataFrame}.
+  In the following code snippets, \code{x} is a \code{DataFrame}.
   
   \describe{
     \item{}{\code{split(x, f, drop = FALSE)}:
