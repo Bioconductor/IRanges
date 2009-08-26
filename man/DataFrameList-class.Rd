@@ -43,6 +43,22 @@
   }
 }
 
+\section{Subsetting}{
+  In the following code snippets, \code{x} is a \code{SplitDataFrameList}. In
+  general \code{x} follows the conventions of 
+  \code{SimpleList}/\code{CompressedList} with the following addition:
+  \describe{
+    \item{}{
+      \code{x[i,j,drop]}: If matrix subsetting is used, \code{i} selects
+      either the list elements or the rows within the list elements as
+      determined by the \code{[} method for
+      \code{SimpleList}/\code{CompressedList}, code{j} selects the columns,
+      and \code{drop} is used when one column is selected and output can
+      be coerced into an \code{AtomicList} or \code{RangesList} subclass.
+    }
+  }
+}
+
 \section{Constructor}{
   \describe{
     \item{}{\code{DataFrameList(...)}: Concatenates the \code{DataFrame}

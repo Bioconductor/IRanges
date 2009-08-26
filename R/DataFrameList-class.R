@@ -121,11 +121,17 @@ setMethod("[", "SimpleSplitDataFrameList",
             if (((nargs() - !missing(drop)) > 2) &&
                 (length(x@listData) > 0) && (ncol(x@listData[[1]]) == 1) &&
                 (missing(drop) || drop)) {
-              simplifed <-
-                try(SimpleAtomicList(lapply(x@listData, "[[", 1)),
-                    silent = TRUE)
-                if (class(simplifed) != "try-error")
-                  x <- simplifed
+              uniqueClasses <-
+                unique(unlist(lapply(x@listData, function(y) class(y[[1]]))))
+              if (all(uniqueClasses %in% 
+                      c("raw", "logical", "integer", "numeric", "character",
+                        "complex", "Rle")))
+                x <- SimpleAtomicList(lapply(x@listData, "[[", 1))
+              else if (identical(uniqueClasses, "IRanges"))
+                x <- IRangesList(lapply(x@listData, "[[", 1), compress=FALSE)
+              else if (unlist(lapply(uniqueClasses,
+                                     function(y) extends(y, "Ranges"))))
+                x <- RangesList(lapply(x@listData, "[[", 1))
             }
 
             x
@@ -141,12 +147,17 @@ setMethod("[", "CompressedSplitDataFrameList",
 
             if (((nargs() - !missing(drop)) > 2) &&
                 (ncol(x@unlistData) == 1) && (missing(drop) || drop)) {
-              simplifed <-
-                try(CompressedAtomicList(x@unlistData[[1]],
-                                         partitioning = x@partitioning),
-                    silent = TRUE)
-              if (class(simplifed) != "try-error")
-                x <- simplifed
+              dataClass <- class(x@unlistData[[1]])
+              if (dataClass %in% 
+                  c("raw", "logical", "integer", "numeric", "character",
+                    "complex", "Rle"))
+                x <-
+                  CompressedAtomicList(x@unlistData[[1]],
+                                       partitioning = x@partitioning)
+              else if (dataClass == "IRanges")
+                x <-
+                  new2("CompressedIRangesList", unlistData = x@unlistData[[1]],
+                       partitioning = x@partitioning)
             }
 
             x
