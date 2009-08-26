@@ -13,6 +13,10 @@ setClass("SimpleRleViewsList",
 ### Constructor.
 ###
 
+setMethod("Views", "RleList",
+          function(subject, start=NULL, end=NULL, width=NULL, names=NULL)
+              RleViewsList(rleList = subject, rangesList = start))
+
 RleViewsList <- function(..., rleList, rangesList, universe = NULL)
 {
     if (!is.null(universe) && !isSingleString(universe))
