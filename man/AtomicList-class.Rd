@@ -48,6 +48,13 @@
 \alias{SimpleRleList}
 \alias{SimpleRleList-class}
 
+\alias{coerce,LogicalList,IRangesList-method}
+\alias{coerce,LogicalList,CompressedIRangesList-method}
+\alias{coerce,LogicalList,SimpleIRangesList-method}
+\alias{coerce,RleList,IRangesList-method}
+\alias{coerce,RleList,CompressedIRangesList-method}
+\alias{coerce,RleList,SimpleIRangesList-method}
+
 \alias{Ops,CompressedAtomicList,CompressedAtomicList-method}
 \alias{Ops,SimpleAtomicList,SimpleAtomicList-method}
 \alias{Ops,SimpleAtomicList,CompressedAtomicList-method}
@@ -103,6 +110,18 @@
       run-length encoded atomic vectors in \code{...} into a new
       \code{RleList}.
       If \code{compress}, the internal storage of the data is compressed.}
+  }
+}
+
+\section{Coercion}{
+  \describe{
+    \item{}{
+      \code{as(from, "IRangesList")}, \code{as(from, "CompressedIRangesList")},
+      \code{as(from, "SimpleIRangesList")}: Creates a
+      \linkS4class{CompressedIRangesList}/\linkS4class{SimpleIRangesList}
+      instance from a LogicalList or logical RleList instance. Note that the
+      elements of this instance are guaranteed to be normal.
+    }
   }
 }
 

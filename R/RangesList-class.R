@@ -478,14 +478,75 @@ setAs("IRangesList", "list",
       function(from) as(as(from, "RangesList"), "list"))
 
 setAs("RangesList", "CompressedIRangesList",
-      function(from) {
+      function(from)
+      {
         newCompressedList("CompressedIRangesList", lapply(from, as, "IRanges"),
                           metadata = metadata(from),
                           elementMetadata = elementMetadata(from))
       })
 
 setAs("RangesList", "SimpleIRangesList",
-      function(from) {
+      function(from)
+      {
+        newSimpleList("SimpleIRangesList", lapply(from, as, "IRanges"),
+                      metadata = metadata(from),
+                      elementMetadata = elementMetadata(from))
+      })
+
+setAs("LogicalList", "IRangesList",
+      function(from)
+      {
+        if (is(from, "CompressedList"))
+          as(from, "CompressedIRangesList")
+        else
+          as(from, "SimpleIRangesList")
+      })
+
+setAs("LogicalList", "CompressedIRangesList",
+      function(from)
+      {
+        newCompressedList("CompressedIRangesList", lapply(from, as, "IRanges"),
+                          metadata = metadata(from),
+                          elementMetadata = elementMetadata(from))
+      })
+
+setAs("LogicalList", "SimpleIRangesList",
+      function(from)
+      {
+        newSimpleList("SimpleIRangesList", lapply(from, as, "IRanges"),
+                      metadata = metadata(from),
+                      elementMetadata = elementMetadata(from))
+      })
+
+setAs("RleList", "IRangesList",
+      function(from)
+      {
+        if (is(from, "CompressedList"))
+          as(from, "CompressedIRangesList")
+        else
+          as(from, "SimpleIRangesList")
+      })
+
+setAs("RleList", "CompressedIRangesList",
+      function(from)
+      {
+        if ((!is.logical(runValue(from@unlistData)) ||
+             any(is.na(runValue(from@unlistData)))))
+          stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
+               "with NAs to an SimpleIRangesList object")
+        newCompressedList("CompressedIRangesList", lapply(from, as, "IRanges"),
+                          metadata = metadata(from),
+                          elementMetadata = elementMetadata(from))
+      })
+
+setAs("RleList", "SimpleIRangesList",
+      function(from)
+      {
+        if ((length(from) > 0) &&
+            (!is.logical(runValue(from[[1]])) ||
+             any(is.na(runValue(from[[1]])))))
+          stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
+               "with NAs to an SimpleIRangesList object")
         newSimpleList("SimpleIRangesList", lapply(from, as, "IRanges"),
                       metadata = metadata(from),
                       elementMetadata = elementMetadata(from))
