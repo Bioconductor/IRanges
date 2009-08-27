@@ -20,11 +20,13 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{IRangesList(..., compress = TRUE)}: Each \code{IRanges} in
-      \code{...} becomes an element in the new \code{IRangesList}, in the same
-      order. This is analogous to the \code{\link{list}} constructor,
-      except every argument in \code{...} must be derived from \code{IRanges}. 
-      If \code{compress}, the internal storage of the data is compressed.
+    \item{}{\code{IRangesList(..., compress = TRUE)}: The \code{...} argument
+      accepts either a comma-separated list of \code{IRanges} objects or
+      a single \code{LogicalList} / logical \code{RleList} object. When
+      the former is supplied, each \code{IRanges} in \code{...} becomes an
+      element in the new \code{IRangesList}, in the same order, which is
+      analogous to the \code{\link{list}} constructor. If \code{compress},
+      the internal storage of the data is compressed.
     }
   }
 }

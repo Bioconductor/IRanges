@@ -179,14 +179,22 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
   if (!is.null(universe) && !isSingleString(universe))
     stop("'universe' must be a single string or NULL")
   ranges <- list(...)
-  if (length(ranges) == 1 && is.list(ranges[[1]]))
-    ranges <- ranges[[1]]
-  if (!all(sapply(ranges, is, "IRanges")))
-    stop("all elements in '...' must be IRanges objects")
-  if (compress)
-    ans <- newCompressedList("CompressedIRangesList", ranges)
-  else
-    ans <- newSimpleList("SimpleIRangesList", ranges)
+  if (length(ranges) == 1 &&
+      (is(ranges[[1]], "LogicalList") || is(ranges[[1]], "RleList"))) {
+    if (compress)
+      ans <- as(ranges[[1]], "CompressedIRangesList")
+    else
+      ans <- as(ranges[[1]], "SimpleIRangesList")
+  } else {
+    if (length(ranges) == 1 && is.list(ranges[[1]]))
+      ranges <- ranges[[1]]
+    if (!all(sapply(ranges, is, "IRanges")))
+      stop("all elements in '...' must be IRanges objects")
+    if (compress)
+      ans <- newCompressedList("CompressedIRangesList", ranges)
+    else
+      ans <- newSimpleList("SimpleIRangesList", ranges)
+  }
   universe(ans) <- universe
   ans
 }
