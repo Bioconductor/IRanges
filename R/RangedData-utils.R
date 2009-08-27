@@ -17,7 +17,7 @@ setMethod("lapply", "RangedData",
 setMethod("endoapply", "RangedData",
           function(X, FUN, ...) {
             ans <- try(do.call(c, lapply(X, FUN, ...)), silent = TRUE)
-            if ((class(ans) == c("try-error")) || (class(ans) != class(X)))
+            if (inherits(ans, "try-error") || (class(ans) != class(X)))
               stop("'FUN' did not produce an endomorphism")
             ans
           })

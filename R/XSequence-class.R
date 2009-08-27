@@ -39,7 +39,7 @@ solveSubseqSEW <- function(seq_length, start, end, width)
     solved_SEW <-
       try(solveUserSEW(seq_length, start=start, end=end, width=width),
           silent = TRUE)
-    if (is(solved_SEW, "try-error"))
+    if (inherits(solved_SEW, "try-error"))
         stop("Invalid sequence coordinates.\n",
              "  Please make sure the supplied 'start', 'end' and 'width' arguments\n",
              "  are defining a region that is within the limits of the sequence.")
