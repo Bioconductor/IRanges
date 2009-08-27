@@ -92,6 +92,8 @@ DataFrameList <- function(...)
 
 SplitDataFrameList <- function(..., compress = TRUE)
 {
+  if (!isTRUEorFALSE(compress))
+    stop("'compress' must be TRUE or FALSE")
   listData <- list(...)
   if (length(listData) == 1 && is.list(listData[[1]]))
     listData <- listData[[1]]

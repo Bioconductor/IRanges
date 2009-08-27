@@ -77,6 +77,8 @@ setClass("SimpleRleList",
 
 LogicalList <- function(..., compress = TRUE)
 {
+    if (!isTRUEorFALSE(compress))
+        stop("'compress' must be TRUE or FALSE")
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1]]))
         listData <- listData[[1]]
@@ -88,6 +90,8 @@ LogicalList <- function(..., compress = TRUE)
 
 IntegerList <- function(..., compress = TRUE)
 {
+    if (!isTRUEorFALSE(compress))
+        stop("'compress' must be TRUE or FALSE")
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1]]))
         listData <- listData[[1]]
@@ -99,6 +103,8 @@ IntegerList <- function(..., compress = TRUE)
 
 NumericList <- function(..., compress = TRUE)
 {
+    if (!isTRUEorFALSE(compress))
+        stop("'compress' must be TRUE or FALSE")
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1]]))
         listData <- listData[[1]]
@@ -110,6 +116,8 @@ NumericList <- function(..., compress = TRUE)
 
 ComplexList <- function(..., compress = TRUE)
 {
+    if (!isTRUEorFALSE(compress))
+        stop("'compress' must be TRUE or FALSE")
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1]]))
         listData <- listData[[1]]
@@ -121,6 +129,8 @@ ComplexList <- function(..., compress = TRUE)
 
 CharacterList <- function(..., compress = TRUE)
 {
+    if (!isTRUEorFALSE(compress))
+        stop("'compress' must be TRUE or FALSE")
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1]]))
         listData <- listData[[1]]
@@ -132,6 +142,8 @@ CharacterList <- function(..., compress = TRUE)
 
 RawList <- function(..., compress = TRUE)
 {
+    if (!isTRUEorFALSE(compress))
+        stop("'compress' must be TRUE or FALSE")
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1]]))
         listData <- listData[[1]]
@@ -143,6 +155,8 @@ RawList <- function(..., compress = TRUE)
 
 RleList <- function(..., compress = TRUE)
 {
+    if (!isTRUEorFALSE(compress))
+        stop("'compress' must be TRUE or FALSE")
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1]]))
         listData <- listData[[1]]

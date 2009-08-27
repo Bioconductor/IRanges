@@ -176,6 +176,8 @@ RangesList <- function(..., universe = NULL)
 
 IRangesList <- function(..., universe = NULL, compress = TRUE)
 {
+  if (!isTRUEorFALSE(compress))
+    stop("'compress' must be TRUE or FALSE")
   if (!is.null(universe) && !isSingleString(universe))
     stop("'universe' must be a single string or NULL")
   ranges <- list(...)
