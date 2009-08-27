@@ -49,7 +49,6 @@
 \alias{Reduce,ANY,Sequence-method}
 \alias{rep,Sequence-method}
 \alias{rev,Sequence-method}
-\alias{sapply}
 \alias{sapply,Sequence-method}
 \alias{seqextract}
 \alias{seqextract,Sequence-method}

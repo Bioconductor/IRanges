@@ -89,7 +89,6 @@ export(
     mendoapply,
 
     ## Generic functions in the Sequence API:
-    sapply,
     mapply,
     Map,
     isEmpty,
@@ -165,6 +164,7 @@ export(
 exportMethods(
     ## Methods for generics defined elsewhere:
     lapply,
+    sapply,
     Arith,
     Ops, Math, Math2, Summary, Complex,
     coerce,
@@ -212,7 +212,6 @@ exportMethods(
     ## Methods for generics defined in this package:
     endoapply,
     mendoapply,
-    sapply,
     mapply,
     Map,
     isEmpty,

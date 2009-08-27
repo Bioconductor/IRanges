@@ -493,12 +493,6 @@ setMethod("lapply", "Sequence",
               lapply(ii, function(i) FUN(X[[i]], ...))
           })
 
-### The implicit generic would dispatch on the X, FUN, simplify and USE.NAMES
-### args, but we don't want that.
-setGeneric("sapply", signature="X",
-           function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
-           standardGeneric("sapply"))
-
 .sapplyDefault <- base::sapply
 environment(.sapplyDefault) <- topenv()
 setMethod("sapply", "Sequence", .sapplyDefault)
