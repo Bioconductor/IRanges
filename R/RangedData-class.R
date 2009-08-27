@@ -190,9 +190,9 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
       warning("since 'class(ranges)' extends RangesList, 'space' argument is ignored")
     if (is.null(names(ranges)))
       space <- rep(as.character(seq_len(length(ranges))),
-                   each = elementLengths(ranges))
+                   elementLengths(ranges))
     else
-      space <- rep(names(ranges), each = elementLengths(ranges))
+      space <- rep(names(ranges), elementLengths(ranges))
     N <- sum(elementLengths(ranges))
     NAMES <- unlist(lapply(ranges, names))
   } else if (!is(ranges, "Ranges")) {
