@@ -27,8 +27,11 @@ RleViewsList <- function(..., rleList, rangesList, universe = NULL)
             stop("'...' must be empty when 'rleList' and 'rangesList' are specified")
         if (!is(rleList, "RleList"))
             stop("'rleList' must be a RleList object")
-        if (!is(rangesList, "RangesList"))
-            stop("'rangesList' must be a RangesList object")
+        if (!is(rangesList, "RangesList")) {
+            rangesList <- try(IRangesList(rangesList), silent = TRUE)
+            if (inherits(rangesList, "try-error"))
+                stop("'rangesList' must be a RangesList object")
+        }
         views <- Map(Views, rleList, rangesList)
     } else if ((length(views) > 0) &&
             (!missing(rleList) || !missing(rangesList))) {
