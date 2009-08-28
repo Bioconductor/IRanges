@@ -384,13 +384,11 @@ setAs("data.frame", "DataFrame",
 setAs("matrix", "DataFrame", # matrices just go through data.frame
       function(from) as(as.data.frame(from), "DataFrame"))
 
-setAs("list", "DataFrame", function(from) do.call(DataFrame, from))
-
 ## everything else
 setAs("ANY", "DataFrame",
       function(from) {
-        new2("DataFrame", listData = list(from),
-             nrows = as.integer(length(from)), check=FALSE)
+        new2("DataFrame", listData = list(from), nrows = length(from),
+             check=FALSE)
       })
 
 ### FIXME: only exists due to annoying S4 warning due to its caching of

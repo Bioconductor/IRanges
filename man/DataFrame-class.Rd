@@ -20,7 +20,6 @@
 \alias{as.data.frame,DataFrame-method}
 \alias{coerce,ANY,DataFrame-method}
 \alias{coerce,matrix,DataFrame-method}
-\alias{coerce,list,DataFrame-method}
 \alias{coerce,integer,DataFrame-method}
 \alias{coerce,data.frame,DataFrame-method}
 \alias{coerce,DataFrame,data.frame-method}
