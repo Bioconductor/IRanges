@@ -170,7 +170,7 @@ exportMethods(
     coerce,
     show,
     summary,
-    length,
+    length, "length<-",
     names, "names<-",
     "[", "[<-", "[[", "[[<-", "$",
     "==", "!=", duplicated, unique,

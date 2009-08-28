@@ -39,6 +39,7 @@
 \alias{grouprank,H2LGrouping-method}
 \alias{togrouprank}
 \alias{togrouprank,H2LGrouping-method}
+\alias{length<-,H2LGrouping-method}
 
 \alias{class:Dups}
 \alias{Dups-class}

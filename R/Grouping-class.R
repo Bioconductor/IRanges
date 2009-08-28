@@ -216,8 +216,15 @@ setMethod("togroup", "H2LGrouping",
 #    }
 #)
 
-### The rank of group G_i is the number of non-empty groups that have a group
-### index <= i.
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### More operations on H2LGrouping objects. These operations are NOT part of
+### the Grouping core API.
+###
+
+### The rank of group G_i is the number of non-empty groups that are before
+### G_i plus one. Or, equivalently, it's the number of non-empty groups with
+### an index <= i.
 setGeneric("grouprank", signature="x",
     function(x, i=NULL) standardGeneric("grouprank")
 )
@@ -254,11 +261,6 @@ setMethod("togrouprank", "H2LGrouping",
     }
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Validity.
-###
-
 .makeLow2highFromHigh2low <- function(high2low)
 {
     ans <- vector(mode="list", length=length(high2low))
@@ -266,6 +268,28 @@ setMethod("togrouprank", "H2LGrouping",
     ans[as.integer(names(sparse_ans))] <- sparse_ans
     ans
 }
+
+setReplaceMethod("length", "H2LGrouping",
+    function(x, value)
+    {
+        if (!isSingleNumber(value))
+            stop("length must be a single integer")
+        if (!is.integer(value))
+            value <- as.integer(value)
+        if (value < 0L)
+            stop("length cannot be negative")
+        if (value > length(x))
+            stop("cannot make a ", class(x), " instance longer")
+        length(x@high2low) <- value
+        x@low2high <- .makeLow2highFromHigh2low(x@high2low)
+        x
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Validity.
+###
 
 .valid.H2LGrouping <- function(x)
 {
