@@ -256,13 +256,6 @@ setMethod("[[", "MaskCollection",
     }
 )
 
-setReplaceMethod("[[", "MaskCollection",
-    function(x, i, j,..., value)
-    {
-        stop("attempt to modify the value of a ", class(x), " instance")
-    }
-)
-
 ### Supported 'i' types: numeric/logical/character vector, NULL and missing.
 ### Unlike "[[" above, when subsetting by names, only the first match is
 ### returned if a name provided by the user matches more than 1 element (note
@@ -315,11 +308,6 @@ setMethod("[", "MaskCollection",
             slot(x, "desc", check=FALSE) <- desc(x)[i]
         .bracket.Sequence(x, i)
     }
-)
-
-setReplaceMethod("[", "MaskCollection",
-    function(x, i, j,..., value)
-        stop("attempt to modify the value of a ", class(x), " instance")
 )
 
 

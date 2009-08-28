@@ -27,7 +27,6 @@
 \alias{unlist,Ranges-method}
 \alias{[[,Ranges-method}
 \alias{show,Ranges-method}
-\alias{[<-,Ranges-method}
 \alias{[,Ranges-method}
 \alias{rep,Ranges-method}
 \alias{isNormal}

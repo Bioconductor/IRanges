@@ -9,7 +9,6 @@
 \alias{Views}
 \alias{coerce,Sequence,Views-method}
 \alias{[[,Views-method}
-\alias{[[<-,Views-method}
 \alias{coerce,Views,NormalIRanges-method}
 \alias{restrict,Views-method}
 \alias{trim}
@@ -74,9 +73,11 @@
 }
 
 \section{Subsetting and appending}{
-  The \code{"["} and \code{c} methods defined for \code{IRanges} objects
-  work on Views objects and return a Views object.
-  In addition, the \code{"[["} operator is defined for Views objects:
+  \code{"["}, \code{c} and \code{"[["} work on a Views object.
+  The first two operations are just inherited from the
+  \code{IRanges} class but now they return a Views object.
+  However, the \code{"[["} method for Views objects has a
+  different semantic than the method for \code{IRanges} objects.
 
   \describe{
     \item{}{

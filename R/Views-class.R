@@ -104,13 +104,6 @@ setMethod("[[", "Views",
     }
 )
 
-setReplaceMethod("[[", "Views",
-    function(x, i, j,..., value)
-    {
-        stop("attempt to modify the value of a ", class(x), " instance")
-    }
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.

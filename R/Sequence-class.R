@@ -131,9 +131,6 @@ function(x, i, j, ..., drop)
 setMethod("[", "Sequence", function(x, i, j, ..., drop)
           stop("missing '[' method for Sequence class ", class(x)))
 
-setReplaceMethod("[", "Sequence", function(x, i, j,..., value)
-                 stop("attempt to modify the value of a ", class(x), " instance"))
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.
 ###

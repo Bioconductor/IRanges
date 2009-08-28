@@ -7,7 +7,6 @@
 \alias{Sequence}
 
 \alias{[,Sequence-method}
-\alias{[<-,Sequence-method}
 \alias{[[,Sequence-method}
 \alias{$,Sequence-method}
 \alias{!=,Sequence,Sequence-method}

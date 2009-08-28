@@ -16,7 +16,6 @@
 \alias{togroup}
 \alias{togrouplength}
 \alias{togrouplength,Grouping-method}
-\alias{[[<-,Grouping-method}
 \alias{show,Grouping-method}
 
 % H2LGrouping and Dups objects:

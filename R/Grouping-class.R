@@ -65,15 +65,6 @@ setMethod("togrouplength", "Grouping",
         grouplength(x, togroup(x, j))
 )
 
-### Not needed anymore since R now displays an error message when attempting
-### to use "[[<-" on an object for which it's not defined.
-setReplaceMethod("[[", "Grouping",
-    function(x, i, j,..., value)
-    {
-        stop("attempt to modify the value of a ", class(x), " instance")
-    }
-)
-
 setMethod("show", "Grouping",
     function(object)
     {

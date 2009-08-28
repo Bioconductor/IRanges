@@ -7,7 +7,6 @@
 \alias{DataTableORNULL-class}
 \alias{DataTable}
 
-\alias{[<-,DataTable-method}
 \alias{cbind}
 \alias{cbind,DataTable-method}
 \alias{dim,DataTable-method}

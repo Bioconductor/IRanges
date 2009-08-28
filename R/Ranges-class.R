@@ -224,11 +224,6 @@ setMethod("whichFirstNotNormal", "Ranges",
 ### Core endomorphisms.
 ###
 
-setReplaceMethod("[", "Ranges",
-    function(x, i, j,..., value)
-        stop("attempt to modify the value of a ", class(x), " instance")
-)
-
 ### FIXME: hopefully temporary
 setMethod("[", "Ranges",
     function(x, i, j, ..., drop)

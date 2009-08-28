@@ -12,8 +12,6 @@
 
 % Methods:
 \alias{show,XIntegerViews-method}
-\alias{[[,XIntegerViews-method}
-\alias{[[<-,XIntegerViews-method}
 
 \alias{==,XIntegerViews,XIntegerViews-method}
 \alias{==,XIntegerViews,XInteger-method}
