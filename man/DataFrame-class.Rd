@@ -135,15 +135,12 @@
     \item{}{\code{as(from, "DataFrame")}:
       By default, constructs a new \code{DataFrame} with \code{from} as
       its only column. If \code{from} is a \code{matrix} or
-      \code{data.frame}, all of 
-      its columns become columns in the new \code{DataFrame}. In any
-      case, there is an attempt to coerce 
+      \code{data.frame}, all of its columns become columns in the new
+      \code{DataFrame}. In any case, there is an attempt to coerce 
       columns to \code{XSequence} before inserting them into the
-      \code{DataFrame}. If \code{from} is a \code{list}, its elements
-      become columns in the same way. Note that for the
-      \code{DataFrame} to behave 
-      correctly, each column object must support element-wise subsetting via
-      the \code{[} method and return the number of elements with
+      \code{DataFrame}. Note that for the \code{DataFrame} to behave
+      correctly, each column object must support element-wise subsetting
+      via the \code{[} method and return the number of elements with
       \code{length}. It is recommended to use the \code{DataFrame} 
       constructor, rather than this interface.
     }
