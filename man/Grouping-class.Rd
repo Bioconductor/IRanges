@@ -26,6 +26,7 @@
 
 \alias{high2low}
 \alias{high2low,H2LGrouping-method}
+\alias{high2low,ANY-method}
 \alias{low2high}
 \alias{low2high,H2LGrouping-method}
 \alias{length,H2LGrouping-method}
@@ -310,9 +311,21 @@
   ## ---------------------------------------------------------------------
   ## B. Dups OBJECTS
   ## ---------------------------------------------------------------------
-  dups <- as(x, "Dups")
-  dups
-  duplicated(dups)  # same as 'duplicated(togroup(dups))'
+  x_dups <- as(x, "Dups")
+  x_dups
+  duplicated(x_dups)  # same as 'duplicated(togroup(x_dups))'
+
+  ### The purpose of a Dups object is to describe the groups of duplicated
+  ### elements in a vector-like object:
+  x <- c(2, 77, 4, 4, 7, 2, 8, 8, 4, 99)
+  x_high2low <- high2low(x)
+  x_high2low  # same length as 'x'
+  x_dups <- Dups(x_high2low)
+  x_dups
+  togroup(x_dups)
+  duplicated(x_dups)
+  togrouplength(x_dups)  # frequency for each element
+  table(x)
 
   ## ---------------------------------------------------------------------
   ## C. Partitioning OBJECTS
