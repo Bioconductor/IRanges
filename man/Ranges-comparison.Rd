@@ -6,9 +6,7 @@
 \alias{==,Ranges,Ranges-method}
 \alias{!=}
 \alias{!=,Ranges,Ranges-method}
-\alias{duplicated}
 \alias{duplicated,Ranges-method}
-\alias{unique}
 \alias{unique,Ranges-method}
 
 \alias{<=}
@@ -21,9 +19,7 @@
 \alias{>,Ranges,Ranges-method}
 \alias{order}
 \alias{order,Ranges-method}
-\alias{sort}
 \alias{sort,Ranges-method}
-\alias{rank}
 \alias{rank,Ranges-method}
 
 

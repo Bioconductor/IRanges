@@ -24,12 +24,6 @@ setMethod("!=", signature(e1="Ranges", e2="Ranges"),
     }
 )
 
-### Need to explicitly define this generic otherwise the implicit generic in
-### package "base" would dispatch on (x, incomparables).
-setGeneric("duplicated", signature="x",
-    function(x, incomparables=FALSE, ...) standardGeneric("duplicated")
-)
-
 ### Note that this default method is very inefficient so efficient methods for
 ### the Ranges subclasses need to be implemented.
 setMethod("duplicated", "Ranges",
@@ -43,12 +37,6 @@ setMethod("duplicated", "Ranges",
                               stringsAsFactors=FALSE),
                    fromLast=fromLast)
     }
-)
-
-### Need to explicitly define this generic otherwise the implicit generic in
-### package "base" would dispatch on (x, incomparables).
-setGeneric("unique", signature="x",
-    function(x, incomparables=FALSE, ...) standardGeneric("unique")
 )
 
 ### Relies on a "[" method for 'x'.
@@ -124,12 +112,6 @@ setMethod("order", "Ranges",
     }
 )
 
-### Need to explicitly define this generic otherwise the implicit generic in
-### package "base" would dispatch on (x, decreasing).
-setGeneric("sort", signature="x",
-    function(x, decreasing=FALSE, ...) standardGeneric("sort")
-)
-
 ### Relies on a "[" method for 'x'.
 setMethod("sort", "Ranges",
     function(x, decreasing=FALSE, ...) 
@@ -138,17 +120,10 @@ setMethod("sort", "Ranges",
     }
 )
 
-### Need to explicitly define this generic otherwise the implicit generic in
-### package "base" would dispatch on (x, na.last, ties.method).
-setGeneric("rank", signature="x",
-    function(x, na.last=TRUE, ties.method=c("average", "first", "random", "max", "min"))
-        standardGeneric("rank")
-)
-
 setMethod("rank", "Ranges",
     function(x, na.last=TRUE, ties.method=c("average", "first", "random", "max", "min"))
     {
-        if (!identical(ties.method, "first"))
+        if (!missing(ties.method) && !identical(ties.method, "first"))
             stop("only 'ties.method=\"first\"' is supported when ranking ranges")
         ox <- order(x)
         ## 'ans' is the reverse permutation of 'ox'
