@@ -8,8 +8,9 @@
 setClassUnion("vectorORfactor", c("vector", "factor"))
 
 setClass("Rle",
-        representation(values = "vectorORfactor",
-                       lengths = "integer"),
+         representation(values = "vectorORfactor",
+                        lengths = "integer"),
+         prototype = prototype(values = logical()),
          contains = "Sequence",
          validity = function(object)
          {
