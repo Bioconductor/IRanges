@@ -1,6 +1,7 @@
 test_Rle_construction <- function() {
     empty <- Rle()
     checkTrue(validObject(empty))
+    checkIdentical(Rle(), new("Rle"))
     checkIdentical(length(empty), 0L)
     x <- Rle(rep(6:10, 1:5))
     checkTrue(validObject(x))
