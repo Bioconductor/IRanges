@@ -57,11 +57,8 @@ newViews <- function(subject, start=NULL, end=NULL, width=NULL, names=NULL, Clas
     } else {
         ir <- IRanges(start=start, end=end, width=width, names=names)
     }
-    if (length(width(ir)) != 0L && min(width(ir)) <= 0L)
-        stop("null widths are not allowed")
     if (is.null(Class))
         Class <- paste(class(subject), "Views", sep="")
-    #new2(Class, ir, subject=subject, check=FALSE)  # gives me an infinite recursion!
     new2(Class, subject=subject, start=start(ir), width=width(ir), NAMES=names(ir), check=FALSE)
 }
 
