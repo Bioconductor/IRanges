@@ -46,47 +46,49 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 		} else if (type == 'r') {
 			REAL(ans)[i] = R_PosInf;
 		}
-		while (index > 0 && upper_run > start) {
-			upper_run -= *lengths_elt;
-			lengths_elt--;
-			index--;
-		}
-		while (upper_run < start) {
-			lengths_elt++;
-			index++;
-			upper_run += *lengths_elt;
-		}
-		lower_run = upper_run - *lengths_elt + 1;
-		upper_bound = start + width - 1;
-		if (type == 'i') {
-			while (lower_run <= upper_bound) {
-				if (INTEGER(values)[index] == NA_INTEGER) {
-					if (!LOGICAL(na_rm)[0]) {
-						INTEGER(ans)[i] = NA_INTEGER;
-						break;
-					}
-				} else if (INTEGER(values)[index] < INTEGER(ans)[i]) {
-					INTEGER(ans)[i] = INTEGER(values)[index];
-				}
+		if (width > 0) {
+			while (index > 0 && upper_run > start) {
+				upper_run -= *lengths_elt;
+				lengths_elt--;
+				index--;
+			}
+			while (upper_run < start) {
 				lengths_elt++;
 				index++;
-				lower_run = upper_run + 1;
 				upper_run += *lengths_elt;
 			}
-		} else if (type == 'r') {
-			while (lower_run <= upper_bound) {
-				if (ISNAN(REAL(values)[index])) {
-					if (!LOGICAL(na_rm)[0]) {
-						REAL(ans)[i] = NA_REAL;
-						break;
+			lower_run = upper_run - *lengths_elt + 1;
+			upper_bound = start + width - 1;
+			if (type == 'i') {
+				while (lower_run <= upper_bound) {
+					if (INTEGER(values)[index] == NA_INTEGER) {
+						if (!LOGICAL(na_rm)[0]) {
+							INTEGER(ans)[i] = NA_INTEGER;
+							break;
+						}
+					} else if (INTEGER(values)[index] < INTEGER(ans)[i]) {
+						INTEGER(ans)[i] = INTEGER(values)[index];
 					}
-				} else if (REAL(values)[index] < REAL(ans)[i]) {
-					REAL(ans)[i] = REAL(values)[index];
+					lengths_elt++;
+					index++;
+					lower_run = upper_run + 1;
+					upper_run += *lengths_elt;
 				}
-				lengths_elt++;
-				index++;
-				lower_run = upper_run + 1;
-				upper_run += *lengths_elt;
+			} else if (type == 'r') {
+				while (lower_run <= upper_bound) {
+					if (ISNAN(REAL(values)[index])) {
+						if (!LOGICAL(na_rm)[0]) {
+							REAL(ans)[i] = NA_REAL;
+							break;
+						}
+					} else if (REAL(values)[index] < REAL(ans)[i]) {
+						REAL(ans)[i] = REAL(values)[index];
+					}
+					lengths_elt++;
+					index++;
+					lower_run = upper_run + 1;
+					upper_run += *lengths_elt;
+				}
 			}
 		}
 	}
@@ -138,47 +140,49 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 		} else if (type == 'r') {
 			REAL(ans)[i] = R_NegInf;
 		}
-		while (index > 0 && upper_run > start) {
-			upper_run -= *lengths_elt;
-			lengths_elt--;
-			index--;
-		}
-		while (upper_run < start) {
-			lengths_elt++;
-			index++;
-			upper_run += *lengths_elt;
-		}
-		lower_run = upper_run - *lengths_elt + 1;
-		upper_bound = start + width - 1;
-		if (type == 'i') {
-			while (lower_run <= upper_bound) {
-				if (INTEGER(values)[index] == NA_INTEGER) {
-					if (!LOGICAL(na_rm)[0]) {
-						INTEGER(ans)[i] = NA_INTEGER;
-						break;
-					}
-				} else if (INTEGER(values)[index] > INTEGER(ans)[i]) {
-					INTEGER(ans)[i] = INTEGER(values)[index];
-				}
+		if (width > 0) {
+			while (index > 0 && upper_run > start) {
+				upper_run -= *lengths_elt;
+				lengths_elt--;
+				index--;
+			}
+			while (upper_run < start) {
 				lengths_elt++;
 				index++;
-				lower_run = upper_run + 1;
 				upper_run += *lengths_elt;
 			}
-		} else if (type == 'r') {
-			while (lower_run <= upper_bound) {
-				if (ISNAN(REAL(values)[index])) {
-					if (!LOGICAL(na_rm)[0]) {
-						REAL(ans)[i] = NA_REAL;
-						break;
+			lower_run = upper_run - *lengths_elt + 1;
+			upper_bound = start + width - 1;
+			if (type == 'i') {
+				while (lower_run <= upper_bound) {
+					if (INTEGER(values)[index] == NA_INTEGER) {
+						if (!LOGICAL(na_rm)[0]) {
+							INTEGER(ans)[i] = NA_INTEGER;
+							break;
+						}
+					} else if (INTEGER(values)[index] > INTEGER(ans)[i]) {
+						INTEGER(ans)[i] = INTEGER(values)[index];
 					}
-				} else if (REAL(values)[index] > REAL(ans)[i]) {
-					REAL(ans)[i] = REAL(values)[index];
+					lengths_elt++;
+					index++;
+					lower_run = upper_run + 1;
+					upper_run += *lengths_elt;
 				}
-				lengths_elt++;
-				index++;
-				lower_run = upper_run + 1;
-				upper_run += *lengths_elt;
+			} else if (type == 'r') {
+				while (lower_run <= upper_bound) {
+					if (ISNAN(REAL(values)[index])) {
+						if (!LOGICAL(na_rm)[0]) {
+							REAL(ans)[i] = NA_REAL;
+							break;
+						}
+					} else if (REAL(values)[index] > REAL(ans)[i]) {
+						REAL(ans)[i] = REAL(values)[index];
+					}
+					lengths_elt++;
+					index++;
+					lower_run = upper_run + 1;
+					upper_run += *lengths_elt;
+				}
 			}
 		}
 	}
@@ -238,79 +242,81 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 			COMPLEX(ans)[i].r = 0;
 			COMPLEX(ans)[i].i = 0;
 		}
-		while (index > 0 && upper_run > start) {
-			upper_run -= *lengths_elt;
-			lengths_elt--;
-			index--;
-		}
-		while (upper_run < start) {
-			lengths_elt++;
-			index++;
-			upper_run += *lengths_elt;
-		}
-		lower_run = upper_run - *lengths_elt + 1;
-		lower_bound = start;
-		upper_bound = start + width - 1;
-		if (type == 'i') {
-			while (lower_run <= upper_bound) {
-				if (INTEGER(values)[index] == NA_INTEGER) {
-					if (!LOGICAL(na_rm)[0]) {
-						INTEGER(ans)[i] = NA_INTEGER;
-						break;
-					}
-				} else {
-					INTEGER(ans)[i] += INTEGER(values)[index] *
-					    (1 + (upper_bound < upper_run ? upper_bound : upper_run) -
-					         (lower_bound > lower_run ? lower_bound : lower_run));
-				}
+		if (width > 0) {
+			while (index > 0 && upper_run > start) {
+				upper_run -= *lengths_elt;
+				lengths_elt--;
+				index--;
+			}
+			while (upper_run < start) {
 				lengths_elt++;
 				index++;
-				lower_run = upper_run + 1;
-				lower_bound = lower_run;
 				upper_run += *lengths_elt;
 			}
-			if (INTEGER(ans)[i] != NA_INTEGER &&
-				(INTEGER(ans)[i] > INT_MAX || INTEGER(ans)[i] < R_INT_MIN))
-				error("Integer overflow");
-		} else if (type == 'r') {
-			while (lower_run <= upper_bound) {
-				if (ISNAN(REAL(values)[index])) {
-					if (!LOGICAL(na_rm)[0]) {
-						REAL(ans)[i] = NA_REAL;
-						break;
+			lower_run = upper_run - *lengths_elt + 1;
+			lower_bound = start;
+			upper_bound = start + width - 1;
+			if (type == 'i') {
+				while (lower_run <= upper_bound) {
+					if (INTEGER(values)[index] == NA_INTEGER) {
+						if (!LOGICAL(na_rm)[0]) {
+							INTEGER(ans)[i] = NA_INTEGER;
+							break;
+						}
+					} else {
+						INTEGER(ans)[i] += INTEGER(values)[index] *
+						    (1 + (upper_bound < upper_run ? upper_bound : upper_run) -
+						         (lower_bound > lower_run ? lower_bound : lower_run));
 					}
-				} else {
-					REAL(ans)[i] += REAL(values)[index] *
-					    (1 + (upper_bound < upper_run ? upper_bound : upper_run) -
-					         (lower_bound > lower_run ? lower_bound : lower_run));
+					lengths_elt++;
+					index++;
+					lower_run = upper_run + 1;
+					lower_bound = lower_run;
+					upper_run += *lengths_elt;
 				}
-				lengths_elt++;
-				index++;
-				lower_run = upper_run + 1;
-				lower_bound = lower_run;
-				upper_run += *lengths_elt;
-			}
-		} else if (type == 'c') {
-			while (lower_run <= upper_bound) {
-				if (ISNAN(COMPLEX(values)[index].r) || ISNAN(COMPLEX(values)[index].i)) {
-					if (!LOGICAL(na_rm)[0]) {
-						COMPLEX(ans)[i].r = NA_REAL;
-						COMPLEX(ans)[i].i = NA_REAL;
-						break;
+				if (INTEGER(ans)[i] != NA_INTEGER &&
+					(INTEGER(ans)[i] > INT_MAX || INTEGER(ans)[i] < R_INT_MIN))
+					error("Integer overflow");
+			} else if (type == 'r') {
+				while (lower_run <= upper_bound) {
+					if (ISNAN(REAL(values)[index])) {
+						if (!LOGICAL(na_rm)[0]) {
+							REAL(ans)[i] = NA_REAL;
+							break;
+						}
+					} else {
+						REAL(ans)[i] += REAL(values)[index] *
+						    (1 + (upper_bound < upper_run ? upper_bound : upper_run) -
+						         (lower_bound > lower_run ? lower_bound : lower_run));
 					}
-				} else {
-					COMPLEX(ans)[i].r += COMPLEX(values)[index].r *
-					    (1 + (upper_bound < upper_run ? upper_bound : upper_run) -
-					         (lower_bound > lower_run ? lower_bound : lower_run));
-					COMPLEX(ans)[i].i += COMPLEX(values)[index].i *
-					    (1 + (upper_bound < upper_run ? upper_bound : upper_run) -
-					         (lower_bound > lower_run ? lower_bound : lower_run));
+					lengths_elt++;
+					index++;
+					lower_run = upper_run + 1;
+					lower_bound = lower_run;
+					upper_run += *lengths_elt;
 				}
-				lengths_elt++;
-				index++;
-				lower_run = upper_run + 1;
-				lower_bound = lower_run;
-				upper_run += *lengths_elt;
+			} else if (type == 'c') {
+				while (lower_run <= upper_bound) {
+					if (ISNAN(COMPLEX(values)[index].r) || ISNAN(COMPLEX(values)[index].i)) {
+						if (!LOGICAL(na_rm)[0]) {
+							COMPLEX(ans)[i].r = NA_REAL;
+							COMPLEX(ans)[i].i = NA_REAL;
+							break;
+						}
+					} else {
+						COMPLEX(ans)[i].r += COMPLEX(values)[index].r *
+						    (1 + (upper_bound < upper_run ? upper_bound : upper_run) -
+						         (lower_bound > lower_run ? lower_bound : lower_run));
+						COMPLEX(ans)[i].i += COMPLEX(values)[index].i *
+						    (1 + (upper_bound < upper_run ? upper_bound : upper_run) -
+						         (lower_bound > lower_run ? lower_bound : lower_run));
+					}
+					lengths_elt++;
+					index++;
+					lower_run = upper_run + 1;
+					lower_bound = lower_run;
+					upper_run += *lengths_elt;
+				}
 			}
 		}
 	}
@@ -359,57 +365,58 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 	for (i = 0, ans_elt = INTEGER(ans); i < ans_length; i++, ans_elt++) {
 		start = _get_cachedIRanges_elt_start(&cached_x, i);
 		width = _get_cachedIRanges_elt_width(&cached_x, i);
-		if (type == 'i') {
-			INTEGER(curr)[0] = INT_MAX;
-		} else if (type == 'r') {
-			REAL(curr)[0] = R_PosInf;
-		}
-		while (index > 0 && upper_run > start) {
-			upper_run -= *lengths_elt;
-			lengths_elt--;
-			index--;
-		}
-		while (upper_run < start) {
-			lengths_elt++;
-			index++;
-			upper_run += *lengths_elt;
-		}
-		lower_run = upper_run - *lengths_elt + 1;
-		lower_bound = start;
-		upper_bound = start + width - 1;
-		if (type == 'i') {
-			while (lower_run <= upper_bound) {
-				if (INTEGER(values)[index] == NA_INTEGER) {
-					if (!LOGICAL(na_rm)[0]) {
-						*ans_elt = NA_INTEGER;
-						break;
-					}
-				} else if (INTEGER(values)[index] < INTEGER(curr)[0]) {
-					*ans_elt = lower_bound;
-					INTEGER(curr)[0] = INTEGER(values)[index];
-				}
+		*ans_elt = NA_INTEGER;
+		if (width > 0) {
+			if (type == 'i') {
+				INTEGER(curr)[0] = INT_MAX;
+			} else if (type == 'r') {
+				REAL(curr)[0] = R_PosInf;
+			}
+			while (index > 0 && upper_run > start) {
+				upper_run -= *lengths_elt;
+				lengths_elt--;
+				index--;
+			}
+			while (upper_run < start) {
 				lengths_elt++;
 				index++;
-				lower_run = upper_run + 1;
-				lower_bound = lower_run;
 				upper_run += *lengths_elt;
 			}
-		} else if (type == 'r') {
-			while (lower_run <= upper_bound) {
-				if (ISNAN(REAL(values)[index])) {
-					if (!LOGICAL(na_rm)[0]) {
-						*ans_elt = NA_REAL;
-						break;
+			lower_run = upper_run - *lengths_elt + 1;
+			lower_bound = start;
+			upper_bound = start + width - 1;
+			if (type == 'i') {
+				while (lower_run <= upper_bound) {
+					if (INTEGER(values)[index] == NA_INTEGER) {
+						if (!LOGICAL(na_rm)[0]) {
+							break;
+						}
+					} else if (INTEGER(values)[index] < INTEGER(curr)[0]) {
+						*ans_elt = lower_bound;
+						INTEGER(curr)[0] = INTEGER(values)[index];
 					}
-				} else if (REAL(values)[index] < REAL(curr)[0]) {
-					*ans_elt = lower_bound;
-					REAL(curr)[0] = REAL(values)[index];
+					lengths_elt++;
+					index++;
+					lower_run = upper_run + 1;
+					lower_bound = lower_run;
+					upper_run += *lengths_elt;
 				}
-				lengths_elt++;
-				index++;
-				lower_run = upper_run + 1;
-				lower_bound = lower_run;
-				upper_run += *lengths_elt;
+			} else if (type == 'r') {
+				while (lower_run <= upper_bound) {
+					if (ISNAN(REAL(values)[index])) {
+						if (!LOGICAL(na_rm)[0]) {
+							break;
+						}
+					} else if (REAL(values)[index] < REAL(curr)[0]) {
+						*ans_elt = lower_bound;
+						REAL(curr)[0] = REAL(values)[index];
+					}
+					lengths_elt++;
+					index++;
+					lower_run = upper_run + 1;
+					lower_bound = lower_run;
+					upper_run += *lengths_elt;
+				}
 			}
 		}
 	}
@@ -458,57 +465,58 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 	for (i = 0, ans_elt = INTEGER(ans); i < ans_length; i++, ans_elt++) {
 		start = _get_cachedIRanges_elt_start(&cached_x, i);
 		width = _get_cachedIRanges_elt_width(&cached_x, i);
-		if (type == 'i') {
-			INTEGER(curr)[0] = R_INT_MIN;
-		} else if (type == 'r') {
-			REAL(curr)[0] = R_NegInf;
-		}
-		while (index > 0 && upper_run > start) {
-			upper_run -= *lengths_elt;
-			lengths_elt--;
-			index--;
-		}
-		while (upper_run < start) {
-			lengths_elt++;
-			index++;
-			upper_run += *lengths_elt;
-		}
-		lower_run = upper_run - *lengths_elt + 1;
-		lower_bound = start;
-		upper_bound = start + width - 1;
-		if (type == 'i') {
-			while (lower_run <= upper_bound) {
-				if (INTEGER(values)[index] == NA_INTEGER) {
-					if (!LOGICAL(na_rm)[0]) {
-						*ans_elt = NA_INTEGER;
-						break;
-					}
-				} else if (INTEGER(values)[index] > INTEGER(curr)[0]) {
-					*ans_elt = lower_bound;
-					INTEGER(curr)[0] = INTEGER(values)[index];
-				}
+		*ans_elt = NA_INTEGER;
+		if (width > 0) {
+			if (type == 'i') {
+				INTEGER(curr)[0] = R_INT_MIN;
+			} else if (type == 'r') {
+				REAL(curr)[0] = R_NegInf;
+			}
+			while (index > 0 && upper_run > start) {
+				upper_run -= *lengths_elt;
+				lengths_elt--;
+				index--;
+			}
+			while (upper_run < start) {
 				lengths_elt++;
 				index++;
-				lower_run = upper_run + 1;
-				lower_bound = lower_run;
 				upper_run += *lengths_elt;
 			}
-		} else if (type == 'r') {
-			while (lower_run <= upper_bound) {
-				if (ISNAN(REAL(values)[index])) {
-					if (!LOGICAL(na_rm)[0]) {
-						*ans_elt = NA_REAL;
-						break;
+			lower_run = upper_run - *lengths_elt + 1;
+			lower_bound = start;
+			upper_bound = start + width - 1;
+			if (type == 'i') {
+				while (lower_run <= upper_bound) {
+					if (INTEGER(values)[index] == NA_INTEGER) {
+						if (!LOGICAL(na_rm)[0]) {
+							break;
+						}
+					} else if (INTEGER(values)[index] > INTEGER(curr)[0]) {
+						*ans_elt = lower_bound;
+						INTEGER(curr)[0] = INTEGER(values)[index];
 					}
-				} else if (REAL(values)[index] > REAL(curr)[0]) {
-					*ans_elt = lower_bound;
-					REAL(curr)[0] = REAL(values)[index];
+					lengths_elt++;
+					index++;
+					lower_run = upper_run + 1;
+					lower_bound = lower_run;
+					upper_run += *lengths_elt;
 				}
-				lengths_elt++;
-				index++;
-				lower_run = upper_run + 1;
-				lower_bound = lower_run;
-				upper_run += *lengths_elt;
+			} else if (type == 'r') {
+				while (lower_run <= upper_bound) {
+					if (ISNAN(REAL(values)[index])) {
+						if (!LOGICAL(na_rm)[0]) {
+							break;
+						}
+					} else if (REAL(values)[index] > REAL(curr)[0]) {
+						*ans_elt = lower_bound;
+						REAL(curr)[0] = REAL(values)[index];
+					}
+					lengths_elt++;
+					index++;
+					lower_run = upper_run + 1;
+					lower_bound = lower_run;
+					upper_run += *lengths_elt;
+				}
 			}
 		}
 	}
