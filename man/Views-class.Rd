@@ -10,10 +10,8 @@
 \alias{coerce,Sequence,Views-method}
 \alias{[[,Views-method}
 \alias{coerce,Views,NormalIRanges-method}
-\alias{restrict,Views-method}
 \alias{trim}
 \alias{trim,Views-method}
-\alias{narrow,Views-method}
 \alias{subviews}
 \alias{subviews,Views-method}
 \alias{gaps,Views-method}
@@ -96,24 +94,17 @@
 \section{Other methods}{
   \describe{
     \item{}{
-       \code{restrict(x, start, end, keep.all.ranges=FALSE, use.names=TRUE)}:
-       \code{start} and \code{end} must be single integers specifying the
-       restriction window.
-       \code{restrict} will drop the views that don't overlap with the
-       restriction window and drop the parts of the remaining views that
-       are outside the window.
-    }
-    \item{}{
        \code{trim(x, use.names=TRUE)}:
-       [TODO]
-    }
-    \item{}{
-       \code{narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)}:
-       [TODO]
+       Equivalent to
+       \code{restrict(x, start=1L, end=length(subject(x)), keep.all.ranges=TRUE,
+                      use.names=use.names)}.
     }
     \item{}{
        \code{subviews(x, start=NA, end=NA, width=NA, use.names=TRUE)}:
-       [TODO]
+       \code{start}, \code{end}, and \code{width} arguments must be vectors
+       of integers, eventually with NAs, that contain coordinates relative
+       to the current ranges. Equivalent to
+       \code{trim(narrow(x, start=start, end=end, width=width, use.names=use.names))}.
     }
     \item{}{
        \code{gaps(x, start=NA, end=NA)}:

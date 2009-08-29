@@ -122,17 +122,8 @@ setAs("Views", "NormalIRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "restrict" method and the "trim" function.
+### The "trim" function.
 ###
-
-setMethod("restrict", "Views",
-    function(x, start, end, keep.all.ranges=FALSE, use.names=TRUE)
-    {
-        if (!missing(keep.all.ranges))
-            stop("argument 'keep.all.ranges' is not supported for Views objects")
-        callNextMethod(x, start, end, use.names=use.names)
-    }
-)
 
 setGeneric("trim", signature="x",
     function(x, use.names=TRUE) standardGeneric("trim")
@@ -140,28 +131,14 @@ setGeneric("trim", signature="x",
 
 setMethod("trim", "Views",
     function(x, use.names=TRUE)
-    {
-        y <- restrict(x, start=1L, end=length(subject(x)), use.names=use.names)
-        if (length(y) != length(x))
-            stop("some views are not overlapping with the subject, cannot trim them")
-        y
-    }
+        restrict(x, start=1L, end=length(subject(x)), keep.all.ranges=TRUE,
+                 use.names=use.names)
 )
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "narrow" method and the "subviews" function.
+### The "subviews" function.
 ###
-
-setMethod("narrow", "Views",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-    {
-        y <- callNextMethod()
-        if (any(width(y) == 0))
-            stop("some views would have a null width after narrowing")
-        y
-    }
-)
 
 ### TODO: - add a 'check.limits' arg (default to TRUE) for raising an error if
 ###         some views are "out of limits"
@@ -172,7 +149,7 @@ setGeneric("subviews", signature="x",
 
 setMethod("subviews", "Views",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-        narrow(x, start=start, end=end, width=width, use.names=use.names)
+        trim(narrow(x, start=start, end=end, width=width, use.names=use.names))
 )
 
 
