@@ -106,6 +106,8 @@ test_Rle_general <- function() {
 }
 
 test_Rle_logical <- function() {
+    checkIdentical(logical(), as.vector(Rle(logical())))
+
     x <- c(TRUE,TRUE,FALSE,FALSE,TRUE,FALSE,TRUE,TRUE,TRUE)
     xRle <- Rle(x)
     checkIdentical(!x, as.vector(!x))
@@ -115,6 +117,8 @@ test_Rle_logical <- function() {
 }
 
 test_Rle_numerical <- function() {
+    checkIdentical(numeric(), as.vector(Rle(numeric())))
+
     x <- cumsum(cumsum(1:10))
     xRle <- Rle(x)
     checkIdentical(pmax(x, rev(x)), as.vector(pmax(xRle, rev(xRle))))
@@ -151,6 +155,8 @@ test_Rle_numerical <- function() {
 }
 
 test_Rle_character <- function() {
+    checkIdentical(character(), as.vector(Rle(character())))
+
     txt <- c("The", "licenses", "for", "most", "software", "are",
              "designed", "to", "take", "away", "your", "freedom",
              "to", "share", "and", "change", "it.",
@@ -172,6 +178,8 @@ test_Rle_character <- function() {
 }
 
 test_Rle_factor <- function() {
+    checkIdentical(factor(character()), as.vector(Rle(factor(character()))))
+
     x <- factor(rep(letters, 1:26))
     xRle <- Rle(x)
     checkIdentical(levels(x), levels(xRle))
