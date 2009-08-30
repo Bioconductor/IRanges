@@ -486,7 +486,7 @@ SEXP Rle_run_seqblock(SEXP x, SEXP runStart, SEXP runEnd,
 
 	if (!IS_INTEGER(runEnd) || LENGTH(runEnd) != 1 ||
 		INTEGER(runEnd)[0] == NA_INTEGER ||
-		INTEGER(runEnd)[0] < INTEGER(runStart)[0] ||
+		(INTEGER(runEnd)[0] + 1) < INTEGER(runStart)[0] ||
 		INTEGER(runEnd)[0] > LENGTH(values))
 		error("invalid 'runWidth' argument");
 
