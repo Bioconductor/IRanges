@@ -1,11 +1,32 @@
 test_RleViews <- function() {
+    empty <- Views(Rle(), IRanges())
+    checkIdentical(empty, new("RleViews"))
+    checkIdentical(list(), viewApply(empty, min))
+    checkIdentical(integer(0), viewMins(empty))
+    checkIdentical(integer(0), viewMaxs(empty))
+    checkIdentical(integer(0), viewSums(empty))
+    checkIdentical(integer(0), viewWhichMins(empty))
+    checkIdentical(integer(0), viewWhichMaxs(empty))
+    checkIdentical(IRanges(), viewRangeMins(empty))
+    checkIdentical(IRanges(), viewRangeMaxs(empty))
+
     x <- rep(c(1L, 3L, NA, 7L, 9L), 1:5)
     xRle <- Rle(x)
+
+    xRleViewsUntrimmed <- Views(xRle, IRanges(start = c(1,1), width = c(0,20)))
+    checkIdentical(c(Inf, 1), suppressWarnings(viewApply(xRleViewsUntrimmed, min, na.rm = TRUE)))
+    checkIdentical(c(2147483647L, 1L), viewMins(xRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(c(-2147483647L, 9L), viewMaxs(xRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(c(0L, 80L), viewSums(xRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(c(NA_integer_, 1L), viewWhichMins(xRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(c(NA_integer_, 11L), viewWhichMaxs(xRleViewsUntrimmed, na.rm = TRUE))
+
     xRleViews <-
       Views(xRle, start = c(1, 3, 5, 7, 9), end = c(1, 13, 11, 10, 9), names = letters[1:5])
     xList <-
       lapply(structure(seq_len(length(xRleViews)), names = letters[1:5]),
              function(i) window(x, start = start(xRleViews)[i], end = end(xRleViews)[i]))
+
     checkIdentical(letters[1:5], names(viewApply(xRleViews, min)))
     checkIdentical(letters[1:5], names(viewMins(xRleViews)))
     checkIdentical(letters[1:5], names(viewMaxs(xRleViews)))
@@ -30,6 +51,15 @@ test_RleViews <- function() {
 
     y <- rep(c(1.2, 3.4, NA, 7.8, 9.0), 1:5)
     yRle <- Rle(y)
+
+    yRleViewsUntrimmed <- Views(yRle, IRanges(start = c(1,1), width = c(0,20)))
+    checkIdentical(c(Inf, 1.2), suppressWarnings(viewApply(yRleViewsUntrimmed, min, na.rm = TRUE)))
+    checkIdentical(c(Inf, 1.2), viewMins(yRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(c(-Inf, 9), viewMaxs(yRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(c(0, 84.2), viewSums(yRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(c(NA_integer_, 1L), viewWhichMins(yRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(c(NA_integer_, 11L), viewWhichMaxs(yRleViewsUntrimmed, na.rm = TRUE))
+
     yRleViews <- Views(yRle, start = c(1, 3, 5, 7, 9), end = c(1, 13, 11, 10, 9))
     yList <-
       lapply(seq_len(length(yRleViews)),
