@@ -117,7 +117,7 @@
       \code{value}.
       It can be used for inserting elements in \code{x} (specify an empty
       left subsequence for this) or deleting elements from \code{x} (use
-      a \code{NULL} rigth value for this).
+      a \code{NULL} right value for this).
       Unlike the extraction method above, this replacement method always
       copies the sequence data of \code{x} (even for XSequence objects).
       NOTE: Only works for XRaw (and derived) objects for now.
