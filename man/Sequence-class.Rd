@@ -200,8 +200,17 @@
       }
     }
     \item{}{
-      \code{rep(x, times)}:
-      Return a new Sequence object made of the repeated elements.
+      \code{rep(x, times, length.out, each)}:
+      Repeats the values in \code{x} through one of the following conventions:
+      \describe{
+        \item{\code{times}}{Vector giving the number of times to repeat each
+          element if of length \code{length(x)}, or to repeat the whole vector
+          if of length 1.}
+        \item{\code{length.out}}{Non-negative integer. The desired length of
+          the output vector.}
+        \item{\code{each}}{Non-negative integer.  Each element of \code{x} is
+          repeated \code{each} times.}
+      }
     }
     \item{}{
       \code{rev(x)}:

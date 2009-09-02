@@ -235,11 +235,6 @@ setMethod("[", "Ranges",
     }
 )
 
-setMethod("rep", "Ranges",
-    function(x, ...)
-        x[rep(seq_len(length(x)), ...)]
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### More endomorphisms.

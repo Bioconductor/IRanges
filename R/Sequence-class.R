@@ -325,8 +325,8 @@ setMethod("Position", signature(x = "Sequence"), .PositionDefault)
 }
 setMethod("Reduce", signature(x = "Sequence"), .ReduceDefault)
   
-setMethod("rep", "Sequence", function(x, times)
-          x[rep.int(seq_len(length(x)), times)])
+setMethod("rep", "Sequence", function(x, ...)
+          x[rep(seq_len(length(x)), ...)])
 
 setMethod("rev", "Sequence",
           function(x) {
