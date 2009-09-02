@@ -139,6 +139,33 @@ setMethod("window", "DataTable",
               }
           })
 
+setReplaceMethod("window", "DataTable",
+                 function(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE, value)
+                 {
+                     if (!isTRUEorFALSE(keepLength))
+                         stop("'keepLength' must be TRUE or FALSE")
+                     solved_SEW <-
+                       solveWindowSEW(nrow(x),
+                                      start = ifelse(is.null(start), NA, start),
+                                      end = ifelse(is.null(end), NA, end),
+                                      width = ifelse(is.null(width), NA, width))
+                     if (!is.null(value)) {
+                         if (!is(value, class(x))) {
+                             value <- try(as(value, class(x)), silent = TRUE)
+                             if (inherits(value, "try-error"))
+                                 stop("'value' must be a ", class(x), " object or NULL")
+                         }
+                         if (keepLength && (nrow(value) != width(solved_SEW)))
+                             value <-
+                               value[rep(seq_len(nrow(value)),
+                                         length.out = width(solved_SEW)), ,
+                                     drop=FALSE]
+                     }
+                     rbind(window(x, end = start(solved_SEW) - 1L),
+                           value,
+                           window(x, start = end(solved_SEW) + 1L))
+                 })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping methods.

@@ -59,6 +59,8 @@
 \alias{tail,Sequence-method}
 \alias{window,Sequence-method}
 \alias{window,vector-method}
+\alias{window<-}
+\alias{window<-,Sequence-method}
 \alias{with,Sequence-method}
 
 
@@ -250,6 +252,20 @@
           the sampling frequency and increment within the window.}
       }
       In general, this is more efficient than using \code{"["} operator.
+    }
+    \item{}{
+      \code{window(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE) <- value}:
+      Replace the subsequence window specified on the left (i.e. the subsequence
+      in \code{x} specified by \code{start}, \code{end} and \code{width})
+      by \code{value}.
+      \code{value} must either be of class \code{class(x)}, belong to a subclass
+      of \code{class(x)}, be coercible to \code{class(x)}, or be \code{NULL}.
+      If \code{keepLength} is \code{TRUE}, the elements of \code{value} are
+      repeated to create a Sequence with the same number of elements as the
+      width of the subsequence window it is replacing.
+      If \code{keepLength} is \code{FALSE}, this replacement method can modify
+      the length of \code{x}, depending on how the length of the left
+      subsequence window compares to the length of \code{value}.
     }
   }
 }

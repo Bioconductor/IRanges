@@ -104,6 +104,11 @@ test_Rle_general <- function() {
                    as.vector(window(xRle, start = 3, end = 13, frequency = 1/2)))
     checkIdentical(as.vector(window(x, start = 3, end = 13, delta = 3)),
                    as.vector(window(xRle, start = 3, end = 13, delta = 3)))
+    z <- x
+    z[3:13] <- 0L
+    zRle <- xRle
+    window(zRle, start = 3, end = 13) <- 0L
+    checkIdentical(z, as.vector(zRle))
 }
 
 test_Rle_logical <- function() {

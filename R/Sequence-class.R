@@ -471,6 +471,34 @@ setMethod("window", "vector",
               }
           })
 
+setGeneric("window<-", signature="x",
+           function(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE, value)
+               standardGeneric("window<-"))
+
+setReplaceMethod("window", "Sequence",
+                 function(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE, value)
+                 {
+                     if (!isTRUEorFALSE(keepLength))
+                         stop("'keepLength' must be TRUE or FALSE")
+                     solved_SEW <-
+                       solveWindowSEW(length(x),
+                                      start = ifelse(is.null(start), NA, start),
+                                      end = ifelse(is.null(end), NA, end),
+                                      width = ifelse(is.null(width), NA, width))
+                     if (!is.null(value)) {
+                         if (!is(value, class(x))) {
+                             value <- try(as(value, class(x)), silent = TRUE)
+                             if (inherits(value, "try-error"))
+                                 stop("'value' must be a ", class(x), " object or NULL")
+                         }
+                         if (keepLength && (length(value) != width(solved_SEW)))
+                             value <- rep(value, length.out = width(solved_SEW))
+                     }
+                     c(window(x, end = start(solved_SEW) - 1L),
+                       value,
+                       window(x, start = end(solved_SEW) + 1L))
+                 })
+
 ### Maybe this is how `!=` should have been defined in the base package so
 ### nobody would ever need to bother implementing such an obvious thing.
 setMethod("!=", signature(e1="Sequence", e2="Sequence"),

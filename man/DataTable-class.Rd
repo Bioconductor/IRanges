@@ -19,6 +19,7 @@
 \alias{subset,DataTable-method}
 \alias{tail,DataTable-method}
 \alias{window,DataTable-method}
+\alias{window<-,DataTable-method}
 \alias{!=,DataTable,DataTable-method}
 \alias{aggregate,DataTable-method}
 \alias{by,DataTable-method}
@@ -110,6 +111,20 @@
           the sampling frequency and increment within the window.}
       }
       In general, this is more efficient than using \code{"["} operator.
+    }
+    \item{}{
+      \code{window(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE) <- value}:
+      Replace the subsequence window specified on the left (i.e. the subsequence
+      in \code{x} specified by \code{start}, \code{end} and \code{width})
+      by \code{value}.
+      \code{value} must either be of class \code{class(x)}, belong to a subclass
+      of \code{class(x)}, be coercible to \code{class(x)}, or be \code{NULL}.
+      If \code{keepLength} is \code{TRUE}, the number of rows of \code{value}
+      are repeated to create a DataTable with the same number of rows as the
+      width of the subsequence window it is replacing.
+      If \code{keepLength} is \code{FALSE}, this replacement method can modify
+      the number of rows of \code{x}, depending on how the number of rows of the
+      left subsequence window compares to the number of rows of \code{value}.
     }
   }
 }
