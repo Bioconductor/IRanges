@@ -51,10 +51,12 @@ setGeneric(".SEW<-", signature="x",
            function(x, FUN, check=TRUE, value) standardGeneric(".SEW<-"))
 setReplaceMethod(".SEW", "RangesList",
                  function(x, FUN, check=TRUE, value) {
+                   if (!isTRUEorFALSE(check))
+                     stop("'check' must be TRUE or FALSE")
                    if (extends(class(value), "IntegerList")) {
-                       if (!identical(lapply(x, names), lapply(value, names)) &&
-                           !all(elementLengths(x) == elementLengths(value)))
-                         stop("'value' must have same length and names as current 'ranges'")
+                     if (!identical(lapply(x, names), lapply(value, names)) &&
+                         !all(elementLengths(x) == elementLengths(value)))
+                       stop("'value' must have same length and names as current 'ranges'")
                    } else if (is.numeric(value)) {
                      lelts <- sum(elementLengths(x))
                      if (lelts != length(value))
@@ -72,16 +74,22 @@ setReplaceMethod(".SEW", "RangesList",
                  })
 setReplaceMethod("start", "RangesList",
                  function(x, check=TRUE, value) {
+                   if (!isTRUEorFALSE(check))
+                     stop("'check' must be TRUE or FALSE")
                    .SEW(x, FUN = "start<-", check = check) <- value
                    x
                  })
 setReplaceMethod("end", "RangesList",
                  function(x, check=TRUE, value) {
+                   if (!isTRUEorFALSE(check))
+                     stop("'check' must be TRUE or FALSE")
                    .SEW(x, FUN = "end<-", check = check) <- value
                    x
                  })
 setReplaceMethod("width", "RangesList",
                  function(x, check=TRUE, value) {
+                   if (!isTRUEorFALSE(check))
+                     stop("'check' must be TRUE or FALSE")
                    .SEW(x, FUN = "width<-", check = check) <- value
                    x
                  })
@@ -109,6 +117,8 @@ setMethod("width", "CompressedIRangesList",
           })
 setReplaceMethod(".SEW", "CompressedIRangesList",
                  function(x, FUN, check=TRUE, value) {
+                   if (!isTRUEorFALSE(check))
+                     stop("'check' must be TRUE or FALSE")
                    if (extends(class(value), "IntegerList")) {
                      if (!identical(lapply(x, names), lapply(value, names)) &&
                          !all(elementLengths(x) == elementLengths(value)))

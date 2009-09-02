@@ -177,6 +177,8 @@ newNormalIRangesFromIRanges <- function(x, check=TRUE)
 {
     if (!is(x, "IRanges"))
         stop("'x' must be an IRanges object")
+    if (!isTRUEorFALSE(check))
+        stop("'check' must be TRUE or FALSE")
     ## Check only what needs to be checked.
     if (check)
         stopIfProblems(.valid.NormalIRanges(x))
@@ -319,6 +321,8 @@ unsafe.update <- function(object, ...)
 setReplaceMethod("start", "IRanges",
     function(x, check=TRUE, value)
     {
+        if (!isTRUEorFALSE(check))
+            stop("'check' must be TRUE or FALSE")
         unsafe.start(x) <- value
         if (check)
             validObject(x)
@@ -329,6 +333,8 @@ setReplaceMethod("start", "IRanges",
 setReplaceMethod("width", "IRanges",
     function(x, check=TRUE, value)
     {
+        if (!isTRUEorFALSE(check))
+            stop("'check' must be TRUE or FALSE")
         unsafe.width(x) <- value
         if (check)
             validObject(x)
@@ -339,6 +345,8 @@ setReplaceMethod("width", "IRanges",
 setReplaceMethod("end", "IRanges",
     function(x, check=TRUE, value)
     {
+        if (!isTRUEorFALSE(check))
+            stop("'check' must be TRUE or FALSE")
         unsafe.end(x) <- value
         if (check)
             validObject(x)
@@ -376,6 +384,8 @@ setReplaceMethod("names", "IRanges",
 setMethod("update", "IRanges",
     function(object, ..., check = TRUE)
     {
+        if (!isTRUEorFALSE(check))
+            stop("'check' must be TRUE or FALSE")
         object <- unsafe.update(object, ...)
         if (check)
             validObject(object)

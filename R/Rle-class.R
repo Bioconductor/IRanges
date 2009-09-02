@@ -78,6 +78,8 @@ setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "missing"),
 setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "integer"),
           function(values, lengths, check = TRUE)
           {
+              if (!isTRUEorFALSE(check))
+                  stop("'check' must be TRUE or FALSE")
               if (check && length(lengths) > 0) {
                   if (length(values) != length(lengths))
                       stop("'values' and 'lengths' must have the same length")
