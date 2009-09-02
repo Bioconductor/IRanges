@@ -116,10 +116,16 @@ setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "numeric"),
 ###
 
 setAs("vector", "Rle", function(from) Rle(from))
+setAs("logical", "Rle", function(from) Rle(from))
+setAs("integer", "Rle", function(from) Rle(from))
+setAs("numeric", "Rle", function(from) Rle(from))
+setAs("complex", "Rle", function(from) Rle(from))
+setAs("character", "Rle", function(from) Rle(from))
+setAs("raw", "Rle", function(from) Rle(from))
 setAs("factor", "Rle", function(from) Rle(from))
 
 setAs("Rle", "vector", function(from) as.vector(from))
-setAs("Rle","logical",  function(from) as.logical(from))
+setAs("Rle", "logical", function(from) as.logical(from))
 setAs("Rle", "integer", function(from) as.integer(from))
 setAs("Rle", "numeric", function(from) as.numeric(from))
 setAs("Rle", "complex", function(from) as.complex(from))

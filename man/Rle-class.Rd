@@ -33,6 +33,12 @@
 \alias{as.raw,Rle-method}
 \alias{as.factor,Rle-method}
 \alias{coerce,vector,Rle-method}
+\alias{coerce,logical,Rle-method}
+\alias{coerce,integer,Rle-method}
+\alias{coerce,numeric,Rle-method}
+\alias{coerce,complex,Rle-method}
+\alias{coerce,character,Rle-method}
+\alias{coerce,raw,Rle-method}
 \alias{coerce,factor,Rle-method}
 \alias{coerce,Rle,vector-method}
 \alias{coerce,Rle,logical-method}
