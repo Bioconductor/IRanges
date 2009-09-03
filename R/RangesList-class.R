@@ -550,8 +550,9 @@ setAs("RleList", "IRangesList",
 setAs("RleList", "CompressedIRangesList",
       function(from)
       {
-        if ((!is.logical(runValue(from@unlistData)) ||
-             any(is.na(runValue(from@unlistData)))))
+        if ((length(from) > 0) &&
+            (!is.logical(runValue(from[[1]])) ||
+             any(is.na(runValue(from[[1]])))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to an SimpleIRangesList object")
         newCompressedList("CompressedIRangesList", lapply(from, as, "IRanges"),
