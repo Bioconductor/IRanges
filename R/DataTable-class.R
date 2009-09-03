@@ -77,6 +77,32 @@ setMethod("seqextract", "DataTable",
                                         width = width(ir)[i])))
           })
 
+setReplaceMethod("seqextract", "DataTable",
+                 function(x, start = NULL, end = NULL, width = NULL, value)
+                 {
+                     if (!is.null(value) && (nrow(value) > 1))
+                         stop("'value' must be of nrow 1 or 'NULL'")
+
+                     if (!is.null(start) && is.null(end) && is.null(width)) {
+                         if (is(start, "Ranges"))
+                             ir <- start
+                         else {
+                             if (is.logical(start) && length(start) != nrow(x))
+                                 start <- rep(start, length.out = nrow(x))
+                             ir <- as(start, "IRanges")
+                         }
+                     } else {
+                         ir <- IRanges(start=start, end=end, width=width, names=NULL)
+                     }
+                     if (any(start(ir) < 1L) || any(end(ir) > nrow(x)))
+                         stop("some ranges are out of bounds")
+                     for (i in seq_len(length(ir))) {
+                         window(x, start = start(ir)[i],
+                                width = width(ir)[i]) <- value
+                     }
+                     x
+                 })
+
 setMethod("subset", "DataTable",
           function (x, subset, select, drop = FALSE, ...) 
           {
@@ -153,7 +179,8 @@ setReplaceMethod("window", "DataTable",
                          if (!is(value, class(x))) {
                              value <- try(as(value, class(x)), silent = TRUE)
                              if (inherits(value, "try-error"))
-                                 stop("'value' must be a ", class(x), " object or NULL")
+                                 stop("'value' must be a ", class(x),
+                                      " object or NULL")
                          }
                          if (keepLength && (nrow(value) != width(solved_SEW)))
                              value <-
@@ -165,7 +192,6 @@ setReplaceMethod("window", "DataTable",
                            value,
                            window(x, start = end(solved_SEW) + 1L))
                  })
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping methods.

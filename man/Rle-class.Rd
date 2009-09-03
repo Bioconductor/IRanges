@@ -284,6 +284,10 @@
       returns an atomic vector.
     }
     \item{}{
+      \code{x[i] <- value}:
+      Equivalent to \code{seqextract(x, i) <- value}.
+    }
+    \item{}{
       \code{x \%in\% table}:
       Returns a logical Rle representing set membership in
       \code{table}.
@@ -369,6 +373,15 @@
       and \code{width}. See \link{seqextract} for more details.
     }
     \item{}{
+      \code{seqextract(x, start=NULL, end=NULL, width=NULL) <- value}:
+      Similar to \code{window<-}, except that multiple consecutive subsequences
+      can be replaced by a constant \code{value}. As such two of the three
+      \code{start}, \code{end}, and \code{width} arguments can be used to
+      specify the consecutive subsequences. Alternatively, \code{start} can take
+      a Ranges object or something that can be converted to a Ranges object like
+      an integer vector, logical vector or logical Rle.
+    }
+    \item{}{
       \code{shiftApply(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)}:
       Let \code{i} be the indices in \code{SHIFT},
       \code{X_i = window(X, 1 + OFFSET, length(X) - SHIFT[i])}, and
@@ -446,6 +459,20 @@
         \item{\code{frequency}, \code{delta}}{Optional arguments that specify
           the sampling frequency and increment within the window.}
       }
+    }
+    \item{}{
+      \code{window(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE) <- value}:
+      Replace the subsequence window specified on the left (i.e. the subsequence
+      in \code{x} specified by \code{start}, \code{end} and \code{width})
+      by \code{value}.
+      \code{value} must either be of class Rle, belong to a subclass of Rle, be
+      coercible to Rle, or be \code{NULL}.
+      If \code{keepLength} is \code{TRUE}, the elements of \code{value} are
+      repeated to create an Rle with the same number of elements as the
+      width of the subsequence window it is replacing.
+      If \code{keepLength} is \code{FALSE}, this replacement method can modify
+      the length of \code{x}, depending on how the length of the left
+      subsequence window compares to the length of \code{value}.
     }
   }
 }

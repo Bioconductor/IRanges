@@ -7,6 +7,7 @@
 \alias{Sequence}
 
 \alias{[,Sequence-method}
+\alias{[<-,Sequence-method}
 \alias{[[,Sequence-method}
 \alias{$,Sequence-method}
 \alias{!=,Sequence,Sequence-method}
@@ -52,6 +53,8 @@
 \alias{seqextract}
 \alias{seqextract,Sequence-method}
 \alias{seqextract,vector-method}
+\alias{seqextract<-}
+\alias{seqextract<-,Sequence-method}
 \alias{shiftApply}
 \alias{shiftApply,Sequence,Sequence-method}
 \alias{shiftApply,vector,vector-method}
@@ -156,6 +159,10 @@
       whether or not to coerce the returned sequence to a standard vector.
     }
     \item{}{
+      \code{x[i] <- value}:
+      Equivalent to \code{seqextract(x, i) <- value}.
+    }
+    \item{}{
       \code{x[[i]]}:
       If defined, return the selected element \code{i}, where \code{i} is an
       integer or character vector of length 1.
@@ -221,14 +228,23 @@
     }
     \item{}{
       \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:
-      Like \code{window}, except that multiple consecutive subsequences can be
-      requested for concatenation. As such two of the three \code{start},
+      Similar to \code{window}, except that multiple consecutive subsequences
+      can be requested for concatenation. As such two of the three \code{start},
       \code{end}, and \code{width} arguments can be used to specify the
       consecutive subsequences. Alternatively, \code{start} can take a Ranges
       object or something that can be converted to a Ranges object like an
       integer vector, logical vector or logical Rle. If the concatenation of
       the consecutive subsequences is undesirable, consider using
       \code{\link{Views}}.
+    }
+    \item{}{
+      \code{seqextract(x, start=NULL, end=NULL, width=NULL) <- value}:
+      Similar to \code{window<-}, except that multiple consecutive subsequences
+      can be replaced by a constant \code{value}. As such two of the three
+      \code{start}, \code{end}, and \code{width} arguments can be used to
+      specify the consecutive subsequences. Alternatively, \code{start} can take
+      a Ranges object or something that can be converted to a Ranges object like
+      an integer vector, logical vector or logical Rle.
     }
     \item{}{
       \code{subset(x, subset)}:

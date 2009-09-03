@@ -15,6 +15,7 @@
 \alias{rbind}
 \alias{rbind,DataTable-method}
 \alias{seqextract,DataTable-method}
+\alias{seqextract<-,DataTable-method}
 \alias{show,DataTable-method}
 \alias{subset,DataTable-method}
 \alias{tail,DataTable-method}
@@ -81,8 +82,13 @@
     }
     \item{}{
       \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:
-      Like \code{window}, except that multiple subsequences can be requested.
-      The requested subsequences are concatenated.
+      Similar to \code{window}, except that multiple subsequences can be
+      requested. The requested subsequences are concatenated.
+    }
+    \item{}{
+      \code{seqextract(x, start=NULL, end=NULL, width=NULL) <- value}:
+      Similar to \code{window<-}, except that multiple consecutive subsequences
+      can be replaced by a constant \code{value}.
     }
     \item{}{
       \code{subset(x, subset, select, drop = FALSE)}:

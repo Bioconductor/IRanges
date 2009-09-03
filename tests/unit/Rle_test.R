@@ -89,6 +89,11 @@ test_Rle_general <- function() {
                    x[c(1,2,3,3,4,5)])
     checkIdentical(as.vector(seqextract(xRle, IRanges(start = 1:3, width = 1:3))),
                    x[c(1,2,3,3,4,5)])
+    z <- x
+    z[1:5] <- 0L
+    zRle <- xRle
+    seqextract(zRle, IRanges(start = 1:3, width = 1:3)) <- 0L
+    checkIdentical(z, as.vector(zRle))
     checkIdentical(sort(c(x,x)), as.vector(sort(c(xRle,xRle))))
     checkIdentical(lapply(as.list(split(Rle(1:26), letters)), as.vector),
                    split(1:26, letters))

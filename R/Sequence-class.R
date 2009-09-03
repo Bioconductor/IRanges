@@ -27,7 +27,8 @@ setGeneric("elementLengths", function(x) standardGeneric("elementLengths"))
 setMethod("elementLengths", "list",
     function(x)
     {
-        ans <- try(.Call("listofvectors_lengths", x, PACKAGE="IRanges"), silent=TRUE)
+        ans <-
+          try(.Call("listofvectors_lengths", x, PACKAGE="IRanges"), silent=TRUE)
         if (!inherits(ans, "try-error")) {
             names(ans) <- names(x)
             return(ans)
@@ -60,7 +61,8 @@ setMethod("isEmpty", "ANY",
               if (is.atomic(x))
                   return(length(x) == 0L)
               if (!is.list(x) && !is(x, "Sequence"))
-                  stop("isEmpty() is not defined for objects of class ", class(x))
+                  stop("isEmpty() is not defined for objects of class ",
+                       class(x))
               ## Recursive definition
               if (length(x) == 0)
                   return(logical(0))
@@ -131,6 +133,12 @@ function(x, i, j, ..., drop)
 setMethod("[", "Sequence", function(x, i, j, ..., drop)
           stop("missing '[' method for Sequence class ", class(x)))
 
+setReplaceMethod("[", "Sequence",
+                 function(x, i, j,..., value) {
+                     seqextract(x, i) <- value
+                     x
+                 })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.
 ###
@@ -192,7 +200,8 @@ checkAndTranslateDbleBracketSubscript <- function(x, i, j, ...)
         stop("subscript \"", subscript, "\" matches no name")
     if (ans == 0L) {
         if (isTRUE(exact))
-            stop("subscript \"", subscript, "\" matches no name or more than one name")
+            stop("subscript \"", subscript,
+                 "\" matches no name or more than one name")
         stop("subscript \"", subscript, "\" matches more than one name")
     }
     if (isTRUE(exact) && nchar(subscript) != nchar(names_x[ans]))
@@ -337,7 +346,8 @@ setMethod("rev", "Sequence",
           })
 
 setGeneric("seqextract", signature="x",
-           function(x, start=NULL, end=NULL, width=NULL) standardGeneric("seqextract"))
+           function(x, start=NULL, end=NULL, width=NULL)
+           standardGeneric("seqextract"))
 
 setMethod("seqextract", "Sequence",
           function(x, start=NULL, end=NULL, width=NULL)
@@ -377,8 +387,39 @@ setMethod("seqextract", "vector",
               } else {
                   ir <- IRanges(start=start, end=end, width=width, names=NULL)
               }
-              .Call("vector_subsetbyranges", x, start(ir), width(ir), PACKAGE="IRanges")
+              .Call("vector_subsetbyranges", x, start(ir), width(ir),
+                    PACKAGE="IRanges")
           })
+
+setGeneric("seqextract<-", signature="x",
+           function(x, start = NULL, end = NULL, width = NULL, value)
+           standardGeneric("seqextract<-"))
+
+setReplaceMethod("seqextract", "Sequence",
+                 function(x, start = NULL, end = NULL, width = NULL, value)
+                 {
+                     if (!is.null(value) && (length(value) > 1))
+                         stop("'value' must be of length 1 or 'NULL'")
+
+                     if (!is.null(start) && is.null(end) && is.null(width)) {
+                         if (is(start, "Ranges"))
+                             ir <- start
+                         else {
+                             if (is.logical(start) && length(start) != length(x))
+                                 start <- rep(start, length.out = length(x))
+                             ir <- as(start, "IRanges")
+                         }
+                     } else {
+                         ir <- IRanges(start=start, end=end, width=width, names=NULL)
+                     }
+                     if (any(start(ir) < 1L) || any(end(ir) > length(x)))
+                         stop("some ranges are out of bounds")
+                     for (i in seq_len(length(ir))) {
+                         window(x, start = start(ir)[i],
+                                width = width(ir)[i]) <- value
+                     }
+                     x
+                 })
 
 setMethod("subset", "Sequence",
           function (x, subset, ...) 
@@ -436,8 +477,9 @@ setMethod("window", "Sequence",
                           end <- start + width - 1L
                   }
                   idx <-
-                    stats:::window.default(seq_len(length(x)), start = start, end = end,
-                                           frequency = frequency, deltat = delta, ...)
+                    stats:::window.default(seq_len(length(x)), start = start,
+                                           end = end, frequency = frequency,
+                                           deltat = delta, ...)
                   attributes(idx) <- NULL
                   x[idx]
               }
@@ -464,8 +506,9 @@ setMethod("window", "vector",
                           end <- start + width - 1L
                   }
                   idx <-
-                    stats:::window.default(seq_len(length(x)), start = start, end = end,
-                                           frequency = frequency, deltat = delta, ...)
+                    stats:::window.default(seq_len(length(x)), start = start,
+                                           end = end, frequency = frequency,
+                                           deltat = delta, ...)
                   attributes(idx) <- NULL
                   x[idx]
               }
@@ -473,7 +516,7 @@ setMethod("window", "vector",
 
 setGeneric("window<-", signature="x",
            function(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE, value)
-               standardGeneric("window<-"))
+           standardGeneric("window<-"))
 
 setReplaceMethod("window", "Sequence",
                  function(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE, value)
@@ -489,7 +532,8 @@ setReplaceMethod("window", "Sequence",
                          if (!is(value, class(x))) {
                              value <- try(as(value, class(x)), silent = TRUE)
                              if (inherits(value, "try-error"))
-                                 stop("'value' must be a ", class(x), " object or NULL")
+                                 stop("'value' must be a ", class(x),
+                                      " object or NULL")
                          }
                          if (keepLength && (length(value) != width(solved_SEW)))
                              value <- rep(value, length.out = width(solved_SEW))
