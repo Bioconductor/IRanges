@@ -366,11 +366,10 @@ setMethod("seqextract", "Sequence",
               if (any(start(ir) < 1L) || any(end(ir) > length(x)))
                   stop("some ranges are out of bounds")
               do.call(c,
-                      lapply(seq_len(length(ir)),
-                             function(i)
-                                 window(x,
-                                        start = start(ir)[i],
-                                        width = width(ir)[i])))
+                      lapply(seq_len(length(ir)), function(i)
+                             window(x,
+                                    start = start(ir)[i],
+                                    width = width(ir)[i])))
           })
 
 setMethod("seqextract", "vector",
@@ -398,9 +397,17 @@ setGeneric("seqextract<-", signature="x",
 setReplaceMethod("seqextract", "Sequence",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
-                     if (!is.null(value) && (length(value) > 1))
-                         stop("'value' must be of length 1 or 'NULL'")
+                     if (!is.null(value)) {
+                         if (length(value) > 1)
+                           stop("'value' must be of length 1 or 'NULL'")
 
+                         if (!is(value, class(x))) {
+                             value <- try(as(value, class(x)), silent = TRUE)
+                             if (inherits(value, "try-error"))
+                                 stop("'value' must be a ", class(x),
+                                         " object or NULL")
+                         }
+                     }
                      if (!is.null(start) && is.null(end) && is.null(width)) {
                          if (is(start, "Ranges"))
                              ir <- start
@@ -412,13 +419,29 @@ setReplaceMethod("seqextract", "Sequence",
                      } else {
                          ir <- IRanges(start=start, end=end, width=width, names=NULL)
                      }
+                     ir <- reduce(ir)
                      if (any(start(ir) < 1L) || any(end(ir) > length(x)))
                          stop("some ranges are out of bounds")
-                     for (i in seq_len(length(ir))) {
-                         window(x, start = start(ir)[i],
-                                width = width(ir)[i]) <- value
+                     valueWidths <- width(ir)
+                     ir <- gaps(ir, start = 1, end = length(x))
+                     if ((length(ir) == 0) || (start(ir)[1] != 1))
+                         ir <- c(IRanges(start = 1, width = 0), ir)
+                     if (end(ir[length(ir)]) != length(x))
+                         ir <- c(ir, IRanges(start = length(x), width = 0))
+                     subseqs <- vector("list", length(valueWidths) + length(ir))
+                     if (length(ir) > 0) {
+                         subseqs[seq(1, length(subseqs), by = 2)] <-
+                           lapply(seq_len(length(ir)), function(i)
+                                  window(x,
+                                         start = start(ir)[i],
+                                         width = width(ir)[i]))
                      }
-                     x
+                     if (length(valueWidths) > 0) {
+                         subseqs[seq(2, length(subseqs), by = 2)] <-
+                           lapply(seq_len(length(valueWidths)), function(i)
+                                  rep(value, length.out = valueWidths[i]))
+                     }
+                     do.call(c, subseqs)
                  })
 
 setReplaceMethod("seqextract", "vector",
