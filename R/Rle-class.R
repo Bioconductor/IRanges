@@ -364,7 +364,7 @@ setMethod("aggregate", "Rle",
                   newRle <- new("Rle")
                   sapply(indices,
                          function(i)
-                             FUN(.Call("Rle_run_seqblock",
+                             FUN(.Call("Rle_run_subsetbyranges",
                                        x, runStart[i], runEnd[i],
                                        offsetStart[i], offsetEnd[i],
                                        newRle, PACKAGE = "IRanges"),
@@ -508,7 +508,7 @@ setMethod("seqextract", "Rle",
               do.call(c,
                       lapply(seq_len(length(ir)),
                              function(i)
-                                 .Call("Rle_seqblock",
+                                 .Call("Rle_subsetbyranges",
                                        x, start(ir)[i], width(ir)[i],
                                        PACKAGE = "IRanges")))
           })
@@ -562,11 +562,11 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
                     sapply(seq_len(length(SHIFT)),
                            function(i) {
                                cat("\r", i, "/", maxI)
-                               FUN(.Call("Rle_run_seqblock",
+                               FUN(.Call("Rle_run_subsetbyranges",
                                          X, runStartX[i], runEndX[i],
                                          offsetStartX[i], offsetEndX[i],
                                          newX, PACKAGE = "IRanges"),
-                                   .Call("Rle_run_seqblock",
+                                   .Call("Rle_run_subsetbyranges",
                                          Y, runStartY[i], runEndY[i],
                                          offsetStartY[i], offsetEndY[i],
                                          newY, PACKAGE = "IRanges"),
@@ -577,11 +577,11 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
                   ans <-
                     sapply(seq_len(length(SHIFT)),
                            function(i)
-                               FUN(.Call("Rle_run_seqblock",
+                               FUN(.Call("Rle_run_subsetbyranges",
                                          X, runStartX[i], runEndX[i],
                                          offsetStartX[i], offsetEndX[i],
                                          newX, PACKAGE = "IRanges"),
-                                   .Call("Rle_run_seqblock",
+                                   .Call("Rle_run_subsetbyranges",
                                          Y, runStartY[i], runEndY[i],
                                          offsetStartY[i], offsetEndY[i],
                                          newY, PACKAGE = "IRanges"),
@@ -667,7 +667,8 @@ setMethod("window", "Rle",
                                    start = ifelse(is.null(start), NA, start),
                                    end = ifelse(is.null(end), NA, end),
                                    width = ifelse(is.null(width), NA, width))
-                  .Call("Rle_seqblock", x, start(solved_SEW), width(solved_SEW),
+                  .Call("Rle_subsetbyranges",
+                        x, start(solved_SEW), width(solved_SEW),
                         PACKAGE = "IRanges")
               } else {
                   if (!is.null(width)) {

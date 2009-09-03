@@ -470,10 +470,10 @@ SEXP Rle_constructor(SEXP x, SEXP counts)
  */
 
 /*
- * Rle_run_seqblock accepts an Rle object to support fast R-level aggregate usage
+ * Rle_run_subsetbyranges accepts an Rle object to support fast R-level aggregate usage
  */
-SEXP Rle_run_seqblock(SEXP x, SEXP runStart, SEXP runEnd,
-		              SEXP offsetStart, SEXP offsetEnd, SEXP ans)
+SEXP Rle_run_subsetbyranges(SEXP x, SEXP runStart, SEXP runEnd,
+		                    SEXP offsetStart, SEXP offsetEnd, SEXP ans)
 {
 	SEXP values, lengths, runWidth, ans_values, ans_lengths;
 
@@ -511,7 +511,7 @@ SEXP Rle_run_seqblock(SEXP x, SEXP runStart, SEXP runEnd,
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP Rle_seqblock(SEXP x, SEXP start, SEXP width)
+SEXP Rle_subsetbyranges(SEXP x, SEXP start, SEXP width)
 {
 	int i, x_length, cumlen, more;
 	int seq_start, seq_width, seq_end;
@@ -584,7 +584,7 @@ SEXP Rle_seqblock(SEXP x, SEXP start, SEXP width)
 	}
 
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	ans = Rle_run_seqblock(x, run_start, run_end, offset_start, offset_end, ans);
+	ans = Rle_run_subsetbyranges(x, run_start, run_end, offset_start, offset_end, ans);
     UNPROTECT(5);
 
 	return ans;

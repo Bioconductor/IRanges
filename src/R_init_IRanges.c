@@ -133,8 +133,8 @@ static const R_CallMethodDef callMethods[] = {
 
 /* Rle_class.c */
 	CALLMETHOD_DEF(Rle_constructor, 2),
-	CALLMETHOD_DEF(Rle_run_seqblock, 6),
-	CALLMETHOD_DEF(Rle_seqblock, 3),
+	CALLMETHOD_DEF(Rle_run_subsetbyranges, 6),
+	CALLMETHOD_DEF(Rle_subsetbyranges, 3),
 
 /* RleViews_utils.c */
 	CALLMETHOD_DEF(RleViews_viewMins, 2),
