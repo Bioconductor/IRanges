@@ -74,6 +74,7 @@
 \alias{rep.int,Rle-method}
 \alias{rev,Rle-method}
 \alias{seqextract,Rle-method}
+\alias{seqextract<-,Rle-method}
 \alias{shiftApply,Rle,Rle-method}
 \alias{show,Rle-method}
 \alias{sort,Rle-method}

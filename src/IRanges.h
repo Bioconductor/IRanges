@@ -847,7 +847,7 @@ SEXP XNumericViews_slice(
 
 SEXP Rle_constructor(SEXP x, SEXP count);
 
-SEXP Rle_run_subsetbyranges(
+SEXP Rle_run_window(
 	SEXP x,
 	SEXP runStart,
 	SEXP runEnd,
@@ -856,7 +856,7 @@ SEXP Rle_run_subsetbyranges(
 	SEXP ans
 );
 
-SEXP Rle_subsetbyranges(
+SEXP Rle_seqextract_aslist(
 	SEXP x,
 	SEXP start,
 	SEXP width

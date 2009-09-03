@@ -470,10 +470,10 @@ SEXP Rle_constructor(SEXP x, SEXP counts)
  */
 
 /*
- * Rle_run_subsetbyranges accepts an Rle object to support fast R-level aggregate usage
+ * Rle_run_window accepts an Rle object to support fast R-level aggregate usage
  */
-SEXP Rle_run_subsetbyranges(SEXP x, SEXP runStart, SEXP runEnd,
-		                    SEXP offsetStart, SEXP offsetEnd, SEXP ans)
+SEXP Rle_run_window(SEXP x, SEXP runStart, SEXP runEnd,
+		            SEXP offsetStart, SEXP offsetEnd, SEXP ans)
 {
 	SEXP values, lengths, runWidth, ans_values, ans_lengths;
 
@@ -508,10 +508,8 @@ SEXP Rle_run_subsetbyranges(SEXP x, SEXP runStart, SEXP runEnd,
 	return ans;
 }
 
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP Rle_subsetbyranges(SEXP x, SEXP start, SEXP width)
+
+SEXP Rle_window(SEXP x, SEXP start, SEXP width)
 {
 	int i, x_length, cumlen, more;
 	int seq_start, seq_width, seq_end;
@@ -584,8 +582,36 @@ SEXP Rle_subsetbyranges(SEXP x, SEXP start, SEXP width)
 	}
 
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	ans = Rle_run_subsetbyranges(x, run_start, run_end, offset_start, offset_end, ans);
+	ans = Rle_run_window(x, run_start, run_end, offset_start, offset_end, ans);
     UNPROTECT(5);
+
+	return ans;
+}
+
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP Rle_seqextract_aslist(SEXP x, SEXP start, SEXP width)
+{
+	int i, start_length, *start_elt, *width_elt;
+	SEXP start1, width1, ans;
+
+	if (!IS_INTEGER(start) || !IS_INTEGER(width) || LENGTH(start) != LENGTH(width))
+		error("'start' and 'width' must be integer vectors of the same length");
+
+	start_length = LENGTH(start);
+
+	PROTECT(start1 = NEW_INTEGER(1));
+	PROTECT(width1 = NEW_INTEGER(1));
+	PROTECT(ans = NEW_LIST(start_length));
+	for (i = 0, start_elt = INTEGER(start), width_elt = INTEGER(width);
+	     i < start_length; i++, start_elt++, width_elt++) {
+		INTEGER(start1)[0] = *start_elt;
+		INTEGER(width1)[0] = *width_elt;
+		SET_VECTOR_ELT(ans, i, Rle_window(x, start1, width1));
+	}
+    UNPROTECT(3);
 
 	return ans;
 }

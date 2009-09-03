@@ -364,7 +364,7 @@ setMethod("aggregate", "Rle",
                   newRle <- new("Rle")
                   sapply(indices,
                          function(i)
-                             FUN(.Call("Rle_run_subsetbyranges",
+                             FUN(.Call("Rle_run_window",
                                        x, runStart[i], runEnd[i],
                                        offsetStart[i], offsetEnd[i],
                                        newRle, PACKAGE = "IRanges"),
@@ -506,12 +506,57 @@ setMethod("seqextract", "Rle",
               if (any(start(ir) < 1L) || any(end(ir) > length(x)))
                   stop("some ranges are out of bounds")
               do.call(c,
-                      lapply(seq_len(length(ir)),
-                             function(i)
-                                 .Call("Rle_subsetbyranges",
-                                       x, start(ir)[i], width(ir)[i],
-                                       PACKAGE = "IRanges")))
+                      .Call("Rle_seqextract_aslist",
+                            x, start(ir), width(ir), PACKAGE = "IRanges"))
           })
+
+setReplaceMethod("seqextract", "Rle",
+                 function(x, start = NULL, end = NULL, width = NULL, value)
+                 {
+                     if (!is.null(value)) {
+                         if (length(value) > 1)
+                             stop("'value' must be of length 1 or 'NULL'")
+                         
+                         if (!is(value, class(x))) {
+                             value <- try(as(value, class(x)), silent = TRUE)
+                             if (inherits(value, "try-error"))
+                                 stop("'value' must be a ", class(x),
+                                      " object or NULL")
+                         }
+                     }
+                     if (!is.null(start) && is.null(end) && is.null(width)) {
+                         if (is(start, "Ranges"))
+                             ir <- start
+                         else {
+                             if (is.logical(start) && length(start) != length(x))
+                                 start <- rep(start, length.out = length(x))
+                             ir <- as(start, "IRanges")
+                         }
+                     } else {
+                         ir <- IRanges(start=start, end=end, width=width, names=NULL)
+                     }
+                     ir <- reduce(ir)
+                     if (any(start(ir) < 1L) || any(end(ir) > length(x)))
+                         stop("some ranges are out of bounds")
+                     valueWidths <- width(ir)
+                     ir <- gaps(ir, start = 1, end = length(x))
+                     if ((length(ir) == 0) || (start(ir)[1] != 1))
+                         ir <- c(IRanges(start = 1, width = 0), ir)
+                     if (end(ir[length(ir)]) != length(x))
+                         ir <- c(ir, IRanges(start = length(x), width = 0))
+                     subseqs <- vector("list", length(valueWidths) + length(ir))
+                     if (length(ir) > 0) {
+                         subseqs[seq(1, length(subseqs), by = 2)] <-
+                           .Call("Rle_seqextract_aslist",
+                                 x, start(ir), width(ir), PACKAGE = "IRanges")
+                     }
+                     if (length(valueWidths) > 0) {
+                         subseqs[seq(2, length(subseqs), by = 2)] <-
+                           lapply(seq_len(length(valueWidths)), function(i)
+                                          rep(value, length.out = valueWidths[i]))
+                     }
+                     do.call(c, subseqs)
+                 })
 
 setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
           function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,
@@ -562,11 +607,11 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
                     sapply(seq_len(length(SHIFT)),
                            function(i) {
                                cat("\r", i, "/", maxI)
-                               FUN(.Call("Rle_run_subsetbyranges",
+                               FUN(.Call("Rle_run_window",
                                          X, runStartX[i], runEndX[i],
                                          offsetStartX[i], offsetEndX[i],
                                          newX, PACKAGE = "IRanges"),
-                                   .Call("Rle_run_subsetbyranges",
+                                   .Call("Rle_run_window",
                                          Y, runStartY[i], runEndY[i],
                                          offsetStartY[i], offsetEndY[i],
                                          newY, PACKAGE = "IRanges"),
@@ -577,11 +622,11 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
                   ans <-
                     sapply(seq_len(length(SHIFT)),
                            function(i)
-                               FUN(.Call("Rle_run_subsetbyranges",
+                               FUN(.Call("Rle_run_window",
                                          X, runStartX[i], runEndX[i],
                                          offsetStartX[i], offsetEndX[i],
                                          newX, PACKAGE = "IRanges"),
-                                   .Call("Rle_run_subsetbyranges",
+                                   .Call("Rle_run_window",
                                          Y, runStartY[i], runEndY[i],
                                          offsetStartY[i], offsetEndY[i],
                                          newY, PACKAGE = "IRanges"),
@@ -667,9 +712,9 @@ setMethod("window", "Rle",
                                    start = ifelse(is.null(start), NA, start),
                                    end = ifelse(is.null(end), NA, end),
                                    width = ifelse(is.null(width), NA, width))
-                  .Call("Rle_subsetbyranges",
+                  .Call("Rle_seqextract_aslist",
                         x, start(solved_SEW), width(solved_SEW),
-                        PACKAGE = "IRanges")
+                        PACKAGE = "IRanges")[[1]]
               } else {
                   if (!is.null(width)) {
                       if (is.null(start))
