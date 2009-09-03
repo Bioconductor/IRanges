@@ -424,7 +424,7 @@ setReplaceMethod("seqextract", "CompressedList",
                              i <-
                                unlist(Map("+", start,
                                           IntegerList(as.list(start(x@partitioning) - 1L))))
-                             start <- rep(FALSE, sum(elementLengths(start)))
+                             start <- rep(FALSE, sum(elementLengths(x)))
                              start[i] <- TRUE
                          } else {
                              stop("unrecognized 'start' type")

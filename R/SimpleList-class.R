@@ -180,7 +180,7 @@ setReplaceMethod("seqextract", "SimpleList",
                              start <- IRangesList(start)
                          } else if (is(start, "IntegerList")) {
                              newstart <-
-                               LogicalList(lapply(elementLengths(x), rep, FALSE))
+                               LogicalList(lapply(elementLengths(x), rep, x = FALSE))
                              for (i in seq_len(length(newstart)))
                                  newstart[[i]][start[[i]]] <- TRUE
                              start <- newstart
