@@ -514,12 +514,8 @@ setMethod("window", "vector",
               }
           })
 
-setGeneric("window<-", signature="x",
-           function(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE, value)
-           standardGeneric("window<-"))
-
 setReplaceMethod("window", "Sequence",
-                 function(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE, value)
+                 function(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE, ..., value)
                  {
                      if (!isTRUEorFALSE(keepLength))
                          stop("'keepLength' must be TRUE or FALSE")

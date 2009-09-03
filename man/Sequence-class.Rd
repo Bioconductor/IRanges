@@ -62,7 +62,6 @@
 \alias{tail,Sequence-method}
 \alias{window,Sequence-method}
 \alias{window,vector-method}
-\alias{window<-}
 \alias{window<-,Sequence-method}
 \alias{with,Sequence-method}
 

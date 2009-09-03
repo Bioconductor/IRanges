@@ -3,7 +3,7 @@ useDynLib(IRanges)
 import(methods)
 importFrom(utils, head, read.table, tail)
 importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
-           window, aggregate, xtabs)
+           window, "window<-", aggregate, xtabs)
 
 exportClasses(
     characterORNULL,
@@ -90,7 +90,6 @@ export(
 
     ## Generic functions in the Sequence API:
     seqextract, "seqextract<-",
-    "window<-",
     mapply,
     Map,
     isEmpty,
@@ -186,7 +185,7 @@ exportMethods(
     range,
     pmax, pmin, pmax.int, pmin.int, diff,
     mean, var, cov, cor, sd, median, quantile, mad,
-    subset, window, aggregate,
+    subset, window, "window<-", aggregate,
     nchar, substr, substring, chartr, tolower, toupper, sub, gsub,
     levels, "levels<-",
     as.vector,
@@ -214,7 +213,6 @@ exportMethods(
     endoapply,
     mendoapply,
     seqextract, "seqextract<-",
-    "window<-",
     mapply,
     Map,
     isEmpty,

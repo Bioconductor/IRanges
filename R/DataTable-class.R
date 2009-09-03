@@ -166,7 +166,7 @@ setMethod("window", "DataTable",
           })
 
 setReplaceMethod("window", "DataTable",
-                 function(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE, value)
+                 function(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE, ..., value)
                  {
                      if (!isTRUEorFALSE(keepLength))
                          stop("'keepLength' must be TRUE or FALSE")
