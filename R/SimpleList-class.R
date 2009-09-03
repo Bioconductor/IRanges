@@ -111,8 +111,8 @@ setMethod("[", "SimpleList",
               if (!missing(j) || length(list(...)) > 0)
                   stop("invalid subsetting")
               if (!missing(i)) {
-                  if (is(i, "RangesList") || is(i, "LogicalList") ||
-                      is(i, "IntegerList")) {
+                  if (is(i, "RangesList") || is(i, "RleList") ||
+                      is(i, "LogicalList") || is(i, "IntegerList")) {
                       x <- seqextract(x, i)
                   } else {
                       slot(x, "listData", check=FALSE) <- as.list(x)[i]
@@ -135,6 +135,8 @@ setMethod("seqextract", "SimpleList",
                           start <- LogicalList(start)
                       else if (is.numeric(start[[1]]))
                           start <- IntegerList(start)
+                  } else if (is(start, "RleList")) {
+                      start <- IRangesList(start)
                   }
                   indices <- structure(seq_len(length(x)), names = names(x))
                   if (is(start, "RangesList")) {
@@ -160,6 +162,46 @@ setMethod("seqextract", "SimpleList",
               }
               x
           })
+
+setReplaceMethod("seqextract", "SimpleList",
+                 function(x, start = NULL, end = NULL, width = NULL, value)
+                 {
+                     if (!is.null(start) && is.null(end) && is.null(width) &&
+                         (length(x) > 0)) {
+                         if (length(x) != length(start))
+                             stop("'length(start)' must equal 'length(x)' when ",
+                                  "'end' and 'width' are NULL")
+                         if (is.list(start)) {
+                             if (is.logical(start[[1]]))
+                                 start <- LogicalList(start)
+                             else if (is.numeric(start[[1]]))
+                                 start <- IntegerList(start)
+                         } else if (is(start, "RleList")) {
+                             start <- IRangesList(start)
+                         } else if (is(start, "IntegerList")) {
+                             newstart <-
+                               LogicalList(lapply(elementLengths(x), rep, FALSE))
+                             for (i in seq_len(length(newstart)))
+                                 newstart[[i]][start[[i]]] <- TRUE
+                             start <- newstart
+                         }
+                         indices <- structure(seq_len(length(x)), names = names(x))
+                         if (is(start, "RangesList") ||
+                             is(start, "LogicalList")) {
+                             x@listData <-
+                               lapply(indices, function(i) {
+                                           y <- x@listData[[i]]
+                                           seqextract(y, start[[i]]) <- value
+                                           y
+                                       })
+                         } else {
+                             stop("unrecognized 'start' type")
+                         }
+                     } else {
+                         x <- callNextMethod()
+                     }
+                     x
+                 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.
