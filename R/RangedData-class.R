@@ -427,6 +427,16 @@ setMethod("seqextract", "RangedData",
                      seqextract(values(x), start=start, end=end, width=width))
           )
 
+setReplaceMethod("seqextract", "RangedData",
+                 function(x, start = NULL, end = NULL, width = NULL, value)
+                 stop("operation not supported")
+                 )
+
+setReplaceMethod("window", "RangedData",
+                 function(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE, ..., value)
+                 stop("operation not supported")
+                 )
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.
 ###
