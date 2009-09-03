@@ -496,8 +496,10 @@ SEXP Rle_run_seqblock(SEXP x, SEXP runStart, SEXP runEnd,
 	PROTECT(ans_values = vector_subsetbyranges(values, runStart, runWidth));
     PROTECT(ans_lengths = vector_subsetbyranges(lengths, runStart, runWidth));
 
-    INTEGER(ans_lengths)[0] -= INTEGER(offsetStart)[0];
-	INTEGER(ans_lengths)[INTEGER(runWidth)[0] - 1] -= INTEGER(offsetEnd)[0];
+    if (INTEGER(runWidth)[0] > 0) {
+        INTEGER(ans_lengths)[0] -= INTEGER(offsetStart)[0];
+    	INTEGER(ans_lengths)[INTEGER(runWidth)[0] - 1] -= INTEGER(offsetEnd)[0];
+    }
 
 	SET_SLOT(ans, install("values"), ans_values);
 	SET_SLOT(ans, install("lengths"), ans_lengths);
@@ -545,32 +547,39 @@ SEXP Rle_seqblock(SEXP x, SEXP start, SEXP width)
 	PROTECT(offset_start = NEW_INTEGER(1));
 	PROTECT(offset_end = NEW_INTEGER(1));
 
-	i = 1;
-	more = 1;
-	cumlen = 0;
-	lengths_elt = INTEGER(lengths);
-	while (more) {
-		cumlen += *lengths_elt;
-		if (seq_start <= cumlen) {
-			INTEGER(run_start)[0] = i;
-			cumlen -= *lengths_elt;
-			INTEGER(offset_start)[0] = seq_start - cumlen - 1;
-			more = 0;
-		} else {
-			i++;
-			lengths_elt++;
+	if (INTEGER(width)[0] == 0) {
+		INTEGER(run_start)[0] = 1;
+		INTEGER(offset_start)[0] = 0;
+		INTEGER(run_end)[0] = 0;
+		INTEGER(offset_end)[0] = 0;
+	} else {
+		i = 1;
+		more = 1;
+		cumlen = 0;
+		lengths_elt = INTEGER(lengths);
+		while (more) {
+			cumlen += *lengths_elt;
+			if (seq_start <= cumlen) {
+				INTEGER(run_start)[0] = i;
+				cumlen -= *lengths_elt;
+				INTEGER(offset_start)[0] = seq_start - cumlen - 1;
+				more = 0;
+			} else {
+				i++;
+				lengths_elt++;
+			}
 		}
-	}
-	more = 1;
-	while (more) {
-		cumlen += *lengths_elt;
-		if (seq_end <= cumlen) {
-			INTEGER(run_end)[0] = i;
-			INTEGER(offset_end)[0] = cumlen - seq_end;
-			more = 0;
-		} else {
-			i++;
-			lengths_elt++;
+		more = 1;
+		while (more) {
+			cumlen += *lengths_elt;
+			if (seq_end <= cumlen) {
+				INTEGER(run_end)[0] = i;
+				INTEGER(offset_end)[0] = cumlen - seq_end;
+				more = 0;
+			} else {
+				i++;
+				lengths_elt++;
+			}
 		}
 	}
 
