@@ -55,6 +55,7 @@
 \alias{seqextract,vector-method}
 \alias{seqextract<-}
 \alias{seqextract<-,Sequence-method}
+\alias{seqextract<-,vector-method}
 \alias{shiftApply}
 \alias{shiftApply,Sequence,Sequence-method}
 \alias{shiftApply,vector,vector-method}
@@ -63,6 +64,7 @@
 \alias{window,Sequence-method}
 \alias{window,vector-method}
 \alias{window<-,Sequence-method}
+\alias{window<-,vector-method}
 \alias{with,Sequence-method}
 
 

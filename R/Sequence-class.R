@@ -421,6 +421,30 @@ setReplaceMethod("seqextract", "Sequence",
                      x
                  })
 
+setReplaceMethod("seqextract", "vector",
+                 function(x, start = NULL, end = NULL, width = NULL, value)
+                 {
+                     if (!is.null(start) && is.null(end) && is.null(width)) {
+                         if (is(start, "Ranges"))
+                             ir <- start
+                         else {
+                             if (is.logical(start) && length(start) != length(x))
+                                 start <- rep(start, length.out = length(x))
+                             ir <- as(start, "IRanges")
+                         }
+                     } else {
+                         ir <- IRanges(start=start, end=end, width=width, names=NULL)
+                     }
+                     if (any(start(ir) < 1L) || any(end(ir) > length(x)))
+                         stop("some ranges are out of bounds")
+                     i <- unlist(ir)
+                     if (is.null(value) && (length(i) > 0))
+                         x <- x[-i]
+                     else
+                         x[i] <- value
+                     x
+                 })
+
 setMethod("subset", "Sequence",
           function (x, subset, ...) 
           {
@@ -515,7 +539,34 @@ setMethod("window", "vector",
           })
 
 setReplaceMethod("window", "Sequence",
-                 function(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE, ..., value)
+                 function(x, start = NULL, end = NULL, width = NULL,
+                          keepLength = TRUE, ..., value)
+                 {
+                     if (!isTRUEorFALSE(keepLength))
+                         stop("'keepLength' must be TRUE or FALSE")
+                     solved_SEW <-
+                       solveWindowSEW(length(x),
+                                      start = ifelse(is.null(start), NA, start),
+                                      end = ifelse(is.null(end), NA, end),
+                                      width = ifelse(is.null(width), NA, width))
+                     if (!is.null(value)) {
+                         if (!is(value, class(x))) {
+                             value <- try(as(value, class(x)), silent = TRUE)
+                             if (inherits(value, "try-error"))
+                                 stop("'value' must be a ", class(x),
+                                      " object or NULL")
+                         }
+                         if (keepLength && (length(value) != width(solved_SEW)))
+                             value <- rep(value, length.out = width(solved_SEW))
+                     }
+                     c(window(x, end = start(solved_SEW) - 1L),
+                       value,
+                       window(x, start = end(solved_SEW) + 1L))
+                 })
+
+setReplaceMethod("window", "vector",
+                 function(x, start = NULL, end = NULL, width = NULL,
+                          keepLength = TRUE, ..., value)
                  {
                      if (!isTRUEorFALSE(keepLength))
                          stop("'keepLength' must be TRUE or FALSE")
