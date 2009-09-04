@@ -505,9 +505,11 @@ setMethod("seqextract", "Rle",
               }
               if (any(start(ir) < 1L) || any(end(ir) > length(x)))
                   stop("some ranges are out of bounds")
-              do.call(c,
-                      .Call("Rle_seqextract_aslist",
-                            x, start(ir), width(ir), PACKAGE = "IRanges"))
+              subseqs <-
+                .Call("Rle_seqextract_aslist",
+                      x, start(ir), width(ir), PACKAGE = "IRanges")
+              Rle(unlist(lapply(subseqs, "[", "values")),
+                  unlist(lapply(subseqs, "[", "lengths")))
           })
 
 setReplaceMethod("seqextract", "Rle",
@@ -523,6 +525,7 @@ setReplaceMethod("seqextract", "Rle",
                                  stop("'value' must be a ", class(x),
                                       " object or NULL")
                          }
+                         value <- as.vector(value)
                      }
                      if (!is.null(start) && is.null(end) && is.null(width)) {
                          if (is(start, "Ranges"))
@@ -553,9 +556,11 @@ setReplaceMethod("seqextract", "Rle",
                      if (length(valueWidths) > 0) {
                          subseqs[seq(2, length(subseqs), by = 2)] <-
                            lapply(seq_len(length(valueWidths)), function(i)
-                                          rep(value, length.out = valueWidths[i]))
+                                          list(values = value,
+                                               lengths = valueWidths[i]))
                      }
-                     do.call(c, subseqs)
+                     Rle(unlist(lapply(subseqs, "[", "values")),
+                         unlist(lapply(subseqs, "[", "lengths")))
                  })
 
 setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
@@ -712,9 +717,9 @@ setMethod("window", "Rle",
                                    start = ifelse(is.null(start), NA, start),
                                    end = ifelse(is.null(end), NA, end),
                                    width = ifelse(is.null(width), NA, width))
-                  .Call("Rle_seqextract_aslist",
-                        x, start(solved_SEW), width(solved_SEW),
-                        PACKAGE = "IRanges")[[1]]
+                  seqextract(x,
+                             IRanges(start = start(solved_SEW),
+                                     width = width(solved_SEW)))
               } else {
                   if (!is.null(width)) {
                       if (is.null(start))
