@@ -77,7 +77,7 @@ setReplaceMethod("subseq", "XSequence",
 
 
 ### Works as long as c() works on objects of the same class as 'x'.
-setMethod("seqextract", "XSequence",
+setMethod("seqselect", "XSequence",
     function(x, start=NULL, end=NULL, width=NULL)
     {
         xv <- Views(x, start=start, end=end, width=width)

@@ -447,16 +447,16 @@ setMethod("[", "IRanges",
     }
 )
 
-setMethod("seqextract", "IRanges",
+setMethod("seqselect", "IRanges",
     function(x, start=NULL, end=NULL, width=NULL)
     {
         slot(x, "start", check=FALSE) <-
-          seqextract(start(x), start = start, end = end, width = width)
+          seqselect(start(x), start = start, end = end, width = width)
         slot(x, "width", check=FALSE) <-
-          seqextract(width(x), start = start, end = end, width = width)
+          seqselect(width(x), start = start, end = end, width = width)
         if (!is.null(names(x)))
             slot(x, "NAMES", check=FALSE) <-
-              seqextract(names(x), start = start, end = end, width = width)
+              seqselect(names(x), start = start, end = end, width = width)
         x
     }
 )

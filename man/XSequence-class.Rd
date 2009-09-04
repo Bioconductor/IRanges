@@ -11,7 +11,7 @@
 \alias{subseq<-}
 \alias{subseq,XSequence-method}
 \alias{subseq<-,XSequence-method}
-\alias{seqextract,XSequence-method}
+\alias{seqselect,XSequence-method}
 \alias{window,XSequence-method}
 \alias{as.numeric,XSequence-method}
 \alias{show,XSequence-method}

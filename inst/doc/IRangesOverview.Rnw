@@ -118,7 +118,7 @@ sequence extraction:
 \begin{enumerate}
 \item \Rfunction{window} - Produces a subsequence over a specified region
   with or without regular interval subsampling.
-\item \Rfunction{seqextract} - Concatenates multiple consecutive
+\item \Rfunction{seqselect} - Concatenates multiple consecutive
   subsequences into a new sequence. The result may or may not be a
   subsequence.
 \item \Rfunction{subset} - Extracts the subsequence specified by a logical
@@ -150,7 +150,7 @@ tail(xSnippet)
 rev(xSnippet)
 rep(xSnippet, 2)
 window(xSnippet, delta = 2)
-seqextract(xSnippet, start = c(6,1), end = c(10, 5))
+seqselect(xSnippet, start = c(6,1), end = c(10, 5))
 subset(xSnippet, xSnippet >= 5L)
 @
 
@@ -440,7 +440,7 @@ ignoring the underlying sequence values. A list of indices would be a
 simple way to select a subsequence. However, a sparser representation
 for consecutive subsequences would be a range, a pairing of a start
 position and a width, as used when extracting sequences with
-\Rfunction{window} and \Rfunction{seqextract}, above.
+\Rfunction{window} and \Rfunction{seqselect}, above.
 
 When analyzing subsequences in \IRanges{}, each range is treated as an
 observation. The virtual \Rclass{Ranges} class represents lists of
@@ -591,9 +591,9 @@ subsequences, they may be used directly in sequence extraction. Note
 that when a \textit{normal} \Rclass{Ranges} is given as the index, the
 result a subsequence, as no elements are repeated or reordered.
 %
-<<seqextract-ranges>>=
+<<seqselect-ranges>>=
 irextract <- IRanges(start = c(4501, 4901) , width = 100)
-seqextract(xRle, irextract)
+seqselect(xRle, irextract)
 @
 %
 If the sequence is a \Rclass{Sequence} subclass (i.e. not an ordinary
@@ -817,7 +817,7 @@ respectively. These are relatively self-explanatory.
 
 \section{Sequence Views}
 
-When we extract a sequence with \Rfunction{seqextract}, we can pass
+When we extract a sequence with \Rfunction{seqselect}, we can pass
 multiple ranges, each selecting a single consecutive
 subsequence. Those subsequences are extracted and concatenated into a
 single sequence. There are many cases where the user wishes to avoid
@@ -825,7 +825,7 @@ the concatenation step and instead treat each consecutive subsequence
 as a separate element in a list.  
 
 While one could simply store each extracted sequence as an element in
-a list object like a \Rclass{TypedList}, this is undesirable for a
+a list object like a \Rclass{SimpleList}, this is undesirable for a
 couple of reasons. First, the user often wants to preserve the
 original sequence and declare a set of interesting regions as an
 overlay. This allows retrieving sequence values even after the ranges

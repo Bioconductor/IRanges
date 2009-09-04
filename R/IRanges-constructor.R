@@ -20,7 +20,7 @@
 }
 
 ### Some of the functions that support the SEW0 interface: IRanges(),
-### seqextract(), Views(), etc...
+### seqselect(), Views(), etc...
 solveUserSEW0 <- function(start=NULL, end=NULL, width=NULL)
 {
     start <- .normargSEW0(start, "start")

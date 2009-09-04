@@ -53,8 +53,8 @@
 \alias{[[,RangedData-method}
 \alias{[[<-,RangedData-method}
 \alias{$<-,RangedData-method}
-\alias{seqextract,RangedData-method}
-\alias{seqextract<-,RangedData-method}
+\alias{seqselect,RangedData-method}
+\alias{seqselect<-,RangedData-method}
 \alias{window<-,RangedData-method}
 
 % Applying:

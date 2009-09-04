@@ -14,8 +14,8 @@
 \alias{is.array,DataTable-method}
 \alias{rbind}
 \alias{rbind,DataTable-method}
-\alias{seqextract,DataTable-method}
-\alias{seqextract<-,DataTable-method}
+\alias{seqselect,DataTable-method}
+\alias{seqselect<-,DataTable-method}
 \alias{show,DataTable-method}
 \alias{subset,DataTable-method}
 \alias{tail,DataTable-method}
@@ -81,12 +81,12 @@
       Return the number of columns in the DataTable object.
     }
     \item{}{
-      \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:
+      \code{seqselect(x, start=NULL, end=NULL, width=NULL)}:
       Similar to \code{window}, except that multiple subsequences can be
       requested. The requested subsequences are concatenated.
     }
     \item{}{
-      \code{seqextract(x, start=NULL, end=NULL, width=NULL) <- value}:
+      \code{seqselect(x, start=NULL, end=NULL, width=NULL) <- value}:
       Similar to \code{window<-}, except that multiple consecutive subsequences
       can be replaced by a constant \code{value}.
     }

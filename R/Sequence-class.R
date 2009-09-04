@@ -135,7 +135,7 @@ setMethod("[", "Sequence", function(x, i, j, ..., drop)
 
 setReplaceMethod("[", "Sequence",
                  function(x, i, j,..., value) {
-                     seqextract(x, i) <- value
+                     seqselect(x, i) <- value
                      x
                  })
 
@@ -345,11 +345,17 @@ setMethod("rev", "Sequence",
                   x[length(x):1]  
           })
 
-setGeneric("seqextract", signature="x",
-           function(x, start=NULL, end=NULL, width=NULL)
-           standardGeneric("seqextract"))
+seqextract <- function(x, start=NULL, end=NULL, width=NULL)
+{
+    .Deprecated("seqselect", "IRanges")
+    seqselect(x, start = start, end = end, width = width)
+}
 
-setMethod("seqextract", "Sequence",
+setGeneric("seqselect", signature="x",
+           function(x, start=NULL, end=NULL, width=NULL)
+           standardGeneric("seqselect"))
+
+setMethod("seqselect", "Sequence",
           function(x, start=NULL, end=NULL, width=NULL)
           {
               if (!is.null(start) && is.null(end) && is.null(width)) {
@@ -372,7 +378,7 @@ setMethod("seqextract", "Sequence",
                                     width = width(ir)[i])))
           })
 
-setMethod("seqextract", "vector",
+setMethod("seqselect", "vector",
           function(x, start=NULL, end=NULL, width=NULL)
           {
               if (!is.null(start) && is.null(end) && is.null(width)) {
@@ -390,11 +396,11 @@ setMethod("seqextract", "vector",
                     PACKAGE="IRanges")
           })
 
-setGeneric("seqextract<-", signature="x",
+setGeneric("seqselect<-", signature="x",
            function(x, start = NULL, end = NULL, width = NULL, value)
-           standardGeneric("seqextract<-"))
+           standardGeneric("seqselect<-"))
 
-setReplaceMethod("seqextract", "Sequence",
+setReplaceMethod("seqselect", "Sequence",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
                      if (!is.null(value)) {
@@ -444,7 +450,7 @@ setReplaceMethod("seqextract", "Sequence",
                      do.call(c, subseqs)
                  })
 
-setReplaceMethod("seqextract", "vector",
+setReplaceMethod("seqselect", "vector",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
                      if (!is.null(start) && is.null(end) && is.null(width)) {

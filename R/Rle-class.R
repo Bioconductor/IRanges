@@ -489,7 +489,7 @@ setMethod("rev", "Rle",
               x
           })
 
-setMethod("seqextract", "Rle",
+setMethod("seqselect", "Rle",
           function(x, start = NULL, end = NULL, width = NULL)
           {
               if (!is.null(start) && is.null(end) && is.null(width)) {
@@ -506,13 +506,13 @@ setMethod("seqextract", "Rle",
               if (any(start(ir) < 1L) || any(end(ir) > length(x)))
                   stop("some ranges are out of bounds")
               subseqs <-
-                .Call("Rle_seqextract_aslist",
+                .Call("Rle_seqselect_aslist",
                       x, start(ir), width(ir), PACKAGE = "IRanges")
               Rle(unlist(lapply(subseqs, "[", "values")),
                   unlist(lapply(subseqs, "[", "lengths")))
           })
 
-setReplaceMethod("seqextract", "Rle",
+setReplaceMethod("seqselect", "Rle",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
                      if (!is.null(value)) {
@@ -550,7 +550,7 @@ setReplaceMethod("seqextract", "Rle",
                      subseqs <- vector("list", length(valueWidths) + length(ir))
                      if (length(ir) > 0) {
                          subseqs[seq(1, length(subseqs), by = 2)] <-
-                           .Call("Rle_seqextract_aslist",
+                           .Call("Rle_seqselect_aslist",
                                  x, start(ir), width(ir), PACKAGE = "IRanges")
                      }
                      if (length(valueWidths) > 0) {
@@ -717,9 +717,9 @@ setMethod("window", "Rle",
                                    start = ifelse(is.null(start), NA, start),
                                    end = ifelse(is.null(end), NA, end),
                                    width = ifelse(is.null(width), NA, width))
-                  seqextract(x,
-                             IRanges(start = start(solved_SEW),
-                                     width = width(solved_SEW)))
+                  seqselect(x,
+                            IRanges(start = start(solved_SEW),
+                                    width = width(solved_SEW)))
               } else {
                   if (!is.null(width)) {
                       if (is.null(start))

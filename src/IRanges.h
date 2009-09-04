@@ -856,7 +856,7 @@ SEXP Rle_run_window(
 	SEXP ans
 );
 
-SEXP Rle_seqextract_aslist(
+SEXP Rle_seqselect_aslist(
 	SEXP x,
 	SEXP start,
 	SEXP width

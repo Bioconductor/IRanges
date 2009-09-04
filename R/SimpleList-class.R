@@ -113,7 +113,7 @@ setMethod("[", "SimpleList",
               if (!missing(i)) {
                   if (is(i, "RangesList") || is(i, "RleList") ||
                       is(i, "LogicalList") || is(i, "IntegerList")) {
-                      x <- seqextract(x, i)
+                      x <- seqselect(x, i)
                   } else {
                       slot(x, "listData", check=FALSE) <- as.list(x)[i]
                       x <- .bracket.Sequence(x, i)
@@ -122,7 +122,7 @@ setMethod("[", "SimpleList",
               x
           })
 
-setMethod("seqextract", "SimpleList",
+setMethod("seqselect", "SimpleList",
           function(x, start=NULL, end=NULL, width=NULL)
           {
               if (!is.null(start) && is.null(end) && is.null(width) &&
@@ -142,7 +142,7 @@ setMethod("seqextract", "SimpleList",
                   if (is(start, "RangesList")) {
                       listData <-
                         lapply(indices, function(i)
-                               seqextract(x@listData[[i]], start[[i]]))
+                               seqselect(x@listData[[i]], start[[i]]))
                   } else if (is(start, "LogicalList") ||
                              is(start, "IntegerList")) {
                       if (length(dim(x@listData[[1]])) < 2)
@@ -163,7 +163,7 @@ setMethod("seqextract", "SimpleList",
               x
           })
 
-setReplaceMethod("seqextract", "SimpleList",
+setReplaceMethod("seqselect", "SimpleList",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
                      if (!is.null(start) && is.null(end) && is.null(width) &&
@@ -191,7 +191,7 @@ setReplaceMethod("seqextract", "SimpleList",
                              x@listData <-
                                lapply(indices, function(i) {
                                            y <- x@listData[[i]]
-                                           seqextract(y, start[[i]]) <- value
+                                           seqselect(y, start[[i]]) <- value
                                            y
                                        })
                          } else {

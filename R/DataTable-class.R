@@ -53,7 +53,7 @@ setMethod("rbind", "DataTable", function(..., deparse.level=1)
           stop("missing 'rbind' method for DataTable class ",
                class(list(...)[[1]])))
 
-setMethod("seqextract", "DataTable",
+setMethod("seqselect", "DataTable",
           function(x, start=NULL, end=NULL, width=NULL)
           {
               if (!is.null(start) && is.null(end) && is.null(width)) {
@@ -76,7 +76,7 @@ setMethod("seqextract", "DataTable",
                                     width = width(ir)[i])))
           })
 
-setReplaceMethod("seqextract", "DataTable",
+setReplaceMethod("seqselect", "DataTable",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
                      if (!is.null(value)) {

@@ -51,11 +51,12 @@
 \alias{rev,Sequence-method}
 \alias{sapply,Sequence-method}
 \alias{seqextract}
-\alias{seqextract,Sequence-method}
-\alias{seqextract,vector-method}
-\alias{seqextract<-}
-\alias{seqextract<-,Sequence-method}
-\alias{seqextract<-,vector-method}
+\alias{seqselect}
+\alias{seqselect,Sequence-method}
+\alias{seqselect,vector-method}
+\alias{seqselect<-}
+\alias{seqselect<-,Sequence-method}
+\alias{seqselect<-,vector-method}
 \alias{shiftApply}
 \alias{shiftApply,Sequence,Sequence-method}
 \alias{shiftApply,vector,vector-method}
@@ -148,7 +149,7 @@
 
 \section{Subsetting}{
   In the code snippets below, \code{x} is a Sequence object or regular R vector
-  object. The R vector object methods for \code{window} and \code{seqextract}
+  object. The R vector object methods for \code{window} and \code{seqselect}
   are defined in this package and the remaining methods are defined in base R.
 
   \describe{
@@ -161,7 +162,7 @@
     }
     \item{}{
       \code{x[i] <- value}:
-      Equivalent to \code{seqextract(x, i) <- value}.
+      Equivalent to \code{seqselect(x, i) <- value}.
     }
     \item{}{
       \code{x[[i]]}:
@@ -228,7 +229,7 @@
       order.
     }
     \item{}{
-      \code{seqextract(x, start=NULL, end=NULL, width=NULL)}:
+      \code{seqselect(x, start=NULL, end=NULL, width=NULL)}:
       Similar to \code{window}, except that multiple consecutive subsequences
       can be requested for concatenation. As such two of the three \code{start},
       \code{end}, and \code{width} arguments can be used to specify the
@@ -239,7 +240,7 @@
       \code{\link{Views}}.
     }
     \item{}{
-      \code{seqextract(x, start=NULL, end=NULL, width=NULL) <- value}:
+      \code{seqselect(x, start=NULL, end=NULL, width=NULL) <- value}:
       Similar to \code{window<-}, except that multiple consecutive subsequences
       can be replaced by a constant \code{value}. As such two of the three
       \code{start}, \code{end}, and \code{width} arguments can be used to

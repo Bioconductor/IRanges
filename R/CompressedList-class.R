@@ -157,9 +157,9 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
     } else if (COMPRESS && missing(FUN) && useFastSubset) {
         nzINDEX <- INDEX[whichNonZeroLength]
         elts <-
-          seqextract(X@unlistData,
-                     start = start(X@partitioning)[nzINDEX],
-                     width = width(X@partitioning)[nzINDEX])
+          seqselect(X@unlistData,
+                    start = start(X@partitioning)[nzINDEX],
+                    width = width(X@partitioning)[nzINDEX])
     } else {
         elts <- rep(list(zeroLengthElt), k)
         if (kOK > 0) {
@@ -282,7 +282,7 @@ setMethod("[", "CompressedList",
               if (!missing(i)) {
                   if (is(i, "RangesList") || is(i, "RleList") ||
                       is(i, "LogicalList") || is(i, "IntegerList")) {
-                      x <- seqextract(x, i)
+                      x <- seqselect(x, i)
                   } else if (!is.atomic(i)) {
                       stop("invalid subscript type")
                   } else {
@@ -331,7 +331,7 @@ setMethod("[", "CompressedList",
               x
           })
 
-setMethod("seqextract", "CompressedList",
+setMethod("seqselect", "CompressedList",
           function(x, start=NULL, end=NULL, width=NULL)
           {
               if (!is.null(start) && is.null(end) && is.null(width) &&
@@ -349,10 +349,10 @@ setMethod("seqextract", "CompressedList",
                   }
                   if (is(start, "RangesList")) {
                       unlistData <-
-                        seqextract(x@unlistData,
-                                   shift(unlist(start),
-                                         rep(start(x@partitioning) - 1L,
-                                             elementLengths(start))))
+                        seqselect(x@unlistData,
+                                  shift(unlist(start),
+                                        rep(start(x@partitioning) - 1L,
+                                            elementLengths(start))))
                       partitionEnd <-
                         cumsum(unlist(lapply(start, function(x) sum(width(x))),
                                       use.names = FALSE))
@@ -393,7 +393,7 @@ setMethod("seqextract", "CompressedList",
               x
           })
 
-setReplaceMethod("seqextract", "CompressedList",
+setReplaceMethod("seqselect", "CompressedList",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
                      if (!is.null(start) && is.null(end) && is.null(width) &&
@@ -429,7 +429,7 @@ setReplaceMethod("seqextract", "CompressedList",
                          } else {
                              stop("unrecognized 'start' type")
                          }
-                         seqextract(x@unlistData, start) <- value
+                         seqselect(x@unlistData, start) <- value
                      } else {
                          x <- callNextMethod()
                      }

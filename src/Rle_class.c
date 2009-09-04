@@ -535,7 +535,7 @@ SEXP Rle_run_window(SEXP x, SEXP runStart, SEXP runEnd,
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP Rle_seqextract_aslist(SEXP x, SEXP start, SEXP width)
+SEXP Rle_seqselect_aslist(SEXP x, SEXP start, SEXP width)
 {
 	int i, x_length, start_length, seq_start, seq_width, seq_end;
 	int idx, cumlen, more;

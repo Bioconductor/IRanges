@@ -391,8 +391,8 @@ setMethod("[", "RangedData",
                 }
                 isplit <- split(i, igroup)
                 names(isplit) <- names(x)
-                ranges <- seqextract(ranges, isplit)
-                values <- seqextract(values, isplit)
+                ranges <- seqselect(ranges, isplit)
+                values <- seqselect(values, isplit)
                 if (drop) {
                   ok <- (elementLengths(ranges) > 0)
                   ranges <- ranges[ok]
@@ -418,16 +418,16 @@ setReplaceMethod("[", "RangedData",
                  stop("operation not supported")
                  )
 
-setMethod("seqextract", "RangedData",
+setMethod("seqselect", "RangedData",
           function(x, start=NULL, end=NULL, width=NULL)
           initialize(x,
                      ranges =
-                     seqextract(ranges(x), start=start, end=end, width=width),
+                     seqselect(ranges(x), start=start, end=end, width=width),
                      values =
-                     seqextract(values(x), start=start, end=end, width=width))
+                     seqselect(values(x), start=start, end=end, width=width))
           )
 
-setReplaceMethod("seqextract", "RangedData",
+setReplaceMethod("seqselect", "RangedData",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  stop("operation not supported")
                  )

@@ -73,8 +73,8 @@
 \alias{rep.int}
 \alias{rep.int,Rle-method}
 \alias{rev,Rle-method}
-\alias{seqextract,Rle-method}
-\alias{seqextract<-,Rle-method}
+\alias{seqselect,Rle-method}
+\alias{seqselect<-,Rle-method}
 \alias{shiftApply,Rle,Rle-method}
 \alias{show,Rle-method}
 \alias{sort,Rle-method}
@@ -286,7 +286,7 @@
     }
     \item{}{
       \code{x[i] <- value}:
-      Equivalent to \code{seqextract(x, i) <- value}.
+      Equivalent to \code{seqselect(x, i) <- value}.
     }
     \item{}{
       \code{x \%in\% table}:
@@ -368,13 +368,13 @@
       Reverses the order of the values in \code{x}.
     }
     \item{}{
-      \code{seqextract(x, start = NULL, end = NULL, width = NULL)}:
+      \code{seqselect(x, start = NULL, end = NULL, width = NULL)}:
       Creates a new Rle object using consecutive subsequences from \code{x}
       specified by two of the three following values:  \code{start}, \code{end},
-      and \code{width}. See \link{seqextract} for more details.
+      and \code{width}. See \link{seqselect} for more details.
     }
     \item{}{
-      \code{seqextract(x, start=NULL, end=NULL, width=NULL) <- value}:
+      \code{seqselect(x, start=NULL, end=NULL, width=NULL) <- value}:
       Similar to \code{window<-}, except that multiple consecutive subsequences
       can be replaced by a constant \code{value}. As such two of the three
       \code{start}, \code{end}, and \code{width} arguments can be used to
