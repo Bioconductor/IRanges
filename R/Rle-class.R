@@ -364,7 +364,7 @@ setMethod("aggregate", "Rle",
                   newRle <- new("Rle")
                   sapply(indices,
                          function(i)
-                             FUN(.Call("Rle_run_window",
+                             FUN(.Call("Rle_window",
                                        x, runStart[i], runEnd[i],
                                        offsetStart[i], offsetEnd[i],
                                        newRle, PACKAGE = "IRanges"),
@@ -503,11 +503,22 @@ setMethod("seqselect", "Rle",
               } else {
                   ir <- IRanges(start=start, end=end, width=width, names=NULL)
               }
-              if (any(start(ir) < 1L) || any(end(ir) > length(x)))
+              start <- start(ir)
+              end <- end(ir)
+              if (any(start < 1L) || any(end > length(x)))
                   stop("some ranges are out of bounds")
+              startX <- start(x)
+              endX <- end(x)
+              runStart <- findInterval(start, startX)
+              runEnd <- findInterval(end, startX)
+              offsetStart <- start - startX[runStart]
+              offsetEnd <- endX[runEnd] - end
               subseqs <-
-                .Call("Rle_seqselect_aslist",
-                      x, start(ir), width(ir), PACKAGE = "IRanges")
+                lapply(seq_len(length(ir)), function(i)
+                           .Call("Rle_window_aslist",
+                                 x, runStart[i], runEnd[i],
+                                 offsetStart[i], offsetEnd[i],
+                                 PACKAGE = "IRanges"))
               Rle(unlist(lapply(subseqs, "[", "values")),
                   unlist(lapply(subseqs, "[", "lengths")))
           })
@@ -547,17 +558,34 @@ setReplaceMethod("seqselect", "Rle",
                          ir <- c(IRanges(start = 1, width = 0), ir)
                      if (end(ir[length(ir)]) != length(x))
                          ir <- c(ir, IRanges(start = length(x), width = 0))
+
+                     start <- start(ir)
+                     end <- end(ir)
+                     startX <- start(x)
+                     endX <- end(x)
+                     runStart <-
+                       .Call("Integer_sorted_findInterval", start, runLength(x),
+                             PACKAGE="IRanges")
+                     runEnd <-
+                       .Call("Integer_sorted_findInterval", end, runLength(x),
+                             PACKAGE="IRanges")
+                     offsetStart <- start - startX[runStart]
+                     offsetEnd <- endX[runEnd] - end
+
                      subseqs <- vector("list", length(valueWidths) + length(ir))
                      if (length(ir) > 0) {
                          subseqs[seq(1, length(subseqs), by = 2)] <-
-                           .Call("Rle_seqselect_aslist",
-                                 x, start(ir), width(ir), PACKAGE = "IRanges")
+                           lapply(seq_len(length(ir)), function(i)
+                                      .Call("Rle_window_aslist",
+                                            x, runStart[i], runEnd[i],
+                                            offsetStart[i], offsetEnd[i],
+                                            PACKAGE = "IRanges"))
                      }
                      if (length(valueWidths) > 0) {
                          subseqs[seq(2, length(subseqs), by = 2)] <-
                            lapply(seq_len(length(valueWidths)), function(i)
-                                          list(values = value,
-                                               lengths = valueWidths[i]))
+                                      list(values = value,
+                                           lengths = valueWidths[i]))
                      }
                      Rle(unlist(lapply(subseqs, "[", "values")),
                          unlist(lapply(subseqs, "[", "lengths")))
@@ -612,11 +640,11 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
                     sapply(seq_len(length(SHIFT)),
                            function(i) {
                                cat("\r", i, "/", maxI)
-                               FUN(.Call("Rle_run_window",
+                               FUN(.Call("Rle_window",
                                          X, runStartX[i], runEndX[i],
                                          offsetStartX[i], offsetEndX[i],
                                          newX, PACKAGE = "IRanges"),
-                                   .Call("Rle_run_window",
+                                   .Call("Rle_window",
                                          Y, runStartY[i], runEndY[i],
                                          offsetStartY[i], offsetEndY[i],
                                          newY, PACKAGE = "IRanges"),
@@ -627,11 +655,11 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
                   ans <-
                     sapply(seq_len(length(SHIFT)),
                            function(i)
-                               FUN(.Call("Rle_run_window",
+                               FUN(.Call("Rle_window",
                                          X, runStartX[i], runEndX[i],
                                          offsetStartX[i], offsetEndX[i],
                                          newX, PACKAGE = "IRanges"),
-                                   .Call("Rle_run_window",
+                                   .Call("Rle_window",
                                          Y, runStartY[i], runEndY[i],
                                          offsetStartY[i], offsetEndY[i],
                                          newY, PACKAGE = "IRanges"),

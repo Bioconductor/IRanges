@@ -465,8 +465,12 @@ SEXP Rle_constructor(SEXP x, SEXP counts)
 }
 
 
-SEXP Rle_run_window_deconstructed(SEXP x, SEXP runStart, SEXP runEnd,
-		                          SEXP offsetStart, SEXP offsetEnd)
+/*
+ * --- .Call ENTRY POINT ---
+ */
+
+SEXP Rle_window_aslist(SEXP x, SEXP runStart, SEXP runEnd,
+		               SEXP offsetStart, SEXP offsetEnd)
 {
 	SEXP values, lengths, runWidth, ans, ans_names, ans_values, ans_lengths;
 
@@ -513,116 +517,20 @@ SEXP Rle_run_window_deconstructed(SEXP x, SEXP runStart, SEXP runEnd,
  */
 
 /*
- * Rle_run_window accepts an Rle object to support fast R-level aggregate usage
+ * Rle_window accepts an Rle object to support fast R-level aggregate usage
  */
-SEXP Rle_run_window(SEXP x, SEXP runStart, SEXP runEnd,
-		            SEXP offsetStart, SEXP offsetEnd, SEXP ans)
+SEXP Rle_window(SEXP x, SEXP runStart, SEXP runEnd,
+		        SEXP offsetStart, SEXP offsetEnd, SEXP ans)
 {
 	SEXP ans_list;
 
-	PROTECT(ans_list = Rle_run_window_deconstructed(x, runStart, runEnd,
-                                                    offsetStart, offsetEnd));
+	PROTECT(ans_list = Rle_window_aslist(x, runStart, runEnd,
+                                         offsetStart, offsetEnd));
 
 	SET_SLOT(ans, install("values"), VECTOR_ELT(ans_list, 0));
 	SET_SLOT(ans, install("lengths"), VECTOR_ELT(ans_list, 1));
 
 	UNPROTECT(1);
-
-	return ans;
-}
-
-
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP Rle_seqselect_aslist(SEXP x, SEXP start, SEXP width)
-{
-	int i, x_length, start_length, seq_start, seq_width, seq_end;
-	int idx, cumlen, more;
-	int *lengths_elt, *start_elt, *width_elt;
-	SEXP values, lengths, ans, run_start, run_end, offset_start, offset_end;
-
-	if (!IS_INTEGER(start) || !IS_INTEGER(width) || LENGTH(start) != LENGTH(width))
-		error("'start' and 'width' must be integer vectors of the same length");
-
-	values = GET_SLOT(x, install("values"));
-	lengths = GET_SLOT(x, install("lengths"));
-
-	x_length = 0;
-	for (i = 0, lengths_elt = INTEGER(lengths); i < LENGTH(lengths);
-	     i++, lengths_elt++) {
-		x_length += *lengths_elt;
-	}
-
-	start_length = LENGTH(start);
-
-	PROTECT(run_start = NEW_INTEGER(1));
-	PROTECT(run_end = NEW_INTEGER(1));
-	PROTECT(offset_start = NEW_INTEGER(1));
-	PROTECT(offset_end = NEW_INTEGER(1));
-	PROTECT(ans = NEW_LIST(start_length));
-
-	for (i = 0, start_elt = INTEGER(start), width_elt = INTEGER(width);
-	     i < start_length; i++, start_elt++, width_elt++) {
-
-		seq_start = *start_elt;
-		seq_width = *width_elt;
-		seq_end = seq_start + seq_width - 1;
-
-		if (seq_start == NA_INTEGER || seq_start < 1) {
-		    UNPROTECT(5);
-			error("'start' must be a positive integer");
-		}
-		if (seq_width == NA_INTEGER || seq_width < 0) {
-		    UNPROTECT(5);
-			error("'width' must be a non-negative integer");
-		}
-		if (x_length < seq_end) {
-		    UNPROTECT(5);
-			error("window exceeds bounds of 'x'");
-		}
-
-		if (seq_width == 0) {
-			INTEGER(run_start)[0] = 1;
-			INTEGER(offset_start)[0] = 0;
-			INTEGER(run_end)[0] = 0;
-			INTEGER(offset_end)[0] = 0;
-		} else {
-			idx = 1;
-			more = 1;
-			cumlen = 0;
-			lengths_elt = INTEGER(lengths);
-			while (more) {
-				cumlen += *lengths_elt;
-				if (seq_start <= cumlen) {
-					INTEGER(run_start)[0] = idx;
-					cumlen -= *lengths_elt;
-					INTEGER(offset_start)[0] = seq_start - cumlen - 1;
-					more = 0;
-				} else {
-					idx++;
-					lengths_elt++;
-				}
-			}
-			more = 1;
-			while (more) {
-				cumlen += *lengths_elt;
-				if (seq_end <= cumlen) {
-					INTEGER(run_end)[0] = idx;
-					INTEGER(offset_end)[0] = cumlen - seq_end;
-					more = 0;
-				} else {
-					idx++;
-					lengths_elt++;
-				}
-			}
-		}
-
-		SET_VECTOR_ELT(ans, i,
-				       Rle_run_window_deconstructed(x, run_start, run_end,
-				    		                        offset_start, offset_end));
-	}
-    UNPROTECT(5);
 
 	return ans;
 }

@@ -847,19 +847,21 @@ SEXP XNumericViews_slice(
 
 SEXP Rle_constructor(SEXP x, SEXP count);
 
-SEXP Rle_run_window(
+SEXP Rle_window_aslist(
+	SEXP x,
+	SEXP runStart,
+	SEXP runEnd,
+	SEXP offsetStart,
+	SEXP offsetEnd
+);
+
+SEXP Rle_window(
 	SEXP x,
 	SEXP runStart,
 	SEXP runEnd,
 	SEXP offsetStart,
 	SEXP offsetEnd,
 	SEXP ans
-);
-
-SEXP Rle_seqselect_aslist(
-	SEXP x,
-	SEXP start,
-	SEXP width
 );
 
 
