@@ -3,6 +3,9 @@
 \alias{RleViewsList-class}
 \alias{SimpleRleViewsList-class}
 
+% accessor
+\alias{subject,SimpleRleViewsList-method}
+
 % constructor
 \alias{Views,RleList-method}
 \alias{RleViewsList}

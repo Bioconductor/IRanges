@@ -153,7 +153,7 @@ RawList <- function(..., compress = TRUE)
         newSimpleList("SimpleRawList", lapply(listData, as.raw))
 }
 
-RleList <- function(..., compress = TRUE)
+RleList <- function(..., compress = FALSE)
 {
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")

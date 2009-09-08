@@ -10,6 +10,14 @@ setClass("SimpleRleViewsList",
          contains = c("RleViewsList", "SimpleRangesList"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Accessor.
+###
+
+setMethod("subject", "SimpleRleViewsList",
+          function(x)
+              newSimpleList("SimpleRleList", lapply(x, slot, "subject")))
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
 ###
 

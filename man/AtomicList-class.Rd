@@ -106,7 +106,7 @@
     \item{}{\code{RawList(..., compress = TRUE)}: Concatenates the
       \code{raw} vectors in \code{...} into a new \code{RawList}.
       If \code{compress}, the internal storage of the data is compressed.}
-    \item{}{\code{RleList(..., compress = TRUE)}: Concatenates the
+    \item{}{\code{RleList(..., compress = FALSE)}: Concatenates the
       run-length encoded atomic vectors in \code{...} into a new
       \code{RleList}.
       If \code{compress}, the internal storage of the data is compressed.}
