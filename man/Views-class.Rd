@@ -31,8 +31,8 @@
   that can be shared by the concrete classes that derive from it.
 
   Some direct subclasses of the Views class are: \link{XIntegerViews},
-  \link{RleViews}, \link[Biostrings]{XStringViews} (defined in the
-  Biostrings package), etc...
+  \link{RleViews}, \link[Biostrings:XStringViews-class]{XStringViews}
+  (defined in the Biostrings package), etc...
 }
 
 \section{Constructor}{
@@ -41,8 +41,9 @@
       \code{Views(subject, start=NULL, end=NULL, width=NULL, names=NULL)}:
       This constructor is a generic function with dispatch on argument
       \code{subject}. Specific methods must be defined for the subclasses
-      of the Views class. For example a method for \link[Biostrings]{XString}
-      subjects is defined that returns an \link[Biostrings]{XStringViews}
+      of the Views class. For example a method for
+      \link[Biostrings:XString-class]{XString} subjects is defined that
+      returns an \link[Biostrings:XStringViews-class]{XStringViews}
       object. There is no default method.
 
       The treatment of the \code{start}, \code{end} and \code{width}

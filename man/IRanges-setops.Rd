@@ -97,7 +97,7 @@
   similar to \code{\link{restrict}}, except ranges outside of the
   restriction become empty and are not discarded.
 
-  \link[base]{union}, \link[base]{intersect}, \link[base]{setdiff},
+  \link[base:sets]{union}, \link[base:sets]{intersect}, \link[base:sets]{setdiff},
   \link{Ranges-class},
   \link{IRanges-class},
   \link{IRanges-utils}

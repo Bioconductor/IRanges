@@ -74,7 +74,8 @@
   The XNumeric class is a container for storing an external sequence
   of numeric values (stored as double values at the C level).
 
-  Also the \link[Biostrings]{XString} class from the Biostrings package
+  Also the \link[Biostrings:XString-class]{XString} class from the Biostrings
+  package.
 
   The purpose of the X* containers is to provide a "pass by address"
   semantic and also to avoid the overhead of copying the sequence
@@ -99,11 +100,11 @@
       of an XSequence object. Hence it's very efficient and is therefore the
       recommended way to extract a linear subsequence (i.e. a set of consecutive
       elements) from an XSequence object. For example, extracting a 100Mb
-      subsequence from Human chromosome 1 (a 250Mb \link[Biostrings]{DNAString}
-      object) with \code{subseq} is (almost) instantaneous and has (almost) no
-      memory footprint (the cost in time and memory does not depend on the
-      length of the original sequence or on the length of the subsequence to
-      extract).
+      subsequence from Human chromosome 1 (a 250Mb
+      \link[Biostrings:DNAString-class]{DNAString} object) with \code{subseq}
+      is (almost) instantaneous and has (almost) no memory footprint (the cost
+      in time and memory does not depend on the length of the original sequence
+      or on the length of the subsequence to extract).
     }
     \item{}{
       \code{subseq(x, start=NA, end=NA, width=NA) <- value}:

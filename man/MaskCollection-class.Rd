@@ -62,11 +62,11 @@
 \details{
   In the context of the Biostrings package, a mask is a set of regions
   in a sequence that need to be excluded from some computation.
-  For example, when calling \code{\link[Biostrings]{alphabetFrequency}}
+  For example, when calling \code{\link[Biostrings:letterFrequency]{alphabetFrequency}}
   or \code{\link[Biostrings]{matchPattern}} on a chromosome sequence,
   you might want to exclude some regions like the centromere or the repeat
   regions. This can be achieved by putting one or several masks on the sequence
-  before calling \code{\link[Biostrings]{alphabetFrequency}} on it.
+  before calling \code{\link[Biostrings:letterFrequency]{alphabetFrequency}} on it.
 
   A MaskCollection object is a vector-like object that represents
   such set of masks.
@@ -74,7 +74,7 @@
   masks contained in it. But unlike standard R vectors, it also has
   a "width" which determines the length of the sequences it can be "put on".
   For example, a MaskCollection object of width 20000 can only be put on
-  an \link[Biostrings]{XString} object of 20000 letters.
+  an \link[Biostrings:XString-class]{XString} object of 20000 letters.
 
   Each mask in a MaskCollection object \code{x} is just a finite set of
   integers that are >= 1 and <= \code{width(x)}.
@@ -218,7 +218,7 @@
   \link{NormalIRanges-class},
   \link{read.Mask},
   \link[Biostrings]{MaskedXString-class},
-  \code{\link[Biostrings]{alphabetFrequency}},
+  \code{\link[Biostrings:letterFrequency]{alphabetFrequency}},
   \code{\link[Biostrings]{reverse}},
   \code{\link[Biostrings]{matchPattern}}
 }

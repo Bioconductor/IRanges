@@ -391,7 +391,7 @@
     }
     \item{}{
       \code{sapply(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)}:
-      Like the standard \code{\link[base]{sapply}} function defined in the
+      Like the standard \code{\link[base:lapply]{sapply}} function defined in the
       base package, the \code{sapply} method for Sequence objects is a
       user-friendly version of \code{lapply} by default returning a vector
       or matrix if appropriate.
