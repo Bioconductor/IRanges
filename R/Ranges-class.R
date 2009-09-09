@@ -224,14 +224,13 @@ setMethod("whichFirstNotNormal", "Ranges",
 ### Core endomorphisms.
 ###
 
-### FIXME: hopefully temporary
 setMethod("[", "Ranges",
     function(x, i, j, ..., drop)
     {
         cl <- class(x)
         mc <- match.call()
         mc$x <- as(x, "IRanges")
-        as(eval(mc), cl)
+        as(eval(mc, parent.frame()), cl)
     }
 )
 
