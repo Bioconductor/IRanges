@@ -519,8 +519,8 @@ setMethod("seqselect", "Rle",
                                  x, runStart[i], runEnd[i],
                                  offsetStart[i], offsetEnd[i],
                                  PACKAGE = "IRanges"))
-              Rle(unlist(lapply(subseqs, "[", "values")),
-                  unlist(lapply(subseqs, "[", "lengths")))
+              Rle(unlist(lapply(subseqs, "[[", "values")),
+                  unlist(lapply(subseqs, "[[", "lengths")))
           })
 
 setReplaceMethod("seqselect", "Rle",
@@ -587,8 +587,8 @@ setReplaceMethod("seqselect", "Rle",
                                       list(values = value,
                                            lengths = valueWidths[i]))
                      }
-                     Rle(unlist(lapply(subseqs, "[", "values")),
-                         unlist(lapply(subseqs, "[", "lengths")))
+                     Rle(unlist(lapply(subseqs, "[[", "values")),
+                         unlist(lapply(subseqs, "[[", "lengths")))
                  })
 
 setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
