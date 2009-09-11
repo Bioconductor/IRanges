@@ -43,7 +43,8 @@ setMethod("runValue", "Rle", function(x) x@values)
 setGeneric("nrun", signature = "x", function(x) standardGeneric("nrun"))
 setMethod("nrun", "Rle", function(x) length(runLength(x)))
 
-setMethod("start", "Rle", function(x) cumsum(c(1L, runLength(x)))[-(nrun(x)+1L)])
+setMethod("start", "Rle",
+          function(x) window(cumsum(c(1L, runLength(x))), 1L, nrun(x)))
 setMethod("end", "Rle", function(x) cumsum(runLength(x)))
 setMethod("width", "Rle", function(x) runLength(x))
 
@@ -292,7 +293,9 @@ setMethod("[", "Rle",
                         pmin(end(i), end(x)[from]) - start(i) + 1L
                       lens[tail(breaks - 1L, -1)] <-
                         end(i) - pmax(start(i), start(x)[to]) + 1L
-                      output <- Rle(runValue(x)[runseq], lens)
+                      output <-
+                        Rle(values  = runValue(x)[runseq],
+                            lengths = lens, check = FALSE)
                   }
                   if (drop)
                       output <- as.vector(output)
@@ -503,24 +506,34 @@ setMethod("seqselect", "Rle",
               } else {
                   ir <- IRanges(start=start, end=end, width=width, names=NULL)
               }
+              k <- length(ir)
               start <- start(ir)
               end <- end(ir)
               if (any(start < 1L) || any(end > length(x)))
                   stop("some ranges are out of bounds")
               startX <- start(x)
               endX <- end(x)
-              runStart <- findInterval(start, startX)
-              runEnd <- findInterval(end, startX)
+              if (k == 1) {
+                  runBound <-
+                    .Call("Integer_sorted_findInterval",
+                          c(start, end), runLength(x),
+                          PACKAGE="IRanges")
+              } else {
+                  runBound <- findInterval(c(start, end), startX)
+              }
+              runStart <- window(runBound, 1L, k)
+              runEnd <- window(runBound, k + 1L, 2 * k)
               offsetStart <- start - startX[runStart]
               offsetEnd <- endX[runEnd] - end
               subseqs <-
-                lapply(seq_len(length(ir)), function(i)
+                lapply(seq_len(k), function(i)
                            .Call("Rle_window_aslist",
                                  x, runStart[i], runEnd[i],
                                  offsetStart[i], offsetEnd[i],
                                  PACKAGE = "IRanges"))
-              Rle(unlist(lapply(subseqs, "[[", "values")),
-                  unlist(lapply(subseqs, "[[", "lengths")))
+              Rle(values  = unlist(lapply(subseqs, "[[", "values")),
+                  lengths = unlist(lapply(subseqs, "[[", "lengths")),
+                  check = FALSE)
           })
 
 setReplaceMethod("seqselect", "Rle",
@@ -559,6 +572,7 @@ setReplaceMethod("seqselect", "Rle",
                      if (end(ir[length(ir)]) != length(x))
                          ir <- c(ir, IRanges(start = length(x), width = 0))
 
+                     k <- length(ir)
                      start <- start(ir)
                      end <- end(ir)
                      startX <- start(x)
@@ -572,10 +586,10 @@ setReplaceMethod("seqselect", "Rle",
                      offsetStart <- start - startX[runStart]
                      offsetEnd <- endX[runEnd] - end
 
-                     subseqs <- vector("list", length(valueWidths) + length(ir))
-                     if (length(ir) > 0) {
+                     subseqs <- vector("list", length(valueWidths) + k)
+                     if (k > 0) {
                          subseqs[seq(1, length(subseqs), by = 2)] <-
-                           lapply(seq_len(length(ir)), function(i)
+                           lapply(seq_len(k), function(i)
                                       .Call("Rle_window_aslist",
                                             x, runStart[i], runEnd[i],
                                             offsetStart[i], offsetEnd[i],
@@ -587,8 +601,9 @@ setReplaceMethod("seqselect", "Rle",
                                       list(values = value,
                                            lengths = valueWidths[i]))
                      }
-                     Rle(unlist(lapply(subseqs, "[[", "values")),
-                         unlist(lapply(subseqs, "[[", "lengths")))
+                     Rle(values  = unlist(lapply(subseqs, "[[", "values")),
+                         lengths = unlist(lapply(subseqs, "[[", "lengths")),
+                         check = FALSE)
                  })
 
 setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
