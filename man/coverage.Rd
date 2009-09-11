@@ -75,7 +75,7 @@
     For most methods, an integer vector (recycled to the length of
     \code{x}) specifying how each element in \code{x} should be
     (horizontally) shifted before the coverage is computed. Only shifted
-    indices in the range [1, \code{width}] will be include in the coverage
+    indices in the range [1, \code{width}] will be included in the coverage
     calculation.
     For \link{RangesList} and \link{RangedData} objects, a list or vector
     of the same length as \code{x} to be used for the corresponding element
