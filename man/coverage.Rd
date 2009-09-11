@@ -74,9 +74,11 @@
   \item{shift}{
     For most methods, an integer vector (recycled to the length of
     \code{x}) specifying how each element in \code{x} should be
-    (horizontally) shifted before the coverage is computed. For
-    \link{RangesList} and \link{RangedData} objects, a list or vector of
-    the same length as \code{x} to be used for the corresponding element
+    (horizontally) shifted before the coverage is computed. Only shifted
+    indices in the range [1, \code{width}] will be include in the coverage
+    calculation.
+    For \link{RangesList} and \link{RangedData} objects, a list or vector
+    of the same length as \code{x} to be used for the corresponding element
     in \code{x}. In addition for \link{RangedData} objects, can also be
     a character vector of length 1 denoting the column to use in
     \code{values(x)}.
