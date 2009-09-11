@@ -227,10 +227,7 @@ setMethod("whichFirstNotNormal", "Ranges",
 setMethod("[", "Ranges",
     function(x, i, j, ..., drop)
     {
-        cl <- class(x)
-        mc <- match.call()
-        mc$x <- as(x, "IRanges")
-        as(eval(mc, parent.frame()), cl)
+        as(callGeneric(as(x, "IRanges"), i=i, j=j, ..., drop=drop), class(x))
     }
 )
 
