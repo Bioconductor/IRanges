@@ -24,6 +24,9 @@
 \alias{as.data.frame,SplitDataFrameList-method}
 \alias{coerce,SplitDataFrameList,DataFrame-method}
 
+% show
+\alias{show,SplitDataFrameList-method}
+
 \title{List of DataFrames}
 \description{Represents a list of \code{\linkS4class{DataFrame}} objects.
   The \code{SplitDataFrameList} class contains the additional restriction

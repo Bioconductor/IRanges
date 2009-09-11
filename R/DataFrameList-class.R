@@ -180,3 +180,19 @@ setMethod("as.data.frame", "SplitDataFrameList",
               warning("'optional' and arguments in '...' ignored")
             as.data.frame(as(x, "DataFrame"), row.names = row.names)
           })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Show
+###
+
+setMethod("show", "SplitDataFrameList", function(object)
+          {
+              nc <- ncol(object)
+              lo <- length(object)
+              cat(class(object), ": ",
+                  lo, ifelse(lo == 1, " elements with ", " elements with "),
+                  nc, ifelse(nc == 1, " column\n", " columns\n"), sep = "")
+              if (!is.null(names(object)))
+                  cat(labeledLine("names", names(object)))
+              cat(labeledLine("colnames", colnames(object)))
+          })
