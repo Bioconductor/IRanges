@@ -469,6 +469,50 @@ SEXP Rle_constructor(SEXP x, SEXP counts)
  * --- .Call ENTRY POINT ---
  */
 
+SEXP Rle_start_end(SEXP x)
+{
+	int i, n, prev_start, prev_end, *len_elt, *start_elt, *end_elt;
+	SEXP lengths, ans, ans_names, ans_start, ans_end;
+
+	lengths = GET_SLOT(x, install("lengths"));
+	n = LENGTH(lengths);
+
+	PROTECT(ans = NEW_LIST(2));
+	PROTECT(ans_names = NEW_CHARACTER(2));
+	PROTECT(ans_start = NEW_INTEGER(n));
+	PROTECT(ans_end = NEW_INTEGER(n));
+
+	if (n > 0) {
+		prev_start = 1;
+		prev_end = 0;
+		INTEGER(ans_start)[0] = 1;
+		for(i = 0, len_elt = INTEGER(lengths),
+			start_elt = INTEGER(ans_start) + 1, end_elt = INTEGER(ans_end);
+		    i < n - 1; i++, len_elt++, start_elt++, end_elt++) {
+			prev_start += *len_elt;
+			prev_end += *len_elt;
+			*start_elt = prev_start;
+			*end_elt = prev_end;
+		}
+		INTEGER(ans_end)[n-1] = prev_end + INTEGER(lengths)[n-1];
+	}
+
+	SET_VECTOR_ELT(ans, 0, ans_start);
+	SET_VECTOR_ELT(ans, 1, ans_end);
+	SET_STRING_ELT(ans_names, 0, mkChar("start"));
+	SET_STRING_ELT(ans_names, 1, mkChar("end"));
+	SET_NAMES(ans, ans_names);
+
+	UNPROTECT(4);
+
+	return ans;
+}
+
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+
 SEXP Rle_window_aslist(SEXP x, SEXP runStart, SEXP runEnd,
 		               SEXP offsetStart, SEXP offsetEnd)
 {

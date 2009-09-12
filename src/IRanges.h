@@ -845,7 +845,12 @@ SEXP XNumericViews_slice(
 
 /* Rle_class.c */
 
-SEXP Rle_constructor(SEXP x, SEXP count);
+SEXP Rle_constructor(
+	SEXP x,
+	SEXP count
+);
+
+SEXP Rle_start_end(SEXP x);
 
 SEXP Rle_window_aslist(
 	SEXP x,
