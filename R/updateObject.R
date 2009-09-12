@@ -79,7 +79,7 @@ setClass("AnnotatedList", representation("VIRTUAL"))
 setMethod("updateObject", signature(object="AnnotatedList"),
           function(object, ..., verbose=FALSE) {
               if (verbose) message("updateObject(object = 'AnnotatedList')")
-              toSimpleList(asS4(object), "SimpleList", "ANYTHING")
+              toSimpleList(asS4(object), "SimpleList", "ANY")
           })
 
 ## "LogicalList" -> "SimpleLogicalList" or "CompressedLogicalList"
@@ -346,7 +346,7 @@ setClass("XDataFrame", representation("VIRTUAL"))
 setMethod("updateObject", signature(object="XDataFrame"),
           function(object, ..., verbose=FALSE) {
               if (verbose) message("updateObject(object = 'XDataFrame')")
-              toSimpleList(asS4(object), "DataFrame", "ANYTHING",
+              toSimpleList(asS4(object), "DataFrame", "ANY",
                            rownames = slot(object, "rownames"),
                            nrows = slot(object, "nrows"))
           })

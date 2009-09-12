@@ -342,17 +342,7 @@ setMethod("disjoin", "RangesList", function(x) endoapply(x, disjoin))
 setMethod("reduce", "RangesList",
           function(x, with.inframe.attrib=FALSE)
           {
-            if (length(x) == 0) {
-              nirl <- list(new("NormalIRanges"))
-            } else {
-              ranges <- new2("IRanges", start=start(x), width=width(x), check=FALSE)
-              nirl <- list(asNormalIRanges(ranges, force=TRUE))
-            }
-            ## This transformation must be atomic.
-            if (is(x, "CompressedList"))
-              newCompressedList(class(x), nirl)
-            else
-              newSimpleList(class(x), nirl)
+            endoapply(x, with.inframe.attrib = with.inframe.attrib)
           })
 
 setMethod("range", "RangesList",

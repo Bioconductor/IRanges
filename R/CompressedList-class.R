@@ -7,7 +7,7 @@ setClass("CompressedList",
          representation(
                         "VIRTUAL",
                         partitioning="PartitioningByEnd",
-                        unlistData="ANYTHING"
+                        unlistData="ANY"
                        )
          )
 
