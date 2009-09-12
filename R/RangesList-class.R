@@ -342,7 +342,7 @@ setMethod("disjoin", "RangesList", function(x) endoapply(x, disjoin))
 setMethod("reduce", "RangesList",
           function(x, with.inframe.attrib=FALSE)
           {
-            endoapply(x, with.inframe.attrib = with.inframe.attrib)
+            endoapply(x, reduce, with.inframe.attrib = with.inframe.attrib)
           })
 
 setMethod("range", "RangesList",
