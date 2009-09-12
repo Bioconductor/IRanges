@@ -6,7 +6,13 @@
 ### i.e. an ordered set of elements.
 ###
 
-setClassUnion("ANYTHING", methods:::.BasicClasses)
+is <- function(object, class2) 
+{
+    if (identical(class2, "ANY")) 
+        TRUE
+    else
+        methods::is(object, class2)
+}
 
 setClass("Sequence",
          contains="Annotated",
@@ -15,7 +21,7 @@ setClass("Sequence",
                         elementMetadata = "DataTableORNULL",
                         elementType = "character"
                         ),
-         prototype(elementType="ANYTHING")
+         prototype(elementType="ANY")
 )
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
