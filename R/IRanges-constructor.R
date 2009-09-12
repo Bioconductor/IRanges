@@ -67,8 +67,8 @@ IRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL)
         names(start) <- names
         return(start)
     }
-    if ((is(start, "logical") && !all(is.na(start))) || is(start, "Rle")) {
-        if (is(start, "Rle") && !is(runValue(start), "logical"))
+    if ((is.logical(start) && !all(is.na(start))) || is(start, "Rle")) {
+        if (is(start, "Rle") && !is.logical(runValue(start)))
             stop("'start' is an Rle, but not a logical Rle object")
         if (!is.null(end) || !is.null(width))
             stop("'end' and 'width' must be NULLs when 'start' is a logical ",
