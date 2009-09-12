@@ -21,6 +21,7 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 	cached_x = _cache_IRanges(x);
 	ans_length = _get_cachedIRanges_length(&cached_x);
 
+	ans = R_NilValue;
 	switch (TYPEOF(values)) {
     case LGLSXP:
     case INTSXP:
@@ -115,6 +116,7 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 	cached_x = _cache_IRanges(x);
 	ans_length = _get_cachedIRanges_length(&cached_x);
 
+	ans = R_NilValue;
 	switch (TYPEOF(values)) {
     case LGLSXP:
     case INTSXP:
@@ -210,6 +212,7 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 	cached_x = _cache_IRanges(x);
 	ans_length = _get_cachedIRanges_length(&cached_x);
 
+	ans = R_NilValue;
 	switch (TYPEOF(values)) {
     case LGLSXP:
     case INTSXP:
@@ -344,6 +347,7 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 	cached_x = _cache_IRanges(x);
 	ans_length = _get_cachedIRanges_length(&cached_x);
 
+	curr = R_NilValue;
 	switch (TYPEOF(values)) {
     case LGLSXP:
     case INTSXP:
@@ -444,6 +448,7 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 	cached_x = _cache_IRanges(x);
 	ans_length = _get_cachedIRanges_length(&cached_x);
 
+	curr = R_NilValue;
 	switch (TYPEOF(values)) {
     case LGLSXP:
     case INTSXP:

@@ -438,6 +438,7 @@ SEXP Rle_constructor(SEXP x, SEXP counts)
 	if (LENGTH(counts) > 0 && (LENGTH(counts) != LENGTH(x)))
 		error("'length(values)' != 'length(lengths)'");
 
+	ans = R_NilValue;
 	switch(TYPEOF(x)) {
     case LGLSXP:
     	PROTECT(ans = Rle_logical_constructor(x, counts));
