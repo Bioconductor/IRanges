@@ -52,14 +52,7 @@ test_RangesList_reduce <- function() {
   collection <- RangesList(one = range1, range2)
 
   checkIdentical(reduce(collection),
-                 RangesList(asNormalIRanges(IRanges(c(1,20), c(8, 100)),
-                                            force=FALSE)))
-
-  collection <- RangesList(one = IntervalTree(range1),
-                           two = IntervalTree(range2))
-  checkIdentical(reduce(collection),
-                 RangesList(asNormalIRanges(IRanges(c(1,20), c(8, 100)),
-                                            force=FALSE)))
+                 RangesList(one = reduce(range1), reduce(range2)))
 }
 
 test_RangesList_range <- function() {
