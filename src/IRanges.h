@@ -850,7 +850,9 @@ SEXP Rle_constructor(
 	SEXP count
 );
 
-SEXP Rle_start_end(SEXP x);
+SEXP Rle_start(SEXP x);
+
+SEXP Rle_end(SEXP x);
 
 SEXP Rle_window_aslist(
 	SEXP x,

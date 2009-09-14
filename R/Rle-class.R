@@ -43,13 +43,8 @@ setMethod("runValue", "Rle", function(x) x@values)
 setGeneric("nrun", signature = "x", function(x) standardGeneric("nrun"))
 setMethod("nrun", "Rle", function(x) length(runLength(x)))
 
-intervalRle <- function(x) {
-    if (!is(x, "Rle"))
-        stop("'x' must be an Rle instance")
-    .Call("Rle_start_end", x, PACKAGE="IRanges")
-}
-setMethod("start", "Rle", function(x) intervalRle(x)[["start"]])
-setMethod("end", "Rle", function(x) intervalRle(x)[["end"]])
+setMethod("start", "Rle", function(x) .Call("Rle_start", x, PACKAGE="IRanges"))
+setMethod("end", "Rle", function(x) .Call("Rle_end", x, PACKAGE="IRanges"))
 setMethod("width", "Rle", function(x) runLength(x))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -360,11 +355,11 @@ setMethod("aggregate", "Rle",
               else
                   indices <- structure(seq_len(n), names = names(end))
               if (is.null(frequency) && is.null(delta)) {
-                  intervalX <- intervalRle(x)
-                  runStart <- findInterval(start, intervalX[["start"]])
-                  runEnd <- findInterval(end, intervalX[["start"]])
-                  offsetStart <- start - intervalX[["start"]][runStart]
-                  offsetEnd <- intervalX[["end"]][runEnd] - end
+                  startX <- start(x)
+                  runStart <- findInterval(start, startX)
+                  runEnd <- findInterval(end, startX)
+                  offsetStart <- start - startX[runStart]
+                  offsetEnd <- (startX[runEnd] + runLength(x)[runEnd]) - end
                   ## Performance Optimization
                   ## Use a stripped down loop with empty Rle object
                   newRle <- new("Rle")
@@ -514,19 +509,19 @@ setMethod("seqselect", "Rle",
               end <- end(ir)
               if (any(start < 1L) || any(end > length(x)))
                   stop("some ranges are out of bounds")
-              intervalX <- intervalRle(x)
+              startX <- start(x)
               if (k == 1) {
                   runBound <-
                     .Call("Integer_sorted_findInterval",
                           c(start, end), runLength(x),
                           PACKAGE="IRanges")
               } else {
-                  runBound <- findInterval(c(start, end), intervalX[["start"]])
+                  runBound <- findInterval(c(start, end), startX)
               }
               runStart <- window(runBound, 1L, k)
               runEnd <- window(runBound, k + 1L, 2 * k)
-              offsetStart <- start - intervalX[["start"]][runStart]
-              offsetEnd <- intervalX[["end"]][runEnd] - end
+              offsetStart <- start - startX[runStart]
+              offsetEnd <- (startX[runEnd] + runLength(x)[runEnd]) - end
               subseqs <-
                 lapply(seq_len(k), function(i)
                            .Call("Rle_window_aslist",
@@ -577,15 +572,15 @@ setReplaceMethod("seqselect", "Rle",
                      k <- length(ir)
                      start <- start(ir)
                      end <- end(ir)
-                     intervalX <- intervalRle(x)
+                     startX <- start(x)
                      runStart <-
                        .Call("Integer_sorted_findInterval", start, runLength(x),
                              PACKAGE="IRanges")
                      runEnd <-
                        .Call("Integer_sorted_findInterval", end, runLength(x),
                              PACKAGE="IRanges")
-                     offsetStart <- start - intervalX[["start"]][runStart]
-                     offsetEnd <- intervalX[["end"]][runEnd] - end
+                     offsetStart <- start - startX[runStart]
+                     offsetEnd <- (startX[runEnd] + runLength(x)[runEnd]) - end
 
                      subseqs <- vector("list", length(valueWidths) + k)
                      if (k > 0) {
@@ -629,20 +624,20 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
               ## Perform X setup
               shiftedStartX <- rep.int(1L + OFFSET, length(SHIFT))
               shiftedEndX <- N - SHIFT
-              intervalX <- intervalRle(X)
-              runStartX <- findInterval(shiftedStartX, intervalX[["start"]])
-              runEndX <- findInterval(shiftedEndX, intervalX[["start"]])
-              offsetStartX <- shiftedStartX - intervalX[["start"]][runStartX]
-              offsetEndX <- intervalX[["end"]][runEndX] - shiftedEndX
+              startX <- start(X)
+              runStartX <- findInterval(shiftedStartX, startX)
+              runEndX <- findInterval(shiftedEndX, startX)
+              offsetStartX <- shiftedStartX - startX[runStartX]
+              offsetEndX <- (startX[runEndX] + runLength(X)[runEndX]) - shiftedEndX
 
               ## Perform Y setup
               shiftedStartY <- 1L + SHIFT
               shiftedEndY <- rep.int(N - OFFSET, length(SHIFT))
-              intervalY <- intervalRle(Y)
-              runStartY <- findInterval(shiftedStartY, intervalY[["start"]])
-              runEndY <- findInterval(shiftedEndY, intervalY[["start"]])
-              offsetStartY <- shiftedStartY - intervalY[["start"]][runStartY]
-              offsetEndY <- intervalY[["end"]][runEndY] - shiftedEndY
+              startY <- start(Y)
+              runStartY <- findInterval(shiftedStartY, startY)
+              runEndY <- findInterval(shiftedEndY, startY)
+              offsetStartY <- shiftedStartY - startY[runStartY]
+              offsetEndY <- (startY[runEndY] + runLength(Y)[runEndY]) - shiftedEndY
 
               ## Performance Optimization
               ## Use a stripped down loop with empty Rle object
