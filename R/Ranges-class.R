@@ -223,6 +223,11 @@ setMethod("whichFirstNotNormal", "Ranges",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Core endomorphisms.
 ###
+### TODO: "[" and most of the Ranges endomorphisms below are only defined for
+### IRanges objects. Need to fix up the update mechanism, so that they can be
+### defined on 'Ranges'. "[" and other endomorphisms below are currently
+### implemented as wrappers that coerce to IRanges, which is not a general,
+### long-term solution.
 
 setMethod("[", "Ranges",
     function(x, i, j, ..., drop)
@@ -235,11 +240,6 @@ setMethod("[", "Ranges",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### More endomorphisms.
 ###
-
-### FIXME: Most of these are only defined for IRanges. Need to fix up
-### the update mechanism, so that they can be defined on 'Ranges'. A
-### couple have been implemented as wrappers that coerce to IRanges,
-### which is not a general, long-term solution.
 
 setGeneric("shift", signature="x",
     function(x, shift, use.names=TRUE) standardGeneric("shift")
