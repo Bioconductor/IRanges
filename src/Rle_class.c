@@ -551,8 +551,8 @@ SEXP Rle_window_aslist(SEXP x, SEXP runStart, SEXP runEnd,
 
 	PROTECT(ans = NEW_LIST(2));
 	PROTECT(ans_names = NEW_CHARACTER(2));
-	PROTECT(ans_values = vector_subsetbyranges(values, runStart, runWidth));
-    PROTECT(ans_lengths = vector_subsetbyranges(lengths, runStart, runWidth));
+	PROTECT(ans_values = vector_seqselect(values, runStart, runWidth));
+	PROTECT(ans_lengths = vector_seqselect(lengths, runStart, runWidth));
 
     if (INTEGER(runWidth)[0] > 0) {
         INTEGER(ans_lengths)[0] -= INTEGER(offsetStart)[0];

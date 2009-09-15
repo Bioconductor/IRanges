@@ -331,3 +331,7 @@ mseq <- function(from, to) {
     stop("every element in 'to' must be >= corresponding element in 'from'")
   .Call("Integer_mseq", from, to, PACKAGE="IRanges")
 }
+
+findIntervalAndStartFromWidth <- function(x, width) {
+    .Call("findIntervalAndStartFromWidth", x, width, PACKAGE="IRanges")
+}

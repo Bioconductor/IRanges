@@ -19,7 +19,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(safe_strexplode, 1),
 	CALLMETHOD_DEF(Integer_diff_with_0, 1),
 	CALLMETHOD_DEF(Integer_sorted_merge, 2),
-	CALLMETHOD_DEF(Integer_sorted_findInterval, 2),
+	CALLMETHOD_DEF(findIntervalAndStartFromWidth, 2),
 
 /* IRanges_class.c */
 	CALLMETHOD_DEF(debug_IRanges_class, 0),
@@ -48,7 +48,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(Ranges_order, 3),
 
 /* Sequence_class.c */
-	CALLMETHOD_DEF(vector_subsetbyranges, 3),
+	CALLMETHOD_DEF(vector_seqselect, 3),
 
 /* SequencePtr_class.c */
 	CALLMETHOD_DEF(debug_SequencePtr_class, 0),

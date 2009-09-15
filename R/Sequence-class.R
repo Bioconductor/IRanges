@@ -398,7 +398,7 @@ setMethod("seqselect", "vector",
               } else {
                   ir <- IRanges(start=start, end=end, width=width, names=NULL)
               }
-              .Call("vector_subsetbyranges", x, start(ir), width(ir),
+              .Call("vector_seqselect", x, start(ir), width(ir),
                     PACKAGE="IRanges")
           })
 
@@ -554,7 +554,7 @@ setMethod("window", "vector",
                                    start = ifelse(is.null(start), NA, start),
                                    end = ifelse(is.null(end), NA, end),
                                    width = ifelse(is.null(width), NA, width))
-                  .Call("vector_subsetbyranges",
+                  .Call("vector_seqselect",
                         x, start(solved_SEW), width(solved_SEW),
                         PACKAGE="IRanges")
                } else {

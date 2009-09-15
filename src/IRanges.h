@@ -325,7 +325,7 @@ SEXP Integer_sorted_merge(
 	SEXP y
 );
 
-SEXP Integer_sorted_findInterval(
+SEXP findIntervalAndStartFromWidth(
 	SEXP x,
 	SEXP vec
 );
@@ -479,7 +479,7 @@ SEXP Ranges_order(
 
 /* Sequence_class.c */
 
-SEXP vector_subsetbyranges(SEXP x, SEXP start, SEXP width);
+SEXP vector_seqselect(SEXP x, SEXP start, SEXP width);
 
 
 /* SequencePtr_class.c */

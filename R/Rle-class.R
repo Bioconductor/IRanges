@@ -158,6 +158,17 @@ setMethod("as.character", "Rle", function(x) rep.int(as.character(runValue(x)), 
 setMethod("as.raw", "Rle", function(x) rep.int(as.raw(runValue(x)), runLength(x)))
 setMethod("as.factor", "Rle", function(x) rep.int(as.factor(runValue(x)), runLength(x)))
 
+getStartEndRunAndOffset <- function(x, start, end) {
+    infoStart <- findIntervalAndStartFromWidth(start, runLength(x))
+    infoEnd <- findIntervalAndStartFromWidth(end, runLength(x))
+    list(start =
+         list(run = infoStart[["interval"]], offset = start - infoStart[["start"]]),
+         end =
+         list(run = infoEnd[["interval"]],
+              offset = (infoEnd[["start"]] + runLength(x)[infoEnd[["interval"]]] - 1L) - end)
+        )
+}
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Group generic methods
 ###
@@ -181,8 +192,8 @@ setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
                       e2 <- rep(e2, length.out = n)
                   # ends <- sort(unique(c(end(e1), end(e2))))
                   ends <- .Call("Integer_sorted_merge", end(e1), end(e2), PACKAGE="IRanges")
-                  which1 <- .Call("Integer_sorted_findInterval", ends, runLength(e1), PACKAGE="IRanges")
-                  which2 <- .Call("Integer_sorted_findInterval", ends, runLength(e2), PACKAGE="IRanges")
+                  which1 <- findIntervalAndStartFromWidth(ends, runLength(e1))[["interval"]]
+                  which2 <- findIntervalAndStartFromWidth(ends, runLength(e2))[["interval"]]
               }
               Rle(values = callGeneric(runValue(e1)[which1], runValue(e2)[which2]),
                   lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
@@ -282,16 +293,16 @@ setMethod("[", "Rle",
                   if (length(i) == 0) {
                       output <- new("Rle")
                   } else {
-                      xstart <- start(x)
-                      from <- findInterval(start(i), xstart)
-                      to <- findInterval(end(i), xstart)
-                      runseq <- mseq(from, to)
+                      start <- start(i)
+                      end <- end(i)
+                      from <- findIntervalAndStartFromWidth(start, runLength(x))
+                      to <- findIntervalAndStartFromWidth(end, runLength(x))
+                      runseq <- mseq(from[["interval"]], to[["interval"]])
                       lens <- runLength(x)[runseq]
-                      breaks <- cumsum(c(1L, to - from + 1L))
+                      breaks <- cumsum(c(1L, to[["interval"]] - from[["interval"]] + 1L))
                       lens[head(breaks, -1)] <-
-                        pmin(end(i), end(x)[from]) - start(i) + 1L
-                      lens[tail(breaks - 1L, -1)] <-
-                        end(i) - pmax(start(i), start(x)[to]) + 1L
+                        pmin(end, (from[["start"]] + width(x)[from[["interval"]]] - 1L)) - start + 1L
+                      lens[tail(breaks - 1L, -1)] <- end - pmax(start, to[["start"]]) + 1L
                       output <-
                         Rle(values  = runValue(x)[runseq],
                             lengths = lens, check = FALSE)
@@ -317,7 +328,8 @@ setMethod("[", "Rle",
                   } else {
                       stop("invalid subscript type")
                   }
-                  output <- runValue(x)[findInterval(i, start(x))]
+                  runs <- findIntervalAndStartFromWidth(i, runLength(x))[["interval"]]
+                  output <- runValue(x)[runs]
                   if (!drop)
                       output <- Rle(output)
               }
@@ -355,11 +367,11 @@ setMethod("aggregate", "Rle",
               else
                   indices <- structure(seq_len(n), names = names(end))
               if (is.null(frequency) && is.null(delta)) {
-                  startX <- start(x)
-                  runStart <- findInterval(start, startX)
-                  runEnd <- findInterval(end, startX)
-                  offsetStart <- start - startX[runStart]
-                  offsetEnd <- (startX[runEnd] + runLength(x)[runEnd] - 1L) - end
+                  info <- getStartEndRunAndOffset(x, start, end)
+                  runStart <- info[["start"]][["run"]]
+                  offsetStart <- info[["start"]][["offset"]]
+                  runEnd <- info[["end"]][["run"]]
+                  offsetEnd <- info[["end"]][["offset"]]
                   ## Performance Optimization
                   ## Use a stripped down loop with empty Rle object
                   newRle <- new("Rle")
@@ -413,8 +425,9 @@ setGeneric("findRun", signature = "vec",
 
 setMethod("findRun", signature = c(vec = "Rle"),
           function(x, vec) {
-            starts <- start(vec)
-            runs <- findInterval(x, starts)
+            runs <-
+              findIntervalAndStartFromWidth(as.integer(x),
+                                            runLength(vec))[["interval"]]
             runs[x == 0 | x > length(vec)] <- NA
             runs
           })
@@ -507,30 +520,26 @@ setMethod("seqselect", "Rle",
               k <- length(ir)
               start <- start(ir)
               end <- end(ir)
-              if (any(start < 1L) || any(end > length(x)))
-                  stop("some ranges are out of bounds")
-              startX <- start(x)
               if (k == 1) {
-                  runBound <-
-                    .Call("Integer_sorted_findInterval",
-                          c(start, end), runLength(x),
-                          PACKAGE="IRanges")
+                  window(x, start = start, end = end)
               } else {
-                  runBound <- findInterval(c(start, end), startX)
+                  if (any(start < 1L) || any(end > length(x)))
+                      stop("some ranges are out of bounds")
+                  info <- getStartEndRunAndOffset(x, start, end)
+                  runStart <- info[["start"]][["run"]]
+                  offsetStart <- info[["start"]][["offset"]]
+                  runEnd <- info[["end"]][["run"]]
+                  offsetEnd <- info[["end"]][["offset"]]
+                  subseqs <-
+                    lapply(seq_len(k), function(i)
+                               .Call("Rle_window_aslist",
+                                     x, runStart[i], runEnd[i],
+                                     offsetStart[i], offsetEnd[i],
+                                     PACKAGE = "IRanges"))
+                  Rle(values  = unlist(lapply(subseqs, "[[", "values")),
+                      lengths = unlist(lapply(subseqs, "[[", "lengths")),
+                      check = FALSE)
               }
-              runStart <- window(runBound, 1L, k)
-              runEnd <- window(runBound, k + 1L, 2 * k)
-              offsetStart <- start - startX[runStart]
-              offsetEnd <- (startX[runEnd] + runLength(x)[runEnd] - 1L) - end
-              subseqs <-
-                lapply(seq_len(k), function(i)
-                           .Call("Rle_window_aslist",
-                                 x, runStart[i], runEnd[i],
-                                 offsetStart[i], offsetEnd[i],
-                                 PACKAGE = "IRanges"))
-              Rle(values  = unlist(lapply(subseqs, "[[", "values")),
-                  lengths = unlist(lapply(subseqs, "[[", "lengths")),
-                  check = FALSE)
           })
 
 setReplaceMethod("seqselect", "Rle",
@@ -572,16 +581,11 @@ setReplaceMethod("seqselect", "Rle",
                      k <- length(ir)
                      start <- start(ir)
                      end <- end(ir)
-                     startX <- start(x)
-                     runStart <-
-                       .Call("Integer_sorted_findInterval", start, runLength(x),
-                             PACKAGE="IRanges")
-                     runEnd <-
-                       .Call("Integer_sorted_findInterval", end, runLength(x),
-                             PACKAGE="IRanges")
-                     offsetStart <- start - startX[runStart]
-                     offsetEnd <- (startX[runEnd] + runLength(x)[runEnd] - 1L) - end
-
+                     info <- getStartEndRunAndOffset(x, start, end)
+                     runStart <- info[["start"]][["run"]]
+                     offsetStart <- info[["start"]][["offset"]]
+                     runEnd <- info[["end"]][["run"]]
+                     offsetEnd <- info[["end"]][["offset"]]
                      subseqs <- vector("list", length(valueWidths) + k)
                      if (k > 0) {
                          subseqs[seq(1, length(subseqs), by = 2)] <-
@@ -622,24 +626,22 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
               OFFSET <- as.integer(OFFSET)
               
               ## Perform X setup
-              shiftedStartX <- rep.int(1L + OFFSET, length(SHIFT))
-              shiftedEndX <- N - SHIFT
-              startX <- start(X)
-              runStartX <- findInterval(shiftedStartX, startX)
-              runEndX <- findInterval(shiftedEndX, startX)
-              offsetStartX <- shiftedStartX - startX[runStartX]
-              offsetEndX <-
-                (startX[runEndX] + runLength(X)[runEndX] - 1L) - shiftedEndX
+              infoX <-
+                getStartEndRunAndOffset(X, rep.int(1L + OFFSET, length(SHIFT)),
+                                        N - SHIFT)
+              runStartX <- infoX[["start"]][["run"]]
+              offsetStartX <- infoX[["start"]][["offset"]]
+              runEndX <- infoX[["end"]][["run"]]
+              offsetEndX <- infoX[["end"]][["offset"]]
 
               ## Perform Y setup
-              shiftedStartY <- 1L + SHIFT
-              shiftedEndY <- rep.int(N - OFFSET, length(SHIFT))
-              startY <- start(Y)
-              runStartY <- findInterval(shiftedStartY, startY)
-              runEndY <- findInterval(shiftedEndY, startY)
-              offsetStartY <- shiftedStartY - startY[runStartY]
-              offsetEndY <-
-                (startY[runEndY] + runLength(Y)[runEndY] - 1L) - shiftedEndY
+              infoY <-
+                getStartEndRunAndOffset(Y, 1L + SHIFT,
+                                        rep.int(N - OFFSET, length(SHIFT)))
+              runStartY <- infoY[["start"]][["run"]]
+              offsetStartY <- infoY[["start"]][["offset"]]
+              runEndY <- infoY[["end"]][["run"]]
+              offsetEndY <- infoY[["end"]][["offset"]]
 
               ## Performance Optimization
               ## Use a stripped down loop with empty Rle object
@@ -756,9 +758,15 @@ setMethod("window", "Rle",
                                    start = ifelse(is.null(start), NA, start),
                                    end = ifelse(is.null(end), NA, end),
                                    width = ifelse(is.null(width), NA, width))
-                  seqselect(x,
-                            IRanges(start = start(solved_SEW),
-                                    width = width(solved_SEW)))
+                  info <-
+                    getStartEndRunAndOffset(x, start(solved_SEW), end(solved_SEW))
+                  runStart <- info[["start"]][["run"]]
+                  offsetStart <- info[["start"]][["offset"]]
+                  runEnd <- info[["end"]][["run"]]
+                  offsetEnd <- info[["end"]][["offset"]]
+                  .Call("Rle_window",
+                        x, runStart, runEnd, offsetStart, offsetEnd,
+                        new("Rle"), PACKAGE = "IRanges")
               } else {
                   if (!is.null(width)) {
                       if (is.null(start))
@@ -827,10 +835,12 @@ setMethod("diff", "Rle",
     Rle(values =
         do.call(FUN,
                 c(lapply(rlist,
-                         function(x)
-                             runValue(x)[.Call("Integer_sorted_findInterval",
-                                               ends, runLength(x),
-                                               PACKAGE="IRanges")]),
+                         function(x) {
+                             runs <-
+                               findIntervalAndStartFromWidth(ends,
+                                       runLength(x))[["interval"]]
+                             runValue(x)[runs]
+                         }),
                  MoreArgs)),
         lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
         check = FALSE)

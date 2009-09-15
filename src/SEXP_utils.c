@@ -179,33 +179,79 @@ SEXP Integer_sorted_merge(SEXP x, SEXP y)
 
 /*
  * --- .Call ENTRY POINT ---
- * findInterval for when x is a sorted integer vector,
- * and 'vec' are the run lengths, not breaks
+ * findIntervalAndStartFromWidth for when x and width are integer vectors
  */
 
-SEXP Integer_sorted_findInterval(SEXP x, SEXP vec)
+SEXP findIntervalAndStartFromWidth(SEXP x, SEXP width)
 {
-	int i, x_len, vec_len, index, vec_sum;
-	const int *x_ptr, *vec_ptr;
-	int *ans_ptr;
-	SEXP ans;
+	int i, x_len, width_len, interval, start;
+	const int *x_elt, *width_elt;
+	int *interval_elt, *start_elt;
+	SEXP ans, ans_class, ans_names, ans_rownames, ans_interval, ans_start;
+
+	if (!IS_INTEGER(x))
+		error("'x' must be an integer vector");
+	if (!IS_INTEGER(width))
+		error("'width' must be an integer vector");
 
 	x_len = LENGTH(x);
-	vec_len = LENGTH(vec);
-	vec_ptr = INTEGER(vec);
-	vec_sum = *vec_ptr + 1;
-	PROTECT(ans = NEW_INTEGER(x_len));
-	index = 1;
-	for (i = 0, x_ptr = INTEGER(x), ans_ptr = INTEGER(ans); i < x_len;
-	     i++, x_ptr++, ans_ptr++) {
-		while (index < vec_len && *x_ptr >= vec_sum) {
-			vec_ptr++;
-			vec_sum += *vec_ptr;
-			index++;
+	width_len = LENGTH(width);
+	width_elt = INTEGER(width);
+	ans_rownames = R_NilValue;
+	PROTECT(ans_interval = NEW_INTEGER(x_len));
+	PROTECT(ans_start = NEW_INTEGER(x_len));
+	if (x_len > 0 && width_len > 0) {
+		start = 1;
+		interval = 1;
+		for (i = 0, x_elt = INTEGER(x), interval_elt = INTEGER(ans_interval),
+			 start_elt = INTEGER(ans_start); i < x_len;
+		     i++, x_elt++, interval_elt++, start_elt++) {
+			if (*x_elt == NA_INTEGER)
+				error("'x' cannot contain missing values");
+			else if (*x_elt < 0)
+				error("'x' must contain non-negative values");
+			if (*x_elt == 0) {
+				*interval_elt = 0;
+				*start_elt = NA_INTEGER;
+			} else {
+				while (interval > 1 && *x_elt < start) {
+					interval--;
+					width_elt--;
+					start -= *width_elt;
+				}
+				while (interval < width_len && *x_elt >= (start + *width_elt)) {
+					interval++;
+					start += *width_elt;
+					width_elt++;
+				}
+				if (*x_elt > start + *width_elt)
+					error("'x' must be less than 'sum(width)'");
+				*interval_elt = interval;
+				*start_elt = start;
+			}
 		}
-		*ans_ptr = index;
+		PROTECT(ans_rownames = NEW_INTEGER(2));
+		INTEGER(ans_rownames)[0] = NA_INTEGER;
+		INTEGER(ans_rownames)[1] = -x_len;
+	} else {
+		PROTECT(ans_rownames = NEW_INTEGER(0));
 	}
-	UNPROTECT(1);
+
+	PROTECT(ans = NEW_LIST(2));
+	PROTECT(ans_class = NEW_CHARACTER(1));
+	PROTECT(ans_names = NEW_CHARACTER(2));
+
+	SET_STRING_ELT(ans_class, 0, mkChar("data.frame"));
+	SET_STRING_ELT(ans_names, 0, mkChar("interval"));
+	SET_STRING_ELT(ans_names, 1, mkChar("start"));
+
+	SET_NAMES(ans, ans_names);
+	SET_ELEMENT(ans, 0, ans_interval);
+	SET_ELEMENT(ans, 1, ans_start);
+    setAttrib(ans, install("row.names"), ans_rownames);
+	SET_CLASS(ans, ans_class);
+
+	UNPROTECT(6);
 
 	return ans;
 }

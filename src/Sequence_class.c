@@ -3,7 +3,7 @@
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP vector_subsetbyranges(SEXP x, SEXP start, SEXP width)
+SEXP vector_seqselect(SEXP x, SEXP start, SEXP width)
 {
 	int ans_offset, i, j, s, w;
 	SEXP ans, ans_names;
@@ -54,12 +54,12 @@ SEXP vector_subsetbyranges(SEXP x, SEXP start, SEXP width)
 			memcpy(RAW(ans) + ans_offset, RAW(x) + s, w * sizeof(char));
 			break;
 		    default:
-			UNIMPLEMENTED_TYPE("vector_subsetbyranges", x);
+			UNIMPLEMENTED_TYPE("vector_seqselect", x);
 		}
 	}
 	ans_names = GET_NAMES(x);
 	if (ans_names != R_NilValue)
-		SET_NAMES(ans, vector_subsetbyranges(ans_names, start, width));
+		SET_NAMES(ans, vector_seqselect(ans_names, start, width));
 	UNPROTECT(1);
 	return ans;
 }
