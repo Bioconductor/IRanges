@@ -11,7 +11,7 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 {
 	char type = '?';
 	int i, start, width, ans_length, index, lower_run, upper_run, upper_bound;
-	int *lengths_elt;
+	int max_index, *lengths_elt;
 	SEXP ans, subject, values, lengths, names;
 	cachedIRanges cached_x;
 
@@ -37,6 +37,7 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
     }
 
 	lengths_elt = INTEGER(lengths);
+	max_index = LENGTH(lengths) - 1;
 	index = 0;
 	upper_run = *lengths_elt;
 	for (i = 0; i < ans_length; i++) {
@@ -70,10 +71,14 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 					} else if (INTEGER(values)[index] < INTEGER(ans)[i]) {
 						INTEGER(ans)[i] = INTEGER(values)[index];
 					}
-					lengths_elt++;
-					index++;
-					lower_run = upper_run + 1;
-					upper_run += *lengths_elt;
+					if (index < max_index) {
+						lengths_elt++;
+						index++;
+						lower_run = upper_run + 1;
+						upper_run += *lengths_elt;
+					} else {
+						break;
+					}
 				}
 			} else if (type == 'r') {
 				while (lower_run <= upper_bound) {
@@ -85,10 +90,14 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 					} else if (REAL(values)[index] < REAL(ans)[i]) {
 						REAL(ans)[i] = REAL(values)[index];
 					}
-					lengths_elt++;
-					index++;
-					lower_run = upper_run + 1;
-					upper_run += *lengths_elt;
+					if (index < max_index) {
+						lengths_elt++;
+						index++;
+						lower_run = upper_run + 1;
+						upper_run += *lengths_elt;
+					} else {
+						break;
+					}
 				}
 			}
 		}
@@ -106,7 +115,7 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 {
 	char type = '?';
 	int i, start, width, ans_length, index, lower_run, upper_run, upper_bound;
-	int *lengths_elt;
+	int max_index, *lengths_elt;
 	SEXP ans, subject, values, lengths, names;
 	cachedIRanges cached_x;
 
@@ -132,6 +141,7 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
     }
 
 	lengths_elt = INTEGER(lengths);
+	max_index = LENGTH(lengths) - 1;
 	index = 0;
 	upper_run = *lengths_elt;
 	for (i = 0; i < ans_length; i++) {
@@ -165,10 +175,14 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 					} else if (INTEGER(values)[index] > INTEGER(ans)[i]) {
 						INTEGER(ans)[i] = INTEGER(values)[index];
 					}
-					lengths_elt++;
-					index++;
-					lower_run = upper_run + 1;
-					upper_run += *lengths_elt;
+					if (index < max_index) {
+						lengths_elt++;
+						index++;
+						lower_run = upper_run + 1;
+						upper_run += *lengths_elt;
+					} else {
+						break;
+					}
 				}
 			} else if (type == 'r') {
 				while (lower_run <= upper_bound) {
@@ -180,10 +194,14 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 					} else if (REAL(values)[index] > REAL(ans)[i]) {
 						REAL(ans)[i] = REAL(values)[index];
 					}
-					lengths_elt++;
-					index++;
-					lower_run = upper_run + 1;
-					upper_run += *lengths_elt;
+					if (index < max_index) {
+						lengths_elt++;
+						index++;
+						lower_run = upper_run + 1;
+						upper_run += *lengths_elt;
+					} else {
+						break;
+					}
 				}
 			}
 		}
@@ -202,7 +220,7 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 	char type = '?';
 	int i, start, width, ans_length, index,
 	    lower_run, upper_run, lower_bound, upper_bound;
-	int *lengths_elt;
+	int max_index, *lengths_elt;
 	SEXP ans, subject, values, lengths, names;
 	cachedIRanges cached_x;
 
@@ -232,6 +250,7 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
     }
 
 	lengths_elt = INTEGER(lengths);
+	max_index = LENGTH(lengths) - 1;
 	index = 0;
 	upper_run = *lengths_elt;
 	for (i = 0; i < ans_length; i++) {
@@ -271,11 +290,15 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 						    (1 + (upper_bound < upper_run ? upper_bound : upper_run) -
 						         (lower_bound > lower_run ? lower_bound : lower_run));
 					}
-					lengths_elt++;
-					index++;
-					lower_run = upper_run + 1;
-					lower_bound = lower_run;
-					upper_run += *lengths_elt;
+					if (index < max_index) {
+						lengths_elt++;
+						index++;
+						lower_run = upper_run + 1;
+						lower_bound = lower_run;
+						upper_run += *lengths_elt;
+					} else {
+						break;
+					}
 				}
 				if (INTEGER(ans)[i] != NA_INTEGER &&
 					(INTEGER(ans)[i] > INT_MAX || INTEGER(ans)[i] < R_INT_MIN))
@@ -292,11 +315,15 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 						    (1 + (upper_bound < upper_run ? upper_bound : upper_run) -
 						         (lower_bound > lower_run ? lower_bound : lower_run));
 					}
-					lengths_elt++;
-					index++;
-					lower_run = upper_run + 1;
-					lower_bound = lower_run;
-					upper_run += *lengths_elt;
+					if (index < max_index) {
+						lengths_elt++;
+						index++;
+						lower_run = upper_run + 1;
+						lower_bound = lower_run;
+						upper_run += *lengths_elt;
+					} else {
+						break;
+					}
 				}
 			} else if (type == 'c') {
 				while (lower_run <= upper_bound) {
@@ -314,11 +341,15 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 						    (1 + (upper_bound < upper_run ? upper_bound : upper_run) -
 						         (lower_bound > lower_run ? lower_bound : lower_run));
 					}
-					lengths_elt++;
-					index++;
-					lower_run = upper_run + 1;
-					lower_bound = lower_run;
-					upper_run += *lengths_elt;
+					if (index < max_index) {
+						lengths_elt++;
+						index++;
+						lower_run = upper_run + 1;
+						lower_bound = lower_run;
+						upper_run += *lengths_elt;
+					} else {
+						break;
+					}
 				}
 			}
 		}
@@ -337,7 +368,7 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 	char type = '?';
 	int i, start, width, ans_length, index,
 	    lower_run, upper_run, lower_bound, upper_bound;
-	int *ans_elt, *lengths_elt;
+	int max_index, *ans_elt, *lengths_elt;
 	SEXP curr, ans, subject, values, lengths, names;
 	cachedIRanges cached_x;
 
@@ -364,6 +395,7 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	lengths_elt = INTEGER(lengths);
+	max_index = LENGTH(lengths) - 1;
 	index = 0;
 	upper_run = *lengths_elt;
 	for (i = 0, ans_elt = INTEGER(ans); i < ans_length; i++, ans_elt++) {
@@ -399,11 +431,15 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 						*ans_elt = lower_bound;
 						INTEGER(curr)[0] = INTEGER(values)[index];
 					}
-					lengths_elt++;
-					index++;
-					lower_run = upper_run + 1;
-					lower_bound = lower_run;
-					upper_run += *lengths_elt;
+					if (index < max_index) {
+						lengths_elt++;
+						index++;
+						lower_run = upper_run + 1;
+						lower_bound = lower_run;
+						upper_run += *lengths_elt;
+					} else {
+						break;
+					}
 				}
 			} else if (type == 'r') {
 				while (lower_run <= upper_bound) {
@@ -415,11 +451,15 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 						*ans_elt = lower_bound;
 						REAL(curr)[0] = REAL(values)[index];
 					}
-					lengths_elt++;
-					index++;
-					lower_run = upper_run + 1;
-					lower_bound = lower_run;
-					upper_run += *lengths_elt;
+					if (index < max_index) {
+						lengths_elt++;
+						index++;
+						lower_run = upper_run + 1;
+						lower_bound = lower_run;
+						upper_run += *lengths_elt;
+					} else {
+						break;
+					}
 				}
 			}
 		}
@@ -438,7 +478,7 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 	char type = '?';
 	int i, start, width, ans_length, index,
 	    lower_run, upper_run, lower_bound, upper_bound;
-	int *ans_elt, *lengths_elt;
+	int max_index, *ans_elt, *lengths_elt;
 	SEXP curr, ans, subject, values, lengths, names;
 	cachedIRanges cached_x;
 
@@ -465,6 +505,7 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	lengths_elt = INTEGER(lengths);
+	max_index = LENGTH(lengths) - 1;
 	index = 0;
 	upper_run = *lengths_elt;
 	for (i = 0, ans_elt = INTEGER(ans); i < ans_length; i++, ans_elt++) {
@@ -500,11 +541,15 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 						*ans_elt = lower_bound;
 						INTEGER(curr)[0] = INTEGER(values)[index];
 					}
-					lengths_elt++;
-					index++;
-					lower_run = upper_run + 1;
-					lower_bound = lower_run;
-					upper_run += *lengths_elt;
+					if (index < max_index) {
+						lengths_elt++;
+						index++;
+						lower_run = upper_run + 1;
+						lower_bound = lower_run;
+						upper_run += *lengths_elt;
+					} else {
+						break;
+					}
 				}
 			} else if (type == 'r') {
 				while (lower_run <= upper_bound) {
@@ -516,11 +561,15 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 						*ans_elt = lower_bound;
 						REAL(curr)[0] = REAL(values)[index];
 					}
-					lengths_elt++;
-					index++;
-					lower_run = upper_run + 1;
-					lower_bound = lower_run;
-					upper_run += *lengths_elt;
+					if (index < max_index) {
+						lengths_elt++;
+						index++;
+						lower_run = upper_run + 1;
+						lower_bound = lower_run;
+						upper_run += *lengths_elt;
+					} else {
+						break;
+					}
 				}
 			}
 		}
