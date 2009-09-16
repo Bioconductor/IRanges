@@ -26,10 +26,8 @@
 \alias{updateObject,SplitXDataFrameList-method}
 \alias{updateObject,XDataFrame-method}
 \alias{updateObject,XDataFrameList-method}
-\alias{updateObject,XInteger-method}
+\alias{updateObject,XSequence-method}
 \alias{updateObject,XIntegerViews-method}
-\alias{updateObject,XDouble-method}
-\alias{updateObject,XRaw-method}
 
 \title{Update an IRanges object from BioC 2.4 to current version}
 \description{

@@ -368,13 +368,13 @@ setMethod("updateObject", signature(object="SplitXDataFrameList"),
                             "CompressedSplitDataFrameList", "DataFrame")
           })
 
-## "XInteger" -> "XInteger"
-setMethod("updateObject", signature(object="XInteger"),
+## "XSequence" -> "XSequence"
+setMethod("updateObject", signature(object="XSequence"),
           function(object, ..., verbose=FALSE) {
-              if (verbose) message("updateObject(object = 'XInteger')")
+              if (verbose) message("updateObject(object = 'XSequence')")
               if (!("metadata" %in% names(attributes(object)))) {
                   object <-
-                    new("XInteger",
+                    new(class(object),
                         shared = slot(object, "shared"),
                         offset = slot(object, "offset"),
                         length = slot(object, "length"))
@@ -397,30 +397,3 @@ setMethod("updateObject", signature(object="XIntegerViews"),
               object
           })
 
-## "XDouble" -> "XDouble"
-setMethod("updateObject", signature(object="XDouble"),
-          function(object, ..., verbose=FALSE) {
-              if (verbose) message("updateObject(object = 'XDouble')")
-              if (!("metadata" %in% names(attributes(object)))) {
-                  object <-
-                    new("XDouble",
-                        shared = slot(object, "shared"),
-                        offset = slot(object, "offset"),
-                        length = slot(object, "length"))
-              }
-              object
-          })
-
-## "XRaw" -> "XRaw"
-setMethod("updateObject", signature(object="XRaw"),
-          function(object, ..., verbose=FALSE) {
-              if (verbose) message("updateObject(object = 'XRaw')")
-              if (!("metadata" %in% names(attributes(object)))) {
-                  object <-
-                    new("XRaw",
-                        shared = slot(object, "shared"),
-                        offset = slot(object, "offset"),
-                        length = slot(object, "length"))
-              }
-              object
-          })
