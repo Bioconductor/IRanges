@@ -376,15 +376,15 @@ SEXP get_H2LGrouping_low2high(SEXP x);
 
 
 /*
- * Low-level manipulation of SequencePtr objects.
- * (see SequencePtr_class.c)
+ * Low-level manipulation of SharedVector objects.
+ * (see SharedVector_class.c)
  */
 
-SEXP new_SequencePtr(const char *classname, SEXP tag);
+SEXP new_SharedVector(const char *classname, SEXP tag);
 
-SEXP get_SequencePtr_tag(SEXP x);
+SEXP get_SharedVector_tag(SEXP x);
 
-int get_SequencePtr_length(SEXP x);
+int get_SharedVector_length(SEXP x);
 
 
 /*
@@ -392,7 +392,7 @@ int get_SequencePtr_length(SEXP x);
  * (see XSequence_class.c)
  */
 
-SEXP get_XSequence_xdata(SEXP x);
+SEXP get_XSequence_shared(SEXP x);
 
 SEXP get_XSequence_offset(SEXP x);
 
@@ -402,11 +402,11 @@ SEXP get_XSequence_tag(SEXP x);
 
 cachedCharSeq cache_XRaw(SEXP x);
 
-SEXP new_XSequence(const char *classname, SEXP xdata, int offset, int length);
+SEXP new_XSequence(const char *classname, SEXP shared, int offset, int length);
 
 SEXP new_XRaw_from_tag(const char *classname, SEXP tag);
 
 SEXP new_XInteger_from_tag(const char *classname, SEXP tag);
 
-SEXP new_XNumeric_from_tag(const char *classname, SEXP tag);
+SEXP new_XDouble_from_tag(const char *classname, SEXP tag);
 

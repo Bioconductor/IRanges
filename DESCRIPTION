@@ -25,7 +25,7 @@ Collate: validity-utils.R
 	Annotated-class.R
 	Sequence-class.R
 	DataTable-class.R
-    DataTable-stats.R
+	DataTable-stats.R
 	AtomicList-class.R
 	Ranges-class.R
 	Ranges-comparison.R
@@ -40,16 +40,16 @@ Collate: validity-utils.R
 	Rle-class.R
 	RleViews-class.R
 	RleViews-utils.R
-	SequencePtr-class.R
-	RawPtr-class.R
-	IntegerPtr-class.R
-	NumericPtr-class.R
+	SharedVector-class.R
+	SharedRaw-class.R
+	SharedInteger-class.R
+	SharedDouble-class.R
 	XSequence-class.R
 	XRaw-class.R
 	XInteger-class.R
 	XIntegerViews-class.R
 	XIntegerViews-utils.R
-	XNumeric-class.R
+	XDouble-class.R
 	SimpleList-class.R
 	CompressedList-class.R
 	AtomicList-impl.R

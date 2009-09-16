@@ -394,20 +394,20 @@ DEFINE_CCALLABLE_STUB(SEXP, get_H2LGrouping_low2high,
 )
 
 /*
- * Stubs for callables defined in SequencePtr_class.c
+ * Stubs for callables defined in SharedVector_class.c
  */
 
-DEFINE_CCALLABLE_STUB(SEXP, new_SequencePtr,
+DEFINE_CCALLABLE_STUB(SEXP, new_SharedVector,
 	(const char *classname, SEXP tag),
 	(            classname,      tag)
 )
 
-DEFINE_CCALLABLE_STUB(SEXP, get_SequencePtr_tag,
+DEFINE_CCALLABLE_STUB(SEXP, get_SharedVector_tag,
 	(SEXP x),
 	(     x)
 )
 
-DEFINE_CCALLABLE_STUB(int, get_SequencePtr_length,
+DEFINE_CCALLABLE_STUB(int, get_SharedVector_length,
 	(SEXP x),
 	(     x)
 )
@@ -417,7 +417,7 @@ DEFINE_CCALLABLE_STUB(int, get_SequencePtr_length,
  * Stubs for callables defined in XSequence_class.c
  */
 
-DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_xdata,
+DEFINE_CCALLABLE_STUB(SEXP, get_XSequence_shared,
 	(SEXP x),
 	(     x)
 )
@@ -443,8 +443,8 @@ DEFINE_CCALLABLE_STUB(cachedCharSeq, cache_XRaw,
 )
 
 DEFINE_CCALLABLE_STUB(SEXP, new_XSequence,
-	(const char *classname, SEXP xdata, int offset, int length),
-	(            classname,      xdata,     offset,     length)
+	(const char *classname, SEXP shared, int offset, int length),
+	(            classname,      shared,     offset,     length)
 )
 
 DEFINE_CCALLABLE_STUB(SEXP, new_XRaw_from_tag,
@@ -457,7 +457,7 @@ DEFINE_CCALLABLE_STUB(SEXP, new_XInteger_from_tag,
 	(            classname,      tag)
 )
 
-DEFINE_CCALLABLE_STUB(SEXP, new_XNumeric_from_tag,
+DEFINE_CCALLABLE_STUB(SEXP, new_XDouble_from_tag,
 	(const char *classname, SEXP tag),
 	(            classname,      tag)
 )

@@ -23,50 +23,50 @@
 
 \alias{coerce,ANY,vector-method}
 
-% SequencePtr class, functions and methods:
-\alias{class:SequencePtr}
-\alias{SequencePtr-class}
-\alias{SequencePtr}
+% SharedVector class, functions and methods:
+\alias{class:SharedVector}
+\alias{SharedVector-class}
+\alias{SharedVector}
 
-\alias{as.numeric,SequencePtr-method}
+\alias{as.numeric,SharedVector-method}
 \alias{show,externalptr-method}
-\alias{length,SequencePtr-method}
-\alias{==,SequencePtr,SequencePtr-method}
-\alias{!=,SequencePtr,SequencePtr-method}
+\alias{length,SharedVector-method}
+\alias{==,SharedVector,SharedVector-method}
+\alias{!=,SharedVector,SharedVector-method}
 
-% RawPtr class, functions and methods:
-\alias{class:RawPtr}
-\alias{RawPtr-class}
-\alias{RawPtr}
+% SharedRaw class, functions and methods:
+\alias{class:SharedRaw}
+\alias{SharedRaw-class}
+\alias{SharedRaw}
 
-\alias{show,RawPtr-method}
-\alias{RawPtr.readInts}
-\alias{RawPtr.writeInts}
-\alias{RawPtr.read}
-\alias{RawPtr.write}
-\alias{RawPtr.copy}
-\alias{RawPtr.reverseCopy}
-\alias{RawPtr.readComplexes}
-\alias{RawPtr.append}
-\alias{RawPtr.compare}
-\alias{as.integer,RawPtr-method}
-\alias{toString,RawPtr-method}
+\alias{show,SharedRaw-method}
+\alias{SharedRaw.readInts}
+\alias{SharedRaw.writeInts}
+\alias{SharedRaw.read}
+\alias{SharedRaw.write}
+\alias{SharedRaw.copy}
+\alias{SharedRaw.reverseCopy}
+\alias{SharedRaw.readComplexes}
+\alias{SharedRaw.append}
+\alias{SharedRaw.compare}
+\alias{as.integer,SharedRaw-method}
+\alias{toString,SharedRaw-method}
 
-% IntegerPtr class, functions and methods:
-\alias{class:IntegerPtr}
-\alias{IntegerPtr-class}
-\alias{IntegerPtr}
+% SharedInteger class, functions and methods:
+\alias{class:SharedInteger}
+\alias{SharedInteger-class}
+\alias{SharedInteger}
 
-\alias{show,IntegerPtr-method}
-\alias{as.integer,IntegerPtr-method}
+\alias{show,SharedInteger-method}
+\alias{as.integer,SharedInteger-method}
 
-% NumericPtr class, functions and methods:
-\alias{class:NumericPtr}
-\alias{NumericPtr-class}
-\alias{NumericPtr}
+% SharedDouble class, functions and methods:
+\alias{class:SharedDouble}
+\alias{SharedDouble-class}
+\alias{SharedDouble}
 
-\alias{show,NumericPtr-method}
-\alias{as.numeric,NumericPtr-method}
+\alias{show,SharedDouble-method}
+\alias{as.numeric,SharedDouble-method}
 
 
 \title{IRanges internals}

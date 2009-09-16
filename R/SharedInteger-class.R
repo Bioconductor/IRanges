@@ -1,19 +1,19 @@
 ### =========================================================================
-### External pointer to an integer vector: the "IntegerPtr" class
+### External pointer to an integer vector: the "SharedInteger" class
 ### -------------------------------------------------------------------------
 ###
 
-setClass("IntegerPtr", contains="SequencePtr")
+setClass("SharedInteger", contains="SharedVector")
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Initialization.
 ###
-### Note that, unlike 'integer(99)', 'IntegerPtr(99)' does NOT initialize its
+### Note that, unlike 'integer(99)', 'SharedInteger(99)' does NOT initialize its
 ### data. Specify the 'val' argument if you want data initialization.
 ###
 
-setMethod("initialize", "IntegerPtr",
+setMethod("initialize", "SharedInteger",
     function(.Object, length=0L, val=NULL)
     {
         if (!isSingleNumber(length) || length < 0)
@@ -26,17 +26,17 @@ setMethod("initialize", "IntegerPtr",
             if (!storage.mode(val) == "integer")
                 storage.mode(val) <- "integer"
         }
-        .Call("IntegerPtr_new", length, val, PACKAGE="IRanges")
+        .Call("SharedInteger_new", length, val, PACKAGE="IRanges")
     }
 )
 
-IntegerPtr <- function(length=0L, val=NULL)
-    new2("IntegerPtr", length=length, val=val, check=FALSE)
+SharedInteger <- function(length=0L, val=NULL)
+    new2("SharedInteger", length=length, val=val, check=FALSE)
 
-setMethod("show", "IntegerPtr",
+setMethod("show", "SharedInteger",
     function(object)
     {
-        show_string <- .Call("IntegerPtr_get_show_string", object, PACKAGE="IRanges")
+        show_string <- .Call("SharedInteger_get_show_string", object, PACKAGE="IRanges")
         cat(show_string, "\n", sep="")
         ## What is correct here? The documentation (?show) says that 'show'
         ## should return an invisible 'NULL' but, on the other hand, the 'show'
@@ -54,7 +54,7 @@ setMethod("show", "IntegerPtr",
 ### and the write functions don't do anything.
 ###
 
-IntegerPtr.read <- function(x, i, imax=integer(0))
+SharedInteger.read <- function(x, i, imax=integer(0))
 {
     if (!is.integer(i))
         i <- as.integer(i)
@@ -63,13 +63,13 @@ IntegerPtr.read <- function(x, i, imax=integer(0))
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("IntegerPtr_read_ints_from_i1i2", x, i, imax, PACKAGE="IRanges")
+        .Call("SharedInteger_read_ints_from_i1i2", x, i, imax, PACKAGE="IRanges")
     } else {
-        .Call("IntegerPtr_read_ints_from_subset", x, i, PACKAGE="IRanges")
+        .Call("SharedInteger_read_ints_from_subset", x, i, PACKAGE="IRanges")
     }
 }
 
-IntegerPtr.write <- function(x, i, imax=integer(0), value)
+SharedInteger.write <- function(x, i, imax=integer(0), value)
 {
     if (!is.integer(value))
         stop("'value' must be an integer vector")
@@ -80,17 +80,17 @@ IntegerPtr.write <- function(x, i, imax=integer(0), value)
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("IntegerPtr_write_ints_to_i1i2", x, i, imax, value, PACKAGE="IRanges")
+        .Call("SharedInteger_write_ints_to_i1i2", x, i, imax, value, PACKAGE="IRanges")
     } else {
-        .Call("IntegerPtr_write_ints_to_subset", x, i, value, PACKAGE="IRanges")
+        .Call("SharedInteger_write_ints_to_subset", x, i, value, PACKAGE="IRanges")
     }
     x
 }
 
-IntegerPtr.copy <- function(dest, i, imax=integer(0), src)
+SharedInteger.copy <- function(dest, i, imax=integer(0), src)
 {
-    if (!is(src, "IntegerPtr"))
-        stop("'src' must be an IntegerPtr object")
+    if (!is(src, "SharedInteger"))
+        stop("'src' must be an SharedInteger object")
     if (!is.integer(i))
         i <- as.integer(i)
     if (length(i) == 1) {
@@ -98,10 +98,10 @@ IntegerPtr.copy <- function(dest, i, imax=integer(0), src)
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("IntegerPtr_copy_from_i1i2",
+        .Call("SharedInteger_copy_from_i1i2",
               dest, src, i, imax, PACKAGE="IRanges")
     } else {
-        .Call("IntegerPtr_copy_from_subset",
+        .Call("SharedInteger_copy_from_subset",
               dest, src, i, PACKAGE="IRanges")
     }
     dest
@@ -112,8 +112,8 @@ IntegerPtr.copy <- function(dest, i, imax=integer(0), src)
 ### Coercion.
 ###
 
-setMethod("as.integer", "IntegerPtr",
-    function(x, ...) IntegerPtr.read(x, 1L, length(x))
+setMethod("as.integer", "SharedInteger",
+    function(x, ...) SharedInteger.read(x, 1L, length(x))
 )
 
 
@@ -122,7 +122,7 @@ setMethod("as.integer", "IntegerPtr",
 ###
 ### A wrapper to the very fast memcmp() C-function.
 ### Arguments MUST be the following or it will crash R:
-###   x1, x2: "IntegerPtr" objects
+###   x1, x2: "SharedInteger" objects
 ###   start1, start2, width: single integers
 ### In addition: 1 <= start1 <= start1+width-1 <= length(x1)
 ###              1 <= start2 <= start2+width-1 <= length(x2)
@@ -130,8 +130,8 @@ setMethod("as.integer", "IntegerPtr",
 ### arguments) because we want it to be the fastest possible!
 ###
 
-IntegerPtr.compare <- function(x1, start1, x2, start2, width)
+SharedInteger.compare <- function(x1, start1, x2, start2, width)
 {
-    .Call("IntegerPtr_memcmp", x1, start1, x2, start2, width, PACKAGE="IRanges")
+    .Call("SharedInteger_memcmp", x1, start1, x2, start2, width, PACKAGE="IRanges")
 }
 

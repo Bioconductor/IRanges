@@ -194,5 +194,5 @@ test_update_SplitXDataFrameList <- function() {
 
 ## "XInteger" -> "XInteger"
 ## "XIntegerViews" -> "XIntegerViews"
-## "XNumeric" -> "XNumeric"
+## "XDouble" -> "XDouble"
 ## "XRaw" -> "XRaw"

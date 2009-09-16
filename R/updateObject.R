@@ -375,7 +375,7 @@ setMethod("updateObject", signature(object="XInteger"),
               if (!("metadata" %in% names(attributes(object)))) {
                   object <-
                     new("XInteger",
-                        xdata = slot(object, "xdata"),
+                        shared = slot(object, "shared"),
                         offset = slot(object, "offset"),
                         length = slot(object, "length"))
               }
@@ -397,14 +397,14 @@ setMethod("updateObject", signature(object="XIntegerViews"),
               object
           })
 
-## "XNumeric" -> "XNumeric"
-setMethod("updateObject", signature(object="XNumeric"),
+## "XDouble" -> "XDouble"
+setMethod("updateObject", signature(object="XDouble"),
           function(object, ..., verbose=FALSE) {
-              if (verbose) message("updateObject(object = 'XNumeric')")
+              if (verbose) message("updateObject(object = 'XDouble')")
               if (!("metadata" %in% names(attributes(object)))) {
                   object <-
-                    new("XNumeric",
-                        xdata = slot(object, "xdata"),
+                    new("XDouble",
+                        shared = slot(object, "shared"),
                         offset = slot(object, "offset"),
                         length = slot(object, "length"))
               }
@@ -418,7 +418,7 @@ setMethod("updateObject", signature(object="XRaw"),
               if (!("metadata" %in% names(attributes(object)))) {
                   object <-
                     new("XRaw",
-                        xdata = slot(object, "xdata"),
+                        shared = slot(object, "shared"),
                         offset = slot(object, "offset"),
                         length = slot(object, "length"))
               }

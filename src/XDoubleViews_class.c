@@ -19,7 +19,7 @@ static int le(double x, double y) {
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP XNumericViews_slice(SEXP xdouble, SEXP lower, SEXP upper, SEXP include_lower, SEXP include_upper)
+SEXP XDoubleViews_slice(SEXP xdouble, SEXP lower, SEXP upper, SEXP include_lower, SEXP include_upper)
 {
 	SEXP x, ans, start, width;
 	int i, x_length, ans_length;
@@ -66,7 +66,7 @@ SEXP XNumericViews_slice(SEXP xdouble, SEXP lower, SEXP upper, SEXP include_lowe
 			prev_elt = curr_elt;
 		}
 	}
-	PROTECT(ans = _new_IRanges("XNumericViews", start, width, R_NilValue));
+	PROTECT(ans = _new_IRanges("XDoubleViews", start, width, R_NilValue));
 	SET_SLOT(ans, install("subject"), duplicate(xdouble));
 	UNPROTECT(3);
 	return ans;

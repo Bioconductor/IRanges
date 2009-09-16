@@ -27,14 +27,14 @@ SEXP debug_XSequence_class()
  */
 
 static SEXP
-	xdata_symbol = NULL,
+	shared_symbol = NULL,
 	offset_symbol = NULL,
 	length_symbol = NULL;
 
-SEXP _get_XSequence_xdata(SEXP x)
+SEXP _get_XSequence_shared(SEXP x)
 {
-	INIT_STATIC_SYMBOL(xdata)
-	return GET_SLOT(x, xdata_symbol);
+	INIT_STATIC_SYMBOL(shared)
+	return GET_SLOT(x, shared_symbol);
 }
 
 SEXP _get_XSequence_offset(SEXP x)
@@ -52,7 +52,7 @@ SEXP _get_XSequence_length(SEXP x)
 /* Not a strict "slot getter" but very much like. */
 SEXP _get_XSequence_tag(SEXP x)
 {
-	return _get_SequencePtr_tag(_get_XSequence_xdata(x));
+	return _get_SharedVector_tag(_get_XSequence_shared(x));
 }
 
 
@@ -80,10 +80,10 @@ cachedCharSeq _cache_XRaw(SEXP x)
  * Be careful that these functions do NOT duplicate the assigned value!
  */
 
-static void set_XSequence_xdata(SEXP x, SEXP value)
+static void set_XSequence_shared(SEXP x, SEXP value)
 {
-	INIT_STATIC_SYMBOL(xdata)
-	SET_SLOT(x, xdata_symbol, value);
+	INIT_STATIC_SYMBOL(shared)
+	SET_SLOT(x, shared_symbol, value);
 	return;
 }
 
@@ -101,9 +101,9 @@ static void set_XSequence_length(SEXP x, SEXP value)
 	return;
 }
 
-static void set_XSequence_slots(SEXP x, SEXP xdata, SEXP offset, SEXP length)
+static void set_XSequence_slots(SEXP x, SEXP shared, SEXP offset, SEXP length)
 {
-	set_XSequence_xdata(x, xdata);
+	set_XSequence_shared(x, shared);
 	set_XSequence_offset(x, offset);
 	set_XSequence_length(x, length);
 }
@@ -117,7 +117,7 @@ static void set_XSequence_slots(SEXP x, SEXP xdata, SEXP offset, SEXP length)
  * Thus they cannot be made .Call() entry points!
  */
 
-SEXP _new_XSequence(const char *classname, SEXP xdata, int offset, int length)
+SEXP _new_XSequence(const char *classname, SEXP shared, int offset, int length)
 {
 	SEXP classdef, ans, ans_offset, ans_length;
 
@@ -125,46 +125,46 @@ SEXP _new_XSequence(const char *classname, SEXP xdata, int offset, int length)
 	PROTECT(ans = NEW_OBJECT(classdef));
 	PROTECT(ans_offset = ScalarInteger(offset));
 	PROTECT(ans_length = ScalarInteger(length));
-	set_XSequence_slots(ans, xdata, ans_offset, ans_length);
+	set_XSequence_slots(ans, shared, ans_offset, ans_length);
 	UNPROTECT(4);
 	return ans;
 }
 
 SEXP _new_XRaw_from_tag(const char *classname, SEXP tag)
 {
-	SEXP xdata, ans;
+	SEXP shared, ans;
 
 	if (!IS_RAW(tag))
 		error("IRanges internal error in _new_XRaw_from_tag(): "
 		      "'tag' is not RAW");
-	PROTECT(xdata = _new_SequencePtr("RawPtr", tag));
-	PROTECT(ans = _new_XSequence(classname, xdata, 0, LENGTH(tag)));
+	PROTECT(shared = _new_SharedVector("SharedRaw", tag));
+	PROTECT(ans = _new_XSequence(classname, shared, 0, LENGTH(tag)));
 	UNPROTECT(2);
 	return ans;
 }
 
 SEXP _new_XInteger_from_tag(const char *classname, SEXP tag)
 {
-	SEXP xdata, ans;
+	SEXP shared, ans;
 
 	if (!IS_INTEGER(tag))
 		error("IRanges internal error in _new_XInteger_from_tag(): "
 		      "'tag' is not INTEGER");
-	PROTECT(xdata = _new_SequencePtr("IntegerPtr", tag));
-	PROTECT(ans = _new_XSequence(classname, xdata, 0, LENGTH(tag)));
+	PROTECT(shared = _new_SharedVector("SharedInteger", tag));
+	PROTECT(ans = _new_XSequence(classname, shared, 0, LENGTH(tag)));
 	UNPROTECT(2);
 	return ans;
 }
 
-SEXP _new_XNumeric_from_tag(const char *classname, SEXP tag)
+SEXP _new_XDouble_from_tag(const char *classname, SEXP tag)
 {
-	SEXP xdata, ans;
+	SEXP shared, ans;
 
 	if (!IS_NUMERIC(tag))
-		error("IRanges internal error in _new_XNumeric_from_tag(): "
+		error("IRanges internal error in _new_XDouble_from_tag(): "
 		      "'tag' is not NUMERIC");
-	PROTECT(xdata = _new_SequencePtr("NumericPtr", tag));
-	PROTECT(ans = _new_XSequence(classname, xdata, 0, LENGTH(tag)));
+	PROTECT(shared = _new_SharedVector("SharedDouble", tag));
+	PROTECT(ans = _new_XSequence(classname, shared, 0, LENGTH(tag)));
 	UNPROTECT(2);
 	return ans;
 }

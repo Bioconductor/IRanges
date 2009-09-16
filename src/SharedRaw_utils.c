@@ -1,12 +1,12 @@
 /****************************************************************************
- *                          Fast RawPtr utilities                           *
+ *                          Fast SharedRaw utilities                           *
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"
 
 static int debug = 0;
 
-SEXP debug_RawPtr_utils()
+SEXP debug_SharedRaw_utils()
 {
 #ifdef DEBUG_IRANGES
 	debug = !debug;
@@ -19,7 +19,7 @@ SEXP debug_RawPtr_utils()
 }
 
 
-SEXP RawPtr_new(SEXP length, SEXP val)
+SEXP SharedRaw_new(SEXP length, SEXP val)
 {
 	SEXP tag, ans;
 	int tag_length, i;
@@ -39,51 +39,51 @@ SEXP RawPtr_new(SEXP length, SEXP val)
 		error("when 'val' is not a single value, its length must "
 		      "be equal to the value of the 'length' argument");
 	}
-	PROTECT(ans = _new_SequencePtr("RawPtr", tag));
+	PROTECT(ans = _new_SharedVector("SharedRaw", tag));
 	UNPROTECT(2);
 	return ans;
 }
 
-SEXP RawPtr_get_show_string(SEXP x)
+SEXP SharedRaw_get_show_string(SEXP x)
 {
 	SEXP tag;
 	int tag_length;
 	char buf[100]; /* should be enough... */
 
-	tag = _get_SequencePtr_tag(x);
+	tag = _get_SharedVector_tag(x);
 	tag_length = LENGTH(tag);
-	snprintf(buf, sizeof(buf), "%d-byte RawPtr object (data starting at memory address %p)",
+	snprintf(buf, sizeof(buf), "%d-byte SharedRaw object (data starting at memory address %p)",
 		tag_length, RAW(tag));
 	return mkString(buf);
 }
 
 /*
  * --- .Call ENTRY POINT ---
- * Comparing the data between 2 RawPtr objects.
+ * Comparing the data between 2 SharedRaw objects.
  * From R:
- *   x <- RawPtr(30)
- *   .Call("RawPtr_memcmp", x, 1L, x, 10L, 21L, PACKAGE="IRanges")
+ *   x <- SharedRaw(30)
+ *   .Call("SharedRaw_memcmp", x, 1L, x, 10L, 21L, PACKAGE="IRanges")
  */
 
-SEXP RawPtr_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
+SEXP SharedRaw_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
 {
 	SEXP tag1, tag2, ans;
 	int i1, i2, n;
 
 #ifdef DEBUG_IRANGES
 	if (debug) {
-		Rprintf("[DEBUG] RawPtr_memcmp(): BEGIN\n");
+		Rprintf("[DEBUG] SharedRaw_memcmp(): BEGIN\n");
 	}
 #endif
-	tag1 = _get_SequencePtr_tag(x1);
+	tag1 = _get_SharedVector_tag(x1);
 	i1 = INTEGER(start1)[0] - 1;
-	tag2 = _get_SequencePtr_tag(x2);
+	tag2 = _get_SharedVector_tag(x2);
 	i2 = INTEGER(start2)[0] - 1;
 	n = INTEGER(width)[0];
 
 #ifdef DEBUG_IRANGES
 	if (debug) {
-		Rprintf("[DEBUG] RawPtr_memcmp(): ");
+		Rprintf("[DEBUG] SharedRaw_memcmp(): ");
 		Rprintf("RAW(tag1)=%p i1=%d RAW(tag2)=%p i2=%d n=%d\n",
 			RAW(tag1), i1, RAW(tag2), i2, n);
 	}
@@ -94,7 +94,7 @@ SEXP RawPtr_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
 				n, sizeof(Rbyte));
 #ifdef DEBUG_IRANGES
 	if (debug) {
-		Rprintf("[DEBUG] RawPtr_memcmp(): END\n");
+		Rprintf("[DEBUG] SharedRaw_memcmp(): END\n");
 	}
 #endif
 	UNPROTECT(1);
@@ -107,7 +107,7 @@ SEXP RawPtr_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
  * ====================
  *
  * The functions in this section implement the read/write operations to an
- * RawPtr object. The user can choose between 2 interfaces for each
+ * SharedRaw object. The user can choose between 2 interfaces for each
  * read or write operation:
  *
  *   1. The "i1i2" interface: the chars to access are specified by 2
@@ -119,7 +119,7 @@ SEXP RawPtr_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
  * integer vector containing their positions in the buffer.
  *
  * The "subset" interface is intended to be used by the subsetting
- * operator [ defined at the R level for RawPtr objects.
+ * operator [ defined at the R level for SharedRaw objects.
  * R subsetting operator [ can be used to read values from, or write values
  * to an object that contains a collection of values, like a character
  * vector, an integer vector or a logical vector.
@@ -142,7 +142,7 @@ SEXP RawPtr_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
  *
  * Here are some arguments to these functions that must always be SEXP of the
  * following types:
- *   src, dest: RawPtr objects;
+ *   src, dest: SharedRaw objects;
  *   imin, imax: single integers;
  *   subset: integer vector containing the subscripts (with no NAs);
  *   lkup: lookup table for encoding/decoding (integer or complex vector).
@@ -150,19 +150,19 @@ SEXP RawPtr_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
 
 
 /* ==========================================================================
- * Copy bytes from a RawPtr object to another RawPtr object.
+ * Copy bytes from a SharedRaw object to another SharedRaw object.
  * --------------------------------------------------------------------------
  */
 
 /* Bold version (no recycling) */
-SEXP RawPtr_memcpy(SEXP dest, SEXP dest_start, SEXP src, SEXP src_start, SEXP width)
+SEXP SharedRaw_memcpy(SEXP dest, SEXP dest_start, SEXP src, SEXP src_start, SEXP width)
 {
 	SEXP dest_tag, src_tag;
 	int i, j, n;
 
-	dest_tag = _get_SequencePtr_tag(dest);
+	dest_tag = _get_SharedVector_tag(dest);
 	i = INTEGER(dest_start)[0] - 1;
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	j = INTEGER(src_start)[0] - 1;
 	n = INTEGER(width)[0];
 	if (i < 0 || i + n > LENGTH(dest_tag)
@@ -173,13 +173,13 @@ SEXP RawPtr_memcpy(SEXP dest, SEXP dest_start, SEXP src, SEXP src_start, SEXP wi
 }
 
 /* Cyclic writing in 'dest' */
-SEXP RawPtr_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
+SEXP SharedRaw_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
 {
 	SEXP dest_tag, src_tag;
 	int i1, i2;
 
-	dest_tag = _get_SequencePtr_tag(dest);
-	src_tag = _get_SequencePtr_tag(src);
+	dest_tag = _get_SharedVector_tag(dest);
+	src_tag = _get_SharedVector_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	_IRanges_memcpy_from_i1i2(i1, i2,
@@ -189,12 +189,12 @@ SEXP RawPtr_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
 }
 
 /* Cyclic writing in 'dest' */
-SEXP RawPtr_copy_from_subset(SEXP dest, SEXP src, SEXP subset)
+SEXP SharedRaw_copy_from_subset(SEXP dest, SEXP src, SEXP subset)
 {
 	SEXP dest_tag, src_tag;
 
-	dest_tag = _get_SequencePtr_tag(dest);
-	src_tag = _get_SequencePtr_tag(src);
+	dest_tag = _get_SharedVector_tag(dest);
+	src_tag = _get_SharedVector_tag(src);
 	_IRanges_memcpy_from_subset(INTEGER(subset), LENGTH(subset),
 			(char *) RAW(dest_tag), LENGTH(dest_tag),
 			(char *) RAW(src_tag), LENGTH(src_tag), sizeof(Rbyte));
@@ -203,7 +203,7 @@ SEXP RawPtr_copy_from_subset(SEXP dest, SEXP src, SEXP subset)
 
 
 /* ==========================================================================
- * Read/write chars from/to a RawPtr object.
+ * Read/write chars from/to a SharedRaw object.
  * All the functions in this group assume that sizeof(Rbyte) == sizeof(char).
  * --------------------------------------------------------------------------
  */
@@ -211,17 +211,17 @@ SEXP RawPtr_copy_from_subset(SEXP dest, SEXP src, SEXP subset)
 /*
  * Return a single string (character vector of length 1).
  * From R:
- *   x <- RawPtr(15)
+ *   x <- SharedRaw(15)
  *   x[] < "Hello"
- *   .Call("RawPtr_read_chars_from_i1i2", x, 2:2, 4:4, PACKAGE="IRanges")
+ *   .Call("SharedRaw_read_chars_from_i1i2", x, 2:2, 4:4, PACKAGE="IRanges")
  */
-SEXP RawPtr_read_chars_from_i1i2(SEXP src, SEXP imin, SEXP imax)
+SEXP SharedRaw_read_chars_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 {
 	SEXP src_tag;
 	int i1, i2, n;
 	CharAE dest;
 
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	n = i2 - i1 + 1;
@@ -234,13 +234,13 @@ SEXP RawPtr_read_chars_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 	return mkString(dest.elts);
 }
 
-SEXP RawPtr_read_chars_from_subset(SEXP src, SEXP subset)
+SEXP SharedRaw_read_chars_from_subset(SEXP src, SEXP subset)
 {
 	SEXP src_tag;
 	int n;
 	CharAE dest;
 
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	n = LENGTH(subset);
 	dest = _new_CharAE(n + 1);
 	dest.elts[n] = '\0';
@@ -254,12 +254,12 @@ SEXP RawPtr_read_chars_from_subset(SEXP src, SEXP subset)
 /*
  * 'string' must be a non-empty single string (character vector of length 1).
  */
-SEXP RawPtr_write_chars_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP string)
+SEXP SharedRaw_write_chars_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP string)
 {
 	SEXP dest_tag, src;
 	int i1, i2;
 
-	dest_tag = _get_SequencePtr_tag(dest);
+	dest_tag = _get_SharedVector_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	src = STRING_ELT(string, 0);
@@ -270,11 +270,11 @@ SEXP RawPtr_write_chars_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP string)
 	return dest;
 }
 
-SEXP RawPtr_write_chars_to_subset(SEXP dest, SEXP subset, SEXP string)
+SEXP SharedRaw_write_chars_to_subset(SEXP dest, SEXP subset, SEXP string)
 {
 	SEXP dest_tag, src;
 
-	dest_tag = _get_SequencePtr_tag(dest);
+	dest_tag = _get_SharedVector_tag(dest);
 	src = STRING_ELT(string, 0);
 	/* assumes that sizeof(Rbyte) == sizeof(char) */
 	_IRanges_memcpy_to_subset(INTEGER(subset), LENGTH(subset),
@@ -285,22 +285,22 @@ SEXP RawPtr_write_chars_to_subset(SEXP dest, SEXP subset, SEXP string)
 
 
 /* ==========================================================================
- * Read/write integers from/to a RawPtr object
+ * Read/write integers from/to a SharedRaw object
  * --------------------------------------------------------------------------
  */
 
 /*
  * Return an integer vector of length 'imax' - 'imin' + 1.
  * From R:
- *   x <- RawPtr(30)
- *   .Call("RawPtr_read_ints_from_i1i2", x, 20:20, 25:25, PACKAGE="IRanges")
+ *   x <- SharedRaw(30)
+ *   .Call("SharedRaw_read_ints_from_i1i2", x, 20:20, 25:25, PACKAGE="IRanges")
  */
-SEXP RawPtr_read_ints_from_i1i2(SEXP src, SEXP imin, SEXP imax)
+SEXP SharedRaw_read_ints_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 {
 	SEXP src_tag, ans;
 	int i1, i2, n, j;
 
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	if (i1 < 0 || i2 >= LENGTH(src_tag))
@@ -318,16 +318,16 @@ SEXP RawPtr_read_ints_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 /*
  * Return an integer vector of same length as 'subset'.
  * From R:
- *   x <- RawPtr(30)
- *   .Call("RawPtr_read_ints_from_subset", x, 25:20, PACKAGE="IRanges")
+ *   x <- SharedRaw(30)
+ *   .Call("SharedRaw_read_ints_from_subset", x, 25:20, PACKAGE="IRanges")
  */
-SEXP RawPtr_read_ints_from_subset(SEXP src, SEXP subset)
+SEXP SharedRaw_read_ints_from_subset(SEXP src, SEXP subset)
 {
 	SEXP src_tag, ans;
 	int src_length;
 	int n, i, j;
 
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	src_length = LENGTH(src_tag);
 	n = LENGTH(subset);
 
@@ -345,14 +345,14 @@ SEXP RawPtr_read_ints_from_subset(SEXP src, SEXP subset)
 /*
  * 'val' must be an integer vector of length > 0.
  */
-SEXP RawPtr_write_ints_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
+SEXP SharedRaw_write_ints_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 {
 	SEXP dest_tag;
 	int val_length;
 	int i1, i2, n, j;
 	int v;
 
-	dest_tag = _get_SequencePtr_tag(dest);
+	dest_tag = _get_SharedVector_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	if (i1 < 0 || i2 >= LENGTH(dest_tag))
@@ -377,7 +377,7 @@ SEXP RawPtr_write_ints_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 	return dest;
 }
 
-SEXP RawPtr_write_ints_to_subset(SEXP dest, SEXP subset, SEXP val)
+SEXP SharedRaw_write_ints_to_subset(SEXP dest, SEXP subset, SEXP val)
 {
 	SEXP dest_tag;
 	int dest_length, val_length;
@@ -388,7 +388,7 @@ SEXP RawPtr_write_ints_to_subset(SEXP dest, SEXP subset, SEXP val)
 	n = LENGTH(subset);
 	if (val_length == 0 && n != 0)
 		error("no value provided");
-	dest_tag = _get_SequencePtr_tag(dest);
+	dest_tag = _get_SharedVector_tag(dest);
 	dest_length = LENGTH(dest_tag);
 
 	for (j = z = 0; z < n; j++, z++) {
@@ -411,20 +411,20 @@ SEXP RawPtr_write_ints_to_subset(SEXP dest, SEXP subset, SEXP val)
 
 
 /* ==========================================================================
- * Read/write encoded chars from/to a RawPtr object
+ * Read/write encoded chars from/to a SharedRaw object
  * --------------------------------------------------------------------------
  */
 
 /*
  * Return a single string (character vector of length 1).
  */
-SEXP RawPtr_read_enc_chars_from_i1i2(SEXP src, SEXP imin, SEXP imax, SEXP lkup)
+SEXP SharedRaw_read_enc_chars_from_i1i2(SEXP src, SEXP imin, SEXP imax, SEXP lkup)
 {
 	SEXP src_tag;
 	int i1, i2, n;
 	CharAE dest;
 
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	n = i2 - i1 + 1;
@@ -436,13 +436,13 @@ SEXP RawPtr_read_enc_chars_from_i1i2(SEXP src, SEXP imin, SEXP imax, SEXP lkup)
 	return mkString(dest.elts);
 }
 
-SEXP RawPtr_read_enc_chars_from_subset(SEXP src, SEXP subset, SEXP lkup)
+SEXP SharedRaw_read_enc_chars_from_subset(SEXP src, SEXP subset, SEXP lkup)
 {
 	SEXP src_tag;
 	int n;
 	CharAE dest;
 
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	n = LENGTH(subset);
 	dest = _new_CharAE(n + 1);
 	dest.elts[n] = '\0';
@@ -453,18 +453,18 @@ SEXP RawPtr_read_enc_chars_from_subset(SEXP src, SEXP subset, SEXP lkup)
 }
 
 /*
- * The RawPtr_write_enc_chars_to_i1i2() function is used when initializing
- * an XString object to encode and store the source string in the @xdata
+ * The SharedRaw_write_enc_chars_to_i1i2() function is used when initializing
+ * an XString object to encode and store the source string in the @shared
  * slot of the object.
  * 'string' must be a non-empty single string (character vector of length 1).
  */
-SEXP RawPtr_write_enc_chars_to_i1i2(SEXP dest, SEXP imin, SEXP imax,
+SEXP SharedRaw_write_enc_chars_to_i1i2(SEXP dest, SEXP imin, SEXP imax,
 		SEXP string, SEXP lkup)
 {
 	SEXP dest_tag, src;
 	int i1, i2;
 
-	dest_tag = _get_SequencePtr_tag(dest);
+	dest_tag = _get_SharedVector_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	src = STRING_ELT(string, 0);
@@ -475,13 +475,13 @@ SEXP RawPtr_write_enc_chars_to_i1i2(SEXP dest, SEXP imin, SEXP imax,
 	return dest;
 }
 
-SEXP RawPtr_write_enc_chars_to_subset(SEXP dest, SEXP subset,
+SEXP SharedRaw_write_enc_chars_to_subset(SEXP dest, SEXP subset,
 		SEXP string, SEXP lkup)
 {
 	SEXP dest_tag, src;
 	int n;
 
-	dest_tag = _get_SequencePtr_tag(dest);
+	dest_tag = _get_SharedVector_tag(dest);
 	n = LENGTH(subset);
 	src = STRING_ELT(string, 0);
 	_IRanges_charcpy_to_subset_with_lkup(INTEGER(subset), n,
@@ -492,17 +492,17 @@ SEXP RawPtr_write_enc_chars_to_subset(SEXP dest, SEXP subset,
 
 
 /* ==========================================================================
- * Read chars from a RawPtr object and convert them to a vector
+ * Read chars from a SharedRaw object and convert them to a vector
  * of complexes.
  * --------------------------------------------------------------------------
  */
 
-SEXP RawPtr_read_complexes_from_i1i2(SEXP src, SEXP imin, SEXP imax, SEXP lkup)
+SEXP SharedRaw_read_complexes_from_i1i2(SEXP src, SEXP imin, SEXP imax, SEXP lkup)
 {
 	SEXP dest, src_tag;
 	int i1, i2, n;
 
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	n = i2 - i1 + 1;
@@ -514,12 +514,12 @@ SEXP RawPtr_read_complexes_from_i1i2(SEXP src, SEXP imin, SEXP imax, SEXP lkup)
 	return dest;
 }
 
-SEXP RawPtr_read_complexes_from_subset(SEXP src, SEXP subset, SEXP lkup)
+SEXP SharedRaw_read_complexes_from_subset(SEXP src, SEXP subset, SEXP lkup)
 {
 	SEXP dest, src_tag;
 	int n;
 
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	n = LENGTH(subset);
 	PROTECT(dest = NEW_COMPLEX(n));
 	error("not available yet");
@@ -529,20 +529,20 @@ SEXP RawPtr_read_complexes_from_subset(SEXP src, SEXP subset, SEXP lkup)
 
 
 /* ==========================================================================
- * Copy and reverse copy bytes from a RawPtr object to another RawPtr object
+ * Copy and reverse copy bytes from a SharedRaw object to another SharedRaw object
  * with or without translation.
  * --------------------------------------------------------------------------
  */
 
-SEXP RawPtr_translate_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax, SEXP lkup)
+SEXP SharedRaw_translate_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax, SEXP lkup)
 {
 	SEXP dest_tag, src_tag;
 	int i1, i2;
 
-	dest_tag = _get_SequencePtr_tag(dest);
+	dest_tag = _get_SharedVector_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	_IRanges_charcpy_from_i1i2_with_lkup(i1, i2,
 		(char *) RAW(dest_tag), LENGTH(dest_tag),
 		(char *) RAW(src_tag), LENGTH(src_tag),
@@ -550,12 +550,12 @@ SEXP RawPtr_translate_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax, 
 	return dest;
 }
 
-SEXP RawPtr_translate_copy_from_subset(SEXP dest, SEXP src, SEXP subset, SEXP lkup)
+SEXP SharedRaw_translate_copy_from_subset(SEXP dest, SEXP src, SEXP subset, SEXP lkup)
 {
 	SEXP dest_tag, src_tag;
 
-	dest_tag = _get_SequencePtr_tag(dest);
-	src_tag = _get_SequencePtr_tag(src);
+	dest_tag = _get_SharedVector_tag(dest);
+	src_tag = _get_SharedVector_tag(src);
 	_IRanges_charcpy_from_subset_with_lkup(INTEGER(subset), LENGTH(subset),
 		(char *) RAW(dest_tag), LENGTH(dest_tag),
 		(char *) RAW(src_tag), LENGTH(src_tag), 
@@ -563,30 +563,30 @@ SEXP RawPtr_translate_copy_from_subset(SEXP dest, SEXP src, SEXP subset, SEXP lk
 	return dest;
 }
 
-SEXP RawPtr_reverse_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
+SEXP SharedRaw_reverse_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
 {
 	SEXP dest_tag, src_tag;
 	int i1, i2;
 
-	dest_tag = _get_SequencePtr_tag(dest);
+	dest_tag = _get_SharedVector_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	_IRanges_reverse_memcpy_from_i1i2(i1, i2,
 		(char *) RAW(dest_tag), LENGTH(dest_tag),
 		(char *) RAW(src_tag), LENGTH(src_tag), sizeof(char));
 	return dest;
 }
 
-SEXP RawPtr_reverse_translate_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax, SEXP lkup)
+SEXP SharedRaw_reverse_translate_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax, SEXP lkup)
 {
 	SEXP dest_tag, src_tag;
 	int i1, i2;
 
-	dest_tag = _get_SequencePtr_tag(dest);
+	dest_tag = _get_SharedVector_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	_IRanges_reverse_charcpy_from_i1i2_with_lkup(i1, i2,
 		(char *) RAW(dest_tag), LENGTH(dest_tag),
 		(char *) RAW(src_tag), LENGTH(src_tag),

@@ -1,12 +1,12 @@
 /****************************************************************************
- *                        Fast NumericPtr utilities                         *
+ *                        Fast SharedDouble utilities                         *
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"
 
 static int debug = 0;
 
-SEXP debug_NumericPtr_utils()
+SEXP debug_SharedDouble_utils()
 {
 #ifdef DEBUG_IRANGES
 	debug = !debug;
@@ -19,7 +19,7 @@ SEXP debug_NumericPtr_utils()
 }
 
 
-SEXP NumericPtr_new(SEXP length, SEXP val)
+SEXP SharedDouble_new(SEXP length, SEXP val)
 {
 	SEXP tag, ans;
 	int tag_length, i;
@@ -39,38 +39,38 @@ SEXP NumericPtr_new(SEXP length, SEXP val)
 		error("when 'val' is not a single value, its length must "
 		      "be equal to the value of the 'length' argument");
 	}
-	PROTECT(ans = _new_SequencePtr("NumericPtr", tag));
+	PROTECT(ans = _new_SharedVector("SharedDouble", tag));
 	UNPROTECT(2);
 	return ans;
 }
 
-SEXP NumericPtr_get_show_string(SEXP x)
+SEXP SharedDouble_get_show_string(SEXP x)
 {
 	SEXP tag;
 	int tag_length;
 	char buf[100]; /* should be enough... */
 
-	tag = _get_SequencePtr_tag(x);
+	tag = _get_SharedVector_tag(x);
 	tag_length = LENGTH(tag);
 	snprintf(buf, sizeof(buf),
-		"%d-number NumericPtr object (data starting at memory address %p)",
+		"%d-number SharedDouble object (data starting at memory address %p)",
 		tag_length, REAL(tag));
 	return mkString(buf);
 }
 
 /*
  * From R:
- *   x <- NumericPtr(30)
- *   .Call("NumericPtr_memcmp", x, 1L, x, 10L, 21L, PACKAGE="IRanges")
+ *   x <- SharedDouble(30)
+ *   .Call("SharedDouble_memcmp", x, 1L, x, 10L, 21L, PACKAGE="IRanges")
  */
-SEXP NumericPtr_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
+SEXP SharedDouble_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
 {
 	SEXP tag1, tag2, ans;
 	int i1, i2, n;
 
-	tag1 = _get_SequencePtr_tag(x1);
+	tag1 = _get_SharedVector_tag(x1);
 	i1 = INTEGER(start1)[0] - 1;
-	tag2 = _get_SequencePtr_tag(x2);
+	tag2 = _get_SharedVector_tag(x2);
 	i2 = INTEGER(start2)[0] - 1;
 	n = INTEGER(width)[0];
 
@@ -83,16 +83,16 @@ SEXP NumericPtr_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
 }
 
 /* ==========================================================================
- * Read/write numerics to a NumericPtr object
+ * Read/write numerics to a SharedDouble object
  * --------------------------------------------------------------------------
  */
 
-SEXP NumericPtr_read_nums_from_i1i2(SEXP src, SEXP imin, SEXP imax)
+SEXP SharedDouble_read_nums_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 {
 	SEXP src_tag, ans;
 	int i1, i2, n;
 
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	n = i2 - i1 + 1;
@@ -105,12 +105,12 @@ SEXP NumericPtr_read_nums_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 	return ans;
 }
 
-SEXP NumericPtr_read_nums_from_subset(SEXP src, SEXP subset)
+SEXP SharedDouble_read_nums_from_subset(SEXP src, SEXP subset)
 {
 	SEXP src_tag, ans;
 	int n;
 
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	n = LENGTH(subset);
 	PROTECT(ans = NEW_NUMERIC(n));
 	_IRanges_memcpy_from_subset(INTEGER(subset), n,
@@ -123,12 +123,12 @@ SEXP NumericPtr_read_nums_from_subset(SEXP src, SEXP subset)
 /*
  * 'val' must be a numeric vector.
  */
-SEXP NumericPtr_write_nums_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
+SEXP SharedDouble_write_nums_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 {
 	SEXP dest_tag;
 	int i1, i2;
 
-	dest_tag = _get_SequencePtr_tag(dest);
+	dest_tag = _get_SharedVector_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	_IRanges_memcpy_to_i1i2(i1, i2,
@@ -137,11 +137,11 @@ SEXP NumericPtr_write_nums_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 	return dest;
 }
 
-SEXP NumericPtr_write_nums_to_subset(SEXP dest, SEXP subset, SEXP val)
+SEXP SharedDouble_write_nums_to_subset(SEXP dest, SEXP subset, SEXP val)
 {
 	SEXP dest_tag;
 
-	dest_tag = _get_SequencePtr_tag(dest);
+	dest_tag = _get_SharedVector_tag(dest);
 	_IRanges_memcpy_to_subset(INTEGER(subset), LENGTH(subset),
 			(char *) REAL(dest_tag), LENGTH(dest_tag),
 			(char *) REAL(val), LENGTH(val), sizeof(double));
@@ -149,18 +149,18 @@ SEXP NumericPtr_write_nums_to_subset(SEXP dest, SEXP subset, SEXP val)
 }
 
 /* ==========================================================================
- * Copy values from an NumericPtr object to another NumericPtr object.
+ * Copy values from an SharedDouble object to another SharedDouble object.
  * --------------------------------------------------------------------------
  */
 
 /* Cyclic writing in 'dest' */
-SEXP NumericPtr_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
+SEXP SharedDouble_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
 {
   SEXP dest_tag, src_tag;
   int i1, i2;
 
-  dest_tag = _get_SequencePtr_tag(dest);
-  src_tag = _get_SequencePtr_tag(src);
+  dest_tag = _get_SharedVector_tag(dest);
+  src_tag = _get_SharedVector_tag(src);
   i1 = INTEGER(imin)[0] - 1;
   i2 = INTEGER(imax)[0] - 1;
   _IRanges_memcpy_from_i1i2(i1, i2,
@@ -170,12 +170,12 @@ SEXP NumericPtr_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
 }
 
 /* Cyclic writing in 'dest' */
-SEXP NumericPtr_copy_from_subset(SEXP dest, SEXP src, SEXP subset)
+SEXP SharedDouble_copy_from_subset(SEXP dest, SEXP src, SEXP subset)
 {
   SEXP dest_tag, src_tag;
 
-  dest_tag = _get_SequencePtr_tag(dest);
-  src_tag = _get_SequencePtr_tag(src);
+  dest_tag = _get_SharedVector_tag(dest);
+  src_tag = _get_SharedVector_tag(src);
   _IRanges_memcpy_from_subset(INTEGER(subset), LENGTH(subset),
                               (char *) REAL(dest_tag), LENGTH(dest_tag),
                               (char *) REAL(src_tag), LENGTH(src_tag), sizeof(double));

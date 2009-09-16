@@ -1,16 +1,8 @@
 ### =========================================================================
-### External pointer to an atomic vector: the "SequencePtr" class
+### External pointer to an ordinary vector: the "SharedVector" class
 ### -------------------------------------------------------------------------
 
-### Note: instead of defining the "SequencePtr" class with just one slot of
-### type "externalptr" (it HAS an "externalptr", and nothing else), an
-### alternative could have been to simply extend the "externalptr" type.
-### After all, a SequencePtr object IS an "externalptr" object.
-### However, when doing this, then creating new RawPtr/IntegerPtr/NumericPtr
-### objects with new() would ALWAYS return the SAME instance (its address in
-### memory will always be the same for a given R session).
-
-setClass("SequencePtr",
+setClass("SharedVector",
     representation("VIRTUAL",
         xp="externalptr",
         ## Any object that is never copied on assignment would be fine here.
@@ -21,8 +13,8 @@ setClass("SequencePtr",
     )
 )
 
-setMethod("length", "SequencePtr",
-    function(x) .Call("SequencePtr_length", x, PACKAGE="IRanges")
+setMethod("length", "SharedVector",
+    function(x) .Call("SharedVector_length", x, PACKAGE="IRanges")
 )
 
 
@@ -31,7 +23,7 @@ setMethod("length", "SequencePtr",
 ###
 
 ### Works as long as as.integer() works on 'x'.
-setMethod("as.numeric", "SequencePtr",
+setMethod("as.numeric", "SharedVector",
     function(x, ...) as.numeric(as.integer(x))
 )
 
@@ -49,17 +41,17 @@ address <- function(x)
     .Call("address_asSTRSXP", x, PACKAGE="IRanges")
 }
 
-setMethod("==", signature(e1="SequencePtr", e2="SequencePtr"),
+setMethod("==", signature(e1="SharedVector", e2="SharedVector"),
     function(e1, e2) address(e1@xp) == address(e2@xp)
 )
 
-setMethod("!=", signature(e1="SequencePtr", e2="SequencePtr"),
+setMethod("!=", signature(e1="SharedVector", e2="SharedVector"),
     function(e1, e2) address(e1@xp) != address(e2@xp)
 )
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Miscellaneous stuff (not SequencePtr related, but I didn't find a better
+### Miscellaneous stuff (not SharedVector related, but I didn't find a better
 ### place for now).
 ###
 

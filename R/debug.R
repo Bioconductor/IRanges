@@ -15,17 +15,17 @@ debug_IRanges_utils <- function()
 debug_Grouping_class <- function()
     invisible(.Call("debug_Grouping_class", PACKAGE="IRanges"))
 
-debug_SequencePtr_class <- function()
-    invisible(.Call("debug_SequencePtr_class", PACKAGE="IRanges"))
+debug_SharedVector_class <- function()
+    invisible(.Call("debug_SharedVector_class", PACKAGE="IRanges"))
 
-debug_RawPtr_utils <- function()
-    invisible(.Call("debug_RawPtr_utils", PACKAGE="IRanges"))
+debug_SharedRaw_utils <- function()
+    invisible(.Call("debug_SharedRaw_utils", PACKAGE="IRanges"))
 
-debug_IntegerPtr_utils <- function()
-    invisible(.Call("debug_IntegerPtr_utils", PACKAGE="IRanges"))
+debug_SharedInteger_utils <- function()
+    invisible(.Call("debug_SharedInteger_utils", PACKAGE="IRanges"))
 
-debug_NumericPtr_utils <- function()
-    invisible(.Call("debug_NumericPtr_utils", PACKAGE="IRanges"))
+debug_SharedDouble_utils <- function()
+    invisible(.Call("debug_SharedDouble_utils", PACKAGE="IRanges"))
 
 debug_XSequence_class <- function()
     invisible(.Call("debug_XSequence_class", PACKAGE="IRanges"))

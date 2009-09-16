@@ -1,12 +1,12 @@
 /****************************************************************************
- *                        Fast IntegerPtr utilities                         *
+ *                        Fast SharedInteger utilities                         *
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"
 
 static int debug = 0;
 
-SEXP debug_IntegerPtr_utils()
+SEXP debug_SharedInteger_utils()
 {
 #ifdef DEBUG_IRANGES
 	debug = !debug;
@@ -19,7 +19,7 @@ SEXP debug_IntegerPtr_utils()
 }
 
 
-SEXP IntegerPtr_new(SEXP length, SEXP val)
+SEXP SharedInteger_new(SEXP length, SEXP val)
 {
 	SEXP tag, ans;
 	int tag_length, i, val0;
@@ -38,38 +38,38 @@ SEXP IntegerPtr_new(SEXP length, SEXP val)
 		error("when 'val' is not a single value, its length must "
 		      "be equal to the value of the 'length' argument");
 	}
-	PROTECT(ans = _new_SequencePtr("IntegerPtr", tag));
+	PROTECT(ans = _new_SharedVector("SharedInteger", tag));
 	UNPROTECT(2);
 	return ans;
 }
 
-SEXP IntegerPtr_get_show_string(SEXP x)
+SEXP SharedInteger_get_show_string(SEXP x)
 {
 	SEXP tag;
 	int tag_length;
 	char buf[100]; /* should be enough... */
 
-	tag = _get_SequencePtr_tag(x);
+	tag = _get_SharedVector_tag(x);
 	tag_length = LENGTH(tag);
 	snprintf(buf, sizeof(buf),
-		"%d-integer IntegerPtr object (data starting at memory address %p)",
+		"%d-integer SharedInteger object (data starting at memory address %p)",
 		tag_length, INTEGER(tag));
 	return mkString(buf);
 }
 
 /*
  * From R:
- *   x <- IntegerPtr(30)
- *   .Call("IntegerPtr_memcmp", x, 1L, x, 10L, 21L, PACKAGE="IRanges")
+ *   x <- SharedInteger(30)
+ *   .Call("SharedInteger_memcmp", x, 1L, x, 10L, 21L, PACKAGE="IRanges")
  */
-SEXP IntegerPtr_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
+SEXP SharedInteger_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
 {
 	SEXP tag1, tag2, tag;
 	int i1, i2, n;
 
-	tag1 = _get_SequencePtr_tag(x1);
+	tag1 = _get_SharedVector_tag(x1);
 	i1 = INTEGER(start1)[0] - 1;
-	tag2 = _get_SequencePtr_tag(x2);
+	tag2 = _get_SharedVector_tag(x2);
 	i2 = INTEGER(start2)[0] - 1;
 	n = INTEGER(width)[0];
 
@@ -83,18 +83,18 @@ SEXP IntegerPtr_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
 
 
 /* ==========================================================================
- * Copy values from an IntegerPtr object to another IntegerPtr object.
+ * Copy values from an SharedInteger object to another SharedInteger object.
  * --------------------------------------------------------------------------
  */
 
 /* Cyclic writing in 'dest' */
-SEXP IntegerPtr_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
+SEXP SharedInteger_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
 {
 	SEXP dest_tag, src_tag;
 	int i1, i2;
 
-	dest_tag = _get_SequencePtr_tag(dest);
-	src_tag = _get_SequencePtr_tag(src);
+	dest_tag = _get_SharedVector_tag(dest);
+	src_tag = _get_SharedVector_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	_IRanges_memcpy_from_i1i2(i1, i2,
@@ -104,12 +104,12 @@ SEXP IntegerPtr_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
 }
 
 /* Cyclic writing in 'dest' */
-SEXP IntegerPtr_copy_from_subset(SEXP dest, SEXP src, SEXP subset)
+SEXP SharedInteger_copy_from_subset(SEXP dest, SEXP src, SEXP subset)
 {
 	SEXP dest_tag, src_tag;
 
-	dest_tag = _get_SequencePtr_tag(dest);
-	src_tag = _get_SequencePtr_tag(src);
+	dest_tag = _get_SharedVector_tag(dest);
+	src_tag = _get_SharedVector_tag(src);
 	_IRanges_memcpy_from_subset(INTEGER(subset), LENGTH(subset),
 			(char *) INTEGER(dest_tag), LENGTH(dest_tag),
 			(char *) INTEGER(src_tag), LENGTH(src_tag), sizeof(int));
@@ -118,16 +118,16 @@ SEXP IntegerPtr_copy_from_subset(SEXP dest, SEXP src, SEXP subset)
 
 
 /* ==========================================================================
- * Read/write integers to an IntegerPtr object
+ * Read/write integers to an SharedInteger object
  * --------------------------------------------------------------------------
  */
 
-SEXP IntegerPtr_read_ints_from_i1i2(SEXP src, SEXP imin, SEXP imax)
+SEXP SharedInteger_read_ints_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 {
 	SEXP src_tag, tag;
 	int i1, i2, n;
 
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	n = i2 - i1 + 1;
@@ -140,12 +140,12 @@ SEXP IntegerPtr_read_ints_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 	return tag;
 }
 
-SEXP IntegerPtr_read_ints_from_subset(SEXP src, SEXP subset)
+SEXP SharedInteger_read_ints_from_subset(SEXP src, SEXP subset)
 {
 	SEXP src_tag, tag;
 	int n;
 
-	src_tag = _get_SequencePtr_tag(src);
+	src_tag = _get_SharedVector_tag(src);
 	n = LENGTH(subset);
 	PROTECT(tag = NEW_INTEGER(n));
 	_IRanges_memcpy_from_subset(INTEGER(subset), n,
@@ -158,12 +158,12 @@ SEXP IntegerPtr_read_ints_from_subset(SEXP src, SEXP subset)
 /*
  * 'val' must be an integer vector.
  */
-SEXP IntegerPtr_write_ints_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
+SEXP SharedInteger_write_ints_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 {
 	SEXP dest_tag;
 	int i1, i2;
 
-	dest_tag = _get_SequencePtr_tag(dest);
+	dest_tag = _get_SharedVector_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	_IRanges_memcpy_to_i1i2(i1, i2,
@@ -172,11 +172,11 @@ SEXP IntegerPtr_write_ints_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 	return dest;
 }
 
-SEXP IntegerPtr_write_ints_to_subset(SEXP dest, SEXP subset, SEXP val)
+SEXP SharedInteger_write_ints_to_subset(SEXP dest, SEXP subset, SEXP val)
 {
 	SEXP dest_tag;
 
-	dest_tag = _get_SequencePtr_tag(dest);
+	dest_tag = _get_SharedVector_tag(dest);
 	_IRanges_memcpy_to_subset(INTEGER(subset), LENGTH(subset),
 			(char *) INTEGER(dest_tag), LENGTH(dest_tag),
 			(char *) INTEGER(val), LENGTH(val), sizeof(int));

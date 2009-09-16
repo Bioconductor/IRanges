@@ -482,35 +482,35 @@ SEXP Ranges_order(
 SEXP vector_seqselect(SEXP x, SEXP start, SEXP width);
 
 
-/* SequencePtr_class.c */
+/* SharedVector_class.c */
 
-SEXP debug_SequencePtr_class();
+SEXP debug_SharedVector_class();
 
 SEXP ExternalPtr_show(SEXP xp);
 
 SEXP ExternalPtr_new();
 
-SEXP _new_SequencePtr(const char *classname, SEXP tag);
+SEXP _new_SharedVector(const char *classname, SEXP tag);
 
-SEXP _get_SequencePtr_tag(SEXP x);
+SEXP _get_SharedVector_tag(SEXP x);
 
-int _get_SequencePtr_length(SEXP x);
+int _get_SharedVector_length(SEXP x);
 
-SEXP SequencePtr_length(SEXP x);
+SEXP SharedVector_length(SEXP x);
 
 
-/* RawPtr_utils.c */
+/* SharedRaw_utils.c */
 
-SEXP debug_RawPtr_utils();
+SEXP debug_SharedRaw_utils();
 
-SEXP RawPtr_new(
+SEXP SharedRaw_new(
 	SEXP length,
 	SEXP val
 );
 
-SEXP RawPtr_get_show_string(SEXP x);
+SEXP SharedRaw_get_show_string(SEXP x);
 
-SEXP RawPtr_memcmp(
+SEXP SharedRaw_memcmp(
 	SEXP x1,
 	SEXP start1,
 	SEXP x2,
@@ -518,7 +518,7 @@ SEXP RawPtr_memcmp(
 	SEXP width
 );
 
-SEXP RawPtr_memcpy(
+SEXP SharedRaw_memcpy(
 	SEXP dest,
 	SEXP dest_start,
 	SEXP src,
@@ -526,81 +526,81 @@ SEXP RawPtr_memcpy(
 	SEXP width
 );
 
-SEXP RawPtr_copy_from_i1i2(
+SEXP SharedRaw_copy_from_i1i2(
 	SEXP dest,
 	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
-SEXP RawPtr_copy_from_subset(
+SEXP SharedRaw_copy_from_subset(
 	SEXP dest,
 	SEXP src,
 	SEXP subset
 );
 
-SEXP RawPtr_read_chars_from_i1i2(
+SEXP SharedRaw_read_chars_from_i1i2(
 	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
-SEXP RawPtr_read_chars_from_subset(
+SEXP SharedRaw_read_chars_from_subset(
 	SEXP src,
 	SEXP subset
 );
 
-SEXP RawPtr_write_chars_to_i1i2(
+SEXP SharedRaw_write_chars_to_i1i2(
 	SEXP dest,
 	SEXP imin,
 	SEXP imax,
 	SEXP string
 );
 
-SEXP RawPtr_write_chars_to_subset(
+SEXP SharedRaw_write_chars_to_subset(
 	SEXP dest,
 	SEXP subset,
 	SEXP string
 );
 
-SEXP RawPtr_read_ints_from_i1i2(
+SEXP SharedRaw_read_ints_from_i1i2(
 	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
-SEXP RawPtr_read_ints_from_subset(
+SEXP SharedRaw_read_ints_from_subset(
 	SEXP src,
 	SEXP subset
 );
 
-SEXP RawPtr_write_ints_to_i1i2(
+SEXP SharedRaw_write_ints_to_i1i2(
 	SEXP dest,
 	SEXP imin,
 	SEXP imax,
 	SEXP val
 );
 
-SEXP RawPtr_write_ints_to_subset(
+SEXP SharedRaw_write_ints_to_subset(
 	SEXP dest,
 	SEXP subset,
 	SEXP val
 );
 
-SEXP RawPtr_read_enc_chars_from_i1i2(
+SEXP SharedRaw_read_enc_chars_from_i1i2(
 	SEXP src,
 	SEXP imin,
 	SEXP imax,
 	SEXP lkup
 );
 
-SEXP RawPtr_read_enc_chars_from_subset(
+SEXP SharedRaw_read_enc_chars_from_subset(
 	SEXP src,
 	SEXP subset,
 	SEXP lkup
 );
 
-SEXP RawPtr_write_enc_chars_to_i1i2(
+SEXP SharedRaw_write_enc_chars_to_i1i2(
 	SEXP dest,
 	SEXP imin,
 	SEXP imax,
@@ -608,27 +608,27 @@ SEXP RawPtr_write_enc_chars_to_i1i2(
 	SEXP lkup
 );
 
-SEXP RawPtr_write_enc_chars_to_subset(
+SEXP SharedRaw_write_enc_chars_to_subset(
 	SEXP dest,
 	SEXP subset,
 	SEXP string,
 	SEXP lkup
 );
 
-SEXP RawPtr_read_complexes_from_i1i2(
+SEXP SharedRaw_read_complexes_from_i1i2(
 	SEXP src,
 	SEXP imin,
 	SEXP imax,
 	SEXP lkup
 );
 
-SEXP RawPtr_read_complexes_from_subset(
+SEXP SharedRaw_read_complexes_from_subset(
 	SEXP src,
 	SEXP subset,
 	SEXP lkup
 );
 
-SEXP RawPtr_translate_copy_from_i1i2(
+SEXP SharedRaw_translate_copy_from_i1i2(
 	SEXP dest,
 	SEXP src,
 	SEXP imin,
@@ -636,21 +636,21 @@ SEXP RawPtr_translate_copy_from_i1i2(
 	SEXP lkup
 );
 
-SEXP RawPtr_translate_copy_from_subset(
+SEXP SharedRaw_translate_copy_from_subset(
 	SEXP dest,
 	SEXP src,
 	SEXP subset,
 	SEXP lkup
 );
 
-SEXP RawPtr_reverse_copy_from_i1i2(
+SEXP SharedRaw_reverse_copy_from_i1i2(
 	SEXP dest,
 	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
-SEXP RawPtr_reverse_translate_copy_from_i1i2(
+SEXP SharedRaw_reverse_translate_copy_from_i1i2(
 	SEXP dest,
 	SEXP src,
 	SEXP imin,
@@ -659,18 +659,18 @@ SEXP RawPtr_reverse_translate_copy_from_i1i2(
 );
 
 
-/* IntegerPtr_utils.c */
+/* SharedInteger_utils.c */
 
-SEXP debug_IntegerPtr_utils();
+SEXP debug_SharedInteger_utils();
 
-SEXP IntegerPtr_new(
+SEXP SharedInteger_new(
 	SEXP length,
 	SEXP val
 );
 
-SEXP IntegerPtr_get_show_string(SEXP x);
+SEXP SharedInteger_get_show_string(SEXP x);
 
-SEXP IntegerPtr_memcmp(
+SEXP SharedInteger_memcmp(
 	SEXP x1,
 	SEXP start1,
 	SEXP x2,
@@ -678,56 +678,56 @@ SEXP IntegerPtr_memcmp(
 	SEXP width
 );
 
-SEXP IntegerPtr_copy_from_i1i2(
+SEXP SharedInteger_copy_from_i1i2(
 	SEXP dest,
 	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
-SEXP IntegerPtr_copy_from_subset(
+SEXP SharedInteger_copy_from_subset(
 	SEXP dest,
 	SEXP src,
 	SEXP subset
 );
 
-SEXP IntegerPtr_read_ints_from_i1i2(
+SEXP SharedInteger_read_ints_from_i1i2(
 	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
-SEXP IntegerPtr_read_ints_from_subset(
+SEXP SharedInteger_read_ints_from_subset(
 	SEXP src,
 	SEXP subset
 );
 
-SEXP IntegerPtr_write_ints_to_i1i2(
+SEXP SharedInteger_write_ints_to_i1i2(
 	SEXP dest,
 	SEXP imin,
 	SEXP imax,
 	SEXP val
 );
 
-SEXP IntegerPtr_write_ints_to_subset(
+SEXP SharedInteger_write_ints_to_subset(
 	SEXP dest,
 	SEXP subset,
 	SEXP val
 );
 
 
-/* NumericPtr_utils.c */
+/* SharedDouble_utils.c */
 
-SEXP debug_NumericPtr_utils();
+SEXP debug_SharedDouble_utils();
 
-SEXP NumericPtr_new(
+SEXP SharedDouble_new(
 	SEXP length,
 	SEXP val
 );
 
-SEXP NumericPtr_get_show_string(SEXP x);
+SEXP SharedDouble_get_show_string(SEXP x);
 
-SEXP NumericPtr_memcmp(
+SEXP SharedDouble_memcmp(
 	SEXP x1,
 	SEXP start1,
 	SEXP x2,
@@ -735,25 +735,25 @@ SEXP NumericPtr_memcmp(
 	SEXP width
 );
 
-SEXP NumericPtr_read_nums_from_i1i2(
+SEXP SharedDouble_read_nums_from_i1i2(
 	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
-SEXP NumericPtr_read_nums_from_subset(
+SEXP SharedDouble_read_nums_from_subset(
 	SEXP src,
 	SEXP subset
 );
 
-SEXP NumericPtr_write_nums_to_i1i2(
+SEXP SharedDouble_write_nums_to_i1i2(
 	SEXP dest,
 	SEXP imin,
 	SEXP imax,
 	SEXP val
 );
 
-SEXP NumericPtr_write_nums_to_subset(
+SEXP SharedDouble_write_nums_to_subset(
 	SEXP dest,
 	SEXP subset,
 	SEXP val
@@ -762,7 +762,7 @@ SEXP NumericPtr_write_nums_to_subset(
 
 /* XSequence_class.c */
 
-SEXP _get_XSequence_xdata(SEXP x);
+SEXP _get_XSequence_shared(SEXP x);
 
 SEXP _get_XSequence_offset(SEXP x);
 
@@ -774,7 +774,7 @@ cachedCharSeq _cache_XRaw(SEXP x);
 
 SEXP _new_XSequence(
 	const char *classname,
-	SEXP xdata,
+	SEXP shared,
 	int offset,
 	int length
 );
@@ -789,7 +789,7 @@ SEXP _new_XInteger_from_tag(
 	SEXP tag
 );
 
-SEXP _new_XNumeric_from_tag(
+SEXP _new_XDouble_from_tag(
 	const char *classname,
 	SEXP tag
 );
@@ -832,9 +832,9 @@ SEXP XIntegerViews_viewWhichMaxs(
 );
 
 
-/* XNumericViews_class.c */
+/* XDoubleViews_class.c */
 
-SEXP XNumericViews_slice(
+SEXP XDoubleViews_slice(
 	SEXP xdouble,
 	SEXP lower,
 	SEXP upper,

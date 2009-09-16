@@ -50,73 +50,73 @@ static const R_CallMethodDef callMethods[] = {
 /* Sequence_class.c */
 	CALLMETHOD_DEF(vector_seqselect, 3),
 
-/* SequencePtr_class.c */
-	CALLMETHOD_DEF(debug_SequencePtr_class, 0),
+/* SharedVector_class.c */
+	CALLMETHOD_DEF(debug_SharedVector_class, 0),
 	CALLMETHOD_DEF(ExternalPtr_show, 1),
 	CALLMETHOD_DEF(ExternalPtr_new, 0),
-	CALLMETHOD_DEF(SequencePtr_length, 1),
+	CALLMETHOD_DEF(SharedVector_length, 1),
 
-/* RawPtr_utils.c */
-	CALLMETHOD_DEF(debug_RawPtr_utils, 0),
+/* SharedRaw_utils.c */
+	CALLMETHOD_DEF(debug_SharedRaw_utils, 0),
 
-	CALLMETHOD_DEF(RawPtr_new, 2),
-	CALLMETHOD_DEF(RawPtr_get_show_string, 1),
-	CALLMETHOD_DEF(RawPtr_memcmp, 5),
+	CALLMETHOD_DEF(SharedRaw_new, 2),
+	CALLMETHOD_DEF(SharedRaw_get_show_string, 1),
+	CALLMETHOD_DEF(SharedRaw_memcmp, 5),
 
-	CALLMETHOD_DEF(RawPtr_memcpy, 5),
-	CALLMETHOD_DEF(RawPtr_copy_from_i1i2, 4),
-	CALLMETHOD_DEF(RawPtr_copy_from_subset, 3),
+	CALLMETHOD_DEF(SharedRaw_memcpy, 5),
+	CALLMETHOD_DEF(SharedRaw_copy_from_i1i2, 4),
+	CALLMETHOD_DEF(SharedRaw_copy_from_subset, 3),
 
-	CALLMETHOD_DEF(RawPtr_read_chars_from_i1i2, 3),
-	CALLMETHOD_DEF(RawPtr_read_chars_from_subset, 2),
-	CALLMETHOD_DEF(RawPtr_write_chars_to_i1i2, 4),
-	CALLMETHOD_DEF(RawPtr_write_chars_to_subset, 3),
+	CALLMETHOD_DEF(SharedRaw_read_chars_from_i1i2, 3),
+	CALLMETHOD_DEF(SharedRaw_read_chars_from_subset, 2),
+	CALLMETHOD_DEF(SharedRaw_write_chars_to_i1i2, 4),
+	CALLMETHOD_DEF(SharedRaw_write_chars_to_subset, 3),
 
-	CALLMETHOD_DEF(RawPtr_read_ints_from_i1i2, 3),
-	CALLMETHOD_DEF(RawPtr_read_ints_from_subset, 2),
-	CALLMETHOD_DEF(RawPtr_write_ints_to_i1i2, 4),
-	CALLMETHOD_DEF(RawPtr_write_ints_to_subset, 3),
+	CALLMETHOD_DEF(SharedRaw_read_ints_from_i1i2, 3),
+	CALLMETHOD_DEF(SharedRaw_read_ints_from_subset, 2),
+	CALLMETHOD_DEF(SharedRaw_write_ints_to_i1i2, 4),
+	CALLMETHOD_DEF(SharedRaw_write_ints_to_subset, 3),
 
-	CALLMETHOD_DEF(RawPtr_read_enc_chars_from_i1i2, 4),
-	CALLMETHOD_DEF(RawPtr_read_enc_chars_from_subset, 3),
-	CALLMETHOD_DEF(RawPtr_write_enc_chars_to_i1i2, 5),
-	CALLMETHOD_DEF(RawPtr_write_enc_chars_to_subset, 4),
+	CALLMETHOD_DEF(SharedRaw_read_enc_chars_from_i1i2, 4),
+	CALLMETHOD_DEF(SharedRaw_read_enc_chars_from_subset, 3),
+	CALLMETHOD_DEF(SharedRaw_write_enc_chars_to_i1i2, 5),
+	CALLMETHOD_DEF(SharedRaw_write_enc_chars_to_subset, 4),
 
-	CALLMETHOD_DEF(RawPtr_read_complexes_from_i1i2, 4),
-	CALLMETHOD_DEF(RawPtr_read_complexes_from_subset, 3),
+	CALLMETHOD_DEF(SharedRaw_read_complexes_from_i1i2, 4),
+	CALLMETHOD_DEF(SharedRaw_read_complexes_from_subset, 3),
 
-	CALLMETHOD_DEF(RawPtr_translate_copy_from_i1i2, 5),
-	CALLMETHOD_DEF(RawPtr_translate_copy_from_subset, 4),
-	CALLMETHOD_DEF(RawPtr_reverse_copy_from_i1i2, 4),
-	CALLMETHOD_DEF(RawPtr_reverse_translate_copy_from_i1i2, 5),
+	CALLMETHOD_DEF(SharedRaw_translate_copy_from_i1i2, 5),
+	CALLMETHOD_DEF(SharedRaw_translate_copy_from_subset, 4),
+	CALLMETHOD_DEF(SharedRaw_reverse_copy_from_i1i2, 4),
+	CALLMETHOD_DEF(SharedRaw_reverse_translate_copy_from_i1i2, 5),
 
 
-/* IntegerPtr_utils.c */
-	CALLMETHOD_DEF(debug_IntegerPtr_utils, 0),
+/* SharedInteger_utils.c */
+	CALLMETHOD_DEF(debug_SharedInteger_utils, 0),
 
-	CALLMETHOD_DEF(IntegerPtr_new, 2),
-	CALLMETHOD_DEF(IntegerPtr_get_show_string, 1),
-	CALLMETHOD_DEF(IntegerPtr_memcmp, 5),
+	CALLMETHOD_DEF(SharedInteger_new, 2),
+	CALLMETHOD_DEF(SharedInteger_get_show_string, 1),
+	CALLMETHOD_DEF(SharedInteger_memcmp, 5),
 
-	CALLMETHOD_DEF(IntegerPtr_copy_from_i1i2, 4),
-	CALLMETHOD_DEF(IntegerPtr_copy_from_subset, 3),
+	CALLMETHOD_DEF(SharedInteger_copy_from_i1i2, 4),
+	CALLMETHOD_DEF(SharedInteger_copy_from_subset, 3),
 
-	CALLMETHOD_DEF(IntegerPtr_read_ints_from_i1i2, 3),
-	CALLMETHOD_DEF(IntegerPtr_read_ints_from_subset, 2),
-	CALLMETHOD_DEF(IntegerPtr_write_ints_to_i1i2, 4),
-	CALLMETHOD_DEF(IntegerPtr_write_ints_to_subset, 3),
+	CALLMETHOD_DEF(SharedInteger_read_ints_from_i1i2, 3),
+	CALLMETHOD_DEF(SharedInteger_read_ints_from_subset, 2),
+	CALLMETHOD_DEF(SharedInteger_write_ints_to_i1i2, 4),
+	CALLMETHOD_DEF(SharedInteger_write_ints_to_subset, 3),
 
-/* NumericPtr_utils.c */
-	CALLMETHOD_DEF(debug_NumericPtr_utils, 0),
+/* SharedDouble_utils.c */
+	CALLMETHOD_DEF(debug_SharedDouble_utils, 0),
 
-	CALLMETHOD_DEF(NumericPtr_new, 2),
-	CALLMETHOD_DEF(NumericPtr_get_show_string, 1),
-	CALLMETHOD_DEF(NumericPtr_memcmp, 5),
+	CALLMETHOD_DEF(SharedDouble_new, 2),
+	CALLMETHOD_DEF(SharedDouble_get_show_string, 1),
+	CALLMETHOD_DEF(SharedDouble_memcmp, 5),
 
-	CALLMETHOD_DEF(NumericPtr_read_nums_from_i1i2, 3),
-	CALLMETHOD_DEF(NumericPtr_read_nums_from_subset, 2),
-	CALLMETHOD_DEF(NumericPtr_write_nums_to_i1i2, 4),
-	CALLMETHOD_DEF(NumericPtr_write_nums_to_subset, 3),
+	CALLMETHOD_DEF(SharedDouble_read_nums_from_i1i2, 3),
+	CALLMETHOD_DEF(SharedDouble_read_nums_from_subset, 2),
+	CALLMETHOD_DEF(SharedDouble_write_nums_to_i1i2, 4),
+	CALLMETHOD_DEF(SharedDouble_write_nums_to_subset, 3),
 
 /* XIntegerViews_class.c */
 	CALLMETHOD_DEF(XIntegerViews_slice, 3),
@@ -128,8 +128,8 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(XIntegerViews_viewWhichMins, 2),
 	CALLMETHOD_DEF(XIntegerViews_viewWhichMaxs, 2),
 
-/* XNumericViews_class.c */
-	CALLMETHOD_DEF(XNumericViews_slice, 5),
+/* XDoubleViews_class.c */
+	CALLMETHOD_DEF(XDoubleViews_slice, 5),
 
 /* Rle_class.c */
 	CALLMETHOD_DEF(Rle_constructor, 2),
@@ -237,13 +237,13 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_get_H2LGrouping_high2low);
 	REGISTER_CCALLABLE(_get_H2LGrouping_low2high);
 
-/* SequencePtr_class.c */
-	REGISTER_CCALLABLE(_new_SequencePtr);
-	REGISTER_CCALLABLE(_get_SequencePtr_tag);
-	REGISTER_CCALLABLE(_get_SequencePtr_length);
+/* SharedVector_class.c */
+	REGISTER_CCALLABLE(_new_SharedVector);
+	REGISTER_CCALLABLE(_get_SharedVector_tag);
+	REGISTER_CCALLABLE(_get_SharedVector_length);
 
 /* XSequence_class.c */
-	REGISTER_CCALLABLE(_get_XSequence_xdata);
+	REGISTER_CCALLABLE(_get_XSequence_shared);
 	REGISTER_CCALLABLE(_get_XSequence_offset);
 	REGISTER_CCALLABLE(_get_XSequence_length);
 	REGISTER_CCALLABLE(_get_XSequence_tag);
@@ -251,7 +251,7 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_new_XSequence);
 	REGISTER_CCALLABLE(_new_XRaw_from_tag);
 	REGISTER_CCALLABLE(_new_XInteger_from_tag);
-	REGISTER_CCALLABLE(_new_XNumeric_from_tag);
+	REGISTER_CCALLABLE(_new_XDouble_from_tag);
 
 	return;
 }

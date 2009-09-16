@@ -1,12 +1,12 @@
 /****************************************************************************
- *              Low-level manipulation of SequencePtr objects               *
+ *              Low-level manipulation of SharedVector objects               *
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"
 
 static int debug = 0;
 
-SEXP debug_SequencePtr_class()
+SEXP debug_SharedVector_class()
 {
 #ifdef DEBUG_IRANGES
 	debug = !debug;
@@ -63,21 +63,21 @@ static SEXP xp_symbol = NULL;
  * Be careful that this function does NOT duplicate the returned SEXP.
  * Thus it cannot be made a .Call() entry point!
  */
-SEXP _get_SequencePtr_tag(SEXP x)
+SEXP _get_SharedVector_tag(SEXP x)
 {
 	INIT_STATIC_SYMBOL(xp)
 	return R_ExternalPtrTag(GET_SLOT(x, xp_symbol));
 }
 
-int _get_SequencePtr_length(SEXP x)
+int _get_SharedVector_length(SEXP x)
 {
-	return LENGTH(_get_SequencePtr_tag(x));
+	return LENGTH(_get_SharedVector_tag(x));
 }
 
 
-SEXP SequencePtr_length(SEXP x)
+SEXP SharedVector_length(SEXP x)
 {
-	return ScalarInteger(_get_SequencePtr_length(x));
+	return ScalarInteger(_get_SharedVector_length(x));
 }
 
 
@@ -87,7 +87,7 @@ SEXP SequencePtr_length(SEXP x)
  * Be careful that these functions do NOT duplicate the assigned value!
  */
 
-static void set_SequencePtr_tag(SEXP x, SEXP value)
+static void set_SharedVector_tag(SEXP x, SEXP value)
 {
 	SEXP xp;
 
@@ -107,14 +107,14 @@ static void set_SequencePtr_tag(SEXP x, SEXP value)
  * Thus they cannot be made .Call() entry points!
  */
 
-/* 'classname' can be "RawPtr", "IntegerPtr" or "NumericPtr" */
-SEXP _new_SequencePtr(const char *classname, SEXP tag)
+/* 'classname' can be "SharedRaw", "SharedInteger" or "SharedDouble" */
+SEXP _new_SharedVector(const char *classname, SEXP tag)
 {
 	SEXP classdef, ans;
 
 	PROTECT(classdef = MAKE_CLASS(classname));
 	PROTECT(ans = NEW_OBJECT(classdef));
-	set_SequencePtr_tag(ans, tag);
+	set_SharedVector_tag(ans, tag);
 	UNPROTECT(2);
 	return ans;
 }
