@@ -52,9 +52,18 @@ setReplaceMethod("ranges", "RangedData",
                  })
 
 ## range delegates
-setMethod("start", "RangedData", function(x) start(ranges(x)))
-setMethod("end", "RangedData", function(x) end(ranges(x)))
-setMethod("width", "RangedData", function(x) width(ranges(x)))
+setMethod("start", "RangedData",
+          function(x) {
+            unlist(start(ranges(x)), use.names=FALSE)
+          })
+setMethod("end", "RangedData",
+          function(x) {
+            unlist(end(ranges(x)), use.names=FALSE)
+          })
+setMethod("width", "RangedData",
+          function(x) {
+            unlist(width(ranges(x)), use.names=FALSE)
+          })
 setReplaceMethod("start", "RangedData",
                  function(x, check=TRUE, value) {
                    start(ranges(x), check=check) <- value

@@ -7,9 +7,15 @@ test_RangesList_construction <- function() {
   named <- RangesList(one = range1, two = range2)
   checkTrue(validObject(named))
   checkIdentical(length(named), 2L)
-  checkIdentical(start(named), start(c(range1, range2)))
-  checkIdentical(end(named), end(c(range1, range2)))
-  checkIdentical(width(named), width(c(range1, range2)))
+  checkIdentical(start(named),
+                 IntegerList(one = start(range1), two = start(range2),
+                             compress=FALSE))
+  checkIdentical(end(named),
+                 IntegerList(one = end(range1), two = end(range2),
+                             compress=FALSE))
+  checkIdentical(width(named),
+                 IntegerList(one = width(range1), two = width(range2),
+                             compress=FALSE))
   checkIdentical(names(named), c("one", "two"))
   checkIdentical(range1, named[[1]])
   unnamed <- RangesList(range1, range2)

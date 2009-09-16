@@ -28,24 +28,15 @@ setClass("SimpleIRangesList",
 
 setMethod("start", "RangesList",
           function(x) {
-            if (length(x) == 0)
-              integer(0)
-            else
-              unlist(lapply(x, start), use.names = FALSE)
+            newSimpleList("SimpleIntegerList", lapply(x, start))
           })
 setMethod("end", "RangesList",
           function(x) {
-            if (length(x) == 0)
-              integer(0)
-            else
-              unlist(lapply(x, end), use.names = FALSE)
+            newSimpleList("SimpleIntegerList", lapply(x, end))
           })
 setMethod("width", "RangesList",
           function(x) {
-            if (length(x) == 0)
-              integer(0)
-            else
-              unlist(lapply(x, width), use.names = FALSE)
+            newSimpleList("SimpleIntegerList", lapply(x, width))
           })
 setGeneric(".SEW<-", signature="x",
            function(x, FUN, check=TRUE, value) standardGeneric(".SEW<-"))
@@ -96,24 +87,21 @@ setReplaceMethod("width", "RangesList",
 
 setMethod("start", "CompressedIRangesList",
           function(x) {
-            if (length(x) == 0)
-              integer(0)
-            else
-              start(unlist(x))
+            new2("CompressedIntegerList",
+                 unlistData = start(unlist(x, use.names=FALSE)),
+                 partitioning = x@partitioning, check=FALSE)
           })
 setMethod("end", "CompressedIRangesList",
           function(x) {
-            if (length(x) == 0)
-              integer(0)
-            else
-              end(unlist(x))
+            new2("CompressedIntegerList",
+                 unlistData = end(unlist(x, use.names=FALSE)),
+                 partitioning = x@partitioning, check=FALSE)
           })
 setMethod("width", "CompressedIRangesList",
           function(x) {
-            if (length(x) == 0)
-              integer(0)
-            else
-              width(unlist(x))
+            new2("CompressedIntegerList",
+                 unlistData = width(unlist(x, use.names=FALSE)),
+                 partitioning = x@partitioning, check=FALSE)
           })
 setReplaceMethod(".SEW", "CompressedIRangesList",
                  function(x, FUN, check=TRUE, value) {
