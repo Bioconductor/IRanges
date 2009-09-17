@@ -2,8 +2,8 @@
 ### IntervalTree utilities
 ### -------------------------------------------------------------------------
 
-setMethod("overlap", c("IntervalTree", "Ranges"),
-          function(object, query, maxgap = 0, multiple = TRUE)
+setMethod("findOverlaps", c("Ranges", "IntervalTree"),
+          function(query, subject, maxgap = 0, multiple = TRUE)
           {
             query <- as(query, "IRanges")
             query_ord <- NULL
@@ -28,7 +28,7 @@ setMethod("overlap", c("IntervalTree", "Ranges"),
             if (multiple)
               fun <- paste(fun, "_multiple", sep = "")
             validObject(query)
-            result <- .IntervalTreeCall(object, fun, query)
+            result <- .IntervalTreeCall(subject, fun, query)
             if (!is.null(query_ord)) {
               if (multiple) {
                 mat <- matchMatrix(result)
@@ -43,15 +43,15 @@ setMethod("overlap", c("IntervalTree", "Ranges"),
             result
           })
 
-setMethod("overlap", c("Ranges", "Ranges"),
-          function(object, query, maxgap = 0, multiple = TRUE) {
-            overlap(IntervalTree(object), query, maxgap, multiple)
+setMethod("findOverlaps", c("Ranges", "Ranges"),
+          function(query, subject, maxgap = 0, multiple = TRUE) {
+            findOverlaps(query, IntervalTree(subject), maxgap, multiple)
           })
 
-setMethod("overlap", c("Ranges", "missing"),
-          function(object, query, maxgap = 0, multiple = TRUE)
+setMethod("findOverlaps", c("Ranges", "missing"),
+          function(query, subject, maxgap = 0, multiple = TRUE)
           {
-            result <- overlap(object, object, maxgap, TRUE)
+            result <- findOverlaps(query, query, maxgap, TRUE)
             ### FIXME: perhaps support a "simplify" option that does this:
             ## mat <- matchMatrix(result)            
             ## mat <- mat[mat[,1] != mat[,2],]
@@ -61,9 +61,9 @@ setMethod("overlap", c("Ranges", "missing"),
             result
           })
 
-setMethod("overlap", c("Ranges", "integer"),
-          function(object, query, maxgap = 0, multiple = TRUE)
-          overlap(object, IRanges(query, query), maxgap, multiple)
+setMethod("findOverlaps", c("integer", "Ranges"),
+          function(query, subject, maxgap = 0, multiple = TRUE)
+          findOverlaps(IRanges(query, query), subject, maxgap, multiple)
           )
 
 ## not for exporting, just a debugging utility

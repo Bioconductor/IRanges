@@ -16,15 +16,15 @@
 \alias{end,IntervalTree-method}
 
 % overlap computation
-\alias{overlap}
-\alias{overlap,IntervalTree,Ranges-method}
-\alias{overlap,Ranges,Ranges-method}
-\alias{overlap,Ranges,missing-method}
-\alias{overlap,Ranges,integer-method}
-\alias{overlap,RangesList,RangesList-method}
-\alias{overlap,RangedData,RangedData-method}
-\alias{overlap,RangedData,RangesList-method}
-\alias{overlap,RangesList,RangedData-method}
+\alias{findOverlaps}
+\alias{findOverlaps,Ranges,IntervalTree-method}
+\alias{findOverlaps,Ranges,Ranges-method}
+\alias{findOverlaps,Ranges,missing-method}
+\alias{findOverlaps,integer,Ranges-method}
+\alias{findOverlaps,RangesList,RangesList-method}
+\alias{findOverlaps,RangedData,RangedData-method}
+\alias{findOverlaps,RangesList,RangedData-method}
+\alias{findOverlaps,RangedData,RangesList-method}
 \alias{\%in\%,Ranges,Ranges-method}
 \alias{\%in\%,RangesList,RangesList-method}
 \alias{\%in\%,RangedData,RangedData-method}
@@ -32,8 +32,8 @@
 \alias{\%in\%,RangesList,RangedData-method}
 \alias{match,Ranges,Ranges-method}
 \alias{match,RangesList,RangesList-method}
-\alias{countOverlap}
-\alias{countOverlap,Ranges,Ranges-method}
+\alias{countOverlaps}
+\alias{countOverlaps,Ranges,Ranges-method}
 
 \title{Interval Search Trees}
 \description{
@@ -47,7 +47,7 @@
   algorithm from the reference below, but heavily adapts it for the use
   case of large, sorted query sets.
 
-  The simplest approach is to call the \code{overlap} function on a
+  The simplest approach is to call the \code{findOverlaps} function on a
   \code{Ranges} or other object with range information, as described in
   the following section.
 
@@ -62,11 +62,11 @@
 \section{Finding Overlaps}{
   This main purpose of the interval tree is to optimize the search for
   ranges overlapping those in a query set. The interface for this
-  operation is the \code{\link{overlap}} function.
+  operation is the \code{\link{findOverlaps}} function.
 
   \describe{
     \item{}{
-      \code{overlap(object, query = object, maxgap = 0, multiple = TRUE,
+      \code{findOverlaps(query, subject = query, maxgap = 0, multiple = TRUE,
         drop = FALSE)}:
 
       Find the intervals in \code{query}, a \code{Ranges},
@@ -76,7 +76,7 @@
       \code{RangedData}. If \code{query} is omitted, \code{object} is
       queried against itself. if \code{query} is unsorted, it is sorted
       first, so it is usually better to sort up-front, to avoid a sort
-      with each \code{overlap} call. Intervals with a separation of
+      with each \code{findOverlaps} call. Intervals with a separation of
       \code{maxgap} or less are considered to be overlapping.
       \code{maxgap} should be a scalar, non-negative, non-NA number.
       When \code{multiple} (a scalar non-NA logical) is \code{TRUE}, 
@@ -130,7 +130,7 @@
       \code{incomparables} argument is currently ignored.
     }
     \item{}{
-      \code{countOverlap(subject, query)}: Return the count of the
+      \code{countOverlaps(query, subject)}: Return the count of the
       number of ranges in \code{query} that overlap a range in \code{subject}.
     }
   }
@@ -184,7 +184,7 @@
   \code{mk}. Note that when the \code{multiple} parameter is set to
   \code{FALSE}, \code{k} is fixed to 1 and drops out of this
   analysis. We also assume here that the query is sorted by start
-  position (the \code{overlap} function sorts the query if it is unsorted).
+  position (the \code{findOverlaps} function sorts the query if it is unsorted).
   
   An upper bound for finding overlaps is
   \code{O(min(mk*lg(n),n+mk))}. The fastest interval tree algorithm
@@ -225,31 +225,31 @@
   tree <- IntervalTree(subject)
 
   ## at most one hit per query
-  overlap(tree, query, multiple = FALSE) # c(2, NA, 3)
+  findOverlaps(query, tree, multiple = FALSE) # c(2, NA, 3)
 
   ## allow multiple hits
-  overlap(tree, query)
+  findOverlaps(query, tree)
 
   ## overlap as long as distance <= 1
-  overlap(tree, query, maxgap = 1)
+  findOverlaps(query, tree, maxgap = 1)
 
   ## shortcut
-  overlap(subject, query)
+  findOverlaps(query, subject)
 
   ## query and subject are easily interchangeable
   query <- IRanges(c(1, 4, 9), c(5, 7, 10))
   subject <- IRanges(c(2, 2), c(5, 4))
   tree <- IntervalTree(subject)
-  t(overlap(tree, query))
+  t(findOverlaps(query, tree))
   # the same as:
-  overlap(query, subject)
+  findOverlaps(subject, query)
 
   ## one Ranges with itself
-  overlap(query)
+  findOverlaps(query)
 
   ## single points as query
   subject <- IRanges(c(1, 6, 13), c(4, 9, 14))
-  overlap(subject, c(3L, 7L, 10L), multiple=FALSE)
+  findOverlaps(c(3L, 7L, 10L), subject, multiple=FALSE)
 }
 
 \keyword{classes}

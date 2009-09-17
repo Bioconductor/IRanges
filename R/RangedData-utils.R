@@ -55,26 +55,26 @@ setMethod("rdapply", "RDApplyParams", function(x) {
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Overlap.
+### findOverlaps()
 ###
 
-setMethod("overlap", c("RangedData", "RangedData"),
-          function(object, query, maxgap = 0, multiple = TRUE)
+setMethod("findOverlaps", c("RangedData", "RangedData"),
+          function(query, subject, maxgap = 0, multiple = TRUE)
           {
-            object <- ranges(object)
+            subject <- ranges(subject)
             query <- ranges(query)
             callGeneric()
           })
-setMethod("overlap", c("RangesList", "RangedData"),
-          function(object, query, maxgap = 0, multiple = TRUE)
+setMethod("findOverlaps", c("RangedData", "RangesList"),
+          function(query, subject, maxgap = 0, multiple = TRUE)
           {
             query <- ranges(query)
             callGeneric()
           })
-setMethod("overlap", c("RangedData", "RangesList"),
-          function(object, query, maxgap = 0, multiple = TRUE)
+setMethod("findOverlaps", c("RangesList", "RangedData"),
+          function(query, subject, maxgap = 0, multiple = TRUE)
           {
-            object <- ranges(object)
+            subject <- ranges(subject)
             callGeneric()
           })
 

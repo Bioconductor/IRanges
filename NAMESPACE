@@ -110,7 +110,7 @@ export(
     threebands,
     reduce,
     gaps,
-    overlap, nearest, precede, follow, countOverlap,
+    findOverlaps, countOverlaps, nearest, precede, follow,
     reflect,
     flank,
     punion, pintersect, psetdiff, pgap,

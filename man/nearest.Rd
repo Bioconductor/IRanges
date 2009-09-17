@@ -61,7 +61,7 @@
 \author{M. Lawrence}
 
 \seealso{
-  \code{\link{overlap}} for finding just the overlapping ranges.
+  \code{\link{findOverlaps}} for finding just the overlapping ranges.
 }
 
 \examples{

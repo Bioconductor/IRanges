@@ -211,7 +211,7 @@ rangesListSingleSquareBracket <- function(x, i, j, ..., drop)
   if (missing(i))
     return(x)
   if (is(i, "RangesList")) {
-    ol <- overlap(i, x, multiple = FALSE)
+    ol <- findOverlaps(x, i, multiple = FALSE)
     els <- as.list(x)
     for (j in seq_len(length(x))) {
       els[[j]] <- els[[j]][!is.na(ol[[j]])]
@@ -357,14 +357,14 @@ setMethod("range", "RangesList",
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Overlap.
+### findOverlaps()
 ###
 
-setMethod("overlap", c("RangesList", "RangesList"),
-          function(object, query, maxgap = 0, multiple = TRUE, drop = FALSE)
+setMethod("findOverlaps", c("RangesList", "RangesList"),
+          function(query, subject, maxgap = 0, multiple = TRUE, drop = FALSE)
           {
             query <- as.list(query)
-            subject <- as.list(object)
+            subject <- as.list(subject)
             origSubject <- subject
             if (!is.null(names(subject)) && !is.null(names(query))) {
               subject <- subject[names(query)]
@@ -375,7 +375,7 @@ setMethod("overlap", c("RangesList", "RangesList"),
             ## We replace those with empty IRanges
             subject[sapply(subject, is.null)] <- IRanges()
             ans <- lapply(seq_len(length(subject)), function(i) {
-              overlap(subject[[i]], query[[i]], maxgap, multiple)
+              findOverlaps(query[[i]], subject[[i]], maxgap, multiple)
             })
             names(ans) <- names(subject)
             if (multiple)
@@ -395,7 +395,7 @@ setMethod("overlap", c("RangesList", "RangesList"),
 
 setMethod("%in%", c("RangesList", "RangesList"),
           function(x, table)
-          LogicalList(lapply(overlap(table, x, multiple = FALSE),
+          LogicalList(lapply(findOverlaps(x, table, multiple = FALSE),
                              function(y) !is.na(y))))
 
 setMethod("match", c("RangesList", "RangesList"),
@@ -403,7 +403,7 @@ setMethod("match", c("RangesList", "RangesList"),
           {
             if (length(nomatch) != 1)
               stop("'nomatch' must be of length 1") 
-            ans <- overlap(table, x, multiple=FALSE, drop=TRUE)
+            ans <- findOverlaps(x, table, multiple=FALSE, drop=TRUE)
             if (!is.na(nomatch))
               ans[is.na(ans)] <- as.integer(nomatch)
             ans

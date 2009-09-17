@@ -607,11 +607,11 @@ xRle[irextract]
 
 \subsection{Finding Overlapping Ranges}
 
-The functions \Rfunction{overlap} and \Rfunction{\%in\%} detect overlaps
-between two \Rclass{Ranges} objects.
+The functions \Rfunction{findOverlaps} and \Rfunction{\%in\%} detect
+overlaps between two \Rclass{Ranges} objects.
 
 <<overlap-ranges>>=
-ol <- overlap(reduce(ir), ir)
+ol <- findOverlaps(ir, reduce(ir))
 as.matrix(ol)
 @
 

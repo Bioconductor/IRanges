@@ -366,9 +366,9 @@ setMethod("[", "RangedData",
               }
               if (!missing(i)) {
                 if (is(i, "RangesList")) {
-                  i <- !is.na(unlist(overlap(i,ranges,multiple=FALSE)))
+                  i <- !is.na(unlist(findOverlaps(ranges, i, multiple=FALSE)))
 ### FIXME: could do this if Ranges supported NAs, then ordering is possible
-                  ##i <- overlap(ranges, i, multiple=FALSE, drop=TRUE)
+                  ##i <- findOverlaps(i, ranges, multiple=FALSE, drop=TRUE)
                 }
                 prob <- checkIndex(i, nrow(x), rownames(x))
                 if (!is.null(prob))

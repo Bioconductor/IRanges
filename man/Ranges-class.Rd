@@ -94,7 +94,7 @@
   Also more operations on Ranges objects are described in the man page
   for \link{IRanges-utils} (\code{\link{shift}}, \code{\link{restrict}},
   \code{\link{narrow}}, \code{\link{reduce}}, etc...),
-  for \link{IntervalTree} objects (\code{\link{overlap}}),
+  for \link{IntervalTree} objects (\code{\link{findOverlaps}}),
   and for \link{RangesList} objects (\code{split} method for Ranges
   objects).
 

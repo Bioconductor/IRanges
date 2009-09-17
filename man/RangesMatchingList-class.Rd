@@ -88,7 +88,7 @@
 
 \author{ Michael Lawrence }
 \seealso{
-\code{\link{overlap}}, which generates an instance of this class.
+\code{\link{findOverlaps}}, which generates an instance of this class.
 }
 \examples{
 }

@@ -27,7 +27,7 @@ setMethod("map", c("RangesList", "Alignment"),
             for (space in names(x)) {
               ranges <- x[[space]]
               align <- alignment[[space]]
-              ol <- overlap(ranges(align), ranges)
+              ol <- findOverlaps(ranges, ranges(align))
               hits <- as.matrix(ol)
               ranges <- ranges(ol, ranges, ranges(align))
               starts <- ifelse(reversed(align)[hits[,2]],

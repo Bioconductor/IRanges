@@ -112,7 +112,7 @@
       except \code{i} may itself be a \code{RangesList}, in which case
       only the ranges in \code{x} that overlap with those in \code{i}
       are kept. See the
-      \code{\link[=overlap,RangesList,RangesList-method]{overlap}}
+      \code{\link[=findOverlaps,RangesList,RangesList-method]{findOverlaps}}
       method for more details.
     }
   }

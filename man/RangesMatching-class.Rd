@@ -21,8 +21,8 @@
 \title{Matchings between Ranges}
 \description{The \code{RangesMatching} class stores a set of matchings
   between the ranges in one \code{\linkS4class{Ranges}} object and the
-  ranges in another. Currently, \code{RangesMatching} are used to represent the
-  result of an \code{\link{overlap}} query, though other matching
+  ranges in another. Currently, \code{RangesMatching} are used to represent
+  the result of a call to \code{\link{findOverlaps}}, though other matching
   operations are imaginable.}
 
 \details{
@@ -91,13 +91,13 @@
 
 \author{ Michael Lawrence }
 \seealso{
-\code{\link{overlap}}, which generates an instance of this class.
+\code{\link{findOverlaps}}, which generates an instance of this class.
 }
 \examples{
   query <- IRanges(c(1, 4, 9), c(5, 7, 10))
   subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
   tree <- IntervalTree(subject)
-  matchings <- overlap(tree, query)
+  matchings <- findOverlaps(query, tree)
 
   as.matrix(matchings)
 

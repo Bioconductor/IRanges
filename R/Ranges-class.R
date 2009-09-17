@@ -40,7 +40,7 @@ setClass("Ranges", contains="IntegerList", representation("VIRTUAL"))
 ###   More operations:
 ###     threebands,
 ###     split
-###     overlap
+###     findOverlaps
 ###     (some are missing, list them all here)
 ###
 ### Note that, except for some default methods provided below (and implemented
@@ -425,19 +425,19 @@ setMethod("range", "Ranges",
 )
 
 ### Find objects in the index that overlap those in a query set.
-setGeneric("overlap", signature = c("object", "query"),
-    function(object, query, maxgap = 0, multiple = TRUE, ...)
-        standardGeneric("overlap")
+setGeneric("findOverlaps", signature = c("query", "subject"),
+    function(query, subject, maxgap = 0, multiple = TRUE, ...)
+        standardGeneric("findOverlaps")
 )
 
-setGeneric("countOverlap", signature = c("object", "query"),
-    function(object, query, ...) standardGeneric("countOverlap")
+setGeneric("countOverlaps", signature = c("query", "subject"),
+    function(query, subject, ...) standardGeneric("countOverlaps")
 )
 
-setMethod("countOverlap", c("Ranges", "Ranges"),
-    function(object, query)
+setMethod("countOverlaps", c("Ranges", "Ranges"),
+    function(query, subject)
     { ## might be faster someday
-        sum(query %in% object)
+        sum(query %in% subject)
     }
 )
 
@@ -455,7 +455,7 @@ setMethod("match", c("Ranges", "Ranges"),
     {
         if (length(nomatch) != 1)
             stop("'nomatch' must be of length 1") 
-        ans <- overlap(table, x, multiple=FALSE)
+        ans <- findOverlaps(x, table, multiple=FALSE)
         if (!is.na(nomatch))
             ans[is.na(ans)] <- nomatch
         ans
@@ -463,6 +463,29 @@ setMethod("match", c("Ranges", "Ranges"),
 )
 
 setClassUnion("RangesORmissing", c("Ranges", "missing"))
+
+setGeneric("nearest", function(x, subject, ...) standardGeneric("nearest"))
+
+setMethod("nearest", c("Ranges", "RangesORmissing"),
+    function(x, subject)
+    {
+        if (!missing(subject))
+            ol <- findOverlaps(x, subject, multiple = FALSE)
+        else { ## avoid overlapping with self
+            subject <- x
+            olm <- as.matrix(findOverlaps(x, subject))
+            olm <- olm[olm[,1] != olm[,2],]
+            ol <- olm[,2][match(seq_len(length(subject)), olm[,1])]
+        }
+        x <- x[is.na(ol)]
+        before <- precede(x, subject)
+        after <- follow(x, subject)
+        pre <- (start(subject)[before] - end(x)) < (start(x) - end(subject)[after])
+        pre[is.na(pre)] <- is.na(after)[is.na(pre)]
+        ol[is.na(ol)] <- ifelse(pre, before, after)
+        ol
+    }
+)
 
 setGeneric("precede", function(x, subject = x, ...) standardGeneric("precede"))
 
@@ -499,29 +522,6 @@ setMethod("follow", c("Ranges", "RangesORmissing"),
         if (!is.null(ord))
             i <- ord[i]
         i
-    }
-)
-
-setGeneric("nearest", function(x, subject, ...) standardGeneric("nearest"))
-
-setMethod("nearest", c("Ranges", "RangesORmissing"),
-    function(x, subject)
-    {
-        if (!missing(subject))
-            ol <- overlap(subject, x, multiple = FALSE)
-        else { ## avoid overlapping with self
-            subject <- x
-            olm <- as.matrix(overlap(subject, x))
-            olm <- olm[olm[,1] != olm[,2],]
-            ol <- olm[,2][match(seq_len(length(subject)), olm[,1])]
-        }
-        x <- x[is.na(ol)]
-        before <- precede(x, subject)
-        after <- follow(x, subject)
-        pre <- (start(subject)[before] - end(x)) < (start(x) - end(subject)[after])
-        pre[is.na(pre)] <- is.na(after)[is.na(pre)]
-        ol[is.na(ol)] <- ifelse(pre, before, after)
-        ol
     }
 )
 
