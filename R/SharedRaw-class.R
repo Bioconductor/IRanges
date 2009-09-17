@@ -52,6 +52,20 @@ setMethod("show", "SharedRaw",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Validity.
+###
+
+.valid.SharedRaw <- function(x)
+{
+    if (!extends(typeoftag(x@xp), "raw"))
+        return("'x@xp' must be an external pointer to a raw vector")
+    NULL
+}
+
+setValidity2("SharedRaw", .valid.SharedRaw)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Read/write functions.
 ### These are almost safe wrappers to unsafe C functions ("almost" because
 ### they don't check for NAs in their arguments).

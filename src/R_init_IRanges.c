@@ -52,8 +52,9 @@ static const R_CallMethodDef callMethods[] = {
 
 /* SharedVector_class.c */
 	CALLMETHOD_DEF(debug_SharedVector_class, 0),
-	CALLMETHOD_DEF(ExternalPtr_show, 1),
-	CALLMETHOD_DEF(ExternalPtr_new, 0),
+	CALLMETHOD_DEF(externalptr_typeoftag, 1),
+	CALLMETHOD_DEF(externalptr_show, 1),
+	CALLMETHOD_DEF(externalptr_new, 0),
 	CALLMETHOD_DEF(SharedVector_length, 1),
 
 /* SharedRaw_utils.c */

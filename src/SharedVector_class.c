@@ -18,26 +18,42 @@ SEXP debug_SharedVector_class()
 	return R_NilValue;
 }
 
-/*
- * Print some obscure info about an "externalptr" object.
- * From R:
- *   .Call("ExternalPtr_show", new("externalptr"), PACKAGE="IRanges")
+
+/****************************************************************************
+ * Some .Call entry points for manipulation externalptr objects.
  */
-SEXP ExternalPtr_show(SEXP xp)
+
+/*
+ * From R:
+ *   .Call("externalptr_typeoftag", new("externalptr"), PACKAGE="IRanges")
+ */
+SEXP externalptr_typeoftag(SEXP x)
 {
+	return ScalarString(type2str(TYPEOF(R_ExternalPtrTag(x))));
+}
+
+/*
+ * Print some info about an externalptr object.
+ * From R:
+ *   .Call("externalptr_show", new("externalptr"), PACKAGE="IRanges")
+ */
+SEXP externalptr_show(SEXP x)
+{
+	void *addr;
 	SEXP s;
-	void *p;
 
 	Rprintf("Object of class 'externalptr':\n");
-	Rprintf("  xp adress: %p\n", xp);
-	p = R_ExternalPtrAddr(xp);
-	Rprintf("  R_ExternalPtrAddr(xp): %p\n", p);
-	s = R_ExternalPtrTag(xp);
-	Rprintf("  R_ExternalPtrTag(xp): %p", s);
-	Rprintf("%s\n", TYPEOF(s) == NILSXP ? " (NILSXP)" : "");
-	s = R_ExternalPtrProtected(xp);
-	Rprintf("  R_ExternalPtrProtected(xp): %p", s);
-	Rprintf("%s\n", TYPEOF(s) == NILSXP ? " (NILSXP)" : "");
+	Rprintf("  x adress: %p\n", x);
+	addr = R_ExternalPtrAddr(x);
+	Rprintf("  R_ExternalPtrAddr(x): %p\n", addr);
+	s = R_ExternalPtrTag(x);
+	Rprintf("  R_ExternalPtrTag(x): %p\n", s);
+	Rprintf("  typeof(R_ExternalPtrTag(x)): %s\n",
+				CHAR(type2str(TYPEOF(s))));
+	s = R_ExternalPtrProtected(x);
+	Rprintf("  R_ExternalPtrProtected(x): %p\n", s);
+	Rprintf("  typeof(R_ExternalPtrProtected(x)): %s\n",
+				CHAR(type2str(TYPEOF(s))));
 	return R_NilValue;
 }
 
@@ -45,9 +61,9 @@ SEXP ExternalPtr_show(SEXP xp)
  * new("externalptr") will always return the same instance of an external
  * pointer object! If you need a new instance, use this function instead.
  * From R:
- *   xp <- .Call("ExternalPtr_new", PACKAGE="IRanges")
+ *   x <- .Call("externalptr_new", PACKAGE="IRanges")
  */
-SEXP ExternalPtr_new()
+SEXP externalptr_new()
 {
 	return R_MakeExternalPtr(NULL, R_NilValue, R_NilValue);
 }

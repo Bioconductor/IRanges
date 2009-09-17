@@ -50,6 +50,20 @@ setMethod("show", "SharedDouble",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Validity.
+###
+
+.valid.SharedDouble <- function(x)
+{
+    if (!extends(typeoftag(x@xp), "double"))
+        return("'x@xp' must be an external pointer to a double vector")
+    NULL
+}
+
+setValidity2("SharedDouble", .valid.SharedDouble)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Read/write functions.
 ### These are almost safe wrappers to unsafe C functions ("almost" because
 ### they don't check for NAs in their arguments).

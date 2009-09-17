@@ -50,6 +50,20 @@ setMethod("show", "SharedInteger",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Validity.
+###
+
+.valid.SharedInteger <- function(x)
+{
+    if (!extends(typeoftag(x@xp), "integer"))
+        return("'x@xp' must be an external pointer to an integer vector")
+    NULL
+}
+
+setValidity2("SharedInteger", .valid.SharedInteger)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Read/write functions.
 ### These are almost safe wrappers to unsafe C functions ("almost" because
 ### they don't check for NAs in their arguments).

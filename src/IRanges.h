@@ -486,9 +486,11 @@ SEXP vector_seqselect(SEXP x, SEXP start, SEXP width);
 
 SEXP debug_SharedVector_class();
 
-SEXP ExternalPtr_show(SEXP xp);
+SEXP externalptr_typeoftag(SEXP x);
 
-SEXP ExternalPtr_new();
+SEXP externalptr_show(SEXP x);
+
+SEXP externalptr_new();
 
 SEXP _new_SharedVector(const char *classname, SEXP tag);
 

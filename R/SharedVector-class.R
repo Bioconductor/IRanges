@@ -22,6 +22,42 @@ setMethod("length", "SharedVector",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### First, a couple of very low-level utilities on externalptr objects.
+###
+
+typeoftag <- function(x)
+{
+    if (!is(x, "externalptr"))
+        stop("'x' must be an externalptr object")
+    .Call("externalptr_typeoftag", x, PACKAGE="IRanges")
+}
+
+### Helper function (for debugging purpose).
+### Print some info about an externalptr object.
+### Typical use:
+###   show(new("externalptr"))
+setMethod("show", "externalptr",
+    function(object)
+        .Call("externalptr_show", object, PACKAGE="IRanges")
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Validity.
+###
+
+.valid.SharedVector <- function(x)
+{
+    type <- typeoftag(x@xp)
+    if (type != "double" && !extends(typeoftag(x@xp), "vector"))
+        return("'x@xp' must be an external pointer to a vector")
+    NULL
+}
+
+setValidity2("SharedVector", .valid.SharedVector)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
 
@@ -57,15 +93,6 @@ setMethod("!=", signature(e1="SharedVector", e2="SharedVector"),
 ### Miscellaneous stuff (not SharedVector related, but I didn't find a better
 ### place for now).
 ###
-
-### Helper function (for debugging purpose).
-### Print some obscure info about an "externalptr" object.
-### Typical use:
-###   show(new("externalptr"))
-setMethod("show", "externalptr",
-    function(object)
-        .Call("ExternalPtr_show", object, PACKAGE="IRanges")
-)
 
 ### Safe alternative to 'strsplit(x, NULL, fixed=TRUE)[[1]]'.
 safeExplode <- function(x)
