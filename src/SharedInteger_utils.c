@@ -1,5 +1,5 @@
 /****************************************************************************
- *                        Fast SharedInteger utilities                         *
+ *                       Fast SharedInteger utilities                       *
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"

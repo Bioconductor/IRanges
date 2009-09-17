@@ -760,19 +760,19 @@ SEXP SharedDouble_write_nums_to_subset(
 );
 
 
-/* XSequence_class.c */
+/* XVector_class.c */
 
-SEXP _get_XSequence_shared(SEXP x);
+SEXP _get_XVector_shared(SEXP x);
 
-SEXP _get_XSequence_offset(SEXP x);
+SEXP _get_XVector_offset(SEXP x);
 
-SEXP _get_XSequence_length(SEXP x);
+SEXP _get_XVector_length(SEXP x);
 
-SEXP _get_XSequence_tag(SEXP x);
+SEXP _get_XVector_tag(SEXP x);
 
 cachedCharSeq _cache_XRaw(SEXP x);
 
-SEXP _new_XSequence(
+SEXP _new_XVector(
 	const char *classname,
 	SEXP shared,
 	int offset,

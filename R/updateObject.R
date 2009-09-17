@@ -368,10 +368,10 @@ setMethod("updateObject", signature(object="SplitXDataFrameList"),
                             "CompressedSplitDataFrameList", "DataFrame")
           })
 
-## "XSequence" -> "XSequence"
-setMethod("updateObject", signature(object="XSequence"),
+## "XVector" -> "XVector"
+setMethod("updateObject", signature(object="XVector"),
           function(object, ..., verbose=FALSE) {
-              if (verbose) message("updateObject(object = 'XSequence')")
+              if (verbose) message("updateObject(object = 'XVector')")
               if (!("metadata" %in% names(attributes(object)))) {
                   object <-
                     new(class(object),

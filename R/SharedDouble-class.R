@@ -1,6 +1,9 @@
 ### =========================================================================
-### External pointer to a numeric vector: the "SharedDouble" class
+### SharedDouble objects
 ### -------------------------------------------------------------------------
+###
+### A SharedDouble object is an external pointer to an ordinary double
+### vector.
 ###
 
 setClass("SharedDouble", contains="SharedVector")

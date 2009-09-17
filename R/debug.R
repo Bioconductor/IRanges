@@ -27,7 +27,7 @@ debug_SharedInteger_utils <- function()
 debug_SharedDouble_utils <- function()
     invisible(.Call("debug_SharedDouble_utils", PACKAGE="IRanges"))
 
-debug_XSequence_class <- function()
-    invisible(.Call("debug_XSequence_class", PACKAGE="IRanges"))
+debug_XVector_class <- function()
+    invisible(.Call("debug_XVector_class", PACKAGE="IRanges"))
 
 

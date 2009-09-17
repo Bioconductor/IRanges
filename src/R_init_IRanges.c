@@ -242,13 +242,13 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_get_SharedVector_tag);
 	REGISTER_CCALLABLE(_get_SharedVector_length);
 
-/* XSequence_class.c */
-	REGISTER_CCALLABLE(_get_XSequence_shared);
-	REGISTER_CCALLABLE(_get_XSequence_offset);
-	REGISTER_CCALLABLE(_get_XSequence_length);
-	REGISTER_CCALLABLE(_get_XSequence_tag);
+/* XVector_class.c */
+	REGISTER_CCALLABLE(_get_XVector_shared);
+	REGISTER_CCALLABLE(_get_XVector_offset);
+	REGISTER_CCALLABLE(_get_XVector_length);
+	REGISTER_CCALLABLE(_get_XVector_tag);
 	REGISTER_CCALLABLE(_cache_XRaw);
-	REGISTER_CCALLABLE(_new_XSequence);
+	REGISTER_CCALLABLE(_new_XVector);
 	REGISTER_CCALLABLE(_new_XRaw_from_tag);
 	REGISTER_CCALLABLE(_new_XInteger_from_tag);
 	REGISTER_CCALLABLE(_new_XDouble_from_tag);

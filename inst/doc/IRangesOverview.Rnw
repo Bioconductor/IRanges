@@ -73,8 +73,8 @@ turn. All \IRanges{}-derived sequences inherit from the
 In \R{}, atomic sequences are typically stored in atomic vectors. The
 \IRanges{} package includes two additional atomic sequence object types:
 \Rclass{Rle}, which compresses an atomic sequence through run-length
-encoding, and \Rclass{XSequence}, which refers to its data through an
-external pointer. \Rclass{XSequence} and its derivatives are considered
+encoding, and \Rclass{XVector}, which refers to its data through an
+external pointer. \Rclass{XVector} and its derivatives are considered
 low-level infrastructure and, as such, will not be covered by this
 vignette.
 

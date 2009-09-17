@@ -44,7 +44,7 @@ Collate: validity-utils.R
 	SharedRaw-class.R
 	SharedInteger-class.R
 	SharedDouble-class.R
-	XSequence-class.R
+	XVector-class.R
 	XRaw-class.R
 	XInteger-class.R
 	XIntegerViews-class.R

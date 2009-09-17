@@ -131,7 +131,7 @@
   \link{IRanges-class},
   \link{Sequence-class},
   \link{IRanges-utils},
-  \link{XSequence}.
+  \link{XVector}.
 
   Some direct subclasses of the Views class:
   \link{XIntegerViews-class},

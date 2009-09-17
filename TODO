@@ -49,7 +49,7 @@ Long term TODO list
   - probably need to add 'excludePattern' parameter
 
 - IO:
-  - xscan() - read data directly into XSequence objects
+  - xscan() - read data directly into XVector objects
   - move chain reading to rtracklayer
 
 -------------------------------------
@@ -75,18 +75,17 @@ most long vectors in our data are series.
 
 There are currently two optimized means of storing long series:
 
-1) Externally, currently only in memory, in XSequence
-derivatives. These would generalize to external vectors, so they would
-all derive from an XVector class. The main benefit here is avoiding
-unnecessary copying, though there is potential for vectors stored in
-databases and flat files on disk (but this is outside our use case).
+1) Externally, currently only in memory, in XVector derivatives.
+The main benefit here is avoiding unnecessary copying, though there
+is potential for vectors stored in databases and flat files on disk
+(but this is outside our use case).
 
 2) Run-length encoding (Rle class). This is a classic means of
 compressing discrete-valued series. It is very efficient, as long as
 there are long runs of equal value.
 
-Rle, so far, is far ahead of XSequence in terms of direct
-usefulness. If XSequence were implemented with an environment, rather
+Rle, so far, is far ahead of XVector in terms of direct
+usefulness. If XVector were implemented with an environment, rather
 than an external pointer, adding functionality would be easier. Could
 carry some things over from externalVector.
 

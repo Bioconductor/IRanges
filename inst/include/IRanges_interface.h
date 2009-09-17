@@ -388,21 +388,21 @@ int get_SharedVector_length(SEXP x);
 
 
 /*
- * Low-level manipulation of XSequence objects.
- * (see XSequence_class.c)
+ * Low-level manipulation of XVector objects.
+ * (see XVector_class.c)
  */
 
-SEXP get_XSequence_shared(SEXP x);
+SEXP get_XVector_shared(SEXP x);
 
-SEXP get_XSequence_offset(SEXP x);
+SEXP get_XVector_offset(SEXP x);
 
-SEXP get_XSequence_length(SEXP x);
+SEXP get_XVector_length(SEXP x);
 
-SEXP get_XSequence_tag(SEXP x);
+SEXP get_XVector_tag(SEXP x);
 
 cachedCharSeq cache_XRaw(SEXP x);
 
-SEXP new_XSequence(const char *classname, SEXP shared, int offset, int length);
+SEXP new_XVector(const char *classname, SEXP shared, int offset, int length);
 
 SEXP new_XRaw_from_tag(const char *classname, SEXP tag);
 

@@ -2,12 +2,16 @@
 ### XDouble objects
 ### -------------------------------------------------------------------------
 ###
-### The XDouble class is a container for storing an external sequence of
-### numeric values (stored as double at the C level).
+### The XDouble class is a container for storing an "external double
+### vector" i.e. a *single* view on a SharedDouble object.
+###
+### IMPORTANT NOTE: Our concept/representation/implementation of external
+### vectors in general differ significantly from those found in the
+### externalVector package!
 ###
 
 setClass("XDouble",
-    contains="XSequence",
+    contains="XVector",
     representation(
         shared="SharedDouble"
     )
@@ -42,7 +46,7 @@ XDouble <- function(length=base::length(val), val=NULL)
 
 ### From standard vectors to XDouble objects:
 setAs("numeric", "XDouble", function(from) XDouble(length(from), val=from))
-setAs("numeric", "XSequence", function(from) as(from, "XDouble"))
+setAs("numeric", "XVector", function(from) as(from, "XDouble"))
 
 ### From XDouble objects to standard vectors:
 setMethod("as.numeric", "XDouble",

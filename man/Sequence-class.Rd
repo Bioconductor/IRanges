@@ -428,7 +428,7 @@
   \linkS4class{SimpleList},
   \linkS4class{Ranges},
   \linkS4class{Rle},
-  \linkS4class{XSequence} for example implementations
+  \linkS4class{XVector} for example implementations
 }
 
 \examples{

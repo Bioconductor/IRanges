@@ -2,12 +2,16 @@
 ### XInteger objects
 ### -------------------------------------------------------------------------
 ###
-### The XInteger class is a container for storing an external sequence
-### of integers (stored as int values at the C level).
+### The XInteger class is a container for storing an "external integer
+### vector" i.e. a *single* view on a SharedInteger object.
+###
+### IMPORTANT NOTE: Our concept/representation/implementation of external
+### vectors in general differ significantly from those found in the
+### externalVector package!
 ###
 
 setClass("XInteger",
-    contains="XSequence",
+    contains="XVector",
     representation(
         shared="SharedInteger"
     )
@@ -42,7 +46,7 @@ XInteger <- function(length=base::length(val), val=NULL)
 
 ### From standard vectors to XInteger objects:
 setAs("numeric", "XInteger", function(from) XInteger(length(from), val=from))
-setAs("integer", "XSequence", function(from) as(from, "XInteger"))
+setAs("integer", "XVector", function(from) as(from, "XInteger"))
 
 ### From XInteger objects to standard vectors:
 setMethod("as.integer", "XInteger",

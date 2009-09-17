@@ -2,12 +2,16 @@
 ### XRaw objects
 ### -------------------------------------------------------------------------
 ###
-### The XRaw class is a container for storing an external sequence of
-### bytes (stored as char values at the C level).
+### The XRaw class is a container for storing an "external raw vector" i.e.
+### a *single* view on a SharedRaw object.
+###
+### IMPORTANT NOTE: Our concept/representation/implementation of external
+### vectors in general differ significantly from those found in the
+### externalVector package!
 ###
 
 setClass("XRaw",
-    contains="XSequence",
+    contains="XVector",
     representation(
         shared="SharedRaw"
     )
@@ -35,7 +39,7 @@ XRaw <- function(length=0L, val=NULL)
 
 ### From standard vectors to XRaw objects:
 setAs("raw", "XRaw", function(from) XRaw(length(from), val=from))
-setAs("raw", "XSequence", function(from) as(from, "XRaw"))
+setAs("raw", "XVector", function(from) as(from, "XRaw"))
 setAs("numeric", "XRaw", function(from) XRaw(length(from), val=from))
 
 ### From XRaw objects to standard vectors:

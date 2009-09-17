@@ -19,7 +19,7 @@ exportClasses(
     Binning,
     SharedVector, SharedRaw, SharedInteger, SharedDouble,
     Views,
-    XSequence, XRaw, XInteger, XIntegerViews, XDouble,
+    XVector, XRaw, XInteger, XIntegerViews, XDouble,
     Rle, RleViews,
     MaskCollection,
     AtomicList, CompressedAtomicList, SimpleAtomicList,

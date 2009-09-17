@@ -125,7 +125,7 @@ test_DataFrame_subset <- function() {
   ## duplicate row, unique row names are created
   checkIdentical(as.data.frame(sw[c(1, 1:2),]), swiss[c(1,1:2),])
 
-  ## NOTE: NA subsetting not yet supported for XSequences
+  ## NOTE: NA subsetting not yet supported for XVectors
   ##checkIdentical(as.data.frame(sw[c(1, NA, 1:2, NA),]), # mixin some NAs
   ##               swiss[c(1, NA, 1:2, NA),])
 
@@ -133,7 +133,7 @@ test_DataFrame_subset <- function() {
   subswiss <- swiss[1:5,1:4]
   subsw <- sw[1:5,1:4]
   checkIdentical(as.data.frame(subsw["C",]), subswiss["C",]) # partially matches
-  ## NOTE: NA subsetting not yet supported for XSequences
+  ## NOTE: NA subsetting not yet supported for XVectors
   ##checkIdentical(as.data.frame(subsw["foo",]), # bad row name
   ##               subswiss["foo",]) 
   ##checkIdentical(as.data.frame(sw[match("C", row.names(sw)), ]), 

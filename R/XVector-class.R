@@ -1,12 +1,16 @@
 ### =========================================================================
-### XSequence objects
+### XVector objects
 ### -------------------------------------------------------------------------
 ###
-### The XSequence virtual class is a general container for storing an
-### "external sequence".
+### The XVector virtual class is a general container for storing an
+### "external vector" i.e. a *single* view on a SharedVector object.
+###
+### IMPORTANT NOTE: Our concept/representation/implementation of external
+### vectors differ significantly from those found in the externalVector
+### package!
 ###
 
-setClass("XSequence",
+setClass("XVector",
     contains="Sequence",
     representation(
         "VIRTUAL",
@@ -20,7 +24,7 @@ setClass("XSequence",
     )
 )
 
-setMethod("length", "XSequence", function(x) x@length)
+setMethod("length", "XVector", function(x) x@length)
 
 ### Extracts a linear subsequence without copying the sequence data!
 setGeneric("subseq", signature="x",
@@ -46,7 +50,7 @@ solveSubseqSEW <- function(seq_length, start, end, width)
     solved_SEW
 }
 
-setMethod("subseq", "XSequence",
+setMethod("subseq", "XVector",
     function(x, start=NA, end=NA, width=NA)
     {
         solved_SEW <- solveSubseqSEW(length(x), start, end, width)
@@ -56,7 +60,7 @@ setMethod("subseq", "XSequence",
     }
 )
 
-setReplaceMethod("subseq", "XSequence",
+setReplaceMethod("subseq", "XVector",
     function(x, start=NA, end=NA, width=NA, value)
     {
         solved_SEW <- solveSubseqSEW(length(x), start, end, width)
@@ -77,7 +81,7 @@ setReplaceMethod("subseq", "XSequence",
 
 
 ### Works as long as c() works on objects of the same class as 'x'.
-setMethod("seqselect", "XSequence",
+setMethod("seqselect", "XVector",
     function(x, start=NULL, end=NULL, width=NULL)
     {
         xv <- Views(x, start=start, end=end, width=width)
@@ -86,7 +90,7 @@ setMethod("seqselect", "XSequence",
     }
 )
 
-setMethod("window", "XSequence",
+setMethod("window", "XVector",
         function(x, start = NULL, end = NULL, width = NULL,
                 frequency = NULL, delta = NULL, ...)
         {
@@ -111,11 +115,11 @@ setMethod("window", "XSequence",
         })
 
 ### Works as long as as.integer() works on 'x'.
-setMethod("as.numeric", "XSequence",
+setMethod("as.numeric", "XVector",
     function(x, ...) as.numeric(as.integer(x))
 )
 
-setMethod("show", "XSequence",
+setMethod("show", "XVector",
     function(object)
     {
         lo <- length(object)

@@ -1,6 +1,9 @@
 ### =========================================================================
-### External pointer to an integer vector: the "SharedInteger" class
+### SharedInteger objects
 ### -------------------------------------------------------------------------
+###
+### A SharedInteger object is an external pointer to an ordinary integer
+### vector.
 ###
 
 setClass("SharedInteger", contains="SharedVector")

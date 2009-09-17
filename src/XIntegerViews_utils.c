@@ -14,7 +14,7 @@ SEXP XIntegerViews_viewMins(SEXP x, SEXP na_rm)
 	cachedIRanges cached_x;
 
 	subject = GET_SLOT(x, install("subject"));
-	subject_tag = _get_XSequence_tag(subject);
+	subject_tag = _get_XVector_tag(subject);
 
 	cached_x = _cache_IRanges(x);
 	ans_length = _get_cachedIRanges_length(&cached_x);
@@ -48,7 +48,7 @@ SEXP XIntegerViews_viewMaxs(SEXP x, SEXP na_rm)
 	cachedIRanges cached_x;
 
 	subject = GET_SLOT(x, install("subject"));
-	subject_tag = _get_XSequence_tag(subject);
+	subject_tag = _get_XVector_tag(subject);
 
 	cached_x = _cache_IRanges(x);
 	ans_length = _get_cachedIRanges_length(&cached_x);
@@ -82,7 +82,7 @@ SEXP XIntegerViews_viewSums(SEXP x, SEXP na_rm)
 	cachedIRanges cached_x;
 
 	subject = GET_SLOT(x, install("subject"));
-	subject_tag = _get_XSequence_tag(subject);
+	subject_tag = _get_XVector_tag(subject);
 
 	cached_x = _cache_IRanges(x);
 	ans_length = _get_cachedIRanges_length(&cached_x);
@@ -119,7 +119,7 @@ SEXP XIntegerViews_viewWhichMins(SEXP x, SEXP na_rm)
 	cachedIRanges cached_x;
 
 	subject = GET_SLOT(x, install("subject"));
-	subject_tag = _get_XSequence_tag(subject);
+	subject_tag = _get_XVector_tag(subject);
 
 	cached_x = _cache_IRanges(x);
 	ans_length = _get_cachedIRanges_length(&cached_x);
@@ -156,7 +156,7 @@ SEXP XIntegerViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 	cachedIRanges cached_x;
 
 	subject = GET_SLOT(x, install("subject"));
-	subject_tag = _get_XSequence_tag(subject);
+	subject_tag = _get_XVector_tag(subject);
 
 	cached_x = _cache_IRanges(x);
 	ans_length = _get_cachedIRanges_length(&cached_x);

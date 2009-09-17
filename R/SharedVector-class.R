@@ -1,6 +1,9 @@
 ### =========================================================================
-### External pointer to an ordinary vector: the "SharedVector" class
+### SharedVector objects
 ### -------------------------------------------------------------------------
+###
+### A SharedVector object is an external pointer to an ordinary vector.
+###
 
 setClass("SharedVector",
     representation("VIRTUAL",

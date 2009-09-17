@@ -1,5 +1,5 @@
 /****************************************************************************
- *                        Fast SharedDouble utilities                         *
+ *                       Fast SharedDouble utilities                        *
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"

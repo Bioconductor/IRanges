@@ -1,6 +1,8 @@
 ### =========================================================================
-### External pointer to a raw vector: the "SharedRaw" class
+### SharedRaw objects
 ### -------------------------------------------------------------------------
+###
+### A SharedRaw object is an external pointer to an ordinary raw vector.
 ###
 
 setClass("SharedRaw", contains="SharedVector")

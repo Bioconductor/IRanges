@@ -1,5 +1,5 @@
 /****************************************************************************
- *              Low-level manipulation of SharedVector objects               *
+ *              Low-level manipulation of SharedVector objects              *
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"

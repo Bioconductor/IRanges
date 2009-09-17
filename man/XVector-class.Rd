@@ -1,20 +1,20 @@
-\name{XSequence-class}
+\name{XVector-class}
 \docType{class}
 
-% XSequence class, functions and methods:
-\alias{class:XSequence}
-\alias{XSequence-class}
-\alias{XSequence}
+% XVector class, functions and methods:
+\alias{class:XVector}
+\alias{XVector-class}
+\alias{XVector}
 
-\alias{length,XSequence-method}
+\alias{length,XVector-method}
 \alias{subseq}
 \alias{subseq<-}
-\alias{subseq,XSequence-method}
-\alias{subseq<-,XSequence-method}
-\alias{seqselect,XSequence-method}
-\alias{window,XSequence-method}
-\alias{as.numeric,XSequence-method}
-\alias{show,XSequence-method}
+\alias{subseq,XVector-method}
+\alias{subseq<-,XVector-method}
+\alias{seqselect,XVector-method}
+\alias{window,XVector-method}
+\alias{as.numeric,XVector-method}
+\alias{show,XVector-method}
 
 % XRaw class, functions and methods:
 \alias{class:XRaw}
@@ -22,7 +22,7 @@
 \alias{XRaw}
 
 \alias{coerce,raw,XRaw-method}
-\alias{coerce,raw,XSequence-method}
+\alias{coerce,raw,XVector-method}
 \alias{coerce,numeric,XRaw-method}
 \alias{as.raw,XRaw-method}
 \alias{as.integer,XRaw-method}
@@ -36,7 +36,7 @@
 \alias{XInteger}
 
 \alias{coerce,numeric,XInteger-method}
-\alias{coerce,integer,XSequence-method}
+\alias{coerce,integer,XVector-method}
 \alias{as.integer,XInteger-method}
 \alias{as.vector,XInteger,missing-method}
 \alias{[,XInteger-method}
@@ -48,7 +48,7 @@
 \alias{XDouble}
 
 \alias{coerce,numeric,XDouble-method}
-\alias{coerce,numeric,XSequence-method}
+\alias{coerce,numeric,XVector-method}
 \alias{as.numeric,XDouble-method}
 \alias{as.vector,XDouble,missing-method}
 \alias{[,XDouble-method}
@@ -56,14 +56,14 @@
 \alias{==,XDouble,XDouble-method}
 
 
-\title{XSequence objects}
+\title{XVector objects}
 
 \description{
-  The XSequence virtual class is a general container for storing
+  The XVector virtual class is a general container for storing
   an "external sequence". It inherits from the \link{Sequence},
   which has a very rich interface.
 
-  The following classes derive directly from the XSequence class:
+  The following classes derive directly from the XVector class:
 
   The XRaw class is a container for storing an external sequence
   of bytes (stored as char values at the C level).
@@ -82,8 +82,8 @@
   data when a linear subsequence needs to be extracted.
 }
 
-\section{Additional Subsetting operations on XSequence objects}{
-  In the code snippets below, \code{x} is an XSequence object.
+\section{Additional Subsetting operations on XVector objects}{
+  In the code snippets below, \code{x} is an XVector object.
 
   \describe{
     \item{}{
@@ -97,9 +97,9 @@
       details).
 
       A note about performance: \code{subseq} does NOT copy the sequence data
-      of an XSequence object. Hence it's very efficient and is therefore the
+      of an XVector object. Hence it's very efficient and is therefore the
       recommended way to extract a linear subsequence (i.e. a set of consecutive
-      elements) from an XSequence object. For example, extracting a 100Mb
+      elements) from an XVector object. For example, extracting a 100Mb
       subsequence from Human chromosome 1 (a 250Mb
       \link[Biostrings:DNAString-class]{DNAString} object) with \code{subseq}
       is (almost) instantaneous and has (almost) no memory footprint (the cost
@@ -120,7 +120,7 @@
       left subsequence for this) or deleting elements from \code{x} (use
       a \code{NULL} right value for this).
       Unlike the extraction method above, this replacement method always
-      copies the sequence data of \code{x} (even for XSequence objects).
+      copies the sequence data of \code{x} (even for XVector objects).
       NOTE: Only works for XRaw (and derived) objects for now.
     }
   }
