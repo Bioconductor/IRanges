@@ -430,6 +430,15 @@ setGeneric("findOverlaps", signature = c("query", "subject"),
         standardGeneric("findOverlaps")
 )
 
+overlap <- function(object, query, maxgap = 0, multiple = TRUE, ...)
+{
+    .Deprecated("findOverlaps")
+    if (missing(query))
+        findOverlaps(object, maxgap = maxgap, multiple = multiple, ...)
+    else
+        findOverlaps(object, query, maxgap = maxgap, multiple = multiple, ...)
+}
+
 setGeneric("countOverlaps", signature = c("query", "subject"),
     function(query, subject, ...) standardGeneric("countOverlaps")
 )
@@ -440,6 +449,12 @@ setMethod("countOverlaps", c("Ranges", "Ranges"),
         sum(query %in% subject)
     }
 )
+
+countOverlap <- function(object, query)
+{
+    .Deprecated("countOverlaps")
+    countOverlaps(query, object)
+}
 
 setMethod("%in%", c("Ranges", "Ranges"),
     function(x, table) !is.na(match(x, table))

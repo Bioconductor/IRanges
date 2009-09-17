@@ -25,6 +25,7 @@
 \alias{findOverlaps,RangedData,RangedData-method}
 \alias{findOverlaps,RangesList,RangedData-method}
 \alias{findOverlaps,RangedData,RangesList-method}
+\alias{overlap}
 \alias{\%in\%,Ranges,Ranges-method}
 \alias{\%in\%,RangesList,RangesList-method}
 \alias{\%in\%,RangedData,RangedData-method}
@@ -34,6 +35,7 @@
 \alias{match,RangesList,RangesList-method}
 \alias{countOverlaps}
 \alias{countOverlaps,Ranges,Ranges-method}
+\alias{countOverlap}
 
 \title{Interval Search Trees}
 \description{
