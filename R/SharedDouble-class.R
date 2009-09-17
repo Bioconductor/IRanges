@@ -55,8 +55,9 @@ setMethod("show", "SharedDouble",
 
 .valid.SharedDouble <- function(x)
 {
-    if (!extends(typeoftag(x@xp), "double"))
-        return("'x@xp' must be an external pointer to a double vector")
+    if (!isExternalVector(x@xp, tagtype="double"))
+        return(problemIfNotExternalVector("'x@xp'",
+                                          tagmustbe="a double vector"))
     NULL
 }
 

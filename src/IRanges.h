@@ -486,7 +486,7 @@ SEXP vector_seqselect(SEXP x, SEXP start, SEXP width);
 
 SEXP debug_SharedVector_class();
 
-SEXP externalptr_typeoftag(SEXP x);
+SEXP externalptr_tagtype(SEXP x);
 
 SEXP externalptr_show(SEXP x);
 
@@ -510,7 +510,7 @@ SEXP SharedRaw_new(
 	SEXP val
 );
 
-SEXP SharedRaw_get_show_string(SEXP x);
+SEXP SharedRaw_address0(SEXP x);
 
 SEXP SharedRaw_memcmp(
 	SEXP x1,

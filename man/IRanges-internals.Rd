@@ -23,23 +23,30 @@
 
 \alias{coerce,ANY,vector-method}
 
-% SharedVector class, functions and methods:
+% SharedVector and SharedVector_Pool classes, functions and methods:
 \alias{class:SharedVector}
 \alias{SharedVector-class}
 \alias{SharedVector}
+\alias{class:SharedVector_Pool}
+\alias{SharedVector_Pool-class}
 
-\alias{as.numeric,SharedVector-method}
-\alias{show,externalptr-method}
 \alias{length,SharedVector-method}
+\alias{show,SharedVector-method}
+\alias{length,SharedVector_Pool-method}
+\alias{show,SharedVector_Pool-method}
+\alias{show,externalptr-method}
+\alias{as.numeric,SharedVector-method}
 \alias{==,SharedVector,SharedVector-method}
 \alias{!=,SharedVector,SharedVector-method}
 
-% SharedRaw class, functions and methods:
+% SharedRaw and SharedRaw_Pool classes, functions and methods:
 \alias{class:SharedRaw}
 \alias{SharedRaw-class}
 \alias{SharedRaw}
+\alias{class:SharedRaw_Pool}
+\alias{SharedRaw_Pool-class}
 
-\alias{show,SharedRaw-method}
+\alias{[[,SharedRaw_Pool-method}
 \alias{SharedRaw.readInts}
 \alias{SharedRaw.writeInts}
 \alias{SharedRaw.read}

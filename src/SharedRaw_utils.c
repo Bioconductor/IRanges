@@ -44,17 +44,14 @@ SEXP SharedRaw_new(SEXP length, SEXP val)
 	return ans;
 }
 
-SEXP SharedRaw_get_show_string(SEXP x)
+SEXP SharedRaw_address0(SEXP x)
 {
 	SEXP tag;
-	int tag_length;
-	char buf[100]; /* should be enough... */
+	char buf[20]; /* should be enough... */
 
 	tag = _get_SharedVector_tag(x);
-	tag_length = LENGTH(tag);
-	snprintf(buf, sizeof(buf), "%d-byte SharedRaw object (data starting at memory address %p)",
-		tag_length, RAW(tag));
-	return mkString(buf);
+	snprintf(buf, sizeof(buf), "%p", RAW(tag));
+        return mkString(buf);
 }
 
 /*

@@ -55,8 +55,9 @@ setMethod("show", "SharedInteger",
 
 .valid.SharedInteger <- function(x)
 {
-    if (!extends(typeoftag(x@xp), "integer"))
-        return("'x@xp' must be an external pointer to an integer vector")
+    if (!isExternalVector(x@xp, tagtype="integer"))
+        return(problemIfNotExternalVector("'x@xp'",
+                                          tagmustbe="an integer vector"))
     NULL
 }
 

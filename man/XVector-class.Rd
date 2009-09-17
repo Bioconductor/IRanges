@@ -46,6 +46,7 @@
 \alias{class:XDouble}
 \alias{XDouble-class}
 \alias{XDouble}
+\alias{XNumeric}
 
 \alias{coerce,numeric,XDouble-method}
 \alias{coerce,numeric,XVector-method}
@@ -60,22 +61,25 @@
 
 \description{
   The XVector virtual class is a general container for storing
-  an "external sequence". It inherits from the \link{Sequence},
+  an "external vector". It inherits from the \link{Sequence},
   which has a very rich interface.
 
   The following classes derive directly from the XVector class:
 
-  The XRaw class is a container for storing an external sequence
-  of bytes (stored as char values at the C level).
+  The XRaw class is a container for storing an "external raw vector"
+  i.e. an external sequence of bytes (stored as char values at the
+  C level).
 
-  The XInteger class is a container for storing an external sequence
-  of integer values (stored as int values at the C level).
+  The XInteger class is a container for storing an "external integer
+  vector" i.e. an external sequence of integer values (stored as
+  int values at the C level).
 
-  The XDouble class is a container for storing an external sequence
-  of numeric values (stored as double values at the C level).
+  The XDouble class is a container for storing an "external double
+  vector" i.e. an external sequence of numeric values (stored as
+  double values at the C level).
 
-  Also the \link[Biostrings:XString-class]{XString} class from the Biostrings
-  package.
+  Also the \link[Biostrings:XString-class]{XString} class from
+  the Biostrings package.
 
   The purpose of the X* containers is to provide a "pass by address"
   semantic and also to avoid the overhead of copying the sequence

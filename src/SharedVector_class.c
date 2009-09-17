@@ -25,9 +25,9 @@ SEXP debug_SharedVector_class()
 
 /*
  * From R:
- *   .Call("externalptr_typeoftag", new("externalptr"), PACKAGE="IRanges")
+ *   .Call("externalptr_tagtype", new("externalptr"), PACKAGE="IRanges")
  */
-SEXP externalptr_typeoftag(SEXP x)
+SEXP externalptr_tagtype(SEXP x)
 {
 	return ScalarString(type2str(TYPEOF(R_ExternalPtrTag(x))));
 }

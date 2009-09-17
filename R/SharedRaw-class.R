@@ -1,11 +1,13 @@
 ### =========================================================================
-### SharedRaw objects
+### SharedRaw objects and SharedRaw_Pool objects
 ### -------------------------------------------------------------------------
 ###
 ### A SharedRaw object is an external pointer to an ordinary raw vector.
 ###
 
 setClass("SharedRaw", contains="SharedVector")
+
+setClass("SharedRaw_Pool", contains="SharedVector_Pool")
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -38,15 +40,24 @@ setMethod("initialize", "SharedRaw",
 SharedRaw <- function(length=0L, val=NULL)
     new2("SharedRaw", length=length, val=val, check=FALSE)
 
-setMethod("show", "SharedRaw",
-    function(object)
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Some low-level methods.
+###
+
+setMethod("address0", "SharedRaw",
+    function(x) .Call("SharedRaw_address0", x, PACKAGE="IRanges")
+)
+
+setMethod("[[", "SharedRaw_Pool",
+    function(x, i, j, ...)
     {
-        show_string <- .Call("SharedRaw_get_show_string", object, PACKAGE="IRanges")
-        cat(show_string, "\n", sep="")
-        ## What is correct here? The documentation (?show) says that 'show'
-        ## should return an invisible 'NULL' but, on the other hand, the 'show'
-        ## method for integers returns its 'object' argument...
-        invisible(object)
+        if (!isSingleInteger(i) || i < 1L || i > length(x))
+            stop("invalid subscript")
+        ans <- SharedRaw()
+        ans@xp <- x@xp_list[[i]]
+        ans@.link_to_cached_object <- x@.link_to_cached_object_list[[i]]
+        return(ans)
     }
 )
 
@@ -57,12 +68,24 @@ setMethod("show", "SharedRaw",
 
 .valid.SharedRaw <- function(x)
 {
-    if (!extends(typeoftag(x@xp), "raw"))
-        return("'x@xp' must be an external pointer to a raw vector")
+    if (!isExternalVector(x@xp, tagtype="raw"))
+        return(problemIfNotExternalVector("'x@xp'",
+                                          tagmustbe="a raw vector"))
     NULL
 }
 
 setValidity2("SharedRaw", .valid.SharedRaw)
+
+.valid.SharedRaw_Pool <- function(x)
+{
+    if (!all(sapply(x@xp_list,
+                    function(elt) isExternalVector(elt, tagtype="raw"))))
+        return(problemIfNotExternalVector("each element in 'x@xp_list'",
+                                          tagmustbe="a raw vector"))
+    NULL
+}
+
+setValidity2("SharedRaw_Pool", .valid.SharedRaw_Pool)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

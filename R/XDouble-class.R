@@ -39,6 +39,9 @@ setMethod("initialize", "XDouble",
 XDouble <- function(length=base::length(val), val=NULL)
     new2("XDouble", length=length, val=val, check=FALSE)
 
+### Just an alias for XDouble().
+XNumeric <- function(...) XDouble(...)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.

@@ -2,8 +2,8 @@
 ### XVector objects
 ### -------------------------------------------------------------------------
 ###
-### The XVector virtual class is a general container for storing an
-### "external vector" i.e. a *single* view on a SharedVector object.
+### The XVector virtual class is a general container for storing
+### an "external vector" i.e. a *single* view on a SharedVector object.
 ###
 ### IMPORTANT NOTE: Our concept/representation/implementation of external
 ### vectors differ significantly from those found in the externalVector

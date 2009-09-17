@@ -1,8 +1,12 @@
 ### =========================================================================
-### SharedVector objects
+### SharedVector and SharedVector_Pool objects
 ### -------------------------------------------------------------------------
 ###
 ### A SharedVector object is an external pointer to an ordinary vector.
+### A SharedVector_Pool object *represents* a list of SharedVector objects but
+### it is NOT *represented* as a list of such objects. This is a way to avoid
+### having to generate long lists of S4 objects which the current S4
+### implementation is *very* inefficient at.
 ###
 
 setClass("SharedVector",
@@ -16,20 +20,84 @@ setClass("SharedVector",
     )
 )
 
-setMethod("length", "SharedVector",
-    function(x) .Call("SharedVector_length", x, PACKAGE="IRanges")
+setClass("SharedVector_Pool",
+    representation("VIRTUAL",
+        xp_list="list",
+        .link_to_cached_object_list="list"
+    )
 )
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### First, a couple of very low-level utilities on externalptr objects.
+### SharedVector low-level methods.
 ###
 
-typeoftag <- function(x)
+setMethod("length", "SharedVector",
+    function(x) .Call("SharedVector_length", x, PACKAGE="IRanges")
+)
+
+### Return the hexadecimal representation of the adress of the first
+### element of the tag (i.e. the first element of the external vector).
+### NOT exported.
+setGeneric("address0", function(x) standardGeneric("address0"))
+
+### NOT exported.
+setGeneric("oneLineDesc", function(x) standardGeneric("oneLineDesc"))
+
+setMethod("oneLineDesc", "SharedVector",
+    function(x)
+        paste(class(x), " instance of length ", length(x),
+              " (data starting at address ", address0(x), ")", sep="")
+)
+
+setMethod("show", "SharedVector",
+    function(object)
+    {
+        cat(oneLineDesc(object), "\n", sep="")
+        ## What is correct here? The documentation (?show) says that 'show'
+        ## should return an invisible 'NULL' but, on the other hand, the 'show'
+        ## method for integers returns its 'object' argument...
+        invisible(object)
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### SharedVector_Pool low-level methods.
+###
+
+setMethod("length", "SharedVector_Pool", function(x) length(x@xp_list))
+
+setMethod("show", "SharedVector_Pool",
+    function(object)
+    {
+        cat(class(object), " instance of length ", length(object), ":\n", sep="")
+        for (i in seq_len(length(object)))
+            cat(i, ": ", oneLineDesc(object[[i]]), "\n", sep="")
+        invisible(object)
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Some very low-level utilities on externalptr objects.
+###
+
+tagtype <- function(x)
 {
     if (!is(x, "externalptr"))
         stop("'x' must be an externalptr object")
-    .Call("externalptr_typeoftag", x, PACKAGE="IRanges")
+    .Call("externalptr_tagtype", x, PACKAGE="IRanges")
+}
+
+isExternalVector <- function(x, tagtype=NA)
+{
+    if (!is(x, "externalptr"))
+        return(FALSE)
+    x_tagtype <- tagtype(x)
+    if (!is.na(tagtype))
+        return(x_tagtype == tagtype)
+    return(x_tagtype == "double" || extends(x_tagtype, "vector"))
 }
 
 ### Helper function (for debugging purpose).
@@ -46,15 +114,35 @@ setMethod("show", "externalptr",
 ### Validity.
 ###
 
+problemIfNotExternalVector <- function(what, tagmustbe="a vector")
+{
+    msg <- paste(what, "must be an external pointer to", tagmustbe)
+    return(msg)
+}
+
 .valid.SharedVector <- function(x)
 {
-    type <- typeoftag(x@xp)
-    if (type != "double" && !extends(typeoftag(x@xp), "vector"))
-        return("'x@xp' must be an external pointer to a vector")
+    if (!isExternalVector(x@xp))
+        return(problemIfNotExternalVector("'x@xp'"))
     NULL
 }
 
 setValidity2("SharedVector", .valid.SharedVector)
+
+.valid.SharedVector_Pool <- function(x)
+{
+    if (length(x@xp_list) != length(x@.link_to_cached_object_list))
+        return("'x@xp_list' and 'x@.link_to_cached_object_list' must have the same length")
+    if (!all(sapply(x@xp_list,
+                    function(elt) isExternalVector(elt))))
+        return(problemIfNotExternalVector("each element in 'x@xp_list'"))
+    if (!all(sapply(x@.link_to_cached_object_list,
+                    function(elt) is.environment(elt))))
+        return("each element in 'x@.link_to_cached_object_list' must be an environment")
+    NULL
+}
+
+setValidity2("SharedVector_Pool", .valid.SharedVector_Pool)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
