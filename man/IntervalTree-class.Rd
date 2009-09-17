@@ -74,9 +74,9 @@
       Find the intervals in \code{query}, a \code{Ranges},
       \code{RangesList}, \code{RangedData} or \code{integer} vector (to
       be converted to length-one ranges), that overlap with the
-      intervals \code{object}, a \code{Ranges}, \code{RangesList}, or
-      \code{RangedData}. If \code{query} is omitted, \code{object} is
-      queried against itself. if \code{query} is unsorted, it is sorted
+      intervals \code{subject}, a \code{Ranges}, \code{RangesList}, or
+      \code{RangedData}. If \code{subject} is omitted, \code{query} is
+      queried against itself. If \code{query} is unsorted, it is sorted
       first, so it is usually better to sort up-front, to avoid a sort
       with each \code{findOverlaps} call. Intervals with a separation of
       \code{maxgap} or less are considered to be overlapping.
@@ -86,15 +86,15 @@
       object.
 
       If \code{multiple} is \code{FALSE}, at most one overlapping
-      interval in \code{object} is returned for each interval in
+      interval in \code{subject} is returned for each interval in
       \code{query}. The matchings are returned as an integer vector of
       length \code{length(query)}, with \code{NA} indicating intervals
-      that did not overlap any intervals in \code{object}. This is
+      that did not overlap any intervals in \code{subject}. This is
       analogous to the default behavior of the \code{\link{match}}
       function.
 
       If \code{query} is a \code{\linkS4class{RangesList}} or
-      \code{\linkS4class{RangedData}}, \code{object} must be a
+      \code{\linkS4class{RangedData}}, \code{subject} must be a
       \code{RangesList} or \code{RangedData}.  If both lists have names,
       each element from the subject is paired with the element from the
       query with the matching name, if any. Otherwise, elements are
@@ -106,7 +106,7 @@
       \code{query}. When \code{drop} is \code{FALSE}, an
       \code{\linkS4class{IntegerList}} is returned, where each element
       of the result corresponds to a space in \code{query}. For spaces
-      that did not exist in \code{object}, the overlap is nil.
+      that did not exist in \code{subject}, the overlap is nil.
     }
     \item{}{
       \code{x \%in\% table}:
