@@ -166,6 +166,11 @@ setMethod("window", "DataTable",
           function(x, start = NULL, end = NULL, width = NULL,
                    frequency = NULL, delta = NULL, ...)
           {
+              if ((!is.null(start) && !isSingleNumber(start)) ||
+                  (!is.null(end) && !isSingleNumber(end)) ||
+                  (!is.null(width) && !isSingleNumber(width)))
+                  stop(paste("'start', 'end', and 'width' each must be",
+                             "either NULL or a single number"))
               if (is.null(frequency) && is.null(delta)) {
                   solved_SEW <-
                     solveWindowSEW(nrow(x),
@@ -193,6 +198,11 @@ setReplaceMethod("window", "DataTable",
                  {
                      if (!isTRUEorFALSE(keepLength))
                          stop("'keepLength' must be TRUE or FALSE")
+                     if ((!is.null(start) && !isSingleNumber(start)) ||
+                         (!is.null(end) && !isSingleNumber(end)) ||
+                         (!is.null(width) && !isSingleNumber(width)))
+                         stop(paste("'start', 'end', and 'width' each must be",
+                                    "either NULL or a single number"))
                      solved_SEW <-
                        solveWindowSEW(nrow(x),
                                       start = ifelse(is.null(start), NA, start),

@@ -752,6 +752,11 @@ setMethod("window", "Rle",
           function(x, start = NULL, end = NULL, width = NULL,
                    frequency = NULL, delta = NULL, ...)
           {
+              if ((!is.null(start) && !isSingleNumber(start)) ||
+                  (!is.null(end) && !isSingleNumber(end)) ||
+                  (!is.null(width) && !isSingleNumber(width)))
+                  stop(paste("'start', 'end', and 'width' each must be",
+                             "either NULL or a single number"))
               if (is.null(frequency) && is.null(delta)) {
                   solved_SEW <-
                     solveWindowSEW(length(x),
