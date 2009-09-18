@@ -5,8 +5,8 @@
 ### The XVector virtual class is a general container for storing
 ### an "external vector" i.e. a *single* view on a SharedVector object.
 ###
-### IMPORTANT NOTE: Our concept/representation/implementation of external
-### vectors differ significantly from those found in the externalVector
+### IMPORTANT NOTE: Our concept/representation/implementation of "external
+### vector" differ significantly from those found in the externalVector
 ### package!
 ###
 
@@ -14,7 +14,7 @@ setClass("XVector",
     contains="Sequence",
     representation(
         "VIRTUAL",
-        shared="SharedVector", 
+        shared="SharedVector",
         offset="integer",  # a single integer
         length="integer"   # a single integer
     ),
@@ -23,6 +23,11 @@ setClass("XVector",
         length=0L
     )
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Methods.
+###
 
 setMethod("length", "XVector", function(x) x@length)
 
@@ -78,7 +83,6 @@ setReplaceMethod("subseq", "XVector",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### msubseq() and msubseq<-().
 ###
-
 
 ### Works as long as c() works on objects of the same class as 'x'.
 setMethod("seqselect", "XVector",

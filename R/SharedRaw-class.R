@@ -3,6 +3,9 @@
 ### -------------------------------------------------------------------------
 ###
 ### A SharedRaw object is an external pointer to an ordinary raw vector.
+### A SharedRaw_Pool object is *conceptually* a list of SharedRaw
+### objects but is actually NOT *implemented* as a list of such objects.
+### See SharedVector-class.R file for the representation details.
 ###
 
 setClass("SharedRaw", contains="SharedVector")

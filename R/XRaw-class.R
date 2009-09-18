@@ -5,8 +5,8 @@
 ### The XRaw class is a container for storing an "external raw vector"
 ### i.e. a *single* view on a SharedRaw object.
 ###
-### IMPORTANT NOTE: Our concept/representation/implementation of external
-### vectors in general differ significantly from those found in the
+### IMPORTANT NOTE: Our concept/representation/implementation of "external
+### vector" in general differ significantly from those found in the
 ### externalVector package!
 ###
 

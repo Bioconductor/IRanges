@@ -3,10 +3,10 @@
 ### -------------------------------------------------------------------------
 ###
 ### A SharedVector object is an external pointer to an ordinary vector.
-### A SharedVector_Pool object *represents* a list of SharedVector objects but
-### it is NOT *represented* as a list of such objects. This is a way to avoid
-### having to generate long lists of S4 objects which the current S4
-### implementation is *very* inefficient at.
+### A SharedVector_Pool object is *conceptually* a list of SharedVector
+### objects but is actually NOT *implemented* as a list of such objects.
+### This is to avoid having to generate long lists of S4 objects which the
+### current S4 implementation is *very* inefficient at.
 ###
 
 setClass("SharedVector",
@@ -75,6 +75,19 @@ setMethod("show", "SharedVector_Pool",
         for (i in seq_len(length(object)))
             cat(i, ": ", oneLineDesc(object[[i]]), "\n", sep="")
         invisible(object)
+    }
+)
+
+### If 'x' is a SharedVector object, then 'as(x, "SharedVector_Pool")[[1]]'
+### is identical to 'x'.
+setAs("SharedVector", "SharedVector_Pool",
+    function(from)
+    {
+        ans_class <- paste(class(from), "_Pool", sep="")
+        new2(ans_class,
+             xp_list=list(from@xp),
+             .link_to_cached_object_list=list(from@.link_to_cached_object),
+             check=FALSE)
     }
 )
 

@@ -47,9 +47,10 @@ Collate: validity-utils.R
 	XVector-class.R
 	XRaw-class.R
 	XInteger-class.R
+	XDouble-class.R
+	XVectorList-class.R
 	XIntegerViews-class.R
 	XIntegerViews-utils.R
-	XDouble-class.R
 	SimpleList-class.R
 	CompressedList-class.R
 	AtomicList-impl.R

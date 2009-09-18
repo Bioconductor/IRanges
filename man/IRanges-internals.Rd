@@ -32,6 +32,7 @@
 
 \alias{length,SharedVector-method}
 \alias{show,SharedVector-method}
+\alias{coerce,SharedVector,SharedVector_Pool-method}
 \alias{length,SharedVector_Pool-method}
 \alias{show,SharedVector_Pool-method}
 \alias{show,externalptr-method}
