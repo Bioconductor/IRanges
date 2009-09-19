@@ -472,19 +472,19 @@ SEXP Rle_constructor(SEXP x, SEXP counts)
 
 SEXP Rle_start(SEXP x)
 {
-	int i, n, *len_elt, *prev_start, *curr_start;
+	int i, nrun, *len_elt, *prev_start, *curr_start;
 	SEXP lengths, ans;
 
 	lengths = GET_SLOT(x, install("lengths"));
-	n = LENGTH(lengths);
+	nrun = LENGTH(lengths);
 
-	PROTECT(ans = NEW_INTEGER(n));
+	PROTECT(ans = NEW_INTEGER(nrun));
 
-	if (n > 0) {
+	if (nrun > 0) {
 		INTEGER(ans)[0] = 1;
 		for(i = 1, len_elt = INTEGER(lengths),
 			prev_start = INTEGER(ans), curr_start = INTEGER(ans) + 1;
-		    i < n; i++, len_elt++, prev_start++, curr_start++) {
+		    i < nrun; i++, len_elt++, prev_start++, curr_start++) {
 			*curr_start = *prev_start + *len_elt;
 		}
 	}
@@ -501,19 +501,19 @@ SEXP Rle_start(SEXP x)
 
 SEXP Rle_end(SEXP x)
 {
-	int i, n, *len_elt, *prev_end, *curr_end;
+	int i, nrun, *len_elt, *prev_end, *curr_end;
 	SEXP lengths, ans;
 
 	lengths = GET_SLOT(x, install("lengths"));
-	n = LENGTH(lengths);
+	nrun = LENGTH(lengths);
 
-	PROTECT(ans = NEW_INTEGER(n));
+	PROTECT(ans = NEW_INTEGER(nrun));
 
-	if (n > 0) {
+	if (nrun > 0) {
 		INTEGER(ans)[0] = INTEGER(lengths)[0];
 		for(i = 1, len_elt = INTEGER(lengths) + 1,
 			prev_end = INTEGER(ans), curr_end = INTEGER(ans) + 1;
-		    i < n; i++, len_elt++, prev_end++, curr_end++) {
+		    i < nrun; i++, len_elt++, prev_end++, curr_end++) {
 			*curr_end = *prev_end + *len_elt;
 		}
 	}
