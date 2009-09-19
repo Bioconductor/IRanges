@@ -1,6 +1,6 @@
 /****************************************************************************
  *                Low-level manipulation of Sequence objects                *
- *                           Author: Herve Pages                            *
+ *          Authors: Patrick Aboyoun, Michael Lawrence, Herve Pages         *
  ****************************************************************************/
 #include "IRanges.h"
 
