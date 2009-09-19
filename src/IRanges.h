@@ -178,6 +178,7 @@ void _append_string_to_CharAEAE(
 
 SEXP _CharAEAE_asCHARACTER(const CharAEAE *char_aeae);
 
+
 /* memcpy_utils.c */
 
 SEXP debug_memcpy_utils();
@@ -331,6 +332,13 @@ SEXP findIntervalAndStartFromWidth(
 );
 
 
+/* Sequence_class.c */
+
+const char *_get_Sequence_elementType(SEXP x);
+
+SEXP vector_seqselect(SEXP x, SEXP start, SEXP width);
+
+
 /* IRanges_class.c */
 
 SEXP debug_IRanges_class();
@@ -477,11 +485,6 @@ SEXP Ranges_order(
 );
 
 
-/* Sequence_class.c */
-
-SEXP vector_seqselect(SEXP x, SEXP start, SEXP width);
-
-
 /* SharedVector_class.c */
 
 SEXP debug_SharedVector_class();
@@ -492,13 +495,15 @@ SEXP externalptr_show(SEXP x);
 
 SEXP externalptr_new();
 
-SEXP _new_SharedVector(const char *classname, SEXP tag);
-
 SEXP _get_SharedVector_tag(SEXP x);
 
 int _get_SharedVector_length(SEXP x);
 
+SEXP _new_SharedVector(const char *classname, SEXP tag);
+
 SEXP SharedVector_length(SEXP x);
+
+SEXP _get_SharedVector_Pool_xp_list(SEXP x);
 
 
 /* SharedRaw_utils.c */
@@ -764,6 +769,8 @@ SEXP SharedDouble_write_nums_to_subset(
 
 /* XVector_class.c */
 
+SEXP debug_XVector_class();
+
 SEXP _get_XVector_shared(SEXP x);
 
 SEXP _get_XVector_offset(SEXP x);
@@ -794,6 +801,26 @@ SEXP _new_XInteger_from_tag(
 SEXP _new_XDouble_from_tag(
 	const char *classname,
 	SEXP tag
+);
+
+
+/* XVectorList_class.c */
+
+SEXP debug_XVectorList_class();
+
+SEXP _get_XVectorList_pool(SEXP x);
+
+SEXP _get_XVectorList_ranges(SEXP x);
+
+int _get_XVectorList_length(SEXP x);
+
+cachedXVectorList _cache_XVectorList(SEXP x);
+
+int _get_cachedXVectorList_length(const cachedXVectorList *cached_x);
+
+cachedCharSeq _get_cachedXVectorList_elt(
+	const cachedXVectorList *cached_x,
+	int i
 );
 
 

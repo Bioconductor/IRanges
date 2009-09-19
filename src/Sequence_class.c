@@ -1,4 +1,26 @@
+/****************************************************************************
+ *                Low-level manipulation of Sequence objects                *
+ *                           Author: Herve Pages                            *
+ ****************************************************************************/
 #include "IRanges.h"
+
+
+/****************************************************************************
+ * C-level slot getters.
+ */
+
+static SEXP elementType_symbol = NULL;
+
+const char *_get_Sequence_elementType(SEXP x)
+{
+	INIT_STATIC_SYMBOL(elementType)
+	return CHAR(STRING_ELT(GET_SLOT(x, elementType_symbol), 0));
+}
+
+
+/****************************************************************************
+ * Other stuff.
+ */
 
 /*
  * --- .Call ENTRY POINT ---

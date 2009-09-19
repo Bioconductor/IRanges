@@ -23,7 +23,7 @@ SEXP debug_IRanges_class()
  * C-level slot getters.
  *
  * Be careful that these functions do NOT duplicate the returned slot.
- * Thus they cannot be made .Call() entry points!
+ * Thus they cannot be made .Call entry points!
  */
 
 static SEXP
@@ -198,7 +198,7 @@ void _copy_IRanges_slots(SEXP x, SEXP x0)
 
 /* Be careful that this constructor does NOT duplicate its arguments before
    putting them in the slots of the returned object.
-   So don't try to make it a .Call() entry point! */
+   So don't try to make it a .Call entry point! */
 SEXP _new_IRanges(const char *classname, SEXP start, SEXP width, SEXP names)
 {
 	SEXP classdef, ans;

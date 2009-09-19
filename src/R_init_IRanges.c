@@ -21,6 +21,9 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(Integer_sorted_merge, 2),
 	CALLMETHOD_DEF(findIntervalAndStartFromWidth, 2),
 
+/* Sequence_class.c */
+	CALLMETHOD_DEF(vector_seqselect, 3),
+
 /* IRanges_class.c */
 	CALLMETHOD_DEF(debug_IRanges_class, 0),
 	CALLMETHOD_DEF(IRanges_from_integer, 1),
@@ -46,9 +49,6 @@ static const R_CallMethodDef callMethods[] = {
 
 /* Ranges_comparison.c */
 	CALLMETHOD_DEF(Ranges_order, 3),
-
-/* Sequence_class.c */
-	CALLMETHOD_DEF(vector_seqselect, 3),
 
 /* SharedVector_class.c */
 	CALLMETHOD_DEF(debug_SharedVector_class, 0),
@@ -118,6 +118,12 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(SharedDouble_read_nums_from_subset, 2),
 	CALLMETHOD_DEF(SharedDouble_write_nums_to_i1i2, 4),
 	CALLMETHOD_DEF(SharedDouble_write_nums_to_subset, 3),
+
+/* XVector_class.c */
+	CALLMETHOD_DEF(debug_XVector_class, 0),
+
+/* XVectorList_class.c */
+	CALLMETHOD_DEF(debug_XVectorList_class, 0),
 
 /* XIntegerViews_class.c */
 	CALLMETHOD_DEF(XIntegerViews_slice, 3),
@@ -213,6 +219,9 @@ void R_init_IRanges(DllInfo *info)
 /* SEXP_utils.c */
 	REGISTER_CCALLABLE(_get_classname);
 
+/* Sequence_class.c */
+	REGISTER_CCALLABLE(_get_Sequence_elementType);
+
 /* IRanges_class.c */
 	REGISTER_CCALLABLE(_get_IRanges_start);
 	REGISTER_CCALLABLE(_get_IRanges_width);
@@ -254,6 +263,11 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_new_XInteger_from_tag);
 	REGISTER_CCALLABLE(_new_XDouble_from_tag);
 
+/* XVectorList_class.c */
+	REGISTER_CCALLABLE(_get_XVectorList_length);
+	REGISTER_CCALLABLE(_cache_XVectorList);
+	REGISTER_CCALLABLE(_get_cachedXVectorList_length);
+	REGISTER_CCALLABLE(_get_cachedXVectorList_elt);
 	return;
 }
 

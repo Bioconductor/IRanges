@@ -316,7 +316,16 @@ void IRanges_memcpy_from_i1i2_to_complex(
 /*
  * SEXP_utils.c
  */
+
 const char *get_classname(SEXP x);
+
+
+/*
+ * Low-level manipulation of Sequence objects.
+ * (see Sequence_class.c)
+ */
+
+const char *get_Sequence_elementType(SEXP x);
 
 
 /*
@@ -409,4 +418,21 @@ SEXP new_XRaw_from_tag(const char *classname, SEXP tag);
 SEXP new_XInteger_from_tag(const char *classname, SEXP tag);
 
 SEXP new_XDouble_from_tag(const char *classname, SEXP tag);
+
+
+/*
+ * Low-level manipulation of XVectorList objects.
+ * (see XVectorList_class.c)
+ */
+
+int get_XVectorList_length(SEXP x);
+
+cachedXVectorList cache_XVectorList(SEXP x);
+
+int get_cachedXVectorList_length(const cachedXVectorList *cached_x);
+
+cachedCharSeq get_cachedXVectorList_elt(
+	const cachedXVectorList *cached_x,
+	int i
+);
 

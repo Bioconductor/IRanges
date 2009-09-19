@@ -1,5 +1,5 @@
 /****************************************************************************
- *              Low-level manipulation of SharedVector objects              *
+ *   Low-level manipulation of SharedVector and SharedVector_Pool objects   *
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"
@@ -70,14 +70,14 @@ SEXP externalptr_new()
 
 
 /****************************************************************************
- * C-level getters.
+ * C-level getters for SharedVector objects.
  */
 
 static SEXP xp_symbol = NULL;
 
 /*
  * Be careful that this function does NOT duplicate the returned SEXP.
- * Thus it cannot be made a .Call() entry point!
+ * Thus it cannot be made a .Call entry point!
  */
 SEXP _get_SharedVector_tag(SEXP x)
 {
@@ -91,14 +91,8 @@ int _get_SharedVector_length(SEXP x)
 }
 
 
-SEXP SharedVector_length(SEXP x)
-{
-	return ScalarInteger(_get_SharedVector_length(x));
-}
-
-
 /****************************************************************************
- * C-level setters.
+ * C-level setters for SharedVector objects.
  *
  * Be careful that these functions do NOT duplicate the assigned value!
  */
@@ -120,7 +114,7 @@ static void set_SharedVector_tag(SEXP x, SEXP value)
  *
  * Be careful that these functions do NOT duplicate their arguments before
  * putting them in the slots of the returned object.
- * Thus they cannot be made .Call() entry points!
+ * Thus they cannot be made .Call entry points!
  */
 
 /* 'classname' can be "SharedRaw", "SharedInteger" or "SharedDouble" */
@@ -133,5 +127,31 @@ SEXP _new_SharedVector(const char *classname, SEXP tag)
 	set_SharedVector_tag(ans, tag);
 	UNPROTECT(2);
 	return ans;
+}
+
+
+/****************************************************************************
+ * One SharedVector getter that is actually a .Call ENTRY POINT!
+ */
+
+SEXP SharedVector_length(SEXP x)
+{
+	return ScalarInteger(_get_SharedVector_length(x));
+}
+
+
+/****************************************************************************
+ * C-level getters for SharedVector_Pool objects.
+ *
+ * Be careful that this function does NOT duplicate the returned slot.
+ * Thus it cannot be made a .Call entry point!
+ */
+
+static SEXP xp_list_symbol = NULL;
+
+SEXP _get_SharedVector_Pool_xp_list(SEXP x)
+{
+	INIT_STATIC_SYMBOL(xp_list)
+	return GET_SLOT(x, xp_list_symbol);
 }
 

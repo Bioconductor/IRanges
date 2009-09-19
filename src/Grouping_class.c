@@ -23,7 +23,7 @@ SEXP debug_Grouping_class()
  * C-level slot getters.
  *
  * Be careful that these functions do NOT duplicate the returned slot.
- * Thus they cannot be made .Call() entry points!
+ * Thus they cannot be made .Call entry points!
  */
 
 static SEXP

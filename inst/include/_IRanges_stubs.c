@@ -287,6 +287,15 @@ DEFINE_CCALLABLE_STUB(const char *, get_classname,
 )
 
 /*
+ * Stubs for callables defined in Sequence_class.c
+ */
+
+DEFINE_CCALLABLE_STUB(const char *, get_Sequence_elementType,
+	(SEXP x),
+	(     x)
+)
+
+/*
  * Stubs for callables defined in IRanges_class.c
  */
 
@@ -412,7 +421,6 @@ DEFINE_CCALLABLE_STUB(int, get_SharedVector_length,
 	(     x)
 )
 
-
 /*
  * Stubs for callables defined in XVector_class.c
  */
@@ -460,5 +468,29 @@ DEFINE_CCALLABLE_STUB(SEXP, new_XInteger_from_tag,
 DEFINE_CCALLABLE_STUB(SEXP, new_XDouble_from_tag,
 	(const char *classname, SEXP tag),
 	(            classname,      tag)
+)
+
+/*
+ * Stubs for callables defined in XVectorList_class.c
+ */
+
+DEFINE_CCALLABLE_STUB(int, get_XVectorList_length,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(cachedXVectorList, cache_XVectorList,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(int, get_cachedXVectorList_length,
+	(const cachedXVectorList *cached_x),
+	(                         cached_x)
+)
+
+DEFINE_CCALLABLE_STUB(cachedCharSeq, get_cachedXVectorList_elt,
+	(const cachedXVectorList *cached_x, int i),
+	(                         cached_x,     i)
 )
 

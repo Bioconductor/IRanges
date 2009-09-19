@@ -92,4 +92,14 @@ typedef struct cached_charseq {
 	int length;
 } cachedCharSeq;
 
+typedef struct cached_xvectorlist {
+	const char *classname;
+	const char *element_type;
+	SEXP xp_list;
+	int length;
+	const int *start;
+	const int *width;
+	const int *group;
+} cachedXVectorList;
+
 #endif

@@ -23,7 +23,7 @@ SEXP debug_XVector_class()
  * C-level slot getters.
  *
  * Be careful that these functions do NOT duplicate the returned slot.
- * Thus they cannot be made .Call() entry points!
+ * Thus they cannot be made .Call entry points!
  */
 
 static SEXP
@@ -114,7 +114,7 @@ static void set_XVector_slots(SEXP x, SEXP shared, SEXP offset, SEXP length)
  *
  * Be careful that these functions do NOT duplicate their arguments before
  * putting them in the slots of the returned object.
- * Thus they cannot be made .Call() entry points!
+ * Thus they cannot be made .Call entry points!
  */
 
 SEXP _new_XVector(const char *classname, SEXP shared, int offset, int length)
