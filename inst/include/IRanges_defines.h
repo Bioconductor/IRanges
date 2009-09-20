@@ -92,6 +92,16 @@ typedef struct cached_charseq {
 	int length;
 } cachedCharSeq;
 
+typedef struct cached_intseq {
+	const int *seq;
+	int length;
+} cachedIntSeq;
+
+typedef struct cached_doubleseq {
+	const double *seq;
+	int length;
+} cachedDoubleSeq;
+
 typedef struct cached_xvectorlist {
 	const char *classname;
 	const char *element_type;

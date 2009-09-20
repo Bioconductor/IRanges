@@ -897,7 +897,17 @@ cachedXVectorList _cache_XVectorList(SEXP x);
 
 int _get_cachedXVectorList_length(const cachedXVectorList *cached_x);
 
-cachedCharSeq _get_cachedXVectorList_elt(
+cachedCharSeq _get_cachedXRawList_elt(
+	const cachedXVectorList *cached_x,
+	int i
+);
+
+cachedIntSeq _get_cachedXIntegerList_elt(
+	const cachedXVectorList *cached_x,
+	int i
+);
+
+cachedDoubleSeq _get_cachedXDoubleList_elt(
 	const cachedXVectorList *cached_x,
 	int i
 );

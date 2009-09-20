@@ -88,16 +88,42 @@ int _get_cachedXVectorList_length(const cachedXVectorList *cached_x)
 	return cached_x->length;
 }
 
-cachedCharSeq _get_cachedXVectorList_elt(const cachedXVectorList *cached_x,
+cachedCharSeq _get_cachedXRawList_elt(const cachedXVectorList *cached_x,
 		int i)
 {
 	SEXP tag;
 	cachedCharSeq charseq;
 
 	tag = R_ExternalPtrTag(VECTOR_ELT(cached_x->xp_list,
-					  cached_x->group[i]));
+					  cached_x->group[i] - 1));
 	charseq.seq = (const char *) RAW(tag) + cached_x->start[i] - 1;
 	charseq.length = cached_x->width[i];
         return charseq;
+}
+
+cachedIntSeq _get_cachedXIntegerList_elt(const cachedXVectorList *cached_x,
+		int i)
+{
+	SEXP tag;
+	cachedIntSeq intseq;
+
+	tag = R_ExternalPtrTag(VECTOR_ELT(cached_x->xp_list,
+					  cached_x->group[i] - 1));
+	intseq.seq = INTEGER(tag) + cached_x->start[i] - 1;
+	intseq.length = cached_x->width[i];
+        return intseq;
+}
+
+cachedDoubleSeq _get_cachedXDoubleList_elt(const cachedXVectorList *cached_x,
+		int i)
+{
+	SEXP tag;
+	cachedDoubleSeq doubleseq;
+
+	tag = R_ExternalPtrTag(VECTOR_ELT(cached_x->xp_list,
+					  cached_x->group[i] - 1));
+	doubleseq.seq = REAL(tag) + cached_x->start[i] - 1;
+	doubleseq.length = cached_x->width[i];
+        return doubleseq;
 }
 

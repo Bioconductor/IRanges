@@ -450,6 +450,16 @@ DEFINE_CCALLABLE_STUB(cachedCharSeq, cache_XRaw,
 	(     x)
 )
 
+DEFINE_CCALLABLE_STUB(cachedIntSeq, cache_XInteger,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(cachedDoubleSeq, cache_XDouble,
+	(SEXP x),
+	(     x)
+)
+
 DEFINE_CCALLABLE_STUB(SEXP, new_XVector,
 	(const char *classname, SEXP shared, int offset, int length),
 	(            classname,      shared,     offset,     length)
@@ -489,7 +499,17 @@ DEFINE_CCALLABLE_STUB(int, get_cachedXVectorList_length,
 	(                         cached_x)
 )
 
-DEFINE_CCALLABLE_STUB(cachedCharSeq, get_cachedXVectorList_elt,
+DEFINE_CCALLABLE_STUB(cachedCharSeq, get_cachedXRawList_elt,
+	(const cachedXVectorList *cached_x, int i),
+	(                         cached_x,     i)
+)
+
+DEFINE_CCALLABLE_STUB(cachedIntSeq, get_cachedXIntegerList_elt,
+	(const cachedXVectorList *cached_x, int i),
+	(                         cached_x,     i)
+)
+
+DEFINE_CCALLABLE_STUB(cachedDoubleSeq, get_cachedXDoubleList_elt,
 	(const cachedXVectorList *cached_x, int i),
 	(                         cached_x,     i)
 )
