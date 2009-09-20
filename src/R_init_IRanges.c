@@ -38,6 +38,9 @@ static const R_CallMethodDef callMethods[] = {
 
 	CALLMETHOD_DEF(IRanges_reduce, 2),
 
+/* coverage */
+	CALLMETHOD_DEF(IRanges_coverage, 3),
+
 /* CompressedIRangesList_class.c */
 	CALLMETHOD_DEF(CompressedIRangesList_summary, 1),
 
@@ -49,6 +52,24 @@ static const R_CallMethodDef callMethods[] = {
 
 /* Ranges_comparison.c */
 	CALLMETHOD_DEF(Ranges_order, 3),
+
+/* Rle_class.c */
+	CALLMETHOD_DEF(Rle_constructor, 2),
+	CALLMETHOD_DEF(Rle_start, 1),
+	CALLMETHOD_DEF(Rle_end, 1),
+	CALLMETHOD_DEF(Rle_window_aslist, 5),
+	CALLMETHOD_DEF(Rle_window, 6),
+
+/* Rle_utils.c */
+	CALLMETHOD_DEF(Rle_rollSum, 2),
+	CALLMETHOD_DEF(Rle_rollQ, 3),
+
+/* RleViews_utils.c */
+	CALLMETHOD_DEF(RleViews_viewMins, 2),
+	CALLMETHOD_DEF(RleViews_viewMaxs, 2),
+	CALLMETHOD_DEF(RleViews_viewSums, 2),
+	CALLMETHOD_DEF(RleViews_viewWhichMins, 2),
+	CALLMETHOD_DEF(RleViews_viewWhichMaxs, 2),
 
 /* SharedVector_class.c */
 	CALLMETHOD_DEF(debug_SharedVector_class, 0),
@@ -90,7 +111,6 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(SharedRaw_translate_copy_from_subset, 4),
 	CALLMETHOD_DEF(SharedRaw_reverse_copy_from_i1i2, 4),
 	CALLMETHOD_DEF(SharedRaw_reverse_translate_copy_from_i1i2, 5),
-
 
 /* SharedInteger_utils.c */
 	CALLMETHOD_DEF(debug_SharedInteger_utils, 0),
@@ -137,23 +157,6 @@ static const R_CallMethodDef callMethods[] = {
 
 /* XDoubleViews_class.c */
 	CALLMETHOD_DEF(XDoubleViews_slice, 5),
-
-/* Rle_class.c */
-	CALLMETHOD_DEF(Rle_constructor, 2),
-	CALLMETHOD_DEF(Rle_start, 1),
-	CALLMETHOD_DEF(Rle_end, 1),
-	CALLMETHOD_DEF(Rle_window_aslist, 5),
-	CALLMETHOD_DEF(Rle_window, 6),
-
-/* RleViews_utils.c */
-	CALLMETHOD_DEF(RleViews_viewMins, 2),
-	CALLMETHOD_DEF(RleViews_viewMaxs, 2),
-	CALLMETHOD_DEF(RleViews_viewSums, 2),
-	CALLMETHOD_DEF(RleViews_viewWhichMins, 2),
-	CALLMETHOD_DEF(RleViews_viewWhichMaxs, 2),
-
-/* coverage */
-	CALLMETHOD_DEF(IRanges_coverage, 3),
 
 	{NULL, NULL, 0}
 };

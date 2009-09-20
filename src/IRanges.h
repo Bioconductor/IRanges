@@ -436,6 +436,15 @@ SEXP IRanges_reduce(
 );
 
 
+/* coverage */
+
+SEXP IRanges_coverage(
+	SEXP x,
+	SEXP weight,
+	SEXP width
+);
+
+
 /* CompressedIRangesList_class.c */
 
 cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x);
@@ -482,6 +491,76 @@ SEXP Ranges_order(
 	SEXP start,
 	SEXP width,
 	SEXP decreasing
+);
+
+
+/* Rle_class.c */
+
+SEXP Rle_constructor(
+	SEXP x,
+	SEXP count
+);
+
+SEXP Rle_start(SEXP x);
+
+SEXP Rle_end(SEXP x);
+
+SEXP Rle_window_aslist(
+	SEXP x,
+	SEXP runStart,
+	SEXP runEnd,
+	SEXP offsetStart,
+	SEXP offsetEnd
+);
+
+SEXP Rle_window(
+	SEXP x,
+	SEXP runStart,
+	SEXP runEnd,
+	SEXP offsetStart,
+	SEXP offsetEnd,
+	SEXP ans
+);
+
+
+/* Rle_utils.c */
+SEXP Rle_rollSum(
+	SEXP x,
+	SEXP width
+);
+
+SEXP Rle_rollQ(
+	SEXP x,
+	SEXP width,
+	SEXP which
+);
+
+
+/* RleViews_utils.c */
+
+SEXP RleViews_viewMins(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP RleViews_viewMaxs(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP RleViews_viewSums(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP RleViews_viewWhichMins(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP RleViews_viewWhichMaxs(
+	SEXP x,
+	SEXP na_rm
 );
 
 
@@ -870,70 +949,3 @@ SEXP XDoubleViews_slice(
 	SEXP include_lower,
 	SEXP include_upper
 );
-
-
-/* Rle_class.c */
-
-SEXP Rle_constructor(
-	SEXP x,
-	SEXP count
-);
-
-SEXP Rle_start(SEXP x);
-
-SEXP Rle_end(SEXP x);
-
-SEXP Rle_window_aslist(
-	SEXP x,
-	SEXP runStart,
-	SEXP runEnd,
-	SEXP offsetStart,
-	SEXP offsetEnd
-);
-
-SEXP Rle_window(
-	SEXP x,
-	SEXP runStart,
-	SEXP runEnd,
-	SEXP offsetStart,
-	SEXP offsetEnd,
-	SEXP ans
-);
-
-
-/* RleViews_utils.c */
-
-SEXP RleViews_viewMins(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP RleViews_viewMaxs(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP RleViews_viewSums(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP RleViews_viewWhichMins(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP RleViews_viewWhichMaxs(
-	SEXP x,
-	SEXP na_rm
-);
-
-
-/* coverage */
-
-SEXP IRanges_coverage(
-	SEXP x,
-	SEXP weight,
-	SEXP width
-);
-
