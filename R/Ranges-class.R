@@ -232,7 +232,7 @@ setMethod("whichFirstNotNormal", "Ranges",
 setMethod("[", "Ranges",
     function(x, i, j, ..., drop)
     {
-        as(callGeneric(as(x, "IRanges"), i=i, j=j, ..., drop=drop), class(x))
+        as(callGeneric(as(x, "IRanges"), i=i, ...), class(x))
     }
 )
 
