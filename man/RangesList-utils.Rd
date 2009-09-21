@@ -104,16 +104,15 @@
   The  \code{flank} method generates flanking ranges for each range in
   \code{x}.
 
-  The \code{gaps} method takes the complement (the \code{\link{gaps}})
+  The \code{gaps} method takes the complement (via \code{\link{gaps}})
   of each element in the list and returns the result as a
   \code{RangesList}.
 
   The \code{disjoin} method returns disjoint ranges by finding the 
   within element union of the end points of \code{x}.
 
-  The \code{reduce} method merges (via \code{\link{reduce}}) all of the
-  elements into a single \code{Ranges} object and returns the result
-  as a length-one \code{RangesList}.
+  The \code{reduce} method merges (via \code{\link{reduce}}) each of the
+  elements in the list and returns the result as a \code{RangesList}.
 
   \code{range} finds the \code{\link[=range,Ranges-method]{range}}, i.e.
   a \code{Ranges} with one range, from the minimum start to the maximum
