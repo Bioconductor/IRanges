@@ -232,6 +232,8 @@ setMethod("whichFirstNotNormal", "Ranges",
 setMethod("[", "Ranges",
     function(x, i, j, ..., drop)
     {
+        if (!missing(j) || length(list(...)) > 0L)
+            stop("invalid subsetting")
         as(callGeneric(as(x, "IRanges"), i=i, ...), class(x))
     }
 )
