@@ -80,23 +80,33 @@ SEXP Rle_integer_rollSum(SEXP x, SEXP width)
 			}
 	    	*buf_values_elt = stat;
 		    // determine length
-		    if (window_len < prev_offset) {
-		    	*buf_lengths_elt += *prev_length - window_len + 1;
-		    	prev_offset = window_len - 1;
-		    	curr_offset = 0;
-		    } else {
-		    	*buf_lengths_elt += 1;
-			    if (i > 0) {
+	    	if (i == 0) {
+			    if (prev_value == curr_value) {
+			    	*buf_lengths_elt += *curr_length - window_len + 1;
+			    	prev_offset = window_len;
+			    	curr_offset = 0;
+			    } else {
+			    	*buf_lengths_elt += 1;
+			    }
+	    	} else {
+			    if ((prev_offset == 1) && (window_len < *curr_length) &&
+			    	((prev_value + 1) == curr_value)) {
+			    	*buf_lengths_elt += *curr_length - window_len + 1;
+			    	prev_offset = window_len;
+			    	curr_offset = 0;
+					prev_value++;
+					prev_length++;
+			    } else {
+			    	*buf_lengths_elt += 1;
 			    	prev_offset--;
 				    curr_offset--;
+					if (prev_offset == 0) {
+						prev_value++;
+						prev_length++;
+						prev_offset = *prev_length;
+					}
 			    }
-		    }
-		    // move pointers if end of run
-			if (prev_offset == 0) {
-				prev_value++;
-				prev_length++;
-				prev_offset = *prev_length;
-			}
+	    	}
 			if (curr_offset == 0) {
 				curr_value++;
 				curr_length++;
@@ -199,23 +209,33 @@ SEXP Rle_real_rollSum(SEXP x, SEXP width)
 			}
 	    	*buf_values_elt = stat;
 		    // determine length
-		    if (window_len < prev_offset) {
-		    	*buf_lengths_elt += *prev_length - window_len + 1;
-		    	prev_offset = window_len - 1;
-		    	curr_offset = 0;
-		    } else {
-		    	*buf_lengths_elt += 1;
-			    if (i > 0) {
+	    	if (i == 0) {
+			    if (prev_value == curr_value) {
+			    	*buf_lengths_elt += *curr_length - window_len + 1;
+			    	prev_offset = window_len;
+			    	curr_offset = 0;
+			    } else {
+			    	*buf_lengths_elt += 1;
+			    }
+	    	} else {
+			    if ((prev_offset == 1) && (window_len < *curr_length) &&
+			    	((prev_value + 1) == curr_value)) {
+			    	*buf_lengths_elt += *curr_length - window_len + 1;
+			    	prev_offset = window_len;
+			    	curr_offset = 0;
+					prev_value++;
+					prev_length++;
+			    } else {
+			    	*buf_lengths_elt += 1;
 			    	prev_offset--;
 				    curr_offset--;
+					if (prev_offset == 0) {
+						prev_value++;
+						prev_length++;
+						prev_offset = *prev_length;
+					}
 			    }
-		    }
-		    // move pointers if end of run
-			if (prev_offset == 0) {
-				prev_value++;
-				prev_length++;
-				prev_offset = *prev_length;
-			}
+	    	}
 			if (curr_offset == 0) {
 				curr_value++;
 				curr_length++;
