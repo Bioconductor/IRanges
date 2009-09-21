@@ -246,9 +246,9 @@ SEXP findIntervalAndStartFromWidth(SEXP x, SEXP width)
 	SET_STRING_ELT(ans_names, 1, mkChar("start"));
 
 	SET_NAMES(ans, ans_names);
-	SET_ELEMENT(ans, 0, ans_interval);
-	SET_ELEMENT(ans, 1, ans_start);
-    setAttrib(ans, install("row.names"), ans_rownames);
+	SET_VECTOR_ELT(ans, 0, ans_interval);
+	SET_VECTOR_ELT(ans, 1, ans_start);
+	setAttrib(ans, install("row.names"), ans_rownames);
 	SET_CLASS(ans, ans_class);
 
 	UNPROTECT(6);

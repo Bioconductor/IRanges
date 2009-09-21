@@ -91,10 +91,10 @@ SEXP IRanges_reduce(SEXP x, SEXP with_inframe_start)
 	SET_STRING_ELT(ans_names, 2, mkChar("inframe.start"));
 	SET_NAMES(ans, ans_names);
 	UNPROTECT(1);
-	SET_ELEMENT(ans, 0, _IntAE_asINTEGER(&(reduced_ranges.start)));
-	SET_ELEMENT(ans, 1, _IntAE_asINTEGER(&(reduced_ranges.width)));
+	SET_VECTOR_ELT(ans, 0, _IntAE_asINTEGER(&(reduced_ranges.start)));
+	SET_VECTOR_ELT(ans, 1, _IntAE_asINTEGER(&(reduced_ranges.width)));
 	if (inframe_start != NULL) {
-		SET_ELEMENT(ans, 2, ans_inframe_start);
+		SET_VECTOR_ELT(ans, 2, ans_inframe_start);
 		UNPROTECT(1);
 	}
 	UNPROTECT(1);

@@ -60,10 +60,10 @@ SEXP CompressedIRangesList_summary(SEXP object)
 	PROTECT(col_names = NEW_CHARACTER(2));
 	SET_STRING_ELT(col_names, 0, mkChar("Length"));
 	SET_STRING_ELT(col_names, 1, mkChar("WidthSum"));
-	SET_ELEMENT(ans_names, 0,
+	SET_VECTOR_ELT(ans_names, 0,
 			    duplicate(GET_SLOT(GET_SLOT(object, install("partitioning")),
 			    		           install("NAMES"))));
-	SET_ELEMENT(ans_names, 1, col_names);
+	SET_VECTOR_ELT(ans_names, 1, col_names);
 	SET_DIMNAMES(ans, ans_names);
 	UNPROTECT(3);
 	return ans;

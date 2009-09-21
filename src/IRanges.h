@@ -336,7 +336,16 @@ SEXP findIntervalAndStartFromWidth(
 
 const char *_get_Sequence_elementType(SEXP x);
 
-SEXP vector_seqselect(SEXP x, SEXP start, SEXP width);
+void _set_Sequence_elementType(
+	SEXP x,
+	const char *type
+);
+
+SEXP vector_seqselect(
+	SEXP x,
+	SEXP start,
+	SEXP width
+);
 
 
 /* IRanges_class.c */
@@ -589,6 +598,8 @@ SEXP _new_SharedVector(const char *classname, SEXP tag);
 SEXP SharedVector_length(SEXP x);
 
 SEXP _get_SharedVector_Pool_xp_list(SEXP x);
+
+SEXP _new_SharedVector_Pool1(SEXP shared);
 
 
 /* SharedRaw_utils.c */
@@ -858,9 +869,9 @@ SEXP debug_XVector_class();
 
 SEXP _get_XVector_shared(SEXP x);
 
-SEXP _get_XVector_offset(SEXP x);
+int _get_XVector_offset(SEXP x);
 
-SEXP _get_XVector_length(SEXP x);
+int _get_XVector_length(SEXP x);
 
 SEXP _get_XVector_tag(SEXP x);
 
@@ -916,6 +927,12 @@ cachedIntSeq _get_cachedXIntegerList_elt(
 cachedDoubleSeq _get_cachedXDoubleList_elt(
 	const cachedXVectorList *cached_x,
 	int i
+);
+
+SEXP _new_XVectorList1(
+	const char *classname,
+	SEXP xvector,
+	SEXP ranges
 );
 
 

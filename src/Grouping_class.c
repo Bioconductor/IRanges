@@ -111,7 +111,7 @@ SEXP H2LGrouping_vmembers(SEXP x, SEXP group_ids_list)
 		group_ids = VECTOR_ELT(group_ids_list, i);
 		if (TYPEOF(group_ids) != INTSXP)
 			error("'L' must be a list of integer vectors");
-		SET_ELEMENT(ans, i, H2LGrouping_members(x, group_ids));
+		SET_VECTOR_ELT(ans, i, H2LGrouping_members(x, group_ids));
 	}
 	UNPROTECT(1);
 	return ans;

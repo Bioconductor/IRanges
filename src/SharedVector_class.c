@@ -71,23 +71,37 @@ SEXP externalptr_new()
 
 /****************************************************************************
  * C-level getters for SharedVector objects.
+ *
+ * Be careful that these functions do NOT duplicate the returned SEXP.
+ * Thus they cannot be made .Call entry points!
  */
 
-static SEXP xp_symbol = NULL;
+static SEXP
+	xp_symbol = NULL,
+	link_symbol = NULL;
 
-/*
- * Be careful that this function does NOT duplicate the returned SEXP.
- * Thus it cannot be made a .Call entry point!
- */
-SEXP _get_SharedVector_tag(SEXP x)
+static SEXP get_SharedVector_xp(SEXP x)
 {
 	INIT_STATIC_SYMBOL(xp)
-	return R_ExternalPtrTag(GET_SLOT(x, xp_symbol));
+	return GET_SLOT(x, xp_symbol);
 }
 
+SEXP _get_SharedVector_tag(SEXP x)
+{
+	return R_ExternalPtrTag(get_SharedVector_xp(x));
+}
+
+/* Not a strict "slot getter" but very much like. */
 int _get_SharedVector_length(SEXP x)
 {
 	return LENGTH(_get_SharedVector_tag(x));
+}
+
+static SEXP get_SharedVector_link(SEXP x)
+{
+	if (link_symbol == NULL)
+		link_symbol = install(".link_to_cached_object");
+	return GET_SLOT(x, link_symbol);
 }
 
 
@@ -110,7 +124,7 @@ static void set_SharedVector_tag(SEXP x, SEXP value)
 
 
 /****************************************************************************
- * C-level constructors.
+ * C-level constructors for SharedVector objects.
  *
  * Be careful that these functions do NOT duplicate their arguments before
  * putting them in the slots of the returned object.
@@ -147,11 +161,77 @@ SEXP SharedVector_length(SEXP x)
  * Thus it cannot be made a .Call entry point!
  */
 
-static SEXP xp_list_symbol = NULL;
+static SEXP
+	xp_list_symbol = NULL,
+	link_list_symbol = NULL;
 
 SEXP _get_SharedVector_Pool_xp_list(SEXP x)
 {
 	INIT_STATIC_SYMBOL(xp_list)
 	return GET_SLOT(x, xp_list_symbol);
+}
+
+
+/****************************************************************************
+ * C-level setters for SharedVector_Pool objects.
+ *
+ * Be careful that these functions do NOT duplicate the assigned value!
+ */
+
+static void set_SharedVector_Pool_xp_list(SEXP x, SEXP value)
+{
+	INIT_STATIC_SYMBOL(xp_list)
+	SET_SLOT(x, xp_list_symbol, value);
+	return;
+}
+
+static void set_SharedVector_Pool_link_list(SEXP x, SEXP value)
+{
+	if (link_list_symbol == NULL)
+		link_list_symbol = install(".link_to_cached_object_list");
+	SET_SLOT(x, link_list_symbol, value);
+	return;
+}
+
+
+/****************************************************************************
+ * C-level constructors for SharedVector_Pool objects.
+ *
+ * Be careful that these functions do NOT duplicate their arguments before
+ * putting them in the slots of the returned object.
+ * Thus they cannot be made .Call entry points!
+ */
+
+SEXP _new_SharedVector_Pool1(SEXP shared)
+{
+	const char *shared_classname;
+	char classname_buf[80];
+	SEXP classdef, ans, ans_xp_list, ans_link_list, tmp;
+
+	shared_classname = _get_classname(shared);
+	if (snprintf(classname_buf, sizeof(classname_buf),
+		     "%s_Pool", shared_classname) >= sizeof(classname_buf))
+		error("IRanges internal error in _new_SharedVector_Pool1(): "
+		      "'shared_classname' too long");
+
+	PROTECT(classdef = MAKE_CLASS(classname_buf));
+	PROTECT(ans = NEW_OBJECT(classdef));
+
+	/* set "xp_list" slot */
+	PROTECT(ans_xp_list = NEW_LIST(1));
+	PROTECT(tmp = duplicate(get_SharedVector_xp(shared)));
+	SET_VECTOR_ELT(ans_xp_list, 0, tmp);
+	set_SharedVector_Pool_xp_list(ans, ans_xp_list);
+	UNPROTECT(2);
+
+	/* set ".link_to_cached_object_list" slot */
+	PROTECT(ans_link_list = NEW_LIST(1));
+	PROTECT(tmp = duplicate(get_SharedVector_link(shared)));
+	SET_VECTOR_ELT(ans_link_list, 0, tmp);
+	set_SharedVector_Pool_link_list(ans, ans_link_list);
+	UNPROTECT(2);
+
+	UNPROTECT(2);
+	return ans;
 }
 

@@ -364,7 +364,7 @@ SEXP _IntAEAE_asLIST(const IntAEAE *int_aeae, int mode)
 		} else {
 			PROTECT(ans_elt = _IntAE_asINTEGER(elt));
 		}
-		SET_ELEMENT(ans, i, ans_elt);
+		SET_VECTOR_ELT(ans, i, ans_elt);
 		UNPROTECT(1);
 	}
 	UNPROTECT(1);

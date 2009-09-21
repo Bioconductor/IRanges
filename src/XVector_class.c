@@ -37,16 +37,16 @@ SEXP _get_XVector_shared(SEXP x)
 	return GET_SLOT(x, shared_symbol);
 }
 
-SEXP _get_XVector_offset(SEXP x)
+int _get_XVector_offset(SEXP x)
 {
 	INIT_STATIC_SYMBOL(offset)
-	return GET_SLOT(x, offset_symbol);
+	return INTEGER(GET_SLOT(x, offset_symbol))[0];
 }
 
-SEXP _get_XVector_length(SEXP x)
+int _get_XVector_length(SEXP x)
 {
 	INIT_STATIC_SYMBOL(length)
-	return GET_SLOT(x, length_symbol);
+	return INTEGER(GET_SLOT(x, length_symbol))[0];
 }
 
 /* Not a strict "slot getter" but very much like. */
@@ -67,9 +67,9 @@ cachedCharSeq _cache_XRaw(SEXP x)
 	int offset;
 
 	tag = _get_XVector_tag(x);
-	offset = INTEGER(_get_XVector_offset(x))[0];
+	offset = _get_XVector_offset(x);
 	cached_x.seq = (const char *) (RAW(tag) + offset);
-	cached_x.length = INTEGER(_get_XVector_length(x))[0];
+	cached_x.length = _get_XVector_length(x);
 	return cached_x;
 }
 

@@ -403,9 +403,9 @@ int get_SharedVector_length(SEXP x);
 
 SEXP get_XVector_shared(SEXP x);
 
-SEXP get_XVector_offset(SEXP x);
+int get_XVector_offset(SEXP x);
 
-SEXP get_XVector_length(SEXP x);
+int get_XVector_length(SEXP x);
 
 SEXP get_XVector_tag(SEXP x);
 
@@ -449,4 +449,6 @@ cachedDoubleSeq get_cachedXDoubleList_elt(
 	const cachedXVectorList *cached_x,
 	int i
 );
+
+SEXP new_XVectorList1(const char *classname, SEXP xvector, SEXP ranges);
 

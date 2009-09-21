@@ -19,6 +19,22 @@ const char *_get_Sequence_elementType(SEXP x)
 
 
 /****************************************************************************
+ * C-level slot setters.
+ */
+
+void _set_Sequence_elementType(SEXP x, const char *type)
+{
+	SEXP value;
+
+	INIT_STATIC_SYMBOL(elementType)
+	PROTECT(value = mkString(type));
+	SET_SLOT(x, elementType_symbol, value);
+	UNPROTECT(1);
+	return;
+}
+
+
+/****************************************************************************
  * Other stuff.
  */
 

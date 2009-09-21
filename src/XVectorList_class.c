@@ -50,7 +50,8 @@ int _get_XVectorList_length(SEXP x)
 
 
 /****************************************************************************
- * One C-level slot getter for GroupedIRanges objects.
+ * C-level slot getter, slot setter, and constructor for GroupedIRanges
+ * objects.
  */
 
 static SEXP group_symbol = NULL;
@@ -59,6 +60,26 @@ static SEXP get_GroupedIRanges_group(SEXP x)
 {
 	INIT_STATIC_SYMBOL(group)
 	return GET_SLOT(x, group_symbol);
+}
+
+static void set_GroupedIRanges_group(SEXP x, SEXP value)
+{
+	INIT_STATIC_SYMBOL(group)
+	SET_SLOT(x, group_symbol, value);
+	return;
+}
+
+static SEXP new_GroupedIRanges(SEXP ranges, SEXP group)
+{
+	SEXP ans;
+
+	PROTECT(ans = _new_IRanges("GroupedIRanges",
+				_get_IRanges_start(ranges),
+				_get_IRanges_width(ranges),
+				_get_IRanges_names(ranges)));
+	set_GroupedIRanges_group(ans, group);
+	UNPROTECT(1);
+	return ans;
 }
 
 
@@ -98,7 +119,7 @@ cachedCharSeq _get_cachedXRawList_elt(const cachedXVectorList *cached_x,
 					  cached_x->group[i] - 1));
 	charseq.seq = (const char *) RAW(tag) + cached_x->start[i] - 1;
 	charseq.length = cached_x->width[i];
-        return charseq;
+	return charseq;
 }
 
 cachedIntSeq _get_cachedXIntegerList_elt(const cachedXVectorList *cached_x,
@@ -111,7 +132,7 @@ cachedIntSeq _get_cachedXIntegerList_elt(const cachedXVectorList *cached_x,
 					  cached_x->group[i] - 1));
 	intseq.seq = INTEGER(tag) + cached_x->start[i] - 1;
 	intseq.length = cached_x->width[i];
-        return intseq;
+	return intseq;
 }
 
 cachedDoubleSeq _get_cachedXDoubleList_elt(const cachedXVectorList *cached_x,
@@ -124,6 +145,82 @@ cachedDoubleSeq _get_cachedXDoubleList_elt(const cachedXVectorList *cached_x,
 					  cached_x->group[i] - 1));
 	doubleseq.seq = REAL(tag) + cached_x->start[i] - 1;
 	doubleseq.length = cached_x->width[i];
-        return doubleseq;
+	return doubleseq;
+}
+
+
+/****************************************************************************
+ * C-level slot setters.
+ *
+ * Be careful that these functions do NOT duplicate the assigned value!
+ */
+
+static void set_XVectorList_pool(SEXP x, SEXP value)
+{
+	INIT_STATIC_SYMBOL(pool)
+	SET_SLOT(x, pool_symbol, value);
+	return;
+}
+
+static void set_XVectorList_ranges(SEXP x, SEXP value)
+{
+	INIT_STATIC_SYMBOL(ranges)
+	SET_SLOT(x, ranges_symbol, value);
+	return;
+}
+
+
+/****************************************************************************
+ * C-level constructors.
+ */
+
+/* Be careful that this constructor does NOT duplicate its arguments before
+   putting them in the slots of the returned object.
+   So don't try to make it a .Call entry point! */
+SEXP _new_XVectorList1(const char *classname, SEXP xvector, SEXP ranges)
+{
+	const char *element_type;
+	char classname_buf[80];
+	SEXP classdef, ans, xvector_shared, ans_pool,
+	     shifted_ranges, shifted_ranges_start, ranges_group, ans_ranges;
+	int ans_length, offset, i;
+
+	element_type = _get_classname(xvector);
+	if (classname == NULL) {
+		if (snprintf(classname_buf, sizeof(classname_buf),
+			     "%sList", element_type) >= sizeof(classname_buf))
+			error("IRanges internal error in _new_XVectorList1(): "
+			      "'element_type' too long");
+		classname = classname_buf;
+	}
+
+	PROTECT(classdef = MAKE_CLASS(classname));
+	PROTECT(ans = NEW_OBJECT(classdef));
+
+	/* set "elementType" slot */
+	_set_Sequence_elementType(ans, element_type);
+
+	/* set "pool" slot */
+	xvector_shared = _get_XVector_shared(xvector);
+	PROTECT(ans_pool = _new_SharedVector_Pool1(xvector_shared));
+	set_XVectorList_pool(ans, ans_pool);
+	UNPROTECT(1);
+
+	/* set "ranges" slot */
+	PROTECT(shifted_ranges = duplicate(ranges));
+	shifted_ranges_start = _get_IRanges_start(shifted_ranges);
+	ans_length = LENGTH(shifted_ranges_start);
+	PROTECT(ranges_group = NEW_INTEGER(ans_length));
+	offset = _get_XVector_offset(xvector);
+	for (i = 0; i < ans_length; i++) {
+		INTEGER(shifted_ranges_start)[i] += offset;
+		INTEGER(ranges_group)[i] = 1;
+	}
+	PROTECT(ans_ranges = new_GroupedIRanges(shifted_ranges, ranges_group));
+	set_XVectorList_ranges(ans, ans_ranges);
+	UNPROTECT(3);
+
+	UNPROTECT(2);
+	return ans;
 }
 
