@@ -50,8 +50,8 @@ new2 <- function(..., check=TRUE)
     if (!isTRUEorFALSE(check))
         stop("'check' must be TRUE or FALSE")
     old_val <- disableValidity()
-    disableValidity(!check)
     on.exit(disableValidity(old_val))
+    disableValidity(!check)
     new(...)
 }
 

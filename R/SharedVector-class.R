@@ -91,6 +91,21 @@ setAs("SharedVector", "SharedVector_Pool",
     }
 )
 
+setMethod("c", "SharedVector_Pool",
+    function(x, ..., recursive=FALSE)
+    {
+        if (!identical(recursive, FALSE))
+            stop("'recursive' argument not supported")
+        x@xp_list <-
+            do.call(c, lapply(list(x, ...),
+                              function(arg) arg@xp_list))
+        x@.link_to_cached_object_list <-
+            do.call(c, lapply(list(x, ...),
+                              function(arg) arg@.link_to_cached_object_list))
+        x
+    }
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Some very low-level utilities on externalptr objects.

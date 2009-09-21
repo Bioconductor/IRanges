@@ -16,11 +16,15 @@
 \alias{as.data.frame,GroupedIRanges-method}
 \alias{show,GroupedIRanges-method}
 \alias{[,GroupedIRanges-method}
+\alias{c,GroupedIRanges-method}
 
 \alias{length,XVectorList-method}
 \alias{width,XVectorList-method}
 \alias{names,XVectorList-method}
 \alias{names<-,XVectorList-method}
+\alias{[[,XVectorList-method}
+\alias{[,XVectorList-method}
+\alias{c,XVectorList-method}
 
 
 \title{XVectorList objects}

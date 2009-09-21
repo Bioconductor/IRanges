@@ -485,13 +485,22 @@ setMethod("window", "IRanges",
 ###
 ### The "c" method for IRanges objects is implemented to behave like an
 ### endomorphism i.e. to return an object of the same class as 'x'. In
-### particular 'c(x)' now returns 'x' and not 'as(x, IRanges)'.
-### It's easy to implement specific "c" methods for IRanges subclasses:
-### typically they just need to call 'x <- callNextMethod()' (the 'x' they
-### get is already of the same class as the original 'x') and to take care
-### of the additional slots (aka the class-specific slots). If there aren't
-### any additional slots (e.g. NormalIRanges) or if they don't need to be
-### modified (e.g. Views), then no need to implement a specific method at all.
+### particular 'c(x)' now returns 'x' and not 'as(x, "IRanges")'.
+### It's easy to implement specific "c" methods for IRanges subclasses.
+### Typically they just need to do something like:
+###
+###     old_val <- disableValidity()
+###     on.exit(disableValidity(old_val))
+###     disableValidity(TRUE)
+###     ans <- callNextMethod(x, ..., recursive=FALSE)
+###     ...
+###
+### and to take care of the additional slots (aka the subclass-specific
+### slots). If there aren't any additional slots (e.g. NormalIRanges), or
+### if the additional slots don't need to be modified (e.g. the "subject"
+### slot of the Views subclass), then no need to implement a specific method
+### at all.
+###
 ### In the case of NormalIRanges objects, 'c(x1, x2)' will fail if the result
 ### is not normal, but 'c(as(x1, "IRanges"), x2)' or 'c(IRanges(), x1, x2)'
 ### would work. Note that, in general, 'c(IRanges(), x)' is not the same as
@@ -542,7 +551,7 @@ setMethod("c", "IRanges",
     function(x, ..., recursive=FALSE)
     {
         if (!identical(recursive, FALSE))
-            stop("'recursive' mode not supported")
+            stop("'recursive' argument not supported")
         if (missing(x)) {
             args <- list(...)
             x <- args[[1L]]
@@ -556,9 +565,9 @@ setMethod("c", "IRanges",
             args[arg_is_null] <- NULL  # remove NULL elements by setting them to NULL!
         if (!all(sapply(args, is, class(x))))
             stop("all arguments in '...' must be ", class(x), " objects (or NULLs)")
+
         new_start <- unlist(lapply(args, start), use.names=FALSE)
         new_width <- unlist(lapply(args, width), use.names=FALSE)
-        new_elementMetadata <- do.call(rbind, lapply(args, elementMetadata))
         names_list <- lapply(args, names)
         arg_has_no_names <- sapply(names_list, is.null)
         if (all(arg_has_no_names)) {
@@ -568,9 +577,8 @@ setMethod("c", "IRanges",
                                                    function(arg) character(length(arg)))
             new_names <- unlist(names_list, use.names=FALSE)
         }
-        ans <-
-          update(x, start=new_start, width=new_width, names=new_names, check=FALSE)
-        elementMetadata(ans) <- new_elementMetadata
+        ans <- update(x, start=new_start, width=new_width, names=new_names, check=FALSE)
+        elementMetadata(ans) <- do.call(rbind, lapply(args, elementMetadata))
         validObject(ans)
         ans
     }
