@@ -529,6 +529,12 @@ SEXP Rle_rollSum(
 	SEXP width
 );
 
+SEXP Rle_rollWeightedSum(
+	SEXP x,
+	SEXP width,
+	SEXP weight
+);
+
 SEXP Rle_rollQ(
 	SEXP x,
 	SEXP width,
