@@ -355,6 +355,22 @@ setMethod("Complex", "CompressedAtomicList",
           function(z)
               CompressedAtomicList(callGeneric(z@unlistData),
                                    partitioning = z@partitioning))
-               
+
 setMethod("Complex", "SimpleAtomicList",
           function(z) SimpleAtomicList(lapply(z@listData, .Generic)))
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Rolling window statistic methods
+###
+
+setMethod("rollSum", "RleList",
+          function(x, width)
+              endoapply(x, rollSum, width = width))
+
+setMethod("rollWeightedSum", "RleList",
+          function(x, width, weight)
+              endoapply(x, rollWeightedSum, width = width, weight = weight))
+
+setMethod("rollQ", "RleList",
+          function(x, width, which)
+              endoapply(x, rollQ, width = width, which = which))

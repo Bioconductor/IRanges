@@ -147,6 +147,7 @@ export(
     subject, Views, subviews, trim,
     slice,
     values,
+    rollSum, rollWeightedSum, rollQ,
     viewApply, viewMins, viewMaxs, viewSums, viewWhichMins, viewWhichMaxs,
     viewRangeMins, viewRangeMaxs,
     cbind, rbind, table, xtabs,
@@ -250,6 +251,7 @@ exportMethods(
     subject, Views, subviews, trim,
     Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
     findRange,
+    rollSum, rollWeightedSum, rollQ,
     viewApply, viewMins, viewMaxs, viewSums, viewWhichMins, viewWhichMaxs,
 
     ## Old stuff (Defunct or Deprecated):

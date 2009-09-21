@@ -106,6 +106,9 @@
 \alias{median,Rle-method}
 \alias{quantile,Rle-method}
 \alias{mad,Rle-method}
+\alias{rollSum,Rle-method}
+\alias{rollWeightedSum,Rle-method}
+\alias{rollQ,Rle-method}
 
 \alias{nchar,Rle-method}
 \alias{substr,Rle-method}
@@ -572,6 +575,35 @@
           before the mad is computed.}
         \item{\code{low}}{If \code{TRUE}, compute the 'lo-median'.}
         \item{\code{high}}{If \code{TRUE}, compute the 'hi-median'.}
+      }
+    }
+    \item{}{
+      \code{rollSum(x, width)}:
+      Calculates the sums for fixed width rolling windows across \code{x}.
+      \describe{
+        \item{\code{width}}{An integer indicating the fixed width of the
+          rolling window.}
+      }
+    }
+    \item{}{
+      \code{rollWeightedSum(x, width, weight)}:
+      Calculates the sums for fixed width rolling windows across \code{x}.
+      \describe{
+        \item{\code{width}}{An integer indicating the fixed width of the
+          rolling window.}
+        \item{\code{weight}}{A numeric vector of length \code{width} that
+          provides the weights to use.}
+      }
+    }
+    \item{}{
+      \code{rollQ(x, width, which)}:
+      Calculates the order statistic for fixed width rolling windows across
+      \code{x}.
+      \describe{
+        \item{\code{width}}{An integer indicating the fixed width of the
+          rolling window.}
+        \item{\code{which}}{An integer indicating which order statistic to
+          calculate.}
       }
     }
   }

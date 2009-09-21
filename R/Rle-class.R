@@ -991,6 +991,17 @@ setMethod("mad", "Rle",
                           low = low, high = high)
           })
 
+setMethod("rollSum", "Rle", function(x, width)
+          .Call("Rle_rollSum", x, as.integer(width), PACKAGE="IRanges"))
+
+setMethod("rollWeightedSum", "Rle", function(x, width, weight)
+          .Call("Rle_rollWeightedSum", x, as.integer(width), as.numeric(weight),
+                PACKAGE="IRanges"))
+
+setMethod("rollQ", "Rle", function(x, width, which)
+          .Call("Rle_rollQ", x, as.integer(width), as.integer(which),
+                PACKAGE="IRanges"))
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other character data methods
 ###

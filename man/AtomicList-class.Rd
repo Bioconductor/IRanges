@@ -71,6 +71,10 @@
 \alias{Complex,CompressedAtomicList-method}
 \alias{Complex,SimpleAtomicList-method}
 
+\alias{rollSum,RleList-method}
+\alias{rollWeightedSum,RleList-method}
+\alias{rollQ,RleList-method}
+
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}
 \description{An extension of \code{\linkS4class{Sequence}} that holds
@@ -150,6 +154,48 @@
       \code{"Mod"}, \code{"Re"}}
   }
   See \link[methods]{S4groupGeneric} for more details.
+}
+
+\section{Fixed Width Rolling Window Summaries}{
+  RleList objects have support for the following fixed width rolling window
+  summary methods:
+  \describe{
+    \item{}{
+      \code{rollSum(x, width)}:
+      Calculates the sums for fixed width rolling windows across \code{x}.
+      \describe{
+        \item{\code{x}}{An RleList object containing integer or numeric
+          Rle elements.}
+        \item{\code{width}}{An integer indicating the fixed width of the
+          rolling window.}
+      }
+    }
+    \item{}{
+      \code{rollWeightedSum(x, width, weight)}:
+      Calculates the sums for fixed width rolling windows across \code{x}.
+      \describe{
+        \item{\code{x}}{An RleList object containing integer or numeric
+          Rle elements.}
+        \item{\code{width}}{An integer indicating the fixed width of the
+          rolling window.}
+        \item{\code{weight}}{A numeric vector of length \code{width} that
+          provides the weights to use.}
+      }
+    }
+    \item{}{
+      \code{rollQ(x, width, which)}:
+      Calculates the order statistic for fixed width rolling windows across
+      \code{x}.
+      \describe{
+        \item{\code{x}}{An RleList object containing integer or numeric
+          Rle elements.}
+        \item{\code{width}}{An integer indicating the fixed width of the
+          rolling window.}
+        \item{\code{which}}{An integer indicating which order statistic to
+          calculate.}
+      }
+    }
+  }
 }
 
 \author{P. Aboyoun}

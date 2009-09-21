@@ -22,6 +22,7 @@ ExtraLicenses: The following files in the 'src' directory are licensed for all
 Collate: validity-utils.R
 	utils.R
 	endoapply.R
+	rollStat.R
 	Annotated-class.R
 	Sequence-class.R
 	DataTable-class.R
