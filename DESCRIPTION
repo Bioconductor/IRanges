@@ -70,6 +70,7 @@ Collate: validity-utils.R
 	RangesMatchingList-class.R
 	Alignment-class.R
 	read.Mask.R
+	copy.R
 	reverse.R
 	coverage.R
 	updateObject.R

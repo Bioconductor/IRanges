@@ -78,6 +78,11 @@
 \alias{show,SharedDouble-method}
 \alias{as.numeric,SharedDouble-method}
 
+% copy():
+\alias{copy}
+\alias{copy,SharedRaw-method}
+\alias{copy,SharedVector_Pool-method}
+
 
 \title{IRanges internals}
 

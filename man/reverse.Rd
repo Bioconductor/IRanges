@@ -7,25 +7,20 @@
 \alias{reverse,SharedVector_Pool-method}
 \alias{reverse,MaskCollection-method}
 
-\alias{translate}
-\alias{translate,SharedRaw-method}
-\alias{translate,SharedVector_Pool-method}
 
-
-\title{Reverse and translate SharedRaw and SharedVector_Pool objects}
+\title{Reverse an IRanges object}
 
 \description{
-  These operations are not intended to be used directly.
+  This operation is not intended to be used directly.
 }
 
 \usage{
   reverse(x, \dots)
-  translate(x, \dots)
 }
 
 \arguments{
   \item{x}{
-    A SharedRaw or SharedVector_Pool object.
+    An IRanges object.
   }
   \item{\dots}{
     Additional arguments to be passed to or from methods.
