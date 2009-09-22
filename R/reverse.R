@@ -120,7 +120,7 @@ setMethod("translate", "SharedVector_Pool",
         ## to work on a SharedRaw_Pool object of arbitrary length!
         if (length(x) != 1L)
             stop("IRanges internal error: length(x) != 1")
-        as(translate(x[[1L]]), "SharedVector_Pool")
+        as(translate(x[[1L]], lkup), "SharedVector_Pool")
     }
 )
 
