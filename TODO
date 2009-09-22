@@ -1,16 +1,27 @@
 Immediate TODO list
 -------------------
 
-- Herve: Use a different name for "reverse" method for IRanges objects (seems
-  like it duplicates the functionality of the "reflect" method, so it should
-  fit here).
+- Herve: Fix "reverse" and "translate" methods for SharedVector_Pool objects.
+
+- Herve: Make the MaskCollection class a derivative of the SimpleIRangesList
+  class.
+
+- Herve: Use a different name for "reverse" method for IRanges and
+  MaskCollection objects. Seems like, for IRanges objects, reverse()
+  and reflect() are doing the same thing, so I should just keep (and
+  eventually adapt) the latter. Also, I should add a "reflect"
+  method for SimpleIRangesList objects that would do what the current
+  "reverse" method for MaskCollection objects does.
+  Once this is done, adapt R/reverse.R file in Biostrings to use reflect()
+  instead of reverse() wherever needed.
 
 - Herve or Michael: Provide a way to reduce ranges separated by a max
   distance or a min overlap (Michael's suggestion).
 
-- Alignment data structure and lift-over functionality
+- Alignment data structure and lift-over functionality.
 
-- Clean up endomorphisms
+- Clean up endomorphisms.
+
 
 Long term TODO list
 -------------------

@@ -70,8 +70,8 @@ setMethod("reverse", "SharedRaw",
 setMethod("reverse", "SharedVector_Pool",
     function(x, ...)
     {
-        ## FIXME: This must be temporary only. We need reverse() to work on
-        ## a SharedRaw_Pool object of arbitrary length!
+        ## FIXME: This limitation must be temporary only. We need reverse()
+        ## to work on a SharedRaw_Pool object of arbitrary length!
         if (length(x) != 1L)
             stop("IRanges internal error: length(x) != 1")
         as(reverse(x[[1L]]), "SharedVector_Pool")
@@ -87,6 +87,40 @@ setMethod("reverse", "MaskCollection",
             function(nir) reverse(nir, start=start, end=end)
         )
         x
+    }
+)
+
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "translate" generic and methods.
+###
+### NOTE: Maybe should go to a separate file.
+###
+
+setGeneric("translate", signature="x",
+    function(x, ...) standardGeneric("translate")
+)
+
+setMethod("translate", "SharedRaw",
+    function(x, lkup)
+    {
+        ans_length <- length(x)
+        ans <- SharedRaw(ans_length)
+        .Call("SharedRaw_translate_copy_from_i1i2",
+              ans, x, 1L, ans_length, lkup, PACKAGE="IRanges")
+        return(ans)
+    }
+)
+
+setMethod("translate", "SharedVector_Pool",
+    function(x, lkup)
+    {
+        ## FIXME: This limitation must be temporary only. We need translate()
+        ## to work on a SharedRaw_Pool object of arbitrary length!
+        if (length(x) != 1L)
+            stop("IRanges internal error: length(x) != 1")
+        as(translate(x[[1L]]), "SharedVector_Pool")
     }
 )
 
