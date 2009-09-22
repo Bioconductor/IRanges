@@ -107,6 +107,7 @@
 \alias{quantile,Rle-method}
 \alias{mad,Rle-method}
 \alias{IQR,Rle-method}
+\alias{smoothEnds,Rle-method}
 \alias{runsum,Rle-method}
 \alias{runwtsum,Rle-method}
 \alias{runq,Rle-method}
@@ -584,6 +585,15 @@
       \describe{
         \item{\code{na.rm}}{If \code{TRUE}, removes \code{NA}s from \code{x}
           before the IQR is computed.}
+      }
+    }
+    \item{}{
+      \code{smoothEnds(y, k = 3)}:
+      Smooth end points of an Rle \code{y} using subsequently smaller
+      medians and Tukey's end point rule at the very end.
+      \describe{
+        \item{\code{k}}{An integer indicating the width of largest median
+          window; must be odd.}
       }
     }
     \item{}{

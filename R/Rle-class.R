@@ -995,6 +995,16 @@ setMethod("IQR", "Rle",
           function(x, na.rm = FALSE)
               diff(quantile(x, c(0.25, 0.75), na.rm = na.rm, names = FALSE)))
 
+.smoothEndsDefault <- stats::smoothEnds
+environment(.smoothEndsDefault) <- topenv()
+setMethod("smoothEnds", "Rle", function(y, k = 3)
+          {
+              oldOption <- getOption("dropRle")
+              options("dropRle" = TRUE)
+              on.exit(options("dropRle" = oldOption))
+              .smoothEndsDefault(y, k = k)
+          })
+
 setMethod("runsum", "Rle", function(x, k)
           .Call("Rle_runsum", x, as.integer(k), PACKAGE="IRanges"))
 
