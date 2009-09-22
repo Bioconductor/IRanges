@@ -991,6 +991,10 @@ setMethod("mad", "Rle",
                           low = low, high = high)
           })
 
+setMethod("IQR", "Rle",
+          function(x, na.rm = FALSE)
+              diff(quantile(x, c(0.25, 0.75), na.rm = na.rm, names = FALSE)))
+
 setMethod("rollSum", "Rle", function(x, width)
           .Call("Rle_rollSum", x, as.integer(width), PACKAGE="IRanges"))
 

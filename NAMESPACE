@@ -3,7 +3,7 @@ useDynLib(IRanges)
 import(methods)
 importFrom(utils, head, read.table, tail)
 importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
-           window, "window<-", aggregate, xtabs)
+           IQR, window, "window<-", aggregate, xtabs)
 
 exportClasses(
     characterORNULL,
@@ -191,7 +191,7 @@ exportMethods(
     min,
     range,
     pmax, pmin, pmax.int, pmin.int, diff,
-    mean, var, cov, cor, sd, median, quantile, mad,
+    mean, var, cov, cor, sd, median, quantile, mad, IQR,
     subset, window, "window<-", aggregate,
     nchar, substr, substring, chartr, tolower, toupper, sub, gsub,
     levels, "levels<-",

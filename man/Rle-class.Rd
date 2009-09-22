@@ -106,6 +106,7 @@
 \alias{median,Rle-method}
 \alias{quantile,Rle-method}
 \alias{mad,Rle-method}
+\alias{IQR,Rle-method}
 \alias{rollSum,Rle-method}
 \alias{rollWeightedSum,Rle-method}
 \alias{rollQ,Rle-method}
@@ -575,6 +576,14 @@
           before the mad is computed.}
         \item{\code{low}}{If \code{TRUE}, compute the 'lo-median'.}
         \item{\code{high}}{If \code{TRUE}, compute the 'hi-median'.}
+      }
+    }
+    \item{}{
+      \code{IQR(x, na.rm = FALSE)}:
+      Calculates the interquartile range of \code{x}.
+      \describe{
+        \item{\code{na.rm}}{If \code{TRUE}, removes \code{NA}s from \code{x}
+          before the IQR is computed.}
       }
     }
     \item{}{

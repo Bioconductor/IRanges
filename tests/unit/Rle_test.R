@@ -163,6 +163,7 @@ test_Rle_numerical <- function() {
     checkIdentical(quantile(x, na.rm = TRUE), quantile(xRle, na.rm = TRUE))
     checkIdentical(mad(x), mad(xRle))
     checkIdentical(mad(x, na.rm = TRUE), mad(xRle, na.rm = TRUE))
+    checkIdentical(IQR(x, na.rm = TRUE), IQR(xRle, na.rm = TRUE))
 
     x <- rep(c(1.2, 3.4, 5.6, 7.8, 9.0), 1:5)
     y <- rep(1:5, c(4, 2, 5, 1, 3))
