@@ -454,7 +454,7 @@ cachedDoubleSeq get_cachedXDoubleList_elt(
 	int i
 );
 
-void set_XVectorList_names(SEXP x);
+void set_XVectorList_names(SEXP x, SEXP names);
 
 SEXP new_XVectorList1(const char *classname, SEXP xvector, SEXP ranges);
 
