@@ -1,6 +1,10 @@
 Immediate TODO list
 -------------------
 
+- Herve: Use a different name for "reverse" method for IRanges objects (seems
+  like it duplicates the functionality of the "reflect" method, so it should
+  fit here).
+
 - Herve or Michael: Provide a way to reduce ranges separated by a max
   distance or a min overlap (Michael's suggestion).
 

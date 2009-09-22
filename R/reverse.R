@@ -14,14 +14,33 @@ setGeneric("reverse", signature="x",
     n2p <- match(c("start", "end", "use.names"), argnames)
     if (is.na(n2p[1]))
         stop("'start' must be supplied for \"reverse\" method for IRanges objects")
-    start <- normargSingleStart(args[[n2p[1]]])
+    start <- args[[n2p[1]]]
+    if (!is.numeric(start))
+        stop("'start' must be a vector of integers")
+    if (!is.integer(start))
+        start <- as.integer(start)
+    if (any(is.na(start)))
+        stop("'start' contains NAs")
     if (is.na(n2p[2]))
         stop("'end' must be supplied for \"reverse\" method for IRanges objects")
-    end <- normargSingleEnd(args[[n2p[2]]])
+    end <- args[[n2p[2]]]
+    if (!is.numeric(end))
+        stop("'end' must be a vector of integers")
+    if (!is.integer(end))
+        end <- as.integer(end)
+    if (any(is.na(end)))
+        stop("'end' contains NAs")
     if (!is.na(n2p[3]) && !normargUseNames(args[[n2p[3]]])) {
         unsafe.names(x) <- NULL
     }
-    x@start <- start + end - end(x)
+    ## WARNING: -end(x) *must* appear first in this expression if we want
+    ## the supplied 'start' and 'end' to be recycled properly.
+    ## Remember that in R, because of the recycling, addition of numeric
+    ## vectors of different lengths is not associative i.e. in general
+    ## '(x + y) + z' is not the same as 'x + (y + z)'. For example:
+    ##     (integer(6) + 1:2) + 1:3  and  integer(6) + (1:2 + 1:3)
+    ## are not the same.
+    x@start[] <- -end(x) + start + end
     x
 }
 

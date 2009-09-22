@@ -138,24 +138,6 @@ isNumericOrNAs <- function(x)
     is.numeric(x) || (is.atomic(x) && is.vector(x) && all(is.na(x)))
 }
 
-normargSingleStart <- function(start)
-{
-    if (!isSingleNumber(start))
-        stop("'start' must be a single integer")
-    if (!is.integer(start))
-        start <- as.integer(start)
-    start
-}
-
-normargSingleEnd <- function(end)
-{
-    if (!isSingleNumber(end))
-        stop("'end' must be a single integer")
-    if (!is.integer(end))
-        end <- as.integer(end)
-    end
-}
-
 normargSingleStartOrNA <- function(start)
 {
     if (!isSingleNumberOrNA(start))
