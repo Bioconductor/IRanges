@@ -83,7 +83,7 @@ SEXP SharedInteger_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width
 
 
 /* ==========================================================================
- * Copy values from an SharedInteger object to another SharedInteger object.
+ * Copy values from a SharedInteger object to another SharedInteger object.
  * --------------------------------------------------------------------------
  */
 
@@ -118,7 +118,7 @@ SEXP SharedInteger_copy_from_subset(SEXP dest, SEXP src, SEXP subset)
 
 
 /* ==========================================================================
- * Read/write integers to an SharedInteger object
+ * Read/write integers to a SharedInteger object.
  * --------------------------------------------------------------------------
  */
 

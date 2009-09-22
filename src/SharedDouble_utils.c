@@ -149,7 +149,7 @@ SEXP SharedDouble_write_nums_to_subset(SEXP dest, SEXP subset, SEXP val)
 }
 
 /* ==========================================================================
- * Copy values from an SharedDouble object to another SharedDouble object.
+ * Copy values from a SharedDouble object to another SharedDouble object.
  * --------------------------------------------------------------------------
  */
 

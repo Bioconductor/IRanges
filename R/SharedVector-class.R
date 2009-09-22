@@ -29,12 +29,48 @@ setClass("SharedVector_Pool",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Some very low-level utilities on externalptr objects.
+###
+
+tagtype <- function(x)
+{
+    if (!is(x, "externalptr"))
+        stop("'x' must be an externalptr object")
+    .Call("externalptr_tagtype", x, PACKAGE="IRanges")
+}
+
+tagIsVector <- function(x, tagtype=NA)
+{
+    if (!is(x, "externalptr"))
+        stop("'x' must be an externalptr object")
+    x_tagtype <- tagtype(x)
+    if (!is.na(tagtype))
+        return(x_tagtype == tagtype)
+    return(x_tagtype == "double" || extends(x_tagtype, "vector"))
+}
+
+taglength <- function(x)
+{
+    if (!is(x, "externalptr"))
+        stop("'x' must be an externalptr object")
+    .Call("externalptr_taglength", x, PACKAGE="IRanges")
+}
+
+### Helper function (for debugging purpose).
+### Print some info about an externalptr object.
+### Typical use:
+###   show(new("externalptr"))
+setMethod("show", "externalptr",
+    function(object)
+        .Call("externalptr_show", object, PACKAGE="IRanges")
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### SharedVector low-level methods.
 ###
 
-setMethod("length", "SharedVector",
-    function(x) .Call("SharedVector_length", x, PACKAGE="IRanges")
-)
+setMethod("length", "SharedVector", function(x) taglength(x@xp))
 
 ### Return the hexadecimal representation of the adress of the first
 ### element of the tag (i.e. the first element of the external vector).
@@ -67,6 +103,11 @@ setMethod("show", "SharedVector",
 ###
 
 setMethod("length", "SharedVector_Pool", function(x) length(x@xp_list))
+
+setMethod("width", "SharedVector_Pool",
+    function(x)
+        if (length(x) == 0L) integer(0) else sapply(x@xp_list, taglength)
+)
 
 setMethod("show", "SharedVector_Pool",
     function(object)
@@ -108,37 +149,6 @@ setMethod("c", "SharedVector_Pool",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Some very low-level utilities on externalptr objects.
-###
-
-tagtype <- function(x)
-{
-    if (!is(x, "externalptr"))
-        stop("'x' must be an externalptr object")
-    .Call("externalptr_tagtype", x, PACKAGE="IRanges")
-}
-
-isExternalVector <- function(x, tagtype=NA)
-{
-    if (!is(x, "externalptr"))
-        return(FALSE)
-    x_tagtype <- tagtype(x)
-    if (!is.na(tagtype))
-        return(x_tagtype == tagtype)
-    return(x_tagtype == "double" || extends(x_tagtype, "vector"))
-}
-
-### Helper function (for debugging purpose).
-### Print some info about an externalptr object.
-### Typical use:
-###   show(new("externalptr"))
-setMethod("show", "externalptr",
-    function(object)
-        .Call("externalptr_show", object, PACKAGE="IRanges")
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
 
@@ -150,7 +160,7 @@ problemIfNotExternalVector <- function(what, tagmustbe="a vector")
 
 .valid.SharedVector <- function(x)
 {
-    if (!isExternalVector(x@xp))
+    if (!tagIsVector(x@xp))
         return(problemIfNotExternalVector("'x@xp'"))
     NULL
 }
@@ -162,7 +172,7 @@ setValidity2("SharedVector", .valid.SharedVector)
     if (length(x@xp_list) != length(x@.link_to_cached_object_list))
         return("'x@xp_list' and 'x@.link_to_cached_object_list' must have the same length")
     if (!all(sapply(x@xp_list,
-                    function(elt) isExternalVector(elt))))
+                    function(elt) tagIsVector(elt))))
         return(problemIfNotExternalVector("each element in 'x@xp_list'"))
     if (!all(sapply(x@.link_to_cached_object_list,
                     function(elt) is.environment(elt))))

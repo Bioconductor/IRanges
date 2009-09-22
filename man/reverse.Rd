@@ -3,6 +3,8 @@
 \alias{reverse}
 \alias{reverse,IRanges-method}
 \alias{reverse,NormalIRanges-method}
+\alias{reverse,SharedRaw-method}
+\alias{reverse,SharedVector_Pool-method}
 \alias{reverse,MaskCollection-method}
 
 

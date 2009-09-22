@@ -71,7 +71,7 @@ setMethod("[[", "SharedRaw_Pool",
 
 .valid.SharedRaw <- function(x)
 {
-    if (!isExternalVector(x@xp, tagtype="raw"))
+    if (!tagIsVector(x@xp, tagtype="raw"))
         return(problemIfNotExternalVector("'x@xp'",
                                           tagmustbe="a raw vector"))
     NULL
@@ -82,7 +82,7 @@ setValidity2("SharedRaw", .valid.SharedRaw)
 .valid.SharedRaw_Pool <- function(x)
 {
     if (!all(sapply(x@xp_list,
-                    function(elt) isExternalVector(elt, tagtype="raw"))))
+                    function(elt) tagIsVector(elt, tagtype="raw"))))
         return(problemIfNotExternalVector("each element in 'x@xp_list'",
                                           tagmustbe="a raw vector"))
     NULL
@@ -190,7 +190,7 @@ SharedRaw.write <- function(x, i, imax=integer(0), value, enc_lkup=NULL)
 SharedRaw.copy <- function(dest, i, imax=integer(0), src, lkup=NULL)
 {
     if (!is(src, "SharedRaw"))
-        stop("'src' must be an SharedRaw object")
+        stop("'src' must be a SharedRaw object")
     if (!is.integer(i))
         i <- as.integer(i)
     if (length(i) == 1) {
@@ -219,7 +219,7 @@ SharedRaw.copy <- function(dest, i, imax=integer(0), src, lkup=NULL)
 SharedRaw.reverseCopy <- function(dest, i, imax=integer(0), src, lkup=NULL)
 {
     if (!is(src, "SharedRaw"))
-        stop("'src' must be an SharedRaw object")
+        stop("'src' must be a SharedRaw object")
     if (length(i) != 1)
         stop("'i' must be a single integer")
     if (!is.integer(i))
@@ -306,15 +306,12 @@ setMethod("as.integer", "SharedRaw",
 ###   toString(x)
 ###   x <- SharedRaw(5, charToRaw("Hello"))
 ###   toString(x)
-### This should always rewrite the content of an SharedRaw object
+### This should always rewrite the content of a SharedRaw object
 ### to itself, without any modification:
 ###   SharedRaw.write(x, 1, length(x), value=toString(x))
 ### whatever the content of 'x' is!
 setMethod("toString", "SharedRaw",
-    function(x, ...)
-    {
-        SharedRaw.read(x, 1, length(x))
-    }
+    function(x, ...) SharedRaw.read(x, 1, length(x))
 )
 
 
@@ -332,7 +329,5 @@ setMethod("toString", "SharedRaw",
 ###
 
 SharedRaw.compare <- function(x1, start1, x2, start2, width)
-{
     .Call("SharedRaw_memcmp", x1, start1, x2, start2, width, PACKAGE="IRanges")
-}
 

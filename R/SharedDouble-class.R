@@ -55,7 +55,7 @@ setMethod("show", "SharedDouble",
 
 .valid.SharedDouble <- function(x)
 {
-    if (!isExternalVector(x@xp, tagtype="double"))
+    if (!tagIsVector(x@xp, tagtype="double"))
         return(problemIfNotExternalVector("'x@xp'",
                                           tagmustbe="a double vector"))
     NULL
@@ -108,7 +108,7 @@ SharedDouble.write <- function(x, i, imax=integer(0), value)
 SharedDouble.copy <- function(dest, i, imax=integer(0), src)
 {
   if (!is(src, "SharedDouble"))
-    stop("'src' must be an SharedDouble object")
+    stop("'src' must be a SharedDouble object")
   if (!is.integer(i))
     i <- as.integer(i)
   if (length(i) == 1) {

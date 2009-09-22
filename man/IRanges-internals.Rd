@@ -30,13 +30,14 @@
 \alias{class:SharedVector_Pool}
 \alias{SharedVector_Pool-class}
 
+\alias{show,externalptr-method}
 \alias{length,SharedVector-method}
 \alias{show,SharedVector-method}
 \alias{length,SharedVector_Pool-method}
+\alias{width,SharedVector_Pool-method}
 \alias{show,SharedVector_Pool-method}
 \alias{coerce,SharedVector,SharedVector_Pool-method}
 \alias{c,SharedVector_Pool-method}
-\alias{show,externalptr-method}
 \alias{as.numeric,SharedVector-method}
 \alias{==,SharedVector,SharedVector-method}
 \alias{!=,SharedVector,SharedVector-method}

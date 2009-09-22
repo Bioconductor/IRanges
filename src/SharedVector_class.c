@@ -32,6 +32,11 @@ SEXP externalptr_tagtype(SEXP x)
 	return ScalarString(type2str(TYPEOF(R_ExternalPtrTag(x))));
 }
 
+SEXP externalptr_taglength(SEXP x)
+{
+	return ScalarInteger(LENGTH(R_ExternalPtrTag(x)));
+}
+
 /*
  * Print some info about an externalptr object.
  * From R:
@@ -141,16 +146,6 @@ SEXP _new_SharedVector(const char *classname, SEXP tag)
 	set_SharedVector_tag(ans, tag);
 	UNPROTECT(2);
 	return ans;
-}
-
-
-/****************************************************************************
- * One SharedVector getter that is actually a .Call ENTRY POINT!
- */
-
-SEXP SharedVector_length(SEXP x)
-{
-	return ScalarInteger(_get_SharedVector_length(x));
 }
 
 

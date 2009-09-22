@@ -37,6 +37,28 @@ setMethod("reverse", "NormalIRanges",
     }
 )
 
+setMethod("reverse", "SharedRaw",
+    function(x, ...)
+    {
+        ans_length <- length(x)
+        ans <- SharedRaw(ans_length)
+        .Call("SharedRaw_reverse_copy_from_i1i2",
+              ans, x, 1L, ans_length, PACKAGE="IRanges")
+        return(ans)
+    }
+)
+
+setMethod("reverse", "SharedVector_Pool",
+    function(x, ...)
+    {
+        ## FIXME: This must be temporary only. We need reverse() to work on
+        ## a SharedRaw_Pool object of arbitrary length!
+        if (length(x) != 1L)
+            stop("IRanges internal error: length(x) != 1")
+        as(reverse(x[[1L]]), "SharedVector_Pool")
+    }
+)
+
 setMethod("reverse", "MaskCollection",
     function(x, ...)
     {

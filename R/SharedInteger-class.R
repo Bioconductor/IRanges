@@ -55,7 +55,7 @@ setMethod("show", "SharedInteger",
 
 .valid.SharedInteger <- function(x)
 {
-    if (!isExternalVector(x@xp, tagtype="integer"))
+    if (!tagIsVector(x@xp, tagtype="integer"))
         return(problemIfNotExternalVector("'x@xp'",
                                           tagmustbe="an integer vector"))
     NULL
@@ -108,7 +108,7 @@ SharedInteger.write <- function(x, i, imax=integer(0), value)
 SharedInteger.copy <- function(dest, i, imax=integer(0), src)
 {
     if (!is(src, "SharedInteger"))
-        stop("'src' must be an SharedInteger object")
+        stop("'src' must be a SharedInteger object")
     if (!is.integer(i))
         i <- as.integer(i)
     if (length(i) == 1) {

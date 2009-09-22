@@ -585,6 +585,8 @@ SEXP debug_SharedVector_class();
 
 SEXP externalptr_tagtype(SEXP x);
 
+SEXP externalptr_taglength(SEXP x);
+
 SEXP externalptr_show(SEXP x);
 
 SEXP externalptr_new();
@@ -594,8 +596,6 @@ SEXP _get_SharedVector_tag(SEXP x);
 int _get_SharedVector_length(SEXP x);
 
 SEXP _new_SharedVector(const char *classname, SEXP tag);
-
-SEXP SharedVector_length(SEXP x);
 
 SEXP _get_SharedVector_Pool_xp_list(SEXP x);
 
