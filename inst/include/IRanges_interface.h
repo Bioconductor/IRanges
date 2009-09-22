@@ -433,6 +433,8 @@ int get_XVectorList_length(SEXP x);
 
 SEXP get_XVectorList_width(SEXP x);
 
+SEXP get_XVectorList_names(SEXP x);
+
 cachedXVectorList cache_XVectorList(SEXP x);
 
 int get_cachedXVectorList_length(const cachedXVectorList *cached_x);
@@ -451,6 +453,8 @@ cachedDoubleSeq get_cachedXDoubleList_elt(
 	const cachedXVectorList *cached_x,
 	int i
 );
+
+void set_XVectorList_names(SEXP x);
 
 SEXP new_XVectorList1(const char *classname, SEXP xvector, SEXP ranges);
 

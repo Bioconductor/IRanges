@@ -270,11 +270,13 @@ void R_init_IRanges(DllInfo *info)
 /* XVectorList_class.c */
 	REGISTER_CCALLABLE(_get_XVectorList_length);
 	REGISTER_CCALLABLE(_get_XVectorList_width);
+	REGISTER_CCALLABLE(_get_XVectorList_names);
 	REGISTER_CCALLABLE(_cache_XVectorList);
 	REGISTER_CCALLABLE(_get_cachedXVectorList_length);
 	REGISTER_CCALLABLE(_get_cachedXRawList_elt);
 	REGISTER_CCALLABLE(_get_cachedXIntegerList_elt);
 	REGISTER_CCALLABLE(_get_cachedXDoubleList_elt);
+	REGISTER_CCALLABLE(_set_XVectorList_names);
 	REGISTER_CCALLABLE(_new_XVectorList1);
 	return;
 }

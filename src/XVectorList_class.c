@@ -54,6 +54,11 @@ SEXP _get_XVectorList_width(SEXP x)
 	return _get_IRanges_width(_get_XVectorList_ranges(x));
 }
 
+SEXP _get_XVectorList_names(SEXP x)
+{
+	return _get_IRanges_names(_get_XVectorList_ranges(x));
+}
+
 
 /****************************************************************************
  * C-level slot getter, slot setter, and constructor for GroupedIRanges
@@ -172,6 +177,16 @@ static void set_XVectorList_ranges(SEXP x, SEXP value)
 {
 	INIT_STATIC_SYMBOL(ranges)
 	SET_SLOT(x, ranges_symbol, value);
+	return;
+}
+
+/*
+ * Not strict a "slot getter" but very much like.
+ * WARNING: x@ranges@NAMES is modified in-place!
+ */
+void _set_XVectorList_names(SEXP x, SEXP names)
+{
+	_set_IRanges_names(_get_XVectorList_ranges(x), names);
 	return;
 }
 

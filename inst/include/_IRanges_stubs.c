@@ -494,6 +494,11 @@ DEFINE_CCALLABLE_STUB(SEXP, get_XVectorList_width,
 	(     x)
 )
 
+DEFINE_CCALLABLE_STUB(SEXP, get_XVectorList_names,
+	(SEXP x),
+	(     x)
+)
+
 DEFINE_CCALLABLE_STUB(cachedXVectorList, cache_XVectorList,
 	(SEXP x),
 	(     x)
@@ -517,6 +522,11 @@ DEFINE_CCALLABLE_STUB(cachedIntSeq, get_cachedXIntegerList_elt,
 DEFINE_CCALLABLE_STUB(cachedDoubleSeq, get_cachedXDoubleList_elt,
 	(const cachedXVectorList *cached_x, int i),
 	(                         cached_x,     i)
+)
+
+DEFINE_NOVALUE_CCALLABLE_STUB(set_XVectorList_names,
+	(SEXP x, SEXP names),
+	(     x,      names)
 )
 
 DEFINE_CCALLABLE_STUB(SEXP, new_XVectorList1,
