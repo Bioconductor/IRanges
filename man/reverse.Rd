@@ -25,7 +25,7 @@
 
 \arguments{
   \item{x}{
-    A \link{SharedRaw} or \link{SharedVector_Pool} object.
+    A SharedRaw or SharedVector_Pool object.
   }
   \item{\dots}{
     Additional arguments to be passed to or from methods.
@@ -34,11 +34,6 @@
 
 \value{
   An object of the same class and length as the original object.
-}
-
-\seealso{
-  \link{SharedRaw-class},
-  \link{SharedVector_Pool-class}
 }
 
 \examples{
