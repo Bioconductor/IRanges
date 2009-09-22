@@ -42,10 +42,16 @@ SEXP _get_XVectorList_ranges(SEXP x)
 	return GET_SLOT(x, ranges_symbol);
 }
 
-/* Not a strict "slot getter" but very much like. */
+/* Not strict "slot getters" but very much like. */
+
 int _get_XVectorList_length(SEXP x)
 {
 	return _get_IRanges_length(_get_XVectorList_ranges(x));
+}
+
+SEXP _get_XVectorList_width(SEXP x)
+{
+	return _get_IRanges_width(_get_XVectorList_ranges(x));
 }
 
 

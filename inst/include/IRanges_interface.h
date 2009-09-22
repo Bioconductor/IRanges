@@ -431,6 +431,8 @@ SEXP new_XDouble_from_tag(const char *classname, SEXP tag);
 
 int get_XVectorList_length(SEXP x);
 
+SEXP get_XVectorList_width(SEXP x);
+
 cachedXVectorList cache_XVectorList(SEXP x);
 
 int get_cachedXVectorList_length(const cachedXVectorList *cached_x);

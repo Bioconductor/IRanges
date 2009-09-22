@@ -108,15 +108,16 @@ setReplaceMethod("names", "XVectorList",
 ### Takes one XVector object ('xvector') and an IRanges object defining
 ### 1-based ranges on 'xvector' (conceptually equivalent to defining views
 ### on subject 'xvector').
-unsafe.newXVectorList1 <- function(xvector, ranges)
+unsafe.newXVectorList1 <- function(classname, xvector, ranges)
 {
-    ans_class <- paste(class(xvector), "List", sep="")
+    if (is.null(classname))
+        classname <- paste(class(xvector), "List", sep="")
     ans_pool <- as(xvector@shared, "SharedVector_Pool")
     ranges_group <- rep.int(1L, length(ranges))
     ans_ranges <- new2("GroupedIRanges",
                        shift(ranges, xvector@offset),
                        group=ranges_group, check=FALSE)
-    new2(ans_class, pool=ans_pool, ranges=ans_ranges, check=FALSE)
+    new2(classname, pool=ans_pool, ranges=ans_ranges, check=FALSE)
 }
 
 

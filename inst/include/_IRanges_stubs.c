@@ -489,6 +489,11 @@ DEFINE_CCALLABLE_STUB(int, get_XVectorList_length,
 	(     x)
 )
 
+DEFINE_CCALLABLE_STUB(SEXP, get_XVectorList_width,
+	(SEXP x),
+	(     x)
+)
+
 DEFINE_CCALLABLE_STUB(cachedXVectorList, cache_XVectorList,
 	(SEXP x),
 	(     x)
