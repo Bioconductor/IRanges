@@ -360,17 +360,17 @@ setMethod("Complex", "SimpleAtomicList",
           function(z) SimpleAtomicList(lapply(z@listData, .Generic)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Rolling window statistic methods
+### Running window statistic methods
 ###
 
-setMethod("rollSum", "RleList",
-          function(x, width)
-              endoapply(x, rollSum, width = width))
+setMethod("runsum", "RleList",
+          function(x, k)
+              endoapply(x, runsum, k = k))
 
-setMethod("rollWeightedSum", "RleList",
-          function(x, width, weight)
-              endoapply(x, rollWeightedSum, width = width, weight = weight))
+setMethod("runwtsum", "RleList",
+          function(x, k, wt)
+              endoapply(x, runwtsum, k = k, wt = wt))
 
-setMethod("rollQ", "RleList",
-          function(x, width, which)
-              endoapply(x, rollQ, width = width, which = which))
+setMethod("runq", "RleList",
+          function(x, k, i)
+              endoapply(x, runq, k = k, i = i))

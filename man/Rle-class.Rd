@@ -107,9 +107,9 @@
 \alias{quantile,Rle-method}
 \alias{mad,Rle-method}
 \alias{IQR,Rle-method}
-\alias{rollSum,Rle-method}
-\alias{rollWeightedSum,Rle-method}
-\alias{rollQ,Rle-method}
+\alias{runsum,Rle-method}
+\alias{runwtsum,Rle-method}
+\alias{runq,Rle-method}
 
 \alias{nchar,Rle-method}
 \alias{substr,Rle-method}
@@ -587,31 +587,31 @@
       }
     }
     \item{}{
-      \code{rollSum(x, width)}:
-      Calculates the sums for fixed width rolling windows across \code{x}.
+      \code{runsum(x, k)}:
+      Calculates the sums for fixed width running windows across \code{x}.
       \describe{
-        \item{\code{width}}{An integer indicating the fixed width of the
-          rolling window.}
+        \item{\code{k}}{An integer indicating the fixed width of the
+          running window.}
       }
     }
     \item{}{
-      \code{rollWeightedSum(x, width, weight)}:
-      Calculates the sums for fixed width rolling windows across \code{x}.
+      \code{runwtsum(x, k, wt)}:
+      Calculates the sums for fixed width running windows across \code{x}.
       \describe{
-        \item{\code{width}}{An integer indicating the fixed width of the
-          rolling window.}
-        \item{\code{weight}}{A numeric vector of length \code{width} that
+        \item{\code{k}}{An integer indicating the fixed width of the
+          running window.}
+        \item{\code{wt}}{A numeric vector of length \code{k} that
           provides the weights to use.}
       }
     }
     \item{}{
-      \code{rollQ(x, width, which)}:
-      Calculates the order statistic for fixed width rolling windows across
+      \code{runq(x, k, i)}:
+      Calculates the order statistic for fixed width running windows across
       \code{x}.
       \describe{
-        \item{\code{width}}{An integer indicating the fixed width of the
-          rolling window.}
-        \item{\code{which}}{An integer indicating which order statistic to
+        \item{\code{k}}{An integer indicating the fixed width of the
+          running window.}
+        \item{\code{i}}{An integer indicating which order statistic to
           calculate.}
       }
     }

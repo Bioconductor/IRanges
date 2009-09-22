@@ -533,20 +533,20 @@ SEXP Rle_window(
 
 
 /* Rle_utils.c */
-SEXP Rle_rollSum(
+SEXP Rle_runsum(
 	SEXP x,
-	SEXP width
+	SEXP k
 );
 
-SEXP Rle_rollWeightedSum(
+SEXP Rle_runwtsum(
 	SEXP x,
-	SEXP width,
-	SEXP weight
+	SEXP k,
+	SEXP wt
 );
 
-SEXP Rle_rollQ(
+SEXP Rle_runq(
 	SEXP x,
-	SEXP width,
+	SEXP k,
 	SEXP which
 );
 

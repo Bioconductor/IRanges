@@ -170,41 +170,37 @@ test_Rle_numerical <- function() {
     xRle <- Rle(x)
     yRle <- Rle(y)
     checkEqualsNumeric(sapply(1:13, function(i) sum(window(x, i, i + 2))),
-                       as.numeric(rollSum(xRle, width = 3)))
+                       as.numeric(runsum(xRle, k = 3)))
     checkEqualsNumeric(sapply(1:13, function(i) sum(window(rev(x), i, i + 2))),
-                       as.numeric(rollSum(rev(xRle), width = 3)))
+                       as.numeric(runsum(rev(xRle), k = 3)))
     checkEqualsNumeric(sapply(1:13, function(i) sum(window(y, i, i + 2))),
-                       as.integer(rollSum(yRle, width = 3)))
+                       as.integer(runsum(yRle, k = 3)))
     checkEqualsNumeric(sapply(1:13, function(i) sum(window(rev(y), i, i + 2))),
-                       as.integer(rollSum(rev(yRle), width = 3)))
+                       as.integer(runsum(rev(yRle), k = 3)))
     checkEqualsNumeric(sapply(1:13, function(i) sum(window(x, i, i + 2))),
-                       as.numeric(rollWeightedSum(xRle, width = 3,
-                                                  weight = rep(1,3))))
+                       as.numeric(runwtsum(xRle, k = 3, wt = rep(1,3))))
     checkEqualsNumeric(sapply(1:13, function(i) sum(window(x, i, i + 2)/3)),
-                       as.numeric(rollWeightedSum(xRle, width = 3,
-                                                  weight = rep(1/3,3))))
+                       as.numeric(runwtsum(xRle, k = 3, wt = rep(1/3,3))))
     checkEqualsNumeric(sapply(1:13, function(i) sum(window(y, i, i + 2))),
-                       as.numeric(rollWeightedSum(yRle, width = 3,
-                                                  weight = rep(1,3))))
+                       as.numeric(runwtsum(yRle, k = 3, wt = rep(1,3))))
     checkEqualsNumeric(sapply(1:13, function(i) sum(window(y, i, i + 2)/3)),
-                       as.numeric(rollWeightedSum(yRle, width = 3,
-                                                  weight = rep(1/3,3))))
+                       as.numeric(runwtsum(yRle, k = 3, wt = rep(1/3,3))))
     checkEqualsNumeric(sapply(1:13, function(i) min(window(x, i, i + 2))),
-                       as.numeric(rollQ(xRle, width = 3, which = 1)))
+                       as.numeric(runq(xRle, k = 3, i = 1)))
     checkEqualsNumeric(sapply(1:13, function(i) median(window(x, i, i + 2))),
-                       as.numeric(rollQ(xRle, width = 3, which = 2)))
+                       as.numeric(runq(xRle, k = 3, i = 2)))
     checkEqualsNumeric(sapply(1:13, function(i) max(window(x, i, i + 2))),
-                       as.numeric(rollQ(xRle, width = 3, which = 3)))
-    checkIdentical(rollQ(xRle, width = 3, which = 2),
-                   rev(rollQ(rev(xRle), width = 3, which = 2)))
+                       as.numeric(runq(xRle, k = 3, i = 3)))
+    checkIdentical(runq(xRle, k = 3, i = 2),
+                   rev(runq(rev(xRle), k = 3, i = 2)))
     checkEqualsNumeric(sapply(1:13, function(i) min(window(y, i, i + 2))),
-                       as.numeric(rollQ(yRle, width = 3, which = 1)))
+                       as.numeric(runq(yRle, k = 3, i = 1)))
     checkEqualsNumeric(sapply(1:13, function(i) median(window(y, i, i + 2))),
-                       as.numeric(rollQ(yRle, width = 3, which = 2)))
+                       as.numeric(runq(yRle, k = 3, i = 2)))
     checkEqualsNumeric(sapply(1:13, function(i) max(window(y, i, i + 2))),
-                       as.numeric(rollQ(yRle, width = 3, which = 3)))
-    checkIdentical(rollQ(yRle, width = 3, which = 2),
-                   rev(rollQ(rev(yRle), width = 3, which = 2)))
+                       as.numeric(runq(yRle, k = 3, i = 3)))
+    checkIdentical(runq(yRle, k = 3, i = 2),
+                   rev(runq(rev(yRle), k = 3, i = 2)))
 }
 
 test_Rle_character <- function() {

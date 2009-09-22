@@ -995,15 +995,15 @@ setMethod("IQR", "Rle",
           function(x, na.rm = FALSE)
               diff(quantile(x, c(0.25, 0.75), na.rm = na.rm, names = FALSE)))
 
-setMethod("rollSum", "Rle", function(x, width)
-          .Call("Rle_rollSum", x, as.integer(width), PACKAGE="IRanges"))
+setMethod("runsum", "Rle", function(x, k)
+          .Call("Rle_runsum", x, as.integer(k), PACKAGE="IRanges"))
 
-setMethod("rollWeightedSum", "Rle", function(x, width, weight)
-          .Call("Rle_rollWeightedSum", x, as.integer(width), as.numeric(weight),
+setMethod("runwtsum", "Rle", function(x, k, wt)
+          .Call("Rle_runwtsum", x, as.integer(k), as.numeric(wt),
                 PACKAGE="IRanges"))
 
-setMethod("rollQ", "Rle", function(x, width, which)
-          .Call("Rle_rollQ", x, as.integer(width), as.integer(which),
+setMethod("runq", "Rle", function(x, k, i)
+          .Call("Rle_runq", x, as.integer(k), as.integer(i),
                 PACKAGE="IRanges"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

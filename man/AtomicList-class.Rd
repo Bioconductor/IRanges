@@ -71,9 +71,9 @@
 \alias{Complex,CompressedAtomicList-method}
 \alias{Complex,SimpleAtomicList-method}
 
-\alias{rollSum,RleList-method}
-\alias{rollWeightedSum,RleList-method}
-\alias{rollQ,RleList-method}
+\alias{runsum,RleList-method}
+\alias{runwtsum,RleList-method}
+\alias{runq,RleList-method}
 
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}
@@ -156,42 +156,42 @@
   See \link[methods]{S4groupGeneric} for more details.
 }
 
-\section{Fixed Width Rolling Window Summaries}{
-  RleList objects have support for the following fixed width rolling window
+\section{Fixed Width Running Window Summaries}{
+  RleList objects have support for the following fixed width running window
   summary methods:
   \describe{
     \item{}{
-      \code{rollSum(x, width)}:
-      Calculates the sums for fixed width rolling windows across \code{x}.
+      \code{runsum(x, k)}:
+      Calculates the sums for fixed width running windows across \code{x}.
       \describe{
         \item{\code{x}}{An RleList object containing integer or numeric
           Rle elements.}
-        \item{\code{width}}{An integer indicating the fixed width of the
-          rolling window.}
+        \item{\code{k}}{An integer indicating the fixed width of the
+          running window.}
       }
     }
     \item{}{
-      \code{rollWeightedSum(x, width, weight)}:
-      Calculates the sums for fixed width rolling windows across \code{x}.
+      \code{runwtsum(x, k, wt)}:
+      Calculates the sums for fixed width running windows across \code{x}.
       \describe{
         \item{\code{x}}{An RleList object containing integer or numeric
           Rle elements.}
-        \item{\code{width}}{An integer indicating the fixed width of the
-          rolling window.}
-        \item{\code{weight}}{A numeric vector of length \code{width} that
+        \item{\code{k}}{An integer indicating the fixed width of the
+          running window.}
+        \item{\code{wt}}{A numeric vector of length \code{k} that
           provides the weights to use.}
       }
     }
     \item{}{
-      \code{rollQ(x, width, which)}:
-      Calculates the order statistic for fixed width rolling windows across
+      \code{runq(x, k, i)}:
+      Calculates the order statistic for fixed width running windows across
       \code{x}.
       \describe{
         \item{\code{x}}{An RleList object containing integer or numeric
           Rle elements.}
-        \item{\code{width}}{An integer indicating the fixed width of the
-          rolling window.}
-        \item{\code{which}}{An integer indicating which order statistic to
+        \item{\code{k}}{An integer indicating the fixed width of the
+          running window.}
+        \item{\code{i}}{An integer indicating which order statistic to
           calculate.}
       }
     }

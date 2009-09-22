@@ -2,7 +2,7 @@
 #include <R_ext/Utils.h>
 
 
-SEXP Rle_integer_rollSum(SEXP x, SEXP width)
+SEXP Rle_integer_runsum(SEXP x, SEXP k)
 {
 	int i, j, nrun, window_len, buf_len, x_vec_len, ans_len;
 	int prev_offset, curr_offset;
@@ -11,16 +11,16 @@ SEXP Rle_integer_rollSum(SEXP x, SEXP width)
 	int *prev_value, *curr_value, *buf_values, *buf_values_elt;
 	SEXP values, lengths,  ans, ans_values, ans_lengths;
 
-	if (!IS_INTEGER(width) || LENGTH(width) != 1 ||
-		INTEGER(width)[0] == NA_INTEGER ||
-		INTEGER(width)[0] <= 0)
-		error("'width' must be a positive integer");
+	if (!IS_INTEGER(k) || LENGTH(k) != 1 ||
+		INTEGER(k)[0] == NA_INTEGER ||
+		INTEGER(k)[0] <= 0)
+		error("'k' must be a positive integer");
 
 	values = GET_SLOT(x, install("values"));
 	lengths = GET_SLOT(x, install("lengths"));
 
 	nrun = LENGTH(lengths);
-	window_len = INTEGER(width)[0];
+	window_len = INTEGER(k)[0];
 
 	ans_len = 0;
 	x_vec_len = 0;
@@ -131,7 +131,7 @@ SEXP Rle_integer_rollSum(SEXP x, SEXP width)
 }
 
 
-SEXP Rle_real_rollSum(SEXP x, SEXP width)
+SEXP Rle_real_runsum(SEXP x, SEXP k)
 {
 	int i, j, nrun, window_len, buf_len, x_vec_len, ans_len;
 	int prev_offset, curr_offset;
@@ -140,16 +140,16 @@ SEXP Rle_real_rollSum(SEXP x, SEXP width)
 	double *prev_value, *curr_value, *buf_values, *buf_values_elt;
 	SEXP values, lengths,  ans, ans_values, ans_lengths;
 
-	if (!IS_INTEGER(width) || LENGTH(width) != 1 ||
-		INTEGER(width)[0] == NA_INTEGER ||
-		INTEGER(width)[0] <= 0)
-		error("'width' must be a positive integer");
+	if (!IS_INTEGER(k) || LENGTH(k) != 1 ||
+		INTEGER(k)[0] == NA_INTEGER ||
+		INTEGER(k)[0] <= 0)
+		error("'k' must be a positive integer");
 
 	values = GET_SLOT(x, install("values"));
 	lengths = GET_SLOT(x, install("lengths"));
 
 	nrun = LENGTH(lengths);
-	window_len = INTEGER(width)[0];
+	window_len = INTEGER(k)[0];
 
 	ans_len = 0;
 	x_vec_len = 0;
@@ -264,18 +264,18 @@ SEXP Rle_real_rollSum(SEXP x, SEXP width)
  * --- .Call ENTRY POINT ---
  */
 
-SEXP Rle_rollSum(SEXP x, SEXP width)
+SEXP Rle_runsum(SEXP x, SEXP k)
 {
 	SEXP ans = R_NilValue;
 	switch(TYPEOF(GET_SLOT(x, install("values")))) {
     case INTSXP:
-    	PROTECT(ans = Rle_integer_rollSum(x, width));
+    	PROTECT(ans = Rle_integer_runsum(x, k));
     	break;
     case REALSXP:
-    	PROTECT(ans = Rle_real_rollSum(x, width));
+    	PROTECT(ans = Rle_real_runsum(x, k));
         break;
     default:
-		error("rollSum only supported for integer and numeric Rle objects");
+		error("runsum only supported for integer and numeric Rle objects");
 	}
 	UNPROTECT(1);
 	return ans;
@@ -283,33 +283,33 @@ SEXP Rle_rollSum(SEXP x, SEXP width)
 
 
 
-SEXP Rle_integer_rollWeightedSum(SEXP x, SEXP width, SEXP weight)
+SEXP Rle_integer_runwtsum(SEXP x, SEXP k, SEXP wt)
 {
 	int i, j, nrun, window_len, buf_len, x_vec_len, ans_len;
 	int start_offset, curr_offset;
 	double stat;
 	int *lengths_elt, *curr_length, *buf_lengths, *buf_lengths_elt;
 	int *values_elt, *curr_value;
-	double *weight_elt, *buf_values, *buf_values_elt;
+	double *wt_elt, *buf_values, *buf_values_elt;
 	SEXP values, lengths,  ans, ans_values, ans_lengths;
 
-	if (!IS_INTEGER(width) || LENGTH(width) != 1 ||
-		INTEGER(width)[0] == NA_INTEGER ||
-		INTEGER(width)[0] <= 0)
-		error("'width' must be a positive integer");
+	if (!IS_INTEGER(k) || LENGTH(k) != 1 ||
+		INTEGER(k)[0] == NA_INTEGER ||
+		INTEGER(k)[0] <= 0)
+		error("'k' must be a positive integer");
 
 	values = GET_SLOT(x, install("values"));
 	lengths = GET_SLOT(x, install("lengths"));
 
 	nrun = LENGTH(lengths);
-	window_len = INTEGER(width)[0];
+	window_len = INTEGER(k)[0];
 
-	if (!IS_NUMERIC(weight) || LENGTH(weight) != window_len)
-		error("'weight' must be a numeric vector of length 'width'");
+	if (!IS_NUMERIC(wt) || LENGTH(wt) != window_len)
+		error("'wt' must be a numeric vector of length 'k'");
 
-	for (j = 0, weight_elt = REAL(weight); j < window_len; j++, weight_elt++) {
-		if (*weight_elt == NA_REAL)
-			error("'weight' contains NAs");
+	for (j = 0, wt_elt = REAL(wt); j < window_len; j++, wt_elt++) {
+		if (*wt_elt == NA_REAL)
+			error("'wt' contains NAs");
 	}
 
 	ans_len = 0;
@@ -340,11 +340,11 @@ SEXP Rle_integer_rollWeightedSum(SEXP x, SEXP width, SEXP weight)
 			curr_value = values_elt;
 			curr_length = lengths_elt;
 			curr_offset = start_offset;
-			for (j = 0, weight_elt = REAL(weight); j < window_len;
-			     j++, weight_elt++) {
+			for (j = 0, wt_elt = REAL(wt); j < window_len;
+			     j++, wt_elt++) {
 				if (*curr_value == NA_INTEGER)
 					error("some values are NAs");
-				stat += (*weight_elt) * (*curr_value);
+				stat += (*wt_elt) * (*curr_value);
 				curr_offset--;
 				if (curr_offset == 0) {
 					curr_value++;
@@ -392,33 +392,33 @@ SEXP Rle_integer_rollWeightedSum(SEXP x, SEXP width, SEXP weight)
 }
 
 
-SEXP Rle_real_rollWeightedSum(SEXP x, SEXP width, SEXP weight)
+SEXP Rle_real_runwtsum(SEXP x, SEXP k, SEXP wt)
 {
 	int i, j, nrun, window_len, buf_len, x_vec_len, ans_len;
 	int start_offset, curr_offset;
 	double stat;
 	int *lengths_elt, *curr_length, *buf_lengths, *buf_lengths_elt;
 	double *values_elt, *curr_value;
-	double *weight_elt, *buf_values, *buf_values_elt;
+	double *wt_elt, *buf_values, *buf_values_elt;
 	SEXP values, lengths,  ans, ans_values, ans_lengths;
 
-	if (!IS_INTEGER(width) || LENGTH(width) != 1 ||
-		INTEGER(width)[0] == NA_INTEGER ||
-		INTEGER(width)[0] <= 0)
-		error("'width' must be a positive integer");
+	if (!IS_INTEGER(k) || LENGTH(k) != 1 ||
+		INTEGER(k)[0] == NA_INTEGER ||
+		INTEGER(k)[0] <= 0)
+		error("'k' must be a positive integer");
 
 	values = GET_SLOT(x, install("values"));
 	lengths = GET_SLOT(x, install("lengths"));
 
 	nrun = LENGTH(lengths);
-	window_len = INTEGER(width)[0];
+	window_len = INTEGER(k)[0];
 
-	if (!IS_NUMERIC(weight) || LENGTH(weight) != window_len)
-		error("'weight' must be a numeric vector of length 'width'");
+	if (!IS_NUMERIC(wt) || LENGTH(wt) != window_len)
+		error("'wt' must be a numeric vector of length 'k'");
 
-	for (j = 0, weight_elt = REAL(weight); j < window_len; j++, weight_elt++) {
-		if (*weight_elt == NA_REAL)
-			error("'weight' contains NAs");
+	for (j = 0, wt_elt = REAL(wt); j < window_len; j++, wt_elt++) {
+		if (*wt_elt == NA_REAL)
+			error("'wt' contains NAs");
 	}
 
 	ans_len = 0;
@@ -449,11 +449,11 @@ SEXP Rle_real_rollWeightedSum(SEXP x, SEXP width, SEXP weight)
 			curr_value = values_elt;
 			curr_length = lengths_elt;
 			curr_offset = start_offset;
-			for (j = 0, weight_elt = REAL(weight); j < window_len;
-			     j++, weight_elt++) {
+			for (j = 0, wt_elt = REAL(wt); j < window_len;
+			     j++, wt_elt++) {
 				if (*curr_value == NA_REAL)
 					error("some values are NAs");
-				stat += (*weight_elt) * (*curr_value);
+				stat += (*wt_elt) * (*curr_value);
 				curr_offset--;
 				if (curr_offset == 0) {
 					curr_value++;
@@ -505,18 +505,18 @@ SEXP Rle_real_rollWeightedSum(SEXP x, SEXP width, SEXP weight)
  * --- .Call ENTRY POINT ---
  */
 
-SEXP Rle_rollWeightedSum(SEXP x, SEXP width, SEXP weight)
+SEXP Rle_runwtsum(SEXP x, SEXP k, SEXP wt)
 {
 	SEXP ans = R_NilValue;
 	switch(TYPEOF(GET_SLOT(x, install("values")))) {
     case INTSXP:
-    	PROTECT(ans =  Rle_integer_rollWeightedSum(x, width, weight));
+    	PROTECT(ans =  Rle_integer_runwtsum(x, k, wt));
     	break;
     case REALSXP:
-    	PROTECT(ans =  Rle_real_rollWeightedSum(x, width, weight));
+    	PROTECT(ans =  Rle_real_runwtsum(x, k, wt));
         break;
     default:
-		error("rollWeightedSum only supported for integer and numeric Rle objects");
+		error("runwtsum only supported for integer and numeric Rle objects");
 	}
 	UNPROTECT(1);
 	return ans;
@@ -524,7 +524,7 @@ SEXP Rle_rollWeightedSum(SEXP x, SEXP width, SEXP weight)
 
 
 
-SEXP Rle_integer_rollQ(SEXP x, SEXP width, SEXP which)
+SEXP Rle_integer_runq(SEXP x, SEXP k, SEXP which)
 {
 	int i, j, nrun, window_len, buf_len, x_vec_len, ans_len;
 	int start_offset, curr_offset;
@@ -534,15 +534,15 @@ SEXP Rle_integer_rollQ(SEXP x, SEXP width, SEXP which)
 	int *window, *values_elt, *curr_value, *buf_values, *buf_values_elt;
 	SEXP values, lengths,  ans, ans_values, ans_lengths;
 
-	if (!IS_INTEGER(width) || LENGTH(width) != 1 ||
-		INTEGER(width)[0] == NA_INTEGER ||
-		INTEGER(width)[0] <= 0)
-		error("'width' must be a positive integer");
+	if (!IS_INTEGER(k) || LENGTH(k) != 1 ||
+		INTEGER(k)[0] == NA_INTEGER ||
+		INTEGER(k)[0] <= 0)
+		error("'k' must be a positive integer");
 
 	if (!IS_INTEGER(which) || LENGTH(which) != 1 ||
 		INTEGER(which)[0] == NA_INTEGER ||
-		INTEGER(which)[0] < 1 || INTEGER(which)[0] > INTEGER(width)[0])
-		error("'which' must be an integer in [0, width]");
+		INTEGER(which)[0] < 1 || INTEGER(which)[0] > INTEGER(k)[0])
+		error("'which' must be an integer in [0, k]");
 
 	q_index = INTEGER(which)[0] - 1;
 
@@ -550,7 +550,7 @@ SEXP Rle_integer_rollQ(SEXP x, SEXP width, SEXP which)
 	lengths = GET_SLOT(x, install("lengths"));
 
 	nrun = LENGTH(lengths);
-	window_len = INTEGER(width)[0];
+	window_len = INTEGER(k)[0];
 
 	ans_len = 0;
 	x_vec_len = 0;
@@ -633,7 +633,7 @@ SEXP Rle_integer_rollQ(SEXP x, SEXP width, SEXP which)
 	return ans;
 }
 
-SEXP Rle_real_rollQ(SEXP x, SEXP width, SEXP which)
+SEXP Rle_real_runq(SEXP x, SEXP k, SEXP which)
 {
 	int i, j, nrun, window_len, buf_len, x_vec_len, ans_len;
 	int start_offset, curr_offset;
@@ -643,15 +643,15 @@ SEXP Rle_real_rollQ(SEXP x, SEXP width, SEXP which)
 	double *window, *values_elt, *curr_value, *buf_values, *buf_values_elt;
 	SEXP values, lengths,  ans, ans_values, ans_lengths;
 
-	if (!IS_INTEGER(width) || LENGTH(width) != 1 ||
-		INTEGER(width)[0] == NA_INTEGER ||
-		INTEGER(width)[0] <= 0)
-		error("'width' must be a positive integer");
+	if (!IS_INTEGER(k) || LENGTH(k) != 1 ||
+		INTEGER(k)[0] == NA_INTEGER ||
+		INTEGER(k)[0] <= 0)
+		error("'k' must be a positive integer");
 
 	if (!IS_INTEGER(which) || LENGTH(which) != 1 ||
 		INTEGER(which)[0] == NA_INTEGER ||
-		INTEGER(which)[0] < 1 || INTEGER(which)[0] > INTEGER(width)[0])
-		error("'which' must be an integer in [0, width]");
+		INTEGER(which)[0] < 1 || INTEGER(which)[0] > INTEGER(k)[0])
+		error("'which' must be an integer in [0, k]");
 
 	q_index = INTEGER(which)[0] - 1;
 
@@ -659,7 +659,7 @@ SEXP Rle_real_rollQ(SEXP x, SEXP width, SEXP which)
 	lengths = GET_SLOT(x, install("lengths"));
 
 	nrun = LENGTH(lengths);
-	window_len = INTEGER(width)[0];
+	window_len = INTEGER(k)[0];
 
 	ans_len = 0;
 	x_vec_len = 0;
@@ -747,18 +747,18 @@ SEXP Rle_real_rollQ(SEXP x, SEXP width, SEXP which)
  * --- .Call ENTRY POINT ---
  */
 
-SEXP Rle_rollQ(SEXP x, SEXP width, SEXP which)
+SEXP Rle_runq(SEXP x, SEXP k, SEXP which)
 {
 	SEXP ans = R_NilValue;
 	switch(TYPEOF(GET_SLOT(x, install("values")))) {
     case INTSXP:
-    	PROTECT(ans = Rle_integer_rollQ(x, width, which));
+    	PROTECT(ans = Rle_integer_runq(x, k, which));
     	break;
     case REALSXP:
-    	PROTECT(ans = Rle_real_rollQ(x, width, which));
+    	PROTECT(ans = Rle_real_runq(x, k, which));
         break;
     default:
-		error("rollQ only supported for integer and numeric Rle objects");
+		error("runq only supported for integer and numeric Rle objects");
 	}
 	UNPROTECT(1);
 	return ans;
