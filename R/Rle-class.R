@@ -888,13 +888,17 @@ setMethod("var", signature = c(x = "Rle", y = "missing"),
                   n <- length(x) - sum(runLength(x)[is.na(runValue(x))])
               else
                   n <- length(x)
-              sum((x - mean(x, na.rm = na.rm))^2, na.rm = na.rm) / (n - 1)
+              centeredValues <- runValue(x) - mean(x, na.rm = na.rm)
+              sum(runLength(x) * centeredValues^2, na.rm = na.rm) / (n - 1)
           })
 
 setMethod("var", signature = c(x = "Rle", y = "Rle"),
           function(x, y = NULL, na.rm = FALSE, use)
           {
-              z <- (x - mean(x, na.rm = na.rm)) * (y - mean(y, na.rm = na.rm))
+              # Direct change to slots for fast computation
+              x@values <- runValue(x) - mean(x, na.rm = na.rm)
+              y@values <- runValue(y) - mean(y, na.rm = na.rm)
+              z <- x * y
               if (na.rm)
                   n <- length(z) - sum(runLength(z)[is.na(runValue(z))])
               else
