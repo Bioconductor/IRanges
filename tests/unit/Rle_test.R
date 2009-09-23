@@ -168,6 +168,16 @@ test_Rle_numerical <- function() {
     y <- (-20:20)^2
     y[c(1,10,21,41)] <- c(100L, 30L, 400L, 470L)
     checkEqualsNumeric(smoothEnds(y), as.vector(smoothEnds(Rle(y))))
+    checkEqualsNumeric(runmed(y, 7), as.vector(runmed(Rle(y), 7)))
+    checkEqualsNumeric(runmed(y, 11), as.vector(runmed(Rle(y), 11)))
+    checkEqualsNumeric(runmed(y, 7, "keep"),
+                       as.vector(runmed(Rle(y), 7, "keep")))
+    checkEqualsNumeric(runmed(y, 11, "keep"),
+                       as.vector(runmed(Rle(y), 11, "keep")))
+    checkEqualsNumeric(runmed(y, 7, "constant"),
+                       as.vector(runmed(Rle(y), 7, "constant")))
+    checkEqualsNumeric(runmed(y, 11, "constant"),
+                       as.vector(runmed(Rle(y), 11, "constant")))
 
     x <- rep(c(1.2, 3.4, 5.6, 7.8, 9.0), 1:5)
     y <- rep(1:5, c(4, 2, 5, 1, 3))
