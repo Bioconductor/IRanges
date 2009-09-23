@@ -6,7 +6,7 @@
 ### i.e. an ordered set of elements.
 ###
 
-is <- function(object, class2) 
+.is <- function(object, class2) 
 {
     if (identical(class2, "ANY")) 
         TRUE
