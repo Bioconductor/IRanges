@@ -1006,29 +1006,19 @@ setMethod("smoothEnds", "Rle", function(y, k = 3)
           })
 
 setMethod("runmed", "Rle",
-          function(x, k, endrule = c("median", "keep", "constant"),
+          function(x, k, endrule = c("median", "keep", "drop", "constant"),
                    algorithm = NULL, print.level = 0)
           {
               endrule <- match.arg(endrule)
               n <- length(x)
-              k <- as.integer(k)
-              if (k < 0) 
-                  stop("'k' must be positive")
-              if (k %% 2 == 0) {
-                  k <- 1L + 2L * (k %/% 2L)
-                  warning("'k' must be odd!  Changing 'k' to ", k)
-              }
-              if (k > n) {
-                  k <- 1L + 2L * ((n - 1L) %/% 2L)
-                  warning("'k' is bigger than 'n'!  Changing 'k' to ", k)
-              }
+              k <- normargRunK(k = k, n = n, endrule = endrule)
               i <- (k + 1L) %/% 2L
               ans <- runq(x, k = k, i = i)
               if (endrule == "constant") {
                   runLength(ans)[1] <- runLength(ans)[1] + (i - 1L)
                   runLength(ans)[nrun(ans)] <-
                     runLength(ans)[nrun(ans)] + (i - 1L)
-              } else {
+              } else if (endrule != "drop") {
                   ans <- c(head(x, i - 1L), ans, tail(x, i - 1L))
                   if (endrule == "median") {
                       ans <- smoothEnds(ans, k = k)
@@ -1037,16 +1027,57 @@ setMethod("runmed", "Rle",
               ans
           })
 
-setMethod("runsum", "Rle", function(x, k)
-          .Call("Rle_runsum", x, as.integer(k), PACKAGE="IRanges"))
+setMethod("runsum", "Rle",
+          function(x, k, endrule = c("drop", "constant"))
+          {
+              endrule <- match.arg(endrule)
+              n <- length(x)
+              k <- normargRunK(k = k, n = n, endrule = endrule)
+              ans <- .Call("Rle_runsum", x, as.integer(k), PACKAGE="IRanges")
+              if (endrule == "constant") {
+                  j <- (k + 1L) %/% 2L
+                  runLength(ans)[1] <- runLength(ans)[1] + (j - 1L)
+                  runLength(ans)[nrun(ans)] <-
+                    runLength(ans)[nrun(ans)] + (j - 1L)
+              }
+              ans
+          })
 
-setMethod("runwtsum", "Rle", function(x, k, wt)
-          .Call("Rle_runwtsum", x, as.integer(k), as.numeric(wt),
-                PACKAGE="IRanges"))
+setMethod("runwtsum", "Rle",
+          function(x, k, wt, endrule = c("drop", "constant"))
+          {
+              endrule <- match.arg(endrule)
+              n <- length(x)
+              k <- normargRunK(k = k, n = n, endrule = endrule)
+              ans <-
+                .Call("Rle_runwtsum", x, as.integer(k), as.numeric(wt),
+                      PACKAGE="IRanges")
+              if (endrule == "constant") {
+                  j <- (k + 1L) %/% 2L
+                  runLength(ans)[1] <- runLength(ans)[1] + (j - 1L)
+                  runLength(ans)[nrun(ans)] <-
+                    runLength(ans)[nrun(ans)] + (j - 1L)
+              }
+              ans
+          })
 
-setMethod("runq", "Rle", function(x, k, i)
-          .Call("Rle_runq", x, as.integer(k), as.integer(i),
-                PACKAGE="IRanges"))
+setMethod("runq", "Rle",
+          function(x, k, i, endrule = c("drop", "constant"))
+          {
+              endrule <- match.arg(endrule)
+              n <- length(x)
+              k <- normargRunK(k = k, n = n, endrule = endrule)
+              ans <-
+                .Call("Rle_runq", x, as.integer(k), as.integer(i),
+                      PACKAGE="IRanges")
+              if (endrule == "constant") {
+                  j <- (k + 1L) %/% 2L
+                  runLength(ans)[1] <- runLength(ans)[1] + (j - 1L)
+                  runLength(ans)[nrun(ans)] <-
+                    runLength(ans)[nrun(ans)] + (j - 1L)
+              }
+              ans
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other character data methods

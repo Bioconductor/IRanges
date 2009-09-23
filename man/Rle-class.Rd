@@ -598,12 +598,12 @@
       }
     }
     \item{}{
-      \code{runmed(x, k, endrule = c("median", "keep", "constant"))}:
+      \code{runmed(x, k, endrule = c("median", "keep", "drop", "constant"))}:
       Calculates the medians for fixed width running windows across \code{x}.
       \describe{
-        \item{\code{k}}{An odd integer indicating the fixed width of the
-          running window.}
-        \item{endrule}{character string indicating how the values at the
+        \item{\code{k}}{An integer indicating the fixed width of the running
+          window. Must be odd when \code{endrule != "drop"}.}
+        \item{endrule}{A character string indicating how the values at the
           beginning and the end (of the data) should be treated.
           \describe{
             \item{\code{"keep"}}{keeps the first and last \eqn{k_2}{k2}
@@ -611,7 +611,7 @@
               \code{k2 = k \%/\% 2}, i.e., \code{y[j] = x[j]} for
               \eqn{j \in \{1,\ldots,k_2; n-k_2+1,\ldots,n\}}
               {j = 1,..,k2 and (n-k2+1),..,n};}
-            \item{\code{"constant"}}{copies \code{median(y[1:k2])} to the
+            \item{\code{"constant"}}{copies the running statistic to the
               first values and analogously for the last ones making the
               smoothed ends \emph{constant};}
             \item{\code{"median"}}{the default, smooths the ends by using
@@ -623,32 +623,62 @@
       }
     }
     \item{}{
-      \code{runsum(x, k)}:
+      \code{runsum(x, k, endrule = c("drop", "constant"))}:
       Calculates the sums for fixed width running windows across \code{x}.
       \describe{
-        \item{\code{k}}{An integer indicating the fixed width of the
-          running window.}
+        \item{\code{k}}{An integer indicating the fixed width of the running
+          window. Must be odd when \code{endrule != "drop"}.}
+        \item{endrule}{A character string indicating how the values at the
+          beginning and the end (of the data) should be treated.
+          \describe{
+            \item{\code{"drop"}}{do not extend the running statistics to
+              be the same length as the underlying vectors;}
+            \item{\code{"constant"}}{copies running statistic to the
+              first values and analogously for the last ones making the
+              smoothed ends \emph{constant};}
+          }
+        }
       }
     }
     \item{}{
-      \code{runwtsum(x, k, wt)}:
+      \code{runwtsum(x, k, wt, endrule = c("drop", "constant"))}:
       Calculates the sums for fixed width running windows across \code{x}.
       \describe{
-        \item{\code{k}}{An integer indicating the fixed width of the
-          running window.}
+        \item{\code{k}}{An integer indicating the fixed width of the running
+          window. Must be odd when \code{endrule != "drop"}.}
         \item{\code{wt}}{A numeric vector of length \code{k} that
           provides the weights to use.}
+        \item{endrule}{A character string indicating how the values at the
+          beginning and the end (of the data) should be treated.
+          \describe{
+            \item{\code{"drop"}}{do not extend the running statistics to
+              be the same length as the underlying vectors;}
+            \item{\code{"constant"}}{copies running statistic to the
+              first values and analogously for the last ones making the
+              smoothed ends \emph{constant};}
+          }
+        }
       }
     }
     \item{}{
-      \code{runq(x, k, i)}:
+      \code{runq(x, k, i, endrule = c("drop", "constant"))}:
       Calculates the order statistic for fixed width running windows across
       \code{x}.
       \describe{
-        \item{\code{k}}{An integer indicating the fixed width of the
-          running window.}
+        \item{\code{k}}{An integer indicating the fixed width of the running
+          window. Must be odd when \code{endrule != "drop"}.}
         \item{\code{i}}{An integer indicating which order statistic to
           calculate.}
+        \item{endrule}{A character string indicating how the values at the
+          beginning and the end (of the data) should be treated.
+          \describe{
+            \item{\code{"drop"}}{do not extend the running statistics to
+              be the same length as the underlying vectors;}
+            \item{\code{"constant"}}{copies running statistic to the
+              first values and analogously for the last ones making the
+              smoothed ends \emph{constant};}
+          }
+        }
       }
     }
   }

@@ -389,13 +389,13 @@ setMethod("runmed", "RleList",
               endoapply(x, runmed, k = k, endrule = endrule))
 
 setMethod("runsum", "RleList",
-          function(x, k)
-              endoapply(x, runsum, k = k))
+          function(x, k, endrule = c("drop", "constant"))
+              endoapply(x, runsum, k = k, endrule = endrule))
 
 setMethod("runwtsum", "RleList",
-          function(x, k, wt)
-              endoapply(x, runwtsum, k = k, wt = wt))
+          function(x, k, wt, endrule = c("drop", "constant"))
+              endoapply(x, runwtsum, k = k, wt = wt, endrule = endrule))
 
 setMethod("runq", "RleList",
-          function(x, k, i)
-              endoapply(x, runq, k = k, i = i))
+          function(x, k, i, endrule = c("drop", "constant"))
+              endoapply(x, runq, k = k, i = i, endrule = endrule))

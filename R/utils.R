@@ -165,6 +165,24 @@ normargUseNames <- function(use.names)
     use.names
 }
 
+normargRunK <- function(k, n, endrule)
+{
+    if (!is.numeric(k))
+        stop("'k' must be a numeric vector")
+    if (k < 0)
+        stop("'k' must be positive")
+    if ((endrule != "drop") && (k %% 2 == 0)) {
+        k <- 1L + 2L * (k %/% 2L)
+        warning(paste("'k' must be odd when 'endrule != \"drop\"'!",
+                      "Changing 'k' to ", k))
+    }
+    if (k > n) {
+        k <- 1L + 2L * ((n - 1L) %/% 2L)
+        warning("'k' is bigger than 'n'! Changing 'k' to ", k)
+    }
+    as.integer(k)
+}
+
 ### isNotStrictlySorted() takes for granted that 'x' contains no NAs (behaviour
 ### is undefined if this is not the case). This allows isNotStrictlySorted() to
 ### be MUCH faster than is.unsorted() in some situations:

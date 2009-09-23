@@ -3,10 +3,13 @@
 ###
 
 setGeneric("runsum", signature="x",
-           function(x, k) standardGeneric("runsum"))
+           function(x, k, endrule = c("drop", "constant"))
+               standardGeneric("runsum"))
 
 setGeneric("runwtsum", signature="x",
-           function(x, k, wt) standardGeneric("runwtsum"))
+           function(x, k, wt, endrule = c("drop", "constant"))
+               standardGeneric("runwtsum"))
 
 setGeneric("runq", signature="x",
-           function(x, k, i) standardGeneric("runq"))
+           function(x, k, i, endrule = c("drop", "constant"))
+               standardGeneric("runq"))
