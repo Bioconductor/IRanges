@@ -167,6 +167,26 @@ RleList <- function(..., compress = FALSE)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion
+###
+
+setMethod("as.logical", "AtomicList", function(x) as.logical(unlist(x, use.names=FALSE)))
+setMethod("as.integer", "AtomicList", function(x) as.integer(unlist(x, use.names=FALSE)))
+setMethod("as.numeric", "AtomicList", function(x) as.numeric(unlist(x, use.names=FALSE)))
+setMethod("as.complex", "AtomicList", function(x) as.complex(unlist(x, use.names=FALSE)))
+setMethod("as.character", "AtomicList", function(x) as.character(unlist(x, use.names=FALSE)))
+setMethod("as.raw", "AtomicList", function(x) as.raw(unlist(x, use.names=FALSE)))
+setMethod("as.factor", "AtomicList", function(x) as.factor(unlist(x, use.names=FALSE)))
+
+setAs("AtomicList", "logical", function(from) as.logical(from))
+setAs("AtomicList", "integer", function(from) as.integer(from))
+setAs("AtomicList", "numeric", function(from) as.numeric(from))
+setAs("AtomicList", "complex", function(from) as.complex(from))
+setAs("AtomicList", "character", function(from) as.character(from))
+setAs("AtomicList", "raw", function(from) as.raw(from))
+setAs("AtomicList", "factor", function(from) as.factor(from))
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Group generic methods
 ###
 

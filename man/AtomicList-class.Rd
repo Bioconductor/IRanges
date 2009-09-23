@@ -48,6 +48,21 @@
 \alias{SimpleRleList}
 \alias{SimpleRleList-class}
 
+\alias{as.logical,AtomicList-method}
+\alias{as.integer,AtomicList-method}
+\alias{as.numeric,AtomicList-method}
+\alias{as.complex,AtomicList-method}
+\alias{as.character,AtomicList-method}
+\alias{as.raw,AtomicList-method}
+\alias{as.factor,AtomicList-method}
+\alias{coerce,AtomicList,logical-method}
+\alias{coerce,AtomicList,integer-method}
+\alias{coerce,AtomicList,numeric-method}
+\alias{coerce,AtomicList,complex-method}
+\alias{coerce,AtomicList,character-method}
+\alias{coerce,AtomicList,raw-method}
+\alias{coerce,AtomicList,factor-method}
+
 \alias{coerce,LogicalList,IRangesList-method}
 \alias{coerce,LogicalList,CompressedIRangesList-method}
 \alias{coerce,LogicalList,SimpleIRangesList-method}
@@ -120,6 +135,34 @@
 
 \section{Coercion}{
   \describe{
+    \item{}{
+      \code{as.logical(x)}, \code{as(from, "logical")}: Creates a logical
+      vector based on the values contained in \code{x}.
+    }
+    \item{}{
+      \code{as.integer(x)}, \code{as(from, "integer")}: Creates an integer
+      vector based on the values contained in \code{x}.
+    }
+    \item{}{
+      \code{as.numeric(x)}, \code{as(from, "numeric")}: Creates a numeric
+      vector based on the values contained in \code{x}.
+    }
+    \item{}{
+      \code{as.complex(x)}, \code{as(from, "complex")}: Creates a complex
+      vector based on the values contained in \code{x}.
+    }
+    \item{}{
+      \code{as.character(x)}, \code{as(from, "character")}: Creates a character
+      vector based on the values contained in \code{x}.
+    }
+    \item{}{
+      \code{as.raw(x)}, \code{as(from, "raw")}: Creates a raw
+      vector based on the values contained in \code{x}.
+    }
+    \item{}{
+      \code{as.factor(x)}, \code{as(from, "factor")}: Creates a factor object
+      based on the values contained in \code{x}.
+    }
     \item{}{
       \code{as(from, "IRangesList")}, \code{as(from, "CompressedIRangesList")},
       \code{as(from, "SimpleIRangesList")}: Creates a
