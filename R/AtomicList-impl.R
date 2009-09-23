@@ -363,6 +363,11 @@ setMethod("Complex", "SimpleAtomicList",
 ### Running window statistic methods
 ###
 
+setMethod("runmed", "RleList",
+          function(x, k, endrule = c("median", "keep", "constant"),
+                   algorithm = NULL, print.level = 0)
+              endoapply(x, runmed, k = k, endrule = endrule))
+
 setMethod("runsum", "RleList",
           function(x, k)
               endoapply(x, runsum, k = k))

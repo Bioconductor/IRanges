@@ -71,6 +71,7 @@
 \alias{Complex,CompressedAtomicList-method}
 \alias{Complex,SimpleAtomicList-method}
 
+\alias{runmed,RleList-method}
 \alias{runsum,RleList-method}
 \alias{runwtsum,RleList-method}
 \alias{runq,RleList-method}
@@ -160,6 +161,33 @@
   RleList objects have support for the following fixed width running window
   summary methods:
   \describe{
+    \item{}{
+      \code{runmed(x, k, endrule = c("median", "keep", "constant"))}:
+      Calculates the medians for fixed width running windows across \code{x}.
+      \describe{
+        \item{\code{x}}{An RleList object containing integer or numeric
+          Rle elements.}
+        \item{\code{k}}{An odd integer indicating the fixed width of the
+          running window.}
+        \item{endrule}{character string indicating how the values at the
+          beginning and the end (of the data) should be treated.
+          \describe{
+            \item{\code{"keep"}}{keeps the first and last \eqn{k_2}{k2}
+              values at both ends, where \eqn{k_2}{k2} is the half-bandwidth
+              \code{k2 = k \%/\% 2}, i.e., \code{y[j] = x[j]} for
+              \eqn{j \in \{1,\ldots,k_2; n-k_2+1,\ldots,n\}}
+              {j = 1,..,k2 and (n-k2+1),..,n};}
+            \item{\code{"constant"}}{copies \code{median(y[1:k2])} to the
+              first values and analogously for the last ones making the
+              smoothed ends \emph{constant};}
+            \item{\code{"median"}}{the default, smooths the ends by using
+              symmetrical medians of subsequently smaller bandwidth, but
+              for the very first and last value where Tukey's robust
+              end-point rule is applied, see \code{\link[stats]{smoothEnds}}.}
+          }
+        }
+      }
+    }
     \item{}{
       \code{runsum(x, k)}:
       Calculates the sums for fixed width running windows across \code{x}.
