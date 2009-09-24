@@ -224,14 +224,14 @@ setReplaceMethod("[[", "DataFrame",
                      stop("attempt to select less than one element")
                    if (length(i) > 1L)
                      stop("attempt to select more than one element")
-                   if (is.numeric(i) && (i < 1L || i > ncol(x)+1))
+                   if (is.numeric(i) && (i < 1L || i > ncol(x) + 1L))
                      stop("subscript out of bounds")
-                   if (!is.null(value) && nrowX != lengthValue) {
-                     if (nrowX %% lengthValue == 0)
-                       value <- rep(value, length.out = nrowX)
+                   if (!is.null(value) && (nrowX != lengthValue)) {
+                     if ((nrowX == 0) || (nrowX %% lengthValue != 0))
+                       stop(paste("replacement has", nrowX, "rows, data has",
+                                  lengthValue))
                      else
-                       stop(paste("length of replacement value must be",
-                                  "a multiple of the number of rows"))
+                       value <- rep(value, length.out = nrowX)
                    }
                    x <- callNextMethod(x, i, value=value)
                    ## ensure unique, valid names
