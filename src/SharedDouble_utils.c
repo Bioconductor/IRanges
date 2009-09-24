@@ -75,7 +75,7 @@ SEXP SharedDouble_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
 	n = INTEGER(width)[0];
 
 	PROTECT(ans = NEW_NUMERIC(1));
-	REAL(ans)[0] = _IRanges_memcmp((char *) REAL(tag1), i1,
+	REAL(ans)[0] = _compare_byteblocks((char *) REAL(tag1), i1,
 					(char *) REAL(tag2), i2,
 					n, sizeof(double));
 	UNPROTECT(1);
@@ -98,7 +98,7 @@ SEXP SharedDouble_read_nums_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 	n = i2 - i1 + 1;
 
 	PROTECT(ans = NEW_NUMERIC(n));
-	_IRanges_memcpy_from_i1i2(i1, i2,
+	_Ocopy_byteblocks_from_i1i2(i1, i2,
 			(char *) REAL(ans), LENGTH(ans),
 			(char *) REAL(src_tag), LENGTH(src_tag), sizeof(double));
 	UNPROTECT(1);
@@ -113,7 +113,7 @@ SEXP SharedDouble_read_nums_from_subset(SEXP src, SEXP subset)
 	src_tag = _get_SharedVector_tag(src);
 	n = LENGTH(subset);
 	PROTECT(ans = NEW_NUMERIC(n));
-	_IRanges_memcpy_from_subset(INTEGER(subset), n,
+	_Ocopy_byteblocks_from_subset(INTEGER(subset), n,
 			(char *) REAL(ans), n,
 			(char *) REAL(src_tag), LENGTH(src_tag), sizeof(double));
 	UNPROTECT(1);
@@ -131,7 +131,7 @@ SEXP SharedDouble_write_nums_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 	dest_tag = _get_SharedVector_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
-	_IRanges_memcpy_to_i1i2(i1, i2,
+	_Ocopy_byteblocks_to_i1i2(i1, i2,
 			(char *) REAL(dest_tag), LENGTH(dest_tag),
 			(char *) REAL(val), LENGTH(val), sizeof(double));
 	return dest;
@@ -142,7 +142,7 @@ SEXP SharedDouble_write_nums_to_subset(SEXP dest, SEXP subset, SEXP val)
 	SEXP dest_tag;
 
 	dest_tag = _get_SharedVector_tag(dest);
-	_IRanges_memcpy_to_subset(INTEGER(subset), LENGTH(subset),
+	_Ocopy_byteblocks_to_subset(INTEGER(subset), LENGTH(subset),
 			(char *) REAL(dest_tag), LENGTH(dest_tag),
 			(char *) REAL(val), LENGTH(val), sizeof(double));
 	return dest;

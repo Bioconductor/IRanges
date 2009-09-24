@@ -213,67 +213,67 @@ DEFINE_CCALLABLE_STUB(SEXP, CharAEAE_asCHARACTER,
 
 
 /*
- * Stubs for callables defined in memcpy_utils.c
+ * Stubs for callables defined in copy_byteblocks.c
  */
 
-DEFINE_CCALLABLE_STUB(int, IRanges_memcmp,
-	(const char *a, int ia, const char *b, int ib, int n, size_t size),
-	(            a,     ia,             b,     ib,     n,        size)
+DEFINE_CCALLABLE_STUB(int, compare_byteblocks,
+	(const char *a, int ia, const char *b, int ib, int n, size_t blocksize),
+	(            a,     ia,             b,     ib,     n,        blocksize)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_memcpy_from_i1i2,
-	(int i1, int i2, char *dest, size_t dest_nelt, const char *src, size_t src_nelt, size_t size),
-	(    i1,     i2,       dest,        dest_nelt,             src,        src_nelt,        size)
+DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_byteblocks_from_i1i2,
+	(int i1, int i2, char *dest, size_t dest_nblocks, const char *src, size_t src_nblocks, size_t blocksize),
+	(    i1,     i2,       dest,        dest_nblocks,             src,        src_nblocks,        blocksize)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_memcpy_from_subset,
-	(const int *subset, int n, char *dest, size_t dest_nelt, const char *src, size_t src_nelt, size_t size),
-	(           subset,     n,       dest,        dest_nelt,             src,        src_nelt,        size)
+DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_byteblocks_from_subset,
+	(const int *subset, int n, char *dest, size_t dest_nblocks, const char *src, size_t src_nblocks, size_t blocksize),
+	(           subset,     n,       dest,        dest_nblocks,             src,        src_nblocks,        blocksize)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_memcpy_to_i1i2,
-	(int i1, int i2, char *dest, size_t dest_nelt, const char *src, size_t src_nelt, size_t size),
-	(    i1,     i2,       dest,        dest_nelt,             src,        src_nelt,        size)
+DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_byteblocks_to_i1i2,
+	(int i1, int i2, char *dest, size_t dest_nblocks, const char *src, size_t src_nblocks, size_t blocksize),
+	(    i1,     i2,       dest,        dest_nblocks,             src,        src_nblocks,        blocksize)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_memcpy_to_subset,
-	(const int *subset, int n, char *dest, size_t dest_nelt, const char *src, size_t src_nelt, size_t size),
-	(           subset,     n,       dest,        dest_nelt,             src,        src_nelt,        size)
+DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_byteblocks_to_subset,
+	(const int *subset, int n, char *dest, size_t dest_nblocks, const char *src, size_t src_nblocks, size_t blocksize),
+	(           subset,     n,       dest,        dest_nblocks,             src,        src_nblocks,        blocksize)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_charcpy_from_i1i2_with_lkup,
-	(int i1, int i2, char *dest, int dest_length, const char *src, int src_length, const int *lkup, int lkup_length),
-	(    i1,     i2,       dest,     dest_length,             src,     src_length,            lkup,     lkup_length)
+DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_bytes_from_i1i2_with_lkup,
+	(int i1, int i2, char *dest, int dest_nbytes, const char *src, int src_nbytes, const int *lkup, int lkup_length),
+	(    i1,     i2,       dest,     dest_nbytes,             src,     src_nbytes,            lkup,     lkup_length)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_charcpy_from_subset_with_lkup,
-	(const int *subset, int n, char *dest, int dest_length, const char *src, int src_length, const int *lkup, int lkup_length),
-	(           subset,     n,       dest,     dest_length,             src,     src_length,            lkup,     lkup_length)
+DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_bytes_from_subset_with_lkup,
+	(const int *subset, int n, char *dest, int dest_nbytes, const char *src, int src_nbytes, const int *lkup, int lkup_length),
+	(           subset,     n,       dest,     dest_nbytes,             src,     src_nbytes,            lkup,     lkup_length)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_charcpy_to_i1i2_with_lkup,
-	(int i1, int i2, char *dest, int dest_length, const char *src, int src_length, const int *lkup, int lkup_length),
-	(    i1,     i2,       dest,     dest_length,             src,     src_length,            lkup,     lkup_length)
+DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_bytes_to_i1i2_with_lkup,
+	(int i1, int i2, char *dest, int dest_nbytes, const char *src, int src_nbytes, const int *lkup, int lkup_length),
+	(    i1,     i2,       dest,     dest_nbytes,             src,     src_nbytes,            lkup,     lkup_length)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_charcpy_to_subset_with_lkup,
-	(const int *subset, int n, char *dest, int dest_length, const char *src, int src_length, const int *lkup, int lkup_length),
-	(           subset,     n,       dest,     dest_length,             src,     src_length,            lkup,     lkup_length)
+DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_bytes_to_subset_with_lkup,
+	(const int *subset, int n, char *dest, int dest_nbytes, const char *src, int src_nbytes, const int *lkup, int lkup_length),
+	(           subset,     n,       dest,     dest_nbytes,             src,     src_nbytes,            lkup,     lkup_length)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_reverse_memcpy_from_i1i2,
-	(int i1, int i2, char *dest, size_t dest_nelt, const char *src, size_t src_nelt, size_t size),
-	(    i1,     i2,       dest,        dest_nelt,             src,        src_nelt,        size)
+DEFINE_NOVALUE_CCALLABLE_STUB(Orevcopy_byteblocks_from_i1i2,
+	(int i1, int i2, char *dest, size_t dest_nblocks, const char *src, size_t src_nblocks, size_t blocksize),
+	(    i1,     i2,       dest,        dest_nblocks,             src,        src_nblocks,        blocksize)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_reverse_charcpy_from_i1i2_with_lkup,
-	(int i1, int i2, char *dest, int dest_length, const char *src, int src_length, const int *lkup, int lkup_length),
-	(    i1,     i2,       dest,     dest_length,             src,     src_length,            lkup,     lkup_length)
+DEFINE_NOVALUE_CCALLABLE_STUB(Orevcopy_bytes_from_i1i2_with_lkup,
+	(int i1, int i2, char *dest, int dest_nbytes, const char *src, int src_nbytes, const int *lkup, int lkup_length),
+	(    i1,     i2,       dest,     dest_nbytes,             src,     src_nbytes,            lkup,     lkup_length)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(IRanges_memcpy_from_i1i2_to_complex,
-	(int i1, int i2, Rcomplex *dest, int dest_length, const char *src, int src_length, const Rcomplex *lkup, int lkup_length),
-	(    i1,     i2,           dest,     dest_length,             src,     src_length,                 lkup,     lkup_length)
+DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_bytes_from_i1i2_to_complex,
+	(int i1, int i2, Rcomplex *dest, int dest_nbytes, const char *src, int src_nbytes, const Rcomplex *lkup, int lkup_length),
+	(    i1,     i2,           dest,     dest_nbytes,             src,     src_nbytes,                 lkup,     lkup_length)
 )
 
 

@@ -93,7 +93,7 @@ void _vector_memcpy(SEXP out, int out_offset, SEXP in, int in_offset, int nelt)
  * 'lkup' table.
  * Reverts the order of the copied elements if 'reverse' is != 0.
  */
-void _vector_copy_from_offset(SEXP out, SEXP in, int in_offset, int nelt,
+void _vector_Ocopy_from_offset(SEXP out, SEXP in, int in_offset, int nelt,
 		SEXP lkup, int reverse)
 {
 	int i1, i2;
@@ -101,8 +101,8 @@ void _vector_copy_from_offset(SEXP out, SEXP in, int in_offset, int nelt,
 
 	i1 = in_offset;
 	i2 = in_offset + nelt - 1;
-	fun = reverse ? _IRanges_reverse_memcpy_from_i1i2
-		      : _IRanges_memcpy_from_i1i2;
+	fun = reverse ? _Orevcopy_byteblocks_from_i1i2
+		      : _Ocopy_byteblocks_from_i1i2;
 	switch (TYPEOF(out)) {
 	case RAWSXP:
 		if (lkup == R_NilValue) {
@@ -111,13 +111,13 @@ void _vector_copy_from_offset(SEXP out, SEXP in, int in_offset, int nelt,
 				(char *) RAW(in), LENGTH(in), sizeof(Rbyte));
 		} else {
 			if (reverse)
-				_IRanges_reverse_charcpy_from_i1i2_with_lkup(
+				_Orevcopy_bytes_from_i1i2_with_lkup(
 					i1, i2,
 					(char *) RAW(out), LENGTH(out),
 					(char *) RAW(in), LENGTH(in),
 					INTEGER(lkup), LENGTH(lkup));
 			else
-				_IRanges_charcpy_from_i1i2_with_lkup(i1, i2,
+				_Ocopy_bytes_from_i1i2_with_lkup(i1, i2,
 					(char *) RAW(out), LENGTH(out),
 					(char *) RAW(in), LENGTH(in),
 					INTEGER(lkup), LENGTH(lkup));
@@ -140,7 +140,7 @@ void _vector_copy_from_offset(SEXP out, SEXP in, int in_offset, int nelt,
 			(char *) COMPLEX(in), LENGTH(in), sizeof(Rcomplex));
 		break;
 	default:
-		error("IRanges internal error in _vector_copy_from_offset(): "
+		error("IRanges internal error in _vector_Ocopy_from_offset(): "
 		      "%s type not supported", type2str(TYPEOF(out)));
 	}
 	return;
@@ -152,17 +152,17 @@ void _vector_copy_from_offset(SEXP out, SEXP in, int in_offset, int nelt,
  * In addition, "raw" vectors support fast on-the-fly translation via the
  * 'lkup' table.
  */
-void _vector_copy_from_subset(SEXP out, SEXP in, SEXP subset, SEXP lkup)
+void _vector_Ocopy_from_subset(SEXP out, SEXP in, SEXP subset, SEXP lkup)
 {
 	switch (TYPEOF(out)) {
 	case RAWSXP:
 		if (lkup == R_NilValue)
-			_IRanges_memcpy_from_subset(
+			_Ocopy_byteblocks_from_subset(
 				INTEGER(subset), LENGTH(subset),
 				(char *) RAW(out), LENGTH(out),
 				(char *) RAW(in), LENGTH(in), sizeof(Rbyte));
 		else
-			_IRanges_charcpy_from_subset_with_lkup(
+			_Ocopy_bytes_from_subset_with_lkup(
 				INTEGER(subset), LENGTH(subset),
 				(char *) RAW(out), LENGTH(out),
 				(char *) RAW(in), LENGTH(in), 
@@ -170,22 +170,22 @@ void _vector_copy_from_subset(SEXP out, SEXP in, SEXP subset, SEXP lkup)
 		break;
 	case LGLSXP:
 	case INTSXP:
-		_IRanges_memcpy_from_subset(INTEGER(subset), LENGTH(subset),
+		_Ocopy_byteblocks_from_subset(INTEGER(subset), LENGTH(subset),
 			(char *) INTEGER(out), LENGTH(out),
 			(char *) INTEGER(in), LENGTH(in), sizeof(int));
 		break;
 	case REALSXP:
-		_IRanges_memcpy_from_subset(INTEGER(subset), LENGTH(subset),
+		_Ocopy_byteblocks_from_subset(INTEGER(subset), LENGTH(subset),
 			(char *) REAL(out), LENGTH(out),
 			(char *) REAL(in), LENGTH(in), sizeof(double));
 		break;
 	case CPLXSXP:
-		_IRanges_memcpy_from_subset(INTEGER(subset), LENGTH(subset),
+		_Ocopy_byteblocks_from_subset(INTEGER(subset), LENGTH(subset),
 			(char *) COMPLEX(out), LENGTH(out),
 			(char *) COMPLEX(in), LENGTH(in), sizeof(Rcomplex));
 		break;
 	default:
-		error("IRanges internal error in _vector_copy_from_subset(): "
+		error("IRanges internal error in _vector_Ocopy_from_subset(): "
 		      "%s type not supported", type2str(TYPEOF(out)));
 	}
 	return;
@@ -194,11 +194,10 @@ void _vector_copy_from_subset(SEXP out, SEXP in, SEXP subset, SEXP lkup)
 /*
  * RECYCLING: Cyclic reading from 'in'.
  * INTERFACE: "offset/nelt".
- *
  * In addition, "raw" vectors support fast on-the-fly translation via the
  * 'lkup' table.
  */
-void _vector_copy_to_offset(SEXP out, SEXP in, int out_offset, int nelt,
+void _vector_Ocopy_to_offset(SEXP out, SEXP in, int out_offset, int nelt,
 		SEXP lkup)
 {
 	int i1, i2;
@@ -208,11 +207,11 @@ void _vector_copy_to_offset(SEXP out, SEXP in, int out_offset, int nelt,
 	switch (TYPEOF(out)) {
 	case RAWSXP:
 		if (lkup == R_NilValue) {
-			_IRanges_memcpy_to_i1i2(i1, i2,
+			_Ocopy_byteblocks_to_i1i2(i1, i2,
 				(char *) RAW(out), LENGTH(out),
 				(char *) RAW(in), LENGTH(in), sizeof(Rbyte));
 		} else {
-			_IRanges_charcpy_to_i1i2_with_lkup(i1, i2,
+			_Ocopy_bytes_to_i1i2_with_lkup(i1, i2,
 				(char *) RAW(out), LENGTH(out),
 				(char *) RAW(in), LENGTH(in),
 				INTEGER(lkup), LENGTH(lkup));
@@ -220,22 +219,22 @@ void _vector_copy_to_offset(SEXP out, SEXP in, int out_offset, int nelt,
 		break;
 	case LGLSXP:
 	case INTSXP:
-		_IRanges_memcpy_to_i1i2(i1, i2,
+		_Ocopy_byteblocks_to_i1i2(i1, i2,
 			(char *) INTEGER(out), LENGTH(out),
 			(char *) INTEGER(in), LENGTH(in), sizeof(int));
 		break;
 	case REALSXP:
-		_IRanges_memcpy_to_i1i2(i1, i2,
+		_Ocopy_byteblocks_to_i1i2(i1, i2,
 			(char *) REAL(out), LENGTH(out),
 			(char *) REAL(in), LENGTH(in), sizeof(double));
 		break;
 	case CPLXSXP:
-		_IRanges_memcpy_to_i1i2(i1, i2,
+		_Ocopy_byteblocks_to_i1i2(i1, i2,
 			(char *) COMPLEX(out), LENGTH(out),
 			(char *) COMPLEX(in), LENGTH(in), sizeof(Rcomplex));
 		break;
 	default:
-		error("IRanges internal error in _vector_copy_to_offset(): "
+		error("IRanges internal error in _vector_Ocopy_to_offset(): "
 		      "%s type not supported", type2str(TYPEOF(out)));
 	}
 	return;
@@ -247,17 +246,17 @@ void _vector_copy_to_offset(SEXP out, SEXP in, int out_offset, int nelt,
  * In addition, "raw" vectors support fast on-the-fly translation via the
  * 'lkup' table.
  */
-void _vector_copy_to_subset(SEXP out, SEXP in, SEXP subset, SEXP lkup)
+void _vector_Ocopy_to_subset(SEXP out, SEXP in, SEXP subset, SEXP lkup)
 {
 	switch (TYPEOF(out)) {
 	case RAWSXP:
 		if (lkup == R_NilValue)
-			_IRanges_memcpy_to_subset(
+			_Ocopy_byteblocks_to_subset(
 				INTEGER(subset), LENGTH(subset),
 				(char *) RAW(out), LENGTH(out),
 				(char *) RAW(in), LENGTH(in), sizeof(Rbyte));
 		else
-			_IRanges_charcpy_to_subset_with_lkup(
+			_Ocopy_bytes_to_subset_with_lkup(
 				INTEGER(subset), LENGTH(subset),
 				(char *) RAW(out), LENGTH(out),
 				(char *) RAW(in), LENGTH(in), 
@@ -265,22 +264,22 @@ void _vector_copy_to_subset(SEXP out, SEXP in, SEXP subset, SEXP lkup)
 		break;
 	case LGLSXP:
 	case INTSXP:
-		_IRanges_memcpy_to_subset(INTEGER(subset), LENGTH(subset),
+		_Ocopy_byteblocks_to_subset(INTEGER(subset), LENGTH(subset),
 			(char *) INTEGER(out), LENGTH(out),
 			(char *) INTEGER(in), LENGTH(in), sizeof(int));
 		break;
 	case REALSXP:
-		_IRanges_memcpy_to_subset(INTEGER(subset), LENGTH(subset),
+		_Ocopy_byteblocks_to_subset(INTEGER(subset), LENGTH(subset),
 			(char *) REAL(out), LENGTH(out),
 			(char *) REAL(in), LENGTH(in), sizeof(double));
 		break;
 	case CPLXSXP:
-		_IRanges_memcpy_to_subset(INTEGER(subset), LENGTH(subset),
+		_Ocopy_byteblocks_to_subset(INTEGER(subset), LENGTH(subset),
 			(char *) COMPLEX(out), LENGTH(out),
 			(char *) COMPLEX(in), LENGTH(in), sizeof(Rcomplex));
 		break;
 	default:
-		error("IRanges internal error in _vector_copy_to_subset(): "
+		error("IRanges internal error in _vector_Ocopy_to_subset(): "
 		      "%s type not supported", type2str(TYPEOF(out)));
 	}
 	return;

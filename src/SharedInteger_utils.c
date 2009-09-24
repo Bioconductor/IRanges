@@ -74,7 +74,7 @@ SEXP SharedInteger_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width
 	n = INTEGER(width)[0];
 
 	PROTECT(tag = NEW_INTEGER(1));
-	INTEGER(tag)[0] = _IRanges_memcmp((char *) INTEGER(tag1), i1,
+	INTEGER(tag)[0] = _compare_byteblocks((char *) INTEGER(tag1), i1,
 				(char *) INTEGER(tag2), i2,
 				n, sizeof(int));
 	UNPROTECT(1);
@@ -98,7 +98,7 @@ SEXP SharedInteger_read_ints_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 	n = i2 - i1 + 1;
 
 	PROTECT(tag = NEW_INTEGER(n));
-	_IRanges_memcpy_from_i1i2(i1, i2,
+	_Ocopy_byteblocks_from_i1i2(i1, i2,
 			(char *) INTEGER(tag), LENGTH(tag),
 			(char *) INTEGER(src_tag), LENGTH(src_tag), sizeof(int));
 	UNPROTECT(1);
@@ -113,7 +113,7 @@ SEXP SharedInteger_read_ints_from_subset(SEXP src, SEXP subset)
 	src_tag = _get_SharedVector_tag(src);
 	n = LENGTH(subset);
 	PROTECT(tag = NEW_INTEGER(n));
-	_IRanges_memcpy_from_subset(INTEGER(subset), n,
+	_Ocopy_byteblocks_from_subset(INTEGER(subset), n,
 			(char *) INTEGER(tag), n,
 			(char *) INTEGER(src_tag), LENGTH(src_tag), sizeof(int));
 	UNPROTECT(1);
@@ -131,7 +131,7 @@ SEXP SharedInteger_write_ints_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 	dest_tag = _get_SharedVector_tag(dest);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
-	_IRanges_memcpy_to_i1i2(i1, i2,
+	_Ocopy_byteblocks_to_i1i2(i1, i2,
 			(char *) INTEGER(dest_tag), LENGTH(dest_tag),
 			(char *) INTEGER(val), LENGTH(val), sizeof(int));
 	return dest;
@@ -142,7 +142,7 @@ SEXP SharedInteger_write_ints_to_subset(SEXP dest, SEXP subset, SEXP val)
 	SEXP dest_tag;
 
 	dest_tag = _get_SharedVector_tag(dest);
-	_IRanges_memcpy_to_subset(INTEGER(subset), LENGTH(subset),
+	_Ocopy_byteblocks_to_subset(INTEGER(subset), LENGTH(subset),
 			(char *) INTEGER(dest_tag), LENGTH(dest_tag),
 			(char *) INTEGER(val), LENGTH(val), sizeof(int));
 	return dest;

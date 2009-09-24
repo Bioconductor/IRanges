@@ -10,8 +10,8 @@ static const R_CallMethodDef callMethods[] = {
 /* AEbufs.c */
 	CALLMETHOD_DEF(debug_AEbufs, 0),
 
-/* memcpy_utils.c */
-	CALLMETHOD_DEF(debug_memcpy_utils, 0),
+/* copy_byteblocks.c */
+	CALLMETHOD_DEF(debug_copy_byteblocks, 0),
 
 /* SEXP_utils.c */
 	CALLMETHOD_DEF(address_asSTRSXP, 1),
@@ -197,19 +197,19 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_append_string_to_CharAEAE);
 	REGISTER_CCALLABLE(_CharAEAE_asCHARACTER);
 
-/* memcpy_utils.c */
-	REGISTER_CCALLABLE(_IRanges_memcmp);
-	REGISTER_CCALLABLE(_IRanges_memcpy_from_i1i2);
-	REGISTER_CCALLABLE(_IRanges_memcpy_from_subset);
-	REGISTER_CCALLABLE(_IRanges_memcpy_to_i1i2);
-	REGISTER_CCALLABLE(_IRanges_memcpy_to_subset);
-	REGISTER_CCALLABLE(_IRanges_charcpy_from_i1i2_with_lkup);
-	REGISTER_CCALLABLE(_IRanges_charcpy_from_subset_with_lkup);
-	REGISTER_CCALLABLE(_IRanges_charcpy_to_i1i2_with_lkup);
-	REGISTER_CCALLABLE(_IRanges_charcpy_to_subset_with_lkup);
-	REGISTER_CCALLABLE(_IRanges_reverse_memcpy_from_i1i2);
-	REGISTER_CCALLABLE(_IRanges_reverse_charcpy_from_i1i2_with_lkup);
-	REGISTER_CCALLABLE(_IRanges_memcpy_from_i1i2_to_complex);
+/* copy_byteblocks.c */
+	REGISTER_CCALLABLE(_compare_byteblocks);
+	REGISTER_CCALLABLE(_Ocopy_byteblocks_from_i1i2);
+	REGISTER_CCALLABLE(_Ocopy_byteblocks_from_subset);
+	REGISTER_CCALLABLE(_Ocopy_byteblocks_to_i1i2);
+	REGISTER_CCALLABLE(_Ocopy_byteblocks_to_subset);
+	REGISTER_CCALLABLE(_Ocopy_bytes_from_i1i2_with_lkup);
+	REGISTER_CCALLABLE(_Ocopy_bytes_from_subset_with_lkup);
+	REGISTER_CCALLABLE(_Ocopy_bytes_to_i1i2_with_lkup);
+	REGISTER_CCALLABLE(_Ocopy_bytes_to_subset_with_lkup);
+	REGISTER_CCALLABLE(_Orevcopy_byteblocks_from_i1i2);
+	REGISTER_CCALLABLE(_Orevcopy_bytes_from_i1i2_with_lkup);
+	REGISTER_CCALLABLE(_Ocopy_bytes_from_i1i2_to_complex);
 
 /* SEXP_utils.c */
 	REGISTER_CCALLABLE(_get_classname);

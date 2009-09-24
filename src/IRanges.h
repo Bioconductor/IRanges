@@ -179,131 +179,131 @@ void _append_string_to_CharAEAE(
 SEXP _CharAEAE_asCHARACTER(const CharAEAE *char_aeae);
 
 
-/* memcpy_utils.c */
+/* copy_byteblocks.c */
 
-SEXP debug_memcpy_utils();
+SEXP debug_copy_byteblocks();
 
-int _IRanges_memcmp(
+int _compare_byteblocks(
 	const char *a,
 	int ia,
 	const char *b,
 	int ib,
 	int n,
-	size_t size
+	size_t blocksize
 );
 
-void _IRanges_memcpy_from_i1i2(
+void _Ocopy_byteblocks_from_i1i2(
 	int i1,
 	int i2,
 	char *dest,
-	size_t dest_nelt,
+	size_t dest_nblocks,
 	const char *src,
-	size_t src_nelt,
-	size_t size
+	size_t src_nblocks,
+	size_t blocksize
 );
 
-void _IRanges_memcpy_from_subset(
+void _Ocopy_byteblocks_from_subset(
 	const int *subset,
 	int n,
 	char *dest,
-	size_t dest_nelt,
+	size_t dest_nblocks,
 	const char *src,
-	size_t src_nelt,
-	size_t size
+	size_t src_nblocks,
+	size_t blocksize
 );
 
-void _IRanges_memcpy_to_i1i2(
+void _Ocopy_byteblocks_to_i1i2(
 	int i1,
 	int i2,
 	char *dest,
-	size_t dest_nelt,
+	size_t dest_nblocks,
 	const char *src,
-	size_t src_nelt,
-	size_t size
+	size_t src_nblocks,
+	size_t blocksize
 );
 
-void _IRanges_memcpy_to_subset(
+void _Ocopy_byteblocks_to_subset(
 	const int *subset,
 	int n,
 	char *dest,
-	size_t dest_nelt,
+	size_t dest_nblocks,
 	const char *src,
-	size_t src_nelt,
-	size_t size
+	size_t src_nblocks,
+	size_t blocksize
 );
 
-void _IRanges_charcpy_from_i1i2_with_lkup(
+void _Ocopy_bytes_from_i1i2_with_lkup(
 	int i1,
 	int i2,
 	char *dest,
-	int dest_length,
+	int dest_nbytes,
 	const char *src,
-	int src_length,
+	int src_nbytes,
 	const int *lkup,
 	int lkup_length
 );
 
-void _IRanges_charcpy_from_subset_with_lkup(
+void _Ocopy_bytes_from_subset_with_lkup(
 	const int *subset,
 	int n,
 	char *dest,
-	int dest_length,
+	int dest_nbytes,
 	const char *src,
-	int src_length,
+	int src_nbytes,
 	const int *lkup,
 	int lkup_length
 );
 
-void _IRanges_charcpy_to_i1i2_with_lkup(
+void _Ocopy_bytes_to_i1i2_with_lkup(
 	int i1,
 	int i2,
 	char *dest,
-	int dest_length,
+	int dest_nbytes,
 	const char *src,
-	int src_length,
+	int src_nbytes,
 	const int *lkup,
 	int lkup_length
 );
 
-void _IRanges_charcpy_to_subset_with_lkup(
+void _Ocopy_bytes_to_subset_with_lkup(
 	const int *subset,
 	int n,
 	char *dest,
-	int dest_length,
+	int dest_nbytes,
 	const char *src,
-	int src_length,
+	int src_nbytes,
 	const int *lkup,
 	int lkup_length
 );
 
-void _IRanges_reverse_memcpy_from_i1i2(
+void _Orevcopy_byteblocks_from_i1i2(
 	int i1,
 	int i2,
 	char *dest,
-	size_t dest_nelt,
+	size_t dest_nblocks,
 	const char *src,
-	size_t src_nelt,
-	size_t size
+	size_t src_nblocks,
+	size_t blocksize
 );
 
-void _IRanges_reverse_charcpy_from_i1i2_with_lkup(
+void _Orevcopy_bytes_from_i1i2_with_lkup(
 	int i1,
 	int i2,
 	char *dest,
-	int dest_length,
+	int dest_nbytes,
 	const char *src,
-	int src_length,
+	int src_nbytes,
 	const int *lkup,
 	int lkup_length
 );
 
-void _IRanges_memcpy_from_i1i2_to_complex(
+void _Ocopy_bytes_from_i1i2_to_complex(
 	int i1,
 	int i2,
 	Rcomplex *dest,
-	int dest_length,
+	int dest_nbytes,
 	const char *src,
-	int src_length,
+	int src_nbytes,
 	const Rcomplex *lkup,
 	int lkup_length
 );
@@ -319,7 +319,7 @@ void _vector_memcpy(
 	int nelt
 );
 
-void _vector_copy_from_offset(
+void _vector_Ocopy_from_offset(
 	SEXP out,
 	SEXP in,
 	int in_offset,
@@ -328,14 +328,14 @@ void _vector_copy_from_offset(
 	int reverse
 );
 
-void _vector_copy_from_subset(
+void _vector_Ocopy_from_subset(
 	SEXP out,
 	SEXP in,
 	SEXP subset,
 	SEXP lkup
 );
 
-void _vector_copy_to_offset(
+void _vector_Ocopy_to_offset(
 	SEXP out,
 	SEXP in,
 	int out_offset,
@@ -343,7 +343,7 @@ void _vector_copy_to_offset(
 	SEXP lkup
 );
 
-void _vector_copy_to_subset(
+void _vector_Ocopy_to_subset(
 	SEXP out,
 	SEXP in,
 	SEXP subset,

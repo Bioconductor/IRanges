@@ -86,7 +86,7 @@ SEXP SharedRaw_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
 	}
 #endif
 	PROTECT(ans = NEW_INTEGER(1));
-	INTEGER(ans)[0] = _IRanges_memcmp((char *) RAW(tag1), i1,
+	INTEGER(ans)[0] = _compare_byteblocks((char *) RAW(tag1), i1,
 				(char *) RAW(tag2), i2,
 				n, sizeof(Rbyte));
 #ifdef DEBUG_IRANGES
@@ -125,7 +125,7 @@ SEXP SharedRaw_read_chars_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 	dest = _new_CharAE(n + 1);
 	dest.elts[n] = '\0';
 	/* assumes that sizeof(Rbyte) == sizeof(char) */
-	_IRanges_memcpy_from_i1i2(i1, i2,
+	_Ocopy_byteblocks_from_i1i2(i1, i2,
 			dest.elts, n, (char *) RAW(src_tag), LENGTH(src_tag),
 			sizeof(char));
 	return mkString(dest.elts);
@@ -142,7 +142,7 @@ SEXP SharedRaw_read_chars_from_subset(SEXP src, SEXP subset)
 	dest = _new_CharAE(n + 1);
 	dest.elts[n] = '\0';
 	/* assumes that sizeof(Rbyte) == sizeof(char) */
-	_IRanges_memcpy_from_subset(INTEGER(subset), n,
+	_Ocopy_byteblocks_from_subset(INTEGER(subset), n,
 			dest.elts, n, (char *) RAW(src_tag), LENGTH(src_tag),
 			sizeof(char));
 	return mkString(dest.elts);
@@ -161,7 +161,7 @@ SEXP SharedRaw_write_chars_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP string)
 	i2 = INTEGER(imax)[0] - 1;
 	src = STRING_ELT(string, 0);
 	/* assumes that sizeof(Rbyte) == sizeof(char) */
-	_IRanges_memcpy_to_i1i2(i1, i2,
+	_Ocopy_byteblocks_to_i1i2(i1, i2,
 			(char *) RAW(dest_tag), LENGTH(dest_tag),
 			CHAR(src), LENGTH(src), sizeof(char));
 	return dest;
@@ -174,7 +174,7 @@ SEXP SharedRaw_write_chars_to_subset(SEXP dest, SEXP subset, SEXP string)
 	dest_tag = _get_SharedVector_tag(dest);
 	src = STRING_ELT(string, 0);
 	/* assumes that sizeof(Rbyte) == sizeof(char) */
-	_IRanges_memcpy_to_subset(INTEGER(subset), LENGTH(subset),
+	_Ocopy_byteblocks_to_subset(INTEGER(subset), LENGTH(subset),
 			(char *) RAW(dest_tag), LENGTH(dest_tag),
 			CHAR(src), LENGTH(src), sizeof(char));
 	return dest;
@@ -327,7 +327,7 @@ SEXP SharedRaw_read_enc_chars_from_i1i2(SEXP src, SEXP imin, SEXP imax, SEXP lku
 	n = i2 - i1 + 1;
 	dest = _new_CharAE(n + 1);
 	dest.elts[n] = '\0';
-	_IRanges_charcpy_from_i1i2_with_lkup(i1, i2,
+	_Ocopy_bytes_from_i1i2_with_lkup(i1, i2,
 			dest.elts, n, (char *) RAW(src_tag), LENGTH(src_tag),
 			INTEGER(lkup), LENGTH(lkup));
 	return mkString(dest.elts);
@@ -343,7 +343,7 @@ SEXP SharedRaw_read_enc_chars_from_subset(SEXP src, SEXP subset, SEXP lkup)
 	n = LENGTH(subset);
 	dest = _new_CharAE(n + 1);
 	dest.elts[n] = '\0';
-	_IRanges_charcpy_from_subset_with_lkup(INTEGER(subset), n,
+	_Ocopy_bytes_from_subset_with_lkup(INTEGER(subset), n,
 			dest.elts, n, (char *) RAW(src_tag), LENGTH(src_tag),
 			INTEGER(lkup), LENGTH(lkup));
 	return mkString(dest.elts);
@@ -365,7 +365,7 @@ SEXP SharedRaw_write_enc_chars_to_i1i2(SEXP dest, SEXP imin, SEXP imax,
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	src = STRING_ELT(string, 0);
-	_IRanges_charcpy_to_i1i2_with_lkup(i1, i2,
+	_Ocopy_bytes_to_i1i2_with_lkup(i1, i2,
 			(char *) RAW(dest_tag), LENGTH(dest_tag),
 			CHAR(src), LENGTH(src),
 			INTEGER(lkup), LENGTH(lkup));
@@ -381,8 +381,9 @@ SEXP SharedRaw_write_enc_chars_to_subset(SEXP dest, SEXP subset,
 	dest_tag = _get_SharedVector_tag(dest);
 	n = LENGTH(subset);
 	src = STRING_ELT(string, 0);
-	_IRanges_charcpy_to_subset_with_lkup(INTEGER(subset), n,
-		(char *) RAW(dest_tag), LENGTH(dest_tag), CHAR(src), LENGTH(src),
+	_Ocopy_bytes_to_subset_with_lkup(INTEGER(subset), n,
+		(char *) RAW(dest_tag), LENGTH(dest_tag),
+		CHAR(src), LENGTH(src),
 		INTEGER(lkup), LENGTH(lkup));
 	return dest;
 }
@@ -404,7 +405,7 @@ SEXP SharedRaw_read_complexes_from_i1i2(SEXP src, SEXP imin, SEXP imax, SEXP lku
 	i2 = INTEGER(imax)[0] - 1;
 	n = i2 - i1 + 1;
 	PROTECT(dest = NEW_COMPLEX(n));
-	_IRanges_memcpy_from_i1i2_to_complex(i1, i2,
+	_Ocopy_bytes_from_i1i2_to_complex(i1, i2,
 		COMPLEX(dest), n, (char *) RAW(src_tag), LENGTH(src_tag),
 		COMPLEX(lkup), LENGTH(lkup));
 	UNPROTECT(1);
