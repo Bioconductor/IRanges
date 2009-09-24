@@ -78,58 +78,56 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(externalptr_taglength, 1),
 	CALLMETHOD_DEF(externalptr_show, 1),
 	CALLMETHOD_DEF(externalptr_new, 0),
+	CALLMETHOD_DEF(SharedVector_memcmp, 5),
 	CALLMETHOD_DEF(SharedVector_memcpy, 5),
 	CALLMETHOD_DEF(SharedVector_copy_from_start, 6),
-	CALLMETHOD_DEF(SharedVector_copy_from_subset, 4),
+	CALLMETHOD_DEF(SharedVector_copy_from_subscript, 4),
 
 /* SharedRaw_utils.c */
 	CALLMETHOD_DEF(debug_SharedRaw_utils, 0),
 
 	CALLMETHOD_DEF(SharedRaw_new, 2),
 	CALLMETHOD_DEF(SharedRaw_address0, 1),
-	CALLMETHOD_DEF(SharedRaw_memcmp, 5),
 
 	CALLMETHOD_DEF(SharedRaw_read_chars_from_i1i2, 3),
-	CALLMETHOD_DEF(SharedRaw_read_chars_from_subset, 2),
+	CALLMETHOD_DEF(SharedRaw_read_chars_from_subscript, 2),
 	CALLMETHOD_DEF(SharedRaw_write_chars_to_i1i2, 4),
-	CALLMETHOD_DEF(SharedRaw_write_chars_to_subset, 3),
+	CALLMETHOD_DEF(SharedRaw_write_chars_to_subscript, 3),
 
 	CALLMETHOD_DEF(SharedRaw_read_ints_from_i1i2, 3),
-	CALLMETHOD_DEF(SharedRaw_read_ints_from_subset, 2),
+	CALLMETHOD_DEF(SharedRaw_read_ints_from_subscript, 2),
 	CALLMETHOD_DEF(SharedRaw_write_ints_to_i1i2, 4),
-	CALLMETHOD_DEF(SharedRaw_write_ints_to_subset, 3),
+	CALLMETHOD_DEF(SharedRaw_write_ints_to_subscript, 3),
 
 	CALLMETHOD_DEF(SharedRaw_read_enc_chars_from_i1i2, 4),
-	CALLMETHOD_DEF(SharedRaw_read_enc_chars_from_subset, 3),
+	CALLMETHOD_DEF(SharedRaw_read_enc_chars_from_subscript, 3),
 	CALLMETHOD_DEF(SharedRaw_write_enc_chars_to_i1i2, 5),
-	CALLMETHOD_DEF(SharedRaw_write_enc_chars_to_subset, 4),
+	CALLMETHOD_DEF(SharedRaw_write_enc_chars_to_subscript, 4),
 
 	CALLMETHOD_DEF(SharedRaw_read_complexes_from_i1i2, 4),
-	CALLMETHOD_DEF(SharedRaw_read_complexes_from_subset, 3),
+	CALLMETHOD_DEF(SharedRaw_read_complexes_from_subscript, 3),
 
 /* SharedInteger_utils.c */
 	CALLMETHOD_DEF(debug_SharedInteger_utils, 0),
 
 	CALLMETHOD_DEF(SharedInteger_new, 2),
 	CALLMETHOD_DEF(SharedInteger_get_show_string, 1),
-	CALLMETHOD_DEF(SharedInteger_memcmp, 5),
 
 	CALLMETHOD_DEF(SharedInteger_read_ints_from_i1i2, 3),
-	CALLMETHOD_DEF(SharedInteger_read_ints_from_subset, 2),
+	CALLMETHOD_DEF(SharedInteger_read_ints_from_subscript, 2),
 	CALLMETHOD_DEF(SharedInteger_write_ints_to_i1i2, 4),
-	CALLMETHOD_DEF(SharedInteger_write_ints_to_subset, 3),
+	CALLMETHOD_DEF(SharedInteger_write_ints_to_subscript, 3),
 
 /* SharedDouble_utils.c */
 	CALLMETHOD_DEF(debug_SharedDouble_utils, 0),
 
 	CALLMETHOD_DEF(SharedDouble_new, 2),
 	CALLMETHOD_DEF(SharedDouble_get_show_string, 1),
-	CALLMETHOD_DEF(SharedDouble_memcmp, 5),
 
 	CALLMETHOD_DEF(SharedDouble_read_nums_from_i1i2, 3),
-	CALLMETHOD_DEF(SharedDouble_read_nums_from_subset, 2),
+	CALLMETHOD_DEF(SharedDouble_read_nums_from_subscript, 2),
 	CALLMETHOD_DEF(SharedDouble_write_nums_to_i1i2, 4),
-	CALLMETHOD_DEF(SharedDouble_write_nums_to_subset, 3),
+	CALLMETHOD_DEF(SharedDouble_write_nums_to_subscript, 3),
 
 /* XVector_class.c */
 	CALLMETHOD_DEF(debug_XVector_class, 0),
@@ -198,15 +196,14 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_CharAEAE_asCHARACTER);
 
 /* copy_byteblocks.c */
-	REGISTER_CCALLABLE(_compare_byteblocks);
 	REGISTER_CCALLABLE(_Ocopy_byteblocks_from_i1i2);
-	REGISTER_CCALLABLE(_Ocopy_byteblocks_from_subset);
+	REGISTER_CCALLABLE(_Ocopy_byteblocks_from_subscript);
 	REGISTER_CCALLABLE(_Ocopy_byteblocks_to_i1i2);
-	REGISTER_CCALLABLE(_Ocopy_byteblocks_to_subset);
+	REGISTER_CCALLABLE(_Ocopy_byteblocks_to_subscript);
 	REGISTER_CCALLABLE(_Ocopy_bytes_from_i1i2_with_lkup);
-	REGISTER_CCALLABLE(_Ocopy_bytes_from_subset_with_lkup);
+	REGISTER_CCALLABLE(_Ocopy_bytes_from_subscript_with_lkup);
 	REGISTER_CCALLABLE(_Ocopy_bytes_to_i1i2_with_lkup);
-	REGISTER_CCALLABLE(_Ocopy_bytes_to_subset_with_lkup);
+	REGISTER_CCALLABLE(_Ocopy_bytes_to_subscript_with_lkup);
 	REGISTER_CCALLABLE(_Orevcopy_byteblocks_from_i1i2);
 	REGISTER_CCALLABLE(_Orevcopy_bytes_from_i1i2_with_lkup);
 	REGISTER_CCALLABLE(_Ocopy_bytes_from_i1i2_to_complex);

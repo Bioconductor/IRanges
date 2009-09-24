@@ -184,6 +184,23 @@ setValidity2("SharedVector_Pool", .valid.SharedVector_Pool)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Data comparison.
+###
+### A wrapper to the very fast memcmp() C-function.
+### Arguments MUST be the following or it will crash R:
+###   x1, x2: SharedVector objects
+###   start1, start2, width: single integers
+### In addition: 1 <= start1 <= start1+width-1 <= length(x1)
+###              1 <= start2 <= start2+width-1 <= length(x2)
+### WARNING: This function is voluntarly unsafe (it doesn't check its
+### arguments) because we want it to be the fastest possible!
+###
+
+SharedVector.compare <- function(x1, start1, x2, start2, width)
+    .Call("SharedVector_memcmp", x1, start1, x2, start2, width, PACKAGE="IRanges")
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Low-level copy.
 ###
 
@@ -203,7 +220,7 @@ SharedVector.copy <- function(dest, i, imax=integer(0), src, lkup=NULL)
         .Call("SharedVector_copy_from_start",
               dest, src, i, width, lkup, FALSE, PACKAGE="IRanges")
     } else {
-        .Call("SharedVector_copy_from_subset",
+        .Call("SharedVector_copy_from_subscript",
               dest, src, i, lkup, PACKAGE="IRanges")
     }
     dest
@@ -240,7 +257,7 @@ setMethod("as.numeric", "SharedVector",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Comparison.
+### Address comparison.
 ###
 ### Be careful with the semantic of the "==" operator: the addresses are
 ### compared, not the data they are pointing at!

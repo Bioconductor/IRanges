@@ -66,17 +66,12 @@ setMethod("[", "XInteger",
     {
         if (!missing(j) || length(list(...)) > 0)
             stop("invalid subsetting")
-        if (missing(i)) {
-            if (!drop)
-                return(x)
-            return(as.integer(x@shared))
-        }
-        if (!is.numeric(i) || any(is.na(i)))
+        if (missing(i))
+            return(x)
+        if (!is.numeric(i))
             stop("invalid subsetting")
-        if (any(i < 1) || any(i > length(x)))
-            stop("subscript out of bounds")
-        if (drop)
-            return(SharedInteger.read(x@shared, x@offset + i))
+        if (!is.integer(i))
+            i <- as.integer(i)
         shared <- SharedInteger(length(i))
         SharedVector.copy(shared, x@offset + i, src=x@shared)
         x@shared <- shared

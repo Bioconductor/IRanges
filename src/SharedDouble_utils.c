@@ -58,29 +58,6 @@ SEXP SharedDouble_get_show_string(SEXP x)
 	return mkString(buf);
 }
 
-/*
- * From R:
- *   x <- SharedDouble(30)
- *   .Call("SharedDouble_memcmp", x, 1L, x, 10L, 21L, PACKAGE="IRanges")
- */
-SEXP SharedDouble_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
-{
-	SEXP tag1, tag2, ans;
-	int i1, i2, n;
-
-	tag1 = _get_SharedVector_tag(x1);
-	i1 = INTEGER(start1)[0] - 1;
-	tag2 = _get_SharedVector_tag(x2);
-	i2 = INTEGER(start2)[0] - 1;
-	n = INTEGER(width)[0];
-
-	PROTECT(ans = NEW_NUMERIC(1));
-	REAL(ans)[0] = _compare_byteblocks((char *) REAL(tag1), i1,
-					(char *) REAL(tag2), i2,
-					n, sizeof(double));
-	UNPROTECT(1);
-	return ans;
-}
 
 /* ==========================================================================
  * Read/write numerics to a SharedDouble object
@@ -105,15 +82,15 @@ SEXP SharedDouble_read_nums_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 	return ans;
 }
 
-SEXP SharedDouble_read_nums_from_subset(SEXP src, SEXP subset)
+SEXP SharedDouble_read_nums_from_subscript(SEXP src, SEXP subscript)
 {
 	SEXP src_tag, ans;
 	int n;
 
 	src_tag = _get_SharedVector_tag(src);
-	n = LENGTH(subset);
+	n = LENGTH(subscript);
 	PROTECT(ans = NEW_NUMERIC(n));
-	_Ocopy_byteblocks_from_subset(INTEGER(subset), n,
+	_Ocopy_byteblocks_from_subscript(INTEGER(subscript), n,
 			(char *) REAL(ans), n,
 			(char *) REAL(src_tag), LENGTH(src_tag), sizeof(double));
 	UNPROTECT(1);
@@ -137,12 +114,12 @@ SEXP SharedDouble_write_nums_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 	return dest;
 }
 
-SEXP SharedDouble_write_nums_to_subset(SEXP dest, SEXP subset, SEXP val)
+SEXP SharedDouble_write_nums_to_subscript(SEXP dest, SEXP subscript, SEXP val)
 {
 	SEXP dest_tag;
 
 	dest_tag = _get_SharedVector_tag(dest);
-	_Ocopy_byteblocks_to_subset(INTEGER(subset), LENGTH(subset),
+	_Ocopy_byteblocks_to_subscript(INTEGER(subscript), LENGTH(subscript),
 			(char *) REAL(dest_tag), LENGTH(dest_tag),
 			(char *) REAL(val), LENGTH(val), sizeof(double));
 	return dest;

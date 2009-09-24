@@ -57,30 +57,6 @@ SEXP SharedInteger_get_show_string(SEXP x)
 	return mkString(buf);
 }
 
-/*
- * From R:
- *   x <- SharedInteger(30)
- *   .Call("SharedInteger_memcmp", x, 1L, x, 10L, 21L, PACKAGE="IRanges")
- */
-SEXP SharedInteger_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
-{
-	SEXP tag1, tag2, tag;
-	int i1, i2, n;
-
-	tag1 = _get_SharedVector_tag(x1);
-	i1 = INTEGER(start1)[0] - 1;
-	tag2 = _get_SharedVector_tag(x2);
-	i2 = INTEGER(start2)[0] - 1;
-	n = INTEGER(width)[0];
-
-	PROTECT(tag = NEW_INTEGER(1));
-	INTEGER(tag)[0] = _compare_byteblocks((char *) INTEGER(tag1), i1,
-				(char *) INTEGER(tag2), i2,
-				n, sizeof(int));
-	UNPROTECT(1);
-	return tag;
-}
-
 
 /* ==========================================================================
  * Read/write integers to a SharedInteger object.
@@ -105,15 +81,15 @@ SEXP SharedInteger_read_ints_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 	return tag;
 }
 
-SEXP SharedInteger_read_ints_from_subset(SEXP src, SEXP subset)
+SEXP SharedInteger_read_ints_from_subscript(SEXP src, SEXP subscript)
 {
 	SEXP src_tag, tag;
 	int n;
 
 	src_tag = _get_SharedVector_tag(src);
-	n = LENGTH(subset);
+	n = LENGTH(subscript);
 	PROTECT(tag = NEW_INTEGER(n));
-	_Ocopy_byteblocks_from_subset(INTEGER(subset), n,
+	_Ocopy_byteblocks_from_subscript(INTEGER(subscript), n,
 			(char *) INTEGER(tag), n,
 			(char *) INTEGER(src_tag), LENGTH(src_tag), sizeof(int));
 	UNPROTECT(1);
@@ -137,12 +113,12 @@ SEXP SharedInteger_write_ints_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 	return dest;
 }
 
-SEXP SharedInteger_write_ints_to_subset(SEXP dest, SEXP subset, SEXP val)
+SEXP SharedInteger_write_ints_to_subscript(SEXP dest, SEXP subscript, SEXP val)
 {
 	SEXP dest_tag;
 
 	dest_tag = _get_SharedVector_tag(dest);
-	_Ocopy_byteblocks_to_subset(INTEGER(subset), LENGTH(subset),
+	_Ocopy_byteblocks_to_subscript(INTEGER(subscript), LENGTH(subscript),
 			(char *) INTEGER(dest_tag), LENGTH(dest_tag),
 			(char *) INTEGER(val), LENGTH(val), sizeof(int));
 	return dest;

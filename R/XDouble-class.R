@@ -64,22 +64,18 @@ setMethod("as.vector", c("XDouble", "missing"),
 ### Subsetting.
 ###
 
+### Ignores the 'drop' argument (so it always behaves like an endomorphism).
 setMethod("[", "XDouble",
     function(x, i, j, ..., drop=TRUE)
     {
         if (!missing(j) || length(list(...)) > 0)
             stop("invalid subsetting")
-        if (missing(i)) {
-            if (!drop)
-                return(x)
-            return(as.numeric(x@shared))
-        }
-        if (!is.numeric(i) || any(is.na(i)))
+        if (missing(i))
+            return(x)
+        if (!is.numeric(i))
             stop("invalid subsetting")
-        if (any(i < 1) || any(i > length(x)))
-            stop("subscript out of bounds")
-        if (drop)
-            return(SharedDouble.read(x@shared, x@offset + i))
+        if (!is.integer(i))
+            i <- as.integer(i)
         shared <- SharedDouble(length(i))
         SharedVector.copy(shared, x@offset + i, src=x@shared)
         x@shared <- shared

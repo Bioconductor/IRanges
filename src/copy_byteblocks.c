@@ -16,26 +16,6 @@ SEXP debug_copy_byteblocks()
 }
 
 
-/*
- * Memory comparison
- */
-int _compare_byteblocks(const char *a, int ia, const char *b, int ib,
-		int n, size_t blocksize)
-{
-#ifdef DEBUG_IRANGES
-	if (debug) {
-		Rprintf("[DEBUG] _compare_byteblocks(): ");
-		Rprintf("a=%p ia=%d b=%p ib=%d n=%d blocksize=%d\n",
-			a, ia, b, ib, n, blocksize);
-	}
-#endif
-	a += ia * blocksize;
-	b += ib * blocksize;
-	/* memcmp() doesn't try to be smart by checking if a == b */
-	return a == b ? 0 : memcmp(a, b, n * blocksize);
-}
-
-
 /****************************************************************************
  All the functions below are performing cyclic copy i.e. copy with recycling
  either at the destination ('dest') or at the source ('src'). In this file,
@@ -49,7 +29,7 @@ int _compare_byteblocks(const char *a, int ia, const char *b, int ib,
  *   - Reads the linear subset of blocks from 'src' defined by 'i1', 'i2'.
  *   - Writing is recycled in 'dest': it starts at its first block
  *     and comes back to it after it reaches its last block.
- *   - Don't do anything if i1 > i2.
+ *   - Doesn't do anything if i1 > i2.
  */
 void _Ocopy_byteblocks_from_i1i2(int i1, int i2,
 		char *dest, size_t dest_nblocks,
@@ -86,33 +66,36 @@ void _Ocopy_byteblocks_from_i1i2(int i1, int i2,
 
 /*
  * Performs (in short):
- *   dest[k % dest_nblocks] <- src[subset[k] - 1] for 0 <= k <= n
+ *   dest[k % dest_nblocks] <- src[subscript[k] - 1] for 0 <= k <= n
  * Details:
  *   - Reads the blocks from 'src' that have the 1-based offsets passed
- *     in 'subset'.
+ *     in 'subscript'.
  *   - Writing is recycled in 'dest': it starts at its first block
  *     and comes back to it after it reaches its last block.
  */
-void _Ocopy_byteblocks_from_subset(const int *subset, int n,
+void _Ocopy_byteblocks_from_subscript(const int *subscript, int n,
 		char *dest, size_t dest_nblocks,
 		const char *src, size_t src_nblocks, size_t blocksize)
 {
 	char *a;
 	const char *b;
-	int i, j, k, z;
+	int i, k, sub_k, z;
 
 	if (dest_nblocks == 0 && n != 0)
 		error("no destination to copy to");
 	a = dest;
 	for (i = k = 0; k < n; i++, k++) {
-		j = subset[k] - 1;
-		if (j < 0 || j >= src_nblocks)
+		sub_k = subscript[k];
+		if (sub_k == NA_INTEGER)
+			error("NAs are not allowed in subscript");
+		sub_k--;
+		if (sub_k < 0 || sub_k >= src_nblocks)
 			error("subscript out of bounds");
 		if (i >= dest_nblocks) {
 			i = 0; /* recycle */
 			a = dest;
 		}
-		b = src + j * blocksize;
+		b = src + sub_k * blocksize;
 		for (z = 0; z < blocksize; z++) {
 			*(a++) = *(b++);
 		}
@@ -130,7 +113,7 @@ void _Ocopy_byteblocks_from_subset(const int *subset, int n,
  *   - Writes to the linear subset of blocks in 'dest' defined by 'i1', 'i2'.
  *   - Reading is recycled in 'src': it starts at its first block
  *     and comes back to it after it reaches its last block.
- *   - Don't do anything if i1 > i2.
+ *   - Doesn't do anything if i1 > i2.
  */
 void _Ocopy_byteblocks_to_i1i2(int i1, int i2,
 		char *dest, size_t dest_nblocks,
@@ -167,33 +150,36 @@ void _Ocopy_byteblocks_to_i1i2(int i1, int i2,
 
 /*
  * Performs (in short):
- *   dest[subset[k] - 1] <- src[k % src_nblocks] for 0 <= k <= n
+ *   dest[subscript[k] - 1] <- src[k % src_nblocks] for 0 <= k <= n
  * Details:
  *   - Writes the blocks in 'dest' that have the 1-based offsets passed
- *     in 'subset'.
+ *     in 'subscript'.
  *   - Reading is recycled in 'src': it starts at its first block
  *     and comes back to it after it reaches its last block.
  */
-void _Ocopy_byteblocks_to_subset(const int *subset, int n,
+void _Ocopy_byteblocks_to_subscript(const int *subscript, int n,
 		char *dest, size_t dest_nblocks,
 		const char *src, size_t src_nblocks, size_t blocksize)
 {
 	char *a;
 	const char *b;
-	int i, j, k, z;
+	int j, k, sub_k, z;
 
 	if (src_nblocks == 0 && n != 0)
 		error("no value provided");
 	b = src;
 	for (j = k = 0; k < n; j++, k++) {
-		i = subset[k] - 1;
-		if (i < 0 || i >= dest_nblocks)
+		sub_k = subscript[k];
+		if (sub_k == NA_INTEGER)
+			error("NAs are not allowed in subscripted assignments");
+		sub_k--;
+		if (sub_k < 0 || sub_k >= dest_nblocks)
 			error("subscript out of bounds");
 		if (j >= src_nblocks) {
 			j = 0; /* recycle */
 			b = src;
 		}
-		a = dest + i * blocksize;
+		a = dest + sub_k * blocksize;
 		for (z = 0; z < blocksize; z++) {
 			*(a++) = *(b++);
 		}
@@ -212,7 +198,7 @@ void _Ocopy_byteblocks_to_subset(const int *subset, int n,
  *   - Reads the linear subset of bytes from 'src' defined by 'i1', 'i2'.
  *   - Writing is recycled in 'dest': it starts at its first byte
  *     and comes back to it after it reaches its last byte.
- *   - Don't do anything if i1 > i2.
+ *   - Doesn't do anything if i1 > i2.
  */
 void _Ocopy_bytes_from_i1i2_with_lkup(int i1, int i2,
 		char *dest, int dest_nbytes,
@@ -249,21 +235,21 @@ void _Ocopy_bytes_from_i1i2_with_lkup(int i1, int i2,
 
 /*
  * Performs (in short):
- *   dest[k % dest_nbytes] <- tr(src[subset[k] - 1]) for 0 <= k <= n
+ *   dest[k % dest_nbytes] <- tr(src[subscript[k] - 1]) for 0 <= k <= n
  * Note: tr() stands for translation.
  * Details:
  *   - Reads the bytes from 'src' that have the 1-based offsets passed
- *     in 'subset'.
+ *     in 'subscript'.
  *   - Writing is recycled in 'dest': it starts at its first byte
  *     and comes back to it after it reaches its last byte.
  */
-void _Ocopy_bytes_from_subset_with_lkup(const int *subset, int n,
+void _Ocopy_bytes_from_subscript_with_lkup(const int *subscript, int n,
 		char *dest, int dest_nbytes,
 		const char *src, int src_nbytes,
 		const int *lkup, int lkup_length)
 {
 	char src_val;
-	int i, j, k, lkup_key, lkup_val;
+	int j, k, sub_k, lkup_key, lkup_val;
 
 	if (dest_nbytes == 0 && n != 0)
 		error("no destination to copy to");
@@ -271,10 +257,13 @@ void _Ocopy_bytes_from_subset_with_lkup(const int *subset, int n,
 		if (j >= dest_nbytes) { /* recycle */
 			j = 0;
 		}
-		i = subset[k] - 1;
-		if (i < 0 || i >= src_nbytes)
+		sub_k = subscript[k];
+		if (sub_k == NA_INTEGER)
+			error("NAs are not allowed in subscript");
+		sub_k--;
+		if (sub_k < 0 || sub_k >= src_nbytes)
 			error("subscript out of bounds");
-		src_val = src[i];
+		src_val = src[sub_k];
 		lkup_key = (unsigned char) src_val;
 		if (lkup_key >= lkup_length || (lkup_val = lkup[lkup_key]) == NA_INTEGER) {
 			error("key %d not in lookup table", lkup_key);
@@ -295,7 +284,7 @@ void _Ocopy_bytes_from_subset_with_lkup(const int *subset, int n,
  *   - Writes to the linear subset of bytes in 'dest' defined by 'i1', 'i2'.
  *   - Reading is recycled in 'src': it starts at its first byte
  *     and comes back to it after it reaches its last byte.
- *   - Don't do anything if i1 > i2.
+ *   - Doesn't do anything if i1 > i2.
  */
 void _Ocopy_bytes_to_i1i2_with_lkup(int i1, int i2,
 		char *dest, int dest_nbytes,
@@ -331,21 +320,21 @@ void _Ocopy_bytes_to_i1i2_with_lkup(int i1, int i2,
 
 /*
  * Performs (in short):
- *   dest[subset[k] - 1] <- tr(src[k % src_nbytes]) for 0 <= k <= n
+ *   dest[subscript[k] - 1] <- tr(src[k % src_nbytes]) for 0 <= k <= n
  * Note: tr() stands for translation.
  * Details:
  *   - Writes the bytes in 'dest' that have the 1-based offsets passed
- *     in 'subset'.
+ *     in 'subscript'.
  *   - Reading is recycled in 'src': it starts at its first byte
  *     and comes back to it after it reaches its last byte.
  */
-void _Ocopy_bytes_to_subset_with_lkup(const int *subset, int n,
+void _Ocopy_bytes_to_subscript_with_lkup(const int *subscript, int n,
 		char *dest, int dest_nbytes,
 		const char *src, int src_nbytes,
 		const int *lkup, int lkup_length)
 {
 	char src_val;
-	int i, j, k, lkup_key, lkup_val;
+	int j, k, sub_k, lkup_key, lkup_val;
 
 	if (src_nbytes == 0 && n != 0)
 		error("no value provided");
@@ -353,15 +342,18 @@ void _Ocopy_bytes_to_subset_with_lkup(const int *subset, int n,
 		if (j >= src_nbytes) { /* recycle */
 			j = 0;
 		}
-		i = subset[k] - 1;
-		if (i < 0 || i >= dest_nbytes)
+		sub_k = subscript[k];
+		if (sub_k == NA_INTEGER)
+			error("NAs are not allowed in subscripted assignments");
+		sub_k--;
+		if (sub_k < 0 || sub_k >= dest_nbytes)
 			error("subscript out of bounds");
 		src_val = src[j];
 		lkup_key = (unsigned char) src_val;
 		if (lkup_key >= lkup_length || (lkup_val = lkup[lkup_key]) == NA_INTEGER) {
 			error("key %d not in lookup table", lkup_key);
 		}
-		dest[i] = (char) lkup_val;
+		dest[sub_k] = (char) lkup_val;
 	}
 	if (j < src_nbytes)
 		warning("number of items to replace is not a multiple "
@@ -377,7 +369,7 @@ void _Ocopy_bytes_to_subset_with_lkup(const int *subset, int n,
  *   - Reads the linear subset of blocks from 'src' defined by 'i1', 'i2'.
  *   - Writing is recycled in 'dest': it starts at its last block
  *     and comes back to it after it reaches its first block.
- *   - Don't do anything if i1 > i2.
+ *   - Doesn't do anything if i1 > i2.
  */
 void _Orevcopy_byteblocks_from_i1i2(int i1, int i2,
 		char *dest, size_t dest_nblocks,
@@ -418,7 +410,7 @@ void _Orevcopy_byteblocks_from_i1i2(int i1, int i2,
  *   - Reads the linear subset of bytes from 'src' defined by 'i1', 'i2'.
  *   - Writing is recycled in 'dest': it starts at its last byte
  *     and comes back to it after it reaches its first byte.
- *   - Don't do anything if i1 > i2.
+ *   - Doesn't do anything if i1 > i2.
  */
 void _Orevcopy_bytes_from_i1i2_with_lkup(int i1, int i2,
 		char *dest, int dest_nbytes,
@@ -461,7 +453,7 @@ void _Orevcopy_bytes_from_i1i2_with_lkup(int i1, int i2,
  *   - Reads the linear subset of bytes from 'src' defined by 'i1', 'i2'.
  *   - Writing is recycled in 'dest': it starts at its first element
  *     and comes back to it after it reaches its last element.
- *   - Don't do anything if i1 > i2.
+ *   - Doesn't do anything if i1 > i2.
  */
 void _Ocopy_bytes_from_i1i2_to_complex(int i1, int i2,
 		Rcomplex *dest, int dest_nbytes,

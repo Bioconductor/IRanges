@@ -83,7 +83,7 @@ SharedDouble.read <- function(x, i, imax=integer(0))
             imax <- as.integer(imax)
         .Call("SharedDouble_read_nums_from_i1i2", x, i, imax, PACKAGE="IRanges")
     } else {
-        .Call("SharedDouble_read_nums_from_subset", x, i, PACKAGE="IRanges")
+        .Call("SharedDouble_read_nums_from_subscript", x, i, PACKAGE="IRanges")
     }
 }
 
@@ -100,7 +100,7 @@ SharedDouble.write <- function(x, i, imax=integer(0), value)
             imax <- as.integer(imax)
         .Call("SharedDouble_write_nums_to_i1i2", x, i, imax, value, PACKAGE="IRanges")
     } else {
-        .Call("SharedDouble_write_nums_to_subset", x, i, value, PACKAGE="IRanges")
+        .Call("SharedDouble_write_nums_to_subscript", x, i, value, PACKAGE="IRanges")
     }
     x
 }
@@ -113,23 +113,4 @@ SharedDouble.write <- function(x, i, imax=integer(0), value)
 setMethod("as.numeric", "SharedDouble",
     function(x, ...) SharedDouble.read(x, 1L, length(x))
 )
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Data comparison.
-###
-### A wrapper to the very fast memcmp() C-function.
-### Arguments MUST be the following or it will crash R:
-###   x1, x2: "SharedDouble" objects
-###   start1, start2, width: single integers
-### In addition: 1 <= start1 <= start1+width-1 <= length(x1)
-###              1 <= start2 <= start2+width-1 <= length(x2)
-### WARNING: This function is voluntarly unsafe (it doesn't check its
-### arguments) because we want it to be the fastest possible!
-###
-
-SharedDouble.compare <- function(x1, start1, x2, start2, width)
-{
-    .Call("SharedDouble_memcmp", x1, start1, x2, start2, width, PACKAGE="IRanges")
-}
 

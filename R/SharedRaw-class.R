@@ -109,7 +109,7 @@ SharedRaw.readInts <- function(x, i, imax=integer(0))
             imax <- as.integer(imax)
         .Call("SharedRaw_read_ints_from_i1i2", x, i, imax, PACKAGE="IRanges")
     } else {
-        .Call("SharedRaw_read_ints_from_subset", x, i, PACKAGE="IRanges")
+        .Call("SharedRaw_read_ints_from_subscript", x, i, PACKAGE="IRanges")
     }
 }
 
@@ -126,7 +126,7 @@ SharedRaw.writeInts <- function(x, i, imax=integer(0), value)
             imax <- as.integer(imax)
         .Call("SharedRaw_write_ints_to_i1i2", x, i, imax, value, PACKAGE="IRanges")
     } else {
-        .Call("SharedRaw_write_ints_to_subset", x, i, value, PACKAGE="IRanges")
+        .Call("SharedRaw_write_ints_to_subscript", x, i, value, PACKAGE="IRanges")
     }
     x
 }
@@ -149,10 +149,10 @@ SharedRaw.read <- function(x, i, imax=integer(0), dec_lkup=NULL)
                   x, i, imax, dec_lkup, PACKAGE="IRanges")
     } else {
         if (is.null(dec_lkup))
-            .Call("SharedRaw_read_chars_from_subset",
+            .Call("SharedRaw_read_chars_from_subscript",
                   x, i, PACKAGE="IRanges")
         else
-            .Call("SharedRaw_read_enc_chars_from_subset",
+            .Call("SharedRaw_read_enc_chars_from_subscript",
                   x, i, dec_lkup, PACKAGE="IRanges")
     }
 }
@@ -177,10 +177,10 @@ SharedRaw.write <- function(x, i, imax=integer(0), value, enc_lkup=NULL)
                   x, i, imax, value, enc_lkup, PACKAGE="IRanges")
     } else {
         if (is.null(enc_lkup))
-            .Call("SharedRaw_write_chars_to_subset",
+            .Call("SharedRaw_write_chars_to_subscript",
                   x, i, value, PACKAGE="IRanges")
         else
-            .Call("SharedRaw_write_enc_chars_to_subset",
+            .Call("SharedRaw_write_enc_chars_to_subscript",
                   x, i, value, enc_lkup, PACKAGE="IRanges")
     }
     x
@@ -199,7 +199,7 @@ SharedRaw.readComplexes <- function(x, i, imax=integer(0), lkup)
         .Call("SharedRaw_read_complexes_from_i1i2",
               x, i, imax, lkup, PACKAGE="IRanges")
     } else {
-        .Call("SharedRaw_read_complexes_from_subset",
+        .Call("SharedRaw_read_complexes_from_subscript",
               x, i, lkup, PACKAGE="IRanges")
     }
 }
@@ -262,21 +262,4 @@ setMethod("as.integer", "SharedRaw",
 setMethod("toString", "SharedRaw",
     function(x, ...) SharedRaw.read(x, 1, length(x))
 )
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Data comparison.
-###
-### A wrapper to the very fast memcmp() C-function.
-### Arguments MUST be the following or it will crash R:
-###   x1, x2: SharedRaw objects
-###   start1, start2, width: single integers
-### In addition: 1 <= start1 <= start1+width-1 <= length(x1)
-###              1 <= start2 <= start2+width-1 <= length(x2)
-### WARNING: This function is voluntarly unsafe (it doesn't check its
-### arguments) because we want it to be the fastest possible!
-###
-
-SharedRaw.compare <- function(x1, start1, x2, start2, width)
-    .Call("SharedRaw_memcmp", x1, start1, x2, start2, width, PACKAGE="IRanges")
 

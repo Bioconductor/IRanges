@@ -226,7 +226,7 @@ DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_byteblocks_from_i1i2,
 	(    i1,     i2,       dest,        dest_nblocks,             src,        src_nblocks,        blocksize)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_byteblocks_from_subset,
+DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_byteblocks_from_subscript,
 	(const int *subset, int n, char *dest, size_t dest_nblocks, const char *src, size_t src_nblocks, size_t blocksize),
 	(           subset,     n,       dest,        dest_nblocks,             src,        src_nblocks,        blocksize)
 )
@@ -236,7 +236,7 @@ DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_byteblocks_to_i1i2,
 	(    i1,     i2,       dest,        dest_nblocks,             src,        src_nblocks,        blocksize)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_byteblocks_to_subset,
+DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_byteblocks_to_subscript,
 	(const int *subset, int n, char *dest, size_t dest_nblocks, const char *src, size_t src_nblocks, size_t blocksize),
 	(           subset,     n,       dest,        dest_nblocks,             src,        src_nblocks,        blocksize)
 )
@@ -246,7 +246,7 @@ DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_bytes_from_i1i2_with_lkup,
 	(    i1,     i2,       dest,     dest_nbytes,             src,     src_nbytes,            lkup,     lkup_length)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_bytes_from_subset_with_lkup,
+DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_bytes_from_subscript_with_lkup,
 	(const int *subset, int n, char *dest, int dest_nbytes, const char *src, int src_nbytes, const int *lkup, int lkup_length),
 	(           subset,     n,       dest,     dest_nbytes,             src,     src_nbytes,            lkup,     lkup_length)
 )
@@ -256,7 +256,7 @@ DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_bytes_to_i1i2_with_lkup,
 	(    i1,     i2,       dest,     dest_nbytes,             src,     src_nbytes,            lkup,     lkup_length)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_bytes_to_subset_with_lkup,
+DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_bytes_to_subscript_with_lkup,
 	(const int *subset, int n, char *dest, int dest_nbytes, const char *src, int src_nbytes, const int *lkup, int lkup_length),
 	(           subset,     n,       dest,     dest_nbytes,             src,     src_nbytes,            lkup,     lkup_length)
 )

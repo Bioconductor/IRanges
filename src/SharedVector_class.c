@@ -154,6 +154,23 @@ SEXP _new_SharedVector(const char *classname, SEXP tag)
  * SharedVector object of the same subtype.
  */
 
+SEXP SharedVector_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
+{
+	SEXP tag1, tag2, ans;
+	int offset1, offset2, nelt;
+
+	tag1 = _get_SharedVector_tag(x1);
+	offset1 = INTEGER(start1)[0] - 1;
+	tag2 = _get_SharedVector_tag(x2);
+	offset2 = INTEGER(start2)[0] - 1;
+	nelt = INTEGER(width)[0];
+
+	PROTECT(ans = NEW_INTEGER(1));
+	INTEGER(ans)[0] = _vector_memcmp(tag1, offset1, tag2, offset2, nelt);
+	UNPROTECT(1);
+	return ans;
+}
+
 SEXP SharedVector_memcpy(SEXP out, SEXP out_start, SEXP in, SEXP in_start,
 		SEXP width)
 {
@@ -185,13 +202,13 @@ SEXP SharedVector_copy_from_start(SEXP out, SEXP in, SEXP in_start, SEXP width,
 	return out;
 }
 
-SEXP SharedVector_copy_from_subset(SEXP out, SEXP in, SEXP subset, SEXP lkup)
+SEXP SharedVector_copy_from_subscript(SEXP out, SEXP in, SEXP subscript, SEXP lkup)
 {
 	SEXP out_tag, in_tag;
 
 	out_tag = _get_SharedVector_tag(out);
 	in_tag = _get_SharedVector_tag(in);
-	_vector_Ocopy_from_subset(out_tag, in_tag, subset, lkup);
+	_vector_Ocopy_from_subscript(out_tag, in_tag, subscript, lkup);
 	return out;
 }
 

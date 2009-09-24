@@ -66,10 +66,10 @@ setMethod("[", "XRaw",
             stop("invalid subsetting")
         if (missing(i))
             return(x)
-        if (!is.numeric(i) || any(is.na(i)))
+        if (!is.numeric(i))
             stop("invalid subsetting")
-        if (any(i < 1) || any(i > length(x)))
-            stop("subscript out of bounds")
+        if (!is.integer(i))
+            i <- as.integer(i)
         shared <- SharedRaw(length(i))
         SharedVector.copy(shared, x@offset + i, src=x@shared)
         x@shared <- shared

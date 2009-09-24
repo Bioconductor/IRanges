@@ -83,7 +83,7 @@ SharedInteger.read <- function(x, i, imax=integer(0))
             imax <- as.integer(imax)
         .Call("SharedInteger_read_ints_from_i1i2", x, i, imax, PACKAGE="IRanges")
     } else {
-        .Call("SharedInteger_read_ints_from_subset", x, i, PACKAGE="IRanges")
+        .Call("SharedInteger_read_ints_from_subscript", x, i, PACKAGE="IRanges")
     }
 }
 
@@ -100,7 +100,7 @@ SharedInteger.write <- function(x, i, imax=integer(0), value)
             imax <- as.integer(imax)
         .Call("SharedInteger_write_ints_to_i1i2", x, i, imax, value, PACKAGE="IRanges")
     } else {
-        .Call("SharedInteger_write_ints_to_subset", x, i, value, PACKAGE="IRanges")
+        .Call("SharedInteger_write_ints_to_subscript", x, i, value, PACKAGE="IRanges")
     }
     x
 }
@@ -113,23 +113,4 @@ SharedInteger.write <- function(x, i, imax=integer(0), value)
 setMethod("as.integer", "SharedInteger",
     function(x, ...) SharedInteger.read(x, 1L, length(x))
 )
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Data comparison.
-###
-### A wrapper to the very fast memcmp() C-function.
-### Arguments MUST be the following or it will crash R:
-###   x1, x2: "SharedInteger" objects
-###   start1, start2, width: single integers
-### In addition: 1 <= start1 <= start1+width-1 <= length(x1)
-###              1 <= start2 <= start2+width-1 <= length(x2)
-### WARNING: This function is voluntarly unsafe (it doesn't check its
-### arguments) because we want it to be the fastest possible!
-###
-
-SharedInteger.compare <- function(x1, start1, x2, start2, width)
-{
-    .Call("SharedInteger_memcmp", x1, start1, x2, start2, width, PACKAGE="IRanges")
-}
 

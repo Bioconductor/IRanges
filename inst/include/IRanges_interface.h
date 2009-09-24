@@ -206,7 +206,7 @@ void Ocopy_byteblocks_from_i1i2(
 	size_t blocksize
 );
 
-void Ocopy_byteblocks_from_subset(
+void Ocopy_byteblocks_from_subscript(
 	const int *subset,
 	int n,
 	char *dest,
@@ -226,7 +226,7 @@ void Ocopy_byteblocks_to_i1i2(
 	size_t blocksize
 );
 
-void Ocopy_byteblocks_to_subset(
+void Ocopy_byteblocks_to_subscript(
 	const int *subset,
 	int n,
 	char *dest,
@@ -247,7 +247,7 @@ void Ocopy_bytes_from_i1i2_with_lkup(
 	int lkup_length
 );
 
-void Ocopy_bytes_from_subset_with_lkup(
+void Ocopy_bytes_from_subscript_with_lkup(
 	const int *subset,
 	int n,
 	char *dest,
@@ -269,7 +269,7 @@ void Ocopy_bytes_to_i1i2_with_lkup(
 	int lkup_length
 );
 
-void Ocopy_bytes_to_subset_with_lkup(
+void Ocopy_bytes_to_subscript_with_lkup(
 	const int *subset,
 	int n,
 	char *dest,

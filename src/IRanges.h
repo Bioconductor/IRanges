@@ -183,15 +183,6 @@ SEXP _CharAEAE_asCHARACTER(const CharAEAE *char_aeae);
 
 SEXP debug_copy_byteblocks();
 
-int _compare_byteblocks(
-	const char *a,
-	int ia,
-	const char *b,
-	int ib,
-	int n,
-	size_t blocksize
-);
-
 void _Ocopy_byteblocks_from_i1i2(
 	int i1,
 	int i2,
@@ -202,8 +193,8 @@ void _Ocopy_byteblocks_from_i1i2(
 	size_t blocksize
 );
 
-void _Ocopy_byteblocks_from_subset(
-	const int *subset,
+void _Ocopy_byteblocks_from_subscript(
+	const int *subscript,
 	int n,
 	char *dest,
 	size_t dest_nblocks,
@@ -222,8 +213,8 @@ void _Ocopy_byteblocks_to_i1i2(
 	size_t blocksize
 );
 
-void _Ocopy_byteblocks_to_subset(
-	const int *subset,
+void _Ocopy_byteblocks_to_subscript(
+	const int *subscript,
 	int n,
 	char *dest,
 	size_t dest_nblocks,
@@ -243,8 +234,8 @@ void _Ocopy_bytes_from_i1i2_with_lkup(
 	int lkup_length
 );
 
-void _Ocopy_bytes_from_subset_with_lkup(
-	const int *subset,
+void _Ocopy_bytes_from_subscript_with_lkup(
+	const int *subscript,
 	int n,
 	char *dest,
 	int dest_nbytes,
@@ -265,8 +256,8 @@ void _Ocopy_bytes_to_i1i2_with_lkup(
 	int lkup_length
 );
 
-void _Ocopy_bytes_to_subset_with_lkup(
-	const int *subset,
+void _Ocopy_bytes_to_subscript_with_lkup(
+	const int *subscript,
 	int n,
 	char *dest,
 	int dest_nbytes,
@@ -311,6 +302,14 @@ void _Ocopy_bytes_from_i1i2_to_complex(
 
 /* vector_copy.c */
 
+int _vector_memcmp(
+	SEXP x1,
+	int x1_offset,
+	SEXP x2,
+	int x2_offset,
+	int nelt
+);
+
 void _vector_memcpy(
 	SEXP out,
 	int out_offset,
@@ -328,10 +327,10 @@ void _vector_Ocopy_from_offset(
 	int reverse
 );
 
-void _vector_Ocopy_from_subset(
+void _vector_Ocopy_from_subscript(
 	SEXP out,
 	SEXP in,
-	SEXP subset,
+	SEXP subscript,
 	SEXP lkup
 );
 
@@ -343,10 +342,10 @@ void _vector_Ocopy_to_offset(
 	SEXP lkup
 );
 
-void _vector_Ocopy_to_subset(
+void _vector_Ocopy_to_subscript(
 	SEXP out,
 	SEXP in,
-	SEXP subset,
+	SEXP subscript,
 	SEXP lkup
 );
 
@@ -639,6 +638,14 @@ int _get_SharedVector_length(SEXP x);
 
 SEXP _new_SharedVector(const char *classname, SEXP tag);
 
+SEXP SharedVector_memcmp(
+	SEXP x1,
+	SEXP start1,
+	SEXP x2,
+	SEXP start2,
+	SEXP width
+);
+
 SEXP SharedVector_memcpy(
 	SEXP out,
 	SEXP out_start,
@@ -656,10 +663,10 @@ SEXP SharedVector_copy_from_start(
 	SEXP reverse
 );
 
-SEXP SharedVector_copy_from_subset(
+SEXP SharedVector_copy_from_subscript(
 	SEXP out,
 	SEXP in,
-	SEXP subset,
+	SEXP subscript,
 	SEXP lkup
 );
 
@@ -679,23 +686,15 @@ SEXP SharedRaw_new(
 
 SEXP SharedRaw_address0(SEXP x);
 
-SEXP SharedRaw_memcmp(
-	SEXP x1,
-	SEXP start1,
-	SEXP x2,
-	SEXP start2,
-	SEXP width
-);
-
 SEXP SharedRaw_read_chars_from_i1i2(
 	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
-SEXP SharedRaw_read_chars_from_subset(
+SEXP SharedRaw_read_chars_from_subscript(
 	SEXP src,
-	SEXP subset
+	SEXP subscript
 );
 
 SEXP SharedRaw_write_chars_to_i1i2(
@@ -705,9 +704,9 @@ SEXP SharedRaw_write_chars_to_i1i2(
 	SEXP string
 );
 
-SEXP SharedRaw_write_chars_to_subset(
+SEXP SharedRaw_write_chars_to_subscript(
 	SEXP dest,
-	SEXP subset,
+	SEXP subscript,
 	SEXP string
 );
 
@@ -717,9 +716,9 @@ SEXP SharedRaw_read_ints_from_i1i2(
 	SEXP imax
 );
 
-SEXP SharedRaw_read_ints_from_subset(
+SEXP SharedRaw_read_ints_from_subscript(
 	SEXP src,
-	SEXP subset
+	SEXP subscript
 );
 
 SEXP SharedRaw_write_ints_to_i1i2(
@@ -729,9 +728,9 @@ SEXP SharedRaw_write_ints_to_i1i2(
 	SEXP val
 );
 
-SEXP SharedRaw_write_ints_to_subset(
+SEXP SharedRaw_write_ints_to_subscript(
 	SEXP dest,
-	SEXP subset,
+	SEXP subscript,
 	SEXP val
 );
 
@@ -742,9 +741,9 @@ SEXP SharedRaw_read_enc_chars_from_i1i2(
 	SEXP lkup
 );
 
-SEXP SharedRaw_read_enc_chars_from_subset(
+SEXP SharedRaw_read_enc_chars_from_subscript(
 	SEXP src,
-	SEXP subset,
+	SEXP subscript,
 	SEXP lkup
 );
 
@@ -756,9 +755,9 @@ SEXP SharedRaw_write_enc_chars_to_i1i2(
 	SEXP lkup
 );
 
-SEXP SharedRaw_write_enc_chars_to_subset(
+SEXP SharedRaw_write_enc_chars_to_subscript(
 	SEXP dest,
-	SEXP subset,
+	SEXP subscript,
 	SEXP string,
 	SEXP lkup
 );
@@ -770,9 +769,9 @@ SEXP SharedRaw_read_complexes_from_i1i2(
 	SEXP lkup
 );
 
-SEXP SharedRaw_read_complexes_from_subset(
+SEXP SharedRaw_read_complexes_from_subscript(
 	SEXP src,
-	SEXP subset,
+	SEXP subscript,
 	SEXP lkup
 );
 
@@ -788,23 +787,15 @@ SEXP SharedInteger_new(
 
 SEXP SharedInteger_get_show_string(SEXP x);
 
-SEXP SharedInteger_memcmp(
-	SEXP x1,
-	SEXP start1,
-	SEXP x2,
-	SEXP start2,
-	SEXP width
-);
-
 SEXP SharedInteger_read_ints_from_i1i2(
 	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
-SEXP SharedInteger_read_ints_from_subset(
+SEXP SharedInteger_read_ints_from_subscript(
 	SEXP src,
-	SEXP subset
+	SEXP subscript
 );
 
 SEXP SharedInteger_write_ints_to_i1i2(
@@ -814,9 +805,9 @@ SEXP SharedInteger_write_ints_to_i1i2(
 	SEXP val
 );
 
-SEXP SharedInteger_write_ints_to_subset(
+SEXP SharedInteger_write_ints_to_subscript(
 	SEXP dest,
-	SEXP subset,
+	SEXP subscript,
 	SEXP val
 );
 
@@ -832,23 +823,15 @@ SEXP SharedDouble_new(
 
 SEXP SharedDouble_get_show_string(SEXP x);
 
-SEXP SharedDouble_memcmp(
-	SEXP x1,
-	SEXP start1,
-	SEXP x2,
-	SEXP start2,
-	SEXP width
-);
-
 SEXP SharedDouble_read_nums_from_i1i2(
 	SEXP src,
 	SEXP imin,
 	SEXP imax
 );
 
-SEXP SharedDouble_read_nums_from_subset(
+SEXP SharedDouble_read_nums_from_subscript(
 	SEXP src,
-	SEXP subset
+	SEXP subscript
 );
 
 SEXP SharedDouble_write_nums_to_i1i2(
@@ -858,9 +841,9 @@ SEXP SharedDouble_write_nums_to_i1i2(
 	SEXP val
 );
 
-SEXP SharedDouble_write_nums_to_subset(
+SEXP SharedDouble_write_nums_to_subscript(
 	SEXP dest,
-	SEXP subset,
+	SEXP subscript,
 	SEXP val
 );
 

@@ -54,50 +54,6 @@ SEXP SharedRaw_address0(SEXP x)
         return mkString(buf);
 }
 
-/*
- * --- .Call ENTRY POINT ---
- * Comparing the data between 2 SharedRaw objects.
- * From R:
- *   x <- SharedRaw(30)
- *   .Call("SharedRaw_memcmp", x, 1L, x, 10L, 21L, PACKAGE="IRanges")
- */
-
-SEXP SharedRaw_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
-{
-	SEXP tag1, tag2, ans;
-	int i1, i2, n;
-
-#ifdef DEBUG_IRANGES
-	if (debug) {
-		Rprintf("[DEBUG] SharedRaw_memcmp(): BEGIN\n");
-	}
-#endif
-	tag1 = _get_SharedVector_tag(x1);
-	i1 = INTEGER(start1)[0] - 1;
-	tag2 = _get_SharedVector_tag(x2);
-	i2 = INTEGER(start2)[0] - 1;
-	n = INTEGER(width)[0];
-
-#ifdef DEBUG_IRANGES
-	if (debug) {
-		Rprintf("[DEBUG] SharedRaw_memcmp(): ");
-		Rprintf("RAW(tag1)=%p i1=%d RAW(tag2)=%p i2=%d n=%d\n",
-			RAW(tag1), i1, RAW(tag2), i2, n);
-	}
-#endif
-	PROTECT(ans = NEW_INTEGER(1));
-	INTEGER(ans)[0] = _compare_byteblocks((char *) RAW(tag1), i1,
-				(char *) RAW(tag2), i2,
-				n, sizeof(Rbyte));
-#ifdef DEBUG_IRANGES
-	if (debug) {
-		Rprintf("[DEBUG] SharedRaw_memcmp(): END\n");
-	}
-#endif
-	UNPROTECT(1);
-	return ans;
-}
-
 
 /* ==========================================================================
  * Read/write chars from/to a SharedRaw object.
@@ -131,18 +87,18 @@ SEXP SharedRaw_read_chars_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 	return mkString(dest.elts);
 }
 
-SEXP SharedRaw_read_chars_from_subset(SEXP src, SEXP subset)
+SEXP SharedRaw_read_chars_from_subscript(SEXP src, SEXP subscript)
 {
 	SEXP src_tag;
 	int n;
 	CharAE dest;
 
 	src_tag = _get_SharedVector_tag(src);
-	n = LENGTH(subset);
+	n = LENGTH(subscript);
 	dest = _new_CharAE(n + 1);
 	dest.elts[n] = '\0';
 	/* assumes that sizeof(Rbyte) == sizeof(char) */
-	_Ocopy_byteblocks_from_subset(INTEGER(subset), n,
+	_Ocopy_byteblocks_from_subscript(INTEGER(subscript), n,
 			dest.elts, n, (char *) RAW(src_tag), LENGTH(src_tag),
 			sizeof(char));
 	return mkString(dest.elts);
@@ -167,14 +123,14 @@ SEXP SharedRaw_write_chars_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP string)
 	return dest;
 }
 
-SEXP SharedRaw_write_chars_to_subset(SEXP dest, SEXP subset, SEXP string)
+SEXP SharedRaw_write_chars_to_subscript(SEXP dest, SEXP subscript, SEXP string)
 {
 	SEXP dest_tag, src;
 
 	dest_tag = _get_SharedVector_tag(dest);
 	src = STRING_ELT(string, 0);
 	/* assumes that sizeof(Rbyte) == sizeof(char) */
-	_Ocopy_byteblocks_to_subset(INTEGER(subset), LENGTH(subset),
+	_Ocopy_byteblocks_to_subscript(INTEGER(subscript), LENGTH(subscript),
 			(char *) RAW(dest_tag), LENGTH(dest_tag),
 			CHAR(src), LENGTH(src), sizeof(char));
 	return dest;
@@ -213,12 +169,12 @@ SEXP SharedRaw_read_ints_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 }
 
 /*
- * Return an integer vector of same length as 'subset'.
+ * Return an integer vector of same length as 'subscript'.
  * From R:
  *   x <- SharedRaw(30)
- *   .Call("SharedRaw_read_ints_from_subset", x, 25:20, PACKAGE="IRanges")
+ *   .Call("SharedRaw_read_ints_from_subscript", x, 25:20, PACKAGE="IRanges")
  */
-SEXP SharedRaw_read_ints_from_subset(SEXP src, SEXP subset)
+SEXP SharedRaw_read_ints_from_subscript(SEXP src, SEXP subscript)
 {
 	SEXP src_tag, ans;
 	int src_length;
@@ -226,11 +182,11 @@ SEXP SharedRaw_read_ints_from_subset(SEXP src, SEXP subset)
 
 	src_tag = _get_SharedVector_tag(src);
 	src_length = LENGTH(src_tag);
-	n = LENGTH(subset);
+	n = LENGTH(subscript);
 
 	PROTECT(ans = NEW_INTEGER(n));
 	for (j = 0; j < n; j++) {
-		i = INTEGER(subset)[j] - 1;
+		i = INTEGER(subscript)[j] - 1;
 		if (i < 0 || i >= src_length)
 			error("subscript out of bounds");
 		INTEGER(ans)[j] = (unsigned char) RAW(src_tag)[i];
@@ -274,7 +230,7 @@ SEXP SharedRaw_write_ints_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 	return dest;
 }
 
-SEXP SharedRaw_write_ints_to_subset(SEXP dest, SEXP subset, SEXP val)
+SEXP SharedRaw_write_ints_to_subscript(SEXP dest, SEXP subscript, SEXP val)
 {
 	SEXP dest_tag;
 	int dest_length, val_length;
@@ -282,14 +238,14 @@ SEXP SharedRaw_write_ints_to_subset(SEXP dest, SEXP subset, SEXP val)
 	int v;
 
 	val_length = LENGTH(val);
-	n = LENGTH(subset);
+	n = LENGTH(subscript);
 	if (val_length == 0 && n != 0)
 		error("no value provided");
 	dest_tag = _get_SharedVector_tag(dest);
 	dest_length = LENGTH(dest_tag);
 
 	for (j = z = 0; z < n; j++, z++) {
-		i = INTEGER(subset)[z] - 1;
+		i = INTEGER(subscript)[z] - 1;
 		if (i < 0 || i >= dest_length)
 			error("subscript out of bounds");
 		if (j >= val_length)
@@ -333,17 +289,17 @@ SEXP SharedRaw_read_enc_chars_from_i1i2(SEXP src, SEXP imin, SEXP imax, SEXP lku
 	return mkString(dest.elts);
 }
 
-SEXP SharedRaw_read_enc_chars_from_subset(SEXP src, SEXP subset, SEXP lkup)
+SEXP SharedRaw_read_enc_chars_from_subscript(SEXP src, SEXP subscript, SEXP lkup)
 {
 	SEXP src_tag;
 	int n;
 	CharAE dest;
 
 	src_tag = _get_SharedVector_tag(src);
-	n = LENGTH(subset);
+	n = LENGTH(subscript);
 	dest = _new_CharAE(n + 1);
 	dest.elts[n] = '\0';
-	_Ocopy_bytes_from_subset_with_lkup(INTEGER(subset), n,
+	_Ocopy_bytes_from_subscript_with_lkup(INTEGER(subscript), n,
 			dest.elts, n, (char *) RAW(src_tag), LENGTH(src_tag),
 			INTEGER(lkup), LENGTH(lkup));
 	return mkString(dest.elts);
@@ -372,16 +328,16 @@ SEXP SharedRaw_write_enc_chars_to_i1i2(SEXP dest, SEXP imin, SEXP imax,
 	return dest;
 }
 
-SEXP SharedRaw_write_enc_chars_to_subset(SEXP dest, SEXP subset,
+SEXP SharedRaw_write_enc_chars_to_subscript(SEXP dest, SEXP subscript,
 		SEXP string, SEXP lkup)
 {
 	SEXP dest_tag, src;
 	int n;
 
 	dest_tag = _get_SharedVector_tag(dest);
-	n = LENGTH(subset);
+	n = LENGTH(subscript);
 	src = STRING_ELT(string, 0);
-	_Ocopy_bytes_to_subset_with_lkup(INTEGER(subset), n,
+	_Ocopy_bytes_to_subscript_with_lkup(INTEGER(subscript), n,
 		(char *) RAW(dest_tag), LENGTH(dest_tag),
 		CHAR(src), LENGTH(src),
 		INTEGER(lkup), LENGTH(lkup));
@@ -412,13 +368,13 @@ SEXP SharedRaw_read_complexes_from_i1i2(SEXP src, SEXP imin, SEXP imax, SEXP lku
 	return dest;
 }
 
-SEXP SharedRaw_read_complexes_from_subset(SEXP src, SEXP subset, SEXP lkup)
+SEXP SharedRaw_read_complexes_from_subscript(SEXP src, SEXP subscript, SEXP lkup)
 {
 	SEXP dest, src_tag;
 	int n;
 
 	src_tag = _get_SharedVector_tag(src);
-	n = LENGTH(subset);
+	n = LENGTH(subscript);
 	PROTECT(dest = NEW_COMPLEX(n));
 	error("not available yet");
 	UNPROTECT(1);
