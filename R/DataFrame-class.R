@@ -212,6 +212,8 @@ setMethod("[[", "DataFrame",
 setReplaceMethod("[[", "DataFrame",
                  function(x, i, j,..., value)
                  {
+                   nrowX <- nrow(x)
+                   lengthValue <- length(value)
                    if (!missing(j) || length(list(...)) > 0)
                      warning("arguments beyond 'i' ignored")
                    if (missing(i))
@@ -224,8 +226,12 @@ setReplaceMethod("[[", "DataFrame",
                      stop("attempt to select more than one element")
                    if (is.numeric(i) && (i < 1L || i > ncol(x)+1))
                      stop("subscript out of bounds")
-                   if (!is.null(value) && nrow(x) != length(value)) {
-                     stop("length of data must equal the number of rows")
+                   if (!is.null(value) && nrowX != lengthValue) {
+                     if (nrowX %% lengthValue == 0)
+                       value <- rep(value, length.out = nrowX)
+                     else
+                       stop(paste("length of replacement value must be",
+                                  "a multiple of the number of rows"))
                    }
                    x <- callNextMethod(x, i, value=value)
                    ## ensure unique, valid names
