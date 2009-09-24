@@ -31,6 +31,6 @@
 }
 
 \examples{
-  xdf <- DataFrame(as.data.frame(UCBAdmissions))
-  xtabs(Freq ~ Gender + Admit, xdf)
+  df <- DataFrame(as.data.frame(UCBAdmissions))
+  xtabs(Freq ~ Gender + Admit, df)
 }

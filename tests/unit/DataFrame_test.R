@@ -9,44 +9,44 @@ test_DataFrame_construction <- function() {
   ## dups in rn
   checkException(DataFrame(score, row.names = c("a", "b", "a")), silent = TRUE)
   
-  xdf <- DataFrame() # no args
-  checkTrue(validObject(xdf))
+  DF <- DataFrame() # no args
+  checkTrue(validObject(DF))
   row.names <- c("one", "two", "three")
-  xdf <- DataFrame(row.names = row.names) # no args, but row.names
-  checkTrue(validObject(xdf))
-  checkIdentical(rownames(xdf), row.names)
+  DF <- DataFrame(row.names = row.names) # no args, but row.names
+  checkTrue(validObject(DF))
+  checkIdentical(rownames(DF), row.names)
   
-  xdf <- DataFrame(score) # single, unnamed arg
-  checkTrue(validObject(xdf))
-  checkIdentical(xdf[["score"]], score)
-  xdf <- DataFrame(score, row.names = row.names) #with row names
-  checkTrue(validObject(xdf))
-  checkIdentical(rownames(xdf), row.names)
+  DF <- DataFrame(score) # single, unnamed arg
+  checkTrue(validObject(DF))
+  checkIdentical(DF[["score"]], score)
+  DF <- DataFrame(score, row.names = row.names) #with row names
+  checkTrue(validObject(DF))
+  checkIdentical(rownames(DF), row.names)
   
-  xdf <- DataFrame(vals = score) # named vector arg
-  checkTrue(validObject(xdf))
-  checkIdentical(xdf[["vals"]], score)
-  xdf <- DataFrame(counts, vals = score) # mixed named and unnamed
-  checkTrue(validObject(xdf))
-  checkIdentical(xdf[["vals"]], score)
-  checkIdentical(xdf[["counts"]], counts)
-  xdf <- DataFrame(score + score) # unnamed arg with invalid name expression
-  checkTrue(validObject(xdf))
-  checkIdentical(xdf[["score...score"]], score + score)
+  DF <- DataFrame(vals = score) # named vector arg
+  checkTrue(validObject(DF))
+  checkIdentical(DF[["vals"]], score)
+  DF <- DataFrame(counts, vals = score) # mixed named and unnamed
+  checkTrue(validObject(DF))
+  checkIdentical(DF[["vals"]], score)
+  checkIdentical(DF[["counts"]], counts)
+  DF <- DataFrame(score + score) # unnamed arg with invalid name expression
+  checkTrue(validObject(DF))
+  checkIdentical(DF[["score...score"]], score + score)
 
   mat <- cbind(score)
-  xdf <- DataFrame(mat) # single column matrix with column name
-  checkTrue(validObject(xdf))
-  checkIdentical(xdf[["score"]], score)
+  DF <- DataFrame(mat) # single column matrix with column name
+  checkTrue(validObject(DF))
+  checkIdentical(DF[["score"]], score)
   mat <- cbind(score, counts)
-  xdf <- DataFrame(mat) # two column matrix with col names
-  checkTrue(validObject(xdf))
-  checkIdentical(xdf[["score"]], score)
-  checkIdentical(xdf[["counts"]], counts)
+  DF <- DataFrame(mat) # two column matrix with col names
+  checkTrue(validObject(DF))
+  checkIdentical(DF[["score"]], score)
+  checkIdentical(DF[["counts"]], counts)
   colnames(mat) <- NULL
-  xdf <- DataFrame(mat) # two column matrix without col names
-  checkTrue(validObject(xdf))
-  checkIdentical(xdf[["V1"]], score)
+  DF <- DataFrame(mat) # two column matrix without col names
+  checkTrue(validObject(DF))
+  checkIdentical(DF[["V1"]], score)
 
   sw <- DataFrame(swiss, row.names = rownames(swiss)) # a data.frame
   checkIdentical(as.data.frame(sw), swiss)
@@ -60,8 +60,8 @@ test_DataFrame_construction <- function() {
                  data.frame(score = score, swiss = swiss[1:3,]))
 
   ## recycling
-  xdf <- DataFrame(1, score)
-  checkIdentical(xdf[[1]], rep(1, 3)) 
+  DF <- DataFrame(1, score)
+  checkIdentical(DF[[1]], rep(1, 3)) 
 }
 
 test_DataFrame_subset <- function() {
@@ -165,20 +165,20 @@ test_DataFrame_replacement <- function() {
   score <- c(1L, 3L, NA)
   counts <- c(10L, 2L, NA)
 
-  xdf <- DataFrame(score) # single, unnamed arg
+  DF <- DataFrame(score) # single, unnamed arg
   
-  xdf[["counts"]] <- counts
-  checkIdentical(xdf[["counts"]], counts)
-  xdf[[3]] <- score
-  checkIdentical(xdf[["X"]], score)
-  xdf[[3]] <- NULL # deletion
-  xdf[["counts"]] <- NULL
-  xdf$counts <- counts
-  checkIdentical(xdf$counts, counts)
+  DF[["counts"]] <- counts
+  checkIdentical(DF[["counts"]], counts)
+  DF[[3]] <- score
+  checkIdentical(DF[["X"]], score)
+  DF[[3]] <- NULL # deletion
+  DF[["counts"]] <- NULL
+  DF$counts <- counts
+  checkIdentical(DF$counts, counts)
   
   
-  checkException(xdf[[13]] <- counts, silent = TRUE) # index must be < length+1
-  checkException(xdf[["tooshort"]] <- counts[1:2], silent = TRUE)
+  checkException(DF[[13]] <- counts, silent = TRUE) # index must be < length+1
+  checkException(DF[["tooshort"]] <- counts[1:2], silent = TRUE)
 }
 
 ## splitting and combining
@@ -210,12 +210,12 @@ test_DataFrame_combine <- function() {
 
   ## combining factors
   df1 <- data.frame(species = c("Mouse", "Chicken"), n = c(5, 6))
-  xdf1 <- DataFrame(df1)
+  DF1 <- DataFrame(df1)
   df2 <- data.frame(species = c("Human", "Chimp"), n = c(1, 2))
-  xdf2 <- DataFrame(df2)
+  DF2 <- DataFrame(df2)
   df12 <- rbind(df1, df2)
   rownames(df12) <- NULL
-  checkIdentical(as.data.frame(rbind(xdf1, xdf2)), df12)
+  checkIdentical(as.data.frame(rbind(DF1, DF2)), df12)
   
   rownames(sw) <- rn
   checkIdentical(rownames(rbind(sw, DataFrame(swiss))), NULL)  

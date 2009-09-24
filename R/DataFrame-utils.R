@@ -35,23 +35,23 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
     args <- args[hasrows]
   }
 
-  xdf <- args[[1]]
+  df <- args[[1]]
 
   for (i in 2:length(args)) {
-    if (ncol(xdf) != ncol(args[[i]]))
+    if (ncol(df) != ncol(args[[i]]))
       stop("number of columns for arg ", i, " do not match those of first arg")
-    if (!identical(colnames(xdf), colnames(args[[i]])))
+    if (!identical(colnames(df), colnames(args[[i]])))
       stop("column names for arg ", i, " do not match those of first arg")
   }
 
-  if (ncol(xdf) == 0) {
+  if (ncol(df) == 0) {
     ans <- DataFrame()
     ans@nrows <- sum(unlist(lapply(args, nrow), use.names=FALSE))
   } else {
-    cn <- colnames(xdf)
-    cl <- unlist(lapply(as.list(xdf, use.names = FALSE), class))
-    factors <- unlist(lapply(as.list(xdf, use.names = FALSE), is.factor))
-    cols <- lapply(seq_len(length(xdf)), function(i) {
+    cn <- colnames(df)
+    cl <- unlist(lapply(as.list(df, use.names = FALSE), class))
+    factors <- unlist(lapply(as.list(df, use.names = FALSE), is.factor))
+    cols <- lapply(seq_len(length(df)), function(i) {
       cols <- lapply(args, `[[`, cn[i])
       if (factors[i]) { # combine factor levels, coerce to character
         levs <- unique(unlist(lapply(cols, levels), use.names=FALSE))
@@ -65,7 +65,7 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
       ## external objects should support external combination (c)
       as(combined, cl[i])
     })
-    names(cols) <- colnames(xdf)
+    names(cols) <- colnames(df)
     ans <- do.call(DataFrame, cols)
   }
 

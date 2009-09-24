@@ -172,13 +172,13 @@
   counts <- c(10L, 2L, NA)
   row.names <- c("one", "two", "three")
   
-  xdf <- DataFrame(score) # single column
-  xdf[["score"]]
-  xdf <- DataFrame(score, row.names = row.names) #with row names
-  rownames(xdf)
+  df <- DataFrame(score) # single column
+  df[["score"]]
+  df <- DataFrame(score, row.names = row.names) #with row names
+  rownames(df)
   
-  xdf <- DataFrame(vals = score) # explicit naming
-  xdf[["vals"]]
+  df <- DataFrame(vals = score) # explicit naming
+  df[["vals"]]
   
   # a data.frame
   sw <- DataFrame(swiss)
@@ -235,11 +235,11 @@
 
   ## column replacement
 
-  xdf[["counts"]] <- counts
-  xdf[["counts"]]
-  xdf[[3]] <- score
-  xdf[["X"]]
-  xdf[[3]] <- NULL # deletion
+  df[["counts"]] <- counts
+  df[["counts"]]
+  df[[3]] <- score
+  df[["X"]]
+  df[[3]] <- NULL # deletion
 
   ## split
 
