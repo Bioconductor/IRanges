@@ -184,6 +184,52 @@ setValidity2("SharedVector_Pool", .valid.SharedVector_Pool)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Low-level copy.
+###
+
+### 'lkup' must be NULL or a vector of integers
+SharedVector.copy <- function(dest, i, imax=integer(0), src, lkup=NULL)
+{
+    if (!is(src, "SharedVector"))
+        stop("'src' must be a SharedVector object")
+    if (!is.integer(i))
+        i <- as.integer(i)
+    if (length(i) == 1) {
+        if (length(imax) == 0)
+            imax <- i
+        else
+            imax <- as.integer(imax)
+        width <- imax - i + 1L
+        .Call("SharedVector_copy_from_start",
+              dest, src, i, width, lkup, FALSE, PACKAGE="IRanges")
+    } else {
+        .Call("SharedVector_copy_from_subset",
+              dest, src, i, lkup, PACKAGE="IRanges")
+    }
+    dest
+}
+
+### 'lkup' must be NULL or a vector of integers
+SharedVector.reverseCopy <- function(dest, i, imax=integer(0), src, lkup=NULL)
+{
+    if (!is(src, "SharedVector"))
+        stop("'src' must be a SharedVector object")
+    if (length(i) != 1)
+        stop("'i' must be a single integer")
+    if (!is.integer(i))
+        i <- as.integer(i)
+    if (length(imax) == 0)
+        imax <- i
+    else
+        imax <- as.integer(imax)
+    width <- imax - i + 1L
+    .Call("SharedVector_copy_from_start",
+          dest, src, i, width, lkup, TRUE, PACKAGE="IRanges")
+    dest
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
 

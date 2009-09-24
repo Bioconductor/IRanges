@@ -13,11 +13,11 @@ setMethod("copy", "SharedRaw",
         ans_length <- width(solved_SEW)
         ans <- SharedRaw(ans_length)
         if (reverse)
-            SharedRaw.reverseCopy(ans, start(solved_SEW), end(solved_SEW),
-                                  src=x, lkup=lkup)
+            SharedVector.reverseCopy(ans, start(solved_SEW), end(solved_SEW),
+                                     src=x, lkup=lkup)
         else
-            SharedRaw.copy(ans, start(solved_SEW), end(solved_SEW),
-                           src=x, lkup=lkup)
+            SharedVector.copy(ans, start(solved_SEW), end(solved_SEW),
+                              src=x, lkup=lkup)
         return(ans)
     }
 )

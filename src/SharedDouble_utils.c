@@ -148,36 +148,3 @@ SEXP SharedDouble_write_nums_to_subset(SEXP dest, SEXP subset, SEXP val)
 	return dest;
 }
 
-/* ==========================================================================
- * Copy values from a SharedDouble object to another SharedDouble object.
- * --------------------------------------------------------------------------
- */
-
-/* Cyclic writing in 'dest' */
-SEXP SharedDouble_copy_from_i1i2(SEXP dest, SEXP src, SEXP imin, SEXP imax)
-{
-  SEXP dest_tag, src_tag;
-  int i1, i2;
-
-  dest_tag = _get_SharedVector_tag(dest);
-  src_tag = _get_SharedVector_tag(src);
-  i1 = INTEGER(imin)[0] - 1;
-  i2 = INTEGER(imax)[0] - 1;
-  _IRanges_memcpy_from_i1i2(i1, i2,
-                            (char *) REAL(dest_tag), LENGTH(dest_tag),
-                            (char *) REAL(src_tag), LENGTH(src_tag), sizeof(double));
-  return dest;
-}
-
-/* Cyclic writing in 'dest' */
-SEXP SharedDouble_copy_from_subset(SEXP dest, SEXP src, SEXP subset)
-{
-  SEXP dest_tag, src_tag;
-
-  dest_tag = _get_SharedVector_tag(dest);
-  src_tag = _get_SharedVector_tag(src);
-  _IRanges_memcpy_from_subset(INTEGER(subset), LENGTH(subset),
-                              (char *) REAL(dest_tag), LENGTH(dest_tag),
-                              (char *) REAL(src_tag), LENGTH(src_tag), sizeof(double));
-  return dest;
-}

@@ -71,7 +71,7 @@ setMethod("[", "XRaw",
         if (any(i < 1) || any(i > length(x)))
             stop("subscript out of bounds")
         shared <- SharedRaw(length(i))
-        SharedRaw.copy(shared, x@offset + i, src=x@shared)
+        SharedVector.copy(shared, x@offset + i, src=x@shared)
         x@shared <- shared
         x@offset <- 0L
         x@length <- length(shared)
@@ -115,7 +115,7 @@ setMethod("c", "XRaw",
             ## ... so from here 'arg' is guaranteed to be an XRaw object.
             src <- arg@shared
             src_start <- arg@offset + 1L
-            .Call("SharedRaw_memcpy",
+            .Call("SharedVector_memcpy",
                   ans_shared, dest_start, src, src_start, width,
                   PACKAGE="IRanges")
             dest_start <- dest_start + width

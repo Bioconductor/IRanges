@@ -78,7 +78,7 @@ setMethod("[", "XInteger",
         if (drop)
             return(SharedInteger.read(x@shared, x@offset + i))
         shared <- SharedInteger(length(i))
-        SharedInteger.copy(shared, x@offset + i, src=x@shared)
+        SharedVector.copy(shared, x@offset + i, src=x@shared)
         x@shared <- shared
         x@offset <- 0L
         x@length <- length(shared)

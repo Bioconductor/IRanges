@@ -81,7 +81,7 @@ setMethod("[", "XDouble",
         if (drop)
             return(SharedDouble.read(x@shared, x@offset + i))
         shared <- SharedDouble(length(i))
-        SharedDouble.copy(shared, x@offset + i, src=x@shared)
+        SharedVector.copy(shared, x@offset + i, src=x@shared)
         x@shared <- shared
         x@offset <- 0L
         x@length <- length(shared)

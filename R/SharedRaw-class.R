@@ -186,57 +186,6 @@ SharedRaw.write <- function(x, i, imax=integer(0), value, enc_lkup=NULL)
     x
 }
 
-### 'lkup' must be NULL or a vector of integers
-SharedRaw.copy <- function(dest, i, imax=integer(0), src, lkup=NULL)
-{
-    if (!is(src, "SharedRaw"))
-        stop("'src' must be a SharedRaw object")
-    if (!is.integer(i))
-        i <- as.integer(i)
-    if (length(i) == 1) {
-        if (length(imax) == 0)
-            imax <- i
-        else
-            imax <- as.integer(imax)
-        if (is.null(lkup))
-            .Call("SharedRaw_copy_from_i1i2",
-                  dest, src, i, imax, PACKAGE="IRanges")
-        else
-            .Call("SharedRaw_translate_copy_from_i1i2",
-                   dest, src, i, imax, lkup, PACKAGE="IRanges")
-    } else {
-        if (is.null(lkup))
-            .Call("SharedRaw_copy_from_subset",
-                  dest, src, i, PACKAGE="IRanges")
-        else
-            .Call("SharedRaw_translate_copy_from_subset",
-                  dest, src, i, lkup, PACKAGE="IRanges")
-    }
-    dest
-}
-
-### 'lkup' must be NULL or a vector of integers
-SharedRaw.reverseCopy <- function(dest, i, imax=integer(0), src, lkup=NULL)
-{
-    if (!is(src, "SharedRaw"))
-        stop("'src' must be a SharedRaw object")
-    if (length(i) != 1)
-        stop("'i' must be a single integer")
-    if (!is.integer(i))
-        i <- as.integer(i)
-    if (length(imax) == 0)
-        imax <- i
-    else
-        imax <- as.integer(imax)
-    if (is.null(lkup))
-        .Call("SharedRaw_reverse_copy_from_i1i2",
-              dest, src, i, imax, PACKAGE="IRanges")
-    else
-        .Call("SharedRaw_reverse_translate_copy_from_i1i2",
-              dest, src, i, imax, lkup, PACKAGE="IRanges")
-    dest
-}
-
 ### 'lkup' must be a vector of complexes
 SharedRaw.readComplexes <- function(x, i, imax=integer(0), lkup)
 {
@@ -282,8 +231,8 @@ SharedRaw.append <- function(x1, start1, width1, x2, start2, width2)
 
     ans_len <- width1 + width2
     ans <- SharedRaw(ans_len)
-    .Call("SharedRaw_memcpy", ans, 1L, x1, start1, width1, PACKAGE="IRanges")
-    .Call("SharedRaw_memcpy", ans, 1L + width1, x2, start2, width2, PACKAGE="IRanges")
+    .Call("SharedVector_memcpy", ans, 1L, x1, start1, width1, PACKAGE="IRanges")
+    .Call("SharedVector_memcpy", ans, 1L + width1, x2, start2, width2, PACKAGE="IRanges")
     ans
 }
 

@@ -150,6 +150,53 @@ SEXP _new_SharedVector(const char *classname, SEXP tag)
 
 
 /****************************************************************************
+ * Some .Call entry points for copying data from a SharedVector object to a
+ * SharedVector object of the same subtype.
+ */
+
+SEXP SharedVector_memcpy(SEXP out, SEXP out_start, SEXP in, SEXP in_start,
+		SEXP width)
+{
+	SEXP out_tag, in_tag;
+	int out_offset, in_offset, nelt;
+
+	out_tag = _get_SharedVector_tag(out);
+	out_offset = INTEGER(out_start)[0] - 1;
+	in_tag = _get_SharedVector_tag(in);
+	in_offset = INTEGER(in_start)[0] - 1;
+	nelt = INTEGER(width)[0];
+	_vector_memcpy(out_tag, out_offset, in_tag, in_offset, nelt);
+	return out;
+}
+
+SEXP SharedVector_copy_from_start(SEXP out, SEXP in, SEXP in_start, SEXP width,
+		SEXP lkup, SEXP reverse)
+{
+	SEXP out_tag, in_tag;
+	int in_offset, nelt, reverse0;
+
+	out_tag = _get_SharedVector_tag(out);
+	in_tag = _get_SharedVector_tag(in);
+	in_offset = INTEGER(in_start)[0] - 1;
+	nelt = INTEGER(width)[0];
+	reverse0 = LOGICAL(reverse)[0];
+	_vector_copy_from_offset(out_tag, in_tag, in_offset, nelt,
+				 lkup, reverse0);
+	return out;
+}
+
+SEXP SharedVector_copy_from_subset(SEXP out, SEXP in, SEXP subset, SEXP lkup)
+{
+	SEXP out_tag, in_tag;
+
+	out_tag = _get_SharedVector_tag(out);
+	in_tag = _get_SharedVector_tag(in);
+	_vector_copy_from_subset(out_tag, in_tag, subset, lkup);
+	return out;
+}
+
+
+/****************************************************************************
  * C-level getters for SharedVector_Pool objects.
  *
  * Be careful that this function does NOT duplicate the returned slot.

@@ -105,26 +105,6 @@ SharedInteger.write <- function(x, i, imax=integer(0), value)
     x
 }
 
-SharedInteger.copy <- function(dest, i, imax=integer(0), src)
-{
-    if (!is(src, "SharedInteger"))
-        stop("'src' must be a SharedInteger object")
-    if (!is.integer(i))
-        i <- as.integer(i)
-    if (length(i) == 1) {
-        if (length(imax) == 0) 
-            imax <- i
-        else
-            imax <- as.integer(imax)
-        .Call("SharedInteger_copy_from_i1i2",
-              dest, src, i, imax, PACKAGE="IRanges")
-    } else {
-        .Call("SharedInteger_copy_from_subset",
-              dest, src, i, PACKAGE="IRanges")
-    }
-    dest
-}
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.

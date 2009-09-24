@@ -78,6 +78,9 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(externalptr_taglength, 1),
 	CALLMETHOD_DEF(externalptr_show, 1),
 	CALLMETHOD_DEF(externalptr_new, 0),
+	CALLMETHOD_DEF(SharedVector_memcpy, 5),
+	CALLMETHOD_DEF(SharedVector_copy_from_start, 6),
+	CALLMETHOD_DEF(SharedVector_copy_from_subset, 4),
 
 /* SharedRaw_utils.c */
 	CALLMETHOD_DEF(debug_SharedRaw_utils, 0),
@@ -85,10 +88,6 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(SharedRaw_new, 2),
 	CALLMETHOD_DEF(SharedRaw_address0, 1),
 	CALLMETHOD_DEF(SharedRaw_memcmp, 5),
-
-	CALLMETHOD_DEF(SharedRaw_memcpy, 5),
-	CALLMETHOD_DEF(SharedRaw_copy_from_i1i2, 4),
-	CALLMETHOD_DEF(SharedRaw_copy_from_subset, 3),
 
 	CALLMETHOD_DEF(SharedRaw_read_chars_from_i1i2, 3),
 	CALLMETHOD_DEF(SharedRaw_read_chars_from_subset, 2),
@@ -108,20 +107,12 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(SharedRaw_read_complexes_from_i1i2, 4),
 	CALLMETHOD_DEF(SharedRaw_read_complexes_from_subset, 3),
 
-	CALLMETHOD_DEF(SharedRaw_translate_copy_from_i1i2, 5),
-	CALLMETHOD_DEF(SharedRaw_translate_copy_from_subset, 4),
-	CALLMETHOD_DEF(SharedRaw_reverse_copy_from_i1i2, 4),
-	CALLMETHOD_DEF(SharedRaw_reverse_translate_copy_from_i1i2, 5),
-
 /* SharedInteger_utils.c */
 	CALLMETHOD_DEF(debug_SharedInteger_utils, 0),
 
 	CALLMETHOD_DEF(SharedInteger_new, 2),
 	CALLMETHOD_DEF(SharedInteger_get_show_string, 1),
 	CALLMETHOD_DEF(SharedInteger_memcmp, 5),
-
-	CALLMETHOD_DEF(SharedInteger_copy_from_i1i2, 4),
-	CALLMETHOD_DEF(SharedInteger_copy_from_subset, 3),
 
 	CALLMETHOD_DEF(SharedInteger_read_ints_from_i1i2, 3),
 	CALLMETHOD_DEF(SharedInteger_read_ints_from_subset, 2),

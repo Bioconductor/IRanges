@@ -309,6 +309,48 @@ void _IRanges_memcpy_from_i1i2_to_complex(
 );
 
 
+/* vector_copy.c */
+
+void _vector_memcpy(
+	SEXP out,
+	int out_offset,
+	SEXP in,
+	int in_offset,
+	int nelt
+);
+
+void _vector_copy_from_offset(
+	SEXP out,
+	SEXP in,
+	int in_offset,
+	int nelt,
+	SEXP lkup,
+	int reverse
+);
+
+void _vector_copy_from_subset(
+	SEXP out,
+	SEXP in,
+	SEXP subset,
+	SEXP lkup
+);
+
+void _vector_copy_to_offset(
+	SEXP out,
+	SEXP in,
+	int out_offset,
+	int nelt,
+	SEXP lkup
+);
+
+void _vector_copy_to_subset(
+	SEXP out,
+	SEXP in,
+	SEXP subset,
+	SEXP lkup
+);
+
+
 /* SEXP_utils.c */
 
 const char *_get_classname(SEXP x);
@@ -597,6 +639,30 @@ int _get_SharedVector_length(SEXP x);
 
 SEXP _new_SharedVector(const char *classname, SEXP tag);
 
+SEXP SharedVector_memcpy(
+	SEXP out,
+	SEXP out_start,
+	SEXP in,
+	SEXP in_start,
+	SEXP width
+);
+
+SEXP SharedVector_copy_from_start(
+	SEXP out,
+	SEXP in,
+	SEXP in_start,
+	SEXP width,
+	SEXP lkup,
+	SEXP reverse
+);
+
+SEXP SharedVector_copy_from_subset(
+	SEXP out,
+	SEXP in,
+	SEXP subset,
+	SEXP lkup
+);
+
 SEXP _get_SharedVector_Pool_xp_list(SEXP x);
 
 SEXP _new_SharedVector_Pool1(SEXP shared);
@@ -619,27 +685,6 @@ SEXP SharedRaw_memcmp(
 	SEXP x2,
 	SEXP start2,
 	SEXP width
-);
-
-SEXP SharedRaw_memcpy(
-	SEXP dest,
-	SEXP dest_start,
-	SEXP src,
-	SEXP src_start,
-	SEXP width
-);
-
-SEXP SharedRaw_copy_from_i1i2(
-	SEXP dest,
-	SEXP src,
-	SEXP imin,
-	SEXP imax
-);
-
-SEXP SharedRaw_copy_from_subset(
-	SEXP dest,
-	SEXP src,
-	SEXP subset
 );
 
 SEXP SharedRaw_read_chars_from_i1i2(
@@ -731,36 +776,6 @@ SEXP SharedRaw_read_complexes_from_subset(
 	SEXP lkup
 );
 
-SEXP SharedRaw_translate_copy_from_i1i2(
-	SEXP dest,
-	SEXP src,
-	SEXP imin,
-	SEXP imax,
-	SEXP lkup
-);
-
-SEXP SharedRaw_translate_copy_from_subset(
-	SEXP dest,
-	SEXP src,
-	SEXP subset,
-	SEXP lkup
-);
-
-SEXP SharedRaw_reverse_copy_from_i1i2(
-	SEXP dest,
-	SEXP src,
-	SEXP imin,
-	SEXP imax
-);
-
-SEXP SharedRaw_reverse_translate_copy_from_i1i2(
-	SEXP dest,
-	SEXP src,
-	SEXP imin,
-	SEXP imax,
-	SEXP lkup
-);
-
 
 /* SharedInteger_utils.c */
 
@@ -779,19 +794,6 @@ SEXP SharedInteger_memcmp(
 	SEXP x2,
 	SEXP start2,
 	SEXP width
-);
-
-SEXP SharedInteger_copy_from_i1i2(
-	SEXP dest,
-	SEXP src,
-	SEXP imin,
-	SEXP imax
-);
-
-SEXP SharedInteger_copy_from_subset(
-	SEXP dest,
-	SEXP src,
-	SEXP subset
 );
 
 SEXP SharedInteger_read_ints_from_i1i2(
