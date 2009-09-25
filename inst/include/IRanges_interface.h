@@ -184,7 +184,7 @@ SEXP CharAEAE_asCHARACTER(const CharAEAE *char_aeae);
 
 
 /*
- * copy_byteblocks.c
+ * Ocopy_byteblocks.c
  */
 
 int compare_byteblocks(
@@ -401,7 +401,7 @@ int get_SharedVector_length(SEXP x);
  * (see SharedRaw_utils.c)
  */
 
-void memcopy_cachedCharSeq_to_SharedRaw(
+void Ocopy_cachedCharSeq_to_SharedRaw_offset(
 	SEXP out,
 	int out_offset,
 	const cachedCharSeq *in,

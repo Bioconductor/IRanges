@@ -213,7 +213,7 @@ DEFINE_CCALLABLE_STUB(SEXP, CharAEAE_asCHARACTER,
 
 
 /*
- * Stubs for callables defined in copy_byteblocks.c
+ * Stubs for callables defined in Ocopy_byteblocks.c
  */
 
 DEFINE_CCALLABLE_STUB(int, compare_byteblocks,
@@ -425,7 +425,7 @@ DEFINE_CCALLABLE_STUB(int, get_SharedVector_length,
  * Stubs for callables defined in SharedRaw_utils.c
  */
 
-DEFINE_NOVALUE_CCALLABLE_STUB(memcopy_cachedCharSeq_to_SharedRaw,
+DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_cachedCharSeq_to_SharedRaw_offset,
 	(SEXP out, int out_offset, const cachedCharSeq *in, const int *lkup, int lkup_length),
 	(     out,     out_offset,                      in,            lkup,     lkup_length)
 )

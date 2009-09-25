@@ -10,8 +10,8 @@ static const R_CallMethodDef callMethods[] = {
 /* AEbufs.c */
 	CALLMETHOD_DEF(debug_AEbufs, 0),
 
-/* copy_byteblocks.c */
-	CALLMETHOD_DEF(debug_copy_byteblocks, 0),
+/* Ocopy_byteblocks.c */
+	CALLMETHOD_DEF(debug_Ocopy_byteblocks, 0),
 
 /* SEXP_utils.c */
 	CALLMETHOD_DEF(address_asSTRSXP, 1),
@@ -80,8 +80,8 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(externalptr_new, 0),
 	CALLMETHOD_DEF(SharedVector_memcmp, 5),
 	CALLMETHOD_DEF(SharedVector_memcpy, 5),
-	CALLMETHOD_DEF(SharedVector_copy_from_start, 6),
-	CALLMETHOD_DEF(SharedVector_copy_from_subscript, 4),
+	CALLMETHOD_DEF(SharedVector_Ocopy_from_start, 6),
+	CALLMETHOD_DEF(SharedVector_Ocopy_from_subscript, 4),
 
 /* SharedRaw_utils.c */
 	CALLMETHOD_DEF(debug_SharedRaw_utils, 0),
@@ -195,7 +195,7 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_append_string_to_CharAEAE);
 	REGISTER_CCALLABLE(_CharAEAE_asCHARACTER);
 
-/* copy_byteblocks.c */
+/* Ocopy_byteblocks.c */
 	REGISTER_CCALLABLE(_Ocopy_byteblocks_from_i1i2);
 	REGISTER_CCALLABLE(_Ocopy_byteblocks_from_subscript);
 	REGISTER_CCALLABLE(_Ocopy_byteblocks_to_i1i2);
@@ -245,7 +245,7 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_get_SharedVector_length);
 
 /* SharedRaw_utils.c */
-	REGISTER_CCALLABLE(_memcopy_cachedCharSeq_to_SharedRaw);
+	REGISTER_CCALLABLE(_Ocopy_cachedCharSeq_to_SharedRaw_offset);
 
 /* XVector_class.c */
 	REGISTER_CCALLABLE(_get_XVector_shared);

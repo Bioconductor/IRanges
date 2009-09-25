@@ -217,10 +217,10 @@ SharedVector.copy <- function(dest, i, imax=integer(0), src, lkup=NULL)
         else
             imax <- as.integer(imax)
         width <- imax - i + 1L
-        .Call("SharedVector_copy_from_start",
+        .Call("SharedVector_Ocopy_from_start",
               dest, src, i, width, lkup, FALSE, PACKAGE="IRanges")
     } else {
-        .Call("SharedVector_copy_from_subscript",
+        .Call("SharedVector_Ocopy_from_subscript",
               dest, src, i, lkup, PACKAGE="IRanges")
     }
     dest
@@ -240,7 +240,7 @@ SharedVector.reverseCopy <- function(dest, i, imax=integer(0), src, lkup=NULL)
     else
         imax <- as.integer(imax)
     width <- imax - i + 1L
-    .Call("SharedVector_copy_from_start",
+    .Call("SharedVector_Ocopy_from_start",
           dest, src, i, width, lkup, TRUE, PACKAGE="IRanges")
     dest
 }

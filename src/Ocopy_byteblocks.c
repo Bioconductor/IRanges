@@ -3,7 +3,7 @@
 
 static int debug = 0;
 
-SEXP debug_copy_byteblocks()
+SEXP debug_Ocopy_byteblocks()
 {
 #ifdef DEBUG_IRANGES
 	debug = !debug;

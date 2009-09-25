@@ -51,7 +51,7 @@ SEXP SharedRaw_address0(SEXP x)
 
 	tag = _get_SharedVector_tag(x);
 	snprintf(buf, sizeof(buf), "%p", RAW(tag));
-        return mkString(buf);
+	return mkString(buf);
 }
 
 
@@ -387,18 +387,20 @@ SEXP SharedRaw_read_complexes_from_subscript(SEXP src, SEXP subscript, SEXP lkup
  * entry point.
  */
 
-void _memcopy_cachedCharSeq_to_SharedRaw(SEXP out, int out_offset,
+void _Ocopy_cachedCharSeq_to_SharedRaw_offset(SEXP out, int out_offset,
 		const cachedCharSeq *in,
 		const int *lkup, int lkup_length)
 {
 	SEXP out_tag;
+	int i1, i2;
 
 	out_tag = _get_SharedVector_tag(out);
-	if (out_offset < 0 || out_offset + in->length > LENGTH(out_tag))
-		error("IRanges internal error in "
-		      "_memcopy_cachedCharSeq_to_SharedRaw(): "
-		      "trying to copy data beyond the vector bounds");
-	memcpy(RAW(out_tag) + out_offset, in->seq, in->length);
+	i1 = out_offset;
+	i2 = out_offset + in->length - 1;
+	_Ocopy_bytes_to_i1i2_with_lkup(i1, i2,
+			(char *) RAW(out), LENGTH(out),
+			in->seq, in->length,
+			lkup, lkup_length);
 	return;
 }
 

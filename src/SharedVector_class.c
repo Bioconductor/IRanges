@@ -186,7 +186,7 @@ SEXP SharedVector_memcpy(SEXP out, SEXP out_start, SEXP in, SEXP in_start,
 	return out;
 }
 
-SEXP SharedVector_copy_from_start(SEXP out, SEXP in, SEXP in_start, SEXP width,
+SEXP SharedVector_Ocopy_from_start(SEXP out, SEXP in, SEXP in_start, SEXP width,
 		SEXP lkup, SEXP reverse)
 {
 	SEXP out_tag, in_tag;
@@ -202,7 +202,8 @@ SEXP SharedVector_copy_from_start(SEXP out, SEXP in, SEXP in_start, SEXP width,
 	return out;
 }
 
-SEXP SharedVector_copy_from_subscript(SEXP out, SEXP in, SEXP subscript, SEXP lkup)
+SEXP SharedVector_Ocopy_from_subscript(SEXP out, SEXP in, SEXP subscript,
+		SEXP lkup)
 {
 	SEXP out_tag, in_tag;
 

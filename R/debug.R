@@ -3,8 +3,8 @@
 debug_AEbufs <- function()
     invisible(.Call("debug_AEbufs", PACKAGE="IRanges"))
 
-debug_copy_byteblocks <- function()
-    invisible(.Call("debug_copy_byteblocks", PACKAGE="IRanges"))
+debug_Ocopy_byteblocks <- function()
+    invisible(.Call("debug_Ocopy_byteblocks", PACKAGE="IRanges"))
 
 debug_IRanges_class <- function()
     invisible(.Call("debug_IRanges_class", PACKAGE="IRanges"))

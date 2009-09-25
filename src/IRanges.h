@@ -179,9 +179,9 @@ void _append_string_to_CharAEAE(
 SEXP _CharAEAE_asCHARACTER(const CharAEAE *char_aeae);
 
 
-/* copy_byteblocks.c */
+/* Ocopy_byteblocks.c */
 
-SEXP debug_copy_byteblocks();
+SEXP debug_Ocopy_byteblocks();
 
 void _Ocopy_byteblocks_from_i1i2(
 	int i1,
@@ -654,7 +654,7 @@ SEXP SharedVector_memcpy(
 	SEXP width
 );
 
-SEXP SharedVector_copy_from_start(
+SEXP SharedVector_Ocopy_from_start(
 	SEXP out,
 	SEXP in,
 	SEXP in_start,
@@ -663,7 +663,7 @@ SEXP SharedVector_copy_from_start(
 	SEXP reverse
 );
 
-SEXP SharedVector_copy_from_subscript(
+SEXP SharedVector_Ocopy_from_subscript(
 	SEXP out,
 	SEXP in,
 	SEXP subscript,
@@ -775,7 +775,7 @@ SEXP SharedRaw_read_complexes_from_subscript(
 	SEXP lkup
 );
 
-void _memcopy_cachedCharSeq_to_SharedRaw(
+void _Ocopy_cachedCharSeq_to_SharedRaw_offset(
 	SEXP out,
 	int out_offset,
 	const cachedCharSeq *in,
