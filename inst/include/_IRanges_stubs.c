@@ -422,6 +422,15 @@ DEFINE_CCALLABLE_STUB(int, get_SharedVector_length,
 )
 
 /*
+ * Stubs for callables defined in SharedRaw_utils.c
+ */
+
+DEFINE_NOVALUE_CCALLABLE_STUB(memcopy_cachedCharSeq_to_SharedRaw,
+	(SEXP out, int out_offset, const cachedCharSeq *in, const int *lkup, int lkup_length),
+	(     out,     out_offset,                      in,            lkup,     lkup_length)
+)
+
+/*
  * Stubs for callables defined in XVector_class.c
  */
 

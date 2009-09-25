@@ -22,7 +22,7 @@ int _vector_memcmp(SEXP x1, int x1_offset, SEXP x2, int x2_offset, int nelt)
 
 	if (x1_offset < 0 || x1_offset + nelt > LENGTH(x1)
 	 || x2_offset < 0 || x2_offset + nelt > LENGTH(x2))
-		error("IRanges internal error in _vector_memcmp(): ",
+		error("IRanges internal error in _vector_memcmp(): "
 		      "trying to compare vector elements that are out of bounds");
 	switch (TYPEOF(x1)) {
 	case RAWSXP:

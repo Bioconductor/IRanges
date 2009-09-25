@@ -244,6 +244,9 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_get_SharedVector_tag);
 	REGISTER_CCALLABLE(_get_SharedVector_length);
 
+/* SharedRaw_utils.c */
+	REGISTER_CCALLABLE(_memcopy_cachedCharSeq_to_SharedRaw);
+
 /* XVector_class.c */
 	REGISTER_CCALLABLE(_get_XVector_shared);
 	REGISTER_CCALLABLE(_get_XVector_offset);

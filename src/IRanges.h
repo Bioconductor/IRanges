@@ -775,6 +775,14 @@ SEXP SharedRaw_read_complexes_from_subscript(
 	SEXP lkup
 );
 
+void _memcopy_cachedCharSeq_to_SharedRaw(
+	SEXP out,
+	int out_offset,
+	const cachedCharSeq *in,
+	const int *lkup,
+	int lkup_length
+);
+
 
 /* SharedInteger_utils.c */
 

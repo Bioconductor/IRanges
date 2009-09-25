@@ -397,6 +397,20 @@ int get_SharedVector_length(SEXP x);
 
 
 /*
+ * Fast SharedRaw utilities.
+ * (see SharedRaw_utils.c)
+ */
+
+void memcopy_cachedCharSeq_to_SharedRaw(
+	SEXP out,
+	int out_offset,
+	const cachedCharSeq *in,
+	const int *lkup,
+	int lkup_length
+);
+
+
+/*
  * Low-level manipulation of XVector objects.
  * (see XVector_class.c)
  */

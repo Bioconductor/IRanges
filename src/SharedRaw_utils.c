@@ -381,3 +381,24 @@ SEXP SharedRaw_read_complexes_from_subscript(SEXP src, SEXP subscript, SEXP lkup
 	return dest;
 }
 
+
+/* ==========================================================================
+ * Unlike all the previous functions in this file, this one is NOT a .Call
+ * entry point.
+ */
+
+void _memcopy_cachedCharSeq_to_SharedRaw(SEXP out, int out_offset,
+		const cachedCharSeq *in,
+		const int *lkup, int lkup_length)
+{
+	SEXP out_tag;
+
+	out_tag = _get_SharedVector_tag(out);
+	if (out_offset < 0 || out_offset + in->length > LENGTH(out_tag))
+		error("IRanges internal error in "
+		      "_memcopy_cachedCharSeq_to_SharedRaw(): "
+		      "trying to copy data beyond the vector bounds");
+	memcpy(RAW(out_tag) + out_offset, in->seq, in->length);
+	return;
+}
+
