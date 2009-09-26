@@ -88,13 +88,13 @@ setMethod("[[", "SimpleList",
               }
               ans
           })
-         
+
 setReplaceMethod("[[", "SimpleList",
                  function(x, i, j,..., value)
                  {
-                     listData <- as.list(x)
-                     listData[[i]] <- value
-                     slot(x, "listData") <- listData
+                     if (!missing(j) || length(list(...)) > 0)
+                         stop("invalid replacement")
+                     x@listData[[i]] <- value
                      x
                  })
 
@@ -188,12 +188,25 @@ setReplaceMethod("seqselect", "SimpleList",
                          indices <- structure(seq_len(length(x)), names = names(x))
                          if (is(start, "RangesList") ||
                              is(start, "LogicalList")) {
+                             if (!is(value, "SimpleList") &&
+                                 !is(value, "CompressedList") &&
+                                 !is.list(value))
+                                 value <- list(value)
+                             li <- length(indices)
+                             lv <- length(value)
+                             if (li != lv) {
+                                 if ((li == 0) || (li %% lv != 0))
+                                     stop(paste(lv, "elements in value to replace",
+                                                li, "elements"))
+                                 else
+                                     value <- rep(value, length.out = li)
+                             }
                              x@listData <-
                                lapply(indices, function(i) {
-                                           y <- x@listData[[i]]
-                                           seqselect(y, start[[i]]) <- value
-                                           y
-                                       })
+                                          y <- x@listData[[i]]
+                                          seqselect(y, start[[i]]) <- value[[i]]
+                                          y
+                                      })
                          } else {
                              stop("unrecognized 'start' type")
                          }

@@ -214,7 +214,8 @@ SimpleAtomicList <- function(listData) {
     classOrder <-
       c("CharacterList", "ComplexList", "NumericList", "IntegerList",
         "LogicalList", "RawList", "RleList")
-    uniqueClasses <- unique(unlist(lapply(listData, atomicElementListClass)))
+    uniqueClasses <-
+      unique(unlist(lapply(listData, atomicElementListClass), use.names=FALSE))
     if (any(is.na(uniqueClasses)))
         stop("cannot create a SimpleAtomicList with non-atomic elements")
     baseClass <- classOrder[min(match(uniqueClasses, classOrder))]
@@ -231,6 +232,84 @@ CompressedAtomicList <- function(unlistData, partitioning) {
     new2(paste("Compressed", baseClass, sep = ""), unlistData = unlistData,
          partitioning = partitioning, check = FALSE)
 }
+
+setReplaceMethod("seqselect", "SimpleAtomicList",
+                 function(x, start = NULL, end = NULL, width = NULL, value)
+                 {
+                     classOrder <-
+                       c("CharacterList", "ComplexList", "NumericList",
+                         "IntegerList", "LogicalList", "RawList", "RleList")
+                     if (!is.null(value) && !is(value, "AtomicList")) {
+                         if (is.list(value))
+                             value <- SimpleAtomicList(value)
+                         else
+                             value <- SimpleAtomicList(list(value))
+                     }
+                     if (!is.null(value) && !is(value, class(x))) {
+                         xClass <-
+                           which(unlist(lapply(classOrder,
+                                               function(y) is(value, x))))
+                         vClass <-
+                           which(unlist(lapply(classOrder,
+                                               function(y) is(value, y))))
+                         if (xClass < vClass) {
+                             value <-
+                               do.call(classOrder[xClass],
+                                       c(value@listData, compress = FALSE))
+                         } else {
+                             x <-
+                               do.call(classOrder[vClass],
+                                             c(x@listData, compress = FALSE))
+                         }
+                     }
+                     callNextMethod()
+                 })
+
+setReplaceMethod("seqselect", "CompressedAtomicList",
+                 function(x, start = NULL, end = NULL, width = NULL, value)
+                 {
+                     classOrder <-
+                       c("character" = "CharacterList",
+                         "complex" = "ComplexList",
+                         "numeric" = "NumericList",
+                         "integer" = "IntegerList",
+                         "logical", "LogicalList",
+                         "raw" = "RawList",
+                         "Rle" = "RleList")
+                     if (!is.null(value) && !is(value, "AtomicList")) {
+                         if (!is.list(value))
+                             value <- list(value)
+                         partitioning <-
+                           PartitioningByEnd(cumsum(unlist(lapply(value, length),
+                                                           use.names=FALSE)),
+                                             names = names(value))
+                         value <-
+                           CompressedAtomicList(unlist(value, use.names=FALSE),
+                                                partitioning)
+                     }
+                     if (!is.null(value) && !is(value, class(x))) {
+                         xClass <-
+                           which(unlist(lapply(classOrder,
+                                               function(y) is(value, x))))
+                         vClass <-
+                           which(unlist(lapply(classOrder,
+                                               function(y) is(value, y))))
+                         if (xClass < vClass) {
+                             value <-
+                               new2(class(x),
+                                    unlistData =
+                                    as(value@unlistData, names(classOrder)[xClass]),
+                                    partitioning = partitioning, check = FALSE)
+                         } else {
+                             x <-
+                               new2(class(value),
+                                    unlistData =
+                                    as(x@unlistData, names(classOrder)[vClass]),
+                                       partitioning = partitioning, check = FALSE)
+                         }
+                     }
+                     callNextMethod()
+                 })
 
 setMethod("Ops",
           signature(e1 = "SimpleAtomicList", e2 = "SimpleAtomicList"),

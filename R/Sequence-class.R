@@ -136,12 +136,88 @@ function(x, i, j, ..., drop)
         elementMetadata(x) <- elementMetadata(x)[i,,drop=FALSE]
     x
 }
+.bracket.Index <-
+function(idx, nms, lx, dup.nms = FALSE)
+{
+    msg <- NULL
+    if (!is.atomic(idx) && !is(idx, "Rle")) {
+        msg <- "invalid subscript type"
+    } else if (!is.null(idx) && any(is.na(idx))) {
+        msg <- "subscript contains NAs"
+    } else if (is.numeric(idx)) {
+        nmi <- idx[!is.na(idx)]
+        if (any(nmi < -lx) || any(nmi > lx))
+            msg <- "subscript out of bounds"
+        if (any(nmi < 0) && any(nmi > 0))
+            msg <- "negative and positive indices cannot be mixed"
+    } else if (is.logical(idx)) {
+        if (length(idx) > lx)
+            msg <- "subscript out of bounds"
+    } else if (is.character(idx) || is.factor(idx)) {
+        if (is.null(nms))
+            msg <- "cannot subset by character when names are NULL"
+        if (dup.nms)
+            m <- pmatch(idx, nms, duplicates.ok = TRUE)
+        else
+            m <- match(idx, nms)
+        if (!dup.nms && any(is.na(m)))
+            msg <- "mismatching names"
+    } else if (is(idx, "Rle")) {
+        if (length(idx) > lx)
+            msg <- "subscript out of bounds"
+    } else if (!is.null(idx)) {
+        msg <- "invalid subscript type"
+    }
+    if (!is.null(msg)) {
+        useIdx <- NULL
+        idx <- NULL
+    } else {
+        useIdx <- TRUE
+        if (is.numeric(idx) && !is.integer(idx)) {
+            idx <- as.integer(idx)
+        }
+        if (is.null(idx)) {
+            idx <- integer()
+        } else if (is.character(idx)) {
+            idx <- pmatch(idx, nms, duplicates.ok = TRUE)
+        } else if (is.logical(idx)) {
+            if (all(idx)) {
+                useIdx <- FALSE
+            } else {
+                idx <- which(idx)
+            }
+        } else if (is.integer(idx) && all(idx < 0)) {
+            idx <- seq_len(lx)[idx]
+        } else if (is(idx, "Rle")) {
+            if (all(runValue(idx))) {
+                useIdx <- FALSE
+            } else {
+                idx <- which(idx)
+            }
+        }
+    }
+    list(msg = msg, useIdx = useIdx, idx = idx)
+}
 setMethod("[", "Sequence", function(x, i, j, ..., drop)
           stop("missing '[' method for Sequence class ", class(x)))
 
 setReplaceMethod("[", "Sequence",
                  function(x, i, j,..., value) {
-                     seqselect(x, i) <- value
+                     if (!missing(j) || length(list(...)) > 0)
+                         stop("invalid replacement")
+                     if (missing(i)) {
+                         seqselect(x, start = 1, end = length(x)) <- value
+                     } else {
+                         iInfo <- .bracket.Index(i, names(x), length(x))
+                         if (is.null(iInfo[["msg"]])) {
+                             if (iInfo[["useIdx"]])
+                                 seqselect(x, iInfo[["idx"]], width = 1) <- value
+                             else
+                                 seqselect(x, start = 1, end = length(x)) <- value
+                         } else {
+                             seqselect(x, i) <- value
+                         }
+                     }
                      x
                  })
 
@@ -409,17 +485,6 @@ setGeneric("seqselect<-", signature="x",
 setReplaceMethod("seqselect", "Sequence",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
-                     if (!is.null(value)) {
-                         if (length(value) > 1)
-                           stop("'value' must be of length 1 or 'NULL'")
-
-                         if (!is(value, class(x))) {
-                             value <- try(as(value, class(x)), silent = TRUE)
-                             if (inherits(value, "try-error"))
-                                 stop("'value' must be a ", class(x),
-                                         " object or NULL")
-                         }
-                     }
                      if (!is.null(start) && is.null(end) && is.null(width)) {
                          if (is(start, "Ranges"))
                              ir <- start
@@ -434,13 +499,30 @@ setReplaceMethod("seqselect", "Sequence",
                      ir <- reduce(ir)
                      if (any(start(ir) < 1L) || any(end(ir) > length(x)))
                          stop("some ranges are out of bounds")
-                     valueWidths <- width(ir)
+                     lr <- sum(width(ir))
+                     lv <- length(value)
+                     if (!is.null(value)) {
+                         if (!is(value, class(x))) {
+                             value <- try(as(value, class(x)), silent = TRUE)
+                             if (inherits(value, "try-error"))
+                                 stop("'value' must be a ", class(x),
+                                      " object or NULL")
+                         }
+                         if (lr != lv) {
+                             if ((lr == 0) || (lr %% lv != 0))
+                                 stop(paste(lv, "elements in value to replace",
+                                            lr, "elements"))
+                             else
+                                 value <- rep(value, length.out = lr)
+                         }
+                     }
+                     irValues <- PartitioningByEnd(cumsum(width(ir)))
                      ir <- gaps(ir, start = 1, end = length(x))
                      if ((length(ir) == 0) || (start(ir)[1] != 1))
                          ir <- c(IRanges(start = 1, width = 0), ir)
                      if (end(ir[length(ir)]) != length(x))
                          ir <- c(ir, IRanges(start = length(x), width = 0))
-                     subseqs <- vector("list", length(valueWidths) + length(ir))
+                     subseqs <- vector("list", length(irValues) + length(ir))
                      if (length(ir) > 0) {
                          subseqs[seq(1, length(subseqs), by = 2)] <-
                            lapply(seq_len(length(ir)), function(i)
@@ -448,10 +530,18 @@ setReplaceMethod("seqselect", "Sequence",
                                          start = start(ir)[i],
                                          width = width(ir)[i]))
                      }
-                     if (length(valueWidths) > 0) {
+                     if (length(irValues) > 0) {
+                         nms <- names(x)
+                         if (is.null(nms)) {
+                             names(value) <- NULL
+                         } else {
+                             names(value) <- seqselect(nms, irValues)
+                         }
                          subseqs[seq(2, length(subseqs), by = 2)] <-
-                           lapply(seq_len(length(valueWidths)), function(i)
-                                  rep(value, length.out = valueWidths[i]))
+                           lapply(seq_len(length(irValues)), function(i)
+                                  window(value,
+                                         start = start(irValues)[i],
+                                         width = width(irValues)[i]))
                      }
                      do.call(c, subseqs)
                  })

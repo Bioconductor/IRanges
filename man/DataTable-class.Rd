@@ -88,7 +88,7 @@
     \item{}{
       \code{seqselect(x, start=NULL, end=NULL, width=NULL) <- value}:
       Similar to \code{window<-}, except that multiple consecutive subsequences
-      can be replaced by a constant \code{value}.
+      can be replaced by a \code{value} that spans those windows.
     }
     \item{}{
       \code{subset(x, subset, select, drop = FALSE)}:

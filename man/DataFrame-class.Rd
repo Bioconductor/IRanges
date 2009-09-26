@@ -13,6 +13,7 @@
 
 % subsetting
 \alias{[,DataFrame-method}
+\alias{[<-,DataFrame-method}
 \alias{[[,DataFrame-method}
 \alias{[[<-,DataFrame-method}
 
@@ -76,15 +77,17 @@
       \code{XVector} objects, indices containing \code{NA}'s are not
       supported.
     }
+    \item{}{\code{x[i,j] <- value}: Behaves very similarly to the
+      \code{\link{[<-.data.frame}} method.
+    }
     \item{}{\code{x[[i]]}: Behaves very similarly to the
       \code{\link{[[.data.frame}} method, except arguments \code{j}
       and \code{exact} are not supported. Column name matching is
       always exact. Subsetting by matrices is not supported.
     }
     \item{}{\code{x[[i]] <- value}: Behaves very similarly to the
-      \code{\link{[[<-.data.frame}} method, except the argument \code{j}
-      is not supported. An attempt is made to coerce \code{value} to a
-      \code{XVector} object.
+      \code{\link{[[<-.data.frame}} method, except argument \code{j}
+      is not supported.
     }
   }
 }

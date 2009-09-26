@@ -175,10 +175,41 @@ test_DataFrame_replacement <- function() {
   DF[["counts"]] <- NULL
   DF$counts <- counts
   checkIdentical(DF$counts, counts)
-  
-  
+
   checkException(DF[[13]] <- counts, silent = TRUE) # index must be < length+1
   checkException(DF[["tooshort"]] <- counts[1:2], silent = TRUE)
+
+  sw <- DataFrame(swiss, row.names = rownames(swiss)) # a data.frame
+  sw1 <- sw; swiss1 <- swiss
+  sw1[] <- 1L; swiss1[] <- 1L
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1[] <- 1; swiss1[] <- 1
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1[,"Education"] <- 1; swiss1[,"Education"] <- 1
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1["Courtelary",] <- 1; swiss1["Courtelary",] <- 1
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1[,1:3] <- 1; swiss1[,1:3] <- 1
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1[2:4,1:3] <- 1; swiss1[2:4,1:3] <- 1
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1[2:4,-c(2,4,5)] <- 1; swiss1[2:4,-c(2,4,5)] <- 1
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1[,1:3] <- sw1[,2:4]; swiss1[,1:3] <- swiss1[,2:4]
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1[2:4,] <- sw1[1:3,]; swiss1[2:4,] <- swiss1[1:3,]
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1[2:4,1:3] <- sw1[1:3,2:4]; swiss1[2:4,1:3] <- swiss1[1:3,2:4]
+  checkIdentical(as.data.frame(sw1), swiss1)
 }
 
 ## splitting and combining

@@ -82,6 +82,31 @@ test_List_subset <- function() {
   }
 }
 
+test_List_replace <- function() {
+  int1 <- c(1L,2L,3L,5L,2L,8L)
+  int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)
+  for (compress in c(TRUE, FALSE)) {
+    collection <- IntegerList(one = int1, int2, compress = compress)
+
+    checkException(collection[1,2] <- 1L, silent = TRUE)
+    checkException(collection[list()] <- 1L, silent = TRUE)
+    checkException(collection[c(-1,2)] <- 1L, silent = TRUE)
+
+    newcollection <- collection
+    newcollection[TRUE] <- 1:10
+    checkIdentical(newcollection,
+                   IntegerList(one = 1:10, 1:10, compress = compress))
+    newcollection <- collection
+    newcollection[c(TRUE, FALSE)] <- 1:10
+    checkIdentical(newcollection,
+                   IntegerList(one = 1:10, int2, compress = compress))
+    newcollection <- collection
+    newcollection["one"] <- 1:10
+    checkIdentical(newcollection,
+                   IntegerList(one = 1:10, int2, compress = compress))
+  }
+}
+
 test_List_combine <- function() {
   int1 <- c(1L,2L,3L,5L,2L,8L)
   int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)

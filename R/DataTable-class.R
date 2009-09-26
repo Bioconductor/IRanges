@@ -79,17 +79,6 @@ setMethod("seqselect", "DataTable",
 setReplaceMethod("seqselect", "DataTable",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
-                     if (!is.null(value)) {
-                         if (nrow(value) > 1)
-                             stop("'value' must be of nrow 1 or 'NULL'")
-                         
-                         if (!is(value, class(x))) {
-                             value <- try(as(value, class(x)), silent = TRUE)
-                             if (inherits(value, "try-error"))
-                                 stop("'value' must be a ", class(x),
-                                      " object or NULL")
-                         }
-                     }
                      if (!is.null(start) && is.null(end) && is.null(width)) {
                          if (is(start, "Ranges"))
                              ir <- start
@@ -104,13 +93,32 @@ setReplaceMethod("seqselect", "DataTable",
                      ir <- reduce(ir)
                      if (any(start(ir) < 1L) || any(end(ir) > nrow(x)))
                          stop("some ranges are out of bounds")
-                     valueWidths <- width(ir)
+                     lr <- sum(width(ir))
+                     nrv <- length(value)
+                     if (!is.null(value)) {
+                         if (!is(value, class(x))) {
+                             value <- try(as(value, class(x)), silent = TRUE)
+                             if (inherits(value, "try-error"))
+                                 stop("'value' must be a ", class(x),
+                                      " object or NULL")
+                         }
+                         if (lr != nrv) {
+                             if ((lr == 0) || (lr %% nrv != 0))
+                                 stop(paste(nrv, "rows in value to replace",
+                                            lr, "rows"))
+                             else
+                                 value <-
+                                   value[rep(seq_len(nrv), length.out = lr), ,
+                                         drop=FALSE]
+                         }
+                     }
+                     irValues <- PartitioningByEnd(cumsum(width(ir)))
                      ir <- gaps(ir, start = 1, end = nrow(x))
                      if ((length(ir) == 0) || (start(ir)[1] != 1))
                          ir <- c(IRanges(start = 1, width = 0), ir)
                      if (end(ir[length(ir)]) != nrow(x))
                          ir <- c(ir, IRanges(start = nrow(x), width = 0))
-                     subseqs <- vector("list", length(valueWidths) + length(ir))
+                     subseqs <- vector("list", length(irValues) + length(ir))
                      if (length(ir) > 0) {
                          subseqs[seq(1, length(subseqs), by = 2)] <-
                            lapply(seq_len(length(ir)), function(i)
@@ -118,10 +126,19 @@ setReplaceMethod("seqselect", "DataTable",
                                          start = start(ir)[i],
                                          width = width(ir)[i]))
                      }
-                     if (length(valueWidths) > 0) {
+                     if (length(irValues) > 0) {
+                         nms <- rownames(x)
+                         if (is.null(nms)) {
+                             rownames(value) <- NULL
+                         } else {
+                             rownames(value) <- seqselect(nms, irValues)
+                         }
+                         colnames(value) <- colnames(x)
                          subseqs[seq(2, length(subseqs), by = 2)] <-
-                           lapply(seq_len(length(valueWidths)), function(i)
-                                  value[rep(1, valueWidths[i]), , drop=FALSE])
+                           lapply(seq_len(length(irValues)), function(i)
+                                  window(value,
+                                         start = start(irValues)[i],
+                                         width = width(irValues)[i]))
                      }
                      do.call(rbind, subseqs)
                  })

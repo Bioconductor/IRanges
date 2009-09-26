@@ -70,6 +70,9 @@
 \alias{coerce,RleList,CompressedIRangesList-method}
 \alias{coerce,RleList,SimpleIRangesList-method}
 
+\alias{seqselect<-,CompressedAtomicList-method}
+\alias{seqselect<-,SimpleAtomicList-method}
+
 \alias{Ops,CompressedAtomicList,CompressedAtomicList-method}
 \alias{Ops,SimpleAtomicList,SimpleAtomicList-method}
 \alias{Ops,SimpleAtomicList,CompressedAtomicList-method}
