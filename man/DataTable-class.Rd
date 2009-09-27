@@ -10,8 +10,10 @@
 \alias{cbind}
 \alias{cbind,DataTable-method}
 \alias{dim,DataTable-method}
+\alias{dimnames,DataTable-method}
 \alias{head,DataTable-method}
-\alias{is.array,DataTable-method}
+\alias{NCOL,DataTable-method}
+\alias{NROW,DataTable-method}
 \alias{rbind}
 \alias{rbind,DataTable-method}
 \alias{seqselect,DataTable-method}
@@ -40,6 +42,11 @@
       Get the length two integer vector indicating in the first and second
       element the number of rows and columns, respectively. This implies the
       existence of \code{nrow(x)} and \code{ncol(x)}.
+    }
+    \item{}{\code{dimnames(x)}:
+      Get the length two list of character vectors indicating in the first
+      and second element the names of the rows and columns, respectively.
+      This implies the existence of \code{rownames(x)} and \code{colnames(x)}.
     }
   }
 }

@@ -20,23 +20,13 @@ setClass("DataFrame",
 ### Accessor methods.
 ###
 
-setMethod("dim", "DataFrame", function(x) as.integer(c(x@nrows, length(x))))
+setMethod("nrow", "DataFrame", function(x) x@nrows)
 
-setMethod("row.names", "DataFrame",
-          function(x) {
-            rn <- x@rownames
-            if (!is.null(rn)) {
-              rn <- as.character(rn)
-              rn[is.na(rn)] <- "NA"
-              if (anyDuplicated(rn))
-                rn <- make.unique(rn)                
-            }
-            rn
-          })
+setMethod("ncol", "DataFrame", function(x) length(x))
 
 setMethod("rownames", "DataFrame",
           function(x, do.NULL = TRUE, prefix = "row") {
-            rn <- row.names(x)
+            rn <- x@rownames
             if (is.null(rn) && !do.NULL) {
               nr <- NROW(x)
               if (nr > 0L) 
@@ -48,10 +38,10 @@ setMethod("rownames", "DataFrame",
           })
 
 setMethod("colnames", "DataFrame",
-          function(x, do.NULL = TRUE, prefix = "row") {
+          function(x, do.NULL = TRUE, prefix = "col") {
             cn <- names(x)
             if (is.null(cn) && !do.NULL) {
-              nc <- NROW(x)
+              nc <- NCOL(x)
               if (nc > 0L) 
                 cn <- paste(prefix, seq_len(nc), sep = "")
               else
@@ -60,12 +50,7 @@ setMethod("colnames", "DataFrame",
             cn
           })
 
-setMethod("dimnames", "DataFrame",
-          function(x) {
-            list(row.names(x), names(x))
-          })
-
-setReplaceMethod("row.names", "DataFrame",
+setReplaceMethod("rownames", "DataFrame",
                  function(x, value) {
                    if (!is.null(value)) {
                      if (any(is.na(value)))
@@ -78,12 +63,6 @@ setReplaceMethod("row.names", "DataFrame",
                        value <- as.character(value)
                    }
                    x@rownames <- value
-                   x
-                 })
-
-setReplaceMethod("rownames", "DataFrame",
-                 function(x, value) {
-                   row.names(x) <- value
                    x
                  })
 
@@ -328,7 +307,11 @@ setMethod("[", "DataFrame",
                 x@listData <- lapply(as.list(x), function(y) y[i, drop = FALSE])
                 dim[1] <- length(seq(dim[1])[i]) # may have 0 cols, no rownames
                 x@nrows <- dim[1]
-                x@rownames <- rownames(x)[i]
+                rn <- rownames(x)[i]
+                if (anyDuplicated(rn))
+                  x@rownames <- make.unique(rn)
+                else
+                  x@rownames <- rn
               }
             }
 

@@ -126,13 +126,22 @@ setMethod("range", "RangedData", function(x, ..., na.rm) {
 })
 
 ## values delegates
-setMethod("dim", "RangedData",
+setMethod("nrow", "RangedData",
           function(x) {
-            dim(values(x))
+            sum(nrow(values(x)))
           })
-setMethod("dimnames", "RangedData",
+setMethod("ncol", "RangedData",
           function(x) {
-            dimnames(values(x))
+            ncol(values(x))[1]
+          })
+setMethod("rownames", "RangedData",
+          function(x, do.NULL = TRUE, prefix = "row") {
+            unlist(rownames(values(x), do.NULL = do.NULL, prefix = prefix),
+                   use.names=FALSE)
+          })
+setMethod("colnames", "RangedData",
+          function(x, do.NULL = TRUE, prefix = "col") {
+            colnames(values(x), do.NULL = do.NULL, prefix = prefix)
           })
 setReplaceMethod("dimnames", "RangedData",
           function(x, value) {

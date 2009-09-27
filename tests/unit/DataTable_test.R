@@ -9,7 +9,6 @@ test_DataTable_basic <- function() {
   checkIdentical(nrow(x), nrow(y))
   checkIdentical(ncol(x), ncol(y))
   checkIdentical(as.data.frame(head(x)), head(y))
-  checkTrue(is.array(x))
   checkIdentical(as.data.frame(rbind(x,x)), rbind(y,y))
 #  checkIdentical(as.data.frame(tail(x)), tail(y))
 }

@@ -22,12 +22,11 @@ setMethod("cbind", "DataTable", function(..., deparse.level=1)
           stop("missing 'cbind' method for DataTable class ",
                class(list(...)[[1]])))
 
-setMethod("dim", "DataTable",
+setMethod("dim", "DataTable", function(x) c(nrow(x), ncol(x)))
+
+setMethod("dimnames", "DataTable",
           function(x) {
-              if (length(x) == 0L)
-                  c(0L, 0L)
-              else
-                  c(length(x[[1]]), length(x))
+            list(rownames(x), colnames(x))
           })
 
 setMethod("head", "DataTable",
@@ -44,7 +43,9 @@ setMethod("head", "DataTable",
                   window(x, 1L, n)
           })
 
-setMethod("is.array", "DataTable", function(x) TRUE)
+setMethod("NCOL", "DataTable", function(x) ncol(x))
+
+setMethod("NROW", "DataTable", function(x) nrow(x))
 
 setGeneric("rbind", function(..., deparse.level=1) standardGeneric("rbind"),
            signature = "...")

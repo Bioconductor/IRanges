@@ -4,8 +4,10 @@
 \alias{RangedData-class}
 
 % Accessors:
-\alias{dim,RangedData-method}
-\alias{dimnames,RangedData-method}
+\alias{nrow,RangedData-method}
+\alias{ncol,RangedData-method}
+\alias{rownames,RangedData-method}
+\alias{colnames,RangedData-method}
 \alias{dimnames<-,RangedData-method}
 \alias{elementLengths,RangedData-method}
 \alias{end,RangedData-method}
