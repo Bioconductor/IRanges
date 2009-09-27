@@ -132,46 +132,48 @@ setMethod("nrow", "RangedData",
           })
 setMethod("ncol", "RangedData",
           function(x) {
-            ncol(values(x))[1]
+            ncol(values(x))[[1]]
           })
 setMethod("rownames", "RangedData",
           function(x, do.NULL = TRUE, prefix = "row") {
-            unlist(rownames(values(x), do.NULL = do.NULL, prefix = prefix),
-                   use.names=FALSE)
+            rn <-
+              unlist(rownames(values(x), do.NULL = do.NULL, prefix = prefix),
+                     use.names=FALSE)
+            if (length(rn) == 0)
+              rn <- NULL
+            rn
           })
 setMethod("colnames", "RangedData",
           function(x, do.NULL = TRUE, prefix = "col") {
-            colnames(values(x), do.NULL = do.NULL, prefix = prefix)
-          })
-setReplaceMethod("dimnames", "RangedData",
-          function(x, value) {
-            rn <- as.character(value[[1]])
-            cn <- as.character(value[[2]])
-            inds <- rep(seq_len(length(x@ranges)),
-                        unlist(lapply(x@ranges, length)))
-            if (is.null(value[[1]]))
-              rns <- vector("list", length(inds))
-            else {
-              if (length(rn) != nrow(x))
-                stop("invalid rownames length")
-              rns <- split(rn, inds)
-            }
-            values <- unlist(values(x))
-            dimnames(values) <- value
-            ranges <- as.list(ranges(x))
-            for(i in seq_len(length(x@ranges))) {
-              ##dimnames(values[[i]]) <- list(rns[[i]], cn)
-              names(ranges[[i]]) <- rns[[i]]
-            }
-            x@values <- split(values, inds)
-            names(x@values) <- names(x)
-            if (is(x@ranges, "CompressedList"))
-              x@ranges <- newCompressedList(class(x@ranges), ranges)
+            if (length(x) == 0)
+              character()
             else
-              x@ranges <- newSimpleList(class(x@ranges), ranges)
-            x
+              colnames(values(x), do.NULL = do.NULL, prefix = prefix)[[1]]
           })
-
+setReplaceMethod("rownames", "RangedData",
+                 function(x, value) {
+                   if (length(value) > 0) {
+                     ends <- cumsum(elementLengths(x))
+                     nr <- tail(ends, 1)
+                     if (length(value) != nr)
+                       value <- rep(value, length.out = nr)
+                     value <-
+                       new("CompressedCharacterList",
+                           unlistData = value,
+                           partitioning = PartitioningByEnd(ends))
+                   }
+                   values <- values(x)
+                   rownames(values) <- value
+                   x@values <- values
+                   x
+                 })
+setReplaceMethod("colnames", "RangedData",
+                 function(x, value) {
+                   values <- values(x)
+                   colnames(values) <- value
+                   x@values <- values
+                   x
+                 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.

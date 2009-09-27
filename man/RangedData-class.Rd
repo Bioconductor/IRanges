@@ -8,7 +8,8 @@
 \alias{ncol,RangedData-method}
 \alias{rownames,RangedData-method}
 \alias{colnames,RangedData-method}
-\alias{dimnames<-,RangedData-method}
+\alias{rownames<-,RangedData-method}
+\alias{colnames<-,RangedData-method}
 \alias{elementLengths,RangedData-method}
 \alias{end,RangedData-method}
 \alias{end<-,RangedData-method}

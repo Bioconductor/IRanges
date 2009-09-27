@@ -29,6 +29,16 @@ setMethod("dimnames", "DataTable",
             list(rownames(x), colnames(x))
           })
 
+setReplaceMethod("dimnames", "DataTable",
+                 function(x, value)
+                 {
+                   if (!is.list(value))
+                     stop("replacement value must be a list")
+                   rownames(x) <- value[[1]]
+                   colnames(x) <- value[[2]]
+                   x
+                 })
+
 setMethod("head", "DataTable",
           function(x, n = 6L, ...)
           {

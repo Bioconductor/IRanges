@@ -24,43 +24,127 @@ setClass("CompressedSplitDataFrameList",
 ### Accessor methods.
 ###
 
-setMethod("dim", "SimpleDataFrameList",
-          function(x) {
+setMethod("nrow", "DataFrameList",
+          function(x)
+          {
             if (length(x) == 0L)
-              c(0L, 0L)
-            else {
-              nrow <- sum(unlist(lapply(as.list(x, use.names = FALSE), nrow)))
-              ncol <- ncol(x[[1]])
-              as.integer(c(nrow, ncol))
-            }
-          })
-  
-setMethod("dim", "CompressedSplitDataFrameList",
-          function(x) {
-            if (length(x) == 0L)
-              c(0L, 0L)
+              0L
             else
-              dim(unlist(x))
+              elementLengths(x)
           })
 
-### FIXME: make separate rownames, colnames methods, because the
-### rownames calculation can be _very_ slow
-setMethod("dimnames", "SimpleDataFrameList",
-          function(x) {
+setMethod("ncol", "DataFrameList",
+          function(x)
+          {
             if (length(x) == 0L)
-              list(character(), character())
+              0L
             else
-              list(unlist(lapply(x, rownames), use.names=FALSE),
-                   colnames(x[[1]]))
+              unlist(lapply(x, ncol))
           })
 
-setMethod("dimnames", "CompressedSplitDataFrameList",
-          function(x) {
-            if (length(x) == 0L)
-              list(character(), character())
-            else
-              dimnames(unlist(x))
+setMethod("dim", "DataFrameList",
+          function(x)
+          {
+            cbind(nrow(x), ncol(x))
           })
+
+setMethod("rownames", "DataFrameList",
+          function(x, do.NULL = TRUE, prefix = "row")
+          {
+            CharacterList(lapply(x, rownames, do.NULL = do.NULL, prefix = prefix))
+          })
+
+setMethod("colnames", "DataFrameList",
+          function(x, do.NULL = TRUE, prefix = "col")
+          {
+            CharacterList(lapply(x, colnames, do.NULL = do.NULL, prefix = prefix))
+          })
+
+setMethod("dimnames", "DataFrameList",
+          function(x)
+          {
+            list(rownames(x), colnames(x))
+          })
+
+setReplaceMethod("rownames", "SimpleDataFrameList",
+                 function(x, value)
+                 {
+                   if (is.null(value)) {
+                     x@listData <-
+                       lapply(x@listData, function(y) {rownames(x) <- NULL; x})
+                   } else if (is(value, "CharacterList")){
+                     if (length(x) != length(value))
+                       stop("replacement value must be the same length as x")
+                     for (i in seq_len(length(x)))
+                       rownames(x@listData[[i]]) <- value[[i]]
+                   } else {
+                     stop("replacement value must either be NULL or a CharacterList")
+                   }
+                   x
+                 })
+
+setReplaceMethod("rownames", "CompressedSplitDataFrameList",
+                 function(x, value)
+                 {
+                   if (is.null(value)) {
+                     rownames(x@unlistData) <- NULL
+                   } else if (is(value, "CharacterList")){
+                     if (length(x) != length(value))
+                       stop("replacement value must be the same length as x")
+                     rownames(x@unlistData) <- unlist(value, use.names=FALSE)
+                   } else {
+                     stop("replacement value must either be NULL or a CharacterList")
+                   }
+                   x
+                 })
+
+setReplaceMethod("colnames", "SimpleDataFrameList",
+                 function(x, value)
+                 {
+                   if (is.null(value)) {
+                     x@listData <-
+                       lapply(x@listData, function(y) {colnames(x) <- NULL; x})
+                   } else if (is.character(value)) {
+                     for (i in seq_len(length(x)))
+                       colnames(x@listData[[i]]) <- value
+                   } else if (is(value, "CharacterList")){
+                     if (length(x) != length(value))
+                       stop("replacement value must be the same length as x")
+                     for (i in seq_len(length(x)))
+                       colnames(x@listData[[i]]) <- value[[i]]
+                   } else {
+                       stop("replacement value must either be NULL or a CharacterList")
+                   }
+                   x
+                 })
+
+setReplaceMethod("colnames", "CompressedSplitDataFrameList",
+                 function(x, value)
+                 {
+                   if (is.null(value)) {
+                     colnames(x@unlistData) <- NULL
+                   } else if (is.character(value)) {
+                     colnames(x@unlistData) <- value
+                   } else if (is(value, "CharacterList")){
+                     if (length(x) != length(value))
+                       stop("replacement value must be the same length as x")
+                     if (length(x) > 0)
+                       colnames(x@unlistData) <- unlist(value[[1]])
+                   } else {
+                     stop("replacement value must either be NULL or a CharacterList")
+                   }
+                   x
+                 })
+
+setReplaceMethod("dimnames", "DataFrameList",
+                 function(x, value)
+                 {
+                   if (!is.list(value))
+                     stop("replacement value must be a list")
+                   rownames(x) <- value[[1]]
+                   colnames(x) <- value[[2]]
+                   x
+                 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
@@ -187,12 +271,12 @@ setMethod("as.data.frame", "SplitDataFrameList",
 
 setMethod("show", "SplitDataFrameList", function(object)
           {
-              nc <- ncol(object)
-              lo <- length(object)
-              cat(class(object), ": ",
-                  lo, ifelse(lo == 1, " elements with ", " elements with "),
-                  nc, ifelse(nc == 1, " column\n", " columns\n"), sep = "")
-              if (!is.null(names(object)))
-                  cat(labeledLine("names", names(object)))
-              cat(labeledLine("colnames", colnames(object)))
+            nc <- ncol(object)
+            lo <- length(object)
+            cat(class(object), ": ",
+                lo, ifelse(lo == 1, " elements with ", " elements with "),
+                nc, ifelse(nc == 1, " column\n", " columns\n"), sep = "")
+            if (!is.null(names(object)))
+              cat(labeledLine("names", names(object)))
+            cat(labeledLine("colnames", colnames(object)))
           })

@@ -7,10 +7,17 @@
 \alias{SimpleSplitDataFrameList-class}
 
 % accessors
-\alias{dim,SimpleDataFrameList-method}
-\alias{dim,CompressedSplitDataFrameList-method}
-\alias{dimnames,SimpleDataFrameList-method}
-\alias{dimnames,CompressedSplitDataFrameList-method}
+\alias{nrow,DataFrameList-method}
+\alias{ncol,DataFrameList-method}
+\alias{dim,DataFrameList-method}
+\alias{rownames,DataFrameList-method}
+\alias{colnames,DataFrameList-method}
+\alias{dimnames,DataFrameList-method}
+\alias{rownames<-,CompressedSplitDataFrameList-method}
+\alias{rownames<-,SimpleDataFrameList-method}
+\alias{colnames<-,CompressedSplitDataFrameList-method}
+\alias{colnames<-,SimpleDataFrameList-method}
+\alias{dimnames<-,DataFrameList-method}
 
 % constructor
 \alias{DataFrameList}

@@ -11,6 +11,7 @@
 \alias{cbind,DataTable-method}
 \alias{dim,DataTable-method}
 \alias{dimnames,DataTable-method}
+\alias{dimnames<-,DataTable-method}
 \alias{head,DataTable-method}
 \alias{NCOL,DataTable-method}
 \alias{NROW,DataTable-method}

@@ -25,7 +25,8 @@ setMethod("nrow", "DataFrame", function(x) x@nrows)
 setMethod("ncol", "DataFrame", function(x) length(x))
 
 setMethod("rownames", "DataFrame",
-          function(x, do.NULL = TRUE, prefix = "row") {
+          function(x, do.NULL = TRUE, prefix = "row")
+          {
             rn <- x@rownames
             if (is.null(rn) && !do.NULL) {
               nr <- NROW(x)
@@ -38,7 +39,8 @@ setMethod("rownames", "DataFrame",
           })
 
 setMethod("colnames", "DataFrame",
-          function(x, do.NULL = TRUE, prefix = "col") {
+          function(x, do.NULL = TRUE, prefix = "col")
+          {
             cn <- names(x)
             if (is.null(cn) && !do.NULL) {
               nc <- NCOL(x)
@@ -51,7 +53,8 @@ setMethod("colnames", "DataFrame",
           })
 
 setReplaceMethod("rownames", "DataFrame",
-                 function(x, value) {
+                 function(x, value)
+                 {
                    if (!is.null(value)) {
                      if (any(is.na(value)))
                        stop("missing values not allowed in rownames")
@@ -67,20 +70,14 @@ setReplaceMethod("rownames", "DataFrame",
                  })
 
 setReplaceMethod("colnames", "DataFrame",
-                 function(x, value) {
+                 function(x, value)
+                 {
                    if (!is.null(value)) {
                      if (length(value) > length(x))
                        stop("more column names than columns")
                      value <- make.names(value, unique=TRUE)
                    }
                    names(x) <- value
-                   x
-                 })
-
-setReplaceMethod("dimnames", "DataFrame",
-                 function(x, value) {
-                   rownames(x) <- value[[1]]
-                   colnames(x) <- value[[2]]
                    x
                  })
 
