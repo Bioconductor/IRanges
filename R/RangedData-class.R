@@ -156,10 +156,10 @@ setReplaceMethod("dimnames", "RangedData",
             }
             x@values <- split(values, inds)
             names(x@values) <- names(x)
-              if (is(x@ranges, "CompressedList"))
-                x@ranges <- newCompressedList(class(x@ranges), ranges)
-              else
-                x@ranges <- newSimpleList(class(x@ranges), ranges)
+            if (is(x@ranges, "CompressedList"))
+              x@ranges <- newCompressedList(class(x@ranges), ranges)
+            else
+              x@ranges <- newSimpleList(class(x@ranges), ranges)
             x
           })
 

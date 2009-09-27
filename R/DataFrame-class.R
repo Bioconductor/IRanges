@@ -22,7 +22,7 @@ setClass("DataFrame",
 
 setMethod("dim", "DataFrame", function(x) as.integer(c(x@nrows, length(x))))
 
-setMethod("dimnames", "DataFrame",
+setMethod("row.names", "DataFrame",
           function(x) {
             rn <- x@rownames
             if (!is.null(rn)) {
@@ -31,31 +31,77 @@ setMethod("dimnames", "DataFrame",
               if (anyDuplicated(rn))
                 rn <- make.unique(rn)                
             }
-            list(rn, names(x))
+            rn
           })
 
+setMethod("rownames", "DataFrame",
+          function(x, do.NULL = TRUE, prefix = "row") {
+            rn <- row.names(x)
+            if (is.null(rn) && !do.NULL) {
+              nr <- NROW(x)
+              if (nr > 0L) 
+                rn <- paste(prefix, seq_len(nr), sep = "")
+              else
+                rn <- character(0L)
+            }
+            rn
+          })
+
+setMethod("colnames", "DataFrame",
+          function(x, do.NULL = TRUE, prefix = "row") {
+            cn <- names(x)
+            if (is.null(cn) && !do.NULL) {
+              nc <- NROW(x)
+              if (nc > 0L) 
+                cn <- paste(prefix, seq_len(nc), sep = "")
+              else
+                cn <- character(0L)
+            }
+            cn
+          })
+
+setMethod("dimnames", "DataFrame",
+          function(x) {
+            list(row.names(x), names(x))
+          })
+
+setReplaceMethod("row.names", "DataFrame",
+                 function(x, value) {
+                   if (!is.null(value)) {
+                     if (any(is.na(value)))
+                       stop("missing values not allowed in rownames")
+                     if (length(value) != nrow(x))
+                       stop("invalid rownames length")
+                     if (anyDuplicated(value))
+                       stop("duplicate rownames not allowed")
+                     if (!is(value, "XStringSet"))
+                       value <- as.character(value)
+                   }
+                   x@rownames <- value
+                   x
+                 })
+
+setReplaceMethod("rownames", "DataFrame",
+                 function(x, value) {
+                   row.names(x) <- value
+                   x
+                 })
+
+setReplaceMethod("colnames", "DataFrame",
+                 function(x, value) {
+                   if (!is.null(value)) {
+                     if (length(value) > length(x))
+                       stop("more column names than columns")
+                     value <- make.names(value, unique=TRUE)
+                   }
+                   names(x) <- value
+                   x
+                 })
 
 setReplaceMethod("dimnames", "DataFrame",
                  function(x, value) {
-                   rows <- value[[1]]
-                   if (!is.null(rows)) {
-                     if (any(is.na(rows)))
-                       stop("missing values not allowed in rownames")
-                     if (length(rows) != nrow(x))
-                       stop("invalid rownames length")
-                     if (anyDuplicated(rows))
-                       stop("duplicate rownames not allowed")
-                     if (!is(rows, "XStringSet"))
-                       rows <- as.character(rows)
-                   }
-                   cols <- value[[2]]
-                   if (!is.null(cols)) {
-                     if (length(cols) > length(x))
-                       stop("more column names than columns")
-                     cols <- make.names(cols, unique=TRUE)
-                   }
-                   x@rownames <- rows
-                   names(x) <- cols
+                   rownames(x) <- value[[1]]
+                   colnames(x) <- value[[2]]
                    x
                  })
 

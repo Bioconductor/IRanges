@@ -4,7 +4,13 @@
 
 % accessor
 \alias{dim,DataFrame-method}
+\alias{row.names,DataFrame-method}
+\alias{rownames,DataFrame-method}
+\alias{colnames,DataFrame-method}
 \alias{dimnames,DataFrame-method}
+\alias{row.names<-,DataFrame-method}
+\alias{rownames<-,DataFrame-method}
+\alias{colnames<-,DataFrame-method}
 \alias{dimnames<-,DataFrame-method}
 
 % constructor
