@@ -155,10 +155,11 @@
   \describe{
     \item{}{
       \code{x[i, drop=TRUE]}:
-      If defined, return a new Sequence object made of the selected elements
-      (subscript \code{i} must be an NA-free numeric vector specifying the
-      positions of the elements to select). The \code{drop} argument specifies
-      whether or not to coerce the returned sequence to a standard vector.
+      If defined, returns a new Sequence object made of selected elements
+      \code{i}, which can be missing; an NA-free logical, numeric, or
+      character vector; or a logical Rle object. The \code{drop} argument
+      specifies whether or not to coerce the returned sequence to a standard
+      vector.
     }
     \item{}{
       \code{x[i] <- value}:
@@ -167,7 +168,7 @@
     \item{}{
       \code{x[[i]]}:
       If defined, return the selected element \code{i}, where \code{i} is an
-      integer or character vector of length 1.
+      numeric or character vector of length 1.
     }
     \item{}{
       \code{x$name}:
