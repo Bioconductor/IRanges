@@ -437,8 +437,8 @@ setAs("data.frame", "DataFrame",
         if (is.integer(rn))
           rn <- NULL
         rownames(from) <- NULL
-        new("DataFrame", listData = as.list(from),
-            nrows = nrow(from), rownames = rn)
+        new2("DataFrame", listData = as.list(from),
+             nrows = nrow(from), rownames = rn, check=FALSE)
       })
 
 # matrices just go through data.frame
@@ -447,8 +447,8 @@ setAs("matrix", "DataFrame",
 
 setAs("vector", "DataFrame",
       function(from) {
-        new("DataFrame", listData = structure(list(unname(from)), names = "X"),
-            nrows = length(from), rownames = names(from))
+        new2("DataFrame", listData = structure(list(unname(from)), names = "X"),
+             nrows = length(from), rownames = names(from), check=FALSE)
       })
 
 ### FIXME: only exists due to annoying S4 warning due to its caching of
@@ -460,6 +460,6 @@ setAs("integer", "DataFrame",
 
 setAs("Sequence", "DataFrame",
       function(from) {
-        new("DataFrame", listData = structure(list(unname(from)), names = "X"),
-            nrows = length(from), rownames = names(from))
+        new2("DataFrame", listData = structure(list(unname(from)), names = "X"),
+             nrows = length(from), rownames = names(from), check=FALSE)
       })
