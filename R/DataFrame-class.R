@@ -422,7 +422,9 @@ setMethod("as.data.frame", "DataFrame",
 ## take data.frames to DataFrames
 setAs("data.frame", "DataFrame",
       function(from) {
-        rn <- rownames(from)
+        rn <- attributes(from)[["row.names"]]
+        if (is.integer(rn))
+          rn <- NULL
         rownames(from) <- NULL
         new("DataFrame", listData = as.list(from),
             nrows = nrow(from), rownames = rn)
