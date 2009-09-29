@@ -104,8 +104,6 @@ setReplaceMethod("seqselect", "DataTable",
                      ir <- reduce(ir)
                      if (any(start(ir) < 1L) || any(end(ir) > nrow(x)))
                          stop("some ranges are out of bounds")
-                     lr <- sum(width(ir))
-                     nrv <- length(value)
                      if (!is.null(value)) {
                          if (!is(value, class(x))) {
                              value <- try(as(value, class(x)), silent = TRUE)
@@ -113,6 +111,8 @@ setReplaceMethod("seqselect", "DataTable",
                                  stop("'value' must be a ", class(x),
                                       " object or NULL")
                          }
+                         lr <- sum(width(ir))
+                         nrv <- nrow(value)
                          if (lr != nrv) {
                              if ((lr == 0) || (lr %% nrv != 0))
                                  stop(paste(nrv, "rows in value to replace",
