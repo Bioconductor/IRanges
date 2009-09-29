@@ -329,24 +329,35 @@ setReplaceMethod("[", "DataFrame",
                    if (length(list(...)) > 0)
                      warning("parameters in '...' not supported")
 
-                   if (missing(i)) {
+                   if (nargs() < 4) {
                      iInfo <- list(msg = NULL, useIdx = FALSE, idx = NULL)
+                     if (missing(i)) {
+                       jInfo <-
+                         list(msg = NULL, useIdx = FALSE, idx = seq_len(ncol(x)))
+                     } else {
+                       jInfo <- .bracket.Index(i, colnames(x), ncol(x))
+                     }
                    } else {
-                     iInfo <- .bracket.Index(i, rownames(x), nrow(x), dup.nms = TRUE)
-                     if (!is.null(iInfo[["msg"]]))
-                       stop("replacing rows: ", iInfo[["msg"]])
-                     i <- iInfo[["idx"]]
+                     if (missing(i)) {
+                       iInfo <- list(msg = NULL, useIdx = FALSE, idx = NULL)
+                     } else {
+                       iInfo <-
+                         .bracket.Index(i, rownames(x), nrow(x), dup.nms = TRUE)
+                     }
+                     if (missing(j)) {
+                       jInfo <-
+                         list(msg = NULL, useIdx = FALSE, idx = seq_len(ncol(x)))
+                     } else {
+                       jInfo <- .bracket.Index(j, colnames(x), ncol(x))
+                     }
                    }
+                   if (!is.null(iInfo[["msg"]]))
+                     stop("replacing rows: ", iInfo[["msg"]])
+                   if (!is.null(jInfo[["msg"]]))
+                     stop("replacing cols: ", jInfo[["msg"]])
+                   i <- iInfo[["idx"]]
+                   j <- jInfo[["idx"]]
                    useI <- iInfo[["useIdx"]]
-                   if (missing(j)) {
-                     jInfo <- list(msg = NULL, useIdx = FALSE, idx = NULL)
-                     j <- seq_len(ncol(x))
-                   } else {
-                     jInfo <- .bracket.Index(j, colnames(x), ncol(x))
-                     if (!is.null(jInfo[["msg"]]))
-                       stop("replacing cols: ", jInfo[["msg"]])
-                     j <- jInfo[["idx"]]
-                   }
                    if (!is(value, "DataFrame")) {
                      if (useI)
                        li <- length(i)

@@ -161,12 +161,12 @@ test_DataFrame_dimnames_replace <- function() {
   checkException(rownames(sw) <- rn, silent = TRUE)
 }
 
-test_DataFrame_replacement <- function() {
+test_DataFrame_replace <- function() {
   score <- c(1L, 3L, NA)
   counts <- c(10L, 2L, NA)
 
   DF <- DataFrame(score) # single, unnamed arg
-  
+
   DF[["counts"]] <- counts
   checkIdentical(DF[["counts"]], counts)
   DF[[3]] <- score
@@ -187,10 +187,16 @@ test_DataFrame_replacement <- function() {
   sw1[] <- 1; swiss1[] <- 1
   checkIdentical(as.data.frame(sw1), swiss1)
   sw1 <- sw; swiss1 <- swiss
+  sw1["Education"] <- 1; swiss1["Education"] <- 1
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
   sw1[,"Education"] <- 1; swiss1[,"Education"] <- 1
   checkIdentical(as.data.frame(sw1), swiss1)
   sw1 <- sw; swiss1 <- swiss
   sw1["Courtelary",] <- 1; swiss1["Courtelary",] <- 1
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1[1:3] <- 1; swiss1[1:3] <- 1
   checkIdentical(as.data.frame(sw1), swiss1)
   sw1 <- sw; swiss1 <- swiss
   sw1[,1:3] <- 1; swiss1[,1:3] <- 1
