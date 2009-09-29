@@ -169,9 +169,10 @@ setValidity2("SplitDataFrameList", .valid.SplitDataFrameList)
 DataFrameList <- function(...)
 {
   listData <- list(...)
-  if (length(listData) == 1 && is.list(listData[[1]]))
+  if (length(listData) == 1 && is.list(listData[[1]]) &&
+      !is.data.frame(listData[[1]]))
     listData <- listData[[1]]
-  newSimpleList("SimpleDataFrameList", listData)
+  newSimpleList("SimpleDataFrameList", lapply(listData, as, "DataFrame"))
 }
 
 SplitDataFrameList <- function(..., compress = TRUE)
@@ -179,7 +180,8 @@ SplitDataFrameList <- function(..., compress = TRUE)
   if (!isTRUEorFALSE(compress))
     stop("'compress' must be TRUE or FALSE")
   listData <- list(...)
-  if (length(listData) == 1 && is.list(listData[[1]]))
+  if (length(listData) == 1 && is.list(listData[[1]]) &&
+      !is.data.frame(listData[[1]]))
     listData <- listData[[1]]
   if (length(listData) > 0 && !is(listData[[1]], "DataFrame")) {
     if (is.null(names(listData)))
@@ -271,12 +273,12 @@ setMethod("as.data.frame", "SplitDataFrameList",
 
 setMethod("show", "SplitDataFrameList", function(object)
           {
-            nc <- ncol(object)
+            nc <- ncol(object)[[1]]
             lo <- length(object)
             cat(class(object), ": ",
                 lo, ifelse(lo == 1, " elements with ", " elements with "),
                 nc, ifelse(nc == 1, " column\n", " columns\n"), sep = "")
             if (!is.null(names(object)))
               cat(labeledLine("names", names(object)))
-            cat(labeledLine("colnames", colnames(object)))
+            cat(labeledLine("colnames", colnames(object)[[1]]))
           })

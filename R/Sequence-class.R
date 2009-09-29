@@ -515,6 +515,12 @@ setReplaceMethod("seqselect", "Sequence",
                              else
                                  value <- rep(value, length.out = lr)
                          }
+                         nms <- names(x)
+                         if (is.null(nms)) {
+                             names(value) <- NULL
+                         } else {
+                             names(value) <- seqselect(nms, ir)
+                         }
                      }
                      irValues <- PartitioningByEnd(cumsum(width(ir)))
                      ir <- gaps(ir, start = 1, end = length(x))
@@ -531,12 +537,6 @@ setReplaceMethod("seqselect", "Sequence",
                                          width = width(ir)[i]))
                      }
                      if (length(irValues) > 0) {
-                         nms <- names(x)
-                         if (is.null(nms)) {
-                             names(value) <- NULL
-                         } else {
-                             names(value) <- seqselect(nms, irValues)
-                         }
                          subseqs[seq(2, length(subseqs), by = 2)] <-
                            lapply(seq_len(length(irValues)), function(i)
                                   window(value,

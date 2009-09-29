@@ -133,48 +133,45 @@ setValidity2("DataFrame", .valid.DataFrame)
 DataFrame <- function(..., row.names = NULL)
 {
   ## build up listData, with names from arguments
-  listData <- list(...)
   nr <- 0
-  varnames <- character()
+  listData <- list(...)
   varlist <- vector("list", length(listData))
   if (length(listData) > 0) {
-    if (is.null(names(listData)))
-      names(listData) <- character(length(listData))
-    emptynames <- !nzchar(names(listData))
-    args <- as.list(substitute(list(...)))[-1]
-    argdp <- sapply(args, function(arg) deparse(arg)[1])
+    dotnames <- names(listData)
+    dotvalues <- 
+      sapply(as.list(substitute(list(...)))[-1],
+             function(arg) deparse(arg)[1])
+    if (is.null(dotnames)) {
+      emptynames <- rep.int(TRUE, length(listData))
+      names(listData) <- dotvalues
+    } else {
+      emptynames <- !nzchar(names(listData))
+      if (any(emptynames)) {
+        names(listData)[emptynames] <- dotvalues[emptynames]
+      }
+    }
     varnames <- as.list(names(listData))
     nrows <- ncols <- integer(length(varnames))
     for (i in seq_along(listData)) {
-      element <- listData[[i]]
-      element <- try(as(element, "DataFrame"), silent = TRUE)
+      element <- try(as(listData[[i]], "DataFrame"), silent = TRUE)
       if (inherits(element, "try-error"))
         stop("cannot coerce class \"", class(listData[[i]]),
              "\" to an DataFrame")
-      enames <- names(element)
-      if (ncol(element) > 1) {
-        if (is.null(enames))
-          enames <- seq_len(ncol(element))
-        if (emptynames[i])
-          varnames[[i]] <- enames
-        else varnames[[i]] <- paste(varnames[[i]], enames, sep = ".") 
-      } else {
-        if (!is.null(enames))
-          varnames[[i]] <- enames
-        else if (emptynames[i])
-          varnames[[i]] <- argdp[i]
-      }
       nrows[i] <- nrow(element)
       ncols[i] <- ncol(element)
       varlist[[i]] <- as.list(element, use.names = FALSE)
+      if (length(dim(listData[[i]])) > 1) {
+        if (emptynames[i])
+          varnames[[i]] <- colnames(element)
+        else
+          varnames[[i]] <- paste(varnames[[i]], colnames(element), sep = ".")
+      }
     }
     nr <- max(nrows)
-    for (i in seq_along(listData)) {
-      if (nrows[i] < nr && nrows[i] && (nr %% nrows[i]) == 0) {
-        recycle <- rep(seq_len(nrows[i]), length = nr)
-        varlist[[i]] <- lapply(varlist[[i]], `[`, recycle, drop=FALSE)
-        nrows[i] <- nr
-      }
+    for (i in which((nrows > 0L) & (nrows < nr) & (nr %% nrows == 0L))) {
+      recycle <- rep(seq_len(nrows[i]), length = nr)
+      varlist[[i]] <- lapply(varlist[[i]], `[`, recycle, drop=FALSE)
+      nrows[i] <- nr
     }
     if (!all(nrows == nr))
       stop("different row counts implied by arguments")
@@ -425,23 +422,31 @@ setMethod("as.data.frame", "DataFrame",
 ## take data.frames to DataFrames
 setAs("data.frame", "DataFrame",
       function(from) {
-        new2("DataFrame", listData = from,
-             nrows = nrow(from), rownames = rownames(from), check=FALSE)
+        rn <- rownames(from)
+        rownames(from) <- NULL
+        new("DataFrame", listData = as.list(from),
+            nrows = nrow(from), rownames = rn)
       })
 
-setAs("matrix", "DataFrame", # matrices just go through data.frame
+# matrices just go through data.frame
+setAs("matrix", "DataFrame",
       function(from) as(as.data.frame(from), "DataFrame"))
 
-## everything else
-setAs("ANY", "DataFrame",
+setAs("vector", "DataFrame",
       function(from) {
-        new2("DataFrame", listData = list(from), nrows = length(from),
-             check=FALSE)
+        new("DataFrame", listData = structure(list(unname(from)), names = "X"),
+            nrows = length(from), rownames = names(from))
       })
 
 ### FIXME: only exists due to annoying S4 warning due to its caching of
 ### coerce methods.
 setAs("integer", "DataFrame",
       function(from) {
-        selectMethod("coerce", c("ANY", "DataFrame"))(from)
+        selectMethod("coerce", c("vector", "DataFrame"))(from)
+      })
+
+setAs("Sequence", "DataFrame",
+      function(from) {
+        new("DataFrame", listData = structure(list(unname(from)), names = "X"),
+            nrows = length(from), rownames = names(from))
       })

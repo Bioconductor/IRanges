@@ -22,9 +22,10 @@
 
 % coercion
 \alias{as.data.frame,DataFrame-method}
-\alias{coerce,ANY,DataFrame-method}
 \alias{coerce,matrix,DataFrame-method}
+\alias{coerce,vector,DataFrame-method}
 \alias{coerce,integer,DataFrame-method}
+\alias{coerce,Sequence,DataFrame-method}
 \alias{coerce,data.frame,DataFrame-method}
 \alias{coerce,DataFrame,data.frame-method}
 
@@ -76,8 +77,7 @@
     \item{}{\code{x[i,j,drop]}: Behaves very similarly to the
       \code{\link{[.data.frame}} method, except \code{i} can be a
       logical \code{Rle} object and subsetting by \code{matrix} indices
-      is not supported. Due to limitations in the subsetting of
-      \code{XVector} objects, indices containing \code{NA}'s are not
+      is not supported. Indices containing \code{NA}'s are also not
       supported.
     }
     \item{}{\code{x[i,j] <- value}: Behaves very similarly to the
@@ -142,8 +142,6 @@
       By default, constructs a new \code{DataFrame} with \code{from} as
       its only column. If \code{from} is a \code{matrix} or
       \code{data.frame}, all of its columns become columns in the new
-      \code{DataFrame}. In any case, there is an attempt to coerce 
-      columns to \code{XVector} before inserting them into the
       \code{DataFrame}. Note that for the \code{DataFrame} to behave
       correctly, each column object must support element-wise subsetting
       via the \code{[} method and return the number of elements with
@@ -151,8 +149,7 @@
       constructor, rather than this interface.
     }
     \item{}{\code{as.list(x)}: Coerces \code{x}, an \code{DataFrame},
-      to a \code{list}, converting any \code{XVector} objects to vectors
-      along the way.
+      to a \code{list}.
     }
     \item{}{\code{as.data.frame(x, row.names=NULL, optional=FALSE)}:
       Coerces \code{x}, an \code{DataFrame}, to a \code{data.frame}.
