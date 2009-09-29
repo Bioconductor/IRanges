@@ -242,13 +242,15 @@ setReplaceMethod("[[", "CompressedList",
                      } else {
                          value <- try(as(value, elementType(x)), silent = TRUE)
                          if (inherits(value, "try-error"))
-                             stop("cannot coerce 'value' to a ", elementType(x), " instance")
+                             stop("cannot coerce 'value' to a ", elementType(x),
+                                  " instance")
                          listData <- as.list(x, use.names = FALSE)
                          listData[[i]] <- value
                          widths <- elementLengths(x)
                          names(widths) <- NULL
                          widths[i] <-
-                           ifelse(length(dim(value)) < 2, length(value), nrow(value))
+                           ifelse(length(dim(value)) < 2, length(value),
+                                  nrow(value))
                          if ((i == length(x) + 1L) &&
                              (!is.null(names(x)) || nchar(nameValue) > 0)) {
                              NAMES <- names(x)
@@ -361,10 +363,12 @@ setMethod("seqselect", "CompressedList",
                       whichRep <- which(xeltlen != elementLengths(start))
                       for (i in whichRep)
                           start[[i]] <- rep(start[[i]], length.out = xeltlen[i])
-                      if (length(dim(x@unlistData)) < 2)
+                      if (length(dim(x@unlistData)) < 2) {
                           unlistData <- x@unlistData[unlist(start)]
-                      else
-                          unlistData <- x@unlistData[unlist(start), , drop = FALSE]
+                      } else {
+                          unlistData <-
+                            x@unlistData[unlist(start), , drop = FALSE]
+                      }
                       partitionEnd <-
                         cumsum(unlist(lapply(start, sum), use.names = FALSE))
                   } else if (is(start, "IntegerList")) {
@@ -399,8 +403,8 @@ setReplaceMethod("seqselect", "CompressedList",
                      if (!is.null(start) && is.null(end) && is.null(width) &&
                          (length(x) > 0)) {
                          if (length(x) != length(start))
-                             stop("'length(start)' must equal 'length(x)' when ",
-                                  "'end' and 'width' are NULL")
+                             stop("'length(start)' must equal 'length(x)' ",
+                                  "when 'end' and 'width' are NULL")
                          if (is.list(start)) {
                              if (is.logical(start[[1]]))
                                  start <- LogicalList(start)
@@ -417,19 +421,22 @@ setReplaceMethod("seqselect", "CompressedList",
                          } else if (is(start, "LogicalList")) {
                              xeltlen <- elementLengths(x)
                              whichRep <- which(xeltlen != elementLengths(start))
-                             for (i in whichRep)
-                                 start[[i]] <- rep(start[[i]], length.out = xeltlen[i])
+                             for (i in whichRep) {
+                                 start[[i]] <-
+                                   rep(start[[i]], length.out = xeltlen[i])
+                             }
                              start <- unlist(start)
                          } else if (is(start, "IntegerList")) {
                              i <-
                                unlist(Map("+", start,
-                                          IntegerList(as.list(start(x@partitioning) - 1L))))
+                                 IntegerList(as.list(start(x@partitioning) - 1L))))
                              start <- rep(FALSE, sum(elementLengths(x)))
                              start[i] <- TRUE
                          } else {
                              stop("unrecognized 'start' type")
                          }
-                         seqselect(x@unlistData, start) <- value
+                         seqselect(x@unlistData, start) <-
+                           unlist(value, use.names=FALSE)
                      } else {
                          x <- callNextMethod()
                      }
@@ -457,8 +464,8 @@ setMethod("c", "CompressedList",
                   stop("all arguments in '...' must be CompressedList objects")
               ecs <- sapply(tls, elementType)
               if (!all(sapply(ecs, extends, ecs[[1]])))
-                  stop("all arguments in '...' must have an element class that extends ",
-                       "that of the first argument")
+                  stop("all arguments in '...' must have an element class ",
+                       "that extends that of the first argument")
               if (length(dim(tls[[1]]@unlistData)) < 2)
                   unlistData <- do.call(c, lapply(tls, slot, "unlistData"))
               else

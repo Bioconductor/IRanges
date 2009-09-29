@@ -251,6 +251,76 @@ setMethod("[", "CompressedSplitDataFrameList",
             x
           })
 
+setReplaceMethod("[", "SimpleSplitDataFrameList",
+                 function(x, i, j,..., value)
+                 {
+                     if (length(list(...)) > 0)
+                         stop("invalid replacement")
+                     if (missing(j)) {
+                         if (missing(i))
+                             x <- callNextMethod(x = x, value = value)
+                         else
+                             x <- callNextMethod(x = x, i = i, value = value)
+                     } else {
+                         jInfo <-
+                           .bracket.Index(j, colnames(x)[[1]], ncol(x)[[1]])
+                         if (!jInfo[["useIdx"]]) {
+                             if (missing(i))
+                                 x[] <- value
+                             else
+                                 x[i] <- value
+                         } else {
+                             j <- jInfo[["idx"]]
+                             y <- x[, j, drop=FALSE]
+                             if (missing(i))
+                                 y[] <- value
+                             else
+                                 y[i] <- value
+                             indices <-
+                               structure(seq_len(length(x)), names = names(x))
+                             x@listData <-
+                               lapply(indices, function(k) {
+                                          z <- x@listData[[k]]
+                                          z[j] <- y[[k]]
+                                          z
+                                      })
+                         }
+                     }
+                     x
+                 })
+
+setReplaceMethod("[", "CompressedSplitDataFrameList",
+                 function(x, i, j,..., value)
+                 {
+                     if (length(list(...)) > 0)
+                         stop("invalid replacement")
+                     if (missing(j)) {
+                         if (missing(i))
+                             x <- callNextMethod(x = x, value = value)
+                         else
+                             x <- callNextMethod(x = x, i = i, value = value)
+                     } else {
+                         jInfo <-
+                           .bracket.Index(j, colnames(x)[[1]], ncol(x)[[1]])
+                         if (!jInfo[["useIdx"]]) {
+                             if (missing(i))
+                                 x[] <- value
+                             else
+                                 x[i] <- value
+                         } else {
+                             j <- jInfo[["idx"]]
+                             y <- x[, j, drop=FALSE]
+                             if (missing(i)) {
+                                 y[] <- value
+                             } else {
+                                 y[i] <- value
+                             }
+                             x@unlistData[, j] <- y@unlistData
+                         }
+                     }
+                     x
+                 })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
 ###

@@ -180,12 +180,14 @@ setReplaceMethod("seqselect", "SimpleList",
                              start <- IRangesList(start)
                          } else if (is(start, "IntegerList")) {
                              newstart <-
-                               LogicalList(lapply(elementLengths(x), rep, x = FALSE))
+                               LogicalList(lapply(elementLengths(x), rep,
+                                                  x = FALSE))
                              for (i in seq_len(length(newstart)))
                                  newstart[[i]][start[[i]]] <- TRUE
                              start <- newstart
                          }
-                         indices <- structure(seq_len(length(x)), names = names(x))
+                         indices <-
+                           structure(seq_len(length(x)), names = names(x))
                          if (is(start, "RangesList") ||
                              is(start, "LogicalList")) {
                              if (!is(value, "SimpleList") &&

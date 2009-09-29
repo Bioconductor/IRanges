@@ -170,6 +170,7 @@ RleList <- function(..., compress = FALSE)
 ### Coercion
 ###
 
+setMethod("as.vector", c("AtomicList", "missing"), function(x, mode) unlist(x, use.names=FALSE))
 setMethod("as.logical", "AtomicList", function(x) as.logical(unlist(x, use.names=FALSE)))
 setMethod("as.integer", "AtomicList", function(x) as.integer(unlist(x, use.names=FALSE)))
 setMethod("as.numeric", "AtomicList", function(x) as.numeric(unlist(x, use.names=FALSE)))
@@ -178,6 +179,7 @@ setMethod("as.character", "AtomicList", function(x) as.character(unlist(x, use.n
 setMethod("as.raw", "AtomicList", function(x) as.raw(unlist(x, use.names=FALSE)))
 setMethod("as.factor", "AtomicList", function(x) as.factor(unlist(x, use.names=FALSE)))
 
+setAs("AtomicList", "vector", function(from) as.vector(from))
 setAs("AtomicList", "logical", function(from) as.logical(from))
 setAs("AtomicList", "integer", function(from) as.integer(from))
 setAs("AtomicList", "numeric", function(from) as.numeric(from))
@@ -185,6 +187,11 @@ setAs("AtomicList", "complex", function(from) as.complex(from))
 setAs("AtomicList", "character", function(from) as.character(from))
 setAs("AtomicList", "raw", function(from) as.raw(from))
 setAs("AtomicList", "factor", function(from) as.factor(from))
+
+setAs("AtomicList", "SimpleSplitDataFrameList",
+      function(from) SplitDataFrameList(from, compress = FALSE))
+setAs("AtomicList", "CompressedSplitDataFrameList",
+      function(from) SplitDataFrameList(from, compress = TRUE))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Group generic methods

@@ -48,6 +48,7 @@
 \alias{SimpleRleList}
 \alias{SimpleRleList-class}
 
+\alias{as.vector,AtomicList,missing-method}
 \alias{as.logical,AtomicList-method}
 \alias{as.integer,AtomicList-method}
 \alias{as.numeric,AtomicList-method}
@@ -55,6 +56,7 @@
 \alias{as.character,AtomicList-method}
 \alias{as.raw,AtomicList-method}
 \alias{as.factor,AtomicList-method}
+\alias{coerce,AtomicList,vector-method}
 \alias{coerce,AtomicList,logical-method}
 \alias{coerce,AtomicList,integer-method}
 \alias{coerce,AtomicList,numeric-method}
@@ -62,6 +64,8 @@
 \alias{coerce,AtomicList,character-method}
 \alias{coerce,AtomicList,raw-method}
 \alias{coerce,AtomicList,factor-method}
+\alias{coerce,AtomicList,SimpleSplitDataFrameList-method}
+\alias{coerce,AtomicList,CompressedSplitDataFrameList-method}
 
 \alias{coerce,LogicalList,IRangesList-method}
 \alias{coerce,LogicalList,CompressedIRangesList-method}
@@ -139,6 +143,10 @@
 \section{Coercion}{
   \describe{
     \item{}{
+      \code{as.vector(x)}, \code{as(from, "vector")}: Creates a vector based
+      on the values contained in \code{x}.
+    }
+    \item{}{
       \code{as.logical(x)}, \code{as(from, "logical")}: Creates a logical
       vector based on the values contained in \code{x}.
     }
@@ -165,6 +173,12 @@
     \item{}{
       \code{as.factor(x)}, \code{as(from, "factor")}: Creates a factor object
       based on the values contained in \code{x}.
+    }
+    \item{}{
+      \code{as(from, "CompressedSplitDataFrameList")},
+      \code{as(from, "SimpleSplitDataFrameList")}: Creates a
+      \linkS4class{CompressedSplitDataFrameList}/\linkS4class{SimpleSplitDataFrameList}
+      instance from an AtomicList instance.
     }
     \item{}{
       \code{as(from, "IRangesList")}, \code{as(from, "CompressedIRangesList")},
