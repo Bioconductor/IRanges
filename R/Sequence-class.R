@@ -563,10 +563,17 @@ setReplaceMethod("seqselect", "vector",
                      if (any(start(ir) < 1L) || any(end(ir) > length(x)))
                          stop("some ranges are out of bounds")
                      i <- unlist(ir)
-                     if (is.null(value) && (length(i) > 0))
+                     if (is.null(value) && (length(i) > 0)) {
                          x <- x[-i]
-                     else
+                     } else {
+                         if (!is(value, class(x))) {
+                             value <- try(as(value, class(x)), silent = TRUE)
+                             if (inherits(value, "try-error"))
+                                 stop("'value' must be a ", class(x),
+                                      " object or NULL")
+                         }
                          x[i] <- value
+                     }
                      x
                  })
 
