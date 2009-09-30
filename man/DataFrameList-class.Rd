@@ -32,6 +32,8 @@
 % coercion
 \alias{as.data.frame,SplitDataFrameList-method}
 \alias{coerce,SplitDataFrameList,DataFrame-method}
+\alias{coerce,ANY,CompressedSplitDataFrameList-method}
+\alias{coerce,ANY,SimpleSplitDataFrameList-method}
 
 % show
 \alias{show,SplitDataFrameList-method}

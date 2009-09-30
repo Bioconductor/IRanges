@@ -315,6 +315,20 @@ setReplaceMethod("[", "CompressedSplitDataFrameList",
                              } else {
                                  y[i] <- value
                              }
+                             xels <- elementLengths(x)
+                             yels <- elementLengths(y)
+                             if (any(xels != yels)) {
+                                 ends <- cumsum(elementLengths(y))
+                                 starts <- c(1L, head(ends, -1) + 1L)
+                                 indices <-
+                                   unlist(lapply(seq_len(length(y)),
+                                                 function(k) {
+                                                     rep(starts[k]:ends[k],
+                                                         length.out = xels[k])
+                                                 }))
+                                 y@unlistData <-
+                                   y@unlistData[indices, , drop = FALSE]
+                             }
                              x@unlistData[, j] <- y@unlistData
                          }
                      }
@@ -336,6 +350,11 @@ setMethod("as.data.frame", "SplitDataFrameList",
               warning("'optional' and arguments in '...' ignored")
             as.data.frame(as(x, "DataFrame"), row.names = row.names)
           })
+
+setAs("ANY", "SimpleSplitDataFrameList",
+      function(from) SplitDataFrameList(from, compress=FALSE))
+setAs("ANY", "CompressedSplitDataFrameList",
+      function(from) SplitDataFrameList(from, compress=TRUE))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Show
