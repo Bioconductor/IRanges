@@ -40,6 +40,7 @@
 
 % show
 \alias{show,RangesList-method}
+\alias{show,IRangesList-method}
 
 % split
 \alias{split,Ranges-method}

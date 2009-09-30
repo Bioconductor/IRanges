@@ -9,7 +9,7 @@ setClass("RangesList", representation("VIRTUAL"),
          contains = "Sequence")
 setClass("SimpleRangesList",
          prototype = prototype(elementType = "Ranges"),
-         contains = c("SimpleList", "RangesList"))
+         contains = c("RangesList", "SimpleList"))
 
 setClass("IRangesList", representation("VIRTUAL"),
          prototype = prototype(elementType = "IRanges"),
@@ -446,7 +446,6 @@ setMethod("Ops", c("RangesList", "ANY"),
   }
 }
 setMethod("show", "RangesList", .RangesList_show)
-setMethod("show", "SimpleRangesList", .RangesList_show)
 setMethod("show", "IRangesList", .RangesList_show)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -8,68 +8,68 @@ setClassUnion("atomic",
 ## A list that holds atomic objects
 
 setClass("CompressedAtomicList",
-         contains =  c("CompressedList", "AtomicList"),
+         contains =  c("AtomicList", "CompressedList"),
          representation("VIRTUAL"))
 
 setClass("SimpleAtomicList",
-         contains =  c("SimpleList", "AtomicList"),
+         contains =  c("AtomicList", "SimpleList"),
          representation("VIRTUAL"))
  
 setClass("CompressedLogicalList",
          prototype = prototype(elementType = "logical",
                                unlistData = logical()),
-         contains = c("CompressedAtomicList", "LogicalList"))
+         contains = c("LogicalList", "CompressedAtomicList"))
 setClass("SimpleLogicalList",
          prototype = prototype(elementType = "logical"),
-         contains = c("SimpleAtomicList", "LogicalList"))
+         contains = c("LogicalList", "SimpleAtomicList"))
 
 setClass("CompressedIntegerList",
          prototype = prototype(elementType = "integer",
                                unlistData = integer()),
-         contains = c("CompressedAtomicList", "IntegerList"))
+         contains = c("IntegerList", "CompressedAtomicList"))
 setClass("SimpleIntegerList",
          prototype = prototype(elementType = "integer"),
-         contains = c("SimpleAtomicList", "IntegerList"))
+         contains = c("IntegerList", "SimpleAtomicList"))
 
 setClass("CompressedNumericList",
          prototype = prototype(elementType = "numeric",
                                unlistData = numeric()),
-         contains = c("CompressedAtomicList", "NumericList"))
+         contains = c("NumericList", "CompressedAtomicList"))
 setClass("SimpleNumericList",
          prototype = prototype(elementType = "numeric"),
-         contains = c("SimpleAtomicList", "NumericList"))
+         contains = c("NumericList", "SimpleAtomicList"))
 
 setClass("CompressedComplexList",
          prototype = prototype(elementType = "complex",
                                unlistData = complex()),
-         contains = c("CompressedAtomicList", "ComplexList"))
+         contains = c("ComplexList", "CompressedAtomicList"))
 setClass("SimpleComplexList",
          prototype = prototype(elementType = "complex"),
-         contains = c("SimpleAtomicList", "ComplexList"))
+         contains = c("ComplexList", "SimpleAtomicList"))
 
 setClass("CompressedCharacterList",
          prototype = prototype(elementType = "character",
                                unlistData = character()),
-         contains = c("CompressedAtomicList", "CharacterList"))
+         contains = c("CharacterList", "CompressedAtomicList"))
 setClass("SimpleCharacterList",
          prototype = prototype(elementType = "character"),
-         contains = c("SimpleAtomicList", "CharacterList"))
+         contains = c("CharacterList", "SimpleAtomicList"))
 
 setClass("CompressedRawList",
          prototype = prototype(elementType = "raw",
                                unlistData = raw()),
-         contains = c("CompressedAtomicList", "RawList"))
+         contains = c("RawList", "CompressedAtomicList"))
 setClass("SimpleRawList",
          prototype = prototype(elementType = "raw"),
-         contains = c("SimpleAtomicList", "RawList"))
+         contains = c("RawList", "SimpleAtomicList"))
 
 setClass("CompressedRleList",
          prototype = prototype(elementType = "Rle",
                                unlistData = new("Rle")),
-         contains = c("CompressedAtomicList", "RleList"))
+         contains = c("RleList", "CompressedAtomicList"))
 setClass("SimpleRleList",
          prototype = prototype(elementType = "Rle"),
-         contains = c("SimpleAtomicList", "RleList"))
+         contains = c("RleList", "SimpleAtomicList"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructors
