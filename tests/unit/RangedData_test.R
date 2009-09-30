@@ -10,7 +10,7 @@ test_RangedData_construction <- function() {
   checkTrue(validObject(rd))
   rd <- RangedData(ranges)
   checkTrue(validObject(rd))
-  checkIdentical(ranges(rd), RangesList(ranges))
+  checkIdentical(unname(ranges(rd)), RangesList(ranges))
   rd <- RangedData(ranges, score)
   checkTrue(validObject(rd))
   checkIdentical(rd[["score"]], score)
@@ -172,6 +172,7 @@ test_RangedData_subset <- function() {
     checkIdentical(length(values(a)), length(values(b)))
     if (length(values(a)) > 0)
         checkIdentical(as.data.frame(values(a)), as.data.frame(values(b)))
+    else TRUE
   }
 
   checkIdenticalRD(rd[numeric()], erd)
@@ -217,6 +218,7 @@ test_RangedData_subset <- function() {
   checkIdenticalRD(rd[1:2, 1], onecol[1:2,]) # combined
   ## repeats
   repeated <- RangedData(ranges[c(1,3,1,2)], filter=filter[c(1:2,1,3)],
+
                          space = c(1,1,1,2))
   checkIdenticalRD(rd[c(1:2,1,3),1], repeated)
 }
@@ -235,8 +237,10 @@ test_RangedData_combine <- function() {
 
   ## split()
   rd2 <- RangedData(ranges, score)
+  rd3 <- rd
+  names(rd3) <- paste(names(rd), names(rd2), sep = ".")
   checkIdentical(as.data.frame(unlist(split(rd2, filter))),
-                 as.data.frame(rd))
+                 as.data.frame(rd3))
   checkException(split(rd2, filter[1:2]), silent = TRUE)
 
   ## rbind()
@@ -248,10 +252,6 @@ test_RangedData_combine <- function() {
   rd <- RangedData(c(ranges, ranges2), score=c(score,score2),
                    space=c(filter, space2))
   checkIdentical(as.data.frame(rbind(rd1, rd2)), as.data.frame(rd))
-
-  rd1 <- RangedData(ranges, score)
-  rd2 <- RangedData(ranges2, score = score2)
-  rbind(rd1, rd2)
   
   universe(rd2) <- "foo"
   checkException(rbind(rd1, rd2), silent=TRUE)
@@ -268,8 +268,8 @@ test_RangedData_lapply <- function() {
 test_RangedData_range <- function() {
   rd1 <- RangedData(IRanges(c(2,5,1), c(3,7,3)))
   rd2 <- RangedData(IRanges(c(5,2,0), c(6,3,1)))
-  checkIdentical(range(rd1), RangesList(IRanges(1, 7)))
-  checkIdentical(range(rd1, rd2), RangesList(IRanges(0, 7)))
+  checkIdentical(range(rd1), RangesList("1" = IRanges(1, 7)))
+  checkIdentical(range(rd1, rd2), RangesList("1" = IRanges(0, 7)))
   checkException(range(rd1, c(2,3)), silent = TRUE)
 }
 
