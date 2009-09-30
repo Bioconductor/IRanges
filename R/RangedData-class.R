@@ -33,6 +33,21 @@ setClass("RangedData", contains = "DataTable",
 setGeneric("values", function(x, ...) standardGeneric("values"))
 setMethod("values", "RangedData", function(x) x@values)
 
+setGeneric("values<-", function(x, ..., value) standardGeneric("values<-"))
+setReplaceMethod("values", "RangedData",
+                 function(x, value) {
+                   if (extends(class(value), "SplitDataFrameList")) {
+                     if (!identical(elementLengths(values(x)), elementLengths(value)))
+                       stop("'value' must have same elementLengths as current 'values'")
+                   } else if (extends(class(value), "DataFrame")) {
+                     value <- split(value, space(x))
+                   } else {
+                     stop("'value' must extend class SplitDataFrameList or DataFrame")
+                   }
+                   x@values <- value
+                   x
+                 })
+
 setGeneric("ranges", function(x, ...) standardGeneric("ranges"))
 setMethod("ranges", "RangedData", function(x) x@ranges)
 
@@ -43,7 +58,7 @@ setReplaceMethod("ranges", "RangedData",
                      if (!identical(lapply(ranges(x), names), lapply(value, names)))
                        stop("'value' must have same length and names as current 'ranges'")
                    } else if (extends(class(value), "IRanges")) {
-                     values <- split(value, space(x))
+                     value <- split(value, space(x))
                    } else {
                      stop("'value' must extend class RangesList or IRanges")
                    }

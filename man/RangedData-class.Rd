@@ -23,7 +23,9 @@
 \alias{start,RangedData-method}
 \alias{start<-,RangedData-method}
 \alias{values}
+\alias{values<-}
 \alias{values,RangedData-method}
+\alias{values<-,RangedData-method}
 \alias{width,RangedData-method}
 \alias{width<-,RangedData-method}
 \alias{space,RangedData-method}
@@ -205,8 +207,8 @@
       \code{space(x)}: Gets the spaces from \code{ranges(x)}.
     }
     \item{}{
-      \code{values(x)}: Gets the data values in \code{x} as a
-      \code{\linkS4class{SplitDataFrameList}}.
+      \code{values(x), values(x) <- value}: Gets or sets the data values in
+      \code{x} as a \code{\linkS4class{SplitDataFrameList}}.
     }
     \item{}{
       \code{score(x), score(x) <- value}: Gets or sets the column

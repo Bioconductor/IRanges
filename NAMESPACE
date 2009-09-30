@@ -151,7 +151,7 @@ export(
     subseq, "subseq<-",
     subject, Views, subviews, trim,
     slice,
-    values,
+    values, "values<-",
     runsum, runwtsum, runq,
     viewApply, viewMins, viewMaxs, viewSums, viewWhichMins, viewWhichMaxs,
     viewRangeMins, viewRangeMaxs,

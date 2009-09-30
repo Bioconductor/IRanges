@@ -74,7 +74,40 @@ test_RangedData_extraction <- function() {
   checkIdentical(rd[1][[1]], filter[1:2])
 }
 
-test_RangedData_data_replace <- function() {
+test_RangedData_values_replace <- function() {
+    ranges <- IRanges(c(1,2,3),c(4,5,6))
+    filter <- c(1L, 0L, 1L)
+    score <- c(10L, 2L, NA)
+
+    rd1 <- RangedData(ranges, filter, space = c(1, 2, 1))
+    values(rd1) <- split(DataFrame(filter=score), c(1, 2, 1))
+    rd2 <- RangedData(ranges, filter=score, space = c(1, 2, 1))
+    checkIdentical(rd1, rd2)
+
+    rd1 <- RangedData(ranges, filter, space = c(1, 2, 1))
+    values(rd1) <- DataFrame(filter=score[c(1,3,2)])
+    rd2 <- RangedData(ranges, filter=score, space = c(1, 2, 1))
+    checkIdentical(rd1, rd2)
+}
+
+test_RangedData_ranges_replace <- function() {
+    ranges1 <- IRanges(c(1,2,3),c(4,5,6))
+    ranges2 <- IRanges(c(3,2,1),c(4,5,6))
+    filter <- c(1L, 0L, 1L)
+    score <- c(10L, 2L, NA)
+
+    rd1 <- RangedData(ranges1, filter, space = c(1, 2, 1))
+    ranges(rd1) <- split(ranges2, c(1, 2, 1))
+    rd2 <- RangedData(ranges2, filter, space = c(1, 2, 1))
+    checkIdentical(rd1, rd2)
+
+    rd1 <- RangedData(ranges1, filter, space = c(1, 2, 1))
+    ranges(rd1) <- ranges2[c(1,3,2)]
+    rd2 <- RangedData(ranges2, filter, space = c(1, 2, 1))
+    checkIdentical(rd1, rd2)
+}
+
+test_RangedData_data_column_replace <- function() {
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   filter <- c(1L, 0L, 1L)
   score <- c(10L, 2L, NA)
