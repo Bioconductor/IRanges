@@ -446,6 +446,7 @@ setMethod("Ops", c("RangesList", "ANY"),
   }
 }
 setMethod("show", "RangesList", .RangesList_show)
+setMethod("show", "SimpleRangesList", .RangesList_show)
 setMethod("show", "IRangesList", .RangesList_show)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -261,8 +261,9 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
     if (!is(ranges, "RangesList"))
       ranges <- RangesList(ranges)
     values <- SplitDataFrameList(values, compress = TRUE)
-    if (length(space) == 1)
-      names(ranges) <- names(values) <- space
+    if (!length(space))
+      space <- "1"
+    names(ranges) <- names(values) <- space
   }
   if (!is.null(universe) && !isSingleString(universe))
     stop("'universe' must be a single string")
