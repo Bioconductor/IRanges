@@ -424,29 +424,29 @@ setMethod("Ops", c("RangesList", "ANY"),
 ### The "show" method.
 ###
 
-setMethod("show", "RangesList",
-          function(object)
-          {
-            nranges <- length(start(object))
-            cat(class(object), ": ", nranges, " range", sep = "")
-            if (nranges != 1)
-              cat("s")
-            cat("\n")
-            if (length(object)) {
-              if (is.null(names(object)))
-                nms <- seq_len(length(object))
-              else nms <- paste("\"", names(object), "\"", sep = "")
-              if (length(object) > 1) {
-                cat(labeledLine("sequences", nms))
-              } else {
-                ranges <- object[[1]]
-                if (length(ranges)) {
-                  str <- paste(start(ranges), ":", end(ranges), sep = "")
-                  cat(labeledLine(nms, str, count = FALSE))
-                }
-              }
-            }
-          })
+.RangesList_show <- function(object) {
+  nranges <- length(start(object))
+  cat(class(object), ": ", nranges, " range", sep = "")
+  if (nranges != 1)
+    cat("s")
+  cat("\n")
+  if (length(object)) {
+    if (is.null(names(object)))
+      nms <- seq_len(length(object))
+    else nms <- paste("\"", names(object), "\"", sep = "")
+    if (length(object) > 1) {
+      cat(labeledLine("sequences", nms))
+    } else {
+      ranges <- object[[1]]
+      if (length(ranges)) {
+        str <- paste(start(ranges), ":", end(ranges), sep = "")
+        cat(labeledLine(nms, str, count = FALSE))
+      }
+    }
+  }
+}
+setMethod("show", "RangesList", .RangesList_show)
+setMethod("show", "IRangesList", .RangesList_show)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.

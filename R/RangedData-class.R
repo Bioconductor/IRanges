@@ -103,8 +103,8 @@ setGeneric("score", function(x, ...) standardGeneric("score"))
 setMethod("score", "RangedData",
           function(x) {
               score <- x[["score"]]
-              if (is.null(score) && ncol(x) > 0 && is.numeric(x[[1]]))
-                  score <- x[[1]]
+              ## if (is.null(score) && ncol(x) > 0 && is.numeric(x[[1]]))
+              ##     score <- x[[1]]
               score
           })
 
@@ -189,8 +189,17 @@ setReplaceMethod("colnames", "RangedData",
   else NULL
 }
 
+.valid.RangedData.names <- function(x) {
+  nms <- names(x)
+  if (length(nms) != length(x))
+    "length(names(x)) must equal length(x)"
+  else if (!is.character(nms) || any(is.na(nms)) || any(duplicated(nms)))
+    "names(x) must be a character vector without any NA's or duplicates"
+  else NULL
+}
+
 .valid.RangedData <- function(x) {
-  c(.valid.RangedData.ranges(x))
+  c(.valid.RangedData.ranges(x), .valid.RangedData.names(x))
 }
 
 setValidity2("RangedData", .valid.RangedData)
@@ -551,8 +560,9 @@ setAs("Rle", "RangedData",
       function(from)
       {
         new2("RangedData",
-             ranges = IRangesList(successiveIRanges(runLength(from))),
-             values = SplitDataFrameList(DataFrame(score = runValue(from))),
+             ranges = IRangesList("1" = successiveIRanges(runLength(from))),
+             values = SplitDataFrameList("1" =
+               DataFrame(score = runValue(from))),
              metadata = metadata(from),
              check = FALSE)
       })
@@ -595,12 +605,19 @@ setAs("RangesList", "RangedData",
 
 setMethod("as.env", "RangedData", function(x, enclos = parent.frame()) {
   env <- callNextMethod()
-  makeActiveBinding("ranges", function() {
-    val <- ranges(x)
-    rm(list="ranges", envir=env)
-    assign("ranges", val, env) ## cache for further use
-    val
-  }, env)
+  makeAccessorBinding <- function(fun, name = deparse(substitute(fun))) {
+    makeActiveBinding(name, function() {
+      val <- fun(x)
+      rm(list=name, envir=env)
+      assign(name, val, env) ## cache for further use
+      val
+    }, env)
+  }
+  makeAccessorBinding(ranges)
+  makeAccessorBinding(space)
+  makeAccessorBinding(start)
+  makeAccessorBinding(width)
+  makeAccessorBinding(end)
   env
 })
 
