@@ -173,6 +173,32 @@ getStartEndRunAndOffset <- function(x, start, end) {
 ### Group generic methods
 ###
 
+.sumprodRle <- function(e1, e2, na.rm = FALSE)
+{
+    n1 <- length(e1)
+    n2 <- length(e2)
+    if (n1 == 0 || n2 == 0) {
+        ends <- integer(0)
+        which1 <- integer(0)
+        which2 <- integer(0)
+    } else {
+        n <- max(n1, n2)
+        if (max(n1, n2) %% min(n1, n2) != 0)
+            warning("longer object length is not a multiple of shorter object length")
+        if (n1 < n)
+            e1 <- rep(e1, length.out = n)
+        if (n2 < n)
+            e2 <- rep(e2, length.out = n)
+        # ends <- sort(unique(c(end(e1), end(e2))))
+        ends <- .Call("Integer_sorted_merge", end(e1), end(e2), PACKAGE="IRanges")
+        which1 <- findIntervalAndStartFromWidth(ends, runLength(e1))[["interval"]]
+        which2 <- findIntervalAndStartFromWidth(ends, runLength(e2))[["interval"]]
+    }
+    lengths <- .Call("Integer_diff_with_0", ends, PACKAGE="IRanges")
+    values <- runValue(e1)[which1] * runValue(e2)[which2]
+    sum(lengths * values, na.rm = na.rm)
+}
+
 setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
           function(e1, e2)
           {
@@ -949,12 +975,7 @@ setMethod("cor", signature = c(x = "Rle", y = "Rle"),
               # Direct change to slots for fast computation
               x@values <- runValue(x) - mean(x, na.rm = na.rm)
               y@values <- runValue(y) - mean(y, na.rm = na.rm)
-              z <- x * y
-              if (na.rm)
-                  n <- length(z) - sum(runLength(z)[is.na(runValue(z))])
-              else
-                  n <- length(z)
-              sum(z, na.rm = na.rm) /
+              .sumprodRle(x, y, na.rm = na.rm) /
                   (sqrt(sum(runLength(x) * runValue(x)^2, na.rm = na.rm)) *
                    sqrt(sum(runLength(y) * runValue(y)^2, na.rm = na.rm)))
          })
