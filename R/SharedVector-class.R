@@ -197,12 +197,31 @@ setValidity2("SharedVector_Pool", .valid.SharedVector_Pool)
 ###
 
 SharedVector.compare <- function(x1, start1, x2, start2, width)
-    .Call("SharedVector_memcmp", x1, start1, x2, start2, width, PACKAGE="IRanges")
+    .Call("SharedVector_memcmp",
+          x1, start1, x2, start2, width, PACKAGE="IRanges")
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Low-level copy.
 ###
+
+SharedVector.memcpy <- function(dest, dest.start, src, src.start, width)
+{
+    if (!is(dest, "SharedVector") || !is(src, "SharedVector"))
+        stop("'dest' and 'src' must be SharedVector objects")
+    if (!isSingleNumber(dest.start)
+     || !isSingleNumber(src.start)
+     || !isSingleNumber(width))
+        stop("'dest.start', 'src.start' and 'width' must be single integers")
+    if (!is.integer(dest.start))
+        dest.start <- as.integer(dest.start)
+    if (!is.integer(src.start))
+        src.start <- as.integer(src.start)
+    if (!is.integer(width))
+        width <- as.integer(width)
+    .Call("SharedVector_memcpy",
+          dest, dest.start, src, src.start, width, PACKAGE="IRanges")
+}
 
 ### 'lkup' must be NULL or a vector of integers
 SharedVector.copy <- function(dest, i, imax=integer(0), src, lkup=NULL)

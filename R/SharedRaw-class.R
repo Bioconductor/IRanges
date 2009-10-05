@@ -231,8 +231,8 @@ SharedRaw.append <- function(x1, start1, width1, x2, start2, width2)
 
     ans_len <- width1 + width2
     ans <- SharedRaw(ans_len)
-    .Call("SharedVector_memcpy", ans, 1L, x1, start1, width1, PACKAGE="IRanges")
-    .Call("SharedVector_memcpy", ans, 1L + width1, x2, start2, width2, PACKAGE="IRanges")
+    SharedVector.memcpy(ans, 1L, x1, start1, width1)
+    SharedVector.memcpy(ans, 1L + width1, x2, start2, width2)
     ans
 }
 

@@ -39,6 +39,7 @@
 \alias{coerce,SharedVector,SharedVector_Pool-method}
 \alias{c,SharedVector_Pool-method}
 \alias{SharedVector.compare}
+\alias{SharedVector.memcpy}
 \alias{SharedVector.copy}
 \alias{SharedVector.reverseCopy}
 \alias{as.numeric,SharedVector-method}

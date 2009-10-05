@@ -115,9 +115,7 @@ setMethod("c", "XRaw",
             ## ... so from here 'arg' is guaranteed to be an XRaw object.
             src <- arg@shared
             src_start <- arg@offset + 1L
-            .Call("SharedVector_memcpy",
-                  ans_shared, dest_start, src, src_start, width,
-                  PACKAGE="IRanges")
+            SharedVector.memcpy(ans_shared, dest_start, src, src_start, width)
             dest_start <- dest_start + width
         }
         new2(class(x), shared=ans_shared, length=ans_length, check=FALSE)

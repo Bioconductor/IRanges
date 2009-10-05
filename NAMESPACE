@@ -70,7 +70,7 @@ export(
     read.trfMask,
     ##read.chain,
     SharedVector.compare,
-    SharedVector.copy, SharedVector.reverseCopy,
+    SharedVector.memcpy, SharedVector.copy, SharedVector.reverseCopy,
     SharedRaw,
     SharedRaw.readInts, SharedRaw.writeInts,
     SharedRaw.read, SharedRaw.write,
