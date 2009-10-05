@@ -915,7 +915,8 @@ setMethod("var", signature = c(x = "Rle", y = "missing"),
               else
                   n <- length(x)
               centeredValues <- runValue(x) - mean(x, na.rm = na.rm)
-              sum(runLength(x) * centeredValues^2, na.rm = na.rm) / (n - 1)
+              sum(runLength(x) * centeredValues * centeredValues,
+                  na.rm = na.rm) / (n - 1)
           })
 
 setMethod("var", signature = c(x = "Rle", y = "Rle"),
@@ -976,8 +977,10 @@ setMethod("cor", signature = c(x = "Rle", y = "Rle"),
               x@values <- runValue(x) - mean(x, na.rm = na.rm)
               y@values <- runValue(y) - mean(y, na.rm = na.rm)
               .sumprodRle(x, y, na.rm = na.rm) /
-                  (sqrt(sum(runLength(x) * runValue(x)^2, na.rm = na.rm)) *
-                   sqrt(sum(runLength(y) * runValue(y)^2, na.rm = na.rm)))
+                  (sqrt(sum(runLength(x) * runValue(x) * runValue(x),
+                            na.rm = na.rm)) *
+                   sqrt(sum(runLength(y) * runValue(y) * runValue(y),
+                            na.rm = na.rm)))
          })
 
 setMethod("sd", signature = c(x = "Rle"),
