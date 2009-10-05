@@ -946,8 +946,18 @@ setMethod("cor", signature = c(x = "Rle", y = "Rle"),
                       y <- y[!isMissing]
                   }
               }
-              var(x, y) / (sd(x) * sd(y))
-          })
+              # Direct change to slots for fast computation
+              x@values <- runValue(x) - mean(x, na.rm = na.rm)
+              y@values <- runValue(y) - mean(y, na.rm = na.rm)
+              z <- x * y
+              if (na.rm)
+                  n <- length(z) - sum(runLength(z)[is.na(runValue(z))])
+              else
+                  n <- length(z)
+              sum(z, na.rm = na.rm) /
+                  (sqrt(sum(runLength(x) * runValue(x)^2, na.rm = na.rm)) *
+                   sqrt(sum(runLength(y) * runValue(y)^2, na.rm = na.rm)))
+         })
 
 setMethod("sd", signature = c(x = "Rle"),
           function(x, na.rm = FALSE) sqrt(var(x, na.rm = na.rm)))
