@@ -64,7 +64,8 @@ setMethod("viewSums", "RleViewsList",
 
 setMethod("viewMeans", "RleViewsList",
           function(x, na.rm = FALSE)
-          .summaryRleViewsList(x, FUN = viewMeans, na.rm = na.rm))
+          .summaryRleViewsList(x, FUN = viewMeans, na.rm = na.rm,
+                               outputListType = "SimpleNumericList"))
 
 setMethod("viewWhichMins", "RleViewsList",
           function(x, na.rm = FALSE)
