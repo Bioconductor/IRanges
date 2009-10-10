@@ -57,26 +57,30 @@ setMethod("viewMins", "RleViewsList",
 setMethod("viewMaxs", "RleViewsList",
           function(x, na.rm = FALSE)
           .summaryRleViewsList(x, FUN = viewMaxs, na.rm = na.rm))
-  
+
 setMethod("viewSums", "RleViewsList",
           function(x, na.rm = FALSE)
           .summaryRleViewsList(x, FUN = viewSums, na.rm = na.rm))
-  
+
+setMethod("viewMeans", "RleViewsList",
+          function(x, na.rm = FALSE)
+          .summaryRleViewsList(x, FUN = viewMeans, na.rm = na.rm))
+
 setMethod("viewWhichMins", "RleViewsList",
           function(x, na.rm = FALSE)
           .summaryRleViewsList(x, FUN = viewWhichMins, na.rm = na.rm,
                                outputListType = "SimpleIntegerList"))
-  
+
 setMethod("viewWhichMaxs", "RleViewsList",
           function(x, na.rm = FALSE)
           .summaryRleViewsList(x, FUN = viewWhichMaxs, na.rm = na.rm,
                                outputListType = "SimpleIntegerList"))
-  
+
 setMethod("viewRangeMaxs", "RleViewsList",
           function(x, na.rm = FALSE)
           .summaryRleViewsList(x, FUN = viewRangeMaxs, na.rm = na.rm,
                                outputListType = "SimpleIRangesList"))
-  
+
 setMethod("viewRangeMins", "RleViewsList",
           function(x, na.rm = FALSE)
           .summaryRleViewsList(x, FUN = viewRangeMins, na.rm = na.rm,

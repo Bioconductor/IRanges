@@ -5,6 +5,7 @@ test_RleViews <- function() {
     checkIdentical(integer(0), viewMins(empty))
     checkIdentical(integer(0), viewMaxs(empty))
     checkIdentical(integer(0), viewSums(empty))
+    checkIdentical(numeric(0), viewMeans(empty))
     checkIdentical(integer(0), viewWhichMins(empty))
     checkIdentical(integer(0), viewWhichMaxs(empty))
     checkIdentical(IRanges(), viewRangeMins(empty))
@@ -18,6 +19,7 @@ test_RleViews <- function() {
     checkIdentical(c(2147483647L, 1L), viewMins(xRleViewsUntrimmed, na.rm = TRUE))
     checkIdentical(c(-2147483647L, 9L), viewMaxs(xRleViewsUntrimmed, na.rm = TRUE))
     checkIdentical(c(0L, 80L), viewSums(xRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(c(NaN, 20/3), viewMeans(xRleViewsUntrimmed, na.rm = TRUE))
     checkIdentical(c(NA_integer_, 1L), viewWhichMins(xRleViewsUntrimmed, na.rm = TRUE))
     checkIdentical(c(NA_integer_, 11L), viewWhichMaxs(xRleViewsUntrimmed, na.rm = TRUE))
 
@@ -31,6 +33,7 @@ test_RleViews <- function() {
     checkIdentical(letters[1:5], names(viewMins(xRleViews)))
     checkIdentical(letters[1:5], names(viewMaxs(xRleViews)))
     checkIdentical(letters[1:5], names(viewSums(xRleViews)))
+    checkIdentical(letters[1:5], names(viewMeans(xRleViews)))
     checkIdentical(letters[1:5], names(viewWhichMins(xRleViews)))
     checkIdentical(letters[1:5], names(viewWhichMaxs(xRleViews)))
     checkIdentical(letters[1:5], names(viewRangeMins(xRleViews, na.rm = TRUE)))
@@ -45,8 +48,10 @@ test_RleViews <- function() {
     checkEqualsNumeric(sapply(xList, max, na.rm = TRUE), viewMaxs(xRleViews, na.rm = TRUE))
     checkEqualsNumeric(sapply(xList, max, na.rm = TRUE), viewApply(xRleViews, max, na.rm = TRUE))
     checkEqualsNumeric(sapply(xList, sum), viewSums(xRleViews))
+    checkEqualsNumeric(sapply(xList, mean), viewMeans(xRleViews))
     checkEqualsNumeric(sapply(xList, sum), viewApply(xRleViews, sum))
     checkEqualsNumeric(sapply(xList, sum, na.rm = TRUE), viewSums(xRleViews, na.rm = TRUE))
+    checkEqualsNumeric(sapply(xList, mean, na.rm = TRUE), viewMeans(xRleViews, na.rm = TRUE))
     checkEqualsNumeric(sapply(xList, sum, na.rm = TRUE), viewApply(xRleViews, sum, na.rm = TRUE))
 
     y <- rep(c(1.2, 3.4, NA, 7.8, 9.0), 1:5)
@@ -57,6 +62,7 @@ test_RleViews <- function() {
     checkIdentical(c(Inf, 1.2), viewMins(yRleViewsUntrimmed, na.rm = TRUE))
     checkIdentical(c(-Inf, 9), viewMaxs(yRleViewsUntrimmed, na.rm = TRUE))
     checkIdentical(c(0, 84.2), viewSums(yRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(c(NaN, 84.2/12), viewMeans(yRleViewsUntrimmed, na.rm = TRUE))
     checkIdentical(c(NA_integer_, 1L), viewWhichMins(yRleViewsUntrimmed, na.rm = TRUE))
     checkIdentical(c(NA_integer_, 11L), viewWhichMaxs(yRleViewsUntrimmed, na.rm = TRUE))
 
@@ -73,8 +79,10 @@ test_RleViews <- function() {
     checkEqualsNumeric(sapply(yList, max, na.rm = TRUE), viewMaxs(yRleViews, na.rm = TRUE))
     checkEqualsNumeric(sapply(yList, max, na.rm = TRUE), viewApply(yRleViews, max, na.rm = TRUE))
     checkEqualsNumeric(sapply(yList, sum), viewSums(yRleViews))
+    checkEqualsNumeric(sapply(yList, mean), viewMeans(yRleViews))
     checkEqualsNumeric(sapply(yList, sum), viewApply(yRleViews, sum))
     checkEqualsNumeric(sapply(yList, sum, na.rm = TRUE), viewSums(yRleViews, na.rm = TRUE))
+    checkEqualsNumeric(sapply(yList, mean, na.rm = TRUE), viewMeans(yRleViews, na.rm = TRUE))
     checkEqualsNumeric(sapply(yList, sum, na.rm = TRUE), viewApply(yRleViews, sum, na.rm = TRUE))
 
     z <- rep(c(1+1i, 3.4-1i, NA, 7.8+3i, 9.0-2i), 1:5)
@@ -84,7 +92,9 @@ test_RleViews <- function() {
       lapply(seq_len(length(zRleViews)),
              function(i) window(z, start = start(zRleViews)[i], end = end(zRleViews)[i]))
     checkEqualsNumeric(sapply(zList, sum), viewSums(zRleViews))
+    checkEqualsNumeric(sapply(zList, mean), viewMeans(zRleViews))
     checkEqualsNumeric(sapply(zList, sum), viewApply(zRleViews, sum))
     checkEqualsNumeric(sapply(zList, sum, na.rm = TRUE), viewSums(zRleViews, na.rm = TRUE))
+    checkEqualsNumeric(sapply(zList, mean, na.rm = TRUE), viewMeans(zRleViews, na.rm = TRUE))
     checkEqualsNumeric(sapply(zList, sum, na.rm = TRUE), viewApply(zRleViews, sum, na.rm = TRUE))
 }

@@ -153,8 +153,8 @@ export(
     slice,
     values, "values<-",
     runsum, runwtsum, runq,
-    viewApply, viewMins, viewMaxs, viewSums, viewWhichMins, viewWhichMaxs,
-    viewRangeMins, viewRangeMaxs,
+    viewApply, viewMins, viewMaxs, viewSums, viewMeans,
+    viewWhichMins, viewWhichMaxs, viewRangeMins, viewRangeMaxs,
     cbind, rbind, table, xtabs,
     rangedData, "rangedData<-", applyFun, "applyFun<-", applyParams,
     "applyParams<-", simplify, "simplify<-",
@@ -257,7 +257,8 @@ exportMethods(
     Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
     findRange,
     runsum, runwtsum, runq,
-    viewApply, viewMins, viewMaxs, viewSums, viewWhichMins, viewWhichMaxs,
+    viewApply, viewMins, viewMaxs, viewSums, viewMeans,
+    viewWhichMins, viewWhichMaxs,
 
     ## Old stuff (Defunct or Deprecated):
     first, last

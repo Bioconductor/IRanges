@@ -51,6 +51,20 @@ setMethod("viewSums", "XIntegerViews",
         .Call("XIntegerViews_viewSums", x, na.rm, PACKAGE="IRanges")
 )
 
+setMethod("viewMeans", "XIntegerViews",
+    function(x, na.rm=FALSE) {
+        if (!isTRUEorFALSE(na.rm))
+            stop("'na.rm' must be TRUE or FALSE")
+        if (na.rm) {
+            n <-
+              viewSums(Views(!is.na(Rle(as.integer(subject(x)))), as(x, "Rle")))
+        } else {
+            n <- width(x)
+        }
+        viewSums(x, na.rm = na.rm) / n
+    }
+)
+
 setMethod("viewWhichMins", "XIntegerViews",
     function(x, na.rm=FALSE)
         .Call("XIntegerViews_viewWhichMins", x, na.rm, PACKAGE="IRanges")

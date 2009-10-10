@@ -857,8 +857,9 @@ xViewsList <- slice(xRleList, 1)
 \subsection{Aggregating Views}
 
 While \Rfunction{sapply} can be used to loop over each window, the native
-functions \Rfunction{viewMaxs}, \Rfunction{viewMins}, and \Rfunction{viewSums}
-provide fast looping to calculate their respective statistical summaries.
+functions \Rfunction{viewMaxs}, \Rfunction{viewMins}, \Rfunction{viewSums},
+and \Rfunction{viewMeans} provide fast looping to calculate their respective
+statistical summaries.
 
 <<views-looping>>=
 head(viewSums(xViews))

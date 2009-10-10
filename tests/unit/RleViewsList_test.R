@@ -20,6 +20,7 @@ test_RleViewsList <- function() {
     checkIdentical(c("a", "b"), names(viewMins(xRleViewsList)))
     checkIdentical(c("a", "b"), names(viewMaxs(xRleViewsList)))
     checkIdentical(c("a", "b"), names(viewSums(xRleViewsList)))
+    checkIdentical(c("a", "b"), names(viewMeans(xRleViewsList)))
     checkIdentical(c("a", "b"), names(viewWhichMins(xRleViewsList)))
     checkIdentical(c("a", "b"), names(viewWhichMaxs(xRleViewsList)))
     checkIdentical(c("a", "b"), names(viewRangeMins(xRleViewsList, na.rm = TRUE)))
@@ -34,8 +35,10 @@ test_RleViewsList <- function() {
     checkEqualsNumeric(unlist(lapply(xList, lapply, max, na.rm = TRUE)), unlist(viewMaxs(xRleViewsList, na.rm = TRUE)))
     checkEqualsNumeric(unlist(lapply(xList, lapply, max, na.rm = TRUE)), unlist(viewApply(xRleViewsList, max, na.rm = TRUE)))
     checkEqualsNumeric(unlist(lapply(xList, lapply, sum)), unlist(viewSums(xRleViewsList)))
+    checkEqualsNumeric(unlist(lapply(xList, lapply, mean)), unlist(viewMeans(xRleViewsList)))
     checkEqualsNumeric(unlist(lapply(xList, lapply, sum)), unlist(viewApply(xRleViewsList, sum)))
     checkEqualsNumeric(unlist(lapply(xList, lapply, sum, na.rm = TRUE)), unlist(viewSums(xRleViewsList, na.rm = TRUE)))
+    checkEqualsNumeric(unlist(lapply(xList, lapply, mean, na.rm = TRUE)), unlist(viewMeans(xRleViewsList, na.rm = TRUE)))
     checkEqualsNumeric(unlist(lapply(xList, lapply, sum, na.rm = TRUE)), unlist(viewApply(xRleViewsList, sum, na.rm = TRUE)))
 
     y1 <- rep(c(1.2, 3.4, NA, 7.8, 9.0), 1:5)
@@ -64,7 +67,9 @@ test_RleViewsList <- function() {
     checkEqualsNumeric(unlist(lapply(yList, lapply, max, na.rm = TRUE)), unlist(viewMaxs(yRleViewsList, na.rm = TRUE)))
     checkEqualsNumeric(unlist(lapply(yList, lapply, max, na.rm = TRUE)), unlist(viewApply(yRleViewsList, max, na.rm = TRUE)))
     checkEqualsNumeric(unlist(lapply(yList, lapply, sum)), unlist(viewSums(yRleViewsList)))
+    checkEqualsNumeric(unlist(lapply(yList, lapply, mean)), unlist(viewMeans(yRleViewsList)))
     checkEqualsNumeric(unlist(lapply(yList, lapply, sum)), unlist(viewApply(yRleViewsList, sum)))
     checkEqualsNumeric(unlist(lapply(yList, lapply, sum, na.rm = TRUE)), unlist(viewSums(yRleViewsList, na.rm = TRUE)))
+    checkEqualsNumeric(unlist(lapply(yList, lapply, mean, na.rm = TRUE)), unlist(viewMeans(yRleViewsList, na.rm = TRUE)))
     checkEqualsNumeric(unlist(lapply(yList, lapply, sum, na.rm = TRUE)), unlist(viewApply(yRleViewsList, sum, na.rm = TRUE)))
 }

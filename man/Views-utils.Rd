@@ -23,6 +23,10 @@
 \alias{viewSums,RleViews-method}
 \alias{viewSums,RleViewsList-method}
 \alias{viewSums,XIntegerViews-method}
+\alias{viewMeans}
+\alias{viewMeans,RleViews-method}
+\alias{viewMeans,RleViewsList-method}
+\alias{viewMeans,XIntegerViews-method}
 \alias{viewWhichMins}
 \alias{viewWhichMins,RleViews-method}
 \alias{viewWhichMins,RleViewsList-method}
@@ -45,8 +49,8 @@
   The \code{slice} function creates a \link{Views} object that contains the
   indices where the data are within the specified bounds.
 
-  The \code{viewMins}, \code{viewMaxs}, \code{viewSums} functions calculate
-  the minima, maxima and sums on views respectively.
+  The \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewMeans}
+  functions calculate the minima, maxima, sums, and means on views respectively.
 }
 
 \usage{
@@ -59,6 +63,7 @@
   viewMins(x, na.rm=FALSE)
   viewMaxs(x, na.rm=FALSE)
   viewSums(x, na.rm=FALSE)
+  viewMeans(x, na.rm=FALSE)
 
   viewWhichMins(x, na.rm=FALSE)
   viewWhichMaxs(x, na.rm=FALSE)
@@ -86,7 +91,7 @@
     for \code{slice}.
 
     An \link{RleViews}, \link{RleViewsList}, \link{XIntegerViews} object for
-    \code{viewMins}, \code{viewMaxs}, and \code{viewSums}.
+    \code{viewMins}, \code{viewMaxs}, \code{viewSums}, and \code{viewMeans}.
 
     An \link{Rle}, \link{RleViewsList}, \link{XIntegerViews} object for
     \code{viewWhichMins} and \code{viewWhichMaxs}.
@@ -108,9 +113,9 @@
   finding areas of absolute maxima (peaks), absolute minima (troughs), or
   fluctuations within a specified limits.
 
-  The \code{viewMins}, \code{viewMaxs}, and \code{viewSums} functions provide
-  efficient methods for calculating the specified numeric summary by performing
-  the looping in compiled code.
+  The \code{viewMins}, \code{viewMaxs}, \code{viewSums}, and \code{viewMeans}
+  functions provide efficient methods for calculating the specified numeric
+  summary by performing the looping in compiled code.
 
   The \code{viewWhichMins}, \code{viewWhichMaxs}, \code{viewRangeMins}, and
   \code{viewRangeMaxs} functions provide efficient methods for finding the
@@ -123,8 +128,8 @@
   A vector of \code{length(x)} for \link{RleViews} and \link{XIntegerViews}
   objects or a \link{SimpleList} object of \code{length(x)} for
   \link{RleViewsList} objects containing the numeric summaries for the views
-  for \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewWhichMins},
-  and \code{viewWhichMaxs}.
+  for \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewMeans},
+  \code{viewWhichMins}, and \code{viewWhichMaxs}.
 
   A \link{IRanges} object for \link{RleViews} objects or a
   \linkS4class{SimpleIRangesList} for \link{RleViewsList} objects containing
@@ -151,6 +156,7 @@
   viewMins(vecViews)
   viewMaxs(vecViews)
   viewSums(vecViews)
+  viewMeans(vecViews)
   viewWhichMins(vecViews)
   viewWhichMaxs(vecViews)
 
