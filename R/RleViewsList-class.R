@@ -57,7 +57,8 @@ RleViewsList <- function(..., rleList, rangesList, universe = NULL)
 
 setMethod("slice", "RleList",
           function(x, lower = -Inf, upper = Inf,
-                   includeLower = TRUE, includeUpper = TRUE)
+                   includeLower = TRUE, includeUpper = TRUE,
+                   rangesOnly = FALSE)
           {
               if (!isSingleNumber(lower)) {
                   stop("'lower' must be a single number")
@@ -71,29 +72,30 @@ setMethod("slice", "RleList",
               if (!isTRUEorFALSE(includeUpper)) {
                   stop("'includeUpper' must be TRUE or FALSE")
               }
+              if (!isTRUEorFALSE(rangesOnly)) {
+                  stop("'rangesOnly' must be TRUE or FALSE")
+              }
               indices <- seq_len(length(x))
               if (lower == -Inf) {
                   ranges <-
-                    lapply(indices, function(i) Rle(TRUE, length(x[[i]])))
+                    LogicalList(lapply(indices,
+                                       function(i) Rle(TRUE, length(x[[i]]))))
               } else if (includeLower) {
-                  ranges <- lapply(indices, function(i) x[[i]] >= lower)
+                  ranges <- (x >= lower)
               } else {
-                  ranges <- lapply(indices, function(i) x[[i]] > lower)
+                  ranges <- (x > lower)
               }
               if (upper < Inf) {
                   if (includeUpper) {
-                      ranges <-
-                        lapply(indices,
-                               function(i) ranges[[i]] & (x[[i]] <= upper))
+                      ranges <- ranges & (x <= upper)
                   } else {
-                      ranges <-
-                        lapply(indices,
-                                function(i) ranges[[i]] & (x[[i]] < upper))
+                      ranges <- ranges & (x < upper)
                   }
               }
-              RleViewsList(rleList = x,
-                           rangesList =
-                           do.call(IRangesList,
-                                   c(lapply(ranges, "IRanges"),
-                                     compress = FALSE)))
+              if (rangesOnly) {
+                  as(ranges, "CompressedIRangesList")
+              } else {
+                  RleViewsList(rleList = x,
+                               rangesList = as(ranges, "SimpleIRangesList"))
+              }
           })

@@ -31,7 +31,8 @@ setGeneric("slice", signature="x",
 
 setMethod("slice", "Rle",
           function(x, lower = -Inf, upper = Inf,
-                   includeLower = TRUE, includeUpper = TRUE)
+                   includeLower = TRUE, includeUpper = TRUE,
+                   rangesOnly = FALSE)
           {
               if (!isSingleNumber(lower)) {
                   stop("'lower' must be a single number")
@@ -44,6 +45,9 @@ setMethod("slice", "Rle",
               }
               if (!isTRUEorFALSE(includeUpper)) {
                   stop("'includeUpper' must be TRUE or FALSE")
+              }
+              if (!isTRUEorFALSE(rangesOnly)) {
+                  stop("'rangesOnly' must be TRUE or FALSE")
               }
               if (lower == -Inf) {
                   ranges <- Rle(TRUE, length(x))
@@ -59,7 +63,11 @@ setMethod("slice", "Rle",
                       ranges <- ranges & (x < upper)
                   }
               }
-              Views(x, ranges)
+              if (rangesOnly) {
+                  as(ranges, "IRanges")
+              } else {
+                  Views(x, ranges)
+              }
           })
 
 

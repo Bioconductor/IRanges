@@ -46,8 +46,8 @@
 \title{Utility functions and numeric summary of Views of numerics}
 
 \description{
-  The \code{slice} function creates a \link{Views} object that contains the
-  indices where the data are within the specified bounds.
+  The \code{slice} function creates a \linkS4class{Views} object that contains
+  the indices where the data are within the specified bounds.
 
   The \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewMeans}
   functions calculate the minima, maxima, sums, and means on views respectively.
@@ -58,7 +58,8 @@
 
   slice(x, lower=-Inf, upper=Inf, ...)
   \S4method{slice}{Rle}(x, lower=-Inf, upper=Inf,
-                        includeLower=TRUE, includeUpper=TRUE)
+                        includeLower=TRUE, includeUpper=TRUE,
+                        rangesOnly = FALSE)
 
   viewMins(x, na.rm=FALSE)
   viewMaxs(x, na.rm=FALSE)
@@ -87,14 +88,16 @@
     to a vector or matrix if possible.
   }
   \item{x}{
-    An \link{Rle}, \link{RleList}, \link{XInteger} object or an integer vector
-    for \code{slice}.
+    An \linkS4class{Rle}, \linkS4class{RleList}, \linkS4class{XInteger} object
+    or an integer vector for \code{slice}.
 
-    An \link{RleViews}, \link{RleViewsList}, \link{XIntegerViews} object for
-    \code{viewMins}, \code{viewMaxs}, \code{viewSums}, and \code{viewMeans}.
+    An \linkS4class{RleViews}, \linkS4class{RleViewsList},
+    \linkS4class{XIntegerViews} object for \code{viewMins}, \code{viewMaxs},
+    \code{viewSums}, and \code{viewMeans}.
 
-    An \link{Rle}, \link{RleViewsList}, \link{XIntegerViews} object for
-    \code{viewWhichMins} and \code{viewWhichMaxs}.
+    An \linkS4class{Rle}, \linkS4class{RleViewsList},
+    \linkS4class{XIntegerViews} object for \code{viewWhichMins} and
+    \code{viewWhichMaxs}.
   }
   \item{lower, upper}{
     The lower and upper bounds for the slice.
@@ -102,16 +105,18 @@
   \item{includeLower, includeUpper}{
     Logical indicating whether or not the specified boundary is open or closed.
   }
+  \item{rangesOnly}{
+    For \linkS4class{Rle} and \linkS4class{RleList} objects, a logical
+    indicating whether or not to drop the original data from the output.
+  }
   \item{na.rm}{
     Logical indicating whether or not to include missing values in the results.
   }
 }
 
 \details{
-  The \code{slice} function creates views on \link{Rle} or \link{XInteger}
-  objects where the data are within the specified bounds. This is useful for
-  finding areas of absolute maxima (peaks), absolute minima (troughs), or
-  fluctuations within a specified limits.
+  The \code{slice} function is useful for finding areas of absolute maxima
+  (peaks), absolute minima (troughs), or fluctuations within specified limits.
 
   The \code{viewMins}, \code{viewMaxs}, \code{viewSums}, and \code{viewMeans}
   functions provide efficient methods for calculating the specified numeric
@@ -123,17 +128,26 @@
 }
 
 \value{
-  An \link{RleViews} or \link{XIntegerViews} object for \code{slice}.
+  An \linkS4class{RleViews} object for \linkS4class{Rle} or an
+  \linkS4class{RleViewsList} for \linkS4class{RleList} containing the
+  views when using \code{slice} with \code{rangesOnly = FALSE}.
+  An \linkS4class{IRanges} object for \linkS4class{Rle} or a
+  \linkS4class{CompressedIRangesList} for \linkS4class{RleList} containing
+  the ranges when using \code{slice} with \code{rangesOnly = TRUE}.
+  An \linkS4class{XIntegerViews} for an \linkS4class{XInteger} object
+  when using \code{slice}.
 
-  A vector of \code{length(x)} for \link{RleViews} and \link{XIntegerViews}
-  objects or a \link{SimpleList} object of \code{length(x)} for
-  \link{RleViewsList} objects containing the numeric summaries for the views
-  for \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewMeans},
-  \code{viewWhichMins}, and \code{viewWhichMaxs}.
+  A vector of \code{length(x)} for \linkS4class{RleViews} and
+  \linkS4class{XIntegerViews} objects or a \linkS4class{SimpleList} object of
+  \code{length(x)} for \linkS4class{RleViewsList} objects containing the
+  numeric summaries for the views for \code{viewMins}, \code{viewMaxs},
+  \code{viewSums}, \code{viewMeans}, \code{viewWhichMins}, and
+  \code{viewWhichMaxs}.
 
-  A \link{IRanges} object for \link{RleViews} objects or a
-  \linkS4class{SimpleIRangesList} for \link{RleViewsList} objects containing
-  the location ranges for \code{viewRangeMins} and \code{viewRangeMaxs}.
+  An \linkS4class{IRanges} object for \linkS4class{RleViews} objects or a
+  \linkS4class{SimpleIRangesList} for \linkS4class{RleViewsList} objects
+  containing the location ranges for \code{viewRangeMins} and
+  \code{viewRangeMaxs}.
 }
 
 \author{P. Aboyoun}
@@ -164,6 +178,7 @@
   x <- IRanges(start=c(1L, 9L, 4L, 1L, 5L, 10L),
                width=c(5L, 6L, 3L, 4L, 3L,  3L))
   slice(coverage(x), lower=2)
+  slice(coverage(x), lower=2, rangesOnly = TRUE)
 }
 
 \keyword{methods}
