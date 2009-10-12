@@ -1043,6 +1043,12 @@ setMethod("smoothEnds", "Rle", function(y, k = 3)
               .smoothEndsDefault(y, k = k)
           })
 
+setMethod("runmean", "Rle",
+          function(x, k, endrule = c("drop", "constant"))
+          {
+              runsum(x, k, endrule = endrule) / k
+          })
+
 setMethod("runmed", "Rle",
           function(x, k, endrule = c("median", "keep", "drop", "constant"),
                    algorithm = NULL, print.level = 0)

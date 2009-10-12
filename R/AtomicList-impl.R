@@ -478,6 +478,10 @@ setMethod("runsum", "RleList",
           function(x, k, endrule = c("drop", "constant"))
               endoapply(x, runsum, k = k, endrule = endrule))
 
+setMethod("runmean", "RleList",
+          function(x, k, endrule = c("drop", "constant"))
+              endoapply(x, runmean, k = k, endrule = endrule))
+
 setMethod("runwtsum", "RleList",
           function(x, k, wt, endrule = c("drop", "constant"))
               endoapply(x, runwtsum, k = k, wt = wt, endrule = endrule))

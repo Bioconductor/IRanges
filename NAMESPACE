@@ -152,7 +152,7 @@ export(
     subject, Views, subviews, trim,
     slice,
     values, "values<-",
-    runsum, runwtsum, runq,
+    runmean, runsum, runwtsum, runq,
     viewApply, viewMins, viewMaxs, viewSums, viewMeans,
     viewWhichMins, viewWhichMaxs, viewRangeMins, viewRangeMaxs,
     cbind, rbind, table, xtabs,
@@ -256,7 +256,7 @@ exportMethods(
     subject, Views, subviews, trim,
     Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
     findRange,
-    runsum, runwtsum, runq,
+    runmean, runsum, runwtsum, runq,
     viewApply, viewMins, viewMaxs, viewSums, viewMeans,
     viewWhichMins, viewWhichMaxs,
 

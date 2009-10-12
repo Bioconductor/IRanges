@@ -108,6 +108,7 @@
 \alias{mad,Rle-method}
 \alias{IQR,Rle-method}
 \alias{smoothEnds,Rle-method}
+\alias{runmean,Rle-method}
 \alias{runmed,Rle-method}
 \alias{runsum,Rle-method}
 \alias{runwtsum,Rle-method}
@@ -598,6 +599,24 @@
       }
     }
     \item{}{
+      \code{runmean(x, k, endrule = c("drop", "constant"))}:
+      Calculates the means for fixed width running windows across \code{x}.
+      \describe{
+        \item{\code{k}}{An integer indicating the fixed width of the running
+          window. Must be odd when \code{endrule == "constant"}.}
+        \item{endrule}{A character string indicating how the values at the
+          beginning and the end (of the data) should be treated.
+          \describe{
+            \item{\code{"drop"}}{do not extend the running statistics to
+              be the same length as the underlying vectors;}
+            \item{\code{"constant"}}{copies running statistic to the
+              first values and analogously for the last ones making the
+              smoothed ends \emph{constant};}
+          }
+        }
+      }
+    }
+    \item{}{
       \code{runmed(x, k, endrule = c("median", "keep", "drop", "constant"))}:
       Calculates the medians for fixed width running windows across \code{x}.
       \describe{
@@ -627,7 +646,7 @@
       Calculates the sums for fixed width running windows across \code{x}.
       \describe{
         \item{\code{k}}{An integer indicating the fixed width of the running
-          window. Must be odd when \code{endrule != "drop"}.}
+          window. Must be odd when \code{endrule == "constant"}.}
         \item{endrule}{A character string indicating how the values at the
           beginning and the end (of the data) should be treated.
           \describe{
@@ -645,7 +664,7 @@
       Calculates the sums for fixed width running windows across \code{x}.
       \describe{
         \item{\code{k}}{An integer indicating the fixed width of the running
-          window. Must be odd when \code{endrule != "drop"}.}
+          window. Must be odd when \code{endrule == "constant"}.}
         \item{\code{wt}}{A numeric vector of length \code{k} that
           provides the weights to use.}
         \item{endrule}{A character string indicating how the values at the
@@ -666,7 +685,7 @@
       \code{x}.
       \describe{
         \item{\code{k}}{An integer indicating the fixed width of the running
-          window. Must be odd when \code{endrule != "drop"}.}
+          window. Must be odd when \code{endrule == "constant"}.}
         \item{\code{i}}{An integer indicating which order statistic to
           calculate.}
         \item{endrule}{A character string indicating how the values at the

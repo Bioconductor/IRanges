@@ -93,6 +93,7 @@
 \alias{Complex,CompressedAtomicList-method}
 \alias{Complex,SimpleAtomicList-method}
 
+\alias{runmean,RleList-method}
 \alias{runmed,RleList-method}
 \alias{runsum,RleList-method}
 \alias{runwtsum,RleList-method}
@@ -222,6 +223,26 @@
   summary methods:
   \describe{
     \item{}{
+      \code{runmean(x, k, endrule = c("drop", "constant"))}:
+      Calculates the means for fixed width running windows across \code{x}.
+      \describe{
+        \item{\code{x}}{An RleList object containing integer or numeric
+          Rle elements.}
+        \item{\code{k}}{An integer indicating the fixed width of the running
+          window. Must be odd when \code{endrule == "constant"}.}
+        \item{endrule}{A character string indicating how the values at the
+          beginning and the end (of the data) should be treated.
+          \describe{
+            \item{\code{"drop"}}{do not extend the running statistics to
+              be the same length as the underlying vectors;}
+            \item{\code{"constant"}}{copies running statistic to the
+              first values and analogously for the last ones making the
+              smoothed ends \emph{constant};}
+          }
+        }
+      }
+    }
+    \item{}{
       \code{runmed(x, k, endrule = c("median", "keep", "constant"))}:
       Calculates the medians for fixed width running windows across \code{x}.
       \describe{
@@ -257,7 +278,7 @@
         \item{\code{x}}{An RleList object containing integer or numeric
           Rle elements.}
         \item{\code{k}}{An integer indicating the fixed width of the
-          running window.}
+          running window. Must be odd when \code{endrule == "constant"}.}
         \item{endrule}{A character string indicating how the values at the
           beginning and the end (of the data) should be treated.
           \describe{
@@ -277,7 +298,7 @@
         \item{\code{x}}{An RleList object containing integer or numeric
           Rle elements.}
         \item{\code{k}}{An integer indicating the fixed width of the
-          running window.}
+          running window. Must be odd when \code{endrule == "constant"}.}
         \item{\code{wt}}{A numeric vector of length \code{k} that
           provides the weights to use.}
         \item{endrule}{A character string indicating how the values at the
@@ -300,7 +321,7 @@
         \item{\code{x}}{An RleList object containing integer or numeric
           Rle elements.}
         \item{\code{k}}{An integer indicating the fixed width of the
-          running window.}
+          running window. Must be odd when \code{endrule == "constant"}.}
         \item{\code{i}}{An integer indicating which order statistic to
           calculate.}
         \item{endrule}{A character string indicating how the values at the

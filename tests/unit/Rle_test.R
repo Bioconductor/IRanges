@@ -191,6 +191,14 @@ test_Rle_numerical <- function() {
                        as.integer(runsum(yRle, k = 3)))
     checkEqualsNumeric(sapply(1:13, function(i) sum(window(rev(y), i, i + 2))),
                        as.integer(runsum(rev(yRle), k = 3)))
+    checkEqualsNumeric(sapply(1:13, function(i) mean(window(x, i, i + 2))),
+                       as.numeric(runmean(xRle, k = 3)))
+    checkEqualsNumeric(sapply(1:13, function(i) mean(window(rev(x), i, i + 2))),
+                       as.numeric(runmean(rev(xRle), k = 3)))
+    checkEqualsNumeric(sapply(1:13, function(i) mean(window(y, i, i + 2))),
+                       as.numeric(runmean(yRle, k = 3)))
+    checkEqualsNumeric(sapply(1:13, function(i) mean(window(rev(y), i, i + 2))),
+                       as.numeric(runmean(rev(yRle), k = 3)))
     checkEqualsNumeric(sapply(1:13, function(i) sum(window(x, i, i + 2))),
                        as.numeric(runwtsum(xRle, k = 3, wt = rep(1,3))))
     checkEqualsNumeric(sapply(1:13, function(i) sum(window(x, i, i + 2)/3)),
