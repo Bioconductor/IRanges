@@ -259,10 +259,15 @@ setMethod("updateObject", signature(object="RangedData"),
           function(object, ..., verbose=FALSE) {
               if (verbose) message("updateObject(object = 'RangedData')")
               if (!("metadata" %in% names(attributes(object)))) {
-                  object <-
-                    new("RangedData",
-                        ranges = updateObject(slot(object, "ranges")),
-                        values = updateObject(slot(object, "values")))
+                  ranges <- updateObject(slot(object, "ranges"))
+                  values <- updateObject(slot(object, "values"))
+                  if (is.null(names(ranges))) {
+                      names(ranges) <- as.character(seq_len(length(ranges)))
+                  }
+                  if (is.null(names(values))) {
+                      names(values) <- as.character(seq_len(length(values)))
+                  }
+                  object <- new("RangedData", ranges = ranges, values = values)
               }
               object
           })
