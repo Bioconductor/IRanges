@@ -609,6 +609,11 @@ SEXP RleViews_viewSums(
 	SEXP na_rm
 );
 
+SEXP RleViews_viewMeans(
+	SEXP x,
+	SEXP na_rm
+);
+
 SEXP RleViews_viewWhichMins(
 	SEXP x,
 	SEXP na_rm

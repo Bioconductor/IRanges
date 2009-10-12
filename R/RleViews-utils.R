@@ -37,16 +37,8 @@ setMethod("viewSums", "RleViews",
 setGeneric("viewMeans", signature="x",
            function(x, na.rm = FALSE) standardGeneric("viewMeans"))
 setMethod("viewMeans", "RleViews",
-          function(x, na.rm = FALSE) {
-              if (!isTRUEorFALSE(na.rm))
-                  stop("'na.rm' must be TRUE or FALSE")
-              if (na.rm) {
-                  n <- viewSums(Views(!is.na(subject(x)), as(x, "IRanges")))
-              } else {
-                  n <- width(x)
-              }
-              viewSums(x, na.rm=na.rm) / n
-          })
+          function(x, na.rm = FALSE)
+          .Call("RleViews_viewMeans", trim(x), na.rm, PACKAGE="IRanges"))
 
 setGeneric("viewWhichMins", signature="x",
            function(x, na.rm = FALSE) standardGeneric("viewWhichMins"))

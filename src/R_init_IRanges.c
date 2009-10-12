@@ -69,6 +69,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(RleViews_viewMins, 2),
 	CALLMETHOD_DEF(RleViews_viewMaxs, 2),
 	CALLMETHOD_DEF(RleViews_viewSums, 2),
+	CALLMETHOD_DEF(RleViews_viewMeans, 2),
 	CALLMETHOD_DEF(RleViews_viewWhichMins, 2),
 	CALLMETHOD_DEF(RleViews_viewWhichMaxs, 2),
 
