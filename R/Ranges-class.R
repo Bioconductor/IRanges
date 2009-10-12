@@ -438,7 +438,7 @@ overlap <- function(object, query, maxgap = 0, multiple = TRUE, ...)
     if (missing(query))
         findOverlaps(object, maxgap = maxgap, multiple = multiple, ...)
     else
-        findOverlaps(object, query, maxgap = maxgap, multiple = multiple, ...)
+        findOverlaps(query, object, maxgap = maxgap, multiple = multiple, ...)
 }
 
 setGeneric("countOverlaps", signature = c("query", "subject"),
