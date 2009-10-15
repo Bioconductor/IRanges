@@ -20,10 +20,13 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{IRangesList(..., compress = TRUE)}: The \code{...} argument
-      accepts either a comma-separated list of \code{IRanges} objects or
-      a single \code{LogicalList} / logical \code{RleList} object. When
-      the former is supplied, each \code{IRanges} in \code{...} becomes an
+    \item{}{\code{IRangesList(..., universe = NULL, compress = TRUE)}:
+      The \code{...} argument accepts either a comma-separated list of
+      \code{IRanges} objects, or a single \code{LogicalList} / logical
+      \code{RleList} object, or 2 elements named \code{start} and \code{end}
+      each of them being either a list of integer vectors or an IntegerList
+      object.
+      When \code{IRanges} objects are supplied, each of them becomes an
       element in the new \code{IRangesList}, in the same order, which is
       analogous to the \code{\link{list}} constructor. If \code{compress},
       the internal storage of the data is compressed.
@@ -59,6 +62,10 @@
   named[[1]] # range1
   unnamed <- IRangesList(range1, range2)
   names(unnamed) # NULL
+
+  x <- IRangesList(start=list(c(1,2,3), c(15,45,20,1)),
+                   end=list(c(5,2,8), c(15,100,80,5)))
+  as.list(x)
 }
 \keyword{classes}
 \keyword{methods}

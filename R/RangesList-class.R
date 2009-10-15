@@ -185,6 +185,37 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
       ans <- as(ranges[[1]], "CompressedIRangesList")
     else
       ans <- as(ranges[[1]], "SimpleIRangesList")
+  } else if (length(ranges) == 2 &&
+             setequal(names(ranges), c("start", "end")) &&
+             !is(ranges[[1]], "Ranges") && !is(ranges[[2]], "Ranges")) {
+    if (!compress)
+      stop("'compress' must be TRUE when passing the 'start' and 'end' arguments")
+    ans_start <- ranges[["start"]]
+    if (!is(ans_start, "CompressedIntegerList")) {
+      if (is(ans_start, "IntegerList"))
+        ans_start <- as.list(ans_start)
+      else if (!is.list(ans_start))
+        stop("'start' must be a list of integer vectors or an IntegerList object")
+      ## Turn 'ans_start' into a CompressedIntegerList object
+      ans_start <- do.call(IntegerList, ans_start)
+    }
+    ans_end <- ranges[["end"]]
+    if (!is(ans_end, "CompressedIntegerList")) {
+      if (is(ans_end, "IntegerList"))
+        ans_end <- as.list(ans_end)
+      else if (!is.list(ans_end))
+        stop("'end' must be a list of integer vectors or an IntegerList object")
+      ## Turn 'ans_end' into a CompressedIntegerList object
+      ans_end <- do.call(IntegerList, ans_end)
+    }
+    if (!identical(ans_start@partitioning@end, ans_end@partitioning@end))
+      stop("'start' and 'end' are not compatible")
+    ans_partitioning <- ans_start@partitioning
+    ans_unlistData <- IRanges(start=ans_start@unlistData, end=ans_end@unlistData)
+    ans <- new2("CompressedIRangesList",
+                partitioning=ans_partitioning,
+                unlistData=ans_unlistData,
+                check=FALSE)
   } else {
     if (length(ranges) == 1 && is.list(ranges[[1]]))
       ranges <- ranges[[1]]
