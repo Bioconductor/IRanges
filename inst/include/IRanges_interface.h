@@ -437,6 +437,12 @@ SEXP new_XInteger_from_tag(const char *classname, SEXP tag);
 
 SEXP new_XDouble_from_tag(const char *classname, SEXP tag);
 
+SEXP alloc_XRaw(const char *classname, int length);
+
+SEXP alloc_XInteger(const char *classname, int length);
+
+SEXP alloc_XDouble(const char *classname, int length);
+
 
 /*
  * Low-level manipulation of XVectorList objects.
@@ -471,4 +477,10 @@ cachedDoubleSeq get_cachedXDoubleList_elt(
 void set_XVectorList_names(SEXP x, SEXP names);
 
 SEXP new_XVectorList1(const char *classname, SEXP xvector, SEXP ranges);
+
+SEXP alloc_XRawList(const char *classname, const char *element_type, SEXP width)
+
+SEXP alloc_XIntegerList(const char *classname, const char *element_type, SEXP width)
+
+SEXP alloc_XDoubleList(const char *classname, const char *element_type, SEXP width)
 

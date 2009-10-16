@@ -875,6 +875,10 @@ SEXP _get_XVector_tag(SEXP x);
 
 cachedCharSeq _cache_XRaw(SEXP x);
 
+cachedIntSeq _cache_XInteger(SEXP x);
+
+cachedDoubleSeq _cache_XDouble(SEXP x);
+
 SEXP _new_XVector(
 	const char *classname,
 	SEXP shared,
@@ -895,6 +899,21 @@ SEXP _new_XInteger_from_tag(
 SEXP _new_XDouble_from_tag(
 	const char *classname,
 	SEXP tag
+);
+
+SEXP _alloc_XRaw(
+	const char *classname,
+	int length
+);
+
+SEXP _alloc_XInteger(
+	const char *classname,
+	int length
+);
+
+SEXP _alloc_XDouble(
+	const char *classname,
+	int length
 );
 
 
@@ -937,6 +956,24 @@ SEXP _new_XVectorList1(
 	const char *classname,
 	SEXP xvector,
 	SEXP ranges
+);
+
+SEXP _alloc_XRawList(
+	const char *classname,
+	const char *element_type,
+	SEXP width
+);
+
+SEXP _alloc_XIntegerList(
+	const char *classname,
+	const char *element_type,
+	SEXP width
+);
+
+SEXP _alloc_XDoubleList(
+	const char *classname,
+	const char *element_type,
+	SEXP width
 );
 
 

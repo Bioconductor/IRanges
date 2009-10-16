@@ -73,6 +73,32 @@ cachedCharSeq _cache_XRaw(SEXP x)
 	return cached_x;
 }
 
+cachedIntSeq _cache_XInteger(SEXP x)
+{
+	cachedIntSeq cached_x;
+	SEXP tag;
+	int offset;
+
+	tag = _get_XVector_tag(x);
+	offset = _get_XVector_offset(x);
+	cached_x.seq = (const int *) (INTEGER(tag) + offset);
+	cached_x.length = _get_XVector_length(x);
+	return cached_x;
+}
+
+cachedDoubleSeq _cache_XDouble(SEXP x)
+{
+	cachedDoubleSeq cached_x;
+	SEXP tag;
+	int offset;
+
+	tag = _get_XVector_tag(x);
+	offset = _get_XVector_offset(x);
+	cached_x.seq = (const double *) (REAL(tag) + offset);
+	cached_x.length = _get_XVector_length(x);
+	return cached_x;
+}
+
 
 /****************************************************************************
  * C-level slot setters.
@@ -165,6 +191,38 @@ SEXP _new_XDouble_from_tag(const char *classname, SEXP tag)
 		      "'tag' is not NUMERIC");
 	PROTECT(shared = _new_SharedVector("SharedDouble", tag));
 	PROTECT(ans = _new_XVector(classname, shared, 0, LENGTH(tag)));
+	UNPROTECT(2);
+	return ans;
+}
+
+/* Allocation WITHOUT initialization. */
+
+SEXP _alloc_XRaw(const char *classname, int length)
+{
+	SEXP tag, ans;
+
+	PROTECT(tag = NEW_RAW(length));
+	PROTECT(ans = _new_XRaw_from_tag(classname, tag));
+	UNPROTECT(2);
+	return ans;
+}
+
+SEXP _alloc_XInteger(const char *classname, int length)
+{
+	SEXP tag, ans;
+
+	PROTECT(tag = NEW_INTEGER(length));
+	PROTECT(ans = _new_XInteger_from_tag(classname, tag));
+	UNPROTECT(2);
+	return ans;
+}
+
+SEXP _alloc_XDouble(const char *classname, int length)
+{
+	SEXP tag, ans;
+
+	PROTECT(tag = NEW_NUMERIC(length));
+	PROTECT(ans = _new_XDouble_from_tag(classname, tag));
 	UNPROTECT(2);
 	return ans;
 }

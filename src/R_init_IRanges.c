@@ -254,10 +254,15 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_get_XVector_length);
 	REGISTER_CCALLABLE(_get_XVector_tag);
 	REGISTER_CCALLABLE(_cache_XRaw);
+	REGISTER_CCALLABLE(_cache_XInteger);
+	REGISTER_CCALLABLE(_cache_XDouble);
 	REGISTER_CCALLABLE(_new_XVector);
 	REGISTER_CCALLABLE(_new_XRaw_from_tag);
 	REGISTER_CCALLABLE(_new_XInteger_from_tag);
 	REGISTER_CCALLABLE(_new_XDouble_from_tag);
+	REGISTER_CCALLABLE(_alloc_XRaw);
+	REGISTER_CCALLABLE(_alloc_XInteger);
+	REGISTER_CCALLABLE(_alloc_XDouble);
 
 /* XVectorList_class.c */
 	REGISTER_CCALLABLE(_get_XVectorList_length);
@@ -270,6 +275,9 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_get_cachedXDoubleList_elt);
 	REGISTER_CCALLABLE(_set_XVectorList_names);
 	REGISTER_CCALLABLE(_new_XVectorList1);
+	REGISTER_CCALLABLE(_alloc_XRawList);
+	REGISTER_CCALLABLE(_alloc_XIntegerList);
+	REGISTER_CCALLABLE(_alloc_XDoubleList);
 	return;
 }
 

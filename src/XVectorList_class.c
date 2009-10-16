@@ -245,3 +245,39 @@ SEXP _new_XVectorList1(const char *classname, SEXP xvector, SEXP ranges)
 	return ans;
 }
 
+/* Allocation WITHOUT initialization. */
+
+static SEXP alloc_XVectorList(const char *classname, const char *element_type,
+		SEXP (*alloc_XVector)(const char *, int), SEXP width)
+{
+	int ans_length, xvector_length, i;
+	SEXP start, xvector, ranges, ans;
+
+	ans_length = LENGTH(width);
+	PROTECT(start = NEW_INTEGER(ans_length));
+	for (i = xvector_length = 0; i < ans_length; i++) {
+		INTEGER(start)[i] = xvector_length + 1;
+		xvector_length += INTEGER(width)[i];
+	}
+	PROTECT(xvector = alloc_XVector(element_type, xvector_length));
+	PROTECT(ranges = _new_IRanges("IRanges", start, width, NULL));
+	PROTECT(ans = _new_XVectorList1(classname, xvector, ranges));
+	UNPROTECT(4);
+	return ans;
+}
+
+SEXP _alloc_XRawList(const char *classname, const char *element_type, SEXP width)
+{
+	return alloc_XVectorList(classname, element_type, _alloc_XRaw, width);
+}
+
+SEXP _alloc_XIntegerList(const char *classname, const char *element_type, SEXP width)
+{
+	return alloc_XVectorList(classname, element_type, _alloc_XInteger, width);
+}
+
+SEXP _alloc_XDoubleList(const char *classname, const char *element_type, SEXP width)
+{
+	return alloc_XVectorList(classname, element_type, _alloc_XDouble, width);
+}
+

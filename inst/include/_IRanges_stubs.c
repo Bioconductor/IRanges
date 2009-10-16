@@ -489,6 +489,21 @@ DEFINE_CCALLABLE_STUB(SEXP, new_XDouble_from_tag,
 	(            classname,      tag)
 )
 
+DEFINE_CCALLABLE_STUB(SEXP, alloc_XRaw,
+	(const char *classname, int length),
+	(            classname,     length)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, alloc_XInteger,
+	(const char *classname, int length),
+	(            classname,     length)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, alloc_XDouble,
+	(const char *classname, int length),
+	(            classname,     length)
+)
+
 /*
  * Stubs for callables defined in XVectorList_class.c
  */
@@ -541,5 +556,20 @@ DEFINE_NOVALUE_CCALLABLE_STUB(set_XVectorList_names,
 DEFINE_CCALLABLE_STUB(SEXP, new_XVectorList1,
 	(const char *classname, SEXP xvector, SEXP ranges),
 	(            classname,      xvector,      ranges)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, alloc_XRawList,
+	(const char *classname, const char *element_type, SEXP width),
+	(            classname,             element_type,      width)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, alloc_XIntegerList,
+	(const char *classname, const char *element_type, SEXP width),
+	(            classname,             element_type,      width)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, alloc_XDoubleList,
+	(const char *classname, const char *element_type, SEXP width),
+	(            classname,             element_type,      width)
 )
 
