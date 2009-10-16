@@ -478,9 +478,9 @@ void set_XVectorList_names(SEXP x, SEXP names);
 
 SEXP new_XVectorList1(const char *classname, SEXP xvector, SEXP ranges);
 
-SEXP alloc_XRawList(const char *classname, const char *element_type, SEXP width)
+SEXP alloc_XRawList(const char *classname, const char *element_type, SEXP width);
 
-SEXP alloc_XIntegerList(const char *classname, const char *element_type, SEXP width)
+SEXP alloc_XIntegerList(const char *classname, const char *element_type, SEXP width);
 
-SEXP alloc_XDoubleList(const char *classname, const char *element_type, SEXP width)
+SEXP alloc_XDoubleList(const char *classname, const char *element_type, SEXP width);
 
