@@ -563,7 +563,9 @@ setMethod("as.data.frame", "RangedData",
             if (!missing(optional) || length(list(...)))
               warning("'optional' and arguments in '...' ignored")
             data.frame(as.data.frame(ranges(x)),
-                       as.data.frame(values(x)), row.names = row.names)
+                       as.data.frame(values(x))[-1],
+                       row.names = row.names,
+                       stringsAsFactors = FALSE)
           })
 
 setAs("RangedData", "DataFrame",
@@ -577,8 +579,8 @@ setAs("Rle", "RangedData",
       {
         new2("RangedData",
              ranges = IRangesList("1" = successiveIRanges(runLength(from))),
-             values = SplitDataFrameList("1" =
-               DataFrame(score = runValue(from))),
+             values =
+             SplitDataFrameList("1" = DataFrame(score = runValue(from))),
              metadata = metadata(from),
              check = FALSE)
       })

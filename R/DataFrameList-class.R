@@ -348,7 +348,19 @@ setMethod("as.data.frame", "SplitDataFrameList",
               stop("'row.names'  must be NULL or a character vector")
             if (!missing(optional) || length(list(...)))
               warning("'optional' and arguments in '...' ignored")
-            as.data.frame(as(x, "DataFrame"), row.names = row.names)
+            spaceLevels <- seq_len(length(x))
+            if (length(names(x)) > 0) {
+              spaceLabels <- names(x)
+            } else {
+              spaceLabels <- as.character(spaceLevels)
+            }
+            data.frame(space =
+                       factor(rep(seq_len(length(x)), elementLengths(x)),
+                              levels = spaceLevels,
+                              labels = spaceLabels),
+                       as.data.frame(as(x, "DataFrame"),
+                                     row.names = row.names),
+                       stringsAsFactors = FALSE)
           })
 
 setAs("ANY", "SimpleSplitDataFrameList",

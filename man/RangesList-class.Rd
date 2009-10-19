@@ -126,7 +126,8 @@
   \describe{
     \item{}{\code{as.data.frame(x, row.names = NULL, optional = FALSE)}:
       Coerces \code{x} to a \code{data.frame}. Essentially the same as
-      calling \code{as.data.frame(unlist(x))}.
+      calling
+      \code{data.frame(space=rep(names(x), elementLengths(x)), as.data.frame(unlist(x, use.names=FALSE)))}.
     }
     \item{}{\code{as(from, "RangedData")}: Coerces \code{from} to a
       \code{\linkS4class{RangedData}} with zero columns and the same

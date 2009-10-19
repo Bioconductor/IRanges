@@ -456,24 +456,27 @@ setMethod("Ops", c("RangesList", "ANY"),
 ###
 
 .RangesList_show <- function(object) {
-  nranges <- length(start(object))
-  cat(class(object), ": ", nranges, " range", sep = "")
-  if (nranges != 1)
-    cat("s")
-  cat("\n")
-  if (length(object)) {
-    if (is.null(names(object)))
-      nms <- seq_len(length(object))
-    else nms <- paste("\"", names(object), "\"", sep = "")
-    if (length(object) > 1) {
-      cat(labeledLine("sequences", nms))
-    } else {
-      ranges <- object[[1]]
-      if (length(ranges)) {
-        str <- paste(start(ranges), ":", end(ranges), sep = "")
-        cat(labeledLine(nms, str, count = FALSE))
-      }
-    }
+  cat(class(object), " instance:\n", sep="")
+  k <- length(object)
+  cumsumN <- cumsum(elementLengths(object))
+  N <- tail(cumsumN, 1)
+  if ((k <= 1L) || (N <= 20L)) {
+    show(as.list(object))
+  } else {
+    sketch <- function(x) c(head(x, 3), "...", tail(x, 3))
+    if (k >= 3 && cumsumN[3] <= 20)
+      showK <- 3
+    else if (k >= 2 && cumsumN[2] <= 20)
+      showK <- 2
+    else
+      showK <- 1
+    diffK <- k - showK
+    show(as.list(object[seq_len(showK)]))
+    if (diffK > 0)
+      cat("<", k - showK,
+          ifelse(diffK == 1,
+                 " additional element>\n\n", " additional elements>\n\n"),
+          sep="")
   }
 }
 setMethod("show", "RangesList", .RangesList_show)
@@ -488,14 +491,20 @@ setMethod("as.data.frame", "RangesList",
           {
             if (!(is.null(row.names) || is.character(row.names)))
               stop("'row.names'  must be NULL or a character vector")
-            if (!missing(optional) || length(list(...)))
-              warning("'optional' and arguments in '...' ignored")
-            xi <- as(x, "CompressedIRangesList")
-            names(xi) <- NULL
-            df <- as.data.frame(unlist(xi), row.names = row.names)
-            if (length(names(x)) > 0)
-              df <- cbind(space = rep(names(x), elementLengths(x)), df)
-            df
+            x <- as(x, "CompressedIRangesList")
+            spaceLevels <- seq_len(length(x))
+            if (length(names(x)) > 0) {
+              spaceLabels <- names(x)
+            } else {
+              spaceLabels <- as.character(spaceLevels)
+            }
+            data.frame(space =
+                       factor(rep(seq_len(length(x)), elementLengths(x)),
+                              level = spaceLevels,
+                              labels = spaceLabels),
+                       as.data.frame(unlist(x, use.names = FALSE)),
+                       row.names = row.names,
+                       stringsAsFactors = FALSE)
           })
 
 ### From an IRangesList object to a NormalIRanges object.

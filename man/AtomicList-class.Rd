@@ -56,6 +56,7 @@
 \alias{as.character,AtomicList-method}
 \alias{as.raw,AtomicList-method}
 \alias{as.factor,AtomicList-method}
+\alias{as.data.frame,AtomicList-method}
 \alias{coerce,AtomicList,vector-method}
 \alias{coerce,AtomicList,logical-method}
 \alias{coerce,AtomicList,integer-method}
@@ -64,6 +65,7 @@
 \alias{coerce,AtomicList,character-method}
 \alias{coerce,AtomicList,raw-method}
 \alias{coerce,AtomicList,factor-method}
+\alias{coerce,AtomicList,data.frame-method}
 \alias{coerce,AtomicList,SimpleSplitDataFrameList-method}
 \alias{coerce,AtomicList,CompressedSplitDataFrameList-method}
 
@@ -98,6 +100,9 @@
 \alias{runsum,RleList-method}
 \alias{runwtsum,RleList-method}
 \alias{runq,RleList-method}
+
+\alias{show,AtomicList-method}
+\alias{show,RleList-method}
 
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}
@@ -174,6 +179,11 @@
     \item{}{
       \code{as.factor(x)}, \code{as(from, "factor")}: Creates a factor object
       based on the values contained in \code{x}.
+    }
+    \item{}{\code{as.data.frame(x, row.names = NULL, optional = FALSE)},
+      \code{as(from, "data.frame")}: Creates a \code{data.frame} object based
+      on the values contained in \code{x}. Essentially the same as calling
+      \code{data.frame(space=rep(names(x), elementLengths(x)), as.vector(x))}.
     }
     \item{}{
       \code{as(from, "CompressedSplitDataFrameList")},

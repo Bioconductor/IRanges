@@ -102,6 +102,29 @@ test_SplitDataFrameList_subset <- function() {
     }
 }
 
+test_SplitDataFrameList_as_data.frame <- function() {
+    checkDFL2dfl <- function(DFL, dfl) {
+        df <-
+          data.frame(space =
+                     factor(rep(seq_len(length(dfl)),
+                                unlist(lapply(dfl, nrow), use.names = FALSE)),
+                            labels = names(dfl)),
+                     do.call(rbind, dfl))
+        rownames(df) <- unlist(lapply(dfl, row.names), use.names = FALSE)
+        checkIdentical(as.data.frame(DFL), df)
+    }
+    data(swiss)
+    sw <- DataFrame(swiss, row.names = rownames(swiss))
+    
+    for (compress in c(TRUE, FALSE)) {
+        swsplit <-
+          SplitDataFrameList(as.list(split(sw, sw[["Education"]])),
+                             compress = compress)
+        swisssplit <- split(swiss, swiss[["Education"]])
+        checkDFL2dfl(swsplit, swisssplit)
+    }
+}
+
 test_DataFrameList_replace <- function() {
     checkDFL2dfl <- function(DFL, dfl) {
         checkIdentical(lapply(as.list(DFL), as.data.frame), dfl)

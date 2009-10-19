@@ -82,10 +82,12 @@ LogicalList <- function(..., compress = TRUE)
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1]]))
         listData <- listData[[1]]
+    listData <-
+      lapply(listData, function(x) structure(as.logical(x), names = names(x)))
     if (compress)
-        newCompressedList("CompressedLogicalList", lapply(listData, as.logical))
+        newCompressedList("CompressedLogicalList", listData)
     else
-        newSimpleList("SimpleLogicalList", lapply(listData, as.logical))
+        newSimpleList("SimpleLogicalList", listData)
 }
 
 IntegerList <- function(..., compress = TRUE)
@@ -95,10 +97,12 @@ IntegerList <- function(..., compress = TRUE)
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1]]))
         listData <- listData[[1]]
+    listData <-
+      lapply(listData, function(x) structure(as.integer(x), names = names(x)))
     if (compress)
-        newCompressedList("CompressedIntegerList", lapply(listData, as.integer))
+        newCompressedList("CompressedIntegerList", listData)
     else
-        newSimpleList("SimpleIntegerList", lapply(listData, as.integer))
+        newSimpleList("SimpleIntegerList", listData)
 }
 
 NumericList <- function(..., compress = TRUE)
@@ -108,10 +112,12 @@ NumericList <- function(..., compress = TRUE)
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1]]))
         listData <- listData[[1]]
+    listData <-
+      lapply(listData, function(x) structure(as.numeric(x), names = names(x)))
     if (compress)
-        newCompressedList("CompressedNumericList", lapply(listData, as.numeric))
+        newCompressedList("CompressedNumericList", listData)
     else
-        newSimpleList("SimpleNumericList", lapply(listData, as.numeric))
+        newSimpleList("SimpleNumericList", listData)
 }
 
 ComplexList <- function(..., compress = TRUE)
@@ -121,10 +127,12 @@ ComplexList <- function(..., compress = TRUE)
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1]]))
         listData <- listData[[1]]
+    listData <-
+      lapply(listData, function(x) structure(as.complex(x), names = names(x)))
     if (compress)
-        newCompressedList("CompressedComplexList", lapply(listData, as.complex))
+        newCompressedList("CompressedComplexList", listData)
     else
-        newSimpleList("SimpleComplexList", lapply(listData, as.complex))
+        newSimpleList("SimpleComplexList", listData)
 }
 
 CharacterList <- function(..., compress = TRUE)
@@ -134,10 +142,12 @@ CharacterList <- function(..., compress = TRUE)
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1]]))
         listData <- listData[[1]]
+    listData <-
+      lapply(listData, function(x) structure(as.character(x), names = names(x)))
     if (compress)
-        newCompressedList("CompressedCharacterList", lapply(listData, as.character))
+        newCompressedList("CompressedCharacterList", listData)
     else
-        newSimpleList("SimpleCharacterList", lapply(listData, as.character))
+        newSimpleList("SimpleCharacterList", listData)
 }
 
 RawList <- function(..., compress = TRUE)
@@ -147,10 +157,12 @@ RawList <- function(..., compress = TRUE)
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1]]))
         listData <- listData[[1]]
+    listData <-
+      lapply(listData, function(x) structure(as.raw(x), names = names(x)))
     if (compress)
-        newCompressedList("CompressedRawList", lapply(listData, as.raw))
+        newCompressedList("CompressedRawList", listData)
     else
-        newSimpleList("SimpleRawList", lapply(listData, as.raw))
+        newSimpleList("SimpleRawList", listData)
 }
 
 RleList <- function(..., compress = FALSE)
@@ -178,6 +190,28 @@ setMethod("as.complex", "AtomicList", function(x) as.complex(unlist(x, use.names
 setMethod("as.character", "AtomicList", function(x) as.character(unlist(x, use.names=FALSE)))
 setMethod("as.raw", "AtomicList", function(x) as.raw(unlist(x, use.names=FALSE)))
 setMethod("as.factor", "AtomicList", function(x) as.factor(unlist(x, use.names=FALSE)))
+setMethod("as.data.frame", "AtomicList",
+          function(x, row.names=NULL, optional=FALSE, ...)
+          {
+              if (is.null(row.names)) {
+                  row.names <- unlist(lapply(x, names), use.names = FALSE)
+              } else if (!is.character(row.names)) {
+                  stop("'row.names'  must be NULL or a character vector")
+              }
+              spaceLevels <- seq_len(length(x))
+              if (length(names(x)) > 0) {
+                  spaceLabels <- names(x)
+              } else {
+                  spaceLabels <- as.character(spaceLevels)
+              }
+              data.frame(space =
+                         factor(rep(seq_len(length(x)), elementLengths(x)),
+                                levels = spaceLevels,
+                                labels = spaceLabels),
+                         value = as.vector(x),
+                         row.names = row.names,
+                         stringsAsFactors = FALSE)
+          })
 
 setAs("AtomicList", "vector", function(from) as.vector(from))
 setAs("AtomicList", "logical", function(from) as.logical(from))
@@ -187,6 +221,7 @@ setAs("AtomicList", "complex", function(from) as.complex(from))
 setAs("AtomicList", "character", function(from) as.character(from))
 setAs("AtomicList", "raw", function(from) as.raw(from))
 setAs("AtomicList", "factor", function(from) as.factor(from))
+setAs("AtomicList", "data.frame", function(from) as.data.frame(from))
 
 setAs("AtomicList", "SimpleSplitDataFrameList",
       function(from) SplitDataFrameList(from, compress = FALSE))
@@ -489,3 +524,45 @@ setMethod("runwtsum", "RleList",
 setMethod("runq", "RleList",
           function(x, k, i, endrule = c("drop", "constant"))
               endoapply(x, runq, k = k, i = i, endrule = endrule))
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "show" method.
+###
+
+setMethod("show", "AtomicList",
+          function(object) {
+              cat(class(object), " instance:\n", sep="")
+              showme <-
+                lapply(head(object, 6), function(x)
+                       substring(labeledLine("", x, count=FALSE), 2))
+              for (i in seq_len(length(showme))) {
+                  nm <- names(showme)[i]
+                  if (length(nm) > 0 && nchar(nm) > 0)
+                      cat("$", nm, "\n", sep = "")
+                  else
+                      cat("[[", i, "]]\n", sep = "")
+                  cat(showme[[i]])
+                  cat("\n")
+              }
+              diffK <- length(object) - 6
+              if (diffK > 0)
+                  cat("<", diffK,
+                      ifelse(diffK == 1,
+                             " additional element>\n\n",
+                             " additional elements>\n\n"),
+                              sep="")
+          })
+
+setMethod("show", "RleList",
+          function(object) {
+              cat(class(object), " instance:\n", sep="")
+              show(as.list(head(object, 6)))
+              diffK <- length(object) - 6
+              if (diffK > 0)
+                  cat("<", diffK,
+                      ifelse(diffK == 1,
+                             " additional element>\n\n",
+                             " additional elements>\n\n"),
+                      sep="")
+          })
+  

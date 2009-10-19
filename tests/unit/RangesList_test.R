@@ -42,6 +42,19 @@ test_RangesList_as_list <- function() {
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   checkIdentical(list(range1, range2),
                  as.list(RangesList(range1, range2)))
+  checkIdentical(list(a=range1, b=range2),
+                 as.list(RangesList(a=range1, b=range2)))
+}
+
+test_RangesList_as_data_frame <- function() {
+  range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
+  range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
+  checkIdentical(data.frame(space=rep(c("1", "2"), c(3,4)),
+                            as.data.frame(c(range1,range2))),
+                 as.data.frame(RangesList(range1, range2)))
+  checkIdentical(data.frame(space=rep(c("a", "b"), c(3,4)),
+                            as.data.frame(c(range1,range2))),
+                 as.data.frame(RangesList(a=range1, b=range2)))
 }
 
 test_RangesList_gaps <- function() {
