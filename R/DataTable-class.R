@@ -354,14 +354,15 @@ setMethod("show", "DataTable",
           function(object)
           {
               cat(class(object), " instance:\n", sep="")
-              k <- min(nrow(object), 10)
-              if (k == 0L) {
-                  nc <- ncol(object)
-                  cat("<0 rows and ", nc,
-                      ifelse(nc == 1,
-                             " column>\n\n",
-                             " columns>\n\n"), sep = "")
+              nr <- nrow(object)
+              nc <- ncol(object)
+              if (nr == 0L || nc == 0L) {
+                  cat("<",
+                      nr, ifelse(nr == 1, " row and ", " rows and "),
+                      nc, ifelse(nc == 1, " column>\n\n", " columns>\n\n"),
+                      sep = "")
               } else {
+                  k <- min(nr, 10)
                   df <-
                     do.call(data.frame,
                             lapply(object, function(x) showAsCell(head(x, k))))
@@ -369,7 +370,8 @@ setMethod("show", "DataTable",
                   colnames(df) <-
                     unlist(lapply(seq_len(ncol(object)), function(i)
                                   showHeading(object[[i]], colnms[i])))
-                  rownames(df) <- head(rownames(object), k)
+                  if (ncol(df) > 0 && !is.null(rownames(df)))
+                      rownames(df) <- head(rownames(object), k)
                   show(df)
                   diffK <- nrow(object) - k
                   if (diffK > 0)
