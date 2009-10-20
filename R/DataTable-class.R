@@ -369,6 +369,7 @@ setMethod("show", "DataTable",
                   colnames(df) <-
                     unlist(lapply(seq_len(ncol(object)), function(i)
                                   showHeading(object[[i]], colnms[i])))
+                  rownames(df) <- head(rownames(object), k)
                   show(df)
                   diffK <- nrow(object) - k
                   if (diffK > 0)
