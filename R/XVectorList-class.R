@@ -210,3 +210,9 @@ setMethod("c", "XVectorList",
     }
 )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Show method for data column.
+###
+
+setMethod("showAsCell", "XVectorList", function(object) as.character(object))
