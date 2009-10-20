@@ -171,6 +171,9 @@ setMethod("show", "Ranges",
     }
 )
 
+setMethod("showAsCell", "Ranges", function(object)
+          paste(format(start(object)), ":", format(end(object)), sep = ""))
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Testing a Ranges object.

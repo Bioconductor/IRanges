@@ -460,7 +460,9 @@ setMethod("Ops", c("RangesList", "ANY"),
   k <- length(object)
   cumsumN <- cumsum(elementLengths(object))
   N <- tail(cumsumN, 1)
-  if ((k <= 1L) || (N <= 20L)) {
+  if (k == 0L) {
+    cat("<0 elements>\n\n")
+  } else if ((k == 1L) || (N <= 20L)) {
     show(as.list(object))
   } else {
     sketch <- function(x) c(head(x, 3), "...", tail(x, 3))
@@ -481,6 +483,19 @@ setMethod("Ops", c("RangesList", "ANY"),
 }
 setMethod("show", "RangesList", .RangesList_show)
 setMethod("show", "IRangesList", .RangesList_show)
+
+setMethod("showAsCell", "RangesList",
+          function(object) {
+            unlist(lapply(object, function(x) {
+                            rng2str <- function(y) 
+                              paste(start(y), ":", end(y), sep = "")
+                            if (length(x) <= 3)
+                              paste(rng2str(x), collapse = ",")
+                            else
+                              paste(c(head(rng2str(x), 3), "..."),
+                                    collapse = ",")
+                          }), use.names = FALSE)
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.

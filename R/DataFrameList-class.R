@@ -374,12 +374,29 @@ setAs("ANY", "CompressedSplitDataFrameList",
 
 setMethod("show", "SplitDataFrameList", function(object)
           {
-            nc <- ncol(object)[[1]]
-            lo <- length(object)
-            cat(class(object), ": ",
-                lo, ifelse(lo == 1, " elements with ", " elements with "),
-                nc, ifelse(nc == 1, " column\n", " columns\n"), sep = "")
-            if (!is.null(names(object)))
-              cat(labeledLine("names", names(object)))
-            cat(labeledLine("colnames", colnames(object)[[1]]))
+            cat(class(object), " instance:\n", sep="")
+            k <- length(object)
+            cumsumN <- cumsum(elementLengths(object))
+            N <- tail(cumsumN, 1)
+            if (k == 0L) {
+              cat("<0 elements>\n\n")
+            } else if ((k == 1L) || (N <= 20L)) {
+              show(as.list(object))
+            } else {
+              sketch <- function(x) c(head(x, 3), "...", tail(x, 3))
+              if (k >= 3 && cumsumN[3] <= 20)
+                showK <- 3
+              else if (k >= 2 && cumsumN[2] <= 20)
+                showK <- 2
+              else
+                showK <- 1
+              diffK <- k - showK
+              show(as.list(object[seq_len(showK)]))
+              if (diffK > 0)
+                cat("<", k - showK,
+                    ifelse(diffK == 1,
+                           " additional element>\n\n",
+                           " additional elements>\n\n"),
+                    sep="")
+            }
           })

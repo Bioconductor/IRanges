@@ -565,4 +565,13 @@ setMethod("show", "RleList",
                              " additional elements>\n\n"),
                       sep="")
           })
-  
+
+setMethod("showAsCell", "AtomicList",
+          function(object) {
+              unlist(lapply(object, function(x)
+                                if (length(x) <= 3)
+                                    paste(x, collapse = ",")
+                                else
+                                    paste(c(head(x, 3), "..."),
+                                          collapse = ",")), use.names = FALSE)
+          })

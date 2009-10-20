@@ -339,14 +339,43 @@ setMethod("as.env", "DataTable",
 ### The "show" method.
 ###
 
+setGeneric("showHeading", function(object, name) standardGeneric("showHeading"),
+           signature = "object")
+setMethod("showHeading", "vectorORfactor", function(object, name) name)
+setMethod("showHeading", "Sequence", function(object, name)
+          paste(name, "=<class:", class(object), ">", sep = ""))
+
+setGeneric("showAsCell", function(object) standardGeneric("showAsCell"))
+setMethod("showAsCell", "vectorORfactor", function(object) object)
+setMethod("showAsCell", "Sequence", function(object)
+          rep("########", length(object)))
+
 setMethod("show", "DataTable",
-    function(object)
-    {
-        dimObject <- dim(object)
-        cat(class(object), ": ", dimObject[1],
-            ifelse(dimObject[1] == 1, " row and ", " rows and "),
-            dimObject[2],
-            ifelse(dimObject[2] == 1, " column\n", " columns\n"),
-            sep="")
-        cat(labeledLine("colnames", colnames(object)))
-    })
+          function(object)
+          {
+              cat(class(object), " instance:\n", sep="")
+              k <- min(nrow(object), 10)
+              if (k == 0L) {
+                  nc <- ncol(object)
+                  cat("<0 rows and ", nc,
+                      ifelse(nc == 1,
+                             " column>\n\n",
+                             " columns>\n\n"), sep = "")
+              } else {
+                  df <-
+                    do.call(data.frame,
+                            lapply(object, function(x) showAsCell(head(x, k))))
+                  colnms <- colnames(object)
+                  colnames(df) <-
+                    unlist(lapply(seq_len(ncol(object)), function(i)
+                                  showHeading(object[[i]], colnms[i])))
+                  show(df)
+                  diffK <- nrow(object) - k
+                  if (diffK > 0)
+                      cat("<", diffK,
+                          ifelse(diffK == 1,
+                                 " additional row>\n\n",
+                                 " additional rows>\n\n"),
+                          sep="")
+              }
+          })
