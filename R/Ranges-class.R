@@ -143,14 +143,14 @@ setMethod("[[", "Ranges",
 setMethod("show", "Ranges",
     function(object)
     {
-        cat(class(object), " instance:\n", sep="")
-        n <- length(object)
-        if (n == 0L) {
-            showme <- as.data.frame(object)
-        } else if (n < 20L) {
+        lo <- length(object)
+        cat(class(object), " of length ", lo, "\n", sep="")
+        if (lo == 0L) {
+            return(NULL)
+        } else if (lo < 20L) {
             showme <-
               as.data.frame(object,
-                            row.names=paste("[", seq_len(n), "]", sep=""))
+                            row.names=paste("[", seq_len(lo), "]", sep=""))
         } else {
             sketch <- function(x)
               c(window(x, 1L, 9L), "...", window(x, length(x)-8L, length(x)))
@@ -159,7 +159,7 @@ setMethod("show", "Ranges",
                          end=sketch(end(object)),
                          width=sketch(width(object)),
                          row.names=c(paste("[", 1:9, "]", sep=""), "...",
-                                     paste("[", (n-8L):n, "]", sep="")),
+                                     paste("[", (lo-8L):lo, "]", sep="")),
                          check.rows=TRUE,
                          check.names=FALSE,
                          stringsAsFactors=FALSE)
@@ -172,7 +172,8 @@ setMethod("show", "Ranges",
 )
 
 setMethod("showAsCell", "Ranges", function(object)
-          paste(format(start(object)), ":", format(end(object)), sep = ""))
+          paste("[", format(start(object)), ", ", format(end(object)), "]",
+                sep = ""))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -82,7 +82,7 @@ setGeneric("oneLineDesc", function(x) standardGeneric("oneLineDesc"))
 
 setMethod("oneLineDesc", "SharedVector",
     function(x)
-        paste(class(x), " instance of length ", length(x),
+        paste(class(x), " of length ", length(x),
               " (data starting at address ", address0(x), ")", sep="")
 )
 
@@ -90,10 +90,6 @@ setMethod("show", "SharedVector",
     function(object)
     {
         cat(oneLineDesc(object), "\n", sep="")
-        ## What is correct here? The documentation (?show) says that 'show'
-        ## should return an invisible 'NULL' but, on the other hand, the 'show'
-        ## method for integers returns its 'object' argument...
-        invisible(object)
     }
 )
 
@@ -112,10 +108,9 @@ setMethod("width", "SharedVector_Pool",
 setMethod("show", "SharedVector_Pool",
     function(object)
     {
-        cat(class(object), " instance of length ", length(object), ":\n", sep="")
+        cat(class(object), " of length ", length(object), "\n", sep="")
         for (i in seq_len(length(object)))
             cat(i, ": ", oneLineDesc(object[[i]]), "\n", sep="")
-        invisible(object)
     }
 )
 

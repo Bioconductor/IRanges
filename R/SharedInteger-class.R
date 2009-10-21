@@ -41,10 +41,6 @@ setMethod("show", "SharedInteger",
     {
         show_string <- .Call("SharedInteger_get_show_string", object, PACKAGE="IRanges")
         cat(show_string, "\n", sep="")
-        ## What is correct here? The documentation (?show) says that 'show'
-        ## should return an invisible 'NULL' but, on the other hand, the 'show'
-        ## method for integers returns its 'object' argument...
-        invisible(object)
     }
 )
 

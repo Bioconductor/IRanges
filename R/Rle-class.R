@@ -1190,8 +1190,10 @@ setReplaceMethod("levels", "Rle",
 setMethod("show", "Rle",
           function(object)
           {
-              cat("  '", class(runValue(object)), "' Rle instance of length ", length(object),
-                  " with ", nrun(object), ifelse(nrun(object) == 1, " run\n", " runs\n"),
+              lo <- length(object)
+              nr <- nrun(object)
+              cat("'", class(runValue(object)), "' Rle of length ", lo,
+                  " with ", nr, ifelse(nr == 1, " run\n", " runs\n"),
                   sep = "")
               cat("  Lengths:  ")
               utils::str(runLength(object), give.head = FALSE)

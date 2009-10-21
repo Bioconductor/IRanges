@@ -480,7 +480,7 @@ setMethod("show", "MaskCollection",
     function(object)
     {
         lo <- length(object)
-        cat("  A ", class(object), " instance of length ", lo,
+        cat(class(object), " of length ", lo,
             " and width ", width(object), "\n", sep="")
         MaskCollection.show_frame(object)
     }

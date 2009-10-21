@@ -274,10 +274,11 @@ toNumSnippet <- function(x, max.width)
     paste(paste(ans_head, collapse=" "), "...", paste(ans_tail, collapse=" "))
 }
 
-labeledLine <- function(label, els, count = TRUE, sep = " ", ellipsis = "...") {
+labeledLine <- function(label, els, count = TRUE, labelSep = ":", sep = " ",
+                        ellipsis = "...") {
   if (count)
     label <- paste(label, "(", length(els), ")", sep = "")
-  label <- paste(label, ": ", sep = "")
+  label <- paste(label, labelSep, sep, sep = "")
   width <- getOption("width") - nchar(label)
   line <- ellipsize(els, width, sep, ellipsis)
   paste(label, line, "\n", sep = "")

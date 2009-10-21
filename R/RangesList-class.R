@@ -456,12 +456,12 @@ setMethod("Ops", c("RangesList", "ANY"),
 ###
 
 .RangesList_show <- function(object) {
-  cat(class(object), " instance:\n", sep="")
   k <- length(object)
   cumsumN <- cumsum(elementLengths(object))
   N <- tail(cumsumN, 1)
+  cat(class(object), " of length ", k, "\n", sep = "")
   if (k == 0L) {
-    cat("<0 elements>\n\n")
+    return(NULL)
   } else if ((k == 1L) || (N <= 20L)) {
     show(as.list(object))
   } else {
@@ -475,9 +475,9 @@ setMethod("Ops", c("RangesList", "ANY"),
     diffK <- k - showK
     show(as.list(object[seq_len(showK)]))
     if (diffK > 0)
-      cat("<", k - showK,
+      cat("...\n<", k - showK,
           ifelse(diffK == 1,
-                 " additional element>\n\n", " additional elements>\n\n"),
+                 " more element>\n", " more elements>\n"),
           sep="")
   }
 }

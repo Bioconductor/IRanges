@@ -157,7 +157,7 @@ RleViews.show_vframe <- function(x, half_nrow=9L)
 setMethod("show", "RleViews",
     function(object)
     {
-        cat("  Views on a ", length(subject(object)), "-length Rle subject\n", sep="")
+        cat("Views on a ", length(subject(object)), "-length Rle subject\n", sep="")
         RleViews.show_vframe(object)
     }
 )

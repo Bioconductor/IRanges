@@ -531,38 +531,37 @@ setMethod("runq", "RleList",
 
 setMethod("show", "AtomicList",
           function(object) {
-              cat(class(object), " instance:\n", sep="")
-              showme <-
-                lapply(head(object, 6), function(x)
-                       substring(labeledLine("", x, count=FALSE), 2))
-              for (i in seq_len(length(showme))) {
-                  nm <- names(showme)[i]
+              lo <- length(object)
+              k <- min(10, length(object))
+              diffK <- lo - 10
+              cat(class(object), " of length ", lo, "\n", sep = "")
+              for (i in seq_len(k)) {
+                  nm <- names(object)[i]
                   if (length(nm) > 0 && nchar(nm) > 0)
-                      cat("$", nm, "\n", sep = "")
+                      label <- paste("[[\"", nm, "\"]]", sep = "")
                   else
-                      cat("[[", i, "]]\n", sep = "")
-                  cat(showme[[i]])
-                  cat("\n")
+                      label <- paste("[[", i, "]]", sep = "")
+                  cat(labeledLine(label, object[[i]], labelSep = "",
+                                  count = FALSE))
               }
-              diffK <- length(object) - 6
               if (diffK > 0)
-                  cat("<", diffK,
+                  cat("...\n<", diffK,
                       ifelse(diffK == 1,
-                             " additional element>\n\n",
-                             " additional elements>\n\n"),
-                              sep="")
+                             " more element>\n", " more elements>\n"),
+                      sep="")
           })
 
 setMethod("show", "RleList",
           function(object) {
-              cat(class(object), " instance:\n", sep="")
-              show(as.list(head(object, 6)))
-              diffK <- length(object) - 6
+              lo <- length(object)
+              k <- min(5, length(object))
+              diffK <- lo - 5
+              cat(class(object), " of length ", lo, "\n", sep = "")
+              show(as.list(head(object, k)))
               if (diffK > 0)
-                  cat("<", diffK,
+                  cat("...\n<", diffK,
                       ifelse(diffK == 1,
-                             " additional element>\n\n",
-                             " additional elements>\n\n"),
+                             " more element>\n", " more elements>\n"),
                       sep="")
           })
 

@@ -339,12 +339,6 @@ setMethod("as.env", "DataTable",
 ### The "show" method.
 ###
 
-setGeneric("showHeading", function(object, name) standardGeneric("showHeading"),
-           signature = "object")
-setMethod("showHeading", "vectorORfactor", function(object, name) name)
-setMethod("showHeading", "Sequence", function(object, name)
-          paste(name, "=<class:", class(object), ">", sep = ""))
-
 setGeneric("showAsCell", function(object) standardGeneric("showAsCell"))
 setMethod("showAsCell", "vectorORfactor", function(object) object)
 setMethod("showAsCell", "Sequence", function(object)
@@ -353,32 +347,32 @@ setMethod("showAsCell", "Sequence", function(object)
 setMethod("show", "DataTable",
           function(object)
           {
-              cat(class(object), " instance:\n", sep="")
               nr <- nrow(object)
               nc <- ncol(object)
-              if (nr == 0L || nc == 0L) {
-                  cat("<",
-                      nr, ifelse(nr == 1, " row and ", " rows and "),
-                      nc, ifelse(nc == 1, " column>\n\n", " columns>\n\n"),
-                      sep = "")
-              } else {
+              cat(class(object), " with ",
+                  nr, ifelse(nr == 1, " row and ", " rows and "),
+                  nc, ifelse(nc == 1, " column\n", " columns\n"),
+                  sep = "")
+              if (nr > 0 && nc > 0) {
                   k <- min(nr, 10)
-                  df <-
-                    do.call(data.frame,
-                            lapply(object, function(x) showAsCell(head(x, k))))
-                  colnms <- colnames(object)
-                  colnames(df) <-
-                    unlist(lapply(seq_len(ncol(object)), function(i)
-                                  showHeading(object[[i]], colnms[i])))
-                  if (ncol(df) > 0 && !is.null(rownames(df)))
-                      rownames(df) <- head(rownames(object), k)
-                  show(df)
+                  out <-
+                    as.matrix(format.data.frame(do.call(data.frame,
+                              lapply(object,
+                                     function(x) showAsCell(head(x, k))))))
+                  if (!is.null(rownames(out)))
+                      rownames(out) <- head(rownames(object), k)
+                  classinfo <-
+                    matrix(unlist(lapply(object, function(x)
+                                  paste("<", class(x), ">", sep = "")),
+                                  use.names = FALSE), nrow = 1,
+                           dimnames = list(NULL, colnames(out)))
+                  out <- rbind(classinfo, out)
+                  print(out, quote = FALSE, right = TRUE)
                   diffK <- nrow(object) - k
                   if (diffK > 0)
-                      cat("<", diffK,
+                      cat("...\n<", diffK,
                           ifelse(diffK == 1,
-                                 " additional row>\n\n",
-                                 " additional rows>\n\n"),
+                                 " more row>\n", " more rows>\n"),
                           sep="")
               }
           })

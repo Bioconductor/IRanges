@@ -127,13 +127,9 @@ setMethod("show", "XVector",
     function(object)
     {
         lo <- length(object)
-        cat("  A ", class(object), " instance of length ", lo, "\n", sep="")
+        cat(class(object), " of length ", lo, "\n", sep="")
         if (lo != 0L)
             cat(" [1] ", toNumSnippet(object, getOption("width")-5), "\n", sep="")
-        ## What is correct here? The documentation (?show) says that 'show'
-        ## should return an invisible 'NULL' but, on the other hand, the 'show'
-        ## method for integers returns its 'object' argument...
-        invisible(object)
     }
 )
 

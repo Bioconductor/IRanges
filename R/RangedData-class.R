@@ -659,9 +659,9 @@ setMethod("show", "RangedData", function(object) {
   nr <- nrow(object)
   nc <- ncol(object)
   lo <- length(object)
-  cat(class(object), ": ",
-      nr, ifelse(nr == 1, " range by ", " ranges by "),
-      nc, ifelse(nc == 1, " column on ", " columns on "),
+  cat(class(object), " with ",
+      nr, ifelse(nr == 1, " range and ", " ranges and "),
+      nc, ifelse(nc == 1, " value column on ", " value columns on "),
       lo, ifelse(lo == 1, " sequence\n", " sequences\n"), sep = "")
   cat(labeledLine("colnames", colnames(object)))
   if (!is.null(names(object)))

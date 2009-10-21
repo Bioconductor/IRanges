@@ -70,10 +70,10 @@ setMethod("show", "Grouping",
     {
         NG <- length(object)
         NO <- nobj(object)
-        cat("  A ", class(object), " instance with ", NG,
-            ifelse(NG == 1, " group ", " groups "),
-            "and ", NO,
-            ifelse(NO == 1, " object\n", " objects\n"), sep="")
+        cat(class(object), " with ",
+            NG, ifelse(NG == 1, " group ", " groups "),
+            "and ", NO, ifelse(NO == 1, " object\n", " objects\n"),
+            sep="")
         if (NG == 0L)
             return(invisible(NULL))
         empty_groups <- which(grouplength(object) == 0L)
@@ -337,7 +337,7 @@ setMethod("show", "Dups",
     function(object)
     {
         percentage <- 100.00 * sum(duplicated(object)) / length(object)
-        cat("  A ", class(object), " instance of length ", length(object),
+        cat(class(object), " of length ", length(object),
             " (", percentage, "% of duplicates)\n", sep="")
     }
 )

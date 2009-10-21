@@ -333,8 +333,7 @@ setMethod("show", "SimpleList",
           function(object)
           {
               lo <- length(object)
-              cat(class(object), ": ", lo,
-                  ifelse(lo == 1, " element\n", " elements\n"), sep = "")
+              cat(class(object), " of length ", lo, "\n", sep = "")
               if (!is.null(names(object)))
                   cat(labeledLine("names", names(object)))
           })
