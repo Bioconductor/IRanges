@@ -132,7 +132,7 @@ setMethod("show", "XVector",
             cat(" [1] ", toNumSnippet(object, getOption("width")-5), "\n", sep="")
         ## What is correct here? The documentation (?show) says that 'show'
         ## should return an invisible 'NULL' but, on the other hand, the 'show'
-        ## method for intergers returns its 'object' argument...
+        ## method for integers returns its 'object' argument...
         invisible(object)
     }
 )
