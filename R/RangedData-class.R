@@ -331,10 +331,17 @@ setReplaceMethod("[[", "RangedData",
                      stop("attempt to select less than one element")
                    if (length(i) > 1L)
                      stop("attempt to select more than one element")
-                   if (is.numeric(i) && (i < 1L || i > ncol(x)+1))
+                   if (is.numeric(i) && (i < 1L || i > ncol(x) + 1L))
                      stop("subscript out of bounds")
-                   if (!is.null(value) && nrow(x) != length(value))
-                     stop("invalid replacement length")
+                   nrx <- nrow(x)
+                   lv <- length(value)
+                   if (!is.null(value) && (nrx != lv)) {
+                     if ((nrx == 0) || (nrx %% lv != 0))
+                       stop(paste(lv, "elements in value to replace",
+                                  nrx, "elements"))
+                     else
+                       value <- rep(value, length.out = nrx)
+                   }
                    ##values <- as.list(values(x))
                    nrows <- elementLengths(values(x))
                    inds <- seq_len(length(x))
