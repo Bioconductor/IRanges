@@ -359,13 +359,13 @@ setMethod("show", "DataTable",
                     as.matrix(format.data.frame(do.call(data.frame,
                               lapply(object,
                                      function(x) showAsCell(head(x, k))))))
-                  if (!is.null(rownames(out)))
+                  if (!is.null(rownames(object)))
                       rownames(out) <- head(rownames(object), k)
                   classinfo <-
                     matrix(unlist(lapply(object, function(x)
                                   paste("<", class(x), ">", sep = "")),
                                   use.names = FALSE), nrow = 1,
-                           dimnames = list(NULL, colnames(out)))
+                           dimnames = list("", colnames(out)))
                   out <- rbind(classinfo, out)
                   print(out, quote = FALSE, right = TRUE)
                   diffK <- nrow(object) - k
