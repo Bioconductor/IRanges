@@ -254,22 +254,17 @@ setMethod("coverage", "RangedData",
             metadata(ranges) <- metadata(x)
         if (!is.null(elementMetadata(x)))
             elementMetadata(x) <- elementMetadata(x)
-        varnames <- colnames(values(x))
-        if (is.character(start) && (length(start) == 1) &&
-            (start %in% varnames))
-            start <- lapply(values(x), "[[", start)
-        if (is.character(end) && (length(end) == 1) &&
-            (end %in% varnames))
-            end <- lapply(values(x), "[[", end)
-        if (is.character(shift) && (length(shift) == 1) &&
-            (shift %in% varnames))
-            shift <- lapply(values(x), "[[", shift)
-        if (is.character(width) && (length(width) == 1) &&
-            (width %in% varnames))
-            width <- lapply(values(x), "[[", width)
-        if (is.character(weight) && (length(weight) == 1) &&
-            (weight %in% varnames))
-            weight <- lapply(values(x), "[[", weight)
+        varnames <- colnames(x)
+        if (isSingleString(start) && (start %in% varnames))
+            start <- values(x)[, start]
+        if (isSingleString(end) && (end %in% varnames))
+            end <- values(x)[, end]
+        if (isSingleString(shift) && (shift %in% varnames))
+            shift <- values(x)[, shift]
+        if (isSingleString(width) && (width %in% varnames))
+            width <- values(x)[, width]
+        if (isSingleString(weight) && (weight %in% varnames))
+            weight <- values(x)[, weight]
         coverage(ranges, start = start, end = end, shift = shift,
                  width = width, weight = weight)
     }
