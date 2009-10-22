@@ -102,10 +102,10 @@
   small and there is no need to distinguish the ranges by their space.
 
   The other mode is to treat the \code{RangedData} as a list, with an
-  element (a virtual \code{Ranges}/\code{DataFrame} pair) for each
-  space. The length of the object is defined as the number of spaces and
-  the value returned by the \code{names} accessor gives the names of
-  the spaces. The list-style \code{[} subset function behaves
+  element (a virtual \code{\linkS4class{Ranges}}/\code{\linkS4class{DataFrame}}
+  pair) for each space. The length of the object is defined as the number
+  of spaces and the value returned by the \code{names} accessor gives the
+  names of the spaces. The list-style \code{[} subset function behaves
   analogously. The \code{rdapply} function provides a convenient and
   formal means of applying an operation over the spaces separately. This
   mode is helpful when ranges from different spaces must be treated
@@ -150,8 +150,8 @@
       }
     }
     \item{}{Range accessors. The type of the return value depends on
-      the type of \code{Ranges}. For \code{IRanges}, an integer
-      vector. Regardless, the number of elements is always equal to
+      the type of \code{\linkS4class{Ranges}}. For \code{\linkS4class{IRanges}},
+      an integer vector. Regardless, the number of elements is always equal to
       \code{nrow(x)}.
       \describe{
         \item{}{
@@ -227,24 +227,24 @@
         universe = NULL)}:
       Creates a \code{RangedData} with the ranges in \code{ranges} and
       variables given by the arguments in \code{...}.  See the
-      constructor \code{\link{DataFrame}} for how the \code{...}
+      constructor \code{\linkS4class{DataFrame}} for how the \code{...}
       arguments are interpreted.
 
-      If \code{ranges} is a \code{Ranges} object, the \code{space}
-      argument is used to split of the data into spaces. If \code{space}
-      is \code{NULL}, all of the ranges and values are placed into the
-      same space, resulting in a single-space (length one) \code{RangedData}
-      object. Otherwise, the ranges and values are split into spaces
-      according to \code{space}, which is treated as a factor, like the
-      \code{f} argument in \code{\link{split}}.
+      If \code{ranges} is a \code{\linkS4class{Ranges}} object, the
+      \code{space} argument is used to split of the data into spaces.
+      If \code{space} is \code{NULL}, all of the ranges and values are
+      placed into the same space, resulting in a single-space (length one)
+      \code{RangedData} object. Otherwise, the ranges and values are split
+      into spaces according to \code{space}, which is treated as a factor,
+      like the \code{f} argument in \code{\link{split}}.
 
-      If \code{ranges} is a \code{RangesList} object, then the supplied
-      \code{space} argument is ignored and its value is derived from
-      \code{ranges}.
+      If \code{ranges} is a \code{\linkS4class{RangesList}} object, then
+      the supplied \code{space} argument is ignored and its value is derived
+      from \code{ranges}.
 
-      If \code{ranges} is not a \code{Ranges} or \code{RangesList} object,
-      this function calls \code{as(ranges, "RangedData")} and returns the
-      result if successful.
+      If \code{ranges} is not a \code{\linkS4class{Ranges}} or
+      \code{\linkS4class{RangesList}} object, this function calls
+      \code{as(ranges, "RangedData")} and returns the result if successful.
 
       The universe may be specified as a scalar string by the \code{universe}
       argument.
@@ -309,8 +309,11 @@
       \code{x[i,j]}:
       Subsets \code{x} by indexing into its rows and columns. The result
       is of the same class, with a different set of rows and columns.
-      Note that this differs from the subset form
-      above, because we are now treating \code{x} as one contiguous dataset.
+      The row index \code{i} can either treat \code{x} as a flat table
+      by being a character, integer, or logical vector or treat \code{x}
+      as a partitioned table by being a \code{\linkS4class{RangesList}},
+      \code{\linkS4class{LogicalList}}, or \code{\linkS4class{IntegerList}}
+      of the same length as \code{x}.
     }
     \item{}{
       \code{x[[i]]}:
@@ -384,8 +387,8 @@
 \author{ Michael Lawrence }
 
 \seealso{
-  \linkS4class{DataTable}, the parent of this class, with more utilites.
-  \link{RangedData-utils} for utlities and the \code{\link{rdapply}}
+  \linkS4class{DataTable}, the parent of this class, with more utilities.
+  \link{RangedData-utils} for utilities and the \code{\link{rdapply}}
   function for applying a function to each space separately.
 }
 

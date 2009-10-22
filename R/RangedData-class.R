@@ -412,6 +412,19 @@ setMethod("[", "RangedData",
                   i <- !is.na(unlist(findOverlaps(ranges, i, multiple=FALSE)))
 ### FIXME: could do this if Ranges supported NAs, then ordering is possible
                   ##i <- findOverlaps(i, ranges, multiple=FALSE, drop=TRUE)
+                } else if (is(i, "LogicalList")) {
+                  xeltlen <- elementLengths(ranges(x))
+                  whichRep <- which(xeltlen != elementLengths(i))
+                  for (k in whichRep)
+                    i[[k]] <- rep(i[[k]], length.out = xeltlen[k])
+                  i <- unlist(i)
+                } else if (is(i, "IntegerList")) {
+                  itemp <-
+                    LogicalList(lapply(elementLengths(ranges(x)), rep,
+                                       x = FALSE))
+                  for (k in seq_len(length(itemp)))
+                    itemp[[k]][i[[k]]] <- TRUE
+                  i <- unlist(itemp)
                 }
                 prob <- checkIndex(i, nrow(x), rownames(x))
                 if (!is.null(prob))
