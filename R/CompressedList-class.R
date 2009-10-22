@@ -516,18 +516,15 @@ setMethod("aggregate", "CompressedList",
                   if (length(x) != length(by))
                       stop("for Ranges 'by', 'length(x) != length(by)'")
                   y <- as.list(x)
-                  ans <-
-                    newSimpleList("SimpleList",
-                                  lapply(structure(seq_len(length(x)),
-                                                   names = names(x)),
-                                         function(i)
-                                         aggregate(y[[i]], by = by[[i]],
-                                                   FUN = FUN,
-                                                   frequency = frequency,
-                                                   delta = delta, ...,
-                                                   simplify = simplify)),
-                                  metadata = metadata(x),
-                                  elementMetadata = elementMetadata(x))
+                  result <-
+                    lapply(structure(seq_len(length(x)), names = names(x)),
+                           function(i)
+                               aggregate(y[[i]], by = by[[i]], FUN = FUN,
+                                         frequency = frequency, delta = delta,
+                                         ..., simplify = simplify))
+                  ans <- try(SimpleAtomicList(result), silent = TRUE)
+                  if (inherits(ans, "try-error"))
+                      ans <- newSimpleList("SimpleList", result)
               } else {
                   ans <- callNextMethod()
               }

@@ -136,14 +136,16 @@
                       frequency = NULL, delta = NULL, ..., simplify = TRUE))}:
       In addition to normal usage, the \code{by} parameter can be a
       \code{RangesList} to aggregate within the list elements rather
-      than across them.
+      than across them. When \code{by} is a \code{RangesList}, the output is
+      either a \code{SimpleAtomicList} object, if possible, or a
+      \code{SimpleList} object, if not.
     }
   }
 }
 
 \author{P. Aboyoun}
 \seealso{\linkS4class{Sequence},
-         \linkS4class{IntegerList} and
+         \linkS4class{AtomicList} and
          \linkS4class{RangesList} for example implementations}
 
 \examples{
