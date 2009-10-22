@@ -35,6 +35,10 @@
 \alias{coerce,ANY,CompressedSplitDataFrameList-method}
 \alias{coerce,ANY,SimpleSplitDataFrameList-method}
 
+% splitting and combining
+\alias{cbind,DataFrameList-method}
+\alias{rbind,DataFrameList-method}
+
 % show
 \alias{show,SplitDataFrameList-method}
 
@@ -90,6 +94,22 @@
       column bound to form \code{DataFrame} objects. If \code{compress = TRUE},
       returns a \code{CompressedSplitDataFrameList}; else returns a
       \code{SimpleSplitDataFrameList}.}
+  }
+}
+
+\section{Combining}{
+  In the following code snippets, objects in \code{...} are of class
+  \code{DataFrameList}.
+
+  \describe{
+    \item{}{
+      \code{rbind(...)}: Creates a new \code{DataFrameList} containing
+      the element-by-element row concatenation of the objects in \code{...}.
+    }
+    \item{}{
+      \code{cbind(...)}: Creates a new \code{DataFrameList} containing
+      the element-by-element column concatenation of the objects in \code{...}.
+    }
   }
 }
 
