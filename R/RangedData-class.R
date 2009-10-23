@@ -237,7 +237,7 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
     space <-
       factor(rep(names(ranges), elementLengths(ranges)), levels = names(ranges))
     N <- sum(elementLengths(ranges))
-    NAMES <- unlist(lapply(ranges, names))
+    NAMES <- unlist(lapply(ranges, names), use.names=FALSE)
   } else if (!is(ranges, "Ranges")) {
     coerced <- try(as(ranges, "RangedData"), silent=TRUE)
     if (is(coerced, "RangedData"))
@@ -310,12 +310,15 @@ setMethod("[[", "RangedData",
               stop("attempt to select more than one element")
             if (is.numeric(i) && !is.na(i) && (i < 1L || i > ncol(x)))
               stop("subscript out of bounds")
-            if (is.na(i) || (is.character(i) && !(i %in% colnames(x))))
-              return(NULL)
-            ##col <- lapply(values(x), function(v) v[i])
-            ##names(col) <- NULL ## use rbind() to handle factor levels
-            ##do.call(rbind, col)[[1]]
-            unlist(values(x))[[i]] # very fast if 'values' is compressed
+            if (is.na(i) || (is.character(i) &&
+                !(i %in% c("space", "ranges", colnames(x)))))
+              NULL
+            else if (i == "space")
+              space(x)
+            else if (i == "ranges")
+              unlist(ranges(x), use.names=FALSE)
+            else
+              unlist(values(x), use.names=FALSE)[[i]]
           })
 
 setReplaceMethod("[[", "RangedData",
@@ -333,30 +336,28 @@ setReplaceMethod("[[", "RangedData",
                      stop("attempt to select more than one element")
                    if (is.numeric(i) && (i < 1L || i > ncol(x) + 1L))
                      stop("subscript out of bounds")
-                   nrx <- nrow(x)
-                   lv <- length(value)
-                   if (!is.null(value) && (nrx != lv)) {
-                     if ((nrx == 0) || (nrx %% lv != 0))
-                       stop(paste(lv, "elements in value to replace",
-                                  nrx, "elements"))
-                     else
-                       value <- rep(value, length.out = nrx)
+                   if (i == "space")
+                     stop("cannot replace \"space\" information")
+                   if (i == "ranges") {
+                     ranges(x) <- value
+                   } else {
+                     nrx <- nrow(x)
+                     lv <- length(value)
+                     if (!is.null(value) && (nrx != lv)) {
+                       if ((nrx == 0) || (nrx %% lv != 0))
+                         stop(paste(lv, "elements in value to replace",
+                                    nrx, "elements"))
+                       else
+                         value <- rep(value, length.out = nrx)
+                     }
+                     nrows <- elementLengths(values(x))
+                     inds <- seq_len(length(x))
+                     spaces <- factor(rep.int(inds, nrows), inds)
+                     values <- unlist(values(x), use.names=FALSE)
+                     values[[i]] <- value
+                     x@values <- split(values, spaces)
+                     names(x@values) <- names(x)
                    }
-                   ##values <- as.list(values(x))
-                   nrows <- elementLengths(values(x))
-                   inds <- seq_len(length(x))
-                   spaces <- factor(rep.int(inds, nrows), inds)
-                   ##svalues <- NULL
-                   ##if (!is.null(value))
-                   ##  svalues <- split(value, spaces)
-                   ##for (j in seq_len(length(x))) {
-                   ##  values[[j]][[i]] <- svalues[[j]]
-                   ##}
-                   ##x@values <- initialize(values(x), elements = values)
-                   values <- unlist(values(x))
-                   values[[i]] <- value
-                   x@values <- split(values, spaces)
-                   names(x@values) <- names(x)
                    x
                  })
 
@@ -417,14 +418,14 @@ setMethod("[", "RangedData",
                   whichRep <- which(xeltlen != elementLengths(i))
                   for (k in whichRep)
                     i[[k]] <- rep(i[[k]], length.out = xeltlen[k])
-                  i <- unlist(i)
+                  i <- unlist(i, use.names=FALSE)
                 } else if (is(i, "IntegerList")) {
                   itemp <-
                     LogicalList(lapply(elementLengths(ranges(x)), rep,
                                        x = FALSE))
                   for (k in seq_len(length(itemp)))
                     itemp[[k]][i[[k]]] <- TRUE
-                  i <- unlist(itemp)
+                  i <- unlist(itemp, use.names=FALSE)
                 }
                 prob <- checkIndex(i, nrow(x), rownames(x))
                 if (!is.null(prob))
@@ -543,7 +544,9 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
     stop("All args in '...' must have the same universe as 'x'")
   ##dfs <- lapply(args, values)
   ##df <- dfs[[1]]
-  df <- do.call("rbind", lapply(args, function(x) unlist(values(x))))
+  df <-
+    do.call("rbind",
+            lapply(args, function(x) unlist(values(x), use.names=FALSE)))
   nmsList <- lapply(args, names)
   if (any(sapply(nmsList, is.null))) {
     if (!all(unlist(lapply(args, length)) == length(args[[1]])))
@@ -680,12 +683,42 @@ setMethod("show", "RangedData", function(object) {
   nc <- ncol(object)
   lo <- length(object)
   cat(class(object), " with ",
-      nr, ifelse(nr == 1, " range and ", " ranges and "),
-      nc, ifelse(nc == 1, " value column on ", " value columns on "),
-      lo, ifelse(lo == 1, " sequence\n", " sequences\n"), sep = "")
-  cat(labeledLine("colnames", colnames(object)))
-  if (!is.null(names(object)))
-    cat(labeledLine("names", names(object)))
+      nr, ifelse(nr == 1, " row and ", " rows and "),
+      nc, ifelse(nc == 1, " value column across ", " value columns across "),
+      lo, ifelse(lo == 1, " space\n", " spaces\n"), sep = "")
+  if (nr > 0) {
+    k <- min(nr, 10)
+    subset  <- object[seq_len(k),]
+    rangesSubset <- unlist(ranges(subset), use.names=FALSE)
+    valuesSubset <- unlist(values(subset), use.names=FALSE)
+    out <-
+      cbind(space = space(subset),
+            ranges = showAsCell(rangesSubset),
+            "|" = rep("|", k))
+    if (nc > 0)
+      out <-
+        cbind(out,
+              as.matrix(format.data.frame(do.call(data.frame,
+                        lapply(valuesSubset, showAsCell)))))
+    if (is.null(rownames(subset)))
+      rownames(out) <- seq_len(k)
+    else
+      rownames(out) <- rownames(subset)
+    classinfo <-
+      matrix(c("<character>", "<IRanges>", "|",
+               unlist(lapply(valuesSubset, function(x)
+                             paste("<", class(x), ">", sep = "")),
+                      use.names = FALSE)), nrow = 1,
+             dimnames = list("", colnames(out)))
+    out <- rbind(classinfo, out)
+    print(out, quote = FALSE, right = TRUE)
+    diffK <- nr - k
+    if (diffK > 0)
+      cat("...\n<", diffK,
+          ifelse(diffK == 1,
+                 " more row>\n", " more rows>\n"),
+          sep="")
+  }
 })
 
 ### =========================================================================

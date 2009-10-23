@@ -320,6 +320,10 @@
       Extracts a variable from \code{x}, where \code{i} can be
       a character, numeric, or logical scalar that indexes into the
       columns. The variable is unlisted over the spaces.
+
+      For convenience, values of \code{"space"} and \code{"ranges"}
+      are equivalent to \code{space(x)} and \code{unlist(ranges(x))}
+      respectively. 
     }
     \item{}{
       \code{x$name}: similar to above, where \code{name} is taken
@@ -332,6 +336,9 @@
       columns. The length of \code{value} should equal
       \code{nrow(x)}. \code{x[[i]]} should be identical to \code{value}
       after this operation.
+
+      For convenience, \code{i="ranges"} is equivalent to
+      \code{ranges(x) <- value}. 
     }
     \item{}{
       \code{x$name <- value}: similar to above, where \code{name} is taken
