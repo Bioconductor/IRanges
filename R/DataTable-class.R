@@ -368,11 +368,10 @@ setMethod("show", "DataTable",
                            dimnames = list("", colnames(out)))
                   out <- rbind(classinfo, out)
                   print(out, quote = FALSE, right = TRUE)
-                  diffK <- nrow(object) - k
+                  diffK <- nr - k
                   if (diffK > 0)
                       cat("...\n<", diffK,
-                          ifelse(diffK == 1,
-                                 " more row>\n", " more rows>\n"),
+                          ifelse(diffK == 1, " more row>\n", " more rows>\n"),
                           sep="")
               }
           })
