@@ -62,6 +62,9 @@
 \alias{seqselect<-,RangedData-method}
 \alias{window<-,RangedData-method}
 
+% Utilities:
+\alias{reduce,RangedData-method}
+
 % Applying:
 \alias{endoapply,RangedData-method}
 \alias{lapply,RangedData-method}
@@ -378,6 +381,19 @@
   }
 }
 
+\section{Utilities}{
+  In the code snippets below, \code{x} is a \code{RangedData} object.
+  
+  \describe{
+    \item{}{
+      \code{reduce(x, by, with.inframe.attrib=FALSE)}: Merges the ranges in
+      each of the spaces after grouping by the \code{by} values columns and
+      returns the result as a \code{RangedData} containing the reduced
+      ranges and the \code{by} value columns.
+    }
+  }
+}
+
 \section{Applying}{
   There are two ways explicitly supported ways to apply a function over
   the spaces of a \code{RangedData}. The richest interface is
@@ -428,6 +444,8 @@
         chrA = IRanges(start = c(1, 4, 6), width=c(3, 2, 4)),
         chrB = IRanges(start = c(1, 3, 6), width=c(3, 3, 4))),
       score = c(2, 7, 3, 1, 1, 1))
+  rd
+  reduce(rd)
 
   ## split some data over chromosomes
 

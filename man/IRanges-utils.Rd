@@ -59,7 +59,7 @@
   \S4method{flank}{Ranges}(x, width, start=TRUE, both=FALSE, use.names=TRUE)
   \S4method{reflect}{Ranges}(x, bounds, use.names=TRUE)
   threebands(x, start=NA, end=NA, width=NA)
-  reduce(x, with.inframe.attrib=FALSE)
+  \S4method{reduce}{Ranges}(x, with.inframe.attrib=FALSE)
 
   ## Other utilities
   \S4method{range}{Ranges}(x, ..., na.rm = FALSE)

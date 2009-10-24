@@ -309,7 +309,7 @@ setGeneric("threebands", signature="x",
 )
 
 setGeneric("reduce", signature="x",
-    function(x, with.inframe.attrib=FALSE) standardGeneric("reduce")
+    function(x, ...) standardGeneric("reduce")
 )
 
 setMethod("reduce", "Ranges",

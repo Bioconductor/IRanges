@@ -16,7 +16,7 @@ setMethod("lapply", "RangedData",
 
 setMethod("endoapply", "RangedData",
           function(X, FUN, ...) {
-            ans <- try(do.call(c, lapply(X, FUN, ...)), silent = TRUE)
+            ans <- try(do.call(c, unname(lapply(X, FUN, ...))), silent = TRUE)
             if (inherits(ans, "try-error") || (class(ans) != class(X)))
               stop("'FUN' did not produce an endomorphism")
             ans
@@ -85,6 +85,39 @@ setMethod("%in%", c("RangesList", "RangedData"),
 setMethod("%in%", c("RangedData", "RangesList"),
           function(x, table) ranges(x) %in% table)
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Reducing
+###
+
+setMethod("reduce", "RangedData",
+          function(x, by, with.inframe.attrib=FALSE)
+          {
+            FUN <- function(y) {
+              name <- names(y)
+              ranges <- ranges(y)[[1]]
+              values <- values(y)[[1]]
+              inds <- split(seq_len(nrow(values)), lapply(values, as.vector))
+              rlist <-
+                lapply(inds, function(i) {
+                         rngs <-
+                           reduce(ranges[i],
+                                  with.inframe.attrib=with.inframe.attrib)
+                         list(ranges = rngs,
+                              values =
+                              values[rep(i, length.out = length(rngs)), ,
+                                     drop=FALSE])
+                       })
+              ranges <-
+                IRangesList(do.call(c, lapply(rlist, "[[", "ranges")))
+              names(ranges) <- name
+              values <-
+                SplitDataFrameList(do.call(rbind,
+                                           lapply(rlist, "[[", "values")))
+              names(values) <- name
+              new2(class(y), ranges = ranges, values = values, check = FALSE)
+            }
+            endoapply(x[,by], FUN)
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Merging (TODO, don't export)
