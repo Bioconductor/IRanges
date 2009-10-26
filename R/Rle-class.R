@@ -299,7 +299,7 @@ setMethod("[", "Rle",
                   return(x)
               if (is(i, "Rle") && is.logical(runValue(i)) && lx == length(i)) {
                   if (!any(runValue(i))) {
-                      output <- new("Rle")
+                      output <- new(class(x))
                   } else {
                       whichValues <- which(runValue(i))
                       starts <- start(i)[whichValues]
@@ -317,7 +317,7 @@ setMethod("[", "Rle",
                     stop("range index out of bounds")
                   i <- i[width(i) > 0]
                   if (length(i) == 0) {
-                      output <- new("Rle")
+                      output <- new(class(x))
                   } else {
                       start <- start(i)
                       end <- end(i)
@@ -400,7 +400,7 @@ setMethod("aggregate", "Rle",
                   offsetEnd <- info[["end"]][["offset"]]
                   ## Performance Optimization
                   ## Use a stripped down loop with empty Rle object
-                  newRle <- new("Rle")
+                  newRle <- new(class(x))
                   sapply(indices,
                          function(i)
                              FUN(.Call("Rle_window",
@@ -488,7 +488,7 @@ setMethod("rep", "Rle",
                   n <- length(x)
                   length.out <- as.integer(length.out[1])
                   if (length.out == 0) {
-                      x <- new("Rle")
+                      x <- new(class(x))
                   } else if (length.out < n) {
                       x <- window(x, 1, length.out)
                   } else if (length.out > n) {
@@ -532,8 +532,10 @@ setMethod("rev", "Rle",
 setMethod("seqselect", "Rle",
           function(x, start = NULL, end = NULL, width = NULL)
           {
-              if (!is.null(start) && is.null(end) && is.null(width)) {
-                  if (is(start, "Ranges"))
+              if (is.null(end) && is.null(width)) {
+                  if (is.null(start))
+                      ir <- IRanges(start = 1, width = length(x))
+                  else if (is(start, "Ranges"))
                       ir <- start
                   else {
                       if (is.logical(start) && length(start) != length(x))
@@ -546,7 +548,9 @@ setMethod("seqselect", "Rle",
               k <- length(ir)
               start <- start(ir)
               end <- end(ir)
-              if (k == 1) {
+              if (k == 0) {
+                  x[integer(0)]
+              } else if (k == 1) {
                   window(x, start = start, end = end)
               } else {
                   if (any(start < 1L) || any(end > length(x)))
@@ -583,8 +587,10 @@ setReplaceMethod("seqselect", "Rle",
                          }
                          value <- as.vector(value)
                      }
-                     if (!is.null(start) && is.null(end) && is.null(width)) {
-                         if (is(start, "Ranges"))
+                     if (is.null(end) && is.null(width)) {
+                         if (is.null(start))
+                             ir <- IRanges(start = 1, width = length(x))
+                         else if (is(start, "Ranges"))
                              ir <- start
                          else {
                              if (is.logical(start) && length(start) != length(x))

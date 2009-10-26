@@ -440,8 +440,10 @@ setGeneric("seqselect", signature="x",
 setMethod("seqselect", "Sequence",
           function(x, start=NULL, end=NULL, width=NULL)
           {
-              if (!is.null(start) && is.null(end) && is.null(width)) {
-                  if (is(start, "Ranges"))
+              if (is.null(end) && is.null(width)) {
+                  if (is.null(start))
+                      ir <- IRanges(start = 1, width = length(x))
+                  else if (is(start, "Ranges"))
                       ir <- start
                   else {
                       if (is.logical(start) && length(start) != length(x))
@@ -451,20 +453,26 @@ setMethod("seqselect", "Sequence",
               } else {
                   ir <- IRanges(start=start, end=end, width=width, names=NULL)
               }
-              if (any(start(ir) < 1L) || any(end(ir) > length(x)))
-                  stop("some ranges are out of bounds")
-              do.call(c,
-                      lapply(seq_len(length(ir)), function(i)
-                             window(x,
-                                    start = start(ir)[i],
-                                    width = width(ir)[i])))
+              if (length(ir) == 0) {
+                  x[integer(0)]
+              } else {
+                  if (any(start(ir) < 1L) || any(end(ir) > length(x)))
+                      stop("some ranges are out of bounds")
+                  do.call(c,
+                          lapply(seq_len(length(ir)), function(i)
+                                 window(x,
+                                        start = start(ir)[i],
+                                        width = width(ir)[i])))
+              }
           })
 
 setMethod("seqselect", "vector",
           function(x, start=NULL, end=NULL, width=NULL)
           {
-              if (!is.null(start) && is.null(end) && is.null(width)) {
-                  if (is(start, "Ranges"))
+              if (is.null(end) && is.null(width)) {
+                  if (is.null(start))
+                      ir <- IRanges(start = 1, width = length(x))
+                  else if (is(start, "Ranges"))
                       ir <- start
                   else {
                       if (is.logical(start) && length(start) != length(x))
@@ -485,8 +493,10 @@ setGeneric("seqselect<-", signature="x",
 setReplaceMethod("seqselect", "Sequence",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
-                     if (!is.null(start) && is.null(end) && is.null(width)) {
-                         if (is(start, "Ranges"))
+                     if (is.null(end) && is.null(width)) {
+                         if (is.null(start))
+                             ir <- IRanges(start = 1, width = length(x))
+                         else if (is(start, "Ranges"))
                              ir <- start
                          else {
                              if (is.logical(start) && length(start) != length(x))
@@ -549,8 +559,10 @@ setReplaceMethod("seqselect", "Sequence",
 setReplaceMethod("seqselect", "vector",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
-                     if (!is.null(start) && is.null(end) && is.null(width)) {
-                         if (is(start, "Ranges"))
+                     if (is.null(end) && is.null(width)) {
+                         if (is.null(start))
+                             ir <- IRanges(start = 1, width = length(x))
+                         else if (is(start, "Ranges"))
                              ir <- start
                          else {
                              if (is.logical(start) && length(start) != length(x))

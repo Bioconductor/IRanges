@@ -67,8 +67,10 @@ setMethod("rbind", "DataTable", function(..., deparse.level=1)
 setMethod("seqselect", "DataTable",
           function(x, start=NULL, end=NULL, width=NULL)
           {
-              if (!is.null(start) && is.null(end) && is.null(width)) {
-                  if (is(start, "Ranges"))
+              if (is.null(end) && is.null(width)) {
+                  if (is.null(start))
+                      ir <- IRanges(start = 1, width = nrow(x))
+                  else if (is(start, "Ranges"))
                       ir <- start
                   else {
                       if (is.logical(start) && length(start) != nrow(x))
@@ -80,18 +82,23 @@ setMethod("seqselect", "DataTable",
               }
               if (any(start(ir) < 1L) || any(end(ir) > nrow(x)))
                   stop("some ranges are out of bounds")
-              do.call(rbind,
-                      lapply(seq_len(length(ir)), function(i)
-                             window(x,
-                                    start = start(ir)[i],
-                                    width = width(ir)[i])))
+              if (length(ir) == 0)
+                  x[integer(0),,drop=FALSE]
+              else
+                  do.call(rbind,
+                          lapply(seq_len(length(ir)), function(i)
+                                 window(x,
+                                        start = start(ir)[i],
+                                        width = width(ir)[i])))
           })
 
 setReplaceMethod("seqselect", "DataTable",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
-                     if (!is.null(start) && is.null(end) && is.null(width)) {
-                         if (is(start, "Ranges"))
+                     if (is.null(end) && is.null(width)) {
+                         if (is.null(start))
+                             ir <- IRanges(start = 1, width = nrow(x))
+                         else if (is(start, "Ranges"))
                              ir <- start
                          else {
                              if (is.logical(start) && length(start) != nrow(x))
