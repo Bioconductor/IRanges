@@ -26,6 +26,8 @@
 \alias{names<-,XVectorList-method}
 \alias{[[,XVectorList-method}
 \alias{[,XVectorList-method}
+\alias{seqselect,XVectorList-method}
+\alias{window,XVectorList-method}
 \alias{c,XVectorList-method}
 
 

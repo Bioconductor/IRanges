@@ -179,6 +179,25 @@ setMethod("[", "XVectorList",
     }
 )
 
+setMethod("seqselect", "XVectorList",
+    function(x, start=NULL, end=NULL, width=NULL)
+    {
+        x@ranges <- callGeneric(x@ranges, start=start, end=end, width=width)
+        x
+    }
+)
+
+setMethod("window", "XVectorList",
+    function(x, start = NULL, end = NULL, width = NULL,
+             frequency = NULL, delta = NULL, ...)
+    {
+        x@ranges <-
+          callGeneric(x@ranges, start=start, end=end, width=width,
+                      frequency=frequency, delta=delta, ...)
+        x
+    }
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining.
