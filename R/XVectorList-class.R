@@ -66,6 +66,29 @@ setMethod("[", "GroupedIRanges",
     }
 )
 
+setMethod("seqselect", "GroupedIRanges",
+    function(x, start=NULL, end=NULL, width=NULL)
+    {
+        x <- callNextMethod(x, start=start, end=end, width=width)
+        x@group <- callGeneric(x@group, start=start, end=end, width=width)
+        x
+    }
+)
+
+setMethod("window", "GroupedIRanges",
+    function(x, start = NULL, end = NULL, width = NULL,
+             frequency = NULL, delta = NULL, ...)
+    {
+        x <-
+          callNextMethod(x, start=start, end=end, width=width,
+                         frequency=frequency, delta=delta, ...)
+        x@group <-
+          callGeneric(x@group, start=start, end=end, width=width,
+                      frequency=frequency, delta=delta, ...)
+        x
+    }
+)
+
 setMethod("c", "GroupedIRanges",
     function(x, ..., recursive=FALSE)
     {
