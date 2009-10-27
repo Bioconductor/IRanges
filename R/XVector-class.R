@@ -95,24 +95,19 @@ setMethod("seqselect", "XVector",
 )
 
 setMethod("window", "XVector",
-        function(x, start = NULL, end = NULL, width = NULL,
+        function(x, start = NA, end = NA, width = NA,
                 frequency = NULL, delta = NULL, ...)
         {
             if (is.null(frequency) && is.null(delta)) {
-                subseq(x,
-                       start = ifelse(is.null(start), NA, start),
-                       end = ifelse(is.null(end), NA, end),
-                       width = ifelse(is.null(width), NA, width))
+                subseq(x, start = start, end = end, width = width)
             } else {
-                if (!is.null(width)) {
-                    if (is.null(start))
-                        start <- end - width + 1L
-                    else if (is.null(end))
-                        end <- start + width - 1L
-                }
+                solved_SEW <- solveWindowSEW(length(x), start, end, width)
                 idx <-
-                  stats:::window.default(seq_len(length(x)), start = start, end = end,
-                                         frequency = frequency, deltat = delta, ...)
+                  stats:::window.default(seq_len(length(x)),
+                                         start = start(solved_SEW),
+                                         end = end(solved_SEW),
+                                         frequency = frequency,
+                                         deltat = delta, ...)
                 attributes(idx) <- NULL
                 x[idx]
             }

@@ -76,7 +76,7 @@ setMethod("seqselect", "GroupedIRanges",
 )
 
 setMethod("window", "GroupedIRanges",
-    function(x, start = NULL, end = NULL, width = NULL,
+    function(x, start = NA, end = NA, width = NA,
              frequency = NULL, delta = NULL, ...)
     {
         x <-
@@ -188,7 +188,7 @@ setMethod("seqselect", "XVectorList",
 )
 
 setMethod("window", "XVectorList",
-    function(x, start = NULL, end = NULL, width = NULL,
+    function(x, start = NA, end = NA, width = NA,
              frequency = NULL, delta = NULL, ...)
     {
         x@ranges <-

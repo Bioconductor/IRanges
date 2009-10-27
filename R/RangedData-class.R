@@ -499,7 +499,7 @@ setReplaceMethod("seqselect", "RangedData",
                  )
 
 setReplaceMethod("window", "RangedData",
-                 function(x, start = NULL, end = NULL, width = NULL, keepLength = TRUE, ..., value)
+                 function(x, start = NA, end = NA, width = NA, keepLength = TRUE, ..., value)
                  stop("operation not supported")
                  )
 

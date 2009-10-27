@@ -462,7 +462,7 @@ setMethod("seqselect", "IRanges",
 )
 
 setMethod("window", "IRanges",
-    function(x, start = NULL, end = NULL, width = NULL,
+    function(x, start = NA, end = NA, width = NA,
              frequency = NULL, delta = NULL, ...)
     {
         slot(x, "start", check=FALSE) <-

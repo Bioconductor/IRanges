@@ -627,31 +627,18 @@ solveWindowSEW <- function(seq_length, start, end, width)
 }
 
 setMethod("window", "Sequence",
-          function(x, start = NULL, end = NULL, width = NULL,
+          function(x, start = NA, end = NA, width = NA,
                    frequency = NULL, delta = NULL, ...)
           {
-              if ((!is.null(start) && !isSingleNumber(start)) ||
-                  (!is.null(end) && !isSingleNumber(end)) ||
-                  (!is.null(width) && !isSingleNumber(width)))
-                  stop(paste("'start', 'end', and 'width' each must be",
-                             "either NULL or a single number"))
+              solved_SEW <- solveWindowSEW(length(x), start, end, width)
               if (is.null(frequency) && is.null(delta)) {
-                  solved_SEW <-
-                    solveWindowSEW(length(x),
-                                   start = ifelse(is.null(start), NA, start),
-                                   end = ifelse(is.null(end), NA, end),
-                                   width = ifelse(is.null(width), NA, width))
                   x[as.integer(solved_SEW)]
               } else {
-                  if (!is.null(width)) {
-                      if (is.null(start))
-                          start <- end - width + 1L
-                      else if (is.null(end))
-                          end <- start + width - 1L
-                  }
                   idx <-
-                    stats:::window.default(seq_len(length(x)), start = start,
-                                           end = end, frequency = frequency,
+                    stats:::window.default(seq_len(length(x)),
+                                           start = start(solved_SEW),
+                                           end = end(solved_SEW),
+                                           frequency = frequency,
                                            deltat = delta, ...)
                   attributes(idx) <- NULL
                   x[idx]
@@ -659,33 +646,20 @@ setMethod("window", "Sequence",
           })
 
 setMethod("window", "vector",
-          function(x, start = NULL, end = NULL, width = NULL,
-                  frequency = NULL, delta = NULL, ...)
+          function(x, start = NA, end = NA, width = NA,
+                   frequency = NULL, delta = NULL, ...)
           {
-              if ((!is.null(start) && !isSingleNumber(start)) ||
-                  (!is.null(end) && !isSingleNumber(end)) ||
-                  (!is.null(width) && !isSingleNumber(width)))
-                  stop(paste("'start', 'end', and 'width' each must be",
-                             "either NULL or a single number"))
+              solved_SEW <- solveWindowSEW(length(x), start, end, width)
               if (is.null(frequency) && is.null(delta)) {
-                  solved_SEW <-
-                    solveWindowSEW(length(x),
-                                   start = ifelse(is.null(start), NA, start),
-                                   end = ifelse(is.null(end), NA, end),
-                                   width = ifelse(is.null(width), NA, width))
                   .Call("vector_seqselect",
                         x, start(solved_SEW), width(solved_SEW),
                         PACKAGE="IRanges")
               } else {
-                  if (!is.null(width)) {
-                      if (is.null(start))
-                          start <- end - width + 1L
-                      else if (is.null(end))
-                          end <- start + width - 1L
-                  }
                   idx <-
-                    stats:::window.default(seq_len(length(x)), start = start,
-                                           end = end, frequency = frequency,
+                    stats:::window.default(seq_len(length(x)),
+                                           start = start(solved_SEW),
+                                           end = end(solved_SEW),
+                                           frequency = frequency,
                                            deltat = delta, ...)
                   attributes(idx) <- NULL
                   x[idx]
@@ -693,21 +667,12 @@ setMethod("window", "vector",
           })
 
 setReplaceMethod("window", "Sequence",
-                 function(x, start = NULL, end = NULL, width = NULL,
+                 function(x, start = NA, end = NA, width = NA,
                           keepLength = TRUE, ..., value)
                  {
                      if (!isTRUEorFALSE(keepLength))
                          stop("'keepLength' must be TRUE or FALSE")
-                     if ((!is.null(start) && !isSingleNumber(start)) ||
-                         (!is.null(end) && !isSingleNumber(end)) ||
-                         (!is.null(width) && !isSingleNumber(width)))
-                         stop(paste("'start', 'end', and 'width' each must be",
-                                    "either NULL or a single number"))
-                     solved_SEW <-
-                       solveWindowSEW(length(x),
-                                      start = ifelse(is.null(start), NA, start),
-                                      end = ifelse(is.null(end), NA, end),
-                                      width = ifelse(is.null(width), NA, width))
+                     solved_SEW <- solveWindowSEW(length(x), start, end, width)
                      if (!is.null(value)) {
                          if (!is(value, class(x))) {
                              value <- try(as(value, class(x)), silent = TRUE)
@@ -724,21 +689,12 @@ setReplaceMethod("window", "Sequence",
                  })
 
 setReplaceMethod("window", "vector",
-                 function(x, start = NULL, end = NULL, width = NULL,
+                 function(x, start = NA, end = NA, width = NA,
                           keepLength = TRUE, ..., value)
                  {
                      if (!isTRUEorFALSE(keepLength))
                          stop("'keepLength' must be TRUE or FALSE")
-                     if ((!is.null(start) && !isSingleNumber(start)) ||
-                         (!is.null(end) && !isSingleNumber(end)) ||
-                         (!is.null(width) && !isSingleNumber(width)))
-                         stop(paste("'start', 'end', and 'width' each must be",
-                                    "either NULL or a single number"))
-                     solved_SEW <-
-                       solveWindowSEW(length(x),
-                                      start = ifelse(is.null(start), NA, start),
-                                      end = ifelse(is.null(end), NA, end),
-                                      width = ifelse(is.null(width), NA, width))
+                     solved_SEW <- solveWindowSEW(length(x), start, end, width)
                      if (!is.null(value)) {
                          if (!is(value, class(x))) {
                              value <- try(as(value, class(x)), silent = TRUE)
