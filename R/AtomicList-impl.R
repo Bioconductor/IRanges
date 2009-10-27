@@ -507,23 +507,24 @@ setMethod("Complex", "SimpleAtomicList",
 setMethod("runmed", "RleList",
           function(x, k, endrule = c("median", "keep", "constant"),
                    algorithm = NULL, print.level = 0)
-              endoapply(x, runmed, k = k, endrule = endrule))
+              endoapply(x, runmed, k = k, endrule = match.arg(endrule)))
 
 setMethod("runsum", "RleList",
           function(x, k, endrule = c("drop", "constant"))
-              endoapply(x, runsum, k = k, endrule = endrule))
+              endoapply(x, runsum, k = k, endrule = match.arg(endrule)))
 
 setMethod("runmean", "RleList",
           function(x, k, endrule = c("drop", "constant"))
-              endoapply(x, runmean, k = k, endrule = endrule))
+              endoapply(x, runmean, k = k, endrule = match.arg(endrule)))
 
 setMethod("runwtsum", "RleList",
           function(x, k, wt, endrule = c("drop", "constant"))
-              endoapply(x, runwtsum, k = k, wt = wt, endrule = endrule))
+              endoapply(x, runwtsum, k = k, wt = wt,
+                        endrule = match.arg(endrule)))
 
 setMethod("runq", "RleList",
           function(x, k, i, endrule = c("drop", "constant"))
-              endoapply(x, runq, k = k, i = i, endrule = endrule))
+              endoapply(x, runq, k = k, i = i, endrule = match.arg(endrule)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
