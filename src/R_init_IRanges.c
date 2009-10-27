@@ -16,10 +16,13 @@ static const R_CallMethodDef callMethods[] = {
 /* SEXP_utils.c */
 	CALLMETHOD_DEF(address_asSTRSXP, 1),
 	CALLMETHOD_DEF(listofvectors_lengths, 1),
-	CALLMETHOD_DEF(safe_strexplode, 1),
 	CALLMETHOD_DEF(Integer_diff_with_0, 1),
 	CALLMETHOD_DEF(Integer_sorted_merge, 2),
 	CALLMETHOD_DEF(findIntervalAndStartFromWidth, 2),
+
+/* strutils.c */
+	CALLMETHOD_DEF(safe_strexplode, 1),
+	CALLMETHOD_DEF(strsplit_asIntList, 2),
 
 /* Sequence_class.c */
 	CALLMETHOD_DEF(vector_seqselect, 3),

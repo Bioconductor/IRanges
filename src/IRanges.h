@@ -358,8 +358,6 @@ SEXP address_asSTRSXP(SEXP s);
 
 SEXP listofvectors_lengths(SEXP x);
 
-SEXP safe_strexplode(SEXP s);
-
 SEXP Integer_diff_with_0(SEXP x);
 
 SEXP Integer_sorted_merge(
@@ -371,6 +369,13 @@ SEXP findIntervalAndStartFromWidth(
 	SEXP x,
 	SEXP vec
 );
+
+
+/* strutils.c */
+
+SEXP safe_strexplode(SEXP s);
+
+SEXP strsplit_asIntList(SEXP x, SEXP split);
 
 
 /* Sequence_class.c */

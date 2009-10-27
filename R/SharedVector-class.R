@@ -291,17 +291,3 @@ setMethod("!=", signature(e1="SharedVector", e2="SharedVector"),
     function(e1, e2) address(e1@xp) != address(e2@xp)
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Miscellaneous stuff (not SharedVector related, but I didn't find a better
-### place for now).
-###
-
-### Safe alternative to 'strsplit(x, NULL, fixed=TRUE)[[1]]'.
-safeExplode <- function(x)
-{
-    if (!isSingleString(x))
-        stop("'x' must be a single string")
-    .Call("safe_strexplode", x, PACKAGE="IRanges")
-}
-

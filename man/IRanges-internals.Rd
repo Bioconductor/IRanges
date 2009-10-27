@@ -3,7 +3,6 @@
 
 \alias{setValidity2}
 \alias{new2}
-\alias{safeExplode}
 
 % Some low-level helper functions and classes (from R/utils.R):
 \alias{isTRUEorFALSE}
@@ -22,6 +21,10 @@
 \alias{characterORNULL}
 
 \alias{coerce,ANY,vector-method}
+
+% R/strutils.R
+\alias{safeExplode}
+\alias{strsplitAsListOfIntegerVectors}
 
 % SharedVector and SharedVector_Pool classes, functions and methods:
 \alias{class:SharedVector}

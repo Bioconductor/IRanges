@@ -51,6 +51,7 @@ export(
     normargShift,
     normargWeight,
     safeExplode,
+    strsplitAsListOfIntegerVectors,
     solveUserSEW0, IRanges, solveUserSEW,
     successiveIRanges,
     whichAsIRanges,
