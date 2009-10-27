@@ -605,10 +605,6 @@ setReplaceMethod("seqselect", "Rle",
                          stop("some ranges are out of bounds")
                      valueWidths <- width(ir)
                      ir <- gaps(ir, start = 1, end = length(x))
-                     if ((length(ir) == 0) || (start(ir)[1] != 1))
-                         ir <- c(IRanges(start = 1, width = 0), ir)
-                     if (end(ir[length(ir)]) != length(x))
-                         ir <- c(ir, IRanges(start = length(x), width = 0))
 
                      k <- length(ir)
                      start <- start(ir)
@@ -618,6 +614,22 @@ setReplaceMethod("seqselect", "Rle",
                      offsetStart <- info[["start"]][["offset"]]
                      runEnd <- info[["end"]][["run"]]
                      offsetEnd <- info[["end"]][["offset"]]
+
+                     if ((length(ir) == 0) || (start(ir)[1] != 1)) {
+                         k <- k + 1L
+                         runStart <- c(1L, runStart)
+                         offsetStart <- c(0L, offsetStart)
+                         runEnd <- c(0L, runEnd)
+                         offsetEnd <- c(0L, offsetEnd)
+                     }
+                     if (end(ir[length(ir)]) != length(x)) {
+                         k <- k + 1L
+                         runStart <- c(runStart, 1L)
+                         offsetStart <- c(offsetStart, 0L)
+                         runEnd <- c(runEnd, 0L)
+                         offsetEnd <- c(offsetEnd, 0L)
+                     }
+
                      subseqs <- vector("list", length(valueWidths) + k)
                      if (k > 0) {
                          subseqs[seq(1, length(subseqs), by = 2)] <-

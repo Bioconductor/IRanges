@@ -254,8 +254,8 @@ atomicElementListClass <- function(x) {
 
 SimpleAtomicList <- function(listData) {
     classOrder <-
-      c("CharacterList", "ComplexList", "NumericList", "IntegerList",
-        "LogicalList", "RawList", "RleList")
+      c("RleList", "CharacterList", "ComplexList", "NumericList",
+        "IntegerList", "LogicalList", "RawList")
     uniqueClasses <-
       unique(unlist(lapply(listData, atomicElementListClass), use.names=FALSE))
     if (any(is.na(uniqueClasses)))
@@ -266,8 +266,8 @@ SimpleAtomicList <- function(listData) {
 
 CompressedAtomicList <- function(unlistData, partitioning) {
     classOrder <-
-      c("CharacterList", "ComplexList", "NumericList", "IntegerList", 
-        "LogicalList", "RawList", "RleList")
+      c("RleList", "CharacterList", "ComplexList", "NumericList",
+        "IntegerList", "LogicalList", "RawList")
     baseClass <- atomicElementListClass(unlistData)
     if (is.na(baseClass))
         stop("cannot create a CompressedAtomicList with non-atomic elements")
@@ -279,8 +279,8 @@ setReplaceMethod("seqselect", "SimpleAtomicList",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
                      classOrder <-
-                       c("CharacterList", "ComplexList", "NumericList",
-                         "IntegerList", "LogicalList", "RawList", "RleList")
+                       c("RleList", "CharacterList", "ComplexList",
+                         "NumericList", "IntegerList", "LogicalList", "RawList")
                      if (!is.null(value) && !is(value, "AtomicList")) {
                          if (is.list(value))
                              value <- SimpleAtomicList(value)
@@ -290,7 +290,7 @@ setReplaceMethod("seqselect", "SimpleAtomicList",
                      if (!is.null(value) && !is(value, class(x))) {
                          xClass <-
                            which(unlist(lapply(classOrder,
-                                               function(y) is(value, x))))
+                                               function(y) is(x, y))))
                          vClass <-
                            which(unlist(lapply(classOrder,
                                                function(y) is(value, y))))
@@ -311,13 +311,13 @@ setReplaceMethod("seqselect", "CompressedAtomicList",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
                      classOrder <-
-                       c("character" = "CharacterList",
+                       c("Rle" = "RleList",
+                         "character" = "CharacterList",
                          "complex" = "ComplexList",
                          "numeric" = "NumericList",
                          "integer" = "IntegerList",
                          "logical", "LogicalList",
-                         "raw" = "RawList",
-                         "Rle" = "RleList")
+                         "raw" = "RawList")
                      if (!is.null(value) && !is(value, "AtomicList")) {
                          if (!is.list(value))
                              value <- list(value)
@@ -326,13 +326,13 @@ setReplaceMethod("seqselect", "CompressedAtomicList",
                                                            use.names=FALSE)),
                                              names = names(value))
                          value <-
-                           CompressedAtomicList(unlist(value, use.names=FALSE),
+                           CompressedAtomicList(do.call(c, unname(value)),
                                                 partitioning)
                      }
                      if (!is.null(value) && !is(value, class(x))) {
                          xClass <-
                            which(unlist(lapply(classOrder,
-                                               function(y) is(value, x))))
+                                               function(y) is(x, y))))
                          vClass <-
                            which(unlist(lapply(classOrder,
                                                function(y) is(value, y))))
@@ -341,13 +341,13 @@ setReplaceMethod("seqselect", "CompressedAtomicList",
                                new2(class(x),
                                     unlistData =
                                     as(value@unlistData, names(classOrder)[xClass]),
-                                    partitioning = partitioning, check = FALSE)
+                                    partitioning = value@partitioning, check = FALSE)
                          } else {
                              x <-
                                new2(class(value),
                                     unlistData =
                                     as(x@unlistData, names(classOrder)[vClass]),
-                                       partitioning = partitioning, check = FALSE)
+                                       partitioning = x@partitioning, check = FALSE)
                          }
                      }
                      callNextMethod()
