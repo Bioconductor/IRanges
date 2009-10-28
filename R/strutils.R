@@ -7,12 +7,12 @@ safeExplode <- function(x)
 }
 
 
-strsplitAsListOfIntegerVectors <- function(x, split)
+strsplitAsListOfIntegerVectors <- function(x, sep=",")
 {
     if (!is.character(x))
         stop("'x' must be a character vector")
-    if (!isSingleString(split))
-        stop("'split' must be a single string")
-    .Call("strsplit_asIntList", x, split, PACKAGE="IRanges")
+    if (!isSingleString(sep) || nchar(sep) != 1L)
+        stop("'sep' must be a string containing just one single-byte character")
+    .Call("strsplit_asIntList", x, sep, PACKAGE="IRanges")
 }
 
