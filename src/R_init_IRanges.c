@@ -22,7 +22,7 @@ static const R_CallMethodDef callMethods[] = {
 
 /* strutils.c */
 	CALLMETHOD_DEF(safe_strexplode, 1),
-	CALLMETHOD_DEF(strsplit_asIntList, 2),
+	CALLMETHOD_DEF(strsplit_as_list_of_ints, 2),
 
 /* Sequence_class.c */
 	CALLMETHOD_DEF(vector_seqselect, 3),

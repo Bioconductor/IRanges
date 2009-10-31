@@ -13,6 +13,6 @@ strsplitAsListOfIntegerVectors <- function(x, sep=",")
         stop("'x' must be a character vector")
     if (!isSingleString(sep) || nchar(sep) != 1L)
         stop("'sep' must be a string containing just one single-byte character")
-    .Call("strsplit_asIntList", x, sep, PACKAGE="IRanges")
+    .Call("strsplit_as_list_of_ints", x, sep, PACKAGE="IRanges")
 }
 

@@ -39,7 +39,7 @@ SEXP safe_strexplode(SEXP s)
 
 
 /****************************************************************************
- * strsplit_asIntList()
+ * strsplit_as_list_of_ints()
  *
  * Similar to
  *   tmp <- strsplit(x, sep, fixed=TRUE)
@@ -53,24 +53,30 @@ SEXP safe_strexplode(SEXP s)
  *     we don't (raise an error);
  *   - as.integer() will coerce non-integer values (e.g. 10.3) to an int
  *     by truncating them, we don't (raise an error).
- * When it fails, strsplit_asIntList() will print a detailed parse error
- * message.
+ * When it fails, strsplit_as_list_of_ints() will print a detailed parse
+ * error message.
+ * It's also faster (between 2x and 3x faster) and uses much less memory
+ * (< 1 Mb versus > 60 Mb) on the character vector 'biginput' obtained with:
+ *   library(GenomicFeatures.Hsapiens.UCSC.hg18)
+ *   genes <- geneHuman()
+ *   biginput <- c(genes$exonStarts, genes$exonEnds)  # 133606 elements
  */
+
+static IntAE int_ae_buf;
 
 static char errmsg_buf[200];
 
-static SEXP parse_string_as_integer_vector(SEXP s, const char *format_buf)
+static SEXP explode_string_as_integer_vector(SEXP s, const char *format_buf)
 {
 	const char *str;
-	int ans_length, offset, n, ret, j;
+	int offset, n, ret;
 	long int val;
-	SEXP ans;
 
 	str = CHAR(s);
-	ans_length = offset = 0;
+	int_ae_buf.nelt = offset = 0;
 	while (1) {
 		n = 0;
-		ret = sscanf(str + offset, "%*d%n", &n);
+		ret = sscanf(str + offset, "%ld%n", &val, &n);
 		if (ret == EOF)
 			break;
 		if (n == 0) {
@@ -81,7 +87,14 @@ static SEXP parse_string_as_integer_vector(SEXP s, const char *format_buf)
 		}
 		offset += n;
 		while (isblank(str[offset])) offset++;
-		ans_length++;
+		if (val < INT_MIN || val > INT_MAX) {
+			UNPROTECT(1);
+			snprintf(errmsg_buf, sizeof(errmsg_buf),
+				 "out of range integer at char %d",
+				 offset + 1);
+			return R_NilValue;
+		}
+		_IntAE_insert_at(&int_ae_buf, int_ae_buf.nelt, (int) val);
 		n = 0;
 		ret = sscanf(str + offset, format_buf, &n);
 		if (ret == EOF)
@@ -94,29 +107,11 @@ static SEXP parse_string_as_integer_vector(SEXP s, const char *format_buf)
 		}
 		offset += n;
 	}
-	PROTECT(ans = NEW_INTEGER(ans_length));
-	offset = 0;
-	for (j = 0; j < ans_length; j++) {
-		ret = sscanf(str + offset, "%ld%n", &val, &n);
-		offset += n;
-		while (isblank(str[offset])) offset++;
-		if (val < INT_MIN || val > INT_MAX) {
-			UNPROTECT(1);
-			snprintf(errmsg_buf, sizeof(errmsg_buf),
-				 "out of range integer at char %d",
-				 offset + 1);
-			return R_NilValue;
-		}
-		INTEGER(ans)[j] = (int) val;
-		ret = sscanf(str + offset, format_buf, &n);
-		offset += n;
-	}
-	UNPROTECT(1);
-	return ans;
+	return _IntAE_asINTEGER(&int_ae_buf);
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP strsplit_asIntList(SEXP x, SEXP sep)
+SEXP strsplit_as_list_of_ints(SEXP x, SEXP sep)
 {
 	SEXP ans, x_elt, ans_elt;
 	int ans_length, i;
@@ -131,6 +126,7 @@ SEXP strsplit_asIntList(SEXP x, SEXP sep)
 		sprintf(format_buf, "%c%s", sep0, "%n");
 	else
 		sprintf(format_buf, "%s%s", "%%", "%n");
+	int_ae_buf = _new_IntAE(0, 0, 0);
 	PROTECT(ans = NEW_LIST(ans_length));
 	for (i = 0; i < ans_length; i++) {
 		x_elt = STRING_ELT(x, i);
@@ -138,7 +134,7 @@ SEXP strsplit_asIntList(SEXP x, SEXP sep)
 			UNPROTECT(1);
 			error("'x' contains NAs");
 		}
-		ans_elt = parse_string_as_integer_vector(x_elt, format_buf);
+		ans_elt = explode_string_as_integer_vector(x_elt, format_buf);
 		if (ans_elt == R_NilValue) {
 			UNPROTECT(1);
 			error("in list element %d: %s", i + 1, errmsg_buf);

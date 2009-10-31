@@ -375,7 +375,7 @@ SEXP findIntervalAndStartFromWidth(
 
 SEXP safe_strexplode(SEXP s);
 
-SEXP strsplit_asIntList(SEXP x, SEXP sep);
+SEXP strsplit_as_list_of_ints(SEXP x, SEXP sep);
 
 
 /* Sequence_class.c */
