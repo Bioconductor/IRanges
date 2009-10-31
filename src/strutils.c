@@ -55,8 +55,8 @@ SEXP safe_strexplode(SEXP s)
  *     by truncating them, we don't (raise an error).
  * When it fails, strsplit_as_list_of_ints() will print a detailed parse
  * error message.
- * It's also faster and uses much less memory. E.g. it's 6x faster and uses
- * < 1 Mb versus > 60 Mb on the character vector 'biginput' obtained with:
+ * It's also faster and uses much less memory. E.g. it's 8x faster and uses
+ * < 1 Mb versus > 60 Mb on the character vector 'biginput' created with:
  *   library(GenomicFeatures.Hsapiens.UCSC.hg18)
  *   genes <- geneHuman()
  *   biginput <- c(genes$exonStarts, genes$exonEnds)  # 133606 elements
@@ -66,7 +66,7 @@ static IntAE int_ae_buf;
 
 static char errmsg_buf[200];
 
-static SEXP explode_string_as_integer_vector(SEXP s, const char *format_buf)
+static SEXP explode_string_as_integer_vector(SEXP s, char sep0)
 {
 	const char *str;
 	int offset, n, ret;
@@ -74,12 +74,9 @@ static SEXP explode_string_as_integer_vector(SEXP s, const char *format_buf)
 
 	str = CHAR(s);
 	int_ae_buf.nelt = offset = 0;
-	while (1) {
-		n = 0;
+	while (str[offset]) {
 		ret = sscanf(str + offset, "%ld%n", &val, &n);
-		if (ret == EOF)
-			break;
-		if (n == 0) {
+		if (ret != 1) {
 			snprintf(errmsg_buf, sizeof(errmsg_buf),
 				 "decimal integer expected at char %d",
 				 offset + 1);
@@ -95,17 +92,15 @@ static SEXP explode_string_as_integer_vector(SEXP s, const char *format_buf)
 			return R_NilValue;
 		}
 		_IntAE_insert_at(&int_ae_buf, int_ae_buf.nelt, (int) val);
-		n = 0;
-		ret = sscanf(str + offset, format_buf, &n);
-		if (ret == EOF)
+		if (str[offset] == '\0')
 			break;
-		if (n == 0) {
+		if (str[offset] != sep0) {
 			snprintf(errmsg_buf, sizeof(errmsg_buf),
 				 "separator expected at char %d",
 				 offset + 1);
 			return R_NilValue;
 		}
-		offset += n;
+		offset++;
 	}
 	return _IntAE_asINTEGER(&int_ae_buf);
 }
@@ -116,16 +111,11 @@ SEXP strsplit_as_list_of_ints(SEXP x, SEXP sep)
 	SEXP ans, x_elt, ans_elt;
 	int ans_length, i;
 	char sep0;
-	static char format_buf[5];
 
 	ans_length = LENGTH(x);
 	sep0 = CHAR(STRING_ELT(sep, 0))[0];
-	if (isdigit(sep0))
-		error("'sep' cannot be a digit");
-	if (sep0 != '%')
-		sprintf(format_buf, "%c%s", sep0, "%n");
-	else
-		sprintf(format_buf, "%s%s", "%%", "%n");
+	if (isdigit(sep0) || sep0 == '+' || sep0 == '-')
+		error("'sep' cannot be a digit, \"+\" or \"-\"");
 	int_ae_buf = _new_IntAE(0, 0, 0);
 	PROTECT(ans = NEW_LIST(ans_length));
 	for (i = 0; i < ans_length; i++) {
@@ -134,7 +124,7 @@ SEXP strsplit_as_list_of_ints(SEXP x, SEXP sep)
 			UNPROTECT(1);
 			error("'x' contains NAs");
 		}
-		ans_elt = explode_string_as_integer_vector(x_elt, format_buf);
+		ans_elt = explode_string_as_integer_vector(x_elt, sep0);
 		if (ans_elt == R_NilValue) {
 			UNPROTECT(1);
 			error("in list element %d: %s", i + 1, errmsg_buf);
