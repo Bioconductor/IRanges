@@ -55,8 +55,8 @@ SEXP safe_strexplode(SEXP s)
  *     by truncating them, we don't (raise an error).
  * When it fails, strsplit_as_list_of_ints() will print a detailed parse
  * error message.
- * It's also faster (between 2x and 3x faster) and uses much less memory
- * (< 1 Mb versus > 60 Mb) on the character vector 'biginput' obtained with:
+ * It's also faster and uses much less memory. E.g. it's 6x faster and uses
+ * < 1 Mb versus > 60 Mb on the character vector 'biginput' obtained with:
  *   library(GenomicFeatures.Hsapiens.UCSC.hg18)
  *   genes <- geneHuman()
  *   biginput <- c(genes$exonStarts, genes$exonEnds)  # 133606 elements

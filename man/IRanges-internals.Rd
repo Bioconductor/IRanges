@@ -22,10 +22,6 @@
 
 \alias{coerce,ANY,vector-method}
 
-% R/strutils.R
-\alias{safeExplode}
-\alias{strsplitAsListOfIntegerVectors}
-
 % SharedVector and SharedVector_Pool classes, functions and methods:
 \alias{class:SharedVector}
 \alias{SharedVector-class}
