@@ -740,14 +740,14 @@
       Returns an upper case version of \code{x}.
     }
     \item{}{
-      \code{sub(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
+      \code{sub(pattern, replacement, x, ignore.case = FALSE,
                 perl = FALSE, fixed = FALSE, useBytes = FALSE)}:
       Returns a character Rle with replacements based on matches determined by
       regular expression matching. See \code{\link{sub}} for a description of the
       arguments.
     }
     \item{}{
-      \code{gsub(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
+      \code{gsub(pattern, replacement, x, ignore.case = FALSE,
                  perl = FALSE, fixed = FALSE, useBytes = FALSE)}:
       Returns a character Rle with replacements based on matches determined by
       regular expression matching. See \code{\link{gsub}} for a description of the

@@ -1161,19 +1161,19 @@ setMethod("toupper", "Rle",
                   check = FALSE))
 
 setMethod("sub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle"),
-          function(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
+          function(pattern, replacement, x, ignore.case = FALSE,
                    perl = FALSE, fixed = FALSE, useBytes = FALSE)
               Rle(values = sub(pattern = pattern, replacement = replacement,
                                x = runValue(x), ignore.case = ignore.case,
-                               extended = extended, perl = perl, fixed = fixed,
+                               perl = perl, fixed = fixed,
                                useBytes = useBytes),
                   lengths = runLength(x), check = FALSE))
 setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle"),
-          function(pattern, replacement, x, ignore.case = FALSE, extended = TRUE,
+          function(pattern, replacement, x, ignore.case = FALSE,
                    perl = FALSE, fixed = FALSE, useBytes = FALSE)
               Rle(values = gsub(pattern = pattern, replacement = replacement,
                                 x = runValue(x), ignore.case = ignore.case,
-                                extended = extended, perl = perl, fixed = fixed,
+                                perl = perl, fixed = fixed,
                                 useBytes = useBytes),
                   lengths = runLength(x), check = FALSE))
 
