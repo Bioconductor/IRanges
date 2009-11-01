@@ -156,7 +156,7 @@ DataFrame <- function(..., row.names = NULL)
       element <- try(as(listData[[i]], "DataFrame"), silent = TRUE)
       if (inherits(element, "try-error"))
         stop("cannot coerce class \"", class(listData[[i]]),
-             "\" to an DataFrame")
+             "\" to a DataFrame")
       nrows[i] <- nrow(element)
       ncols[i] <- ncol(element)
       varlist[[i]] <- as.list(element, use.names = FALSE)

@@ -37,7 +37,7 @@
 }
 
 \section{Accessors}{
-  In the following code snippets, \code{x} is an \code{DataTable}.
+  In the following code snippets, \code{x} is a \code{DataTable}.
   \describe{
     \item{}{\code{dim(x)}:
       Get the length two integer vector indicating in the first and second
@@ -169,7 +169,7 @@
     }
     \item{}{
       \code{by(data, INDICES, FUN, ..., simplify = TRUE)}:
-      Apply \code{FUN} to each group of \code{data}, an \code{DataTable},
+      Apply \code{FUN} to each group of \code{data}, a \code{DataTable},
       formed by the factor (or list of factors) \code{INDICES}. Exactly 
       the same contract as \code{\link{as.data.frame}}.
     }

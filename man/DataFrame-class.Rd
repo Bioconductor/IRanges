@@ -97,9 +97,9 @@
 
 \section{Constructor}{
   \describe{\code{DataFrame(..., row.names = NULL)}:
-    Constructs an \code{DataFrame} in similar fashion to
+    Constructs a \code{DataFrame} in similar fashion to
     \code{\link{data.frame}}. Each argument in \code{...} is coerced to
-    an \code{DataFrame} and combined column-wise. No special effort is
+    a \code{DataFrame} and combined column-wise. No special effort is
     expended to automatically determine the row names from the
     arguments. The row names should be given in
     \code{row.names}; otherwise, there are no row names. This is by
@@ -148,11 +148,11 @@
       \code{length}. It is recommended to use the \code{DataFrame} 
       constructor, rather than this interface.
     }
-    \item{}{\code{as.list(x)}: Coerces \code{x}, an \code{DataFrame},
+    \item{}{\code{as.list(x)}: Coerces \code{x}, a \code{DataFrame},
       to a \code{list}.
     }
     \item{}{\code{as.data.frame(x, row.names=NULL, optional=FALSE)}:
-      Coerces \code{x}, an \code{DataFrame}, to a \code{data.frame}.
+      Coerces \code{x}, a \code{DataFrame}, to a \code{data.frame}.
       Each column is coerced to a \code{vector} and stored as a column in
       the \code{data.frame}. If \code{row.names} is \code{NULL}, they
       are retrieved from \code{x}, if it has any. Otherwise, they are
