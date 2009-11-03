@@ -90,15 +90,31 @@ LogicalList <- function(..., compress = TRUE)
         newSimpleList("SimpleLogicalList", listData)
 }
 
+.dotargsAsListOfIntegerVectors <- function(dotargs)
+{
+    if (length(dotargs) == 1) {
+        arg1 <- dotargs[[1]]
+        if (is(arg1, "IntegerList"))
+            return(as.list(arg1))
+        if (is.character(arg1))
+            return(strsplitAsListOfIntegerVectors(arg1))
+        if (is.list(arg1))
+            dotargs <- arg1
+    }
+    lapply(dotargs, function(x) structure(as.integer(x), names = names(x)))
+}
+
 IntegerList <- function(..., compress = TRUE)
 {
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
-    listData <- list(...)
-    if (length(listData) == 1 && is.list(listData[[1]]))
-        listData <- listData[[1]]
-    listData <-
-      lapply(listData, function(x) structure(as.integer(x), names = names(x)))
+    dotargs <- list(...)
+    if (length(dotargs) == 1 && is(dotargs[[1]], "IntegerList")) {
+        if (is(dotargs[[1]], "CompressedIntegerList") && compress
+         || is(dotargs[[1]], "SimpleIntegerList") && !compress)
+            return(dotargs[[1]])
+    }
+    listData <- .dotargsAsListOfIntegerVectors(dotargs)
     if (compress)
         newCompressedList("CompressedIntegerList", listData)
     else
