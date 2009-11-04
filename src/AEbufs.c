@@ -27,10 +27,11 @@ SEXP debug_AEbufs()
 	return R_NilValue;
 }
 
-static int get_new_buflength(int buflength)
+/* Guaranteed to return a new buflength > 'buflength', or to raise an error. */
+int _get_new_buflength(int buflength)
 {
 	if (buflength >= MAX_BUFLENGTH)
-		error("get_new_buflength(): MAX_BUFLENGTH reached");
+		error("_get_new_buflength(): MAX_BUFLENGTH reached");
 	if (buflength == 0)
 		return 256;
 	if (buflength <= 256 * 1024)
@@ -76,7 +77,7 @@ static void IntAE_extend(IntAE *int_ae)
 {
 	long new_buflength;
 
-	new_buflength = get_new_buflength(int_ae->buflength);
+	new_buflength = _get_new_buflength(int_ae->buflength);
 	int_ae->elts = Srealloc((char *) int_ae->elts, new_buflength,
 					(long) int_ae->buflength, int);
 	int_ae->buflength = new_buflength;
@@ -277,7 +278,7 @@ static void IntAEAE_extend(IntAEAE *int_aeae)
 {
 	long new_buflength;
 
-	new_buflength = get_new_buflength(int_aeae->buflength);
+	new_buflength = _get_new_buflength(int_aeae->buflength);
 	int_aeae->elts = Srealloc((char *) int_aeae->elts, new_buflength,
 					(long) int_aeae->buflength, IntAE);
 	int_aeae->buflength = new_buflength;
@@ -510,7 +511,7 @@ static void CharAE_extend(CharAE *char_ae)
 {
 	long new_buflength;
 
-	new_buflength = get_new_buflength(char_ae->buflength);
+	new_buflength = _get_new_buflength(char_ae->buflength);
 	char_ae->elts = Srealloc((char *) char_ae->elts, new_buflength,
 					(long) char_ae->buflength, char);
 	char_ae->buflength = new_buflength;
@@ -599,7 +600,7 @@ static void CharAEAE_extend(CharAEAE *char_aeae)
 {
 	long new_buflength;
 
-	new_buflength = get_new_buflength(char_aeae->buflength);
+	new_buflength = _get_new_buflength(char_aeae->buflength);
 #ifdef DEBUG_IRANGES
 	if (debug) {
 		Rprintf("[DEBUG] CharAEAE_extend(): BEGIN\n");

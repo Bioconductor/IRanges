@@ -165,6 +165,7 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_get_int_array_order);
 
 /* AEbufs.c */
+	REGISTER_CCALLABLE(_get_new_buflength);
 	REGISTER_CCALLABLE(_IntAE_set_val);
 	REGISTER_CCALLABLE(_new_IntAE);
 	REGISTER_CCALLABLE(_IntAE_insert_at);

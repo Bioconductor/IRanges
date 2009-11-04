@@ -46,6 +46,11 @@ DEFINE_NOVALUE_CCALLABLE_STUB(get_int_array_order,
  * Stubs for callables defined in AEbufs.c
  */
 
+DEFINE_CCALLABLE_STUB(int, get_new_buflength,
+	(int buflength),
+	(    buflength)
+)
+
 DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_set_val,
 	(const IntAE *int_ae, int val),
 	(             int_ae,     val)

@@ -34,6 +34,8 @@ void get_int_array_order(
  * (see AEbufs.c)
  */
 
+int get_new_buflength(int buflength);
+
 void IntAE_set_val(
 	const IntAE *int_ae,
 	int val

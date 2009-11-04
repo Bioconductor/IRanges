@@ -28,6 +28,8 @@ void _get_int_array_order(
 
 SEXP debug_AEbufs();
 
+int _get_new_buflength(int buflength);
+
 void _IntAE_set_val(
 	const IntAE *int_ae,
 	int val
