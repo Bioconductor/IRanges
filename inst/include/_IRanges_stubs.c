@@ -171,6 +171,21 @@ DEFINE_CCALLABLE_STUB(SEXP, RangeAE_asIRanges,
 	(               range_ae)
 )
 
+DEFINE_CCALLABLE_STUB(RangeAEAE, new_RangeAEAE,
+	(int buflength, int nelt),
+	(    buflength,     nelt)
+)
+
+DEFINE_NOVALUE_CCALLABLE_STUB(RangeAEAE_insert_at,
+	(RangeAEAE *range_aeae, int at, const RangeAE *range_ae),
+	(           range_aeae,     at,                range_ae)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, RangeAEAE_asLIST,
+	(const RangeAEAE *range_aeae),
+	(                 range_aeae)
+)
+
 DEFINE_CCALLABLE_STUB(CharAE, new_CharAE,
 	(int buflength),
 	(    buflength)

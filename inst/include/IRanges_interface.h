@@ -149,6 +149,19 @@ void RangeAE_insert_at(
 
 SEXP RangeAE_asIRanges(const RangeAE *range_ae);
 
+RangeAEAE new_RangeAEAE(
+	int buflength,
+	int nelt
+);
+
+void RangeAEAE_insert_at(
+	RangeAEAE *range_aeae,
+	int at,
+	const RangeAE *range_ae
+);
+
+SEXP RangeAEAE_asLIST(const RangeAEAE *range_aeae);
+
 CharAE new_CharAE(int buflength);
 
 CharAE new_CharAE_from_string(const char *string);

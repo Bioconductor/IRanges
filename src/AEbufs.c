@@ -349,7 +349,7 @@ SEXP _IntAEAE_asLIST(const IntAEAE *int_aeae, int mode)
 {
 	SEXP ans, ans_elt;
 	int i;
-	IntAE *elt;
+	const IntAE *elt;
 
 	PROTECT(ans = NEW_LIST(int_aeae->nelt));
 	for (i = 0, elt = int_aeae->elts; i < int_aeae->nelt; i++, elt++) {
@@ -474,6 +474,72 @@ SEXP _RangeAE_asIRanges(const RangeAE *range_ae)
   ans = _new_IRanges("IRanges", start, width, R_NilValue);
   UNPROTECT(2);
   return ans;
+}
+
+
+/****************************************************************************
+ * RangeAEAE functions
+ */
+
+RangeAEAE _new_RangeAEAE(int buflength, int nelt)
+{
+	RangeAEAE range_aeae;
+	RangeAE *elt;
+
+	/* No memory leak here, because we use transient storage allocation */
+	if (buflength == 0)
+		range_aeae.elts = NULL;
+	else
+		range_aeae.elts = Salloc((long) buflength, RangeAE);
+	range_aeae.buflength = buflength;
+	for (range_aeae.nelt = 0, elt = range_aeae.elts;
+	     range_aeae.nelt < nelt;
+	     range_aeae.nelt++, elt++)
+		*elt = _new_RangeAE(0, 0);
+	return range_aeae;
+}
+
+static void RangeAEAE_extend(RangeAEAE *range_aeae)
+{
+	long new_buflength;
+
+	new_buflength = _get_new_buflength(range_aeae->buflength);
+	range_aeae->elts = Srealloc((char *) range_aeae->elts, new_buflength,
+					(long) range_aeae->buflength, RangeAE);
+	range_aeae->buflength = new_buflength;
+	return;
+}
+
+void _RangeAEAE_insert_at(RangeAEAE *range_aeae, int at,
+		const RangeAE *range_ae)
+{
+	RangeAE *elt1, *elt2;
+	int i1;
+
+	if (range_aeae->nelt >= range_aeae->buflength)
+		RangeAEAE_extend(range_aeae);
+	elt2 = range_aeae->elts + range_aeae->nelt;
+	elt1 = elt2 - 1;
+	for (i1 = range_aeae->nelt++; i1 > at; i1--)
+		*(elt2--) = *(elt1--);
+	*elt2 = *range_ae;
+	return;
+}
+
+SEXP _RangeAEAE_asLIST(const RangeAEAE *range_aeae)
+{
+	SEXP ans, ans_elt;
+	int i;
+	const RangeAE *elt;
+
+	PROTECT(ans = NEW_LIST(range_aeae->nelt));
+	for (i = 0, elt = range_aeae->elts; i < range_aeae->nelt; i++, elt++) {
+		PROTECT(ans_elt = _RangeAE_asIRanges(elt));
+		SET_VECTOR_ELT(ans, i, ans_elt);
+		UNPROTECT(1);
+	}
+	UNPROTECT(1);
+	return ans;
 }
 
 
