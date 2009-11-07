@@ -468,6 +468,28 @@ setMethod("Ops",
               callGeneric(e1, e2)
           })
 
+setMethod("Ops",
+          signature(e1 = "CompressedAtomicList", e2 = "atomic"),
+          function(e1, e2)
+          {
+              if (length(e2) == 1)
+                  CompressedAtomicList(callGeneric(e1@unlistData, e2),
+                                       partitioning = e1@partitioning)
+              else
+                  callNextMethod()
+          })
+
+setMethod("Ops",
+          signature(e1 = "atomic", e2 = "CompressedAtomicList"),
+          function(e1, e2)
+          {
+              if (length(e1) == 1)
+                  CompressedAtomicList(callGeneric(e1, e2@unlistData),
+                                       partitioning = e2@partitioning)
+              else
+                  callNextMethod()
+          })
+
 setMethod("!", "SimpleLogicalList",
           function(x) {
               x@listData <- lapply(x@listData, "!")

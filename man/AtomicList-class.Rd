@@ -85,6 +85,8 @@
 \alias{Ops,CompressedAtomicList,SimpleAtomicList-method}
 \alias{Ops,AtomicList,atomic-method}
 \alias{Ops,atomic,AtomicList-method}
+\alias{Ops,CompressedAtomicList,atomic-method}
+\alias{Ops,atomic,CompressedAtomicList-method}
 \alias{!,SimpleLogicalList-method}
 \alias{!,CompressedLogicalList-method}
 \alias{Math,CompressedAtomicList-method}
