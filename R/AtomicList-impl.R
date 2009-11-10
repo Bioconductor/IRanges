@@ -610,6 +610,6 @@ setMethod("showAsCell", "AtomicList",
                                 if (length(x) <= 3)
                                     paste(x, collapse = ",")
                                 else
-                                    paste(c(head(x, 3), "..."),
+                                    paste(c(as.vector(head(x, 3)), "..."),
                                           collapse = ",")), use.names = FALSE)
           })
