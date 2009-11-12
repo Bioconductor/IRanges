@@ -23,9 +23,9 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
     if (length(width) == 0)
         return(IRanges())
     if (!is.integer(width))
-        width <- as.integer(width)
-    else
-        width <- unname(width)
+        width <- as.integer(width)  # this drops the names
+    else if (!is.null(names(width)))
+        names(width) <- NULL  # unname() is broken on vector of length 0
     if (any(is.na(width)))
         stop("'width' cannot contain NAs")
     if (min(width) < 0L)
