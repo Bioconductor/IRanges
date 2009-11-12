@@ -94,47 +94,51 @@ setMethod("min", "NormalIRanges",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
-### Both 'start' and 'width' must be integer vectors of equal length
-### (eventually 0) with no NAs and such that all(width >= 0) is TRUE.
-### 'names' must be NULL or a character vector of the same length as 'start'
-### (or 'width').
+### Both 'start(x)' and 'width(x)' must be unnamed integer vectors of equal
+### length (eventually 0) with no NAs and such that 'all(width >= 0)' is TRUE.
+### 'names(x)' must be NULL or an unnamed character vector of the same length
+### as 'start(x)' (or 'width(x)').
 ###
-### We use 'min(width(x)) < 0L' in .valid.IRanges.width().
-### Note that the 'min(x) <= y' construct is faster and more memory efficent
-### than 'any(x <= y)', especially when 'x' is a big vector (the speedup is
-### around 10x or more when length(x) >= 100000).
+### Note that we use 'min(width(x)) < 0L' in .valid.IRanges.width() because
+### the 'min(x) < val' test is generally faster and more memory efficent than
+### the 'any(x < val)' test, especially when 'x' is a big vector (the speedup
+### is around 10x or more when 'length(x)' is >= 100000). The 2 tests are
+### equivalent when 'length(x)' != 0 and 'length(val)' == 1.
 ###
 
 ### IRanges objects
 
 .valid.IRanges.start <- function(x)
 {
-    if (!is.integer(start(x)) || any(is.na(start(x))))
-        return("the starts must be non-NA integers")
-    if (length(start(x)) != length(width(x)))
-        return("number of starts and number of widths differ")
+    x_start <- start(x)
+    if (!is.integer(x_start) || !is.null(names(x_start)) || any(is.na(x_start)))
+        return("'start(x)' must be an unnamed integer vector with no NAs")
+    if (length(x_start) != length(width(x)))
+        return("'start(x)' and 'width(x)' must have the same length")
     NULL
 }
 
 .valid.IRanges.width <- function(x)
 {
-    if (!is.integer(width(x)) || any(is.na(width(x))))
-        return("the widths must be non-NA integers")
-    if (length(start(x)) != length(width(x)))
-        return("number of starts and number of widths differ")
-    if (length(width(x)) != 0L && min(width(x)) < 0L)
-        return("negative widths are not allowed")
+    x_width <- width(x)
+    if (!is.integer(x_width) || !is.null(names(x_width)) || any(is.na(x_width)))
+        return("'width(x)' must be an unnamed integer vector with no NAs")
+    if (length(start(x)) != length(x_width))
+        return("'start(x)' and 'width(x)' must have the same length")
+    if (length(x_width) != 0L && min(x_width) < 0L)
+        return("'widths(x)' cannot contain negative values")
     NULL
 }
 
 .valid.IRanges.names <- function(x)
 {
-    if (is.null(names(x)))
+    x_names <- names(x)
+    if (is.null(x_names))
         return(NULL)
-    if (!is.character(names(x)))
-        return("the names must be a character vector or NULL")
-    if (length(names(x)) != length(x))
-        return("number of names and number of elements differ")
+    if (!is.character(x_names) || !is.null(names(x_names)))
+        return("'names(x)' must be NULL or an unnamed character vector")
+    if (length(x_names) != length(x))
+        return("'names(x)' and 'x' must have the same length")
     NULL
 }
 

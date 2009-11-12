@@ -42,18 +42,19 @@
       This constructor is a generic function with dispatch on argument
       \code{subject}. Specific methods must be defined for the subclasses
       of the Views class. For example a method for
-      \link[Biostrings:XString-class]{XString} subjects is defined that
-      returns an \link[Biostrings:XStringViews-class]{XStringViews}
+      \link[Biostrings:XString-class]{XString} subjects is defined
+      in the Biostrings package that returns an
+      \link[Biostrings:XStringViews-class]{XStringViews}
       object. There is no default method.
 
       The treatment of the \code{start}, \code{end} and \code{width}
       arguments is the same as with the \code{\link{IRanges}} constructor,
-      except that, in addition, \code{Views} allows \code{start} to be an
-      \link{IRanges} object. This ensures that
-      \code{Views(subject, IRanges(mystarts, myends, mywidths, mynames))}
-      and \code{Views(subject, mystarts, myends, mywidths, mynames)}
-      are equivalent (except when \code{mystarts} is itself an
-      \link{IRanges} object).
+      except that, in addition, \code{Views} allows \code{start} to be a
+      \link{Ranges} object. With this feature,
+      \code{Views(subject, IRanges(my_starts, my_ends, my_widths, my_names))}
+      and \code{Views(subject, my_starts, my_ends, my_widths, my_names)}
+      are equivalent (except when \code{my_starts} is itself a
+      \link{Ranges} object).
     }
   }
 }

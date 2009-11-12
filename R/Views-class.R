@@ -45,21 +45,27 @@ setValidity2("Views", .valid.Views.width)
 ###         some views are "out of limits".
 ###
 
-newViews <- function(subject, start=NULL, end=NULL, width=NULL, names=NULL, Class=NULL)
+newViews <- function(subject, start=NULL, end=NULL, width=NULL, names=NULL,
+                     Class=NULL)
 {
-    if (is(start, "IRanges")) {
+    if (is(start, "Ranges")) {
         if (!is.null(end) || !is.null(width))
-            stop("'end' and 'width' must be NULLs when 'start' is an IRanges object")
-        ir <- start
-        ## Keep names in 'ir' unless 'names' is specified.
+            stop("'end' and 'width' must be NULLs when 'start' is a Ranges object")
+        ranges <- start
+        ## Keep the names that are already in 'ranges' unless the 'names' arg
+        ## was specified.
         if (!is.null(names))
-            names(ir) <- names
+            names(ranges) <- names
     } else {
-        ir <- IRanges(start=start, end=end, width=width, names=names)
+        ranges <- IRanges(start=start, end=end, width=width, names=names)
     }
     if (is.null(Class))
         Class <- paste(class(subject), "Views", sep="")
-    new2(Class, subject=subject, start=start(ir), width=width(ir), NAMES=names(ir), check=FALSE)
+    new2(Class, subject=subject,
+                start=start(ranges),
+                width=width(ranges),
+                NAMES=names(ranges),
+                check=FALSE)
 }
 
 
@@ -180,8 +186,8 @@ setMethod("gaps", "Views",
 
 successiveViews <- function(subject, width, gapwidth=0, from=1)
 {
-    views <- successiveIRanges(width, gapwidth=gapwidth, from=from)
-    Views(subject, start=start(views), end=end(views))
+    ranges <- successiveIRanges(width, gapwidth=gapwidth, from=from)
+    Views(subject, ranges)
 }
 
 

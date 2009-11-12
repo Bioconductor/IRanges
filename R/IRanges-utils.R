@@ -3,6 +3,7 @@
 ### -------------------------------------------------------------------------
 ###
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "successiveIRanges" function.
 ###
@@ -23,6 +24,8 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
         return(IRanges())
     if (!is.integer(width))
         width <- as.integer(width)
+    else
+        width <- unname(width)
     if (any(is.na(width)))
         stop("'width' cannot contain NAs")
     if (min(width) < 0L)
@@ -47,6 +50,7 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
     ans_start <- from + c(0L, ans_start)
     new2("IRanges", start=ans_start, width=width, check=FALSE)
 }
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "centeredIRanges" function.
