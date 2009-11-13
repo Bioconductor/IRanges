@@ -762,6 +762,9 @@ function(x, by, FUN, start = NULL, end = NULL, width = NULL,
 {
     FUN <- match.fun(FUN)
     if (!missing(by)) {
+        if (is.list(by)) {
+            return(callGeneric(x = as.data.frame(x), by = by, FUN = FUN, ...))
+        }
         start <- start(by)
         end <- end(by)
     } else {
