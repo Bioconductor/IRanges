@@ -144,9 +144,12 @@ setValidity2("CompressedList", .valid.CompressedList)
 function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
          ...) {
     k <- length(INDEX)
-    whichNonZeroLength <- which(elementLengths(X)[INDEX] > 0)
+    nonZeroLength <- elementLengths(X)[INDEX] > 0L
+    whichNonZeroLength <- which(nonZeroLength)
     kOK <- length(whichNonZeroLength)
-    if (length(dim(X@unlistData)) < 2) {
+    if ((k > 0) && all(nonZeroLength)) {
+        zeroLengthElt <- NULL
+    } else if (length(dim(X@unlistData)) < 2) {
         zeroLengthElt <- FUN(X@unlistData[integer(0)], ...)
     } else {
         zeroLengthElt <- FUN(X@unlistData[integer(0), , drop = FALSE], ...)
