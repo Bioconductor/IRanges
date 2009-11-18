@@ -441,10 +441,10 @@ setMethod("intersect", c("RangesList", "RangesList"),
           })
 
 setMethod("setdiff", c("RangesList", "RangesList"),
-        function(x, y)
-        {
-          mendoapply(setdiff, x, y)
-        })
+          function(x, y)
+          {
+            mendoapply(setdiff, x, y)
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Arithmetic Operations
