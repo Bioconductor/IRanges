@@ -423,6 +423,28 @@ setMethod("match", c("RangesList", "RangesList"),
               ans[is.na(ans)] <- as.integer(nomatch)
             ans
           })
+  
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Set Operations
+###
+
+setMethod("union", c("RangesList", "RangesList"),
+          function(x, y)
+          {
+            mendoapply(union, x, y)
+          })
+
+setMethod("intersect", c("RangesList", "RangesList"),
+          function(x, y)
+          {
+            mendoapply(intersect, x, y)
+          })
+
+setMethod("setdiff", c("RangesList", "RangesList"),
+        function(x, y)
+        {
+          mendoapply(setdiff, x, y)
+        })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Arithmetic Operations

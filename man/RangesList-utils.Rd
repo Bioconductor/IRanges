@@ -16,6 +16,11 @@
 \alias{reduce,RangesList-method}
 \alias{range,RangesList-method}
 
+% set operations
+\alias{union,RangesList,RangesList-method}
+\alias{intersect,RangesList,RangesList-method}
+\alias{setdiff,RangesList,RangesList-method}
+
 \title{RangesList utility functions}
 
 \description{
@@ -33,10 +38,15 @@
 \S4method{disjoin}{RangesList}(x)
 \S4method{reduce}{RangesList}(x, with.inframe.attrib=FALSE)
 \S4method{range}{RangesList}(x, ..., na.rm = FALSE)
+
+# Set operations
+\S4method{union}{RangesList,RangesList}(x, y)
+\S4method{intersect}{RangesList,RangesList}(x, y)
+\S4method{setdiff}{RangesList,RangesList}(x, y)
 }
 
 \arguments{
-  \item{x}{A \code{RangesList}}
+  \item{x, y}{A \code{RangesList}}
   \item{start, end}{
     A single integer or \code{NA} for all functions except \code{narrow},
     \code{resize}, and \code{flank}.
@@ -121,6 +131,15 @@
   in \code{...}, they are merged into \code{x} by name, if all objects
   have names, otherwise, if they are all of the same length, by
   position. Else, an exception is thrown.
+
+  The \code{union} method performs elementwise \code{union} operations
+  for two \code{RangesList} objects.
+
+  The \code{intersect} method performs elementwise \code{intersect} operations
+  for two \code{RangesList} objects.
+
+  The \code{setdiff} method performs elementwise \code{setdiff} operations
+  for two \code{RangesList} objects.
 }
 
 \value{
@@ -165,6 +184,11 @@
   range(rl, rl2) # matched by names
   names(rl2) <- NULL
   range(rl, rl2) # now by position
+
+  # set operations
+  union(rl, rl2)
+  intersect(rl, rl2)
+  setdiff(rl, rl2)
 }
 
 \keyword{utilities}
