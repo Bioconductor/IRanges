@@ -1,8 +1,6 @@
 Immediate TODO list
 -------------------
 
-- Herve: Fix "copy" method for SharedVector_Pool objects.
-
 - Herve: Make the MaskCollection class a derivative of the SimpleIRangesList
   class.
 

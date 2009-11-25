@@ -214,8 +214,9 @@ SharedVector.memcpy <- function(dest, dest.start, src, src.start, width)
         src.start <- as.integer(src.start)
     if (!is.integer(width))
         width <- as.integer(width)
-    .Call("SharedVector_memcpy",
-          dest, dest.start, src, src.start, width, PACKAGE="IRanges")
+    .Call("SharedVector_mcopy",
+          dest, dest.start - 1L, src, src.start, width, NULL, 0L,
+          PACKAGE="IRanges")
 }
 
 ### 'lkup' must be NULL or a vector of integers

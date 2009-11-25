@@ -28,6 +28,9 @@
 \alias{[,XVectorList-method}
 \alias{seqselect,XVectorList-method}
 \alias{window,XVectorList-method}
+\alias{narrow,XVectorList-method}
+\alias{subseq,XVectorList-method}
+\alias{threebands,XVectorList-method}
 \alias{c,XVectorList-method}
 
 

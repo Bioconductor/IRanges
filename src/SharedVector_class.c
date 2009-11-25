@@ -171,21 +171,6 @@ SEXP SharedVector_memcmp(SEXP x1, SEXP start1, SEXP x2, SEXP start2, SEXP width)
 	return ans;
 }
 
-SEXP SharedVector_memcpy(SEXP out, SEXP out_start, SEXP in, SEXP in_start,
-		SEXP width)
-{
-	SEXP out_tag, in_tag;
-	int out_offset, in_offset, nelt;
-
-	out_tag = _get_SharedVector_tag(out);
-	out_offset = INTEGER(out_start)[0] - 1;
-	in_tag = _get_SharedVector_tag(in);
-	in_offset = INTEGER(in_start)[0] - 1;
-	nelt = INTEGER(width)[0];
-	_vector_memcpy(out_tag, out_offset, in_tag, in_offset, nelt);
-	return out;
-}
-
 SEXP SharedVector_Ocopy_from_start(SEXP out, SEXP in, SEXP in_start, SEXP width,
 		SEXP lkup, SEXP reverse)
 {
@@ -212,6 +197,23 @@ SEXP SharedVector_Ocopy_from_subscript(SEXP out, SEXP in, SEXP subscript,
 	_vector_Ocopy_from_subscript(out_tag, in_tag, subscript, lkup);
 	return out;
 }
+
+SEXP SharedVector_mcopy(SEXP out, SEXP out_offset,
+		SEXP in, SEXP in_start, SEXP in_width,
+		SEXP lkup, SEXP reverse)
+{
+	SEXP out_tag, in_tag;
+	int out_offset0, reverse0;
+
+	out_tag = _get_SharedVector_tag(out);
+	out_offset0 = INTEGER(out_offset)[0];
+	in_tag = _get_SharedVector_tag(in);
+	reverse0 = INTEGER(reverse)[0];
+	_vector_mcopy(out_tag, out_offset0, in_tag, in_start, in_width,
+			lkup, reverse0);
+	return out;
+}
+
 
 
 /****************************************************************************

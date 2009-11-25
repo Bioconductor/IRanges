@@ -53,7 +53,7 @@ void _Ocopy_byteblocks_from_i1i2(int i1, int i2,
 		return;
 	if (i1 < 0 || i2 >= src_nblocks)
 		error("subscript out of bounds");
-	if (dest_nblocks == 0)
+	if (dest_nblocks <= 0)
 		error("no destination to copy to");
 	i2next = i2 + 1;
 	i1max = i2next - dest_nblocks;
@@ -91,7 +91,7 @@ void _Ocopy_byteblocks_from_subscript(const int *subscript, int n,
 	const char *b;
 	int i, k, sub_k, z;
 
-	if (dest_nblocks == 0 && n != 0)
+	if (n != 0 && dest_nblocks <= 0)
 		error("no destination to copy to");
 	a = dest;
 	for (i = k = 0; k < n; i++, k++) {
@@ -137,7 +137,7 @@ void _Ocopy_byteblocks_to_i1i2(int i1, int i2,
 		return;
 	if (i1 < 0 || i2 >= dest_nblocks)
 		error("subscript out of bounds");
-	if (src_nblocks == 0)
+	if (src_nblocks <= 0)
 		error("no value provided");
 	i2next = i2 + 1;
 	i1max = i2next - src_nblocks;
@@ -175,7 +175,7 @@ void _Ocopy_byteblocks_to_subscript(const int *subscript, int n,
 	const char *b;
 	int j, k, sub_k, z;
 
-	if (src_nblocks == 0 && n != 0)
+	if (n != 0 && src_nblocks <= 0)
 		error("no value provided");
 	b = src;
 	for (j = k = 0; k < n; j++, k++) {
@@ -223,7 +223,7 @@ void _Ocopy_bytes_from_i1i2_with_lkup(int i1, int i2,
 		return;
 	if (i1 < 0 || i2 >= src_nbytes)
 		error("subscript out of bounds");
-	if (dest_nbytes == 0)
+	if (dest_nbytes <= 0)
 		error("no destination to copy to");
 	b = src + i1;
 	for (i = i1, j = 0; i <= i2; i++, j++) {
@@ -259,7 +259,7 @@ void _Ocopy_bytes_from_subscript_with_lkup(const int *subscript, int n,
 	char src_elt;
 	int j, k, sub_k;
 
-	if (dest_nbytes == 0 && n != 0)
+	if (n != 0 && dest_nbytes <= 0)
 		error("no destination to copy to");
 	for (k = j = 0; k < n; k++, j++) {
 		if (j >= dest_nbytes) { /* recycle */
@@ -304,7 +304,7 @@ void _Ocopy_bytes_to_i1i2_with_lkup(int i1, int i2,
 		return;
 	if (i1 < 0 || i2 >= dest_nbytes)
 		error("subscript out of bounds");
-	if (src_nbytes == 0)
+	if (src_nbytes <= 0)
 		error("no value provided");
 	a = dest + i1;
 	for (i = i1, j = 0; i <= i2; i++, j++) {
@@ -340,7 +340,7 @@ void _Ocopy_bytes_to_subscript_with_lkup(const int *subscript, int n,
 	char src_elt;
 	int j, k, sub_k;
 
-	if (src_nbytes == 0 && n != 0)
+	if (n != 0 && src_nbytes <= 0)
 		error("no value provided");
 	for (k = j = 0; k < n; k++, j++) {
 		if (j >= src_nbytes) { /* recycle */
@@ -385,7 +385,7 @@ void _Orevcopy_byteblocks_from_i1i2(int i1, int i2,
 		return;
 	if (i1 < 0 || i2 >= src_nblocks)
 		error("subscript out of bounds");
-	if (dest_nblocks == 0)
+	if (dest_nblocks <= 0)
 		error("no destination to copy to");
 	b = src + i1 * blocksize;
 	for (i = i1, j = dest_nblocks - 1; i <= i2; i++, j--) {
@@ -427,7 +427,7 @@ void _Orevcopy_bytes_from_i1i2_with_lkup(int i1, int i2,
 		return;
 	if (i1 < 0 || i2 >= src_nbytes)
 		error("subscript out of bounds");
-	if (dest_nbytes == 0)
+	if (dest_nbytes <= 0)
 		error("no destination to copy to");
 	b = src + i1;
 	for (i = i1, j = dest_nbytes - 1; i <= i2; i++, j--) {
@@ -469,7 +469,7 @@ void _Ocopy_bytes_from_i1i2_to_complex(int i1, int i2,
 		return;
 	if (i1 < 0 || i2 >= src_nbytes)
 		error("subscript out of bounds");
-	if (dest_nbytes == 0)
+	if (dest_nbytes <= 0)
 		error("no destination to copy to");
 	b = src + i1;
 	for (i = i1, j = 0; i <= i2; i++, j++) {

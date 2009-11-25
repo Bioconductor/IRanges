@@ -78,10 +78,12 @@
 \alias{show,SharedDouble-method}
 \alias{as.numeric,SharedDouble-method}
 
-% copy():
-\alias{copy}
-\alias{copy,SharedRaw-method}
-\alias{copy,SharedVector_Pool-method}
+% xvcopy():
+\alias{xvcopy}
+\alias{xvcopy,SharedRaw-method}
+\alias{xvcopy,XVector-method}
+\alias{xvcopy,SharedVector_Pool-method}
+\alias{xvcopy,XRawList-method}
 
 
 \title{IRanges internals}

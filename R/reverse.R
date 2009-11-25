@@ -7,30 +7,35 @@ setGeneric("reverse", function(x, ...) standardGeneric("reverse"))
 ### This method does NOT preserve normality.
 .IRanges.reverse <- function(x, ...)
 {
+    if (length(x) == 0L)
+        return(x)
     args <- extraArgsAsList(NULL, ...)
     argnames <- names(args)
     n2p <- match(c("start", "end", "use.names"), argnames)
-    if (is.na(n2p[1]))
-        stop("'start' must be supplied for \"reverse\" method for IRanges objects")
-    start <- args[[n2p[1]]]
-    if (!is.numeric(start))
-        stop("'start' must be a vector of integers")
-    if (!is.integer(start))
-        start <- as.integer(start)
-    if (any(is.na(start)))
-        stop("'start' contains NAs")
-    if (is.na(n2p[2]))
-        stop("'end' must be supplied for \"reverse\" method for IRanges objects")
-    end <- args[[n2p[2]]]
-    if (!is.numeric(end))
-        stop("'end' must be a vector of integers")
-    if (!is.integer(end))
-        end <- as.integer(end)
-    if (any(is.na(end)))
-        stop("'end' contains NAs")
-    if (!is.na(n2p[3]) && !normargUseNames(args[[n2p[3]]])) {
-        unsafe.names(x) <- NULL
+    if (is.na(n2p[1L])) {
+        start <- min(start(x))
+    } else {
+        start <- args[[n2p[1L]]]
+        if (!is.numeric(start))
+            stop("'start' must be a vector of integers")
+        if (!is.integer(start))
+            start <- as.integer(start)
+        if (any(is.na(start)))
+            stop("'start' contains NAs")
     }
+    if (is.na(n2p[2L])) {
+        end <- max(end(x))
+    } else {
+        end <- args[[n2p[2L]]]
+        if (!is.numeric(end))
+            stop("'end' must be a vector of integers")
+        if (!is.integer(end))
+            end <- as.integer(end)
+        if (any(is.na(end)))
+            stop("'end' contains NAs")
+    }
+    if (!is.na(n2p[3L]) && !normargUseNames(args[[n2p[3L]]]))
+        unsafe.names(x) <- NULL
     ## WARNING: -end(x) *must* appear first in this expression if we want
     ## the supplied 'start' and 'end' to be recycled properly.
     ## Remember that in R, because of the recycling, addition of numeric

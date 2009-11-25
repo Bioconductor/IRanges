@@ -36,8 +36,12 @@
   ## updated soon.
   x <- IRanges(start=c(-2L, 6L, 9L, -4L, 1L, 0L, -6L, 10L),
                width=c( 5L, 0L, 6L,  1L, 4L, 3L,  2L,  3L))
-  reverse(x, start=-6, end=20)  # 'start' and 'end' must be specified for
-                                # an IRanges object.
+  reverse(x, start=-6, end=20)
+
+  ## When omitted, 'start' and 'end' are considered to be 'min(start(x))'
+  ## and 'max(end(x))', respectively:
+  reverse(x)
+
   reverse(shift(x, 2), start=-6, end=20)
   reverse(restrict(x, 1, 10), start=-6, end=20)
   reverse(reduce(x), start=-6, end=20)

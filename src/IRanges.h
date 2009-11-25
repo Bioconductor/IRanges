@@ -325,12 +325,15 @@ int _vector_memcmp(
 	int nelt
 );
 
-void _vector_memcpy(
+void _vector_Ocopy(
 	SEXP out,
 	int out_offset,
 	SEXP in,
 	int in_offset,
-	int nelt
+	int nelt,
+	SEXP lkup,
+	int reverse,
+	int Omode
 );
 
 void _vector_Ocopy_from_offset(
@@ -342,13 +345,6 @@ void _vector_Ocopy_from_offset(
 	int reverse
 );
 
-void _vector_Ocopy_from_subscript(
-	SEXP out,
-	SEXP in,
-	SEXP subscript,
-	SEXP lkup
-);
-
 void _vector_Ocopy_to_offset(
 	SEXP out,
 	SEXP in,
@@ -357,11 +353,28 @@ void _vector_Ocopy_to_offset(
 	SEXP lkup
 );
 
+void _vector_Ocopy_from_subscript(
+	SEXP out,
+	SEXP in,
+	SEXP subscript,
+	SEXP lkup
+);
+
 void _vector_Ocopy_to_subscript(
 	SEXP out,
 	SEXP in,
 	SEXP subscript,
 	SEXP lkup
+);
+
+void _vector_mcopy(
+	SEXP out,
+	int out_offset,
+	SEXP in,
+	SEXP in_start,
+	SEXP in_width,
+	SEXP lkup,
+	int reverse
 );
 
 
@@ -671,14 +684,6 @@ SEXP SharedVector_memcmp(
 	SEXP width
 );
 
-SEXP SharedVector_memcpy(
-	SEXP out,
-	SEXP out_start,
-	SEXP in,
-	SEXP in_start,
-	SEXP width
-);
-
 SEXP SharedVector_Ocopy_from_start(
 	SEXP out,
 	SEXP in,
@@ -693,6 +698,16 @@ SEXP SharedVector_Ocopy_from_subscript(
 	SEXP in,
 	SEXP subscript,
 	SEXP lkup
+);
+
+SEXP SharedVector_mcopy(
+	SEXP out,
+	SEXP out_offset,
+	SEXP in,
+	SEXP in_start,
+	SEXP in_width,
+	SEXP lkup,
+	SEXP reverse
 );
 
 SEXP _get_SharedVector_Pool_xp_list(SEXP x);

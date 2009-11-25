@@ -33,12 +33,12 @@ setMethod("length", "XVector", function(x) x@length)
 
 ### Extracts a linear subsequence without copying the sequence data!
 setGeneric("subseq", signature="x",
-        function(x, start=NA, end=NA, width=NA) standardGeneric("subseq")
+    function(x, start=NA, end=NA, width=NA) standardGeneric("subseq")
 )
 
-## Replace a linear subsequence.
+### Replace a linear subsequence.
 setGeneric("subseq<-", signature="x",
-        function(x, start=NA, end=NA, width=NA, value) standardGeneric("subseq<-")
+    function(x, start=NA, end=NA, width=NA, value) standardGeneric("subseq<-")
 )
 
 ### Returns an IRanges instance of length 1.
