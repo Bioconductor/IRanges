@@ -38,9 +38,7 @@
 \alias{coerce,SharedVector,SharedVector_Pool-method}
 \alias{c,SharedVector_Pool-method}
 \alias{SharedVector.compare}
-\alias{SharedVector.memcpy}
 \alias{SharedVector.copy}
-\alias{SharedVector.reverseCopy}
 \alias{as.numeric,SharedVector-method}
 \alias{==,SharedVector,SharedVector-method}
 \alias{!=,SharedVector,SharedVector-method}
@@ -58,7 +56,6 @@
 \alias{SharedRaw.read}
 \alias{SharedRaw.write}
 \alias{SharedRaw.readComplexes}
-\alias{SharedRaw.append}
 \alias{as.integer,SharedRaw-method}
 \alias{toString,SharedRaw-method}
 

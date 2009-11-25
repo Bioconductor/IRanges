@@ -206,38 +206,6 @@ SharedRaw.readComplexes <- function(x, i, imax=integer(0), lkup)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "SharedRaw.append" function.
-###
-
-SharedRaw.append <- function(x1, start1, width1, x2, start2, width2)
-{
-    if (!isSingleNumber(start1))
-        stop("'start1' must be a single integer")
-    if (!is.integer(start1))
-        start1 <- as.integer(start1)
-    if (!isSingleNumber(width1))
-        stop("'width1' must be a single integer")
-    if (!is.integer(width1))
-        width1 <- as.integer(width1)
-
-    if (!isSingleNumber(start2))
-        stop("'start2' must be a single integer")
-    if (!is.integer(start2))
-        start2 <- as.integer(start2)
-    if (!isSingleNumber(width2))
-        stop("'width2' must be a single integer")
-    if (!is.integer(width2))
-        width2 <- as.integer(width2)
-
-    ans_len <- width1 + width2
-    ans <- SharedRaw(ans_len)
-    SharedVector.memcpy(ans, 1L, x1, start1, width1)
-    SharedVector.memcpy(ans, 1L + width1, x2, start2, width2)
-    ans
-}
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
 ### TODO: add the "as.raw" and "as.character" methods.

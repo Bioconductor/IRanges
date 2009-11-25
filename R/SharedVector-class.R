@@ -200,26 +200,7 @@ SharedVector.compare <- function(x1, start1, x2, start2, width)
 ### Low-level copy.
 ###
 
-SharedVector.memcpy <- function(dest, dest.start, src, src.start, width)
-{
-    if (!is(dest, "SharedVector") || !is(src, "SharedVector"))
-        stop("'dest' and 'src' must be SharedVector objects")
-    if (!isSingleNumber(dest.start)
-     || !isSingleNumber(src.start)
-     || !isSingleNumber(width))
-        stop("'dest.start', 'src.start' and 'width' must be single integers")
-    if (!is.integer(dest.start))
-        dest.start <- as.integer(dest.start)
-    if (!is.integer(src.start))
-        src.start <- as.integer(src.start)
-    if (!is.integer(width))
-        width <- as.integer(width)
-    .Call("SharedVector_mcopy",
-          dest, dest.start - 1L, src, src.start, width, NULL, 0L,
-          PACKAGE="IRanges")
-}
-
-### 'lkup' must be NULL or a vector of integers
+### 'lkup' must be NULL or an integer vector.
 SharedVector.copy <- function(dest, i, imax=integer(0), src, lkup=NULL)
 {
     if (!is(src, "SharedVector"))
@@ -241,7 +222,7 @@ SharedVector.copy <- function(dest, i, imax=integer(0), src, lkup=NULL)
     dest
 }
 
-### 'lkup' must be NULL or a vector of integers
+### 'lkup' must be NULL or an integer vector.
 SharedVector.reverseCopy <- function(dest, i, imax=integer(0), src, lkup=NULL)
 {
     if (!is(src, "SharedVector"))
@@ -257,6 +238,24 @@ SharedVector.reverseCopy <- function(dest, i, imax=integer(0), src, lkup=NULL)
     width <- imax - i + 1L
     .Call("SharedVector_Ocopy_from_start",
           dest, src, i, width, lkup, TRUE, PACKAGE="IRanges")
+    dest
+}
+
+### 'lkup' must be NULL or an integer vector.
+SharedVector.mcopy <- function(dest, dest.offset, src, src.start, src.width,
+                               lkup=NULL, reverse=FALSE)
+{
+    if (!isSingleInteger(dest.offset))
+        stop("'dest.offset' must be a single integer")
+    if (!is(src, "SharedVector"))
+        stop("'src' must be a SharedVector object")
+    if (!is.integer(src.start) || !is.integer(src.width))
+        stop("'src.start' and 'src.width' must be integer vectors")
+    if (!isTRUEorFALSE(reverse))
+        stop("'reverse' must be TRUE or FALSE")
+    .Call("SharedVector_mcopy",
+          dest, dest.offset, src, src.start, src.width, lkup, reverse,
+          PACKAGE="IRanges")
     dest
 }
 

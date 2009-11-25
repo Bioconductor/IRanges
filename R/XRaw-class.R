@@ -107,7 +107,7 @@ setMethod("c", "XRaw",
             stop("all arguments in '...' must be ", class(x), " objects (or NULLs)")
         ans_length <- sum(sapply(args, length))
         ans_shared <- SharedRaw(ans_length)
-        dest_start <- 1L
+        dest_offset <- 0L
         for (arg in args) {
             width <- length(arg)
             if (width == 0L)  # will be TRUE on NULLs too...
@@ -115,8 +115,8 @@ setMethod("c", "XRaw",
             ## ... so from here 'arg' is guaranteed to be an XRaw object.
             src <- arg@shared
             src_start <- arg@offset + 1L
-            SharedVector.memcpy(ans_shared, dest_start, src, src_start, width)
-            dest_start <- dest_start + width
+            SharedVector.mcopy(ans_shared, dest_offset, src, src_start, width)
+            dest_offset <- dest_offset + width
         }
         new2(class(x), shared=ans_shared, length=ans_length, check=FALSE)
     }
