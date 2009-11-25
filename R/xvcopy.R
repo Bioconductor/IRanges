@@ -34,10 +34,10 @@ setMethod("xvcopy", "XVector",
     function(x, start=NA, end=NA, width=NA, lkup=NULL, reverse=FALSE)
     {
         solved_SEW <- solveUserSEW(length(x), start=start, end=end, width=width)
-        x@shared <- xvcopy(x@shared, start=x@offset+start(solved_SEW),
+        x@shared <- xvcopy(x@shared, start=start(solved_SEW)+x@offset,
                                      width=width(solved_SEW),
                                      lkup=lkup, reverse=reverse)
-        x@offset <- 1L
+        x@offset <- 0L
         x@length <- width(solved_SEW)
         x
     }
