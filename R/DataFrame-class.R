@@ -451,6 +451,10 @@ setAs("vector", "DataFrame",
              nrows = length(from), rownames = names(from), check=FALSE)
       })
 
+## note that any element named 'row.names' will be interpreted differently
+## is this a bug or a feature?
+setAs("list", "DataFrame", function(from) do.call(DataFrame, from))
+
 ### FIXME: only exists due to annoying S4 warning due to its caching of
 ### coerce methods.
 setAs("integer", "DataFrame",

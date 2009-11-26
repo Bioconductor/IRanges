@@ -24,6 +24,7 @@
 \alias{as.data.frame,DataFrame-method}
 \alias{coerce,matrix,DataFrame-method}
 \alias{coerce,vector,DataFrame-method}
+\alias{coerce,list,DataFrame-method}
 \alias{coerce,integer,DataFrame-method}
 \alias{coerce,Sequence,DataFrame-method}
 \alias{coerce,data.frame,DataFrame-method}
@@ -142,9 +143,10 @@
       By default, constructs a new \code{DataFrame} with \code{from} as
       its only column. If \code{from} is a \code{matrix} or
       \code{data.frame}, all of its columns become columns in the new
-      \code{DataFrame}. Note that for the \code{DataFrame} to behave
-      correctly, each column object must support element-wise subsetting
-      via the \code{[} method and return the number of elements with
+      \code{DataFrame}. If \code{from} is a list, each element becomes a
+      column, recycling as necessary. Note that for the \code{DataFrame}
+      to behave correctly, each column object must support element-wise
+      subsetting via the \code{[} method and return the number of elements with
       \code{length}. It is recommended to use the \code{DataFrame} 
       constructor, rather than this interface.
     }
