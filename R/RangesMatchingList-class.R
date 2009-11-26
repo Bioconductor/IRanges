@@ -3,7 +3,7 @@
 ### -------------------------------------------------------------------------
 
 setClass("RangesMatchingList",
-         representation(subjectToQuery = "integer"),
+         representation(subjectOffsets = "integer"),
          prototype(elementType = "RangesMatching"),
          contains = "SimpleList")
 
@@ -31,12 +31,15 @@ setMethod("queryHits", "RangesMatchingList", function(x) {
 ### Constructor
 ###
 
-RangesMatchingList <- function(matchings, subjectNames = NULL)
+RangesMatchingList <- function(matchings, subject)
 {
+  subjectOffsets <- c(0L, head(cumsum(sapply(subject, length)), -1))
   subjectToQuery <- seq_along(matchings)
-  if (!is.null(names(matchings)) && !is.null(subjectNames))
-    subjectToQuery <- match(names(matchings), subjectNames)
-  newSimpleList("RangesMatchingList", matchings, subjectToQuery = subjectToQuery)
+  if (!is.null(names(matchings)) && !is.null(names(subject)))
+    subjectToQuery <- match(names(matchings), names(subject))
+  subjectOffsets <- subjectOffsets[subjectToQuery]
+  newSimpleList("RangesMatchingList", matchings,
+                subjectOffsets = subjectOffsets)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -48,12 +51,9 @@ RangesMatchingList <- function(matchings, subjectNames = NULL)
 setMethod("as.matrix", "RangesMatchingList", function(x) {
   mats <- lapply(x, as.matrix)
   mat <- do.call(rbind, mats)
-  rows <- c(0, head(cumsum(lapply(x, nrow)[x@subjectToQuery]), -1))
   cols <- c(0, head(cumsum(lapply(x, ncol)), -1))
-  queryToSubject <- integer(length(x))
-  queryToSubject[subjectToQuery] <- seq(length(queryToSubject))
   nr <- sapply(mats, nrow)
-  mat + cbind(rep(cols, nr), rep(rows[queryToSubject], nr))
+  mat + cbind(rep(cols, nr), rep(x@subjectOffsets, nr))
 })
 
 ## count up the matches for each query in every matching

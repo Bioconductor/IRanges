@@ -394,7 +394,7 @@ setMethod("findOverlaps", c("RangesList", "RangesList"),
             })
             names(ans) <- names(subject)
             if (multiple)
-              ans <- RangesMatchingList(ans, names(origSubject))
+              ans <- RangesMatchingList(ans, origSubject)
             else if (drop) {
               off <- head(c(0, cumsum(sapply(origSubject, length))), -1)
               names(off) <- names(origSubject)
