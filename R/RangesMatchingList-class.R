@@ -43,15 +43,17 @@ RangesMatchingList <- function(matchings, subjectNames = NULL)
 ### Coercion
 ###
 
-## return as.matrix as on RangesMatching, except with space column
+## return as.matrix as on RangesMatching, with indices adjusted
 
 setMethod("as.matrix", "RangesMatchingList", function(x) {
   mats <- lapply(x, as.matrix)
   mat <- do.call(rbind, mats)
-  rows <- c(0, head(cumsum(lapply(x, nrow)), -1))[x@subjectToQuery]
+  rows <- c(0, head(cumsum(lapply(x, nrow)[x@subjectToQuery]), -1))
   cols <- c(0, head(cumsum(lapply(x, ncol)), -1))
+  queryToSubject <- integer(length(x))
+  queryToSubject[subjectToQuery] <- seq(length(queryToSubject))
   nr <- sapply(mats, nrow)
-  mat + cbind(rep(cols, nr), rep(rows, nr))
+  mat + cbind(rep(cols, nr), rep(rows[queryToSubject], nr))
 })
 
 ## count up the matches for each query in every matching

@@ -452,7 +452,7 @@ setMethod("[", "RangedData",
                   igroup <-
                     factor(findInterval(i, starts), levels = seq_len(length(x)))
                   if (anyDuplicated(runValue(Rle(igroup))))
-                    stop("cannot combine 'i' row values from different spaces")
+                    stop("cannot mix row indices from different spaces")
                   i <- i - (starts - 1L)[as.integer(igroup)]
                 }
                 isplit <- split(i, igroup)
