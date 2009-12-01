@@ -1,3 +1,5 @@
+// Code based on timing enhancements by Charles C. Berry <ccberry@ucsd.edu>
+
 #include "IRanges.h"
 #include <stdlib.h> /* for qsort() */
 
@@ -6,13 +8,17 @@ static const int *base_width;
 
 static int cmp_sw_subset_for_ordering(const void *p1, const void *p2)
 {
-	int i1, i2, ret1, ret2;
+	int i1, i2;
+	int s1, s2;
 
 	i1 = *((const int *) p1);
 	i2 = *((const int *) p2);
-	ret1 = *(base_start + i1) - *(base_start + i2);
-	ret2 = *(base_width + i1) - *(base_width + i2);
-	return ret1 != 0 ? ret1 : ret2;
+	// if i is index for width, then s = end + 1
+	// if i is index for start, then s = start
+	s1 = (i1 % 2) ? *(base_start + i1 / 2) + *(base_width + i1 / 2) : *(base_start + i1 / 2);
+	s2 = (i2 % 2) ? *(base_start + i2 / 2) + *(base_width + i2 / 2) : *(base_start + i2 / 2);
+	return s1 - s2;
+
 }
 
 
@@ -21,171 +27,163 @@ static int cmp_sw_subset_for_ordering(const void *p1, const void *p2)
  */
 SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP width)
 {
-	int i, j;
+	int i;
+	int ans_nrun, max_nrun = 0;
+	int *values_buf, *lengths_buf;
 	SEXP ans, ans_lengths, ans_values;
 
 	int x_length = _get_IRanges_length(x);
 	const int *x_start = INTEGER(_get_IRanges_start(x));
 	const int *x_width = INTEGER(_get_IRanges_width(x));
 
-	// order start values
-	const int *wd, *wt;
+	int weight_length = LENGTH(weight);
+	const int *weight_ptr = INTEGER(weight);
+
+	// use i / 2 and  i % 2 to find start, width
+	int *order = (int *) R_alloc((long) 2 * x_length, sizeof(int));
+	memset(order, -1, 2 * x_length * sizeof(int));
+
 	int order_length = 0;
-	int *order = (int *) R_alloc((long) x_length, sizeof(int));
-	memset(order, -1, x_length * sizeof(int));
-	if (LENGTH(weight) == 1) {
+	int *order_elt;
+	const int *wd, *wt;
+	order_elt = order;
+	if (weight_length == 1) {
 		for (i = 0, wd = x_width; i < x_length; i++, wd++) {
 			if (*wd > 0) {
-				order[order_length] = i;
+				// start order
+				*order_elt = 2 * i;
+				order_elt++;
+				order_length++;
+				// width order
+				*order_elt = 2 * i + 1;
+				order_elt++;
 				order_length++;
 			}
 		}
 	} else {
-		for (i = 0, wd = x_width, wt = INTEGER(weight); i < x_length;
-		     i++, wd++, wt++) {
+		for (i = 0, wd = x_width, wt = weight_ptr; i < x_length;
+			 i++, wd++, wt++) {
 			if (*wd > 0 && *wt != 0) {
-				order[order_length] = i;
+				// start order
+				*order_elt = 2 * i;
+				order_elt++;
+				order_length++;
+				// width order
+				*order_elt = 2 * i + 1;
+				order_elt++;
 				order_length++;
 			}
 		}
 	}
 
-	const int *order_elt;
-	int shift;
-	int weight_elt, index_start, index_end;
-
-	// find reasonable buffer length
-	int *sparse_data;
-	int *sparse_index;
-	int sparse_data_length = 0;
 	if (order_length > 0) {
 		base_start = x_start;
 		base_width = x_width;
 		qsort(order, order_length, sizeof(int), cmp_sw_subset_for_ordering);
 
-		int prev_index = 0;
-		for (i = 0, order_elt = order; i < order_length; i++, order_elt++)
-		{
-			if (*order_elt >= LENGTH(weight)) {
-				weight_elt = INTEGER(weight)[0];
-			} else {
-				weight_elt = INTEGER(weight)[*order_elt];
+		values_buf = (int *) R_alloc((long) order_length, sizeof(int));
+		lengths_buf = (int *) R_alloc((long) order_length, sizeof(int));
+
+		int index, is_end;
+		int prev_pos, curr_pos, prev_weight, curr_weight;
+
+		// pos is either a start position or an end position + 1
+		prev_pos = 1;
+		prev_weight = 0;
+		curr_weight = 0;
+		if (weight_length == 1) {
+			for (i = 0, order_elt = order; i < order_length; i++, order_elt++) {
+				index = *order_elt / 2;
+				is_end = *order_elt % 2;
+				if (is_end) {
+					curr_pos = x_start[index] + x_width[index];
+					curr_weight -= weight_ptr[0];
+				} else {
+					curr_pos = x_start[index];
+					curr_weight += weight_ptr[0];
+				}
+				if (curr_pos != prev_pos) {
+					lengths_buf[max_nrun] = curr_pos - prev_pos;
+					values_buf[max_nrun] = prev_weight;
+					max_nrun++;
+					prev_pos = curr_pos;
+				}
+				prev_weight = curr_weight;
 			}
-			index_start = (x_start[*order_elt] > prev_index ? x_start[*order_elt] : prev_index);
-			index_end = x_start[*order_elt] + x_width[*order_elt] - 1;
-			shift = index_end - index_start + 1;
-			if (shift > 0) {
-				sparse_data_length += shift;
-				prev_index = index_end + 1;
+		} else {
+			for (i = 0, order_elt = order; i < order_length; i++, order_elt++) {
+				index = *order_elt / 2;
+				is_end = *order_elt % 2;
+				if (is_end) {
+					curr_pos = x_start[index] + x_width[index];
+					curr_weight -= weight_ptr[index];
+				} else {
+					curr_pos = x_start[index];
+					curr_weight += weight_ptr[index];
+				}
+				if (curr_pos != prev_pos) {
+					lengths_buf[max_nrun] = curr_pos - prev_pos;
+					values_buf[max_nrun] = prev_weight;
+					max_nrun++;
+					prev_pos = curr_pos;
+				}
+				prev_weight = curr_weight;
 			}
+		}
+		// extend vector length if user-supplied width exceeds coverage domain
+		curr_pos = INTEGER(width)[0] + 1;
+		if (curr_pos != prev_pos) {
+			lengths_buf[max_nrun] = curr_pos - prev_pos;
+			values_buf[max_nrun] = 0;
+			max_nrun++;
 		}
 	}
 
-	// perform coverage calculation
-	int values_length = 0;
-	int *prev_sdata, *curr_sdata, *prev_sindex, *curr_sindex;
-	if (sparse_data_length > 0) {
-		sparse_data = (int *) R_alloc((long) sparse_data_length, sizeof(int));
-		sparse_index = (int *) R_alloc((long) sparse_data_length, sizeof(int));
-		memset(sparse_data, 0, sparse_data_length * sizeof(int));
-		memset(sparse_index, 0, sparse_data_length * sizeof(int));
-
-		int *sparse_data_elt = sparse_data;
-		int *sparse_index_elt = sparse_index;
-		for (i = 0, order_elt = order; i < order_length; i++, order_elt++)
-		{
-			if (*order_elt >= LENGTH(weight)) {
-				weight_elt = INTEGER(weight)[0];
-			} else {
-				weight_elt = INTEGER(weight)[*order_elt];
-			}
-			index_start = x_start[*order_elt];
-			shift = *sparse_index_elt - index_start;
-			if (shift > 0) {
-				sparse_index_elt -= shift;
-				sparse_data_elt -= shift;
-			}
-			while ((*sparse_index_elt > 0) && (*sparse_index_elt < index_start)) {
-				sparse_index_elt++;
-				sparse_data_elt++;
-			}
-			for (j = 0; j < x_width[*order_elt];
-			     j++, sparse_index_elt++, sparse_data_elt++, index_start++)
-			{
-				*sparse_index_elt = index_start;
-				*sparse_data_elt += weight_elt;
-			}
-			sparse_index_elt--;
-			sparse_data_elt--;
+	// combine adjacent equal values
+	if (max_nrun == 0) {
+		ans_nrun = 0;
+	} else {
+		ans_nrun = 1;
+		int *curr_val, *prev_val;
+		for (i = 1, curr_val = (values_buf+1), prev_val = values_buf;
+			 i < max_nrun; i++, curr_val++, prev_val++) {
+			if (*curr_val != *prev_val)
+				ans_nrun++;
 		}
-		values_length = 1 + (*sparse_index != 1);
-		for (i = 1, prev_sdata = sparse_data, curr_sdata = (sparse_data + 1),
-			 prev_sindex = sparse_index, curr_sindex = (sparse_index + 1);
-		     i < sparse_data_length;
-		     i++, prev_sdata++, curr_sdata++, prev_sindex++, curr_sindex++)
-		{
-			if ((*prev_sindex + 1) != *curr_sindex)
-				values_length += 2;
-			else if (*prev_sdata != *curr_sdata)
-				values_length++;
-		}
-		values_length += (sparse_index[sparse_data_length - 1] != INTEGER(width)[0]);
 	}
-
 	// create output object
-	if (values_length == 0) {
+	if (max_nrun == 0) {
 		PROTECT(ans_lengths = NEW_INTEGER(1));
 		PROTECT(ans_values = NEW_INTEGER(1));
 		INTEGER(ans_values)[0] = 0;
 		INTEGER(ans_lengths)[0] = INTEGER(width)[0];
 	} else {
-		PROTECT(ans_lengths = NEW_INTEGER(values_length));
-		PROTECT(ans_values = NEW_INTEGER(values_length));
+		PROTECT(ans_lengths = NEW_INTEGER(ans_nrun));
+		PROTECT(ans_values = NEW_INTEGER(ans_nrun));
 		int *ans_lengths_ptr = INTEGER(ans_lengths);
 		int *ans_values_ptr = INTEGER(ans_values);
-		memset(ans_lengths_ptr, 0, values_length * sizeof(int));
-		memset(ans_values_ptr, 0, values_length * sizeof(int));
 
-		if (*sparse_index != 1) {
-			*ans_values_ptr = 0;
-			*ans_lengths_ptr = *sparse_index - 1;
-			ans_values_ptr++;
-			ans_lengths_ptr++;
-		}
-		*ans_values_ptr = *sparse_data;
-		*ans_lengths_ptr = 1;
-		for (i = 1, prev_sdata = sparse_data, curr_sdata = (sparse_data + 1),
-			 prev_sindex = sparse_index, curr_sindex = (sparse_index + 1);
-		     i < sparse_data_length;
-		     i++, prev_sdata++, curr_sdata++, prev_sindex++, curr_sindex++)
-		{
-			if ((*prev_sindex + 1) != *curr_sindex) {
-				ans_values_ptr++;
-				ans_lengths_ptr++;
-				*ans_values_ptr = 0;
-				*ans_lengths_ptr = *curr_sindex - *prev_sindex - 1;
-
-				ans_values_ptr++;
-				ans_lengths_ptr++;
-				*ans_values_ptr = *curr_sdata;
-				*ans_lengths_ptr = 1;
-			} else if (*prev_sdata != *curr_sdata) {
-				ans_values_ptr++;
-				ans_lengths_ptr++;
-				*ans_values_ptr = *curr_sdata;
-				*ans_lengths_ptr = 1;
-			} else {
-				*ans_lengths_ptr += 1;
+		if (ans_nrun == max_nrun) {
+			memcpy(ans_lengths_ptr, lengths_buf, max_nrun * sizeof(int));
+			memcpy(ans_values_ptr, values_buf, max_nrun * sizeof(int));
+		} else {
+			int *values_buf_ptr, *lengths_buf_ptr;
+			*ans_lengths_ptr = *lengths_buf;
+			*ans_values_ptr = *values_buf;
+			for (i = 1, values_buf_ptr = (values_buf+1),
+				 lengths_buf_ptr = (lengths_buf+1); i < max_nrun;
+				 i++, values_buf_ptr++, lengths_buf_ptr++) {
+				if (*values_buf_ptr != *ans_values_ptr) {
+					ans_values_ptr++;
+					ans_lengths_ptr++;
+					*ans_values_ptr = *values_buf_ptr;
+					*ans_lengths_ptr = *lengths_buf_ptr;
+				} else {
+					*ans_lengths_ptr += *lengths_buf_ptr;
+				}
 			}
 		}
-		if (sparse_index[sparse_data_length - 1] != INTEGER(width)[0]) {
-			ans_values_ptr++;
-			ans_lengths_ptr++;
-			*ans_values_ptr = 0;
-			*ans_lengths_ptr = INTEGER(width)[0] - sparse_index[sparse_data_length - 1];
-		}
 	}
-
 	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
 	SET_SLOT(ans, install("lengths"), ans_lengths);
 	SET_SLOT(ans, install("values"), ans_values);
