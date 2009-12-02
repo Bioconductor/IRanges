@@ -216,7 +216,8 @@ exportMethods(
     split,
     eval, with,
     t,
-    is.na, "%in%", by, match,
+    is.na, na.omit, na.exclude, complete.cases,
+    "%in%", by, match,
     Reduce, Filter, Find, Position,
     updateObject,
 

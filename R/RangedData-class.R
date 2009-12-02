@@ -291,7 +291,6 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
 ###
 
 ## The extraction operator delegates to the values (extracts columns)
-
 setMethod("[[", "RangedData",
           function(x, i, j, ...)
           {

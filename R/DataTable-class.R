@@ -241,6 +241,42 @@ setReplaceMethod("window", "DataTable",
                            window(x, start = end(solved_SEW) + 1L))
                  })
 
+setGeneric("na.omit", function(object, ...) standardGeneric("na.omit"))
+
+setMethod("na.omit", "DataTable",
+          function(object, ...) {
+            attr(object, "row.names") <- rownames(object)
+            object.omit <- stats:::na.omit.data.frame(object)
+            attr(object.omit, "row.names") <- NULL
+            object.omit
+          })
+
+setGeneric("na.exclude", function(object, ...) standardGeneric("na.exclude"))
+
+setMethod("na.exclude", "DataTable",
+          function(object, ...) {
+            attr(object, "row.names") <- rownames(object)
+            object.ex <- stats:::na.exclude.data.frame(object)
+            attr(object.ex, "row.names") <- NULL
+            object.ex
+          })
+
+setMethod("is.na", "DataTable", function(x) {
+  na <- do.call(cbind, lapply(seq(ncol(x)), function(xi) is.na(x[[xi]])))
+  rownames(na) <- rownames(x)
+  na
+})
+
+setGeneric("complete.cases", function(...) standardGeneric("complete.cases"))
+
+setMethod("complete.cases", "DataTable", function(...) {
+  args <- list(...)
+  if (length(args) == 1) {
+    x <- args[[1]]
+    rowSums(is.na(x)) == 0
+  } else complete.cases(args[[1]]) & do.call(complete.cases, args[-1])
+})
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping methods.
 ###

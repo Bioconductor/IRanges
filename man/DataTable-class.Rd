@@ -28,6 +28,13 @@
 \alias{aggregate,DataTable-method}
 \alias{by,DataTable-method}
 \alias{as.env,DataTable-method}
+\alias{na.omit}
+\alias{na.omit,DataTable-method}
+\alias{na.exclude}
+\alias{na.exclude,DataTable-method}
+\alias{complete.cases}
+\alias{complete.cases,DataTable-method}
+\alias{is.na,DataTable-method}
 
 \title{DataTable objects}
 
@@ -127,7 +134,8 @@
       In general, this is more efficient than using \code{"["} operator.
     }
     \item{}{
-      \code{window(x, start = NA, end = NA, width = NA, keepLength = TRUE) <- value}:
+      \code{window(x, start = NA, end = NA, width = NA, keepLength =
+        TRUE) <- value}:
       Replace the subsequence window specified on the left (i.e. the subsequence
       in \code{x} specified by \code{start}, \code{end} and \code{width})
       by \code{value}.
@@ -139,6 +147,19 @@
       If \code{keepLength} is \code{FALSE}, this replacement method can modify
       the number of rows of \code{x}, depending on how the number of rows of the
       left subsequence window compares to the number of rows of \code{value}.
+    }
+    \item{}{\code{\link[stats:na.fail]{na.omit}(object)}: Returns a
+      subset with incomplete cases removed.
+    }
+    \item{}{\code{\link[stats:na.fail]{na.exclude}(object)}: Returns a
+      subset with incomplete cases removed (but to be included with NA's
+      in statistical results).
+    }
+    \item{}{\code{\link[base:NA]{is.na}(x)}: Returns a logical matrix
+      indicating which cells are missing.
+    }
+    \item{}{\code{\link[stats]{complete.cases}(x)}: Returns a logical vector
+      identifying which cases have no missing values.
     }
   }
 }
