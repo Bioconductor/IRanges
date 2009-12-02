@@ -3,7 +3,8 @@ useDynLib(IRanges)
 import(methods)
 importFrom(utils, head, read.table, tail)
 importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
-           IQR, smoothEnds, runmed, window, "window<-", aggregate, xtabs)
+           IQR, smoothEnds, runmed, window, "window<-", aggregate, xtabs,
+           na.omit, na.exclude, complete.cases)
 
 exportClasses(
     characterORNULL,
