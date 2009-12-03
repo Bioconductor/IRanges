@@ -37,6 +37,7 @@ exportClasses(
     RleList, CompressedRleList, SimpleRleList,
     RangesList, SimpleRangesList,
     IRangesList, CompressedIRangesList, SimpleIRangesList,
+    GappedRanges,
     RleViewsList, SimpleRleViewsList,
     DataFrame,
     DataFrameList, SimpleDataFrameList,

@@ -9,6 +9,7 @@
 \alias{shift,Ranges-method}
 \alias{restrict}
 \alias{restrict,IRanges-method}
+\alias{restrict,NormalIRanges-method}
 \alias{restrict,Ranges-method}
 \alias{narrow}
 \alias{narrow,IRanges-method}

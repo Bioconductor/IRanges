@@ -165,7 +165,7 @@ XVectorList.getElement <- function(x, i)
 setMethod("[[", "XVectorList",
     function(x, i, j, ..., exact=TRUE)
     {
-        i <- IRanges:::checkAndTranslateDbleBracketSubscript(x, i)
+        i <- checkAndTranslateDbleBracketSubscript(x, i)
         XVectorList.getElement(x, i)
     }
 )
@@ -199,7 +199,7 @@ setMethod("window", "XVectorList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "subseq" endomorphism and related transformations.
+### The "narrow" endomorphism and related transformations.
 ###
 
 setMethod("narrow", "XVectorList",
