@@ -45,8 +45,8 @@ RleViewsList <- function(..., rleList, rangesList, universe = NULL)
             (!missing(rleList) || !missing(rangesList))) {
         stop("cannot specify 'rleList' or 'rangesList' when specifying '...'")
     } else {
-        if (length(views) == 1 && is.list(views[[1]]))
-            views <- views[[1]]
+        if (length(views) == 1 && is.list(views[[1L]]))
+            views <- views[[1L]]
         if (!all(sapply(views, is, "RleViews")))
             stop("all elements in '...' must be RleViews objects")
     }

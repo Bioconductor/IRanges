@@ -114,7 +114,7 @@ setMethod("show", "SharedVector_Pool",
     }
 )
 
-### If 'x' is a SharedVector object, then 'as(x, "SharedVector_Pool")[[1]]'
+### If 'x' is a SharedVector object, then 'as(x, "SharedVector_Pool")[[1L]]'
 ### is identical to 'x'.
 setAs("SharedVector", "SharedVector_Pool",
     function(from)

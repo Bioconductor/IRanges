@@ -118,8 +118,8 @@ setGeneric("score", function(x, ...) standardGeneric("score"))
 setMethod("score", "RangedData",
           function(x) {
               score <- x[["score"]]
-              ## if (is.null(score) && ncol(x) > 0 && is.numeric(x[[1]]))
-              ##     score <- x[[1]]
+              ## if (is.null(score) && ncol(x) > 0 && is.numeric(x[[1L]]))
+              ##     score <- x[[1L]]
               score
           })
 
@@ -147,7 +147,7 @@ setMethod("nrow", "RangedData",
           })
 setMethod("ncol", "RangedData",
           function(x) {
-            ncol(values(x))[[1]]
+            ncol(values(x))[[1L]]
           })
 setMethod("rownames", "RangedData",
           function(x, do.NULL = TRUE, prefix = "row") {
@@ -163,7 +163,7 @@ setMethod("colnames", "RangedData",
             if (length(x) == 0)
               character()
             else
-              colnames(values(x), do.NULL = do.NULL, prefix = prefix)[[1]]
+              colnames(values(x), do.NULL = do.NULL, prefix = prefix)[[1L]]
           })
 setReplaceMethod("rownames", "RangedData",
                  function(x, value) {
@@ -513,7 +513,7 @@ setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
     rds <- unname(list(...))
   else
     rds <- unname(list(x, ...))
-  rd <- rds[[1]]
+  rd <- rds[[1L]]
   if (!all(sapply(rds, is, "RangedData")))
     stop("all arguments in '...' must be RangedData objects")
   nms <- lapply(rds, ## figure out names like 'c' on an ordinary vector
@@ -539,19 +539,19 @@ setMethod("split", "RangedData", function(x, f, drop = FALSE) {
 setMethod("rbind", "RangedData", function(..., deparse.level=1) {
   args <- unname(list(...))
   rls <- lapply(args, ranges)
-  rl <- rls[[1]]
+  rl <- rls[[1L]]
   if (!all(sapply(sapply(rls, universe), identical, universe(rl))))
     stop("All args in '...' must have the same universe as 'x'")
   ##dfs <- lapply(args, values)
-  ##df <- dfs[[1]]
+  ##df <- dfs[[1L]]
   df <-
     do.call("rbind",
             lapply(args, function(x) unlist(values(x), use.names=FALSE)))
   nmsList <- lapply(args, names)
   if (any(sapply(nmsList, is.null))) {
-    if (!all(unlist(lapply(args, length)) == length(args[[1]])))
+    if (!all(unlist(lapply(args, length)) == length(args[[1L]])))
       stop("If any args are missing names, all must have same length")
-    nms <- seq_len(length(args[[1]]))
+    nms <- seq_len(length(args[[1L]]))
   } else {
     nms <- unique(unlist(nmsList))
   }
@@ -571,7 +571,7 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
   }
   df <- split(df, f)
   names(df) <- names(rl)
-  initialize(args[[1]], ranges = rl, values = df)
+  initialize(args[[1L]], ranges = rl, values = df)
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -586,7 +586,7 @@ setMethod("as.data.frame", "RangedData",
             if (!missing(optional) || length(list(...)))
               warning("'optional' and arguments in '...' ignored")
             data.frame(as.data.frame(ranges(x)),
-                       as.data.frame(values(x))[-1],
+                       as.data.frame(values(x))[-1L],
                        row.names = row.names,
                        stringsAsFactors = FALSE)
           })
@@ -734,8 +734,8 @@ setClass("RangedDataList",
 RangedDataList <- function(...)
 {
   listData <- list(...)
-  if (length(listData) == 1 && is.list(listData[[1]]))
-    listData <- listData[[1]]
+  if (length(listData) == 1 && is.list(listData[[1L]]))
+    listData <- listData[[1L]]
   newSimpleList("RangedDataList", listData)
 }
 

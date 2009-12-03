@@ -163,8 +163,8 @@ RangesList <- function(..., universe = NULL)
   if (!is.null(universe) && !isSingleString(universe))
     stop("'universe' must be a single string or NULL")
   ranges <- list(...)
-  if (length(ranges) == 1 && is.list(ranges[[1]]))
-    ranges <- ranges[[1]]
+  if (length(ranges) == 1 && is.list(ranges[[1L]]))
+    ranges <- ranges[[1L]]
   if (!all(sapply(ranges, is, "Ranges")))
     stop("all elements in '...' must be Ranges objects")
   ans <- newSimpleList("SimpleRangesList", ranges)
@@ -180,14 +180,14 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
     stop("'universe' must be a single string or NULL")
   ranges <- list(...)
   if (length(ranges) == 1 &&
-      (is(ranges[[1]], "LogicalList") || is(ranges[[1]], "RleList"))) {
+      (is(ranges[[1L]], "LogicalList") || is(ranges[[1L]], "RleList"))) {
     if (compress)
-      ans <- as(ranges[[1]], "CompressedIRangesList")
+      ans <- as(ranges[[1L]], "CompressedIRangesList")
     else
-      ans <- as(ranges[[1]], "SimpleIRangesList")
+      ans <- as(ranges[[1L]], "SimpleIRangesList")
   } else if (length(ranges) == 2 &&
              setequal(names(ranges), c("start", "end")) &&
-             !is(ranges[[1]], "Ranges") && !is(ranges[[2]], "Ranges")) {
+             !is(ranges[[1L]], "Ranges") && !is(ranges[[2L]], "Ranges")) {
     if (!compress)
       stop("'compress' must be TRUE when passing the 'start' and 'end' arguments")
     ans_start <- IntegerList(ranges[["start"]], compress = TRUE)
@@ -201,8 +201,8 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
                 unlistData=ans_unlistData,
                 check=FALSE)
   } else {
-    if (length(ranges) == 1 && is.list(ranges[[1]]))
-      ranges <- ranges[[1]]
+    if (length(ranges) == 1 && is.list(ranges[[1L]]))
+      ranges <- ranges[[1L]]
     if (!all(sapply(ranges, is, "IRanges")))
       stop("all elements in '...' must be IRanges objects")
     if (compress)
@@ -472,9 +472,9 @@ setMethod("Ops", c("RangesList", "ANY"),
     show(as.list(object))
   } else {
     sketch <- function(x) c(head(x, 3), "...", tail(x, 3))
-    if (k >= 3 && cumsumN[3] <= 20)
+    if (k >= 3 && cumsumN[3L] <= 20)
       showK <- 3
-    else if (k >= 2 && cumsumN[2] <= 20)
+    else if (k >= 2 && cumsumN[2L] <= 20)
       showK <- 2
     else
       showK <- 1
@@ -530,7 +530,7 @@ setMethod("as.data.frame", "RangesList",
 
 ### From an IRangesList object to a NormalIRanges object.
 setAs("IRangesList", "NormalIRanges",
-      function(from) reduce(from)[[1]])
+      function(from) reduce(from)[[1L]])
 
 ### FIXME: Not clear why this is needed
 setAs("IRangesList", "list",
@@ -590,8 +590,8 @@ setAs("RleList", "CompressedIRangesList",
       function(from)
       {
         if ((length(from) > 0) &&
-            (!is.logical(runValue(from[[1]])) ||
-             any(is.na(runValue(from[[1]])))))
+            (!is.logical(runValue(from[[1L]])) ||
+             any(is.na(runValue(from[[1L]])))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to an SimpleIRangesList object")
         newCompressedList("CompressedIRangesList", lapply(from, as, "IRanges"),
@@ -603,8 +603,8 @@ setAs("RleList", "SimpleIRangesList",
       function(from)
       {
         if ((length(from) > 0) &&
-            (!is.logical(runValue(from[[1]])) ||
-             any(is.na(runValue(from[[1]])))))
+            (!is.logical(runValue(from[[1L]])) ||
+             any(is.na(runValue(from[[1L]])))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to an SimpleIRangesList object")
         newSimpleList("SimpleIRangesList", lapply(from, as, "IRanges"),

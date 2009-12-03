@@ -427,7 +427,7 @@ setMethod("subseq", "MaskCollection",
 
 ### From a MaskCollection object to a NormalIRanges object.
 setAs("MaskCollection", "NormalIRanges",
-    function(from) collapse(from)[[1]]
+    function(from) collapse(from)[[1L]]
 )
 
 

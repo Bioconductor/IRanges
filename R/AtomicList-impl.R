@@ -80,8 +80,8 @@ LogicalList <- function(..., compress = TRUE)
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
     listData <- list(...)
-    if (length(listData) == 1 && is.list(listData[[1]]))
-        listData <- listData[[1]]
+    if (length(listData) == 1 && is.list(listData[[1L]]))
+        listData <- listData[[1L]]
     listData <-
       lapply(listData, function(x) structure(as.logical(x), names = names(x)))
     if (compress)
@@ -93,7 +93,7 @@ LogicalList <- function(..., compress = TRUE)
 .dotargsAsListOfIntegerVectors <- function(dotargs)
 {
     if (length(dotargs) == 1) {
-        arg1 <- dotargs[[1]]
+        arg1 <- dotargs[[1L]]
         if (is(arg1, "IntegerList"))
             return(as.list(arg1))
         if (is.character(arg1))
@@ -109,10 +109,10 @@ IntegerList <- function(..., compress = TRUE)
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
     dotargs <- list(...)
-    if (length(dotargs) == 1 && is(dotargs[[1]], "IntegerList")) {
-        if (is(dotargs[[1]], "CompressedIntegerList") && compress
-         || is(dotargs[[1]], "SimpleIntegerList") && !compress)
-            return(dotargs[[1]])
+    if (length(dotargs) == 1 && is(dotargs[[1L]], "IntegerList")) {
+        if (is(dotargs[[1L]], "CompressedIntegerList") && compress
+         || is(dotargs[[1L]], "SimpleIntegerList") && !compress)
+            return(dotargs[[1L]])
     }
     listData <- .dotargsAsListOfIntegerVectors(dotargs)
     if (compress)
@@ -126,8 +126,8 @@ NumericList <- function(..., compress = TRUE)
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
     listData <- list(...)
-    if (length(listData) == 1 && is.list(listData[[1]]))
-        listData <- listData[[1]]
+    if (length(listData) == 1 && is.list(listData[[1L]]))
+        listData <- listData[[1L]]
     listData <-
       lapply(listData, function(x) structure(as.numeric(x), names = names(x)))
     if (compress)
@@ -141,8 +141,8 @@ ComplexList <- function(..., compress = TRUE)
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
     listData <- list(...)
-    if (length(listData) == 1 && is.list(listData[[1]]))
-        listData <- listData[[1]]
+    if (length(listData) == 1 && is.list(listData[[1L]]))
+        listData <- listData[[1L]]
     listData <-
       lapply(listData, function(x) structure(as.complex(x), names = names(x)))
     if (compress)
@@ -156,8 +156,8 @@ CharacterList <- function(..., compress = TRUE)
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
     listData <- list(...)
-    if (length(listData) == 1 && is.list(listData[[1]]))
-        listData <- listData[[1]]
+    if (length(listData) == 1 && is.list(listData[[1L]]))
+        listData <- listData[[1L]]
     listData <-
       lapply(listData, function(x) structure(as.character(x), names = names(x)))
     if (compress)
@@ -171,8 +171,8 @@ RawList <- function(..., compress = TRUE)
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
     listData <- list(...)
-    if (length(listData) == 1 && is.list(listData[[1]]))
-        listData <- listData[[1]]
+    if (length(listData) == 1 && is.list(listData[[1L]]))
+        listData <- listData[[1L]]
     listData <-
       lapply(listData, function(x) structure(as.raw(x), names = names(x)))
     if (compress)
@@ -186,8 +186,8 @@ RleList <- function(..., compress = FALSE)
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
     listData <- list(...)
-    if (length(listData) == 1 && is.list(listData[[1]]))
-        listData <- listData[[1]]
+    if (length(listData) == 1 && is.list(listData[[1L]]))
+        listData <- listData[[1L]]
     if (compress)
         newCompressedList("CompressedRleList", lapply(listData,  as, "Rle"))
     else

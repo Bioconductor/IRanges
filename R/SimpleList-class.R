@@ -131,9 +131,9 @@ setMethod("seqselect", "SimpleList",
                       stop("'length(start)' must equal 'length(x)' when ",
                            "'end' and 'width' are NULL")
                   if (is.list(start)) {
-                      if (is.logical(start[[1]]))
+                      if (is.logical(start[[1L]]))
                           start <- LogicalList(start)
-                      else if (is.numeric(start[[1]]))
+                      else if (is.numeric(start[[1L]]))
                           start <- IntegerList(start)
                   } else if (is(start, "RleList")) {
                       start <- IRangesList(start)
@@ -145,7 +145,7 @@ setMethod("seqselect", "SimpleList",
                                seqselect(x@listData[[i]], start[[i]]))
                   } else if (is(start, "LogicalList") ||
                              is(start, "IntegerList")) {
-                      if (length(dim(x@listData[[1]])) < 2)
+                      if (length(dim(x@listData[[1L]])) < 2)
                           listData <-
                             lapply(indices,
                                    function(i) x@listData[[i]][start[[i]]])
@@ -172,9 +172,9 @@ setReplaceMethod("seqselect", "SimpleList",
                              stop("'length(start)' must equal 'length(x)' when ",
                                   "'end' and 'width' are NULL")
                          if (is.list(start)) {
-                             if (is.logical(start[[1]]))
+                             if (is.logical(start[[1L]]))
                                  start <- LogicalList(start)
-                             else if (is.numeric(start[[1]]))
+                             else if (is.numeric(start[[1L]]))
                                  start <- IntegerList(start)
                          } else if (is(start, "RleList")) {
                              start <- IRangesList(start)
@@ -277,7 +277,7 @@ setMethod("endoapply", "SimpleList",
 
 setMethod("mendoapply", "SimpleList",
           function(FUN, ..., MoreArgs = NULL) {
-              X <- list(...)[[1]]
+              X <- list(...)[[1L]]
               elementTypeX <- elementType(X)
               listData <- mapply(FUN = FUN, ..., MoreArgs = MoreArgs)
               if (!all(sapply(listData,

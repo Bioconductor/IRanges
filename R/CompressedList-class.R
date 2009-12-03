@@ -44,7 +44,7 @@ setReplaceMethod("names", "CompressedList",
 
 .compress.list <- function(x) {
     if (length(x) > 0) {
-        if (length(dim(x[[1]])) < 2) {
+        if (length(dim(x[[1L]])) < 2) {
             x <- do.call(c, unname(x))
         } else {
             x <- do.call(rbind, unname(x))
@@ -66,7 +66,7 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
             end <- integer(0)
             unlistData <- new(elementTypeData)
         } else {
-            if (length(dim(unlistData[[1]])) < 2) {
+            if (length(dim(unlistData[[1L]])) < 2) {
                 end <-
                   cumsum(unlist(lapply(unlistData, length), use.names = FALSE))
             } else {
@@ -345,9 +345,9 @@ setMethod("seqselect", "CompressedList",
                       stop("'length(start)' must equal 'length(x)' when ",
                            "'end' and 'width' are NULL")
                   if (is.list(start)) {
-                      if (is.logical(start[[1]]))
+                      if (is.logical(start[[1L]]))
                           start <- LogicalList(start)
-                      else if (is.numeric(start[[1]]))
+                      else if (is.numeric(start[[1L]]))
                           start <- IntegerList(start)
                   } else if (is(start, "RleList")) {
                       start <- IRangesList(start)
@@ -409,9 +409,9 @@ setReplaceMethod("seqselect", "CompressedList",
                              stop("'length(start)' must equal 'length(x)' ",
                                   "when 'end' and 'width' are NULL")
                          if (is.list(start)) {
-                             if (is.logical(start[[1]]))
+                             if (is.logical(start[[1L]]))
                                  start <- LogicalList(start)
-                             else if (is.numeric(start[[1]]))
+                             else if (is.numeric(start[[1L]]))
                                  start <- IntegerList(start)
                          } else if (is(start, "RleList")) {
                              start <- IRangesList(start)
@@ -466,10 +466,10 @@ setMethod("c", "CompressedList",
               if (!all(sapply(tls, is, "CompressedList")))
                   stop("all arguments in '...' must be CompressedList objects")
               ecs <- sapply(tls, elementType)
-              if (!all(sapply(ecs, extends, ecs[[1]])))
+              if (!all(sapply(ecs, extends, ecs[[1L]])))
                   stop("all arguments in '...' must have an element class ",
                        "that extends that of the first argument")
-              if (length(dim(tls[[1]]@unlistData)) < 2)
+              if (length(dim(tls[[1L]]@unlistData)) < 2)
                   unlistData <- do.call(c, lapply(tls, slot, "unlistData"))
               else
                   unlistData <- do.call(rbind, lapply(tls, slot, "unlistData"))
@@ -491,7 +491,7 @@ setMethod("c", "CompressedList",
               if (all(nchar(NAMES) == 0L))
                   NAMES <- NULL
               eltmetaX <- elementMetadata(x)
-              x <- newCompressedList(class(tls[[1]]), unlistData,
+              x <- newCompressedList(class(tls[[1L]]), unlistData,
                                      end = partitionEnd, NAMES = NAMES)
               slot(x, "elementMetadata", check=FALSE) <- eltmetaX
               .c.Sequence(x, ...)
@@ -542,7 +542,7 @@ setMethod("aggregate", "CompressedList",
     if (length(listData) == 0) {
         end <- integer(0)
     } else {
-        if (length(dim(listData[[1]])) < 2) {
+        if (length(dim(listData[[1L]])) < 2) {
             end <- cumsum(unlist(lapply(listData, length), use.names = FALSE))
         } else {
             end <- cumsum(unlist(lapply(listData, nrow), use.names = FALSE))
@@ -567,7 +567,7 @@ setMethod("endoapply", "CompressedList",
 
 setMethod("mendoapply", "CompressedList",
           function(FUN, ..., MoreArgs = NULL) {
-              .updateCompressedList(list(...)[[1]],
+              .updateCompressedList(list(...)[[1L]],
                                     mapply(FUN = FUN, ..., MoreArgs = MoreArgs))
           })
 

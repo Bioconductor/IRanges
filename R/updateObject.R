@@ -51,7 +51,7 @@ toCompressedList <- function(object, newclass, newtype, ...)
         partitioning = new("PartitioningByEnd",
                            end = cumsum(slot(object, "elementLengths")),
                            NAMES = slot(object, "NAMES")),
-        unlistData = updateObject(slot(object, "elements")[[1]]),
+        unlistData = updateObject(slot(object, "elements")[[1L]]),
         elementMetadata =
         updateObject(tryCatch(slot(object, "elementMetadata"),
                               error = function(e) NULL)),

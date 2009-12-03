@@ -43,7 +43,7 @@ isSingleStringOrNA <- function(x)
 ###   isConstant2 <- function(x) {length(unique(x)) == 1L}
 ###   isConstant3 <- function(x) {sum(duplicated(x)) == length(x) - 1L}
 ###   isConstant4 <- function(x) {length(x) != 0L && min(x) == max(x)}
-###   isConstant5 <- function(x) {length(x) != 0L && {rx <- range(x); rx[1] == rx[2]}}
+###   isConstant5 <- function(x) {length(x) != 0L && {rx <- range(x); rx[1L] == rx[2L]}}
 ### And the winner is... isConstant4()! It's 2x faster than isConstant1()
 ### and isConstant5(), 4x faster than isConstant2(), and 9x faster than
 ### isConstant3(). Results obtained on 'x0 <- rep.int(112L, 999999L)' with
@@ -255,7 +255,7 @@ toNumSnippet <- function(x, max.width)
     tail_ii0 <- length(x) + head_ii0 - length(head_ii0)
     ii0 <- c(head_ii0, tail_ii0)
     ## Effective elt width and nb of elt to display
-    elt_width <- format.info(as.numeric(x[ii0]))[1]
+    elt_width <- format.info(as.numeric(x[ii0]))[1L]
     nelt_to_display <- min(length(x), (max.width+1L) %/% (elt_width+1L))
     if (nelt_to_display == length(x))
         return(paste(format(as.numeric(x), width=elt_width), collapse=" "))
@@ -300,10 +300,10 @@ ellipsize <- function(obj, width = getOption("width"), sep = " ",
     while (last && (nc[last] + nchar(sep)*2^(last>1) + nchar(ellipsis)) > width)
       last <- last - 1L
     if (last == 0) ## have to truncate the first element
-      str <- paste(substring(str[1], 1, width - nchar(ellipsis)), ellipsis,
+      str <- paste(substring(str[1L], 1, width - nchar(ellipsis)), ellipsis,
                    sep = "")
     else if (last == 1) ## can only show the first
-      str <- c(str[1], "...")
+      str <- c(str[1L], "...")
     else
       str <- selectSome(str, last + 1L)
   }

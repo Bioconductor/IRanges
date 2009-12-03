@@ -100,7 +100,7 @@ setMethod("order", "Ranges",
         args <- list(...)
         if (length(args) == 1) {
             ans <- .Call("Ranges_order",
-                         start(args[[1]]), width(args[[1]]),
+                         start(args[[1L]]), width(args[[1L]]),
                          decreasing=decreasing,
                          PACKAGE="IRanges")
             return(ans)

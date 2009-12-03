@@ -88,7 +88,7 @@ setReplaceMethod("colnames", "DataFrame",
 
 .valid.DataFrame.dim <- function(x)
 {
-  nr <- dim(x)[1]
+  nr <- dim(x)[1L]
   if (!length(nr) == 1)
     return("length of 'nrows' slot must be 1")
   if (nr < 0)
@@ -139,8 +139,8 @@ DataFrame <- function(..., row.names = NULL)
   if (length(listData) > 0) {
     dotnames <- names(listData)
     dotvalues <- 
-      sapply(as.list(substitute(list(...)))[-1],
-             function(arg) deparse(arg)[1])
+      sapply(as.list(substitute(list(...)))[-1L],
+             function(arg) deparse(arg)[1L])
     if (is.null(dotnames)) {
       emptynames <- rep.int(TRUE, length(listData))
       names(listData) <- dotvalues
@@ -196,7 +196,7 @@ DataFrame <- function(..., row.names = NULL)
 XDataFrame <- function(..., row.names = NULL) {
   .Deprecated("DataFrame", "IRanges")
   mc <- match.call()
-  mc[1] <- DataFrame
+  mc[1L] <- DataFrame
   eval(mc)
 }
 
@@ -288,7 +288,7 @@ setMethod("[", "DataFrame",
               x <- callNextMethod(x, jInfo[["idx"]])
               if (anyDuplicated(names(x)))
                 names(x) <- make.unique(names(x))
-              dim[2] <- length(x)
+              dim[2L] <- length(x)
             }
 
             if (!missing(i)) {
@@ -299,8 +299,8 @@ setMethod("[", "DataFrame",
               i <- iInfo[["idx"]]
               if (useI) {
                 x@listData <- lapply(as.list(x), function(y) y[i, drop = FALSE])
-                dim[1] <- length(seq(dim[1])[i]) # may have 0 cols, no rownames
-                x@nrows <- dim[1]
+                dim[1L] <- length(seq(dim[1L])[i]) # may have 0 cols, no rownames
+                x@nrows <- dim[1L]
                 rn <- rownames(x)[i]
                 if (anyDuplicated(rn))
                   x@rownames <- make.unique(rn)
@@ -310,13 +310,13 @@ setMethod("[", "DataFrame",
             }
 
             if (missing(drop)) ## drop by default if only one column left
-              drop <- dim[2] == 1
+              drop <- dim[2L] == 1
             if (drop) {
               ## one column left
-              if (dim[2] == 1) 
-                return(x[[1]])
+              if (dim[2L] == 1) 
+                return(x[[1L]])
               ## one row left
-              if (dim[1] == 1)
+              if (dim[1L] == 1)
                 return(as(x, "list"))
             }
 

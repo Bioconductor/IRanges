@@ -89,7 +89,7 @@ setClass("GappedRanges",
 setMethod("length", "GappedRanges", function(x) length(x@cirl))
 
 setMethod("start", "GappedRanges",
-    function(x, ...) sapply(start(unname(x@cirl)), function(s) s[1])
+    function(x, ...) sapply(start(unname(x@cirl)), function(s) s[1L])
 )
 
 setMethod("end", "GappedRanges",

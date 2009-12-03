@@ -20,7 +20,7 @@ setGeneric("cbind", function(..., deparse.level=1) standardGeneric("cbind"),
 
 setMethod("cbind", "DataTable", function(..., deparse.level=1)
           stop("missing 'cbind' method for DataTable class ",
-               class(list(...)[[1]])))
+               class(list(...)[[1L]])))
 
 setMethod("dim", "DataTable", function(x) c(nrow(x), ncol(x)))
 
@@ -34,8 +34,8 @@ setReplaceMethod("dimnames", "DataTable",
                  {
                    if (!is.list(value))
                      stop("replacement value must be a list")
-                   rownames(x) <- value[[1]]
-                   colnames(x) <- value[[2]]
+                   rownames(x) <- value[[1L]]
+                   colnames(x) <- value[[2L]]
                    x
                  })
 
@@ -62,7 +62,7 @@ setGeneric("rbind", function(..., deparse.level=1) standardGeneric("rbind"),
 
 setMethod("rbind", "DataTable", function(..., deparse.level=1)
           stop("missing 'rbind' method for DataTable class ",
-               class(list(...)[[1]])))
+               class(list(...)[[1L]])))
 
 setMethod("seqselect", "DataTable",
           function(x, start=NULL, end=NULL, width=NULL)
@@ -132,7 +132,7 @@ setReplaceMethod("seqselect", "DataTable",
                      }
                      irValues <- PartitioningByEnd(cumsum(width(ir)))
                      ir <- gaps(ir, start = 1, end = nrow(x))
-                     if ((length(ir) == 0) || (start(ir)[1] != 1))
+                     if ((length(ir) == 0) || (start(ir)[1L] != 1))
                          ir <- c(IRanges(start = 1, width = 0), ir)
                      if (end(ir[length(ir)]) != nrow(x))
                          ir <- c(ir, IRanges(start = nrow(x), width = 0))
@@ -272,9 +272,9 @@ setGeneric("complete.cases", function(...) standardGeneric("complete.cases"))
 setMethod("complete.cases", "DataTable", function(...) {
   args <- list(...)
   if (length(args) == 1) {
-    x <- args[[1]]
+    x <- args[[1L]]
     rowSums(is.na(x)) == 0
-  } else complete.cases(args[[1]]) & do.call(complete.cases, args[-1])
+  } else complete.cases(args[[1L]]) & do.call(complete.cases, args[-1L])
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -332,7 +332,7 @@ setMethod("by", "DataTable",
           function(data, INDICES, FUN, ..., simplify = TRUE)
           {
               .mc <- mc <- match.call()
-              .mc[[1]] <- .by.data.frame
+              .mc[[1L]] <- .by.data.frame
               ans <- eval(.mc)
               attr(ans, "call") <- mc
               ans

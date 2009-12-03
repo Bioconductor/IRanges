@@ -193,7 +193,7 @@ setMethod("isDisjoint", "Ranges",
             return(TRUE)
         starts <- start(x)
         startord <- order(starts)
-        all(starts[startord][-1] - end(x)[startord][-length(x)] >= 1)
+        all(starts[startord][-1L] - end(x)[startord][-length(x)] >= 1)
     }
 )
 
@@ -204,7 +204,7 @@ setMethod("isNormal", "Ranges",
     {
         all_ok <- all(width(x) >= 1)
         if (length(x) >= 2)
-            all_ok <- all_ok && all(start(x)[-1] - end(x)[-length(x)] >= 2)
+            all_ok <- all_ok && all(start(x)[-1L] - end(x)[-length(x)] >= 2)
         all_ok
     }
 )
@@ -218,8 +218,8 @@ setMethod("whichFirstNotNormal", "Ranges",
     {
         is_ok <- width(x) >= 1
         if (length(x) >= 2)
-            is_ok <- is_ok & c(TRUE, start(x)[-1] - end(x)[-length(x)] >= 2)
-        which(!is_ok)[1]
+            is_ok <- is_ok & c(TRUE, start(x)[-1L] - end(x)[-length(x)] >= 2)
+        which(!is_ok)[1L]
     }
 )
 

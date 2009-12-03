@@ -94,8 +94,8 @@ setMethod("reduce", "RangedData",
           {
             FUN <- function(y) {
               name <- names(y)
-              ranges <- ranges(y)[[1]]
-              values <- values(y)[[1]]
+              ranges <- ranges(y)[[1L]]
+              values <- values(y)[[1L]]
               inds <-
                 unname(split(seq_len(nrow(values)), lapply(values, as.vector)))
               rlist <-

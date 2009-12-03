@@ -28,14 +28,14 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
   if (!any(hasrows | hascols)) {
     return(DataFrame())
   } else if (!any(hasrows)) {
-    return(args[[which(hascols)[1]]])
+    return(args[[which(hascols)[1L]]])
   } else if (sum(hasrows) == 1) {
     return(args[[which(hasrows)]])
   } else {
     args <- args[hasrows]
   }
 
-  df <- args[[1]]
+  df <- args[[1L]]
 
   for (i in 2:length(args)) {
     if (ncol(df) != ncol(args[[i]]))

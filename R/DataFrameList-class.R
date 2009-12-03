@@ -129,7 +129,7 @@ setReplaceMethod("colnames", "CompressedSplitDataFrameList",
                      if (length(x) != length(value))
                        stop("replacement value must be the same length as x")
                      if (length(x) > 0)
-                       colnames(x@unlistData) <- unlist(value[[1]])
+                       colnames(x@unlistData) <- unlist(value[[1L]])
                    } else {
                      stop("replacement value must either be NULL or a CharacterList")
                    }
@@ -141,8 +141,8 @@ setReplaceMethod("dimnames", "DataFrameList",
                  {
                    if (!is.list(value))
                      stop("replacement value must be a list")
-                   rownames(x) <- value[[1]]
-                   colnames(x) <- value[[2]]
+                   rownames(x) <- value[[1L]]
+                   colnames(x) <- value[[2L]]
                    x
                  })
 
@@ -152,7 +152,7 @@ setReplaceMethod("dimnames", "DataFrameList",
 
 .valid.SplitDataFrameList <- function(x) {
   if (length(x)) {
-    firstNames <- colnames(x[[1]])
+    firstNames <- colnames(x[[1L]])
     if (!all(sapply(as.list(x, use.names = FALSE),
                     function(df) identical(firstNames, colnames(df)))))
       return("column counts or names differ across elements")
@@ -169,9 +169,9 @@ setValidity2("SplitDataFrameList", .valid.SplitDataFrameList)
 DataFrameList <- function(...)
 {
   listData <- list(...)
-  if (length(listData) == 1 && is.list(listData[[1]]) &&
-      !is.data.frame(listData[[1]]))
-    listData <- listData[[1]]
+  if (length(listData) == 1 && is.list(listData[[1L]]) &&
+      !is.data.frame(listData[[1L]]))
+    listData <- listData[[1L]]
   newSimpleList("SimpleDataFrameList", lapply(listData, as, "DataFrame"))
 }
 
@@ -180,10 +180,10 @@ SplitDataFrameList <- function(..., compress = TRUE)
   if (!isTRUEorFALSE(compress))
     stop("'compress' must be TRUE or FALSE")
   listData <- list(...)
-  if (length(listData) == 1 && is.list(listData[[1]]) &&
-      !is.data.frame(listData[[1]]))
-    listData <- listData[[1]]
-  if (length(listData) > 0 && !is(listData[[1]], "DataFrame")) {
+  if (length(listData) == 1 && is.list(listData[[1L]]) &&
+      !is.data.frame(listData[[1L]]))
+    listData <- listData[[1L]]
+  if (length(listData) > 0 && !is(listData[[1L]], "DataFrame")) {
     if (is.null(names(listData)))
       names(listData) <- paste("X", seq_len(length(listData)), sep = "")
     listData <- do.call(Map, c(list(DataFrame), listData))
@@ -207,10 +207,10 @@ setMethod("[", "SimpleSplitDataFrameList",
               x <- callNextMethod(x, i)
 
             if (((nargs() - !missing(drop)) > 2) &&
-                (length(x@listData) > 0) && (ncol(x@listData[[1]]) == 1) &&
+                (length(x@listData) > 0) && (ncol(x@listData[[1L]]) == 1) &&
                 (missing(drop) || drop)) {
               uniqueClasses <-
-                unique(unlist(lapply(x@listData, function(y) class(y[[1]]))))
+                unique(unlist(lapply(x@listData, function(y) class(y[[1L]]))))
               if (all(uniqueClasses %in% 
                       c("raw", "logical", "integer", "numeric", "character",
                         "complex", "Rle")))
@@ -235,16 +235,16 @@ setMethod("[", "CompressedSplitDataFrameList",
 
             if (((nargs() - !missing(drop)) > 2) &&
                 (ncol(x@unlistData) == 1) && (missing(drop) || drop)) {
-              dataClass <- class(x@unlistData[[1]])
+              dataClass <- class(x@unlistData[[1L]])
               if (dataClass %in% 
                   c("raw", "logical", "integer", "numeric", "character",
                     "complex", "Rle"))
                 x <-
-                  CompressedAtomicList(x@unlistData[[1]],
+                  CompressedAtomicList(x@unlistData[[1L]],
                                        partitioning = x@partitioning)
               else if (dataClass == "IRanges")
                 x <-
-                  new2("CompressedIRangesList", unlistData = x@unlistData[[1]],
+                  new2("CompressedIRangesList", unlistData = x@unlistData[[1L]],
                        partitioning = x@partitioning)
             }
 
@@ -263,7 +263,7 @@ setReplaceMethod("[", "SimpleSplitDataFrameList",
                              x <- callNextMethod(x = x, i = i, value = value)
                      } else {
                          jInfo <-
-                           .bracket.Index(j, colnames(x)[[1]], ncol(x)[[1]])
+                           .bracket.Index(j, colnames(x)[[1L]], ncol(x)[[1L]])
                          if (!jInfo[["useIdx"]]) {
                              if (missing(i))
                                  x[] <- value
@@ -301,7 +301,7 @@ setReplaceMethod("[", "CompressedSplitDataFrameList",
                              x <- callNextMethod(x = x, i = i, value = value)
                      } else {
                          jInfo <-
-                           .bracket.Index(j, colnames(x)[[1]], ncol(x)[[1]])
+                           .bracket.Index(j, colnames(x)[[1L]], ncol(x)[[1L]])
                          if (!jInfo[["useIdx"]]) {
                              if (missing(i))
                                  x[] <- value
@@ -384,9 +384,9 @@ setMethod("show", "SplitDataFrameList", function(object)
               show(as.list(object))
             } else {
               sketch <- function(x) c(head(x, 3), "...", tail(x, 3))
-              if (k >= 3 && cumsumN[3] <= 20)
+              if (k >= 3 && cumsumN[3L] <= 20)
                 showK <- 3
-              else if (k >= 2 && cumsumN[2] <= 20)
+              else if (k >= 2 && cumsumN[2L] <= 20)
                 showK <- 2
               else
                 showK <- 1

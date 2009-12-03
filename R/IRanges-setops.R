@@ -42,7 +42,7 @@ setMethod("gaps", "IRanges",
             }
             if (length(start0) >= 2) {
                 ans_start <- end0[-length(start0)] + 1L
-                ans_width <- start0[-1] - ans_start
+                ans_width <- start0[-1L] - ans_start
             }
         } else if (!is.na(start) || !is.na(end)) {
             if (is.na(start) || is.na(end))

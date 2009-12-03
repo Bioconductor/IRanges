@@ -67,7 +67,7 @@ FilterRules.parseRule <- function(expr) {
 ## takes logical expressions, or character vectors to parse
 
 FilterRules <- function(exprs = list(), ..., active = TRUE) {
-  exprs <- c(as.list(substitute(list(...)))[-1], exprs)
+  exprs <- c(as.list(substitute(list(...)))[-1L], exprs)
   if (length(names(exprs)) == 0) {
     names(exprs) <- unlist(lapply(exprs, deparse))
     chars <- unlist(sapply(exprs, is.character))

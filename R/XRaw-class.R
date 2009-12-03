@@ -94,7 +94,7 @@ setMethod("c", "XRaw",
             stop("'recursive' mode not supported")
         if (missing(x)) {
             args <- unname(list(...))
-            x <- args[[1]]
+            x <- args[[1L]]
         } else {
             args <- unname(list(x, ...))
         }

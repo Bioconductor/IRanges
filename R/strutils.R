@@ -1,4 +1,4 @@
-### Safe alternative to 'strsplit(x, NULL, fixed=TRUE)[[1]]'.
+### Safe alternative to 'strsplit(x, NULL, fixed=TRUE)[[1L]]'.
 safeExplode <- function(x)
 {
     if (!isSingleString(x))

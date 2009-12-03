@@ -255,7 +255,7 @@ checkAndTranslateDbleBracketSubscript <- function(x, i, j, ...)
         subscripts$j <- j
     if (length(subscripts) != 1L)
         stop("incorrect number of subscripts")
-    subscript <- subscripts[[1]]
+    subscript <- subscripts[[1L]]
     if (!is.character(subscript) && !is.numeric(subscript))
         stop("invalid subscript type '", class(subscript), "'")
     if (length(subscript) < 1L)
@@ -534,7 +534,7 @@ setReplaceMethod("seqselect", "Sequence",
                      }
                      irValues <- PartitioningByEnd(cumsum(width(ir)))
                      ir <- gaps(ir, start = 1, end = length(x))
-                     if ((length(ir) == 0) || (start(ir)[1] != 1))
+                     if ((length(ir) == 0) || (start(ir)[1L] != 1))
                          ir <- c(IRanges(start = 1, width = 0), ir)
                      if (end(ir[length(ir)]) != length(x))
                          ir <- c(ir, IRanges(start = length(x), width = 0))
@@ -751,7 +751,7 @@ setMethod("mapply", "Sequence",
               FUNprime <- function(.__INDEX__, ...) {
                   do.call(FUN, c(lapply(seqs, "[[", .__INDEX__), ...))
               }
-              mapply(FUNprime, structure(seq_len(N), names = names(seqs[[1]])),
+              mapply(FUNprime, structure(seq_len(N), names = names(seqs[[1L]])),
                      MoreArgs = MoreArgs, SIMPLIFY = SIMPLIFY,
                      USE.NAMES = USE.NAMES)
           })
@@ -824,7 +824,7 @@ setMethod("endoapply", "Sequence",
 
 setMethod("mendoapply", "Sequence",
           function(FUN, ..., MoreArgs = NULL) {
-              X <- list(...)[[1]]
+              X <- list(...)[[1L]]
               elementTypeX <- elementType(X)
               listData <- mapply(FUN = FUN, ..., MoreArgs = MoreArgs)
               for (i in seq_len(length(listData))) {

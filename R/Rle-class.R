@@ -23,7 +23,7 @@ setClass("Rle",
                  msg <- c(msg, "all run lengths must be positive")
              ## TODO: Fix the following test.
              #if (length(run_lengths) >= 2 && is.atomic(run_values)
-             #      && any(run_values[-1] == run_values[-length(run_values)]))
+             #      && any(run_values[-1L] == run_values[-length(run_values)]))
              #    msg <- c(msg, "consecutive runs must have different values")
              if (is.null(msg)) TRUE else msg
          })
@@ -469,7 +469,7 @@ setMethod("rep", "Rle",
           function(x, times, length.out, each)
           {
               if (!missing(each) && length(each) > 0) {
-                  x@lengths <- runLength(x) * as.integer(each[1])
+                  x@lengths <- runLength(x) * as.integer(each[1L])
               } else if (!missing(times) && length(times) > 0) {
                   times <- as.integer(times)
                   if (length(times) == length(x)) {
@@ -486,7 +486,7 @@ setMethod("rep", "Rle",
                   }
               } else if (!missing(length.out) && length(length.out) > 0) {
                   n <- length(x)
-                  length.out <- as.integer(length.out[1])
+                  length.out <- as.integer(length.out[1L])
                   if (length.out == 0) {
                       x <- new(class(x))
                   } else if (length.out < n) {
@@ -615,7 +615,7 @@ setReplaceMethod("seqselect", "Rle",
                      runEnd <- info[["end"]][["run"]]
                      offsetEnd <- info[["end"]][["offset"]]
 
-                     if ((length(ir) == 0) || (start(ir)[1] != 1)) {
+                     if ((length(ir) == 0) || (start(ir)[1L] != 1)) {
                          k <- k + 1L
                          runStart <- c(1L, runStart)
                          offsetStart <- c(0L, offsetStart)
@@ -863,7 +863,7 @@ setMethod("diff", "Rle",
 
 .psummary.Rle <- function(FUN, ..., MoreArgs = NULL) {
     rlist <- RleList(..., compress = FALSE)
-    ends <- end(rlist[[1]])
+    ends <- end(rlist[[1L]])
     if (length(rlist) > 1) {
         for (i in 2:length(rlist))
             ends <- .Call("Integer_sorted_merge", ends, end(rlist[[i]]),
@@ -1065,7 +1065,7 @@ setMethod("runmed", "Rle",
               i <- (k + 1L) %/% 2L
               ans <- runq(x, k = k, i = i)
               if (endrule == "constant") {
-                  runLength(ans)[1] <- runLength(ans)[1] + (i - 1L)
+                  runLength(ans)[1L] <- runLength(ans)[1L] + (i - 1L)
                   runLength(ans)[nrun(ans)] <-
                     runLength(ans)[nrun(ans)] + (i - 1L)
               } else if (endrule != "drop") {
@@ -1086,7 +1086,7 @@ setMethod("runsum", "Rle",
               ans <- .Call("Rle_runsum", x, as.integer(k), PACKAGE="IRanges")
               if (endrule == "constant") {
                   j <- (k + 1L) %/% 2L
-                  runLength(ans)[1] <- runLength(ans)[1] + (j - 1L)
+                  runLength(ans)[1L] <- runLength(ans)[1L] + (j - 1L)
                   runLength(ans)[nrun(ans)] <-
                     runLength(ans)[nrun(ans)] + (j - 1L)
               }
@@ -1104,7 +1104,7 @@ setMethod("runwtsum", "Rle",
                       PACKAGE="IRanges")
               if (endrule == "constant") {
                   j <- (k + 1L) %/% 2L
-                  runLength(ans)[1] <- runLength(ans)[1] + (j - 1L)
+                  runLength(ans)[1L] <- runLength(ans)[1L] + (j - 1L)
                   runLength(ans)[nrun(ans)] <-
                     runLength(ans)[nrun(ans)] + (j - 1L)
               }
@@ -1122,7 +1122,7 @@ setMethod("runq", "Rle",
                       PACKAGE="IRanges")
               if (endrule == "constant") {
                   j <- (k + 1L) %/% 2L
-                  runLength(ans)[1] <- runLength(ans)[1] + (j - 1L)
+                  runLength(ans)[1L] <- runLength(ans)[1L] + (j - 1L)
                   runLength(ans)[nrun(ans)] <-
                     runLength(ans)[nrun(ans)] + (j - 1L)
               }
