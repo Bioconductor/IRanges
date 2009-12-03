@@ -133,10 +133,10 @@ setMethod("c", "SharedVector_Pool",
         if (!identical(recursive, FALSE))
             stop("'recursive' argument not supported")
         x@xp_list <-
-            do.call(c, lapply(list(x, ...),
+            do.call(c, lapply(unname(list(x, ...)),
                               function(arg) arg@xp_list))
         x@.link_to_cached_object_list <-
-            do.call(c, lapply(list(x, ...),
+            do.call(c, lapply(unname(list(x, ...)),
                               function(arg) arg@.link_to_cached_object_list))
         x
     }

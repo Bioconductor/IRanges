@@ -426,7 +426,7 @@ setMethod("c", "Rle",
           {
               if (recursive)
                   stop("'recursive' mode is not supported")
-              args <- list(x, ...)
+              args <- unname(list(x, ...))
               if (!all(unlist(lapply(args, is, "Rle"))))
                   stop("all arguments in '...' must be Rle objects")
               Rle(values  = unlist(lapply(args, slot, "values")),

@@ -99,7 +99,7 @@ setMethod("c", "GroupedIRanges",
         disableValidity(TRUE)
         ans <- callNextMethod(x, ..., recursive=FALSE)
         ans@group <-
-            do.call(c, lapply(list(x, ...), function(arg) arg@group))
+            do.call(c, lapply(unname(list(x, ...)), function(arg) arg@group))
         ans
     }
 )
@@ -257,12 +257,12 @@ setMethod("c", "XVectorList",
         if (!identical(recursive, FALSE))
             stop("'recursive' argument not supported")
         if (missing(x)) {
-            args <- list(...)
+            args <- unname(list(...))
             x <- args[[1L]]
         } else {
-            args <- list(x, ...)
+            args <- unname(list(x, ...))
         }
-	if (length(args) == 1L)
+        if (length(args) == 1L)
             return(x)
         arg_is_null <- sapply(args, is.null)
         if (any(arg_is_null))

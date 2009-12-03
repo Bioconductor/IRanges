@@ -350,7 +350,7 @@ setMethod("reduce", "RangesList",
 
 setMethod("range", "RangesList",
           function(x, ..., na.rm) {
-            args <- list(x, ...)
+            args <- unname(list(x, ...))
             if (!all(sapply(sapply(args, universe), identical, universe(x))))
               stop("All args in '...' must have the same universe as 'x'")
             spaceList <- lapply(args, names)

@@ -230,7 +230,7 @@ setReplaceMethod("seqselect", "SimpleList",
 setMethod("c", "SimpleList",
           function(x, ..., recursive = FALSE) {
               slot(x, "listData") <-
-                do.call("c", lapply(list(x, ...), as.list))
+                do.call(c, lapply(unname(list(x, ...)), as.list))
               .c.Sequence(x, ...)
           })
 

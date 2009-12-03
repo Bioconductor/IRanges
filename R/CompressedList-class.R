@@ -459,10 +459,10 @@ setMethod("c", "CompressedList",
           function(x, ..., recursive = FALSE) {
               if (recursive)
                   stop("'recursive' mode is not supported")
-              if (!missing(x))
-                  tls <- list(x, ...)
+              if (missing(x))
+                  tls <- unname(list(...))
               else
-                  tls <- list(...)
+                  tls <- unname(list(x, ...))
               if (!all(sapply(tls, is, "CompressedList")))
                   stop("all arguments in '...' must be CompressedList objects")
               ecs <- sapply(tls, elementType)

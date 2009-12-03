@@ -557,10 +557,10 @@ setMethod("c", "IRanges",
         if (!identical(recursive, FALSE))
             stop("'recursive' argument not supported")
         if (missing(x)) {
-            args <- list(...)
+            args <- unname(list(...))
             x <- args[[1L]]
         } else {
-            args <- list(x, ...)
+            args <- unname(list(x, ...))
         }
         if (length(args) == 1L)
             return(x)

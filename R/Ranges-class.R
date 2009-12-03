@@ -419,7 +419,7 @@ setMethod("disjoin", "Ranges",
 setMethod("range", "Ranges",
     function(x, ..., na.rm)
     {
-        args <- list(x, ...)
+        args <- unname(list(x, ...))
         if (!all(sapply(args, is, "Ranges")))
             stop("all arguments in '...' must be Ranges objects")
         x <- do.call(c, args)

@@ -179,10 +179,10 @@ setMethod("c", "FilterRules",
           function(x, ..., recursive = FALSE) {
             if (recursive)
               stop("'recursive' mode is not supported")
-            if (!missing(x))
-              args <- list(x, ...)
+            if (missing(x))
+              args <- unname(list(...))
             else
-              args <- list(...)
+              args <- unname(list(x, ...))
             if (!all(sapply(args, is, "FilterRules")))
               stop("all arguments in '...' must be FilterRules objects")
             ans <-

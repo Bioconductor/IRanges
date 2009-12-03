@@ -509,9 +509,10 @@ setReplaceMethod("window", "RangedData",
 setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
   if (recursive)
     stop("'recursive' mode not supported")
-  rds <- list(...)
-  if (!missing(x))
-    rds <- c(list(x), rds)
+  if (missing(x))
+    rds <- unname(list(...))
+  else
+    rds <- unname(list(x, ...))
   rd <- rds[[1]]
   if (!all(sapply(rds, is, "RangedData")))
     stop("all arguments in '...' must be RangedData objects")
@@ -536,7 +537,7 @@ setMethod("split", "RangedData", function(x, f, drop = FALSE) {
 })
 
 setMethod("rbind", "RangedData", function(..., deparse.level=1) {
-  args <- list(...)
+  args <- unname(list(...))
   rls <- lapply(args, ranges)
   rl <- rls[[1]]
   if (!all(sapply(sapply(rls, universe), identical, universe(rl))))
@@ -742,7 +743,12 @@ setMethod("unlist", "RangedDataList",
           function(x, recursive = TRUE, use.names = TRUE) {
             if (!missing(recursive))
               warning("'recursive' argument currently ignored")
-            ans <- do.call(c, as.list(x))
+            for (i in seq_len(length(x))) {
+              nms <- paste(names(x)[i], names(ranges(x[[i]])), sep = ".")
+              names(x[[i]]@ranges) <- nms
+              names(x[[i]]@values) <- nms
+            }
+            ans <- do.call(c, unname(as.list(x)))
             if (!use.names)
               names(ans) <- NULL
             ans
