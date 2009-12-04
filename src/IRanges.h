@@ -528,18 +528,6 @@ SEXP IRanges_coverage(
 );
 
 
-/* CompressedIRangesList_class.c */
-
-cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x);
-
-cachedIRanges _get_cachedCompressedIRangesList_elt(
-	const cachedCompressedIRangesList *cached_x,
-	int i
-);
-
-SEXP CompressedIRangesList_summary(SEXP object);
-
-
 /* Grouping_class.c */
 
 SEXP debug_Grouping_class();
@@ -547,6 +535,8 @@ SEXP debug_Grouping_class();
 SEXP _get_H2LGrouping_high2low(SEXP x);
 
 SEXP _get_H2LGrouping_low2high(SEXP x);
+
+SEXP _get_PartitioningByEnd_end(SEXP x);
 
 SEXP H2LGrouping_members(
 	SEXP x,
@@ -557,6 +547,35 @@ SEXP H2LGrouping_vmembers(
 	SEXP x,
 	SEXP group_ids_list
 );
+
+
+/* CompressedIRangesList_class.c */
+
+SEXP _get_CompressedIRangesList_unlistData(SEXP x);
+
+SEXP _get_CompressedIRangesList_partitioning(SEXP x);
+
+int _get_CompressedIRangesList_length(SEXP x);
+
+cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x);
+
+int _get_cachedCompressedIRangesList_length(
+	const cachedCompressedIRangesList *cached_x
+);
+
+cachedIRanges _get_cachedCompressedIRangesList_elt(
+	const cachedCompressedIRangesList *cached_x,
+	int i
+);
+
+SEXP CompressedIRangesList_summary(SEXP object);
+
+
+/* GappedRanges_class.c */
+
+SEXP GappedRanges_start(SEXP x);
+
+SEXP GappedRanges_end(SEXP x);
 
 
 /* Ranges_comparison.c */

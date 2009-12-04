@@ -44,14 +44,18 @@ static const R_CallMethodDef callMethods[] = {
 /* coverage */
 	CALLMETHOD_DEF(IRanges_coverage, 3),
 
-/* CompressedIRangesList_class.c */
-	CALLMETHOD_DEF(CompressedIRangesList_summary, 1),
-
 /* Grouping_class.c */
 	CALLMETHOD_DEF(debug_Grouping_class, 0),
 
 	CALLMETHOD_DEF(H2LGrouping_members, 2),
 	CALLMETHOD_DEF(H2LGrouping_vmembers, 2),
+
+/* CompressedIRangesList_class.c */
+	CALLMETHOD_DEF(CompressedIRangesList_summary, 1),
+
+/* GappedRanges_class.c */
+	CALLMETHOD_DEF(GappedRanges_start, 1),
+	CALLMETHOD_DEF(GappedRanges_end, 1),
 
 /* Ranges_comparison.c */
 	CALLMETHOD_DEF(Ranges_order, 3),
@@ -239,13 +243,13 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_new_IRanges);
 	REGISTER_CCALLABLE(_alloc_IRanges);
 
-/* CompressedIRangesList_class.c */
-	REGISTER_CCALLABLE(_cache_CompressedIRangesList);
-	REGISTER_CCALLABLE(_get_cachedCompressedIRangesList_elt);
-
 /* Grouping_class.c */
 	REGISTER_CCALLABLE(_get_H2LGrouping_high2low);
 	REGISTER_CCALLABLE(_get_H2LGrouping_low2high);
+
+/* CompressedIRangesList_class.c */
+	REGISTER_CCALLABLE(_cache_CompressedIRangesList);
+	REGISTER_CCALLABLE(_get_cachedCompressedIRangesList_elt);
 
 /* SharedVector_class.c */
 	REGISTER_CCALLABLE(_new_SharedVector);

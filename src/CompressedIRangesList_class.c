@@ -1,4 +1,45 @@
+/****************************************************************************
+ *         Low-level manipulation of CompressedIRangesList objects          *
+ ****************************************************************************/
+
 #include "IRanges.h"
+
+
+/****************************************************************************
+ * C-level slot getters for CompressedIRangesList objects.
+ *
+ * Be careful that these functions do NOT duplicate the returned slot.
+ * Thus they cannot be made .Call entry points!
+ */
+
+static SEXP
+	unlistData_symbol = NULL,
+	partitioning_symbol = NULL;
+
+SEXP _get_CompressedIRangesList_unlistData(SEXP x)
+{
+	INIT_STATIC_SYMBOL(unlistData)
+	return GET_SLOT(x, unlistData_symbol);
+}
+
+SEXP _get_CompressedIRangesList_partitioning(SEXP x)
+{
+	INIT_STATIC_SYMBOL(partitioning)
+	return GET_SLOT(x, partitioning_symbol);
+}
+
+/* Not strict "slot getters" but very much like. */
+
+int _get_CompressedIRangesList_length(SEXP x)
+{
+	return LENGTH(_get_PartitioningByEnd_end(
+			_get_CompressedIRangesList_partitioning(x)));
+}
+
+
+/****************************************************************************
+ * C-level abstract getters.
+ */
 
 cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x)
 {
@@ -6,11 +47,17 @@ cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x)
 	SEXP x_end;
 
 	cached_x.classname = _get_classname(x);
-	x_end = GET_SLOT(GET_SLOT(x, install("partitioning")), install("end"));
+	x_end = _get_PartitioningByEnd_end(_get_CompressedIRangesList_partitioning(x));
 	cached_x.length = LENGTH(x_end);
 	cached_x.end = INTEGER(x_end);
-	cached_x.cached_unlistData = _cache_IRanges(GET_SLOT(x, install("unlistData")));
+	cached_x.cached_unlistData = _cache_IRanges(
+				_get_CompressedIRangesList_unlistData(x));
 	return cached_x;
+}
+
+int _get_cachedCompressedIRangesList_length(const cachedCompressedIRangesList *cached_x)
+{
+	return cached_x->length;
 }
 
 cachedIRanges _get_cachedCompressedIRangesList_elt(
@@ -23,6 +70,10 @@ cachedIRanges _get_cachedCompressedIRangesList_elt(
 	return _sub_cachedIRanges(&(cached_x->cached_unlistData), offset, length);
 }
 
+
+/****************************************************************************
+ * Other utilities.
+ */
 
 /*
  * --- .Call ENTRY POINT ---

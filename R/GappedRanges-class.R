@@ -89,11 +89,15 @@ setClass("GappedRanges",
 setMethod("length", "GappedRanges", function(x) length(x@cirl))
 
 setMethod("start", "GappedRanges",
-    function(x, ...) sapply(start(unname(x@cirl)), function(s) s[1L])
+    function(x, ...)
+        #sapply(start(unname(x@cirl)), function(s) s[1L])
+        .Call("GappedRanges_start", x, PACKAGE="IRanges")
 )
 
 setMethod("end", "GappedRanges",
-    function(x, ...) sapply(end(unname(x@cirl)), function(e) e[length(e)])
+    function(x, ...)
+        #sapply(end(unname(x@cirl)), function(e) e[length(e)])
+        .Call("GappedRanges_end", x, PACKAGE="IRanges")
 )
 
 setMethod("names", "GappedRanges", function(x) names(x@cirl))
