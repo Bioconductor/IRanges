@@ -54,9 +54,11 @@
 \alias{seqselect}
 \alias{seqselect,Sequence-method}
 \alias{seqselect,vector-method}
+\alias{seqselect,factor-method}
 \alias{seqselect<-}
 \alias{seqselect<-,Sequence-method}
 \alias{seqselect<-,vector-method}
+\alias{seqselect<-,factor-method}
 \alias{shiftApply}
 \alias{shiftApply,Sequence,Sequence-method}
 \alias{shiftApply,vector,vector-method}
@@ -64,8 +66,10 @@
 \alias{tail,Sequence-method}
 \alias{window,Sequence-method}
 \alias{window,vector-method}
+\alias{window,factor-method}
 \alias{window<-,Sequence-method}
 \alias{window<-,vector-method}
+\alias{window<-,factor-method}
 \alias{with,Sequence-method}
 
 

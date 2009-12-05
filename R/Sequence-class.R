@@ -486,6 +486,15 @@ setMethod("seqselect", "vector",
                     PACKAGE="IRanges")
           })
 
+setMethod("seqselect", "factor",
+          function(x, start=NULL, end=NULL, width=NULL)
+          {
+              labels <- levels(x)
+              factor(callGeneric(as.integer(x), start = start, end = end,
+                                 width = width),
+                     levels = seq_len(length(labels)), labels = labels)
+          })
+
 setGeneric("seqselect<-", signature="x",
            function(x, start = NULL, end = NULL, width = NULL, value)
            standardGeneric("seqselect<-"))
@@ -589,6 +598,15 @@ setReplaceMethod("seqselect", "vector",
                      x
                  })
 
+setReplaceMethod("seqselect", "factor",
+                 function(x, start = NULL, end = NULL, width = NULL, value)
+                 {
+                     levels <- levels(x)
+                     x <- as.character(x)
+                     value <- as.character(value)
+                     factor(callGeneric(), levels = levels)
+                 })
+
 setMethod("subset", "Sequence",
           function (x, subset, ...) 
           {
@@ -666,6 +684,17 @@ setMethod("window", "vector",
               }
           })
 
+setMethod("window", "factor",
+          function(x, start = NA, end = NA, width = NA,
+                   frequency = NULL, delta = NULL, ...)
+          {
+              labels <- levels(x)
+              factor(callGeneric(as.integer(x), start = start, end = end,
+                                 width = width, frequency = frequency,
+                                 delta = delta, ...),
+                     levels = seq_len(length(labels)), labels = labels)
+          })
+
 setReplaceMethod("window", "Sequence",
                  function(x, start = NA, end = NA, width = NA,
                           keepLength = TRUE, ..., value)
@@ -708,6 +737,16 @@ setReplaceMethod("window", "vector",
                      c(window(x, end = start(solved_SEW) - 1L),
                        value,
                        window(x, start = end(solved_SEW) + 1L))
+                 })
+
+setReplaceMethod("window", "factor",
+                 function(x, start = NA, end = NA, width = NA,
+                          keepLength = TRUE, ..., value)
+                 {
+                     levels <- levels(x)
+                     x <- as.character(x)
+                     value <- as.character(value)
+                     factor(callGeneric(), levels = levels)
                  })
 
 ### Maybe this is how `!=` should have been defined in the base package so
