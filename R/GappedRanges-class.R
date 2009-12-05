@@ -149,6 +149,12 @@ setMethod("[[", "GappedRanges",
     }
 )
 
+### Without this definition, we inherit the method for Sequence objects
+### which returns the same thing but is thousands of times slower!
+setMethod("elementLengths", "GappedRanges",
+    function(x) elementLengths(x@cirl)
+)
+
 setMethod("[", "GappedRanges",
     function(x, i, j, ... , drop=TRUE)
     {
