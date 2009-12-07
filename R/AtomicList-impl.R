@@ -580,8 +580,13 @@ setMethod("show", "AtomicList",
                       label <- paste("[[\"", nm, "\"]]", sep = "")
                   else
                       label <- paste("[[", i, "]]", sep = "")
-                  cat(labeledLine(label, object[[i]], labelSep = "",
-                                  count = FALSE))
+                  if (length(object[[i]]) == 0) {
+                      cat(label, " ", sep = "")
+                      print(object[[i]])
+                  } else {
+                      cat(labeledLine(label, object[[i]], labelSep = "",
+                                      count = FALSE))
+                  }
               }
               if (diffK > 0)
                   cat("...\n<", diffK,
