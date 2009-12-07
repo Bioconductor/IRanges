@@ -107,7 +107,7 @@ setMethod("as.data.frame", "Ranges",
 setMethod("as.integer", "Ranges",
     function(x, ...)
     {
-        x <- x[width(x) > 0]
+        x <- x[width(x) > 0L]
         mseq(start(x), end(x))
     }
 )
@@ -188,12 +188,12 @@ setGeneric("isDisjoint", function(x) standardGeneric("isDisjoint"))
 setMethod("isDisjoint", "Ranges",
     function(x)
     {
-        x <- x[width(x) > 0]
+        x <- x[width(x) > 0L]
         if (length(x) < 2)
             return(TRUE)
         starts <- start(x)
         startord <- order(starts)
-        all(starts[startord][-1L] - end(x)[startord][-length(x)] >= 1)
+        all(starts[startord][-1L] - end(x)[startord][-length(x)] >= 1L)
     }
 )
 
@@ -202,9 +202,9 @@ setGeneric("isNormal", function(x) standardGeneric("isNormal"))
 setMethod("isNormal", "Ranges",
     function(x)
     {
-        all_ok <- all(width(x) >= 1)
+        all_ok <- all(width(x) >= 1L)
         if (length(x) >= 2)
-            all_ok <- all_ok && all(start(x)[-1L] - end(x)[-length(x)] >= 2)
+            all_ok <- all_ok && all(start(x)[-1L] - end(x)[-length(x)] >= 2L)
         all_ok
     }
 )
@@ -216,9 +216,9 @@ setGeneric("whichFirstNotNormal",
 setMethod("whichFirstNotNormal", "Ranges",
     function(x)
     {
-        is_ok <- width(x) >= 1
+        is_ok <- width(x) >= 1L
         if (length(x) >= 2)
-            is_ok <- is_ok & c(TRUE, start(x)[-1L] - end(x)[-length(x)] >= 2)
+            is_ok <- is_ok & c(TRUE, start(x)[-1L] - end(x)[-length(x)] >= 2L)
         which(!is_ok)[1L]
     }
 )
@@ -378,14 +378,14 @@ setMethod("flank", "Ranges",
         if (both)
             x <-
               update(x, start = ifelse(start, start(x) - abs(width),
-                                       end(x) - abs(width) + 1),
-                     width = 2 * abs(width), check = FALSE)
+                                       end(x) - abs(width) + 1L),
+                     width = 2L * abs(width), check = FALSE)
         else
             x <-
               update(x,
                      start = ifelse(start,
-                             ifelse(width < 0, start(x), start(x) - width),
-                             ifelse(width < 0, end(x) + width + 1, end(x) + 1)),
+                             ifelse(width < 0L, start(x), start(x) - width),
+                             ifelse(width < 0L, end(x) + width + 1L, end(x) + 1L)),
                      width = abs(width), check = FALSE)
         if (!normargUseNames(use.names))
             names(x) <- NULL
@@ -402,9 +402,9 @@ setMethod("disjoin", "Ranges",
         ## ends: original ends and start-1 when inside another interval
         starts <- unique(start(x))
         ends <- unique(end(x))
-        adj_start <- sort(unique(c(starts, ends + 1)))
-        adj_end <- sort(unique(c(ends, starts - 1)))
-        adj <- update(x, start = head(adj_start, -1), end = tail(adj_end, -1),
+        adj_start <- sort(unique(c(starts, ends + 1L)))
+        adj_end <- sort(unique(c(ends, starts - 1L)))
+        adj <- update(x, start = head(adj_start, -1L), end = tail(adj_end, -1L),
                       check = FALSE)
         adj[adj %in% x]
     }
@@ -495,8 +495,8 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
         else { ## avoid overlapping with self
             subject <- x
             olm <- as.matrix(findOverlaps(x, subject))
-            olm <- olm[olm[,1] != olm[,2],]
-            ol <- olm[,2][match(seq_len(length(subject)), olm[,1])]
+            olm <- olm[olm[,1L] != olm[,2L],]
+            ol <- olm[,2L][match(seq_len(length(subject)), olm[,1L])]
         }
         x <- x[is.na(ol)]
         before <- precede(x, subject)

@@ -32,7 +32,7 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
             if (!is.null(query_ord)) {
               if (multiple) {
                 mat <- matchMatrix(result)
-                mat[,1] <- query_ord[mat[,1]]
+                mat[,1L] <- query_ord[mat[,1L]]
                 result@matchMatrix <- mat
               } else {
                 query_rev_ord <- integer(length(query_ord))
@@ -54,8 +54,8 @@ setMethod("findOverlaps", c("Ranges", "missing"),
             result <- findOverlaps(query, query, maxgap, TRUE)
             ### FIXME: perhaps support a "simplify" option that does this:
             ## mat <- matchMatrix(result)            
-            ## mat <- mat[mat[,1] != mat[,2],]
-            ## norm_mat <- cbind(pmin(mat[,1], mat[,2]), pmax(mat[,1], mat[,2]))
+            ## mat <- mat[mat[,1L] != mat[,2L],]
+            ## norm_mat <- cbind(pmin(mat[,1L], mat[,2L]), pmax(mat[,1L], mat[,2L]))
             ## mat <- mat[!duplicated(norm_mat),]
             ## result@matchMatrix <- mat
             result

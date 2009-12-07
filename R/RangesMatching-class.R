@@ -24,13 +24,13 @@ setMethod("length", "RangesMatching", function(x) {
 setGeneric("subjectHits", function(x, ...) standardGeneric("subjectHits"))
 
 setMethod("subjectHits", "RangesMatching", function(x) {
-  matchMatrix(x)[,2]
+  matchMatrix(x)[,2L]
 })
 
 setGeneric("queryHits", function(x, ...) standardGeneric("queryHits"))
 
 setMethod("queryHits", "RangesMatching", function(x) {
-  matchMatrix(x)[,1]
+  matchMatrix(x)[,1L]
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -54,7 +54,7 @@ setMethod("as.matrix", "RangesMatching", function(x) {
 
 setMethod("as.table", "RangesMatching", function(x, ...) {
   mm <- matchMatrix(x)
-  table(factor(mm[,1], seq_len(ncol(x))))
+  table(factor(mm[,1L], seq_len(ncol(x))))
   ## if (!ncol(mm)) ## as.table does not work for empty arrays
   ##   return(table(integer(), dnn="ranges"))
   ## if (is(mm, "ngCMatrix"))
@@ -76,8 +76,8 @@ setMethod("ranges", "RangesMatching", function(x, query, subject) {
   if (!is(subject, "Ranges") || length(subject) != nrow(x))
     stop("'subject' must be a Ranges of length equal to number of subjects")
   m <- as.matrix(x)
-  q <- query[m[,1]]
-  s <- subject[m[,2]]
+  q <- query[m[,1L]]
+  s <- subject[m[,2L]]
   IRanges(pmax(start(q), start(s)), pmin(end(s), end(q)))
 })
 

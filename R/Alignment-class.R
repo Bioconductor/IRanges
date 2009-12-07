@@ -30,12 +30,12 @@ setMethod("map", c("RangesList", "Alignment"),
               ol <- findOverlaps(ranges, ranges(align))
               hits <- as.matrix(ol)
               ranges <- ranges(ol, ranges, ranges(align))
-              starts <- ifelse(reversed(align)[hits[,2]],
-                               start(reflect(ranges, ranges(align)[hits[,2]])),
+              starts <- ifelse(reversed(align)[hits[,2L]],
+                               start(reflect(ranges, ranges(align)[hits[,2L]])),
                                start(ranges))
               ranges <- IRanges(starts, width=width(ranges))
-              offsets <- offset(align)[hits[,2]]
-              spaces <- space(align)[hits[,2]]
+              offsets <- offset(align)[hits[,2L]]
+              spaces <- space(align)[hits[,2L]]
               r <- c(r, IRanges(start(ranges) - offsets, end(ranges) - offsets))
               s <- c(s, spaces)
             } ### FIXME: need some more efficient way of bundling result
