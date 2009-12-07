@@ -376,14 +376,15 @@ setMethod("seqselect", "CompressedList",
                         cumsum(unlist(lapply(start, sum), use.names = FALSE))
                   } else if (is(start, "IntegerList")) {
                       i <-
-                        unlist(Map("+", start,
-                          IntegerList(as.list(start(x@partitioning) - 1L))))
+                        unlist(start +
+                               newCompressedList("CompressedIntegerList",
+                                                 start(x@partitioning) - 1L,
+                                                 end = seq_len(length(x))))
                       if (length(dim(x@unlistData)) < 2)
                           unlistData <- x@unlistData[i]
                       else
                           unlistData <- x@unlistData[i, , drop = FALSE]
-                      partitionEnd <-
-                        cumsum(unlist(lapply(start, length), use.names = FALSE))
+                      partitionEnd <- cumsum(unname(elementLengths(start)))
                   } else {
                       stop("unrecognized 'start' type")
                   }
@@ -431,8 +432,10 @@ setReplaceMethod("seqselect", "CompressedList",
                              start <- unlist(start)
                          } else if (is(start, "IntegerList")) {
                              i <-
-                               unlist(Map("+", start,
-                                 IntegerList(as.list(start(x@partitioning) - 1L))))
+                               unlist(start +
+                                      newCompressedList("CompressedIntegerList",
+                                                        start(x@partitioning) - 1L,
+                                                        end = seq_len(length(x))))
                              start <- rep(FALSE, sum(elementLengths(x)))
                              start[i] <- TRUE
                          } else {
