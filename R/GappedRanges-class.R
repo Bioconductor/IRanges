@@ -138,6 +138,7 @@ setAs("GappedRanges", "RangesList", function(from) from@cirl)
 ### Subsetting.
 ###
 
+### WARNING: We override the *semantic* of the "[[" method for Ranges objects.
 setMethod("[[", "GappedRanges",
     function(x, i, j, ..., exact=TRUE)
     {
@@ -146,8 +147,8 @@ setMethod("[[", "GappedRanges",
     }
 )
 
-### Without this definition, we inherit the method for Sequence objects
-### which returns the same thing but is thousands of times slower!
+### WARNING: We override the *semantic* of the "elementLengths" method for
+### Ranges objects.
 setMethod("elementLengths", "GappedRanges",
     function(x) elementLengths(x@cirl)
 )
@@ -186,21 +187,21 @@ setMethod("window", "GappedRanges",
 ### inefficient. It needs to be improved a lot!
 ### FIXME: It's also broken because it can return a GappedRanges object with
 ### empty elements (not allowed).
-setMethod("narrow", "GappedRanges",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-    {
-        solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
-        start2 <- start(x) + start(solved_SEW) - 1L
-        end2 <- start2 + width(solved_SEW) - 1L
+#setMethod("narrow", "GappedRanges",
+#    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+#    {
+#        solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
+#        start2 <- start(x) + start(solved_SEW) - 1L
+#        end2 <- start2 + width(solved_SEW) - 1L
 
-        for (i in seq_len(length(x))) {
-            x@cirl[[i]] <- restrict(x[[i]], start=start2[i], end=end2[i])
-        }
-        if (!normargUseNames(use.names))
-            names(x) <- NULL
-        x
-    }
-)
+#        for (i in seq_len(length(x))) {
+#            x@cirl[[i]] <- restrict(x[[i]], start=start2[i], end=end2[i])
+#        }
+#        if (!normargUseNames(use.names))
+#            names(x) <- NULL
+#        x
+#    }
+#)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

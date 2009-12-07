@@ -18,7 +18,7 @@ setClass("CompressedList",
 setMethod("elementLengths", "CompressedList",
     function(x)
     {
-        ans <- width(x@partitioning)
+        ans <- elementLengths(x@partitioning)
         names(ans) <- names(x)
         ans
     }

@@ -140,6 +140,10 @@ setMethod("[[", "Ranges",
     }
 )
 
+### Without this definition, we inherit the method for Sequence objects
+### which is very inefficient on Ranges objects!
+setMethod("elementLengths", "Ranges", function(x) width(x))
+
 setMethod("show", "Ranges",
     function(object)
     {
