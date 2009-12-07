@@ -38,7 +38,7 @@ setValidity2 <- function(Class, valid.func)
                 on.exit(cat("[debugValidity] Leaving ", whoami, "\n", sep=""))
             }
             problems <- valid.func(object)
-            if (isTRUE(problems) || length(problems) == 0)
+            if (isTRUE(problems) || length(problems) == 0L)
                 return(TRUE)
             problems
         }

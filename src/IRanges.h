@@ -573,6 +573,8 @@ SEXP CompressedIRangesList_summary(SEXP object);
 
 /* GappedRanges_class.c */
 
+SEXP valid_GappedRanges(SEXP x, SEXP ans_type);
+
 SEXP GappedRanges_start(SEXP x);
 
 SEXP GappedRanges_end(SEXP x);

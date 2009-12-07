@@ -115,11 +115,8 @@ setReplaceMethod("names", "GappedRanges",
 ### Validity.
 ###
 
-### IMPLEMENT ME!
 .valid.GappedRanges <- function(x)
-{
-    NULL
-}
+    .Call("valid_GappedRanges", x, 0L, PACKAGE="IRanges")
 
 setValidity2("GappedRanges", .valid.GappedRanges)
 
