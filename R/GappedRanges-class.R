@@ -14,65 +14,8 @@
 ### object.
 ###
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Some experimental stuff that didn't work very well.
-###
 ### TODO: It could be worth pursuing this so it could be reused in the
 ### context of the MaskCollection class rework...
-###
-
-if (FALSE) {
-
-  setClass("NormalIRangesList",
-    contains="IRangesList",
-    representation("VIRTUAL"),
-    prototype(elementType="NormalIRanges")
-  )
-
-  setClass("CompressedNormalIRangesList",
-    contains=c("NormalIRangesList", "CompressedIRangesList")
-  )
-
-  setAs("CompressedIRangesList", "NormalIRangesList",
-    function(from)
-    {
-        ans <- new("CompressedNormalIRangesList",
-                   elementMetadata=from@elementMetadata,
-                   elementType="IRanges",  # we need to cheat
-                   metadata=from@metadata,
-                   partitioning=from@partitioning,
-                   unlistData=from@unlistData)
-        ans@elementType = "NormalIRanges"
-        ans
-    }
-  )
-
-  ### Pb with this approach: the coercion method above generates invalid
-  ### objects! This is because the the unlistData slot of a CompressedList
-  ### object is expected to belong to the class (or to s subclass of the
-  ### class) specified in the elementType slot. This is not the case here:
-  ### it will of class IRanges, not NormalIRanges.
-
-  ### Class definition 1: extending CompressedNormalIRangesList:
-  setClass("GappedRanges", contains("CompressedNormalIRangesList", "Ranges"))
-
-  ### Class definition 2: with a CompressedNormalIRangesList slot:
-  setClass("GappedRanges",
-    contains="Ranges",
-    representation(
-        cnirl="CompressedNormalIRangesList"
-    ),
-    prototype(
-        elementType="NormalIRanges"
-    )
-  )
-
-}
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The real class definition.
 ###
 
 setClass("GappedRanges",
@@ -89,15 +32,23 @@ setClass("GappedRanges",
 setMethod("length", "GappedRanges", function(x) length(x@cirl))
 
 setMethod("start", "GappedRanges",
-    function(x, ...)
-        #sapply(start(unname(x@cirl)), function(s) s[1L])
+    function(x, ...) {
+        #i <-
+        #  newCompressedList("CompressedIntegerList", rep.int(1L, length(x)),
+        #                    end = seq_len(length(x)))
+        #unlist(start(x@cirl[i]), use.names = FALSE)
         .Call("GappedRanges_start", x, PACKAGE="IRanges")
+    }
 )
 
 setMethod("end", "GappedRanges",
-    function(x, ...)
-        #sapply(end(unname(x@cirl)), function(e) e[length(e)])
+    function(x, ...) {
+        #i <-
+        #  newCompressedList("CompressedIntegerList", unname(elementLengths(x)),
+        #                    end = seq_len(length(x)))
+        #unlist(end(x@cirl[i]), use.names = FALSE)
         .Call("GappedRanges_end", x, PACKAGE="IRanges")
+    }
 )
 
 setMethod("names", "GappedRanges", function(x) names(x@cirl))
