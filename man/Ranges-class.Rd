@@ -9,6 +9,7 @@
 
 % Generics and methods:
 \alias{length,Ranges-method}
+\alias{elementLengths,Ranges-method}
 \alias{width}
 \alias{start,Ranges-method}
 \alias{width,Ranges-method}

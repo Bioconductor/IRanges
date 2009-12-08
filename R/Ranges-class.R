@@ -48,6 +48,9 @@ setClass("Ranges", contains="IntegerList", representation("VIRTUAL"))
 ### methods.
 ###
 
+setMethod("length", "Ranges", function(x) length(start(x)))
+setMethod("elementLengths", "Ranges", function(x) width(x))
+
 ### The "start" and "end" generics are defined in the stats package.
 setGeneric("width", function(x) standardGeneric("width"))
 
@@ -61,8 +64,6 @@ setMethod("end", "Ranges", function(x, ...) {start(x) + width(x) - 1L})
 
 setGeneric("mid", function(x, ...) standardGeneric("mid"))
 setMethod("mid", "Ranges", function(x) start(x) + as.integer((width(x)-1) / 2))
-
-setMethod("length", "Ranges", function(x) length(start(x)))
 
 setGeneric("start<-", signature="x",
     function(x, check=TRUE, value) standardGeneric("start<-")
@@ -139,10 +140,6 @@ setMethod("[[", "Ranges",
         seq_len(ans_length) + ans_shift
     }
 )
-
-### Without this definition, we inherit the method for Sequence objects
-### which is very inefficient on Ranges objects!
-setMethod("elementLengths", "Ranges", function(x) width(x))
 
 setMethod("show", "Ranges",
     function(object)
