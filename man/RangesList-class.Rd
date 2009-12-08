@@ -1,5 +1,7 @@
 \name{RangesList-class}
 \docType{class}
+\alias{class:RangesList-class}
+\alias{class:SimpleRangesList-class}
 \alias{RangesList-class}
 \alias{SimpleRangesList-class}
 
@@ -8,13 +10,10 @@
 
 % accessors
 \alias{end,RangesList-method}
-\alias{end,CompressedIRangesList-method}
 \alias{end<-,RangesList-method}
 \alias{width,RangesList-method}
-\alias{width,CompressedIRangesList-method}
 \alias{width<-,RangesList-method}
 \alias{start,RangesList-method}
-\alias{start,CompressedIRangesList-method}
 \alias{start<-,RangesList-method}
 \alias{space}
 \alias{space,RangesList-method}
@@ -26,13 +25,15 @@
 % subset
 \alias{[,RangesList-method}
 \alias{[,SimpleRangesList-method}
-\alias{[,SimpleIRangesList-method}
-\alias{[,CompressedIRangesList-method}
 
 % coercion
 \alias{as.data.frame,RangesList-method}
+\alias{coerce,RangesList,IRangesList-method}
 \alias{coerce,RangesList,CompressedIRangesList-method}
 \alias{coerce,RangesList,SimpleIRangesList-method}
+\alias{coerce,RangesList,NormalIRangesList-method}
+\alias{coerce,RangesList,CompressedNormalIRangesList-method}
+\alias{coerce,RangesList,SimpleNormalIRangesList-method}
 \alias{coerce,RangesList,RangedData-method}
 
 % operations
@@ -40,11 +41,9 @@
 
 % show
 \alias{show,RangesList-method}
-\alias{show,IRangesList-method}
 
 % split
 \alias{split,Ranges-method}
-\alias{split,IRanges-method}
 
 \title{List of Ranges}
 \description{An extension of \code{\linkS4class{Sequence}} that holds only
@@ -127,7 +126,8 @@
     \item{}{\code{as.data.frame(x, row.names = NULL, optional = FALSE)}:
       Coerces \code{x} to a \code{data.frame}. Essentially the same as
       calling
-      \code{data.frame(space=rep(names(x), elementLengths(x)), as.data.frame(unlist(x, use.names=FALSE)))}.
+      \code{data.frame(space=rep(names(x), elementLengths(x)),
+                       as.data.frame(unlist(x, use.names=FALSE)))}.
     }
     \item{}{\code{as(from, "RangedData")}: Coerces \code{from} to a
       \code{\linkS4class{RangedData}} with zero columns and the same
@@ -146,6 +146,16 @@
       \code{IRanges} elements. This is a convenient way to ensure that all
       \code{Ranges} have been imported into R (and that there is no
       unwanted overhead when accessing them).
+    }
+    \item{}{\code{as(from, "SimpleNormalIRangesList")}: Coerces \code{from},
+      to a \code{\linkS4class{SimpleNormalIRangesList}}, requiring
+      that all \code{Ranges} elements are coerced to internal
+      \code{NormalIRanges} elements.
+    }
+    \item{}{\code{as(from, "CompressedNormalIRangesList")}: Coerces
+      \code{from}, to a \code{\linkS4class{CompressedNormalIRangesList}},
+      requiring that all \code{Ranges} elements are coerced to internal
+      \code{NormalIRanges} elements.
     }
   }
 }

@@ -1,22 +1,67 @@
 \name{IRangesList-class}
 \docType{class}
+
+% IRangesList objects:
+\alias{class:IRangesList}
+\alias{class:CompressedIRangesList}
+\alias{class:SimpleIRangesList}
 \alias{IRangesList-class}
 \alias{CompressedIRangesList-class}
 \alias{SimpleIRangesList-class}
 
+% accessors
+\alias{end,CompressedIRangesList-method}
+\alias{width,CompressedIRangesList-method}
+\alias{start,CompressedIRangesList-method}
+
+% subset
+\alias{[,SimpleIRangesList-method}
+\alias{[,CompressedIRangesList-method}
+
 % coercion
-\alias{coerce,IRangesList,NormalIRanges-method}
-\alias{coerce,IRangesList,list-method} % undocumented
 \alias{unlist,IRangesList-method}
 
+% general
+\alias{show,IRangesList-method}
+\alias{split,IRanges-method}
+\alias{max,CompressedNormalIRangesList-method}
+\alias{max,SimpleNormalIRangesList-method}
+\alias{min,CompressedNormalIRangesList-method}
+\alias{min,SimpleNormalIRangesList-method}
 \alias{summary,CompressedIRangesList-method}
 
 % constructor
 \alias{IRangesList}
 
-\title{List of IRanges}
-\description{A \code{\linkS4class{RangesList}} that only stores
-  \code{\linkS4class{IRanges}} objects.}
+
+% NormalIRangesList objects:
+\alias{class:NormalIRangesList}
+\alias{class:CompressedNormalIRangesList}
+\alias{class:SimpleNormalIRangesList}
+\alias{NormalIRangesList-class}
+\alias{CompressedNormalIRangesList-class}
+\alias{SimpleNormalIRangesList-class}
+
+\alias{isDisjoint,RangesList-method}
+\alias{isNormal,CompressedIRangesList-method}
+\alias{isNormal,RangesList-method}
+\alias{isNormal,SimpleIRangesList-method}
+\alias{whichFirstNotNormal,RangesList-method}
+
+\alias{[[,CompressedNormalIRangesList-method}
+\alias{unlist,SimpleNormalIRangesList-method}
+
+% coercion
+\alias{coerce,CompressedIRangesList,CompressedNormalIRangesList-method}
+\alias{coerce,SimpleIRangesList,SimpleNormalIRangesList-method}
+\alias{as.list,CompressedNormalIRangesList-method}
+
+
+\title{List of IRanges and NormalIRanges}
+\description{\code{\linkS4class{IRangesList}} and
+  \code{\linkS4class{NormalIRangesList}} objects for storing
+  \code{\linkS4class{IRanges}} and \code{\linkS4class{NormalIRanges}} objects
+  respectively.}
 
 \section{Constructor}{
   \describe{
@@ -36,14 +81,25 @@
 
 \section{Coercion}{
   \describe{
-    \item{}{\code{as(from, "NormalIRanges")}: Merges each of the
-      elements into a single \code{\linkS4class{NormalIRanges}} through
-      \code{\link{reduce}}.
-    }
     \item{}{\code{unlist(x)}: Unlists \code{x}, an \code{IRangesList},
       by concatenating all of the ranges into a single \code{IRanges}
       instance. If the length of \code{x} is zero, an empty \code{IRanges}
       is returned.
+    }
+  }
+}
+
+\section{Methods for NormalIRangesList objects}{
+  \describe{
+    \item{}{
+      \code{max(x)}:
+      An integer vector containing the maximum values of each of the elements
+      of \code{x}.
+    }
+    \item{}{
+      \code{min(x)}:
+      An integer vector containing the minimum values of each of the elements
+      of \code{x}.
     }
   }
 }

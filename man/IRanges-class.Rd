@@ -12,6 +12,7 @@
 \alias{width<-,IRanges-method}
 \alias{end<-,IRanges-method}
 \alias{names<-,IRanges-method}
+\alias{isNormal,IRanges-method}
 \alias{update,IRanges-method}
 \alias{[,IRanges-method}
 \alias{seqselect,IRanges-method}
@@ -32,7 +33,9 @@
 \alias{coerce,logical,IRanges-method}
 \alias{coerce,logical,NormalIRanges-method}
 \alias{coerce,integer,IRanges-method}
+\alias{coerce,integer,NormalIRanges-method}
 \alias{coerce,numeric,IRanges-method}
+\alias{coerce,numeric,NormalIRanges-method}
 
 
 \title{IRanges and NormalIRanges objects}
@@ -69,7 +72,8 @@
     }
     \item{}{
       \code{as(from, "NormalIRanges")}: Creates a NormalIRanges instance
-      from a logical vector.
+      from a logical or integer vector. When \code{from} is an integer vector,
+      the elements must be strictly increasing.
     }
   }
 }

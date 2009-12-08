@@ -486,6 +486,10 @@ SEXP _alloc_IRanges(
 	int length
 );
 
+int _is_normal_IRanges(const cachedIRanges *cached_ir);
+
+SEXP IRanges_isNormal(SEXP x);
+
 SEXP IRanges_from_integer(SEXP x);
 
 SEXP NormalIRanges_from_logical(SEXP x);
@@ -568,7 +572,22 @@ cachedIRanges _get_cachedCompressedIRangesList_elt(
 	int i
 );
 
+SEXP CompressedIRangesList_isNormal(SEXP x);
+
+SEXP CompressedNormalIRangesList_min(SEXP x);
+
+SEXP CompressedNormalIRangesList_max(SEXP x);
+
 SEXP CompressedIRangesList_summary(SEXP object);
+
+
+/* CompressedIRangesList_class.c */
+
+SEXP SimpleIRangesList_isNormal(SEXP x);
+
+SEXP SimpleNormalIRangesList_min(SEXP x);
+
+SEXP SimpleNormalIRangesList_max(SEXP x);
 
 
 /* GappedRanges_class.c */

@@ -46,6 +46,14 @@ setMethod("names", "IRanges", function(x) x@NAMES)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Efficient "isNormal" method for IRanges objects.
+
+setMethod("isNormal", "IRanges",
+    function(x) .Call("IRanges_isNormal", x, PACKAGE="IRanges")
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "isEmpty" default method for Ranges objects would work just fine on a
 ### NormalIRanges object but we can take advantage of the normality to make
 ### it slightly more efficient.
@@ -192,7 +200,7 @@ newNormalIRangesFromIRanges <- function(x, check=TRUE)
 
 ### The returned IRanges instance is guaranteed to be normal.
 setAs("logical", "IRanges",
-      function(from) as(as(from, "NormalIRanges"), "IRanges")
+    function(from) as(as(from, "NormalIRanges"), "IRanges")
 )
 
 setAs("logical", "NormalIRanges",
@@ -204,8 +212,14 @@ setAs("integer", "IRanges",
     function(from) .Call("IRanges_from_integer", from, PACKAGE="IRanges")
 )
 
+setAs("integer", "NormalIRanges",
+    function(from) newNormalIRangesFromIRanges(as(from, "IRanges"))
+)
+
 setAs("numeric", "IRanges", function(from) as(as.integer(from), "IRanges"))
 
+setAs("numeric", "NormalIRanges", 
+    function(from) newNormalIRangesFromIRanges(as(as.integer(from), "IRanges")))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Low-level (i.e. non-exported and unsafe) replacement functions for
@@ -461,6 +475,7 @@ setMethod("seqselect", "IRanges",
         if (!is.null(names(x)))
             slot(x, "NAMES", check=FALSE) <-
               seqselect(names(x), start = start, end = end, width = width)
+        validObject(x)
         x
     }
 )

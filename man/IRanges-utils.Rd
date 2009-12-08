@@ -32,7 +32,7 @@
 
 % Coercion:
 \alias{asNormalIRanges}
-\alias{coerce,IRanges,NormalIRanges-method}
+\alias{coerce,Ranges,NormalIRanges-method}
 
 % Deprecated:
 \alias{intToRanges}

@@ -29,6 +29,7 @@ static const R_CallMethodDef callMethods[] = {
 
 /* IRanges_class.c */
 	CALLMETHOD_DEF(debug_IRanges_class, 0),
+	CALLMETHOD_DEF(IRanges_isNormal, 1),
 	CALLMETHOD_DEF(IRanges_from_integer, 1),
 	CALLMETHOD_DEF(NormalIRanges_from_logical, 1),
 
@@ -51,7 +52,15 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(H2LGrouping_vmembers, 2),
 
 /* CompressedIRangesList_class.c */
+	CALLMETHOD_DEF(CompressedIRangesList_isNormal, 1),
+	CALLMETHOD_DEF(CompressedNormalIRangesList_min, 1),
+	CALLMETHOD_DEF(CompressedNormalIRangesList_max, 1),
 	CALLMETHOD_DEF(CompressedIRangesList_summary, 1),
+
+/* SimpleIRangesList_class.c */
+	CALLMETHOD_DEF(SimpleIRangesList_isNormal, 1),
+	CALLMETHOD_DEF(SimpleNormalIRangesList_min, 1),
+	CALLMETHOD_DEF(SimpleNormalIRangesList_max, 1),
 
 /* GappedRanges_class.c */
 	CALLMETHOD_DEF(valid_GappedRanges, 2),

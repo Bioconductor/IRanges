@@ -22,26 +22,46 @@ setClass("SimpleIRangesList",
          prototype = prototype(elementType = "IRanges"),
          contains = c("IRangesList", "SimpleRangesList"))
 
+setClass("NormalIRangesList", representation("VIRTUAL"),
+         prototype = prototype(elementType = "NormalIRanges"),
+         contains = "IRangesList")
+setClass("CompressedNormalIRangesList",
+         prototype = prototype(elementType = "IRanges",
+                               unlistData = new("IRanges")),
+         contains = c("NormalIRangesList", "CompressedIRangesList"))
+setClass("SimpleNormalIRangesList",
+         prototype = prototype(elementType = "NormalIRanges"),
+         contains = c("NormalIRangesList", "SimpleIRangesList"))
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Validity.
+###
+
+.valid.NormalIRangesList <- function(x)
+{
+  if (!all(isNormal(x)))
+    return("at least one element of object is not normal")
+  NULL
+}
+
+setValidity2("NormalIRangesList", .valid.NormalIRangesList)
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
 setMethod("start", "RangesList",
-          function(x) {
-            newSimpleList("SimpleIntegerList", lapply(x, start))
-          })
+          function(x) newSimpleList("SimpleIntegerList", lapply(x, start)))
 setMethod("end", "RangesList",
-          function(x) {
-            newSimpleList("SimpleIntegerList", lapply(x, end))
-          })
+          function(x) newSimpleList("SimpleIntegerList", lapply(x, end)))
 setMethod("width", "RangesList",
-          function(x) {
-            newSimpleList("SimpleIntegerList", lapply(x, width))
-          })
+          function(x) newSimpleList("SimpleIntegerList", lapply(x, width)))
 setGeneric(".SEW<-", signature="x",
            function(x, FUN, check=TRUE, value) standardGeneric(".SEW<-"))
 setReplaceMethod(".SEW", "RangesList",
-                 function(x, FUN, check=TRUE, value) {
+                 function(x, FUN, check=TRUE, value)
+                 {
                    if (!isTRUEorFALSE(check))
                      stop("'check' must be TRUE or FALSE")
                    if (extends(class(value), "IntegerList")) {
@@ -64,21 +84,24 @@ setReplaceMethod(".SEW", "RangesList",
                    x
                  })
 setReplaceMethod("start", "RangesList",
-                 function(x, check=TRUE, value) {
+                 function(x, check=TRUE, value)
+                 {
                    if (!isTRUEorFALSE(check))
                      stop("'check' must be TRUE or FALSE")
                    .SEW(x, FUN = "start<-", check = check) <- value
                    x
                  })
 setReplaceMethod("end", "RangesList",
-                 function(x, check=TRUE, value) {
+                 function(x, check=TRUE, value)
+                 {
                    if (!isTRUEorFALSE(check))
                      stop("'check' must be TRUE or FALSE")
                    .SEW(x, FUN = "end<-", check = check) <- value
                    x
                  })
 setReplaceMethod("width", "RangesList",
-                 function(x, check=TRUE, value) {
+                 function(x, check=TRUE, value)
+                 {
                    if (!isTRUEorFALSE(check))
                      stop("'check' must be TRUE or FALSE")
                    .SEW(x, FUN = "width<-", check = check) <- value
@@ -86,25 +109,23 @@ setReplaceMethod("width", "RangesList",
                  })
 
 setMethod("start", "CompressedIRangesList",
-          function(x) {
-            new2("CompressedIntegerList",
-                 unlistData = start(unlist(x, use.names=FALSE)),
-                 partitioning = x@partitioning, check=FALSE)
-          })
+          function(x)
+          new2("CompressedIntegerList",
+               unlistData = start(unlist(x, use.names=FALSE)),
+               partitioning = x@partitioning, check=FALSE))
 setMethod("end", "CompressedIRangesList",
-          function(x) {
-            new2("CompressedIntegerList",
-                 unlistData = end(unlist(x, use.names=FALSE)),
-                 partitioning = x@partitioning, check=FALSE)
-          })
+          function(x)
+          new2("CompressedIntegerList",
+               unlistData = end(unlist(x, use.names=FALSE)),
+               partitioning = x@partitioning, check=FALSE))
 setMethod("width", "CompressedIRangesList",
-          function(x) {
-            new2("CompressedIntegerList",
-                 unlistData = width(unlist(x, use.names=FALSE)),
-                 partitioning = x@partitioning, check=FALSE)
-          })
+          function(x)
+          new2("CompressedIntegerList",
+               unlistData = width(unlist(x, use.names=FALSE)),
+               partitioning = x@partitioning, check=FALSE))
 setReplaceMethod(".SEW", "CompressedIRangesList",
-                 function(x, FUN, check=TRUE, value) {
+                 function(x, FUN, check=TRUE, value)
+                 {
                    if (!isTRUEorFALSE(check))
                      stop("'check' must be TRUE or FALSE")
                    if (extends(class(value), "IntegerList")) {
@@ -129,7 +150,8 @@ setReplaceMethod(".SEW", "CompressedIRangesList",
 
 setGeneric("space", function(x, ...) standardGeneric("space"))
 setMethod("space", "RangesList",
-          function(x) {
+          function(x)
+          {
             space <- names(x)
             if (!is.null(space))
               space <- rep(space, elementLengths(x))
@@ -137,22 +159,46 @@ setMethod("space", "RangesList",
           })
 
 setGeneric("universe", function(x) standardGeneric("universe"))
-setMethod("universe", "RangesList", function(x) {
-  ### FIXME: for compatibility with older versions, eventually emit warning
-  if (is.null(metadata(x)) || is.character(metadata(x)))
-      metadata(x)
-  else
-      metadata(x)$universe
-})
+setMethod("universe", "RangesList",
+          function(x)
+          {
+            ### FIXME: for compatibility with older versions, eventually emit warning
+            if (is.null(metadata(x)) || is.character(metadata(x)))
+              metadata(x)
+            else
+              metadata(x)$universe
+          })
 
 setGeneric("universe<-", function(x, value) standardGeneric("universe<-"))
 setReplaceMethod("universe", "RangesList",
-                 function(x, value) {
+                 function(x, value)
+                 {
                    if (!is.null(value) && !isSingleString(value))
                      stop("'value' must be a single string or NULL")
                    metadata(x)$universe <- value
                    x
                  })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Testing a RangesList object.
+###
+
+setMethod("isDisjoint", "RangesList",
+          function(x) unlist(lapply(x, isDisjoint)))
+
+setMethod("isNormal", "RangesList",
+          function(x) unlist(lapply(x, isNormal)))
+
+setMethod("isNormal", "CompressedIRangesList",
+          function(x)
+          .Call("CompressedIRangesList_isNormal", x, PACKAGE = "IRanges"))
+
+setMethod("isNormal", "SimpleIRangesList",
+          function(x)
+          .Call("SimpleIRangesList_isNormal", x, PACKAGE = "IRanges"))
+
+setMethod("whichFirstNotNormal", "RangesList",
+          function(x) unlist(lapply(x, whichFirstNotNormal)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
@@ -244,6 +290,9 @@ setMethod("[", "SimpleRangesList", rangesListSingleSquareBracket)
 setMethod("[", "CompressedIRangesList", rangesListSingleSquareBracket)
 setMethod("[", "SimpleIRangesList", rangesListSingleSquareBracket)
 
+setMethod("[[", "CompressedNormalIRangesList",
+          function(x, i, j, ...) newNormalIRangesFromIRanges(callNextMethod()))
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Some useful endomorphisms: "shift", "restrict", "narrow", "resize",
 ### "flank", "reflect", "reduce" and "gaps".
@@ -251,9 +300,7 @@ setMethod("[", "SimpleIRangesList", rangesListSingleSquareBracket)
 
 setMethod("shift", "RangesList",
           function(x, shift, use.names = TRUE)
-          {
-            endoapply(x, "shift", shift = shift, use.names = use.names)
-          })
+          endoapply(x, "shift", shift = shift, use.names = use.names))
 
 setMethod("shift", "CompressedIRangesList",
           function(x, shift, use.names = TRUE)
@@ -265,10 +312,8 @@ setMethod("shift", "CompressedIRangesList",
 
 setMethod("restrict", "RangesList",
           function(x, start = NA, end = NA, keep.all.ranges = FALSE, use.names = TRUE)
-          {
-            endoapply(x, restrict, start = start, end = end,
-                      keep.all.ranges = keep.all.ranges, use.names = use.names)
-          })
+          endoapply(x, restrict, start = start, end = end,
+                    keep.all.ranges = keep.all.ranges, use.names = use.names))
 
 setMethod("restrict", "CompressedIRangesList",
           function(x, start = NA, end = NA, keep.all.ranges = FALSE, use.names = TRUE)
@@ -287,10 +332,8 @@ setMethod("restrict", "CompressedIRangesList",
 
 setMethod("narrow", "RangesList",
           function(x, start = NA, end = NA, width = NA, use.names = TRUE)
-          {
-            endoapply(x, narrow, start = start, end = end, width = width,
-                      use.names = use.names)
-          })
+          endoapply(x, narrow, start = start, end = end, width = width,
+                    use.names = use.names))
 
 setMethod("narrow", "CompressedIRangesList",
           function(x, start = NA, end = NA, width = NA, use.names = TRUE)
@@ -303,10 +346,8 @@ setMethod("narrow", "CompressedIRangesList",
 
 setMethod("resize", "RangesList",
           function(x, width, start = TRUE, use.names = TRUE)
-          {
-            endoapply(x, resize, width = width, start = start,
-                      use.names = use.names)
-          })
+          endoapply(x, resize, width = width, start = start,
+                    use.names = use.names))
 
 setMethod("resize", "CompressedIRangesList",
           function(x, width, start = TRUE, use.names = TRUE)
@@ -319,10 +360,8 @@ setMethod("resize", "CompressedIRangesList",
 
 setMethod("flank", "RangesList",
           function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
-          {
-            endoapply(x, flank, width = width, start = start, both = both,
-                      use.names = use.names)
-          })
+          endoapply(x, flank, width = width, start = start, both = both,
+                    use.names = use.names))
 
 setMethod("flank", "CompressedIRangesList",
           function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
@@ -335,21 +374,18 @@ setMethod("flank", "CompressedIRangesList",
 
 setMethod("gaps", "RangesList",
           function(x, start=NA, end=NA)
-          {
-            endoapply(x, gaps, start = start, end = end)
-          })
+          endoapply(x, gaps, start = start, end = end))
 
 setMethod("disjoin", "RangesList", function(x) endoapply(x, disjoin))
 
 ### 'with.inframe.attrib' is ignored.
 setMethod("reduce", "RangesList",
           function(x, with.inframe.attrib=FALSE)
-          {
-            endoapply(x, reduce, with.inframe.attrib = with.inframe.attrib)
-          })
+          endoapply(x, reduce, with.inframe.attrib = with.inframe.attrib))
 
 setMethod("range", "RangesList",
-          function(x, ..., na.rm) {
+          function(x, ..., na.rm)
+          {
             args <- unname(list(x, ...))
             if (!all(sapply(sapply(args, universe), identical, universe(x))))
               stop("All args in '...' must have the same universe as 'x'")
@@ -429,29 +465,21 @@ setMethod("match", c("RangesList", "RangesList"),
 ###
 
 setMethod("union", c("RangesList", "RangesList"),
-          function(x, y)
-          {
-            mendoapply(union, x, y)
-          })
+          function(x, y) mendoapply(union, x, y))
 
 setMethod("intersect", c("RangesList", "RangesList"),
-          function(x, y)
-          {
-            mendoapply(intersect, x, y)
-          })
+          function(x, y) mendoapply(intersect, x, y))
 
 setMethod("setdiff", c("RangesList", "RangesList"),
-          function(x, y)
-          {
-            mendoapply(setdiff, x, y)
-          })
+          function(x, y) mendoapply(setdiff, x, y))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Arithmetic Operations
 ###
 
 setMethod("Ops", c("RangesList", "ANY"),
-          function(e1, e2) {
+          function(e1, e2)
+          {
             for (i in seq_len(length(e1)))
               e1[[i]] <- callGeneric(e1[[i]], e2)
             e1
@@ -461,7 +489,8 @@ setMethod("Ops", c("RangesList", "ANY"),
 ### The "show" method.
 ###
 
-.RangesList_show <- function(object) {
+.RangesList_show <- function(object)
+{
   k <- length(object)
   cumsumN <- cumsum(elementLengths(object))
   N <- tail(cumsumN, 1)
@@ -491,7 +520,8 @@ setMethod("show", "RangesList", .RangesList_show)
 setMethod("show", "IRangesList", .RangesList_show)
 
 setMethod("showAsCell", "RangesList",
-          function(object) {
+          function(object)
+          {
             unlist(lapply(object, function(x) {
                             rng2str <- function(y) 
                               paste(start(y), ":", end(y), sep = "")
@@ -528,28 +558,87 @@ setMethod("as.data.frame", "RangesList",
                        stringsAsFactors = FALSE)
           })
 
-### From an IRangesList object to a NormalIRanges object.
-setAs("IRangesList", "NormalIRanges",
-      function(from) reduce(from)[[1L]])
+setMethod("as.list", "CompressedNormalIRangesList",
+          function(x, use.names = TRUE)
+          .CompressedList.list.subscript(X = x,
+                                         INDEX = seq_len(length(x)),
+                                         USE.NAMES = use.names,
+                                         FUN = newNormalIRangesFromIRanges,
+                                         COMPRESS = FALSE))
 
-### FIXME: Not clear why this is needed
-setAs("IRangesList", "list",
-      function(from) as(as(from, "RangesList"), "list"))
+setMethod("unlist", "SimpleNormalIRangesList",
+          function(x, recursive = TRUE, use.names = TRUE)
+          {
+            x <- newSimpleList("SimpleIRangesList", lapply(x, as, "IRanges"))
+            callGeneric()
+          })
+
+setAs("RangesList", "IRangesList",
+      function(from)
+      {
+        if (is(from, "CompressedList"))
+          as(from, "CompressedIRangesList")
+        else
+          as(from, "SimpleIRangesList")
+      })
 
 setAs("RangesList", "CompressedIRangesList",
       function(from)
-      {
-        newCompressedList("CompressedIRangesList", lapply(from, as, "IRanges"),
-                          metadata = metadata(from),
-                          elementMetadata = elementMetadata(from))
-      })
+      newCompressedList("CompressedIRangesList", lapply(from, as, "IRanges"),
+                        metadata = metadata(from),
+                        elementMetadata = elementMetadata(from)))
 
 setAs("RangesList", "SimpleIRangesList",
       function(from)
+      newSimpleList("SimpleIRangesList", lapply(from, as, "IRanges"),
+                    metadata = metadata(from),
+                    elementMetadata = elementMetadata(from)))
+
+setAs("RangesList", "NormalIRangesList",
+      function(from)
       {
-        newSimpleList("SimpleIRangesList", lapply(from, as, "IRanges"),
-                      metadata = metadata(from),
-                      elementMetadata = elementMetadata(from))
+        if (is(from, "CompressedList"))
+          as(from, "CompressedNormalIRangesList")
+        else
+          as(from, "SimpleNormalIRangesList")
+      })
+
+setAs("RangesList", "CompressedNormalIRangesList",
+      function(from)
+      newCompressedList("CompressedNormalIRangesList",
+                        lapply(from, as, "NormalIRanges"),
+                        metadata = metadata(from),
+                        elementMetadata = elementMetadata(from)))
+
+setAs("RangesList", "SimpleNormalIRangesList",
+      function(from)
+      newSimpleList("SimpleNormalIRangesList",
+                    lapply(from, as, "NormalIRanges"),
+                    metadata = metadata(from),
+                    elementMetadata = elementMetadata(from)))
+
+setAs("CompressedIRangesList", "CompressedNormalIRangesList",
+      function(from)
+      {
+        if (!all(isNormal(from))) {
+          from <- from[width(from) != 0L]
+          from <- reduce(from)
+        }
+        new2("CompressedNormalIRangesList", unlistData = from@unlistData,
+             partitioning = from@partitioning, metadata = from@metadata,
+             elementMetadata = from@elementMetadata, check=FALSE)
+      })
+
+setAs("SimpleIRangesList", "SimpleNormalIRangesList",
+      function(from)
+      {
+        if (!all(isNormal(from))) {
+          from <- from[width(from) != 0L]
+          from <- reduce(from)
+        }
+        new2("SimpleNormalIRangesList", listData = from@listData,
+             metadata = from@metadata,
+             elementMetadata = from@elementMetadata, check=FALSE)
       })
 
 setAs("LogicalList", "IRangesList",
@@ -563,19 +652,40 @@ setAs("LogicalList", "IRangesList",
 
 setAs("LogicalList", "CompressedIRangesList",
       function(from)
-      {
-        newCompressedList("CompressedIRangesList", lapply(from, as, "IRanges"),
-                          metadata = metadata(from),
-                          elementMetadata = elementMetadata(from))
-      })
+      newCompressedList("CompressedIRangesList",
+                        lapply(from, as, "IRanges"),
+                        metadata = metadata(from),
+                        elementMetadata = elementMetadata(from)))
 
 setAs("LogicalList", "SimpleIRangesList",
       function(from)
+      newSimpleList("SimpleIRangesList",
+                    lapply(from, as, "IRanges"),
+                    metadata = metadata(from),
+                    elementMetadata = elementMetadata(from)))
+
+setAs("LogicalList", "NormalIRangesList",
+      function(from)
       {
-        newSimpleList("SimpleIRangesList", lapply(from, as, "IRanges"),
-                      metadata = metadata(from),
-                      elementMetadata = elementMetadata(from))
+        if (is(from, "CompressedList"))
+          as(from, "CompressedNormalIRangesList")
+        else
+          as(from, "SimpleNormalIRangesList")
       })
+
+setAs("LogicalList", "CompressedNormalIRangesList",
+      function(from)
+      newCompressedList("CompressedNormalIRangesList",
+                        lapply(from, as, "NormalIRanges"),
+                        metadata = metadata(from),
+                        elementMetadata = elementMetadata(from)))
+
+setAs("LogicalList", "SimpleNormalIRangesList",
+      function(from)
+      newSimpleList("SimpleNormalIRangesList",
+                    lapply(from, as, "NormalIRanges"),
+                    metadata = metadata(from),
+                    elementMetadata = elementMetadata(from)))
 
 setAs("RleList", "IRangesList",
       function(from)
@@ -593,8 +703,9 @@ setAs("RleList", "CompressedIRangesList",
             (!is.logical(runValue(from[[1L]])) ||
              any(is.na(runValue(from[[1L]])))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
-               "with NAs to an SimpleIRangesList object")
-        newCompressedList("CompressedIRangesList", lapply(from, as, "IRanges"),
+               "with NAs to a CompressedIRangesList object")
+        newCompressedList("CompressedIRangesList",
+                          lapply(from, as, "IRanges"),
                           metadata = metadata(from),
                           elementMetadata = elementMetadata(from))
       })
@@ -606,21 +717,80 @@ setAs("RleList", "SimpleIRangesList",
             (!is.logical(runValue(from[[1L]])) ||
              any(is.na(runValue(from[[1L]])))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
-               "with NAs to an SimpleIRangesList object")
-        newSimpleList("SimpleIRangesList", lapply(from, as, "IRanges"),
+               "with NAs to a SimpleIRangesList object")
+        newSimpleList("SimpleIRangesList",
+                      lapply(from, as, "IRanges"),
                       metadata = metadata(from),
                       elementMetadata = elementMetadata(from))
       })
+
+
+setAs("RleList", "NormalIRangesList",
+        function(from)
+        {
+            if (is(from, "CompressedList"))
+                as(from, "CompressedNormalIRangesList")
+            else
+                as(from, "SimpleNormalIRangesList")
+        })
+
+setAs("RleList", "CompressedNormalIRangesList",
+      function(from)
+      {
+        if ((length(from) > 0) &&
+            (!is.logical(runValue(from[[1L]])) ||
+             any(is.na(runValue(from[[1L]])))))
+          stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
+               "with NAs to a CompressedNormalIRangesList object")
+        newCompressedList("CompressedNormalIRangesList",
+                          lapply(from, as, "NormalIRanges"),
+                          metadata = metadata(from),
+                          elementMetadata = elementMetadata(from))
+      })
+
+setAs("RleList", "SimpleNormalIRangesList",
+      function(from)
+      {
+        if ((length(from) > 0) &&
+            (!is.logical(runValue(from[[1L]])) ||
+             any(is.na(runValue(from[[1L]])))))
+          stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
+               "with NAs to a SimpleNormalIRangesList object")
+        newSimpleList("SimpleNormalIRangesList",
+                      lapply(from, as, "NormalIRanges"),
+                      metadata = metadata(from),
+                      elementMetadata = elementMetadata(from))
+      })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "max" and "min" methods for NormalIRangesList.
+###
+
+setMethod("max", "CompressedNormalIRangesList",
+          function(x, ..., na.rm)
+          .Call("CompressedNormalIRangesList_max", x, PACKAGE="IRanges"))
+
+setMethod("max", "SimpleNormalIRangesList",
+          function(x, ..., na.rm)
+          .Call("SimpleNormalIRangesList_max", x, PACKAGE="IRanges"))
+
+setMethod("min", "CompressedNormalIRangesList",
+          function(x, ..., na.rm)
+          .Call("CompressedNormalIRangesList_min", x, PACKAGE="IRanges"))
+
+setMethod("min", "SimpleNormalIRangesList",
+          function(x, ..., na.rm)
+          .Call("SimpleNormalIRangesList_min", x, PACKAGE="IRanges"))
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "summary" method.
 ###
 
 setMethod("summary", "CompressedIRangesList",
-         function(object)
-         {
-             .Call("CompressedIRangesList_summary", object, PACKAGE="IRanges")
-         })
+          function(object)
+          .Call("CompressedIRangesList_summary", object, PACKAGE="IRanges"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -629,13 +799,9 @@ setMethod("summary", "CompressedIRangesList",
 
 setMethod("split", "Ranges",
           function(x, f, drop = FALSE, ...)
-          {
-            do.call(RangesList, callNextMethod())
-          })
+          do.call(RangesList, callNextMethod()))
 
 setMethod("split", "IRanges",
           function(x, f, drop = FALSE, ...)
-          {
-            newCompressedList("CompressedIRangesList", x,
-                              splitFactor = f, drop = drop)
-          })
+          newCompressedList("CompressedIRangesList", x,
+                            splitFactor = f, drop = drop))

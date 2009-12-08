@@ -225,7 +225,47 @@ SEXP _alloc_IRanges(const char *classname, int length)
 
 
 /****************************************************************************
- * Other functions.
+ * Validity functions.
+ */
+
+int _is_normal_IRanges(const cachedIRanges *cached_ir)
+{
+	int ir_length, i, ans;
+
+	ans = 1;
+	ir_length = _get_cachedIRanges_length(cached_ir);
+	if (ir_length > 0) {
+		ans = _get_cachedIRanges_elt_width(cached_ir, 0) > 0;
+		if (ans) {
+			for (i = 1; i < ir_length; i++) {
+				if (_get_cachedIRanges_elt_width(cached_ir, i) < 1 ||
+					(_get_cachedIRanges_elt_start(cached_ir, i)
+				  <= _get_cachedIRanges_elt_end(cached_ir, i - 1) + 1)) {
+					ans = 0;
+					break;
+				}
+			}
+		}
+	}
+	return ans;
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP IRanges_isNormal(SEXP x)
+{
+	SEXP ans;
+	cachedIRanges cached_ir = _cache_IRanges(x);
+
+	PROTECT(ans = NEW_LOGICAL(1));
+	LOGICAL(ans)[0] = _is_normal_IRanges(&cached_ir);
+	UNPROTECT(1);
+
+	return ans;
+}
+
+
+/****************************************************************************
+ * Coercion functions.
  */
 
 /* --- .Call ENTRY POINT --- */

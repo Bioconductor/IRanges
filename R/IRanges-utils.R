@@ -302,26 +302,27 @@ setMethod("reduce", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercing an IRanges object to a NormalIRanges object.
+### Coercing a Ranges object to a NormalIRanges object.
 ###
 
 asNormalIRanges <- function(x, force=TRUE)
 {
-    if (!is(x, "IRanges"))
-        stop("'x' must be an IRanges object")
+    if (!is(x, "Ranges"))
+        stop("'x' must be an Ranges object")
+    else if (!is(x, "IRanges"))
+        x <- as(x, "IRanges")
     if (!isTRUEorFALSE(force))
         stop("'force' must be TRUE or FALSE")
-    if (!force)
-        return(newNormalIRangesFromIRanges(x, check=TRUE))
-    x1 <- as(x, "IRanges") # downgrade
-    x2 <- reduce(x1)
-    x3 <- x2[width(x2) != 0]
-    newNormalIRangesFromIRanges(x3, check=FALSE)
+    if (force) {
+        x <- reduce(x)
+        x <- x[width(x) != 0L]
+    }
+    newNormalIRangesFromIRanges(x, check=!force)
 }
 
 .asNormalIRanges <- function(from) asNormalIRanges(from, force=TRUE)
 
-setAs("IRanges", "NormalIRanges", .asNormalIRanges)
+setAs("Ranges", "NormalIRanges", .asNormalIRanges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -341,4 +342,3 @@ intToAdjacentRanges <- function(...)
 
 toNormalIRanges <- function(x)
     .Defunct("asNormalIRanges")
-

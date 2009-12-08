@@ -3,7 +3,9 @@
  ****************************************************************************/
 
 #include "IRanges.h"
+#include <limits.h>
 
+#define R_INT_MIN	(1+INT_MIN)
 
 /****************************************************************************
  * C-level slot getters for CompressedIRangesList objects.
@@ -74,6 +76,90 @@ cachedIRanges _get_cachedCompressedIRangesList_elt(
 /****************************************************************************
  * Other utilities.
  */
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP CompressedIRangesList_isNormal(SEXP x)
+{
+	SEXP ans, ans_names;
+	cachedIRanges cached_ir;
+	cachedCompressedIRangesList cached_cirl;
+	int x_length, i;
+
+	cached_cirl = _cache_CompressedIRangesList(x);
+	x_length = _get_cachedCompressedIRangesList_length(&cached_cirl);
+	PROTECT(ans = NEW_LOGICAL(x_length));
+	for (i = 0; i < x_length; i++) {
+		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_cirl, i);
+		LOGICAL(ans)[i] = _is_normal_IRanges(&cached_ir);
+	}
+	PROTECT(ans_names = duplicate(GET_SLOT(GET_SLOT(x, install("partitioning")),
+			                               install("NAMES"))));
+	SET_NAMES(ans, ans_names);
+	UNPROTECT(2);
+	return ans;
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP CompressedNormalIRangesList_min(SEXP x)
+{
+	SEXP ans, ans_names;
+	cachedIRanges cached_ir;
+	cachedCompressedIRangesList cached_cirl;
+	int x_length, ir_length, i;
+	int *ans_elt;
+
+	cached_cirl = _cache_CompressedIRangesList(x);
+	x_length = _get_cachedCompressedIRangesList_length(&cached_cirl);
+	PROTECT(ans = NEW_INTEGER(x_length));
+	for (i = 0, ans_elt = INTEGER(ans); i < x_length; i++, ans_elt++) {
+		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_cirl, i);
+		ir_length = _get_cachedIRanges_length(&cached_ir);
+		if (ir_length == 0) {
+			*ans_elt = INT_MAX;
+		} else {
+			*ans_elt = _get_cachedIRanges_elt_start(&cached_ir, 0);
+		}
+	}
+	PROTECT(ans_names = duplicate(GET_SLOT(GET_SLOT(x, install("partitioning")),
+			                               install("NAMES"))));
+	SET_NAMES(ans, ans_names);
+	UNPROTECT(2);
+	return ans;
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP CompressedNormalIRangesList_max(SEXP x)
+{
+	SEXP ans, ans_names;
+	cachedIRanges cached_ir;
+	cachedCompressedIRangesList cached_cirl;
+	int x_length, ir_length, i;
+	int *ans_elt;
+
+	cached_cirl = _cache_CompressedIRangesList(x);
+	x_length = _get_cachedCompressedIRangesList_length(&cached_cirl);
+	PROTECT(ans = NEW_INTEGER(x_length));
+	for (i = 0, ans_elt = INTEGER(ans); i < x_length; i++, ans_elt++) {
+		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_cirl, i);
+		ir_length = _get_cachedIRanges_length(&cached_ir);
+		if (ir_length == 0) {
+			*ans_elt = R_INT_MIN;
+		} else {
+			*ans_elt = _get_cachedIRanges_elt_end(&cached_ir, ir_length - 1);
+		}
+	}
+	PROTECT(ans_names = duplicate(GET_SLOT(GET_SLOT(x, install("partitioning")),
+			                               install("NAMES"))));
+	SET_NAMES(ans, ans_names);
+	UNPROTECT(2);
+	return ans;
+}
 
 /*
  * --- .Call ENTRY POINT ---
