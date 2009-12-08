@@ -32,29 +32,30 @@ SEXP valid_GappedRanges(SEXP x, SEXP ans_type)
 	int x_length, ans_type0, i;
 	cachedIRanges cached_ir;
 	const char *errmsg;
-	char string_buf[200];
+	char string_buf[80];
 
 	cirl = GET_SLOT(x, install("cirl"));
 	cached_cirl = _cache_CompressedIRangesList(cirl);
 	x_length = _get_cachedCompressedIRangesList_length(&cached_cirl);
 	ans_type0 = INTEGER(ans_type)[0];
-	if (ans_type0 == 0)
-		ans = R_NilValue;
-	else
+	if (ans_type0 == 1)
 		PROTECT(ans = NEW_LOGICAL(x_length));
+	else
+		ans = R_NilValue;
 	for (i = 0; i < x_length; i++) {
 		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_cirl, i);
 		errmsg = is_valid_GappedRanges_elt(&cached_ir);
-		if (ans_type0 == 0) {
-			if (errmsg == NULL)
-				continue;
+		if (ans_type0 == 1) {
+			LOGICAL(ans)[i] = errmsg == NULL;
+			continue;
+		}
+		if (errmsg != NULL) {
 			snprintf(string_buf, sizeof(string_buf),
 				 "element %d is invalid (%s)", i + 1, errmsg);
 			return mkString(string_buf);
 		}
-		LOGICAL(ans)[i] = errmsg == NULL;
 	}
-	if (ans_type0 != 0)
+	if (ans_type0 == 1)
 		UNPROTECT(1);
 	return ans;
 }
