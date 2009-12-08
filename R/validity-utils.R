@@ -25,7 +25,7 @@ disableValidity <- function(disabled)
     disabled
 }
 
-setValidity2 <- function(Class, valid.func)
+setValidity2 <- function(Class, valid.func, where=topenv(parent.frame()))
 {
     setValidity(Class,
         function(object)
@@ -41,7 +41,8 @@ setValidity2 <- function(Class, valid.func)
             if (isTRUE(problems) || length(problems) == 0L)
                 return(TRUE)
             problems
-        }
+        },
+        where=where
     )
 }
 
