@@ -49,6 +49,9 @@ setClass("Ranges", contains="IntegerList", representation("VIRTUAL"))
 ###
 
 setMethod("length", "Ranges", function(x) length(start(x)))
+
+### Without this definition, we inherit the method for Sequence objects
+### which is very inefficient on Ranges objects!
 setMethod("elementLengths", "Ranges", function(x) width(x))
 
 ### The "start" and "end" generics are defined in the stats package.
