@@ -20,7 +20,7 @@
 
 setClass("GappedRanges",
     contains="Ranges",
-    representation(cirl="CompressedIRangesList"),
+    representation(cnirl="CompressedNormalIRangesList"),
     prototype(elementType="NormalIRanges")
 )
 
@@ -29,34 +29,22 @@ setClass("GappedRanges",
 ### Accessor-like methods.
 ###
 
-setMethod("length", "GappedRanges", function(x) length(x@cirl))
+setMethod("length", "GappedRanges", function(x) length(x@cnirl))
 
 setMethod("start", "GappedRanges",
-    function(x, ...) {
-        #i <-
-        #  newCompressedList("CompressedIntegerList", rep.int(1L, length(x)),
-        #                    end = seq_len(length(x)))
-        #unlist(start(x@cirl[i]), use.names = FALSE)
-        .Call("GappedRanges_start", x, PACKAGE="IRanges")
-    }
+    function(x, ...) CompressedNormalIRangesList.min(x@cnirl, FALSE)
 )
 
 setMethod("end", "GappedRanges",
-    function(x, ...) {
-        #i <-
-        #  newCompressedList("CompressedIntegerList", unname(elementLengths(x)),
-        #                    end = seq_len(length(x)))
-        #unlist(end(x@cirl[i]), use.names = FALSE)
-        .Call("GappedRanges_end", x, PACKAGE="IRanges")
-    }
+    function(x, ...) CompressedNormalIRangesList.max(x@cnirl, FALSE)
 )
 
-setMethod("names", "GappedRanges", function(x) names(x@cirl))
+setMethod("names", "GappedRanges", function(x) names(x@cnirl))
 
 setReplaceMethod("names", "GappedRanges",
     function(x, value)
     {
-        names(x@cirl) <- value
+        names(x@cnirl) <- value
         x
     }
 )
@@ -76,13 +64,18 @@ setValidity2("GappedRanges", .valid.GappedRanges)
 ### Coercion.
 ###
 
+setAs("CompressedNormalIRangesList", "GappedRanges",
+    function(from) new("GappedRanges", cnirl=from)
+)
 setAs("CompressedIRangesList", "GappedRanges",
-    function(from) new("GappedRanges", cirl=from)
+    function(from) as(as(from, "CompressedNormalIRangesList"), "GappedRanges")
 )
 
-setAs("GappedRanges", "CompressedIRangesList", function(from) from@cirl)
-setAs("GappedRanges", "IRangesList", function(from) from@cirl)
-setAs("GappedRanges", "RangesList", function(from) from@cirl)
+setAs("GappedRanges", "CompressedNormalIRangesList", function(from) from@cnirl)
+setAs("GappedRanges", "NormalIRangesList", function(from) from@cnirl)
+setAs("GappedRanges", "CompressedIRangesList", function(from) from@cnirl)
+setAs("GappedRanges", "IRangesList", function(from) from@cnirl)
+setAs("GappedRanges", "RangesList", function(from) from@cnirl)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -94,20 +87,20 @@ setMethod("[[", "GappedRanges",
     function(x, i, j, ..., exact=TRUE)
     {
         i <- checkAndTranslateDbleBracketSubscript(x, i)
-        newNormalIRangesFromIRanges(x@cirl[[i]], check=FALSE)
+        newNormalIRangesFromIRanges(x@cnirl[[i]], check=FALSE)
     }
 )
 
 ### WARNING: We override the *semantic* of the "elementLengths" method for
 ### Ranges objects.
 setMethod("elementLengths", "GappedRanges",
-    function(x) elementLengths(x@cirl)
+    function(x) elementLengths(x@cnirl)
 )
 
 setMethod("[", "GappedRanges",
     function(x, i, j, ... , drop=TRUE)
     {
-        x@cirl <- x@cirl[i]
+        x@cnirl <- x@cnirl[i]
         x
     }
 )
@@ -115,7 +108,7 @@ setMethod("[", "GappedRanges",
 setMethod("seqselect", "GappedRanges",
     function(x, start=NULL, end=NULL, width=NULL)
     {
-        x@cirl <- seqselect(x@cirl, start=start, end=end, width=width)
+        x@cnirl <- seqselect(x@cnirl, start=start, end=end, width=width)
         x
     }
 )
@@ -123,8 +116,8 @@ setMethod("seqselect", "GappedRanges",
 setMethod("window", "GappedRanges",
     function(x, start=NA, end=NA, width=NA, frequency=NULL, delta=NULL, ...)
     {
-        x@cirl <- window(x@cirl, start=start, end=end, width=width,
-                         frequency=frequency, delta=delta, ...)
+        x@cnirl <- window(x@cnirl, start=start, end=end, width=width,
+                          frequency=frequency, delta=delta, ...)
         x
     }
 )
@@ -146,7 +139,7 @@ setMethod("window", "GappedRanges",
 #        end2 <- start2 + width(solved_SEW) - 1L
 
 #        for (i in seq_len(length(x))) {
-#            x@cirl[[i]] <- restrict(x[[i]], start=start2[i], end=end2[i])
+#            x@cnirl[[i]] <- restrict(x[[i]], start=start2[i], end=end2[i])
 #        }
 #        if (!normargUseNames(use.names))
 #            names(x) <- NULL
@@ -177,7 +170,7 @@ setMethod("c", "GappedRanges",
             args[arg_is_null] <- NULL  # remove NULL elements by setting them to NULL!
         if (!all(sapply(args, is, class(x))))
             stop("all arguments in '...' must be ", class(x), " objects (or NULLs)")
-        x@cirl <- do.call(c, lapply(args, function(xx) xx@cirl))
+        x@cnirl <- do.call(c, lapply(args, function(xx) xx@cnirl))
         x
     }
 )

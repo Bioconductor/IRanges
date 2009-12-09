@@ -486,7 +486,7 @@ SEXP _alloc_IRanges(
 	int length
 );
 
-int _is_normal_IRanges(const cachedIRanges *cached_ir);
+int _is_normal_cachedIRanges(const cachedIRanges *cached_ir);
 
 SEXP IRanges_isNormal(SEXP x);
 
@@ -540,6 +540,8 @@ SEXP _get_H2LGrouping_high2low(SEXP x);
 
 SEXP _get_H2LGrouping_low2high(SEXP x);
 
+SEXP _get_Partitioning_names(SEXP x);
+
 SEXP _get_PartitioningByEnd_end(SEXP x);
 
 SEXP H2LGrouping_members(
@@ -561,6 +563,8 @@ SEXP _get_CompressedIRangesList_partitioning(SEXP x);
 
 int _get_CompressedIRangesList_length(SEXP x);
 
+SEXP _get_CompressedIRangesList_names(SEXP x);
+
 cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x);
 
 int _get_cachedCompressedIRangesList_length(
@@ -572,16 +576,16 @@ cachedIRanges _get_cachedCompressedIRangesList_elt(
 	int i
 );
 
-SEXP CompressedIRangesList_isNormal(SEXP x);
+SEXP CompressedIRangesList_isNormal(SEXP x, SEXP use_names);
 
-SEXP CompressedNormalIRangesList_min(SEXP x);
+SEXP CompressedNormalIRangesList_min(SEXP x, SEXP use_names);
 
-SEXP CompressedNormalIRangesList_max(SEXP x);
+SEXP CompressedNormalIRangesList_max(SEXP x, SEXP use_names);
 
 SEXP CompressedIRangesList_summary(SEXP object);
 
 
-/* CompressedIRangesList_class.c */
+/* SimpleIRangesList_class.c */
 
 SEXP SimpleIRangesList_isNormal(SEXP x);
 
@@ -593,10 +597,6 @@ SEXP SimpleNormalIRangesList_max(SEXP x);
 /* GappedRanges_class.c */
 
 SEXP valid_GappedRanges(SEXP x, SEXP ans_type);
-
-SEXP GappedRanges_start(SEXP x);
-
-SEXP GappedRanges_end(SEXP x);
 
 
 /* Ranges_comparison.c */

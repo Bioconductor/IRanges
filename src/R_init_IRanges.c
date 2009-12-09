@@ -51,21 +51,19 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(H2LGrouping_members, 2),
 	CALLMETHOD_DEF(H2LGrouping_vmembers, 2),
 
-/* CompressedIRangesList_class.c */
-	CALLMETHOD_DEF(CompressedIRangesList_isNormal, 1),
-	CALLMETHOD_DEF(CompressedNormalIRangesList_min, 1),
-	CALLMETHOD_DEF(CompressedNormalIRangesList_max, 1),
-	CALLMETHOD_DEF(CompressedIRangesList_summary, 1),
-
 /* SimpleIRangesList_class.c */
 	CALLMETHOD_DEF(SimpleIRangesList_isNormal, 1),
 	CALLMETHOD_DEF(SimpleNormalIRangesList_min, 1),
 	CALLMETHOD_DEF(SimpleNormalIRangesList_max, 1),
 
+/* CompressedIRangesList_class.c */
+	CALLMETHOD_DEF(CompressedIRangesList_isNormal, 2),
+	CALLMETHOD_DEF(CompressedNormalIRangesList_min, 2),
+	CALLMETHOD_DEF(CompressedNormalIRangesList_max, 2),
+	CALLMETHOD_DEF(CompressedIRangesList_summary, 1),
+
 /* GappedRanges_class.c */
 	CALLMETHOD_DEF(valid_GappedRanges, 2),
-	CALLMETHOD_DEF(GappedRanges_start, 1),
-	CALLMETHOD_DEF(GappedRanges_end, 1),
 
 /* Ranges_comparison.c */
 	CALLMETHOD_DEF(Ranges_order, 3),

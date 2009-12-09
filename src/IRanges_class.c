@@ -214,13 +214,13 @@ SEXP _new_IRanges(const char *classname, SEXP start, SEXP width, SEXP names)
    The 'start' and 'width' slots are not initialized (they contain junk). */
 SEXP _alloc_IRanges(const char *classname, int length)
 {
-        SEXP start, width, ans;
+	SEXP start, width, ans;
 
-        PROTECT(start = NEW_INTEGER(length));
-        PROTECT(width = NEW_INTEGER(length));
-        PROTECT(ans = _new_IRanges(classname, start, width, R_NilValue));
-        UNPROTECT(3);
-        return ans;
+	PROTECT(start = NEW_INTEGER(length));
+	PROTECT(width = NEW_INTEGER(length));
+	PROTECT(ans = _new_IRanges(classname, start, width, R_NilValue));
+	UNPROTECT(3);
+	return ans;
 }
 
 
@@ -228,39 +228,32 @@ SEXP _alloc_IRanges(const char *classname, int length)
  * Validity functions.
  */
 
-int _is_normal_IRanges(const cachedIRanges *cached_ir)
+int _is_normal_cachedIRanges(const cachedIRanges *cached_ir)
 {
-	int ir_length, i, ans;
+	int ir_length, i;
 
-	ans = 1;
 	ir_length = _get_cachedIRanges_length(cached_ir);
-	if (ir_length > 0) {
-		ans = _get_cachedIRanges_elt_width(cached_ir, 0) > 0;
-		if (ans) {
-			for (i = 1; i < ir_length; i++) {
-				if (_get_cachedIRanges_elt_width(cached_ir, i) < 1 ||
-					(_get_cachedIRanges_elt_start(cached_ir, i)
-				  <= _get_cachedIRanges_elt_end(cached_ir, i - 1) + 1)) {
-					ans = 0;
-					break;
-				}
-			}
-		}
+	if (ir_length == 0)
+		return 1;
+	if (_get_cachedIRanges_elt_width(cached_ir, 0) <= 0)
+		return 0;
+	for (i = 1; i < ir_length; i++) {
+		if (_get_cachedIRanges_elt_width(cached_ir, i) <= 0)
+			return 0;
+		if (_get_cachedIRanges_elt_start(cached_ir, i)
+		 <= _get_cachedIRanges_elt_end(cached_ir, i - 1) + 1)
+			return 0;
 	}
-	return ans;
+	return 1;
 }
 
 /* --- .Call ENTRY POINT --- */
 SEXP IRanges_isNormal(SEXP x)
 {
-	SEXP ans;
-	cachedIRanges cached_ir = _cache_IRanges(x);
+	cachedIRanges cached_ir;
 
-	PROTECT(ans = NEW_LOGICAL(1));
-	LOGICAL(ans)[0] = _is_normal_IRanges(&cached_ir);
-	UNPROTECT(1);
-
-	return ans;
+	cached_ir = _cache_IRanges(x);
+	return ScalarLogical(_is_normal_cachedIRanges(&cached_ir));
 }
 
 

@@ -6,7 +6,6 @@
 
 #define R_INT_MIN	(1+INT_MIN)
 
-
 /*
  * --- .Call ENTRY POINT ---
  */
@@ -21,7 +20,7 @@ SEXP SimpleIRangesList_isNormal(SEXP x)
 	PROTECT(ans = NEW_LOGICAL(x_length));
 	for (i = 0; i < x_length; i++) {
 		cached_ir = _cache_IRanges(VECTOR_ELT(list_ir, i));
-		LOGICAL(ans)[i] = _is_normal_IRanges(&cached_ir);
+		LOGICAL(ans)[i] = _is_normal_cachedIRanges(&cached_ir);
 	}
 	PROTECT(ans_names = duplicate(GET_NAMES(list_ir)));
 	SET_NAMES(ans, ans_names);

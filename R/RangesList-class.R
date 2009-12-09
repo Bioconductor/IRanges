@@ -191,7 +191,7 @@ setMethod("isNormal", "RangesList",
 
 setMethod("isNormal", "CompressedIRangesList",
           function(x)
-          .Call("CompressedIRangesList_isNormal", x, PACKAGE = "IRanges"))
+          .Call("CompressedIRangesList_isNormal", x, TRUE, PACKAGE = "IRanges"))
 
 setMethod("isNormal", "SimpleIRangesList",
           function(x)
@@ -764,20 +764,34 @@ setAs("RleList", "SimpleNormalIRangesList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "max" and "min" methods for NormalIRangesList.
+### The "max" and "min" methods for NormalIRangesList objects.
 ###
 
+CompressedNormalIRangesList.max <- function(x, use.names)
+{
+    if (!is(x, "CompressedNormalIRangesList"))
+        stop("'x' must be a CompressedNormalIRangesList object")
+    use.names <- normargUseNames(use.names)
+    .Call("CompressedNormalIRangesList_max", x, use.names, PACKAGE="IRanges")
+}
+
 setMethod("max", "CompressedNormalIRangesList",
-          function(x, ..., na.rm)
-          .Call("CompressedNormalIRangesList_max", x, PACKAGE="IRanges"))
+          function(x, ..., na.rm) CompressedNormalIRangesList.max(x, TRUE))
 
 setMethod("max", "SimpleNormalIRangesList",
           function(x, ..., na.rm)
           .Call("SimpleNormalIRangesList_max", x, PACKAGE="IRanges"))
 
+CompressedNormalIRangesList.min <- function(x, use.names)
+{
+    if (!is(x, "CompressedNormalIRangesList"))
+        stop("'x' must be a CompressedNormalIRangesList object")
+    use.names <- normargUseNames(use.names)
+    .Call("CompressedNormalIRangesList_min", x, use.names, PACKAGE="IRanges")
+}
+
 setMethod("min", "CompressedNormalIRangesList",
-          function(x, ..., na.rm)
-          .Call("CompressedNormalIRangesList_min", x, PACKAGE="IRanges"))
+          function(x, ..., na.rm) CompressedNormalIRangesList.min(x, TRUE))
 
 setMethod("min", "SimpleNormalIRangesList",
           function(x, ..., na.rm)

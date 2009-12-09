@@ -29,7 +29,8 @@ SEXP debug_Grouping_class()
 static SEXP
 	high2low_symbol = NULL,
 	low2high_symbol = NULL,
-	end_symbol = NULL;
+	end_symbol = NULL,
+	NAMES_symbol = NULL;
 
 SEXP _get_H2LGrouping_high2low(SEXP x)
 {
@@ -41,6 +42,12 @@ SEXP _get_H2LGrouping_low2high(SEXP x)
 {
 	INIT_STATIC_SYMBOL(low2high)
 	return GET_SLOT(x, low2high_symbol);
+}
+
+SEXP _get_Partitioning_names(SEXP x)
+{
+	INIT_STATIC_SYMBOL(NAMES)
+	return GET_SLOT(x, NAMES_symbol);
 }
 
 SEXP _get_PartitioningByEnd_end(SEXP x)

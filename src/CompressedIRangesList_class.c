@@ -38,6 +38,11 @@ int _get_CompressedIRangesList_length(SEXP x)
 			_get_CompressedIRangesList_partitioning(x)));
 }
 
+SEXP _get_CompressedIRangesList_names(SEXP x)
+{
+	return _get_Partitioning_names(_get_CompressedIRangesList_partitioning(x));
+}
+
 
 /****************************************************************************
  * C-level abstract getters.
@@ -49,7 +54,8 @@ cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x)
 	SEXP x_end;
 
 	cached_x.classname = _get_classname(x);
-	x_end = _get_PartitioningByEnd_end(_get_CompressedIRangesList_partitioning(x));
+	x_end = _get_PartitioningByEnd_end(
+			_get_CompressedIRangesList_partitioning(x));
 	cached_x.length = LENGTH(x_end);
 	cached_x.end = INTEGER(x_end);
 	cached_x.cached_unlistData = _cache_IRanges(
@@ -80,43 +86,45 @@ cachedIRanges _get_cachedCompressedIRangesList_elt(
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP CompressedIRangesList_isNormal(SEXP x)
+SEXP CompressedIRangesList_isNormal(SEXP x, SEXP use_names)
 {
 	SEXP ans, ans_names;
 	cachedIRanges cached_ir;
-	cachedCompressedIRangesList cached_cirl;
+	cachedCompressedIRangesList cached_x;
 	int x_length, i;
 
-	cached_cirl = _cache_CompressedIRangesList(x);
-	x_length = _get_cachedCompressedIRangesList_length(&cached_cirl);
+	cached_x = _cache_CompressedIRangesList(x);
+	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
 	PROTECT(ans = NEW_LOGICAL(x_length));
 	for (i = 0; i < x_length; i++) {
-		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_cirl, i);
-		LOGICAL(ans)[i] = _is_normal_IRanges(&cached_ir);
+		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
+		LOGICAL(ans)[i] = _is_normal_cachedIRanges(&cached_ir);
 	}
-	PROTECT(ans_names = duplicate(GET_SLOT(GET_SLOT(x, install("partitioning")),
-			                               install("NAMES"))));
-	SET_NAMES(ans, ans_names);
-	UNPROTECT(2);
+	if (LOGICAL(use_names)[0]) {
+		PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
+		SET_NAMES(ans, ans_names);
+		UNPROTECT(1);
+	}
+	UNPROTECT(1);
 	return ans;
 }
 
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP CompressedNormalIRangesList_min(SEXP x)
+SEXP CompressedNormalIRangesList_min(SEXP x, SEXP use_names)
 {
 	SEXP ans, ans_names;
 	cachedIRanges cached_ir;
-	cachedCompressedIRangesList cached_cirl;
+	cachedCompressedIRangesList cached_x;
 	int x_length, ir_length, i;
 	int *ans_elt;
 
-	cached_cirl = _cache_CompressedIRangesList(x);
-	x_length = _get_cachedCompressedIRangesList_length(&cached_cirl);
+	cached_x = _cache_CompressedIRangesList(x);
+	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
 	PROTECT(ans = NEW_INTEGER(x_length));
 	for (i = 0, ans_elt = INTEGER(ans); i < x_length; i++, ans_elt++) {
-		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_cirl, i);
+		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
 		ir_length = _get_cachedIRanges_length(&cached_ir);
 		if (ir_length == 0) {
 			*ans_elt = INT_MAX;
@@ -124,29 +132,31 @@ SEXP CompressedNormalIRangesList_min(SEXP x)
 			*ans_elt = _get_cachedIRanges_elt_start(&cached_ir, 0);
 		}
 	}
-	PROTECT(ans_names = duplicate(GET_SLOT(GET_SLOT(x, install("partitioning")),
-			                               install("NAMES"))));
-	SET_NAMES(ans, ans_names);
-	UNPROTECT(2);
+	if (LOGICAL(use_names)[0]) {
+		PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
+		SET_NAMES(ans, ans_names);
+		UNPROTECT(1);
+	}
+	UNPROTECT(1);
 	return ans;
 }
 
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP CompressedNormalIRangesList_max(SEXP x)
+SEXP CompressedNormalIRangesList_max(SEXP x, SEXP use_names)
 {
 	SEXP ans, ans_names;
 	cachedIRanges cached_ir;
-	cachedCompressedIRangesList cached_cirl;
+	cachedCompressedIRangesList cached_x;
 	int x_length, ir_length, i;
 	int *ans_elt;
 
-	cached_cirl = _cache_CompressedIRangesList(x);
-	x_length = _get_cachedCompressedIRangesList_length(&cached_cirl);
+	cached_x = _cache_CompressedIRangesList(x);
+	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
 	PROTECT(ans = NEW_INTEGER(x_length));
 	for (i = 0, ans_elt = INTEGER(ans); i < x_length; i++, ans_elt++) {
-		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_cirl, i);
+		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
 		ir_length = _get_cachedIRanges_length(&cached_ir);
 		if (ir_length == 0) {
 			*ans_elt = R_INT_MIN;
@@ -154,10 +164,12 @@ SEXP CompressedNormalIRangesList_max(SEXP x)
 			*ans_elt = _get_cachedIRanges_elt_end(&cached_ir, ir_length - 1);
 		}
 	}
-	PROTECT(ans_names = duplicate(GET_SLOT(GET_SLOT(x, install("partitioning")),
-			                               install("NAMES"))));
-	SET_NAMES(ans, ans_names);
-	UNPROTECT(2);
+	if (LOGICAL(use_names)[0]) {
+		PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
+		SET_NAMES(ans, ans_names);
+		UNPROTECT(1);
+	}
+	UNPROTECT(1);
 	return ans;
 }
 
@@ -170,8 +182,8 @@ SEXP CompressedIRangesList_summary(SEXP object)
 	SEXP part_end;
 	SEXP ans, ans_names, col_names;
 
-	part_end = GET_SLOT(GET_SLOT(object, install("partitioning")),
-			                     install("end"));
+	part_end = _get_PartitioningByEnd_end(
+			_get_CompressedIRangesList_partitioning(object));
 	ans_len = LENGTH(part_end);
 	PROTECT(ans = allocMatrix(INTSXP, ans_len, 2));
 	memset(INTEGER(ans), 0, 2 * ans_len * sizeof(int));
@@ -179,7 +191,7 @@ SEXP CompressedIRangesList_summary(SEXP object)
 		int i, j, prev_end = 0;
 		int *ans1_elt, *ans2_elt;
 		const int *part_end_elt, *ranges_width;
-		SEXP unlistData = GET_SLOT(object, install("unlistData"));
+		SEXP unlistData = _get_CompressedIRangesList_unlistData(object);
 		ranges_width = INTEGER(_get_IRanges_width(unlistData));
 		for (i = 0, ans1_elt = INTEGER(ans), ans2_elt = (INTEGER(ans) + ans_len),
 			 part_end_elt = INTEGER(part_end);
@@ -198,8 +210,7 @@ SEXP CompressedIRangesList_summary(SEXP object)
 	SET_STRING_ELT(col_names, 0, mkChar("Length"));
 	SET_STRING_ELT(col_names, 1, mkChar("WidthSum"));
 	SET_VECTOR_ELT(ans_names, 0,
-			       duplicate(GET_SLOT(GET_SLOT(object, install("partitioning")),
-			    		              install("NAMES"))));
+			       duplicate(_get_CompressedIRangesList_names(object)));
 	SET_VECTOR_ELT(ans_names, 1, col_names);
 	SET_DIMNAMES(ans, ans_names);
 	UNPROTECT(3);
