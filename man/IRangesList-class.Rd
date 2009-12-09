@@ -8,6 +8,9 @@
 \alias{IRangesList-class}
 \alias{CompressedIRangesList-class}
 \alias{SimpleIRangesList-class}
+\alias{IRangesList}
+\alias{CompressedIRangesList}
+\alias{SimpleIRangesList}
 
 % accessors
 \alias{end,CompressedIRangesList-method}
@@ -30,9 +33,6 @@
 \alias{min,SimpleNormalIRangesList-method}
 \alias{summary,CompressedIRangesList-method}
 
-% constructor
-\alias{IRangesList}
-
 
 % NormalIRangesList objects:
 \alias{class:NormalIRangesList}
@@ -41,6 +41,9 @@
 \alias{NormalIRangesList-class}
 \alias{CompressedNormalIRangesList-class}
 \alias{SimpleNormalIRangesList-class}
+\alias{NormalIRangesList}
+\alias{CompressedNormalIRangesList}
+\alias{SimpleNormalIRangesList}
 
 \alias{isDisjoint,RangesList-method}
 \alias{isNormal,CompressedIRangesList-method}

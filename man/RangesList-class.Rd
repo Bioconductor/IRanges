@@ -4,9 +4,8 @@
 \alias{class:SimpleRangesList-class}
 \alias{RangesList-class}
 \alias{SimpleRangesList-class}
-
-% constructor
 \alias{RangesList}
+\alias{SimpleRangesList}
 
 % accessors
 \alias{end,RangesList-method}
