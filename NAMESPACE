@@ -135,6 +135,9 @@ export(
     nobj, grouplength, members, vmembers, togroup, togrouplength,
     high2low, low2high, grouprank, togrouprank,
 
+    ## Generic functions in the GappedRanges API:
+    ngap,
+
     ## Generic functions in the DataTable API:
     as.env,
     
@@ -251,6 +254,7 @@ exportMethods(
     coverage,
     nobj, grouplength, members, vmembers, togroup, togrouplength,
     high2low, low2high, grouprank, togrouprank,
+    ngap,
     nir_list,
     active, "active<-",
     desc, "desc<-",

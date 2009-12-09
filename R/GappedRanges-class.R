@@ -14,10 +14,6 @@
 ### object.
 ###
 
-### TODO: It could be worth pursuing this so it could be reused in the
-### context of the MaskCollection class rework...
-###
-
 setClass("GappedRanges",
     contains="Ranges",
     representation(cnirl="CompressedNormalIRangesList"),
@@ -38,6 +34,9 @@ setMethod("start", "GappedRanges",
 setMethod("end", "GappedRanges",
     function(x, ...) CompressedNormalIRangesList.max(x@cnirl, FALSE)
 )
+
+setGeneric("ngap", function(x) standardGeneric("ngap"))
+setMethod("ngap", "GappedRanges", function(x) {elementLengths(x) - 1L})
 
 setMethod("names", "GappedRanges", function(x) names(x@cnirl))
 
@@ -76,6 +75,53 @@ setAs("GappedRanges", "NormalIRangesList", function(from) from@cnirl)
 setAs("GappedRanges", "CompressedIRangesList", function(from) from@cnirl)
 setAs("GappedRanges", "IRangesList", function(from) from@cnirl)
 setAs("GappedRanges", "RangesList", function(from) from@cnirl)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "show" method.
+###
+
+setMethod("as.data.frame", "GappedRanges",
+    function(x, row.names=NULL, optional=FALSE, ...)
+    {
+        ans <- callNextMethod(unname(x), row.names, optional, ...)
+        ans$ngap <- ngap(x)
+        ans$names <- names(x)
+        return(ans)
+    }
+)
+
+setMethod("show", "GappedRanges",
+    function(object)
+    {
+        lo <- length(object)
+        cat(class(object), " of length ", lo, "\n", sep="")
+        if (lo == 0L) {
+            return(NULL)
+        } else if (lo < 20L) {
+            showme <-
+              as.data.frame(object,
+                            row.names=paste("[", seq_len(lo), "]", sep=""))
+        } else {
+            sketch <- function(x)
+              c(window(x, 1L, 9L), "...", window(x, length(x)-8L, length(x)))
+            showme <-
+              data.frame(start=sketch(start(object)),
+                         end=sketch(end(object)),
+                         width=sketch(width(object)),
+                         ngap=sketch(ngap(object)),
+                         row.names=c(paste("[", 1:9, "]", sep=""), "...",
+                                     paste("[", (lo-8L):lo, "]", sep="")),
+                         check.rows=TRUE,
+                         check.names=FALSE,
+                         stringsAsFactors=FALSE)
+            NAMES <- names(object)
+            if (!is.null(NAMES))
+                showme$names <- sketch(NAMES)
+        }
+        show(showme)
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
