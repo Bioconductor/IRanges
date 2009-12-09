@@ -124,7 +124,9 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
 }
 .valid.CompressedList.unlistData <- function(x)
 {
-    elementTypeX <- elementType(x)
+    ## FIXME: workaround to support CompressedNormalIRangesList
+    ## elementTypeX <- elementType(x)
+    elementTypeX <- elementType(new(class(x)))
     if (!extends(class(x@unlistData), elementTypeX))
         paste("the 'unlistData' slot must be of class", elementTypeX)
     else NULL

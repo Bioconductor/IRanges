@@ -26,7 +26,7 @@ setClass("NormalIRangesList", representation("VIRTUAL"),
          prototype = prototype(elementType = "NormalIRanges"),
          contains = "IRangesList")
 setClass("CompressedNormalIRangesList",
-         prototype = prototype(elementType = "IRanges",
+         prototype = prototype(elementType = "NormalIRanges",
                                unlistData = new("IRanges")),
          contains = c("NormalIRangesList", "CompressedIRangesList"))
 setClass("SimpleNormalIRangesList",
