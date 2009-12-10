@@ -241,8 +241,6 @@ setReplaceMethod("window", "DataTable",
                            window(x, start = end(solved_SEW) + 1L))
                  })
 
-setGeneric("na.omit", function(object, ...) standardGeneric("na.omit"))
-
 setMethod("na.omit", "DataTable",
           function(object, ...) {
             attr(object, "row.names") <- rownames(object)
@@ -250,8 +248,6 @@ setMethod("na.omit", "DataTable",
             attr(object.omit, "row.names") <- NULL
             object.omit
           })
-
-setGeneric("na.exclude", function(object, ...) standardGeneric("na.exclude"))
 
 setMethod("na.exclude", "DataTable",
           function(object, ...) {
@@ -267,7 +263,15 @@ setMethod("is.na", "DataTable", function(x) {
   na
 })
 
-setGeneric("complete.cases", function(...) standardGeneric("complete.cases"))
+## Somehow, the "..." signature yields a broken implicit generic. We
+## have to specify the package to force the override.  The
+## useAsDefault argument ensures that the default method of the
+## would-be implicit generic is preserved.
+
+setGeneric("complete.cases",
+           function(...) standardGeneric("complete.cases"),
+           useAsDefault = function(...) stats::complete.cases(...),
+           package = "IRanges")
 
 setMethod("complete.cases", "DataTable", function(...) {
   args <- list(...)
