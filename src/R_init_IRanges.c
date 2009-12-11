@@ -262,6 +262,7 @@ void R_init_IRanges(DllInfo *info)
 /* CompressedIRangesList_class.c */
 	REGISTER_CCALLABLE(_cache_CompressedIRangesList);
 	REGISTER_CCALLABLE(_get_cachedCompressedIRangesList_elt);
+	REGISTER_CCALLABLE(_new_CompressedIRangesList);
 
 /* SharedVector_class.c */
 	REGISTER_CCALLABLE(_new_SharedVector);

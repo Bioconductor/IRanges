@@ -404,6 +404,8 @@ cachedCompressedIRangesList cache_CompressedIRangesList(SEXP x);
 
 cachedIRanges get_cachedCompressedIRangesList_elt(const cachedCompressedIRangesList *cached_x, int i);
 
+SEXP new_CompressedIRangesList(const char *classname, SEXP unlistData, SEXP partitioning);
+
 
 /*
  * Low-level manipulation of SharedVector objects.

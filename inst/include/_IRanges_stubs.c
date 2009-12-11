@@ -437,6 +437,11 @@ DEFINE_CCALLABLE_STUB(cachedIRanges, get_cachedCompressedIRangesList_elt,
 	(                                   cached_x,     i)
 )
 
+DEFINE_CCALLABLE_STUB(SEXP, new_CompressedIRangesList,
+	(const char *classname, SEXP unlistData, SEXP partitioning),
+	(            classname,      unlistData,      partitioning)
+)
+
 /*
  * Stubs for callables defined in SharedVector_class.c
  */

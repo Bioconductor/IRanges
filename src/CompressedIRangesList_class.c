@@ -8,7 +8,7 @@
 #define R_INT_MIN	(1+INT_MIN)
 
 /****************************************************************************
- * C-level slot getters for CompressedIRangesList objects.
+ * C-level slot getters.
  *
  * Be careful that these functions do NOT duplicate the returned slot.
  * Thus they cannot be made .Call entry points!
@@ -40,7 +40,8 @@ int _get_CompressedIRangesList_length(SEXP x)
 
 SEXP _get_CompressedIRangesList_names(SEXP x)
 {
-	return _get_Partitioning_names(_get_CompressedIRangesList_partitioning(x));
+	return _get_Partitioning_names(
+			_get_CompressedIRangesList_partitioning(x));
 }
 
 
@@ -59,11 +60,12 @@ cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x)
 	cached_x.length = LENGTH(x_end);
 	cached_x.end = INTEGER(x_end);
 	cached_x.cached_unlistData = _cache_IRanges(
-				_get_CompressedIRangesList_unlistData(x));
+			_get_CompressedIRangesList_unlistData(x));
 	return cached_x;
 }
 
-int _get_cachedCompressedIRangesList_length(const cachedCompressedIRangesList *cached_x)
+int _get_cachedCompressedIRangesList_length(
+		const cachedCompressedIRangesList *cached_x)
 {
 	return cached_x->length;
 }
@@ -75,7 +77,50 @@ cachedIRanges _get_cachedCompressedIRangesList_elt(
 
 	offset = i == 0 ? 0 : cached_x->end[i - 1];
 	length = cached_x->end[i] - offset;
-	return _sub_cachedIRanges(&(cached_x->cached_unlistData), offset, length);
+	return _sub_cachedIRanges(&(cached_x->cached_unlistData),
+			offset, length);
+}
+
+
+/****************************************************************************
+ * C-level slot setters.
+ *
+ * Be careful that these functions do NOT duplicate the assigned value!
+ */
+
+static void set_CompressedIRangesList_unlistData(SEXP x, SEXP value)
+{
+	INIT_STATIC_SYMBOL(unlistData)
+	SET_SLOT(x, unlistData_symbol, value);
+	return;
+}
+
+static void set_CompressedIRangesList_partitioning(SEXP x, SEXP value)
+{
+	INIT_STATIC_SYMBOL(partitioning)
+	SET_SLOT(x, partitioning_symbol, value);
+	return;
+}
+
+
+/****************************************************************************
+ * C-level constructor.
+ */
+
+/* Be careful that this constructor does NOT duplicate its arguments before
+   putting them in the slots of the returned object.
+   So don't try to make it a .Call entry point! */
+SEXP _new_CompressedIRangesList(const char *classname,
+		SEXP unlistData, SEXP partitioning)
+{
+	SEXP classdef, ans;
+
+	PROTECT(classdef = MAKE_CLASS(classname));
+	PROTECT(ans = NEW_OBJECT(classdef));
+	set_CompressedIRangesList_unlistData(ans, unlistData);
+	set_CompressedIRangesList_partitioning(ans, partitioning);
+	UNPROTECT(2);
+	return ans;
 }
 
 

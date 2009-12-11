@@ -582,6 +582,12 @@ cachedIRanges _get_cachedCompressedIRangesList_elt(
 	int i
 );
 
+SEXP _new_CompressedIRangesList(
+	const char *classname,
+	SEXP unlistData,
+	SEXP partitioning
+);
+
 SEXP CompressedIRangesList_isNormal(SEXP x, SEXP use_names);
 
 SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end);
