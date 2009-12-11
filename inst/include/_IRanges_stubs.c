@@ -420,7 +420,7 @@ DEFINE_CCALLABLE_STUB(SEXP, get_PartitioningByEnd_end,
 
 DEFINE_CCALLABLE_STUB(SEXP, new_PartitioningByEnd,
 	(const char *classname, SEXP end, SEXP names),
-	(           *classname,      end,      names)
+	(            classname,      end,      names)
 )
 
 /*
