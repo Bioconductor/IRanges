@@ -544,6 +544,12 @@ SEXP _get_Partitioning_names(SEXP x);
 
 SEXP _get_PartitioningByEnd_end(SEXP x);
 
+SEXP _new_PartitioningByEnd(
+	const char *classname,
+	SEXP end,
+	SEXP names
+);
+
 SEXP H2LGrouping_members(
 	SEXP x,
 	SEXP group_ids
@@ -578,11 +584,13 @@ cachedIRanges _get_cachedCompressedIRangesList_elt(
 
 SEXP CompressedIRangesList_isNormal(SEXP x, SEXP use_names);
 
+SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end);
+
+SEXP CompressedIRangesList_summary(SEXP object);
+
 SEXP CompressedNormalIRangesList_min(SEXP x, SEXP use_names);
 
 SEXP CompressedNormalIRangesList_max(SEXP x, SEXP use_names);
-
-SEXP CompressedIRangesList_summary(SEXP object);
 
 
 /* SimpleIRangesList_class.c */

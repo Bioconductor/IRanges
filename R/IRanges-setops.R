@@ -23,8 +23,8 @@ setMethod("gaps", "IRanges",
     {
         start <- normargSingleStartOrNA(start)
         end <- normargSingleEndOrNA(end)
-        ## No matter in what order restricting and normalizing are done, the final
-        ## result should always be exactly the same.
+        ## No matter in what order restricting and normalizing are done,
+        ## the final result should always be exactly the same.
         ## Now which order is the most efficient? It depends...
         xx <- asNormalIRanges(x, force=TRUE)
         xx0 <- restrict(xx, start=start, end=end) # preserves normality

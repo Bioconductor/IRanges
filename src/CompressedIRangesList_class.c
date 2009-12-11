@@ -80,12 +80,10 @@ cachedIRanges _get_cachedCompressedIRangesList_elt(
 
 
 /****************************************************************************
- * Other utilities.
+ * CompressedIRangesList methods.
  */
 
-/*
- * --- .Call ENTRY POINT ---
- */
+/* --- .Call ENTRY POINT --- */
 SEXP CompressedIRangesList_isNormal(SEXP x, SEXP use_names)
 {
 	SEXP ans, ans_names;
@@ -109,73 +107,14 @@ SEXP CompressedIRangesList_isNormal(SEXP x, SEXP use_names)
 	return ans;
 }
 
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP CompressedNormalIRangesList_min(SEXP x, SEXP use_names)
+/* --- .Call ENTRY POINT --- */
+SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 {
-	SEXP ans, ans_names;
-	cachedIRanges cached_ir;
-	cachedCompressedIRangesList cached_x;
-	int x_length, ir_length, i;
-	int *ans_elt;
-
-	cached_x = _cache_CompressedIRangesList(x);
-	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
-	PROTECT(ans = NEW_INTEGER(x_length));
-	for (i = 0, ans_elt = INTEGER(ans); i < x_length; i++, ans_elt++) {
-		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
-		ir_length = _get_cachedIRanges_length(&cached_ir);
-		if (ir_length == 0) {
-			*ans_elt = INT_MAX;
-		} else {
-			*ans_elt = _get_cachedIRanges_elt_start(&cached_ir, 0);
-		}
-	}
-	if (LOGICAL(use_names)[0]) {
-		PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
-		SET_NAMES(ans, ans_names);
-		UNPROTECT(1);
-	}
-	UNPROTECT(1);
-	return ans;
+	error("IMPLEMENT ME");
+	return R_NilValue;
 }
 
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP CompressedNormalIRangesList_max(SEXP x, SEXP use_names)
-{
-	SEXP ans, ans_names;
-	cachedIRanges cached_ir;
-	cachedCompressedIRangesList cached_x;
-	int x_length, ir_length, i;
-	int *ans_elt;
-
-	cached_x = _cache_CompressedIRangesList(x);
-	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
-	PROTECT(ans = NEW_INTEGER(x_length));
-	for (i = 0, ans_elt = INTEGER(ans); i < x_length; i++, ans_elt++) {
-		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
-		ir_length = _get_cachedIRanges_length(&cached_ir);
-		if (ir_length == 0) {
-			*ans_elt = R_INT_MIN;
-		} else {
-			*ans_elt = _get_cachedIRanges_elt_end(&cached_ir, ir_length - 1);
-		}
-	}
-	if (LOGICAL(use_names)[0]) {
-		PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
-		SET_NAMES(ans, ans_names);
-		UNPROTECT(1);
-	}
-	UNPROTECT(1);
-	return ans;
-}
-
-/*
- * --- .Call ENTRY POINT ---
- */
+/* --- .Call ENTRY POINT --- */
 SEXP CompressedIRangesList_summary(SEXP object)
 {
 	int ans_len;
@@ -216,3 +155,69 @@ SEXP CompressedIRangesList_summary(SEXP object)
 	UNPROTECT(3);
 	return ans;
 }
+
+
+/****************************************************************************
+ * CompressedNormalIRangesList methods.
+ */
+
+/* --- .Call ENTRY POINT --- */
+SEXP CompressedNormalIRangesList_min(SEXP x, SEXP use_names)
+{
+	SEXP ans, ans_names;
+	cachedIRanges cached_ir;
+	cachedCompressedIRangesList cached_x;
+	int x_length, ir_length, i;
+	int *ans_elt;
+
+	cached_x = _cache_CompressedIRangesList(x);
+	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
+	PROTECT(ans = NEW_INTEGER(x_length));
+	for (i = 0, ans_elt = INTEGER(ans); i < x_length; i++, ans_elt++) {
+		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
+		ir_length = _get_cachedIRanges_length(&cached_ir);
+		if (ir_length == 0) {
+			*ans_elt = INT_MAX;
+		} else {
+			*ans_elt = _get_cachedIRanges_elt_start(&cached_ir, 0);
+		}
+	}
+	if (LOGICAL(use_names)[0]) {
+		PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
+		SET_NAMES(ans, ans_names);
+		UNPROTECT(1);
+	}
+	UNPROTECT(1);
+	return ans;
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP CompressedNormalIRangesList_max(SEXP x, SEXP use_names)
+{
+	SEXP ans, ans_names;
+	cachedIRanges cached_ir;
+	cachedCompressedIRangesList cached_x;
+	int x_length, ir_length, i;
+	int *ans_elt;
+
+	cached_x = _cache_CompressedIRangesList(x);
+	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
+	PROTECT(ans = NEW_INTEGER(x_length));
+	for (i = 0, ans_elt = INTEGER(ans); i < x_length; i++, ans_elt++) {
+		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
+		ir_length = _get_cachedIRanges_length(&cached_ir);
+		if (ir_length == 0) {
+			*ans_elt = R_INT_MIN;
+		} else {
+			*ans_elt = _get_cachedIRanges_elt_end(&cached_ir, ir_length - 1);
+		}
+	}
+	if (LOGICAL(use_names)[0]) {
+		PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
+		SET_NAMES(ans, ans_names);
+		UNPROTECT(1);
+	}
+	UNPROTECT(1);
+	return ans;
+}
+

@@ -376,6 +376,16 @@ setMethod("gaps", "RangesList",
           function(x, start=NA, end=NA)
           endoapply(x, gaps, start = start, end = end))
 
+#setMethod("gaps", "CompressedIRangesList",
+#    function(x, start=NA, end=NA)
+#    {
+#        start <- normargSingleStartOrNA(start)
+#        end <- normargSingleEndOrNA(end)
+#        .Call("CompressedIRangesList_gaps", x, start, end,
+#              PACKAGE="IRanges")
+#    }
+#)
+
 setMethod("disjoin", "RangesList", function(x) endoapply(x, disjoin))
 
 ### 'with.inframe.attrib' is ignored.

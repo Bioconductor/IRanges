@@ -58,9 +58,10 @@ static const R_CallMethodDef callMethods[] = {
 
 /* CompressedIRangesList_class.c */
 	CALLMETHOD_DEF(CompressedIRangesList_isNormal, 2),
+	CALLMETHOD_DEF(CompressedIRangesList_gaps, 3),
+	CALLMETHOD_DEF(CompressedIRangesList_summary, 1),
 	CALLMETHOD_DEF(CompressedNormalIRangesList_min, 2),
 	CALLMETHOD_DEF(CompressedNormalIRangesList_max, 2),
-	CALLMETHOD_DEF(CompressedIRangesList_summary, 1),
 
 /* GappedRanges_class.c */
 	CALLMETHOD_DEF(valid_GappedRanges, 2),
@@ -254,6 +255,9 @@ void R_init_IRanges(DllInfo *info)
 /* Grouping_class.c */
 	REGISTER_CCALLABLE(_get_H2LGrouping_high2low);
 	REGISTER_CCALLABLE(_get_H2LGrouping_low2high);
+	REGISTER_CCALLABLE(_get_Partitioning_names);
+	REGISTER_CCALLABLE(_get_PartitioningByEnd_end);
+	REGISTER_CCALLABLE(_new_PartitioningByEnd);
 
 /* CompressedIRangesList_class.c */
 	REGISTER_CCALLABLE(_cache_CompressedIRangesList);

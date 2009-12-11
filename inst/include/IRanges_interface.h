@@ -380,16 +380,6 @@ SEXP alloc_IRanges(const char *classname, int length);
 
 
 /*
- * Low-level manipulation of CompressedIRangesList objects.
- * (see CompressedIRangesList_class.c)
- */
-
-cachedCompressedIRangesList cache_CompressedIRangesList(SEXP x);
-
-cachedIRanges get_cachedCompressedIRangesList_elt(const cachedCompressedIRangesList *cached_x, int i);
-
-
-/*
  * Low-level manipulation of Grouping objects.
  * (see Grouping_class.c)
  */
@@ -397,6 +387,22 @@ cachedIRanges get_cachedCompressedIRangesList_elt(const cachedCompressedIRangesL
 SEXP get_H2LGrouping_high2low(SEXP x);
 
 SEXP get_H2LGrouping_low2high(SEXP x);
+
+SEXP get_Partitioning_names(SEXP x);
+
+SEXP get_PartitioningByEnd_end(SEXP x);
+
+SEXP new_PartitioningByEnd(const char *classname, SEXP end, SEXP names);
+
+
+/*
+ * Low-level manipulation of CompressedIRangesList objects.
+ * (see CompressedIRangesList_class.c)
+ */
+
+cachedCompressedIRangesList cache_CompressedIRangesList(SEXP x);
+
+cachedIRanges get_cachedCompressedIRangesList_elt(const cachedCompressedIRangesList *cached_x, int i);
 
 
 /*

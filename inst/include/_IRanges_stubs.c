@@ -395,20 +395,6 @@ DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,
 )
 
 /*
- * Stubs for callables defined in CompressedIRangesList_class.c
- */
-
-DEFINE_CCALLABLE_STUB(cachedCompressedIRangesList, cache_CompressedIRangesList,
-	(SEXP x),
-	(     x)
-)
-
-DEFINE_CCALLABLE_STUB(cachedIRanges, get_cachedCompressedIRangesList_elt,
-	(const cachedCompressedIRangesList *cached_x, int i),
-	(                                   cached_x,     i)
-)
-
-/*
  * Stubs for callables defined in Grouping_class.c
  */
 
@@ -420,6 +406,35 @@ DEFINE_CCALLABLE_STUB(SEXP, get_H2LGrouping_high2low,
 DEFINE_CCALLABLE_STUB(SEXP, get_H2LGrouping_low2high,
 	(SEXP x),
 	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, get_Partitioning_names,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, get_PartitioningByEnd_end,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, new_PartitioningByEnd,
+	(const char *classname, SEXP end, SEXP names),
+	(           *classname,      end,      names)
+)
+
+/*
+ * Stubs for callables defined in CompressedIRangesList_class.c
+ */
+
+DEFINE_CCALLABLE_STUB(cachedCompressedIRangesList, cache_CompressedIRangesList,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(cachedIRanges, get_cachedCompressedIRangesList_elt,
+	(const cachedCompressedIRangesList *cached_x, int i),
+	(                                   cached_x,     i)
 )
 
 /*
