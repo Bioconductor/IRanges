@@ -92,6 +92,8 @@ SEXP _new_PartitioningByEnd(const char *classname, SEXP end, SEXP names)
 	PROTECT(classdef = MAKE_CLASS(classname));
 	PROTECT(ans = NEW_OBJECT(classdef));
 	set_PartitioningByEnd_end(ans, end);
+	if (names == NULL)
+		names = R_NilValue;
 	set_Partitioning_names(ans, names);
 	UNPROTECT(2);
 	return ans;
