@@ -157,6 +157,37 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 {
 	error("IMPLEMENT ME");
 	return R_NilValue;
+/*
+	SEXP ans, ans_unlistData, ans_partitioning, ans_partitioning_end;
+	cachedIRanges cached_ir;
+	cachedCompressedIRangesList cached_x;
+	int x_length, i, j, start, width;
+	RangeAE range_ae;
+
+	cached_x = cache_CompressedIRangesList(x);
+	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
+	range_ae = new_RangeAE(cigar_length, 0);
+	PROTECT(ans_partitioning_end = NEW_INTEGER(x_length));
+	for (i = 0; i < x_length; i++) {
+		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
+		ir_length = _get_cachedIRanges_length(&cached_ir);
+		for (j = 0; j < ir_length; j++) {
+			start = _get_cachedIRanges_elt_start(&cached_ir, j);
+			width = _get_cachedIRanges_elt_width(&cached_ir, j);
+			_RangeAE_insert_at(range_ae, range_ae->start.nelt,
+					start, width);
+		}
+	}
+	PROTECT(ans_unlistData = _RangeAE_asIRanges(&range_ae));
+	PROTECT(ans_partitioning = _new_PartitioningByEnd(
+			"PartitioningByEnd",
+			ans_partitioning_end, NULL));
+	PROTECT(ans = _new_CompressedIRangesList(
+			classname(x),
+			ans_unlistData, ans_partitioning));
+	UNPROTECT(4);
+	return ans;
+*/
 }
 
 /* --- .Call ENTRY POINT --- */
@@ -194,7 +225,7 @@ SEXP CompressedIRangesList_summary(SEXP object)
 	SET_STRING_ELT(col_names, 0, mkChar("Length"));
 	SET_STRING_ELT(col_names, 1, mkChar("WidthSum"));
 	SET_VECTOR_ELT(ans_names, 0,
-			       duplicate(_get_CompressedIRangesList_names(object)));
+			duplicate(_get_CompressedIRangesList_names(object)));
 	SET_VECTOR_ELT(ans_names, 1, col_names);
 	SET_DIMNAMES(ans, ans_names);
 	UNPROTECT(3);

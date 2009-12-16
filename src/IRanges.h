@@ -14,13 +14,25 @@
 
 void _sort_int_array(
 	int *x,
-	int x_nelt
+	int nelt,
+	int desc
 );
 
-void _get_int_array_order(
+void _get_order_of_int_array(
 	const int *x,
-	int x_nelt,
-	int *order
+	int nelt,
+	int desc,
+	int *out,
+	int out_shift
+);
+
+void _get_order_of_two_int_arrays(
+	const int *x,
+	const int *y,
+	int nelt,
+	int desc,
+	int *out,
+	int out_shift
 );
 
 
@@ -76,7 +88,10 @@ void _IntAE_append_shifted_vals(
 	int shift
 );
 
-void _IntAE_qsort(IntAE *int_ae);
+void _IntAE_qsort(
+	IntAE *int_ae,
+	int desc
+);
 
 void _IntAE_delete_adjdups(IntAE *int_ae);
 
@@ -614,15 +629,6 @@ SEXP valid_GappedRanges(SEXP x, SEXP ans_type);
 
 
 /* Ranges_comparison.c */
-
-void _get_Ranges_order(
-	int *order,
-	int nelt,
-	const int *start,
-	const int *width,
-	int decreasing,
-	int base1
-);
 
 SEXP Ranges_order(
 	SEXP start,

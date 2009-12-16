@@ -19,13 +19,25 @@
 
 void sort_int_array(
 	int *x,
-	int x_nelt
+	int nelt,
+	int desc
 );
 
-void get_int_array_order(
+void get_order_of_int_array(
 	const int *x,
-	int x_nelt,
-	int *order
+	int nelt,
+	int desc,
+	int *out,
+	int out_shift
+);
+
+void get_order_of_two_int_arrays(
+	const int *x,
+	const int *y,
+	int nelt,
+	int desc,
+	int *out,
+	int out_shift
 );
 
 
@@ -82,7 +94,10 @@ void IntAE_append_shifted_vals(
 	int shift
 );
 
-void IntAE_qsort(IntAE *int_ae);
+void IntAE_qsort(
+	IntAE *int_ae,
+	int desc
+);
 
 void IntAE_delete_adjdups(IntAE *int_ae);
 

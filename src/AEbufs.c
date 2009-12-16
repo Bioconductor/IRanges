@@ -167,9 +167,9 @@ void _IntAE_append_shifted_vals(IntAE *int_ae, const int *newvals, int nnewval, 
 	return;
 }
 
-void _IntAE_qsort(IntAE *int_ae)
+void _IntAE_qsort(IntAE *int_ae, int desc)
 {
-	_sort_int_array(int_ae->elts, int_ae->nelt);
+	_sort_int_array(int_ae->elts, int_ae->nelt, desc);
 	return;
 }
 

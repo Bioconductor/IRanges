@@ -175,7 +175,8 @@ void R_init_IRanges(DllInfo *info)
 
 /* sort_utils.c */
 	REGISTER_CCALLABLE(_sort_int_array);
-	REGISTER_CCALLABLE(_get_int_array_order);
+	REGISTER_CCALLABLE(_get_order_of_int_array);
+	REGISTER_CCALLABLE(_get_order_of_two_int_arrays);
 
 /* AEbufs.c */
 	REGISTER_CCALLABLE(_get_new_buflength);

@@ -48,13 +48,14 @@ static void add_to_reduced_ranges(int start, int width)
 	return;
 }
 
-static void reduce_ranges(int length, const int *start, const int *width, int *inframe_start)
+static void reduce_ranges(int length, const int *start, const int *width,
+		int *inframe_start)
 {
 	int i, j;
 	IntAE start_order;
 
 	start_order = _new_IntAE(length, 0, 0);
-	_get_int_array_order(start, length, start_order.elts);
+	_get_order_of_int_array(start, length, 0, start_order.elts, 0);
 	reduced_ranges = _new_RangeAE(0, 0);
 	for (i = 0; i < length; i++) {
 		j = start_order.elts[i];

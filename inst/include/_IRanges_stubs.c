@@ -32,15 +32,19 @@ void stubname Targs \
  */
 
 DEFINE_NOVALUE_CCALLABLE_STUB(sort_int_array,
-	(int *x, int x_nelt),
-	(     x,     x_nelt)
+	(int *x, int nelt, int desc),
+	(     x,     nelt,     desc)
 )
 
-DEFINE_NOVALUE_CCALLABLE_STUB(get_int_array_order,
-	(const int *x, int x_nelt, int *order),
-	(           x,     x_nelt,      order)
+DEFINE_NOVALUE_CCALLABLE_STUB(get_order_of_int_array,
+	(const int *x, int nelt, int desc, int *out, int out_shift),
+	(           x,     nelt,     desc,      out,     out_shift)
 )
 
+DEFINE_NOVALUE_CCALLABLE_STUB(get_order_of_two_int_arrays,
+	(const int *x, const int *y, int nelt, int desc, int *out, int out_shift),
+	(           x,            y,     nelt,     desc,      out,     out_shift)
+)
 
 /*
  * Stubs for callables defined in AEbufs.c
@@ -92,8 +96,8 @@ DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_append_shifted_vals,
 )
 
 DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_qsort,
-	(IntAE *int_ae),
-	(       int_ae)
+	(IntAE *int_ae, int desc),
+	(       int_ae,     desc)
 )
 
 DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_delete_adjdups,
@@ -231,7 +235,6 @@ DEFINE_CCALLABLE_STUB(SEXP, CharAEAE_asCHARACTER,
 	(                char_aeae)
 )
 
-
 /*
  * Stubs for callables defined in Ocopy_byteblocks.c
  */
@@ -295,7 +298,6 @@ DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_bytes_from_i1i2_to_complex,
 	(int i1, int i2, Rcomplex *dest, int dest_nbytes, const char *src, int src_nbytes, const Rcomplex *lkup, int lkup_length),
 	(    i1,     i2,           dest,     dest_nbytes,             src,     src_nbytes,                 lkup,     lkup_length)
 )
-
 
 /*
  * Stubs for callables defined in SEXP_utils.c
