@@ -36,7 +36,7 @@
 \S4method{resize}{RangesList}(x, width, start=TRUE, use.names=TRUE)
 \S4method{flank}{RangesList}(x, width, start=TRUE, both=FALSE, use.names=TRUE)
 \S4method{disjoin}{RangesList}(x)
-\S4method{reduce}{RangesList}(x, with.inframe.attrib=FALSE)
+\S4method{reduce}{RangesList}(x, drop.empty.ranges=FALSE, with.inframe.attrib=FALSE)
 \S4method{gaps}{RangesList}(x, start=NA, end=NA)
 \S4method{range}{RangesList}(x, ..., na.rm = FALSE)
 
@@ -89,6 +89,9 @@
     Ranges that end at \code{start - 1} or start at \code{end + 1}
     are always kept and their width is set to zero in the returned
     \link{RangesList} object.
+  }
+  \item{drop.empty.ranges}{
+    \code{TRUE} or \code{FALSE}. Should empty ranges be dropped?
   }
   \item{with.inframe.attrib}{
     \code{TRUE} or \code{FALSE}. For internal use.

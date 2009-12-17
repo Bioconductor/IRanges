@@ -222,7 +222,9 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges)
 		in_ranges.start.nelt = in_ranges.width.nelt = 0;
 		append_cachedIRanges_to_RangeAE(&in_ranges, &cached_ir);
 		_reduce_ranges(in_ranges.start.elts, in_ranges.width.elts,
-			in_ranges.start.nelt, tmpbuf.elts, &out_ranges, NULL);
+			in_ranges.start.nelt,
+			LOGICAL(drop_empty_ranges)[0],
+			tmpbuf.elts, &out_ranges, NULL);
 		INTEGER(ans_partitioning_end)[i] = out_ranges.start.nelt;
 	}
 	PROTECT(ans_unlistData = _RangeAE_asIRanges(&out_ranges));

@@ -60,7 +60,7 @@
   \S4method{flank}{Ranges}(x, width, start=TRUE, both=FALSE, use.names=TRUE)
   \S4method{reflect}{Ranges}(x, bounds, use.names=TRUE)
   threebands(x, start=NA, end=NA, width=NA)
-  \S4method{reduce}{Ranges}(x, with.inframe.attrib=FALSE)
+  \S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, with.inframe.attrib=FALSE)
 
   ## Other utilities
   \S4method{range}{Ranges}(x, ..., na.rm = FALSE)
@@ -126,9 +126,6 @@
     are always kept and their width is set to zero in the returned
     \link{IRanges} object.
   }
-  \item{with.inframe.attrib}{
-    \code{TRUE} or \code{FALSE}. For internal use.
-  }
   \item{bounds}{
     An \link{IRanges} object to serve as the reference bounds for the
     reflection, see below.
@@ -137,6 +134,12 @@
     If \code{TRUE}, extends the flanking region \code{width} positions
     \emph{into} the range. The resulting range thus straddles the end
     point, with \code{width} positions on either side.
+  }
+  \item{drop.empty.ranges}{
+    \code{TRUE} or \code{FALSE}. Should empty ranges be dropped?
+  }
+  \item{with.inframe.attrib}{
+    \code{TRUE} or \code{FALSE}. For internal use.
   }
   \item{...}{
     Additional \code{Ranges} to consider.

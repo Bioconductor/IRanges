@@ -295,7 +295,7 @@ setMethod("[[", "CompressedNormalIRangesList",
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Some useful endomorphisms: "shift", "restrict", "narrow", "resize",
-### "flank", "reflect", "reduce" and "gaps".
+### "flank", "disjoin", "reflect", "reduce", "gaps" and "range".
 ###
 
 setMethod("shift", "RangesList",
@@ -375,18 +375,23 @@ setMethod("flank", "CompressedIRangesList",
 setMethod("disjoin", "RangesList", function(x) endoapply(x, disjoin))
 
 setMethod("reduce", "RangesList",
-          function(x, with.inframe.attrib=FALSE)
-          endoapply(x, reduce, with.inframe.attrib = with.inframe.attrib))
+          function(x, drop.empty.ranges=FALSE, with.inframe.attrib=FALSE)
+          endoapply(x, reduce, drop.empty.ranges=drop.empty.ranges,
+                    with.inframe.attrib = with.inframe.attrib))
 
 ### 'with.inframe.attrib' is ignored for now.
 ### TODO: Support 'with.inframe.attrib=TRUE'.
 setMethod("reduce", "CompressedIRangesList",
-    function(x, with.inframe.attrib=FALSE)
+    function(x, drop.empty.ranges=FALSE, with.inframe.attrib=FALSE)
     {
+        if (!isTRUEorFALSE(drop.empty.ranges))
+            stop("'drop.empty.ranges' must be TRUE or FALSE")
         if (!identical(with.inframe.attrib, FALSE))
             stop("'with.inframe.attrib' argument not yet supported ",
                  "when reducing a CompressedIRangesList object")
-        .Call("CompressedIRangesList_reduce", x, FALSE, PACKAGE="IRanges")
+        .Call("CompressedIRangesList_reduce",
+              x, drop.empty.ranges,
+              PACKAGE="IRanges")
     }
 )
 
@@ -640,10 +645,8 @@ setAs("RangesList", "SimpleNormalIRangesList",
 setAs("CompressedIRangesList", "CompressedNormalIRangesList",
       function(from)
       {
-        if (!all(isNormal(from))) {
-          from <- from[width(from) != 0L]
-          from <- reduce(from)
-        }
+        if (!all(isNormal(from)))
+          from <- reduce(from, drop.empty.ranges=TRUE)
         new2("CompressedNormalIRangesList", unlistData = from@unlistData,
              partitioning = from@partitioning, metadata = from@metadata,
              elementMetadata = from@elementMetadata, check=FALSE)
@@ -652,10 +655,8 @@ setAs("CompressedIRangesList", "CompressedNormalIRangesList",
 setAs("SimpleIRangesList", "SimpleNormalIRangesList",
       function(from)
       {
-        if (!all(isNormal(from))) {
-          from <- from[width(from) != 0L]
-          from <- reduce(from)
-        }
+        if (!all(isNormal(from))) 
+          from <- reduce(from, drop.empty.ranges=TRUE)
         new2("SimpleNormalIRangesList", listData = from@listData,
              metadata = from@metadata,
              elementMetadata = from@elementMetadata, check=FALSE)

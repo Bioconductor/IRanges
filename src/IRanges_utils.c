@@ -27,6 +27,7 @@ SEXP debug_IRanges_utils()
  * Returns the number of appended ranges.
  */
 int _reduce_ranges(const int *start, const int *width, int length,
+		int drop_empty_ranges,
 		int *tmpbuf, RangeAE *out_ranges, int *out_inframe_start)
 {
 	int out_length, i, j, start_j, width_j, end_j,
@@ -36,8 +37,10 @@ int _reduce_ranges(const int *start, const int *width, int length,
 	out_length = 0;
 	for (i = 0; i < length; i++) {
 		j = tmpbuf[i];
-		start_j = start[j];
 		width_j = width[j];
+		if (width_j == 0)
+			continue;
+		start_j = start[j];
 		end_j = start_j + width_j - 1;
 		if (out_length == 0 || (gap = start_j - max_end - 1) > 0) {
 			_RangeAE_insert_at(out_ranges, out_ranges->start.nelt,
@@ -61,7 +64,7 @@ int _reduce_ranges(const int *start, const int *width, int length,
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP IRanges_reduce(SEXP x, SEXP with_inframe_start)
+SEXP IRanges_reduce(SEXP x, SEXP drop_empty_ranges, SEXP with_inframe_start)
 {
 	int x_length, *inframe_start;
 	SEXP x_start, x_width, ans, ans_names, ans_inframe_start;
@@ -80,6 +83,7 @@ SEXP IRanges_reduce(SEXP x, SEXP with_inframe_start)
 	out_ranges = _new_RangeAE(0, 0);
 	tmpbuf = _new_IntAE(x_length, 0, 0);
 	_reduce_ranges(INTEGER(x_start), INTEGER(x_width), x_length,
+			LOGICAL(drop_empty_ranges)[0],
 			tmpbuf.elts, &out_ranges, inframe_start);
 
 	PROTECT(ans = NEW_LIST(3));

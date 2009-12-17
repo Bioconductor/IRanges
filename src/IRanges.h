@@ -536,6 +536,7 @@ int _reduce_ranges(
 	const int *start,
 	const int *width,
 	int length,
+	int drop_empty_ranges,
 	int *tmpbuf,
 	RangeAE *out_ranges,
 	int *out_inframe_start
@@ -543,6 +544,7 @@ int _reduce_ranges(
 
 SEXP IRanges_reduce(
 	SEXP x,
+	SEXP drop_empty_ranges,
 	SEXP with_inframe_start
 );
 

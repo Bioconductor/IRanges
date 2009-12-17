@@ -90,8 +90,10 @@ setMethod("%in%", c("RangedData", "RangesList"),
 ###
 
 setMethod("reduce", "RangedData",
-          function(x, by, with.inframe.attrib=FALSE)
+          function(x, drop.empty.ranges=FALSE, by, with.inframe.attrib=FALSE)
           {
+            if (!isTRUEorFALSE(drop.empty.ranges))
+                stop("'drop.empty.ranges' must be TRUE or FALSE")
             FUN <- function(y) {
               name <- names(y)
               ranges <- ranges(y)[[1L]]
@@ -102,6 +104,7 @@ setMethod("reduce", "RangedData",
                 lapply(inds, function(i) {
                          rngs <-
                            reduce(ranges[i],
+                                  drop.empty.ranges=drop.empty.ranges,
                                   with.inframe.attrib=with.inframe.attrib)
                          list(ranges = rngs,
                               values =

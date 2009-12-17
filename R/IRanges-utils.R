@@ -283,12 +283,14 @@ setMethod("threebands", "IRanges",
 ###
 
 setMethod("reduce", "IRanges",
-    function(x, with.inframe.attrib=FALSE)
+    function(x, drop.empty.ranges=FALSE, with.inframe.attrib=FALSE)
     {
+        if (!isTRUEorFALSE(drop.empty.ranges))
+            stop("'drop.empty.ranges' must be TRUE or FALSE")
         if (!isTRUEorFALSE(with.inframe.attrib))
             stop("'with.inframe.attrib' must be TRUE or FALSE")
         C_ans <- .Call("IRanges_reduce",
-                        x, with.inframe.attrib,
+                        x, drop.empty.ranges, with.inframe.attrib,
                         PACKAGE="IRanges")
         ans <- unsafe.update(x, start=C_ans$start, width=C_ans$width, names=NULL)
         if (with.inframe.attrib) {
@@ -313,10 +315,8 @@ asNormalIRanges <- function(x, force=TRUE)
         x <- as(x, "IRanges")
     if (!isTRUEorFALSE(force))
         stop("'force' must be TRUE or FALSE")
-    if (force) {
-        x <- reduce(x)
-        x <- x[width(x) != 0L]
-    }
+    if (force)
+        x <- reduce(x, drop.empty.ranges=TRUE)
     newNormalIRangesFromIRanges(x, check=!force)
 }
 

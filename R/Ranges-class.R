@@ -313,14 +313,16 @@ setGeneric("threebands", signature="x",
 )
 
 setGeneric("reduce", signature="x",
-    function(x, ...) standardGeneric("reduce")
+    function(x, drop.empty.ranges=FALSE, ...) standardGeneric("reduce")
 )
 
 setMethod("reduce", "Ranges",
-    function(x, with.inframe.attrib=FALSE)
+    function(x, drop.empty.ranges=FALSE, with.inframe.attrib=FALSE)
     {
         ir <- as(x, "IRanges")
-        y <- reduce(ir, with.inframe.attrib)
+        y <- reduce(ir,
+                    drop.empty.ranges=drop.empty.ranges,
+                    with.inframe.attrib=with.inframe.attrib)
         as(y, class(x))
     }
 )
