@@ -27,6 +27,29 @@ test_IRanges_combine <- function() {
                  IRanges(c(2,3,1,1), c(2,8,5,3)))
 }
 
+test_IRanges_reduce <- function() {
+  x <- IRanges(start=c(1,2,3), end=c(5,2,8))
+  y <- reduce(x)
+  checkIdentical(y, IRanges(start=1, end=8))
+  checkIdentical(reduce(y), y)
+
+  x <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
+  y <- reduce(x)  
+  checkIdentical(y, IRanges(start=c(1,15,20), end=c(5,15,100)))
+  checkIdentical(reduce(y), y)
+
+  x <- IRanges(start=c(-2,6,7), width=c(8,0,0))
+  y <- reduce(x)
+  checkIdentical(y, IRanges(start=c(-2,7), end=c(5,6)))
+  checkIdentical(reduce(y), y)
+  y <- reduce(x, drop.empty.ranges=TRUE)
+  checkIdentical(y, IRanges(start=-2, end=5))
+
+  x <- IRanges()
+  y <- reduce(x)
+  checkIdentical(y, x)
+}
+
 test_IRanges_setops <- function() {
   ## gaps
   checkIdentical(gaps(IRanges()), IRanges())

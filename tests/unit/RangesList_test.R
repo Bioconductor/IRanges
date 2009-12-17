@@ -57,21 +57,24 @@ test_RangesList_as_data_frame <- function() {
                  as.data.frame(RangesList(a=range1, b=range2)))
 }
 
+test_RangesList_reduce <- function() {
+  range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
+  range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
+  range3 <- IRanges(start=c(-2,6,7), width=c(8,0,0))
+  range4 <- IRanges()
+  collection <- RangesList(one = range1, range2, range3, range4)
+
+  checkIdentical(reduce(collection),
+                 RangesList(one = reduce(range1), reduce(range2),
+                            reduce(range3), reduce(range4)))
+}
+
 test_RangesList_gaps <- function() {
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   collection <- RangesList(one = range1, range2)
 
   checkIdentical(gaps(collection), RangesList(one = gaps(range1), gaps(range2)))
-}
-
-test_RangesList_reduce <- function() {
-  range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
-  range2 <- IRanges(start=c(45,20,1), end=c(100,80,5))
-  collection <- RangesList(one = range1, range2)
-
-  checkIdentical(reduce(collection),
-                 RangesList(one = reduce(range1), reduce(range2)))
 }
 
 test_RangesList_range <- function() {
