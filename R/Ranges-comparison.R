@@ -84,12 +84,36 @@ setMethod(">", signature(e1="Ranges", e2="Ranges"),
 ### Note that dispatching on ... is supported starting with R 2.8.0 only.
 ### WARNING: Here are 2 common pitfalls when implementing an "order" method:
 ###   - order(x, decreasing=TRUE) is NOT equivalent to rev(order(x));
-###   - It should be made stable for consistent behavior across platforms and
-###     consistency with base::order(). Note that C qsort() is NOT stable so
-###     qsort-based implementations need extra code in order to be stable.
+###   - It should be made "stable" for consistent behavior across platforms
+###     and consistency with base::order(). Note that C qsort() is NOT "stable"
+###     so "order" methods that use qsort() at the C-level need to ultimately
+###     break ties by position (this is generally done by adding a little
+###     extra code at the end of the comparison function used in the calls to
+###     qsort()).
 setGeneric("order", signature="...",
     function(..., na.last=TRUE, decreasing=FALSE) standardGeneric("order")
 )
+
+### '.Ranges.order(x, FALSE)' is equivalent to 'order(start(x), width(x))'
+### but faster:
+###   library(IRanges)
+###   N <- 20000000L  # nb of ranges
+###   W <- 40L        # average width of the ranges
+###   start <- 1L
+###   end <- 55000000L
+###   set.seed(777)
+###   x_start <- sample(end - W - 2L, N, replace=TRUE)
+###   x_width <- W + sample(-3:3, N, replace=TRUE)
+###   x <- IRanges(start=x_start, width=x_width)
+###   xo <- IRanges:::.Ranges.order(x, FALSE)  # takes < 10 sec.
+###   xo2 <- order(start(x), width(x))  # takes about 1 min.
+###   identical(xo, xo2)  # TRUE
+.Ranges.order <- function(x, decreasing)
+{
+    .Call("Ranges_order",
+          start(x), width(x), decreasing=decreasing,
+          PACKAGE="IRanges")
+}
 
 setMethod("order", "Ranges",
     function(..., na.last=TRUE, decreasing=FALSE)
@@ -98,13 +122,8 @@ setMethod("order", "Ranges",
             stop("'decreasing' must be TRUE or FALSE")
         ## all arguments in '...' are guaranteed to be Ranges objects
         args <- list(...)
-        if (length(args) == 1) {
-            ans <- .Call("Ranges_order",
-                         start(args[[1L]]), width(args[[1L]]),
-                         decreasing=decreasing,
-                         PACKAGE="IRanges")
-            return(ans)
-        }
+        if (length(args) == 1)
+            return(.Ranges.order(args[[1L]], decreasing))
         order_args <- vector("list", 2L*length(args))
         order_args[2L*seq_len(length(args)) - 1L] <- lapply(args, start)
         order_args[2L*seq_len(length(args))] <- lapply(args, end)
@@ -125,10 +144,10 @@ setMethod("rank", "Ranges",
     {
         if (!missing(ties.method) && !identical(ties.method, "first"))
             stop("only 'ties.method=\"first\"' is supported when ranking ranges")
-        ox <- order(x)
-        ## 'ans' is the reverse permutation of 'ox'
-        ans <- integer(length(ox))
-        ans[ox] <- seq_len(length(ox))
+        xo <- order(x)
+        ## 'ans' is the reverse permutation of 'xo'
+        ans <- integer(length(xo))
+        ans[xo] <- seq_len(length(xo))
         ans
     }
 )

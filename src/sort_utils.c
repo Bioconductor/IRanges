@@ -2,12 +2,12 @@
  * Low-level sorting utilities                                              *
  * ---------------------------                                              *
  *                                                                          *
- * All sortings are based on the qsort() function from the standard C lib.  *
- * How qsort() breaks ties is undefined (the Quicksort algo is not          *
- * "stable"). So it is the responsability of the comparison functions used  *
- * in our calls to qsort() to break the ties in a                           *
- * predictible/reproducible/portable manner.                                *
- * See below for the details.                                               *
+ * All sortings/orderings are based on the qsort() function from the        *
+ * standard C lib.                                                          *
+ * Note that C qsort() is NOT "stable" so the ordering functions below      *
+ * (_get_order_of_*() functions) need to ultimately break ties by position  *
+ * (this is done by adding a little extra code at the end of the comparison *
+ * function used in the call to qsort()).                                   *
  ****************************************************************************/
 #include "IRanges.h"
 #include <stdlib.h> /* for qsort() */
@@ -48,12 +48,12 @@ static int compar_xx_for_asc_order(const void *p1, const void *p2)
 	ret = xx[i1] - xx[i2];
 	if (ret != 0)
 		return ret;
-	/* Ultimate tie-break so the sorting is "stable". */
+	/* Break tie by position so the ordering is "stable". */
 	return i1 - i2;
 }
 
-/* We cannot just define compar_xx_for_desc_order(p1, p2) as being
- * compar_xx_for_asc_order(p2, p1) because of the ultimate tie-break. */
+/* We cannot just define compar_xx_for_desc_order(p1, p2) to be
+ * compar_xx_for_asc_order(p2, p1) because of the tie-break by position. */
 static int compar_xx_for_desc_order(const void *p1, const void *p2)
 {
 	int i1, i2, ret;
@@ -63,7 +63,7 @@ static int compar_xx_for_desc_order(const void *p1, const void *p2)
 	ret = xx[i2] - xx[i1];
 	if (ret != 0)
 		return ret;
-	/* Ultimate tie-break so the sorting is "stable". */
+	/* Break tie by position so the ordering is "stable". */
 	return i1 - i2;
 }
 
@@ -98,12 +98,12 @@ static int compar_xxyy_for_asc_order(const void *p1, const void *p2)
 	ret = yy[i1] - yy[i2];
 	if (ret != 0)
 		return ret;
-	/* Ultimate tie-break so the sorting is "stable". */
+	/* Break tie by position so the ordering is "stable". */
 	return i1 - i2;
 }
 
-/* We cannot just define compar_xxyy_for_desc_order(p1, p2) as being
- * compar_xxyy_for_asc_order(p2, p1) because of the ultimate tie-break. */
+/* We cannot just define compar_xxyy_for_desc_order(p1, p2) to be
+ * compar_xxyy_for_asc_order(p2, p1) because of the tie-break by position. */
 static int compar_xxyy_for_desc_order(const void *p1, const void *p2)
 {
 	int i1, i2, ret;
@@ -116,7 +116,7 @@ static int compar_xxyy_for_desc_order(const void *p1, const void *p2)
 	ret = yy[i2] - yy[i1];
 	if (ret != 0)
 		return ret;
-	/* Ultimate tie-break so the sorting is "stable". */
+	/* Break tie by position so the ordering is "stable". */
 	return i1 - i2;
 }
 
