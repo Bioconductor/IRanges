@@ -38,7 +38,7 @@ int _reduce_ranges(const int *start, const int *width, int length,
 	for (i = 0; i < length; i++) {
 		j = tmpbuf[i];
 		width_j = width[j];
-		if (width_j == 0)
+		if (drop_empty_ranges && width_j == 0)
 			continue;
 		start_j = start[j];
 		end_j = start_j + width_j - 1;

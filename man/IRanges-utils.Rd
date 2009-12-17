@@ -46,27 +46,27 @@
 }
 
 \usage{
-  ## Create an IRanges instance:
-  successiveIRanges(width, gapwidth=0, from=1)
+## Create an IRanges instance:
+successiveIRanges(width, gapwidth=0, from=1)
 
-  ## Turn a logical vector into a set of ranges:
-  whichAsIRanges(x)
+## Turn a logical vector into a set of ranges:
+whichAsIRanges(x)
 
-  ## Modify an IRanges object (endomorphisms):
-  shift(x, shift, use.names=TRUE)
-  restrict(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
-  narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
-  resize(x, width, start=TRUE, use.names=TRUE)
-  \S4method{flank}{Ranges}(x, width, start=TRUE, both=FALSE, use.names=TRUE)
-  \S4method{reflect}{Ranges}(x, bounds, use.names=TRUE)
-  threebands(x, start=NA, end=NA, width=NA)
-  \S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, with.inframe.attrib=FALSE)
+## Modify an IRanges object (endomorphisms):
+shift(x, shift, use.names=TRUE)
+restrict(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
+narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
+resize(x, width, start=TRUE, use.names=TRUE)
+\S4method{flank}{Ranges}(x, width, start=TRUE, both=FALSE, use.names=TRUE)
+\S4method{reflect}{Ranges}(x, bounds, use.names=TRUE)
+threebands(x, start=NA, end=NA, width=NA)
+\S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, with.inframe.attrib=FALSE)
 
-  ## Other utilities
-  \S4method{range}{Ranges}(x, ..., na.rm = FALSE)
+## Other utilities
+\S4method{range}{Ranges}(x, ..., na.rm = FALSE)
 
-  ## Coercion:
-  asNormalIRanges(x, force=TRUE)
+## Coercion:
+asNormalIRanges(x, force=TRUE)
 }
 
 \arguments{
@@ -296,9 +296,10 @@
   identical(y, y0)  # TRUE
   threebands(y, start=-5)
 
-  x <- IRanges(start=c(-2, 6, 9, -4, 1, 0, -6, 10),
-               width=c( 5, 0, 6,  1, 4, 3,  2,  3))
+  x <- IRanges(start=c(-2, 6, 9, -4, 1, 0, -6, 3, 10),
+               width=c( 5, 0, 6,  1, 4, 3,  2, 0,  3))
   reduce(x)
+  reduce(x, drop.empty.ranges=TRUE)
 
   ir1 <- IRanges(c(2,5,1), c(3,7,3))
 
