@@ -306,8 +306,8 @@ setMethod("[", "CompressedList",
                                   stop("negative and positive indices cannot be mixed")
                               if (length(nna) < length(i))
                                   stop("NAs cannot be mixed with negative subscripts")
-                              i <- seq_len(lx)[nna]
                           }
+                          i <- seq_len(lx)[nna]
                       } else if (is.logical(i)) {
                           if (length(i) > lx && !nullOK)
                               stop("subscript out of bounds (and NULL elements not allowed)")
