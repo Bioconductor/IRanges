@@ -532,6 +532,15 @@ SEXP solve_user_SEW(
 
 SEXP debug_IRanges_utils();
 
+int _reduce_ranges(
+	const int *start,
+	const int *width,
+	int length,
+	int *tmpbuf,
+	RangeAE *out_ranges,
+	int *out_inframe_start
+);
+
 SEXP IRanges_reduce(
 	SEXP x,
 	SEXP with_inframe_start
@@ -597,21 +606,46 @@ cachedIRanges _get_cachedCompressedIRangesList_elt(
 	int i
 );
 
+int _get_cachedCompressedIRangesList_eltLength(
+	const cachedCompressedIRangesList *cached_x,
+	int i
+);
+
 SEXP _new_CompressedIRangesList(
 	const char *classname,
 	SEXP unlistData,
 	SEXP partitioning
 );
 
-SEXP CompressedIRangesList_isNormal(SEXP x, SEXP use_names);
+SEXP CompressedIRangesList_isNormal(
+	SEXP x,
+	SEXP use_names
+);
 
-SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end);
+SEXP CompressedIRangesList_reduce(
+	SEXP x,
+	SEXP drop_empty_ranges
+);
 
-SEXP CompressedIRangesList_summary(SEXP object);
+SEXP CompressedIRangesList_gaps(
+	SEXP x,
+	SEXP start,
+	SEXP end
+);
 
-SEXP CompressedNormalIRangesList_min(SEXP x, SEXP use_names);
+SEXP CompressedIRangesList_summary(
+	SEXP object
+);
 
-SEXP CompressedNormalIRangesList_max(SEXP x, SEXP use_names);
+SEXP CompressedNormalIRangesList_min(
+	SEXP x,
+	SEXP use_names
+);
+
+SEXP CompressedNormalIRangesList_max(
+	SEXP x,
+	SEXP use_names
+);
 
 
 /* SimpleIRangesList_class.c */

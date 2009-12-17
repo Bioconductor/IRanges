@@ -372,6 +372,24 @@ setMethod("flank", "CompressedIRangesList",
             x
           })
 
+setMethod("disjoin", "RangesList", function(x) endoapply(x, disjoin))
+
+setMethod("reduce", "RangesList",
+          function(x, with.inframe.attrib=FALSE)
+          endoapply(x, reduce, with.inframe.attrib = with.inframe.attrib))
+
+### 'with.inframe.attrib' is ignored for now.
+### TODO: Support 'with.inframe.attrib=TRUE'.
+setMethod("reduce", "CompressedIRangesList",
+    function(x, with.inframe.attrib=FALSE)
+    {
+        if (!identical(with.inframe.attrib, FALSE))
+            stop("'with.inframe.attrib' argument not yet supported ",
+                 "when reducing a CompressedIRangesList object")
+        .Call("CompressedIRangesList_reduce", x, FALSE, PACKAGE="IRanges")
+    }
+)
+
 setMethod("gaps", "RangesList",
           function(x, start=NA, end=NA)
           endoapply(x, gaps, start = start, end = end))
@@ -381,17 +399,9 @@ setMethod("gaps", "RangesList",
 #    {
 #        start <- normargSingleStartOrNA(start)
 #        end <- normargSingleEndOrNA(end)
-#        .Call("CompressedIRangesList_gaps", x, start, end,
-#              PACKAGE="IRanges")
+#        .Call("CompressedIRangesList_gaps", x, start, end, PACKAGE="IRanges")
 #    }
 #)
-
-setMethod("disjoin", "RangesList", function(x) endoapply(x, disjoin))
-
-### 'with.inframe.attrib' is ignored.
-setMethod("reduce", "RangesList",
-          function(x, with.inframe.attrib=FALSE)
-          endoapply(x, reduce, with.inframe.attrib = with.inframe.attrib))
 
 setMethod("range", "RangesList",
           function(x, ..., na.rm)

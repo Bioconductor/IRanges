@@ -81,6 +81,21 @@ cachedIRanges _get_cachedCompressedIRangesList_elt(
 			offset, length);
 }
 
+int _get_cachedCompressedIRangesList_eltLength(
+		const cachedCompressedIRangesList *cached_x, int i)
+{
+/*
+	cachedIRanges cached_ir;
+
+	cached_ir = _get_cachedCompressedIRangesList_elt(cached_x, i);
+	return _get_cachedIRanges_length(&cached_ir);
+*/
+	int offset;
+
+	offset = i == 0 ? 0 : cached_x->end[i - 1];
+	return cached_x->end[i] - offset; /* faster than the above */
+}
+
 
 /****************************************************************************
  * C-level slot setters.
@@ -132,8 +147,8 @@ SEXP _new_CompressedIRangesList(const char *classname,
 SEXP CompressedIRangesList_isNormal(SEXP x, SEXP use_names)
 {
 	SEXP ans, ans_names;
-	cachedIRanges cached_ir;
 	cachedCompressedIRangesList cached_x;
+	cachedIRanges cached_ir;
 	int x_length, i;
 
 	cached_x = _cache_CompressedIRangesList(x);
@@ -152,42 +167,81 @@ SEXP CompressedIRangesList_isNormal(SEXP x, SEXP use_names)
 	return ans;
 }
 
+static int get_cachedCompressedIRangesList_max_eltLengths(
+		const cachedCompressedIRangesList *cached_x)
+{
+	int max_ir_length, x_length, i, ir_length;
+
+	max_ir_length = 0;
+	x_length = _get_cachedCompressedIRangesList_length(cached_x);
+	for (i = 0; i < x_length; i++) {
+		ir_length = _get_cachedCompressedIRangesList_eltLength(
+				cached_x, i);
+		if (ir_length > max_ir_length)
+			max_ir_length = ir_length;
+	}
+	return max_ir_length;
+}
+
+static int append_cachedIRanges_to_RangeAE(RangeAE *range_ae,
+		const cachedIRanges *cached_ir)
+{
+	int ir_length, j, start, width;
+
+	ir_length = _get_cachedIRanges_length(cached_ir);
+	for (j = 0; j < ir_length; j++) {
+		start = _get_cachedIRanges_elt_start(cached_ir, j);
+		width = _get_cachedIRanges_elt_width(cached_ir, j);
+		_RangeAE_insert_at(range_ae, range_ae->start.nelt,
+				start, width);
+	}
+	return ir_length;
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges)
+{
+	SEXP ans, ans_names, ans_unlistData,
+	     ans_partitioning, ans_partitioning_end;
+	cachedCompressedIRangesList cached_x;
+	cachedIRanges cached_ir;
+	int max_in_length, x_length, i;
+	RangeAE in_ranges, out_ranges;
+	IntAE tmpbuf;
+
+	cached_x = _cache_CompressedIRangesList(x);
+	max_in_length = get_cachedCompressedIRangesList_max_eltLengths(
+				&cached_x);
+	in_ranges = _new_RangeAE(0, 0);
+	out_ranges = _new_RangeAE(0, 0);
+	tmpbuf = _new_IntAE(max_in_length, 0, 0);
+	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
+	PROTECT(ans_partitioning_end = NEW_INTEGER(x_length));
+	for (i = 0; i < x_length; i++) {
+		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
+		in_ranges.start.nelt = in_ranges.width.nelt = 0;
+		append_cachedIRanges_to_RangeAE(&in_ranges, &cached_ir);
+		_reduce_ranges(in_ranges.start.elts, in_ranges.width.elts,
+			in_ranges.start.nelt, tmpbuf.elts, &out_ranges, NULL);
+		INTEGER(ans_partitioning_end)[i] = out_ranges.start.nelt;
+	}
+	PROTECT(ans_unlistData = _RangeAE_asIRanges(&out_ranges));
+	PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
+	PROTECT(ans_partitioning = _new_PartitioningByEnd(
+			"PartitioningByEnd",
+			ans_partitioning_end, ans_names));
+	PROTECT(ans = _new_CompressedIRangesList(
+			_get_classname(x),
+			ans_unlistData, ans_partitioning));
+	UNPROTECT(5);
+	return ans;
+}
+
 /* --- .Call ENTRY POINT --- */
 SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 {
 	error("IMPLEMENT ME");
 	return R_NilValue;
-/*
-	SEXP ans, ans_unlistData, ans_partitioning, ans_partitioning_end;
-	cachedIRanges cached_ir;
-	cachedCompressedIRangesList cached_x;
-	int x_length, i, j, start, width;
-	RangeAE range_ae;
-
-	cached_x = cache_CompressedIRangesList(x);
-	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
-	range_ae = new_RangeAE(cigar_length, 0);
-	PROTECT(ans_partitioning_end = NEW_INTEGER(x_length));
-	for (i = 0; i < x_length; i++) {
-		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
-		ir_length = _get_cachedIRanges_length(&cached_ir);
-		for (j = 0; j < ir_length; j++) {
-			start = _get_cachedIRanges_elt_start(&cached_ir, j);
-			width = _get_cachedIRanges_elt_width(&cached_ir, j);
-			_RangeAE_insert_at(range_ae, range_ae->start.nelt,
-					start, width);
-		}
-	}
-	PROTECT(ans_unlistData = _RangeAE_asIRanges(&range_ae));
-	PROTECT(ans_partitioning = _new_PartitioningByEnd(
-			"PartitioningByEnd",
-			ans_partitioning_end, NULL));
-	PROTECT(ans = _new_CompressedIRangesList(
-			classname(x),
-			ans_unlistData, ans_partitioning));
-	UNPROTECT(4);
-	return ans;
-*/
 }
 
 /* --- .Call ENTRY POINT --- */
@@ -241,8 +295,8 @@ SEXP CompressedIRangesList_summary(SEXP object)
 SEXP CompressedNormalIRangesList_min(SEXP x, SEXP use_names)
 {
 	SEXP ans, ans_names;
-	cachedIRanges cached_ir;
 	cachedCompressedIRangesList cached_x;
+	cachedIRanges cached_ir;
 	int x_length, ir_length, i;
 	int *ans_elt;
 
@@ -271,8 +325,8 @@ SEXP CompressedNormalIRangesList_min(SEXP x, SEXP use_names)
 SEXP CompressedNormalIRangesList_max(SEXP x, SEXP use_names)
 {
 	SEXP ans, ans_names;
-	cachedIRanges cached_ir;
 	cachedCompressedIRangesList cached_x;
+	cachedIRanges cached_ir;
 	int x_length, ir_length, i;
 	int *ans_elt;
 

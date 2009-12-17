@@ -58,6 +58,7 @@ static const R_CallMethodDef callMethods[] = {
 
 /* CompressedIRangesList_class.c */
 	CALLMETHOD_DEF(CompressedIRangesList_isNormal, 2),
+	CALLMETHOD_DEF(CompressedIRangesList_reduce, 2),
 	CALLMETHOD_DEF(CompressedIRangesList_gaps, 3),
 	CALLMETHOD_DEF(CompressedIRangesList_summary, 1),
 	CALLMETHOD_DEF(CompressedNormalIRangesList_min, 2),

@@ -11,9 +11,10 @@
 \alias{resize,CompressedIRangesList-method}
 \alias{flank,RangesList-method}
 \alias{flank,CompressedIRangesList-method}
-\alias{gaps,RangesList-method}
 \alias{disjoin,RangesList-method}
 \alias{reduce,RangesList-method}
+\alias{reduce,CompressedIRangesList-method}
+\alias{gaps,RangesList-method}
 \alias{range,RangesList-method}
 
 % set operations
@@ -34,9 +35,9 @@
 \S4method{narrow}{RangesList}(x, start=NA, end=NA, width=NA, use.names=TRUE)
 \S4method{resize}{RangesList}(x, width, start=TRUE, use.names=TRUE)
 \S4method{flank}{RangesList}(x, width, start=TRUE, both=FALSE, use.names=TRUE)
-\S4method{gaps}{RangesList}(x, start=NA, end=NA)
 \S4method{disjoin}{RangesList}(x)
 \S4method{reduce}{RangesList}(x, with.inframe.attrib=FALSE)
+\S4method{gaps}{RangesList}(x, start=NA, end=NA)
 \S4method{range}{RangesList}(x, ..., na.rm = FALSE)
 
 # Set operations
@@ -114,15 +115,15 @@
   The  \code{flank} method generates flanking ranges for each range in
   \code{x}.
 
-  The \code{gaps} method takes the complement (via \code{\link{gaps}})
-  of each element in the list and returns the result as a
-  \code{RangesList}.
-
   The \code{disjoin} method returns disjoint ranges by finding the 
   within element union of the end points of \code{x}.
 
   The \code{reduce} method merges (via \code{\link{reduce}}) each of the
   elements in the list and returns the result as a \code{RangesList}.
+
+  The \code{gaps} method takes the complement (via \code{\link{gaps}})
+  of each element in the list and returns the result as a
+  \code{RangesList}.
 
   \code{range} finds the \code{\link[=range,Ranges-method]{range}}, i.e.
   a \code{Ranges} with one range, from the minimum start to the maximum
@@ -144,8 +145,8 @@
 
 \value{
   A \code{RangesList} object. For \code{shift}, \code{restrict},
-  \code{narrow}, \code{resize}, \code{flank}, \code{gaps} and \code{range},
-  length is the same as that of \code{x}. For \code{reduce}, length is one.
+  \code{narrow}, \code{resize}, \code{flank}, \code{reduce},
+  \code{gaps} and \code{range}, length is the same as that of \code{x}.
 }
 
 \author{Michael Lawrence, H. Pages, P. Aboyoun}
@@ -155,7 +156,6 @@
 }
 
 \examples{
-  # 'gaps'
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   collection <- RangesList(one = range1, range2)
@@ -166,17 +166,15 @@
   flank(collection, width=10)
   disjoin(collection)
 
-  # these two are the same
-  RangesList(gaps(range1), gaps(range2))
-  gaps(collection)
-
-  # 'reduce'
-  range2 <- IRanges(start=c(45,20,1), end=c(100,80,5))
-  collection <- RangesList(one = range1, range2)
-
-  # and these two are the same
+  # these three are the same
   reduce(collection)
-  RangesList(asNormalIRanges(IRanges(c(1,20), c(8, 100)), force=FALSE))
+  RangesList(one = reduce(range1), reduce(range2))
+  do.call(RangesList, lapply(collection, reduce))
+
+  # these three are the same
+  gaps(collection)
+  RangesList(one = gaps(range1), gaps(range2))
+  do.call(RangesList, lapply(collection, gaps))
 
   # 'range'
   rl <- RangesList(a = IRanges(c(1,2),c(4,3)), b = IRanges(c(4,6),c(10,7)))

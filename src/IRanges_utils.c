@@ -23,47 +23,39 @@ SEXP debug_IRanges_utils()
  * Reduction (aka extracting the frame)
  */
 
-static RangeAE reduced_ranges;
-static int max_end, inframe_offset;
-
-static void add_to_reduced_ranges(int start, int width)
+/* WARNING: The reduced ranges are *appended* to 'out_ranges'!
+ * Returns the number of appended ranges.
+ */
+int _reduce_ranges(const int *start, const int *width, int length,
+		int *tmpbuf, RangeAE *out_ranges, int *out_inframe_start)
 {
-	int buf_length, end, gap;
+	int out_length, i, j, start_j, width_j, end_j,
+	    gap, max_end, inframe_offset;
 
-	buf_length = reduced_ranges.start.nelt;
-	end = start + width - 1;
-	if (buf_length == 0 || (gap = start - max_end - 1) > 0) {
-		_RangeAE_insert_at(&reduced_ranges, buf_length, start, width);
-		if (buf_length == 0)
-			inframe_offset = start - 1;
-		else
-			inframe_offset += gap;
-		max_end = end;
-		return;
-	}
-	if (end <= max_end)
-		return;
-	reduced_ranges.width.elts[buf_length - 1] += end - max_end;
-	max_end = end;
-	return;
-}
-
-static void reduce_ranges(int length, const int *start, const int *width,
-		int *inframe_start)
-{
-	int i, j;
-	IntAE start_order;
-
-	start_order = _new_IntAE(length, 0, 0);
-	_get_order_of_int_array(start, length, 0, start_order.elts, 0);
-	reduced_ranges = _new_RangeAE(0, 0);
+	_get_order_of_int_array(start, length, 0, tmpbuf, 0);
+	out_length = 0;
 	for (i = 0; i < length; i++) {
-		j = start_order.elts[i];
-		add_to_reduced_ranges(start[j], width[j]);
-		if (inframe_start != NULL)
-			inframe_start[j] = start[j] - inframe_offset;
+		j = tmpbuf[i];
+		start_j = start[j];
+		width_j = width[j];
+		end_j = start_j + width_j - 1;
+		if (out_length == 0 || (gap = start_j - max_end - 1) > 0) {
+			_RangeAE_insert_at(out_ranges, out_ranges->start.nelt,
+				start_j, width_j);
+			max_end = end_j;
+			if (out_length == 0)
+				inframe_offset = start_j - 1;
+			else
+				inframe_offset += gap;
+			out_length++;
+		} else if (end_j > max_end) {
+			out_ranges->width.elts[out_ranges->width.nelt - 1] += end_j - max_end;
+			max_end = end_j;
+		}
+		if (out_inframe_start != NULL)
+			out_inframe_start[j] = start_j - inframe_offset;
 	}
-	return;
+	return out_length;
 }
 
 /*
@@ -73,6 +65,8 @@ SEXP IRanges_reduce(SEXP x, SEXP with_inframe_start)
 {
 	int x_length, *inframe_start;
 	SEXP x_start, x_width, ans, ans_names, ans_inframe_start;
+	RangeAE out_ranges;
+	IntAE tmpbuf;
 
 	x_length = _get_IRanges_length(x);
 	x_start = _get_IRanges_start(x);
@@ -83,7 +77,10 @@ SEXP IRanges_reduce(SEXP x, SEXP with_inframe_start)
 	} else {
 		inframe_start = NULL;
 	}
-	reduce_ranges(x_length, INTEGER(x_start), INTEGER(x_width), inframe_start);
+	out_ranges = _new_RangeAE(0, 0);
+	tmpbuf = _new_IntAE(x_length, 0, 0);
+	_reduce_ranges(INTEGER(x_start), INTEGER(x_width), x_length,
+			tmpbuf.elts, &out_ranges, inframe_start);
 
 	PROTECT(ans = NEW_LIST(3));
 	PROTECT(ans_names = NEW_CHARACTER(3));
@@ -92,8 +89,8 @@ SEXP IRanges_reduce(SEXP x, SEXP with_inframe_start)
 	SET_STRING_ELT(ans_names, 2, mkChar("inframe.start"));
 	SET_NAMES(ans, ans_names);
 	UNPROTECT(1);
-	SET_VECTOR_ELT(ans, 0, _IntAE_asINTEGER(&(reduced_ranges.start)));
-	SET_VECTOR_ELT(ans, 1, _IntAE_asINTEGER(&(reduced_ranges.width)));
+	SET_VECTOR_ELT(ans, 0, _IntAE_asINTEGER(&(out_ranges.start)));
+	SET_VECTOR_ELT(ans, 1, _IntAE_asINTEGER(&(out_ranges.width)));
 	if (inframe_start != NULL) {
 		SET_VECTOR_ELT(ans, 2, ans_inframe_start);
 		UNPROTECT(1);
