@@ -509,11 +509,14 @@ setMethod("c", "CompressedList",
 setMethod("lapply", "CompressedList",
           function(X, FUN, ...)
           {
-              .CompressedList.list.subscript(X = X,
-                                             INDEX = seq_len(length(X)),
-                                             USE.NAMES = TRUE,
-                                             COMPRESS = FALSE,
-                                             FUN = match.fun(FUN), ...)
+              if (length(X) == 0)
+                  list()
+              else
+                  .CompressedList.list.subscript(X = X,
+                                                 INDEX = seq_len(length(X)),
+                                                 USE.NAMES = TRUE,
+                                                 COMPRESS = FALSE,
+                                                 FUN = match.fun(FUN), ...)
           })
 
 setMethod("aggregate", "CompressedList",
