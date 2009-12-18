@@ -147,7 +147,7 @@ setMethod("nrow", "RangedData",
           })
 setMethod("ncol", "RangedData",
           function(x) {
-            ncol(values(x))[[1L]]
+            ncol(values(x)[[1L]])
           })
 setMethod("rownames", "RangedData",
           function(x, do.NULL = TRUE, prefix = "row") {
