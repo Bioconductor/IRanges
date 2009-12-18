@@ -393,20 +393,32 @@ setMethod("Ops",
               nms <- names(e1)
               if (is.null(nms))
                   nms <- names(e2)
+              n1 <- elementLengths(e1)
+              n2 <- elementLengths(e2)
+              if (any(n1 != n2)) {
+                  u1 <- as.list(e1)
+                  u2 <- as.list(e2)
+                  zeroLength <- which((n1 == 0L) | (n2 == 0L))
+                  empty1 <- e1[[1L]][integer(0)]
+                  empty2 <- e2[[1L]][integer(0)]
+                  for (i in zeroLength) {
+                      u1[[i]] <- empty1
+                      u2[[i]] <- empty2
+                  }
+                  n1[zeroLength] <- 0L
+                  n2[zeroLength] <- 0L
+                  for (i in which(n1 < n2))
+                      u1[[i]] <- rep(u1[[i]], length.out = n2[i])
+                  for (i in which(n2 < n1))
+                      u2[[i]] <- rep(u2[[i]], length.out = n1[i])
+                  partitioningEnd <- cumsum(pmax.int(n1, n2))
+                  e1@unlistData <- unlist(u1)
+                  e1@partitioning@end <- partitioningEnd
+                  e2@unlistData <- unlist(u2)
+                  e2@partitioning@end <- partitioningEnd
+              }
               partitioning <- e1@partitioning
               names(partitioning) <- nms
-              n1 <- elementLengths(e1)
-              n2 <- elementLengths(e2)
-              for (i in which(n2 == 0))
-                  e1[[i]] <- e1[[i]][integer(0)]
-              for (i in which(n1 == 0))
-                  e2[[i]] <- e2[[i]][integer(0)]
-              n1 <- elementLengths(e1)
-              n2 <- elementLengths(e2)
-              for (i in which(n1 < n2))
-                  e1[[i]] <- rep(e1[[i]], length.out = n2[i])
-              for (i in which(n2 < n1))
-                  e2[[i]] <- rep(e2[[i]], length.out = n1[i])
               CompressedAtomicList(callGeneric(e1@unlistData, e2@unlistData),
                                    partitioning = partitioning)
           })
