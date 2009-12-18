@@ -26,11 +26,11 @@ SEXP debug_IRanges_utils()
 /* WARNING: The reduced ranges are *appended* to 'out_ranges'!
    Returns the number of ranges that were appended. */
 int _reduce_ranges(const int *start, const int *width, int length,
-		int drop_empty_ranges,
+		int drop_empty_ranges, //int merge_adjacent_ranges,
 		int *tmpbuf, RangeAE *out_ranges, int *out_inframe_start)
 {
 	int out_length, merging_is_blocked, i, j, start_j, width_j, end_j,
-	    delta, max_end, gap;
+	    max_end, gap, delta;
 
 	_get_order_of_int_array(start, length, 0, tmpbuf, 0);
 	out_length = 0;
@@ -40,15 +40,17 @@ int _reduce_ranges(const int *start, const int *width, int length,
 		start_j = start[j];
 		width_j = width[j];
 		end_j = start_j + width_j - 1;
-		if (out_length != 0)
+		if (i == 0) {
+			max_end = end_j;
+			delta = start_j - 1;
+		} else {
+			/* If 'i' != 0 and 'merging_is_blocked' is 1
+			   then the previous range was empty so 'gap'
+			   will be >= 0. */
 			gap = start_j - max_end - 1;
-		/* (merging_is_blocked == 0) => (out_length != 0) */
+		}
 		if (merging_is_blocked || gap > 0) {
-			if (out_length == 0)
-				delta = start_j - 1;
-			else
-				delta += gap;
-			if (drop_empty_ranges && width_j == 0) {
+			if (width_j == 0 && drop_empty_ranges) {
 				merging_is_blocked = 1;
 			} else {
 				_RangeAE_insert_at(out_ranges,
@@ -58,6 +60,8 @@ int _reduce_ranges(const int *start, const int *width, int length,
 				merging_is_blocked = 0;
 			}
 			max_end = end_j;
+			if (i != 0)
+				delta += gap;
 		} else if (end_j > max_end) {
 			/* Merge with last range in 'out_ranges'. */
 			out_ranges->width.elts[out_ranges->width.nelt - 1] +=
