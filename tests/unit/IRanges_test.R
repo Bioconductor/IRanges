@@ -38,12 +38,30 @@ test_IRanges_reduce <- function() {
   checkIdentical(y, IRanges(start=c(1,15,20), end=c(5,15,100)))
   checkIdentical(reduce(y), y)
 
-  x <- IRanges(start=c(-2,6,7), width=c(8,0,0))
-  y <- reduce(x)
-  checkIdentical(y, IRanges(start=c(-2,7), end=c(5,6)))
-  checkIdentical(reduce(y), y)
-  y <- reduce(x, drop.empty.ranges=TRUE)
-  checkIdentical(y, IRanges(start=-2, end=5))
+  x <- IRanges(start=c(3,-2,6,7,-10,3), width=c(1,8,0,0,0,0))
+  ## Before reduction:
+  ##     start end width  ==-10===-5====0===+5==+10===
+  ## [1]     3   3     1  ....:....:....:..x.:....:...
+  ## [2]    -2   5     8  ....:....:..xxxxxxxx....:...
+  ## [3]     6   5     0  ....:....:....:....:[...:...
+  ## [4]     7   6     0  ....:....:....:....:.[..:...
+  ## [5]   -10 -11     0  ....[....:....:....:....:...
+  ## [6]     3   2     0  ....:....:....:..[.:....:...
+  ## ---------------------==-10===-5====0===+5==+10===
+  ## After reduction:
+  ##                  y1: ....[....:..xxxxxxxx.[..:...
+  ##                  y3: ....:....:..xxxxxxxx....:...
+  y1 <- reduce(x)
+  checkIdentical(y1, IRanges(start=c(-10,-2,7), end=c(-11,5,6)))
+  checkIdentical(reduce(y1), y1)
+  y2 <- reduce(x, with.inframe.attrib=TRUE)
+  checkIdentical(start(attr(y2, "inframe")), c(6L,1L,9L,9L,1L,6L))
+  checkIdentical(width(attr(y2, "inframe")), width(x))
+  y3 <- reduce(x, drop.empty.ranges=TRUE)
+  checkIdentical(y3, IRanges(start=-2, end=5))
+  checkIdentical(reduce(y3), y3)
+  y4 <- reduce(x, drop.empty.ranges=TRUE, with.inframe.attrib=TRUE)
+  checkIdentical(attr(y4, "inframe"), attr(y2, "inframe"))
 
   x <- IRanges()
   y <- reduce(x)

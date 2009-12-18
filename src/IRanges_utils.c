@@ -20,12 +20,11 @@ SEXP debug_IRanges_utils()
 
 
 /****************************************************************************
- * Reduction (aka extracting the frame)
+ * Reduction (aka extracting the frame).
  */
 
 /* WARNING: The reduced ranges are *appended* to 'out_ranges'!
- * Returns the number of appended ranges.
- */
+   Returns the number of ranges that were appended. */
 int _reduce_ranges(const int *start, const int *width, int length,
 		int drop_empty_ranges,
 		int *tmpbuf, RangeAE *out_ranges, int *out_inframe_start)
@@ -37,14 +36,14 @@ int _reduce_ranges(const int *start, const int *width, int length,
 	out_length = 0;
 	for (i = 0; i < length; i++) {
 		j = tmpbuf[i];
-		width_j = width[j];
-		if (drop_empty_ranges && width_j == 0)
-			continue;
 		start_j = start[j];
+		width_j = width[j];
 		end_j = start_j + width_j - 1;
 		if (out_length == 0 || (gap = start_j - max_end - 1) > 0) {
-			_RangeAE_insert_at(out_ranges, out_ranges->start.nelt,
-				start_j, width_j);
+			if (width_j != 0 || !drop_empty_ranges)
+				_RangeAE_insert_at(out_ranges,
+					out_ranges->start.nelt,
+					start_j, width_j);
 			max_end = end_j;
 			if (out_length == 0)
 				inframe_offset = start_j - 1;
@@ -52,7 +51,8 @@ int _reduce_ranges(const int *start, const int *width, int length,
 				inframe_offset += gap;
 			out_length++;
 		} else if (end_j > max_end) {
-			out_ranges->width.elts[out_ranges->width.nelt - 1] += end_j - max_end;
+			out_ranges->width.elts[out_ranges->width.nelt - 1] +=
+					end_j - max_end;
 			max_end = end_j;
 		}
 		if (out_inframe_start != NULL)
@@ -103,11 +103,14 @@ SEXP IRanges_reduce(SEXP x, SEXP drop_empty_ranges, SEXP with_inframe_start)
 	return ans;
 }
 
-/*
- * --- .Call ENTRY POINT ---
+
+/****************************************************************************
+ * Other Ranges utilities.
  */
 
-/* Worst case complexity of O(n^2) :(, but in practice very fast */
+/* --- .Call ENTRY POINT ---
+ * Worst case complexity of O(n^2) :(, but in practice very fast.
+ */
 SEXP Ranges_disjointBins(SEXP r_start, SEXP r_width)
 {
   SEXP ans;
@@ -130,3 +133,4 @@ SEXP Ranges_disjointBins(SEXP r_start, SEXP r_width)
   UNPROTECT(1);
   return ans;
 }
+
