@@ -214,6 +214,8 @@ setReplaceMethod("[", "Sequence",
                                  seqselect(x, iInfo[["idx"]], width = 1) <- value
                              else
                                  seqselect(x, start = 1, end = length(x)) <- value
+                         } else if (is.atomic(i)) {
+                             stop(iInfo[["msg"]])
                          } else {
                              seqselect(x, i) <- value
                          }
