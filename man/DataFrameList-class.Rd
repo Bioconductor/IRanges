@@ -9,6 +9,8 @@
 % accessors
 \alias{nrow,DataFrameList-method}
 \alias{ncol,DataFrameList-method}
+\alias{ncol,CompressedSplitDataFrameList-method}
+\alias{ncol,SimpleSplitDataFrameList-method}
 \alias{dim,DataFrameList-method}
 \alias{rownames,DataFrameList-method}
 \alias{colnames,DataFrameList-method}

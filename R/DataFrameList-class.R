@@ -42,6 +42,26 @@ setMethod("ncol", "DataFrameList",
               unlist(lapply(x, ncol))
           })
 
+setMethod("ncol", "SimpleSplitDataFrameList",
+          function(x)
+          {
+            if (length(x) == 0L)
+              0L
+            else
+              structure(rep.int(ncol(x[[1L]]), length(x)),
+                        names = names(x))
+          })
+
+setMethod("ncol", "CompressedSplitDataFrameList",
+          function(x)
+          {
+            if (length(x) == 0L)
+              0L
+            else
+              structure(rep.int(ncol(x@unlistData), length(x)),
+                        names = names(x))
+          })
+
 setMethod("dim", "DataFrameList",
           function(x)
           {
