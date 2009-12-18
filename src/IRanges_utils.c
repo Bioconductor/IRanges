@@ -29,34 +29,43 @@ int _reduce_ranges(const int *start, const int *width, int length,
 		int drop_empty_ranges,
 		int *tmpbuf, RangeAE *out_ranges, int *out_inframe_start)
 {
-	int out_length, i, j, start_j, width_j, end_j,
-	    gap, max_end, inframe_offset;
+	int out_length, merging_is_blocked, i, j, start_j, width_j, end_j,
+	    delta, max_end, gap;
 
 	_get_order_of_int_array(start, length, 0, tmpbuf, 0);
 	out_length = 0;
+	merging_is_blocked = 1;
 	for (i = 0; i < length; i++) {
 		j = tmpbuf[i];
 		start_j = start[j];
 		width_j = width[j];
 		end_j = start_j + width_j - 1;
-		if (out_length == 0 || (gap = start_j - max_end - 1) > 0) {
-			if (width_j != 0 || !drop_empty_ranges)
+		if (out_length != 0)
+			gap = start_j - max_end - 1;
+		/* (merging_is_blocked == 0) => (out_length != 0) */
+		if (merging_is_blocked || gap > 0) {
+			if (out_length == 0)
+				delta = start_j - 1;
+			else
+				delta += gap;
+			if (drop_empty_ranges && width_j == 0) {
+				merging_is_blocked = 1;
+			} else {
 				_RangeAE_insert_at(out_ranges,
 					out_ranges->start.nelt,
 					start_j, width_j);
+				out_length++;
+				merging_is_blocked = 0;
+			}
 			max_end = end_j;
-			if (out_length == 0)
-				inframe_offset = start_j - 1;
-			else
-				inframe_offset += gap;
-			out_length++;
 		} else if (end_j > max_end) {
+			/* Merge with last range in 'out_ranges'. */
 			out_ranges->width.elts[out_ranges->width.nelt - 1] +=
 					end_j - max_end;
 			max_end = end_j;
 		}
-		if (out_inframe_start != NULL)
-			out_inframe_start[j] = start_j - inframe_offset;
+		if (out_inframe_start != NULL) 
+			out_inframe_start[j] = start_j - delta;
 	}
 	return out_length;
 }
