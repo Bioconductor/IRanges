@@ -199,7 +199,8 @@ static int append_cachedIRanges_to_RangeAE(RangeAE *range_ae,
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges)
+SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
+		SEXP min_gapwidth)
 {
 	SEXP ans, ans_names, ans_unlistData,
 	     ans_partitioning, ans_partitioning_end;
@@ -223,7 +224,7 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges)
 		append_cachedIRanges_to_RangeAE(&in_ranges, &cached_ir);
 		_reduce_ranges(in_ranges.start.elts, in_ranges.width.elts,
 			in_ranges.start.nelt,
-			LOGICAL(drop_empty_ranges)[0],
+			LOGICAL(drop_empty_ranges)[0], INTEGER(min_gapwidth)[0],
 			tmpbuf.elts, &out_ranges, NULL);
 		INTEGER(ans_partitioning_end)[i] = out_ranges.start.nelt;
 	}

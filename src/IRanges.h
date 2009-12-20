@@ -537,6 +537,7 @@ int _reduce_ranges(
 	const int *width,
 	int length,
 	int drop_empty_ranges,
+	int min_gapwidth,
 	int *tmpbuf,
 	RangeAE *out_ranges,
 	int *out_inframe_start
@@ -545,6 +546,7 @@ int _reduce_ranges(
 SEXP IRanges_reduce(
 	SEXP x,
 	SEXP drop_empty_ranges,
+	SEXP min_gapwidth,
 	SEXP with_inframe_start
 );
 
@@ -626,7 +628,8 @@ SEXP CompressedIRangesList_isNormal(
 
 SEXP CompressedIRangesList_reduce(
 	SEXP x,
-	SEXP drop_empty_ranges
+	SEXP drop_empty_ranges,
+	SEXP min_gapwidth
 );
 
 SEXP CompressedIRangesList_gaps(

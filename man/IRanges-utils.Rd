@@ -60,7 +60,8 @@ resize(x, width, start=TRUE, use.names=TRUE)
 \S4method{flank}{Ranges}(x, width, start=TRUE, both=FALSE, use.names=TRUE)
 \S4method{reflect}{Ranges}(x, bounds, use.names=TRUE)
 threebands(x, start=NA, end=NA, width=NA)
-\S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, with.inframe.attrib=FALSE)
+\S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
+                          with.inframe.attrib=FALSE)
 
 ## Other utilities
 \S4method{range}{Ranges}(x, ..., na.rm = FALSE)
@@ -137,6 +138,11 @@ asNormalIRanges(x, force=TRUE)
   }
   \item{drop.empty.ranges}{
     \code{TRUE} or \code{FALSE}. Should empty ranges be dropped?
+  }
+  \item{min.gapwidth}{
+    Ranges separated by a gap of at least \code{min.gapwidth} positions
+    won't be merged in the \link{Ranges} object returned by \code{reduce}.
+    Otherwise, they will.
   }
   \item{with.inframe.attrib}{
     \code{TRUE} or \code{FALSE}. For internal use.

@@ -386,7 +386,8 @@
   
   \describe{
     \item{}{
-      \code{reduce(x, drop.empty.ranges=FALSE, by, with.inframe.attrib = FALSE)}:
+      \code{reduce(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
+                   by, with.inframe.attrib = FALSE)}:
       Merges the ranges in each of the spaces after grouping by the \code{by}
       values columns and returns the result as a \code{RangedData} containing
       the reduced ranges and the \code{by} value columns.

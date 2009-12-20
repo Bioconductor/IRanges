@@ -36,7 +36,8 @@
 \S4method{resize}{RangesList}(x, width, start=TRUE, use.names=TRUE)
 \S4method{flank}{RangesList}(x, width, start=TRUE, both=FALSE, use.names=TRUE)
 \S4method{disjoin}{RangesList}(x)
-\S4method{reduce}{RangesList}(x, drop.empty.ranges=FALSE, with.inframe.attrib=FALSE)
+\S4method{reduce}{RangesList}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
+                              with.inframe.attrib=FALSE)
 \S4method{gaps}{RangesList}(x, start=NA, end=NA)
 \S4method{range}{RangesList}(x, ..., na.rm = FALSE)
 

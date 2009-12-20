@@ -13,8 +13,8 @@ Immediate TODO list
   Once this is done, adapt R/reverse.R file in Biostrings to use reflect()
   instead of reverse() wherever needed.
 
-- Herve or Michael: Provide a way to reduce ranges separated by a max
-  distance or a min overlap (Michael's suggestion).
+- Herve or Michael: Provide a way to reduce ranges with a min overlap
+  (Michael's suggestion).
 
 - Alignment data structure and lift-over functionality.
 

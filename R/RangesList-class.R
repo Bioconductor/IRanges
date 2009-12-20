@@ -375,22 +375,31 @@ setMethod("flank", "CompressedIRangesList",
 setMethod("disjoin", "RangesList", function(x) endoapply(x, disjoin))
 
 setMethod("reduce", "RangesList",
-          function(x, drop.empty.ranges=FALSE, with.inframe.attrib=FALSE)
+          function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
+                   with.inframe.attrib=FALSE)
           endoapply(x, reduce, drop.empty.ranges=drop.empty.ranges,
+                    min.gapwidth=min.gapwidth,
                     with.inframe.attrib = with.inframe.attrib))
 
 ### 'with.inframe.attrib' is ignored for now.
 ### TODO: Support 'with.inframe.attrib=TRUE'.
 setMethod("reduce", "CompressedIRangesList",
-    function(x, drop.empty.ranges=FALSE, with.inframe.attrib=FALSE)
+    function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
+             with.inframe.attrib=FALSE)
     {
         if (!isTRUEorFALSE(drop.empty.ranges))
             stop("'drop.empty.ranges' must be TRUE or FALSE")
+        if (!isSingleNumber(min.gapwidth))
+            stop("'min.gapwidth' must be a single integer")
+        if (!is.integer(min.gapwidth))
+            min.gapwidth <- as.integer(min.gapwidth)
+        if (min.gapwidth < 0L)
+            stop("'min.gapwidth' must be non-negative")
         if (!identical(with.inframe.attrib, FALSE))
             stop("'with.inframe.attrib' argument not yet supported ",
                  "when reducing a CompressedIRangesList object")
         .Call("CompressedIRangesList_reduce",
-              x, drop.empty.ranges,
+              x, drop.empty.ranges, min.gapwidth,
               PACKAGE="IRanges")
     }
 )

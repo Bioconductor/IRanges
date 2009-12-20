@@ -61,8 +61,7 @@ setMethod("union", c("IRanges", "IRanges"),
         ## We need to downgrade 'x' to an IRanges instance 'x0' so 'c(x0, y)'
         ## is guaranteed to work (even e.g. if 'x' is a NormalIRanges object).
         x0 <- as(x, "IRanges")  # downgrade x to IRanges
-        x0 <- reduce(c(x0, y))
-        x0 <- x0[width(x0) != 0]
+        x0 <- reduce(c(x0, y), drop.empty.ranges=TRUE)
         ## Maybe the call to update() below could be replaced by
         ## 'as(x, "IRanges") <- x0' but I was not lucky with my first
         ## attempt to use this construct:

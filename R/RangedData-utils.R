@@ -90,10 +90,17 @@ setMethod("%in%", c("RangedData", "RangesList"),
 ###
 
 setMethod("reduce", "RangedData",
-          function(x, drop.empty.ranges=FALSE, by, with.inframe.attrib=FALSE)
+          function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
+                   by, with.inframe.attrib=FALSE)
           {
             if (!isTRUEorFALSE(drop.empty.ranges))
                 stop("'drop.empty.ranges' must be TRUE or FALSE")
+            if (!isSingleNumber(min.gapwidth))
+                stop("'min.gapwidth' must be a single integer")
+            if (!is.integer(min.gapwidth))
+                min.gapwidth <- as.integer(min.gapwidth)
+            if (min.gapwidth < 0L)
+                stop("'min.gapwidth' must be non-negative")
             FUN <- function(y) {
               name <- names(y)
               ranges <- ranges(y)[[1L]]
@@ -105,6 +112,7 @@ setMethod("reduce", "RangedData",
                          rngs <-
                            reduce(ranges[i],
                                   drop.empty.ranges=drop.empty.ranges,
+                                  min.gapwidth=min.gapwidth,
                                   with.inframe.attrib=with.inframe.attrib)
                          list(ranges = rngs,
                               values =

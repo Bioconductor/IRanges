@@ -26,42 +26,54 @@ SEXP debug_IRanges_utils()
 /* WARNING: The reduced ranges are *appended* to 'out_ranges'!
    Returns the number of ranges that were appended. */
 int _reduce_ranges(const int *start, const int *width, int length,
-		int drop_empty_ranges, //int merge_adjacent_ranges,
+		int drop_empty_ranges, int min_gapwidth,
 		int *tmpbuf, RangeAE *out_ranges, int *out_inframe_start)
 {
-	int out_length, merging_is_blocked, i, j, start_j, width_j, end_j,
-	    max_end, gap, delta;
+	int out_length, i, j, start_j, width_j, end_j,
+	    append_or_drop, max_end, gapwidth, delta;
 
+	if (min_gapwidth < 0)
+		error("IRanges internal error in _reduce_ranges(): "
+		      "negative min_gapwidth not supported");
 	_get_order_of_int_array(start, length, 0, tmpbuf, 0);
 	out_length = 0;
-	merging_is_blocked = 1;
 	for (i = 0; i < length; i++) {
 		j = tmpbuf[i];
 		start_j = start[j];
 		width_j = width[j];
 		end_j = start_j + width_j - 1;
 		if (i == 0) {
+			/* 'append_or_drop' is a toggle that indicates how
+			   the current input range should be added to
+			   'out_ranges': 1 for appended (or dropped), 0 for
+			   merged. */
+			append_or_drop = 1;
 			max_end = end_j;
 			delta = start_j - 1;
 		} else {
-			/* If 'i' != 0 and 'merging_is_blocked' is 1
-			   then the previous range was empty so 'gap'
-			   will be >= 0. */
-			gap = start_j - max_end - 1;
+			/* If 'i' != 0 and 'append_or_drop' is 1 then the
+			   previous range was empty so 'gapwidth' will be
+			   >= 0. */
+			gapwidth = start_j - max_end - 1;
+			if (gapwidth >= min_gapwidth)
+				append_or_drop = 1;
 		}
-		if (merging_is_blocked || gap > 0) {
-			if (width_j == 0 && drop_empty_ranges) {
-				merging_is_blocked = 1;
-			} else {
+		if (append_or_drop) {
+			if (width_j != 0
+			 || (!drop_empty_ranges
+			     && (out_length == 0
+			         || start_j != out_ranges->start.elts[
+					out_ranges->start.nelt - 1]))) {
+				/* Append to 'out_ranges'. */
 				_RangeAE_insert_at(out_ranges,
 					out_ranges->start.nelt,
 					start_j, width_j);
 				out_length++;
-				merging_is_blocked = 0;
+				append_or_drop = 0;
 			}
 			max_end = end_j;
 			if (i != 0)
-				delta += gap;
+				delta += gapwidth;
 		} else if (end_j > max_end) {
 			/* Merge with last range in 'out_ranges'. */
 			out_ranges->width.elts[out_ranges->width.nelt - 1] +=
@@ -77,7 +89,8 @@ int _reduce_ranges(const int *start, const int *width, int length,
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP IRanges_reduce(SEXP x, SEXP drop_empty_ranges, SEXP with_inframe_start)
+SEXP IRanges_reduce(SEXP x, SEXP drop_empty_ranges, SEXP min_gapwidth,
+		SEXP with_inframe_start)
 {
 	int x_length, *inframe_start;
 	SEXP x_start, x_width, ans, ans_names, ans_inframe_start;
@@ -96,7 +109,7 @@ SEXP IRanges_reduce(SEXP x, SEXP drop_empty_ranges, SEXP with_inframe_start)
 	out_ranges = _new_RangeAE(0, 0);
 	tmpbuf = _new_IntAE(x_length, 0, 0);
 	_reduce_ranges(INTEGER(x_start), INTEGER(x_width), x_length,
-			LOGICAL(drop_empty_ranges)[0],
+			LOGICAL(drop_empty_ranges)[0], INTEGER(min_gapwidth)[0],
 			tmpbuf.elts, &out_ranges, inframe_start);
 
 	PROTECT(ans = NEW_LIST(3));
@@ -115,6 +128,21 @@ SEXP IRanges_reduce(SEXP x, SEXP drop_empty_ranges, SEXP with_inframe_start)
 	UNPROTECT(1);
 	return ans;
 }
+
+
+/****************************************************************************
+ * Extracting the gaps.
+ */
+
+/* WARNING: The ranges of the gaps are *appended* to 'out_ranges'!
+   Returns the number of ranges that were appended. */
+/*
+int _gaps_ranges(const int *start, const int *width, int length,
+		int drop_empty_ranges, int restrict_start, int restrict_end,
+		int *tmpbuf, RangeAE *out_ranges)
+{
+}
+*/
 
 
 /****************************************************************************

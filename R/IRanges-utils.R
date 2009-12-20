@@ -283,14 +283,21 @@ setMethod("threebands", "IRanges",
 ###
 
 setMethod("reduce", "IRanges",
-    function(x, drop.empty.ranges=FALSE, with.inframe.attrib=FALSE)
+    function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
+             with.inframe.attrib=FALSE)
     {
         if (!isTRUEorFALSE(drop.empty.ranges))
             stop("'drop.empty.ranges' must be TRUE or FALSE")
+        if (!isSingleNumber(min.gapwidth))
+            stop("'min.gapwidth' must be a single integer")
+        if (!is.integer(min.gapwidth))
+            min.gapwidth <- as.integer(min.gapwidth)
+        if (min.gapwidth < 0L)
+            stop("'min.gapwidth' must be non-negative")
         if (!isTRUEorFALSE(with.inframe.attrib))
             stop("'with.inframe.attrib' must be TRUE or FALSE")
         C_ans <- .Call("IRanges_reduce",
-                        x, drop.empty.ranges, with.inframe.attrib,
+                        x, drop.empty.ranges, min.gapwidth, with.inframe.attrib,
                         PACKAGE="IRanges")
         ans <- unsafe.update(x, start=C_ans$start, width=C_ans$width, names=NULL)
         if (with.inframe.attrib) {
