@@ -94,6 +94,11 @@
   \item{drop.empty.ranges}{
     \code{TRUE} or \code{FALSE}. Should empty ranges be dropped?
   }
+  \item{min.gapwidth}{
+    Ranges separated by a gap of at least \code{min.gapwidth} positions
+    won't be merged in the \link{Ranges} object returned by \code{reduce}.
+    Otherwise, they will.
+  }
   \item{with.inframe.attrib}{
     \code{TRUE} or \code{FALSE}. For internal use.
   }

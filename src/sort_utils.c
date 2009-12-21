@@ -67,8 +67,8 @@ static int compar_xx_for_desc_order(const void *p1, const void *p2)
 	return i1 - i2;
 }
 
-void _get_order_of_int_array(const int *x, int nelt, int desc,
-		int *out, int out_shift)
+void _get_order_of_int_array(const int *x, int nelt,
+		int desc, int *out, int out_shift)
 {
 	int i, (*compar)(const void *, const void *);
 
