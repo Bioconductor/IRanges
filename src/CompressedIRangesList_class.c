@@ -243,8 +243,42 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 /* --- .Call ENTRY POINT --- */
 SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 {
-	error("IMPLEMENT ME");
-	return R_NilValue;
+	SEXP ans, ans_names, ans_unlistData,
+	     ans_partitioning, ans_partitioning_end;
+	cachedCompressedIRangesList cached_x;
+	cachedIRanges cached_ir;
+	int max_in_length, x_length, i;
+	RangeAE in_ranges, out_ranges;
+	IntAE tmpbuf;
+
+	cached_x = _cache_CompressedIRangesList(x);
+	max_in_length = get_cachedCompressedIRangesList_max_eltLengths(
+				&cached_x);
+	in_ranges = _new_RangeAE(0, 0);
+	out_ranges = _new_RangeAE(0, 0);
+	tmpbuf = _new_IntAE(max_in_length, 0, 0);
+	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
+	PROTECT(ans_partitioning_end = NEW_INTEGER(x_length));
+	for (i = 0; i < x_length; i++) {
+		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
+		in_ranges.start.nelt = in_ranges.width.nelt = 0;
+		append_cachedIRanges_to_RangeAE(&in_ranges, &cached_ir);
+		_gaps_ranges(in_ranges.start.elts, in_ranges.width.elts,
+			in_ranges.start.nelt,
+			INTEGER(start)[0], INTEGER(end)[0],
+			tmpbuf.elts, &out_ranges);
+		INTEGER(ans_partitioning_end)[i] = out_ranges.start.nelt;
+	}
+	PROTECT(ans_unlistData = _RangeAE_asIRanges(&out_ranges));
+	PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
+	PROTECT(ans_partitioning = _new_PartitioningByEnd(
+			"PartitioningByEnd",
+			ans_partitioning_end, ans_names));
+	PROTECT(ans = _new_CompressedIRangesList(
+			_get_classname(x),
+			ans_unlistData, ans_partitioning));
+	UNPROTECT(5);
+	return ans;
 }
 
 /* --- .Call ENTRY POINT --- */

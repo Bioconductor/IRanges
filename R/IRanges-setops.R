@@ -23,35 +23,8 @@ setMethod("gaps", "IRanges",
     {
         start <- normargSingleStartOrNA(start)
         end <- normargSingleEndOrNA(end)
-        ## No matter in what order restricting and normalizing are done,
-        ## the final result should always be exactly the same.
-        ## Now which order is the most efficient? It depends...
-        xx <- asNormalIRanges(x, force=TRUE)
-        xx0 <- restrict(xx, start=start, end=end) # preserves normality
-        ans_start <- ans_width <- integer(0)
-        if (!isEmpty(xx0)) {
-            start0 <- start(xx0)
-            end0 <- end(xx0)
-            if (!is.na(start) && start < min(xx0)) {
-                start0 <- c(start, start0)
-                end0 <- c(start - 1L, end0)
-            }
-            if (!is.na(end) && max(xx0) < end) {
-                start0 <- c(start0, end + 1L)
-                end0 <- c(end0, end)
-            }
-            if (length(start0) >= 2) {
-                ans_start <- end0[-length(start0)] + 1L
-                ans_width <- start0[-1L] - ans_start
-            }
-        } else if (!is.na(start) || !is.na(end)) {
-            if (is.na(start) || is.na(end))
-                stop("'x' is not overlapping with the unbounded region ",
-                     "represented by 'start' and 'end'")
-            ans_start <- start
-            ans_width <- end - start + 1L
-        }
-        unsafe.update(x, start=ans_start, width=ans_width, names=NULL)
+        C_ans <- .Call("IRanges_gaps", x, start, end, PACKAGE="IRanges")
+        unsafe.update(x, start=C_ans$start, width=C_ans$width, names=NULL)
     }
 )
 

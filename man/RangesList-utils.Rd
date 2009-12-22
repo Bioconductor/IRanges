@@ -15,6 +15,7 @@
 \alias{reduce,RangesList-method}
 \alias{reduce,CompressedIRangesList-method}
 \alias{gaps,RangesList-method}
+\alias{gaps,CompressedIRangesList-method}
 \alias{range,RangesList-method}
 
 % set operations

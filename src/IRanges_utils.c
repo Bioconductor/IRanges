@@ -86,9 +86,7 @@ int _reduce_ranges(const int *start, const int *width, int length,
 	return out_length;
 }
 
-/*
- * --- .Call ENTRY POINT ---
- */
+/* --- .Call ENTRY POINT --- */
 SEXP IRanges_reduce(SEXP x, SEXP drop_empty_ranges, SEXP min_gapwidth,
 		SEXP with_inframe_start)
 {
@@ -109,8 +107,8 @@ SEXP IRanges_reduce(SEXP x, SEXP drop_empty_ranges, SEXP min_gapwidth,
 	out_ranges = _new_RangeAE(0, 0);
 	tmpbuf = _new_IntAE(x_length, 0, 0);
 	_reduce_ranges(INTEGER(x_start), INTEGER(x_width), x_length,
-			LOGICAL(drop_empty_ranges)[0], INTEGER(min_gapwidth)[0],
-			tmpbuf.elts, &out_ranges, inframe_start);
+		LOGICAL(drop_empty_ranges)[0], INTEGER(min_gapwidth)[0],
+		tmpbuf.elts, &out_ranges, inframe_start);
 
 	PROTECT(ans = NEW_LIST(3));
 	PROTECT(ans_names = NEW_CHARACTER(3));
@@ -134,15 +132,92 @@ SEXP IRanges_reduce(SEXP x, SEXP drop_empty_ranges, SEXP min_gapwidth,
  * Extracting the gaps.
  */
 
-/* WARNING: The ranges of the gaps are *appended* to 'out_ranges'!
+/* WARNING: The ranges representing the gaps are *appended* to 'out_ranges'!
    Returns the number of ranges that were appended. */
-/*
 int _gaps_ranges(const int *start, const int *width, int length,
-		int drop_empty_ranges, int restrict_start, int restrict_end,
+		int restrict_start, int restrict_end,
 		int *tmpbuf, RangeAE *out_ranges)
 {
+	int out_length, i, j, start_j, width_j, end_j,
+	    max_end, gapstart, gapwidth;
+
+	if (restrict_start != NA_INTEGER)
+		max_end = restrict_start - 1;
+	else
+		max_end = NA_INTEGER;
+	_get_order_of_two_int_arrays(start, width, length, 0, tmpbuf, 0);
+	out_length = 0;
+	for (i = 0; i < length; i++) {
+		j = tmpbuf[i];
+		width_j = width[j];
+		if (width_j == 0)
+			continue;
+		start_j = start[j];
+		end_j = start_j + width_j - 1;
+		if (max_end == NA_INTEGER) {
+			max_end = end_j;
+		} else {
+			gapstart = max_end + 1;
+			if (restrict_end != NA_INTEGER
+			 && start_j > restrict_end + 1)
+				start_j = restrict_end + 1;
+			gapwidth = start_j - gapstart;
+			if (gapwidth >= 1) {
+				/* Append to 'out_ranges'. */
+				_RangeAE_insert_at(out_ranges,
+					out_ranges->start.nelt,
+					gapstart, gapwidth);
+				out_length++;
+				max_end = end_j;
+			} else if (end_j > max_end) {
+				max_end = end_j;
+			}
+		}
+		if (restrict_end != NA_INTEGER && max_end >= restrict_end)
+			break;
+	}
+	if (restrict_end != NA_INTEGER
+	 && max_end != NA_INTEGER
+	 && max_end < restrict_end) {
+		gapstart = max_end + 1;
+		gapwidth = restrict_end - max_end;
+		/* Append to 'out_ranges'. */
+		_RangeAE_insert_at(out_ranges,
+			out_ranges->start.nelt,
+			gapstart, gapwidth);
+		out_length++;
+	}
+	return out_length;
 }
-*/
+
+/* --- .Call ENTRY POINT --- */
+SEXP IRanges_gaps(SEXP x, SEXP start, SEXP end)
+{
+	int x_length;
+	SEXP x_start, x_width, ans, ans_names;
+	RangeAE out_ranges;
+	IntAE tmpbuf;
+
+	x_length = _get_IRanges_length(x);
+	x_start = _get_IRanges_start(x);
+	x_width = _get_IRanges_width(x);
+	out_ranges = _new_RangeAE(0, 0);
+	tmpbuf = _new_IntAE(x_length, 0, 0);
+	_gaps_ranges(INTEGER(x_start), INTEGER(x_width), x_length,
+		INTEGER(start)[0], INTEGER(end)[0],
+		tmpbuf.elts, &out_ranges);
+
+	PROTECT(ans = NEW_LIST(2));
+	PROTECT(ans_names = NEW_CHARACTER(2));
+	SET_STRING_ELT(ans_names, 0, mkChar("start"));
+	SET_STRING_ELT(ans_names, 1, mkChar("width"));
+	SET_NAMES(ans, ans_names);
+	UNPROTECT(1);
+	SET_VECTOR_ELT(ans, 0, _IntAE_asINTEGER(&(out_ranges.start)));
+	SET_VECTOR_ELT(ans, 1, _IntAE_asINTEGER(&(out_ranges.width)));
+	UNPROTECT(1);
+	return ans;
+}
 
 
 /****************************************************************************

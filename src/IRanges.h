@@ -550,6 +550,22 @@ SEXP IRanges_reduce(
 	SEXP with_inframe_start
 );
 
+int _gaps_ranges(
+	const int *start,
+	const int *width,
+	int length,
+	int restrict_start,
+	int restrict_end,
+	int *tmpbuf,
+	RangeAE *out_ranges
+);
+
+SEXP IRanges_gaps(
+	SEXP x,
+	SEXP start,
+	SEXP end
+);
+
 
 /* coverage */
 
