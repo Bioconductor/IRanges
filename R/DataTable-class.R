@@ -263,16 +263,6 @@ setMethod("is.na", "DataTable", function(x) {
   na
 })
 
-## Somehow, the "..." signature yields a broken implicit generic. We
-## have to specify the package to force the override.  The
-## useAsDefault argument ensures that the default method of the
-## would-be implicit generic is preserved.
-
-setGeneric("complete.cases",
-           function(...) standardGeneric("complete.cases"),
-           useAsDefault = function(...) stats::complete.cases(...),
-           package = "IRanges")
-
 setMethod("complete.cases", "DataTable", function(...) {
   args <- list(...)
   if (length(args) == 1) {

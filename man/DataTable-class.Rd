@@ -32,7 +32,6 @@
 \alias{na.omit,DataTable-method}
 \alias{na.exclude}
 \alias{na.exclude,DataTable-method}
-\alias{complete.cases}
 \alias{complete.cases,DataTable-method}
 \alias{is.na,DataTable-method}
 
