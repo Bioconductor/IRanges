@@ -24,6 +24,7 @@
 \alias{coerce,Sequence,list-method}
 \alias{elementType}
 \alias{elementType,Sequence-method}
+\alias{elementType,vector-method}
 \alias{elementLengths}
 \alias{elementLengths,list-method}
 \alias{elementLengths,Sequence-method}
@@ -71,7 +72,6 @@
 \alias{window<-,vector-method}
 \alias{window<-,factor-method}
 \alias{with,Sequence-method}
-
 
 \title{Sequence objects}
 
