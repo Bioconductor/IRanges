@@ -32,6 +32,7 @@
 \alias{as.character,Rle-method}
 \alias{as.raw,Rle-method}
 \alias{as.factor,Rle-method}
+\alias{as.data.frame,Rle-method}
 \alias{coerce,vector,Rle-method}
 \alias{coerce,logical,Rle-method}
 \alias{coerce,integer,Rle-method}
@@ -50,6 +51,7 @@
 \alias{coerce,Rle,factor-method}
 \alias{coerce,Rle,IRanges-method}
 \alias{coerce,Rle,NormalIRanges-method}
+\alias{coerce,Rle,data.frame-method}
 
 \alias{Ops,Rle,Rle-method}
 \alias{Ops,Rle,vector-method}
@@ -240,6 +242,11 @@
     \item{}{
       \code{as.factor(x)}, \code{as(from, "factor")}: Creates a factor object
       based on the values contained in \code{x}.
+    }
+    \item{}{
+      \code{as.data.frame(x)}, \code{as(from, "data.frame")}: Creates
+      a \code{data.frame} with a single column holding the result of
+      \code{as.vector(x)}.
     }
     \item{}{
       \code{as(from, "IRanges")}: Creates an \link{IRanges} instance
