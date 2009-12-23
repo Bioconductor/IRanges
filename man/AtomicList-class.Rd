@@ -82,6 +82,8 @@
 \alias{coerce,RleList,CompressedNormalIRangesList-method}
 \alias{coerce,RleList,SimpleNormalIRangesList-method}
 
+\alias{coerce,vector,AtomicList-method}
+
 \alias{seqselect<-,CompressedAtomicList-method}
 \alias{seqselect<-,SimpleAtomicList-method}
 
@@ -112,6 +114,59 @@
 \alias{show,AtomicList-method}
 \alias{show,RleList-method}
 
+\alias{is.na,SimpleAtomicList-method}
+\alias{unique,SimpleAtomicList-method}
+\alias{sort,SimpleAtomicList-method}
+
+\alias{which,SimpleAtomicList-method}
+\alias{mean,SimpleAtomicList-method}
+\alias{median,SimpleAtomicList-method}
+\alias{table,SimpleAtomicList-method}
+\alias{diff,SimpleAtomicList-method}
+\alias{var,SimpleAtomicList-method}
+\alias{cov,SimpleAtomicList-method}
+\alias{cor,SimpleAtomicList-method}
+\alias{sd,SimpleAtomicList-method}
+\alias{cor,SimpleAtomicList-method}
+\alias{quantile,SimpleAtomicList-method}
+\alias{mad,SimpleAtomicList-method}
+\alias{IQR,SimpleAtomicList-method}
+\alias{smoothEnds,SimpleAtomicList-method}
+\alias{runmed,SimpleAtomicList-method}
+
+\alias{nchar,SimpleAtomicList-method}
+\alias{chartr,SimpleAtomicList-method}
+\alias{tolower,SimpleAtomicList-method}
+\alias{toupper,SimpleAtomicList-method}
+\alias{sub,SimpleAtomicList-method}
+\alias{gsub,SimpleAtomicList-method}
+
+\alias{is.na,CompressedAtomicList-method}
+\alias{unique,CompressedAtomicList-method}
+\alias{sort,CompressedAtomicList-method}
+
+\alias{which,CompressedAtomicList-method}
+\alias{mean,CompressedAtomicList-method}
+\alias{median,CompressedAtomicList-method}
+\alias{table,CompressedAtomicList-method}
+\alias{diff,CompressedAtomicList-method}
+\alias{var,CompressedAtomicList-method}
+\alias{cov,CompressedAtomicList-method}
+\alias{cor,CompressedAtomicList-method}
+\alias{sd,CompressedAtomicList-method}
+\alias{cor,CompressedAtomicList-method}
+\alias{quantile,CompressedAtomicList-method}
+\alias{mad,CompressedAtomicList-method}
+\alias{IQR,CompressedAtomicList-method}
+\alias{smoothEnds,CompressedAtomicList-method}
+\alias{runmed,CompressedAtomicList-method}
+
+\alias{nchar,CompressedAtomicList-method}
+\alias{chartr,CompressedAtomicList-method}
+\alias{tolower,CompressedAtomicList-method}
+\alias{toupper,CompressedAtomicList-method}
+\alias{sub,CompressedAtomicList-method}
+\alias{gsub,CompressedAtomicList-method}
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}
 \description{An extension of \code{\linkS4class{Sequence}} that holds
@@ -213,6 +268,9 @@
       \linkS4class{CompressedNormalIRangesList}/\linkS4class{SimpleNormalIRangesList}
       instance from a LogicalList or logical RleList instance.
     }
+    \item{}{\code{as(from, "AtomicList")}: If \code{from} is a vector,
+      converts it to an \code{AtomicList} of the appropriate type.
+    }
   }
 }
 
@@ -241,6 +299,20 @@
       \code{"Mod"}, \code{"Re"}}
   }
   See \link[methods]{S4groupGeneric} for more details.
+}
+
+\section{Other Basic Methods}{
+  The \code{SimpleAtomicList} and \code{CompressedAtomicList} objects
+  also support a large number of basic methods. Like the group generics
+  above, these methods perform the corresponding operation on each
+  element of the list separately. The methods include: 
+
+  \code{is.na}, \code{unique}, \code{sort}, \code{which}, \code{mean},
+  \code{median}, \code{table}, \code{diff}, \code{var}, \code{cov},
+  \code{cor}, \code{sd}, \code{cor}, \code{quantile}, \code{mad},
+  \code{IQR}, \code{smoothEnds}, \code{runmed}, \code{nchar},
+  \code{chartr}, \code{tolower}, \code{toupper}, \code{sub},
+  \code{gsub}
 }
 
 \section{Fixed Width Running Window Summaries}{
