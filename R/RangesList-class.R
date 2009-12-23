@@ -345,16 +345,16 @@ setMethod("narrow", "CompressedIRangesList",
           })
 
 setMethod("resize", "RangesList",
-          function(x, width, start = TRUE, use.names = TRUE)
+          function(x, width, start = TRUE, use.names = TRUE, symmetric = FALSE)
           endoapply(x, resize, width = width, start = start,
-                    use.names = use.names))
+                    use.names = use.names, symmetric = symmetric))
 
 setMethod("resize", "CompressedIRangesList",
-          function(x, width, start = TRUE, use.names = TRUE)
+          function(x, width, start = TRUE, use.names = TRUE, symmetric = FALSE)
           {
             slot(x, "unlistData", check=FALSE) <-
               resize(x@unlistData, width = width, start = start,
-                     use.names = use.names)
+                     use.names = use.names, symmetric = symmetric)
             x
           })
 
@@ -405,8 +405,14 @@ setMethod("reduce", "CompressedIRangesList",
 )
 
 setMethod("gaps", "RangesList",
-          function(x, start=NA, end=NA)
-          endoapply(x, gaps, start = start, end = end))
+          function(x, start=NA, end=NA) {
+            ## need to coerce due to limitation of S4 and '...' dispatch
+            if (!is(start, "Sequence"))
+              start <- IntegerList(as.list(recycleVector(start, length(x))))
+            if (!is(end, "Sequence"))
+              end <- IntegerList(as.list(recycleVector(end, length(x))))
+            mendoapply(gaps, x, start = start, end = end)
+          })
 
 setMethod("gaps", "CompressedIRangesList",
     function(x, start=NA, end=NA)
