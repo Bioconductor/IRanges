@@ -132,6 +132,7 @@ setAs("Rle", "complex", function(from) as.complex(from))
 setAs("Rle", "character", function(from) as.character(from))
 setAs("Rle", "raw", function(from) as.raw(from))
 setAs("Rle", "factor", function(from) as.factor(from))
+setAs("Rle", "data.frame", function(from) as.data.frame(from))
 
 setAs("Rle", "IRanges",
       function(from)
@@ -157,6 +158,11 @@ setMethod("as.complex", "Rle", function(x) rep.int(as.complex(runValue(x)), runL
 setMethod("as.character", "Rle", function(x) rep.int(as.character(runValue(x)), runLength(x)))
 setMethod("as.raw", "Rle", function(x) rep.int(as.raw(runValue(x)), runLength(x)))
 setMethod("as.factor", "Rle", function(x) rep.int(as.factor(runValue(x)), runLength(x)))
+
+setMethod("as.data.frame", "Rle",
+          function(x, row.names = NULL, optional = FALSE, ...) 
+            as.data.frame(as.vector(x), row.names = row.names,
+                          optional = optional, ...))
 
 getStartEndRunAndOffset <- function(x, start, end) {
     infoStart <- findIntervalAndStartFromWidth(start, runLength(x))
@@ -1206,3 +1212,5 @@ setMethod("show", "Rle",
               cat("  Values :  ")
               utils::str(as.vector(runValue(object)), give.head = FALSE)
           })
+
+setMethod("showAsCell", "Rle", function(object) as.vector(object))
