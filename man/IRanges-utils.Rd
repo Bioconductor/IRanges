@@ -56,7 +56,7 @@ whichAsIRanges(x)
 shift(x, shift, use.names=TRUE)
 restrict(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
 narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
-resize(x, width, start=TRUE, use.names=TRUE)
+resize(x, width, start=TRUE, use.names=TRUE, symmetric = FALSE)
 \S4method{flank}{Ranges}(x, width, start=TRUE, both=FALSE, use.names=TRUE)
 \S4method{reflect}{Ranges}(x, bounds, use.names=TRUE)
 threebands(x, start=NA, end=NA, width=NA)
@@ -136,6 +136,10 @@ asNormalIRanges(x, force=TRUE)
     \emph{into} the range. The resulting range thus straddles the end
     point, with \code{width} positions on either side.
   }
+  \item{symmetric}{
+    If \code{TRUE}, the width is distributed evenly on either side of
+    the center of the range, and \code{start} is ignored.
+  }
   \item{drop.empty.ranges}{
     \code{TRUE} or \code{FALSE}. Should empty ranges be dropped?
   }
@@ -187,7 +191,9 @@ asNormalIRanges(x, force=TRUE)
   solved values are interpreted relatively to the original range.
 
   \code{resize} resizes the ranges to the specified width where either the
-  start or end is used as an anchor.
+  start or end is used as an anchor, or, if \code{symmetric} is
+  \code{TRUE}, the width is evenly distributed on either side of the
+  center of the range.
 
   \code{threebands} extends the capability of \code{narrow} by returning
   the 3 ranges objects associated to the narrowing operation.

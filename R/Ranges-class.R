@@ -294,15 +294,16 @@ setMethod("narrow", "Ranges",
 )
 
 setGeneric("resize", signature="x",
-    function(x, width, start=TRUE, use.names=TRUE)
+    function(x, width, start=TRUE, use.names=TRUE, symmetric = FALSE)
       standardGeneric("resize")
 )
 
 setMethod("resize", "Ranges",
-    function(x, width, start=TRUE, use.names=TRUE)
+    function(x, width, start=TRUE, use.names=TRUE, symmetric = FALSE)
     {
         ir <- as(x, "IRanges")
-        y <- resize(ir, width=width, start=start, use.names=use.names)
+        y <- resize(ir, width=width, start=start, use.names=use.names,
+                    symmetric = symmetric)
         as(y, class(x))
     }
 )

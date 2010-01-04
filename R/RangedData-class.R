@@ -521,9 +521,11 @@ setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
   nms <- names(do.call(c, nms))
   names(rds) <- NULL # critical for dispatch to work
   ranges <- do.call(c, lapply(rds, ranges))
+  values <- do.call(c, lapply(rds, values))
+  rm(rds); gc()
   names(ranges) <- nms
   rd@ranges <- ranges
-  values <- do.call(c, lapply(rds, values))
+  rm(ranges)
   names(values) <- nms
   rd@values <- values
   rd

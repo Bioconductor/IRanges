@@ -228,32 +228,38 @@ setMethod("narrow", "NormalIRanges",
 ###
 
 setMethod("resize", "IRanges",
-    function(x, width, start=TRUE, use.names=TRUE)
+    function(x, width, start=TRUE, use.names=TRUE, symmetric = FALSE)
     {
         if (!is.numeric(width))
             stop("'width' must be numeric")
         if (!is.logical(start) || any(is.na(start)))
             stop("'start' must be logical without NA's")
         lx <- length(x)
-        offset <- recycleVector(width - 1L, lx)
-        if (length(start) == 1) {
-            if (start)
-                end(x) <- start(x) + offset
-            else
-                start(x) <- end(x) - offset
+        if (symmetric) {
+          offset <- (recycleVector(width, lx) - width(x)) / 2
+          start(x) <- start(x) - floor(offset)
+          end(x) <- end(x) + ceiling(offset)
         } else {
+          offset <- recycleVector(width - 1L, lx)          
+          if (length(start) == 1) {
+            if (start)
+              end(x) <- start(x) + offset
+            else
+              start(x) <- end(x) - offset
+          } else {
             start <- recycleVector(start, lx)
             end(x)[start] <- start(x)[start] + offset[start]
             start(x)[!start] <- end(x)[!start] - offset[!start]
+          }
         }
         if (!normargUseNames(use.names))
-            names(x) <- NULL
+          names(x) <- NULL
         x
     }
 )
 
 setMethod("resize", "NormalIRanges",
-    function(x, width, start=TRUE, use.names=TRUE)
+    function(x, width, start=TRUE, use.names=TRUE, symmetric = FALSE)
         stop("resizing a ", class(x), " instance is not supported")
 )
 

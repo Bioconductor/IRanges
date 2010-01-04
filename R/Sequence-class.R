@@ -77,6 +77,7 @@ setMethod("isEmpty", "ANY",
 
 setGeneric("elementType", function(x, ...) standardGeneric("elementType"))
 setMethod("elementType", "Sequence", function(x) x@elementType)
+setMethod("elementType", "vector", function(x) mode(x))
 
 setGeneric("elementMetadata",
            function(x, ...) standardGeneric("elementMetadata"))

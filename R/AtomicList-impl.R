@@ -244,6 +244,8 @@ setAs("AtomicList", "SimpleSplitDataFrameList",
 setAs("AtomicList", "CompressedSplitDataFrameList",
       function(from) SplitDataFrameList(from, compress = TRUE))
 
+setAs("vector", "AtomicList", function(from) SimpleAtomicList(as.list(from)))
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Group generic methods
 ###
@@ -575,6 +577,81 @@ setMethod("runwtsum", "RleList",
 setMethod("runq", "RleList",
           function(x, k, i, endrule = c("drop", "constant"))
               endoapply(x, runq, k = k, i = i, endrule = match.arg(endrule)))
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### More list-ized methods
+###
+
+setListMethod <- function(f, signature = character(), simplify = FALSE,
+                          where = topenv(parent.frame()))
+{
+  fun <- get(f)
+  fargs <- formals(args(fun))
+  args <- sapply(names(fargs), as.name)
+  names(args) <- sub("...", "", names(args), fixed = TRUE)
+  names(args)[1] <- ""
+  obj <- args[[1]]
+  args <- c(obj, as.name(f), tail(args, -1))
+  call <- as.call(c(as.name("sapply"), args, list(simplify = simplify)))
+  if (!simplify) {
+    conArgs <- call
+    if (extends(signature, "CompressedList"))
+      conArgs <- c(conArgs,
+                   list(partitioning = call("slot", obj, "partitioning")))
+    call <- as.call(c(as.name(signature), conArgs))
+  }
+  def <- as.function(c(fargs, call))
+  environment(def) <- parent.frame()
+  setMethod(f, signature, def, where)
+}
+
+setAtomicListMethod <- function(f, simplify = FALSE,
+                                where = topenv(parent.frame()))
+{
+  setListMethod(f, "SimpleAtomicList", simplify, where)
+  setListMethod(f, "CompressedAtomicList", simplify, where)
+}
+
+## General
+
+setAtomicListMethod("is.na")
+setAtomicListMethod("unique")
+setAtomicListMethod("sort")
+
+## Logical
+setAtomicListMethod("which")
+
+## Numerical
+
+setAtomicListMethod("mean", TRUE)
+setAtomicListMethod("median", TRUE)
+setAtomicListMethod("table") # only a single factor for now
+setAtomicListMethod("diff")
+setAtomicListMethod("var", TRUE)
+setAtomicListMethod("cov", TRUE)
+setAtomicListMethod("cor", TRUE)
+setAtomicListMethod("sd", TRUE)
+setAtomicListMethod("cor", TRUE)
+setAtomicListMethod("quantile")
+setAtomicListMethod("mad", TRUE)
+setAtomicListMethod("IQR", TRUE)
+setAtomicListMethod("smoothEnds")
+setAtomicListMethod("runmed")
+
+## Character
+
+setAtomicListMethod("nchar", TRUE)
+## need vectorized start, end
+##setAtomicListMethod("substr")
+##setAtomicListMethod("substring")
+setAtomicListMethod("chartr")
+setAtomicListMethod("tolower")
+setAtomicListMethod("toupper")
+setAtomicListMethod("sub")
+setAtomicListMethod("gsub")
+
+
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.

@@ -34,7 +34,8 @@
 \S4method{shift}{RangesList}(x, shift, use.names=TRUE)
 \S4method{restrict}{RangesList}(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
 \S4method{narrow}{RangesList}(x, start=NA, end=NA, width=NA, use.names=TRUE)
-\S4method{resize}{RangesList}(x, width, start=TRUE, use.names=TRUE)
+\S4method{resize}{RangesList}(x, width, start=TRUE, use.names=TRUE,
+                              symmetric = FALSE)
 \S4method{flank}{RangesList}(x, width, start=TRUE, both=FALSE, use.names=TRUE)
 \S4method{disjoin}{RangesList}(x)
 \S4method{reduce}{RangesList}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
