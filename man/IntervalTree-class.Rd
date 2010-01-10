@@ -69,20 +69,20 @@
   \describe{
     \item{}{
       \code{findOverlaps(query, subject = query, maxgap = 0, multiple = TRUE,
-        drop = FALSE)}:
+        drop = FALSE, type = c("any", "start", "finish", "during", "equal"))}:
 
       Find the intervals in \code{query}, a \code{Ranges},
       \code{RangesList}, \code{RangedData} or \code{integer} vector (to
       be converted to length-one ranges), that overlap with the
       intervals \code{subject}, a \code{Ranges}, \code{RangesList}, or
-      \code{RangedData}. If \code{subject} is omitted, \code{query} is
+      \code{RangedData}.  If \code{subject} is omitted, \code{query} is
       queried against itself. If \code{query} is unsorted, it is sorted
       first, so it is usually better to sort up-front, to avoid a sort
       with each \code{findOverlaps} call. Intervals with a separation of
       \code{maxgap} or less are considered to be overlapping.
       \code{maxgap} should be a scalar, non-negative, non-NA number.
-      When \code{multiple} (a scalar non-NA logical) is \code{TRUE}, 
-      the results are returned as a \code{\linkS4class{RangesMatching}}
+      When \code{multiple} (a scalar non-NA logical) is \code{TRUE}, the
+      results are returned as a \code{\linkS4class{RangesMatching}}
       object.
 
       If \code{multiple} is \code{FALSE}, at most one overlapping
@@ -107,6 +107,24 @@
       \code{\linkS4class{IntegerList}} is returned, where each element
       of the result corresponds to a space in \code{query}. For spaces
       that did not exist in \code{subject}, the overlap is nil.
+
+      By default, any overlap is accepted. By specifying the \code{type}
+      parameter, one can select for specific types of overlap. The types
+      correspond to operations in Allen's Interval Algebra (see
+      references). If \code{type} is \code{start} or \code{finish}, the
+      intervals are required to have matching starts or ends,
+      respectively. While this operation seems trivial, the naive
+      implementation using \code{outer} would be much less
+      efficient. Specifying \code{equal} as the type returns the
+      intersection of the \code{start} and \code{finish} matches. If
+      \code{type} is \code{during}, the query interval must be wholly
+      contained within the subject interval.
+
+      The \code{maxgap} parameter has special meaning with the special
+      overlap types. For \code{start}, \code{finish}, and \code{equal},
+      it specifies the maximum difference in the starts, ends or both,
+      respectively. For \code{during}, it is the maximum amount by which
+      the query may be wider than the subject.
     }
     \item{}{
       \code{x \%in\% table}:
@@ -211,10 +229,16 @@
   the query set of size \code{m}, roughly when \code{n > m*lg(n)}.
 }
 
-\references{Interval tree algorithm from: Cormen, Thomas H.; Leiserson,
+\references{
+  Interval tree algorithm from: Cormen, Thomas H.; Leiserson,
   Charles E.; Rivest, Ronald L.; Stein, Clifford. Introduction to
   Algorithms, second edition, MIT Press and McGraw-Hill. ISBN
-  0-262-53196-8}
+  0-262-53196-8
+  
+  Allen's Interval Algebra:
+  James F. Allen: Maintaining knowledge about temporal intervals. In:
+  Communications of the ACM. 26/11/1983. ACM Press. S. 832-843, ISSN 0001-0782
+}
 
 \author{Michael Lawrence}
 \seealso{
@@ -252,6 +276,15 @@
   ## single points as query
   subject <- IRanges(c(1, 6, 13), c(4, 9, 14))
   findOverlaps(c(3L, 7L, 10L), subject, multiple=FALSE)
+
+  ## alternative overlap types
+  query <- IRanges(c(1, 5, 3, 4), width=c(2, 2, 4, 6))
+  subject <- IRanges(c(1, 3, 5, 6), width=c(4, 4, 5, 4))
+
+  findOverlaps(query, tree, type = "start")
+  findOverlaps(query, tree, type = "start", maxgap = 1L)
+  findOverlaps(query, tree, type = "finish", multiple = FALSE)
+  findOverlaps(query, tree, type = "during", maxgap = 1L)
 }
 
 \keyword{classes}

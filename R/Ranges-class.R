@@ -442,7 +442,8 @@ setMethod("range", "Ranges",
 
 ### Find objects in the index that overlap those in a query set.
 setGeneric("findOverlaps", signature = c("query", "subject"),
-    function(query, subject, maxgap = 0, multiple = TRUE, ...)
+    function(query, subject, maxgap = 0, multiple = TRUE,
+             type = c("any", "start", "finish", "during", "equal"), ...)
         standardGeneric("findOverlaps")
 )
 

@@ -59,20 +59,23 @@ setMethod("rdapply", "RDApplyParams", function(x) {
 ###
 
 setMethod("findOverlaps", c("RangedData", "RangedData"),
-          function(query, subject, maxgap = 0, multiple = TRUE)
+          function(query, subject, maxgap = 0, multiple = TRUE,
+                   type = c("any", "start", "finish", "during", "equal"))
           {
             subject <- ranges(subject)
             query <- ranges(query)
             callGeneric()
           })
 setMethod("findOverlaps", c("RangedData", "RangesList"),
-          function(query, subject, maxgap = 0, multiple = TRUE)
+          function(query, subject, maxgap = 0, multiple = TRUE,
+                   type = c("any", "start", "finish", "during", "equal"))
           {
             query <- ranges(query)
             callGeneric()
           })
 setMethod("findOverlaps", c("RangesList", "RangedData"),
-          function(query, subject, maxgap = 0, multiple = TRUE)
+          function(query, subject, maxgap = 0, multiple = TRUE,
+                   type = c("any", "start", "finish", "during", "equal"))
           {
             subject <- ranges(subject)
             callGeneric()

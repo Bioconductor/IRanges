@@ -254,11 +254,7 @@ SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges) {
   PROTECT(r_query_start);
   nhits = INTEGER(r_query_start)[nranges];
   slReverse(&results);
-  /*if (2*nhits < ((double)tree->n*nranges)) {
-    SEXP r_subject, r_query;
-    PROTECT(r_matrix = NEW_OBJECT(MAKE_CLASS("ngCMatrix")));*/
-    /* thinking about going to a doublet matrix, rather than sparse */
-
+  
   PROTECT(r_results = NEW_OBJECT(MAKE_CLASS("RangesMatching")));
   
   r_matrix = allocMatrix(INTSXP, nhits, 2);
@@ -270,37 +266,11 @@ SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges) {
       INTEGER(r_matrix)[j] = i /*-1*/;
     }
   }
-    
-    //SET_SLOT(r_matrix, install("p"), r_query_start);
-    //Rprintf("r_subject: %d\n", nhits);
-    //r_subject = allocVector(INTSXP, nhits);
-    //SET_SLOT(r_matrix, install("i"), r_subject);
-
+  
   for (result = results, i = nhits; result != NULL;
        result = result->next, i++)
     INTEGER(r_matrix)[i] = ((IntegerIntervalNode *)result->val)->index/*-1*/;
-    /*} else {
-    SEXP r_elements;
-    int j = 0;
-    PROTECT(r_matrix = NEW_OBJECT(MAKE_CLASS("lgeMatrix")));
-    r_elements = allocVector(LGLSXP, tree->n*nranges);
-    //    Rprintf("r_elements: %d\n", tree->n*nranges);
-    for (i = 0; i < LENGTH(r_elements); i++)
-      LOGICAL(r_elements)[i] = FALSE;
-    SET_SLOT(r_matrix, install("x"), r_elements);
-    result = results;
-    for (i = 0; i < nranges; i++) {
-      int offset = i * tree->n;
-      while(j < INTEGER(r_query_start)[i+1]) {
-        int index = ((IntegerIntervalNode *)result->val)->index;
-        LOGICAL(r_elements)[offset + index - 1] = TRUE;
-        result = result->next;
-        j++;
-      }
-    }
-  }
-    */
-
+ 
   r_dims = allocVector(INTSXP, 2);
   INTEGER(r_dims)[0] = tree->n;
   INTEGER(r_dims)[1] = nranges;
@@ -376,7 +346,7 @@ IntegerInterval **_IntegerIntervalTree_intervals(struct rbTree *tree) {
   int count = 0, height = 0;
   IntegerInterval **intervals = Salloc(tree->n, IntegerInterval *);
   
-  if (tree->n)
+  if (tree->n && p)
     while(1) {
       /* is node on top of stack? */
       Rboolean visited = height && p == tree->stack[height-1];
@@ -387,7 +357,8 @@ IntegerInterval **_IntegerIntervalTree_intervals(struct rbTree *tree) {
         /* go left */
         p = p->left;
       } else {       /* can't go left, handle this node */
-        intervals[count++] = (IntegerInterval *)p->item;
+        intervals[((IntegerIntervalNode *)p->item)->index - 1] =
+          (IntegerInterval *)p->item;
         if (visited)
           height--; /* pop handled node if on stack */
         if (p->right) /* go right if possible */
@@ -410,8 +381,13 @@ SEXP IntegerIntervalTree_asIRanges(SEXP r_tree) {
   PROTECT(r_width = allocVector(INTSXP, tree->n));
 
   for(int i = 0; i < tree->n; i++) {
-    INTEGER(r_start)[i] = intervals[i]->start;
-    INTEGER(r_width)[i] = intervals[i]->end - intervals[i]->start + 1;
+    int start = 1, width = 0;
+    if (intervals[i]) {
+      start = intervals[i]->start;
+      width = intervals[i]->end - intervals[i]->start + 1;
+    }
+    INTEGER(r_start)[i] = start;
+    INTEGER(r_width)[i] = width;
   }
 
   r_ranges = _new_IRanges("IRanges", r_start, r_width, R_NilValue);
@@ -428,7 +404,7 @@ SEXP IntegerIntervalTree_start(SEXP r_tree) {
   r_start = allocVector(INTSXP, tree->n);
 
   for(int i = 0; i < tree->n; i++)
-    INTEGER(r_start)[i] = intervals[i]->start;
+    INTEGER(r_start)[i] = intervals[i] ? intervals[i]->start : 1;
 
   return r_start;
 }
@@ -441,7 +417,7 @@ SEXP IntegerIntervalTree_end(SEXP r_tree) {
   r_end = allocVector(INTSXP, tree->n);
   
   for(int i = 0; i < tree->n; i++)
-    INTEGER(r_end)[i] = intervals[i]->end;
+    INTEGER(r_end)[i] = intervals[i] ? intervals[i]->end : 0;
   
   return r_end;
 }

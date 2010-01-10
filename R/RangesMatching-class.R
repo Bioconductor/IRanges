@@ -65,7 +65,9 @@ setMethod("as.table", "RangesMatching", function(x, ...) {
 })
 
 setMethod("t", "RangesMatching", function(x) {
-  x@matchMatrix <- matchMatrix(x)[,2:1,drop=FALSE]
+  m <- matchMatrix(x)[,2:1,drop=FALSE]
+  colnames(m) <- rev(colnames(m))
+  x@matchMatrix <- m
   x@DIM <- x@DIM[2:1]
   x
 })

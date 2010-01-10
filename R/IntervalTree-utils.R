@@ -3,24 +3,25 @@
 ### -------------------------------------------------------------------------
 
 setMethod("findOverlaps", c("Ranges", "IntervalTree"),
-          function(query, subject, maxgap = 0, multiple = TRUE)
+          function(query, subject, maxgap = 0, multiple = TRUE,
+                   type = c("any", "start", "finish", "during", "equal"))
           {
+            if (!IRanges:::isSingleNumber(maxgap) || maxgap < 0)
+              stop("'maxgap' must be a single, non-negative, non-NA number")
+            if (!IRanges:::isTRUEorFALSE(multiple))
+              stop("'multiple' must be logical of length 1")
+            type <- match.arg(type)
+            origMultiple <- multiple
+            if (type != "any")
+              multiple <- TRUE
             query <- as(query, "IRanges")
             query_ord <- NULL
+            origQuery <- query
             if (is.unsorted(start(query))) { ## query must be sorted
               query_ord <- order(query)
               query <- query[query_ord]
             }
-            if (!isTRUEorFALSE(multiple))
-              stop("'multiple' must be logical of length 1")
             if (maxgap != 0) {
-              if (!isSingleNumber(maxgap) || maxgap < 0)
-                stop("'maxgap' must be a single, non-negative, non-NA number")
-              ## Another option would be to do
-              ##   query <- unsafe.update(start = start(query) - maxgap,
-              ##                          end = end(query) + maxgap)
-              ## instead of the 2 lines below. More readable? (but maybe not as
-              ## efficient)
               query <- shift(query, -maxgap)
               width(query) <- width(query) + 2*maxgap # adds to end (weird...)
             }
@@ -28,7 +29,7 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
             if (multiple)
               fun <- paste(fun, "_multiple", sep = "")
             validObject(query)
-            result <- .IntervalTreeCall(subject, fun, query)
+            result <- IRanges:::.IntervalTreeCall(subject, fun, query)
             if (!is.null(query_ord)) {
               if (multiple) {
                 mat <- matchMatrix(result)
@@ -40,31 +41,60 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
                 result <- result[query_rev_ord]
               }
             }
+            if (multiple && type != "any") {
+              query <- origQuery
+              m <- as.matrix(result)
+              filterMatrix <- function(fun)
+                m[abs(fun(query)[m[,1]] - fun(subject)[m[,2]]) <= maxgap,,
+                  drop=FALSE]
+              if (type == "during") {
+                r <- ranges(result, query, subject)                
+                m <- m[width(query)[m[,1]] - width(r) <= maxgap,]
+              } else if (type == "start")
+                m <- filterMatrix(start)
+              else if (type == "finish")
+                m <- filterMatrix(end)
+              else if (type == "equal") {
+                m <- filterMatrix(start)
+                m <- filterMatrix(end)
+              }
+              if (!origMultiple) {
+                m <- m[!duplicated(m[,1]),]
+                result <- rep(NA_integer_, length(query))
+                result[m[,1]] <- m[,2]
+              } else result@matchMatrix <- m
+            }
             result
           })
 
 setMethod("findOverlaps", c("Ranges", "Ranges"),
-          function(query, subject, maxgap = 0, multiple = TRUE) {
-            findOverlaps(query, IntervalTree(subject), maxgap, multiple)
+          function(query, subject, maxgap = 0, multiple = TRUE,
+                   type = c("any", "start", "finish", "during", "equal")) {
+            findOverlaps(query, IntervalTree(subject), maxgap, multiple, type)
           })
 
 setMethod("findOverlaps", c("Ranges", "missing"),
-          function(query, subject, maxgap = 0, multiple = TRUE)
+          function(query, subject, maxgap = 0, multiple = TRUE,
+                   type = c("any", "start", "finish", "during", "equal"))
           {
-            result <- findOverlaps(query, query, maxgap, TRUE)
+            if (!multiple) # silly case
+              seq(length(query))
+            else findOverlaps(query, query, maxgap, TRUE, type)
             ### FIXME: perhaps support a "simplify" option that does this:
             ## mat <- matchMatrix(result)            
             ## mat <- mat[mat[,1L] != mat[,2L],]
             ## norm_mat <- cbind(pmin(mat[,1L], mat[,2L]), pmax(mat[,1L], mat[,2L]))
             ## mat <- mat[!duplicated(norm_mat),]
             ## result@matchMatrix <- mat
-            result
           })
 
 setMethod("findOverlaps", c("integer", "Ranges"),
-          function(query, subject, maxgap = 0, multiple = TRUE)
-          findOverlaps(IRanges(query, query), subject, maxgap, multiple)
-          )
+          function(query, subject, maxgap = 0, multiple = TRUE,
+                   type = c("any", "start", "finish", "during", "equal"))
+          {
+            query <- IRanges(query, query)
+            findOverlaps(query, subject, maxgap, multiple, type)
+          })
 
 ## not for exporting, just a debugging utility
 IntervalTreeDump <- function(object) {

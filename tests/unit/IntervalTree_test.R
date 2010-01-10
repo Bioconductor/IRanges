@@ -6,14 +6,19 @@ test_IntervalTree_construction <- function() {
   checkTrue(validObject(tree))
   tree <- IntervalTree(IRanges())
   checkTrue(validObject(tree))
+
+  tree <- IntervalTree(IRanges(1, 0))
+  checkIdentical(start(tree), 1L)
+  checkTrue(validObject(tree))
+
+  tree <- IntervalTree(IRanges(c(1, 1), c(1, 0)))
+  checkIdentical(width(tree), c(1L, 0L))
+  checkTrue(validObject(tree))
   
   checkException(IntervalTree(), silent = TRUE)
   checkException(IntervalTree(subject, query), silent = TRUE)
   checkException(IntervalTree(NULL), silent = TRUE)
 }
-
-library(IRanges)
-library(RUnit)
 
 test_IntervalTree_findOverlaps <- function() {
   ## .....
@@ -36,28 +41,20 @@ test_IntervalTree_findOverlaps <- function() {
   }
   
   result <- findOverlaps(query, tree)
-  #sparse <- new("ngCMatrix", p = c(0L, 2L, 2L, 3L), i = c(0L, 1L, 2L),
-  #              Dim = as.integer(c(length(subject), length(query))))
   checkOverlap(result, c(1, 1, 3), c(2, 1, 3), 3, 3)
 
   result <- findOverlaps(query, tree, 1)
-  ## sparse <- new("ngCMatrix", p = c(0L, 2L, 3L, 4L), i = c(0L, 1L, 1L, 2L),
-  ##               Dim = as.integer(c(length(subject), length(query))))
   checkOverlap(result, c(1, 1, 2, 3), c(2, 1, 2, 3), 3, 3)
 
   ## empty query range
   query <- IRanges(c(1, 4, 9, 10), c(5, 7, 10, 9))
   result <- findOverlaps(query, tree)
-  ## sparse <- new("ngCMatrix", p = c(0L, 2L, 2L, 3L, 3L), i = c(0L, 1L, 2L),
-  ##               Dim = as.integer(c(length(subject), length(query))))
   checkOverlap(result, c(1, 1, 3), c(2, 1, 3), 3, 4)
 
   ## empty subject range
   subject <- IRanges(c(2, 2, 2, 10), c(2, 1, 3, 12))
   tree <- IntervalTree(subject)
   result <- findOverlaps(query, tree)
-  ## sparse <- new("ngCMatrix", p = c(0L, 2L, 2L, 3L, 3L), i = c(0L, 2L, 3L),
-  ##               Dim = as.integer(c(length(subject), length(query))))
   checkOverlap(result, c(1, 1, 3), c(3, 1, 4), 4, 4)
   
   ## .....
@@ -70,8 +67,6 @@ test_IntervalTree_findOverlaps <- function() {
   
   tree <- IntervalTree(subject)
   result <- findOverlaps(query, tree)
-  ## dense <- new("lgeMatrix", x = c(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE),
-  ##              Dim = as.integer(c(length(subject), length(query))))
   checkOverlap(result, c(1, 1, 2, 2), c(2, 1, 2, 1), 2, 3)
 
   result <- findOverlaps(subject, query)
@@ -81,9 +76,6 @@ test_IntervalTree_findOverlaps <- function() {
   query <- IRanges(c(1, 4, 9, 11), c(5, 7, 10, 11))
   
   result <- findOverlaps(query)
-  ## sparse <- new("ngCMatrix", p = c(0L, 2L, 4L, 5L, 6L),
-  ##               i = c(0L, 1L, 0L, 1L, 2L, 3L),
-  ##               Dim = as.integer(c(length(query), length(query))))
   checkOverlap(result, c(1, 1, 2, 2, 3, 4), c(1, 2, 1, 2, 3, 4), 4, 4)
 
   ## check case of identical subjects
@@ -99,8 +91,6 @@ test_IntervalTree_findOverlaps <- function() {
   subject <- IRanges(c(2, 2, 6, 6, 6), c(5, 5, 7, 8, 7))  
   tree <- IntervalTree(subject)
   result <- findOverlaps(query, tree)
-  ## sparse <- new("ngCMatrix", i = as.integer(c(0, 1, 0, 1, 2, 3, 4)),
-  ##               p = as.integer(c(0, 2, 7, 7)), Dim = c(5L, 3L))
   checkOverlap(result, c(1, 1, 2, 2, 2, 2, 2), c(2, 1, 2, 1, 5, 4, 3), 5, 3)
 
   subject <- IRanges(c(1, 6, 13), c(4, 9, 14)) # single points
@@ -110,6 +100,53 @@ test_IntervalTree_findOverlaps <- function() {
                  new("RangesMatching",
                      matchMatrix = cbind(query=2:1, subject=c(1L,1L)), DIM = 3:2))
 
+  ## check other types of matching
+
+  ## ..
+  ##     ..
+  ##   ....  
+  ##    ......
+  ## xxxx
+  ##   xxxx
+  ##     xxxxx
+  ##      xxxx
+
+  query <- IRanges(c(1, 5, 3, 4), width=c(2, 2, 4, 6))
+  subject <- IRanges(c(1, 3, 5, 6), width=c(4, 4, 5, 4))
+  tree <- IntervalTree(subject)
+
+  ## 'start'
+  result <- findOverlaps(query, tree, type = "start")
+  checkOverlap(result, c(1, 3, 2), c(1, 2, 3), 4, 4)
+
+  ## non-zero maxgap
+  result <- findOverlaps(query, tree, type = "start", maxgap = 1L)
+  checkOverlap(result, c(1, 3, 4, 4, 2, 2), c(1, 2, 2, 3, 3, 4), 4, 4)
+  
+  ## 'finish'
+  result <- findOverlaps(query, tree, type = "finish")
+  checkOverlap(result, c(3, 4, 4, 2), c(2, 3, 4, 2), 4, 4)
+  
+  ## ensure inverse is same as transpose
+  inverse <- findOverlaps(subject, query, type = "finish")
+  tr <- as.matrix(t(result))
+  checkIdentical(as.matrix(inverse), tr[order(tr[,1]),])
+  
+  ## multiple = FALSE
+  result <- findOverlaps(query, tree, type = "finish", multiple = FALSE)
+  checkIdentical(result, c(NA, 2L, 2L, 3L))  
+  
+  ## 'during'
+  result <- findOverlaps(query, tree, type = "during")
+  checkOverlap(result, c(1, 3, 2, 2), c(1, 2, 2, 3), 4, 4)  
+
+  result <- findOverlaps(query, tree, type = "during", maxgap = 1L)
+  checkOverlap(result, c(1, 3, 4, 2, 2, 2), c(1, 2, 3, 2, 3, 4), 4, 4)  
+  
+  ## 'equal'
+  result <- findOverlaps(query, tree, type = "equal")
+  checkOverlap(result, 3, 2, 4, 4)  
+    
   checkException(findOverlaps(query, NULL), silent = TRUE)
   checkException(findOverlaps(NULL, query), silent = TRUE)
 }
