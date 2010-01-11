@@ -66,8 +66,6 @@
 \alias{coerce,AtomicList,raw-method}
 \alias{coerce,AtomicList,factor-method}
 \alias{coerce,AtomicList,data.frame-method}
-\alias{coerce,AtomicList,SimpleSplitDataFrameList-method}
-\alias{coerce,AtomicList,CompressedSplitDataFrameList-method}
 
 \alias{coerce,LogicalList,IRangesList-method}
 \alias{coerce,LogicalList,CompressedIRangesList-method}

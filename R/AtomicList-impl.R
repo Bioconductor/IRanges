@@ -239,11 +239,6 @@ setAs("AtomicList", "raw", function(from) as.raw(from))
 setAs("AtomicList", "factor", function(from) as.factor(from))
 setAs("AtomicList", "data.frame", function(from) as.data.frame(from))
 
-setAs("AtomicList", "SimpleSplitDataFrameList",
-      function(from) SplitDataFrameList(from, compress = FALSE))
-setAs("AtomicList", "CompressedSplitDataFrameList",
-      function(from) SplitDataFrameList(from, compress = TRUE))
-
 setAs("vector", "AtomicList", function(from) SimpleAtomicList(as.list(from)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
