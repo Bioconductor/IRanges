@@ -565,12 +565,12 @@ setMethod("showAsCell", "RangesList",
           {
             unlist(lapply(object, function(x) {
                             rng2str <- function(y) 
-                              paste(start(y), ":", end(y), sep = "")
+                              paste("[", start(y), ", ", end(y), "]", sep = "")
                             if (length(x) <= 3)
-                              paste(rng2str(x), collapse = ",")
+                              paste(rng2str(x), collapse = " ")
                             else
                               paste(c(head(rng2str(x), 3), "..."),
-                                    collapse = ",")
+                                    collapse = " ")
                           }), use.names = FALSE)
           })
 
