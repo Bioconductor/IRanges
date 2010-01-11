@@ -14,6 +14,8 @@
         methods::is(object, class2)
 }
 
+setClassUnion("vectorORfactor", c("vector", "factor"))
+
 setClass("Sequence",
          contains="Annotated",
          representation(

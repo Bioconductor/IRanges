@@ -5,8 +5,6 @@
 ### Class definitions
 ###
 
-setClassUnion("vectorORfactor", c("vector", "factor"))
-
 setClass("Rle",
          representation(values = "vectorORfactor",
                         lengths = "integer"),
