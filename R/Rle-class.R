@@ -1207,10 +1207,24 @@ setMethod("show", "Rle",
               cat("'", class(runValue(object)), "' Rle of length ", lo,
                   " with ", nr, ifelse(nr == 1, " run\n", " runs\n"),
                   sep = "")
-              cat("  Lengths:  ")
-              utils::str(runLength(object), give.head = FALSE)
-              cat("  Values :  ")
-              utils::str(as.vector(runValue(object)), give.head = FALSE)
+              first <- max(1L, getOption("width") %/% 2L)
+              showMatrix <-
+                rbind(as.character(head(runLength(object), first)),
+                      as.character(head(runValue(object), first)))
+              if (nr > first) {
+                  last <- nr - first
+                  showMatrix <-
+                    cbind(showMatrix,
+                          rbind(as.character(tail(runLength(object), last)),
+                                as.character(tail(runValue(object), last))))
+              }
+              if (is.character(runValue(object))) {
+                  showMatrix[2L,] <-
+                    paste("\"", showMatrix[2L,], "\"", sep = "")
+              }
+              showMatrix <- format(showMatrix, justify = "right")
+              cat(labeledLine("  Lengths", showMatrix[1L,], count = FALSE))
+              cat(labeledLine("  Values ", showMatrix[2L,], count = FALSE))
           })
 
 setMethod("showAsCell", "Rle", function(object) as.vector(object))
