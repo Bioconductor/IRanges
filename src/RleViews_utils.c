@@ -1,5 +1,6 @@
 #include "IRanges.h"
 #include <R_ext/Arith.h>
+#include <R_ext/Utils.h>
 #include <limits.h>
 
 #define R_INT_MIN	(1+INT_MIN)
@@ -44,6 +45,7 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 	index = 0;
 	upper_run = *lengths_elt;
 	for (i = 0; i < ans_length; i++) {
+        R_CheckUserInterrupt();
 		start = _get_cachedIRanges_elt_start(&cached_x, i);
 		width = _get_cachedIRanges_elt_width(&cached_x, i);
 		if (type == 'i') {
@@ -151,6 +153,7 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 	index = 0;
 	upper_run = *lengths_elt;
 	for (i = 0; i < ans_length; i++) {
+        R_CheckUserInterrupt();
 		start = _get_cachedIRanges_elt_start(&cached_x, i);
 		width = _get_cachedIRanges_elt_width(&cached_x, i);
 		if (type == 'i') {
@@ -263,6 +266,7 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 	index = 0;
 	upper_run = *lengths_elt;
 	for (i = 0; i < ans_length; i++) {
+        R_CheckUserInterrupt();
 		start = _get_cachedIRanges_elt_start(&cached_x, i);
 		width = _get_cachedIRanges_elt_width(&cached_x, i);
 		if (type == 'i') {
@@ -414,6 +418,7 @@ SEXP RleViews_viewMeans(SEXP x, SEXP na_rm)
 	index = 0;
 	upper_run = *lengths_elt;
 	for (i = 0; i < ans_length; i++) {
+        R_CheckUserInterrupt();
 		start = _get_cachedIRanges_elt_start(&cached_x, i);
 		width = _get_cachedIRanges_elt_width(&cached_x, i);
 		if (width <= 0) {
@@ -596,6 +601,7 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 	index = 0;
 	upper_run = *lengths_elt;
 	for (i = 0, ans_elt = INTEGER(ans); i < ans_length; i++, ans_elt++) {
+        R_CheckUserInterrupt();
 		start = _get_cachedIRanges_elt_start(&cached_x, i);
 		width = _get_cachedIRanges_elt_width(&cached_x, i);
 		*ans_elt = NA_INTEGER;
@@ -709,6 +715,7 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 	index = 0;
 	upper_run = *lengths_elt;
 	for (i = 0, ans_elt = INTEGER(ans); i < ans_length; i++, ans_elt++) {
+        R_CheckUserInterrupt();
 		start = _get_cachedIRanges_elt_start(&cached_x, i);
 		width = _get_cachedIRanges_elt_width(&cached_x, i);
 		*ans_elt = NA_INTEGER;
