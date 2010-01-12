@@ -210,6 +210,37 @@ SEXP _new_IRanges(const char *classname, SEXP start, SEXP width, SEXP names)
 	return ans;
 }
 
+SEXP _new_IRanges_from_RangeAE(const char *classname, const RangeAE *range_ae)
+{
+	SEXP ans, start, width;
+
+	PROTECT(start = _IntAE_asINTEGER(&(range_ae->start)));
+	PROTECT(width = _IntAE_asINTEGER(&(range_ae->width)));
+	PROTECT(ans = _new_IRanges(classname, start, width, R_NilValue));
+	UNPROTECT(3);
+	return ans;
+}
+
+/* TODO: Try to make this faster by making only 1 call to _new_IRanges() (or
+   _alloc_IRanges()) and cloning and modifying this initial object inside the
+   for loop. */
+SEXP _new_list_of_IRanges_from_RangeAEAE(const char *element_type,
+		const RangeAEAE *range_aeae)
+{
+	SEXP ans, ans_elt;
+	int i;
+	const RangeAE *elt;
+
+	PROTECT(ans = NEW_LIST(range_aeae->nelt));
+	for (i = 0, elt = range_aeae->elts; i < range_aeae->nelt; i++, elt++) {
+		PROTECT(ans_elt = _new_IRanges_from_RangeAE(element_type, elt));
+		SET_VECTOR_ELT(ans, i, ans_elt);
+		UNPROTECT(1);
+	}
+	UNPROTECT(1);
+	return ans;
+}
+
 /* Allocation WITHOUT initialization.
    The 'start' and 'width' slots are not initialized (they contain junk). */
 SEXP _alloc_IRanges(const char *classname, int length)

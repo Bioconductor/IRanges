@@ -156,8 +156,6 @@ void _RangeAE_insert_at(
 	int width
 );
 
-SEXP _RangeAE_asIRanges(const RangeAE *range_ae);
-
 RangeAEAE _new_RangeAEAE(
 	int buflength,
 	int nelt
@@ -168,8 +166,6 @@ void _RangeAEAE_insert_at(
 	int at,
 	const RangeAE *range_ae
 );
-
-SEXP _RangeAEAE_asLIST(const RangeAEAE *range_aeae);
 
 CharAE _new_CharAE(int buflength);
 
@@ -494,6 +490,16 @@ SEXP _new_IRanges(
 	SEXP start,
 	SEXP width,
 	SEXP names
+);
+
+SEXP _new_IRanges_from_RangeAE(
+	const char *classname,
+	const RangeAE *range_ae
+);
+
+SEXP _new_list_of_IRanges_from_RangeAEAE(
+	const char *element_type,
+	const RangeAEAE *range_aeae
 );
 
 SEXP _alloc_IRanges(

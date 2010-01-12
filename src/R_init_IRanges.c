@@ -204,10 +204,8 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_IntAEAE_toEnvir);
 	REGISTER_CCALLABLE(_new_RangeAE);
 	REGISTER_CCALLABLE(_RangeAE_insert_at);
-	REGISTER_CCALLABLE(_RangeAE_asIRanges);
 	REGISTER_CCALLABLE(_new_RangeAEAE);
 	REGISTER_CCALLABLE(_RangeAEAE_insert_at);
-	REGISTER_CCALLABLE(_RangeAEAE_asLIST);
 	REGISTER_CCALLABLE(_new_CharAE);
 	REGISTER_CCALLABLE(_new_CharAE_from_string);
 	REGISTER_CCALLABLE(_CharAE_insert_at);
@@ -252,6 +250,8 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_set_IRanges_names);
 	REGISTER_CCALLABLE(_copy_IRanges_slots);
 	REGISTER_CCALLABLE(_new_IRanges);
+	REGISTER_CCALLABLE(_new_IRanges_from_RangeAE);
+	REGISTER_CCALLABLE(_new_list_of_IRanges_from_RangeAEAE);
 	REGISTER_CCALLABLE(_alloc_IRanges);
 
 /* Grouping_class.c */

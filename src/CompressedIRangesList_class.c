@@ -228,7 +228,8 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 			tmpbuf.elts, &out_ranges, NULL);
 		INTEGER(ans_partitioning_end)[i] = out_ranges.start.nelt;
 	}
-	PROTECT(ans_unlistData = _RangeAE_asIRanges(&out_ranges));
+	PROTECT(ans_unlistData = _new_IRanges_from_RangeAE("IRanges",
+			&out_ranges));
 	PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
 	PROTECT(ans_partitioning = _new_PartitioningByEnd(
 			"PartitioningByEnd",
@@ -269,7 +270,8 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 			tmpbuf.elts, &out_ranges);
 		INTEGER(ans_partitioning_end)[i] = out_ranges.start.nelt;
 	}
-	PROTECT(ans_unlistData = _RangeAE_asIRanges(&out_ranges));
+	PROTECT(ans_unlistData = _new_IRanges_from_RangeAE("IRanges",
+			&out_ranges));
 	PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
 	PROTECT(ans_partitioning = _new_PartitioningByEnd(
 			"PartitioningByEnd",

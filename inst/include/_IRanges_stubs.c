@@ -170,11 +170,6 @@ DEFINE_NOVALUE_CCALLABLE_STUB(RangeAE_insert_at,
 	(         range_ae,     at,     start,     width)
 )
 
-DEFINE_CCALLABLE_STUB(SEXP, RangeAE_asIRanges,
-	(const RangeAE *range_ae),
-	(               range_ae)
-)
-
 DEFINE_CCALLABLE_STUB(RangeAEAE, new_RangeAEAE,
 	(int buflength, int nelt),
 	(    buflength,     nelt)
@@ -183,11 +178,6 @@ DEFINE_CCALLABLE_STUB(RangeAEAE, new_RangeAEAE,
 DEFINE_NOVALUE_CCALLABLE_STUB(RangeAEAE_insert_at,
 	(RangeAEAE *range_aeae, int at, const RangeAE *range_ae),
 	(           range_aeae,     at,                range_ae)
-)
-
-DEFINE_CCALLABLE_STUB(SEXP, RangeAEAE_asLIST,
-	(const RangeAEAE *range_aeae),
-	(                 range_aeae)
 )
 
 DEFINE_CCALLABLE_STUB(CharAE, new_CharAE,
@@ -389,6 +379,16 @@ DEFINE_NOVALUE_CCALLABLE_STUB(copy_IRanges_slots,
 DEFINE_CCALLABLE_STUB(SEXP, new_IRanges,
 	(const char *classname, SEXP start, SEXP width, SEXP names),
 	(            classname,      start,      width,      names)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, new_IRanges_from_RangeAE,
+	(const char *classname, const RangeAE *range_ae),
+	(            classname,                range_ae)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, new_list_of_IRanges_from_RangeAEAE,
+	(const char *element_type, const RangeAEAE *range_aeae),
+	(            element_type,                  range_aeae)
 )
 
 DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,

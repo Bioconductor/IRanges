@@ -149,7 +149,8 @@ SEXP readChain(SEXP r_path, SEXP r_exclude) {
     SEXP block;
     block = NEW_OBJECT(MAKE_CLASS("AlignmentSpace"));
     SET_VECTOR_ELT(ans_listData, i, block);
-    SET_SLOT(block, install("ranges"), _RangeAE_asIRanges(&chains[i]->ranges));
+    SET_SLOT(block, install("ranges"),
+		_new_IRanges_from_RangeAE("IRanges", &chains[i]->ranges));
     SET_SLOT(block, install("offset"), _IntAE_asINTEGER(&chains[i]->offset));
     SET_SLOT(block, install("length"), _IntAE_asINTEGER(&chains[i]->length));
     SET_SLOT(block, install("score"), _IntAE_asINTEGER(&chains[i]->score));

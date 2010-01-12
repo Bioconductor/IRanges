@@ -465,18 +465,6 @@ void _RangeAE_insert_at(RangeAE *range_ae, int at, int start, int width)
 }
 
 
-SEXP _RangeAE_asIRanges(const RangeAE *range_ae)
-{
-  SEXP ans, start, width;
-
-  PROTECT(start = _IntAE_asINTEGER(&(range_ae->start)));
-  PROTECT(width = _IntAE_asINTEGER(&(range_ae->width)));
-  ans = _new_IRanges("IRanges", start, width, R_NilValue);
-  UNPROTECT(2);
-  return ans;
-}
-
-
 /****************************************************************************
  * RangeAEAE functions
  */
@@ -524,22 +512,6 @@ void _RangeAEAE_insert_at(RangeAEAE *range_aeae, int at,
 		*(elt2--) = *(elt1--);
 	*elt2 = *range_ae;
 	return;
-}
-
-SEXP _RangeAEAE_asLIST(const RangeAEAE *range_aeae)
-{
-	SEXP ans, ans_elt;
-	int i;
-	const RangeAE *elt;
-
-	PROTECT(ans = NEW_LIST(range_aeae->nelt));
-	for (i = 0, elt = range_aeae->elts; i < range_aeae->nelt; i++, elt++) {
-		PROTECT(ans_elt = _RangeAE_asIRanges(elt));
-		SET_VECTOR_ELT(ans, i, ans_elt);
-		UNPROTECT(1);
-	}
-	UNPROTECT(1);
-	return ans;
 }
 
 
