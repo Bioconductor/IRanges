@@ -288,6 +288,18 @@ CompressedAtomicList <- function(unlistData, partitioning) {
          partitioning = partitioning, check = FALSE)
 }
 
+CompressedAtomicListFromList <- function(listData) {
+    classOrder <-
+      c("RleList", "CharacterList", "ComplexList", "NumericList",
+        "IntegerList", "LogicalList", "RawList")
+    uniqueClasses <-
+      unique(unlist(lapply(listData, atomicElementListClass), use.names=FALSE))
+    if (any(is.na(uniqueClasses)))
+        stop("cannot create a SimpleAtomicList with non-atomic elements")
+    baseClass <- classOrder[min(match(uniqueClasses, classOrder))]
+    do.call(baseClass, c(listData, compress = TRUE))
+}
+
 setReplaceMethod("seqselect", "SimpleAtomicList",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
@@ -580,20 +592,18 @@ setMethod("runq", "RleList",
 setListMethod <- function(f, signature = character(), simplify = FALSE,
                           where = topenv(parent.frame()))
 {
-  fun <- get(f)
-  fargs <- formals(args(fun))
+  fargs <- formals(args(get(f)))
   args <- sapply(names(fargs), as.name)
   names(args) <- sub("...", "", names(args), fixed = TRUE)
-  names(args)[1] <- ""
-  obj <- args[[1]]
-  args <- c(obj, as.name(f), tail(args, -1))
+  names(args)[1L] <- ""
+  args <- c(args[[1L]], as.name(f), tail(args, -1L))
   call <- as.call(c(as.name("sapply"), args, list(simplify = simplify)))
   if (!simplify) {
-    conArgs <- call
-    if (extends(signature, "CompressedList"))
-      conArgs <- c(conArgs,
-                   list(partitioning = call("slot", obj, "partitioning")))
-    call <- as.call(c(as.name(signature), conArgs))
+    if (extends(signature, "SimpleList")) {
+      call <- as.call(c(as.name("SimpleAtomicList"), call))
+    } else {
+      call <- as.call(c(as.name("CompressedAtomicListFromList"), call))
+    }
   }
   def <- as.function(c(fargs, call))
   environment(def) <- parent.frame()
@@ -608,7 +618,6 @@ setAtomicListMethod <- function(f, simplify = FALSE,
 }
 
 ## General
-
 setAtomicListMethod("is.na")
 setAtomicListMethod("unique")
 setAtomicListMethod("sort")
@@ -617,7 +626,6 @@ setAtomicListMethod("sort")
 setAtomicListMethod("which")
 
 ## Numerical
-
 setAtomicListMethod("mean", TRUE)
 setAtomicListMethod("median", TRUE)
 setAtomicListMethod("table") # only a single factor for now
@@ -634,7 +642,6 @@ setAtomicListMethod("smoothEnds")
 setAtomicListMethod("runmed")
 
 ## Character
-
 setAtomicListMethod("nchar", TRUE)
 ## need vectorized start, end
 ##setAtomicListMethod("substr")
@@ -644,9 +651,6 @@ setAtomicListMethod("tolower")
 setAtomicListMethod("toupper")
 setAtomicListMethod("sub")
 setAtomicListMethod("gsub")
-
-
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
