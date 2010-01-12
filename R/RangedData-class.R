@@ -619,6 +619,11 @@ setAs("RleList", "RangedData",
         values <-
           SplitDataFrameList(lapply(from, function(x)
                                     DataFrame(score = runValue(x))))
+        if (is.null(names(from))) {
+          nms <- as.character(seq_len(length(from)))
+          names(ranges) <- nms
+          names(values) <- nms
+        }
         new2("RangedData",
              ranges = ranges, values = values,
              metadata = metadata(from),
