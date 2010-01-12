@@ -49,7 +49,8 @@ SEXP Rle_integer_runsum(SEXP x, SEXP k)
 		prev_offset = INTEGER(lengths)[0];
 		curr_offset = INTEGER(lengths)[0];
 		for (i = 0; i < buf_len; i++) {
-	        R_CheckUserInterrupt();
+			if (i % 10000 == 9999)
+				R_CheckUserInterrupt();
 			// calculate stat
 			if (i == 0) {
 				if (*curr_value == NA_INTEGER)
@@ -179,7 +180,8 @@ SEXP Rle_real_runsum(SEXP x, SEXP k)
 		prev_offset = INTEGER(lengths)[0];
 		curr_offset = INTEGER(lengths)[0];
 		for (i = 0; i < buf_len; i++) {
-	        R_CheckUserInterrupt();
+			if (i % 10000 == 9999)
+				R_CheckUserInterrupt();
 			// calculate stat
 			if (i == 0) {
 				if (*curr_value == NA_REAL)
@@ -337,7 +339,8 @@ SEXP Rle_integer_runwtsum(SEXP x, SEXP k, SEXP wt)
 		lengths_elt = INTEGER(lengths);
 		start_offset = INTEGER(lengths)[0];
 		for (i = 0; i < buf_len; i++) {
-	        R_CheckUserInterrupt();
+			if (i % 10000 == 9999)
+				R_CheckUserInterrupt();
 			// calculate stat
 			stat = 0;
 			curr_value = values_elt;
@@ -447,7 +450,8 @@ SEXP Rle_real_runwtsum(SEXP x, SEXP k, SEXP wt)
 		lengths_elt = INTEGER(lengths);
 		start_offset = INTEGER(lengths)[0];
 		for (i = 0; i < buf_len; i++) {
-	        R_CheckUserInterrupt();
+			if (i % 10000 == 9999)
+				R_CheckUserInterrupt();
 			// calculate stat
 			stat = 0;
 			curr_value = values_elt;
@@ -580,7 +584,8 @@ SEXP Rle_integer_runq(SEXP x, SEXP k, SEXP which)
 		lengths_elt = INTEGER(lengths);
 		start_offset = INTEGER(lengths)[0];
 		for (i = 0; i < buf_len; i++) {
-	        R_CheckUserInterrupt();
+			if (i % 10000 == 9999)
+				R_CheckUserInterrupt();
 			// create window
 			curr_value = values_elt;
 			curr_length = lengths_elt;
@@ -690,7 +695,8 @@ SEXP Rle_real_runq(SEXP x, SEXP k, SEXP which)
 		lengths_elt = INTEGER(lengths);
 		start_offset = INTEGER(lengths)[0];
 		for (i = 0; i < buf_len; i++) {
-	        R_CheckUserInterrupt();
+			if (i % 10000 == 9999)
+				R_CheckUserInterrupt();
 			// create window
 			curr_value = values_elt;
 			curr_length = lengths_elt;

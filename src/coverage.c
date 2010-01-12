@@ -94,7 +94,8 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP width)
 		curr_weight = 0;
 		if (weight_length == 1) {
 			for (i = 0, order_elt = order; i < order_length; i++, order_elt++) {
-				R_CheckUserInterrupt();
+				if (i % 10000 == 9999)
+					R_CheckUserInterrupt();
 				index = *order_elt / 2;
 				is_end = *order_elt % 2;
 				if (is_end) {
@@ -114,7 +115,8 @@ SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP width)
 			}
 		} else {
 			for (i = 0, order_elt = order; i < order_length; i++, order_elt++) {
-				R_CheckUserInterrupt();
+				if (i % 10000 == 9999)
+					R_CheckUserInterrupt();
 				index = *order_elt / 2;
 				is_end = *order_elt % 2;
 				if (is_end) {
