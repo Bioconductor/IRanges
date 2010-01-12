@@ -76,11 +76,6 @@
   \item{shift}{
     A single integer.
   }
-  \item{both}{
-    If \code{TRUE}, extends the flanking region \code{width} positions
-    \emph{into} the range. The resulting range thus straddles the end
-    point, with \code{width} positions on either side.
-  }
   \item{use.names}{
     \code{TRUE} or \code{FALSE}. Should names be preserved?
   }
@@ -92,6 +87,15 @@
     Ranges that end at \code{start - 1} or start at \code{end + 1}
     are always kept and their width is set to zero in the returned
     \link{RangesList} object.
+  }
+  \item{symmetric}{
+    If \code{TRUE}, the width is distributed evenly on either side of
+    the center of the range, and \code{start} is ignored.
+  }
+  \item{both}{
+    If \code{TRUE}, extends the flanking region \code{width} positions
+    \emph{into} the range. The resulting range thus straddles the end
+    point, with \code{width} positions on either side.
   }
   \item{drop.empty.ranges}{
     \code{TRUE} or \code{FALSE}. Should empty ranges be dropped?
