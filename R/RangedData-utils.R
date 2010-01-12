@@ -62,23 +62,22 @@ setMethod("findOverlaps", c("RangedData", "RangedData"),
           function(query, subject, maxgap = 0, multiple = TRUE,
                    type = c("any", "start", "finish", "during", "equal"))
           {
-            subject <- ranges(subject)
-            query <- ranges(query)
-            callGeneric()
+            findOverlaps(ranges(query), ranges(subject), maxgap = maxgap,
+                         multiple = multiple, type = type)
           })
 setMethod("findOverlaps", c("RangedData", "RangesList"),
           function(query, subject, maxgap = 0, multiple = TRUE,
                    type = c("any", "start", "finish", "during", "equal"))
           {
-            query <- ranges(query)
-            callGeneric()
+            findOverlaps(ranges(query), subject, maxgap = maxgap,
+                         multiple = multiple, type = type)
           })
 setMethod("findOverlaps", c("RangesList", "RangedData"),
           function(query, subject, maxgap = 0, multiple = TRUE,
                    type = c("any", "start", "finish", "during", "equal"))
           {
-            subject <- ranges(subject)
-            callGeneric()
+            findOverlaps(query, ranges(subject), maxgap = maxgap,
+                         multiple = multiple, type = type)
           })
 
 setMethod("%in%", c("RangedData", "RangedData"),

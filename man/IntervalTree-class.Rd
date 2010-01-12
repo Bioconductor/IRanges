@@ -69,7 +69,7 @@
   \describe{
     \item{}{
       \code{findOverlaps(query, subject = query, maxgap = 0, multiple = TRUE,
-        drop = FALSE, type = c("any", "start", "finish", "during", "equal"))}:
+        type = c("any", "start", "finish", "during", "equal"), drop = FALSE)}:
 
       Find the intervals in \code{query}, a \code{Ranges},
       \code{RangesList}, \code{RangedData} or \code{integer} vector (to
