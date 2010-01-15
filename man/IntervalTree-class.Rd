@@ -69,7 +69,7 @@
   \describe{
     \item{}{
       \code{findOverlaps(query, subject = query, maxgap = 0, multiple = TRUE,
-        type = c("any", "start", "finish", "during", "equal"), drop = FALSE)}:
+        type = c("any", "start", "end", "within", "equal"), drop = FALSE)}:
 
       Find the intervals in \code{query}, a \code{Ranges},
       \code{RangesList}, \code{RangedData} or \code{integer} vector (to
@@ -111,19 +111,19 @@
       By default, any overlap is accepted. By specifying the \code{type}
       parameter, one can select for specific types of overlap. The types
       correspond to operations in Allen's Interval Algebra (see
-      references). If \code{type} is \code{start} or \code{finish}, the
+      references). If \code{type} is \code{start} or \code{end}, the
       intervals are required to have matching starts or ends,
       respectively. While this operation seems trivial, the naive
       implementation using \code{outer} would be much less
       efficient. Specifying \code{equal} as the type returns the
-      intersection of the \code{start} and \code{finish} matches. If
-      \code{type} is \code{during}, the query interval must be wholly
+      intersection of the \code{start} and \code{end} matches. If
+      \code{type} is \code{within}, the query interval must be wholly
       contained within the subject interval.
 
       The \code{maxgap} parameter has special meaning with the special
-      overlap types. For \code{start}, \code{finish}, and \code{equal},
+      overlap types. For \code{start}, \code{end}, and \code{equal},
       it specifies the maximum difference in the starts, ends or both,
-      respectively. For \code{during}, it is the maximum amount by which
+      respectively. For \code{within}, it is the maximum amount by which
       the query may be wider than the subject.
     }
     \item{}{
@@ -283,8 +283,8 @@
 
   findOverlaps(query, tree, type = "start")
   findOverlaps(query, tree, type = "start", maxgap = 1L)
-  findOverlaps(query, tree, type = "finish", multiple = FALSE)
-  findOverlaps(query, tree, type = "during", maxgap = 1L)
+  findOverlaps(query, tree, type = "end", multiple = FALSE)
+  findOverlaps(query, tree, type = "within", maxgap = 1L)
 }
 
 \keyword{classes}

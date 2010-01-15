@@ -4,7 +4,7 @@
 
 setMethod("findOverlaps", c("Ranges", "IntervalTree"),
           function(query, subject, maxgap = 0, multiple = TRUE,
-                   type = c("any", "start", "finish", "during", "equal"))
+                   type = c("any", "start", "end", "within", "equal"))
           {
             if (!IRanges:::isSingleNumber(maxgap) || maxgap < 0)
               stop("'maxgap' must be a single, non-negative, non-NA number")
@@ -47,12 +47,12 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
               filterMatrix <- function(fun)
                 m[abs(fun(query)[m[,1L]] - fun(subject)[m[,2L]]) <= maxgap,,
                   drop=FALSE]
-              if (type == "during") {
+              if (type == "within") {
                 r <- ranges(result, query, subject)                
                 m <- m[width(query)[m[,1L]] - width(r) <= maxgap,]
               } else if (type == "start")
                 m <- filterMatrix(start)
-              else if (type == "finish")
+              else if (type == "end")
                 m <- filterMatrix(end)
               else if (type == "equal") {
                 m <- filterMatrix(start)
@@ -71,14 +71,14 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
 
 setMethod("findOverlaps", c("Ranges", "Ranges"),
           function(query, subject, maxgap = 0, multiple = TRUE,
-                   type = c("any", "start", "finish", "during", "equal")) {
+                   type = c("any", "start", "end", "within", "equal")) {
             findOverlaps(query, IntervalTree(subject), maxgap = maxgap,
                          multiple = multiple, type = type)
           })
 
 setMethod("findOverlaps", c("Ranges", "missing"),
           function(query, subject, maxgap = 0, multiple = TRUE,
-                   type = c("any", "start", "finish", "during", "equal"))
+                   type = c("any", "start", "end", "within", "equal"))
           {
             if (!multiple) # silly case
               seq(length(query))
@@ -95,7 +95,7 @@ setMethod("findOverlaps", c("Ranges", "missing"),
 
 setMethod("findOverlaps", c("integer", "Ranges"),
           function(query, subject, maxgap = 0, multiple = TRUE,
-                   type = c("any", "start", "finish", "during", "equal"))
+                   type = c("any", "start", "end", "within", "equal"))
           {
             findOverlaps(IRanges(query, query), subject, maxgap = maxgap,
                          multiple = multiple, type = type)

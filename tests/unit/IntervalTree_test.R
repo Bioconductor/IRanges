@@ -123,24 +123,24 @@ test_IntervalTree_findOverlaps <- function() {
   result <- findOverlaps(query, tree, type = "start", maxgap = 1L)
   checkOverlap(result, c(1, 3, 4, 4, 2, 2), c(1, 2, 2, 3, 3, 4), 4, 4)
   
-  ## 'finish'
-  result <- findOverlaps(query, tree, type = "finish")
+  ## 'end'
+  result <- findOverlaps(query, tree, type = "end")
   checkOverlap(result, c(3, 4, 4, 2), c(2, 3, 4, 2), 4, 4)
   
   ## ensure inverse is same as transpose
-  inverse <- findOverlaps(subject, query, type = "finish")
+  inverse <- findOverlaps(subject, query, type = "end")
   tr <- as.matrix(t(result))
   checkIdentical(as.matrix(inverse), tr[order(tr[,1]),])
   
   ## multiple = FALSE
-  result <- findOverlaps(query, tree, type = "finish", multiple = FALSE)
+  result <- findOverlaps(query, tree, type = "end", multiple = FALSE)
   checkIdentical(result, c(NA, 2L, 2L, 3L))  
   
-  ## 'during'
-  result <- findOverlaps(query, tree, type = "during")
+  ## 'within'
+  result <- findOverlaps(query, tree, type = "within")
   checkOverlap(result, c(1, 3, 2, 2), c(1, 2, 2, 3), 4, 4)  
 
-  result <- findOverlaps(query, tree, type = "during", maxgap = 1L)
+  result <- findOverlaps(query, tree, type = "within", maxgap = 1L)
   checkOverlap(result, c(1, 3, 4, 2, 2, 2), c(1, 2, 3, 2, 3, 4), 4, 4)  
   
   ## 'equal'

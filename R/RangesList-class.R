@@ -453,7 +453,7 @@ setMethod("range", "RangesList",
 
 setMethod("findOverlaps", c("RangesList", "RangesList"),
           function(query, subject, maxgap = 0, multiple = TRUE,
-                   type = c("any", "start", "finish", "during", "equal"),
+                   type = c("any", "start", "end", "within", "equal"),
                    drop = FALSE)
           {
             query <- as.list(query)
