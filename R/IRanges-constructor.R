@@ -64,8 +64,9 @@ IRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL)
     if (is(start, "Ranges")) {
         if (!is.null(end) || !is.null(width))
             stop("'end' and 'width' must be NULLs when 'start' is a Ranges object")
-        names(start) <- names
-        return(start)
+        ans <- new2("IRanges", start=start(start), width=width(start),
+                    NAMES=names, check=FALSE)
+        return(ans)
     }
     if ((is.logical(start) && !all(is.na(start))) || is(start, "Rle")) {
         if (is(start, "Rle") && !is.logical(runValue(start)))
