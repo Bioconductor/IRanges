@@ -570,19 +570,25 @@ setMethod("seqselect", "Rle",
                                      x, runStart[i], runEnd[i],
                                      offsetStart[i], offsetEnd[i],
                                      PACKAGE = "IRanges"))
-                  Rle(values  = unlist(lapply(subseqs, "[[", "values")),
-                      lengths = unlist(lapply(subseqs, "[[", "lengths")),
-                      check = FALSE)
+                  ans <-
+                    Rle(values  = unlist(lapply(subseqs, "[[", "values")),
+                        lengths = unlist(lapply(subseqs, "[[", "lengths")),
+                        check = FALSE)
+                  if (is.factor(runValue(x)))
+                      runValue(ans) <-
+                        factor(levels(x), levels = levels(x))[runValue(ans)]
+                  ans
               }
           })
 
 setReplaceMethod("seqselect", "Rle",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
+                     isFactorRle <- is.factor(runValue(x))
                      if (!is.null(value)) {
                          if (length(value) > 1)
                              stop("'value' must be of length 1 or 'NULL'")
-                         
+
                          if (!is(value, class(x))) {
                              value <- try(as(value, class(x)), silent = TRUE)
                              if (inherits(value, "try-error"))
@@ -590,6 +596,8 @@ setReplaceMethod("seqselect", "Rle",
                                       " object or NULL")
                          }
                          value <- as.vector(value)
+                         if (isFactorRle)
+                           value <- factor(value, levels = levels(x))
                      }
                      if (is.null(end) && is.null(width)) {
                          if (is.null(start))
@@ -636,12 +644,26 @@ setReplaceMethod("seqselect", "Rle",
 
                      subseqs <- vector("list", length(valueWidths) + k)
                      if (k > 0) {
-                         subseqs[seq(1, length(subseqs), by = 2)] <-
-                           lapply(seq_len(k), function(i)
-                                      .Call("Rle_window_aslist",
-                                            x, runStart[i], runEnd[i],
-                                            offsetStart[i], offsetEnd[i],
-                                            PACKAGE = "IRanges"))
+                         if (!isFactorRle)
+                             subseqs[seq(1, length(subseqs), by = 2)] <-
+                               lapply(seq_len(k), function(i)
+                                          .Call("Rle_window_aslist",
+                                                x, runStart[i], runEnd[i],
+                                                offsetStart[i], offsetEnd[i],
+                                                PACKAGE = "IRanges"))
+                         else
+                             subseqs[seq(1, length(subseqs), by = 2)] <-
+                               lapply(seq_len(k), function(i) {
+                                          ans <-
+                                            .Call("Rle_window_aslist",
+                                                  x, runStart[i], runEnd[i],
+                                                  offsetStart[i], offsetEnd[i],
+                                                  PACKAGE = "IRanges")
+                                          ans[["values"]] <-
+                                            factor(levels(x),
+                                                   levels = levels(x))[ans[["values"]]]
+                                          ans
+                                      })
                      }
                      if (length(valueWidths) > 0) {
                          subseqs[seq(2, length(subseqs), by = 2)] <-
@@ -649,7 +671,10 @@ setReplaceMethod("seqselect", "Rle",
                                       list(values = value,
                                            lengths = valueWidths[i]))
                      }
-                     Rle(values  = unlist(lapply(subseqs, "[[", "values")),
+                     values <- unlist(lapply(subseqs, "[[", "values"))
+                     if (isFactorRle)
+                         values <- factor(levels(x), levels = levels(x))[values]
+                     Rle(values  = values,
                          lengths = unlist(lapply(subseqs, "[[", "lengths")),
                          check = FALSE)
                  })
@@ -808,9 +833,14 @@ setMethod("window", "Rle",
                   offsetStart <- info[["start"]][["offset"]]
                   runEnd <- info[["end"]][["run"]]
                   offsetEnd <- info[["end"]][["offset"]]
-                  .Call("Rle_window",
-                        x, runStart, runEnd, offsetStart, offsetEnd,
-                        new("Rle"), PACKAGE = "IRanges")
+                  ans <-
+                    .Call("Rle_window",
+                          x, runStart, runEnd, offsetStart, offsetEnd,
+                          new("Rle"), PACKAGE = "IRanges")
+                  if (is.factor(runValue(x)))
+                      runValue(ans) <-
+                        factor(levels(x), levels = levels(x))[runValue(ans)]
+                  ans
               } else {
                   idx <-
                     stats:::window.default(seq_len(length(x)),
