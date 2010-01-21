@@ -314,7 +314,7 @@ setGeneric("threebands", signature="x",
 )
 
 setGeneric("reduce", signature="x",
-    function(x, drop.empty.ranges=FALSE, min.gapwidth=1L, ...)
+    function(x, ...)
         standardGeneric("reduce")
 )
 

@@ -92,8 +92,8 @@ setMethod("%in%", c("RangedData", "RangesList"),
 ###
 
 setMethod("reduce", "RangedData",
-          function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                   by, with.inframe.attrib=FALSE)
+          function(x, by, drop.empty.ranges=FALSE, min.gapwidth=1L,
+                   with.inframe.attrib=FALSE)
           {
             if (!isTRUEorFALSE(drop.empty.ranges))
                 stop("'drop.empty.ranges' must be TRUE or FALSE")
@@ -130,7 +130,24 @@ setMethod("reduce", "RangedData",
               names(values) <- name
               new2(class(y), ranges = ranges, values = values, check = FALSE)
             }
-            endoapply(x[,by], FUN)
+            if (ncol(x) == 0) {
+              ranges <-
+                reduce(ranges(x),
+                       drop.empty.ranges = drop.empty.ranges,
+                       min.gapwidth = min.gapwidth,
+                       with.inframe.attrib = with.inframe.attrib)
+              initialize(x,
+                         ranges = ranges,
+                         values =
+                         newCompressedList("CompressedSplitDataFrameList",
+                                           new2("DataFrame",
+                                                nrows = sum(elementLengths(ranges)),
+                                                check = FALSE),
+                                           end = cumsum(elementLengths(ranges)),
+                                           NAMES = names(ranges)))
+            } else {
+              endoapply(x[,by], FUN)
+            }
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
