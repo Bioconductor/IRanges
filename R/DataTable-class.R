@@ -176,7 +176,7 @@ setMethod("subset", "DataTable",
                   j <- TRUE
               else {
                   nl <- as.list(seq_len(ncol(x)))
-                  names(nl) <- names(x)
+                  names(nl) <- colnames(x)
                   j <- eval(substitute(select), nl, parent.frame())
               }
               x[i, j, drop = drop]
