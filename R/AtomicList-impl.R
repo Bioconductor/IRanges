@@ -619,8 +619,21 @@ setAtomicListMethod <- function(f, simplify = FALSE,
 
 ## General
 setAtomicListMethod("is.na")
-setAtomicListMethod("unique")
 setAtomicListMethod("sort")
+setMethod("table", "AtomicList",
+          function(...)
+          {
+              x <- list(...)[[1L]]
+              nms <- names(x)
+              if (is.null(nms)) {
+                  nms <- as.character(seq_len(length(x)))
+              }
+              nms <- factor(rep.int(nms, elementLengths(x)), levels = nms)
+              ans <- table(nms, unlist(x, use.names = FALSE))
+              names(dimnames(ans)) <- NULL
+              ans
+          })
+setAtomicListMethod("unique")
 
 ## Logical
 setAtomicListMethod("which")
@@ -628,7 +641,6 @@ setAtomicListMethod("which")
 ## Numerical
 setAtomicListMethod("mean", TRUE)
 setAtomicListMethod("median", TRUE)
-setAtomicListMethod("table") # only a single factor for now
 setAtomicListMethod("diff")
 setAtomicListMethod("var", TRUE)
 setAtomicListMethod("cov", TRUE)

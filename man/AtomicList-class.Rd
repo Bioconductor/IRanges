@@ -112,59 +112,55 @@
 \alias{show,AtomicList-method}
 \alias{show,RleList-method}
 
-\alias{is.na,SimpleAtomicList-method}
-\alias{unique,SimpleAtomicList-method}
-\alias{sort,SimpleAtomicList-method}
-
-\alias{which,SimpleAtomicList-method}
-\alias{mean,SimpleAtomicList-method}
-\alias{median,SimpleAtomicList-method}
-\alias{table,SimpleAtomicList-method}
-\alias{diff,SimpleAtomicList-method}
-\alias{var,SimpleAtomicList-method}
-\alias{cov,SimpleAtomicList-method}
-\alias{cor,SimpleAtomicList-method}
-\alias{sd,SimpleAtomicList-method}
-\alias{cor,SimpleAtomicList-method}
-\alias{quantile,SimpleAtomicList-method}
-\alias{mad,SimpleAtomicList-method}
-\alias{IQR,SimpleAtomicList-method}
-\alias{smoothEnds,SimpleAtomicList-method}
-\alias{runmed,SimpleAtomicList-method}
-
-\alias{nchar,SimpleAtomicList-method}
-\alias{chartr,SimpleAtomicList-method}
-\alias{tolower,SimpleAtomicList-method}
-\alias{toupper,SimpleAtomicList-method}
-\alias{sub,SimpleAtomicList-method}
-\alias{gsub,SimpleAtomicList-method}
-
 \alias{is.na,CompressedAtomicList-method}
-\alias{unique,CompressedAtomicList-method}
+\alias{is.na,SimpleAtomicList-method}
 \alias{sort,CompressedAtomicList-method}
+\alias{sort,SimpleAtomicList-method}
+\alias{table,AtomicList-method}
+\alias{unique,CompressedAtomicList-method}
+\alias{unique,SimpleAtomicList-method}
 
 \alias{which,CompressedAtomicList-method}
-\alias{mean,CompressedAtomicList-method}
-\alias{median,CompressedAtomicList-method}
-\alias{table,CompressedAtomicList-method}
+\alias{which,SimpleAtomicList-method}
+
 \alias{diff,CompressedAtomicList-method}
+\alias{diff,SimpleAtomicList-method}
+\alias{mean,CompressedAtomicList-method}
+\alias{mean,SimpleAtomicList-method}
 \alias{var,CompressedAtomicList-method}
+\alias{var,SimpleAtomicList-method}
 \alias{cov,CompressedAtomicList-method}
+\alias{cov,SimpleAtomicList-method}
 \alias{cor,CompressedAtomicList-method}
+\alias{cor,SimpleAtomicList-method}
 \alias{sd,CompressedAtomicList-method}
-\alias{cor,CompressedAtomicList-method}
+\alias{sd,SimpleAtomicList-method}
+\alias{median,CompressedAtomicList-method}
+\alias{median,SimpleAtomicList-method}
 \alias{quantile,CompressedAtomicList-method}
+\alias{quantile,SimpleAtomicList-method}
 \alias{mad,CompressedAtomicList-method}
+\alias{mad,SimpleAtomicList-method}
 \alias{IQR,CompressedAtomicList-method}
+\alias{IQR,SimpleAtomicList-method}
 \alias{smoothEnds,CompressedAtomicList-method}
+\alias{smoothEnds,SimpleAtomicList-method}
 \alias{runmed,CompressedAtomicList-method}
+\alias{runmed,SimpleAtomicList-method}
 
 \alias{nchar,CompressedAtomicList-method}
+\alias{nchar,SimpleAtomicList-method}
 \alias{chartr,CompressedAtomicList-method}
+\alias{chartr,SimpleAtomicList-method}
 \alias{tolower,CompressedAtomicList-method}
+\alias{tolower,SimpleAtomicList-method}
 \alias{toupper,CompressedAtomicList-method}
+\alias{toupper,SimpleAtomicList-method}
 \alias{sub,CompressedAtomicList-method}
+\alias{sub,SimpleAtomicList-method}
 \alias{gsub,CompressedAtomicList-method}
+\alias{gsub,SimpleAtomicList-method}
+
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}
 \description{An extension of \code{\linkS4class{Sequence}} that holds
@@ -305,12 +301,13 @@
   above, these methods perform the corresponding operation on each
   element of the list separately. The methods include: 
 
-  \code{is.na}, \code{unique}, \code{sort}, \code{which}, \code{mean},
-  \code{median}, \code{table}, \code{diff}, \code{var}, \code{cov},
-  \code{cor}, \code{sd}, \code{cor}, \code{quantile}, \code{mad},
-  \code{IQR}, \code{smoothEnds}, \code{runmed}, \code{nchar},
-  \code{chartr}, \code{tolower}, \code{toupper}, \code{sub},
-  \code{gsub}
+  \code{is.na}, \code{sort}, \code{table}, \code{unique},
+  \code{which},
+  \code{diff}, \code{mean}, \code{var}, \code{cov}, \code{cor},
+  \code{sd}, \code{median}, \code{quantile}, \code{mad}, \code{IQR},
+  \code{smoothEnds}, \code{runmed},
+  \code{nchar}, \code{chartr}, \code{tolower}, \code{toupper},
+  \code{sub}, \code{gsub}
 }
 
 \section{Fixed Width Running Window Summaries}{
