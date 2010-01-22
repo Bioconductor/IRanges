@@ -80,6 +80,24 @@ setMethod("colnames", "DataFrameList",
             CharacterList(lapply(x, colnames, do.NULL = do.NULL, prefix = prefix))
           })
 
+setMethod("colnames", "SimpleSplitDataFrameList",
+          function(x, do.NULL = TRUE, prefix = "col")
+          {
+            if (length(x)) {
+              nms <- colnames(x[[1]], do.NULL = do.NULL, prefix = prefix)
+              CharacterList(rep(list(nms), length(x)))
+            } else NULL
+          })
+
+setMethod("colnames", "CompressedSplitDataFrameList",
+          function(x, do.NULL = TRUE, prefix = "col")
+          {
+            if (length(x)) {
+              nms <- colnames(x@unlistData, do.NULL = do.NULL, prefix = prefix)
+              CharacterList(rep(list(nms), length(x)))
+            } else NULL
+          })
+
 setMethod("dimnames", "DataFrameList",
           function(x)
           {
