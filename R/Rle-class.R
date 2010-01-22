@@ -1232,15 +1232,16 @@ setMethod("show", "Rle",
           {
               lo <- length(object)
               nr <- nrun(object)
+              halfWidth <- getOption("width") %/% 2L
               cat("'", class(runValue(object)), "' Rle of length ", lo,
                   " with ", nr, ifelse(nr == 1, " run\n", " runs\n"),
                   sep = "")
-              first <- max(1L, getOption("width") %/% 2L)
+              first <- max(1L, halfWidth)
               showMatrix <-
                 rbind(as.character(head(runLength(object), first)),
                       as.character(head(runValue(object), first)))
               if (nr > first) {
-                  last <- nr - first
+                  last <- min(nr - first, halfWidth)
                   showMatrix <-
                     cbind(showMatrix,
                           rbind(as.character(tail(runLength(object), last)),
