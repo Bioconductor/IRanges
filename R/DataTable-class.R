@@ -168,8 +168,9 @@ setMethod("subset", "DataTable",
                   i <- TRUE
               else {
                   i <- eval(substitute(subset), x, parent.frame())
-                  if (!is.logical(i)) 
-                      stop("'subset' must evaluate to logical")
+                  i <- try(as.logical(i), silent=TRUE)
+                  if (inherits(i, "try-error"))
+                    stop("'subset' must be coercible to logical")
                   i <- i & !is.na(i)
               }
               if (missing(select)) 
