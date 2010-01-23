@@ -157,9 +157,11 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
         zeroLengthElt <- FUN(X@unlistData[integer(0), , drop = FALSE], ...)
     }
     useFastSubset <- (is.vector(X@unlistData) || is(X@unlistData, "Sequence"))
-    if ((k == 0) || ((kOK == 0) && COMPRESS)) {
+    if (!COMPRESS && (k == 0)) {
+        elts <- list()
+    } else if (COMPRESS && (kOK == 0)) {
         elts <- zeroLengthElt
-    } else if (COMPRESS && missing(FUN) && useFastSubset) {
+    } else if(COMPRESS && missing(FUN) && useFastSubset) {
         nzINDEX <- INDEX[whichNonZeroLength]
         elts <-
           seqselect(X@unlistData,
