@@ -462,8 +462,9 @@ setMethod("findOverlaps", c("RangesList", "RangesList"),
             if (!is.null(names(subject)) && !is.null(names(query))) {
               subject <- subject[names(query)]
               names(subject) <- names(query) # get rid of NA's in names
+            } else {
+              subject <- subject[seq_along(query)]
             }
-            else subject <- subject[seq_along(query)]
             ## NULL's are introduced where they do not match
             ## We replace those with empty IRanges
             subject[sapply(subject, is.null)] <- IRanges()
@@ -472,18 +473,21 @@ setMethod("findOverlaps", c("RangesList", "RangesList"),
                            multiple = multiple, type = type)
             })
             names(ans) <- names(subject)
-            if (multiple)
+            if (multiple) {
               ans <- RangesMatchingList(ans, origSubject)
-            else if (drop) {
-              off <- head(c(0, cumsum(sapply(origSubject, length))), -1)
+            } else if (drop) {
+              off <- head(c(0L, cumsum(sapply(origSubject, length))), -1)
               names(off) <- names(origSubject)
               if (is.null(names(ans)))
                 off <- off[seq_along(ans)]
-              else off <- off[names(ans)]
-              ans <- unlist(ans, use.names=FALSE) +
-                rep(unname(off), sapply(ans, length))
-            } else
+              else
+                off <- off[names(ans)]
+              ans <-
+                unlist(ans, use.names=FALSE) +
+                  rep.int(unname(off), sapply(ans, length))
+            } else {
               ans <- IntegerList(ans)
+            }
             ans
           })
 
