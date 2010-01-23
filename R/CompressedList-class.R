@@ -92,7 +92,7 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
         splitRle <- Rle(splitFactor)
         if (is.factor(splitFactor) && !drop) {
             NAMES <- levels(splitFactor)
-            width <- structure(rep(0L, length(NAMES)), names = NAMES)
+            width <- structure(rep.int(0L, length(NAMES)), names = NAMES)
             width[as.character(runValue(splitRle))] <- runLength(splitRle)
             end <- cumsum(unname(width))
         } else {
@@ -262,7 +262,7 @@ setReplaceMethod("[[", "CompressedList",
                              (!is.null(names(x)) || nchar(nameValue) > 0)) {
                              NAMES <- names(x)
                              if (is.null(NAMES))
-                                 NAMES <- rep("", length(x))
+                                 NAMES <- rep.int("", length(x))
                              NAMES[i] <- nameValue
                          } else {
                              NAMES <- names(x)
@@ -360,8 +360,8 @@ setMethod("seqselect", "CompressedList",
                       unlistData <-
                         seqselect(x@unlistData,
                                   shift(unlist(start),
-                                        rep(start(x@partitioning) - 1L,
-                                            elementLengths(start))))
+                                        rep.int(start(x@partitioning) - 1L,
+                                                elementLengths(start))))
                       partitionEnd <-
                         cumsum(unlist(lapply(start, function(x) sum(width(x))),
                                       use.names = FALSE))
@@ -424,8 +424,8 @@ setReplaceMethod("seqselect", "CompressedList",
                          if (is(start, "RangesList")) {
                              start <-
                                shift(unlist(start),
-                                     rep(start(x@partitioning) - 1L,
-                                         elementLengths(start)))
+                                     rep.int(start(x@partitioning) - 1L,
+                                             elementLengths(start)))
                          } else if (is(start, "LogicalList")) {
                              xeltlen <- elementLengths(x)
                              whichRep <- which(xeltlen != elementLengths(start))
@@ -440,7 +440,7 @@ setReplaceMethod("seqselect", "CompressedList",
                                       newCompressedList("CompressedIntegerList",
                                                         start(x@partitioning) - 1L,
                                                         end = seq_len(length(x))))
-                             start <- rep(FALSE, sum(elementLengths(x)))
+                             start <- rep.int(FALSE, sum(elementLengths(x)))
                              start[i] <- TRUE
                          } else {
                              stop("unrecognized 'start' type")
@@ -492,7 +492,7 @@ setMethod("c", "CompressedList",
                         lapply(tls, function(y) {
                                    nms <- names(y)
                                    if (is.null(nms))
-                                       nms <- rep("", length(y))
+                                       nms <- rep.int("", length(y))
                                    nms
                                }))
               if (all(nchar(NAMES) == 0L))
@@ -600,12 +600,12 @@ setMethod("unlist", "CompressedList",
               ans <- x@unlistData
               if (length(x) > 0) {
                   if (length(dim(ans)) < 2 && use.names) {
-                      nms <- rep(names(x), elementLengths(x))
-                      if (!is.null(nms) && !is.null(names(ans)))
-                          nms <- paste(nms, names(ans), sep = ".")
-                      else if (is.null(nms))
-                          nms <- names(ans)
-                      names(ans) <- nms
+                      if (!is.null(names(x))) {
+                          nms <- rep.int(names(x), elementLengths(x))
+                          if (!is.null(names(ans)))
+                              nms <- paste(nms, names(ans), sep = ".")
+                          names(ans) <- nms
+                      }
                   } else {
                       if (!use.names)
                           rownames(ans) <- NULL

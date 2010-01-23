@@ -123,12 +123,12 @@ setMethod("unlist", "Ranges",
             warning("'recursive' argument currently ignored")
         ans <- as.integer(x)
         if (use.names) {
-            nms <- rep(names(x), elementLengths(x))
-            if (!is.null(nms) && !is.null(names(ans)))
-                nms <- paste(nms, names(ans), sep = ".")
-            else if (is.null(nms))
-                nms <- names(ans)
-            names(ans) <- nms
+            if (!is.null(names(x))) {
+                nms <- rep.int(names(x), elementLengths(x))
+                if (!is.null(names(ans)))
+                    nms <- paste(nms, names(ans), sep = ".")
+                names(ans) <- nms
+            }
         }
         ans
     }

@@ -473,7 +473,7 @@ setMethod("[[", "Partitioning",
 setMethod("togroup", "Partitioning",
     function(x, j=NULL)
     {
-        to_group <- rep(seq_len(length(x)), times=width(x))
+        to_group <- rep.int(seq_len(length(x)), width(x))
         if (is.null(j))
             return(to_group)
         if (!is.numeric(j))

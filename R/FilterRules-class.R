@@ -42,7 +42,7 @@ setReplaceMethod("active", "FilterRules", function(x, value) {
       stop("'value' cannot contain NA's")
     if (nfilters && (nfilters %% length(value) != 0))
       stop("number of filters not a multiple of 'value' length")
-    x@active <- rep(value, length = nfilters)
+    x@active <- rep(value, length.out = nfilters)
     x
   } else stop("unsupported type of 'value'")
 })

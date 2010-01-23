@@ -235,7 +235,8 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
     if (is.null(names(ranges)))
       names(ranges) <- as.character(seq_len(length(ranges)))
     space <-
-      factor(rep(names(ranges), elementLengths(ranges)), levels = names(ranges))
+      factor(rep.int(names(ranges), elementLengths(ranges)),
+             levels = names(ranges))
     N <- sum(elementLengths(ranges))
     NAMES <- unlist(lapply(ranges, names), use.names=FALSE)
   } else if (!is(ranges, "Ranges")) {
@@ -431,7 +432,7 @@ setMethod("[", "RangedData",
                   stop("selecting rows: ", prob)
                 if (is.logical(i)) {
                   igroup <-
-                    factor(rep(seq_len(length(x)), elementLengths(x)),
+                    factor(rep.int(seq_len(length(x)), elementLengths(x)),
                            levels = seq_len(length(x)))
                   if (length(i) < nrow(x))
                     i <- rep(i, length.out = nrow(x))
@@ -567,9 +568,9 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
   }
   counts <- unlist(lapply(rls, function(x) lapply(x, length)))
   if (is.numeric(nms)) {
-    f <- rep(rep(nms, length(args)), counts)
+    f <- rep.int(rep.int(nms, length(args)), counts)
   } else {
-    f <- factor(rep(unlist(nmsList), counts), names(rl))
+    f <- factor(rep.int(unlist(nmsList, use.names=FALSE), counts), names(rl))
   }
   df <- split(df, f)
   names(df) <- names(rl)
@@ -701,7 +702,7 @@ setMethod("show", "RangedData", function(object) {
     out <-
       cbind(space = space(subset),
             ranges = showAsCell(rangesSubset),
-            "|" = rep("|", k))
+            "|" = rep.int("|", k))
     if (nc > 0)
       out <-
         cbind(out,

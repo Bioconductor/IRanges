@@ -60,7 +60,7 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
               }
               if (!origMultiple) {
                 m <- m[!duplicated(m[,1L]),]
-                result <- rep(NA_integer_, length(query))
+                result <- rep.int(NA_integer_, length(query))
                 result[m[,1L]] <- m[,2L]
               } else {
                 result@matchMatrix <- m

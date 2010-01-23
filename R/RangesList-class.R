@@ -154,7 +154,7 @@ setMethod("space", "RangesList",
           {
             space <- names(x)
             if (!is.null(space))
-              space <- rep(space, elementLengths(x))
+              space <- rep.int(space, elementLengths(x))
             space
           })
 
@@ -597,7 +597,7 @@ setMethod("as.data.frame", "RangesList",
               spaceLabels <- as.character(spaceLevels)
             }
             data.frame(space =
-                       factor(rep(seq_len(length(x)), elementLengths(x)),
+                       factor(rep.int(seq_len(length(x)), elementLengths(x)),
                               level = spaceLevels,
                               labels = spaceLabels),
                        as.data.frame(unlist(x, use.names = FALSE)),

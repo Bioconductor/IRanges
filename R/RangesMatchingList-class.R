@@ -15,7 +15,8 @@ setMethod("space", "RangesMatchingList",
           function(x) {
             space <- names(x)
             if (!is.null(space))
-              space <- rep(space, sapply(as.list(x, use.names = FALSE), length))
+              space <-
+                rep.int(space, sapply(as.list(x, use.names = FALSE), length))
             space
           })
 
@@ -53,7 +54,7 @@ setMethod("as.matrix", "RangesMatchingList", function(x) {
   mat <- do.call(rbind, mats)
   cols <- c(0, head(cumsum(lapply(x, ncol)), -1))
   nr <- sapply(mats, nrow)
-  mat + cbind(rep(cols, nr), rep(x@subjectOffsets, nr))
+  mat + cbind(rep.int(cols, nr), rep.int(x@subjectOffsets, nr))
 })
 
 ## count up the matches for each query in every matching

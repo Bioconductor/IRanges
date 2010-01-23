@@ -360,7 +360,7 @@ setMethod("as.env", "DataTable",
 setGeneric("showAsCell", function(object) standardGeneric("showAsCell"))
 setMethod("showAsCell", "vectorORfactor", function(object) object)
 setMethod("showAsCell", "Sequence", function(object)
-          rep("########", length(object)))
+          rep.int("########", length(object)))
 
 setMethod("show", "DataTable",
           function(object)

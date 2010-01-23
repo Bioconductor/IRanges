@@ -273,7 +273,7 @@ setAs("numeric", "NormalIRanges",
         if (length(value) > length(x))
             stop("too many names")
         if (length(value) < length(x))
-            value <- c(value, rep(NA, length(x) - length(value)))
+            value <- c(value, rep.int(NA, length(x) - length(value)))
         x@NAMES <- value
     }
     x

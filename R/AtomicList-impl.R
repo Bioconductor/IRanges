@@ -221,7 +221,7 @@ setMethod("as.data.frame", "AtomicList",
                   spaceLabels <- as.character(spaceLevels)
               }
               data.frame(space =
-                         factor(rep(seq_len(length(x)), elementLengths(x)),
+                         factor(rep.int(seq_len(length(x)), elementLengths(x)),
                                 levels = spaceLevels,
                                 labels = spaceLabels),
                          value = as.vector(x),

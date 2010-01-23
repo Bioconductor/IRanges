@@ -46,7 +46,7 @@ setMethod("togroup", "Binning",
     function(x, j=NULL)
     {
         whichBin <-
-          rep(seq_len(length(x)), times=grouplength(x))[order(unlist(x@bins))]
+          rep.int(seq_len(length(x)), grouplength(x))[order(unlist(x@bins))]
         if (is.null(j))
             whichBin
         else
