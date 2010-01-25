@@ -76,21 +76,27 @@ setMethod("findOverlaps", c("Ranges", "Ranges"),
                          multiple = multiple, type = type)
           })
 
-setMethod("findOverlaps", c("Ranges", "missing"),
+setMethod("findOverlaps", c("ANY", "missing"),
           function(query, subject, maxgap = 0, multiple = TRUE,
-                   type = c("any", "start", "end", "within", "equal"))
+                   type = c("any", "start", "end", "within", "equal"),
+                   ignoreSelf = FALSE, ignoreRedundant = FALSE)
           {
-            if (!multiple) # silly case
+            if (!multiple && !ignoreSelf) # silly case
               seq(length(query))
-            else
-              findOverlaps(query, query, maxgap = maxgap, multiple = multiple,
-                           type = type)
-            ### FIXME: perhaps support a "simplify" option that does this:
-            ## mat <- matchMatrix(result)            
-            ## mat <- mat[mat[,1L] != mat[,2L],]
-            ## norm_mat <- cbind(pmin(mat[,1L], mat[,2L]), pmax(mat[,1L], mat[,2L]))
-            ## mat <- mat[!duplicated(norm_mat),]
-            ## result@matchMatrix <- mat
+            else {
+              result <- findOverlaps(query, query, maxgap = maxgap,
+                                     multiple = multiple, type = type)
+              mat <- matchMatrix(result)
+              if (ignoreSelf)
+                mat <- mat[mat[,1L] != mat[,2L],]
+              if (ignoreRedundant) {
+                norm_mat <- cbind(pmin(mat[,1L], mat[,2L]),
+                                  pmax(mat[,1L], mat[,2L]))
+                mat <- mat[!duplicated(norm_mat),]
+              }
+              result@matchMatrix <- mat
+              result
+            }
           })
 
 setMethod("findOverlaps", c("integer", "Ranges"),

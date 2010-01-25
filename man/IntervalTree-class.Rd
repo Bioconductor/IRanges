@@ -19,7 +19,7 @@
 \alias{findOverlaps}
 \alias{findOverlaps,Ranges,IntervalTree-method}
 \alias{findOverlaps,Ranges,Ranges-method}
-\alias{findOverlaps,Ranges,missing-method}
+\alias{findOverlaps,ANY,missing-method}
 \alias{findOverlaps,integer,Ranges-method}
 \alias{findOverlaps,RangesList,RangesList-method}
 \alias{findOverlaps,RangedData,RangedData-method}
@@ -69,21 +69,31 @@
   \describe{
     \item{}{
       \code{findOverlaps(query, subject = query, maxgap = 0, multiple = TRUE,
-        type = c("any", "start", "end", "within", "equal"), drop = FALSE)}:
+        type = c("any", "start", "end", "within", "equal"),
+        drop = FALSE, ignoreSelf = FALSE, ignoreRedundant = FALSE)}:
 
       Find the intervals in \code{query}, a \code{Ranges},
       \code{RangesList}, \code{RangedData} or \code{integer} vector (to
       be converted to length-one ranges), that overlap with the
       intervals \code{subject}, a \code{Ranges}, \code{RangesList}, or
-      \code{RangedData}.  If \code{subject} is omitted, \code{query} is
-      queried against itself. If \code{query} is unsorted, it is sorted
+      \code{RangedData}. If \code{query} is unsorted, it is sorted
       first, so it is usually better to sort up-front, to avoid a sort
-      with each \code{findOverlaps} call. Intervals with a separation of
-      \code{maxgap} or less are considered to be overlapping.
-      \code{maxgap} should be a scalar, non-negative, non-NA number.
-      When \code{multiple} (a scalar non-NA logical) is \code{TRUE}, the
-      results are returned as a \code{\linkS4class{RangesMatching}}
-      object.
+      with each \code{findOverlaps} call.
+      
+      If \code{subject} is omitted, \code{query} is queried against
+      itself. In this case, and only this case, the \code{ignoreSelf}
+      and \code{ignoreRedundant} arguments are allowed. By default,
+      the result will contain hits for each range against itself, and if
+      there is a hit from A to B, there is also a hit for B to A. If
+      \code{ignoreSelf} is \code{TRUE}, all self matches are dropped. If
+      \code{ignoreRedundant} is \code{TRUE}, only one of A->B and B->A
+      is returned.
+      
+      Intervals with a separation of \code{maxgap} or less are
+      considered to be overlapping.  \code{maxgap} should be a scalar,
+      non-negative, non-NA number.  When \code{multiple} (a scalar
+      non-NA logical) is \code{TRUE}, the results are returned as a
+      \code{\linkS4class{RangesMatching}} object.
 
       If \code{multiple} is \code{FALSE}, at most one overlapping
       interval in \code{subject} is returned for each interval in
