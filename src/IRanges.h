@@ -9,7 +9,6 @@
 		NAME ## _symbol = install(# NAME); \
 }
 
-
 /* sort_utils.c */
 
 void _sort_int_array(
@@ -674,6 +673,10 @@ SEXP CompressedNormalIRangesList_max(
 	SEXP use_names
 );
 
+/* DataFrame_class.c */
+
+SEXP _new_DataFrame(const char *className, SEXP vars, SEXP rownames,
+                    SEXP nrows);
 
 /* SimpleIRangesList_class.c */
 
@@ -683,6 +686,9 @@ SEXP SimpleNormalIRangesList_min(SEXP x);
 
 SEXP SimpleNormalIRangesList_max(SEXP x);
 
+/* SimpleList_class.c */
+
+SEXP _new_SimpleList(const char *className, SEXP listData);
 
 /* GappedRanges_class.c */
 
@@ -697,6 +703,9 @@ SEXP Ranges_order(
 	SEXP decreasing
 );
 
+/* RangedData_class.c */
+
+SEXP _new_RangedData(const char *className, SEXP ranges, SEXP values);
 
 /* Rle_class.c */
 

@@ -235,6 +235,12 @@ void R_init_IRanges(DllInfo *info)
 /* Sequence_class.c */
 	REGISTER_CCALLABLE(_get_Sequence_elementType);
 
+/* SimpleList_class.c */
+        REGISTER_CCALLABLE(_new_SimpleList);
+
+/* DataFrame_class.c */
+        REGISTER_CCALLABLE(_new_DataFrame);
+
 /* IRanges_class.c */
 	REGISTER_CCALLABLE(_get_IRanges_start);
 	REGISTER_CCALLABLE(_get_IRanges_width);
@@ -266,6 +272,9 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_get_cachedCompressedIRangesList_elt);
 	REGISTER_CCALLABLE(_new_CompressedIRangesList);
 
+/* RangedData_class.c */
+        REGISTER_CCALLABLE(_new_RangedData);
+        
 /* SharedVector_class.c */
 	REGISTER_CCALLABLE(_new_SharedVector);
 	REGISTER_CCALLABLE(_get_SharedVector_tag);

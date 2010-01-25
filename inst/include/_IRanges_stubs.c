@@ -308,6 +308,14 @@ DEFINE_CCALLABLE_STUB(const char *, get_Sequence_elementType,
 )
 
 /*
+ * Stubs for callables defined in SimpleList_class.c
+ */
+
+DEFINE_CCALLABLE_STUB(SEXP, new_SimpleList,
+                      (const char *className, SEXP listData),
+                      (            className,      listData))
+
+/*
  * Stubs for callables defined in IRanges_class.c
  */
 
@@ -397,6 +405,14 @@ DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,
 )
 
 /*
+ * Stubs for callables defined in DataFrame_class.c
+ */
+
+DEFINE_CCALLABLE_STUB(SEXP, new_DataFrame,
+        (const char *className, SEXP vars, SEXP rownames, SEXP nrows),
+        (            className,      vars,      rownames, nrows))
+
+/*
  * Stubs for callables defined in Grouping_class.c
  */
 
@@ -443,6 +459,14 @@ DEFINE_CCALLABLE_STUB(SEXP, new_CompressedIRangesList,
 	(const char *classname, SEXP unlistData, SEXP partitioning),
 	(            classname,      unlistData,      partitioning)
 )
+
+/*
+ * Stubs for callables defined in RangedData_class.c
+ */
+
+DEFINE_CCALLABLE_STUB(SEXP, new_RangedData,
+                      (const char *className, SEXP ranges, SEXP values),
+                      (            className,      ranges,      values))
 
 /*
  * Stubs for callables defined in SharedVector_class.c
