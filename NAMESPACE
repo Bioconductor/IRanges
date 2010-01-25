@@ -43,7 +43,8 @@ exportClasses(
     DataFrame,
     DataFrameList, SimpleDataFrameList,
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
-    RangedData, RangedDataList, FilterRules, RDApplyParams, RangesMatching)
+    RangedData, RangedDataList, FilterRules, RDApplyParams, RangesMatching,
+    RangedSelection)
 
 export(
     ## Non-generic functions:
@@ -61,6 +62,7 @@ export(
     asNormalIRanges,
     H2LGrouping, Dups, PartitioningByEnd, PartitioningByWidth, Binning,
     RangedData, RangedDataList,
+    RangedSelection,
     FilterRules, RDApplyParams,
     RangesList,
     IRangesList,

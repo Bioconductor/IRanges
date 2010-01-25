@@ -83,6 +83,7 @@ setMethod("findOverlaps", c("RangesList", "RangedData"),
                          multiple = multiple, type = type, drop = drop)
           })
 
+
 setMethod("%in%", c("RangedData", "RangedData"),
           function(x, table) ranges(x) %in% ranges(table))
 setMethod("%in%", c("RangesList", "RangedData"),
