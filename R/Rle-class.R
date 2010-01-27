@@ -359,7 +359,7 @@ setMethod("[", "Rle",
                       if (li > lx)
                           stop("subscript out of bounds")
                       if (li < lx)
-                          i <- which(rep(i, length.out = lx))
+                          i <- rep(i, length.out = lx)
                       i <- which(i)
                   } else if (is.null(i)) {
                       i <- integer(0)

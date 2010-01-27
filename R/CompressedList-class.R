@@ -322,7 +322,7 @@ setMethod("[", "CompressedList",
                           if (li > lx && !nullOK)
                               stop("subscript out of bounds (and NULL elements not allowed)")
                           if (li < lx)
-                              i <- which(rep(i, length.out = lx))
+                              i <- rep(i, length.out = lx)
                           i <- which(i)
                       } else if (is.character(i) || is.factor(i)) {
                           nms <- names(x)
