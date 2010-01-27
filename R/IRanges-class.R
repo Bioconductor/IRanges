@@ -469,6 +469,61 @@ setMethod("[", "IRanges",
     }
 )
 
+setReplaceMethod("[", "IRanges",
+    function(x, i, j,..., value)
+    {
+        if (!missing(j) || length(list(...)) > 0L)
+            stop("invalid subsetting")
+        if (missing(i))
+            i <- seq_len(length(x))
+        if (!is(i, "Ranges") && !is.atomic(i))
+            stop("invalid subscript type")
+        lx <- length(x)
+        if (is.numeric(i)) {
+            if (any(is.na(i)))
+                stop("subscript contains NAs")
+            if (any(i < -lx) || any(i > lx))
+                stop("subscript out of bounds")
+            if (is(x, "NormalIRanges") && all(i >= 0)) {
+                if (!is.integer(i))
+                    i <- as.integer(i)
+                i <- i[i != 0L]
+                if (isNotStrictlySorted(i))
+                    stop("positive numeric subscript must be strictly increasing ",
+                         "for NormalIRanges objects")
+            }
+        } else if (is.logical(i)) {
+            if (any(is.na(i)))
+                stop("subscript contains NAs")
+            li <- length(i)
+            if (li > lx)
+                stop("subscript out of bounds")
+            if (li < lx)
+                i <- rep(i, length.out = lx)
+            i <- which(i)
+        } else if (is.character(i) || is.factor(i)) {
+          if (is.null(names(x)))
+            stop("cannot subset by character when names are NULL")
+          i <- match(i, names(x))
+          if (any(is.na(i)))
+            stop("subsetting by character would result in NA's")
+        } else if (is(i, "Ranges")) {
+            i <- x %in% i
+        } else if (!is.null(i)) {
+            stop("invalid subscript type")
+        }
+        newStart <- start(x)
+        newStart[i] <- start(value)
+        newWidth <- width(x)
+        newWidth[i] <- width(value)
+        newNames <- names(x)
+        if (!is.null(newNames) && !is.null(names(values)))
+            newNames[i] <- names(value)
+        initialize(x, start = newStart, width = newWidth,
+                   NAMES = newNames)
+    }
+)
+
 setMethod("seqselect", "IRanges",
     function(x, start=NULL, end=NULL, width=NULL)
     {
