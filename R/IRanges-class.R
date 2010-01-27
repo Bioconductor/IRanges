@@ -448,7 +448,8 @@ setMethod("[", "IRanges",
             if (li > lx)
                 stop("subscript out of bounds")
             if (li < lx)
-                i <- which(rep(i, length.out = lx))
+                i <- rep(i, length.out = lx)
+            i <- which(i)
         } else if (is.character(i) || is.factor(i)) {
           if (is.null(names(x)))
             stop("cannot subset by character when names are NULL")
