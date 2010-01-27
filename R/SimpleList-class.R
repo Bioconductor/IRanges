@@ -118,22 +118,32 @@ setMethod("[", "SimpleList",
                       lx <- length(x)
                       nullOK <- extends("NULL", elementType(x))
                       if (is.numeric(i)) {
-                          if (any(is.na(i)) && !nullOK)
-                              stop("cannot subset by NA (NULL elements not allowed)")
-                          nna <- i[!is.na(i)]
-                          if (any(nna < -lx) || any(nna > lx))
-                              stop("subscript out of bounds")
-                          if (any(nna < 0)) {
-                              if (any(nna > 0))
-                                  stop("negative and positive indices cannot be mixed")
-                              if (length(nna) < length(i))
-                                  stop("NAs cannot be mixed with negative subscripts")
+                          if (!is.integer(i))
+                              i <- as.integer(i)
+                          ina <- is.na(i)
+                          if (any(ina)) {
+                              if (!nullOK)
+                                  stop("cannot subset by NA (NULL elements not allowed)")
+                              i <- i[!ina]
                           }
-                          i <- seq_len(lx)[nna]
+                          if (any(abs(i) > lx))
+                              stop("subscript out of bounds")
+                          if (any(i < 0)) {
+                              if (any(i > 0))
+                                  stop("negative and positive indices cannot be mixed")
+                              if (sum(ina) > 0)
+                                  stop("NAs cannot be mixed with negative subscripts")
+                              i <- seq_len(lx)[i]
+                          }
                       } else if (is.logical(i)) {
-                          if (length(i) > lx && !nullOK)
+                          if (any(is.na(i)))
+                              stop("subscript contains NAs")
+                          li <- length(i)
+                          if (li > lx && !nullOK)
                               stop("subscript out of bounds (and NULL elements not allowed)")
-                          i <- which(rep(i, length.out = lx))
+                          if (li < lx)
+                              i <- which(rep(i, length.out = lx))
+                          i <- which(i)
                       } else if (is.character(i) || is.factor(i)) {
                           nms <- names(x)
                           if (is.null(nms))

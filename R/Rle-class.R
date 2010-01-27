@@ -341,7 +341,10 @@ setMethod("[", "Rle",
                       output <- as.vector(output)
               } else {
                   if (is.numeric(i)) {
-                      i <- as.integer(i[!is.na(i)])
+                      if (any(is.na(i)))
+                          stop("subscript contains NAs")
+                      if (!is.integer(i))
+                          i <- as.integer(i)
                       if (any(i < -lx) || any(i > lx))
                           stop("subscript out of bounds")
                       if (any(i < 0)) {
@@ -350,9 +353,14 @@ setMethod("[", "Rle",
                           i <- seq_len(lx)[i]
                       }
                   } else if (is.logical(i)) {
-                      if (lx %% length(i) != 0)
-                          warning("length of x is not a multiple of the length of i")
-                      i <- which(rep(i, length.out = lx))
+                      if (any(is.na(i)))
+                          stop("subscript contains NAs")
+                      li <- length(i)
+                      if (li > lx)
+                          stop("subscript out of bounds")
+                      if (li < lx)
+                          i <- which(rep(i, length.out = lx))
+                      i <- which(i)
                   } else if (is.null(i)) {
                       i <- integer(0)
                   } else {

@@ -148,10 +148,12 @@ function(idx, nms, lx, dup.nms = FALSE)
     } else if (!is.null(idx) && any(is.na(idx))) {
         msg <- "subscript contains NAs"
     } else if (is.numeric(idx)) {
-        nmi <- idx[!is.na(idx)]
-        if (any(nmi < -lx) || any(nmi > lx))
+        if (!is.integer(idx)) {
+            idx <- as.integer(idx)
+        }
+        if (any(abs(idx) > lx))
             msg <- "subscript out of bounds"
-        if (any(nmi < 0) && any(nmi > 0))
+        if (any(idx < 0) && any(idx > 0))
             msg <- "negative and positive indices cannot be mixed"
     } else if (is.logical(idx)) {
         if (length(idx) > lx)
@@ -176,9 +178,6 @@ function(idx, nms, lx, dup.nms = FALSE)
         idx <- NULL
     } else {
         useIdx <- TRUE
-        if (is.numeric(idx) && !is.integer(idx)) {
-            idx <- as.integer(idx)
-        }
         if (is.null(idx)) {
             idx <- integer()
         } else if (is.character(idx)) {
@@ -187,6 +186,8 @@ function(idx, nms, lx, dup.nms = FALSE)
             if (all(idx)) {
                 useIdx <- FALSE
             } else {
+                if (length(idx) < lx)
+                    idx <- rep(idx, length.out = lx)
                 idx <- which(idx)
             }
         } else if (is.integer(idx) && all(idx < 0)) {

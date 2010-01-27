@@ -444,8 +444,11 @@ setMethod("[", "IRanges",
         } else if (is.logical(i)) {
             if (any(is.na(i)))
                 stop("subscript contains NAs")
-            if (length(i) > lx)
+            li <- length(i)
+            if (li > lx)
                 stop("subscript out of bounds")
+            if (li < lx)
+                i <- which(rep(i, length.out = lx))
         } else if (is.character(i) || is.factor(i)) {
           if (is.null(names(x)))
             stop("cannot subset by character when names are NULL")

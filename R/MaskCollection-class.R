@@ -276,6 +276,8 @@ setMethod("[", "MaskCollection",
         if (any(is.na(i)))
             stop("subscript contains NAs")
         if (is.numeric(i)) {
+            if (any(is.na(i)))
+                stop("subscript contains NAs")
             if (!is.integer(i))
                 i <- as.integer(i)
             ## equivalent to, but faster than, any(i < -lx | i > lx)
@@ -285,8 +287,13 @@ setMethod("[", "MaskCollection",
             if (anyDuplicated(ipos))
                 stop("subscript contains duplicated positive values")
         } else if (is.logical(i)) {
-            if (length(i) > lx)
+            if (any(is.na(i)))
+                stop("subscript contains NAs")
+            li <- length(i)
+            if (li > lx)
                 stop("subscript out of bounds")
+            if (li < lx)
+                i <- which(rep(i, length.out = lx))
         } else if (is.character(i) || is.factor(i)) {
             if (is.null(names(x)))
                 stop("cannot subset by names a ", class(x), " object with no names")
