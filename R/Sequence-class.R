@@ -959,7 +959,7 @@ setMethod("with", "Sequence",
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coersion.
+### Coercion.
 ###
 
 setAs("Sequence", "list", function(from) as.list(from))

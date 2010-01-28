@@ -309,7 +309,7 @@
   }
 }
 
-\section{Coersion}{
+\section{Coercion}{
   In the code snippets below, \code{x} is a Sequence object.
 
   \describe{
