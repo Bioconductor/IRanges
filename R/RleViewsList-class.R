@@ -105,10 +105,10 @@ setMethod("slice", "RleList",
 ###
 
 setAs("RleViewsList", "IRangesList", function(from)
-      IRangesList(lapply(peaks, as, "IRanges")))
+      IRangesList(lapply(from, as, "IRanges")))
 
 setAs("RleViewsList", "CompressedIRangesList", function(from)
-      IRangesList(lapply(peaks, as, "IRanges"), compress=TRUE))
+      IRangesList(lapply(from, as, "IRanges"), compress=TRUE))
 
 setAs("RleViewsList", "SimpleIRangesList", function(from)
-      IRangesList(lapply(peaks, as, "IRanges"), compress=FALSE))
+      IRangesList(lapply(from, as, "IRanges"), compress=FALSE))
