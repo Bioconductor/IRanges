@@ -59,6 +59,17 @@
   }
 }
 
+\section{Coercion}{
+  In the code snippets below, \code{from} is a Views object:
+
+  \describe{
+    \item{}{
+      \code{as(from, "IRanges")}: Creates an \code{IRanges} object
+      containing the view locations in \code{from}.
+    }
+  }
+}
+
 \section{Accessor-like methods}{
   All the accessor-like methods defined for \code{IRanges} objects
   work on Views objects. In addition, the following accessors are defined

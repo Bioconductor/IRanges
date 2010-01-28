@@ -10,6 +10,11 @@
 \alias{Views,RleList-method}
 \alias{RleViewsList}
 
+% coercion
+\alias{coerce,RleViewsList,IRangesList-method}
+\alias{coerce,RleViewsList,CompressedIRangesList-method}
+\alias{coerce,RleViewsList,SimpleIRangesList-method}
+
 \title{List of RleViews}
 \description{An extension of \code{\linkS4class{RangesList}} that holds only
   \code{\linkS4class{RleViews}} objects. Useful for storing coverage vectors
@@ -37,6 +42,26 @@
     }
     \item{}{\code{Views(subject, start=NULL, end=NULL, width=NULL, names=NULL)}:
       Same as \code{RleViewsList(rleList = subject, rangesList = start)}.
+    }
+  }
+}
+
+\section{Coercion}{
+  In the code snippets below, \code{from} is an RleViewsList object:
+
+  \describe{
+    \item{}{
+      \code{as(from, "IRangesList")}: Creates a \code{CompressedIRangesList}
+      object containing the view locations in \code{from}.
+    }
+    \item{}{
+      \code{as(from, "CompressedIRangesList")}: Creates a
+      \code{CompressedIRangesList} object containing the view locations in
+      \code{from}.
+    }
+    \item{}{
+      \code{as(from, "SimpleIRangesList")}: Creates a \code{SimpleIRangesList}
+      object containing the view locations in \code{from}.
     }
   }
 }

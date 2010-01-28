@@ -99,3 +99,16 @@ setMethod("slice", "RleList",
                                rangesList = as(ranges, "SimpleIRangesList"))
               }
           })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion.
+###
+
+setAs("RleViewsList", "IRangesList", function(from)
+      IRangesList(lapply(peaks, as, "IRanges")))
+
+setAs("RleViewsList", "CompressedIRangesList", function(from)
+      IRangesList(lapply(peaks, as, "IRanges"), compress=TRUE))
+
+setAs("RleViewsList", "SimpleIRangesList", function(from)
+      IRangesList(lapply(peaks, as, "IRanges"), compress=FALSE))
