@@ -415,7 +415,7 @@ setMethod("disjoin", "Ranges",
         adj_start <- sort(unique(c(starts, ends + 1L)))
         adj_end <- sort(unique(c(ends, starts - 1L)))
         adj <- update(x, start = head(adj_start, -1L), end = tail(adj_end, -1L),
-                      check = FALSE)
+                      names = NULL, check = FALSE)
         adj[adj %in% x]
     }
 )
