@@ -430,6 +430,8 @@ setMethod("[", "RangedData",
                 prob <- checkIndex(i, nrow(x), rownames(x))
                 if (!is.null(prob))
                   stop("selecting rows: ", prob)
+                if (is.numeric(i) && any(i < 0))
+                  i <- setdiff(seq(nrow(x)), -i)
                 if (is.logical(i)) {
                   igroup <-
                     factor(rep.int(seq_len(length(x)), elementLengths(x)),
