@@ -21,7 +21,8 @@ setGeneric("mendoapply", signature = "...",
            function(FUN, ..., MoreArgs = NULL) standardGeneric("mendoapply"))
 
 setMethod("mendoapply", "list", function(FUN, ..., MoreArgs = NULL)
-          mapply(FUN = FUN, ..., MoreArgs = MoreArgs))
+          mapply(FUN = FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = FALSE))
 
 setMethod("mendoapply", "data.frame", function(FUN, ..., MoreArgs = NULL)
-          as.data.frame(mapply(FUN = FUN, ..., MoreArgs = MoreArgs)))
+          as.data.frame(mapply(FUN = FUN, ..., MoreArgs = MoreArgs,
+                               SIMPLIFY = FALSE)))

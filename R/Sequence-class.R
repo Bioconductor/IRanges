@@ -871,7 +871,8 @@ setMethod("mendoapply", "Sequence",
           function(FUN, ..., MoreArgs = NULL) {
               X <- list(...)[[1L]]
               elementTypeX <- elementType(X)
-              listData <- mapply(FUN = FUN, ..., MoreArgs = MoreArgs)
+              listData <-
+                mapply(FUN = FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = FALSE)
               for (i in seq_len(length(listData))) {
                   if (!extends(class(listData[[i]]), elementTypeX))
                       stop("'FUN' must return elements of class ", elementTypeX)

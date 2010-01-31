@@ -588,7 +588,8 @@ setMethod("endoapply", "CompressedList",
 setMethod("mendoapply", "CompressedList",
           function(FUN, ..., MoreArgs = NULL) {
               .updateCompressedList(list(...)[[1L]],
-                                    mapply(FUN = FUN, ..., MoreArgs = MoreArgs))
+                                    mapply(FUN = FUN, ..., MoreArgs = MoreArgs,
+                                           SIMPLIFY = FALSE))
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

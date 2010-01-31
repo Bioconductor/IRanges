@@ -320,7 +320,8 @@ setMethod("mendoapply", "SimpleList",
           function(FUN, ..., MoreArgs = NULL) {
               X <- list(...)[[1L]]
               elementTypeX <- elementType(X)
-              listData <- mapply(FUN = FUN, ..., MoreArgs = MoreArgs)
+              listData <-
+                mapply(FUN = FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = FALSE)
               if (!all(sapply(listData,
                               function(Xi) extends(class(Xi), elementTypeX))))
                   stop("all results must be of class '", elementTypeX, "'")
