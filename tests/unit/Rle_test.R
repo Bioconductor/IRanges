@@ -81,8 +81,15 @@ test_Rle_general <- function() {
                    as.vector(is.na(c(Rle(NA), xRle, Rle(NA, 3), xRle, Rle(NA)))))
     checkIdentical(length(x), length(xRle))
     checkIdentical(rep(x, times = 2), as.vector(rep(xRle, times = 2)))
-    checkIdentical(rep(x, each = 2), as.vector(rep(xRle, each = 2)))
+    checkIdentical(rep(x, times = x), as.vector(rep(xRle, times = x)))
     checkIdentical(rep(x, length.out = 20), as.vector(rep(xRle, length.out = 20)))
+    checkIdentical(rep(x, each = 2), as.vector(rep(xRle, each = 2)))
+    checkIdentical(rep(x, x, 20), as.vector(rep(xRle, x, 20)))
+    checkException(rep(xRle, x, each = 2), silent = TRUE)
+    checkIdentical(rep(x, 2, each = 2), as.vector(rep(xRle, 2, each = 2)))
+    checkIdentical(rep(x, length.out = 20, each = 2),
+                   as.vector(rep(xRle, length.out = 20, each = 2)))
+    checkIdentical(rep(x, x, 20, 2), as.vector(rep(xRle, x, 20, 2)))
     checkIdentical(rep.int(x, times = 2), as.vector(rep.int(xRle, times = 2)))
     checkIdentical(rev(x), as.vector(rev(xRle)))
     checkIdentical(as.vector(seqselect(xRle, start = 1:3, width = 1:3)),

@@ -513,6 +513,15 @@
 
   \describe{
     \item{}{
+      \code{diff(x, lag = 1, differences = 1}:
+      Returns suitably lagged and iterated differences of \code{x}.
+      \describe{
+         \item{\code{lag}}{An integer indicating which lag to use.}
+         \item{\code{differences}}{An integer indicating the order of the
+           difference.}
+      }
+    }
+    \item{}{
        \code{pmax(..., na.rm = FALSE)}, \code{pmax.int(..., na.rm = FALSE)}:
        Parallel maxima of the Rle input values. Removes \code{NA}s when
        \code{na.rm = TRUE}.
@@ -521,15 +530,6 @@
        \code{pmin(..., na.rm = FALSE)}, \code{pmin.int(..., na.rm = FALSE)}:
        Parallel minima of the Rle input values. Removes \code{NA}s when
        \code{na.rm = TRUE}.
-    }
-    \item{}{
-      \code{diff(x, lag = 1, differences = 1}:
-      Returns suitably lagged and iterated differences of \code{x}.
-      \describe{
-         \item{\code{lag}}{An integer indicating which lag to use.}
-         \item{\code{differences}}{An integer indicating the order of the
-           difference.}
-      }
     }
     \item{}{
       \code{mean(x, na.rm = FALSE)}:
