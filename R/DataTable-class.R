@@ -328,7 +328,7 @@ setMethod("by", "DataTable",
           {
               .mc <- mc <- match.call()
               .mc[[1L]] <- .by.data.frame
-              ans <- eval(.mc)
+              ans <- eval(.mc, parent.frame())
               attr(ans, "call") <- mc
               ans
           })
