@@ -460,12 +460,12 @@ setGeneric("countOverlaps", signature = c("query", "subject"),
     function(query, subject, ...) standardGeneric("countOverlaps")
 )
 
-setMethod("countOverlaps", c("Ranges", "Ranges"),
-    function(query, subject)
-    { ## might be faster someday
-        sum(query %in% subject)
-    }
-)
+.countOverlaps <- function(query, subject) {
+  ## might be faster someday
+  sum(query %in% subject)
+}
+
+setMethod("countOverlaps", c("Ranges", "Ranges"), .countOverlaps)
 
 countOverlap <- function(object, query)
 {

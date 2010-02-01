@@ -506,7 +506,9 @@ setMethod("match", c("RangesList", "RangesList"),
               ans[is.na(ans)] <- as.integer(nomatch)
             ans
           })
-  
+
+setMethod("countOverlaps", c("RangesList", "RangesList"), .countOverlaps)
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Set Operations
 ###

@@ -35,6 +35,7 @@
 \alias{match,RangesList,RangesList-method}
 \alias{countOverlaps}
 \alias{countOverlaps,Ranges,Ranges-method}
+\alias{countOverlaps,RangesList,RangesList-method}
 \alias{countOverlap}
 
 \title{Interval Search Trees}
@@ -161,7 +162,10 @@
     }
     \item{}{
       \code{countOverlaps(query, subject)}: Return the count of the
-      number of ranges in \code{query} that overlap a range in \code{subject}.
+      number of ranges in \code{query} that overlap a range in
+      \code{subject}. For \code{RangesList} arguments, this will return
+      an integer vector, the same length as \code{query}, with each
+      element giving the overlap count for the corresponding space.
     }
   }
   
