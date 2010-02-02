@@ -551,7 +551,11 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
   ##df <- dfs[[1L]]
   df <-
     do.call("rbind",
-            lapply(args, function(x) unlist(values(x), use.names=FALSE)))
+            lapply(args, function(x) {
+              xx <- unlist(values(x), use.names=FALSE)
+              rownames(xx) <- unlist(rownames(values(x)))
+              xx
+            }))
   nmsList <- lapply(args, names)
   if (any(sapply(nmsList, is.null))) {
     if (!all(unlist(lapply(args, length)) == length(args[[1L]])))
