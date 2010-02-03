@@ -167,26 +167,30 @@ setMethod("colnames", "RangedData",
           })
 setReplaceMethod("rownames", "RangedData",
                  function(x, value) {
-                   if (length(value) > 0) {
-                     ends <- cumsum(elementLengths(x))
-                     nr <- tail(ends, 1)
-                     if (length(value) != nr)
-                       value <- rep(value, length.out = nr)
-                     value <-
-                       new("CompressedCharacterList",
-                           unlistData = value,
-                           partitioning = PartitioningByEnd(ends))
+                   if (!is.null(value)) {
+                     if (length(value) != nrow(x)) {
+                       stop("invalid 'row.names' length")
+                     } else {
+                       if (!is.character(value))
+                         value <- as.character(value)
+                       ends <- cumsum(elementLengths(x))
+                       value <-
+                         new("CompressedCharacterList",
+                             unlistData = value,
+                             partitioning = PartitioningByEnd(ends))
+                     }
                    }
-                   values <- values(x)
-                   rownames(values) <- value
-                   x@values <- values
+                   ranges <- ranges(x)
+                   for(i in seq_len(length(ranges))) {
+                     names(ranges[[i]]) <- value[[i]]
+                   }
+                   x@ranges <- ranges
+                   rownames(x@values) <- value
                    x
                  })
 setReplaceMethod("colnames", "RangedData",
                  function(x, value) {
-                   values <- values(x)
-                   colnames(values) <- value
-                   x@values <- values
+                   colnames(x@values) <- value
                    x
                  })
 
@@ -544,43 +548,25 @@ setMethod("split", "RangedData", function(x, f, drop = FALSE) {
 setMethod("rbind", "RangedData", function(..., deparse.level=1) {
   args <- unname(list(...))
   rls <- lapply(args, ranges)
-  rl <- rls[[1L]]
-  if (!all(sapply(sapply(rls, universe), identical, universe(rl))))
-    stop("All args in '...' must have the same universe as 'x'")
-  ##dfs <- lapply(args, values)
-  ##df <- dfs[[1L]]
-  df <-
-    do.call("rbind",
-            lapply(args, function(x) {
-              xx <- unlist(values(x), use.names=FALSE)
-              rownames(xx) <- unlist(rownames(values(x)))
-              xx
-            }))
-  nmsList <- lapply(args, names)
-  if (any(sapply(nmsList, is.null))) {
-    if (!all(unlist(lapply(args, length)) == length(args[[1L]])))
-      stop("If any args are missing names, all must have same length")
-    nms <- seq_len(length(args[[1L]]))
-  } else {
-    nms <- unique(unlist(nmsList))
+  univ1 <- universe(rls[[1L]])
+  if (!all(sapply(sapply(rls, universe), identical, univ1)))
+    stop("All args in '...' must have the same universe")
+  nms <- unique(unlist(lapply(args, names), use.names=FALSE))
+  rls <- lapply(rls, function(x) as.list(x)[nms])
+  dfs <- lapply(args, function(x) as.list(values(x))[nms])
+  safe.c <- function(...) {
+    x <- list(...)
+    do.call(c, x[!sapply(x, is.null)])
   }
-  for (nm in nms) {
-    rli <- lapply(rls, `[[`, nm)
-    rl[[nm]] <- do.call(c, rli[!sapply(rli, is.null)])
-    if (anyDuplicated(names(rl[[nm]])))
-      names(rl[[nm]]) <- make.unique(names(rl[[nm]]), sep = "")
-    ##dfi <- lapply(dfs, `[[`, nm)
-    ##df[[nm]] <- do.call(rbind, dfi[!sapply(dfi, is.null)])
+  rls <- IRangesList(do.call(Map, c(list(safe.c), rls)))
+  safe.rbind <- function(...) {
+    x <- list(...)
+    do.call(rbind, x[!sapply(x, is.null)])
   }
-  counts <- unlist(lapply(rls, function(x) lapply(x, length)))
-  if (is.numeric(nms)) {
-    f <- rep.int(rep.int(nms, length(args)), counts)
-  } else {
-    f <- factor(rep.int(unlist(nmsList, use.names=FALSE), counts), names(rl))
-  }
-  df <- split(df, f)
-  names(df) <- names(rl)
-  initialize(args[[1L]], ranges = rl, values = df)
+  dfs <- SplitDataFrameList(do.call(Map, c(list(safe.rbind), dfs)))
+  for (i in seq_len(length(rls)))
+    names(rls[[i]]) <- rownames(dfs[[i]])
+  initialize(args[[1L]], ranges = rls, values = dfs)
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
