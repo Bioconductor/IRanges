@@ -511,18 +511,6 @@ setMethod("Ops",
                   callNextMethod()
           })
 
-setMethod("!", "SimpleLogicalList",
-          function(x) {
-              x@listData <- lapply(x@listData, "!")
-              x
-          })
-
-setMethod("!", "CompressedLogicalList",
-          function(x) {
-              x@unlistData <- !x@unlistData
-              x
-          })
-
 setMethod("Math", "CompressedAtomicList",
           function(x)
               CompressedAtomicList(callGeneric(x@unlistData),
@@ -560,66 +548,93 @@ setMethod("Complex", "SimpleAtomicList",
           function(z) SimpleAtomicList(lapply(z@listData, .Generic)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Running window statistic methods
-###
-
-setMethod("runmed", "RleList",
-          function(x, k, endrule = c("median", "keep", "constant"),
-                   algorithm = NULL, print.level = 0)
-              endoapply(x, runmed, k = k, endrule = match.arg(endrule)))
-
-setMethod("runsum", "RleList",
-          function(x, k, endrule = c("drop", "constant"))
-              endoapply(x, runsum, k = k, endrule = match.arg(endrule)))
-
-setMethod("runmean", "RleList",
-          function(x, k, endrule = c("drop", "constant"))
-              endoapply(x, runmean, k = k, endrule = match.arg(endrule)))
-
-setMethod("runwtsum", "RleList",
-          function(x, k, wt, endrule = c("drop", "constant"))
-              endoapply(x, runwtsum, k = k, wt = wt,
-                        endrule = match.arg(endrule)))
-
-setMethod("runq", "RleList",
-          function(x, k, i, endrule = c("drop", "constant"))
-              endoapply(x, runq, k = k, i = i, endrule = match.arg(endrule)))
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### More list-ized methods
 ###
 
-setListMethod <- function(f, signature = character(), simplify = FALSE,
+setListMethod <- function(f, signature = character(),
+                          outputBaseClass,
+                          whichArg = 1L,
+                          endoapply = FALSE,
+                          applyToUnlist = FALSE,
                           where = topenv(parent.frame()))
 {
-  fargs <- formals(args(get(f)))
-  args <- sapply(names(fargs), as.name)
-  names(args) <- sub("...", "", names(args), fixed = TRUE)
-  names(args)[1L] <- ""
-  args <- c(args[[1L]], as.name(f), tail(args, -1L))
-  call <- as.call(c(as.name("sapply"), args, list(simplify = simplify)))
-  if (!simplify) {
-    if (extends(signature, "SimpleList")) {
-      call <- as.call(c(as.name("SimpleAtomicList"), call))
+    fargs <- formals(args(get(f)))
+    args <- sapply(names(fargs), as.name)
+    names(args) <- sub("...", "", names(args), fixed = TRUE)
+    if (applyToUnlist) {
+        call2 <- as.call(c(as.name("@"), args[[whichArg]], "partitioning"))
+        args[[whichArg]] <-
+          as.call(c(as.name("@"), args[[whichArg]], "unlistData"))
+        call1 <- as.call(c(as.name(f), args))
+        call <-
+          as.call(c(as.name("new2"), paste("Compressed", outputBaseClass, sep=""),
+                    unlistData = call1, partitioning = call2, check = FALSE))
     } else {
-      call <- as.call(c(as.name("CompressedAtomicListFromList"), call))
+        args <- c(args[[whichArg]], as.name(f), args[-whichArg])
+        if (endoapply) {
+            call <- as.call(c(as.name("endoapply"), args))
+        } else if (missing(outputBaseClass)) {
+            call <- as.call(c(as.name("sapply"), args, list(simplify = TRUE)))
+        } else {
+            call <- as.call(c(as.name("lapply"), args))
+            if (extends(signature, "SimpleList")) {
+                call <-
+                  as.call(c(as.name("new2"),
+                            paste("Simple", outputBaseClass, sep=""),
+                            listData = call, check = FALSE))
+            } else {
+                call <-
+                  as.call(c(as.name(outputBaseClass), call, compress = TRUE))
+            }
+        }
     }
-  }
-  def <- as.function(c(fargs, call))
-  environment(def) <- parent.frame()
-  setMethod(f, signature, def, where)
+    def <- as.function(c(fargs, call))
+    environment(def) <- parent.frame()
+    setMethod(f, c(rep("ANY", whichArg - 1L), signature), def, where)
 }
 
-setAtomicListMethod <- function(f, simplify = FALSE,
+setAtomicListMethod <- function(f, inputBaseClass = "AtomicList",
+                                outputBaseClass,
+                                whichArg = 1L,
+                                endoapply = FALSE,
+                                applyToUnlist = FALSE,
+                                addRleList = TRUE,
+                                rleListOutputBaseClass = "RleList",
                                 where = topenv(parent.frame()))
 {
-  setListMethod(f, "SimpleAtomicList", simplify, where)
-  setListMethod(f, "CompressedAtomicList", simplify, where)
+    if (missing(outputBaseClass)) {
+        for (i in inputBaseClass)
+            setListMethod(f, i, whichArg = whichArg, endoapply = endoapply,
+                          where = where)
+    } else if (endoapply) {
+        setListMethod(f, "AtomicList", whichArg = whichArg, endoapply = TRUE,
+                      where = where)
+    } else {
+        setListMethod(f, paste("Simple", inputBaseClass, sep = ""),
+                      outputBaseClass = outputBaseClass, whichArg = whichArg,
+                      where = where)
+        setListMethod(f, paste("Compressed", inputBaseClass, sep = ""),
+                      outputBaseClass = outputBaseClass, whichArg = whichArg,
+                      applyToUnlist = applyToUnlist, where = where)
+        if (addRleList) {
+            setListMethod(f, "SimpleRleList",
+                          outputBaseClass = rleListOutputBaseClass,
+                          whichArg = whichArg, where = where)
+            setListMethod(f, "CompressedRleList",
+                          outputBaseClass = rleListOutputBaseClass,
+                          whichArg = whichArg, applyToUnlist = applyToUnlist,
+                          where = where)
+        }
+    }
 }
 
-## General
-setAtomicListMethod("is.na")
-setAtomicListMethod("sort")
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### General methods
+###
+
+setAtomicListMethod("is.na", outputBaseClass = "LogicalList",
+                    applyToUnlist = TRUE)
+setAtomicListMethod("sort", endoapply = TRUE)
 setMethod("table", "AtomicList",
           function(...)
           {
@@ -633,35 +648,154 @@ setMethod("table", "AtomicList",
               names(dimnames(ans)) <- NULL
               ans
           })
-setAtomicListMethod("unique")
+setAtomicListMethod("unique", endoapply = TRUE)
+setMethod("unique", "CompressedRleList",
+          function(x, incomparables = FALSE, ...)
+              CompressedAtomicListFromList(lapply(x, unique,
+                                                  incomparables = incomparables,
+                                                  ...)))
+setMethod("unique", "SimpleRleList",
+          function(x, incomparables = FALSE, ...)
+              SimpleAtomicList(lapply(x, unique, incomparables = incomparables,
+                                      ...)))
 
-## Logical
-setAtomicListMethod("which")
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Logical methods
+###
 
-## Numerical
-setAtomicListMethod("diff")
-setAtomicListMethod("mean", TRUE)
-setAtomicListMethod("var", TRUE)
-setAtomicListMethod("cov", TRUE)
-setAtomicListMethod("cor", TRUE)
-setAtomicListMethod("sd", TRUE)
-setAtomicListMethod("median", TRUE)
-setAtomicListMethod("quantile")
-setAtomicListMethod("mad", TRUE)
-setAtomicListMethod("IQR", TRUE)
-setAtomicListMethod("smoothEnds")
-setAtomicListMethod("runmed")
+setAtomicListMethod("!", inputBaseClass = "LogicalList", 
+                    outputBaseClass = "LogicalList", applyToUnlist = TRUE)
+setAtomicListMethod("which", inputBaseClass = "LogicalList",
+                    outputBaseClass = "IntegerList",
+                    rleListOutputBaseClass = "IntegerList")
 
-## Character
-setAtomicListMethod("nchar", TRUE)
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Numerical methods
+###
+
+for (i in c("IntegerList", "NumericList", "RleList")) {
+    setAtomicListMethod("diff", inputBaseClass = i, endoapply = TRUE)
+    setMethod("pmax", i, function(..., na.rm = FALSE)
+                  mendoapply(pmax, ..., MoreArgs = list(na.rm = na.rm)))
+    setMethod("pmin", i, function(..., na.rm = FALSE)
+                  mendoapply(pmin, ..., MoreArgs = list(na.rm = na.rm)))
+    setMethod("pmax.int", i, function(..., na.rm = FALSE)
+                  mendoapply(pmax.int, ..., MoreArgs = list(na.rm = na.rm)))
+    setMethod("pmin.int", i, function(..., na.rm = FALSE)
+                  mendoapply(pmin.int, ..., MoreArgs = list(na.rm = na.rm)))
+}
+for (i in c("LogicalList", "IntegerList", "NumericList", "RleList")) {
+    setAtomicListMethod("mean", inputBaseClass = i)
+    setMethod("var", signature = c(x = i, y = "missing"),
+              function(x, y = NULL, na.rm = FALSE, use)
+              {
+                  if (missing(use))
+                      use <- ifelse(na.rm, "na.or.complete", "everything")
+                  sapply(x, var, na.rm = na.rm, use = use, simplify = TRUE)
+              })
+    setMethod("var", signature = c(x = i, y = "AtomicList"),
+              function(x, y = NULL, na.rm = FALSE, use)
+              {
+                  if (missing(use))
+                      use <- ifelse(na.rm, "na.or.complete", "everything")
+                  mapply(var, x, y, MoreArgs = list(na.rm = na.rm, use = use),
+                         SIMPLIFY = TRUE)
+              })
+    setMethod("cov", signature = c(x = i, y = "AtomicList"),
+              function(x, y = NULL, use = "everything",
+                       method = c("pearson", "kendall", "spearman"))
+                  mapply(cov, x, y,
+                         MoreArgs = list(use = use, method = match.arg(method)),
+                         SIMPLIFY = TRUE))
+    setMethod("cor", signature = c(x = i, y = "AtomicList"),
+              function(x, y = NULL, use = "everything",
+                       method = c("pearson", "kendall", "spearman"))
+                  mapply(cor, x, y,
+                         MoreArgs = list(use = use, method = match.arg(method)),
+                         SIMPLIFY = TRUE))
+    setAtomicListMethod("sd", inputBaseClass = i)
+    setAtomicListMethod("median", inputBaseClass = i)
+    setAtomicListMethod("quantile", inputBaseClass = i)
+    setMethod("mad", i,
+              function(x, center = median(x), constant = 1.4826, na.rm = FALSE, 
+                       low = FALSE, high = FALSE)
+              {
+                  if (!missing(center))
+                      stop("'center' argument is not supported")
+                  sapply(x, mad, constant = constant, na.rm = na.rm,
+                         low = low, high = high, simplify = TRUE)
+              })
+    setAtomicListMethod("IQR", inputBaseClass = i)
+}
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Running window statistic methods
+###
+
+setAtomicListMethod("smoothEnds", inputBaseClass = "IntegerList",
+                    outputBaseClass = "NumericList",
+                    addRleList = FALSE)
+setAtomicListMethod("smoothEnds", inputBaseClass = "NumericList",
+                    endoapply = TRUE)
+setAtomicListMethod("smoothEnds", inputBaseClass = "RleList",
+                    endoapply = TRUE)
+setMethod("runmed", "CompressedIntegerList",
+          function(x, k, endrule = c("median", "keep", "constant"),
+                   algorithm = NULL, print.level = 0)
+              NumericList(lapply(x, runmed, k = k, endrule = match.arg(endrule),
+                                 algorithm = algorithm,
+                                 print.level = print.level)))
+setMethod("runmed", "SimpleIntegerList",
+          function(x, k, endrule = c("median", "keep", "constant"),
+                   algorithm = NULL, print.level = 0)
+              NumericList(lapply(x, runmed, k = k, endrule = match.arg(endrule),
+                                 algorithm = algorithm,
+                                 print.level = print.level), compress = FALSE))
+setMethod("runmed", "NumericList",
+          function(x, k, endrule = c("median", "keep", "constant"),
+                   algorithm = NULL, print.level = 0)
+              endoapply(x, runmed, k = k, endrule = match.arg(endrule),
+                        algorithm = algorithm, print.level = print.level))
+setMethod("runmed", "RleList",
+          function(x, k, endrule = c("median", "keep", "constant"),
+                   algorithm = NULL, print.level = 0)
+              endoapply(x, runmed, k = k, endrule = match.arg(endrule)))
+setMethod("runmean", "RleList",
+          function(x, k, endrule = c("drop", "constant"))
+              endoapply(x, runmean, k = k, endrule = match.arg(endrule)))
+setMethod("runsum", "RleList",
+          function(x, k, endrule = c("drop", "constant"))
+              endoapply(x, runsum, k = k, endrule = match.arg(endrule)))
+setMethod("runwtsum", "RleList",
+          function(x, k, wt, endrule = c("drop", "constant"))
+              endoapply(x, runwtsum, k = k, wt = wt,
+                        endrule = match.arg(endrule)))
+setMethod("runq", "RleList",
+          function(x, k, i, endrule = c("drop", "constant"))
+              endoapply(x, runq, k = k, i = i, endrule = match.arg(endrule)))
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Character
+###
+
+setAtomicListMethod("nchar", inputBaseClass = "CharacterList",
+                    outputBaseClass = "IntegerList", applyToUnlist = TRUE)
 ## need vectorized start, end
 ##setAtomicListMethod("substr")
 ##setAtomicListMethod("substring")
-setAtomicListMethod("chartr")
-setAtomicListMethod("tolower")
-setAtomicListMethod("toupper")
-setAtomicListMethod("sub")
-setAtomicListMethod("gsub")
+setAtomicListMethod("chartr", inputBaseClass = "CharacterList",
+                    outputBaseClass = "CharacterList", whichArg = 3L,
+                    applyToUnlist = TRUE)
+setAtomicListMethod("tolower", inputBaseClass = "CharacterList",
+                    outputBaseClass = "CharacterList",  applyToUnlist = TRUE)
+setAtomicListMethod("toupper", inputBaseClass = "CharacterList",
+                    outputBaseClass = "CharacterList", applyToUnlist = TRUE)
+setAtomicListMethod("sub", inputBaseClass = "CharacterList",
+                    outputBaseClass = "CharacterList", whichArg = 3L,
+                    applyToUnlist = TRUE)
+setAtomicListMethod("gsub", inputBaseClass = "CharacterList",
+                    outputBaseClass = "CharacterList", whichArg = 3L,
+                    applyToUnlist = TRUE)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.

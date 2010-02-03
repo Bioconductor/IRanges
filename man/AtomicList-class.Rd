@@ -93,8 +93,6 @@
 \alias{Ops,atomic,AtomicList-method}
 \alias{Ops,CompressedAtomicList,atomic-method}
 \alias{Ops,atomic,CompressedAtomicList-method}
-\alias{!,SimpleLogicalList-method}
-\alias{!,CompressedLogicalList-method}
 \alias{Math,CompressedAtomicList-method}
 \alias{Math,SimpleAtomicList-method}
 \alias{Math2,CompressedAtomicList-method}
@@ -103,63 +101,123 @@
 \alias{Complex,CompressedAtomicList-method}
 \alias{Complex,SimpleAtomicList-method}
 
-\alias{runmean,RleList-method}
+\alias{is.na,CompressedAtomicList-method}
+\alias{is.na,SimpleAtomicList-method}
+\alias{is.na,CompressedRleList-method}
+\alias{is.na,SimpleRleList-method}
+\alias{sort,AtomicList-method}
+\alias{table,AtomicList-method}
+\alias{unique,AtomicList-method}
+\alias{unique,CompressedRleList-method}
+\alias{unique,SimpleRleList-method}
+
+\alias{!,CompressedLogicalList-method}
+\alias{!,SimpleLogicalList-method}
+\alias{!,CompressedRleList-method}
+\alias{!,SimpleRleList-method}
+\alias{which,CompressedLogicalList-method}
+\alias{which,SimpleLogicalList-method}
+\alias{which,CompressedRleList-method}
+\alias{which,SimpleRleList-method}
+
+\alias{diff,IntegerList-method}
+\alias{diff,NumericList-method}
+\alias{diff,RleList-method}
+
+\alias{pmax,IntegerList-method}
+\alias{pmax,NumericList-method}
+\alias{pmax,RleList-method}
+\alias{pmin,IntegerList-method}
+\alias{pmin,NumericList-method}
+\alias{pmin,RleList-method}
+\alias{pmax.int,IntegerList-method}
+\alias{pmax.int,NumericList-method}
+\alias{pmax.int,RleList-method}
+\alias{pmin.int,IntegerList-method}
+\alias{pmin.int,NumericList-method}
+\alias{pmin.int,RleList-method}
+
+\alias{mean,LogicalList-method}
+\alias{mean,IntegerList-method}
+\alias{mean,NumericList-method}
+\alias{mean,RleList-method}
+\alias{var,LogicalList,missing-method}
+\alias{var,LogicalList,AtomicList-method}
+\alias{var,IntegerList,missing-method}
+\alias{var,IntegerList,AtomicList-method}
+\alias{var,NumericList,missing-method}
+\alias{var,NumericList,AtomicList-method}
+\alias{var,RleList,missing-method}
+\alias{var,RleList,AtomicList-method}
+\alias{cov,LogicalList,AtomicList-method}
+\alias{cov,IntegerList,AtomicList-method}
+\alias{cov,NumericList,AtomicList-method}
+\alias{cov,RleList,AtomicList-method}
+\alias{cor,LogicalList,AtomicList-method}
+\alias{cor,IntegerList,AtomicList-method}
+\alias{cor,NumericList,AtomicList-method}
+\alias{cor,RleList,AtomicList-method}
+\alias{sd,LogicalList-method}
+\alias{sd,IntegerList-method}
+\alias{sd,NumericList-method}
+\alias{sd,RleList-method}
+\alias{median,LogicalList-method}
+\alias{median,IntegerList-method}
+\alias{median,NumericList-method}
+\alias{median,RleList-method}
+\alias{quantile,LogicalList-method}
+\alias{quantile,IntegerList-method}
+\alias{quantile,NumericList-method}
+\alias{quantile,RleList-method}
+\alias{mad,LogicalList-method}
+\alias{mad,IntegerList-method}
+\alias{mad,NumericList-method}
+\alias{mad,RleList-method}
+\alias{IQR,LogicalList-method}
+\alias{IQR,IntegerList-method}
+\alias{IQR,NumericList-method}
+\alias{IQR,RleList-method}
+
+\alias{smoothEnds,CompressedIntegerList-method}
+\alias{smoothEnds,SimpleIntegerList-method}
+\alias{smoothEnds,NumericList-method}
+\alias{smoothEnds,RleList-method}
+\alias{runmed,CompressedIntegerList-method}
+\alias{runmed,SimpleIntegerList-method}
+\alias{runmed,NumericList-method}
 \alias{runmed,RleList-method}
+\alias{runmean,RleList-method}
 \alias{runsum,RleList-method}
 \alias{runwtsum,RleList-method}
 \alias{runq,RleList-method}
 
+\alias{nchar,CompressedCharacterList-method}
+\alias{nchar,SimpleCharacterList-method}
+\alias{nchar,CompressedRleList-method}
+\alias{nchar,SimpleRleList-method}
+\alias{chartr,ANY,ANY,CompressedCharacterList-method}
+\alias{chartr,ANY,ANY,SimpleCharacterList-method}
+\alias{chartr,ANY,ANY,CompressedRleList-method}
+\alias{chartr,ANY,ANY,SimpleRleList-method}
+\alias{tolower,CompressedCharacterList-method}
+\alias{tolower,SimpleCharacterList-method}
+\alias{tolower,CompressedRleList-method}
+\alias{tolower,SimpleRleList-method}
+\alias{toupper,CompressedCharacterList-method}
+\alias{toupper,SimpleCharacterList-method}
+\alias{toupper,CompressedRleList-method}
+\alias{toupper,SimpleRleList-method}
+\alias{sub,ANY,ANY,CompressedCharacterList-method}
+\alias{sub,ANY,ANY,SimpleCharacterList-method}
+\alias{sub,ANY,ANY,CompressedRleList-method}
+\alias{sub,ANY,ANY,SimpleRleList-method}
+\alias{gsub,ANY,ANY,CompressedCharacterList-method}
+\alias{gsub,ANY,ANY,SimpleCharacterList-method}
+\alias{gsub,ANY,ANY,CompressedRleList-method}
+\alias{gsub,ANY,ANY,SimpleRleList-method}
+
 \alias{show,AtomicList-method}
 \alias{show,RleList-method}
-
-\alias{is.na,CompressedAtomicList-method}
-\alias{is.na,SimpleAtomicList-method}
-\alias{sort,CompressedAtomicList-method}
-\alias{sort,SimpleAtomicList-method}
-\alias{table,AtomicList-method}
-\alias{unique,CompressedAtomicList-method}
-\alias{unique,SimpleAtomicList-method}
-
-\alias{which,CompressedAtomicList-method}
-\alias{which,SimpleAtomicList-method}
-
-\alias{diff,CompressedAtomicList-method}
-\alias{diff,SimpleAtomicList-method}
-\alias{mean,CompressedAtomicList-method}
-\alias{mean,SimpleAtomicList-method}
-\alias{var,CompressedAtomicList-method}
-\alias{var,SimpleAtomicList-method}
-\alias{cov,CompressedAtomicList-method}
-\alias{cov,SimpleAtomicList-method}
-\alias{cor,CompressedAtomicList-method}
-\alias{cor,SimpleAtomicList-method}
-\alias{sd,CompressedAtomicList-method}
-\alias{sd,SimpleAtomicList-method}
-\alias{median,CompressedAtomicList-method}
-\alias{median,SimpleAtomicList-method}
-\alias{quantile,CompressedAtomicList-method}
-\alias{quantile,SimpleAtomicList-method}
-\alias{mad,CompressedAtomicList-method}
-\alias{mad,SimpleAtomicList-method}
-\alias{IQR,CompressedAtomicList-method}
-\alias{IQR,SimpleAtomicList-method}
-\alias{smoothEnds,CompressedAtomicList-method}
-\alias{smoothEnds,SimpleAtomicList-method}
-\alias{runmed,CompressedAtomicList-method}
-\alias{runmed,SimpleAtomicList-method}
-
-\alias{nchar,CompressedAtomicList-method}
-\alias{nchar,SimpleAtomicList-method}
-\alias{chartr,CompressedAtomicList-method}
-\alias{chartr,SimpleAtomicList-method}
-\alias{tolower,CompressedAtomicList-method}
-\alias{tolower,SimpleAtomicList-method}
-\alias{toupper,CompressedAtomicList-method}
-\alias{toupper,SimpleAtomicList-method}
-\alias{sub,CompressedAtomicList-method}
-\alias{sub,SimpleAtomicList-method}
-\alias{gsub,CompressedAtomicList-method}
-\alias{gsub,SimpleAtomicList-method}
 
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}
@@ -296,138 +354,21 @@
 }
 
 \section{Other Basic Methods}{
-  The \code{SimpleAtomicList} and \code{CompressedAtomicList} objects
-  also support a large number of basic methods. Like the group generics
-  above, these methods perform the corresponding operation on each
-  element of the list separately. The methods include: 
+  The AtomicList objects also support a large number of basic methods.
+  Like the group generics above, these methods perform the corresponding
+  operation on each element of the list separately. The methods are: 
 
-  \code{is.na}, \code{sort}, \code{table}, \code{unique},
-  \code{which},
-  \code{diff}, \code{mean}, \code{var}, \code{cov}, \code{cor},
-  \code{sd}, \code{median}, \code{quantile}, \code{mad}, \code{IQR},
-  \code{smoothEnds}, \code{runmed},
-  \code{nchar}, \code{chartr}, \code{tolower}, \code{toupper},
-  \code{sub}, \code{gsub}
-}
-
-\section{Fixed Width Running Window Summaries}{
-  RleList objects have support for the following fixed width running window
-  summary methods:
   \describe{
-    \item{}{
-      \code{runmean(x, k, endrule = c("drop", "constant"))}:
-      Calculates the means for fixed width running windows across \code{x}.
-      \describe{
-        \item{\code{x}}{An RleList object containing integer or numeric
-          Rle elements.}
-        \item{\code{k}}{An integer indicating the fixed width of the running
-          window. Must be odd when \code{endrule == "constant"}.}
-        \item{endrule}{A character string indicating how the values at the
-          beginning and the end (of the data) should be treated.
-          \describe{
-            \item{\code{"drop"}}{do not extend the running statistics to
-              be the same length as the underlying vectors;}
-            \item{\code{"constant"}}{copies running statistic to the
-              first values and analogously for the last ones making the
-              smoothed ends \emph{constant};}
-          }
-        }
-      }
-    }
-    \item{}{
-      \code{runmed(x, k, endrule = c("median", "keep", "constant"))}:
-      Calculates the medians for fixed width running windows across \code{x}.
-      \describe{
-        \item{\code{x}}{An RleList object containing integer or numeric
-          Rle elements.}
-        \item{\code{k}}{An integer indicating the fixed width of the running
-          window. Must be odd when \code{endrule != "drop"}.}
-        \item{endrule}{A character string indicating how the values at the
-          beginning and the end (of the data) should be treated.
-          \describe{
-            \item{\code{"drop"}}{do not extend the running statistics to
-              be the same length as the underlying vectors;}
-            \item{\code{"keep"}}{keeps the first and last \eqn{k_2}{k2}
-              values at both ends, where \eqn{k_2}{k2} is the half-bandwidth
-              \code{k2 = k \%/\% 2}, i.e., \code{y[[i]][j] = x[[i]][j]} for
-              \eqn{j \in \{1,\ldots,k_2; n-k_2+1,\ldots,n\}}
-              {j = 1,..,k2 and (n-k2+1),..,n};}
-            \item{\code{"constant"}}{copies the running statistic to the
-              first values and analogously for the last ones making the
-              smoothed ends \emph{constant};}
-            \item{\code{"median"}}{the default, smooths the ends by using
-              symmetrical medians of subsequently smaller bandwidth, but
-              for the very first and last value where Tukey's robust
-              end-point rule is applied, see \code{\link[stats]{smoothEnds}}.}
-          }
-        }
-      }
-    }
-    \item{}{
-      \code{runsum(x, k, endrule = c("drop", "constant"))}:
-      Calculates the sums for fixed width running windows across \code{x}.
-      \describe{
-        \item{\code{x}}{An RleList object containing integer or numeric
-          Rle elements.}
-        \item{\code{k}}{An integer indicating the fixed width of the
-          running window. Must be odd when \code{endrule == "constant"}.}
-        \item{endrule}{A character string indicating how the values at the
-          beginning and the end (of the data) should be treated.
-          \describe{
-            \item{\code{"drop"}}{do not extend the running statistics to
-              be the same length as the underlying vectors;}
-            \item{\code{"constant"}}{copies running statistic to the
-              first values and analogously for the last ones making the
-              smoothed ends \emph{constant};}
-          }
-        }
-      }
-    }
-    \item{}{
-      \code{runwtsum(x, k, wt, endrule = c("drop", "constant"))}:
-      Calculates the sums for fixed width running windows across \code{x}.
-      \describe{
-        \item{\code{x}}{An RleList object containing integer or numeric
-          Rle elements.}
-        \item{\code{k}}{An integer indicating the fixed width of the
-          running window. Must be odd when \code{endrule == "constant"}.}
-        \item{\code{wt}}{A numeric vector of length \code{k} that
-          provides the weights to use.}
-        \item{endrule}{A character string indicating how the values at the
-          beginning and the end (of the data) should be treated.
-          \describe{
-            \item{\code{"drop"}}{do not extend the running statistics to
-              be the same length as the underlying vectors;}
-            \item{\code{"constant"}}{copies running statistic to the
-              first values and analogously for the last ones making the
-              smoothed ends \emph{constant};}
-          }
-        }
-      }
-    }
-    \item{}{
-      \code{runq(x, k, i, endrule = c("drop", "constant"))}:
-      Calculates the order statistic for fixed width running windows across
-      \code{x}.
-      \describe{
-        \item{\code{x}}{An RleList object containing integer or numeric
-          Rle elements.}
-        \item{\code{k}}{An integer indicating the fixed width of the
-          running window. Must be odd when \code{endrule == "constant"}.}
-        \item{\code{i}}{An integer indicating which order statistic to
-          calculate.}
-        \item{endrule}{A character string indicating how the values at the
-          beginning and the end (of the data) should be treated.
-          \describe{
-            \item{\code{"drop"}}{do not extend the running statistics to
-              be the same length as the underlying vectors;}
-            \item{\code{"constant"}}{copies running statistic to the
-              first values and analogously for the last ones making the
-              smoothed ends \emph{constant};}
-          }
-        }
-      }
-    }
+    \item{General}{\code{is.na}, \code{sort}, \code{table}, \code{unique}}
+    \item{Logical}{\code{!}, \code{which}}
+    \item{Numeric}{\code{diff},
+                   \code{pmax}, \code{pmax.int}, \code{pmin}, \code{pmin.int},
+                   \code{mean}, \code{var}, \code{cov}, \code{cor}, \code{sd},
+                   \code{median}, \code{quantile}, \code{mad}, \code{IQR}}
+    \item{Running Window}{\code{smoothEnds}, \code{runmed}. \code{runmean},
+                          \code{runsum}, \code{runwtsum}, \code{runq}}
+    \item{Character}{\code{nchar}, \code{chartr}, \code{tolower},
+                     \code{toupper}, \code{sub}, \code{gsub}}
   }
 }
 

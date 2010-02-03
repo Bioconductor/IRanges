@@ -143,19 +143,6 @@ test_List_combine <- function() {
   }
 }
 
-test_List_GroupGenerics <- function() {
-  int1 <- c(1L,2L,3L,5L,2L,8L)
-  int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)
-  for (compress in c(TRUE, FALSE)) {
-    col1 <- IntegerList(one = int1, int2)
-    checkIdentical(as.list(col1 + col1), Map("+", col1, col1))
-    checkIdentical(as.list(log(col1)), lapply(col1, log))
-    checkIdentical(as.list(round(sqrt(col1))),
-                   lapply(col1, function(x) round(sqrt(x))))
-    checkIdentical(sum(col1), sapply(col1, sum))
-  }
-}
-
 test_List_apply <- function() {
   int1 <- c(1L,2L,3L,5L,2L,8L)
   int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)
