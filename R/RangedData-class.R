@@ -548,12 +548,12 @@ setMethod("split", "RangedData", function(x, f, drop = FALSE) {
 setMethod("rbind", "RangedData", function(..., deparse.level=1) {
   args <- unname(list(...))
   rls <- lapply(args, ranges)
-  univ1 <- universe(rls[[1L]])
-  if (!all(sapply(sapply(rls, universe), identical, univ1)))
+  if (!all(sapply(sapply(rls, universe), identical, universe(rls[[1L]]))))
     stop("All args in '...' must have the same universe")
   nms <- unique(unlist(lapply(args, names), use.names=FALSE))
-  rls <- lapply(rls, function(x) as.list(x)[nms])
-  dfs <- lapply(args, function(x) as.list(values(x))[nms])
+  rls <- lapply(rls, function(x) {y <- as.list(x)[nms];names(y) <- nms;y})
+  dfs <-
+    lapply(args, function(x) {y <- as.list(values(x))[nms];names(y) <- nms;y})
   safe.c <- function(...) {
     x <- list(...)
     do.call(c, x[!sapply(x, is.null)])
