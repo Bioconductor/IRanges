@@ -477,6 +477,13 @@ setMethod("is.na", "Rle",
 
 setMethod("length", "Rle", function(x) sum(runLength(x)))
 
+setMethod("match", "Rle",
+          function(x, table, nomatch = NA_integer_, incomparables = NULL)
+              Rle(values =
+                  match(runValue(x), table = table, nomatch = nomatch,
+                        incomparables = incomparables), 
+                  lengths = runLength(x), check = FALSE))
+
 setMethod("rep", "Rle",
           function(x, times, length.out, each)
           {

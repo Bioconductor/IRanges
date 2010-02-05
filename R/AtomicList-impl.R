@@ -551,9 +551,12 @@ setMethod("Complex", "SimpleAtomicList",
 ### More list-ized methods
 ###
 
-setListMethod <- function(f, signature = character(),
+setListMethod <- function(f,
+                          inputClass,
                           outputBaseClass,
                           whichArg = 1L,
+                          remainingSignature = character(),
+                          mapply = FALSE,
                           endoapply = FALSE,
                           applyToUnlist = FALSE,
                           where = topenv(parent.frame()))
@@ -576,8 +579,23 @@ setListMethod <- function(f, signature = character(),
         } else if (missing(outputBaseClass)) {
             call <- as.call(c(as.name("sapply"), args, list(simplify = TRUE)))
         } else {
-            call <- as.call(c(as.name("lapply"), args))
-            if (extends(signature, "SimpleList")) {
+            if (mapply) {
+                if (length(args) <= 3) {
+                    call <-
+                      as.call(c(as.name("mapply"), args[c(2:1,3L)],
+                                SIMPLIFY = FALSE))
+                } else {
+                    call <-
+                      as.call(c(as.name("mapply"),
+                                args[c(2:1,3L)],
+                                MoreArgs =
+                                as.call(c(as.name("list"), tail(args, -3))),
+                                SIMPLIFY = FALSE))
+                }
+            } else {
+                call <- as.call(c(as.name("lapply"), args))
+            }
+            if (extends(inputClass, "SimpleList")) {
                 call <-
                   as.call(c(as.name("new2"),
                             paste("Simple", outputBaseClass, sep=""),
@@ -590,12 +608,16 @@ setListMethod <- function(f, signature = character(),
     }
     def <- as.function(c(fargs, call))
     environment(def) <- parent.frame()
-    setMethod(f, c(rep("ANY", whichArg - 1L), signature), def, where)
+    setMethod(f, c(rep("ANY", whichArg - 1L), inputClass, remainingSignature),
+              def, where)
 }
 
-setAtomicListMethod <- function(f, inputBaseClass = "AtomicList",
+setAtomicListMethod <- function(f,
+                                inputBaseClass = "AtomicList",
                                 outputBaseClass,
                                 whichArg = 1L,
+                                remainingSignature = character(),
+                                mapply = FALSE,
                                 endoapply = FALSE,
                                 applyToUnlist = FALSE,
                                 addRleList = TRUE,
@@ -604,25 +626,33 @@ setAtomicListMethod <- function(f, inputBaseClass = "AtomicList",
 {
     if (missing(outputBaseClass)) {
         for (i in inputBaseClass)
-            setListMethod(f, i, whichArg = whichArg, endoapply = endoapply,
-                          where = where)
+            setListMethod(f, i, whichArg = whichArg,
+                          remainingSignature = remainingSignature,
+                          endoapply = endoapply, where = where)
     } else if (endoapply) {
-        setListMethod(f, "AtomicList", whichArg = whichArg, endoapply = TRUE,
+        setListMethod(f, "AtomicList", whichArg = whichArg,
+                      remainingSignature = remainingSignature, endoapply = TRUE,
                       where = where)
     } else {
         setListMethod(f, paste("Simple", inputBaseClass, sep = ""),
                       outputBaseClass = outputBaseClass, whichArg = whichArg,
+                      remainingSignature = remainingSignature, mapply = mapply,
                       where = where)
         setListMethod(f, paste("Compressed", inputBaseClass, sep = ""),
                       outputBaseClass = outputBaseClass, whichArg = whichArg,
+                      remainingSignature, mapply = mapply,
                       applyToUnlist = applyToUnlist, where = where)
         if (addRleList) {
             setListMethod(f, "SimpleRleList",
                           outputBaseClass = rleListOutputBaseClass,
-                          whichArg = whichArg, where = where)
+                          whichArg = whichArg,
+                          remainingSignature = remainingSignature,
+                          mapply = mapply, where = where)
             setListMethod(f, "CompressedRleList",
                           outputBaseClass = rleListOutputBaseClass,
-                          whichArg = whichArg, applyToUnlist = applyToUnlist,
+                          whichArg = whichArg,
+                          remainingSignature = remainingSignature,
+                          mapply = mapply, applyToUnlist = applyToUnlist,
                           where = where)
         }
     }
@@ -632,8 +662,16 @@ setAtomicListMethod <- function(f, inputBaseClass = "AtomicList",
 ### General methods
 ###
 
+setAtomicListMethod("%in%", outputBaseClass = "LogicalList",
+                    remainingSignature = "atomic")
+setAtomicListMethod("%in%", outputBaseClass = "LogicalList",
+                    remainingSignature = "AtomicList", mapply = TRUE)
 setAtomicListMethod("is.na", outputBaseClass = "LogicalList",
                     applyToUnlist = TRUE)
+setAtomicListMethod("match", outputBaseClass = "IntegerList",
+                    remainingSignature = "atomic")
+setAtomicListMethod("match", outputBaseClass = "IntegerList",
+                    remainingSignature = "AtomicList", mapply = TRUE)
 setAtomicListMethod("sort", endoapply = TRUE)
 setMethod("table", "AtomicList",
           function(...)

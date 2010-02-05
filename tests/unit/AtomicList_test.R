@@ -19,7 +19,23 @@ test_AtomicList_general <- function() {
     for (compress in c(TRUE, FALSE)) {
         for (type in c("IntegerList", "RleList")) {
             list1 <- do.call(type, list(one = vec1, vec2, compress = compress))
+            checkIdentical(as.list(list1 %in% c(1L, 5L)),
+                           lapply(list1, "%in%", c(1L, 5L)))
+            checkIdentical(lapply(list1 %in%
+                                  IntegerList(one = vec1, vec2,
+                                              compress = compress),
+                                  as.vector),
+                           mapply("%in%", lapply(list1, as.vector),
+                                  list(one = vec1, vec2)))
             checkIdentical(as.list(is.na(list1)), lapply(list1, is.na))
+            checkIdentical(as.list(match(list1, c(1L, 5L))),
+                           lapply(list1, match, c(1L, 5L)))
+            checkIdentical(lapply(match(list1,
+                                        IntegerList(one = vec1, vec2,
+                                                    compress = compress)),
+                                  as.vector),
+                           mapply(match, lapply(list1, as.vector),
+                                  list(one = vec1, vec2)))
             checkIdentical(as.list(sort(list1)), lapply(list1, sort))
             checkIdentical(as.list(unique(list1)), lapply(list1, unique))
         }

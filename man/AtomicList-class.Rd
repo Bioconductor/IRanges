@@ -101,10 +101,26 @@
 \alias{Complex,CompressedAtomicList-method}
 \alias{Complex,SimpleAtomicList-method}
 
+\alias{\%in\%,CompressedAtomicList,atomic-method}
+\alias{\%in\%,SimpleAtomicList,atomic-method}
+\alias{\%in\%,CompressedRleList,atomic-method}
+\alias{\%in\%,SimpleRleList,atomic-method}
+\alias{\%in\%,CompressedAtomicList,AtomicList-method}
+\alias{\%in\%,SimpleAtomicList,AtomicList-method}
+\alias{\%in\%,CompressedRleList,AtomicList-method}
+\alias{\%in\%,SimpleRleList,AtomicList-method}
 \alias{is.na,CompressedAtomicList-method}
 \alias{is.na,SimpleAtomicList-method}
 \alias{is.na,CompressedRleList-method}
 \alias{is.na,SimpleRleList-method}
+\alias{match,CompressedAtomicList,atomic-method}
+\alias{match,SimpleAtomicList,atomic-method}
+\alias{match,CompressedRleList,atomic-method}
+\alias{match,SimpleRleList,atomic-method}
+\alias{match,CompressedAtomicList,AtomicList-method}
+\alias{match,SimpleAtomicList,AtomicList-method}
+\alias{match,CompressedRleList,AtomicList-method}
+\alias{match,SimpleRleList,AtomicList-method}
 \alias{sort,AtomicList-method}
 \alias{table,AtomicList-method}
 \alias{unique,AtomicList-method}
@@ -359,7 +375,8 @@
   operation on each element of the list separately. The methods are: 
 
   \describe{
-    \item{General}{\code{is.na}, \code{sort}, \code{table}, \code{unique}}
+    \item{General}{\code{\%in\%}, \code{is.na}, \code{match}, \code{sort},
+                   \code{table}, \code{unique}}
     \item{Logical}{\code{!}, \code{which}}
     \item{Numeric}{\code{diff},
                    \code{pmax}, \code{pmax.int}, \code{pmin}, \code{pmin.int},

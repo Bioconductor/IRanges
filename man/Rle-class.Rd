@@ -71,6 +71,7 @@
 \alias{findRun,Rle-method}
 \alias{is.na,Rle-method}
 \alias{length,Rle-method}
+\alias{match,Rle-method}
 \alias{rep,Rle-method}
 \alias{rep.int}
 \alias{rep.int,Rle-method}
@@ -363,6 +364,18 @@
     \item{}{
       \code{length(x)}:
       Returns the underlying vector length of \code{x}.
+    }
+    \item{}{
+      \code{match(x, table, nomatch = NA_integer_, incomparables = NULL)}:
+      Matches the values in \code{x} to \code{table}:
+      \describe{
+        \item{\code{table}}{the values to be matched against.}
+        \item{\code{nomatch}}{the value to be returned in the case when no
+          match is found.}
+        \item{\code{incomparables}}{a vector of values that cannot be matched.
+          Any value in \code{x} matching a value in this vector is assigned
+          the \code{nomatch} value.}
+      }
     }
     \item{}{
       \code{rep(x, times, length.out, each)}, \code{rep.int(x, times)}:
