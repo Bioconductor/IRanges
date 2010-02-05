@@ -314,7 +314,7 @@ setMethod("append", c("Sequence", "Sequence"),
               else if (after >= xlen)
                   c(x, values)
               else
-                  c(x[1L:after], values, x[(after + 1L):xlen])
+                  c(window(x, 1L, after), values, window(x, after + 1L, xlen))
              })
 
 .FilterDefault <- base::Filter
