@@ -70,6 +70,7 @@
 \alias{findRun}
 \alias{findRun,Rle-method}
 \alias{is.na,Rle-method}
+\alias{is.unsorted,Rle-method}
 \alias{length,Rle-method}
 \alias{match,Rle-method}
 \alias{rep,Rle-method}
@@ -360,6 +361,14 @@
     \item{}{
       \code{is.na(x)}:
       Returns a logical Rle indicating with values are \code{NA}.
+    }
+    \item{}{
+      \code{is.unsorted(x, na.rm = FALSE, strictly = FALSE)}:
+      Returns a logical value specifying if \code{x} is unsorted.
+      \describe{
+        \item{\code{na.rm}}{remove missing values from check.}
+        \item{\code{strictly}}{check for _strictly_ increasing values.}
+      }
     }
     \item{}{
       \code{length(x)}:

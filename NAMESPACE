@@ -196,7 +196,7 @@ exportMethods(
     rownames, colnames, dimnames,
     "rownames<-", "colnames<-", "dimnames<-",
     duplicated, unique,
-    order, sort, rank,
+    order, sort, rank, is.unsorted,
     rev,
     rep, rep.int,
     head, tail,

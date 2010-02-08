@@ -475,6 +475,15 @@ setMethod("is.na", "Rle",
               Rle(values = is.na(runValue(x)), lengths = runLength(x),
                   check = FALSE))
 
+setMethod("is.unsorted", "Rle",
+          function(x, na.rm = FALSE, strictly = FALSE)
+          {
+              ans <- is.unsorted(runValue(x), na.rm = na.rm, strictly = strictly)
+              if (strictly && !ans)
+                  ans <- any(runLength(x) > 1L)
+              ans
+          })
+
 setMethod("length", "Rle", function(x) sum(runLength(x)))
 
 setMethod("match", "Rle",
