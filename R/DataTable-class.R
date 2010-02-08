@@ -372,7 +372,7 @@ setMethod("show", "DataTable",
                   nc, ifelse(nc == 1, " column\n", " columns\n"),
                   sep = "")
               if (nr > 0 && nc > 0) {
-                  k <- min(nr, 10)
+                  k <- ifelse(nr <= 12L, nr, min(nr, 10L))
                   out <-
                     as.matrix(format.data.frame(do.call(data.frame,
                               lapply(object,
@@ -388,8 +388,6 @@ setMethod("show", "DataTable",
                   print(out, quote = FALSE, right = TRUE)
                   diffK <- nr - k
                   if (diffK > 0)
-                      cat("...\n<", diffK,
-                          ifelse(diffK == 1, " more row>\n", " more rows>\n"),
-                          sep="")
+                      cat("...\n<", diffK, " more rows>\n", sep="")
               }
           })

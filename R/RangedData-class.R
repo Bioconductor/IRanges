@@ -687,7 +687,7 @@ setMethod("show", "RangedData", function(object) {
       nc, ifelse(nc == 1, " value column across ", " value columns across "),
       lo, ifelse(lo == 1, " space\n", " spaces\n"), sep = "")
   if (nr > 0) {
-    k <- min(nr, 10)
+    k <- ifelse(nr <= 12L, nr, min(nr, 10L))
     subset  <- object[seq_len(k),]
     rangesSubset <- unlist(ranges(subset), use.names=FALSE)
     valuesSubset <- unlist(values(subset), use.names=FALSE)
@@ -714,10 +714,7 @@ setMethod("show", "RangedData", function(object) {
     print(out, quote = FALSE, right = TRUE)
     diffK <- nr - k
     if (diffK > 0)
-      cat("...\n<", diffK,
-          ifelse(diffK == 1,
-                 " more row>\n", " more rows>\n"),
-          sep="")
+      cat("...\n<", diffK, " more rows>\n", sep="")
   }
 })
 
