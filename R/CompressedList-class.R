@@ -79,25 +79,26 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
     } else if (!extends(class(unlistData), elementTypeData)) {
         stop("'unlistData' not of class ", elementTypeData)
     } else if (!is.null(splitFactor)) {
+        if (!is(splitFactor, "Rle"))
+            splitFactor <- Rle(splitFactor)
         if (is.unsorted(splitFactor)) {
-            orderElts <- order(splitFactor)
+            orderElts <- order(as.vector(splitFactor))
             if (length(dim(unlistData)) < 2)
                 unlistData <- unlistData[orderElts]
             else
                 unlistData <- unlistData[orderElts, , drop = FALSE]
-            splitFactor <- splitFactor[orderElts]
+            splitFactor <- sort(splitFactor)
+            if (is.factor(runValue(splitFactor)) && drop)
+                runValue(splitFactor) <- runValue(splitFactor)[drop = TRUE]
         }
-        if (is.factor(splitFactor) && drop)
-            splitFactor <- splitFactor[drop = TRUE]
-        splitRle <- Rle(splitFactor)
-        if (is.factor(splitFactor) && !drop) {
-            NAMES <- levels(splitFactor)
+        if (is.factor(runValue(splitFactor)) && !drop) {
+            NAMES <- levels(runValue(splitFactor))
             width <- structure(rep.int(0L, length(NAMES)), names = NAMES)
-            width[as.character(runValue(splitRle))] <- runLength(splitRle)
+            width[as.character(runValue(splitFactor))] <- runLength(splitFactor)
             end <- cumsum(unname(width))
         } else {
-            NAMES <- as.character(runValue(splitRle))
-            end <- cumsum(runLength(splitRle))
+            NAMES <- as.character(runValue(splitFactor))
+            end <- cumsum(runLength(splitFactor))
         }
     }
 
