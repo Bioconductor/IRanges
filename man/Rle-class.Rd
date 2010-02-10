@@ -73,7 +73,7 @@
 \alias{is.na,Rle-method}
 \alias{is.unsorted,Rle-method}
 \alias{length,Rle-method}
-\alias{match,Rle-method}
+\alias{match,Rle,ANY-method}
 \alias{rep,Rle-method}
 \alias{rep.int}
 \alias{rep.int,Rle-method}
