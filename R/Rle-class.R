@@ -377,11 +377,19 @@ setMethod("[", "Rle",
 setReplaceMethod("[", "Rle",
                  function(x, i, j,..., value) {
                      if (length(value) <= 1) {
-                         output <- callNextMethod(x = x, i = i, value = value)
+                         if (missing(i))
+                             output <- callNextMethod(x = x, value = value)
+                         else
+                             output <-
+                               callNextMethod(x = x, i = i, value = value)
                      } else {
                          x <- as.vector(x)
                          value <- as.vector(value)
-                         output <- Rle(callGeneric(x = x, i = i, value = value))
+                         if (missing(i))
+                             output <- Rle(callGeneric(x = x, value = value))
+                         else
+                             output <-
+                               Rle(callGeneric(x = x, i = i, value = value))
                      }
                      output
                  })
