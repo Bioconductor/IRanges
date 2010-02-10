@@ -682,7 +682,7 @@ setMethod("table", "AtomicList",
                   nms <- as.character(seq_len(length(x)))
               }
               nms <- factor(rep.int(nms, elementLengths(x)), levels = nms)
-              ans <- table(nms, unlist(x, use.names = FALSE))
+              ans <- table(nms, as.vector(unlist(x, use.names = FALSE)))
               names(dimnames(ans)) <- NULL
               ans
           })
