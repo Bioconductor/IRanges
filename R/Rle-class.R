@@ -458,12 +458,14 @@ setMethod("c", "Rle",
           {
               if (recursive)
                   stop("'recursive' mode is not supported")
-              args <- unname(list(x, ...))
-              if (!all(unlist(lapply(args, is, "Rle"))))
-                  stop("all arguments in '...' must be Rle objects")
-              Rle(values  = unlist(lapply(args, slot, "values")),
-                  lengths = unlist(lapply(args, slot, "lengths")),
-                  check = FALSE)
+              args <- RleList(unname(list(x, ...)))
+              args <- args[elementLengths(args) > 0]
+              if (length(args) == 0)
+                  x
+              else
+                  Rle(values  = unlist(lapply(args, slot, "values")),
+                      lengths = unlist(lapply(args, slot, "lengths")),
+                      check = FALSE)
           })
 
 setGeneric("findRange", signature = "vec",
