@@ -376,7 +376,7 @@ setMethod("[", "Rle",
 
 setReplaceMethod("[", "Rle",
                  function(x, i, j,..., value) {
-                     if (length(value) <= 1) {
+                     if (is.null(value) || length(value) == 1) {
                          if (missing(i))
                              output <- callNextMethod(x = x, value = value)
                          else
