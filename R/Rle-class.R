@@ -374,6 +374,18 @@ setMethod("[", "Rle",
               output
           })
 
+setReplaceMethod("[", "Rle",
+                 function(x, i, j,..., value) {
+                     if (length(value) <= 1) {
+                         output <- callNextMethod(x = x, i = i, value = value)
+                     } else {
+                         x <- as.vector(x)
+                         value <- as.vector(value)
+                         output <- Rle(callGeneric(x = x, i = i, value = value))
+                     }
+                     output
+                 })
+
 setMethod("%in%", "Rle",
           function(x, table)
               Rle(values = runValue(x) %in% table, lengths = runLength(x),

@@ -101,6 +101,11 @@ test_Rle_general <- function() {
     checkIdentical(as.vector(seqselect(xRle, IRanges(start = 1:3, width = 1:3))),
                    x[c(1,2,3,3,4,5)])
     z <- x
+    z[c(1,5,3)] <- 3:1
+    zRle <- xRle
+    zRle[c(1,5,3)] <- 3:1
+    checkIdentical(z, as.vector(zRle))
+    z <- x
     z[1:5] <- 0L
     zRle <- xRle
     seqselect(zRle, IRanges(start = 1:3, width = 1:3)) <- 0L
