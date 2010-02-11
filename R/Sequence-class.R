@@ -145,30 +145,36 @@ function(idx, nms, lx, dup.nms = FALSE)
     msg <- NULL
     if (!is.atomic(idx) && !is(idx, "Rle")) {
         msg <- "invalid subscript type"
-    } else if (!is.null(idx) && any(is.na(idx))) {
-        msg <- "subscript contains NAs"
     } else if (is.numeric(idx)) {
-        if (!is.integer(idx)) {
+        if (!is.integer(idx))
             idx <- as.integer(idx)
-        }
-        if (any(abs(idx) > lx))
-            msg <- "subscript out of bounds"
-        if (any(idx < 0) && any(idx > 0))
+        if (anyMissingOrOutside(idx, -lx, lx))
+            msg <- "subscript contains NAs or out of bounds indices"
+        else if (anyMissingOrOutside(idx, 0L, lx) &&
+                 anyMissingOrOutside(idx, -lx, 0L))
             msg <- "negative and positive indices cannot be mixed"
     } else if (is.logical(idx)) {
-        if (length(idx) > lx)
+        if (anyMissing(idx))
+            msg <- "subscript contains NAs"
+        else if (length(idx) > lx)
             msg <- "subscript out of bounds"
     } else if (is.character(idx) || is.factor(idx)) {
-        if (is.null(nms))
+        if (anyMissing(idx))
+            msg <- "subscript contains NAs"
+        else if (is.null(nms))
             msg <- "cannot subset by character when names are NULL"
-        if (dup.nms)
-            m <- pmatch(idx, nms, duplicates.ok = TRUE)
-        else
-            m <- match(idx, nms)
-        if (!dup.nms && any(is.na(m)))
-            msg <- "mismatching names"
+        else {
+            if (dup.nms)
+                m <- pmatch(idx, nms, duplicates.ok = TRUE)
+            else
+                m <- match(idx, nms)
+            if (!dup.nms && anyMissing(m))
+                msg <- "mismatching names"
+        }
     } else if (is(idx, "Rle")) {
-        if (length(idx) > lx)
+        if (anyMissing(runValue(idx)))
+            msg <- "subscript contains NAs"
+        else if (length(idx) > lx)
             msg <- "subscript out of bounds"
     } else if (!is.null(idx)) {
         msg <- "invalid subscript type"
@@ -888,25 +894,25 @@ function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)
     N <- length(X)
     if (N != length(Y))
         stop("'X' and 'Y' must be of equal length")
-    
-    if (length(SHIFT) == 0 || !is.numeric(SHIFT) ||
-            any(is.na(SHIFT)) || any(SHIFT < 0))
+
+    if (!is.integer(SHIFT))
+        SHIFT <- as.integer(SHIFT)
+    if (length(SHIFT) == 0 || anyMissingOrOutside(SHIFT, 0L))
         stop("all 'SHIFT' values must be non-negative")
-    SHIFT <- as.integer(SHIFT)
-    
-    if (length(OFFSET) == 0 || !is.numeric(OFFSET) ||
-            any(is.na(OFFSET)) || any(OFFSET < 0))
+
+    if (!is.integer(OFFSET))
+        OFFSET <- as.integer(OFFSET)
+    if (length(OFFSET) == 0 || anyMissingOrOutside(OFFSET, 0L))
         stop("'OFFSET' must be non-negative")
-    OFFSET <- as.integer(OFFSET)
-    
+
     ## Perform X setup
     shiftedStartX <- rep.int(1L + OFFSET, length(SHIFT))
     shiftedEndX <- N - SHIFT
-    
+
     ## Perform Y setup
     shiftedStartY <- 1L + SHIFT
     shiftedEndY <- rep.int(N - OFFSET, length(SHIFT))
-    
+
     if (verbose) {
         maxI <- length(SHIFT)
         ans <-

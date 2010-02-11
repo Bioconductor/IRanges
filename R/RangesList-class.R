@@ -746,7 +746,7 @@ setAs("RleList", "CompressedIRangesList",
       {
         if ((length(from) > 0) &&
             (!is.logical(runValue(from[[1L]])) ||
-             any(is.na(runValue(from[[1L]])))))
+             anyMissing(runValue(from[[1L]]))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a CompressedIRangesList object")
         newCompressedList("CompressedIRangesList",
@@ -760,7 +760,7 @@ setAs("RleList", "SimpleIRangesList",
       {
         if ((length(from) > 0) &&
             (!is.logical(runValue(from[[1L]])) ||
-             any(is.na(runValue(from[[1L]])))))
+             anyMissing(runValue(from[[1L]]))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a SimpleIRangesList object")
         newSimpleList("SimpleIRangesList",
@@ -784,7 +784,7 @@ setAs("RleList", "CompressedNormalIRangesList",
       {
         if ((length(from) > 0) &&
             (!is.logical(runValue(from[[1L]])) ||
-             any(is.na(runValue(from[[1L]])))))
+             anyMissing(runValue(from[[1L]]))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a CompressedNormalIRangesList object")
         newCompressedList("CompressedNormalIRangesList",
@@ -798,7 +798,7 @@ setAs("RleList", "SimpleNormalIRangesList",
       {
         if ((length(from) > 0) &&
             (!is.logical(runValue(from[[1L]])) ||
-             any(is.na(runValue(from[[1L]])))))
+             anyMissing(runValue(from[[1L]]))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a SimpleNormalIRangesList object")
         newSimpleList("SimpleNormalIRangesList",

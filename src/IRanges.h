@@ -388,6 +388,11 @@ void _vector_mcopy(
 );
 
 
+/* anyMissing.c */
+
+SEXP anyMissing(SEXP x);
+
+
 /* SEXP_utils.c */
 
 const char *_get_classname(SEXP x);
@@ -395,6 +400,8 @@ const char *_get_classname(SEXP x);
 SEXP address_asSTRSXP(SEXP s);
 
 SEXP listofvectors_lengths(SEXP x);
+
+SEXP Integer_any_missing_or_outside(SEXP x, SEXP lower, SEXP upper);
 
 SEXP Integer_diff_with_0(SEXP x);
 

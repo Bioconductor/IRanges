@@ -57,7 +57,7 @@ setGeneric("viewRangeMaxs",
 setMethod("viewRangeMaxs", "RleViews",
           function(x, na.rm = FALSE) {
               maxs <- viewWhichMaxs(trim(x), na.rm = na.rm)
-              if (any(is.na(maxs)))
+              if (anyMissing(maxs))
                   stop("missing values present, set 'na.rm = TRUE'")
               findRange(maxs, subject(x))
           })
@@ -67,7 +67,7 @@ setGeneric("viewRangeMins",
 setMethod("viewRangeMins", "RleViews",
           function(x, na.rm = FALSE) {
               mins <- viewWhichMins(trim(x), na.rm = na.rm)
-              if (any(is.na(mins)))
+              if (anyMissing(mins))
                   stop("missing values present, set 'na.rm = TRUE'")
               findRange(mins, subject(x))
           })

@@ -232,7 +232,7 @@ setMethod("==", signature(e1="XIntegerViews", e2="XInteger"),
 setMethod("==", signature(e1="XIntegerViews", e2="integer"),
     function(e1, e2)
     {
-        if (length(e2) == 0 || any(is.na(e2)))
+        if (length(e2) == 0 || anyMissing(e2))
             stop("comparison between an XIntegerViews object and an integer ",
                  "vector of length 0 or with NAs is not supported")
         XIntegerViews.equal(e1, as(e2, "Views"))

@@ -38,7 +38,7 @@ setReplaceMethod("active", "FilterRules", function(x, value) {
     nfilters <- length(x)
     if (length(value) > nfilters)
       stop("length of 'value' must not be greater than that of 'filters'")
-    if (any(is.na(value)))
+    if (anyMissing(value))
       stop("'value' cannot contain NA's")
     if (nfilters && (nfilters %% length(value) != 0))
       stop("number of filters not a multiple of 'value' length")
@@ -79,7 +79,7 @@ FilterRules <- function(exprs = list(), ..., active = TRUE) {
 
   active <- rep(active, length.out = length(exprs))
 
-  if (!is.logical(active) || any(is.na(active)))
+  if (!is.logical(active) || anyMissing(active))
     stop("'active' must be logical without any missing values")
   if (length(active) > length(exprs))
     stop("length of 'active' is greater than number of rules")
@@ -136,7 +136,7 @@ setMethod("[", "FilterRules",
     "length of 'active' must match length of 'filters'"
   else if (!identical(names(active(x)), names(x)))
     "names of 'active' must match those of 'filters'"
-  else if (any(is.na(active(x))))
+  else if (anyMissing(active(x)))
     "'active' cannot contain NA's"
   else NULL
 }

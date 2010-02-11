@@ -51,7 +51,7 @@ setGeneric("active<-", signature="x",
 setReplaceMethod("active", "MaskCollection",
     function(x, value)
     {
-        if (!is.logical(value) || any(is.na(value)))
+        if (!is.logical(value) || anyMissing(value))
             stop("'value' must be a logical vector with no NAs")
         x@active[] <- value
         x
@@ -138,7 +138,7 @@ setReplaceMethod("desc", "MaskCollection",
 
 .valid.MaskCollection.active <- function(x)
 {
-    if (!is.logical(active(x)) || any(is.na(active(x))))
+    if (!is.logical(active(x)) || anyMissing(active(x)))
         return("the 'active' slot must be a logical vector with no NAs")
     if (length(active(x)) != length(x))
         return("the length of the 'active' slot differs from the length of the object")
@@ -151,7 +151,7 @@ setReplaceMethod("desc", "MaskCollection",
         return("the 'NAMES' slot must contain a character vector")
     if (is.null(names(x)))
         return(NULL)
-    if (any(is.na(names(x))))
+    if (anyMissing(names(x)))
         return("the names must be non-NA strings")
     if (length(names(x)) != length(x))
         return("number of names and number of elements differ")
@@ -164,7 +164,7 @@ setReplaceMethod("desc", "MaskCollection",
         return("the 'desc' slot must contain a character vector")
     if (is.null(desc(x)))
         return(NULL)
-    if (any(is.na(desc(x))))
+    if (anyMissing(desc(x)))
         return("the descriptions must be non-NA strings")
     if (length(desc(x)) != length(x))
         return("number of descriptions and number of elements differ")
@@ -273,21 +273,16 @@ setMethod("[", "MaskCollection",
         lx <- length(x)
         if (lx == 0)
             return(x[FALSE])  # x[0] would work too
-        if (any(is.na(i)))
-            stop("subscript contains NAs")
         if (is.numeric(i)) {
-            if (any(is.na(i)))
-                stop("subscript contains NAs")
             if (!is.integer(i))
                 i <- as.integer(i)
-            ## equivalent to, but faster than, any(i < -lx | i > lx)
-            if (any(i < -lx) || any(i > lx))
-                stop("subscript out of bounds")
+            if (anyMissingOrOutside(i, -lx, lx))
+                stop("subscript contains NAs or out of bounds indices")
             ipos <- i[i > 0]
             if (anyDuplicated(ipos))
                 stop("subscript contains duplicated positive values")
         } else if (is.logical(i)) {
-            if (any(is.na(i)))
+            if (anyMissing(i))
                 stop("subscript contains NAs")
             li <- length(i)
             if (li > lx)
@@ -296,6 +291,8 @@ setMethod("[", "MaskCollection",
                 i <- rep(i, length.out = lx)
             i <- which(i)
         } else if (is.character(i) || is.factor(i)) {
+            if (anyMissing(i))
+                stop("subscript contains NAs")
             if (is.null(names(x)))
                 stop("cannot subset by names a ", class(x), " object with no names")
             if (any(i == ""))
@@ -303,7 +300,7 @@ setMethod("[", "MaskCollection",
             if (anyDuplicated(i))
                 stop("subscript contains duplicated names")
             i <- match(i, names(x))
-            if (any(is.na(i)))
+            if (anyMissing(i))
                 stop("subscript contains invalid names")
         } else {
             stop("invalid subscript type")

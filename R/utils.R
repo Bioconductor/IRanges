@@ -62,7 +62,7 @@ normargShift <- function(shift, nseq)
         stop("'shift' has no elements")
     if (length(shift) > nseq)
         stop("'shift' is longer than 'x'")
-    if (any(is.na(shift)))
+    if (anyMissing(shift))
         stop("'shift' contains NAs")
     if (length(shift) < nseq)
         shift <- recycleVector(shift, nseq)
@@ -81,7 +81,7 @@ normargWeight <- function(weight, nseq)
         stop("'weight' has no elements")
     if (length(weight) > nseq)
         stop("'weight' is longer than 'x'")
-    if (any(is.na(weight)))
+    if (anyMissing(weight))
         stop("'weight' contains NAs")
     if (length(weight) < nseq)
         weight <- recycleVector(weight, nseq)
@@ -335,6 +335,20 @@ mseq <- function(from, to) {
   if (any(to < from))
     stop("every element in 'to' must be >= corresponding element in 'from'")
   .Call("Integer_mseq", from, to, PACKAGE="IRanges")
+}
+
+anyMissing <- function(x) .Call("anyMissing", x, PACKAGE="IRanges")
+
+anyMissingOrOutside <-
+function(x, lower = -.Machine$integer.max, upper = .Machine$integer.max)
+{
+    if (!is.integer(x))
+        stop("'x' must be an integer vector")
+    if (!is.integer(lower))
+        lower <- as.integer(lower)
+    if (!is.integer(upper))
+        upper <- as.integer(upper)
+    .Call("Integer_any_missing_or_outside", x, lower, upper, PACKAGE="IRanges")
 }
 
 findIntervalAndStartFromWidth <- function(x, width) {

@@ -13,9 +13,13 @@ static const R_CallMethodDef callMethods[] = {
 /* Ocopy_byteblocks.c */
 	CALLMETHOD_DEF(debug_Ocopy_byteblocks, 0),
 
+/* anyMissing.c */
+	CALLMETHOD_DEF(anyMissing, 1),
+
 /* SEXP_utils.c */
 	CALLMETHOD_DEF(address_asSTRSXP, 1),
 	CALLMETHOD_DEF(listofvectors_lengths, 1),
+	CALLMETHOD_DEF(Integer_any_missing_or_outside, 3),
 	CALLMETHOD_DEF(Integer_diff_with_0, 1),
 	CALLMETHOD_DEF(Integer_sorted_merge, 2),
 	CALLMETHOD_DEF(findIntervalAndStartFromWidth, 2),

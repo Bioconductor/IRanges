@@ -212,7 +212,7 @@ setReplaceMethod("colnames", "RangedData",
   nms <- names(x)
   if (length(nms) != length(x))
     "length(names(x)) must equal length(x)"
-  else if (!is.character(nms) || any(is.na(nms)) || any(duplicated(nms)))
+  else if (!is.character(nms) || anyMissing(nms) || anyDuplicated(nms))
     "names(x) must be a character vector without any NA's or duplicates"
   else NULL
 }
@@ -384,19 +384,24 @@ setMethod("[", "RangedData",
             checkIndex <- function(i, lx, nms) {
               if (!is.atomic(i))
                 return("invalid subscript type")
-              if (!is.null(i) && any(is.na(i)))
-                return("subscript contains NAs")
               if (is.numeric(i)) {
-                if (any(i < -lx) || any(i > lx))
-                  return("subscript out of bounds")
-                if (any(i < 0) && any(i > 0))
+                if (!is.integer(i))
+                  i <- as.integer(i)
+                if (anyMissingOrOutside(i, -lx, lx))
+                  return("subscript contains NAs or out of bounds indices")
+                if (anyMissingOrOutside(i, 0L, lx) &&
+                    anyMissingOrOutside(i, -lx, 0L))
                   return("negative and positive indices cannot be mixed")
               } else if (is.logical(i)) {
+                if (anyMissing(i))
+                  return("subscript contains NAs")
                 if (length(i) > lx)
                   return("subscript out of bounds")
               } else if ((is.character(i) || is.factor(i))) {
-                  if (any(is.na(match(i, nms))))
-                    return("mismatching names")
+                if (anyMissing(i))
+                  return("subscript contains NAs")
+                if (anyMissing(match(i, nms)))
+                  return("mismatching names")
               } else if (!is.null(i)) {
                 return("invalid subscript type")
               }
@@ -451,7 +456,7 @@ setMethod("[", "RangedData",
                     dummy <- seq_len(nrow(x))
                     names(dummy) <- rownames(x)
                     i <- dummy[i]
-                    if (any(is.na(i))) ## cannot subset by NAs yet
+                    if (anyMissing(i)) ## cannot subset by NAs yet
                       stop("invalid rownames specified")
                   }
                   starts <- cumsum(c(1L, head(elementLengths(x), -1)))

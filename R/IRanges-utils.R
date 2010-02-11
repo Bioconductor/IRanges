@@ -26,15 +26,13 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
         width <- as.integer(width)  # this drops the names
     else if (!is.null(names(width)))
         names(width) <- NULL  # unname() is broken on vector of length 0
-    if (any(is.na(width)))
-        stop("'width' cannot contain NAs")
-    if (min(width) < 0L)
-        stop("'width' cannot contain negative values")
+    if (anyMissingOrOutside(width, 0L))
+        stop("'width' cannot contain NAs or negative values")
     if (!is.numeric(gapwidth))
         stop("'gapwidth' must be an integer vector")
     if (!is.integer(gapwidth))
         gapwidth <- as.integer(gapwidth)
-    if (any(is.na(gapwidth)))
+    if (anyMissing(gapwidth))
         stop("'gapwidth' cannot contain NAs")
     if (length(gapwidth) != length(width) - 1) {
         if (length(gapwidth) != 1)
@@ -232,7 +230,7 @@ setMethod("resize", "IRanges",
     {
         if (!is.numeric(width))
             stop("'width' must be numeric")
-        if (!is.logical(start) || any(is.na(start)))
+        if (!is.logical(start) || anyMissing(start))
             stop("'start' must be logical without NA's")
         lx <- length(x)
         if (symmetric) {

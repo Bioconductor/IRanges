@@ -271,7 +271,7 @@ SimpleAtomicList <- function(listData) {
         "IntegerList", "LogicalList", "RawList")
     uniqueClasses <-
       unique(unlist(lapply(listData, atomicElementListClass), use.names=FALSE))
-    if (any(is.na(uniqueClasses)))
+    if (anyMissing(uniqueClasses))
         stop("cannot create a SimpleAtomicList with non-atomic elements")
     baseClass <- classOrder[min(match(uniqueClasses, classOrder))]
     do.call(baseClass, c(listData, compress = FALSE))
@@ -294,7 +294,7 @@ CompressedAtomicListFromList <- function(listData) {
         "IntegerList", "LogicalList", "RawList")
     uniqueClasses <-
       unique(unlist(lapply(listData, atomicElementListClass), use.names=FALSE))
-    if (any(is.na(uniqueClasses)))
+    if (anyMissing(uniqueClasses))
         stop("cannot create a SimpleAtomicList with non-atomic elements")
     baseClass <- classOrder[min(match(uniqueClasses, classOrder))]
     do.call(baseClass, c(listData, compress = TRUE))

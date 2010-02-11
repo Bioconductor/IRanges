@@ -56,7 +56,7 @@ setReplaceMethod("rownames", "DataFrame",
                  function(x, value)
                  {
                    if (!is.null(value)) {
-                     if (any(is.na(value)))
+                     if (anyMissing(value))
                        stop("missing values not allowed in rownames")
                      if (length(value) != nrow(x))
                        stop("invalid rownames length")
@@ -180,7 +180,7 @@ DataFrame <- function(..., row.names = NULL)
   }
   
   if (!is.null(row.names)) {
-    if (any(is.na(row.names)))
+    if (anyMissing(row.names))
       stop("missing values in 'row.names'")
     if (length(varlist) && length(row.names) != nr)
       stop("invalid length of row names")

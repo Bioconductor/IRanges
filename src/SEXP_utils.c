@@ -47,6 +47,33 @@ SEXP listofvectors_lengths(SEXP x)
 
 /*
  * --- .Call ENTRY POINT ---
+ * any(is.na(x) | x < lower | x > upper)
+ */
+SEXP Integer_any_missing_or_outside(SEXP x, SEXP lower, SEXP upper)
+{
+	  SEXP ans;
+	  int i, n, *x_ptr, lower_value, upper_value;
+
+	  n = length(x);
+	  lower_value = INTEGER(lower)[0];
+	  upper_value = INTEGER(upper)[0];
+
+	  PROTECT(ans = NEW_LOGICAL(1));
+	  LOGICAL(ans)[0] = 0;
+      for (i = 0, x_ptr = INTEGER(x); i < n; i++, x_ptr++) {
+        if ((*x_ptr == NA_INTEGER) ||
+        	(*x_ptr < lower_value) ||
+        	(*x_ptr > upper_value)) {
+          LOGICAL(ans)[0] = 1;
+          break;
+        }
+      }
+      UNPROTECT(1);
+      return(ans);
+}
+
+/*
+ * --- .Call ENTRY POINT ---
  * diff(c(0L, x))
  */
 SEXP Integer_diff_with_0(SEXP x)

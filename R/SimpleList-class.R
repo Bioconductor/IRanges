@@ -116,31 +116,22 @@ setMethod("[", "SimpleList",
                       x <- seqselect(x, i)
                   } else {
                       lx <- length(x)
-                      nullOK <- extends("NULL", elementType(x))
                       if (is.numeric(i)) {
                           if (!is.integer(i))
                               i <- as.integer(i)
-                          ina <- is.na(i)
-                          if (any(ina)) {
-                              if (!nullOK)
-                                  stop("cannot subset by NA (NULL elements not allowed)")
-                              i <- i[!ina]
-                          }
-                          if (any(abs(i) > lx))
-                              stop("subscript out of bounds")
-                          if (any(i < 0)) {
-                              if (any(i > 0))
+                          if (anyMissingOrOutside(i, -lx, lx))
+                              stop("subscript contains NAs or out of bounds indices")
+                          if (anyMissingOrOutside(i, 0L, lx)) {
+                              if (anyMissingOrOutside(i, -lx, 0L))
                                   stop("negative and positive indices cannot be mixed")
-                              if (sum(ina) > 0)
-                                  stop("NAs cannot be mixed with negative subscripts")
                               i <- seq_len(lx)[i]
                           }
                       } else if (is.logical(i)) {
-                          if (any(is.na(i)))
+                          if (anyMissing(i))
                               stop("subscript contains NAs")
                           li <- length(i)
-                          if (li > lx && !nullOK)
-                              stop("subscript out of bounds (and NULL elements not allowed)")
+                          if (li > lx)
+                              stop("subscript out of bounds")
                           if (li < lx)
                               i <- rep(i, length.out = lx)
                           i <- which(i)
@@ -149,8 +140,8 @@ setMethod("[", "SimpleList",
                           if (is.null(nms))
                               stop("cannot subset by character when names are NULL")
                           i <- match(i, nms)
-                          if (any(is.na(i)))
-                              stop("mismatching names (and NULL elements not allowed)")
+                          if (anyMissing(i))
+                              stop("mismatching names")
                       } else if (is.null(i)) {
                           i <- integer(0)
                       } else {

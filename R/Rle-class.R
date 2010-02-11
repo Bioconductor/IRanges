@@ -81,7 +81,7 @@ setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "integer"),
               if (check && length(lengths) > 0) {
                   if (length(values) != length(lengths))
                       stop("'values' and 'lengths' must have the same length")
-                  if (any(is.na(lengths)) || any(lengths < 0L))
+                  if (anyMissingOrOutside(lengths, 0L))
                       stop("'lengths' must contain all positive integers")
                   zeros <- which(lengths == 0L)
                   if (length(zeros) > 0L) {
@@ -135,7 +135,7 @@ setAs("Rle", "data.frame", function(from) as.data.frame(from))
 setAs("Rle", "IRanges",
       function(from)
       {
-          if (!is.logical(runValue(from)) || any(is.na(runValue(from))))
+          if (!is.logical(runValue(from)) || anyMissing(runValue(from)))
               stop("cannot coerce a non-logical 'Rle' or a logical 'Rle' ",
                    "with NAs to an IRanges object")
           keep <- runValue(from)
@@ -341,19 +341,17 @@ setMethod("[", "Rle",
                       output <- as.vector(output)
               } else {
                   if (is.numeric(i)) {
-                      if (any(is.na(i)))
-                          stop("subscript contains NAs")
                       if (!is.integer(i))
                           i <- as.integer(i)
-                      if (any(i < -lx) || any(i > lx))
-                          stop("subscript out of bounds")
-                      if (any(i < 0)) {
-                          if (any(i > 0))
+                      if (anyMissingOrOutside(i, -lx, lx))
+                          stop("subscript contains NAs or out of bounds indices")
+                      if (anyMissingOrOutside(i, 0L, lx)) {
+                          if (anyMissingOrOutside(i, -lx, 0L))
                               stop("negative and positive indices cannot be mixed")
                           i <- seq_len(lx)[i]
                       }
                   } else if (is.logical(i)) {
-                      if (any(is.na(i)))
+                      if (anyMissing(i))
                           stop("subscript contains NAs")
                       li <- length(i)
                       if (li > lx)
@@ -474,7 +472,7 @@ setGeneric("findRange", signature = "vec",
 setMethod("findRange", signature = c(vec = "Rle"),
           function(x, vec) {
               run <- findRun(x, vec)
-              if (any(is.na(run)))
+              if (anyMissing(run))
                 stop("all 'x' values must be in [1, 'length(vec)']")
               IRanges(start = start(vec)[run], width = width(vec)[run],
                       names = names(x))
@@ -561,10 +559,11 @@ setMethod("rep.int", "Rle",
           function(x, times)
           {
               n <- length(x)
-              times <- as.integer(times)
+              if (!is.integer(times))
+                  times <- as.integer(times)
               if (length(times) == 0 ||
                   (length(times) > 1 && length(times) < n) ||
-                  any(is.na(times)) || any(times < 0))
+                  anyMissingOrOutside(times, 0L))
                   stop("invalid 'times' argument")
               if (length(times) == n) {
                   runLength(x) <-
@@ -741,16 +740,16 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
               if (N != length(Y))
                   stop("'X' and 'Y' must be of equal length")
 
-              if (length(SHIFT) == 0 || !is.numeric(SHIFT) ||
-                  any(is.na(SHIFT)) || any(SHIFT < 0))
+              if (!is.integer(SHIFT))
+                  SHIFT <- as.integer(SHIFT)
+              if (length(SHIFT) == 0 || anyMissingOrOutside(SHIFT, 0L))
                   stop("all 'SHIFT' values must be non-negative")
-              SHIFT <- as.integer(SHIFT)
 
-              if (length(OFFSET) == 0 || !is.numeric(OFFSET) ||
-                  any(is.na(OFFSET)) || any(OFFSET < 0))
+              if (!is.integer(OFFSET))
+                  OFFSET <- as.integer(OFFSET)
+              if (length(OFFSET) == 0 || anyMissingOrOutside(OFFSET, 0L))
                   stop("'OFFSET' must be non-negative")
-              OFFSET <- as.integer(OFFSET)
-              
+
               ## Perform X setup
               infoX <-
                 getStartEndRunAndOffset(X, rep.int(1L + OFFSET, length(SHIFT)),
@@ -813,7 +812,7 @@ setMethod("sort", "Rle",
           {
               if (is.na(na.last)) {
                   na.last <- TRUE
-                  if (any(is.na(x)))
+                  if (anyMissing(x))
                       x <- x[!is.na(x)]
               }
               ord <- order(runValue(x), decreasing = decreasing, na.last = na.last)
@@ -1039,7 +1038,7 @@ setMethod("cov", signature = c(x = "Rle", y = "Rle"),
                   stop("only 'pearson' method is supported for Rle objects")
               na.rm <-
                 use %in% c("complete.obs", "pairwise.complete.obs", "na.or.complete")
-              if (use == "all.obs" && (any(is.na(x)) || any(is.na(y))))
+              if (use == "all.obs" && (anyMissing(x) || anyMissing(y)))
                   stop("missing observations in cov/cor")
               var(x, y, na.rm = na.rm)
           })

@@ -119,7 +119,7 @@ setMethod("coverage", "numeric",
         weight <- coverage.normargWeight(weight, length(x))
         if (!is.integer(x))
             x <- as.integer(x)
-        if (any(is.na(x)))
+        if (anyMissing(x))
             stop("'x' contains NAs")
         sx <- x + shift
         if (is.null(width)) {

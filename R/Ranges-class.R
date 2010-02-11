@@ -379,7 +379,7 @@ setMethod("flank", "Ranges",
     {
         if (!is.numeric(width))
             stop("'width' must be numeric")
-        if (!is.logical(start) || any(is.na(start)))
+        if (!is.logical(start) || anyMissing(start))
             stop("'start' must be logical without NA's")
         if (!isTRUEorFALSE(both))
             stop("'both' must be TRUE or FALSE")
@@ -561,7 +561,7 @@ setMethod("follow", c("Ranges", "RangesORmissing"),
 setMethod("Ops", c("Ranges", "numeric"),
     function(e1, e2)
     {
-        if (any(is.na(e2)))
+        if (anyMissing(e2))
             stop("NA not allowed as zoom factor")
         if ((length(e1) < length(e2) && length(e1)) ||
             (length(e1) && !length(e2)) ||

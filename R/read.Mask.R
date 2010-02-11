@@ -111,7 +111,7 @@
     if (!is.integer(mask.width))
         mask.width <- as.integer(mask.width)
     if (!is.null(gap.types) && (!is.character(gap.types)
-                                || any(is.na(gap.types))
+                                || anyMissing(gap.types)
                                 || anyDuplicated(gap.types)))
         stop("'gap.types' must be 'NULL' or a character vector ",
              "with no NAs and no duplicated")

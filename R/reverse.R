@@ -20,7 +20,7 @@ setGeneric("reverse", function(x, ...) standardGeneric("reverse"))
             stop("'start' must be a vector of integers")
         if (!is.integer(start))
             start <- as.integer(start)
-        if (any(is.na(start)))
+        if (anyMissing(start))
             stop("'start' contains NAs")
     }
     if (is.na(n2p[2L])) {
@@ -31,7 +31,7 @@ setGeneric("reverse", function(x, ...) standardGeneric("reverse"))
             stop("'end' must be a vector of integers")
         if (!is.integer(end))
             end <- as.integer(end)
-        if (any(is.na(end)))
+        if (anyMissing(end))
             stop("'end' contains NAs")
     }
     if (!is.na(n2p[3L]) && !normargUseNames(args[[n2p[3L]]]))

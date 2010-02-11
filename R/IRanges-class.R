@@ -119,7 +119,7 @@ setMethod("min", "NormalIRanges",
 .valid.IRanges.start <- function(x)
 {
     x_start <- start(x)
-    if (!is.integer(x_start) || !is.null(names(x_start)) || any(is.na(x_start)))
+    if (!is.integer(x_start) || !is.null(names(x_start)) || anyMissing(x_start))
         return("'start(x)' must be an unnamed integer vector with no NAs")
     if (length(x_start) != length(width(x)))
         return("'start(x)' and 'width(x)' must have the same length")
@@ -129,7 +129,7 @@ setMethod("min", "NormalIRanges",
 .valid.IRanges.width <- function(x)
 {
     x_width <- width(x)
-    if (!is.integer(x_width) || !is.null(names(x_width)) || any(is.na(x_width)))
+    if (!is.integer(x_width) || !is.null(names(x_width)) || anyMissing(x_width))
         return("'width(x)' must be an unnamed integer vector with no NAs")
     if (length(start(x)) != length(x_width))
         return("'start(x)' and 'width(x)' must have the same length")
@@ -429,20 +429,18 @@ setMethod("[", "IRanges",
             stop("invalid subscript type")
         lx <- length(x)
         if (is.numeric(i)) {
-            if (any(is.na(i)))
-                stop("subscript contains NAs")
-            if (any(i < -lx) || any(i > lx))
-                stop("subscript out of bounds")
-            if (is(x, "NormalIRanges") && all(i >= 0)) {
-                if (!is.integer(i))
-                    i <- as.integer(i)
+            if (!is.integer(i))
+                i <- as.integer(i)
+            if (anyMissingOrOutside(i, -lx, lx))
+                stop("subscript contains NAs or out of bounds indices")
+            if (is(x, "NormalIRanges") && anyMissingOrOutside(i, 0L)) {
                 i <- i[i != 0L]
                 if (isNotStrictlySorted(i))
                     stop("positive numeric subscript must be strictly increasing ",
                          "for NormalIRanges objects")
             }
         } else if (is.logical(i)) {
-            if (any(is.na(i)))
+            if (anyMissing(i))
                 stop("subscript contains NAs")
             li <- length(i)
             if (li > lx)
@@ -454,7 +452,7 @@ setMethod("[", "IRanges",
           if (is.null(names(x)))
             stop("cannot subset by character when names are NULL")
           i <- match(i, names(x))
-          if (any(is.na(i)))
+          if (anyMissing(i))
             stop("subsetting by character would result in NA's")
         } else if (is(i, "Ranges")) {
             i <- x %in% i
@@ -480,20 +478,18 @@ setReplaceMethod("[", "IRanges",
             stop("invalid subscript type")
         lx <- length(x)
         if (is.numeric(i)) {
-            if (any(is.na(i)))
-                stop("subscript contains NAs")
-            if (any(i < -lx) || any(i > lx))
-                stop("subscript out of bounds")
-            if (is(x, "NormalIRanges") && all(i >= 0)) {
-                if (!is.integer(i))
-                    i <- as.integer(i)
+            if (!is.integer(i))
+                i <- as.integer(i)
+            if (anyMissingOrOutside(i, -lx, lx))
+                stop("subscript contains NAs or out of bounds indices")
+            if (is(x, "NormalIRanges") && anyMissingOrOutside(i, 0L)) {
                 i <- i[i != 0L]
                 if (isNotStrictlySorted(i))
                     stop("positive numeric subscript must be strictly increasing ",
                          "for NormalIRanges objects")
             }
         } else if (is.logical(i)) {
-            if (any(is.na(i)))
+            if (anyMissing(i))
                 stop("subscript contains NAs")
             li <- length(i)
             if (li > lx)
@@ -505,7 +501,7 @@ setReplaceMethod("[", "IRanges",
           if (is.null(names(x)))
             stop("cannot subset by character when names are NULL")
           i <- match(i, names(x))
-          if (any(is.na(i)))
+          if (anyMissing(i))
             stop("subsetting by character would result in NA's")
         } else if (is(i, "Ranges")) {
             i <- x %in% i

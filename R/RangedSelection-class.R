@@ -31,7 +31,7 @@ setReplaceMethod("colnames", "RangedSelection",
 RangedSelection <- function(ranges = RangesList(), colnames = character()) {
   if (!is(ranges, "RangesList"))
     stop("'ranges' must be a RangesList")
-  if (!is.character(colnames) || any(is.na(colnames)))
+  if (!is.character(colnames) || anyMissing(colnames))
     stop("'colnames' must be a character vector without missing values")
   new("RangedSelection", ranges = ranges, colnames = colnames)
 }
