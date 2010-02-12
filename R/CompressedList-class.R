@@ -328,13 +328,15 @@ setMethod("[", "CompressedList",
                       } else {
                           stop("invalid subscript type")
                       }
-                      partitionEnd <- cumsum(elementLengths(x)[i])
-                      names(partitionEnd) <- NULL
-                      slot(x, "unlistData", check=FALSE) <-
-                        .CompressedList.list.subscript(X = x, INDEX = i,
-                                                       USE.NAMES = FALSE)
-                      slot(x, "partitioning", check=FALSE) <- 
-                        new2("PartitioningByEnd", end = partitionEnd,
+                      ir <- as(x@partitioning, "IRanges")[i]
+                      if (length(dim(x@unlistData)) < 2)
+                          slot(x, "unlistData", check=FALSE) <-
+                            x@unlistData[as.integer(ir)]
+                      else
+                          slot(x, "unlistData", check=FALSE) <-
+                            x@unlistData[as.integer(ir), , drop = FALSE]
+                      slot(x, "partitioning", check=FALSE) <-
+                        new2("PartitioningByEnd", end = cumsum(width(ir)),
                              NAMES = names(x)[i], check=FALSE)
                       x <- .bracket.Sequence(x, i)
                   }
@@ -402,7 +404,21 @@ setMethod("seqselect", "CompressedList",
                                       end = partitionEnd, NAMES = names(x),
                                       check=FALSE))
               } else {
-                  x <- callNextMethod()
+                  if (is.null(end) && is.null(width)) {
+                      if (is.null(start)) 
+                          ir <- IRanges(start = 1, width = length(x))
+                      else if (is(start, "Ranges")) 
+                          ir <- start
+                      else {
+                          if (is.logical(start) && length(start) != length(x)) 
+                              start <- rep(start, length.out = length(x))
+                          ir <- as(start, "IRanges")
+                      }
+                  }
+                  else {
+                      ir <- IRanges(start = start, end = end, width = width)
+                  }
+                  x <- x[as.integer(ir)]
               }
               x
           })
