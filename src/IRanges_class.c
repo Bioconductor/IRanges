@@ -343,7 +343,7 @@ SEXP IRanges_from_integer(SEXP x)
 SEXP NormalIRanges_from_logical(SEXP x)
 {
 	SEXP ans, ans_start, ans_width;
-	int i, x_length, ans_length;
+	int i, x_length, buf_length, ans_length;
 	int *start_buf, *width_buf;
 	int *x_elt, *start_elt, *width_elt, prev_elt;
 
@@ -352,9 +352,10 @@ SEXP NormalIRanges_from_logical(SEXP x)
 		PROTECT(ans_start = NEW_INTEGER(0));
 		PROTECT(ans_width = NEW_INTEGER(0));
 	} else {
+		buf_length = x_length / 2 + 1;
 		ans_length = 0;
-		start_buf = (int *) R_alloc((long) x_length, sizeof(int));
-		width_buf = (int *) R_alloc((long) x_length, sizeof(int));
+		start_buf = (int *) R_alloc((long) buf_length, sizeof(int));
+		width_buf = (int *) R_alloc((long) buf_length, sizeof(int));
 		prev_elt = 0;
 		start_elt = start_buf - 1;
 		width_elt = width_buf - 1;
