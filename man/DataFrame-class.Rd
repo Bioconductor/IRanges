@@ -19,6 +19,7 @@
 \alias{[<-,DataFrame-method}
 \alias{[[,DataFrame-method}
 \alias{[[<-,DataFrame-method}
+\alias{seqselect,DataFrame-method}
 
 % coercion
 \alias{as.data.frame,DataFrame-method}

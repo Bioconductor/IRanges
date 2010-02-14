@@ -69,8 +69,16 @@ setMethod("[", "GroupedIRanges",
 setMethod("seqselect", "GroupedIRanges",
     function(x, start=NULL, end=NULL, width=NULL)
     {
-        x <- callNextMethod(x, start=start, end=end, width=width)
-        x@group <- callGeneric(x@group, start=start, end=end, width=width)
+        if (!is.null(end) || !is.null(width))
+            start <- IRanges(start = start, end = end, width = width)
+        irInfo <- .bracket.Index(start, length(x), names(x), asRanges = TRUE)
+        if (!is.null(irInfo[["msg"]]))
+            stop(irInfo[["msg"]])
+        if (irInfo[["useIdx"]]) {
+            ir <- irInfo[["idx"]]
+            slot(x, "group", check=FALSE) <- callGeneric(x@group, ir)
+            x <- callNextMethod(x, ir)
+        }
         x
     }
 )

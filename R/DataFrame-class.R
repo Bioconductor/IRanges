@@ -271,7 +271,7 @@ setMethod("[", "DataFrame",
                 warning("parameter 'drop' ignored by list-style subsetting")
               if (missing(i))
                 return(x)
-              iInfo <- .bracket.Index(i, colnames(x), ncol(x))
+              iInfo <- .bracket.Index(i, ncol(x), colnames(x))
               if (!is.null(iInfo[["msg"]]))
                 stop("subsetting as list: ", iInfo[["msg"]])
               x <- callNextMethod(x, iInfo[["idx"]])
@@ -282,7 +282,7 @@ setMethod("[", "DataFrame",
 
             dim <- dim(x)
             if (!missing(j)) {
-              jInfo <- .bracket.Index(j, colnames(x), ncol(x))
+              jInfo <- .bracket.Index(j, ncol(x), colnames(x))
               if (!is.null(jInfo[["msg"]]))
                 stop("selecting cols: ", jInfo[["msg"]])
               x <- callNextMethod(x, jInfo[["idx"]])
@@ -292,7 +292,7 @@ setMethod("[", "DataFrame",
             }
 
             if (!missing(i)) {
-              iInfo <- .bracket.Index(i, rownames(x), nrow(x), dup.nms = TRUE)
+              iInfo <- .bracket.Index(i, nrow(x), rownames(x), dup.nms = TRUE)
               if (!is.null(iInfo[["msg"]]))
                 stop("selecting rows: ", iInfo[["msg"]])
               useI <- iInfo[["useIdx"]]
@@ -335,20 +335,20 @@ setReplaceMethod("[", "DataFrame",
                        jInfo <-
                          list(msg = NULL, useIdx = FALSE, idx = seq_len(ncol(x)))
                      } else {
-                       jInfo <- .bracket.Index(i, colnames(x), ncol(x))
+                       jInfo <- .bracket.Index(i, ncol(x), colnames(x))
                      }
                    } else {
                      if (missing(i)) {
                        iInfo <- list(msg = NULL, useIdx = FALSE, idx = NULL)
                      } else {
                        iInfo <-
-                         .bracket.Index(i, rownames(x), nrow(x), dup.nms = TRUE)
+                         .bracket.Index(i, nrow(x), rownames(x), dup.nms = TRUE)
                      }
                      if (missing(j)) {
                        jInfo <-
                          list(msg = NULL, useIdx = FALSE, idx = seq_len(ncol(x)))
                      } else {
-                       jInfo <- .bracket.Index(j, colnames(x), ncol(x))
+                       jInfo <- .bracket.Index(j, ncol(x), colnames(x))
                      }
                    }
                    if (!is.null(iInfo[["msg"]]))
@@ -404,6 +404,34 @@ setReplaceMethod("[", "DataFrame",
                    }
                    x
                  })
+
+setMethod("seqselect", "DataFrame",
+          function(x, start=NULL, end=NULL, width=NULL)
+          {
+              if (!is.null(end) || !is.null(width))
+                  start <- IRanges(start = start, end = end, width = width)
+              irInfo <-
+                .bracket.Index(start, nrow(x), rownames(x), asRanges = TRUE)
+              if (!is.null(irInfo[["msg"]]))
+                  stop(irInfo[["msg"]])
+              if (irInfo[["useIdx"]]) {
+                  ir <- irInfo[["idx"]]
+                  if (length(ir) == 0) {
+                      x <- x[integer(0),,drop=FALSE]
+                  } else {
+                      slot(x, "listData", check=FALSE) <-
+                        lapply(structure(seq_len(ncol(x)),
+                                         names = names(x)),
+                               function(i) seqselect(x[[i]], ir))
+                      slot(x, "nrows", check=FALSE) <- sum(width(ir))
+                      if (!is.null(rownames(x))) {
+                          slot(x, "rownames", check=FALSE) <-
+                            make.unique(seqselect(rownames(x), ir))
+                      }
+                  }
+              }
+              x
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.

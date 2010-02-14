@@ -301,7 +301,7 @@ setReplaceMethod("[", "SimpleSplitDataFrameList",
                              x <- callNextMethod(x = x, i = i, value = value)
                      } else {
                          jInfo <-
-                           .bracket.Index(j, colnames(x)[[1L]], ncol(x)[[1L]])
+                           .bracket.Index(j, ncol(x)[[1L]], colnames(x)[[1L]])
                          if (!jInfo[["useIdx"]]) {
                              if (missing(i))
                                  x[] <- value
@@ -339,7 +339,7 @@ setReplaceMethod("[", "CompressedSplitDataFrameList",
                              x <- callNextMethod(x = x, i = i, value = value)
                      } else {
                          jInfo <-
-                           .bracket.Index(j, colnames(x)[[1L]], ncol(x)[[1L]])
+                           .bracket.Index(j, ncol(x)[[1L]], colnames(x)[[1L]])
                          if (!jInfo[["useIdx"]]) {
                              if (missing(i))
                                  x[] <- value

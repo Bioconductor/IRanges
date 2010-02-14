@@ -140,19 +140,20 @@ function(x, i, j, ..., drop)
     x
 }
 .bracket.Index <-
-function(idx, nms, lx, dup.nms = FALSE)
+function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE)
 {
     msg <- NULL
-    if (!is.atomic(idx) && !is(idx, "Rle")) {
-        msg <- "invalid subscript type"
-    } else if (is.numeric(idx)) {
+    if (is.numeric(idx)) {
         if (!is.integer(idx))
             idx <- as.integer(idx)
-        if (anyMissingOrOutside(idx, -lx, lx))
+        if (anyMissingOrOutside(idx, -lx, lx)) {
             msg <- "subscript contains NAs or out of bounds indices"
-        else if (anyMissingOrOutside(idx, 0L, lx) &&
-                 anyMissingOrOutside(idx, -lx, 0L))
-            msg <- "negative and positive indices cannot be mixed"
+        } else {
+            anyPos <- anyMissingOrOutside(idx, -lx, 0L)
+            anyNeg <- anyMissingOrOutside(idx, 0L, lx)
+            if (anyPos && anyNeg)
+                msg <- "negative and positive indices cannot be mixed"
+        }
     } else if (is.logical(idx)) {
         if (anyMissing(idx))
             msg <- "subscript contains NAs"
@@ -161,7 +162,7 @@ function(idx, nms, lx, dup.nms = FALSE)
     } else if (is.character(idx) || is.factor(idx)) {
         if (anyMissing(idx))
             msg <- "subscript contains NAs"
-        else if (is.null(nms))
+        else if (is.null(nms) && length(idx) > 0)
             msg <- "cannot subset by character when names are NULL"
         else {
             if (dup.nms)
@@ -176,6 +177,13 @@ function(idx, nms, lx, dup.nms = FALSE)
             msg <- "subscript contains NAs"
         else if (length(idx) > lx)
             msg <- "subscript out of bounds"
+    } else if (is(idx, "Ranges")) {
+        if (anyMissingOrOutside(start(idx), 1L, lx) ||
+            anyMissingOrOutside(end(idx), 1L, lx))
+            stop("range index out of bounds")
+        else if (anyMissingOrOutside(width(idx), 1L)) {
+            idx <- idx[width(idx) > 0L]
+        }
     } else if (!is.null(idx)) {
         msg <- "invalid subscript type"
     }
@@ -184,25 +192,62 @@ function(idx, nms, lx, dup.nms = FALSE)
         idx <- NULL
     } else {
         useIdx <- TRUE
-        if (is.null(idx)) {
-            idx <- integer()
-        } else if (is.character(idx)) {
-            idx <- pmatch(idx, nms, duplicates.ok = TRUE)
-        } else if (is.logical(idx)) {
-            if (all(idx)) {
-                useIdx <- FALSE
-            } else {
-                if (length(idx) < lx)
-                    idx <- rep(idx, length.out = lx)
-                idx <- which(idx)
+        if (asRanges) {
+            if (length(idx) == 0) {
+                idx <- IRanges()
+            } else if (is.character(idx)) {
+                idx <- as(pmatch(idx, nms, duplicates.ok = TRUE), "IRanges")
+            } else if (is.logical(idx)) {
+                if (all(idx)) {
+                    useIdx <- FALSE
+                } else {
+                    if (length(idx) < lx)
+                        idx <- rep(idx, length.out = lx)
+                    idx <- as(idx, "NormalIRanges")
+                }
+            } else if (is.integer(idx)) {
+                if (anyNeg)
+                    idx <- seq_len(lx)[idx]
+                idx <- as(idx, "IRanges")
+            } else if (is(idx, "Rle")) {
+                if (all(runValue(idx))) {
+                    useIdx <- FALSE
+                } else {
+                    if (length(idx) < lx)
+                        idx <- rep(idx, length.out = lx)
+                    idx <- as(idx, "NormalIRanges")
+                }
             }
-        } else if (is.integer(idx) && all(idx < 0)) {
-            idx <- seq_len(lx)[idx]
-        } else if (is(idx, "Rle")) {
-            if (all(runValue(idx))) {
+            if (length(idx) == 1 && start(idx) == 1 && end(idx) == lx)
                 useIdx <- FALSE
-            } else {
-                idx <- which(idx)
+        } else {
+            if (length(idx) == 0) {
+                idx <- integer()
+            } else if (is.character(idx)) {
+                idx <- pmatch(idx, nms, duplicates.ok = TRUE)
+            } else if (is.logical(idx)) {
+                if (all(idx)) {
+                    useIdx <- FALSE
+                } else {
+                    if (length(idx) < lx)
+                        idx <- rep(idx, length.out = lx)
+                    idx <- which(idx)
+                }
+            } else if (is.integer(idx) && anyNeg) {
+                idx <- seq_len(lx)[idx]
+            } else if (is(idx, "Rle")) {
+                if (all(runValue(idx))) {
+                    useIdx <- FALSE
+                } else {
+                    if (length(idx) < lx)
+                        idx <- rep(idx, length.out = lx)
+                    idx <- which(idx)
+                }
+            } else if (is(idx, "Ranges")) {
+                if (length(idx) == 1 && start(idx) == 1 && end(idx) == lx)
+                    useIdx <- FALSE
+                else
+                    idx <- as.integer(idx)
             }
         }
     }
@@ -218,7 +263,7 @@ setReplaceMethod("[", "Sequence",
                      if (missing(i)) {
                          seqselect(x, start = 1, end = length(x)) <- value
                      } else {
-                         iInfo <- .bracket.Index(i, names(x), length(x))
+                         iInfo <- .bracket.Index(i, length(x), names(x))
                          if (is.null(iInfo[["msg"]])) {
                              if (iInfo[["useIdx"]])
                                  seqselect(x, iInfo[["idx"]], width = 1) <- value
@@ -452,59 +497,52 @@ setGeneric("seqselect", signature="x",
 setMethod("seqselect", "Sequence",
           function(x, start=NULL, end=NULL, width=NULL)
           {
-              if (is.null(end) && is.null(width)) {
-                  if (is.null(start))
-                      ir <- IRanges(start = 1, width = length(x))
-                  else if (is(start, "Ranges"))
-                      ir <- start
-                  else {
-                      if (is.logical(start) && length(start) != length(x))
-                          start <- rep(start, length.out = length(x))
-                      ir <- as(start, "IRanges")
+              if (!is.null(end) || !is.null(width))
+                  start <- IRanges(start = start, end = end, width = width)
+              irInfo <-
+                .bracket.Index(start, length(x), names(x), asRanges = TRUE)
+              if (!is.null(irInfo[["msg"]]))
+                  stop(irInfo[["msg"]])
+              if (irInfo[["useIdx"]]) {
+                  ir <- irInfo[["idx"]]
+                  if (length(ir) == 0) {
+                      x <- x[integer(0)]
+                  } else {
+                      x <-
+                        do.call(c,
+                                lapply(seq_len(length(ir)), function(i)
+                                       window(x,
+                                              start = start(ir)[i],
+                                              width = width(ir)[i])))
                   }
-              } else {
-                  ir <- IRanges(start=start, end=end, width=width, names=NULL)
               }
-              if (length(ir) == 0) {
-                  x[integer(0)]
-              } else {
-                  if (any(start(ir) < 1L) || any(end(ir) > length(x)))
-                      stop("some ranges are out of bounds")
-                  do.call(c,
-                          lapply(seq_len(length(ir)), function(i)
-                                 window(x,
-                                        start = start(ir)[i],
-                                        width = width(ir)[i])))
-              }
+              x
           })
 
 setMethod("seqselect", "vector",
           function(x, start=NULL, end=NULL, width=NULL)
           {
-              if (is.null(end) && is.null(width)) {
-                  if (is.null(start))
-                      ir <- IRanges(start = 1, width = length(x))
-                  else if (is(start, "Ranges"))
-                      ir <- start
-                  else {
-                      if (is.logical(start) && length(start) != length(x))
-                          start <- rep(start, length.out = length(x))
-                      ir <- as(start, "IRanges")
-                  }
-              } else {
-                  ir <- IRanges(start=start, end=end, width=width, names=NULL)
+              if (!is.null(end) || !is.null(width))
+                  start <- IRanges(start = start, end = end, width = width)
+              irInfo <-
+                .bracket.Index(start, length(x), names(x), asRanges = TRUE)
+              if (!is.null(irInfo[["msg"]]))
+                  stop(irInfo[["msg"]])
+              if (irInfo[["useIdx"]]) {
+                  ir <- irInfo[["idx"]]
+                  x <-
+                    .Call("vector_seqselect", x, start(ir), width(ir),
+                          PACKAGE="IRanges")
               }
-              .Call("vector_seqselect", x, start(ir), width(ir),
-                    PACKAGE="IRanges")
+              x
           })
 
 setMethod("seqselect", "factor",
           function(x, start=NULL, end=NULL, width=NULL)
           {
-              labels <- levels(x)
-              factor(callGeneric(as.integer(x), start = start, end = end,
-                                 width = width),
-                     levels = seq_len(length(labels)), labels = labels)
+              ans <- callGeneric(x, start = start, end = end, width = width)
+              attributes(ans) <- list(levels = levels(x), class = "factor")
+              ans
           })
 
 setGeneric("seqselect<-", signature="x",

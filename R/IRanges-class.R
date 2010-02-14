@@ -523,14 +523,19 @@ setReplaceMethod("[", "IRanges",
 setMethod("seqselect", "IRanges",
     function(x, start=NULL, end=NULL, width=NULL)
     {
-        slot(x, "start", check=FALSE) <-
-          seqselect(start(x), start = start, end = end, width = width)
-        slot(x, "width", check=FALSE) <-
-          seqselect(width(x), start = start, end = end, width = width)
-        if (!is.null(names(x)))
-            slot(x, "NAMES", check=FALSE) <-
-              seqselect(names(x), start = start, end = end, width = width)
-        validObject(x)
+        if (!is.null(end) || !is.null(width))
+            start <- IRanges(start = start, end = end, width = width)
+        irInfo <- .bracket.Index(start, length(x), names(x), asRanges = TRUE)
+        if (!is.null(irInfo[["msg"]]))
+            stop(irInfo[["msg"]])
+        if (irInfo[["useIdx"]]) {
+            ir <- irInfo[["idx"]]
+            slot(x, "start", check=FALSE) <- seqselect(start(x), ir)
+            slot(x, "width", check=FALSE) <- seqselect(width(x), ir)
+            if (!is.null(names(x)))
+                slot(x, "NAMES", check=FALSE) <- seqselect(names(x), ir)
+            validObject(x)
+        }
         x
     }
 )

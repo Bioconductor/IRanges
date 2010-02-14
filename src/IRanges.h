@@ -725,6 +725,12 @@ SEXP Rle_start(SEXP x);
 
 SEXP Rle_end(SEXP x);
 
+SEXP Rle_getStartEndRunAndOffset(
+	SEXP x,
+	SEXP start,
+	SEXP end
+);
+
 SEXP Rle_window_aslist(
 	SEXP x,
 	SEXP runStart,
@@ -740,6 +746,12 @@ SEXP Rle_window(
 	SEXP offsetStart,
 	SEXP offsetEnd,
 	SEXP ans
+);
+
+SEXP Rle_seqselect(
+	SEXP x,
+	SEXP start,
+	SEXP width
 );
 
 

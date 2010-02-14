@@ -67,29 +67,26 @@ setMethod("rbind", "DataTable", function(..., deparse.level=1)
 setMethod("seqselect", "DataTable",
           function(x, start=NULL, end=NULL, width=NULL)
           {
-              if (is.null(end) && is.null(width)) {
-                  if (is.null(start))
-                      ir <- IRanges(start = 1, width = nrow(x))
-                  else if (is(start, "Ranges"))
-                      ir <- start
-                  else {
-                      if (is.logical(start) && length(start) != nrow(x))
-                          start <- rep(start, length.out = nrow(x))
-                      ir <- as(start, "IRanges")
+              if (!is.null(end) || !is.null(width))
+                  start <- IRanges(start = start, end = end, width = width)
+              irInfo <-
+                .bracket.Index(start, nrow(x), rownames(x), asRanges = TRUE)
+              if (!is.null(irInfo[["msg"]]))
+                  stop(irInfo[["msg"]])
+              if (irInfo[["useIdx"]]) {
+                  ir <- irInfo[["idx"]]
+                  if (length(ir) == 0) {
+                      x <- x[integer(0),,drop=FALSE]
+                  } else {
+                      x <-
+                        do.call(rbind,
+                                lapply(seq_len(length(ir)), function(i)
+                                       window(x,
+                                              start = start(ir)[i],
+                                              width = width(ir)[i])))
                   }
-              } else {
-                  ir <- IRanges(start=start, end=end, width=width, names=NULL)
               }
-              if (any(start(ir) < 1L) || any(end(ir) > nrow(x)))
-                  stop("some ranges are out of bounds")
-              if (length(ir) == 0)
-                  x[integer(0),,drop=FALSE]
-              else
-                  do.call(rbind,
-                          lapply(seq_len(length(ir)), function(i)
-                                 window(x,
-                                        start = start(ir)[i],
-                                        width = width(ir)[i])))
+              x
           })
 
 setReplaceMethod("seqselect", "DataTable",

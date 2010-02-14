@@ -64,6 +64,7 @@ test_List_subset <- function() {
     names(empty) <- character(0)
     checkIdentical(collection[numeric()], empty)
     checkIdentical(collection[logical()], empty)
+    checkIdentical(collection[character()], empty)
     checkIdentical(collection[NULL], empty)
     checkIdentical(collection[], collection)
     checkIdentical(collection[FALSE], empty)

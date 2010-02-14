@@ -528,6 +528,69 @@ SEXP Rle_end(SEXP x)
  * --- .Call ENTRY POINT ---
  */
 
+SEXP Rle_getStartEndRunAndOffset(SEXP x, SEXP start, SEXP end)
+{
+	int i, n, *start_elt, *end_elt, *soff_elt, *eoff_elt, *erun_elt;
+	SEXP values, lengths, info_start, info_end, ans, ans_names;
+	SEXP ans_start, ans_start_names, ans_end, ans_end_names;
+	SEXP start_run, start_offset, end_run, end_offset;
+
+	n = LENGTH(start);
+	if (LENGTH(end) != n)
+		error("length of 'start' must equal length of 'end'");
+
+	values = GET_SLOT(x, install("values"));
+	lengths = GET_SLOT(x, install("lengths"));
+
+	PROTECT(info_start = findIntervalAndStartFromWidth(start, lengths));
+	PROTECT(info_end = findIntervalAndStartFromWidth(end, lengths));
+
+	start_run = VECTOR_ELT(info_start, 0);
+	start_offset = VECTOR_ELT(info_start, 1);
+	end_run = VECTOR_ELT(info_end, 0);
+	end_offset = VECTOR_ELT(info_end, 1);
+	for (i = 0, start_elt = INTEGER(start), end_elt = INTEGER(end),
+		 soff_elt = INTEGER(start_offset), eoff_elt = INTEGER(end_offset),
+		 erun_elt = INTEGER(end_run); i < n; i++, start_elt++, end_elt++,
+		 soff_elt++, eoff_elt++, erun_elt++) {
+		*soff_elt = *start_elt - *soff_elt;
+		*eoff_elt = *eoff_elt + INTEGER(lengths)[*erun_elt - 1] - 1 - *end_elt;
+	}
+
+	PROTECT(ans_start = NEW_LIST(2));
+	PROTECT(ans_start_names = NEW_CHARACTER(2));
+	SET_VECTOR_ELT(ans_start, 0, start_run);
+	SET_VECTOR_ELT(ans_start, 1, start_offset);
+	SET_STRING_ELT(ans_start_names, 0, mkChar("run"));
+	SET_STRING_ELT(ans_start_names, 1, mkChar("offset"));
+	SET_NAMES(ans_start, ans_start_names);
+
+	PROTECT(ans_end = NEW_LIST(2));
+	PROTECT(ans_end_names = NEW_CHARACTER(2));
+	SET_VECTOR_ELT(ans_end, 0, end_run);
+	SET_VECTOR_ELT(ans_end, 1, end_offset);
+	SET_STRING_ELT(ans_end_names, 0, mkChar("run"));
+	SET_STRING_ELT(ans_end_names, 1, mkChar("offset"));
+	SET_NAMES(ans_end, ans_end_names);
+
+	PROTECT(ans = NEW_LIST(2));
+	PROTECT(ans_names = NEW_CHARACTER(2));
+	SET_VECTOR_ELT(ans, 0, ans_start);
+	SET_VECTOR_ELT(ans, 1, ans_end);
+	SET_STRING_ELT(ans_names, 0, mkChar("start"));
+	SET_STRING_ELT(ans_names, 1, mkChar("end"));
+	SET_NAMES(ans, ans_names);
+
+	UNPROTECT(8);
+
+	return(ans);
+}
+
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+
 SEXP Rle_window_aslist(SEXP x, SEXP runStart, SEXP runEnd,
 		               SEXP offsetStart, SEXP offsetEnd)
 {
@@ -590,6 +653,78 @@ SEXP Rle_window(SEXP x, SEXP runStart, SEXP runEnd,
 	SET_SLOT(ans, install("lengths"), VECTOR_ELT(ans_list, 1));
 
 	UNPROTECT(1);
+
+	return ans;
+}
+
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+
+SEXP Rle_seqselect(SEXP x, SEXP start, SEXP width)
+{
+	int i, n, index, *start_elt, *width_elt, *end_elt, *len_elt;
+	int *soff_elt, *eoff_elt;
+	SEXP values, lengths, end;
+	SEXP info, info_start, info_end;
+	SEXP start_run, end_run, width_run, start_offset, end_offset;
+	SEXP ans, ans_names, ans_values, ans_lengths;
+
+	n = LENGTH(start);
+	if (LENGTH(width) != n)
+		error("length of 'start' must equal length of 'width'");
+
+	values = GET_SLOT(x, install("values"));
+	lengths = GET_SLOT(x, install("lengths"));
+
+	PROTECT(end = NEW_INTEGER(n));
+	for (i = 0, start_elt = INTEGER(start), end_elt = INTEGER(end),
+		 width_elt = INTEGER(width); i < n;
+		 i++, start_elt++, end_elt++, width_elt++) {
+		*end_elt = *start_elt + *width_elt - 1;
+	}
+
+	PROTECT(info = Rle_getStartEndRunAndOffset(x, start, end));
+	info_start = VECTOR_ELT(info, 0);
+	start_run = VECTOR_ELT(info_start, 0);
+	start_offset = VECTOR_ELT(info_start, 1);
+	info_end = VECTOR_ELT(info, 1);
+	end_run = VECTOR_ELT(info_end, 0);
+	end_offset = VECTOR_ELT(info_end, 1);
+
+	PROTECT(width_run = NEW_INTEGER(n));
+	for (i = 0, start_elt = INTEGER(start_run), end_elt = INTEGER(end_run),
+		 width_elt = INTEGER(width_run); i < n;
+		 i++, start_elt++, end_elt++, width_elt++) {
+		*width_elt = *end_elt - *start_elt + 1;
+	}
+
+	PROTECT(ans_values = vector_seqselect(values, start_run, width_run));
+	PROTECT(ans_lengths = vector_seqselect(lengths, start_run, width_run));
+
+	index = 0;
+	len_elt = INTEGER(ans_lengths);
+	for (i = 0, soff_elt = INTEGER(start_offset),
+		 eoff_elt = INTEGER(end_offset), width_elt = INTEGER(width_run);
+		 i < n; i++, soff_elt++, eoff_elt++, width_elt++) {
+		if (*width_elt > 0) {
+			len_elt[index] -= *soff_elt;
+			index += *width_elt;
+			len_elt[index - 1] -= *eoff_elt;
+		}
+	}
+
+	PROTECT(ans = NEW_LIST(2));
+	PROTECT(ans_names = NEW_CHARACTER(2));
+
+	SET_VECTOR_ELT(ans, 0, ans_values);
+	SET_VECTOR_ELT(ans, 1, ans_lengths);
+	SET_STRING_ELT(ans_names, 0, mkChar("values"));
+	SET_STRING_ELT(ans_names, 1, mkChar("lengths"));
+	SET_NAMES(ans, ans_names);
+
+	UNPROTECT(7);
 
 	return ans;
 }

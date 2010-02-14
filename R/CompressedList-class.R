@@ -291,54 +291,37 @@ setMethod("[", "CompressedList",
                   stop("invalid subsetting")
               if (!missing(i)) {
                   if (is(i, "RangesList") || is(i, "RleList") ||
-                      is(i, "LogicalList") || is(i, "IntegerList")) {
+                      is(i, "LogicalList") ||
+                      (is(i, "IntegerList") && !is(i, "Ranges"))) {
                       x <- seqselect(x, i)
-                  } else if (!is.atomic(i)) {
-                      stop("invalid subscript type")
                   } else {
-                      lx <- length(x)
-                      if (is.numeric(i)) {
-                          if (!is.integer(i))
-                              i <- as.integer(i)
-                          if (anyMissingOrOutside(i, -lx, lx))
-                              stop("subscript contains NAs or out of bounds indices")
-                          if (anyMissingOrOutside(i, 0L, lx)) {
-                              if (anyMissingOrOutside(i, -lx, 0L))
-                                  stop("negative and positive indices cannot be mixed")
-                              i <- seq_len(lx)[i]
+                      irInfo <-
+                        .bracket.Index(i, length(x), names(x), asRanges = TRUE)
+                      if (!is.null(irInfo[["msg"]]))
+                          stop(irInfo[["msg"]])
+                      if (irInfo[["useIdx"]]) {
+                          i <- irInfo[["idx"]]
+                          ir <-
+                            IRanges(end =
+                                    seqselect(end(x@partitioning), i),
+                                    width =
+                                    seqselect(width(x@partitioning), i))
+                          slot(x, "unlistData", check=FALSE) <-
+                            seqselect(x@unlistData, ir)
+                          if (is.null(names(x))) {
+                              slot(x, "partitioning", check=FALSE) <-
+                                new2("PartitioningByEnd",
+                                     end = cumsum(width(ir)), check=FALSE)
+                          } else {
+                              slot(x, "partitioning", check=FALSE) <-
+                                new2("PartitioningByEnd",
+                                     end = cumsum(width(ir)),
+                                     NAMES = seqselect(names(x), i),
+                                     check=FALSE)
                           }
-                      } else if (is.logical(i)) {
-                          if (anyMissing(i))
-                              stop("subscript contains NAs")
-                          li <- length(i)
-                          if (li > lx)
-                              stop("subscript out of bounds")
-                          if (li < lx)
-                              i <- rep(i, length.out = lx)
-                          i <- which(i)
-                      } else if (is.character(i) || is.factor(i)) {
-                          nms <- names(x)
-                          if (is.null(nms))
-                              stop("cannot subset by character when names are NULL")
-                          i <- match(i, nms)
-                          if (anyMissing(i))
-                              stop("mismatching names")
-                      } else if (is.null(i)) {
-                          i <- integer(0)
-                      } else {
-                          stop("invalid subscript type")
+                          if (!is.null(elementMetadata(x)))
+                              x <- .bracket.Sequence(x, as.integer(i))
                       }
-                      ir <- as(x@partitioning, "IRanges")[i]
-                      if (length(dim(x@unlistData)) < 2)
-                          slot(x, "unlistData", check=FALSE) <-
-                            x@unlistData[as.integer(ir)]
-                      else
-                          slot(x, "unlistData", check=FALSE) <-
-                            x@unlistData[as.integer(ir), , drop = FALSE]
-                      slot(x, "partitioning", check=FALSE) <-
-                        new2("PartitioningByEnd", end = cumsum(width(ir)),
-                             NAMES = names(x)[i], check=FALSE)
-                      x <- .bracket.Sequence(x, i)
                   }
               }
               x
@@ -347,9 +330,10 @@ setMethod("[", "CompressedList",
 setMethod("seqselect", "CompressedList",
           function(x, start=NULL, end=NULL, width=NULL)
           {
+              lx <- length(x)
               if (!is.null(start) && is.null(end) && is.null(width) &&
-                  (length(x) > 0)) {
-                  if (length(x) != length(start))
+                  (lx > 0)) {
+                  if (lx != length(start))
                       stop("'length(start)' must equal 'length(x)' when ",
                            "'end' and 'width' are NULL")
                   if (is.list(start)) {
@@ -387,7 +371,7 @@ setMethod("seqselect", "CompressedList",
                         unlist(start +
                                newCompressedList("CompressedIntegerList",
                                                  start(x@partitioning) - 1L,
-                                                 end = seq_len(length(x))))
+                                                 end = seq_len(lx)))
                       if (length(dim(x@unlistData)) < 2)
                           unlistData <- x@unlistData[i]
                       else
@@ -404,21 +388,13 @@ setMethod("seqselect", "CompressedList",
                                       end = partitionEnd, NAMES = names(x),
                                       check=FALSE))
               } else {
-                  if (is.null(end) && is.null(width)) {
-                      if (is.null(start)) 
-                          ir <- IRanges(start = 1, width = length(x))
-                      else if (is(start, "Ranges")) 
-                          ir <- start
-                      else {
-                          if (is.logical(start) && length(start) != length(x)) 
-                              start <- rep(start, length.out = length(x))
-                          ir <- as(start, "IRanges")
-                      }
-                  }
-                  else {
-                      ir <- IRanges(start = start, end = end, width = width)
-                  }
-                  x <- x[as.integer(ir)]
+                  if (!is.null(end) || !is.null(width))
+                      start <- IRanges(start = start, end = end, width = width)
+                  irInfo <- .bracket.Index(start, lx, names(x), asRanges = TRUE)
+                  if (!is.null(irInfo[["msg"]]))
+                      stop(irInfo[["msg"]])
+                  if (irInfo[["useIdx"]])
+                      x <- x[irInfo[["idx"]]]
               }
               x
           })

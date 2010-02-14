@@ -163,14 +163,7 @@ setMethod("as.data.frame", "Rle",
                           optional = optional, ...))
 
 getStartEndRunAndOffset <- function(x, start, end) {
-    infoStart <- findIntervalAndStartFromWidth(start, runLength(x))
-    infoEnd <- findIntervalAndStartFromWidth(end, runLength(x))
-    list(start =
-         list(run = infoStart[["interval"]], offset = start - infoStart[["start"]]),
-         end =
-         list(run = infoEnd[["interval"]],
-              offset = (infoEnd[["start"]] + runLength(x)[infoEnd[["interval"]]] - 1L) - end)
-        )
+    .Call("Rle_getStartEndRunAndOffset", x, start, end, PACKAGE="IRanges")
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -293,83 +286,37 @@ setMethod("Complex", "Rle",
 ###
 
 setMethod("[", "Rle",
-          function(x, i, j, ...,
-                   drop = !is.null(getOption("dropRle")) && getOption("dropRle"))
+          function(x, i, j, ..., drop = getOption("dropRle", FALSE))
           {
               if (!missing(j) || length(list(...)) > 0)
                   stop("invalid subsetting")
-              lx <- length(x)
-              if (missing(i) || lx == 0)
-                  return(x)
-              if (is(i, "Rle") && is.logical(runValue(i)) && lx == length(i)) {
-                  if (!any(runValue(i))) {
-                      output <- new(class(x))
-                  } else {
-                      whichValues <- which(runValue(i))
-                      starts <- start(i)[whichValues]
-                      widths <- width(i)[whichValues]
-                      output <-
-                        do.call(c,
-                                lapply(seq_len(length(starts)),
-                                       function(k)
-                                       window(x, start = starts[k], width = widths[k])))
-                  }
-                  if (drop)
-                      output <- as.vector(output)
-              } else if (is(i, "Ranges")) {
-                  if (any(start(i) <= 0) || any(end(i) > length(x)))
-                    stop("range index out of bounds")
-                  i <- i[width(i) > 0]
-                  if (length(i) == 0) {
-                      output <- new(class(x))
-                  } else {
-                      start <- start(i)
-                      end <- end(i)
-                      from <- findIntervalAndStartFromWidth(start, runLength(x))
-                      to <- findIntervalAndStartFromWidth(end, runLength(x))
-                      runseq <- mseq(from[["interval"]], to[["interval"]])
-                      lens <- runLength(x)[runseq]
-                      breaks <- cumsum(c(1L, to[["interval"]] - from[["interval"]] + 1L))
-                      lens[head(breaks, -1)] <-
-                        pmin(end, (from[["start"]] + width(x)[from[["interval"]]] - 1L)) - start + 1L
-                      lens[tail(breaks - 1L, -1)] <- end - pmax(start, to[["start"]]) + 1L
-                      output <-
-                        Rle(values  = runValue(x)[runseq],
-                            lengths = lens, check = FALSE)
-                  }
-                  if (drop)
-                      output <- as.vector(output)
-              } else {
-                  if (is.numeric(i)) {
-                      if (!is.integer(i))
-                          i <- as.integer(i)
-                      if (anyMissingOrOutside(i, -lx, lx))
-                          stop("subscript contains NAs or out of bounds indices")
-                      if (anyMissingOrOutside(i, 0L, lx)) {
-                          if (anyMissingOrOutside(i, -lx, 0L))
-                              stop("negative and positive indices cannot be mixed")
-                          i <- seq_len(lx)[i]
+              if (!missing(i)) {
+                  lx <- length(x)
+                  iInfo <- .bracket.Index(i, lx, asRanges = TRUE)
+                  if (!is.null(iInfo[["msg"]]))
+                      stop(iInfo[["msg"]])
+                  if (iInfo[["useIdx"]]) {
+                      i <- iInfo[["idx"]]
+                      ansList <-
+                        .Call("Rle_seqselect", x, start(i), width(i),
+                              PACKAGE="IRanges")
+                      if (is.factor(runValue(x))) {
+                          attributes(ansList[["values"]]) <-
+                            list(levels = levels(x), class = "factor")
                       }
-                  } else if (is.logical(i)) {
-                      if (anyMissing(i))
-                          stop("subscript contains NAs")
-                      li <- length(i)
-                      if (li > lx)
-                          stop("subscript out of bounds")
-                      if (li < lx)
-                          i <- rep(i, length.out = lx)
-                      i <- which(i)
-                  } else if (is.null(i)) {
-                      i <- integer(0)
-                  } else {
-                      stop("invalid subscript type")
+                      if (drop) {
+                          x <-
+                            rep.int(ansList[["values"]], ansList[["lengths"]])
+                      } else {
+                          x <-
+                            Rle(values  = ansList[["values"]],
+                                lengths = ansList[["lengths"]], check = FALSE)
+                      }
+                  } else if (drop) {
+                      x <- as.vector(x)
                   }
-                  runs <- findIntervalAndStartFromWidth(i, runLength(x))[["interval"]]
-                  output <- runValue(x)[runs]
-                  if (!drop)
-                      output <- Rle(output)
               }
-              output
+              x
           })
 
 setReplaceMethod("[", "Rle",
@@ -588,49 +535,9 @@ setMethod("rev", "Rle",
 setMethod("seqselect", "Rle",
           function(x, start = NULL, end = NULL, width = NULL)
           {
-              if (is.null(end) && is.null(width)) {
-                  if (is.null(start))
-                      ir <- IRanges(start = 1, width = length(x))
-                  else if (is(start, "Ranges"))
-                      ir <- start
-                  else {
-                      if (is.logical(start) && length(start) != length(x))
-                          start <- rep(start, length.out = length(x))
-                      ir <- as(start, "IRanges")
-                  }
-              } else {
-                  ir <- IRanges(start=start, end=end, width=width, names=NULL)
-              }
-              k <- length(ir)
-              start <- start(ir)
-              end <- end(ir)
-              if (k == 0) {
-                  x[integer(0)]
-              } else if (k == 1) {
-                  window(x, start = start, end = end)
-              } else {
-                  if (any(start < 1L) || any(end > length(x)))
-                      stop("some ranges are out of bounds")
-                  info <- getStartEndRunAndOffset(x, start, end)
-                  runStart <- info[["start"]][["run"]]
-                  offsetStart <- info[["start"]][["offset"]]
-                  runEnd <- info[["end"]][["run"]]
-                  offsetEnd <- info[["end"]][["offset"]]
-                  subseqs <-
-                    lapply(seq_len(k), function(i)
-                               .Call("Rle_window_aslist",
-                                     x, runStart[i], runEnd[i],
-                                     offsetStart[i], offsetEnd[i],
-                                     PACKAGE = "IRanges"))
-                  ans <-
-                    Rle(values  = unlist(lapply(subseqs, "[[", "values")),
-                        lengths = unlist(lapply(subseqs, "[[", "lengths")),
-                        check = FALSE)
-                  if (is.factor(runValue(x)))
-                      runValue(ans) <-
-                        factor(levels(x), levels = levels(x))[runValue(ans)]
-                  ans
-              }
+              if (!is.null(end) || !is.null(width))
+                  start <- IRanges(start = start, end = end, width = width)
+              x[start]
           })
 
 setReplaceMethod("seqselect", "Rle",
