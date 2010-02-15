@@ -3,6 +3,9 @@
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"
+#include <limits.h>
+
+#define R_INT_MIN	(1+INT_MIN)
 
 static int debug = 0;
 
@@ -16,6 +19,48 @@ SEXP debug_IRanges_utils()
 	Rprintf("Debug mode not available in file %s\n", __FILE__);
 #endif
 	return R_NilValue;
+}
+
+
+/****************************************************************************
+ * Range (min(start), max(end)) of an IRanges instance.
+ */
+
+
+/* --- .Call ENTRY POINT --- */
+SEXP IRanges_range(SEXP x)
+{
+	int x_length, i, min, max, *start_elt, *width_elt, end;
+	SEXP x_start, x_width, ans, ans_start, ans_width;
+
+	x_length = _get_IRanges_length(x);
+	x_start = _get_IRanges_start(x);
+	x_width = _get_IRanges_width(x);
+
+	min = INT_MAX;
+	max = R_INT_MIN;
+	for (i = 0, start_elt = INTEGER(x_start), width_elt = INTEGER(x_width);
+		 i < x_length; i++, start_elt++, width_elt++) {
+		if (*width_elt > 0) {
+			if (min > *start_elt)
+				min = *start_elt;
+			end = *start_elt + *width_elt - 1;
+			if (max < end)
+				max = end;
+		}
+	}
+	if (min == INT_MAX && max == R_INT_MIN) {
+		PROTECT(ans_start = NEW_INTEGER(0));
+		PROTECT(ans_width = NEW_INTEGER(0));
+	} else {
+		PROTECT(ans_start = NEW_INTEGER(1));
+		PROTECT(ans_width = NEW_INTEGER(1));
+		INTEGER(ans_start)[0] = min;
+		INTEGER(ans_width)[0] = max - min + 1;
+	}
+	PROTECT(ans = _new_IRanges("IRanges", ans_start, ans_width, R_NilValue));
+	UNPROTECT(3);
+	return ans;
 }
 
 

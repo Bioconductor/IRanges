@@ -29,6 +29,7 @@
 \alias{flank}
 \alias{flank,Ranges-method}
 \alias{range,Ranges-method}
+\alias{range,IRanges-method}
 
 % Coercion:
 \alias{asNormalIRanges}

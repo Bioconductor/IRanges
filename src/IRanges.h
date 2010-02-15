@@ -544,6 +544,8 @@ SEXP solve_user_SEW(
 
 SEXP debug_IRanges_utils();
 
+SEXP IRanges_range(SEXP x);
+
 int _reduce_ranges(
 	const int *start,
 	const int *width,

@@ -178,8 +178,8 @@ function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE)
         else if (length(idx) > lx)
             msg <- "subscript out of bounds"
     } else if (is(idx, "Ranges")) {
-        if (anyMissingOrOutside(start(idx), 1L, lx) ||
-            anyMissingOrOutside(end(idx), 1L, lx))
+        rng <- range(idx)
+        if ((length(rng) > 0) && (start(rng) < 1 || end(rng) > lx))
             stop("range index out of bounds")
         else if (anyMissingOrOutside(width(idx), 1L)) {
             idx <- idx[width(idx) > 0L]

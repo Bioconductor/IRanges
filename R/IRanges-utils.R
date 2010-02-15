@@ -79,6 +79,26 @@ whichAsIRanges <- function(x)
 }
 
 
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "range" function.
+###
+### Finds [min(start), max(end)]
+###
+
+setMethod("range", "IRanges",
+    function(x, ..., na.rm)
+    {
+        args <- unname(list(x, ...))
+        if (!all(sapply(args, is, "IRanges")))
+            stop("all arguments in '...' must be IRanges objects")
+        x <- do.call(c, args)
+        .Call("IRanges_range", x, PACKAGE="IRanges")
+    }
+)
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "shift" method (endomorphism).
 ###
