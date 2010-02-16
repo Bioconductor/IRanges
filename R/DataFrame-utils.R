@@ -22,8 +22,8 @@ setMethod("cbind", "DataFrame",
 
 setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
   args <- list(...)
-  hasrows <- unlist(lapply(args, nrow), use.names=FALSE) > 0
-  hascols <- unlist(lapply(args, ncol), use.names=FALSE) > 0
+  hasrows <- unlist(lapply(args, nrow), use.names=FALSE) > 0L
+  hascols <- unlist(lapply(args, ncol), use.names=FALSE) > 0L
 
   if (!any(hasrows | hascols)) {
     return(DataFrame())
