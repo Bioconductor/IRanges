@@ -410,6 +410,13 @@ SEXP Integer_sorted_merge(
 	SEXP y
 );
 
+SEXP Integer_mseq(
+	SEXP from,
+	SEXP to
+);
+
+SEXP Logical_whichAsVector(SEXP x);
+
 SEXP findIntervalAndStartFromWidth(
 	SEXP x,
 	SEXP vec

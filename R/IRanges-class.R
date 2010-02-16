@@ -447,7 +447,7 @@ setMethod("[", "IRanges",
                 stop("subscript out of bounds")
             if (li < lx)
                 i <- rep(i, length.out = lx)
-            i <- which(i)
+            i <- whichAsVector(i)
         } else if (is.character(i) || is.factor(i)) {
           if (is.null(names(x)))
             stop("cannot subset by character when names are NULL")
@@ -496,7 +496,7 @@ setReplaceMethod("[", "IRanges",
                 stop("subscript out of bounds")
             if (li < lx)
                 i <- rep(i, length.out = lx)
-            i <- which(i)
+            i <- whichAsVector(i)
         } else if (is.character(i) || is.factor(i)) {
           if (is.null(names(x)))
             stop("cannot subset by character when names are NULL")

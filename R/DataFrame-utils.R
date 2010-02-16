@@ -28,9 +28,9 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
   if (!any(hasrows | hascols)) {
     return(DataFrame())
   } else if (!any(hasrows)) {
-    return(args[[which(hascols)[1L]]])
+    return(args[[whichAsVector(hascols)[1L]]])
   } else if (sum(hasrows) == 1) {
-    return(args[[which(hasrows)]])
+    return(args[[whichAsVector(hasrows)]])
   } else {
     args <- args[hasrows]
   }

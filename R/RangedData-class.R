@@ -424,7 +424,7 @@ setMethod("[", "RangedData",
                   ##i <- findOverlaps(i, ranges, multiple=FALSE, drop=TRUE)
                 } else if (is(i, "LogicalList")) {
                   xeltlen <- elementLengths(ranges(x))
-                  whichRep <- which(xeltlen != elementLengths(i))
+                  whichRep <- whichAsVector(xeltlen != elementLengths(i))
                   for (k in whichRep)
                     i[[k]] <- rep(i[[k]], length.out = xeltlen[k])
                   i <- unlist(i, use.names=FALSE)

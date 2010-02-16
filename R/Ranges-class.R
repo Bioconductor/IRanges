@@ -223,7 +223,7 @@ setMethod("whichFirstNotNormal", "Ranges",
         is_ok <- width(x) >= 1L
         if (length(x) >= 2)
             is_ok <- is_ok & c(TRUE, start(x)[-1L] - end(x)[-length(x)] >= 2L)
-        which(!is_ok)[1L]
+        whichAsVector(!is_ok)[1L]
     }
 )
 

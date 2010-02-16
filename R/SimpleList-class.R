@@ -134,7 +134,7 @@ setMethod("[", "SimpleList",
                               stop("subscript out of bounds")
                           if (li < lx)
                               i <- rep(i, length.out = lx)
-                          i <- which(i)
+                          i <- whichAsVector(i)
                       } else if (is.character(i) || is.factor(i)) {
                           nms <- names(x)
                           if (is.null(nms))

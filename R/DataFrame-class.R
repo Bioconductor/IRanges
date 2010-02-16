@@ -168,7 +168,7 @@ DataFrame <- function(..., row.names = NULL)
       }
     }
     nr <- max(nrows)
-    for (i in which((nrows > 0L) & (nrows < nr) & (nr %% nrows == 0L))) {
+    for (i in whichAsVector((nrows > 0L) & (nrows < nr) & (nr %% nrows == 0L))) {
       recycle <- rep(seq_len(nrows[i]), length.out = nr)
       varlist[[i]] <- lapply(varlist[[i]], `[`, recycle, drop=FALSE)
       nrows[i] <- nr

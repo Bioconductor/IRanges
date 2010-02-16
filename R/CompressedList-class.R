@@ -148,7 +148,7 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
          ...) {
     k <- length(INDEX)
     nonZeroLength <- elementLengths(X)[INDEX] > 0L
-    whichNonZeroLength <- which(nonZeroLength)
+    whichNonZeroLength <- whichAsVector(nonZeroLength)
     kOK <- length(whichNonZeroLength)
     if ((k > 0) && all(nonZeroLength)) {
         zeroLengthElt <- NULL
@@ -355,7 +355,7 @@ setMethod("seqselect", "CompressedList",
                                       use.names = FALSE))
                   } else if (is(start, "LogicalList")) {
                       xeltlen <- elementLengths(x)
-                      whichRep <- which(xeltlen != elementLengths(start))
+                      whichRep <- whichAsVector(xeltlen != elementLengths(start))
                       for (i in whichRep)
                           start[[i]] <- rep(start[[i]], length.out = xeltlen[i])
                       if (length(dim(x@unlistData)) < 2) {
@@ -422,7 +422,8 @@ setReplaceMethod("seqselect", "CompressedList",
                                              elementLengths(start)))
                          } else if (is(start, "LogicalList")) {
                              xeltlen <- elementLengths(x)
-                             whichRep <- which(xeltlen != elementLengths(start))
+                             whichRep <-
+                               whichAsVector(xeltlen != elementLengths(start))
                              for (i in whichRep) {
                                  start[[i]] <-
                                    rep(start[[i]], length.out = xeltlen[i])

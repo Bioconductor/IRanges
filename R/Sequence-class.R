@@ -231,7 +231,7 @@ function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE)
                 } else {
                     if (length(idx) < lx)
                         idx <- rep(idx, length.out = lx)
-                    idx <- which(idx)
+                    idx <- whichAsVector(idx)
                 }
             } else if (is.integer(idx) && anyNeg) {
                 idx <- seq_len(lx)[idx]

@@ -289,7 +289,7 @@ setMethod("[", "MaskCollection",
                 stop("subscript out of bounds")
             if (li < lx)
                 i <- rep(i, length.out = lx)
-            i <- which(i)
+            i <- whichAsVector(i)
         } else if (is.character(i) || is.factor(i)) {
             if (anyMissing(i))
                 stop("subscript contains NAs")

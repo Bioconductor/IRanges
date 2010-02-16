@@ -173,6 +173,81 @@ SEXP Integer_sorted_merge(SEXP x, SEXP y)
 
 /*
  * --- .Call ENTRY POINT ---
+ */
+SEXP Integer_mseq(SEXP from, SEXP to)
+{
+	int i, j, n, ans_length, *from_elt, *to_elt, *ans_elt;
+	SEXP ans;
+
+	if (!IS_INTEGER(from) || !IS_INTEGER(to))
+		error("'from' and 'to' must be integer vectors");
+
+	n = LENGTH(from);
+	if (n != LENGTH(to))
+		error("lengths of 'from' and 'to' must be equal");
+
+	ans_length = 0;
+	for (i = 0, from_elt = INTEGER(from), to_elt = INTEGER(to); i < n;
+		 i++, from_elt++, to_elt++) {
+		ans_length += *to_elt - *from_elt + 1;
+	}
+
+	PROTECT(ans = NEW_INTEGER(ans_length));
+	ans_elt = INTEGER(ans);
+	for (i = 0, from_elt = INTEGER(from), to_elt = INTEGER(to); i < n;
+		 i++, from_elt++, to_elt++) {
+		if (*from_elt == NA_INTEGER || *to_elt == NA_INTEGER)
+			error("'from' and 'to' contain NAs");
+
+		if (*from_elt <= *to_elt) {
+			for (j = *from_elt; j <= *to_elt; j++) {
+				*ans_elt = j;
+				ans_elt++;
+			}
+		} else {
+			for (j = *from_elt; j >= *to_elt; j--) {
+				*ans_elt = j;
+				ans_elt++;
+			}
+		}
+	}
+	UNPROTECT(1);
+	return ans;
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ * a faster version of which
+ */
+SEXP Logical_whichAsVector(SEXP x)
+{
+	SEXP ans;
+	int i, x_length, buf_length, ans_length;
+	int *x_elt, *buf, *buf_elt;
+
+	if (!IS_LOGICAL(x))
+		error("argument to 'which' is not logical");
+
+	x_length = LENGTH(x);
+	buf_length = x_length;
+	buf = (int *) R_alloc((long) buf_length, sizeof(int));
+	buf_elt = buf;
+	ans_length = 0;
+	for (i = 0, x_elt = LOGICAL(x); i < x_length; i++, x_elt++) {
+		if (*x_elt && (*x_elt != NA_LOGICAL)) {
+			*buf_elt = i + 1;
+			buf_elt++;
+			ans_length++;
+		}
+	}
+	PROTECT(ans = NEW_INTEGER(ans_length));
+	memcpy(INTEGER(ans), buf, sizeof(int) * ans_length);
+	UNPROTECT(1);
+	return ans;
+}
+
+/*
+ * --- .Call ENTRY POINT ---
  * findIntervalAndStartFromWidth for when x and width are integer vectors
  */
 
@@ -248,21 +323,4 @@ SEXP findIntervalAndStartFromWidth(SEXP x, SEXP width)
 	UNPROTECT(6);
 
 	return ans;
-}
-
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP Integer_mseq(SEXP from, SEXP to) {
-  int k = 0;
-  SEXP ans;
-  for (int i = 0; i < length(from); i++)
-    k += INTEGER(to)[i] - INTEGER(from)[i] + 1;
-  PROTECT(ans = NEW_INTEGER(k));
-  k = 0;
-  for (int i = 0; i < length(from); i++)
-    for (int j = INTEGER(from)[i]; j <= INTEGER(to)[i]; j++)
-      INTEGER(ans)[k++] = j;
-  UNPROTECT(1);
-  return ans;
 }
