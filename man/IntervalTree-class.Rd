@@ -152,7 +152,7 @@
       \code{match(x, table, nomatch = NA_integer_, incomparables =
         NULL)}:
       Returns an integer vector of length \code{length(x)}, containing
-      the index of the first overlapping range in \code{table} for each
+      the index of one overlapping range in \code{table}, if any, for each
       range in \code{x}. If a range in \code{x} does not overlap any
       ranges in \code{table}, its value is \code{nomatch}. The \code{x}
       and \code{table} arguments should either be both \code{Ranges}
