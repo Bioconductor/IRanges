@@ -429,7 +429,7 @@ setMethod("show", "SplitDataFrameList", function(object)
               else
                 showK <- 1
               diffK <- k - showK
-              show(as.list(object[seq_len(showK)]))
+              show(as.list(head(object, showK)))
               if (diffK > 0)
                 cat("...\n<", k - showK,
                     ifelse(diffK == 1,
