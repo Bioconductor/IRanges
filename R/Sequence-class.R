@@ -540,7 +540,9 @@ setMethod("seqselect", "vector",
 setMethod("seqselect", "factor",
           function(x, start=NULL, end=NULL, width=NULL)
           {
-              ans <- callGeneric(x, start = start, end = end, width = width)
+              ans <-
+                callGeneric(as.integer(x), start = start, end = end,
+                            width = width)
               attributes(ans) <- list(levels = levels(x), class = "factor")
               ans
           })
