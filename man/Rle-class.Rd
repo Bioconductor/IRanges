@@ -84,6 +84,9 @@
 \alias{show,Rle-method}
 \alias{sort,Rle-method}
 \alias{split,Rle-method}
+\alias{splitRanges}
+\alias{splitRanges,Rle-method}
+\alias{splitRanges,vectorORfactor-method}
 \alias{summary,Rle-method}
 \alias{table}
 \alias{table,Rle-method}
@@ -462,8 +465,13 @@
       if \code{drop} is \code{TRUE}.
     }
     \item{}{
+      \code{splitRanges(x)}:
+      Returns a \linkS4class{CompressedIRangesList} object that contain the
+      ranges for each of the unique run values. 
+    }
+    \item{}{
       \code{subset(x, subset)}:
-      Return a new Rle object made of the subset using logical vector
+      Returns a new Rle object made of the subset using logical vector
       \code{subset}.
     }
     \item{}{

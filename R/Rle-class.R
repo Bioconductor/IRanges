@@ -191,7 +191,7 @@ getStartEndRunAndOffset <- function(x, start, end) {
         which1 <- findIntervalAndStartFromWidth(ends, runLength(e1))[["interval"]]
         which2 <- findIntervalAndStartFromWidth(ends, runLength(e2))[["interval"]]
     }
-    lengths <- .Call("Integer_diff_with_0", ends, PACKAGE="IRanges")
+    lengths <- diffWithInitialZero(ends)
     values <- runValue(e1)[which1] * runValue(e2)[which2]
     sum(lengths * values, na.rm = na.rm)
 }
@@ -219,8 +219,7 @@ setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
                   which2 <- findIntervalAndStartFromWidth(ends, runLength(e2))[["interval"]]
               }
               Rle(values = callGeneric(runValue(e1)[which1], runValue(e2)[which2]),
-                  lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
-                  check = FALSE)
+                  lengths = diffWithInitialZero(ends), check = FALSE)
           })
 
 setMethod("Ops", signature(e1 = "Rle", e2 = "vector"),
@@ -513,9 +512,7 @@ setMethod("rep.int", "Rle",
                   anyMissingOrOutside(times, 0L))
                   stop("invalid 'times' argument")
               if (length(times) == n) {
-                  runLength(x) <-
-                    .Call("Integer_diff_with_0", cumsum(times)[end(x)],
-                          PACKAGE="IRanges")
+                  runLength(x) <- diffWithInitialZero(cumsum(times)[end(x)])
               } else if (length(times) == 1) {
                   x <- Rle(values  = rep.int(runValue(x), times),
                            lengths = rep.int(runLength(x), times),
@@ -733,6 +730,22 @@ setMethod("split", "Rle",
                                 drop = drop)
           })
 
+setGeneric("splitRanges", signature = "x",
+           function(x) standardGeneric("splitRanges"))
+
+setMethod("splitRanges", "Rle",
+          function(x) {
+              split(IRanges(start = start(x), width = runLength(x)),
+                    runValue(x))
+          })
+
+setMethod("splitRanges", "vectorORfactor",
+          function(x) {
+              callGeneric(Rle(x))
+              split(IRanges(start = start(x), width = runLength(x)),
+                      runValue(x))
+          })
+
 setMethod("summary", "Rle",
           function (object, ..., digits = max(3, getOption("digits") - 3)) 
           {
@@ -872,8 +885,7 @@ setMethod("diff", "Rle",
                              runValue(x)[runs]
                          }),
                  MoreArgs)),
-        lengths = .Call("Integer_diff_with_0", ends, PACKAGE="IRanges"),
-        check = FALSE)
+        lengths = diffWithInitialZero(ends), check = FALSE)
 }
 
 setGeneric("pmax", signature = "...",

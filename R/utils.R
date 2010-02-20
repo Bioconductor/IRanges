@@ -348,6 +348,12 @@ whichAsVector <- function(x)
     ans
 }
 
+diffWithInitialZero <- function(x) {
+    if (!is.integer(x))
+        stop("'x' must be an integer vector")
+    .Call("Integer_diff_with_0", x, PACKAGE="IRanges")
+}
+
 anyMissing <- function(x) .Call("anyMissing", x, PACKAGE="IRanges")
 
 anyMissingOrOutside <-
