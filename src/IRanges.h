@@ -405,6 +405,12 @@ SEXP Integer_any_missing_or_outside(SEXP x, SEXP lower, SEXP upper);
 
 SEXP Integer_diff_with_0(SEXP x);
 
+SEXP Integer_order_two(
+	SEXP x,
+	SEXP y,
+	SEXP decreasing
+);
+
 SEXP Integer_sorted_merge(
 	SEXP x,
 	SEXP y
@@ -709,15 +715,6 @@ SEXP _new_SimpleList(const char *className, SEXP listData);
 /* GappedRanges_class.c */
 
 SEXP valid_GappedRanges(SEXP x, SEXP ans_type);
-
-
-/* Ranges_comparison.c */
-
-SEXP Ranges_order(
-	SEXP start,
-	SEXP width,
-	SEXP decreasing
-);
 
 /* RangedData_class.c */
 

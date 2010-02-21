@@ -330,6 +330,13 @@ selectSome <- function (obj, maxToShow = 5)
     }
 }
 
+orderTwoIntegers <- function(x, y, decreasing = FALSE)
+{
+    if (!is.integer(x) || !is.integer(y))
+        stop("'x' and 'y' must be integer vectors")
+    .Call("Integer_order_two", x, y, decreasing, PACKAGE="IRanges")
+}
+
 mseq <- function(from, to)
 {
     if (!is.integer(from))

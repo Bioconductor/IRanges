@@ -21,6 +21,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(listofvectors_lengths, 1),
 	CALLMETHOD_DEF(Integer_any_missing_or_outside, 3),
 	CALLMETHOD_DEF(Integer_diff_with_0, 1),
+	CALLMETHOD_DEF(Integer_order_two, 3),
 	CALLMETHOD_DEF(Integer_sorted_merge, 2),
 	CALLMETHOD_DEF(Integer_mseq, 2),
 	CALLMETHOD_DEF(Logical_whichAsVector, 1),
@@ -73,9 +74,6 @@ static const R_CallMethodDef callMethods[] = {
 
 /* GappedRanges_class.c */
 	CALLMETHOD_DEF(valid_GappedRanges, 2),
-
-/* Ranges_comparison.c */
-	CALLMETHOD_DEF(Ranges_order, 3),
 
 /* Rle_class.c */
 	CALLMETHOD_DEF(Rle_constructor, 2),

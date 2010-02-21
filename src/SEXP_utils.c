@@ -99,6 +99,22 @@ SEXP Integer_diff_with_0(SEXP x)
 
 /*
  * --- .Call ENTRY POINT ---
+ */
+SEXP Integer_order_two(SEXP x, SEXP y, SEXP decreasing)
+{
+	int ans_length;
+	SEXP ans;
+
+	ans_length = LENGTH(x);
+	PROTECT(ans = NEW_INTEGER(ans_length));
+	_get_order_of_two_int_arrays(INTEGER(x), INTEGER(y),
+		ans_length, LOGICAL(decreasing)[0], INTEGER(ans), 1);
+	UNPROTECT(1);
+	return ans;
+}
+
+/*
+ * --- .Call ENTRY POINT ---
  * Creates the (sorted) union of two sorted integer vectors
  */
 SEXP Integer_sorted_merge(SEXP x, SEXP y)

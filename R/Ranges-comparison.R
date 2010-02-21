@@ -94,8 +94,8 @@ setGeneric("order", signature="...",
     function(..., na.last=TRUE, decreasing=FALSE) standardGeneric("order")
 )
 
-### '.Ranges.order(x, FALSE)' is equivalent to 'order(start(x), width(x))'
-### but faster:
+### 'orderTwoIntegers(start(x), width(x), FALSE)' is equivalent to
+### 'order(start(x), width(x))' but faster:
 ###   library(IRanges)
 ###   N <- 20000000L  # nb of ranges
 ###   W <- 40L        # average width of the ranges
@@ -105,16 +105,9 @@ setGeneric("order", signature="...",
 ###   x_start <- sample(end - W - 2L, N, replace=TRUE)
 ###   x_width <- W + sample(-3:3, N, replace=TRUE)
 ###   x <- IRanges(start=x_start, width=x_width)
-###   xo <- IRanges:::.Ranges.order(x, FALSE)  # takes < 10 sec.
+###   xo <- IRanges:::orderTwoIntegers(start(x), width(x), FALSE)  # takes < 10 sec.
 ###   xo2 <- order(start(x), width(x))  # takes about 1 min.
 ###   identical(xo, xo2)  # TRUE
-.Ranges.order <- function(x, decreasing)
-{
-    .Call("Ranges_order",
-          start(x), width(x), decreasing=decreasing,
-          PACKAGE="IRanges")
-}
-
 setMethod("order", "Ranges",
     function(..., na.last=TRUE, decreasing=FALSE)
     {
@@ -122,8 +115,11 @@ setMethod("order", "Ranges",
             stop("'decreasing' must be TRUE or FALSE")
         ## all arguments in '...' are guaranteed to be Ranges objects
         args <- list(...)
-        if (length(args) == 1)
-            return(.Ranges.order(args[[1L]], decreasing))
+        if (length(args) == 1) {
+            x <- args[[1L]]
+            return(orderTwoIntegers(start(x), width(x),
+                                    decreasing = decreasing))
+        }
         order_args <- vector("list", 2L*length(args))
         order_args[2L*seq_len(length(args)) - 1L] <- lapply(args, start)
         order_args[2L*seq_len(length(args))] <- lapply(args, end)
