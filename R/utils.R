@@ -210,6 +210,7 @@ normargRunK <- function(k, n, endrule)
 ###        [1] TRUE
 ###      Common sense would expect to have less objects that are "strictly
 ###      something" than objects that are "just something".
+isNotSorted <- function(x) .Internal(is.unsorted(x, FALSE))
 isNotStrictlySorted <- function(x) .Internal(is.unsorted(x, TRUE))
 
 extraArgsAsList <- function(.valid.argnames, ...)
@@ -328,6 +329,13 @@ selectSome <- function (obj, maxToShow = 5)
     } else {
         obj
     }
+}
+
+orderInteger <- function(x, decreasing = FALSE)
+{
+    if (!is.integer(x))
+        stop("'x' must be an integer vector")
+    .Call("Integer_order", x, decreasing, PACKAGE="IRanges")
 }
 
 orderTwoIntegers <- function(x, y, decreasing = FALSE)

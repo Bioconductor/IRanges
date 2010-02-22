@@ -21,6 +21,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(listofvectors_lengths, 1),
 	CALLMETHOD_DEF(Integer_any_missing_or_outside, 3),
 	CALLMETHOD_DEF(Integer_diff_with_0, 1),
+	CALLMETHOD_DEF(Integer_order, 2),
 	CALLMETHOD_DEF(Integer_order_two, 3),
 	CALLMETHOD_DEF(Integer_sorted_merge, 2),
 	CALLMETHOD_DEF(Integer_mseq, 2),

@@ -196,7 +196,7 @@ setMethod("isDisjoint", "Ranges",
         if (length(x) < 2)
             return(TRUE)
         starts <- start(x)
-        startord <- order(starts)
+        startord <- orderInteger(starts)
         all(starts[startord][-1L] - end(x)[startord][-length(x)] >= 1L)
     }
 )
@@ -526,8 +526,8 @@ setMethod("precede", c("Ranges", "RangesORmissing"),
     {
         s <- start(subject)
         ord <- NULL
-        if (is.unsorted(s)) {
-            ord <- order(s)
+        if (isNotSorted(s)) {
+            ord <- orderInteger(s)
             s <- s[ord]
         }
         i <- findInterval(end(x), s) + 1L
@@ -545,8 +545,8 @@ setMethod("follow", c("Ranges", "RangesORmissing"),
     {
         e <- end(subject)
         ord <- NULL
-        if (is.unsorted(e)) {
-            ord <- order(e)
+        if (isNotSorted(e)) {
+            ord <- orderInteger(e)
             e <- e[ord]
         }
         i <- findInterval(start(x) - 1L, e)
@@ -593,7 +593,7 @@ setMethod("disjointBins", "Ranges",
     function(x)
     {
         x_ord <- NULL
-        if (is.unsorted(start(x))) { # minimize work for sorted ranges (common)
+        if (isNotSorted(start(x))) { # minimize work for sorted ranges (common)
             x_ord <- order(x)
             x <- x[x_ord]
         }

@@ -405,6 +405,11 @@ SEXP Integer_any_missing_or_outside(SEXP x, SEXP lower, SEXP upper);
 
 SEXP Integer_diff_with_0(SEXP x);
 
+SEXP Integer_order(
+	SEXP x,
+	SEXP decreasing
+);
+
 SEXP Integer_order_two(
 	SEXP x,
 	SEXP y,

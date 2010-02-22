@@ -17,7 +17,7 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
             query <- as(query, "IRanges")
             query_ord <- NULL
             origQuery <- query
-            if (is.unsorted(start(query))) { ## query must be sorted
+            if (isNotSorted(start(query))) { ## query must be sorted
               query_ord <- order(query)
               query <- query[query_ord]
             }
