@@ -719,7 +719,15 @@ setMethod("sort", "Rle",
                   if (anyMissing(x))
                       x <- x[!is.na(x)]
               }
-              ord <- order(runValue(x), decreasing = decreasing, na.last = na.last)
+              if (is.integer(runValue(x)) || is.factor(runValue(x))) {
+                  ord <-
+                    sort.list(runValue(x), decreasing = decreasing,
+                              na.last = na.last, method = "radix")
+              } else {
+                  ord <-
+                    order(runValue(x), decreasing = decreasing,
+                          na.last = na.last)
+              }
               Rle(values = runValue(x)[ord], lengths = runLength(x)[ord],
                   check = FALSE)
           })

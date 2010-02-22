@@ -333,14 +333,19 @@ selectSome <- function (obj, maxToShow = 5)
 
 orderInteger <- function(x, decreasing = FALSE)
 {
-    if (!is.integer(x))
+    if (!is.integer(x) && !is.factor(x))
         stop("'x' must be an integer vector")
-    .Call("Integer_order", x, decreasing, PACKAGE="IRanges")
+    if ((is.integer(x) && anyMissingOrOutside(x, 1, 100000)) ||
+        (is.factor(x) && length(levels(x)) > 100000))
+        .Call("Integer_order", x, decreasing, PACKAGE="IRanges")
+    else
+        sort.list(x, decreasing = decreasing, method = "radix")
 }
 
 orderTwoIntegers <- function(x, y, decreasing = FALSE)
 {
-    if (!is.integer(x) || !is.integer(y))
+    if ((!is.integer(x) && !is.factor(x)) || 
+        (!is.integer(y) && !is.factor(y)))
         stop("'x' and 'y' must be integer vectors")
     .Call("Integer_order_two", x, y, decreasing, PACKAGE="IRanges")
 }
