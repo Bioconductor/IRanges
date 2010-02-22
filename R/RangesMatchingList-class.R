@@ -21,11 +21,11 @@ setMethod("space", "RangesMatchingList",
           })
 
 setMethod("subjectHits", "RangesMatchingList", function(x) {
-  as.matrix(x)[,2L]
+  as.matrix(x)[,2L,drop=TRUE]
 })
 
 setMethod("queryHits", "RangesMatchingList", function(x) {
-  as.matrix(x)[,1L]
+  as.matrix(x)[,1L,drop=TRUE]
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

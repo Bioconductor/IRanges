@@ -24,13 +24,13 @@ setMethod("length", "RangesMatching", function(x) {
 setGeneric("subjectHits", function(x, ...) standardGeneric("subjectHits"))
 
 setMethod("subjectHits", "RangesMatching", function(x) {
-  matchMatrix(x)[,2L]
+  matchMatrix(x)[,2L,drop=TRUE]
 })
 
 setGeneric("queryHits", function(x, ...) standardGeneric("queryHits"))
 
 setMethod("queryHits", "RangesMatching", function(x) {
-  matchMatrix(x)[,1L]
+  matchMatrix(x)[,1L,drop=TRUE]
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
