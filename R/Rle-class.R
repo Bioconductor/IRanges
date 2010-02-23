@@ -750,8 +750,6 @@ setMethod("splitRanges", "Rle",
 setMethod("splitRanges", "vectorORfactor",
           function(x) {
               callGeneric(Rle(x))
-              split(IRanges(start = start(x), width = runLength(x)),
-                      runValue(x))
           })
 
 setMethod("summary", "Rle",
