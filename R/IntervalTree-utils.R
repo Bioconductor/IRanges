@@ -45,11 +45,11 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
               query <- origQuery
               m <- as.matrix(result)
               filterMatrix <- function(fun)
-                m[abs(fun(query)[m[,1L]] - fun(subject)[m[,2L]]) <= maxgap,,
+                m[abs(fun(query)[m[,1L]] - fun(subject)[m[,2L]]) <= maxgap, ,
                   drop=FALSE]
               if (type == "within") {
                 r <- ranges(result, query, subject)                
-                m <- m[width(query)[m[,1L]] - width(r) <= maxgap,]
+                m <- m[width(query)[m[,1L]] - width(r) <= maxgap, , drop=FALSE]
               } else if (type == "start")
                 m <- filterMatrix(start)
               else if (type == "end")
@@ -59,7 +59,7 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
                 m <- filterMatrix(end)
               }
               if (!origMultiple) {
-                m <- m[!duplicated(m[,1L]),]
+                m <- m[!duplicated(m[,1L]), , drop=FALSE]
                 result <- rep.int(NA_integer_, length(query))
                 result[m[,1L]] <- m[,2L]
               } else {
