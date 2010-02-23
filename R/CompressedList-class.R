@@ -79,20 +79,66 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
     } else if (!extends(class(unlistData), elementTypeData)) {
         stop("'unlistData' not of class ", elementTypeData)
     } else if (!is.null(splitFactor)) {
-        if (!is.factor(splitFactor))
-            splitFactor <- as.factor(splitFactor)
-        if (drop)
-            splitFactor <- splitFactor[drop = TRUE]
-        if (is.unsorted(splitFactor)) {
-            orderElts <- orderInteger(splitFactor)
-            if (length(dim(unlistData)) < 2)
-                unlistData <- unlistData[orderElts]
-            else
-                unlistData <- unlistData[orderElts, , drop = FALSE]
-            splitFactor <- splitFactor[orderElts]
+        if (is(splitFactor, "Rle")) {
+            if (anyMissing(runValue(splitFactor)))
+                stop("splitting factor contains missing values")
+            isInt <- is.integer(runValue(splitFactor))
+            isFactor <- is.factor(runValue(splitFactor))
+            if (!isInt && !isFactor) {
+                uniqueFactors <- sort(unique(splitFactor))
+                runValue(splitFactor) <-
+                  structure(match(runValue(splitFactor), uniqueFactors),
+                            levels = as.character(uniqueFactors),
+                            class = "factor")
+            } else if (isFactor && drop) {
+                runValue(splitFactor) <- runValue(splitFactor)[drop = TRUE]
+            }
+            if (isNotSorted(runValue(splitFactor))) {
+                ord <- orderAsRanges(splitFactor)
+                unlistData <- seqselect(unlistData, ord)
+                splitFactor <- sort(splitFactor)
+            }
+            if (isInt || drop) {
+                NAMES <- as.character(runValue(splitFactor))
+                end <- cumsum(runLength(splitFactor))
+            } else {
+                NAMES <- levels(runValue(splitFactor))
+                width <- structure(rep.int(0L, length(NAMES)), names = NAMES)
+                width[as.character(runValue(splitFactor))] <-
+                  runLength(splitFactor)
+                end <- cumsum(unname(width))
+            }
+        } else {
+            if (anyMissing(splitFactor))
+                stop("splitting factor contains missing values")
+            isInt <- is.integer(splitFactor)
+            isFactor <- is.factor(splitFactor)
+            if (!isInt && !isFactor) {
+                uniqueFactors <- sort(unique(splitFactor))
+                splitFactor <-
+                  structure(match(splitFactor, uniqueFactors),
+                            levels = as.character(uniqueFactors),
+                            class = "factor")
+            } else if (isFactor && drop) {
+                splitFactor <- splitFactor[drop = TRUE]
+            }
+            if (isNotSorted(splitFactor)) {
+                orderElts <- orderInteger(splitFactor)
+                if (length(dim(unlistData)) < 2)
+                    unlistData <- unlistData[orderElts]
+                else
+                    unlistData <- unlistData[orderElts, , drop = FALSE]
+                splitFactor <- splitFactor[orderElts]
+            }
+            if (isInt) {
+                splitFactor <- Rle(splitFactor)
+                NAMES <- as.character(runValue(splitFactor))
+                end <- cumsum(runLength(splitFactor))
+            } else {
+                NAMES <- levels(splitFactor)
+                end <- cumsum(tabulate(splitFactor, length(NAMES)))
+            }
         }
-        NAMES <- levels(splitFactor)
-        end <- cumsum(tabulate(splitFactor, length(NAMES)))
     }
 
     new2(listClass, unlistData = unlistData,

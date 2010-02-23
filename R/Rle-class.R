@@ -459,6 +459,26 @@ setMethod("match", "Rle",
                         incomparables = incomparables), 
                   lengths = runLength(x), check = FALSE))
 
+setGeneric("orderAsRanges", signature = c("x"),
+           function(x, na.last = TRUE, decreasing = FALSE)
+               standardGeneric("orderAsRanges"))
+
+setMethod("orderAsRanges", "Rle",
+           function(x, na.last = TRUE, decreasing = FALSE)
+           {
+               if (is.integer(runValue(x)) || is.factor(runValue(x))) {
+                   ord <-
+                     sort.list(runValue(x), na.last = na.last,
+                               decreasing = decreasing, method = "radix")
+               } else {
+                   ord <-
+                     order(runValue(x), na.last = na.last,
+                           decreasing = decreasing)
+               }
+               new2("IRanges", start = start(x)[ord], width = runLength(x)[ord],
+                    check = FALSE)
+           })
+
 setMethod("rep", "Rle",
           function(x, times, length.out, each)
           {
@@ -790,9 +810,10 @@ setMethod("table", "Rle",
           {
               x <- sort(...)
               structure(array(runLength(x), dim = nrun(x),
-                              dimnames = structure(list(as.character(runValue(x))), 
-                                      names = "")),
-                      class = "table")
+                              dimnames =
+                              structure(list(as.character(runValue(x))), 
+                                        names = "")),
+                        class = "table")
           })
 
 setMethod("unique", "Rle",
