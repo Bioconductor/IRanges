@@ -6,8 +6,8 @@ test_RangesMatching_as_matrix <- function() {
   result <- findOverlaps(query, tree)
 
   checkIdentical(as.matrix(result),
-                 cbind(query = as.integer(c(1, 1, 3)),
-                       subject = as.integer(c(2, 1, 3))))
+                 cbind(query = c(1L, 1L, 3L),
+                       subject = 1:3))
 
   ## dense
   query <- IRanges(c(1, 4, 9), c(5, 7, 10))
@@ -16,8 +16,8 @@ test_RangesMatching_as_matrix <- function() {
   result <- findOverlaps(query, tree)
 
   checkIdentical(as.matrix(result),
-                 cbind(query = as.integer(c(1, 1, 2, 2)),
-                       subject = as.integer(c(2, 1, 2, 1))))
+                 cbind(query = rep(1:2, each=2),
+                       subject = rep(1:2, 2)))
 }
 
 test_RangesMatching_matched <- function() {
@@ -35,6 +35,6 @@ test_RangesMatching_matched <- function() {
   subject <- IRanges(c(2, 2), c(5, 4))
   tree <- IntervalTree(subject)
   result <- findOverlaps(query, tree)
-  
+
   checkIdentical(as.vector(as.table(result)), c(2L, 2L, 0L))
 }
