@@ -569,7 +569,7 @@ setMethod("start", "PartitioningByEnd",
     }
 )
 
-setMethod("width", "PartitioningByEnd", function(x) diff(c(0L, end(x))))
+setMethod("width", "PartitioningByEnd", function(x) diffWithInitialZero(end(x)))
 
 .valid.PartitioningByEnd <- function(x)
 {
