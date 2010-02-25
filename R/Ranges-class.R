@@ -474,7 +474,19 @@ countOverlap <- function(object, query)
 }
 
 setMethod("%in%", c("Ranges", "Ranges"),
-    function(x, table) !is.na(match(x, table))
+    function(x, table)
+    {
+        if (!is(x, "IRanges"))
+            x <- as(x, "IRanges")
+        subject <- IntervalTree(table)
+        if (isNotSorted(start(x))) { ## x must be sorted
+            x_ord <- order(x)
+            x <- x[x_ord]
+        } else {
+            x_ord <- seq_len(length(x))
+        }
+        IRanges:::.IntervalTreeCall(subject, "overlap_exists", x, x_ord)
+    }
 )
 
 setGeneric("match",
