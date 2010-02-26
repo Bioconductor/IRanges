@@ -61,26 +61,29 @@ setMethod("rdapply", "RDApplyParams", function(x) {
 setMethod("findOverlaps", c("RangedData", "RangedData"),
           function(query, subject, maxgap = 0, multiple = TRUE,
                    type = c("any", "start", "end", "within", "equal"),
-                   drop = FALSE)
+                   minoverlap = 1L, drop = FALSE)
           {
             findOverlaps(ranges(query), ranges(subject), maxgap = maxgap,
-                         multiple = multiple, type = type, drop = drop)
+                         multiple = multiple, type = type,
+                         minoverlap = minoverlap, drop = drop)
           })
 setMethod("findOverlaps", c("RangedData", "RangesList"),
           function(query, subject, maxgap = 0, multiple = TRUE,
                    type = c("any", "start", "end", "within", "equal"),
-                   drop = FALSE)
+                   minoverlap = 1L, drop = FALSE)
           {
             findOverlaps(ranges(query), subject, maxgap = maxgap,
-                         multiple = multiple, type = type, drop = drop)
+                         multiple = multiple, type = type,
+                         minoverlap = minoverlap, drop = drop)
           })
 setMethod("findOverlaps", c("RangesList", "RangedData"),
           function(query, subject, maxgap = 0, multiple = TRUE,
                    type = c("any", "start", "end", "within", "equal"),
-                   drop = FALSE)
+                   minoverlap = 1L, drop = FALSE)
           {
             findOverlaps(query, ranges(subject), maxgap = maxgap,
-                         multiple = multiple, type = type, drop = drop)
+                         multiple = multiple, type = type,
+                         minoverlap = minoverlap, drop = drop)
           })
 
 

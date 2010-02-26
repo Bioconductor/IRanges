@@ -3,39 +3,55 @@
 ### -------------------------------------------------------------------------
 
 setMethod("findOverlaps", c("Ranges", "IntervalTree"),
-          function(query, subject, maxgap = 0, multiple = TRUE,
-                   type = c("any", "start", "end", "within", "equal"))
+          function(query, subject, maxgap = 0L, multiple = TRUE,
+                   type = c("any", "start", "end", "within", "equal"),
+                   minoverlap = 1L)
           {
-            if (!IRanges:::isSingleNumber(maxgap) || maxgap < 0)
-              stop("'maxgap' must be a non-negative number")
-            if (!IRanges:::isTRUEorFALSE(multiple))
+            if (!isSingleNumber(maxgap) || maxgap < 0L)
+              stop("'maxgap' must be a single, non-negative integer")
+            if (!isTRUEorFALSE(multiple))
               stop("'multiple' must be TRUE or FALSE")
             type <- match.arg(type)
+            if (!isSingleNumber(minoverlap) || minoverlap < 1L)
+              stop("'minoverlap' must be a single, positive integer")
             origMultiple <- multiple
-            if (type != "any")
+            if (type != "any" || minoverlap > 1L)
               multiple <- TRUE
             query <- as(query, "IRanges")
             query_ord <- NULL
             origQuery <- query
+            adjust <- maxgap - minoverlap + 1L
+            if (adjust != 0L) {
+              query <- shift(query, -adjust)
+              ## ensure that width >= 0 and >= 1 when orig width >= minoverlap
+              width(query) <- pmax(width(query) + 2*adjust,
+                                   ifelse(width(query) < minoverlap, 0L, 1L))
+            }
             if (isNotSorted(start(query))) { ## query must be sorted
-              query_ord <- order(query)
+              query_ord <- sort.list(start(query), method = "quick",
+                                     na.last = NA)
               query <- query[query_ord]
             } else {
               query_ord <- seq_len(length(query))
-            }
-            if (maxgap != 0) {
-              query <- shift(query, -maxgap)
-              width(query) <- width(query) + 2*maxgap # adds to end (weird...)
             }
             validObject(query)
             if (multiple)
               fun <- "overlap_multiple"
             else
               fun <- "overlap_first"
-            result <- IRanges:::.IntervalTreeCall(subject, fun, query, query_ord)
-            if (multiple && type != "any") {
+            result <- .IntervalTreeCall(subject, fun, query, query_ord)
+            if (type != "any" || minoverlap > 1L) {
               query <- origQuery
               m <- as.matrix(result)
+              if (minoverlap > 1L) {
+                if (maxgap > 0L)
+                  expandedQuery <- resize(query, width(query) + 2*maxgap,
+                                          symmetric = TRUE)
+                else expandedQuery <- query
+                r <- ranges(result, expandedQuery, subject)
+                m <- m[width(r) >= minoverlap, , drop=FALSE]
+                result@matchMatrix <- m
+              }
               filterMatrix <- function(fun)
                 m[abs(fun(query)[m[,1L]] - fun(subject)[m[,2L]]) <= maxgap, ,
                   drop=FALSE]
@@ -63,21 +79,24 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
 
 setMethod("findOverlaps", c("Ranges", "Ranges"),
           function(query, subject, maxgap = 0, multiple = TRUE,
-                   type = c("any", "start", "end", "within", "equal")) {
+                   type = c("any", "start", "end", "within", "equal"),
+                   minoverlap = 1L) {
             findOverlaps(query, IntervalTree(subject), maxgap = maxgap,
-                         multiple = multiple, type = type)
+                         multiple = multiple, type = type,
+                         minoverlap = minoverlap)
           })
 
 setMethod("findOverlaps", c("ANY", "missing"),
           function(query, subject, maxgap = 0, multiple = TRUE,
                    type = c("any", "start", "end", "within", "equal"),
-                   ignoreSelf = FALSE, ignoreRedundant = FALSE)
+                   ignoreSelf = FALSE, ignoreRedundant = FALSE, minoverlap = 1L)
           {
             if (!multiple && !ignoreSelf) # silly case
               seq(length(query))
             else {
               result <- findOverlaps(query, query, maxgap = maxgap,
-                                     multiple = multiple, type = type)
+                                     multiple = multiple, type = type,
+                                     minoverlap = minoverlap)
               mat <- matchMatrix(result)
               if (ignoreSelf)
                 mat <- mat[mat[,1L] != mat[,2L],]
@@ -93,10 +112,12 @@ setMethod("findOverlaps", c("ANY", "missing"),
 
 setMethod("findOverlaps", c("integer", "Ranges"),
           function(query, subject, maxgap = 0, multiple = TRUE,
-                   type = c("any", "start", "end", "within", "equal"))
+                   type = c("any", "start", "end", "within", "equal"),
+                   minoverlap = 1L)
           {
             findOverlaps(IRanges(query, query), subject, maxgap = maxgap,
-                         multiple = multiple, type = type)
+                         multiple = multiple, type = type,
+                         minoverlap = minoverlap)
           })
 
 ## not for exporting, just a debugging utility

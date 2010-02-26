@@ -43,9 +43,18 @@ test_IntervalTree_findOverlaps <- function() {
   result <- findOverlaps(query, tree)
   checkOverlap(result, c(1, 1, 3), c(1, 2, 3), 3, 3)
 
+  ## with 'maxgap'
   result <- findOverlaps(query, tree, 1)
   checkOverlap(result, c(1, 1, 2, 3), c(1, 2, 2, 3), 3, 3)
 
+  ## with 'minoverlap'
+  result <- findOverlaps(query, tree, minoverlap = 3L)
+  checkOverlap(result, integer(0), integer(0), 3, 3)
+  result <- findOverlaps(query, tree, minoverlap = 2L)
+  checkOverlap(result, 1, 2, 3, 3)
+  result <- findOverlaps(query, tree, minoverlap = 2L, multiple = FALSE)
+  checkIdentical(result, c(2L, NA, NA))
+  
   ## empty query range
   query <- IRanges(c(1, 4, 9, 10), c(5, 7, 10, 9))
   result <- findOverlaps(query, tree)
@@ -71,8 +80,7 @@ test_IntervalTree_findOverlaps <- function() {
 
   result <- findOverlaps(subject, query)
   checkOverlap(result, c(1, 1, 2, 2), c(1, 2, 1, 2), 3, 2)
-  ##checkOverlap(result, Matrix::t(dense))
-
+  
   query <- IRanges(c(1, 4, 9, 11), c(5, 7, 10, 11))
 
   result <- findOverlaps(query)
@@ -98,7 +106,8 @@ test_IntervalTree_findOverlaps <- function() {
                  c(1L, 2L, NA))
   checkIdentical(findOverlaps(IRanges(c(2,1),c(3,4)), subject),
                  new("RangesMatching",
-                     matchMatrix = cbind(query=1:2, subject=c(1L,1L)), DIM = 3:2))
+                     matchMatrix = cbind(query=1:2, subject=c(1L,1L)),
+                     DIM = 3:2))
 
   ## check other types of matching
 
@@ -123,6 +132,15 @@ test_IntervalTree_findOverlaps <- function() {
   result <- findOverlaps(query, tree, type = "start", maxgap = 1L)
   checkOverlap(result, c(1, 2, 2, 3, 4, 4), c(1, 3, 4, 2, 2, 3), 4, 4)
 
+  ## minoverlap > 1L
+  result <- findOverlaps(query, tree, type = "start", minoverlap = 3L)
+  checkOverlap(result, 3, 2, 4, 4)
+  
+  ## combine minoverlap and maxgap
+  result <- findOverlaps(query, tree, type = "start", maxgap = 1L,
+                         minoverlap = 3L)
+  checkOverlap(result, c(3, 4, 4), c(2, 2, 3), 4, 4)
+  
   ## 'end'
   result <- findOverlaps(query, tree, type = "end")
   checkOverlap(result, c(2, 3, 4, 4), c(2, 2, 3, 4), 4, 4)

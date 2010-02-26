@@ -70,7 +70,7 @@
   \describe{
     \item{}{
       \code{findOverlaps(query, subject = query, maxgap = 0, multiple = TRUE,
-        type = c("any", "start", "end", "within", "equal"),
+        type = c("any", "start", "end", "within", "equal"), minoverlap = 1L,
         drop = FALSE, ignoreSelf = FALSE, ignoreRedundant = FALSE)}:
 
       Find the intervals in \code{query}, a \code{Ranges},
@@ -90,19 +90,21 @@
       \code{ignoreRedundant} is \code{TRUE}, only one of A->B and B->A
       is returned.
       
-      Intervals with a separation of \code{maxgap} or less are
-      considered to be overlapping.  \code{maxgap} should be a scalar,
-      non-negative, non-NA number.  When \code{multiple} (a scalar
-      non-NA logical) is \code{TRUE}, the results are returned as a
-      \code{\linkS4class{RangesMatching}} object.
+      Intervals with a separation of \code{maxgap} or less and a minimum
+      of \code{minoverlap} overlapping positions, allowing for
+      \code{maxgap}, are considered to be overlapping.  \code{maxgap}
+      should be a scalar, non-negative, integer. \code{minoverlap}
+      should be a scalar, positive integer.
 
-      If \code{multiple} is \code{FALSE}, at most one overlapping
-      interval in \code{subject} is returned for each interval in
-      \code{query}. The matchings are returned as an integer vector of
-      length \code{length(query)}, with \code{NA} indicating intervals
-      that did not overlap any intervals in \code{subject}. This is
-      analogous to the default behavior of the \code{\link{match}}
-      function.
+      When \code{multiple} (a scalar non-NA logical) is \code{TRUE}, the
+      results are returned as a \code{\linkS4class{RangesMatching}}
+      object. If \code{multiple} is \code{FALSE}, at most one
+      overlapping interval in \code{subject} is returned for each
+      interval in \code{query}. The matchings are returned as an integer
+      vector of length \code{length(query)}, with \code{NA} indicating
+      intervals that did not overlap any intervals in
+      \code{subject}. This is analogous to the default behavior of the
+      \code{\link{match}} function.
 
       If \code{query} is a \code{\linkS4class{RangesList}} or
       \code{\linkS4class{RangedData}}, \code{subject} must be a
@@ -129,7 +131,8 @@
       efficient. Specifying \code{equal} as the type returns the
       intersection of the \code{start} and \code{end} matches. If
       \code{type} is \code{within}, the query interval must be wholly
-      contained within the subject interval.
+      contained within the subject interval. Note that all matches must
+      additionally satisfy the \code{minoverlap} constraint described above.
 
       The \code{maxgap} parameter has special meaning with the special
       overlap types. For \code{start}, \code{end}, and \code{equal},

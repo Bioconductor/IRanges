@@ -454,7 +454,7 @@ setMethod("range", "RangesList",
 setMethod("findOverlaps", c("RangesList", "RangesList"),
           function(query, subject, maxgap = 0, multiple = TRUE,
                    type = c("any", "start", "end", "within", "equal"),
-                   drop = FALSE)
+                   minoverlap = 1L, drop = FALSE)
           {
             query <- as.list(query)
             subject <- as.list(subject)
@@ -470,7 +470,8 @@ setMethod("findOverlaps", c("RangesList", "RangesList"),
             subject[sapply(subject, is.null)] <- IRanges()
             ans <- lapply(seq_len(length(subject)), function(i) {
               findOverlaps(query[[i]], subject[[i]], maxgap = maxgap,
-                           multiple = multiple, type = type)
+                           multiple = multiple, type = type,
+                           minoverlap = minoverlap)
             })
             names(ans) <- names(subject)
             if (multiple) {
