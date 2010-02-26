@@ -21,12 +21,9 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
             query_ord <- NULL
             origQuery <- query
             adjust <- maxgap - minoverlap + 1L
-            if (adjust != 0L) {
-              query <- shift(query, -adjust)
-              ## ensure that width >= 0 and >= 1 when orig width >= minoverlap
-              width(query) <- pmax(width(query) + 2*adjust,
-                                   ifelse(width(query) < minoverlap, 0L, 1L))
-            }
+            if (adjust > 0L)
+              query <- resize(query, width(query) + 2*adjust, symmetric = TRUE)
+            unsortedQuery <- query
             if (isNotSorted(start(query))) { ## query must be sorted
               query_ord <- sort.list(start(query), method = "quick",
                                      na.last = NA)
@@ -41,17 +38,13 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
               fun <- "overlap_first"
             result <- .IntervalTreeCall(subject, fun, query, query_ord)
             if (type != "any" || minoverlap > 1L) {
-              query <- origQuery
               m <- as.matrix(result)
               if (minoverlap > 1L) {
-                if (maxgap > 0L)
-                  expandedQuery <- resize(query, width(query) + 2*maxgap,
-                                          symmetric = TRUE)
-                else expandedQuery <- query
-                r <- ranges(result, expandedQuery, subject)
+                r <- ranges(result, unsortedQuery, subject)
                 m <- m[width(r) >= minoverlap, , drop=FALSE]
                 result@matchMatrix <- m
               }
+              query <- origQuery
               filterMatrix <- function(fun)
                 m[abs(fun(query)[m[,1L]] - fun(subject)[m[,2L]]) <= maxgap, ,
                   drop=FALSE]
