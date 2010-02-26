@@ -80,7 +80,7 @@ setMethod("ranges", "RangesMatching", function(x, query, subject) {
   m <- as.matrix(x)
   q <- query[m[,1L]]
   s <- subject[m[,2L]]
-  IRanges(pmax(start(q), start(s)), pmin(end(s), end(q)))
+  IRanges(pmax.int(start(q), start(s)), pmin.int(end(s), end(q)))
 })
 
 ### TODO: many convenience methods
