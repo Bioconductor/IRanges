@@ -22,7 +22,8 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
             origQuery <- query
             adjust <- maxgap - minoverlap + 1L
             if (adjust > 0L)
-              query <- resize(query, width(query) + 2*adjust, symmetric = TRUE)
+              query <-
+                resize(query, width(query) + 2L * adjust, symmetric = TRUE)
             unsortedQuery <- query
             if (isNotSorted(start(query))) { ## query must be sorted
               query_ord <- sort.list(start(query), method = "quick",
@@ -82,7 +83,7 @@ setMethod("findOverlaps", c("Ranges", "Ranges"),
 setMethod("findOverlaps", c("ANY", "missing"),
           function(query, subject, maxgap = 0L, multiple = TRUE,
                    type = c("any", "start", "end", "within", "equal"),
-                   ignoreSelf = FALSE, ignoreRedundant = FALSE, minoverlap = 1L)
+                   minoverlap = 1L, ignoreSelf = FALSE, ignoreRedundant = FALSE)
           {
             if (!multiple && !ignoreSelf) # silly case
               seq(length(query))
@@ -94,8 +95,8 @@ setMethod("findOverlaps", c("ANY", "missing"),
               if (ignoreSelf)
                 mat <- mat[mat[,1L] != mat[,2L],]
               if (ignoreRedundant) {
-                norm_mat <- cbind(pmin(mat[,1L], mat[,2L]),
-                                  pmax(mat[,1L], mat[,2L]))
+                norm_mat <- cbind(pmin.int(mat[,1L], mat[,2L]),
+                                  pmax.int(mat[,1L], mat[,2L]))
                 mat <- mat[!duplicated(norm_mat),]
               }
               result@matchMatrix <- mat
