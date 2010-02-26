@@ -71,7 +71,7 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
           })
 
 setMethod("findOverlaps", c("Ranges", "Ranges"),
-          function(query, subject, maxgap = 0, multiple = TRUE,
+          function(query, subject, maxgap = 0L, multiple = TRUE,
                    type = c("any", "start", "end", "within", "equal"),
                    minoverlap = 1L) {
             findOverlaps(query, IntervalTree(subject), maxgap = maxgap,
@@ -80,7 +80,7 @@ setMethod("findOverlaps", c("Ranges", "Ranges"),
           })
 
 setMethod("findOverlaps", c("ANY", "missing"),
-          function(query, subject, maxgap = 0, multiple = TRUE,
+          function(query, subject, maxgap = 0L, multiple = TRUE,
                    type = c("any", "start", "end", "within", "equal"),
                    ignoreSelf = FALSE, ignoreRedundant = FALSE, minoverlap = 1L)
           {
@@ -104,7 +104,7 @@ setMethod("findOverlaps", c("ANY", "missing"),
           })
 
 setMethod("findOverlaps", c("integer", "Ranges"),
-          function(query, subject, maxgap = 0, multiple = TRUE,
+          function(query, subject, maxgap = 0L, multiple = TRUE,
                    type = c("any", "start", "end", "within", "equal"),
                    minoverlap = 1L)
           {

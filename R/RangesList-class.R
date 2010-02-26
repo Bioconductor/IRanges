@@ -452,7 +452,7 @@ setMethod("range", "RangesList",
 ###
 
 setMethod("findOverlaps", c("RangesList", "RangesList"),
-          function(query, subject, maxgap = 0, multiple = TRUE,
+          function(query, subject, maxgap = 0L, multiple = TRUE,
                    type = c("any", "start", "end", "within", "equal"),
                    minoverlap = 1L, drop = FALSE)
           {

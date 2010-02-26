@@ -442,13 +442,13 @@ setMethod("range", "Ranges",
 
 ### Find objects in the index that overlap those in a query set.
 setGeneric("findOverlaps", signature = c("query", "subject"),
-    function(query, subject, maxgap = 0, multiple = TRUE,
+    function(query, subject, maxgap = 0L, multiple = TRUE,
              type = c("any", "start", "end", "within", "equal"),
              minoverlap = 1L, ...)
         standardGeneric("findOverlaps")
 )
 
-overlap <- function(object, query, maxgap = 0, multiple = TRUE, ...)
+overlap <- function(object, query, maxgap = 0L, multiple = TRUE, ...)
 {
     .Deprecated("findOverlaps")
     if (missing(query))

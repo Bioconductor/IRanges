@@ -69,7 +69,7 @@
 
   \describe{
     \item{}{
-      \code{findOverlaps(query, subject = query, maxgap = 0, multiple = TRUE,
+      \code{findOverlaps(query, subject = query, maxgap = 0L, multiple = TRUE,
         type = c("any", "start", "end", "within", "equal"), minoverlap = 1L,
         drop = FALSE, ignoreSelf = FALSE, ignoreRedundant = FALSE)}:
 
@@ -274,7 +274,7 @@
   findOverlaps(query, tree)
 
   ## overlap as long as distance <= 1
-  findOverlaps(query, tree, maxgap = 1)
+  findOverlaps(query, tree, maxgap = 1L)
 
   ## shortcut
   findOverlaps(query, subject)
