@@ -508,7 +508,18 @@ setMethod("match", c("RangesList", "RangesList"),
             ans
           })
 
-setMethod("countOverlaps", c("RangesList", "RangesList"), .countOverlaps)
+setMethod("countOverlaps", c("RangesList", "RangesList"),
+    function(query, subject, maxgap = 0L,
+             type = c("any", "start", "end", "within", "equal"),
+             minoverlap = 1L)
+    {
+        IntegerList(mapply(countOverlaps, query, subject,
+                           MoreArgs = list(maxgap = maxgap,
+                                           type = match.arg(type),
+                                           minoverlap = minoverlap),
+                    SIMPLIFY = FALSE))
+    }
+)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Set Operations

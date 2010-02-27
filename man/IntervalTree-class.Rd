@@ -141,6 +141,12 @@
       the query may be wider than the subject.
     }
     \item{}{
+      \code{countOverlaps(query, subject = query, maxgap = 0L,
+        type = c("any", "start", "end", "within", "equal"), minoverlap = 1L)}:
+        Returns the overlap hit count for each range in \code{query} using the
+        specified \code{findOverlaps} parameters.
+    }
+    \item{}{
       \code{x \%in\% table}:
       Shortcut for finding the ranges in \code{x} that overlap any of
       the ranges in \code{table}. Both \code{x} and \code{table} should
@@ -162,13 +168,6 @@
       objects or both \code{RangesList} objects, in which case the
       indices are into the unlisted \code{table}. The
       \code{incomparables} argument is currently ignored.
-    }
-    \item{}{
-      \code{countOverlaps(query, subject)}: Return the count of the
-      number of ranges in \code{query} that overlap a range in
-      \code{subject}. For \code{RangesList} arguments, this will return
-      an integer vector, the same length as \code{query}, with each
-      element giving the overlap count for the corresponding space.
     }
   }
   
