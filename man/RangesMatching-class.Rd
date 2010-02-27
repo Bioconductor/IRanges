@@ -80,8 +80,8 @@
       \code{x}, in which case the arguments would be redundant.
     }
     \item{}{\code{length(x)}: get the number of matches}
-    \item{}{\code{nrow(x)}: get the number of subjects in the matching}
-    \item{}{\code{ncol(x)}: get the number of queries in the matching}
+    \item{}{\code{nrow(x)}: get the number of queries in the matching}
+    \item{}{\code{ncol(x)}: get the number of subjects in the matching}
     \item{}{
       \code{dim(x)}: get a two-element integer vector, essentially
       \code{c(nrow(x), ncol(x))}.

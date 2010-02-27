@@ -40,28 +40,13 @@ setMethod("queryHits", "RangesMatching", function(x) {
 ## return a matrix where each row indicates a match (query and subject index)
 
 setMethod("as.matrix", "RangesMatching", function(x) {
-  mm <- matchMatrix(x)
-  ## if (is(mm, "ngCMatrix")) { ## 'i' holds non-zero rows, 'p' delimits cols
-  ##   cbind(query = rep(seq_len(ncol(mm)), diff(mm@p)), subject = mm@i+1L)
-  ## } else if (is(mm, "lgeMatrix")) {
-  ##   mm <- as.matrix(mm)
-  ##   cbind(query = col(mm)[mm], subject = row(mm)[mm])
-  ## }
-  mm
+  matchMatrix(x)
 })
 
 ## count up the matches for each query
 
 setMethod("as.table", "RangesMatching", function(x, ...) {
-  mm <- matchMatrix(x)
-  table(factor(mm[,1L], seq_len(ncol(x))))
-  ## if (!ncol(mm)) ## as.table does not work for empty arrays
-  ##   return(table(integer(), dnn="ranges"))
-  ## if (is(mm, "ngCMatrix"))
-  ##   counts <- diff(mm@p)
-  ## else if (is(mm, "lgeMatrix"))
-  ##   counts <- as.integer(colSums(mm))
-  ## as.table(array(counts, ncol(mm), list(range = seq_len(ncol(mm)))))
+  tabulate(queryHits(x), nrow(x))
 })
 
 setMethod("t", "RangesMatching", function(x) {
@@ -73,9 +58,9 @@ setMethod("t", "RangesMatching", function(x) {
 })
 
 setMethod("ranges", "RangesMatching", function(x, query, subject) {
-  if (!is(query, "Ranges") || length(query) != ncol(x))
+  if (!is(query, "Ranges") || length(query) != nrow(x))
     stop("'query' must be a Ranges of length equal to number of queries")
-  if (!is(subject, "Ranges") || length(subject) != nrow(x))
+  if (!is(subject, "Ranges") || length(subject) != ncol(x))
     stop("'subject' must be a Ranges of length equal to number of subjects")
   m <- as.matrix(x)
   q <- query[m[,1L]]

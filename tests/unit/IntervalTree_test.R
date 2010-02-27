@@ -58,7 +58,7 @@ test_IntervalTree_findOverlaps <- function() {
   ## empty query range
   query <- IRanges(c(1, 4, 9, 10), c(5, 7, 10, 9))
   result <- findOverlaps(query, tree)
-  checkOverlap(result, c(1, 1, 3), c(1, 2, 3), 3, 4)
+  checkOverlap(result, c(1, 1, 3), c(1, 2, 3), 4, 3)
 
   ## empty subject range
   subject <- IRanges(c(2, 2, 2, 10), c(2, 1, 3, 12))
@@ -76,10 +76,10 @@ test_IntervalTree_findOverlaps <- function() {
 
   tree <- IntervalTree(subject)
   result <- findOverlaps(query, tree)
-  checkOverlap(result, c(1, 1, 2, 2), c(1, 2, 1, 2), 2, 3)
+  checkOverlap(result, c(1, 1, 2, 2), c(1, 2, 1, 2), 3, 2)
 
   result <- findOverlaps(subject, query)
-  checkOverlap(result, c(1, 1, 2, 2), c(1, 2, 1, 2), 3, 2)
+  checkOverlap(result, c(1, 1, 2, 2), c(1, 2, 1, 2), 2, 3)
   
   query <- IRanges(c(1, 4, 9, 11), c(5, 7, 10, 11))
 
@@ -99,7 +99,7 @@ test_IntervalTree_findOverlaps <- function() {
   subject <- IRanges(c(2, 2, 6, 6, 6), c(5, 5, 7, 8, 7))  
   tree <- IntervalTree(subject)
   result <- findOverlaps(query, tree)
-  checkOverlap(result, c(1, 1, 2, 2, 2, 2, 2), c(1, 2, 1, 2, 3, 4, 5), 5, 3)
+  checkOverlap(result, c(1, 1, 2, 2, 2, 2, 2), c(1, 2, 1, 2, 3, 4, 5), 3, 5)
 
   subject <- IRanges(c(1, 6, 13), c(4, 9, 14)) # single points
   checkIdentical(findOverlaps(c(3L, 7L, 10L), subject, multiple=FALSE),
@@ -107,7 +107,7 @@ test_IntervalTree_findOverlaps <- function() {
   checkIdentical(findOverlaps(IRanges(c(2,1),c(3,4)), subject),
                  new("RangesMatching",
                      matchMatrix = cbind(query=1:2, subject=c(1L,1L)),
-                     DIM = 3:2))
+                     DIM = 2:3))
 
   ## check other types of matching
 

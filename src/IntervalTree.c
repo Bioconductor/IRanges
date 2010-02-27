@@ -337,8 +337,8 @@ SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges,
   }
 
   r_dims = allocVector(INTSXP, 2);
-  INTEGER(r_dims)[0] = tree->n;
-  INTEGER(r_dims)[1] = nranges;
+  INTEGER(r_dims)[0] = nranges;
+  INTEGER(r_dims)[1] = tree->n;
   SET_SLOT(r_results, install("DIM"), r_dims);
 
   r_dimnames = allocVector(VECSXP, 2);
