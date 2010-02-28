@@ -59,31 +59,52 @@ setMethod("rdapply", "RDApplyParams", function(x) {
 ###
 
 setMethod("findOverlaps", c("RangedData", "RangedData"),
-          function(query, subject, maxgap = 0L, multiple = TRUE,
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
-                   minoverlap = 1L, drop = FALSE)
+                   select = c("all", "first", "last", "random"),
+                   multiple = TRUE, drop = FALSE)
           {
+            if (!missing(multiple) && !multiple) {
+              if (!isTRUEorFALSE(multiple))
+                stop("'multiple' must be TRUE or FALSE")
+              warning("argument 'multiple' is deprecated; use 'select'.")
+              select <- "random"
+            }
             findOverlaps(ranges(query), ranges(subject), maxgap = maxgap,
-                         multiple = multiple, type = type,
-                         minoverlap = minoverlap, drop = drop)
+                         minoverlap = minoverlap, type = match.arg(type),
+                         select = match.arg(select), drop = drop)
           })
 setMethod("findOverlaps", c("RangedData", "RangesList"),
-          function(query, subject, maxgap = 0L, multiple = TRUE,
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
-                   minoverlap = 1L, drop = FALSE)
+                   select = c("all", "first", "last", "random"),
+                   multiple = TRUE, drop = FALSE)
           {
+            if (!missing(multiple) && !multiple) {
+              if (!isTRUEorFALSE(multiple))
+                stop("'multiple' must be TRUE or FALSE")
+              warning("argument 'multiple' is deprecated; use 'select'.")
+              select <- "random"
+            }
             findOverlaps(ranges(query), subject, maxgap = maxgap,
-                         multiple = multiple, type = type,
-                         minoverlap = minoverlap, drop = drop)
+                         minoverlap = minoverlap, type = match.arg(type),
+                         select = match.arg(select), drop = drop)
           })
 setMethod("findOverlaps", c("RangesList", "RangedData"),
-          function(query, subject, maxgap = 0L, multiple = TRUE,
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
-                   minoverlap = 1L, drop = FALSE)
+                   select = c("all", "first", "last", "random"),
+                   multiple = TRUE, drop = FALSE)
           {
+            if (!missing(multiple) && !multiple) {
+              if (!isTRUEorFALSE(multiple))
+                stop("'multiple' must be TRUE or FALSE")
+              warning("argument 'multiple' is deprecated; use 'select'.")
+              select <- "random"
+            }
             findOverlaps(query, ranges(subject), maxgap = maxgap,
-                         multiple = multiple, type = type,
-                         minoverlap = minoverlap, drop = drop)
+                         minoverlap = minoverlap, type = match.arg(type),
+                         select = match.arg(select), drop = drop)
           })
 
 

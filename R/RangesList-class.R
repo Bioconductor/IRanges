@@ -272,10 +272,10 @@ rangesListSingleSquareBracket <- function(x, i, j, ..., drop)
   if (missing(i))
     return(x)
   if (is(i, "RangesList")) {
-    ol <- findOverlaps(x, i, multiple = FALSE)
+    ol <- x %in% i
     els <- as.list(x)
     for (j in seq_len(length(x))) {
-      els[[j]] <- els[[j]][!is.na(ol[[j]])]
+      els[[j]] <- els[[j]][ol[[j]]]
     }
     if (is(x, "CompressedList"))
       ans <- newCompressedList(class(x), els)
@@ -452,10 +452,20 @@ setMethod("range", "RangesList",
 ###
 
 setMethod("findOverlaps", c("RangesList", "RangesList"),
-          function(query, subject, maxgap = 0L, multiple = TRUE,
+          function(query, subject, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
-                   minoverlap = 1L, drop = FALSE)
+                   select = c("all", "first", "last", "random"),
+                   multiple = TRUE, drop = FALSE)
           {
+            if (!missing(multiple) && !multiple) {
+              if (!isTRUEorFALSE(multiple))
+                stop("'multiple' must be TRUE or FALSE")
+              warning("argument 'multiple' is deprecated; use 'select'.")
+              select <- "random"
+            }
+            type <- match.arg(type)
+            select <- match.arg(select)
+
             query <- as.list(query)
             subject <- as.list(subject)
             origSubject <- subject
@@ -468,13 +478,15 @@ setMethod("findOverlaps", c("RangesList", "RangesList"),
             ## NULL's are introduced where they do not match
             ## We replace those with empty IRanges
             subject[sapply(subject, is.null)] <- IRanges()
+
             ans <- lapply(seq_len(length(subject)), function(i) {
               findOverlaps(query[[i]], subject[[i]], maxgap = maxgap,
-                           multiple = multiple, type = type,
-                           minoverlap = minoverlap)
+                           minoverlap = minoverlap, type = type,
+                           select = select)
             })
             names(ans) <- names(subject)
-            if (multiple) {
+
+            if (select == "all") {
               ans <- RangesMatchingList(ans, origSubject)
             } else if (drop) {
               off <- head(c(0L, cumsum(sapply(origSubject, length))), -1)
@@ -494,16 +506,29 @@ setMethod("findOverlaps", c("RangesList", "RangesList"),
 
 setMethod("%in%", c("RangesList", "RangesList"),
           function(x, table)
-          LogicalList(lapply(findOverlaps(x, table, multiple = FALSE),
-                             function(y) !is.na(y))))
+          {
+            x <- as.list(x)
+            table <- as.list(table)
+            if (!is.null(names(x)) && !is.null(names(table))) {
+              table <- table[names(x)]
+              names(table) <- names(x) # get rid of NA's in names
+            } else {
+              table <- table[seq_along(x)]
+            }
+            ## NULL's are introduced where they do not match
+            ## We replace those with empty IRanges
+            table[sapply(table, is.null)] <- IRanges()
+            LogicalList(lapply(structure(seq_len(length(x)), names = names(x)),
+                               function(i) x[[i]] %in% table[[i]]))
+          })
 
 setMethod("match", c("RangesList", "RangesList"),
           function(x, table, nomatch = NA_integer_, incomparables = NULL)
           {
             if (length(nomatch) != 1)
               stop("'nomatch' must be of length 1") 
-            ans <- findOverlaps(x, table, multiple=FALSE, drop=TRUE)
-            if (!is.na(nomatch))
+            ans <- findOverlaps(x, table, select = "first", drop=TRUE)
+            if (!is.na(nomatch) && anyMissing(ans))
               ans[is.na(ans)] <- as.integer(nomatch)
             ans
           })

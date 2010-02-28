@@ -3,20 +3,26 @@
 ### -------------------------------------------------------------------------
 
 setMethod("findOverlaps", c("Ranges", "IntervalTree"),
-          function(query, subject, maxgap = 0L, multiple = TRUE,
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
-                   minoverlap = 1L)
+                   select = c("all", "first", "last", "random"),
+                   multiple = TRUE)
           {
+            if (!missing(multiple) && !multiple) {
+              if (!isTRUEorFALSE(multiple))
+                stop("'multiple' must be TRUE or FALSE")
+              warning("argument 'multiple' is deprecated; use 'select'.")
+              select <- "random"
+            }
             if (!isSingleNumber(maxgap) || maxgap < 0L)
               stop("'maxgap' must be a single, non-negative integer")
-            if (!isTRUEorFALSE(multiple))
-              stop("'multiple' must be TRUE or FALSE")
-            type <- match.arg(type)
             if (!isSingleNumber(minoverlap) || minoverlap < 1L)
               stop("'minoverlap' must be a single, positive integer")
-            origMultiple <- multiple
+            type <- match.arg(type)
+            select <- match.arg(select)
+            origSelect <- select
             if (type != "any" || minoverlap > 1L)
-              multiple <- TRUE
+              select <- "all"
             query <- as(query, "IRanges")
             query_ord <- NULL
             origQuery <- query
@@ -33,10 +39,7 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
               query_ord <- seq_len(length(query))
             }
             validObject(query)
-            if (multiple)
-              fun <- "overlap_multiple"
-            else
-              fun <- "overlap_first"
+            fun <- paste("overlap_", select, sep = "")
             result <- .IntervalTreeCall(subject, fun, query, query_ord)
             if (type != "any" || minoverlap > 1L) {
               m <- as.matrix(result)
@@ -60,7 +63,7 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
                 m <- filterMatrix(start)
                 m <- filterMatrix(end)
               }
-              if (!origMultiple) {
+              if (origSelect != "all") {
                 m <- m[!duplicated(m[,1L]), , drop=FALSE]
                 result <- rep.int(NA_integer_, length(query))
                 result[m[,1L]] <- m[,2L]
@@ -72,18 +75,27 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
           })
 
 setMethod("findOverlaps", c("Ranges", "Ranges"),
-          function(query, subject, maxgap = 0L, multiple = TRUE,
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
-                   minoverlap = 1L) {
+                   select = c("all", "first", "last", "random"),
+                   multiple = TRUE)
+          {
+            if (!missing(multiple) && !multiple) {
+              if (!isTRUEorFALSE(multiple))
+                stop("'multiple' must be TRUE or FALSE")
+              warning("argument 'multiple' is deprecated; use 'select'.")
+              select <- "random"
+            }
             findOverlaps(query, IntervalTree(subject), maxgap = maxgap,
-                         multiple = multiple, type = type,
-                         minoverlap = minoverlap)
+                         minoverlap = minoverlap, type = match.arg(type),
+                         select = match.arg(select))
           })
 
 setMethod("findOverlaps", c("ANY", "missing"),
-          function(query, subject, maxgap = 0L, multiple = TRUE,
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
-                   minoverlap = 1L, ignoreSelf = FALSE, ignoreRedundant = FALSE)
+                   select = c("all", "first", "last", "random"),
+                   multiple = TRUE, ignoreSelf = FALSE, ignoreRedundant = FALSE)
           {
             if (!multiple && !ignoreSelf) # silly case
               seq(length(query))
@@ -105,13 +117,20 @@ setMethod("findOverlaps", c("ANY", "missing"),
           })
 
 setMethod("findOverlaps", c("integer", "Ranges"),
-          function(query, subject, maxgap = 0L, multiple = TRUE,
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
-                   minoverlap = 1L)
+                   select = c("all", "first", "last", "random"),
+                   multiple = TRUE)
           {
+            if (!missing(multiple) && !multiple) {
+              if (!isTRUEorFALSE(multiple))
+                stop("'multiple' must be TRUE or FALSE")
+              warning("argument 'multiple' is deprecated; use 'select'.")
+              select <- "random"
+            }
             findOverlaps(IRanges(query, query), subject, maxgap = maxgap,
-                         multiple = multiple, type = type,
-                         minoverlap = minoverlap)
+                         minoverlap = minoverlap, type = match.arg(type),
+                         select = match.arg(select))
           })
 
 ## not for exporting, just a debugging utility

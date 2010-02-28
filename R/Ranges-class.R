@@ -442,9 +442,9 @@ setMethod("range", "Ranges",
 
 ### Find objects in the index that overlap those in a query set.
 setGeneric("findOverlaps", signature = c("query", "subject"),
-    function(query, subject, maxgap = 0L, multiple = TRUE,
+    function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within", "equal"),
-             minoverlap = 1L, ...)
+             select = c("all", "first", "last", "random"), ...)
         standardGeneric("findOverlaps")
 )
 
@@ -493,7 +493,7 @@ setMethod("%in%", c("Ranges", "Ranges"),
         } else {
             x_ord <- seq_len(length(x))
         }
-        IRanges:::.IntervalTreeCall(subject, "overlap_exists", x, x_ord)
+        IRanges:::.IntervalTreeCall(subject, "overlap_any", x, x_ord)
     }
 )
 
@@ -507,8 +507,8 @@ setMethod("match", c("Ranges", "Ranges"),
     {
         if (length(nomatch) != 1)
             stop("'nomatch' must be of length 1") 
-        ans <- findOverlaps(x, table, multiple=FALSE)
-        if (!is.na(nomatch))
+        ans <- findOverlaps(x, table, select = "first")
+        if (!is.na(nomatch) && anyMissing(ans))
             ans[is.na(ans)] <- nomatch
         ans
     }
@@ -521,9 +521,9 @@ setGeneric("nearest", function(x, subject, ...) standardGeneric("nearest"))
 setMethod("nearest", c("Ranges", "RangesORmissing"),
     function(x, subject)
     {
-        if (!missing(subject))
-            ol <- findOverlaps(x, subject, multiple = FALSE)
-        else { ## avoid overlapping with self
+        if (!missing(subject)) {
+            ol <- findOverlaps(x, subject, select = "first")
+        } else { ## avoid overlapping with self
             subject <- x
             olm <- as.matrix(findOverlaps(x, subject))
             olm <- olm[olm[,1L] != olm[,2L],]

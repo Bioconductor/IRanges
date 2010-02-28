@@ -8,6 +8,10 @@
 
 #define MAX(a, b)  (((a) > (b)) ? (a) : (b))
 
+#define FIND_ALL    1
+#define FIND_ANY    2
+#define FIND_RANDOM 3
+
 typedef struct _IntegerInterval {
   int start;
   int end;
@@ -110,6 +114,7 @@ SEXP IntegerIntervalTree_new(SEXP r_ranges) {
  * of overlaps.
  * Running time: less than O(mk + mlogn) */
 SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
+                                  int find_type,
                                   struct slRef **result_ints)
 {
   struct rbTreeNode *p = tree->root;
@@ -121,10 +126,12 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
 
   cachedIRanges cached_r_ranges = _cache_IRanges(r_ranges);
   int nranges = _get_cachedIRanges_length(&cached_r_ranges);
-  if (result_ints) {
+  if (find_type == FIND_ALL) {
     PROTECT(result_inds = allocVector(INTSXP, nranges + 1));
-  } else {
+  } else if (find_type == FIND_ANY) {
     PROTECT(result_inds = allocVector(LGLSXP, nranges));
+  } else if (find_type == FIND_RANDOM) {
+    PROTECT(result_inds = allocVector(INTSXP, nranges));
   }
   memset(INTEGER(result_inds), 0, LENGTH(result_inds) * sizeof(int));
   //Rprintf("result_inds: %d\n", nranges + (result_ints != NULL));
@@ -138,14 +145,14 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
     int start = _get_cachedIRanges_elt_start(&cached_r_ranges, m);
     int end = _get_cachedIRanges_elt_end(&cached_r_ranges, m);
     if (end < start) { /* empty query range */
-      if (result_ints)
+      if (find_type == FIND_ALL)
         *(r_elt+1) = *r_elt;
       continue;
     }
     int count = 0;
     /* add hits from previous query, if still valid */
     /* this trick lets us avoid restarting the search for every query */
-    if (result_ints) {
+    if (find_type == FIND_ALL) {
       struct slRef *prev = NULL;
       for (struct slRef *a = active_head; a != NULL;) {
         IntegerInterval *interval = a->val;
@@ -192,7 +199,7 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
         /* consider current node if not already checked */
         if (interval->start <= end && interval->end >= start) {
           /* Rprintf("hit: %d\n", ((IntegerIntervalNode *)interval)->index); */
-          if (result_ints) {
+          if (find_type == FIND_ALL) {
             if (!hit) {
               struct slRef *resultNode = slRefNew(interval);
               slAddHead(result_ints, resultNode);
@@ -204,8 +211,11 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
               active = resultNode;
               count++;
             }
-          } else {
+          } else if (find_type == FIND_ANY) {
             *r_elt = 1;
+            break;
+          } else if (find_type == FIND_RANDOM) {
+            *r_elt = ((IntegerIntervalNode *)interval)->index;
             break;
           }
           hit = TRUE;
@@ -226,7 +236,7 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
         else if (interval->start > end || !height) { /* no more hits */
           if (visited)
             height++; /* repush -- don't go left again */
-          if (result_ints)
+          if (find_type == FIND_ALL)
             *(r_elt+1) = *r_elt + count;
           break;
         } else {
@@ -241,16 +251,32 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
   return result_inds;
 }
 
-SEXP IntegerIntervalTree_overlap_exists(SEXP r_tree, SEXP r_ranges,
-                                        SEXP r_order) {
+SEXP IntegerIntervalTree_overlap_any(SEXP r_tree, SEXP r_ranges,
+                                     SEXP r_order) {
   int i, *left, *right, *o_elt, nranges = _get_IRanges_length(r_ranges);
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
-  SEXP r_unordered = _IntegerIntervalTree_overlap(tree, r_ranges, NULL);
+  SEXP r_unordered =
+    _IntegerIntervalTree_overlap(tree, r_ranges, FIND_ANY, NULL);
   SEXP r_ordered = allocVector(LGLSXP, nranges);
   left = INTEGER(r_ordered);
   for (i = 0, right = INTEGER(r_unordered), o_elt = INTEGER(r_order);
        i < nranges; i++, right++, o_elt++) {
     left[*o_elt - 1] = *right; 
+  }
+  return r_ordered;
+}
+
+SEXP IntegerIntervalTree_overlap_random(SEXP r_tree, SEXP r_ranges,
+                                        SEXP r_order) {
+  int i, *left, *right, *o_elt, nranges = _get_IRanges_length(r_ranges);
+  struct rbTree *tree = R_ExternalPtrAddr(r_tree);
+  SEXP r_unordered =
+    _IntegerIntervalTree_overlap(tree, r_ranges, FIND_RANDOM, NULL);
+  SEXP r_ordered = allocVector(INTSXP, nranges);
+  left = INTEGER(r_ordered);
+  for (i = 0, right = INTEGER(r_unordered), o_elt = INTEGER(r_order);
+       i < nranges; i++, right++, o_elt++) {
+    left[*o_elt - 1] = *right > 0 ? *right : NA_INTEGER;
   }
   return r_ordered;
 }
@@ -264,7 +290,8 @@ SEXP IntegerIntervalTree_overlap_first(SEXP r_tree, SEXP r_ranges,
   int i, j, index, nhits, nranges = _get_IRanges_length(r_ranges);
   int *left, *right, *r_vector, *r_elt, *o_elt;
 
-  r_query_start = _IntegerIntervalTree_overlap(tree, r_ranges, &results);
+  r_query_start =
+    _IntegerIntervalTree_overlap(tree, r_ranges, FIND_ALL, &results);
   PROTECT(r_query_start);
   nhits = INTEGER(r_query_start)[nranges];
   slReverse(&results);
@@ -293,8 +320,46 @@ SEXP IntegerIntervalTree_overlap_first(SEXP r_tree, SEXP r_ranges,
   return r_results;
 }
 
-SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges,
-                                          SEXP r_order)
+SEXP IntegerIntervalTree_overlap_last(SEXP r_tree, SEXP r_ranges,
+                                      SEXP r_order)
+{
+  struct rbTree *tree = R_ExternalPtrAddr(r_tree);
+  struct slRef *results = NULL, *result;
+  SEXP r_query_start, r_results;
+  int i, j, index, nhits, nranges = _get_IRanges_length(r_ranges);
+  int *left, *right, *r_vector, *r_elt, *o_elt;
+
+  r_query_start =
+    _IntegerIntervalTree_overlap(tree, r_ranges, FIND_ALL, &results);
+  PROTECT(r_query_start);
+  nhits = INTEGER(r_query_start)[nranges];
+  slReverse(&results);
+
+  PROTECT(r_results = allocVector(INTSXP, nranges));
+  for (i = 0, r_elt = INTEGER(r_results); i < nranges; i++, r_elt++)
+    *r_elt = NA_INTEGER;
+  result = results;
+  r_vector = INTEGER(r_results);
+  for (i = 0, o_elt = INTEGER(r_order),
+       left = INTEGER(r_query_start), right = INTEGER(r_query_start) + 1;
+       i < nranges; i++, o_elt++, left++, right++) {
+    r_elt = r_vector + (*o_elt - 1);
+    for (j = *left; j < *right; j++) {
+      index = ((IntegerIntervalNode *)result->val)->index;
+      if (*r_elt == NA_INTEGER || (*r_elt < index))
+        *r_elt = index;
+      result = result->next;
+    }
+  }
+
+  slFreeList(&results);
+
+  UNPROTECT(2);
+
+  return r_results;
+}
+
+SEXP IntegerIntervalTree_overlap_all(SEXP r_tree, SEXP r_ranges, SEXP r_order)
 {
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
   struct slRef *results = NULL, *result;
@@ -302,7 +367,8 @@ SEXP IntegerIntervalTree_overlap_multiple(SEXP r_tree, SEXP r_ranges,
   int i, j, nhits, nranges = _get_IRanges_length(r_ranges);
   int *left, *right, *r_elt, *o_elt;
 
-  r_query_start = _IntegerIntervalTree_overlap(tree, r_ranges, &results);
+  r_query_start =
+    _IntegerIntervalTree_overlap(tree, r_ranges, FIND_ALL, &results);
   PROTECT(r_query_start);
   nhits = INTEGER(r_query_start)[nranges];
   slReverse(&results);

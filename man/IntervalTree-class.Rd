@@ -69,18 +69,19 @@
 
   \describe{
     \item{}{
-      \code{findOverlaps(query, subject = query, maxgap = 0L, multiple = TRUE,
-        type = c("any", "start", "end", "within", "equal"), minoverlap = 1L,
+      \code{findOverlaps(query, subject = query, maxgap = 0L, minoverlap = 1L,
+        type = c("any", "start", "end", "within", "equal"),
+        select = c("all", "first", "last", "random"),
         drop = FALSE, ignoreSelf = FALSE, ignoreRedundant = FALSE)}:
 
       Find the intervals in \code{query}, a \code{Ranges},
-      \code{RangesList}, \code{RangedData} or \code{integer} vector (to
+      \code{RangesList}, \code{RangedData}, or \code{integer} vector (to
       be converted to length-one ranges), that overlap with the
       intervals \code{subject}, a \code{Ranges}, \code{RangesList}, or
       \code{RangedData}. If \code{query} is unsorted, it is sorted
       first, so it is usually better to sort up-front, to avoid a sort
       with each \code{findOverlaps} call.
-      
+
       If \code{subject} is omitted, \code{query} is queried against
       itself. In this case, and only this case, the \code{ignoreSelf}
       and \code{ignoreRedundant} arguments are allowed. By default,
@@ -89,22 +90,20 @@
       \code{ignoreSelf} is \code{TRUE}, all self matches are dropped. If
       \code{ignoreRedundant} is \code{TRUE}, only one of A->B and B->A
       is returned.
-      
+
       Intervals with a separation of \code{maxgap} or less and a minimum
       of \code{minoverlap} overlapping positions, allowing for
       \code{maxgap}, are considered to be overlapping.  \code{maxgap}
       should be a scalar, non-negative, integer. \code{minoverlap}
       should be a scalar, positive integer.
 
-      When \code{multiple} (a scalar non-NA logical) is \code{TRUE}, the
-      results are returned as a \code{\linkS4class{RangesMatching}}
-      object. If \code{multiple} is \code{FALSE}, at most one
-      overlapping interval in \code{subject} is returned for each
-      interval in \code{query}. The matchings are returned as an integer
-      vector of length \code{length(query)}, with \code{NA} indicating
-      intervals that did not overlap any intervals in
-      \code{subject}. This is analogous to the default behavior of the
-      \code{\link{match}} function.
+      When \code{select} is {"all"}, the results are returned as a
+      \code{\linkS4class{RangesMatching}} object. When \code{select}
+      is \code{"first"}, \code{"last"}, or \code{"random"} the results
+      are returned as an integer vector of length \code{query} containing
+      the first, last, or random overlapping interval in \code{subject},
+      with \code{NA} indicating intervals that did not overlap any intervals
+      in \code{subject}.
 
       If \code{query} is a \code{\linkS4class{RangesList}} or
       \code{\linkS4class{RangedData}}, \code{subject} must be a
@@ -112,14 +111,14 @@
       each element from the subject is paired with the element from the
       query with the matching name, if any. Otherwise, elements are
       paired by position. The overlap is then computed between the pairs
-      as described above. If \code{multiple} is \code{TRUE}, a
-      \code{\linkS4class{RangesMatchingList}} is returned, otherwise a
-      list of integer vectors or, if \code{drop} is \code{TRUE}, an
-      integer vector with indices offset to align with the unlisted
-      \code{query}. When \code{drop} is \code{FALSE}, an
-      \code{\linkS4class{IntegerList}} is returned, where each element
-      of the result corresponds to a space in \code{query}. For spaces
-      that did not exist in \code{subject}, the overlap is nil.
+      as described above. If \code{select} is \code{"all"}, a
+      \code{\linkS4class{RangesMatchingList}} is returned. For all other
+      \code{select} the return value depends on the \code{drop} argument.
+      When \code{select != "all" && !drop}, an \code{\linkS4class{IntegerList}}
+      is returned, where each element of the result corresponds to a space in
+      \code{query}. When\code{select != "all" && drop}, an integer vector is
+      returned containing indices that are offset to align with the unlisted
+      \code{query}.
 
       By default, any overlap is accepted. By specifying the \code{type}
       parameter, one can select for specific types of overlap. The types
@@ -267,7 +266,9 @@
   tree <- IntervalTree(subject)
 
   ## at most one hit per query
-  findOverlaps(query, tree, multiple = FALSE)
+  findOverlaps(query, tree, select = "first")
+  findOverlaps(query, tree, select = "last")
+  findOverlaps(query, tree, select = "random")
 
   ## allow multiple hits
   findOverlaps(query, tree)
@@ -291,7 +292,7 @@
 
   ## single points as query
   subject <- IRanges(c(1, 6, 13), c(4, 9, 14))
-  findOverlaps(c(3L, 7L, 10L), subject, multiple=FALSE)
+  findOverlaps(c(3L, 7L, 10L), subject, select = "first")
 
   ## alternative overlap types
   query <- IRanges(c(1, 5, 3, 4), width=c(2, 2, 4, 6))
@@ -299,7 +300,7 @@
 
   findOverlaps(query, tree, type = "start")
   findOverlaps(query, tree, type = "start", maxgap = 1L)
-  findOverlaps(query, tree, type = "end", multiple = FALSE)
+  findOverlaps(query, tree, type = "end", select = "first")
   findOverlaps(query, tree, type = "within", maxgap = 1L)
 }
 

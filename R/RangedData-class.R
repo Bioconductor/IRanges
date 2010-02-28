@@ -419,9 +419,7 @@ setMethod("[", "RangedData",
               }
               if (!missing(i)) {
                 if (is(i, "RangesList")) {
-                  i <- !is.na(unlist(findOverlaps(ranges, i, multiple=FALSE)))
-### FIXME: could do this if Ranges supported NAs, then ordering is possible
-                  ##i <- findOverlaps(i, ranges, multiple=FALSE, drop=TRUE)
+                  i <- ranges %in% i
                 } else if (is(i, "LogicalList")) {
                   xeltlen <- elementLengths(ranges(x))
                   whichRep <- whichAsVector(xeltlen != elementLengths(i))
