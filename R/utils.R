@@ -361,11 +361,7 @@ mseq <- function(from, to)
 
 whichAsVector <- function(x)
 {
-    ans <- .Call("Logical_whichAsVector", x, PACKAGE="IRanges")
-    if (!is.null(names(x))) {
-        names(ans) <- names(x)[ans]
-    }
-    ans
+    .Call("Logical_whichAsVector", x, PACKAGE="IRanges")
 }
 
 diffWithInitialZero <- function(x) {

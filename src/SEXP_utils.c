@@ -253,27 +253,38 @@ SEXP Integer_mseq(SEXP from, SEXP to)
  */
 SEXP Logical_whichAsVector(SEXP x)
 {
-	SEXP ans;
-	int i, x_length, buf_length, ans_length;
-	int *x_elt, *buf, *buf_elt;
+	int i, x_length, ans_length;
+	int const * x_elt;
+	int const * ans_elt;
+	SEXP ans, x_names, ans_names;
 
 	if (!IS_LOGICAL(x))
 		error("argument to 'which' is not logical");
 
 	x_length = LENGTH(x);
-	buf_length = x_length;
-	buf = (int *) R_alloc((long) buf_length, sizeof(int));
-	buf_elt = buf;
-	ans_length = 0;
-	for (i = 0, x_elt = LOGICAL(x); i < x_length; i++, x_elt++) {
-		if (*x_elt && (*x_elt != NA_LOGICAL)) {
-			*buf_elt = i + 1;
+	int * const buf = (int *) R_alloc((long) x_length, sizeof(int));
+	int * buf_elt = buf;
+	for (i = 1, x_elt = LOGICAL(x); i <= x_length; i++, x_elt++) {
+		if (*x_elt == TRUE) {
+			*buf_elt = i;
 			buf_elt++;
-			ans_length++;
 		}
 	}
-	PROTECT(ans = NEW_INTEGER(ans_length));
+
+	ans_length = (int) (buf_elt - buf);
+	PROTECT(ans = allocVector(INTSXP, ans_length));
 	memcpy(INTEGER(ans), buf, sizeof(int) * ans_length);
+
+	x_names = getAttrib(x, R_NamesSymbol);
+	if (x_names != R_NilValue) {
+		PROTECT(ans_names = allocVector(STRSXP, ans_length));
+		for (i = 0, ans_elt = INTEGER(ans); i < ans_length; i++, ans_elt++) {
+			SET_STRING_ELT(ans_names, i, STRING_ELT(x_names, *ans_elt - 1));
+		}
+		SET_NAMES(ans, ans_names);
+		UNPROTECT(1);
+	}
+
 	UNPROTECT(1);
 	return ans;
 }
