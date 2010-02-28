@@ -281,7 +281,7 @@ SEXP Logical_whichAsVector(SEXP x)
 		for (i = 0, ans_elt = INTEGER(ans); i < ans_length; i++, ans_elt++) {
 			SET_STRING_ELT(ans_names, i, STRING_ELT(x_names, *ans_elt - 1));
 		}
-		SET_NAMES(ans, ans_names);
+		setAttrib(ans, R_NamesSymbol, ans_names);
 		UNPROTECT(1);
 	}
 
