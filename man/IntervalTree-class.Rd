@@ -71,7 +71,7 @@
     \item{}{
       \code{findOverlaps(query, subject = query, maxgap = 0L, minoverlap = 1L,
         type = c("any", "start", "end", "within", "equal"),
-        select = c("all", "first", "last", "random"),
+        select = c("all", "first", "last", "arbitrary"),
         drop = FALSE, ignoreSelf = FALSE, ignoreRedundant = FALSE)}:
 
       Find the intervals in \code{query}, a \code{Ranges},
@@ -99,9 +99,9 @@
 
       When \code{select} is {"all"}, the results are returned as a
       \code{\linkS4class{RangesMatching}} object. When \code{select}
-      is \code{"first"}, \code{"last"}, or \code{"random"} the results
+      is \code{"first"}, \code{"last"}, or \code{"arbitrary"} the results
       are returned as an integer vector of length \code{query} containing
-      the first, last, or random overlapping interval in \code{subject},
+      the first, last, or arbitrary overlapping interval in \code{subject},
       with \code{NA} indicating intervals that did not overlap any intervals
       in \code{subject}.
 
@@ -268,7 +268,7 @@
   ## at most one hit per query
   findOverlaps(query, tree, select = "first")
   findOverlaps(query, tree, select = "last")
-  findOverlaps(query, tree, select = "random")
+  findOverlaps(query, tree, select = "arbitrary")
 
   ## allow multiple hits
   findOverlaps(query, tree)

@@ -444,7 +444,7 @@ setMethod("range", "Ranges",
 setGeneric("findOverlaps", signature = c("query", "subject"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within", "equal"),
-             select = c("all", "first", "last", "random"), ...)
+             select = c("all", "first", "last", "arbitrary"), ...)
         standardGeneric("findOverlaps")
 )
 

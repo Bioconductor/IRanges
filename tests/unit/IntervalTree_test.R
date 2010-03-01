@@ -35,7 +35,7 @@ test_IntervalTree_findOverlaps <- function() {
   checkIdentical(result, c(1L, NA, 3L))
   result <- findOverlaps(query, tree, select = "last")
   checkIdentical(result, c(2L, NA, 3L))
-  result <- findOverlaps(query, tree, select = "random")
+  result <- findOverlaps(query, tree, select = "arbitrary")
   checkIdentical(result, c(2L, NA, 3L))
 
   checkOverlap <- function(a, q, s, r, c) {
@@ -60,7 +60,7 @@ test_IntervalTree_findOverlaps <- function() {
   checkIdentical(result, c(2L, NA, NA))
   result <- findOverlaps(query, tree, minoverlap = 2L, select = "last")
   checkIdentical(result, c(2L, NA, NA))
-  result <- findOverlaps(query, tree, minoverlap = 2L, select = "random")
+  result <- findOverlaps(query, tree, minoverlap = 2L, select = "arbitrary")
   checkIdentical(result, c(2L, NA, NA))
 
   ## empty query range
@@ -114,7 +114,7 @@ test_IntervalTree_findOverlaps <- function() {
                  c(1L, 2L, NA))
   checkIdentical(findOverlaps(c(3L, 7L, 10L), subject, select = "last"),
                  c(1L, 2L, NA))
-  checkIdentical(findOverlaps(c(3L, 7L, 10L), subject, select = "random"),
+  checkIdentical(findOverlaps(c(3L, 7L, 10L), subject, select = "arbitrary"),
                  c(1L, 2L, NA))
   checkIdentical(findOverlaps(IRanges(c(2,1),c(3,4)), subject),
                  new("RangesMatching",

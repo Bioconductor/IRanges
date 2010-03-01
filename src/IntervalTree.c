@@ -10,7 +10,7 @@
 
 #define FIND_ALL    1
 #define FIND_ANY    2
-#define FIND_RANDOM 3
+#define FIND_ARBITRARY 3
 
 typedef struct _IntegerInterval {
   int start;
@@ -130,7 +130,7 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
     PROTECT(result_inds = allocVector(INTSXP, nranges + 1));
   } else if (find_type == FIND_ANY) {
     PROTECT(result_inds = allocVector(LGLSXP, nranges));
-  } else if (find_type == FIND_RANDOM) {
+  } else if (find_type == FIND_ARBITRARY) {
     PROTECT(result_inds = allocVector(INTSXP, nranges));
   }
   memset(INTEGER(result_inds), 0, LENGTH(result_inds) * sizeof(int));
@@ -214,7 +214,7 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
           } else if (find_type == FIND_ANY) {
             *r_elt = 1;
             break;
-          } else if (find_type == FIND_RANDOM) {
+          } else if (find_type == FIND_ARBITRARY) {
             *r_elt = ((IntegerIntervalNode *)interval)->index;
             break;
           }
@@ -266,12 +266,12 @@ SEXP IntegerIntervalTree_overlap_any(SEXP r_tree, SEXP r_ranges,
   return r_ordered;
 }
 
-SEXP IntegerIntervalTree_overlap_random(SEXP r_tree, SEXP r_ranges,
+SEXP IntegerIntervalTree_overlap_arbitrary(SEXP r_tree, SEXP r_ranges,
                                         SEXP r_order) {
   int i, *left, *right, *o_elt, nranges = _get_IRanges_length(r_ranges);
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
   SEXP r_unordered =
-    _IntegerIntervalTree_overlap(tree, r_ranges, FIND_RANDOM, NULL);
+    _IntegerIntervalTree_overlap(tree, r_ranges, FIND_ARBITRARY, NULL);
   SEXP r_ordered = allocVector(INTSXP, nranges);
   left = INTEGER(r_ordered);
   for (i = 0, right = INTEGER(r_unordered), o_elt = INTEGER(r_order);
