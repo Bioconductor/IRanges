@@ -267,7 +267,7 @@ SEXP IntegerIntervalTree_overlap_any(SEXP r_tree, SEXP r_ranges,
 }
 
 SEXP IntegerIntervalTree_overlap_arbitrary(SEXP r_tree, SEXP r_ranges,
-                                        SEXP r_order) {
+                                           SEXP r_order) {
   int i, *left, *right, *o_elt, nranges = _get_IRanges_length(r_ranges);
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
   SEXP r_unordered =
