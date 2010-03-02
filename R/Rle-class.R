@@ -837,8 +837,8 @@ setMethod("window", "Rle",
                           x, runStart, runEnd, offsetStart, offsetEnd,
                           new("Rle"), PACKAGE = "IRanges")
                   if (is.factor(runValue(x)))
-                      runValue(ans) <-
-                        factor(levels(x), levels = levels(x))[runValue(ans)]
+                      attributes(runValue(ans)) <-
+                        list(levels = levels(x), class = "factor")
                   ans
               } else {
                   idx <-
@@ -1217,7 +1217,7 @@ setMethod("levels", "Rle", function(x) levels(runValue(x)))
 
 setReplaceMethod("levels", "Rle",
                  function(x, value) {
-                     levels(runValue(x)) <- value
+                     levels(x@values) <- value
                      x
                  })
 
