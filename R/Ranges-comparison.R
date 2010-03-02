@@ -31,10 +31,7 @@ setMethod("duplicated", "Ranges",
     {
         if (!identical(incomparables, FALSE))
             stop("\"duplicated\" method for Ranges objects only accepts 'incomparables=FALSE'")
-        duplicated(data.frame(start=start(x),
-                              width=width(x),
-                              check.names=FALSE,
-                              stringsAsFactors=FALSE),
+        duplicated(start(x) + width(x)/(max(width(x)) + 1L),
                    fromLast=fromLast)
     }
 )
