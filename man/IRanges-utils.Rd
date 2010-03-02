@@ -185,8 +185,8 @@ asNormalIRanges(x, force=TRUE)
   The supplied start/end/width values are solved by a call to
   \code{solveUserSEW(width(x), start=start, end=end, width=width)}
   and therefore must be compliant with the rules of the SEW
-  (Start/End/Width) interface (see \code{?solveUserSEW} for the
-  details).
+  (Start/End/Width) interface (see \code{?\link{solveUserSEW}}
+  for the details).
   Then each subrange is derived from the original range according
   to the solved start/end/width values for this range. Note that those
   solved values are interpreted relatively to the original range.
