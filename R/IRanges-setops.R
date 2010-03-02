@@ -5,7 +5,7 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Vector-wise operations.
+### Vector-wise set operations.
 ###
 ### All the functions in that section are implemented to behave like
 ### endomorphisms with respect to their first argument 'x' (an IRanges
@@ -65,7 +65,7 @@ setMethod("setdiff", c("IRanges", "IRanges"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Element-wise (aka "parallel") operations.
+### Element-wise (aka "parallel") set operations.
 ###
 ### The functions below take 2 IRanges *objects* and return an IRanges
 ### *instance*. Hence they are NOT endomorphisms.
@@ -109,9 +109,10 @@ setMethod("pintersect", c("IRanges", "IRanges"),
         ans_start <- pmax.int(start(x), start(y))
         ans_end <- pmin.int(end(x), end(y))
         ans_width <- ans_end - ans_start + 1L
-        which_empty <- whichAsVector(ans_width <= 0L)
-        ans_start[which_empty] <- 1L
-        ans_width[which_empty] <- 0L
+        fixme <- whichAsVector(ans_width < 0L |
+                   ans_width == 0L & width(x) != 0L & width(y) != 0L)
+        ans_start[fixme] <- start(x)[fixme]
+        ans_width[fixme] <- 0L
         IRanges(start=ans_start, width=ans_width)
     }
 )
@@ -139,9 +140,6 @@ setMethod("psetdiff", c("IRanges", "IRanges"),
         ans_end[kk] <- start2[kk] - 1L
         kk <- ii & (!jj)
         ans_start[kk] <- end2[kk] + 1L
-        which_empty <- whichAsVector(ans_start > ans_end)
-        ans_start[which_empty] <- 1L
-        ans_end[which_empty] <- 0L
         IRanges(start=ans_start, end=ans_end)
     }
 )
@@ -155,12 +153,10 @@ setMethod("pgap", c("IRanges", "IRanges"),
     {
         if (length(x) != length(y))
             stop("'x' and 'y' must have the same length")
-        ans_start <- pmax.int(start(x), start(y))
-        ans_end <- pmin.int(end(x), end(y)) + 1L
-        ans_width <- ans_start - ans_end
-        which_empty <- whichAsVector(ans_width <= 0L)
-        ans_start[which_empty] <- 1L
-        ans_width[which_empty] <- 0L
-        IRanges(start=ans_end, width=ans_width)
+        ans_end_plus1 <- pmax.int(start(x), start(y))
+        ans_start <- pmin.int(end(x), end(y)) + 1L
+        ans_width <- ans_end_plus1 - ans_start
+        ans_width[ans_width < 0L] <- 0L
+        IRanges(start=ans_start, width=ans_width)
     }
 )

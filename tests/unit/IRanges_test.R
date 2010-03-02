@@ -80,36 +80,6 @@ test_IRanges_reduce <- function() {
   checkIdentical(y, x)
 }
 
-test_IRanges_setops <- function() {
-  ## gaps
-  checkIdentical(gaps(IRanges()), IRanges())
-  checkIdentical(gaps(IRanges(), start=1, end=4),
-                 IRanges(start=1, end=4))
-
-  x <- IRanges(start=2, end=3)
-  checkIdentical(gaps(x), IRanges())
-  checkIdentical(gaps(x, start=2), IRanges())
-  checkIdentical(gaps(x, start=4), IRanges())
-  checkIdentical(gaps(x, start=0), IRanges(start=0, end=1))
-  checkIdentical(gaps(x, end=3), IRanges())
-  checkIdentical(gaps(x, end=1), IRanges())
-  checkIdentical(gaps(x, end=5), IRanges(start=4, end=5))
-  checkIdentical(gaps(x, start=0, end=5), IRanges(start=c(0,4), end=c(1,5)))
-
-  query <- IRanges(c(1, 4, 9), c(5, 7, 10))
-  subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
-
-  ## union
-  checkIdentical(union(query, subject), IRanges(c(1, 9), c(7, 12)))
-
-  ## setdiff
-  checkIdentical(setdiff(subject, query), IRanges(c(11), c(12)))
-  checkIdentical(setdiff(query, subject), IRanges(c(1,4,9), c(1,7,9)))
-
-  ## intersect
-  checkIdentical(intersect(query, subject), IRanges(c(2,10),c(3,10)))  
-}
-
 test_IRanges_subset <- function() { # by range
   query <- IRanges(c(1, 4, 9), c(5, 7, 10))
   subject <- IRanges(c(6, 8, 10), c(7, 12, 14))
