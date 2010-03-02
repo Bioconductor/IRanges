@@ -109,7 +109,9 @@ setMethod("pintersect", c("IRanges", "IRanges"),
         ans_start <- pmax.int(start(x), start(y))
         ans_end <- pmin.int(end(x), end(y))
         ans_width <- ans_end - ans_start + 1L
-        ans_width[ans_width < 0L] <- 0L
+        which_empty <- whichAsVector(ans_width <= 0L)
+        ans_start[which_empty] <- 1L
+        ans_width[which_empty] <- 0L
         IRanges(start=ans_start, width=ans_width)
     }
 )
@@ -137,6 +139,9 @@ setMethod("psetdiff", c("IRanges", "IRanges"),
         ans_end[kk] <- start2[kk] - 1L
         kk <- ii & (!jj)
         ans_start[kk] <- end2[kk] + 1L
+        which_empty <- whichAsVector(ans_start > ans_end)
+        ans_start[which_empty] <- 1L
+        ans_end[which_empty] <- 0L
         IRanges(start=ans_start, end=ans_end)
     }
 )
@@ -153,8 +158,9 @@ setMethod("pgap", c("IRanges", "IRanges"),
         ans_start <- pmax.int(start(x), start(y))
         ans_end <- pmin.int(end(x), end(y)) + 1L
         ans_width <- ans_start - ans_end
-        ans_width[ans_width < 0L] <- 0L
+        which_empty <- whichAsVector(ans_width <= 0L)
+        ans_start[which_empty] <- 1L
+        ans_width[which_empty] <- 0L
         IRanges(start=ans_end, width=ans_width)
     }
 )
-
