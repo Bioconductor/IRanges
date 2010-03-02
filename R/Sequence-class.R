@@ -568,6 +568,8 @@ setReplaceMethod("seqselect", "Sequence",
                          ir <- IRanges(start=start, end=end, width=width, names=NULL)
                      }
                      ir <- reduce(ir)
+                     if (length(ir) == 0)
+                         return(x)
                      if (anyMissingOrOutside(start(ir), 1L, length(x)) ||
                          anyMissingOrOutside(end(ir), 1L, length(x)))
                          stop("some ranges are out of bounds")
@@ -635,11 +637,13 @@ setReplaceMethod("seqselect", "vector",
                          ir <- IRanges(start=start, end=end, width=width, names=NULL)
                      }
                      ir <- reduce(ir)
+                     if (length(ir) == 0)
+                         return(x)
                      if (anyMissingOrOutside(start(ir), 1L, length(x)) ||
                          anyMissingOrOutside(end(ir), 1L, length(x)))
                          stop("some ranges are out of bounds")
                      i <- unlist(ir)
-                     if (is.null(value) && (length(i) > 0)) {
+                     if (is.null(value)) {
                          x <- x[-i]
                      } else {
                          if (!is(value, class(x))) {
