@@ -589,7 +589,8 @@ setReplaceMethod("seqselect", "Rle",
                          ir <- IRanges(start=start, end=end, width=width, names=NULL)
                      }
                      ir <- reduce(ir)
-                     if (any(start(ir) < 1L) || any(end(ir) > length(x)))
+                     if (anyMissingOrOutside(start(ir), 1L, length(x)) ||
+                         anyMissingOrOutside(end(ir), 1L, length(x)))
                          stop("some ranges are out of bounds")
                      valueWidths <- width(ir)
                      ir <- gaps(ir, start = 1, end = length(x))

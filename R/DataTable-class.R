@@ -106,7 +106,8 @@ setReplaceMethod("seqselect", "DataTable",
                          ir <- IRanges(start=start, end=end, width=width, names=NULL)
                      }
                      ir <- reduce(ir)
-                     if (any(start(ir) < 1L) || any(end(ir) > nrow(x)))
+                     if (anyMissingOrOutside(start(ir), 1L, nrow(x)) ||
+                         anyMissingOrOutside(end(ir), 1L, nrow(x)))
                          stop("some ranges are out of bounds")
                      if (!is.null(value)) {
                          if (!is(value, class(x))) {
