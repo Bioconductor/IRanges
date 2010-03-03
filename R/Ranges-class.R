@@ -184,7 +184,7 @@ setMethod("showAsCell", "Ranges",
         ends <- format(end(object))
         ans <- paste("[", starts, ", ", ends, "]", sep = "")
         ans[zero_indices] <-
-          paste("EMPTY_OR_@", starts[zero_indices], "@", sep = "")
+          paste("EMPTY_RANGE_@", starts[zero_indices], "@", sep = "")
         ans
     }
 )
