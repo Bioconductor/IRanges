@@ -540,6 +540,40 @@ setMethod("seqselect", "IRanges",
     }
 )
 
+setReplaceMethod("seqselect", "IRanges",
+    function(x, start = NULL, end = NULL, width = NULL, value)
+    {
+        if (is.null(end) && is.null(width)) {
+            if (is.null(start))
+                ir <- IRanges(start = 1, width = length(x))
+            else if (is(start, "Ranges"))
+                ir <- start
+            else {
+                if (is.logical(start) && length(start) != length(x))
+                    start <- rep(start, length.out = length(x))
+                ir <- as(start, "IRanges")
+            }
+        } else {
+            ir <- IRanges(start=start, end=end, width=width, names=NULL)
+        }
+        ir <- reduce(ir)
+        if (length(ir) == 0)
+            return(x)
+        if (anyMissingOrOutside(start(ir), 1L, length(x)) ||
+            anyMissingOrOutside(end(ir), 1L, length(x)))
+            stop("some ranges are out of bounds")
+        newStart <- start(x)
+        seqselect(newStart, ir) <- start(value)
+        newWidth <- width(x)
+        seqselect(newWidth, ir) <- width(value)
+        newNames <- names(x)
+        if (!is.null(newNames) && !is.null(names(values)))
+            seqselect(newNames, ir) <- names(value)
+        initialize(x, start = newStart, width = newWidth,
+                   NAMES = newNames)
+    }
+)
+
 setMethod("window", "IRanges",
     function(x, start = NA, end = NA, width = NA,
              frequency = NULL, delta = NULL, ...)
