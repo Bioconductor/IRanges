@@ -178,13 +178,13 @@ setMethod("show", "Ranges",
 setMethod("showAsCell", "Ranges",
     function(object)
     {
-        zero_length <- width(object) == 0L
-        zero_indices <- whichAsVector(zero_length)
+        zero_width <- width(object) == 0L
+        zero_indices <- whichAsVector(zero_width)
         starts <- start(object)
         ends <- end(object)
         ends[zero_indices] <- ends[zero_indices] + 2L
-        paste(ifelse(zero_length, "(", "["), format(starts), ", ",
-              format(ends), ifelse(zero_length, ")", "]"),
+        paste(ifelse(zero_width, "(", "["), format(starts), ", ",
+              format(ends), ifelse(zero_width, ")", "]"),
               sep = "")
     }
 )
