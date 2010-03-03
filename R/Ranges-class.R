@@ -182,9 +182,10 @@ setMethod("showAsCell", "Ranges",
         zero_indices <- whichAsVector(zero_width)
         starts <- start(object)
         ends <- end(object)
-        ends[zero_indices] <- ends[zero_indices] + 2L
+        starts[zero_indices] <- starts[zero_indices] - 1L
+        ends[zero_indices] <- ends[zero_indices] + 1L
         paste(ifelse(zero_width, "(", "["), format(starts), ", ",
-              format(ends), ifelse(zero_width, ")", "]"),
+              format(ends), ifelse(zero_width, ")*", "]"),
               sep = "")
     }
 )
