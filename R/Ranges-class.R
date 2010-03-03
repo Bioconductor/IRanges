@@ -175,9 +175,19 @@ setMethod("show", "Ranges",
     }
 )
 
-setMethod("showAsCell", "Ranges", function(object)
-          paste("[", format(start(object)), ", ", format(end(object)), "]",
-                sep = ""))
+setMethod("showAsCell", "Ranges",
+    function(object)
+    {
+        zero_length <- width(object) == 0L
+        zero_indices <- whichAsVector(zero_length)
+        starts <- start(object)
+        ends <- end(object)
+        ends[zero_indices] <- ends[zero_indices] + 2L
+        paste(ifelse(zero_length, "(", "["), format(starts), ", ",
+              format(ends), ifelse(zero_length, ")", "]"),
+              sep = "")
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
