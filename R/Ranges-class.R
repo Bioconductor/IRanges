@@ -184,7 +184,7 @@ setMethod("showAsCell", "Ranges",
         ends <- end(object)
         starts[zero_indices] <- starts[zero_indices] - 1L
         ends[zero_indices] <- ends[zero_indices] + 1L
-        paste(ifelse(zero_width, "(", "["), format(starts), ", ",
+        paste(ifelse(zero_width, "*(", "["), format(starts), ", ",
               format(ends), ifelse(zero_width, ")*", "]"),
               sep = "")
     }
