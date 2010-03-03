@@ -177,17 +177,8 @@ setMethod("show", "Ranges",
 
 setMethod("showAsCell", "Ranges",
     function(object)
-    {
-        zero_width <- width(object) == 0L
-        zero_indices <- whichAsVector(zero_width)
-        starts <- format(start(object))
-        ends <- format(end(object))
-        ans <- paste("[", starts, ", ", ends, "]", sep = "")
-        ans[zero_indices] <-
-          paste("EMPTY_RANGE_@", starts[zero_indices], "@", sep = "")
-        ans
-    }
-)
+        paste("[", format(start(object)), ", ", format(end(object)), "]",
+              sep = ""))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
