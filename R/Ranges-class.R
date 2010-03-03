@@ -180,13 +180,12 @@ setMethod("showAsCell", "Ranges",
     {
         zero_width <- width(object) == 0L
         zero_indices <- whichAsVector(zero_width)
-        starts <- start(object)
-        ends <- end(object)
-        starts[zero_indices] <- starts[zero_indices] - 1L
-        ends[zero_indices] <- ends[zero_indices] + 1L
-        paste(ifelse(zero_width, "*(", "["), format(starts), ", ",
-              format(ends), ifelse(zero_width, ")*", "]"),
-              sep = "")
+        starts <- format(start(object))
+        ends <- format(end(object))
+        ans <- paste("[", starts, ", ", ends, "]", sep = "")
+        ans[zero_indices] <-
+          paste("EMPTY_OR_@", starts[zero_indices], "@", sep = "")
+        ans
     }
 )
 
