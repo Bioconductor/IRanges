@@ -84,6 +84,10 @@
   Two ranges are considered equal iff they share the same start and width.
   Note that with this definition, 2 empty ranges are generally
   not equal (they need to share the same start to be considered equal).
+  This means that, when it comes to comparing ranges, an empty range is
+  interpreted as a position between its end and start. For example, a
+  typical usecase is comparison of insertion points defined along a string
+  (like a DNA sequence) and represented as empty ranges.
 
   Ranges are ordered by starting position first, and then by width.
   This way, the space of ranges is totally ordered.
@@ -139,6 +143,7 @@
                width=c( 4L, 0L, 11L,  5L,  0L,  9L,  5L,  0L))
   x
   which(width(x) == 0)  # 3 empty ranges
+  x[2] == x[2]  # TRUE
   x[2] == x[5]  # FALSE
   x == x[4]
   duplicated(x)

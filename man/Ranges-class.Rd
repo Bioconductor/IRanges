@@ -71,8 +71,10 @@
   (see \code{width} below). The ending point (or "end") of a range is
   equal to its "start" plus its "width" minus one (see \code{end} below).
   An "empty" range is a range that contains no value i.e. a range that
-  has a null width.
-  Note that for an empty range, the end is smaller than the start.
+  has a null width. Depending on the context, it can be interpreted
+  either as just the empty \emph{set} of integers or, more precisely,
+  as the position \emph{between} its "end" and its "start" (note that
+  for an empty range, the "end" equals the "start" minus one).
 
   The length of a Ranges object is the number of ranges in it, not the
   number of integer values in its ranges.
