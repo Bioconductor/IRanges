@@ -109,10 +109,7 @@ setMethod("pintersect", c("IRanges", "IRanges"),
         ans_start <- pmax.int(start(x), start(y))
         ans_end <- pmin.int(end(x), end(y))
         ans_width <- ans_end - ans_start + 1L
-        fixme <- whichAsVector(ans_width < 0L |
-                   ans_width == 0L & width(x) != 0L & width(y) != 0L)
-        ans_start[fixme] <- start(x)[fixme]
-        ans_width[fixme] <- 0L
+        ans_width[ans_width < 0L] <- 0L
         IRanges(start=ans_start, width=ans_width)
     }
 )

@@ -53,14 +53,9 @@ test_punion <- function() {
 test_pintersect <- function() {
   x <- IRanges(start=c(1,11,21,31,41,51,61,71), end=c(5,10,25,35,40,55,65,75))
   y <- IRanges(start=c(1, 8,18,35,43,48,63,78), end=c(4,15,22,36,45,50,62,79))
-
-  ans <- pintersect(x, y)
-  ans0 <- IRanges(start=c(1,11,21,35,41,51,63,71), end=c(4,10,22,35,40,50,62,70))
-  checkIdentical(ans, ans0)
-
-  ans <- pintersect(y, x)
-  ans0 <- IRanges(start=c(1,11,21,35,43,48,63,78), end=c(4,10,22,35,42,47,62,77))
-  checkIdentical(ans, ans0)
+  ans0 <- IRanges(start=c(1,11,21,35,43,51,63,78), end=c(4,10,22,35,42,50,62,77))
+  checkIdentical(pintersect(x, y), ans0)
+  checkIdentical(pintersect(y, x), ans0)
 }
 
 test_psetdiff <- function() {
