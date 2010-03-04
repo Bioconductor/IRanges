@@ -80,8 +80,11 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
         stop("'unlistData' not of class ", elementTypeData)
     } else if (!is.null(splitFactor)) {
         if (is(splitFactor, "Rle")) {
-            if (anyMissing(runValue(splitFactor)))
-                stop("splitting factor contains missing values")
+            if (anyMissing(runValue(splitFactor))) {
+                keep <- !is.na(splitFactor)
+                unlistData <- seqselect(unlistData, keep)
+                splitFactor <- seqselect(splitFactor, keep)
+            }
             isInt <- is.integer(runValue(splitFactor))
             isFactor <- is.factor(runValue(splitFactor))
             if (!isInt && !isFactor) {
@@ -94,8 +97,8 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
                 runValue(splitFactor) <- runValue(splitFactor)[drop = TRUE]
             }
             if (isNotSorted(runValue(splitFactor))) {
-                ord <- orderAsRanges(splitFactor)
-                unlistData <- seqselect(unlistData, ord)
+                orderElts <- orderAsRanges(splitFactor)
+                unlistData <- seqselect(unlistData, orderElts)
                 splitFactor <- sort(splitFactor)
             }
             if (isInt || drop) {
@@ -109,8 +112,11 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
                 end <- cumsum(unname(width))
             }
         } else {
-            if (anyMissing(splitFactor))
-                stop("splitting factor contains missing values")
+            if (anyMissing(splitFactor)) {
+                keep <- !is.na(splitFactor)
+                unlistData <- seqselect(unlistData, keep)
+                splitFactor <- seqselect(splitFactor, keep)
+            }
             isInt <- is.integer(splitFactor)
             isFactor <- is.factor(splitFactor)
             if (!isInt && !isFactor) {
@@ -124,11 +130,8 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
             }
             if (isNotSorted(splitFactor)) {
                 orderElts <- orderInteger(splitFactor)
-                if (length(dim(unlistData)) < 2)
-                    unlistData <- unlistData[orderElts]
-                else
-                    unlistData <- unlistData[orderElts, , drop = FALSE]
-                splitFactor <- splitFactor[orderElts]
+                unlistData <- seqselect(unlistData, orderElts)
+                splitFactor <- seqselect(splitFactor, orderElts)
             }
             if (isInt) {
                 splitFactor <- Rle(splitFactor)
@@ -397,12 +400,7 @@ setMethod("seqselect", "CompressedList",
                       whichRep <- whichAsVector(xeltlen != elementLengths(start))
                       for (i in whichRep)
                           start[[i]] <- rep(start[[i]], length.out = xeltlen[i])
-                      if (length(dim(x@unlistData)) < 2) {
-                          unlistData <- x@unlistData[unlist(start)]
-                      } else {
-                          unlistData <-
-                            x@unlistData[unlist(start), , drop = FALSE]
-                      }
+                      unlistData <- seqselect(x@unlistData, unlist(start))
                       partitionEnd <-
                         cumsum(unlist(lapply(start, sum), use.names = FALSE))
                   } else if (is(start, "IntegerList")) {
@@ -411,10 +409,7 @@ setMethod("seqselect", "CompressedList",
                                newCompressedList("CompressedIntegerList",
                                                  start(x@partitioning) - 1L,
                                                  end = seq_len(lx)))
-                      if (length(dim(x@unlistData)) < 2)
-                          unlistData <- x@unlistData[i]
-                      else
-                          unlistData <- x@unlistData[i, , drop = FALSE]
+                      unlistData <- seqselect(x@unlistData, i)
                       partitionEnd <- cumsum(unname(elementLengths(start)))
                   } else {
                       stop("unrecognized 'start' type")
