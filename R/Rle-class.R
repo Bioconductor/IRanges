@@ -612,8 +612,9 @@ setReplaceMethod("seqselect", "Rle",
                          offsetStart <- c(0L, offsetStart)
                          runEnd <- c(0L, runEnd)
                          offsetEnd <- c(0L, offsetEnd)
-                     }
-                     if (end(ir[length(ir)]) != length(x)) {
+                     } 
+                     if ((length(ir) > 0) &&
+                         (end(ir[length(ir)]) != length(x))) {
                          k <- k + 1L
                          runStart <- c(runStart, 1L)
                          offsetStart <- c(offsetStart, 0L)
