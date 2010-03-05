@@ -31,10 +31,10 @@
   \S4method{setdiff}{IRanges,IRanges}(x, y)
 
   ## Element-wise (aka "parallel") operations:
-  punion(x, y, ...)
-  pintersect(x, y, ...)
-  psetdiff(x, y, ...)
-  pgap(x, y, ...)
+  \S4method{punion}{IRanges,IRanges}(x, y, fill.gap=FALSE, ...)
+  \S4method{pintersect}{IRanges,IRanges}(x, y, resolve.empty=c("none", "max.start", "start.x"), ...)
+  \S4method{psetdiff}{IRanges,IRanges}(x, y, ...)
+  \S4method{pgap}{IRanges,IRanges}(x, y, ...)
 }
 
 \arguments{
@@ -46,10 +46,21 @@
     interval of reference i.e. which interval the returned gaps
     should be relative to.
   }
+  \item{fill.gap}{
+    Logical indicating whether or not to force a union by using the rule
+    \code{start = min(start(x), start(y)), end = max(end(x), end(y))}.
+  }
+  \item{resolve.empty}{
+    One of \code{"none"}, \code{"max.start"}, or \code{"start.x"} denoting
+    how to handle ambiguous empty ranges formed by intersections.
+    \code{"none"} - throw an error if an ambiguous empty range is formed,
+    \code{"max.start"} - associate the maximum start value with any
+    ambiguous empty range, and \code{"start.x"} - associate the start value
+    of \code{x} with any ambiguous empty range. (See Details section
+    below for the definition of an ambiguous range.)
+  }
   \item{...}{
     Further arguments to be passed to or from other methods.
-    For example, the \code{fill.gap} argument can be passed to the
-    \code{punion} method for \link{IRanges} objects (see below).
   }
 }
 
@@ -76,17 +87,17 @@
   the union/intersection/difference/gap of/between the corresponding
   ranges in \code{x} and \code{y}.
 
-  Note that the union or difference of 2 ranges cannot always
-  be represented by a single range so \code{punion} and \code{psetdiff}
-  cannot always return their result in an \link{IRanges} instance of
-  the same length as the input. This happens to \code{punion} when
-  there is a gap between the 2 ranges to combine. In that case,
-  the user can use the \code{fill.gap} argument to enforce the union
-  by filling the gap. This happens to \code{psetdiff} when a range
-  in \code{y} has its end points strictly inside the corresponding
-  range in \code{x}. In that case, \code{psetdiff} will simply fail.
-
-  If two ranges overlap, then the gap between them is empty.
+  By default, \code{pintersect} will throw an error when an "ambiguous
+  empty range" is formed. An ambiguous empty range can occur three
+  different ways:  1) when corresponding non-empty ranges elements \code{x}
+  and \code{y} have an empty intersection, 2) if the position of an empty
+  range element does not fall within the corresponding limits of a non-empty
+  range element, or 3) if two corresponding empty range elements do not have
+  the same position. For example if empty range element [22,21] is intersected
+  with non-empty range element [1,10], an error will be produced; but if
+  it is intersected with the range [22,28], it will produce [22,21].
+  As mentioned in the Arguments section above, this behavior can be
+  changed using the \code{resolve.empty} argument.
 }
 
 \author{H. Pages and M. Lawrence}
@@ -126,7 +137,9 @@
   try(punion(x, y))
   punion(x[3:5], y[3:5])
   punion(x, y, fill.gap=TRUE)
-  pintersect(x, y)
+  try(pintersect(x, y))
+  pintersect(x[3:4], y[3:4])
+  pintersect(x, y, resolve.empty="max.start")
   psetdiff(y, x)
   try(psetdiff(x, y))
   start(x)[4] <- -99

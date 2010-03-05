@@ -76,7 +76,7 @@ setGeneric("punion", signature=c("x", "y"),
 )
 
 setMethod("punion", c("IRanges", "IRanges"),
-    function(x, y, fill.gap=FALSE)
+    function(x, y, fill.gap=FALSE, ...)
     {
         if (length(x) != length(y))
             stop("'x' and 'y' must have the same length")
@@ -93,7 +93,10 @@ setMethod("punion", c("IRanges", "IRanges"),
         }
         ans_start <- pmin.int(start(x), start(y))
         ans_end <- pmax.int(end(x), end(y))
-        IRanges(start=ans_start, end=ans_end)
+        ans_names <- names(x)
+        if (is.null(ans_names))
+            ans_names <- names(y)
+        IRanges(start=ans_start, end=ans_end, names=ans_names)
     }
 )
 
@@ -102,15 +105,56 @@ setGeneric("pintersect", signature=c("x", "y"),
 )
 
 setMethod("pintersect", c("IRanges", "IRanges"),
-    function(x, y, ...)
+    function(x, y, resolve.empty=c("none", "max.start", "start.x"), ...)
     {
         if (length(x) != length(y))
             stop("'x' and 'y' must have the same length")
+
         ans_start <- pmax.int(start(x), start(y))
         ans_end <- pmin.int(end(x), end(y))
         ans_width <- ans_end - ans_start + 1L
-        ans_width[ans_width < 0L] <- 0L
-        IRanges(start=ans_start, width=ans_width)
+
+        keep_empty_x <- whichAsVector(width(x) == 0L)
+        if (length(keep_empty_x) > 0) {
+            keep_empty_x <-
+              intersect(keep_empty_x,
+                        (start(x) >= start(y) & start(x) <= end(y)) | 
+                        (start(x) == start(y) & width(y) == 0L))
+        }
+        if (length(keep_empty_x) > 0) {
+            ans_start[keep_empty_x] <- start(x)[keep_empty_x]
+            ans_width[keep_empty_x] <- 0L
+        }
+
+        keep_empty_y <- whichAsVector(width(y) == 0L)
+        if (length(keep_empty_y) > 0) {
+            keep_empty_y <-
+              intersect(keep_empty_y,
+                        start(y) >= start(x) & start(y) <= end(x))
+        }
+        if (length(keep_empty_y) > 0) {
+            ans_start[keep_empty_y] <- start(y)[keep_empty_y]
+            ans_width[keep_empty_y] <- 0L
+        }
+
+        check_empty <-
+          setdiff(whichAsVector(ans_width < 0L),
+                  c(keep_empty_x, keep_empty_y))
+        if (length(check_empty) > 0) {
+            resolve.empty <- match.arg(resolve.empty)
+            if (resolve.empty == "none") {
+                stop("some intersections produce ambiguous empty ranges.\n",
+                     "  Use argument 'resolve.empty' to resolve them.")
+            } else {
+                ans_width[check_empty] <- 0L
+                if (resolve.empty == "start.x")
+                    ans_start[check_empty] <- start(x)[check_empty]
+            }
+        }
+        ans_names <- names(x)
+        if (is.null(ans_names))
+            ans_names <- names(y)
+        IRanges(start=ans_start, width=ans_width, names=ans_names)
     }
 )
 
@@ -137,7 +181,10 @@ setMethod("psetdiff", c("IRanges", "IRanges"),
         ans_end[kk] <- start2[kk] - 1L
         kk <- ii & (!jj)
         ans_start[kk] <- end2[kk] + 1L
-        IRanges(start=ans_start, end=ans_end)
+        ans_names <- names(x)
+        if (is.null(ans_names))
+            ans_names <- names(y)
+        IRanges(start=ans_start, end=ans_end, names=ans_names)
     }
 )
 
@@ -154,6 +201,9 @@ setMethod("pgap", c("IRanges", "IRanges"),
         ans_start <- pmin.int(end(x), end(y)) + 1L
         ans_width <- ans_end_plus1 - ans_start
         ans_width[ans_width < 0L] <- 0L
-        IRanges(start=ans_start, width=ans_width)
+        ans_names <- names(x)
+        if (is.null(ans_names))
+            ans_names <- names(y)
+        IRanges(start=ans_start, width=ans_width, names=ans_names)
     }
 )

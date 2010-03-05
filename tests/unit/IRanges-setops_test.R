@@ -51,11 +51,28 @@ test_punion <- function() {
 }
 
 test_pintersect <- function() {
-  x <- IRanges(start=c(1,11,21,31,41,51,61,71), end=c(5,10,25,35,40,55,65,75))
-  y <- IRanges(start=c(1, 8,18,35,43,48,63,78), end=c(4,15,22,36,45,50,62,79))
-  ans0 <- IRanges(start=c(1,11,21,35,43,51,63,78), end=c(4,10,22,35,42,50,62,77))
-  checkIdentical(pintersect(x, y), ans0)
-  checkIdentical(pintersect(y, x), ans0)
+  x <- IRanges(start=c(22,22,22,22,22,22), end=c(28,28,28,28,21,21))
+  y <- IRanges(start=c(25,30,29,25,22,22), end=c(30,40,40,24,21,29))
+  ansMaxStart <- IRanges(start=c(25,30,29,25,22,22), end=c(28,29,28,24,21,21))
+  ansStartX   <- IRanges(start=c(25,22,29,25,22,22), end=c(28,21,28,24,21,21))
+  ansStartY   <- IRanges(start=c(25,30,29,25,22,22), end=c(28,29,28,24,21,21))
+
+  checkException(pintersect(x, y), silent = TRUE)
+  checkException(pintersect(y, x), silent = TRUE)
+
+  for (resolve.empty in c("none", "max.start", "start.x")) {
+      checkIdentical(x, pintersect(x, x, resolve.empty = resolve.empty))
+      checkIdentical(y, pintersect(y, y, resolve.empty = resolve.empty))
+  }
+
+  checkIdentical(pintersect(x[-c(2,3)], y[-c(2,3)]), ansMaxStart[-c(2,3)])
+  checkIdentical(pintersect(y[-c(2,3)], x[-c(2,3)]), ansMaxStart[-c(2,3)])
+
+  checkIdentical(pintersect(x, y, resolve.empty = "max.start"), ansMaxStart)
+  checkIdentical(pintersect(y, x, resolve.empty = "max.start"), ansMaxStart)
+
+  checkIdentical(pintersect(x, y, resolve.empty = "start.x"), ansStartX)
+  checkIdentical(pintersect(y, x, resolve.empty = "start.x"), ansStartY)
 }
 
 test_psetdiff <- function() {
