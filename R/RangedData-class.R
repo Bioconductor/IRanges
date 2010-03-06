@@ -229,29 +229,55 @@ setValidity2("RangedData", .valid.RangedData)
 
 ## creates a single-element RangedData (unless splitter (space) is specified)
 
-RangedData <- function(ranges = IRanges(), ..., space = NULL,
-                       universe = NULL)
+RangedData <- function(ranges = IRanges(), ..., space = NULL, universe = NULL)
 {
   hasDots <- (((nargs() - !missing(space)) - !missing(universe)) > 1)
+
+  if (!is.null(universe) && !isSingleString(universe))
+    stop("'universe' must be a single string")
+
   if (is(ranges, "RangesList")) {
     if (!is.null(space))
       warning("since 'class(ranges)' extends RangesList, 'space' argument is ignored")
     if (is.null(names(ranges)))
       names(ranges) <- as.character(seq_len(length(ranges)))
     space <-
-      factor(rep.int(names(ranges), elementLengths(ranges)),
-             levels = names(ranges))
+      Rle(factor(names(ranges), levels = names(ranges)),
+          elementLengths(ranges))
     N <- sum(elementLengths(ranges))
     NAMES <- unlist(lapply(ranges, names), use.names=FALSE)
-  } else if (!is(ranges, "Ranges")) {
-    coerced <- try(as(ranges, "RangedData"), silent=TRUE)
-    if (is(coerced, "RangedData"))
-      return(coerced)
-    stop("'ranges' must be a Ranges or directly coercible to RangedData")
   } else {
+    if (!is(ranges, "Ranges")) {
+      coerced <- try(as(ranges, "RangedData"), silent=TRUE)
+      if (is(coerced, "RangedData"))
+        return(coerced)
+      stop("'ranges' must be a Ranges or directly coercible to RangedData")
+    }
     N <- length(ranges)
     NAMES <- names(ranges)
+    if (is.null(space)) {
+      if (N == 0)
+        space <- Rle(factor())
+      else
+        space <- Rle(factor("1"))
+    } else if (!is(space, "Rle")) {
+      space <- Rle(space)
+    }
+    if (!is.factor(runValue(space)))
+      runValue(space) <- factor(runValue(space))
+    if (length(space) != N) {
+      if (length(space) > N)
+        stop("length of 'space' greater than length of 'ranges'")
+      if (N %% length(space) != 0)
+        stop("length of 'ranges' not a multiple of 'space' length")
+      space <- rep(space, length.out = N)
+    }
+    if (!is(ranges, "IRanges"))
+        ranges <- as(ranges, "IRanges")
+    ranges <- split(ranges, space)
   }
+  universe(ranges) <- universe
+
   if (hasDots) 
     values <- DataFrame(...) ## at least one column specified
   else
@@ -265,29 +291,8 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL,
     values <- values[rind,,drop=FALSE]
   }
   rownames(values) <- NAMES ## ensure these are identical
-  if (length(space) > 1) {
-    if (!is(ranges, "RangesList")) {
-      if (length(space) != N) {
-        if (length(space) > N)
-          stop("length of 'space' greater than length of 'ranges'")
-        if (N %% length(space) != 0)
-          stop("length of 'ranges' not a multiple of 'space' length")
-        space <- recycleVector(space, N)
-      }
-      ranges <- split(ranges, space)
-    }
-    values <- split(values, space)
-  } else {
-    if (!is(ranges, "RangesList"))
-      ranges <- RangesList(ranges)
-    values <- SplitDataFrameList(values, compress = TRUE)
-    if (!length(space))
-      space <- "1"
-    names(ranges) <- names(values) <- space
-  }
-  if (!is.null(universe) && !isSingleString(universe))
-    stop("'universe' must be a single string")
-  universe(ranges) <- universe
+  values <- split(values, space)
+
   new2("RangedData", ranges = ranges, values = values, check=FALSE)
 }
 
@@ -532,10 +537,8 @@ setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
   names(rds) <- NULL # critical for dispatch to work
   ranges <- do.call(c, lapply(rds, ranges))
   values <- do.call(c, lapply(rds, values))
-  rm(rds); gc()
   names(ranges) <- nms
   rd@ranges <- ranges
-  rm(ranges)
   names(values) <- nms
   rd@values <- values
   rd

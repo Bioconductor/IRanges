@@ -8,9 +8,19 @@ test_RangedData_construction <- function() {
 
   rd <- RangedData()
   checkTrue(validObject(rd))
+  rd <- RangedData(IRanges())
+  checkTrue(validObject(rd))
+  rd <- RangedData(IRangesList())
+  checkTrue(validObject(rd))
+  rd <- RangedData(IRangesList(IRanges()))
+  checkTrue(validObject(rd))
+  rd <- RangedData(IRangesList(IRanges(), IRanges()))
+  checkTrue(validObject(rd))
+  rd <- RangedData(IRangesList(IRanges(), IRanges(1,1)))
+  checkTrue(validObject(rd))
   rd <- RangedData(ranges)
   checkTrue(validObject(rd))
-  checkIdentical(unname(ranges(rd)), RangesList(ranges))
+  checkIdentical(unname(ranges(rd)), IRangesList(ranges))
   rd <- RangedData(ranges, score)
   checkTrue(validObject(rd))
   checkIdentical(rd[["score"]], score)
@@ -275,8 +285,8 @@ test_RangedData_lapply <- function() {
 test_RangedData_range <- function() {
   rd1 <- RangedData(IRanges(c(2,5,1), c(3,7,3)))
   rd2 <- RangedData(IRanges(c(5,2,0), c(6,3,1)))
-  checkIdentical(range(rd1), RangesList("1" = IRanges(1, 7)))
-  checkIdentical(range(rd1, rd2), RangesList("1" = IRanges(0, 7)))
+  checkIdentical(range(rd1), IRangesList("1" = IRanges(1, 7)))
+  checkIdentical(range(rd1, rd2), IRangesList("1" = IRanges(0, 7)))
   checkException(range(rd1, c(2,3)), silent = TRUE)
 }
 

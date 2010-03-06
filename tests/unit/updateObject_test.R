@@ -105,6 +105,7 @@ test_update_RDApplyParams <- function() {
     ranges <- IRanges(c(1,2,3),c(4,5,6))
     score <- c(2L, 0L, 1L)
     rd <- RangedData(ranges, score, splitter = c("chr1","chr2","chr1"))
+    rd@ranges <- RangesList("1" = rd@ranges[[1]])
     countrows <- updateObject(oldRDApplyParams)@applyFun
     newRDApplyParams <- RDApplyParams(rd, countrows)
     checkIdentical(newRDApplyParams, updateObject(oldRDApplyParams))
@@ -116,6 +117,8 @@ test_update_RangedData <- function() {
     filter <- c(1L, 0L, 1L)
     score <- c(10L, 2L, NA)
     newRangedData <- RangedData(ranges, filter, vals = score, universe = "hg18")
+    newRangedData@ranges <-
+      RangesList("1" = newRangedData@ranges[[1]], universe = "hg18")
     load(file.path("unit", "oldObjects", "oldRangedData.rda"))
     checkIdentical(newRangedData, updateObject(oldRangedData))
 }
@@ -126,6 +129,10 @@ test_update_RangedDataList <- function() {
     a <- RangedData(IRanges(c(1,2,3),c(4,5,6)), score = c(10L, 2L, NA))
     b <- RangedData(IRanges(c(1,2,4),c(4,7,5)), score = c(3L, 5L, 7L))
     newRangedDataList <- RangedDataList(sample1 = a, sample2 = b)
+    ranges(newRangedDataList[[1]]) <-
+      RangesList("1" = ranges(newRangedDataList[[1]])[[1]])
+    ranges(newRangedDataList[[2]]) <-
+      RangesList("1" = ranges(newRangedDataList[[2]])[[1]])
     load(file.path("unit", "oldObjects", "oldRangedDataList.rda"))
     checkIdentical(newRangedDataList, updateObject(oldRangedDataList))
 }
