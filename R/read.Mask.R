@@ -58,7 +58,7 @@
 
 .read.agpORgapFile <- function(agp_or_gap, file)
 {
-    if (agp_or_gap == "agp")
+    if (agp_or_gap == "agp") {
         COL2CLASS <- c(
             `chrom`="character",
             `chr_start`="integer",
@@ -70,7 +70,7 @@
             `linkage`="character",
             `empty`="character"
         )
-    else if (agp_or_gap == "gap")
+    } else if (agp_or_gap == "gap") {
         COL2CLASS <- c(
             `bin`="integer",
             `chrom`="character",
@@ -82,8 +82,14 @@
             `gap_type`="character",
             `bridge`="character"
         )
-    else
+        ncol <- ncol(read.table(file, sep="\t", nrows=1, check.names=FALSE))
+        ## Because for some organisms like Rhesus, the 'gap' table in the
+        ## UCSC database has no 'bin' column.
+        if (ncol == 8L)
+            COL2CLASS <- COL2CLASS[-1L]
+    } else {
         stop("read.Mask internal error: please report")
+    }
     COLS <- c(
         "chrom",
         "chr_start",
