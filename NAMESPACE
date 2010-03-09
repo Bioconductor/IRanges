@@ -91,12 +91,6 @@ export(
     DataFrameList, SplitDataFrameList,
     coverage.normargWidth,
 
-    ## Functions to help migrating the interface of coverage() from "start/end"
-    ## to "shift/width" (remove when migration is over):
-    coverage.isCalledWithStartEndInterface,
-    coverage.getShift0FromStartEnd,
-    coverage.getWidthFromStartEnd,
-
     ## Generic endomorphism functions
     endoapply,
     mendoapply,

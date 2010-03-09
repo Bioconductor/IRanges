@@ -1,11 +1,5 @@
 \name{coverage}
 
-% Functions to help migrating the interface of coverage() from "start/end"
-% to "shift/width" (remove when migration is over):
-\alias{coverage.isCalledWithStartEndInterface}
-\alias{coverage.getShift0FromStartEnd}
-\alias{coverage.getWidthFromStartEnd}
-
 \alias{coverage.normargWidth}
 
 \alias{coverage}
@@ -23,34 +17,11 @@
 }
 
 \usage{
-  ## Old interface (IRanges < 1.1.58):
-  #coverage(x, start=NA, end=NA, \dots)
-
-  ## Transitional interface (the current one):
-  coverage(x, start=NA, end=NA, shift=0L, width=NULL, weight=1L, \dots)
+  coverage(x, shift=0L, width=NULL, weight=1L, \dots)
   \S4method{coverage}{RangesList}(x,
-       start = structure(rep(list(NA), length(x)), names = names(x)),
-       end = structure(rep(list(NA), length(x)), names = names(x)),
-       shift = structure(rep(list(0L), length(x)), names = names(x)),
-       width = structure(rep(list(NULL), length(x)), names = names(x)),
-       weight = structure(rep(list(1L), length(x)), names = names(x)))
-
-  ## New interface (in the near future):
-  #coverage(x, shift=0L, width=NULL, weight=1L, \dots)
-}
-
-\note{
-  The interface of the \code{coverage} generic is currently being migrated
-  from "start/end" to "shift/width".
-  In the near future, the \code{start} and \code{end} arguments will be
-  dropped and the remaining arguments will be:
-    \code{coverage(x, shift=0L, width=NULL, weight=1L, ...)}
-  The "shift/width" interface is more intuitive, more convenient and
-  offers slightly more control than the "start/end" interface.
-  Also it makes sense to add the \code{weight} argument to the generic
-  (versus having it supported only by some methods) since weighting the
-  elements in \code{x} can be considered part of the concept of coverage
-  in general.
+         shift = structure(rep(list(0L), length(x)), names = names(x)),
+         width = structure(rep(list(NULL), length(x)), names = names(x)),
+         weight = structure(rep(list(1L), length(x)), names = names(x)))
 }
 
 \arguments{
@@ -58,18 +29,6 @@
     An \link{IRanges}, \link{Views}, \link{MaskCollection}, 
     \link{RangesList}, \link{RangedData} object, or any object for which a
     \code{coverage} method is defined.
-  }
-  \item{start, end}{
-    For most methods, single integers specifying the position in \code{x}
-    where to start and end the extraction of the coverage. For
-    \link{RangesList} and \link{RangedData} objects, a list or vector of
-    the same length as \code{x} to be used for the corresponding element
-    in \code{x}. In addition for \link{RangedData} objects, can also be
-    a character vector of length 1 denoting the column to use in
-    \code{values(x)}.
-    IMPORTANT NOTE: Please do not use these arguments (use the shift/width
-    arguments below). They are temporarily kept for backward compatibility
-    with existing code and will be dropped in the near future.
   }
   \item{shift}{
     For most methods, an integer vector (recycled to the length of

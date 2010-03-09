@@ -2,74 +2,11 @@
 ### coverage()
 ### -------------------------------------------------------------------------
 ###
-### NOTE: The interface of the coverage() generic is currently being migrated
-### from "start/end" to "shift/width". Here is the roadmap:
-### Starting with IRanges 1.1.58, coverage() arguments have changed from
-###   coverage(x, start=NA, end=NA, ...)
-### to
-###   coverage(x, start=NA, end=NA, shift=0L, width=NULL, weight=1L, ...)
-### In the near future, the start/end arguments will be dropped and the
-### remaining arguments will be:
-###   coverage(x, shift=0L, width=NULL, weight=1L, ...)
-### The "shift/width" interface is more intuitive, more convenient and
-### offers slighty more control than the "start/end" interface. In addition
-### it's already used by Biostrings::consensusMatrix() and
-### Biostrings::consensusString() which are both related to coverage() (see
-### ?consensusMatrix).
-### Also it makes sense to add the 'weight' argument to the generic (vs
-### having it supported only by some methods) since weighting the
-### elements in 'x' can be considered part of the concept of coverage
-### in general.
-###
 
 setGeneric("coverage", signature="x",
-    function(x, start=NA, end=NA, shift=0L, width=NULL, weight=1L, ...)
+    function(x, shift=0L, width=NULL, weight=1L, ...)
         standardGeneric("coverage")
 )
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Functions to help migrating from the "start/end" to the "shift/width"
-### interface (remove when migration is over).
-###
-
-coverage.isCalledWithStartEndInterface <- function(start, end, shift, width)
-{
-    isSingleNA <- function(x) {is.atomic(x) && length(x) == 1 && is.na(x)}
-    if (isSingleNA(start) && isSingleNA(end))
-        return(FALSE)
-    if (!identical(shift, 0L) || !is.null(width))
-        stop("you cannot use both the \"start/end\" interface and\n",
-             "  the \"shift/width\" interface when calling coverage()")
-    warning("the signature of coverage() has changed.\n  Please use the ",
-            "\"shift/width\" interface instead of the \"start/end\" interface.\n",
-            "  See '?coverage'")
-    if (isSingleNA(start) || isSingleNA(end))
-        stop("when calling coverage() with the \"start/end\" interface,\n",
-             "  both 'start' and 'end' must be specified")
-    TRUE
-}
-
-coverage.getShift0FromStartEnd <- function(start)
-{
-    if (!isSingleNumber(start))
-        stop("when specified, 'start' must be a single integer")
-    if (!is.integer(start))
-        start <- as.integer(start)
-    1L - start
-}
-
-coverage.getWidthFromStartEnd <- function(end, shift0)
-{
-    if (!isSingleNumber(end))
-        stop("when specified, 'end' must be a single integer")
-    if (!is.integer(end))
-        end <- as.integer(end)
-    width <- end + shift0
-    if (width < 0L)
-        stop("when specified, 'end' must be >= 'start' - 1")
-    width
-}
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -106,16 +43,10 @@ coverage.normargWeight <- function(weight, nseq)
 ###
 
 setMethod("coverage", "numeric",
-    function(x, start=NA, end=NA, shift=0L, width=NULL, weight=1L)
+    function(x, shift=0L, width=NULL, weight=1L)
     {
-        if (coverage.isCalledWithStartEndInterface(start, end, shift, width)) {
-            ## From here, 'start' and 'end' cannot be single NAs
-            shift <- coverage.getShift0FromStartEnd(start)
-            width <- coverage.getWidthFromStartEnd(end, shift)
-        } else {
-            width <- coverage.normargWidth(width, length(x))
-        }
         shift <- normargShift(shift, length(x))
+        width <- coverage.normargWidth(width, length(x))
         weight <- coverage.normargWeight(weight, length(x))
         if (!is.integer(x))
             x <- as.integer(x)
@@ -143,16 +74,10 @@ setMethod("coverage", "numeric",
 }
 
 setMethod("coverage", "IRanges",
-    function(x, start=NA, end=NA, shift=0L, width=NULL, weight=1L)
+    function(x, shift=0L, width=NULL, weight=1L)
     {
-        if (coverage.isCalledWithStartEndInterface(start, end, shift, width)) {
-            ## From here, 'start' and 'end' cannot be single NAs
-            shift <- coverage.getShift0FromStartEnd(start)
-            width <- coverage.getWidthFromStartEnd(end, shift)
-        } else {
-            width <- coverage.normargWidth(width, length(x))
-        }
         #shift <- normargShift(shift, length(x))  # done by shift() below
+        width <- coverage.normargWidth(width, length(x))
         weight <- coverage.normargWeight(weight, length(x))
         sx <- shift(x, shift)
         if (is.null(width)) {
@@ -170,15 +95,11 @@ setMethod("coverage", "IRanges",
 )
 
 setMethod("coverage", "Views",
-    function(x, start=NA, end=NA, shift=0L, width=NULL, weight=1L)
+    function(x, shift=0L, width=NULL, weight=1L)
     {
-        if (coverage.isCalledWithStartEndInterface(start, end, shift, width)) {
-            ## From here, 'start' and 'end' cannot be single NAs
-            shift <- coverage.getShift0FromStartEnd(start)
-        }
         if (is.null(width))
             width <- length(subject(x)) + max(shift)
-        coverage(as(x, "IRanges"), start=start, end=end, shift=shift, width=width, weight=weight)
+        coverage(as(x, "IRanges"), shift=shift, width=width, weight=weight)
     }
 )
 
@@ -186,16 +107,10 @@ setMethod("coverage", "Views",
 ### just calling coverage() on the single IRanges object resulting from
 ### unlisting 'x' ('shift' and 'weight' must be modified consequently).
 setMethod("coverage", "MaskCollection",
-    function(x, start=NA, end=NA, shift=0L, width=NULL, weight=1L)
+    function(x, shift=0L, width=NULL, weight=1L)
     {
-        if (coverage.isCalledWithStartEndInterface(start, end, shift, width)) {
-            ## From here, 'start' and 'end' cannot be single NAs
-            shift <- coverage.getShift0FromStartEnd(start)
-            width <- coverage.getWidthFromStartEnd(end, shift)
-        } else {
-            width <- coverage.normargWidth(width, length(x))
-        }
         shift <- normargShift(shift, length(x))
+        width <- coverage.normargWidth(width, length(x))
         weight <- coverage.normargWeight(weight, length(x))
         if (is.null(width))
             width <- width(mymasks)
@@ -217,8 +132,6 @@ setMethod("coverage", "MaskCollection",
 
 setMethod("coverage", "RangesList",
     function(x,
-             start = structure(rep(list(NA), length(x)), names = names(x)),
-             end = structure(rep(list(NA), length(x)), names = names(x)),
              shift = structure(rep(list(0L), length(x)), names = names(x)),
              width = structure(rep(list(NULL), length(x)), names = names(x)),
              weight = structure(rep(list(1L), length(x)), names = names(x)))
@@ -232,7 +145,6 @@ setMethod("coverage", "RangesList",
                       lapply(indices,
                              function(i) {
                                  coverage(as(x[[i]], "IRanges"),
-                                         start = start[[i]], end = end[[i]],
                                          shift = shift[[i]], width = width[[i]],
                                          weight = weight[[i]])
                              }),
@@ -243,8 +155,6 @@ setMethod("coverage", "RangesList",
 
 setMethod("coverage", "RangedData",
     function(x,
-             start = structure(rep(list(NA), length(x)), names = names(x)),
-             end = structure(rep(list(NA), length(x)), names = names(x)),
              shift = structure(rep(list(0L), length(x)), names = names(x)),
              width = structure(rep(list(NULL), length(x)), names = names(x)),
              weight = structure(rep(list(1L), length(x)), names = names(x)))
@@ -255,17 +165,12 @@ setMethod("coverage", "RangedData",
         if (!is.null(elementMetadata(x)))
             elementMetadata(x) <- elementMetadata(x)
         varnames <- colnames(x)
-        if (isSingleString(start) && (start %in% varnames))
-            start <- values(x)[, start]
-        if (isSingleString(end) && (end %in% varnames))
-            end <- values(x)[, end]
         if (isSingleString(shift) && (shift %in% varnames))
             shift <- values(x)[, shift]
         if (isSingleString(width) && (width %in% varnames))
             width <- values(x)[, width]
         if (isSingleString(weight) && (weight %in% varnames))
             weight <- values(x)[, weight]
-        coverage(ranges, start = start, end = end, shift = shift,
-                 width = width, weight = weight)
+        coverage(ranges, shift = shift, width = width, weight = weight)
     }
 )
