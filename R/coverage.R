@@ -129,7 +129,6 @@ setMethod("coverage", "MaskCollection",
     }
 )
 
-
 setMethod("coverage", "RangesList",
     function(x,
              shift = structure(rep(list(0L), length(x)), names = names(x)),
