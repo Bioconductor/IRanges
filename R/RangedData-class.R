@@ -266,7 +266,13 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL, universe = NULL)
     if (!is.factor(runValue(space)))
       runValue(space) <- factor(runValue(space))
     if (length(space) != N) {
-      if (length(space) > N)
+      if (length(space) == 0L)
+        stop("'space' is a 0-length vector but length of 'ranges' is > 0")
+      ## We make an exception to the "length(space) must be <= N" rule when
+      ## N != 0L so we can support the direct creation of RangedData objects
+      ## with 0 rows across 1 or more user-specified spaces like in:
+      ##     RangedData(ranges=IRanges(), space=letters)
+      if (N != 0L && length(space) > N)
         stop("length of 'space' greater than length of 'ranges'")
       if (N %% length(space) != 0)
         stop("length of 'ranges' not a multiple of 'space' length")
