@@ -6,14 +6,6 @@
 ### i.e. an ordered set of elements.
 ###
 
-.is <- function(object, class2) 
-{
-    if (identical(class2, "ANY")) 
-        TRUE
-    else
-        methods::is(object, class2)
-}
-
 setClassUnion("vectorORfactor", c("vector", "factor"))
 
 setClass("Sequence",
@@ -25,6 +17,7 @@ setClass("Sequence",
                         ),
          prototype(elementType="ANY")
 )
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -110,6 +103,7 @@ setReplaceMethod("elementMetadata", c("Sequence", "DataTableORNULL"),
                      x
                  })
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
@@ -127,6 +121,7 @@ setReplaceMethod("elementMetadata", c("Sequence", "DataTableORNULL"),
     c(.valid.Sequence.elementMetadata(x))
 }
 setValidity2("Sequence", .valid.Sequence)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
@@ -253,6 +248,7 @@ function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE)
     }
     list(msg = msg, useIdx = useIdx, idx = idx)
 }
+
 setMethod("[", "Sequence", function(x, i, j, ..., drop)
           stop("missing '[' method for Sequence class ", class(x)))
 
@@ -278,20 +274,23 @@ setReplaceMethod("[", "Sequence",
                      x
                  })
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.
 ###
 
-.c.Sequence <-
-function(x, ..., recursive = FALSE) {
+.c.Sequence <- function(x, ..., recursive = FALSE)
+{
     if (!is.null(elementMetadata(x)))
         elementMetadata(x) <-
           do.call(rbind, lapply(c(list(x), ...), elementMetadata))
     x
 }
+
 setMethod("c", "Sequence",
           function(x, ..., recursive = FALSE)
           stop("missing 'c' method for Sequence class ", class(x)))
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Element extraction.
@@ -347,9 +346,12 @@ checkAndTranslateDbleBracketSubscript <- function(x, i, j, ...)
         stop("subscript \"", subscript, "\" matches no name")
     ans
 }
+
 setMethod("[[", "Sequence", function(x, i, j, ...)
           stop("missing '[[' method for Sequence class ", class(x)))
+
 setMethod("$", "Sequence", function(x, name) x[[name, exact=FALSE]])
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Basic methods.
@@ -471,6 +473,7 @@ setMethod("Position", signature(x = "Sequence"), .PositionDefault)
         out
     }
 }
+
 setMethod("Reduce", signature(x = "Sequence"), .ReduceDefault)
   
 setMethod("rep", "Sequence", function(x, ...)
@@ -808,6 +811,7 @@ setMethod("!=", signature(e1="Sequence", e2="Sequence"),
     function(e1, e2) !(e1 == e2)
 )
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping methods.
 ###
@@ -988,6 +992,7 @@ setMethod("shiftApply", signature(X = "Sequence", Y = "Sequence"),
 setMethod("shiftApply", signature(X = "vector", Y = "vector"),
           .shiftApplyInternal)
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Evaluating
 ###
@@ -1006,11 +1011,13 @@ setMethod("with", "Sequence",
               eval(substitute(expr), data, parent.frame())
           })
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
 
 setAs("Sequence", "list", function(from) as.list(from))
+
 setMethod("as.list", "Sequence", function(x, ...) lapply(x, identity))
 
 setGeneric("as.env", function(x, ...) standardGeneric("as.env"))
