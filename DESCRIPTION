@@ -1,13 +1,14 @@
 Package: IRanges
 Title: Infrastructure for manipulating intervals on sequences
-Description: The IRanges class and its extensions are low-level containers
-	for storing sets of integer ranges. A typical use of these containers
-	in biology is for representing a set of chromosome regions.
-	More specific extensions of the IRanges class will typically
-	allow the storage of additional information attached to each
-	chromosome region as well as a hierarchical relationship between
-	these regions.
-Version: 1.5.58
+Description: The package provides efficient low-level and highly reusable S4
+	classes for storing ranges of integers, RLE vectors (Run-Length
+	Encoding), and, more generally, data that can be organized
+	sequentially, as well as views on these sequences.
+	Efficient list-like classes are also provided for storing big
+	collections of instances of the basic classes. All classes in
+	the package use consistent naming and share the same rich and
+	consistent "Sequence API" as much as possible.
+Version: 1.5.59
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Biocore Team c/o BioC user list <bioconductor@stat.math.ethz.ch>
 biocViews: Infrastructure, Genetics
