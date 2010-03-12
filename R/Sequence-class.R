@@ -484,12 +484,6 @@ setMethod("rev", "Sequence",
                   x[length(x):1]  
           })
 
-seqextract <- function(x, start=NULL, end=NULL, width=NULL)
-{
-    .Deprecated("seqselect", "IRanges")
-    seqselect(x, start = start, end = end, width = width)
-}
-
 setGeneric("seqselect", signature="x",
            function(x, start=NULL, end=NULL, width=NULL)
            standardGeneric("seqselect"))

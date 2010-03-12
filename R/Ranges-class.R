@@ -628,12 +628,3 @@ setMethod("disjointBins", "Ranges",
         bins
     }
 )
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Old stuff (Deprecated or Defunct).
-###
-
-setGeneric("first", function(x) standardGeneric("first"))
-setMethod("first", "Ranges", function(x) .Defunct("start"))
-setGeneric("last", function(x) standardGeneric("last"))
-setMethod("last", "Ranges", function(x) .Defunct("end"))

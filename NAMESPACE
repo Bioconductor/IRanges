@@ -96,7 +96,6 @@ export(
     mendoapply,
 
     ## Generic functions in the Sequence API:
-    seqextract,
     seqselect, "seqselect<-",
     mapply,
     Map,
@@ -167,12 +166,7 @@ export(
     universe, "universe<-", space, score, "score<-",
     elementType, elementLengths,
     metadata, elementMetadata, "metadata<-", "elementMetadata<-",
-    matchMatrix, queryHits, subjectHits,
-
-    ## Old stuff (Defunct or Deprecated):
-    first, last,
-    intToRanges, intToAdjacentRanges, toNormalIRanges,
-    views
+    matchMatrix, queryHits, subjectHits
 )
 
 exportMethods(
@@ -262,8 +256,5 @@ exportMethods(
     findRange,
     runmean, runsum, runwtsum, runq,
     viewApply, viewMins, viewMaxs, viewSums, viewMeans,
-    viewWhichMins, viewWhichMaxs,
-
-    ## Old stuff (Defunct or Deprecated):
-    first, last
+    viewWhichMins, viewWhichMaxs
 )

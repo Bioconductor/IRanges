@@ -35,11 +35,6 @@
 \alias{asNormalIRanges}
 \alias{coerce,Ranges,NormalIRanges-method}
 
-% Deprecated:
-\alias{intToRanges}
-\alias{intToAdjacentRanges}
-\alias{toNormalIRanges}
-
 \title{IRanges utility functions}
 
 \description{

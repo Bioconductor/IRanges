@@ -193,13 +193,6 @@ DataFrame <- function(..., row.names = NULL)
        nrows=as.integer(max(nr, length(row.names))), check=FALSE)
 }
 
-XDataFrame <- function(..., row.names = NULL) {
-  .Deprecated("DataFrame", "IRanges")
-  mc <- match.call()
-  mc[1L] <- DataFrame
-  eval(mc)
-}
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
 ###

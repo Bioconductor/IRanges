@@ -12,7 +12,6 @@
 
 % constructor
 \alias{DataFrame}
-\alias{XDataFrame}
 
 % subsetting
 \alias{[,DataFrame-method}

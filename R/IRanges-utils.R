@@ -354,22 +354,3 @@ asNormalIRanges <- function(x, force=TRUE)
 .asNormalIRanges <- function(from) asNormalIRanges(from, force=TRUE)
 
 setAs("Ranges", "NormalIRanges", .asNormalIRanges)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Old stuff (Deprecated or Defunct).
-###
-
-intToRanges <- function(x)
-{
-    msg <- paste("'intToRanges' is deprecated.",
-                 "Use 'IRanges(start=rep.int(1L, length(x)), width=x)' instead.",
-                 sep="\n")
-    .Defunct(msg=msg)
-}
-
-intToAdjacentRanges <- function(...)
-    .Defunct("successiveIRanges")
-
-toNormalIRanges <- function(x)
-    .Defunct("asNormalIRanges")

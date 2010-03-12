@@ -51,7 +51,6 @@
 \alias{rep,Sequence-method}
 \alias{rev,Sequence-method}
 \alias{sapply,Sequence-method}
-\alias{seqextract}
 \alias{seqselect}
 \alias{seqselect,Sequence-method}
 \alias{seqselect,vector-method}
