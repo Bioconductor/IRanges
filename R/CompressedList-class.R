@@ -79,14 +79,32 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
     } else if (!extends(class(unlistData), elementTypeData)) {
         stop("'unlistData' not of class ", elementTypeData)
     } else if (!is.null(splitFactor)) {
+        if (length(dim(unlistData)) < 2) {
+            dataLength <- length(unlistData)
+        } else {
+            dataLength <- nrow(unlistData)
+        }
+        splitLength <- length(splitFactor)
         if (is(splitFactor, "Rle")) {
+            isInt <- is.integer(runValue(splitFactor))
+            isFactor <- is.factor(runValue(splitFactor))
+            if (dataLength != splitLength) {
+                if (splitLength == 0) {
+                    stop("Group length is 0 but data length > 0")
+                } else if (dataLength %% splitLength != 0) {
+                    warning("data length is not a multiple of split variable")
+                }
+                if (!isFactor) {
+                    runValue(splitFactor) <- factor(runValue(splitFactor))
+                    isFactor <- TRUE
+                }
+                splitFactor <- rep(splitFactor, length.out = dataLength)
+            }
             if (anyMissing(runValue(splitFactor))) {
                 keep <- !is.na(splitFactor)
                 unlistData <- seqselect(unlistData, keep)
                 splitFactor <- seqselect(splitFactor, keep)
             }
-            isInt <- is.integer(runValue(splitFactor))
-            isFactor <- is.factor(runValue(splitFactor))
             if (!isInt && !isFactor) {
                 uniqueFactors <- sort(unique(splitFactor))
                 runValue(splitFactor) <-
@@ -112,13 +130,25 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
                 end <- cumsum(unname(width))
             }
         } else {
+            isInt <- is.integer(splitFactor)
+            isFactor <- is.factor(splitFactor)
+            if (dataLength != splitLength) {
+                if (splitLength == 0) {
+                    stop("Group length is 0 but data length > 0")
+                } else if (dataLength %% splitLength != 0) {
+                    warning("data length is not a multiple of split variable")
+                }
+                if (!isFactor) {
+                    splitFactor <- factor(splitFactor)
+                    isFactor <- TRUE
+                }
+                splitFactor <- rep(splitFactor, length.out = dataLength)
+            }
             if (anyMissing(splitFactor)) {
                 keep <- !is.na(splitFactor)
                 unlistData <- seqselect(unlistData, keep)
                 splitFactor <- seqselect(splitFactor, keep)
             }
-            isInt <- is.integer(splitFactor)
-            isFactor <- is.factor(splitFactor)
             if (!isInt && !isFactor) {
                 uniqueFactors <- sort(unique(splitFactor))
                 splitFactor <-
@@ -157,11 +187,11 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
 .valid.CompressedList.partitioning <- function(x)
 {
     if (length(dim(x@unlistData)) < 2) {
-        objsize <- length(x@unlistData)
+        dataLength <- length(x@unlistData)
     } else {
-        objsize <- nrow(x@unlistData)
+        dataLength <- nrow(x@unlistData)
     }
-    if (nobj(x@partitioning) != objsize)
+    if (nobj(x@partitioning) != dataLength)
         "improper partitioning"
     else NULL
 }

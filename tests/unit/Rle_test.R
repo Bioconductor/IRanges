@@ -116,8 +116,22 @@ test_Rle_general <- function() {
     seqselect(zRle, IRanges(start = 1:3, width = 1:3)) <- 0L
     checkIdentical(z, as.vector(zRle))
     checkIdentical(sort(c(x,x)), as.vector(sort(c(xRle,xRle))))
+
+    checkException(split(Rle(1:26), integer()), silent = TRUE)
+    checkException(split(Rle(1:26), Rle()), silent = TRUE)
     checkIdentical(lapply(as.list(split(Rle(1:26), letters)), as.vector),
                    split(1:26, letters))
+    checkIdentical(lapply(as.list(split(Rle(1:26), Rle(letters))), as.vector),
+                   split(1:26, letters))
+    checkIdentical(lapply(as.list(split(Rle(1:26), letters[1:2])), as.vector),
+                   split(1:26, letters[1:2]))
+    checkIdentical(lapply(as.list(split(Rle(1:26), Rle(letters[1:2]))), as.vector),
+                   split(1:26, letters[1:2]))
+    checkIdentical(lapply(as.list(split(Rle(integer()), letters)), as.vector),
+                   split(integer(), letters))
+    checkIdentical(lapply(as.list(split(Rle(integer()), Rle(letters))), as.vector),
+                   split(integer(), letters))
+
     checkIdentical(splitRanges(Rle(letters, 1:26)),
                    split(IRanges(end = cumsum(1:26), width = 1:26), letters))
     checkIdentical(as.vector(subset(xRle, rep(c(TRUE, FALSE), length.out = length(x)))),
