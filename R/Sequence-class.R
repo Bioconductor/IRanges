@@ -134,6 +134,7 @@ function(x, i, j, ..., drop)
         elementMetadata(x) <- elementMetadata(x)[i,,drop=FALSE]
     x
 }
+
 .bracket.Index <-
 function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE)
 {
@@ -274,218 +275,124 @@ setReplaceMethod("[", "Sequence",
                      x
                  })
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Combining and splitting.
-###
-
-.c.Sequence <- function(x, ..., recursive = FALSE)
+### Returns an IRanges instance of length 1.
+### Not exported.
+solveWindowSEW <- function(seq_length, start, end, width)
 {
-    if (!is.null(elementMetadata(x)))
-        elementMetadata(x) <-
-          do.call(rbind, lapply(c(list(x), ...), elementMetadata))
-    x
+    solved_SEW <-
+      try(solveUserSEW(seq_length, start=start, end=end, width=width),
+          silent = TRUE)
+    if (inherits(solved_SEW, "try-error"))
+        stop("Invalid sequence coordinates.\n",
+             "  Please make sure the supplied 'start', 'end' and 'width' arguments\n",
+             "  are defining a region that is within the limits of the sequence.")
+    solved_SEW
 }
 
-setMethod("c", "Sequence",
-          function(x, ..., recursive = FALSE)
-          stop("missing 'c' method for Sequence class ", class(x)))
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Element extraction.
-###
-
-checkAndTranslateDbleBracketSubscript <- function(x, i, j, ...)
-{
-    subscripts <- list(...)
-    if ("exact" %in% names(subscripts)) {
-        exact <- subscripts[["exact"]]
-        subscripts[["exact"]] <- NULL
-    } else {
-        exact <- TRUE  # default
-    }
-    if (!missing(i))
-        subscripts$i <- i
-    if (!missing(j))
-        subscripts$j <- j
-    if (length(subscripts) != 1L)
-        stop("incorrect number of subscripts")
-    subscript <- subscripts[[1L]]
-    if (!is.character(subscript) && !is.numeric(subscript))
-        stop("invalid subscript type '", class(subscript), "'")
-    if (length(subscript) < 1L)
-        stop("attempt to extract less than one element")
-    if (length(subscript) > 1L)
-        stop("attempt to extract more than one element")
-    if (is.na(subscript))
-        stop("invalid subscript NA")
-    if (is.numeric(subscript)) {
-        if (!is.integer(subscript))
-            subscript <- as.integer(subscript)
-        if (subscript < 1L || length(x) < subscript)
-            stop("subscript out of bounds")
-        return(subscript)
-    }
-    ## 'subscript' is a character string
-    names_x <- names(x)
-    if (is.null(names_x))
-        stop("attempt to extract by name when elements have no names")
-    #if (subscript == "")
-    #    stop("invalid subscript \"\"")
-    ans <- charmatch(subscript, names_x)
-    if (is.na(ans))
-        stop("subscript \"", subscript, "\" matches no name")
-    if (ans == 0L) {
-        if (isTRUE(exact))
-            stop("subscript \"", subscript,
-                 "\" matches no name or more than one name")
-        stop("subscript \"", subscript, "\" matches more than one name")
-    }
-    if (isTRUE(exact) && nchar(subscript) != nchar(names_x[ans]))
-        stop("subscript \"", subscript, "\" matches no name")
-    ans
-}
-
-setMethod("[[", "Sequence", function(x, i, j, ...)
-          stop("missing '[[' method for Sequence class ", class(x)))
-
-setMethod("$", "Sequence", function(x, name) x[[name, exact=FALSE]])
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Basic methods.
-###
-
-setMethod("append", c("Sequence", "Sequence"),
-          function(x, values, after=length(x)) {
-              if (!isSingleNumber(after))
-                  stop("'after' must be a single number")
-              xlen <- length(x)
-              if (after == 0L)
-                  c(values, x)
-              else if (after >= xlen)
-                  c(x, values)
-              else
-                  c(window(x, 1L, after), values, window(x, after + 1L, xlen))
-             })
-
-.FilterDefault <- base::Filter
-environment(.FilterDefault) <- topenv()
-setMethod("Filter", signature(x = "Sequence"), .FilterDefault)
-
-.FindDefault <- base::Find
-environment(.FindDefault) <- topenv()
-setMethod("Find", signature(x = "Sequence"), .FindDefault)
-
-setMethod("head", "Sequence",
-          function(x, n = 6L, ...)
+setMethod("window", "Sequence",
+          function(x, start = NA, end = NA, width = NA,
+                   frequency = NULL, delta = NULL, ...)
           {
-              stopifnot(length(n) == 1L)
-              if (n < 0L)
-                  n <- max(length(x) + n, 0L)
-              else
-                  n <- min(n, length(x))
-              if (n == 0L)
-                  x[integer(0)]
-              else
-                  window(x, 1L, n)
+              solved_SEW <- solveWindowSEW(length(x), start, end, width)
+              if (is.null(frequency) && is.null(delta)) {
+                  x[as.integer(solved_SEW)]
+              } else {
+                  idx <-
+                    stats:::window.default(seq_len(length(x)),
+                                           start = start(solved_SEW),
+                                           end = end(solved_SEW),
+                                           frequency = frequency,
+                                           deltat = delta, ...)
+                  attributes(idx) <- NULL
+                  x[idx]
+              }
           })
 
-setGeneric("Map", function (f, ...) standardGeneric("Map"), signature = "...")
-
-.MapDefault <- base::Map
-environment(.MapDefault) <- topenv()
-setMethod("Map", "Sequence", .MapDefault)
-  
-.PositionDefault <- base::Position
-environment(.PositionDefault) <- topenv()
-setMethod("Position", signature(x = "Sequence"), .PositionDefault)
-
-#.ReduceDefault <- base::Reduce
-#environment(.ReduceDefault) <- topenv()
-.ReduceDefault <- function (f, x, init, right = FALSE, accumulate = FALSE) 
-{
-    mis <- missing(init)
-    len <- length(x)
-    if (len == 0L) 
-        return(if (mis) NULL else init)
-    f <- match.fun(f)
-#    if (!is.vector(x) || is.object(x)) 
-#        x <- as.list(x)
-    ind <- seq_len(len)
-    if (mis) {
-        if (right) {
-            init <- x[[len]]
-            ind <- ind[-len]
-        }
-        else {
-            init <- x[[1L]]
-            ind <- ind[-1L]
-        }
-    }
-    if (!accumulate) {
-        if (right) {
-            for (i in rev(ind)) init <- f(x[[i]], init)
-        }
-        else {
-            for (i in ind) init <- f(init, x[[i]])
-        }
-        init
-    }
-    else {
-        len <- length(ind) + 1L
-        out <- vector("list", len)
-        if (mis) {
-            if (right) {
-                out[[len]] <- init
-                for (i in rev(ind)) {
-                    init <- f(x[[i]], init)
-                    out[[i]] <- init
-                }
-            }
-            else {
-                out[[1L]] <- init
-                for (i in ind) {
-                    init <- f(init, x[[i]])
-                    out[[i]] <- init
-                }
-            }
-        }
-        else {
-            if (right) {
-                out[[len]] <- init
-                for (i in rev(ind)) {
-                    init <- f(x[[i]], init)
-                    out[[i]] <- init
-                }
-            }
-            else {
-                for (i in ind) {
-                    out[[i]] <- init
-                    init <- f(init, x[[i]])
-                }
-                out[[len]] <- init
-            }
-        }
-        if (all(sapply(out, length) == 1L)) 
-            out <- unlist(out, recursive = FALSE)
-        out
-    }
-}
-
-setMethod("Reduce", signature(x = "Sequence"), .ReduceDefault)
-  
-setMethod("rep", "Sequence", function(x, ...)
-          x[rep(seq_len(length(x)), ...)])
-
-setMethod("rev", "Sequence",
-          function(x) {
-              if (length(x) == 0)
-                  x
-              else
-                  x[length(x):1]  
+setMethod("window", "vector",
+          function(x, start = NA, end = NA, width = NA,
+                   frequency = NULL, delta = NULL, ...)
+          {
+              solved_SEW <- solveWindowSEW(length(x), start, end, width)
+              if (is.null(frequency) && is.null(delta)) {
+                  .Call("vector_seqselect",
+                        x, start(solved_SEW), width(solved_SEW),
+                        PACKAGE="IRanges")
+              } else {
+                  idx <-
+                    stats:::window.default(seq_len(length(x)),
+                                           start = start(solved_SEW),
+                                           end = end(solved_SEW),
+                                           frequency = frequency,
+                                           deltat = delta, ...)
+                  attributes(idx) <- NULL
+                  x[idx]
+              }
           })
+
+setMethod("window", "factor",
+          function(x, start = NA, end = NA, width = NA,
+                   frequency = NULL, delta = NULL, ...)
+          {
+              labels <- levels(x)
+              factor(callGeneric(as.integer(x), start = start, end = end,
+                                 width = width, frequency = frequency,
+                                 delta = delta, ...),
+                     levels = seq_len(length(labels)), labels = labels)
+          })
+
+setReplaceMethod("window", "Sequence",
+                 function(x, start = NA, end = NA, width = NA,
+                          keepLength = TRUE, ..., value)
+                 {
+                     if (!isTRUEorFALSE(keepLength))
+                         stop("'keepLength' must be TRUE or FALSE")
+                     solved_SEW <- solveWindowSEW(length(x), start, end, width)
+                     if (!is.null(value)) {
+                         if (!is(value, class(x))) {
+                             value <- try(as(value, class(x)), silent = TRUE)
+                             if (inherits(value, "try-error"))
+                                 stop("'value' must be a ", class(x),
+                                      " object or NULL")
+                         }
+                         if (keepLength && (length(value) != width(solved_SEW)))
+                             value <- rep(value, length.out = width(solved_SEW))
+                     }
+                     c(window(x, end = start(solved_SEW) - 1L),
+                       value,
+                       window(x, start = end(solved_SEW) + 1L))
+                 })
+
+setReplaceMethod("window", "vector",
+                 function(x, start = NA, end = NA, width = NA,
+                          keepLength = TRUE, ..., value)
+                 {
+                     if (!isTRUEorFALSE(keepLength))
+                         stop("'keepLength' must be TRUE or FALSE")
+                     solved_SEW <- solveWindowSEW(length(x), start, end, width)
+                     if (!is.null(value)) {
+                         if (!is(value, class(x))) {
+                             value <- try(as(value, class(x)), silent = TRUE)
+                             if (inherits(value, "try-error"))
+                                 stop("'value' must be a ", class(x),
+                                      " object or NULL")
+                         }
+                         if (keepLength && (length(value) != width(solved_SEW)))
+                             value <- rep(value, length.out = width(solved_SEW))
+                     }
+                     c(window(x, end = start(solved_SEW) - 1L),
+                       value,
+                       window(x, start = end(solved_SEW) + 1L))
+                 })
+
+setReplaceMethod("window", "factor",
+                 function(x, start = NA, end = NA, width = NA,
+                          keepLength = TRUE, ..., value)
+                 {
+                     levels <- levels(x)
+                     x <- as.character(x)
+                     value <- as.character(value)
+                     factor(callGeneric(), levels = levels)
+                 })
 
 setGeneric("seqselect", signature="x",
            function(x, start=NULL, end=NULL, width=NULL)
@@ -663,12 +570,23 @@ setReplaceMethod("seqselect", "factor",
                      factor(callGeneric(), levels = levels)
                  })
 
-setMethod("subset", "Sequence",
-          function (x, subset, ...) 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Simple helper functions for some common subsetting operations.
+###
+
+setMethod("head", "Sequence",
+          function(x, n = 6L, ...)
           {
-              if (!is.logical(subset)) 
-                  stop("'subset' must be logical")
-              x[subset & !is.na(subset)]
+              stopifnot(length(n) == 1L)
+              if (n < 0L)
+                  n <- max(length(x) + n, 0L)
+              else
+                  n <- min(n, length(x))
+              if (n == 0L)
+                  x[integer(0)]
+              else
+                  window(x, 1L, n)
           })
 
 setMethod("tail", "Sequence",
@@ -686,124 +604,120 @@ setMethod("tail", "Sequence",
                   window(x, xlen - n + 1L, xlen)
           })
 
-### Returns an IRanges instance of length 1.
-### Not exported.
-solveWindowSEW <- function(seq_length, start, end, width)
+setMethod("rev", "Sequence",
+          function(x) {
+              if (length(x) == 0)
+                  x
+              else
+                  x[length(x):1]  
+          })
+
+setMethod("rep", "Sequence", function(x, ...)
+          x[rep(seq_len(length(x)), ...)])
+
+setMethod("subset", "Sequence",
+          function (x, subset, ...) 
+          {
+              if (!is.logical(subset)) 
+                  stop("'subset' must be logical")
+              x[subset & !is.na(subset)]
+          })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Combining and splitting.
+###
+
+.c.Sequence <- function(x, ..., recursive = FALSE)
 {
-    solved_SEW <-
-      try(solveUserSEW(seq_length, start=start, end=end, width=width),
-          silent = TRUE)
-    if (inherits(solved_SEW, "try-error"))
-        stop("Invalid sequence coordinates.\n",
-             "  Please make sure the supplied 'start', 'end' and 'width' arguments\n",
-             "  are defining a region that is within the limits of the sequence.")
-    solved_SEW
+    if (!is.null(elementMetadata(x)))
+        elementMetadata(x) <-
+          do.call(rbind, lapply(c(list(x), ...), elementMetadata))
+    x
 }
 
-setMethod("window", "Sequence",
-          function(x, start = NA, end = NA, width = NA,
-                   frequency = NULL, delta = NULL, ...)
-          {
-              solved_SEW <- solveWindowSEW(length(x), start, end, width)
-              if (is.null(frequency) && is.null(delta)) {
-                  x[as.integer(solved_SEW)]
-              } else {
-                  idx <-
-                    stats:::window.default(seq_len(length(x)),
-                                           start = start(solved_SEW),
-                                           end = end(solved_SEW),
-                                           frequency = frequency,
-                                           deltat = delta, ...)
-                  attributes(idx) <- NULL
-                  x[idx]
-              }
-          })
+setMethod("c", "Sequence",
+          function(x, ..., recursive = FALSE)
+          stop("missing 'c' method for Sequence class ", class(x)))
 
-setMethod("window", "vector",
-          function(x, start = NA, end = NA, width = NA,
-                   frequency = NULL, delta = NULL, ...)
-          {
-              solved_SEW <- solveWindowSEW(length(x), start, end, width)
-              if (is.null(frequency) && is.null(delta)) {
-                  .Call("vector_seqselect",
-                        x, start(solved_SEW), width(solved_SEW),
-                        PACKAGE="IRanges")
-              } else {
-                  idx <-
-                    stats:::window.default(seq_len(length(x)),
-                                           start = start(solved_SEW),
-                                           end = end(solved_SEW),
-                                           frequency = frequency,
-                                           deltat = delta, ...)
-                  attributes(idx) <- NULL
-                  x[idx]
-              }
-          })
+setMethod("append", c("Sequence", "Sequence"),
+          function(x, values, after=length(x)) {
+              if (!isSingleNumber(after))
+                  stop("'after' must be a single number")
+              xlen <- length(x)
+              if (after == 0L)
+                  c(values, x)
+              else if (after >= xlen)
+                  c(x, values)
+              else
+                  c(window(x, 1L, after), values, window(x, after + 1L, xlen))
+             })
 
-setMethod("window", "factor",
-          function(x, start = NA, end = NA, width = NA,
-                   frequency = NULL, delta = NULL, ...)
-          {
-              labels <- levels(x)
-              factor(callGeneric(as.integer(x), start = start, end = end,
-                                 width = width, frequency = frequency,
-                                 delta = delta, ...),
-                     levels = seq_len(length(labels)), labels = labels)
-          })
 
-setReplaceMethod("window", "Sequence",
-                 function(x, start = NA, end = NA, width = NA,
-                          keepLength = TRUE, ..., value)
-                 {
-                     if (!isTRUEorFALSE(keepLength))
-                         stop("'keepLength' must be TRUE or FALSE")
-                     solved_SEW <- solveWindowSEW(length(x), start, end, width)
-                     if (!is.null(value)) {
-                         if (!is(value, class(x))) {
-                             value <- try(as(value, class(x)), silent = TRUE)
-                             if (inherits(value, "try-error"))
-                                 stop("'value' must be a ", class(x),
-                                      " object or NULL")
-                         }
-                         if (keepLength && (length(value) != width(solved_SEW)))
-                             value <- rep(value, length.out = width(solved_SEW))
-                     }
-                     c(window(x, end = start(solved_SEW) - 1L),
-                       value,
-                       window(x, start = end(solved_SEW) + 1L))
-                 })
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### List-like API: Element extraction.
+###
 
-setReplaceMethod("window", "vector",
-                 function(x, start = NA, end = NA, width = NA,
-                          keepLength = TRUE, ..., value)
-                 {
-                     if (!isTRUEorFALSE(keepLength))
-                         stop("'keepLength' must be TRUE or FALSE")
-                     solved_SEW <- solveWindowSEW(length(x), start, end, width)
-                     if (!is.null(value)) {
-                         if (!is(value, class(x))) {
-                             value <- try(as(value, class(x)), silent = TRUE)
-                             if (inherits(value, "try-error"))
-                                 stop("'value' must be a ", class(x),
-                                      " object or NULL")
-                         }
-                         if (keepLength && (length(value) != width(solved_SEW)))
-                             value <- rep(value, length.out = width(solved_SEW))
-                     }
-                     c(window(x, end = start(solved_SEW) - 1L),
-                       value,
-                       window(x, start = end(solved_SEW) + 1L))
-                 })
+checkAndTranslateDbleBracketSubscript <- function(x, i, j, ...)
+{
+    subscripts <- list(...)
+    if ("exact" %in% names(subscripts)) {
+        exact <- subscripts[["exact"]]
+        subscripts[["exact"]] <- NULL
+    } else {
+        exact <- TRUE  # default
+    }
+    if (!missing(i))
+        subscripts$i <- i
+    if (!missing(j))
+        subscripts$j <- j
+    if (length(subscripts) != 1L)
+        stop("incorrect number of subscripts")
+    subscript <- subscripts[[1L]]
+    if (!is.character(subscript) && !is.numeric(subscript))
+        stop("invalid subscript type '", class(subscript), "'")
+    if (length(subscript) < 1L)
+        stop("attempt to extract less than one element")
+    if (length(subscript) > 1L)
+        stop("attempt to extract more than one element")
+    if (is.na(subscript))
+        stop("invalid subscript NA")
+    if (is.numeric(subscript)) {
+        if (!is.integer(subscript))
+            subscript <- as.integer(subscript)
+        if (subscript < 1L || length(x) < subscript)
+            stop("subscript out of bounds")
+        return(subscript)
+    }
+    ## 'subscript' is a character string
+    names_x <- names(x)
+    if (is.null(names_x))
+        stop("attempt to extract by name when elements have no names")
+    #if (subscript == "")
+    #    stop("invalid subscript \"\"")
+    ans <- charmatch(subscript, names_x)
+    if (is.na(ans))
+        stop("subscript \"", subscript, "\" matches no name")
+    if (ans == 0L) {
+        if (isTRUE(exact))
+            stop("subscript \"", subscript,
+                 "\" matches no name or more than one name")
+        stop("subscript \"", subscript, "\" matches more than one name")
+    }
+    if (isTRUE(exact) && nchar(subscript) != nchar(names_x[ans]))
+        stop("subscript \"", subscript, "\" matches no name")
+    ans
+}
 
-setReplaceMethod("window", "factor",
-                 function(x, start = NA, end = NA, width = NA,
-                          keepLength = TRUE, ..., value)
-                 {
-                     levels <- levels(x)
-                     x <- as.character(x)
-                     value <- as.character(value)
-                     factor(callGeneric(), levels = levels)
-                 })
+setMethod("[[", "Sequence", function(x, i, j, ...)
+          stop("missing '[[' method for Sequence class ", class(x)))
+
+setMethod("$", "Sequence", function(x, name) x[[name, exact=FALSE]])
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Comparison.
+###
 
 ### Maybe this is how `!=` should have been defined in the base package so
 ### nobody would ever need to bother implementing such an obvious thing.
@@ -994,7 +908,104 @@ setMethod("shiftApply", signature(X = "vector", Y = "vector"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Evaluating
+### Functional Programming.
+###
+
+#.ReduceDefault <- base::Reduce
+#environment(.ReduceDefault) <- topenv()
+.ReduceDefault <- function (f, x, init, right = FALSE, accumulate = FALSE) 
+{
+    mis <- missing(init)
+    len <- length(x)
+    if (len == 0L) 
+        return(if (mis) NULL else init)
+    f <- match.fun(f)
+#    if (!is.vector(x) || is.object(x)) 
+#        x <- as.list(x)
+    ind <- seq_len(len)
+    if (mis) {
+        if (right) {
+            init <- x[[len]]
+            ind <- ind[-len]
+        }
+        else {
+            init <- x[[1L]]
+            ind <- ind[-1L]
+        }
+    }
+    if (!accumulate) {
+        if (right) {
+            for (i in rev(ind)) init <- f(x[[i]], init)
+        }
+        else {
+            for (i in ind) init <- f(init, x[[i]])
+        }
+        init
+    }
+    else {
+        len <- length(ind) + 1L
+        out <- vector("list", len)
+        if (mis) {
+            if (right) {
+                out[[len]] <- init
+                for (i in rev(ind)) {
+                    init <- f(x[[i]], init)
+                    out[[i]] <- init
+                }
+            }
+            else {
+                out[[1L]] <- init
+                for (i in ind) {
+                    init <- f(init, x[[i]])
+                    out[[i]] <- init
+                }
+            }
+        }
+        else {
+            if (right) {
+                out[[len]] <- init
+                for (i in rev(ind)) {
+                    init <- f(x[[i]], init)
+                    out[[i]] <- init
+                }
+            }
+            else {
+                for (i in ind) {
+                    out[[i]] <- init
+                    init <- f(init, x[[i]])
+                }
+                out[[len]] <- init
+            }
+        }
+        if (all(sapply(out, length) == 1L)) 
+            out <- unlist(out, recursive = FALSE)
+        out
+    }
+}
+
+setMethod("Reduce", signature(x = "Sequence"), .ReduceDefault)
+  
+.FilterDefault <- base::Filter
+environment(.FilterDefault) <- topenv()
+setMethod("Filter", signature(x = "Sequence"), .FilterDefault)
+
+.FindDefault <- base::Find
+environment(.FindDefault) <- topenv()
+setMethod("Find", signature(x = "Sequence"), .FindDefault)
+
+setGeneric("Map", function (f, ...) standardGeneric("Map"), signature = "...")
+
+.MapDefault <- base::Map
+environment(.MapDefault) <- topenv()
+setMethod("Map", "Sequence", .MapDefault)
+  
+.PositionDefault <- base::Position
+environment(.PositionDefault) <- topenv()
+setMethod("Position", signature(x = "Sequence"), .PositionDefault)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Evaluating.
 ###
   
 setClassUnion("expressionORlanguage", c("expression", "language"))
