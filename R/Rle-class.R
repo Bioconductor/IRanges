@@ -1176,42 +1176,91 @@ setMethod("nchar", "Rle",
 
 setMethod("substr", "Rle",
           function(x, start, stop)
-              Rle(values = substr(runValue(x), start = start, stop = stop),
-                  lengths = runLength(x), check = FALSE))
+          {
+              if (is.factor(runValue(x))) {
+                  levels(x) <- substr(levels(x), start = start, stop = stop)
+              } else {
+                  runValue(x) <- substr(runValue(x), start = start, stop = stop)
+              }
+              x
+          })
 setMethod("substring", "Rle",
           function(text, first, last = 1000000L)
-              Rle(values = substring(runValue(text), first = first, last = last),
-                  lengths = runLength(text), check = FALSE))
+          {
+              if (is.factor(runValue(text))) {
+                  levels(text) <-
+                    substring(levels(text), first = first, last = last)
+              } else {
+                  runValue(text) <-
+                    substring(runValue(text), first = first, last = last)
+              }
+              text
+          })
 
 setMethod("chartr", c(old = "ANY", new = "ANY", x = "Rle"),
           function(old, new, x)
-              Rle(values = chartr(old = old, new = new, x = runValue(x)),
-                  lengths = runLength(x), check = FALSE))
+          {
+              if (is.factor(runValue(x))) {
+                  levels(x) <- chartr(old = old, new = new, levels(x))
+              } else {
+                  runValue(x) <- chartr(old = old, new = new, runValue(x))
+              }
+              x
+          })
 setMethod("tolower", "Rle",
-          function(x)
-              Rle(values = tolower(runValue(x)), lengths = runLength(x),
-                  check = FALSE))
+          function(x) {
+              if (is.factor(runValue(x))) {
+                  levels(x) <- tolower(levels(x))
+              } else {
+                  runValue(x) <- tolower(runValue(x))
+              }
+              x
+          })
 setMethod("toupper", "Rle",
           function(x)
-              Rle(values = toupper(runValue(x)), lengths = runLength(x),
-                  check = FALSE))
+          {
+              if (is.factor(runValue(x))) {
+                  levels(x) <- toupper(levels(x))
+              } else {
+                  runValue(x) <- toupper(runValue(x))
+              }
+              x
+          })
 
 setMethod("sub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle"),
           function(pattern, replacement, x, ignore.case = FALSE,
                    perl = FALSE, fixed = FALSE, useBytes = FALSE)
-              Rle(values = sub(pattern = pattern, replacement = replacement,
-                               x = runValue(x), ignore.case = ignore.case,
-                               perl = perl, fixed = fixed,
-                               useBytes = useBytes),
-                  lengths = runLength(x), check = FALSE))
+          {
+              if (is.factor(runValue(x))) {
+                  levels(x) <-
+                    sub(pattern = pattern, replacement = replacement,
+                        x = levels(x), ignore.case = ignore.case,
+                        perl = perl, fixed = fixed, useBytes = useBytes)
+              } else {
+                  runValue(x) <-
+                    sub(pattern = pattern, replacement = replacement,
+                        x = runValue(x), ignore.case = ignore.case,
+                        perl = perl, fixed = fixed, useBytes = useBytes)
+              }
+              x
+          })
 setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle"),
           function(pattern, replacement, x, ignore.case = FALSE,
                    perl = FALSE, fixed = FALSE, useBytes = FALSE)
-              Rle(values = gsub(pattern = pattern, replacement = replacement,
-                                x = runValue(x), ignore.case = ignore.case,
-                                perl = perl, fixed = fixed,
-                                useBytes = useBytes),
-                  lengths = runLength(x), check = FALSE))
+          {
+              if (is.factor(runValue(x))) {
+                  levels(x) <-
+                    gsub(pattern = pattern, replacement = replacement,
+                         x = levels(x), ignore.case = ignore.case,
+                         perl = perl, fixed = fixed, useBytes = useBytes)
+              } else {
+                  runValue(x) <-
+                    gsub(pattern = pattern, replacement = replacement,
+                         x = runValue(x), ignore.case = ignore.case,
+                         perl = perl, fixed = fixed, useBytes = useBytes)
+              }
+              x
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other factor data methods

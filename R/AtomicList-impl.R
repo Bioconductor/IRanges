@@ -689,13 +689,24 @@ setMethod("table", "AtomicList",
 setAtomicListMethod("unique", endoapply = TRUE)
 setMethod("unique", "CompressedRleList",
           function(x, incomparables = FALSE, ...)
+          {
+              if (is.factor(runValue(x@unlistData)))
+                  runValue(x@unlistData) <- as.character(runValue(x@unlistData))
               CompressedAtomicListFromList(lapply(x, unique,
                                                   incomparables = incomparables,
-                                                  ...)))
+                                                  ...))
+          })
 setMethod("unique", "SimpleRleList",
           function(x, incomparables = FALSE, ...)
-              SimpleAtomicList(lapply(x, unique, incomparables = incomparables,
-                                      ...)))
+              SimpleAtomicList(lapply(x,
+                                      function(y) {
+                                          if (is.factor(runValue(y)))
+                                              runValue(y) <-
+                                                as.character(runValue(y))
+                                          unique(y,
+                                                 incomparables = incomparables,
+                                                 ...)
+                                      })))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Logical methods

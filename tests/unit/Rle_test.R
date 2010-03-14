@@ -275,15 +275,36 @@ test_Rle_character <- function() {
              "free", "for", "all", "its", "users")
      txt <- rep(txt, seq_len(length(txt)))
      txtRle <- Rle(txt)
-     checkIdentical(nchar(txt), as.vector(nchar(txt)))
-     checkIdentical(substr(txt, 3, 7), as.vector(substr(txt, 3, 7)))
-     checkIdentical(substring(txt, 4, 9), as.vector(substring(txt, 4, 9)))
-     checkIdentical(chartr("@!*", "alo", txt), as.vector(chartr("@!*", "alo", txt)))
-     checkIdentical(tolower(txt), as.vector(tolower(txt)))
-     checkIdentical(toupper(txt), as.vector(toupper(txt)))
+     checkIdentical(nchar(txt), as.vector(nchar(txtRle)))
+     checkIdentical(substr(txt, 3, 7), as.vector(substr(txtRle, 3, 7)))
+     checkIdentical(substring(txt, 4, 9), as.vector(substring(txtRle, 4, 9)))
+     checkIdentical(chartr("@!*", "alo", txt),
+                    as.vector(chartr("@!*", "alo", txtRle)))
+     checkIdentical(tolower(txt), as.vector(tolower(txtRle)))
+     checkIdentical(toupper(txt), as.vector(toupper(txtRle)))
      checkIdentical(sub("[b-e]",".", txt), as.vector(sub("[b-e]",".", txtRle)))
      checkIdentical(gsub("[b-e]",".", txt), as.vector(gsub("[b-e]",".", txtRle)))
-}
+ 
+     modifyFactor <- function(x, FUN, ...) {
+         levels(x) <- FUN(levels(x), ...)
+         x
+     }
+     fac <- factor(txt)
+     facRle <- Rle(fac)
+     checkIdentical(nchar(fac), as.vector(nchar(facRle)))
+     checkIdentical(modifyFactor(fac, substr, 3, 7),
+                    as.vector(substr(facRle, 3, 7)))
+     checkIdentical(modifyFactor(fac, substring, 4, 9),
+                    as.vector(substring(facRle, 4, 9)))
+     checkIdentical(modifyFactor(fac, chartr, old = "@!*", new = "alo"),
+                    as.vector(chartr("@!*", "alo", facRle)))
+     checkIdentical(modifyFactor(fac, tolower), as.vector(tolower(facRle)))
+     checkIdentical(modifyFactor(fac, toupper), as.vector(toupper(facRle)))
+     checkIdentical(modifyFactor(fac, sub, pattern = "[b-e]", replacement = "."),
+                    as.vector(sub("[b-e]",".", facRle)))
+     checkIdentical(modifyFactor(fac, gsub, pattern = "[b-e]", replacement = "."),
+                    as.vector(gsub("[b-e]",".", facRle)))
+ }
 
 test_Rle_factor <- function() {
     checkIdentical(factor(character()), as.vector(Rle(factor(character()))))
