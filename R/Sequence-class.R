@@ -743,6 +743,63 @@ setMethod("lapply", "Sequence",
 environment(.sapplyDefault) <- topenv()
 setMethod("sapply", "Sequence", .sapplyDefault)
 
+#.tapplyDefault <- base::tapply
+#environment(.tapplyDefault) <- topenv()
+.tapplyDefault <-
+function (X, INDEX, FUN = NULL, ..., simplify = TRUE) 
+{
+    if (!is.null(FUN))
+        FUN <- match.fun(FUN)
+    if (missing(INDEX))
+        stop("'INDEX' is missing")
+    if (!is(INDEX, "RleList")) {
+        if (!is.list(INDEX) && !is(INDEX, "Rle"))
+            INDEX <- Rle(INDEX)
+        INDEX <- RleList(INDEX)
+    }
+    nI <- length(INDEX)
+    namelist <- vector("list", nI)
+    names(namelist) <- names(INDEX)
+    extent <- integer(nI)
+    nx <- length(X)
+    one <- 1L
+    group <- Rle(one, nx)
+    ngroup <- one
+    for (i in seq_len(nI)) {
+        index <- INDEX[[i]]
+        if (!is.factor(runValue(index)))
+            runValue(index) <- factor(runValue(index))
+        offset <- index
+        runValue(offset) <- ngroup * (as.integer(runValue(index)) - one)
+        if (length(index) != nx) 
+            stop("arguments must have same length")
+        namelist[[i]] <- levels(index)
+        extent[i] <- nlevels(index)
+        group <- group + offset
+        ngroup <- ngroup * nlevels(index)
+    }
+    if (is.null(FUN))
+        return(as.vector(group))
+    groupRanges <- splitRanges(group)
+    ans <- lapply(groupRanges, function(i) FUN(seqselect(X, i), ...))
+    index <- as.integer(names(ans))
+    if (simplify && all(unlist(lapply(ans, length), use.names=FALSE) == 1L)) {
+        ansmat <- array(dim = extent, dimnames = namelist)
+        ans <- unlist(ans, recursive = FALSE)
+    }
+    else {
+        ansmat <-
+          array(vector("list", prod(extent)), dim = extent,
+                dimnames = namelist)
+    }
+    if (length(index) > 0) {
+        names(ans) <- NULL
+        ansmat[index] <- ans
+    }
+    ansmat
+}
+setMethod("tapply", "Sequence", .tapplyDefault)
+
 setGeneric("mapply",
            function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
                     USE.NAMES = TRUE) standardGeneric("mapply"),

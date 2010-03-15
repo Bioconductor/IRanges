@@ -140,6 +140,14 @@ test_Rle_general <- function() {
     checkIdentical(table(as.vector(x)), table(xRle))
     checkIdentical(tail(x, 8), as.vector(tail(xRle, 8)))
     checkIdentical(tail(x, -3), as.vector(tail(xRle, -3)))
+    checkException(tapply(xRle), silent = TRUE)
+    checkIdentical(tapply(x, x), tapply(xRle, xRle))
+    checkIdentical(tapply(x, x, mean), tapply(xRle, xRle, mean))
+    checkIdentical(tapply(xRle, x, mean), tapply(xRle, xRle, mean))
+    checkIdentical(tapply(x, x, mean, simplify = FALSE),
+                   tapply(xRle, xRle, mean, simplify = FALSE))
+    checkIdentical(tapply(xRle, x, mean, simplify = FALSE),
+                   tapply(xRle, xRle, mean, simplify = FALSE))
     checkIdentical(as.vector(window(x, start = 3, end = 13)),
                    as.vector(window(xRle, start = 3, end = 13)))
     checkIdentical(as.vector(window(x, start = 3, end = 13, frequency = 1/2)),

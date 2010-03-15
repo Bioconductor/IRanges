@@ -64,6 +64,7 @@
 \alias{shiftApply,vector,vector-method}
 \alias{subset,Sequence-method}
 \alias{tail,Sequence-method}
+\alias{tapply,Sequence-method}
 \alias{window,Sequence-method}
 \alias{window,vector-method}
 \alias{window,factor-method}
@@ -395,7 +396,7 @@
       }
     }
     \item{}{
-      \code{sapply(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE)}:
+      \code{sapply(X, FUN, ..., simplify = TRUE, USE.NAMES = TRUE)}:
       Like the standard \code{\link[base:lapply]{sapply}} function defined in the
       base package, the \code{sapply} method for Sequence objects is a
       user-friendly version of \code{lapply} by default returning a vector
@@ -421,6 +422,14 @@
         \item{\code{verbose}}{A logical value specifying whether or not to
           print the \code{i} indices to track the iterations.}
       }
+    }
+    \item{}{
+      \code{tapply(X, INDEX, FUN = NULL, ..., simplify = TRUE)}:
+      Like the standard \code{\link[base]{tapply}} function defined in the
+      base package, the \code{tapply} method for Sequence objects applies a
+      function to each cell of a ragged array, that is to each (non-empty)
+      group of values given by a unique combination of the levels of certain
+      factors.
     }
   }
 }
