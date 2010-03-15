@@ -315,4 +315,5 @@ test_Rle_factor <- function() {
     levels(x) <- LETTERS
     levels(xRle) <- LETTERS
     checkIdentical(levels(x), levels(xRle))
+    checkIdentical(nlevels(x), 26L)
 }

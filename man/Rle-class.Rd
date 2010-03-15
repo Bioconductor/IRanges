@@ -133,6 +133,7 @@
 
 \alias{levels,Rle-method}
 \alias{levels<-,Rle-method}
+\alias{nlevels,Rle-method}
 
 
 \title{Rle objects}
@@ -800,7 +801,11 @@
   \describe{
     \item{}{
       \code{levels(x)}, \code{levels(x) <- value}:
-      Gets and sets to the levels attribute of a variable, respectively.
+      Gets and sets the factor levels, respectively.
+    }
+    \item{}{
+      \code{nlevels(x)}:
+      Returns the number of factor levels.
     }
   }
 }
