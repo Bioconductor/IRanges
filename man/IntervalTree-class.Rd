@@ -140,10 +140,10 @@
       the query may be wider than the subject.
     }
     \item{}{
-      \code{countOverlaps(query, subject = query, maxgap = 0L,
-        type = c("any", "start", "end", "within", "equal"), minoverlap = 1L)}:
-        Returns the overlap hit count for each range in \code{query} using the
-        specified \code{findOverlaps} parameters.
+      \code{countOverlaps(query, subject = query, maxgap = 0L, minoverlap = 1L,
+        type = c("any", "start", "end", "within", "equal"))}:
+      Returns the overlap hit count for each range in \code{query} using the
+      specified \code{findOverlaps} parameters.
     }
     \item{}{
       \code{x \%in\% table}:

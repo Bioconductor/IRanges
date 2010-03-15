@@ -459,19 +459,17 @@ overlap <- function(object, query, maxgap = 0L, multiple = TRUE, ...)
 }
 
 setGeneric("countOverlaps",
-    function(query, subject, maxgap = 0L,
-             type = c("any", "start", "end", "within", "equal"),
-             minoverlap = 1L)
+    function(query, subject, maxgap = 0L, minoverlap = 1L,
+             type = c("any", "start", "end", "within", "equal"))
         standardGeneric("countOverlaps")
 )
 
 setMethod("countOverlaps", c("Ranges", "Ranges"),
-    function(query, subject, maxgap = 0L,
-             type = c("any", "start", "end", "within", "equal"),
-             minoverlap = 1L)
+    function(query, subject, maxgap = 0L, minoverlap = 1L,
+             type = c("any", "start", "end", "within", "equal"))
     {
         tabulate(queryHits(findOverlaps(query, subject, maxgap = maxgap,
-                                        type = type, minoverlap = minoverlap)),
+                                        minoverlap = minoverlap, type = type)),
                  length(query))
     }
 )
