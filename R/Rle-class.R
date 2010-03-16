@@ -1274,8 +1274,6 @@ setReplaceMethod("levels", "Rle",
                      x
                  })
 
-setMethod("nlevels", "Rle", function(x) length(levels(x)))
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method
 ###

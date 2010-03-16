@@ -23,6 +23,10 @@ setClass("Sequence",
 ### Accessor methods.
 ###
 
+setGeneric("elementType", function(x, ...) standardGeneric("elementType"))
+setMethod("elementType", "Sequence", function(x) x@elementType)
+setMethod("elementType", "vector", function(x) mode(x))
+
 setGeneric("elementLengths", function(x) standardGeneric("elementLengths"))
 
 setMethod("elementLengths", "list",
@@ -70,9 +74,10 @@ setMethod("isEmpty", "ANY",
               sapply(x, function(xx) all(isEmpty(xx)))
           })
 
-setGeneric("elementType", function(x, ...) standardGeneric("elementType"))
-setMethod("elementType", "Sequence", function(x) x@elementType)
-setMethod("elementType", "vector", function(x) mode(x))
+### Same definition as base::nlevels() but needed anyway because the call to
+### levels(x) in base::nlevels() won't dispatch on the appropriate "levels"
+### method.
+setMethod("nlevels", "Sequence", function(x) length(levels(x)))
 
 setGeneric("elementMetadata",
            function(x, ...) standardGeneric("elementMetadata"))
@@ -625,36 +630,6 @@ setMethod("subset", "Sequence",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Combining and splitting.
-###
-
-.c.Sequence <- function(x, ..., recursive = FALSE)
-{
-    if (!is.null(elementMetadata(x)))
-        elementMetadata(x) <-
-          do.call(rbind, lapply(c(list(x), ...), elementMetadata))
-    x
-}
-
-setMethod("c", "Sequence",
-          function(x, ..., recursive = FALSE)
-          stop("missing 'c' method for Sequence class ", class(x)))
-
-setMethod("append", c("Sequence", "Sequence"),
-          function(x, values, after=length(x)) {
-              if (!isSingleNumber(after))
-                  stop("'after' must be a single number")
-              xlen <- length(x)
-              if (after == 0L)
-                  c(values, x)
-              else if (after >= xlen)
-                  c(x, values)
-              else
-                  c(window(x, 1L, after), values, window(x, after + 1L, xlen))
-             })
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### List-like API: Element extraction.
 ###
 
@@ -727,6 +702,36 @@ setMethod("!=", signature(e1="Sequence", e2="Sequence"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Combining and splitting.
+###
+
+.c.Sequence <- function(x, ..., recursive = FALSE)
+{
+    if (!is.null(elementMetadata(x)))
+        elementMetadata(x) <-
+          do.call(rbind, lapply(c(list(x), ...), elementMetadata))
+    x
+}
+
+setMethod("c", "Sequence",
+          function(x, ..., recursive = FALSE)
+          stop("missing 'c' method for Sequence class ", class(x)))
+
+setMethod("append", c("Sequence", "Sequence"),
+          function(x, values, after=length(x)) {
+              if (!isSingleNumber(after))
+                  stop("'after' must be a single number")
+              xlen <- length(x)
+              if (after == 0L)
+                  c(values, x)
+              else if (after >= xlen)
+                  c(x, values)
+              else
+                  c(window(x, 1L, after), values, window(x, after + 1L, xlen))
+             })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping methods.
 ###
 
@@ -742,6 +747,29 @@ setMethod("lapply", "Sequence",
 .sapplyDefault <- base::sapply
 environment(.sapplyDefault) <- topenv()
 setMethod("sapply", "Sequence", .sapplyDefault)
+
+setGeneric("mapply",
+           function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
+                    USE.NAMES = TRUE) standardGeneric("mapply"),
+           signature = "...")
+
+setMethod("mapply", "Sequence",
+          function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
+                   USE.NAMES = TRUE)
+          {
+              seqs <- list(...)
+              if (any(!sapply(seqs, is, "Sequence")))
+                  stop("all objects in ... should inherit from 'Sequence'")
+              N <- unique(sapply(seqs, length))
+              if (length(N) != 1)
+                  stop("not all objects in ... have the same length")
+              FUNprime <- function(.__INDEX__, ...) {
+                  do.call(FUN, c(lapply(seqs, "[[", .__INDEX__), ...))
+              }
+              mapply(FUNprime, structure(seq_len(N), names = names(seqs[[1L]])),
+                     MoreArgs = MoreArgs, SIMPLIFY = SIMPLIFY,
+                     USE.NAMES = USE.NAMES)
+          })
 
 #.tapplyDefault <- base::tapply
 #environment(.tapplyDefault) <- topenv()
@@ -799,82 +827,6 @@ function (X, INDEX, FUN = NULL, ..., simplify = TRUE)
     ansmat
 }
 setMethod("tapply", "Sequence", .tapplyDefault)
-
-setGeneric("mapply",
-           function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
-                    USE.NAMES = TRUE) standardGeneric("mapply"),
-           signature = "...")
-
-setMethod("mapply", "Sequence",
-          function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
-                   USE.NAMES = TRUE)
-          {
-              seqs <- list(...)
-              if (any(!sapply(seqs, is, "Sequence")))
-                  stop("all objects in ... should inherit from 'Sequence'")
-              N <- unique(sapply(seqs, length))
-              if (length(N) != 1)
-                  stop("not all objects in ... have the same length")
-              FUNprime <- function(.__INDEX__, ...) {
-                  do.call(FUN, c(lapply(seqs, "[[", .__INDEX__), ...))
-              }
-              mapply(FUNprime, structure(seq_len(N), names = names(seqs[[1L]])),
-                     MoreArgs = MoreArgs, SIMPLIFY = SIMPLIFY,
-                     USE.NAMES = USE.NAMES)
-          })
-
-.aggregateInternal <-
-function(x, by, FUN, start = NULL, end = NULL, width = NULL,
-         frequency = NULL, delta = NULL, ..., simplify = TRUE)
-{
-    FUN <- match.fun(FUN)
-    if (!missing(by)) {
-        if (is.list(by)) {
-            return(callGeneric(x = as.data.frame(x), by = by, FUN = FUN, ...))
-        }
-        start <- start(by)
-        end <- end(by)
-    } else {
-        if (!is.null(width)) {
-            if (is.null(start))
-                start <- end - width + 1L
-            else if (is.null(end))
-                end <- start + width - 1L
-        }
-        start <- as(start, "integer")
-        end <- as(end, "integer")
-    }
-    if (length(start) != length(end))
-        stop("'start', 'end', and 'width' arguments have unequal length")
-    n <- length(start)
-    if (!is.null(names(start)))
-        indices <- structure(seq_len(n), names = names(start))
-    else
-        indices <- structure(seq_len(n), names = names(end))
-    if (is.null(frequency) && is.null(delta)) {
-        sapply(indices, function(i)
-               FUN(window(x, start = start[i], end = end[i]), ...),
-               simplify = simplify)
-    } else {
-        frequency <- rep(frequency, length.out = n)
-        delta <- rep(delta, length.out = n)
-        sapply(indices, function(i)
-               FUN(window(x, start = start[i], end = end[i],
-                   frequency = frequency[i], delta = delta[i]),
-                   ...),
-               simplify = simplify)
-    }
-}
-
-setMethod("aggregate", "Sequence", .aggregateInternal)
-
-setMethod("aggregate", "vector", .aggregateInternal)
-
-setMethod("aggregate", "matrix", stats:::aggregate.default)
-
-setMethod("aggregate", "data.frame", stats:::aggregate.data.frame)
-
-setMethod("aggregate", "ts", stats:::aggregate.ts)
 
 setMethod("endoapply", "Sequence",
           function(X, FUN, ...) {
@@ -962,6 +914,89 @@ setMethod("shiftApply", signature(X = "Sequence", Y = "Sequence"),
 
 setMethod("shiftApply", signature(X = "vector", Y = "vector"),
           .shiftApplyInternal)
+
+.aggregateInternal <-
+function(x, by, FUN, start = NULL, end = NULL, width = NULL,
+         frequency = NULL, delta = NULL, ..., simplify = TRUE)
+{
+    FUN <- match.fun(FUN)
+    if (!missing(by)) {
+        if (is.list(by)) {
+            return(callGeneric(x = as.data.frame(x), by = by, FUN = FUN, ...))
+        }
+        start <- start(by)
+        end <- end(by)
+    } else {
+        if (!is.null(width)) {
+            if (is.null(start))
+                start <- end - width + 1L
+            else if (is.null(end))
+                end <- start + width - 1L
+        }
+        start <- as(start, "integer")
+        end <- as(end, "integer")
+    }
+    if (length(start) != length(end))
+        stop("'start', 'end', and 'width' arguments have unequal length")
+    n <- length(start)
+    if (!is.null(names(start)))
+        indices <- structure(seq_len(n), names = names(start))
+    else
+        indices <- structure(seq_len(n), names = names(end))
+    if (is.null(frequency) && is.null(delta)) {
+        sapply(indices, function(i)
+               FUN(window(x, start = start[i], end = end[i]), ...),
+               simplify = simplify)
+    } else {
+        frequency <- rep(frequency, length.out = n)
+        delta <- rep(delta, length.out = n)
+        sapply(indices, function(i)
+               FUN(window(x, start = start[i], end = end[i],
+                   frequency = frequency[i], delta = delta[i]),
+                   ...),
+               simplify = simplify)
+    }
+}
+
+setMethod("aggregate", "Sequence", .aggregateInternal)
+
+setMethod("aggregate", "vector", .aggregateInternal)
+
+setMethod("aggregate", "matrix", stats:::aggregate.default)
+
+setMethod("aggregate", "data.frame", stats:::aggregate.data.frame)
+
+setMethod("aggregate", "ts", stats:::aggregate.ts)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion.
+###
+
+setAs("Sequence", "list", function(from) as.list(from))
+
+setMethod("as.list", "Sequence", function(x, ...) lapply(x, identity))
+
+setGeneric("as.env", function(x, ...) standardGeneric("as.env"))
+
+setMethod("as.env", "Sequence",
+          function(x, enclos = parent.frame()) {
+              nms <- names(x)
+              if (is.null(nms))
+                  stop("cannot convert to environment when names are NULL")
+              env <- new.env(parent = enclos)
+              lapply(nms,
+                     function(col) {
+                         colFun <- function() {
+                             val <- x[[col]]
+                             rm(list=col, envir=env)
+                             assign(col, val, env)
+                             val
+                         }
+                         makeActiveBinding(col, colFun, env)
+                     })
+              env
+          })
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1079,32 +1114,3 @@ setMethod("with", "Sequence",
               eval(substitute(expr), data, parent.frame())
           })
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion.
-###
-
-setAs("Sequence", "list", function(from) as.list(from))
-
-setMethod("as.list", "Sequence", function(x, ...) lapply(x, identity))
-
-setGeneric("as.env", function(x, ...) standardGeneric("as.env"))
-
-setMethod("as.env", "Sequence",
-          function(x, enclos = parent.frame()) {
-              nms <- names(x)
-              if (is.null(nms))
-                  stop("cannot convert to environment when names are NULL")
-              env <- new.env(parent = enclos)
-              lapply(nms,
-                     function(col) {
-                         colFun <- function() {
-                             val <- x[[col]]
-                             rm(list=col, envir=env)
-                             assign(col, val, env)
-                             val
-                         }
-                         makeActiveBinding(col, colFun, env)
-                     })
-              env
-          })

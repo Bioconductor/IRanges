@@ -6,22 +6,6 @@
 \alias{Sequence-class}
 \alias{Sequence}
 
-\alias{[,Sequence-method}
-\alias{[<-,Sequence-method}
-\alias{[[,Sequence-method}
-\alias{$,Sequence-method}
-\alias{!=,Sequence,Sequence-method}
-\alias{aggregate,Sequence-method}
-\alias{aggregate,vector-method}
-\alias{aggregate,matrix-method}
-\alias{aggregate,data.frame-method}
-\alias{aggregate,ts-method}
-\alias{append,Sequence,Sequence-method}
-\alias{as.env}
-\alias{as.env,Sequence-method}
-\alias{as.list,Sequence-method}
-\alias{c,Sequence-method}
-\alias{coerce,Sequence,list-method}
 \alias{elementType}
 \alias{elementType,Sequence-method}
 \alias{elementType,vector-method}
@@ -29,28 +13,22 @@
 \alias{elementLengths,list-method}
 \alias{elementLengths,Sequence-method}
 \alias{elementLengths,CompressedList-method}
+\alias{isEmpty}
+\alias{isEmpty,ANY-method}
+\alias{nlevels,Sequence-method}
 \alias{elementMetadata}
 \alias{elementMetadata,Sequence-method}
 \alias{elementMetadata<-}
 \alias{elementMetadata<-,Sequence,DataTableORNULL-method}
-\alias{endoapply,Sequence-method}
-\alias{eval,expressionORlanguage,Sequence-method}
-\alias{Filter,ANY,Sequence-method}
-\alias{Find,ANY,Sequence-method}
-\alias{head,Sequence-method}
-\alias{isEmpty}
-\alias{isEmpty,ANY-method}
-\alias{lapply,Sequence-method}
-\alias{Map}
-\alias{Map,Sequence-method}
-\alias{mapply}
-\alias{mapply,Sequence-method}
-\alias{mendoapply,Sequence-method}
-\alias{Position,ANY,Sequence-method}
-\alias{Reduce,ANY,Sequence-method}
-\alias{rep,Sequence-method}
-\alias{rev,Sequence-method}
-\alias{sapply,Sequence-method}
+
+\alias{[,Sequence-method}
+\alias{[<-,Sequence-method}
+\alias{window,Sequence-method}
+\alias{window,vector-method}
+\alias{window,factor-method}
+\alias{window<-,Sequence-method}
+\alias{window<-,vector-method}
+\alias{window<-,factor-method}
 \alias{seqselect}
 \alias{seqselect,Sequence-method}
 \alias{seqselect,vector-method}
@@ -59,25 +37,57 @@
 \alias{seqselect<-,Sequence-method}
 \alias{seqselect<-,vector-method}
 \alias{seqselect<-,factor-method}
+
+\alias{head,Sequence-method}
+\alias{tail,Sequence-method}
+\alias{rev,Sequence-method}
+\alias{rep,Sequence-method}
+\alias{subset,Sequence-method}
+
+\alias{[[,Sequence-method}
+\alias{$,Sequence-method}
+
+\alias{!=,Sequence,Sequence-method}
+
+\alias{c,Sequence-method}
+\alias{append,Sequence,Sequence-method}
+
+\alias{lapply,Sequence-method}
+\alias{sapply,Sequence-method}
+\alias{mapply}
+\alias{mapply,Sequence-method}
+\alias{tapply,Sequence-method}
+\alias{endoapply,Sequence-method}
+\alias{mendoapply,Sequence-method}
 \alias{shiftApply}
 \alias{shiftApply,Sequence,Sequence-method}
 \alias{shiftApply,vector,vector-method}
-\alias{subset,Sequence-method}
-\alias{tail,Sequence-method}
-\alias{tapply,Sequence-method}
-\alias{window,Sequence-method}
-\alias{window,vector-method}
-\alias{window,factor-method}
-\alias{window<-,Sequence-method}
-\alias{window<-,vector-method}
-\alias{window<-,factor-method}
+\alias{aggregate,Sequence-method}
+\alias{aggregate,vector-method}
+\alias{aggregate,matrix-method}
+\alias{aggregate,data.frame-method}
+\alias{aggregate,ts-method}
+
+\alias{coerce,Sequence,list-method}
+\alias{as.list,Sequence-method}
+\alias{as.env}
+\alias{as.env,Sequence-method}
+
+\alias{Reduce,ANY,Sequence-method}
+\alias{Filter,ANY,Sequence-method}
+\alias{Find,ANY,Sequence-method}
+\alias{Map}
+\alias{Map,Sequence-method}
+\alias{Position,ANY,Sequence-method}
+
+\alias{eval,expressionORlanguage,Sequence-method}
 \alias{with,Sequence-method}
 
 \title{Sequence objects}
 
 \description{
   The Sequence virtual class serves as the heart of the IRanges package
-  and has over 80 subclasses. It serves a similar role as \link[base]{vector}
+  and has over 90 subclasses. It serves a similar role as \link[base]{vector}
   in base R. The Sequence class includes three slots: \code{elementType},
   \code{metadata} (via extension of the \linkS4class{Annotated} class), and
   \code{elementMetadata}. Their purpose is defined below.
@@ -120,6 +130,10 @@
     \item{}{\code{isEmpty(x)}: Returns a logical indicating either if the
       sequence has no elements or if all its elements are empty.
     }
+    \item{}{
+      \code{nlevels(x)}:
+      Returns the number of factor levels.
+    }
     \item{}{\code{metadata(x)}, \code{metadata(x) <- value}:
       Get or set the list holding arbitrary R objects as annotations. May be,
       and often is, empty.
@@ -128,25 +142,6 @@
       Get or set the \linkS4class{DataTable} holding local metadata on each
       element. The rows are named according to the names of the elements.
       Optional, may be \code{NULL}.
-    }
-  }
-}
-
-\section{Combining}{
-  In the code snippets below, \code{x} is a Sequence object.
-
-  \describe{
-    \item{}{\code{append(x, values, after = length(x))}: Insert the
-      \code{Sequence} \code{values} onto \code{x} at the position given by
-      \code{after}. \code{values} must have an \code{elementType} that extends
-      that of \code{x}.
-    }
-    \item{}{
-      \code{c(x, ...)}:
-      Combine \code{x} and the Sequence objects in \code{...} together.
-      Any object in \code{...} must belong to the same class as \code{x},
-      or to one of its subclasses, or must be \code{NULL}.
-      The result is an object of the same class as \code{x}.
     }
   }
 }
@@ -168,103 +163,6 @@
     \item{}{
       \code{x[i] <- value}:
       Equivalent to \code{seqselect(x, i) <- value}.
-    }
-    \item{}{
-      \code{x[[i]]}:
-      If defined, return the selected element \code{i}, where \code{i} is an
-      numeric or character vector of length 1.
-    }
-    \item{}{
-      \code{x$name}:
-      Similar to \code{x[[name]]}, but \code{name} is taken literally as an
-      element name.
-    }
-    \item{}{
-      \code{Filter(f, x)}:
-      Extracts the elements of \code{x} for which function \code{f} is TRUE.
-      \describe{
-        \item{f}{A unary argument function.}
-      }
-    }
-    \item{}{
-      \code{Find(f, x, right = FALSE, nomatch = NULL)}:
-      Extracts the first or last such element in \code{x}.
-      \describe{
-        \item{f}{A unary argument function.}
-        \item{right}{A logical indicating whether to proceed from left to right
-          (default) or from right to left.}
-        \item{nomatch}{The value to be returned in the case when "no match" (no
-          element satisfying the predicate) is found.}
-      }
-    }
-    \item{}{
-      \code{head(x, n = 6L)}:
-      If \code{n} is non-negative, returns the first n elements of the Sequence
-      object.
-      If \code{n} is negative, returns all but the last \code{abs(n)} elements
-      of the Sequence object.
-    }
-    \item{}{
-      \code{Position(f, x, right = FALSE, nomatch = NA_integer_)}:
-      Extracts the first or last such position in \code{x}.
-      \describe{
-        \item{f}{A unary argument function.}
-        \item{right}{A logical indicating whether to proceed from left to right
-          (default) or from right to left.}
-        \item{nomatch}{The value to be returned in the case when "no match" (no
-          element satisfying the predicate) is found.}
-      }
-    }
-    \item{}{
-      \code{rep(x, times, length.out, each)}:
-      Repeats the values in \code{x} through one of the following conventions:
-      \describe{
-        \item{\code{times}}{Vector giving the number of times to repeat each
-          element if of length \code{length(x)}, or to repeat the whole vector
-          if of length 1.}
-        \item{\code{length.out}}{Non-negative integer. The desired length of
-          the output vector.}
-        \item{\code{each}}{Non-negative integer.  Each element of \code{x} is
-          repeated \code{each} times.}
-      }
-    }
-    \item{}{
-      \code{rev(x)}:
-      Return a new Sequence object made of the original elements in the reverse
-      order.
-    }
-    \item{}{
-      \code{seqselect(x, start=NULL, end=NULL, width=NULL)}:
-      Similar to \code{window}, except that multiple consecutive subsequences
-      can be requested for concatenation. As such two of the three \code{start},
-      \code{end}, and \code{width} arguments can be used to specify the
-      consecutive subsequences. Alternatively, \code{start} can take a Ranges
-      object or something that can be converted to a Ranges object like an
-      integer vector, logical vector or logical Rle. If the concatenation of
-      the consecutive subsequences is undesirable, consider using
-      \code{\link{Views}}.
-    }
-    \item{}{
-      \code{seqselect(x, start=NULL, end=NULL, width=NULL) <- value}:
-      Similar to \code{window<-}, except that multiple consecutive subsequences
-      can be replaced by a \code{value} whose length is a divisor of the number
-      of elements it is replacing. As such two of the three \code{start},
-      \code{end}, and \code{width} arguments can be used to specify the
-      consecutive subsequences. Alternatively, \code{start} can take a Ranges
-      object or something that can be converted to a Ranges object like an
-      integer vector, logical vector or logical Rle.
-    }
-    \item{}{
-      \code{subset(x, subset)}:
-      Return a new Sequence object made of the subset using logical vector
-      \code{subset}, where missing values are taken as FALSE.
-    }
-    \item{}{
-      \code{tail(x, n = 6L)}:
-      If \code{n} is non-negative, returns the last n elements of the Sequence
-      object.
-      If \code{n} is negative, returns all but the first \code{abs(n)} elements
-      of the Sequence object.
     }
     \item{}{
       \code{window(x, start = NA, end = NA, width = NA, frequency = NULL, delta = NULL, ...)}:
@@ -291,20 +189,186 @@
       the length of \code{x}, depending on how the length of the left
       subsequence window compares to the length of \code{value}.
     }
+    \item{}{
+      \code{seqselect(x, start=NULL, end=NULL, width=NULL)}:
+      Similar to \code{window}, except that multiple consecutive subsequences
+      can be requested for concatenation. As such two of the three \code{start},
+      \code{end}, and \code{width} arguments can be used to specify the
+      consecutive subsequences. Alternatively, \code{start} can take a Ranges
+      object or something that can be converted to a Ranges object like an
+      integer vector, logical vector or logical Rle. If the concatenation of
+      the consecutive subsequences is undesirable, consider using
+      \code{\link{Views}}.
+    }
+    \item{}{
+      \code{seqselect(x, start=NULL, end=NULL, width=NULL) <- value}:
+      Similar to \code{window<-}, except that multiple consecutive subsequences
+      can be replaced by a \code{value} whose length is a divisor of the number
+      of elements it is replacing. As such two of the three \code{start},
+      \code{end}, and \code{width} arguments can be used to specify the
+      consecutive subsequences. Alternatively, \code{start} can take a Ranges
+      object or something that can be converted to a Ranges object like an
+      integer vector, logical vector or logical Rle.
+    }
+    \item{}{
+      \code{head(x, n = 6L)}:
+      If \code{n} is non-negative, returns the first n elements of the Sequence
+      object.
+      If \code{n} is negative, returns all but the last \code{abs(n)} elements
+      of the Sequence object.
+    }
+    \item{}{
+      \code{tail(x, n = 6L)}:
+      If \code{n} is non-negative, returns the last n elements of the Sequence
+      object.
+      If \code{n} is negative, returns all but the first \code{abs(n)} elements
+      of the Sequence object.
+    }
+    \item{}{
+      \code{rev(x)}:
+      Return a new Sequence object made of the original elements in the reverse
+      order.
+    }
+    \item{}{
+      \code{rep(x, times, length.out, each)}:
+      Repeats the values in \code{x} through one of the following conventions:
+      \describe{
+        \item{\code{times}}{Vector giving the number of times to repeat each
+          element if of length \code{length(x)}, or to repeat the whole vector
+          if of length 1.}
+        \item{\code{length.out}}{Non-negative integer. The desired length of
+          the output vector.}
+        \item{\code{each}}{Non-negative integer.  Each element of \code{x} is
+          repeated \code{each} times.}
+      }
+    }
+    \item{}{
+      \code{subset(x, subset)}:
+      Return a new Sequence object made of the subset using logical vector
+      \code{subset}, where missing values are taken as FALSE.
+    }
   }
 }
 
-\section{Evaluating}{
-  In the code snippets below, \code{envir} and \code{data} is a Sequence object.
+\section{Element extraction (list style)}{
+  In the code snippets below, \code{x} is a Sequence object.
 
   \describe{
-    \item{}{\code{eval(expr, envir, enclos = parent.frame())}:
-      Converts the Sequence object specified in \code{envir} to an
-      environment using \code{as.env}, with \code{enclos} as its parent,
-      and then evaluates \code{expr} within that environment.
+    \item{}{
+      \code{x[[i]]}:
+      If defined, return the selected element \code{i}, where \code{i} is an
+      numeric or character vector of length 1.
     }
-    \item{}{\code{with(data, expr, \dots)}:
-      Equivalent to \code{eval(quote(expr), data, ...)}.
+    \item{}{
+      \code{x$name}:
+      Similar to \code{x[[name]]}, but \code{name} is taken literally as an
+      element name.
+    }
+  }
+}
+
+\section{Combining}{
+  In the code snippets below, \code{x} is a Sequence object.
+
+  \describe{
+    \item{}{
+      \code{c(x, ...)}:
+      Combine \code{x} and the Sequence objects in \code{...} together.
+      Any object in \code{...} must belong to the same class as \code{x},
+      or to one of its subclasses, or must be \code{NULL}.
+      The result is an object of the same class as \code{x}.
+    }
+    \item{}{\code{append(x, values, after = length(x))}: Insert the
+      \code{Sequence} \code{values} onto \code{x} at the position given by
+      \code{after}. \code{values} must have an \code{elementType} that extends
+      that of \code{x}.
+    }
+  }
+}
+
+\section{Looping}{
+  In the code snippets below, \code{x} is a Sequence object.
+
+  \describe{
+    \item{}{
+      \code{lapply(X, FUN, ...)}:
+      Like the standard \code{\link[base]{lapply}} function defined in the
+      base package, the \code{lapply} method for Sequence objects returns
+      a list of the same length as \code{X}, with each element being the
+      result of applying \code{FUN} to the corresponding element of \code{X}.
+    }
+    \item{}{
+      \code{sapply(X, FUN, ..., simplify = TRUE, USE.NAMES = TRUE)}:
+      Like the standard \code{\link[base:lapply]{sapply}} function defined in the
+      base package, the \code{sapply} method for Sequence objects is a
+      user-friendly version of \code{lapply} by default returning a vector
+      or matrix if appropriate.
+    }
+    \item{}{
+      \code{mapply(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = TRUE)}:
+      Like the standard \code{\link[base]{mapply}} function defined in the
+      base package, the \code{mapply} method for Sequence objects is a
+      multivariate version of \code{sapply}.
+    }
+    \item{}{
+      \code{tapply(X, INDEX, FUN = NULL, ..., simplify = TRUE)}:
+      Like the standard \code{\link[base]{tapply}} function defined in the
+      base package, the \code{tapply} method for Sequence objects applies a
+      function to each cell of a ragged array, that is to each (non-empty)
+      group of values given by a unique combination of the levels of certain
+      factors.
+    }
+    \item{}{
+      \code{endoapply(X, FUN, ...)}:
+      Similar to \code{\link[base]{lapply}}, but performs an endomorphism,
+      i.e. returns an object of \code{class(X)}.
+    }
+    \item{}{
+      \code{mendoapply(FUN, ..., MoreArgs = NULL)}:
+      Similar to \code{\link[base]{mapply}}, but performs an endomorphism
+      across multiple objects, i.e. returns an object of
+      \code{class(list(...)[[1]])}.
+    }
+    \item{}{
+      \code{shiftApply(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)}:
+      Let \code{i} be the indices in \code{SHIFT},
+      \code{X_i = window(X, 1 + OFFSET, length(X) - SHIFT[i])}, and
+      \code{Y_i = window(Y, 1 + SHIFT[i], length(Y) - OFFSET)}. Calculates
+      the set of \code{FUN(X_i, Y_i, ...)} values and return the results in a
+      convenient form:
+      \describe{
+        \item{\code{SHIFT}}{A non-negative integer vector of shift values.}
+        \item{\code{X}, \code{Y}}{The Sequence or R vector objects to shift.}
+        \item{\code{FUN}}{The function, found via \code{match.fun}, to be
+          applied to each set of shifted vectors.}
+        \item{\dots}{Further arguments for \code{FUN}.}
+        \item{OFFSET}{A non-negative integer offset to maintain throughout
+          the shift operations.}
+        \item{\code{simplify}}{A logical value specifying whether or not the
+          result should be simplified to a vector or matrix if possible.}
+        \item{\code{verbose}}{A logical value specifying whether or not to
+          print the \code{i} indices to track the iterations.}
+      }
+    }
+    \item{}{
+      \code{aggregate(x, by, FUN, start = NULL, end = NULL, width = NULL,
+                      frequency = NULL, delta = NULL, ..., simplify = TRUE))}:
+      Generates summaries on the specified windows and returns the result in a
+      convenient form:
+      \describe{
+        \item{\code{by}}{An object with \code{start}, \code{end}, and
+          \code{width} methods.}
+        \item{\code{FUN}}{The function, found via \code{match.fun}, to be
+          applied to each window of \code{x}.}
+        \item{\code{start}, \code{end}, \code{width}}{the start, end, or width
+          of the window. If \code{by} is missing, then must supply two of the
+          three.}
+        \item{\code{frequency}, \code{delta}}{Optional arguments that specify
+          the sampling frequency and increment within the window.}
+        \item{\dots}{Further arguments for \code{FUN}.}
+        \item{\code{simplify}}{A logical value specifying whether or not the
+          result should be simplified to a vector or matrix if possible.}
+      }
     }
   }
 }
@@ -329,107 +393,56 @@
   }
 }
 
-\section{Looping}{
-  In the code snippets below, \code{x} is a Sequence object.
+\section{Functional Programming}{
+  The R base package defines some Higher-Order functions that are commonly
+  found in Functional Programming Languages. See \code{?\link[base]{Reduce}}
+  for the details, and, in particular, for a description of their arguments.
+  The IRanges package provides methods for Sequence objects, so, in addition
+  to be a vector, the \code{x} argument can also be a Sequence object.
 
   \describe{
     \item{}{
-      \code{aggregate(x, by, FUN, start = NULL, end = NULL, width = NULL,
-                      frequency = NULL, delta = NULL, ..., simplify = TRUE))}:
-      Generates summaries on the specified windows and returns the result in a
-      convenient form:
-      \describe{
-        \item{\code{by}}{An object with \code{start}, \code{end}, and
-          \code{width} methods.}
-        \item{\code{FUN}}{The function, found via \code{match.fun}, to be
-          applied to each window of \code{x}.}
-        \item{\code{start}, \code{end}, \code{width}}{the start, end, or width
-          of the window. If \code{by} is missing, then must supply two of the
-          three.}
-        \item{\code{frequency}, \code{delta}}{Optional arguments that specify
-          the sampling frequency and increment within the window.}
-        \item{\dots}{Further arguments for \code{FUN}.}
-        \item{\code{simplify}}{A logical value specifying whether or not the
-          result should be simplified to a vector or matrix if possible.}
-      }
+      \code{Reduce(f, x, init, right = FALSE, accumulate = FALSE)}:
+      Uses a binary function to successively combine the elements of \code{x}
+      and a possibly given initial value.
+      See \code{?\link[base]{Reduce}} (in the base package) for the details.
     }
     \item{}{
-      \code{endoapply(X, FUN, ...)}:
-      Similar to \code{\link[base]{lapply}}, but performs an endomorphism,
-      i.e. returns an object of \code{class(X)}.
+      \code{Filter(f, x)}:
+      Extracts the elements of \code{x} for which function \code{f} is TRUE.
+      See \code{?\link[base]{Filter}} (in the base package) for the details.
     }
     \item{}{
-      \code{lapply(X, FUN, ...)}:
-      Like the standard \code{\link[base]{lapply}} function defined in the
-      base package, the \code{lapply} method for Sequence objects returns
-      a list of the same length as \code{X}, with each element being the
-      result of applying \code{FUN} to the corresponding element of \code{X}.
+      \code{Find(f, x, right = FALSE, nomatch = NULL)}:
+      Extracts the first or last such element in \code{x}.
+      See \code{?\link[base]{Find}} (in the base package) for the details.
     }
     \item{}{
       \code{Map(f, ...)}:
       Applies a function to the corresponding elements of given Sequence
       objects.
+      See \code{?\link[base]{Map}} (in the base package) for the details.
     }
     \item{}{
-      \code{mapply(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = TRUE)}:
-      Like the standard \code{\link[base]{mapply}} function defined in the
-      base package, the \code{mapply} method for Sequence objects is a
-      multivariate version of \code{sapply}.
+      \code{Position(f, x, right = FALSE, nomatch = NA_integer_)}:
+      Extracts the first or last such position in \code{x}.
+      See \code{?\link[base]{Position}} (in the base package) for the details.
     }
-    \item{}{
-      \code{mendoapply(FUN, ..., MoreArgs = NULL)}:
-      Similar to \code{\link[base]{mapply}}, but performs an endomorphism
-      across multiple objects, i.e. returns an object of
-      \code{class(list(...)[[1]])}.
+  }
+}
+
+\section{Evaluating}{
+  In the code snippets below, \code{envir} and \code{data} are Sequence
+  objects.
+
+  \describe{
+    \item{}{\code{eval(expr, envir, enclos = parent.frame())}:
+      Converts the Sequence object specified in \code{envir} to an
+      environment using \code{as.env}, with \code{enclos} as its parent,
+      and then evaluates \code{expr} within that environment.
     }
-    \item{}{
-      \code{Reduce(f, x, init, right = FALSE, accumulate = FALSE)}:
-      Uses a binary function to successively combine the elements of \code{x}
-      and a possibly given initial value.
-      \describe{
-        \item{f}{A binary argument function.}
-        \item{init}{An R object of the same kind as the elements of \code{x}.}
-        \item{right}{A logical indicating whether to proceed from left to right
-          (default) or from right to left.}
-        \item{nomatch}{The value to be returned in the case when "no match" (no
-          element satisfying the predicate) is found.}
-      }
-    }
-    \item{}{
-      \code{sapply(X, FUN, ..., simplify = TRUE, USE.NAMES = TRUE)}:
-      Like the standard \code{\link[base:lapply]{sapply}} function defined in the
-      base package, the \code{sapply} method for Sequence objects is a
-      user-friendly version of \code{lapply} by default returning a vector
-      or matrix if appropriate.
-    }
-    \item{}{
-      \code{shiftApply(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)}:
-      Let \code{i} be the indices in \code{SHIFT},
-      \code{X_i = window(X, 1 + OFFSET, length(X) - SHIFT[i])}, and
-      \code{Y_i = window(Y, 1 + SHIFT[i], length(Y) - OFFSET)}. Calculates
-      the set of \code{FUN(X_i, Y_i, ...)} values and return the results in a
-      convenient form:
-      \describe{
-        \item{\code{SHIFT}}{A non-negative integer vector of shift values.}
-        \item{\code{X}, \code{Y}}{The Sequence or R vector objects to shift.}
-        \item{\code{FUN}}{The function, found via \code{match.fun}, to be
-          applied to each set of shifted vectors.}
-        \item{\dots}{Further arguments for \code{FUN}.}
-        \item{OFFSET}{A non-negative integer offset to maintain throughout
-          the shift operations.}
-        \item{\code{simplify}}{A logical value specifying whether or not the
-          result should be simplified to a vector or matrix if possible.}
-        \item{\code{verbose}}{A logical value specifying whether or not to
-          print the \code{i} indices to track the iterations.}
-      }
-    }
-    \item{}{
-      \code{tapply(X, INDEX, FUN = NULL, ..., simplify = TRUE)}:
-      Like the standard \code{\link[base]{tapply}} function defined in the
-      base package, the \code{tapply} method for Sequence objects applies a
-      function to each cell of a ragged array, that is to each (non-empty)
-      group of values given by a unique combination of the levels of certain
-      factors.
+    \item{}{\code{with(data, expr, \dots)}:
+      Equivalent to \code{eval(quote(expr), data, ...)}.
     }
   }
 }

@@ -133,7 +133,6 @@
 
 \alias{levels,Rle-method}
 \alias{levels<-,Rle-method}
-\alias{nlevels,Rle-method}
 
 
 \title{Rle objects}
