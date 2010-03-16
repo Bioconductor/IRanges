@@ -114,7 +114,7 @@ setMethod("pintersect", c("IRanges", "IRanges"),
         ans_end <- pmin.int(end(x), end(y))
         ans_width <- ans_end - ans_start + 1L
 
-        keep_empty_x <- whichAsVector(width(x) == 0L)
+        keep_empty_x <- which(width(x) == 0L)
         if (length(keep_empty_x) > 0) {
             keep_empty_x <-
               intersect(keep_empty_x,
@@ -126,7 +126,7 @@ setMethod("pintersect", c("IRanges", "IRanges"),
             ans_width[keep_empty_x] <- 0L
         }
 
-        keep_empty_y <- whichAsVector(width(y) == 0L)
+        keep_empty_y <- which(width(y) == 0L)
         if (length(keep_empty_y) > 0) {
             keep_empty_y <-
               intersect(keep_empty_y,
@@ -138,7 +138,7 @@ setMethod("pintersect", c("IRanges", "IRanges"),
         }
 
         check_empty <-
-          setdiff(whichAsVector(ans_width < 0L),
+          setdiff(which(ans_width < 0L),
                   c(keep_empty_x, keep_empty_y))
         if (length(check_empty) > 0) {
             resolve.empty <- match.arg(resolve.empty)

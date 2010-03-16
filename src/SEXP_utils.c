@@ -249,48 +249,6 @@ SEXP Integer_mseq(SEXP from, SEXP to)
 
 /*
  * --- .Call ENTRY POINT ---
- * a faster version of which
- */
-SEXP Logical_whichAsVector(SEXP x)
-{
-	int i, x_length, ans_length;
-	int const * x_elt;
-	int const * ans_elt;
-	SEXP ans, x_names, ans_names;
-
-	if (!IS_LOGICAL(x))
-		error("argument to 'which' is not logical");
-
-	x_length = LENGTH(x);
-	int * const buf = (int *) R_alloc((long) x_length, sizeof(int));
-	int * buf_elt = buf;
-	for (i = 1, x_elt = LOGICAL(x); i <= x_length; i++, x_elt++) {
-		if (*x_elt == TRUE) {
-			*buf_elt = i;
-			buf_elt++;
-		}
-	}
-
-	ans_length = (int) (buf_elt - buf);
-	PROTECT(ans = allocVector(INTSXP, ans_length));
-	memcpy(INTEGER(ans), buf, sizeof(int) * ans_length);
-
-	x_names = getAttrib(x, R_NamesSymbol);
-	if (x_names != R_NilValue) {
-		PROTECT(ans_names = allocVector(STRSXP, ans_length));
-		for (i = 0, ans_elt = INTEGER(ans); i < ans_length; i++, ans_elt++) {
-			SET_STRING_ELT(ans_names, i, STRING_ELT(x_names, *ans_elt - 1));
-		}
-		setAttrib(ans, R_NamesSymbol, ans_names);
-		UNPROTECT(1);
-	}
-
-	UNPROTECT(1);
-	return ans;
-}
-
-/*
- * --- .Call ENTRY POINT ---
  * findIntervalAndStartFromWidth for when x and width are integer vectors
  */
 

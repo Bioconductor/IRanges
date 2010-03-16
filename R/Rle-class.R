@@ -83,7 +83,7 @@ setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "integer"),
                       stop("'values' and 'lengths' must have the same length")
                   if (anyMissingOrOutside(lengths, 0L))
                       stop("'lengths' must contain all positive integers")
-                  zeros <- whichAsVector(lengths == 0L)
+                  zeros <- which(lengths == 0L)
                   if (length(zeros) > 0L) {
                       values <- values[-zeros]
                       lengths <- lengths[-zeros]
@@ -233,7 +233,7 @@ setMethod("Math", "Rle",
               switch(.Generic,
                      cumsum =
                      {
-                         whichZero <- whichAsVector(runValue(x) == 0)
+                         whichZero <- which(runValue(x) == 0)
                          widthZero <- runLength(x)[whichZero]
                          startZero <- cumsum(c(1L, runLength(x)))[whichZero]
                          y <- x
@@ -245,7 +245,7 @@ setMethod("Math", "Rle",
                      },
                      cumprod =
                      {
-                         whichOne <- whichAsVector(runValue(x) == 0)
+                         whichOne <- which(runValue(x) == 0)
                          widthOne <- runLength(x)[whichOne]
                          startOne <- cumsum(c(1L, runLength(x)))[whichOne]
                          y <- x

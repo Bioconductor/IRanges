@@ -76,7 +76,7 @@ setMethod("show", "Grouping",
             sep="")
         if (NG == 0L)
             return(invisible(NULL))
-        empty_groups <- whichAsVector(grouplength(object) == 0L)
+        empty_groups <- which(grouplength(object) == 0L)
         cat("Nb of empty groups: ", length(empty_groups),
             " (", 100.00 * length(empty_groups) / NG, "%)\n", sep="")
     }
@@ -186,7 +186,7 @@ setMethod("togroup", "H2LGrouping",
     function(x, j=NULL)
     {
         to_group <- x@high2low
-        to_group[is.na(to_group)] <- whichAsVector(is.na(to_group))
+        to_group[is.na(to_group)] <- which(is.na(to_group))
         if (is.null(j))
             return(to_group)
         if (!is.numeric(j))

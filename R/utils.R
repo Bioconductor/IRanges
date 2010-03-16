@@ -359,11 +359,6 @@ mseq <- function(from, to)
     .Call("Integer_mseq", from, to, PACKAGE="IRanges")
 }
 
-whichAsVector <- function(x)
-{
-    .Call("Logical_whichAsVector", x, PACKAGE="IRanges")
-}
-
 diffWithInitialZero <- function(x) {
     if (!is.integer(x))
         stop("'x' must be an integer vector")

@@ -433,7 +433,7 @@ setMethod("[", "RangedData",
                   i <- ranges %in% i
                 } else if (is(i, "LogicalList")) {
                   xeltlen <- elementLengths(ranges(x))
-                  whichRep <- whichAsVector(xeltlen != elementLengths(i))
+                  whichRep <- which(xeltlen != elementLengths(i))
                   for (k in whichRep)
                     i[[k]] <- rep(i[[k]], length.out = xeltlen[k])
                   i <- unlist(i, use.names=FALSE)

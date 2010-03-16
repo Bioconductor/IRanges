@@ -55,9 +55,9 @@ setMethod("coverage", "numeric",
         sx <- x + shift
         if (is.null(width)) {
             width <- max(sx)
-            ii <- whichAsVector(1L <= sx)
+            ii <- which(1L <= sx)
         } else {
-            ii <- whichAsVector(1L <= sx & sx <= width)
+            ii <- which(1L <= sx & sx <= width)
         }
         if (width <= 0L)  # could be < 0 now if supplied width was NULL
             return(Rle())

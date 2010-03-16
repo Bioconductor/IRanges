@@ -426,8 +426,6 @@ SEXP Integer_mseq(
 	SEXP to
 );
 
-SEXP Logical_whichAsVector(SEXP x);
-
 SEXP findIntervalAndStartFromWidth(
 	SEXP x,
 	SEXP vec

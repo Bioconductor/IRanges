@@ -25,7 +25,6 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(Integer_order_two, 3),
 	CALLMETHOD_DEF(Integer_sorted_merge, 2),
 	CALLMETHOD_DEF(Integer_mseq, 2),
-	CALLMETHOD_DEF(Logical_whichAsVector, 1),
 	CALLMETHOD_DEF(findIntervalAndStartFromWidth, 2),
 
 /* strutils.c */

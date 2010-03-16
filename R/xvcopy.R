@@ -61,7 +61,7 @@ setMethod("xvcopy", "XRawList",
         y <- narrow(x, start=start, end=end, width=width)
         all_groups <- unique(y@ranges@group)
         for (group in all_groups) {
-            ii <- whichAsVector(y@ranges@group == group)
+            ii <- which(y@ranges@group == group)
             ranges <- as(y@ranges[ii], "IRanges")
             frame <- reduce(ranges, with.inframe.attrib=TRUE)
             shared_length <- sum(width(frame))
