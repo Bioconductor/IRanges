@@ -1283,16 +1283,21 @@ setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle")
         which1 <- findIntervalAndStartFromWidth(ends, runLength(e1))[["interval"]]
         which2 <- findIntervalAndStartFromWidth(ends, runLength(e2))[["interval"]]
     }
-    values <-
-      paste(runValue(e1)[which1], runValue(e2)[which2], sep = sep,
-            collapse = collapse)
     if (is.null(collapse) &&
         is.factor(runValue(e1)) && is.factor(runValue(e2))) {
         levelsTable <-
           expand.grid(levels(e2), levels(e1), KEEP.OUT.ATTRS = FALSE,
                       stringsAsFactors = FALSE)
-        pastedLevels <- paste(levelsTable[[2L]], levelsTable[[1L]], sep = sep)
-        values <- factor(values, levels = pastedLevels)
+        values <-
+          structure((as.integer(runValue(e1)[which1]) - 1L) * nlevels(e2) +
+                    as.integer(runValue(e2)[which2]),
+                    levels =
+                    paste(levelsTable[[2L]], levelsTable[[1L]], sep = sep),
+                    class = "factor")
+    } else {
+        values <-
+          paste(runValue(e1)[which1], runValue(e2)[which2], sep = sep,
+                collapse = collapse)
     }
     Rle(values = values, lengths = diffWithInitialZero(ends), check = FALSE)
 }
