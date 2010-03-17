@@ -1262,6 +1262,59 @@ setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle")
               x
           })
 
+.pasteTwoRles <- function(e1, e2, sep = " ", collapse = NULL)
+{
+    n1 <- length(e1)
+    n2 <- length(e2)
+    if (n1 == 0 || n2 == 0) {
+        ends <- integer(0)
+        which1 <- integer(0)
+        which2 <- integer(0)
+    } else {
+        n <- max(n1, n2)
+        if (max(n1, n2) %% min(n1, n2) != 0)
+            warning("longer object length is not a multiple of shorter object length")
+        if (n1 < n)
+            e1 <- rep(e1, length.out = n)
+        if (n2 < n)
+            e2 <- rep(e2, length.out = n)
+        # ends <- sort(unique(c(end(e1), end(e2))))
+        ends <- .Call("Integer_sorted_merge", end(e1), end(e2), PACKAGE="IRanges")
+        which1 <- findIntervalAndStartFromWidth(ends, runLength(e1))[["interval"]]
+        which2 <- findIntervalAndStartFromWidth(ends, runLength(e2))[["interval"]]
+    }
+    values <-
+      paste(runValue(e1)[which1], runValue(e2)[which2], sep = sep,
+            collapse = collapse)
+    if (is.null(collapse) &&
+        is.factor(runValue(e1)) && is.factor(runValue(e2))) {
+        levelsTable <-
+          expand.grid(levels(e2), levels(e1), KEEP.OUT.ATTRS = FALSE,
+                      stringsAsFactors = FALSE)
+        pastedLevels <- paste(levelsTable[[2L]], levelsTable[[1L]], sep = sep)
+        values <- factor(values, levels = pastedLevels)
+    }
+    Rle(values = values, lengths = diffWithInitialZero(ends), check = FALSE)
+}
+
+setGeneric("paste", signature = "...",
+           function(..., sep = " ", collapse = NULL) standardGeneric("paste"))
+
+setMethod("paste", "Rle",
+          function(..., sep = " ", collapse = NULL)
+          {
+              rleList <- RleList(...)
+              ans <- rleList[[1L]]
+              if (length(rleList) > 1) {
+                  for (i in 2:length(rleList)) {
+                      ans <-
+                        .pasteTwoRles(ans, rleList[[i]], sep = sep,
+                                      collapse = collapse)
+                  }
+              }
+              ans
+          })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other factor data methods
 ###

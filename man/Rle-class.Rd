@@ -130,6 +130,8 @@
 \alias{toupper,Rle-method}
 \alias{sub,ANY,ANY,Rle-method}
 \alias{gsub,ANY,ANY,Rle-method}
+\alias{paste}
+\alias{paste,Rle-method}
 
 \alias{levels,Rle-method}
 \alias{levels<-,Rle-method}
@@ -757,12 +759,14 @@
     }
     \item{}{
       \code{substr(x, start, stop)}, \code{substring(text, first, last = 1000000L)}:
-      Returns a character Rle containing the specified substrings beginning at
-      \code{start}/\code{first} and ending at \code{stop}/\code{last}.
+      Returns a character or factor Rle containing the specified substrings
+      beginning at \code{start}/\code{first} and ending at
+      \code{stop}/\code{last}.
     }
     \item{}{
       \code{chartr(old, new, x)}:
-      Returns a character translated version of \code{x}.
+      Returns a character or factor Rle containing a translated version of
+      \code{x}.
       \describe{
          \item{\code{old}}{A character string specifying the characters to be
            translated.}
@@ -771,25 +775,32 @@
     }
     \item{}{
       \code{tolower(x)}:
-      Returns a lower case version of \code{x}.
+      Returns a character or factor Rle containing a lower case version of
+      \code{x}.
     }
     \item{}{
       \code{toupper(x)}:
-      Returns an upper case version of \code{x}.
+      Returns a character or factor Rle containing an upper case version of
+      \code{x}.
     }
     \item{}{
       \code{sub(pattern, replacement, x, ignore.case = FALSE,
                 perl = FALSE, fixed = FALSE, useBytes = FALSE)}:
-      Returns a character Rle with replacements based on matches determined by
-      regular expression matching. See \code{\link{sub}} for a description of the
-      arguments.
+      Returns a character or factor Rle containing replacements based on
+      matches determined by regular expression matching. See \code{\link{sub}}
+      for a description of the arguments.
     }
     \item{}{
       \code{gsub(pattern, replacement, x, ignore.case = FALSE,
                  perl = FALSE, fixed = FALSE, useBytes = FALSE)}:
-      Returns a character Rle with replacements based on matches determined by
-      regular expression matching. See \code{\link{gsub}} for a description of the
-      arguments.
+      Returns a character or factor Rle containing replacements based on
+      matches determined by regular expression matching. See \code{\link{gsub}}
+      for a description of the arguments.
+    }
+    \item{}{
+      \code{paste(..., sep = " ", collapse = NULL)}:
+      Returns a character or factor Rle containing a concatenation of
+      the values in \code{...}.
     }
   }
 }

@@ -96,6 +96,8 @@ export(
     mendoapply,
 
     ## Generic functions in the Sequence API:
+    elementType, elementLengths,
+    metadata, elementMetadata, "metadata<-", "elementMetadata<-",
     seqselect, "seqselect<-",
     mapply,
     Map,
@@ -125,6 +127,7 @@ export(
     ## Generic functions in the Rle API:
     Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
     findRange, findRun,
+    paste,
 
     ## Generic functions in the Grouping API:
     nobj, grouplength, members, vmembers, togroup, togrouplength,
@@ -164,8 +167,6 @@ export(
     reducerFun, "reducerFun<-", reducerParams, "reducerParams<-",
     rdapply,
     universe, "universe<-", space, score, "score<-",
-    elementType, elementLengths,
-    metadata, elementMetadata, "metadata<-", "elementMetadata<-",
     matchMatrix, queryHits, subjectHits
 )
 

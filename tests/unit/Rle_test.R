@@ -273,14 +273,14 @@ test_Rle_numerical <- function() {
 test_Rle_character <- function() {
     checkIdentical(character(), as.vector(Rle(character())))
 
-    txt <- c("The", "licenses", "for", "most", "software", "are",
-             "designed", "to", "take", "away", "your", "freedom",
-             "to", "share", "and", "change", "it.",
-             "", "By", "contrast,", "the", "GNU", "General", "Public", "License",
-             "is", "intended", "to", "guarantee", "your", "freedom", "to",
-             "share", "and", "change", "free", "software", "--",
-             "to", "make", "sure", "the", "software", "is",
-             "free", "for", "all", "its", "users")
+    txt <-
+      c("The", "licenses", "for", "most", "software", "are", "designed",
+        "to", "take", "away", "your", "freedom", "to", "share", "and",
+        "change", "it.", "", "By", "contrast,", "the", "GNU", "General",
+        "Public", "License", "is", "intended", "to", "guarantee", "your",
+        "freedom", "to", "share", "and", "change", "free", "software",
+        "--", "to", "make", "sure", "the", "software", "is", "free", "for",
+        "all", "its", "users")
      txt <- rep(txt, seq_len(length(txt)))
      txtRle <- Rle(txt)
      checkIdentical(nchar(txt), as.vector(nchar(txtRle)))
@@ -292,7 +292,9 @@ test_Rle_character <- function() {
      checkIdentical(toupper(txt), as.vector(toupper(txtRle)))
      checkIdentical(sub("[b-e]",".", txt), as.vector(sub("[b-e]",".", txtRle)))
      checkIdentical(gsub("[b-e]",".", txt), as.vector(gsub("[b-e]",".", txtRle)))
- 
+     checkIdentical(paste(txt, rev(txt), sep = "|"),
+                    as.vector(paste(txtRle, rev(txtRle), sep = "|")))
+
      modifyFactor <- function(x, FUN, ...) {
          levels(x) <- FUN(levels(x), ...)
          x
@@ -312,7 +314,8 @@ test_Rle_character <- function() {
                     as.vector(sub("[b-e]",".", facRle)))
      checkIdentical(modifyFactor(fac, gsub, pattern = "[b-e]", replacement = "."),
                     as.vector(gsub("[b-e]",".", facRle)))
- }
+     checkTrue(is.factor(runValue(paste(facRle, rev(facRle), sep = "|"))))
+}
 
 test_Rle_factor <- function() {
     checkIdentical(factor(character()), as.vector(Rle(factor(character()))))
