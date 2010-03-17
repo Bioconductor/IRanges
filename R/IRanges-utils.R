@@ -353,4 +353,4 @@ asNormalIRanges <- function(x, force=TRUE)
 
 .asNormalIRanges <- function(from) asNormalIRanges(from, force=TRUE)
 
-setAs("Ranges", "NormalIRanges", .asNormalIRanges)
+setAs("IRanges", "NormalIRanges", .asNormalIRanges)

@@ -33,7 +33,7 @@
 
 % Coercion:
 \alias{asNormalIRanges}
-\alias{coerce,Ranges,NormalIRanges-method}
+\alias{coerce,IRanges,NormalIRanges-method}
 
 \title{IRanges utility functions}
 
