@@ -6,6 +6,7 @@
 \alias{Sequence-class}
 \alias{Sequence}
 
+\alias{NROW,Sequence-method}
 \alias{elementType}
 \alias{elementType,Sequence-method}
 \alias{elementType,vector-method}
@@ -118,27 +119,46 @@
   In the following code snippets, \code{x} is a Sequence object.
   
   \describe{
-    \item{}{\code{length(x)}: Get the number of elements in \code{x}}
-    \item{}{\code{names(x)}, \code{names(x) <- value}: Get or set the names of
-      the elements in the Sequence.
+    \item{}{
+      \code{length(x)}:
+      Get the number of elements in \code{x}.
     }
-    \item{}{\code{elementType(x)}: Get the scalar string naming the class from
-      which all elements must derive.
+    \item{}{
+      \code{NROW(x)}:
+      Defined as \code{length(x)} for any Sequence object that is
+      \emph{not} a \linkS4class{DataTable} object.
+      If \code{x} is a \linkS4class{DataTable} object, then it's
+      defined as \code{nrow(x)}.
     }
-    \item{}{\code{elementLengths(x)}: Get the 'length' of each of the elements.
+    \item{}{
+      \code{names(x)}, \code{names(x) <- value}:
+      Get or set the names of the elements in the Sequence.
     }
-    \item{}{\code{isEmpty(x)}: Returns a logical indicating either if the
-      sequence has no elements or if all its elements are empty.
+    \item{}{
+      \code{elementType(x)}:
+      Get the scalar string naming the class from which all elements must
+      derive.
+    }
+    \item{}{
+      \code{elementLengths(x)}:
+      Get the 'length' of each of the elements.
+    }
+    \item{}{
+      \code{isEmpty(x)}:
+      Returns a logical indicating either if the sequence has no elements
+      or if all its elements are empty.
     }
     \item{}{
       \code{nlevels(x)}:
       Returns the number of factor levels.
     }
-    \item{}{\code{metadata(x)}, \code{metadata(x) <- value}:
-      Get or set the list holding arbitrary R objects as annotations. May be,
-      and often is, empty.
+    \item{}{
+      \code{metadata(x)}, \code{metadata(x) <- value}:
+      Get or set the list holding arbitrary R objects as annotations.
+      May be, and often is, empty.
     }
-    \item{}{\code{elementMetadata(x), elementMetadata(x) <- value}:
+    \item{}{
+      \code{elementMetadata(x), elementMetadata(x) <- value}:
       Get or set the \linkS4class{DataTable} holding local metadata on each
       element. The rows are named according to the names of the elements.
       Optional, may be \code{NULL}.

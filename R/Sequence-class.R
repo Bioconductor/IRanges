@@ -23,6 +23,8 @@ setClass("Sequence",
 ### Accessor methods.
 ###
 
+setMethod("NROW", "Sequence", function(x) length(x))
+
 setGeneric("elementType", function(x, ...) standardGeneric("elementType"))
 setMethod("elementType", "Sequence", function(x) x@elementType)
 setMethod("elementType", "vector", function(x) mode(x))

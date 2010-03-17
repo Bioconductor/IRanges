@@ -7,33 +7,37 @@
 \alias{DataTableORNULL-class}
 \alias{DataTable}
 
-\alias{cbind}
-\alias{cbind,DataTable-method}
+\alias{NROW,DataTable-method}
+\alias{NCOL,DataTable-method}
 \alias{dim,DataTable-method}
 \alias{dimnames,DataTable-method}
 \alias{dimnames<-,DataTable-method}
-\alias{head,DataTable-method}
-\alias{NCOL,DataTable-method}
-\alias{NROW,DataTable-method}
-\alias{rbind}
-\alias{rbind,DataTable-method}
-\alias{seqselect,DataTable-method}
-\alias{seqselect<-,DataTable-method}
-\alias{show,DataTable-method}
-\alias{subset,DataTable-method}
-\alias{tail,DataTable-method}
+
 \alias{window,DataTable-method}
 \alias{window<-,DataTable-method}
-\alias{!=,DataTable,DataTable-method}
-\alias{aggregate,DataTable-method}
-\alias{by,DataTable-method}
-\alias{as.env,DataTable-method}
+\alias{seqselect,DataTable-method}
+\alias{seqselect<-,DataTable-method}
+\alias{head,DataTable-method}
+\alias{tail,DataTable-method}
+\alias{subset,DataTable-method}
 \alias{na.omit}
 \alias{na.omit,DataTable-method}
 \alias{na.exclude}
 \alias{na.exclude,DataTable-method}
-\alias{complete.cases,DataTable-method}
 \alias{is.na,DataTable-method}
+\alias{complete.cases,DataTable-method}
+
+\alias{cbind}
+\alias{cbind,DataTable-method}
+\alias{rbind}
+\alias{rbind,DataTable-method}
+
+\alias{aggregate,DataTable-method}
+\alias{by,DataTable-method}
+
+\alias{as.env,DataTable-method}
+
+\alias{show,DataTable-method}
 
 \title{DataTable objects}
 
@@ -45,30 +49,26 @@
 \section{Accessors}{
   In the following code snippets, \code{x} is a \code{DataTable}.
   \describe{
-    \item{}{\code{dim(x)}:
-      Get the length two integer vector indicating in the first and second
-      element the number of rows and columns, respectively. This implies the
-      existence of \code{nrow(x)} and \code{ncol(x)}.
-    }
-    \item{}{\code{dimnames(x)}:
-      Get the length two list of character vectors indicating in the first
-      and second element the names of the rows and columns, respectively.
-      This implies the existence of \code{rownames(x)} and \code{colnames(x)}.
-    }
-  }
-}
-
-\section{Combining}{
-  In the code snippets below, \code{x} is a DataTable object.
-
-  \describe{
     \item{}{
-      \code{cbind(...)}: Creates a new \code{DataTable} by combining the columns
-      of the \code{DataTable} objects in \code{...}.
+      \code{nrow(x)}, \code{ncol(x)}:
+      Get the number of rows and columns, respectively.
     }
     \item{}{
-      \code{rbind(...)}: Creates a new \code{DataTable} by combining the rows of
-      the \code{DataTable} objects in \code{...}.
+      \code{NROW(x)}, \code{NCOL(x)}:
+      Same as \code{nrow(x)} and \code{ncol(x)}, respectively.
+    }
+    \item{}{
+      \code{dim(x)}:
+      Length two integer vector defined as \code{c(nrow(x), ncol(x))}.
+    }
+    \item{}{
+      \code{rownames(x)}, \code{colnames(x)}:
+      Get the names of the rows and columns, respectively.
+    }
+    \item{}{
+      \code{dimnames(x)}:
+      Length two list of character vectors defined as
+      \code{list(rownames(x), colnames(x))}.
     }
   }
 }
@@ -82,44 +82,6 @@
       Return a new DataTable object made of the selected rows and columns. For
       single column selection, the \code{drop} argument specifies whether or not
       to coerce the returned sequence to a standard vector.
-    }
-    \item{}{
-      \code{head(x, n = 6L)}:
-      If \code{n} is non-negative, returns the first n rows of the DataTable
-      object.
-      If \code{n} is negative, returns all but the last \code{abs(n)} rows of
-      the DataTable object.
-    }
-    \item{}{
-      \code{length(x)}:
-      Return the number of columns in the DataTable object.
-    }
-    \item{}{
-      \code{seqselect(x, start=NULL, end=NULL, width=NULL)}:
-      Similar to \code{window}, except that multiple subsequences can be
-      requested. The requested subsequences are concatenated.
-    }
-    \item{}{
-      \code{seqselect(x, start=NULL, end=NULL, width=NULL) <- value}:
-      Similar to \code{window<-}, except that multiple consecutive subsequences
-      can be replaced by a \code{value} that spans those windows.
-    }
-    \item{}{
-      \code{subset(x, subset, select, drop = FALSE)}:
-      Return a new DataTable object using:
-      \describe{
-        \item{subset}{logical expression indicating rows to keep, where missing
-          values are taken as FALSE.}
-        \item{select}{expression indicating columns to keep.}
-        \item{drop}{passed on to \code{[} indexing operator.}
-      }
-    }
-    \item{}{
-      \code{tail(x, n = 6L)}:
-      If \code{n} is non-negative, returns the last n rows of the DataTable
-      object.
-      If \code{n} is negative, returns all but the first \code{abs(n)} rows of
-      the DataTable object.
     }
     \item{}{
       \code{window(x, start = NA, end = NA, width = NA, frequency = NULL, delta = NULL, ...)}:
@@ -147,18 +109,71 @@
       the number of rows of \code{x}, depending on how the number of rows of the
       left subsequence window compares to the number of rows of \code{value}.
     }
-    \item{}{\code{\link[stats:na.fail]{na.omit}(object)}: Returns a
-      subset with incomplete cases removed.
+    \item{}{
+      \code{seqselect(x, start=NULL, end=NULL, width=NULL)}:
+      Similar to \code{window}, except that multiple subsequences can be
+      requested. The requested subsequences are concatenated.
     }
-    \item{}{\code{\link[stats:na.fail]{na.exclude}(object)}: Returns a
-      subset with incomplete cases removed (but to be included with NA's
-      in statistical results).
+    \item{}{
+      \code{seqselect(x, start=NULL, end=NULL, width=NULL) <- value}:
+      Similar to \code{window<-}, except that multiple consecutive subsequences
+      can be replaced by a \code{value} that spans those windows.
     }
-    \item{}{\code{\link[base:NA]{is.na}(x)}: Returns a logical matrix
-      indicating which cells are missing.
+    \item{}{
+      \code{head(x, n = 6L)}:
+      If \code{n} is non-negative, returns the first n rows of the DataTable
+      object.
+      If \code{n} is negative, returns all but the last \code{abs(n)} rows of
+      the DataTable object.
     }
-    \item{}{\code{\link[stats]{complete.cases}(x)}: Returns a logical vector
-      identifying which cases have no missing values.
+    \item{}{
+      \code{tail(x, n = 6L)}:
+      If \code{n} is non-negative, returns the last n rows of the DataTable
+      object.
+      If \code{n} is negative, returns all but the first \code{abs(n)} rows of
+      the DataTable object.
+    }
+    \item{}{
+      \code{subset(x, subset, select, drop = FALSE)}:
+      Return a new DataTable object using:
+      \describe{
+        \item{subset}{logical expression indicating rows to keep, where missing
+          values are taken as FALSE.}
+        \item{select}{expression indicating columns to keep.}
+        \item{drop}{passed on to \code{[} indexing operator.}
+      }
+    }
+    \item{}{
+      \code{\link[stats:na.fail]{na.omit}(object)}:
+      Returns a subset with incomplete cases removed.
+    }
+    \item{}{
+      \code{\link[stats:na.fail]{na.exclude}(object)}:
+      Returns a subset with incomplete cases removed (but to be
+      included with NAs in statistical results).
+    }
+    \item{}{
+      \code{\link[base:NA]{is.na}(x)}:
+      Returns a logical matrix indicating which cells are missing.
+    }
+    \item{}{
+      \code{\link[stats]{complete.cases}(x)}:
+      Returns a logical vector identifying which cases have no missing values.
+    }
+  }
+}
+
+\section{Combining}{
+  In the code snippets below, \code{x} is a DataTable object.
+
+  \describe{
+    \item{}{
+      \code{cbind(...)}: Creates a new \code{DataTable} by combining the columns
+      of the \code{DataTable} objects in \code{...}.
+    }
+    \item{}{
+      \code{rbind(...)}: Creates a new \code{DataTable} by combining the rows of
+      the \code{DataTable} objects in \code{...}.
     }
   }
 }

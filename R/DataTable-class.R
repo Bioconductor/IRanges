@@ -15,12 +15,9 @@ setClassUnion("DataTableORNULL", c("DataTable", "NULL"))
 ### Basic methods.
 ###
 
-setGeneric("cbind", function(..., deparse.level=1) standardGeneric("cbind"),
-           signature = "...")
+setMethod("NROW", "DataTable", function(x) nrow(x))
 
-setMethod("cbind", "DataTable", function(..., deparse.level=1)
-          stop("missing 'cbind' method for DataTable class ",
-               class(list(...)[[1L]])))
+setMethod("NCOL", "DataTable", function(x) ncol(x))
 
 setMethod("dim", "DataTable", function(x) c(nrow(x), ncol(x)))
 
@@ -39,30 +36,53 @@ setReplaceMethod("dimnames", "DataTable",
                    x
                  })
 
-setMethod("head", "DataTable",
-          function(x, n = 6L, ...)
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Subsetting.
+###
+
+setMethod("window", "DataTable",
+          function(x, start = NA, end = NA, width = NA,
+                   frequency = NULL, delta = NULL, ...)
           {
-              stopifnot(length(n) == 1L)
-              if (n < 0L)
-                  n <- max(nrow(x) + n, 0L)
-              else
-                  n <- min(n, nrow(x))
-              if (n == 0L)
-                  x[integer(0),,drop = FALSE]
-              else
-                  window(x, 1L, n)
+              solved_SEW <- solveWindowSEW(nrow(x), start, end, width)
+              if (is.null(frequency) && is.null(delta)) {
+                  x[as.integer(solved_SEW),,drop = FALSE]
+              } else {
+                  idx <-
+                    stats:::window.default(seq_len(nrow(x)),
+                                           start = start(solved_SEW),
+                                           end = end(solved_SEW),
+                                           frequency = frequency,
+                                           deltat = delta, ...)
+                  attributes(idx) <- NULL
+                  x[idx,,drop = FALSE]
+              }
           })
 
-setMethod("NCOL", "DataTable", function(x) ncol(x))
-
-setMethod("NROW", "DataTable", function(x) nrow(x))
-
-setGeneric("rbind", function(..., deparse.level=1) standardGeneric("rbind"),
-           signature = "...")
-
-setMethod("rbind", "DataTable", function(..., deparse.level=1)
-          stop("missing 'rbind' method for DataTable class ",
-               class(list(...)[[1L]])))
+setReplaceMethod("window", "DataTable",
+                 function(x, start = NA, end = NA, width = NA,
+                          keepLength = TRUE, ..., value)
+                 {
+                     if (!isTRUEorFALSE(keepLength))
+                         stop("'keepLength' must be TRUE or FALSE")
+                     solved_SEW <- solveWindowSEW(nrow(x), start, end, width)
+                     if (!is.null(value)) {
+                         if (!is(value, class(x))) {
+                             value <- try(as(value, class(x)), silent = TRUE)
+                             if (inherits(value, "try-error"))
+                                 stop("'value' must be a ", class(x),
+                                      " object or NULL")
+                         }
+                         if (keepLength && (nrow(value) != width(solved_SEW)))
+                             value <-
+                               value[rep(seq_len(nrow(value)),
+                                         length.out = width(solved_SEW)), ,
+                                     drop=FALSE]
+                     }
+                     rbind(window(x, end = start(solved_SEW) - 1L),
+                           value,
+                           window(x, start = end(solved_SEW) + 1L))
+                 })
 
 setMethod("seqselect", "DataTable",
           function(x, start=NULL, end=NULL, width=NULL)
@@ -161,6 +181,35 @@ setReplaceMethod("seqselect", "DataTable",
                      do.call(rbind, subseqs)
                  })
 
+setMethod("head", "DataTable",
+          function(x, n = 6L, ...)
+          {
+              stopifnot(length(n) == 1L)
+              if (n < 0L)
+                  n <- max(nrow(x) + n, 0L)
+              else
+                  n <- min(n, nrow(x))
+              if (n == 0L)
+                  x[integer(0),,drop = FALSE]
+              else
+                  window(x, 1L, n)
+          })
+
+setMethod("tail", "DataTable",
+          function(x, n = 6L, ...)
+          {
+              stopifnot(length(n) == 1L)
+              xlen <- nrow(x)
+              if (n < 0L) 
+                  n <- max(xlen + n, 0L)
+              else
+                  n <- min(n, xlen)
+              if (n == 0L)
+                  x[integer(0),,drop = FALSE]
+              else
+                  window(x, xlen - n + 1L, xlen)
+          })
+
 setMethod("subset", "DataTable",
           function (x, subset, select, drop = FALSE, ...) 
           {
@@ -182,65 +231,6 @@ setMethod("subset", "DataTable",
               }
               x[i, j, drop = drop]
           })
-
-setMethod("tail", "DataTable",
-          function(x, n = 6L, ...)
-          {
-              stopifnot(length(n) == 1L)
-              xlen <- nrow(x)
-              if (n < 0L) 
-                  n <- max(xlen + n, 0L)
-              else
-                  n <- min(n, xlen)
-              if (n == 0L)
-                  x[integer(0),,drop = FALSE]
-              else
-                  window(x, xlen - n + 1L, xlen)
-          })
-
-setMethod("window", "DataTable",
-          function(x, start = NA, end = NA, width = NA,
-                   frequency = NULL, delta = NULL, ...)
-          {
-              solved_SEW <- solveWindowSEW(nrow(x), start, end, width)
-              if (is.null(frequency) && is.null(delta)) {
-                  x[as.integer(solved_SEW),,drop = FALSE]
-              } else {
-                  idx <-
-                    stats:::window.default(seq_len(nrow(x)),
-                                           start = start(solved_SEW),
-                                           end = end(solved_SEW),
-                                           frequency = frequency,
-                                           deltat = delta, ...)
-                  attributes(idx) <- NULL
-                  x[idx,,drop = FALSE]
-              }
-          })
-
-setReplaceMethod("window", "DataTable",
-                 function(x, start = NA, end = NA, width = NA,
-                          keepLength = TRUE, ..., value)
-                 {
-                     if (!isTRUEorFALSE(keepLength))
-                         stop("'keepLength' must be TRUE or FALSE")
-                     solved_SEW <- solveWindowSEW(nrow(x), start, end, width)
-                     if (!is.null(value)) {
-                         if (!is(value, class(x))) {
-                             value <- try(as(value, class(x)), silent = TRUE)
-                             if (inherits(value, "try-error"))
-                                 stop("'value' must be a ", class(x),
-                                      " object or NULL")
-                         }
-                         if (keepLength && (nrow(value) != width(solved_SEW)))
-                             value <-
-                               value[rep(seq_len(nrow(value)),
-                                         length.out = width(solved_SEW)), ,
-                                     drop=FALSE]
-                     }
-                     rbind(window(x, end = start(solved_SEW) - 1L),
-                           value,
-                           window(x, start = end(solved_SEW) + 1L))
-                 })
 
 setMethod("na.omit", "DataTable",
           function(object, ...) {
@@ -271,6 +261,24 @@ setMethod("complete.cases", "DataTable", function(...) {
     rowSums(is.na(x)) == 0
   } else complete.cases(args[[1L]]) & do.call(complete.cases, args[-1L])
 })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Combining.
+###
+
+setGeneric("cbind", function(..., deparse.level=1) standardGeneric("cbind"),
+           signature = "...")
+
+setMethod("cbind", "DataTable", function(..., deparse.level=1)
+          stop("missing 'cbind' method for DataTable class ",
+               class(list(...)[[1L]])))
+
+setGeneric("rbind", function(..., deparse.level=1) standardGeneric("rbind"),
+           signature = "...")
+
+setMethod("rbind", "DataTable", function(..., deparse.level=1)
+          stop("missing 'rbind' method for DataTable class ",
+               class(list(...)[[1L]])))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping methods.
