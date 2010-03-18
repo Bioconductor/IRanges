@@ -107,6 +107,60 @@ setMethod("findOverlaps", c("RangesList", "RangedData"),
                          select = match.arg(select), drop = drop)
           })
 
+setMethod("countOverlaps", c("RangedData", "RangedData"),
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
+                   type = c("any", "start", "end", "within", "equal"))
+          {
+              countOverlaps(ranges(query), ranges(subject), maxgap = maxgap,
+                            minoverlap = minoverlap, type = match.arg(type))
+          })
+setMethod("countOverlaps", c("RangedData", "RangesList"),
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
+                   type = c("any", "start", "end", "within", "equal"))
+          {
+              countOverlaps(ranges(query), subject, maxgap = maxgap,
+                            minoverlap = minoverlap, type = match.arg(type))
+          })
+setMethod("countOverlaps", c("RangesList", "RangedData"),
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
+                   type = c("any", "start", "end", "within", "equal"))
+          {
+              countOverlaps(query, ranges(subject), maxgap = maxgap,
+                            minoverlap = minoverlap, type = match.arg(type))
+          })
+
+setMethod("subsetByOverlaps", c("RangedData", "RangedData"),
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
+                   type = c("any", "start", "end", "within", "equal"))
+          {
+              query[unlist(!is.na(findOverlaps(ranges(query), ranges(subject),
+                                               maxgap = maxgap,
+                                               minoverlap = minoverlap,
+                                               type = match.arg(type),
+                                               select = "arbitrary")),
+                           use.names=FALSE),]
+          })
+setMethod("subsetByOverlaps", c("RangedData", "RangesList"),
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
+                   type = c("any", "start", "end", "within", "equal"))
+          {
+              query[unlist(!is.na(findOverlaps(ranges(query), subject,
+                                               maxgap = maxgap,
+                                               minoverlap = minoverlap,
+                                               type = match.arg(type),
+                                               select = "arbitrary")),
+                           use.names=FALSE),]
+          })
+setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
+                  type = c("any", "start", "end", "within", "equal"))
+          {
+              query[!is.na(findOverlaps(query, ranges(subject),
+                                        maxgap = maxgap,
+                                        minoverlap = minoverlap,
+                                        type = match.arg(type),
+                                        select = "arbitrary"))]
+          })
 
 setMethod("%in%", c("RangedData", "RangedData"),
           function(x, table) ranges(x) %in% ranges(table))
@@ -114,6 +168,25 @@ setMethod("%in%", c("RangesList", "RangedData"),
           function(x, table) x %in% ranges(table))
 setMethod("%in%", c("RangedData", "RangesList"),
           function(x, table) ranges(x) %in% table)
+
+setMethod("match", c("RangedData", "RangedData"),
+          function(x, table, nomatch = NA_integer_, incomparables = NULL)
+          {
+              match(ranges(x), ranges(table), nomatch = nomatch,
+                    incomparables = incomparables)
+          })
+setMethod("match", c("RangedData", "RangesList"),
+          function(x, table, nomatch = NA_integer_, incomparables = NULL)
+          {
+              match(ranges(x), table, nomatch = nomatch,
+                    incomparables = incomparables)
+          })
+setMethod("match", c("RangesList", "RangedData"),
+          function(x, table, nomatch = NA_integer_, incomparables = NULL)
+          {
+              match(x, ranges(table), nomatch = nomatch,
+                    incomparables = incomparables)
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Reducing

@@ -504,6 +504,27 @@ setMethod("findOverlaps", c("RangesList", "RangesList"),
             ans
           })
 
+setMethod("countOverlaps", c("RangesList", "RangesList"),
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
+                   type = c("any", "start", "end", "within", "equal"))
+          {
+              IntegerList(mapply(countOverlaps, query, subject,
+                              MoreArgs = list(maxgap = maxgap,
+                                      minoverlap = minoverlap,
+                                      type = match.arg(type)),
+                              SIMPLIFY = FALSE))
+          })
+
+setMethod("subsetByOverlaps", c("RangesList", "RangesList"),
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
+                   type = c("any", "start", "end", "within", "equal"))
+          {
+              type <- match.arg(type)
+              query[!is.na(findOverlaps(query, subject, maxgap = maxgap,
+                                        minoverlap = minoverlap, type = type,
+                                        select = "arbitrary"))]
+          })
+
 setMethod("%in%", c("RangesList", "RangesList"),
           function(x, table)
           {
@@ -532,18 +553,6 @@ setMethod("match", c("RangesList", "RangesList"),
               ans[is.na(ans)] <- as.integer(nomatch)
             ans
           })
-
-setMethod("countOverlaps", c("RangesList", "RangesList"),
-    function(query, subject, maxgap = 0L, minoverlap = 1L,
-             type = c("any", "start", "end", "within", "equal"))
-    {
-        IntegerList(mapply(countOverlaps, query, subject,
-                           MoreArgs = list(maxgap = maxgap,
-                                           minoverlap = minoverlap,
-                                           type = match.arg(type)),
-                           SIMPLIFY = FALSE))
-    }
-)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Set Operations

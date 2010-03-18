@@ -442,13 +442,7 @@ setMethod("range", "Ranges",
 )
 
 ### Find objects in the index that overlap those in a query set.
-setGeneric("findOverlaps", signature = c("query", "subject"),
-    function(query, subject, maxgap = 0L, minoverlap = 1L,
-             type = c("any", "start", "end", "within", "equal"),
-             select = c("all", "first", "last", "arbitrary"), ...)
-        standardGeneric("findOverlaps")
-)
-
+### Deprecated operations
 overlap <- function(object, query, maxgap = 0L, multiple = TRUE, ...)
 {
     .Deprecated("findOverlaps")
@@ -457,6 +451,20 @@ overlap <- function(object, query, maxgap = 0L, multiple = TRUE, ...)
     else
         findOverlaps(query, object, maxgap = maxgap, multiple = multiple, ...)
 }
+
+countOverlap <- function(object, query)
+{
+    .Deprecated("countOverlaps")
+    countOverlaps(query, object)
+}
+###
+
+setGeneric("findOverlaps", signature = c("query", "subject"),
+    function(query, subject, maxgap = 0L, minoverlap = 1L,
+             type = c("any", "start", "end", "within", "equal"),
+             select = c("all", "first", "last", "arbitrary"), ...)
+        standardGeneric("findOverlaps")
+)
 
 setGeneric("countOverlaps",
     function(query, subject, maxgap = 0L, minoverlap = 1L,
@@ -474,11 +482,22 @@ setMethod("countOverlaps", c("Ranges", "Ranges"),
     }
 )
 
-countOverlap <- function(object, query)
-{
-    .Deprecated("countOverlaps")
-    countOverlaps(query, object)
-}
+setGeneric("subsetByOverlaps",
+    function(query, subject, maxgap = 0L, minoverlap = 1L,
+             type = c("any", "start", "end", "within", "equal"))
+        standardGeneric("subsetByOverlaps")
+)
+
+setMethod("subsetByOverlaps", c("Ranges", "Ranges"),
+    function(query, subject, maxgap = 0L, minoverlap = 1L,
+             type = c("any", "start", "end", "within", "equal"))
+    {
+        type <- match.arg(type)
+        query[!is.na(findOverlaps(query, subject, maxgap = maxgap,
+                                  minoverlap = minoverlap, type = type,
+                                  select = "arbitrary"))]
+    }
+)
 
 setMethod("%in%", c("Ranges", "Ranges"),
     function(x, table)

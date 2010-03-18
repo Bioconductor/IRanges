@@ -25,7 +25,18 @@
 \alias{findOverlaps,RangedData,RangedData-method}
 \alias{findOverlaps,RangesList,RangedData-method}
 \alias{findOverlaps,RangedData,RangesList-method}
-\alias{overlap}
+\alias{countOverlaps}
+\alias{countOverlaps,Ranges,Ranges-method}
+\alias{countOverlaps,RangesList,RangesList-method}
+\alias{countOverlaps,RangedData,RangedData-method}
+\alias{countOverlaps,RangesList,RangedData-method}
+\alias{countOverlaps,RangedData,RangesList-method}
+\alias{subsetByOverlaps}
+\alias{subsetByOverlaps,Ranges,Ranges-method}
+\alias{subsetByOverlaps,RangesList,RangesList-method}
+\alias{subsetByOverlaps,RangedData,RangedData-method}
+\alias{subsetByOverlaps,RangesList,RangedData-method}
+\alias{subsetByOverlaps,RangedData,RangesList-method}
 \alias{\%in\%,Ranges,Ranges-method}
 \alias{\%in\%,RangesList,RangesList-method}
 \alias{\%in\%,RangedData,RangedData-method}
@@ -33,9 +44,12 @@
 \alias{\%in\%,RangesList,RangedData-method}
 \alias{match,Ranges,Ranges-method}
 \alias{match,RangesList,RangesList-method}
-\alias{countOverlaps}
-\alias{countOverlaps,Ranges,Ranges-method}
-\alias{countOverlaps,RangesList,RangesList-method}
+\alias{match,RangedData,RangedData-method}
+\alias{match,RangesList,RangedData-method}
+\alias{match,RangedData,RangesList-method}
+
+% deprecated methods
+\alias{overlap}
 \alias{countOverlap}
 
 \title{Interval Search Trees}
@@ -140,10 +154,20 @@
       the query may be wider than the subject.
     }
     \item{}{
-      \code{countOverlaps(query, subject = query, maxgap = 0L, minoverlap = 1L,
+      \code{countOverlaps(query, subject, maxgap = 0L, minoverlap = 1L,
         type = c("any", "start", "end", "within", "equal"))}:
       Returns the overlap hit count for each range in \code{query} using the
-      specified \code{findOverlaps} parameters.
+      specified \code{findOverlaps} parameters. Both \code{query} and
+      \code{subject} should be \code{Ranges}, \code{RangesList} or
+      \code{RangedData} objects.
+    }
+    \item{}{
+      \code{subsetByOverlaps(query, subject, maxgap = 0L, minoverlap = 1L,
+        type = c("any", "start", "end", "within", "equal"))}:
+      Returns the subset of \code{query} that has an overlap hit with a range
+      in \code{subject} using the specified \code{findOverlaps} parameters.
+      Both \code{query} and \code{subject} should be \code{Ranges},
+      \code{RangesList} or \code{RangedData} objects.
     }
     \item{}{
       \code{x \%in\% table}:

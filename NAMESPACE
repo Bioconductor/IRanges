@@ -117,6 +117,7 @@ export(
     reduce,
     gaps,
     findOverlaps, overlap, countOverlaps, countOverlap,
+    subsetByOverlaps,
     nearest, precede, follow,
     reflect,
     flank,
