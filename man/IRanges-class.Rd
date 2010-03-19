@@ -97,6 +97,7 @@
 
 \seealso{
   \link{Ranges-class},
+  \link{Ranges-utils},
   \link{IRanges-constructor},
   \link{IRanges-utils},
   \link{IRanges-setops}.

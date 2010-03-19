@@ -7,23 +7,6 @@ test_Ranges_order <- function() {
   checkException(sort(ir1, decreasing=NA), silent = TRUE)
 }
 
-test_Ranges_range <- function() {
-  ir1 <- IRanges(c(2,5,1), c(3,7,3))
-  ir2 <- IRanges(c(5,2,0), c(6,3,1))
-  checkIdentical(range(ir1), IRanges(1, 7))
-  checkIdentical(range(ir1, ir2), IRanges(0, 7))
-  checkIdentical(range(IRanges()), IRanges())
-  checkException(range(ir1, c(2,3)), silent = TRUE)
-}
-
-test_Ranges_reflect <- function() {
-  ir1 <- IRanges(c(2,5,1), c(3,7,3))
-  bounds <- IRanges(c(0, 5, 3), c(10, 6, 9))
-  checkIdentical(reflect(ir1, bounds),
-                 IRanges(c(7, 4, 9), c(8, 6, 11)))
-  checkException(reflect(ir1, IRanges(0, 10)), silent = TRUE)
-}
-
 test_Ranges_flank <- function() {
   ir1 <- IRanges(c(2,5,1), c(3,7,3))
   checkIdentical(flank(ir1, 2), IRanges(c(0, 3, -1), c(1, 4, 0)))
@@ -38,6 +21,53 @@ test_Ranges_flank <- function() {
                  silent = TRUE) # not vectorized
   checkException(flank(ir1, 2, c(FALSE, TRUE, NA)), silent = TRUE)
   checkException(flank(ir1, NA), silent = TRUE)
+}
+
+test_Ranges_narrow <- function() {
+  ir1 <- IRanges(c(2,5,1), c(3,7,3))
+  checkIdentical(narrow(ir1, start=1, end=2),
+                 IRanges(c(2, 5, 1), c(3, 6, 2)))
+  checkException(narrow(ir1, start=10, end=20), silent = TRUE)
+}
+
+test_Ranges_reflect <- function() {
+  ir1 <- IRanges(c(2,5,1), c(3,7,3))
+  bounds <- IRanges(c(0, 5, 3), c(10, 6, 9))
+  checkIdentical(reflect(ir1, bounds),
+                 IRanges(c(7, 4, 9), c(8, 6, 11)))
+  checkException(reflect(ir1, IRanges(0, 10)), silent = TRUE)
+}
+
+test_Ranges_resize <- function() {
+  ir1 <- IRanges(c(2,5,1), c(3,7,3))
+  checkIdentical(resize(ir1, width=10),
+                 IRanges(c(2, 5, 1), width=10))
+  checkIdentical(resize(ir1, width=10, fix="end"),
+                 IRanges(c(-6, -2, -6), width=10))
+  checkIdentical(resize(ir1, width=10, fix="center"),
+                 IRanges(c(-2, 1, -3), width=10))
+  checkIdentical(resize(ir1, width=10, fix=c("start", "end", "center")),
+                 IRanges(c(2, -2, -3), width=10))
+  checkException(resize(ir1, -1), silent = TRUE)
+}
+
+test_Ranges_restrict <- function() {
+  ir1 <- IRanges(c(2,5,1), c(3,7,3))
+  checkIdentical(restrict(ir1, start=2, end=5),
+                 IRanges(c(2, 5, 2), c(3, 5, 3)))
+  checkIdentical(restrict(ir1, start=1, end=2),
+                 IRanges(c(2, 1), c(2, 2)))
+  checkIdentical(restrict(ir1, start=1, end=2, keep.all.ranges=TRUE),
+                 IRanges(c(2, 3, 1), c(2, 2, 2)))
+}
+
+test_Ranges_range <- function() {
+  ir1 <- IRanges(c(2,5,1), c(3,7,3))
+  ir2 <- IRanges(c(5,2,0), c(6,3,1))
+  checkIdentical(range(ir1), IRanges(1, 7))
+  checkIdentical(range(ir1, ir2), IRanges(0, 7))
+  checkIdentical(range(IRanges()), IRanges())
+  checkException(range(ir1, c(2,3)), silent = TRUE)
 }
 
 test_Ranges_isDisjoint <- function() {

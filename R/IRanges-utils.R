@@ -79,97 +79,50 @@ whichAsIRanges <- function(x)
 }
 
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercing an IRanges object to a NormalIRanges object.
+###
+
+asNormalIRanges <- function(x, force=TRUE)
+{
+    if (!is(x, "Ranges"))
+        stop("'x' must be an Ranges object")
+    else if (!is(x, "IRanges"))
+        x <- as(x, "IRanges")
+    if (!isTRUEorFALSE(force))
+        stop("'force' must be TRUE or FALSE")
+    if (force)
+        x <- reduce(x, drop.empty.ranges=TRUE)
+    newNormalIRangesFromIRanges(x, check=!force)
+}
+
+.asNormalIRanges <- function(from) asNormalIRanges(from, force=TRUE)
+
+setAs("IRanges", "NormalIRanges", .asNormalIRanges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "range" function.
-###
-### Finds [min(start), max(end)]
+### NormalIRanges Inter-interval endomorphisms.
 ###
 
-setMethod("range", "IRanges",
-    function(x, ..., na.rm)
-    {
-        args <- unname(list(x, ...))
-        if (!all(sapply(args, is, "IRanges")))
-            stop("all arguments in '...' must be IRanges objects")
-        x <- do.call(c, args)
-        .Call("IRanges_range", x, PACKAGE="IRanges")
-    }
+setMethod("flank", "NormalIRanges",
+    function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
+        stop("flanking a ", class(x), " instance is not supported")
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "shift" method (endomorphism).
-###
-### Shifting preserves normality.
-###
-
-setMethod("shift", "IRanges",
-    function(x, shift, use.names=TRUE)
-    {
-        shift <- normargShift(shift, length(x))
-        if (!normargUseNames(use.names))
-            names(x) <- NULL
-        x@start <- x@start + shift
-        x
-    }
+setMethod("narrow", "NormalIRanges",
+    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+        stop("narrowing a ", class(x), " instance is not supported")
 )
 
+setMethod("reflect", "NormalIRanges",
+    function(x, bounds, use.names = TRUE)
+        stop("reflecting a ", class(x), " instance is not supported")
+)
 
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "restrict" method (endomorphism).
-###
-### NormalIRanges objects have their own "restrict" method.
-###
-
-setMethod("restrict", "IRanges",
-    function(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
-    {
-        start <- normargSingleStartOrNA(start)
-        end <- normargSingleEndOrNA(end)
-        if (!isTRUEorFALSE(keep.all.ranges))
-            stop("'keep.all.ranges' must be TRUE or FALSE")
-        use.names <- normargUseNames(use.names)
-
-        ans_start <- start(x)
-        ans_end <- end(x)
-        if (use.names) ans_names <- names(x) else ans_names <- NULL
-
-        if (!is.na(start)) {
-            far_too_left <- ans_end < start - 1L
-            if (keep.all.ranges) {
-                ans_end[far_too_left] <- start - 1L
-            } else {
-                keep_it <- !far_too_left
-                ans_start <- ans_start[keep_it]
-                ans_end <- ans_end[keep_it]
-                if (!is.null(ans_names))
-                    ans_names <- ans_names[keep_it]
-            }
-            ## "fix" ans_start
-            too_left <- ans_start < start
-            ans_start[too_left] <- start
-        }
-        if (!is.na(end)) {
-            far_too_right <- ans_start > end + 1L
-            if (keep.all.ranges) {
-                ans_start[far_too_right] <- end + 1L
-            } else {
-                keep_it <- !far_too_right
-                ans_start <- ans_start[keep_it]
-                ans_end <- ans_end[keep_it]
-                if (!is.null(ans_names))
-                    ans_names <- ans_names[keep_it]
-            }
-            ## "fix" ans_end
-            too_right <- end < ans_end
-            ans_end[too_right] <- end
-        }
-        ans_width <- ans_end - ans_start + 1L
-
-        unsafe.update(x, start=ans_start, width=ans_width, names=ans_names)
-    }
+setMethod("resize", "NormalIRanges",
+    function(x, width, fix="start", use.names=TRUE, ...)
+        stop("resizing a ", class(x), " instance is not supported")
 )
 
 setMethod("restrict", "NormalIRanges",
@@ -215,96 +168,21 @@ setMethod("restrict", "NormalIRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "narrow" methods (endomorphisms).
+### Intra-interval endomorphisms.
 ###
-### Note that in general, narrow() does NOT preserve normality.
-### NormalIRanges objects have their own "narrow" method.
+### These are optimized at the C-level.
 ###
 
-setMethod("narrow", "IRanges",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+setMethod("range", "IRanges",
+    function(x, ..., na.rm)
     {
-        solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
-        x@start <- start(x) + start(solved_SEW) - 1L
-        x@width <- width(solved_SEW)
-        if (!normargUseNames(use.names))
-            names(x) <- NULL
-        x
+        args <- unname(list(x, ...))
+        if (!all(sapply(args, is, "IRanges")))
+            stop("all arguments in '...' must be IRanges objects")
+        x <- do.call(c, args)
+        .Call("IRanges_range", x, PACKAGE="IRanges")
     }
 )
-
-setMethod("narrow", "NormalIRanges",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-        stop("narrowing a ", class(x), " instance is not supported")
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "resize" methods (endomorphisms).
-###
-### NormalIRanges objects have their own "resize" method.
-###
-
-setMethod("resize", "IRanges",
-    function(x, width, start=TRUE, use.names=TRUE, symmetric = FALSE)
-    {
-        if (!is.numeric(width))
-            stop("'width' must be numeric")
-        if (!is.logical(start) || anyMissing(start))
-            stop("'start' must be logical without NA's")
-        lx <- length(x)
-        if (symmetric) {
-          offset <- (recycleVector(width, lx) - width(x)) / 2
-          start(x) <- start(x) - floor(offset)
-          end(x) <- end(x) + ceiling(offset)
-        } else {
-          offset <- recycleVector(width - 1L, lx)          
-          if (length(start) == 1) {
-            if (start)
-              end(x) <- start(x) + offset
-            else
-              start(x) <- end(x) - offset
-          } else {
-            start <- recycleVector(start, lx)
-            end(x)[start] <- start(x)[start] + offset[start]
-            start(x)[!start] <- end(x)[!start] - offset[!start]
-          }
-        }
-        if (!normargUseNames(use.names))
-          names(x) <- NULL
-        x
-    }
-)
-
-setMethod("resize", "NormalIRanges",
-    function(x, width, start=TRUE, use.names=TRUE, symmetric = FALSE)
-        stop("resizing a ", class(x), " instance is not supported")
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "threebands" method.
-###
-
-setMethod("threebands", "IRanges",
-    function(x, start=NA, end=NA, width=NA)
-    {
-        middle <- narrow(x, start=start, end=end, width=width, use.names=FALSE)
-        left <- right <- middle
-        left@start <- start(x)
-        left@width <- start(middle) - start(x)
-        right@start <- end(middle) + 1L
-        right@width <- end(x) - end(middle)
-        list(left=left, middle=middle, right=right)
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "reduce" method (endomorphism).
-###
-### Note that reduce() preserves normality (of course).
-###
 
 setMethod("reduce", "IRanges",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
@@ -335,22 +213,18 @@ setMethod("reduce", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercing a Ranges object to a NormalIRanges object.
+### The "threebands" method.
 ###
 
-asNormalIRanges <- function(x, force=TRUE)
-{
-    if (!is(x, "Ranges"))
-        stop("'x' must be an Ranges object")
-    else if (!is(x, "IRanges"))
-        x <- as(x, "IRanges")
-    if (!isTRUEorFALSE(force))
-        stop("'force' must be TRUE or FALSE")
-    if (force)
-        x <- reduce(x, drop.empty.ranges=TRUE)
-    newNormalIRangesFromIRanges(x, check=!force)
-}
-
-.asNormalIRanges <- function(from) asNormalIRanges(from, force=TRUE)
-
-setAs("IRanges", "NormalIRanges", .asNormalIRanges)
+setMethod("threebands", "IRanges",
+    function(x, start=NA, end=NA, width=NA)
+    {
+        middle <- narrow(x, start=start, end=end, width=width, use.names=FALSE)
+        left <- right <- middle
+        left@start <- start(x)
+        left@width <- start(middle) - start(x)
+        right@start <- end(middle) + 1L
+        right@width <- end(x) - end(middle)
+        list(left=left, middle=middle, right=right)
+    }
+)

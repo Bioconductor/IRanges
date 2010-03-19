@@ -95,7 +95,7 @@
   work with all kinds of Ranges objects but they should work at least
   for \link{IRanges} objects.
   Also more operations on Ranges objects are described in the man page
-  for \link{IRanges-utils} (\code{\link{shift}}, \code{\link{restrict}},
+  for \link{Ranges-utils} (\code{\link{shift}}, \code{\link{restrict}},
   \code{\link{narrow}}, \code{\link{reduce}}, etc...),
   for \link{IntervalTree} objects (\code{\link{findOverlaps}}),
   and for \link{RangesList} objects (\code{split} method for Ranges
@@ -275,6 +275,7 @@
 
 \seealso{
   \link{Ranges-comparison},
+  \link{Ranges-utils},
   \link{IRanges-class},
   \link{IRanges-utils},
   \link{IRanges-setops},

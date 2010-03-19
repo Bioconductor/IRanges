@@ -110,6 +110,7 @@
 
   \link[base:sets]{union}, \link[base:sets]{intersect}, \link[base:sets]{setdiff},
   \link{Ranges-class},
+  \link{Ranges-utils},
   \link{IRanges-class},
   \link{IRanges-utils}
 }

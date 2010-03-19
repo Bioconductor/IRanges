@@ -345,16 +345,28 @@ setMethod("narrow", "CompressedIRangesList",
           })
 
 setMethod("resize", "RangesList",
-          function(x, width, start = TRUE, use.names = TRUE, symmetric = FALSE)
-          endoapply(x, resize, width = width, start = start,
-                    use.names = use.names, symmetric = symmetric))
+          function(x, width, fix = "start", use.names = TRUE, ...)
+          endoapply(x, resize, width = width, fix = fix,
+                    use.names = use.names, ...))
 
 setMethod("resize", "CompressedIRangesList",
-          function(x, width, start = TRUE, use.names = TRUE, symmetric = FALSE)
+          function(x, width, fix = "start", use.names = TRUE, ...)
           {
+            if (is(width, "AtomicList")) {
+                if (identical(elementLengths(x), elementLengths(width)))
+                    width <- unlist(width, use.names=FALSE)
+                else
+                    stop("'width' must have same elementLengths as 'x'")
+            }
+            if (is(fix, "AtomicList")) {
+                if (identical(elementLengths(x), elementLengths(fix)))
+                    fix <- unlist(fix, use.names=FALSE)
+                else
+                    stop("'fix' must have same elementLengths as 'x'")
+            }
             slot(x, "unlistData", check=FALSE) <-
-              resize(x@unlistData, width = width, start = start,
-                     use.names = use.names, symmetric = symmetric)
+              resize(x@unlistData, width = width, fix = fix,
+                     use.names = use.names, ...)
             x
           })
 

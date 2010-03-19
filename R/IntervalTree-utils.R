@@ -29,7 +29,7 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
             adjust <- maxgap - minoverlap + 1L
             if (adjust > 0L)
               query <-
-                resize(query, width(query) + 2L * adjust, symmetric = TRUE)
+                resize(query, width(query) + 2L * adjust, fix = "center")
             unsortedQuery <- query
             if (isNotSorted(start(query))) { ## query must be sorted
               query_ord <- sort.list(start(query), method = "quick",

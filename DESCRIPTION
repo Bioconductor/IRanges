@@ -32,6 +32,7 @@ Collate: validity-utils.R
 	AtomicList-class.R
 	Ranges-class.R
 	Ranges-comparison.R
+	Ranges-utils.R
 	IRanges-class.R
 	IRanges-constructor.R
 	IRanges-utils.R
