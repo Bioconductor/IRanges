@@ -699,34 +699,65 @@ setMethod("show", "RangedData", function(object) {
       nc, ifelse(nc == 1, " value column across ", " value columns across "),
       lo, ifelse(lo == 1, " space\n", " spaces\n"), sep = "")
   if (nr > 0) {
-    k <- ifelse(nr <= 12L, nr, min(nr, 10L))
-    subset  <- object[seq_len(k),]
-    rangesSubset <- unlist(ranges(subset), use.names=FALSE)
-    valuesSubset <- unlist(values(subset), use.names=FALSE)
-    out <-
-      cbind(space = space(subset),
-            ranges = showAsCell(rangesSubset),
-            "|" = rep.int("|", k))
-    if (nc > 0)
+    nms <- rownames(object)
+    if (nr < 20) {
+      ranges <- unlist(ranges(object), use.names=FALSE)
+      values <- unlist(values(object), use.names=FALSE)
       out <-
-        cbind(out,
-              as.matrix(format.data.frame(do.call(data.frame,
-                        lapply(valuesSubset, showAsCell)))))
-    if (is.null(rownames(subset)))
-      rownames(out) <- seq_len(k)
-    else
-      rownames(out) <- rownames(subset)
-    classinfo <-
-      matrix(c("<character>", "<IRanges>", "|",
-               unlist(lapply(valuesSubset, function(x)
-                             paste("<", class(x), ">", sep = "")),
-                      use.names = FALSE)), nrow = 1,
-             dimnames = list("", colnames(out)))
+        cbind(space = space(object), ranges = showAsCell(ranges),
+              "|" = rep.int("|", nr))
+      if (nc > 0)
+        out <-
+          cbind(out,
+                as.matrix(format(do.call(data.frame,
+                                         lapply(values, showAsCell)))))
+      if (is.null(nms))
+        rownames(out) <- as.character(seq_len(nr))
+      else
+        rownames(out) <- nms
+      classinfo <-
+        matrix(c("<character>", "<IRanges>", "|",
+                 unlist(lapply(values, function(x)
+                               paste("<", class(x), ">", sep = "")),
+                        use.names = FALSE)), nrow = 1,
+               dimnames = list("", colnames(out)))
+    } else {
+      top <- object[1:9, ]
+      topRanges <- unlist(ranges(top), use.names=FALSE)
+      topValues <- unlist(values(top), use.names=FALSE)
+      bottom <- object[(nr-8L):nr, ]
+      bottomRanges <- unlist(ranges(bottom), use.names=FALSE)
+      bottomValues <- unlist(values(bottom), use.names=FALSE)
+      out <-
+        rbind(cbind(space = space(top), ranges = showAsCell(topRanges),
+                    "|" = rep.int("|", 9)),
+              rbind(rep.int("...", 3)),
+              cbind(space = space(bottom), ranges = showAsCell(bottomRanges),
+                    "|" = rep.int("|", 9)))
+      if (nc > 0)
+        out <-
+          cbind(out,
+                rbind(as.matrix(format(do.call(data.frame,
+                                                lapply(topValues,
+                                                       showAsCell)))),
+                rbind(rep.int("...", nc)),
+                rbind(as.matrix(format(do.call(data.frame,
+                                                lapply(bottomValues,
+                                                       showAsCell)))))))
+      if (is.null(nms)) {
+        rownames(out) <- c(as.character(1:9), "...", as.character((nr-8L):nr))
+      } else {
+        rownames(out) <- c(head(nms, 9), "...", tail(nms, 9))
+      }
+      classinfo <-
+        matrix(c("<character>", "<IRanges>", "|",
+                 unlist(lapply(topValues, function(x)
+                               paste("<", class(x), ">", sep = "")),
+                        use.names = FALSE)), nrow = 1,
+               dimnames = list("", colnames(out)))
+    }
     out <- rbind(classinfo, out)
     print(out, quote = FALSE, right = TRUE)
-    diffK <- nr - k
-    if (diffK > 0)
-      cat("...\n<", diffK, " more rows>\n", sep="")
   }
 })
 

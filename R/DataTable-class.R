@@ -382,13 +382,30 @@ setMethod("show", "DataTable",
                   nc, ifelse(nc == 1, " column\n", " columns\n"),
                   sep = "")
               if (nr > 0 && nc > 0) {
-                  k <- ifelse(nr <= 12L, nr, min(nr, 10L))
-                  out <-
-                    as.matrix(format.data.frame(do.call(data.frame,
-                              lapply(object,
-                                     function(x) showAsCell(head(x, k))))))
-                  if (!is.null(rownames(object)))
-                      rownames(out) <- head(rownames(object), k)
+                  nms <- rownames(object)
+                  if (nr < 20) {
+                      out <-
+                        as.matrix(format(do.call(data.frame,
+                                                 lapply(object, showAsCell))))
+                      if (!is.null(nms))
+                          rownames(out) <- nms
+                  } else {
+                      out <-
+                        rbind(as.matrix(format(do.call(data.frame,
+                                              lapply(object, function(x)
+                                                     showAsCell(head(x, 9)))))),
+                              rbind(rep.int("...", nc)),
+                              as.matrix(format(do.call(data.frame,
+                                              lapply(object, function(x) 
+                                                     showAsCell(tail(x, 9)))))))
+                      if (is.null(nms)) {
+                          rownames(out) <-
+                            c(as.character(1:9), "...",
+                              as.character((nr-8L):nr))
+                      } else {
+                          rownames(out) <- c(head(nms, 9), "...", tail(nms, 9))
+                      }
+                  }
                   classinfo <-
                     matrix(unlist(lapply(object, function(x)
                                   paste("<", class(x), ">", sep = "")),
@@ -396,8 +413,5 @@ setMethod("show", "DataTable",
                            dimnames = list("", colnames(out)))
                   out <- rbind(classinfo, out)
                   print(out, quote = FALSE, right = TRUE)
-                  diffK <- nr - k
-                  if (diffK > 0)
-                      cat("...\n<", diffK, " more rows>\n", sep="")
               }
           })
