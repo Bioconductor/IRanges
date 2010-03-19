@@ -2,7 +2,7 @@
 
 \alias{safeExplode}
 \alias{strsplitAsListOfIntegerVectors}
-
+\alias{svn.time}
 
 \title{Low-level string utilities}
 

@@ -18,3 +18,9 @@ strsplitAsListOfIntegerVectors <- function(x, sep=",")
     ans
 }
 
+### svn.time() returns the time in Subversion format, e.g.:
+###   "2007-12-07 10:03:15 -0800 (Fri, 07 Dec 2007)"
+### The -0800 part will be adjusted if daylight saving time is in effect.
+### TODO: Find a better home for this function.
+svn.time <- function() .Call("svn_time", PACKAGE="IRanges")
+

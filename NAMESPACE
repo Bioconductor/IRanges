@@ -56,6 +56,7 @@ export(
     normargWeight,
     safeExplode,
     strsplitAsListOfIntegerVectors,
+    svn.time,
     solveUserSEW0, IRanges, solveUserSEW,
     successiveIRanges,
     whichAsIRanges,
