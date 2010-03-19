@@ -157,9 +157,10 @@ setMethod("[", "SimpleList",
 setMethod("seqselect", "SimpleList",
           function(x, start=NULL, end=NULL, width=NULL)
           {
-              if (!is.null(start) && is.null(end) && is.null(width) &&
-                  (length(x) > 0)) {
-                  if (length(x) != length(start))
+              lx <- length(x)
+              if ((lx > 0) && is.null(end) && is.null(width) &&
+                  !is.null(start) && !is(start, "Ranges")) {
+                  if (lx != length(start))
                       stop("'length(start)' must equal 'length(x)' when ",
                            "'end' and 'width' are NULL")
                   if (is.list(start)) {
@@ -170,7 +171,7 @@ setMethod("seqselect", "SimpleList",
                   } else if (is(start, "RleList")) {
                       start <- IRangesList(start)
                   }
-                  indices <- structure(seq_len(length(x)), names = names(x))
+                  indices <- structure(seq_len(lx), names = names(x))
                   if (is(start, "RangesList")) {
                       listData <-
                         lapply(indices, function(i)
@@ -198,9 +199,10 @@ setMethod("seqselect", "SimpleList",
 setReplaceMethod("seqselect", "SimpleList",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
-                     if (!is.null(start) && is.null(end) && is.null(width) &&
-                         (length(x) > 0)) {
-                         if (length(x) != length(start))
+                     lx <- length(x)
+                     if ((lx > 0) && is.null(end) && is.null(width) &&
+                         !is.null(start) && !is(start, "Ranges")) {
+                         if (lx != length(start))
                              stop("'length(start)' must equal 'length(x)' when ",
                                   "'end' and 'width' are NULL")
                          if (is.list(start)) {
@@ -218,8 +220,7 @@ setReplaceMethod("seqselect", "SimpleList",
                                  newstart[[i]][start[[i]]] <- TRUE
                              start <- newstart
                          }
-                         indices <-
-                           structure(seq_len(length(x)), names = names(x))
+                         indices <- structure(seq_len(lx), names = names(x))
                          if (is(start, "RangesList") ||
                              is(start, "LogicalList")) {
                              if (!is(value, "SimpleList") &&

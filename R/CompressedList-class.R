@@ -403,8 +403,8 @@ setMethod("seqselect", "CompressedList",
           function(x, start=NULL, end=NULL, width=NULL)
           {
               lx <- length(x)
-              if (!is.null(start) && is.null(end) && is.null(width) &&
-                  (lx > 0)) {
+              if ((lx > 0) && is.null(end) && is.null(width) &&
+                  !is.null(start) && !is(start, "Ranges")) {
                   if (lx != length(start))
                       stop("'length(start)' must equal 'length(x)' when ",
                            "'end' and 'width' are NULL")
@@ -466,9 +466,10 @@ setMethod("seqselect", "CompressedList",
 setReplaceMethod("seqselect", "CompressedList",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
-                     if (!is.null(start) && is.null(end) && is.null(width) &&
-                         (length(x) > 0)) {
-                         if (length(x) != length(start))
+                     lx <- length(x)
+                     if ((lx > 0) && is.null(end) && is.null(width) &&
+                         !is.null(start) && !is(start, "Ranges")) {
+                         if (lx != length(start))
                              stop("'length(start)' must equal 'length(x)' ",
                                   "when 'end' and 'width' are NULL")
                          if (is.list(start)) {
