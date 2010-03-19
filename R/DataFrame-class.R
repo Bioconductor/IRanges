@@ -145,7 +145,7 @@ DataFrame <- function(..., row.names = NULL)
       emptynames <- rep.int(TRUE, length(listData))
       names(listData) <- dotvalues
     } else {
-      emptynames <- !nzchar(names(listData))
+      emptynames <- !nzchar(dotnames)
       if (any(emptynames)) {
         names(listData)[emptynames] <- dotvalues[emptynames]
       }
@@ -160,7 +160,8 @@ DataFrame <- function(..., row.names = NULL)
       nrows[i] <- nrow(element)
       ncols[i] <- ncol(element)
       varlist[[i]] <- as.list(element, use.names = FALSE)
-      if (length(dim(listData[[i]])) > 1) {
+      if ((length(dim(listData[[i]])) > 1) ||
+          (ncol(element) > 1)) {
         if (emptynames[i])
           varnames[[i]] <- colnames(element)
         else
