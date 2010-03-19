@@ -160,7 +160,7 @@ static int get_svn_time(time_t t, char *out, size_t out_size)
 	  *wday2str[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"},
 	  *mon2str[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
 			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"},
-	  *svn_format = "%d-%02d-%02d %02d:%02d:%02d %+03d00 (%s, %d %s %d)";
+	  *svn_format = "%d-%02d-%02d %02d:%02d:%02d %+03d00 (%s, %02d %s %d)";
 
 	tzset();
 	utc_offset = - (timezone / 3600);
