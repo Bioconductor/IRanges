@@ -155,10 +155,14 @@
     }
     \item{}{\code{as.data.frame(x, row.names=NULL, optional=FALSE)}:
       Coerces \code{x}, a \code{DataFrame}, to a \code{data.frame}.
-      Each column is coerced to a \code{vector} and stored as a column in
-      the \code{data.frame}. If \code{row.names} is \code{NULL}, they
-      are retrieved from \code{x}, if it has any. Otherwise, they are
+      Each column is coerced to a \code{data.frame} and then column
+      bound together. If \code{row.names} is \code{NULL}, they are
+      retrieved from \code{x}, if it has any. Otherwise, they are
       inferred by the \code{data.frame} constructor.
+
+      NOTE: conversion of \code{x} to a \code{data.frame} is not
+      supported if \code{x} contains any \code{list}, \code{SimpleList},
+      or \code{CompressedList} columns.
     }
     \item{}{\code{as(from, "data.frame")}: Coerces a \code{DataFrame}
       to a \code{data.frame} by calling \code{as.data.frame(from)}.

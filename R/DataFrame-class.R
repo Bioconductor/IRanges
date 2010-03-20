@@ -447,9 +447,15 @@ setMethod("as.data.frame", "DataFrame",
               row.names <- rownames(x)
             if (!length(l) && is.null(row.names))
               row.names <- seq_len(nrow(x))
-            ## we call as.data.frame here, because data.frame uses S3 dispatch
-            do.call(data.frame, c(lapply(l, as.data.frame, optional = TRUE),
-                                  list(row.names = row.names)))
+            do.call(data.frame,
+                    c(lapply(l,
+                             function(y) {
+                               if(is.list(y) || is(y, "SimpleList") ||
+                                  is(y, "CompressedList"))
+                                 stop("conversion of list columns to a ",
+                                      "data.frame is not supported")
+                               as.data.frame(y, optional = TRUE)
+                             }), list(row.names = row.names)))
           })
 
 ## take data.frames to DataFrames
