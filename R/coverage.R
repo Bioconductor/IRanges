@@ -135,11 +135,43 @@ setMethod("coverage", "RangesList",
              width = structure(rep(list(NULL), length(x)), names = names(x)),
              weight = structure(rep(list(1L), length(x)), names = names(x)))
     {
+        lx <- length(x)
+        if (lx != 0 &&
+            ((!is.list(shift) && !is(shift, "IntegerList")) ||
+             length(shift) == 0))
+            stop("'shift' must be a non-empty list of integers")
+        if (length(shift) < lx)
+            shift <- rep(shift, length.out = lx)
+        if (lx != 0 &&
+            ((!is.list(width) && !is(width, "IntegerList")) ||
+             length(width) == 0))
+            stop("'width' must be a non-empty list")
+        if (length(width) < lx)
+            width <- rep(width, length.out = lx)
+        if (lx != 0 &&
+            ((!is.list(weight) && !is(weight, "IntegerList")) ||
+             length(weight) == 0))
+            stop("'weight' must be a non-empty list of integers")
+        if (length(weight) < lx)
+            weight <- rep(weight, length.out = lx)
         indices <- names(x)
-        if (is.null(indices))
-            indices <- seq_len(length(x))
-        else
+        if (is.null(indices)) {
+            indices <- seq_len(lx)
+        } else {
+            if (is.null(names(shift)))
+                names(shift) <- indices
+            if (length(setdiff(names(shift), indices)) > 0)
+                stop("'x' and 'shift' have mismatching names")
+            if (is.null(names(width)))
+                names(width) <- indices
+            if (length(setdiff(names(width), indices)) > 0)
+                stop("'x' and 'width' have mismatching names")
+            if (is.null(names(weight)))
+                names(weight) <- indices
+            if (length(setdiff(names(weight), indices)) > 0)
+                stop("'x' and 'weight' have mismatching names")
             names(indices) <- indices
+        }
         newSimpleList("SimpleRleList",
                       lapply(indices,
                              function(i) {
