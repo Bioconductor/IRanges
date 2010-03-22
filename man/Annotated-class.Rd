@@ -7,7 +7,7 @@
 \alias{metadata}
 \alias{metadata,Annotated-method}
 \alias{metadata<-}
-\alias{metadata<-,Annotated,list-method}
+\alias{metadata<-,Annotated-method}
 
 \title{Annotated class}
 \description{The virtual class \code{Annotated} is used to standardize the

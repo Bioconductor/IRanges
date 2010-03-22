@@ -97,8 +97,10 @@ setMethod("elementMetadata", "Sequence",
 
 setGeneric("elementMetadata<-",
            function(x, ..., value) standardGeneric("elementMetadata<-"))
-setReplaceMethod("elementMetadata", c("Sequence", "DataTableORNULL"),
+setReplaceMethod("elementMetadata", "Sequence",
                  function(x, value) {
+                     if (!is(value, "DataTableORNULL"))
+                         stop("replacement 'elementMetadata' value must be a DataTable object")
                      if ("elementMetadata" %in% names(attributes(x))) {
                          if (!is.null(value) && length(x) != nrow(value))
                              stop("the number of rows in elementMetadata 'value' ",
@@ -315,6 +317,10 @@ setMethod("window", "Sequence",
               }
           })
 
+setMethod("window", "NULL",
+        function(x, start = NA, end = NA, width = NA,
+                 frequency = NULL, delta = NULL, ...) NULL)
+
 setMethod("window", "vector",
           function(x, start = NA, end = NA, width = NA,
                    frequency = NULL, delta = NULL, ...)
@@ -430,6 +436,9 @@ setMethod("seqselect", "Sequence",
               x
           })
 
+setMethod("seqselect", "NULL",
+          function(x, start=NULL, end=NULL, width=NULL) NULL)
+
 setMethod("seqselect", "vector",
           function(x, start=NULL, end=NULL, width=NULL)
           {
@@ -500,12 +509,7 @@ setReplaceMethod("seqselect", "Sequence",
                              else
                                  value <- rep(value, length.out = lr)
                          }
-                         nms <- names(x)
-                         if (is.null(nms)) {
-                             names(value) <- NULL
-                         } else {
-                             names(value) <- seqselect(nms, ir)
-                         }
+                         names(value) <- seqselect(names(x), ir)
                      }
                      irValues <- PartitioningByEnd(cumsum(width(ir)))
                      ir <- gaps(ir, start = 1, end = length(x))

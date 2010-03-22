@@ -147,8 +147,11 @@ setMethod("[", "SimpleList",
                       } else {
                           stop("invalid subscript type")
                       }
-                      slot(x, "listData", check=FALSE) <- as.list(x)[i]
-                      x <- .bracket.Sequence(x, i)
+                      x <-
+                        initialize(x,
+                                   elementMetadata =
+                                   seqselect(x@elementMetadata, i),
+                                   listData = as.list(x)[i])
                   }
               }
               x

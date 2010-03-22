@@ -120,10 +120,10 @@ setMethod("[", "FilterRules",
           {
             if (!missing(j) || length(list(...)) > 0)
               stop("invalid subsetting")
-            if (missing(i))
-              return(x)
-            x <- callNextMethod(x, i)
-            active(x) <- x@active[i]
+            if (!missing(i)) {
+              x@active <- x@active[i]
+              x <- callNextMethod(x, i)
+            }
             x
           })
 

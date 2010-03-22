@@ -378,21 +378,16 @@ setMethod("[", "CompressedList",
                                     seqselect(end(x@partitioning), i),
                                     width =
                                     seqselect(width(x@partitioning), i))
-                          slot(x, "unlistData", check=FALSE) <-
-                            seqselect(x@unlistData, ir)
-                          if (is.null(names(x))) {
-                              slot(x, "partitioning", check=FALSE) <-
-                                new2("PartitioningByEnd",
-                                     end = cumsum(width(ir)), check=FALSE)
-                          } else {
-                              slot(x, "partitioning", check=FALSE) <-
-                                new2("PartitioningByEnd",
-                                     end = cumsum(width(ir)),
-                                     NAMES = seqselect(names(x), i),
-                                     check=FALSE)
-                          }
-                          if (!is.null(elementMetadata(x)))
-                              x <- .bracket.Sequence(x, as.integer(i))
+                          x <-
+                            initialize(x,
+                                       elementMetadata =
+                                       seqselect(x@elementMetadata, i),
+                                       unlistData = seqselect(x@unlistData, ir),
+                                       partitioning =
+                                       new2("PartitioningByEnd",
+                                            end = cumsum(width(ir)),
+                                            NAMES = seqselect(names(x), i),
+                                            check=FALSE))
                       }
                   }
               }

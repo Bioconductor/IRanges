@@ -530,11 +530,11 @@ setMethod("seqselect", "IRanges",
             stop(irInfo[["msg"]])
         if (irInfo[["useIdx"]]) {
             ir <- irInfo[["idx"]]
-            slot(x, "start", check=FALSE) <- seqselect(start(x), ir)
-            slot(x, "width", check=FALSE) <- seqselect(width(x), ir)
-            if (!is.null(names(x)))
-                slot(x, "NAMES", check=FALSE) <- seqselect(names(x), ir)
-            validObject(x)
+            x <-
+              initialize(x,
+                         start = seqselect(start(x), ir),
+                         width = seqselect(width(x), ir),
+                         NAMES = seqselect(names(x), ir))
         }
         x
     }

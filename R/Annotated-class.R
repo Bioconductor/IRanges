@@ -15,8 +15,10 @@ setMethod("metadata", "Annotated",
 
 setGeneric("metadata<-",
            function(x, ..., value) standardGeneric("metadata<-"))
-setReplaceMethod("metadata", c("Annotated", "list"),
+setReplaceMethod("metadata", "Annotated",
                  function(x, value) {
+                     if (!is.list(value))
+                         stop("replacement 'metadata' value must be a list")
                      if (!length(value))
                          names(value) <- NULL # instead of character()
                      x@metadata <- value

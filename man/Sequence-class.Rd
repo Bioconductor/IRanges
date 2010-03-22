@@ -20,11 +20,12 @@
 \alias{elementMetadata}
 \alias{elementMetadata,Sequence-method}
 \alias{elementMetadata<-}
-\alias{elementMetadata<-,Sequence,DataTableORNULL-method}
+\alias{elementMetadata<-,Sequence-method}
 
 \alias{[,Sequence-method}
 \alias{[<-,Sequence-method}
 \alias{window,Sequence-method}
+\alias{window,NULL-method}
 \alias{window,vector-method}
 \alias{window,factor-method}
 \alias{window<-,Sequence-method}
@@ -32,6 +33,7 @@
 \alias{window<-,factor-method}
 \alias{seqselect}
 \alias{seqselect,Sequence-method}
+\alias{seqselect,NULL-method}
 \alias{seqselect,vector-method}
 \alias{seqselect,factor-method}
 \alias{seqselect<-}

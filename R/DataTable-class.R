@@ -165,12 +165,7 @@ setReplaceMethod("seqselect", "DataTable",
                                          width = width(ir)[i]))
                      }
                      if (length(irValues) > 0) {
-                         nms <- rownames(x)
-                         if (is.null(nms)) {
-                             rownames(value) <- NULL
-                         } else {
-                             rownames(value) <- seqselect(nms, irValues)
-                         }
+                         rownames(value) <- seqselect(rownames(x), irValues)
                          colnames(value) <- colnames(x)
                          subseqs[seq(2, length(subseqs), by = 2)] <-
                            lapply(seq_len(length(irValues)), function(i)
