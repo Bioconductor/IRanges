@@ -163,12 +163,14 @@ static int get_svn_time(time_t t, char *out, size_t out_size)
 	  *svn_format = "%d-%02d-%02d %02d:%02d:%02d %+03d00 (%s, %02d %s %d)";
 
 	tzset();
-	utc_offset = - (timezone / 3600);
 	//localtime_r() not available on Windows+MinGW
 	//localtime_r(&t, &result);
 	result = *localtime(&t);
-	if (result.tm_isdst > 0)
-		utc_offset++;
+	//timezone is not portable (is a function, not a long, on OS X Tiger)
+	//utc_offset = - (timezone / 3600);
+	//if (result.tm_isdst > 0)
+	//	utc_offset++;
+	utc_offset = result.tm_gmtoff / 3600;
 	n = snprintf(out, out_size, svn_format,
 		result.tm_year + 1900,
 		result.tm_mon + 1,
