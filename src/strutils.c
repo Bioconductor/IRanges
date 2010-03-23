@@ -164,7 +164,9 @@ static int get_svn_time(time_t t, char *out, size_t out_size)
 
 	tzset();
 	utc_offset = - (timezone / 3600);
-	localtime_r(&t, &result);
+	//localtime_r() not available on Windows+MinGW
+	//localtime_r(&t, &result);
+	result = *localtime(&t);
 	if (result.tm_isdst > 0)
 		utc_offset++;
 	n = snprintf(out, out_size, svn_format,
