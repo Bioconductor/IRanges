@@ -230,7 +230,7 @@ setMethod("disjoin", "Ranges",
         adj_end <- sort(unique(c(ends, starts - 1L)))
         adj <- update(x, start=head(adj_start, -1L), end=tail(adj_end, -1L),
                       names=NULL, check=FALSE)
-        adj[adj %in% x]
+        subsetByOverlaps(adj,  x)
     }
 )
 

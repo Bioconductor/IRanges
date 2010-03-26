@@ -272,6 +272,8 @@ rangesListSingleSquareBracket <- function(x, i, j, ..., drop)
   if (missing(i))
     return(x)
   if (is(i, "RangesList")) {
+    warning("'[' subsetting by RangesList is deprecated.\n",
+            "Use 'subsetByOverlaps' instead.")
     ol <- x %in% i
     els <- as.list(x)
     for (j in seq_len(length(x))) {

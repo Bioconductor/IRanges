@@ -29,11 +29,14 @@ test_RangesList_subset <- function() { ## by RangesList
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(1,15,20,45), end=c(5,15,100,80))
   collection <- RangesList(one = range1, range2)
-  checkIdentical(collection[RangesList()], RangesList(one=IRanges(), IRanges()))
-  checkIdentical(collection[RangesList(IRanges(4, 6), IRanges(50, 70))],
+  checkIdentical(subsetByOverlaps(collection, RangesList()),
+                 RangesList(one=IRanges(), IRanges()))
+  checkIdentical(subsetByOverlaps(collection,
+                                  RangesList(IRanges(4, 6), IRanges(50, 70))),
                  RangesList(one=IRanges(c(1,3),c(5,8)),
                             IRanges(c(20,45),c(100,80))))
-  checkIdentical(collection[RangesList(IRanges(50, 70), one=IRanges(4, 6))],
+  checkIdentical(subsetByOverlaps(collection,
+                                  RangesList(IRanges(50, 70), one=IRanges(4, 6))),
                  RangesList(one=IRanges(c(1,3),c(5,8)), IRanges()))
 }
 

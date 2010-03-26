@@ -83,7 +83,7 @@ test_IRanges_reduce <- function() {
 test_IRanges_subset <- function() { # by range
   query <- IRanges(c(1, 4, 9), c(5, 7, 10))
   subject <- IRanges(c(6, 8, 10), c(7, 12, 14))
-  checkIdentical(query[subject], query[2:3])
+  checkIdentical(subsetByOverlaps(query, subject), query[2:3])
 }
 
 test_IRanges_annotation <- function() {

@@ -428,6 +428,8 @@ setMethod("[", "RangedData",
               }
               if (!missing(i)) {
                 if (is(i, "RangesList")) {
+                  warning("'[' subsetting by RangesList is deprecated.\n",
+                          "Use 'subsetByOverlaps' instead.")
                   i <- ranges %in% i
                 } else if (is(i, "LogicalList")) {
                   xeltlen <- elementLengths(ranges(x))

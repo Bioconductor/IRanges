@@ -455,6 +455,8 @@ setMethod("[", "IRanges",
           if (anyMissing(i))
             stop("subsetting by character would result in NA's")
         } else if (is(i, "Ranges")) {
+            warning("'[' subsetting by Ranges is deprecated.\n",
+                    "Use 'subsetByOverlaps' instead.")
             i <- x %in% i
         } else if (!is.null(i)) {
             stop("invalid subscript type")
@@ -504,6 +506,8 @@ setReplaceMethod("[", "IRanges",
           if (anyMissing(i))
             stop("subsetting by character would result in NA's")
         } else if (is(i, "Ranges")) {
+            warning("'[' subsetting by Ranges is deprecated.\n",
+                    "Use 'subsetByOverlaps' instead.")
             i <- x %in% i
         } else if (!is.null(i)) {
             stop("invalid subscript type")
