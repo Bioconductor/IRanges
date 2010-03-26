@@ -75,11 +75,12 @@ Collate: validity-utils.R
 	RangesMatching-class.R
 	RangesMatchingList-class.R
 	Alignment-class.R
-        RangedSelection-class.R
+	RangedSelection-class.R
 	read.Mask.R
 	xvcopy.R
 	reverse.R
 	coverage.R
+	test_IRanges_package.R
 	updateObject.R
 	debug.R
 	zzz.R
