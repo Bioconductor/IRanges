@@ -30,10 +30,8 @@ setClass("RangedData", contains = "DataTable",
 ### Accessor methods.
 ###
 
-setGeneric("values", function(x, ...) standardGeneric("values"))
 setMethod("values", "RangedData", function(x) x@values)
 
-setGeneric("values<-", function(x, ..., value) standardGeneric("values<-"))
 setReplaceMethod("values", "RangedData",
                  function(x, value) {
                    if (extends(class(value), "SplitDataFrameList")) {

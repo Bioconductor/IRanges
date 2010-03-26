@@ -94,6 +94,8 @@ setMethod("elementMetadata", "Sequence",
               }
               emd
           })
+setGeneric("values", function(x, ...) standardGeneric("values"))
+setMethod("values", "Sequence", function(x, ...) elementMetadata(x, ...))
 
 setGeneric("elementMetadata<-",
            function(x, ..., value) standardGeneric("elementMetadata<-"))
@@ -109,6 +111,12 @@ setReplaceMethod("elementMetadata", "Sequence",
                              rownames(value) <- NULL
                          x@elementMetadata <- value
                      }
+                     x
+                 })
+setGeneric("values<-", function(x, ..., value) standardGeneric("values<-"))
+setReplaceMethod("values", "Sequence",
+                 function(x, value) {
+                     elementMetadata(x) <- value
                      x
                  })
 

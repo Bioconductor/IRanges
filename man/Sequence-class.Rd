@@ -19,8 +19,12 @@
 \alias{nlevels,Sequence-method}
 \alias{elementMetadata}
 \alias{elementMetadata,Sequence-method}
+\alias{values}
+\alias{values,Sequence-method}
 \alias{elementMetadata<-}
 \alias{elementMetadata<-,Sequence-method}
+\alias{values<-}
+\alias{values<-,Sequence-method}
 
 \alias{[,Sequence-method}
 \alias{[<-,Sequence-method}
@@ -164,6 +168,10 @@
       Get or set the \linkS4class{DataTable} holding local metadata on each
       element. The rows are named according to the names of the elements.
       Optional, may be \code{NULL}.
+    }
+    \item{}{
+      \code{values(x), values(x) <- value}:
+      Alternative to \code{elementMetadata} functions.
     }
   }
 }
