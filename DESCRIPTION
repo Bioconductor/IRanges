@@ -8,7 +8,7 @@ Description: The package provides efficient low-level and highly reusable S4
 	collections of instances of the basic classes. All classes in
 	the package use consistent naming and share the same rich and
 	consistent "Sequence API" as much as possible.
-Version: 1.5.73
+Version: 1.5.74
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Biocore Team c/o BioC user list <bioconductor@stat.math.ethz.ch>
 biocViews: Infrastructure, Genetics
@@ -23,6 +23,7 @@ ExtraLicenses: The following files in the 'src' directory are licensed for all
 Collate: validity-utils.R
 	utils.R
 	strutils.R
+	compact_bitvector.R
 	endoapply.R
 	runstat.R
 	Annotated-class.R

@@ -32,6 +32,14 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(strsplit_as_list_of_ints, 2),
 	CALLMETHOD_DEF(svn_time, 0),
 
+/* compact_bitvector.c */
+	CALLMETHOD_DEF(logical_as_compact_bitvector, 1),
+	CALLMETHOD_DEF(compact_bitvector_as_logical, 2),
+	CALLMETHOD_DEF(subset_compact_bitvector, 2),
+	CALLMETHOD_DEF(compact_bitvector_bit_count, 1),
+	CALLMETHOD_DEF(compact_bitvector_last_bit, 1),
+	CALLMETHOD_DEF(compact_bitvector_set_op, 3),
+
 /* Sequence_class.c */
 	CALLMETHOD_DEF(vector_seqselect, 3),
 

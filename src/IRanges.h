@@ -441,6 +441,21 @@ SEXP strsplit_as_list_of_ints(SEXP x, SEXP sep);
 SEXP svn_time();
 
 
+/* compact_bitvector.c */
+
+SEXP logical_as_compact_bitvector(SEXP x);
+
+SEXP compact_bitvector_as_logical(SEXP x, SEXP length_out);
+
+SEXP subset_compact_bitvector(SEXP x, SEXP subscript);
+
+SEXP compact_bitvector_bit_count(SEXP x);
+
+SEXP compact_bitvector_last_bit(SEXP x);
+
+SEXP compact_bitvector_set_op(SEXP query, SEXP ref, SEXP align);
+
+
 /* Sequence_class.c */
 
 const char *_get_Sequence_elementType(SEXP x);
