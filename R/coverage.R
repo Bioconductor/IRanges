@@ -17,13 +17,13 @@ coverage.normargWidth <- function(width, nseq)
 {
     if (is.null(width)) {
         if (nseq == 0L)
-            stop("'x' has no element and 'width' is NULL")
-        return(width)
+            width <- 0L
+    } else {
+        if (!isSingleNumber(width) || width < 0)
+            stop("'width' must be NULL or a single non-negative integer")
+        if (!is.integer(width))
+            width <- as.integer(width)
     }
-    if (!isSingleNumber(width) || width < 0)
-        stop("'width' must be NULL or a single non-negative integer")
-    if (!is.integer(width))
-        width <- as.integer(width)
     width
 }
 
