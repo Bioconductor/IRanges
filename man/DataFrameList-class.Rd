@@ -14,6 +14,8 @@
 \alias{dim,DataFrameList-method}
 \alias{rownames,DataFrameList-method}
 \alias{colnames,DataFrameList-method}
+\alias{colnames,CompressedSplitDataFrameList-method}
+\alias{colnames,SimpleSplitDataFrameList-method}
 \alias{dimnames,DataFrameList-method}
 \alias{rownames<-,CompressedSplitDataFrameList-method}
 \alias{rownames<-,SimpleDataFrameList-method}
