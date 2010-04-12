@@ -64,9 +64,13 @@ setGeneric("reflect",
 setMethod("reflect", "Ranges",
     function(x, bounds, use.names=TRUE)
     {
-        if (!is(bounds, "Ranges") || length(bounds) != length(x))
-            stop("'bounds' must be a Ranges object of length equal to that of 'x'")
-        ans_start <- end(bounds) - (end(x) - start(bounds))
+        if (!is(bounds, "Ranges"))
+            stop("'bounds' must be a Ranges object")
+        if (length(x) > 1 && length(bounds) == 0)
+            stop("'bounds' is an empty Ranges object")
+        if (length(x) < length(bounds))
+            bounds <- head(bounds, length(x))
+        ans_start <- (2L * start(bounds) + width(bounds) - 1L) - end(x)
         x <- update(x, start=ans_start, width=width(x), check=FALSE)
         if (!normargUseNames(use.names))
             names(x) <- NULL

@@ -35,7 +35,7 @@ test_Ranges_reflect <- function() {
   bounds <- IRanges(c(0, 5, 3), c(10, 6, 9))
   checkIdentical(reflect(ir1, bounds),
                  IRanges(c(7, 4, 9), c(8, 6, 11)))
-  checkException(reflect(ir1, IRanges(0, 10)), silent = TRUE)
+  checkException(reflect(ir1, IRanges()), silent = TRUE)
 }
 
 test_Ranges_resize <- function() {
