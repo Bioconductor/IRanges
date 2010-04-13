@@ -1329,6 +1329,11 @@ setMethod("levels", "Rle", function(x) levels(runValue(x)))
 setReplaceMethod("levels", "Rle",
                  function(x, value) {
                      levels(x@values) <- value
+                     if (anyDuplicated(value)) {
+                         x <-
+                           Rle(values = runValue(x), lengths = runLength(x),
+                               check = FALSE)
+                     }
                      x
                  })
 
