@@ -52,9 +52,9 @@ RangesMatchingList <- function(matchings, subject)
 setMethod("as.matrix", "RangesMatchingList", function(x) {
   mats <- lapply(x, as.matrix)
   mat <- do.call(rbind, mats)
-  cols <- c(0, head(cumsum(lapply(x, ncol)), -1))
+  rows <- c(0, head(cumsum(lapply(x, nrow)), -1))
   nr <- sapply(mats, nrow)
-  mat + cbind(rep.int(cols, nr), rep.int(x@subjectOffsets, nr))
+  mat + cbind(rep.int(rows, nr), rep.int(x@subjectOffsets, nr))
 })
 
 ## count up the matches for each query in every matching
