@@ -12,7 +12,7 @@ setClass("Sequence",
          contains="Annotated",
          representation(
                         "VIRTUAL",
-                        elementMetadata = "DataTableORNULL",
+                        elementMetadata = "ANY",
                         elementType = "character"
                         ),
          prototype(elementType="ANY")
@@ -127,7 +127,9 @@ setReplaceMethod("values", "Sequence",
 
 .valid.Sequence.elementMetadata <- function(x) {
     emd <- elementMetadata(x)
-    if (!is.null(emd) && nrow(emd) != length(x))
+    if (!is(emd, "DataTableORNULL"))
+        "'elementMetadata(x)' must be a DataTable object or NULL"
+    else if (!is.null(emd) && nrow(emd) != length(x))
         "number of rows in non-NULL 'elementMetadata(x)' must match length of 'x'"
     else if (!is.null(emd) && !identical(rownames(emd), names(x)))
         "the rownames of non-NULL 'elementMetadata(x)' must match the names of 'x'"
