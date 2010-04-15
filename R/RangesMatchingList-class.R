@@ -52,7 +52,7 @@ RangesMatchingList <- function(matchings, subject)
 setMethod("as.matrix", "RangesMatchingList", function(x) {
   mats <- lapply(x, as.matrix)
   mat <- do.call(rbind, mats)
-  rows <- c(0, head(cumsum(lapply(x, nrow)), -1))
+  rows <- c(0L, head(cumsum(sapply(x, nrow)), -1))
   nr <- sapply(mats, nrow)
   mat + cbind(rep.int(rows, nr), rep.int(x@subjectOffsets, nr))
 })
