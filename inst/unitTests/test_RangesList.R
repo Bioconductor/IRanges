@@ -60,40 +60,141 @@ test_RangesList_as_data_frame <- function() {
                  as.data.frame(RangesList(a=range1, b=range2)))
 }
 
-test_RangesList_reduce <- function() {
-  range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
-  range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
-  range3 <- IRanges(start=c(3,-2,6,7,-10,-2,3), width=c(1,0,0,0,0,8,0))
-  range4 <- IRanges()
-  collection <- RangesList(one = range1, range2, range3, range4)
-  checkIdentical(reduce(collection),
-                 RangesList(one = reduce(range1), reduce(range2),
-                            reduce(range3), reduce(range4)))
-  checkIdentical(reduce(collection, drop.empty.ranges=TRUE),
-                 RangesList(one = reduce(range1, drop.empty.ranges=TRUE),
-                            reduce(range2, drop.empty.ranges=TRUE),
-                            reduce(range3, drop.empty.ranges=TRUE),
-                            reduce(range4, drop.empty.ranges=TRUE)))
+test_RangesList_flank <- function() {
+  range1 <- IRanges(start=c(2,5), end=c(3,7))
+  range2 <- IRanges(start=1, end=3)
+  for (compress in c(TRUE, FALSE)) {
+    collection <- IRangesList(range1, range2, compress = compress)
+    checkIdentical(flank(collection, 2),
+                   IRangesList(IRanges(c(0, 3), c(1, 4)), IRanges(-1, 0),
+                               compress = compress))
+    checkIdentical(flank(collection, 2, FALSE),
+                   IRangesList(IRanges(c(4, 8), c(5, 9)), IRanges(4, 5),
+                               compress = compress))
+    checkIdentical(flank(collection, 2, LogicalList(c(FALSE, TRUE), FALSE)),
+                   IRangesList(IRanges(c(4, 3), c(5, 4)), IRanges(4, 5),
+                               compress = compress))
+    checkIdentical(flank(collection, IntegerList(c(2, -2), 2)),
+                   IRangesList(IRanges(c(0, 5), c(1, 6)), IRanges(-1, 0),
+                               compress = compress))
+    checkIdentical(flank(collection, 2, both = TRUE),
+                   IRangesList(IRanges(c(0, 3), c(3, 6)), IRanges(-1, 2),
+                               compress = compress))
+    checkIdentical(flank(collection, 2, FALSE, TRUE),
+                   IRangesList(IRanges(c(2, 6), c(5, 9)), IRanges(2, 5),
+                               compress = compress))
+    checkIdentical(flank(collection, -2, FALSE, TRUE),
+                   IRangesList(IRanges(c(2, 6), c(5, 9)),
+                               IRanges(2, 5), compress = compress))
+    checkException(flank(collection, 2, both = c(TRUE, FALSE, TRUE)),
+                   silent = TRUE) # not vectorized
+    checkException(flank(collection, 2, LogicalList(c(FALSE, TRUE), NA)),
+                   silent = TRUE)
+    checkException(flank(collection, NA), silent = TRUE)
+  }
+}
+
+test_RangesList_narrow <- function() {
+  range1 <- IRanges(start=c(2,5), end=c(3,7))
+  range2 <- IRanges(start=1, end=3)
+  for (compress in c(TRUE, FALSE)) {
+    collection <- IRangesList(range1, range2, compress = compress)
+    checkIdentical(narrow(collection, start=1, end=2),
+                   IRangesList(IRanges(c(2, 5), c(3, 6)), IRanges(1, 2),
+                               compress = compress))
+    checkException(narrow(collection, start=10, end=20), silent = TRUE)
+  }
+}
+
+test_RangesList_resize <- function() {
+  range1 <- IRanges(start=c(2,5), end=c(3,7))
+  range2 <- IRanges(start=1, end=3)
+  for (compress in c(TRUE, FALSE)) {
+    collection <- IRangesList(range1, range2, compress = compress)
+    checkIdentical(resize(collection, width=10),
+                   IRangesList(IRanges(c(2, 5), width=10), IRanges(1, width=10),
+                               compress = compress))
+    checkIdentical(resize(collection, width=10, fix="end"),
+                   IRangesList(IRanges(c(-6, -2), width=10), IRanges(-6, width=10),
+                               compress = compress))
+    checkIdentical(resize(collection, width=10, fix="center"),
+                   IRangesList(IRanges(c(-2, 1), width=10), IRanges(-3, width=10),
+                               compress = compress))
+    checkIdentical(resize(collection, width=10,
+                          fix=CharacterList(c("start", "end"), "center")),
+                   IRangesList(IRanges(c(2, -2), width=10), IRanges(-3, width=10),
+                               compress = compress))
+    checkException(resize(collection, -1), silent = TRUE)
+  }
+}
+
+test_RangesList_restrict <- function() {
+  range1 <- IRanges(start=c(2,5), end=c(3,7))
+  range2 <- IRanges(start=1, end=3)
+  for (compress in c(TRUE, FALSE)) {
+    collection <- IRangesList(range1, range2, compress = compress)
+    checkIdentical(restrict(collection, start=2, end=5),
+                   IRangesList(IRanges(c(2, 5), c(3, 5)), IRanges(2, 3),
+                               compress = compress))
+    checkIdentical(restrict(collection, start=1, end=2),
+                   IRangesList(IRanges(2, 2), IRanges(1, 2),
+                               compress = compress))
+    checkIdentical(restrict(collection, start=1, end=2, keep.all.ranges=TRUE),
+                   IRangesList(IRanges(c(2, 3), c(2, 2)), IRanges(1, 2),
+                               compress = compress))
+  }
 }
 
 test_RangesList_gaps <- function() {
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
-  collection <- RangesList(one = range1, range2)
-  checkIdentical(gaps(collection), RangesList(one = gaps(range1), gaps(range2)))
+  for (compress in c(TRUE, FALSE)) {
+    collection <- IRangesList(one = range1, range2, compress = compress)
+    checkIdentical(gaps(collection),
+                   IRangesList(one = gaps(range1), gaps(range2),
+                               compress = compress))
+  }
 }
 
 test_RangesList_range <- function() {
-  rl1 <- RangesList(a = IRanges(c(1,2),c(4,3)), b = IRanges(c(4,6),c(10,7)))
-  rl2 <- RangesList(c = IRanges(c(0,2),c(4,5)), a = IRanges(c(4,5),c(6,7)))
-  ans <- RangesList(a = IRanges(1,7), b = IRanges(4,10), c = IRanges(0,5))
-  checkIdentical(range(rl1, rl2), ans)
-  names(rl2) <- NULL
-  ans <- RangesList(a = IRanges(0,5), b = IRanges(4,10))
-  checkIdentical(range(rl1, rl2), ans)
-  ## must be same length
-  checkException(range(RangesList(IRanges(c(1,2),c(4,3)), IRanges(3,5)),
-                       RangesList(IRanges(2,6))), silent=TRUE) 
+  for (compress in c(TRUE, FALSE)) {
+    rl1 <- IRangesList(a = IRanges(c(1,2),c(4,3)), b = IRanges(c(4,6),c(10,7)),
+                       compress = compress)
+    rl2 <- IRangesList(c = IRanges(c(0,2),c(4,5)), a = IRanges(c(4,5),c(6,7)),
+                       compress = compress)
+    ans <- IRangesList(a = IRanges(1,7), b = IRanges(4,10), c = IRanges(0,5),
+                       compress = compress)
+    checkIdentical(range(rl1, rl2), ans)
+    names(rl2) <- NULL
+    ans <- IRangesList(a = IRanges(0,5), b = IRanges(4,10), compress = compress)
+    checkIdentical(range(rl1, rl2), ans)
+    ## must be same length
+    checkException(range(IRangesList(IRanges(c(1,2),c(4,3)), IRanges(3,5),
+                                     compress = compress),
+                        IRangesList(IRanges(2,6), compres = compress)),
+                   silent=TRUE) 
+  }
+}
+
+test_RangesList_reduce <- function() {
+  for (compress in c(TRUE, FALSE)) {
+    range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
+    range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
+    range3 <- IRanges(start=c(3,-2,6,7,-10,-2,3), width=c(1,0,0,0,0,8,0))
+    range4 <- IRanges()
+    collection <- IRangesList(one = range1, range2, range3, range4,
+                              compress = compress)
+    checkIdentical(reduce(collection),
+                   IRangesList(one = reduce(range1), reduce(range2),
+                               reduce(range3), reduce(range4),
+                               compress = compress))
+    checkIdentical(reduce(collection, drop.empty.ranges=TRUE),
+                   IRangesList(one = reduce(range1, drop.empty.ranges=TRUE),
+                               reduce(range2, drop.empty.ranges=TRUE),
+                               reduce(range3, drop.empty.ranges=TRUE),
+                               reduce(range4, drop.empty.ranges=TRUE),
+                               compress = compress))
+  }
 }
 
 test_RangesList_setops <- function() {

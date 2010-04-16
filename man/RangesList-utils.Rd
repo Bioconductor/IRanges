@@ -37,7 +37,7 @@
 # Intra-interval operations
 \S4method{flank}{RangesList}(x, width, start=TRUE, both=FALSE, use.names=TRUE)
 \S4method{narrow}{RangesList}(x, start=NA, end=NA, width=NA, use.names=TRUE)
-\S4method{resize}{RangesList}(x, width, fix="start", use.names=TRUE, ...)
+\S4method{resize}{RangesList}(x, width, fix="start", use.names=TRUE)
 \S4method{restrict}{RangesList}(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
 \S4method{shift}{RangesList}(x, shift, use.names=TRUE)
 
@@ -57,26 +57,31 @@
 \arguments{
   \item{x, y}{A \code{RangesList}}
   \item{start, end}{
-    A single integer or \code{NA} for all functions except \code{narrow},
-    \code{resize}, and \code{flank}.
+    For \code{flank}, \code{start} must be either a logical vector or a
+    LogicalList object indicating whether \code{x} should be flanked at the
+    start (\code{TRUE}) or the end (\code{FALSE}). Recycled as necessary so
+    that each element corresponds to a range in \code{x}.
 
-    For \code{narrow}, the supplied \code{start} and \code{end} arguments
-    must be vectors of integers, eventually with NAs, that contain
-    coordinates relative to the current ranges.
+    For \code{narrow}, \code{start} and \code{end} must be either an integer
+    vector or a IntegerList object containing coordinates relative to the
+    current ranges.
 
-    For \code{flank}, \code{start} is a logical indicating whether \code{x}
-    should be flanked at the start (\code{TRUE}) or the end (\code{FALSE}).
-    Recycled as necessary so that each element corresponds to a range in
-    \code{x}.
+    For \code{restrict}, \code{start} and \code{end} must be either a single
+    integer or \code{NA}.
+
+    For \code{gaps}, \code{start} and \code{end} must be an integer vector
+    containing the coordinate bounds for each RangesList element.
   }
   \item{width}{
-    For \code{narrow}, a vector of integers, eventually with NAs. See the SEW
-    (Start/End/Width) interface for the details (\code{?solveUserSEW}).
+    For \code{flank} and \code{resize}, either an integer vector or an
+    IntegerList object containing the width of the flanking or resized
+    regions. Recycled as necessary so that each element corresponds to a
+    range in \code{x}. (Note for \code{flank}: if \code{both} is \code{TRUE},
+    this is effectively doubled.) 
 
-    For \code{resize} and \code{flank}, the width of the resized or flanking
-    regions. Note that if \code{both} is \code{TRUE}, this is effectively
-    doubled. Recycled as necessary so that each element corresponds to a range
-    in \code{x}.
+    For \code{narrow}, either an integer vector or a IntegerList object
+    containing the widths to narrow to. See the SEW (Start/End/Width)
+    interface for the details (\code{?solveUserSEW}).
   }
   \item{both}{
     If \code{TRUE}, extends the flanking region \code{width} positions
@@ -102,7 +107,9 @@
     \link{RangesList} object.
   }
   \item{shift}{
-    A single integer.
+    Either an integer vector or a IntegerList object containing the shift
+    information. Recycled as necessary so that each element corresponds to
+    a range in \code{x}.
   }
   \item{drop.empty.ranges}{
     \code{TRUE} or \code{FALSE}. Should empty ranges be dropped?

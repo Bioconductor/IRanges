@@ -165,6 +165,32 @@ normargUseNames <- function(use.names)
     use.names
 }
 
+normargAtomicList1 <- function(arg, List, lx, argname = deparse(substitute(arg)))
+{
+    if (is.vector(arg))
+        arg <- List(as.list(recycleVector(arg, lx)))
+    else if (!is(arg, "AtomicList"))
+        stop("'", argname,"' must be a vector or AtomicList object")
+    arg
+}
+
+normargAtomicList2 <- function(arg, List, lx, eln, argname = deparse(substitute(arg)))
+{
+    if (!(is.vector(arg) && length(arg) == 1)) {
+        if (is.vector(arg))
+            arg <- List(as.list(recycleVector(arg, lx)))
+        else if (!is(arg, "AtomicList"))
+            stop("'arg' must be a vector or AtomicList object")
+        if (all.equal(elementLengths(arg), eln, check.attributes=FALSE))
+            arg <- unlist(arg, use.names=FALSE)
+        else
+            arg <- mapply(recycleVector, arg, List(as.list(eln)))
+    } else if (is.list(arg)){
+        arg <- unlist(arg, use.names=FALSE)
+    }
+    arg
+}
+
 normargRunK <- function(k, n, endrule)
 {
     if (!is.numeric(k))
@@ -234,9 +260,13 @@ extraArgsAsList <- function(.valid.argnames, ...)
 ###     a multiple of replacement length". The latter will always remain silent.
 recycleVector <- function(x, length)
 {
-    ans <- vector(storage.mode(x), length)
-    ans[] <- x
-    ans
+    if (length(x) == length) {
+        x
+    } else {
+        ans <- vector(storage.mode(x), length)
+        ans[] <- x
+        ans
+    }
 }
 
 ### Pretty printing

@@ -248,7 +248,7 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 	     ans_partitioning, ans_partitioning_end;
 	cachedCompressedIRangesList cached_x;
 	cachedIRanges cached_ir;
-	int max_in_length, x_length, i;
+	int max_in_length, x_length, start_length, *start_elt, *end_elt, i;
 	RangeAE in_ranges, out_ranges;
 	IntAE tmpbuf;
 
@@ -259,16 +259,26 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 	out_ranges = _new_RangeAE(0, 0);
 	tmpbuf = _new_IntAE(max_in_length, 0, 0);
 	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
+	start_length = LENGTH(start);
+	if ((start_length != 1 && start_length != x_length) ||
+		start_length != LENGTH(end))
+        error("'start' and 'end' should both be integer vectors of length 1 or length(x)");
 	PROTECT(ans_partitioning_end = NEW_INTEGER(x_length));
+	start_elt = INTEGER(start);
+	end_elt = INTEGER(end);
 	for (i = 0; i < x_length; i++) {
 		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
 		in_ranges.start.nelt = in_ranges.width.nelt = 0;
 		append_cachedIRanges_to_RangeAE(&in_ranges, &cached_ir);
 		_gaps_ranges(in_ranges.start.elts, in_ranges.width.elts,
 			in_ranges.start.nelt,
-			INTEGER(start)[0], INTEGER(end)[0],
+			*start_elt, *end_elt,
 			tmpbuf.elts, &out_ranges);
 		INTEGER(ans_partitioning_end)[i] = out_ranges.start.nelt;
+		if (start_length != 1) {
+			start_elt++;
+			end_elt++;
+		}
 	}
 	PROTECT(ans_unlistData = _new_IRanges_from_RangeAE("IRanges",
 			&out_ranges));

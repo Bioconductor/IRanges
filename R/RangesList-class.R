@@ -296,169 +296,220 @@ setMethod("[[", "CompressedNormalIRangesList",
           function(x, i, j, ...) newNormalIRangesFromIRanges(callNextMethod()))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Some useful endomorphisms: "shift", "restrict", "narrow", "resize",
-### "flank", "disjoin", "reflect", "reduce", "gaps" and "range".
+### Intra-interval endomorphisms.
 ###
-
-setMethod("shift", "RangesList",
-          function(x, shift, use.names = TRUE)
-          endoapply(x, "shift", shift = shift, use.names = use.names))
-
-setMethod("shift", "CompressedIRangesList",
-          function(x, shift, use.names = TRUE)
-          {
-            slot(x, "unlistData", check=FALSE) <-
-              shift(x@unlistData, shift = shift, use.names = use.names)
-            x
-          })
-
-setMethod("restrict", "RangesList",
-          function(x, start = NA, end = NA, keep.all.ranges = FALSE, use.names = TRUE)
-          endoapply(x, restrict, start = start, end = end,
-                    keep.all.ranges = keep.all.ranges, use.names = use.names))
-
-setMethod("restrict", "CompressedIRangesList",
-          function(x, start = NA, end = NA, keep.all.ranges = FALSE, use.names = TRUE)
-          {
-            if (!isTRUEorFALSE(keep.all.ranges))
-              stop("'keep.all.ranges' must be TRUE or FALSE")
-            if (keep.all.ranges)
-              slot(x, "unlistData", check=FALSE) <-
-                restrict(x@unlistData, start = start, end = end,
-                         keep.all.ranges = keep.all.ranges,
-                         use.names = use.names)
-            else
-              x <- callNextMethod()
-            x
-          })
-
-setMethod("narrow", "RangesList",
-          function(x, start = NA, end = NA, width = NA, use.names = TRUE)
-          endoapply(x, narrow, start = start, end = end, width = width,
-                    use.names = use.names))
-
-setMethod("narrow", "CompressedIRangesList",
-          function(x, start = NA, end = NA, width = NA, use.names = TRUE)
-          {
-            slot(x, "unlistData", check=FALSE) <-
-              narrow(x@unlistData, start = start, end = end, width = width,
-                     use.names = use.names)
-            x
-          })
-
-setMethod("resize", "RangesList",
-          function(x, width, fix = "start", use.names = TRUE, ...)
-          endoapply(x, resize, width = width, fix = fix,
-                    use.names = use.names, ...))
-
-setMethod("resize", "CompressedIRangesList",
-          function(x, width, fix = "start", use.names = TRUE, ...)
-          {
-            if (is(width, "AtomicList")) {
-                if (identical(elementLengths(x), elementLengths(width)))
-                    width <- unlist(width, use.names=FALSE)
-                else
-                    stop("'width' must have same elementLengths as 'x'")
-            }
-            if (is(fix, "AtomicList")) {
-                if (identical(elementLengths(x), elementLengths(fix)))
-                    fix <- unlist(fix, use.names=FALSE)
-                else
-                    stop("'fix' must have same elementLengths as 'x'")
-            }
-            slot(x, "unlistData", check=FALSE) <-
-              resize(x@unlistData, width = width, fix = fix,
-                     use.names = use.names, ...)
-            x
-          })
 
 setMethod("flank", "RangesList",
           function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
-          endoapply(x, flank, width = width, start = start, both = both,
-                    use.names = use.names))
+          {
+              lx <- length(x)
+              width <- normargAtomicList1(width, IntegerList, lx)
+              start <- normargAtomicList1(start, LogicalList, lx)
+              mendoapply(flank, x = x, width = width, start = start,
+                         MoreArgs = list(both = both, use.names = use.names))
+          })
 
 setMethod("flank", "CompressedIRangesList",
           function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
           {
-            slot(x, "unlistData", check=FALSE) <-
-              flank(x@unlistData, width = width, start = start, both = both,
-                    use.names = use.names)
-            x
+              lx <- length(x)
+              eln <- elementLengths(x)
+              width <- normargAtomicList2(width, IntegerList, lx, eln)
+              start <- normargAtomicList2(start, LogicalList, lx, eln)
+              slot(x, "unlistData", check=FALSE) <-
+                flank(x@unlistData, width = width, start = start, both = both,
+                      use.names = use.names)
+              x
           })
+
+setMethod("narrow", "RangesList",
+          function(x, start = NA, end = NA, width = NA, use.names = TRUE)
+          {
+              lx <- length(x)
+              start <- normargAtomicList1(start, IntegerList, lx)
+              end <- normargAtomicList1(end, IntegerList, lx)
+              width <- normargAtomicList1(width, IntegerList, lx)
+              mendoapply(narrow, x = x, start = start, end = end, width = width,
+                         MoreArgs = list(use.names = use.names))
+          })
+
+setMethod("narrow", "CompressedIRangesList",
+          function(x, start = NA, end = NA, width = NA, use.names = TRUE)
+          {
+              lx <- length(x)
+              eln <- elementLengths(x)
+              start <- normargAtomicList2(start, IntegerList, lx, eln)
+              end <- normargAtomicList2(end, IntegerList, lx, eln)
+              width <- normargAtomicList2(width, IntegerList, lx, eln)
+              slot(x, "unlistData", check=FALSE) <-
+                narrow(x@unlistData, start = start, end = end, width = width,
+                       use.names = use.names)
+              x
+          })
+
+setMethod("resize", "RangesList",
+          function(x, width, fix = "start", use.names = TRUE)
+          {
+              lx <- length(x)
+              width <- normargAtomicList1(width, IntegerList, lx)
+              fix <- normargAtomicList1(fix, CharacterList, lx)
+              mendoapply(resize, x = x, width = width, fix = fix,
+                         MoreArgs = list(use.names = use.names))
+          })
+
+setMethod("resize", "CompressedIRangesList",
+          function(x, width, fix = "start", use.names = TRUE)
+          {
+              lx <- length(x)
+              eln <- elementLengths(x)
+              width <- normargAtomicList2(width, IntegerList, lx, eln)
+              fix <- normargAtomicList2(fix, CharacterList, lx, eln)
+              slot(x, "unlistData", check=FALSE) <-
+                resize(x@unlistData, width = width, fix = fix,
+                       use.names = use.names)
+              x
+          })
+
+setMethod("restrict", "RangesList",
+          function(x, start = NA, end = NA, keep.all.ranges = FALSE,
+                   use.names = TRUE)
+          {
+              endoapply(x, restrict, start = start, end = end,
+                        keep.all.ranges = keep.all.ranges,
+                        use.names = use.names)
+          })
+
+setMethod("restrict", "CompressedIRangesList",
+          function(x, start = NA, end = NA, keep.all.ranges = FALSE,
+                   use.names = TRUE)
+          {
+              if (!isTRUEorFALSE(keep.all.ranges))
+                  stop("'keep.all.ranges' must be TRUE or FALSE")
+              if (keep.all.ranges)
+                  slot(x, "unlistData", check=FALSE) <-
+                    restrict(x@unlistData, start = start, end = end,
+                             keep.all.ranges = keep.all.ranges,
+                             use.names = use.names)
+              else
+                  x <- callNextMethod()
+              x
+          })
+
+setMethod("shift", "RangesList",
+          function(x, shift, use.names = TRUE)
+          {
+              lx <- length(x)
+              shift <- normargAtomicList1(shift, IntegerList, lx)
+              mendoapply("shift", x = x, shift = shift,
+                         MoreArgs = list(use.names = use.names))
+          })
+
+setMethod("shift", "CompressedIRangesList",
+          function(x, shift, use.names = TRUE)
+          {
+              lx <- length(x)
+              eln <- elementLengths(x)
+              shift <- normargAtomicList2(shift, IntegerList, lx, eln)
+              slot(x, "unlistData", check=FALSE) <-
+                shift(x@unlistData, shift = shift, use.names = use.names)
+              x
+          })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Inter-interval endomorphisms.
+###
 
 setMethod("disjoin", "RangesList", function(x) endoapply(x, disjoin))
 
+setMethod("gaps", "RangesList",
+          function(x, start = NA, end = NA)
+          {
+              lx <- length(x)
+              if (!isNumericOrNAs(start))
+                  stop("'start' must be an integer vector or NA")
+              if (!is.integer(start))
+                  start <- as.integer(start)
+              if (!isNumericOrNAs(end))
+                  stop("'end' must be an integer vector or NA")
+              if (!is.integer(end))
+                  end <- as.integer(end)
+              start <- IntegerList(as.list(recycleVector(start, lx)))
+              end <- IntegerList(as.list(recycleVector(end, lx)))
+              mendoapply(gaps, x, start = start, end = end)
+          })
+
+setMethod("gaps", "CompressedIRangesList",
+          function(x, start = NA, end = NA)
+          {
+              lx <- length(x)
+              if (!isNumericOrNAs(start))
+                  stop("'start' must be an integer vector or NA")
+              if (!is.integer(start))
+                  start <- as.integer(start)
+              if (!isNumericOrNAs(end))
+                  stop("'end' must be an integer vector or NA")
+              if (!is.integer(end))
+                  end <- as.integer(end)
+              if ((length(start) != 1) || (length(end) != 1)) {
+                  start <- recycleVector(start, lx)
+                  end <- recycleVector(end, lx)
+              }
+              .Call("CompressedIRangesList_gaps", x, start, end,
+                    PACKAGE="IRanges")
+          })
+
+setMethod("range", "RangesList",
+          function(x, ..., na.rm)
+          {
+              args <- unname(list(x, ...))
+              if (!all(sapply(sapply(args, universe), identical, universe(x))))
+                  stop("All args in '...' must have the same universe as 'x'")
+              spaceList <- lapply(args, names)
+              names <- spaces <- unique(do.call(c, spaceList))
+              if (any(sapply(spaceList, is.null))) {
+                  if (!all(unlist(lapply(args, length)) == length(x)))
+                      stop("If any args are missing names, all must have same length")
+                  spaces <- seq_len(length(x))
+              }
+              ranges <-
+                lapply(spaces, function(space) {
+                           r <- lapply(args, `[[`, space)
+                           do.call(range, r[!sapply(r, is.null)])
+                       })
+              names(ranges) <- names
+              if (is(x, "CompressedList"))
+                  newCompressedList(class(x), ranges)
+              else
+                  newSimpleList(class(x), ranges)
+          })
+
 setMethod("reduce", "RangesList",
-          function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                   with.inframe.attrib=FALSE)
-          endoapply(x, reduce, drop.empty.ranges=drop.empty.ranges,
-                    min.gapwidth=min.gapwidth,
+          function(x, drop.empty.ranges = FALSE, min.gapwidth = 1L,
+                   with.inframe.attrib = FALSE)
+          endoapply(x, reduce, drop.empty.ranges = drop.empty.ranges,
+                    min.gapwidth = min.gapwidth,
                     with.inframe.attrib = with.inframe.attrib))
 
 ### 'with.inframe.attrib' is ignored for now.
 ### TODO: Support 'with.inframe.attrib=TRUE'.
 setMethod("reduce", "CompressedIRangesList",
-    function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-             with.inframe.attrib=FALSE)
-    {
-        if (!isTRUEorFALSE(drop.empty.ranges))
-            stop("'drop.empty.ranges' must be TRUE or FALSE")
-        if (!isSingleNumber(min.gapwidth))
-            stop("'min.gapwidth' must be a single integer")
-        if (!is.integer(min.gapwidth))
-            min.gapwidth <- as.integer(min.gapwidth)
-        if (min.gapwidth < 0L)
-            stop("'min.gapwidth' must be non-negative")
-        if (!identical(with.inframe.attrib, FALSE))
-            stop("'with.inframe.attrib' argument not yet supported ",
-                 "when reducing a CompressedIRangesList object")
-        .Call("CompressedIRangesList_reduce",
-              x, drop.empty.ranges, min.gapwidth,
-              PACKAGE="IRanges")
-    }
-)
-
-setMethod("gaps", "RangesList",
-          function(x, start=NA, end=NA) {
-            ## need to coerce due to limitation of S4 and '...' dispatch
-            if (!is(start, "Sequence"))
-              start <- IntegerList(as.list(recycleVector(start, length(x))))
-            if (!is(end, "Sequence"))
-              end <- IntegerList(as.list(recycleVector(end, length(x))))
-            mendoapply(gaps, x, start = start, end = end)
-          })
-
-setMethod("gaps", "CompressedIRangesList",
-    function(x, start=NA, end=NA)
-    {
-        start <- normargSingleStartOrNA(start)
-        end <- normargSingleEndOrNA(end)
-        .Call("CompressedIRangesList_gaps", x, start, end, PACKAGE="IRanges")
-    }
-)
-
-setMethod("range", "RangesList",
-          function(x, ..., na.rm)
+          function(x, drop.empty.ranges = FALSE, min.gapwidth = 1L,
+                   with.inframe.attrib = FALSE)
           {
-            args <- unname(list(x, ...))
-            if (!all(sapply(sapply(args, universe), identical, universe(x))))
-              stop("All args in '...' must have the same universe as 'x'")
-            spaceList <- lapply(args, names)
-            names <- spaces <- unique(do.call(c, spaceList))
-            if (any(sapply(spaceList, is.null))) {
-              if (!all(unlist(lapply(args, length)) == length(x)))
-                stop("If any args are missing names, all must have same length")
-              spaces <- seq_len(length(x))
-            }
-            ranges <- lapply(spaces, function(space) {
-              r <- lapply(args, `[[`, space)
-              do.call(range, r[!sapply(r, is.null)])
-            })
-            names(ranges) <- names
-            if (is(x, "CompressedList"))
-              newCompressedList(class(x), ranges)
-            else
-              newSimpleList(class(x), ranges)
+              if (!isTRUEorFALSE(drop.empty.ranges))
+                  stop("'drop.empty.ranges' must be TRUE or FALSE")
+              if (!isSingleNumber(min.gapwidth))
+                  stop("'min.gapwidth' must be a single integer")
+              if (!is.integer(min.gapwidth))
+                  min.gapwidth <- as.integer(min.gapwidth)
+              if (min.gapwidth < 0L)
+                  stop("'min.gapwidth' must be non-negative")
+              if (!identical(with.inframe.attrib, FALSE))
+                  stop("'with.inframe.attrib' argument not yet supported ",
+                       "when reducing a CompressedIRangesList object")
+              .Call("CompressedIRangesList_reduce",
+                    x, drop.empty.ranges, min.gapwidth,
+                    PACKAGE="IRanges")
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
