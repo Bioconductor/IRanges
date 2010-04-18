@@ -57,6 +57,7 @@
 \alias{as.raw,AtomicList-method}
 \alias{as.factor,AtomicList-method}
 \alias{as.data.frame,AtomicList-method}
+\alias{as.list,CompressedAtomicList-method}
 \alias{coerce,AtomicList,vector-method}
 \alias{coerce,AtomicList,logical-method}
 \alias{coerce,AtomicList,integer-method}
@@ -66,6 +67,7 @@
 \alias{coerce,AtomicList,raw-method}
 \alias{coerce,AtomicList,factor-method}
 \alias{coerce,AtomicList,data.frame-method}
+\alias{coerce,CompressedAtomicList,list-method}
 
 \alias{coerce,LogicalList,IRangesList-method}
 \alias{coerce,LogicalList,CompressedIRangesList-method}

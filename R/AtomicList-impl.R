@@ -228,6 +228,25 @@ setMethod("as.data.frame", "AtomicList",
                          row.names = row.names,
                          stringsAsFactors = FALSE)
           })
+setMethod("as.list", "CompressedAtomicList",
+          function(x, use.names = TRUE) {
+              if (is(x, "CompressedRleList")) {
+                  callNextMethod()
+              } else {
+                  codes <- seq_len(length(x))
+                  ans <-
+                    split(x@unlistData,
+                          structure(rep.int(codes, elementLengths(x)),
+                                    levels = as.character(codes),
+                                    class = "factor"))
+                  if (use.names) {
+                      names(ans) <- names(x)
+                  } else {
+                      names(ans) <- NULL
+                  }
+                  ans
+              }
+          })
 
 setAs("AtomicList", "vector", function(from) as.vector(from))
 setAs("AtomicList", "logical", function(from) as.logical(from))
@@ -238,6 +257,7 @@ setAs("AtomicList", "character", function(from) as.character(from))
 setAs("AtomicList", "raw", function(from) as.raw(from))
 setAs("AtomicList", "factor", function(from) as.factor(from))
 setAs("AtomicList", "data.frame", function(from) as.data.frame(from))
+setAs("CompressedAtomicList", "list", function(from) as.list(from))
 
 setAs("vector", "AtomicList", function(from) SimpleAtomicList(as.list(from)))
 
