@@ -261,6 +261,16 @@ setAs("CompressedAtomicList", "list", function(from) as.list(from))
 
 setAs("vector", "AtomicList", function(from) SimpleAtomicList(as.list(from)))
 
+setMethod("lapply", "CompressedAtomicList",
+          function(X, FUN, ...)
+          {
+              if (is(X, "CompressedRleList")) {
+                  callNextMethod(X, FUN, ...)
+              } else {
+                  lapply(as.list(X), FUN, ...)
+              }
+          })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Group generic methods
 ###

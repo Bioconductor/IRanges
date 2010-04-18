@@ -69,6 +69,8 @@
 \alias{coerce,AtomicList,data.frame-method}
 \alias{coerce,CompressedAtomicList,list-method}
 
+\alias{lapply,CompressedAtomicList-method}
+
 \alias{coerce,LogicalList,IRangesList-method}
 \alias{coerce,LogicalList,CompressedIRangesList-method}
 \alias{coerce,LogicalList,SimpleIRangesList-method}
