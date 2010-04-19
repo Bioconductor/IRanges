@@ -68,8 +68,6 @@ test_Rle_general <- function() {
                 aggregate(xRle, FUN = mean, start = 3:6, end = 13:10))
     checkEquals(as.vector(aggregate.ts(ts(x, frequency = 5), FUN = mean)),
                 aggregate(xRle, FUN = mean, start = c(1, 6, 11), end = c(5, 10, 15)))
-    checkEquals(as.vector(aggregate.ts(x, FUN = mean, ndelta = 5)),
-                aggregate(xRle, FUN = mean, start = c(1, 6, 11), end = c(5, 10, 15)))
     checkIdentical(append(x,x), as.vector(append(xRle,xRle)))
     checkIdentical(append(x,x,3), as.vector(append(xRle,xRle,3)))
     checkIdentical(c(x,x) %in% c(7:9), as.vector(c(xRle,xRle)) %in% c(7:9))
