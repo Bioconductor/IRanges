@@ -66,7 +66,7 @@ test_Rle_general <- function() {
                    aggregate(xRle, FUN = mean, start = 3:6, width = seq(11, 5, by = -2)))
     checkEquals(c(mean(x[3:13]), mean(x[4:12]), mean(x[5:11]), mean(x[6:10])),
                 aggregate(xRle, FUN = mean, start = 3:6, end = 13:10))
-    checkEquals(as.vector(aggregate.ts(x, FUN = mean, nfrequency = 1/5)),
+    checkEquals(as.vector(aggregate.ts(ts(x, frequency = 5), FUN = mean)),
                 aggregate(xRle, FUN = mean, start = c(1, 6, 11), end = c(5, 10, 15)))
     checkEquals(as.vector(aggregate.ts(x, FUN = mean, ndelta = 5)),
                 aggregate(xRle, FUN = mean, start = c(1, 6, 11), end = c(5, 10, 15)))
