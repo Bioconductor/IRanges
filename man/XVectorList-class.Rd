@@ -32,6 +32,7 @@
 \alias{subseq,XVectorList-method}
 \alias{threebands,XVectorList-method}
 \alias{c,XVectorList-method}
+\alias{[<-,XVectorList-method}
 
 
 \title{XVectorList objects}

@@ -292,6 +292,21 @@ setMethod("c", "XVectorList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Replacement methods.
+###
+
+setReplaceMethod("[", "XVectorList",
+    function(x, i, j,..., value)
+    {
+        ans <- c(x, value)
+        idx <- seq_len(length(x))
+        idx[i] <- length(x) + seq_len(length(value))
+        ans[idx]
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Show method for data column.
 ###
 
