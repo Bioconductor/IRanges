@@ -105,11 +105,11 @@ setMethod("findOverlaps", c("ANY", "missing"),
                                      minoverlap = minoverlap)
               mat <- matchMatrix(result)
               if (ignoreSelf)
-                mat <- mat[mat[,1L] != mat[,2L],]
+                mat <- mat[mat[,1L] != mat[,2L],,drop=FALSE]
               if (ignoreRedundant) {
                 norm_mat <- cbind(pmin.int(mat[,1L], mat[,2L]),
                                   pmax.int(mat[,1L], mat[,2L]))
-                mat <- mat[!duplicated(norm_mat),]
+                mat <- mat[!duplicated(norm_mat),,drop=FALSE]
               }
               result@matchMatrix <- mat
               result
