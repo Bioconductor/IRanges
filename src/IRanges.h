@@ -438,8 +438,6 @@ SEXP safe_strexplode(SEXP s);
 
 SEXP strsplit_as_list_of_ints(SEXP x, SEXP sep);
 
-SEXP svn_time();
-
 
 /* compact_bitvector.c */
 

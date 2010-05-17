@@ -30,7 +30,6 @@ static const R_CallMethodDef callMethods[] = {
 /* strutils.c */
 	CALLMETHOD_DEF(safe_strexplode, 1),
 	CALLMETHOD_DEF(strsplit_as_list_of_ints, 2),
-	CALLMETHOD_DEF(svn_time, 0),
 
 /* compact_bitvector.c */
 	CALLMETHOD_DEF(logical_as_compact_bitvector, 1),
