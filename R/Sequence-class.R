@@ -88,7 +88,7 @@ setMethod("elementMetadata", "Sequence",
               if ("elementMetadata" %in% names(attributes(x))) {
                   emd <- x@elementMetadata
                   if (!is.null(emd) && !is.null(names(x)))
-                      rownames(emd) <- names(x)
+                      rownames(emd) <- head(names(x), nrow(emd))
               } else {
                   emd <- NULL
               }
@@ -723,9 +723,15 @@ setMethod("!=", signature(e1="Sequence", e2="Sequence"),
 
 .c.Sequence <- function(x, ..., recursive = FALSE)
 {
-    if (!is.null(elementMetadata(x)))
-        elementMetadata(x) <-
-          do.call(rbind, lapply(c(list(x), ...), elementMetadata))
+    if (!is.null(elementMetadata(x))) {
+      emdCols <- colnames(elementMetadata(x))
+      l <- list(x, ...)
+      sameEmdCols <- function(xi)
+        identical(colnames(elementMetadata(xi)), emdCols)
+      if (all(sapply(l, sameEmdCols))) # only if all columns the same
+        elementMetadata(x) <- do.call(rbind, lapply(l, elementMetadata))
+      else elementMetadata(x) <- NULL
+    }
     x
 }
 
