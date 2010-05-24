@@ -137,3 +137,72 @@ SEXP strsplit_as_list_of_ints(SEXP x, SEXP sep)
 	UNPROTECT(1);
 	return ans;
 }
+
+
+/****************************************************************************
+ * svn_time() returns the time in Subversion format, e.g.:
+ *   "2007-12-07 10:03:15 -0800 (Fri, 07 Dec 2007)"
+ * The -0800 part will be adjusted if daylight saving time is in effect.
+ *
+ * TODO: Find a better home for this function.
+ */
+
+/*
+ * 'out_size' should be at least 45 (for year < 10000, 44 chars will be
+ * printed to it + '\0').
+ */
+static int get_svn_time(time_t t, char *out, size_t out_size)
+{
+	struct tm result;
+	int utc_offset, n;
+
+	static const char
+	  *wday2str[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"},
+	  *mon2str[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"},
+	  *svn_format = "%d-%02d-%02d %02d:%02d:%02d %+03d00 (%s, %02d %s %d)";
+
+	//localtime_r() not available on Windows+MinGW
+	//localtime_r(&t, &result);
+	result = *localtime(&t);
+#ifndef __APPLE__
+	tzset();
+	//timezone is not portable (is a function, not a long, on OS X Tiger)
+	utc_offset = - (timezone / 3600);
+	if (result.tm_isdst > 0)
+		utc_offset++;
+#else
+	//'struct tm' has no member named 'tm_gmtoff' on Windows + MinGW
+	utc_offset = result.tm_gmtoff / 3600;
+#endif
+	n = snprintf(out, out_size, svn_format,
+		result.tm_year + 1900,
+		result.tm_mon + 1,
+		result.tm_mday,
+		result.tm_hour,
+		result.tm_min,
+		result.tm_sec,
+		utc_offset,
+		wday2str[result.tm_wday],
+		result.tm_mday,
+		mon2str[result.tm_mon],
+		result.tm_year + 1900);
+	return n >= out_size ? -1 : 0;
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP svn_time()
+{
+	time_t t;
+	char buf[45];
+
+	t = time(NULL);
+	if (t == (time_t) -1)
+		error("IRanges internal error in svn_time(): "
+		      "time(NULL) failed");
+	if (get_svn_time(t, buf, sizeof(buf)) != 0)
+		error("IRanges internal error in svn_time(): "
+		      "get_svn_time() failed");
+	return mkString(buf);
+}
+
