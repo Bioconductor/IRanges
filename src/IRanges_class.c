@@ -136,6 +136,10 @@ static void set_IRanges_width(SEXP x, SEXP value)
 {
 	INIT_STATIC_SYMBOL(width)
 	SET_SLOT(x, width_symbol, value);
+/*
+        Rprintf("set_IRanges_width(): value=%p _get_IRanges_width(x)=%p\n",
+                value, _get_IRanges_width(x));
+*/
 	return;
 }
 

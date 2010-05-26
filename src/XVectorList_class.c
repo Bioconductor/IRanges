@@ -203,7 +203,7 @@ SEXP _new_XVectorList1(const char *classname, SEXP xvector, SEXP ranges)
 	const char *element_type;
 	char classname_buf[80];
 	SEXP classdef, ans, xvector_shared, ans_pool,
-	     shifted_ranges, shifted_ranges_start, ranges_group, ans_ranges;
+	     ranges_start, ranges_group, ans_ranges;
 	int ans_length, offset, i;
 
 	element_type = _get_classname(xvector);
@@ -227,19 +227,18 @@ SEXP _new_XVectorList1(const char *classname, SEXP xvector, SEXP ranges)
 	set_XVectorList_pool(ans, ans_pool);
 	UNPROTECT(1);
 
-	/* set "ranges" slot */
-	PROTECT(shifted_ranges = duplicate(ranges));
-	shifted_ranges_start = _get_IRanges_start(shifted_ranges);
-	ans_length = LENGTH(shifted_ranges_start);
+	/* shift the ranges and set "ranges" slot */
+	ranges_start = _get_IRanges_start(ranges);
+	ans_length = LENGTH(ranges_start);
 	PROTECT(ranges_group = NEW_INTEGER(ans_length));
 	offset = _get_XVector_offset(xvector);
 	for (i = 0; i < ans_length; i++) {
-		INTEGER(shifted_ranges_start)[i] += offset;
+		INTEGER(ranges_start)[i] += offset;
 		INTEGER(ranges_group)[i] = 1;
 	}
-	PROTECT(ans_ranges = new_GroupedIRanges(shifted_ranges, ranges_group));
+	PROTECT(ans_ranges = new_GroupedIRanges(ranges, ranges_group));
 	set_XVectorList_ranges(ans, ans_ranges);
-	UNPROTECT(3);
+	UNPROTECT(2);
 
 	UNPROTECT(2);
 	return ans;
