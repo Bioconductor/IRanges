@@ -178,10 +178,18 @@ setMethod("[[", "XVectorList",
     }
 )
 
+### Supported 'i' types: numeric vector, logical vector, NULL and missing.
+### TODO: Support subsetting by names.
 ### TODO: Drop unused pool elements.
 setMethod("[", "XVectorList",
     function(x, i, j, ... , drop=TRUE)
     {
+        if (!missing(j) || length(list(...)) > 0L)
+            stop("invalid subsetting")
+        if (missing(i))
+            return(x)
+        if (is.character(i))
+            stop("cannot subset a ", class(x), " object by names")
         x@ranges <- x@ranges[i]
         x
     }
