@@ -75,7 +75,6 @@
 \alias{length,Rle-method}
 \alias{match,Rle,ANY-method}
 \alias{rep,Rle-method}
-\alias{rep.int}
 \alias{rep.int,Rle-method}
 \alias{rev,Rle-method}
 \alias{seqselect,Rle-method}

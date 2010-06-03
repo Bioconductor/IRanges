@@ -636,6 +636,15 @@ setMethod("rev", "Sequence",
 setMethod("rep", "Sequence", function(x, ...)
           x[rep(seq_len(length(x)), ...)])
 
+setGeneric("rep.int", signature="x",
+    function(x, times) standardGeneric("rep.int"),
+        useAsDefault = function(x, times) base::rep.int(x, times)
+)
+
+setMethod("rep.int", "Sequence",
+    function(x, times) x[rep.int(seq_len(length(x)), times)]
+)
+
 setMethod("subset", "Sequence",
           function (x, subset, ...) 
           {

@@ -517,10 +517,6 @@ setMethod("rep", "Rle",
               x
           })
 
-setGeneric("rep.int", signature = "x",
-           function(x, ...) standardGeneric("rep.int"),
-           useAsDefault = function(x, ...) base::rep.int(x, ...))
-
 setMethod("rep.int", "Rle",
           function(x, times)
           {

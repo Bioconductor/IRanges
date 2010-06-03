@@ -49,6 +49,8 @@
 \alias{tail,Sequence-method}
 \alias{rev,Sequence-method}
 \alias{rep,Sequence-method}
+\alias{rep.int}
+\alias{rep.int,Sequence-method}
 \alias{subset,Sequence-method}
 
 \alias{[[,Sequence-method}
@@ -260,7 +262,7 @@
       order.
     }
     \item{}{
-      \code{rep(x, times, length.out, each)}:
+      \code{rep(x, times, length.out, each)}, \code{rep.int(x, times)}:
       Repeats the values in \code{x} through one of the following conventions:
       \describe{
         \item{\code{times}}{Vector giving the number of times to repeat each
