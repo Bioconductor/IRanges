@@ -88,6 +88,9 @@ IRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL)
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The SEW interface: start=NA/end=NA/width=NA
 ###
+### Some of the functions that support the SEW interface: narrow(), subseq(),
+### xvcopy(), Biostrings::BStringSet() (and family), BSgenome::getSeq(), etc...
+###
 
 .normargSEW <- function(x, argname)
 {
@@ -98,9 +101,16 @@ IRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL)
     x
 }
 
-### Some of the functions that support the SEW interface: narrow(), subseq(),
-### Biostrings::BStringSet() (and family), BSgenome::getSeq(), etc...
+### Use of 'rep.refwidths=TRUE' is supported only when 'refwidths' is of
+### length 1.
+### If 'rep.refwidths=FALSE' (the default) then 'start', 'end' and 'width'
+### are recycled to 'length(refwidths)' (it's an error if one of them is
+### longer than 'refwidths'). Otherwise, 'refwidths' is replicated L times
+### where L is the length of the longest of 'start', 'end' and 'width'.
+### The returned value is an IRanges object of the same length as 'refwidths'
+### (after replication if 'rep.refwidths=TRUE').
 solveUserSEW <- function(refwidths, start=NA, end=NA, width=NA,
+                         rep.refwidths=FALSE,
                          translate.negative.coord=TRUE,
                          allow.nonnarrowing=FALSE)
 {
@@ -108,26 +118,28 @@ solveUserSEW <- function(refwidths, start=NA, end=NA, width=NA,
         stop("'refwidths' must be a vector of integers")
     if (!is.integer(refwidths))
         refwidths <- as.integer(refwidths)
+    if (!isTRUEorFALSE(rep.refwidths))
+        stop("'rep.refwidths' must be TRUE or FALSE")
+    if (rep.refwidths && length(refwidths) != 1L)
+        stop("use 'rep.refwidths=TRUE' only when 'refwidths' is of length 1")
     start <- .normargSEW(start, "start")
     end <- .normargSEW(end, "end")
     width <- .normargSEW(width, "width")
     ## From here, 'refwidths', 'start', 'end' and 'width' are guaranteed to be
     ## integer vectors. NAs in 'start', 'end' and 'width' are OK but not in
     ## 'refwidths' so this needs to be checked by C function solve_user_SEW().
-    l1 <- length(start)
-    l2 <- length(end)
-    l3 <- length(width)
-    min123 <- min(l1, l2, l3)
-    max123 <- max(l1, l2, l3)
-    if (length(refwidths) == 0L) {
-        if (max123 != min123 || max123 > 1L)
-            stop("'start', 'end' and 'width' must have the same length ",
-                 "and it must be 0 or 1 when 'refwidths' is empty")
+    Lsew <- c(length(start), length(end), length(width))
+    maxLsew <- max(Lsew)
+    if (min(Lsew) == 0L && maxLsew != 0L)
+        stop("'start', 'end' and 'width' cannot be a mix of zero-length ",
+             "and non zero-length vectors")
+    if (rep.refwidths) {
+        refwidths <- rep.int(refwidths, maxLsew)
     } else {
-        if (max123 > length(refwidths))
-            stop("'start', 'end' or 'width' has more elements than 'refwidths'")
-        if (min123 == 0L)
-            stop("'start', 'end' or 'width' is empty but 'refwidths' is not")
+        if (maxLsew > length(refwidths) && maxLsew > 1L)
+            stop("'start', 'end' or 'width' is longer than 'refwidths'")
+        if (length(refwidths) != 0L && maxLsew == 0L)
+            stop("cannot recycle empty 'start', 'end' and 'width'")
     }
     if (!isTRUEorFALSE(translate.negative.coord))
         stop("'translate.negative.coord' must be TRUE or FALSE")

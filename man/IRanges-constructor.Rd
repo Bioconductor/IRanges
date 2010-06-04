@@ -23,6 +23,7 @@
   ## Supporting functions (not for the end user):
   solveUserSEW0(start=NULL, end=NULL, width=NULL)
   solveUserSEW(refwidths, start=NA, end=NA, width=NA,
+               rep.refwidths=FALSE,
                translate.negative.coord=TRUE,
                allow.nonnarrowing=FALSE)
 }
@@ -39,7 +40,13 @@
     A character vector or \code{NULL}.
   }
   \item{refwidths}{
-    Vector of non-negative integers containing the reference widths.
+    Vector of non-NA non-negative integers containing the
+    reference widths.
+  }
+  \item{rep.refwidths}{
+    \code{TRUE} or \code{FALSE}.
+    Use of \code{rep.refwidths=TRUE} is supported only when
+    \code{refwidths} is of length 1.
   }
   \item{translate.negative.coord, allow.nonnarrowing}{
     \code{TRUE} or \code{FALSE}.
@@ -53,9 +60,9 @@
   \describe{
     \item{Category 1}{
       \code{start}, \code{end} and \code{width} are numeric vectors
-      (or NULLs). If necessary they are expanded cyclically to the
+      (or NULLs). If necessary they are recycled to the
       length of the longest (NULL arguments are filled with NAs).
-      After this expansion, each row in the 3-column matrix obtained
+      After this recycling, each row in the 3-column matrix obtained
       by binding those 3 vectors together is "solved" i.e. NAs are
       treated as unknown in the equation \code{end = start + width - 1}.
       Finally, the solved matrix is returned as an \link{IRanges}
@@ -80,35 +87,50 @@
     }
     \item{}{
       \code{solveUserSEW(refwidths, start=NA, end=NA, width=NA,
+               rep.refwidths=FALSE,
                translate.negative.coord=TRUE,
                allow.nonnarrowing=FALSE)}:
-      \code{start}, \code{end} and \code{width} must have the same number of
-      elements as, or less elements than, \code{refwidths}. In the latter case,
-      they are expanded cyclically to the length of \code{refwidths} (provided
-      none are of zero length). After this expansion, each row in the 3-column
-      matrix obtained by binding those 3 vectors together must contain at least
-      one NA (otherwise an error is returned).
+      Use of \code{rep.refwidths=TRUE} is supported only when
+      \code{refwidths} is of length 1.
+      If \code{rep.refwidths=FALSE} (the default) then
+      \code{start}, \code{end} and \code{width} are recycled to
+      the length of \code{refwidths} (it's an error if one of them
+      is longer than \code{refwidths}, or is of zero length while
+      \code{refwidths} is not).
+      If \code{rep.refwidths=TRUE} then \code{refwidths} is first
+      replicated L times where L is the length of the longest of
+      \code{start}, \code{end} and \code{width}. After this replication,
+      \code{start}, \code{end} and \code{width} are recycled to
+      the new length of \code{refwidths} (L) (it's an error if one
+      of them is of zero length while L is != 0).
 
-      Then each row is "solved" i.e. the 2 following transformations are
-      performed (\code{i} is the indice of the row):
+      From now, \code{refwidths}, \code{start}, \code{end} and
+      \code{width} are integer vectors of equal lengths.
+      Each row in the 3-column matrix obtained by binding those
+      3 vectors together must contain at least one NA (otherwise
+      an error is returned).
+      Then each row is "solved" i.e. the 2 following transformations
+      are performed (\code{i} is the indice of the row):
       (1) if \code{translate.negative.coord} is TRUE then a
           negative value of \code{start[i]} or \code{end[i]} is
           considered to be a \code{-refwidths[i]}-based coordinate so
           \code{refwidths[i]+1} is added to it to make it 1-based;
-      (2) the NAs in the row are treated as unknowns which values are deduced
-          from the known values in the row and from \code{refwidths[i]}.
+      (2) the NAs in the row are treated as unknowns which values are
+          deduced from the known values in the row and from
+          \code{refwidths[i]}.
 
       The exact rules for (2) are the following.
-      Rule (2a): if the row contains at least 2 NAs, then \code{width[i]} must be
-      one of them (otherwise an error is returned), and if \code{start[i]} is one
-      of them it is replaced by 1, and if \code{end[i]} is one of them it is
-      replaced by \code{refwidths[i]}, and finally \code{width[i]} is replaced by
-      \code{end[i] - start[i] + 1}.
-      Rule (2b): if the row contains only 1 NA, then it is replaced by the solution
-      of the \code{width[i] == end[i] - start[i] + 1} equation.
+      Rule (2a): if the row contains at least 2 NAs, then \code{width[i]}
+      must be one of them (otherwise an error is returned), and if
+      \code{start[i]} is one of them it is replaced by 1, and if \code{end[i]}
+      is one of them it is replaced by \code{refwidths[i]}, and finally
+      \code{width[i]} is replaced by \code{end[i] - start[i] + 1}.
+      Rule (2b): if the row contains only 1 NA, then it is replaced by the
+      solution of the \code{width[i] == end[i] - start[i] + 1} equation.
 
-      Finally, the set of solved rows is returned as an \link{IRanges} object
-      (with the same number of elements as \code{refwidths}).
+      Finally, the set of solved rows is returned as an \link{IRanges}
+      object of the same length as \code{refwidths} (after replication
+      if \code{rep.refwidths=TRUE}).
 
       Note that an error is raised if either (1) the set of
       user-supplied start/end/width values is invalid or (2)
@@ -156,8 +178,12 @@
   solveUserSEW(refwidths, start=-3, width=2)
   solveUserSEW(refwidths, end=-4)
 
-  ## The start/end/width arguments are expanded cyclically
+  ## The start/end/width arguments are recycled:
   solveUserSEW(refwidths, start=c(3, -4, NA), end=c(-2, NA))
+
+  ## Using 'rep.refwidths=TRUE':
+  solveUserSEW(10, start=-(1:6), rep.refwidths=TRUE)
+  solveUserSEW(10, end=-(1:6), width=3, rep.refwidths=TRUE)
 }
 
 \keyword{utilities}
