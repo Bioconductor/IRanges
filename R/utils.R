@@ -365,7 +365,7 @@ orderInteger <- function(x, decreasing = FALSE)
 {
     if (!is.integer(x) && !is.factor(x))
         stop("'x' must be an integer vector")
-    if ((is.integer(x) && anyMissingOrOutside(x, 1, 100000)) ||
+    if ((is.integer(x) && diff(range(x)) > 100000) ||
         (is.factor(x) && length(levels(x)) > 100000))
         .Call("Integer_order", x, decreasing, PACKAGE="IRanges")
     else
