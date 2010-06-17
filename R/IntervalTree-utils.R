@@ -95,22 +95,24 @@ setMethod("findOverlaps", c("ANY", "missing"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
                    select = c("all", "first", "last", "arbitrary"),
-                   multiple = TRUE, ignoreSelf = FALSE, ignoreRedundant = FALSE)
+                   ignoreSelf = FALSE, ignoreRedundant = FALSE)
           {
-            if (!multiple && !ignoreSelf) # silly case
-              seq(length(query))
-            else {
-              result <- findOverlaps(query, query, maxgap = maxgap,
-                                     multiple = multiple, type = type,
-                                     minoverlap = minoverlap)
-              mat <- matchMatrix(result)
-              if (ignoreSelf)
-                mat <- mat[mat[,1L] != mat[,2L],,drop=FALSE]
-              if (ignoreRedundant) {
-                norm_mat <- cbind(pmin.int(mat[,1L], mat[,2L]),
-                                  pmax.int(mat[,1L], mat[,2L]))
-                mat <- mat[!duplicated(norm_mat),,drop=FALSE]
-              }
+            select <- match.arg(select)
+            result <- findOverlaps(query, query, maxgap = maxgap,
+                                   type = "all", minoverlap = minoverlap)
+            mat <- matchMatrix(result)
+            if (ignoreSelf)
+              mat <- mat[mat[,1L] != mat[,2L],,drop=FALSE]
+            if (ignoreRedundant) {
+              norm_mat <- cbind(pmin.int(mat[,1L], mat[,2L]),
+                                pmax.int(mat[,1L], mat[,2L]))
+              mat <- mat[!duplicated(norm_mat),,drop=FALSE]
+            }
+            if (select != "all") { # relies on 'mat' sorted by subject
+              if (select == "last")
+                mat <- mat[seq(nrow(mat), 1),,drop=FALSE]
+              .matchMatrixToVector(mat, length(query))
+            } else {
               result@matchMatrix <- mat
               result
             }
