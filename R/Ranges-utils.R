@@ -386,64 +386,134 @@ setMethod("match", c("Ranges", "Ranges"),
 
 setClassUnion("RangesORmissing", c("Ranges", "missing"))
 
+.matchMatrixToVector <- function(matchMatrix, lengthQuery) {
+  matchMatrix <-
+    matchMatrix[diffWithInitialZero(matchMatrix[,1L,drop=TRUE]) != 0L,,
+                drop=FALSE]
+  ans <- rep.int(NA_integer_, lengthQuery)
+  ans[matchMatrix[,1L,drop=TRUE]] <- matchMatrix[,2L,drop=TRUE]
+  ans
+}
+
+.vectorToMatching <- function(i, srle, ord) {
+  lx <- length(i)
+  v <- !is.na(i)
+  i <- i[v]
+  w <- width(srle)[i]
+  subj <- as.integer(IRanges(start(srle)[i], width=w))
+  m <- cbind(query = rep(seq(lx)[v], w),
+             subject = if (!is.null(ord)) ord[subj] else subj)
+  if (!is.null(ord))
+    m <- m[orderTwoIntegers(m[,1L], m[,2L]),,drop=FALSE]
+  new("RangesMatching", matchMatrix = m, DIM = c(lx, length(srle)))
+}
+
 setGeneric("nearest", function(x, subject, ...) standardGeneric("nearest"))
 
 setMethod("nearest", c("Ranges", "RangesORmissing"),
-    function(x, subject)
-    {
-        if (!missing(subject)) {
-            ol <- findOverlaps(x, subject, select = "first")
-        } else { ## avoid overlapping with self
-            subject <- x
-            olm <- as.matrix(findOverlaps(x, subject))
-            olm <- olm[olm[,1L] != olm[,2L],]
-            ol <- olm[,2L][match(seq_len(length(subject)), olm[,1L])]
-        }
-        x <- x[is.na(ol)]
-        before <- precede(x, subject)
-        after <- follow(x, subject)
-        pre <- (start(subject)[before] - end(x)) < (start(x) - end(subject)[after])
-        pre[is.na(pre)] <- is.na(after)[is.na(pre)]
-        ol[is.na(ol)] <- ifelse(pre, before, after)
-        ol
-    }
-)
+          function(x, subject, select = c("arbitrary", "all"))
+          {
+            select <- match.arg(select)
+            if (!missing(subject)) {
+              ol <- findOverlaps(x, subject, select = select)
+            } else {
+              subject <- x
+              ol <- findOverlaps(x, select = select, ignoreSelf = TRUE)
+            }
+            if (select == "all") {
+              m <- as.matrix(ol)
+              olv <- .matchMatrixToVector(m, length(x))
+            } else olv <- ol
+            x <- x[is.na(olv)]
+            before <- precede(x, subject,
+                              if (select == "all") "all" else "first")
+            after <- follow(x, subject,
+                            if (select == "all") "all" else "last")
+            if (select == "all") {
+              before_m <- as.matrix(before)
+              before <- .matchMatrixToVector(before_m, length(x))
+              after_m <- as.matrix(after)
+              after <- .matchMatrixToVector(after_m, length(x))
+            }
+            leftdist <- (start(subject)[before] - end(x))
+            rightdist <- (start(x) - end(subject)[after])
+            left <- leftdist < rightdist
+            left[is.na(left)] <- is.na(after)[is.na(left)]
+            if (select == "all") {
+              filterMatchMatrix <- function(m, i) {
+                qrle <- Rle(m[,1L])
+                qstart <- qend <- integer(length(i))
+                qstart[runValue(qrle)] <- start(qrle)
+                qend[runValue(qrle)] <- end(qrle)
+                rows <- as.integer(IRanges(qstart[i], qend[i]))
+                m <- m[rows,,drop=FALSE]
+                m[,1L] <- map[m[,1L]]
+                m
+              }
+              map <- which(is.na(olv))
+              right <- !left
+              left[leftdist == rightdist] <- TRUE
+              m <- rbind(m, filterMatchMatrix(before_m, left),
+                         filterMatchMatrix(after_m, right))
+              m <- m[orderTwoIntegers(m[,1L], m[,2L]),, drop=FALSE]
+              ol@matchMatrix <- m
+            } else olv[is.na(olv)] <- ifelse(left, before, after)
+            ol
+          })
 
 setGeneric("precede", function(x, subject = x, ...) standardGeneric("precede"))
 
 setMethod("precede", c("Ranges", "RangesORmissing"),
-    function(x, subject)
+    function(x, subject, select = c("first", "all"))
     {
-        s <- start(subject)
-        ord <- NULL
-        if (isNotSorted(s)) {
-            ord <- orderInteger(s)
-            s <- s[ord]
-        }
-        i <- findInterval(end(x), s) + 1L
+      select <- match.arg(select)
+      s <- start(subject)
+      ord <- NULL
+      if (isNotSorted(s)) {
+        ord <- orderInteger(s)
+        s <- s[ord]
+      }
+      if (select == "all") {
+        srle <- Rle(s)
+        s <- runValue(srle)
+      }
+      i <- findInterval(end(x), s) + 1L
+      i[i > length(s)] <- NA
+      if (select == "all") {
+        .vectorToMatching(i, srle, ord)
+      } else {
         if (!is.null(ord))
-            i <- ord[i]
-        i[i > length(subject)] <- NA
+          i <- ord[i]
         i
+      }
     }
 )
 
 setGeneric("follow", function(x, subject = x, ...) standardGeneric("follow"))
 
 setMethod("follow", c("Ranges", "RangesORmissing"),
-    function(x, subject)
+    function(x, subject, select = c("last", "all"))
     {
-        e <- end(subject)
-        ord <- NULL
-        if (isNotSorted(e)) {
-            ord <- orderInteger(e)
-            e <- e[ord]
-        }
-        i <- findInterval(start(x) - 1L, e)
-        i[i == 0] <- NA
+      select <- match.arg(select)
+      e <- end(subject)
+      ord <- NULL
+      if (isNotSorted(e)) {
+        ord <- orderInteger(e)
+        e <- e[ord]
+      }
+      if (select == "all") {
+        srle <- Rle(e)
+        e <- runValue(srle)
+      }
+      i <- findInterval(start(x) - 1L, e)
+      i[i == 0] <- NA        
+      if (select == "all") {
+        .vectorToMatching(i, srle, ord)
+      } else {
         if (!is.null(ord))
-            i <- ord[i]
+          i <- ord[i]
         i
+      }
     }
 )
 

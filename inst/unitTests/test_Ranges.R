@@ -90,6 +90,12 @@ test_Ranges_zoom <- function() {
   checkException(ir[rep(1,3)]*c(1,2), silent = TRUE)
 }
 
+checkMatching <- function(a, q, s, r, c) {
+  mat <- cbind(query = as.integer(q), subject = as.integer(s))
+  checkIdentical(as.matrix(matchMatrix(a)), mat)
+  checkIdentical(dim(a), as.integer(c(r, c)))
+}
+
 test_Ranges_adjacency <- function() {
   query <- IRanges(c(1, 3, 9), c(3, 7, 10))
   subject <- IRanges(c(3, 10, 2), c(3, 12, 5))
@@ -103,6 +109,43 @@ test_Ranges_adjacency <- function() {
   checkIdentical(follow(IRanges(), subject), integer())
   checkIdentical(follow(query, IRanges()), rep(NA_integer_, 3))
   checkIdentical(follow(query), c(NA, NA, 2L))
+
+  checkMatching(precede(query, subject, select="all"),
+                c(1, 2), c(2, 2), 3, 3)
+
+  ## xxxx          
+  ##  xxx
+  ##         xx
+  ##               xx
+  ##               xxx
+  ##      ..
+  ##           ..
+  ## ..        
+  ##             ..
+  ##                  ..
+
+  subject <- IRanges(c(1, 2, 9, 15, 15), width=c(4, 3, 2, 2, 3))
+  query <- IRanges(c(6, 11, 1, 13, 18), width=c(2, 2, 2, 2, 2))
+
+  checkMatching(precede(query, subject, select="all"),
+                c(1, 2, 2, 3, 4, 4), c(3, 4, 5, 3, 4, 5), 5, 5)
+  checkMatching(precede(subject, query, select="all"),
+                c(1, 2, 3, 4, 5), c(1, 1, 2, 5, 5), 5, 5)
+
+  checkMatching(follow(query, subject, select="all"),
+                c(1, 1, 2, 4, 5), c(1, 2, 3, 3, 5), 5, 5)
+  checkMatching(follow(subject, query, select="all"),
+                c(3, 4, 5), c(1, 4, 4), 5, 5)
+
+  checkMatching(precede(query, select="all"),
+                c(1, 2, 3, 4), c(2, 4, 1, 5), 5, 5)
+  checkMatching(precede(subject, select="all"),
+                c(1, 2, 3, 3), c(3, 3, 4, 5), 5, 5)
+
+  checkMatching(follow(query, select="all"),
+                c(1, 2, 4, 5), c(3, 1, 2, 4), 5, 5)
+  checkMatching(follow(subject, select="all"),
+                c(3, 3, 4, 5), c(1, 2, 3, 3), 5, 5)
 }
 
 test_Ranges_nearest <- function() {
@@ -112,6 +155,31 @@ test_Ranges_nearest <- function() {
   checkIdentical(nearest(query, subject), c(1L, 1L, 3L))
   checkIdentical(nearest(query), c(2L, 1L, 2L))
   checkIdentical(nearest(query, subject[c(2,3,1)]), c(3L, 1L, 2L))
+
+  ## xxxx          
+  ##  xxx
+  ##         xx
+  ##               xx
+  ##               xxx
+  ##      ..
+  ##           ..
+  ## ..        
+  ##             ..
+  ##                  ..
+
+  subject <- IRanges(c(1, 2, 9, 15, 15), width=c(4, 3, 2, 2, 3))
+  query <- IRanges(c(6, 11, 1, 13, 18), width=c(2, 2, 2, 2, 2))
+  
+  checkMatching(nearest(query, subject, select = "all"),
+                c(1, 1, 1, 2, 3, 3, 4, 4, 5),
+                c(1, 2, 3, 3, 1, 2, 4, 5, 5), 5, 5)
+  checkMatching(nearest(subject, query, select = "all"),
+                c(1, 2, 3, 4, 5, 5), c(3, 3, 2, 4, 4, 5), 5, 5)
+  
+  checkMatching(nearest(subject, select="all"),
+                c(1, 2, 3, 3, 3, 3, 4, 5), c(2, 1, 1, 2, 4, 5, 5, 4), 5, 5)
+  checkMatching(nearest(query, select="all"),
+                c(1, 1, 2, 3, 4, 5), c(2, 3, 4, 1, 2, 4), 5, 5)
 }
 
 test_Ranges_disjoin <- function() {
