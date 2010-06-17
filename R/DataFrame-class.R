@@ -218,7 +218,7 @@ setMethod("[[", "DataFrame",
               stop("subscript out of bounds")
             els <- as.list(x, use.names = FALSE)
             names(els) <- names(x)
-            els[[i]]
+            els[[i, ...]]
           }
           )
 
@@ -336,7 +336,7 @@ setReplaceMethod("[", "DataFrame",
                        iInfo <- list(msg = NULL, useIdx = FALSE, idx = NULL)
                      } else {
                        iInfo <-
-                         .bracket.Index(i, nrow(x), rownames(x), dup.nms = TRUE)
+                         .bracket.Index(i, nrow(x), rownames(x))
                      }
                      if (missing(j)) {
                        jInfo <-
