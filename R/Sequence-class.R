@@ -886,6 +886,83 @@ setMethod("mendoapply", "Sequence",
               X
           })
 
+.sequenceClasses <- new.env(parent=emptyenv())
+registerSequenceClass <- function(name, elementType) {
+  .sequenceClasses[[elementType]] <- name
+  name
+}
+
+castList <- function(x, ...) {
+  if (!is.list(x))
+    stop("'x' must be a 'list'")
+  cl <- lapply(x, class)
+  clnames <- unique(unlist(cl, use.names=FALSE))
+  if (length(clnames) == 1L) {
+    cl <- cl[[1]]
+    pkg <- packageSlot(cl)
+  } else if (length(clnames)) {
+    contains <- lapply(cl, function(x) getClass(x)@contains)
+    clnames <- c(clnames,
+                 unlist(lapply(contains, names), use.names=FALSE))
+    contab <- table(factor(clnames, unique(clnames)))
+    cl <- names(contab)[contab == length(x)]
+    if (length(cl))
+      pkg <- sapply(do.call(c, unname(contains))[cl], packageSlot)
+  }
+  if (length(cl)) {
+    constructorName <- function(x) {
+      substring(x, 1, 1) <- toupper(substring(x, 1, 1))
+      paste(x, "List", sep = "")
+    }
+    if (is.null(pkg))
+      ns <- topenv()
+    else ns <- getNamespace(pkg[1])
+    consym <- constructorName(cl[1])
+    cons <- NULL
+    if (exists(consym, ns))
+      cons <- get(consym, ns)
+    else {
+      if (length(clnames) == 1L) {
+        contains <- getClass(cl)@contains
+        cl <- names(contains)
+        pkg <- sapply(contains, packageSlot)
+      } else {
+        cl <- tail(cl, -1)
+        pkg <- tail(pkg, -1)
+      }
+      connms <- constructorName(cl)
+      ns <- lapply(pkg, getNamespace)
+      coni <- head(which(mapply(exists, connms, ns)), 1)
+      if (length(coni))
+        cons <- get(connms[coni], ns[[coni]])
+    }
+    if (!is.null(cons))
+      x <- cons(x, ...)
+  }
+  x
+}
+
+clapply <- function(X, FUN, ...) {
+  castList(lapply(X, FUN, ...))
+}
+
+cmapply <- function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
+                    USE.NAMES = TRUE)
+{
+  ans <- mapply(FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = SIMPLIFY,
+                USE.NAMES = USE.NAMES)
+  if (is.list(ans))
+    ans <- castList(ans)
+  ans
+}
+
+ctapply <- function(X, INDEX, FUN = NULL, ..., simplify = TRUE) {
+  ans <- tapply(X, INDEX, FUN, ..., simplify = simplify)
+  if (is.list(ans))
+    ans <- castList(ans)
+  ans  
+}
+
 .shiftApplyInternal <-
 function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)
 {
