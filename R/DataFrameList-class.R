@@ -210,7 +210,9 @@ DataFrameList <- function(...)
   if (length(listData) == 1 && is.list(listData[[1L]]) &&
       !is.data.frame(listData[[1L]]))
     listData <- listData[[1L]]
-  newSimpleList("SimpleDataFrameList", lapply(listData, as, "DataFrame"))
+  if (length(listData) > 0 && !is(listData[[1L]], "DataFrame"))
+    listData <- lapply(listData, as, "DataFrame")
+  newSimpleList("SimpleDataFrameList", listData)
 }
 
 SplitDataFrameList <- function(..., compress = TRUE)
