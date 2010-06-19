@@ -897,6 +897,7 @@ castList <- function(x, ...) {
     stop("'x' must be a 'list'")
   cl <- lapply(x, class)
   clnames <- unique(unlist(cl, use.names=FALSE))
+  cons <- NULL
   if (length(clnames) == 1L) {
     cl <- cl[[1]]
     pkg <- packageSlot(cl)
@@ -918,7 +919,6 @@ castList <- function(x, ...) {
       ns <- topenv()
     else ns <- getNamespace(pkg[1])
     consym <- constructorName(cl[1])
-    cons <- NULL
     if (exists(consym, ns))
       cons <- get(consym, ns)
     else {
@@ -936,9 +936,10 @@ castList <- function(x, ...) {
       if (length(coni))
         cons <- get(connms[coni], ns[[coni]])
     }
-    if (!is.null(cons))
-      x <- cons(x, ...)
   }
+  if (!is.null(cons))
+    x <- cons(x, ...)
+  else stop("Failed to coerce list into a Sequence subclass")
   x
 }
 
