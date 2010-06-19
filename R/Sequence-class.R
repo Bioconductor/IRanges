@@ -946,21 +946,13 @@ clapply <- function(X, FUN, ...) {
   castList(lapply(X, FUN, ...))
 }
 
-cmapply <- function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
-                    USE.NAMES = TRUE)
-{
-  ans <- mapply(FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = SIMPLIFY,
-                USE.NAMES = USE.NAMES)
-  if (is.list(ans))
-    ans <- castList(ans)
-  ans
+cmapply <- function(FUN, ..., MoreArgs = NULL, USE.NAMES = TRUE) {
+  castList(mapply(FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = FALSE,
+                  USE.NAMES = USE.NAMES))
 }
 
-ctapply <- function(X, INDEX, FUN = NULL, ..., simplify = TRUE) {
-  ans <- tapply(X, INDEX, FUN, ..., simplify = simplify)
-  if (is.list(ans))
-    ans <- castList(ans)
-  ans  
+ctapply <- function(X, INDEX, FUN = NULL, ...) {
+  castList(tapply(X, INDEX, FUN, ..., simplify = FALSE))
 }
 
 .shiftApplyInternal <-
