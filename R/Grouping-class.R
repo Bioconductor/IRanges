@@ -369,8 +369,8 @@ Dups <- function(high2low=integer())
 ###       sapply(seq_len(length(x)),
 ###              function(i) which(x[seq_len(i-1L)] == x[i])[1L])
 ###
-### Of course this *very* inefficient (quadratic in time), but at leat it
-### shows the concept:
+### Of course this is *very* inefficient (quadratic in time), its only value
+### being to describe the semantic:
 ###
 ###   > x <- as.integer(c(2,77,4,4,7,2,8,8,4,99))
 ###   > high2low(x)
@@ -380,38 +380,40 @@ Dups <- function(high2low=integer())
 ###      user  system elapsed 
 ###   338.213  18.241 356.992
 ###
-### The .default.high2low() function below is a fast implementation of this
-### concept but it requires that "order" be defined for 'x' (in addition to
-### "[" and "=="):
-###
-###   > system.time(.default.high2low(bigx))
-###      user  system elapsed 
-###     0.476   0.000   0.476 
-###
-.default.high2low <- function(x)
-{
-    if (!((is.vector(x) && is.atomic(x)) || is(x, "Sequence")))
-        stop("the default \"high2low\" method expects 'x' to be an atomic ",
-             "vector or a Sequence object")
-    ## The 2 lines below are equivalent but much faster than
-    ## ans <- rep.int(NA_integer_, length(x))
-    ans <- integer(length(x))
-    ans[] <- NA_integer_
-    if (length(x) <= 1L)
+setMethod("high2low", "vector",
+    function(x)
+    {
+        ## Author: Harris A. Jaffee
+        ans <- match(x, x)
+        ans[ans == seq_len(length(x))] <- NA_integer_
         return(ans)
-    x_order <- order(x)
-    low <- x_order[1L]
-    for (i in 2:length(x)) {
-        high <- x_order[i]
-        if (x[high] == x[low])
-            ans[high] <- low
-        else
-            low <- high
     }
-    return(ans)
-}
+)
 
-setMethod("high2low", "ANY", .default.high2low)
+### The "high2low" method for Sequence objects uses an implementation that
+### is O(n*log(n)) in time but it requires that "order" be defined for 'x'
+### (in addition to "[" and "==").
+setMethod("high2low", "Sequence",
+    function(x)
+    {
+        ## The 2 lines below are equivalent but much faster than
+        ## ans <- rep.int(NA_integer_, length(x))
+        ans <- integer(length(x))
+        ans[] <- NA_integer_
+        if (length(x) <= 1L)
+            return(ans)
+        x_order <- order(x)
+        low <- x_order[1L]
+        for (i in 2:length(x)) {
+            high <- x_order[i]
+            if (x[high] == x[low])
+                ans[high] <- low
+            else
+                low <- high
+        }
+        return(ans)
+    }
+)
 
 
 ### -------------------------------------------------------------------------
