@@ -367,7 +367,7 @@ Dups <- function(high2low=integer())
 ###
 ###   high2low <- function(x)
 ###       sapply(seq_len(length(x)),
-###              function(i) which(x[seq_len(i-1L)] == x[i])[1L])
+###              function(i) match(x[i], x[seq_len(i-1L)]))
 ###
 ### Of course this is *very* inefficient (quadratic in time), its only value
 ### being to describe the semantic:
@@ -378,7 +378,7 @@ Dups <- function(high2low=integer())
 ###   > bigx <- rep.int(x, 10000)
 ###   > system.time(high2low(bigx))
 ###      user  system elapsed 
-###   338.213  18.241 356.992
+###   284.805   9.792 294.888
 ###
 setMethod("high2low", "vector",
     function(x)
