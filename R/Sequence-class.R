@@ -943,16 +943,16 @@ castList <- function(x, ...) {
   x
 }
 
-clapply <- function(X, FUN, ...) {
+seqapply <- function(X, FUN, ...) {
   castList(lapply(X, FUN, ...))
 }
 
-cmapply <- function(FUN, ..., MoreArgs = NULL, USE.NAMES = TRUE) {
+mseqapply <- function(FUN, ..., MoreArgs = NULL, USE.NAMES = TRUE) {
   castList(mapply(FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = FALSE,
                   USE.NAMES = USE.NAMES))
 }
 
-ctapply <- function(X, INDEX, FUN = NULL, ...) {
+tseqapply <- function(X, INDEX, FUN = NULL, ...) {
   castList(tapply(X, INDEX, FUN, ..., simplify = FALSE))
 }
 
