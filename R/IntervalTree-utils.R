@@ -98,8 +98,9 @@ setMethod("findOverlaps", c("ANY", "missing"),
                    ignoreSelf = FALSE, ignoreRedundant = FALSE)
           {
             select <- match.arg(select)
-            result <- findOverlaps(query, query, maxgap = maxgap,
-                                   type = "all", minoverlap = minoverlap)
+            result <- findOverlaps(query, query,
+                                   maxgap = maxgap, minoverlap = minoverlap,
+                                   type = type, select = "all")
             mat <- matchMatrix(result)
             if (ignoreSelf)
               mat <- mat[mat[,1L] != mat[,2L],,drop=FALSE]
