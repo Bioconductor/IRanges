@@ -730,18 +730,21 @@ setMethod("!=", signature(e1="Sequence", e2="Sequence"),
 ### Combining and splitting.
 ###
 
-.rbind.elementMetadata <- function(x, ...) {
-  l <- list(x, ...)
-  emd <- lapply(l, elementMetadata)
-  noEmd <- sapply(emd, is.null)
-  if (all(noEmd))
-    return(NULL)
-  newDf <- function(nr) new("DataFrame", nrows = nr)
-  emd[noEmd] <- lapply(elementLengths(l[noEmd]), newDf)
-  allCols <- unique(do.call(c, lapply(emd, colnames)))
-  fillCols <- function(df)
-    df[setdiff(allCols, colnames(df))] <- list(rep(NA, nrow(df)))
-  do.call(rbind, lapply(emd, fillCols))
+.rbind.elementMetadata <- function(x, ...)
+{
+    l <- list(x, ...)
+    emd <- lapply(l, elementMetadata)
+    noEmd <- sapply(emd, is.null)
+    if (all(noEmd))
+        return(NULL)
+    newDf <- function(nr) new("DataFrame", nrows = nr)
+    emd[noEmd] <- lapply(elementLengths(l[noEmd]), newDf)
+    allCols <- unique(do.call(c, lapply(emd, colnames)))
+    fillCols <- function(df) {
+      df[setdiff(allCols, colnames(df))] <- list(rep(NA, nrow(df)))
+      df
+    }
+    do.call(rbind, lapply(emd, fillCols))
 }
 
 .c.Sequence <- function(x, ..., recursive = FALSE)
