@@ -38,8 +38,6 @@ Collate: validity-utils.R
 	IRanges-constructor.R
 	IRanges-utils.R
 	IRanges-setops.R
-	IntervalTree-class.R
-	IntervalTree-utils.R
 	Grouping-class.R
 	Views-class.R
 	Rle-class.R
@@ -75,6 +73,8 @@ Collate: validity-utils.R
 	RangedData-utils.R
 	RangesMatching-class.R
 	RangesMatchingList-class.R
+        IntervalTree-class.R
+	IntervalTree-utils.R
 	Alignment-class.R
 	RangedSelection-class.R
 	read.Mask.R
