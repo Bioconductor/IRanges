@@ -112,7 +112,7 @@ setMethod("processSelfMatching", "RangesMatching",
             if (select != "all") { # relies on 'mat' sorted by subject
               if (select == "last")
                 mat <- mat[seq(nrow(mat), 1),,drop=FALSE]
-              .matchMatrixToVector(mat, length(x))
+              .matchMatrixToVector(mat, nrow(x))
             } else {
               x@matchMatrix <- mat
               x
