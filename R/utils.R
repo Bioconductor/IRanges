@@ -181,7 +181,7 @@ normargAtomicList2 <- function(arg, List, lx, eln, argname = deparse(substitute(
             arg <- List(as.list(recycleVector(arg, lx)))
         else if (!is(arg, "AtomicList"))
             stop("'arg' must be a vector or AtomicList object")
-        if (all.equal(elementLengths(arg), eln, check.attributes=FALSE))
+        if (isTRUE(all.equal(elementLengths(arg), eln, check.attributes=FALSE)))
             arg <- unlist(arg, use.names=FALSE)
         else
             arg <- mapply(recycleVector, arg, List(as.list(eln)))
