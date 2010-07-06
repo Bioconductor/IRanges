@@ -91,17 +91,17 @@ setMethod("findOverlaps", c("Ranges", "Ranges"),
                          select = match.arg(select))
           })
 
-setMethod("findOverlaps", c("ANY", "missing"),
-          function(query, subject, maxgap = 0L, minoverlap = 1L,
-                   type = c("any", "start", "end", "within", "equal"),
-                   select = c("all", "first", "last", "arbitrary"),
+## internal generic
+setGeneric("processSelfMatching",
+           function(x, select = c("all", "first", "last", "arbitrary"),
+                    ignoreSelf = FALSE, ignoreRedundant = FALSE)
+           standardGeneric("processSelfMatching"))
+
+setMethod("processSelfMatching", "RangesMatching",
+          function(x, select = c("all", "first", "last", "arbitrary"),
                    ignoreSelf = FALSE, ignoreRedundant = FALSE)
           {
-            select <- match.arg(select)
-            result <- findOverlaps(query, query,
-                                   maxgap = maxgap, minoverlap = minoverlap,
-                                   type = type, select = "all")
-            mat <- matchMatrix(result)
+            mat <- matchMatrix(x)
             if (ignoreSelf)
               mat <- mat[mat[,1L] != mat[,2L],,drop=FALSE]
             if (ignoreRedundant) {
@@ -114,9 +114,36 @@ setMethod("findOverlaps", c("ANY", "missing"),
                 mat <- mat[seq(nrow(mat), 1),,drop=FALSE]
               .matchMatrixToVector(mat, length(query))
             } else {
-              result@matchMatrix <- mat
-              result
+              x@matchMatrix <- mat
+              x
             }
+          })
+
+setMethod("processSelfMatching", "RangesMatchingList",
+          function(x, select = c("all", "first", "last", "arbitrary"),
+                   ignoreSelf = FALSE, ignoreRedundant = FALSE)
+          {
+            select <- match.arg(select)
+            ans <- lapply(x, processSelfMatching, select, ignoreSelf,
+                          ignoreRedundant)
+            if (select != "all")
+              IntegerList(ans)
+            else
+              newSimpleList("RangesMatchingList", ans,
+                            subjectOffsets = x@subjectOffsets)
+          })
+
+setMethod("findOverlaps", c("ANY", "missing"),
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
+                   type = c("any", "start", "end", "within", "equal"),
+                   select = c("all", "first", "last", "arbitrary"),
+                   ignoreSelf = FALSE, ignoreRedundant = FALSE)
+          {
+            select <- match.arg(select)
+            result <- findOverlaps(query, query,
+                                   maxgap = maxgap, minoverlap = minoverlap,
+                                   type = type, select = "all")
+            processSelfMatching(result, select, ignoreSelf, ignoreRedundant)
           })
 
 setMethod("findOverlaps", c("integer", "Ranges"),
