@@ -68,14 +68,15 @@ setMethod("coverage", "numeric",
     }
 )
 
-.IRanges.coverage <- function(x, width, weight)
+.IRanges.coverage <- function(x, width, weight, method = "sort")
 {
-    .Call("IRanges_coverage", x, weight, width, PACKAGE="IRanges")
+    .Call("IRanges_coverage", x, weight, width, method, PACKAGE="IRanges")
 }
 
 setMethod("coverage", "IRanges",
-    function(x, shift=0L, width=NULL, weight=1L)
+    function(x, shift=0L, width=NULL, weight=1L, method=c("sort", "hash"))
     {
+        method <- match.arg(method)      
         #shift <- normargShift(shift, length(x))  # done by shift() below
         width <- coverage.normargWidth(width, length(x))
         weight <- coverage.normargWeight(weight, length(x))
@@ -90,16 +91,21 @@ setMethod("coverage", "IRanges",
         }
         if (width <= 0L)  # could be < 0 now if supplied width was NULL
             return(Rle())
-        .IRanges.coverage(rsx, width, weight)
+        .IRanges.coverage(rsx, width, weight, method)
     }
 )
 
 setMethod("coverage", "Views",
-    function(x, shift=0L, width=NULL, weight=1L)
+    function(x, shift=0L, width=NULL, weight=1L, method=c("sort", "hash"))
     {
+        method <- match.arg(method)
         if (is.null(width))
             width <- length(subject(x)) + max(shift)
-        coverage(as(x, "IRanges"), shift=shift, width=width, weight=weight)
+        coverage(as(x, "IRanges"),
+                 shift=shift,
+                 width=width,
+                 weight=weight,
+                 method=method)
     }
 )
 
@@ -107,13 +113,14 @@ setMethod("coverage", "Views",
 ### just calling coverage() on the single IRanges object resulting from
 ### unlisting 'x' ('shift' and 'weight' must be modified consequently).
 setMethod("coverage", "MaskCollection",
-    function(x, shift=0L, width=NULL, weight=1L)
+    function(x, shift=0L, width=NULL, weight=1L, method=c("sort", "hash"))
     {
+        method <- match.arg(method)
         shift <- normargShift(shift, length(x))
         width <- coverage.normargWidth(width, length(x))
         weight <- coverage.normargWeight(weight, length(x))
         if (is.null(width))
-            width <- width(mymasks)
+            width <- width(x)
         if (width <= 0L)  # should never be < 0
             return(Rle())
         ans <- new2("Rle", values=0L, lengths=width, check=FALSE)
@@ -123,7 +130,7 @@ setMethod("coverage", "MaskCollection",
                 next()
             snir <- shift(nir, shift[i])
             rsnir <- restrict(snir, start=1L, end=width)
-            ans <- ans + .IRanges.coverage(rsnir, width, weight[i])
+            ans <- ans + .IRanges.coverage(rsnir, width, weight[i], method)
         }
         ans
     }
@@ -133,8 +140,10 @@ setMethod("coverage", "RangesList",
     function(x,
              shift = structure(rep(list(0L), length(x)), names = names(x)),
              width = structure(rep(list(NULL), length(x)), names = names(x)),
-             weight = structure(rep(list(1L), length(x)), names = names(x)))
+             weight = structure(rep(list(1L), length(x)), names = names(x)),
+             method=c("sort", "hash"))
     {
+        method <- match.arg(method)
         lx <- length(x)
         if (lx != 0 &&
             ((!is.list(shift) && !is(shift, "IntegerList")) ||
@@ -177,7 +186,7 @@ setMethod("coverage", "RangesList",
                              function(i) {
                                  coverage(as(x[[i]], "IRanges"),
                                          shift = shift[[i]], width = width[[i]],
-                                         weight = weight[[i]])
+                                         weight = weight[[i]], method = method)
                              }),
                       metadata = metadata(x),
                       elementMetadata = elementMetadata(x))
@@ -188,8 +197,10 @@ setMethod("coverage", "RangedData",
     function(x,
              shift = structure(rep(list(0L), length(x)), names = names(x)),
              width = structure(rep(list(NULL), length(x)), names = names(x)),
-             weight = structure(rep(list(1L), length(x)), names = names(x)))
+             weight = structure(rep(list(1L), length(x)), names = names(x)),
+             method = c("sort", "hash"))
     {
+        method <- match.arg(method)
         ranges <- ranges(x)
         if (length(metadata(x)) > 0)
             metadata(ranges) <- metadata(x)
@@ -202,6 +213,6 @@ setMethod("coverage", "RangedData",
             width <- values(x)[, width]
         if (isSingleString(weight) && (weight %in% varnames))
             weight <- values(x)[, weight]
-        coverage(ranges, shift = shift, width = width, weight = weight)
+        coverage(ranges, shift = shift, width = width, weight = weight, method = method)
     }
 )

@@ -21,7 +21,8 @@
   \S4method{coverage}{RangesList}(x,
          shift = structure(rep(list(0L), length(x)), names = names(x)),
          width = structure(rep(list(NULL), length(x)), names = names(x)),
-         weight = structure(rep(list(1L), length(x)), names = names(x)))
+         weight = structure(rep(list(1L), length(x)), names = names(x)),
+         method = c("sort", "hash"))
 }
 
 \arguments{
@@ -72,6 +73,15 @@
     \code{x} counts. For \link{RangesList} and \link{RangedData} objects, a
     list or vector of the same length as \code{x} to be used for the
     corresponding element in \code{x}.
+  }
+  \item{method}{
+    Settings \code{method} to \code{hash} is intended only for large
+    \code{x} objects. If \code{method} is set to the \code{sort}
+    default, then \code{x} is sorted during the calculation of the
+    coverage \link{Rle}. If \code{method} is set to \code{hash}, then
+    \code{x} is hashed to a vector of size \code{width}. Note that
+    setting \code{method} to \code{hash} saves time on large \code{x}
+    vectors, but at the expense of additional memory usage.
   }
   \item{\dots}{
     Further arguments to be passed to or from other methods.

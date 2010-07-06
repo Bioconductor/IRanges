@@ -619,7 +619,8 @@ SEXP IRanges_gaps(
 SEXP IRanges_coverage(
 	SEXP x,
 	SEXP weight,
-	SEXP width
+	SEXP width,
+	SEXP method
 );
 
 
