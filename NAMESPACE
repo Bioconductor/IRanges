@@ -1,7 +1,7 @@
 useDynLib(IRanges)
 
 import(methods)
-importFrom(utils, head, read.table, tail)
+importFrom(utils, head, read.table, tail, stack)
 importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
            IQR, smoothEnds, runmed, window, "window<-", aggregate, xtabs,
            na.omit, na.exclude, complete.cases)
@@ -96,6 +96,9 @@ export(
     endoapply,
     mendoapply,
 
+    ## Casting apply functions and the like
+    seqapply, mseqapply, tseqapply, seqsplit,
+    
     ## Generic functions in the Sequence API:
     elementType, elementLengths,
     metadata, elementMetadata, "metadata<-", "elementMetadata<-",
@@ -158,6 +161,7 @@ export(
     subject, Views, subviews, trim,
     slice,
     values, "values<-",
+    columnMetadata, "columnMetadata<-",
     runmean, runsum, runwtsum, runq,
     viewApply, viewMins, viewMaxs, viewSums, viewMeans,
     viewWhichMins, viewWhichMaxs, viewRangeMins, viewRangeMaxs,
@@ -206,7 +210,7 @@ exportMethods(
     as.list,
     as.table,
     toString,
-    unlist,
+    unlist, stack,
     update,
     append,
     "!", which,

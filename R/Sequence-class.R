@@ -102,7 +102,7 @@ setGeneric("elementMetadata<-",
 setReplaceMethod("elementMetadata", "Sequence",
                  function(x, value) {
                      if (!is(value, "DataTableORNULL"))
-                         stop("replacement 'elementMetadata' value must be a DataTable object")
+                         stop("replacement 'elementMetadata' value must be a DataTable object or NULL")
                      if ("elementMetadata" %in% names(attributes(x))) {
                          if (!is.null(value) && length(x) != nrow(value))
                              stop("the number of rows in elementMetadata 'value' ",
@@ -730,17 +730,24 @@ setMethod("!=", signature(e1="Sequence", e2="Sequence"),
 ### Combining and splitting.
 ###
 
+.rbind.elementMetadata <- function(x, ...) {
+  l <- list(x, ...)
+  emd <- lapply(l, elementMetadata)
+  noEmd <- sapply(emd, is.null)
+  if (all(noEmd))
+    return(NULL)
+  newDf <- function(nr) new("DataFrame", nrows = nr)
+  emd[noEmd] <- lapply(elementLengths(l[noEmd]), newDf)
+  allCols <- unique(do.call(c, lapply(emd, colnames)))
+  fillCols <- function(df)
+    df[setdiff(allCols, colnames(df))] <- list(rep(NA, nrow(df)))
+  do.call(rbind, lapply(emd, fillCols))
+}
+
 .c.Sequence <- function(x, ..., recursive = FALSE)
 {
-    if (!is.null(elementMetadata(x))) {
-      emdCols <- colnames(elementMetadata(x))
-      l <- list(x, ...)
-      sameEmdCols <- function(xi)
-        identical(colnames(elementMetadata(xi)), emdCols)
-      if (all(sapply(l, sameEmdCols))) # only if all columns the same
-        elementMetadata(x) <- do.call(rbind, lapply(l, elementMetadata))
-      else elementMetadata(x) <- NULL
-    }
+    if (!is.null(elementMetadata(x)))
+      elementMetadata(x) <- .rbind.elementMetadata(x, ...)
     x
 }
 
@@ -893,6 +900,8 @@ registerSequenceClass <- function(name, elementType) {
 }
 
 castList <- function(x, ...) {
+  if (is(x, "Sequence"))
+    return(x)
   if (!is.list(x))
     stop("'x' must be a 'list'")
   cl <- lapply(x, class)
@@ -954,6 +963,10 @@ mseqapply <- function(FUN, ..., MoreArgs = NULL, USE.NAMES = TRUE) {
 
 tseqapply <- function(X, INDEX, FUN = NULL, ...) {
   castList(tapply(X, INDEX, FUN, ..., simplify = FALSE))
+}
+
+seqsplit <- function(x, f, drop=FALSE) {
+  castList(split(x, f, drop))
 }
 
 .shiftApplyInternal <-
@@ -1099,6 +1112,27 @@ setMethod("as.env", "Sequence",
               env
           })
 
+.stack.ind <- function(x, indName = "space") {
+  spaceLevels <- seq_len(length(x))
+  if (length(names(x)) > 0) {
+    spaceLabels <- names(x)
+  } else {
+    spaceLabels <- as.character(spaceLevels)
+  }
+  ind <- Rle(factor(rep.int(seq_len(length(x)), elementLengths(x)),
+                    levels = spaceLevels,
+                    labels = spaceLabels))
+  do.call(DataFrame, structure(list(ind), names = indName))
+}
+
+setMethod("stack", "Sequence",
+          function(x, indName = "space", valuesName = "values")
+          {
+            df <- DataFrame(.stack.ind(x, indName),
+                            as(unlist(x, use.names=FALSE), "DataFrame"))
+            colnames(df)[2] <- valuesName
+            df
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Functional Programming.

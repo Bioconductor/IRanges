@@ -192,6 +192,15 @@ setReplaceMethod("colnames", "RangedData",
                    x
                  })
 
+setMethod("columnMetadata", "RangedData", function(x) {
+  columnMetadata(values(x))
+})
+
+setReplaceMethod("columnMetadata", "RangedData", function(x, value) {
+  columnMetadata(values(x)) <- value
+  x
+})
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
@@ -793,3 +802,5 @@ setMethod("unlist", "RangedDataList",
               names(ans) <- NULL
             ans
           })
+
+### TODO: a stack method for RangedDataList

@@ -184,16 +184,50 @@ setReplaceMethod("dimnames", "DataFrameList",
                    x
                  })
 
+setGeneric("columnMetadata", function(x, ...) standardGeneric("columnMetadata"))
+
+setMethod("columnMetadata", "SimpleSplitDataFrameList", function(x) {
+  if (length(x))
+    elementMetadata(x[[1]])
+  else NULL
+})
+
+setMethod("columnMetadata", "CompressedSplitDataFrameList", function(x) {
+  elementMetadata(x@unlistData)
+})
+
+setGeneric("columnMetadata<-",
+           function(x, ..., value) standardGeneric("columnMetadata<-"))
+
+setReplaceMethod("columnMetadata", "SimpleSplitDataFrameList",
+                 function(x, value) {
+                   x@listData <- lapply(x@listData, function(xi) {
+                     elementMetadata(xi) <- value
+                     xi
+                   })
+                   x
+                 })
+
+setReplaceMethod("columnMetadata", "CompressedSplitDataFrameList",
+                 function(x, value) {
+                   elementMetadata(x@unlistData) <- value
+                 })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
 
 .valid.SplitDataFrameList <- function(x) {
-  if (length(x)) {
+  if (length(x) && !is(x, "CompressedList")) {
     firstNames <- colnames(x[[1L]])
-    if (!all(sapply(as.list(x, use.names = FALSE),
-                    function(df) identical(firstNames, colnames(df)))))
+    l <- as.list(x, use.names = FALSE)
+    if (!all(sapply(l, function(df) identical(firstNames, colnames(df)))))
       return("column counts or names differ across elements")
+    firstMetaData <- elementMetadata(x[[1L]]) # could be NULL
+    if (!all(sapply(l, function(df) {
+      identical(firstMetaData, elementMetadata(df))
+    })))
+      return("elementMetadata must be identical across elements")
   }
   NULL
 }
@@ -223,11 +257,8 @@ SplitDataFrameList <- function(..., compress = TRUE)
   if (length(listData) == 1 && is.list(listData[[1L]]) &&
       !is.data.frame(listData[[1L]]))
     listData <- listData[[1L]]
-  if (length(listData) > 0 && !is(listData[[1L]], "DataFrame")) {
-    if (is.null(names(listData)))
-      names(listData) <- paste("X", seq_len(length(listData)), sep = "")
-    listData <- do.call(Map, c(list(DataFrame), listData))
-  }
+  if (any(!sapply(listData, is, "DataFrame")))
+    listData <- lapply(listData, as, "DataFrame")
   if (compress)
     newCompressedList("CompressedSplitDataFrameList", listData)
   else
@@ -379,6 +410,14 @@ setReplaceMethod("[", "CompressedSplitDataFrameList",
 ### Coercion
 ###
 
+## Casting DataFrameList -> DataFrame implies cast to SplitDataFrameList
+setAs("DataFrameList", "DataFrame", function(from) {
+  v <- .valid.SplitDataFrameList(from)
+  if (!is.null(v))
+    stop(v)
+  unlist(from)
+})
+
 setAs("SplitDataFrameList", "DataFrame", function(from) unlist(from))
 
 setMethod("as.data.frame", "SplitDataFrameList",
@@ -388,18 +427,7 @@ setMethod("as.data.frame", "SplitDataFrameList",
               stop("'row.names'  must be NULL or a character vector")
             if (!missing(optional) || length(list(...)))
               warning("'optional' and arguments in '...' ignored")
-            spaceLevels <- seq_len(length(x))
-            if (length(names(x)) > 0) {
-              spaceLabels <- names(x)
-            } else {
-              spaceLabels <- as.character(spaceLevels)
-            }
-            data.frame(space =
-                       factor(rep.int(seq_len(length(x)), elementLengths(x)),
-                              levels = spaceLevels,
-                              labels = spaceLabels),
-                       as.data.frame(as(x, "DataFrame"),
-                                     row.names = row.names),
+            data.frame(as.data.frame(stack(x), row.names = row.names),
                        stringsAsFactors = FALSE)
           })
 

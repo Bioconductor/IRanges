@@ -15,8 +15,7 @@ setMethod("split", "DataFrame",
 setMethod("cbind", "DataFrame",
           function(..., deparse.level=1) {
             ans <- DataFrame(...)
-            elementMetadata(ans) <-
-              do.call(rbind, lapply(list(...), elementMetadata))
+            elementMetadata(ans) <- .rbind.elementMetadata(...)
             ans
           })
 
@@ -57,7 +56,7 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
         levs <- unique(unlist(lapply(cols, levels), use.names=FALSE))
         cols <- lapply(cols, as.character)
       }
-      combined <- do.call(c, cols)
+      combined <- do.call(c, unname(cols))
       if (factors[i])
         combined <- factor(combined, levs)
       ## this coercion needed only because we extracted ([[) above
@@ -78,5 +77,11 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
   }
   rownames(ans) <- rn
 
+  if (!is.null(elementMetadata(df))) {
+    emd <- elementMetadata(df)
+    if (all(sapply(args, function(x) identical(elementMetadata(x), emd))))
+      elementMetadata(ans) <- emd
+  }
+  
   ans
 })
