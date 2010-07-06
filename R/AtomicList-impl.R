@@ -706,7 +706,10 @@ setAtomicListMethod("sort", endoapply = TRUE)
 setMethod("table", "AtomicList",
           function(...)
           {
-              x <- list(...)[[1L]]
+              args <- list(...)
+              if (length(args) > 1)
+                  stop("Only one argument in '...' supported")
+              x <- args[[1L]]
               nms <- names(x)
               if (is.null(nms)) {
                   nms <- as.character(seq_len(length(x)))
@@ -875,6 +878,7 @@ setAtomicListMethod("sub", inputBaseClass = "CharacterList",
 setAtomicListMethod("gsub", inputBaseClass = "CharacterList",
                     outputBaseClass = "CharacterList", whichArg = 3L,
                     applyToUnlist = TRUE)
+### TODO: grep, grepl
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
