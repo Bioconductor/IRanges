@@ -440,8 +440,6 @@ setAs("DataFrame", "data.frame",
 setMethod("as.data.frame", "DataFrame",
           function(x, row.names=NULL, optional=FALSE, ...)
           {
-            if (length(list(...)))
-              stop("arguments in '...' ignored")
             l <- as(x, "list")
             if (is.null(row.names))
               row.names <- rownames(x)
@@ -454,7 +452,7 @@ setMethod("as.data.frame", "DataFrame",
                                   is(y, "CompressedList"))
                                  stop("conversion of list columns to a ",
                                       "data.frame is not supported")
-                               as.data.frame(y, optional = TRUE)
+                               as.data.frame(y, optional = TRUE, ...)
                              }), list(row.names = row.names)))
           })
 
