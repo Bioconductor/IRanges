@@ -798,7 +798,7 @@ setMethod("summary", "Rle",
                     c(Length = length(object),
                       Class = class(object),
                       ValueMode = mode(runValue(object)))
-              class(value) <- "table"
+              class(value) <- c("summaryDefault", "table")
               value
           })
 

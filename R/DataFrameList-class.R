@@ -427,7 +427,10 @@ setMethod("as.data.frame", "SplitDataFrameList",
               stop("'row.names'  must be NULL or a character vector")
             if (!missing(optional) || length(list(...)))
               warning("'optional' and arguments in '...' ignored")
-            data.frame(as.data.frame(stack(x), row.names = row.names),
+            stacked <- stack(x)
+            if (is.null(row.names))
+              row.names <- rownames(stacked)
+            data.frame(as.data.frame(stacked, row.names = row.names),
                        stringsAsFactors = FALSE)
           })
 

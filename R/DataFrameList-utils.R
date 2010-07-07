@@ -15,5 +15,6 @@ setMethod("rbind", "DataFrameList",
 setMethod("stack", "DataFrameList",
           function(x, indName = "space")
           {
-            DataFrame(.stack.ind(x, indName), x)
+            DataFrame(.stack.ind(x, indName), x,
+                      row.names = unlist(rownames(x)))
           })
