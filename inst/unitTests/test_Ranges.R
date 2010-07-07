@@ -154,7 +154,7 @@ test_Ranges_nearest <- function() {
 
   checkIdentical(nearest(query, subject), c(1L, 1L, 3L))
   checkIdentical(nearest(query), c(2L, 1L, 2L))
-  checkIdentical(nearest(query, subject[c(2,3,1)]), c(3L, 1L, 2L))
+  checkIdentical(nearest(query, subject[c(2,3,1)]), c(3L, 3L, 2L))
 
   ## xxxx          
   ##  xxx

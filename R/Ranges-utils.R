@@ -457,7 +457,10 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
                          filterMatchMatrix(after_m, right))
               m <- m[orderTwoIntegers(m[,1L], m[,2L]),, drop=FALSE]
               ol@matchMatrix <- m
-            } else olv[is.na(olv)] <- ifelse(left, before, after)
+            } else {
+              olv[is.na(olv)] <- ifelse(left, before, after)
+              ol <- olv
+            }
             ol
           })
 
