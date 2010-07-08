@@ -16,5 +16,5 @@ setMethod("stack", "DataFrameList",
           function(x, indName = "space")
           {
             DataFrame(.stack.ind(x, indName), x,
-                      row.names = unlist(rownames(x)))
+                      row.names = unlist(lapply(x, rownames)))
           })
