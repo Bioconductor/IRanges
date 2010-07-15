@@ -3,6 +3,7 @@
 \alias{IRanges-utils}
 
 \alias{successiveIRanges}
+\alias{breakInChunks}
 \alias{whichAsIRanges}
 
 % Coercion:
@@ -18,6 +19,7 @@
 \usage{
 ## Create an IRanges instance:
 successiveIRanges(width, gapwidth=0, from=1)
+breakInChunks(totalsize, chunksize)
 
 ## Turn a logical vector into a set of ranges:
 whichAsIRanges(x)
@@ -38,6 +40,12 @@ asNormalIRanges(x, force=TRUE)
   }
   \item{from}{
     A single integer specifying the starting position of the first range.
+  }
+  \item{totalsize}{
+    A single integer. The total size of the object to break.
+  }
+  \item{chunksize}{
+   A single integer. The size of the chunks (last chunk might be smaller).
   }
   \item{x}{
     A logical vector for \code{whichAsIRanges}.
@@ -86,12 +94,18 @@ asNormalIRanges(x, force=TRUE)
 
 \examples{
   vec <- as.integer(c(19, 5, 0, 8, 5))
-  whichAsIRanges(vec >= 5)
-  x <- successiveIRanges(vec)
-  x
 
-  asNormalIRanges(x)   # 3 ranges ordered from left to right and separated by
-                       # gaps of width >= 1.
+  successiveIRanges(vec)
+
+  breakInChunks(600999, 50000)  # 13 chunks of size 50000 (last chunk is
+                                # smaller).
+
+  whichAsIRanges(vec >= 5)
+
+  x <- IRanges(start=c(-2L, 6L, 9L, -4L, 1L, 0L, -6L, 10L),
+               width=c( 5L, 0L, 6L,  1L, 4L, 3L,  2L,  3L))
+  asNormalIRanges(x)  # 3 non-empty ranges ordered from left to right and
+                      # separated by gaps of width >= 1.
 
   ## More on normality:
   example(`IRanges-class`)

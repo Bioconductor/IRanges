@@ -59,6 +59,7 @@ export(
     svn.time,
     solveUserSEW0, IRanges, solveUserSEW,
     successiveIRanges,
+    breakInChunks,
     whichAsIRanges,
     asNormalIRanges,
     H2LGrouping, Dups, PartitioningByEnd, PartitioningByWidth, Binning,

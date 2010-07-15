@@ -51,6 +51,21 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "breakInChunks" function.
+###
+
+breakInChunks <- function(totalsize, chunksize)
+{
+    quot <- totalsize %/% chunksize
+    ans_width <- rep.int(chunksize, quot)
+    rem <- totalsize %% chunksize
+    if (rem > 0L)
+        ans_width <- c(ans_width, rem)
+    IRanges(end=cumsum(ans_width), width=ans_width)
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "centeredIRanges" function.
 ###
 
