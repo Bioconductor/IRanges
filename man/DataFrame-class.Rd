@@ -28,6 +28,8 @@
 \alias{coerce,integer,DataFrame-method}
 \alias{coerce,Sequence,DataFrame-method}
 \alias{coerce,data.frame,DataFrame-method}
+\alias{coerce,NULL,DataFrame-method}
+\alias{coerce,table,DataFrame-method}
 \alias{coerce,DataFrame,data.frame-method}
 
 % splitting and combining

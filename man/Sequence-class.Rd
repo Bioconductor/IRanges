@@ -81,6 +81,7 @@
 \alias{as.list,Sequence-method}
 \alias{as.env}
 \alias{as.env,Sequence-method}
+\alias{stack,Sequence-method}
 
 \alias{Reduce,ANY,Sequence-method}
 \alias{Filter,ANY,Sequence-method}
@@ -421,6 +422,14 @@
     \item{}{
       \code{as.list(x, ...)}, \code{as(from, "list")}:
       Turns \code{x} into a standard list.
+    }
+    \item{}{\code{stack(x, indName = "space", valuesName = "values")}:
+      As with \code{\link[utils:stack]{stack}} on a \code{list},
+      constructs a \code{DataFrame} with two columns: one for the
+      unlisted values, the other indicating the name of the element from
+      which each value was obtained. \code{indName} specifies the column
+      name for the index (source name) column and \code{valuesName}
+      specifies the column name for the values.
     }
   }
 }

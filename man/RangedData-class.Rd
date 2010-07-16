@@ -31,6 +31,8 @@
 \alias{universe<-,RangedData-method}
 \alias{score,RangedData-method}
 \alias{score<-,RangedData-method}
+\alias{columnMetadata,RangedData-method}
+\alias{columnMetadata<-,RangedData-method}
 
 % Constructor:
 \alias{RangedData}
@@ -62,6 +64,7 @@
 
 % Utilities:
 \alias{reduce,RangedData-method}
+\alias{within,RangedData-method}
 
 % Applying:
 \alias{endoapply,RangedData-method}
@@ -147,6 +150,24 @@
         \item{}{
           \code{dimnames(x) <- value}: Sets the row and column names,
           where value is a list as described above.
+        }
+        \item{}{\code{columnMetadata(x)}: Get the \code{DataFrame} of
+          metadata along the value columns, i.e., where each column in
+          \code{x} is represented by a row in the metadata. Note that
+          calling \code{elementMetadata(x)} returns the metadata on each
+          space in \code{x}.
+        }
+        \item{}{\code{columnMetadata(x) <- value}: Set the \code{DataFrame}
+          of metadata for the columns.
+        }
+        \item{}{\code{within(data, expr, ...)}: Evaluates \code{expr}
+          within \code{data}, a \code{RangedData}. Any values assigned
+          in \code{expr} will be stored as value columns in \code{data},
+          unless they match one of the reserved names: \code{ranges},
+          \code{start}, \code{end}, \code{width} and
+          \code{space}. Behavior is undefined if any of the range
+          symbols are modified inconsistently. Modifications
+          to \code{space} are ignored.
         }
       }
     }

@@ -22,6 +22,13 @@
 \alias{colnames<-,CompressedSplitDataFrameList-method}
 \alias{colnames<-,SimpleDataFrameList-method}
 \alias{dimnames<-,DataFrameList-method}
+\alias{columnMetadata}
+\alias{columnMetadata<-}
+\alias{columnMetadata,SimpleSplitDataFrameList-method}
+\alias{columnMetadata<-,SimpleSplitDataFrameList-method}
+\alias{columnMetadata,CompressedSplitDataFrameList-method}
+\alias{columnMetadata<-,CompressedSplitDataFrameList-method}
+
 
 % constructor
 \alias{DataFrameList}
@@ -34,10 +41,14 @@
 \alias{[<-,CompressedSplitDataFrameList-method}
 
 % coercion
-\alias{as.data.frame,SplitDataFrameList-method}
+\alias{as.data.frame,DataFrameList-method}
+\alias{coerce,DataFrameList,DataFrame-method}
 \alias{coerce,SplitDataFrameList,DataFrame-method}
 \alias{coerce,ANY,CompressedSplitDataFrameList-method}
 \alias{coerce,ANY,SimpleSplitDataFrameList-method}
+\alias{coerce,Sequence,CompressedSplitDataFrameList-method}
+\alias{coerce,Sequence,SimpleSplitDataFrameList-method}
+\alias{stack,DataFrameList-method}
 
 % splitting and combining
 \alias{cbind,DataFrameList-method}
@@ -61,6 +72,16 @@
     \item{}{\code{dimnames(x)}: Get the list of two character vectors,
       the first holding the rownames (possibly \code{NULL}) and the second
       the column names.
+    }
+    \item{}{\code{columnMetadata(x)}: Get the \code{DataFrame} of
+      metadata along the columns, i.e., where each column in \code{x} is
+      represented by a row in the metadata. The metadata is common
+      across all elements of \code{x}. Note that
+      calling \code{elementMetadata(x)} returns the metadata on
+      the \code{DataFrame} elements of \code{x}.
+    }
+    \item{}{\code{columnMetadata(x) <- value}: Set the \code{DataFrame}
+      of metadata for the columns.
     }
   }
 }
@@ -91,12 +112,15 @@
   \describe{
     \item{}{\code{DataFrameList(...)}: Concatenates the \code{DataFrame}
       objects in \code{...} into a new \code{DataFrameList}.}
-    \item{}{\code{SplitDataFrameList(..., compress = TRUE)}:
-      The \code{...} arguments can either be a set of \code{DataFrame}
-      objects with the same number and names of columns or a set of objects
-      (e.g. \code{AtomicList}) that represent split columns that will be
-      column bound to form \code{DataFrame} objects. If \code{compress = TRUE},
-      returns a \code{CompressedSplitDataFrameList}; else returns a
+      \item{}{\code{SplitDataFrameList(..., compress = TRUE, cbindArgs =
+      FALSE)}: If \code{cbindArgs} is \code{FALSE}, the \code{...}
+      arguments are coerced to \code{DataFrame} objects and concatenated
+      to form the result. The arguments must have the same number and
+      names of columns. If \code{cbindArgs} is \code{TRUE}, the
+      arguments are combined as columns. The arguments must then be the
+      same length, with each element of an argument mapping to an
+      element in the result. If \code{compress = TRUE}, returns a
+      \code{CompressedSplitDataFrameList}; else returns a
       \code{SimpleSplitDataFrameList}.}
   }
 }
@@ -118,16 +142,26 @@
 }
 
 \section{Coercion}{
-  In the following code snippets, \code{x} is a \code{SplitDataFrameList}.
+  In the following code snippets, \code{x} is a \code{DataFrameList}.
   \describe{
     \item{}{\code{as(from, "DataFrame")}: Coerces a
       \code{DataFrameList} to an \code{DataFrame} by combining the
-      rows of the elements. This essentially unsplits the \code{DataFrame}.
+      rows of the elements. This essentially unsplits the
+      \code{DataFrame}. Every element of \code{x} must have the same columns.
     }
+    \item{}{\code{as(from, "SplitDataFrameList")}: By default, simply
+      calls the \code{SplitDataFrameList} constructor
+      on \code{from}. If \code{from} is a \code{Sequence}, each element
+      of \code{from} is passed as an argument
+      to \code{SplitDataFrameList}, like calling \code{as.list} on a vector.}
     \item{}{\code{as.data.frame(x, row.names=NULL, optional=FALSE, ...)}:
       Unsplits the \code{DataFrame} and coerces it to a
       \code{data.frame}, with the rownames specified in
       \code{row.names}. The \code{optional} argument is ignored.
+    }
+    \item{}{\code{stack(x, indName = "space")}: Unlists \code{x} and
+      adds a column named \code{indName} to the result, indicating the
+      element of \code{x} from which each row was obtained.
     }
   }
 }
