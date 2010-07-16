@@ -218,7 +218,7 @@ exportMethods(
     c,
     union, intersect, setdiff,
     split, splitRanges,
-    eval, with,
+    eval, with, within,
     t,
     is.na, na.omit, na.exclude, complete.cases,
     "%in%", by, match,
