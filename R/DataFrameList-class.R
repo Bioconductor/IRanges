@@ -249,7 +249,7 @@ DataFrameList <- function(...)
   newSimpleList("SimpleDataFrameList", listData)
 }
 
-SplitDataFrameList <- function(..., compress = TRUE)
+SplitDataFrameList <- function(..., compress = TRUE, cbindArgs = FALSE)
 {
   if (!isTRUEorFALSE(compress))
     stop("'compress' must be TRUE or FALSE")
@@ -257,11 +257,13 @@ SplitDataFrameList <- function(..., compress = TRUE)
   if (length(listData) == 1 && is.list(listData[[1L]]) &&
       !is.data.frame(listData[[1L]]))
     listData <- listData[[1L]]
-  if (length(listData) > 0 && !is(listData[[1L]], "DataFrame")) {
+  if (cbindArgs) {
     if (is.null(names(listData)))
       names(listData) <- paste("X", seq_len(length(listData)), sep = "")
     listData <- do.call(Map, c(list(DataFrame), listData))
-  }
+  } else if (any(!sapply(listData, is, "DataFrame")))
+    listData <- lapply(listData, as, "DataFrame")
+  
   if (compress)
     newCompressedList("CompressedSplitDataFrameList", listData)
   else
@@ -338,6 +340,8 @@ setReplaceMethod("[", "SimpleSplitDataFrameList",
                      } else {
                          jInfo <-
                            .bracket.Index(j, ncol(x)[[1L]], colnames(x)[[1L]])
+                         if (!is.null(jInfo[["msg"]]))
+                           stop("subsetting by column: ", jInfo[["msg"]])
                          if (!jInfo[["useIdx"]]) {
                              if (missing(i))
                                  x[] <- value
@@ -376,6 +380,8 @@ setReplaceMethod("[", "CompressedSplitDataFrameList",
                      } else {
                          jInfo <-
                            .bracket.Index(j, ncol(x)[[1L]], colnames(x)[[1L]])
+                         if (!is.null(jInfo[["msg"]]))
+                           stop("subsetting by column: ", jInfo[["msg"]])
                          if (!jInfo[["useIdx"]]) {
                              if (missing(i))
                                  x[] <- value
@@ -423,7 +429,7 @@ setAs("DataFrameList", "DataFrame", function(from) {
 
 setAs("SplitDataFrameList", "DataFrame", function(from) unlist(from))
 
-setMethod("as.data.frame", "SplitDataFrameList",
+setMethod("as.data.frame", "DataFrameList",
           function(x, row.names=NULL, optional=FALSE, ...)
           {
             if (!(is.null(row.names) || is.character(row.names)))
@@ -441,6 +447,14 @@ setAs("ANY", "SimpleSplitDataFrameList",
       function(from) SplitDataFrameList(from, compress=FALSE))
 setAs("ANY", "CompressedSplitDataFrameList",
       function(from) SplitDataFrameList(from, compress=TRUE))
+
+## Behaves like as.list() on a vector, while SplitDataFrameList() is like list()
+setAs("Sequence", "SimpleSplitDataFrameList",
+      function(from) do.call(SplitDataFrameList,
+                             c(as.list(from), compress=FALSE)))
+setAs("Sequence", "CompressedSplitDataFrameList",
+      function(from) do.call(SplitDataFrameList,
+                             c(as.list(from), compress=TRUE)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Show
