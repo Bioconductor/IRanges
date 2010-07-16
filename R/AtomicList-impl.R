@@ -703,6 +703,7 @@ setAtomicListMethod("match", outputBaseClass = "IntegerList",
 setAtomicListMethod("match", outputBaseClass = "IntegerList",
                     remainingSignature = "AtomicList", mapply = TRUE)
 setAtomicListMethod("sort", endoapply = TRUE)
+setAtomicListMethod("order", outputBaseClass = "IntegerList")
 setMethod("table", "AtomicList",
           function(...)
           {
