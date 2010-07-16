@@ -538,7 +538,8 @@ setMethod("seqselect", "IRanges",
               initialize(x,
                          start = seqselect(start(x), ir),
                          width = seqselect(width(x), ir),
-                         NAMES = seqselect(names(x), ir))
+                         NAMES = seqselect(names(x), ir),
+                         elementMetadata = seqselect(elementMetadata(x), ir))
         }
         x
     }
