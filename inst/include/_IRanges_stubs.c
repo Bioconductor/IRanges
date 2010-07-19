@@ -619,6 +619,21 @@ DEFINE_NOVALUE_CCALLABLE_STUB(set_XVectorList_names,
 	(     x,      names)
 )
 
+DEFINE_CCALLABLE_STUB(SEXP, new_XRawList_from_tags,
+	(const char *classname, const char *element_type, SEXP tags, SEXP ranges, SEXP ranges_group),
+	(            classname,             element_type,      tags,      ranges,      ranges_group)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, new_XIntegerList_from_tags,
+	(const char *classname, const char *element_type, SEXP tags, SEXP ranges, SEXP ranges_group),
+	(            classname,             element_type,      tags,      ranges,      ranges_group)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, new_XDoubleList_from_tags,
+	(const char *classname, const char *element_type, SEXP tags, SEXP ranges, SEXP ranges_group),
+	(            classname,             element_type,      tags,      ranges,      ranges_group)
+)
+
 DEFINE_CCALLABLE_STUB(SEXP, new_XVectorList1,
 	(const char *classname, SEXP xvector, SEXP ranges),
 	(            classname,      xvector,      ranges)

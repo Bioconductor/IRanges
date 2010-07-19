@@ -325,6 +325,9 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_get_cachedXIntegerList_elt);
 	REGISTER_CCALLABLE(_get_cachedXDoubleList_elt);
 	REGISTER_CCALLABLE(_set_XVectorList_names);
+	REGISTER_CCALLABLE(_new_XRawList_from_tags);
+	REGISTER_CCALLABLE(_new_XIntegerList_from_tags);
+	REGISTER_CCALLABLE(_new_XDoubleList_from_tags);
 	REGISTER_CCALLABLE(_new_XVectorList1);
 	REGISTER_CCALLABLE(_alloc_XRawList);
 	REGISTER_CCALLABLE(_alloc_XIntegerList);

@@ -160,9 +160,6 @@ SEXP _new_XRaw_from_tag(const char *classname, SEXP tag)
 {
 	SEXP shared, ans;
 
-	if (!IS_RAW(tag))
-		error("IRanges internal error in _new_XRaw_from_tag(): "
-		      "'tag' is not RAW");
 	PROTECT(shared = _new_SharedVector("SharedRaw", tag));
 	PROTECT(ans = _new_XVector(classname, shared, 0, LENGTH(tag)));
 	UNPROTECT(2);
@@ -173,9 +170,6 @@ SEXP _new_XInteger_from_tag(const char *classname, SEXP tag)
 {
 	SEXP shared, ans;
 
-	if (!IS_INTEGER(tag))
-		error("IRanges internal error in _new_XInteger_from_tag(): "
-		      "'tag' is not INTEGER");
 	PROTECT(shared = _new_SharedVector("SharedInteger", tag));
 	PROTECT(ans = _new_XVector(classname, shared, 0, LENGTH(tag)));
 	UNPROTECT(2);
@@ -186,9 +180,6 @@ SEXP _new_XDouble_from_tag(const char *classname, SEXP tag)
 {
 	SEXP shared, ans;
 
-	if (!IS_NUMERIC(tag))
-		error("IRanges internal error in _new_XDouble_from_tag(): "
-		      "'tag' is not NUMERIC");
 	PROTECT(shared = _new_SharedVector("SharedDouble", tag));
 	PROTECT(ans = _new_XVector(classname, shared, 0, LENGTH(tag)));
 	UNPROTECT(2);

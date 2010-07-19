@@ -888,6 +888,12 @@ SEXP SharedVector_mcopy(
 
 SEXP _get_SharedVector_Pool_xp_list(SEXP x);
 
+SEXP _new_SharedRaw_Pool(SEXP tags);
+
+SEXP _new_SharedInteger_Pool(SEXP tags);
+
+SEXP _new_SharedDouble_Pool(SEXP tags);
+
 SEXP _new_SharedVector_Pool1(SEXP shared);
 
 
@@ -1162,6 +1168,30 @@ cachedDoubleSeq _get_cachedXDoubleList_elt(
 );
 
 void _set_XVectorList_names(SEXP x, SEXP names);
+
+SEXP _new_XRawList_from_tags(
+	const char *classname,
+	const char *element_type,
+	SEXP tags,
+	SEXP ranges,
+	SEXP ranges_group
+);
+
+SEXP _new_XIntegerList_from_tags(
+	const char *classname,
+	const char *element_type,
+	SEXP tags,
+	SEXP ranges,
+	SEXP ranges_group
+);
+
+SEXP _new_XDoubleList_from_tags(
+	const char *classname,
+	const char *element_type,
+	SEXP tags,
+	SEXP ranges,
+	SEXP ranges_group
+);
 
 SEXP _new_XVectorList1(
 	const char *classname,
