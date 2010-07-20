@@ -94,7 +94,7 @@ void _IntAE_qsort(
 
 void _IntAE_delete_adjdups(IntAE *int_ae);
 
-SEXP _IntAE_asINTEGER(const IntAE *int_ae);
+SEXP _new_INTEGER_from_IntAE(const IntAE *int_ae);
 
 IntAE _INTEGER_asIntAE(SEXP x);
 
@@ -130,7 +130,7 @@ void _IntAEAE_sum_and_shift(
 	int shift
 );
 
-SEXP _IntAEAE_asLIST(
+SEXP _new_LIST_from_IntAEAE(
 	const IntAEAE *int_aeae,
 	int mode
 );
@@ -181,9 +181,9 @@ void _append_string_to_CharAE(
 	const char *string
 );
 
-SEXP _CharAE_asRAW(const CharAE *char_ae);
+SEXP _new_RAW_from_CharAE(const CharAE *char_ae);
 
-SEXP _CharAE_asLOGICAL(const CharAE *char_ae);
+SEXP _new_LOGICAL_from_CharAE(const CharAE *char_ae);
 
 CharAEAE _new_CharAEAE(
 	int buflength,
@@ -201,7 +201,7 @@ void _append_string_to_CharAEAE(
 	const char *string
 );
 
-SEXP _CharAEAE_asCHARACTER(const CharAEAE *char_aeae);
+SEXP _new_CHARACTER_from_CharAEAE(const CharAEAE *char_aeae);
 
 
 /* Ocopy_byteblocks.c */

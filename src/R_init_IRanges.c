@@ -207,7 +207,7 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_IntAE_append_shifted_vals);
 	REGISTER_CCALLABLE(_IntAE_qsort);
 	REGISTER_CCALLABLE(_IntAE_delete_adjdups);
-	REGISTER_CCALLABLE(_IntAE_asINTEGER);
+	REGISTER_CCALLABLE(_new_INTEGER_from_IntAE);
 	REGISTER_CCALLABLE(_INTEGER_asIntAE);
 	REGISTER_CCALLABLE(_CHARACTER_asIntAE);
 	REGISTER_CCALLABLE(_new_IntAEAE);
@@ -215,7 +215,7 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_IntAEAE_eltwise_append);
 	REGISTER_CCALLABLE(_IntAEAE_shift);
 	REGISTER_CCALLABLE(_IntAEAE_sum_and_shift);
-	REGISTER_CCALLABLE(_IntAEAE_asLIST);
+	REGISTER_CCALLABLE(_new_LIST_from_IntAEAE);
 	REGISTER_CCALLABLE(_LIST_asIntAEAE);
 	REGISTER_CCALLABLE(_IntAEAE_toEnvir);
 	REGISTER_CCALLABLE(_new_RangeAE);
@@ -226,11 +226,11 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_new_CharAE_from_string);
 	REGISTER_CCALLABLE(_CharAE_insert_at);
 	REGISTER_CCALLABLE(_append_string_to_CharAE);
-	REGISTER_CCALLABLE(_CharAE_asRAW);
+	REGISTER_CCALLABLE(_new_RAW_from_CharAE);
 	REGISTER_CCALLABLE(_new_CharAEAE);
 	REGISTER_CCALLABLE(_CharAEAE_insert_at);
 	REGISTER_CCALLABLE(_append_string_to_CharAEAE);
-	REGISTER_CCALLABLE(_CharAEAE_asCHARACTER);
+	REGISTER_CCALLABLE(_new_CHARACTER_from_CharAEAE);
 
 /* Ocopy_byteblocks.c */
 	REGISTER_CCALLABLE(_Ocopy_byteblocks_from_i1i2);

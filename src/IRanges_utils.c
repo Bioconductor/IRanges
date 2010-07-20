@@ -162,8 +162,8 @@ SEXP IRanges_reduce(SEXP x, SEXP drop_empty_ranges, SEXP min_gapwidth,
 	SET_STRING_ELT(ans_names, 2, mkChar("inframe.start"));
 	SET_NAMES(ans, ans_names);
 	UNPROTECT(1);
-	SET_VECTOR_ELT(ans, 0, _IntAE_asINTEGER(&(out_ranges.start)));
-	SET_VECTOR_ELT(ans, 1, _IntAE_asINTEGER(&(out_ranges.width)));
+	SET_VECTOR_ELT(ans, 0, _new_INTEGER_from_IntAE(&(out_ranges.start)));
+	SET_VECTOR_ELT(ans, 1, _new_INTEGER_from_IntAE(&(out_ranges.width)));
 	if (inframe_start != NULL) {
 		SET_VECTOR_ELT(ans, 2, ans_inframe_start);
 		UNPROTECT(1);
@@ -258,8 +258,8 @@ SEXP IRanges_gaps(SEXP x, SEXP start, SEXP end)
 	SET_STRING_ELT(ans_names, 1, mkChar("width"));
 	SET_NAMES(ans, ans_names);
 	UNPROTECT(1);
-	SET_VECTOR_ELT(ans, 0, _IntAE_asINTEGER(&(out_ranges.start)));
-	SET_VECTOR_ELT(ans, 1, _IntAE_asINTEGER(&(out_ranges.width)));
+	SET_VECTOR_ELT(ans, 0, _new_INTEGER_from_IntAE(&(out_ranges.start)));
+	SET_VECTOR_ELT(ans, 1, _new_INTEGER_from_IntAE(&(out_ranges.width)));
 	UNPROTECT(1);
 	return ans;
 }

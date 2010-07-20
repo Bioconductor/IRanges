@@ -151,11 +151,16 @@ SEXP readChain(SEXP r_path, SEXP r_exclude) {
     SET_VECTOR_ELT(ans_listData, i, block);
     SET_SLOT(block, install("ranges"),
 		_new_IRanges_from_RangeAE("IRanges", &chains[i]->ranges));
-    SET_SLOT(block, install("offset"), _IntAE_asINTEGER(&chains[i]->offset));
-    SET_SLOT(block, install("length"), _IntAE_asINTEGER(&chains[i]->length));
-    SET_SLOT(block, install("score"), _IntAE_asINTEGER(&chains[i]->score));
-    SET_SLOT(block, install("space"), _CharAEAE_asCHARACTER(&chains[i]->space));
-    SET_SLOT(block, install("rev"), _CharAE_asLOGICAL(&chains[i]->rev));
+    SET_SLOT(block, install("offset"),
+		_new_INTEGER_from_IntAE(&chains[i]->offset));
+    SET_SLOT(block, install("length"),
+		_new_INTEGER_from_IntAE(&chains[i]->length));
+    SET_SLOT(block, install("score"),
+		_new_INTEGER_from_IntAE(&chains[i]->score));
+    SET_SLOT(block, install("space"),
+		_new_CHARACTER_from_CharAEAE(&chains[i]->space));
+    SET_SLOT(block, install("rev"),
+		_new_LOGICAL_from_CharAE(&chains[i]->rev));
     SET_STRING_ELT(ans_names, i, mkChar(chains[i]->name));
   }
 

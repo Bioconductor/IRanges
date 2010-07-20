@@ -103,7 +103,7 @@ static SEXP explode_string_as_integer_vector(SEXP s, char sep0)
 		}
 		offset++;
 	}
-	return _IntAE_asINTEGER(&int_ae_buf);
+	return _new_INTEGER_from_IntAE(&int_ae_buf);
 }
 
 /* --- .Call ENTRY POINT --- */

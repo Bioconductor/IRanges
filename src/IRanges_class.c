@@ -218,8 +218,8 @@ SEXP _new_IRanges_from_RangeAE(const char *classname, const RangeAE *range_ae)
 {
 	SEXP ans, start, width;
 
-	PROTECT(start = _IntAE_asINTEGER(&(range_ae->start)));
-	PROTECT(width = _IntAE_asINTEGER(&(range_ae->width)));
+	PROTECT(start = _new_INTEGER_from_IntAE(&(range_ae->start)));
+	PROTECT(width = _new_INTEGER_from_IntAE(&(range_ae->width)));
 	PROTECT(ans = _new_IRanges(classname, start, width, R_NilValue));
 	UNPROTECT(3);
 	return ans;

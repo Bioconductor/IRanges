@@ -194,7 +194,7 @@ void _IntAE_delete_adjdups(IntAE *int_ae)
 	return;
 }
 
-SEXP _IntAE_asINTEGER(const IntAE *int_ae)
+SEXP _new_INTEGER_from_IntAE(const IntAE *int_ae)
 {
 	SEXP ans;
 
@@ -345,7 +345,7 @@ void _IntAEAE_sum_and_shift(const IntAEAE *int_aeae1, const IntAEAE *int_aeae2, 
 /*
  * mode: 0 -> integer(0), 1-> NULL, 2 -> NA
  */
-SEXP _IntAEAE_asLIST(const IntAEAE *int_aeae, int mode)
+SEXP _new_LIST_from_IntAEAE(const IntAEAE *int_aeae, int mode)
 {
 	SEXP ans, ans_elt;
 	int i;
@@ -363,7 +363,7 @@ SEXP _IntAEAE_asLIST(const IntAEAE *int_aeae, int mode)
 				PROTECT(ans_elt = NEW_LOGICAL(1));
 			}
 		} else {
-			PROTECT(ans_elt = _IntAE_asINTEGER(elt));
+			PROTECT(ans_elt = _new_INTEGER_from_IntAE(elt));
 		}
 		SET_VECTOR_ELT(ans, i, ans_elt);
 		UNPROTECT(1);
@@ -421,7 +421,7 @@ SEXP _IntAEAE_toEnvir(const IntAEAE *int_aeae, SEXP envir, int keyshift)
 					"installing key=%s ... ", key);
 		}
 #endif
-		PROTECT(value = _IntAE_asINTEGER(elt));
+		PROTECT(value = _new_INTEGER_from_IntAE(elt));
 		defineVar(install(key), value, envir);
 		UNPROTECT(1);
 #ifdef DEBUG_IRANGES
@@ -586,12 +586,12 @@ void _append_string_to_CharAE(CharAE *char_ae, const char *string)
 	return;
 }
 
-SEXP _CharAE_asRAW(const CharAE *char_ae)
+SEXP _new_RAW_from_CharAE(const CharAE *char_ae)
 {
 	SEXP ans;
 
 	if (sizeof(Rbyte) != sizeof(char)) // should never happen!
-		error("_CharAE_asRAW(): sizeof(Rbyte) != sizeof(char)");
+		error("_new_RAW_from_CharAE(): sizeof(Rbyte) != sizeof(char)");
 	PROTECT(ans = NEW_RAW(char_ae->nelt));
 	memcpy(RAW(ans), char_ae->elts, sizeof(char) * char_ae->nelt);
 	UNPROTECT(1);
@@ -599,7 +599,7 @@ SEXP _CharAE_asRAW(const CharAE *char_ae)
 }
 
 /* only until we have a bitset or something smaller than char */
-SEXP _CharAE_asLOGICAL(const CharAE *char_ae)
+SEXP _new_LOGICAL_from_CharAE(const CharAE *char_ae)
 {
   SEXP ans;
   int i;
@@ -693,7 +693,7 @@ void _append_string_to_CharAEAE(CharAEAE *char_aeae, const char *string)
 	return;
 }
 
-SEXP _CharAEAE_asCHARACTER(const CharAEAE *char_aeae)
+SEXP _new_CHARACTER_from_CharAEAE(const CharAEAE *char_aeae)
 {
   int i;
   SEXP ans;

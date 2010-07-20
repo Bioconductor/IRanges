@@ -105,7 +105,7 @@ DEFINE_NOVALUE_CCALLABLE_STUB(IntAE_delete_adjdups,
 	(       int_ae)
 )
 
-DEFINE_CCALLABLE_STUB(SEXP, IntAE_asINTEGER,
+DEFINE_CCALLABLE_STUB(SEXP, new_INTEGER_from_IntAE,
 	(const IntAE *int_ae),
 	(             int_ae)
 )
@@ -145,7 +145,7 @@ DEFINE_NOVALUE_CCALLABLE_STUB(IntAEAE_sum_and_shift,
 	(               int_aeae1,                int_aeae2,     shift)
 )
 
-DEFINE_CCALLABLE_STUB(SEXP, IntAEAE_asLIST,
+DEFINE_CCALLABLE_STUB(SEXP, new_LIST_from_IntAEAE,
 	(const IntAEAE *int_aeae, int mode),
 	(               int_aeae,     mode)
 )
@@ -200,7 +200,7 @@ DEFINE_NOVALUE_CCALLABLE_STUB(append_string_to_CharAE,
 	(        char_ae,             string)
 )
 
-DEFINE_CCALLABLE_STUB(SEXP, CharAE_asRAW,
+DEFINE_CCALLABLE_STUB(SEXP, new_RAW_from_CharAE,
 	(const CharAE *char_ae),
 	(              char_ae)
 )
@@ -220,7 +220,7 @@ DEFINE_NOVALUE_CCALLABLE_STUB(append_string_to_CharAEAE,
 	(          char_aeae,             string)
 )
 
-DEFINE_CCALLABLE_STUB(SEXP, CharAEAE_asCHARACTER,
+DEFINE_CCALLABLE_STUB(SEXP, new_CHARACTER_from_CharAEAE,
 	(const CharAEAE *char_aeae),
 	(                char_aeae)
 )

@@ -101,7 +101,7 @@ void IntAE_qsort(
 
 void IntAE_delete_adjdups(IntAE *int_ae);
 
-SEXP IntAE_asINTEGER(const IntAE *int_ae);
+SEXP new_INTEGER_from_IntAE(const IntAE *int_ae);
 
 IntAE INTEGER_asIntAE(SEXP x);
 
@@ -137,7 +137,7 @@ void IntAEAE_sum_and_shift(
 	int shift
 );
 
-SEXP IntAEAE_asLIST(
+SEXP new_LIST_from_IntAEAE(
 	const IntAEAE *int_aeae,
 	int mode
 );
@@ -188,7 +188,7 @@ void append_string_to_CharAE(
 	const char *string
 );
 
-SEXP CharAE_asRAW(const CharAE *char_ae);
+SEXP new_RAW_from_CharAE(const CharAE *char_ae);
 
 CharAEAE new_CharAEAE(
 	int buflength,
@@ -206,7 +206,7 @@ void append_string_to_CharAEAE(
 	const char *string
 );
 
-SEXP CharAEAE_asCHARACTER(const CharAEAE *char_aeae);
+SEXP new_CHARACTER_from_CharAEAE(const CharAEAE *char_aeae);
 
 
 /*
