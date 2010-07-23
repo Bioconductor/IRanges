@@ -33,6 +33,7 @@
 \alias{threebands,XVectorList-method}
 \alias{c,XVectorList-method}
 \alias{[<-,XVectorList-method}
+\alias{[[<-,XVectorList-method}
 
 
 \title{XVectorList objects}

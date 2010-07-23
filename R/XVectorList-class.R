@@ -313,6 +313,18 @@ setReplaceMethod("[", "XVectorList",
     }
 )
 
+setReplaceMethod("[[", "XVectorList",
+    function(x, i, j, ..., value)
+    {
+        i <- checkAndTranslateDbleBracketSubscript(x, i)
+        if (!is(value, elementType(x)))
+            stop("supplied replacement value must be a ",
+                 elementType(x), " object")
+        x[i] <- as(value, class(x))
+        x
+    }
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Show method for data column.
