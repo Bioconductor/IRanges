@@ -395,7 +395,7 @@ SEXP _new_XIntegerList_from_IntAEAE(const char *classname,
 		src = int_aeae->elts + i;
 		INTEGER(ans_width)[i] = src->nelt;
 	}
-	PROTECT(ans = _alloc_XRawList(classname, element_type, ans_width));
+	PROTECT(ans = _alloc_XIntegerList(classname, element_type, ans_width));
 	cached_ans = _cache_XVectorList(ans);
 	for (i = 0; i < int_aeae->nelt; i++) {
 		src = int_aeae->elts + i;
