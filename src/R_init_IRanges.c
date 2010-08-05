@@ -332,6 +332,8 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_alloc_XRawList);
 	REGISTER_CCALLABLE(_alloc_XIntegerList);
 	REGISTER_CCALLABLE(_alloc_XDoubleList);
+	REGISTER_CCALLABLE(_new_XRawList_from_CharAEAE);
+	REGISTER_CCALLABLE(_new_XIntegerList_from_IntAEAE);
 	return;
 }
 

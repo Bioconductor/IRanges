@@ -1217,6 +1217,19 @@ SEXP _alloc_XDoubleList(
 	SEXP width
 );
 
+SEXP _new_XRawList_from_CharAEAE(
+	const char *classname,
+	const char *element_type,
+	const CharAEAE *char_aeae,
+	SEXP lkup
+);
+
+SEXP _new_XIntegerList_from_IntAEAE(
+	const char *classname,
+	const char *element_type,
+	const IntAEAE *int_aeae
+);
+
 
 /* XIntegerViews_class.c */
 

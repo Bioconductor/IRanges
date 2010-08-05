@@ -342,3 +342,72 @@ SEXP _alloc_XDoubleList(const char *classname, const char *element_type,
 				 _alloc_XDouble, width);
 }
 
+SEXP _new_XRawList_from_CharAEAE(const char *classname,
+		const char *element_type,
+		const CharAEAE *char_aeae, SEXP lkup)
+{
+	const int *lkup0;
+	int lkup_length, i;
+	SEXP ans_width, ans;
+	const CharAE *src;
+	cachedXVectorList cached_ans;
+	cachedCharSeq dest;
+
+	if (lkup == R_NilValue) {
+		lkup0 = NULL;
+	} else {
+		lkup0 = INTEGER(lkup);
+		lkup_length = LENGTH(lkup);
+	}
+	PROTECT(ans_width = NEW_INTEGER(char_aeae->nelt));
+	for (i = 0; i < char_aeae->nelt; i++) {
+		src = char_aeae->elts + i;
+		INTEGER(ans_width)[i] = src->nelt;
+	}
+	PROTECT(ans = _alloc_XRawList(classname, element_type, ans_width));
+	cached_ans = _cache_XVectorList(ans);
+	for (i = 0; i < char_aeae->nelt; i++) {
+		src = char_aeae->elts + i;
+		dest = _get_cachedXRawList_elt(&cached_ans, i);
+		/* dest.seq is a const char * so we need to cast it to
+		   char * before we can write to it */
+		_Ocopy_bytes_to_i1i2_with_lkup(0, dest.length - 1,
+			(char *) dest.seq, dest.length,
+			src->elts, src->nelt,
+			lkup0, lkup_length);
+	}
+	UNPROTECT(2);
+	return ans;
+}
+
+SEXP _new_XIntegerList_from_IntAEAE(const char *classname,
+		const char *element_type,
+		const IntAEAE *int_aeae)
+{
+	int i;
+	SEXP ans_width, ans;
+	const IntAE *src;
+	cachedXVectorList cached_ans;
+	cachedIntSeq dest;
+
+	PROTECT(ans_width = NEW_INTEGER(int_aeae->nelt));
+	for (i = 0; i < int_aeae->nelt; i++) {
+		src = int_aeae->elts + i;
+		INTEGER(ans_width)[i] = src->nelt;
+	}
+	PROTECT(ans = _alloc_XRawList(classname, element_type, ans_width));
+	cached_ans = _cache_XVectorList(ans);
+	for (i = 0; i < int_aeae->nelt; i++) {
+		src = int_aeae->elts + i;
+		dest = _get_cachedXIntegerList_elt(&cached_ans, i);
+		/* dest.seq is a const int * so we need to cast it to
+		   char * before we can write to it */
+		_Ocopy_byteblocks_to_i1i2(0, dest.length - 1,
+			(char *) dest.seq, dest.length,
+			(const char *) src->elts, src->nelt,
+			sizeof(int));
+	}
+	UNPROTECT(2);
+	return ans;
+}
+
