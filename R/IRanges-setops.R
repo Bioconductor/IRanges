@@ -24,7 +24,8 @@ setMethod("gaps", "IRanges",
         start <- normargSingleStartOrNA(start)
         end <- normargSingleEndOrNA(end)
         C_ans <- .Call("IRanges_gaps", x, start, end, PACKAGE="IRanges")
-        unsafe.update(x, start=C_ans$start, width=C_ans$width, names=NULL)
+        initialize(x, start=C_ans$start, width=C_ans$width, NAMES=NULL,
+                   elementMetadata=NULL)
     }
 )
 
@@ -41,7 +42,8 @@ setMethod("union", c("IRanges", "IRanges"),
         ##   > v <- Views(XInteger(18), 2:5, 13:10)
         ##   > as(v, "IRanges") <- IRanges(3, 8)
         ##   Error: evaluation nested too deeply: infinite recursion / options(expressions=)?
-        update(x, start=start(x0), width=width(x0), names=names(x0))
+        initialize(x, start=start(x0), width=width(x0), NAMES=names(x0),
+                   elementMetadata=NULL)
     }
 )
 

@@ -704,7 +704,28 @@ setAtomicListMethod("match", outputBaseClass = "IntegerList",
                     remainingSignature = "AtomicList", mapply = TRUE)
 setAtomicListMethod("sort", endoapply = TRUE)
 setAtomicListMethod("order", outputBaseClass = "IntegerList")
-setMethod("table", "AtomicList",
+setMethod("table", "SimpleAtomicList",
+          function(...)
+          {
+              args <- list(...)
+              if (length(args) > 1)
+                  stop("Only one argument in '...' supported")
+              x <- args[[1L]]
+              values <-
+                as.character(sort(unique(unlist(lapply(x, unique),
+                                                use.names=FALSE))))
+              zeros <- structure(rep.int(0L, length(values)), names = values)
+              if (is.null(names(x)))
+                  names(x) <- as.character(seq_len(length(x)))
+              structure(do.call(rbind,
+                                lapply(x, function(elt) {
+                                           eltTable <- table(elt)
+                                           out <- zeros
+                                           out[names(eltTable)] <- eltTable
+                                           out
+                                       })), class = "table")
+          })
+setMethod("table", "CompressedAtomicList",
           function(...)
           {
               args <- list(...)

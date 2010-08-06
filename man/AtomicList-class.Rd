@@ -126,7 +126,8 @@
 \alias{match,CompressedRleList,AtomicList-method}
 \alias{match,SimpleRleList,AtomicList-method}
 \alias{sort,AtomicList-method}
-\alias{table,AtomicList-method}
+\alias{table,SimpleAtomicList-method}
+\alias{table,CompressedAtomicList-method}
 \alias{unique,AtomicList-method}
 \alias{unique,CompressedRleList-method}
 \alias{unique,SimpleRleList-method}
