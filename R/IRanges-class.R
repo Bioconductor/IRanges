@@ -416,6 +416,52 @@ setMethod("update", "IRanges",
 ### Subsetting.
 ###
 
+.IRanges.checkAndTranslateSingleBracketSubscript <- function(x, i)
+{
+    if (!is(i, "Ranges") && !is.atomic(i))
+        stop("invalid subscript type")
+    lx <- length(x)
+    if (is.numeric(i)) {
+        if (!is.integer(i))
+            i <- as.integer(i)
+        if (anyMissingOrOutside(i, -lx, lx))
+            stop("subscript contains NAs or out of bounds indices")
+        if (is(x, "NormalIRanges") && all(i >= 0L)) {
+            i <- i[i != 0L]
+            if (isNotStrictlySorted(i))
+                stop("positive numeric subscript must be strictly increasing ",
+                     "for NormalIRanges objects")
+        }
+        return(i)
+    }
+    if (is.logical(i)) {
+        if (anyMissing(i))
+            stop("subscript contains NAs")
+        li <- length(i)
+        if (li > lx)
+            stop("subscript out of bounds")
+        if (li < lx)
+            i <- rep(i, length.out=lx)
+        return(which(i))
+    }
+    if (is.character(i) || is.factor(i)) {
+        if (is.null(names(x)))
+            stop("cannot subset by character when names are NULL")
+        i <- match(i, names(x))
+        if (anyMissing(i))
+            stop("subsetting by character would result in NA's")
+        return(i)
+    }
+    if (is(i, "Ranges")) {
+        warning("'[' subsetting by Ranges is deprecated.\n",
+                "Use 'subsetByOverlaps' instead.")
+        return(x %in% i)
+    }
+    if (is.null(i))
+        return(NULL)
+    stop("invalid subscript type")
+}
+
 ### Supported 'i' types: numeric vector, logical vector, character vector,
 ### Ranges object, NULL and missing.
 setMethod("[", "IRanges",
@@ -425,42 +471,7 @@ setMethod("[", "IRanges",
             stop("invalid subsetting")
         if (missing(i))
             return(x)
-        if (!is(i, "Ranges") && !is.atomic(i))
-            stop("invalid subscript type")
-        lx <- length(x)
-        if (is.numeric(i)) {
-            if (!is.integer(i))
-                i <- as.integer(i)
-            if (anyMissingOrOutside(i, -lx, lx))
-                stop("subscript contains NAs or out of bounds indices")
-            if (is(x, "NormalIRanges") && all(i >= 0L)) {
-                i <- i[i != 0L]
-                if (isNotStrictlySorted(i))
-                    stop("positive numeric subscript must be strictly increasing ",
-                         "for NormalIRanges objects")
-            }
-        } else if (is.logical(i)) {
-            if (anyMissing(i))
-                stop("subscript contains NAs")
-            li <- length(i)
-            if (li > lx)
-                stop("subscript out of bounds")
-            if (li < lx)
-                i <- rep(i, length.out = lx)
-            i <- which(i)
-        } else if (is.character(i) || is.factor(i)) {
-          if (is.null(names(x)))
-            stop("cannot subset by character when names are NULL")
-          i <- match(i, names(x))
-          if (anyMissing(i))
-            stop("subsetting by character would result in NA's")
-        } else if (is(i, "Ranges")) {
-            warning("'[' subsetting by Ranges is deprecated.\n",
-                    "Use 'subsetByOverlaps' instead.")
-            i <- x %in% i
-        } else if (!is.null(i)) {
-            stop("invalid subscript type")
-        }
+        i <- .IRanges.checkAndTranslateSingleBracketSubscript(x, i)
         slot(x, "start", check=FALSE) <- start(x)[i]
         slot(x, "width", check=FALSE) <- width(x)[i]
         if (!is.null(names(x)))
@@ -476,51 +487,12 @@ setReplaceMethod("[", "IRanges",
             stop("invalid subsetting")
         if (missing(i))
             i <- seq_len(length(x))
-        if (!is(i, "Ranges") && !is.atomic(i))
-            stop("invalid subscript type")
-        lx <- length(x)
-        if (is.numeric(i)) {
-            if (!is.integer(i))
-                i <- as.integer(i)
-            if (anyMissingOrOutside(i, -lx, lx))
-                stop("subscript contains NAs or out of bounds indices")
-            if (is(x, "NormalIRanges") && anyMissingOrOutside(i, 0L)) {
-                i <- i[i != 0L]
-                if (isNotStrictlySorted(i))
-                    stop("positive numeric subscript must be strictly increasing ",
-                         "for NormalIRanges objects")
-            }
-        } else if (is.logical(i)) {
-            if (anyMissing(i))
-                stop("subscript contains NAs")
-            li <- length(i)
-            if (li > lx)
-                stop("subscript out of bounds")
-            if (li < lx)
-                i <- rep(i, length.out = lx)
-            i <- which(i)
-        } else if (is.character(i) || is.factor(i)) {
-          if (is.null(names(x)))
-            stop("cannot subset by character when names are NULL")
-          i <- match(i, names(x))
-          if (anyMissing(i))
-            stop("subsetting by character would result in NA's")
-        } else if (is(i, "Ranges")) {
-            warning("'[' subsetting by Ranges is deprecated.\n",
-                    "Use 'subsetByOverlaps' instead.")
-            i <- x %in% i
-        } else if (!is.null(i)) {
-            stop("invalid subscript type")
-        }
-        newStart <- start(x)
-        newStart[i] <- start(value)
-        newWidth <- width(x)
-        newWidth[i] <- width(value)
-        newNames <- names(x)
-        if (!is.null(newNames) && !is.null(names(values)))
-            newNames[i] <- names(value)
-        initialize(x, start = newStart, width = newWidth,
-                   NAMES = newNames)
+        i <- .IRanges.checkAndTranslateSingleBracketSubscript(x, i)
+        ans_start <- start(x)
+        ans_start[i] <- start(value)
+        ans_width <- width(x)
+        ans_width[i] <- width(value)
+        initialize(x, start=ans_start, width=ans_width, NAMES=names(x))
     }
 )
 
@@ -567,15 +539,11 @@ setReplaceMethod("seqselect", "IRanges",
         if (anyMissingOrOutside(start(ir), 1L, length(x)) ||
             anyMissingOrOutside(end(ir), 1L, length(x)))
             stop("some ranges are out of bounds")
-        newStart <- start(x)
-        seqselect(newStart, ir) <- start(value)
-        newWidth <- width(x)
-        seqselect(newWidth, ir) <- width(value)
-        newNames <- names(x)
-        if (!is.null(newNames) && !is.null(names(values)))
-            seqselect(newNames, ir) <- names(value)
-        initialize(x, start = newStart, width = newWidth,
-                   NAMES = newNames)
+        ans_start <- start(x)
+        seqselect(ans_start, ir) <- start(value)
+        ans_width <- width(x)
+        seqselect(ans_width, ir) <- width(value)
+        initialize(x, start=ans_start, width=ans_width, NAMES=names(x))
     }
 )
 
