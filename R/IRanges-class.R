@@ -433,7 +433,7 @@ setMethod("[", "IRanges",
                 i <- as.integer(i)
             if (anyMissingOrOutside(i, -lx, lx))
                 stop("subscript contains NAs or out of bounds indices")
-            if (is(x, "NormalIRanges") && anyMissingOrOutside(i, 0L)) {
+            if (is(x, "NormalIRanges") && all(i >= 0L)) {
                 i <- i[i != 0L]
                 if (isNotStrictlySorted(i))
                     stop("positive numeric subscript must be strictly increasing ",
