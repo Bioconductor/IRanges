@@ -165,7 +165,7 @@ DataFrame <- function(..., row.names = NULL)
           varnames[[i]] <- colnames(element)
         else
           varnames[[i]] <- paste(varnames[[i]], colnames(element), sep = ".")
-      } else if (length(names(listData[[i]])))
+      } else if (is.list(listData[[i]]) && length(names(listData[[i]])))
           varnames[[i]] <- names(element)
     }
     nr <- max(nrows)
