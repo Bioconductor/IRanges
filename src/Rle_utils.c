@@ -54,7 +54,7 @@ SEXP Rle_integer_runsum(SEXP x, SEXP k)
 			// calculate stat
 			if (i == 0) {
 				if (*curr_value == NA_INTEGER)
-					error("some values are NAs");
+					error("some values are NA");
 				j = 0;
 		    	ans_len = 1;
 				while (j < window_len) {
@@ -63,7 +63,7 @@ SEXP Rle_integer_runsum(SEXP x, SEXP k)
 						curr_length++;
 						curr_offset = *curr_length;
 						if (*curr_value == NA_INTEGER)
-							error("some values are NAs");
+							error("some values are NA");
 					}
 					int times =
 						curr_offset < window_len - j ?
@@ -114,7 +114,7 @@ SEXP Rle_integer_runsum(SEXP x, SEXP k)
 				curr_length++;
 				curr_offset = *curr_length;
 				if (*curr_value == NA_INTEGER)
-					error("some values are NAs");
+					error("some values are NA");
 			}
 		}
 	}
@@ -184,8 +184,8 @@ SEXP Rle_real_runsum(SEXP x, SEXP k)
 				R_CheckUserInterrupt();
 			// calculate stat
 			if (i == 0) {
-				if (*curr_value == NA_REAL)
-					error("some values are NAs");
+				if (!R_FINITE(*curr_value))
+					error("some values are NA, NaN, +/-Inf");
 				j = 0;
 		    	ans_len = 1;
 				while (j < window_len) {
@@ -193,8 +193,8 @@ SEXP Rle_real_runsum(SEXP x, SEXP k)
 						curr_value++;
 						curr_length++;
 						curr_offset = *curr_length;
-						if (*curr_value == NA_REAL)
-							error("some values are NAs");
+						if (!R_FINITE(*curr_value))
+							error("some values are NA, NaN, +/-Inf");
 					}
 					int times =
 						curr_offset < window_len - j ?
@@ -244,8 +244,8 @@ SEXP Rle_real_runsum(SEXP x, SEXP k)
 				curr_value++;
 				curr_length++;
 				curr_offset = *curr_length;
-				if (*curr_value == NA_REAL)
-					error("some values are NAs");
+				if (!R_FINITE(*curr_value))
+					error("some values are NA, NaN, +/-Inf");
 			}
 		}
 	}
@@ -312,8 +312,8 @@ SEXP Rle_integer_runwtsum(SEXP x, SEXP k, SEXP wt)
 		error("'wt' must be a numeric vector of length 'k'");
 
 	for (j = 0, wt_elt = REAL(wt); j < window_len; j++, wt_elt++) {
-		if (*wt_elt == NA_REAL)
-			error("'wt' contains NAs");
+		if (!R_FINITE(*wt_elt))
+			error("'wt' contains NA, NaN, +/-Inf");
 	}
 
 	ans_len = 0;
@@ -349,7 +349,7 @@ SEXP Rle_integer_runwtsum(SEXP x, SEXP k, SEXP wt)
 			for (j = 0, wt_elt = REAL(wt); j < window_len;
 			     j++, wt_elt++) {
 				if (*curr_value == NA_INTEGER)
-					error("some values are NAs");
+					error("some values are NA");
 				stat += (*wt_elt) * (*curr_value);
 				curr_offset--;
 				if (curr_offset == 0) {
@@ -423,8 +423,8 @@ SEXP Rle_real_runwtsum(SEXP x, SEXP k, SEXP wt)
 		error("'wt' must be a numeric vector of length 'k'");
 
 	for (j = 0, wt_elt = REAL(wt); j < window_len; j++, wt_elt++) {
-		if (*wt_elt == NA_REAL)
-			error("'wt' contains NAs");
+		if (!R_FINITE(*wt_elt))
+			error("'wt' contains NA, NaN, +/-Inf");
 	}
 
 	ans_len = 0;
@@ -459,8 +459,8 @@ SEXP Rle_real_runwtsum(SEXP x, SEXP k, SEXP wt)
 			curr_offset = start_offset;
 			for (j = 0, wt_elt = REAL(wt); j < window_len;
 			     j++, wt_elt++) {
-				if (*curr_value == NA_REAL)
-					error("some values are NAs");
+				if (!R_FINITE(*curr_value))
+					error("some values are NA, NaN, +/-Inf");
 				stat += (*wt_elt) * (*curr_value);
 				curr_offset--;
 				if (curr_offset == 0) {
@@ -592,7 +592,7 @@ SEXP Rle_integer_runq(SEXP x, SEXP k, SEXP which)
 			curr_offset = start_offset;
 			for(j = 0; j < window_len; j++) {
 				if (*curr_value == NA_INTEGER)
-					error("some values are NAs");
+					error("some values are NA");
 				window[j] = *curr_value;
 				curr_offset--;
 				if (curr_offset == 0) {
@@ -702,8 +702,8 @@ SEXP Rle_real_runq(SEXP x, SEXP k, SEXP which)
 			curr_length = lengths_elt;
 			curr_offset = start_offset;
 			for(j = 0; j < window_len; j++) {
-				if (*curr_value == NA_REAL)
-					error("some values are NAs");
+				if (!R_FINITE(*curr_value))
+					error("some values are NA, NaN, +/-Inf");
 				window[j] = *curr_value;
 				curr_offset--;
 				if (curr_offset == 0) {
