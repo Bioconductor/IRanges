@@ -9,6 +9,15 @@ test_Rle_construction <- function() {
     y <- Rle(factor(rep(letters, 1:26)))
     checkTrue(validObject(y))
     checkIdentical(y, Rle(factor(letters), 1:26))
+
+    checkIdentical(Rle(c(TRUE, TRUE, FALSE, FALSE, FALSE, NA, NA, NA)),
+                   Rle(c(TRUE, FALSE, NA), c(2, 3, 3)))
+    checkIdentical(Rle(c(1L, 1L, 1L, 2L, 2L, NA, NA, NA)),
+                   Rle(c(1L, 2L, NA), c(3, 2, 3)))
+    checkIdentical(Rle(c(1, 1, 1, 2, 2, NA, NA, NA)),
+                   Rle(c(1, 2, NA), c(3, 2, 3)))
+    checkIdentical(Rle(c("a", "a", "b", "b", "b", NA, NA, NA)),
+                   Rle(c("a", "b", NA), c(2, 3, 3)))
 }
 
 test_Rle_replace <- function() {

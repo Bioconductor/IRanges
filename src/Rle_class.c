@@ -171,7 +171,8 @@ SEXP Rle_real_constructor(SEXP x, SEXP counts) {
         	INTEGER(buf_lengths)[0] = 1;
         	for (i = 1, val1 = REAL(x), val2 = REAL(x) + 1; i < n;
         	     i++, val1++, val2++) {
-                if (*val1 != *val2) {
+                if ((*val1 != *val2) && !(R_IsNA(*val1) && R_IsNA(*val2)) &&
+                    !(R_IsNaN(*val1) && R_IsNaN(*val2))) {
                 	index++;
                 	REAL(buf_values)[index] = *val2;
                 }
@@ -182,7 +183,8 @@ SEXP Rle_real_constructor(SEXP x, SEXP counts) {
         	INTEGER(buf_lengths)[0] = INTEGER(counts)[0];
         	for (i = 1, val1 = REAL(x), val2 = REAL(x) + 1,
         		 cnt = INTEGER(counts) + 1; i < n; i++, val1++, val2++, cnt++) {
-                if (*val1 != *val2) {
+                if ((*val1 != *val2) && !(R_IsNA(*val1) && R_IsNA(*val2)) &&
+                    !(R_IsNaN(*val1) && R_IsNaN(*val2))) {
                 	index++;
                 	REAL(buf_values)[index] = *val2;
                 }
@@ -243,7 +245,12 @@ SEXP Rle_complex_constructor(SEXP x, SEXP counts) {
         	for (i = 1; i < n; i++) {
         		val1 = val2;
         		val2 = COMPLEX(x)[i];
-                if (val1.r != val2.r || val1.i != val2.i) {
+                if (((val1.r != val2.r) &&
+                	 !(R_IsNA(val1.r) && R_IsNA(val2.r)) &&
+                     !(R_IsNaN(val1.r) && R_IsNaN(val2.r))) ||
+                    ((val1.i != val2.i) &&
+                     !(R_IsNA(val1.i) && R_IsNA(val2.i)) &&
+                     !(R_IsNaN(val1.i) && R_IsNaN(val2.i)))) {
                 	index++;
                 	COMPLEX(buf_values)[index].r = val2.r;
                 	COMPLEX(buf_values)[index].i = val2.i;
@@ -257,7 +264,12 @@ SEXP Rle_complex_constructor(SEXP x, SEXP counts) {
         	for (i = 1, cnt = INTEGER(counts) + 1; i < n; i++, cnt++) {
         		val1 = val2;
         		val2 = COMPLEX(x)[i];
-                if (val1.r != val2.r || val1.i != val2.i) {
+                if (((val1.r != val2.r) &&
+                	 !(R_IsNA(val1.r) && R_IsNA(val2.r)) &&
+                     !(R_IsNaN(val1.r) && R_IsNaN(val2.r))) ||
+                    ((val1.i != val2.i) &&
+                     !(R_IsNA(val1.i) && R_IsNA(val2.i)) &&
+                     !(R_IsNaN(val1.i) && R_IsNaN(val2.i)))) {
                 	index++;
                 	COMPLEX(buf_values)[index].r = val2.r;
                 	COMPLEX(buf_values)[index].i = val2.i;
@@ -320,7 +332,7 @@ SEXP Rle_string_constructor(SEXP x, SEXP counts) {
         	for (i = 1; i < n; i++) {
         		val1 = val2;
         		val2 = STRING_ELT(x, i);
-                if (strcmp(CHAR(val1), CHAR(val2)) != 0) {
+                if (val1 != val2) {
                 	index++;
                 	SET_STRING_ELT(buf_values, index, val2);
                 }
@@ -333,7 +345,7 @@ SEXP Rle_string_constructor(SEXP x, SEXP counts) {
         	for (i = 1, cnt = INTEGER(counts) + 1; i < n; i++, cnt++) {
         		val1 = val2;
         		val2 = STRING_ELT(x, i);
-                if (strcmp(CHAR(val1), CHAR(val2)) != 0) {
+                if (val1 != val2) {
                 	index++;
                 	SET_STRING_ELT(buf_values, index, val2);
                 }
