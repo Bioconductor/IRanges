@@ -256,8 +256,9 @@ SEXP findIntervalAndStartFromWidth(SEXP x, SEXP width)
 {
 	int i, x_len, width_len, interval, start;
 	const int *x_elt, *width_elt;
-	int *interval_elt, *start_elt;
+	int *interval_elt, *start_elt, *x_order_elt;
 	SEXP ans, ans_class, ans_names, ans_rownames, ans_interval, ans_start;
+	SEXP x_order;
 
 	if (!IS_INTEGER(x))
 		error("'x' must be an integer vector");
@@ -266,6 +267,14 @@ SEXP findIntervalAndStartFromWidth(SEXP x, SEXP width)
 
 	x_len = LENGTH(x);
 	width_len = LENGTH(width);
+
+	for (i = 0, width_elt = INTEGER(width); i < width_len; i++, width_elt++) {
+		if (*width_elt == NA_INTEGER)
+			error("'width' cannot contain missing values");
+		else if (*width_elt < 0)
+			error("'width' must contain non-negative values");
+	}
+
 	width_elt = INTEGER(width);
 	ans_rownames = R_NilValue;
 	PROTECT(ans_interval = NEW_INTEGER(x_len));
@@ -273,9 +282,13 @@ SEXP findIntervalAndStartFromWidth(SEXP x, SEXP width)
 	if (x_len > 0 && width_len > 0) {
 		start = 1;
 		interval = 1;
-		for (i = 0, x_elt = INTEGER(x), interval_elt = INTEGER(ans_interval),
-			 start_elt = INTEGER(ans_start); i < x_len;
-		     i++, x_elt++, interval_elt++, start_elt++) {
+		PROTECT(x_order = NEW_INTEGER(x_len));
+		_get_order_of_int_array(INTEGER(x), x_len, 0, INTEGER(x_order), 0);
+		for (i = 0, x_order_elt = INTEGER(x_order); i < x_len;
+		     i++, x_order_elt++) {
+			x_elt = INTEGER(x) + *x_order_elt;
+			interval_elt = INTEGER(ans_interval) + *x_order_elt;
+			start_elt = INTEGER(ans_start) + *x_order_elt;
 			if (*x_elt == NA_INTEGER)
 				error("'x' cannot contain missing values");
 			else if (*x_elt < 0)
@@ -284,22 +297,18 @@ SEXP findIntervalAndStartFromWidth(SEXP x, SEXP width)
 				*interval_elt = 0;
 				*start_elt = NA_INTEGER;
 			} else {
-				while (interval > 1 && *x_elt < start) {
-					interval--;
-					width_elt--;
-					start -= *width_elt;
-				}
 				while (interval < width_len && *x_elt >= (start + *width_elt)) {
 					interval++;
 					start += *width_elt;
 					width_elt++;
 				}
 				if (*x_elt > start + *width_elt)
-					error("'x' must be less than 'sum(width)'");
+					error("'x' values larger than vector length 'sum(width)'");
 				*interval_elt = interval;
 				*start_elt = start;
 			}
 		}
+		UNPROTECT(1);
 		PROTECT(ans_rownames = NEW_INTEGER(2));
 		INTEGER(ans_rownames)[0] = NA_INTEGER;
 		INTEGER(ans_rownames)[1] = -x_len;
