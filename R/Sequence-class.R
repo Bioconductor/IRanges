@@ -1240,6 +1240,16 @@ setMethod("Position", signature(x = "Sequence"), .PositionDefault)
   
 setClassUnion("expressionORlanguage", c("expression", "language"))
 
+setGeneric("eval", function (expr, envir = parent.frame(),
+                             enclos = if (is.list(envir) || 
+                               is.pairlist(envir)) parent.frame()
+                             else baseenv())
+           {
+             force(envir)
+             force(enclos)
+             standardGeneric("eval")
+           })
+
 setMethod("eval", c("expressionORlanguage", "Sequence"),
           function(expr, envir, enclos = parent.frame())
           {
