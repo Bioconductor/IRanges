@@ -280,9 +280,10 @@ static void set_SharedVector_Pool_link_list(SEXP x, SEXP value)
  * Thus they cannot be made .Call entry points!
  */
 
-static SEXP new_SharedVector_Pool(const char *classname, SEXP tags)
+static SEXP new_SharedVector_Pool(const char *classname,
+		const char *element_type, SEXP tags)
 {
-	SEXP classdef, ans, ans_xp_list, tag, xp;
+	SEXP classdef, ans, ans_xp_list, ans_link_list, tmp, ans_elt;
 	int ans_length, i;
 
 	PROTECT(classdef = MAKE_CLASS(classname));
@@ -292,13 +293,25 @@ static SEXP new_SharedVector_Pool(const char *classname, SEXP tags)
 	/* set "xp_list" slot */
 	PROTECT(ans_xp_list = NEW_LIST(ans_length));
 	for (i = 0; i < ans_length; i++) {
-		tag = VECTOR_ELT(tags, i);
-		PROTECT(xp = R_MakeExternalPtr(NULL, tag, R_NilValue));
-		SET_VECTOR_ELT(ans_xp_list, i, xp);
+		tmp = VECTOR_ELT(tags, i);
+		PROTECT(tmp = R_MakeExternalPtr(NULL, tmp, R_NilValue));
+		SET_VECTOR_ELT(ans_xp_list, i, tmp);
 		UNPROTECT(1);
 	}
 	set_SharedVector_Pool_xp_list(ans, ans_xp_list);
 	UNPROTECT(1);
+
+	/* set ".link_to_cached_object_list" slot */
+	PROTECT(classdef = MAKE_CLASS(element_type));
+	PROTECT(ans_elt = NEW_OBJECT(classdef));
+	PROTECT(ans_link_list = NEW_LIST(ans_length));
+	for (i = 0; i < ans_length; i++) {
+		PROTECT(tmp = duplicate(get_SharedVector_link(ans_elt)));
+		SET_VECTOR_ELT(ans_link_list, i, tmp);
+		UNPROTECT(1);
+	}
+	set_SharedVector_Pool_link_list(ans, ans_link_list);
+	UNPROTECT(3);
 
 	UNPROTECT(2);
 	return ans;
@@ -315,7 +328,8 @@ SEXP _new_SharedRaw_Pool(SEXP tags)
 		error("IRanges internal error in _new_SharedRaw_Pool(): "
 		      "'tags[[%d]]' is not RAW", i + 1);
 	}
-	return new_SharedVector_Pool("SharedRaw_Pool", tags);
+	return new_SharedVector_Pool("SharedRaw_Pool",
+			"SharedRaw", tags);
 }
 
 SEXP _new_SharedInteger_Pool(SEXP tags)
@@ -329,7 +343,8 @@ SEXP _new_SharedInteger_Pool(SEXP tags)
 		error("IRanges internal error in _new_SharedInteger_Pool(): "
 		      "'tags[[%d]]' is not INTEGER", i + 1);
 	}
-	return new_SharedVector_Pool("SharedInteger_Pool", tags);
+	return new_SharedVector_Pool("SharedInteger_Pool",
+			"SharedInteger", tags);
 }
 
 SEXP _new_SharedDouble_Pool(SEXP tags)
@@ -343,7 +358,8 @@ SEXP _new_SharedDouble_Pool(SEXP tags)
 		error("IRanges internal error in _new_SharedDouble_Pool(): "
 		      "'tags[[%d]]' is not NUMERIC", i + 1);
 	}
-	return new_SharedVector_Pool("SharedDouble_Pool", tags);
+	return new_SharedVector_Pool("SharedDouble_Pool",
+			"SharedDouble",  tags);
 }
 
 SEXP _new_SharedVector_Pool1(SEXP shared)
