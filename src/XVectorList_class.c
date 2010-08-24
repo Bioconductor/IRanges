@@ -257,7 +257,7 @@ SEXP _new_XDoubleList_from_tags(const char *classname,
 
 /*
  * Constructing an XVectorList object from a single tag.
- * As a convenience 'ranges' can be NULL as a way to indicate that the
+ * For convenience, 'ranges' can be NULL as a way to indicate that the
  * returned XVectorList object has only 1 element that spans the entire tag.
  */
 
@@ -326,39 +326,70 @@ SEXP _new_XDoubleList_from_tag(const char *classname,
 					tag, ranges);
 }
 
-/* Allocation WITHOUT initialization. */
+/* Allocation WITHOUT initialization.
+ * This is a soft limit. Some tags could be longer than this limit if the
+ * XVectorList object to allocate contains elements that are also longer
+ * than this limit. */
+#define	MAX_TAG_LENGTH 1073741824
 
 static SEXP alloc_XVectorList(const char *classname,
 		const char *element_type, const char *tag_type,
 		SEXP width)
 {
-	int ans_length, tag_length, i;
-	SEXP start, tag, ranges, ans;
+	int ans_length, tag_length, new_tag_length, i;
+	SEXP start, group, ranges, tags, tag, ans;
+	IntAE tag_lengths;
 
 	ans_length = LENGTH(width);
 	PROTECT(start = NEW_INTEGER(ans_length));
-	for (i = tag_length = 0; i < ans_length; i++) {
+	PROTECT(group = NEW_INTEGER(ans_length));
+	tag_length = 0;
+	tag_lengths = _new_IntAE(0, 0, 0);
+	for (i = 0; i < ans_length; i++) {
+		new_tag_length = tag_length + INTEGER(width)[i];
+		if (new_tag_length > MAX_TAG_LENGTH
+		 || new_tag_length < tag_length) {
+			_IntAE_insert_at(&tag_lengths,
+					 tag_lengths.nelt, tag_length);
+			tag_length = 0;
+		}
 		INTEGER(start)[i] = tag_length + 1;
+		INTEGER(group)[i] = tag_lengths.nelt + 1;
 		tag_length += INTEGER(width)[i];
 	}
+	_IntAE_insert_at(&tag_lengths, tag_lengths.nelt, tag_length);
 	PROTECT(ranges = _new_IRanges("IRanges", start, width, NULL));
+	PROTECT(tags = NEW_LIST(tag_lengths.nelt));
 	if (strcmp(tag_type, "raw") == 0) {
-		PROTECT(tag = NEW_RAW(tag_length));
-		PROTECT(ans = _new_XRawList_from_tag(classname,
-					element_type, tag, ranges));
+		for (i = 0; i < tag_lengths.nelt; i++) {
+			PROTECT(tag = NEW_RAW(tag_lengths.elts[i]));
+			SET_VECTOR_ELT(tags, i, tag);
+			UNPROTECT(1);
+		}
+		PROTECT(ans = _new_XRawList_from_tags(classname,
+					element_type, tags, ranges, group));
 	} else if (strcmp(tag_type, "integer") == 0) {
-		PROTECT(tag = NEW_INTEGER(tag_length));
-		PROTECT(ans = _new_XIntegerList_from_tag(classname,
-					element_type, tag, ranges));
+		for (i = 0; i < tag_lengths.nelt; i++) {
+			PROTECT(tag = NEW_INTEGER(tag_lengths.elts[i]));
+			SET_VECTOR_ELT(tags, i, tag);
+			UNPROTECT(1);
+		}
+		PROTECT(ans = _new_XIntegerList_from_tags(classname,
+					element_type, tags, ranges, group));
 	} else if (strcmp(tag_type, "double") == 0) {
-		PROTECT(tag = NEW_NUMERIC(tag_length));
-		PROTECT(ans = _new_XDoubleList_from_tag(classname,
-					element_type, tag, ranges));
+		for (i = 0; i < tag_lengths.nelt; i++) {
+			PROTECT(tag = NEW_NUMERIC(tag_lengths.elts[i]));
+			SET_VECTOR_ELT(tags, i, tag);
+			UNPROTECT(1);
+		}
+		PROTECT(ans = _new_XDoubleList_from_tags(classname,
+					element_type, tags, ranges, group));
 	} else {
+		UNPROTECT(4);
 		error("IRanges internal error in alloc_XVectorList(): "
 		      "%s: invalid 'tag_type'", tag_type);
 	}
-	UNPROTECT(4);
+	UNPROTECT(5);
 	return ans;
 }
 
