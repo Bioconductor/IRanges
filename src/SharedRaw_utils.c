@@ -381,26 +381,3 @@ SEXP SharedRaw_read_complexes_from_subscript(SEXP src, SEXP subscript, SEXP lkup
 	return dest;
 }
 
-
-/* ==========================================================================
- * Unlike all the previous functions in this file, this one is NOT a .Call
- * entry point.
- */
-
-void _Ocopy_cachedCharSeq_to_SharedRaw_offset(SEXP out, int out_offset,
-		const cachedCharSeq *in,
-		const int *lkup, int lkup_length)
-{
-	SEXP out_tag;
-	int i1, i2;
-
-	out_tag = _get_SharedVector_tag(out);
-	i1 = out_offset;
-	i2 = out_offset + in->length - 1;
-	_Ocopy_bytes_to_i1i2_with_lkup(i1, i2,
-			(char *) RAW(out_tag), LENGTH(out_tag),
-			in->seq, in->length,
-			lkup, lkup_length);
-	return;
-}
-
