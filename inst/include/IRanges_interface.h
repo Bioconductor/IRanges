@@ -557,9 +557,24 @@ SEXP new_XDoubleList_from_tags(
 	SEXP ranges_group
 );
 
-SEXP new_XVectorList1(
+SEXP new_XRawList_from_tag(
 	const char *classname,
-	SEXP xvector,
+	const char *element_type,
+	SEXP tag,
+	SEXP ranges
+);
+
+SEXP new_XIntegerList_from_tag(
+	const char *classname,
+	const char *element_type,
+	SEXP tag,
+	SEXP ranges
+);
+
+SEXP new_XDoubleList_from_tag(
+	const char *classname,
+	const char *element_type,
+	SEXP tag,
 	SEXP ranges
 );
 

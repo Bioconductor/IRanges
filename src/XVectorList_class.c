@@ -194,10 +194,12 @@ void _set_XVectorList_names(SEXP x, SEXP names)
 /****************************************************************************
  * C-level constructors.
  *
- * Be careful that these functions do NOT duplicate their arguments before
- * putting them in the slots of the returned object.
+ * Please be aware that these functions do NOT duplicate their arguments
+ * before putting them in the slots of the returned object.
  * Thus they cannot be made .Call entry points!
  */
+
+/* Constructing an XVectorList object from a list of tags.  */
 
 static SEXP new_XVectorList_from_tags(const char *classname,
 		const char *element_type,
@@ -225,7 +227,7 @@ static SEXP new_XVectorList_from_tags(const char *classname,
 	UNPROTECT(2);
 	return ans;
 }
-	
+
 SEXP _new_XRawList_from_tags(const char *classname,
 		const char *element_type,
 		SEXP tags, SEXP ranges, SEXP ranges_group)
@@ -253,70 +255,109 @@ SEXP _new_XDoubleList_from_tags(const char *classname,
 					 tags, ranges, ranges_group);
 }
 
-SEXP _new_XVectorList1(const char *classname, SEXP xvector, SEXP ranges)
+/*
+ * Constructing an XVectorList object from a single tag.
+ * As a convenience 'ranges' can be NULL as a way to indicate that the
+ * returned XVectorList object has only 1 element that spans the entire tag.
+ */
+
+static SEXP new_XVectorList_from_tag(const char *classname,
+		const char *element_type,
+		SEXP (*new_SharedVector_Pool)(SEXP),
+		SEXP tag, SEXP ranges)
 {
-	const char *element_type;
-	char classname_buf[80];
-	SEXP classdef, ans, xvector_shared, ans_pool,
-	     ranges_start, ranges_group, ans_ranges;
-	int ans_length, offset, i;
+	SEXP tags, ans_start, ans_width, ranges_group, ans;
+	int nprotect = 0, ans_length, i;
 
-	element_type = _get_classname(xvector);
-	if (classname == NULL) {
-		if (snprintf(classname_buf, sizeof(classname_buf),
-			     "%sList", element_type) >= sizeof(classname_buf))
-			error("IRanges internal error in _new_XVectorList1(): "
-			      "'element_type' too long");
-		classname = classname_buf;
+	/* prepare 'tags' */
+	PROTECT(tags = NEW_LIST(1));
+	nprotect++;
+	SET_VECTOR_ELT(tags, 0, tag);
+
+	/* prepare 'ranges' */
+	if (ranges == NULL) {
+		PROTECT(ans_start = ScalarInteger(1));
+		PROTECT(ans_width = ScalarInteger(LENGTH(tag)));
+		PROTECT(ranges = _new_IRanges("IRanges",
+					ans_start, ans_width, R_NilValue));
+		nprotect += 3;
 	}
 
-	PROTECT(classdef = MAKE_CLASS(classname));
-	PROTECT(ans = NEW_OBJECT(classdef));
-
-	/* set "elementType" slot */
-	_set_Sequence_elementType(ans, element_type);
-
-	/* set "pool" slot */
-	xvector_shared = _get_XVector_shared(xvector);
-	PROTECT(ans_pool = _new_SharedVector_Pool1(xvector_shared));
-	set_XVectorList_pool(ans, ans_pool);
-	UNPROTECT(1);
-
-	/* shift the ranges and set "ranges" slot */
-	ranges_start = _get_IRanges_start(ranges);
-	ans_length = LENGTH(ranges_start);
+	/* prepare 'ranges_group' */
+	ans_length = _get_IRanges_length(ranges);
 	PROTECT(ranges_group = NEW_INTEGER(ans_length));
-	offset = _get_XVector_offset(xvector);
-	for (i = 0; i < ans_length; i++) {
-		INTEGER(ranges_start)[i] += offset;
+	nprotect++;
+	for (i = 0; i < ans_length; i++)
 		INTEGER(ranges_group)[i] = 1;
-	}
-	PROTECT(ans_ranges = new_GroupedIRanges(ranges, ranges_group));
-	set_XVectorList_ranges(ans, ans_ranges);
-	UNPROTECT(2);
 
-	UNPROTECT(2);
+	/* make the XVectorList object */
+	PROTECT(ans = new_XVectorList_from_tags(classname, element_type,
+				new_SharedVector_Pool,
+				tags, ranges, ranges_group));
+	nprotect++;
+	UNPROTECT(nprotect);
 	return ans;
 }
 
+SEXP _new_XRawList_from_tag(const char *classname,
+		const char *element_type,
+		SEXP tag, SEXP ranges)
+{
+	return new_XVectorList_from_tag(classname, element_type,
+					_new_SharedRaw_Pool,
+					tag, ranges);
+}
+
+SEXP _new_XIntegerList_from_tag(const char *classname,
+		const char *element_type,
+		SEXP tag, SEXP ranges)
+{
+	return new_XVectorList_from_tag(classname, element_type,
+					_new_SharedInteger_Pool,
+					tag, ranges);
+}
+
+SEXP _new_XDoubleList_from_tag(const char *classname,
+		const char *element_type,
+		SEXP tag, SEXP ranges)
+{
+	return new_XVectorList_from_tag(classname, element_type,
+					_new_SharedDouble_Pool,
+					tag, ranges);
+}
 
 /* Allocation WITHOUT initialization. */
 
-static SEXP alloc_XVectorList(const char *classname, const char *element_type,
-		SEXP (*alloc_XVector)(const char *, int), SEXP width)
+static SEXP alloc_XVectorList(const char *classname,
+		const char *element_type, const char *tag_type,
+		SEXP width)
 {
-	int ans_length, xvector_length, i;
-	SEXP start, xvector, ranges, ans;
+	int ans_length, tag_length, i;
+	SEXP start, tag, ranges, ans;
 
 	ans_length = LENGTH(width);
 	PROTECT(start = NEW_INTEGER(ans_length));
-	for (i = xvector_length = 0; i < ans_length; i++) {
-		INTEGER(start)[i] = xvector_length + 1;
-		xvector_length += INTEGER(width)[i];
+	for (i = tag_length = 0; i < ans_length; i++) {
+		INTEGER(start)[i] = tag_length + 1;
+		tag_length += INTEGER(width)[i];
 	}
-	PROTECT(xvector = alloc_XVector(element_type, xvector_length));
 	PROTECT(ranges = _new_IRanges("IRanges", start, width, NULL));
-	PROTECT(ans = _new_XVectorList1(classname, xvector, ranges));
+	if (strcmp(tag_type, "raw") == 0) {
+		PROTECT(tag = NEW_RAW(tag_length));
+		PROTECT(ans = _new_XRawList_from_tag(classname,
+					element_type, tag, ranges));
+	} else if (strcmp(tag_type, "integer") == 0) {
+		PROTECT(tag = NEW_INTEGER(tag_length));
+		PROTECT(ans = _new_XIntegerList_from_tag(classname,
+					element_type, tag, ranges));
+	} else if (strcmp(tag_type, "double") == 0) {
+		PROTECT(tag = NEW_NUMERIC(tag_length));
+		PROTECT(ans = _new_XDoubleList_from_tag(classname,
+					element_type, tag, ranges));
+	} else {
+		error("IRanges internal error in alloc_XVectorList(): "
+		      "%s: invalid 'tag_type'", tag_type);
+	}
 	UNPROTECT(4);
 	return ans;
 }
@@ -324,23 +365,22 @@ static SEXP alloc_XVectorList(const char *classname, const char *element_type,
 SEXP _alloc_XRawList(const char *classname, const char *element_type,
 		SEXP width)
 {
-	return alloc_XVectorList(classname, element_type,
-				 _alloc_XRaw, width);
+	return alloc_XVectorList(classname, element_type, "raw", width);
 }
 
 SEXP _alloc_XIntegerList(const char *classname, const char *element_type,
 		SEXP width)
 {
-	return alloc_XVectorList(classname, element_type,
-				 _alloc_XInteger, width);
+	return alloc_XVectorList(classname, element_type, "integer", width);
 }
 
 SEXP _alloc_XDoubleList(const char *classname, const char *element_type,
 		SEXP width)
 {
-	return alloc_XVectorList(classname, element_type,
-				 _alloc_XDouble, width);
+	return alloc_XVectorList(classname, element_type, "double", width);
 }
+
+/* More constructors. */
 
 SEXP _new_XRawList_from_CharAEAE(const char *classname,
 		const char *element_type,

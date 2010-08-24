@@ -634,9 +634,19 @@ DEFINE_CCALLABLE_STUB(SEXP, new_XDoubleList_from_tags,
 	(            classname,             element_type,      tags,      ranges,      ranges_group)
 )
 
-DEFINE_CCALLABLE_STUB(SEXP, new_XVectorList1,
-	(const char *classname, SEXP xvector, SEXP ranges),
-	(            classname,      xvector,      ranges)
+DEFINE_CCALLABLE_STUB(SEXP, new_XRawList_from_tag,
+	(const char *classname, const char *element_type, SEXP tag, SEXP ranges),
+	(            classname,             element_type,      tag,      ranges)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, new_XIntegerList_from_tag,
+	(const char *classname, const char *element_type, SEXP tag, SEXP ranges),
+	(            classname,             element_type,      tag,      ranges)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, new_XDoubleList_from_tag,
+	(const char *classname, const char *element_type, SEXP tag, SEXP ranges),
+	(            classname,             element_type,      tag,      ranges)
 )
 
 DEFINE_CCALLABLE_STUB(SEXP, alloc_XRawList,

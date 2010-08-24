@@ -283,7 +283,7 @@ static void set_SharedVector_Pool_link_list(SEXP x, SEXP value)
 static SEXP new_SharedVector_Pool(const char *classname,
 		const char *element_type, SEXP tags)
 {
-	SEXP classdef, ans, ans_xp_list, ans_link_list, tmp, ans_elt;
+	SEXP classdef, ans, ans_xp_list, ans_link_list, tmp, shared_vector;
 	int ans_length, i;
 
 	PROTECT(classdef = MAKE_CLASS(classname));
@@ -303,10 +303,10 @@ static SEXP new_SharedVector_Pool(const char *classname,
 
 	/* set ".link_to_cached_object_list" slot */
 	PROTECT(classdef = MAKE_CLASS(element_type));
-	PROTECT(ans_elt = NEW_OBJECT(classdef));
+	PROTECT(shared_vector = NEW_OBJECT(classdef));
 	PROTECT(ans_link_list = NEW_LIST(ans_length));
 	for (i = 0; i < ans_length; i++) {
-		PROTECT(tmp = duplicate(get_SharedVector_link(ans_elt)));
+		PROTECT(tmp = duplicate(get_SharedVector_link(shared_vector)));
 		SET_VECTOR_ELT(ans_link_list, i, tmp);
 		UNPROTECT(1);
 	}
