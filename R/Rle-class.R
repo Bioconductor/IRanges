@@ -148,7 +148,7 @@ setAs("Rle", "IRanges",
 setAs("Rle", "NormalIRanges",
       function(from) newNormalIRangesFromIRanges(as(from, "IRanges"), check=FALSE))
 
-setMethod("as.vector", c("Rle", "missing"), function(x, mode) rep.int(runValue(x), runLength(x)))
+setMethod("as.vector", c("Rle", "missing"), function(x, mode) rep.int(as.vector(runValue(x)), runLength(x)))
 setMethod("as.logical", "Rle", function(x) rep.int(as.logical(runValue(x)), runLength(x)))
 setMethod("as.integer", "Rle", function(x) rep.int(as.integer(runValue(x)), runLength(x)))
 setMethod("as.numeric", "Rle", function(x) rep.int(as.numeric(runValue(x)), runLength(x)))
