@@ -160,6 +160,11 @@ DEFINE_CCALLABLE_STUB(SEXP, IntAEAE_toEnvir,
 	(               int_aeae,      envir,     keyshift)
 )
 
+DEFINE_CCALLABLE_STUB(SEXP, new_LOGICAL_from_CharAE,
+                      (const CharAE *char_ae),
+                      (              char_ae)
+)
+
 DEFINE_CCALLABLE_STUB(RangeAE, new_RangeAE,
 	(int buflength, int nelt),
 	(    buflength,     nelt)
