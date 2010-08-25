@@ -75,7 +75,6 @@ Collate: validity-utils.R
 	RangesMatchingList-class.R
         IntervalTree-class.R
 	IntervalTree-utils.R
-	Alignment-class.R
 	RangedSelection-class.R
 	read.Mask.R
 	xvcopy.R
