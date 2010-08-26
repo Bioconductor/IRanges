@@ -105,7 +105,8 @@ threebands(x, start=NA, end=NA, width=NA)
     \link{IRanges} object.
   }
   \item{shift}{
-    A single integer.
+    An integer vector containing the shift information. Recycled as 
+    necessary so that each element corresponds to a range in \code{x}.
   }
   \item{drop.empty.ranges}{
     \code{TRUE} or \code{FALSE}. Should empty ranges be dropped?
