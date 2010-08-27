@@ -50,7 +50,7 @@ export(
     ## Non-generic functions:
     setValidity2, new2,
     isTRUEorFALSE, isSingleInteger, isSingleNumber, isSingleString,
-    isSingleIntegerOrNA, isSingleNumberOrNA, isSingleStringOrNA,
+    isSingleNumberOrNA, isSingleStringOrNA,
     isConstant,
     normargShift,
     normargWeight,

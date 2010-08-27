@@ -9,7 +9,6 @@
 \alias{isSingleInteger}
 \alias{isSingleNumber}
 \alias{isSingleString}
-\alias{isSingleIntegerOrNA}
 \alias{isSingleNumberOrNA}
 \alias{isSingleStringOrNA}
 \alias{isConstant}

@@ -163,11 +163,11 @@ setGeneric("restrict", signature="x",
 ### Note that the only mode compatible with a NormalIRanges object is 0L.
 Ranges.restrict <- function(x, start, end, drop.ranges.mode, use.names)
 {
-    if (!is.numeric(start) && !(is.logical(start) && all(is.na(start))))
+    if (!isNumericOrNAs(start))
         stop("'start' must be a vector of integers")
     if (!is.integer(start))
         start <- as.integer(start)
-    if (!is.numeric(end) && !(is.logical(end) && all(is.na(end))))
+    if (!isNumericOrNAs(end))
         stop("'end' must be a vector of integers")
     if (!is.integer(end))
         end <- as.integer(end)

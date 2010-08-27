@@ -4,38 +4,33 @@
 
 isTRUEorFALSE <- function(x)
 {
-    is.logical(x) && length(x) == 1 && !is.na(x)
+    is.logical(x) && length(x) == 1L && !is.na(x)
 }
 
 isSingleInteger <- function(x)
 {
-    is.integer(x) && length(x) == 1 && !is.na(x)
+    is.integer(x) && length(x) == 1L && !is.na(x)
 }
 
 isSingleNumber <- function(x)
 {
-    is.numeric(x) && length(x) == 1 && !is.na(x)
+    is.numeric(x) && length(x) == 1L && !is.na(x)
 }
 
 isSingleString <- function(x)
 {
-    is.character(x) && length(x) == 1 && !is.na(x)
+    is.character(x) && length(x) == 1L && !is.na(x)
 }
 
 ### We want these functions to return TRUE when passed an NA of whatever type.
-isSingleIntegerOrNA <- function(x)
-{
-    is.atomic(x) && length(x) == 1 && (is.integer(x) || is.na(x))
-}
-
 isSingleNumberOrNA <- function(x)
 {
-    is.atomic(x) && length(x) == 1 && (is.numeric(x) || is.na(x))
+    is.atomic(x) && length(x) == 1L && (is.numeric(x) || is.na(x))
 }
 
 isSingleStringOrNA <- function(x)
 {
-    is.atomic(x) && length(x) == 1 && (is.character(x) || is.na(x))
+    is.atomic(x) && length(x) == 1L && (is.character(x) || is.na(x))
 }
 
 ### The fastest implementation of isConstant() is hard to guess:
@@ -176,7 +171,7 @@ normargAtomicList1 <- function(arg, List, lx, argname = deparse(substitute(arg))
 
 normargAtomicList2 <- function(arg, List, lx, eln, argname = deparse(substitute(arg)))
 {
-    if (!(is.vector(arg) && length(arg) == 1)) {
+    if (!(is.vector(arg) && length(arg) == 1L)) {
         if (is.vector(arg))
             arg <- List(as.list(recycleVector(arg, lx)))
         else if (!is(arg, "AtomicList"))
@@ -243,7 +238,7 @@ extraArgsAsList <- function(.valid.argnames, ...)
 {
     args <- list(...)
     argnames <- names(args)
-    if (length(args) != 0
+    if (length(args) != 0L
         && (is.null(argnames) || any(argnames %in% c("", NA))))
         stop("all extra arguments must be named")
     if (!is.null(.valid.argnames) && !all(argnames %in% .valid.argnames))
