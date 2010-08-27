@@ -48,8 +48,6 @@ void get_order_of_two_int_arrays(
 
 int get_new_buflength(int buflength);
 
-SEXP new_LOGICAL_from_CharAE(const CharAE *char_ae);
-
 void IntAE_set_val(
 	const IntAE *int_ae,
 	int val
@@ -191,6 +189,8 @@ void append_string_to_CharAE(
 );
 
 SEXP new_RAW_from_CharAE(const CharAE *char_ae);
+
+SEXP new_LOGICAL_from_CharAE(const CharAE *char_ae);
 
 CharAEAE new_CharAEAE(
 	int buflength,
