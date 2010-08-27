@@ -143,41 +143,11 @@ setMethod("resize", "NormalIRanges",
 setMethod("restrict", "NormalIRanges",
     function(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
     {
-        start <- normargSingleStartOrNA(start)
-        end <- normargSingleEndOrNA(end)
         if (!identical(keep.all.ranges, FALSE))
-            stop("'keep.all.ranges' argument not supported")
+            stop("'keep.all.ranges' argument is not supported ",
+                 "when 'x' is a NormalIRanges object")
         use.names <- normargUseNames(use.names)
-
-        ans_start <- start(x)
-        ans_end <- end(x)
-        if (use.names) ans_names <- names(x) else ans_names <- NULL
-
-        if (!is.na(start)) {
-            far_too_left <- ans_end < start
-            keep_it <- !far_too_left
-            ans_start <- ans_start[keep_it]
-            ans_end <- ans_end[keep_it]
-            if (!is.null(ans_names))
-                ans_names <- ans_names[keep_it]
-            ## "fix" ans_start
-            too_left <- ans_start < start
-            ans_start[too_left] <- start
-        }
-        if (!is.na(end)) {
-            far_too_right <- ans_start > end
-            keep_it <- !far_too_right
-            ans_start <- ans_start[keep_it]
-            ans_end <- ans_end[keep_it]
-            if (!is.null(ans_names))
-                ans_names <- ans_names[keep_it]
-            ## "fix" ans_end
-            too_right <- end < ans_end
-            ans_end[too_right] <- end
-        }
-        ans_width <- ans_end - ans_start + 1L
-
-        unsafe.update(x, start=ans_start, width=ans_width, names=ans_names)
+        Ranges.restrict(x, start, end, 0L, use.names)
     }
 )
 

@@ -64,12 +64,16 @@ threebands(x, start=NA, end=NA, width=NA)
     in \code{x}.
   }
   \item{start, end}{
-    A single integer or \code{NA} for all functions except \code{narrow},
-    \code{threebands}, and \code{flank}.
+    A vector of integers for all functions except for \code{flank}.
 
-    For \code{narrow} and \code{threebands}, the supplied \code{start}
-    and \code{end} arguments must be vectors of integers, eventually with NAs,
-    that contain coordinates relative to the current ranges.
+    For \code{restrict}, the supplied \code{start} and \code{end} arguments
+    must be vectors of integers, eventually with NAs, that specify the
+    restriction interval(s). Recycled as necessary so that each element
+    corresponds to a range in \code{x}.
+
+    Same thing for \code{narrow} and \code{threebands}, except that
+    here \code{start} and \code{end} must contain coordinates relative
+    to the ranges in \code{x}.
     See the Details section below.
 
     For \code{flank}, \code{start} is a logical indicating whether \code{x}
@@ -97,7 +101,7 @@ threebands(x, start=NA, end=NA, width=NA)
   }
   \item{keep.all.ranges}{
     \code{TRUE} or \code{FALSE}. Should ranges that don't overlap with
-    the interval specified by \code{start} and \code{end} be kept?
+    the restriction interval(s) be kept?
     Note that "don't overlap" means that they end strictly before
     \code{start - 1} or start strictly after \code{end + 1}.
     Ranges that end at \code{start - 1} or start at \code{end + 1}
@@ -185,7 +189,7 @@ threebands(x, start=NA, end=NA, width=NA)
   \code{resize} resizes the ranges to the specified width where either the
   start, end, or center is used as an anchor.
 
-  \code{restrict} restricts the ranges in \code{x} to the interval
+  \code{restrict} restricts the ranges in \code{x} to the interval(s)
   specified by the \code{start} and \code{end} arguments.
 
   \code{shift} shifts all the ranges in \code{x}.

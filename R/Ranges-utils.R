@@ -150,56 +150,100 @@ setGeneric("restrict", signature="x",
     function(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
         standardGeneric("restrict")
 )
+
+### drop.ranges.mode:
+###   0L: Ranges in 'x' that are empty after restriction are dropped.
+###   1L: Ranges in 'x' that are not overlapping and not even adjacent
+###       with the region of restriction are dropped.
+###       "Not overlapping and not adjacent" means that they end strictly
+###       before start - 1 or start strictly after end + 1.
+###       Those that are not overlapping but are however adjacent are kept
+###       (and are empty after restriction).
+###   2L: All ranges in 'x' are kept after restriction.
+### Note that the only mode compatible with a NormalIRanges object is 0L.
+Ranges.restrict <- function(x, start, end, drop.ranges.mode, use.names)
+{
+    if (!is.numeric(start) && !(is.logical(start) && all(is.na(start))))
+        stop("'start' must be a vector of integers")
+    if (!is.integer(start))
+        start <- as.integer(start)
+    if (!is.numeric(end) && !(is.logical(end) && all(is.na(end))))
+        stop("'end' must be a vector of integers")
+    if (!is.integer(end))
+        end <- as.integer(end)
+    if (length(x) != 0L) {
+        if (length(start) == 0L || length(start) > length(x))
+            stop("invalid 'start' length")
+        if (length(end) == 0L || length(end) > length(x))
+            stop("invalid 'end' length")
+    }
+    start <- recycleVector(start, length(x))
+    end <- recycleVector(end, length(x))
+    use.names <- normargUseNames(use.names)
+
+    ans_start <- start(x)
+    ans_end <- end(x)
+    if (use.names) ans_names <- names(x) else ans_names <- NULL
+
+    ## Compare ranges in 'x' with 'start'.
+    if (drop.ranges.mode == 0L)
+        far_too_left <- !is.na(start) & (ans_end < start)
+    else
+        far_too_left <- !is.na(start) & (ans_end < start - 1L)
+    if (drop.ranges.mode == 2L) {
+        ans_end[far_too_left] <- start[far_too_left] - 1L
+    } else {
+        ## Drop the ranges that are far too left with respect to the
+        ## region of restriction.
+        keep_it <- !far_too_left
+        ans_start <- ans_start[keep_it]
+        ans_end <- ans_end[keep_it]
+        if (!is.null(ans_names))
+            ans_names <- ans_names[keep_it]
+        start <- start[keep_it]
+        end <- end[keep_it]
+    }
+    ## Fix 'ans_start'.
+    too_left <- !is.na(start) & (ans_start < start)
+    ans_start[too_left] <- start[too_left]
+
+    ## Compare ranges in 'x' with 'end'.
+    if (drop.ranges.mode == 0L)
+        far_too_right <- !is.na(end) & (ans_start > end)
+    else
+        far_too_right <- !is.na(end) & (ans_start > end + 1L)
+    if (drop.ranges.mode == 2L) {
+        ans_start[far_too_right] <- end[far_too_right] + 1L
+    } else {
+        ## Drop the ranges that are far too right with respect to the
+        ## region of restriction.
+        keep_it <- !far_too_right
+        ans_start <- ans_start[keep_it]
+        ans_end <- ans_end[keep_it]
+        if (!is.null(ans_names))
+            ans_names <- ans_names[keep_it]
+        start <- start[keep_it]
+        end <- end[keep_it]
+    }
+    ## Fix 'ans_end'.
+    too_right <- !is.na(end) & (ans_end > end)
+    ans_end[too_right] <- end[too_right]
+
+    ans_width <- ans_end - ans_start + 1L
+    unsafe.update(x, start=ans_start, width=ans_width, names=ans_names)
+}
+
 setMethod("restrict", "Ranges",
     function(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
     {
-        start <- normargSingleStartOrNA(start)
-        end <- normargSingleEndOrNA(end)
         if (!isTRUEorFALSE(keep.all.ranges))
             stop("'keep.all.ranges' must be TRUE or FALSE")
         use.names <- normargUseNames(use.names)
-
-        ans_start <- start(x)
-        ans_end <- end(x)
-        if (use.names)
-            ans_names <- names(x)
+        if (keep.all.ranges)
+            drop.ranges.mode <- 2L
         else
-            ans_names <- NULL
-
-        if (!is.na(start)) {
-            far_too_left <- ans_end < start - 1L
-            if (keep.all.ranges) {
-                ans_end[far_too_left] <- start - 1L
-            } else {
-                keep_it <- !far_too_left
-                ans_start <- ans_start[keep_it]
-                ans_end <- ans_end[keep_it]
-                if (!is.null(ans_names))
-                    ans_names <- ans_names[keep_it]
-            }
-            ## "fix" ans_start
-            too_left <- ans_start < start
-            ans_start[too_left] <- start
-        }
-        if (!is.na(end)) {
-            far_too_right <- ans_start > end + 1L
-            if (keep.all.ranges) {
-                ans_start[far_too_right] <- end + 1L
-            } else {
-                keep_it <- !far_too_right
-                ans_start <- ans_start[keep_it]
-                ans_end <- ans_end[keep_it]
-                if (!is.null(ans_names))
-                    ans_names <- ans_names[keep_it]
-            }
-            ## "fix" ans_end
-            too_right <- end < ans_end
-            ans_end[too_right] <- end
-        }
-        ans_width <- ans_end - ans_start + 1L
-
-        update(x, start=ans_start, width=ans_width, names=ans_names,
-               check=FALSE)
+            drop.ranges.mode <- 1L
+        Ranges.restrict(x, start, end, drop.ranges.mode, use.names)
     }
 )
 
