@@ -10,7 +10,8 @@
 ### All the functions in that section are implemented to behave like
 ### endomorphisms with respect to their first argument 'x' (an IRanges
 ### object).
-### The returned IRanges object is guaranteed to be normal.
+### The returned IRanges object is guaranteed to be normal (note that, in
+### case of an IRanges *instance*, it is *not* promoted to NormalIRanges).
 ### Finally, each of these function interprets each supplied IRanges object
 ### ('x' or 'y') as a set of integer values. Therefore, if 2 IRanges objects
 ### 'x1' and 'x2' represent the same set of integers, then each of these
@@ -50,6 +51,8 @@ setMethod("union", c("IRanges", "IRanges"),
 setMethod("intersect", c("IRanges", "IRanges"),
     function(x, y)
     {
+        if (length(x) == 0L)
+            return(x)
         start <- min(c(start(x), start(y)))
         end <- max(c(end(x), end(y)))
         setdiff(x, gaps(y, start=start, end=end))
@@ -59,6 +62,8 @@ setMethod("intersect", c("IRanges", "IRanges"),
 setMethod("setdiff", c("IRanges", "IRanges"),
     function(x, y)
     {
+        if (length(x) == 0L)
+            return(x)
         start <- min(c(start(x), start(y)))
         end <- max(c(end(x), end(y)))
         gaps(union(gaps(x, start=start, end=end), y), start=start, end=end)
