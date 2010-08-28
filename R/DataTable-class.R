@@ -143,7 +143,7 @@ setReplaceMethod("seqselect", "DataTable",
                          if (lr != nrv) {
                              if ((lr == 0) || (lr %% nrv != 0))
                                  stop(paste(nrv, "rows in value to replace",
-                                            lr, "rows"))
+                                            lr, " rows"))
                              else
                                  value <-
                                    value[rep(seq_len(nrv), length.out = lr), ,

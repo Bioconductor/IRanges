@@ -111,7 +111,7 @@
       should be a scalar, non-negative, integer. \code{minoverlap}
       should be a scalar, positive integer.
 
-      When \code{select} is {"all"}, the results are returned as a
+      When \code{select} is "all", the results are returned as a
       \code{\linkS4class{RangesMatching}} object. When \code{select}
       is \code{"first"}, \code{"last"}, or \code{"arbitrary"} the results
       are returned as an integer vector of length \code{query} containing

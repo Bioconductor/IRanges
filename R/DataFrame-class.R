@@ -361,7 +361,7 @@ setReplaceMethod("[", "DataFrame",
                      if (li != lv) {
                        if ((li == 0) || (li %% lv != 0))
                          stop(paste(lv, "rows in value to replace",
-                                    li, "rows"))
+                                    li, " rows"))
                        else
                          value <- rep(value, length.out = li)
                      }
@@ -382,7 +382,7 @@ setReplaceMethod("[", "DataFrame",
                      if (li != nrv) {
                        if ((li == 0) || (li %% nrv != 0))
                          stop(paste(nrv, "rows in value to replace",
-                                    li, "rows"))
+                                    li, " rows"))
                        else
                          value <-
                            value[rep(seq_len(nrv), length.out = li), ,

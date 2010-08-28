@@ -90,7 +90,5 @@
 \seealso{
 \code{\link{findOverlaps}}, which generates an instance of this class.
 }
-\examples{
-}
 \keyword{methods}
 \keyword{classes}

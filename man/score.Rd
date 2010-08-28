@@ -20,7 +20,4 @@
   \item{\dots}{Additional arguments.}
 }
 
-\examples{
-}
-
 \keyword{methods}

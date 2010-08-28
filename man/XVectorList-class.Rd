@@ -51,8 +51,5 @@
   \link{XVector-class}
 }
 
-\examples{
-}
-
 \keyword{methods}
 \keyword{classes}

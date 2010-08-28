@@ -11,9 +11,6 @@
   objects.
 }
 
-\section{Regression}{
-}
-
 \section{Tabulation}{
   \describe{
     \item{}{\code{xtabs(formula = ~., data, subset, na.action, 
