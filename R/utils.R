@@ -205,34 +205,26 @@ normargRunK <- function(k, n, endrule)
 }
 
 normargSubset2_iOnly <-
-    function(x, i, j, ...,
-             .errPrefix=character(), .warnPrefix=character())
+    function(x, i, j, ..., .conditionPrefix=character())
 {
-    withCallingHandlers(tryCatch({
-        if (!missing(j) || length(list(...)) > 0)
-            warning("arguments beyond 'i' ignored")
-        if (missing(i))
-            stop("subscript 'i' is missing")
-        if (!is.character(i) && !is.numeric(i))
-            stop("invalid subscript 'i' type")
-        if (length(i) < 1L)
-            stop("attempt to select less than one element")
-        if (length(i) > 1L)
-            stop("attempt to select more than one element")
-        if (is.numeric(i) && (i < 1L || i > length(x)+1))
-            stop("subscript 'i' out of bounds")
-        if (is.character(i)) {
-            i <- match(i, names(x))
-            if (is.na(i))
-                i <- length(x) + 1L
-        }
-        i
-    }, error=function(err) {
-        stop(.errPrefix, conditionMessage(err))
-    }), warning=function(warn) {
-        warning(.warnPrefix, conditionMessage(warn), call.=FALSE)
-        invokeRestart("muffleWarning")
-    })
+    if (!missing(j) || length(list(...)) > 0)
+        warning(.conditionPrefix, "arguments beyond 'i' ignored")
+    if (missing(i))
+        stop(.conditionPrefix, "subscript 'i' is missing")
+    if (!is.character(i) && !is.numeric(i))
+        stop(.conditionPrefix, "invalid subscript 'i' type")
+    if (length(i) < 1L)
+        stop(.conditionPrefix, "attempt to select less than one element")
+    if (length(i) > 1L)
+        stop(.conditionPrefix, "attempt to select more than one element")
+    if (is.numeric(i) && (i < 1L || i > length(x)+1))
+        stop(.conditionPrefix, "subscript 'i' out of bounds")
+    if (is.character(i)) {
+        i <- match(i, names(x))
+        if (is.na(i))
+            i <- length(x) + 1L
+    }
+    i
 }
 
 ### isNotStrictlySorted() takes for granted that 'x' contains no NAs (behaviour
