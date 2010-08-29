@@ -158,9 +158,13 @@ setMethod("as.raw", "Rle", function(x) rep.int(as.raw(runValue(x)), runLength(x)
 setMethod("as.factor", "Rle", function(x) rep.int(as.factor(runValue(x)), runLength(x)))
 
 setMethod("as.data.frame", "Rle",
-          function(x, row.names = NULL, optional = FALSE, ...) 
-            as.data.frame(as.vector(x), row.names = row.names,
-                          optional = optional, ...))
+    function(x, row.names = NULL, optional = FALSE, ...)
+    {
+        value <- as(x, class(runValue(x)))
+        as.data.frame(value, row.names = row.names,
+                      optional = optional, ...)
+    }
+)
 
 getStartEndRunAndOffset <- function(x, start, end) {
     .Call("Rle_getStartEndRunAndOffset", x, start, end, PACKAGE="IRanges")
