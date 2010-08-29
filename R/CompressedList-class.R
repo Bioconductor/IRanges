@@ -296,26 +296,18 @@ setMethod("[[", "CompressedList",
 setReplaceMethod("[[", "CompressedList",
                  function(x, i, j,..., value)
                  {
-                     if (!missing(j) || length(list(...)) > 0)
-                         warning("arguments beyond 'i' ignored")
-                     if (missing(i))
-                         stop("subscript is missing")
-                     if (!is.character(i) && !is.numeric(i))
-                         stop("invalid subscript type")
-                     if (length(i) < 1L)
-                         stop("attempt to select less than one element")
-                     if (length(i) > 1L)
-                         stop("attempt to select more than one element")
-                     if (is.numeric(i) && (i < 1L || i > length(x)+1))
-                         stop("subscript out of bounds")
-                     if (is.character(i)) {
-                         nameValue <- i
-                         i <- match(i, names(x))
-                         if (is.na(i))
-                             i <- length(x) + 1L
-                     } else {
-                         nameValue <- ""
-                     }
+                     nameValue <- if (is.character(i)) i else ""
+                     i <- withCallingHandlers(tryCatch({
+                         normargSubset2_iOnly(x, i, j, ...)
+                     }, error=function(err) {
+                         stop("[[<-,CompressedList-methopd: 'i' ",
+                              conditionMessage(err))
+                     }), warning=function(warn) {
+                         warning("[[<-,CompressedList-method: ",
+                                 conditionMessage(warn),
+                                 call.=FALSE)
+                         invokeRestart("muffleWarning")
+                     })
                      if (is.null(value)) {
                          if (i <= length(x)) # if name did not exist, could be +1
                              x <- x[-i]
@@ -534,6 +526,8 @@ setMethod("c", "CompressedList",
                   unlistData <- do.call(c, lapply(tls, slot, "unlistData"))
               else
                   unlistData <- do.call(rbind, lapply(tls, slot, "unlistData"))
+              elementMetadata <- do.call(.rbind.elementMetadata, tls)
+              rownames(elementMetadata) <- NULL
               partitionEnd <-
                 cumsum(do.call(c,
                                lapply(tls, function(y) {
@@ -551,11 +545,10 @@ setMethod("c", "CompressedList",
                                }))
               if (all(nchar(NAMES) == 0L))
                   NAMES <- NULL
-              eltmetaX <- elementMetadata(x)
               x <- newCompressedList(class(tls[[1L]]), unlistData,
                                      end = partitionEnd, NAMES = NAMES)
-              slot(x, "elementMetadata", check=FALSE) <- eltmetaX
-              .c.Sequence(x, ...)
+              slot(x, "elementMetadata", check=FALSE) <- elementMetadata
+              x
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

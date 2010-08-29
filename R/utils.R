@@ -204,6 +204,29 @@ normargRunK <- function(k, n, endrule)
     as.integer(k)
 }
 
+normargSubset2_iOnly <-
+    function(x, i, j, ...)
+{
+    if (!missing(j) || length(list(...)) > 0)
+        warning("arguments beyond 'i' ignored")
+    if (missing(i))
+        stop("subscript is missing")
+    if (!is.character(i) && !is.numeric(i))
+        stop("invalid subscript type")
+    if (length(i) < 1L)
+        stop("attempt to select less than one element")
+    if (length(i) > 1L)
+        stop("attempt to select more than one element")
+    if (is.numeric(i) && (i < 1L || i > length(x)+1))
+        stop("subscript out of bounds")
+    if (is.character(i)) {
+        i <- match(i, names(x))
+        if (is.na(i))
+            i <- length(x) + 1L
+    }
+    i
+}
+
 ### isNotStrictlySorted() takes for granted that 'x' contains no NAs (behaviour
 ### is undefined if this is not the case). This allows isNotStrictlySorted() to
 ### be MUCH faster than is.unsorted() in some situations:

@@ -741,7 +741,9 @@ setMethod("!=", signature(e1="Sequence", e2="Sequence"),
     emd[noEmd] <- lapply(elementLengths(l[noEmd]), newDf)
     allCols <- unique(do.call(c, lapply(emd, colnames)))
     fillCols <- function(df) {
-      df[setdiff(allCols, colnames(df))] <- list(rep(NA, nrow(df)))
+      if (nrow(df))
+          df[setdiff(allCols, colnames(df))] <-
+              list(rep(NA, nrow(df)))
       df
     }
     do.call(rbind, lapply(emd, fillCols))
