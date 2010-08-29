@@ -297,17 +297,9 @@ setReplaceMethod("[[", "CompressedList",
                  function(x, i, j,..., value)
                  {
                      nameValue <- if (is.character(i)) i else ""
-                     i <- withCallingHandlers(tryCatch({
-                         normargSubset2_iOnly(x, i, j, ...)
-                     }, error=function(err) {
-                         stop("[[<-,CompressedList-methopd: 'i' ",
-                              conditionMessage(err))
-                     }), warning=function(warn) {
-                         warning("[[<-,CompressedList-method: ",
-                                 conditionMessage(warn),
-                                 call.=FALSE)
-                         invokeRestart("muffleWarning")
-                     })
+                     i <- normargSubset2_iOnly(x, i, j, ...,
+                              .errPrefix="[[<-,CompressedList-method: ",
+                              .warnPrefix="[[<-,CompressedList-method: ")
                      if (is.null(value)) {
                          if (i <= length(x)) # if name did not exist, could be +1
                              x <- x[-i]
