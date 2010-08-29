@@ -316,7 +316,7 @@ setMethod("[", "Rle",
                                 lengths = ansList[["lengths"]], check = FALSE)
                       }
                   } else if (drop) {
-                      x <- as.vector(x)
+                      x <- as(x, class(runValue(x)))
                   }
               }
               x
@@ -331,7 +331,7 @@ setReplaceMethod("[", "Rle",
                              output <-
                                callNextMethod(x = x, i = i, value = value)
                      } else {
-                         x <- as.vector(x)
+                         x <- as(x, class(runValue(x)))
                          value <- as.vector(value)
                          if (missing(i))
                              output <- Rle(callGeneric(x = x, value = value))
@@ -571,9 +571,10 @@ setReplaceMethod("seqselect", "Rle",
                                  stop("'value' must be a ", class(x),
                                       " object or NULL")
                          }
-                         value <- as.vector(value)
-                         if (isFactorRle)
-                           value <- factor(value, levels = levels(x))
+                         value <-
+                             if (isFactorRle) {
+                                 factor(value, levels = levels(x))
+                             } else as.vector(value)
                      }
                      if (is.null(end) && is.null(width)) {
                          if (is.null(start))
