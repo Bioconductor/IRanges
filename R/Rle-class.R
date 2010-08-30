@@ -571,10 +571,10 @@ setReplaceMethod("seqselect", "Rle",
                                  stop("'value' must be a ", class(x),
                                       " object or NULL")
                          }
-                         value <-
-                             if (isFactorRle) {
-                                 factor(value, levels = levels(x))
-                             } else as.vector(value)
+
+                         value <- as.vector(value)
+                         if (isFactorRle)
+                             value <- factor(value, levels = levels(x))
                      }
                      if (is.null(end) && is.null(width)) {
                          if (is.null(start))
