@@ -257,12 +257,14 @@ SEXP IntegerIntervalTree_overlap_any(SEXP r_tree, SEXP r_ranges,
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
   SEXP r_unordered =
     _IntegerIntervalTree_overlap(tree, r_ranges, FIND_ANY, NULL);
+  PROTECT(r_unordered);
   SEXP r_ordered = allocVector(LGLSXP, nranges);
   left = INTEGER(r_ordered);
   for (i = 0, right = INTEGER(r_unordered), o_elt = INTEGER(r_order);
        i < nranges; i++, right++, o_elt++) {
     left[*o_elt - 1] = *right; 
   }
+  UNPROTECT(1);
   return r_ordered;
 }
 
@@ -272,12 +274,14 @@ SEXP IntegerIntervalTree_overlap_arbitrary(SEXP r_tree, SEXP r_ranges,
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
   SEXP r_unordered =
     _IntegerIntervalTree_overlap(tree, r_ranges, FIND_ARBITRARY, NULL);
+  PROTECT(r_unordered);
   SEXP r_ordered = allocVector(INTSXP, nranges);
   left = INTEGER(r_ordered);
   for (i = 0, right = INTEGER(r_unordered), o_elt = INTEGER(r_order);
        i < nranges; i++, right++, o_elt++) {
     left[*o_elt - 1] = *right > 0 ? *right : NA_INTEGER;
   }
+  UNPROTECT(1);
   return r_ordered;
 }
 
