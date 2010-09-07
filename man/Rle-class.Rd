@@ -24,7 +24,9 @@
 \alias{runValue<-}
 \alias{runValue<-,Rle-method}
 
-\alias{as.vector,Rle,missing-method}
+\alias{as.vector,Rle,ANY-method}
+\alias{as.vectorORfactor}
+\alias{as.vectorORfactor,Rle-method}
 \alias{as.logical,Rle-method}
 \alias{as.integer,Rle-method}
 \alias{as.numeric,Rle-method}
@@ -219,8 +221,17 @@
 
   \describe{
     \item{}{
-      \code{as.vector(x)}, \code{as(from, "vector")}: Creates an atomic vector
-      of the most appropriate type based on the values contained in \code{x}.
+      \code{as.vector(x, mode = "any")}, \code{as(from, "vector")}:
+      Creates an atomic vector based on the values contained in
+      \code{x}. The vector will be coerced to the requested \code{mode},
+      unless \code{mode} is "any", in which case the most appropriate
+      type is chosen.
+    }
+    \item{}{
+      \code{as.vectorORfactor(x)}: Creates an atomic vector or factor,
+      based on the type of values contained in \code{x}. This is the
+      most general way to decompress the Rle to a native R data
+      structure.
     }
     \item{}{
       \code{as.logical(x)}, \code{as(from, "logical")}: Creates a logical

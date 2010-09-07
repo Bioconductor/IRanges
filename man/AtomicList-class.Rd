@@ -48,7 +48,8 @@
 \alias{SimpleRleList}
 \alias{SimpleRleList-class}
 
-\alias{as.vector,AtomicList,missing-method}
+\alias{as.vector,AtomicList,ANY-method}
+\alias{as.vectorORfactor,AtomicList-method}
 \alias{as.logical,AtomicList-method}
 \alias{as.integer,AtomicList-method}
 \alias{as.numeric,AtomicList-method}
@@ -285,8 +286,16 @@
 \section{Coercion}{
   \describe{
     \item{}{
-      \code{as.vector(x)}, \code{as(from, "vector")}: Creates a vector based
-      on the values contained in \code{x}.
+      \code{as.vector(x, mode = "any")}, \code{as(from, "vector")}:
+      Creates a vector based on the values contained in \code{x}. The
+      vector will be coerced to the requested \code{mode}, unless
+      \code{mode} is "any", in which case the most appropriate type is
+      chosen.
+    }
+    \item{}{
+      \code{as.vectorORfactor(x)}: Creates an atomic vector or factor,
+      based on the type of values contained in \code{x}. This is the
+      most general way to flatten the list to a native R data structure.
     }
     \item{}{
       \code{as.logical(x)}, \code{as(from, "logical")}: Creates a logical

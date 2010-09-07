@@ -198,7 +198,7 @@ RleList <- function(..., compress = FALSE)
 ### Coercion
 ###
 
-setMethod("as.vector", c("AtomicList", "missing"), function(x, mode) as.vector(unlist(x, use.names=FALSE)))
+setMethod("as.vector", "AtomicList", function(x, mode) as.vector(unlist(x, use.names=FALSE), mode = mode))
 setMethod("as.logical", "AtomicList", function(x) as.logical(unlist(x, use.names=FALSE)))
 setMethod("as.integer", "AtomicList", function(x) as.integer(unlist(x, use.names=FALSE)))
 setMethod("as.numeric", "AtomicList", function(x) as.numeric(unlist(x, use.names=FALSE)))
@@ -206,6 +206,10 @@ setMethod("as.complex", "AtomicList", function(x) as.complex(unlist(x, use.names
 setMethod("as.character", "AtomicList", function(x) as.character(unlist(x, use.names=FALSE)))
 setMethod("as.raw", "AtomicList", function(x) as.raw(unlist(x, use.names=FALSE)))
 setMethod("as.factor", "AtomicList", function(x) as.factor(unlist(x, use.names=FALSE)))
+
+setMethod("as.vectorORfactor", "AtomicList",
+          function(x) unlist(x, use.names=FALSE))
+
 setMethod("as.data.frame", "AtomicList",
           function(x, row.names=NULL, optional=FALSE, ...)
           {

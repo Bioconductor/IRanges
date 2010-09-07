@@ -148,7 +148,7 @@ setAs("Rle", "IRanges",
 setAs("Rle", "NormalIRanges",
       function(from) newNormalIRangesFromIRanges(as(from, "IRanges"), check=FALSE))
 
-setMethod("as.vector", c("Rle", "missing"), function(x, mode) rep.int(as.vector(runValue(x)), runLength(x)))
+setMethod("as.vector", "Rle", function(x, mode) rep.int(as.vector(runValue(x), mode), runLength(x)))
 setMethod("as.logical", "Rle", function(x) rep.int(as.logical(runValue(x)), runLength(x)))
 setMethod("as.integer", "Rle", function(x) rep.int(as.integer(runValue(x)), runLength(x)))
 setMethod("as.numeric", "Rle", function(x) rep.int(as.numeric(runValue(x)), runLength(x)))
@@ -157,10 +157,15 @@ setMethod("as.character", "Rle", function(x) rep.int(as.character(runValue(x)), 
 setMethod("as.raw", "Rle", function(x) rep.int(as.raw(runValue(x)), runLength(x)))
 setMethod("as.factor", "Rle", function(x) rep.int(as.factor(runValue(x)), runLength(x)))
 
+setGeneric("as.vectorORfactor",
+           function(x, ...) standardGeneric("as.vectorORfactor"))
+setMethod("as.vectorORfactor", "Rle",
+          function(x) rep.int(runValue(x), runLength(x)))
+
 setMethod("as.data.frame", "Rle",
     function(x, row.names = NULL, optional = FALSE, ...)
     {
-        value <- as(x, class(runValue(x)))
+        value <- as.vectorORfactor(x)
         as.data.frame(value, row.names = row.names,
                       optional = optional, ...)
     }
@@ -316,7 +321,7 @@ setMethod("[", "Rle",
                                 lengths = ansList[["lengths"]], check = FALSE)
                       }
                   } else if (drop) {
-                      x <- as(x, class(runValue(x)))
+                      x <- as.vectorORfactor(x)
                   }
               }
               x
@@ -331,7 +336,7 @@ setReplaceMethod("[", "Rle",
                              output <-
                                callNextMethod(x = x, i = i, value = value)
                      } else {
-                         x <- as(x, class(runValue(x)))
+                         x <- as.vectorORfactor(x)
                          value <- as.vector(value)
                          if (missing(i))
                              output <- Rle(callGeneric(x = x, value = value))
