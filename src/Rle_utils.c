@@ -109,7 +109,7 @@ SEXP Rle_integer_runsum(SEXP x, SEXP k)
 					}
 			    }
 	    	}
-			if (curr_offset == 0) {
+			if ((curr_offset == 0) && (i != buf_len - 1)) {
 				curr_value++;
 				curr_length++;
 				curr_offset = *curr_length;
@@ -240,7 +240,7 @@ SEXP Rle_real_runsum(SEXP x, SEXP k)
 					}
 			    }
 	    	}
-			if (curr_offset == 0) {
+			if ((curr_offset == 0) && (i != buf_len - 1)) {
 				curr_value++;
 				curr_length++;
 				curr_offset = *curr_length;
