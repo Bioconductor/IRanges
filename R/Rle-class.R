@@ -338,6 +338,7 @@ setReplaceMethod("[", "Rle",
                      } else {
                          x <- as.vectorORfactor(x)
                          value <- as.vector(value)
+                         i <- as.vector(i)
                          if (missing(i))
                              output <- Rle(callGeneric(x = x, value = value))
                          else
@@ -883,9 +884,18 @@ setMethod("which", "Rle",
               else mseq(from, to)
           })
 
+setMethod("ifelse", "Rle", function (test, yes, no) 
+          {
+            test <- as.vector(test)
+            yes <- as.vector(yes)
+            no <- as.vector(no)
+            as(callGeneric(), "Rle")
+          })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other numerical data methods
 ###
+
 
 setMethod("diff", "Rle",
           function(x, lag = 1, differences = 1)
