@@ -85,3 +85,13 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
   
   ans
 })
+
+setMethod("aggregate", "formula", function(x, data, ...) {
+  if (is(data, "DataFrame")) {
+    data <- as.data.frame(data)
+    ## depending on the formula, this may or not be a valid subclass
+    ## of DataFrame, so we just explicitly create a DataFrame here
+    ##DataFrame(callGeneric())
+    DataFrame(aggregate(x, data, ...))
+  } else callNextMethod(x, data, ...) ## for e.g. data.frame
+})
