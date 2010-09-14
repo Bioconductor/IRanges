@@ -974,6 +974,10 @@ seqsplit <- function(x, f, drop=FALSE) {
   castList(split(x, f, drop))
 }
 
+seqby <- function(data, INDICES, FUN, ...) {
+  castList(by(data, INDICES, FUN, ..., simplify = FALSE))
+}
+
 .shiftApplyInternal <-
 function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)
 {
