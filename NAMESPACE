@@ -98,7 +98,7 @@ export(
     mendoapply,
 
     ## Casting apply functions and the like
-    seqapply, mseqapply, tseqapply, seqsplit,
+    seqapply, mseqapply, tseqapply, seqsplit, seqby,
     
     ## Generic functions in the Sequence API:
     elementType, elementLengths,
@@ -215,6 +215,7 @@ exportMethods(
     update,
     append,
     "!", which,
+    ifelse,
     c,
     union, intersect, setdiff,
     split, splitRanges,
