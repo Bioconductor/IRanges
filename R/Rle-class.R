@@ -338,12 +338,13 @@ setReplaceMethod("[", "Rle",
                      } else {
                          x <- as.vectorORfactor(x)
                          value <- as.vector(value)
-                         i <- as.vector(i)
                          if (missing(i))
                              output <- Rle(callGeneric(x = x, value = value))
-                         else
+                         else {
+                             i <- as.vector(i)                           
                              output <-
                                Rle(callGeneric(x = x, i = i, value = value))
+                         }
                      }
                      output
                  })
