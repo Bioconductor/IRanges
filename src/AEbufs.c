@@ -9,8 +9,8 @@
 #include "IRanges.h"
 #include <S.h> /* for Salloc() and Srealloc() */
 
-#define MAX_BUFLENGTH_INC (128 * 1024 * 1024)
-#define MAX_BUFLENGTH (8 * MAX_BUFLENGTH_INC)
+#define MAX_BUFLENGTH_INC (32 * 1024 * 1024)
+#define MAX_BUFLENGTH (32 * MAX_BUFLENGTH_INC)
 
 
 static int debug = 0;
@@ -33,9 +33,7 @@ int _get_new_buflength(int buflength)
 	if (buflength >= MAX_BUFLENGTH)
 		error("_get_new_buflength(): MAX_BUFLENGTH reached");
 	if (buflength == 0)
-		return 256;
-	if (buflength <= 256 * 1024)
-		return 4 * buflength;
+		return 128;
 	if (buflength <= MAX_BUFLENGTH_INC)
 		return 2 * buflength;
 	buflength += MAX_BUFLENGTH_INC;

@@ -151,6 +151,16 @@ setGeneric("restrict", signature="x",
         standardGeneric("restrict")
 )
 
+### We distinguish 4 exclusive types of relationship between a range in 'x'
+### and its corresponding restriction interval (specified by 'start' and
+### 'end'):
+###   - Type 1: They have a non-empty intersection.
+###   - Type 2: The restriction interval is empty but its bounds are within
+###             the range in 'x'.
+###   - Type 3: The restriction interval is not empty and is adjacent to the
+###             range in 'x' i.e. the range in 'x' ends at start - 1 or starts
+###             at end - 1.
+
 ### drop.ranges.mode:
 ###   0L: Ranges in 'x' that are empty after restriction are dropped.
 ###   1L: Ranges in 'x' that are not overlapping and not even adjacent
@@ -160,6 +170,7 @@ setGeneric("restrict", signature="x",
 ###       Those that are not overlapping but are however adjacent are kept
 ###       (and are empty after restriction).
 ###   2L: All ranges in 'x' are kept after restriction.
+###       Ranges
 ### Note that the only mode compatible with a NormalIRanges object is 0L.
 Ranges.restrict <- function(x, start, end, drop.ranges.mode, use.names)
 {
