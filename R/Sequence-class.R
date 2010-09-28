@@ -1234,10 +1234,22 @@ setGeneric("Map", function (f, ...) standardGeneric("Map"), signature = "...")
 .MapDefault <- base::Map
 environment(.MapDefault) <- topenv()
 setMethod("Map", "Sequence", .MapDefault)
-  
-.PositionDefault <- base::Position
-environment(.PositionDefault) <- topenv()
-setMethod("Position", signature(x = "Sequence"), .PositionDefault)
+ 
+setMethod("Position", signature(x = "Sequence"),
+    function(f, x, right = FALSE, nomatch = NA_integer_)
+    {
+        ## In R-2.12, base::Position() was modified to use seq_along()
+        ## internally. The problem is that seq_along() was a primitive
+        ## that would let the user define methods for it (otherwise it
+        ## would have been worth defining a "seq_along" method for Sequence
+        ## objects). So we need to redefine seq_along() locally in order
+        ## to make base_Position() work.
+        seq_along <- function(along.with) seq_len(length(along.with))
+        base_Position <- base::Position
+        environment(base_Position) <- environment()
+        base_Position(f, x, right = right, nomatch = nomatch)
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
