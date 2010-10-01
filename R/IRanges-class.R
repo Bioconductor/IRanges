@@ -557,6 +557,10 @@ setMethod("window", "IRanges",
         slot(x, "width", check=FALSE) <-
           window(width(x), start = start, end = end, width = width,
                  frequency = frequency, delta = delta)
+        if (!is.null(elementMetadata(x)))
+          slot(x, "elementMetadata", check=FALSE) <-
+            window(elementMetadata(x), start = start, end = end, width = width,
+                   frequency = frequency, delta = delta)
         if (!is.null(names(x)))
             slot(x, "NAMES", check=FALSE) <-
               window(names(x), start = start, end = end, width = width,
