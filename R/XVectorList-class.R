@@ -191,6 +191,7 @@ setMethod("[", "XVectorList",
         if (is.character(i))
             stop("cannot subset a ", class(x), " object by names")
         x@ranges <- x@ranges[i]
+        x@elementMetadata <- x@elementMetadata[i,,drop=FALSE]
         x
     }
 )
