@@ -643,6 +643,7 @@ setMethod("unlist", "CompressedList",
                           nms <- rep.int(names(x), elementLengths(x))
                           if (!is.null(names(ans)))
                               nms <- paste(nms, names(ans), sep = ".")
+                          else nms <- make.unique(nms, sep = "")
                           names(ans) <- nms
                       }
                   } else {
