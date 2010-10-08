@@ -33,18 +33,6 @@ isSingleStringOrNA <- function(x)
     is.atomic(x) && length(x) == 1L && (is.character(x) || is.na(x))
 }
 
-### The fastest implementation of isConstant() is hard to guess:
-###   isConstant1 <- function(x) {length(x) != 0L && all(x == x[1L])}
-###   isConstant2 <- function(x) {length(unique(x)) == 1L}
-###   isConstant3 <- function(x) {sum(duplicated(x)) == length(x) - 1L}
-###   isConstant4 <- function(x) {length(x) != 0L && min(x) == max(x)}
-###   isConstant5 <- function(x) {length(x) != 0L && {rx <- range(x); rx[1L] == rx[2L]}}
-### And the winner is... isConstant4()! It's 2x faster than isConstant1()
-### and isConstant5(), 4x faster than isConstant2(), and 9x faster than
-### isConstant3(). Results obtained on 'x0 <- rep.int(112L, 999999L)' with
-### R-2.9 Under development (unstable) (2009-01-26 r47727).
-isConstant <- function(x) {length(x) != 0L && min(x) == max(x)}
-
 normargShift <- function(shift, nseq)
 {
     if (!is.numeric(shift))
@@ -81,6 +69,75 @@ normargWeight <- function(weight, nseq)
     if (length(weight) < nseq)
         weight <- recycleVector(weight, nseq)
     weight
+}
+
+### The fastest implementation of isConstant() is hard to guess:
+###   isConstant1 <- function(x) {length(x) != 0L && all(x == x[1L])}
+###   isConstant2 <- function(x) {length(unique(x)) == 1L}
+###   isConstant3 <- function(x) {sum(duplicated(x)) == length(x) - 1L}
+###   isConstant4 <- function(x) {length(x) != 0L && min(x) == max(x)}
+###   isConstant5 <- function(x) {length(x) != 0L && {rx <- range(x); rx[1L] == rx[2L]}}
+### And the winner is... isConstant4()! It's 2x faster than isConstant1()
+### and isConstant5(), 4x faster than isConstant2(), and 9x faster than
+### isConstant3(). Results obtained on 'x0 <- rep.int(112L, 999999L)' with
+### R-2.9 Under development (unstable) (2009-01-26 r47727).
+### The downside of this implementation is that it only works with numeric
+### or logical vectors.
+isConstant <- function(x) {length(x) != 0L && min(x) == max(x)}
+
+### We use a signature that follows what's used by successiveIRanges() and
+### successiveViews().
+### The current implementation should be fast enough if length(x)/width is
+### small (i.e. < 10 or 20). This will actually be the case for the typical
+### usecase which is the calculation of "circular coverage vectors", that is,
+### we use fold() on the "linear coverage vector" to turn it into a "circular
+### coverage vector" of length 'width' where 'width' is the length of the
+### circular sequence.  
+fold <- function(x, width, from=1)
+{
+    if (typeof(x) != "S4" && !is.numeric(x) && !is.complex(x))
+        stop("'x' must be a vector-like object with elements that can be added")
+    if (!isSingleNumber(width))
+        stop("'width' must be a single integer")
+    if (!is.integer(width))
+        width <- as.integer(width)
+    if (width <= 0L)
+        stop("'width' must be positive")
+    if (!isSingleNumber(from))
+        stop("'from' must be a single integer")
+    if (!is.integer(from))
+        from <- as.integer(from)
+    from <- 1L + (from - 1L) %% width
+    if (typeof(x) == "S4") {
+        ans <- as(rep.int(0L, width), class(x))
+        if (length(ans) != width)
+            stop("don't know how to handle 'x' of class ", class(x))
+    } else {
+        ans <- vector(typeof(x), length=width)
+    }
+    if (from > length(x)) {
+        ## Nothing to fold
+        jj <- seq_len(length(x)) + width - from + 1L
+        ans[jj] <- x
+        return(ans)
+    }
+    if (from > 1L) {
+        ii <- seq_len(from - 1L)
+        jj <- ii + width - from + 1L
+        ans[jj] <- x[ii]
+    }
+    max_from <- length(x) - width + 1L
+    while (from <= max_from) {
+        ii <- from:(from+width-1L)
+        ans[] <- ans[] + x[ii]
+        from <- from + width
+    }
+    if (from > length(x))
+        return(ans)
+    ii <- from:length(x)
+    jj <- ii - from + 1L
+    ans[jj] <- ans[jj] + x[ii]
+    ans
 }
 
 setClassUnion("characterORNULL", c("character", "NULL"))

@@ -11,9 +11,11 @@
 \alias{isSingleString}
 \alias{isSingleNumberOrNA}
 \alias{isSingleStringOrNA}
-\alias{isConstant}
 \alias{normargShift}
 \alias{normargWeight}
+
+\alias{isConstant}
+\alias{fold}
 
 \alias{class:characterORNULL}
 \alias{characterORNULL-class}
