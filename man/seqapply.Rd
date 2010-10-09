@@ -3,6 +3,7 @@
 \alias{mseqapply}
 \alias{tseqapply}
 \alias{seqsplit}
+\alias{seqby}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
@@ -20,11 +21,18 @@ seqapply(X, FUN, ...)
 mseqapply(FUN, ..., MoreArgs = NULL, USE.NAMES = TRUE)
 tseqapply(X, INDEX, FUN = NULL, ...)
 seqsplit(x, f, drop = FALSE)
+seqby(data, INDICES, FUN, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{X}{
     The object over which to iterate, usually a vector or \code{Sequence}
+  }
+  \item{x}{
+    Like \code{X}
+  }
+  \item{data}{
+    Like \code{X}
   }
   \item{FUN}{
     The function that is applied to each element of \code{X}
@@ -39,8 +47,9 @@ seqsplit(x, f, drop = FALSE)
     A \code{list} of factors to split \code{X} into subsets, each of
     which is passed in a separate invocation of \code{FUN}
   }
-  \item{x}{
-    Like \code{X} above
+  \item{INDICES}{
+    Like \code{INDEX}, except a single factor need not be in a
+    \code{list}.
   }
   \item{f}{
     A \code{factor} or \code{list} of factors
@@ -59,6 +68,7 @@ seqsplit(x, f, drop = FALSE)
     \item{\code{mseqapply}}{=> \code{mapply}}
     \item{\code{tseqapply}}{=> \code{tapply}}
     \item{\code{seqsplit}}{=> \code{split}}
+    \item{\code{seqby}}{=> \code{by}}
   }
   The only difference is that the result is cast to a \code{Sequence}
   object. The casting logic simply looks for a common class from which

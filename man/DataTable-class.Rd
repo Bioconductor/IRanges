@@ -184,7 +184,7 @@
   \describe{
     \item{}{
       \code{aggregate(x, by, FUN, start = NULL, end = NULL, width = NULL,
-                      frequency = NULL, delta = NULL, ..., simplify = TRUE))}:
+                      frequency = NULL, delta = NULL, ..., simplify = TRUE)}:
       Generates summaries on the specified windows and returns the result in a
       convenient form:
       \describe{
@@ -202,6 +202,7 @@
           result should be simplified to a vector or matrix if possible.}
       }
     }
+    
     \item{}{
       \code{by(data, INDICES, FUN, ..., simplify = TRUE)}:
       Apply \code{FUN} to each group of \code{data}, a \code{DataTable},

@@ -37,6 +37,9 @@
 \alias{rbind,DataFrame-method}
 \alias{split,DataFrame-method}
 
+% aggregation
+\alias{aggregate,formula-method}
+
 \title{External Data Frame}
 \description{
   The \code{DataFrame} extends the \code{\linkS4class{DataTable}} virtual
@@ -135,6 +138,19 @@
       \code{...}. Very similar to \code{\link{cbind.data.frame}}, except
       row names, if any, are dropped. Consider the \code{DataFrame}
       as an alternative that allows one to specify row names.
+    }
+  }
+}
+
+\section{Aggregation}{
+  In the following code snippets, \code{data} is a \code{DataFrame}.
+  \describe{
+    \item{}{\code{aggregate(x, data, FUN, ..., subset, na.action =
+        na.omit)}:
+      Aggregates the \code{DataFrame} \code{data} according to the
+      formula \code{x} and the aggregating
+      function \code{FUN}. See \code{\link{aggregate}} and its method
+      for \code{formula}.
     }
   }
 }

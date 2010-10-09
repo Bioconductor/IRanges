@@ -90,6 +90,7 @@
 \alias{Map,Sequence-method}
 \alias{Position,ANY,Sequence-method}
 
+\alias{eval}
 \alias{eval,expressionORlanguage,Sequence-method}
 \alias{with,Sequence-method}
 

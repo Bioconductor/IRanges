@@ -2,6 +2,7 @@
 \docType{class}
 \alias{RangedDataList-class}
 \alias{unlist,RangedDataList-method}
+\alias{stack,RangedDataList-method}
 
 % Constructor
 \alias{RangedDataList}
@@ -18,6 +19,16 @@
   \describe{
     \item{}{\code{RangedDataList(...)}: Concatenates the
       \code{RangedData} objects in \code{...} into a new \code{RangedDataList}.
+    }
+  }
+}
+
+\section{Other methods}{
+  \describe{
+    \item{}{\code{stack(x, indName = "sample")}: Concantenates the elements
+      of \code{x} into a \code{RangedData}, with a column
+      named by \code{indName} that groups the records by their original
+      element in \code{x}.
     }
   }
 }

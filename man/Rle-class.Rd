@@ -96,6 +96,7 @@
 
 \alias{!,Rle-method}
 \alias{which,Rle-method}
+\alias{ifelse,Rle-method}
 
 \alias{pmax}
 \alias{pmax,Rle-method}
@@ -547,7 +548,14 @@
       \code{which(x)}:
        Returns an integer vector representing the \code{TRUE} indices of
        \code{x}.
-    }
+     }
+     \item{}{
+       \code{ifelse(x, yes, no)}:
+       For each element of \code{x}, returns the corresponding element
+       in \code{yes} if \code{TRUE}, otherwise the element in
+       \code{no}. \code{yes} and \code{no} may be \code{Rle} objects or
+       anything else coercible to a vector.
+     }
   }
 }
 
