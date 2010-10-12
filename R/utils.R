@@ -85,52 +85,52 @@ normargWeight <- function(weight, nseq)
 ### or logical vectors.
 isConstant <- function(x) {length(x) != 0L && min(x) == max(x)}
 
-### We use a signature that follows what's used by successiveIRanges() and
+### We use a signature in the style of successiveIRanges() or
 ### successiveViews().
-### The current implementation should be fast enough if length(x)/width is
-### small (i.e. < 10 or 20). This will actually be the case for the typical
+### The current implementation should be fast enough if length(x)/circle.length
+### is small (i.e. < 10 or 20). This will actually be the case for the typical
 ### usecase which is the calculation of "circular coverage vectors", that is,
 ### we use fold() on the "linear coverage vector" to turn it into a "circular
-### coverage vector" of length 'width' where 'width' is the length of the
-### circular sequence.  
-fold <- function(x, width, from=1)
+### coverage vector" of length 'circle.length' where 'circle.length' is the
+### length of the circular sequence.  
+fold <- function(x, circle.length, from=1)
 {
     if (typeof(x) != "S4" && !is.numeric(x) && !is.complex(x))
         stop("'x' must be a vector-like object with elements that can be added")
-    if (!isSingleNumber(width))
-        stop("'width' must be a single integer")
-    if (!is.integer(width))
-        width <- as.integer(width)
-    if (width <= 0L)
-        stop("'width' must be positive")
+    if (!isSingleNumber(circle.length))
+        stop("'circle.length' must be a single integer")
+    if (!is.integer(circle.length))
+        circle.length <- as.integer(circle.length)
+    if (circle.length <= 0L)
+        stop("'circle.length' must be positive")
     if (!isSingleNumber(from))
         stop("'from' must be a single integer")
     if (!is.integer(from))
         from <- as.integer(from)
-    from <- 1L + (from - 1L) %% width
+    from <- 1L + (from - 1L) %% circle.length
     if (typeof(x) == "S4") {
-        ans <- as(rep.int(0L, width), class(x))
-        if (length(ans) != width)
+        ans <- as(rep.int(0L, circle.length), class(x))
+        if (length(ans) != circle.length)
             stop("don't know how to handle 'x' of class ", class(x))
     } else {
-        ans <- vector(typeof(x), length=width)
+        ans <- vector(typeof(x), length=circle.length)
     }
     if (from > length(x)) {
         ## Nothing to fold
-        jj <- seq_len(length(x)) + width - from + 1L
+        jj <- seq_len(length(x)) + circle.length - from + 1L
         ans[jj] <- x
         return(ans)
     }
     if (from > 1L) {
         ii <- seq_len(from - 1L)
-        jj <- ii + width - from + 1L
+        jj <- ii + circle.length - from + 1L
         ans[jj] <- x[ii]
     }
-    max_from <- length(x) - width + 1L
+    max_from <- length(x) - circle.length + 1L
     while (from <= max_from) {
-        ii <- from:(from+width-1L)
+        ii <- from:(from+circle.length-1L)
         ans[] <- ans[] + x[ii]
-        from <- from + width
+        from <- from + circle.length
     }
     if (from > length(x))
         return(ans)
