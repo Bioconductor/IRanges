@@ -246,6 +246,8 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
             nzINDEX <- INDEX[whichNonZeroLength]
             eltStarts <- start(X@partitioning)[nzINDEX]
             eltEnds <- end(X@partitioning)[nzINDEX]
+            oldValidityStatus <- disableValidity()
+            disableValidity(FALSE)
             if (useFastSubset) {
                 elts[whichNonZeroLength] <-
                   lapply(seq_len(kOK), function(j)
@@ -261,11 +263,18 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
                          FUN(X@unlistData[eltStarts[j]:eltEnds[j], ,
                                           drop = FALSE], ...))
             }
+            disableValidity(oldValidityStatus)
         }
         if (COMPRESS) {
             elts <- .compress.list(elts)
-        } else if (USE.NAMES) {
-            names(elts) <- names(X)[INDEX]
+        } else {
+            for (i in seq_len(length(elts))) {
+                obj <- elts[[i]]
+                if (isS4(obj) && !isTRUE(validObject(obj, test = TRUE)))
+                    stop("invalid output element of class \"", class(obj), "\"")
+            }
+            if (USE.NAMES)
+                names(elts) <- names(X)[INDEX]
         }
     }
     elts
