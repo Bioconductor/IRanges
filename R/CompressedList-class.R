@@ -247,7 +247,7 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
             eltStarts <- start(X@partitioning)[nzINDEX]
             eltEnds <- end(X@partitioning)[nzINDEX]
             oldValidityStatus <- disableValidity()
-            disableValidity(FALSE)
+            disableValidity(TRUE)
             if (useFastSubset) {
                 elts[whichNonZeroLength] <-
                   lapply(seq_len(kOK), function(j)
