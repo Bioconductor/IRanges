@@ -154,32 +154,37 @@ function(x, i, j, ..., drop)
     x
 }
 
+## 'allowAppend' allows new elements in 'idx' for appending. Ideally,
+## all list-like sequences should allow appending through [<-, but
+## this is only supported by DataFrame for now. 
 .bracket.Index <-
-function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE)
+function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE,
+         allowAppend = FALSE)
 {
     msg <- NULL
+    newNames <- character(0)
     if (is.numeric(idx)) {
         if (!is.integer(idx))
             idx <- as.integer(idx)
-        if (anyMissingOrOutside(idx, -lx, lx)) {
+        if (anyMissingOrOutside(idx, -lx, if (!allowAppend) lx)) {
             msg <- "subscript contains NAs or out of bounds indices"
         } else {
-            anyPos <- anyMissingOrOutside(idx, -lx, 0L)
-            anyNeg <- anyMissingOrOutside(idx, 0L, lx)
+            anyPos <- anyMissingOrOutside(idx, upper = 0L)
+            anyNeg <- anyMissingOrOutside(idx, 0L)
             if (anyPos && anyNeg)
                 msg <- "negative and positive indices cannot be mixed"
         }
     } else if (is.logical(idx)) {
         if (anyMissing(idx))
             msg <- "subscript contains NAs"
-        else if (length(idx) > lx)
+        else if (!allowAppend && length(idx) > lx)
             msg <- "subscript out of bounds"
     } else if (is.character(idx) || is.factor(idx)) {
         if (anyMissing(idx))
             msg <- "subscript contains NAs"
-        else if (is.null(nms) && length(idx) > 0)
+        else if (!allowAppend && is.null(nms) && length(idx) > 0)
             msg <- "cannot subset by character when names are NULL"
-        else {
+        else if (!allowAppend) {
             if (dup.nms)
                 m <- pmatch(idx, nms, duplicates.ok = TRUE)
             else
@@ -190,7 +195,7 @@ function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE)
     } else if (is(idx, "Rle")) {
         if (anyMissing(runValue(idx)))
             msg <- "subscript contains NAs"
-        else if (length(idx) > lx)
+        else if (!allowAppend && length(idx) > lx)
             msg <- "subscript out of bounds"
     } else if (is(idx, "Ranges")) {
         rng <- range(idx)
@@ -211,7 +216,14 @@ function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE)
             if (length(idx) == 0) {
                 idx <- IRanges()
             } else if (is.character(idx)) {
-                idx <- as(pmatch(idx, nms, duplicates.ok = TRUE), "IRanges")
+                if (allowAppend) {
+                    m <- match(idx, nms)
+                    nam <- is.na(m)
+                    m[nam] <- lx + seq(sum(nam))
+                    newNames <- idx[nam]
+                    idx <- as(m, "IRanges")
+                } else idx <-
+                    as(pmatch(idx, nms, duplicates.ok = TRUE), "IRanges")
             } else if (is.logical(idx)) {
                 if (all(idx)) {
                     useIdx <- FALSE
@@ -239,7 +251,13 @@ function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE)
             if (length(idx) == 0) {
                 idx <- integer()
             } else if (is.character(idx)) {
-                idx <- pmatch(idx, nms, duplicates.ok = TRUE)
+                if (allowAppend) {
+                    m <- match(idx, nms)
+                    nam <- is.na(m)
+                    newNames <- idx[nam]
+                    m[nam] <- lx + seq_len(sum(nam))
+                    idx <- m
+                } else idx <- pmatch(idx, nms, duplicates.ok = TRUE)
             } else if (is.logical(idx)) {
                 if (all(idx)) {
                     useIdx <- FALSE
@@ -266,7 +284,7 @@ function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE)
             }
         }
     }
-    list(msg = msg, useIdx = useIdx, idx = idx)
+    list(msg = msg, useIdx = useIdx, idx = idx, newNames = newNames)
 }
 
 setMethod("[", "Sequence", function(x, i, j, ..., drop)
@@ -741,6 +759,13 @@ setMethod("!=", signature(e1="Sequence", e2="Sequence"),
 ### Combining and splitting.
 ###
 
+.addNAElementMetadataRow <- function(x) {
+  emd <- elementMetadata(x)
+  if (!is.null(emd))
+    elementMetadata(x)[nrow(emd)+1L,] <- NA
+  x
+}
+
 .rbind.elementMetadata <- function(x, ...)
 {
     l <- list(x, ...)
@@ -748,13 +773,14 @@ setMethod("!=", signature(e1="Sequence", e2="Sequence"),
     noEmd <- sapply(emd, is.null)
     if (all(noEmd))
         return(NULL)
-    newDf <- function(nr) new("DataFrame", nrows = nr)
+    newDf <- function(nr)
+      new("DataFrame", listData = structure(list(), names = character(0)),
+          nrows = nr)
     emd[noEmd] <- lapply(elementLengths(l[noEmd]), newDf)
     allCols <- unique(do.call(c, lapply(emd, colnames)))
     fillCols <- function(df) {
       if (nrow(df))
-          df[setdiff(allCols, colnames(df))] <-
-              list(rep(NA, nrow(df)))
+          df[setdiff(allCols, colnames(df))] <- DataFrame(NA)
       df
     }
     do.call(rbind, lapply(emd, fillCols))

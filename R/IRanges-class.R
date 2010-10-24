@@ -668,7 +668,7 @@ setMethod("c", "IRanges",
             new_names <- unlist(names_list, use.names=FALSE)
         }
         ans <- update(x, start=new_start, width=new_width, names=new_names, check=FALSE)
-        elementMetadata(ans) <- do.call(rbind, lapply(args, elementMetadata))
+        elementMetadata(ans) <- do.call(.rbind.elementMetadata, args)
         validObject(ans)
         ans
     }

@@ -216,6 +216,50 @@ test_DataFrame_replace <- function() {
   sw1 <- sw; swiss1 <- swiss
   sw1[2:4,1:3] <- sw1[1:3,2:4]; swiss1[2:4,1:3] <- swiss1[1:3,2:4]
   checkIdentical(as.data.frame(sw1), swiss1)
+
+  sw1 <- sw; swiss1 <- swiss
+  sw1["NewCity",] <- NA; swiss1["NewCity",] <- NA
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1[nrow(sw1)+(1:2),] <- NA; swiss1[nrow(swiss1)+(1:2),] <- NA
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1["NewCol"] <- seq(nrow(sw1)); swiss1["NewCol"] <- seq(nrow(sw1))
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1[ncol(sw1)+1L] <- seq(nrow(sw1)); swiss1[ncol(swiss1)+1L] <- seq(nrow(sw1))
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1[,"NewCol"] <- seq(nrow(sw1)); swiss1[,"NewCol"] <- seq(nrow(sw1))
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1["NewCity","NewCol"] <- 0
+  swiss1["NewCity","NewCol"] <- 0
+  checkIdentical(as.data.frame(sw1), swiss1)
+
+  sw1 <- sw; swiss1 <- swiss
+  sw1["NewCity",] <- DataFrame(NA); swiss1["NewCity",] <- data.frame(NA)
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1[nrow(sw1)+(1:2),] <- DataFrame(NA)
+  swiss1[nrow(swiss1)+(1:2),] <- data.frame(NA)
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1["NewCol"] <- DataFrame(seq(nrow(sw1)))
+  swiss1["NewCol"] <- data.frame(seq(nrow(sw1)))
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1[ncol(sw1)+1L] <- DataFrame(seq(nrow(sw1)))
+  swiss1[ncol(swiss1)+1L] <- data.frame(seq(nrow(sw1)))
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1[,"NewCol"] <- DataFrame(seq(nrow(sw1)))
+  swiss1[,"NewCol"] <- data.frame(seq(nrow(sw1)))
+  checkIdentical(as.data.frame(sw1), swiss1)
+  sw1 <- sw; swiss1 <- swiss
+  sw1["NewCity","NewCol"] <- DataFrame(0)
+  swiss1["NewCity","NewCol"] <- data.frame(0)
+  checkIdentical(as.data.frame(sw1), swiss1)
 }
 
 ## splitting and combining
@@ -278,9 +322,12 @@ test_DataFrame_looping <- function() {
 }
 
 test_DataFrame_annotation <- function() {
-  df <- DataFrame(c(1L, 3L, NA), c(10L, 2L, NA))
+  df <- DataFrame(x = c(1L, 3L, NA), y = c(10L, 2L, NA))
   elementMetadata(df) <- DataFrame(a = 1:2)
   checkIdentical(elementMetadata(df)[,1], 1:2)
   checkIdentical(elementMetadata(df[2:1])[,1], 2:1)
   checkIdentical(elementMetadata(cbind(df,df))[,1], rep(1:2,2))
+  df$z <- 1:3
+  checkIdentical(elementMetadata(df),
+                 DataFrame(a = c(1L, 2L, NA), row.names = c("x", "y", "z")))
 }

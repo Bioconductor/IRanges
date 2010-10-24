@@ -90,11 +90,14 @@ setMethod("[[", "SimpleList",
           })
 
 setReplaceMethod("[[", "SimpleList",
-                 function(x, i, j,..., value)
+                 function(x, i, j, ..., value)
                  {
                      if (!missing(j) || length(list(...)) > 0)
                          stop("invalid replacement")
+                     origLen <- length(x)
                      x@listData[[i]] <- value
+                     if (origLen < length(x))
+                       x <- .addNAElementMetadataRow(x)
                      x
                  })
 

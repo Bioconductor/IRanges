@@ -338,6 +338,8 @@ setReplaceMethod("[[", "CompressedList",
                          slot(x, "partitioning", check=FALSE) <-
                            new2("PartitioningByEnd", end = cumsum(widths),
                                 NAMES = NAMES, check=FALSE)
+                         if (i > length(x))
+                           x <- .addNAElementMetadataRow(x)
                          x
                      }
                  })

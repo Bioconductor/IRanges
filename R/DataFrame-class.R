@@ -178,7 +178,7 @@ DataFrame <- function(..., row.names = NULL)
       stop("different row counts implied by arguments")
     varlist <- unlist(varlist, recursive = FALSE, use.names = FALSE)
     names(varlist) <- make.names(unlist(varnames[ncols > 0L]), unique = TRUE)
-  }
+  } else names(varlist) <- character(0)
   
   if (!is.null(row.names)) {
     if (anyMissing(row.names))
@@ -329,20 +329,23 @@ setReplaceMethod("[", "DataFrame",
                        jInfo <-
                          list(msg = NULL, useIdx = FALSE, idx = seq_len(ncol(x)))
                      } else {
-                       jInfo <- .bracket.Index(i, ncol(x), colnames(x))
+                       jInfo <- .bracket.Index(i, ncol(x), colnames(x),
+                                               allowAppend = TRUE)
                      }
                    } else {
                      if (missing(i)) {
                        iInfo <- list(msg = NULL, useIdx = FALSE, idx = NULL)
                      } else {
                        iInfo <-
-                         .bracket.Index(i, nrow(x), rownames(x))
+                         .bracket.Index(i, nrow(x), rownames(x),
+                                        allowAppend = TRUE)
                      }
                      if (missing(j)) {
                        jInfo <-
                          list(msg = NULL, useIdx = FALSE, idx = seq_len(ncol(x)))
                      } else {
-                       jInfo <- .bracket.Index(j, ncol(x), colnames(x))
+                       jInfo <- .bracket.Index(j, ncol(x), colnames(x),
+                                               allowAppend = TRUE)
                      }
                    }
                    if (!is.null(iInfo[["msg"]]))
@@ -351,6 +354,10 @@ setReplaceMethod("[", "DataFrame",
                      stop("replacing cols: ", jInfo[["msg"]])
                    i <- iInfo[["idx"]]
                    j <- jInfo[["idx"]]
+                   newcn <- jInfo[["newNames"]]
+                   newrn <- iInfo[["newNames"]]
+                   if (!length(j)) # nothing to replace
+                     return(x)
                    useI <- iInfo[["useIdx"]]
                    if (!is(value, "DataFrame")) {
                      if (useI)
@@ -365,15 +372,28 @@ setReplaceMethod("[", "DataFrame",
                        else
                          value <- rep(value, length.out = li)
                      }
+                     ## come up with some default row and col names
+                     if (!length(newcn) && max(j) > length(x)) {
+                       newcn <- paste("V", seq.int(length(x) + 1L, max(j)),
+                                      sep = "")
+                       if (length(newcn) != sum(j > length(x)))
+                         stop("new columns would leave holes after",
+                              "existing columns")
+                     }
                      if (useI) {
+                       if (!length(newrn) && max(i) > nrow(x))
+                         newrn <- as.character(seq.int(nrow(x) + 1L, max(i)))
                        x@listData[j] <-
                          lapply(x@listData[j], function(y) {y[i] <- value; y})
                      } else {
                        x@listData[j] <- list(value)
                      }
                    } else {
-                     if (ncol(value) != length(j))
-                       stop("ncol(x[j]) != ncol(value)")
+                     vc <- seq_len(ncol(value))
+                     if (ncol(value) > length(j))
+                       stop("ncol(x[j]) < ncol(value)")
+                     if (ncol(value) < length(j))
+                       vc <- rep(vc, length.out = length(j))
                      if (useI)
                        li <- length(i)
                      else
@@ -388,14 +408,44 @@ setReplaceMethod("[", "DataFrame",
                            value[rep(seq_len(nrv), length.out = li), ,
                                  drop=FALSE]
                      }
+                     ## attempt to derive new row and col names from value
+                     if (!length(newcn) && max(j) > length(x)) {
+                       newcn <- rep(names(value), length.out = length(j))
+                       newcn <- newcn[j > length(x)]
+                     }
                      if (useI) {
-                       for (k in seq_len(length(j)))
-                         x@listData[[j[[k]]]][i] <- value[[k]]
+                       if (!length(newrn) && max(i) > nrow(x)) {
+                         if (!is.null(rownames(value))) {
+                           newrn <- rep(rownames(value), length.out = length(i))
+                           newrn <- newrn[i > nrow(x)]
+                         } else newrn <-
+                           as.character(seq.int(nrow(x) + 1L, max(i)))
+                       }
+                       for (k in seq_len(length(j))) {
+                         if (j[k] > length(x))
+                           v <- NULL
+                         else v <- x@listData[[j[k]]]
+                         v[i] <- value[[vc[k]]]
+                         x@listData[[j[k]]] <- v
+                       }
                      } else {
                        for (k in seq_len(length(j)))
-                         x@listData[[j[[k]]]] <- value[[k]]
+                         x@listData[[j[k]]] <- value[[vc[k]]]
                      }
                    }
+                   ## update row and col names, making them unique
+                   if (length(newcn)) {
+                     oldcn <- head(names(x@listData), length(x) - length(newcn))
+                     names(x@listData) <- make.unique(c(oldcn, newcn))
+                   }
+                   if (length(newrn)) {
+                     notj <- setdiff(seq_len(ncol(x)), j)
+                     x@listData[notj] <-
+                       lapply(x@listData[notj],
+                              function(y) c(y, rep(NA, length(newrn))))
+                     x@rownames <- make.unique(c(rownames(x), newrn))
+                   }
+                   x@nrows <- length(x[[1]]) # we should always have a column
                    x
                  })
 

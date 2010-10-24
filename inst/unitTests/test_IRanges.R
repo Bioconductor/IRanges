@@ -25,6 +25,12 @@ test_IRanges_combine <- function() {
                     "CompressedIRangesList"))
   checkIdentical(do.call(c, unname(as.list(srange))),
                  IRanges(c(2,3,1,1), c(2,8,5,3)))
+
+  i1 <- IRanges(1, 10)
+  i2 <- IRanges(c(1, 15), width=5)
+  values(i2) <- DataFrame(score=1:2)
+  checkIdentical(elementMetadata(c(i1, i2)),
+                 DataFrame(score = c(NA, TRUE, TRUE)))  
 }
 
 test_IRanges_reduce <- function() {
