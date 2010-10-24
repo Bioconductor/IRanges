@@ -437,6 +437,9 @@ setReplaceMethod("[", "DataFrame",
                    if (length(newcn)) {
                      oldcn <- head(names(x@listData), length(x) - length(newcn))
                      names(x@listData) <- make.unique(c(oldcn, newcn))
+                     if (!is.null(elementMetadata(x)))
+                       elementMetadata(x)[tail(names(x),length(newcn)),] <-
+                         DataFrame(NA)
                    }
                    if (length(newrn)) {
                      notj <- setdiff(seq_len(ncol(x)), j)

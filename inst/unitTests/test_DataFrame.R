@@ -260,6 +260,13 @@ test_DataFrame_replace <- function() {
   sw1["NewCity","NewCol"] <- DataFrame(0)
   swiss1["NewCity","NewCol"] <- data.frame(0)
   checkIdentical(as.data.frame(sw1), swiss1)
+
+  sw1 <- sw
+  elementMetadata(sw1) <- DataFrame(id = seq_len(ncol(sw1)))
+  sw1["NewCol"] <- DataFrame(seq(nrow(sw1)))
+  checkIdentical(elementMetadata(sw1),
+                 DataFrame(id = c(seq_len(ncol(sw1)-1), NA),
+                           row.names = colnames(sw1)))
 }
 
 ## splitting and combining
