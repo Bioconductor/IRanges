@@ -72,7 +72,7 @@ x > y
     Use a Quicksort-based (\code{method="quick"})
     or a hash-based (\code{method="hash"}) algorithm.
     The latter will give better performance than the former
-    when the number of duplicates is small.
+    only when the number of duplicates is very small.
   }
   \item{...}{
     \link{Ranges} objects for \code{order}.

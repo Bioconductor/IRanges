@@ -494,14 +494,7 @@ duplicatedTwoIntegers <- function(x, y,
     if (fromLast)
         return(rev(duplicatedTwoIntegers(rev(x), rev(y), method=method)))
     if (method == "quick") {
-        ## TODO: Implement the "quick" method entirely in C.
-        xyo <- orderTwoIntegers(x, y)
-        x1 <- x[xyo]
-        y1 <- y[xyo]
-        dup1 <- diffWithInitialZero(x1) == 0L & diffWithInitialZero(y1) == 0L
-        dup1[1L] <- FALSE
-        ans <- logical(length(dup1))
-        ans[xyo] <- dup1
+        ans <- .Call("Integer_duplicated_xy_quick", x, y, PACKAGE="IRanges")
     } else {
         ## Author: Martin Morgan
         ans <- .Call("Integer_duplicated_xy_hash", x, y, PACKAGE="IRanges")

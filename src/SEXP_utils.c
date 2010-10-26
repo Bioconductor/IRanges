@@ -124,7 +124,34 @@ SEXP Integer_order_two(SEXP x, SEXP y, SEXP decreasing)
 	ans_length = LENGTH(x);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	_get_order_of_two_int_arrays(INTEGER(x), INTEGER(y),
-		ans_length, LOGICAL(decreasing)[0], INTEGER(ans), 1);
+			ans_length, LOGICAL(decreasing)[0], INTEGER(ans), 1);
+	UNPROTECT(1);
+	return ans;
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP Integer_duplicated_xy_quick(SEXP x, SEXP y)
+{
+	int ans_length, *o1, *o2, *ans0, *x0, *y0, i;
+	SEXP ans;
+
+	if (!IS_INTEGER(x) || !IS_INTEGER(y) || LENGTH(x) != LENGTH(y))
+		error("'x' and 'y' must be integer vectors of equal length");
+	ans_length = LENGTH(x);
+	o1 = (int *) R_alloc(sizeof(int), ans_length);
+	_get_order_of_two_int_arrays(INTEGER(x), INTEGER(y),
+			ans_length, 0, o1, 0);
+	PROTECT(ans = NEW_LOGICAL(ans_length));
+	ans0 = LOGICAL(ans);
+	x0 = INTEGER(x);
+	y0 = INTEGER(y);
+	if (ans_length >= 1) {
+		ans0[*o1] = 0;
+		for (i = 1, o2 = o1 + 1; i < ans_length; i++, o1++, o2++)
+			ans0[*o2] = x0[*o2] == x0[*o1] && y0[*o2] == y0[*o1];
+	}
 	UNPROTECT(1);
 	return ans;
 }
@@ -172,7 +199,7 @@ static Rboolean duplicated_xy_hash(const int *x, const int *y,
 
 SEXP Integer_duplicated_xy_hash(SEXP x, SEXP y)
 {
-	int ans_length, *x0, *y0, *ans0;
+	int ans_length, *ans0, *x0, *y0;
 	struct hash *tbl;
 	SEXP ans;
 
@@ -185,7 +212,7 @@ SEXP Integer_duplicated_xy_hash(SEXP x, SEXP y)
 	for (int i = 0; i < tbl->M; i++)
 		tbl->lkup[i] = NA_INTEGER;
 
-	ans = PROTECT(NEW_LOGICAL(ans_length));
+	PROTECT(ans = NEW_LOGICAL(ans_length));
 	ans0 = LOGICAL(ans);
 	x0 = INTEGER(x);
 	y0 = INTEGER(y);

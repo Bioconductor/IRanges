@@ -416,6 +416,11 @@ SEXP Integer_order_two(
 	SEXP decreasing
 );
 
+SEXP Integer_duplicated_xy_quick(
+	SEXP x,
+	SEXP y
+);
+
 SEXP Integer_duplicated_xy_hash(
 	SEXP x,
 	SEXP y
