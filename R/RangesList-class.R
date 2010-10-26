@@ -26,7 +26,7 @@ setClass("NormalIRangesList", representation("VIRTUAL"),
          prototype = prototype(elementType = "NormalIRanges"),
          contains = "IRangesList")
 setClass("CompressedNormalIRangesList",
-         prototype = prototype(elementType = "NormalIRanges",
+         prototype = prototype(elementType = "IRanges",
                                unlistData = new("IRanges")),
          contains = c("NormalIRangesList", "CompressedIRangesList"))
 setClass("SimpleNormalIRangesList",
@@ -769,10 +769,10 @@ setAs("RangesList", "CompressedNormalIRangesList",
 
 setAs("RangesList", "SimpleNormalIRangesList",
       function(from)
-      newSimpleList("SimpleNormalIRangesList",
-                    lapply(from, as, "NormalIRanges"),
-                    metadata = metadata(from),
-                    elementMetadata = elementMetadata(from)))
+        newSimpleList("SimpleNormalIRangesList",
+                      lapply(from, as, "NormalIRanges"),
+                      metadata = metadata(from),
+                      elementMetadata = elementMetadata(from)))
 
 setAs("CompressedIRangesList", "CompressedNormalIRangesList",
       function(from)
@@ -789,7 +789,9 @@ setAs("SimpleIRangesList", "SimpleNormalIRangesList",
       {
         if (!all(isNormal(from))) 
           from <- reduce(from, drop.empty.ranges=TRUE)
-        new2("SimpleNormalIRangesList", listData = from@listData,
+        new2("SimpleNormalIRangesList",
+             listData = lapply(from@listData, newNormalIRangesFromIRanges,
+               check = FALSE),
              metadata = from@metadata,
              elementMetadata = from@elementMetadata, check=FALSE)
       })
