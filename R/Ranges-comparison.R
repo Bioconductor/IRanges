@@ -3,20 +3,6 @@
 ### -------------------------------------------------------------------------
 ###
 
-### Converts Ranges object 'x' into a numeric vector of the same length where
-### the elements are in the same order as the elements in 'x'.
-.toNumericWithCompatibleOrder <- function(x)
-{
-    if (length(x) == 0L)
-        return(integer(0))
-    max_width <- max(width(x))
-    if (max_width == 0L)
-        return(start(x))
-    ## Adding 1.00 instead of 1L will avoid the result of the addition to be
-    ## NA when 'max_width' is MAX_INT (i.e. 2^31-1).
-    start(x) + width(x)/(max_width+1.00)
-}
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Equality and related methods.
@@ -39,19 +25,24 @@ setMethod("!=", signature(e1="Ranges", e2="Ranges"),
 )
 
 setMethod("duplicated", "Ranges",
-    function(x, incomparables=FALSE, fromLast=FALSE, ...)
+    function(x, incomparables=FALSE, fromLast=FALSE,
+             method=c("quick", "hash"), ...)
     {
         if (!identical(incomparables, FALSE))
-            stop("\"duplicated\" method for Ranges objects only accepts 'incomparables=FALSE'")
-        duplicated(.toNumericWithCompatibleOrder(x), fromLast=fromLast)
+            stop("\"duplicated\" method for Ranges objects ",
+                 "only accepts 'incomparables=FALSE'")
+        duplicatedTwoIntegers(start(x), width(x),
+                              fromLast=fromLast, method=method)
     }
 )
 
 ### Relies on a "[" method for 'x'.
 setMethod("unique", "Ranges",
-    function(x, incomparables=FALSE, fromLast=FALSE, ...)
+    function(x, incomparables=FALSE, fromLast=FALSE,
+             method=c("quick", "hash"), ...)
     {
-        x[!duplicated(x, incomparables=incomparables, fromLast=fromLast)]
+        x[!duplicated(x, incomparables=incomparables,
+                         fromLast=fromLast, method=method, ...)]
     }
 )
 
@@ -118,11 +109,6 @@ setGeneric("order", signature="...",
 ###   ## Takes about 1 min.:
 ###   xo2 <- order(start(x), width(x))
 ###   identical(xo, xo2)  # TRUE
-### 'orderTwoIntegers(start(x), width(x))' is also equivalent to
-### 'order(.toNumericWithCompatibleOrder(x))' but still faster:
-###   ## Takes about 30 sec.:
-###   xo3 <- order(IRanges:::.toNumericWithCompatibleOrder(x))
-###   identical(xo, xo3)  # TRUE
 setMethod("order", "Ranges",
     function(..., na.last=TRUE, decreasing=FALSE)
     {

@@ -30,29 +30,32 @@
 }
 
 \usage{
-  ## ==== Equality and related methods ====
-  ## --------------------------------------
+## ==== Equality and related methods ====
+## --------------------------------------
 
-  x == y
-  x != y
+x == y
+x != y
 
-  \S4method{duplicated}{Ranges}(x, incomparables=FALSE, fromLast=FALSE, ...)
+\S4method{duplicated}{Ranges}(x, incomparables=FALSE, fromLast=FALSE,
+           method=c("quick", "hash"), ...)
 
-  \S4method{unique}{Ranges}(x, incomparables=FALSE, fromLast=FALSE, ...)
+\S4method{unique}{Ranges}(x, incomparables=FALSE, fromLast=FALSE,
+       method=c("quick", "hash"), ...)
 
-  ## ==== Ordering and related methods ====
-  ## --------------------------------------
+## ==== Ordering and related methods ====
+## --------------------------------------
 
-  x <= y
-  x >= y
-  x < y
-  x > y
+x <= y
+x >= y
+x < y
+x > y
 
-  \S4method{order}{Ranges}(..., na.last=TRUE, decreasing=FALSE)
+\S4method{order}{Ranges}(..., na.last=TRUE, decreasing=FALSE)
 
-  \S4method{sort}{Ranges}(x, decreasing=FALSE, ...)
+\S4method{sort}{Ranges}(x, decreasing=FALSE, ...)
 
-  \S4method{rank}{Ranges}(x, na.last=TRUE, ties.method=c("average", "first", "random", "max", "min"))
+\S4method{rank}{Ranges}(x, na.last=TRUE,
+     ties.method=c("average", "first", "random", "max", "min"))
 }
 
 \arguments{
@@ -63,7 +66,13 @@
     Must be \code{FALSE}.
   }
   \item{fromLast}{
-    \code{TRUE} or \code{FALSE}.
+    See default S3 method for \code{\link[base]{duplicated}}.
+  }
+  \item{method}{
+    Use a Quicksort-based (\code{method="quick"})
+    or a hash-based (\code{method="hash"}) algorithm.
+    The latter will give better performance than the former
+    when the number of duplicates is small.
   }
   \item{...}{
     \link{Ranges} objects for \code{order}.

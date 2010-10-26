@@ -436,6 +436,12 @@ selectSome <- function (obj, maxToShow = 5)
     }
 }
 
+diffWithInitialZero <- function(x) {
+    if (!is.integer(x))
+        stop("'x' must be an integer vector")
+    .Call("Integer_diff_with_0", x, PACKAGE="IRanges")
+}
+
 orderInteger <- function(x, decreasing = FALSE)
 {
     if (!is.integer(x) && !is.factor(x))
@@ -447,12 +453,60 @@ orderInteger <- function(x, decreasing = FALSE)
         sort.list(x, decreasing = decreasing, method = "radix")
 }
 
+## Note that, for efficiency reasons, we don't support (and don't even check)
+## for NAs.
+## TODO: What happens if 'x' and 'y' don't have the same length? Shouldn't
+## we check for that?
 orderTwoIntegers <- function(x, y, decreasing = FALSE)
 {
-    if ((!is.integer(x) && !is.factor(x)) || 
-        (!is.integer(y) && !is.factor(y)))
-        stop("'x' and 'y' must be integer vectors")
+    if (!is.integer(x) && !is.factor(x))
+        stop("'x' must be an integer vector or factor")
+    if (!is.integer(y) && !is.factor(y))
+        stop("'y' must be an integer vector or factor")
     .Call("Integer_order_two", x, y, decreasing, PACKAGE="IRanges")
+}
+
+## Note that, for efficiency reasons, we don't support (and don't even check)
+## for NAs.
+duplicatedTwoIntegers <- function(x, y,
+                                  fromLast=FALSE, method=c("quick", "hash"))
+{
+    if (is.factor(x))
+        x <- as.integer(x)
+    else if (!is.integer(x))
+        stop("'x' must be an integer vector or factor")
+    if (is.factor(y))
+        y <- as.integer(y)
+    else if (!is.integer(y))
+        stop("'y' must be an integer vector or factor")
+    if (length(x) != length(y))
+        stop("'x' and 'y' must have the same length")
+    if (!isTRUEorFALSE(fromLast))
+        stop("'fromLast' must be TRUE or FALSE")
+    method <- match.arg(method)
+    if (length(x) == 0L)
+        return(logical(0L))
+    if (length(x) == 1L)
+        return(FALSE)
+    ## This is a temporary workaround until "quick" and "hash" methods can
+    ## natively support fromLast=TRUE.
+    ## TODO: Add support for fromLast=TRUE to "quick" and "hash" methods.
+    if (fromLast)
+        return(rev(duplicatedTwoIntegers(rev(x), rev(y), method=method)))
+    if (method == "quick") {
+        ## TODO: Implement the "quick" method entirely in C.
+        xyo <- orderTwoIntegers(x, y)
+        x1 <- x[xyo]
+        y1 <- y[xyo]
+        dup1 <- diffWithInitialZero(x1) == 0L & diffWithInitialZero(y1) == 0L
+        dup1[1L] <- FALSE
+        ans <- logical(length(dup1))
+        ans[xyo] <- dup1
+    } else {
+        ## Author: Martin Morgan
+        ans <- .Call("Integer_duplicated_xy_hash", x, y, PACKAGE="IRanges")
+    }
+    ans
 }
 
 mseq <- function(from, to)
@@ -462,12 +516,6 @@ mseq <- function(from, to)
     if (!is.integer(to))
         to <- as.integer(to)
     .Call("Integer_mseq", from, to, PACKAGE="IRanges")
-}
-
-diffWithInitialZero <- function(x) {
-    if (!is.integer(x))
-        stop("'x' must be an integer vector")
-    .Call("Integer_diff_with_0", x, PACKAGE="IRanges")
 }
 
 anyMissing <- function(x) .Call("anyMissing", x, PACKAGE="IRanges")

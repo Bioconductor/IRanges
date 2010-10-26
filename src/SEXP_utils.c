@@ -131,6 +131,72 @@ SEXP Integer_order_two(SEXP x, SEXP y, SEXP decreasing)
 
 /*
  * --- .Call ENTRY POINT ---
+ * Author: Martin Morgan
+ * Modified from R_HOME/src/main/unique.c
+ */
+struct hash {
+	int K, M;
+	int *lkup;
+};
+
+static void MKsetup(int n, struct hash *h)
+{
+	int n2 = 2 * n;
+
+	if (n < 0 || n > 536870912) /* protect against overflow to -ve */
+		error("length %d is too large for hashing", n);
+	h->M = 2;
+	h->K = 1;
+	while (h->M < n2) {
+		h->M *= 2;
+		h->K += 1;
+	}
+}
+
+static Rboolean duplicated_xy_hash(const int *x, const int *y,
+		const int idx, struct hash *tbl)
+{
+	const int xx = x[idx], yy = y[idx];
+	int *h = tbl->lkup;
+
+	/* pack-and-scatter, no justification for doing pack */
+	int i = 3141592653U * (xx ^ yy) >> (32 - tbl->K);
+	while (h[i] != NA_INTEGER) {
+		if (xx == x[h[i]] && yy == y[h[i]])
+			return TRUE;
+		i = (i + 1) % tbl->M;
+	}
+	h[i] = idx;
+	return FALSE;
+}
+
+SEXP Integer_duplicated_xy_hash(SEXP x, SEXP y)
+{
+	int ans_length, *x0, *y0, *ans0;
+	struct hash *tbl;
+	SEXP ans;
+
+	if (!IS_INTEGER(x) || !IS_INTEGER(y) || LENGTH(x) != LENGTH(y))
+		error("'x' and 'y' must be integer vectors of equal length");
+	ans_length = LENGTH(x);
+	tbl = (struct hash *) R_alloc(sizeof(struct hash), 1);
+	MKsetup(ans_length, tbl);
+	tbl->lkup = (int *) R_alloc(sizeof(int), tbl->M);
+	for (int i = 0; i < tbl->M; i++)
+		tbl->lkup[i] = NA_INTEGER;
+
+	ans = PROTECT(NEW_LOGICAL(ans_length));
+	ans0 = LOGICAL(ans);
+	x0 = INTEGER(x);
+	y0 = INTEGER(y);
+	for (int i = 0; i < ans_length; i++)
+		ans0[i] = duplicated_xy_hash(x0, y0, i, tbl);
+	UNPROTECT(1);
+	return ans;
+}
+
+/*
+ * --- .Call ENTRY POINT ---
  * Creates the (sorted) union of two sorted integer vectors
  */
 SEXP Integer_sorted_merge(SEXP x, SEXP y)
