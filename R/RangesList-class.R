@@ -2,36 +2,61 @@
 ### RangesList objects
 ### -------------------------------------------------------------------------
 
-## Accepts any type of Ranges object as an element
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### RangesList
+###
+### Accepts any type of Ranges object as an element.
+###
 
 setClass("RangesList", representation("VIRTUAL"),
          prototype = prototype(elementType = "Ranges"),
          contains = "Sequence")
+
 setClass("SimpleRangesList",
          prototype = prototype(elementType = "Ranges"),
          contains = c("RangesList", "SimpleList"))
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### IRangesList
+###
+
 setClass("IRangesList", representation("VIRTUAL"),
          prototype = prototype(elementType = "IRanges"),
          contains = "RangesList")
+
 setClass("CompressedIRangesList",
          prototype = prototype(elementType = "IRanges",
                                unlistData = new("IRanges")),
          contains = c("IRangesList", "CompressedList"))
+
 setClass("SimpleIRangesList",
          prototype = prototype(elementType = "IRanges"),
          contains = c("IRangesList", "SimpleRangesList"))
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### NormalIRangesList
+###
+
 setClass("NormalIRangesList", representation("VIRTUAL"),
          prototype = prototype(elementType = "NormalIRanges"),
          contains = "IRangesList")
+
+### CompressedNormalIRangesList cannot hold NormalIRanges as its elements,
+### due to the compression combining everything into a single
+### NormalIRanges (which could easily become non-normal). So just have it
+### hold IRanges, instead.
 setClass("CompressedNormalIRangesList",
          prototype = prototype(elementType = "IRanges",
                                unlistData = new("IRanges")),
          contains = c("NormalIRangesList", "CompressedIRangesList"))
+
 setClass("SimpleNormalIRangesList",
          prototype = prototype(elementType = "NormalIRanges"),
          contains = c("NormalIRangesList", "SimpleIRangesList"))
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
