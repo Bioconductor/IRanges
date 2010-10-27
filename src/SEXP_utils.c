@@ -162,7 +162,7 @@ SEXP Integer_duplicated_xy_quick(SEXP x, SEXP y)
  * Modified from R_HOME/src/main/unique.c
  */
 struct hash {
-	int K, M;
+	int K, M, Mminus1;
 	int *lkup;
 };
 
@@ -179,72 +179,18 @@ static void MKsetup(int n, struct hash *h)
 		h->M *= 2;
 		h->K += 1;
 	}
+	h->Mminus1 = h->M - 1;
 }
 
-/*
- * Unlike R_HOME/src/main/unique.c (they use a much simpler hash), we use the
- * very efficient MurmurHash2 hash. The MurmurHash2() function below is taken
- * from
- *   http://sites.google.com/site/murmurhash/MurmurHash2.cpp
- */
-static unsigned int MurmurHash2(const void * key, int len, unsigned int seed)
-{
-	// 'm' and 'r' are mixing constants generated offline.
-	// They're not really 'magic', they just happen to work well.
-
-	const unsigned int m = 0x5bd1e995;
-	const int r = 24;
-
-	// Initialize the hash to a 'random' value
-
-	unsigned int h = seed ^ len;
-
-	// Mix 4 bytes at a time into the hash
-
-	const unsigned char * data = (const unsigned char *)key;
-
-	while(len >= 4)
-	{
-		unsigned int k = *(unsigned int *)data;
-
-		k *= m; 
-		k ^= k >> r; 
-		k *= m; 
-		
-		h *= m; 
-		h ^= k;
-
-		data += 4;
-		len -= 4;
-	}
-	
-	// Handle the last few bytes of the input array
-
-	switch(len)
-	{
-	case 3: h ^= data[2] << 16;
-	case 2: h ^= data[1] << 8;
-	case 1: h ^= data[0];
-	        h *= m;
-	};
-
-	// Do a few final mixes of the hash to ensure the last few
-	// bytes are well-incorporated.
-
-	h ^= h >> 13;
-	h *= m;
-	h ^= h >> 15;
-
-	return h;
-} 
-
-static Rboolean duplicated_xy_hash(const int *x, const int *y,
+static Rboolean is_duplicated_xy_hash(const int *x, const int *y,
 		const int idx, struct hash *tbl)
 {
 	const int xx = x[idx], yy = y[idx];
 	int *h = tbl->lkup, hi;
 
-	int i = MurmurHash2(&xx, sizeof(int), yy) >> (32 - tbl->K);
+	/* use 2 consecutive prime numbers (seems to work well, no serious
+	   justification for it) */
+	int i = (3929449U * xx + 3929461U * yy) & tbl->Mminus1;
 	while ((hi = h[i]) != NA_INTEGER) {
 		if (xx == x[hi] && yy == y[hi])
 			return TRUE;
@@ -274,7 +220,7 @@ SEXP Integer_duplicated_xy_hash(SEXP x, SEXP y)
 	x0 = INTEGER(x);
 	y0 = INTEGER(y);
 	for (int i = 0; i < ans_length; i++)
-		ans0[i] = duplicated_xy_hash(x0, y0, i, tbl);
+		ans0[i] = is_duplicated_xy_hash(x0, y0, i, tbl);
 	UNPROTECT(1);
 	return ans;
 }
