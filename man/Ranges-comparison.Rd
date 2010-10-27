@@ -37,10 +37,10 @@ x == y
 x != y
 
 \S4method{duplicated}{Ranges}(x, incomparables=FALSE, fromLast=FALSE,
-           method=c("quick", "hash"), ...)
+           method=c("auto", "quick", "hash"), ...)
 
 \S4method{unique}{Ranges}(x, incomparables=FALSE, fromLast=FALSE,
-       method=c("quick", "hash"), ...)
+       method=c("auto", "quick", "hash"), ...)
 
 ## ==== Ordering and related methods ====
 ## --------------------------------------
@@ -71,8 +71,11 @@ x > y
   \item{method}{
     Use a Quicksort-based (\code{method="quick"})
     or a hash-based (\code{method="hash"}) algorithm.
-    The latter will give better performance than the former
-    only when the number of duplicates is very small.
+    The latter tends to give better performance, except maybe for some
+    pathological input that we've not been able to determine so far.
+    When \code{method="auto"} is specified, the hash-based algorithm
+    is used as long as the length of \code{x} is <= 2^29, otherwise the
+    Quicksort-based algorithm is used.
   }
   \item{...}{
     \link{Ranges} objects for \code{order}.

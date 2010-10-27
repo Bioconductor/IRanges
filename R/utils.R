@@ -469,7 +469,8 @@ orderTwoIntegers <- function(x, y, decreasing = FALSE)
 ## Note that, for efficiency reasons, we don't support (and don't even check)
 ## for NAs.
 duplicatedTwoIntegers <- function(x, y,
-                                  fromLast=FALSE, method=c("quick", "hash"))
+                                  fromLast=FALSE,
+                                  method=c("auto", "quick", "hash"))
 {
     if (is.factor(x))
         x <- as.integer(x)
@@ -493,6 +494,12 @@ duplicatedTwoIntegers <- function(x, y,
     ## TODO: Add support for fromLast=TRUE to "quick" and "hash" methods.
     if (fromLast)
         return(rev(duplicatedTwoIntegers(rev(x), rev(y), method=method)))
+    if (method == "auto") {
+        if (length(x) <= 2^29)
+            method <- "hash"
+        else
+            method <- "quick"
+    }
     if (method == "quick") {
         ans <- .Call("Integer_duplicated_xy_quick", x, y, PACKAGE="IRanges")
     } else {

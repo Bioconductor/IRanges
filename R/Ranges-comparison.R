@@ -26,7 +26,7 @@ setMethod("!=", signature(e1="Ranges", e2="Ranges"),
 
 setMethod("duplicated", "Ranges",
     function(x, incomparables=FALSE, fromLast=FALSE,
-             method=c("quick", "hash"), ...)
+             method=c("auto", "quick", "hash"), ...)
     {
         if (!identical(incomparables, FALSE))
             stop("\"duplicated\" method for Ranges objects ",
@@ -39,7 +39,7 @@ setMethod("duplicated", "Ranges",
 ### Relies on a "[" method for 'x'.
 setMethod("unique", "Ranges",
     function(x, incomparables=FALSE, fromLast=FALSE,
-             method=c("quick", "hash"), ...)
+             method=c("auto", "quick", "hash"), ...)
     {
         x[!duplicated(x, incomparables=incomparables,
                          fromLast=fromLast, method=method, ...)]
