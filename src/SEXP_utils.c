@@ -170,6 +170,7 @@ static void MKsetup(int n, struct hash *h)
 {
 	int n2 = 2 * n;
 
+	/* max supported value for n is 2^29 */
 	if (n < 0 || n > 536870912) /* protect against overflow to -ve */
 		error("length %d is too large for hashing", n);
 	h->M = 2;
@@ -180,16 +181,72 @@ static void MKsetup(int n, struct hash *h)
 	}
 }
 
+/*
+ * Unlike R_HOME/src/main/unique.c (they use a much simpler hash), we use the
+ * very efficient MurmurHash2 hash. The MurmurHash2() function below is taken
+ * from
+ *   http://sites.google.com/site/murmurhash/MurmurHash2.cpp
+ */
+static unsigned int MurmurHash2(const void * key, int len, unsigned int seed)
+{
+	// 'm' and 'r' are mixing constants generated offline.
+	// They're not really 'magic', they just happen to work well.
+
+	const unsigned int m = 0x5bd1e995;
+	const int r = 24;
+
+	// Initialize the hash to a 'random' value
+
+	unsigned int h = seed ^ len;
+
+	// Mix 4 bytes at a time into the hash
+
+	const unsigned char * data = (const unsigned char *)key;
+
+	while(len >= 4)
+	{
+		unsigned int k = *(unsigned int *)data;
+
+		k *= m; 
+		k ^= k >> r; 
+		k *= m; 
+		
+		h *= m; 
+		h ^= k;
+
+		data += 4;
+		len -= 4;
+	}
+	
+	// Handle the last few bytes of the input array
+
+	switch(len)
+	{
+	case 3: h ^= data[2] << 16;
+	case 2: h ^= data[1] << 8;
+	case 1: h ^= data[0];
+	        h *= m;
+	};
+
+	// Do a few final mixes of the hash to ensure the last few
+	// bytes are well-incorporated.
+
+	h ^= h >> 13;
+	h *= m;
+	h ^= h >> 15;
+
+	return h;
+} 
+
 static Rboolean duplicated_xy_hash(const int *x, const int *y,
 		const int idx, struct hash *tbl)
 {
 	const int xx = x[idx], yy = y[idx];
-	int *h = tbl->lkup;
+	int *h = tbl->lkup, hi;
 
-	/* pack-and-scatter, no justification for doing pack */
-	int i = 3141592653U * (xx ^ yy) >> (32 - tbl->K);
-	while (h[i] != NA_INTEGER) {
-		if (xx == x[h[i]] && yy == y[h[i]])
+	int i = MurmurHash2(&xx, sizeof(int), yy) >> (32 - tbl->K);
+	while ((hi = h[i]) != NA_INTEGER) {
+		if (xx == x[hi] && yy == y[hi])
 			return TRUE;
 		i = (i + 1) % tbl->M;
 	}
