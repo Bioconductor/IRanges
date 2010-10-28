@@ -13,7 +13,8 @@ setClass("DataFrame",
                         nrows = "integer"
                         ),
          prototype(rownames = NULL,
-                   nrows = 0L),
+                   nrows = 0L,
+                   listData = structure(list(), names = character())),
          contains = c("DataTable", "SimpleList"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -108,7 +109,7 @@ setReplaceMethod("colnames", "DataFrame",
 .valid.DataFrame.names <- function(x)
 {
   if (is.null(names(x)))
-    return(NULL)
+    return("column names should not be NULL")
   if (anyDuplicated(names(x)))
     return("duplicate column names")
   if (length(names(x)) != ncol(x))
