@@ -41,26 +41,6 @@ SEXP safe_strexplode(SEXP s)
 
 /****************************************************************************
  * strsplit_as_list_of_ints()
- *
- * Similar to
- *   tmp <- strsplit(x, sep, fixed=TRUE)
- *   lapply(tmp, as.integer)
- * except that:
- *   - strsplit() accepts NAs, we don't (raise an error);
- *   - as.integer() introduces NAs by coercion (with a warning), we don't
- *     (raise an error);
- *   - as.integer() supports "inaccurate integer conversion in coercion"
- *     when the value to coerce is > INT_MAX (then it's coerced to INT_MAX),
- *     we don't (raise an error);
- *   - as.integer() will coerce non-integer values (e.g. 10.3) to an int
- *     by truncating them, we don't (raise an error).
- * When it fails, strsplit_as_list_of_ints() will print a detailed parse
- * error message.
- * It's also faster and uses much less memory. E.g. it's 8x faster and uses
- * < 1 Mb versus > 60 Mb on the character vector 'biginput' created with:
- *   library(GenomicFeatures.Hsapiens.UCSC.hg18)
- *   genes <- geneHuman()
- *   biginput <- c(genes$exonStarts, genes$exonEnds)  # 133606 elements
  */
 
 static IntAE int_ae_buf;

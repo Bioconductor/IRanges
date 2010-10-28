@@ -70,7 +70,8 @@
 
   ## In normal situations (i.e. when the input is well-formed),
   ## strsplitAsListOfIntegerVectors() does actually the same as the
-  ## function below but is faster and much more memory efficient:
+  ## function below but is more efficient (both in speed and memory
+  ## footprint):
   strsplitAsListOfIntegerVectors2 <- function(x, sep=",")
   {
     tmp <- strsplit(x, sep, fixed = TRUE)

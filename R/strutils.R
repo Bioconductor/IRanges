@@ -6,7 +6,27 @@ safeExplode <- function(x)
     .Call("safe_strexplode", x, PACKAGE="IRanges")
 }
 
-
+### strsplitAsListOfIntegerVectors(x) is an alternative to:
+###   lapply(strsplit(x, ",", fixed=TRUE), as.integer)
+### except that:
+###  - strsplit() accepts NAs, we don't (raise an error);
+###  - as.integer() introduces NAs by coercion (with a warning), we don't
+###    (raise an error);
+###  - as.integer() supports "inaccurate integer conversion in coercion"
+###    when the value to coerce is > INT_MAX (then it's coerced to INT_MAX),
+###    we don't (raise an error);
+###  - as.integer() will coerce non-integer values (e.g. 10.3) to an int
+###    by truncating them, we don't (raise an error).
+### When it fails, strsplit_as_list_of_ints() will print a detailed parse
+### error message.
+### It's also faster and uses much less memory. E.g. it's 8x faster and uses
+### < 1 Mb versus > 60 Mb on the character vector 'biginput' created with:
+###   library(rtracklayer)
+###   session <- browserSession()
+###   genome(session) <- "hg18"
+###   query <- ucscTableQuery(session, "UCSC Genes")
+###   tx <- getTable(query)
+###   biginput <- c(tx$exonStarts, tx$exonEnds)  # 133606 elements
 strsplitAsListOfIntegerVectors <- function(x, sep=",")
 {
     if (!is.character(x))
