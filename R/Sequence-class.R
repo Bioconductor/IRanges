@@ -166,7 +166,9 @@ function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE,
     if (is.numeric(idx)) {
         if (!is.integer(idx))
             idx <- as.integer(idx)
-        if (anyMissingOrOutside(idx, -lx, if (!allowAppend) lx)) {
+        if (anyMissingOrOutside(idx, -lx,
+                                if (!allowAppend) lx else .Machine$integer.max))
+        {
             msg <- "subscript contains NAs or out of bounds indices"
         } else {
             anyPos <- anyMissingOrOutside(idx, upper = 0L)
