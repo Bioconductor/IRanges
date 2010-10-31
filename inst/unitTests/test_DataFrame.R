@@ -64,6 +64,11 @@ test_DataFrame_construction <- function() {
   checkIdentical(DF[[1]], rep(1, 3)) 
 }
 
+test_DataFrame_coerce <- function() {
+    ## need to introduce character() dim names
+    checkTrue(validObject(as(matrix(0L, 0L, 0L), "DataFrame")))
+}
+
 test_DataFrame_subset <- function() {
   data(swiss)
   sw <- DataFrame(swiss)

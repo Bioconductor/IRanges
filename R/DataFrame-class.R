@@ -522,8 +522,14 @@ setAs("data.frame", "DataFrame",
       })
 
 # matrices and tables just go through data.frame
-setAs("matrix", "DataFrame",
-      function(from) as(as.data.frame(from), "DataFrame"))
+setAs("matrix", "DataFrame", function(from) {
+    df <- as.data.frame(from)
+    if (0L == ncol(from))
+        ## colnames on matrix with 0 columns are 'NULL'
+        names(df) <- character()
+    as(df, "DataFrame")
+})
+
 setAs("table", "DataFrame",
       function(from) {
         df <- as.data.frame(from)
