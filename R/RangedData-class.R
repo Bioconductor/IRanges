@@ -41,6 +41,11 @@ setReplaceMethod("values", "RangedData",
                    } else {
                      stop("'value' must extend class SplitDataFrameList or DataFrame")
                    }
+                   if (is.null(rownames(value)) && !is.null(rownames(x)))
+                     rownames(value) <- rownames(x)
+                   else if (!identical(rownames(value), rownames(values(x))))
+                     stop("rownames of 'value', if non-NULL, must match the ",
+                          "rownames of 'x'")
                    x@values <- value
                    x
                  })
