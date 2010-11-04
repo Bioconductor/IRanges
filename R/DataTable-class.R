@@ -361,7 +361,7 @@ setMethod("as.env", "DataTable",
 ###
 
 setGeneric("showAsCell", function(object) standardGeneric("showAsCell"))
-setMethod("showAsCell", "vectorORfactor", function(object) object)
+setMethod("showAsCell", "ANY", function(object) object)
 setMethod("showAsCell", "list", function(object)
           rep.int("########", length(object)))
 setMethod("showAsCell", "Sequence", function(object)

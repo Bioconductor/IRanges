@@ -497,6 +497,15 @@ setMethod("seqselect", "factor",
               ans
           })
 
+setMethod("seqselect", "ANY",
+          function(x, start=NULL, end=NULL, width=NULL)
+          {
+            ans <-
+              callGeneric(seq_len(length(x)), start = start, end = end,
+                          width = width)
+            x[ans]
+          })
+
 setGeneric("seqselect<-", signature="x",
            function(x, start = NULL, end = NULL, width = NULL, value)
            standardGeneric("seqselect<-"))
