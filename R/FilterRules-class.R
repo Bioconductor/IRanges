@@ -224,3 +224,35 @@ setMethod("eval", signature(expr="FilterRules", envir="ANY"),
             result
           })
 
+setGeneric("evalSeparately",
+           function(expr, envir = parent.frame(),
+                    enclos = if (is.list(envir) ||
+                      is.pairlist(envir)) parent.frame() else baseenv())
+           standardGeneric("evalSeparately"))
+
+setMethod("evalSeparately", "FilterRules",
+          function(expr, envir = parent.frame(),
+                   enclos = if (is.list(envir) ||
+                     is.pairlist(envir)) parent.frame() else baseenv())
+          {
+            inds <- seq_len(length(expr))
+            names(inds) <- names(expr)
+            sapply(inds,
+                   function(i) eval(expr[i], envir = envir, enclos = enclos))
+          })
+
+setGeneric("subsetByFilter",
+           function(x, filter, ...) standardGeneric("subsetByFilter"))
+
+setMethod("subsetByFilter", c("ANY", "FilterRules"), function(x, filter) {
+  x[eval(filter, x)]
+})
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Summary
+###
+
+setMethod("summary", "FilterRules", function(object, subject) {
+  mat <- evalSeparately(object, subject)
+  c(colSums(mat), Combined = sum(rowSums(mat) == ncol(mat)))
+})
