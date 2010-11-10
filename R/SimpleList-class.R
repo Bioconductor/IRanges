@@ -37,6 +37,8 @@ SimpleList <- function(...) {
 newSimpleList <- function(listClass, listData, ...) {
     if (!is.list(listData))
         stop("'listData' must be a list object")
+    if (is.array(listData)) # drop any unwanted dimensions
+        dim(listData) <- NULL
     if (!extends(listClass, "SimpleList"))
         stop("cannot create a ", listClass, " as a 'SimpleList'")
     elementTypeData <- elementType(new(listClass))
