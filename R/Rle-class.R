@@ -328,26 +328,23 @@ setMethod("[", "Rle",
           })
 
 setReplaceMethod("[", "Rle",
-                 function(x, i, j,..., value) {
-                     if (length(value) <= 1) {
-                         if (missing(i))
-                             output <- callNextMethod(x = x, value = value)
-                         else
-                             output <-
-                               callNextMethod(x = x, i = i, value = value)
-                     } else {
-                         x <- as.vectorORfactor(x)
-                         value <- as.vector(value)
-                         if (missing(i))
-                             output <- Rle(callGeneric(x = x, value = value))
-                         else {
-                             i <- as.vector(i)                           
-                             output <-
-                               Rle(callGeneric(x = x, i = i, value = value))
-                         }
-                     }
-                     output
-                 })
+    function(x, i, j,..., value)
+    {
+        if (missing(i)) {
+            if (length(value) <= 1L)
+                return(callNextMethod(x = x, value = value))
+            x <- as.vectorORfactor(x)
+            value <- as.vector(value)
+            return(Rle(callGeneric(x = x, value = value)))
+        }
+        if (length(value) <= 1L && length(i) != 0L)
+            return(callNextMethod(x = x, i = i, value = value))
+        x <- as.vectorORfactor(x)
+        value <- as.vector(value)
+        i <- as.vector(i)
+        Rle(callGeneric(x = x, i = i, value = value))
+    }
+)
 
 setMethod("%in%", "Rle",
           function(x, table)
