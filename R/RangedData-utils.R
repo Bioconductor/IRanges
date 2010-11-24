@@ -41,14 +41,18 @@ setMethod("rdapply", "RDApplyParams", function(x) {
   ##     if (length(excludePattern))
   ##       inds <- inds[-excludePattern]
   ##   }
-  ans <- sapply(inds, function(i) {
+  forEachSpace <- function(i) {
     rdi <- rd[i]
     if (length(rules)) {
       filter <- eval(rules, rdi, enclos)
       rdi <- rdi[filter,]
     }
     do.call(applyFun, c(list(rdi), applyParams))
-  }, simplify = simplify)
+  }
+  iteratorFun <- iteratorFun(x)
+  if ("simplify" %in% names(formals(iteratorFun)))
+    ans <- iteratorFun(inds, forEachSpace, simplify = simplify)
+  else ans <- iteratorFun(inds, forEachSpace)
   if (!is.null(reducerFun))
     ans <- do.call(reducerFun, c(list(ans), reducerParams))
   ans

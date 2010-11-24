@@ -8,8 +8,10 @@ setClass("RDApplyParams",
          representation(rangedData = "RangedData", applyFun = "function",
                         applyParams = "list", ##excludePattern = "character",
                         filterRules = "FilterRules", simplify = "logical",
-                        reducerFun = "functionORNULL", reducerParams = "list"),
-         prototype(applyFun = function(rd) NULL, simplify = FALSE))
+                        reducerFun = "functionORNULL", reducerParams = "list",
+                        iteratorFun = "function"),
+         prototype(applyFun = function(rd) NULL, simplify = FALSE,
+                   iteratorFun = sapply))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -102,18 +104,30 @@ setReplaceMethod("reducerParams", "RDApplyParams", function(x, value) {
   x
 })
 
+setGeneric("iteratorFun", function(x, ...) standardGeneric("iteratorFun"))
+setMethod("iteratorFun", "RDApplyParams", function(x) x@iteratorFun)
+
+setGeneric("iteratorFun<-", function(x, ..., value)
+           standardGeneric("iteratorFun<-"))
+setReplaceMethod("iteratorFun", "RDApplyParams", function(x, value) {
+  x@iteratorFun <- value
+  validObject(x)
+  x
+})
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor
 ###
 
 ## Simple convenience constructor around RDApplyParams's initializer
 RDApplyParams <- function(rangedData, applyFun, applyParams, #excludePattern,
-                          filterRules, simplify, reducerFun, reducerParams)
+                          filterRules, simplify, reducerFun, reducerParams,
+                          iteratorFun)
 {
   params <- new("RDApplyParams", applyFun = applyFun,
                 applyParams = applyParams, filterRules = filterRules,
                 simplify = simplify, reducerFun = reducerFun,
-                reducerParams = reducerParams)
+                reducerParams = reducerParams, iteratorFun = iteratorFun)
   params@rangedData <- rangedData ## set rangedData last for efficiency
   params
 }
@@ -181,10 +195,20 @@ formals(RDApplyParams) <- structure(lapply(slotNames("RDApplyParams"),
   NULL
 }
 
+.valid.RDApplyParams.iteratorFun <- function(x) {
+  formals <- formals(iteratorFun(x))
+  if (length(formals) < 2)
+    "'iteratorFun' must take at least two parameters"
+  else if ("simplify" %in% names(formals) && length(formals) < 3)
+    "'iteratorFun' must take at least three parameters if one is 'simplify'"
+  else NULL
+}
+
 .valid.RDApplyParams <- function(x)
   c(##.valid.RDApplyParams.rangedData(x),
     .valid.RDApplyParams.applyFun(x),
     ##.valid.RDApplyParams.excludePattern(x),
-    .valid.RDApplyParams.simplify(x), .valid.RDApplyParams.reducerParams(x))
+    .valid.RDApplyParams.simplify(x), .valid.RDApplyParams.reducerParams(x),
+    .valid.RDApplyParams.iteratorFun(x))
 
 setValidity2("RDApplyParams", .valid.RDApplyParams)

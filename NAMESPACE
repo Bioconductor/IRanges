@@ -173,6 +173,7 @@ export(
     ##excludePattern, "excludePattern<-",
     filterRules, "filterRules<-",
     reducerFun, "reducerFun<-", reducerParams, "reducerParams<-",
+    iteratorFun, "iteratorFun<-",
     rdapply,
     universe, "universe<-", space, score, "score<-",
     matchMatrix, queryHits, subjectHits

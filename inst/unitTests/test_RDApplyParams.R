@@ -147,6 +147,16 @@ test_RDApplyParams_construct <- function() {
   checkException(RDApplyParams(rd, function(...) NULL, reducerFun = reducer,
                                reducerParams = rep(reducerParams,2)),
                  silent = TRUE)
+
+  ## iteratorFun
+  params <- RDApplyParams(rd, iteratorFun = lapply)
+  checkTrue(validObject(params))
+  checkIdentical(iteratorFun(params), lapply)
+  iteratorFun(params) <- sapply
+  checkTrue(validObject(params))
+  checkIdentical(iteratorFun(params), sapply)
+  checkException(iteratorFun(params) <- function(x) NULL, silent=TRUE)
+  checkException(iteratorFun(params) <- function(x, simplify) NULL, silent=TRUE)
 }
 
 test_RDApplyParams_rdapply <- function() {
