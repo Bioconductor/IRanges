@@ -48,14 +48,14 @@
       returned.
   }
 
-  \code{precede} returns an integer vector of the index of range in
-  \code{subject} that ends before and closest to the start of each range in
-  \code{x}. Note that any overlapping ranges are excluded. \code{NA} is
+  For each range in \code{x}, \code{precede} returns the index of the
+  interval in \code{subject} that is directly preceded by the query
+  range. Note that any overlapping ranges are excluded. \code{NA} is
   returned when there are no qualifying ranges in \code{subject}.
 
-  \code{follow} is the opposite of \code{precede}: it returns the
-  index of the range in \code{subject} that starts after and closest
-  to the end of each range in \code{x}.
+  \code{follow} is the opposite of \code{precede}: it returns the index
+  of the range in \code{subject} that a query range in \code{x} directly
+  follows.
 }
 
 \author{M. Lawrence}
