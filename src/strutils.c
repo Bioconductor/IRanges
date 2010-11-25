@@ -145,7 +145,7 @@ static int get_svn_time(time_t t, char *out, size_t out_size)
 	//localtime_r() not available on Windows+MinGW
 	//localtime_r(&t, &result);
 	result = *localtime(&t);
-#ifndef __APPLE__
+#if !(defined(__APPLE__) || defined(__FreeBSD__))
 	tzset();
 	//timezone is not portable (is a function, not a long, on OS X Tiger)
 	utc_offset = - (timezone / 3600);
