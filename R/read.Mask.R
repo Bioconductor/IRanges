@@ -56,6 +56,41 @@
 ### "agp" file or a UCSC "gap" file, respectively.
 ###
 
+.guessGapFileCOL2CLASS <- function(file)
+{
+    ## UCSC "gap" files generally have the 9 columns below except for some
+    ## organisms like Rhesus that have only 8 columns (no 'bin' column).
+    COL2CLASS <- c(
+        `bin`="integer",
+        `chrom`="character",
+        `chr_start`="integer",
+        `chr_stop`="integer",
+        `part_no`="integer",
+        `part_type`="character",
+        `gap_len`="integer",
+        `gap_type`="character",
+        `bridge`="character"
+    )
+    line1 <- try(read.table(file, sep="\t",
+                            col.names=names(COL2CLASS),
+                            colClasses=COL2CLASS,
+                            nrows=1L,
+                            check.names=FALSE),
+                 silent=TRUE)
+    if (!inherits(line1, "try-error"))
+        return(COL2CLASS)
+    COL2CLASS <- COL2CLASS[-1L]
+    line1 <- try(read.table(file, sep="\t",
+                            col.names=names(COL2CLASS),
+                            colClasses=COL2CLASS,
+                            nrows=1L,
+                            check.names=FALSE),
+                 silent=TRUE)
+    if (!inherits(line1, "try-error"))
+        return(COL2CLASS)
+    stop("unable to guess the column names in \"gap\" file '", file, "', sorry")
+}
+
 .read.agpORgapFile <- function(agp_or_gap, file)
 {
     if (agp_or_gap == "agp") {
@@ -71,22 +106,7 @@
             `empty`="character"
         )
     } else if (agp_or_gap == "gap") {
-        COL2CLASS <- c(
-            `bin`="integer",
-            `chrom`="character",
-            `chr_start`="integer",
-            `chr_stop`="integer",
-            `part_no`="integer",
-            `part_type`="character",
-            `gap_len`="integer",
-            `gap_type`="character",
-            `bridge`="character"
-        )
-        ncol <- ncol(read.table(file, sep="\t", nrows=1, check.names=FALSE))
-        ## Because for some organisms like Rhesus, the 'gap' table in the
-        ## UCSC database has no 'bin' column.
-        if (ncol == 8L)
-            COL2CLASS <- COL2CLASS[-1L]
+        COL2CLASS <- .guessGapFileCOL2CLASS(file)
     } else {
         stop("read.Mask internal error: please report")
     }
