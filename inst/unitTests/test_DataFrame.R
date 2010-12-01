@@ -86,8 +86,6 @@ test_DataFrame_subset <- function() {
   options(warn=0)
   checkException(sw["Sion",], silent = TRUE) # no row names
   checkException(sw[,"Fert"], silent = TRUE) # bad column name
-  colnames(sw) <- NULL
-  checkException(sw[,"Fertility"], silent = TRUE) # no column names
 
   sw <- DataFrame(swiss)
 
@@ -151,7 +149,7 @@ test_DataFrame_dimnames_replace <- function() {
   sw <- DataFrame(swiss)
   colnames(sw) <- cn
   checkIdentical(colnames(sw), cn)
-  cn <- seq_len(ncol(swiss))
+  cn <- as.character(seq_len(ncol(swiss)))
   colnames(sw) <- cn
   checkIdentical(colnames(sw), make.names(cn, unique=TRUE))
   colnames(sw) <- cn[1]
