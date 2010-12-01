@@ -42,15 +42,15 @@ setMethod("rownames", "DataFrame",
 setMethod("colnames", "DataFrame",
           function(x, do.NULL = TRUE, prefix = "col")
           {
-            cn <- names(x)
-            if (is.null(cn) && !do.NULL) {
-              nc <- NCOL(x)
-              if (nc > 0L) 
-                cn <- paste(prefix, seq_len(nc), sep = "")
-              else
-                cn <- character(0L)
-            }
-            cn
+            if (!identical(do.NULL, TRUE)) warning("do.NULL arg is ignored ",
+                "in this method")
+            cn <- names(x@listData)
+            if (!is.null(cn))
+                return(cn)
+            if (length(x@listData) != 0L)
+                stop("DataFrame object with NULL colnames, please fix it ",
+                     "with colnames(x) <- value")
+            return(character(0)) 
           })
 
 setReplaceMethod("rownames", "DataFrame",
@@ -73,11 +73,12 @@ setReplaceMethod("rownames", "DataFrame",
 setReplaceMethod("colnames", "DataFrame",
                  function(x, value)
                  {
-                   if (!is.null(value)) {
+                   if (!is.character(value)) 
+                       stop("'value' must be a character vector ",
+                            "in colnames(x) <- value")
                      if (length(value) > length(x))
                        stop("more column names than columns")
                      value <- make.names(value, unique=TRUE)
-                   }
                    names(x) <- value
                    x
                  })
@@ -108,7 +109,8 @@ setReplaceMethod("colnames", "DataFrame",
 
 .valid.DataFrame.names <- function(x)
 {
-  if (is.null(names(x)))
+  ## DataFrames with no columns can have NULL column name
+  if (is.null(names(x)) && ncol(x) != 0)
     return("column names should not be NULL")
   if (anyDuplicated(names(x)))
     return("duplicate column names")
@@ -436,8 +438,8 @@ setReplaceMethod("[", "DataFrame",
                    }
                    ## update row and col names, making them unique
                    if (length(newcn)) {
-                     oldcn <- head(names(x@listData), length(x) - length(newcn))
-                     names(x@listData) <- make.unique(c(oldcn, newcn))
+                     oldcn <- head(colnames(x), length(x) - length(newcn))
+                     colnames(x) <- make.unique(c(oldcn, newcn))
                      if (!is.null(elementMetadata(x)))
                        elementMetadata(x)[tail(names(x),length(newcn)),] <-
                          DataFrame(NA)
