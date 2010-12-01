@@ -52,6 +52,7 @@ Collate: validity-utils.R
 	XInteger-class.R
 	XDouble-class.R
 	XVectorList-class.R
+	XRawList-class.R
 	XIntegerViews-class.R
 	XIntegerViews-utils.R
 	SimpleList-class.R
@@ -73,7 +74,7 @@ Collate: validity-utils.R
 	RangedData-utils.R
 	RangesMatching-class.R
 	RangesMatchingList-class.R
-        IntervalTree-class.R
+	IntervalTree-class.R
 	IntervalTree-utils.R
 	RangedSelection-class.R
 	read.Mask.R

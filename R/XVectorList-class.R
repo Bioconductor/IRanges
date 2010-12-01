@@ -3,7 +3,7 @@
 ### -------------------------------------------------------------------------
 ###
 ### An XVectorList object is *conceptually* a list of XVector objects
-### but is actually NOT *implemented* as a list of such objects.
+### but is actually not *implemented* as a list of such objects.
 ### This is to avoid having to generate long lists of S4 objects which the
 ### current S4 implementation is *very* inefficient at.
 ###
@@ -21,16 +21,6 @@ setClass("XVectorList",
         "VIRTUAL",
         pool="SharedVector_Pool",
         ranges="GroupedIRanges"
-    )
-)
-
-setClass("XRawList",
-    contains="XVectorList",
-    representation(
-        pool="SharedRaw_Pool"
-    ),
-    prototype(
-        elementType="XRaw"
     )
 )
 

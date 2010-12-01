@@ -9,10 +9,6 @@
 \alias{XVectorList-class}
 \alias{XVectorList}
 
-\alias{class:XRawList}
-\alias{XRawList-class}
-\alias{XRawList}
-
 \alias{as.data.frame,GroupedIRanges-method}
 \alias{show,GroupedIRanges-method}
 \alias{[,GroupedIRanges-method}
@@ -48,7 +44,8 @@
 \author{H. Pages}
 
 \seealso{
-  \link{XVector-class}
+  \link{XVector-class},
+  \link{XRawList-class}
 }
 
 \keyword{methods}
