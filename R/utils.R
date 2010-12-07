@@ -33,23 +33,25 @@ isSingleStringOrNA <- function(x)
     is.atomic(x) && length(x) == 1L && (is.character(x) || is.na(x))
 }
 
+### "shift" method for Ranges objects expect this to *always* return an unnamed
+### integer vector of length 'nseq'.
 normargShift <- function(shift, nseq)
 {
     if (!is.numeric(shift))
         stop("'shift' must be a vector of integers")
-    if (!is.integer(shift))
-        shift <- as.integer(shift)
     if (nseq == 0L)
         return(integer())
     if (length(shift) == 0L)
         stop("'shift' has no elements")
+    if (!is.integer(shift))
+        shift <- as.integer(shift)
     if (length(shift) > nseq)
         stop("'shift' is longer than 'x'")
     if (anyMissing(shift))
         stop("'shift' contains NAs")
     if (length(shift) < nseq)
         shift <- recycleVector(shift, nseq)
-    shift
+    unname(shift)
 }
 
 ### Implements the same logic as normargShift() (except for the coercion to an
