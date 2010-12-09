@@ -229,6 +229,7 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_CharAE_insert_at);
 	REGISTER_CCALLABLE(_append_string_to_CharAE);
 	REGISTER_CCALLABLE(_new_RAW_from_CharAE);
+        REGISTER_CCALLABLE(_new_LOGICAL_from_CharAE);
 	REGISTER_CCALLABLE(_new_CharAEAE);
 	REGISTER_CCALLABLE(_CharAEAE_insert_at);
 	REGISTER_CCALLABLE(_append_string_to_CharAEAE);
