@@ -161,7 +161,7 @@ setMethod("rownames", "RangedData",
             rn
           })
 setMethod("colnames", "RangedData",
-          function(x, do.NULL = TRUE, prefix = "col") {
+          function(x, do.NULL = FALSE, prefix = "col") {
             if (length(x) == 0)
               character()
             else
@@ -811,8 +811,12 @@ setMethod("unlist", "RangedDataList",
 
 setMethod("stack", "RangedDataList",
           function(x, indName = "sample") {
-            rd <- do.call(rbind, unname(x))
-            spaces <- unlist(lapply(x, space))
-            rd[[indName]] <- rep(names(x), lapply(x, nrow))[order(spaces)]
+            rd <- do.call(rbind, unname(as.list(x)))
+            spaces <- unlist(lapply(x, space), use.names=FALSE)
+            ids <- names(x)
+            if (is.null(ids))
+              ids <- seq_len(length(x))
+            spaceOrd <- order(factor(spaces, names(rd)))
+            rd[[indName]] <- rep(factor(ids), sapply(x, nrow))[spaceOrd]
             rd
           })
