@@ -63,9 +63,11 @@ setMethod("ranges", "RangesMatching", function(x, query, subject) {
   if (!is(subject, "Ranges") || length(subject) != ncol(x))
     stop("'subject' must be a Ranges of length equal to number of subjects")
   m <- as.matrix(x)
-  q <- query[m[,1L]]
-  s <- subject[m[,2L]]
-  IRanges(pmax.int(start(q), start(s)), pmin.int(end(s), end(q)))
+  qstart <- start(query)[m[,1L]]
+  qend <- end(query)[m[,1L]]
+  sstart <- start(subject)[m[,2L]]
+  send <- end(subject)[m[,2L]]
+  IRanges(pmax.int(qstart, sstart), pmin.int(send, qend))
 })
 
 ### TODO: many convenience methods
