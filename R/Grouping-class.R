@@ -585,6 +585,8 @@ setMethod("width", "PartitioningByEnd", function(x) diffWithInitialZero(end(x)))
         return("the ends must be sorted")
     if (end(x)[1L] < 0L)
         return("the ends cannot be negative")
+    if (!is.null(names(end(x))))
+        return("the ends should not be named")
     NULL
 }
 
@@ -596,7 +598,7 @@ PartitioningByEnd <- function(end=integer(), names=NULL)
         stop("'end' must contain integer values")
     if (!is.integer(end))
         end <- as.integer(end)
-    new2("PartitioningByEnd", end=end, NAMES=names, check=FALSE)
+    new2("PartitioningByEnd", end=unname(end), NAMES=names, check=FALSE)
 }
 
 setAs("Ranges", "PartitioningByEnd",
@@ -663,6 +665,8 @@ setMethod("start", "PartitioningByWidth",
         return("the widths cannot be NAs")
     if (any(width(x) < 0L))
         return("the widths cannot be negative")
+    if (!is.null(names(width(x))))
+        return("the widths should not be named")
     NULL
 }
 
@@ -674,7 +678,7 @@ PartitioningByWidth <- function(width=integer(), names=NULL)
         stop("'width' must contain integer values")
     if (!is.integer(width))
         width <- as.integer(width)
-    new2("PartitioningByWidth", width=width, NAMES=names, check=FALSE)
+    new2("PartitioningByWidth", width=unname(width), NAMES=names, check=FALSE)
 }
 
 setAs("Ranges", "PartitioningByWidth",
