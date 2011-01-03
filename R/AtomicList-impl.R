@@ -907,6 +907,32 @@ setAtomicListMethod("gsub", inputBaseClass = "CharacterList",
 ### TODO: grep, grepl
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Rle methods
+###
+
+setMethod("runValue", "RleList", function(x) {
+  rle <- unlist(x, use.names=FALSE)
+  rlePart <- PartitioningByWidth(runLength(rle))
+  listPart <- PartitioningByWidth(elementLengths(x))
+  ol <- findOverlaps(rlePart, listPart)
+  values <- runValue(rle)[queryHits(ol)]
+  valueClass <- class(values)
+  substring(valueClass, 1, 1) <- toupper(substring(valueClass, 1, 1))
+  cl <- paste("Compressed", valueClass, "List", sep = "")
+  newCompressedList(cl, values, splitFactor = subjectHits(ol), NAMES = names(x))
+})
+
+setMethod("runLength", "RleList", function(x) {
+  rle <- unlist(x, use.names=FALSE)
+  rlePart <- PartitioningByWidth(runLength(rle))
+  listPart <- PartitioningByWidth(elementLengths(x))
+  ol <- findOverlaps(rlePart, listPart)
+  widths <- width(ranges(ol, rlePart, listPart))
+  newCompressedList("CompressedIntegerList", widths,
+                    splitFactor = subjectHits(ol), NAMES = names(x))
+})
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
 ###
 
