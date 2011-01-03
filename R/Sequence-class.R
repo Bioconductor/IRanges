@@ -1019,7 +1019,16 @@ tseqapply <- function(X, INDEX, FUN = NULL, ...) {
 }
 
 seqsplit <- function(x, f, drop=FALSE) {
-  castList(split(x, f, drop))
+  cl <- class(x)
+  cl <- c(cl, names(getClass(cl)@contains))
+  substring(cl, 1, 1) <- toupper(substring(cl, 1, 1))
+  compressedClass <- paste("Compressed", cl, "List", sep = "")
+  clExists <- which(sapply(compressedClass,
+                           function(ccl) !is.null(getClassDef(ccl))))
+  if (length(clExists))
+    newCompressedList(compressedClass[clExists[1L]], x, splitFactor = f,
+                      drop = drop)
+  else castList(split(x, f, drop))
 }
 
 seqby <- function(data, INDICES, FUN, ...) {
