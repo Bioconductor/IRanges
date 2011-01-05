@@ -40,7 +40,7 @@ setMethod("rownames", "DataFrame",
           })
 
 setMethod("colnames", "DataFrame",
-          function(x, do.NULL = FALSE, prefix = "col")
+          function(x, do.NULL = TRUE, prefix = "col")
           {
             if (!identical(do.NULL, TRUE)) warning("do.NULL arg is ignored ",
                 "in this method")

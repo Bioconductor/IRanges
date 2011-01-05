@@ -17,7 +17,7 @@ setReplaceMethod("ranges", "RangedSelection",
                  })
 
 setMethod("colnames", "RangedSelection",
-          function(x, do.NULL = FALSE, prefix = "col") x@colnames)
+          function(x, do.NULL = TRUE, prefix = "col") x@colnames)
 setReplaceMethod("colnames", "RangedSelection",
                  function(x, value) {
                    x@colnames <- value

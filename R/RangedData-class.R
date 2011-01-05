@@ -161,7 +161,7 @@ setMethod("rownames", "RangedData",
             rn
           })
 setMethod("colnames", "RangedData",
-          function(x, do.NULL = FALSE, prefix = "col") {
+          function(x, do.NULL = TRUE, prefix = "col") {
             if (length(x) == 0)
               character()
             else
