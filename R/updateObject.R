@@ -71,9 +71,6 @@ toNewTypeList <- function(object, simpleclass, compressedclass, newtype) {
 ### Update methods
 ### ###################################################################
 
-## "AlignmentSpace" -> "AlignmentSpace"
-## "Alignment" -> "Alignment"
-
 ## "AnnotatedList" -> "SimpleList"
 setClass("AnnotatedList", representation("VIRTUAL"))
 setMethod("updateObject", signature(object="AnnotatedList"),
