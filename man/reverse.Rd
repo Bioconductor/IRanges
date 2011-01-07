@@ -15,7 +15,7 @@
 }
 
 \usage{
-  reverse(x, \dots)
+reverse(x, \dots)
 }
 
 \arguments{

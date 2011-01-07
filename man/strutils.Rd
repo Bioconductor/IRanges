@@ -13,7 +13,7 @@
 }
 
 \usage{
-  strsplitAsListOfIntegerVectors(x, sep=",")
+strsplitAsListOfIntegerVectors(x, sep=",")
 }
 
 \arguments{

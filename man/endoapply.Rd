@@ -16,9 +16,9 @@
 }
 
 \usage{
-  endoapply(X, FUN, \dots)
+endoapply(X, FUN, \dots)
 
-  mendoapply(FUN, \dots, MoreArgs = NULL)
+mendoapply(FUN, \dots, MoreArgs = NULL)
 }
 
 \arguments{

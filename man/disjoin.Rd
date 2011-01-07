@@ -13,8 +13,8 @@
 }
 
 \usage{
-  disjoin(x, ...)
-  disjointBins(x, ...)
+disjoin(x, ...)
+disjointBins(x, ...)
 }
 
 \arguments{

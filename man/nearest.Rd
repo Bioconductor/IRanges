@@ -15,9 +15,9 @@
 }
 
 \usage{
-  nearest(x, subject, ...)
-  precede(x, subject = x, ...)
-  follow(x, subject = x, ...)
+nearest(x, subject, ...)
+precede(x, subject = x, ...)
+follow(x, subject = x, ...)
 }
 
 \arguments{

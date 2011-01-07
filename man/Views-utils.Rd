@@ -54,23 +54,23 @@
 }
 
 \usage{
-  viewApply(X, FUN, ..., simplify = TRUE)
+viewApply(X, FUN, ..., simplify = TRUE)
 
-  slice(x, lower=-Inf, upper=Inf, ...)
-  \S4method{slice}{Rle}(x, lower=-Inf, upper=Inf,
-                        includeLower=TRUE, includeUpper=TRUE,
-                        rangesOnly = FALSE)
+slice(x, lower=-Inf, upper=Inf, ...)
+\S4method{slice}{Rle}(x, lower=-Inf, upper=Inf,
+                      includeLower=TRUE, includeUpper=TRUE,
+                      rangesOnly = FALSE)
 
-  viewMins(x, na.rm=FALSE)
-  viewMaxs(x, na.rm=FALSE)
-  viewSums(x, na.rm=FALSE)
-  viewMeans(x, na.rm=FALSE)
+viewMins(x, na.rm=FALSE)
+viewMaxs(x, na.rm=FALSE)
+viewSums(x, na.rm=FALSE)
+viewMeans(x, na.rm=FALSE)
 
-  viewWhichMins(x, na.rm=FALSE)
-  viewWhichMaxs(x, na.rm=FALSE)
+viewWhichMins(x, na.rm=FALSE)
+viewWhichMaxs(x, na.rm=FALSE)
 
-  viewRangeMins(x, na.rm=FALSE)
-  viewRangeMaxs(x, na.rm=FALSE)
+viewRangeMins(x, na.rm=FALSE)
+viewRangeMaxs(x, na.rm=FALSE)
 }
 
 \arguments{

@@ -5,7 +5,6 @@
 \alias{seqsplit}
 \alias{seqby}
 
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Apply function and cast to Sequence
 }
@@ -16,6 +15,7 @@ Apply function and cast to Sequence
   computation to the \code{Sequence} framework across iteration and
   (for \code{seqsplit}) splitting.
 }
+
 \usage{
 seqapply(X, FUN, ...)
 mseqapply(FUN, ..., MoreArgs = NULL, USE.NAMES = TRUE)
@@ -23,7 +23,7 @@ tseqapply(X, INDEX, FUN = NULL, ...)
 seqsplit(x, f, drop = FALSE)
 seqby(data, INDICES, FUN, ...)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{X}{
     The object over which to iterate, usually a vector or \code{Sequence}
@@ -61,6 +61,7 @@ seqby(data, INDICES, FUN, ...)
     Extra arguments to pass to \code{FUN}
   }
 }
+
 \details{
   These functions should be used just like their base equivalent:
   \describe{
@@ -80,9 +81,11 @@ seqby(data, INDICES, FUN, ...)
   return values as its only argument, under the assumption that
   a \code{Sequence}-derived instance will be constructed.
 }
+
 \value{
   A \code{Sequence} object
 }
+
 \author{
   Michael Lawrence
 }
@@ -96,4 +99,4 @@ dataFrameList <- seqsplit(rangeDataFrame, rangeDataFrame$space)
 starts <- seqapply(dataFrameList[,"ranges"], start)
 }
 
-\keyword{ manip }
+\keyword{manip}

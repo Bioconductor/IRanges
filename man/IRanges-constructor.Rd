@@ -17,15 +17,15 @@
 }
 
 \usage{
-  ## IRanges constructor:
-  IRanges(start=NULL, end=NULL, width=NULL, names=NULL)
+## IRanges constructor:
+IRanges(start=NULL, end=NULL, width=NULL, names=NULL)
 
-  ## Supporting functions (not for the end user):
-  solveUserSEW0(start=NULL, end=NULL, width=NULL)
-  solveUserSEW(refwidths, start=NA, end=NA, width=NA,
-               rep.refwidths=FALSE,
-               translate.negative.coord=TRUE,
-               allow.nonnarrowing=FALSE)
+## Supporting functions (not for the end user):
+solveUserSEW0(start=NULL, end=NULL, width=NULL)
+solveUserSEW(refwidths, start=NA, end=NA, width=NA,
+             rep.refwidths=FALSE,
+             translate.negative.coord=TRUE,
+             allow.nonnarrowing=FALSE)
 }
 
 \arguments{

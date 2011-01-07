@@ -17,12 +17,12 @@
 }
 
 \usage{
-  coverage(x, shift=0L, width=NULL, weight=1L, \dots)
-  \S4method{coverage}{RangesList}(x,
-         shift = structure(rep(list(0L), length(x)), names = names(x)),
-         width = structure(rep(list(NULL), length(x)), names = names(x)),
-         weight = structure(rep(list(1L), length(x)), names = names(x)),
-         method = c("sort", "hash"))
+coverage(x, shift=0L, width=NULL, weight=1L, \dots)
+\S4method{coverage}{RangesList}(x,
+       shift = structure(rep(list(0L), length(x)), names = names(x)),
+       width = structure(rep(list(NULL), length(x)), names = names(x)),
+       weight = structure(rep(list(1L), length(x)), names = names(x)),
+       method = c("sort", "hash"))
 }
 
 \arguments{

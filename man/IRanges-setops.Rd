@@ -24,17 +24,17 @@
 }
 
 \usage{
-  ## Vector-wise operations:
-  gaps(x, start=NA, end=NA)
-  \S4method{union}{IRanges,IRanges}(x, y)
-  \S4method{intersect}{IRanges,IRanges}(x, y)
-  \S4method{setdiff}{IRanges,IRanges}(x, y)
+## Vector-wise operations:
+gaps(x, start=NA, end=NA)
+\S4method{union}{IRanges,IRanges}(x, y)
+\S4method{intersect}{IRanges,IRanges}(x, y)
+\S4method{setdiff}{IRanges,IRanges}(x, y)
 
-  ## Element-wise (aka "parallel") operations:
-  \S4method{punion}{IRanges,IRanges}(x, y, fill.gap=FALSE, ...)
-  \S4method{pintersect}{IRanges,IRanges}(x, y, resolve.empty=c("none", "max.start", "start.x"), ...)
-  \S4method{psetdiff}{IRanges,IRanges}(x, y, ...)
-  \S4method{pgap}{IRanges,IRanges}(x, y, ...)
+## Element-wise (aka "parallel") operations:
+\S4method{punion}{IRanges,IRanges}(x, y, fill.gap=FALSE, ...)
+\S4method{pintersect}{IRanges,IRanges}(x, y, resolve.empty=c("none", "max.start", "start.x"), ...)
+\S4method{psetdiff}{IRanges,IRanges}(x, y, ...)
+\S4method{pgap}{IRanges,IRanges}(x, y, ...)
 }
 
 \arguments{

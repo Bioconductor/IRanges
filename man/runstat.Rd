@@ -16,10 +16,10 @@
 }
 
 \usage{
-  runsum(x, k, endrule = c("drop", "constant"))
-  runmean(x, k, endrule = c("drop", "constant"))
-  runwtsum(x, k, wt, endrule = c("drop", "constant"))
-  runq(x, k, i, endrule = c("drop", "constant"))
+runsum(x, k, endrule = c("drop", "constant"))
+runmean(x, k, endrule = c("drop", "constant"))
+runwtsum(x, k, wt, endrule = c("drop", "constant"))
+runq(x, k, i, endrule = c("drop", "constant"))
 }
 
 \arguments{

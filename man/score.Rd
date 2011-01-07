@@ -10,8 +10,8 @@
 }
 
 \usage{
-  score(x, ...)
-  score(x, ...) <- value
+score(x, ...)
+score(x, ...) <- value
 }
 
 \arguments{

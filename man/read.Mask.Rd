@@ -24,11 +24,11 @@
 }
 
 \usage{
-  read.agpMask(file, seqname="?", mask.width=NA, gap.types=NULL, use.gap.types=FALSE)
-  read.gapMask(file, seqname="?", mask.width=NA, gap.types=NULL, use.gap.types=FALSE)
-  read.liftMask(file, seqname="?", mask.width=NA)
-  read.rmMask(file, seqname="?", mask.width=NA, use.IDs=FALSE)
-  read.trfMask(file, seqname="?", mask.width=NA)
+read.agpMask(file, seqname="?", mask.width=NA, gap.types=NULL, use.gap.types=FALSE)
+read.gapMask(file, seqname="?", mask.width=NA, gap.types=NULL, use.gap.types=FALSE)
+read.liftMask(file, seqname="?", mask.width=NA)
+read.rmMask(file, seqname="?", mask.width=NA, use.IDs=FALSE)
+read.trfMask(file, seqname="?", mask.width=NA)
 }
 
 \arguments{
