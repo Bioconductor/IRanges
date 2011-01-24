@@ -166,13 +166,10 @@ test_RangesList_range <- function() {
                        compress = compress)
     checkIdentical(range(rl1, rl2), ans)
     names(rl2) <- NULL
-    ans <- IRangesList(a = IRanges(0,5), b = IRanges(4,10), compress = compress)
+    ans <- IRangesList(IRanges(0,5), IRanges(4,10), compress = compress)
     checkIdentical(range(rl1, rl2), ans)
     ## must be same length
-    checkException(range(IRangesList(IRanges(c(1,2),c(4,3)), IRanges(3,5),
-                                     compress = compress),
-                        IRangesList(IRanges(2,6), compres = compress)),
-                   silent=TRUE) 
+    checkException(range(rl2, rep.int(rl2, 2L)), silent=TRUE)
   }
 }
 

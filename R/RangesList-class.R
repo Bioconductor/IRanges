@@ -483,31 +483,6 @@ setMethod("gaps", "CompressedIRangesList",
                     PACKAGE="IRanges")
           })
 
-setMethod("range", "RangesList",
-          function(x, ..., na.rm)
-          {
-              args <- unname(list(x, ...))
-              if (!all(sapply(sapply(args, universe), identical, universe(x))))
-                  stop("All args in '...' must have the same universe as 'x'")
-              spaceList <- lapply(args, names)
-              names <- spaces <- unique(do.call(c, spaceList))
-              if (any(sapply(spaceList, is.null))) {
-                  if (!all(unlist(lapply(args, length)) == length(x)))
-                      stop("If any args are missing names, all must have same length")
-                  spaces <- seq_len(length(x))
-              }
-              ranges <-
-                lapply(spaces, function(space) {
-                           r <- lapply(args, `[[`, space)
-                           do.call(range, r[!sapply(r, is.null)])
-                       })
-              names(ranges) <- names
-              if (is(x, "CompressedList"))
-                  newCompressedList(class(x), ranges)
-              else
-                  newSimpleList(class(x), ranges)
-          })
-
 setMethod("reduce", "RangesList",
           function(x, drop.empty.ranges = FALSE, min.gapwidth = 1L,
                    with.inframe.attrib = FALSE)
@@ -536,6 +511,74 @@ setMethod("reduce", "CompressedIRangesList",
                     x, drop.empty.ranges, min.gapwidth,
                     PACKAGE="IRanges")
           })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### "merge" and "range" methods.
+###
+### The 2 methods are actually related: "range" merges its arguments before
+### doing 'endoapply(x, range)'. See below for the details.
+###
+
+### Merges various RangesList objects into a single RangesList object.
+### The merging is either by name (if all the RangesList objects have names),
+### or by position (if any RangesList object is missing names).
+### When merging by name, and in case of duplicated names within a given
+### RangesList, the elements corresponding to the duplicated names are ignored.
+### When merging by position, all the RangesList objects must have the same
+### length.
+### Note that the "range" method for RangesList objects expects "merge" to
+### behave like this.  
+.RangesList.merge <- function(...)
+{
+    args <- unname(list(...))
+    if (length(args) == 0L)
+        stop("nothing to merge")
+    x <- args[[1L]]
+    if (!all(sapply(sapply(args, universe), identical, universe(x))))
+        stop("all RangesList objects to merge must have the same universe")
+    spaceList <- lapply(args, names)
+    names <- spaces <- unique(do.call(c, spaceList))
+    if (any(sapply(spaceList, is.null))) {
+        ## Merging by position.
+        if (!all(unlist(lapply(args, length)) == length(x)))
+            stop("if any RangesList objects to merge are missing names, ",
+                 "all must have same length")
+        names <- NULL
+        spaces <- seq_len(length(x))
+    }
+    ranges <- lapply(spaces,
+                     function(space) {
+                       r <- lapply(args, `[[`, space)
+                       do.call(c, r[!sapply(r, is.null)])
+                     })
+    names(ranges) <- names
+    if (is(x, "CompressedList"))
+        newCompressedList(class(x), ranges)
+    else
+        newSimpleList(class(x), ranges)
+}
+
+setMethod("merge", c("RangesList", "missing"),
+    function(x, y, ...) .RangesList.merge(x, ...)
+)
+
+setMethod("merge", c("missing", "RangesList"),
+    function(x, y, ...) .RangesList.merge(y, ...)
+)
+
+setMethod("merge", c("RangesList", "RangesList"),
+    function(x, y, ...) .RangesList.merge(x, y, ...)
+)
+
+setMethod("range", "RangesList",
+    function(x, ..., na.rm=FALSE)
+    {
+        if (length(list(x, ...)) >= 2L)
+            x <- merge(x, ...)
+        ## FIXME: This is too slow when 'length(x)' is big (e.g. > 10k)
+        endoapply(x, range)
+    }
+)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### findOverlaps()

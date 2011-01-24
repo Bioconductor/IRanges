@@ -220,6 +220,7 @@ exportMethods(
     ifelse,
     c,
     union, intersect, setdiff,
+    merge,
     split, splitRanges,
     eval, with, within,
     t,

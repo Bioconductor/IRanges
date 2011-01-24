@@ -17,9 +17,14 @@
 \alias{disjoin,RangesList-method}
 \alias{gaps,RangesList-method}
 \alias{gaps,CompressedIRangesList-method}
-\alias{range,RangesList-method}
 \alias{reduce,RangesList-method}
 \alias{reduce,CompressedIRangesList-method}
+
+% "merge" and "range"
+\alias{merge,RangesList,missing-method}
+\alias{merge,missing,RangesList-method}
+\alias{merge,RangesList,RangesList-method}
+\alias{range,RangesList-method}
 
 % set operations
 \alias{union,RangesList,RangesList-method}
