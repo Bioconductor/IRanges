@@ -78,17 +78,15 @@ setMethod("[[", "SimpleList",
                   dotArgs <- dotArgs[names(dotArgs) != "exact"]
               if (!missing(j) || length(dotArgs) > 0)
                   stop("incorrect number of subscripts")
-              index <-
-                try(checkAndTranslateDbleBracketSubscript(x, i), silent = TRUE)
-              if (inherits(index, "try-error")) {
-                  if (length(i) == 1 && (is.na(i) || is.character(i)))
-                      ans <- NULL
-                  else
-                      stop(index)
-              } else {
-                  ans <- as.list(x)[[index]]
-              }
-              ans
+              ## H.P.: Do we really need to support subsetting by NA? Other
+              ## "[[" methods for other Sequence subtypes don't support it.
+              if (is.vector(i) && length(i) == 1L && is.na(i))
+                  return(NULL)
+              index <- checkAndTranslateDbleBracketSubscript(x, i,
+                           error.if.nomatch=FALSE)
+              if (is.na(index))
+                  return(NULL)
+              as.list(x)[[index]]
           })
 
 setReplaceMethod("[[", "SimpleList",

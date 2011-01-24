@@ -698,54 +698,39 @@ setMethod("subset", "Sequence",
 ### List-like API: Element extraction.
 ###
 
-checkAndTranslateDbleBracketSubscript <- function(x, i, j, ...)
+### Supported types for 'i' are: numeric or character vector.
+### If 'i' is a single string with no match in 'names(x)', then raises an
+### error by default (i.e. if 'error.if.nomatch=TRUE'), otherwise returns
+### NA_integer_.
+checkAndTranslateDbleBracketSubscript <- function(x, i, error.if.nomatch=TRUE)
 {
-    subscripts <- list(...)
-    if ("exact" %in% names(subscripts)) {
-        exact <- subscripts[["exact"]]
-        subscripts[["exact"]] <- NULL
-    } else {
-        exact <- TRUE  # default
-    }
-    if (!missing(i))
-        subscripts$i <- i
-    if (!missing(j))
-        subscripts$j <- j
-    if (length(subscripts) != 1L)
-        stop("incorrect number of subscripts")
-    subscript <- subscripts[[1L]]
-    if (!is.character(subscript) && !is.numeric(subscript))
-        stop("invalid subscript type '", class(subscript), "'")
-    if (length(subscript) < 1L)
+    if (!is.numeric(i) && !is.character(i))
+        stop("invalid subscript type '", class(i), "'")
+    if (length(i) < 1L)
         stop("attempt to extract less than one element")
-    if (length(subscript) > 1L)
+    if (length(i) > 1L)
         stop("attempt to extract more than one element")
-    if (is.na(subscript))
+    if (is.na(i))
         stop("invalid subscript NA")
-    if (is.numeric(subscript)) {
-        if (!is.integer(subscript))
-            subscript <- as.integer(subscript)
-        if (subscript < 1L || length(x) < subscript)
+    if (is.numeric(i)) {
+        if (!is.integer(i))
+            i <- as.integer(i)
+        if (i < 1L || length(x) < i)
             stop("subscript out of bounds")
-        return(subscript)
+        return(i)
     }
-    ## 'subscript' is a character string
-    names_x <- names(x)
-    if (is.null(names_x))
-        stop("attempt to extract by name when elements have no names")
-    #if (subscript == "")
+    ## 'i' is a character string
+    x_names <- names(x)
+    if (is.null(x_names)) {
+        if (error.if.nomatch)
+            stop("attempt to extract by name when elements have no names")
+        return(NA_integer_)
+    }
+    #if (i == "")
     #    stop("invalid subscript \"\"")
-    ans <- charmatch(subscript, names_x)
-    if (is.na(ans))
-        stop("subscript \"", subscript, "\" matches no name")
-    if (ans == 0L) {
-        if (isTRUE(exact))
-            stop("subscript \"", subscript,
-                 "\" matches no name or more than one name")
-        stop("subscript \"", subscript, "\" matches more than one name")
-    }
-    if (isTRUE(exact) && nchar(subscript) != nchar(names_x[ans]))
-        stop("subscript \"", subscript, "\" matches no name")
+    ans <- match(i, x_names)
+    if (is.na(ans) && error.if.nomatch)
+        stop("subscript \"", i, "\" matches no name")
     ans
 }
 
