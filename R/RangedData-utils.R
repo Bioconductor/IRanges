@@ -286,15 +286,13 @@ setMethod("within", "RangedData",
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Merging (TODO, don't export)
+### Merging (TODO)
 ###
 
-setGeneric("merge", function(x, y, ...) standardGeneric("merge"))
-
-setMethod("merge", "RangedData",
-          function(x, y, by = 1, all = FALSE, all.x = all, all.y = all,
-                   resolver = intersect, sort = TRUE, suffixes = c(".x",".y"))
-          {
-            
-          })
+#setMethod("merge", "RangedData",
+#          function(x, y, by = 1, all = FALSE, all.x = all, all.y = all,
+#                   resolver = intersect, sort = TRUE, suffixes = c(".x",".y"))
+#          {
+#            
+#          })
 
