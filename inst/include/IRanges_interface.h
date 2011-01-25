@@ -416,14 +416,21 @@ SEXP new_PartitioningByEnd(const char *classname, SEXP end, SEXP names);
  * (see SimpleList_class.c)
  */
 
-SEXP new_SimpleList(const char *className, SEXP listData);
+SEXP new_SimpleList(const char *classname, SEXP listData);
 
 /*
  * Low-level manipulation of DataFrame objects.
  * (see DataFrame_class.c)
  */
 
-SEXP new_DataFrame(const char *className, SEXP vars, SEXP rownames, SEXP nrows);
+SEXP new_DataFrame(const char *classname, SEXP vars, SEXP rownames, SEXP nrows);
+
+/*
+ * Low-level manipulation of CompressedList objects.
+ * (see CompressedList_class.c)
+ */
+
+SEXP new_CompressedList(const char *classname, SEXP unlistData, SEXP partitioning);
 
 /*
  * Low-level manipulation of CompressedIRangesList objects.
@@ -434,14 +441,12 @@ cachedCompressedIRangesList cache_CompressedIRangesList(SEXP x);
 
 cachedIRanges get_cachedCompressedIRangesList_elt(const cachedCompressedIRangesList *cached_x, int i);
 
-SEXP new_CompressedIRangesList(const char *classname, SEXP unlistData, SEXP partitioning);
-
 /*
  * Low-level manipulation of RangedData objects.
  * (see RangedData_class.c)
  */
 
-SEXP new_RangedData(const char *className, SEXP ranges, SEXP values);
+SEXP new_RangedData(const char *classname, SEXP ranges, SEXP values);
 
 /*
  * Low-level manipulation of SharedVector objects.

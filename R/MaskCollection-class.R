@@ -362,7 +362,7 @@ setMethod("append", c("MaskCollection", "MaskCollection"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Some useful endomorphisms: "collapse", "gaps" and "subseq".
+### Some useful endomorphisms: "collapse", "gaps" and "narrow".
 ###
 
 setGeneric("collapse", function(x) standardGeneric("collapse"))
@@ -409,8 +409,8 @@ setMethod("gaps", "MaskCollection",
     }
 )
 
-setMethod("subseq", "MaskCollection",
-    function(x, start=NA, end=NA, width=NA)
+setMethod("narrow", "MaskCollection",
+    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
         solved_SEW <- solveSubseqSEW(width(x), start, end, width)
         solved_start <- start(solved_SEW)
@@ -421,6 +421,8 @@ setMethod("subseq", "MaskCollection",
                                 1L - solved_start)
         )
         x@width <- solved_width
+        if (!normargUseNames(use.names))
+            names(x) <- NULL
         x
     }
 )

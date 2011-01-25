@@ -16,10 +16,10 @@ static SEXP set_RangedData_values(SEXP x, SEXP value) {
   SET_SLOT(x, values_symbol, value);
 }
 
-SEXP _new_RangedData(const char *className, SEXP ranges, SEXP values)
+SEXP _new_RangedData(const char *classname, SEXP ranges, SEXP values)
 {
   SEXP rdClass, rd;
-  PROTECT(rdClass = MAKE_CLASS(className));
+  PROTECT(rdClass = MAKE_CLASS(classname));
   PROTECT(rd = NEW_OBJECT(rdClass));
   set_RangedData_ranges(rd, ranges);
   set_RangedData_values(rd, values);

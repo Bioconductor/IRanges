@@ -42,7 +42,7 @@
 \alias{collapse}
 \alias{collapse,MaskCollection-method}
 \alias{gaps,MaskCollection-method}
-\alias{subseq,MaskCollection-method}
+\alias{narrow,MaskCollection-method}
 
 % Coercion:
 \alias{coerce,MaskCollection,NormalIRanges-method}
@@ -202,12 +202,12 @@
       Invert the masks in \code{x}.
     }
     \item{}{
-      \code{subseq(x, start=NA, end=NA, width=NA)}:
+      \code{narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)}:
       If \code{y} is a sequence that \code{x} has been put on top of,
-      then \code{subseq} will return the set of submasks that go on top
+      then \code{narrow} will return the set of submasks that go on top
       of the subsequence obtained by calling \code{subseq} on \code{y}
-      (\code{subseq} must be called on \code{x} with the same arguments
-      that have been used when called on \code{y}).
+      (\code{narrow} must be called on \code{x} with the same arguments
+      that have been used to call \code{subseq} on \code{y}).
     }
   }
 }
@@ -256,7 +256,7 @@
   length(mymasks[[2]])
   mymasks[[2]][-3]
   append(mymasks[-2], gaps(mymasks[2]))
-  mymasks2 <- subseq(mymasks, start=8)
+  mymasks2 <- narrow(mymasks, start=8)
   mymasks2
   mymasks2[[2]]
 }

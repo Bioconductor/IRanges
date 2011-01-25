@@ -8,7 +8,7 @@ Description: The package provides efficient low-level and highly reusable S4
 	collections of instances of the basic classes. All classes in
 	the package use consistent naming and share the same rich and
 	consistent "Sequence API" as much as possible.
-Version: 1.9.19
+Version: 1.9.20
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Biocore Team c/o BioC user list <bioconductor@stat.math.ethz.ch>
 biocViews: Infrastructure, DataRepresentation
@@ -38,32 +38,20 @@ Collate: validity-utils.R
 	IRanges-constructor.R
 	IRanges-utils.R
 	IRanges-setops.R
-	Grouping-class.R
 	Views-class.R
+	Grouping-class.R
+	SimpleList-class.R
+	CompressedList-class.R
 	Rle-class.R
 	RleViews-class.R
 	RleViews-utils.R
-	SharedVector-class.R
-	SharedRaw-class.R
-	SharedInteger-class.R
-	SharedDouble-class.R
-	XVector-class.R
-	XRaw-class.R
-	XInteger-class.R
-	XDouble-class.R
-	XVectorList-class.R
-	XRawList-class.R
-	XIntegerViews-class.R
-	XIntegerViews-utils.R
-	SimpleList-class.R
-	CompressedList-class.R
 	AtomicList-impl.R
+	Binning-class.R
 	DataFrame-class.R
 	DataFrame-utils.R
 	DataFrameList-class.R
 	DataFrameList-utils.R
 	RangesList-class.R
-	Binning-class.R
 	GappedRanges-class.R
 	RleViewsList-class.R
 	RleViewsList-utils.R
@@ -78,6 +66,18 @@ Collate: validity-utils.R
 	IntervalTree-utils.R
 	RangedSelection-class.R
 	read.Mask.R
+	SharedVector-class.R
+	SharedRaw-class.R
+	SharedInteger-class.R
+	SharedDouble-class.R
+	XVector-class.R
+	XRaw-class.R
+	XInteger-class.R
+	XDouble-class.R
+	XVectorList-class.R
+	XRawList-class.R
+	XIntegerViews-class.R
+	XIntegerViews-utils.R
 	xvcopy.R
 	reverse.R
 	coverage.R

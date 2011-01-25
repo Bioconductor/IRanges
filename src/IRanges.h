@@ -663,15 +663,51 @@ SEXP H2LGrouping_vmembers(
 );
 
 
+/* SimpleList_class.c */
+
+SEXP _new_SimpleList(
+	const char *classname,
+	SEXP listData
+);
+
+
+/* DataFrame_class.c */
+
+SEXP _new_DataFrame(
+	const char *classname,
+	SEXP vars,
+	SEXP rownames,
+	SEXP nrows
+);
+
+
+/* SimpleIRangesList_class.c */
+
+SEXP SimpleIRangesList_isNormal(SEXP x);
+
+SEXP SimpleNormalIRangesList_min(SEXP x);
+
+SEXP SimpleNormalIRangesList_max(SEXP x);
+
+
+/* CompressedList_class.c */
+
+SEXP _get_CompressedList_unlistData(SEXP x);
+
+SEXP _get_CompressedList_partitioning(SEXP x);
+
+int _get_CompressedList_length(SEXP x);
+
+SEXP _get_CompressedList_names(SEXP x);
+
+SEXP _new_CompressedList(
+	const char *classname,
+	SEXP unlistData,
+	SEXP partitioning
+);
+
+
 /* CompressedIRangesList_class.c */
-
-SEXP _get_CompressedIRangesList_unlistData(SEXP x);
-
-SEXP _get_CompressedIRangesList_partitioning(SEXP x);
-
-int _get_CompressedIRangesList_length(SEXP x);
-
-SEXP _get_CompressedIRangesList_names(SEXP x);
 
 cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x);
 
@@ -687,12 +723,6 @@ cachedIRanges _get_cachedCompressedIRangesList_elt(
 int _get_cachedCompressedIRangesList_eltLength(
 	const cachedCompressedIRangesList *cached_x,
 	int i
-);
-
-SEXP _new_CompressedIRangesList(
-	const char *classname,
-	SEXP unlistData,
-	SEXP partitioning
 );
 
 SEXP CompressedIRangesList_isNormal(
@@ -726,30 +756,20 @@ SEXP CompressedNormalIRangesList_max(
 	SEXP use_names
 );
 
-/* DataFrame_class.c */
-
-SEXP _new_DataFrame(const char *className, SEXP vars, SEXP rownames,
-                    SEXP nrows);
-
-/* SimpleIRangesList_class.c */
-
-SEXP SimpleIRangesList_isNormal(SEXP x);
-
-SEXP SimpleNormalIRangesList_min(SEXP x);
-
-SEXP SimpleNormalIRangesList_max(SEXP x);
-
-/* SimpleList_class.c */
-
-SEXP _new_SimpleList(const char *className, SEXP listData);
 
 /* GappedRanges_class.c */
 
 SEXP valid_GappedRanges(SEXP x, SEXP ans_type);
 
+
 /* RangedData_class.c */
 
-SEXP _new_RangedData(const char *className, SEXP ranges, SEXP values);
+SEXP _new_RangedData(
+	const char *classname,
+	SEXP ranges,
+	SEXP values
+);
+
 
 /* Rle_class.c */
 
@@ -793,6 +813,7 @@ SEXP Rle_seqselect(
 
 
 /* Rle_utils.c */
+
 SEXP Rle_runsum(
 	SEXP x,
 	SEXP k

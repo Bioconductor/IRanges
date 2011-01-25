@@ -7,43 +7,6 @@
 
 #define R_INT_MIN	(1+INT_MIN)
 
-/****************************************************************************
- * C-level slot getters.
- *
- * Be careful that these functions do NOT duplicate the returned slot.
- * Thus they cannot be made .Call entry points!
- */
-
-static SEXP
-	unlistData_symbol = NULL,
-	partitioning_symbol = NULL;
-
-SEXP _get_CompressedIRangesList_unlistData(SEXP x)
-{
-	INIT_STATIC_SYMBOL(unlistData)
-	return GET_SLOT(x, unlistData_symbol);
-}
-
-SEXP _get_CompressedIRangesList_partitioning(SEXP x)
-{
-	INIT_STATIC_SYMBOL(partitioning)
-	return GET_SLOT(x, partitioning_symbol);
-}
-
-/* Not strict "slot getters" but very much like. */
-
-int _get_CompressedIRangesList_length(SEXP x)
-{
-	return LENGTH(_get_PartitioningByEnd_end(
-			_get_CompressedIRangesList_partitioning(x)));
-}
-
-SEXP _get_CompressedIRangesList_names(SEXP x)
-{
-	return _get_Partitioning_names(
-			_get_CompressedIRangesList_partitioning(x));
-}
-
 
 /****************************************************************************
  * C-level abstract getters.
@@ -56,11 +19,11 @@ cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x)
 
 	cached_x.classname = _get_classname(x);
 	x_end = _get_PartitioningByEnd_end(
-			_get_CompressedIRangesList_partitioning(x));
+			_get_CompressedList_partitioning(x));
 	cached_x.length = LENGTH(x_end);
 	cached_x.end = INTEGER(x_end);
 	cached_x.cached_unlistData = _cache_IRanges(
-			_get_CompressedIRangesList_unlistData(x));
+			_get_CompressedList_unlistData(x));
 	return cached_x;
 }
 
@@ -98,48 +61,6 @@ int _get_cachedCompressedIRangesList_eltLength(
 
 
 /****************************************************************************
- * C-level slot setters.
- *
- * Be careful that these functions do NOT duplicate the assigned value!
- */
-
-static void set_CompressedIRangesList_unlistData(SEXP x, SEXP value)
-{
-	INIT_STATIC_SYMBOL(unlistData)
-	SET_SLOT(x, unlistData_symbol, value);
-	return;
-}
-
-static void set_CompressedIRangesList_partitioning(SEXP x, SEXP value)
-{
-	INIT_STATIC_SYMBOL(partitioning)
-	SET_SLOT(x, partitioning_symbol, value);
-	return;
-}
-
-
-/****************************************************************************
- * C-level constructor.
- */
-
-/* Be careful that this constructor does NOT duplicate its arguments before
-   putting them in the slots of the returned object.
-   So don't try to make it a .Call entry point! */
-SEXP _new_CompressedIRangesList(const char *classname,
-		SEXP unlistData, SEXP partitioning)
-{
-	SEXP classdef, ans;
-
-	PROTECT(classdef = MAKE_CLASS(classname));
-	PROTECT(ans = NEW_OBJECT(classdef));
-	set_CompressedIRangesList_unlistData(ans, unlistData);
-	set_CompressedIRangesList_partitioning(ans, partitioning);
-	UNPROTECT(2);
-	return ans;
-}
-
-
-/****************************************************************************
  * CompressedIRangesList methods.
  */
 
@@ -159,7 +80,7 @@ SEXP CompressedIRangesList_isNormal(SEXP x, SEXP use_names)
 		LOGICAL(ans)[i] = _is_normal_cachedIRanges(&cached_ir);
 	}
 	if (LOGICAL(use_names)[0]) {
-		PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
+		PROTECT(ans_names = duplicate(_get_CompressedList_names(x)));
 		SET_NAMES(ans, ans_names);
 		UNPROTECT(1);
 	}
@@ -230,12 +151,11 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 	}
 	PROTECT(ans_unlistData = _new_IRanges_from_RangeAE("IRanges",
 			&out_ranges));
-	PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
+	PROTECT(ans_names = duplicate(_get_CompressedList_names(x)));
 	PROTECT(ans_partitioning = _new_PartitioningByEnd(
 			"PartitioningByEnd",
 			ans_partitioning_end, ans_names));
-	PROTECT(ans = _new_CompressedIRangesList(
-			_get_classname(x),
+	PROTECT(ans = _new_CompressedList(_get_classname(x),
 			ans_unlistData, ans_partitioning));
 	UNPROTECT(5);
 	return ans;
@@ -282,12 +202,11 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 	}
 	PROTECT(ans_unlistData = _new_IRanges_from_RangeAE("IRanges",
 			&out_ranges));
-	PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
+	PROTECT(ans_names = duplicate(_get_CompressedList_names(x)));
 	PROTECT(ans_partitioning = _new_PartitioningByEnd(
 			"PartitioningByEnd",
 			ans_partitioning_end, ans_names));
-	PROTECT(ans = _new_CompressedIRangesList(
-			_get_classname(x),
+	PROTECT(ans = _new_CompressedList(_get_classname(x),
 			ans_unlistData, ans_partitioning));
 	UNPROTECT(5);
 	return ans;
@@ -301,7 +220,7 @@ SEXP CompressedIRangesList_summary(SEXP object)
 	SEXP ans, ans_names, col_names;
 
 	part_end = _get_PartitioningByEnd_end(
-			_get_CompressedIRangesList_partitioning(object));
+			_get_CompressedList_partitioning(object));
 	ans_len = LENGTH(part_end);
 	PROTECT(ans = allocMatrix(INTSXP, ans_len, 2));
 	memset(INTEGER(ans), 0, 2 * ans_len * sizeof(int));
@@ -309,7 +228,7 @@ SEXP CompressedIRangesList_summary(SEXP object)
 		int i, j, prev_end = 0;
 		int *ans1_elt, *ans2_elt;
 		const int *part_end_elt, *ranges_width;
-		SEXP unlistData = _get_CompressedIRangesList_unlistData(object);
+		SEXP unlistData = _get_CompressedList_unlistData(object);
 		ranges_width = INTEGER(_get_IRanges_width(unlistData));
 		for (i = 0, ans1_elt = INTEGER(ans), ans2_elt = (INTEGER(ans) + ans_len),
 			 part_end_elt = INTEGER(part_end);
@@ -328,7 +247,7 @@ SEXP CompressedIRangesList_summary(SEXP object)
 	SET_STRING_ELT(col_names, 0, mkChar("Length"));
 	SET_STRING_ELT(col_names, 1, mkChar("WidthSum"));
 	SET_VECTOR_ELT(ans_names, 0,
-			duplicate(_get_CompressedIRangesList_names(object)));
+			duplicate(_get_CompressedList_names(object)));
 	SET_VECTOR_ELT(ans_names, 1, col_names);
 	SET_DIMNAMES(ans, ans_names);
 	UNPROTECT(3);
@@ -362,7 +281,7 @@ SEXP CompressedNormalIRangesList_min(SEXP x, SEXP use_names)
 		}
 	}
 	if (LOGICAL(use_names)[0]) {
-		PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
+		PROTECT(ans_names = duplicate(_get_CompressedList_names(x)));
 		SET_NAMES(ans, ans_names);
 		UNPROTECT(1);
 	}
@@ -392,7 +311,7 @@ SEXP CompressedNormalIRangesList_max(SEXP x, SEXP use_names)
 		}
 	}
 	if (LOGICAL(use_names)[0]) {
-		PROTECT(ans_names = duplicate(_get_CompressedIRangesList_names(x)));
+		PROTECT(ans_names = duplicate(_get_CompressedList_names(x)));
 		SET_NAMES(ans, ans_names);
 		UNPROTECT(1);
 	}
