@@ -29,7 +29,8 @@ SEXP debug_IRanges_utils()
 /* --- .Call ENTRY POINT --- */
 SEXP IRanges_range(SEXP x)
 {
-	int x_length, *start_p, *width_p, min, max, i, end;
+	int x_length, min, max, i, end;
+	const int *start_p, *width_p;
 	SEXP ans, ans_start, ans_width;
 
 	x_length = _get_IRanges_length(x);
