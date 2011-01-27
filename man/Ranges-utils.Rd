@@ -194,10 +194,14 @@ threebands(x, start=NA, end=NA, width=NA)
 
   \code{shift} shifts all the ranges in \code{x}.
 
-  \code{range} returns an \code{IRanges} instance with a single range,
-  from the minimum start to the maximum end in the combined ranges of
-  \code{x} and the arguments in \code{...}.
-  
+  \code{range} first combines \code{x} and the arguments in \code{...}.
+  If the combined \link{IRanges} object contains at least 1 range,
+  then \code{range} returns an \code{IRanges} instance with a single
+  range, from the minimum start to the maximum end of the combined object.
+  Otherwise (i.e. if the combined object contains no range),
+  \code{IRanges()} is returned (i.e. an \link{IRanges} instance of
+  length 0).
+
   \code{reduce} first orders the ranges in \code{x} from left to right,
   then merges the overlapping or adjacent ones.
 
@@ -254,6 +258,7 @@ threebands(x, start=NA, end=NA, width=NA)
 
   x <- IRanges(start=c(-2, 6, 9, -4, 1, 0, -6, 3, 10),
                width=c( 5, 0, 6,  1, 4, 3,  2, 0,  3))
+  range(x)
   reduce(x)
   reduce(x, drop.empty.ranges=TRUE)
 

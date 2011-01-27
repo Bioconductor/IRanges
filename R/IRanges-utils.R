@@ -161,10 +161,7 @@ setMethod("restrict", "NormalIRanges",
 setMethod("range", "IRanges",
     function(x, ..., na.rm)
     {
-        args <- unname(list(x, ...))
-        if (!all(sapply(args, is, "IRanges")))
-            stop("all arguments in '...' must be IRanges objects")
-        x <- do.call(c, args)
+        x <- c(x, ...)
         .Call("IRanges_range", x, PACKAGE="IRanges")
     }
 )

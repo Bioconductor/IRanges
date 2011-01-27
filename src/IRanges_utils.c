@@ -23,42 +23,40 @@ SEXP debug_IRanges_utils()
 
 
 /****************************************************************************
- * Range (min(start), max(end)) of an IRanges instance.
+ * Range (min(start), max(end)) of an IRanges object.
  */
-
 
 /* --- .Call ENTRY POINT --- */
 SEXP IRanges_range(SEXP x)
 {
-	int x_length, i, min, max, *start_elt, *width_elt, end;
-	SEXP x_start, x_width, ans, ans_start, ans_width;
+	int x_length, *start_p, *width_p, min, max, i, end;
+	SEXP ans, ans_start, ans_width;
 
 	x_length = _get_IRanges_length(x);
-	x_start = _get_IRanges_start(x);
-	x_width = _get_IRanges_width(x);
-
-	min = INT_MAX;
-	max = R_INT_MIN;
-	for (i = 0, start_elt = INTEGER(x_start), width_elt = INTEGER(x_width);
-		 i < x_length; i++, start_elt++, width_elt++) {
-		if (*width_elt > 0) {
-			if (min > *start_elt)
-				min = *start_elt;
-			end = *start_elt + *width_elt - 1;
-			if (max < end)
-				max = end;
-		}
-	}
-	if (min == INT_MAX && max == R_INT_MIN) {
+	if (x_length == 0) {
 		PROTECT(ans_start = NEW_INTEGER(0));
 		PROTECT(ans_width = NEW_INTEGER(0));
-	} else {
-		PROTECT(ans_start = NEW_INTEGER(1));
-		PROTECT(ans_width = NEW_INTEGER(1));
-		INTEGER(ans_start)[0] = min;
-		INTEGER(ans_width)[0] = max - min + 1;
+		PROTECT(ans = _new_IRanges("IRanges", ans_start, ans_width,
+					   R_NilValue));
+		UNPROTECT(3);
+		return ans;
 	}
-	PROTECT(ans = _new_IRanges("IRanges", ans_start, ans_width, R_NilValue));
+	start_p = INTEGER(_get_IRanges_start(x));
+	width_p = INTEGER(_get_IRanges_width(x));
+	min = *(start_p++);
+	max = min + *(width_p++) - 1;
+	for (i = 1; i < x_length; i++, start_p++, width_p++)
+	{
+		if (*start_p < min)
+			min = *start_p;
+		end = *start_p + *width_p - 1;
+		if (end > max)
+			max = end;
+	}
+	PROTECT(ans_start = ScalarInteger(min));
+	PROTECT(ans_width = ScalarInteger(max - min + 1));
+	PROTECT(ans = _new_IRanges("IRanges", ans_start, ans_width,
+				   R_NilValue));
 	UNPROTECT(3);
 	return ans;
 }
