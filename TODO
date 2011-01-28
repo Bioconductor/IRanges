@@ -1,6 +1,14 @@
 Immediate TODO list
 -------------------
 
+- Bug fix: Combining RangedData objects is currently broken (IRanges 1.9.20):
+    library(IRanges)
+    ranges <- IRanges(c(1,2,3),c(4,5,6))
+    rd1 <- RangedData(ranges)
+    rd2 <- RangedData(shift(ranges, 100))
+    rd <- c(rd1, rd2)  # Seems to work (with some warnings)...
+    validObject(rd)  # but returns an invalid object!
+
 - Herve: Make the MaskCollection class a derivative of the SimpleIRangesList
   class.
 
@@ -66,8 +74,10 @@ Long term TODO list
   - move chain reading to rtracklayer
 
 -------------------------------------
-Conceptual framework
+Conceptual framework (by Michael)
 -------------------------------------
+
+[Herve: This might be slightly out-of-sync. Would be good to revisit/update.]
 
 We need to construct a conceptual framework around the current
 functionality in IRanges, so that we can eliminate redundancies and
