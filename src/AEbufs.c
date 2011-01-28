@@ -341,7 +341,8 @@ void _IntAEAE_sum_and_shift(const IntAEAE *int_aeae1, const IntAEAE *int_aeae2, 
 }
 
 /*
- * mode: 0 -> integer(0), 1-> NULL, 2 -> NA
+ * 'mode' controls how empty list elements should be represented:
+ *   0 -> integer(0); 1 -> NULL; 2 -> NA
  */
 SEXP _new_LIST_from_IntAEAE(const IntAEAE *int_aeae, int mode)
 {
@@ -351,17 +352,15 @@ SEXP _new_LIST_from_IntAEAE(const IntAEAE *int_aeae, int mode)
 
 	PROTECT(ans = NEW_LIST(int_aeae->nelt));
 	for (i = 0, elt = int_aeae->elts; i < int_aeae->nelt; i++, elt++) {
-		if (elt->nelt == 0 && mode != 0) {
-			if (mode == 1) {
-				PROTECT(ans_elt = R_NilValue);
-			} else {
-				// Not sure new LOGICALs are initialized with NAs,
-				// need to check! If not, then LOGICAL(ans_elt)[0]
-				// must be set to NA but I don't know how to do this :-/
-				PROTECT(ans_elt = NEW_LOGICAL(1));
-			}
-		} else {
+		if (elt->nelt != 0 || mode == 0) {
 			PROTECT(ans_elt = _new_INTEGER_from_IntAE(elt));
+		} else if (mode == 1) {
+			continue;
+		} else {
+			// Not sure new LOGICALs are initialized with NAs,
+			// need to check! If not, then LOGICAL(ans_elt)[0] must
+			// be set to NA but I don't know how to do this :-/
+			PROTECT(ans_elt = NEW_LOGICAL(1));
 		}
 		SET_VECTOR_ELT(ans, i, ans_elt);
 		UNPROTECT(1);
