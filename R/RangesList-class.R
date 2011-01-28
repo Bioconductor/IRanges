@@ -570,15 +570,41 @@ setMethod("merge", c("RangesList", "RangesList"),
     function(x, y, ...) .RangesList.merge(x, y, ...)
 )
 
+### Equivalent to, but much faster than, 'endoapply(x, range)'.
+.CompressedIRangesList.range <- function(x)
+{
+    ## 'x_start' and 'x_end' are CompressedIntegerList objects with the
+    ## same shape as 'x'.
+    x_start <- start(x)
+    x_end <- end(x)
+    ## 'sv' and 'ev' are XIntegerViews objects.
+    sv <- Views(x_start@unlistData, x_start@partitioning)
+    ev <- Views(x_end@unlistData, x_end@partitioning)
+    is_not_empty_view <- width(sv) != 0L  # same as 'width(ev) != 0L'
+    ans_unlistData <- IRanges(viewMins(sv)[is_not_empty_view],
+                              viewMaxs(ev)[is_not_empty_view])
+    ans_partitioning <- new2("PartitioningByEnd",
+                             end=cumsum(is_not_empty_view), check=FALSE)
+    ans <- new2("CompressedIRangesList",
+                unlistData=ans_unlistData,
+                partitioning=ans_partitioning,
+                check=FALSE)
+    names(ans) <- names(x)
+    elementMetadata(ans) <- elementMetadata(x)
+    ans
+}
+
 setMethod("range", "RangesList",
     function(x, ..., na.rm=FALSE)
     {
         if (length(list(x, ...)) >= 2L)
             x <- merge(x, ...)
-        ## FIXME: This is too slow when 'length(x)' is big (e.g. > 10k)
-        endoapply(x, range)
+        if (!is(x, "CompressedIRangesList"))
+            x <- as(x, "CompressedIRangesList")
+        .CompressedIRangesList.range(x)
     }
 )
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### findOverlaps()
