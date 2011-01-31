@@ -16,13 +16,13 @@ setClassUnion("DataTableORNULL", c("DataTable", "NULL"))
 
 
 setClass("Sequence",
-         contains="Annotated",
-         representation(
-                        "VIRTUAL",
-                        elementMetadata = "DataTableORNULL",
-                        elementType = "character"
-                        ),
-         prototype(elementType="ANY")
+    representation(
+        "VIRTUAL",
+        elementMetadata="DataTableORNULL",
+        elementType="character",
+        metadata="list"
+    ),
+    prototype(elementType="ANY")
 )
 
 
@@ -138,6 +138,30 @@ setReplaceMethod("values", "Sequence",
                      elementMetadata(x) <- value
                      x
                  })
+
+setGeneric("metadata", function(x, ...) standardGeneric("metadata"))
+setMethod("metadata", "Sequence",
+    function(x)
+    {
+        if (is.null(x@metadata) || is.character(x@metadata))
+            list(metadata = x@metadata)
+        else
+            x@metadata
+    }
+)
+
+setGeneric("metadata<-", function(x, ..., value) standardGeneric("metadata<-"))
+setReplaceMethod("metadata", "Sequence",
+    function(x, value)
+    {
+        if (!is.list(value))
+            stop("replacement 'metadata' value must be a list")
+        if (!length(value))
+            names(value) <- NULL # instead of character()
+        x@metadata <- value
+        x
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
