@@ -6,7 +6,14 @@
 ### i.e. an ordered set of elements.
 ###
 
+### Is it the right place for this?
 setClassUnion("vectorORfactor", c("vector", "factor"))
+
+### Need to be defined before the Sequence class. See DataTable-API.R for the
+### implementation of the DataTable API.
+setClass("DataTable", representation("VIRTUAL"))
+setClassUnion("DataTableORNULL", c("DataTable", "NULL"))
+
 
 setClass("Sequence",
          contains="Annotated",
@@ -17,6 +24,18 @@ setClass("Sequence",
                         ),
          prototype(elementType="ANY")
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Internal utility (not exported).
+###
+
+setGeneric("showAsCell", function(object) standardGeneric("showAsCell"))
+setMethod("showAsCell", "ANY", function(object) object)
+setMethod("showAsCell", "list", function(object)
+          rep.int("########", length(object)))
+setMethod("showAsCell", "Sequence", function(object)
+          rep.int("########", length(object)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

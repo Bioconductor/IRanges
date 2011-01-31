@@ -1,6 +1,7 @@
 \name{RangedData-class}
 \docType{class}
 
+\alias{class:RangedData}
 \alias{RangedData-class}
 
 % Accessors:

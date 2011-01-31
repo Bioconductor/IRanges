@@ -1,5 +1,7 @@
 \name{DataFrame-class}
 \docType{class}
+
+\alias{class:DataFrame}
 \alias{DataFrame-class}
 
 % accessor

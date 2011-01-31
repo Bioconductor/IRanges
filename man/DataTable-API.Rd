@@ -1,11 +1,15 @@
-\name{DataTable-class}
+\name{DataTable-API}
 \docType{class}
+
+\alias{DataTable-API}
 
 % DataTable class, functions and methods:
 \alias{class:DataTable}
 \alias{DataTable-class}
-\alias{DataTableORNULL-class}
 \alias{DataTable}
+\alias{class:DataTableORNULL}
+\alias{DataTableORNULL-class}
+\alias{DataTableORNULL}
 
 \alias{NROW,DataTable-method}
 \alias{NCOL,DataTable-method}
@@ -39,11 +43,12 @@
 
 \alias{show,DataTable-method}
 
-\title{DataTable objects}
+\title{The DataTable API}
 
 \description{
-  The DataTable virtual class provides an interface for the storing rectangular
-  data sets, like a basic data.frame object. It extends \code{Sequence}.
+  DataTable is an API only (i.e. virtual class with no slots) for accessing
+  objects with a rectangular shape like \link{DataFrame} or \link{RangedData}
+  objects. It mimics the API for standard \link{data.frame} objects.
 }
 
 \section{Accessors}{
@@ -229,9 +234,7 @@
 \seealso{
   \link{DataTable-stats} for statistical functionality, like fitting
   regression models,
-  \link{DataFrame-class} for an implementation that mimics
-  \code{data.frame},
-  \link{Sequence-class}
+  \link{data.frame}
 }
 
 \examples{

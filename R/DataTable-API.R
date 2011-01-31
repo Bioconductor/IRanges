@@ -1,14 +1,14 @@
 ### =========================================================================
-### DataTable objects
+### The DataTable API
 ### -------------------------------------------------------------------------
 ###
-### The DataTable virtual class is a general container for storing a list of
-### sequences.
+### DataTable is an API only (i.e. virtual class with no slots) for accessing
+### objects with a rectangular shape like DataFrame or RangedData objects.
+### It mimics the API for standard data.frame objects.
 ###
-
-setClass("DataTable", contains = "Sequence", representation("VIRTUAL"))
-
-setClassUnion("DataTableORNULL", c("DataTable", "NULL"))
+### See the Sequence-class.R file for the definitions of the DataTable and
+### DataTableORNULL virtual classes (they need to occur before the definition
+### of the Sequence class).
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -359,13 +359,6 @@ setMethod("as.env", "DataTable",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
 ###
-
-setGeneric("showAsCell", function(object) standardGeneric("showAsCell"))
-setMethod("showAsCell", "ANY", function(object) object)
-setMethod("showAsCell", "list", function(object)
-          rep.int("########", length(object)))
-setMethod("showAsCell", "Sequence", function(object)
-          rep.int("########", length(object)))
 
 setMethod("show", "DataTable",
           function(object)

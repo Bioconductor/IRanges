@@ -28,8 +28,6 @@ Collate: validity-utils.R
 	runstat.R
 	Annotated-class.R
 	Sequence-class.R
-	DataTable-class.R
-	DataTable-stats.R
 	AtomicList-class.R
 	Ranges-class.R
 	Ranges-comparison.R
@@ -38,6 +36,8 @@ Collate: validity-utils.R
 	IRanges-constructor.R
 	IRanges-utils.R
 	IRanges-setops.R
+	DataTable-API.R
+	DataTable-stats.R
 	Views-class.R
 	Grouping-class.R
 	SimpleList-class.R

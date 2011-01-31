@@ -20,7 +20,7 @@
 ## thus trivially compressed. It does, however, incur a slight
 ## performance penalty when applying over the RangedData.
 
-setClass("RangedData", contains = "DataTable",
+setClass("RangedData", contains = c("DataTable", "Sequence"),
          representation(ranges = "RangesList", values = "SplitDataFrameList"),
          prototype = prototype(ranges = new("SimpleRangesList"),
                                values = new("CompressedSplitDataFrameList")))
