@@ -570,6 +570,15 @@ setMethod("merge", c("RangesList", "RangesList"),
     function(x, y, ...) .RangesList.merge(x, y, ...)
 )
 
+setMethod("range", "RangesList",
+    function(x, ..., na.rm=FALSE)
+    {
+        if (length(list(x, ...)) >= 2L)
+            x <- merge(x, ...)
+        endoapply(x, range)
+    }
+)
+
 ### Equivalent to, but much faster than, 'endoapply(x, range)'.
 .CompressedIRangesList.range <- function(x)
 {
@@ -594,13 +603,11 @@ setMethod("merge", c("RangesList", "RangesList"),
     ans
 }
 
-setMethod("range", "RangesList",
+setMethod("range", "CompressedIRangesList",
     function(x, ..., na.rm=FALSE)
     {
         if (length(list(x, ...)) >= 2L)
             x <- merge(x, ...)
-        if (!is(x, "CompressedIRangesList"))
-            x <- as(x, "CompressedIRangesList")
         .CompressedIRangesList.range(x)
     }
 )

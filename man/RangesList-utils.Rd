@@ -25,6 +25,7 @@
 \alias{merge,missing,RangesList-method}
 \alias{merge,RangesList,RangesList-method}
 \alias{range,RangesList-method}
+\alias{range,CompressedIRangesList-method}
 
 % set operations
 \alias{union,RangesList,RangesList-method}
