@@ -12,7 +12,7 @@ setClass("Sequence",
          contains="Annotated",
          representation(
                         "VIRTUAL",
-                        elementMetadata = "ANY",
+                        elementMetadata = "DataTableORNULL",
                         elementType = "character"
                         ),
          prototype(elementType="ANY")
