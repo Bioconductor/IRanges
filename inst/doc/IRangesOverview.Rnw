@@ -61,12 +61,12 @@ library(IRanges)
 
 \section{Sequences}
 
-A sequence is an ordered collection of elements. The \IRanges{}
-packages represents three types of objects as sequences: atomic
-sequences, lists (or non-atomic sequences), and data tables (similar
-to \Rclass{data.frame}). The following subsections describe each in
-turn. All \IRanges{}-derived sequences inherit from the
-\Rclass{Sequence} virtual class.
+In the context of the \IRanges{} package, a sequence is an ordered finite
+collection of elements. The \IRanges{} packages represents two types of
+objects as sequences: (1) atomic sequences and (2) lists (or non-atomic
+sequences). The following subsections describe each in turn.
+All \IRanges{}-derived sequences inherit from the \Rclass{Sequence}
+virtual class.
 
 \subsection{Atomic Sequences}
 
@@ -104,10 +104,10 @@ While these three methods may seem trivial, they provide a great deal of
 power and many atomic sequence manipulations can be constructed
 using them.
 
-\subsubsection{Sequence Extraction}
+\subsubsection{Sequence Subsetting}
 
-As with ordinary \R{} atomic vectors, it is often necessary to extract
-one sequence from another. When this extraction does not duplicate or
+As with ordinary \R{} atomic vectors, it is often necessary to subset
+one sequence from another. When this subsetting does not duplicate or
 reorder the elements being extracted, the result is called a
 \textit{subsequence}. In general, the \Rfunction{[} function can be used
 to construct a new sequence or extract a subsequence, but its interface
@@ -131,12 +131,6 @@ sequence extraction:
   reverse order.
 \item \Rfunction{rep} - Creates a new sequence by repeating sequence
   elements.
-\item \Rfunction{Filter} - Extracts the elements for which a function evaluates
-  to TRUE.
-\item \Rfunction{Find} - Extracts the first or last such element specified by
-  a function.
-\item \Rfunction{Position} - Extracts the first or last such position specified
-  by a function.
 \end{enumerate}
 
 The following code illustrates how these functions are used on an
@@ -178,7 +172,7 @@ functions for looping over the elements of an \R{} \Rclass{list} object.
 The \Rfunction{endoapply} function performs an endomorphism equivalent to
 \Rfunction{lapply}, i.e. returns a \Rclass{Sequence} object of the same class
 as the input rather than a \Rclass{list} object. More will be given on these
-three functions in the List subsection.
+three functions in the Lists subsection.
 
 The \Rfunction{aggregate} function combines sequence extraction functionality
 of the \Rfunction{window} function with looping capabilities of the
@@ -305,6 +299,8 @@ container, it does not confer any information about the specific class
 of its elements, provides no infrastructure to ensure type safety, and
 the S3 and S4 method dispatch mechanisms do not support method selection
 for lists with homogeneous object types.
+The \Rclass{List} virtual class defined in the \IRanges{} package addresses
+these issues. \Rclass{List} is a direct extension of \Rclass{Sequence}.
 
 \subsubsection{Lists of Atomic Sequences}
 
@@ -313,7 +309,7 @@ such as \Rclass{integer} vectors or \Rclass{Rle} objects. We may wish to
 define a method that retrieves the length of each atomic sequence element,
 without special type checking. To enable this, we define collection
 classes such as \Rclass{IntegerList} and \Rclass{RleList}, which inherit
-from the \Rclass{Sequence} virtual class, for representing lists of
+from the \Rclass{List} virtual class, for representing lists of
 \Rclass{integer} vectors and \Rclass{Rle} objects respectively.
 
 <<list-intro>>=
@@ -327,11 +323,11 @@ underlying elements and the \Rclass{CompressedRleList} class stores the
 elements in an unlisted form and keeps track of where the element breaks
 are. The former ``simple list" class is useful when the Rle elements are
 long and the latter ``compressed list" class is useful when the list is
-sparse, i.e. a number of the list elements have length 0.
+long and/or sparse (i.e. a number of the list elements have length 0).
 
 In fact, all of the atomic vector types (raw, logical, integer, numeric,
 complex, and character) have similar list classes that derive from the
-\Rclass{Sequence} virtual class. For example, there is an
+\Rclass{List} virtual class. For example, there is an
 \Rclass{IntegerList} virtual class with subclasses
 \Rclass{SimpleIntegerList} and \Rclass{CompressedIntegerList}.
 
@@ -358,17 +354,18 @@ object.size(sIntList2)
 @
 
 The \Rfunction{length} function returns the number of elements in a
-\Rclass{Sequence}-derived object and, for ``simple lists" and
-``compressed lists", the \Rfunction{elementLengths} function returns
-an integer vector containing the lengths of each of the elements:
+\Rclass{Sequence}-derived object and, for a \Rclass{List}-derived object
+like ``simple list" or ``compressed list", the \Rfunction{elementLengths}
+function returns an integer vector containing the lengths of each of the
+elements:
 
 <<list-length>>=
 length(cIntList2)
 Rle(elementLengths(cIntList2))
 @
 
-Just as with ordinary \R{} \Rclass{list} objects, \Rclass{Sequence}-derived
-list classes support the \Rfunction{[[} for element extraction \Rfunction{c}
+Just as with ordinary \R{} \Rclass{list} objects, \Rclass{List}-derived
+object support the \Rfunction{[[} for element extraction, \Rfunction{c}
 for combining, and \Rfunction{lapply}/\Rfunction{sapply} for looping. When
 looping over sparse lists, the ``compressed list" classes can be much faster
 during computations since only the non-empty elements are looped over during
@@ -398,7 +395,7 @@ xRleList + yRleList
 sum(xRleList > 0 | yRleList > 0)
 @
 
-Since these atomic lists inherit from \Rclass{Sequence}, they can also use
+Since these atomic lists inherit from \Rclass{List}, they can also use
 the looping function \Rfunction{endoapply} to perform endomorphisms.
 
 <<list-endoapply>>=
@@ -408,7 +405,7 @@ endoapply(cIntList2, safe.max)
 endoapply(sIntList2, safe.max)[[1]]
 @
 
-\subsection{Data Tables}
+\section{Data Tables}
 
 To Do:
 \Rclass{DataTable},
@@ -565,17 +562,17 @@ plotRanges(reduce(ir))
 
 \subsection{Lists of \Rclass{Ranges} objects}
 
-As with \Rclass{Sequence} objects, it is common to manipulate
-collections of \Rclass{Ranges} objects during an analysis. Thus, the
-\IRanges{} package defines some specific classes for working with
-multiple \Rclass{Ranges} objects.
+It is common to manipulate collections of \Rclass{Ranges} objects during
+an analysis. Thus, the \IRanges{} package defines some specific classes
+for working with multiple \Rclass{Ranges} objects.
 
 The \Rclass{RangesList} class asserts that each element is a
 \Rclass{Ranges} object and provides convenience methods, such as
 \Rfunction{start}, \Rfunction{end} and \Rfunction{width} accessors
-that return flat integer vectors, aligning with the unlisted form of
-the \Rclass{RangesList}. To explicitly construct a
-\Rclass{RangesList}, use the \Rfunction{RangesList} function.
+that return \Rclass{IntegerList} objects, aligning with the
+\Rclass{RangesList} object.
+To explicitly construct a \Rclass{RangesList}, use the
+\Rfunction{RangesList} function.
 <<rangeslist-contructor>>=
 rl <- RangesList(ir, rev(ir))
 @
@@ -833,7 +830,7 @@ have been adjusted. Another benefit of an overlay approach is
 performance: the sequence values need not be copied.
 
 For representing such an overlay, the \IRanges{} package provides the
-virtual \Rclass{Views} class, which derives from \Rclass{Ranges} but
+virtual \Rclass{Views} class, which derives from \Rclass{IRanges} but
 also stores a sequence. Each range is said to represent a
 \textit{view} onto the sequence.
 

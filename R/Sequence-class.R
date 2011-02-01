@@ -3,7 +3,7 @@
 ### -------------------------------------------------------------------------
 ###
 ### The Sequence virtual class is a general container for storing a finite
-### sequence i.e. a finite ordered set of elements.
+### sequence i.e. an ordered finite collection of elements.
 ###
 ### H.P.: "Vector" sounds like it could have been a better name for this.
 ### Especially given this comment in man/Sequence-class.Rd:
