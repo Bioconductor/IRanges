@@ -22,12 +22,12 @@ mendoapply(FUN, \dots, MoreArgs = NULL)
 }
 
 \arguments{
-  \item{X}{a list, data.frame or Sequence object.}
+  \item{X}{a list, data.frame or List object.}
   \item{FUN}{the function to be applied to each element of \code{X}
     (for \code{endoapply}) or for the elements in \code{\dots}
     (for \code{mendoapply}).}
   \item{\dots}{For \code{endoapply}, optional arguments to \code{FUN}.
-    For \code{mendoapply}, a set of list, data.frame or Sequence
+    For \code{mendoapply}, a set of list, data.frame or List
     objects to compute over.}
   \item{MoreArgs}{a list of other arguments to \code{FUN}.}
 }

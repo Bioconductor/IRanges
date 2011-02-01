@@ -4,7 +4,7 @@
 
 setClass("DataFrameList", representation("VIRTUAL"),
          prototype = prototype(elementType = "DataFrame"),
-         contains = "Sequence")
+         contains = "List")
 setClass("SimpleDataFrameList",
          prototype = prototype(elementType = "DataFrame"),
          contains = c("DataFrameList", "SimpleList"))
@@ -449,10 +449,10 @@ setAs("ANY", "CompressedSplitDataFrameList",
       function(from) SplitDataFrameList(from, compress=TRUE))
 
 ## Behaves like as.list() on a vector, while SplitDataFrameList() is like list()
-setAs("Sequence", "SimpleSplitDataFrameList",
+setAs("List", "SimpleSplitDataFrameList",
       function(from) do.call(SplitDataFrameList,
                              c(as.list(from), compress=FALSE)))
-setAs("Sequence", "CompressedSplitDataFrameList",
+setAs("List", "CompressedSplitDataFrameList",
       function(from) do.call(SplitDataFrameList,
                              c(as.list(from), compress=TRUE)))
 

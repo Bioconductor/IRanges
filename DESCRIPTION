@@ -27,6 +27,7 @@ Collate: validity-utils.R
 	endoapply.R
 	runstat.R
 	Sequence-class.R
+	List-class.R
 	AtomicList-class.R
 	Ranges-class.R
 	Ranges-comparison.R

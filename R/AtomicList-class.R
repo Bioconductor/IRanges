@@ -6,7 +6,7 @@
 
 setClass("AtomicList", representation("VIRTUAL"),
         prototype = prototype(elementType = "logical"),
-        contains = "Sequence")
+        contains = "List")
 
 setClass("LogicalList", representation("VIRTUAL"),
          prototype = prototype(elementType = "logical"),

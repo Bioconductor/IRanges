@@ -45,7 +45,7 @@
 \alias{split,Ranges-method}
 
 \title{List of Ranges}
-\description{An extension of \code{\linkS4class{Sequence}} that holds only
+\description{An extension of \code{\linkS4class{List}} that holds only
   \code{\linkS4class{Ranges}} objects. Useful for storing ranges over a set
   of spaces (e.g. chromosomes), each of which requires a separate
   \code{Ranges} object. As a \code{Sequence}, \code{RangesList} may be

@@ -3,7 +3,7 @@
 ### -------------------------------------------------------------------------
 
 setClass("SimpleList",
-         contains="Sequence",
+         contains="List",
          representation(
                         listData="list"
                         )

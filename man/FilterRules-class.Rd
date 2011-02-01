@@ -100,11 +100,11 @@
     }
     \item{}{
       \code{x[[i]]}: Extracts an expression or function via the same
-      interface as for \code{\linkS4class{Sequence}}.
+      interface as for \code{\linkS4class{List}}.
     }
     \item{}{
       \code{x[[i]] <- value}: The same interface as for
-      \code{\linkS4class{Sequence}}. The default active state for new
+      \code{\linkS4class{List}}. The default active state for new
       rules is \code{TRUE}.
     }
   }

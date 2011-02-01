@@ -3,7 +3,7 @@
 ### -------------------------------------------------------------------------
 
 setClass("CompressedList",
-         contains="Sequence",
+         contains="List",
          representation(
                         "VIRTUAL",
                         partitioning="PartitioningByEnd",

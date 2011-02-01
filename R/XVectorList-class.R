@@ -16,7 +16,7 @@ setClass("GroupedIRanges",
 )
 
 setClass("XVectorList",
-    contains="Sequence",
+    contains="List",
     representation(
         "VIRTUAL",
         pool="SharedVector_Pool",

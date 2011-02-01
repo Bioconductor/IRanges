@@ -243,7 +243,7 @@
 
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}
-\description{An extension of \code{\linkS4class{Sequence}} that holds
+\description{An extension of \code{\linkS4class{List}} that holds
   only atomic vectors in either a natural or run-length encoded form.}
 
 \details{
@@ -404,7 +404,7 @@
 }
 
 \author{P. Aboyoun}
-\seealso{\code{\linkS4class{Sequence}} for the applicable methods.}
+\seealso{\code{\linkS4class{List}} for the applicable methods.}
 
 \examples{
   int1 <- c(1L,2L,3L,5L,2L,8L)

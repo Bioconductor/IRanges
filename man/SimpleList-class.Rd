@@ -56,14 +56,14 @@
 
 \title{Simple and Compressed List Classes}
 \description{The (non-virtual) SimpleList and (virtual) CompressedList classes
-  extend the \linkS4class{Sequence} virtual class.}
+  extend the \linkS4class{List} virtual class.}
 
 \details{
   The SimpleList and CompressedList classes provide an implementation that
   subclasses can easily extend. The underlying storage in a SimpleList
   subclass is a list object. The underlying storage in a CompressedList
   object is a virtually partitioned vector-like object. For more information
-  on the available methods, see the \linkS4class{Sequence} man page.
+  on the available methods, see the \linkS4class{List} man page.
 }
 
 \section{Constructor}{
@@ -144,7 +144,7 @@
 }
 
 \author{P. Aboyoun}
-\seealso{\linkS4class{Sequence},
+\seealso{\linkS4class{List},
          \linkS4class{AtomicList} and
          \linkS4class{RangesList} for example implementations}
 

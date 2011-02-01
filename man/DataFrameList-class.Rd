@@ -46,8 +46,8 @@
 \alias{coerce,SplitDataFrameList,DataFrame-method}
 \alias{coerce,ANY,CompressedSplitDataFrameList-method}
 \alias{coerce,ANY,SimpleSplitDataFrameList-method}
-\alias{coerce,Sequence,CompressedSplitDataFrameList-method}
-\alias{coerce,Sequence,SimpleSplitDataFrameList-method}
+\alias{coerce,List,CompressedSplitDataFrameList-method}
+\alias{coerce,List,SimpleSplitDataFrameList-method}
 \alias{stack,DataFrameList-method}
 
 % splitting and combining
@@ -62,7 +62,7 @@
   The \code{SplitDataFrameList} class contains the additional restriction
   that all the columns be of the same name and type. Internally it is stored
   as a list of \code{DataFrame} objects and extends
-  \code{\linkS4class{Sequence}}.}
+  \code{\linkS4class{List}}.}
 
 \section{Accessors}{
   In the following code snippets, \code{x} is a \code{DataFrameList}.
@@ -151,7 +151,7 @@
     }
     \item{}{\code{as(from, "SplitDataFrameList")}: By default, simply
       calls the \code{SplitDataFrameList} constructor
-      on \code{from}. If \code{from} is a \code{Sequence}, each element
+      on \code{from}. If \code{from} is a \code{List}, each element
       of \code{from} is passed as an argument
       to \code{SplitDataFrameList}, like calling \code{as.list} on a vector.}
     \item{}{\code{as.data.frame(x, row.names=NULL, optional=FALSE, ...)}:

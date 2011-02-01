@@ -11,7 +11,7 @@
 
 setClass("RangesList", representation("VIRTUAL"),
          prototype = prototype(elementType = "Ranges"),
-         contains = "Sequence")
+         contains = "List")
 
 setClass("SimpleRangesList",
          prototype = prototype(elementType = "Ranges"),
