@@ -353,7 +353,7 @@ const char *get_classname(SEXP x);
  * (see Sequence_class.c)
  */
 
-const char *get_Sequence_elementType(SEXP x);
+const char *get_List_elementType(SEXP x);
 
 
 /*

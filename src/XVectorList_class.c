@@ -104,7 +104,7 @@ cachedXVectorList _cache_XVectorList(SEXP x)
 	SEXP ranges;
 
 	cached_x.classname = _get_classname(x);
-	cached_x.element_type = _get_Sequence_elementType(x);
+	cached_x.element_type = _get_List_elementType(x);
 	cached_x.xp_list = _get_SharedVector_Pool_xp_list(
 				_get_XVectorList_pool(x));
 	ranges = _get_XVectorList_ranges(x);
@@ -212,7 +212,7 @@ static SEXP new_XVectorList_from_tags(const char *classname,
 	PROTECT(ans = NEW_OBJECT(classdef));
 
 	/* set "elementType" slot */
-	_set_Sequence_elementType(ans, element_type);
+	_set_List_elementType(ans, element_type);
 
 	/* set "pool" slot */
 	PROTECT(ans_pool = new_SharedVector_Pool(tags));

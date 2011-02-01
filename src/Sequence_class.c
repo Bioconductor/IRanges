@@ -1,5 +1,5 @@
 /****************************************************************************
- *                Low-level manipulation of Sequence objects                *
+ *           Low-level manipulation of Sequence and List objects            *
  *          Authors: Patrick Aboyoun, Michael Lawrence, Herve Pages         *
  ****************************************************************************/
 #include "IRanges.h"
@@ -11,7 +11,7 @@
 
 static SEXP elementType_symbol = NULL;
 
-const char *_get_Sequence_elementType(SEXP x)
+const char *_get_List_elementType(SEXP x)
 {
 	INIT_STATIC_SYMBOL(elementType)
 	return CHAR(STRING_ELT(GET_SLOT(x, elementType_symbol), 0));
@@ -22,7 +22,7 @@ const char *_get_Sequence_elementType(SEXP x)
  * C-level slot setters.
  */
 
-void _set_Sequence_elementType(SEXP x, const char *type)
+void _set_List_elementType(SEXP x, const char *type)
 {
 	SEXP value;
 

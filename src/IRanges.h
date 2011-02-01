@@ -468,9 +468,9 @@ SEXP compact_bitvector_set_op(SEXP query, SEXP ref, SEXP align);
 
 /* Sequence_class.c */
 
-const char *_get_Sequence_elementType(SEXP x);
+const char *_get_List_elementType(SEXP x);
 
-void _set_Sequence_elementType(
+void _set_List_elementType(
 	SEXP x,
 	const char *type
 );

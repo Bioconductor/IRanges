@@ -252,7 +252,7 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_get_classname);
 
 /* Sequence_class.c */
-	REGISTER_CCALLABLE(_get_Sequence_elementType);
+	REGISTER_CCALLABLE(_get_List_elementType);
 
 /* IRanges_class.c */
 	REGISTER_CCALLABLE(_get_IRanges_start);

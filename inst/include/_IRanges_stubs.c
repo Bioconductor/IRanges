@@ -307,7 +307,7 @@ DEFINE_CCALLABLE_STUB(const char *, get_classname,
  * Stubs for callables defined in Sequence_class.c
  */
 
-DEFINE_CCALLABLE_STUB(const char *, get_Sequence_elementType,
+DEFINE_CCALLABLE_STUB(const char *, get_List_elementType,
 	(SEXP x),
 	(     x)
 )
