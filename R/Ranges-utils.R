@@ -348,23 +348,13 @@ setGeneric("threebands", signature="x",
 ### More operations.
 ###
 
-### Find objects in the index that overlap those in a query set.
-### Deprecated operations
+### Find objects in the query that overlap those in a subject set.
+
 overlap <- function(object, query, maxgap = 0L, multiple = TRUE, ...)
-{
-    .Deprecated("findOverlaps")
-    if (missing(query))
-        findOverlaps(object, maxgap = maxgap, multiple = multiple, ...)
-    else
-        findOverlaps(query, object, maxgap = maxgap, multiple = multiple, ...)
-}
+    .Defunct("findOverlaps")
 
 countOverlap <- function(object, query)
-{
-    .Deprecated("countOverlaps")
-    countOverlaps(query, object)
-}
-###
+    .Defunct("countOverlaps")
 
 setGeneric("findOverlaps", signature = c("query", "subject"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
