@@ -10,7 +10,7 @@ exportClasses(
     characterORNULL,
     DataTable, DataTableORNULL,
     Sequence,
-    SimpleList, CompressedList,
+    List, SimpleList, CompressedList,
     Ranges, RangesORmissing,
     IRanges, NormalIRanges,
     IntervalTree,

@@ -2,8 +2,15 @@
 ### Sequence objects
 ### -------------------------------------------------------------------------
 ###
-### The Sequence virtual class is a general container for storing a sequence
-### i.e. an ordered set of elements.
+### The Sequence virtual class is a general container for storing a finite
+### sequence i.e. a finite ordered set of elements.
+###
+### H.P.: "Vector" sounds like it could have been a better name for this.
+### Especially given this comment in man/Sequence-class.Rd:
+###   The Sequence virtual class serves a similar role as \link[base]{vector}
+###   in base R.
+### which suggests that either "Sequence" is a misnomer, or this comment is
+### not telling all the truth about the Sequence class, or both.
 ###
 
 ### Is it the right place for this?

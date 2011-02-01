@@ -32,6 +32,14 @@ Immediate TODO list
 Long term TODO list
 -------------------
 
+- Sequence: maybe rename -> Vector
+  Motivations: See the Conceptual framework (by Michael) below and also
+  this comment in man/Sequence-class.Rd:
+    The Sequence virtual class serves a similar role as \link[base]{vector}
+    in base R.
+  which suggests that either "Sequence" is a misnomer, or this comment is
+  not telling all the truth about the Sequence class, or both.
+
 - Ranges:
   - "match" for exact matching
   - operator aliases
@@ -72,6 +80,7 @@ Long term TODO list
 - IO:
   - xscan() - read data directly into XVector objects
   - move chain reading to rtracklayer
+
 
 -------------------------------------
 Conceptual framework (by Michael)
