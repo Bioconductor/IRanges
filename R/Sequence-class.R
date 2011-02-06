@@ -13,6 +13,13 @@
 ### not telling all the truth about the Sequence class, or both.
 ###
 
+### ML: Like everything in IRanges, this was discussed at length. The
+### Sequence name was chosen, because it suggested the importance of
+### order. Also, some behavior is different. For example, it is not in
+### general possible to extract an element with [[. R atomic vectors
+### just create a new vector in this case. There are other reasons
+### that now escape my memory. But it was a conscious decision.
+
 ### Is it the right place for this?
 setClassUnion("vectorORfactor", c("vector", "factor"))
 
