@@ -32,7 +32,7 @@ Immediate TODO list
 Long term TODO list
 -------------------
 
-- Sequence: maybe rename -> Vector
+o Herve's proposal: maybe rename Sequence -> Vector
   Motivations: See the Conceptual framework (by Michael) below and also
   this comment in man/Sequence-class.Rd:
     The Sequence virtual class serves a similar role as \link[base]{vector}
@@ -40,7 +40,29 @@ Long term TODO list
   which suggests that either "Sequence" is a misnomer, or this comment is
   not telling all the truth about the Sequence class, or both.
 
-- Ranges:
+  Michael: Like everything in IRanges, this was discussed at length. The
+  Sequence name was chosen, because it suggested the importance of
+  order. Also, some behavior is different. For example, it is not in
+  general possible to extract an element with [[. R atomic vectors
+  just create a new vector in this case. There are other reasons
+  that now escape my memory. But it was a conscious decision.
+
+  Herve: A vector in base R is not necesarily atomic. Ordinary lists are
+  vectors too. And now with the new List class in IRanges, the parallel
+  between ordinary lists/vectors on one side and List/Sequence on the other
+  side is stronger than before. Sequence objects that are not List objects
+  (e.g. Rle and XVector) behave like atomic vectors even though they don't
+  have [[ (but they could have it if we wanted to push the resemblance with
+  atomic vectors, would feel kind of artificial to me though because this
+  [[ on atomic vectors doesn't offer a lot of value over [).
+  About the importance of order: depending on the application, the order
+  of the elements in an ordinary list/vector can be meaningful too, or,
+  inversely, in a Sequence object it might not be meaningful (e.g.
+  the reads in a GappedAlignments object, the exons in a GRanges object,
+  the exons grouped by transcript in a GRangesList object, the chip probes
+  in a DNAStringSet object, etc...).
+
+o Ranges:
   - "match" for exact matching
   - operator aliases
     - ranges & ranges (pintersect)
@@ -50,7 +72,7 @@ Long term TODO list
     - ranges +/- x (expand both sides)
   - permute or something to create a random mimic
 
-- RangesList:
+o RangesList:
   - parallel rbind
   - binary ops: "nearest", "intersect", "setdiff", "union"
     - 'y' omitted: become n-ary ops on items in collection
@@ -59,25 +81,25 @@ Long term TODO list
   * as a subset specification for BSGenome objects (get sequences out)
     - as XStringSet?
     
-- DataTable:
+o DataTable:
   - group generics (Math, Ops, Summary)
   
-- RangedData:
+o RangedData:
   - 'merge' for SQL-type join operations based on range overlap
   - "rangeQuantiles", "rangeMins", "rangeMaxs", "rangeSums"
     - could support radius for smoothing
 
-- SplitDataFrameList:
+o SplitDataFrameList:
   - rbind
 
-- FilterRules:
+o FilterRules:
   - refactor, using ShortRead filter framework (becomes FilterList)
   - support subsetting DataFrame/RangedData directly
 
-- rdapply:
+o rdapply:
   - probably need to add 'excludePattern' parameter
 
-- IO:
+o IO:
   - xscan() - read data directly into XVector objects
   - move chain reading to rtracklayer
 

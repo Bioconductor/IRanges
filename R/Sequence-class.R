@@ -5,20 +5,6 @@
 ### The Sequence virtual class is a general container for storing a finite
 ### sequence i.e. an ordered finite collection of elements.
 ###
-### H.P.: "Vector" sounds like it could have been a better name for this.
-### Especially given this comment in man/Sequence-class.Rd:
-###   The Sequence virtual class serves a similar role as \link[base]{vector}
-###   in base R.
-### which suggests that either "Sequence" is a misnomer, or this comment is
-### not telling all the truth about the Sequence class, or both.
-###
-
-### ML: Like everything in IRanges, this was discussed at length. The
-### Sequence name was chosen, because it suggested the importance of
-### order. Also, some behavior is different. For example, it is not in
-### general possible to extract an element with [[. R atomic vectors
-### just create a new vector in this case. There are other reasons
-### that now escape my memory. But it was a conscious decision.
 
 ### Is it the right place for this?
 setClassUnion("vectorORfactor", c("vector", "factor"))
