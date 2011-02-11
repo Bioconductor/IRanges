@@ -661,6 +661,7 @@ SEXP Rle_window(SEXP x, SEXP runStart, SEXP runEnd,
 	PROTECT(ans_list = Rle_window_aslist(x, runStart, runEnd,
                                          offsetStart, offsetEnd));
 
+	ans = Rf_duplicate(ans);
 	SET_SLOT(ans, install("values"), VECTOR_ELT(ans_list, 0));
 	SET_SLOT(ans, install("lengths"), VECTOR_ELT(ans_list, 1));
 
