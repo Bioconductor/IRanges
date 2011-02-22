@@ -9,7 +9,7 @@
 ###
 
 setGeneric("flank",
-    function(x, width, start=TRUE, both=FALSE, use.names=TRUE)
+    function(x, width, start=TRUE, both=FALSE, use.names=TRUE, ...)
         standardGeneric("flank")
 )
 setMethod("flank", "Ranges",
@@ -294,7 +294,7 @@ setMethod("disjoin", "Ranges",
 )
 
 setGeneric("gaps", signature="x",
-    function(x, start=NA, end=NA) standardGeneric("gaps")
+    function(x, start=NA, end=NA, ...) standardGeneric("gaps")
 )
 setMethod("gaps", "Ranges",
     function(x, start=NA, end=NA)
@@ -365,7 +365,7 @@ setGeneric("findOverlaps", signature = c("query", "subject"),
 
 setGeneric("countOverlaps",
     function(query, subject, maxgap = 0L, minoverlap = 1L,
-             type = c("any", "start", "end", "within", "equal"))
+             type = c("any", "start", "end", "within", "equal"), ...)
         standardGeneric("countOverlaps")
 )
 
@@ -381,7 +381,7 @@ setMethod("countOverlaps", c("Ranges", "Ranges"),
 
 setGeneric("subsetByOverlaps",
     function(query, subject, maxgap = 0L, minoverlap = 1L,
-             type = c("any", "start", "end", "within", "equal"))
+             type = c("any", "start", "end", "within", "equal"), ...)
         standardGeneric("subsetByOverlaps")
 )
 
