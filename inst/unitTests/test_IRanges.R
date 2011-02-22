@@ -30,7 +30,12 @@ test_IRanges_combine <- function() {
   i2 <- IRanges(c(1, 15), width=5)
   values(i2) <- DataFrame(score=1:2)
   checkIdentical(elementMetadata(c(i1, i2)),
-                 DataFrame(score = c(NA, TRUE, TRUE)))  
+                 DataFrame(score = c(NA, TRUE, TRUE)))
+  
+  ## Combining multiple IRanges object with varying elementMetadata
+  values(i1) <- DataFrame(gc=0.78)
+  checkException(c(i1, i2), silent=TRUE)
+  checkIdentical(values(c(i1, i2, .ignoreElementMetadata=TRUE)), NULL)
 }
 
 test_IRanges_reduce <- function() {
