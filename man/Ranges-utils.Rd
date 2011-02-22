@@ -35,10 +35,10 @@
 }
 
 \usage{
-flank(x, width, start=TRUE, both=FALSE, use.names=TRUE)
+flank(x, width, start=TRUE, both=FALSE, use.names=TRUE,...)
 narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
 reflect(x, bounds, use.names=TRUE)
-resize(x, width, fix="start", use.names=TRUE, ...)
+resize(x, width, fix="start", use.names=TRUE,...)
 restrict(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
 shift(x, shift, use.names=TRUE)
 
