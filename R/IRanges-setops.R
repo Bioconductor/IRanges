@@ -30,8 +30,12 @@ setMethod("gaps", "IRanges",
     }
 )
 
+
+setGeneric("union", function(x,y,...) standardGeneric("union"),
+        useAsDefault=function(x,y,...) base::union(x,y))
+
 setMethod("union", c("IRanges", "IRanges"),
-    function(x, y)
+    function(x, y, ...)
     {
         ## We need to downgrade 'x' to an IRanges instance 'x0' so 'c(x0, y)'
         ## is guaranteed to work (even e.g. if 'x' is a NormalIRanges object).
@@ -48,8 +52,11 @@ setMethod("union", c("IRanges", "IRanges"),
     }
 )
 
+setGeneric("intersect", function(x,y,...) standardGeneric("intersect"),
+        useAsDefault=function(x,y,...) base::intersect(x,y))
+
 setMethod("intersect", c("IRanges", "IRanges"),
-    function(x, y)
+    function(x, y, ...)
     {
         if (length(x) == 0L)
             return(x)
@@ -59,8 +66,11 @@ setMethod("intersect", c("IRanges", "IRanges"),
     }
 )
 
+setGeneric("setdiff", function(x,y,...) standardGeneric("setdiff"),
+        useAsDefault=function(x,y,...) base::setdiff(x,y))
+
 setMethod("setdiff", c("IRanges", "IRanges"),
-    function(x, y)
+    function(x, y, ...)
     {
         if (length(x) == 0L)
             return(x)
