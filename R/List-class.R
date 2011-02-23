@@ -182,15 +182,6 @@ setMethod("mendoapply", "List",
               X
           })
 
-
-### H.P.: Doesn't seem to be used at all. What are the plans Michael? A short
-### comment from you would help. Thx!
-.ListClasses <- new.env(parent=emptyenv())
-registerListClass <- function(name, elementType) {
-  .ListClasses[[elementType]] <- name
-  name
-}
-
 castList <- function(x, ...) {
   if (is(x, "List"))
     return(x)
@@ -223,7 +214,7 @@ castList <- function(x, ...) {
     if (exists(consym, ns))
       cons <- get(consym, ns)
     else {
-      if (length(clnames) == 1L) {
+      if (length(cl) == 1L) {
         contains <- getClass(cl)@contains
         cl <- names(contains)
         pkg <- sapply(contains, packageSlot)
@@ -231,6 +222,8 @@ castList <- function(x, ...) {
         cl <- tail(cl, -1)
         pkg <- tail(pkg, -1)
       }
+      if (!length(pkg))
+        ns <- list(topenv())
       connms <- constructorName(cl)
       ns <- lapply(pkg, getNamespace)
       coni <- head(which(mapply(exists, connms, ns)), 1)
