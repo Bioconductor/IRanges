@@ -294,7 +294,7 @@ setMethod("disjoin", "Ranges",
 )
 
 setGeneric("gaps", signature="x",
-    function(x, start=NA, end=NA, ...) standardGeneric("gaps")
+    function(x, start=NA, end=NA) standardGeneric("gaps")
 )
 setMethod("gaps", "Ranges",
     function(x, start=NA, end=NA)

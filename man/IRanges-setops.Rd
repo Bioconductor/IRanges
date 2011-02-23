@@ -25,7 +25,7 @@
 
 \usage{
 ## Vector-wise operations:
-gaps(x, start=NA, end=NA, ...)
+gaps(x, start=NA, end=NA)
 \S4method{union}{IRanges,IRanges}(x, y,...)
 \S4method{intersect}{IRanges,IRanges}(x, y,...)
 \S4method{setdiff}{IRanges,IRanges}(x, y,...)
