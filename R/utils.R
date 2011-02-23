@@ -434,7 +434,7 @@ orderInteger <- function(x, decreasing = FALSE, na.last = NA)
 {
     if (!is.integer(x) && !is.factor(x))
         stop("'x' must be an integer vector")
-    if ((is.integer(x) && diff(range(x)) < 100000) ||
+    if ((is.integer(x) && diff(range(x[!is.na(x)])) < 100000) ||
         (is.factor(x) && length(levels(x)) < 100000))
       sort.list(x, decreasing = decreasing, na.last = na.last, method = "radix")
     else if (!anyMissing(x))
