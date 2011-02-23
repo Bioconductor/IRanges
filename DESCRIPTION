@@ -22,6 +22,7 @@ ExtraLicenses: The following files in the 'src' directory are licensed for all
   dlist.c/h, errCatch.h 
 Collate: validity-utils.R
 	utils.R
+	isConstant.R
 	strutils.R
 	compact_bitvector.R
 	endoapply.R

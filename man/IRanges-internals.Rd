@@ -14,7 +14,6 @@
 \alias{normargShift}
 \alias{normargWeight}
 
-\alias{isConstant}
 \alias{fold}
 
 \alias{class:characterORNULL}
