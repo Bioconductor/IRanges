@@ -798,14 +798,9 @@ setMethod("unlist", "RangedDataList",
           function(x, recursive = TRUE, use.names = TRUE) {
             if (!missing(recursive))
               warning("'recursive' argument currently ignored")
-            for (i in seq_len(length(x))) {
-              nms <- paste(names(x)[i], names(ranges(x[[i]])), sep = ".")
-              names(x[[i]]@ranges) <- nms
-              names(x[[i]]@values) <- nms
-            }
-            ans <- do.call(c, unname(as.list(x)))
+            ans <- do.call(rbind, unname(as.list(x)))
             if (!use.names)
-              names(ans) <- NULL
+              rownames(ans) <- NULL
             ans
           })
 

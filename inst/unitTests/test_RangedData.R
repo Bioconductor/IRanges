@@ -248,10 +248,8 @@ test_RangedData_combine <- function() {
 
   ## split()
   rd2 <- RangedData(ranges, score)
-  rd3 <- rd
-  names(rd3) <- paste(names(rd), names(rd2), sep = ".")
   checkIdentical(as.data.frame(unlist(split(rd2, filter))),
-                 as.data.frame(rd3))
+                 as.data.frame(rd2[order(filter),]))
   checkException(split(rd2, filter[1:2]), silent = TRUE)
 
   ## rbind()
