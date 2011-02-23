@@ -749,9 +749,8 @@ setMethod("sort", "Rle",
                       x <- x[!is.na(x)]
               }
               if (is.integer(runValue(x)) || is.factor(runValue(x))) {
-                  ord <-
-                    sort.list(runValue(x), decreasing = decreasing,
-                              na.last = na.last, method = "radix")
+                  ord <- orderInteger(runValue(x), decreasing = decreasing,
+                                      na.last = na.last)
               } else {
                   ord <-
                     order(runValue(x), decreasing = decreasing,
