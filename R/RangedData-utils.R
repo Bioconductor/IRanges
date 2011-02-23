@@ -197,8 +197,8 @@ setMethod("match", c("RangesList", "RangedData"),
 ###
 
 setMethod("reduce", "RangedData",
-          function(x, by, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                   with.inframe.attrib=FALSE)
+          function(x, by = character(), drop.empty.ranges=FALSE,
+                   min.gapwidth=1L, with.inframe.attrib=FALSE)
           {
             if (!isTRUEorFALSE(drop.empty.ranges))
                 stop("'drop.empty.ranges' must be TRUE or FALSE")
@@ -235,7 +235,7 @@ setMethod("reduce", "RangedData",
               names(values) <- name
               new2(class(y), ranges = ranges, values = values, check = FALSE)
             }
-            if (ncol(x) == 0) {
+            if (ncol(x) == 0 || length(by) == 0) {
               ranges <-
                 reduce(ranges(x),
                        drop.empty.ranges = drop.empty.ranges,
