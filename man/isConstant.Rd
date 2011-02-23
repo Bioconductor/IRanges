@@ -30,8 +30,9 @@ isConstant(x)
 }
 
 \examples{
-  x <- c(11/3, 2/3+4/3+5/3, 7.00001-1000003/300000)
+  x <- c(11/3, 2/3 + 4/3 + 5/3, 7.00001 - 1000003/300000)
   isConstant(x)
+
   ## Note that looking at the length of unique(x) to determine whether
   ## x is constant or not would not work:
   unique(x)
