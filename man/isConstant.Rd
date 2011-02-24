@@ -3,12 +3,14 @@
 \alias{isConstant}
 \alias{isConstant,integer-method}
 \alias{isConstant,numeric-method}
+\alias{isConstant,array-method}
 
-\title{Test if a vector is constant}
+\title{Test if an atomic vector or array is constant}
 
 \description{
-  Generic function to test if a vector is constant or not.
-  Currently only methods for integer and numeric vectors are implemented.
+  Generic function to test if an atomic vector or array is constant or not.
+  Currently only methods for vectors or arrays of type integer or double
+  are implemented.
 }
 
 \usage{
@@ -17,7 +19,7 @@ isConstant(x)
 
 \arguments{
   \item{x}{
-    A vector.
+    An atomic vector or array.
   }
 }
 

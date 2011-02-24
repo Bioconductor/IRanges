@@ -96,3 +96,5 @@ setMethod("isConstant", "numeric",
     }
 )
 
+setMethod("isConstant", "array", function(x) isConstant(as.vector(x)))
+
