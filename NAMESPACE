@@ -8,6 +8,7 @@ importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
 
 exportClasses(
     characterORNULL,
+    Annotated,
     DataTable, DataTableORNULL,
     Sequence,
     List, SimpleList, CompressedList,

@@ -16,11 +16,6 @@
 \alias{elementMetadata<-,Sequence-method}
 \alias{values<-}
 \alias{values<-,Sequence-method}
-\alias{metadata}
-\alias{metadata,Sequence-method}
-\alias{metadata<-}
-\alias{metadata<-,Sequence-method}
-
 
 \alias{[,Sequence-method}
 \alias{[<-,Sequence-method}
@@ -71,7 +66,8 @@
   The Sequence virtual class serves as the heart of the IRanges package
   and has over 90 subclasses. It serves a similar role as \link[base]{vector}
   in base R. The Sequence class includes two slots: \code{metadata}
-  and \code{elementMetadata}. Their purpose is defined below.
+  (via extension of the \linkS4class{Annotated} class) and
+  \code{elementMetadata}. Their purpose is defined below.
 
   The Sequence class supports the storage of global and element-wise metadata
   with its \code{metadata} and \code{elementMetadata} slots. The
@@ -116,11 +112,6 @@
     \item{}{
       \code{values(x), values(x) <- value}:
       Alternative to \code{elementMetadata} functions.
-    }
-    \item{}{
-      \code{metadata(x)}, \code{metadata(x) <- value}:
-      Get or set the list holding arbitrary R objects as annotations.
-      May be, and often is, empty.
     }
   }
 }
@@ -314,6 +305,8 @@
 
   \linkS4class{DataTable} which is the type of objects returned by the
   \code{elementMetadata} accessor.
+
+  \linkS4class{Annotated} which Sequence extends.
 }
 
 \examples{

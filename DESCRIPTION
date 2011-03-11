@@ -27,6 +27,7 @@ Collate: validity-utils.R
 	compact_bitvector.R
 	endoapply.R
 	runstat.R
+	Annotated-class.R
 	Sequence-class.R
 	List-class.R
 	AtomicList-class.R
