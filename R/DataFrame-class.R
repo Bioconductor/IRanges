@@ -559,7 +559,7 @@ setAs("integer", "DataFrame",
         selectMethod("coerce", c("vector", "DataFrame"))(from)
       })
 
-setAs("Sequence", "DataFrame",
+setAs("Vector", "DataFrame",
       function(from) {
         new2("DataFrame", listData = structure(list(unname(from)), names = "X"),
              nrows = length(from), rownames = names(from), check=FALSE)

@@ -6,9 +6,9 @@
 ### objects with a rectangular shape like DataFrame or RangedData objects.
 ### It mimics the API for standard data.frame objects.
 ###
-### See the Sequence-class.R file for the definitions of the DataTable and
+### See the Vector-class.R file for the definitions of the DataTable and
 ### DataTableORNULL virtual classes (they need to occur before the definition
-### of the Sequence class).
+### of the Vector class).
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

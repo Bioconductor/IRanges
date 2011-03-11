@@ -466,7 +466,7 @@ SEXP compact_bitvector_last_bit(SEXP x);
 SEXP compact_bitvector_set_op(SEXP query, SEXP ref, SEXP align);
 
 
-/* Sequence_class.c */
+/* Vector_class.c */
 
 const char *_get_List_elementType(SEXP x);
 

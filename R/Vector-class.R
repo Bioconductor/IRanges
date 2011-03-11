@@ -1,21 +1,21 @@
 ### =========================================================================
-### Sequence objects
+### Vector objects
 ### -------------------------------------------------------------------------
 ###
-### The Sequence virtual class is a general container for storing a finite
+### The Vector virtual class is a general container for storing a finite
 ### sequence i.e. an ordered finite collection of elements.
 ###
 
 ### Is it the right place for this?
 setClassUnion("vectorORfactor", c("vector", "factor"))
 
-### Need to be defined before the Sequence class. See DataTable-API.R for the
+### Need to be defined before the Vector class. See DataTable-API.R for the
 ### implementation of the DataTable API.
 setClass("DataTable", representation("VIRTUAL"))
 setClassUnion("DataTableORNULL", c("DataTable", "NULL"))
 
 
-setClass("Sequence",
+setClass("Vector",
     contains="Annotated",
     representation(
         "VIRTUAL",
@@ -32,7 +32,7 @@ setGeneric("showAsCell", function(object) standardGeneric("showAsCell"))
 setMethod("showAsCell", "ANY", function(object) object)
 setMethod("showAsCell", "list", function(object)
           rep.int("########", length(object)))
-setMethod("showAsCell", "Sequence", function(object)
+setMethod("showAsCell", "Vector", function(object)
           rep.int("########", length(object)))
 
 
@@ -40,16 +40,16 @@ setMethod("showAsCell", "Sequence", function(object)
 ### Accessor methods.
 ###
 
-setMethod("NROW", "Sequence", function(x) length(x))
+setMethod("NROW", "Vector", function(x) length(x))
 
 ### Same definition as base::nlevels() but needed anyway because the call to
 ### levels(x) in base::nlevels() won't dispatch on the appropriate "levels"
 ### method.
-setMethod("nlevels", "Sequence", function(x) length(levels(x)))
+setMethod("nlevels", "Vector", function(x) length(levels(x)))
 
 setGeneric("elementMetadata",
            function(x, ...) standardGeneric("elementMetadata"))
-setMethod("elementMetadata", "Sequence",
+setMethod("elementMetadata", "Vector",
           function(x) {
               if ("elementMetadata" %in% names(attributes(x))) {
                   emd <- x@elementMetadata
@@ -61,11 +61,11 @@ setMethod("elementMetadata", "Sequence",
               emd
           })
 setGeneric("values", function(x, ...) standardGeneric("values"))
-setMethod("values", "Sequence", function(x, ...) elementMetadata(x, ...))
+setMethod("values", "Vector", function(x, ...) elementMetadata(x, ...))
 
 setGeneric("elementMetadata<-",
            function(x, ..., value) standardGeneric("elementMetadata<-"))
-setReplaceMethod("elementMetadata", "Sequence",
+setReplaceMethod("elementMetadata", "Vector",
                  function(x, value) {
                      if (!is(value, "DataTableORNULL"))
                          stop("replacement 'elementMetadata' value must be a DataTable object or NULL")
@@ -80,7 +80,7 @@ setReplaceMethod("elementMetadata", "Sequence",
                      x
                  })
 setGeneric("values<-", function(x, ..., value) standardGeneric("values<-"))
-setReplaceMethod("values", "Sequence",
+setReplaceMethod("values", "Vector",
                  function(x, value) {
                      elementMetadata(x) <- value
                      x
@@ -91,7 +91,7 @@ setReplaceMethod("values", "Sequence",
 ### Validity.
 ###
 
-.valid.Sequence.elementMetadata <- function(x)
+.valid.Vector.elementMetadata <- function(x)
 {
     emd <- elementMetadata(x)
     if (!is(emd, "DataTableORNULL"))
@@ -112,18 +112,18 @@ setReplaceMethod("values", "Sequence",
     NULL
 }
 
-.valid.Sequence <- function(x)
+.valid.Vector <- function(x)
 {
-    c(.valid.Sequence.elementMetadata(x))
+    c(.valid.Vector.elementMetadata(x))
 }
-setValidity2("Sequence", .valid.Sequence)
+setValidity2("Vector", .valid.Vector)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
 ###
 
-.bracket.Sequence <-
+.bracket.Vector <-
 function(x, i, j, ..., drop)
 {
     if (!is.null(elementMetadata(x)))
@@ -266,10 +266,10 @@ function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE,
     list(msg = msg, useIdx = useIdx, idx = idx, newNames = newNames)
 }
 
-setMethod("[", "Sequence", function(x, i, j, ..., drop)
-          stop("missing '[' method for Sequence class ", class(x)))
+setMethod("[", "Vector", function(x, i, j, ..., drop)
+          stop("missing '[' method for Vector class ", class(x)))
 
-setReplaceMethod("[", "Sequence",
+setReplaceMethod("[", "Vector",
                  function(x, i, j,..., value) {
                      if (!missing(j) || length(list(...)) > 0)
                          stop("invalid replacement")
@@ -305,7 +305,7 @@ solveWindowSEW <- function(seq_length, start, end, width)
     solved_SEW
 }
 
-setMethod("window", "Sequence",
+setMethod("window", "Vector",
           function(x, start = NA, end = NA, width = NA,
                    frequency = NULL, delta = NULL, ...)
           {
@@ -360,7 +360,7 @@ setMethod("window", "factor",
                      levels = seq_len(length(labels)), labels = labels)
           })
 
-setReplaceMethod("window", "Sequence",
+setReplaceMethod("window", "Vector",
                  function(x, start = NA, end = NA, width = NA,
                           keepLength = TRUE, ..., value)
                  {
@@ -418,7 +418,7 @@ setGeneric("seqselect", signature="x",
            function(x, start=NULL, end=NULL, width=NULL)
            standardGeneric("seqselect"))
 
-setMethod("seqselect", "Sequence",
+setMethod("seqselect", "Vector",
           function(x, start=NULL, end=NULL, width=NULL)
           {
               if (!is.null(end) || !is.null(width))
@@ -487,7 +487,7 @@ setGeneric("seqselect<-", signature="x",
            function(x, start = NULL, end = NULL, width = NULL, value)
            standardGeneric("seqselect<-"))
 
-setReplaceMethod("seqselect", "Sequence",
+setReplaceMethod("seqselect", "Vector",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {
                      if (is.null(end) && is.null(width)) {
@@ -602,7 +602,7 @@ setReplaceMethod("seqselect", "factor",
 ### Simple helper functions for some common subsetting operations.
 ###
 
-setMethod("head", "Sequence",
+setMethod("head", "Vector",
           function(x, n = 6L, ...)
           {
               stopifnot(length(n) == 1L)
@@ -616,7 +616,7 @@ setMethod("head", "Sequence",
                   window(x, 1L, n)
           })
 
-setMethod("tail", "Sequence",
+setMethod("tail", "Vector",
           function(x, n = 6L, ...)
           {
               stopifnot(length(n) == 1L)
@@ -631,7 +631,7 @@ setMethod("tail", "Sequence",
                   window(x, xlen - n + 1L, xlen)
           })
 
-setMethod("rev", "Sequence",
+setMethod("rev", "Vector",
           function(x) {
               if (length(x) == 0)
                   x
@@ -639,7 +639,7 @@ setMethod("rev", "Sequence",
                   x[length(x):1]  
           })
 
-setMethod("rep", "Sequence", function(x, ...)
+setMethod("rep", "Vector", function(x, ...)
           x[rep(seq_len(length(x)), ...)])
 
 ### The natural (and cleaner) thing to do for this generic would be to use
@@ -658,11 +658,11 @@ setGeneric("rep.int",
         useAsDefault = function(x, ...) base::rep.int(x, ...)
 )
 
-setMethod("rep.int", "Sequence",
+setMethod("rep.int", "Vector",
     function(x, times) x[rep.int(seq_len(length(x)), times)]
 )
 
-setMethod("subset", "Sequence",
+setMethod("subset", "Vector",
           function (x, subset, ...) 
           {
               if (!is.logical(subset)) 
@@ -677,7 +677,7 @@ setMethod("subset", "Sequence",
 
 ### Maybe this is how `!=` should have been defined in the base package so
 ### nobody would ever need to bother implementing such an obvious thing.
-setMethod("!=", signature(e1="Sequence", e2="Sequence"),
+setMethod("!=", signature(e1="Vector", e2="Vector"),
     function(e1, e2) !(e1 == e2)
 )
 
@@ -713,18 +713,18 @@ setMethod("!=", signature(e1="Sequence", e2="Sequence"),
     do.call(rbind, lapply(emd, fillCols))
 }
 
-.c.Sequence <- function(x, ..., recursive = FALSE)
+.c.Vector <- function(x, ..., recursive = FALSE)
 {
     if (!is.null(elementMetadata(x)))
       elementMetadata(x) <- .rbind.elementMetadata(x, ...)
     x
 }
 
-setMethod("c", "Sequence",
+setMethod("c", "Vector",
           function(x, ..., recursive = FALSE)
-          stop("missing 'c' method for Sequence class ", class(x)))
+          stop("missing 'c' method for Vector class ", class(x)))
 
-setMethod("append", c("Sequence", "Sequence"),
+setMethod("append", c("Vector", "Vector"),
           function(x, values, after=length(x)) {
               if (!isSingleNumber(after))
                   stop("'after' must be a single number")
@@ -797,7 +797,7 @@ function (X, INDEX, FUN = NULL, ..., simplify = TRUE)
     }
     ansmat
 }
-setMethod("tapply", "Sequence", .tapplyDefault)
+setMethod("tapply", "Vector", .tapplyDefault)
 
 .shiftApplyInternal <-
 function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)
@@ -853,7 +853,7 @@ setGeneric("shiftApply", signature = c("X", "Y"),
                     verbose = FALSE)
            standardGeneric("shiftApply"))
 
-setMethod("shiftApply", signature(X = "Sequence", Y = "Sequence"),
+setMethod("shiftApply", signature(X = "Vector", Y = "Vector"),
           .shiftApplyInternal)
 
 setMethod("shiftApply", signature(X = "vector", Y = "vector"),
@@ -902,7 +902,7 @@ function(x, by, FUN, start = NULL, end = NULL, width = NULL,
     }
 }
 
-setMethod("aggregate", "Sequence", .aggregateInternal)
+setMethod("aggregate", "Vector", .aggregateInternal)
 
 setMethod("aggregate", "vector", .aggregateInternal)
 

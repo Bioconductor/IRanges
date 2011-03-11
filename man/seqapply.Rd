@@ -6,13 +6,13 @@
 \alias{seqby}
 
 \title{
-Apply function and cast to Sequence
+Apply function and cast to Vector
 }
 \description{
   The \code{seqapply} family of functions behaves much like the existing
   \code{lapply} family, except the return value is cast to a
-  \linkS4class{Sequence} subclass. This facilitates constraining
-  computation to the \code{Sequence} framework across iteration and
+  \linkS4class{Vector} subclass. This facilitates constraining
+  computation to the \code{Vector} framework across iteration and
   (for \code{seqsplit}) splitting.
 }
 
@@ -26,7 +26,7 @@ seqby(data, INDICES, FUN, ...)
 
 \arguments{
   \item{X}{
-    The object over which to iterate, usually a vector or \code{Sequence}
+    The object over which to iterate, usually a vector or \code{Vector}
   }
   \item{x}{
     Like \code{X}
@@ -71,7 +71,7 @@ seqby(data, INDICES, FUN, ...)
     \item{\code{seqsplit}}{=> \code{split}}
     \item{\code{seqby}}{=> \code{by}}
   }
-  The only difference is that the result is cast to a \code{Sequence}
+  The only difference is that the result is cast to a \code{Vector}
   object. The casting logic simply looks for a common class from which
   all returned values inherit. It then checks for the existence of a
   function of the form \code{ClassList} where \code{Class} is the name
@@ -79,11 +79,11 @@ seqby(data, INDICES, FUN, ...)
   the hierarchy of classes. An error is thrown when hierarchy is
   exhausted. If \code{ClassList} is found, it is called with the list of
   return values as its only argument, under the assumption that
-  a \code{Sequence}-derived instance will be constructed.
+  a \code{Vector}-derived instance will be constructed.
 }
 
 \value{
-  A \code{Sequence} object
+  A \code{Vector} object
 }
 
 \author{

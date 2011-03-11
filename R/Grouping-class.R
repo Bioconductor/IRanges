@@ -390,10 +390,10 @@ setMethod("high2low", "vector",
     }
 )
 
-### The "high2low" method for Sequence objects uses an implementation that
+### The "high2low" method for Vector objects uses an implementation that
 ### is O(n*log(n)) in time but it requires that "order" be defined for 'x'
 ### (in addition to "[" and "==").
-setMethod("high2low", "Sequence",
+setMethod("high2low", "Vector",
     function(x)
     {
         ## The 2 lines below are equivalent but much faster than

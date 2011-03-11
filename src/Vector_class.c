@@ -1,5 +1,5 @@
 /****************************************************************************
- *           Low-level manipulation of Sequence and List objects            *
+ *            Low-level manipulation of Vector and List objects             *
  *          Authors: Patrick Aboyoun, Michael Lawrence, Herve Pages         *
  ****************************************************************************/
 #include "IRanges.h"

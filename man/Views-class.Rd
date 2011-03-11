@@ -7,7 +7,7 @@
 \alias{subject,Views-method}
 \alias{newViews}
 \alias{Views}
-\alias{coerce,Sequence,Views-method}
+\alias{coerce,Vector,Views-method}
 \alias{[[,Views-method}
 \alias{coerce,Views,NormalIRanges-method}
 \alias{trim}
@@ -25,7 +25,7 @@
 
 \description{
   The Views virtual class is a general container for storing a set of
-  views on an arbitrary \link{Sequence} object, called the "subject".
+  views on an arbitrary \link{Vector} object, called the "subject".
 
   Its primary purpose is to introduce concepts and provide some facilities
   that can be shared by the concrete classes that derive from it.
@@ -141,7 +141,7 @@
 
 \seealso{
   \link{IRanges-class},
-  \link{Sequence-class},
+  \link{Vector-class},
   \link{IRanges-utils},
   \link{XVector}.
 

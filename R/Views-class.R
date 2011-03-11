@@ -3,14 +3,14 @@
 ### -------------------------------------------------------------------------
 ###
 ### The Views virtual class is a general container for storing a set of views
-### on an arbitrary Sequence object, called the "subject".
+### on an arbitrary Vector object, called the "subject".
 ###
 
 setClass("Views",
     contains="IRanges",
     representation(
         "VIRTUAL",
-        subject="Sequence"
+        subject="Vector"
     )
 )
 
@@ -86,7 +86,7 @@ setGeneric("Views", signature="subject",
 ###
 
 ### Returns a single view covering the entire sequence.
-setAs("Sequence", "Views",
+setAs("Vector", "Views",
     function(from) Views(from, start=1L, width=length(from))
 )
 

@@ -349,8 +349,8 @@ const char *get_classname(SEXP x);
 
 
 /*
- * Low-level manipulation of Sequence objects.
- * (see Sequence_class.c)
+ * Low-level manipulation of Vector objects.
+ * (see Vector_class.c)
  */
 
 const char *get_List_elementType(SEXP x);

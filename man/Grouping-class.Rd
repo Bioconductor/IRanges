@@ -26,7 +26,7 @@
 \alias{high2low}
 \alias{high2low,H2LGrouping-method}
 \alias{high2low,vector-method}
-\alias{high2low,Sequence-method}
+\alias{high2low,Vector-method}
 \alias{low2high}
 \alias{low2high,H2LGrouping-method}
 \alias{length,H2LGrouping-method}

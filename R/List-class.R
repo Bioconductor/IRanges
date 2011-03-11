@@ -2,12 +2,12 @@
 ### List objects
 ### -------------------------------------------------------------------------
 ###
-### List objects are Sequence objects with "[[", "elementType" and
+### List objects are Vector objects with "[[", "elementType" and
 ### "elementLengths" methods.
 ###
 
 setClass("List",
-    contains="Sequence",
+    contains="Vector",
     representation(
         "VIRTUAL",
         elementType="character"
@@ -418,7 +418,7 @@ setMethod("Position", signature(x = "List"),
         ## In R-2.12, base::Position() was modified to use seq_along()
         ## internally. The problem is that seq_along() was a primitive
         ## that would let the user define methods for it (otherwise it
-        ## would have been worth defining a "seq_along" method for Sequence
+        ## would have been worth defining a "seq_along" method for Vector
         ## objects). So we need to redefine seq_along() locally in order
         ## to make base_Position() work.
         seq_along <- function(along.with) seq_len(length(along.with))

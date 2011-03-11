@@ -28,7 +28,7 @@
 \alias{coerce,vector,DataFrame-method}
 \alias{coerce,list,DataFrame-method}
 \alias{coerce,integer,DataFrame-method}
-\alias{coerce,Sequence,DataFrame-method}
+\alias{coerce,Vector,DataFrame-method}
 \alias{coerce,data.frame,DataFrame-method}
 \alias{coerce,NULL,DataFrame-method}
 \alias{coerce,table,DataFrame-method}
@@ -59,7 +59,7 @@
   example, combination functions that no row names are desired (they are
   often a luxury when dealing with large data).
 
-  As \code{DataFrame} derives from \code{\linkS4class{Sequence}}, it is
+  As \code{DataFrame} derives from \code{\linkS4class{Vector}}, it is
   possible to set an \code{annotation} string. Also, another
   \code{DataFrame} can hold metadata on the columns.
 }
@@ -193,7 +193,7 @@
 \author{ Michael Lawrence }
 \seealso{
   \code{\linkS4class{DataTable}},
-  \code{\linkS4class{Sequence}}, and
+  \code{\linkS4class{Vector}}, and
   \code{\linkS4class{RangedData}}, which makes heavy use of this class.
 }
 \examples{

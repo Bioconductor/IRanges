@@ -19,7 +19,7 @@
 \description{An extension of \code{\linkS4class{RangesList}} that holds only
   \code{\linkS4class{RleViews}} objects. Useful for storing coverage vectors
   over a set of spaces (e.g. chromosomes), each of which requires a separate
-  \code{RleViews} object. As a \code{Sequence}, \code{RleViewsList} may be
+  \code{RleViews} object. As a \code{Vector}, \code{RleViewsList} may be
   annotated with its universe identifier (e.g. a genome) in which all of its
   spaces exist.
 }

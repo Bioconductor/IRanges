@@ -842,7 +842,7 @@
 
 \seealso{
   \code{\link[base]{rle}},
-  \link{Sequence-class},
+  \link{Vector-class},
   \link[methods]{S4groupGeneric},
   \link{IRanges-class}
 }

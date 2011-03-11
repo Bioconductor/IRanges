@@ -476,7 +476,7 @@ setMethod("[", "IRanges",
         slot(x, "width", check=FALSE) <- width(x)[i]
         if (!is.null(names(x)))
             slot(x, "NAMES", check=FALSE) <- names(x)[i]
-        .bracket.Sequence(x, i)
+        .bracket.Vector(x, i)
     }
 )
 

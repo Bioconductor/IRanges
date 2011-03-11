@@ -9,7 +9,7 @@ setClass("Rle",
          representation(values = "vectorORfactor",
                         lengths = "integer"),
          prototype = prototype(values = logical()),
-         contains = "Sequence",
+         contains = "Vector",
          validity = function(object)
          {
              msg <- NULL

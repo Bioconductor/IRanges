@@ -11,7 +11,7 @@
 ###
 
 setClass("XVector",
-    contains="Sequence",
+    contains="Vector",
     representation(
         "VIRTUAL",
         shared="SharedVector",

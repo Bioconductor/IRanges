@@ -30,6 +30,6 @@
 }
 
 \author{P. Aboyoun}
-\seealso{\code{\linkS4class{Sequence}} for example implementations}
+\seealso{\code{\linkS4class{Vector}} for example implementations}
 \keyword{methods}
 \keyword{classes}

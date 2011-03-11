@@ -10,7 +10,7 @@ exportClasses(
     characterORNULL,
     Annotated,
     DataTable, DataTableORNULL,
-    Sequence,
+    Vector,
     List, SimpleList, CompressedList,
     Ranges, RangesORmissing,
     IRanges, NormalIRanges,
@@ -101,7 +101,7 @@ export(
     ## Casting apply functions and the like
     seqapply, mseqapply, tseqapply, seqsplit, seqby,
     
-    ## Generic functions in the Sequence API:
+    ## Generic functions in the Vector API:
     elementType, elementLengths,
     metadata, elementMetadata, "metadata<-", "elementMetadata<-",
     seqselect, "seqselect<-",

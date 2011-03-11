@@ -1,87 +1,87 @@
-\name{Sequence-class}
+\name{Vector-class}
 \docType{class}
 
-% Sequence class, functions and methods:
-\alias{class:Sequence}
-\alias{Sequence-class}
-\alias{Sequence}
+% Vector class, functions and methods:
+\alias{class:Vector}
+\alias{Vector-class}
+\alias{Vector}
 
-\alias{NROW,Sequence-method}
-\alias{nlevels,Sequence-method}
+\alias{NROW,Vector-method}
+\alias{nlevels,Vector-method}
 \alias{elementMetadata}
-\alias{elementMetadata,Sequence-method}
+\alias{elementMetadata,Vector-method}
 \alias{values}
-\alias{values,Sequence-method}
+\alias{values,Vector-method}
 \alias{elementMetadata<-}
-\alias{elementMetadata<-,Sequence-method}
+\alias{elementMetadata<-,Vector-method}
 \alias{values<-}
-\alias{values<-,Sequence-method}
+\alias{values<-,Vector-method}
 
-\alias{[,Sequence-method}
-\alias{[<-,Sequence-method}
-\alias{window,Sequence-method}
+\alias{[,Vector-method}
+\alias{[<-,Vector-method}
+\alias{window,Vector-method}
 \alias{window,NULL-method}
 \alias{window,vector-method}
 \alias{window,factor-method}
-\alias{window<-,Sequence-method}
+\alias{window<-,Vector-method}
 \alias{window<-,vector-method}
 \alias{window<-,factor-method}
 \alias{seqselect}
-\alias{seqselect,Sequence-method}
+\alias{seqselect,Vector-method}
 \alias{seqselect,NULL-method}
 \alias{seqselect,vector-method}
 \alias{seqselect,factor-method}
 \alias{seqselect<-}
-\alias{seqselect<-,Sequence-method}
+\alias{seqselect<-,Vector-method}
 \alias{seqselect<-,vector-method}
 \alias{seqselect<-,factor-method}
 
-\alias{head,Sequence-method}
-\alias{tail,Sequence-method}
-\alias{rev,Sequence-method}
-\alias{rep,Sequence-method}
+\alias{head,Vector-method}
+\alias{tail,Vector-method}
+\alias{rev,Vector-method}
+\alias{rep,Vector-method}
 \alias{rep.int}
-\alias{rep.int,Sequence-method}
-\alias{subset,Sequence-method}
+\alias{rep.int,Vector-method}
+\alias{subset,Vector-method}
 
-\alias{!=,Sequence,Sequence-method}
+\alias{!=,Vector,Vector-method}
 
-\alias{c,Sequence-method}
-\alias{append,Sequence,Sequence-method}
+\alias{c,Vector-method}
+\alias{append,Vector,Vector-method}
 
-\alias{tapply,Sequence-method}
+\alias{tapply,Vector-method}
 \alias{shiftApply}
-\alias{shiftApply,Sequence,Sequence-method}
+\alias{shiftApply,Vector,Vector-method}
 \alias{shiftApply,vector,vector-method}
-\alias{aggregate,Sequence-method}
+\alias{aggregate,Vector-method}
 \alias{aggregate,vector-method}
 \alias{aggregate,matrix-method}
 \alias{aggregate,data.frame-method}
 \alias{aggregate,ts-method}
 
 
-\title{Sequence objects}
+\title{Vector objects}
 
 \description{
-  The Sequence virtual class serves as the heart of the IRanges package
+  The Vector virtual class serves as the heart of the IRanges package
   and has over 90 subclasses. It serves a similar role as \link[base]{vector}
-  in base R. The Sequence class includes two slots: \code{metadata}
+  in base R. The Vector class includes two slots: \code{metadata}
   (via extension of the \linkS4class{Annotated} class) and
   \code{elementMetadata}. Their purpose is defined below.
 
-  The Sequence class supports the storage of global and element-wise metadata
+  The Vector class supports the storage of global and element-wise metadata
   with its \code{metadata} and \code{elementMetadata} slots. The
   \code{metadata} slot can store a list of metadata pertaining to the whole
   object and the \code{elementMetadata} slot can store a
   \linkS4class{DataTable} (or \code{NULL}) for element-wise metadata with a
   row for each element and a column for each metadata variable.
 
-  To be functional, a class that inherits from Sequence must define at
+  To be functional, a class that inherits from Vector must define at
   least a \code{length}, \code{names} and \code{"["} method.
 }
 
 \section{Accessors}{
-  In the following code snippets, \code{x} is a Sequence object.
+  In the following code snippets, \code{x} is a Vector object.
   
   \describe{
     \item{}{
@@ -90,14 +90,14 @@
     }
     \item{}{
       \code{NROW(x)}:
-      Defined as \code{length(x)} for any Sequence object that is
+      Defined as \code{length(x)} for any Vector object that is
       \emph{not} a \linkS4class{DataTable} object.
       If \code{x} is a \linkS4class{DataTable} object, then it's
       defined as \code{nrow(x)}.
     }
     \item{}{
       \code{names(x)}, \code{names(x) <- value}:
-      Get or set the names of the elements in the Sequence.
+      Get or set the names of the elements in the Vector.
     }
     \item{}{
       \code{nlevels(x)}:
@@ -117,14 +117,14 @@
 }
 
 \section{Subsetting}{
-  In the code snippets below, \code{x} is a Sequence object or regular R vector
+  In the code snippets below, \code{x} is a Vector object or regular R vector
   object. The R vector object methods for \code{window} and \code{seqselect}
   are defined in this package and the remaining methods are defined in base R.
 
   \describe{
     \item{}{
       \code{x[i, drop=TRUE]}:
-      If defined, returns a new Sequence object made of selected elements
+      If defined, returns a new Vector object made of selected elements
       \code{i}, which can be missing; an NA-free logical, numeric, or
       character vector; or a logical Rle object. The \code{drop} argument
       specifies whether or not to coerce the returned sequence to a standard
@@ -136,7 +136,7 @@
     }
     \item{}{
       \code{window(x, start = NA, end = NA, width = NA, frequency = NULL, delta = NULL, ...)}:
-      Extract the subsequence window from the Sequence object using:
+      Extract the subsequence window from the Vector object using:
       \describe{
         \item{\code{start}, \code{end}, \code{width}}{The start, end, or width
           of the window. Two of the three are required.}
@@ -153,7 +153,7 @@
       \code{value} must either be of class \code{class(x)}, belong to a subclass
       of \code{class(x)}, be coercible to \code{class(x)}, or be \code{NULL}.
       If \code{keepLength} is \code{TRUE}, the elements of \code{value} are
-      repeated to create a Sequence with the same number of elements as the
+      repeated to create a Vector with the same number of elements as the
       width of the subsequence window it is replacing.
       If \code{keepLength} is \code{FALSE}, this replacement method can modify
       the length of \code{x}, depending on how the length of the left
@@ -182,21 +182,21 @@
     }
     \item{}{
       \code{head(x, n = 6L)}:
-      If \code{n} is non-negative, returns the first n elements of the Sequence
+      If \code{n} is non-negative, returns the first n elements of the Vector
       object.
       If \code{n} is negative, returns all but the last \code{abs(n)} elements
-      of the Sequence object.
+      of the Vector object.
     }
     \item{}{
       \code{tail(x, n = 6L)}:
-      If \code{n} is non-negative, returns the last n elements of the Sequence
+      If \code{n} is non-negative, returns the last n elements of the Vector
       object.
       If \code{n} is negative, returns all but the first \code{abs(n)} elements
-      of the Sequence object.
+      of the Vector object.
     }
     \item{}{
       \code{rev(x)}:
-      Return a new Sequence object made of the original elements in the reverse
+      Return a new Vector object made of the original elements in the reverse
       order.
     }
     \item{}{
@@ -214,25 +214,25 @@
     }
     \item{}{
       \code{subset(x, subset)}:
-      Return a new Sequence object made of the subset using logical vector
+      Return a new Vector object made of the subset using logical vector
       \code{subset}, where missing values are taken as FALSE.
     }
   }
 }
 
 \section{Combining}{
-  In the code snippets below, \code{x} is a Sequence object.
+  In the code snippets below, \code{x} is a Vector object.
 
   \describe{
     \item{}{
       \code{c(x, ...)}:
-      Combine \code{x} and the Sequence objects in \code{...} together.
+      Combine \code{x} and the Vector objects in \code{...} together.
       Any object in \code{...} must belong to the same class as \code{x},
       or to one of its subclasses, or must be \code{NULL}.
       The result is an object of the same class as \code{x}.
     }
     \item{}{\code{append(x, values, after = length(x))}: Insert the
-      \code{Sequence} \code{values} onto \code{x} at the position given by
+      \code{Vector} \code{values} onto \code{x} at the position given by
       \code{after}. \code{values} must have an \code{elementType} that extends
       that of \code{x}.
     }
@@ -240,13 +240,13 @@
 }
 
 \section{Looping}{
-  In the code snippets below, \code{x} is a Sequence object.
+  In the code snippets below, \code{x} is a Vector object.
 
   \describe{
     \item{}{
       \code{tapply(X, INDEX, FUN = NULL, ..., simplify = TRUE)}:
       Like the standard \code{\link[base]{tapply}} function defined in the
-      base package, the \code{tapply} method for Sequence objects applies a
+      base package, the \code{tapply} method for Vector objects applies a
       function to each cell of a ragged array, that is to each (non-empty)
       group of values given by a unique combination of the levels of certain
       factors.
@@ -260,7 +260,7 @@
       convenient form:
       \describe{
         \item{\code{SHIFT}}{A non-negative integer vector of shift values.}
-        \item{\code{X}, \code{Y}}{The Sequence or R vector objects to shift.}
+        \item{\code{X}, \code{Y}}{The Vector or R vector objects to shift.}
         \item{\code{FUN}}{The function, found via \code{match.fun}, to be
           applied to each set of shifted vectors.}
         \item{\dots}{Further arguments for \code{FUN}.}
@@ -306,11 +306,11 @@
   \linkS4class{DataTable} which is the type of objects returned by the
   \code{elementMetadata} accessor.
 
-  \linkS4class{Annotated} which Sequence extends.
+  \linkS4class{Annotated} which Vector extends.
 }
 
 \examples{
-  showClass("Sequence")  # shows (some of) the known subclasses
+  showClass("Vector")  # shows (some of) the known subclasses
 }
 
 \keyword{methods}

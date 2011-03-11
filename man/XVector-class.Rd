@@ -61,7 +61,7 @@
 
 \description{
   The XVector virtual class is a general container for storing
-  an "external vector". It inherits from the \link{Sequence},
+  an "external vector". It inherits from the \link{Vector},
   which has a very rich interface.
 
   The following classes derive directly from the XVector class:
@@ -133,7 +133,7 @@
 \author{H. Pages}
 
 \seealso{
-  \link{Sequence-class},
+  \link{Vector-class},
   \link{Views-class},
   \code{\link{solveUserSEW}},
   \link[Biostrings]{DNAString-class}

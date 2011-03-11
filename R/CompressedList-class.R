@@ -229,7 +229,7 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
     } else {
         zeroLengthElt <- FUN(X@unlistData[integer(0), , drop = FALSE], ...)
     }
-    useFastSubset <- (is.vector(X@unlistData) || is(X@unlistData, "Sequence"))
+    useFastSubset <- (is.vector(X@unlistData) || is(X@unlistData, "Vector"))
     if (!COMPRESS && (k == 0)) {
         elts <- list()
     } else if (COMPRESS && (kOK == 0)) {
@@ -289,7 +289,7 @@ setMethod("[[", "CompressedList",
               if (!missing(j) || length(dotArgs) > 0)
                   stop("incorrect number of subscripts")
               ## H.P.: Do we really need to support subsetting by NA? Other
-              ## "[[" methods for other Sequence subtypes don't support it.
+              ## "[[" methods for other Vector subtypes don't support it.
               if (is.vector(i) && length(i) == 1L && is.na(i))
                   return(NULL)
               index <- checkAndTranslateDbleBracketSubscript(x, i,

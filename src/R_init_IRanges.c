@@ -42,7 +42,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(compact_bitvector_last_bit, 1),
 	CALLMETHOD_DEF(compact_bitvector_set_op, 3),
 
-/* Sequence_class.c */
+/* Vector_class.c */
 	CALLMETHOD_DEF(vector_seqselect, 3),
 
 /* IRanges_class.c */
@@ -251,7 +251,7 @@ void R_init_IRanges(DllInfo *info)
 /* SEXP_utils.c */
 	REGISTER_CCALLABLE(_get_classname);
 
-/* Sequence_class.c */
+/* Vector_class.c */
 	REGISTER_CCALLABLE(_get_List_elementType);
 
 /* IRanges_class.c */

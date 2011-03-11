@@ -46,12 +46,12 @@
 \title{List objects}
 
 \description{
-  List objects are \link{Sequence} objects with a \code{"[["},
+  List objects are \link{Vector} objects with a \code{"[["},
   \code{elementType} and \code{elementLengths} method.
   The List class serves a similar role as \link[base]{list} in base R.
 
   It adds one slot, the \code{elementType} slot, to the two slots shared by
-  all \link{Sequence} objects.
+  all \link{Vector} objects.
 
   The \code{elementType} slot is the preferred location for List
   subclasses to store the type of data represented in the sequence. It is
@@ -64,7 +64,7 @@
   condition is TRUE.
 
   To be functional, a class that inherits from List must define at least
-  a \code{"[["} method (in addition to the minimum set of \link{Sequence}
+  a \code{"[["} method (in addition to the minimum set of \link{Vector}
   methods).
 }
 
@@ -229,7 +229,7 @@
 \author{P. Aboyoun and H. Pages}
 
 \seealso{
-  \linkS4class{Sequence} for the parent class.
+  \linkS4class{Vector} for the parent class.
 
   \linkS4class{SimpleList} and \linkS4class{CompressedList} for direct
   extensions.

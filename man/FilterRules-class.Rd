@@ -96,7 +96,7 @@
   \describe{
     \item{}{
       \code{x[i]}: Subsets the filter rules using the
-      same interface as for \code{\linkS4class{Sequence}}.
+      same interface as for \code{\linkS4class{Vector}}.
     }
     \item{}{
       \code{x[[i]]}: Extracts an expression or function via the same

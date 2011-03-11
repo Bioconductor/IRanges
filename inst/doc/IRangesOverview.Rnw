@@ -59,16 +59,16 @@ biocLite("IRanges")
 library(IRanges)
 @
 
-\section{Sequences}
+\section{Vector objects}
 
 In the context of the \IRanges{} package, a sequence is an ordered finite
 collection of elements. The \IRanges{} packages represents two types of
 objects as sequences: (1) atomic sequences and (2) lists (or non-atomic
 sequences). The following subsections describe each in turn.
-All \IRanges{}-derived sequences inherit from the \Rclass{Sequence}
+All \IRanges{}-derived sequences inherit from the \Rclass{Vector}
 virtual class.
 
-\subsection{Atomic Sequences}
+\subsection{Atomic Vectors}
 
 In \R{}, atomic sequences are typically stored in atomic vectors. The
 \IRanges{} package includes two additional atomic sequence object types:
@@ -104,7 +104,7 @@ While these three methods may seem trivial, they provide a great deal of
 power and many atomic sequence manipulations can be constructed
 using them.
 
-\subsubsection{Sequence Subsetting}
+\subsubsection{Vector Subsetting}
 
 As with ordinary \R{} atomic vectors, it is often necessary to subset
 one sequence from another. When this subsetting does not duplicate or
@@ -148,11 +148,11 @@ seqselect(xSnippet, start = c(6,1), end = c(10, 5))
 subset(xSnippet, xSnippet >= 5L)
 @
 
-\subsubsection{Combining Sequences}
+\subsubsection{Combining Vectors}
 
 The \IRanges{} package uses two generic functions, \Rfunction{c} and
-\Rfunction{append}, for combining two \Rclass{Sequence} objects. The methods
-for \Rclass{Sequence} objects follow the definition that these two functions
+\Rfunction{append}, for combining two \Rclass{Vector} objects. The methods
+for \Rclass{Vector} objects follow the definition that these two functions
 are given the the \Rpackage{base} package.
 
 <<seq-combine>>=
@@ -160,7 +160,7 @@ c(xSnippet, rev(xSnippet))
 append(xSnippet, xSnippet, after = 3)
 @
 
-\subsubsection{Looping over Sequences and Subsequences}
+\subsubsection{Looping over Vectors and Vector subsets}
 
 In \R{}, \Rfunction{for} looping can be an expensive operation. To
 compensate for this, \IRanges{} uses three generics, \Rfunction{endoapply},
@@ -170,7 +170,7 @@ calculations over subsequences. The \Rfunction{lapply} and \Rfunction{sapply}
 functions are familiar to many \R{} users since they are the standard
 functions for looping over the elements of an \R{} \Rclass{list} object.
 The \Rfunction{endoapply} function performs an endomorphism equivalent to
-\Rfunction{lapply}, i.e. returns a \Rclass{Sequence} object of the same class
+\Rfunction{lapply}, i.e. returns a \Rclass{Vector} object of the same class
 as the input rather than a \Rclass{list} object. More will be given on these
 three functions in the Lists subsection.
 
@@ -300,9 +300,9 @@ of its elements, provides no infrastructure to ensure type safety, and
 the S3 and S4 method dispatch mechanisms do not support method selection
 for lists with homogeneous object types.
 The \Rclass{List} virtual class defined in the \IRanges{} package addresses
-these issues. \Rclass{List} is a direct extension of \Rclass{Sequence}.
+these issues. \Rclass{List} is a direct extension of \Rclass{Vector}.
 
-\subsubsection{Lists of Atomic Sequences}
+\subsubsection{Lists of Atomic Vectors}
 
 The first type of lists we consider are those containing atomic sequences
 such as \Rclass{integer} vectors or \Rclass{Rle} objects. We may wish to
@@ -354,7 +354,7 @@ object.size(sIntList2)
 @
 
 The \Rfunction{length} function returns the number of elements in a
-\Rclass{Sequence}-derived object and, for a \Rclass{List}-derived object
+\Rclass{Vector}-derived object and, for a \Rclass{List}-derived object
 like ``simple list" or ``compressed list", the \Rfunction{elementLengths}
 function returns an integer vector containing the lengths of each of the
 elements:
@@ -413,18 +413,18 @@ To Do:
 \Rclass{DataFrameList},
 \Rclass{SplitDataFrameList}
 
-\section{Sequence Annotations}
+\section{Vector Annotations}
 
 Often when one has a collection of objects, there is a need to attach
 metadata that describes the collection in some way. The
-\Rclass{Sequence} class definition contains two slots for storing
+\Rclass{Vector} class definition contains two slots for storing
 metadata: the \Robject{metadata} slot, which stores an ordinary
 \Rclass{list} for storing metadata about the whole object, and
 \Robject{elementMetadata}, which can store and object that inherits
 from \Rclass{DataTable} whose rows annotate the corresponding element
-of the \Rclass{Sequence} object.
+of the \Rclass{Vector} object.
 
-\section{Sequence Ranges}
+\section{Vector Ranges}
 
 When analyzing sequences, we are often interested in particular
 consecutive subsequences. For example, the \Sexpr{letters} vector could
@@ -528,7 +528,7 @@ subsequence, where no elements are repeated and order is
 preserved. Also, it is occasionally useful to think of a
 \Rclass{Ranges} object as a set, where no elements are repeated and
 order does not matter. While every \Rclass{Ranges} object, as a
-\Rclass{Sequence} derivative, has an implicit ordering, one can
+\Rclass{Vector} derivative, has an implicit ordering, one can
 enforce the same ordering for all such objects, so that ordering
 becomes inconsequential within that context. 
 
@@ -581,7 +581,7 @@ rl <- RangesList(ir, rev(ir))
 start(rl)
 @
 
-\subsection{Sequence Extraction}
+\subsection{Vector Extraction}
 
 As the elements of \Rclass{Ranges} objects encode consecutive
 subsequences, they may be used directly in sequence extraction. Note
@@ -593,7 +593,7 @@ irextract <- IRanges(start = c(4501, 4901) , width = 100)
 seqselect(xRle, irextract)
 @
 %
-If the sequence is a \Rclass{Sequence} subclass (i.e. not an ordinary
+If the sequence is a \Rclass{Vector} subclass (i.e. not an ordinary
 \Rclass{vector}), the canonical \Rfunction{[} function also accepts a
 \Rclass{Ranges} instance.
 %
@@ -807,12 +807,12 @@ respectively. These are relatively self-explanatory.
 <<ranges-psetdiff>>=
 @
 
-% \subsection{Mapping Ranges Between Sequences}
+% \subsection{Mapping Ranges Between Vectors}
 
 % \Rclass{RangesMapping}
 % \Rfunction{map}
 
-\section{Sequence Views}
+\section{Vector Views}
 
 When we extract a sequence with \Rfunction{seqselect}, we can pass
 multiple ranges, each selecting a single consecutive
@@ -973,7 +973,7 @@ sequence analysis concepts are represented in the \IRanges{} class system.
 \begin{center}
 \begin{tabular}{l|l}
 \hline
-Biological Entity                        & \Rclass{Sequence} Subclass \\
+Biological Entity                        & \Rclass{Vector} Subclass \\
 \hline
 Genome browser track(s)                  & \Rclass{RangedData}/\Rclass{RangedDataList} \\
 Coverage across chromosomes/contigs      & \Rclass{RleList} \\
@@ -982,7 +982,7 @@ Data (sans ranges) across chroms/contigs & \Rclass{SplitDataFrameList} \\
 \hline
 \end{tabular}
 \end{center}
-\caption{\Rclass{Sequence} subclasses for Biological Sequence Analysis}
+\caption{\Rclass{Vector} subclasses for Biological Sequence Analysis}
 \label{table:bioseq}
 \end{table}
 
