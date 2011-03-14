@@ -70,6 +70,13 @@ setMethod("slice", "Rle",
               }
           })
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion.
+###
+
+setAs("AtomicList", "RleViews", function(from) {
+  Views(as(unlist(from), "Rle"), PartitioningByWidth(elementLengths(from)))
+})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
