@@ -564,3 +564,12 @@ setAs("Vector", "DataFrame",
         new2("DataFrame", listData = structure(list(unname(from)), names = "X"),
              nrows = length(from), rownames = names(from), check=FALSE)
       })
+
+setOldClass("AsIs")
+setAs("AsIs", "DataFrame",
+      function(from) {
+        class(from) <- tail(class(from), -1)
+        df <- new2("DataFrame", nrows = length(from), check=FALSE)
+        df[[1]] <- from
+        df
+      })
