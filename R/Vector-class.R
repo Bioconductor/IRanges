@@ -29,7 +29,12 @@ setClass("Vector",
 ###
 
 setGeneric("showAsCell", function(object) standardGeneric("showAsCell"))
-setMethod("showAsCell", "ANY", function(object) object)
+setMethod("showAsCell", "ANY", function(object) {
+  attempt <- try(data.frame(object), silent=TRUE)
+  if (is(attempt, "try-error"))
+    rep.int("########", length(object))
+  else object
+})
 setMethod("showAsCell", "list", function(object)
           rep.int("########", length(object)))
 setMethod("showAsCell", "Vector", function(object)
