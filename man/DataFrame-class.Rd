@@ -42,6 +42,7 @@
 % aggregation
 \alias{aggregate,formula-method}
 
+
 \title{External Data Frame}
 \description{
   The \code{DataFrame} extends the \code{\linkS4class{DataTable}} virtual
@@ -62,6 +63,16 @@
   As \code{DataFrame} derives from \code{\linkS4class{Vector}}, it is
   possible to set an \code{annotation} string. Also, another
   \code{DataFrame} can hold metadata on the columns.
+
+  For a class to be supported as a column, it must have \code{length}
+  and \code{[} methods, where \code{[} supports subsetting only by
+  \code{i} and respects \code{drop=FALSE}. Optionally, a method may be
+  defined for the \code{showAsCell} generic, which should return a
+  vector of the same length as the subset of the column passed to
+  it. This vector is then placed into a \code{data.frame} and converted
+  to text with \code{format}. Thus, each element of the vector should be
+  some simple, usually character, representation of the corresponding
+  element in the column.
 }
 
 \section{Accessors}{
