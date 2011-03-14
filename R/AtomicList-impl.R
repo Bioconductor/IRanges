@@ -571,7 +571,18 @@ setMethod("Math2", "SimpleAtomicList",
           })
 
 setMethod("Summary", "AtomicList",
-          function(x, ..., na.rm = FALSE) sapply(x, .Generic, na.rm = na.rm))
+          function(x, ..., na.rm = FALSE) {
+            sapply(x, .Generic, na.rm = na.rm)
+          })
+
+setMethod("Summary", "CompressedRleList",
+          function(x, ..., na.rm = FALSE) {
+            toViewFun <- list(max = viewMaxs, min = viewMins, sum = viewSums)
+            if (!is.null(viewFun <- toViewFun[[.Generic]]))
+              structure(viewFun(as(x, "RleViews"), na.rm = na.rm),
+                        names=names(x))
+            else callNextMethod()
+          })
 
 setMethod("Complex", "CompressedAtomicList",
           function(z)
@@ -783,6 +794,8 @@ setAtomicListMethod("which", inputBaseClass = "LogicalList",
 
 for (i in c("IntegerList", "NumericList", "RleList")) {
     setAtomicListMethod("diff", inputBaseClass = i, endoapply = TRUE)
+    setAtomicListMethod("which.max", inputBaseClass = i)
+    setAtomicListMethod("which.min", inputBaseClass = i)
     setMethod("pmax", i, function(..., na.rm = FALSE)
                   mendoapply(pmax, ..., MoreArgs = list(na.rm = na.rm)))
     setMethod("pmin", i, function(..., na.rm = FALSE)
@@ -835,6 +848,17 @@ for (i in c("LogicalList", "IntegerList", "NumericList", "RleList")) {
               })
     setAtomicListMethod("IQR", inputBaseClass = i)
 }
+
+setMethod("which.max", "CompressedRleList",
+          function(x) {
+            viewWhichMaxs(as(x, "RleViews"), na.rm=TRUE) -
+              c(0L, head(cumsum(elementLengths(x)), -1))
+          })
+setMethod("which.min", "CompressedRleList",
+          function(x) {
+            viewWhichMins(as(x, "RleViews"), na.rm=TRUE) -
+              c(0L, head(cumsum(elementLengths(x)), -1))
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Running window statistic methods
