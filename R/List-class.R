@@ -267,7 +267,6 @@ seqby <- function(data, INDICES, FUN, ...) {
   castList(by(data, INDICES, FUN, ..., simplify = FALSE))
 }
 
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
@@ -319,6 +318,16 @@ setMethod("stack", "List",
             df
           })
 
+setMethod("relist", signature(skeleton = "List"),
+          function(flesh, skeleton) {
+            ind <- names(skeleton)
+            if (is.null(ind))
+              ind <- seq(length(skeleton))
+            list <- seqsplit(flesh, rep(ind, elementLengths(skeleton)))
+            if (is.null(names(skeleton)))
+              names(list) <- NULL
+            list
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Functional Programming.
