@@ -1,7 +1,7 @@
 useDynLib(IRanges)
 
 import(methods)
-importFrom(utils, head, read.table, tail, stack)
+importFrom(utils, head, read.table, tail, stack, relist)
 importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
            IQR, smoothEnds, runmed, window, "window<-", aggregate, xtabs,
            na.omit, na.exclude, complete.cases)
@@ -199,7 +199,7 @@ exportMethods(
     rep, rep.int,
     head, tail,
     start, end,
-    min, max, range,
+    min, max, range, which.max, which.min,
     pmax, pmin, pmax.int, pmin.int, diff,
     mean, var, cov, cor, sd, median, quantile, mad, IQR, smoothEnds, runmed,
     subset, window, "window<-", aggregate,
