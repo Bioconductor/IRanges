@@ -172,6 +172,7 @@ export(
     "applyParams<-", simplify, "simplify<-",
     ##excludePattern, "excludePattern<-",
     filterRules, "filterRules<-",
+    evalSeparately, subsetByFilter,
     reducerFun, "reducerFun<-", reducerParams, "reducerParams<-",
     iteratorFun, "iteratorFun<-",
     rdapply,
