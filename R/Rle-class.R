@@ -196,7 +196,7 @@ getStartEndRunAndOffset <- function(x, start, end) {
         if (n2 < n)
             e2 <- rep(e2, length.out = n)
         # ends <- sort(unique(c(end(e1), end(e2))))
-        ends <- .Call("Integer_sorted_merge", end(e1), end(e2), PACKAGE="IRanges")
+        ends <- sortedMerge(end(e1), end(e2))
         which1 <- findIntervalAndStartFromWidth(ends, runLength(e1))[["interval"]]
         which2 <- findIntervalAndStartFromWidth(ends, runLength(e2))[["interval"]]
     }
@@ -223,7 +223,7 @@ setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
                   if (n2 < n)
                       e2 <- rep(e2, length.out = n)
                   # ends <- sort(unique(c(end(e1), end(e2))))
-                  ends <- .Call("Integer_sorted_merge", end(e1), end(e2), PACKAGE="IRanges")
+                  ends <- sortedMerge(end(e1), end(e2))
                   which1 <- findIntervalAndStartFromWidth(ends, runLength(e1))[["interval"]]
                   which2 <- findIntervalAndStartFromWidth(ends, runLength(e2))[["interval"]]
               }
@@ -916,8 +916,7 @@ setMethod("diff", "Rle",
     ends <- end(rlist[[1L]])
     if (length(rlist) > 1) {
         for (i in 2:length(rlist))
-            ends <- .Call("Integer_sorted_merge", ends, end(rlist[[i]]),
-                    PACKAGE="IRanges")
+            ends <- sortedMerge(ends, end(rlist[[i]]))
     }
     Rle(values =
         do.call(FUN,
@@ -1292,7 +1291,7 @@ setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle")
         if (n2 < n)
             e2 <- rep(e2, length.out = n)
         # ends <- sort(unique(c(end(e1), end(e2))))
-        ends <- .Call("Integer_sorted_merge", end(e1), end(e2), PACKAGE="IRanges")
+        ends <- sortedMerge(end(e1), end(e2))
         which1 <- findIntervalAndStartFromWidth(ends, runLength(e1))[["interval"]]
         which2 <- findIntervalAndStartFromWidth(ends, runLength(e2))[["interval"]]
     }

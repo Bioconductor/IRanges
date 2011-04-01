@@ -401,6 +401,9 @@ SEXP address_asSTRSXP(SEXP s);
 
 SEXP listofvectors_lengths(SEXP x);
 
+
+/* int_utils.c */
+
 SEXP Integer_any_missing_or_outside(SEXP x, SEXP lower, SEXP upper);
 
 SEXP Integer_diff_with_0(SEXP x);
@@ -442,7 +445,7 @@ SEXP findIntervalAndStartFromWidth(
 );
 
 
-/* strutils.c */
+/* str_utils.c */
 
 SEXP safe_strexplode(SEXP s);
 
