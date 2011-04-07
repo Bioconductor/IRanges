@@ -150,3 +150,18 @@ mseq <- function(from, to)
 findIntervalAndStartFromWidth <- function(x, width)
     .Call("findIntervalAndStartFromWidth", x, width, PACKAGE="IRanges")
 
+### Reverse an injection from 1:M to 1:N.
+### The injection is represented by an integer vector of length M (eventually
+### with NAs). Fundamental property:
+###     reverseIntegerInjection(reverseIntegerInjection(injection, N), M)
+### is the identity function.
+### Can be used to efficiently reverse the result of a call to 'order()'.
+reverseIntegerInjection <- function(injection, N)
+{
+    M <- length(injection)
+    ans <- rep.int(NA_integer_, N)
+    is_not_na <- !is.na(injection)
+    ans[injection[is_not_na]] <- seq_len(M)[is_not_na]
+    ans
+}
+
