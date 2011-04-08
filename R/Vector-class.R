@@ -111,7 +111,7 @@ setReplaceMethod("values", "Vector",
     }
     if (!identical(rownames(emd), names(x))) {
         msg <- c("the rownames of DataTable 'elementMetadata(x)' ",
-                 "match the names of 'x'")
+                 "must match the names of 'x'")
         return(paste(msg, collapse=""))
     }
     NULL
@@ -670,7 +670,8 @@ setMethod("rep.int", "Vector",
 setMethod("subset", "Vector",
           function (x, subset, ...) 
           {
-              if (!is.logical(subset)) 
+              if (!is.logical(subset) ||
+                  (is(subset, "Rle") && !is.logical(runValue(subset)))) 
                   stop("'subset' must be logical")
               x[subset & !is.na(subset)]
           })
