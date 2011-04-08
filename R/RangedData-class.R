@@ -729,7 +729,7 @@ setMethod("show", "RangedData", function(object) {
       else
         rownames(out) <- nms
       classinfo <-
-        matrix(c("<character>", "<IRanges>", "|",
+        matrix(c("<factor>", "<IRanges>", "|",
                  unlist(lapply(values, function(x)
                                paste("<", class(x), ">", sep = "")),
                         use.names = FALSE)), nrow = 1,
@@ -765,7 +765,7 @@ setMethod("show", "RangedData", function(object) {
         rownames(out) <- c(head(nms, 9), "...", tail(nms, 9))
       }
       classinfo <-
-        matrix(c("<character>", "<IRanges>", "|",
+        matrix(c("<factor>", "<IRanges>", "|",
                  unlist(lapply(topValues, function(x)
                                paste("<", class(x), ">", sep = "")),
                         use.names = FALSE)), nrow = 1,
