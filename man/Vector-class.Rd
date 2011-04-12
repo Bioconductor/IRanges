@@ -29,6 +29,7 @@
 \alias{seqselect}
 \alias{seqselect,Vector-method}
 \alias{seqselect,NULL-method}
+\alias{seqselect,ANY-method}
 \alias{seqselect,vector-method}
 \alias{seqselect,factor-method}
 \alias{seqselect<-}

@@ -5,8 +5,11 @@
 \alias{gaps}
 \alias{gaps,IRanges-method}
 \alias{gaps,Ranges-method}
+\alias{union}
 \alias{union,IRanges,IRanges-method}
+\alias{intersect}
 \alias{intersect,IRanges,IRanges-method}
+\alias{setdiff}
 \alias{setdiff,IRanges,IRanges-method}
 \alias{punion}
 \alias{punion,IRanges,IRanges-method}

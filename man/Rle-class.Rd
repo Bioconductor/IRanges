@@ -11,8 +11,10 @@
 
 \alias{runLength}
 \alias{runLength,Rle-method}
+\alias{runLength,RleList-method}
 \alias{runValue}
 \alias{runValue,Rle-method}
+\alias{runValue,RleList-method}
 \alias{nrun}
 \alias{nrun,Rle-method}
 \alias{start,Rle-method}

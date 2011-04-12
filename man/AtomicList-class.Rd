@@ -103,6 +103,7 @@
 \alias{Math2,CompressedAtomicList-method}
 \alias{Math2,SimpleAtomicList-method}
 \alias{Summary,AtomicList-method}
+\alias{Summary,CompressedRleList-method}
 \alias{Complex,CompressedAtomicList-method}
 \alias{Complex,SimpleAtomicList-method}
 
@@ -141,6 +142,8 @@
 \alias{which,SimpleLogicalList-method}
 \alias{which,CompressedRleList-method}
 \alias{which,SimpleRleList-method}
+\alias{which.max,CompressedRleList-method}
+\alias{which.min,CompressedRleList-method}
 
 \alias{diff,IntegerList-method}
 \alias{diff,NumericList-method}

@@ -9,6 +9,8 @@
 % subsetting
 \alias{[,FilterRules-method}
 \alias{[[<-,FilterRules-method}
+\alias{subsetByFilter}
+\alias{subsetByFilter,ANY,FilterRules-method}
 
 % splitting and combining
 \alias{append,FilterRules,FilterRules-method}
@@ -16,9 +18,14 @@
 
 % evaluating
 \alias{eval,FilterRules,ANY-method}
+\alias{evalSeparately}
+\alias{evalSeparately,FilterRules-method}
 
 % constructor
 \alias{FilterRules}
+
+% general 
+\alias{summary,FilterRules-method}
 
 \title{Collection of Filter Rules}
 \description{A \code{FilterRules} object is a collection of filter

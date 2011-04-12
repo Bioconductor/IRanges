@@ -13,6 +13,7 @@
 \alias{elementLengths,list-method}
 \alias{elementLengths,List-method}
 \alias{elementLengths,CompressedList-method}
+\alias{elementLengths,ANY-method}
 \alias{isEmpty}
 \alias{isEmpty,ANY-method}
 

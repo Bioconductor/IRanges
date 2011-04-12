@@ -35,6 +35,10 @@
 \alias{simplify,RDApplyParams-method}
 \alias{simplify<-}
 \alias{simplify<-,RDApplyParams-method}
+\alias{iteratorFun}
+\alias{iteratorFun,RDApplyParams-method}
+\alias{iteratorFun<-}
+\alias{iteratorFun<-,RDApplyParams-method}
 
 \title{Applying over spaces}
 \description{The \code{rdapply} function applies a user function over

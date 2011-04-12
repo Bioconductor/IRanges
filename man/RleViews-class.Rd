@@ -12,6 +12,8 @@
 % Methods:
 \alias{show,RleViews-method}
 
+% coercion
+\alias{coerce,AtomicList,RleViews-method}
 
 \title{The RleViews class}
 
