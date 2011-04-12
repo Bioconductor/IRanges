@@ -182,6 +182,14 @@ test_Ranges_nearest <- function() {
                 c(1, 1, 2, 3, 4, 5), c(2, 3, 4, 1, 2, 4), 5, 5)
 }
 
+test_Ranges_distance <- function() {
+  query <- IRanges(c(1, 3, 9), c(2, 7, 10))
+  subject <- IRanges(c(3, 5, 12), c(3, 6, 12))
+  checkIdentical(distance(query, subject), c(1L, 0L, 2L))
+  checkIdentical(distance(IRanges(), IRanges()), integer())
+  checkException(distance(query[1:2], subject), silent=TRUE)
+}
+
 test_Ranges_disjoin <- function() {
   checkIdentical(disjoin(IRanges()), IRanges())
   ir <- IRanges(c(1, 1, 4, 10), c(6, 3, 8, 10))
