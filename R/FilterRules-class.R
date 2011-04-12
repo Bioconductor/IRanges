@@ -183,8 +183,7 @@ setMethod("c", "FilterRules",
               args <- unname(list(...))
             else
               args <- unname(list(x, ...))
-            if (!all(sapply(args, is, "FilterRules")))
-              stop("all arguments in '...' must be FilterRules objects")
+            args <- lapply(args, as, "FilterRules")              
             ans <-
               FilterRules(unlist(lapply(args,
                                         function(x) {
