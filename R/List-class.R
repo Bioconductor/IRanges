@@ -26,9 +26,10 @@ setMethod("elementType", "vector", function(x) mode(x))
 
 setGeneric("elementLengths", function(x) standardGeneric("elementLengths"))
 
-setMethod("elementLengths", "list",
+setMethod("elementLengths", "ANY",
     function(x)
     {
+        x <- as.list(x)
         ans <-
           try(.Call("listofvectors_lengths", x, PACKAGE="IRanges"), silent=TRUE)
         if (!inherits(ans, "try-error")) {
@@ -137,23 +138,30 @@ setGeneric("mapply",
                     USE.NAMES = TRUE) standardGeneric("mapply"),
            signature = "...")
 
-setMethod("mapply", "List",
-          function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
-                   USE.NAMES = TRUE)
-          {
-              seqs <- list(...)
-              if (any(!sapply(seqs, is, "List")))
-                  stop("all objects in ... should inherit from 'List'")
-              N <- unique(sapply(seqs, length))
-              if (length(N) != 1)
-                  stop("not all objects in ... have the same length")
-              FUNprime <- function(.__INDEX__, ...) {
-                  do.call(FUN, c(lapply(seqs, "[[", .__INDEX__), ...))
-              }
-              mapply(FUNprime, structure(seq_len(N), names = names(seqs[[1L]])),
-                     MoreArgs = MoreArgs, SIMPLIFY = SIMPLIFY,
-                     USE.NAMES = USE.NAMES)
-          })
+.mapply_List <- function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
+                         USE.NAMES = TRUE)
+{
+    seqs <- list(...)
+    isListOrVector <- function(x) is.vector(x) | is(x, "List")
+    if (any(!sapply(seqs, isListOrVector)))
+        stop("all objects in ... should be a vector or 'List'")
+    elens <- elementLengths(seqs)
+    N <- max(elens)
+    if (any(N %% elens != 0L))
+        stop("all object lengths must be multiple of longest object length")
+    recycleExtract <- function(x, i) x[[(i - 1L) %% length(x) + 1L]]
+    FUNprime <- function(.__INDEX__, ...) {
+        do.call(FUN, c(lapply(seqs, recycleExtract, .__INDEX__), ...))
+    }
+    nms <- names(seqs[[1]])
+    if (is.null(nms) && is.character(seqs[[1]]))
+      nms <- seqs[[1]]
+    mapply(FUNprime, structure(seq_len(N), names = nms),
+           MoreArgs = MoreArgs, SIMPLIFY = SIMPLIFY,
+           USE.NAMES = USE.NAMES)
+}
+
+setMethod("mapply", "List", .mapply_List)
 
 setMethod("endoapply", "List",
           function(X, FUN, ...) {
@@ -242,8 +250,8 @@ seqapply <- function(X, FUN, ...) {
 }
 
 mseqapply <- function(FUN, ..., MoreArgs = NULL, USE.NAMES = TRUE) {
-  castList(mapply(FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = FALSE,
-                  USE.NAMES = USE.NAMES))
+  castList(.mapply_List(FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = FALSE,
+                        USE.NAMES = USE.NAMES))
 }
 
 tseqapply <- function(X, INDEX, FUN = NULL, ...) {
