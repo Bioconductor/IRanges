@@ -125,6 +125,7 @@ export(
     findOverlaps, overlap, countOverlaps, countOverlap,
     subsetByOverlaps,
     nearest, precede, follow,
+    distance,
     reflect,
     flank,
     punion, pintersect, psetdiff, pgap,

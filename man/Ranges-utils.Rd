@@ -28,6 +28,9 @@
 \alias{threebands}
 \alias{threebands,IRanges-method}
 
+\alias{distance}
+\alias{distance,Ranges,Ranges-method}
+
 \title{Ranges utility functions}
 
 \description{
@@ -45,13 +48,17 @@ shift(x, shift, use.names=TRUE)
 \S4method{range}{Ranges}(x, ..., na.rm = FALSE)
 \S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
        with.inframe.attrib=FALSE)
+\S4method{distance}{Ranges}(x, y)
 
 threebands(x, start=NA, end=NA, width=NA)
 }
 
 \arguments{
   \item{x}{
-    An \link{Ranges} object.
+    A \link{Ranges} object.
+  }
+  \item{y}{
+    A \link{Ranges} object. 
   }
   \item{width}{
     For \code{narrow} and \code{threebands}, a vector of integers, eventually
@@ -216,7 +223,13 @@ threebands(x, start=NA, end=NA, width=NA)
   of the original ranges during the narrowing.
 
   Note that original object \code{x} can be reconstructed from the
-  left and right bands with \code{punion(y$left, y$right, fill.gap=TRUE)}.
+  left and right bands with \code{punion(y$left, y$right,
+    fill.gap=TRUE)}.
+
+  \code{distance} returns the number of steps between the end (or start) of one
+  range in \code{x} and the start (or end) of the corresponding range in
+  \code{y}, depending on their order. If the two ranges overlap, the
+  distance is zero. If they are adjacent, the distance is one.
 }
 
 \author{H. Pages, M. Lawrence, P. Aboyoun}

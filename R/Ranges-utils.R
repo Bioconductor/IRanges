@@ -565,6 +565,39 @@ setMethod("follow", c("Ranges", "RangesORmissing"),
     }
 )
 
+## NOTE: not exported yet, because not sure if useful
+setGeneric("distanceToNearest",
+           function(x, subject, ...) standardGeneric("distanceToNearest"))
+
+setMethod("distanceToNearest", c("Ranges", "RangesORmissing"),
+          function(x, subject, select = c("arbitrary", "all"))
+          {
+            select <- match.arg(select)
+            if (missing(subject)) {
+              subject <- x
+              x_nearest <- nearest(x, select = select)
+            } else x_nearest <- nearest(x, subject, select = select)
+            if (select == "arbitrary")
+              x_nearest <- cbind(query = seq(length(x)), subject = x_nearest)
+            else x_nearest <- as.matrix(x_nearest)
+            x <- x[x_nearest[,1]]
+            subject <- subject[x_nearest[,2]]
+            DataFrame(x_nearest, distance = distance(x, subject))
+          })
+
+setGeneric("distance",
+           function(x, y, ...) standardGeneric("distance"))
+
+setMethod("distance", c("Ranges", "Ranges"), function(x, y) {
+  if (length(x) != length(y))
+    stop("'x' and 'y' must have the same length")
+  ans_end_plus1 <- pmax.int(start(x), start(y))
+  ans_start <- pmin.int(end(x), end(y))
+  ans <- ans_end_plus1 - ans_start
+  pmax(ans, if (length(x)) 0L else integer())
+})
+
+
 ## zooming (symmetrically scales the width)
 setMethod("Ops", c("Ranges", "numeric"),
     function(e1, e2)
