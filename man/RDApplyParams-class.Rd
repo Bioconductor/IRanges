@@ -120,6 +120,11 @@ rdapply(x, ...)
       A \code{list} of additional parameters to pass to \code{reducerFun}.
       Can only be set if \code{reducerFun} is set. Usually empty.
     }
+    \item{\code{iteratorFun}}{
+      The function used for applying over the \code{RangedData}. By
+      default, this is \code{lapply}, but it could also be a specialized
+      function, like \code{mclapply}.
+    }
   }
 }
 
@@ -167,6 +172,9 @@ rdapply(x, ...)
     \item{}{\code{reducerParams(x)}, \code{reducerParams(x) <- value}:
       Get or set a \code{list} of additional parameters to pass to
       \code{reducerFun}.
+    }
+    \item{}{\code{iteratorFun(x)}, \code{iteratorFun(x) <- value}:
+      Get or set the function used for applying over the \code{RangedData}.
     }
   }
 }

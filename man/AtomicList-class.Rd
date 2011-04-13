@@ -394,7 +394,7 @@
   \describe{
     \item{General}{\code{\%in\%}, \code{is.na}, \code{match}, \code{sort},
                    \code{table}, \code{unique}}
-    \item{Logical}{\code{!}, \code{which}}
+    \item{Logical}{\code{!}, \code{which}, \code{which.max}, \code{which.min}}
     \item{Numeric}{\code{diff},
                    \code{pmax}, \code{pmax.int}, \code{pmin}, \code{pmin.int},
                    \code{mean}, \code{var}, \code{cov}, \code{cor}, \code{sd},
