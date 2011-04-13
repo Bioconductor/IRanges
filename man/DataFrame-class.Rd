@@ -124,6 +124,10 @@
     arguments. The row names should be given in
     \code{row.names}; otherwise, there are no row names. This is by
     design, as row names are normally undesirable when data is large.
+
+    To store an object of a class that does not support coercion to
+    \code{DataFrame}, wrap it in \code{I()}. The class must still have
+    methods for \code{length} and \code{[}.
   }
 }
 

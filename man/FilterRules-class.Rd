@@ -164,6 +164,11 @@
       contains only the elements in \code{x} for which \code{filter}
       evaluates to \code{TRUE}.
     }
+    \item{}{\code{summary(object, subject)}:
+      Returns an integer vector with the number of elements
+      in \code{subject} that pass each rule in \code{object}, along with
+      a count of the elements that pass all filters.
+    }
   }
 }
 

@@ -406,6 +406,20 @@
   }
 }
 
+\section{RleList Methods}{
+  RleList has a number of methods that are not shared by other
+  AtomicList derivatives.
+
+  \describe{
+    \item{}{\code{runLength(x)}: Gets the run lengths of each element of the
+      list, as an IntegerList.
+    }
+    \item{}{\code{runValue(x)}: Gets the run values of each element of the
+      list, as an AtomicList.
+    }
+  }
+}
+
 \author{P. Aboyoun}
 \seealso{\code{\linkS4class{List}} for the applicable methods.}
 
