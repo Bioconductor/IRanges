@@ -83,7 +83,7 @@ setGeneric("resize", signature="x",
         standardGeneric("resize")
 )
 setMethod("resize", "Ranges",
-    function(x, width, fix="start", use.names=TRUE, start=TRUE, symmetric=FALSE)
+    function(x, width, fix="start", use.names=TRUE)
     {
         lx <- length(x)
         if (!is.numeric(width) || anyMissing(width))
@@ -92,35 +92,18 @@ setMethod("resize", "Ranges",
             width <- as.integer(width)
         if (anyMissingOrOutside(width, 0L))
             stop("'width' values must be non-negative")
-        if (missing(start) && missing(symmetric)) {
-            if (!(is.character(fix) ||
-                  (is(fix, "Rle") && is.character(runValue(fix)))) || 
-                (length(fix) == 0) ||
-                (length(setdiff(unique(fix),
-                                c("start", "end", "center"))) > 0)) {
-                stop("'fix' must be a character vector or character Rle ",
-                     "with values in \"start\", \"end\", and \"center\"")
-            }
-            if (!is(fix, "Rle"))
-                fix <- Rle(fix)
-            if (length(fix) != lx)
-                fix <- rep(fix, length.out = lx)
-        } else {
-            fix <- Rle("start", lx)
-            if (!missing(start)) {
-                if (!is.logical(start) || anyMissing(start))
-                    stop("'start' must be a logical vector without NA's")
-                warning("argument 'start' is deprecated; use 'fix'.")
-                fix <- Rle(ifelse(start, "start", "end"), lx)
-            }
-            if (!missing(symmetric)) {
-                if (!isTRUEorFALSE(symmetric))
-                    stop("'symmetric' must be TRUE or FALSE")
-                warning("argument 'symmetric' is deprecated; use 'fix'.")
-                if (symmetric)
-                    fix <- Rle("center", lx)
-            }
+        if (!(is.character(fix) ||
+              (is(fix, "Rle") && is.character(runValue(fix)))) || 
+            (length(fix) == 0) ||
+            (length(setdiff(unique(fix),
+                            c("start", "end", "center"))) > 0)) {
+            stop("'fix' must be a character vector or character Rle ",
+                 "with values in \"start\", \"end\", and \"center\"")
         }
+        if (!is(fix, "Rle"))
+            fix <- Rle(fix)
+        if (length(fix) != lx)
+            fix <- rep(fix, length.out = lx)
         ans_width <- recycleVector(width, lx)
         ans_start <- start(x)
         if (!identical(runValue(fix), "start")) {

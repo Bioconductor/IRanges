@@ -5,15 +5,8 @@
 setMethod("findOverlaps", c("Ranges", "IntervalTree"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
-                   select = c("all", "first", "last", "arbitrary"),
-                   multiple = TRUE)
+                   select = c("all", "first", "last", "arbitrary"))
           {
-            if (!missing(multiple) && !multiple) {
-              if (!isTRUEorFALSE(multiple))
-                stop("'multiple' must be TRUE or FALSE")
-              warning("argument 'multiple' is deprecated; use 'select'.")
-              select <- "arbitrary"
-            }
             if (!isSingleNumber(maxgap) || maxgap < 0L)
               stop("'maxgap' must be a single, non-negative integer")
             if (!isSingleNumber(minoverlap) || minoverlap < 1L)
@@ -77,15 +70,8 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
 setMethod("findOverlaps", c("Ranges", "Ranges"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
-                   select = c("all", "first", "last", "arbitrary"),
-                   multiple = TRUE)
+                   select = c("all", "first", "last", "arbitrary"))
           {
-            if (!missing(multiple) && !multiple) {
-              if (!isTRUEorFALSE(multiple))
-                stop("'multiple' must be TRUE or FALSE")
-              warning("argument 'multiple' is deprecated; use 'select'.")
-              select <- "arbitrary"
-            }
             findOverlaps(query, IntervalTree(subject), maxgap = maxgap,
                          minoverlap = minoverlap, type = match.arg(type),
                          select = match.arg(select))
@@ -149,15 +135,8 @@ setMethod("findOverlaps", c("ANY", "missing"),
 setMethod("findOverlaps", c("integer", "Ranges"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
-                   select = c("all", "first", "last", "arbitrary"),
-                   multiple = TRUE)
+                   select = c("all", "first", "last", "arbitrary"))
           {
-            if (!missing(multiple) && !multiple) {
-              if (!isTRUEorFALSE(multiple))
-                stop("'multiple' must be TRUE or FALSE")
-              warning("argument 'multiple' is deprecated; use 'select'.")
-              select <- "arbitrary"
-            }
             findOverlaps(IRanges(query, query), subject, maxgap = maxgap,
                          minoverlap = minoverlap, type = match.arg(type),
                          select = match.arg(select))
