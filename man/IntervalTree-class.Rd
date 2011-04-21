@@ -48,9 +48,6 @@
 \alias{match,RangesList,RangedData-method}
 \alias{match,RangedData,RangesList-method}
 
-% deprecated methods
-\alias{overlap}
-\alias{countOverlap}
 
 \title{Interval Search Trees}
 \description{

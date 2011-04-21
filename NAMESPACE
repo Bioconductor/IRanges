@@ -122,7 +122,7 @@ export(
     threebands,
     reduce,
     gaps,
-    findOverlaps, overlap, countOverlaps, countOverlap,
+    findOverlaps, countOverlaps,
     subsetByOverlaps,
     nearest, precede, follow,
     distance,

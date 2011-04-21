@@ -350,12 +350,6 @@ setGeneric("threebands", signature="x",
 
 ### Find objects in the query that overlap those in a subject set.
 
-overlap <- function(object, query, maxgap = 0L, multiple = TRUE, ...)
-    .Defunct("findOverlaps")
-
-countOverlap <- function(object, query)
-    .Defunct("countOverlaps")
-
 setGeneric("findOverlaps", signature = c("query", "subject"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within", "equal"),
