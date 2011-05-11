@@ -16,13 +16,32 @@ test_RleViews <- function() {
 
     xRleViewsUntrimmed <- Views(xRle, IRanges(start = c(1,1), width = c(0,20)))
     checkIdentical(c(Inf, 1), suppressWarnings(viewApply(xRleViewsUntrimmed, min, na.rm = TRUE)))
-    checkIdentical(c(2147483647L, 1L), viewMins(xRleViewsUntrimmed, na.rm = TRUE))
-    checkIdentical(c(-2147483647L, 9L), viewMaxs(xRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(c(2147483647L, 1L),
+                   viewMins(xRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(viewMins(xRleViewsUntrimmed, na.rm = TRUE),
+                   min(xRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(c(-2147483647L, 9L),
+                   viewMaxs(xRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(viewMaxs(xRleViewsUntrimmed, na.rm = TRUE),
+                   max(xRleViewsUntrimmed, na.rm = TRUE))
     checkIdentical(c(0L, 80L), viewSums(xRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(viewSums(xRleViewsUntrimmed, na.rm = TRUE),
+                   sum(xRleViewsUntrimmed, na.rm = TRUE))
     checkIdentical(c(NaN, 20/3), viewMeans(xRleViewsUntrimmed, na.rm = TRUE))
-    checkIdentical(c(NA_integer_, 1L), viewWhichMins(xRleViewsUntrimmed, na.rm = TRUE))
-    checkIdentical(c(NA_integer_, 11L), viewWhichMaxs(xRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(viewMeans(xRleViewsUntrimmed, na.rm = TRUE),
+                   mean(xRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(c(NA_integer_, 1L),
+                   viewWhichMins(xRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(viewWhichMins(xRleViewsUntrimmed, na.rm = TRUE),
+                   which.min(xRleViewsUntrimmed))
+    checkIdentical(c(NA_integer_, 11L),
+                   viewWhichMaxs(xRleViewsUntrimmed, na.rm = TRUE))
+    checkIdentical(viewWhichMaxs(xRleViewsUntrimmed, na.rm = TRUE),
+                   which.max(xRleViewsUntrimmed))
 
+    checkException(max(xRleViewsUntrimmed, xRleViewsUntrimmed, na.rm = TRUE),
+                   silent = TRUE)
+    
     xRleViews <-
       Views(xRle, start = c(1, 3, 5, 7, 9), end = c(1, 13, 11, 10, 9), names = letters[1:5])
     xList <-
@@ -41,18 +60,25 @@ test_RleViews <- function() {
 
     checkEqualsNumeric(sapply(xList, min), viewMins(xRleViews))
     checkEqualsNumeric(sapply(xList, min), viewApply(xRleViews, min))
-    checkEqualsNumeric(sapply(xList, min, na.rm = TRUE), viewMins(xRleViews, na.rm = TRUE))
-    checkEqualsNumeric(sapply(xList, min, na.rm = TRUE), viewApply(xRleViews, min, na.rm = TRUE))
+    checkEqualsNumeric(sapply(xList, min, na.rm = TRUE),
+                       viewMins(xRleViews, na.rm = TRUE))
+    checkEqualsNumeric(sapply(xList, min, na.rm = TRUE),
+                       viewApply(xRleViews, min, na.rm = TRUE))
     checkEqualsNumeric(sapply(xList, max), viewMaxs(xRleViews))
     checkEqualsNumeric(sapply(xList, max), viewApply(xRleViews, max))
-    checkEqualsNumeric(sapply(xList, max, na.rm = TRUE), viewMaxs(xRleViews, na.rm = TRUE))
-    checkEqualsNumeric(sapply(xList, max, na.rm = TRUE), viewApply(xRleViews, max, na.rm = TRUE))
+    checkEqualsNumeric(sapply(xList, max, na.rm = TRUE),
+                       viewMaxs(xRleViews, na.rm = TRUE))
+    checkEqualsNumeric(sapply(xList, max, na.rm = TRUE),
+                       viewApply(xRleViews, max, na.rm = TRUE))
     checkEqualsNumeric(sapply(xList, sum), viewSums(xRleViews))
     checkEqualsNumeric(sapply(xList, mean), viewMeans(xRleViews))
     checkEqualsNumeric(sapply(xList, sum), viewApply(xRleViews, sum))
-    checkEqualsNumeric(sapply(xList, sum, na.rm = TRUE), viewSums(xRleViews, na.rm = TRUE))
-    checkEqualsNumeric(sapply(xList, mean, na.rm = TRUE), viewMeans(xRleViews, na.rm = TRUE))
-    checkEqualsNumeric(sapply(xList, sum, na.rm = TRUE), viewApply(xRleViews, sum, na.rm = TRUE))
+    checkEqualsNumeric(sapply(xList, sum, na.rm = TRUE),
+                       viewSums(xRleViews, na.rm = TRUE))
+    checkEqualsNumeric(sapply(xList, mean, na.rm = TRUE),
+                       viewMeans(xRleViews, na.rm = TRUE))
+    checkEqualsNumeric(sapply(xList, sum, na.rm = TRUE),
+                       viewApply(xRleViews, sum, na.rm = TRUE))
 
     y <- rep(c(1.2, 3.4, NA, 7.8, 9.0), 1:5)
     yRle <- Rle(y)

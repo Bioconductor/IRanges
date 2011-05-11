@@ -42,6 +42,13 @@
 \alias{viewRangeMaxs,RleViews-method}
 \alias{viewRangeMaxs,RleViewsList-method}
 
+\alias{Summary,Views-method}
+\alias{mean,Views-method}
+\alias{max,Views-method}
+\alias{min,Views-method}
+\alias{sum,Views-method}
+\alias{which.min,Views-method}
+\alias{which.max,Views-method}
 
 \title{Utility functions and numeric summary of Views of numerics}
 
@@ -62,12 +69,18 @@ slice(x, lower=-Inf, upper=Inf, ...)
                       rangesOnly = FALSE)
 
 viewMins(x, na.rm=FALSE)
+\S4method{min}{Views}(x, ..., na.rm = FALSE)
 viewMaxs(x, na.rm=FALSE)
+\S4method{max}{Views}(x, ..., na.rm = FALSE)
 viewSums(x, na.rm=FALSE)
+\S4method{sum}{Views}(x, ..., na.rm = FALSE)
 viewMeans(x, na.rm=FALSE)
+\S4method{mean}{Views}(x, ...)
 
 viewWhichMins(x, na.rm=FALSE)
+\S4method{which.min}{Views}(x)
 viewWhichMaxs(x, na.rm=FALSE)
+\S4method{which.max}{Views}(x)
 
 viewRangeMins(x, na.rm=FALSE)
 viewRangeMaxs(x, na.rm=FALSE)
@@ -125,6 +138,11 @@ viewRangeMaxs(x, na.rm=FALSE)
   The \code{viewWhichMins}, \code{viewWhichMaxs}, \code{viewRangeMins}, and
   \code{viewRangeMaxs} functions provide efficient methods for finding the
   locations of the minima and maxima.
+
+  For convenience, methods for \code{min}, \code{max}, \code{sum},
+  \code{mean}, \code{which.min} and \code{which.max} are provided as
+  wrappers around the corresponding \code{view*} functions (which might
+  be deprecated at some point).
 }
 
 \value{

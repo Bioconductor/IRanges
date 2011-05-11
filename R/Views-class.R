@@ -219,3 +219,41 @@ setMethod("viewApply", "Views",
         ans
     }
 )
+
+setGeneric("viewMins", signature="x",
+           function(x, na.rm = FALSE) standardGeneric("viewMins"))
+setGeneric("viewMaxs", signature="x",
+           function(x, na.rm = FALSE) standardGeneric("viewMaxs"))
+setGeneric("viewSums", signature="x",
+           function(x, na.rm = FALSE) standardGeneric("viewSums"))
+setGeneric("viewMeans", signature="x",
+           function(x, na.rm = FALSE) standardGeneric("viewMeans"))
+setGeneric("viewWhichMins", signature="x",
+           function(x, na.rm = FALSE) standardGeneric("viewWhichMins"))
+setGeneric("viewWhichMaxs", signature="x",
+           function(x, na.rm = FALSE) standardGeneric("viewWhichMaxs"))
+setGeneric("viewRangeMaxs",
+           function(x, na.rm = FALSE) standardGeneric("viewRangeMaxs"))
+setGeneric("viewRangeMins",
+           function(x, na.rm = FALSE) standardGeneric("viewRangeMins"))
+
+setMethod("Summary", "Views", function(x, ..., na.rm = FALSE) {
+  viewSummaryFunMap <- list(min = viewMins, max = viewMaxs, sum = viewSums)
+  viewSummaryFun <- viewSummaryFunMap[[.Generic]]
+  if (!is.null(viewSummaryFun)) {
+    if (length(list(...)))
+      stop("Passing multiple arguments to '", .Generic, "' is not supported.")
+    viewSummaryFun(x, na.rm = na.rm)
+  } else callNextMethod()
+})
+
+setMethod("mean", "Views", viewMeans)
+
+setMethod("which.max", "Views", function(x) {
+  viewWhichMaxs(x, na.rm = TRUE)
+})
+
+setMethod("which.min", "Views", function(x) {
+  viewWhichMins(x, na.rm = TRUE)
+})
+
