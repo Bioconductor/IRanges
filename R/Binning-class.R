@@ -78,12 +78,15 @@ setMethod("togroup", "Binning",
 }
 
 setValidity2("Binning",
-    function(x)
+    function(x) {
+        .Deprecated(msg="the Binning class is deprecated")
         c(.valid.Binning.names(x), .valid.Binning.values(x))
+    }
 )
 
 Binning <- function(group=integer(), names=NULL)
 {
+    .Deprecated(msg="the Binning class is deprecated")
     if (length(group) == 0) {
         ans <- new("Binning")
     } else {

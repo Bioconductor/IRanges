@@ -82,7 +82,7 @@
 \alias{start,PartitioningByWidth-method}
 \alias{coerce,Ranges,PartitioningByWidth-method}
 
-% Binning objects:
+% Deprecated stuff:
 \alias{class:Binning}
 \alias{Binning-class}
 \alias{Binning}
@@ -224,6 +224,8 @@
 }
 
 \section{Binning subclass}{
+  WARNING: The Binning subclass is deprecated!
+
   A Binning container represents a grouping where each observation is
   assigned to a group or bin. It is similar in nature to taking a the
   integer codes of a factor object and splitting it up by its levels
@@ -255,6 +257,8 @@
       is non NULL, it is used to name the partitions.
     }
     \item{}{
+      WARNING: Binning objects are deprecated!
+
       \code{Binning(group=integer(), names=NULL)}:
       Return the Binning object made from the \code{group} argument, which
       takes a factor or positive valued integer vector. If the \code{names}
@@ -381,6 +385,7 @@
   ## ---------------------------------------------------------------------
   ## E. Binning OBJECTS
   ## ---------------------------------------------------------------------
+  ## WARNING: Binning objects are deprecated!
   set.seed(0)
   x <- Binning(factor(sample(letters, 36, replace=TRUE), levels=letters))
   x
