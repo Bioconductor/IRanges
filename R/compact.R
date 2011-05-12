@@ -5,7 +5,9 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### xvcopy() -- For internal use only!
+### xvcopy()
+###
+### Internal compact() support function. Not intended to be called directly.
 ###
 
 setGeneric("xvcopy", signature="x",
@@ -91,7 +93,7 @@ setMethod("xvcopy", "XRawList",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### compact()
 ###
-### Compacting an object 'x' is trying to change its internal representation
+### Compacting an object 'x' is trying to modify its internal representation
 ### in order to reduce its size in memory. This internal reorganization
 ### should be transparent to the user i.e. 'compact(x)' should look the same
 ### as 'x', or, more precisely, 'x' and 'compact(x)' should be interchangeable.

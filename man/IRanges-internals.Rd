@@ -28,6 +28,7 @@
 \alias{SharedVector}
 \alias{class:SharedVector_Pool}
 \alias{SharedVector_Pool-class}
+\alias{SharedVector_Pool}
 
 \alias{show,externalptr-method}
 \alias{length,SharedVector-method}
@@ -49,6 +50,7 @@
 \alias{SharedRaw}
 \alias{class:SharedRaw_Pool}
 \alias{SharedRaw_Pool-class}
+\alias{SharedRaw_Pool}
 
 \alias{[[,SharedRaw_Pool-method}
 \alias{SharedRaw.readInts}
@@ -72,13 +74,6 @@
 \alias{SharedDouble}
 
 \alias{as.numeric,SharedDouble-method}
-
-% xvcopy():
-\alias{xvcopy}
-\alias{xvcopy,SharedVector-method}
-\alias{xvcopy,XVector-method}
-\alias{xvcopy,SharedVector_Pool-method}
-\alias{xvcopy,XRawList-method}
 
 
 \title{IRanges internals}

@@ -45,7 +45,8 @@
 
 \seealso{
   \link{XVector-class},
-  \link{XRawList-class}
+  \link{XRawList-class},
+  \code{\link{compact}}
 }
 
 \keyword{methods}

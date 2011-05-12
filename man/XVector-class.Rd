@@ -132,9 +132,11 @@
 
 \seealso{
   \link{Vector-class},
+  \link[Biostrings]{DNAString-class},
+  \link{XVectorList-class},
   \link{Views-class},
   \code{\link{solveUserSEW}},
-  \link[Biostrings]{DNAString-class}
+  \code{\link{compact}}
 }
 
 \examples{
