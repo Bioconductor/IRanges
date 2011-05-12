@@ -106,10 +106,12 @@ setGeneric("compact", signature="x",
 ### The user should be able to call compact() on anything.
 ### By default 'compact(x)' is obtained by compacting all the "components" in
 ### 'x'. Only 2 kinds of objects are considered to have "components": lists
-### (the components are the list elements), and objects with slots (the
-### components are the slots). The other objects are not considered to have
-### components, so, by default, compact() does nothing on them (in particular,
-### it does nothing on environments).
+### (the components are the list elements), and S4 objects (the components
+### are the slots). The other objects are not considered to have components,
+### so, by default, compact() does nothing on them. In particular, it does
+### nothing on environments. Also the attributes of an object (other than the
+### slots of an S4 object) are not considered to be "components" and therefore
+### are not compacted.
 ### Note that in the absence of some specialized "compact" methods, this
 ### default behaviour would visit the tree of all the components,
 ### sub-components, sub-sub-components etc of object 'x' without actually
@@ -119,11 +121,14 @@ setGeneric("compact", signature="x",
 setMethod("compact", "ANY",
     function(x, check=TRUE, ...)
     {
-        if (is.list(x))
-            return(lapply(x, compact))
-        slotnames <- slotNames(x)
-        if (length(slotnames) != 0L) {
-            for (name in slotnames)
+        if (is.list(x)) {
+            ## By assigning to x[], we keep all the attributes (e.g. the
+            ## row.names if 'x' is a data.frame).
+            x[] <- lapply(x, compact)
+            return(x)
+        }
+        if (isS4(x)) {
+            for (name in slotNames(x))
                 slot(x, name, check=check) <-
                     compact(slot(x, name), check=check, ...)
             return(x)
