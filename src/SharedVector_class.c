@@ -48,7 +48,7 @@ SEXP externalptr_show(SEXP x)
 	SEXP s;
 
 	Rprintf("Object of class 'externalptr':\n");
-	Rprintf("  x adress: %p\n", x);
+	Rprintf("  x address: %p\n", x);
 	addr = R_ExternalPtrAddr(x);
 	Rprintf("  R_ExternalPtrAddr(x): %p\n", addr);
 	s = R_ExternalPtrTag(x);
@@ -162,6 +162,30 @@ SEXP _new_SharedVector(const char *classname, SEXP tag)
 	set_SharedVector_tag(ans, tag);
 	UNPROTECT(2);
 	return ans;
+}
+
+/****************************************************************************
+ * Needed by the "show" method for SharedVector objects.
+ */
+
+SEXP SharedVector_address0(SEXP x)
+{
+	SEXP tag;
+	void *address0;
+	char buf[20]; /* should be enough... */
+
+	tag = _get_SharedVector_tag(x);
+	if (IS_RAW(tag))
+		address0 = RAW(tag);
+	else if (IS_INTEGER(tag))
+		address0 = INTEGER(tag);
+	else if (IS_NUMERIC(tag))
+		address0 = REAL(tag);
+	else
+		error("IRanges internal error in SharedVector_address0(): ",
+		      "%s: invalid tag type", type2str(TYPEOF(tag)));
+	snprintf(buf, sizeof(buf), "%p", address0);
+	return mkString(buf);
 }
 
 

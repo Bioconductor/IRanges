@@ -26,10 +26,80 @@ setClass("XVector",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Methods.
+### Getters.
 ###
 
 setMethod("length", "XVector", function(x) x@length)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Combining.
+###
+
+### Should work as an endomorphism (e.g. will return a DNAString instance if
+### 'x' is a DNAString instance).
+setMethod("c", "XVector",
+    function(x, ..., recursive=FALSE)
+    {
+        if (!identical(recursive, FALSE))
+            stop("'recursive' mode not supported")
+        if (missing(x)) {
+            args <- unname(list(...))
+            x <- args[[1L]]
+        } else {
+            args <- unname(list(x, ...))
+        }
+        if (length(args) == 1L)
+            return(x)
+        arg_is_null <- sapply(args, is.null)
+        ## Remove NULL elements by setting them to NULL!
+        if (any(arg_is_null))
+            args[arg_is_null] <- NULL
+        if (!all(sapply(args, is, class(x))))
+            stop("all arguments in '...' must be ",
+                 class(x), " objects (or NULLs)")
+        ans_length <- sum(sapply(args, length))
+        ans_shared <- SharedVector(class(x@shared), length=ans_length)
+        dest_offset <- 0L
+        for (arg in args) {
+            width <- length(arg)
+            if (width == 0L)  # will be TRUE on NULLs too...
+                next
+            ## ... so from here 'arg' is guaranteed to be an XVector object.
+            src <- arg@shared
+            src_start <- arg@offset + 1L
+            SharedVector.mcopy(ans_shared, dest_offset, src, src_start, width)
+            dest_offset <- dest_offset + width
+        }
+        new2(class(x), shared=ans_shared, length=ans_length, check=FALSE)
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Subsetting.
+###
+
+### Ignores the 'drop' argument (so it always behaves like an endomorphism).
+setMethod("[", "XVector",
+    function(x, i, j, ..., drop=TRUE)
+    {
+        if (!missing(j) || length(list(...)) > 0)
+            stop("invalid subsetting")
+        if (missing(i))
+            return(x)
+        if (!is.numeric(i))
+            stop("invalid subsetting")
+        if (!is.integer(i))
+            i <- as.integer(i)
+        new_shared <- SharedVector(class(x@shared), length=length(i))
+        SharedVector.copy(new_shared, x@offset + i, src=x@shared)
+        x@shared <- new_shared
+        x@offset <- 0L
+        x@length <- length(new_shared)
+        x
+    }
+)
 
 ### Extracts a linear subsequence without copying the sequence data!
 setGeneric("subseq", signature="x",
@@ -79,11 +149,6 @@ setReplaceMethod("subseq", "XVector",
     }
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### msubseq() and msubseq<-().
-###
-
 ### Works as long as c() works on objects of the same class as 'x'.
 setMethod("seqselect", "XVector",
     function(x, start=NULL, end=NULL, width=NULL)
@@ -113,10 +178,25 @@ setMethod("window", "XVector",
             }
         })
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "compact" generic and methods.
+###
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion.
+###
+
 ### Works as long as as.integer() works on 'x'.
 setMethod("as.numeric", "XVector",
     function(x, ...) as.numeric(as.integer(x))
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "show" method.
+###
 
 setMethod("show", "XVector",
     function(object)

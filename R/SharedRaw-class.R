@@ -41,16 +41,12 @@ setMethod("initialize", "SharedRaw",
 )
 
 SharedRaw <- function(length=0L, val=NULL)
-    new2("SharedRaw", length=length, val=val, check=FALSE)
+    SharedVector("SharedRaw", length=length, val=val)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Some low-level methods.
 ###
-
-setMethod("address0", "SharedRaw",
-    function(x) .Call("SharedRaw_address0", x, PACKAGE="IRanges")
-)
 
 setMethod("[[", "SharedRaw_Pool",
     function(x, i, j, ...)

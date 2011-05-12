@@ -7,6 +7,8 @@
 \alias{XVector}
 
 \alias{length,XVector-method}
+\alias{c,XVector-method}
+\alias{[,XVector-method}
 \alias{subseq}
 \alias{subseq<-}
 \alias{subseq,XVector-method}
@@ -27,8 +29,6 @@
 \alias{as.raw,XRaw-method}
 \alias{as.integer,XRaw-method}
 \alias{as.vector,XRaw,missing-method}
-\alias{[,XRaw-method}
-\alias{c,XRaw-method}
 
 % XInteger class, functions and methods:
 \alias{class:XInteger}
@@ -39,7 +39,6 @@
 \alias{coerce,integer,XVector-method}
 \alias{as.integer,XInteger-method}
 \alias{as.vector,XInteger,missing-method}
-\alias{[,XInteger-method}
 \alias{==,XInteger,XInteger-method}
 
 % XDouble class, functions and methods:
@@ -52,7 +51,6 @@
 \alias{coerce,numeric,XVector-method}
 \alias{as.numeric,XDouble-method}
 \alias{as.vector,XDouble,missing-method}
-\alias{[,XDouble-method}
 \alias{show,XDouble-method}
 \alias{==,XDouble,XDouble-method}
 

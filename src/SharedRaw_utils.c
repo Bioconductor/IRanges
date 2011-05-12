@@ -44,16 +44,6 @@ SEXP SharedRaw_new(SEXP length, SEXP val)
 	return ans;
 }
 
-SEXP SharedRaw_address0(SEXP x)
-{
-	SEXP tag;
-	char buf[20]; /* should be enough... */
-
-	tag = _get_SharedVector_tag(x);
-	snprintf(buf, sizeof(buf), "%p", RAW(tag));
-	return mkString(buf);
-}
-
 
 /* ==========================================================================
  * Read/write chars from/to a SharedRaw object.

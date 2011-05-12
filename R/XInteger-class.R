@@ -58,31 +58,6 @@ setMethod("as.vector", c("XInteger", "missing"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Subsetting.
-###
-
-setMethod("[", "XInteger",
-    function(x, i, j, ..., drop=TRUE)
-    {
-        if (!missing(j) || length(list(...)) > 0)
-            stop("invalid subsetting")
-        if (missing(i))
-            return(x)
-        if (!is.numeric(i))
-            stop("invalid subsetting")
-        if (!is.integer(i))
-            i <- as.integer(i)
-        shared <- SharedInteger(length(i))
-        SharedVector.copy(shared, x@offset + i, src=x@shared)
-        x@shared <- shared
-        x@offset <- 0L
-        x@length <- length(shared)
-        x
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Comparison.
 ###
 

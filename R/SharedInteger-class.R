@@ -34,15 +34,7 @@ setMethod("initialize", "SharedInteger",
 )
 
 SharedInteger <- function(length=0L, val=NULL)
-    new2("SharedInteger", length=length, val=val, check=FALSE)
-
-setMethod("show", "SharedInteger",
-    function(object)
-    {
-        show_string <- .Call("SharedInteger_get_show_string", object, PACKAGE="IRanges")
-        cat(show_string, "\n", sep="")
-    }
-)
+    SharedVector("SharedInteger", length=length, val=val)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

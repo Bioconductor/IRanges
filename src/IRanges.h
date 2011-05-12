@@ -886,6 +886,8 @@ int _get_SharedVector_length(SEXP x);
 
 SEXP _new_SharedVector(const char *classname, SEXP tag);
 
+SEXP SharedVector_address0(SEXP x);
+
 SEXP SharedVector_memcmp(
 	SEXP x1,
 	SEXP start1,
@@ -939,8 +941,6 @@ SEXP SharedRaw_new(
 	SEXP length,
 	SEXP val
 );
-
-SEXP SharedRaw_address0(SEXP x);
 
 SEXP SharedRaw_read_chars_from_i1i2(
 	SEXP src,

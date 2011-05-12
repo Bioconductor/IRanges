@@ -116,6 +116,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(externalptr_taglength, 1),
 	CALLMETHOD_DEF(externalptr_show, 1),
 	CALLMETHOD_DEF(externalptr_new, 0),
+	CALLMETHOD_DEF(SharedVector_address0, 1),
 	CALLMETHOD_DEF(SharedVector_memcmp, 5),
 	CALLMETHOD_DEF(SharedVector_Ocopy_from_start, 6),
 	CALLMETHOD_DEF(SharedVector_Ocopy_from_subscript, 4),
@@ -125,7 +126,6 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(debug_SharedRaw_utils, 0),
 
 	CALLMETHOD_DEF(SharedRaw_new, 2),
-	CALLMETHOD_DEF(SharedRaw_address0, 1),
 
 	CALLMETHOD_DEF(SharedRaw_read_chars_from_i1i2, 3),
 	CALLMETHOD_DEF(SharedRaw_read_chars_from_subscript, 2),

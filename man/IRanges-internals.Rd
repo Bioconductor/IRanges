@@ -64,7 +64,6 @@
 \alias{SharedInteger-class}
 \alias{SharedInteger}
 
-\alias{show,SharedInteger-method}
 \alias{as.integer,SharedInteger-method}
 
 % SharedDouble class, functions and methods:
@@ -72,7 +71,6 @@
 \alias{SharedDouble-class}
 \alias{SharedDouble}
 
-\alias{show,SharedDouble-method}
 \alias{as.numeric,SharedDouble-method}
 
 % xvcopy():

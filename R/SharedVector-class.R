@@ -29,10 +29,17 @@ setClass("SharedVector_Pool",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Some very low-level utilities on externalptr objects.
+### Low-level utilities operating directly on an externalptr object.
 ###
 
-tagtype <- function(x)
+.taglength <- function(x)
+{
+    if (!is(x, "externalptr"))
+        stop("'x' must be an externalptr object")
+    .Call("externalptr_taglength", x, PACKAGE="IRanges")
+}
+
+.tagtype <- function(x)
 {
     if (!is(x, "externalptr"))
         stop("'x' must be an externalptr object")
@@ -43,17 +50,10 @@ tagIsVector <- function(x, tagtype=NA)
 {
     if (!is(x, "externalptr"))
         stop("'x' must be an externalptr object")
-    x_tagtype <- tagtype(x)
+    x_tagtype <- .tagtype(x)
     if (!is.na(tagtype))
         return(x_tagtype == tagtype)
     return(x_tagtype == "double" || extends(x_tagtype, "vector"))
-}
-
-taglength <- function(x)
-{
-    if (!is(x, "externalptr"))
-        stop("'x' must be an externalptr object")
-    .Call("externalptr_taglength", x, PACKAGE="IRanges")
 }
 
 ### Helper function (for debugging purpose).
@@ -67,29 +67,38 @@ setMethod("show", "externalptr",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### SharedVector low-level methods.
+### SharedVector constructor.
 ###
 
-setMethod("length", "SharedVector", function(x) taglength(x@xp))
+### Each SharedVector concrete subclass must define an "initialize" method
+### with arguments: .Object, length=0L, val=NULL
+SharedVector <- function(Class, length=0L, val=NULL)
+    new2(Class, length=length, val=val, check=FALSE)
 
-### Return the hexadecimal representation of the adress of the first
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### SharedVector getters.
+###
+
+setMethod("length", "SharedVector", function(x) .taglength(x@xp))
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "show" method for SharedVector objects.
+###
+
+### Return the hexadecimal representation of the address of the first
 ### element of the tag (i.e. the first element of the external vector).
-### NOT exported.
-setGeneric("address0", function(x) standardGeneric("address0"))
+.address0 <- function(x) .Call("SharedVector_address0", x, PACKAGE="IRanges")
 
-### NOT exported.
-setGeneric("oneLineDesc", function(x) standardGeneric("oneLineDesc"))
-
-setMethod("oneLineDesc", "SharedVector",
-    function(x)
-        paste(class(x), " of length ", length(x),
-              " (data starting at address ", address0(x), ")", sep="")
-)
+.oneLineDesc <- function(x)
+    paste(class(x), " of length ", length(x),
+          " (data starting at address ", .address0(x), ")", sep="")
 
 setMethod("show", "SharedVector",
     function(object)
     {
-        cat(oneLineDesc(object), "\n", sep="")
+        cat(.oneLineDesc(object), "\n", sep="")
     }
 )
 
@@ -102,7 +111,7 @@ setMethod("length", "SharedVector_Pool", function(x) length(x@xp_list))
 
 setMethod("width", "SharedVector_Pool",
     function(x)
-        if (length(x) == 0L) integer(0) else sapply(x@xp_list, taglength)
+        if (length(x) == 0L) integer(0) else sapply(x@xp_list, .taglength)
 )
 
 setMethod("show", "SharedVector_Pool",
@@ -110,7 +119,7 @@ setMethod("show", "SharedVector_Pool",
     {
         cat(class(object), " of length ", length(object), "\n", sep="")
         for (i in seq_len(length(object)))
-            cat(i, ": ", oneLineDesc(object[[i]]), "\n", sep="")
+            cat(i, ": ", .oneLineDesc(object[[i]]), "\n", sep="")
     }
 )
 

@@ -34,15 +34,7 @@ setMethod("initialize", "SharedDouble",
 )
 
 SharedDouble <- function(length=0L, val=NULL)
-    new2("SharedDouble", length=length, val=val, check=FALSE)
-
-setMethod("show", "SharedDouble",
-    function(object)
-    {
-        show_string <- .Call("SharedDouble_get_show_string", object, PACKAGE="IRanges")
-        cat(show_string, "\n", sep="")
-    }
-)
+    SharedVector("SharedDouble", length=length, val=val)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
