@@ -75,7 +75,7 @@
 
 % xvcopy():
 \alias{xvcopy}
-\alias{xvcopy,SharedRaw-method}
+\alias{xvcopy,SharedVector-method}
 \alias{xvcopy,XVector-method}
 \alias{xvcopy,SharedVector_Pool-method}
 \alias{xvcopy,XRawList-method}

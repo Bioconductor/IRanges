@@ -322,3 +322,4 @@ setReplaceMethod("[[", "XVectorList",
 ###
 
 setMethod("showAsCell", "XVectorList", function(object) as.character(object))
+

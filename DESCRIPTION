@@ -82,7 +82,7 @@ Collate: validity-utils.R
 	XRawList-class.R
 	XIntegerViews-class.R
 	XIntegerViews-utils.R
-	xvcopy.R
+	compact.R
 	reverse.R
 	coverage.R
 	test_IRanges_package.R
