@@ -1,7 +1,5 @@
 \name{coverage}
 
-\alias{coverage.normargWidth}
-
 \alias{coverage}
 \alias{coverage,numeric-method}
 \alias{coverage,IRanges-method}

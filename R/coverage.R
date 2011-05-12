@@ -13,7 +13,7 @@ setGeneric("coverage", signature="x",
 ### Argument checking.
 ###
 
-coverage.normargWidth <- function(width, nseq)
+.normargWidth <- function(width, nseq)
 {
     if (is.null(width)) {
         if (nseq == 0L)
@@ -46,7 +46,7 @@ setMethod("coverage", "numeric",
     function(x, shift=0L, width=NULL, weight=1L)
     {
         shift <- normargShift(shift, length(x))
-        width <- coverage.normargWidth(width, length(x))
+        width <- .normargWidth(width, length(x))
         weight <- coverage.normargWeight(weight, length(x))
         if (!is.integer(x))
             x <- as.integer(x)
@@ -78,7 +78,7 @@ setMethod("coverage", "IRanges",
     {
         method <- match.arg(method)      
         #shift <- normargShift(shift, length(x))  # done by shift() below
-        width <- coverage.normargWidth(width, length(x))
+        width <- .normargWidth(width, length(x))
         weight <- coverage.normargWeight(weight, length(x))
         sx <- shift(x, shift)
         if (is.null(width)) {
@@ -117,7 +117,7 @@ setMethod("coverage", "MaskCollection",
     {
         method <- match.arg(method)
         shift <- normargShift(shift, length(x))
-        width <- coverage.normargWidth(width, length(x))
+        width <- .normargWidth(width, length(x))
         weight <- coverage.normargWeight(weight, length(x))
         if (is.null(width))
             width <- width(x)

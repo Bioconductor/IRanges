@@ -92,7 +92,6 @@ export(
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList,
     DataFrameList, SplitDataFrameList,
-    coverage.normargWidth,
 
     ## Generic endomorphism functions
     endoapply,
