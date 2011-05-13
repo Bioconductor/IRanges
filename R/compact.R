@@ -93,33 +93,11 @@ setMethod("xvcopy", "XRawList",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### compact()
 ###
-### Compacting an object 'x' is trying to modify its internal representation
-### in order to reduce its size in memory. This internal reorganization
-### should be transparent to the user i.e. 'compact(x)' should look the same
-### as 'x', or, more precisely, 'x' and 'compact(x)' should be interchangeable.
-### However, because of the different internal representations, we generally
-### don't expect 'identical(x, compact(x))' to be TRUE.
-###
 
 setGeneric("compact", signature="x",
     function(x, check=TRUE, ...) standardGeneric("compact")
 )
 
-### The user should be able to call compact() on anything.
-### By default 'compact(x)' is obtained by compacting all the "components" in
-### 'x'. Only 2 kinds of objects are considered to have "components": lists
-### (the components are the list elements), and S4 objects (the components
-### are the slots). The other objects are not considered to have components,
-### so, by default, compact() does nothing on them. In particular, it does
-### nothing on environments. Also the attributes of an object (other than the
-### slots of an S4 object) are not considered to be "components" and therefore
-### are not compacted.
-### Note that in the absence of some specialized "compact" methods, this
-### default behaviour would visit the tree of all the components,
-### sub-components, sub-sub-components etc of object 'x' without actually
-### modifying anything in 'x'! So of course, additional "compact" methods
-### need to be defined for the objects that can *effectively* be compacted.
-### Otherwise compact() would be equivalent to identity()!
 setMethod("compact", "ANY",
     function(x, check=TRUE, ...)
     {
@@ -139,7 +117,22 @@ setMethod("compact", "ANY",
     }
 )
 
-setMethod("compact", "XVector", function(x, check=TRUE, ...) xvcopy(x))
+### Both methods below first try to compact all the slots separately by
+### calling the default "compact" method. In particular this could potentially
+### achieve some real compaction of the "elementMetadata" and "metadata" slots.
+setMethod("compact", "XVector",
+    function(x, check=TRUE, ...)
+    {
+        x <- callNextMethod()
+        xvcopy(x)
+    }
+)
 
-setMethod("compact", "XVectorList", function(x, check=TRUE, ...) xvcopy(x))
+setMethod("compact", "XVectorList",
+    function(x, check=TRUE, ...)
+    {
+        x <- callNextMethod()
+        xvcopy(x)
+    }
+)
 
