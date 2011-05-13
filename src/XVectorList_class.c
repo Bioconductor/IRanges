@@ -343,21 +343,23 @@ static SEXP alloc_XVectorList(const char *classname,
 	ans_length = LENGTH(width);
 	PROTECT(start = NEW_INTEGER(ans_length));
 	PROTECT(group = NEW_INTEGER(ans_length));
-	tag_length = 0;
 	tag_lengths = _new_IntAE(0, 0, 0);
-	for (i = 0; i < ans_length; i++) {
-		new_tag_length = tag_length + INTEGER(width)[i];
-		if (new_tag_length > MAX_TAG_LENGTH
-		 || new_tag_length < tag_length) {
-			_IntAE_insert_at(&tag_lengths,
+	if (ans_length != 0) {
+		tag_length = 0;
+		for (i = 0; i < ans_length; i++) {
+			new_tag_length = tag_length + INTEGER(width)[i];
+			if (new_tag_length > MAX_TAG_LENGTH
+			 || new_tag_length < tag_length) {
+				_IntAE_insert_at(&tag_lengths,
 					 tag_lengths.nelt, tag_length);
-			tag_length = 0;
+				tag_length = 0;
+			}
+			INTEGER(start)[i] = tag_length + 1;
+			INTEGER(group)[i] = tag_lengths.nelt + 1;
+			tag_length += INTEGER(width)[i];
 		}
-		INTEGER(start)[i] = tag_length + 1;
-		INTEGER(group)[i] = tag_lengths.nelt + 1;
-		tag_length += INTEGER(width)[i];
+		_IntAE_insert_at(&tag_lengths, tag_lengths.nelt, tag_length);
 	}
-	_IntAE_insert_at(&tag_lengths, tag_lengths.nelt, tag_length);
 	PROTECT(ranges = _new_IRanges("IRanges", start, width, NULL));
 	PROTECT(tags = NEW_LIST(tag_lengths.nelt));
 	if (strcmp(tag_type, "raw") == 0) {

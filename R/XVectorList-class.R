@@ -143,6 +143,42 @@ unsafe.newXVectorList1 <- function(classname, xvector, ranges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### 2 internal bookkeeping functions to keep the XVectorList "pool" slot
+### clean and tidy.
+###
+
+### Used in "[" method for XVectorList objects.
+.dropUnusedPoolElts <- function(x)
+{
+    pool_len <- length(x@pool)
+    if (pool_len == 0L)
+        return(x)
+    keep_it <- logical(pool_len)
+    keep_it[x@ranges@group] <- TRUE
+    keep_idx <- which(keep_it)
+    remap <- integer(pool_len)
+    remap[keep_idx] <- seq_len(length(keep_idx))
+    x@pool <- x@pool[keep_idx]
+    x@ranges@group <- remap[x@ranges@group]
+    x
+}
+
+### Used in "c" method for XVectorList objects.
+.dropDuplicatedPoolElts <- function(x)
+{
+    pool_len <- length(x@pool)
+    if (pool_len == 0L)
+        return(x)
+    remap <- high2low(sapply(x@pool@xp_list, address))
+    keep_idx <- which(is.na(remap))
+    remap[keep_idx] <- seq_len(length(keep_idx))
+    x@pool <- x@pool[keep_idx]
+    x@ranges@group <- remap[x@ranges@group]
+    x
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### XVectorList subsetting.
 ###
 
@@ -170,7 +206,6 @@ setMethod("[[", "XVectorList",
 
 ### Supported 'i' types: numeric vector, logical vector, NULL and missing.
 ### TODO: Support subsetting by names.
-### TODO: Drop unused pool elements.
 setMethod("[", "XVectorList",
     function(x, i, j, ... , drop=TRUE)
     {
@@ -181,7 +216,10 @@ setMethod("[", "XVectorList",
         if (is.character(i))
             stop("cannot subset a ", class(x), " object by names")
         x@ranges <- x@ranges[i]
+        ## Subset the element metadata.
         x@elementMetadata <- x@elementMetadata[i,,drop=FALSE]
+        ## Drop unused pool elements.
+        x <- .dropUnusedPoolElts(x)
         x
     }
 )
@@ -257,7 +295,6 @@ setMethod("threebands", "XVectorList",
 ### specific method at all.
 ###
 
-### TODO: Merge identical pool elements.
 setMethod("c", "XVectorList",
     function(x, ..., recursive=FALSE)
     {
@@ -276,14 +313,17 @@ setMethod("c", "XVectorList",
             args[arg_is_null] <- NULL  # remove NULL elements by setting them to NULL!
         if (!all(sapply(args, is, class(x))))
             stop("all arguments in '...' must be ", class(x), " objects (or NULLs)")
-
+        ## Combine the "pool" and "ranges" slots.
         for (arg in args[-1L]) {
             ranges <- arg@ranges
             ranges@group <- ranges@group + length(x@pool)
             x@pool <- c(x@pool, arg@pool)
             x@ranges <- c(x@ranges, ranges)
         }
+        ## Combine the element metadata.
         elementMetadata(x) <- do.call(rbind, lapply(args, elementMetadata))
+        ## Drop duplicated pool elements.
+        x <- .dropDuplicatedPoolElts(x)
         validObject(x)
         x
     }

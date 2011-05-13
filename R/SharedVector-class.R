@@ -136,6 +136,7 @@ setAs("SharedVector", "SharedVector_Pool",
     }
 )
 
+### For internal use only. No argument checking!
 setMethod("c", "SharedVector_Pool",
     function(x, ..., recursive=FALSE)
     {
@@ -147,6 +148,16 @@ setMethod("c", "SharedVector_Pool",
         x@.link_to_cached_object_list <-
             do.call(c, lapply(unname(list(x, ...)),
                               function(arg) arg@.link_to_cached_object_list))
+        x
+    }
+)
+
+### For internal use only. No argument checking!
+setMethod("[", "SharedVector_Pool",
+    function(x, i, j, ..., drop=TRUE)
+    {
+        x@xp_list <- x@xp_list[i]
+        x@.link_to_cached_object_list <- x@.link_to_cached_object_list[i]
         x
     }
 )
