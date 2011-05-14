@@ -38,6 +38,7 @@
 \alias{show,SharedVector_Pool-method}
 \alias{coerce,SharedVector,SharedVector_Pool-method}
 \alias{c,SharedVector_Pool-method}
+\alias{[,SharedVector_Pool-method}
 \alias{SharedVector.compare}
 \alias{SharedVector.copy}
 \alias{as.numeric,SharedVector-method}
