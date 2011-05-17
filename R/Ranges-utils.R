@@ -247,7 +247,7 @@ setGeneric("shift", signature="x",
 setMethod("shift", "Ranges",
     function(x, shift, use.names=TRUE)
     {
-        shift <- normargShift(shift, length(x))
+        shift <- recycleIntegerArg(shift, "shift", length(x))
         x <- update(x, start=start(x) + shift, width=width(x), check=FALSE)
         if (!normargUseNames(use.names))
             names(x) <- NULL

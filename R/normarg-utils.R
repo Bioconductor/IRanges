@@ -94,55 +94,52 @@ numeric2integer <- function(x)
 ###   - The former seems a little bit faster (1.5x - 2x).
 ###   - The former will issue a warning that "number of items to replace is not
 ###     a multiple of replacement length". The latter will always remain silent.
-recycleVector <- function(x, length)
+recycleVector <- function(x, length.out)
 {
-    if (length(x) == length) {
+    if (length(x) == length.out) {
         x
     } else {
-        ans <- vector(storage.mode(x), length)
+        ans <- vector(storage.mode(x), length.out)
         ans[] <- x
         ans
     }
 }
 
-### "shift" method for Ranges objects expect this to *always* return an unnamed
-### integer vector of length 'nseq'.
-normargShift <- function(shift, nseq)
+### Must always drop the names of 'arg'.
+recycleArg <- function(arg, argname, length.out)
 {
-    if (!is.numeric(shift))
-        stop("'shift' must be a vector of integers")
-    if (nseq == 0L)
-        return(integer())
-    if (length(shift) == 0L)
-        stop("'shift' has no elements")
-    if (!is.integer(shift))
-        shift <- as.integer(shift)
-    if (length(shift) > nseq)
-        stop("'shift' is longer than 'x'")
-    if (anyMissing(shift))
-        stop("'shift' contains NAs")
-    if (length(shift) < nseq)
-        shift <- recycleVector(shift, nseq)
-    unname(shift)
+    if (length.out == 0L) {
+        if (length(arg) > 1L)
+            stop("invalid length for '", argname, "'")
+        return(recycleVector(arg, length.out))
+    }
+    if (length(arg) == 0L)
+        stop("'", argname, "' has no elements")
+    if (length(arg) > length.out)
+        stop("'", argname, "' is longer than 'x'")
+    if (anyMissing(arg))
+        stop("'", argname, "' contains NAs")
+    if (length(arg) < length.out)
+        arg <- recycleVector(arg, length.out)  # will drop the name
+    else
+        arg <- unname(arg)
+    arg
 }
 
-### Implements the same logic as normargShift() (except for the coercion to an
-### integer vector).
-normargWeight <- function(weight, nseq)
+recycleIntegerArg <- function(arg, argname, length.out)
 {
-    if (!is.numeric(weight))
-        stop("'weight' must be a numeric vector")
-    if (nseq == 0L)
-        return(integer())
-    if (length(weight) == 0L)
-        stop("'weight' has no elements")
-    if (length(weight) > nseq)
-        stop("'weight' is longer than 'x'")
-    if (anyMissing(weight))
-        stop("'weight' contains NAs")
-    if (length(weight) < nseq)
-        weight <- recycleVector(weight, nseq)
-    weight
+    if (!is.numeric(arg))
+        stop("'", argname, "' must be a vector of integers")
+    if (!is.integer(arg))
+        arg <- as.integer(arg)
+    recycleArg(arg, argname, length.out)
+}
+
+recycleNumericArg <- function(arg, argname, length.out)
+{
+    if (!is.numeric(arg))
+        stop("'", argname, "' must be a numeric vector")
+    recycleArg(arg, argname, length.out)
 }
 
 ### We use a signature in the style of successiveIRanges() or

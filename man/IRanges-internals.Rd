@@ -11,8 +11,8 @@
 \alias{isSingleString}
 \alias{isSingleNumberOrNA}
 \alias{isSingleStringOrNA}
-\alias{normargShift}
-\alias{normargWeight}
+\alias{recycleIntegerArg}
+\alias{recycleNumericArg}
 
 \alias{fold}
 

@@ -27,16 +27,6 @@ setGeneric("coverage", signature="x",
     width
 }
 
-### Implements the same logic as normargShift().
-### TODO: Support non-integer weights in coverage().
-coverage.normargWeight <- function(weight, nseq)
-{
-    weight <- normargWeight(weight, nseq)
-    if (!is.integer(weight))
-        weight <- as.integer(weight)
-    weight
-}
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Methods.
@@ -45,9 +35,9 @@ coverage.normargWeight <- function(weight, nseq)
 setMethod("coverage", "numeric",
     function(x, shift=0L, width=NULL, weight=1L)
     {
-        shift <- normargShift(shift, length(x))
+        shift <- recycleIntegerArg(shift, "shift", length(x))
         width <- .normargWidth(width, length(x))
-        weight <- coverage.normargWeight(weight, length(x))
+        weight <- recycleIntegerArg(weight, "weight,", length(x))
         if (!is.integer(x))
             x <- as.integer(x)
         if (anyMissing(x))
@@ -76,10 +66,9 @@ setMethod("coverage", "numeric",
 setMethod("coverage", "IRanges",
     function(x, shift=0L, width=NULL, weight=1L, method=c("sort", "hash"))
     {
-        method <- match.arg(method)      
-        #shift <- normargShift(shift, length(x))  # done by shift() below
+        method <- match.arg(method)
         width <- .normargWidth(width, length(x))
-        weight <- coverage.normargWeight(weight, length(x))
+        weight <- recycleIntegerArg(weight, "weight", length(x))
         sx <- shift(x, shift)
         if (is.null(width)) {
             width <- max(end(sx))
@@ -116,9 +105,9 @@ setMethod("coverage", "MaskCollection",
     function(x, shift=0L, width=NULL, weight=1L, method=c("sort", "hash"))
     {
         method <- match.arg(method)
-        shift <- normargShift(shift, length(x))
+        shift <- recycleIntegerArg(shift, "shift", length(x))
         width <- .normargWidth(width, length(x))
-        weight <- coverage.normargWeight(weight, length(x))
+        weight <- recycleIntegerArg(weight, "weight", length(x))
         if (is.null(width))
             width <- width(x)
         if (width <= 0L)  # should never be < 0
