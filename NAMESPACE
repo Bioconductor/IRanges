@@ -54,7 +54,6 @@ export(
     normargShift,
     normargWeight,
     fold,
-    isConstant,
     safeExplode,
     strsplitAsListOfIntegerVectors,
     svn.time,
@@ -103,10 +102,11 @@ export(
     ## Generic functions in the Vector API:
     elementType, elementLengths,
     metadata, elementMetadata, "metadata<-", "elementMetadata<-",
+    isConstant,
+    isEmpty,
     seqselect, "seqselect<-",
     mapply,
     Map,
-    isEmpty,
 
     ## Generic functions in the Ranges API:
     width,
@@ -231,13 +231,13 @@ exportMethods(
     updateObject,
 
     ## Methods for generics defined in this package:
-    isConstant,
     endoapply,
     mendoapply,
+    isConstant,
+    isEmpty,
     seqselect, "seqselect<-",
     mapply,
     Map,
-    isEmpty,
     width,
     "start<-",
     "width<-",

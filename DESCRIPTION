@@ -24,6 +24,7 @@ ExtraLicenses: The following files in the 'src' directory are licensed for all
 Collate: validity-utils.R
 	utils.R
 	isConstant.R
+	normarg-utils.R
 	int-utils.R
 	str-utils.R
 	compact_bitvector.R
