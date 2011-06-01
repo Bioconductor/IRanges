@@ -109,7 +109,7 @@ setReplaceMethod("values", "Vector",
                  "must match length of 'x'")
         return(paste(msg, collapse=""))
     }
-    if (!identical(rownames(emd), names(x))) {
+    if (!is.null(rownames(emd)) && !identical(rownames(emd), names(x))) {
         msg <- c("the rownames of DataTable 'elementMetadata(x)' ",
                  "must match the names of 'x'")
         return(paste(msg, collapse=""))

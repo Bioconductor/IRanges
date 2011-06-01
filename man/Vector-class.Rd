@@ -107,7 +107,8 @@
     \item{}{
       \code{elementMetadata(x), elementMetadata(x) <- value}:
       Get or set the \linkS4class{DataTable} holding local metadata on each
-      element. The rows are named according to the names of the elements.
+      element. The rows are either not named or named according to the names
+      of the elements.
       Optional, may be \code{NULL}.
     }
     \item{}{
