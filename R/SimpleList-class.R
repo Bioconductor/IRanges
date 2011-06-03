@@ -357,7 +357,10 @@ setMethod("unlist", "SimpleList",
                           if (!is.null(names(ans)))
                               nms <- paste(nms, names(ans), sep = ".")
                           else nms <- make.unique(nms, sep = "")
-                          names(ans) <- nms
+                          res <- try(names(ans) <- nms, silent=TRUE)
+                          if (is(res, "try-error"))
+                              warning("failed to set names on the result ",
+                                      "of unlisting a ", class(x), " object")
                       }
                   } else {
                       if (!use.names)
