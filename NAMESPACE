@@ -85,6 +85,8 @@ export(
     #SharedInteger, SharedInteger.read, SharedInteger.write,
     #SharedDouble, SharedDouble.read, SharedDouble.write,
     XRaw, XInteger, XDouble, XNumeric,
+    XVectorList,
+    unlist.list.of.XVectorList, unsplit.list.of.XVectorList,
     newViews, successiveViews,
     SimpleList, DataFrame,
     LogicalList, IntegerList, NumericList, ComplexList,

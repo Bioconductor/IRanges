@@ -31,6 +31,9 @@
 \alias{[<-,XVectorList-method}
 \alias{[[<-,XVectorList-method}
 
+\alias{unlist.list.of.XVectorList}
+\alias{unsplit.list.of.XVectorList}
+
 
 \title{XVectorList objects}
 

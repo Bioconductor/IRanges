@@ -141,6 +141,16 @@ unsafe.newXVectorList1 <- function(classname, xvector, ranges)
     new2(classname, pool=ans_pool, ranges=ans_ranges, check=FALSE)
 }
 
+### Produces an XVectorList object of the given length with empty elements.
+XVectorList <- function(classname, length=0L)
+{
+    elt <- new(elementType(new(classname)))
+    ans1_pool <- as(elt@shared, "SharedVector_Pool")
+    ans1_ranges <- new("GroupedIRanges", IRanges(start=1L, width=0L), group=1L)
+    ans1 <- new2(classname, pool=ans1_pool, ranges=ans1_ranges, check=FALSE)
+    rep.int(ans1, length)
+}
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### 2 internal bookkeeping functions to keep the XVectorList "pool" slot
@@ -362,4 +372,30 @@ setReplaceMethod("[[", "XVectorList",
 ###
 
 setMethod("showAsCell", "XVectorList", function(object) as.character(object))
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Two helper functions for unlisting and unsplitting a list of XVectorList
+### objects. Not for the end user.
+###
+
+unlist.list.of.XVectorList <- function(classname, x)
+{
+    ## Prepending the list with 'new(classname)' guarantees that we dispatch
+    ## on the right "c" method, even when 'x' is an empty list. Note that this
+    ## code would work on a list of objects with another type, not only
+    ## XVectorList objects, as long as they have a "c" method.
+    do.call(c, c(list(new(classname)), unname(x)))
+}
+
+### 'f' must be a factor with number of levels equal to 'length(x)' and
+### length equal to 'sum(elementLengths(x))'. 
+unsplit.list.of.XVectorList <- function(classname, x, f)
+{
+    ans <- XVectorList(classname, length(f))
+    unlisted_x <- do.call(c, unname(x))
+    idx <- unname(split(seq_len(length(f)), f))
+    ans[unlist(idx)] <- unlisted_x
+    ans
+}
 
