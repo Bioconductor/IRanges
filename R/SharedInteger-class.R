@@ -16,25 +16,20 @@ setClass("SharedInteger", contains="SharedVector")
 ### data. Specify the 'val' argument if you want data initialization.
 ###
 
-setMethod("initialize", "SharedInteger",
-    function(.Object, length=0L, val=NULL)
-    {
-        if (!isSingleNumber(length) || length < 0)
-            stop("'length' must be a single non-negative integer")
-        if (!is.integer(length))
-            length <- as.integer(length)
-        if (!is.null(val)) {
-            if (!is.numeric(val))
-                stop("'val' must be a numeric vector")
-            if (!storage.mode(val) == "integer")
-                storage.mode(val) <- "integer"
-        }
-        .Call("SharedInteger_new", length, val, PACKAGE="IRanges")
-    }
-)
-
 SharedInteger <- function(length=0L, val=NULL)
-    SharedVector("SharedInteger", length=length, val=val)
+{
+    if (!isSingleNumber(length) || length < 0)
+        stop("'length' must be a single non-negative integer")
+    if (!is.integer(length))
+        length <- as.integer(length)
+    if (!is.null(val)) {
+        if (!is.numeric(val))
+            stop("'val' must be a numeric vector")
+        if (!storage.mode(val) == "integer")
+            storage.mode(val) <- "integer"
+    }
+    .Call("SharedInteger_new", length, val, PACKAGE="IRanges")
+}
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

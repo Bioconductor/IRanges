@@ -41,6 +41,30 @@ setClassUnion("characterORNULL", c("character", "NULL"))
 ###   [1]  3  2  1  0 -1 -2 -3 -4 -5
 setAs("ANY", "vector", function(from) as.vector(from))
 
+### Gets or sets the default value of the given slot of the given class by
+### reading or altering the prototype of the class. setDefaultSlotValue() is
+### typically used in the .onLoad() hook of a package when the DLL of the
+### package needs to be loaded *before* the default value of a slot can be
+### computed.
+getDefaultSlotValue <- function(classname, slotname)
+{
+    classdef <- getClass(classname)
+    if (!(slotname %in% names(attributes(classdef@prototype))))
+        stop("prototype for class \"", classname, "\" ",
+             "has no \"", slotname, "\" attribute")
+    attr(classdef@prototype, slotname, exact=TRUE)
+}
+
+setDefaultSlotValue <- function(classname, slotname, value, where=.GlobalEnv)
+{
+    classdef <- getClass(classname)
+    if (!(slotname %in% names(attributes(classdef@prototype))))
+        stop("prototype for class \"", classname, "\" ",
+             "has no \"", slotname, "\" attribute")
+    attr(classdef@prototype, slotname) <- value
+    assignClassDef(classname, classdef, where=where)
+}
+
 
 ### Pretty printing
 

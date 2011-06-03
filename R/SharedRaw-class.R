@@ -16,32 +16,26 @@ setClass("SharedRaw_Pool", contains="SharedVector_Pool")
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Initialization.
 ###
+
 ### Note that, unlike 'raw(99)', 'SharedRaw(99)' does NOT initialize its
 ### data. Specify the 'val' argument if you want data initialization.
-###
-
-setMethod("initialize", "SharedRaw",
-    function(.Object, length=0L, val=NULL)
-    {
-        if (!isSingleNumber(length) || length < 0)
-            stop("'length' must be a single non-negative integer")
-        if (!is.integer(length))
-            length <- as.integer(length)
-        if (!is.null(val) && !is.raw(val)) {
-            if (is.numeric(val)) {
-                val <- as.raw(val)
-            } else if (isSingleString(val)) {
-                val <- charToRaw(val)
-            } else {
-                stop("don't know how to turn 'val' into a raw vector")
-            }
-        }
-        .Call("SharedRaw_new", length, val, PACKAGE="IRanges")
-    }
-)
-
 SharedRaw <- function(length=0L, val=NULL)
-    SharedVector("SharedRaw", length=length, val=val)
+{
+    if (!isSingleNumber(length) || length < 0)
+        stop("'length' must be a single non-negative integer")
+    if (!is.integer(length))
+        length <- as.integer(length)
+    if (!is.null(val) && !is.raw(val)) {
+        if (is.numeric(val)) {
+            val <- as.raw(val)
+        } else if (isSingleString(val)) {
+            val <- charToRaw(val)
+        } else {
+            stop("don't know how to turn 'val' into a raw vector")
+        }
+    }
+    .Call("SharedRaw_new", length, val, PACKAGE="IRanges")
+}
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

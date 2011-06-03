@@ -32,6 +32,20 @@ setClass("SharedVector_Pool",
 ### Low-level utilities operating directly on an externalptr object.
 ###
 
+.get_tag <- function(x)
+{
+    if (!is(x, "externalptr"))
+        stop("'x' must be an externalptr object")
+    .Call("externalptr_get_tag", x, PACKAGE="IRanges")
+}
+
+.set_tag <- function(x, tag)
+{
+    if (!is(x, "externalptr"))
+        stop("'x' must be an externalptr object")
+    .Call("externalptr_set_tag", x, tag, PACKAGE="IRanges")
+}
+
 .taglength <- function(x)
 {
     if (!is(x, "externalptr"))
@@ -56,6 +70,12 @@ tagIsVector <- function(x, tagtype=NA)
     return(x_tagtype == "double" || extends(x_tagtype, "vector"))
 }
 
+newExternalptrWithTag <- function(tag=NULL)
+{
+    xp <- .Call("externalptr_new", PACKAGE="IRanges")
+    .set_tag(xp, tag)
+}
+
 ### Helper function (for debugging purpose).
 ### Print some info about an externalptr object.
 ### Typical use:
@@ -70,10 +90,14 @@ setMethod("show", "externalptr",
 ### SharedVector constructor.
 ###
 
-### Each SharedVector concrete subclass must define an "initialize" method
-### with arguments: .Object, length=0L, val=NULL
+### Just dispatches on the specific constructor function (each SharedVector
+### concrete subclass should define a constructor function with arguments
+### 'length' and 'val').
 SharedVector <- function(Class, length=0L, val=NULL)
-    new2(Class, length=length, val=val, check=FALSE)
+{
+    FUN <- match.fun(Class)
+    FUN(length=length, val=val)
+}
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

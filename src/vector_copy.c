@@ -49,7 +49,7 @@ int _vector_memcmp(SEXP x1, int x1_offset, SEXP x2, int x2_offset, int nelt)
 		break;
 	default:
 		error("IRanges internal error in _vector_memcmp(): "
-		      "%s type not supported", type2str(TYPEOF(x1)));
+		      "%s type not supported", CHAR(type2str(TYPEOF(x1))));
 	}
 	return s1 == s2 ? 0 : memcmp(s1, s2, nelt * eltsize);
 }
@@ -145,7 +145,7 @@ void _vector_Ocopy(SEXP out, int out_offset, SEXP in, int in_offset,
 		break;
 	    default:
 		error("IRanges internal error in _vector_Ocopy(): "
-		      "%s type not supported", type2str(TYPEOF(out)));
+		      "%s type not supported", CHAR(type2str(TYPEOF(out))));
 		break; // gcc -Wall
 	}
 	Ocopy_byteblocks(i1, i2, dest, dest_nelt, src, src_nelt, blocksize);
@@ -264,7 +264,7 @@ void _vector_Ocopy_from_subscript(SEXP out, SEXP in, SEXP subscript, SEXP lkup)
 		break;
 	default:
 		error("IRanges internal error in _vector_Ocopy_from_subscript(): "
-		      "%s type not supported", type2str(TYPEOF(out)));
+		      "%s type not supported", CHAR(type2str(TYPEOF(out))));
 	}
 	return;
 }
@@ -312,7 +312,7 @@ void _vector_Ocopy_to_subscript(SEXP out, SEXP in, SEXP subscript, SEXP lkup)
 		break;
 	default:
 		error("IRanges internal error in _vector_Ocopy_to_subscript(): "
-		      "%s type not supported", type2str(TYPEOF(out)));
+		      "%s type not supported", CHAR(type2str(TYPEOF(out))));
 	}
 	return;
 }

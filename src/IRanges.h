@@ -872,13 +872,20 @@ SEXP RleViews_viewWhichMaxs(
 
 SEXP debug_SharedVector_class();
 
+SEXP externalptr_new();
+
+SEXP externalptr_get_tag(SEXP x);
+
+SEXP externalptr_set_tag(
+	SEXP x,
+	SEXP tag
+);
+
 SEXP externalptr_tagtype(SEXP x);
 
 SEXP externalptr_taglength(SEXP x);
 
 SEXP externalptr_show(SEXP x);
-
-SEXP externalptr_new();
 
 SEXP _get_SharedVector_tag(SEXP x);
 

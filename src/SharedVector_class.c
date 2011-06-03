@@ -20,8 +20,30 @@ SEXP debug_SharedVector_class()
 
 
 /****************************************************************************
- * Some .Call entry points for manipulation externalptr objects.
+ * Some .Call entry points for manipulating externalptr objects.
  */
+
+/*
+ * new("externalptr") will always return the same instance of an external
+ * pointer object! If you need a new instance, use this function instead.
+ * From R:
+ *   x <- .Call("externalptr_new", PACKAGE="IRanges")
+ */
+SEXP externalptr_new()
+{
+	return R_MakeExternalPtr(NULL, R_NilValue, R_NilValue);
+}
+
+SEXP externalptr_get_tag(SEXP x)
+{
+	return R_ExternalPtrTag(x);
+}
+
+SEXP externalptr_set_tag(SEXP x, SEXP tag)
+{
+	R_SetExternalPtrTag(x, tag);
+	return x;
+}
 
 /*
  * From R:
@@ -60,17 +82,6 @@ SEXP externalptr_show(SEXP x)
 	Rprintf("  typeof(R_ExternalPtrProtected(x)): %s\n",
 				CHAR(type2str(TYPEOF(s))));
 	return R_NilValue;
-}
-
-/*
- * new("externalptr") will always return the same instance of an external
- * pointer object! If you need a new instance, use this function instead.
- * From R:
- *   x <- .Call("externalptr_new", PACKAGE="IRanges")
- */
-SEXP externalptr_new()
-{
-	return R_MakeExternalPtr(NULL, R_NilValue, R_NilValue);
 }
 
 
@@ -182,8 +193,8 @@ SEXP SharedVector_address0(SEXP x)
 	else if (IS_NUMERIC(tag))
 		address0 = REAL(tag);
 	else
-		error("IRanges internal error in SharedVector_address0(): ",
-		      "%s: invalid tag type", type2str(TYPEOF(tag)));
+		error("IRanges internal error in SharedVector_address0(): "
+		      "%s: invalid tag type", CHAR(type2str(TYPEOF(tag))));
 	snprintf(buf, sizeof(buf), "%p", address0);
 	return mkString(buf);
 }
