@@ -7,10 +7,11 @@
 ###
 
 setClass("Views",
-    contains="IRanges",
+    contains="List",
     representation(
         "VIRTUAL",
-        subject="Vector"
+        subject="Vector",
+        ranges="IRanges"
     )
 )
 
@@ -22,6 +23,117 @@ setClass("Views",
 setGeneric("subject", function(x) standardGeneric("subject"))
 
 setMethod("subject", "Views", function(x) x@subject)
+
+setGeneric("ranges", function(x, ...) standardGeneric("ranges"))
+
+setMethod("ranges", "Views", function(x) x@ranges)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Methods derived from the IRanges interface.
+###
+
+setMethod("length", "Views", function(x) length(ranges(x)))
+
+setMethod("start", "Views", function(x, ...) start(ranges(x)))
+setMethod("end", "Views", function(x, ...) end(ranges(x)))
+setMethod("width", "Views", function(x) width(ranges(x)))
+setMethod("names", "Views", function(x) names(ranges(x)))
+
+setReplaceMethod("start", "Views",
+    function(x, check=TRUE, value)
+    {
+        x@ranges <- `start<-`(ranges(x), check=check, value)
+        x
+    }
+)
+
+setReplaceMethod("end", "Views",
+    function(x, check=TRUE, value)
+    {
+        x@ranges <- `end<-`(ranges(x), check=check, value)
+        x
+    }
+)
+
+setReplaceMethod("width", "Views",
+    function(x, check=TRUE, value)
+    {
+        x@ranges <- `width<-`(ranges(x), check=check, value)
+        x
+    }
+)
+
+setReplaceMethod("names", "Views",
+    function(x, value)
+    {
+        x@ranges <- `names<-`(ranges(x), value)
+        x
+    }
+)
+
+setMethod("[", "Views",
+    function(x, i, j, ..., drop)
+    {
+        if (!missing(j) || length(list(...)) > 0L)
+            stop("invalid subsetting")
+        if (missing(i))
+            return(x)
+        x@ranges <- ranges(x)[i]
+        x
+    }
+)
+
+setMethod("shift", "Views",
+    function(x, shift, use.names=TRUE)
+    {
+        x@ranges <- shift(ranges(x), shift=shift, use.names=use.names)
+        x
+    }
+)
+
+setMethod("narrow", "Views",
+    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+    {
+        x@ranges <- narrow(ranges(x), start=start, end=end, width=width,
+                           use.names=use.names)
+        x
+    }
+)
+
+setMethod("gaps", "Views",
+    function(x, start=NA, end=NA)
+    {
+        if (!isSingleNumberOrNA(start))
+            stop("'start' must be a single integer")
+        if (!is.integer(start))
+            start <- as.integer(start)
+        if (!isSingleNumberOrNA(end))
+            stop("'end' must be a single integer")
+        if (!is.integer(end))
+            end <- as.integer(end)
+        if (is.na(start))
+            start <- 1L
+        if (is.na(end))
+            end <- length(subject(x))
+        x@ranges <- gaps(ranges(x), start=start, end=end)
+        x
+    }
+)
+
+setMethod("reduce", "Views",
+    function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
+             with.inframe.attrib=FALSE)
+    {
+        x@ranges <- reduce(ranges(x),
+                           drop.empty.ranges=drop.empty.ranges,
+                           min.gapwidth=min.gapwidth,
+                           with.inframe.attrib=with.inframe.attrib)
+        x
+    }
+)
+
+setMethod("elementLengths", "Views", function(x) width(x))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -52,6 +164,8 @@ newViews <- function(subject, start=NULL, end=NULL, width=NULL, names=NULL,
         if (!is.null(end) || !is.null(width))
             stop("'end' and 'width' must be NULLs when 'start' is a Ranges object")
         ranges <- start
+        if (class(ranges) != "IRanges")
+            ranges <- as(ranges, "IRanges")
         ## Keep the names that are already in 'ranges' unless the 'names' arg
         ## was specified.
         if (!is.null(names))
@@ -61,11 +175,7 @@ newViews <- function(subject, start=NULL, end=NULL, width=NULL, names=NULL,
     }
     if (is.null(Class))
         Class <- paste(class(subject), "Views", sep="")
-    new2(Class, subject=subject,
-                start=start(ranges),
-                width=width(ranges),
-                NAMES=names(ranges),
-                check=FALSE)
+    new2(Class, subject=subject, ranges=ranges, check=FALSE)
 }
 
 
@@ -90,6 +200,20 @@ setAs("Vector", "Views",
     function(from) Views(from, start=1L, width=length(from))
 )
 
+setAs("Views", "Ranges", function(from) ranges(from))
+setAs("Views", "IRanges", function(from) ranges(from))
+
+### Unfortunately, even if we've already defined the IRanges->NormalIRanges
+### "coerce" method to override the silly implicit one, we still need to
+### define the <class>->NormalIRanges ones for every <class> that contains
+### IRanges. Otherwise, again, 'as(x, "NormalIRanges")' would call another
+### silly implicit method when 'x' is a <class> instance.
+### Yes, this is another S4 "feature":
+###   https://stat.ethz.ch/pipermail/r-devel/2008-April/049027.html
+setAs("Views", "NormalIRanges",
+    function(from) asNormalIRanges(ranges(from), force=TRUE)
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Extracting a view.
@@ -109,22 +233,6 @@ setMethod("[[", "Views",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion.
-###
-
-### Unfortunately, even if we've already defined the IRanges->NormalIRanges
-### "coerce" method to override the silly implicit one, we still need to
-### define the <class>->NormalIRanges ones for every <class> that contains
-### IRanges. Otherwise, again, 'as(x, "NormalIRanges")' would call another
-### silly implicit method when 'x' is a <class> instance.
-### Yes, this is another S4 "feature":
-###   https://stat.ethz.ch/pipermail/r-devel/2008-April/049027.html
-setAs("Views", "NormalIRanges",
-    function(from) asNormalIRanges(from, force=TRUE)
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "trim" function.
 ###
 
@@ -134,8 +242,12 @@ setGeneric("trim", signature="x",
 
 setMethod("trim", "Views",
     function(x, use.names=TRUE)
-        restrict(x, start=1L, end=length(subject(x)), keep.all.ranges=TRUE,
-                 use.names=use.names)
+    {
+        x@ranges <- restrict(ranges(x), start=1L, end=length(subject(x)),
+                             keep.all.ranges=TRUE,
+                             use.names=use.names)
+        x
+    }
 )
 
 
@@ -153,30 +265,6 @@ setGeneric("subviews", signature="x",
 setMethod("subviews", "Views",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
         trim(narrow(x, start=start, end=end, width=width, use.names=use.names))
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "gaps" method.
-###
-
-setMethod("gaps", "Views",
-    function(x, start=NA, end=NA)
-    {
-        if (!isSingleNumberOrNA(start))
-            stop("'start' must be a single integer")
-        if (!is.integer(start))
-            start <- as.integer(start)
-        if (!isSingleNumberOrNA(end))
-            stop("'end' must be a single integer")
-        if (!is.integer(end))
-            end <- as.integer(end)
-        if (is.na(start))
-            start <- 1L
-        if (is.na(end))
-            end <- length(subject(x))
-        callNextMethod(x, start=start, end=end)
-    }
 )
 
 
@@ -244,7 +332,9 @@ setMethod("Summary", "Views", function(x, ..., na.rm = FALSE) {
     if (length(list(...)))
       stop("Passing multiple arguments to '", .Generic, "' is not supported.")
     viewSummaryFun(x, na.rm = na.rm)
-  } else callNextMethod()
+  } else {
+    Summary(ranges(x), ..., na.rm = na.rm)
+  }
 })
 
 setMethod("mean", "Views", viewMeans)

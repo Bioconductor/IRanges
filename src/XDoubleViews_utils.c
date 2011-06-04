@@ -19,9 +19,10 @@ static int le(double x, double y) {
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP XDoubleViews_slice(SEXP xdouble, SEXP lower, SEXP upper, SEXP include_lower, SEXP include_upper)
+SEXP XDouble_slice(SEXP x, SEXP lower, SEXP upper,
+		SEXP include_lower, SEXP include_upper)
 {
-	SEXP x, ans, start, width;
+	SEXP x_tag, ans, start, width;
 	int i, x_length, ans_length;
 	int *start_elt, *width_elt, curr_elt, prev_elt;
 	double *x_elt, lower_elt, upper_elt;
@@ -34,11 +35,11 @@ SEXP XDoubleViews_slice(SEXP xdouble, SEXP lower, SEXP upper, SEXP include_lower
 	lower_elt = REAL(lower)[0];
 	upper_elt = REAL(upper)[0];
 
-	x = _get_XVector_tag(xdouble);
-	x_length = LENGTH(x);
+	x_tag = _get_XVector_tag(x);
+	x_length = LENGTH(x_tag);
 	ans_length = 0;
 	prev_elt = 0;
-	for (i = 1, x_elt = REAL(x); i <= x_length; i++, x_elt++) {
+	for (i = 1, x_elt = REAL(x_tag); i <= x_length; i++, x_elt++) {
 		curr_elt = lower_fun(*x_elt, lower_elt) && upper_fun(*x_elt, upper_elt);
 		if (curr_elt && !prev_elt)
 			ans_length++;
@@ -51,7 +52,7 @@ SEXP XDoubleViews_slice(SEXP xdouble, SEXP lower, SEXP upper, SEXP include_lower
 		start_elt = INTEGER(start) - 1;
 		width_elt = INTEGER(width) - 1;
 		prev_elt = 0;
-		for (i = 1, x_elt = REAL(x); i <= x_length; i++, x_elt++) {
+		for (i = 1, x_elt = REAL(x_tag); i <= x_length; i++, x_elt++) {
 			curr_elt = lower_fun(*x_elt, lower_elt) && upper_fun(*x_elt, upper_elt);
 			if (curr_elt) {
 				if (prev_elt)
@@ -66,8 +67,7 @@ SEXP XDoubleViews_slice(SEXP xdouble, SEXP lower, SEXP upper, SEXP include_lower
 			prev_elt = curr_elt;
 		}
 	}
-	PROTECT(ans = _new_IRanges("XDoubleViews", start, width, R_NilValue));
-	SET_SLOT(ans, install("subject"), duplicate(xdouble));
+	PROTECT(ans = _new_IRanges("IRanges", start, width, R_NilValue));
 	UNPROTECT(3);
 	return ans;
 }

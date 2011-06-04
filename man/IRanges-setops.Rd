@@ -128,28 +128,28 @@ gaps(x, start=NA, end=NA)
   y <- Views(as(4:-17, "XInteger"), start=c(14, 0, -5, 6, 18), end=c(20, 2, 2, 8, 20))
 
   ## Vector-wise operations:
-  union(x, y)
-  union(y, x)
+  union(x, ranges(y))
+  union(ranges(y), x)
 
-  intersect(x, y)
-  intersect(y, x)
+  intersect(x, ranges(y))
+  intersect(ranges(y), x)
 
-  setdiff(x, y)
-  setdiff(y, x)
+  setdiff(x, ranges(y))
+  setdiff(ranges(y), x)
 
   ## Element-wise (aka "parallel") operations:
-  try(punion(x, y))
-  punion(x[3:5], y[3:5])
-  punion(x, y, fill.gap=TRUE)
-  try(pintersect(x, y))
-  pintersect(x[3:4], y[3:4])
-  pintersect(x, y, resolve.empty="max.start")
-  psetdiff(y, x)
-  try(psetdiff(x, y))
+  try(punion(x, ranges(y)))
+  punion(x[3:5], ranges(y)[3:5])
+  punion(x, ranges(y), fill.gap=TRUE)
+  try(pintersect(x, ranges(y)))
+  pintersect(x[3:4], ranges(y)[3:4])
+  pintersect(x, ranges(y), resolve.empty="max.start")
+  psetdiff(ranges(y), x)
+  try(psetdiff(x, ranges(y)))
   start(x)[4] <- -99
   end(y)[4] <- 99
-  psetdiff(x, y)
-  pgap(x, y)
+  psetdiff(x, ranges(y))
+  pgap(x, ranges(y))
 }
 
 \keyword{utilities}

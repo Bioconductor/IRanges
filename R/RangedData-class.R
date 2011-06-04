@@ -50,7 +50,6 @@ setReplaceMethod("values", "RangedData",
                    x
                  })
 
-setGeneric("ranges", function(x, ...) standardGeneric("ranges"))
 setMethod("ranges", "RangedData", function(x) x@ranges)
 
 setGeneric("ranges<-", function(x, ..., value) standardGeneric("ranges<-"))

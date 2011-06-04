@@ -13,14 +13,15 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 	char type = '?';
 	int i, start, width, ans_length, index, lower_run, upper_run, upper_bound;
 	int max_index, *lengths_elt;
-	SEXP ans, subject, values, lengths, names;
-	cachedIRanges cached_x;
+	SEXP ans, subject, values, lengths, ranges, names;
+	cachedIRanges cached_ranges;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
-	cached_x = _cache_IRanges(x);
-	ans_length = _get_cachedIRanges_length(&cached_x);
+	ranges = GET_SLOT(x, install("ranges"));
+	cached_ranges = _cache_IRanges(ranges);
+	ans_length = _get_cachedIRanges_length(&cached_ranges);
 
 	ans = R_NilValue;
 	switch (TYPEOF(values)) {
@@ -47,8 +48,8 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 	for (i = 0; i < ans_length; i++) {
 		if (i % 100000 == 99999)
 			R_CheckUserInterrupt();
-		start = _get_cachedIRanges_elt_start(&cached_x, i);
-		width = _get_cachedIRanges_elt_width(&cached_x, i);
+		start = _get_cachedIRanges_elt_start(&cached_ranges, i);
+		width = _get_cachedIRanges_elt_width(&cached_ranges, i);
 		if (type == 'i') {
 			INTEGER(ans)[i] = INT_MAX;
 		} else if (type == 'r') {
@@ -108,7 +109,7 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	PROTECT(names = duplicate(_get_IRanges_names(x)));
+	PROTECT(names = duplicate(_get_IRanges_names(ranges)));
 	SET_NAMES(ans, names);
 	UNPROTECT(2);
 	return ans;
@@ -122,14 +123,15 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 	char type = '?';
 	int i, start, width, ans_length, index, lower_run, upper_run, upper_bound;
 	int max_index, *lengths_elt;
-	SEXP ans, subject, values, lengths, names;
-	cachedIRanges cached_x;
+	SEXP ans, subject, values, lengths, ranges, names;
+	cachedIRanges cached_ranges;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
-	cached_x = _cache_IRanges(x);
-	ans_length = _get_cachedIRanges_length(&cached_x);
+	ranges = GET_SLOT(x, install("ranges"));
+	cached_ranges = _cache_IRanges(ranges);
+	ans_length = _get_cachedIRanges_length(&cached_ranges);
 
 	ans = R_NilValue;
 	switch (TYPEOF(values)) {
@@ -156,8 +158,8 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 	for (i = 0; i < ans_length; i++) {
 		if (i % 100000 == 99999)
 			R_CheckUserInterrupt();
-		start = _get_cachedIRanges_elt_start(&cached_x, i);
-		width = _get_cachedIRanges_elt_width(&cached_x, i);
+		start = _get_cachedIRanges_elt_start(&cached_ranges, i);
+		width = _get_cachedIRanges_elt_width(&cached_ranges, i);
 		if (type == 'i') {
 			INTEGER(ans)[i] = R_INT_MIN;
 		} else if (type == 'r') {
@@ -217,7 +219,7 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	PROTECT(names = duplicate(_get_IRanges_names(x)));
+	PROTECT(names = duplicate(_get_IRanges_names(ranges)));
 	SET_NAMES(ans, names);
 	UNPROTECT(2);
 	return ans;
@@ -232,14 +234,15 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 	int i, start, width, ans_length, index,
 	    lower_run, upper_run, lower_bound, upper_bound;
 	int max_index, *lengths_elt;
-	SEXP ans, subject, values, lengths, names;
-	cachedIRanges cached_x;
+	SEXP ans, subject, values, lengths, ranges, names;
+	cachedIRanges cached_ranges;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
-	cached_x = _cache_IRanges(x);
-	ans_length = _get_cachedIRanges_length(&cached_x);
+	ranges = GET_SLOT(x, install("ranges"));
+	cached_ranges = _cache_IRanges(ranges);
+	ans_length = _get_cachedIRanges_length(&cached_ranges);
 
 	ans = R_NilValue;
 	switch (TYPEOF(values)) {
@@ -270,8 +273,8 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 	for (i = 0; i < ans_length; i++) {
 		if (i % 100000 == 99999)
 			R_CheckUserInterrupt();
-		start = _get_cachedIRanges_elt_start(&cached_x, i);
-		width = _get_cachedIRanges_elt_width(&cached_x, i);
+		start = _get_cachedIRanges_elt_start(&cached_ranges, i);
+		width = _get_cachedIRanges_elt_width(&cached_ranges, i);
 		if (type == 'i') {
 			INTEGER(ans)[i] = 0;
 		} else if (type == 'r') {
@@ -370,7 +373,7 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	PROTECT(names = duplicate(_get_IRanges_names(x)));
+	PROTECT(names = duplicate(_get_IRanges_names(ranges)));
 	SET_NAMES(ans, names);
 	UNPROTECT(2);
 	return ans;
@@ -385,14 +388,15 @@ SEXP RleViews_viewMeans(SEXP x, SEXP na_rm)
 	int i, n, start, width, ans_length, index,
 	    lower_run, upper_run, lower_bound, upper_bound;
 	int max_index, *lengths_elt;
-	SEXP ans, subject, values, lengths, names;
-	cachedIRanges cached_x;
+	SEXP ans, subject, values, lengths, ranges, names;
+	cachedIRanges cached_ranges;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
-	cached_x = _cache_IRanges(x);
-	ans_length = _get_cachedIRanges_length(&cached_x);
+	ranges = GET_SLOT(x, install("ranges"));
+	cached_ranges = _cache_IRanges(ranges);
+	ans_length = _get_cachedIRanges_length(&cached_ranges);
 
 	ans = R_NilValue;
 	switch (TYPEOF(values)) {
@@ -423,8 +427,8 @@ SEXP RleViews_viewMeans(SEXP x, SEXP na_rm)
 	for (i = 0; i < ans_length; i++) {
 		if (i % 100000 == 99999)
 			R_CheckUserInterrupt();
-		start = _get_cachedIRanges_elt_start(&cached_x, i);
-		width = _get_cachedIRanges_elt_width(&cached_x, i);
+		start = _get_cachedIRanges_elt_start(&cached_ranges, i);
+		width = _get_cachedIRanges_elt_width(&cached_ranges, i);
 		if (width <= 0) {
 			if (type == 'i') {
 				REAL(ans)[i] = R_NaN;
@@ -557,7 +561,7 @@ SEXP RleViews_viewMeans(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	PROTECT(names = duplicate(_get_IRanges_names(x)));
+	PROTECT(names = duplicate(_get_IRanges_names(ranges)));
 	SET_NAMES(ans, names);
 	UNPROTECT(2);
 	return ans;
@@ -572,14 +576,15 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 	int i, start, width, ans_length, index,
 	    lower_run, upper_run, lower_bound, upper_bound;
 	int max_index, *ans_elt, *lengths_elt;
-	SEXP curr, ans, subject, values, lengths, names;
-	cachedIRanges cached_x;
+	SEXP curr, ans, subject, values, lengths, ranges, names;
+	cachedIRanges cached_ranges;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
-	cached_x = _cache_IRanges(x);
-	ans_length = _get_cachedIRanges_length(&cached_x);
+	ranges = GET_SLOT(x, install("ranges"));
+	cached_ranges = _cache_IRanges(ranges);
+	ans_length = _get_cachedIRanges_length(&cached_ranges);
 
 	curr = R_NilValue;
 	switch (TYPEOF(values)) {
@@ -607,8 +612,8 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 	for (i = 0, ans_elt = INTEGER(ans); i < ans_length; i++, ans_elt++) {
 		if (i % 100000 == 99999)
 			R_CheckUserInterrupt();
-		start = _get_cachedIRanges_elt_start(&cached_x, i);
-		width = _get_cachedIRanges_elt_width(&cached_x, i);
+		start = _get_cachedIRanges_elt_start(&cached_ranges, i);
+		width = _get_cachedIRanges_elt_width(&cached_ranges, i);
 		*ans_elt = NA_INTEGER;
 		if (width > 0) {
 			if (type == 'i') {
@@ -672,7 +677,7 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	PROTECT(names = duplicate(_get_IRanges_names(x)));
+	PROTECT(names = duplicate(_get_IRanges_names(ranges)));
 	SET_NAMES(ans, names);
 	UNPROTECT(3);
 	return ans;
@@ -687,14 +692,15 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 	int i, start, width, ans_length, index,
 	    lower_run, upper_run, lower_bound, upper_bound;
 	int max_index, *ans_elt, *lengths_elt;
-	SEXP curr, ans, subject, values, lengths, names;
-	cachedIRanges cached_x;
+	SEXP curr, ans, subject, values, lengths, ranges, names;
+	cachedIRanges cached_ranges;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
-	cached_x = _cache_IRanges(x);
-	ans_length = _get_cachedIRanges_length(&cached_x);
+	ranges = GET_SLOT(x, install("ranges"));
+	cached_ranges = _cache_IRanges(ranges);
+	ans_length = _get_cachedIRanges_length(&cached_ranges);
 
 	curr = R_NilValue;
 	switch (TYPEOF(values)) {
@@ -722,8 +728,8 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 	for (i = 0, ans_elt = INTEGER(ans); i < ans_length; i++, ans_elt++) {
 		if (i % 100000 == 99999)
 			R_CheckUserInterrupt();
-		start = _get_cachedIRanges_elt_start(&cached_x, i);
-		width = _get_cachedIRanges_elt_width(&cached_x, i);
+		start = _get_cachedIRanges_elt_start(&cached_ranges, i);
+		width = _get_cachedIRanges_elt_width(&cached_ranges, i);
 		*ans_elt = NA_INTEGER;
 		if (width > 0) {
 			if (type == 'i') {
@@ -787,7 +793,7 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 			}
 		}
 	}
-	PROTECT(names = duplicate(_get_IRanges_names(x)));
+	PROTECT(names = duplicate(_get_IRanges_names(ranges)));
 	SET_NAMES(ans, names);
 	UNPROTECT(3);
 	return ans;

@@ -26,7 +26,9 @@ setMethod("slice", "XInteger",
             stop("'upper' must be a single integer")
         if (!is.integer(upper))
             upper <- as.integer(upper)
-        .Call("XIntegerViews_slice", x, lower, upper, PACKAGE="IRanges")
+        ranges <- .Call("XInteger_slice", x, lower, upper,
+                        PACKAGE="IRanges")
+        Views(x, ranges)
     }
 )
 

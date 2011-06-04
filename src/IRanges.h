@@ -1279,16 +1279,13 @@ SEXP _new_XIntegerList_from_IntAEAE(
 );
 
 
-/* XIntegerViews_class.c */
+/* XIntegerViews_utils.c */
 
-SEXP XIntegerViews_slice(
-	SEXP xint,
+SEXP XInteger_slice(
+	SEXP x,
 	SEXP lower,
 	SEXP upper
 );
-
-
-/* XIntegerViews_utils.c */
 
 SEXP XIntegerViews_viewMins(
 	SEXP x,
@@ -1316,12 +1313,13 @@ SEXP XIntegerViews_viewWhichMaxs(
 );
 
 
-/* XDoubleViews_class.c */
+/* XDoubleViews_utils.c */
 
-SEXP XDoubleViews_slice(
-	SEXP xdouble,
+SEXP XDouble_slice(
+	SEXP x,
 	SEXP lower,
 	SEXP upper,
 	SEXP include_lower,
 	SEXP include_upper
 );
+
