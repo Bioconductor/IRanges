@@ -214,7 +214,7 @@ setAs("Views", "NormalIRanges",
     function(from) asNormalIRanges(ranges(from), force=TRUE)
 )
 
-setMethod("as.matrix", "Views", function(x, ...) as.matrix(ranges(x))
+setMethod("as.matrix", "Views", function(x, ...) as.matrix(ranges(x)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
