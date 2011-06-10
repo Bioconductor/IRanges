@@ -185,6 +185,11 @@ static const R_CallMethodDef callMethods[] = {
 
 /* XDoubleViews_utils.c */
 	CALLMETHOD_DEF(XDouble_slice, 5),
+	CALLMETHOD_DEF(XDoubleViews_viewMins, 2),
+	CALLMETHOD_DEF(XDoubleViews_viewMaxs, 2),
+	CALLMETHOD_DEF(XDoubleViews_viewSums, 2),
+	CALLMETHOD_DEF(XDoubleViews_viewWhichMins, 2),
+	CALLMETHOD_DEF(XDoubleViews_viewWhichMaxs, 2),
 
 	{NULL, NULL, 0}
 };

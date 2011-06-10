@@ -9,7 +9,7 @@ Description: The package provides efficient low-level and highly reusable S4
 	collections of instances of the basic classes. All classes in
 	the package use consistent naming and share the same rich and
 	consistent "Vector API" as much as possible.
-Version: 1.11.8
+Version: 1.11.9
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Biocore Team c/o BioC user list <bioconductor@stat.math.ethz.ch>
 biocViews: Infrastructure, DataRepresentation
@@ -20,7 +20,7 @@ License: Artistic-2.0
 ExtraLicenses: The following files in the 'src' directory are licensed for all
   use by Jim Kent, in a manner compatible with the Artistic 2.0 license:
   common.c/h, memalloc.c/h, localmem.c/h, hash.c/h, errabort.c/h, rbTree.c/h,
-  dlist.c/h, errCatch.h 
+  dlist.c/h, errCatch.h
 Collate: validity-utils.R
 	utils.R
 	isConstant.R
@@ -83,6 +83,8 @@ Collate: validity-utils.R
 	XRawList-class.R
 	XIntegerViews-class.R
 	XIntegerViews-utils.R
+	XDoubleViews-class.R
+	XDoubleViews-utils.R
 	compact.R
 	reverse.R
 	coverage.R

@@ -1323,3 +1323,27 @@ SEXP XDouble_slice(
 	SEXP include_upper
 );
 
+SEXP XDoubleViews_viewMins(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP XDoubleViews_viewMaxs(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP XDoubleViews_viewSums(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP XDoubleViews_viewWhichMins(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP XDoubleViews_viewWhichMaxs(
+	SEXP x,
+	SEXP na_rm
+);
