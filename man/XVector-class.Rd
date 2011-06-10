@@ -17,6 +17,7 @@
 \alias{window,XVector-method}
 \alias{as.numeric,XVector-method}
 \alias{show,XVector-method}
+\alias{==,XVector,XVector-method}
 
 % XRaw class, functions and methods:
 \alias{class:XRaw}
@@ -39,7 +40,6 @@
 \alias{coerce,integer,XVector-method}
 \alias{as.integer,XInteger-method}
 \alias{as.vector,XInteger,missing-method}
-\alias{==,XInteger,XInteger-method}
 
 % XDouble class, functions and methods:
 \alias{class:XDouble}
@@ -52,7 +52,6 @@
 \alias{as.numeric,XDouble-method}
 \alias{as.vector,XDouble,missing-method}
 \alias{show,XDouble-method}
-\alias{==,XDouble,XDouble-method}
 
 
 \title{XVector objects}

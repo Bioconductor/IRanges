@@ -62,7 +62,10 @@ XIntegerViews.show_vframe_line <- function(x, i, iW, startW, endW, widthW)
     width <- end - start + 1
     snippetWidth <- getOption("width") - 6 - iW - startW - endW - widthW
     if (width > 0 && lsx > 0 && start <= lsx && end >= 1) {
-        snippet <- toNumSnippet(SharedInteger.read(subject(x)@shared, max(min(start,lsx),1), max(min(end,lsx),1)), snippetWidth)
+        snippet <- toNumSnippet(subseq(subject(x),
+                                       start=max(min(start,lsx),1),
+                                       end=max(min(end,lsx),1)),
+                                snippetWidth)
     } else {
        snippet <- " "
     }
@@ -173,9 +176,8 @@ XIntegerViews.view1_equal_view2 <- function(x1, start1, end1, x2, start2, end2)
     }
 
     # At this point, we can trust that 1 <= start1 <= end1 <= lx1
-    # and that 1 <= start2 <= end2 <= lx2 so we can call unsafe
-    # function SharedInteger.read() with no fear...
-    SharedInteger.read(x1@shared, start1, end1) == SharedInteger.read(x2@shared, start2, end2)
+    # and that 1 <= start2 <= end2 <= lx2.
+    subseq(x1, start=start1, end=end1) == subseq(x2, start=start2, end=end2)
 }
 
 ### 'x' and 'y' must be XIntegerViews objects.

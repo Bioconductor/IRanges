@@ -11,7 +11,7 @@
 ###
 
 setMethod("slice", "numeric",
-    function(x, lower=-.Machine$double.xmax, upper=.Machine$double.xmax,
+    function(x, lower=-Inf, upper=Inf,
              includeLower=TRUE, includeUpper=TRUE, rangesOnly=FALSE)
         slice(as(x, "XDouble"), lower=lower, upper=upper,
               includeLower=includeLower, includeUpper=includeUpper,
@@ -30,15 +30,12 @@ setMethod("slice", "XDouble",
             stop("'upper' must be a single integer")
         if (!is.numeric(upper))
             upper <- as.numeric(upper)
-        if (!isTRUEorFALSE(includeLower)) {
+        if (!isTRUEorFALSE(includeLower))
             stop("'includeLower' must be TRUE or FALSE")
-        }
-        if (!isTRUEorFALSE(includeUpper)) {
+        if (!isTRUEorFALSE(includeUpper))
             stop("'includeUpper' must be TRUE or FALSE")
-        }
-        if (!isTRUEorFALSE(rangesOnly)) {
+        if (!isTRUEorFALSE(rangesOnly))
             stop("'rangesOnly' must be TRUE or FALSE")
-        }
         
         ranges <- .Call("XDouble_slice", x, lower, upper, includeLower,
                         includeUpper, PACKAGE="IRanges")

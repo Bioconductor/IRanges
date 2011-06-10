@@ -59,13 +59,3 @@ setMethod("as.vector", c("XDouble", "missing"),
     function(x, mode) as.numeric(x)
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Comparison.
-###
-
-### FIXME: Compare the contents, not the addresses!
-setMethod("==", signature(e1="XDouble", e2="XDouble"),
-    function(e1, e2) { e1@shared == e2@shared }
-)
-

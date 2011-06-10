@@ -31,7 +31,7 @@
   that can be shared by the concrete classes that derive from it.
 
   Some direct subclasses of the Views class are: \link{XIntegerViews},
-  \link{RleViews}, \link[Biostrings:XStringViews-class]{XStringViews}
+  \link{XDoubleViews}, \link{RleViews}, \link[Biostrings]{XStringViews}
   (defined in the Biostrings package), etc...
 }
 
@@ -147,6 +147,7 @@
 
   Some direct subclasses of the Views class:
   \link{XIntegerViews-class},
+  \link{XDoubleViews-class},
   \link{RleViews-class},
   \link[Biostrings]{XStringViews-class}.
 }

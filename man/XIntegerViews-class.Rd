@@ -80,7 +80,8 @@
 \seealso{
   \link{Views-class},
   \link{XInteger-class},
-  \link{Views-utils}
+  \link{Views-utils},
+  \link{XDoubleViews-class}
 }
 
 \examples{
@@ -100,15 +101,16 @@
   names(v4)
 
   ## A more programatical way to "tag" the "out of limits" views:
-  names(v4)[start(v4) < 1 | length(subject(v4)) < end(v4)] <- "out of limits"
-  ## or just:
-  names(v4)[length(subject(v4)) < width(v4)] <- "out of limits"
+  idx <- start(v4) < 1 | end(v4) > length(subject(v4)) 
+  names(v4)[idx] <- "out of limits"
 
   ## Extract a view as an XInteger object:
   v4[[2]]
 
   ## It is an error to try to extract an "out of limits" view:
-  #v4[[3]] # Error!
+\dontrun{
+  v4[[3]] # Error!
+}
 
   ## Here the first view doesn't even overlap with the subject:
   subject <- as(c(97, 97, 97, 45, 45, 98), "XInteger")

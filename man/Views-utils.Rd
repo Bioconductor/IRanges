@@ -112,12 +112,12 @@ viewRangeMaxs(x, na.rm=FALSE)
     or an integer vector for \code{slice}.
 
     An \linkS4class{RleViews}, \linkS4class{RleViewsList},
-    \linkS4class{XIntegerViews} object for \code{viewMins}, \code{viewMaxs},
-    \code{viewSums}, and \code{viewMeans}.
+    \linkS4class{XIntegerViews} or \linkS4class{XDoubleViews} object
+    for \code{viewMins}, \code{viewMaxs}, \code{viewSums}, and \code{viewMeans}.
 
     An \linkS4class{Rle}, \linkS4class{RleViewsList},
-    \linkS4class{XIntegerViews} object for \code{viewWhichMins} and
-    \code{viewWhichMaxs}.
+    \linkS4class{XIntegerViews} or \linkS4class{XDoubleViews} object
+    for \code{viewWhichMins} and \code{viewWhichMaxs}.
   }
   \item{lower, upper}{
     The lower and upper bounds for the slice.
@@ -161,11 +161,14 @@ viewRangeMaxs(x, na.rm=FALSE)
   the ranges when using \code{slice} with \code{rangesOnly = TRUE}.
   An \linkS4class{XIntegerViews} for an \linkS4class{XInteger} object
   when using \code{slice}.
+  An \linkS4class{XDoubleViews} for an \linkS4class{XDouble} object
+  when using \code{slice}.
 
-  A vector of \code{length(x)} for \linkS4class{RleViews} and
-  \linkS4class{XIntegerViews} objects or a \linkS4class{SimpleList} object of
-  \code{length(x)} for \linkS4class{RleViewsList} objects containing the
-  numeric summaries for the views for \code{viewMins}, \code{viewMaxs},
+  A vector of \code{length(x)} for \linkS4class{RleViews},
+  \linkS4class{XIntegerViews} and \linkS4class{XDoubleViews} objects,
+  or a \linkS4class{SimpleList} object of \code{length(x)} for
+  \linkS4class{RleViewsList} objects containing the numeric summaries
+  for the views for \code{viewMins}, \code{viewMaxs},
   \code{viewSums}, \code{viewMeans}, \code{viewWhichMins}, and
   \code{viewWhichMaxs}.
 

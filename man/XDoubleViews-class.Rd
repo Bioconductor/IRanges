@@ -81,10 +81,10 @@
 }
 
 \seealso{
-  \link{XInteverViews-class}
   \link{Views-class},
   \link{XDouble-class},
-  \link{Views-utils}
+  \link{Views-utils},
+  \link{XIntegerViews-class}
 }
 
 \examples{
@@ -104,30 +104,30 @@
   names(v4)
 
   ## A more programatical way to "tag" the "out of limits" views:
-  names(v4)[start(v4) < 1 | length(subject(v4)) < end(v4)] <- "out of limits"
-  ## or just:
-  names(v4)[length(subject(v4)) < width(v4)] <- "out of limits"
+  idx <- start(v4) < 1 | end(v4) > length(subject(v4))
+  names(v4)[idx] <- "out of limits"
 
   ## Extract a view as an XDouble object:
   v4[[2]]
 
   ## It is an error to try to extract an "out of limits" view:
-  #v4[[3]] # Error!
+\dontrun{
+  v4[[3]] # Error!
+}
 
   ## Here the first view doesn't even overlap with the subject:
   subject <- as(c(97, 97, 97, 45, 45, 98), "XDouble")
   Views(subject, start=-3:4, end=-3:4 + c(3:6, 6:3))
 
-  ## Some fast view* functionality
-  x <- rnorm(50)
-  bounds <- IRanges(c(1, 20, 50, 80), width=c(5, 10, 15, 18))
+  ## Some fast view* functionalities:
+  x <- rnorm(55)
+  bounds <- IRanges(c(1, 11, 35, 20), width=c(5, 10, 15, 28))
   v <- Views(x, bounds)
   val <- viewMins(v)
   expect <- sapply(1:length(bounds), function(i) {
     min(x[start(bounds)[i]:end(bounds[i])])
   })
-  all(val == expect)
-
+  stopifnot(all(val == expect))
 }
 
 \keyword{methods}

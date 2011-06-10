@@ -203,3 +203,26 @@ setMethod("show", "XVector",
     }
 )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Equality.
+###
+
+.XVector.equal <- function(x, y)
+{
+    if (class(x) != class(y) || x@length != y@length)
+        return(FALSE)
+    ans <- !SharedVector.compare(x@shared, x@offset + 1L,
+                                 y@shared, y@offset + 1L,
+                                 x@length)
+    as.logical(ans)
+}
+
+setMethod("==", signature(e1="XVector", e2="XVector"),
+    function(e1, e2) .XVector.equal(e1, e2)
+)
+
+setMethod("!=", signature(e1="XVector", e2="XVector"),
+    function(e1, e2) !(e1 == e2)
+)
+

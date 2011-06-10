@@ -5,7 +5,7 @@
 
 
 ### The XDoubleViews class is the basic container for storing a set of views
-### (start/end locations) on the same XInteger object, called the "subject"
+### (start/end locations) on the same XDouble object, called the "subject"
 ### vector.
 setClass("XDoubleViews",
     contains="Views",
@@ -62,7 +62,10 @@ XDoubleViews.show_vframe_line <- function(x, i, iW, startW, endW, widthW)
     width <- end - start + 1
     snippetWidth <- getOption("width") - 6 - iW - startW - endW - widthW
     if (width > 0 && lsx > 0 && start <= lsx && end >= 1) {
-        snippet <- toNumSnippet(SharedDouble.read(subject(x)@shared, max(min(start,lsx),1), max(min(end,lsx),1)), snippetWidth)
+        snippet <- toNumSnippet(subseq(subject(x),
+                                       start=max(min(start,lsx),1),
+                                       end=max(min(end,lsx),1)),
+                                snippetWidth)
     } else {
        snippet <- " "
     }
@@ -173,9 +176,8 @@ XDoubleViews.view1_equal_view2 <- function(x1, start1, end1, x2, start2, end2)
     }
 
     # At this point, we can trust that 1 <= start1 <= end1 <= lx1
-    # and that 1 <= start2 <= end2 <= lx2 so we can call unsafe
-    # function SharedDouble.read() with no fear...
-    SharedDouble.read(x1@shared, start1, end1) == SharedDouble.read(x2@shared, start2, end2)
+    # and that 1 <= start2 <= end2 <= lx2.
+    subseq(x1, start=start1, end=end1) == subseq(x2, start=start2, end=end2)
 }
 
 ### 'x' and 'y' must be XDoubleViews objects.
@@ -199,11 +201,9 @@ XDoubleViews.equal <- function(x, y)
     ans <- logical(lx)
     j <- 1
     for (i in seq_len(lx)) {
-        are.equal <- XDoubleViews.view1_equal_view2(
+        ans[i] <- XDoubleViews.view1_equal_view2(
                           subject(x), start(x)[i], end(x)[i],
                           subject(y), start(y)[j], end(y)[j])
-        ans[i] <- all(are.equal)
-        
         # Recycle
         if (j < ly) j <- j + 1 else j <- 1
     }
@@ -235,7 +235,7 @@ setMethod("==", signature(e1="XDoubleViews", e2="numeric"),
     function(e1, e2)
     {
         if (length(e2) == 0 || anyMissing(e2))
-            stop("comparison between an XIntegerViews object and an integer ",
+            stop("comparison between an XDoubleViews object and an integer ",
                  "vector of length 0 or with NAs is not supported")
         XDoubleViews.equal(e1, as(e2, "Views"))
     }

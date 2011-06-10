@@ -56,13 +56,3 @@ setMethod("as.vector", c("XInteger", "missing"),
     function(x, mode) as.integer(x)
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Comparison.
-###
-
-### FIXME: Compare the contents, not the addresses!
-setMethod("==", signature(e1="XInteger", e2="XInteger"),
-    function(e1, e2) { e1@shared == e2@shared }
-)
-
