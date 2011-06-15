@@ -86,7 +86,7 @@ SEXP XDouble_slice(SEXP x, SEXP lower, SEXP upper,
  * See C function rmin() in the R source code (src/main/summary.c) for the
  * details.
  */
-static int get_cachedDoubleSeq_min(const cachedDoubleSeq *X, int narm)
+static double get_cachedDoubleSeq_min(const cachedDoubleSeq *X, int narm)
 {
 	int xlen, i;
 	double val, x;
@@ -114,7 +114,7 @@ static int get_cachedDoubleSeq_min(const cachedDoubleSeq *X, int narm)
  * See C function rmax() in the R source code (src/main/summary.c) for the
  * details.
  */
-static int get_cachedDoubleSeq_max(const cachedDoubleSeq *X, int narm)
+static double get_cachedDoubleSeq_max(const cachedDoubleSeq *X, int narm)
 {
 	int xlen, i;
 	double val, x;
@@ -139,7 +139,7 @@ static int get_cachedDoubleSeq_max(const cachedDoubleSeq *X, int narm)
  * See C function rsum() in the R source code (src/main/summary.c) for the
  * details.
  */
-static int get_cachedDoubleSeq_sum(const cachedDoubleSeq *X, int narm)
+static double get_cachedDoubleSeq_sum(const cachedDoubleSeq *X, int narm)
 {
 	int xlen, i;
 	double val, x;
@@ -201,7 +201,7 @@ static int get_cachedDoubleSeq_which_max(const cachedDoubleSeq *X, int narm)
 				continue;
 			return xlen == 1 ? 1 : NA_INTEGER;
 		}
-		if (which_max == NA_INTEGER || x < cur_max) {
+		if (which_max == NA_INTEGER || x > cur_max) {
 			cur_max = x;
 			which_max = i;
 		}
