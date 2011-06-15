@@ -177,19 +177,13 @@ static const R_CallMethodDef callMethods[] = {
 
 /* XIntegerViews_utils.c */
 	CALLMETHOD_DEF(XInteger_slice, 3),
-	CALLMETHOD_DEF(XIntegerViews_viewMins, 2),
-	CALLMETHOD_DEF(XIntegerViews_viewMaxs, 2),
-	CALLMETHOD_DEF(XIntegerViews_viewSums, 2),
-	CALLMETHOD_DEF(XIntegerViews_viewWhichMins, 2),
-	CALLMETHOD_DEF(XIntegerViews_viewWhichMaxs, 2),
+	CALLMETHOD_DEF(XIntegerViews_summary1, 3),
+	CALLMETHOD_DEF(XIntegerViews_summary2, 3),
 
 /* XDoubleViews_utils.c */
 	CALLMETHOD_DEF(XDouble_slice, 5),
-	CALLMETHOD_DEF(XDoubleViews_viewMins, 2),
-	CALLMETHOD_DEF(XDoubleViews_viewMaxs, 2),
-	CALLMETHOD_DEF(XDoubleViews_viewSums, 2),
-	CALLMETHOD_DEF(XDoubleViews_viewWhichMins, 2),
-	CALLMETHOD_DEF(XDoubleViews_viewWhichMaxs, 2),
+	CALLMETHOD_DEF(XDoubleViews_summary1, 3),
+	CALLMETHOD_DEF(XDoubleViews_summary2, 3),
 
 	{NULL, NULL, 0}
 };

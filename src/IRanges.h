@@ -1287,29 +1287,16 @@ SEXP XInteger_slice(
 	SEXP upper
 );
 
-SEXP XIntegerViews_viewMins(
+SEXP XIntegerViews_summary1(
 	SEXP x,
-	SEXP na_rm
+	SEXP na_rm,
+	SEXP method
 );
 
-SEXP XIntegerViews_viewMaxs(
+SEXP XIntegerViews_summary2(
 	SEXP x,
-	SEXP na_rm
-);
-
-SEXP XIntegerViews_viewSums(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP XIntegerViews_viewWhichMins(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP XIntegerViews_viewWhichMaxs(
-	SEXP x,
-	SEXP na_rm
+	SEXP na_rm,
+	SEXP method
 );
 
 
@@ -1323,27 +1310,15 @@ SEXP XDouble_slice(
 	SEXP include_upper
 );
 
-SEXP XDoubleViews_viewMins(
+SEXP XDoubleViews_summary1(
 	SEXP x,
-	SEXP na_rm
+	SEXP na_rm,
+	SEXP method
 );
 
-SEXP XDoubleViews_viewMaxs(
+SEXP XDoubleViews_summary2(
 	SEXP x,
-	SEXP na_rm
+	SEXP na_rm,
+	SEXP method
 );
 
-SEXP XDoubleViews_viewSums(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP XDoubleViews_viewWhichMins(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP XDoubleViews_viewWhichMaxs(
-	SEXP x,
-	SEXP na_rm
-);

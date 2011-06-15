@@ -40,17 +40,20 @@ setMethod("slice", "XInteger",
 
 setMethod("viewMins", "XIntegerViews",
     function(x, na.rm=FALSE)
-        .Call("XIntegerViews_viewMins", x, na.rm, PACKAGE="IRanges")
+        .Call("XIntegerViews_summary1", x, na.rm, "viewMins",
+              PACKAGE="IRanges")
 )
 
 setMethod("viewMaxs", "XIntegerViews",
     function(x, na.rm=FALSE)
-        .Call("XIntegerViews_viewMaxs", x, na.rm, PACKAGE="IRanges")
+        .Call("XIntegerViews_summary1", x, na.rm, "viewMaxs",
+              PACKAGE="IRanges")
 )
 
 setMethod("viewSums", "XIntegerViews",
     function(x, na.rm=FALSE)
-        .Call("XIntegerViews_viewSums", x, na.rm, PACKAGE="IRanges")
+        .Call("XIntegerViews_summary1", x, na.rm, "viewSums",
+              PACKAGE="IRanges")
 )
 
 setMethod("viewMeans", "XIntegerViews",
@@ -69,10 +72,13 @@ setMethod("viewMeans", "XIntegerViews",
 
 setMethod("viewWhichMins", "XIntegerViews",
     function(x, na.rm=FALSE)
-        .Call("XIntegerViews_viewWhichMins", x, na.rm, PACKAGE="IRanges")
+        .Call("XIntegerViews_summary2", x, na.rm, "viewWhichMins",
+              PACKAGE="IRanges")
 )
 
 setMethod("viewWhichMaxs", "XIntegerViews",
     function(x, na.rm=FALSE)
-        .Call("XIntegerViews_viewWhichMaxs", x, na.rm, PACKAGE="IRanges")
+        .Call("XIntegerViews_summary2", x, na.rm, "viewWhichMaxs",
+              PACKAGE="IRanges")
 )
+
