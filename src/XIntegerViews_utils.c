@@ -68,8 +68,8 @@ static cachedIntSeq get_cachedIntSeq_view(const cachedIntSeq *X,
 	view_offset = view_start - 1;
 	/* Trim the view if it's "out of limits". */
 	if (view_offset < 0) {
-		view_offset = 0;
 		view_width += view_offset;
+		view_offset = 0;
 	}
 	if (view_width > (tmp = X->length - view_offset))
 		view_width = tmp;
@@ -170,10 +170,10 @@ static int get_cachedIntSeq_which_min(const cachedIntSeq *X, int narm)
 		}
 		if (which_min == NA_INTEGER || x < cur_min) {
 			cur_min = x;
-			which_min = i;
+			which_min = i + 1;
 		}
 	}
-	return which_min + 1;
+	return which_min;
 }
 
 /* TODO: Compare the code below with what which.max() does on a standard
@@ -193,10 +193,10 @@ static int get_cachedIntSeq_which_max(const cachedIntSeq *X, int narm)
 		}
 		if (which_max == NA_INTEGER || x > cur_max) {
 			cur_max = x;
-			which_max = i;
+			which_max = i + 1;
 		}
 	}
-	return which_max + 1;
+	return which_max;
 }
 
 

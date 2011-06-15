@@ -87,8 +87,8 @@ static cachedDoubleSeq get_cachedDoubleSeq_view(const cachedDoubleSeq *X,
 	view_offset = view_start - 1;
 	/* Trim the view if it's "out of limits". */
 	if (view_offset < 0) {
-		view_offset = 0;
 		view_width += view_offset;
+		view_offset = 0;
 	}
 	if (view_width > (tmp = X->length - view_offset))
 		view_width = tmp;
@@ -195,10 +195,10 @@ static int get_cachedDoubleSeq_which_min(const cachedDoubleSeq *X, int narm)
 		}
 		if (which_min == NA_INTEGER || x < cur_min) {
 			cur_min = x;
-			which_min = i;
+			which_min = i + 1;
 		}
 	}
-	return which_min + 1;
+	return which_min;
 }
 
 /* The code below does something *close* but not identical to what which.max()
@@ -222,10 +222,10 @@ static int get_cachedDoubleSeq_which_max(const cachedDoubleSeq *X, int narm)
 		}
 		if (which_max == NA_INTEGER || x > cur_max) {
 			cur_max = x;
-			which_max = i;
+			which_max = i + 1;
 		}
 	}
-	return which_max + 1;
+	return which_max;
 }
 
 
