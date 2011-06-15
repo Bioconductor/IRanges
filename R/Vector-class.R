@@ -676,6 +676,25 @@ setMethod("subset", "Vector",
               x[subset & !is.na(subset)]
           })
 
+setMethod("unique", "Vector",
+          function(x, incomparables = FALSE, ...)
+          {
+            x[!duplicated(x, incomparables = incomparables, ...)]
+          })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion.
+###
+
+setAs("Vector", "data.frame", function(from) as.data.frame(from))
+
+setMethod("as.data.frame", "Vector",
+          function(x, row.names=NULL, optional=FALSE, ...)
+          {
+            x <- as.vector(x)
+            callGeneric()
+          })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Comparison.
