@@ -60,10 +60,11 @@ SEXP XInteger_slice(SEXP x, SEXP lower, SEXP upper)
  */
 
 /*
- * Returns NA_INTEGER if 'X' is empty. Note that this differs from what min()
- * does on a standard integer vector (it returns Inf, which is a double).
- * See C function imin() defined in the R source code (src/main/summary.c)
- * for the details.
+ * Returns NA if 'X' is empty. Note that this differs from what
+ * 'min(integer(0))' does: the latter returns 'Inf' (which is a double) and
+ * issues a warning.
+ * See C function imin() in the R source code (src/main/summary.c) for the
+ * details.
  */
 static int get_cachedIntSeq_min(const cachedIntSeq *X, int narm)
 {
@@ -85,10 +86,11 @@ static int get_cachedIntSeq_min(const cachedIntSeq *X, int narm)
 }
 
 /*
- * Returns NA_INTEGER if 'X' is empty. Note that this differs from what max()
- * does on a standard integer vector (it returns -Inf, which is a double).
- * See C function imax() defined in the R source code (src/main/summary.c)
- * for the details.
+ * Returns NA if 'X' is empty. Note that this differs from what
+ * 'max(integer(0))' does: the latter returns '-Inf' (which is a double) and
+ * issues a warning.
+ * See C function imax() in the R source code (src/main/summary.c) for the
+ * details.
  */
 static int get_cachedIntSeq_max(const cachedIntSeq *X, int narm)
 {
@@ -132,46 +134,50 @@ static int get_cachedIntSeq_sum(const cachedIntSeq *X, int narm)
 	return val;
 }
 
-static int get_cachedIntSeq_min_offset(const cachedIntSeq *X, int narm)
+/* TODO: Compare the code below with what which.min() does on a standard
+ * integer vector. */
+static int get_cachedIntSeq_which_min(const cachedIntSeq *X, int narm)
 {
-	int xlen, cur_min, offset, i, x;
+	int xlen, cur_min, which_min, i, x;
 
 	xlen = X->length;
-	offset = NA_INTEGER;
+	which_min = NA_INTEGER;
 	for (i = 0; i < xlen; i++) {
 		x = X->seq[i];
 		if (x == NA_INTEGER) {
 			if (narm)
 				continue;
-			return xlen == 1 ? 0 : NA_INTEGER;
+			return xlen == 1 ? 1 : NA_INTEGER;
 		}
-		if (offset == NA_INTEGER || x < cur_min) {
+		if (which_min == NA_INTEGER || x < cur_min) {
 			cur_min = x;
-			offset = i;
+			which_min = i;
 		}
 	}
-	return offset;
+	return which_min + 1;
 }
 
-static int get_cachedIntSeq_max_offset(const cachedIntSeq *X, int narm)
+/* TODO: Compare the code below with what which.max() does on a standard
+ * integer vector. */
+static int get_cachedIntSeq_which_max(const cachedIntSeq *X, int narm)
 {
-	int xlen, cur_max, offset, i, x;
+	int xlen, cur_max, which_max, i, x;
 
 	xlen = X->length;
-	offset = NA_INTEGER;
+	which_max = NA_INTEGER;
 	for (i = 0; i < xlen; i++) {
 		x = X->seq[i];
 		if (x == NA_INTEGER) {
 			if (narm)
 				continue;
-			return xlen == 1 ? 0 : NA_INTEGER;
+			return xlen == 1 ? 1 : NA_INTEGER;
 		}
-		if (offset == NA_INTEGER || x > cur_max) {
+		if (which_max == NA_INTEGER || x > cur_max) {
 			cur_max = x;
-			offset = i;
+			which_max = i;
 		}
 	}
-	return offset;
+	return which_max + 1;
 }
 
 
@@ -278,7 +284,7 @@ SEXP XIntegerViews_viewWhichMins(SEXP x, SEXP na_rm)
 	cachedIntSeq S, S_view;
 	cachedIRanges cached_ranges;
 	int ans_length, v, *ans_elt, view_start, view_width, view_offset,
-	    min_offset;
+	    which_min;
 
 	subject = GET_SLOT(x, install("subject"));
 	S = _cache_XInteger(subject);
@@ -297,10 +303,10 @@ SEXP XIntegerViews_viewWhichMins(SEXP x, SEXP na_rm)
 		}
 		S_view.seq = S.seq + view_offset;
 		S_view.length = view_width;
-		min_offset = get_cachedIntSeq_min_offset(&S_view,
+		which_min = get_cachedIntSeq_which_min(&S_view,
 						LOGICAL(na_rm)[0]);
-		*ans_elt = min_offset == NA_INTEGER ? min_offset
-						    : view_start + min_offset;
+		*ans_elt = which_min == NA_INTEGER ? which_min
+						   : view_offset + which_min;
 	}
 	UNPROTECT(1);
 	return ans;
@@ -312,7 +318,7 @@ SEXP XIntegerViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 	cachedIntSeq S, S_view;
 	cachedIRanges cached_ranges;
 	int ans_length, v, *ans_elt, view_start, view_width, view_offset,
-	    max_offset;
+	    which_max;
 
 	subject = GET_SLOT(x, install("subject"));
 	S = _cache_XInteger(subject);
@@ -331,10 +337,10 @@ SEXP XIntegerViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 		}
 		S_view.seq = S.seq + view_offset;
 		S_view.length = view_width;
-		max_offset = get_cachedIntSeq_max_offset(&S_view,
+		which_max = get_cachedIntSeq_which_max(&S_view,
 						LOGICAL(na_rm)[0]);
-		*ans_elt = max_offset == NA_INTEGER ? max_offset
-						    : view_start + max_offset;
+		*ans_elt = which_max == NA_INTEGER ? which_max
+						   : view_offset + which_max;
 	}
 	UNPROTECT(1);
 	return ans;
