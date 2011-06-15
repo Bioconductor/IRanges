@@ -4,6 +4,16 @@
 
 setGeneric("reverse", function(x, ...) standardGeneric("reverse"))
 
+setMethod("reverse", "character",
+    function(x, ...)
+    {
+        if (length(x) == 0)
+            return(x)
+        sapply(strsplit(x, NULL, fixed=TRUE),
+               function(xx) paste(rev(xx), collapse=""))
+    }
+)
+
 ### This method does NOT preserve normality.
 .IRanges.reverse <- function(x, ...)
 {
@@ -59,6 +69,15 @@ setMethod("reverse", "NormalIRanges",
     }
 )
 
+setMethod("reverse", "Views",
+    function(x, ...)
+    {
+        x@subject <- reverse(subject(x))
+        x@ranges <- reverse(ranges(x), start=1L, end=length(subject(x)))
+        x
+    }
+)
+
 setMethod("reverse", "MaskCollection",
     function(x, ...)
     {
@@ -70,4 +89,9 @@ setMethod("reverse", "MaskCollection",
         x
     }
 )
+
+setMethod("reverse", "XVector", function(x, ...) xvcopy(x, reverse=TRUE))
+setMethod("rev", "XVector", function(x) reverse(x))
+
+setMethod("reverse", "XVectorList", function(x, ...) xvcopy(x, reverse=TRUE))
 
