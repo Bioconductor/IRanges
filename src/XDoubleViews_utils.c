@@ -78,6 +78,25 @@ SEXP XDouble_slice(SEXP x, SEXP lower, SEXP upper,
  * Low-level operations on cachedDoubleSeq structures (sequences of doubles).
  */
 
+static cachedDoubleSeq get_cachedDoubleSeq_view(const cachedDoubleSeq *X,
+		int view_start, int view_width)
+{
+	cachedDoubleSeq X_view;
+	int view_offset, tmp;
+
+	view_offset = view_start - 1;
+	/* Trim the view if it's "out of limits". */
+	if (view_offset < 0) {
+		view_offset = 0;
+		view_width += view_offset;
+	}
+	if (view_width > (tmp = X->length - view_offset))
+		view_width = tmp;
+	X_view.seq = X->seq + view_offset;
+	X_view.length = view_width;
+	return X_view;
+}
+
 /*
  * Returns NA if 'X' contains NAs and/or NaNs and 'narm' is FALSE. Note that
  * this differs from what min() does on a standard double vector: the latter
@@ -213,10 +232,6 @@ static int get_cachedDoubleSeq_which_max(const cachedDoubleSeq *X, int narm)
 /****************************************************************************
  * XDoubleViews_summary1() .Call entry points for fast view summary methods:
  * viewMins, viewMaxs, viewSums.
- *
- * TODO: Doesn't support "out of limits" views right now. An easy solution
- * would be to trim the views in R before 'x' is passed to the .Call entry
- * point.
  */
 
 SEXP XDoubleViews_summary1(SEXP x, SEXP na_rm, SEXP method)
@@ -226,7 +241,7 @@ SEXP XDoubleViews_summary1(SEXP x, SEXP na_rm, SEXP method)
 	cachedIRanges cached_ranges;
 	const char *funname;
 	double (*fun)(const cachedDoubleSeq *, int);
-	int ans_length, v, view_start, view_width, view_offset;
+	int ans_length, v, view_start, view_width;
 	double *ans_elt;
 
 	subject = GET_SLOT(x, install("subject"));
@@ -234,11 +249,11 @@ SEXP XDoubleViews_summary1(SEXP x, SEXP na_rm, SEXP method)
 	cached_ranges = _cache_IRanges(GET_SLOT(x, install("ranges")));
 	funname = CHAR(STRING_ELT(method, 0));
 	if (strcmp(funname, "viewMins") == 0)
-		fun = get_cachedDoubleSeq_min;
+		fun = &get_cachedDoubleSeq_min;
 	else if (strcmp(funname, "viewMaxs") == 0)
-		fun = get_cachedDoubleSeq_max;
+		fun = &get_cachedDoubleSeq_max;
 	else if (strcmp(funname, "viewSums") == 0)
-		fun = get_cachedDoubleSeq_sum;
+		fun = &get_cachedDoubleSeq_sum;
 	else
 		error("IRanges internal error in XDoubleViews_summary1(): "
 		      "invalid method \"%s\"", funname);
@@ -247,15 +262,7 @@ SEXP XDoubleViews_summary1(SEXP x, SEXP na_rm, SEXP method)
 	for (v = 0, ans_elt = REAL(ans); v < ans_length; v++, ans_elt++) {
 		view_start = _get_cachedIRanges_elt_start(&cached_ranges, v);
 		view_width = _get_cachedIRanges_elt_width(&cached_ranges, v);
-		view_offset = view_start - 1;
-		if (view_offset < 0 || view_offset + view_width > S.length) {
-			UNPROTECT(1);
-			error("%s() doesn't support \"out of limits\" "
-			      "views in XDoubleViews objects yet, sorry",
-			      funname);
-		}
-		S_view.seq = S.seq + view_offset;
-		S_view.length = view_width;
+		S_view = get_cachedDoubleSeq_view(&S, view_start, view_width);
 		*ans_elt = fun(&S_view, LOGICAL(na_rm)[0]);
 	}
 	UNPROTECT(1);
@@ -266,10 +273,6 @@ SEXP XDoubleViews_summary1(SEXP x, SEXP na_rm, SEXP method)
 /****************************************************************************
  * XDoubleViews_summary2() .Call entry points for fast view summary methods:
  * viewWhichMins, viewWhichMaxs.
- *
- * TODO: Doesn't support "out of limits" views right now. Note that the
- * "trimming" solution suggested above for XDoubleViews_summary1() does not
- * work here.
  */
 
 SEXP XDoubleViews_summary2(SEXP x, SEXP na_rm, SEXP method)
@@ -279,17 +282,16 @@ SEXP XDoubleViews_summary2(SEXP x, SEXP na_rm, SEXP method)
 	cachedIRanges cached_ranges;
 	const char *funname;
 	int (*fun)(const cachedDoubleSeq *, int);
-	int ans_length, v, view_start, view_width, view_offset,
-	    *ans_elt, which_min;
+	int ans_length, v, view_start, view_width, *ans_elt, which_min;
 
 	subject = GET_SLOT(x, install("subject"));
 	S = _cache_XDouble(subject);
 	cached_ranges = _cache_IRanges(GET_SLOT(x, install("ranges")));
 	funname = CHAR(STRING_ELT(method, 0));
 	if (strcmp(funname, "viewWhichMins") == 0)
-		fun = get_cachedDoubleSeq_which_min;
+		fun = &get_cachedDoubleSeq_which_min;
 	else if (strcmp(funname, "viewWhichMaxs") == 0)
-		fun = get_cachedDoubleSeq_which_max;
+		fun = &get_cachedDoubleSeq_which_max;
 	else
 		error("IRanges internal error in XDoubleViews_summary2(): "
 		      "invalid method \"%s\"", funname);
@@ -298,17 +300,12 @@ SEXP XDoubleViews_summary2(SEXP x, SEXP na_rm, SEXP method)
 	for (v = 0, ans_elt = INTEGER(ans); v < ans_length; v++, ans_elt++) {
 		view_start = _get_cachedIRanges_elt_start(&cached_ranges, v);
 		view_width = _get_cachedIRanges_elt_width(&cached_ranges, v);
-		view_offset = view_start - 1;
-		if (view_offset < 0 || view_offset + view_width > S.length) {
-			UNPROTECT(1);
-			error("%s() doesn't support \"out of limits\" views "
-			      "in XDoubleViews objects yet, sorry", funname);
-		}
-		S_view.seq = S.seq + view_offset;
-		S_view.length = view_width;
+		S_view = get_cachedDoubleSeq_view(&S, view_start, view_width);
 		which_min = fun(&S_view, LOGICAL(na_rm)[0]);
-		*ans_elt = which_min == NA_INTEGER ? which_min
-						   : view_offset + which_min;
+		if (which_min == NA_INTEGER)
+			*ans_elt = which_min;
+		else
+			*ans_elt = S_view.seq - S.seq + which_min;
 	}
 	UNPROTECT(1);
 	return ans;
