@@ -183,6 +183,7 @@ setMethod("space", "RangesList",
             space
           })
 
+### TODO: Why not define this at the List level? Or even at the Vector level?
 setGeneric("universe", function(x) standardGeneric("universe"))
 setMethod("universe", "RangesList",
           function(x)

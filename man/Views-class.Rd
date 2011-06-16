@@ -5,6 +5,10 @@
 \alias{Views-class}
 \alias{subject}
 \alias{subject,Views-method}
+\alias{ranges}
+\alias{ranges,Views-method}
+\alias{ranges<-}
+\alias{ranges<-,Views-method}
 \alias{newViews}
 \alias{Views}
 \alias{coerce,Vector,Views-method}

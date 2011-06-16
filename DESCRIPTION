@@ -58,6 +58,7 @@ Collate: validity-utils.R
 	DataFrameList-utils.R
 	RangesList-class.R
 	GappedRanges-class.R
+	ViewsList-class.R
 	RleViewsList-class.R
 	RleViewsList-utils.R
 	MaskCollection-class.R

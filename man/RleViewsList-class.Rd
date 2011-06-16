@@ -16,7 +16,7 @@
 \alias{coerce,RleViewsList,SimpleIRangesList-method}
 
 \title{List of RleViews}
-\description{An extension of \code{\linkS4class{RangesList}} that holds only
+\description{An extension of \linkS4class{ViewsList} that holds only
   \code{\linkS4class{RleViews}} objects. Useful for storing coverage vectors
   over a set of spaces (e.g. chromosomes), each of which requires a separate
   \code{RleViews} object. As a \code{Vector}, \code{RleViewsList} may be
@@ -26,7 +26,7 @@
 
 \details{
   For more information on methods available for RleViewsList objects consult
-  the man pages for \link{RangesList} and \link{Views-utils}.
+  the man pages for \link{ViewsList-class} and \link{Views-utils}.
 }
 
 \section{Constructor}{
@@ -69,7 +69,7 @@
 \author{P. Aboyoun}
 
 \seealso{
-  \link{RangesList-class},
+  \link{ViewsList-class},
   \link{Views-utils}
 }
 

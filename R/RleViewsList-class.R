@@ -4,10 +4,10 @@
 
 setClass("RleViewsList", representation("VIRTUAL"),
          prototype = prototype(elementType = "RleViews"),
-         contains = "RangesList")
+         contains = "ViewsList")
 setClass("SimpleRleViewsList",
          prototype = prototype(elementType = "RleViews"),
-         contains = c("RleViewsList", "SimpleRangesList"))
+         contains = c("RleViewsList", "SimpleViewsList"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor.
