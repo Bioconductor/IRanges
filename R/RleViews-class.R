@@ -8,7 +8,7 @@
 ### (start/end locations) on the same Rle object, called the "subject"
 ### vector.
 setClass("RleViews",
-    contains="Views",
+    contains=c("Views", "RleList"),
     representation(
         subject="Rle"
     )
