@@ -43,11 +43,22 @@ setMethod("as.matrix", "RangesMatching", function(x) {
   matchMatrix(x)
 })
 
+## a list, with an element for each query, containing the subject hits
+setMethod("as.list", "RangesMatching",
+          function(x, values = seq(ncol(x))) {
+            unname(split(values[subjectHits(x)],
+                         factor(queryHits(x), levels = seq(nrow(x)))))
+          })
+
+setAs("RangesMatching", "list", function(from) as.list(from))
+setAs("RangesMatching", "List", function(from) castList(as.list(from)))
+
 ## count up the matches for each query
 
 setMethod("as.table", "RangesMatching", function(x, ...) {
   tabulate(queryHits(x), nrow(x))
 })
+
 
 setMethod("t", "RangesMatching", function(x) {
   m <- matchMatrix(x)[,2:1,drop=FALSE]
