@@ -7,7 +7,6 @@
  * they are used internally within the IRanges shared lib.
  */
 #include "IRanges.h"
-#include <S.h> /* for Salloc() and Srealloc() */
 
 #define MAX_BUFLENGTH_INC (32 * 1024 * 1024)
 #define MAX_BUFLENGTH (32 * MAX_BUFLENGTH_INC)
@@ -42,6 +41,15 @@ int _get_new_buflength(int buflength)
 	return MAX_BUFLENGTH;
 }
 
+static void *reallocAEbuf(const void *elts, int new_buflength,
+		int buflength, size_t size)
+{
+	char *new_elts;
+
+	new_elts = R_alloc(new_buflength, size);
+	return memcpy(new_elts, elts, (size_t) buflength * size);
+}
+
 
 /****************************************************************************
  * IntAE functions
@@ -64,7 +72,7 @@ IntAE _new_IntAE(int buflength, int nelt, int val)
 	if (buflength == 0)
 		int_ae.elts = NULL;
 	else
-		int_ae.elts = Salloc((long) buflength, int);
+		int_ae.elts = (int *) R_alloc(buflength, sizeof(int));
 	int_ae.buflength = buflength;
 	int_ae.nelt = nelt;
 	_IntAE_set_val(&int_ae, val);
@@ -73,11 +81,11 @@ IntAE _new_IntAE(int buflength, int nelt, int val)
 
 static void IntAE_extend(IntAE *int_ae)
 {
-	long new_buflength;
+	int new_buflength;
 
 	new_buflength = _get_new_buflength(int_ae->buflength);
-	int_ae->elts = Srealloc((char *) int_ae->elts, new_buflength,
-					(long) int_ae->buflength, int);
+	int_ae->elts = (int *) reallocAEbuf(int_ae->elts, new_buflength,
+					int_ae->buflength, sizeof(int));
 	int_ae->buflength = new_buflength;
 	return;
 }
@@ -263,7 +271,7 @@ IntAEAE _new_IntAEAE(int buflength, int nelt)
 	if (buflength == 0)
 		int_aeae.elts = NULL;
 	else
-		int_aeae.elts = Salloc((long) buflength, IntAE);
+		int_aeae.elts = (IntAE *) R_alloc(buflength, sizeof(IntAE));
 	int_aeae.buflength = buflength;
 	for (int_aeae.nelt = 0, elt = int_aeae.elts;
 	     int_aeae.nelt < nelt;
@@ -274,11 +282,11 @@ IntAEAE _new_IntAEAE(int buflength, int nelt)
 
 static void IntAEAE_extend(IntAEAE *int_aeae)
 {
-	long new_buflength;
+	int new_buflength;
 
 	new_buflength = _get_new_buflength(int_aeae->buflength);
-	int_aeae->elts = Srealloc((char *) int_aeae->elts, new_buflength,
-					(long) int_aeae->buflength, IntAE);
+	int_aeae->elts = (IntAE *) reallocAEbuf(int_aeae->elts, new_buflength,
+					int_aeae->buflength, sizeof(IntAE));
 	int_aeae->buflength = new_buflength;
 	return;
 }
@@ -475,7 +483,8 @@ RangeAEAE _new_RangeAEAE(int buflength, int nelt)
 	if (buflength == 0)
 		range_aeae.elts = NULL;
 	else
-		range_aeae.elts = Salloc((long) buflength, RangeAE);
+		range_aeae.elts = (RangeAE *) R_alloc(buflength,
+						      sizeof(RangeAE));
 	range_aeae.buflength = buflength;
 	for (range_aeae.nelt = 0, elt = range_aeae.elts;
 	     range_aeae.nelt < nelt;
@@ -486,11 +495,12 @@ RangeAEAE _new_RangeAEAE(int buflength, int nelt)
 
 static void RangeAEAE_extend(RangeAEAE *range_aeae)
 {
-	long new_buflength;
+	int new_buflength;
 
 	new_buflength = _get_new_buflength(range_aeae->buflength);
-	range_aeae->elts = Srealloc((char *) range_aeae->elts, new_buflength,
-					(long) range_aeae->buflength, RangeAE);
+	range_aeae->elts = (RangeAE *) reallocAEbuf(range_aeae->elts,
+					new_buflength, range_aeae->buflength,
+					sizeof(RangeAE));
 	range_aeae->buflength = new_buflength;
 	return;
 }
@@ -524,7 +534,7 @@ CharAE _new_CharAE(int buflength)
 	if (buflength == 0)
 		char_ae.elts = NULL;
 	else
-		char_ae.elts = Salloc((long) buflength, char);
+		char_ae.elts = (char *) R_alloc(buflength, sizeof(char));
 	char_ae.buflength = buflength;
 	char_ae.nelt = 0;
 	return char_ae;
@@ -544,11 +554,11 @@ CharAE _new_CharAE_from_string(const char *string)
 
 static void CharAE_extend(CharAE *char_ae)
 {
-	long new_buflength;
+	int new_buflength;
 
 	new_buflength = _get_new_buflength(char_ae->buflength);
-	char_ae->elts = Srealloc((char *) char_ae->elts, new_buflength,
-					(long) char_ae->buflength, char);
+	char_ae->elts = (char *) reallocAEbuf(char_ae->elts, new_buflength,
+					char_ae->buflength, sizeof(char));
 	char_ae->buflength = new_buflength;
 	return;
 }
@@ -622,7 +632,7 @@ CharAEAE _new_CharAEAE(int buflength, int nelt)
 	if (buflength == 0)
 		char_aeae.elts = NULL;
 	else
-		char_aeae.elts = Salloc((long) buflength, CharAE);
+		char_aeae.elts = (CharAE *) R_alloc(buflength, sizeof(CharAE));
 	char_aeae.buflength = buflength;
 	for (char_aeae.nelt = 0, elt = char_aeae.elts;
 	     char_aeae.nelt < nelt;
@@ -633,7 +643,7 @@ CharAEAE _new_CharAEAE(int buflength, int nelt)
 
 static void CharAEAE_extend(CharAEAE *char_aeae)
 {
-	long new_buflength;
+	int new_buflength;
 
 	new_buflength = _get_new_buflength(char_aeae->buflength);
 #ifdef DEBUG_IRANGES
@@ -644,8 +654,9 @@ static void CharAEAE_extend(CharAEAE *char_aeae)
 			char_aeae->elts, char_aeae->buflength, new_buflength);
 	}
 #endif
-	char_aeae->elts = Srealloc((char *) char_aeae->elts, new_buflength,
-				(long) char_aeae->buflength, CharAE);
+	char_aeae->elts = (CharAE *) reallocAEbuf(char_aeae->elts,
+					new_buflength,
+					char_aeae->buflength, sizeof(CharAE));
 	char_aeae->buflength = new_buflength;
 #ifdef DEBUG_IRANGES
 	if (debug) {
