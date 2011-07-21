@@ -15,7 +15,7 @@ AEbufs.free <- function()
 {
     AEbufs.use.malloc(TRUE)
     on.exit({AEbufs.free(); AEbufs.use.malloc(FALSE)})    
-    .Call(.NAME=.NAME, ..., PACKAGE=PACKAGE)
+    .Call(.NAME, ..., PACKAGE=PACKAGE)
 }
 
 ### Exported!
