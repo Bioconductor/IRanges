@@ -145,6 +145,17 @@ static void IntAE_alloc(IntAE *int_ae, int buflength)
 	return;
 }
 
+static void IntAE_realloc(IntAE *int_ae)
+{
+	int new_buflength;
+
+	new_buflength = _get_new_buflength(int_ae->buflength);
+	int_ae->elts = (int *) realloc_AEbuf(int_ae->elts, new_buflength,
+					int_ae->buflength, sizeof(int));
+	int_ae->buflength = new_buflength;
+	return;
+}
+
 /* Must be used on a malloc-based IntAE */
 static void IntAE_free(IntAE *int_ae)
 {
@@ -176,17 +187,6 @@ IntAE _new_IntAE(int buflength, int nelt, int val)
 	return int_ae;
 }
 
-static void IntAE_extend(IntAE *int_ae)
-{
-	int new_buflength;
-
-	new_buflength = _get_new_buflength(int_ae->buflength);
-	int_ae->elts = (int *) realloc_AEbuf(int_ae->elts, new_buflength,
-					int_ae->buflength, sizeof(int));
-	int_ae->buflength = new_buflength;
-	return;
-}
-
 void _IntAE_insert_at(IntAE *int_ae, int at, int val)
 {
 	const int *elt1;
@@ -194,7 +194,7 @@ void _IntAE_insert_at(IntAE *int_ae, int at, int val)
 	int i1;
 
 	if (int_ae->nelt >= int_ae->buflength)
-		IntAE_extend(int_ae);
+		IntAE_realloc(int_ae);
 	elt2 = int_ae->elts + int_ae->nelt;
 	elt1 = elt2 - 1;
 	for (i1 = int_ae->nelt++; i1 > at; i1--)
@@ -209,7 +209,7 @@ void _IntAE_append(IntAE *int_ae, const int *newvals, int nnewval)
 
 	new_nelt = int_ae->nelt + nnewval;
 	while (int_ae->buflength < new_nelt)
-		IntAE_extend(int_ae);
+		IntAE_realloc(int_ae);
 	dest = int_ae->elts + int_ae->nelt;
 	memcpy(dest, newvals, nnewval * sizeof(int));
 	int_ae->nelt = new_nelt;
@@ -261,7 +261,7 @@ void _IntAE_append_shifted_vals(IntAE *int_ae, const int *newvals, int nnewval, 
 
 	new_nelt = int_ae->nelt + nnewval;
 	while (int_ae->buflength < new_nelt)
-		IntAE_extend(int_ae);
+		IntAE_realloc(int_ae);
 	for (i = 0, elt1 = int_ae->elts + int_ae->nelt, elt2 = newvals;
 	     i < nnewval;
 	     i++, elt1++, elt2++)
@@ -372,6 +372,17 @@ static void IntAEAE_alloc(IntAEAE *int_aeae, int buflength)
 	return;
 }
 
+static void IntAEAE_realloc(IntAEAE *int_aeae)
+{
+	int new_buflength;
+
+	new_buflength = _get_new_buflength(int_aeae->buflength);
+	int_aeae->elts = (IntAE *) realloc_AEbuf(int_aeae->elts, new_buflength,
+					int_aeae->buflength, sizeof(IntAE));
+	int_aeae->buflength = new_buflength;
+	return;
+}
+
 /* Must be used on a malloc-based IntAEAE */
 static void IntAEAE_free(IntAEAE *int_aeae)
 {
@@ -404,24 +415,13 @@ IntAEAE _new_IntAEAE(int buflength, int nelt)
 	return int_aeae;
 }
 
-static void IntAEAE_extend(IntAEAE *int_aeae)
-{
-	int new_buflength;
-
-	new_buflength = _get_new_buflength(int_aeae->buflength);
-	int_aeae->elts = (IntAE *) realloc_AEbuf(int_aeae->elts, new_buflength,
-					int_aeae->buflength, sizeof(IntAE));
-	int_aeae->buflength = new_buflength;
-	return;
-}
-
 void _IntAEAE_insert_at(IntAEAE *int_aeae, int at, const IntAE *int_ae)
 {
 	IntAE *elt1, *elt2;
 	int i1;
 
 	if (int_aeae->nelt >= int_aeae->buflength)
-		IntAEAE_extend(int_aeae);
+		IntAEAE_realloc(int_aeae);
 	elt2 = int_aeae->elts + int_aeae->nelt;
 	elt1 = elt2 - 1;
 	for (i1 = int_aeae->nelt++; i1 > at; i1--)
@@ -632,6 +632,18 @@ static void RangeAEAE_alloc(RangeAEAE *range_aeae, int buflength)
 	return;
 }
 
+static void RangeAEAE_realloc(RangeAEAE *range_aeae)
+{
+	int new_buflength;
+
+	new_buflength = _get_new_buflength(range_aeae->buflength);
+	range_aeae->elts = (RangeAE *) realloc_AEbuf(range_aeae->elts,
+					new_buflength, range_aeae->buflength,
+					sizeof(RangeAE));
+	range_aeae->buflength = new_buflength;
+	return;
+}
+
 /* Must be used on a malloc-based RangeAEAE */
 static void RangeAEAE_free(RangeAEAE *range_aeae)
 {
@@ -664,18 +676,6 @@ RangeAEAE _new_RangeAEAE(int buflength, int nelt)
 	return range_aeae;
 }
 
-static void RangeAEAE_extend(RangeAEAE *range_aeae)
-{
-	int new_buflength;
-
-	new_buflength = _get_new_buflength(range_aeae->buflength);
-	range_aeae->elts = (RangeAE *) realloc_AEbuf(range_aeae->elts,
-					new_buflength, range_aeae->buflength,
-					sizeof(RangeAE));
-	range_aeae->buflength = new_buflength;
-	return;
-}
-
 void _RangeAEAE_insert_at(RangeAEAE *range_aeae, int at,
 		const RangeAE *range_ae)
 {
@@ -683,7 +683,7 @@ void _RangeAEAE_insert_at(RangeAEAE *range_aeae, int at,
 	int i1;
 
 	if (range_aeae->nelt >= range_aeae->buflength)
-		RangeAEAE_extend(range_aeae);
+		RangeAEAE_realloc(range_aeae);
 	elt2 = range_aeae->elts + range_aeae->nelt;
 	elt1 = elt2 - 1;
 	for (i1 = range_aeae->nelt++; i1 > at; i1--)
@@ -701,6 +701,17 @@ static void CharAE_alloc(CharAE *char_ae, int buflength)
 {
 	char_ae->elts = (char *) alloc_AEbuf(buflength, sizeof(char));
 	char_ae->buflength = buflength;
+	return;
+}
+
+static void CharAE_realloc(CharAE *char_ae)
+{
+	int new_buflength;
+
+	new_buflength = _get_new_buflength(char_ae->buflength);
+	char_ae->elts = (char *) realloc_AEbuf(char_ae->elts, new_buflength,
+					char_ae->buflength, sizeof(char));
+	char_ae->buflength = new_buflength;
 	return;
 }
 
@@ -735,24 +746,13 @@ CharAE _new_CharAE_from_string(const char *string)
 	return char_ae;
 }
 
-static void CharAE_extend(CharAE *char_ae)
-{
-	int new_buflength;
-
-	new_buflength = _get_new_buflength(char_ae->buflength);
-	char_ae->elts = (char *) realloc_AEbuf(char_ae->elts, new_buflength,
-					char_ae->buflength, sizeof(char));
-	char_ae->buflength = new_buflength;
-	return;
-}
-
 void _CharAE_insert_at(CharAE *char_ae, int at, char c)
 {
 	char *elt1, *elt2;
 	int i1;
 
 	if (char_ae->nelt >= char_ae->buflength)
-		CharAE_extend(char_ae);
+		CharAE_realloc(char_ae);
 	elt2 = char_ae->elts + char_ae->nelt;
 	elt1 = elt2 - 1;
 	for (i1 = char_ae->nelt++; i1 > at; i1--)
@@ -769,7 +769,7 @@ void _append_string_to_CharAE(CharAE *char_ae, const char *string)
 	nnewval = strlen(string);
 	new_nelt = char_ae->nelt + nnewval;
 	while (char_ae->buflength < new_nelt)
-		CharAE_extend(char_ae);
+		CharAE_realloc(char_ae);
 	dest = char_ae->elts + char_ae->nelt;
 	memcpy(dest, string, nnewval * sizeof(char));
 	char_ae->nelt = new_nelt;
@@ -813,6 +813,18 @@ static void CharAEAE_alloc(CharAEAE *char_aeae, int buflength)
 	return;
 }
 
+static void CharAEAE_realloc(CharAEAE *char_aeae)
+{
+	int new_buflength;
+
+	new_buflength = _get_new_buflength(char_aeae->buflength);
+	char_aeae->elts = (CharAE *) realloc_AEbuf(char_aeae->elts,
+					new_buflength,
+					char_aeae->buflength, sizeof(CharAE));
+	char_aeae->buflength = new_buflength;
+	return;
+}
+
 /* Must be used on a malloc-based CharAEAE */
 static void CharAEAE_free(CharAEAE *char_aeae)
 {
@@ -845,25 +857,13 @@ CharAEAE _new_CharAEAE(int buflength, int nelt)
 	return char_aeae;
 }
 
-static void CharAEAE_extend(CharAEAE *char_aeae)
-{
-	int new_buflength;
-
-	new_buflength = _get_new_buflength(char_aeae->buflength);
-	char_aeae->elts = (CharAE *) realloc_AEbuf(char_aeae->elts,
-					new_buflength,
-					char_aeae->buflength, sizeof(CharAE));
-	char_aeae->buflength = new_buflength;
-	return;
-}
-
 void _CharAEAE_insert_at(CharAEAE *char_aeae, int at, const CharAE *char_ae)
 {
 	CharAE *elt1, *elt2;
 	int i1;
 
 	if (char_aeae->nelt >= char_aeae->buflength)
-		CharAEAE_extend(char_aeae);
+		CharAEAE_realloc(char_aeae);
 	elt2 = char_aeae->elts + char_aeae->nelt;
 	elt1 = elt2 - 1;
 	for (i1 = char_aeae->nelt++; i1 > at; i1--)
@@ -912,6 +912,7 @@ static void pop_AEbuf()
 		error("IRanges internal error in pop_AEbuf(): "
 		      "cannot pop AEbuf from empty stack. "
 		      "This should NEVER happen! Please report.");
+	AEbuf_stack_nelt--;
 	aebuf_ptr = AEbuf_stack + AEbuf_stack_nelt;
 	switch (aebuf_ptr->type) {
 	case INTAE:
@@ -938,7 +939,6 @@ static void pop_AEbuf()
 		      "This should NEVER happen! Please report.",
 		      aebuf_ptr->type);
 	}
-	AEbuf_stack_nelt--;
 	return;
 }
 
