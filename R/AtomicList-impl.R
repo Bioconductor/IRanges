@@ -2,6 +2,12 @@
 ### AtomicList object implementations
 ### -------------------------------------------------------------------------
 
+## Possible optimizations for compressed lists:
+## - order/sort: unlist, order by split factor first
+## - sum/mean: unlist, rowsum() with split factor
+## - cumsum: unlist, cumsum and subtract offsets
+## - paste: when collapsing, unlist, collapse, using embedded delimiter
+
 setClassUnion("atomic",
               c("raw", "logical", "integer", "numeric", "character", "complex"))
 
@@ -1003,10 +1009,10 @@ setMethod("show", "RleList",
 
 setMethod("showAsCell", "AtomicList",
           function(object) {
-              unlist(lapply(object, function(x)
-                                if (length(x) <= 3)
-                                    paste(x, collapse = ",")
-                                else
-                                    paste(c(as.vector(head(x, 3)), "..."),
-                                          collapse = ",")), use.names = FALSE)
+              unlist(lapply(object, function(x) {
+                str <- paste(as.vector(head(x, 3)), collapse = ",") 
+                if (length(x) > 3)
+                  str <- paste(str, "...", sep = ",")
+                str
+              }), use.names = FALSE)
           })
