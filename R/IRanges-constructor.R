@@ -51,7 +51,7 @@ solveUserSEW0 <- function(start=NULL, end=NULL, width=NULL)
         else
             width <- recycleVector(width, max123)
     }
-    .Call("solve_user_SEW0", start, end, width, PACKAGE="IRanges")
+    .Call2("solve_user_SEW0", start, end, width, PACKAGE="IRanges")
 }
 
 
@@ -145,7 +145,7 @@ solveUserSEW <- function(refwidths, start=NA, end=NA, width=NA,
         stop("'translate.negative.coord' must be TRUE or FALSE")
     if (!isTRUEorFALSE(allow.nonnarrowing))
         stop("'allow.nonnarrowing' must be TRUE or FALSE")
-    .Call("solve_user_SEW",
+    .Call2("solve_user_SEW",
           refwidths, start, end, width,
           translate.negative.coord, allow.nonnarrowing,
           PACKAGE="IRanges")

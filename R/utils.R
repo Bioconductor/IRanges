@@ -1,8 +1,22 @@
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Some low-level classes and helper functions.
+### Some low-level helper functions and classes.
 ###
 ### Unless stated otherwise, nothing in this file is exported.
 ###
+
+AEbufs.use.malloc <- function(x)
+    .Call("AEbufs_use_malloc", x, PACKAGE="IRanges")
+
+AEbufs.free <- function()
+    .Call("AEbufs_free", PACKAGE="IRanges")
+
+### Exported!
+.Call2 <- function(.NAME, ..., PACKAGE)
+{
+    AEbufs.use.malloc(TRUE)
+    on.exit({AEbufs.free(); AEbufs.use.malloc(FALSE)})    
+    .Call(.NAME=.NAME, ..., PACKAGE=PACKAGE)
+}
 
 ### Exported!
 setClassUnion("characterORNULL", c("character", "NULL"))

@@ -36,28 +36,28 @@ setClass("SharedVector_Pool",
 {
     if (!is(x, "externalptr"))
         stop("'x' must be an externalptr object")
-    .Call("externalptr_get_tag", x, PACKAGE="IRanges")
+    .Call2("externalptr_get_tag", x, PACKAGE="IRanges")
 }
 
 .set_tag <- function(x, tag)
 {
     if (!is(x, "externalptr"))
         stop("'x' must be an externalptr object")
-    .Call("externalptr_set_tag", x, tag, PACKAGE="IRanges")
+    .Call2("externalptr_set_tag", x, tag, PACKAGE="IRanges")
 }
 
 .taglength <- function(x)
 {
     if (!is(x, "externalptr"))
         stop("'x' must be an externalptr object")
-    .Call("externalptr_taglength", x, PACKAGE="IRanges")
+    .Call2("externalptr_taglength", x, PACKAGE="IRanges")
 }
 
 .tagtype <- function(x)
 {
     if (!is(x, "externalptr"))
         stop("'x' must be an externalptr object")
-    .Call("externalptr_tagtype", x, PACKAGE="IRanges")
+    .Call2("externalptr_tagtype", x, PACKAGE="IRanges")
 }
 
 tagIsVector <- function(x, tagtype=NA)
@@ -72,7 +72,7 @@ tagIsVector <- function(x, tagtype=NA)
 
 newExternalptrWithTag <- function(tag=NULL)
 {
-    xp <- .Call("externalptr_new", PACKAGE="IRanges")
+    xp <- .Call2("externalptr_new", PACKAGE="IRanges")
     .set_tag(xp, tag)
 }
 
@@ -82,7 +82,7 @@ newExternalptrWithTag <- function(tag=NULL)
 ###   show(new("externalptr"))
 setMethod("show", "externalptr",
     function(object)
-        .Call("externalptr_show", object, PACKAGE="IRanges")
+        .Call2("externalptr_show", object, PACKAGE="IRanges")
 )
 
 
@@ -113,7 +113,7 @@ setMethod("length", "SharedVector", function(x) .taglength(x@xp))
 
 ### Return the hexadecimal representation of the address of the first
 ### element of the tag (i.e. the first element of the external vector).
-.address0 <- function(x) .Call("SharedVector_address0", x, PACKAGE="IRanges")
+.address0 <- function(x) .Call2("SharedVector_address0", x, PACKAGE="IRanges")
 
 .oneLineDesc <- function(x)
     paste(class(x), " of length ", length(x),
@@ -236,7 +236,7 @@ setValidity2("SharedVector_Pool", .valid.SharedVector_Pool)
 ###
 
 SharedVector.compare <- function(x1, start1, x2, start2, width)
-    .Call("SharedVector_memcmp",
+    .Call2("SharedVector_memcmp",
           x1, start1, x2, start2, width, PACKAGE="IRanges")
 
 
@@ -257,10 +257,10 @@ SharedVector.copy <- function(dest, i, imax=integer(0), src, lkup=NULL)
         else
             imax <- as.integer(imax)
         width <- imax - i + 1L
-        .Call("SharedVector_Ocopy_from_start",
+        .Call2("SharedVector_Ocopy_from_start",
               dest, src, i, width, lkup, FALSE, PACKAGE="IRanges")
     } else {
-        .Call("SharedVector_Ocopy_from_subscript",
+        .Call2("SharedVector_Ocopy_from_subscript",
               dest, src, i, lkup, PACKAGE="IRanges")
     }
     dest
@@ -280,7 +280,7 @@ SharedVector.reverseCopy <- function(dest, i, imax=integer(0), src, lkup=NULL)
     else
         imax <- as.integer(imax)
     width <- imax - i + 1L
-    .Call("SharedVector_Ocopy_from_start",
+    .Call2("SharedVector_Ocopy_from_start",
           dest, src, i, width, lkup, TRUE, PACKAGE="IRanges")
     dest
 }
@@ -297,7 +297,7 @@ SharedVector.mcopy <- function(dest, dest.offset, src, src.start, src.width,
         stop("'src.start' and 'src.width' must be integer vectors")
     if (!isTRUEorFALSE(reverse))
         stop("'reverse' must be TRUE or FALSE")
-    .Call("SharedVector_mcopy",
+    .Call2("SharedVector_mcopy",
           dest, dest.offset, src, src.start, src.width, lkup, reverse,
           PACKAGE="IRanges")
     dest
@@ -323,9 +323,7 @@ setMethod("as.numeric", "SharedVector",
 
 ### Return the hexadecimal address of any R object in a string.
 address <- function(x)
-{
-    .Call("address_asSTRSXP", x, PACKAGE="IRanges")
-}
+    .Call2("address_asSTRSXP", x, PACKAGE="IRanges")
 
 setMethod("==", signature(e1="SharedVector", e2="SharedVector"),
     function(e1, e2) address(e1@xp) == address(e2@xp)

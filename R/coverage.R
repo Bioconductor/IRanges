@@ -60,7 +60,7 @@ setMethod("coverage", "numeric",
 
 .IRanges.coverage <- function(x, width, weight, method = "sort")
 {
-    .Call("IRanges_coverage", x, weight, width, method, PACKAGE="IRanges")
+    .Call2("IRanges_coverage", x, weight, width, method, PACKAGE="IRanges")
 }
 
 setMethod("coverage", "IRanges",

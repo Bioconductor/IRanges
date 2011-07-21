@@ -7,7 +7,7 @@ logicalAsCompactBitvector <- function(x)
 {
     if (!is.logical(x))
         stop("'x' must be a logical vector")
-    .Call("logical_as_compact_bitvector", x, PACKAGE="IRanges")
+    .Call2("logical_as_compact_bitvector", x, PACKAGE="IRanges")
 }
 
 compactBitvectorAsLogical <- function(x, length.out)
@@ -18,7 +18,7 @@ compactBitvectorAsLogical <- function(x, length.out)
         stop("'length.out' must be a single number")
     if (!is.integer(length.out))
         length.out <- as.integer(length.out)
-    .Call("compact_bitvector_as_logical", x, length.out, PACKAGE="IRanges")
+    .Call2("compact_bitvector_as_logical", x, length.out, PACKAGE="IRanges")
 }
 
 subsetCompactBitvector <- function(x, i)
@@ -27,6 +27,6 @@ subsetCompactBitvector <- function(x, i)
         stop("'x' must be a raw vector")
     if (!is.integer(i))
         stop("'i' must be an integer vector")
-    .Call("subset_compact_bitvector", x, i, PACKAGE="IRanges")
+    .Call2("subset_compact_bitvector", x, i, PACKAGE="IRanges")
 }
 

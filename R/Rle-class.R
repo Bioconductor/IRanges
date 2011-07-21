@@ -41,8 +41,8 @@ setMethod("runValue", "Rle", function(x) x@values)
 setGeneric("nrun", signature = "x", function(x) standardGeneric("nrun"))
 setMethod("nrun", "Rle", function(x) length(runLength(x)))
 
-setMethod("start", "Rle", function(x) .Call("Rle_start", x, PACKAGE="IRanges"))
-setMethod("end", "Rle", function(x) .Call("Rle_end", x, PACKAGE="IRanges"))
+setMethod("start", "Rle", function(x) .Call2("Rle_start", x, PACKAGE="IRanges"))
+setMethod("end", "Rle", function(x) .Call2("Rle_end", x, PACKAGE="IRanges"))
 setMethod("width", "Rle", function(x) runLength(x))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -91,7 +91,7 @@ setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "integer"),
               }
               if (is.factor(values)) {
                   ans <-
-                    .Call("Rle_constructor", as.integer(values), lengths,
+                    .Call2("Rle_constructor", as.integer(values), lengths,
                           PACKAGE="IRanges")
                   ans@values <-
                     factor(ans@values,
@@ -99,7 +99,7 @@ setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "integer"),
                            labels = levels(values))
               } else {
                   ans <-
-                   .Call("Rle_constructor", values, lengths, PACKAGE="IRanges")
+                   .Call2("Rle_constructor", values, lengths, PACKAGE="IRanges")
               }
               ans
           })
@@ -172,7 +172,7 @@ setMethod("as.data.frame", "Rle",
 )
 
 getStartEndRunAndOffset <- function(x, start, end) {
-    .Call("Rle_getStartEndRunAndOffset", x, start, end, PACKAGE="IRanges")
+    .Call2("Rle_getStartEndRunAndOffset", x, start, end, PACKAGE="IRanges")
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -306,7 +306,7 @@ setMethod("[", "Rle",
                   if (iInfo[["useIdx"]]) {
                       i <- iInfo[["idx"]]
                       ansList <-
-                        .Call("Rle_seqselect", x, start(i), width(i),
+                        .Call2("Rle_seqselect", x, start(i), width(i),
                               PACKAGE="IRanges")
                       if (is.factor(runValue(x))) {
                           attributes(ansList[["values"]]) <-
@@ -387,7 +387,7 @@ setMethod("aggregate", "Rle",
                   newRle <- new(class(x))
                   sapply(indices,
                          function(i)
-                             FUN(.Call("Rle_window",
+                             FUN(.Call2("Rle_window",
                                        x, runStart[i], runEnd[i],
                                        offsetStart[i], offsetEnd[i],
                                        newRle, PACKAGE = "IRanges"),
@@ -632,7 +632,7 @@ setReplaceMethod("seqselect", "Rle",
                          if (!isFactorRle)
                              subseqs[seq(1, length(subseqs), by = 2)] <-
                                lapply(seq_len(k), function(i)
-                                          .Call("Rle_window_aslist",
+                                          .Call2("Rle_window_aslist",
                                                 x, runStart[i], runEnd[i],
                                                 offsetStart[i], offsetEnd[i],
                                                 PACKAGE = "IRanges"))
@@ -640,7 +640,7 @@ setReplaceMethod("seqselect", "Rle",
                              subseqs[seq(1, length(subseqs), by = 2)] <-
                                lapply(seq_len(k), function(i) {
                                           ans <-
-                                            .Call("Rle_window_aslist",
+                                            .Call2("Rle_window_aslist",
                                                   x, runStart[i], runEnd[i],
                                                   offsetStart[i], offsetEnd[i],
                                                   PACKAGE = "IRanges")
@@ -711,11 +711,11 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
                     sapply(seq_len(length(SHIFT)),
                            function(i) {
                                cat("\r", i, "/", maxI)
-                               FUN(.Call("Rle_window",
+                               FUN(.Call2("Rle_window",
                                          X, runStartX[i], runEndX[i],
                                          offsetStartX[i], offsetEndX[i],
                                          newX, PACKAGE = "IRanges"),
-                                   .Call("Rle_window",
+                                   .Call2("Rle_window",
                                          Y, runStartY[i], runEndY[i],
                                          offsetStartY[i], offsetEndY[i],
                                          newY, PACKAGE = "IRanges"),
@@ -726,11 +726,11 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
                   ans <-
                     sapply(seq_len(length(SHIFT)),
                            function(i)
-                               FUN(.Call("Rle_window",
+                               FUN(.Call2("Rle_window",
                                          X, runStartX[i], runEndX[i],
                                          offsetStartX[i], offsetEndX[i],
                                          newX, PACKAGE = "IRanges"),
-                                   .Call("Rle_window",
+                                   .Call2("Rle_window",
                                          Y, runStartY[i], runEndY[i],
                                          offsetStartY[i], offsetEndY[i],
                                          newY, PACKAGE = "IRanges"),
@@ -841,7 +841,7 @@ setMethod("window", "Rle",
                   runEnd <- info[["end"]][["run"]]
                   offsetEnd <- info[["end"]][["offset"]]
                   ans <-
-                    .Call("Rle_window",
+                    .Call2("Rle_window",
                           x, runStart, runEnd, offsetStart, offsetEnd,
                           new("Rle"), PACKAGE = "IRanges")
                   if (is.factor(runValue(x)))
@@ -1131,7 +1131,7 @@ setMethod("runsum", "Rle",
               endrule <- match.arg(endrule)
               n <- length(x)
               k <- normargRunK(k = k, n = n, endrule = endrule)
-              ans <- .Call("Rle_runsum", x, as.integer(k), PACKAGE="IRanges")
+              ans <- .Call2("Rle_runsum", x, as.integer(k), PACKAGE="IRanges")
               if (endrule == "constant") {
                   j <- (k + 1L) %/% 2L
                   runLength(ans)[1L] <- runLength(ans)[1L] + (j - 1L)
@@ -1148,7 +1148,7 @@ setMethod("runwtsum", "Rle",
               n <- length(x)
               k <- normargRunK(k = k, n = n, endrule = endrule)
               ans <-
-                .Call("Rle_runwtsum", x, as.integer(k), as.numeric(wt),
+                .Call2("Rle_runwtsum", x, as.integer(k), as.numeric(wt),
                       PACKAGE="IRanges")
               if (endrule == "constant") {
                   j <- (k + 1L) %/% 2L
@@ -1166,7 +1166,7 @@ setMethod("runq", "Rle",
               n <- length(x)
               k <- normargRunK(k = k, n = n, endrule = endrule)
               ans <-
-                .Call("Rle_runq", x, as.integer(k), as.integer(i),
+                .Call2("Rle_runq", x, as.integer(k), as.integer(i),
                       PACKAGE="IRanges")
               if (endrule == "constant") {
                   j <- (k + 1L) %/% 2L

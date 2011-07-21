@@ -39,7 +39,7 @@ isSingleStringOrNA <- function(x)
 }
 
 ### NOT exported.
-anyMissing <- function(x) .Call("anyMissing", x, PACKAGE="IRanges")
+anyMissing <- function(x) .Call2("anyMissing", x, PACKAGE="IRanges")
 
 ### NOT exported.
 isNumericOrNAs <- function(x)
@@ -105,6 +105,7 @@ recycleVector <- function(x, length.out)
     }
 }
 
+### NOT exported.
 ### Must always drop the names of 'arg'.
 recycleArg <- function(arg, argname, length.out)
 {

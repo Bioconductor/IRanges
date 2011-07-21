@@ -217,11 +217,11 @@ setMethod("isNormal", "RangesList",
 
 setMethod("isNormal", "CompressedIRangesList",
           function(x)
-          .Call("CompressedIRangesList_isNormal", x, TRUE, PACKAGE = "IRanges"))
+          .Call2("CompressedIRangesList_isNormal", x, TRUE, PACKAGE = "IRanges"))
 
 setMethod("isNormal", "SimpleIRangesList",
           function(x)
-          .Call("SimpleIRangesList_isNormal", x, PACKAGE = "IRanges"))
+          .Call2("SimpleIRangesList_isNormal", x, PACKAGE = "IRanges"))
 
 setMethod("whichFirstNotNormal", "RangesList",
           function(x) unlist(lapply(x, whichFirstNotNormal)))
@@ -480,7 +480,7 @@ setMethod("gaps", "CompressedIRangesList",
                   start <- recycleVector(start, lx)
                   end <- recycleVector(end, lx)
               }
-              .Call("CompressedIRangesList_gaps", x, start, end,
+              .Call2("CompressedIRangesList_gaps", x, start, end,
                     PACKAGE="IRanges")
           })
 
@@ -508,7 +508,7 @@ setMethod("reduce", "CompressedIRangesList",
               if (!identical(with.inframe.attrib, FALSE))
                   stop("'with.inframe.attrib' argument not yet supported ",
                        "when reducing a CompressedIRangesList object")
-              .Call("CompressedIRangesList_reduce",
+              .Call2("CompressedIRangesList_reduce",
                     x, drop.empty.ranges, min.gapwidth,
                     PACKAGE="IRanges")
           })
@@ -1023,7 +1023,7 @@ CompressedNormalIRangesList.max <- function(x, use.names)
     if (!is(x, "CompressedNormalIRangesList"))
         stop("'x' must be a CompressedNormalIRangesList object")
     use.names <- normargUseNames(use.names)
-    .Call("CompressedNormalIRangesList_max", x, use.names, PACKAGE="IRanges")
+    .Call2("CompressedNormalIRangesList_max", x, use.names, PACKAGE="IRanges")
 }
 
 setMethod("max", "CompressedNormalIRangesList",
@@ -1031,14 +1031,14 @@ setMethod("max", "CompressedNormalIRangesList",
 
 setMethod("max", "SimpleNormalIRangesList",
           function(x, ..., na.rm)
-          .Call("SimpleNormalIRangesList_max", x, PACKAGE="IRanges"))
+          .Call2("SimpleNormalIRangesList_max", x, PACKAGE="IRanges"))
 
 CompressedNormalIRangesList.min <- function(x, use.names)
 {
     if (!is(x, "CompressedNormalIRangesList"))
         stop("'x' must be a CompressedNormalIRangesList object")
     use.names <- normargUseNames(use.names)
-    .Call("CompressedNormalIRangesList_min", x, use.names, PACKAGE="IRanges")
+    .Call2("CompressedNormalIRangesList_min", x, use.names, PACKAGE="IRanges")
 }
 
 setMethod("min", "CompressedNormalIRangesList",
@@ -1046,7 +1046,7 @@ setMethod("min", "CompressedNormalIRangesList",
 
 setMethod("min", "SimpleNormalIRangesList",
           function(x, ..., na.rm)
-          .Call("SimpleNormalIRangesList_min", x, PACKAGE="IRanges"))
+          .Call2("SimpleNormalIRangesList_min", x, PACKAGE="IRanges"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1055,7 +1055,7 @@ setMethod("min", "SimpleNormalIRangesList",
 
 setMethod("summary", "CompressedIRangesList",
           function(object)
-          .Call("CompressedIRangesList_summary", object, PACKAGE="IRanges"))
+          .Call2("CompressedIRangesList_summary", object, PACKAGE="IRanges"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -33,7 +33,7 @@ setAs("IntervalTree", "IRanges", function(from) {
 
 setAs("IRanges", "IntervalTree", function(from) {
   validObject(from)
-  ptr <- .Call("IntegerIntervalTree_new", from, PACKAGE="IRanges")
+  ptr <- .Call2("IntegerIntervalTree_new", from, PACKAGE="IRanges")
   new2("IntervalTree", ptr = ptr, mode = "integer", check=FALSE)
 })
 
@@ -50,6 +50,6 @@ setAs("Ranges", "IntervalTree", function(from) {
   fun <- paste("IntervalTree", fun, sep = "_")
   if (object@mode == "integer") {
     fun <- paste("Integer", fun, sep = "")
-    .Call(fun, object@ptr, ..., PACKAGE="IRanges")
+    .Call2(fun, object@ptr, ..., PACKAGE="IRanges")
   } else stop("unknown interval tree mode: ", object@mode)
 }

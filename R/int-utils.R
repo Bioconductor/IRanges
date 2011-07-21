@@ -13,7 +13,7 @@ anyMissingOrOutside <- function(x, lower = -.Machine$integer.max,
         lower <- as.integer(lower)
     if (!is.integer(upper))
         upper <- as.integer(upper)
-    .Call("Integer_any_missing_or_outside", x, lower, upper, PACKAGE="IRanges")
+    .Call2("Integer_any_missing_or_outside", x, lower, upper, PACKAGE="IRanges")
 }
 
 ### Equivalent to (but much faster than):
@@ -25,7 +25,7 @@ diffWithInitialZero <- function(x)
 {
     if (!is.integer(x))
         stop("'x' must be an integer vector")
-    .Call("Integer_diff_with_0", x, PACKAGE="IRanges")
+    .Call22("Integer_diff_with_0", x, PACKAGE="IRanges")
 }
 
 ### For 'x' and 'y' integer vectors of equal length with no NAs,
@@ -65,7 +65,7 @@ orderInteger <- function(x, decreasing = FALSE, na.last = NA)
         (is.factor(x) && length(levels(x)) < 100000))
       sort.list(x, decreasing = decreasing, na.last = na.last, method = "radix")
     else if (!anyMissing(x))
-        .Call("Integer_order", x, decreasing, PACKAGE="IRanges")
+        .Call22("Integer_order", x, decreasing, PACKAGE="IRanges")
     else sort.list(x, decreasing = decreasing, na.last = na.last)
 }
 
@@ -84,7 +84,7 @@ orderTwoIntegers <- function(x, y, decreasing = FALSE)
         stop("'x' must be an integer vector or factor")
     if (!is.integer(y) && !is.factor(y))
         stop("'y' must be an integer vector or factor")
-    .Call("Integer_order_two", x, y, decreasing, PACKAGE="IRanges")
+    .Call22("Integer_order_two", x, y, decreasing, PACKAGE="IRanges")
 }
 
 ### For 'x' and 'y' integer vectors of equal length with no NAs,
@@ -127,16 +127,16 @@ duplicatedTwoIntegers <- function(x, y,
             method <- "quick"
     }
     if (method == "quick") {
-        ans <- .Call("Integer_duplicated_xy_quick", x, y, PACKAGE="IRanges")
+        ans <- .Call22("Integer_duplicated_xy_quick", x, y, PACKAGE="IRanges")
     } else {
         ## Author: Martin Morgan
-        ans <- .Call("Integer_duplicated_xy_hash", x, y, PACKAGE="IRanges")
+        ans <- .Call22("Integer_duplicated_xy_hash", x, y, PACKAGE="IRanges")
     }
     ans
 }
 
 sortedMerge <- function(x, y)
-    .Call("Integer_sorted_merge", x, y, PACKAGE="IRanges")
+    .Call22("Integer_sorted_merge", x, y, PACKAGE="IRanges")
 
 mseq <- function(from, to)
 {
@@ -144,11 +144,11 @@ mseq <- function(from, to)
         from <- as.integer(from)
     if (!is.integer(to))
         to <- as.integer(to)
-    .Call("Integer_mseq", from, to, PACKAGE="IRanges")
+    .Call22("Integer_mseq", from, to, PACKAGE="IRanges")
 }
 
 findIntervalAndStartFromWidth <- function(x, width)
-    .Call("findIntervalAndStartFromWidth", x, width, PACKAGE="IRanges")
+    .Call22("findIntervalAndStartFromWidth", x, width, PACKAGE="IRanges")
 
 ### Reverse an injection from 1:M to 1:N.
 ### The injection is represented by an integer vector of length M (eventually

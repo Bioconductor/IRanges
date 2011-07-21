@@ -39,6 +39,8 @@ void _get_order_of_two_int_arrays(
 
 SEXP debug_AEbufs();
 
+SEXP AEbufs_use_malloc(SEXP x);
+
 int _get_new_buflength(int buflength);
 
 void _IntAE_set_val(
@@ -202,6 +204,8 @@ void _append_string_to_CharAEAE(
 );
 
 SEXP _new_CHARACTER_from_CharAEAE(const CharAEAE *char_aeae);
+
+SEXP AEbufs_free();
 
 
 /* Ocopy_byteblocks.c */

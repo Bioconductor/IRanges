@@ -37,7 +37,7 @@ setMethod("slice", "XDouble",
         if (!isTRUEorFALSE(rangesOnly))
             stop("'rangesOnly' must be TRUE or FALSE")
         
-        ranges <- .Call("XDouble_slice", x, lower, upper, includeLower,
+        ranges <- .Call2("XDouble_slice", x, lower, upper, includeLower,
                         includeUpper, PACKAGE="IRanges")
         if (rangesOnly) {
             ranges
@@ -55,19 +55,19 @@ setMethod("slice", "XDouble",
 
 setMethod("viewMins", "XDoubleViews",
     function(x, na.rm=FALSE)
-        .Call("XDoubleViews_summary1", x, na.rm, "viewMins",
+        .Call2("XDoubleViews_summary1", x, na.rm, "viewMins",
               PACKAGE="IRanges")
 )
 
 setMethod("viewMaxs", "XDoubleViews",
     function(x, na.rm=FALSE)
-        .Call("XDoubleViews_summary1", x, na.rm, "viewMaxs",
+        .Call2("XDoubleViews_summary1", x, na.rm, "viewMaxs",
               PACKAGE="IRanges")
 )
 
 setMethod("viewSums", "XDoubleViews",
     function(x, na.rm=FALSE)
-        .Call("XDoubleViews_summary1", x, na.rm, "viewSums",
+        .Call2("XDoubleViews_summary1", x, na.rm, "viewSums",
               PACKAGE="IRanges")
 )
 
@@ -87,13 +87,13 @@ setMethod("viewMeans", "XDoubleViews",
 
 setMethod("viewWhichMins", "XDoubleViews",
     function(x, na.rm=FALSE)
-        .Call("XDoubleViews_summary2", x, na.rm, "viewWhichMins",
+        .Call2("XDoubleViews_summary2", x, na.rm, "viewWhichMins",
               PACKAGE="IRanges")
 )
 
 setMethod("viewWhichMaxs", "XDoubleViews",
     function(x, na.rm=FALSE)
-        .Call("XDoubleViews_summary2", x, na.rm, "viewWhichMaxs",
+        .Call2("XDoubleViews_summary2", x, na.rm, "viewWhichMaxs",
               PACKAGE="IRanges")
 )
 

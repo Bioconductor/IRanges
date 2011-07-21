@@ -30,9 +30,10 @@ SEXP debug_AEbufs()
 
 static int use_malloc = 0;
 
-SEXP AEbufs_use_malloc()
+SEXP AEbufs_use_malloc(SEXP x)
 {
-	return ScalarLogical(use_malloc = !use_malloc);
+	use_malloc = LOGICAL(x)[0];
+	return R_NilValue;
 }
 
 /* Types of AEbufs */

@@ -26,7 +26,7 @@ setMethod("slice", "XInteger",
             stop("'upper' must be a single integer")
         if (!is.integer(upper))
             upper <- as.integer(upper)
-        ranges <- .Call("XInteger_slice", x, lower, upper,
+        ranges <- .Call2("XInteger_slice", x, lower, upper,
                         PACKAGE="IRanges")
         Views(x, ranges)
     }
@@ -40,19 +40,19 @@ setMethod("slice", "XInteger",
 
 setMethod("viewMins", "XIntegerViews",
     function(x, na.rm=FALSE)
-        .Call("XIntegerViews_summary1", x, na.rm, "viewMins",
+        .Call2("XIntegerViews_summary1", x, na.rm, "viewMins",
               PACKAGE="IRanges")
 )
 
 setMethod("viewMaxs", "XIntegerViews",
     function(x, na.rm=FALSE)
-        .Call("XIntegerViews_summary1", x, na.rm, "viewMaxs",
+        .Call2("XIntegerViews_summary1", x, na.rm, "viewMaxs",
               PACKAGE="IRanges")
 )
 
 setMethod("viewSums", "XIntegerViews",
     function(x, na.rm=FALSE)
-        .Call("XIntegerViews_summary1", x, na.rm, "viewSums",
+        .Call2("XIntegerViews_summary1", x, na.rm, "viewSums",
               PACKAGE="IRanges")
 )
 
@@ -72,13 +72,13 @@ setMethod("viewMeans", "XIntegerViews",
 
 setMethod("viewWhichMins", "XIntegerViews",
     function(x, na.rm=FALSE)
-        .Call("XIntegerViews_summary2", x, na.rm, "viewWhichMins",
+        .Call2("XIntegerViews_summary2", x, na.rm, "viewWhichMins",
               PACKAGE="IRanges")
 )
 
 setMethod("viewWhichMaxs", "XIntegerViews",
     function(x, na.rm=FALSE)
-        .Call("XIntegerViews_summary2", x, na.rm, "viewWhichMaxs",
+        .Call2("XIntegerViews_summary2", x, na.rm, "viewWhichMaxs",
               PACKAGE="IRanges")
 )
 

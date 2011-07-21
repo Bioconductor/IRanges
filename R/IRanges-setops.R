@@ -24,7 +24,7 @@ setMethod("gaps", "IRanges",
     {
         start <- normargSingleStartOrNA(start)
         end <- normargSingleEndOrNA(end)
-        C_ans <- .Call("IRanges_gaps", x, start, end, PACKAGE="IRanges")
+        C_ans <- .Call2("IRanges_gaps", x, start, end, PACKAGE="IRanges")
         initialize(x, start=C_ans$start, width=C_ans$width, NAMES=NULL,
                    elementMetadata=NULL)
     }

@@ -31,7 +31,7 @@ setMethod("elementLengths", "ANY",
     {
         x <- as.list(x)
         ans <-
-          try(.Call("listofvectors_lengths", x, PACKAGE="IRanges"), silent=TRUE)
+          try(.Call2("listofvectors_lengths", x, PACKAGE="IRanges"), silent=TRUE)
         if (!inherits(ans, "try-error")) {
             names(ans) <- names(x)
             return(ans)

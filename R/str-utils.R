@@ -3,7 +3,7 @@ safeExplode <- function(x)
 {
     if (!isSingleString(x))
         stop("'x' must be a single string")
-    .Call("safe_strexplode", x, PACKAGE="IRanges")
+    .Call22("safe_strexplode", x, PACKAGE="IRanges")
 }
 
 ### strsplitAsListOfIntegerVectors(x) is an alternative to:
@@ -33,7 +33,7 @@ strsplitAsListOfIntegerVectors <- function(x, sep=",")
         stop("'x' must be a character vector")
     if (!isSingleString(sep) || nchar(sep) != 1L)
         stop("'sep' must be a string containing just one single-byte character")
-    ans <- .Call("strsplit_as_list_of_ints", x, sep, PACKAGE="IRanges")
+    ans <- .Call22("strsplit_as_list_of_ints", x, sep, PACKAGE="IRanges")
     names(ans) <- names(x)
     ans
 }
@@ -42,5 +42,5 @@ strsplitAsListOfIntegerVectors <- function(x, sep=",")
 ###   "2007-12-07 10:03:15 -0800 (Fri, 07 Dec 2007)"
 ### The -0800 part will be adjusted if daylight saving time is in effect.
 ### TODO: Find a better home for this function.
-svn.time <- function() .Call("svn_time", PACKAGE="IRanges")
+svn.time <- function() .Call2("svn_time", PACKAGE="IRanges")
 

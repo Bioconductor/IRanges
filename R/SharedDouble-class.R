@@ -28,7 +28,7 @@ SharedDouble <- function(length=0L, val=NULL)
         if (!storage.mode(val) == "double")
             storage.mode(val) <- "double"
     }
-    .Call("SharedDouble_new", length, val, PACKAGE="IRanges")
+    .Call2("SharedDouble_new", length, val, PACKAGE="IRanges")
 }
 
 
@@ -64,9 +64,9 @@ SharedDouble.read <- function(x, i, imax=integer(0))
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("SharedDouble_read_nums_from_i1i2", x, i, imax, PACKAGE="IRanges")
+        .Call2("SharedDouble_read_nums_from_i1i2", x, i, imax, PACKAGE="IRanges")
     } else {
-        .Call("SharedDouble_read_nums_from_subscript", x, i, PACKAGE="IRanges")
+        .Call2("SharedDouble_read_nums_from_subscript", x, i, PACKAGE="IRanges")
     }
 }
 
@@ -81,9 +81,9 @@ SharedDouble.write <- function(x, i, imax=integer(0), value)
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("SharedDouble_write_nums_to_i1i2", x, i, imax, value, PACKAGE="IRanges")
+        .Call2("SharedDouble_write_nums_to_i1i2", x, i, imax, value, PACKAGE="IRanges")
     } else {
-        .Call("SharedDouble_write_nums_to_subscript", x, i, value, PACKAGE="IRanges")
+        .Call2("SharedDouble_write_nums_to_subscript", x, i, value, PACKAGE="IRanges")
     }
     x
 }

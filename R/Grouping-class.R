@@ -169,7 +169,7 @@ setMethod("members", "H2LGrouping",
         if (!is.integer(i))
             i <- as.integer(i)
         ## NAs and "subscript out of bounds" are checked at the C level
-        .Call("H2LGrouping_members", x, i, PACKAGE="IRanges")
+        .Call2("H2LGrouping_members", x, i, PACKAGE="IRanges")
     }
 )
 
@@ -178,7 +178,7 @@ setMethod("vmembers", "H2LGrouping",
     {
         if (!is.list(L))
             stop("'L' must be a list of integer vectors") 
-        .Call("H2LGrouping_vmembers", x, L, PACKAGE="IRanges")
+        .Call2("H2LGrouping_vmembers", x, L, PACKAGE="IRanges")
     }
 )
 

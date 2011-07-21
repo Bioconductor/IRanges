@@ -5,6 +5,13 @@
 \alias{new2}
 
 % Some low-level helper functions and classes (from R/utils.R):
+\alias{.Call2}
+\alias{class:characterORNULL}
+\alias{characterORNULL-class}
+\alias{characterORNULL}
+\alias{coerce,ANY,vector-method}
+
+% More low-level helper functions (from R/normarg-utils.R):
 \alias{isTRUEorFALSE}
 \alias{isSingleInteger}
 \alias{isSingleNumber}
@@ -13,14 +20,7 @@
 \alias{isSingleStringOrNA}
 \alias{recycleIntegerArg}
 \alias{recycleNumericArg}
-
 \alias{fold}
-
-\alias{class:characterORNULL}
-\alias{characterORNULL-class}
-\alias{characterORNULL}
-
-\alias{coerce,ANY,vector-method}
 
 % SharedVector and SharedVector_Pool classes, functions and methods:
 \alias{class:SharedVector}

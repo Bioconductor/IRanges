@@ -49,7 +49,7 @@ setMethod("names", "IRanges", function(x) x@NAMES)
 ### Efficient "isNormal" method for IRanges objects.
 
 setMethod("isNormal", "IRanges",
-    function(x) .Call("IRanges_isNormal", x, PACKAGE="IRanges")
+    function(x) .Call2("IRanges_isNormal", x, PACKAGE="IRanges")
 )
 
 
@@ -204,12 +204,12 @@ setAs("logical", "IRanges",
 )
 
 setAs("logical", "NormalIRanges",
-    function(from) .Call("NormalIRanges_from_logical", from, PACKAGE="IRanges")
+    function(from) .Call2("NormalIRanges_from_logical", from, PACKAGE="IRanges")
 )
 
 ### coersion from integer
 setAs("integer", "IRanges",
-    function(from) .Call("IRanges_from_integer", from, PACKAGE="IRanges")
+    function(from) .Call2("IRanges_from_integer", from, PACKAGE="IRanges")
 )
 
 setAs("integer", "NormalIRanges",

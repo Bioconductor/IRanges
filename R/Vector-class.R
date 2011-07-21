@@ -339,7 +339,7 @@ setMethod("window", "vector",
           {
               solved_SEW <- solveWindowSEW(length(x), start, end, width)
               if (is.null(frequency) && is.null(delta)) {
-                  .Call("vector_seqselect",
+                  .Call2("vector_seqselect",
                         x, start(solved_SEW), width(solved_SEW),
                         PACKAGE="IRanges")
               } else {
@@ -463,7 +463,7 @@ setMethod("seqselect", "vector",
               if (irInfo[["useIdx"]]) {
                   ir <- irInfo[["idx"]]
                   x <-
-                    .Call("vector_seqselect", x, start(ir), width(ir),
+                    .Call2("vector_seqselect", x, start(ir), width(ir),
                           PACKAGE="IRanges")
               }
               x

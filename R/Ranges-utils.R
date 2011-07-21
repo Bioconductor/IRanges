@@ -615,7 +615,7 @@ setMethod("disjointBins", "Ranges",
             x_ord <- order(x)
             x <- x[x_ord]
         }
-        bins <- .Call("Ranges_disjointBins", start(x), width(x), PACKAGE="IRanges")
+        bins <- .Call2("Ranges_disjointBins", start(x), width(x), PACKAGE="IRanges")
         if (!is.null(x_ord)) {
             rev_ord <- integer(length(x_ord))
             rev_ord[x_ord] <- seq_along(rev_ord)

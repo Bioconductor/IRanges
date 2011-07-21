@@ -28,7 +28,7 @@ SharedInteger <- function(length=0L, val=NULL)
         if (!storage.mode(val) == "integer")
             storage.mode(val) <- "integer"
     }
-    .Call("SharedInteger_new", length, val, PACKAGE="IRanges")
+    .Call2("SharedInteger_new", length, val, PACKAGE="IRanges")
 }
 
 
@@ -64,9 +64,9 @@ SharedInteger.read <- function(x, i, imax=integer(0))
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("SharedInteger_read_ints_from_i1i2", x, i, imax, PACKAGE="IRanges")
+        .Call2("SharedInteger_read_ints_from_i1i2", x, i, imax, PACKAGE="IRanges")
     } else {
-        .Call("SharedInteger_read_ints_from_subscript", x, i, PACKAGE="IRanges")
+        .Call2("SharedInteger_read_ints_from_subscript", x, i, PACKAGE="IRanges")
     }
 }
 
@@ -81,9 +81,9 @@ SharedInteger.write <- function(x, i, imax=integer(0), value)
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("SharedInteger_write_ints_to_i1i2", x, i, imax, value, PACKAGE="IRanges")
+        .Call2("SharedInteger_write_ints_to_i1i2", x, i, imax, value, PACKAGE="IRanges")
     } else {
-        .Call("SharedInteger_write_ints_to_subscript", x, i, value, PACKAGE="IRanges")
+        .Call2("SharedInteger_write_ints_to_subscript", x, i, value, PACKAGE="IRanges")
     }
     x
 }

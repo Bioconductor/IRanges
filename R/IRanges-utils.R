@@ -162,7 +162,7 @@ setMethod("range", "IRanges",
     function(x, ..., na.rm)
     {
         x <- c(x, ...)
-        .Call("IRanges_range", x, PACKAGE="IRanges")
+        .Call2("IRanges_range", x, PACKAGE="IRanges")
     }
 )
 
@@ -180,7 +180,7 @@ setMethod("reduce", "IRanges",
             stop("'min.gapwidth' must be non-negative")
         if (!isTRUEorFALSE(with.inframe.attrib))
             stop("'with.inframe.attrib' must be TRUE or FALSE")
-        C_ans <- .Call("IRanges_reduce",
+        C_ans <- .Call2("IRanges_reduce",
                         x, drop.empty.ranges, min.gapwidth, with.inframe.attrib,
                         PACKAGE="IRanges")
         ans <- unsafe.update(x, start=C_ans$start, width=C_ans$width, names=NULL)

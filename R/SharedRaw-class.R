@@ -34,7 +34,7 @@ SharedRaw <- function(length=0L, val=NULL)
             stop("don't know how to turn 'val' into a raw vector")
         }
     }
-    .Call("SharedRaw_new", length, val, PACKAGE="IRanges")
+    .Call2("SharedRaw_new", length, val, PACKAGE="IRanges")
 }
 
 
@@ -97,9 +97,9 @@ SharedRaw.readInts <- function(x, i, imax=integer(0))
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("SharedRaw_read_ints_from_i1i2", x, i, imax, PACKAGE="IRanges")
+        .Call2("SharedRaw_read_ints_from_i1i2", x, i, imax, PACKAGE="IRanges")
     } else {
-        .Call("SharedRaw_read_ints_from_subscript", x, i, PACKAGE="IRanges")
+        .Call2("SharedRaw_read_ints_from_subscript", x, i, PACKAGE="IRanges")
     }
 }
 
@@ -114,9 +114,9 @@ SharedRaw.writeInts <- function(x, i, imax=integer(0), value)
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("SharedRaw_write_ints_to_i1i2", x, i, imax, value, PACKAGE="IRanges")
+        .Call2("SharedRaw_write_ints_to_i1i2", x, i, imax, value, PACKAGE="IRanges")
     } else {
-        .Call("SharedRaw_write_ints_to_subscript", x, i, value, PACKAGE="IRanges")
+        .Call2("SharedRaw_write_ints_to_subscript", x, i, value, PACKAGE="IRanges")
     }
     x
 }
@@ -132,17 +132,17 @@ SharedRaw.read <- function(x, i, imax=integer(0), dec_lkup=NULL)
         else
             imax <- as.integer(imax)
         if (is.null(dec_lkup))
-            .Call("SharedRaw_read_chars_from_i1i2",
+            .Call2("SharedRaw_read_chars_from_i1i2",
                   x, i, imax, PACKAGE="IRanges")
         else
-            .Call("SharedRaw_read_enc_chars_from_i1i2",
+            .Call2("SharedRaw_read_enc_chars_from_i1i2",
                   x, i, imax, dec_lkup, PACKAGE="IRanges")
     } else {
         if (is.null(dec_lkup))
-            .Call("SharedRaw_read_chars_from_subscript",
+            .Call2("SharedRaw_read_chars_from_subscript",
                   x, i, PACKAGE="IRanges")
         else
-            .Call("SharedRaw_read_enc_chars_from_subscript",
+            .Call2("SharedRaw_read_enc_chars_from_subscript",
                   x, i, dec_lkup, PACKAGE="IRanges")
     }
 }
@@ -160,17 +160,17 @@ SharedRaw.write <- function(x, i, imax=integer(0), value, enc_lkup=NULL)
         else
             imax <- as.integer(imax)
         if (is.null(enc_lkup))
-            .Call("SharedRaw_write_chars_to_i1i2",
+            .Call2("SharedRaw_write_chars_to_i1i2",
                   x, i, imax, value, PACKAGE="IRanges")
         else
-            .Call("SharedRaw_write_enc_chars_to_i1i2",
+            .Call2("SharedRaw_write_enc_chars_to_i1i2",
                   x, i, imax, value, enc_lkup, PACKAGE="IRanges")
     } else {
         if (is.null(enc_lkup))
-            .Call("SharedRaw_write_chars_to_subscript",
+            .Call2("SharedRaw_write_chars_to_subscript",
                   x, i, value, PACKAGE="IRanges")
         else
-            .Call("SharedRaw_write_enc_chars_to_subscript",
+            .Call2("SharedRaw_write_enc_chars_to_subscript",
                   x, i, value, enc_lkup, PACKAGE="IRanges")
     }
     x
@@ -186,10 +186,10 @@ SharedRaw.readComplexes <- function(x, i, imax=integer(0), lkup)
             imax <- i
         else
             imax <- as.integer(imax)
-        .Call("SharedRaw_read_complexes_from_i1i2",
+        .Call2("SharedRaw_read_complexes_from_i1i2",
               x, i, imax, lkup, PACKAGE="IRanges")
     } else {
-        .Call("SharedRaw_read_complexes_from_subscript",
+        .Call2("SharedRaw_read_complexes_from_subscript",
               x, i, lkup, PACKAGE="IRanges")
     }
 }
