@@ -674,6 +674,8 @@ setValidity2("PartitioningByWidth", .valid.PartitioningByWidth)
 
 PartitioningByWidth <- function(width=integer(), names=NULL)
 {
+    if (is(width, "List") || is.list(width))
+        width <- elementLengths(width)
     if (!is.numeric(width))
         stop("'width' must contain integer values")
     if (!is.integer(width))
@@ -690,3 +692,27 @@ setAs("Ranges", "PartitioningByWidth",
         ans
     }
 )
+
+### -------------------------------------------------------------------------
+### Grouping based on lists
+### --------------------
+
+.List_togroup <- function(x, j = NULL) {
+  ind <- names(x)
+  if (is.null(ind))
+    ind <- seq(length(x))
+  to_group <- rep.int(ind, elementLengths(x))
+  if (is.null(j))
+    return(to_group)
+  if (!is.numeric(j))
+    stop("subscript 'j' must be a vector of integers or NULL")
+  if (!is.integer(j))
+    j <- as.integer(j)
+  bound <- length(to_group)
+  if (anyMissingOrOutside(j, -bound, bound))
+    stop("subscript 'j' contains NAs or out of bounds indices")
+  to_group[j]
+}
+
+setMethod("togroup", "List", .List_togroup)
+setMethod("togroup", "list", .List_togroup)
