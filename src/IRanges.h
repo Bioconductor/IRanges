@@ -96,9 +96,9 @@ void _IntAE_delete_adjdups(IntAE *int_ae);
 
 SEXP _new_INTEGER_from_IntAE(const IntAE *int_ae);
 
-IntAE _INTEGER_asIntAE(SEXP x);
+IntAE _new_IntAE_from_INTEGER(SEXP x);
 
-IntAE _CHARACTER_asIntAE(
+IntAE _new_IntAE_from_CHARACTER(
 	SEXP x,
 	int keyshift
 );
@@ -135,7 +135,7 @@ SEXP _new_LIST_from_IntAEAE(
 	int mode
 );
 
-IntAEAE _LIST_asIntAEAE(SEXP x);
+IntAEAE _new_IntAEAE_from_LIST(SEXP x);
 
 SEXP _IntAEAE_toEnvir(
 	const IntAEAE *int_aeae,

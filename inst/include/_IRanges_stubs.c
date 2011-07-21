@@ -110,12 +110,12 @@ DEFINE_CCALLABLE_STUB(SEXP, new_INTEGER_from_IntAE,
 	(             int_ae)
 )
 
-DEFINE_CCALLABLE_STUB(IntAE, INTEGER_asIntAE,
+DEFINE_CCALLABLE_STUB(IntAE, new_IntAE_from_INTEGER,
 	(SEXP x),
 	(     x)
 )
 
-DEFINE_CCALLABLE_STUB(IntAE, CHARACTER_asIntAE,
+DEFINE_CCALLABLE_STUB(IntAE, new_IntAE_from_CHARACTER,
 	(SEXP x, int keyshift),
 	(     x,     keyshift)
 )
@@ -150,7 +150,7 @@ DEFINE_CCALLABLE_STUB(SEXP, new_LIST_from_IntAEAE,
 	(               int_aeae,     mode)
 )
 
-DEFINE_CCALLABLE_STUB(IntAEAE, LIST_asIntAEAE,
+DEFINE_CCALLABLE_STUB(IntAEAE, new_IntAEAE_from_LIST,
 	(SEXP x),
 	(     x)
 )

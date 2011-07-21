@@ -1,12 +1,9 @@
-/*****************************************************************************
- * Low-level manipulation of the Auto-Extending buffers
- * ----------------------------------------------------
- * Except for debug_AEbufs(), the functions defined in this file are
- * NOT .Call methods (but they are used by .Call methods defined in other .c
- * files). They are prefixed with a "_" (underscore) to emphasize the fact that
- * they are used internally within the IRanges shared lib.
- */
+/****************************************************************************
+ *           Low-level manipulation of the Auto-Extending buffers           *
+ *           ----------------------------------------------------           *
+ ****************************************************************************/
 #include "IRanges.h"
+#include <stdlib.h>  /* for malloc, free, realloc */
 
 #define MAX_BUFLENGTH_INC (32 * 1024 * 1024)
 #define MAX_BUFLENGTH (32 * MAX_BUFLENGTH_INC)
@@ -26,6 +23,62 @@ SEXP debug_AEbufs()
 	return R_NilValue;
 }
 
+
+/****************************************************************************
+ * Management of the malloc-based AEbufs.
+ */
+
+static int use_malloc = 0;
+
+SEXP AEbufs_use_malloc()
+{
+	return ScalarLogical(use_malloc = !use_malloc);
+}
+
+/* Types of AEbufs */
+#define	INTAE		1
+#define	INTAEAE		2
+#define	RANGEAE		3
+#define	RANGEAEAE	4
+#define	CHARAE		5
+#define	CHARAEAE	6
+
+/*
+ * The "global AEbuf stack" stores pointers to all the malloc-based AEbufs
+ * that are created during the execution of a .Call entry point. Every .Call()
+ * should start with an empty stack. After the .Call() has returned, the stack
+ * must be emptied with '.Call("AEbufs_free", PACKAGE="IRanges")'.
+ */
+#define AEBUF_STACK_MAXNELT 2048
+
+typedef struct aebuf_ptr {
+	int type;
+	void *ptr;
+} AEbufPtr;
+
+static AEbufPtr AEbuf_stack[AEBUF_STACK_MAXNELT];
+
+static int AEbuf_stack_nelt = 0;
+
+static void push_AEbuf(int type, void *ptr)
+{
+	AEbufPtr *aebuf_ptr;
+
+	if (AEbuf_stack_nelt >= AEBUF_STACK_MAXNELT)
+		error("IRanges internal error in push_AEbuf(): "
+		      "AEbuf stack is full");
+	aebuf_ptr = AEbuf_stack + AEbuf_stack_nelt;
+	aebuf_ptr->type = type;
+	aebuf_ptr->ptr = ptr;
+	AEbuf_stack_nelt++;
+	return;
+}
+
+
+/****************************************************************************
+ * Core helper functions used for allocation/reallocation of the AEbufs.
+ */
+
 /* Guaranteed to return a new buflength > 'buflength', or to raise an error. */
 int _get_new_buflength(int buflength)
 {
@@ -41,19 +94,63 @@ int _get_new_buflength(int buflength)
 	return MAX_BUFLENGTH;
 }
 
-static void *reallocAEbuf(const void *elts, int new_buflength,
+static void *malloc_AEbuf(int buflength, size_t size)
+{
+	void *elts;
+
+	if (buflength == 0)
+		return NULL;
+	elts = malloc((size_t) buflength * size);
+	if (elts == NULL)
+		error("IRanges internal error in malloc_AEbuf(): "
+		      "cannot allocate memory");
+	return elts;
+}
+
+static void *alloc_AEbuf(int buflength, size_t size)
+{
+	if (use_malloc)
+		return malloc_AEbuf(buflength, size);
+	if (buflength == 0)
+		return NULL;
+	return (void *) R_alloc(buflength, size);
+}
+
+static void *realloc_AEbuf(void *elts, int new_buflength,
 		int buflength, size_t size)
 {
-	char *new_elts;
+	void *new_elts;
 
-	new_elts = R_alloc(new_buflength, size);
+	if (use_malloc) {
+		new_elts = realloc(elts, (size_t) new_buflength * size);
+		if (new_elts == NULL)
+			error("IRanges internal error in realloc_AEbuf(): "
+			      "cannot reallocate memory");
+		return new_elts;
+	}
+	new_elts = (void *) R_alloc(new_buflength, size);
 	return memcpy(new_elts, elts, (size_t) buflength * size);
 }
 
 
 /****************************************************************************
- * IntAE functions
+ * IntAE buffers
  */
+
+static void IntAE_alloc(IntAE *int_ae, int buflength)
+{
+	int_ae->elts = (int *) alloc_AEbuf(buflength, sizeof(int));
+	int_ae->buflength = buflength;
+	return;
+}
+
+/* Must be used on a malloc-based IntAE */
+static void IntAE_free(IntAE *int_ae)
+{
+	if (int_ae->elts != NULL)
+		free(int_ae->elts);
+	return;
+}
 
 void _IntAE_set_val(const IntAE *int_ae, int val)
 {
@@ -68,12 +165,11 @@ IntAE _new_IntAE(int buflength, int nelt, int val)
 {
 	IntAE int_ae;
 
-	/* No memory leak here, because we use transient storage allocation */
-	if (buflength == 0)
-		int_ae.elts = NULL;
-	else
-		int_ae.elts = (int *) R_alloc(buflength, sizeof(int));
-	int_ae.buflength = buflength;
+	/* Allocation */
+	IntAE_alloc(&int_ae, buflength);
+	if (use_malloc)
+		push_AEbuf(INTAE, &int_ae);
+	/* Initialization */
 	int_ae.nelt = nelt;
 	_IntAE_set_val(&int_ae, val);
 	return int_ae;
@@ -84,7 +180,7 @@ static void IntAE_extend(IntAE *int_ae)
 	int new_buflength;
 
 	new_buflength = _get_new_buflength(int_ae->buflength);
-	int_ae->elts = (int *) reallocAEbuf(int_ae->elts, new_buflength,
+	int_ae->elts = (int *) realloc_AEbuf(int_ae->elts, new_buflength,
 					int_ae->buflength, sizeof(int));
 	int_ae->buflength = new_buflength;
 	return;
@@ -210,24 +306,30 @@ SEXP _new_INTEGER_from_IntAE(const IntAE *int_ae)
 	return ans;
 }
 
-IntAE _INTEGER_asIntAE(SEXP x)
+static void copy_INTEGER_to_IntAE(SEXP x, IntAE *int_ae)
+{
+	int_ae->nelt = LENGTH(x);
+	memcpy(int_ae->elts, INTEGER(x), sizeof(int) * LENGTH(x));
+	return;
+}
+
+IntAE _new_IntAE_from_INTEGER(SEXP x)
 {
 	IntAE int_ae;
 
 	int_ae = _new_IntAE(LENGTH(x), 0, 0);
-	memcpy(int_ae.elts, INTEGER(x), sizeof(int) * LENGTH(x));
-	int_ae.nelt = int_ae.buflength;
+	copy_INTEGER_to_IntAE(x, &int_ae);
 	return int_ae;
 }
 
-IntAE _CHARACTER_asIntAE(SEXP x, int keyshift)
+IntAE _new_IntAE_from_CHARACTER(SEXP x, int keyshift)
 {
 	IntAE int_ae;
 	int *elt;
 
 #ifdef DEBUG_IRANGES
 	if (debug) {
-		Rprintf("[DEBUG] _CHARACTER_asIntAE(): BEGIN ... "
+		Rprintf("[DEBUG] _new_IntAE_from_CHARACTER(): BEGIN ... "
 			"LENGTH(x)=%d keyshift=%d\n",
 			LENGTH(x), keyshift);
 	}
@@ -242,7 +344,7 @@ IntAE _CHARACTER_asIntAE(SEXP x, int keyshift)
 		if (debug) {
 			if (int_ae.nelt < 100
 			 || int_ae.nelt >= int_ae.buflength - 100)
-				Rprintf("[DEBUG] _CHARACTER_asIntAE(): "
+				Rprintf("[DEBUG] _new_IntAE_from_CHARACTER(): "
 					"int_ae.nelt=%d key=%s *elt=%d\n",
 					int_ae.nelt,
 					CHAR(STRING_ELT(x, int_ae.nelt)), *elt);
@@ -251,7 +353,7 @@ IntAE _CHARACTER_asIntAE(SEXP x, int keyshift)
 	}
 #ifdef DEBUG_IRANGES
 	if (debug) {
-		Rprintf("[DEBUG] _CHARACTER_asIntAE(): END\n");
+		Rprintf("[DEBUG] _new_IntAE_from_CHARACTER(): END\n");
 	}
 #endif
 	return int_ae;
@@ -259,24 +361,45 @@ IntAE _CHARACTER_asIntAE(SEXP x, int keyshift)
 
 
 /****************************************************************************
- * IntAEAE functions
+ * IntAEAE buffers
  */
+
+static void IntAEAE_alloc(IntAEAE *int_aeae, int buflength)
+{
+	int_aeae->elts = (IntAE *) alloc_AEbuf(buflength, sizeof(IntAE));
+	int_aeae->buflength = buflength;
+	return;
+}
+
+/* Must be used on a malloc-based IntAEAE */
+static void IntAEAE_free(IntAEAE *int_aeae)
+{
+	int i;
+	IntAE *elt;
+
+	for (i = 0, elt = int_aeae->elts; i < int_aeae->nelt; i++, elt++)
+		IntAE_free(elt);
+	if (int_aeae->elts != NULL)
+		free(int_aeae->elts);
+	return;
+}
 
 IntAEAE _new_IntAEAE(int buflength, int nelt)
 {
 	IntAEAE int_aeae;
+	int i;
 	IntAE *elt;
 
-	/* No memory leak here, because we use transient storage allocation */
-	if (buflength == 0)
-		int_aeae.elts = NULL;
-	else
-		int_aeae.elts = (IntAE *) R_alloc(buflength, sizeof(IntAE));
-	int_aeae.buflength = buflength;
-	for (int_aeae.nelt = 0, elt = int_aeae.elts;
-	     int_aeae.nelt < nelt;
-	     int_aeae.nelt++, elt++)
-		*elt = _new_IntAE(0, 0, 0);
+	/* Allocation */
+	IntAEAE_alloc(&int_aeae, buflength);
+	if (use_malloc)
+		push_AEbuf(INTAEAE, &int_aeae);
+	/* Initialization */
+	int_aeae.nelt = nelt;
+	for (i = 0, elt = int_aeae.elts; i < nelt; i++, elt++) {
+		IntAE_alloc(elt, 0);
+		elt->nelt = 0;
+	}
 	return int_aeae;
 }
 
@@ -285,7 +408,7 @@ static void IntAEAE_extend(IntAEAE *int_aeae)
 	int new_buflength;
 
 	new_buflength = _get_new_buflength(int_aeae->buflength);
-	int_aeae->elts = (IntAE *) reallocAEbuf(int_aeae->elts, new_buflength,
+	int_aeae->elts = (IntAE *) realloc_AEbuf(int_aeae->elts, new_buflength,
 					int_aeae->buflength, sizeof(IntAE));
 	int_aeae->buflength = new_buflength;
 	return;
@@ -377,16 +500,24 @@ SEXP _new_LIST_from_IntAEAE(const IntAEAE *int_aeae, int mode)
 	return ans;
 }
 
-IntAEAE _LIST_asIntAEAE(SEXP x)
+IntAEAE _new_IntAEAE_from_LIST(SEXP x)
 {
 	IntAEAE int_aeae;
+	int i;
 	IntAE *elt;
+	SEXP x_elt;
 
 	int_aeae = _new_IntAEAE(LENGTH(x), 0);
-	for (int_aeae.nelt = 0, elt = int_aeae.elts;
-	     int_aeae.nelt < int_aeae.buflength;
-	     int_aeae.nelt++, elt++) {
-		*elt = _INTEGER_asIntAE(VECTOR_ELT(x, int_aeae.nelt));
+	int_aeae.nelt = int_aeae.buflength;
+	for (i = 0, elt = int_aeae.elts; i < int_aeae.nelt; i++, elt++) {
+		x_elt = VECTOR_ELT(x, i);
+		if (TYPEOF(x_elt) != INTSXP)
+			error("IRanges internal error in "
+			      "_new_IntAEAE_from_LIST(): "
+			      "not all elements in the list "
+			      "are integer vectors");
+		IntAE_alloc(elt, LENGTH(x_elt));
+		copy_INTEGER_to_IntAE(x_elt, elt);
 	}
 	return int_aeae;
 }
@@ -450,15 +581,34 @@ SEXP _IntAEAE_toEnvir(const IntAEAE *int_aeae, SEXP envir, int keyshift)
 
 
 /****************************************************************************
- * RangeAE functions
+ * RangeAE buffers
  */
+
+static void RangeAE_alloc(RangeAE *range_ae, int buflength)
+{
+	IntAE_alloc(&(range_ae->start), buflength);
+	IntAE_alloc(&(range_ae->width), buflength);
+	return;
+}
+
+/* Must be used on a malloc-based RangeAE */
+static void RangeAE_free(RangeAE *range_ae)
+{
+	IntAE_free(&(range_ae->start));
+	IntAE_free(&(range_ae->width));
+	return;
+}
 
 RangeAE _new_RangeAE(int buflength, int nelt)
 {
 	RangeAE range_ae;
 
-	range_ae.start = _new_IntAE(buflength, nelt, 0);
-	range_ae.width = _new_IntAE(buflength, nelt, 0);
+	/* Allocation */
+	RangeAE_alloc(&range_ae, buflength);
+	if (use_malloc)
+		push_AEbuf(RANGEAE, &range_ae);
+	/* There is NO initialization */
+	range_ae.start.nelt = range_ae.width.nelt = nelt;
 	return range_ae;
 }
 
@@ -471,25 +621,45 @@ void _RangeAE_insert_at(RangeAE *range_ae, int at, int start, int width)
 
 
 /****************************************************************************
- * RangeAEAE functions
+ * RangeAEAE buffers
  */
+
+static void RangeAEAE_alloc(RangeAEAE *range_aeae, int buflength)
+{
+	range_aeae->elts = (RangeAE *) alloc_AEbuf(buflength, sizeof(RangeAE));
+	range_aeae->buflength = buflength;
+	return;
+}
+
+/* Must be used on a malloc-based RangeAEAE */
+static void RangeAEAE_free(RangeAEAE *range_aeae)
+{
+	int i;
+	RangeAE *elt;
+
+	for (i = 0, elt = range_aeae->elts; i < range_aeae->nelt; i++, elt++)
+		RangeAE_free(elt);
+	if (range_aeae->elts != NULL)
+		free(range_aeae->elts);
+	return;
+}
 
 RangeAEAE _new_RangeAEAE(int buflength, int nelt)
 {
 	RangeAEAE range_aeae;
+	int i;
 	RangeAE *elt;
 
-	/* No memory leak here, because we use transient storage allocation */
-	if (buflength == 0)
-		range_aeae.elts = NULL;
-	else
-		range_aeae.elts = (RangeAE *) R_alloc(buflength,
-						      sizeof(RangeAE));
-	range_aeae.buflength = buflength;
-	for (range_aeae.nelt = 0, elt = range_aeae.elts;
-	     range_aeae.nelt < nelt;
-	     range_aeae.nelt++, elt++)
-		*elt = _new_RangeAE(0, 0);
+	/* Allocation */
+	RangeAEAE_alloc(&range_aeae, buflength);
+	if (use_malloc)
+		push_AEbuf(RANGEAEAE, &range_aeae);
+	/* Initialization */
+	range_aeae.nelt = nelt;
+	for (i = 0, elt = range_aeae.elts; i < nelt; i++, elt++) {
+		RangeAE_alloc(elt, 0);
+		elt->start.nelt = elt->width.nelt = 0;
+	}
 	return range_aeae;
 }
 
@@ -498,7 +668,7 @@ static void RangeAEAE_extend(RangeAEAE *range_aeae)
 	int new_buflength;
 
 	new_buflength = _get_new_buflength(range_aeae->buflength);
-	range_aeae->elts = (RangeAE *) reallocAEbuf(range_aeae->elts,
+	range_aeae->elts = (RangeAE *) realloc_AEbuf(range_aeae->elts,
 					new_buflength, range_aeae->buflength,
 					sizeof(RangeAE));
 	range_aeae->buflength = new_buflength;
@@ -523,19 +693,33 @@ void _RangeAEAE_insert_at(RangeAEAE *range_aeae, int at,
 
 
 /****************************************************************************
- * CharAE functions
+ * CharAE buffers
  */
+
+static void CharAE_alloc(CharAE *char_ae, int buflength)
+{
+	char_ae->elts = (char *) alloc_AEbuf(buflength, sizeof(char));
+	char_ae->buflength = buflength;
+	return;
+}
+
+/* Must be used on a malloc-based CharAE */
+static void CharAE_free(CharAE *char_ae)
+{
+	if (char_ae->elts != NULL)
+		free(char_ae->elts);
+	return;
+}
 
 CharAE _new_CharAE(int buflength)
 {
 	CharAE char_ae;
 
-	/* No memory leak here, because we use transient storage allocation */
-	if (buflength == 0)
-		char_ae.elts = NULL;
-	else
-		char_ae.elts = (char *) R_alloc(buflength, sizeof(char));
-	char_ae.buflength = buflength;
+	/* Allocation */
+	CharAE_alloc(&char_ae, buflength);
+	if (use_malloc)
+		push_AEbuf(CHARAE, &char_ae);
+	/* Initialization */
 	char_ae.nelt = 0;
 	return char_ae;
 }
@@ -543,12 +727,10 @@ CharAE _new_CharAE(int buflength)
 CharAE _new_CharAE_from_string(const char *string)
 {
 	CharAE char_ae;
-	int buflength;
 
-	buflength = strlen(string);
-	char_ae = _new_CharAE(buflength);
-	memcpy(char_ae.elts, string, buflength);
-	char_ae.nelt = buflength;
+	char_ae = _new_CharAE(strlen(string));
+	char_ae.nelt = char_ae.buflength;
+	memcpy(char_ae.elts, string, char_ae.nelt);
 	return char_ae;
 }
 
@@ -557,7 +739,7 @@ static void CharAE_extend(CharAE *char_ae)
 	int new_buflength;
 
 	new_buflength = _get_new_buflength(char_ae->buflength);
-	char_ae->elts = (char *) reallocAEbuf(char_ae->elts, new_buflength,
+	char_ae->elts = (char *) realloc_AEbuf(char_ae->elts, new_buflength,
 					char_ae->buflength, sizeof(char));
 	char_ae->buflength = new_buflength;
 	return;
@@ -608,36 +790,57 @@ SEXP _new_RAW_from_CharAE(const CharAE *char_ae)
 /* only until we have a bitset or something smaller than char */
 SEXP _new_LOGICAL_from_CharAE(const CharAE *char_ae)
 {
-  SEXP ans;
-  int i;
-  
-  PROTECT(ans = NEW_LOGICAL(char_ae->nelt));
-  for (i = 0; i < char_ae->nelt; i++)
-    LOGICAL(ans)[i] = char_ae->elts[i];
-  UNPROTECT(1);
-  return ans;
+	SEXP ans;
+	int i;
+
+	PROTECT(ans = NEW_LOGICAL(char_ae->nelt));
+	for (i = 0; i < char_ae->nelt; i++)
+		LOGICAL(ans)[i] = char_ae->elts[i];
+	UNPROTECT(1);
+	return ans;
 }
 
 
 /****************************************************************************
- * CharAEAE functions
+ * CharAEAE buffers
  */
+
+static void CharAEAE_alloc(CharAEAE *char_aeae, int buflength)
+{
+	char_aeae->elts = (CharAE *) alloc_AEbuf(buflength, sizeof(CharAE));
+	char_aeae->buflength = buflength;
+	return;
+}
+
+/* Must be used on a malloc-based CharAEAE */
+static void CharAEAE_free(CharAEAE *char_aeae)
+{
+	int i;
+	CharAE *elt;
+
+	for (i = 0, elt = char_aeae->elts; i < char_aeae->nelt; i++, elt++)
+		CharAE_free(elt);
+	if (char_aeae->elts != NULL)
+		free(char_aeae->elts);
+	return;
+}
 
 CharAEAE _new_CharAEAE(int buflength, int nelt)
 {
 	CharAEAE char_aeae;
+	int i;
 	CharAE *elt;
 
-	/* No memory leak here, because we use transient storage allocation */
-	if (buflength == 0)
-		char_aeae.elts = NULL;
-	else
-		char_aeae.elts = (CharAE *) R_alloc(buflength, sizeof(CharAE));
-	char_aeae.buflength = buflength;
-	for (char_aeae.nelt = 0, elt = char_aeae.elts;
-	     char_aeae.nelt < nelt;
-	     char_aeae.nelt++, elt++)
-		*elt = _new_CharAE(0);
+	/* Allocation */
+	CharAEAE_alloc(&char_aeae, buflength);
+	if (use_malloc)
+		push_AEbuf(CHARAEAE, &char_aeae);
+	/* Initialization */
+	char_aeae.nelt = nelt;
+	for (i = 0, elt = char_aeae.elts; i < nelt; i++, elt++) {
+		CharAE_alloc(elt, 0);
+		elt->nelt = 0;
+	}
 	return char_aeae;
 }
 
@@ -646,24 +849,10 @@ static void CharAEAE_extend(CharAEAE *char_aeae)
 	int new_buflength;
 
 	new_buflength = _get_new_buflength(char_aeae->buflength);
-#ifdef DEBUG_IRANGES
-	if (debug) {
-		Rprintf("[DEBUG] CharAEAE_extend(): BEGIN\n");
-		Rprintf("[DEBUG] CharAEAE_extend(): "
-			"char_aeae->elts=%p buflength=%d new_buflength=%d\n",
-			char_aeae->elts, char_aeae->buflength, new_buflength);
-	}
-#endif
-	char_aeae->elts = (CharAE *) reallocAEbuf(char_aeae->elts,
+	char_aeae->elts = (CharAE *) realloc_AEbuf(char_aeae->elts,
 					new_buflength,
 					char_aeae->buflength, sizeof(CharAE));
 	char_aeae->buflength = new_buflength;
-#ifdef DEBUG_IRANGES
-	if (debug) {
-		Rprintf("[DEBUG] CharAEAE_extend(): END (char_aeae->elts=%p)\n",
-			char_aeae->elts);
-	}
-#endif
 	return;
 }
 
@@ -672,11 +861,6 @@ void _CharAEAE_insert_at(CharAEAE *char_aeae, int at, const CharAE *char_ae)
 	CharAE *elt1, *elt2;
 	int i1;
 
-#ifdef DEBUG_IRANGES
-	if (debug) {
-		Rprintf("[DEBUG] _CharAEAE_insert_at(): BEGIN\n");
-	}
-#endif
 	if (char_aeae->nelt >= char_aeae->buflength)
 		CharAEAE_extend(char_aeae);
 	elt2 = char_aeae->elts + char_aeae->nelt;
@@ -684,11 +868,6 @@ void _CharAEAE_insert_at(CharAEAE *char_aeae, int at, const CharAE *char_ae)
 	for (i1 = char_aeae->nelt++; i1 > at; i1--)
 		*(elt2--) = *(elt1--);
 	*elt2 = *char_ae;
-#ifdef DEBUG_IRANGES
-	if (debug) {
-		Rprintf("[DEBUG] _CharAEAE_insert_at(): END\n");
-	}
-#endif
 	return;
 }
 
@@ -696,20 +875,76 @@ void _append_string_to_CharAEAE(CharAEAE *char_aeae, const char *string)
 {
 	CharAE char_ae;
 
-	char_ae = _new_CharAE_from_string(string);
+	CharAE_alloc(&char_ae, strlen(string));
+	char_ae.nelt = char_ae.buflength;
+	memcpy(char_ae.elts, string, char_ae.nelt);
 	_CharAEAE_insert_at(char_aeae, char_aeae->nelt, &char_ae);
 	return;
 }
 
 SEXP _new_CHARACTER_from_CharAEAE(const CharAEAE *char_aeae)
 {
-  int i;
-  SEXP ans;
+	SEXP ans, ans_elt;
+	int i;
+	CharAE *elt;
 
-  PROTECT(ans = NEW_CHARACTER(char_aeae->nelt));
-  for (i = 0; i < char_aeae->nelt; i++)
-    SET_STRING_ELT(ans, i,
-                   mkCharLen(char_aeae->elts[i].elts, char_aeae->elts[i].nelt));
-  UNPROTECT(1);
-  return ans;
+	PROTECT(ans = NEW_CHARACTER(char_aeae->nelt));
+	for (i = 0, elt = char_aeae->elts; i < char_aeae->nelt; i++, elt++) {
+		PROTECT(ans_elt = mkCharLen(elt->elts, elt->nelt));
+		SET_STRING_ELT(ans, i, ans_elt);
+		UNPROTECT(1);
+	}
+	UNPROTECT(1);
+	return ans;
 }
+
+
+/****************************************************************************
+ * Freeing the malloc-based AEbufs.
+ */
+
+static void pop_AEbuf()
+{
+	AEbufPtr *aebuf_ptr;
+
+	if (AEbuf_stack_nelt <= 0)
+		error("IRanges internal error in pop_AEbuf(): "
+		      "cannot pop AEbuf from empty stack. "
+		      "This should NEVER happen! Please report.");
+	aebuf_ptr = AEbuf_stack + AEbuf_stack_nelt;
+	switch (aebuf_ptr->type) {
+	case INTAE:
+		IntAE_free((IntAE *) aebuf_ptr->ptr);
+		break;
+	case INTAEAE:
+		IntAEAE_free((IntAEAE *) aebuf_ptr->ptr);
+		break;
+	case RANGEAE:
+		RangeAE_free((RangeAE *) aebuf_ptr->ptr);
+		break;
+	case RANGEAEAE:
+		RangeAEAE_free((RangeAEAE *) aebuf_ptr->ptr);
+		break;
+	case CHARAE:
+		CharAE_free((CharAE *) aebuf_ptr->ptr);
+		break;
+	case CHARAEAE:
+		CharAEAE_free((CharAEAE *) aebuf_ptr->ptr);
+		break;
+	default: 
+		error("IRanges internal error in pop_AEbuf(): "
+		      "type of AEbuf not supported: %d. "
+		      "This should NEVER happen! Please report.",
+		      aebuf_ptr->type);
+	}
+	AEbuf_stack_nelt--;
+	return;
+}
+
+SEXP AEbufs_free()
+{
+	while (AEbuf_stack_nelt > 0)
+		pop_AEbuf();
+	return R_NilValue;
+}
+
