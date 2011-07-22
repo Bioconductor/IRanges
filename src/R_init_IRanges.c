@@ -202,6 +202,8 @@ void R_init_IRanges(DllInfo *info)
 
 /* AEbufs.c */
 	REGISTER_CCALLABLE(_get_new_buflength);
+	REGISTER_CCALLABLE(_IntAE_get_nelt);
+	REGISTER_CCALLABLE(_IntAE_set_nelt);
 	REGISTER_CCALLABLE(_IntAE_set_val);
 	REGISTER_CCALLABLE(_new_IntAE);
 	REGISTER_CCALLABLE(_IntAE_insert_at);
@@ -215,6 +217,8 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_new_INTEGER_from_IntAE);
 	REGISTER_CCALLABLE(_new_IntAE_from_INTEGER);
 	REGISTER_CCALLABLE(_new_IntAE_from_CHARACTER);
+	REGISTER_CCALLABLE(_IntAEAE_get_nelt);
+	REGISTER_CCALLABLE(_IntAEAE_set_nelt);
 	REGISTER_CCALLABLE(_new_IntAEAE);
 	REGISTER_CCALLABLE(_IntAEAE_insert_at);
 	REGISTER_CCALLABLE(_IntAEAE_eltwise_append);
@@ -223,16 +227,24 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_new_LIST_from_IntAEAE);
 	REGISTER_CCALLABLE(_new_IntAEAE_from_LIST);
 	REGISTER_CCALLABLE(_IntAEAE_toEnvir);
+	REGISTER_CCALLABLE(_RangeAE_get_nelt);
+	REGISTER_CCALLABLE(_RangeAE_set_nelt);
 	REGISTER_CCALLABLE(_new_RangeAE);
 	REGISTER_CCALLABLE(_RangeAE_insert_at);
+	REGISTER_CCALLABLE(_RangeAEAE_get_nelt);
+	REGISTER_CCALLABLE(_RangeAEAE_set_nelt);
 	REGISTER_CCALLABLE(_new_RangeAEAE);
 	REGISTER_CCALLABLE(_RangeAEAE_insert_at);
+	REGISTER_CCALLABLE(_CharAE_get_nelt);
+	REGISTER_CCALLABLE(_CharAE_set_nelt);
 	REGISTER_CCALLABLE(_new_CharAE);
 	REGISTER_CCALLABLE(_new_CharAE_from_string);
 	REGISTER_CCALLABLE(_CharAE_insert_at);
 	REGISTER_CCALLABLE(_append_string_to_CharAE);
 	REGISTER_CCALLABLE(_new_RAW_from_CharAE);
 	REGISTER_CCALLABLE(_new_LOGICAL_from_CharAE);
+	REGISTER_CCALLABLE(_CharAEAE_get_nelt);
+	REGISTER_CCALLABLE(_CharAEAE_set_nelt);
 	REGISTER_CCALLABLE(_new_CharAEAE);
 	REGISTER_CCALLABLE(_CharAEAE_insert_at);
 	REGISTER_CCALLABLE(_append_string_to_CharAEAE);

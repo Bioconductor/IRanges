@@ -43,6 +43,13 @@ SEXP AEbufs_use_malloc(SEXP x);
 
 int _get_new_buflength(int buflength);
 
+int _IntAE_get_nelt(const IntAE *int_ae);
+
+int _IntAE_set_nelt(
+	IntAE *int_ae,
+	int nelt
+);
+
 void _IntAE_set_val(
 	const IntAE *int_ae,
 	int val
@@ -90,7 +97,7 @@ void _IntAE_append_shifted_vals(
 );
 
 void _IntAE_qsort(
-	IntAE *int_ae,
+	const IntAE *int_ae,
 	int desc
 );
 
@@ -103,6 +110,13 @@ IntAE _new_IntAE_from_INTEGER(SEXP x);
 IntAE _new_IntAE_from_CHARACTER(
 	SEXP x,
 	int keyshift
+);
+
+int _IntAEAE_get_nelt(const IntAEAE *int_aeae);
+
+int _IntAEAE_set_nelt(
+	IntAEAE *int_aeae,
+	int nelt
 );
 
 IntAEAE _new_IntAEAE(
@@ -145,6 +159,13 @@ SEXP _IntAEAE_toEnvir(
 	int keyshift
 );
 
+int _RangeAE_get_nelt(const RangeAE *range_ae);
+
+int _RangeAE_set_nelt(
+	RangeAE *range_ae,
+	int nelt
+);
+
 RangeAE _new_RangeAE(
 	int buflength,
 	int nelt
@@ -157,6 +178,13 @@ void _RangeAE_insert_at(
 	int width
 );
 
+int _RangeAEAE_get_nelt(const RangeAEAE *range_aeae);
+
+int _RangeAEAE_set_nelt(
+	RangeAEAE *range_aeae,
+	int nelt
+);
+
 RangeAEAE _new_RangeAEAE(
 	int buflength,
 	int nelt
@@ -166,6 +194,13 @@ void _RangeAEAE_insert_at(
 	RangeAEAE *range_aeae,
 	int at,
 	const RangeAE *range_ae
+);
+
+int _CharAE_get_nelt(const CharAE *char_ae);
+
+int _CharAE_set_nelt(
+	CharAE *char_ae,
+	int nelt
 );
 
 CharAE _new_CharAE(int buflength);
@@ -186,6 +221,13 @@ void _append_string_to_CharAE(
 SEXP _new_RAW_from_CharAE(const CharAE *char_ae);
 
 SEXP _new_LOGICAL_from_CharAE(const CharAE *char_ae);
+
+int _CharAEAE_get_nelt(const CharAEAE *char_aeae);
+
+int _CharAEAE_set_nelt(
+	CharAEAE *char_aeae,
+	int nelt
+);
 
 CharAEAE _new_CharAEAE(
 	int buflength,
