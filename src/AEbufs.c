@@ -144,6 +144,18 @@ int _IntAE_set_nelt(IntAE *int_ae, int nelt)
 	return nelt;
 }
 
+#ifdef DEBUG_IRANGES
+static void IntAE_print(const IntAE *int_ae)
+{
+	Rprintf("buflength=%d elts=%p _nelt=%d _AE_malloc_stack_idx=%d",
+		int_ae->buflength,
+		int_ae->elts,
+		int_ae->_nelt,
+		int_ae->_AE_malloc_stack_idx);
+	return;
+}
+#endif
+
 /* Must be used on a malloc-based IntAE */
 static void IntAE_free(const IntAE *int_ae)
 {
@@ -161,8 +173,16 @@ static void reset_IntAE_malloc_stack()
 	     i < IntAE_malloc_stack_nelt;
 	     i++, int_ae++)
 	{
+#ifdef DEBUG_IRANGES
+		if (debug) {
+			Rprintf("IntAE_malloc_stack[%d]: ", i);
+			IntAE_print(int_ae);
+			Rprintf("\n");
+		}
+#endif
 		IntAE_free(int_ae);
 	}
+	IntAE_malloc_stack_nelt = 0;
 	return;
 }
 
@@ -459,6 +479,7 @@ static void reset_IntAEAE_malloc_stack()
 	{
 		IntAEAE_free(int_aeae);
 	}
+	IntAEAE_malloc_stack_nelt = 0;
 	return;
 }
 
@@ -709,6 +730,17 @@ int _RangeAE_set_nelt(RangeAE *range_ae, int nelt)
 	return nelt;
 }
 
+#ifdef DEBUG_IRANGES
+static void RangeAE_print(const RangeAE *range_ae)
+{
+	IntAE_print(&(range_ae->start));
+	Rprintf(" ");
+	IntAE_print(&(range_ae->width));
+	Rprintf(" _AE_malloc_stack_idx=%d", range_ae->_AE_malloc_stack_idx);
+	return;
+}
+#endif
+
 /* Must be used on a malloc-based RangeAE */
 static void RangeAE_free(const RangeAE *range_ae)
 {
@@ -726,8 +758,16 @@ static void reset_RangeAE_malloc_stack()
 	     i < RangeAE_malloc_stack_nelt;
 	     i++, range_ae++)
 	{
+#ifdef DEBUG_IRANGES
+		if (debug) {
+			Rprintf("RangeAE_malloc_stack[%d]: ", i);
+			RangeAE_print(range_ae);
+			Rprintf("\n");
+		}
+#endif
 		RangeAE_free(range_ae);
 	}
+	RangeAE_malloc_stack_nelt = 0;
 	return;
 }
 
@@ -844,6 +884,7 @@ static void reset_RangeAEAE_malloc_stack()
 	{
 		RangeAEAE_free(range_aeae);
 	}
+	RangeAEAE_malloc_stack_nelt = 0;
 	return;
 }
 
@@ -970,6 +1011,7 @@ static void reset_CharAE_malloc_stack()
 	{
 		CharAE_free(char_ae);
 	}
+	CharAE_malloc_stack_nelt = 0;
 	return;
 }
 
@@ -1151,6 +1193,7 @@ static void reset_CharAEAE_malloc_stack()
 	{
 		CharAEAE_free(char_aeae);
 	}
+	CharAEAE_malloc_stack_nelt = 0;
 	return;
 }
 
