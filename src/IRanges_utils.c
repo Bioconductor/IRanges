@@ -107,10 +107,10 @@ int _reduce_ranges(const int *start, const int *width, int length,
 			 || (!drop_empty_ranges
 			     && (out_length == 0
 			         || start_j != out_ranges->start.elts[
-					out_ranges->start.nelt - 1]))) {
+					_RangeAE_get_nelt(out_ranges) - 1]))) {
 				/* Append to 'out_ranges'. */
 				_RangeAE_insert_at(out_ranges,
-					out_ranges->start.nelt,
+					_RangeAE_get_nelt(out_ranges),
 					start_j, width_j);
 				out_length++;
 				append_or_drop = 0;
@@ -120,8 +120,7 @@ int _reduce_ranges(const int *start, const int *width, int length,
 				delta += gapwidth;
 		} else if (end_j > max_end) {
 			/* Merge with last range in 'out_ranges'. */
-			out_ranges->width.elts[out_ranges->width.nelt - 1] +=
-					end_j - max_end;
+			out_ranges->width.elts[_RangeAE_get_nelt(out_ranges) - 1] += end_j - max_end;
 			max_end = end_j;
 		}
 		if (out_inframe_start != NULL) 
@@ -209,7 +208,7 @@ int _gaps_ranges(const int *start, const int *width, int length,
 			if (gapwidth >= 1) {
 				/* Append to 'out_ranges'. */
 				_RangeAE_insert_at(out_ranges,
-					out_ranges->start.nelt,
+					_RangeAE_get_nelt(out_ranges),
 					gapstart, gapwidth);
 				out_length++;
 				max_end = end_j;
@@ -227,7 +226,7 @@ int _gaps_ranges(const int *start, const int *width, int length,
 		gapwidth = restrict_end - max_end;
 		/* Append to 'out_ranges'. */
 		_RangeAE_insert_at(out_ranges,
-			out_ranges->start.nelt,
+			_RangeAE_get_nelt(out_ranges),
 			gapstart, gapwidth);
 		out_length++;
 	}
@@ -281,9 +280,9 @@ SEXP Ranges_disjointBins(SEXP r_start, SEXP r_width)
   for (int i = 0; i < length(r_start); i++) {
     // find a bin, starting at first
     int j = 0, end = INTEGER(r_start)[i] + INTEGER(r_width)[i] - 1;
-    for (; j < bin_ends.nelt && bin_ends.elts[j] >= INTEGER(r_start)[i]; j++);
+    for (; j < _IntAE_get_nelt(&bin_ends) && bin_ends.elts[j] >= INTEGER(r_start)[i]; j++);
     // remember when this bin will be open
-    if (j == bin_ends.nelt)
+    if (j == _IntAE_get_nelt(&bin_ends))
       _IntAE_append(&bin_ends, &end, 1);
     else bin_ends.elts[j] = end;
     // store the bin for this range

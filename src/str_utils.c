@@ -54,7 +54,7 @@ static SEXP explode_string_as_integer_vector(SEXP s, char sep0)
 	long int val;
 
 	str = CHAR(s);
-	int_ae_buf.nelt = offset = 0;
+	_IntAE_set_nelt(&int_ae_buf, offset = 0);
 	while (str[offset]) {
 		ret = sscanf(str + offset, "%ld%n", &val, &n);
 		if (ret != 1) {
@@ -72,7 +72,8 @@ static SEXP explode_string_as_integer_vector(SEXP s, char sep0)
 				 offset + 1);
 			return R_NilValue;
 		}
-		_IntAE_insert_at(&int_ae_buf, int_ae_buf.nelt, (int) val);
+		_IntAE_insert_at(&int_ae_buf,
+			_IntAE_get_nelt(&int_ae_buf), (int) val);
 		if (str[offset] == '\0')
 			break;
 		if (str[offset] != sep0) {

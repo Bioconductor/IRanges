@@ -336,7 +336,7 @@ static SEXP alloc_XVectorList(const char *classname,
 		const char *element_type, const char *tag_type,
 		SEXP width)
 {
-	int ans_length, tag_length, new_tag_length, i;
+	int ans_length, tag_length, new_tag_length, i, nelt;
 	SEXP start, group, ranges, tags, tag, ans;
 	IntAE tag_lengths;
 
@@ -351,19 +351,22 @@ static SEXP alloc_XVectorList(const char *classname,
 			if (new_tag_length > MAX_TAG_LENGTH
 			 || new_tag_length < tag_length) {
 				_IntAE_insert_at(&tag_lengths,
-					 tag_lengths.nelt, tag_length);
+					_IntAE_get_nelt(&tag_lengths),
+					tag_length);
 				tag_length = 0;
 			}
 			INTEGER(start)[i] = tag_length + 1;
-			INTEGER(group)[i] = tag_lengths.nelt + 1;
+			INTEGER(group)[i] = _IntAE_get_nelt(&tag_lengths) + 1;
 			tag_length += INTEGER(width)[i];
 		}
-		_IntAE_insert_at(&tag_lengths, tag_lengths.nelt, tag_length);
+		_IntAE_insert_at(&tag_lengths,
+			_IntAE_get_nelt(&tag_lengths), tag_length);
 	}
 	PROTECT(ranges = _new_IRanges("IRanges", start, width, NULL));
-	PROTECT(tags = NEW_LIST(tag_lengths.nelt));
+	nelt = _IntAE_get_nelt(&tag_lengths);
+	PROTECT(tags = NEW_LIST(nelt));
 	if (strcmp(tag_type, "raw") == 0) {
-		for (i = 0; i < tag_lengths.nelt; i++) {
+		for (i = 0; i < nelt; i++) {
 			PROTECT(tag = NEW_RAW(tag_lengths.elts[i]));
 			SET_VECTOR_ELT(tags, i, tag);
 			UNPROTECT(1);
@@ -371,7 +374,7 @@ static SEXP alloc_XVectorList(const char *classname,
 		PROTECT(ans = _new_XRawList_from_tags(classname,
 					element_type, tags, ranges, group));
 	} else if (strcmp(tag_type, "integer") == 0) {
-		for (i = 0; i < tag_lengths.nelt; i++) {
+		for (i = 0; i < nelt; i++) {
 			PROTECT(tag = NEW_INTEGER(tag_lengths.elts[i]));
 			SET_VECTOR_ELT(tags, i, tag);
 			UNPROTECT(1);
@@ -379,7 +382,7 @@ static SEXP alloc_XVectorList(const char *classname,
 		PROTECT(ans = _new_XIntegerList_from_tags(classname,
 					element_type, tags, ranges, group));
 	} else if (strcmp(tag_type, "double") == 0) {
-		for (i = 0; i < tag_lengths.nelt; i++) {
+		for (i = 0; i < nelt; i++) {
 			PROTECT(tag = NEW_NUMERIC(tag_lengths.elts[i]));
 			SET_VECTOR_ELT(tags, i, tag);
 			UNPROTECT(1);
@@ -420,7 +423,7 @@ SEXP _new_XRawList_from_CharAEAE(const char *classname,
 		const CharAEAE *char_aeae, SEXP lkup)
 {
 	const int *lkup0;
-	int lkup_length, i;
+	int lkup_length, nelt, i;
 	SEXP ans_width, ans;
 	const CharAE *src;
 	cachedXVectorList cached_ans;
@@ -432,21 +435,22 @@ SEXP _new_XRawList_from_CharAEAE(const char *classname,
 		lkup0 = INTEGER(lkup);
 		lkup_length = LENGTH(lkup);
 	}
-	PROTECT(ans_width = NEW_INTEGER(char_aeae->nelt));
-	for (i = 0; i < char_aeae->nelt; i++) {
+	nelt = _CharAEAE_get_nelt(char_aeae);
+	PROTECT(ans_width = NEW_INTEGER(nelt));
+	for (i = 0; i < nelt; i++) {
 		src = char_aeae->elts + i;
-		INTEGER(ans_width)[i] = src->nelt;
+		INTEGER(ans_width)[i] = _CharAE_get_nelt(src);
 	}
 	PROTECT(ans = _alloc_XRawList(classname, element_type, ans_width));
 	cached_ans = _cache_XVectorList(ans);
-	for (i = 0; i < char_aeae->nelt; i++) {
+	for (i = 0; i < nelt; i++) {
 		src = char_aeae->elts + i;
 		dest = _get_cachedXRawList_elt(&cached_ans, i);
 		/* dest.seq is a const char * so we need to cast it to
 		   char * before we can write to it */
 		_Ocopy_bytes_to_i1i2_with_lkup(0, dest.length - 1,
 			(char *) dest.seq, dest.length,
-			src->elts, src->nelt,
+			src->elts, _CharAE_get_nelt(src),
 			lkup0, lkup_length);
 	}
 	UNPROTECT(2);
@@ -457,27 +461,28 @@ SEXP _new_XIntegerList_from_IntAEAE(const char *classname,
 		const char *element_type,
 		const IntAEAE *int_aeae)
 {
-	int i;
+	int nelt, i;
 	SEXP ans_width, ans;
 	const IntAE *src;
 	cachedXVectorList cached_ans;
 	cachedIntSeq dest;
 
-	PROTECT(ans_width = NEW_INTEGER(int_aeae->nelt));
-	for (i = 0; i < int_aeae->nelt; i++) {
+	nelt = _IntAEAE_get_nelt(int_aeae);
+	PROTECT(ans_width = NEW_INTEGER(nelt));
+	for (i = 0; i < nelt; i++) {
 		src = int_aeae->elts + i;
-		INTEGER(ans_width)[i] = src->nelt;
+		INTEGER(ans_width)[i] = _IntAE_get_nelt(src);
 	}
 	PROTECT(ans = _alloc_XIntegerList(classname, element_type, ans_width));
 	cached_ans = _cache_XVectorList(ans);
-	for (i = 0; i < int_aeae->nelt; i++) {
+	for (i = 0; i < nelt; i++) {
 		src = int_aeae->elts + i;
 		dest = _get_cachedXIntegerList_elt(&cached_ans, i);
 		/* dest.seq is a const int * so we need to cast it to
 		   char * before we can write to it */
 		_Ocopy_byteblocks_to_i1i2(0, dest.length - 1,
 			(char *) dest.seq, dest.length,
-			(const char *) src->elts, src->nelt,
+			(const char *) src->elts, _IntAE_get_nelt(src),
 			sizeof(int));
 	}
 	UNPROTECT(2);

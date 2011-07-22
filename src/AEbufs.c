@@ -96,7 +96,7 @@ static void *realloc_AEbuf(void *elts, int new_buflength,
  * We use a "global IntAE malloc stack" to store a copy of each top-level
  * malloc-based IntAE that is created during the execution of a .Call entry
  * point. The copy must be modified at every reallocation or every time the
- * nb of elements in the buffer (nelt member) is modified.
+ * nb of elements in the buffer (_nelt member) is modified.
  * Every .Call() should start with an empty stack.
  * After the .Call() has returned, the stack must be emptied with
  *     .Call("AEbufs_free", PACKAGE="IRanges")
@@ -130,14 +130,14 @@ static void IntAE_realloc(IntAE *int_ae)
 
 int _IntAE_get_nelt(const IntAE *int_ae)
 {
-	return int_ae->nelt;
+	return int_ae->_nelt;
 }
 
 int _IntAE_set_nelt(IntAE *int_ae, int nelt)
 {
 	int idx;
 
-	int_ae->nelt = nelt;
+	int_ae->_nelt = nelt;
 	idx = int_ae->_AE_malloc_stack_idx;
 	if (idx >= 0)
 		IntAE_malloc_stack[idx] = *int_ae;
@@ -420,14 +420,14 @@ static void IntAEAE_realloc(IntAEAE *int_aeae)
 
 int _IntAEAE_get_nelt(const IntAEAE *int_aeae)
 {
-	return int_aeae->nelt;
+	return int_aeae->_nelt;
 }
 
 int _IntAEAE_set_nelt(IntAEAE *int_aeae, int nelt)
 {
 	int idx;
 
-	int_aeae->nelt = nelt;
+	int_aeae->_nelt = nelt;
 	idx = int_aeae->_AE_malloc_stack_idx;
 	if (idx >= 0)
 		IntAEAE_malloc_stack[idx] = *int_aeae;
@@ -621,7 +621,7 @@ SEXP _IntAEAE_toEnvir(const IntAEAE *int_aeae, SEXP envir, int keyshift)
 	int nkey = 0, cum_length = 0;
 	if (debug) {
 		Rprintf("[DEBUG] _IntAEAE_toEnvir(): BEGIN ... "
-			"int_aeae->nelt=%d keyshift=%d\n",
+			"int_aeae->_nelt=%d keyshift=%d\n",
 			nelt, keyshift);
 	}
 #endif
@@ -630,7 +630,7 @@ SEXP _IntAEAE_toEnvir(const IntAEAE *int_aeae, SEXP envir, int keyshift)
 		if (debug) {
 			if (i < 100 || i >= nelt - 100)
 				Rprintf("[DEBUG] _IntAEAE_toEnvir(): "
-					"nkey=%d int_aeae->elts[%d].nelt=%d\n",
+					"nkey=%d int_aeae->elts[%d]._nelt=%d\n",
 					nkey, i, _IntAE_get_nelt(elt));
 		}
 #endif
@@ -805,14 +805,14 @@ static void RangeAEAE_realloc(RangeAEAE *range_aeae)
 
 int _RangeAEAE_get_nelt(const RangeAEAE *range_aeae)
 {
-	return range_aeae->nelt;
+	return range_aeae->_nelt;
 }
 
 int _RangeAEAE_set_nelt(RangeAEAE *range_aeae, int nelt)
 {
 	int idx;
 
-	range_aeae->nelt = nelt;
+	range_aeae->_nelt = nelt;
 	idx = range_aeae->_AE_malloc_stack_idx;
 	if (idx >= 0)
 		RangeAEAE_malloc_stack[idx] = *range_aeae;
@@ -937,14 +937,14 @@ static void CharAE_realloc(CharAE *char_ae)
 
 int _CharAE_get_nelt(const CharAE *char_ae)
 {
-	return char_ae->nelt;
+	return char_ae->_nelt;
 }
 
 int _CharAE_set_nelt(CharAE *char_ae, int nelt)
 {
 	int idx;
 
-	char_ae->nelt = nelt;
+	char_ae->_nelt = nelt;
 	idx = char_ae->_AE_malloc_stack_idx;
 	if (idx >= 0)
 		CharAE_malloc_stack[idx] = *char_ae;
@@ -1112,14 +1112,14 @@ static void CharAEAE_realloc(CharAEAE *char_aeae)
 
 int _CharAEAE_get_nelt(const CharAEAE *char_aeae)
 {
-	return char_aeae->nelt;
+	return char_aeae->_nelt;
 }
 
 int _CharAEAE_set_nelt(CharAEAE *char_aeae, int nelt)
 {
 	int idx;
 
-	char_aeae->nelt = nelt;
+	char_aeae->_nelt = nelt;
 	idx = char_aeae->_AE_malloc_stack_idx;
 	if (idx >= 0)
 		CharAEAE_malloc_stack[idx] = *char_aeae;

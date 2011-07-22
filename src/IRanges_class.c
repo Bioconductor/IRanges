@@ -232,11 +232,12 @@ SEXP _new_list_of_IRanges_from_RangeAEAE(const char *element_type,
 		const RangeAEAE *range_aeae)
 {
 	SEXP ans, ans_elt;
-	int i;
+	int nelt, i;
 	const RangeAE *elt;
 
-	PROTECT(ans = NEW_LIST(range_aeae->nelt));
-	for (i = 0, elt = range_aeae->elts; i < range_aeae->nelt; i++, elt++) {
+	nelt = _RangeAEAE_get_nelt(range_aeae);
+	PROTECT(ans = NEW_LIST(nelt));
+	for (i = 0, elt = range_aeae->elts; i < nelt; i++, elt++) {
 		PROTECT(ans_elt = _new_IRanges_from_RangeAE(element_type, elt));
 		SET_VECTOR_ELT(ans, i, ans_elt);
 		UNPROTECT(1);

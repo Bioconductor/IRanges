@@ -113,7 +113,7 @@ static int append_cachedIRanges_to_RangeAE(RangeAE *range_ae,
 	for (j = 0; j < ir_length; j++) {
 		start = _get_cachedIRanges_elt_start(cached_ir, j);
 		width = _get_cachedIRanges_elt_width(cached_ir, j);
-		_RangeAE_insert_at(range_ae, range_ae->start.nelt,
+		_RangeAE_insert_at(range_ae, _RangeAE_get_nelt(range_ae),
 				start, width);
 	}
 	return ir_length;
@@ -141,13 +141,13 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 	PROTECT(ans_partitioning_end = NEW_INTEGER(x_length));
 	for (i = 0; i < x_length; i++) {
 		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
-		in_ranges.start.nelt = in_ranges.width.nelt = 0;
+		_RangeAE_set_nelt(&in_ranges, 0);
 		append_cachedIRanges_to_RangeAE(&in_ranges, &cached_ir);
 		_reduce_ranges(in_ranges.start.elts, in_ranges.width.elts,
-			in_ranges.start.nelt,
+			_RangeAE_get_nelt(&in_ranges),
 			LOGICAL(drop_empty_ranges)[0], INTEGER(min_gapwidth)[0],
 			tmpbuf.elts, &out_ranges, NULL);
-		INTEGER(ans_partitioning_end)[i] = out_ranges.start.nelt;
+		INTEGER(ans_partitioning_end)[i] = _RangeAE_get_nelt(&out_ranges);
 	}
 	PROTECT(ans_unlistData = _new_IRanges_from_RangeAE("IRanges",
 			&out_ranges));
@@ -188,13 +188,13 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 	end_elt = INTEGER(end);
 	for (i = 0; i < x_length; i++) {
 		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
-		in_ranges.start.nelt = in_ranges.width.nelt = 0;
+		_RangeAE_set_nelt(&in_ranges, 0);
 		append_cachedIRanges_to_RangeAE(&in_ranges, &cached_ir);
 		_gaps_ranges(in_ranges.start.elts, in_ranges.width.elts,
-			in_ranges.start.nelt,
+			_RangeAE_get_nelt(&in_ranges),
 			*start_elt, *end_elt,
 			tmpbuf.elts, &out_ranges);
-		INTEGER(ans_partitioning_end)[i] = out_ranges.start.nelt;
+		INTEGER(ans_partitioning_end)[i] = _RangeAE_get_nelt(&out_ranges);
 		if (start_length != 1) {
 			start_elt++;
 			end_elt++;

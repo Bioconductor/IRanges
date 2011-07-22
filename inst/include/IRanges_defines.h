@@ -40,14 +40,14 @@
 typedef struct int_ae {
 	int buflength;
 	int *elts;
-	int nelt;
+	int _nelt;
 	int _AE_malloc_stack_idx;
 } IntAE;
 
 typedef struct int_aeae {
 	int buflength;
 	IntAE *elts;
-	int nelt;
+	int _nelt;
 	int _AE_malloc_stack_idx;
 } IntAEAE; 
 
@@ -60,21 +60,21 @@ typedef struct range_ae {
 typedef struct range_aeae {
 	int buflength;
 	RangeAE *elts;
-	int nelt;
+	int _nelt;
 	int _AE_malloc_stack_idx;
 } RangeAEAE;
 
 typedef struct char_ae {
 	int buflength;
 	char *elts;
-	int nelt;
+	int _nelt;
 	int _AE_malloc_stack_idx;
 } CharAE; 
 
 typedef struct char_aeae {
         int buflength;
         CharAE *elts;
-        int nelt;
+        int _nelt;
 	int _AE_malloc_stack_idx;
 } CharAEAE; 
 
