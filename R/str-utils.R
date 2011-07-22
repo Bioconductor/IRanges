@@ -3,7 +3,7 @@ safeExplode <- function(x)
 {
     if (!isSingleString(x))
         stop("'x' must be a single string")
-    .Call22("safe_strexplode", x, PACKAGE="IRanges")
+    .Call2("safe_strexplode", x, PACKAGE="IRanges")
 }
 
 ### strsplitAsListOfIntegerVectors(x) is an alternative to:
@@ -33,7 +33,7 @@ strsplitAsListOfIntegerVectors <- function(x, sep=",")
         stop("'x' must be a character vector")
     if (!isSingleString(sep) || nchar(sep) != 1L)
         stop("'sep' must be a string containing just one single-byte character")
-    ans <- .Call22("strsplit_as_list_of_ints", x, sep, PACKAGE="IRanges")
+    ans <- .Call2("strsplit_as_list_of_ints", x, sep, PACKAGE="IRanges")
     names(ans) <- names(x)
     ans
 }
