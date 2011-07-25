@@ -13,8 +13,10 @@ AEbufs.free <- function()
 ### Exported!
 .Call2 <- function(.NAME, ..., PACKAGE)
 {
-    AEbufs.use.malloc(TRUE)
-    on.exit({AEbufs.free(); AEbufs.use.malloc(FALSE)})    
+    #Turning off malloc-based Auto-Extending buffers again until I find the
+    #time to troubleshoot 'R CMD check' segfault on moscato1 and pitt. 
+    #AEbufs.use.malloc(TRUE)
+    #on.exit({AEbufs.free(); AEbufs.use.malloc(FALSE)})    
     .Call(.NAME, ..., PACKAGE=PACKAGE)
 }
 
