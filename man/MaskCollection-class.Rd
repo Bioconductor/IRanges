@@ -218,8 +218,8 @@
   \link{NormalIRanges-class},
   \link{read.Mask},
   \link[Biostrings]{MaskedXString-class},
-  \code{\link[Biostrings:letterFrequency]{alphabetFrequency}},
-  \code{\link[Biostrings]{reverse}},
+  \code{\link{reverse}},
+  \code{\link[Biostrings]{alphabetFrequency}},
   \code{\link[Biostrings]{matchPattern}}
 }
 

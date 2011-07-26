@@ -137,6 +137,110 @@ setMethod("elementLengths", "Views", function(x) width(x))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### findOverlaps() and family.
+###
+
+setMethod("findOverlaps", c("Views", "Views"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"),
+             select=c("all", "first", "last", "arbitrary"))
+    {
+        findOverlaps(ranges(query), ranges(subject),
+                     maxgap=maxgap, minoverlap=minoverlap,
+                     type=type, select=select)
+    }
+)
+
+setMethod("findOverlaps", c("ANY", "Views"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"),
+             select=c("all", "first", "last", "arbitrary"))
+    {
+        findOverlaps(query, ranges(subject),
+                     maxgap=maxgap, minoverlap=minoverlap,
+                     type=type, select=select)
+    }
+)
+
+setMethod("findOverlaps", c("Views", "ANY"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"),
+             select=c("all", "first", "last", "arbitrary"))
+    {
+        findOverlaps(ranges(query), subject,
+                     maxgap=maxgap, minoverlap=minoverlap,
+                     type=type, select=select)
+    }
+)
+
+setMethod("countOverlaps", c("Views", "Views"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"))
+    {
+         countOverlaps(ranges(query), ranges(subject),
+                       maxgap=maxgap, minoverlap=minoverlap,
+                       type=type)
+    }
+)
+
+setMethod("countOverlaps", c("ANY", "Views"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"))
+    {
+         countOverlaps(query, ranges(subject),
+                       maxgap=maxgap, minoverlap=minoverlap,
+                       type=type)
+    }
+)
+
+setMethod("countOverlaps", c("Views", "ANY"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"))
+    {
+         countOverlaps(ranges(query), subject,
+                       maxgap=maxgap, minoverlap=minoverlap,
+                       type=type)
+    }
+)
+
+setMethod("match", c("Views", "Views"),
+    function(x, table, nomatch=NA_integer_, incomparables=NULL)
+    {
+        match(ranges(x), ranges(table),
+              nomatch=nomatch, incomparables=incomparables)
+    }
+)
+
+setMethod("match", c("ANY", "Views"),
+    function(x, table, nomatch=NA_integer_, incomparables=NULL)
+    {
+        match(x, ranges(table),
+              nomatch=nomatch, incomparables=incomparables)
+    }
+)
+
+setMethod("match", c("Views", "ANY"),
+    function(x, table, nomatch=NA_integer_, incomparables=NULL)
+    {
+        match(ranges(x), table,
+              nomatch=nomatch, incomparables=incomparables)
+    }
+)
+
+setMethod("%in%", c("Views", "Views"),
+    function(x, table) ranges(x) %in% ranges(table)
+)
+
+setMethod("%in%", c("ANY", "Views"),
+    function(x, table) x %in% ranges(table)
+)
+
+setMethod("%in%", c("Views", "ANY"),
+    function(x, table) ranges(x) %in% table
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
 

@@ -17,8 +17,6 @@
 \alias{length,RangedData-method}
 \alias{names,RangedData-method}
 \alias{names<-,RangedData-method}
-\alias{ranges}
-\alias{ranges<-}
 \alias{ranges,RangedData-method}
 \alias{ranges<-,RangedData-method}
 \alias{start,RangedData-method}
