@@ -798,6 +798,7 @@ setAtomicListMethod("which", inputBaseClass = "LogicalList",
 ### Numerical methods
 ###
 
+
 for (i in c("IntegerList", "NumericList", "RleList")) {
     setAtomicListMethod("diff", inputBaseClass = i, endoapply = TRUE)
     setAtomicListMethod("which.max", inputBaseClass = i)
@@ -853,7 +854,7 @@ for (i in c("LogicalList", "IntegerList", "NumericList", "RleList")) {
                          low = low, high = high, simplify = TRUE)
               })
     setAtomicListMethod("IQR", inputBaseClass = i)
-}
+    }
 
 setMethod("which.max", "CompressedRleList",
           function(x) {
@@ -865,6 +866,27 @@ setMethod("which.min", "CompressedRleList",
             viewWhichMins(as(x, "RleViews"), na.rm=TRUE) -
               c(0L, head(cumsum(elementLengths(x)), -1))
           })
+
+setGeneric("listCumsum", function(x, ...) standardGeneric("listCumsum"))
+
+setMethod("listCumsum", "NumericList",
+              function(x, ...) NumericList(.listCumsum(x))) 
+setMethod("listCumsum", "IntegerList",
+              function(x, ...) IntegerList(.listCumsum(x))) 
+setMethod("listCumsum", "LogicalList",
+              function(x, ...) IntegerList(.listCumsum(x))) 
+setMethod("listCumsum", "RleList",
+              function(x, ...) RleList(.listCumsum(x))) 
+
+.listCumsum <- function(x, ...)
+{
+    xUnlisted <- unlist(x, use.names=FALSE)
+    xCumsum <- cumsum(xUnlisted)
+    xPart <- PartitioningByWidth(elementLengths(x))
+    xListsum <- xCumsum - rep(xCumsum[start(xPart)] -
+        xUnlisted[start(xPart)], width(xPart))
+    split(xListsum, rep(seq_len(length(xPart)), width(xPart))) 
+}
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Running window statistic methods

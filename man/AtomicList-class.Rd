@@ -202,6 +202,11 @@
 \alias{IQR,IntegerList-method}
 \alias{IQR,NumericList-method}
 \alias{IQR,RleList-method}
+\alias{listCumsum}
+\alias{listCumsum,LogicalList-method}
+\alias{listCumsum,IntegerList-method}
+\alias{listCumsum,NumericList-method}
+\alias{listCumsum,RleList-method}
 
 \alias{smoothEnds,CompressedIntegerList-method}
 \alias{smoothEnds,SimpleIntegerList-method}
@@ -399,6 +404,10 @@
                    \code{pmax}, \code{pmax.int}, \code{pmin}, \code{pmin.int},
                    \code{mean}, \code{var}, \code{cov}, \code{cor}, \code{sd},
                    \code{median}, \code{quantile}, \code{mad}, \code{IQR}}
+    \item{Other Numeric}{\code{listCumsum} : This function returns a vector of
+      cumulative sums across the elements within each list level. This is in
+      contrast to \code{cumsum} which provides the cumulative sums across all
+      elements over all list levels. See examples.} 
     \item{Running Window}{\code{smoothEnds}, \code{runmed}. \code{runmean},
                           \code{runsum}, \code{runwtsum}, \code{runq}}
     \item{Character}{\code{nchar}, \code{chartr}, \code{tolower},
@@ -473,6 +482,10 @@
 
   ## get the mean for each element
   sapply(col1, mean)
+
+  ## summation over list elements
+  sum1 <- cumsum(collection)
+  sum2 <- listCumsum(collection)
 }
 \keyword{methods}
 \keyword{classes}
