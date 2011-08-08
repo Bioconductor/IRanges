@@ -552,9 +552,12 @@ setMethod("Ops",
           })
 
 setMethod("Math", "CompressedAtomicList",
-          function(x)
-              CompressedAtomicList(callGeneric(x@unlistData),
-                                   partitioning = x@partitioning))
+          function(x) {
+              lst <- split(x@unlistData, rep(seq_len(length(x)),
+                  width(x@partitioning)))
+              names(lst) <- names(x)
+              CompressedAtomicListFromList(lapply(lst, .Generic))
+          })
 
 setMethod("Math", "SimpleAtomicList",
           function(x) SimpleAtomicList(lapply(x@listData, .Generic)))
@@ -866,27 +869,6 @@ setMethod("which.min", "CompressedRleList",
             viewWhichMins(as(x, "RleViews"), na.rm=TRUE) -
               c(0L, head(cumsum(elementLengths(x)), -1))
           })
-
-setGeneric("listCumsum", function(x, ...) standardGeneric("listCumsum"))
-
-setMethod("listCumsum", "NumericList",
-              function(x, ...) NumericList(.listCumsum(x))) 
-setMethod("listCumsum", "IntegerList",
-              function(x, ...) IntegerList(.listCumsum(x))) 
-setMethod("listCumsum", "LogicalList",
-              function(x, ...) IntegerList(.listCumsum(x))) 
-setMethod("listCumsum", "RleList",
-              function(x, ...) RleList(.listCumsum(x))) 
-
-.listCumsum <- function(x, ...)
-{
-    xUnlisted <- unlist(x, use.names=FALSE)
-    xCumsum <- cumsum(xUnlisted)
-    xPart <- PartitioningByWidth(elementLengths(x))
-    xListsum <- xCumsum - rep(xCumsum[start(xPart)] -
-        xUnlisted[start(xPart)], width(xPart))
-    split(xListsum, rep(seq_len(length(xPart)), width(xPart))) 
-}
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Running window statistic methods

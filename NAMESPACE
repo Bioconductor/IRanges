@@ -273,6 +273,5 @@ exportMethods(
     findRange,
     runmean, runsum, runwtsum, runq,
     viewApply, viewMins, viewMaxs, viewSums, viewMeans,
-    viewWhichMins, viewWhichMaxs,
-    listCumsum
+    viewWhichMins, viewWhichMaxs
 )
