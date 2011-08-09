@@ -553,9 +553,7 @@ setMethod("Ops",
 
 setMethod("Math", "CompressedAtomicList",
           function(x) {
-              lst <- split(x@unlistData, rep(seq_len(length(x)),
-                  width(x@partitioning)))
-              names(lst) <- names(x)
+              lst <- as(x, "list") 
               CompressedAtomicListFromList(lapply(lst, .Generic))
           })
 
