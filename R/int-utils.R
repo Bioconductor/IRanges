@@ -89,7 +89,7 @@ orderInteger <- function(x, decreasing=FALSE, na.last=NA)
         if (has_NAs)
             x <- x[!is.na(x)]
         ## Uses _get_order_of_int_array() at the C level which is stable.
-        return(.Call("Integer_order", x, decreasing, PACKAGE="IRanges"))
+        return(.Call2("Integer_order", x, decreasing, PACKAGE="IRanges"))
     }
     ## At this point 'x' has NAs and we must keep them ('na.last' is not NA).
     ## We can't use sort.list() with method="quick" or method="shell" here
