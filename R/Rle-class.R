@@ -474,15 +474,8 @@ setGeneric("orderAsRanges", signature = c("x"),
 setMethod("orderAsRanges", "Rle",
            function(x, na.last = TRUE, decreasing = FALSE)
            {
-               if (is.integer(runValue(x)) || is.factor(runValue(x))) {
-                   ord <-
-                     sort.list(runValue(x), na.last = na.last,
-                               decreasing = decreasing, method = "radix")
-               } else {
-                   ord <-
-                     order(runValue(x), na.last = na.last,
-                           decreasing = decreasing)
-               }
+               ord <- orderInteger(runValue(x), na.last = na.last,
+                                   decreasing = decreasing)
                new2("IRanges", start = start(x)[ord], width = runLength(x)[ord],
                     check = FALSE)
            })

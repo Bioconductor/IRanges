@@ -57,16 +57,53 @@ runEndsOfIntegerPairs <- function(x, y)
     which(c(not_same_as_prev[-1L], TRUE))
 }
 
-orderInteger <- function(x, decreasing = FALSE, na.last = NA)
+### We want this ordering to be "stable".
+orderInteger <- function(x, decreasing=FALSE, na.last=NA)
 {
-    if (!is.integer(x) && !is.factor(x))
-        stop("'x' must be an integer vector")
-    if ((is.integer(x) && diff(range(x[!is.na(x)])) < 100000) ||
-        (is.factor(x) && length(levels(x)) < 100000))
-      sort.list(x, decreasing = decreasing, na.last = na.last, method = "radix")
-    else if (!anyMissing(x))
-        .Call2("Integer_order", x, decreasing, PACKAGE="IRanges")
-    else sort.list(x, decreasing = decreasing, na.last = na.last)
+    if (is.factor(x)) {
+        input_is_factor <- TRUE
+        x_delta <- length(levels(x)) - 1L
+        x <- as.integer(x)
+    } else {
+        if (!is.integer(x))
+            stop("'x' must be an integer vector or a factor")
+        input_is_factor <- FALSE
+    }
+    x_min <- suppressWarnings(min(x, na.rm=TRUE))
+    if (x_min == Inf) {
+        if (is.na(na.last))
+            return(integer(0))
+        else
+            return(seq_len(length(x)))
+    }
+    ## At this point 'x' is guaranteed to contain at least one non NA value.
+    if (!input_is_factor)
+        x_delta <- max(x, na.rm=TRUE) - x_min
+    if (x_delta < 100000L) {
+        ## "radix" method is stable.
+        return(sort.list(x, decreasing=decreasing, na.last=na.last,
+                         method="radix"))
+    }
+    has_NAs <- anyMissing(x)
+    if (!has_NAs || is.na(na.last)) {
+        if (has_NAs)
+            x <- x[!is.na(x)]
+        ## Uses _get_order_of_int_array() at the C level which is stable.
+        return(.Call("Integer_order", x, decreasing, PACKAGE="IRanges"))
+    }
+    ## At this point 'x' has NAs and we must keep them ('na.last' is not NA).
+    ## We can't use sort.list() with method="quick" or method="shell" here
+    ## because they are not stable algorithms (and in addition method="quick"
+    ## is only supported when 'na.last' is NA). So we use order() with an
+    ## extra vector to break ties, which is a trick to make it stable.
+    ## Unfortunately this is very inefficient (about twice slower than
+    ## using sort.list() with method="shell").
+    ## TODO: Modify .Call entry point Integer_order to support 'na.last' arg.
+    if (decreasing)
+        y <- length(x):1L
+    else
+        y <- seq_len(length(x))
+    order(x, y, decreasing=decreasing, na.last=na.last)
 }
 
 ### For 'x' and 'y' integer vectors of equal length with no NAs,
@@ -78,7 +115,7 @@ orderInteger <- function(x, decreasing = FALSE, na.last = NA)
 ### TODO: Maybe rename orderIntegerPairs().
 ### TODO: What happens if 'x' and 'y' don't have the same length? Shouldn't
 ### we check for that?
-orderTwoIntegers <- function(x, y, decreasing = FALSE)
+orderTwoIntegers <- function(x, y, decreasing=FALSE)
 {
     if (!is.integer(x) && !is.factor(x))
         stop("'x' must be an integer vector or factor")
