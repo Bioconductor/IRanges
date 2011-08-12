@@ -202,11 +202,10 @@
 \alias{IQR,IntegerList-method}
 \alias{IQR,NumericList-method}
 \alias{IQR,RleList-method}
-\alias{listCumsum}
-\alias{listCumsum,LogicalList-method}
-\alias{listCumsum,IntegerList-method}
-\alias{listCumsum,NumericList-method}
-\alias{listCumsum,RleList-method}
+\alias{cumsum,CompressedAtomicList-method}
+\alias{cumprod,CompressedAtomicList-method}
+\alias{cummin,CompressedAtomicList-method}
+\alias{cummax,CompressedAtomicList-method}
 
 \alias{smoothEnds,CompressedIntegerList-method}
 \alias{smoothEnds,SimpleIntegerList-method}
@@ -381,7 +380,14 @@
       \code{"acosh"}, \code{"asin"}, \code{"asinh"}, \code{"atan"},
       \code{"atanh"}, \code{"exp"}, \code{"expm1"}, \code{"cos"},
       \code{"cosh"}, \code{"sin"}, \code{"sinh"}, \code{"tan"}, \code{"tanh"},
-      \code{"gamma"}, \code{"lgamma"}, \code{"digamma"}, \code{"trigamma"}}
+      \code{"gamma"}, \code{"lgamma"}, \code{"digamma"}, \code{"trigamma"}
+
+      Note the behavior of the 'cum' methods has changed in IRanges >= 1.11.19.
+      Previously cumsum, cumprod, cummax and cummin did not operate within
+      elements across objects as stated above. A warning is now issued 
+      to alert users of the changed behavior; this is temporary and will be 
+      removed in BioC 2.10. To avoid the warning wrap the call to the 'cum' 
+      methods in suppressWarnings().}
     \item{\code{Math2}}{\code{"round"}, \code{"signif"}}
     \item{\code{Summary}}{\code{"max"}, \code{"min"}, \code{"range"},
       \code{"prod"}, \code{"sum"}, \code{"any"}, \code{"all"}}

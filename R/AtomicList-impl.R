@@ -553,9 +553,49 @@ setMethod("Ops",
 
 setMethod("Math", "CompressedAtomicList",
           function(x) {
+              CompressedAtomicList(callGeneric(x@unlistData),
+                                   partitioning = x@partitioning)
+
+          })
+
+setMethod("cumsum", "CompressedAtomicList",
+          function(x) {
+              .cumWarning()
+              unlst <- unlist(x, use.names=FALSE)
+              xcumsum <- cumsum(as.numeric(unlst))
+              partition <- PartitioningByWidth(elementLengths(x))
+              ans <- xcumsum - rep(xcumsum[start(partition)] -
+                  unlst[start(partition)], width(partition))
+              IRanges:::CompressedAtomicList(ans, partitioning=x@partitioning)
+          })
+
+setMethod("cumprod", "CompressedAtomicList",
+          function(x) {
+              .cumWarning()
               lst <- as(x, "list") 
               CompressedAtomicListFromList(lapply(lst, .Generic))
           })
+
+setMethod("cummin", "CompressedAtomicList",
+          function(x) {
+              .cumWarning()
+              lst <- as(x, "list") 
+              CompressedAtomicListFromList(lapply(lst, .Generic))
+          })
+
+setMethod("cummax", "CompressedAtomicList",
+          function(x) {
+              .cumWarning()
+              lst <- as(x, "list") 
+              CompressedAtomicListFromList(lapply(lst, .Generic))
+          })
+
+.cumWarning <- function() 
+{
+    warning("behavior of 'cum' methods on CompressedAtomicLists ", 
+            "has changed in IRanges >= 1.11.19 (see ?'AtomicList-class' ",
+            "for more details)")
+} 
 
 setMethod("Math", "SimpleAtomicList",
           function(x) SimpleAtomicList(lapply(x@listData, .Generic)))
