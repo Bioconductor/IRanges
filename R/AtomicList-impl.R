@@ -561,12 +561,12 @@ setMethod("Math", "CompressedAtomicList",
 setMethod("cumsum", "CompressedAtomicList",
           function(x) {
               .cumWarning()
-              unlst <- unlist(x, use.names=FALSE)
-              xcumsum <- cumsum(as.numeric(unlst))
+              xunlist <- unlist(x, use.names=FALSE)
+              xcumsum <- cumsum(as.numeric(xunlist))
               partition <- PartitioningByWidth(elementLengths(x))
               ans <- xcumsum - rep(xcumsum[start(partition)] -
-                  unlst[start(partition)], width(partition))
-              IRanges:::CompressedAtomicList(ans, partitioning=x@partitioning)
+                  xunlist[start(partition)], width(partition))
+              CompressedAtomicList(ans, partitioning=x@partitioning)
           })
 
 setMethod("cumprod", "CompressedAtomicList",
