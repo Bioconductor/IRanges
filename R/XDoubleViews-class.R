@@ -247,16 +247,9 @@ setMethod("==", signature(e1="numeric", e2="XDoubleViews"),
     function(e1, e2) e2 == e1
 )
 
-setMethod("!=", signature(e1="XDoubleViews", e2="XDoubleViews"),
-    function(e1, e2) !(e1 == e2)
-)
-setMethod("!=", signature(e1="XDoubleViews", e2="XDouble"),
-    function(e1, e2) !(e1 == e2)
-)
+### TODO: Define "!=" method for ANY,ANY to cover the 2 cases below
+### (currently there is a method for Vector,Vector but it doesn't cover them).
 setMethod("!=", signature(e1="XDoubleViews", e2="numeric"),
-    function(e1, e2) !(e1 == e2)
-)
-setMethod("!=", signature(e1="XDouble", e2="XDoubleViews"),
     function(e1, e2) !(e1 == e2)
 )
 setMethod("!=", signature(e1="numeric", e2="XDoubleViews"),

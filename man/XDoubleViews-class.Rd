@@ -19,10 +19,7 @@
 \alias{==,XDouble,XDoubleViews-method}
 \alias{==,numeric,XDoubleViews-method}
 
-\alias{!=,XDoubleViews,XDoubleViews-method}
-\alias{!=,XDoubleViews,XDouble-method}
 \alias{!=,XDoubleViews,numeric-method}
-\alias{!=,XDouble,XDoubleViews-method}
 \alias{!=,numeric,XDoubleViews-method}
 
 

@@ -45,6 +45,7 @@
 \alias{rep.int,Vector-method}
 \alias{subset,Vector-method}
 
+\alias{!=}
 \alias{!=,Vector,Vector-method}
 
 \alias{c,Vector-method}

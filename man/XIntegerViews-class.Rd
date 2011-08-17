@@ -19,10 +19,7 @@
 \alias{==,XInteger,XIntegerViews-method}
 \alias{==,integer,XIntegerViews-method}
 
-\alias{!=,XIntegerViews,XIntegerViews-method}
-\alias{!=,XIntegerViews,XInteger-method}
 \alias{!=,XIntegerViews,integer-method}
-\alias{!=,XInteger,XIntegerViews-method}
 \alias{!=,integer,XIntegerViews-method}
 
 

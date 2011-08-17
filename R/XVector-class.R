@@ -222,7 +222,3 @@ setMethod("==", signature(e1="XVector", e2="XVector"),
     function(e1, e2) .XVector.equal(e1, e2)
 )
 
-setMethod("!=", signature(e1="XVector", e2="XVector"),
-    function(e1, e2) !(e1 == e2)
-)
-

@@ -4,7 +4,6 @@
 
 \alias{==}
 \alias{==,Ranges,Ranges-method}
-\alias{!=}
 \alias{!=,Ranges,Ranges-method}
 \alias{duplicated,Ranges-method}
 \alias{unique,Ranges-method}
@@ -33,8 +32,9 @@
 ## ==== Equality and related methods ====
 ## --------------------------------------
 
-x == y
-x != y
+\S4method{==}{Ranges,Ranges}(e1, e2)
+
+\S4method{!=}{Ranges,Ranges}(e1, e2)
 
 \S4method{duplicated}{Ranges}(x, incomparables=FALSE, fromLast=FALSE,
            method=c("auto", "quick", "hash"), ...)
@@ -45,10 +45,10 @@ x != y
 ## ==== Ordering and related methods ====
 ## --------------------------------------
 
-x <= y
-x >= y
-x < y
-x > y
+\S4method{<=}{Ranges,Ranges}(e1, e2)
+\S4method{>=}{Ranges,Ranges}(e1, e2)
+\S4method{<}{Ranges,Ranges}(e1, e2)
+\S4method{>}{Ranges,Ranges}(e1, e2)
 
 \S4method{order}{Ranges}(..., na.last=TRUE, decreasing=FALSE)
 
@@ -59,8 +59,8 @@ x > y
 }
 
 \arguments{
-  \item{x,y}{
-    A \link{Ranges} object.
+  \item{e1,e2,x}{
+    \link{Ranges} objects.
   }
   \item{incomparables}{
     Must be \code{FALSE}.
