@@ -72,14 +72,14 @@ SEXP Integer_order(SEXP x, SEXP decreasing)
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP Integer_order_two(SEXP x, SEXP y, SEXP decreasing)
+SEXP Integer_order2(SEXP a, SEXP b, SEXP decreasing)
 {
 	int ans_length;
 	SEXP ans;
 
-	ans_length = LENGTH(x);
+	ans_length = LENGTH(a);
 	PROTECT(ans = NEW_INTEGER(ans_length));
-	_get_order_of_two_int_arrays(INTEGER(x), INTEGER(y),
+	_get_order_of_two_int_arrays(INTEGER(a), INTEGER(b),
 			ans_length, LOGICAL(decreasing)[0], INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
@@ -88,25 +88,24 @@ SEXP Integer_order_two(SEXP x, SEXP y, SEXP decreasing)
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP Integer_duplicated_xy_quick(SEXP x, SEXP y)
+SEXP Integer_duplicated2_quick(SEXP a, SEXP b)
 {
-	int ans_length, *o1, *o2, *ans0, *x0, *y0, i;
+	int ans_length, *o1, *o2, *ans0, *a0, *b0, i;
 	SEXP ans;
 
-	if (!IS_INTEGER(x) || !IS_INTEGER(y) || LENGTH(x) != LENGTH(y))
-		error("'x' and 'y' must be integer vectors of equal length");
-	ans_length = LENGTH(x);
+	if (!IS_INTEGER(a) || !IS_INTEGER(b) || LENGTH(a) != LENGTH(b))
+		error("'a' and 'b' must be integer vectors of equal length");
+	ans_length = LENGTH(a);
+	a0 = INTEGER(a);
+	b0 = INTEGER(b);
 	o1 = (int *) R_alloc(sizeof(int), ans_length);
-	_get_order_of_two_int_arrays(INTEGER(x), INTEGER(y),
-			ans_length, 0, o1, 0);
+	_get_order_of_two_int_arrays(a0, b0, ans_length, 0, o1, 0);
 	PROTECT(ans = NEW_LOGICAL(ans_length));
 	ans0 = LOGICAL(ans);
-	x0 = INTEGER(x);
-	y0 = INTEGER(y);
 	if (ans_length >= 1) {
 		ans0[*o1] = 0;
 		for (i = 1, o2 = o1 + 1; i < ans_length; i++, o1++, o2++)
-			ans0[*o2] = x0[*o2] == x0[*o1] && y0[*o2] == y0[*o1];
+			ans0[*o2] = a0[*o2] == a0[*o1] && b0[*o2] == b0[*o1];
 	}
 	UNPROTECT(1);
 	return ans;
@@ -138,17 +137,17 @@ static void MKsetup(int n, struct hash *h)
 	h->Mminus1 = h->M - 1;
 }
 
-static Rboolean is_duplicated_xy_hash(const int *x, const int *y,
+static Rboolean is_duplicated2_hash(const int *a, const int *b,
 		const int idx, struct hash *tbl)
 {
-	const int xx = x[idx], yy = y[idx];
+	const int aa = a[idx], bb = b[idx];
 	int *h = tbl->lkup, hi;
 
 	/* use 2 consecutive prime numbers (seems to work well, no serious
 	   justification for it) */
-	int i = (3929449U * xx + 3929461U * yy) & tbl->Mminus1;
+	int i = (3929449U * aa + 3929461U * bb) & tbl->Mminus1;
 	while ((hi = h[i]) != NA_INTEGER) {
-		if (xx == x[hi] && yy == y[hi])
+		if (aa == a[hi] && bb == b[hi])
 			return TRUE;
 		i = (i + 1) % tbl->M;
 	}
@@ -156,15 +155,15 @@ static Rboolean is_duplicated_xy_hash(const int *x, const int *y,
 	return FALSE;
 }
 
-SEXP Integer_duplicated_xy_hash(SEXP x, SEXP y)
+SEXP Integer_duplicated2_hash(SEXP a, SEXP b)
 {
-	int ans_length, *ans0, *x0, *y0;
+	int ans_length, *ans0, *a0, *b0;
 	struct hash *tbl;
 	SEXP ans;
 
-	if (!IS_INTEGER(x) || !IS_INTEGER(y) || LENGTH(x) != LENGTH(y))
-		error("'x' and 'y' must be integer vectors of equal length");
-	ans_length = LENGTH(x);
+	if (!IS_INTEGER(a) || !IS_INTEGER(b) || LENGTH(a) != LENGTH(b))
+		error("'a' and 'b' must be integer vectors of equal length");
+	ans_length = LENGTH(a);
 	tbl = (struct hash *) R_alloc(sizeof(struct hash), 1);
 	MKsetup(ans_length, tbl);
 	tbl->lkup = (int *) R_alloc(sizeof(int), tbl->M);
@@ -173,14 +172,72 @@ SEXP Integer_duplicated_xy_hash(SEXP x, SEXP y)
 
 	PROTECT(ans = NEW_LOGICAL(ans_length));
 	ans0 = LOGICAL(ans);
-	x0 = INTEGER(x);
-	y0 = INTEGER(y);
+	a0 = INTEGER(a);
+	b0 = INTEGER(b);
 	for (int i = 0; i < ans_length; i++)
-		ans0[i] = is_duplicated_xy_hash(x0, y0, i, tbl);
+		ans0[i] = is_duplicated2_hash(a0, b0, i, tbl);
 	UNPROTECT(1);
 	return ans;
 }
 
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP Integer_order4(SEXP a, SEXP b, SEXP c, SEXP d, SEXP decreasing)
+{
+	int ans_length;
+	SEXP ans;
+
+	ans_length = LENGTH(a);
+	PROTECT(ans = NEW_INTEGER(ans_length));
+	_get_order_of_four_int_arrays(INTEGER(a), INTEGER(b),
+			INTEGER(c), INTEGER(d),
+			ans_length, LOGICAL(decreasing)[0], INTEGER(ans), 1);
+	UNPROTECT(1);
+	return ans;
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP Integer_duplicated4_quick(SEXP a, SEXP b, SEXP c, SEXP d)
+{
+	int ans_length, *o1, *o2, *ans0, *a0, *b0, *c0, *d0, i;
+	SEXP ans;
+
+	if (!IS_INTEGER(a) || !IS_INTEGER(b)
+	 || !IS_INTEGER(c) || !IS_INTEGER(d)
+	 || LENGTH(a) != LENGTH(b) || LENGTH(b) != LENGTH(c)
+	 || LENGTH(c) != LENGTH(d))
+		error("the input must be integer vectors of equal length");
+	ans_length = LENGTH(a);
+	a0 = INTEGER(a);
+	b0 = INTEGER(b);
+	c0 = INTEGER(c);
+	d0 = INTEGER(d);
+	o1 = (int *) R_alloc(sizeof(int), ans_length);
+	_get_order_of_four_int_arrays(a0, b0, c0, d0,
+			ans_length, 0, o1, 0);
+	PROTECT(ans = NEW_LOGICAL(ans_length));
+	ans0 = LOGICAL(ans);
+	if (ans_length >= 1) {
+		ans0[*o1] = 0;
+		for (i = 1, o2 = o1 + 1; i < ans_length; i++, o1++, o2++)
+			ans0[*o2] = a0[*o2] == a0[*o1] && b0[*o2] == b0[*o1] &&
+				    c0[*o2] == c0[*o1] && d0[*o2] == d0[*o1];
+	}
+	UNPROTECT(1);
+	return ans;
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP Integer_duplicated4_hash(SEXP a, SEXP b, SEXP c, SEXP d)
+{
+	error("not implemented yet, sorry!");
+	return R_NilValue;
+}
 /*
  * --- .Call ENTRY POINT ---
  * Creates the (sorted) union of two sorted integer vectors

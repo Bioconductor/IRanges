@@ -32,8 +32,19 @@ void get_order_of_int_array(
 );
 
 void get_order_of_two_int_arrays(
-	const int *x,
-	const int *y,
+	const int *a,
+	const int *b,
+	int nelt,
+	int desc,
+	int *out,
+	int out_shift
+);
+
+void get_order_of_four_int_arrays(
+	const int *a,
+	const int *b,
+	const int *c,
+	const int *d,
 	int nelt,
 	int desc,
 	int *out,

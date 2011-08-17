@@ -426,7 +426,7 @@ setClassUnion("RangesORmissing", c("Ranges", "missing"))
   m <- cbind(query = rep(seq(lx)[v], w),
              subject = if (!is.null(ord)) ord[subj] else subj)
   if (!is.null(ord))
-    m <- m[orderTwoIntegers(m[,1L], m[,2L]),,drop=FALSE]
+    m <- m[orderIntegerPairs(m[,1L], m[,2L]),,drop=FALSE]
   new("RangesMatching", matchMatrix = m, DIM = c(lx, length(srle)))
 }
 
@@ -477,7 +477,7 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
               left[leftdist == rightdist] <- TRUE
               m <- rbind(m, filterMatchMatrix(before_m, left),
                          filterMatchMatrix(after_m, right))
-              m <- m[orderTwoIntegers(m[,1L], m[,2L]),, drop=FALSE]
+              m <- m[orderIntegerPairs(m[,1L], m[,2L]),, drop=FALSE]
               ol@matchMatrix <- m
             } else {
               olv[is.na(olv)] <- ifelse(left, before, after)

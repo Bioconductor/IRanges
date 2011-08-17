@@ -26,9 +26,12 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(Integer_any_missing_or_outside, 3),
 	CALLMETHOD_DEF(Integer_diff_with_0, 1),
 	CALLMETHOD_DEF(Integer_order, 2),
-	CALLMETHOD_DEF(Integer_order_two, 3),
-	CALLMETHOD_DEF(Integer_duplicated_xy_quick, 2),
-	CALLMETHOD_DEF(Integer_duplicated_xy_hash, 2),
+	CALLMETHOD_DEF(Integer_order2, 3),
+	CALLMETHOD_DEF(Integer_duplicated2_quick, 2),
+	CALLMETHOD_DEF(Integer_duplicated2_hash, 2),
+	CALLMETHOD_DEF(Integer_order4, 5),
+	CALLMETHOD_DEF(Integer_duplicated4_quick, 4),
+	CALLMETHOD_DEF(Integer_duplicated4_hash, 4),
 	CALLMETHOD_DEF(Integer_sorted_merge, 2),
 	CALLMETHOD_DEF(Integer_mseq, 2),
 	CALLMETHOD_DEF(findIntervalAndStartFromWidth, 2),
@@ -199,6 +202,7 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_sort_int_array);
 	REGISTER_CCALLABLE(_get_order_of_int_array);
 	REGISTER_CCALLABLE(_get_order_of_two_int_arrays);
+	REGISTER_CCALLABLE(_get_order_of_four_int_arrays);
 
 /* AEbufs.c */
 	REGISTER_CCALLABLE(_get_new_buflength);

@@ -31,8 +31,8 @@ setMethod("duplicated", "Ranges",
         if (!identical(incomparables, FALSE))
             stop("\"duplicated\" method for Ranges objects ",
                  "only accepts 'incomparables=FALSE'")
-        duplicatedTwoIntegers(start(x), width(x),
-                              fromLast=fromLast, method=method)
+        duplicatedIntegerPairs(start(x), width(x),
+                               fromLast=fromLast, method=method)
     }
 )
 
@@ -93,22 +93,6 @@ setGeneric("order", signature="...",
     function(..., na.last=TRUE, decreasing=FALSE) standardGeneric("order")
 )
 
-### 'orderTwoIntegers(start(x), width(x))' is equivalent to
-### 'order(start(x), width(x))' but much faster:
-###   library(IRanges)
-###   N <- 20000000L  # nb of ranges
-###   W <- 40L        # average width of the ranges
-###   start <- 1L
-###   end <- 55000000L
-###   set.seed(777)
-###   x_start <- sample(end - W - 2L, N, replace=TRUE)
-###   x_width <- W + sample(-3:3, N, replace=TRUE)
-###   x <- IRanges(start=x_start, width=x_width)
-###   ## Takes < 10 sec.:
-###   xo <- IRanges:::orderTwoIntegers(start(x), width(x), FALSE)
-###   ## Takes about 1 min.:
-###   xo2 <- order(start(x), width(x))
-###   identical(xo, xo2)  # TRUE
 setMethod("order", "Ranges",
     function(..., na.last=TRUE, decreasing=FALSE)
     {
@@ -118,8 +102,8 @@ setMethod("order", "Ranges",
         args <- list(...)
         if (length(args) == 1) {
             x <- args[[1L]]
-            return(orderTwoIntegers(start(x), width(x),
-                                    decreasing = decreasing))
+            return(orderIntegerPairs(start(x), width(x),
+                                     decreasing = decreasing))
         }
         order_args <- vector("list", 2L*length(args))
         order_args[2L*seq_len(length(args)) - 1L] <- lapply(args, start)

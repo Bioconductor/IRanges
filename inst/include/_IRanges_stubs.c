@@ -42,8 +42,13 @@ DEFINE_NOVALUE_CCALLABLE_STUB(get_order_of_int_array,
 )
 
 DEFINE_NOVALUE_CCALLABLE_STUB(get_order_of_two_int_arrays,
-	(const int *x, const int *y, int nelt, int desc, int *out, int out_shift),
-	(           x,            y,     nelt,     desc,      out,     out_shift)
+	(const int *a, const int *b, int nelt, int desc, int *out, int out_shift),
+	(           a,            b,     nelt,     desc,      out,     out_shift)
+)
+
+DEFINE_NOVALUE_CCALLABLE_STUB(get_order_of_four_int_arrays,
+	(const int *a, const int *b, const int *c, const int *d, int nelt, int desc, int *out, int out_shift),
+	(           a,            b,            c,            d,     nelt,     desc,      out,     out_shift)
 )
 
 /*

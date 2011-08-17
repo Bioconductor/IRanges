@@ -26,8 +26,19 @@ void _get_order_of_int_array(
 );
 
 void _get_order_of_two_int_arrays(
-	const int *x,
-	const int *y,
+	const int *a,
+	const int *b,
+	int nelt,
+	int desc,
+	int *out,
+	int out_shift
+);
+
+void _get_order_of_four_int_arrays(
+	const int *a,
+	const int *b,
+	const int *c,
+	const int *d,
 	int nelt,
 	int desc,
 	int *out,
@@ -459,20 +470,42 @@ SEXP Integer_order(
 	SEXP decreasing
 );
 
-SEXP Integer_order_two(
-	SEXP x,
-	SEXP y,
+SEXP Integer_order2(
+	SEXP a,
+	SEXP b,
 	SEXP decreasing
 );
 
-SEXP Integer_duplicated_xy_quick(
-	SEXP x,
-	SEXP y
+SEXP Integer_duplicated2_quick(
+	SEXP a,
+	SEXP b
 );
 
-SEXP Integer_duplicated_xy_hash(
-	SEXP x,
-	SEXP y
+SEXP Integer_duplicated2_hash(
+	SEXP a,
+	SEXP b
+);
+
+SEXP Integer_order4(
+	SEXP a,
+	SEXP b,
+	SEXP c,
+	SEXP d,
+	SEXP decreasing
+);
+
+SEXP Integer_duplicated4_quick(
+	SEXP a,
+	SEXP b,
+	SEXP c,
+	SEXP d
+);
+
+SEXP Integer_duplicated4_hash(
+	SEXP a,
+	SEXP b,
+	SEXP c,
+	SEXP d
 );
 
 SEXP Integer_sorted_merge(
