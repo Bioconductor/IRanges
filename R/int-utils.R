@@ -319,3 +319,31 @@ reverseIntegerInjection <- function(injection, N)
     ans
 }
 
+### Doesn't produce a meaningful result on negative ints.
+explodeIntBits <- function(x, nbit)
+{
+    if (!is.integer(x))
+        stop("'x' must be an integer vector")
+    if (!isSingleInteger(nbit) || nbit < 0L)
+        stop("'nbit' must be a single non-negative integer")
+    ans <- matrix(nrow=length(x), ncol=nbit)
+    for (i in seq_len(ncol(ans))) {
+        ans[ , i] <- x %% 2L
+        x <- x %/% 2L
+    }
+    ans
+}
+
+implodeIntBits <- function(x)
+{
+    if (!is.matrix(x))
+        stop("'x' must be a matrix")
+    tx <- t(x)
+    data <- tx * as.integer(2L^(0:(nrow(tx)-1L)))
+    ## In some circumstances (e.g. when 't(x)' has 0 col), the "dim" attribute
+    ## gets lost during the above multiplication.
+    if (is.null(dim(data)))
+        dim(data) <- dim(tx)
+    as.integer(colSums(data))
+}
+
