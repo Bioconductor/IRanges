@@ -319,6 +319,15 @@ reverseIntegerInjection <- function(injection, N)
     ans
 }
 
+makePowersOfTwo <- function(nbit)
+{
+    if (!isSingleInteger(nbit) || nbit < 0L)
+        stop("'nbit' must be a single non-negative integer")
+    if (nbit == 0L)
+        return(integer(0))
+    as.integer(cumprod(c(1L, rep.int(2L, nbit-1L))))
+}
+
 ### Doesn't produce a meaningful result on negative ints.
 explodeIntBits <- function(x, nbit)
 {
@@ -339,8 +348,8 @@ implodeIntBits <- function(x)
     if (!is.matrix(x))
         stop("'x' must be a matrix")
     tx <- t(x)
-    data <- tx * as.integer(2L^(0:(nrow(tx)-1L)))
-    ## In some circumstances (e.g. when 't(x)' has 0 col), the "dim" attribute
+    data <- tx * makePowersOfTwo(nrow(tx))
+    ## In some circumstances (e.g. if 'tx' has 0 col), the "dim" attribute
     ## gets lost during the above multiplication.
     if (is.null(dim(data)))
         dim(data) <- dim(tx)
