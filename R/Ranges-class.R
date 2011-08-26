@@ -162,8 +162,13 @@ setMethod("show", "Ranges",
 
 setMethod("showAsCell", "Ranges",
     function(object)
+    {
+        if (length(object) == 0L)
+            return(character(0))
         paste("[", format(start(object)), ", ", format(end(object)), "]",
-              sep = ""))
+              sep = "")
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
