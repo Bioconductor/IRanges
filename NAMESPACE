@@ -225,7 +225,7 @@ exportMethods(
     c,
     union, intersect, setdiff,
     merge,
-    split, splitRanges,
+    split, splitRanges, relist,
     eval, with, within,
     t,
     is.na, na.omit, na.exclude, complete.cases,
