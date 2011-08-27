@@ -146,6 +146,8 @@ setGeneric("mapply",
     if (any(!sapply(seqs, isListOrVector)))
         stop("all objects in ... should be a vector or 'List'")
     elens <- elementLengths(seqs)
+    if (any(elens == 0L))
+      return(list())
     N <- max(elens)
     if (any(N %% elens != 0L))
         stop("all object lengths must be multiple of longest object length")
@@ -328,10 +330,7 @@ setMethod("stack", "List",
 
 setMethod("relist", signature(skeleton = "List"),
           function(flesh, skeleton) {
-            ind <- names(skeleton)
-            if (is.null(ind))
-              ind <- seq(length(skeleton))
-            list <- seqsplit(flesh, rep(ind, elementLengths(skeleton)))
+            list <- seqsplit(flesh, togroup(skeleton))
             if (is.null(names(skeleton)))
               names(list) <- NULL
             list

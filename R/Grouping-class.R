@@ -701,7 +701,7 @@ setAs("Ranges", "PartitioningByWidth",
   ind <- names(x)
   if (is.null(ind))
     ind <- seq(length(x))
-  to_group <- rep.int(ind, elementLengths(x))
+  to_group <- factor(rep.int(ind, elementLengths(x)), ind)
   if (is.null(j))
     return(to_group)
   if (!is.numeric(j))
