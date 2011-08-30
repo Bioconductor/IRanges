@@ -135,20 +135,20 @@ setMethod("coverage", "RangesList",
         method <- match.arg(method)
         lx <- length(x)
         if (lx != 0 &&
-            ((!is.list(shift) && !is(shift, "IntegerList")) ||
-             length(shift) == 0))
+            ((!is.list(shift) && !is(shift, "IntegerList") &&
+              !is(shift, "NumericList")) || length(shift) == 0))
             stop("'shift' must be a non-empty list of integers")
         if (length(shift) < lx)
             shift <- rep(shift, length.out = lx)
         if (lx != 0 &&
-            ((!is.list(width) && !is(width, "IntegerList")) ||
-             length(width) == 0))
+            ((!is.list(width) && !is(width, "IntegerList") &&
+              !is(width, "NumericList")) || length(width) == 0))
             stop("'width' must be a non-empty list")
         if (length(width) < lx)
             width <- rep(width, length.out = lx)
         if (lx != 0 &&
-            ((!is.list(weight) && !is(weight, "IntegerList")) ||
-             length(weight) == 0))
+            ((!is.list(weight) && !is(weight, "IntegerList") &&
+              !is(weight, "NumericList")) || length(weight) == 0))
             stop("'weight' must be a non-empty list of integers")
         if (length(weight) < lx)
             weight <- rep(weight, length.out = lx)
