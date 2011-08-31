@@ -582,7 +582,8 @@ setReplaceMethod("seqselect", "vector",
                      if (is.null(value)) {
                          x <- x[-i]
                      } else {
-                         if (!is(value, class(x))) {
+                         ## allow conventional vector type promotion rules
+                         if (!is(value, "vector") && !is(value, class(x))) {
                              value <- try(as(value, class(x)), silent = TRUE)
                              if (inherits(value, "try-error"))
                                  stop("'value' must be a ", class(x),
