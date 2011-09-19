@@ -48,9 +48,7 @@
 \alias{SimpleRleList}
 \alias{SimpleRleList-class}
 
-\alias{as.data.frame,AtomicList-method}
 \alias{as.list,CompressedAtomicList-method}
-\alias{coerce,AtomicList,data.frame-method}
 \alias{coerce,CompressedAtomicList,list-method}
 
 \alias{lapply,CompressedAtomicList-method}
@@ -251,6 +249,9 @@
 \alias{coerce,AtomicList,raw-method}
 \alias{coerce,AtomicList,factor-method}
 
+\alias{as.data.frame,AtomicList-method}
+\alias{coerce,AtomicList,data.frame-method}
+
 \title{Lists of Atomic Vectors in Natural and Rle Form}
 \description{An extension of \code{\linkS4class{List}} that holds
   only atomic vectors in either a natural or run-length encoded form.}
@@ -294,11 +295,6 @@
 
 \section{Coercion}{
   \describe{
-    \item{}{\code{as.data.frame(x, row.names = NULL, optional = FALSE)},
-      \code{as(from, "data.frame")}: Creates a \code{data.frame} object based
-      on the values contained in \code{x}. Essentially the same as calling
-      \code{data.frame(space=rep(names(x), elementLengths(x)), as.vector(x))}.
-    }
     \item{}{
       \code{as(from, "CompressedSplitDataFrameList")},
       \code{as(from, "SimpleSplitDataFrameList")}: Creates a

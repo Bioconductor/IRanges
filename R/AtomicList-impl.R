@@ -204,28 +204,6 @@ RleList <- function(..., compress = FALSE)
 ### Coercion
 ###
 
-setMethod("as.data.frame", "AtomicList",
-          function(x, row.names=NULL, optional=FALSE, ...)
-          {
-              if (is.null(row.names)) {
-                  row.names <- unlist(lapply(x, names), use.names = FALSE)
-              } else if (!is.character(row.names)) {
-                  stop("'row.names'  must be NULL or a character vector")
-              }
-              spaceLevels <- seq_len(length(x))
-              if (length(names(x)) > 0) {
-                  spaceLabels <- names(x)
-              } else {
-                  spaceLabels <- as.character(spaceLevels)
-              }
-              data.frame(space =
-                         factor(rep.int(seq_len(length(x)), elementLengths(x)),
-                                levels = spaceLevels,
-                                labels = spaceLabels),
-                         value = as.vector(x),
-                         row.names = row.names,
-                         stringsAsFactors = FALSE)
-          })
 setMethod("as.list", "CompressedAtomicList",
           function(x, use.names = TRUE) {
               if (is(x, "CompressedRleList")) {
@@ -246,7 +224,6 @@ setMethod("as.list", "CompressedAtomicList",
               }
           })
 
-setAs("AtomicList", "data.frame", function(from) as.data.frame(from))
 setAs("CompressedAtomicList", "list", function(from) as.list(from))
 
 setAs("vector", "AtomicList", function(from) SimpleAtomicList(as.list(from)))
@@ -1049,8 +1026,8 @@ setMethod("as.vectorORfactor", "AtomicList",
     {
         msg <- c("  Use of 'as.vector()', 'as.logical()', 'as.integer()', ",
                  "'as.numeric()',\n  'as.complex()', 'as.character()', ",
-                 "'as.raw()', 'as.factor()', or any of\n",
-                 "  their 'as()' equivalent, for unlisting an AtomicList ",
+                 "'as.raw()', 'as.factor()', or any of their\n",
+                 "  'as(...)' equivalent, for unlisting an AtomicList ",
                  "object is deprecated.\n",
                  "  Please use 'unlist()' instead, eventually followed ",
                  "by the appropriate\n  coercion.")
@@ -1092,4 +1069,33 @@ setAs("AtomicList", "complex", function(from) as.complex(from))
 setAs("AtomicList", "character", function(from) as.character(from))
 setAs("AtomicList", "raw", function(from) as.raw(from))
 setAs("AtomicList", "factor", function(from) as.factor(from))
+
+setMethod("as.data.frame", "AtomicList",
+    function(x, row.names=NULL, optional=FALSE, ...)
+    {
+        msg <- c("  Use of 'as.data.frame()' or 'as( , \"data.frame\") ",
+                 "on an AtomicList object\n  is deprecated.")
+        .Deprecated(msg=paste(msg, collapse=""))
+        if (is.null(row.names)) {
+            row.names <- unlist(lapply(x, names), use.names = FALSE)
+        } else if (!is.character(row.names)) {
+            stop("'row.names'  must be NULL or a character vector")
+        }
+        spaceLevels <- seq_len(length(x))
+        if (length(names(x)) > 0) {
+            spaceLabels <- names(x)
+        } else {
+            spaceLabels <- as.character(spaceLevels)
+        }
+        data.frame(space =
+                   factor(rep.int(seq_len(length(x)), elementLengths(x)),
+                          levels = spaceLevels,
+                          labels = spaceLabels),
+                   value = as.vector(unlist(x, use.names=FALSE)),
+                   row.names = row.names,
+                   stringsAsFactors = FALSE)
+    }
+)
+
+setAs("AtomicList", "data.frame", function(from) as.data.frame(from))
 
