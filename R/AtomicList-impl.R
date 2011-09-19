@@ -1062,13 +1062,27 @@ setMethod("as.vectorORfactor", "AtomicList",
 setMethod("as.vector", "AtomicList",
     function(x, mode="any") as.vector(as.vectorORfactor(x), mode = mode)
 )
-setMethod("as.logical", "AtomicList", function(x) as.vector(x, mode="logical"))
-setMethod("as.integer", "AtomicList", function(x) as.vector(x, mode="integer"))
-setMethod("as.numeric", "AtomicList", function(x) as.vector(x, mode="numeric"))
-setMethod("as.complex", "AtomicList", function(x) as.vector(x, mode="complex"))
-setMethod("as.character", "AtomicList", function(x) as.vector(x, mode="character"))
-setMethod("as.raw", "AtomicList", function(x) as.vector(x, mode="raw"))
-setMethod("as.factor", "AtomicList", function(x) as.vector(x, mode="factor"))
+setMethod("as.logical", "AtomicList",
+    function(x) as.logical(as.vectorORfactor(x))
+)
+setMethod("as.integer", "AtomicList",
+    function(x) as.integer(as.vectorORfactor(x))
+)
+setMethod("as.numeric", "AtomicList",
+    function(x) as.numeric(as.vectorORfactor(x))
+)
+setMethod("as.complex", "AtomicList",
+    function(x) as.complex(as.vectorORfactor(x))
+)
+setMethod("as.character", "AtomicList",
+    function(x) as.character(as.vectorORfactor(x))
+)
+setMethod("as.raw", "AtomicList",
+    function(x) as.raw(as.vectorORfactor(x))
+)
+setMethod("as.factor", "AtomicList",
+    function(x) as.factor(as.vectorORfactor(x))
+)
 
 setAs("AtomicList", "vector", function(from) as.vector(from))
 setAs("AtomicList", "logical", function(from) as.logical(from))
