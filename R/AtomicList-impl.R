@@ -1049,11 +1049,11 @@ setMethod("as.vectorORfactor", "AtomicList",
     {
         msg <- c("  Use of 'as.vector()', 'as.logical()', 'as.integer()', ",
                  "'as.numeric()',\n  'as.complex()', 'as.character()', ",
-                 "'as.raw()', 'as.factor()' or\n",
-                 "'as.vectorORfactor()' for unlisting an AtomicList object ",
-                 "is deprecated.\n",
+                 "'as.raw()', 'as.factor()', or any of\n",
+                 "  their 'as()' equivalent, for unlisting an AtomicList ",
+                 "object is deprecated.\n",
                  "  Please use 'unlist()' instead, eventually followed ",
-                 "by the appropriate coercion.")
+                 "by the appropriate\n  coercion.")
         .Deprecated(msg=paste(msg, collapse=""))
         unlist(x, use.names=FALSE)
     }
