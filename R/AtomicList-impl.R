@@ -204,18 +204,6 @@ RleList <- function(..., compress = FALSE)
 ### Coercion
 ###
 
-setMethod("as.vector", "AtomicList", function(x, mode) as.vector(unlist(x, use.names=FALSE), mode = mode))
-setMethod("as.logical", "AtomicList", function(x) as.logical(unlist(x, use.names=FALSE)))
-setMethod("as.integer", "AtomicList", function(x) as.integer(unlist(x, use.names=FALSE)))
-setMethod("as.numeric", "AtomicList", function(x) as.numeric(unlist(x, use.names=FALSE)))
-setMethod("as.complex", "AtomicList", function(x) as.complex(unlist(x, use.names=FALSE)))
-setMethod("as.character", "AtomicList", function(x) as.character(unlist(x, use.names=FALSE)))
-setMethod("as.raw", "AtomicList", function(x) as.raw(unlist(x, use.names=FALSE)))
-setMethod("as.factor", "AtomicList", function(x) as.factor(unlist(x, use.names=FALSE)))
-
-setMethod("as.vectorORfactor", "AtomicList",
-          function(x) unlist(x, use.names=FALSE))
-
 setMethod("as.data.frame", "AtomicList",
           function(x, row.names=NULL, optional=FALSE, ...)
           {
@@ -258,14 +246,6 @@ setMethod("as.list", "CompressedAtomicList",
               }
           })
 
-setAs("AtomicList", "vector", function(from) as.vector(from))
-setAs("AtomicList", "logical", function(from) as.logical(from))
-setAs("AtomicList", "integer", function(from) as.integer(from))
-setAs("AtomicList", "numeric", function(from) as.numeric(from))
-setAs("AtomicList", "complex", function(from) as.complex(from))
-setAs("AtomicList", "character", function(from) as.character(from))
-setAs("AtomicList", "raw", function(from) as.raw(from))
-setAs("AtomicList", "factor", function(from) as.factor(from))
 setAs("AtomicList", "data.frame", function(from) as.data.frame(from))
 setAs("CompressedAtomicList", "list", function(from) as.list(from))
 
@@ -1058,3 +1038,44 @@ setMethod("showAsCell", "AtomicList",
                 str
               }), use.names = FALSE)
           })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Old stuff (deprecated or defunct).
+###
+
+setMethod("as.vectorORfactor", "AtomicList",
+    function(x)
+    {
+        msg <- c("  Use of 'as.vector()', 'as.logical()', 'as.integer()', ",
+                 "'as.numeric()',\n  'as.complex()', 'as.character()', ",
+                 "'as.raw()', 'as.factor()' or\n",
+                 "'as.vectorORfactor()' for unlisting an AtomicList object ",
+                 "is deprecated.\n",
+                 "  Please use 'unlist()' instead, eventually followed ",
+                 "by the appropriate coercion.")
+        .Deprecated(msg=paste(msg, collapse=""))
+        unlist(x, use.names=FALSE)
+    }
+)
+
+setMethod("as.vector", "AtomicList",
+    function(x, mode="any") as.vector(as.vectorORfactor(x), mode = mode)
+)
+setMethod("as.logical", "AtomicList", function(x) as.vector(x, mode="logical"))
+setMethod("as.integer", "AtomicList", function(x) as.vector(x, mode="integer"))
+setMethod("as.numeric", "AtomicList", function(x) as.vector(x, mode="numeric"))
+setMethod("as.complex", "AtomicList", function(x) as.vector(x, mode="complex"))
+setMethod("as.character", "AtomicList", function(x) as.vector(x, mode="character"))
+setMethod("as.raw", "AtomicList", function(x) as.vector(x, mode="raw"))
+setMethod("as.factor", "AtomicList", function(x) as.vector(x, mode="factor"))
+
+setAs("AtomicList", "vector", function(from) as.vector(from))
+setAs("AtomicList", "logical", function(from) as.logical(from))
+setAs("AtomicList", "integer", function(from) as.integer(from))
+setAs("AtomicList", "numeric", function(from) as.numeric(from))
+setAs("AtomicList", "complex", function(from) as.complex(from))
+setAs("AtomicList", "character", function(from) as.character(from))
+setAs("AtomicList", "raw", function(from) as.raw(from))
+setAs("AtomicList", "factor", function(from) as.factor(from))
+

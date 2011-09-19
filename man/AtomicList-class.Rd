@@ -48,25 +48,8 @@
 \alias{SimpleRleList}
 \alias{SimpleRleList-class}
 
-\alias{as.vector,AtomicList,ANY-method}
-\alias{as.vectorORfactor,AtomicList-method}
-\alias{as.logical,AtomicList-method}
-\alias{as.integer,AtomicList-method}
-\alias{as.numeric,AtomicList-method}
-\alias{as.complex,AtomicList-method}
-\alias{as.character,AtomicList-method}
-\alias{as.raw,AtomicList-method}
-\alias{as.factor,AtomicList-method}
 \alias{as.data.frame,AtomicList-method}
 \alias{as.list,CompressedAtomicList-method}
-\alias{coerce,AtomicList,vector-method}
-\alias{coerce,AtomicList,logical-method}
-\alias{coerce,AtomicList,integer-method}
-\alias{coerce,AtomicList,numeric-method}
-\alias{coerce,AtomicList,complex-method}
-\alias{coerce,AtomicList,character-method}
-\alias{coerce,AtomicList,raw-method}
-\alias{coerce,AtomicList,factor-method}
 \alias{coerce,AtomicList,data.frame-method}
 \alias{coerce,CompressedAtomicList,list-method}
 
@@ -248,6 +231,25 @@
 \alias{show,AtomicList-method}
 \alias{show,RleList-method}
 
+% Old stuff (deprecated or defunct).
+\alias{as.vectorORfactor,AtomicList-method}
+\alias{as.vector,AtomicList,ANY-method}
+\alias{as.logical,AtomicList-method}
+\alias{as.integer,AtomicList-method}
+\alias{as.numeric,AtomicList-method}
+\alias{as.complex,AtomicList-method}
+\alias{as.character,AtomicList-method}
+\alias{as.raw,AtomicList-method}
+\alias{as.factor,AtomicList-method}
+
+\alias{coerce,AtomicList,vector-method}
+\alias{coerce,AtomicList,logical-method}
+\alias{coerce,AtomicList,integer-method}
+\alias{coerce,AtomicList,numeric-method}
+\alias{coerce,AtomicList,complex-method}
+\alias{coerce,AtomicList,character-method}
+\alias{coerce,AtomicList,raw-method}
+\alias{coerce,AtomicList,factor-method}
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}
 \description{An extension of \code{\linkS4class{List}} that holds
@@ -292,46 +294,6 @@
 
 \section{Coercion}{
   \describe{
-    \item{}{
-      \code{as.vector(x, mode = "any")}, \code{as(from, "vector")}:
-      Creates a vector based on the values contained in \code{x}. The
-      vector will be coerced to the requested \code{mode}, unless
-      \code{mode} is "any", in which case the most appropriate type is
-      chosen.
-    }
-    \item{}{
-      \code{as.vectorORfactor(x)}: Creates an atomic vector or factor,
-      based on the type of values contained in \code{x}. This is the
-      most general way to flatten the list to a native R data structure.
-    }
-    \item{}{
-      \code{as.logical(x)}, \code{as(from, "logical")}: Creates a logical
-      vector based on the values contained in \code{x}.
-    }
-    \item{}{
-      \code{as.integer(x)}, \code{as(from, "integer")}: Creates an integer
-      vector based on the values contained in \code{x}.
-    }
-    \item{}{
-      \code{as.numeric(x)}, \code{as(from, "numeric")}: Creates a numeric
-      vector based on the values contained in \code{x}.
-    }
-    \item{}{
-      \code{as.complex(x)}, \code{as(from, "complex")}: Creates a complex
-      vector based on the values contained in \code{x}.
-    }
-    \item{}{
-      \code{as.character(x)}, \code{as(from, "character")}: Creates a character
-      vector based on the values contained in \code{x}.
-    }
-    \item{}{
-      \code{as.raw(x)}, \code{as(from, "raw")}: Creates a raw
-      vector based on the values contained in \code{x}.
-    }
-    \item{}{
-      \code{as.factor(x)}, \code{as(from, "factor")}: Creates a factor object
-      based on the values contained in \code{x}.
-    }
     \item{}{\code{as.data.frame(x, row.names = NULL, optional = FALSE)},
       \code{as(from, "data.frame")}: Creates a \code{data.frame} object based
       on the values contained in \code{x}. Essentially the same as calling
