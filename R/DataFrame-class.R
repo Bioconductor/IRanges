@@ -540,6 +540,14 @@ setAs("table", "DataFrame",
         do.call(DataFrame, c(df[1], lapply(df[factors], Rle), df["Freq"]))
       })
 
+setOldClass("xtabs", "table")
+
+setAs("xtabs", "DataFrame",
+      function(from) {
+        class(from) <- "table"
+        as(from, "DataFrame")
+      })
+
 setAs("vector", "DataFrame",
       function(from) {
         new2("DataFrame", listData = structure(list(unname(from)), names = "X"),
