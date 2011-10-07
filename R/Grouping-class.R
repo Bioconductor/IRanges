@@ -56,6 +56,26 @@ setGeneric("togroup", signature="x",
     function(x, j=NULL) standardGeneric("togroup")
 )
 
+### The default method works on any object 'x' for which 'elementLengths(x)'
+### works (e.g. Partitioning, List, list). Not very efficient.
+setMethod("togroup", "ANY",
+    function(x, j=NULL)
+    {
+        elt_len <- elementLengths(x)
+        to_group <- rep.int(seq_len(length(elt_len)), elt_len)
+        if (is.null(j))
+            return(to_group)
+        if (!is.numeric(j))
+            stop("subscript 'j' must be a vector of integers or NULL")
+        if (!is.integer(j))
+            j <- as.integer(j)
+        bound <- length(to_group)
+        if (anyMissingOrOutside(j, -bound, bound))
+            stop("subscript 'j' contains NAs or out of bounds indices")
+        to_group[j]
+    }
+)
+
 setGeneric("togrouplength", signature="x",
     function(x, j=NULL) standardGeneric("togrouplength")
 )
@@ -469,24 +489,6 @@ setMethod("[[", "Partitioning",
     }
 )
 
-### Pretty inefficient.
-setMethod("togroup", "Partitioning",
-    function(x, j=NULL)
-    {
-        to_group <- rep.int(seq_len(length(x)), width(x))
-        if (is.null(j))
-            return(to_group)
-        if (!is.numeric(j))
-            stop("subscript 'j' must be a vector of integers or NULL")
-        if (!is.integer(j))
-            j <- as.integer(j)
-        bound <- length(to_group)
-        if (anyMissingOrOutside(j, -bound, bound))
-            stop("subscript 'j' contains NAs or out of bounds indices")
-        to_group[j]
-    }
-)
-
 ### Should be more efficient than the default method for Grouping objects.
 setMethod("grouplength", "Partitioning",
     function(x, i=NULL)
@@ -693,26 +695,3 @@ setAs("Ranges", "PartitioningByWidth",
     }
 )
 
-### -------------------------------------------------------------------------
-### Grouping based on lists
-### --------------------
-
-.List_togroup <- function(x, j = NULL) {
-  ind <- names(x)
-  if (is.null(ind))
-    ind <- seq(length(x))
-  to_group <- factor(rep.int(ind, elementLengths(x)), ind)
-  if (is.null(j))
-    return(to_group)
-  if (!is.numeric(j))
-    stop("subscript 'j' must be a vector of integers or NULL")
-  if (!is.integer(j))
-    j <- as.integer(j)
-  bound <- length(to_group)
-  if (anyMissingOrOutside(j, -bound, bound))
-    stop("subscript 'j' contains NAs or out of bounds indices")
-  to_group[j]
-}
-
-setMethod("togroup", "List", .List_togroup)
-setMethod("togroup", "list", .List_togroup)

@@ -14,6 +14,7 @@
 \alias{vmembers}
 \alias{vmembers,Grouping-method}
 \alias{togroup}
+\alias{togroup,ANY-method}
 \alias{togrouplength}
 \alias{togrouplength,Grouping-method}
 \alias{show,Grouping-method}
@@ -55,7 +56,6 @@
 \alias{Partitioning}
 
 \alias{[[,Partitioning-method}
-\alias{togroup,Partitioning-method}
 \alias{grouplength,Partitioning-method}
 \alias{names,Partitioning-method}
 \alias{names<-,Partitioning-method}
