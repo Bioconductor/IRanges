@@ -524,8 +524,7 @@ setMethod("rep.int", "Rle",
               n <- length(x)
               if (!is.integer(times))
                   times <- as.integer(times)
-              if (length(times) == 0 ||
-                  (length(times) > 1 && length(times) < n) ||
+              if ((length(times) > 1 && length(times) < n) ||
                   anyMissingOrOutside(times, 0L))
                   stop("invalid 'times' argument")
               if (length(times) == n) {
