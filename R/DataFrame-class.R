@@ -537,7 +537,7 @@ setAs("table", "DataFrame",
         df <- as.data.frame(from)
         factors <- sapply(df, is.factor)
         factors[1] <- FALSE
-        DataFrame(df[1], lapply(df[factors], Rle), df["Freq"])
+        do.call(DataFrame, c(df[1], lapply(df[factors], Rle), df["Freq"]))
       })
 
 setAs("vector", "DataFrame",
