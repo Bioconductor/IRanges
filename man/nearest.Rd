@@ -3,9 +3,11 @@
 \alias{nearest}
 \alias{precede}
 \alias{follow}
+\alias{distanceToNearest}
 \alias{nearest,Ranges,RangesORmissing-method}
 \alias{precede,Ranges,RangesORmissing-method}
 \alias{follow,Ranges,RangesORmissing-method}
+\alias{distanceToNearest,Ranges,RangesORmissing-method}
 
 \title{Nearest neighbor finding}
 
@@ -16,8 +18,17 @@
 
 \usage{
 nearest(x, subject, ...)
+\S4method{nearest}{Ranges,RangesORmissing}(x, subject,
+select = c("arbitrary", "all"))
 precede(x, subject = x, ...)
+\S4method{precede}{Ranges,RangesORmissing}(x, subject,
+select = c("first", "all"))
 follow(x, subject = x, ...)
+\S4method{follow}{Ranges,RangesORmissing}(x, subject,
+select = c("last", "all"))
+distanceToNearest(x, subject = x, ...)
+\S4method{distanceToNearest}{Ranges,RangesORmissing}(x, subject,
+select = c("arbitrary", "all"))
 }
 
 \arguments{
@@ -25,6 +36,12 @@ follow(x, subject = x, ...)
   \item{subject}{The subject \code{Ranges} instance, within which the
     nearest neighbors are found. Can be missing, in which case the
     query, \code{x}, is also the subject.
+  }
+  \item{select}{Logic for handling ties. By default, all of the methods
+    here will select a single interval (arbitrary for \code{nearest},
+    the first by order in \code{subject} for \code{precede}, and the
+    last for \code{follow}). To get all matchings, as
+    a \code{RangesMatching} object, use \dQuote{all}.
   }
   \item{...}{Additional arguments for methods}
 }
@@ -56,6 +73,20 @@ follow(x, subject = x, ...)
   \code{follow} is the opposite of \code{precede}: it returns the index
   of the range in \code{subject} that a query range in \code{x} directly
   follows.
+
+  \code{distanceToNearest} returns the distance for each range
+  in \code{x} to its nearest neighbor in \code{subject}.
+}
+
+\value{
+  For \code{nearest}, \code{precede} and \code{follow}, an integer
+  vector of indices in \code{subject}, or
+  a \code{\linkS4class{RangesMatching}} if \code{select} is
+  \dQuote{all}.
+
+  For \code{distanceToNearest}, a \code{DataFrame} with a column for
+  the \code{query} index, \code{subject} index and \code{distance}
+  between the pair. This may become more formal in the future.
 }
 
 \author{M. Lawrence}

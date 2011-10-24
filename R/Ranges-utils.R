@@ -542,9 +542,8 @@ setMethod("follow", c("Ranges", "RangesORmissing"),
     }
 )
 
-## NOTE: not exported yet, because not sure if useful
 setGeneric("distanceToNearest",
-           function(x, subject, ...) standardGeneric("distanceToNearest"))
+           function(x, subject = x, ...) standardGeneric("distanceToNearest"))
 
 setMethod("distanceToNearest", c("Ranges", "RangesORmissing"),
           function(x, subject, select = c("arbitrary", "all"))

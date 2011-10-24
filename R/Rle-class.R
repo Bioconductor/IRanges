@@ -808,6 +808,9 @@ setGeneric("table", signature = "...",
 setMethod("table", "Rle",
           function(...)
           {
+            ## idea for doing this over multiple Rles
+            ## use disjoin(), findRun() to find matching runs,
+            ## then xtabs(length ~ value...)
               x <- sort(...)
               structure(array(runLength(x), dim = nrun(x),
                               dimnames =
