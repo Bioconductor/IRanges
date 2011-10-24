@@ -17,6 +17,9 @@
 \alias{as.matrix,RangesMatching-method}
 \alias{as.table,RangesMatching-method}
 \alias{t,RangesMatching-method}
+\alias{as.list,RangesMatching-method}
+\alias{coerce,RangesMatching,list-method}
+\alias{coerce,RangesMatching,List-method}
 
 \title{Matchings between Ranges}
 \description{The \code{RangesMatching} class stores a set of matchings
@@ -59,6 +62,12 @@
     }
     \item{}{\code{t(x)}: Interchange the query and subject in \code{x},
       returns a transposed \code{RangesMatching}.}
+    \item{}{\code{as.list(x)}: Returns a list with an element for each
+      query, where each element contains the indices of the subjects
+      that match to the corresponding query.
+    }
+    \item{}{\code{as(x, "List")}: Like \code{as.list}, above.
+    }
   }
 }
 

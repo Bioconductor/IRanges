@@ -34,6 +34,7 @@
 \alias{coerce,table,DataFrame-method}
 \alias{coerce,AsIs,DataFrame-method}
 \alias{coerce,DataFrame,data.frame-method}
+\alias{coerce,xtabs,DataFrame-method}
 
 % splitting and combining
 \alias{cbind,DataFrame-method}

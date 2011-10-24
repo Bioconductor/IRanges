@@ -49,7 +49,6 @@ shift(x, shift, use.names=TRUE)
 \S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
        with.inframe.attrib=FALSE)
 \S4method{distance}{Ranges,Ranges}(x, y)
-
 threebands(x, start=NA, end=NA, width=NA)
 }
 

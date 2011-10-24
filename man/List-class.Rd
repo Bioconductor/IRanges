@@ -32,6 +32,7 @@
 \alias{as.env}
 \alias{as.env,List-method}
 \alias{stack,List-method}
+\alias{relist,ANY,List-method}
 
 \alias{Reduce,ANY,List-method}
 \alias{Filter,ANY,List-method}
@@ -169,6 +170,11 @@
       which each value was obtained. \code{indName} specifies the column
       name for the index (source name) column and \code{valuesName}
       specifies the column name for the values.
+    }
+    \item{}{\code{relist(flesh, skeleton)}: Convert \code{flesh} to a
+      list with the same structure (element lengths) as
+      \code{skeleton}, a \code{List} object. This makes sense when
+      \code{flesh[i]} corresponds somehow to \code{unlist(skeleton)[i]}.
     }
   }
 }
