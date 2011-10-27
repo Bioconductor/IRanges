@@ -43,7 +43,7 @@ narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
 reflect(x, bounds, use.names=TRUE)
 resize(x, width, fix="start", use.names=TRUE,...)
 restrict(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
-shift(x, shift, use.names=TRUE)
+shift(x, shift=0L, use.names=TRUE)
 
 \S4method{range}{Ranges}(x, ..., na.rm = FALSE)
 \S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,

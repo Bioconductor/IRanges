@@ -422,7 +422,7 @@ setMethod("restrict", "CompressedIRangesList",
           })
 
 setMethod("shift", "RangesList",
-          function(x, shift, use.names = TRUE)
+          function(x, shift=0L, use.names = TRUE)
           {
               lx <- length(x)
               shift <- normargAtomicList1(shift, IntegerList, lx)
@@ -431,7 +431,7 @@ setMethod("shift", "RangesList",
           })
 
 setMethod("shift", "CompressedIRangesList",
-          function(x, shift, use.names = TRUE)
+          function(x, shift=0L, use.names = TRUE)
           {
               lx <- length(x)
               eln <- elementLengths(x)

@@ -242,10 +242,10 @@ setMethod("restrict", "Ranges",
 )
 
 setGeneric("shift", signature="x",
-    function(x, shift, use.names=TRUE) standardGeneric("shift")
+    function(x, shift=0L, use.names=TRUE) standardGeneric("shift")
 )
 setMethod("shift", "Ranges",
-    function(x, shift, use.names=TRUE)
+    function(x, shift=0L, use.names=TRUE)
     {
         shift <- recycleIntegerArg(shift, "shift", length(x))
         x <- update(x, start=start(x) + shift, width=width(x), check=FALSE)

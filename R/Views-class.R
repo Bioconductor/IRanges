@@ -85,7 +85,7 @@ setMethod("[", "Views",
 )
 
 setMethod("shift", "Views",
-    function(x, shift, use.names=TRUE)
+    function(x, shift=0L, use.names=TRUE)
     {
         x@ranges <- shift(ranges(x), shift=shift, use.names=use.names)
         x
