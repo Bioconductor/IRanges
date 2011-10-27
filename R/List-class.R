@@ -277,6 +277,16 @@ seqby <- function(data, INDICES, FUN, ...) {
   castList(by(data, INDICES, FUN, ..., simplify = FALSE))
 }
 
+mcseqapply <- function(X, FUN, ..., mc.preschedule = TRUE, mc.set.seed = TRUE, 
+                       mc.silent = FALSE, mc.cores = getOption("cores"),
+                       mc.cleanup = TRUE)
+{
+  castList(mclapply(X, FUN, ..., mc.preschedule = mc.preschedule,
+           mc.set.seed = mc.set.seed, 
+           mc.silent = mc.silent, mc.cores = mc.cores,
+           mc.cleanup = mc.cleanup))
+}
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
@@ -330,9 +340,9 @@ setMethod("stack", "List",
 
 setMethod("relist", signature(skeleton = "List"),
           function(flesh, skeleton) {
-            list <- seqsplit(flesh, togroup(skeleton))
-            if (is.null(names(skeleton)))
-              names(list) <- NULL
+            list <- seqsplit(flesh,
+                             factor(togroup(skeleton), seq(length(skeleton))))
+            names(list) <- names(skeleton)
             list
           })
 
