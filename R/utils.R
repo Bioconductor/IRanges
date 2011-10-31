@@ -1,7 +1,15 @@
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Register S3 classes as S4 classes.
+###
+
+setOldClass("xtabs", "table")
+setOldClass("AsIs")
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Some low-level helper functions and classes.
 ###
-### Unless stated otherwise, nothing in this file is exported.
+### Unless stated otherwise, nothing in this section is exported.
 ###
 
 AEbufs.use.malloc <- function(x)

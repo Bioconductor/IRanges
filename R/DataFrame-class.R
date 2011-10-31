@@ -540,8 +540,6 @@ setAs("table", "DataFrame",
         do.call(DataFrame, c(df[1], lapply(df[factors], Rle), df["Freq"]))
       })
 
-setOldClass("xtabs", "table")
-
 setAs("xtabs", "DataFrame",
       function(from) {
         class(from) <- "table"
@@ -573,7 +571,6 @@ setAs("Vector", "DataFrame",
              nrows = length(from), rownames = names(from), check=FALSE)
       })
 
-setOldClass("AsIs")
 setAs("AsIs", "DataFrame",
       function(from) {
         class(from) <- tail(class(from), -1)
