@@ -17,11 +17,9 @@
 
 \title{List of RleViews}
 \description{An extension of \linkS4class{ViewsList} that holds only
-  \code{\linkS4class{RleViews}} objects. Useful for storing coverage vectors
+  \linkS4class{RleViews} objects. Useful for storing coverage vectors
   over a set of spaces (e.g. chromosomes), each of which requires a separate
-  \code{RleViews} object. As a \code{Vector}, \code{RleViewsList} may be
-  annotated with its universe identifier (e.g. a genome) in which all of its
-  spaces exist.
+  \linkS4class{RleViews} object.
 }
 
 \details{
