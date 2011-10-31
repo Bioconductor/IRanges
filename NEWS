@@ -1,0 +1,57 @@
+CHANGES IN VERSION 1.12.0
+-------------------------
+
+NEW FEATURES
+
+    o Add "relist" method that works on a List skeleton.
+
+    o Add XDoubleViews class with support of most of the functionalities
+      available for XIntegerViews.
+
+    o c() now works on XInteger and XDouble objects (in addition to XRaw
+      objects).
+
+    o Add min, max, mean, sum, which.min, which.max methods as synonyms for
+      the view* functions.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Views and RleViewsList classes don't derive from IRanges and IRangesList
+      classes anymore.
+
+    o When used on a List or a list, togroup() now returns an integer vector
+      (instead of a factor) for consistency with what it does on other
+      objects (e.g. on a Partitioning object).
+
+    o Move compact() generic from Biostrings to IRanges.
+
+    o Drop deprecated 'multiple' argument from "findOverlaps" methods.
+
+    o Drop deprecated 'start' and 'symmetric' arguments from "resize" method
+      for Ranges objects.
+
+DEPRECATED AND DEFUNCT
+
+   o Using as.data.frame() and or as( , "data.frame") on an AtomicList
+     object is deprecated.
+
+   o Deprecate all coercion methods from AtomicList to atomic vectors.
+     Those methods were unlisting the object, which can still be done with
+     unlist().
+
+   o Deprecate the Binning class.
+
+   o Remove defunct overlap() and countOverlap().
+
+BUG FIXES
+
+   o togroup() on a List or a list does not look at the names anymore to infer
+     the grouping, only at the shape of the list-like object.
+
+   o Fix 'relist(IRanges(), IRangesList())'.
+
+   o Fix 'rep.int(Rle(), integer(0))'.
+
+   o Fix some long-standing issues with the XIntegerViews code (better
+     handling of "out of limits" or empty views, overflows, NAs).
+
