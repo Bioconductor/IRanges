@@ -24,9 +24,9 @@
 \alias{match,ViewsList,ViewsList-method}
 \alias{match,ANY,ViewsList-method}
 \alias{match,ViewsList,ViewsList-method}
-\alias{%in%,ViewsList,ViewsList-method}
-\alias{%in%,ANY,ViewsList-method}
-\alias{%in%,ViewsList,ANY-method}
+\alias{\%in\%,ViewsList,ViewsList-method}
+\alias{\%in\%,ANY,ViewsList-method}
+\alias{\%in\%,ViewsList,ANY-method}
 
 
 \title{List of Views}
