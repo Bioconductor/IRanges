@@ -13,6 +13,7 @@
 \alias{end,SimpleViewsList-method}
 \alias{width,SimpleViewsList-method}
 \alias{universe,ViewsList-method}
+\alias{universe<-,ViewsList-method}
 
 % overlaps
 \alias{findOverlaps,ViewsList,ViewsList-method}
@@ -23,7 +24,7 @@
 \alias{countOverlaps,ViewsList,ANY-method}
 \alias{match,ViewsList,ViewsList-method}
 \alias{match,ANY,ViewsList-method}
-\alias{match,ViewsList,ViewsList-method}
+\alias{match,ViewsList,ANY-method}
 \alias{\%in\%,ViewsList,ViewsList-method}
 \alias{\%in\%,ANY,ViewsList-method}
 \alias{\%in\%,ViewsList,ANY-method}
