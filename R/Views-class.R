@@ -28,6 +28,14 @@ setGeneric("ranges", function(x, ...) standardGeneric("ranges"))
 
 setMethod("ranges", "Views", function(x) x@ranges)
 
+setGeneric("ranges<-", function(x, ..., value) standardGeneric("ranges<-"))
+
+setReplaceMethod("ranges", "Views",
+    function(x, ..., value)
+    {
+        stop("ranges setter for Views objects not ready yet")
+    }
+)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Methods derived from the IRanges interface.

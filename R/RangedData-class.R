@@ -52,7 +52,6 @@ setReplaceMethod("values", "RangedData",
 
 setMethod("ranges", "RangedData", function(x) x@ranges)
 
-setGeneric("ranges<-", function(x, ..., value) standardGeneric("ranges<-"))
 setReplaceMethod("ranges", "RangedData",
                  function(x, value) {
                    if (extends(class(value), "RangesList")) {

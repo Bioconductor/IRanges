@@ -7,6 +7,8 @@
 \alias{subject,Views-method}
 \alias{ranges}
 \alias{ranges,Views-method}
+\alias{ranges<-}
+\alias{ranges<-,Views-method}
 \alias{length,Views-method}
 \alias{start,Views-method}
 \alias{end,Views-method}
