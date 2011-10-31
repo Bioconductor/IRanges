@@ -379,7 +379,7 @@ setMethod("showAsCell", "XVectorList", function(object) as.character(object))
 ### objects. Not for the end user.
 ###
 
-unlist.list.of.XVectorList <- function(classname, x)
+unlist_list_of_XVectorList <- function(classname, x)
 {
     ## Prepending the list with 'new(classname)' guarantees that we dispatch
     ## on the right "c" method, even when 'x' is an empty list. Note that this
@@ -390,7 +390,7 @@ unlist.list.of.XVectorList <- function(classname, x)
 
 ### 'f' must be a factor with number of levels equal to 'length(x)' and
 ### length equal to 'sum(elementLengths(x))'. 
-unsplit.list.of.XVectorList <- function(classname, x, f)
+unsplit_list_of_XVectorList <- function(classname, x, f)
 {
     ans <- XVectorList(classname, length(f))
     unlisted_x <- do.call(c, unname(x))
