@@ -7,7 +7,8 @@ importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
            na.omit, na.exclude, complete.cases)
 
 exportClasses(
-    characterORNULL, AsIs,
+    AsIs, xtabs, file, connection,
+    characterORNULL,
     Annotated,
     DataTable, DataTableORNULL,
     Vector,
