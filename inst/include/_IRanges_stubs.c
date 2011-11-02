@@ -299,11 +299,6 @@ DEFINE_CCALLABLE_STUB(SEXP, new_CHARACTER_from_CharAEAE,
  * Stubs for callables defined in Ocopy_byteblocks.c
  */
 
-DEFINE_CCALLABLE_STUB(int, compare_byteblocks,
-	(const char *a, int ia, const char *b, int ib, int n, size_t blocksize),
-	(            a,     ia,             b,     ib,     n,        blocksize)
-)
-
 DEFINE_NOVALUE_CCALLABLE_STUB(Ocopy_byteblocks_from_i1i2,
 	(int i1, int i2, char *dest, size_t dest_nblocks, const char *src, size_t src_nblocks, size_t blocksize),
 	(    i1,     i2,       dest,        dest_nblocks,             src,        src_nblocks,        blocksize)

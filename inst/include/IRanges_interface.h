@@ -268,15 +268,6 @@ SEXP new_CHARACTER_from_CharAEAE(const CharAEAE *char_aeae);
  * Ocopy_byteblocks.c
  */
 
-int compare_byteblocks(
-	const char *a,
-	int ia,
-	const char *b,
-	int ib,
-	int n,
-	size_t blocksize
-);
-
 void Ocopy_byteblocks_from_i1i2(
 	int i1,
 	int i2,
