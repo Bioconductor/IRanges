@@ -183,14 +183,6 @@
   width(edited) <- rep(c(3,2), elementLengths(named))
   edited
 
-  # subset by RangesList
-  range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
-  range2 <- IRanges(start=c(1,15,20,45), end=c(5,15,100,80))
-  collection <- RangesList(one = range1, range2)
-  collection[RangesList()] # empty elements
-  collection[RangesList(IRanges(4, 6), IRanges(50, 70))]
-  collection[RangesList(IRanges(50, 70), one=IRanges(4, 6))]
-
   # same as list(range1, range2)
   as.list(RangesList(range1, range2))
 
@@ -203,6 +195,7 @@
   RangesList(range1, range2, universe = "hg18")
 
   ## zoom in 2X
+  collection <- RangesList(one = range1, range2)
   collection * 2
 }
 \keyword{methods}
