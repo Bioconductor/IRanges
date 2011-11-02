@@ -452,11 +452,9 @@ setMethod("update", "IRanges",
             stop("subsetting by character would result in NA's")
         return(i)
     }
-    if (is(i, "Ranges")) {
-        warning("'[' subsetting by Ranges is deprecated.\n",
-                "Use 'subsetByOverlaps' instead.")
-        return(x %in% i)
-    }
+    if (is(i, "Ranges"))
+        stop("'[' subsetting by Ranges is defunct.\n",
+             "Use 'subsetByOverlaps' instead.")
     if (is.null(i))
         return(NULL)
     stop("invalid subscript type")

@@ -297,22 +297,10 @@ rangesListSingleSquareBracket <- function(x, i, j, ..., drop)
     stop("invalid subsetting")
   if (missing(i))
     return(x)
-  if (is(i, "RangesList")) {
-    warning("'[' subsetting by RangesList is deprecated.\n",
-            "Use 'subsetByOverlaps' instead.")
-    ol <- x %in% i
-    els <- as.list(x)
-    for (j in seq_len(length(x))) {
-      els[[j]] <- els[[j]][ol[[j]]]
-    }
-    if (is(x, "CompressedList"))
-      ans <- newCompressedList(class(x), els)
-    else
-      ans <- newSimpleList(class(x), els)
-  } else {
-    ans <- callNextMethod(x, i)
-  }
-  ans
+  if (is(i, "RangesList"))
+    stop("'[' subsetting by RangesList is defunct.\n",
+         "Use 'subsetByOverlaps' instead.")
+  callNextMethod(x, i)
 }
 setMethod("[", "SimpleRangesList", rangesListSingleSquareBracket)
 setMethod("[", "CompressedIRangesList", rangesListSingleSquareBracket)

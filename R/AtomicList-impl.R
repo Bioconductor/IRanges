@@ -1028,11 +1028,10 @@ setMethod("as.vectorORfactor", "AtomicList",
                  "'as.numeric()',\n  'as.complex()', 'as.character()', ",
                  "'as.raw()', 'as.factor()', or any of their\n",
                  "  'as(...)' equivalent, for unlisting an AtomicList ",
-                 "object is deprecated.\n",
+                 "object is defunct.\n",
                  "  Please use 'unlist()' instead, eventually followed ",
                  "by the appropriate\n  coercion.")
-        .Deprecated(msg=paste(msg, collapse=""))
-        unlist(x, use.names=FALSE)
+        .Defunct(msg=paste(msg, collapse=""))
     }
 )
 
@@ -1074,26 +1073,8 @@ setMethod("as.data.frame", "AtomicList",
     function(x, row.names=NULL, optional=FALSE, ...)
     {
         msg <- c("  Use of 'as.data.frame()' or 'as( , \"data.frame\") ",
-                 "on an AtomicList object\n  is deprecated.")
-        .Deprecated(msg=paste(msg, collapse=""))
-        if (is.null(row.names)) {
-            row.names <- unlist(lapply(x, names), use.names = FALSE)
-        } else if (!is.character(row.names)) {
-            stop("'row.names'  must be NULL or a character vector")
-        }
-        spaceLevels <- seq_len(length(x))
-        if (length(names(x)) > 0) {
-            spaceLabels <- names(x)
-        } else {
-            spaceLabels <- as.character(spaceLevels)
-        }
-        data.frame(space =
-                   factor(rep.int(seq_len(length(x)), elementLengths(x)),
-                          levels = spaceLevels,
-                          labels = spaceLabels),
-                   value = as.vector(unlist(x, use.names=FALSE)),
-                   row.names = row.names,
-                   stringsAsFactors = FALSE)
+                 "on an AtomicList object\n  is defunct.")
+        .Defunct(msg=paste(msg, collapse=""))
     }
 )
 

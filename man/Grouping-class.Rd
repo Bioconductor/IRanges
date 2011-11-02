@@ -82,18 +82,12 @@
 \alias{start,PartitioningByWidth-method}
 \alias{coerce,Ranges,PartitioningByWidth-method}
 
-% Deprecated stuff:
+% Defunct stuff:
 \alias{class:Binning}
 \alias{Binning-class}
 \alias{Binning}
 
-\alias{[[,Binning-method}
-\alias{grouplength,Binning-method}
 \alias{length,Binning-method}
-\alias{names,Binning-method}
-\alias{names<-,Binning-method}
-\alias{nobj,Binning-method}
-\alias{togroup,Binning-method}
 
 
 \title{Grouping objects}
@@ -223,15 +217,6 @@
   the width of the groups).
 }
 
-\section{Binning subclass}{
-  WARNING: The Binning subclass is deprecated!
-
-  A Binning container represents a grouping where each observation is
-  assigned to a group or bin. It is similar in nature to taking a the
-  integer codes of a factor object and splitting it up by its levels
-  (i.e. myFactor <- factor(...); split(as.integer(myFactor), myFactor)).
-}
-
 \section{Constructors}{
   \describe{
     \item{}{
@@ -255,16 +240,6 @@
       the widths specified by \code{width}. \code{width} must contain
       non-negative integer values. If the \code{names} argument
       is non NULL, it is used to name the partitions.
-    }
-    \item{}{
-      WARNING: Binning objects are deprecated!
-
-      \code{Binning(group=integer(), names=NULL)}:
-      Return the Binning object made from the \code{group} argument, which
-      takes a factor or positive valued integer vector. If the \code{names}
-      argument is non NULL, it is used to name the bins. When \code{group}
-      is a factor, the \code{names} are set to \code{levels(group)} unless
-      specified otherwise.
     }
   }
   Note that these constructors don't recycle their \code{names} argument
@@ -381,19 +356,6 @@
   x3 <- PartitioningByWidth(width=mywidths)  # PartitioningByWidth instance.
   stopifnot(identical(as(x1, "PartitioningByEnd"), x2))
   stopifnot(identical(as(x1, "PartitioningByWidth"), x3))
-
-  ## ---------------------------------------------------------------------
-  ## E. Binning OBJECTS
-  ## ---------------------------------------------------------------------
-  ## WARNING: Binning objects are deprecated!
-  set.seed(0)
-  x <- Binning(factor(sample(letters, 36, replace=TRUE), levels=letters))
-  x
-
-  grouplength(x)
-  togroup(x)
-  x[[2]]
-  x[["u"]]
 }
 
 \keyword{methods}
