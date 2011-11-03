@@ -518,6 +518,13 @@ SEXP Integer_mseq(
 	SEXP to
 );
 
+SEXP _find_interv_and_start_from_width(
+	const int *x,
+	int x_len,
+	const int *width,
+	int width_len
+);
+
 SEXP findIntervalAndStartFromWidth(
 	SEXP x,
 	SEXP vec
@@ -885,6 +892,13 @@ SEXP Rle_window(
 	SEXP offsetStart,
 	SEXP offsetEnd,
 	SEXP ans
+);
+
+SEXP _seqselect_Rle(
+	SEXP x,
+	const int *start,
+	const int *width,
+	int length
 );
 
 SEXP Rle_seqselect(

@@ -536,37 +536,38 @@ SEXP Rle_end(SEXP x)
 }
 
 
-/*
- * --- .Call ENTRY POINT ---
+/****************************************************************************
+ * Rle_getStartEndRunAndOffset()
  */
 
-SEXP Rle_getStartEndRunAndOffset(SEXP x, SEXP start, SEXP end)
+static SEXP get_StartEndRunAndOffset_from_runLength(
+		const int *runlength, int runlength_len,
+		const int *start, const int *end, int length)
 {
-	int i, n, *start_elt, *end_elt, *soff_elt, *eoff_elt, *erun_elt;
-	SEXP values, lengths, info_start, info_end, ans, ans_names;
+	int i, *soff_elt, *eoff_elt;
+	const int *start_elt, *end_elt, *erun_elt;
+	SEXP info_start, info_end, ans, ans_names;
 	SEXP ans_start, ans_start_names, ans_end, ans_end_names;
 	SEXP start_run, start_offset, end_run, end_offset;
 
-	n = LENGTH(start);
-	if (LENGTH(end) != n)
-		error("length of 'start' must equal length of 'end'");
-
-	values = GET_SLOT(x, install("values"));
-	lengths = GET_SLOT(x, install("lengths"));
-
-	PROTECT(info_start = findIntervalAndStartFromWidth(start, lengths));
-	PROTECT(info_end = findIntervalAndStartFromWidth(end, lengths));
+	PROTECT(info_start = _find_interv_and_start_from_width(start, length,
+					runlength, runlength_len));
+	PROTECT(info_end = _find_interv_and_start_from_width(end, length,
+					runlength, runlength_len));
 
 	start_run = VECTOR_ELT(info_start, 0);
 	start_offset = VECTOR_ELT(info_start, 1);
 	end_run = VECTOR_ELT(info_end, 0);
 	end_offset = VECTOR_ELT(info_end, 1);
-	for (i = 0, start_elt = INTEGER(start), end_elt = INTEGER(end),
-		 soff_elt = INTEGER(start_offset), eoff_elt = INTEGER(end_offset),
-		 erun_elt = INTEGER(end_run); i < n; i++, start_elt++, end_elt++,
-		 soff_elt++, eoff_elt++, erun_elt++) {
+	for (i = 0, start_elt = start, end_elt = end,
+		    soff_elt = INTEGER(start_offset),
+		    eoff_elt = INTEGER(end_offset),
+		    erun_elt = INTEGER(end_run);
+	     i < length;
+	     i++, start_elt++, end_elt++, soff_elt++, eoff_elt++, erun_elt++)
+	{
 		*soff_elt = *start_elt - *soff_elt;
-		*eoff_elt = *eoff_elt + INTEGER(lengths)[*erun_elt - 1] - 1 - *end_elt;
+		*eoff_elt = *eoff_elt + runlength[*erun_elt - 1] - 1 - *end_elt;
 	}
 
 	PROTECT(ans_start = NEW_LIST(2));
@@ -595,7 +596,22 @@ SEXP Rle_getStartEndRunAndOffset(SEXP x, SEXP start, SEXP end)
 
 	UNPROTECT(8);
 
-	return(ans);
+	return ans;
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP Rle_getStartEndRunAndOffset(SEXP x, SEXP start, SEXP end)
+{
+	int n;
+	SEXP lengths;
+
+	n = LENGTH(start);
+	if (LENGTH(end) != n)
+		error("length of 'start' must equal length of 'end'");
+	lengths = GET_SLOT(x, install("lengths"));
+	return get_StartEndRunAndOffset_from_runLength(
+			INTEGER(lengths), LENGTH(lengths),
+			INTEGER(start), INTEGER(end), n);
 }
 
 
@@ -671,34 +687,35 @@ SEXP Rle_window(SEXP x, SEXP runStart, SEXP runEnd,
 }
 
 
-/*
- * --- .Call ENTRY POINT ---
+/****************************************************************************
+ * Rle_seqselect()
  */
 
-SEXP Rle_seqselect(SEXP x, SEXP start, SEXP width)
+SEXP _seqselect_Rle(SEXP x, const int *start, const int *width, int length)
 {
-	int i, n, index, *start_elt, *width_elt, *end_elt, *len_elt;
-	int *soff_elt, *eoff_elt;
+	int i, index, *end_elt, *width_run_elt, *len_elt;
+	const int *start_elt, *width_elt, *soff_elt, *eoff_elt;
 	SEXP values, lengths, end;
 	SEXP info, info_start, info_end;
 	SEXP start_run, end_run, width_run, start_offset, end_offset;
 	SEXP ans, ans_names, ans_values, ans_lengths;
 
-	n = LENGTH(start);
-	if (LENGTH(width) != n)
-		error("length of 'start' must equal length of 'width'");
-
 	values = GET_SLOT(x, install("values"));
 	lengths = GET_SLOT(x, install("lengths"));
 
-	PROTECT(end = NEW_INTEGER(n));
-	for (i = 0, start_elt = INTEGER(start), end_elt = INTEGER(end),
-		 width_elt = INTEGER(width); i < n;
-		 i++, start_elt++, end_elt++, width_elt++) {
+	PROTECT(end = NEW_INTEGER(length));
+	for (i = 0, start_elt = start,
+		    end_elt = INTEGER(end),
+		    width_elt = width;
+	     i < length;
+	     i++, start_elt++, end_elt++, width_elt++)
+	{
 		*end_elt = *start_elt + *width_elt - 1;
 	}
 
-	PROTECT(info = Rle_getStartEndRunAndOffset(x, start, end));
+	PROTECT(info = get_StartEndRunAndOffset_from_runLength(
+					INTEGER(lengths), LENGTH(lengths),
+					start, INTEGER(end), length));
 	info_start = VECTOR_ELT(info, 0);
 	start_run = VECTOR_ELT(info_start, 0);
 	start_offset = VECTOR_ELT(info_start, 1);
@@ -706,11 +723,14 @@ SEXP Rle_seqselect(SEXP x, SEXP start, SEXP width)
 	end_run = VECTOR_ELT(info_end, 0);
 	end_offset = VECTOR_ELT(info_end, 1);
 
-	PROTECT(width_run = NEW_INTEGER(n));
-	for (i = 0, start_elt = INTEGER(start_run), end_elt = INTEGER(end_run),
-		 width_elt = INTEGER(width_run); i < n;
-		 i++, start_elt++, end_elt++, width_elt++) {
-		*width_elt = *end_elt - *start_elt + 1;
+	PROTECT(width_run = NEW_INTEGER(length));
+	for (i = 0, start_elt = INTEGER(start_run),
+		    end_elt = INTEGER(end_run),
+		    width_run_elt = INTEGER(width_run);
+	     i < length;
+	     i++, start_elt++, end_elt++, width_run_elt++)
+	{
+		*width_run_elt = *end_elt - *start_elt + 1;
 	}
 
 	PROTECT(ans_values = vector_seqselect(values, start_run, width_run));
@@ -719,8 +739,11 @@ SEXP Rle_seqselect(SEXP x, SEXP start, SEXP width)
 	index = 0;
 	len_elt = INTEGER(ans_lengths);
 	for (i = 0, soff_elt = INTEGER(start_offset),
-		 eoff_elt = INTEGER(end_offset), width_elt = INTEGER(width_run);
-		 i < n; i++, soff_elt++, eoff_elt++, width_elt++) {
+		    eoff_elt = INTEGER(end_offset),
+		    width_elt = INTEGER(width_run);
+	     i < length;
+	     i++, soff_elt++, eoff_elt++, width_elt++)
+	{
 		if (*width_elt > 0) {
 			len_elt[index] -= *soff_elt;
 			index += *width_elt;
@@ -741,3 +764,15 @@ SEXP Rle_seqselect(SEXP x, SEXP start, SEXP width)
 
 	return ans;
 }
+
+/* --- .Call ENTRY POINT --- */
+SEXP Rle_seqselect(SEXP x, SEXP start, SEXP width)
+{
+	int n;
+
+	n = LENGTH(start);
+	if (LENGTH(width) != n)
+		error("length of 'start' must equal length of 'width'");
+	return _seqselect_Rle(x, INTEGER(start), INTEGER(width), n);
+}
+

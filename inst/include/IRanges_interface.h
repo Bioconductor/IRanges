@@ -493,6 +493,13 @@ cachedIRanges get_cachedCompressedIRangesList_elt(const cachedCompressedIRangesL
 SEXP new_RangedData(const char *classname, SEXP ranges, SEXP values);
 
 /*
+ * Low-level manipulation of Rle objects.
+ * (see Rle_class.c)
+ */
+
+SEXP seqselect_Rle(SEXP x, const int *start, const int *width, int length);
+
+/*
  * Low-level manipulation of SharedVector objects.
  * (see SharedVector_class.c)
  */

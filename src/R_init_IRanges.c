@@ -315,6 +315,9 @@ void R_init_IRanges(DllInfo *info)
 /* RangedData_class.c */
 	REGISTER_CCALLABLE(_new_RangedData);
 
+/* Rle_class.c */
+	REGISTER_CCALLABLE(_seqselect_Rle);
+
 /* SharedVector_class.c */
 	REGISTER_CCALLABLE(_new_SharedVector);
 	REGISTER_CCALLABLE(_get_SharedVector_tag);

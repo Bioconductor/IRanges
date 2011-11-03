@@ -356,35 +356,30 @@ SEXP Integer_mseq(SEXP from, SEXP to)
 	return ans;
 }
 
-/*
- * --- .Call ENTRY POINT ---
- * findIntervalAndStartFromWidth for when x and width are integer vectors
+
+/****************************************************************************
+ * findIntervalAndStartFromWidth()
+ *
+ * 'x' and 'width' are integer vectors
  */
 
-SEXP findIntervalAndStartFromWidth(SEXP x, SEXP width)
+SEXP _find_interv_and_start_from_width(const int *x, int x_len,
+		const int *width, int width_len)
 {
-	int i, x_len, width_len, interval, start;
+	int i, interval, start;
 	const int *x_elt, *width_elt;
 	int *interval_elt, *start_elt, *x_order_elt;
 	SEXP ans, ans_class, ans_names, ans_rownames, ans_interval, ans_start;
 	SEXP x_order;
 
-	if (!IS_INTEGER(x))
-		error("'x' must be an integer vector");
-	if (!IS_INTEGER(width))
-		error("'width' must be an integer vector");
-
-	x_len = LENGTH(x);
-	width_len = LENGTH(width);
-
-	for (i = 0, width_elt = INTEGER(width); i < width_len; i++, width_elt++) {
+	for (i = 0, width_elt = width; i < width_len; i++, width_elt++) {
 		if (*width_elt == NA_INTEGER)
 			error("'width' cannot contain missing values");
 		else if (*width_elt < 0)
 			error("'width' must contain non-negative values");
 	}
 
-	width_elt = INTEGER(width);
+	width_elt = width;
 	ans_rownames = R_NilValue;
 	PROTECT(ans_interval = NEW_INTEGER(x_len));
 	PROTECT(ans_start = NEW_INTEGER(x_len));
@@ -392,10 +387,10 @@ SEXP findIntervalAndStartFromWidth(SEXP x, SEXP width)
 		start = 1;
 		interval = 1;
 		PROTECT(x_order = NEW_INTEGER(x_len));
-		_get_order_of_int_array(INTEGER(x), x_len, 0, INTEGER(x_order), 0);
+		_get_order_of_int_array(x, x_len, 0, INTEGER(x_order), 0);
 		for (i = 0, x_order_elt = INTEGER(x_order); i < x_len;
 		     i++, x_order_elt++) {
-			x_elt = INTEGER(x) + *x_order_elt;
+			x_elt = x + *x_order_elt;
 			interval_elt = INTEGER(ans_interval) + *x_order_elt;
 			start_elt = INTEGER(ans_start) + *x_order_elt;
 			if (*x_elt == NA_INTEGER)
@@ -442,5 +437,16 @@ SEXP findIntervalAndStartFromWidth(SEXP x, SEXP width)
 	UNPROTECT(6);
 
 	return ans;
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP findIntervalAndStartFromWidth(SEXP x, SEXP width)
+{
+	if (!IS_INTEGER(x))
+		error("'x' must be an integer vector");
+	if (!IS_INTEGER(width))
+		error("'width' must be an integer vector");
+	return _find_interv_and_start_from_width(INTEGER(x), LENGTH(x),
+						 INTEGER(width), LENGTH(width));
 }
 
