@@ -802,9 +802,6 @@ setMethod("summary", "Rle",
               value
           })
 
-setGeneric("table", signature = "...",
-          function(...) standardGeneric("table"),
-              useAsDefault = function(...) base::table(...))
 setMethod("table", "Rle",
           function(...)
           {

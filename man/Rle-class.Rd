@@ -91,7 +91,6 @@
 \alias{splitRanges,Rle-method}
 \alias{splitRanges,vectorORfactor-method}
 \alias{summary,Rle-method}
-\alias{table}
 \alias{table,Rle-method}
 \alias{unique,Rle-method}
 \alias{window,Rle-method}
@@ -864,12 +863,14 @@
   x[c(1,3,5,7,9)]
   window(x, 4, 14)
   range(x)
-  table(x)
   sum(x)
   mean(x)
   x > 4
   aggregate(x, x > 4, mean)
   aggregate(x, FUN = mean, start = 1:(length(x) - 50), end = 51:length(x))
+
+  x2 <- Rle(LETTERS[c(21:26, 25:26)], 8:1)
+  table(x2)
 
   y <- Rle(c(TRUE,TRUE,FALSE,FALSE,TRUE,FALSE,TRUE,TRUE,TRUE))
   y
