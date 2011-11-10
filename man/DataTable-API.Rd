@@ -31,9 +31,7 @@
 \alias{is.na,DataTable-method}
 \alias{complete.cases,DataTable-method}
 
-\alias{cbind}
 \alias{cbind,DataTable-method}
-\alias{rbind}
 \alias{rbind,DataTable-method}
 
 \alias{aggregate,DataTable-method}

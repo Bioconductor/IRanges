@@ -261,15 +261,9 @@ setMethod("complete.cases", "DataTable", function(...) {
 ### Combining.
 ###
 
-setGeneric("cbind", function(..., deparse.level=1) standardGeneric("cbind"),
-           signature = "...")
-
 setMethod("cbind", "DataTable", function(..., deparse.level=1)
           stop("missing 'cbind' method for DataTable class ",
                class(list(...)[[1L]])))
-
-setGeneric("rbind", function(..., deparse.level=1) standardGeneric("rbind"),
-           signature = "...")
 
 setMethod("rbind", "DataTable", function(..., deparse.level=1)
           stop("missing 'rbind' method for DataTable class ",

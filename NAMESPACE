@@ -6,6 +6,8 @@ importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
            IQR, smoothEnds, runmed, window, "window<-", aggregate, xtabs,
            na.omit, na.exclude, complete.cases)
 
+importFrom(BiocGenerics, cbind, rbind)
+
 exportClasses(
     AsIs, xtabs, file, connection,
     characterORNULL,
@@ -171,7 +173,7 @@ export(
     runmean, runsum, runwtsum, runq,
     viewApply, viewMins, viewMaxs, viewSums, viewMeans,
     viewWhichMins, viewWhichMaxs, viewRangeMins, viewRangeMaxs,
-    cbind, rbind, table, xtabs,
+    table, xtabs,
     rangedData, "rangedData<-", applyFun, "applyFun<-", applyParams,
     "applyParams<-", simplify, "simplify<-",
     ##excludePattern, "excludePattern<-",
