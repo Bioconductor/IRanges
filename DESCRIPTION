@@ -90,6 +90,6 @@ Collate: validity-utils.R
 	reverse.R
 	coverage.R
 	test_IRanges_package.R
-	updateObject.R
+	updateObject-methods.R
 	debug.R
 	zzz.R

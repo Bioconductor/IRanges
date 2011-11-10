@@ -1,18 +1,3 @@
-## updateObject
-setGeneric("updateObject",
-           function(object, ..., verbose=FALSE) {
-               result <- standardGeneric("updateObject")
-               validObject(result)
-               result
-           })
-
-setMethod("updateObject", signature(object="ANY"),
-          function(object, ..., verbose=FALSE) {
-              if (verbose)
-                  message("updateObject(object = 'ANY') default for object of class '", class(object), "'")
-              object
-          })
-
 ## Functions for updating old TypedList to new infrastructure
 toSimpleList <- function(object, newclass, newtype, ...)
 {

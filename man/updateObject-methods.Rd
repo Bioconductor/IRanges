@@ -1,8 +1,7 @@
-\name{updateObject}
-\alias{updateObject}
+\name{updateObject-methods}
+\alias{updateObject-methods}
 
 \alias{updateObject,AnnotatedList-method}
-\alias{updateObject,ANY-method}
 \alias{updateObject,CharacterList-method}
 \alias{updateObject,ComplexList-method}
 \alias{updateObject,FilterRules-method}
@@ -29,28 +28,42 @@
 \alias{updateObject,XVector-method}
 \alias{updateObject,XIntegerViews-method}
 
-\title{Update an IRanges object from BioC 2.4 to current version}
+\title{Update an object of a class defined in IRanges to its current
+       class definition}
+
 \description{
-  Updates an old IRanges object to the current version. This updating
-  process is useful when an object has been serialized (e.g., stored to
-  disk) for some time (e.g., months), and the class definition has changed.
-  This change in class definition makes the serialized instance is no longer
-  valid.
+  The IRanges package provides an extensive collection of
+  \code{\link[BiocGenerics]{updateObject}} methods for updating
+  almost any instance of a class defined in this package.
 }
 \usage{
-updateObject(object, \dots, verbose=FALSE)
-}
-\arguments{
-  \item{object}{Object to be updated, or for slot information to be
-    extracted from.}
-  \item{verbose}{A logical, indicating whether information about the
-    update should be reported. Use \code{message} to report this.}
-  \item{\dots}{Additional arguments, for use in specific update methods.}
-}
-\value{
-  \code{updateObject} returns a valid instance of \code{object}.
+## Showing usage of method defined for IntegerList objects only (usage
+## is the same for all methods).
+
+\S4method{updateObject}{IntegerList}(object, ..., verbose=FALSE)
 }
 
-\author{Biocore team}
+\arguments{
+  \item{object}{
+    Object to be updated. Many (but not all) IRanges classes are supported.
+    If no specific method is available for the object, then the default
+    method (defined in the BiocGenerics package) is used.
+    See \code{?\link[BiocGenerics]{updateObject}} for a description of
+    the default method.
+  }
+  \item{..., verbose}{
+    See \code{?\link[BiocGenerics]{updateObject}}.
+  }
+}
+
+\value{
+  Returns a valid instance of \code{object}.
+}
+
+\author{The Bioconductor Dev Team}
+
+\seealso{
+  \code{\link[BiocGenerics]{updateObject}}
+}
 
 \keyword{manip}
