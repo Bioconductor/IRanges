@@ -1309,9 +1309,6 @@ setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle")
     Rle(values = values, lengths = diffWithInitialZero(ends), check = FALSE)
 }
 
-setGeneric("paste", signature = "...",
-           function(..., sep = " ", collapse = NULL) standardGeneric("paste"))
-
 setMethod("paste", "Rle",
           function(..., sep = " ", collapse = NULL)
           {

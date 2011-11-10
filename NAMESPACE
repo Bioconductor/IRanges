@@ -6,7 +6,7 @@ importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
            IQR, smoothEnds, runmed, window, "window<-", aggregate, xtabs,
            na.omit, na.exclude, complete.cases)
 
-importFrom(BiocGenerics, cbind, rbind, updateObject)
+importFrom(BiocGenerics, cbind, rbind, paste, updateObject)
 
 exportClasses(
     AsIs, xtabs, file, connection,
@@ -140,7 +140,6 @@ export(
     ## Generic functions in the Rle API:
     Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
     findRange, findRun,
-    paste,
 
     ## Generic functions in the Grouping API:
     nobj, grouplength, members, vmembers, togroup, togrouplength,

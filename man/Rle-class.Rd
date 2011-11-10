@@ -134,7 +134,6 @@
 \alias{toupper,Rle-method}
 \alias{sub,ANY,ANY,Rle-method}
 \alias{gsub,ANY,ANY,Rle-method}
-\alias{paste}
 \alias{paste,Rle-method}
 
 \alias{levels,Rle-method}
