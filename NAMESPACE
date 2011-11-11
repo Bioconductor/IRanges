@@ -6,7 +6,14 @@ importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
            IQR, smoothEnds, runmed, window, "window<-", aggregate, xtabs,
            na.omit, na.exclude, complete.cases)
 
-importFrom(BiocGenerics, cbind, rbind, order, paste, table, updateObject)
+importFrom(BiocGenerics,
+    cbind, rbind,
+    order,
+    paste,
+    table,
+    union, intersect, setdiff,
+    updateObject
+)
 
 exportClasses(
     AsIs, xtabs, file, connection,
