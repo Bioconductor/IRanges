@@ -10,6 +10,7 @@ importFrom(BiocGenerics,
     cbind, rbind,
     order,
     paste,
+    rep.int,
     table,
     union, intersect, setdiff,
     updateObject

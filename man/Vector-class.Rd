@@ -41,7 +41,6 @@
 \alias{tail,Vector-method}
 \alias{rev,Vector-method}
 \alias{rep,Vector-method}
-\alias{rep.int}
 \alias{rep.int,Vector-method}
 \alias{subset,Vector-method}
 
