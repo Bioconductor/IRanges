@@ -78,21 +78,6 @@ setMethod(">", signature(e1="Ranges", e2="Ranges"),
     function(e1, e2) {e2 < e1}
 )
 
-### Need to explicitly define this generic otherwise the implicit generic in
-### package "base" would dispatch on (na.last, decreasing).
-### Note that dispatching on ... is supported starting with R 2.8.0 only.
-### WARNING: Here are 2 common pitfalls when implementing an "order" method:
-###   - order(x, decreasing=TRUE) is NOT equivalent to rev(order(x));
-###   - It should be made "stable" for consistent behavior across platforms
-###     and consistency with base::order(). Note that C qsort() is NOT "stable"
-###     so "order" methods that use qsort() at the C-level need to ultimately
-###     break ties by position (this is generally done by adding a little
-###     extra code at the end of the comparison function used in the calls to
-###     qsort()).
-setGeneric("order", signature="...",
-    function(..., na.last=TRUE, decreasing=FALSE) standardGeneric("order")
-)
-
 setMethod("order", "Ranges",
     function(..., na.last=TRUE, decreasing=FALSE)
     {

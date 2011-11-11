@@ -16,7 +16,6 @@
 \alias{<,Ranges,Ranges-method}
 \alias{>}
 \alias{>,Ranges,Ranges-method}
-\alias{order}
 \alias{order,Ranges-method}
 \alias{sort,Ranges-method}
 \alias{rank,Ranges-method}
@@ -125,7 +124,8 @@
       Returns a permutation which rearranges its first argument (a \link{Ranges}
       object) into ascending order, breaking ties by further arguments (also
       \link{Ranges} objects).
-      See \code{\link[base]{order}} in the base package for more details.
+      See \code{\link[BiocGenerics]{order}} in the BiocGenerics package
+      for more information.
     }
     \item{}{
       \code{sort(x)}:
@@ -145,7 +145,7 @@
   \link{IRanges-class},
   \code{\link[base]{duplicated}},
   \code{\link[base]{unique}},
-  \code{\link[base]{order}},
+  \code{\link[BiocGenerics]{order}},
   \code{\link[base]{sort}},
   \code{\link[base]{rank}}
 }
