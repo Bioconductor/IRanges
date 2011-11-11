@@ -5,11 +5,8 @@
 \alias{gaps}
 \alias{gaps,IRanges-method}
 \alias{gaps,Ranges-method}
-\alias{union}
 \alias{union,IRanges,IRanges-method}
-\alias{intersect}
 \alias{intersect,IRanges,IRanges-method}
-\alias{setdiff}
 \alias{setdiff,IRanges,IRanges-method}
 \alias{punion}
 \alias{punion,IRanges,IRanges-method}
@@ -111,7 +108,8 @@ gaps(x, start=NA, end=NA)
   similar to \code{\link{restrict}}, except ranges outside of the
   restriction become empty and are not discarded.
 
-  \link[base:sets]{union}, \link[base:sets]{intersect}, \link[base:sets]{setdiff},
+  \link[BiocGenerics]{union},
+
   \link{Ranges-class},
   \link{Ranges-utils},
   \link{IRanges-class},
