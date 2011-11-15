@@ -194,7 +194,7 @@ export(
 )
 
 exportMethods(
-    ## Methods for generics defined elsewhere:
+    ## Methods for generics defined in the base packages:
     lapply, sapply, tapply,
     "[", "[<-", "[[", "[[<-", "$",
     "==", "!=", "<=", ">=", "<", ">",
@@ -210,7 +210,7 @@ exportMethods(
     duplicated, unique,
     sort, rank, is.unsorted,
     rev,
-    rep, rep.int,
+    rep,
     head, tail,
     start, end,
     min, max, range, which.max, which.min,
@@ -233,7 +233,6 @@ exportMethods(
     "!", which,
     ifelse,
     c,
-    union, intersect, setdiff,
     merge,
     split, splitRanges, relist,
     eval, with, within,
@@ -241,6 +240,14 @@ exportMethods(
     is.na, na.omit, na.exclude, complete.cases,
     "%in%", by, match,
     Reduce, Filter, Find, Position,
+
+    ## Methods for generics defined in the BiocGenerics package:
+    cbind, rbind,
+    order,
+    paste,
+    rep.int,
+    table,
+    union, intersect, setdiff,
     updateObject,
 
     ## Methods for generics defined in this package:
