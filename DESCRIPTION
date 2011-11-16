@@ -13,7 +13,7 @@ Version: 1.13.5
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Infrastructure, DataRepresentation
-Depends: R (>= 2.8.0), methods, utils, stats, BiocGenerics (>= 0.1.0)
+Depends: R (>= 2.8.0), methods, utils, stats, BiocGenerics (>= 0.1.1)
 Imports: methods, utils, stats, BiocGenerics
 Suggests: RUnit
 License: Artistic-2.0

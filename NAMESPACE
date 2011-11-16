@@ -3,7 +3,7 @@ useDynLib(IRanges)
 import(methods)
 importFrom(utils, head, read.table, tail, stack, relist)
 importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
-           IQR, smoothEnds, runmed, window, "window<-", aggregate, xtabs,
+           IQR, smoothEnds, runmed, window, "window<-", aggregate,
            na.omit, na.exclude, complete.cases)
 
 importFrom(BiocGenerics,
@@ -13,6 +13,7 @@ importFrom(BiocGenerics,
     rep.int,
     table,
     union, intersect, setdiff,
+    xtabs,
     updateObject
 )
 
@@ -247,6 +248,7 @@ exportMethods(
     rep.int,
     table,
     union, intersect, setdiff,
+    xtabs,
     updateObject,
 
     ## Methods for generics defined in this package:
