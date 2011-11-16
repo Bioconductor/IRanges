@@ -459,23 +459,15 @@ setMethod("Position", signature(x = "List"),
 ### Evaluating.
 ###
   
-setClassUnion("expressionORlanguage", c("expression", "language"))
+setMethod("eval", c("expression", "List"),
+    function(expr, envir, enclos = parent.frame())
+        eval(expr, as.env(envir), enclos)
+)
 
-setGeneric("eval", function (expr, envir = parent.frame(),
-                             enclos = if (is.list(envir) || 
-                               is.pairlist(envir)) parent.frame()
-                             else baseenv())
-           {
-             force(envir)
-             force(enclos)
-             standardGeneric("eval")
-           })
-
-setMethod("eval", c("expressionORlanguage", "List"),
-          function(expr, envir, enclos = parent.frame())
-          {
-              eval(expr, as.env(envir), enclos)
-          })
+setMethod("eval", c("language", "List"),
+    function(expr, envir, enclos = parent.frame())
+        eval(expr, as.env(envir), enclos)
+)
 
 setMethod("with", "List",
           function(data, expr, ...)

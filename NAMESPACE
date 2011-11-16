@@ -8,6 +8,7 @@ importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
 
 importFrom(BiocGenerics,
     cbind, rbind,
+    eval,
     order,
     paste,
     rep.int,
@@ -235,7 +236,7 @@ exportMethods(
     c,
     merge,
     split, splitRanges, relist,
-    eval, with, within,
+    with, within,
     t,
     is.na, na.omit, na.exclude, complete.cases,
     "%in%", by, match,
@@ -243,6 +244,7 @@ exportMethods(
 
     ## Methods for generics defined in the BiocGenerics package:
     cbind, rbind,
+    eval,
     order,
     paste,
     rep.int,

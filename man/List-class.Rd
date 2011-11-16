@@ -42,7 +42,8 @@
 \alias{Position,ANY,List-method}
 
 \alias{eval}
-\alias{eval,expressionORlanguage,List-method}
+\alias{eval,expression,List-method}
+\alias{eval,language,List-method}
 \alias{with,List-method}
 
 \title{List objects}
