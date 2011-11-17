@@ -112,7 +112,6 @@ export(
     isConstant,
     isEmpty,
     seqselect, "seqselect<-",
-    mapply,
 
     ## Generic functions in the Ranges API:
     width,
@@ -233,6 +232,7 @@ exportMethods(
     duplicated,
     eval,
     lapply, sapply,
+    mapply,
     pmax, pmin, pmax.int, pmin.int,
     order,
     paste,
@@ -254,7 +254,6 @@ exportMethods(
     isConstant,
     isEmpty,
     seqselect, "seqselect<-",
-    mapply,
 
     width,
     mid,

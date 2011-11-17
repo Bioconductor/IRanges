@@ -22,7 +22,6 @@
 
 \alias{lapply,List-method}
 \alias{sapply,List-method}
-\alias{mapply}
 \alias{mapply,List-method}
 \alias{endoapply,List-method}
 \alias{mendoapply,List-method}

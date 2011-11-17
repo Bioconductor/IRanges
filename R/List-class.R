@@ -133,11 +133,6 @@ setMethod("lapply", "List",
 environment(.sapplyDefault) <- topenv()
 setMethod("sapply", "List", .sapplyDefault)
 
-setGeneric("mapply",
-           function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
-                    USE.NAMES = TRUE) standardGeneric("mapply"),
-           signature = "...")
-
 .mapply_List <- function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
                          USE.NAMES = TRUE)
 {
