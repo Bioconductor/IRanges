@@ -196,7 +196,6 @@ exportMethods(
     nrow, NROW, ncol, NCOL, dim,
     rownames, colnames, dimnames,
     "rownames<-", "colnames<-", "dimnames<-",
-    unique,
     sort, rank, is.unsorted,
     rev,
     rep,
@@ -242,6 +241,7 @@ exportMethods(
     table,
     tapply,
     union, intersect, setdiff,
+    unique,
     xtabs,
     updateObject,
 
