@@ -9,6 +9,7 @@ importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
 importFrom(BiocGenerics,
     cbind, rbind,
     eval,
+    lapply, sapply,
     pmax, pmin, pmax.int, pmin.int,
     order,
     paste,
@@ -197,7 +198,7 @@ export(
 
 exportMethods(
     ## Methods for generics defined in the base packages:
-    lapply, sapply, tapply,
+    tapply,
     "[", "[<-", "[[", "[[<-", "$",
     "==", "!=", "<=", ">=", "<", ">",
     Ops, Math, Math2, Summary, Complex,
@@ -245,6 +246,7 @@ exportMethods(
     ## Methods for generics defined in the BiocGenerics package:
     cbind, rbind,
     eval,
+    lapply, sapply,
     pmax, pmin, pmax.int, pmin.int,
     order,
     paste,
