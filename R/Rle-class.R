@@ -923,23 +923,15 @@ setMethod("diff", "Rle",
         lengths = diffWithInitialZero(ends), check = FALSE)
 }
 
-setGeneric("pmax", signature = "...",
-           function(..., na.rm = FALSE) standardGeneric("pmax"))
 setMethod("pmax", "Rle", function(..., na.rm = FALSE)
             .psummary.Rle(pmax, ..., MoreArgs = list(na.rm = na.rm)))
 
-setGeneric("pmin", signature = "...",
-           function(..., na.rm = FALSE) standardGeneric("pmin"))
 setMethod("pmin", "Rle", function(..., na.rm = FALSE)
             .psummary.Rle(pmin, ..., MoreArgs = list(na.rm = na.rm)))
 
-setGeneric("pmax.int", signature = "...",
-           function(..., na.rm = FALSE) standardGeneric("pmax.int"))
 setMethod("pmax.int", "Rle", function(..., na.rm = FALSE)
             .psummary.Rle(pmax.int, ..., MoreArgs = list(na.rm = na.rm)))
 
-setGeneric("pmin.int", signature = "...",
-           function(..., na.rm = FALSE) standardGeneric("pmin.int"))
 setMethod("pmin.int", "Rle", function(..., na.rm = FALSE)
             .psummary.Rle(pmin.int, ..., MoreArgs = list(na.rm = na.rm)))
 

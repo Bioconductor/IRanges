@@ -99,13 +99,9 @@
 \alias{which,Rle-method}
 \alias{ifelse,Rle-method}
 
-\alias{pmax}
 \alias{pmax,Rle-method}
-\alias{pmin}
 \alias{pmin,Rle-method}
-\alias{pmax.int}
 \alias{pmax.int,Rle-method}
-\alias{pmin.int}
 \alias{pmin.int,Rle-method}
 \alias{diff,Rle-method}
 \alias{mean,Rle-method}
