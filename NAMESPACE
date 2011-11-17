@@ -12,6 +12,7 @@ importFrom(BiocGenerics,
     pmax, pmin, pmax.int, pmin.int,
     order,
     paste,
+    Reduce, Filter, Find, Map, Position,
     rep.int,
     table,
     union, intersect, setdiff,
@@ -124,7 +125,6 @@ export(
     isEmpty,
     seqselect, "seqselect<-",
     mapply,
-    Map,
 
     ## Generic functions in the Ranges API:
     width,
@@ -241,7 +241,6 @@ exportMethods(
     t,
     is.na, na.omit, na.exclude, complete.cases,
     "%in%", by, match,
-    Reduce, Filter, Find, Position,
 
     ## Methods for generics defined in the BiocGenerics package:
     cbind, rbind,
@@ -249,6 +248,7 @@ exportMethods(
     pmax, pmin, pmax.int, pmin.int,
     order,
     paste,
+    Reduce, Filter, Find, Map, Position,
     rep.int,
     table,
     union, intersect, setdiff,
@@ -265,7 +265,6 @@ exportMethods(
     isEmpty,
     seqselect, "seqselect<-",
     mapply,
-    Map,
 
     width,
     mid,

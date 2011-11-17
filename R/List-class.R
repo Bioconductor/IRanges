@@ -422,23 +422,21 @@ setMethod("relist", signature(skeleton = "List"),
     }
 }
 
-setMethod("Reduce", signature(x = "List"), .ReduceDefault)
+setMethod("Reduce", "List", .ReduceDefault)
   
 .FilterDefault <- base::Filter
 environment(.FilterDefault) <- topenv()
-setMethod("Filter", signature(x = "List"), .FilterDefault)
+setMethod("Filter", "List", .FilterDefault)
 
 .FindDefault <- base::Find
 environment(.FindDefault) <- topenv()
-setMethod("Find", signature(x = "List"), .FindDefault)
-
-setGeneric("Map", function (f, ...) standardGeneric("Map"), signature = "...")
+setMethod("Find", "List", .FindDefault)
 
 .MapDefault <- base::Map
 environment(.MapDefault) <- topenv()
 setMethod("Map", "List", .MapDefault)
  
-setMethod("Position", signature(x = "List"),
+setMethod("Position", "List",
     function(f, x, right = FALSE, nomatch = NA_integer_)
     {
         ## In R-2.12, base::Position() was modified to use seq_along()

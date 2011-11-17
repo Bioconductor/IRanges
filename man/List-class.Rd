@@ -34,12 +34,11 @@
 \alias{stack,List-method}
 \alias{relist,ANY,List-method}
 
-\alias{Reduce,ANY,List-method}
-\alias{Filter,ANY,List-method}
-\alias{Find,ANY,List-method}
-\alias{Map}
+\alias{Reduce,List-method}
+\alias{Filter,List-method}
+\alias{Find,List-method}
 \alias{Map,List-method}
-\alias{Position,ANY,List-method}
+\alias{Position,List-method}
 
 \alias{eval}
 \alias{eval,expression,List-method}
