@@ -128,6 +128,75 @@ setValidity2("Vector", .valid.Vector)
 ### Subsetting.
 ###
 
+normalizeSingleBracketSubscript <- function(i, x)
+{
+    if (is.null(i))
+        return(NULL)
+    if (is(i, "Ranges")) {
+        ## Subsetting by ranges will be re-introduced later but it will do
+        ## the right thing.
+        stop("'[' subsetting by Ranges is defunct.\n",
+             "Use 'subsetByOverlaps' instead.")
+    }
+    if (is(i, "Rle"))
+        i <- as.vector(i)
+    if (!is.atomic(i))
+        stop("invalid subscript type")
+    lx <- length(x)
+    if (is.numeric(i)) {
+        if (!is.integer(i))
+            i <- as.integer(i)
+        if (anyMissingOrOutside(i, -lx, lx))
+            stop("subscript contains NAs or out of bounds indices")
+        i <- i[i != 0L]
+        if (any(i < 0L) && any(i > 0L))
+            stop("cannot mix negative with positive subscripts")
+        if (is(x, "NormalIRanges") && all(i >= 0L)) {
+            if (isNotStrictlySorted(i))
+                stop("positive numeric subscript must be strictly increasing ",
+                     "for NormalIRanges objects")
+        }
+        return(i)
+    }
+    if (is.logical(i)) {
+        if (anyMissing(i))
+            stop("subscript contains NAs")
+        li <- length(i)
+        if (li > lx)
+            stop("subscript out of bounds")
+        if (li < lx)
+            i <- rep(i, length.out=lx)
+        return(which(i))
+    }
+    if (is.character(i) || is.factor(i)) {
+        if (is.null(names(x)))
+            stop("cannot subset by character when names are NULL")
+        i <- match(i, names(x))
+        if (anyMissing(i))
+            stop("subsetting by character would result in NA's")
+        return(i)
+    }
+    stop("invalid subscript type")
+}
+
+tryToCoerceReplacementValue <- function(x, value)
+{
+    lv <- length(value)
+    value <- try(as(value, class(x)), silent=TRUE)
+    if (inherits(value, "try-error"))
+        stop("'value' must be a ", class(x), " object")
+    if (length(value) != lv)
+        stop("coercing replacement value to ", class(x), "\n",
+             "  changed its length!\n",
+             "  Please do the explicit coercion ",
+             "yourself with something like:\n",
+             "    x[...] <- as(value, \"", class(x), "\")\n",
+             "  but first make sure this coercion does what you want.")
+    if (is(value, "SplitDataFrameList") && length(x) != 0L)
+        colnames(value) <- colnames(x)[[1L]]
+    value
+}
+
 .bracket.Vector <-
 function(x, i, j, ..., drop)
 {

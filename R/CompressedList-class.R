@@ -211,9 +211,208 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
 }
 setValidity2("CompressedList", .valid.CompressedList)
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
 ###
+
+### Supported 'i' types: numeric, character, logical, NULL and missing.
+setMethod("[", "CompressedList",
+          function(x, i, j, ..., drop)
+          {
+              if (!missing(j) || length(list(...)) > 0)
+                  stop("invalid subsetting")
+              if (!missing(i)) {
+                  if (is(i, "RangesList") || is(i, "RleList") ||
+                      is(i, "LogicalList") ||
+                      (is(i, "IntegerList") && !is(i, "Ranges"))) {
+                      x <- seqselect(x, i)
+                  } else {
+                      irInfo <-
+                        .bracket.Index(i, length(x), names(x), asRanges = TRUE)
+                      if (!is.null(irInfo[["msg"]]))
+                          stop(irInfo[["msg"]])
+                      if (irInfo[["useIdx"]]) {
+                          i <- irInfo[["idx"]]
+                          ir <-
+                            IRanges(end =
+                                    seqselect(end(x@partitioning), i),
+                                    width =
+                                    seqselect(width(x@partitioning), i))
+                          x <-
+                            initialize(x,
+                                       elementMetadata =
+                                       seqselect(x@elementMetadata, i),
+                                       unlistData = seqselect(x@unlistData, ir),
+                                       partitioning =
+                                       new2("PartitioningByEnd",
+                                            end = cumsum(width(ir)),
+                                            NAMES = seqselect(names(x), i),
+                                            check=FALSE))
+                      }
+                  }
+              }
+              x
+          })
+
+### The code is generic and does nothing specific to CompressedList.
+### Could be made the method for Vector objects.
+setReplaceMethod("[", "CompressedList",
+    function(x, i, j, ..., value)
+    {
+        if (!missing(j) || length(list(...)) > 0L)
+            stop("invalid subsetting")
+        if (missing(i))
+            i <- seq_len(length(x))
+        else if (is.list(i) || is(i, "List"))
+            return(subsetListByList_replace(x, i, value))
+        else
+            i <- normalizeSingleBracketSubscript(i, x)
+        li <- length(i)
+        if (li == 0L) {
+            ## Surprisingly, in that case, `[<-` on standard vectors does not
+            ## even look at 'value'. So neither do we...
+            return(x)
+        }
+        lv <- length(value)
+        if (lv == 0L)
+            stop("replacement has length zero")
+        if (!is(value, class(x)))
+            value <- tryToCoerceReplacementValue(x, value)
+        if (li != lv) {
+            if (li %% lv != 0L)
+                warning("number of items to replace is not a multiple ",
+                        "of replacement length")
+            ## Assuming that rep() works on 'value' and also replicates its
+            ## names.
+            value <- rep(value, length.out = li)
+        }
+        ## Assuming that c() works on objects of class 'class(x)'.
+        ans <- c(x, value)
+        idx <- seq_len(length(x))
+        idx[i] <- length(x) + seq_len(length(value))
+        ## Assuming that [ works on objects of class 'class(x)'.
+        ans <- ans[idx]
+        ## Restore the original decoration.
+        metadata(ans) <- metadata(x)
+        names(ans) <- names(x)
+        elementMetadata(ans) <- elementMetadata(x)
+        ans
+    }
+)
+
+setMethod("seqselect", "CompressedList",
+          function(x, start=NULL, end=NULL, width=NULL)
+          {
+              lx <- length(x)
+              if ((lx > 0) && is.null(end) && is.null(width) &&
+                  !is.null(start) && !is(start, "Ranges")) {
+                  if (lx != length(start))
+                      stop("'length(start)' must equal 'length(x)' when ",
+                           "'end' and 'width' are NULL")
+                  if (is.list(start)) {
+                      if (is.logical(start[[1L]]))
+                          start <- LogicalList(start)
+                      else if (is.numeric(start[[1L]]))
+                          start <- IntegerList(start)
+                  } else if (is(start, "RleList")) {
+                      start <- IRangesList(start)
+                  }
+                  if (is(start, "RangesList")) {
+                      unlistData <-
+                        seqselect(x@unlistData,
+                                  shift(unlist(start),
+                                        rep.int(start(x@partitioning) - 1L,
+                                                elementLengths(start))))
+                      partitionEnd <-
+                        cumsum(unlist(lapply(start, function(x) sum(width(x))),
+                                      use.names = FALSE))
+                  } else if (is(start, "LogicalList")) {
+                      xeltlen <- elementLengths(x)
+                      whichRep <- which(xeltlen != elementLengths(start))
+                      for (i in whichRep)
+                          start[[i]] <- rep(start[[i]], length.out = xeltlen[i])
+                      unlistData <- seqselect(x@unlistData, unlist(start))
+                      partitionEnd <-
+                        cumsum(unlist(lapply(start, sum), use.names = FALSE))
+                  } else if (is(start, "IntegerList")) {
+                      i <-
+                        unlist(start +
+                               newCompressedList("CompressedIntegerList",
+                                                 start(x@partitioning) - 1L,
+                                                 end = seq_len(lx)))
+                      unlistData <- seqselect(x@unlistData, i)
+                      partitionEnd <- cumsum(unname(elementLengths(start)))
+                  } else {
+                      stop("unrecognized 'start' type")
+                  }
+                  x <-
+                    initialize(x,
+                               unlistData = unlistData,
+                               partitioning = 
+                                 new2("PartitioningByEnd",
+                                      end = partitionEnd, NAMES = names(x),
+                                      check=FALSE))
+              } else {
+                  if (!is.null(end) || !is.null(width))
+                      start <- IRanges(start = start, end = end, width = width)
+                  irInfo <- .bracket.Index(start, lx, names(x), asRanges = TRUE)
+                  if (!is.null(irInfo[["msg"]]))
+                      stop(irInfo[["msg"]])
+                  if (irInfo[["useIdx"]])
+                      x <- x[irInfo[["idx"]]]
+              }
+              x
+          })
+
+setReplaceMethod("seqselect", "CompressedList",
+                 function(x, start = NULL, end = NULL, width = NULL, value)
+                 {
+                     lx <- length(x)
+                     if ((lx > 0) && is.null(end) && is.null(width) &&
+                         !is.null(start) && !is(start, "Ranges")) {
+                         if (lx != length(start))
+                             stop("'length(start)' must equal 'length(x)' ",
+                                  "when 'end' and 'width' are NULL")
+                         if (is.list(start)) {
+                             if (is.logical(start[[1L]]))
+                                 start <- LogicalList(start)
+                             else if (is.numeric(start[[1L]]))
+                                 start <- IntegerList(start)
+                         } else if (is(start, "RleList")) {
+                             start <- IRangesList(start)
+                         }
+                         if (is(start, "RangesList")) {
+                             start <-
+                               shift(unlist(start),
+                                     rep.int(start(x@partitioning) - 1L,
+                                             elementLengths(start)))
+                         } else if (is(start, "LogicalList")) {
+                             xeltlen <- elementLengths(x)
+                             whichRep <- which(xeltlen != elementLengths(start))
+                             for (i in whichRep) {
+                                 start[[i]] <-
+                                   rep(start[[i]], length.out = xeltlen[i])
+                             }
+                             start <- unlist(start)
+                         } else if (is(start, "IntegerList")) {
+                             i <-
+                               unlist(start +
+                                      newCompressedList("CompressedIntegerList",
+                                                        start(x@partitioning) - 1L,
+                                                        end = seq_len(length(x))))
+                             start <- rep.int(FALSE, sum(elementLengths(x)))
+                             start[i] <- TRUE
+                         } else {
+                             stop("unrecognized 'start' type")
+                         }
+                         seqselect(x@unlistData, start) <-
+                           unlist(value, use.names=FALSE)
+                     } else {
+                         x <- callNextMethod()
+                     }
+                     x
+                 })
 
 .CompressedList.list.subscript <-
 function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
@@ -347,157 +546,6 @@ setReplaceMethod("$", "CompressedList",
                      x
                  })
 
-### Supported 'i' types: numeric, character, logical, NULL and missing.
-setMethod("[", "CompressedList",
-          function(x, i, j, ..., drop)
-          {
-              if (!missing(j) || length(list(...)) > 0)
-                  stop("invalid subsetting")
-              if (!missing(i)) {
-                  if (is(i, "RangesList") || is(i, "RleList") ||
-                      is(i, "LogicalList") ||
-                      (is(i, "IntegerList") && !is(i, "Ranges"))) {
-                      x <- seqselect(x, i)
-                  } else {
-                      irInfo <-
-                        .bracket.Index(i, length(x), names(x), asRanges = TRUE)
-                      if (!is.null(irInfo[["msg"]]))
-                          stop(irInfo[["msg"]])
-                      if (irInfo[["useIdx"]]) {
-                          i <- irInfo[["idx"]]
-                          ir <-
-                            IRanges(end =
-                                    seqselect(end(x@partitioning), i),
-                                    width =
-                                    seqselect(width(x@partitioning), i))
-                          x <-
-                            initialize(x,
-                                       elementMetadata =
-                                       seqselect(x@elementMetadata, i),
-                                       unlistData = seqselect(x@unlistData, ir),
-                                       partitioning =
-                                       new2("PartitioningByEnd",
-                                            end = cumsum(width(ir)),
-                                            NAMES = seqselect(names(x), i),
-                                            check=FALSE))
-                      }
-                  }
-              }
-              x
-          })
-
-setMethod("seqselect", "CompressedList",
-          function(x, start=NULL, end=NULL, width=NULL)
-          {
-              lx <- length(x)
-              if ((lx > 0) && is.null(end) && is.null(width) &&
-                  !is.null(start) && !is(start, "Ranges")) {
-                  if (lx != length(start))
-                      stop("'length(start)' must equal 'length(x)' when ",
-                           "'end' and 'width' are NULL")
-                  if (is.list(start)) {
-                      if (is.logical(start[[1L]]))
-                          start <- LogicalList(start)
-                      else if (is.numeric(start[[1L]]))
-                          start <- IntegerList(start)
-                  } else if (is(start, "RleList")) {
-                      start <- IRangesList(start)
-                  }
-                  if (is(start, "RangesList")) {
-                      unlistData <-
-                        seqselect(x@unlistData,
-                                  shift(unlist(start),
-                                        rep.int(start(x@partitioning) - 1L,
-                                                elementLengths(start))))
-                      partitionEnd <-
-                        cumsum(unlist(lapply(start, function(x) sum(width(x))),
-                                      use.names = FALSE))
-                  } else if (is(start, "LogicalList")) {
-                      xeltlen <- elementLengths(x)
-                      whichRep <- which(xeltlen != elementLengths(start))
-                      for (i in whichRep)
-                          start[[i]] <- rep(start[[i]], length.out = xeltlen[i])
-                      unlistData <- seqselect(x@unlistData, unlist(start))
-                      partitionEnd <-
-                        cumsum(unlist(lapply(start, sum), use.names = FALSE))
-                  } else if (is(start, "IntegerList")) {
-                      i <-
-                        unlist(start +
-                               newCompressedList("CompressedIntegerList",
-                                                 start(x@partitioning) - 1L,
-                                                 end = seq_len(lx)))
-                      unlistData <- seqselect(x@unlistData, i)
-                      partitionEnd <- cumsum(unname(elementLengths(start)))
-                  } else {
-                      stop("unrecognized 'start' type")
-                  }
-                  x <-
-                    initialize(x,
-                               unlistData = unlistData,
-                               partitioning = 
-                                 new2("PartitioningByEnd",
-                                      end = partitionEnd, NAMES = names(x),
-                                      check=FALSE))
-              } else {
-                  if (!is.null(end) || !is.null(width))
-                      start <- IRanges(start = start, end = end, width = width)
-                  irInfo <- .bracket.Index(start, lx, names(x), asRanges = TRUE)
-                  if (!is.null(irInfo[["msg"]]))
-                      stop(irInfo[["msg"]])
-                  if (irInfo[["useIdx"]])
-                      x <- x[irInfo[["idx"]]]
-              }
-              x
-          })
-
-setReplaceMethod("seqselect", "CompressedList",
-                 function(x, start = NULL, end = NULL, width = NULL, value)
-                 {
-                     lx <- length(x)
-                     if ((lx > 0) && is.null(end) && is.null(width) &&
-                         !is.null(start) && !is(start, "Ranges")) {
-                         if (lx != length(start))
-                             stop("'length(start)' must equal 'length(x)' ",
-                                  "when 'end' and 'width' are NULL")
-                         if (is.list(start)) {
-                             if (is.logical(start[[1L]]))
-                                 start <- LogicalList(start)
-                             else if (is.numeric(start[[1L]]))
-                                 start <- IntegerList(start)
-                         } else if (is(start, "RleList")) {
-                             start <- IRangesList(start)
-                         }
-                         if (is(start, "RangesList")) {
-                             start <-
-                               shift(unlist(start),
-                                     rep.int(start(x@partitioning) - 1L,
-                                             elementLengths(start)))
-                         } else if (is(start, "LogicalList")) {
-                             xeltlen <- elementLengths(x)
-                             whichRep <- which(xeltlen != elementLengths(start))
-                             for (i in whichRep) {
-                                 start[[i]] <-
-                                   rep(start[[i]], length.out = xeltlen[i])
-                             }
-                             start <- unlist(start)
-                         } else if (is(start, "IntegerList")) {
-                             i <-
-                               unlist(start +
-                                      newCompressedList("CompressedIntegerList",
-                                                        start(x@partitioning) - 1L,
-                                                        end = seq_len(length(x))))
-                             start <- rep.int(FALSE, sum(elementLengths(x)))
-                             start[i] <- TRUE
-                         } else {
-                             stop("unrecognized 'start' type")
-                         }
-                         seqselect(x@unlistData, start) <-
-                           unlist(value, use.names=FALSE)
-                     } else {
-                         x <- callNextMethod()
-                     }
-                     x
-                 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.

@@ -17,7 +17,9 @@
 
 % subsetting
 \alias{[,CompressedList-method}
+\alias{[<-,CompressedList-method}
 \alias{[,SimpleList-method}
+\alias{[<-,SimpleList-method}
 \alias{[[,CompressedList-method}
 \alias{[[,SimpleList-method}
 \alias{[[<-,CompressedList-method}

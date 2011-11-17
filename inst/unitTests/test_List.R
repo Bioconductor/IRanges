@@ -90,19 +90,23 @@ test_List_replace <- function() {
     collection <- IntegerList(one = int1, int2, compress = compress)
 
     checkException(collection[1,2] <- 1L, silent = TRUE)
-    checkException(collection[list()] <- 1L, silent = TRUE)
     checkException(collection[c(-1,2)] <- 1L, silent = TRUE)
 
     newcollection <- collection
-    newcollection[TRUE] <- 1:10
+    newcollection[list()] <- 1L
+    checkIdentical(newcollection, collection)
+
+    value <-  IntegerList(1:10, compress = compress)
+    newcollection <- collection
+    newcollection[TRUE] <- value
     checkIdentical(newcollection,
                    IntegerList(one = 1:10, 1:10, compress = compress))
     newcollection <- collection
-    newcollection[c(TRUE, FALSE)] <- 1:10
+    newcollection[c(TRUE, FALSE)] <- value
     checkIdentical(newcollection,
                    IntegerList(one = 1:10, int2, compress = compress))
     newcollection <- collection
-    newcollection["one"] <- 1:10
+    newcollection["one"] <- value
     checkIdentical(newcollection,
                    IntegerList(one = 1:10, int2, compress = compress))
   }

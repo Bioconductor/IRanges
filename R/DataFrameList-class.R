@@ -350,10 +350,14 @@ setReplaceMethod("[", "SimpleSplitDataFrameList",
                          } else {
                              j <- jInfo[["idx"]]
                              y <- x[, j, drop=FALSE]
-                             if (missing(i))
+                             if (missing(i)) {
                                  y[] <- value
-                             else
+                             } else if (is.list(i) || is(i, "List")) {
+                                 y <- subsetListByList_replace(y, i, value,
+                                                               byrow=TRUE)
+                             } else {
                                  y[i] <- value
+                             }
                              indices <-
                                structure(seq_len(length(x)), names = names(x))
                              x@listData <-
@@ -392,6 +396,9 @@ setReplaceMethod("[", "CompressedSplitDataFrameList",
                              y <- x[, j, drop=FALSE]
                              if (missing(i)) {
                                  y[] <- value
+                             } else if (is.list(i) || is(i, "List")) {
+                                 y <- subsetListByList_replace(y, i, value,
+                                                               byrow=TRUE)
                              } else {
                                  y[i] <- value
                              }

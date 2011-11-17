@@ -50,8 +50,22 @@
 
 \alias{as.list,CompressedAtomicList-method}
 \alias{coerce,CompressedAtomicList,list-method}
-
+\alias{coerce,vector,AtomicList-method}
 \alias{lapply,CompressedAtomicList-method}
+\alias{coerce,list,CompressedLogicalList-method}
+\alias{coerce,list,SimpleLogicalList-method}
+\alias{coerce,list,CompressedIntegerList-method}
+\alias{coerce,list,SimpleIntegerList-method}
+\alias{coerce,list,CompressedNumericList-method}
+\alias{coerce,list,SimpleNumericList-method}
+\alias{coerce,list,CompressedComplexList-method}
+\alias{coerce,list,SimpleComplexList-method}
+\alias{coerce,list,CompressedCharacterList-method}
+\alias{coerce,list,SimpleCharacterList-method}
+\alias{coerce,list,CompressedRawList-method}
+\alias{coerce,list,SimpleRawList-method}
+\alias{coerce,list,CompressedRleList-method}
+\alias{coerce,list,SimpleRleList-method}
 
 \alias{coerce,LogicalList,IRangesList-method}
 \alias{coerce,LogicalList,CompressedIRangesList-method}
@@ -65,8 +79,6 @@
 \alias{coerce,RleList,NormalIRangesList-method}
 \alias{coerce,RleList,CompressedNormalIRangesList-method}
 \alias{coerce,RleList,SimpleNormalIRangesList-method}
-
-\alias{coerce,vector,AtomicList-method}
 
 \alias{seqselect<-,CompressedAtomicList-method}
 \alias{seqselect<-,SimpleAtomicList-method}

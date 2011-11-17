@@ -238,6 +238,56 @@ setMethod("lapply", "CompressedAtomicList",
               }
           })
 
+setAs("list", "CompressedLogicalList",
+    function(from) LogicalList(from, compress=TRUE)
+)
+setAs("list", "SimpleLogicalList",
+    function(from) LogicalList(from, compress=FALSE)
+)
+
+setAs("list", "CompressedIntegerList",
+    function(from) IntegerList(from, compress=TRUE)
+)
+setAs("list", "SimpleIntegerList",
+    function(from) IntegerList(from, compress=FALSE)
+)
+
+setAs("list", "CompressedNumericList",
+    function(from) NumericList(from, compress=TRUE)
+)
+setAs("list", "SimpleNumericList",
+    function(from) NumericList(from, compress=FALSE)
+)
+
+setAs("list", "CompressedComplexList",
+    function(from) ComplexList(from, compress=TRUE)
+)
+setAs("list", "SimpleComplexList",
+    function(from) ComplexList(from, compress=FALSE)
+)
+
+setAs("list", "CompressedCharacterList",
+    function(from) CharacterList(from, compress=TRUE)
+)
+setAs("list", "SimpleCharacterList",
+    function(from) CharacterList(from, compress=FALSE)
+)
+
+setAs("list", "CompressedRawList",
+    function(from) RawList(from, compress=TRUE)
+)
+setAs("list", "SimpleRawList",
+    function(from) RawList(from, compress=FALSE)
+)
+
+setAs("list", "CompressedRleList",
+    function(from) RleList(from, compress=TRUE)
+)
+setAs("list", "SimpleRleList",
+    function(from) RleList(from, compress=FALSE)
+)
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Group generic methods
 ###

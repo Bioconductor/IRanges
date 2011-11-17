@@ -115,6 +115,60 @@ checkAndTranslateDbleBracketSubscript <- function(x, i, error.if.nomatch=TRUE)
 
 setMethod("$", "List", function(x, name) x[[name, exact=FALSE]])
 
+### Fancy subsetting of a List object by a list-like subscript.
+### NOT efficient because it loops over the elements of 'i'.
+subsetListByList_replace <- function(x, i, value, byrow=FALSE)
+{
+    li <- length(i)
+    if (li == 0L) {
+        ## Surprisingly, in that case, `[<-` on standard vectors does not
+        ## even look at 'value'. So neither do we...
+        return(x)
+    }
+    lv <- length(value)
+    if (lv == 0L)
+        stop("replacement has length zero")
+    if (!is(value, class(x)))
+        value <- tryToCoerceReplacementValue(x, value)
+    if (li != lv) {
+        if (li %% lv != 0L)
+            warning("number of items to replace is not a multiple ",
+                    "of replacement length")
+        ## Assuming that rep() works on 'value' and also replicates its
+        ## names.
+        value <- rep(value, length.out = li)
+    }
+    if (is.null(names(i))) {
+        if (length(i) > length(x))
+            stop("list-like subscript is longer than ",
+                 "list-like object to subset")
+        for (ii in seq_len(li)) {
+            xx <- x[[ii]]
+            if (byrow)
+                xx[i[[ii]], ] <- value[[ii]]
+            else
+                xx[i[[ii]]] <- value[[ii]]
+            x[[ii]] <- xx
+        }
+        return(x)
+    }
+    if (is.null(names(x)))
+        stop("cannot subscript an unnamed list-like object ",
+             "by a named list-like object")
+    j <- match(names(i), names(x))
+    if (anyMissing(j))
+        stop("list-like subscript has names not in list-like object to subset")
+    for (ii in seq_len(li)) {
+        xx <- x[[j[ii]]]
+        if (byrow)
+            xx[i[[ii]], ] <- value[[ii]]
+        else
+            xx[i[[ii]]] <- value[[ii]]
+        x[[j[ii]]] <- xx
+    }
+    return(x)
+}
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping methods.

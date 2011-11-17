@@ -75,42 +75,6 @@ setValidity2("SimpleList", .valid.SimpleList)
 ### Subsetting.
 ###
 
-setMethod("[[", "SimpleList",
-          function(x, i, j, ...) {
-              dotArgs <- list(...)
-              if (length(dotArgs) > 0)
-                  dotArgs <- dotArgs[names(dotArgs) != "exact"]
-              if (!missing(j) || length(dotArgs) > 0)
-                  stop("incorrect number of subscripts")
-              ## H.P.: Do we really need to support subsetting by NA? Other
-              ## "[[" methods for other List subtypes don't support it.
-              if (is.vector(i) && length(i) == 1L && is.na(i))
-                  return(NULL)
-              index <- checkAndTranslateDbleBracketSubscript(x, i,
-                           error.if.nomatch=FALSE)
-              if (is.na(index))
-                  return(NULL)
-              as.list(x)[[index]]
-          })
-
-setReplaceMethod("[[", "SimpleList",
-                 function(x, i, j, ..., value)
-                 {
-                     if (!missing(j) || length(list(...)) > 0)
-                         stop("invalid replacement")
-                     origLen <- length(x)
-                     x@listData[[i]] <- value
-                     if (origLen < length(x))
-                       x <- .addNAElementMetadataRow(x)
-                     x
-                 })
-
-setReplaceMethod("$", "SimpleList",
-                 function(x, name, value) {
-                     x[[name]] <- value
-                     x
-                 })
-
 ### Supported 'i' types: numeric, character, logical, NULL and missing.
 setMethod("[", "SimpleList",
           function(x, i, j, ..., drop)
@@ -163,6 +127,41 @@ setMethod("[", "SimpleList",
               }
               x
           })
+
+setReplaceMethod("[", "SimpleList",
+    function(x, i, j, ..., value)
+    {
+        if (!missing(j) || length(list(...)) > 0L)
+            stop("invalid subsetting")
+        if (missing(i))
+            i <- seq_len(length(x))
+        else if (is.list(i) || is(i, "List")) 
+            return(subsetListByList_replace(x, i, value))
+        else
+            i <- normalizeSingleBracketSubscript(i, x)
+        li <- length(i)
+        if (li == 0L) {
+            ## Surprisingly, in that case, `[<-` on standard vectors does not
+            ## even look at 'value'. So neither do we...
+            return(x)
+        }
+        lv <- length(value)
+        if (lv == 0L)
+            stop("replacement has length zero")
+        if (!is(value, class(x)))
+            value <- tryToCoerceReplacementValue(x, value)
+        if (li != lv) {
+            if (li %% lv != 0L)
+                warning("number of items to replace is not a multiple ",
+                        "of replacement length")
+            ## Assuming that rep() works on 'value' and also replicates its
+            ## names.
+            value <- rep(value, length.out = li)
+        }
+        x@listData[i] <- value@listData
+        x
+    }
+)
 
 setMethod("seqselect", "SimpleList",
           function(x, start=NULL, end=NULL, width=NULL)
@@ -260,6 +259,42 @@ setReplaceMethod("seqselect", "SimpleList",
                      }
                      x
                  })
+setMethod("[[", "SimpleList",
+          function(x, i, j, ...) {
+              dotArgs <- list(...)
+              if (length(dotArgs) > 0)
+                  dotArgs <- dotArgs[names(dotArgs) != "exact"]
+              if (!missing(j) || length(dotArgs) > 0)
+                  stop("incorrect number of subscripts")
+              ## H.P.: Do we really need to support subsetting by NA? Other
+              ## "[[" methods for other List subtypes don't support it.
+              if (is.vector(i) && length(i) == 1L && is.na(i))
+                  return(NULL)
+              index <- checkAndTranslateDbleBracketSubscript(x, i,
+                           error.if.nomatch=FALSE)
+              if (is.na(index))
+                  return(NULL)
+              as.list(x)[[index]]
+          })
+
+setReplaceMethod("[[", "SimpleList",
+                 function(x, i, j, ..., value)
+                 {
+                     if (!missing(j) || length(list(...)) > 0)
+                         stop("invalid replacement")
+                     origLen <- length(x)
+                     x@listData[[i]] <- value
+                     if (origLen < length(x))
+                       x <- .addNAElementMetadataRow(x)
+                     x
+                 })
+
+setReplaceMethod("$", "SimpleList",
+                 function(x, name, value) {
+                     x[[name]] <- value
+                     x
+                 })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.
