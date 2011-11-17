@@ -16,6 +16,7 @@ importFrom(BiocGenerics,
     Reduce, Filter, Find, Map, Position,
     rep.int,
     table,
+    tapply,
     union, intersect, setdiff,
     xtabs,
     updateObject
@@ -198,7 +199,6 @@ export(
 
 exportMethods(
     ## Methods for generics defined in the base packages:
-    tapply,
     "[", "[<-", "[[", "[[<-", "$",
     "==", "!=", "<=", ">=", "<", ">",
     Ops, Math, Math2, Summary, Complex,
@@ -253,6 +253,7 @@ exportMethods(
     Reduce, Filter, Find, Map, Position,
     rep.int,
     table,
+    tapply,
     union, intersect, setdiff,
     xtabs,
     updateObject,
