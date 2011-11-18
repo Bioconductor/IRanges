@@ -140,6 +140,17 @@ test_List_replace <- function() {
                    IntegerList(one = rep(c(-99,-100), 3),
                                two = c(15,45,20,1,-2,-1,80,5),
                                compress = compress))
+
+    collection <- IntegerList(one = c(a=1,b=2), two = c(d=1,b=0,a=5),
+                              compress = compress)
+    newcollection1 <- newcollection2 <- collection
+    newcollection1[list(two=2, one=2:1)] <- list(99, 11:12)
+    checkIdentical(newcollection1,
+                   IntegerList(one = c(a=12,b=11), two = c(d=1,b=99,a=5),
+                               compress = compress))
+
+    newcollection2[list(two="b", one=c("b", "a"))] <- list(99, 11:12)
+    checkIdentical(newcollection2, newcollection1)
   }
 }
 
