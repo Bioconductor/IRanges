@@ -188,11 +188,7 @@ setGeneric("universe", function(x) standardGeneric("universe"))
 setMethod("universe", "RangesList",
           function(x)
           {
-            ### FIXME: for compatibility with older versions, eventually emit warning
-            if (is.null(metadata(x)) || is.character(metadata(x)))
-              metadata(x)
-            else
-              metadata(x)$universe
+            metadata(x)$universe
           })
 
 setGeneric("universe<-", function(x, value) standardGeneric("universe<-"))
