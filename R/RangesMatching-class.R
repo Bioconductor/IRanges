@@ -34,6 +34,41 @@ setMethod("queryHits", "RangesMatching", function(x) {
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Extraction
+###
+
+setMethod("[", "RangesMatching",
+          function(x, i, j, ... , drop=TRUE)
+          {
+            if (!missing(j) || length(list(...)) > 0L)
+              stop("invalid subsetting")
+            if (missing(i))
+              return(x)
+            if (is(i, "Rle"))
+              i <- as.vector(i)
+            if (!is.atomic(i))
+              stop("invalid subscript type")
+            lx <- length(x)
+            if (length(i) == 0L) {
+              i <- integer(0)
+            } else if (is.numeric(i)) {
+              if (min(i) < 0L)
+                i <- seq_len(lx)[i]
+              else if (!is.integer(i))
+                i <- as.integer(i)
+            } else if (is.logical(i)) {
+              if (length(i) > lx)
+                stop("subscript out of bounds")
+              i <- seq_len(lx)[i]
+            } else {
+              stop("invalid subscript type")
+            }
+            x@matchMatrix <- x@matchMatrix[i,]
+            x
+          }
+          )
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
 ###
 
