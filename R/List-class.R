@@ -372,7 +372,7 @@ setMethod("as.env", "List",
   } else {
     spaceLabels <- as.character(spaceLevels)
   }
-  ind <- Rle(factor(rep.int(seq_len(length(x)), elementLengths(x)),
+  ind <- Rle(factor(rep.int(spaceLevels, elementLengths(x)),
                     levels = spaceLevels,
                     labels = spaceLabels))
   do.call(DataFrame, structure(list(ind), names = indName))
@@ -389,8 +389,7 @@ setMethod("stack", "List",
 
 setMethod("relist", signature(skeleton = "List"),
           function(flesh, skeleton) {
-            list <- seqsplit(flesh,
-                             factor(togroup(skeleton), seq(length(skeleton))))
+            list <- seqsplit(flesh, tofactor(skeleton))
             names(list) <- names(skeleton)
             list
           })
