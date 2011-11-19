@@ -238,6 +238,16 @@ setMethod("lapply", "CompressedAtomicList",
               }
           })
 
+setMethod("drop", "AtomicList", function(x) {
+  lens <- elementLengths(x)
+  if (any(lens > 1))
+    stop("All element lengths must be <= 1")
+  x_dropped <- rep.int(NA, sum(lens))
+  x_dropped[lens > 0] <- unlist(x, use.names = FALSE)
+  names(x_dropped) <- names(x)
+  x_dropped
+})
+
 setAs("list", "CompressedLogicalList",
     function(from) LogicalList(from, compress=TRUE)
 )
@@ -286,7 +296,6 @@ setAs("list", "CompressedRleList",
 setAs("list", "SimpleRleList",
     function(from) RleList(from, compress=FALSE)
 )
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Group generic methods
