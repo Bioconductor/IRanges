@@ -61,7 +61,7 @@ breakInChunks <- function(totalsize, chunksize)
     rem <- totalsize %% chunksize
     if (rem > 0L)
         ans_width <- c(ans_width, rem)
-    IRanges(end=cumsum(ans_width), width=ans_width)
+    PartitioningByWidth(ans_width)
 }
 
 
