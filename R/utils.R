@@ -9,7 +9,6 @@
 
 setOldClass("AsIs")
 setOldClass("xtabs", "table")
-setOldClass(c("file", "connection"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -9,7 +9,7 @@ importFrom(stats, start, end, update, var, cov, cor, sd, median, quantile, mad,
 import(BiocGenerics)
 
 exportClasses(
-    AsIs, xtabs, file, connection,
+    AsIs, xtabs,
     characterORNULL,
     Annotated,
     DataTable, DataTableORNULL,
@@ -48,7 +48,7 @@ exportClasses(
     DataFrameList, SimpleDataFrameList,
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
     RangedData, RangedDataList, FilterRules, RDApplyParams, RangesMatching,
-    RangedSelection)
+    RangedSelection, RangesMapping)
 
 export(
     ## Non-generic functions:
@@ -140,7 +140,7 @@ export(
     findRange, findRun,
 
     ## Generic functions in the Grouping API:
-    nobj, grouplength, members, vmembers, togroup, togrouplength,
+    nobj, grouplength, members, vmembers, togroup, togrouplength, tofactor,
     high2low, low2high, grouprank, togrouprank,
 
     ## Generic functions in the GappedRanges API:
@@ -179,7 +179,7 @@ export(
     iteratorFun, "iteratorFun<-",
     rdapply,
     universe, "universe<-", space, score, "score<-",
-    matchMatrix, queryHits, subjectHits
+    matchMatrix, queryHits, subjectHits, matching, map
 )
 
 exportMethods(
@@ -199,6 +199,7 @@ exportMethods(
     rev,
     rep,
     head, tail,
+    drop,
     start, end,
     min, max, range, which.max, which.min,
     diff,
