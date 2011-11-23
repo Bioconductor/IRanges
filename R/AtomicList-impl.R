@@ -8,8 +8,9 @@
 ## - cumsum: unlist, cumsum and subtract offsets
 ## - paste: when collapsing, unlist, collapse, using embedded delimiter
 
-setClassUnion("atomic",
-              c("raw", "logical", "integer", "numeric", "character", "complex"))
+.ATOMIC_TYPES <- c("logical", "integer", "numeric", "complex",
+                   "character", "raw")
+setClassUnion("atomic", .ATOMIC_TYPES)
 
 ## A list that holds atomic objects
 
@@ -76,6 +77,7 @@ setClass("CompressedRleList",
 setClass("SimpleRleList",
          prototype = prototype(elementType = "Rle"),
          contains = c("RleList", "SimpleAtomicList"))
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructors
@@ -200,6 +202,7 @@ RleList <- function(..., compress = FALSE)
         newSimpleList("SimpleRleList", lapply(listData, as, "Rle"))
 }
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
 ###
@@ -248,54 +251,31 @@ setMethod("drop", "AtomicList", function(x) {
   x_dropped
 })
 
-setAs("list", "CompressedLogicalList",
-    function(from) LogicalList(from, compress=TRUE)
-)
-setAs("list", "SimpleLogicalList",
-    function(from) LogicalList(from, compress=FALSE)
-)
+vector2AtomicList <- function(type, compress)
+{
+    function(from) {
+        if (!is.list(from))
+            from <- as.list(from)
+        constructor <- paste(type, "List", sep="")
+        get(constructor)(from, compress=compress)
+    }
+}
 
-setAs("list", "CompressedIntegerList",
-    function(from) IntegerList(from, compress=TRUE)
-)
-setAs("list", "SimpleIntegerList",
-    function(from) IntegerList(from, compress=FALSE)
-)
+setAs("vector", "CompressedLogicalList", vector2AtomicList("Logical", TRUE))
+setAs("vector", "SimpleLogicalList", vector2AtomicList("Logical", FALSE))
+setAs("vector", "CompressedIntegerList", vector2AtomicList("Integer", TRUE))
+setAs("vector", "SimpleIntegerList", vector2AtomicList("Integer", FALSE))
+setAs("vector", "CompressedNumericList", vector2AtomicList("Numeric", TRUE))
+setAs("vector", "SimpleNumericList", vector2AtomicList("Numeric", FALSE))
+setAs("vector", "CompressedComplexList", vector2AtomicList("Complex", TRUE))
+setAs("vector", "SimpleComplexList", vector2AtomicList("Complex", FALSE))
+setAs("vector", "CompressedCharacterList", vector2AtomicList("Character", TRUE))
+setAs("vector", "SimpleCharacterList", vector2AtomicList("Character", FALSE))
+setAs("vector", "CompressedRawList", vector2AtomicList("Raw", TRUE))
+setAs("vector", "SimpleRawList", vector2AtomicList("Raw", FALSE))
+setAs("vector", "CompressedRleList", vector2AtomicList("Rle", TRUE))
+setAs("vector", "SimpleRleList", vector2AtomicList("Rle", FALSE))
 
-setAs("list", "CompressedNumericList",
-    function(from) NumericList(from, compress=TRUE)
-)
-setAs("list", "SimpleNumericList",
-    function(from) NumericList(from, compress=FALSE)
-)
-
-setAs("list", "CompressedComplexList",
-    function(from) ComplexList(from, compress=TRUE)
-)
-setAs("list", "SimpleComplexList",
-    function(from) ComplexList(from, compress=FALSE)
-)
-
-setAs("list", "CompressedCharacterList",
-    function(from) CharacterList(from, compress=TRUE)
-)
-setAs("list", "SimpleCharacterList",
-    function(from) CharacterList(from, compress=FALSE)
-)
-
-setAs("list", "CompressedRawList",
-    function(from) RawList(from, compress=TRUE)
-)
-setAs("list", "SimpleRawList",
-    function(from) RawList(from, compress=FALSE)
-)
-
-setAs("list", "CompressedRleList",
-    function(from) RleList(from, compress=TRUE)
-)
-setAs("list", "SimpleRleList",
-    function(from) RleList(from, compress=FALSE)
-)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Group generic methods
