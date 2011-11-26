@@ -277,6 +277,50 @@ setAs("vector", "CompressedRleList", vector2AtomicList("Rle", TRUE))
 setAs("vector", "SimpleRleList", vector2AtomicList("Rle", FALSE))
 
 
+### FIXME: We could also use the constructors here, but those need to
+### be modified to accept a List as a singular argument and to more
+### efficiently coerce each element. Another issue is that coercion
+### traditionally strips off the names, but the constructors will
+### preserve the names.
+coerceAtomicList <- function(from, converter) {
+  relist(converter(unlist(from, use.names = FALSE)), from)
+}
+
+### FIXME: could special case CompressedAtomicList and take
+### shortcuts. Is it worth it?
+
+### FIXME: could have separate coercions to Compressed/Simple lists,
+### to be consistent with the 'list' coercions above, but does the
+### user want to worry about that?
+
+setAs("AtomicList", "LogicalList", function(from) {
+  coerceAtomicList(from, as.logical)
+})
+
+setAs("AtomicList", "IntegerList", function(from) {
+  coerceAtomicList(from, as.integer)
+})
+
+setAs("AtomicList", "NumericList", function(from) {
+  coerceAtomicList(from, as.numeric)
+})
+
+setAs("AtomicList", "ComplexList", function(from) {
+  coerceAtomicList(from, as.complex)
+})
+
+setAs("AtomicList", "CharacterList", function(from) {
+  coerceAtomicList(from, as.character)
+})
+
+setAs("AtomicList", "RawList", function(from) {
+  coerceAtomicList(from, as.raw)
+})
+
+setAs("AtomicList", "RleList", function(from) {
+  coerceAtomicList(from, Rle)
+})
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Group generic methods
 ###
