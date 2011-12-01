@@ -350,9 +350,9 @@ setMethod("countOverlaps", c("Ranges", "Ranges"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within", "equal"))
     {
-        tabulate(queryHits(findOverlaps(query, subject, maxgap = maxgap,
-                                        minoverlap = minoverlap, type = type)),
-                 length(query))
+        counts <- queryHits(findOverlaps(query, subject, maxgap = maxgap,
+                                         minoverlap = minoverlap, type = type))
+        structure(tabulate(counts, length(query)), names=names(query))
     }
 )
 
