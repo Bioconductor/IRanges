@@ -1,4 +1,5 @@
 #include "IRanges.h"
+#include <limits.h> /* for INT_MAX */
 
 
 SEXP Rle_logical_constructor(SEXP x, SEXP counts) {
@@ -445,10 +446,24 @@ SEXP Rle_raw_constructor(SEXP x, SEXP counts) {
 
 SEXP Rle_constructor(SEXP x, SEXP counts)
 {
+	int i, counts_elt;
+	unsigned int ans_length;
 	SEXP ans;
 
-	if (LENGTH(counts) > 0 && (LENGTH(counts) != LENGTH(x)))
-		error("'length(values)' != 'length(lengths)'");
+	if (LENGTH(counts) > 0) {
+		if (LENGTH(counts) != LENGTH(x))
+			error("'length(values)' != 'length(lengths)'");
+		for (i = ans_length = 0; i < LENGTH(counts); i++) {
+			counts_elt = INTEGER(counts)[i];
+			if (counts_elt == NA_INTEGER || counts_elt < 0)
+				error("'lengths' must contain non-negative "
+				      "integers");
+			ans_length += counts_elt;
+			if (ans_length > INT_MAX)
+				error("trying to construct an Rle with "
+				      "length > .Machine$integer.max");
+		}
+	}
 
 	ans = R_NilValue;
 	switch(TYPEOF(x)) {
