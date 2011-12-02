@@ -2,499 +2,468 @@
 #include <limits.h> /* for INT_MAX */
 
 
-SEXP Rle_logical_constructor(SEXP x, SEXP counts) {
-	int n, unpro;
-	SEXP ans, ans_values, ans_lengths;
-
-    n = LENGTH(x);
-
-    if (n == 0) {
-    	PROTECT(ans_values = NEW_LOGICAL(0));
-    	PROTECT(ans_lengths = NEW_INTEGER(0));
-        unpro = 3;
-    } else if (n == 1) {
-    	PROTECT(ans_values = NEW_LOGICAL(1));
-    	PROTECT(ans_lengths = NEW_INTEGER(1));
-    	LOGICAL(ans_values)[0] = LOGICAL(x)[0];
-    	if (LENGTH(counts) == 0) {
-    		INTEGER(ans_lengths)[0] = 1;
-    	} else {
-        	INTEGER(ans_lengths)[0] = INTEGER(counts)[0];
-    	}
-    	unpro = 3;
-    } else {
-    	int i, index;
-    	int *val1, *val2;
-    	SEXP buf_values, buf_lengths;
-
-    	PROTECT(buf_values = NEW_LOGICAL(n));
-    	PROTECT(buf_lengths = NEW_INTEGER(n));
-    	memset(INTEGER(buf_lengths), 0, n * sizeof(int));
-    	LOGICAL(buf_values)[0] = LOGICAL(x)[0];
-    	index = 0;
-    	if (LENGTH(counts) == 0) {
-        	INTEGER(buf_lengths)[0] = 1;
-        	for (i = 1, val1 = LOGICAL(x), val2 = LOGICAL(x) + 1; i < n;
-        	     i++, val1++, val2++) {
-                if (*val1 != *val2) {
-                	index++;
-                	LOGICAL(buf_values)[index] = *val2;
-                }
-                INTEGER(buf_lengths)[index]++;
-        	}
-    	} else {
-    		int *cnt;
-        	INTEGER(buf_lengths)[0] = INTEGER(counts)[0];
-        	for (i = 1, val1 = LOGICAL(x), val2 = LOGICAL(x) + 1,
-        		 cnt = INTEGER(counts) + 1; i < n; i++, val1++, val2++, cnt++) {
-                if (*val1 != *val2) {
-                	index++;
-                	LOGICAL(buf_values)[index] = *val2;
-                }
-                INTEGER(buf_lengths)[index] += *cnt;
-        	}
-    	}
-    	index++;
-    	PROTECT(ans_values = NEW_LOGICAL(index));
-    	PROTECT(ans_lengths = NEW_INTEGER(index));
-    	memcpy(LOGICAL(ans_values), LOGICAL(buf_values), index * sizeof(int));
-    	memcpy(INTEGER(ans_lengths), INTEGER(buf_lengths), index * sizeof(int));
-    	unpro = 5;
-    }
-
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, install("values"), ans_values);
-	SET_SLOT(ans, install("lengths"), ans_lengths);
-	UNPROTECT(unpro);
-
-	return ans;
-}
-
-SEXP Rle_integer_constructor(SEXP x, SEXP counts) {
-	int n, unpro;
-	SEXP ans, ans_values, ans_lengths;
-
-    n = LENGTH(x);
-
-    if (n == 0) {
-    	PROTECT(ans_values = NEW_INTEGER(0));
-    	PROTECT(ans_lengths = NEW_INTEGER(0));
-        unpro = 3;
-    } else if (n == 1) {
-    	PROTECT(ans_values = NEW_INTEGER(1));
-    	PROTECT(ans_lengths = NEW_INTEGER(1));
-    	INTEGER(ans_values)[0] = INTEGER(x)[0];
-    	if (LENGTH(counts) == 0) {
-    		INTEGER(ans_lengths)[0] = 1;
-    	} else {
-        	INTEGER(ans_lengths)[0] = INTEGER(counts)[0];
-    	}
-    	unpro = 3;
-    } else {
-    	int i, index;
-    	int *val1, *val2;
-    	SEXP buf_values, buf_lengths;
-
-    	PROTECT(buf_values = NEW_INTEGER(n));
-    	PROTECT(buf_lengths = NEW_INTEGER(n));
-    	memset(INTEGER(buf_lengths), 0, n * sizeof(int));
-    	INTEGER(buf_values)[0] = INTEGER(x)[0];
-    	index = 0;
-    	if (LENGTH(counts) == 0) {
-        	INTEGER(buf_lengths)[0] = 1;
-        	for (i = 1, val1 = INTEGER(x), val2 = INTEGER(x) + 1; i < n;
-        	     i++, val1++, val2++) {
-                if (*val1 != *val2) {
-                	index++;
-                	INTEGER(buf_values)[index] = *val2;
-                }
-                INTEGER(buf_lengths)[index]++;
-        	}
-    	} else {
-    		int *cnt;
-        	INTEGER(buf_lengths)[0] = INTEGER(counts)[0];
-        	for (i = 1, val1 = INTEGER(x), val2 = INTEGER(x) + 1,
-        		 cnt = INTEGER(counts) + 1; i < n; i++, val1++, val2++, cnt++) {
-                if (*val1 != *val2) {
-                	index++;
-                	INTEGER(buf_values)[index] = *val2;
-                }
-                INTEGER(buf_lengths)[index] += *cnt;
-        	}
-    	}
-    	index++;
-    	PROTECT(ans_values = NEW_INTEGER(index));
-    	PROTECT(ans_lengths = NEW_INTEGER(index));
-    	memcpy(INTEGER(ans_values), INTEGER(buf_values), index * sizeof(int));
-    	memcpy(INTEGER(ans_lengths), INTEGER(buf_lengths), index * sizeof(int));
-    	unpro = 5;
-    }
-
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, install("values"), ans_values);
-	SET_SLOT(ans, install("lengths"), ans_lengths);
-	UNPROTECT(unpro);
-
-	return ans;
-}
-
-SEXP Rle_real_constructor(SEXP x, SEXP counts) {
-	int n, unpro;
-	SEXP ans, ans_values, ans_lengths;
-
-    n = LENGTH(x);
-
-    if (n == 0) {
-    	PROTECT(ans_values = NEW_NUMERIC(0));
-    	PROTECT(ans_lengths = NEW_INTEGER(0));
-        unpro = 3;
-    } else if (n == 1) {
-    	PROTECT(ans_values = NEW_NUMERIC(1));
-    	PROTECT(ans_lengths = NEW_INTEGER(1));
-    	REAL(ans_values)[0] = REAL(x)[0];
-    	if (LENGTH(counts) == 0) {
-    		INTEGER(ans_lengths)[0] = 1;
-    	} else {
-        	INTEGER(ans_lengths)[0] = INTEGER(counts)[0];
-    	}
-    	unpro = 3;
-    } else {
-    	int i, index;
-    	double *val1, *val2;
-    	SEXP buf_values, buf_lengths;
-
-    	PROTECT(buf_values = NEW_NUMERIC(n));
-    	PROTECT(buf_lengths = NEW_INTEGER(n));
-    	memset(INTEGER(buf_lengths), 0, n * sizeof(int));
-    	REAL(buf_values)[0] = REAL(x)[0];
-    	index = 0;
-    	if (LENGTH(counts) == 0) {
-        	INTEGER(buf_lengths)[0] = 1;
-        	for (i = 1, val1 = REAL(x), val2 = REAL(x) + 1; i < n;
-        	     i++, val1++, val2++) {
-                if ((*val1 != *val2) && !(R_IsNA(*val1) && R_IsNA(*val2)) &&
-                    !(R_IsNaN(*val1) && R_IsNaN(*val2))) {
-                	index++;
-                	REAL(buf_values)[index] = *val2;
-                }
-                INTEGER(buf_lengths)[index]++;
-        	}
-    	} else {
-    		int *cnt;
-        	INTEGER(buf_lengths)[0] = INTEGER(counts)[0];
-        	for (i = 1, val1 = REAL(x), val2 = REAL(x) + 1,
-        		 cnt = INTEGER(counts) + 1; i < n; i++, val1++, val2++, cnt++) {
-                if ((*val1 != *val2) && !(R_IsNA(*val1) && R_IsNA(*val2)) &&
-                    !(R_IsNaN(*val1) && R_IsNaN(*val2))) {
-                	index++;
-                	REAL(buf_values)[index] = *val2;
-                }
-                INTEGER(buf_lengths)[index] += *cnt;
-        	}
-    	}
-    	index++;
-    	PROTECT(ans_values = NEW_NUMERIC(index));
-    	PROTECT(ans_lengths = NEW_INTEGER(index));
-    	memcpy(REAL(ans_values), REAL(buf_values), index * sizeof(double));
-    	memcpy(INTEGER(ans_lengths), INTEGER(buf_lengths), index * sizeof(int));
-    	unpro = 5;
-    }
-
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, install("values"), ans_values);
-	SET_SLOT(ans, install("lengths"), ans_lengths);
-	UNPROTECT(unpro);
-
-	return ans;
-}
-
-SEXP Rle_complex_constructor(SEXP x, SEXP counts) {
-	int n, unpro;
-	SEXP ans, ans_values, ans_lengths;
-
-    n = LENGTH(x);
-
-    if (n == 0) {
-    	PROTECT(ans_values = NEW_COMPLEX(0));
-    	PROTECT(ans_lengths = NEW_INTEGER(0));
-        unpro = 3;
-    } else if (n == 1) {
-    	PROTECT(ans_values = NEW_COMPLEX(1));
-    	PROTECT(ans_lengths = NEW_INTEGER(1));
-    	COMPLEX(ans_values)[0].r = COMPLEX(x)[0].r;
-    	COMPLEX(ans_values)[0].i = COMPLEX(x)[0].i;
-    	if (LENGTH(counts) == 0) {
-    		INTEGER(ans_lengths)[0] = 1;
-    	} else {
-        	INTEGER(ans_lengths)[0] = INTEGER(counts)[0];
-    	}
-    	unpro = 3;
-    } else {
-    	int i, index;
-    	Rcomplex val1, val2;
-    	SEXP buf_values, buf_lengths;
-
-    	PROTECT(buf_values = NEW_COMPLEX(n));
-    	PROTECT(buf_lengths = NEW_INTEGER(n));
-    	memset(INTEGER(buf_lengths), 0, n * sizeof(int));
-    	COMPLEX(buf_values)[0].r = COMPLEX(x)[0].r;
-    	COMPLEX(buf_values)[0].i = COMPLEX(x)[0].i;
-    	index = 0;
-    	if (LENGTH(counts) == 0) {
-        	INTEGER(buf_lengths)[0] = 1;
-    		val2 = COMPLEX(x)[0];
-        	for (i = 1; i < n; i++) {
-        		val1 = val2;
-        		val2 = COMPLEX(x)[i];
-                if (((val1.r != val2.r) &&
-                	 !(R_IsNA(val1.r) && R_IsNA(val2.r)) &&
-                     !(R_IsNaN(val1.r) && R_IsNaN(val2.r))) ||
-                    ((val1.i != val2.i) &&
-                     !(R_IsNA(val1.i) && R_IsNA(val2.i)) &&
-                     !(R_IsNaN(val1.i) && R_IsNaN(val2.i)))) {
-                	index++;
-                	COMPLEX(buf_values)[index].r = val2.r;
-                	COMPLEX(buf_values)[index].i = val2.i;
-                }
-                INTEGER(buf_lengths)[index]++;
-        	}
-    	} else {
-    		int *cnt;
-        	INTEGER(buf_lengths)[0] = INTEGER(counts)[0];
-    		val2 = COMPLEX(x)[0];
-        	for (i = 1, cnt = INTEGER(counts) + 1; i < n; i++, cnt++) {
-        		val1 = val2;
-        		val2 = COMPLEX(x)[i];
-                if (((val1.r != val2.r) &&
-                	 !(R_IsNA(val1.r) && R_IsNA(val2.r)) &&
-                     !(R_IsNaN(val1.r) && R_IsNaN(val2.r))) ||
-                    ((val1.i != val2.i) &&
-                     !(R_IsNA(val1.i) && R_IsNA(val2.i)) &&
-                     !(R_IsNaN(val1.i) && R_IsNaN(val2.i)))) {
-                	index++;
-                	COMPLEX(buf_values)[index].r = val2.r;
-                	COMPLEX(buf_values)[index].i = val2.i;
-                }
-                INTEGER(buf_lengths)[index] += *cnt;
-        	}
-    	}
-    	index++;
-    	PROTECT(ans_values = NEW_COMPLEX(index));
-    	PROTECT(ans_lengths = NEW_INTEGER(index));
-    	for (i = 0; i < index; i++) {
-    		COMPLEX(ans_values)[i].r = COMPLEX(buf_values)[i].r;
-    		COMPLEX(ans_values)[i].i = COMPLEX(buf_values)[i].i;
-    	}
-    	memcpy(INTEGER(ans_lengths), INTEGER(buf_lengths), index * sizeof(int));
-    	unpro = 5;
-    }
-
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, install("values"), ans_values);
-	SET_SLOT(ans, install("lengths"), ans_lengths);
-	UNPROTECT(unpro);
-
-	return ans;
-}
-
-SEXP Rle_string_constructor(SEXP x, SEXP counts) {
-	int n, unpro;
-	SEXP ans, ans_values, ans_lengths;
-
-    n = LENGTH(x);
-
-    if (n == 0) {
-    	PROTECT(ans_values = NEW_CHARACTER(0));
-    	PROTECT(ans_lengths = NEW_INTEGER(0));
-        unpro = 3;
-    } else if (n == 1) {
-    	PROTECT(ans_values = NEW_CHARACTER(1));
-    	PROTECT(ans_lengths = NEW_INTEGER(1));
-    	SET_STRING_ELT(ans_values, 0, STRING_ELT(x, 0));
-    	if (LENGTH(counts) == 0) {
-    		INTEGER(ans_lengths)[0] = 1;
-    	} else {
-        	INTEGER(ans_lengths)[0] = INTEGER(counts)[0];
-    	}
-    	unpro = 3;
-    } else {
-    	int i, index;
-    	SEXP val1, val2;
-    	SEXP buf_values, buf_lengths;
-
-    	PROTECT(buf_values = NEW_CHARACTER(n));
-    	PROTECT(buf_lengths = NEW_INTEGER(n));
-    	memset(INTEGER(buf_lengths), 0, n * sizeof(int));
-    	SET_STRING_ELT(buf_values, 0, STRING_ELT(x, 0));
-    	index = 0;
-    	if (LENGTH(counts) == 0) {
-        	INTEGER(buf_lengths)[0] = 1;
-    		val2 = STRING_ELT(x, 0);
-        	for (i = 1; i < n; i++) {
-        		val1 = val2;
-        		val2 = STRING_ELT(x, i);
-                if (val1 != val2) {
-                	index++;
-                	SET_STRING_ELT(buf_values, index, val2);
-                }
-                INTEGER(buf_lengths)[index]++;
-        	}
-    	} else {
-    		int *cnt;
-        	INTEGER(buf_lengths)[0] = INTEGER(counts)[0];
-    		val2 = STRING_ELT(x, 0);
-        	for (i = 1, cnt = INTEGER(counts) + 1; i < n; i++, cnt++) {
-        		val1 = val2;
-        		val2 = STRING_ELT(x, i);
-                if (val1 != val2) {
-                	index++;
-                	SET_STRING_ELT(buf_values, index, val2);
-                }
-                INTEGER(buf_lengths)[index] += *cnt;
-        	}
-    	}
-    	index++;
-    	PROTECT(ans_values = NEW_CHARACTER(index));
-    	PROTECT(ans_lengths = NEW_INTEGER(index));
-    	for (i = 0; i < index; i++) {
-    		SET_STRING_ELT(ans_values, i, STRING_ELT(buf_values, i));
-    	}
-    	memcpy(INTEGER(ans_lengths), INTEGER(buf_lengths), index * sizeof(int));
-    	unpro = 5;
-    }
-
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, install("values"), ans_values);
-	SET_SLOT(ans, install("lengths"), ans_lengths);
-	UNPROTECT(unpro);
-
-	return ans;
-}
-
-SEXP Rle_raw_constructor(SEXP x, SEXP counts) {
-	int n, unpro;
-	SEXP ans, ans_values, ans_lengths;
-
-    n = LENGTH(x);
-
-    if (n == 0) {
-    	PROTECT(ans_values = NEW_RAW(0));
-    	PROTECT(ans_lengths = NEW_INTEGER(0));
-        unpro = 3;
-    } else if (n == 1) {
-    	PROTECT(ans_values = NEW_RAW(1));
-    	PROTECT(ans_lengths = NEW_INTEGER(1));
-    	RAW(ans_values)[0] = RAW(x)[0];
-    	if (LENGTH(counts) == 0) {
-    		INTEGER(ans_lengths)[0] = 1;
-    	} else {
-        	INTEGER(ans_lengths)[0] = INTEGER(counts)[0];
-    	}
-    	unpro = 3;
-    } else {
-    	int i, index;
-    	Rbyte *val1, *val2;
-    	SEXP buf_values, buf_lengths;
-
-    	PROTECT(buf_values = NEW_RAW(n));
-    	PROTECT(buf_lengths = NEW_INTEGER(n));
-    	memset(INTEGER(buf_lengths), 0, n * sizeof(int));
-    	RAW(buf_values)[0] = RAW(x)[0];
-    	index = 0;
-    	if (LENGTH(counts) == 0) {
-        	INTEGER(buf_lengths)[0] = 1;
-        	for (i = 1, val1 = RAW(x), val2 = RAW(x) + 1; i < n;
-        	     i++, val1++, val2++) {
-                if (*val1 != *val2) {
-                	index++;
-                	RAW(buf_values)[index] = *val2;
-                }
-                INTEGER(buf_lengths)[index]++;
-        	}
-    	} else {
-    		int *cnt;
-        	INTEGER(buf_lengths)[0] = INTEGER(counts)[0];
-        	for (i = 1, val1 = RAW(x), val2 = RAW(x) + 1,
-        		 cnt = INTEGER(counts) + 1; i < n; i++, val1++, val2++, cnt++) {
-                if (*val1 != *val2) {
-                	index++;
-                	RAW(buf_values)[index] = *val2;
-                }
-                INTEGER(buf_lengths)[index] += *cnt;
-        	}
-    	}
-    	index++;
-    	PROTECT(ans_values = NEW_RAW(index));
-    	PROTECT(ans_lengths = NEW_INTEGER(index));
-    	memcpy(RAW(ans_values), RAW(buf_values), index);
-    	memcpy(INTEGER(ans_lengths), INTEGER(buf_lengths), index * sizeof(int));
-    	unpro = 5;
-    }
-
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, install("values"), ans_values);
-	SET_SLOT(ans, install("lengths"), ans_lengths);
-	UNPROTECT(unpro);
-
-	return ans;
-}
-
-
-/*
- * --- .Call ENTRY POINT ---
+/****************************************************************************
+ * The _fill_Rle_slots_with_<things>() low-level helper functions.
+ *
+ * To compute only the nb of Rle runs without actually filling the slots
+ * (degraded mode), set 'ans_lengths' to NULL.
  */
 
-SEXP Rle_constructor(SEXP x, SEXP counts)
+static int _fill_Rle_slots_with_int_vals(int *ans_values,
+		int *ans_lengths,
+		const int *values, int n,
+		const int *lengths)
 {
-	int i, counts_elt;
-	unsigned int ans_length;
-	SEXP ans;
+	int i, nrun, lengths_elt;
+	int val0;
 
-	if (LENGTH(counts) > 0) {
-		if (LENGTH(counts) != LENGTH(x))
-			error("'length(values)' != 'length(lengths)'");
-		for (i = ans_length = 0; i < LENGTH(counts); i++) {
-			counts_elt = INTEGER(counts)[i];
-			if (counts_elt == NA_INTEGER || counts_elt < 0)
+	for (i = nrun = 0, lengths_elt = 1; i < n; i++, values++) {
+		if (lengths != NULL) {
+			lengths_elt = lengths[i];
+			if (lengths_elt == 0)
+				continue;
+		}
+		if (nrun != 0 && *values == val0) {
+			if (ans_lengths != NULL)
+				ans_lengths[nrun - 1] += lengths_elt;
+			continue;
+		}
+		val0 = *values;
+		if (ans_lengths != NULL) {
+			ans_lengths[nrun] = lengths_elt;
+			ans_values[nrun] = val0;
+		}
+		nrun++;
+	}
+	return nrun;
+}
+
+static int _fill_Rle_slots_with_double_vals(double *ans_values,
+		int *ans_lengths,
+		const double *values, int n,
+		const int *lengths)
+{
+	int i, nrun, lengths_elt;
+	double val0;
+
+	for (i = nrun = 0, lengths_elt = 1; i < n; i++, values++) {
+		if (lengths != NULL) {
+			lengths_elt = lengths[i];
+			if (lengths_elt == 0)
+				continue;
+		}
+		if (nrun != 0 && ((*values == val0) ||
+				  (R_IsNA(*values) && R_IsNA(val0)) ||
+				  (R_IsNaN(*values) && R_IsNaN(val0))))
+		{
+			if (ans_lengths != NULL)
+				ans_lengths[nrun - 1] += lengths_elt;
+			continue;
+		}
+		val0 = *values;
+		if (ans_lengths != NULL) {
+			ans_lengths[nrun] = lengths_elt;
+			ans_values[nrun] = val0;
+		}
+		nrun++;
+	}
+	return nrun;
+}
+
+static int _fill_Rle_slots_with_Rcomplex_vals(Rcomplex *ans_values,
+		int *ans_lengths,
+		const Rcomplex *values, int n,
+		const int *lengths)
+{
+	int i, nrun, lengths_elt;
+	Rcomplex val0;
+
+	for (i = nrun = 0, lengths_elt = 1; i < n; i++, values++) {
+		if (lengths != NULL) {
+			lengths_elt = lengths[i];
+			if (lengths_elt == 0)
+				continue;
+		}
+		if (nrun != 0 && ((values->r == val0.r) ||
+				  (R_IsNA(values->r) && R_IsNA(val0.r)) ||
+				  (R_IsNaN(values->r) && R_IsNaN(val0.r)))
+			      && ((values->i == val0.i) ||
+				  (R_IsNA(values->i) && R_IsNA(val0.i)) ||
+				  (R_IsNaN(values->i) && R_IsNaN(val0.i))))
+		{
+			if (ans_lengths != NULL)
+				ans_lengths[nrun - 1] += lengths_elt;
+			continue;
+		}
+		val0 = *values;
+		if (ans_lengths != NULL) {
+			ans_lengths[nrun] = lengths_elt;
+			ans_values[nrun] = val0;
+		}
+		nrun++;
+	}
+	return nrun;
+}
+
+static int _fill_Rle_slots_with_strings(SEXP ans_values,
+		int *ans_lengths,
+		SEXP values,
+		const int *lengths)
+{
+	int n, i, nrun, lengths_elt;
+	SEXP values_elt, val0;
+
+	n = LENGTH(values);
+	for (i = nrun = 0, lengths_elt = 1; i < n; i++) {
+		if (lengths != NULL) {
+			lengths_elt = lengths[i];
+			if (lengths_elt == 0)
+				continue;
+		}
+		values_elt = STRING_ELT(values, i);
+		if (nrun != 0 && values_elt == val0) {
+			if (ans_lengths != NULL)
+				ans_lengths[nrun - 1] += lengths_elt;
+			continue;
+		}
+		val0 = values_elt;
+		if (ans_lengths != NULL) {
+			ans_lengths[nrun] = lengths_elt;
+			SET_STRING_ELT(ans_values, nrun, val0);
+		}
+		nrun++;
+	}
+	return nrun;
+}
+
+static int _fill_Rle_slots_with_Rbyte_vals(Rbyte *ans_values,
+		int *ans_lengths,
+		const Rbyte *values, int n,
+		const int *lengths)
+{
+	int i, nrun, lengths_elt;
+	Rbyte val0;
+
+	for (i = nrun = 0, lengths_elt = 1; i < n; i++, values++) {
+		if (lengths != NULL) {
+			lengths_elt = lengths[i];
+			if (lengths_elt == 0)
+				continue;
+		}
+		if (nrun != 0 && *values == val0) {
+			if (ans_lengths != NULL)
+				ans_lengths[nrun - 1] += lengths_elt;
+			continue;
+		}
+		val0 = *values;
+		if (ans_lengths != NULL) {
+			ans_lengths[nrun] = lengths_elt;
+			ans_values[nrun] = val0;
+		}
+		nrun++;
+	}
+	return nrun;
+}
+
+
+/****************************************************************************
+ * The _Rle_<type>_constructor() helper functions.
+ *
+ * 'lengths' must have length 0, or have the same length as 'values' and
+ * contain non-NA non-negative integers.
+ * If 'nobuf' is 1, then a 2-pass algo is used that doesn't use the
+ * intermediate buffers, typically leading to 20%-30% less memory used (it
+ * also seems slightly faster on my machine).
+ */
+
+static SEXP _new_Rle(SEXP values, SEXP lengths)
+{
+	SEXP classdef, ans;
+
+	PROTECT(classdef = MAKE_CLASS("Rle"));
+	PROTECT(ans = NEW_OBJECT(classdef));
+	SET_SLOT(ans, install("values"), values);
+	SET_SLOT(ans, install("lengths"), lengths);
+	UNPROTECT(2);
+	return ans;
+}
+
+static SEXP _Rle_logical_constructor(SEXP values, SEXP lengths, int nobuf)
+{
+	int n, nrun, *buf_lengths;
+	int *buf_values;
+	SEXP ans_lengths, ans_values, ans;
+
+	n = LENGTH(values);
+	if (nobuf) {
+		/* 1st pass: compute the nb of runs */
+		nrun = _fill_Rle_slots_with_int_vals(NULL,
+				NULL,
+				LOGICAL(values), n,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	} else {
+		buf_lengths = (int *) R_alloc(n, sizeof(int));
+		buf_values = (int *) R_alloc(n, sizeof(int));
+		nrun = _fill_Rle_slots_with_int_vals(buf_values,
+				buf_lengths,
+				LOGICAL(values), n,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	}
+	PROTECT(ans_lengths = NEW_INTEGER(nrun));
+	PROTECT(ans_values = NEW_LOGICAL(nrun));
+	if (nobuf) {
+		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
+		_fill_Rle_slots_with_int_vals(LOGICAL(ans_values),
+				INTEGER(ans_lengths),
+				LOGICAL(values), n,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	} else {
+		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
+		memcpy(LOGICAL(ans_values), buf_values, nrun * sizeof(int));
+	}
+	PROTECT(ans = _new_Rle(ans_values, ans_lengths));
+	UNPROTECT(3);
+	return ans;
+}
+
+static SEXP _Rle_integer_constructor(SEXP values, SEXP lengths, int nobuf)
+{
+	int n, nrun, *buf_lengths;
+	int *buf_values;
+	SEXP ans_lengths, ans_values, ans;
+
+	n = LENGTH(values);
+	if (nobuf) {
+		/* 1st pass: compute the nb of runs */
+		nrun = _fill_Rle_slots_with_int_vals(NULL,
+				NULL,
+				INTEGER(values), n,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	} else {
+		buf_lengths = (int *) R_alloc(n, sizeof(int));
+		buf_values = (int *) R_alloc(n, sizeof(int));
+		nrun = _fill_Rle_slots_with_int_vals(buf_values,
+				buf_lengths,
+				INTEGER(values), n,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	}
+	PROTECT(ans_lengths = NEW_INTEGER(nrun));
+	PROTECT(ans_values = NEW_INTEGER(nrun));
+	if (nobuf) {
+		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
+		_fill_Rle_slots_with_int_vals(INTEGER(ans_values),
+				INTEGER(ans_lengths),
+				INTEGER(values), n,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	} else {
+		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
+		memcpy(INTEGER(ans_values), buf_values, nrun * sizeof(int));
+	}
+	PROTECT(ans = _new_Rle(ans_values, ans_lengths));
+	UNPROTECT(3);
+	return ans;
+}
+
+static SEXP _Rle_real_constructor(SEXP values, SEXP lengths, int nobuf)
+{
+	int n, nrun, *buf_lengths;
+	double *buf_values;
+	SEXP ans_lengths, ans_values, ans;
+
+	n = LENGTH(values);
+	if (nobuf) {
+		/* 1st pass: compute the nb of runs */
+		nrun = _fill_Rle_slots_with_double_vals(NULL,
+				NULL,
+				REAL(values), n,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	} else {
+		buf_lengths = (int *) R_alloc(n, sizeof(int));
+		buf_values = (double *) R_alloc(n, sizeof(double));
+		nrun = _fill_Rle_slots_with_double_vals(buf_values,
+				buf_lengths,
+				REAL(values), n,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	}
+	PROTECT(ans_lengths = NEW_INTEGER(nrun));
+	PROTECT(ans_values = NEW_NUMERIC(nrun));
+	if (nobuf) {
+		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
+		_fill_Rle_slots_with_double_vals(REAL(ans_values),
+				INTEGER(ans_lengths),
+				REAL(values), n,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	} else {
+		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
+		memcpy(REAL(ans_values), buf_values, nrun * sizeof(double));
+	}
+	PROTECT(ans = _new_Rle(ans_values, ans_lengths));
+	UNPROTECT(3);
+	return ans;
+}
+
+static SEXP _Rle_complex_constructor(SEXP values, SEXP lengths, int nobuf)
+{
+	int n, nrun, *buf_lengths;
+	Rcomplex *buf_values;
+	SEXP ans_lengths, ans_values, ans;
+
+	n = LENGTH(values);
+	if (nobuf) {
+		/* 1st pass: compute the nb of runs */
+		nrun = _fill_Rle_slots_with_Rcomplex_vals(NULL,
+				NULL,
+				COMPLEX(values), n,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	} else {
+		buf_lengths = (int *) R_alloc(n, sizeof(int));
+		buf_values = (Rcomplex *) R_alloc(n, sizeof(Rcomplex));
+		nrun = _fill_Rle_slots_with_Rcomplex_vals(buf_values,
+				buf_lengths,
+				COMPLEX(values), n,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	}
+	PROTECT(ans_lengths = NEW_INTEGER(nrun));
+	PROTECT(ans_values = NEW_COMPLEX(nrun));
+	if (nobuf) {
+		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
+		_fill_Rle_slots_with_Rcomplex_vals(COMPLEX(ans_values),
+				INTEGER(ans_lengths),
+				COMPLEX(values), n,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	} else {
+		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
+		memcpy(COMPLEX(ans_values), buf_values,
+					    nrun * sizeof(Rcomplex));
+	}
+	PROTECT(ans = _new_Rle(ans_values, ans_lengths));
+	UNPROTECT(3);
+	return ans;
+}
+
+static SEXP _Rle_string_constructor(SEXP values, SEXP lengths, int nobuf)
+{
+	int n, nrun, *buf_lengths, i;
+	SEXP buf_values, ans_lengths, ans_values, ans;
+
+	n = LENGTH(values);
+	if (nobuf) {
+		/* 1st pass: compute the nb of runs */
+		nrun = _fill_Rle_slots_with_strings(NULL,
+				NULL,
+				values,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	} else {
+		buf_lengths = (int *) R_alloc(n, sizeof(int));
+		PROTECT(buf_values = NEW_CHARACTER(n));
+		nrun = _fill_Rle_slots_with_strings(buf_values,
+				buf_lengths,
+				values,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	}
+	PROTECT(ans_lengths = NEW_INTEGER(nrun));
+	PROTECT(ans_values = NEW_CHARACTER(nrun));
+	if (nobuf) {
+		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
+		_fill_Rle_slots_with_strings(ans_values,
+				INTEGER(ans_lengths),
+				values,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	} else {
+		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
+		for (i = 0; i < nrun; i++)
+		    SET_STRING_ELT(ans_values, i, STRING_ELT(buf_values, i));
+	}
+	PROTECT(ans = _new_Rle(ans_values, ans_lengths));
+	UNPROTECT(nobuf ? 3 : 4);
+	return ans;
+}
+
+static SEXP _Rle_raw_constructor(SEXP values, SEXP lengths, int nobuf)
+{
+	int n, nrun, *buf_lengths;
+	Rbyte *buf_values;
+	SEXP ans_lengths, ans_values, ans;
+
+	n = LENGTH(values);
+	if (nobuf) {
+		/* 1st pass: compute the nb of runs */
+		nrun = _fill_Rle_slots_with_Rbyte_vals(NULL,
+				NULL,
+				RAW(values), n,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	} else {
+		buf_lengths = (int *) R_alloc(n, sizeof(int));
+		buf_values = (Rbyte *) R_alloc(n, sizeof(Rbyte));
+		nrun = _fill_Rle_slots_with_Rbyte_vals(buf_values,
+				buf_lengths,
+				RAW(values), n,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	}
+	PROTECT(ans_lengths = NEW_INTEGER(nrun));
+	PROTECT(ans_values = NEW_RAW(nrun));
+	if (nobuf) {
+		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
+		_fill_Rle_slots_with_Rbyte_vals(RAW(ans_values),
+				INTEGER(ans_lengths),
+				RAW(values), n,
+				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+	} else {
+		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
+		memcpy(RAW(ans_values), buf_values, nrun * sizeof(Rbyte));
+	}
+	PROTECT(ans = _new_Rle(ans_values, ans_lengths));
+	UNPROTECT(3);
+	return ans;
+}
+
+
+/****************************************************************************
+ * The Rle constructor (.Call ENTRY POINT).
+ */
+
+SEXP Rle_constructor(SEXP values, SEXP lengths, SEXP check, SEXP nobuf)
+{
+	unsigned int ans_length;
+	int i, lengths_elt, nobuf0;
+
+	if (LOGICAL(check)[0] && LENGTH(lengths) > 0) {
+		if (LENGTH(lengths) != LENGTH(values))
+			error("'length(lengths)' != 'length(values)'");
+		for (i = ans_length = 0; i < LENGTH(lengths); i++) {
+			lengths_elt = INTEGER(lengths)[i];
+			if (lengths_elt == NA_INTEGER || lengths_elt < 0)
 				error("'lengths' must contain non-negative "
 				      "integers");
-			ans_length += counts_elt;
+			ans_length += lengths_elt;
 			if (ans_length > INT_MAX)
 				error("trying to construct an Rle with "
 				      "length > .Machine$integer.max");
 		}
 	}
-
-	ans = R_NilValue;
-	switch(TYPEOF(x)) {
-    case LGLSXP:
-    	PROTECT(ans = Rle_logical_constructor(x, counts));
-    	break;
-    case INTSXP:
-    	PROTECT(ans = Rle_integer_constructor(x, counts));
-    	break;
-    case REALSXP:
-    	PROTECT(ans = Rle_real_constructor(x, counts));
-        break;
-    case CPLXSXP:
-    	PROTECT(ans = Rle_complex_constructor(x, counts));
-        break;
-    case STRSXP:
-    	PROTECT(ans = Rle_string_constructor(x, counts));
-        break;
-    case RAWSXP:
-    	PROTECT(ans = Rle_raw_constructor(x, counts));
-        break;
-    default:
-		error("Rle computation of these types is not implemented");
+	nobuf0 = LOGICAL(nobuf)[0];
+	switch (TYPEOF(values)) {
+	    case LGLSXP:
+		return _Rle_logical_constructor(values, lengths, nobuf0);
+	    case INTSXP:
+		return _Rle_integer_constructor(values, lengths, nobuf0);
+	    case REALSXP:
+		return _Rle_real_constructor(values, lengths, nobuf0);
+	    case CPLXSXP:
+		return _Rle_complex_constructor(values, lengths, nobuf0);
+	    case STRSXP:
+		return _Rle_string_constructor(values, lengths, nobuf0);
+	    case RAWSXP:
+		return _Rle_raw_constructor(values, lengths, nobuf0);
 	}
-	UNPROTECT(1);
-	return ans;
+	error("Rle of type '%s' is not supported",
+	      CHAR(type2str(TYPEOF(values))));
+	return R_NilValue;
 }
 
 
-/*
- * --- .Call ENTRY POINT ---
+/****************************************************************************
+ * The Rle start() and end() getters (.Call ENTRY POINTS).
  */
 
 SEXP Rle_start(SEXP x)
@@ -520,11 +489,6 @@ SEXP Rle_start(SEXP x)
 
 	return ans;
 }
-
-
-/*
- * --- .Call ENTRY POINT ---
- */
 
 SEXP Rle_end(SEXP x)
 {

@@ -94,7 +94,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(valid_GappedRanges, 2),
 
 /* Rle_class.c */
-	CALLMETHOD_DEF(Rle_constructor, 2),
+	CALLMETHOD_DEF(Rle_constructor, 4),
 	CALLMETHOD_DEF(Rle_start, 1),
 	CALLMETHOD_DEF(Rle_end, 1),
 	CALLMETHOD_DEF(Rle_getStartEndRunAndOffset, 3),

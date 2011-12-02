@@ -78,28 +78,14 @@ setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "integer"),
           {
               if (!isTRUEorFALSE(check))
                   stop("'check' must be TRUE or FALSE")
-              if (check && length(lengths) > 0) {
-                  if (length(values) != length(lengths))
-                      stop("'values' and 'lengths' must have the same length")
-                  if (anyMissingOrOutside(lengths, 0L))
-                      stop("'lengths' must contain all positive integers")
-                  zeros <- which(lengths == 0L)
-                  if (length(zeros) > 0L) {
-                      values <- values[-zeros]
-                      lengths <- lengths[-zeros]
-                  }
-              }
+              ans <- .Call2("Rle_constructor",
+                            values, lengths, check, TRUE,
+                            PACKAGE="IRanges")
               if (is.factor(values)) {
-                  ans <-
-                    .Call2("Rle_constructor", as.integer(values), lengths,
-                          PACKAGE="IRanges")
                   ans@values <-
                     factor(ans@values,
                            levels = seq_len(length(levels(values))),
                            labels = levels(values))
-              } else {
-                  ans <-
-                   .Call2("Rle_constructor", values, lengths, PACKAGE="IRanges")
               }
               ans
           })

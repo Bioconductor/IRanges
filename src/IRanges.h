@@ -863,8 +863,10 @@ SEXP _new_RangedData(
 /* Rle_class.c */
 
 SEXP Rle_constructor(
-	SEXP x,
-	SEXP count
+	SEXP values,
+	SEXP lengths,
+	SEXP check,
+	SEXP nobuf
 );
 
 SEXP Rle_start(SEXP x);
