@@ -1104,7 +1104,7 @@ SEXP _new_LOGICAL_from_CharAE(const CharAE *char_ae)
 	PROTECT(ans = NEW_LOGICAL(nelt));
 	for (i = 0, ans_elt = LOGICAL(ans), elt = char_ae->elts;
 	     i < nelt;
-	     i++, elt++)
+	     i++, ans_elt++, elt++)
 	{
 		*ans_elt = *elt;
 	}
