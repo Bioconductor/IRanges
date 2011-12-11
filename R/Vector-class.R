@@ -91,6 +91,13 @@ setReplaceMethod("values", "Vector",
                      x
                  })
 
+setGeneric("rename", function(x, value, ...) standardGeneric("rename"))
+
+setMethod("rename", "Vector", function(x, value, ...) {
+  newNames <- c(value, ...)
+  names(x)[match(names(newNames), names(x))] <- newNames
+  x
+})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
