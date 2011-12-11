@@ -646,6 +646,27 @@ setAs("RleList", "RangedData",
              check = FALSE)
       })
 
+setAs("RleViewsList", "RangedData", function(from) {
+  subject <- subject(from)
+  from_ranges <- restrict(ranges(from), 1L, elementLengths(subject),
+                          keep.all.ranges = TRUE)
+### FIXME: do we want to insert NAs for out of bounds views?
+  score <- seqselect(subject, from_ranges)
+  score_part <- seqapply(width(from_ranges), PartitioningByWidth)
+  score_ranges <- ranges(score)
+  ol <- findOverlaps(score_ranges, score_part)
+  offset <- (start(from_ranges) - start(score_part))[seqapply(ol, subjectHits)]
+  ranges <- shift(ranges(ol, score_ranges, score_part), offset)
+  viewNames <- lapply(from_ranges, function(x) {
+    if (is.null(names(x)))
+      seq_len(length(x))
+    else names(x)
+  })
+  RangedData(ranges,
+             score = unlist(runValue(score), use.names = FALSE)[queryHits(ol)],
+             view = unlist(viewNames, use.names = FALSE)[subjectHits(ol)])
+})
+
 setAs("Ranges", "RangedData",
       function(from)
       {
