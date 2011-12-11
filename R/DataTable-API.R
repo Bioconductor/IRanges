@@ -269,6 +269,11 @@ setMethod("rbind", "DataTable", function(..., deparse.level=1)
           stop("missing 'rbind' method for DataTable class ",
                class(list(...)[[1L]])))
 
+## FIXME: do not cheat by going through data.frame
+setMethod("merge", c("DataTable", "DataTable"), function(x, y, ...) {
+  DataFrame(merge(as.data.frame(x), as.data.frame(y), ...))
+})
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping methods.
 ###
