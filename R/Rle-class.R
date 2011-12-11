@@ -44,6 +44,7 @@ setMethod("nrun", "Rle", function(x) length(runLength(x)))
 setMethod("start", "Rle", function(x) .Call2("Rle_start", x, PACKAGE="IRanges"))
 setMethod("end", "Rle", function(x) .Call2("Rle_end", x, PACKAGE="IRanges"))
 setMethod("width", "Rle", function(x) runLength(x))
+setMethod("ranges", "Rle", function(x) IRanges(start(x), width = width(x)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Replace methods.
@@ -857,6 +858,11 @@ setMethod("which", "Rle",
               if (length(from) == 0)
                   integer(0)
               else mseq(from, to)
+          })
+
+setMethod("which.max", "Rle",
+          function(x) {
+            start(x)[which.max(runValue(x))]
           })
 
 setMethod("ifelse", "Rle", function (test, yes, no) 
