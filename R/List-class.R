@@ -248,7 +248,7 @@ castList <- function(x, ...) {
     stop("'x' must be a 'list'")
   cl <- lapply(x, class)
   clnames <- unique(unlist(cl, use.names=FALSE))
-  cons <- NULL
+  cons <- SimpleList
   if (length(clnames) == 1L) {
     cl <- cl[[1]]
     pkg <- packageSlot(cl)
@@ -290,10 +290,7 @@ castList <- function(x, ...) {
         cons <- get(connms[coni], ns[[coni]])
     }
   }
-  if (!is.null(cons))
-    x <- cons(x, ...)
-  else stop("Failed to coerce list into a List subclass")
-  x
+  cons(x, ...)
 }
 
 seqapply <- function(X, FUN, ...) {
@@ -521,3 +518,17 @@ setMethod("with", "List",
               eval(substitute(expr), data, parent.frame())
           })
 
+setMethod("within", "List",
+          function(data, expr, ...)
+          {
+            e <- as.env(data)
+            eval(substitute(expr), e, parent.frame())
+            l <- mget(ls(e), e)
+            l <- l[!sapply(l, is.null)]
+            nD <- length(del <- setdiff(names(data), (nl <- names(l))))
+            for (nm in nl)
+              data[[nm]] <- l[[nm]]
+            for (nm in del) 
+              data[[nm]] <- NULL
+            data
+          })
