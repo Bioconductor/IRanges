@@ -69,15 +69,15 @@ setReplaceMethod("ranges", "RangedData",
 ## range delegates
 setMethod("start", "RangedData",
           function(x) {
-            unlist(start(ranges(x)), use.names=FALSE)
+            start(unlist(ranges(x), use.names=FALSE))
           })
 setMethod("end", "RangedData",
           function(x) {
-            unlist(end(ranges(x)), use.names=FALSE)
+            end(unlist(ranges(x), use.names=FALSE))
           })
 setMethod("width", "RangedData",
           function(x) {
-            unlist(width(ranges(x)), use.names=FALSE)
+            width(unlist(ranges(x), use.names=FALSE))
           })
 setReplaceMethod("start", "RangedData",
                  function(x, check=TRUE, value) {
