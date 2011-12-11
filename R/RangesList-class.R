@@ -384,9 +384,12 @@ setMethod("restrict", "RangesList",
           function(x, start = NA, end = NA, keep.all.ranges = FALSE,
                    use.names = TRUE)
           {
-              endoapply(x, restrict, start = start, end = end,
-                        keep.all.ranges = keep.all.ranges,
-                        use.names = use.names)
+              lx <- length(x)
+              start <- normargAtomicList1(start, IntegerList, lx)
+              end <- normargAtomicList1(end, IntegerList, lx)
+              mendoapply(restrict, x, start = start, end = end,
+                         MoreArgs = list(keep.all.ranges = keep.all.ranges,
+                           use.names = use.names))
           })
 
 setMethod("restrict", "CompressedIRangesList",
@@ -395,12 +398,16 @@ setMethod("restrict", "CompressedIRangesList",
           {
               if (!isTRUEorFALSE(keep.all.ranges))
                   stop("'keep.all.ranges' must be TRUE or FALSE")
-              if (keep.all.ranges)
+              if (keep.all.ranges) {
+                  lx <- length(x)
+                  eln <- elementLengths(x)
+                  start <- normargAtomicList2(start, IntegerList, lx, eln)
+                  end <- normargAtomicList2(end, IntegerList, lx, eln)
                   slot(x, "unlistData", check=FALSE) <-
                     restrict(x@unlistData, start = start, end = end,
                              keep.all.ranges = keep.all.ranges,
                              use.names = use.names)
-              else
+              } else
                   x <- callNextMethod()
               x
           })
