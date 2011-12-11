@@ -109,9 +109,11 @@ export(
     ## Generic functions in the Vector API:
     elementType, elementLengths,
     metadata, elementMetadata, "metadata<-", "elementMetadata<-",
+    values, "values<-",   
     isConstant,
     isEmpty,
     seqselect, "seqselect<-",
+    rename,
 
     ## Generic functions in the Ranges API:
     width,
@@ -134,7 +136,11 @@ export(
     flank,
     punion, pintersect, psetdiff, pgap,
     disjoin, disjointBins,
-
+    isNormal,
+    isDisjoint,
+    whichFirstNotNormal,
+    coverage,
+    
     ## Generic functions in the Rle API:
     Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
     findRange, findRun,
@@ -149,13 +155,7 @@ export(
     ## Generic functions in the DataTable API:
     as.env,
     
-    ## Other generic functions:
-    isNormal,
-    isDisjoint,
-    whichFirstNotNormal,
-    xvcopy, compact,
-    reverse,
-    coverage,
+    ## MaskCollection API
     nir_list,
     active, "active<-",
     desc, "desc<-",
@@ -163,13 +163,15 @@ export(
     collapse,
     ranges, "ranges<-",
     subseq, "subseq<-",
+
+    ## Views API
     subject, Views, subviews, trim,
     slice,
-    values, "values<-",
-    columnMetadata, "columnMetadata<-",
     runmean, runsum, runwtsum, runq,
     viewApply, viewMins, viewMaxs, viewSums, viewMeans,
     viewWhichMins, viewWhichMaxs, viewRangeMins, viewRangeMaxs,
+
+    ## rdapply API
     rangedData, "rangedData<-", applyFun, "applyFun<-", applyParams,
     "applyParams<-", simplify, "simplify<-",
     ##excludePattern, "excludePattern<-",
@@ -178,8 +180,17 @@ export(
     reducerFun, "reducerFun<-", reducerParams, "reducerParams<-",
     iteratorFun, "iteratorFun<-",
     rdapply,
+
+    ## RangedData API
     universe, "universe<-", space, score, "score<-",
-    matchMatrix, queryHits, subjectHits, matching, map
+    columnMetadata, "columnMetadata<-",
+       
+    ## RangesMatching API
+    matchMatrix, queryHits, subjectHits, matching, map,
+
+    ## Other generic functions:
+    xvcopy, compact,
+    reverse
 )
 
 exportMethods(
