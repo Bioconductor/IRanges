@@ -1022,26 +1022,38 @@ setAtomicListMethod("gsub", inputBaseClass = "CharacterList",
 ### Rle methods
 ###
 
-setMethod("runValue", "RleList", function(x) {
-  rle <- unlist(x, use.names=FALSE)
-  rlePart <- PartitioningByWidth(runLength(rle))
-  listPart <- PartitioningByWidth(elementLengths(x))
-  ol <- findOverlaps(rlePart, listPart)
-  values <- runValue(rle)[queryHits(ol)]
-  valueClass <- class(values)
-  substring(valueClass, 1, 1) <- toupper(substring(valueClass, 1, 1))
-  cl <- paste("Compressed", valueClass, "List", sep = "")
-  newCompressedList(cl, values, splitFactor = subjectHits(ol), NAMES = names(x))
+setMethod("runValue", "SimpleRleList", function(x) {
+  seqapply(x, runValue)
 })
 
-setMethod("runLength", "RleList", function(x) {
+setMethod("runValue", "CompressedRleList", function(x) {
   rle <- unlist(x, use.names=FALSE)
   rlePart <- PartitioningByWidth(runLength(rle))
   listPart <- PartitioningByWidth(elementLengths(x))
   ol <- findOverlaps(rlePart, listPart)
-  widths <- width(ranges(ol, rlePart, listPart))
-  newCompressedList("CompressedIntegerList", widths,
-                    splitFactor = subjectHits(ol), NAMES = names(x))
+  setNames(seqsplit(runValue(rle)[queryHits(ol)], subjectHits(ol)), names(x))
+})
+
+setMethod("runLength", "SimpleRleList", function(x) {
+  seqapply(x, runLength)
+})
+
+setMethod("runLength", "CompressedRleList", function(x) {
+  width(ranges(x))
+})
+
+setMethod("ranges", "SimpleRleList", function(x) {
+  seqapply(x, ranges)
+})
+
+setMethod("ranges", "CompressedRleList", function(x) {
+  rle <- unlist(x, use.names=FALSE)
+  rlePart <- PartitioningByWidth(runLength(rle))
+  listPart <- PartitioningByWidth(elementLengths(x))
+  ol <- findOverlaps(rlePart, listPart)
+  ranges <- shift(ranges(ol, rlePart, listPart),
+                  1L - start(listPart)[subjectHits(ol)])
+  setNames(seqsplit(ranges, subjectHits(ol)), names(x))
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
