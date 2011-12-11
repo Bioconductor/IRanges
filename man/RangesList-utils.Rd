@@ -72,8 +72,8 @@
     vector or a IntegerList object containing coordinates relative to the
     current ranges.
 
-    For \code{restrict}, \code{start} and \code{end} must be either a single
-    integer or \code{NA}.
+    For \code{restrict}, \code{start} and \code{end} must be either an integer
+    vector or a IntegerList object (possibly containing NA's).
 
     For \code{gaps}, \code{start} and \code{end} must be an integer vector
     containing the coordinate bounds for each RangesList element.
