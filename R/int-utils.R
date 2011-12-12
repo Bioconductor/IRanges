@@ -16,6 +16,11 @@ anyMissingOrOutside <- function(x, lower = -.Machine$integer.max,
     .Call2("Integer_any_missing_or_outside", x, lower, upper, PACKAGE="IRanges")
 }
 
+### Returns 'sum(x)', or an error if 'x' contains NAs or negative values or if
+### an integer overflow occurs while summing.
+sumNonNegInts <- function(x)
+    .Call2("Integer_sum_non_neg_vals", x, PACKAGE="IRanges")
+
 ### Equivalent to (but much faster than):
 ###
 ###   diff(c(0L, x))

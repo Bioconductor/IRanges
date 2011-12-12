@@ -463,6 +463,14 @@ SEXP listofvectors_lengths(SEXP x);
 
 SEXP Integer_any_missing_or_outside(SEXP x, SEXP lower, SEXP upper);
 
+int _sum_non_neg_ints(
+	const int *x,
+	int x_len,
+	const char *varname
+);
+
+SEXP Integer_sum_non_neg_vals(SEXP x);
+
 SEXP Integer_diff_with_0(SEXP x);
 
 SEXP Integer_order(
