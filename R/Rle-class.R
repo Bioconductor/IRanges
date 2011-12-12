@@ -305,7 +305,7 @@ setMethod("[", "Rle",
                       } else {
                           x <-
                             Rle(values  = ansList[["values"]],
-                                lengths = ansList[["lengths"]], check = FALSE)
+                                lengths = ansList[["lengths"]])
                       }
                   } else if (drop) {
                       x <- as.vectorORfactor(x)
@@ -403,8 +403,7 @@ setMethod("c", "Rle",
                   x
               else
                   Rle(values  = unlist(lapply(args, slot, "values")),
-                      lengths = unlist(lapply(args, slot, "lengths")),
-                      check = FALSE)
+                      lengths = unlist(lapply(args, slot, "lengths")))
           })
 
 setGeneric("findRange", signature = "vec",
@@ -518,8 +517,7 @@ setMethod("rep.int", "Rle",
                   runLength(x) <- diffWithInitialZero(cumsum(times)[end(x)])
               } else if (length(times) == 1) {
                   x <- Rle(values  = rep.int(runValue(x), times),
-                           lengths = rep.int(runLength(x), times),
-                           check = FALSE)
+                           lengths = rep.int(runLength(x), times))
               }
               x
           })
@@ -639,8 +637,7 @@ setReplaceMethod("seqselect", "Rle",
                      if (isFactorRle)
                          values <- factor(levels(x), levels = levels(x))[values]
                      Rle(values  = values,
-                         lengths = unlist(lapply(subseqs, "[[", "lengths")),
-                         check = FALSE)
+                         lengths = unlist(lapply(subseqs, "[[", "lengths")))
                  })
 
 setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
