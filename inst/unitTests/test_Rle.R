@@ -310,7 +310,6 @@ test_Rle_character <- function() {
      }
      fac <- factor(txt)
      facRle <- Rle(fac)
-     checkIdentical(nchar(fac), as.vector(nchar(facRle)))
      checkIdentical(modifyFactor(fac, substr, 3, 7),
                     as.factor(substr(facRle, 3, 7)))
      checkIdentical(modifyFactor(fac, substring, 4, 9),
