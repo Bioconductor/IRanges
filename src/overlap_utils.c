@@ -9,35 +9,39 @@
  *                   numeric code & |                 numeric code &
  *                  1-letter code & |                1-letter code &
  *                        long code |                      long code
- *   ~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~ | ~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~
+ *   -------------  --------------- | -------------  ---------------
  *   q: xxxx         0   'a'  "qNs" | q:       xxxx  12   'm'  "sNq"
  *   s:       xxxx                  | s: xxxx      
- *                                  |
+ *   -------------  --------------- | -------------  ---------------
  *   q:  xxxx        1   'b'  "qs"  | q:      xxxx   11   'l'  "sq"
  *   s:      xxxx                   | s:  xxxx     
- *                                  |
+ *   -------------  --------------- | -------------  ---------------
  *   q:   xxxx       2   'c'  "q=s" | q:     xxxx    10   'k'  "s=q"
  *   s:     xxxx                    | s:   xxxx    
- *                                  |
+ *   -------------  --------------- | -------------  ---------------
  *   q:   xxxxxx     3   'd'  "q="  | q:      xxx     9   'j'  "s="
  *   s:      xxx                    | s:   xxxxxx  
- *                                  |
+ *   -------------  --------------- | -------------  ---------------
  *   q:  xxxxxxxx    4   'e'  "q=q" | q:    xxxx      8   'i'  "s=s"
  *   s:    xxxx                     | s:  xxxxxxxx
- *                                  |
+ *   -------------  --------------- | -------------  ---------------
  *   q:   xxx        5   'f'  "=s"  | q:   xxxxxx     7   'h'  "=q"
  *   s:   xxxxxx                    | s:   xxx
- *                                  |
- *   q:   xxxxxx     6   'g'  "="   |
- *   s:   xxxxxx                    |
- *
+ *   -------------  -------------------------------  ---------------
+ *                \   q:   xxxxxx     6   'g'  "="    /
+ *                 \  s:   xxxxxx                    /
+ *                  \-------------------------------/
  * Notes:
- *   (a) Overlaps correspond to numeric codes 2-10 and to long codes that
+ *   (a) Long codes are designed to be user-friendly whereas numeric and
+ *       1-letter codes are designed to be more compact and memory efficient.
+ *       Typically the formers will be exposed to the end-user and translated
+ *       internally into the latters.
+ *   (b) Overlaps correspond to numeric codes 2-10 and to long codes that
  *       contain an equal ("=").
- *   (b) Inverting the order of q and s has the effect to replace numeric code
+ *   (c) Inverting the order of q and s has the effect to replace numeric code
  *       C by 12 - C and to substitute "q" by "s" and "s" by "q" in the long
  *       code.
- *   (c) Reflecting ranges q and s relative to an arbitrary position (i.e.
+ *   (d) Reflecting ranges q and s relative to an arbitrary position (i.e.
  *       doing a symetry with respect to a vertical axis) has the effect to
  *       reverse the associated long code.
  */
@@ -50,18 +54,18 @@ static char enc_overlap(int q_start, int q_width, int s_start, int s_width)
 {
 	int q_end, s_end;
 
-	q_end = q_start + q_width;  /* not the real q_end */
+	q_end = q_start + q_width;  /* not the real 'q_end' */
 	if (q_end < s_start)
 		return 'a';
 	if (q_end == s_start)
 		return 'b';
-	s_end = s_start + s_width; /* not the real s_end */
+	s_end = s_start + s_width;  /* not the real 's_end' */
 	if (s_end < q_start)
 		return 'm';
 	if (s_end == q_start)
 		return 'l';
-	q_end--;  /* the real q_end */
-	s_end--;  /* the real s_end */
+	q_end--;  /* the real 'q_end' */
+	s_end--;  /* the real 's_end' */
 	if (q_start < s_start) {
 		if (q_end < s_end)
 			return 'c';
@@ -111,6 +115,9 @@ void _enc_overlaps(const int *q_start, const int *q_width, int q_len,
  * 'query_start' and 'query_width' are recycled to length N. If N is 1, then
  * M must be > N and 'subject_start' and 'subject_width' are recycled to
  * length M.
+ * The 4 integer vectors are assumed to be NA free and 'query_width' and
+ * 'subject_width' are assumed to contain non-negative values. For efficiency
+ * reasons, those assumptions are not checked.
  */
 SEXP encode_overlaps(SEXP query_start, SEXP query_width,
 		     SEXP subject_start, SEXP subject_width)
@@ -130,18 +137,16 @@ SEXP encode_overlaps(SEXP query_start, SEXP query_width,
 		      "the same length");
 	m = LENGTH(query_start);
 	n = LENGTH(subject_start);
-	if (m == n) {
-		ans_length = m;
-	} else if (m == 0 || n == 0) {
-		error("when query or subject has length 0, both of them "
-                      "must have length 0");
-	} else if (m == 1) {
-		ans_length = n;
-	} else if (n == 1) {
-		ans_length = m;
-	} else {
-		error("when lengths of query and subject are different, "
-		      "one of them must have length 1");
+	ans_length = m;
+	if (m != n) {
+		if (m == 0 || n == 0)
+			error("when query or subject has length 0, "
+			      "both of them must have length 0");
+		if (m == 1)
+			ans_length = n;
+		else if (n != 1)
+			error("when lengths of query and subject are "
+			      "different, one of them must have length 1");
 	}
 	PROTECT(ans = NEW_RAW(ans_length));
 	_enc_overlaps(INTEGER(query_start), INTEGER(query_width), m,
