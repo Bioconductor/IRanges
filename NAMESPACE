@@ -184,7 +184,10 @@ export(
     ## RangedData API
     universe, "universe<-", space, score, "score<-",
     columnMetadata, "columnMetadata<-",
-       
+
+    ## overlap utils
+    encodeOverlaps,
+
     ## RangesMatching API
     matchMatrix, queryHits, subjectHits, matching, map,
 
@@ -327,5 +330,7 @@ exportMethods(
     iteratorFun, "iteratorFun<-",
     rdapply,
     universe, "universe<-", space, score, "score<-",
+    encodeOverlaps,
     matchMatrix, queryHits, subjectHits
 )
+

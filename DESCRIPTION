@@ -66,9 +66,10 @@ Collate: validity-utils.R
 	FilterRules-class.R
 	RDApplyParams-class.R
 	RangedData-utils.R
+	overlap-utils.R
 	RangesMatching-class.R
 	RangesMatchingList-class.R
-        RangesMapping-class.R
+	RangesMapping-class.R
 	IntervalTree-class.R
 	IntervalTree-utils.R
 	RangedSelection-class.R

@@ -971,6 +971,26 @@ SEXP RleViews_viewWhichMaxs(
 );
 
 
+/* overlap_utils.c */
+
+void _enc_overlaps(
+	const int *q_start,
+	const int *q_width,
+	int q_len,
+	const int *s_start,
+	const int *s_width,
+	int s_len,
+	char *out
+);
+
+SEXP encode_overlaps(
+	SEXP query_start,
+	SEXP query_width,
+	SEXP subject_start,
+	SEXP subject_width
+);
+
+
 /* SharedVector_class.c */
 
 SEXP debug_SharedVector_class();
