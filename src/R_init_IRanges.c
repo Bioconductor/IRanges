@@ -118,7 +118,7 @@ static const R_CallMethodDef callMethods[] = {
 
 /* overlap_utils.c */
 	CALLMETHOD_DEF(encode_poverlaps, 4),
-	CALLMETHOD_DEF(overlaps_to_GOCS, 4),
+	CALLMETHOD_DEF(overlaps_to_OGOCS, 4),
 
 /* SharedVector_class.c */
 	CALLMETHOD_DEF(debug_SharedVector_class, 0),

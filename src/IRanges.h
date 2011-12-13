@@ -990,7 +990,7 @@ SEXP encode_poverlaps(
 	SEXP subject_width
 );
 
-int _enc_overlaps_as_GOCS(
+int _enc_overlaps_as_OGOCS(
 	const int *q_start,
 	const int *q_width,
 	int q_len,
@@ -1000,7 +1000,7 @@ int _enc_overlaps_as_GOCS(
 	char *out
 );
 
-SEXP overlaps_to_GOCS(
+SEXP overlaps_to_OGOCS(
 	SEXP query_start,
 	SEXP query_width,
 	SEXP subject_start,

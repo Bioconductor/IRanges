@@ -190,36 +190,36 @@ SEXP encode_poverlaps(SEXP query_start, SEXP query_width,
  * not always the case. We've seen at least one exception in the transcript
  * annotations provided by UCSC where 2 consecutive exons are overlapping!
  *  
- * Sparse representation: for each row, report only the sequence between the
- * "m" prefix and the "a" suffix. Then put the col nb of the first non-m
- * letter in front of that. For example, the sparse representation of row
- * "mmmecaa" is "4ec". If there is nothing between the "m" prefix and the "a"
- * suffix, then report the first "a". Finally paste together the results for
- * all the rows:
+ * Sparse representation: for each row in the matrix of 1-letter codes, report
+ * only the sequence between the "m" prefix and the "a" suffix and put the
+ * col nb of the first non-m letter in front of that. For example, the sparse
+ * representation of row "mmmecaa" is "4ec". If there is nothing between the
+ * "m" prefix and the "a" suffix, then report the first "a". Finally paste
+ * together the results for all the rows:
  *
  *   A = 2j3g4f     B = 2j3g4g     C = 2j3a3f     D = 4j6g7f     E = 2i2i4ec
  *
- * Sparse representation using Global Offset and Cumulative Shifts (a shift
+ * Sparse representation using One Global Offset and Cumulative Shifts (a shift
  * can be either one or more "<", or "=", or one or more ">"):
  *
  *   A = 2:j<g<f    B = 2:j<g<g    C = 2:j<a=f    D = 4:j<<g<f   E = 2:i=i<<ec
  *
- * The advantage of the GOCS string over the non-GOCS string is that it's
+ * The advantage of the OGOCS string over the non-OGOCS string is that it's
  * easier to use regular expressions on the former. For example, reads with
  * 1 gap and a splicing that is compatible with the transcript can be filtered
  * with regex ":(j|g)<(g|f)$"
  */
 
-int _enc_overlaps_as_GOCS(const int *q_start, const int *q_width, int q_len,
-			  const int *s_start, const int *s_width, int s_len,
-			  char *out)
+int _enc_overlaps_as_OGOCS(const int *q_start, const int *q_width, int q_len,
+			   const int *s_start, const int *s_width, int s_len,
+			   char *out)
 {
 	int out_len, i, j;
 	char code;
 
 	out_len = 0;
-	/* Producing the full matrix instead of the GOCS string for now.
-         * FIXME: Produce the GOCS string. */
+	/* Producing the full matrix instead of the OGOCS string for now.
+         * FIXME: Produce the OGOCS string. */
 	for (i = 0; i < q_len; i++) {
 		for (j = 0; j < s_len; j++) {
 			code = 'a' + overlap_code(q_start[i], q_width[i],
@@ -237,10 +237,10 @@ int _enc_overlaps_as_GOCS(const int *q_start, const int *q_width, int q_len,
  * The 4 integer vectors are assumed to be NA free and 'query_width' and
  * 'subject_width' are assumed to contain non-negative values. For efficiency
  * reasons, those assumptions are not checked.
- * Returns the corresponding GOCS string in a raw vector.
+ * Returns the corresponding OGOCS string in a raw vector.
  */
-SEXP overlaps_to_GOCS(SEXP query_start, SEXP query_width,
-		      SEXP subject_start, SEXP subject_width)
+SEXP overlaps_to_OGOCS(SEXP query_start, SEXP query_width,
+		       SEXP subject_start, SEXP subject_width)
 {
 	int m, n, ans_length;
 	SEXP ans;
@@ -261,9 +261,9 @@ SEXP overlaps_to_GOCS(SEXP query_start, SEXP query_width,
 		error("query or subject cannot have length 0");
 	ans_length = m * n;
 	PROTECT(ans = NEW_RAW(ans_length));
-	_enc_overlaps_as_GOCS(INTEGER(query_start), INTEGER(query_width), m,
-			      INTEGER(subject_start), INTEGER(subject_width), n,
-			      (char *) RAW(ans));
+	_enc_overlaps_as_OGOCS(INTEGER(query_start), INTEGER(query_width), m,
+			INTEGER(subject_start), INTEGER(subject_width), n,
+			(char *) RAW(ans));
 	UNPROTECT(1);
 	return ans;
 }

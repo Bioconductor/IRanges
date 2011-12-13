@@ -32,7 +32,7 @@ setGeneric("encodeOverlaps",
 ### [1] "mmmf"
 setMethod("encodeOverlaps", c("Ranges", "Ranges"),
     function(query, subject)
-        .Call2("overlaps_to_GOCS",
+        .Call2("overlaps_to_OGOCS",
                start(query), width(query), start(subject), width(subject),
                PACKAGE="IRanges")
 )
