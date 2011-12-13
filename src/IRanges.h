@@ -990,6 +990,23 @@ SEXP encode_poverlaps(
 	SEXP subject_width
 );
 
+int _enc_overlaps_as_GOCS(
+	const int *q_start,
+	const int *q_width,
+	int q_len,
+	const int *s_start,
+	const int *s_width,
+	int s_len,
+	char *out
+);
+
+SEXP overlaps_to_GOCS(
+	SEXP query_start,
+	SEXP query_width,
+	SEXP subject_start,
+	SEXP subject_width
+);
+
 
 /* SharedVector_class.c */
 

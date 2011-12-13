@@ -186,7 +186,7 @@ export(
     columnMetadata, "columnMetadata<-",
 
     ## overlap utils
-    encodePOverlaps,
+    encodePOverlaps, encodeOverlaps,
 
     ## RangesMatching API
     matchMatrix, queryHits, subjectHits, matching, map,
@@ -330,7 +330,7 @@ exportMethods(
     iteratorFun, "iteratorFun<-",
     rdapply,
     universe, "universe<-", space, score, "score<-",
-    encodePOverlaps,
+    encodePOverlaps, encodeOverlaps,
     matchMatrix, queryHits, subjectHits
 )
 

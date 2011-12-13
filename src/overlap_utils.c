@@ -32,21 +32,19 @@
  *                 \  s:   xxxxxx                    /
  *                  \-------------------------------/
  * Notes:
- *   (a) Long codes are designed to be user-friendly whereas numeric and
- *       1-letter codes are designed to be more compact and memory efficient.
- *       Typically the formers will be exposed to the end-user and translated
- *       internally into the latters.
- *   (b) Overlaps correspond to numeric codes 2-10 and to long codes that
- *       contain an equal ("=").
- *   (c) Inverting the order of q and s has the effect to replace numeric code
- *       C by 12 - C and to substitute "q" by "s" and "s" by "q" in the long
- *       code.
- *   (d) Reflecting ranges q and s relative to an arbitrary position (i.e.
- *       doing a symetry with respect to a vertical axis) has the effect to
- *       reverse the associated long code.
- */
-
-/*
+ *   o Long codes are designed to be user-friendly whereas numeric and
+ *     1-letter codes are designed to be more compact and memory efficient.
+ *     Typically the formers will be exposed to the end-user and translated
+ *     internally into the latters.
+ *   o Overlaps correspond to numeric codes 2-10 and to long codes that
+ *     contain an equal ("=").
+ *   o Inverting the order of q and s has the effect to replace numeric code
+ *     C by 12 - C and to substitute "q" by "s" and "s" by "q" in the long
+ *     code.
+ *   o Reflecting ranges q and s relative to an arbitrary position (i.e. doing
+ *     a symetry with respect to a vertical axis) has the effect to reverse
+ *     the associated long code.
+ *
  * 'q_start', 'q_width', 's_start' and 's_width' are assumed to be non NA.
  * 'q_width' and 's_width' are assumed to be >= 0.
  */
@@ -87,6 +85,11 @@ static char enc_overlap(int q_start, int q_width, int s_start, int s_width)
 	return 'k';
 }
 
+
+/****************************************************************************
+ * Encode "parallel" overlaps.
+ */
+
 void _enc_poverlaps(const int *q_start, const int *q_width, int q_len,
 		    const int *s_start, const int *s_width, int s_len,
 		    char *out)
@@ -109,7 +112,6 @@ void _enc_poverlaps(const int *q_start, const int *q_width, int q_len,
 }
 
 /* --- .Call ENTRY POINT ---
- * Encode pairwise (aka "parallel") overlaps.
  * 'query_start' and 'query_width': integer vectors of the same length M.
  * 'subject_start' and 'subject_width': integer vectors of the same length N.
  * If M != N then either M or N must be 1. If M is 1, then N must be > M and
@@ -157,7 +159,10 @@ SEXP encode_poverlaps(SEXP query_start, SEXP query_width,
 	return ans;
 }
 
-/*
+
+/****************************************************************************
+ * Encode "all against all" overlaps.
+ *
  * Comparing all the ranges in a gapped read with all the ranges in a
  * transcript produces a matrix of codes. For example, if the read contains
  * 2 gaps and the transcript has 7 exons, the matrix of 1-letter codes has
@@ -196,9 +201,67 @@ SEXP encode_poverlaps(SEXP query_start, SEXP query_width,
  *
  *   A = 2:j<g<f    B = 2:j<g<g    C = 2:j<a=f    D = 4:j<<g<f   E = 2:i=i<<ec
  *
- * The advantage of the GOCS sparse representation over the non-GOCS sparse
- * representation is that it's easier to use regular expressions on the
- * former. For example, reads with 1 gap and a splicing that is compatible
- * with the transcript can be filtered with regex ":(j|g)<(g|f)$"
+ * The advantage of the GOCS string over the non-GOCS string is that it's
+ * easier to use regular expressions on the former. For example, reads with
+ * 1 gap and a splicing that is compatible with the transcript can be filtered
+ * with regex ":(j|g)<(g|f)$"
  */
+
+int _enc_overlaps_as_GOCS(const int *q_start, const int *q_width, int q_len,
+			  const int *s_start, const int *s_width, int s_len,
+			  char *out)
+{
+	int out_len, i, j;
+	char code;
+
+	out_len = 0;
+	/* Producing the full matrix instead of the GOCS string for now.
+         * FIXME: Produce the GOCS string. */
+	for (i = 0; i < q_len; i++) {
+		for (j = 0; j < s_len; j++) {
+			code = enc_overlap(q_start[i], q_width[i],
+					   s_start[j], s_width[j]);
+			out[out_len++] = code;
+		}
+	}
+	return out_len;
+}
+
+/* --- .Call ENTRY POINT ---
+ * 'query_start' and 'query_width': integer vectors of the same length M.
+ * 'subject_start' and 'subject_width': integer vectors of the same length N
+ * M or N cannot be 0.
+ * The 4 integer vectors are assumed to be NA free and 'query_width' and
+ * 'subject_width' are assumed to contain non-negative values. For efficiency
+ * reasons, those assumptions are not checked.
+ * Returns the corresponding GOCS string in a raw vector.
+ */
+SEXP overlaps_to_GOCS(SEXP query_start, SEXP query_width,
+		      SEXP subject_start, SEXP subject_width)
+{
+	int m, n, ans_length;
+	SEXP ans;
+
+	if (!IS_INTEGER(query_start) || !IS_INTEGER(query_width)
+	 || !IS_INTEGER(subject_start) || !IS_INTEGER(subject_width))
+		error("'query_start', 'query_width', 'subject_start' "
+		      "and 'subject_width' must be integer vectors");
+	if (LENGTH(query_start) != LENGTH(query_width))
+		error("'query_start' and 'query_width' must have "
+		      "the same length");
+	if (LENGTH(subject_start) != LENGTH(subject_width))
+		error("'subject_start' and 'subject_width' must have "
+		      "the same length");
+	m = LENGTH(query_start);
+	n = LENGTH(subject_start);
+	if (m == 0 || n == 0)
+		error("query or subject cannot have length 0");
+	ans_length = m * n;
+	PROTECT(ans = NEW_RAW(ans_length));
+	_enc_overlaps_as_GOCS(INTEGER(query_start), INTEGER(query_width), m,
+			      INTEGER(subject_start), INTEGER(subject_width), n,
+			      (char *) RAW(ans));
+	UNPROTECT(1);
+	return ans;
+}
 
