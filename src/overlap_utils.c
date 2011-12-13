@@ -36,8 +36,10 @@
  *     1-letter codes are designed to be more compact and memory efficient.
  *     Typically the formers will be exposed to the end-user and translated
  *     internally into the latters.
- *   o Overlaps correspond to numeric codes 2-10 and to long codes that
- *     contain an equal ("=").
+ *   o In this file we use the term "overlap" in a loose way even when there
+ *     is actually no overlap between the query and the subject. Real overlaps
+ *     correspond to numeric codes 2-10 and to long codes that contain an
+ *     equal ("=").
  *   o Inverting the order of q and s has the effect to replace numeric code
  *     C by 12 - C and to substitute "q" by "s" and "s" by "q" in the long
  *     code.
@@ -48,41 +50,41 @@
  * 'q_start', 'q_width', 's_start' and 's_width' are assumed to be non NA.
  * 'q_width' and 's_width' are assumed to be >= 0.
  */
-static char enc_overlap(int q_start, int q_width, int s_start, int s_width)
+static int overlap_code(int q_start, int q_width, int s_start, int s_width)
 {
 	int q_end, s_end;
 
 	q_end = q_start + q_width;  /* not the real 'q_end' */
 	if (q_end < s_start)
-		return 'a';
+		return 0;
 	if (q_end == s_start)
-		return 'b';
+		return 1;
 	s_end = s_start + s_width;  /* not the real 's_end' */
 	if (s_end < q_start)
-		return 'm';
+		return 12;
 	if (s_end == q_start)
-		return 'l';
+		return 11;
 	q_end--;  /* the real 'q_end' */
 	s_end--;  /* the real 's_end' */
 	if (q_start < s_start) {
 		if (q_end < s_end)
-			return 'c';
+			return 2;
 		if (q_end == s_end)
-			return 'd';
-		return 'e';
+			return 3;
+		return 4;
 	}
 	if (q_start == s_start) {
 		if (q_end < s_end)
-			return 'f';
+			return 5;
 		if (q_end == s_end)
-			return 'g';
-		return 'h';
+			return 6;
+		return 7;
 	}
 	if (q_end < s_end)
-		return 'i';
+		return 8;
 	if (q_end == s_end)
-		return 'j';
-	return 'k';
+		return 9;
+	return 10;
 }
 
 
@@ -98,7 +100,8 @@ void _enc_poverlaps(const int *q_start, const int *q_width, int q_len,
 
 	out_len = q_len >= s_len ? q_len : s_len;
 	for (i = 0; i < out_len; i++, out++) {
-		*out = enc_overlap(*q_start, *q_width, *s_start, *s_width);
+		*out = 'a' + overlap_code(*q_start, *q_width,
+					  *s_start, *s_width);
 		if (q_len != 1) {
 			q_start++;
 			q_width++;
@@ -219,8 +222,8 @@ int _enc_overlaps_as_GOCS(const int *q_start, const int *q_width, int q_len,
          * FIXME: Produce the GOCS string. */
 	for (i = 0; i < q_len; i++) {
 		for (j = 0; j < s_len; j++) {
-			code = enc_overlap(q_start[i], q_width[i],
-					   s_start[j], s_width[j]);
+			code = 'a' + overlap_code(q_start[i], q_width[i],
+						  s_start[j], s_width[j]);
 			out[out_len++] = code;
 		}
 	}
