@@ -973,7 +973,7 @@ SEXP RleViews_viewWhichMaxs(
 
 /* overlap_utils.c */
 
-void _enc_overlaps(
+void _enc_poverlaps(
 	const int *q_start,
 	const int *q_width,
 	int q_len,
@@ -983,7 +983,7 @@ void _enc_overlaps(
 	char *out
 );
 
-SEXP encode_overlaps(
+SEXP encode_poverlaps(
 	SEXP query_start,
 	SEXP query_width,
 	SEXP subject_start,

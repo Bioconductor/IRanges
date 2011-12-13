@@ -87,9 +87,9 @@ static char enc_overlap(int q_start, int q_width, int s_start, int s_width)
 	return 'k';
 }
 
-void _enc_overlaps(const int *q_start, const int *q_width, int q_len,
-		   const int *s_start, const int *s_width, int s_len,
-		   char *out)
+void _enc_poverlaps(const int *q_start, const int *q_width, int q_len,
+		    const int *s_start, const int *s_width, int s_len,
+		    char *out)
 {
 	int i, out_len;
 
@@ -109,6 +109,7 @@ void _enc_overlaps(const int *q_start, const int *q_width, int q_len,
 }
 
 /* --- .Call ENTRY POINT ---
+ * Encode pairwise (aka "parallel") overlaps.
  * 'query_start' and 'query_width': integer vectors of the same length M.
  * 'subject_start' and 'subject_width': integer vectors of the same length N.
  * If M != N then either M or N must be 1. If M is 1, then N must be > M and
@@ -119,8 +120,8 @@ void _enc_overlaps(const int *q_start, const int *q_width, int q_len,
  * 'subject_width' are assumed to contain non-negative values. For efficiency
  * reasons, those assumptions are not checked.
  */
-SEXP encode_overlaps(SEXP query_start, SEXP query_width,
-		     SEXP subject_start, SEXP subject_width)
+SEXP encode_poverlaps(SEXP query_start, SEXP query_width,
+		      SEXP subject_start, SEXP subject_width)
 {
 	int m, n, ans_length;
 	SEXP ans;
@@ -149,10 +150,55 @@ SEXP encode_overlaps(SEXP query_start, SEXP query_width,
 			      "different, one of them must have length 1");
 	}
 	PROTECT(ans = NEW_RAW(ans_length));
-	_enc_overlaps(INTEGER(query_start), INTEGER(query_width), m,
-		      INTEGER(subject_start), INTEGER(subject_width), n,
-		      (char *) RAW(ans));
+	_enc_poverlaps(INTEGER(query_start), INTEGER(query_width), m,
+		       INTEGER(subject_start), INTEGER(subject_width), n,
+		       (char *) RAW(ans));
 	UNPROTECT(1);
 	return ans;
 }
+
+/*
+ * Comparing all the ranges in a gapped read with all the ranges in a
+ * transcript produces a matrix of codes. For example, if the read contains
+ * 2 gaps and the transcript has 7 exons, the matrix of 1-letter codes has
+ * 3 rows and 7 columns and will typically look like:
+ *
+ *   A = mjaaaaa    B = mjaaaaa    C = mjaaaaa    D = mmmjaaa    E = miaaaaa
+ *       mmgaaaa        mmgaaaa        mmaaaaa        mmmmmga        miaaaaa
+ *       mmmfaaa        mmmgaaa        mmfaaaa        mmmmmmf        mmmecaa
+ *
+ *    compatible     compatible       splicing       splicing      3rd range
+ *      splicing       splicing       would be       would be    in the read
+ *                                  compatible     compatible         covers
+ *                                 if one exon     if exon #5    exon #4 and
+ *                                was inserted    was dropped      partially
+ *                               between exons                        covers
+ *                                   #2 and #3                       exon #5
+ *
+ * Note that we make no assumption that the exons in the transcript are
+ * ordered from 5' to 3' or non overlapping. They only need to be ordered by
+ * ascending *rank*, which most of the time means that they are ordered from
+ * 5' to 3' and with non-empty gaps between them (introns). However, this is
+ * not always the case. We've seen at least one exception in the transcript
+ * annotations provided by UCSC where 2 consecutive exons are overlapping!
+ *  
+ * Sparse representation: for each row, report only the sequence between the
+ * "m" prefix and the "a" suffix. Then put the col nb of the first non-m
+ * letter in front of that. For example, the sparse representation of row
+ * "mmmecaa" is "4ec". If there is nothing between the "m" prefix and the "a"
+ * suffix, then report the first "a". Finally paste together the results for
+ * all the rows:
+ *
+ *   A = 2j3g4f     B = 2j3g4g     C = 2j3a3f     D = 4j6g7f     E = 2i2i4ec
+ *
+ * Sparse representation using Global Offset and Cumulative Shifts (a shift
+ * can be either one or more "<", or "=", or one or more ">"):
+ *
+ *   A = 2:j<g<f    B = 2:j<g<g    C = 2:j<a=f    D = 4:j<<g<f   E = 2:i=i<<ec
+ *
+ * The advantage of the GOCS sparse representation over the non-GOCS sparse
+ * representation is that it's easier to use regular expressions on the
+ * former. For example, reads with 1 gap and a splicing that is compatible
+ * with the transcript can be filtered with regex ":(j|g)<(g|f)$"
+ */
 
