@@ -238,51 +238,52 @@ static void CharAE_append_int(CharAE *char_ae, int d)
 	return;
 }
 
-void _enc_overlaps_as_OGOCS(const int *q_start, const int *q_width, int q_len,
-			    const int *s_start, const int *s_width, int s_len,
-			    CharAE *out)
+void _enc_overlaps(const int *q_start, const int *q_width, int q_len,
+		   const int *s_start, const int *s_width, int s_len,
+		   int sparse_output, CharAE *out)
 {
-	int global_offset, offset, i, j, pos1;
+	int prev_offset, offset, i, j, pos1;
 	char code;
 
-	if (q_len == 0 || s_len == 0)
-		error("query or subject cannot have length 0");
-	global_offset = 0;
+	if (sparse_output && (q_len == 0 || s_len == 0))
+		error("sparse output not supported when "
+		      "query or subject have length 0");
+	prev_offset = 0;
 	for (i = 0; i < q_len; i++) {
 		offset = 0;
 		for (j = 0; j < s_len; j++) {
 			code = 'a' + overlap_code(q_start[i], q_width[i],
 						  s_start[j], s_width[j]);
-			if (offset == 0) {
+			if (sparse_output && offset == 0) {
 				if (code == 'm' && j + 1 < s_len)
 					continue;
 				offset = j + 1;
-				if (global_offset == 0) {
-					global_offset = offset;
-					CharAE_append_int(out, global_offset);
+				if (prev_offset == 0) {
+					CharAE_append_int(out, offset);
 					CharAE_append_char(out, ':', 1);
+				} else if (prev_offset > offset) {
+					CharAE_append_char(out, '>',
+						prev_offset - offset);
+				} else if (prev_offset == offset) {
+					CharAE_append_char(out, '=', 1);
 				} else {
-					if (offset < global_offset)
-						CharAE_append_char(out, '>',
-							global_offset - offset);
-					else if (offset == global_offset)
-						CharAE_append_char(out, '=', 1);
-					else
-						CharAE_append_char(out, '<',
-							offset - global_offset);
-					global_offset = offset;
+					CharAE_append_char(out, '<',
+						offset - prev_offset);
 				}
+				prev_offset = offset;
 				pos1 = _CharAE_get_nelt(out) + 1;
 			}
 			CharAE_append_char(out, code, 1);
 		}
-		/* Remove trailing "a"'s */
-		j = _CharAE_get_nelt(out);
-		while (j > pos1) {
-			if (out->elts[--j] != 'a')
-				break;
+		if (sparse_output) {
+			/* Remove trailing "a"'s */
+			j = _CharAE_get_nelt(out);
+			while (j > pos1) {
+				if (out->elts[--j] != 'a')
+					break;
+			}
+			_CharAE_set_nelt(out, j);
 		}
-		_CharAE_set_nelt(out, j);
 	}
 	return;
 }
@@ -294,13 +295,16 @@ void _enc_overlaps_as_OGOCS(const int *q_start, const int *q_width, int q_len,
  * The 4 integer vectors are assumed to be NA free and 'query_width' and
  * 'subject_width' are assumed to contain non-negative values. For efficiency
  * reasons, those assumptions are not checked.
- * Returns the corresponding OGOCS string in a raw vector.
+ * Returns the matrix of 1-letter codes (if 'sparse_output' is TRUE) or the
+ * OGOCS string (if 'sparse_output' is FALSE).
  */
-SEXP overlaps_to_OGOCS(SEXP query_start, SEXP query_width,
-		       SEXP subject_start, SEXP subject_width)
+SEXP encode_overlaps(SEXP query_start, SEXP query_width,
+		     SEXP subject_start, SEXP subject_width,
+		     SEXP sparse_output, SEXP as_raw)
 {
-	int m, n;
+	int m, n, sparse_output0, as_raw0, i;
 	CharAE buf;
+	SEXP ans, ans_elt, ans_dim;
 
 	if (!IS_INTEGER(query_start) || !IS_INTEGER(query_width)
 	 || !IS_INTEGER(subject_start) || !IS_INTEGER(subject_width))
@@ -314,11 +318,43 @@ SEXP overlaps_to_OGOCS(SEXP query_start, SEXP query_width,
 		      "the same length");
 	m = LENGTH(query_start);
 	n = LENGTH(subject_start);
+	sparse_output0 = LOGICAL(sparse_output)[0];
+	as_raw0 = LOGICAL(as_raw)[0];
 	buf = _new_CharAE(0);
-	_enc_overlaps_as_OGOCS(
-			INTEGER(query_start), INTEGER(query_width), m,
+	if (as_raw0 || sparse_output0) {
+		_enc_overlaps(INTEGER(query_start), INTEGER(query_width), m,
+			      INTEGER(subject_start), INTEGER(subject_width), n,
+			      sparse_output0, &buf);
+		if (!as_raw0) {
+			PROTECT(ans_elt = mkCharLen(buf.elts,
+						 _CharAE_get_nelt(&buf)));
+			PROTECT(ans = ScalarString(ans_elt));
+			UNPROTECT(2);
+			return ans;
+		}
+		PROTECT(ans = _new_RAW_from_CharAE(&buf));
+		if (!sparse_output0) {
+			PROTECT(ans_dim	= NEW_INTEGER(2));
+			INTEGER(ans_dim)[0] = n;
+			INTEGER(ans_dim)[1] = m;
+			SET_DIM(ans, ans_dim);
+			UNPROTECT(1);
+		}
+		UNPROTECT(1);
+		return ans;
+	}
+	PROTECT(ans = NEW_CHARACTER(m));
+	for (i = 0; i < m; i++) {
+		_enc_overlaps(
+			INTEGER(query_start) + i, INTEGER(query_width) + i, 1,
 			INTEGER(subject_start), INTEGER(subject_width), n,
-			&buf);
-	return _new_RAW_from_CharAE(&buf);
+			0, &buf);
+		PROTECT(ans_elt = mkCharLen(buf.elts, _CharAE_get_nelt(&buf)));
+		SET_STRING_ELT(ans, i, ans_elt);
+		UNPROTECT(1);
+		_CharAE_set_nelt(&buf, 0);
+	}
+	UNPROTECT(1);
+	return ans;
 }
 
