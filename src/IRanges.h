@@ -990,14 +990,14 @@ SEXP encode_poverlaps(
 	SEXP subject_width
 );
 
-int _enc_overlaps_as_OGOCS(
+void _enc_overlaps_as_OGOCS(
 	const int *q_start,
 	const int *q_width,
 	int q_len,
 	const int *s_start,
 	const int *s_width,
 	int s_len,
-	char *out
+	CharAE *out
 );
 
 SEXP overlaps_to_OGOCS(

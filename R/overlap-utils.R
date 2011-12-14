@@ -23,13 +23,8 @@ setGeneric("encodeOverlaps",
 
 ### > query <- IRanges(c(7, 15, 22), c(9, 19, 23))
 ### > subject <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
-### > gocs <- encodeOverlaps(query, subject)
-### > rawToChar(gocs[1:4])
-### [1] "mjaa"
-### > rawToChar(gocs[5:8])
-### [1] "mmga"
-### > rawToChar(gocs[9:12])
-### [1] "mmmf"
+### > rawToChar(encodeOverlaps(query, subject))
+### [1] "2:j<g<f"
 setMethod("encodeOverlaps", c("Ranges", "Ranges"),
     function(query, subject)
         .Call2("overlaps_to_OGOCS",

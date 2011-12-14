@@ -171,17 +171,19 @@ SEXP encode_poverlaps(SEXP query_start, SEXP query_width,
  * 2 gaps and the transcript has 7 exons, the matrix of 1-letter codes has
  * 3 rows and 7 columns and will typically look like:
  *
- *   A = mjaaaaa    B = mjaaaaa    C = mjaaaaa    D = mmmjaaa    E = miaaaaa
- *       mmgaaaa        mmgaaaa        mmaaaaa        mmmmmga        miaaaaa
- *       mmmfaaa        mmmgaaa        mmfaaaa        mmmmmmf        mmmecaa
+ *     A = mjaaaaa   B = mjaaaaa   C = mjaaaaa   D = mmmjaaa   E = aaaaaaa
+ *         mmgaaaa       mmgaaaa       mmaaaaa       mmmmmga       mmmiaaa
+ *         mmmfaaa       mmmgaaa       mmfaaaa       mmmmmmf       mmmkiaa
  *
- *    compatible     compatible       splicing       splicing      3rd range
- *      splicing       splicing       would be       would be    in the read
- *                                  compatible     compatible         covers
- *                                 if one exon     if exon #5    exon #4 and
- *                                was inserted    was dropped      partially
- *                               between exons                        covers
- *                                   #2 and #3                       exon #5
+ *   A, B: Compatible splicing.
+ *   C: Compatible splicing modulo 1 inserted exon (splicing would be
+ *      compatible if one exon was inserted between exons #2 and #3).
+ *   D: Compatible splicing modulo 1 dropped exon (splicing would be compatible
+ *      if exon #5 was dropped).
+ *   E: Incompatible splicing. 1st range in the read is beyond the bounds of
+ *      the transcript (on the upstream side), 2nd range is within exon #4,
+ *      and 3rd range overlaps with exon #4 and is within exon #5. This implies
+ *      that exon #4 and #5 overlap.
  *
  * Note that we make no assumption that the exons in the transcript are
  * ordered from 5' to 3' or non overlapping. They only need to be ordered by
@@ -194,15 +196,16 @@ SEXP encode_poverlaps(SEXP query_start, SEXP query_width,
  * only the sequence between the "m" prefix and the "a" suffix and put the
  * col nb of the first non-m letter in front of that. For example, the sparse
  * representation of row "mmmecaa" is "4ec". If there is nothing between the
- * "m" prefix and the "a" suffix, then report the first "a". Finally paste
- * together the results for all the rows:
+ * "m" prefix and the "a" suffix, then report the first "a" (or the last "m"
+ * if the row contains only "m"'s). Finally paste together the results for all
+ * the rows:
  *
- *   A = 2j3g4f     B = 2j3g4g     C = 2j3a3f     D = 4j6g7f     E = 2i2i4ec
+ *     A = 2j3g4f    B = 2j3g4g    C = 2j3a3f    D = 4j6g7f    E = 1a4i4ki
  *
  * Sparse representation using One Global Offset and Cumulative Shifts (a shift
  * can be either one or more "<", or "=", or one or more ">"):
  *
- *   A = 2:j<g<f    B = 2:j<g<g    C = 2:j<a=f    D = 4:j<<g<f   E = 2:i=i<<ec
+ *     A = 2:j<g<f   B = 2:j<g<g   C = 2:j<a=f   D = 4:j<<g<f  E = 1:a<<<i=ki
  *
  * The advantage of the OGOCS string over the non-OGOCS string is that it's
  * easier to use regular expressions on the former. For example, reads with
@@ -210,24 +213,78 @@ SEXP encode_poverlaps(SEXP query_start, SEXP query_width,
  * with regex ":(j|g)<(g|f)$"
  */
 
-int _enc_overlaps_as_OGOCS(const int *q_start, const int *q_width, int q_len,
-			   const int *s_start, const int *s_width, int s_len,
-			   char *out)
+static void CharAE_append_char(CharAE *char_ae, char c, int times)
 {
-	int out_len, i, j;
+	int i;
+
+	for (i = 0; i < times; i++)
+		_CharAE_insert_at(char_ae, _CharAE_get_nelt(char_ae), c);
+	return;
+}
+
+static void CharAE_append_int(CharAE *char_ae, int d)
+{
+	static char buf[12];  /* should be enough for 32-bit ints */
+	int ret;
+
+	ret = snprintf(buf, sizeof(buf), "%d", d);
+	if (ret < 0)  /* should never happen */
+		error("IRanges internal error in CharAE_append_int(): "
+		      "snprintf() returned value < 0");
+	if (ret >= sizeof(buf))  /* could happen with ints > 32-bit */
+		error("IRanges internal error in CharAE_append_int(): "
+		      "output of snprintf() was truncated");
+	_append_string_to_CharAE(char_ae, buf);
+	return;
+}
+
+void _enc_overlaps_as_OGOCS(const int *q_start, const int *q_width, int q_len,
+			    const int *s_start, const int *s_width, int s_len,
+			    CharAE *out)
+{
+	int global_offset, offset, i, j, pos1;
 	char code;
 
-	out_len = 0;
-	/* Producing the full matrix instead of the OGOCS string for now.
-         * FIXME: Produce the OGOCS string. */
+	if (q_len == 0 || s_len == 0)
+		error("query or subject cannot have length 0");
+	global_offset = 0;
 	for (i = 0; i < q_len; i++) {
+		offset = 0;
 		for (j = 0; j < s_len; j++) {
 			code = 'a' + overlap_code(q_start[i], q_width[i],
 						  s_start[j], s_width[j]);
-			out[out_len++] = code;
+			if (offset == 0) {
+				if (code == 'm' && j + 1 < s_len)
+					continue;
+				offset = j + 1;
+				if (global_offset == 0) {
+					global_offset = offset;
+					CharAE_append_int(out, global_offset);
+					CharAE_append_char(out, ':', 1);
+				} else {
+					if (offset < global_offset)
+						CharAE_append_char(out, '>',
+							global_offset - offset);
+					else if (offset == global_offset)
+						CharAE_append_char(out, '=', 1);
+					else
+						CharAE_append_char(out, '<',
+							offset - global_offset);
+					global_offset = offset;
+				}
+				pos1 = _CharAE_get_nelt(out) + 1;
+			}
+			CharAE_append_char(out, code, 1);
 		}
+		/* Remove trailing "a"'s */
+		j = _CharAE_get_nelt(out);
+		while (j > pos1) {
+			if (out->elts[--j] != 'a')
+				break;
+		}
+		_CharAE_set_nelt(out, j);
 	}
-	return out_len;
+	return;
 }
 
 /* --- .Call ENTRY POINT ---
@@ -242,8 +299,8 @@ int _enc_overlaps_as_OGOCS(const int *q_start, const int *q_width, int q_len,
 SEXP overlaps_to_OGOCS(SEXP query_start, SEXP query_width,
 		       SEXP subject_start, SEXP subject_width)
 {
-	int m, n, ans_length;
-	SEXP ans;
+	int m, n;
+	CharAE buf;
 
 	if (!IS_INTEGER(query_start) || !IS_INTEGER(query_width)
 	 || !IS_INTEGER(subject_start) || !IS_INTEGER(subject_width))
@@ -257,14 +314,11 @@ SEXP overlaps_to_OGOCS(SEXP query_start, SEXP query_width,
 		      "the same length");
 	m = LENGTH(query_start);
 	n = LENGTH(subject_start);
-	if (m == 0 || n == 0)
-		error("query or subject cannot have length 0");
-	ans_length = m * n;
-	PROTECT(ans = NEW_RAW(ans_length));
-	_enc_overlaps_as_OGOCS(INTEGER(query_start), INTEGER(query_width), m,
+	buf = _new_CharAE(0);
+	_enc_overlaps_as_OGOCS(
+			INTEGER(query_start), INTEGER(query_width), m,
 			INTEGER(subject_start), INTEGER(subject_width), n,
-			(char *) RAW(ans));
-	UNPROTECT(1);
-	return ans;
+			&buf);
+	return _new_RAW_from_CharAE(&buf);
 }
 
