@@ -320,8 +320,13 @@ SEXP encode_overlaps(SEXP query_start, SEXP query_width,
 	n = LENGTH(subject_start);
 	sparse_output0 = LOGICAL(sparse_output)[0];
 	as_raw0 = LOGICAL(as_raw)[0];
-	buf = _new_CharAE(0);
 	if (as_raw0 || sparse_output0) {
+		if (!sparse_output0) {
+			/* FIXME: Risk of integer overflow! */
+			buf = _new_CharAE(m * n);
+		} else {
+			buf = _new_CharAE(0);
+		}
 		_enc_overlaps(INTEGER(query_start), INTEGER(query_width), m,
 			      INTEGER(subject_start), INTEGER(subject_width), n,
 			      sparse_output0, &buf);
@@ -344,6 +349,7 @@ SEXP encode_overlaps(SEXP query_start, SEXP query_width,
 		return ans;
 	}
 	PROTECT(ans = NEW_CHARACTER(m));
+	buf = _new_CharAE(n);
 	for (i = 0; i < m; i++) {
 		_enc_overlaps(
 			INTEGER(query_start) + i, INTEGER(query_width) + i, 1,
