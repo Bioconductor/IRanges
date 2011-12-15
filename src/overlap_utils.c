@@ -1,6 +1,9 @@
 #include "IRanges.h"
 
 /*
+ * Generalized comparison of ranges
+ * ================================
+ *
  * There are 13 different ways 2 ranges can be positioned with respect to each
  * other. They are described in the table below together with their associated
  * codes. The 1st range is called the "query" range (q) and the 2nd range the
@@ -10,42 +13,45 @@
  *                  1-letter code & |                1-letter code &
  *                        long code |                      long code
  *   -------------  --------------- | -------------  ---------------
- *   q: xxxx         0   'a'  "qNs" | q:       xxxx  12   'm'  "sNq"
+ *   q: xxxx        -6   'a'  "qNs" | q:       xxxx   6   'm'  "sNq"
  *   s:       xxxx                  | s: xxxx      
  *   -------------  --------------- | -------------  ---------------
- *   q:  xxxx        1   'b'  "qs"  | q:      xxxx   11   'l'  "sq"
+ *   q:  xxxx       -5   'b'  "qs"  | q:      xxxx    5   'l'  "sq"
  *   s:      xxxx                   | s:  xxxx     
  *   -------------  --------------- | -------------  ---------------
- *   q:   xxxx       2   'c'  "q=s" | q:     xxxx    10   'k'  "s=q"
+ *   q:   xxxx      -4   'c'  "q=s" | q:     xxxx     4   'k'  "s=q"
  *   s:     xxxx                    | s:   xxxx    
  *   -------------  --------------- | -------------  ---------------
- *   q:   xxxxxx     3   'd'  "q="  | q:      xxx     9   'j'  "s="
+ *   q:   xxxxxx    -3   'd'  "q="  | q:      xxx     3   'j'  "s="
  *   s:      xxx                    | s:   xxxxxx  
  *   -------------  --------------- | -------------  ---------------
- *   q:  xxxxxxxx    4   'e'  "q=q" | q:    xxxx      8   'i'  "s=s"
+ *   q:  xxxxxxxx   -2   'e'  "q=q" | q:    xxxx      2   'i'  "s=s"
  *   s:    xxxx                     | s:  xxxxxxxx
  *   -------------  --------------- | -------------  ---------------
- *   q:   xxx        5   'f'  "=s"  | q:   xxxxxx     7   'h'  "=q"
+ *   q:   xxx       -1   'f'  "=s"  | q:   xxxxxx     1   'h'  "=q"
  *   s:   xxxxxx                    | s:   xxx
  *   -------------  -------------------------------  ---------------
- *                \   q:   xxxxxx     6   'g'  "="    /
+ *                \   q:   xxxxxx     0   'g'  "="    /
  *                 \  s:   xxxxxx                    /
  *                  \-------------------------------/
  * Notes:
+ *   o This way of comparing ranges is a refinement over the standard ranges
+ *     comparison defined by the <, >, <=, >=, == and != operators. In
+ *     particular a numeric code that is < 0, = 0, or > 0 corresponds to
+ *     q < s, q == s, or q > s, respectively.
+ *   o In this file we use the term "overlap" in a loose way even when there
+ *     is actually no overlap between the query and the subject. Real overlaps
+ *     correspond to numeric codes >= -4 and <= 4, and to long codes that
+ *     contain an equal ("=").
  *   o Long codes are designed to be user-friendly whereas numeric and
  *     1-letter codes are designed to be more compact and memory efficient.
  *     Typically the formers will be exposed to the end-user and translated
  *     internally into the latters.
- *   o In this file we use the term "overlap" in a loose way even when there
- *     is actually no overlap between the query and the subject. Real overlaps
- *     correspond to numeric codes 2-10 and to long codes that contain an
- *     equal ("=").
- *   o Inverting the order of q and s has the effect to replace numeric code
- *     C by 12 - C and to substitute "q" by "s" and "s" by "q" in the long
- *     code.
+ *   o Swapping q and s changes the sign of the corresponding numeric code and
+ *     substitutes "q" by "s" and "s" by "q" in the corresponding long code.
  *   o Reflecting ranges q and s relative to an arbitrary position (i.e. doing
- *     a symetry with respect to a vertical axis) has the effect to reverse
- *     the associated long code.
+ *     a symetry with respect to a vertical axis) has the effect of reversing
+ *     the associated long code e.g. "q=s" becomes "s=q".
  *
  * 'q_start', 'q_width', 's_start' and 's_width' are assumed to be non NA.
  * 'q_width' and 's_width' are assumed to be >= 0.
@@ -56,35 +62,35 @@ static int overlap_code(int q_start, int q_width, int s_start, int s_width)
 
 	q_end = q_start + q_width;  /* not the real 'q_end' */
 	if (q_end < s_start)
-		return 0;
+		return -6;
 	if (q_end == s_start)
-		return 1;
+		return -5;
 	s_end = s_start + s_width;  /* not the real 's_end' */
 	if (s_end < q_start)
-		return 12;
+		return 6;
 	if (s_end == q_start)
-		return 11;
+		return 5;
 	q_end--;  /* the real 'q_end' */
 	s_end--;  /* the real 's_end' */
 	if (q_start < s_start) {
 		if (q_end < s_end)
-			return 2;
+			return -4;
 		if (q_end == s_end)
-			return 3;
-		return 4;
+			return -3;
+		return -2;
 	}
 	if (q_start == s_start) {
 		if (q_end < s_end)
-			return 5;
+			return -1;
 		if (q_end == s_end)
-			return 6;
-		return 7;
+			return 0;
+		return 1;
 	}
 	if (q_end < s_end)
-		return 8;
+		return 2;
 	if (q_end == s_end)
-		return 9;
-	return 10;
+		return 3;
+	return 4;
 }
 
 
@@ -100,7 +106,7 @@ void _enc_poverlaps(const int *q_start, const int *q_width, int q_len,
 
 	out_len = q_len >= s_len ? q_len : s_len;
 	for (i = 0; i < out_len; i++, out++) {
-		*out = 'a' + overlap_code(*q_start, *q_width,
+		*out = 'g' + overlap_code(*q_start, *q_width,
 					  *s_start, *s_width);
 		if (q_len != 1) {
 			q_start++;
@@ -252,7 +258,7 @@ void _enc_overlaps(const int *q_start, const int *q_width, int q_len,
 	for (i = 0; i < q_len; i++) {
 		offset = 0;
 		for (j = 0; j < s_len; j++) {
-			code = 'a' + overlap_code(q_start[i], q_width[i],
+			code = 'g' + overlap_code(q_start[i], q_width[i],
 						  s_start[j], s_width[j]);
 			if (sparse_output && offset == 0) {
 				if (code == 'm' && j + 1 < s_len)
