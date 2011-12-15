@@ -118,7 +118,7 @@ static const R_CallMethodDef callMethods[] = {
 
 /* overlap_utils.c */
 	CALLMETHOD_DEF(Ranges_compare, 4),
-	CALLMETHOD_DEF(encode_overlaps, 6),
+	CALLMETHOD_DEF(Ranges_encode_overlaps, 8),
 
 /* SharedVector_class.c */
 	CALLMETHOD_DEF(debug_SharedVector_class, 0),

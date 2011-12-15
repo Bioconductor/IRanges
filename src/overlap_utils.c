@@ -234,11 +234,15 @@ static void CharAE_append_int(CharAE *char_ae, int d)
 	return;
 }
 
-void _enc_overlaps(const int *q_start, const int *q_width, int q_len,
-		   const int *s_start, const int *s_width, int s_len,
+/* Uses special 1-letter code 'X' for ranges that are not on the same space. */
+void _enc_overlaps(const int *q_start, const int *q_width,
+			const int *q_space, int q_len,
+		   const int *s_start, const int *s_width,
+			const int *s_space, int s_len,
 		   int sparse_output, CharAE *out)
 {
-	int prev_offset, offset, i, j, pos1;
+	int prev_offset, offset,
+	    i, starti, widthi, spacei, j, startj, widthj, spacej, pos1;
 	char code;
 
 	if (sparse_output && (q_len == 0 || s_len == 0))
@@ -247,9 +251,18 @@ void _enc_overlaps(const int *q_start, const int *q_width, int q_len,
 	prev_offset = 0;
 	for (i = 0; i < q_len; i++) {
 		offset = 0;
+		starti = q_start[i];
+		widthi = q_width[i];
+		spacei = q_space == NULL ? 0 : q_space[i];
 		for (j = 0; j < s_len; j++) {
-			code = 'g' + overlap_code(q_start[i], q_width[i],
-						  s_start[j], s_width[j]);
+			startj = s_start[j];
+			widthj = s_width[j];
+			spacej = s_space == NULL ? 0 : s_space[j];
+			if (spacei == -1 || spacej == -1 || spacei != spacej)
+				code = 'X';
+			else
+				code = 'g' + overlap_code(starti, widthi,
+							  startj, widthj);
 			if (sparse_output && offset == 0) {
 				if (code == 'm' && j + 1 < s_len)
 					continue;
@@ -275,8 +288,9 @@ void _enc_overlaps(const int *q_start, const int *q_width, int q_len,
 			/* Remove trailing "a"'s */
 			j = _CharAE_get_nelt(out);
 			while (j > pos1) {
-				if (out->elts[--j] != 'a')
+				if (out->elts[j - 1] != 'a')
 					break;
+				j--;
 			}
 			_CharAE_set_nelt(out, j);
 		}
@@ -285,35 +299,67 @@ void _enc_overlaps(const int *q_start, const int *q_width, int q_len,
 }
 
 /* --- .Call ENTRY POINT ---
- * 'query_start' and 'query_width': integer vectors of the same length M.
- * 'subject_start' and 'subject_width': integer vectors of the same length N
- * M or N cannot be 0.
- * The 4 integer vectors are assumed to be NA free and 'query_width' and
- * 'subject_width' are assumed to contain non-negative values. For efficiency
- * reasons, those assumptions are not checked.
- * Returns the matrix of 1-letter codes (if 'sparse_output' is TRUE) or the
- * OGOCS string (if 'sparse_output' is FALSE).
+ * 'query_start', 'query_width', 'query_space': integer vectors of the same
+ * length M (or NULL for 'query_space').
+ * 'subject_start', 'subject_width', 'subject_space': integer vectors of the
+ * same length N (or NULL for 'subject_space').
+ * Integer vectors 'query_start', 'query_width', 'subject_start' and
+ * 'subject_width' are assumed to be NA free. 'query_width' and 'subject_width'
+ * are assumed to contain non-negative values. For efficiency reasons, those
+ * assumptions are not checked.
+ * Returns the matrix of 1-letter codes (if 'sparse_output' is FALSE), or the
+ * OGOCS string (if 'sparse_output' is TRUE) in which case both M and N must
+ * be != 0.
  */
-SEXP encode_overlaps(SEXP query_start, SEXP query_width,
-		     SEXP subject_start, SEXP subject_width,
-		     SEXP sparse_output, SEXP as_raw)
+SEXP Ranges_encode_overlaps(SEXP query_start, SEXP query_width,
+				SEXP query_space,
+			    SEXP subject_start, SEXP subject_width,
+				SEXP subject_space,
+			    SEXP sparse_output, SEXP as_raw)
 {
 	int m, n, sparse_output0, as_raw0, i;
+	const int *q_space, *s_space;
 	CharAE buf;
 	SEXP ans, ans_elt, ans_dim;
 
-	if (!IS_INTEGER(query_start) || !IS_INTEGER(query_width)
-	 || !IS_INTEGER(subject_start) || !IS_INTEGER(subject_width))
-		error("'query_start', 'query_width', 'subject_start' "
-		      "and 'subject_width' must be integer vectors");
+	/* Check 'query_start', 'query_width' and 'query_space'. */
+	if (!IS_INTEGER(query_start) || !IS_INTEGER(query_width))
+		error("'start(query)' and 'width(query)' must be "
+		      "integer vectors");
 	if (LENGTH(query_start) != LENGTH(query_width))
-		error("'query_start' and 'query_width' must have "
-		      "the same length");
-	if (LENGTH(subject_start) != LENGTH(subject_width))
-		error("'subject_start' and 'subject_width' must have "
+		error("'start(query)' and 'width(query)' must have "
 		      "the same length");
 	m = LENGTH(query_start);
+	if (query_space == R_NilValue) {
+		q_space = NULL;
+	} else if (!IS_INTEGER(query_space)) {
+		error("'query_space' must be an integer vector or NULL");
+	} else if (LENGTH(query_space) != m) {
+		error("when not NULL, 'query_space' must have "
+		      "the same length as 'start(query)'");
+	} else {
+		q_space = INTEGER(query_space);
+	}
+
+	/* Check 'subject_start', 'subject_width' and 'subject_space'. */
+	if (!IS_INTEGER(subject_start) || !IS_INTEGER(subject_width))
+		error("'start(subject)' and 'width(subject)' must be "
+		      "integer vectors");
+	if (LENGTH(subject_start) != LENGTH(subject_width))
+		error("'start(subject)' and 'width(subject)' must have "
+		      "the same length");
 	n = LENGTH(subject_start);
+	if (subject_space == R_NilValue) {
+		s_space = NULL;
+	} else if (!IS_INTEGER(subject_space)) {
+		error("'subject_space' must be an integer vector or NULL");
+	} else if (LENGTH(subject_space) != n) {
+		error("when not NULL, 'subject_space' must have "
+		      "the same length as 'start(subject)'");
+	} else {
+		s_space = INTEGER(subject_space);
+	}
+
 	sparse_output0 = LOGICAL(sparse_output)[0];
 	as_raw0 = LOGICAL(as_raw)[0];
 	if (as_raw0 || sparse_output0) {
@@ -323,8 +369,10 @@ SEXP encode_overlaps(SEXP query_start, SEXP query_width,
 		} else {
 			buf = _new_CharAE(0);
 		}
-		_enc_overlaps(INTEGER(query_start), INTEGER(query_width), m,
-			      INTEGER(subject_start), INTEGER(subject_width), n,
+		_enc_overlaps(INTEGER(query_start), INTEGER(query_width),
+				q_space, m,
+			      INTEGER(subject_start), INTEGER(subject_width),
+				s_space, n,
 			      sparse_output0, &buf);
 		if (!as_raw0) {
 			PROTECT(ans_elt = mkCharLen(buf.elts,
@@ -348,13 +396,17 @@ SEXP encode_overlaps(SEXP query_start, SEXP query_width,
 	buf = _new_CharAE(n);
 	for (i = 0; i < m; i++) {
 		_enc_overlaps(
-			INTEGER(query_start) + i, INTEGER(query_width) + i, 1,
-			INTEGER(subject_start), INTEGER(subject_width), n,
+			INTEGER(query_start) + i, INTEGER(query_width) + i,
+			  q_space, 1,
+			INTEGER(subject_start), INTEGER(subject_width),
+			  s_space, n,
 			0, &buf);
 		PROTECT(ans_elt = mkCharLen(buf.elts, _CharAE_get_nelt(&buf)));
 		SET_STRING_ELT(ans, i, ans_elt);
 		UNPROTECT(1);
 		_CharAE_set_nelt(&buf, 0);
+		if (q_space != NULL)
+			q_space++;
 	}
 	UNPROTECT(1);
 	return ans;

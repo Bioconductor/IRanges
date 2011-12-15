@@ -995,19 +995,23 @@ SEXP Ranges_compare(
 void _enc_overlaps(
 	const int *q_start,
 	const int *q_width,
+	const int *q_space,
 	int q_len,
 	const int *s_start,
 	const int *s_width,
+	const int *s_space,
 	int s_len,
 	int sparse_output,
 	CharAE *out
 );
 
-SEXP encode_overlaps(
+SEXP Ranges_encode_overlaps(
 	SEXP query_start,
 	SEXP query_width,
+	SEXP query_space,
 	SEXP subject_start,
 	SEXP subject_width,
+	SEXP subject_space,
 	SEXP sparse_output,
 	SEXP as_raw
 );

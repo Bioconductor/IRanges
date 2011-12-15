@@ -32,27 +32,31 @@ setGeneric("encodeOverlaps", signature=c("query", "subject"),
 
 ### > query <- IRanges(c(7, 15, 22), c(9, 19, 23))
 ### > subject <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
+### > encodeOverlaps(query, subject, sparse.output=FALSE)
+### [1] "mjaa" "mmga" "mmmf"
 ### > encodeOverlaps(query, subject)
 ### [1] "2:j<g<f"
 setMethod("encodeOverlaps", c("Ranges", "Ranges"),
-    function(query, subject, sparse.output=TRUE, as.raw=FALSE)
+    function(query, subject, sparse.output=TRUE,
+             query.space=NULL, subject.space=NULL, as.raw=FALSE)
     {
         if (!isTRUEorFALSE(sparse.output))
             stop("'sparse.output' must be TRUE or FALSE")
         if (!isTRUEorFALSE(as.raw))
             stop("'as.raw' must be TRUE or FALSE")
-        .Call2("encode_overlaps",
-               start(query), width(query), start(subject), width(subject),
+        .Call2("Ranges_encode_overlaps",
+               start(query), width(query), query.space,
+               start(subject), width(subject), subject.space,
                sparse.output, as.raw,
                PACKAGE="IRanges")
     }
 )
 
 ### TODO: Put this in the (upcoming) man page for encodeOverlaps().
-### A simple but inefficient implementation of findOverlaps(). Complexity and
-### memory usage is M x N where M and N are the lengths of 'query' and
-### 'subject', respectively.
-simpleFindOverlaps <- function(query, subject)
+### A simple (but inefficient) implementation of the "findOverlaps" method for
+### Ranges objects. Complexity and memory usage is M x N where M and N are the
+### lengths of 'query' and 'subject', respectively.
+findRangesOverlaps <- function(query, subject)
 {
     ## WARNING: When using sparse.output=FALSE and as.raw=TRUE, the returned
     ## raw matrix is transposed!
