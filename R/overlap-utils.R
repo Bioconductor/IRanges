@@ -1,20 +1,28 @@
 ###
 
-setGeneric("encodePOverlaps",
-    function(query, subject) standardGeneric("encodePOverlaps")
-)
+setGeneric("compare", function(x, y) standardGeneric("compare"))
 
-### > rawToChar(encodePOverlaps(IRanges(1:11, width=4), IRanges(6, 9)))
-### [1] "abcccgkkklm"
-### > rawToChar(encodePOverlaps(IRanges(4:6, width=6), IRanges(6, 9)))
-### [1] "deh"
-### > rawToChar(encodePOverlaps(IRanges(6:8, width=2), IRanges(6, 9)))
-### [1] "fij"
-setMethod("encodePOverlaps", c("Ranges", "Ranges"),
-    function(query, subject)
-        .Call2("encode_poverlaps",
-               start(query), width(query), start(subject), width(subject),
+### > x <- IRanges(1:11, width=4)
+### > y <- IRanges(6, 9)
+### > compare(x, y)
+###  [1] -6 -5 -4 -4 -4  0  4  4  4  5  6
+### > compare(IRanges(4:6, width=6), y)
+### [1] -3 -2  1
+### > compare(IRanges(6:8, width=2), y)
+### [1] -1  2  3
+### > compare(x, y) < 0  # equivalent to x < y
+### > compare(x, y) == 0  # equivalent to x == y
+### > compare(x, y) > 0  # equivalent to x > y
+### TODO: Seems like using compare() to implement "==", "!=", "<=", ">=",
+### "<" and ">" methods for Ranges objects would make them slightly faster
+### (between 1.5x and 2.5x) and also slightly more memory efficient.
+setMethod("compare", c("Ranges", "Ranges"),
+    function(x, y)
+    {
+        .Call2("Ranges_compare",
+               start(x), width(x), start(y), width(y),
                PACKAGE="IRanges")
+    }
 )
 
 setGeneric("encodeOverlaps", signature=c("query", "subject"),

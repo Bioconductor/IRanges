@@ -973,21 +973,23 @@ SEXP RleViews_viewWhichMaxs(
 
 /* overlap_utils.c */
 
-void _enc_poverlaps(
-	const int *q_start,
-	const int *q_width,
-	int q_len,
-	const int *s_start,
-	const int *s_width,
-	int s_len,
-	char *out
+void _ranges_pcompare(
+	const int *x_start,
+	const int *x_width,
+	int x_len,
+	const int *y_start,
+	const int *y_width,
+	int y_len,
+	int *out,
+	int out_len,
+	int with_warning
 );
 
-SEXP encode_poverlaps(
-	SEXP query_start,
-	SEXP query_width,
-	SEXP subject_start,
-	SEXP subject_width
+SEXP Ranges_compare(
+	SEXP x_start,
+	SEXP x_width,
+	SEXP y_start,
+	SEXP y_width
 );
 
 void _enc_overlaps(

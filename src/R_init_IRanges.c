@@ -117,7 +117,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(RleViews_viewWhichMaxs, 2),
 
 /* overlap_utils.c */
-	CALLMETHOD_DEF(encode_poverlaps, 4),
+	CALLMETHOD_DEF(Ranges_compare, 4),
 	CALLMETHOD_DEF(encode_overlaps, 6),
 
 /* SharedVector_class.c */

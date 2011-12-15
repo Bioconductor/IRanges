@@ -60,18 +60,18 @@ static int overlap_code(int q_start, int q_width, int s_start, int s_width)
 {
 	int q_end, s_end;
 
-	q_end = q_start + q_width;  /* not the real 'q_end' */
+	q_end = q_start + q_width; /* not the real 'q_end' */
 	if (q_end < s_start)
 		return -6;
 	if (q_end == s_start)
 		return -5;
-	s_end = s_start + s_width;  /* not the real 's_end' */
+	s_end = s_start + s_width; /* not the real 's_end' */
 	if (s_end < q_start)
 		return 6;
 	if (s_end == q_start)
 		return 5;
-	q_end--;  /* the real 'q_end' */
-	s_end--;  /* the real 's_end' */
+	q_end--; /* the real 'q_end' */
+	s_end--; /* the real 's_end' */
 	if (q_start < s_start) {
 		if (q_end < s_end)
 			return -4;
@@ -95,75 +95,65 @@ static int overlap_code(int q_start, int q_width, int s_start, int s_width)
 
 
 /****************************************************************************
- * Encode "parallel" overlaps.
+ * "Parallel" ranges comparison with recycling.
  */
 
-void _enc_poverlaps(const int *q_start, const int *q_width, int q_len,
-		    const int *s_start, const int *s_width, int s_len,
-		    char *out)
+void _ranges_pcompare(const int *x_start, const int *x_width, int x_len,
+		      const int *y_start, const int *y_width, int y_len,
+		      int *out, int out_len, int with_warning)
 {
-	int i, out_len;
+	int i, j, k;
 
-	out_len = q_len >= s_len ? q_len : s_len;
-	for (i = 0; i < out_len; i++, out++) {
-		*out = 'g' + overlap_code(*q_start, *q_width,
-					  *s_start, *s_width);
-		if (q_len != 1) {
-			q_start++;
-			q_width++;
-		}
-		if (s_len != 1) {
-			s_start++;
-			s_width++;
-		}
+	for (i = j = k = 0; k < out_len; i++, j++, k++) {
+		if (i >= x_len)
+			i = 0; /* recycle i */
+		if (j >= y_len)
+			j = 0; /* recycle j */
+		out[k] = overlap_code(x_start[i], x_width[i],
+				      y_start[j], y_width[j]);
 	}
-	return;	
+	/* Warning message appropriate only when 'out_len' is
+           'max(x_len, y_len)' */
+	if (with_warning && out_len != 0 && (i != x_len || j != y_len))
+		warning("longer object length is not a multiple "
+			"of shorter object length");
+	return;
 }
 
 /* --- .Call ENTRY POINT ---
- * 'query_start' and 'query_width': integer vectors of the same length M.
- * 'subject_start' and 'subject_width': integer vectors of the same length N.
- * If M != N then either M or N must be 1. If M is 1, then N must be > M and
- * 'query_start' and 'query_width' are recycled to length N. If N is 1, then
- * M must be > N and 'subject_start' and 'subject_width' are recycled to
- * length M.
- * The 4 integer vectors are assumed to be NA free and 'query_width' and
- * 'subject_width' are assumed to contain non-negative values. For efficiency
+ * 'x_start' and 'x_width': integer vectors of the same length M.
+ * 'y_start' and 'y_width': integer vectors of the same length N.
+ * If M != N then the shorter object is recycled to the length of the longer
+ * object, except if M or N is 0 in which case the object with length != 0 is
+ * truncated to length 0.
+ * The 4 integer vectors are assumed to be NA free and 'x_width' and
+ * 'y_width' are assumed to contain non-negative values. For efficiency
  * reasons, those assumptions are not checked.
  */
-SEXP encode_poverlaps(SEXP query_start, SEXP query_width,
-		      SEXP subject_start, SEXP subject_width)
+SEXP Ranges_compare(SEXP x_start, SEXP x_width,
+		    SEXP y_start, SEXP y_width)
 {
 	int m, n, ans_length;
 	SEXP ans;
 
-	if (!IS_INTEGER(query_start) || !IS_INTEGER(query_width)
-	 || !IS_INTEGER(subject_start) || !IS_INTEGER(subject_width))
-		error("'query_start', 'query_width', 'subject_start' "
-		      "and 'subject_width' must be integer vectors");
-	if (LENGTH(query_start) != LENGTH(query_width))
-		error("'query_start' and 'query_width' must have "
-		      "the same length");
-	if (LENGTH(subject_start) != LENGTH(subject_width))
-		error("'subject_start' and 'subject_width' must have "
-		      "the same length");
-	m = LENGTH(query_start);
-	n = LENGTH(subject_start);
-	ans_length = m;
-	if (m != n) {
-		if (m == 0 || n == 0)
-			error("when query or subject has length 0, "
-			      "both of them must have length 0");
-		if (m == 1)
-			ans_length = n;
-		else if (n != 1)
-			error("when lengths of query and subject are "
-			      "different, one of them must have length 1");
-	}
-	PROTECT(ans = NEW_RAW(ans_length));
-	_enc_poverlaps(INTEGER(query_start), INTEGER(query_width), m,
-		       INTEGER(subject_start), INTEGER(subject_width), n,
-		       (char *) RAW(ans));
+	if (!IS_INTEGER(x_start) || !IS_INTEGER(x_width)
+	 || !IS_INTEGER(y_start) || !IS_INTEGER(y_width))
+		error("'start(x)', 'width(x)', 'start(y)' and 'width(y)' "
+		      "must be integer vectors");
+	if (LENGTH(x_start) != LENGTH(x_width))
+		error("'start(x)' and 'width(x)' must have the same length");
+	if (LENGTH(y_start) != LENGTH(y_width))
+		error("'start(y)' and 'width(y)' must have the same length");
+	m = LENGTH(x_start);
+	n = LENGTH(y_start);
+	if (m == 0 || n == 0)
+		ans_length = 0;
+	else
+		ans_length = m >= n ? m : n;
+	PROTECT(ans = NEW_INTEGER(ans_length));
+	_ranges_pcompare(INTEGER(x_start), INTEGER(x_width), m,
+			 INTEGER(y_start), INTEGER(y_width), n,
+			 INTEGER(ans), ans_length, 1);
 	UNPROTECT(1);
 	return ans;
 }
@@ -230,14 +220,14 @@ static void CharAE_append_char(CharAE *char_ae, char c, int times)
 
 static void CharAE_append_int(CharAE *char_ae, int d)
 {
-	static char buf[12];  /* should be enough for 32-bit ints */
+	static char buf[12]; /* should be enough for 32-bit ints */
 	int ret;
 
 	ret = snprintf(buf, sizeof(buf), "%d", d);
-	if (ret < 0)  /* should never happen */
+	if (ret < 0) /* should never happen */
 		error("IRanges internal error in CharAE_append_int(): "
 		      "snprintf() returned value < 0");
-	if (ret >= sizeof(buf))  /* could happen with ints > 32-bit */
+	if (ret >= sizeof(buf)) /* could happen with ints > 32-bit */
 		error("IRanges internal error in CharAE_append_int(): "
 		      "output of snprintf() was truncated");
 	_append_string_to_CharAE(char_ae, buf);
