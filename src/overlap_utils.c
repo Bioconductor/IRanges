@@ -167,19 +167,19 @@ SEXP Ranges_compare(SEXP x_start, SEXP x_width,
  * 2 gaps and the transcript has 7 exons, the matrix of 1-letter codes has
  * 3 rows and 7 columns and will typically look like:
  *
- *     A = mjaaaaa   B = mjaaaaa   C = mjaaaaa   D = mmmjaaa   E = aaaaaaa
- *         mmgaaaa       mmgaaaa       mmaaaaa       mmmmmga       mmmiaaa
- *         mmmfaaa       mmmgaaa       mmfaaaa       mmmmmmf       mmmkiaa
+ *     A = mjaaaaa   B = mjaaaaa   C = mjaaaaa   D = mmmjaaa   E = mmmiaaa
+ *         mmgaaaa       mmgaaaa       mmaaaaa       mmmmmga       mmmkiaa
+ *         mmmfaaa       mmmgaaa       mmfaaaa       mmmmmmf       mmmmmmm
  *
  *   A, B: Compatible splicing.
  *   C: Compatible splicing modulo 1 inserted exon (splicing would be
  *      compatible if one exon was inserted between exons #2 and #3).
  *   D: Compatible splicing modulo 1 dropped exon (splicing would be compatible
  *      if exon #5 was dropped).
- *   E: Incompatible splicing. 1st range in the read is beyond the bounds of
- *      the transcript (on the upstream side), 2nd range is within exon #4,
- *      and 3rd range overlaps with exon #4 and is within exon #5. This implies
- *      that exon #4 and #5 overlap.
+ *   E: Incompatible splicing. 1st range in the read is within exon #4, 2nd
+ *      range overlaps with exon #4 and is within exon #5 (this implies that
+ *      exon #4 and #5 overlap), and 3rd range is beyond the bounds of
+ *      the transcript (on the downstream side),
  *
  * Note that we make no assumption that the exons in the transcript are
  * ordered from 5' to 3' or non overlapping. They only need to be ordered by
@@ -190,23 +190,26 @@ SEXP Ranges_compare(SEXP x_start, SEXP x_width,
  *  
  * Sparse representation: for each row in the matrix of 1-letter codes, report
  * only the sequence between the "m" prefix and the "a" suffix and put the
- * col nb of the first non-m letter in front of that. For example, the sparse
- * representation of row "mmmecaa" is "4ec". If there is nothing between the
- * "m" prefix and the "a" suffix, then report the first "a" (or the last "m"
- * if the row contains only "m"'s). Finally paste together the results for all
- * the rows:
+ * 1-base column index of the first non-"m" letter in front of that. For
+ * example, the sparse representation of row "mmmecaa" is "4ec". If there is
+ * nothing between the "m" prefix and the "a" suffix, then report the first "a"
+ * (or the last "m" if the row contains only "m"'s). Finally paste together the
+ * results for all the rows using the ":" separator:
  *
- *     A = 2j3g4f    B = 2j3g4g    C = 2j3a3f    D = 4j6g7f    E = 1a4i4ki
+ *     A = 2j:3g:4f  B = 2j:3g:4g  C = 2j:3a:3f  D = 4j:6g:7f  E = 4i:4ki:7m
  *
- * Sparse representation using One Global Offset and Cumulative Shifts (a shift
- * can be either one or more "<", or "=", or one or more ">"):
+ * Sparse representation using relative shifts: the 1st row is represented as
+ * previously but for each subsequent row the sequence to report is preceded
+ * by an horizontal shift relative to the position of the last reported letter
+ * plus one. A shift = 0 is represented by an empty string, a shift > 0 by one
+ * or more ">" (suggesting a shift to the right), and a shift < 0 by one or
+ * more "<" (suggesting a shift to the left):
  *
- *     A = 2:j<g<f   B = 2:j<g<g   C = 2:j<a=f   D = 4:j<<g<f  E = 1:a<<<i=ki
+ *     A = 2j:g:f   B = 2j:g:g   C = 2j:a:<f   D = 4j:>g:f  E = 4i:<ki:>m
  *
- * The advantage of the OGOCS string over the non-OGOCS string is that it's
- * easier to use regular expressions on the former. For example, reads with
- * 1 gap and a splicing that is compatible with the transcript can be filtered
- * with regex ":(j|g)<(g|f)$"
+ * Using relative shifts makes it easier to use regular expressions. For
+ * example, reads with 1 gap and a splicing that is compatible with the
+ * transcript can be filtered with regex "^[0-9]+(j|g):(g|f)$"
  */
 
 static void CharAE_append_char(CharAE *char_ae, char c, int times)
@@ -242,25 +245,27 @@ void _enc_overlaps(const int *q_start, const int *q_width,
 		   int sparse_output, CharAE *out)
 {
 	int i, starti, widthi, spacei, j, startj, widthj, spacej,
-	    prev_j1, j1, j2;
+	    j1, j2, shift;
 	char code;
 
 	if (sparse_output && (q_len == 0 || s_len == 0))
 		error("sparse output not supported when "
 		      "query or subject have length 0");
-	prev_j1 = 0;
+	j2 = 0;
 	for (i = 0; i < q_len; i++) {
+		if (sparse_output && i != 0)
+			CharAE_append_char(out, ':', 1);
 		/* j1: 1-base column index of the first letter of the sequence
-		 * to report when in sparse mode (defined as the last letter
-		 * in the row that is preceded by "m"'s only).
+		 * to report when in sparse mode. Concisely defined as the last
+		 * position in the row that is preceded by "m"'s only.
 		 * j2: 1-base column index of the last letter of the sequence
-		 * to report when in sparse mode (defined as the first letter
-		 * in the row that is followed by "a"'s only).
+		 * to report when in sparse mode. Concisely defined as the
+		 * first position in the row that is >= j1 and followed by
+		 * "a"'s only.
 		 * When we exit the for (j = 0; ...) loop below, we have the
 		 * guarantee that 1 <= j1 <= j2 <= s_len.
 		 */
 		j1 = 0;
-		j2 = 1;
 		starti = q_start[i];
 		widthi = q_width[i];
 		spacei = q_space == NULL ? 0 : q_space[i];
@@ -276,20 +281,19 @@ void _enc_overlaps(const int *q_start, const int *q_width,
 			if (sparse_output && j1 == 0) {
 				if (code == 'm' && j + 1 < s_len)
 					continue;
-				j1 = j2 = j + 1;
-				if (prev_j1 == 0) {
+				j1 = j + 1;
+				if (j2 == 0) {
 					CharAE_append_int(out, j1);
-					CharAE_append_char(out, ':', 1);
-				} else if (prev_j1 > j1) {
-					CharAE_append_char(out, '>',
-							   prev_j1 - j1);
-				} else if (prev_j1 == j1) {
-					CharAE_append_char(out, '=', 1);
 				} else {
-					CharAE_append_char(out, '<',
-							   j1 - prev_j1);
+					shift = j1 - j2 - 1;
+					if (shift >= 0)
+						CharAE_append_char(out, '>',
+								   shift);
+					else
+						CharAE_append_char(out, '<',
+								   -shift);
 				}
-				prev_j1 = j1;
+				j2 = j1;
 			}
 			CharAE_append_char(out, code, 1);
 			if (sparse_output && code != 'a')

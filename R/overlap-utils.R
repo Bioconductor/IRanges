@@ -35,7 +35,7 @@ setGeneric("encodeOverlaps", signature=c("query", "subject"),
 ### > encodeOverlaps(query, subject, sparse.output=FALSE)
 ### [1] "mjaa" "mmga" "mmmf"
 ### > encodeOverlaps(query, subject)
-### [1] "2:j<g<f"
+### [1] "2j:g:f"
 setMethod("encodeOverlaps", c("Ranges", "Ranges"),
     function(query, subject, sparse.output=TRUE,
              query.space=NULL, subject.space=NULL, as.raw=FALSE)
