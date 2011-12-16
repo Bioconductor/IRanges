@@ -35,7 +35,7 @@ setMethod("compare", c("Ranges", "Ranges"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### pencodeOverlaps()
+### encodeOverlaps()
 ###
 
 Ranges_encodeOverlaps <- function(query.start, query.width,
@@ -43,33 +43,33 @@ Ranges_encodeOverlaps <- function(query.start, query.width,
                                   query.space=NULL, subject.space=NULL,
                                   sparse.output=TRUE, as.raw=FALSE)
 {
-        if (!isTRUEorFALSE(sparse.output))
-            stop("'sparse.output' must be TRUE or FALSE")
-        if (!isTRUEorFALSE(as.raw))
-            stop("'as.raw' must be TRUE or FALSE")
-        .Call2("Ranges_encode_overlaps",
-               query.start, query.width, query.space,
-               subject.start, subject.width, subject.space,
-               sparse.output, as.raw,
-               PACKAGE="IRanges")
+    if (!isTRUEorFALSE(sparse.output))
+        stop("'sparse.output' must be TRUE or FALSE")
+    if (!isTRUEorFALSE(as.raw))
+        stop("'as.raw' must be TRUE or FALSE")
+    .Call2("Ranges_encode_overlaps",
+           query.start, query.width, query.space,
+           subject.start, subject.width, subject.space,
+           sparse.output, as.raw,
+           PACKAGE="IRanges")
 }
 
 RangesList_encodeOverlaps <- function(query.starts, query.widths,
                                       subject.starts, subject.widths,
                                       query.spaces=NULL, subject.spaces=NULL)
 {
-    .Call2("RangesList_pencode_overlaps",
+    .Call2("RangesList_encode_overlaps",
            query.starts, query.widths, query.spaces,
            subject.starts, subject.widths, subject.spaces,
            PACKAGE="IRanges")
 }
 
-setGeneric("pencodeOverlaps", signature=c("query", "subject"),
-    function(query, subject, ...) standardGeneric("pencodeOverlaps")
+setGeneric("encodeOverlaps", signature=c("query", "subject"),
+    function(query, subject, ...) standardGeneric("encodeOverlaps")
 )
 
 ### "Parallel" overlap encoding between 2 RangesList objects.
-setMethod("pencodeOverlaps", c("RangesList", "RangesList"),
+setMethod("encodeOverlaps", c("RangesList", "RangesList"),
     function(query, subject)
     {
         RangesList_encodeOverlaps(as.list(start(query)),
@@ -85,7 +85,7 @@ setMethod("pencodeOverlaps", c("RangesList", "RangesList"),
 ###   > read3 <- IRanges(c(16, 22), c(19, 24))
 ###   > query <- IRangesList(read1, read2, read3)
 ###   > tx <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
-###   > ocodes <- pencodeOverlaps(query, tx)
+###   > ocodes <- encodeOverlaps(query, tx)
 ###   > ocodes
 ###   [1] "2j:g:f" "2j:f"   "3j:f"
 ### Reads compatible with transcript 'tx':
@@ -93,7 +93,7 @@ setMethod("pencodeOverlaps", c("RangesList", "RangesList"),
 ###   > grep(pattern, ocodes)
 ###   [1] 1 2 3
 ### All the reads are compatible with this transcript!
-setMethod("pencodeOverlaps", c("RangesList", "Ranges"),
+setMethod("encodeOverlaps", c("RangesList", "Ranges"),
     function(query, subject)
     {
         RangesList_encodeOverlaps(as.list(start(query)),
@@ -103,7 +103,7 @@ setMethod("pencodeOverlaps", c("RangesList", "Ranges"),
     }
 )
 
-setMethod("pencodeOverlaps", c("Ranges", "RangesList"),
+setMethod("encodeOverlaps", c("Ranges", "RangesList"),
     function(query, subject)
     {
         RangesList_encodeOverlaps(list(start(query)),
@@ -115,11 +115,11 @@ setMethod("pencodeOverlaps", c("Ranges", "RangesList"),
 
 ###   > query <- IRanges(c(7, 15, 22), c(9, 19, 23))
 ###   > subject <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
-###   > pencodeOverlaps(query, subject, sparse.output=FALSE)
+###   > encodeOverlaps(query, subject, sparse.output=FALSE)
 ###   [1] "mjaa" "mmga" "mmmf"
-###   > pencodeOverlaps(query, subject)
+###   > encodeOverlaps(query, subject)
 ###   [1] "2j:g:f"
-setMethod("pencodeOverlaps", c("Ranges", "Ranges"),
+setMethod("encodeOverlaps", c("Ranges", "Ranges"),
     function(query, subject, sparse.output=TRUE, as.raw=FALSE)
     {
         Ranges_encodeOverlaps(start(query), width(query),
@@ -136,7 +136,7 @@ findRangesOverlaps <- function(query, subject)
 {
     ## WARNING: When using sparse.output=FALSE and as.raw=TRUE, the returned
     ## raw matrix is transposed!
-    ocodes <- pencodeOverlaps(query, subject, sparse.output=FALSE, as.raw=TRUE)
+    ocodes <- encodeOverlaps(query, subject, sparse.output=FALSE, as.raw=TRUE)
     offsets <- which(charToRaw("c") <= ocodes & ocodes <= charToRaw("k")) - 1L
     q_hits <- offsets %/% nrow(ocodes) + 1L
     s_hits <- offsets %% nrow(ocodes) + 1L

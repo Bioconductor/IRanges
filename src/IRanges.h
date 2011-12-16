@@ -1027,7 +1027,7 @@ SEXP Ranges_encode_overlaps(
 	SEXP as_raw
 );
 
-SEXP RangesList_pencode_overlaps(
+SEXP RangesList_encode_overlaps(
 	SEXP query_starts,
 	SEXP query_widths,
 	SEXP query_spaces,

@@ -446,10 +446,10 @@ SEXP Ranges_encode_overlaps(SEXP query_start, SEXP query_width,
  * 'subject_starts', 'subject_widths', 'subject_spaces': lists of integer
  * vectors of the same length (N) and shape.
  */
-SEXP RangesList_pencode_overlaps(SEXP query_starts, SEXP query_widths,
-				 SEXP query_spaces,
-				 SEXP subject_starts, SEXP subject_widths,
-				 SEXP subject_spaces)
+SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
+				SEXP query_spaces,
+				SEXP subject_starts, SEXP subject_widths,
+				SEXP subject_spaces)
 {
 	int m, n, ans_length, i, j, k;
 	SEXP query_start, query_width, query_space,
