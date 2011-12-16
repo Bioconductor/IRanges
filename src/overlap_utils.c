@@ -136,12 +136,12 @@ SEXP Ranges_compare(SEXP x_start, SEXP x_width,
 	int m, n, ans_length;
 	SEXP ans;
 
-	if (!IS_INTEGER(x_start) || !IS_INTEGER(x_width)
-	 || !IS_INTEGER(y_start) || !IS_INTEGER(y_width))
-		error("'start(x)', 'width(x)', 'start(y)' and 'width(y)' "
-		      "must be integer vectors");
+	if (!IS_INTEGER(x_start) || !IS_INTEGER(x_width))
+		error("'start(x)' and 'width(x)' must be integer vectors");
 	if (LENGTH(x_start) != LENGTH(x_width))
 		error("'start(x)' and 'width(x)' must have the same length");
+	if (!IS_INTEGER(y_start) || !IS_INTEGER(y_width))
+		error("'start(y)' and 'width(y)' must be integer vectors");
 	if (LENGTH(y_start) != LENGTH(y_width))
 		error("'start(y)' and 'width(y)' must have the same length");
 	m = LENGTH(x_start);
@@ -276,7 +276,7 @@ void _enc_overlaps(const int *q_start, const int *q_width,
 			if (sparse_output && j1 == 0) {
 				if (code == 'm' && j + 1 < s_len)
 					continue;
-				j1 = j + 1;
+				j1 = j2 = j + 1;
 				if (prev_j1 == 0) {
 					CharAE_append_int(out, j1);
 					CharAE_append_char(out, ':', 1);
