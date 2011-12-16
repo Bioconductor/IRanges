@@ -241,16 +241,26 @@ void _enc_overlaps(const int *q_start, const int *q_width,
 			const int *s_space, int s_len,
 		   int sparse_output, CharAE *out)
 {
-	int prev_offset, offset,
-	    i, starti, widthi, spacei, j, startj, widthj, spacej, pos1;
+	int i, starti, widthi, spacei, j, startj, widthj, spacej,
+	    prev_j1, j1, j2;
 	char code;
 
 	if (sparse_output && (q_len == 0 || s_len == 0))
 		error("sparse output not supported when "
 		      "query or subject have length 0");
-	prev_offset = 0;
+	prev_j1 = 0;
 	for (i = 0; i < q_len; i++) {
-		offset = 0;
+		/* j1: 1-base column index of the first letter of the sequence
+		 * to report when in sparse mode (defined as the last letter
+		 * in the row that is preceded by "m"'s only).
+		 * j2: 1-base column index of the last letter of the sequence
+		 * to report when in sparse mode (defined as the first letter
+		 * in the row that is followed by "a"'s only).
+		 * When we exit the for (j = 0; ...) loop below, we have the
+		 * guarantee that 1 <= j1 <= j2 <= s_len.
+		 */
+		j1 = 0;
+		j2 = 1;
 		starti = q_start[i];
 		widthi = q_width[i];
 		spacei = q_space == NULL ? 0 : q_space[i];
@@ -263,36 +273,32 @@ void _enc_overlaps(const int *q_start, const int *q_width,
 			else
 				code = 'g' + overlap_code(starti, widthi,
 							  startj, widthj);
-			if (sparse_output && offset == 0) {
+			if (sparse_output && j1 == 0) {
 				if (code == 'm' && j + 1 < s_len)
 					continue;
-				offset = j + 1;
-				if (prev_offset == 0) {
-					CharAE_append_int(out, offset);
+				j1 = j + 1;
+				if (prev_j1 == 0) {
+					CharAE_append_int(out, j1);
 					CharAE_append_char(out, ':', 1);
-				} else if (prev_offset > offset) {
+				} else if (prev_j1 > j1) {
 					CharAE_append_char(out, '>',
-						prev_offset - offset);
-				} else if (prev_offset == offset) {
+							   prev_j1 - j1);
+				} else if (prev_j1 == j1) {
 					CharAE_append_char(out, '=', 1);
 				} else {
 					CharAE_append_char(out, '<',
-						offset - prev_offset);
+							   j1 - prev_j1);
 				}
-				prev_offset = offset;
-				pos1 = _CharAE_get_nelt(out) + 1;
+				prev_j1 = j1;
 			}
 			CharAE_append_char(out, code, 1);
+			if (sparse_output && code != 'a')
+				j2 = j + 1;
 		}
 		if (sparse_output) {
 			/* Remove trailing "a"'s */
-			j = _CharAE_get_nelt(out);
-			while (j > pos1) {
-				if (out->elts[j - 1] != 'a')
-					break;
-				j--;
-			}
-			_CharAE_set_nelt(out, j);
+			_CharAE_set_nelt(out, _CharAE_get_nelt(out) -
+					      (s_len - j2));
 		}
 	}
 	return;
