@@ -35,13 +35,13 @@ setMethod("compare", c("Ranges", "Ranges"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### encodeOverlaps()
+### pencodeOverlaps()
 ###
 
-encode_overlaps <- function(query.start, query.width,
-                            subject.start, subject.width,
-                            query.space=NULL, subject.space=NULL,
-                            sparse.output=TRUE, as.raw=FALSE)
+Ranges_encodeOverlaps <- function(query.start, query.width,
+                                  subject.start, subject.width,
+                                  query.space=NULL, subject.space=NULL,
+                                  sparse.output=TRUE, as.raw=FALSE)
 {
         if (!isTRUEorFALSE(sparse.output))
             stop("'sparse.output' must be TRUE or FALSE")
@@ -54,52 +54,9 @@ encode_overlaps <- function(query.start, query.width,
                PACKAGE="IRanges")
 }
 
-### TODO: encodeOverlaps() not really needed since what it does is covered by
-### pencodeOverlaps(). Maybe drop it and rename pencodeOverlaps ->
-### encodeOverlaps.
-setGeneric("encodeOverlaps", signature=c("query", "subject"),
-    function(query, subject, sparse.output=TRUE, ...)
-        standardGeneric("encodeOverlaps")
-)
-
-###   > query <- IRanges(c(7, 15, 22), c(9, 19, 23))
-###   > subject <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
-###   > encodeOverlaps(query, subject, sparse.output=FALSE)
-###   [1] "mjaa" "mmga" "mmmf"
-###   > encodeOverlaps(query, subject)
-###   [1] "2j:g:f"
-setMethod("encodeOverlaps", c("Ranges", "Ranges"),
-    function(query, subject, sparse.output=TRUE, as.raw=FALSE)
-    {
-        encode_overlaps(start(query), width(query),
-                        start(subject), width(subject),
-                        sparse.output=sparse.output, as.raw=as.raw)
-    }
-)
-
-### TODO: Put this in the (upcoming) man page for encodeOverlaps().
-### A simple (but inefficient) implementation of the "findOverlaps" method for
-### Ranges objects. Complexity and memory usage is M x N where M and N are the
-### lengths of 'query' and 'subject', respectively.
-findRangesOverlaps <- function(query, subject)
-{
-    ## WARNING: When using sparse.output=FALSE and as.raw=TRUE, the returned
-    ## raw matrix is transposed!
-    ocodes <- encodeOverlaps(query, subject, sparse.output=FALSE, as.raw=TRUE)
-    offsets <- which(charToRaw("c") <= ocodes & ocodes <= charToRaw("k")) - 1L
-    q_hits <- offsets %/% nrow(ocodes) + 1L
-    s_hits <- offsets %% nrow(ocodes) + 1L
-    cbind(query=q_hits, subject=s_hits)
-}
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### pencodeOverlaps()
-###
-
-pencode_overlaps <- function(query.starts, query.widths,
-                             subject.starts, subject.widths,
-                             query.spaces=NULL, subject.spaces=NULL)
+RangesList_encodeOverlaps <- function(query.starts, query.widths,
+                                      subject.starts, subject.widths,
+                                      query.spaces=NULL, subject.spaces=NULL)
 {
     .Call2("RangesList_pencode_overlaps",
            query.starts, query.widths, query.spaces,
@@ -115,8 +72,10 @@ setGeneric("pencodeOverlaps", signature=c("query", "subject"),
 setMethod("pencodeOverlaps", c("RangesList", "RangesList"),
     function(query, subject)
     {
-        pencode_overlaps(as.list(start(query)), as.list(width(query)),
-                         as.list(start(subject)), as.list(width(subject)))
+        RangesList_encodeOverlaps(as.list(start(query)),
+                                  as.list(width(query)),
+                                  as.list(start(subject)),
+                                  as.list(width(subject)))
     }
 )
 
@@ -137,26 +96,50 @@ setMethod("pencodeOverlaps", c("RangesList", "RangesList"),
 setMethod("pencodeOverlaps", c("RangesList", "Ranges"),
     function(query, subject)
     {
-        pencode_overlaps(as.list(start(query)), as.list(width(query)),
-                         list(start(subject)), list(width(subject)))
+        RangesList_encodeOverlaps(as.list(start(query)),
+                                  as.list(width(query)),
+                                  list(start(subject)),
+                                  list(width(subject)))
     }
 )
 
 setMethod("pencodeOverlaps", c("Ranges", "RangesList"),
     function(query, subject)
     {
-        pencode_overlaps(list(start(query)), list(width(query)),
-                         as.list(start(subject)), as.list(width(subject)))
+        RangesList_encodeOverlaps(list(start(query)),
+                                  list(width(query)),
+                                  as.list(start(subject)),
+                                  as.list(width(subject)))
     }
 )
 
-### Same as "encodeOverlaps" method for Ranges objects (except for the
-### 'sparse.output' and 'as.raw' arguments).
+###   > query <- IRanges(c(7, 15, 22), c(9, 19, 23))
+###   > subject <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
+###   > pencodeOverlaps(query, subject, sparse.output=FALSE)
+###   [1] "mjaa" "mmga" "mmmf"
+###   > pencodeOverlaps(query, subject)
+###   [1] "2j:g:f"
 setMethod("pencodeOverlaps", c("Ranges", "Ranges"),
-    function(query, subject)
+    function(query, subject, sparse.output=TRUE, as.raw=FALSE)
     {
-        pencode_overlaps(list(start(query)), list(width(query)),
-                         list(start(subject)), list(width(subject)))
+        Ranges_encodeOverlaps(start(query), width(query),
+                              start(subject), width(subject),
+                              sparse.output=sparse.output, as.raw=as.raw)
     }
 )
+
+### TODO: Put this in the (upcoming) man page for encodeOverlaps().
+### A simple (but inefficient) implementation of the "findOverlaps" method for
+### Ranges objects. Complexity and memory usage is M x N where M and N are the
+### lengths of 'query' and 'subject', respectively.
+findRangesOverlaps <- function(query, subject)
+{
+    ## WARNING: When using sparse.output=FALSE and as.raw=TRUE, the returned
+    ## raw matrix is transposed!
+    ocodes <- pencodeOverlaps(query, subject, sparse.output=FALSE, as.raw=TRUE)
+    offsets <- which(charToRaw("c") <= ocodes & ocodes <= charToRaw("k")) - 1L
+    q_hits <- offsets %/% nrow(ocodes) + 1L
+    s_hits <- offsets %% nrow(ocodes) + 1L
+    cbind(query=q_hits, subject=s_hits)
+}
 
