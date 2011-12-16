@@ -160,7 +160,7 @@ SEXP Ranges_compare(SEXP x_start, SEXP x_width,
 
 
 /****************************************************************************
- * Encode "all against all" overlaps.
+ * Encode "all ranges against all ranges" overlaps between 2 Ranges objects.
  *
  * Comparing all the ranges in a gapped read with all the ranges in a
  * transcript produces a matrix of codes. For example, if the read contains
@@ -434,11 +434,6 @@ SEXP Ranges_encode_overlaps(SEXP query_start, SEXP query_width,
 	UNPROTECT(1);
 	return ans;
 }
-
-
-/****************************************************************************
- * "Parallel" overlap encoding between 2 lists of Ranges objects.
- */
 
 /* --- .Call ENTRY POINT ---
  * 'query_starts', 'query_widths', 'query_spaces': lists of integer vectors
