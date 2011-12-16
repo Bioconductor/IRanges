@@ -437,7 +437,7 @@ SEXP Ranges_encode_overlaps(SEXP query_start, SEXP query_width,
 
 
 /****************************************************************************
- * "Parallel" overlap encoding of 2 lists of Ranges objects.
+ * "Parallel" overlap encoding between 2 lists of Ranges objects.
  */
 
 /* --- .Call ENTRY POINT ---
