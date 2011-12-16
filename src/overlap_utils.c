@@ -308,11 +308,9 @@ void _enc_overlaps(const int *q_start, const int *q_width,
 	return;
 }
 
-SEXP _encode_overlaps(SEXP query_start, SEXP query_width,
-			SEXP query_space,
-		      SEXP subject_start, SEXP subject_width,
-			SEXP subject_space,
-		      int sparse_output, int as_raw)
+SEXP _enc_overlaps1(SEXP query_start, SEXP query_width, SEXP query_space,
+		    SEXP subject_start, SEXP subject_width, SEXP subject_space,
+		    int sparse_output, int as_raw)
 {
 	int m, n, i;
 	const int *q_space, *s_space;
@@ -415,18 +413,18 @@ SEXP _encode_overlaps(SEXP query_start, SEXP query_width,
  * sparse format with relative shifts (if 'sparse_output' is TRUE) in which
  * case both M and N must be != 0.
  */
-SEXP Ranges_encode_overlaps(SEXP query_start, SEXP query_width,
-				SEXP query_space,
-			    SEXP subject_start, SEXP subject_width,
-				SEXP subject_space,
-			    SEXP sparse_output, SEXP as_raw)
+SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
+			SEXP query_space,
+		      SEXP subject_start, SEXP subject_width,
+			SEXP subject_space,
+		      SEXP sparse_output, SEXP as_raw)
 {
 	int sparse0, as_raw0;
 	SEXP ans;
 
 	sparse0 = sparse_output == R_NilValue || LOGICAL(sparse_output)[0];
 	as_raw0 = as_raw != R_NilValue && LOGICAL(as_raw)[0];
-	PROTECT(ans = _encode_overlaps(query_start, query_width, query_space,
+	PROTECT(ans = _enc_overlaps1(query_start, query_width, query_space,
 				subject_start, subject_width, subject_space,
 				sparse0, as_raw0));
 	if (sparse0 && !as_raw0)
@@ -472,7 +470,7 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 		subject_width = VECTOR_ELT(subject_widths, j);
 		if (subject_spaces != R_NilValue)
 			subject_space = VECTOR_ELT(subject_spaces, j);
-		PROTECT(ans_elt = _encode_overlaps(
+		PROTECT(ans_elt = _enc_overlaps1(
 					query_start,
 					query_width,
 					query_space,

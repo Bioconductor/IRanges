@@ -186,7 +186,7 @@ export(
     columnMetadata, "columnMetadata<-",
 
     ## overlap utils
-    compare, Ranges_encodeOverlaps, RangesList_encodeOverlaps, encodeOverlaps,
+    compare, encodeOverlaps1, RangesList_encodeOverlaps, encodeOverlaps,
 
     ## RangesMatching API
     matchMatrix, queryHits, subjectHits, matching, map,
