@@ -1005,6 +1005,17 @@ void _enc_overlaps(
 	CharAE *out
 );
 
+SEXP _encode_overlaps(
+	SEXP query_start,
+	SEXP query_width,
+	SEXP query_space,
+	SEXP subject_start,
+	SEXP subject_width,
+	SEXP subject_space,
+	int sparse_output,
+	int as_raw
+);
+
 SEXP Ranges_encode_overlaps(
 	SEXP query_start,
 	SEXP query_width,
@@ -1014,6 +1025,15 @@ SEXP Ranges_encode_overlaps(
 	SEXP subject_space,
 	SEXP sparse_output,
 	SEXP as_raw
+);
+
+SEXP RangesList_pencode_overlaps(
+	SEXP query_starts,
+	SEXP query_widths,
+	SEXP query_spaces,
+	SEXP subject_starts,
+	SEXP subject_widths,
+	SEXP subject_spaces
 );
 
 

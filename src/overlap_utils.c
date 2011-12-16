@@ -95,7 +95,7 @@ static int overlap_code(int q_start, int q_width, int s_start, int s_width)
 
 
 /****************************************************************************
- * "Parallel" ranges comparison with recycling.
+ * "Parallel" generalized comparison of 2 Ranges objects.
  */
 
 void _ranges_pcompare(const int *x_start, const int *x_width, int x_len,
@@ -308,26 +308,13 @@ void _enc_overlaps(const int *q_start, const int *q_width,
 	return;
 }
 
-/* --- .Call ENTRY POINT ---
- * 'query_start', 'query_width', 'query_space': integer vectors of the same
- * length M (or NULL for 'query_space').
- * 'subject_start', 'subject_width', 'subject_space': integer vectors of the
- * same length N (or NULL for 'subject_space').
- * Integer vectors 'query_start', 'query_width', 'subject_start' and
- * 'subject_width' are assumed to be NA free. 'query_width' and 'subject_width'
- * are assumed to contain non-negative values. For efficiency reasons, those
- * assumptions are not checked.
- * Returns the matrix of 1-letter codes (if 'sparse_output' is FALSE), or the
- * OGOCS string (if 'sparse_output' is TRUE) in which case both M and N must
- * be != 0.
- */
-SEXP Ranges_encode_overlaps(SEXP query_start, SEXP query_width,
-				SEXP query_space,
-			    SEXP subject_start, SEXP subject_width,
-				SEXP subject_space,
-			    SEXP sparse_output, SEXP as_raw)
+SEXP _encode_overlaps(SEXP query_start, SEXP query_width,
+			SEXP query_space,
+		      SEXP subject_start, SEXP subject_width,
+			SEXP subject_space,
+		      int sparse_output, int as_raw)
 {
-	int m, n, sparse_output0, as_raw0, i;
+	int m, n, i;
 	const int *q_space, *s_space;
 	CharAE buf;
 	SEXP ans, ans_elt, ans_dim;
@@ -370,10 +357,8 @@ SEXP Ranges_encode_overlaps(SEXP query_start, SEXP query_width,
 		s_space = INTEGER(subject_space);
 	}
 
-	sparse_output0 = LOGICAL(sparse_output)[0];
-	as_raw0 = LOGICAL(as_raw)[0];
-	if (as_raw0 || sparse_output0) {
-		if (!sparse_output0) {
+	if (sparse_output || as_raw) {
+		if (!sparse_output) {
 			/* FIXME: Risk of integer overflow! */
 			buf = _new_CharAE(m * n);
 		} else {
@@ -383,16 +368,11 @@ SEXP Ranges_encode_overlaps(SEXP query_start, SEXP query_width,
 				q_space, m,
 			      INTEGER(subject_start), INTEGER(subject_width),
 				s_space, n,
-			      sparse_output0, &buf);
-		if (!as_raw0) {
-			PROTECT(ans_elt = mkCharLen(buf.elts,
-						 _CharAE_get_nelt(&buf)));
-			PROTECT(ans = ScalarString(ans_elt));
-			UNPROTECT(2);
-			return ans;
-		}
+			      sparse_output, &buf);
+		if (!as_raw)
+			return mkCharLen(buf.elts, _CharAE_get_nelt(&buf));
 		PROTECT(ans = _new_RAW_from_CharAE(&buf));
-		if (!sparse_output0) {
+		if (!sparse_output) {
 			PROTECT(ans_dim	= NEW_INTEGER(2));
 			INTEGER(ans_dim)[0] = n;
 			INTEGER(ans_dim)[1] = m;
@@ -418,6 +398,99 @@ SEXP Ranges_encode_overlaps(SEXP query_start, SEXP query_width,
 		if (q_space != NULL)
 			q_space++;
 	}
+	UNPROTECT(1);
+	return ans;
+}
+
+/* --- .Call ENTRY POINT ---
+ * 'query_start', 'query_width', 'query_space': integer vectors of the same
+ * length M (or NULL for 'query_space').
+ * 'subject_start', 'subject_width', 'subject_space': integer vectors of the
+ * same length N (or NULL for 'subject_space').
+ * Integer vectors 'query_start', 'query_width', 'subject_start' and
+ * 'subject_width' are assumed to be NA free. 'query_width' and 'subject_width'
+ * are assumed to contain non-negative values. For efficiency reasons, those
+ * assumptions are not checked.
+ * Returns the matrix of 1-letter codes (if 'sparse_output' is FALSE), or the
+ * sparse format with relative shifts (if 'sparse_output' is TRUE) in which
+ * case both M and N must be != 0.
+ */
+SEXP Ranges_encode_overlaps(SEXP query_start, SEXP query_width,
+				SEXP query_space,
+			    SEXP subject_start, SEXP subject_width,
+				SEXP subject_space,
+			    SEXP sparse_output, SEXP as_raw)
+{
+	int sparse0, as_raw0;
+	SEXP ans;
+
+	sparse0 = sparse_output == R_NilValue || LOGICAL(sparse_output)[0];
+	as_raw0 = as_raw != R_NilValue && LOGICAL(as_raw)[0];
+	PROTECT(ans = _encode_overlaps(query_start, query_width, query_space,
+				subject_start, subject_width, subject_space,
+				sparse0, as_raw0));
+	if (sparse0 && !as_raw0)
+		ans = ScalarString(ans);
+	UNPROTECT(1);
+	return ans;
+}
+
+
+/****************************************************************************
+ * "Parallel" overlap encoding of 2 lists of Ranges objects.
+ */
+
+/* --- .Call ENTRY POINT ---
+ * 'query_starts', 'query_widths', 'query_spaces': lists of integer vectors
+ * of the same length (M) and shape.
+ * 'subject_starts', 'subject_widths', 'subject_spaces': lists of integer
+ * vectors of the same length (N) and shape.
+ */
+SEXP RangesList_pencode_overlaps(SEXP query_starts, SEXP query_widths,
+				 SEXP query_spaces,
+				 SEXP subject_starts, SEXP subject_widths,
+				 SEXP subject_spaces)
+{
+	int m, n, ans_length, i, j, k;
+	SEXP query_start, query_width, query_space,
+	     subject_start, subject_width, subject_space,
+	     ans, ans_elt;
+
+	/* TODO: Some basic check of the input values. */
+	m = LENGTH(query_starts);
+	n = LENGTH(subject_starts);
+	if (m == 0 || n == 0)
+		return NEW_CHARACTER(0);
+	ans_length = m >= n ? m : n;
+	PROTECT(ans = NEW_CHARACTER(ans_length));
+	query_space = subject_space = R_NilValue;
+	for (i = j = k = 0; k < ans_length; i++, j++, k++) {
+		if (i >= m)
+			i = 0; /* recycle i */
+		if (j >= n)
+			j = 0; /* recycle j */
+		query_start = VECTOR_ELT(query_starts, i);
+		query_width = VECTOR_ELT(query_widths, i);
+		if (query_spaces != R_NilValue)
+			query_space = VECTOR_ELT(query_spaces, i);
+		subject_start = VECTOR_ELT(subject_starts, j);
+		subject_width = VECTOR_ELT(subject_widths, j);
+		if (subject_spaces != R_NilValue)
+			subject_space = VECTOR_ELT(subject_spaces, j);
+		PROTECT(ans_elt = _encode_overlaps(
+					query_start,
+					query_width,
+					query_space,
+					subject_start,
+					subject_width,
+					subject_space,
+					1, 0));
+		SET_STRING_ELT(ans, k, ans_elt);
+		UNPROTECT(1);
+	}
+	if (i != m || j != n)
+		warning("longer object length is not a multiple "
+			"of shorter object length");
 	UNPROTECT(1);
 	return ans;
 }
