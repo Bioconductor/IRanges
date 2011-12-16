@@ -38,16 +38,22 @@ setMethod("compare", c("Ranges", "Ranges"),
 ### encodeOverlaps()
 ###
 
-### Low-level utility. Do we really need it? Same could be achieved with
-### 'encodeOverlaps(IRangesList(query), IRangesList(subject))' except that
-### here we can control the format of the ouput thru the 'sparse.output' and
-### 'as.raw' args.
+### Low-level utility.
 ###   > query <- IRanges(c(7, 15, 22), c(9, 19, 23))
 ###   > subject <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
 ###   > encodeOverlaps1(query, subject, sparse.output=FALSE)
 ###   [1] "mjaa" "mmga" "mmmf"
 ###   > encodeOverlaps1(query, subject)
 ###   [1] "2j:g:f"
+### TODO: Do we really need this? Same could be achieved with
+### 'encodeOverlaps(IRangesList(query), IRangesList(subject))' except that
+### with encodeOverlaps1() we can specify 'query.space' and 'subject.space'
+### and use the 'sparse.output' and 'as.raw' flags to control the format of
+### the output.
+### Also the C code behind encodeOverlaps1() is at the heart of all the
+### "encodeOverlaps" methods. Playing with encodeOverlaps1() with different
+### inputs and combinations of the 'sparse.output' and 'as.raw' flags is
+### educative and allows testing all parts of this C code.
 encodeOverlaps1 <- function(query, subject,
                             query.space=NULL, subject.space=NULL,
                             sparse.output=TRUE, as.raw=FALSE)
@@ -89,7 +95,7 @@ RangesList_encodeOverlaps <- function(query.starts, query.widths,
 }
 
 setGeneric("encodeOverlaps", signature=c("query", "subject"),
-    function(query, subject, ...) standardGeneric("encodeOverlaps")
+    function(query, subject) standardGeneric("encodeOverlaps")
 )
 
 ### "Parallel" overlap encoding between 2 RangesList objects.
