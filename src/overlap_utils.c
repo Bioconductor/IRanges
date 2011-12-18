@@ -162,14 +162,14 @@ SEXP Ranges_compare(SEXP x_start, SEXP x_width,
 /****************************************************************************
  * Encode "all ranges against all ranges" overlaps between 2 Ranges objects.
  *
- * Comparing all the ranges in a gapped read with all the ranges in a
- * transcript produces a matrix of codes. For example, if the read contains
- * 2 gaps and the transcript has 7 exons, the matrix of 1-letter codes has
- * 3 rows and 7 columns and will typically look like:
+ * Comparing the M ranges in a gapped read with the N ranges in a transcript
+ * produces a M x N matrix of codes. For example, if the read contains 2 gaps
+ * and the transcript has 7 exons, the matrix of 1-letter codes has 3 rows and
+ * 7 columns and will typically look like:
  *
- *     A = mjaaaaa   B = mjaaaaa   C = mjaaaaa   D = mmmjaaa   E = mmmiaaa
- *         mmgaaaa       mmgaaaa       mmaaaaa       mmmmmga       mmmkiaa
- *         mmmfaaa       mmmgaaa       mmfaaaa       mmmmmmf       mmmmmmm
+ *      A = mjaaaaa   B = mjaaaaa   C = mjaaaaa   D = mmmjaaa   E = mmmiaaa
+ *          mmgaaaa       mmgaaaa       mmaaaaa       mmmmmga       mmmkiaa
+ *          mmmfaaa       mmmgaaa       mmfaaaa       mmmmmmf       mmmmmmm
  *
  *   A, B: Compatible splicing.
  *   C: Compatible splicing modulo 1 inserted exon (splicing would be
@@ -188,28 +188,52 @@ SEXP Ranges_compare(SEXP x_start, SEXP x_width,
  * not always the case. We've seen at least one exception in the transcript
  * annotations provided by UCSC where 2 consecutive exons are overlapping!
  *  
- * Sparse representation: for each row in the matrix of 1-letter codes, report
- * only the sequence between the "m" prefix and the "a" suffix and put the
- * 1-base column index of the first non-"m" letter in front of that. For
- * example, the sparse representation of row "mmmecaa" is "4ec". If there is
- * nothing between the "m" prefix and the "a" suffix, then report the first "a"
- * (or the last "m" if the row contains only "m"'s). Finally paste together the
- * results for all the rows using the ":" separator:
+ * This matrix can be transformed into a linear sequence of symbols that will
+ * make it easy to use regular expressions on it for the most common use cases
+ * like the detection of reads with compatible splicing. This linear sequence
+ * is defined as follow:
+ *   1) The matrix is walked row by row from the top left to the bottom right.
+ *   2) For each row, the sequence between the "m" prefix and the "a" suffix
+ *      is reported with curly brackets ("{" and "}") placed around it.
+ *   3) The 2 sequences S(i) and S(i+1) reported for 2 consecutive rows (rows
+ *      i and i+1) are separated by a number of ">"'s or "<"'s indicating the
+ *      horizontal gap between the end of S(i) and the start of S(i+1).
+ *      A null, positive or negative gap is represented by an empty string,
+ *      one or more ">"'s (suggesting a shift to the right), or one or more
+ *      "<"'s (suggesting a shift to the left), respectively.
+ *   4) The length of the "m" prefix in the first row and the length of the
+ *      "a" suffix in the last row are called the initial and final gaps,
+ *      respectively. They are reported at the beginning and end of the linear
+ *      sequence, respectively.
  *
- *     A = 2j:3g:4f  B = 2j:3g:4g  C = 2j:3a:3f  D = 4j:6g:7f  E = 4i:4ki:7m
+ *   A = ">{j}{g}{f}>>>"
+ *   B = ">{j}{g}{g}>>>"
+ *   C = ">{j}{}{f}>>>>"
+ *   D = ">>>{j}>{g}{f}"
+ *   E = ">>>{i}<{ki}>>{}"
  *
- * Sparse representation using relative shifts: the 1st row is represented as
- * previously but for each subsequent row the sequence to report is preceded
- * by an horizontal shift relative to the position of the last reported letter
- * plus one. A shift = 0 is represented by an empty string, a shift > 0 by one
- * or more ">" (suggesting a shift to the right), and a shift < 0 by one or
- * more "<" (suggesting a shift to the left):
+ * Note that the M x N matrix can be reconstructed from the linear sequence.
+ * In the best case (no negative gaps), the length of this linear sequence is
+ * 2M + N. If there is at least one negative gap, then the sequence is longer.
+ * In the worst case (no "m" prefix and no "a" suffix in any of the rows),
+ * then its length is 2M + N*(2M-1). So it can be much longer than the matrix,
+ * but, on real sequencing data, in average it is expected to be shorter.
  *
- *     A = 2j:g:f   B = 2j:g:g   C = 2j:a:<f   D = 4j:>g:f  E = 4i:<ki:>m
+ * Examples of regular expressions that can be used on the linear sequences:
  *
- * Using relative shifts makes it easier to use regular expressions. For
- * example, reads with 1 gap and a splicing that is compatible with the
- * transcript can be filtered with regex "^[0-9]+(j|g):(g|f)$"
+ *   a. For detecting reads with 1 gap and a splicing that is compatible with
+ *      the transcript:
+ *          ^>*\{[jg]\}\{[gf]\}>*$
+ *      Note: replace single backslash by double backslash when putting this
+ *      in a character string in R for use with grep().
+ *
+ *   b. For detecting reads (with or without gaps) with a splicing that is
+ *      compatible with the transcript:
+ *          ^>*(\{[i]\}|(\{j\})?(\{g\})*(\{f\})?)>*$
+ *
+ *   c. For detecting reads with a splicing that is not compatible with the
+ *      transcript but that would be compatible if one exon was dropped:
+ *          ^>*\{[jg]\}(\{g\})*>(\{g\})*\{[gf]\}>*$
  */
 
 static void CharAE_append_char(CharAE *char_ae, char c, int times)
