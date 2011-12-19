@@ -229,6 +229,12 @@ void _append_string_to_CharAE(
 	const char *string
 );
 
+void _CharAE_delete_at(
+	CharAE *char_ae,
+	int at,
+	int nelt
+);
+
 SEXP _new_RAW_from_CharAE(const CharAE *char_ae);
 
 SEXP _new_LOGICAL_from_CharAE(const CharAE *char_ae);
@@ -971,49 +977,13 @@ SEXP RleViews_viewWhichMaxs(
 );
 
 
-/* overlap_utils.c */
-
-void _ranges_pcompare(
-	const int *x_start,
-	const int *x_width,
-	int x_len,
-	const int *y_start,
-	const int *y_width,
-	int y_len,
-	int *out,
-	int out_len,
-	int with_warning
-);
+/* OverlapEncodings_class.c */
 
 SEXP Ranges_compare(
 	SEXP x_start,
 	SEXP x_width,
 	SEXP y_start,
 	SEXP y_width
-);
-
-void _enc_overlaps(
-	const int *q_start,
-	const int *q_width,
-	const int *q_space,
-	int q_len,
-	const int *s_start,
-	const int *s_width,
-	const int *s_space,
-	int s_len,
-	int sparse_output,
-	CharAE *out
-);
-
-SEXP _enc_overlaps1(
-	SEXP query_start,
-	SEXP query_width,
-	SEXP query_space,
-	SEXP subject_start,
-	SEXP subject_width,
-	SEXP subject_space,
-	int sparse_output,
-	int as_raw
 );
 
 SEXP encode_overlaps1(

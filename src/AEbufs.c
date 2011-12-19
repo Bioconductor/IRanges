@@ -252,14 +252,14 @@ void _IntAE_delete_at(IntAE *int_ae, int at)
 {
 	int *elt1;
 	const int *elt2;
-	int nelt, i2;
+	int nelt0, i2;
 
 	elt1 = int_ae->elts + at;
 	elt2 = elt1 + 1;
-	nelt = _IntAE_get_nelt(int_ae);
-	for (i2 = at + 1; i2 < nelt; i2++)
+	nelt0 = _IntAE_get_nelt(int_ae);
+	for (i2 = at + 1; i2 < nelt0; i2++)
 		*(elt1++) = *(elt2++);
-	_IntAE_set_nelt(int_ae, _IntAE_get_nelt(int_ae) - 1);
+	_IntAE_set_nelt(int_ae, nelt0 - 1);
 	return;
 }
 
@@ -1076,6 +1076,28 @@ void _append_string_to_CharAE(CharAE *char_ae, const char *string)
 	dest = char_ae->elts + nelt;
 	memcpy(dest, string, nnewval * sizeof(char));
 	_CharAE_set_nelt(char_ae, new_nelt);
+	return;
+}
+
+/*
+ * Delete 'nelt' elements, starting at position 'at'.
+ * Doing _CharAE_delete_at(x, at, nelt) is equivalent to doing
+ * _CharAE_delete_at(x, at, 1) 'nelt' times.
+ */
+void _CharAE_delete_at(CharAE *char_ae, int at, int nelt)
+{
+	char *elt1;
+	const char *elt2;
+	int nelt0, i2;
+
+	if (nelt == 0)
+		return;
+	elt1 = char_ae->elts + at;
+	elt2 = elt1 + nelt;
+	nelt0 = _CharAE_get_nelt(char_ae);
+	for (i2 = at + nelt; i2 < nelt0; i2++)
+		*(elt1++) = *(elt2++);
+	_CharAE_set_nelt(char_ae, nelt0 - nelt);
 	return;
 }
 

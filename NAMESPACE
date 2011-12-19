@@ -47,8 +47,11 @@ exportClasses(
     DataFrame,
     DataFrameList, SimpleDataFrameList,
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
-    RangedData, RangedDataList, FilterRules, RDApplyParams, RangesMatching,
-    RangedSelection, RangesMapping)
+    RangedData, RangedDataList, FilterRules, RDApplyParams,
+    OverlapEncodings,
+    RangesMatching, RangesMatchingList,
+    RangedSelection, RangesMapping
+)
 
 export(
     ## Non-generic functions:
@@ -185,7 +188,7 @@ export(
     universe, "universe<-", space, score, "score<-",
     columnMetadata, "columnMetadata<-",
 
-    ## overlap utils
+    ## OverlapEncodings
     compare, encodeOverlaps1, RangesList_encodeOverlaps, encodeOverlaps,
 
     ## RangesMatching API

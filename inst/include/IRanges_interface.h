@@ -234,6 +234,12 @@ void append_string_to_CharAE(
 	const char *string
 );
 
+void CharAE_delete_at(
+	CharAE *char_ae,
+	int at,
+	int nelt
+);
+
 SEXP new_RAW_from_CharAE(const CharAE *char_ae);
 
 SEXP new_LOGICAL_from_CharAE(const CharAE *char_ae);

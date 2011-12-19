@@ -1,10 +1,12 @@
 ### =========================================================================
-### Utilities for generalized comparison of ranges and for overlap encoding
+### OverlapEncodings objects
 ### -------------------------------------------------------------------------
-
+###
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### compare()
+###
+### TODO: This should probably go somewhere else e.g. in Ranges-comparison.R
 ###
 
 setGeneric("compare", function(x, y) standardGeneric("compare"))
@@ -35,6 +37,32 @@ setMethod("compare", c("Ranges", "Ranges"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The OverlapEncodings class.
+###
+### The OverlapEncodings class is a container for storing a vector of OVM's.
+### An OVM ("overlaps matrix") is an M x N matrix of 1-letter codes
+### representing all the range-to-range overlaps between a query with M ranges
+### and a subject with N ranges.
+###
+
+### Slots:
+###   o Loffset ("left offset"): nb of cols on the left of the OVM that contain
+###     only "m"'s.
+###   o Roffset ("right offset"): nb of cols on the right of the OVM that
+###     contain only "a"'s.
+###   o encoding: linear sequence of symbols representing the trimmed OVM (i.e.
+###     after removing Loffset cols on the left and Roffset cols on the right).
+setClass("OverlapEncodings",
+    contains="Vector",
+    representation(
+        Loffset="integer",    # no NAs, >= 0
+        Roffset="integer",    # no NAs, >= 0
+        encoding="character"  # no NAs
+    )
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### encodeOverlaps()
 ###
 
@@ -43,8 +71,8 @@ setMethod("compare", c("Ranges", "Ranges"),
 ###   > subject <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
 ###   > encodeOverlaps1(query, subject, sparse.output=FALSE)
 ###   [1] "mjaa" "mmga" "mmmf"
-###   > encodeOverlaps1(query, subject)
-###   [1] "2j:g:f"
+###   > encodeOverlaps1(query, subject)  # Type III encoding
+###   [1] ":jmm:agm:aaf:"
 ### TODO: Do we really need this? Same could be achieved with
 ### 'encodeOverlaps(IRangesList(query), IRangesList(subject))' except that
 ### with encodeOverlaps1() we can specify 'query.space' and 'subject.space'
@@ -108,10 +136,17 @@ setGeneric("encodeOverlaps", signature=c("query", "subject"),
 ###   > subject <- IRangesList(tx)
 ###   > ocodes <- encodeOverlaps(query, subject)
 ###   > ocodes
-###   [1] "2j:g:f" "2j:f"   "3j:f"
+###   [1] ":jmm:agm:aaf:" ":jm:af:"       ":jm:af:"
 ### Reads compatible with transcript 'tx':
-###   > pattern <- "^[0-9]+([fgij]|(j|g)(:g)*:(g|f))$"
-###   > grep(pattern, ocodes)
+###   ## Regex to use for reads with no gaps:
+###   > pattern0 <- ":[fgij]:"
+###   ## Regex to use for reads with 1 gap:
+###   > pattern1 <- ":[jg].:.[gf]:"
+###   ## Regex to use for reads with 2 gaps:
+###   > pattern2 <- ":[jg]..:.g.:..[gf]:"
+###   ## Regex to use for reads with up to 2 gaps:
+###   > pattern012 <- ":([fgij]|[jg].:.[gf]|[jg]..:.g.:..[gf]):"
+###   > grep(pattern012, ocodes)
 ###   [1] 1 2 3
 ### All the reads are compatible with this transcript!
 setMethod("encodeOverlaps", c("RangesList", "RangesList"),

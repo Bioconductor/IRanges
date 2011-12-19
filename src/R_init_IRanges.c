@@ -116,7 +116,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(RleViews_viewWhichMins, 2),
 	CALLMETHOD_DEF(RleViews_viewWhichMaxs, 2),
 
-/* overlap_utils.c */
+/* OverlapEncodings_class.c */
 	CALLMETHOD_DEF(Ranges_compare, 4),
 	CALLMETHOD_DEF(encode_overlaps1, 8),
 	CALLMETHOD_DEF(RangesList_encode_overlaps, 6),
@@ -251,6 +251,7 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_new_CharAE_from_string);
 	REGISTER_CCALLABLE(_CharAE_insert_at);
 	REGISTER_CCALLABLE(_append_string_to_CharAE);
+	REGISTER_CCALLABLE(_CharAE_delete_at);
 	REGISTER_CCALLABLE(_new_RAW_from_CharAE);
 	REGISTER_CCALLABLE(_new_LOGICAL_from_CharAE);
 	REGISTER_CCALLABLE(_CharAEAE_get_nelt);

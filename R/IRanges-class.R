@@ -2,7 +2,7 @@
 ### IRanges objects
 ### -------------------------------------------------------------------------
 ###
-### The IRanges class is a simple container for storing a set of integer
+### The IRanges class is a simple container for storing a vector of integer
 ### ranges.
 ###
 
