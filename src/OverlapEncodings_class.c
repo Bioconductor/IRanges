@@ -6,91 +6,89 @@
  *
  * TODO: This should probably go somewhere else.
  *
- * There are 13 different ways 2 ranges can be positioned with respect to each
- * other. They are described in the table below together with their associated
- * codes. The 1st range is called the "query" range (q) and the 2nd range the
- * "subject" range (s).
+ * There are 13 different ways 2 integer ranges x and y can be positioned
+ * with respect to each other. They are summarized in the following table
+ * together with the codes we assign them:
  *
  *                   numeric code & |                 numeric code &
  *                  1-letter code & |                1-letter code &
  *                        long code |                      long code
  *   -------------  --------------- | -------------  ---------------
- *   q: xxxx        -6   'a'  "qNs" | q:       xxxx   6   'm'  "sNq"
- *   s:       xxxx                  | s: xxxx      
+ *   x: oooo        -6   'a'  "xNy" | x:       oooo   6   'm'  "yNx"
+ *   y:       oooo                  | y: oooo      
  *   -------------  --------------- | -------------  ---------------
- *   q:  xxxx       -5   'b'  "qs"  | q:      xxxx    5   'l'  "sq"
- *   s:      xxxx                   | s:  xxxx     
+ *   x:  oooo       -5   'b'  "xy"  | x:      oooo    5   'l'  "yx"
+ *   y:      oooo                   | y:  oooo     
  *   -------------  --------------- | -------------  ---------------
- *   q:   xxxx      -4   'c'  "q=s" | q:     xxxx     4   'k'  "s=q"
- *   s:     xxxx                    | s:   xxxx    
+ *   x:   oooo      -4   'c'  "x=y" | x:     oooo     4   'k'  "y=x"
+ *   y:     oooo                    | y:   oooo    
  *   -------------  --------------- | -------------  ---------------
- *   q:   xxxxxx    -3   'd'  "q="  | q:      xxx     3   'j'  "s="
- *   s:      xxx                    | s:   xxxxxx  
+ *   x:   oooooo    -3   'd'  "x="  | x:      ooo     3   'j'  "y="
+ *   y:      ooo                    | y:   oooooo  
  *   -------------  --------------- | -------------  ---------------
- *   q:  xxxxxxxx   -2   'e'  "q=q" | q:    xxxx      2   'i'  "s=s"
- *   s:    xxxx                     | s:  xxxxxxxx
+ *   x:  oooooooo   -2   'e'  "x=x" | x:    oooo      2   'i'  "y=y"
+ *   y:    oooo                     | y:  oooooooo
  *   -------------  --------------- | -------------  ---------------
- *   q:   xxx       -1   'f'  "=s"  | q:   xxxxxx     1   'h'  "=q"
- *   s:   xxxxxx                    | s:   xxx
+ *   x:   ooo       -1   'f'  "=y"  | x:   oooooo     1   'h'  "=x"
+ *   y:   oooooo                    | y:   ooo
  *   -------------  -------------------------------  ---------------
- *                \   q:   xxxxxx     0   'g'  "="    /
- *                 \  s:   xxxxxx                    /
+ *                \   x:   oooooo     0   'g'  "="    /
+ *                 \  y:   oooooo                    /
  *                  \-------------------------------/
  * Notes:
  *   o This way of comparing ranges is a refinement over the standard ranges
  *     comparison defined by the <, >, <=, >=, == and != operators. In
  *     particular a numeric code that is < 0, = 0, or > 0 corresponds to
- *     q < s, q == s, or q > s, respectively.
+ *     x < y, x == y, or x > y, respectively.
  *   o In this file we use the term "overlap" in a loose way even when there
- *     is actually no overlap between the query and the subject. Real overlaps
- *     correspond to numeric codes >= -4 and <= 4, and to long codes that
- *     contain an equal ("=").
+ *     is actually no overlap between ranges x and y. Real overlaps correspond
+ *     to numeric codes >= -4 and <= 4, and to long codes that contain an
+ *     equal ("=").
  *   o Long codes are designed to be user-friendly whereas numeric and
  *     1-letter codes are designed to be more compact and memory efficient.
  *     Typically the formers will be exposed to the end-user and translated
  *     internally into the latters.
- *   o Swapping q and s changes the sign of the corresponding numeric code and
- *     substitutes "q" by "s" and "s" by "q" in the corresponding long code.
- *   o Reflecting ranges q and s relative to an arbitrary position (i.e. doing
+ *   o Swapping x and y changes the sign of the corresponding numeric code and
+ *     substitutes "x" by "y" and "y" by "x" in the corresponding long code.
+ *   o Reflecting ranges x and y relative to an arbitrary position (i.e. doing
  *     a symetry with respect to a vertical axis) has the effect of reversing
- *     the associated long code e.g. "q=s" becomes "s=q".
+ *     the associated long code e.g. "x=y" becomes "y=x".
  *
- * 'q_start', 'q_width', 's_start' and 's_width' are assumed to be non NA.
- * 'q_width' and 's_width' are assumed to be >= 0.
+ * 'x_start', 'x_width', 'y_start' and 'y_width' are assumed to be non NA (not
+ * checked). 'x_start' and 'y_start' must be 1-based. 'x_width' and 'y_width'
+ * are assumed to be >= 0 (not checked).
  */
-static int overlap_code(int q_start, int q_width, int s_start, int s_width)
+static int overlap_code(int x_start, int x_width, int y_start, int y_width)
 {
-	int q_end, s_end;
+	int x_end_plus1, y_end_plus1;
 
-	q_end = q_start + q_width; /* not the real 'q_end' */
-	if (q_end < s_start)
+	x_end_plus1 = x_start + x_width;
+	if (x_end_plus1 < y_start)
 		return -6;
-	if (q_end == s_start)
+	if (x_end_plus1 == y_start)
 		return -5;
-	s_end = s_start + s_width; /* not the real 's_end' */
-	if (s_end < q_start)
+	y_end_plus1 = y_start + y_width;
+	if (y_end_plus1 < x_start)
 		return 6;
-	if (s_end == q_start)
+	if (y_end_plus1 == x_start)
 		return 5;
-	q_end--; /* the real 'q_end' */
-	s_end--; /* the real 's_end' */
-	if (q_start < s_start) {
-		if (q_end < s_end)
+	if (x_start < y_start) {
+		if (x_end_plus1 < y_end_plus1)
 			return -4;
-		if (q_end == s_end)
+		if (x_end_plus1 == y_end_plus1)
 			return -3;
 		return -2;
 	}
-	if (q_start == s_start) {
-		if (q_end < s_end)
+	if (x_start == y_start) {
+		if (x_end_plus1 < y_end_plus1)
 			return -1;
-		if (q_end == s_end)
+		if (x_end_plus1 == y_end_plus1)
 			return 0;
 		return 1;
 	}
-	if (q_end < s_end)
+	if (x_end_plus1 < y_end_plus1)
 		return 2;
-	if (q_end == s_end)
+	if (x_end_plus1 == y_end_plus1)
 		return 3;
 	return 4;
 }
