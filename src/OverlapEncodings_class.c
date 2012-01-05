@@ -2,6 +2,47 @@
 
 
 /****************************************************************************
+ * 2 low-level helpers for "superficial" checking of the 'start', 'width' and
+ * 'space' vectors associated with a Ranges object.
+ *
+ * TODO: The 1st helper has nothing specific to OverlapEncodings and could
+ * be used more generally for checking the input of C functions that deal with
+ * Ranges objects. Therefore it should probably go somewhere else and be used
+ * more systematically across the IRanges C code.
+ */
+
+static int check_Ranges_start_width(SEXP start, SEXP width,
+				const int **start_p, const int **width_p,
+				const char *what)
+{
+	int len;
+
+	if (!IS_INTEGER(start) || !IS_INTEGER(width))
+		error("'start(%s)' and 'width(%s)' must be "
+		      "integer vectors", what, what);
+	len = LENGTH(start);
+	if (LENGTH(width) != len)
+		error("'start(%s)' and 'width(%s)' must have "
+		      "the same length", what, what);
+	*start_p = INTEGER(start);
+	*width_p = INTEGER(width);
+	return len;
+}
+
+static const int *check_Ranges_space(SEXP space, int len, const char *what)
+{
+	if (space == R_NilValue)
+		return NULL;
+	if (!IS_INTEGER(space))
+		error("'%s_space' must be an integer vector or NULL", what);
+	if (LENGTH(space) != len)
+		error("when not NULL, '%s_space' must have "
+		      "the same length as 'start(%s)'", what, what);
+	return INTEGER(space);
+}
+
+
+/****************************************************************************
  * Generalized comparison of 2 integer ranges.
  *
  * TODO: This should probably go somewhere else.
@@ -131,25 +172,20 @@ SEXP Ranges_compare(SEXP x_start, SEXP x_width,
 		    SEXP y_start, SEXP y_width)
 {
 	int m, n, ans_length;
+	const int *x_start_p, *x_width_p, *y_start_p, *y_width_p;
 	SEXP ans;
 
-	if (!IS_INTEGER(x_start) || !IS_INTEGER(x_width))
-		error("'start(x)' and 'width(x)' must be integer vectors");
-	if (LENGTH(x_start) != LENGTH(x_width))
-		error("'start(x)' and 'width(x)' must have the same length");
-	if (!IS_INTEGER(y_start) || !IS_INTEGER(y_width))
-		error("'start(y)' and 'width(y)' must be integer vectors");
-	if (LENGTH(y_start) != LENGTH(y_width))
-		error("'start(y)' and 'width(y)' must have the same length");
-	m = LENGTH(x_start);
-	n = LENGTH(y_start);
+	m = check_Ranges_start_width(x_start, x_width,
+				     &x_start_p, &x_width_p, "x");
+	n = check_Ranges_start_width(y_start, y_width,
+				     &y_start_p, &y_width_p, "y");
 	if (m == 0 || n == 0)
 		ans_length = 0;
 	else
 		ans_length = m >= n ? m : n;
 	PROTECT(ans = NEW_INTEGER(ans_length));
-	_ranges_pcompare(INTEGER(x_start), INTEGER(x_width), m,
-			 INTEGER(y_start), INTEGER(y_width), n,
+	_ranges_pcompare(x_start_p, x_width_p, m,
+			 y_start_p, y_width_p, n,
 			 INTEGER(ans), ans_length, 1);
 	UNPROTECT(1);
 	return ans;
@@ -358,35 +394,6 @@ static void encodeII(
 	return;
 }
 
-static int check_start_width_space(SEXP start, SEXP width, SEXP space,
-				   const int **s, const int **w, const int **sp,
-				   const char *what)
-{
-	int len;
-
-	if (!IS_INTEGER(start) || !IS_INTEGER(width))
-		error("'start(%s)' and 'width(%s)' must be "
-		      "integer vectors", what, what);
-	len = LENGTH(start);
-	if (LENGTH(width) != len)
-		error("'start(%s)' and 'width(%s)' must have "
-		      "the same length", what, what);
-	if (space == R_NilValue) {
-		*sp = NULL;
-	} else {
-		if (!IS_INTEGER(space))
-			error("'%s_space' must be an integer vector or NULL",
-			      what);
-		if (LENGTH(space) != len)
-			error("when not NULL, '%s_space' must have "
-			      "the same length as 'start(%s)'", what, what);
-		*sp = INTEGER(space);
-	}
-	*s = INTEGER(start);
-	*w = INTEGER(width);
-	return len;
-}
-
 static void safe_encodeII(
 		SEXP query_start, SEXP query_width, SEXP query_space,
 		SEXP subject_start, SEXP subject_width, SEXP subject_space,
@@ -395,10 +402,12 @@ static void safe_encodeII(
 	int m, n, Loffset, Roffset;
 	const int *q_start, *q_width, *q_space, *s_start, *s_width, *s_space;
 
-	m = check_start_width_space(query_start, query_width, query_space,
-				    &q_start, &q_width, &q_space, "query");
-	n = check_start_width_space(subject_start, subject_width, subject_space,
-				    &s_start, &s_width, &s_space, "subject");
+	m = check_Ranges_start_width(query_start, query_width,
+				     &q_start, &q_width, "query");
+	q_space = check_Ranges_space(query_space, m, "query");
+	n = check_Ranges_start_width(subject_start, subject_width,
+				     &s_start, &s_width, "subject");
+	s_space = check_Ranges_space(subject_space, n, "subject");
 	encodeII(q_start, q_width, q_space, m,
 		 s_start, s_width, s_space, n,
 		 full_OVM, &Loffset, &Roffset, out);
