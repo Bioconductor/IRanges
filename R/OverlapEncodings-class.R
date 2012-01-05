@@ -70,9 +70,12 @@ setClass("OverlapEncodings",
 ###   > query <- IRanges(c(7, 15, 22), c(9, 19, 23))
 ###   > subject <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
 ###   > encodeOverlaps1(query, subject, sparse.output=FALSE)
-###   [1] "mjaa" "mmga" "mmmf"
+###        [,1] [,2] [,3] [,4]
+###   [1,] "m"  "j"  "a"  "a" 
+###   [2,] "m"  "m"  "g"  "a" 
+###   [3,] "m"  "m"  "m"  "f" 
 ###   > encodeOverlaps1(query, subject)  # Type II encoding
-###   [1] ":jmm:agm:aaf:"
+###   [1] "3:jmm:agm:aaf:"
 ### TODO: Do we really need this? Same could be achieved with
 ### 'encodeOverlaps(IRangesList(query), IRangesList(subject))' except that
 ### with encodeOverlaps1() we can specify 'query.space' and 'subject.space'
@@ -136,7 +139,7 @@ setGeneric("encodeOverlaps", signature=c("query", "subject"),
 ###   > subject <- IRangesList(tx)
 ###   > ocodes <- encodeOverlaps(query, subject)
 ###   > ocodes
-###   [1] ":jmm:agm:aaf:" ":jm:af:"       ":jm:af:"
+###   [1] "3:jmm:agm:aaf:" "2:jm:af:"       "2:jm:af:"
 ### Reads compatible with transcript 'tx':
 ###   ## Regex to use for reads with no gaps:
 ###   > pattern0 <- ":[fgij]:"

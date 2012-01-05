@@ -387,55 +387,22 @@ static int check_start_width_space(SEXP start, SEXP width, SEXP space,
 	return len;
 }
 
-static SEXP _enc_overlaps1(
+static void safe_encodeII(
 		SEXP query_start, SEXP query_width, SEXP query_space,
 		SEXP subject_start, SEXP subject_width, SEXP subject_space,
-		int sparse_output, int as_raw)
+		int full_OVM, CharAE *out)
 {
-	int m, n, Loffset, Roffset, i;
+	int m, n, Loffset, Roffset;
 	const int *q_start, *q_width, *q_space, *s_start, *s_width, *s_space;
-	CharAE buf;
-	SEXP ans, ans_elt, ans_dim;
 
 	m = check_start_width_space(query_start, query_width, query_space,
 				    &q_start, &q_width, &q_space, "query");
 	n = check_start_width_space(subject_start, subject_width, subject_space,
 				    &s_start, &s_width, &s_space, "subject");
-	if (sparse_output || as_raw) {
-		/* FIXME: Risk of integer overflow! */
-		buf = _new_CharAE(m * n);
-		encodeII(q_start, q_width, q_space, m,
-			 s_start, s_width, s_space, n,
-			 !sparse_output, &Loffset, &Roffset, &buf);
-		if (!as_raw)
-			return mkCharLen(buf.elts, _CharAE_get_nelt(&buf));
-		PROTECT(ans = _new_RAW_from_CharAE(&buf));
-		if (!sparse_output) {
-			PROTECT(ans_dim	= NEW_INTEGER(2));
-			INTEGER(ans_dim)[0] = m;
-			INTEGER(ans_dim)[1] = n;
-			SET_DIM(ans, ans_dim);
-			UNPROTECT(1);
-		}
-		UNPROTECT(1);
-		return ans;
-	}
-	PROTECT(ans = NEW_CHARACTER(m));
-	buf = _new_CharAE(n);
-	for (i = 0; i < m; i++) {
-		encodeII(q_start + i, q_width + i,
-			 q_space == NULL ? NULL : q_space + i, 1,
-			 s_start, s_width, s_space, n,
-			 1, &Loffset, &Roffset, &buf);
-		PROTECT(ans_elt = mkCharLen(buf.elts, _CharAE_get_nelt(&buf)));
-		SET_STRING_ELT(ans, i, ans_elt);
-		UNPROTECT(1);
-		_CharAE_set_nelt(&buf, 0);
-		if (q_space != NULL)
-			q_space++;
-	}
-	UNPROTECT(1);
-	return ans;
+	encodeII(q_start, q_width, q_space, m,
+		 s_start, s_width, s_space, n,
+		 full_OVM, &Loffset, &Roffset, out);
+	return;
 }
 
 /* --- .Call ENTRY POINT ---
@@ -457,16 +424,47 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 			SEXP subject_space,
 		      SEXP sparse_output, SEXP as_raw)
 {
-	int sparse0, as_raw0;
-	SEXP ans;
+	int sparse0, as_raw0, nelt, i;
+	CharAE buf;
+	SEXP ans, ans_elt, ans_dim;
 
 	sparse0 = sparse_output == R_NilValue || LOGICAL(sparse_output)[0];
 	as_raw0 = as_raw != R_NilValue && LOGICAL(as_raw)[0];
-	PROTECT(ans = _enc_overlaps1(query_start, query_width, query_space,
-				subject_start, subject_width, subject_space,
-				sparse0, as_raw0));
-	if (sparse0 && !as_raw0)
-		ans = ScalarString(ans);
+	buf = _new_CharAE(0);
+	safe_encodeII(query_start, query_width, query_space,
+		      subject_start, subject_width, subject_space,
+		      !sparse0, &buf);
+	if (!sparse0) {
+		PROTECT(ans_dim	= NEW_INTEGER(2));
+		INTEGER(ans_dim)[0] = LENGTH(query_start);
+		INTEGER(ans_dim)[1] = LENGTH(subject_start);
+	}
+	if (as_raw0) {
+		PROTECT(ans = _new_RAW_from_CharAE(&buf));
+		if (!sparse0) {
+			SET_DIM(ans, ans_dim);
+			UNPROTECT(1);
+		}
+		UNPROTECT(1);
+		return ans;
+	}
+	nelt = _CharAE_get_nelt(&buf);
+	if (sparse0) {
+		PROTECT(ans_elt = mkCharLen(buf.elts, nelt));
+		PROTECT(ans = ScalarString(ans_elt));
+		UNPROTECT(2);
+		return ans;
+	}
+	PROTECT(ans = NEW_CHARACTER(nelt));
+	for (i = 0; i < nelt; i++) {
+		PROTECT(ans_elt = mkCharLen(buf.elts + i, 1));
+		SET_STRING_ELT(ans, i, ans_elt);
+		UNPROTECT(1);
+	}
+	if (!sparse0) {
+		SET_DIM(ans, ans_dim);
+		UNPROTECT(1);
+	}
 	UNPROTECT(1);
 	return ans;
 }
@@ -486,6 +484,7 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 	SEXP query_start, query_width, query_space,
 	     subject_start, subject_width, subject_space,
 	     ans, ans_elt;
+	CharAE buf;
 
 	/* TODO: Some basic check of the input values. */
 	m = LENGTH(query_starts);
@@ -495,6 +494,7 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 	ans_length = m >= n ? m : n;
 	PROTECT(ans = NEW_CHARACTER(ans_length));
 	query_space = subject_space = R_NilValue;
+	buf = _new_CharAE(0);
 	for (i = j = k = 0; k < ans_length; i++, j++, k++) {
 		if (i >= m)
 			i = 0; /* recycle i */
@@ -508,16 +508,13 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 		subject_width = VECTOR_ELT(subject_widths, j);
 		if (subject_spaces != R_NilValue)
 			subject_space = VECTOR_ELT(subject_spaces, j);
-		PROTECT(ans_elt = _enc_overlaps1(
-					query_start,
-					query_width,
-					query_space,
-					subject_start,
-					subject_width,
-					subject_space,
-					1, 0));
+		safe_encodeII(query_start, query_width, query_space,
+			      subject_start, subject_width, subject_space,
+			      0, &buf);
+		PROTECT(ans_elt = mkCharLen(buf.elts, _CharAE_get_nelt(&buf)));
 		SET_STRING_ELT(ans, k, ans_elt);
 		UNPROTECT(1);
+		_CharAE_set_nelt(&buf, 0);
 	}
 	if (i != m || j != n)
 		warning("longer object length is not a multiple "
