@@ -335,14 +335,14 @@ static void encodeII(
 		const int *s_space, int s_len,
 		int as_matrix, int *Loffset, int *Roffset, CharAE *out)
 {
-	int nelt0, i, starti, widthi, spacei, j, startj, widthj, spacej,
+	int out_nelt0, i, starti, widthi, spacei, j, startj, widthj, spacej,
 	    j1, j2;
 	char code;
 
 	if (!as_matrix) {
 		CharAE_append_int(out, q_len);
 		CharAE_append_char(out, ':', 1);
-		nelt0 = _CharAE_get_nelt(out);
+		out_nelt0 = _CharAE_get_nelt(out);
 	}
 	/* j1: 0-based index of first (i.e. leftmost) OVM col with a non-"m",
 	       or 's_len' if there is no such col.
@@ -384,12 +384,12 @@ static void encodeII(
 		*Loffset = j1;
 		*Roffset = s_len - j2;
 		/* Remove "a"-cols on the right. */
-		_CharAE_set_nelt(out, nelt0 + j2 * q_len);
+		_CharAE_set_nelt(out, out_nelt0 + j2 * q_len);
 		/* Remove "m"-cols on the left. */
-		_CharAE_delete_at(out, nelt0, j1 * q_len);
+		_CharAE_delete_at(out, out_nelt0, j1 * q_len);
 		/* Insert ":" at the end of each remaining col. */
 		for (j = j2 - j1; j >= 1; j--)
-			_CharAE_insert_at(out, nelt0 + j * q_len, ':');
+			_CharAE_insert_at(out, out_nelt0 + j * q_len, ':');
 	}
 	return;
 }
@@ -414,6 +414,45 @@ static void safe_encodeII(
 	return;
 }
 
+/* type: 0=CHARSXP, 1=STRSXP, 2=RAWSXP
+   as_matrix: 0 or 1, ignored when type is 0 */
+static SEXP new_encoding_from_CharAE(const CharAE *buf, int type,
+				     int as_matrix, int q_len, int s_len)
+{
+	SEXP ans, ans_elt, ans_dim;
+	int buf_nelt, i;
+
+	buf_nelt = _CharAE_get_nelt(buf);
+	if (type == 0 || (type == 1 && !as_matrix)) {
+		PROTECT(ans = mkCharLen(buf->elts, buf_nelt));
+		if (type == 1) {
+			PROTECT(ans = ScalarString(ans));
+			UNPROTECT(1);
+		}
+		UNPROTECT(1);
+		return ans;
+	}
+	if (type == 1) {
+		PROTECT(ans = NEW_CHARACTER(buf_nelt));
+		for (i = 0; i < buf_nelt; i++) {
+			PROTECT(ans_elt = mkCharLen(buf->elts + i, 1));
+			SET_STRING_ELT(ans, i, ans_elt);
+			UNPROTECT(1);
+		}
+	} else {
+		PROTECT(ans = _new_RAW_from_CharAE(buf));
+	}
+	if (as_matrix) {
+		PROTECT(ans_dim	= NEW_INTEGER(2));
+		INTEGER(ans_dim)[0] = q_len;
+		INTEGER(ans_dim)[1] = s_len;
+		SET_DIM(ans, ans_dim);
+		UNPROTECT(1);
+	}
+	UNPROTECT(1);
+	return ans;
+}
+
 /* --- .Call ENTRY POINT ---
  * 'query_start', 'query_width', 'query_space': integer vectors of the same
  * length M (or NULL for 'query_space').
@@ -432,9 +471,8 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 			SEXP subject_space,
 		      SEXP as_matrix, SEXP as_raw)
 {
-	int as_matrix0, as_raw0, Loffset, Roffset, nelt, i;
+	int as_matrix0, as_raw0, Loffset, Roffset;
 	CharAE buf;
-	SEXP ans, ans_elt, ans_dim;
 
 	as_matrix0 = as_matrix != R_NilValue && LOGICAL(as_matrix)[0];
 	as_raw0 = as_raw != R_NilValue && LOGICAL(as_raw)[0];
@@ -442,39 +480,8 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 	safe_encodeII(query_start, query_width, query_space,
 		      subject_start, subject_width, subject_space,
 		      as_matrix0, &Loffset, &Roffset, &buf);
-	if (as_matrix0) {
-		PROTECT(ans_dim	= NEW_INTEGER(2));
-		INTEGER(ans_dim)[0] = LENGTH(query_start);
-		INTEGER(ans_dim)[1] = LENGTH(subject_start);
-	}
-	if (as_raw0) {
-		PROTECT(ans = _new_RAW_from_CharAE(&buf));
-		if (as_matrix0) {
-			SET_DIM(ans, ans_dim);
-			UNPROTECT(1);
-		}
-		UNPROTECT(1);
-		return ans;
-	}
-	nelt = _CharAE_get_nelt(&buf);
-	if (!as_matrix0) {
-		PROTECT(ans_elt = mkCharLen(buf.elts, nelt));
-		PROTECT(ans = ScalarString(ans_elt));
-		UNPROTECT(2);
-		return ans;
-	}
-	PROTECT(ans = NEW_CHARACTER(nelt));
-	for (i = 0; i < nelt; i++) {
-		PROTECT(ans_elt = mkCharLen(buf.elts + i, 1));
-		SET_STRING_ELT(ans, i, ans_elt);
-		UNPROTECT(1);
-	}
-	if (as_matrix0) {
-		SET_DIM(ans, ans_dim);
-		UNPROTECT(1);
-	}
-	UNPROTECT(1);
-	return ans;
+	return new_encoding_from_CharAE(&buf, as_raw0 ? 2 : 1,
+		      as_matrix0, LENGTH(query_start), LENGTH(subject_start));
 }
 
 /* --- .Call ENTRY POINT ---
@@ -497,7 +504,7 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 	     subject_start, subject_width, subject_space;
 	CharAE buf;
 
-	/* TODO: Some basic check of the input values. */
+	/* TODO: Add some basic checking of the input values. */
 	m = LENGTH(query_starts);
 	n = LENGTH(subject_starts);
 	if (m == 0 || n == 0)
@@ -528,8 +535,8 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 			      INTEGER(ans_Loffset) + k,
 			      INTEGER(ans_Roffset) + k,
 			      &buf);
-		PROTECT(ans_encoding_elt = mkCharLen(buf.elts,
-						     _CharAE_get_nelt(&buf)));
+		PROTECT(ans_encoding_elt = new_encoding_from_CharAE(&buf, 0,
+								    0, m, n));
 		SET_STRING_ELT(ans_encoding, k, ans_encoding_elt);
 		UNPROTECT(1);
 		_CharAE_set_nelt(&buf, 0);
