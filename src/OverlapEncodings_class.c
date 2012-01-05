@@ -23,14 +23,14 @@
  *   x:   oooo      -4   'c'  "x=y" | x:     oooo     4   'k'  "y=x"
  *   y:     oooo                    | y:   oooo    
  *   -------------  --------------- | -------------  ---------------
- *   x:   oooooo    -3   'd'  "x="  | x:      ooo     3   'j'  "y="
- *   y:      ooo                    | y:   oooooo  
+ *   x:   oooooo    -3   'd'  "x="  | x:     oooo     3   'j'  "y="
+ *   y:     oooo                    | y:   oooooo  
  *   -------------  --------------- | -------------  ---------------
  *   x:  oooooooo   -2   'e'  "x=x" | x:    oooo      2   'i'  "y=y"
  *   y:    oooo                     | y:  oooooooo
  *   -------------  --------------- | -------------  ---------------
- *   x:   ooo       -1   'f'  "=y"  | x:   oooooo     1   'h'  "=x"
- *   y:   oooooo                    | y:   ooo
+ *   x:   oooo      -1   'f'  "=y"  | x:   oooooo     1   'h'  "=x"
+ *   y:   oooooo                    | y:   oooo
  *   -------------  -------------------------------  ---------------
  *                \   x:   oooooo     0   'g'  "="    /
  *                 \  y:   oooooo                    /
@@ -210,8 +210,8 @@ SEXP Ranges_compare(SEXP x_start, SEXP x_width,
  * below don't loose information i.e. the OVM can always be reconstructed
  * from Loffset, Roffset, and the encoding.
  *
- * Type II encoding
- * ----------------
+ * Type I encoding
+ * ---------------
  *
  *   1) The trimmed OVM is walked row by row from the top left to the bottom
  *      right.
@@ -228,7 +228,7 @@ SEXP Ranges_compare(SEXP x_start, SEXP x_width,
  *      respectively. They are reported at the beginning and end of the linear
  *      sequence, respectively.
  *
- *          Loffset   Roffset   Type II encoding
+ *          Loffset   Roffset   Type I encoding
  *      A         1         3   "{j}{g}{f}"
  *      B         1         3   "{j}{g}{g}"
  *      C         1         4   "{j}{}{f}"
@@ -260,8 +260,8 @@ SEXP Ranges_compare(SEXP x_start, SEXP x_width,
  *     each row between the m-prefix and the a-suffix. This is not guaranteed
  *     to be the case for a transcript that is not "normal".
  *
- * Type III encoding
- * -----------------
+ * Type II encoding
+ * ----------------
  *
  * Coming soon...
  */
@@ -291,81 +291,7 @@ static void CharAE_append_int(CharAE *char_ae, int d)
 	return;
 }
 
-/* Type I encoding is obsolete. encodeI() only used with full_OVM=1 to
-   generate the full OVM matrix. */
-static void encodeI(
-		const int *q_start, const int *q_width,
-		const int *q_space, int q_len,
-		const int *s_start, const int *s_width,
-		const int *s_space, int s_len,
-		int full_OVM, CharAE *out)
-{
-	int i, starti, widthi, spacei, j, startj, widthj, spacej,
-	    j1, j2, shift;
-	char code;
-
-	if (!full_OVM && (q_len == 0 || s_len == 0))
-		error("Type I encoding not supported when "
-		      "query or subject have no ranges");
-	j2 = 0;
-	for (i = 0; i < q_len; i++) {
-		if (!full_OVM && i != 0)
-			CharAE_append_char(out, ':', 1);
-		/* j1: 1-base column index of the first letter of the sequence
-		 * to report when in sparse mode. Concisely defined as the last
-		 * position in the row that is preceded by "m"'s only.
-		 * j2: 1-base column index of the last letter of the sequence
-		 * to report when in sparse mode. Concisely defined as the
-		 * first position in the row that is >= j1 and followed by
-		 * "a"'s only.
-		 * When we exit the for (j = 0; ...) loop below, we have the
-		 * guarantee that 1 <= j1 <= j2 <= s_len.
-		 */
-		j1 = 0;
-		starti = q_start[i];
-		widthi = q_width[i];
-		spacei = q_space == NULL ? 0 : q_space[i];
-		for (j = 0; j < s_len; j++) {
-			startj = s_start[j];
-			widthj = s_width[j];
-			spacej = s_space == NULL ? 0 : s_space[j];
-			if (spacei == -1 || spacej == -1 || spacei != spacej)
-				code = 'X';
-			else
-				code = 'g' + overlap_code(starti, widthi,
-							  startj, widthj);
-			if (!full_OVM && j1 == 0) {
-				if (code == 'm' && j + 1 < s_len)
-					continue;
-				j1 = j + 1;
-				if (j2 == 0) {
-					CharAE_append_int(out, j1);
-				} else {
-					shift = j1 - j2 - 1;
-					if (shift >= 0)
-						CharAE_append_char(out, '>',
-								   shift);
-					else
-						CharAE_append_char(out, '<',
-								   -shift);
-				}
-				j2 = j1;
-			}
-			CharAE_append_char(out, code, 1);
-			if (!full_OVM && code != 'a')
-				j2 = j + 1;
-		}
-		if (!full_OVM) {
-			/* Remove trailing "a"'s */
-			_CharAE_set_nelt(out, _CharAE_get_nelt(out) -
-					      (s_len - j2));
-		}
-	}
-	return;
-}
-
 /* Uses special 1-letter code 'X' for ranges that are not on the same space. */
-/*
 static void encodeII(
 		const int *q_start, const int *q_width,
 		const int *q_space, int q_len,
@@ -373,26 +299,22 @@ static void encodeII(
 		const int *s_space, int s_len,
 		int full_OVM, int *Loffset, int *Roffset, CharAE *out)
 {
-	return;
-}
-*/
-
-/* Uses special 1-letter code 'X' for ranges that are not on the same space. */
-static void encodeIII(
-		const int *q_start, const int *q_width,
-		const int *q_space, int q_len,
-		const int *s_start, const int *s_width,
-		const int *s_space, int s_len,
-		int *Loffset, int *Roffset, CharAE *out)
-{
-	int i, starti, widthi, spacei, j, startj, widthj, spacej, j1, j2;
+	int nelt0, i, starti, widthi, spacei, j, startj, widthj, spacej,
+	    j1, j2;
 	char code;
 
-	if (q_len == 0 && s_len != 0)
-		error("Type III encoding not supported when "
-		      "query has no ranges but subject has ranges");
-	j1 = j2 = -1;
-	/* Walk col by col */
+	if (!full_OVM) {
+		CharAE_append_int(out, q_len);
+		CharAE_append_char(out, ':', 1);
+		nelt0 = _CharAE_get_nelt(out);
+	}
+	/* j1: 0-based index of first (i.e. leftmost) OVM col with a non-"m",
+	       or 's_len' if there is no such col.
+	   j2: 0-based index of last (i.e. rightmost) OVM col with a non-"a",
+	       or -1 if there is no such col. */
+	j1 = s_len;
+	j2 = -1;
+	/* Walk col by col. */
 	for (j = 0; j < s_len; j++) {
 		startj = s_start[j];
 		widthj = s_width[j];
@@ -407,28 +329,62 @@ static void encodeIII(
 				code = 'g' + overlap_code(starti, widthi,
 							  startj, widthj);
 			CharAE_append_char(out, code, 1);
-			/* j1 = first col where a non-"m" is seen */
-			if (j1 == -1 && code != 'm')
+			if (j1 == s_len && code != 'm')
 				j1 = j;
-			/* j2 = last col where a non-"a" was seen */
 			if (code != 'a')
 				j2 = j;
 		}
 	}
-	if (j1 == -1)
-		j1 = s_len;
-	j2++;
-	/* Remove cols on the right. */
-	_CharAE_set_nelt(out, q_len * j2);
-	/* Remove cols on the left. */
-	_CharAE_delete_at(out, 0, q_len * j1);
-	*Loffset = j1;
-	*Roffset = s_len - j2;
-	/* Insert ":" between remaining cols and before the 1st and after the
-	   last column. */
-	for (j = j2 - j1; j >= 0; j--)
-		_CharAE_insert_at(out, j * q_len, ':');
+	if (!full_OVM) {
+		/* By making 'j2' a 1-based index we will then have
+		   0 <= j1 <= j2 <= s_len, which will then simplify further
+		   arithmetic/logic. */
+		if (q_len == 0) {
+			/* A 0-row OVM needs special treatment. */
+			j2 = s_len;
+		} else {
+			j2++;
+		}
+		*Loffset = j1;
+		*Roffset = s_len - j2;
+		/* Remove "a"-cols on the right. */
+		_CharAE_set_nelt(out, nelt0 + j2 * q_len);
+		/* Remove "m"-cols on the left. */
+		_CharAE_delete_at(out, nelt0, j1 * q_len);
+		/* Insert ":" at the end of each remaining col. */
+		for (j = j2 - j1; j >= 1; j--)
+			_CharAE_insert_at(out, nelt0 + j * q_len, ':');
+	}
 	return;
+}
+
+static int check_start_width_space(SEXP start, SEXP width, SEXP space,
+				   const int **s, const int **w, const int **sp,
+				   const char *what)
+{
+	int len;
+
+	if (!IS_INTEGER(start) || !IS_INTEGER(width))
+		error("'start(%s)' and 'width(%s)' must be "
+		      "integer vectors", what, what);
+	len = LENGTH(start);
+	if (LENGTH(width) != len)
+		error("'start(%s)' and 'width(%s)' must have "
+		      "the same length", what, what);
+	if (space == R_NilValue) {
+		*sp = NULL;
+	} else {
+		if (!IS_INTEGER(space))
+			error("'%s_space' must be an integer vector or NULL",
+			      what);
+		if (LENGTH(space) != len)
+			error("when not NULL, '%s_space' must have "
+			      "the same length as 'start(%s)'", what, what);
+		*sp = INTEGER(space);
+	}
+	*s = INTEGER(start);
+	*w = INTEGER(width);
+	return len;
 }
 
 static SEXP _enc_overlaps1(
@@ -437,71 +393,27 @@ static SEXP _enc_overlaps1(
 		int sparse_output, int as_raw)
 {
 	int m, n, Loffset, Roffset, i;
-	const int *q_space, *s_space;
+	const int *q_start, *q_width, *q_space, *s_start, *s_width, *s_space;
 	CharAE buf;
 	SEXP ans, ans_elt, ans_dim;
 
-	/* Check 'query_start', 'query_width' and 'query_space'. */
-	if (!IS_INTEGER(query_start) || !IS_INTEGER(query_width))
-		error("'start(query)' and 'width(query)' must be "
-		      "integer vectors");
-	if (LENGTH(query_start) != LENGTH(query_width))
-		error("'start(query)' and 'width(query)' must have "
-		      "the same length");
-	m = LENGTH(query_start);
-	if (query_space == R_NilValue) {
-		q_space = NULL;
-	} else if (!IS_INTEGER(query_space)) {
-		error("'query_space' must be an integer vector or NULL");
-	} else if (LENGTH(query_space) != m) {
-		error("when not NULL, 'query_space' must have "
-		      "the same length as 'start(query)'");
-	} else {
-		q_space = INTEGER(query_space);
-	}
-
-	/* Check 'subject_start', 'subject_width' and 'subject_space'. */
-	if (!IS_INTEGER(subject_start) || !IS_INTEGER(subject_width))
-		error("'start(subject)' and 'width(subject)' must be "
-		      "integer vectors");
-	if (LENGTH(subject_start) != LENGTH(subject_width))
-		error("'start(subject)' and 'width(subject)' must have "
-		      "the same length");
-	n = LENGTH(subject_start);
-	if (subject_space == R_NilValue) {
-		s_space = NULL;
-	} else if (!IS_INTEGER(subject_space)) {
-		error("'subject_space' must be an integer vector or NULL");
-	} else if (LENGTH(subject_space) != n) {
-		error("when not NULL, 'subject_space' must have "
-		      "the same length as 'start(subject)'");
-	} else {
-		s_space = INTEGER(subject_space);
-	}
-
+	m = check_start_width_space(query_start, query_width, query_space,
+				    &q_start, &q_width, &q_space, "query");
+	n = check_start_width_space(subject_start, subject_width, subject_space,
+				    &s_start, &s_width, &s_space, "subject");
 	if (sparse_output || as_raw) {
 		/* FIXME: Risk of integer overflow! */
 		buf = _new_CharAE(m * n);
-		if (sparse_output) {
-			encodeIII(INTEGER(query_start), INTEGER(query_width),
-				q_space, m,
-				INTEGER(subject_start), INTEGER(subject_width),
-				s_space, n,
-				&Loffset, &Roffset, &buf);
-		} else {
-			encodeI(INTEGER(query_start), INTEGER(query_width),
-				q_space, m,
-				INTEGER(subject_start), INTEGER(subject_width),
-				s_space, n,
-				1, &buf);
-		}
+		encodeII(q_start, q_width, q_space, m,
+			 s_start, s_width, s_space, n,
+			 !sparse_output, &Loffset, &Roffset, &buf);
 		if (!as_raw)
 			return mkCharLen(buf.elts, _CharAE_get_nelt(&buf));
 		PROTECT(ans = _new_RAW_from_CharAE(&buf));
 		if (!sparse_output) {
 			PROTECT(ans_dim	= NEW_INTEGER(2));
-			INTEGER(ans_dim)[0] = n;
-			INTEGER(ans_dim)[1] = m;
+			INTEGER(ans_dim)[0] = m;
+			INTEGER(ans_dim)[1] = n;
 			SET_DIM(ans, ans_dim);
 			UNPROTECT(1);
 		}
@@ -511,11 +423,10 @@ static SEXP _enc_overlaps1(
 	PROTECT(ans = NEW_CHARACTER(m));
 	buf = _new_CharAE(n);
 	for (i = 0; i < m; i++) {
-		encodeI(INTEGER(query_start) + i, INTEGER(query_width) + i,
-			q_space, 1,
-			INTEGER(subject_start), INTEGER(subject_width),
-			s_space, n,
-			1, &buf);
+		encodeII(q_start + i, q_width + i,
+			 q_space == NULL ? NULL : q_space + i, 1,
+			 s_start, s_width, s_space, n,
+			 1, &Loffset, &Roffset, &buf);
 		PROTECT(ans_elt = mkCharLen(buf.elts, _CharAE_get_nelt(&buf)));
 		SET_STRING_ELT(ans, i, ans_elt);
 		UNPROTECT(1);
@@ -561,10 +472,10 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 }
 
 /* --- .Call ENTRY POINT ---
- * 'query_starts', 'query_widths', 'query_spaces': lists of integer vectors
- * of the same length (M) and shape.
+ * 'query_starts', 'query_widths', 'query_spaces': lists of integer vectors.
+ * The 3 lists are assumed to have the same length (M) and shape.
  * 'subject_starts', 'subject_widths', 'subject_spaces': lists of integer
- * vectors of the same length (N) and shape.
+ * vectors. The 3 lists are assumed to have the same length (N) and shape.
  */
 SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 				SEXP query_spaces,

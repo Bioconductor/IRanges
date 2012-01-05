@@ -71,7 +71,7 @@ setClass("OverlapEncodings",
 ###   > subject <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
 ###   > encodeOverlaps1(query, subject, sparse.output=FALSE)
 ###   [1] "mjaa" "mmga" "mmmf"
-###   > encodeOverlaps1(query, subject)  # Type III encoding
+###   > encodeOverlaps1(query, subject)  # Type II encoding
 ###   [1] ":jmm:agm:aaf:"
 ### TODO: Do we really need this? Same could be achieved with
 ### 'encodeOverlaps(IRangesList(query), IRangesList(subject))' except that
@@ -107,8 +107,8 @@ findRangesOverlaps <- function(query, subject)
     ## raw matrix is transposed!
     ocodes <- encodeOverlaps1(query, subject, sparse.output=FALSE, as.raw=TRUE)
     offsets <- which(charToRaw("c") <= ocodes & ocodes <= charToRaw("k")) - 1L
-    q_hits <- offsets %/% nrow(ocodes) + 1L
-    s_hits <- offsets %% nrow(ocodes) + 1L
+    q_hits <- offsets %% nrow(ocodes) + 1L
+    s_hits <- offsets %/% nrow(ocodes) + 1L
     cbind(query=q_hits, subject=s_hits)
 }
 
