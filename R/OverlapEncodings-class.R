@@ -57,8 +57,62 @@ setClass("OverlapEncodings",
     representation(
         Loffset="integer",    # no NAs, >= 0
         Roffset="integer",    # no NAs, >= 0
-        encoding="character"  # no NAs
+        encoding="factor"     # no NAs
     )
+)
+
+setGeneric("Loffset", function(x) standardGeneric("Loffset"))
+setMethod("Loffset", "OverlapEncodings", function(x) x@Loffset)
+
+setGeneric("Roffset", function(x) standardGeneric("Roffset"))
+setMethod("Roffset", "OverlapEncodings", function(x) x@Roffset)
+
+setGeneric("encoding", function(x) standardGeneric("encoding"))
+setMethod("encoding", "OverlapEncodings", function(x) x@encoding)
+
+setMethod("length", "OverlapEncodings", function(x) length(encoding(x)))
+
+setMethod("as.data.frame", "OverlapEncodings",
+    function(x, row.names=NULL, optional=FALSE, ...)
+    {
+        if (!(is.null(row.names) || is.character(row.names)))
+            stop("'row.names' must be NULL or a character vector")
+        data.frame(Loffset=Loffset(x),
+                   Roffset=Roffset(x),
+                   encoding=encoding(x),
+                   row.names=row.names,
+                   check.rows=TRUE,
+                   check.names=FALSE,
+                   stringsAsFactors=FALSE)
+    }
+)
+
+setMethod("show", "OverlapEncodings",
+    function(object)
+    {
+        lo <- length(object)
+        cat(class(object), " of length ", lo, "\n", sep="")
+        if (lo == 0L)
+            return(NULL)
+        if (lo < 20L) {
+            showme <-
+              as.data.frame(object,
+                            row.names=paste("[", seq_len(lo), "]", sep=""))
+        } else {
+            sketch <- function(x)
+              c(window(x, 1L, 9L), "...", window(x, length(x)-8L, length(x)))
+            showme <-
+              data.frame(Loffset=sketch(Loffset(object)),
+                         Roffset=sketch(Roffset(object)),
+                         encoding=sketch(encoding(object)),
+                         row.names=c(paste("[", 1:9, "]", sep=""), "...",
+                                     paste("[", (lo-8L):lo, "]", sep="")),
+                         check.rows=TRUE,
+                         check.names=FALSE,
+                         stringsAsFactors=FALSE)
+        }
+        show(showme)
+    }
 )
 
 
@@ -106,10 +160,10 @@ encodeOverlaps1 <- function(query, subject,
 ### lengths of 'query' and 'subject', respectively.
 findRangesOverlaps <- function(query, subject)
 {
-    ocodes <- encodeOverlaps1(query, subject, as.matrix=TRUE, as.raw=TRUE)
-    offsets <- which(charToRaw("c") <= ocodes & ocodes <= charToRaw("k")) - 1L
-    q_hits <- offsets %% nrow(ocodes) + 1L
-    s_hits <- offsets %/% nrow(ocodes) + 1L
+    ovenc <- encodeOverlaps1(query, subject, as.matrix=TRUE, as.raw=TRUE)
+    offsets <- which(charToRaw("c") <= ovenc & ovenc <= charToRaw("k")) - 1L
+    q_hits <- offsets %% nrow(ovenc) + 1L
+    s_hits <- offsets %/% nrow(ovenc) + 1L
     cbind(query=q_hits, subject=s_hits)
 }
 
@@ -117,10 +171,15 @@ RangesList_encodeOverlaps <- function(query.starts, query.widths,
                                       subject.starts, subject.widths,
                                       query.spaces=NULL, subject.spaces=NULL)
 {
-    .Call2("RangesList_encode_overlaps",
-           query.starts, query.widths, query.spaces,
-           subject.starts, subject.widths, subject.spaces,
-           PACKAGE="IRanges")
+    C_ans <- .Call2("RangesList_encode_overlaps",
+                    query.starts, query.widths, query.spaces,
+                    subject.starts, subject.widths, subject.spaces,
+                    PACKAGE="IRanges")
+    Loffset <- C_ans[[1L]]
+    Roffset <- C_ans[[2L]]
+    encoding <- factor(C_ans[[3L]])
+    new2("OverlapEncodings", Loffset=Loffset, Roffset=Roffset,
+                             encoding=encoding, check=FALSE)
 }
 
 setGeneric("encodeOverlaps", signature=c("query", "subject"),
@@ -135,9 +194,13 @@ setGeneric("encodeOverlaps", signature=c("query", "subject"),
 ###   > query <- IRangesList(read1, read2, read3)
 ###   > tx <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
 ###   > subject <- IRangesList(tx)
-###   > ocodes <- encodeOverlaps(query, subject)
-###   > ocodes
-###   [1] "3:jmm:agm:aaf:" "2:jm:af:"       "2:jm:af:"
+###   > ovenc <- encodeOverlaps(query, subject)
+###   > ovenc
+###   OverlapEncodings of length 3
+###       Loffset Roffset       encoding
+###   [1]       1       0 3:jmm:agm:aaf:
+###   [2]       1       1       2:jm:af:
+###   [3]       2       0       2:jm:af:
 ### Reads compatible with transcript 'tx':
 ###   ## Regex to use for reads with no gaps:
 ###   > pattern0 <- ":[fgij]:"
@@ -147,7 +210,7 @@ setGeneric("encodeOverlaps", signature=c("query", "subject"),
 ###   > pattern2 <- ":[jg]..:.g.:..[gf]:"
 ###   ## Regex to use for reads with up to 2 gaps:
 ###   > pattern012 <- ":([fgij]|[jg].:.[gf]|[jg]..:.g.:..[gf]):"
-###   > grep(pattern012, ocodes)
+###   > grep(pattern012, encoding(ovenc))
 ###   [1] 1 2 3
 ### All the reads are compatible with this transcript!
 setMethod("encodeOverlaps", c("RangesList", "RangesList"),
@@ -193,8 +256,8 @@ setMethod("encodeOverlaps", c("Ranges", "Ranges"),
     {
         ### TODO: Add an extra arg to compare() to let the user choose the
         ### type of output i.e. numeric or 1-letter codes.
-        ocodes <- compare(query, subject)
-        safeExplode(rawToChar(as.raw(as.integer(charToRaw("g")) + ocodes)))
+        ovenc <- compare(query, subject)
+        safeExplode(rawToChar(as.raw(as.integer(charToRaw("g")) + ovenc)))
     }
 )
 

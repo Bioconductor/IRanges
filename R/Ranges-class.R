@@ -134,9 +134,9 @@ setMethod("show", "Ranges",
     {
         lo <- length(object)
         cat(class(object), " of length ", lo, "\n", sep="")
-        if (lo == 0L) {
+        if (lo == 0L)
             return(NULL)
-        } else if (lo < 20L) {
+        if (lo < 20L) {
             showme <-
               as.data.frame(object,
                             row.names=paste("[", seq_len(lo), "]", sep=""))

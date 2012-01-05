@@ -171,7 +171,7 @@ static void _ranges_pcompare(
 SEXP Ranges_compare(SEXP x_start, SEXP x_width,
 		    SEXP y_start, SEXP y_width)
 {
-	int m, n, ans_length;
+	int m, n, ans_len;
 	const int *x_start_p, *x_width_p, *y_start_p, *y_width_p;
 	SEXP ans;
 
@@ -180,13 +180,13 @@ SEXP Ranges_compare(SEXP x_start, SEXP x_width,
 	n = check_Ranges_start_width(y_start, y_width,
 				     &y_start_p, &y_width_p, "y");
 	if (m == 0 || n == 0)
-		ans_length = 0;
+		ans_len = 0;
 	else
-		ans_length = m >= n ? m : n;
-	PROTECT(ans = NEW_INTEGER(ans_length));
+		ans_len = m >= n ? m : n;
+	PROTECT(ans = NEW_INTEGER(ans_len));
 	_ranges_pcompare(x_start_p, x_width_p, m,
 			 y_start_p, y_width_p, n,
-			 INTEGER(ans), ans_length, 1);
+			 INTEGER(ans), ans_len, 1);
 	UNPROTECT(1);
 	return ans;
 }
@@ -333,13 +333,13 @@ static void encodeII(
 		const int *q_space, int q_len,
 		const int *s_start, const int *s_width,
 		const int *s_space, int s_len,
-		int full_OVM, int *Loffset, int *Roffset, CharAE *out)
+		int as_matrix, int *Loffset, int *Roffset, CharAE *out)
 {
 	int nelt0, i, starti, widthi, spacei, j, startj, widthj, spacej,
 	    j1, j2;
 	char code;
 
-	if (!full_OVM) {
+	if (!as_matrix) {
 		CharAE_append_int(out, q_len);
 		CharAE_append_char(out, ':', 1);
 		nelt0 = _CharAE_get_nelt(out);
@@ -371,7 +371,7 @@ static void encodeII(
 				j2 = j;
 		}
 	}
-	if (!full_OVM) {
+	if (!as_matrix) {
 		/* By making 'j2' a 1-based index we will then have
 		   0 <= j1 <= j2 <= s_len, which will then simplify further
 		   arithmetic/logic. */
@@ -397,9 +397,9 @@ static void encodeII(
 static void safe_encodeII(
 		SEXP query_start, SEXP query_width, SEXP query_space,
 		SEXP subject_start, SEXP subject_width, SEXP subject_space,
-		int full_OVM, CharAE *out)
+		int as_matrix, int *Loffset, int *Roffset, CharAE *out)
 {
-	int m, n, Loffset, Roffset;
+	int m, n;
 	const int *q_start, *q_width, *q_space, *s_start, *s_width, *s_space;
 
 	m = check_Ranges_start_width(query_start, query_width,
@@ -410,7 +410,7 @@ static void safe_encodeII(
 	s_space = check_Ranges_space(subject_space, n, "subject");
 	encodeII(q_start, q_width, q_space, m,
 		 s_start, s_width, s_space, n,
-		 full_OVM, &Loffset, &Roffset, out);
+		 as_matrix, Loffset, Roffset, out);
 	return;
 }
 
@@ -423,7 +423,7 @@ static void safe_encodeII(
  * 'subject_width' are assumed to be NA free. 'query_width' and 'subject_width'
  * are assumed to contain non-negative values. For efficiency reasons, those
  * assumptions are not checked.
- * Returns the matrix of 1-letter codes (if 'as_matrix' is TRUE), or the type
+ * Return the matrix of 1-letter codes (if 'as_matrix' is TRUE), or the type
  * II encoding (if 'as_matrix' is FALSE).
  */
 SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
@@ -432,7 +432,7 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 			SEXP subject_space,
 		      SEXP as_matrix, SEXP as_raw)
 {
-	int as_matrix0, as_raw0, nelt, i;
+	int as_matrix0, as_raw0, Loffset, Roffset, nelt, i;
 	CharAE buf;
 	SEXP ans, ans_elt, ans_dim;
 
@@ -441,7 +441,7 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 	buf = _new_CharAE(0);
 	safe_encodeII(query_start, query_width, query_space,
 		      subject_start, subject_width, subject_space,
-		      as_matrix0, &buf);
+		      as_matrix0, &Loffset, &Roffset, &buf);
 	if (as_matrix0) {
 		PROTECT(ans_dim	= NEW_INTEGER(2));
 		INTEGER(ans_dim)[0] = LENGTH(query_start);
@@ -482,28 +482,34 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
  * The 3 lists are assumed to have the same length (M) and shape.
  * 'subject_starts', 'subject_widths', 'subject_spaces': lists of integer
  * vectors. The 3 lists are assumed to have the same length (N) and shape.
+ * Return a list of 3 vectors of the same length, each vector corresponding
+ * to a slot of the OverlapEncodings class, that is, "Loffset" (integer),
+ * "Roffset" (integer), and "encoding" (character).
  */
 SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 				SEXP query_spaces,
 				SEXP subject_starts, SEXP subject_widths,
 				SEXP subject_spaces)
 {
-	int m, n, ans_length, i, j, k;
-	SEXP query_start, query_width, query_space,
-	     subject_start, subject_width, subject_space,
-	     ans, ans_elt;
+	int m, n, ans_len, i, j, k;
+	SEXP ans_Loffset, ans_Roffset, ans_encoding, ans_encoding_elt, ans,
+	     query_start, query_width, query_space,
+	     subject_start, subject_width, subject_space;
 	CharAE buf;
 
 	/* TODO: Some basic check of the input values. */
 	m = LENGTH(query_starts);
 	n = LENGTH(subject_starts);
 	if (m == 0 || n == 0)
-		return NEW_CHARACTER(0);
-	ans_length = m >= n ? m : n;
-	PROTECT(ans = NEW_CHARACTER(ans_length));
+		ans_len = 0;
+	else
+		ans_len = m >= n ? m : n;
+	PROTECT(ans_Loffset = NEW_INTEGER(ans_len));
+	PROTECT(ans_Roffset = NEW_INTEGER(ans_len));
+	PROTECT(ans_encoding = NEW_CHARACTER(ans_len));
 	query_space = subject_space = R_NilValue;
 	buf = _new_CharAE(0);
-	for (i = j = k = 0; k < ans_length; i++, j++, k++) {
+	for (i = j = k = 0; k < ans_len; i++, j++, k++) {
 		if (i >= m)
 			i = 0; /* recycle i */
 		if (j >= n)
@@ -518,16 +524,24 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 			subject_space = VECTOR_ELT(subject_spaces, j);
 		safe_encodeII(query_start, query_width, query_space,
 			      subject_start, subject_width, subject_space,
-			      0, &buf);
-		PROTECT(ans_elt = mkCharLen(buf.elts, _CharAE_get_nelt(&buf)));
-		SET_STRING_ELT(ans, k, ans_elt);
+			      0,
+			      INTEGER(ans_Loffset) + k,
+			      INTEGER(ans_Roffset) + k,
+			      &buf);
+		PROTECT(ans_encoding_elt = mkCharLen(buf.elts,
+						     _CharAE_get_nelt(&buf)));
+		SET_STRING_ELT(ans_encoding, k, ans_encoding_elt);
 		UNPROTECT(1);
 		_CharAE_set_nelt(&buf, 0);
 	}
-	if (i != m || j != n)
+	if (ans_len != 0 && (i != m || j != n))
 		warning("longer object length is not a multiple "
 			"of shorter object length");
-	UNPROTECT(1);
+	PROTECT(ans = NEW_LIST(3));
+	SET_VECTOR_ELT(ans, 0, ans_Loffset);
+	SET_VECTOR_ELT(ans, 1, ans_Roffset);
+	SET_VECTOR_ELT(ans, 2, ans_encoding);
+	UNPROTECT(4);
 	return ans;
 }
 
