@@ -993,7 +993,7 @@ SEXP encode_overlaps1(
 	SEXP subject_start,
 	SEXP subject_width,
 	SEXP subject_space,
-	SEXP sparse_output,
+	SEXP as_matrix,
 	SEXP as_raw
 );
 

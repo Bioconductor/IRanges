@@ -69,7 +69,7 @@ setClass("OverlapEncodings",
 ### Low-level utility.
 ###   > query <- IRanges(c(7, 15, 22), c(9, 19, 23))
 ###   > subject <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
-###   > encodeOverlaps1(query, subject, sparse.output=FALSE)
+###   > encodeOverlaps1(query, subject, as.matrix=TRUE)
 ###        [,1] [,2] [,3] [,4]
 ###   [1,] "m"  "j"  "a"  "a" 
 ###   [2,] "m"  "m"  "g"  "a" 
@@ -79,24 +79,24 @@ setClass("OverlapEncodings",
 ### TODO: Do we really need this? Same could be achieved with
 ### 'encodeOverlaps(IRangesList(query), IRangesList(subject))' except that
 ### with encodeOverlaps1() we can specify 'query.space' and 'subject.space'
-### and use the 'sparse.output' and 'as.raw' flags to control the format of
-### the output.
+### and use the 'as.matrix' and 'as.raw' flags to control the format of the
+### output.
 ### Also the C code behind encodeOverlaps1() is at the heart of all the
 ### "encodeOverlaps" methods. Playing with encodeOverlaps1() with different
-### inputs and combinations of the 'sparse.output' and 'as.raw' flags is
+### inputs and combinations of the 'as.matrix' and 'as.raw' flags is
 ### educative and allows testing all parts of this C code.
 encodeOverlaps1 <- function(query, subject,
                             query.space=NULL, subject.space=NULL,
-                            sparse.output=TRUE, as.raw=FALSE)
+                            as.matrix=FALSE, as.raw=FALSE)
 {
-    if (!isTRUEorFALSE(sparse.output))
-        stop("'sparse.output' must be TRUE or FALSE")
+    if (!isTRUEorFALSE(as.matrix))
+        stop("'as.matrix' must be TRUE or FALSE")
     if (!isTRUEorFALSE(as.raw))
         stop("'as.raw' must be TRUE or FALSE")
     .Call2("encode_overlaps1",
            start(query), width(query), query.space,
            start(subject), width(subject), subject.space,
-           sparse.output, as.raw,
+           as.matrix, as.raw,
            PACKAGE="IRanges")
 }
 
@@ -106,9 +106,7 @@ encodeOverlaps1 <- function(query, subject,
 ### lengths of 'query' and 'subject', respectively.
 findRangesOverlaps <- function(query, subject)
 {
-    ## WARNING: When using sparse.output=FALSE and as.raw=TRUE, the returned
-    ## raw matrix is transposed!
-    ocodes <- encodeOverlaps1(query, subject, sparse.output=FALSE, as.raw=TRUE)
+    ocodes <- encodeOverlaps1(query, subject, as.matrix=TRUE, as.raw=TRUE)
     offsets <- which(charToRaw("c") <= ocodes & ocodes <= charToRaw("k")) - 1L
     q_hits <- offsets %% nrow(ocodes) + 1L
     s_hits <- offsets %/% nrow(ocodes) + 1L

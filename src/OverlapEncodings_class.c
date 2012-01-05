@@ -423,34 +423,33 @@ static void safe_encodeII(
  * 'subject_width' are assumed to be NA free. 'query_width' and 'subject_width'
  * are assumed to contain non-negative values. For efficiency reasons, those
  * assumptions are not checked.
- * Returns the matrix of 1-letter codes (if 'sparse_output' is FALSE), or the
- * sparse format with relative shifts (if 'sparse_output' is TRUE) in which
- * case both M and N must be != 0.
+ * Returns the matrix of 1-letter codes (if 'as_matrix' is TRUE), or the type
+ * II encoding (if 'as_matrix' is FALSE).
  */
 SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 			SEXP query_space,
 		      SEXP subject_start, SEXP subject_width,
 			SEXP subject_space,
-		      SEXP sparse_output, SEXP as_raw)
+		      SEXP as_matrix, SEXP as_raw)
 {
-	int sparse0, as_raw0, nelt, i;
+	int as_matrix0, as_raw0, nelt, i;
 	CharAE buf;
 	SEXP ans, ans_elt, ans_dim;
 
-	sparse0 = sparse_output == R_NilValue || LOGICAL(sparse_output)[0];
+	as_matrix0 = as_matrix != R_NilValue && LOGICAL(as_matrix)[0];
 	as_raw0 = as_raw != R_NilValue && LOGICAL(as_raw)[0];
 	buf = _new_CharAE(0);
 	safe_encodeII(query_start, query_width, query_space,
 		      subject_start, subject_width, subject_space,
-		      !sparse0, &buf);
-	if (!sparse0) {
+		      as_matrix0, &buf);
+	if (as_matrix0) {
 		PROTECT(ans_dim	= NEW_INTEGER(2));
 		INTEGER(ans_dim)[0] = LENGTH(query_start);
 		INTEGER(ans_dim)[1] = LENGTH(subject_start);
 	}
 	if (as_raw0) {
 		PROTECT(ans = _new_RAW_from_CharAE(&buf));
-		if (!sparse0) {
+		if (as_matrix0) {
 			SET_DIM(ans, ans_dim);
 			UNPROTECT(1);
 		}
@@ -458,7 +457,7 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 		return ans;
 	}
 	nelt = _CharAE_get_nelt(&buf);
-	if (sparse0) {
+	if (!as_matrix0) {
 		PROTECT(ans_elt = mkCharLen(buf.elts, nelt));
 		PROTECT(ans = ScalarString(ans_elt));
 		UNPROTECT(2);
@@ -470,7 +469,7 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 		SET_STRING_ELT(ans, i, ans_elt);
 		UNPROTECT(1);
 	}
-	if (!sparse0) {
+	if (as_matrix0) {
 		SET_DIM(ans, ans_dim);
 		UNPROTECT(1);
 	}
