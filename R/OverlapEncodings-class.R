@@ -250,21 +250,28 @@ setMethod("encodeOverlaps", c("Ranges", "RangesList"),
     }
 )
 
+### Not sure we need to bother with methods that do 1-to-1 range overlap
+### encodings. What would be the use cases?
 ###   > query <- IRanges(1:11, width=4)
 ###   > subject <- IRanges(6, 9)
 ###   > encodeOverlaps(query, subject)
-###    [1] "a" "b" "c" "c" "c" "g" "k" "k" "k" "l" "m"
+###    [1] a b c c c g k k k l m
+###   Levels: a b c d e f g h i j k l m
 ###   > encodeOverlaps(IRanges(4:6, width=6), subject)
-###   [1] "d" "e" "h"
+###   [1] d e h
+###   Levels: a b c d e f g h i j k l m
 ###   > encodeOverlaps(IRanges(6:8, width=2), subject)
-###   [1] "f" "i" "j"
+###   [1] f i j
+###   Levels: a b c d e f g h i j k l m
 setMethod("encodeOverlaps", c("Ranges", "Ranges"),
     function(query, subject)
     {
-        ### TODO: Add an extra arg to compare() to let the user choose the
-        ### type of output i.e. numeric or 1-letter codes.
-        ovenc <- compare(query, subject)
-        safeExplode(rawToChar(as.raw(as.integer(charToRaw("g")) + ovenc)))
+        ### TODO: Maybe add an extra arg to compare() to let the user choose
+        ### the type of output i.e. numeric or 1-letter codes.
+        codes <- compare(query, subject)
+        numTo1Letter <- function(codes)
+            safeExplode(rawToChar(as.raw(as.integer(charToRaw("g")) + codes)))
+        factor(numTo1Letter(codes), levels=numTo1Letter(-6:6))
     }
 )
 
