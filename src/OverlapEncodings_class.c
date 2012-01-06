@@ -416,8 +416,8 @@ static void safe_encodeII(
 
 /* type: 0=CHARSXP, 1=STRSXP, 2=RAWSXP
    as_matrix: 0 or 1, ignored when type is 0 */
-static SEXP new_encoding_from_CharAE(const CharAE *buf, int type,
-				     int as_matrix, int q_len, int s_len)
+static SEXP make_encoding_from_CharAE(const CharAE *buf, int type,
+				      int as_matrix, int q_len, int s_len)
 {
 	SEXP ans, ans_elt, ans_dim;
 	int buf_nelt, i;
@@ -453,6 +453,33 @@ static SEXP new_encoding_from_CharAE(const CharAE *buf, int type,
 	return ans;
 }
 
+static SEXP make_LIST_from_ovenc_parts(SEXP Loffset, SEXP Roffset,
+				       SEXP encoding)
+{
+	SEXP ans, ans_names, ans_names_elt;
+
+	PROTECT(ans = NEW_LIST(3));
+
+	PROTECT(ans_names = NEW_CHARACTER(3));
+	PROTECT(ans_names_elt = mkChar("Loffset"));
+	SET_STRING_ELT(ans_names, 0, ans_names_elt);
+	UNPROTECT(1);
+	PROTECT(ans_names_elt = mkChar("Roffset"));
+	SET_STRING_ELT(ans_names, 1, ans_names_elt);
+	UNPROTECT(1);
+	PROTECT(ans_names_elt = mkChar("encoding"));
+	SET_STRING_ELT(ans_names, 2, ans_names_elt);
+	UNPROTECT(1);
+	SET_NAMES(ans, ans_names);
+	UNPROTECT(1);
+
+	SET_VECTOR_ELT(ans, 0, Loffset);
+	SET_VECTOR_ELT(ans, 1, Roffset);
+	SET_VECTOR_ELT(ans, 2, encoding);
+	UNPROTECT(1);
+	return ans;
+}
+
 /* --- .Call ENTRY POINT ---
  * 'query_start', 'query_width', 'query_space': integer vectors of the same
  * length M (or NULL for 'query_space').
@@ -462,9 +489,12 @@ static SEXP new_encoding_from_CharAE(const CharAE *buf, int type,
  * 'subject_width' are assumed to be NA free. 'query_width' and 'subject_width'
  * are assumed to contain non-negative values. For efficiency reasons, those
  * assumptions are not checked.
- * Return the matrix of 1-letter codes (if 'as_matrix' is TRUE), or a list of
- * 3 elements (if 'as_matrix' is FALSE): (1) the Loffset (single integer),
- * (2) the Roffset (single integer), and (3) the compact encoding (type II).
+ * Return the matrix of 1-letter codes (if 'as_matrix' is TRUE), otherwise a
+ * named list with the 3 following components:
+ *     1. Loffset: single integer;
+ *     2. Roffset: single integer;
+ *     3. encoding: the compact encoding (type II) as a single string (if
+ *        'as_raw' is FALSE) or a raw vector (if 'as_raw' is TRUE).
  */
 SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 			SEXP query_space,
@@ -482,21 +512,18 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 	safe_encodeII(query_start, query_width, query_space,
 		      subject_start, subject_width, subject_space,
 		      as_matrix0, &Loffset, &Roffset, &buf);
-	PROTECT(encoding = new_encoding_from_CharAE(&buf, as_raw0 ? 2 : 1,
-					as_matrix0,
-					LENGTH(query_start),
-					LENGTH(subject_start)));
+	PROTECT(encoding = make_encoding_from_CharAE(&buf, as_raw0 ? 2 : 1,
+						as_matrix0,
+						LENGTH(query_start),
+						LENGTH(subject_start)));
 	if (as_matrix0) {
 		UNPROTECT(1);
 		return encoding;
 	}
-	/* Assemble the answer. */
 	PROTECT(ans_Loffset = ScalarInteger(Loffset));
 	PROTECT(ans_Roffset = ScalarInteger(Roffset));
-	PROTECT(ans = NEW_LIST(3));
-	SET_VECTOR_ELT(ans, 0, ans_Loffset);
-	SET_VECTOR_ELT(ans, 1, ans_Roffset);
-	SET_VECTOR_ELT(ans, 2, encoding);
+	PROTECT(ans = make_LIST_from_ovenc_parts(ans_Loffset, ans_Roffset,
+						 encoding));
 	UNPROTECT(4);
 	return ans;
 }
@@ -506,9 +533,12 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
  * The 3 lists are assumed to have the same length (M) and shape.
  * 'subject_starts', 'subject_widths', 'subject_spaces': lists of integer
  * vectors. The 3 lists are assumed to have the same length (N) and shape.
- * Return a list of 3 vectors of the same length, each vector corresponding
- * to a slot of the OverlapEncodings class, that is, "Loffset" (integer),
- * "Roffset" (integer), and "encoding" (character).
+ * Return a named list with the 3 following components (all of the same
+ * length):
+ *     1. Loffset: integer vector;
+ *     2. Roffset: integer vector;
+ *     3. encoding: character vector containing the compact encodings (type
+ *        II).
  */
 SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 				SEXP query_spaces,
@@ -552,7 +582,7 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 			      INTEGER(ans_Loffset) + k,
 			      INTEGER(ans_Roffset) + k,
 			      &buf);
-		PROTECT(ans_encoding_elt = new_encoding_from_CharAE(&buf, 0,
+		PROTECT(ans_encoding_elt = make_encoding_from_CharAE(&buf, 0,
 							0, q_len, s_len));
 		SET_STRING_ELT(ans_encoding, k, ans_encoding_elt);
 		UNPROTECT(1);
@@ -561,11 +591,8 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 	if (ans_len != 0 && (i != q_len || j != s_len))
 		warning("longer object length is not a multiple "
 			"of shorter object length");
-	/* Assemble the answer. */
-	PROTECT(ans = NEW_LIST(3));
-	SET_VECTOR_ELT(ans, 0, ans_Loffset);
-	SET_VECTOR_ELT(ans, 1, ans_Roffset);
-	SET_VECTOR_ELT(ans, 2, ans_encoding);
+	PROTECT(ans = make_LIST_from_ovenc_parts(ans_Loffset, ans_Roffset,
+						 ans_encoding));
 	UNPROTECT(4);
 	return ans;
 }

@@ -130,13 +130,13 @@ setMethod("show", "OverlapEncodings",
 ###   [2,] "m"  "m"  "g"  "a" 
 ###   [3,] "m"  "m"  "m"  "f" 
 ###   > encodeOverlaps1(query, subject)  # Type II encoding
-###   [[1]]
+###   $Loffset
 ###   [1] 1
 ###   
-###   [[2]]
+###   $Roffset
 ###   [1] 0
 ###   
-###   [[3]]
+###   $encoding
 ###   [1] "3:jmm:agm:aaf:"
 ###
 ### TODO: Do we really need this? Same could be achieved with
@@ -184,10 +184,8 @@ RangesList_encodeOverlaps <- function(query.starts, query.widths,
                     query.starts, query.widths, query.spaces,
                     subject.starts, subject.widths, subject.spaces,
                     PACKAGE="IRanges")
-    Loffset <- C_ans[[1L]]
-    Roffset <- C_ans[[2L]]
-    encoding <- factor(C_ans[[3L]])
-    new2("OverlapEncodings", Loffset=Loffset, Roffset=Roffset,
+    encoding <- factor(C_ans$encoding)
+    new2("OverlapEncodings", Loffset=C_ans$Loffset, Roffset=C_ans$Roffset,
                              encoding=encoding, check=FALSE)
 }
 
