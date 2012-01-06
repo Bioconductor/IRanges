@@ -29,11 +29,19 @@ setClass("Vector",
 ###
 
 setGeneric("showAsCell", function(object) standardGeneric("showAsCell"))
-setMethod("showAsCell", "ANY", function(object) {
-  attempt <- try(data.frame(object), silent=TRUE)
-  if (is(attempt, "try-error"))
-    rep.int("########", length(object))
-  else object
+setMethod(IRanges:::showAsCell, "ANY", function(object) {
+  if (NCOL(object) > 1) {
+    df <- as.data.frame(object[, head(seq_len(ncol(object)), 3), drop = FALSE])
+    attempt <- do.call(paste, df)
+    if (ncol(object) > 3)
+      attempt <- paste(attempt, "...")
+    attempt
+  } else {
+    attempt <- try(data.frame(object), silent=TRUE)
+    if (is(attempt, "try-error"))
+      rep.int("########", length(object))
+    object
+  }
 })
 setMethod("showAsCell", "list", function(object)
           rep.int("########", length(object)))
@@ -94,7 +102,9 @@ setReplaceMethod("values", "Vector",
 setGeneric("rename", function(x, value, ...) standardGeneric("rename"))
 
 setMethod("rename", "Vector", function(x, value, ...) {
-  newNames <- c(value, ...)
+  if (missing(value))
+    newNames <- c(...)
+  else newNames <- c(value, ...)
   names(x)[match(names(newNames), names(x))] <- newNames
   x
 })

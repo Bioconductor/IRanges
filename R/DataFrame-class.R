@@ -229,7 +229,7 @@ setReplaceMethod("[[", "DataFrame",
                  function(x, i, j,..., value)
                  {
                    nrx <- nrow(x)
-                   lv <- length(value)
+                   lv <- NROW(value)
                    if (!missing(j) || length(list(...)) > 0)
                      warning("arguments beyond 'i' ignored")
                    if (missing(i))
@@ -295,7 +295,11 @@ setMethod("[", "DataFrame",
               useI <- iInfo[["useIdx"]]
               i <- iInfo[["idx"]]
               if (useI) {
-                x@listData <- lapply(as.list(x), function(y) y[i, drop = FALSE])
+                x@listData <- lapply(as.list(x), function(y) {
+                  if (length(dim(y)) > 1)
+                    y[i, , drop = FALSE]
+                  else y[i, drop = FALSE]
+                })
                 dim[1L] <- length(seq(dim[1L])[i]) # may have 0 cols, no rownames
                 x@nrows <- dim[1L]
                 rn <- rownames(x)[i]
@@ -573,8 +577,10 @@ setAs("Vector", "DataFrame",
 
 setAs("AsIs", "DataFrame",
       function(from) {
-        class(from) <- tail(class(from), -1)
-        df <- new2("DataFrame", nrows = length(from), check=FALSE)
+        if (length(class(from)) > 1)
+          class(from) <- tail(class(from), -1)
+        else from <- unclass(from)
+        df <- new2("DataFrame", nrows = NROW(from), check=FALSE)
         df[[1]] <- from
         df
       })
