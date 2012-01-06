@@ -350,7 +350,7 @@
       \code{"acosh"}, \code{"asin"}, \code{"asinh"}, \code{"atan"},
       \code{"atanh"}, \code{"exp"}, \code{"expm1"}, \code{"cos"},
       \code{"cosh"}, \code{"sin"}, \code{"sinh"}, \code{"tan"}, \code{"tanh"},
-      \code{"gamma"}, \code{"lgamma"}, \code{"digamma"}, \code{"trigamma"}
+      \code{"gamma"}, \code{"lgamma"}, \code{"digamma"}, \code{"trigamma"}}
     \item{\code{Math2}}{\code{"round"}, \code{"signif"}}
     \item{\code{Summary}}{\code{"max"}, \code{"min"}, \code{"range"},
       \code{"prod"}, \code{"sum"}, \code{"any"}, \code{"all"}}
