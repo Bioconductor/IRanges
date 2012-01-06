@@ -120,7 +120,8 @@ setMethod("show", "OverlapEncodings",
 ### encodeOverlaps()
 ###
 
-### Low-level utility.
+### Low-level utility:
+###
 ###   > query <- IRanges(c(7, 15, 22), c(9, 19, 23))
 ###   > subject <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
 ###   > encodeOverlaps1(query, subject, as.matrix=TRUE)
@@ -129,7 +130,15 @@ setMethod("show", "OverlapEncodings",
 ###   [2,] "m"  "m"  "g"  "a" 
 ###   [3,] "m"  "m"  "m"  "f" 
 ###   > encodeOverlaps1(query, subject)  # Type II encoding
+###   [[1]]
+###   [1] 1
+###   
+###   [[2]]
+###   [1] 0
+###   
+###   [[3]]
 ###   [1] "3:jmm:agm:aaf:"
+###
 ### TODO: Do we really need this? Same could be achieved with
 ### 'encodeOverlaps(IRangesList(query), IRangesList(subject))' except that
 ### with encodeOverlaps1() we can specify 'query.space' and 'subject.space'

@@ -399,17 +399,17 @@ static void safe_encodeII(
 		SEXP subject_start, SEXP subject_width, SEXP subject_space,
 		int as_matrix, int *Loffset, int *Roffset, CharAE *out)
 {
-	int m, n;
+	int q_len, s_len;
 	const int *q_start, *q_width, *q_space, *s_start, *s_width, *s_space;
 
-	m = check_Ranges_start_width(query_start, query_width,
-				     &q_start, &q_width, "query");
-	q_space = check_Ranges_space(query_space, m, "query");
-	n = check_Ranges_start_width(subject_start, subject_width,
-				     &s_start, &s_width, "subject");
-	s_space = check_Ranges_space(subject_space, n, "subject");
-	encodeII(q_start, q_width, q_space, m,
-		 s_start, s_width, s_space, n,
+	q_len = check_Ranges_start_width(query_start, query_width,
+					 &q_start, &q_width, "query");
+	q_space = check_Ranges_space(query_space, q_len, "query");
+	s_len = check_Ranges_start_width(subject_start, subject_width,
+					 &s_start, &s_width, "subject");
+	s_space = check_Ranges_space(subject_space, s_len, "subject");
+	encodeII(q_start, q_width, q_space, q_len,
+		 s_start, s_width, s_space, s_len,
 		 as_matrix, Loffset, Roffset, out);
 	return;
 }
@@ -462,8 +462,9 @@ static SEXP new_encoding_from_CharAE(const CharAE *buf, int type,
  * 'subject_width' are assumed to be NA free. 'query_width' and 'subject_width'
  * are assumed to contain non-negative values. For efficiency reasons, those
  * assumptions are not checked.
- * Return the matrix of 1-letter codes (if 'as_matrix' is TRUE), or the type
- * II encoding (if 'as_matrix' is FALSE).
+ * Return the matrix of 1-letter codes (if 'as_matrix' is TRUE), or a list of
+ * 3 elements (if 'as_matrix' is FALSE): (1) the Loffset (single integer),
+ * (2) the Roffset (single integer), and (3) the compact encoding (type II).
  */
 SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 			SEXP query_space,
@@ -473,6 +474,7 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 {
 	int as_matrix0, as_raw0, Loffset, Roffset;
 	CharAE buf;
+	SEXP encoding, ans_Loffset, ans_Roffset, ans;
 
 	as_matrix0 = as_matrix != R_NilValue && LOGICAL(as_matrix)[0];
 	as_raw0 = as_raw != R_NilValue && LOGICAL(as_raw)[0];
@@ -480,8 +482,23 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 	safe_encodeII(query_start, query_width, query_space,
 		      subject_start, subject_width, subject_space,
 		      as_matrix0, &Loffset, &Roffset, &buf);
-	return new_encoding_from_CharAE(&buf, as_raw0 ? 2 : 1,
-		      as_matrix0, LENGTH(query_start), LENGTH(subject_start));
+	PROTECT(encoding = new_encoding_from_CharAE(&buf, as_raw0 ? 2 : 1,
+					as_matrix0,
+					LENGTH(query_start),
+					LENGTH(subject_start)));
+	if (as_matrix0) {
+		UNPROTECT(1);
+		return encoding;
+	}
+	/* Assemble the answer. */
+	PROTECT(ans_Loffset = ScalarInteger(Loffset));
+	PROTECT(ans_Roffset = ScalarInteger(Roffset));
+	PROTECT(ans = NEW_LIST(3));
+	SET_VECTOR_ELT(ans, 0, ans_Loffset);
+	SET_VECTOR_ELT(ans, 1, ans_Roffset);
+	SET_VECTOR_ELT(ans, 2, encoding);
+	UNPROTECT(4);
+	return ans;
 }
 
 /* --- .Call ENTRY POINT ---
@@ -498,28 +515,28 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 				SEXP subject_starts, SEXP subject_widths,
 				SEXP subject_spaces)
 {
-	int m, n, ans_len, i, j, k;
+	int q_len, s_len, ans_len, i, j, k;
 	SEXP ans_Loffset, ans_Roffset, ans_encoding, ans_encoding_elt, ans,
 	     query_start, query_width, query_space,
 	     subject_start, subject_width, subject_space;
 	CharAE buf;
 
 	/* TODO: Add some basic checking of the input values. */
-	m = LENGTH(query_starts);
-	n = LENGTH(subject_starts);
-	if (m == 0 || n == 0)
+	q_len = LENGTH(query_starts);
+	s_len = LENGTH(subject_starts);
+	if (q_len == 0 || s_len == 0)
 		ans_len = 0;
 	else
-		ans_len = m >= n ? m : n;
+		ans_len = q_len >= s_len ? q_len : s_len;
 	PROTECT(ans_Loffset = NEW_INTEGER(ans_len));
 	PROTECT(ans_Roffset = NEW_INTEGER(ans_len));
 	PROTECT(ans_encoding = NEW_CHARACTER(ans_len));
 	query_space = subject_space = R_NilValue;
 	buf = _new_CharAE(0);
 	for (i = j = k = 0; k < ans_len; i++, j++, k++) {
-		if (i >= m)
+		if (i >= q_len)
 			i = 0; /* recycle i */
-		if (j >= n)
+		if (j >= s_len)
 			j = 0; /* recycle j */
 		query_start = VECTOR_ELT(query_starts, i);
 		query_width = VECTOR_ELT(query_widths, i);
@@ -536,14 +553,15 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 			      INTEGER(ans_Roffset) + k,
 			      &buf);
 		PROTECT(ans_encoding_elt = new_encoding_from_CharAE(&buf, 0,
-								    0, m, n));
+							0, q_len, s_len));
 		SET_STRING_ELT(ans_encoding, k, ans_encoding_elt);
 		UNPROTECT(1);
 		_CharAE_set_nelt(&buf, 0);
 	}
-	if (ans_len != 0 && (i != m || j != n))
+	if (ans_len != 0 && (i != q_len || j != s_len))
 		warning("longer object length is not a multiple "
 			"of shorter object length");
+	/* Assemble the answer. */
 	PROTECT(ans = NEW_LIST(3));
 	SET_VECTOR_ELT(ans, 0, ans_Loffset);
 	SET_VECTOR_ELT(ans, 1, ans_Roffset);
