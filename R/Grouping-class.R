@@ -76,6 +76,8 @@ setMethod("togroup", "ANY",
     }
 )
 
+tofactor <- function(x) factor(togroup(x), seq_len(length(x)))
+
 setGeneric("togrouplength", signature="x",
     function(x, j=NULL) standardGeneric("togrouplength")
 )
@@ -84,10 +86,6 @@ setMethod("togrouplength", "Grouping",
     function(x, j=NULL)
         grouplength(x, togroup(x, j))
 )
-
-tofactor <- function(x) {
-  factor(togroup(x), seq(length(x)))
-}
 
 setMethod("show", "Grouping",
     function(object)
@@ -535,6 +533,7 @@ setReplaceMethod("names", "Partitioning",
 }
 
 setValidity2("Partitioning", .valid.Partitioning)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### PartitioningByEnd uses a compact internal representation that allows
