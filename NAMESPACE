@@ -48,8 +48,8 @@ exportClasses(
     DataFrameList, SimpleDataFrameList,
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
     RangedData, RangedDataList, FilterRules, RDApplyParams,
-    OverlapEncodings,
     RangesMatching, RangesMatchingList,
+    OverlapEncodings,
     RangedSelection, RangesMapping
 )
 
@@ -188,12 +188,13 @@ export(
     universe, "universe<-", space, score, "score<-",
     columnMetadata, "columnMetadata<-",
 
+    ## RangesMatching API
+    matchMatrix, queryHits, subjectHits, matching, map,
+
     ## OverlapEncodings
     compare, Loffset, Roffset, encoding,
     encodeOverlaps1, RangesList_encodeOverlaps, encodeOverlaps,
-
-    ## RangesMatching API
-    matchMatrix, queryHits, subjectHits, matching, map,
+    encodeOverlapsFromRangesMatching,
 
     ## Other generic functions:
     xvcopy, compact,
@@ -334,7 +335,7 @@ exportMethods(
     iteratorFun, "iteratorFun<-",
     rdapply,
     universe, "universe<-", space, score, "score<-",
-    compare, Loffset, Roffset, encoding, encodeOverlaps,
-    matchMatrix, queryHits, subjectHits
+    matchMatrix, queryHits, subjectHits,
+    compare, Loffset, Roffset, encoding, encodeOverlaps
 )
 

@@ -211,15 +211,15 @@ setGeneric("encodeOverlaps", signature=c("query", "subject"),
 ###   [2]       1       1       2:jm:af:
 ###   [3]       2       0       2:jm:af:
 ### Reads compatible with transcript 'tx':
-###   ## Regex to use for reads with no gaps:
-###   > pattern0 <- ":[fgij]:"
-###   ## Regex to use for reads with 1 gap:
-###   > pattern1 <- ":[jg].:.[gf]:"
-###   ## Regex to use for reads with 2 gaps:
-###   > pattern2 <- ":[jg]..:.g.:..[gf]:"
+###   ## Regex to use for reads with 1 range (no gaps):
+###   > pattern1 <- ":[fgij]:"
+###   ## Regex to use for reads with 2 ranges (1 gap):
+###   > pattern2 <- ":[jg].:.[gf]:"
+###   ## Regex to use for reads with 3 ranges (2 gaps):
+###   > pattern3 <- ":[jg]..:.g.:..[gf]:"
 ###   ## Regex to use for reads with up to 2 gaps:
-###   > pattern012 <- ":([fgij]|[jg].:.[gf]|[jg]..:.g.:..[gf]):"
-###   > grep(pattern012, encoding(ovenc))
+###   > pattern123 <- ":([fgij]|[jg].:.[gf]|[jg]..:.g.:..[gf]):"
+###   > grep(pattern123, encoding(ovenc))
 ###   [1] 1 2 3
 ### All the reads are compatible with this transcript!
 setMethod("encodeOverlaps", c("RangesList", "RangesList"),
@@ -276,4 +276,16 @@ setMethod("encodeOverlaps", c("Ranges", "Ranges"),
         factor(numTo1Letter(codes), levels=numTo1Letter(-6:6))
     }
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Some convenience wrappers.
+###
+
+encodeOverlapsFromRangesMatching <- function(x, query, subject)
+{
+    if (!is(x, "RangesMatching"))
+        stop("'x' must be a RangesMatching object")
+    encodeOverlaps(query[queryHits(x)], subject[subjectHits(x)])
+}
 
