@@ -100,7 +100,9 @@ setMethod("show", "OverlapEncodings",
                             row.names=paste("[", seq_len(lo), "]", sep=""))
         } else {
             sketch <- function(x)
-              c(window(x, 1L, 9L), "...", window(x, length(x)-8L, length(x)))
+              c(as.character(window(x, 1L, 9L)),
+                "...",
+                as.character(window(x, length(x)-8L, length(x))))
             showme <-
               data.frame(Loffset=sketch(Loffset(object)),
                          Roffset=sketch(Roffset(object)),
