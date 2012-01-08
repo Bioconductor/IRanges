@@ -75,7 +75,10 @@ setMethod("slice", "Rle",
 ###
 
 setAs("AtomicList", "RleViews", function(from) {
-  Views(as(unlist(from), "Rle"), PartitioningByWidth(elementLengths(from)))
+  to <- Views(as(unlist(from, use.names = FALSE), "Rle"),
+              PartitioningByWidth(elementLengths(from)))
+  names(to) <- names(from)
+  to
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
