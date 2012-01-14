@@ -30,6 +30,8 @@ setClass("Vector",
 
 setGeneric("showAsCell", function(object) standardGeneric("showAsCell"))
 setMethod(IRanges:::showAsCell, "ANY", function(object) {
+  if (length(dim(object)) > 2)
+    dim(object) <- c(nrow(object), prod(tail(dim(object), -1)))
   if (NCOL(object) > 1) {
     df <- as.data.frame(object[, head(seq_len(ncol(object)), 3), drop = FALSE])
     attempt <- do.call(paste, df)
