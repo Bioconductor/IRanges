@@ -335,7 +335,7 @@ exportMethods(
     iteratorFun, "iteratorFun<-",
     rdapply,
     universe, "universe<-", space, score, "score<-",
-    matchMatrix, queryHits, subjectHits,
+    matchMatrix, queryHits, subjectHits, queryLength, subjectLength,
     compare, Loffset, Roffset, encoding, encodeOverlaps
 )
 

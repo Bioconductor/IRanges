@@ -300,7 +300,7 @@ setMethod("[", "DataFrame",
                     y[i, , drop = FALSE]
                   else y[i, drop = FALSE]
                 })
-                dim[1L] <- length(seq(dim[1L])[i]) # may have 0 cols, no rownames
+                dim[1L] <- length(seq(dim[1L])[i]) #may have 0 cols, no rownames
                 x@nrows <- dim[1L]
                 rn <- rownames(x)[i]
                 if (anyDuplicated(rn))

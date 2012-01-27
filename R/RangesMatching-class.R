@@ -14,6 +14,7 @@ setGeneric("matchMatrix", function(x, ...) standardGeneric("matchMatrix"))
 setMethod("matchMatrix", "RangesMatching", function(x) x@matchMatrix)
 
 setMethod("dim", "RangesMatching", function(x) {
+  .Deprecated("queryLength or subjectLength")
   x@DIM
 })
 
@@ -33,38 +34,39 @@ setMethod("queryHits", "RangesMatching", function(x) {
   matchMatrix(x)[,1L,drop=TRUE]
 })
 
+setGeneric("subjectLength", function(x, ...) standardGeneric("subjectLength"))
+
+setMethod("subjectLength", "RangesMatching", function(x) {
+  x@DIM[2]
+})
+
+setGeneric("queryLength", function(x, ...) standardGeneric("queryLength"))
+
+setMethod("queryLength", "RangesMatching", function(x) {
+  x@DIM[1]
+})
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Extraction
 ###
 
 setMethod("[", "RangesMatching",
-          function(x, i, j, ... , drop=TRUE)
+          function(x, i, j, ... , drop=FALSE)
           {
             if (!missing(j) || length(list(...)) > 0L)
               stop("invalid subsetting")
-            if (missing(i))
-              return(x)
-            if (is(i, "Rle"))
-              i <- as.vector(i)
-            if (!is.atomic(i))
-              stop("invalid subscript type")
-            lx <- length(x)
-            if (length(i) == 0L) {
-              i <- integer(0)
-            } else if (is.numeric(i)) {
-              if (min(i) < 0L)
-                i <- seq_len(lx)[i]
-              else if (!is.integer(i))
-                i <- as.integer(i)
-            } else if (is.logical(i)) {
-              if (length(i) > lx)
-                stop("subscript out of bounds")
-              i <- seq_len(lx)[i]
-            } else {
-              stop("invalid subscript type")
+            if (!isTRUEorFALSE(drop))
+              stop("'drop' must be TRUE or FALSE")
+            if (!missing(i)) {
+              iInfo <- .bracket.Index(i, length(x))
+              if (!is.null(iInfo[["msg"]]))
+                stop(iInfo[["msg"]])
+              if (iInfo[["useIdx"]])
+                x@matchMatrix <- x@matchMatrix[iInfo[["idx"]],,drop=FALSE]
             }
-            x@matchMatrix <- x@matchMatrix[i,]
-            x
+            if (drop)
+              as.matrix(x)
+            else x
           }
           )
 
@@ -80,9 +82,9 @@ setMethod("as.matrix", "RangesMatching", function(x) {
 
 ## a list, with an element for each query, containing the subject hits
 setMethod("as.list", "RangesMatching",
-          function(x, values = seq(ncol(x))) {
+          function(x, values = seq(subjectLength(x))) {
             unname(split(values[subjectHits(x)],
-                         factor(queryHits(x), levels = seq(nrow(x)))))
+                         factor(queryHits(x), levels = seq(queryLength(x)))))
           })
 
 setAs("RangesMatching", "list", function(from) as.list(from))
@@ -91,7 +93,7 @@ setAs("RangesMatching", "List", function(from) castList(as.list(from)))
 ## count up the matches for each query
 
 setMethod("as.table", "RangesMatching", function(x, ...) {
-  tabulate(queryHits(x), nrow(x))
+  tabulate(queryHits(x), queryLength(x))
 })
 
 
@@ -104,9 +106,9 @@ setMethod("t", "RangesMatching", function(x) {
 })
 
 setMethod("ranges", "RangesMatching", function(x, query, subject) {
-  if (!is(query, "Ranges") || length(query) != nrow(x))
+  if (!is(query, "Ranges") || length(query) != queryLength(x))
     stop("'query' must be a Ranges of length equal to number of queries")
-  if (!is(subject, "Ranges") || length(subject) != ncol(x))
+  if (!is(subject, "Ranges") || length(subject) != subjectLength(x))
     stop("'subject' must be a Ranges of length equal to number of subjects")
   m <- as.matrix(x)
   qstart <- start(query)[m[,1L]]
