@@ -731,6 +731,12 @@ setMethod("Ops", c("RangesList", "ANY"),
             e1
           })
 
+setMethod("Ops", c("CompressedIRangesList", "ANY"),
+          function(e1, e2)
+          {
+            relist(callGeneric(unlist(e1, use.names = FALSE), e2), e1)
+          })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
 ###
