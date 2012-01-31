@@ -421,10 +421,8 @@ SEXP IntegerIntervalTree_overlap_all(SEXP r_tree, SEXP r_ranges, SEXP r_order)
     *right = r_subject_col[*o_elt];
   }
 
-  r_dims = allocVector(INTSXP, 2);
-  INTEGER(r_dims)[0] = nranges;
-  INTEGER(r_dims)[1] = tree->n;
-  SET_SLOT(r_results, install("DIM"), r_dims);
+  SET_SLOT(r_results, install("queryLength"), ScalarInteger(nranges));
+  SET_SLOT(r_results, install("subjectLength"), ScalarInteger(tree->n));
 
   r_dimnames = allocVector(VECSXP, 2);
   dimnamesgets(r_matrix, r_dimnames);

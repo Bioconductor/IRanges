@@ -119,7 +119,7 @@ test_IntervalTree_findOverlaps <- function() {
   checkIdentical(findOverlaps(IRanges(c(2,1),c(3,4)), subject),
                  new("RangesMatching",
                      matchMatrix = cbind(query=1:2, subject=c(1L,1L)),
-                     DIM = 2:3))
+                     queryLength = 2L, subjectLength = 3L))
 
   ## check other types of matching
 

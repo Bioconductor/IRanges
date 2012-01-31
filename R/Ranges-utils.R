@@ -427,7 +427,8 @@ setClassUnion("RangesORmissing", c("Ranges", "missing"))
              subject = if (!is.null(ord)) ord[subj] else subj)
   if (!is.null(ord))
     m <- m[orderIntegerPairs(m[,1L], m[,2L]),,drop=FALSE]
-  new("RangesMatching", matchMatrix = m, DIM = c(lx, length(srle)))
+  new("RangesMatching", matchMatrix = m, queryLength = lx,
+      subjectLength = length(srle))
 }
 
 setGeneric("nearest", function(x, subject, ...) standardGeneric("nearest"))

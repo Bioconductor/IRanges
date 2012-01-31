@@ -3,7 +3,9 @@
 ### -------------------------------------------------------------------------
 
 setClass("RangesMatching",
-         representation(matchMatrix = "matrix", DIM = "integer"))
+         representation(matchMatrix = "matrix",
+                        queryLength = "integer", subjectLength = "integer"),
+         contains = "Vector")
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -15,7 +17,7 @@ setMethod("matchMatrix", "RangesMatching", function(x) x@matchMatrix)
 
 setMethod("dim", "RangesMatching", function(x) {
   .Deprecated("queryLength or subjectLength")
-  x@DIM
+  c(queryLength(x), subjectLength(x))
 })
 
 setMethod("length", "RangesMatching", function(x) {
@@ -37,13 +39,13 @@ setMethod("queryHits", "RangesMatching", function(x) {
 setGeneric("subjectLength", function(x, ...) standardGeneric("subjectLength"))
 
 setMethod("subjectLength", "RangesMatching", function(x) {
-  x@DIM[2]
+  x@subjectLength
 })
 
 setGeneric("queryLength", function(x, ...) standardGeneric("queryLength"))
 
 setMethod("queryLength", "RangesMatching", function(x) {
-  x@DIM[1]
+  x@queryLength
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -96,12 +98,14 @@ setMethod("as.table", "RangesMatching", function(x, ...) {
   tabulate(queryHits(x), queryLength(x))
 })
 
-
+### FIXME: this needs a new name given the switch to Vector
 setMethod("t", "RangesMatching", function(x) {
   m <- matchMatrix(x)[,2:1,drop=FALSE]
   colnames(m) <- rev(colnames(m))
   x@matchMatrix <- m
-  x@DIM <- x@DIM[2:1]
+  queryLength <- x@queryLength
+  x@queryLength <- x@subjectLength
+  x@subjectLength <- queryLength
   x
 })
 
