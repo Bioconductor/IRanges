@@ -225,6 +225,10 @@
   
   df <- DataFrame(vals = score) # explicit naming
   df[["vals"]]
+
+  # arrays
+  ary <- array(1:4, c(2,1,2))
+  sw <- DataFrame(I(ary))  
   
   # a data.frame
   sw <- DataFrame(swiss)
