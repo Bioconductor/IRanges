@@ -41,7 +41,7 @@ select = c("arbitrary", "all"))
     here will select a single interval (arbitrary for \code{nearest},
     the first by order in \code{subject} for \code{precede}, and the
     last for \code{follow}). To get all matchings, as
-    a \code{RangesMatching} object, use \dQuote{all}.
+    a \code{Hits} object, use \dQuote{all}.
   }
   \item{...}{Additional arguments for methods}
 }
@@ -81,7 +81,7 @@ select = c("arbitrary", "all"))
 \value{
   For \code{nearest}, \code{precede} and \code{follow}, an integer
   vector of indices in \code{subject}, or
-  a \code{\linkS4class{RangesMatching}} if \code{select} is
+  a \code{\linkS4class{Hits}} if \code{select} is
   \dQuote{all}.
 
   For \code{distanceToNearest}, a \code{DataFrame} with a column for

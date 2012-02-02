@@ -91,8 +91,8 @@ test_Ranges_zoom <- function() {
 }
 
 checkMatching <- function(a, q, s, r, c) {
-  mat <- cbind(query = as.integer(q), subject = as.integer(s))
-  checkIdentical(as.matrix(matchMatrix(a)), mat)
+  mat <- cbind(queryHits = as.integer(q), subjectHits = as.integer(s))
+  checkIdentical(as.matrix(a), mat)
   checkIdentical(dim(a), as.integer(c(r, c)))
 }
 

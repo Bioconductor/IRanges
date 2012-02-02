@@ -175,7 +175,7 @@ findRangesOverlaps <- function(query, subject)
     offsets <- which(charToRaw("c") <= ovenc & ovenc <= charToRaw("k")) - 1L
     q_hits <- offsets %% nrow(ovenc) + 1L
     s_hits <- offsets %/% nrow(ovenc) + 1L
-    cbind(query=q_hits, subject=s_hits)
+    cbind(queryHits=q_hits, subjectHits=s_hits)
 }
 
 RangesList_encodeOverlaps <- function(query.starts, query.widths,
@@ -282,10 +282,10 @@ setMethod("encodeOverlaps", c("Ranges", "Ranges"),
 ### Some convenience wrappers.
 ###
 
-encodeOverlapsFromRangesMatching <- function(x, query, subject)
+encodeOverlapsFromHits <- function(x, query, subject)
 {
-    if (!is(x, "RangesMatching"))
-        stop("'x' must be a RangesMatching object")
+    if (!is(x, "Hits"))
+        stop("'x' must be a Hits object")
     encodeOverlaps(query[queryHits(x)], subject[subjectHits(x)])
 }
 

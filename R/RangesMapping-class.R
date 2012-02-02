@@ -9,7 +9,7 @@
 ## Conceptually, a RangesMapping is a matching of each query range to
 ## one or more elements in a subject. The geometry of the query range
 ## is then transformed according to that matching. Thus, this data
-## class combines a RangesMatching with a set of transformed ranges.
+## class combines a Hits object with a set of transformed ranges.
 
 ## In IRanges, we do not have any tabular structure that links a space
 ## with an interval, except for RangedData. We could use a RangedData
@@ -17,7 +17,7 @@
 ## we have an accessor for each, and support a coercion.
 
 setClass("RangesMapping",
-         representation(matching = "RangesMatching", space = "Rle",
+         representation(matching = "Hits", space = "Rle",
                         ranges = "Ranges"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -51,3 +51,4 @@ setAs("RangesMapping", "RangedData", function(from) {
 ###
 
 setGeneric("map", function(from, to, ...) standardGeneric("map"))
+

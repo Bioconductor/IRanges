@@ -381,7 +381,7 @@ SEXP IntegerIntervalTree_overlap_all(SEXP r_tree, SEXP r_ranges, SEXP r_order)
 {
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
   struct slRef *results = NULL, *result;
-  SEXP r_query_start, r_results, r_dims, r_matrix, r_dimnames, r_colnames;
+  SEXP r_query_start, r_results, r_query_hits, r_subject_hits;
   int i, j, nhits, nranges = _get_IRanges_length(r_ranges);
   int *left, *right, *r_elt, *o_elt;
 
@@ -411,11 +411,14 @@ SEXP IntegerIntervalTree_overlap_all(SEXP r_tree, SEXP r_ranges, SEXP r_order)
   int *row = (int *) R_alloc((long) nhits, sizeof(int));
   _get_order_of_two_int_arrays(r_query_col, r_subject_col, nhits, 0, row, 0);
 
-  PROTECT(r_results = NEW_OBJECT(MAKE_CLASS("RangesMatching")));
+  PROTECT(r_results = NEW_OBJECT(MAKE_CLASS("Hits")));
 
-  r_matrix = allocMatrix(INTSXP, nhits, 2);
-  SET_SLOT(r_results, install("matchMatrix"), r_matrix);
-  for (i = 0, left = INTEGER(r_matrix), right = INTEGER(r_matrix) + nhits,
+  r_query_hits = NEW_INTEGER(nhits);
+  SET_SLOT(r_results, install("queryHits"), r_query_hits);
+  r_subject_hits = NEW_INTEGER(nhits);
+  SET_SLOT(r_results, install("subjectHits"), r_subject_hits);
+
+  for (i = 0, left = INTEGER(r_query_hits), right = INTEGER(r_subject_hits),
        o_elt = row; i < nhits; i++, left++, right++, o_elt++) {
     *left = r_query_col[*o_elt];
     *right = r_subject_col[*o_elt];
@@ -423,14 +426,6 @@ SEXP IntegerIntervalTree_overlap_all(SEXP r_tree, SEXP r_ranges, SEXP r_order)
 
   SET_SLOT(r_results, install("queryLength"), ScalarInteger(nranges));
   SET_SLOT(r_results, install("subjectLength"), ScalarInteger(tree->n));
-
-  r_dimnames = allocVector(VECSXP, 2);
-  dimnamesgets(r_matrix, r_dimnames);
-  r_colnames = allocVector(STRSXP, 2);
-  SET_VECTOR_ELT(r_dimnames, 0, R_NilValue);
-  SET_VECTOR_ELT(r_dimnames, 1, r_colnames);
-  SET_STRING_ELT(r_colnames, 0, mkChar("query"));
-  SET_STRING_ELT(r_colnames, 1, mkChar("subject"));
 
   slFreeList(&results);
   popRHandlers();

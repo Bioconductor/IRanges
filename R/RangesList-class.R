@@ -639,7 +639,7 @@ setMethod("findOverlaps", c("RangesList", "RangesList"),
             names(ans) <- names(subject)
 
             if (select == "all") {
-              ans <- RangesMatchingList(ans, origSubject)
+              ans <- HitsList(ans, origSubject)
             } else if (drop) {
               off <- head(c(0L, cumsum(sapply(origSubject, length))), -1)
               names(off) <- names(origSubject)

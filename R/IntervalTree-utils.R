@@ -39,7 +39,10 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
               if (minoverlap > 1L) {
                 r <- ranges(result, unsortedQuery, subject)
                 m <- m[width(r) >= minoverlap, , drop=FALSE]
-                result@matchMatrix <- m
+                ## unname() required because in case 'm' has only 1 row
+                ## 'm[ , 1L]' and 'm[ , 2L]' will return a named atomic vector
+                result@queryHits <- unname(m[ , 1L])
+                result@subjectHits <- unname(m[ , 2L])
               }
               query <- origQuery
               filterMatrix <- function(fun)
@@ -59,9 +62,14 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
               if (origSelect != "all") {
                 m <- m[!duplicated(m[,1L]), , drop=FALSE]
                 result <- rep.int(NA_integer_, length(query))
-                result[m[,1L]] <- m[,2L]
+                ## unname() required because in case 'm' has only 1 row
+                ## 'm[,2L]' will return a named atomic vector
+                result[m[,1L]] <- unname(m[,2L])
               } else {
-                result@matchMatrix <- m
+                ## unname() required because in case 'm' has only 1 row
+                ## 'm[ , 1L]' and 'm[ , 2L]' will return a named atomic vector
+                result@queryHits <- unname(m[ , 1L])
+                result@subjectHits <- unname(m[ , 2L])
               }
             }
             result
@@ -83,11 +91,11 @@ setGeneric("processSelfMatching",
                     ignoreSelf = FALSE, ignoreRedundant = FALSE)
            standardGeneric("processSelfMatching"))
 
-setMethod("processSelfMatching", "RangesMatching",
+setMethod("processSelfMatching", "Hits",
           function(x, select = c("all", "first", "last", "arbitrary"),
                    ignoreSelf = FALSE, ignoreRedundant = FALSE)
           {
-            mat <- matchMatrix(x)
+            mat <- as.matrix(x)
             if (ignoreSelf)
               mat <- mat[mat[,1L] != mat[,2L],,drop=FALSE]
             if (ignoreRedundant) {
@@ -98,14 +106,17 @@ setMethod("processSelfMatching", "RangesMatching",
             if (select != "all") { # relies on 'mat' sorted by subject
               if (select == "last")
                 mat <- mat[seq(nrow(mat), 1),,drop=FALSE]
-              .matchMatrixToVector(mat, queryLength(x))
+              .hitsMatrixToVector(mat, queryLength(x))
             } else {
-              x@matchMatrix <- mat
+              ## unname() required because in case 'm' has only 1 row
+              ## 'm[ , 1L]' and 'm[ , 2L]' will return a named atomic vector
+              x@queryHits <- unname(mat[ , 1L])
+              x@subjectHits <- unname(mat[ , 2L])
               x
             }
           })
 
-setMethod("processSelfMatching", "RangesMatchingList",
+setMethod("processSelfMatching", "HitsList",
           function(x, select = c("all", "first", "last", "arbitrary"),
                    ignoreSelf = FALSE, ignoreRedundant = FALSE)
           {
@@ -115,7 +126,7 @@ setMethod("processSelfMatching", "RangesMatchingList",
             if (select != "all")
               IntegerList(ans)
             else
-              newSimpleList("RangesMatchingList", ans,
+              newSimpleList("HitsList", ans,
                             subjectOffsets = x@subjectOffsets)
           })
 

@@ -109,7 +109,7 @@
       should be a scalar, positive integer.
 
       When \code{select} is "all", the results are returned as a
-      \code{\linkS4class{RangesMatching}} object. When \code{select}
+      \code{\linkS4class{Hits}} object. When \code{select}
       is \code{"first"}, \code{"last"}, or \code{"arbitrary"} the results
       are returned as an integer vector of length \code{query} containing
       the first, last, or arbitrary overlapping interval in \code{subject},
@@ -123,7 +123,7 @@
       query with the matching name, if any. Otherwise, elements are
       paired by position. The overlap is then computed between the pairs
       as described above. If \code{select} is \code{"all"}, a
-      \code{\linkS4class{RangesMatchingList}} is returned. For all other
+      \code{\linkS4class{Hits}} is returned. For all other
       \code{select} the return value depends on the \code{drop} argument.
       When \code{select != "all" && !drop}, an \code{\linkS4class{IntegerList}}
       is returned, where each element of the result corresponds to a space in
@@ -279,7 +279,7 @@
 \author{Michael Lawrence}
 \seealso{
   \code{\linkS4class{Ranges}}, the parent of this class,
-  \code{\linkS4class{RangesMatching}}, the result of an overlap query.
+  \code{\linkS4class{Hits}}, set of hits between 2 vector-like objects.
 }
 \examples{
   query <- IRanges(c(1, 4, 9), c(5, 7, 10))

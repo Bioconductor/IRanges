@@ -1,4 +1,4 @@
-test_RangesMatching_as_matrix <- function() {
+test_Hits_as_matrix <- function() {
   ## sparse
   query <- IRanges(c(1, 4, 9), c(5, 7, 10))
   subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
@@ -6,8 +6,8 @@ test_RangesMatching_as_matrix <- function() {
   result <- findOverlaps(query, tree)
 
   checkIdentical(as.matrix(result),
-                 cbind(query = c(1L, 1L, 3L),
-                       subject = 1:3))
+                 cbind(queryHits = c(1L, 1L, 3L),
+                       subjectHits = 1:3))
 
   ## dense
   query <- IRanges(c(1, 4, 9), c(5, 7, 10))
@@ -16,11 +16,11 @@ test_RangesMatching_as_matrix <- function() {
   result <- findOverlaps(query, tree)
 
   checkIdentical(as.matrix(result),
-                 cbind(query = rep(1:2, each=2),
-                       subject = rep(1:2, 2)))
+                 cbind(queryHits = rep(1:2, each=2),
+                       subjectHits = rep(1:2, 2)))
 }
 
-test_RangesMatching_matched <- function() {
+test_Hits_matched <- function() {
   ## sparse
   query <- IRanges(c(1, 4, 9), c(5, 7, 10))
   subject <- IRanges(c(2, 2, 10), c(2, 3, 12))

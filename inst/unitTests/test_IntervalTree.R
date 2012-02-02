@@ -39,9 +39,10 @@ test_IntervalTree_findOverlaps <- function() {
   checkIdentical(result, c(2L, NA, 3L))
 
   checkOverlap <- function(a, q, s, r, c) {
-    mat <- cbind(query = as.integer(q), subject = as.integer(s))
-    checkIdentical(as.matrix(matchMatrix(a)), mat)
-    checkIdentical(dim(a), as.integer(c(r, c)))
+    mat <- cbind(queryHits = as.integer(q), subjectHits = as.integer(s))
+    checkIdentical(as.matrix(a), mat)
+    checkIdentical(queryLength(a), as.integer(r))
+    checkIdentical(subjectLength(a), as.integer(c))
   }
 
   result <- findOverlaps(query, tree)
@@ -117,8 +118,8 @@ test_IntervalTree_findOverlaps <- function() {
   checkIdentical(findOverlaps(c(3L, 7L, 10L), subject, select = "arbitrary"),
                  c(1L, 2L, NA))
   checkIdentical(findOverlaps(IRanges(c(2,1),c(3,4)), subject),
-                 new("RangesMatching",
-                     matchMatrix = cbind(query=1:2, subject=c(1L,1L)),
+                 new("Hits",
+                     queryHits = 1:2, subjectHits = c(1L,1L),
                      queryLength = 2L, subjectLength = 3L))
 
   ## check other types of matching

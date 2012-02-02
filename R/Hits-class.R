@@ -1,58 +1,66 @@
 ### =========================================================================
-### RangesMatching objects
+### Hits objects
 ### -------------------------------------------------------------------------
 
-setClass("RangesMatching",
-         representation(matchMatrix = "matrix",
-                        queryLength = "integer", subjectLength = "integer"),
-         contains = "Vector")
+setClass("Hits",
+    contains="Vector",
+    representation(
+        queryHits="integer",     # integer vector of length N
+        subjectHits="integer",   # integer vector of length N
+        queryLength="integer",   # single integer
+        subjectLength="integer"  # single integer
+    )
+)
 
+### TODO: Drop this class in BioC 2.11
+setClass("RangesMatching", contains="Hits")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessors
 ###
 
 setGeneric("matchMatrix", function(x, ...) standardGeneric("matchMatrix"))
-setMethod("matchMatrix", "RangesMatching", function(x) x@matchMatrix)
+setMethod("matchMatrix", "Hits",
+    function(x)
+    {
+        msg <- c("'matchMatrix' is deprecated.",
+                 "Use 'as.matrix' instead.",
+                 "See help(\"Deprecated\")")
+        .Deprecated(msg=paste(msg, collapse="\n"))
+        as.matrix(x)
+    }
+)
 
-setMethod("dim", "RangesMatching", function(x) {
+setMethod("dim", "Hits", function(x) {
   .Deprecated("queryLength or subjectLength")
   c(queryLength(x), subjectLength(x))
 })
 
-setMethod("length", "RangesMatching", function(x) {
-  nrow(as.matrix(x))
-})
-
-setGeneric("subjectHits", function(x, ...) standardGeneric("subjectHits"))
-
-setMethod("subjectHits", "RangesMatching", function(x) {
-  matchMatrix(x)[,2L,drop=TRUE]
+setMethod("length", "Hits", function(x) {
+  length(queryHits(x))
 })
 
 setGeneric("queryHits", function(x, ...) standardGeneric("queryHits"))
 
-setMethod("queryHits", "RangesMatching", function(x) {
-  matchMatrix(x)[,1L,drop=TRUE]
-})
+setMethod("queryHits", "Hits", function(x) x@queryHits)
 
-setGeneric("subjectLength", function(x, ...) standardGeneric("subjectLength"))
+setGeneric("subjectHits", function(x, ...) standardGeneric("subjectHits"))
 
-setMethod("subjectLength", "RangesMatching", function(x) {
-  x@subjectLength
-})
+setMethod("subjectHits", "Hits", function(x) x@subjectHits)
 
 setGeneric("queryLength", function(x, ...) standardGeneric("queryLength"))
 
-setMethod("queryLength", "RangesMatching", function(x) {
-  x@queryLength
-})
+setMethod("queryLength", "Hits", function(x) x@queryLength)
+
+setGeneric("subjectLength", function(x, ...) standardGeneric("subjectLength"))
+
+setMethod("subjectLength", "Hits", function(x) x@subjectLength)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Extraction
 ###
 
-setMethod("[", "RangesMatching",
+setMethod("[", "Hits",
           function(x, i, j, ... , drop=FALSE)
           {
             if (!missing(j) || length(list(...)) > 0L)
@@ -63,8 +71,10 @@ setMethod("[", "RangesMatching",
               iInfo <- .bracket.Index(i, length(x))
               if (!is.null(iInfo[["msg"]]))
                 stop(iInfo[["msg"]])
-              if (iInfo[["useIdx"]])
-                x@matchMatrix <- x@matchMatrix[iInfo[["idx"]],,drop=FALSE]
+              if (iInfo[["useIdx"]]) {
+                x@queryHits <- x@queryHits[iInfo[["idx"]]]
+                x@subjectHits <- x@subjectHits[iInfo[["idx"]]]
+              }
             }
             if (drop)
               as.matrix(x)
@@ -78,38 +88,40 @@ setMethod("[", "RangesMatching",
 
 ## return a matrix where each row indicates a match (query and subject index)
 
-setMethod("as.matrix", "RangesMatching", function(x) {
-  matchMatrix(x)
-})
+setMethod("as.matrix", "Hits",
+    function(x) cbind(queryHits=queryHits(x), subjectHits=subjectHits(x))
+)
 
 ## a list, with an element for each query, containing the subject hits
-setMethod("as.list", "RangesMatching",
+setMethod("as.list", "Hits",
           function(x, values = seq(subjectLength(x))) {
             unname(split(values[subjectHits(x)],
                          factor(queryHits(x), levels = seq(queryLength(x)))))
           })
 
+setAs("Hits", "list", function(from) as.list(from))
+setAs("Hits", "List", function(from) castList(as.list(from)))
 setAs("RangesMatching", "list", function(from) as.list(from))
 setAs("RangesMatching", "List", function(from) castList(as.list(from)))
 
 ## count up the matches for each query
 
-setMethod("as.table", "RangesMatching", function(x, ...) {
+setMethod("as.table", "Hits", function(x, ...) {
   tabulate(queryHits(x), queryLength(x))
 })
 
 ### FIXME: this needs a new name given the switch to Vector
-setMethod("t", "RangesMatching", function(x) {
-  m <- matchMatrix(x)[,2:1,drop=FALSE]
-  colnames(m) <- rev(colnames(m))
-  x@matchMatrix <- m
-  queryLength <- x@queryLength
+setMethod("t", "Hits", function(x) {
+  tmp <- x@queryHits
+  x@queryHits <- x@subjectHits
+  x@subjectHits <- tmp
+  tmp <- x@queryLength
   x@queryLength <- x@subjectLength
-  x@subjectLength <- queryLength
+  x@subjectLength <- tmp
   x
 })
 
-setMethod("ranges", "RangesMatching", function(x, query, subject) {
+setMethod("ranges", "Hits", function(x, query, subject) {
   if (!is(query, "Ranges") || length(query) != queryLength(x))
     stop("'query' must be a Ranges of length equal to number of queries")
   if (!is(subject, "Ranges") || length(subject) != subjectLength(x))

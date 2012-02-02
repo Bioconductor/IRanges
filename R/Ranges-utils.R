@@ -408,27 +408,29 @@ setMethod("match", c("Ranges", "Ranges"),
 
 setClassUnion("RangesORmissing", c("Ranges", "missing"))
 
-.matchMatrixToVector <- function(matchMatrix, lengthQuery) {
-  matchMatrix <-
-    matchMatrix[diffWithInitialZero(matchMatrix[,1L,drop=TRUE]) != 0L,,
+.hitsMatrixToVector <- function(hitsMatrix, queryLength) {
+  hitsMatrix <-
+    hitsMatrix[diffWithInitialZero(hitsMatrix[,1L,drop=TRUE]) != 0L,,
                 drop=FALSE]
-  ans <- rep.int(NA_integer_, lengthQuery)
-  ans[matchMatrix[,1L,drop=TRUE]] <- matchMatrix[,2L,drop=TRUE]
+  ans <- rep.int(NA_integer_, queryLength)
+  ans[hitsMatrix[,1L,drop=TRUE]] <- hitsMatrix[,2L,drop=TRUE]
   ans
 }
 
-.vectorToMatching <- function(i, srle, ord) {
+.vectorToHits <- function(i, srle, ord) {
   lx <- length(i)
   v <- !is.na(i)
   i <- i[v]
   w <- width(srle)[i]
   subj <- as.integer(IRanges(start(srle)[i], width=w))
-  m <- cbind(query = rep(seq(lx)[v], w),
-             subject = if (!is.null(ord)) ord[subj] else subj)
+  m <- cbind(queryHits = rep(seq(lx)[v], w),
+             subjectHits = if (!is.null(ord)) ord[subj] else subj)
   if (!is.null(ord))
     m <- m[orderIntegerPairs(m[,1L], m[,2L]),,drop=FALSE]
-  new("RangesMatching", matchMatrix = m, queryLength = lx,
-      subjectLength = length(srle))
+  ## unname() required because in case 'm' has only 1 row
+  ## 'm[ , 1L]' and 'm[ , 2L]' will return a named atomic vector
+  new("Hits", queryHits = unname(m[ , 1L]), subjectHits = unname(m[ , 2L]),
+              queryLength = lx, subjectLength = length(srle))
 }
 
 setGeneric("nearest", function(x, subject, ...) standardGeneric("nearest"))
@@ -445,7 +447,7 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
             }
             if (select == "all") {
               m <- as.matrix(ol)
-              olv <- .matchMatrixToVector(m, length(x))
+              olv <- .hitsMatrixToVector(m, length(x))
             } else olv <- ol
             x <- x[is.na(olv)]
             before <- precede(x, subject,
@@ -454,9 +456,9 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
                             if (select == "all") "all" else "last")
             if (select == "all") {
               before_m <- as.matrix(before)
-              before <- .matchMatrixToVector(before_m, length(x))
+              before <- .hitsMatrixToVector(before_m, length(x))
               after_m <- as.matrix(after)
-              after <- .matchMatrixToVector(after_m, length(x))
+              after <- .hitsMatrixToVector(after_m, length(x))
             }
             leftdist <- (start(subject)[before] - end(x))
             rightdist <- (start(x) - end(subject)[after])
@@ -479,7 +481,10 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
               m <- rbind(m, filterMatchMatrix(before_m, left),
                          filterMatchMatrix(after_m, right))
               m <- m[orderIntegerPairs(m[,1L], m[,2L]),, drop=FALSE]
-              ol@matchMatrix <- m
+              ## unname() required because in case 'm' has only 1 row
+              ## 'm[ , 1L]' and 'm[ , 2L]' will return a named atomic vector
+              ol@queryHits <- unname(m[ , 1L])
+              ol@subjectHits <- unname(m[ , 2L])
             } else {
               olv[is.na(olv)] <- ifelse(left, before, after)
               ol <- olv
@@ -506,7 +511,7 @@ setMethod("precede", c("Ranges", "RangesORmissing"),
       i <- findInterval(end(x), s) + 1L
       i[i > length(s)] <- NA
       if (select == "all") {
-        .vectorToMatching(i, srle, ord)
+        .vectorToHits(i, srle, ord)
       } else {
         if (!is.null(ord))
           i <- ord[i]
@@ -534,7 +539,7 @@ setMethod("follow", c("Ranges", "RangesORmissing"),
       i <- findInterval(start(x) - 1L, e)
       i[i == 0] <- NA        
       if (select == "all") {
-        .vectorToMatching(i, srle, ord)
+        .vectorToHits(i, srle, ord)
       } else {
         if (!is.null(ord))
           i <- ord[i]
@@ -555,7 +560,8 @@ setMethod("distanceToNearest", c("Ranges", "RangesORmissing"),
               x_nearest <- nearest(x, select = select)
             } else x_nearest <- nearest(x, subject, select = select)
             if (select == "arbitrary")
-              x_nearest <- cbind(query = seq(length(x)), subject = x_nearest)
+              x_nearest <- cbind(queryHits = seq(length(x)),
+                                 subjectHits = x_nearest)
             else x_nearest <- as.matrix(x_nearest)
             x <- x[x_nearest[,1]]
             subject <- subject[x_nearest[,2]]

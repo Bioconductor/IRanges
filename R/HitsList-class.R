@@ -1,17 +1,28 @@
 ### =========================================================================
-### RangesMatchingList objects
+### HitsList objects
 ### -------------------------------------------------------------------------
 
+setClass("HitsList",
+    contains="SimpleList",
+    representation(
+        subjectOffsets="integer"
+    ),
+    prototype(elementType="Hits")
+)
+
+### TODO: Drop this class in BioC 2.11
 setClass("RangesMatchingList",
-         representation(subjectOffsets = "integer"),
-         prototype(elementType = "RangesMatching"),
-         contains = "SimpleList")
+    contains="HitsList",
+    prototype=prototype(
+        elementType="RangesMatching"
+    )
+)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessors
 ###
 
-setMethod("space", "RangesMatchingList",
+setMethod("space", "HitsList",
           function(x) {
             space <- names(x)
             if (!is.null(space))
@@ -20,11 +31,11 @@ setMethod("space", "RangesMatchingList",
             space
           })
 
-setMethod("subjectHits", "RangesMatchingList", function(x) {
+setMethod("subjectHits", "HitsList", function(x) {
   as.matrix(x)[,2L,drop=TRUE]
 })
 
-setMethod("queryHits", "RangesMatchingList", function(x) {
+setMethod("queryHits", "HitsList", function(x) {
   as.matrix(x)[,1L,drop=TRUE]
 })
 
@@ -32,24 +43,30 @@ setMethod("queryHits", "RangesMatchingList", function(x) {
 ### Constructor
 ###
 
-RangesMatchingList <- function(matchings, subject)
+HitsList <- function(list_of_hits, subject)
 {
   subjectOffsets <- c(0L, head(cumsum(sapply(subject, length)), -1))
-  subjectToQuery <- seq_along(matchings)
-  if (!is.null(names(matchings)) && !is.null(names(subject)))
-    subjectToQuery <- match(names(matchings), names(subject))
+  subjectToQuery <- seq_along(list_of_hits)
+  if (!is.null(names(list_of_hits)) && !is.null(names(subject)))
+    subjectToQuery <- match(names(list_of_hits), names(subject))
   subjectOffsets <- subjectOffsets[subjectToQuery]
-  newSimpleList("RangesMatchingList", matchings,
+  newSimpleList("HitsList", list_of_hits,
                 subjectOffsets = subjectOffsets)
+}
+
+RangesMatchingList <- function(...)
+{
+    .Deprecated("HitsList")
+    as(HitsList(...), "RangesMatchingList")
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
 ###
 
-## return as.matrix as on RangesMatching, with indices adjusted
+## return as.matrix as on Hits, with indices adjusted
 
-setMethod("as.matrix", "RangesMatchingList", function(x) {
+setMethod("as.matrix", "HitsList", function(x) {
   mats <- lapply(x, as.matrix)
   mat <- do.call(rbind, mats)
   rows <- c(0L, head(cumsum(sapply(x, queryLength)), -1))
@@ -59,17 +76,17 @@ setMethod("as.matrix", "RangesMatchingList", function(x) {
 
 ## count up the matches for each query in every matching
 
-setMethod("as.table", "RangesMatchingList", function(x, ...) {
+setMethod("as.table", "HitsList", function(x, ...) {
   counts <- unlist(lapply(x, as.table))
   as.table(array(counts, length(counts), list(range = seq_along(counts))))
 })
 
-setMethod("t", "RangesMatchingList", function(x) {
+setMethod("t", "HitsList", function(x) {
   x@elements <- lapply(as.list(x, use.names = FALSE), t)
   x
 })
 
-setMethod("ranges", "RangesMatchingList", function(x, query, subject) {
+setMethod("ranges", "HitsList", function(x, query, subject) {
   if (!is(query, "RangesList") || length(query) != length(x))
     stop("'query' must be a RangesList of length equal to that of 'x'")
   if (!is(subject, "RangesList") || length(subject) != length(x))
