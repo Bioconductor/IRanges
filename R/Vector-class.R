@@ -835,15 +835,20 @@ setMethod("append", c("Vector", "Vector"),
                   c(window(x, 1L, after), values, window(x, after + 1L, xlen))
              })
 
-setReplaceMethod("split", "Vector", function(x, f, drop = FALSE, ..., value) {
+`seqsplit<-` <- function(x, f, drop = FALSE, ..., value) {
   if (!isTRUEorFALSE(drop))
     stop("'drop' must be TRUE or FALSE")
   if (length(x) != length(f))
     stop("Length of 'f' must equal the length of 'x'")
-  ind <- split(seq_len(length(x)), f, drop = drop)
+  ind <- seqsplit(seq_len(length(x)), f, drop = drop)
   if (length(ind) != length(value))
     stop("Length of 'value' must equal the length of a split on 'f'")
   x[unlist(ind, use.names=FALSE)] <- unlist(value, use.names = FALSE)
+  x
+}
+
+setReplaceMethod("split", "Vector", function(x, f, drop = FALSE, ..., value) {
+  seqsplit(x, f, drop = drop, ...) <- value
   x
 })
 

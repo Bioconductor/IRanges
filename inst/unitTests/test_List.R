@@ -241,7 +241,11 @@ test_List_unsplit <- function() {
   checkIdentical(unsplit(rl, f), ir)  
 
   rl <- split(ir, f, drop = TRUE)
-  checkIdentical(unsplit(rl, f, drop = TRUE), ir)
+  checkIdentical(unsplit(rl, Rle(f), drop = TRUE), ir)
   checkException(unsplit(rl, f, drop = FALSE), silent = TRUE)
+
+  v <- 1:5
+  l <- seqsplit(v, f)
+  checkIdentical(unsplit(l, Rle(f)), v)    
 }
 
