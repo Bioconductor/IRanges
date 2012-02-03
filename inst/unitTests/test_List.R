@@ -232,3 +232,16 @@ test_List_annotation <- function() {
     checkIdentical(elementMetadata(append(ilist,ilist))[,1], rep(1:2,2))
   }
 }
+
+test_List_unsplit <- function() {
+  ir <- IRanges(1:5, 11:15)
+  f <- factor(c("a", "b", "a", "b", "b"), c("b", "a", "c"))
+
+  rl <- split(ir, f)
+  checkIdentical(unsplit(rl, f), ir)  
+
+  rl <- split(ir, f, drop = TRUE)
+  checkIdentical(unsplit(rl, f, drop = TRUE), ir)
+  checkException(unsplit(rl, f, drop = FALSE), silent = TRUE)
+}
+

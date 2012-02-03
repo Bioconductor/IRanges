@@ -391,6 +391,14 @@ setMethod("relist", signature(skeleton = "List"),
             list
           })
 
+setMethod("unsplit", "List", function(value, f, drop = FALSE) {
+  value_flat <- unlist(value, use.names = FALSE)
+  if (length(value_flat) != length(f))
+    stop("Length of 'unlist(value)' must equal length of 'f'")
+  split(value_flat, f, drop = drop) <- value
+  value_flat
+})
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Functional Programming.
 ###
