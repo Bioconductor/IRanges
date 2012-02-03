@@ -438,6 +438,8 @@ setMethod("shift", "CompressedIRangesList",
 
 setMethod("disjoin", "RangesList", function(x) endoapply(x, disjoin))
 
+setMethod("disjointBins", "RangesList", function(x) seqapply(x, disjointBins))
+
 setMethod("gaps", "RangesList",
           function(x, start = NA, end = NA)
           {
