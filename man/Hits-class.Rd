@@ -16,6 +16,7 @@
 
 % coercion
 \alias{as.matrix,Hits-method}
+\alias{as.data.frame,Hits-method}
 \alias{as.table,Hits-method}
 \alias{t,Hits-method}
 \alias{as.list,Hits-method}
@@ -33,10 +34,10 @@
   are imaginable.}
 
 \details{
-  The \code{as.matrix} method coerces a \code{Hits} to a two
-  column \code{matrix} with one row for each hit, where the value
-  in the first column is the index of an element in the query
-  and the value in the second column is the index of an element in
+  The \code{as.matrix} and \code{as.data.frame} methods coerce a \code{Hits}
+  object to a two column \code{matrix} or \code{data.frame} with one row for
+  each hit, where the value in the first column is the index of an element in
+  the query and the value in the second column is the index of an element in
   the subject.
 
   The \code{as.table} method counts the number of hits for each
@@ -61,6 +62,9 @@
       between a query index (first column) and subject index (second
       column).
     }
+    \item{}{\code{as.data.frame(x)}: Same as \code{as.matrix(x)} except that
+      it returns a data frame instead of a matrix.
+    }
     \item{}{\code{as.table(x)}: counts the number of hits for each
       query element in \code{x} and outputs the counts as a \code{table}.
     }
@@ -77,14 +81,8 @@
 
 \section{Accessors}{
   \describe{
-    \item{}{\code{queryHits(x)}: Equivalent to
-      \code{unname(as.matrix(x)[,1])}.
-    }
-    \item{}{\code{subjectHits(x)}: Equivalent to
-      \code{unname(as.matrix(x)[,2])}.
-    }
-    \item{}{\code{matchMatrix(x)}: A synonym for \code{as.matrix}, above.
-    }
+    \item{}{\code{queryHits(x)}: Equivalent to \code{as.data.frame(x)[[1]]}.}
+    \item{}{\code{subjectHits(x)}: Equivalent to \code{as.data.frame(x)[[2]]}.}
     \item{}{\code{ranges(x, query, subject)}: returns a \code{Ranges}
       holding the intersection of the ranges in the
       \code{Ranges} objects \code{query} and \code{subject}, which
@@ -114,6 +112,7 @@
   matchings <- findOverlaps(query, tree)
 
   as.matrix(matchings)
+  as.data.frame(matchings)
 
   as.table(matchings) # hits per query
   as.table(t(matchings)) # hits per subject

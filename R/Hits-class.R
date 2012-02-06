@@ -86,10 +86,25 @@ setMethod("[", "Hits",
 ### Coercion
 ###
 
-## return a matrix where each row indicates a match (query and subject index)
+## return a matrix where each row indicates a hit (query and subject index)
 
 setMethod("as.matrix", "Hits",
     function(x) cbind(queryHits=queryHits(x), subjectHits=subjectHits(x))
+)
+
+setMethod("as.data.frame", "Hits",
+    function(x, row.names=NULL, optional=FALSE, ...)
+    {
+        if (!(is.null(row.names) || is.character(row.names)))
+            stop("'row.names' must be NULL or a character vector")
+        if (!identical(optional, FALSE) || length(list(...)))
+            warning("'optional' and arguments in '...' are ignored")
+        data.frame(queryHits=queryHits(x),
+                   subjectHits=subjectHits(x),
+                   row.names=row.names,
+                   check.names=FALSE,
+                   stringsAsFactors=FALSE)
+    }
 )
 
 ## a list, with an element for each query, containing the subject hits
@@ -104,7 +119,7 @@ setAs("Hits", "List", function(from) castList(as.list(from)))
 setAs("RangesMatching", "list", function(from) as.list(from))
 setAs("RangesMatching", "List", function(from) castList(as.list(from)))
 
-## count up the matches for each query
+## count up the hits for each query
 
 setMethod("as.table", "Hits", function(x, ...) {
   tabulate(queryHits(x), queryLength(x))

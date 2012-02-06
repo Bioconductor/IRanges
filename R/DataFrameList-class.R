@@ -440,7 +440,7 @@ setMethod("as.data.frame", "DataFrameList",
           function(x, row.names=NULL, optional=FALSE, ...)
           {
             if (!(is.null(row.names) || is.character(row.names)))
-              stop("'row.names'  must be NULL or a character vector")
+              stop("'row.names' must be NULL or a character vector")
             if (!missing(optional) || length(list(...)))
               warning("'optional' and arguments in '...' ignored")
             stacked <- stack(x)
