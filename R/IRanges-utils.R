@@ -20,12 +20,12 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
 {
     if (!is.numeric(width))
         stop("'width' must be an integer vector")
-    if (length(width) == 0)
+    if (length(width) == 0L)
         return(IRanges())
     if (!is.integer(width))
         width <- as.integer(width)  # this drops the names
     else if (!is.null(names(width)))
-        names(width) <- NULL  # unname() is broken on vector of length 0
+        names(width) <- NULL  # unname() used to be broken on 0-length vectors
     if (anyMissingOrOutside(width, 0L))
         stop("'width' cannot contain NAs or negative values")
     if (!is.numeric(gapwidth))
@@ -34,11 +34,11 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
         gapwidth <- as.integer(gapwidth)
     if (anyMissing(gapwidth))
         stop("'gapwidth' cannot contain NAs")
-    if (length(gapwidth) != length(width) - 1) {
-        if (length(gapwidth) != 1)
+    if (length(gapwidth) != length(width) - 1L) {
+        if (length(gapwidth) != 1L)
             stop("'gapwidth' must a single integer or an integer vector ",
                  "with one less element than the 'width' vector")
-        gapwidth <- rep.int(gapwidth, length(width) - 1)
+        gapwidth <- rep.int(gapwidth, length(width) - 1L)
     }
     if (!isSingleNumber(from))
         stop("'from' must be a single integer")
@@ -46,7 +46,9 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
         from <- as.integer(from)
     ans_start <- cumsum(width[-length(width)] + gapwidth)
     ans_start <- from + c(0L, ans_start)
-    new2("IRanges", start=ans_start, width=width, check=FALSE)
+    ## 'ans_start' could contain NAs in case of an integer overflow in
+    ## cumsum(), hence the use of 'check=TRUE' here:
+    new2("IRanges", start=ans_start, width=width, check=TRUE)
 }
 
 

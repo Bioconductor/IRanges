@@ -138,6 +138,17 @@ setMethod("min", "NormalIRanges",
     NULL
 }
 
+.valid.IRanges.end <- function(x)
+{
+    ## Even if 'start(x)' and 'width(x)' are valid, 'end(x)' (which is
+    ## obtained by doing 'start(x) + width(x) - 1L') could contain NAs
+    ## in case of an integer overflow.
+    x_end <- end(x)
+    if (anyMissing(x_end))
+        return("'end(x)' cannot contain NAs")
+    NULL
+}
+
 .valid.IRanges.names <- function(x)
 {
     x_names <- names(x)
@@ -154,6 +165,7 @@ setMethod("min", "NormalIRanges",
 {
     c(.valid.IRanges.start(x),
       .valid.IRanges.width(x),
+      .valid.IRanges.end(x),
       .valid.IRanges.names(x))
 }
 
