@@ -363,15 +363,13 @@ setMethod("as.env", "List",
           })
 
 .stack.ind <- function(x, indName = "space") {
-  spaceLevels <- seq_len(length(x))
   if (length(names(x)) > 0) {
     spaceLabels <- names(x)
   } else {
-    spaceLabels <- as.character(spaceLevels)
+    spaceLabels <- seq_len(length(x))
   }
-  ind <- Rle(factor(rep.int(spaceLevels, elementLengths(x)),
-                    levels = spaceLevels,
-                    labels = spaceLabels))
+  ind <- Rle(factor(spaceLabels, levels = unique(spaceLabels)),
+             elementLengths(x))
   do.call(DataFrame, structure(list(ind), names = indName))
 }
 
@@ -523,14 +521,16 @@ setMethod("eval", c("language", "List"),
 setMethod("with", "List",
           function(data, expr, ...)
           {
-              eval(substitute(expr), data, parent.frame())
+              eval(substitute(expr), data, parent.frame(2))
           })
 
 setMethod("within", "List",
           function(data, expr, ...)
           {
-            e <- as.env(data)
-            eval(substitute(expr), e, parent.frame())
+            ## cannot use active bindings here, as they break for replacement
+            e <- list2env(as.list(data))
+            ##e <- as.env(data)
+            eval(substitute(expr), e, parent.frame(2))
             l <- mget(ls(e), e)
             l <- l[!sapply(l, is.null)]
             nD <- length(del <- setdiff(names(data), (nl <- names(l))))
