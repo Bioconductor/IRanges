@@ -516,6 +516,12 @@ setMethod("as.data.frame", "DataFrame",
                              }), list(row.names = row.names)))
           })
 
+setMethod("as.matrix", "DataFrame", function(x) {
+  m <- do.call(cbind, as.list(x))
+  rownames(m) <- rownames(x)
+  m
+})
+
 ## take data.frames to DataFrames
 setAs("data.frame", "DataFrame",
       function(from) {
