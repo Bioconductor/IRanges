@@ -273,6 +273,12 @@ setMethod("rbind", "DataTable", function(..., deparse.level=1)
 setMethod("merge", c("DataTable", "DataTable"), function(x, y, ...) {
   DataFrame(merge(as.data.frame(x), as.data.frame(y), ...))
 })
+setMethod("merge", c("data.frame", "DataTable"), function(x, y, ...) {
+  DataFrame(merge(x, as.data.frame(y), ...))
+})
+setMethod("merge", c("DataTable", "data.frame"), function(x, y, ...) {
+  DataFrame(merge(as.data.frame(x), y, ...))
+})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping methods.
@@ -334,6 +340,23 @@ setMethod("by", "DataTable",
               attr(ans, "call") <- mc
               ans
           })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Comparison
+###
+
+setMethod("unique", "DataTable", function (x, incomparables = FALSE, ...) 
+          {
+            x[!duplicated(x, incomparables = incomparables, ...), ]
+          })
+
+setMethod("duplicated", "DataTable",
+          function (x, incomparables = FALSE, fromLast = FALSE, ...) 
+          {
+            x <- as.data.frame(x)
+            callGeneric()
+          })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
