@@ -977,6 +977,11 @@ SEXP RleViews_viewWhichMaxs(
 );
 
 
+/* Hits_class.c */
+
+SEXP make_all_group_inner_hits(SEXP group_sizes);
+
+
 /* OverlapEncodings_class.c */
 
 SEXP Ranges_compare(

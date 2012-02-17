@@ -149,4 +149,46 @@ setMethod("ranges", "Hits", function(x, query, subject) {
   IRanges(pmax.int(qstart, sstart), pmin.int(send, qend))
 })
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### makeAllGroupInnerHits()
+###
+### NOT exported.
+
+### About 10x faster and uses 4x less memory than my first attempt in pure
+### R below.
+makeAllGroupInnerHits <- function(group_sizes)
+{
+    if (!is.integer(group_sizes))
+        stop("'group_sizes' must be an integer vector")
+    .Call2("make_all_group_inner_hits", group_sizes, PACKAGE="IRanges")
+}
+
+### TODO: Remove this.
+makeAllGroupInnerHits.old <- function(GS)
+{
+    NG <- length(GS)  # nb of groups
+    ## First Element In group i.e. first elt associated with each group.
+    FEIG <- cumsum(c(1L, GS[-NG]))
+    GSr <- c(0L, GS[-NG])
+    CGSr2 <- cumsum(GSr * GSr)
+    GS2 <- GS * GS
+    N <- sum(GS)  # length of original vector (i.e. before grouping)
+
+    ## Original Group Size Assignment i.e. group size associated with each
+    ## element in the original vector.
+    OGSA <- rep.int(GS, GS)  # has length N
+    query_hits <- rep.int(seq_len(N), OGSA)
+    NH <- length(query_hits)  # same as sum(GS2)
+
+    ## Hit Group Assignment i.e. group associated with each hit.
+    HGA <- rep.int(seq_len(NG), GS2)
+    ## Hit Group Size Assignment i.e. group size associated with each hit.
+    HGSA <- GS[HGA]
+    subject_hits <- (0:(NH-1L) - CGSr2[HGA]) %% GS[HGA] + FEIG[HGA]
+    new2("Hits", queryHits=query_hits, subjectHits=subject_hits,
+                 queryLength=N, subjectLength=N, check=FALSE)
+}
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### TODO: many convenience methods
+
