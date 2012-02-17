@@ -278,7 +278,7 @@ setReplaceMethod("[", "CompressedList",
         if (lv == 0L)
             stop("replacement has length zero")
         if (!is(value, class(x)))
-            value <- tryToCoerceReplacementValue(x, value)
+            value <- mk_singleBracketReplacementValue(x, value)
         if (li != lv) {
             if (li %% lv != 0L)
                 warning("number of items to replace is not a multiple ",

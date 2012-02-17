@@ -198,7 +198,7 @@ normalizeSingleBracketSubscript <- function(i, x)
     stop("invalid subscript type")
 }
 
-tryToCoerceReplacementValue <- function(x, value)
+mk_singleBracketReplacementValue <- function(x, value)
 {
     lv <- length(value)
     value <- try(as(value, class(x)), silent=TRUE)
