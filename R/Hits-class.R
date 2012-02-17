@@ -156,11 +156,16 @@ setMethod("ranges", "Hits", function(x, query, subject) {
 
 ### About 10x faster and uses 4x less memory than my first attempt in pure
 ### R below.
-makeAllGroupInnerHits <- function(group_sizes)
+makeAllGroupInnerHits <- function(group.sizes, hit.type=0L)
 {
-    if (!is.integer(group_sizes))
-        stop("'group_sizes' must be an integer vector")
-    .Call2("make_all_group_inner_hits", group_sizes, PACKAGE="IRanges")
+    if (!is.integer(group.sizes))
+        stop("'group.sizes' must be an integer vector")
+    if (!isSingleNumber(hit.type))
+        stop("'hit.type' must be a single integer")
+    if (!is.integer(hit.type))
+        hit.type <- as.integer(hit.type)
+    .Call2("make_all_group_inner_hits", group.sizes, hit.type,
+           PACKAGE="IRanges")
 }
 
 ### TODO: Remove this.

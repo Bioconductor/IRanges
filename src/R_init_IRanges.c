@@ -117,7 +117,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(RleViews_viewWhichMaxs, 2),
 
 /* Hits_class.c */
-	CALLMETHOD_DEF(make_all_group_inner_hits, 1),
+	CALLMETHOD_DEF(make_all_group_inner_hits, 2),
 
 /* OverlapEncodings_class.c */
 	CALLMETHOD_DEF(Ranges_compare, 4),
