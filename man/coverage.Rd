@@ -70,9 +70,11 @@ coverage(x, shift=0L, width=NULL, weight=1L, \dots)
     For most methods, an integer vector specifying how much each element
     in \code{x} counts. For \link{RangesList} and \link{RangedData}
     objects, a list or vector of the same length as \code{x} to be used
-    for the corresponding element in \code{x}. For \code{RangedData}
-    objects, this can also be a single string naming a column to be
-    used as the weights.
+    for the corresponding element in \code{x}.
+    For \link{IRanges}, \link{Views}, \link{MaskCollection} and
+    \link{RangedData} objects, this can also be a single string naming
+    a column in \code{elementMetadata(x)} (or in \code{x} for
+    \link{RangedData}) to be used as the weights.
   }
   \item{method}{
     Settings \code{method} to \code{hash} is intended only for large

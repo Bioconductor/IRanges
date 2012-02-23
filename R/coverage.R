@@ -67,9 +67,17 @@ setMethod("coverage", "IRanges",
     function(x, shift=0L, width=NULL, weight=1L, method=c("sort", "hash"))
     {
         method <- match.arg(method)
-        width <- .normargWidth(width, length(x))
-        weight <- recycleIntegerArg(weight, "weight", length(x))
         sx <- shift(x, shift)
+        width <- .normargWidth(width, length(x))
+        if (isSingleString(weight)) {
+            x_elementMetadata <- elementMetadata(x)
+            if (!is(x_elementMetadata, "DataTable")
+             || sum(colnames(x_elementMetadata) == weight) != 1L)
+                stop("'elementMetadata(x)' has 0 or more than 1 \"",
+                     weight, "\" columns")
+            weight <- x_elementMetadata[[weight]]
+        } 
+        weight <- recycleIntegerArg(weight, "weight", length(x))
         if (is.null(width)) {
             width <- max(end(sx))
             ## By keeping all ranges, 'rsx' and 'weight' remain of the same
@@ -107,6 +115,14 @@ setMethod("coverage", "MaskCollection",
         method <- match.arg(method)
         shift <- recycleIntegerArg(shift, "shift", length(x))
         width <- .normargWidth(width, length(x))
+        if (isSingleString(weight)) {
+            x_elementMetadata <- elementMetadata(x)
+            if (!is(x_elementMetadata, "DataTable")
+             || sum(colnames(x_elementMetadata) == weight) != 1L)
+                stop("'elementMetadata(x)' has 0 or more than 1 \"",
+                     weight, "\" columns")
+            weight <- x_elementMetadata[[weight]]
+        } 
         weight <- recycleIntegerArg(weight, "weight", length(x))
         if (is.null(width))
             width <- width(x)
