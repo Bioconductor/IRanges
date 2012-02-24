@@ -69,7 +69,7 @@ setMethod("elementMetadata", "Vector",
               if ("elementMetadata" %in% names(attributes(x))) {
                   emd <- x@elementMetadata
                   if (!is.null(emd) && !is.null(names(x)))
-                      rownames(emd) <- head(names(x), nrow(emd))
+                      rownames(emd) <- make.unique(head(names(x), nrow(emd)))
               } else {
                   emd <- NULL
               }
@@ -850,6 +850,25 @@ setMethod("append", c("Vector", "Vector"),
 setReplaceMethod("split", "Vector", function(x, f, drop = FALSE, ..., value) {
   seqsplit(x, f, drop = drop, ...) <- value
   x
+})
+
+multisplit <- function(x, f) {
+  if (!is.list(x) && !is(f, "List"))
+    stop("'f' must be a list")
+  if (length(x) != length(f))
+    stop("Length of 'f' must equal length of 'x'")
+  seqsplit(rep(x, elementLengths(f)), unlist(f, use.names = FALSE))
+}
+
+setGeneric("mstack", function(...) standardGeneric("mstack"))
+
+setMethod("mstack", "Vector", function(..., .indName = "name") {
+  if (!isSingleString(.indName))
+    stop("'.indName' must be a single, non-NA string")
+  args <- list(...)
+  combined <- do.call(c, unname(args))
+  values(combined) <- cbind(values(combined), .stack.ind(args, .indName))
+  combined
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
