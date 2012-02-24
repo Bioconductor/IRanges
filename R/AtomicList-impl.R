@@ -657,8 +657,24 @@ setMethod("Summary", "CompressedRleList",
             if (!is.null(viewFun <- toViewFun[[.Generic]]))
               structure(viewFun(as(x, "RleViews"), na.rm = na.rm),
                         names=names(x))
-            else callNextMethod()
+            else sapply(x, .Generic, na.rm = na.rm)
           })
+
+setMethod("all", "CompressedRleList", function(x, ..., na.rm = FALSE) {
+  args <- list(...)
+  if (length(args) > 0L)
+    stop("Only a single argument in '...' is supported for now")
+  if (!isTRUEorFALSE(na.rm))
+    stop("'na.rm' must be TRUE or FALSE")
+  rv <- runValue(x)
+  if (na.rm)
+    rv <- rv[!is.na(rv)]
+  elen <- elementLengths(rv)
+  ans <- elen == 0L
+  singletons <- elen == 1L
+  ans[singletons] <- unlist(rv, use.names = FALSE)[singletons[togroup(rv)]]
+  ans
+})
 
 setMethod("Complex", "CompressedAtomicList",
           function(z)
