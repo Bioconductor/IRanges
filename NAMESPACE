@@ -234,7 +234,7 @@ exportMethods(
     as.list,
     as.table,
     toString,
-    unlist, stack, "split<-", unsplit,
+    unlist, stack, mstack, "split<-", unsplit, multisplit,
     update,
     append,
     "!", which,
