@@ -715,11 +715,47 @@ setMethod("match", c("RangesList", "RangesList"),
 setMethod("union", c("RangesList", "RangesList"),
           function(x, y) mendoapply(union, x, y))
 
+setMethod("union", c("CompressedIRangesList", "CompressedIRangesList"),
+          function(x, y) {
+            len <- max(length(x), length(y))
+            if (length(x) != len)
+              x <- x[recycleVector(seq_len(length(x)), len)]
+            if (length(y) != len)
+              y <- y[recycleVector(seq_len(length(y)), len)]
+            xy <- c(unlist(x, use.names = FALSE), unlist(y, use.names = FALSE))
+            xy_list <- split(xy, factor(c(togroup(x), togroup(y)),
+                                        seq_len(length(x))))
+            names(xy_list) <- names(x)
+            reduce(xy_list, drop.empty.ranges=TRUE)
+          })
+
 setMethod("intersect", c("RangesList", "RangesList"),
           function(x, y) mendoapply(intersect, x, y))
 
+setMethod("intersect", c("CompressedIRangesList", "CompressedIRangesList"),
+          function(x, y) {
+            nonempty <- elementLengths(x) != 0L
+            rx <- unlist(range(x), use.names = FALSE)
+            startx <- integer()
+            startx[nonempty] <- start(rx)
+            endx <- integer()
+            endx[nonempty] <- end(rx)
+            setdiff(x, gaps(y, start = startx, end = endx))
+          })
+
 setMethod("setdiff", c("RangesList", "RangesList"),
           function(x, y) mendoapply(setdiff, x, y))
+
+setMethod("setdiff", c("CompressedIRangesList", "CompressedIRangesList"),
+          function(x, y) {
+            nonempty <- elementLengths(x) != 0L
+            rx <- unlist(range(x), use.names = FALSE)
+            startx <- integer()
+            startx[nonempty] <- start(rx)
+            endx <- integer()
+            endx[nonempty] <- end(rx)            
+            gaps(union(gaps(x), y), start = startx, end = endx)
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Arithmetic Operations
