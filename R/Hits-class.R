@@ -72,8 +72,10 @@ setMethod("[", "Hits",
               if (!is.null(iInfo[["msg"]]))
                 stop(iInfo[["msg"]])
               if (iInfo[["useIdx"]]) {
-                x@queryHits <- x@queryHits[iInfo[["idx"]]]
-                x@subjectHits <- x@subjectHits[iInfo[["idx"]]]
+                i <- iInfo[["idx"]]
+                x@queryHits <- x@queryHits[i]
+                x@subjectHits <- x@subjectHits[i]
+                x@elementMetadata <- x@elementMetadata[i,,drop=FALSE]
               }
             }
             if (drop)
@@ -193,6 +195,18 @@ makeAllGroupInnerHits.old <- function(GS)
     new2("Hits", queryHits=query_hits, subjectHits=subject_hits,
                  queryLength=N, subjectLength=N, check=FALSE)
 }
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Show
+###
+
+setMethod("show", "Hits", function(object) {
+  cat("Hits of length ", length(object), "\n", sep = "")
+  cat("queryLength: ", queryLength(object), "\n", sep = "")
+  cat("subjectLength: ", subjectLength(object), "\n", sep = "")
+  cat(labeledLine("queryHits", queryHits(object), count = FALSE))
+  cat(labeledLine("subjectHits", subjectHits(object), count = FALSE))
+})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### TODO: many convenience methods
