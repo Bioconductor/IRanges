@@ -107,7 +107,7 @@ export(
     mendoapply,
 
     ## Casting apply functions and the like
-    seqapply, mseqapply, tseqapply, seqsplit, seqby,
+    seqapply, mseqapply, tseqapply, seqsplit, seqby, multisplit,
     
     ## Generic functions in the Vector API:
     elementType, elementLengths,
@@ -234,7 +234,7 @@ exportMethods(
     as.list,
     as.table,
     toString,
-    unlist, stack, mstack, "split<-", unsplit, multisplit,
+    unlist, stack, mstack, "split<-", unsplit,
     update,
     append,
     "!", which,
