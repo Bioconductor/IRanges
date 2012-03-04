@@ -141,7 +141,7 @@ setReplaceMethod("colnames", "SimpleDataFrameList",
                  {
                    if (is.null(value)) {
                      x@listData <-
-                       lapply(x@listData, function(y) {colnames(x) <- NULL; x})
+                       lapply(x@listData, function(y) {colnames(y) <- NULL; y})
                    } else if (is.character(value)) {
                      for (i in seq_len(length(x)))
                        colnames(x@listData[[i]]) <- value
