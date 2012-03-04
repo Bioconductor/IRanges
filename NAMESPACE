@@ -11,7 +11,7 @@ importFrom(stats4, summary)
 
 exportClasses(
     AsIs, xtabs,
-    characterORNULL,
+    characterORNULL, functionORNULL,
     Annotated,
     DataTable, DataTableORNULL,
     Vector,
