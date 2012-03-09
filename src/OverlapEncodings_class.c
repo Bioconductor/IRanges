@@ -358,11 +358,17 @@ static void encodeII(
 		int as_matrix, int *Loffset, int *Roffset, CharAE *out)
 {
 	int out_nelt0, i, starti, widthi, spacei, j, startj, widthj, spacej,
-	    j1, j2;
+	    j1, j2, nrow;
 	char code;
 
 	if (!as_matrix) {
-		CharAE_append_int(out, q_len);
+		if (Lq_len) {
+			CharAE_append_int(out, Lq_len);
+			CharAE_append_char(out, '-', 2);
+			CharAE_append_int(out, q_len - Lq_len);
+		} else {
+			CharAE_append_int(out, q_len);
+		}
 		CharAE_append_char(out, ':', 1);
 		out_nelt0 = _CharAE_get_nelt(out);
 	}
@@ -378,6 +384,8 @@ static void encodeII(
 		widthj = s_width[j];
 		spacej = s_space == NULL ? 0 : s_space[j];
 		for (i = 0; i < q_len; i++) {
+			if (Lq_len && i == Lq_len)
+				CharAE_append_char(out, '-', 2);
 			starti = q_start[i];
 			widthi = q_width[i];
 			spacei = q_space == NULL ? 0 : q_space[i];
@@ -395,7 +403,7 @@ static void encodeII(
 	}
 	if (!as_matrix) {
 		/* By making 'j2' a 1-based index we will then have
-		   0 <= j1 <= j2 <= s_len, which will then simplify further
+		   0 <= j1 <= j2 <= s_len, which will simplify further
 		   arithmetic/logic. */
 		if (q_len == 0) {
 			/* A 0-row OVM needs special treatment. */
@@ -405,13 +413,16 @@ static void encodeII(
 		}
 		*Loffset = j1;
 		*Roffset = s_len - j2;
+		nrow = q_len;
+		if (Lq_len)
+			nrow += 2;
 		/* Remove "a"-cols on the right. */
-		_CharAE_set_nelt(out, out_nelt0 + j2 * q_len);
+		_CharAE_set_nelt(out, out_nelt0 + j2 * nrow);
 		/* Remove "m"-cols on the left. */
-		_CharAE_delete_at(out, out_nelt0, j1 * q_len);
+		_CharAE_delete_at(out, out_nelt0, j1 * nrow);
 		/* Insert ":" at the end of each remaining col. */
 		for (j = j2 - j1; j >= 1; j--)
-			_CharAE_insert_at(out, out_nelt0 + j * q_len, ':');
+			_CharAE_insert_at(out, out_nelt0 + j * nrow, ':');
 	}
 	return;
 }
@@ -443,10 +454,11 @@ static void safe_encodeII(
 /* type: 0=CHARSXP, 1=STRSXP, 2=RAWSXP
    as_matrix: 0 or 1, ignored when type is 0 */
 static SEXP make_encoding_from_CharAE(const CharAE *buf, int type,
-				      int as_matrix, int q_len, int s_len)
+				      int as_matrix,
+				      int q_len, int Lq_len, int s_len)
 {
 	SEXP ans, ans_elt, ans_dim;
-	int buf_nelt, i;
+	int buf_nelt, i, nrow;
 
 	buf_nelt = _CharAE_get_nelt(buf);
 	if (type == 0 || (type == 1 && !as_matrix)) {
@@ -469,8 +481,11 @@ static SEXP make_encoding_from_CharAE(const CharAE *buf, int type,
 		PROTECT(ans = _new_RAW_from_CharAE(buf));
 	}
 	if (as_matrix) {
+		nrow = q_len;
+		if (Lq_len)
+			nrow += 2;
 		PROTECT(ans_dim	= NEW_INTEGER(2));
-		INTEGER(ans_dim)[0] = q_len;
+		INTEGER(ans_dim)[0] = nrow;
 		INTEGER(ans_dim)[1] = s_len;
 		SET_DIM(ans, ans_dim);
 		UNPROTECT(1);
@@ -543,6 +558,7 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 	PROTECT(encoding = make_encoding_from_CharAE(&buf, as_raw0 ? 2 : 1,
 						as_matrix0,
 						LENGTH(query_start),
+						Lquery_len,
 						LENGTH(subject_start)));
 	if (as_matrix0) {
 		UNPROTECT(1);
@@ -616,7 +632,7 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 			      INTEGER(ans_Roffset) + k,
 			      &buf);
 		PROTECT(ans_encoding_elt = make_encoding_from_CharAE(&buf, 0,
-							0, q_len, s_len));
+						0, q_len, Lquery_len, s_len));
 		SET_STRING_ELT(ans_encoding, k, ans_encoding_elt);
 		UNPROTECT(1);
 		_CharAE_set_nelt(&buf, 0);
