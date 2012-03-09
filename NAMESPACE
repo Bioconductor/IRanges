@@ -195,7 +195,6 @@ export(
     ## OverlapEncodings
     compare, Loffset, Roffset, encoding,
     encodeOverlaps1, RangesList_encodeOverlaps, encodeOverlaps,
-    encodeOverlapsFromHits,
 
     ## Other generic functions:
     xvcopy, compact,

@@ -197,8 +197,13 @@ RangesList_encodeOverlaps <- function(query.starts, query.widths,
                              encoding=encoding, check=FALSE)
 }
 
-setGeneric("encodeOverlaps", signature=c("query", "subject"),
-    function(query, subject) standardGeneric("encodeOverlaps")
+setGeneric("encodeOverlaps", signature=c("query", "subject", "hits"),
+    function(query, subject, hits=NULL) standardGeneric("encodeOverlaps")
+)
+
+setMethod("encodeOverlaps", c("ANY", "ANY", "Hits"),
+    function(query, subject, hits=NULL)
+        encodeOverlaps(query[queryHits(hits)], subject[subjectHits(hits)])
 )
 
 ### "Parallel" overlap encoding between 2 RangesList objects.
@@ -228,8 +233,8 @@ setGeneric("encodeOverlaps", signature=c("query", "subject"),
 ###   > grep(pattern123, encoding(ovenc))
 ###   [1] 1 2 3
 ### All the reads are compatible with this transcript!
-setMethod("encodeOverlaps", c("RangesList", "RangesList"),
-    function(query, subject)
+setMethod("encodeOverlaps", c("RangesList", "RangesList", "missing"),
+    function(query, subject, hits=NULL)
     {
         RangesList_encodeOverlaps(as.list(start(query)),
                                   as.list(width(query)),
@@ -238,8 +243,8 @@ setMethod("encodeOverlaps", c("RangesList", "RangesList"),
     }
 )
 
-setMethod("encodeOverlaps", c("RangesList", "Ranges"),
-    function(query, subject)
+setMethod("encodeOverlaps", c("RangesList", "Ranges", "missing"),
+    function(query, subject, hits=NULL)
     {
         RangesList_encodeOverlaps(as.list(start(query)),
                                   as.list(width(query)),
@@ -248,8 +253,8 @@ setMethod("encodeOverlaps", c("RangesList", "Ranges"),
     }
 )
 
-setMethod("encodeOverlaps", c("Ranges", "RangesList"),
-    function(query, subject)
+setMethod("encodeOverlaps", c("Ranges", "RangesList", "missing"),
+    function(query, subject, hits=NULL)
     {
         RangesList_encodeOverlaps(as.list(start(query)),
                                   as.list(width(query)),
@@ -271,8 +276,8 @@ setMethod("encodeOverlaps", c("Ranges", "RangesList"),
 ###   > encodeOverlaps(IRanges(6:8, width=2), subject)
 ###   [1] f i j
 ###   Levels: a b c d e f g h i j k l m
-setMethod("encodeOverlaps", c("Ranges", "Ranges"),
-    function(query, subject)
+setMethod("encodeOverlaps", c("Ranges", "Ranges", "missing"),
+    function(query, subject,  hits=NULL)
     {
         ### TODO: Maybe add an extra arg to compare() to let the user choose
         ### the type of output i.e. numeric or 1-letter codes.
@@ -282,16 +287,4 @@ setMethod("encodeOverlaps", c("Ranges", "Ranges"),
         factor(numTo1Letter(codes), levels=numTo1Letter(-6:6))
     }
 )
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Some convenience wrappers.
-###
-
-encodeOverlapsFromHits <- function(x, query, subject)
-{
-    if (!is(x, "Hits"))
-        stop("'x' must be a Hits object")
-    encodeOverlaps(query[queryHits(x)], subject[subjectHits(x)])
-}
 
