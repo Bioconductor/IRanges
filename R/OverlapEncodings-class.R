@@ -152,14 +152,19 @@ setMethod("show", "OverlapEncodings",
 ### educative and allows testing all parts of this C code.
 encodeOverlaps1 <- function(query, subject,
                             query.space=NULL, subject.space=NULL,
+                            Lquery.length=0L,
                             as.matrix=FALSE, as.raw=FALSE)
 {
+    if (!isSingleNumber(Lquery.length))
+        stop("'Lquery.length' must be a single integer value")
+    if (!is.integer(Lquery.length))
+        Lquery.length <- as.integer(Lquery.length)
     if (!isTRUEorFALSE(as.matrix))
         stop("'as.matrix' must be TRUE or FALSE")
     if (!isTRUEorFALSE(as.raw))
         stop("'as.raw' must be TRUE or FALSE")
     .Call2("encode_overlaps1",
-           start(query), width(query), query.space,
+           start(query), width(query), query.space, Lquery.length,
            start(subject), width(subject), subject.space,
            as.matrix, as.raw,
            PACKAGE="IRanges")
@@ -180,10 +185,11 @@ findRangesOverlaps <- function(query, subject)
 
 RangesList_encodeOverlaps <- function(query.starts, query.widths,
                                       subject.starts, subject.widths,
-                                      query.spaces=NULL, subject.spaces=NULL)
+                                      query.spaces=NULL, subject.spaces=NULL,
+                                      Lquery.lengths=NULL)
 {
     C_ans <- .Call2("RangesList_encode_overlaps",
-                    query.starts, query.widths, query.spaces,
+                    query.starts, query.widths, query.spaces, Lquery.lengths,
                     subject.starts, subject.widths, subject.spaces,
                     PACKAGE="IRanges")
     encoding <- factor(C_ans$encoding)

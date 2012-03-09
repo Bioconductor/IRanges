@@ -998,6 +998,7 @@ SEXP encode_overlaps1(
 	SEXP query_start,
 	SEXP query_width,
 	SEXP query_space,
+	SEXP Lquery_length,
 	SEXP subject_start,
 	SEXP subject_width,
 	SEXP subject_space,
@@ -1009,6 +1010,7 @@ SEXP RangesList_encode_overlaps(
 	SEXP query_starts,
 	SEXP query_widths,
 	SEXP query_spaces,
+	SEXP Lquery_lengths,
 	SEXP subject_starts,
 	SEXP subject_widths,
 	SEXP subject_spaces

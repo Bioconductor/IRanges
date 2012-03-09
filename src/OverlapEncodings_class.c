@@ -55,23 +55,23 @@ static const int *check_Ranges_space(SEXP space, int len, const char *what)
  *                  1-letter code & |                1-letter code &
  *                        long code |                      long code
  *   -------------  --------------- | -------------  ---------------
- *   x: oooo        -6   'a'  "xNy" | x:       oooo   6   'm'  "yNx"
- *   y:       oooo                  | y: oooo      
+ *   x: oooo        -6   'a'  "x y" | x:       oooo   6   'm'  "y x"
+ *   y:       oooo                  | y: oooo                       
  *   -------------  --------------- | -------------  ---------------
- *   x:  oooo       -5   'b'  "xy"  | x:      oooo    5   'l'  "yx"
- *   y:      oooo                   | y:  oooo     
+ *   x:  oooo       -5   'b'  "xy"  | x:      oooo    5   'l'  "yx" 
+ *   y:      oooo                   | y:  oooo                      
  *   -------------  --------------- | -------------  ---------------
  *   x:   oooo      -4   'c'  "x=y" | x:     oooo     4   'k'  "y=x"
- *   y:     oooo                    | y:   oooo    
+ *   y:     oooo                    | y:   oooo                     
  *   -------------  --------------- | -------------  ---------------
- *   x:   oooooo    -3   'd'  "x="  | x:     oooo     3   'j'  "y="
- *   y:     oooo                    | y:   oooooo  
+ *   x:   oooooo    -3   'd'  "x="  | x:     oooo     3   'j'  "y=" 
+ *   y:     oooo                    | y:   oooooo                   
  *   -------------  --------------- | -------------  ---------------
  *   x:  oooooooo   -2   'e'  "x=x" | x:    oooo      2   'i'  "y=y"
- *   y:    oooo                     | y:  oooooooo
+ *   y:    oooo                     | y:  oooooooo                  
  *   -------------  --------------- | -------------  ---------------
- *   x:   oooo      -1   'f'  "=y"  | x:   oooooo     1   'h'  "=x"
- *   y:   oooooo                    | y:   oooo
+ *   x:   oooo      -1   'f'  "=y"  | x:   oooooo     1   'h'  "=x" 
+ *   y:   oooooo                    | y:   oooo                     
  *   -------------  -------------------------------  ---------------
  *                \   x:   oooooo     0   'g'  "="    /
  *                 \  y:   oooooo                    /
@@ -327,10 +327,32 @@ static void CharAE_append_int(CharAE *char_ae, int d)
 	return;
 }
 
-/* Uses special 1-letter code 'X' for ranges that are not on the same space. */
+/*
+ * q_start, q_width: int arrays of length q_len.
+ * q_space: NULL or an int array of length q_len.
+ * q_len: nb of ranges in the query.
+ * Lq_len: 0 if all the ranges in the query are coming from the same segment
+ *         (single-end read), or the nb of ranges in the query coming from the
+ *         left segment if the query is made of ranges coming from 2 segments
+ *         (paired-end read). If the latter, then Lq_len must be >= 1 and
+ *         < q_len (this implies that q_len >= 2), and the first Lq_len ranges
+ *         in the query are assumed to belong to the left segment.
+ * s_start, s_width: int arrays of length s_len.
+ * s_space: NULL or an int array of length s_len.
+ * s_len: nb of ranges in the subject.
+ * as_matrix, Loffset, Roffset: if as_matrix, then the full matrix of codes
+ *         is returned and the returned values for Loffset and Roffset are
+ *         undefined. Otherwise, the matrix is trimmed and the returned values
+ *         for Loffset and Roffset are the number of cols removed on the left
+ *         and right sides of the matrix, respectively.
+ * out: character array containing the matrix of codes (possibly trimmed)
+ *  
+ * A special 1-letter code 'X' is used for ranges that are not on the same
+ * space.
+ */
 static void encodeII(
 		const int *q_start, const int *q_width,
-		const int *q_space, int q_len,
+		const int *q_space, int q_len, int Lq_len,
 		const int *s_start, const int *s_width,
 		const int *s_space, int s_len,
 		int as_matrix, int *Loffset, int *Roffset, CharAE *out)
@@ -396,6 +418,7 @@ static void encodeII(
 
 static void safe_encodeII(
 		SEXP query_start, SEXP query_width, SEXP query_space,
+		int Lquery_len,
 		SEXP subject_start, SEXP subject_width, SEXP subject_space,
 		int as_matrix, int *Loffset, int *Roffset, CharAE *out)
 {
@@ -404,11 +427,14 @@ static void safe_encodeII(
 
 	q_len = check_Ranges_start_width(query_start, query_width,
 					 &q_start, &q_width, "query");
+	if (Lquery_len != 0 && (Lquery_len < 1 || Lquery_len >= q_len))
+		error("number of ranges in query coming from the left "
+		      "segment must be >= 1 and < length(query)");
 	q_space = check_Ranges_space(query_space, q_len, "query");
 	s_len = check_Ranges_start_width(subject_start, subject_width,
 					 &s_start, &s_width, "subject");
 	s_space = check_Ranges_space(subject_space, s_len, "subject");
-	encodeII(q_start, q_width, q_space, q_len,
+	encodeII(q_start, q_width, q_space, q_len, Lquery_len,
 		 s_start, s_width, s_space, s_len,
 		 as_matrix, Loffset, Roffset, out);
 	return;
@@ -482,9 +508,10 @@ static SEXP make_LIST_from_ovenc_parts(SEXP Loffset, SEXP Roffset,
 
 /* --- .Call ENTRY POINT ---
  * 'query_start', 'query_width', 'query_space': integer vectors of the same
- * length M (or NULL for 'query_space').
+ *     length M (or NULL for 'query_space').
+ * 'Lquery_length': single integer.
  * 'subject_start', 'subject_width', 'subject_space': integer vectors of the
- * same length N (or NULL for 'subject_space').
+ *     same length N (or NULL for 'subject_space').
  * Integer vectors 'query_start', 'query_width', 'subject_start' and
  * 'subject_width' are assumed to be NA free. 'query_width' and 'subject_width'
  * are assumed to contain non-negative values. For efficiency reasons, those
@@ -497,19 +524,20 @@ static SEXP make_LIST_from_ovenc_parts(SEXP Loffset, SEXP Roffset,
  *        'as_raw' is FALSE) or a raw vector (if 'as_raw' is TRUE).
  */
 SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
-			SEXP query_space,
+			SEXP query_space, SEXP Lquery_length,
 		      SEXP subject_start, SEXP subject_width,
 			SEXP subject_space,
 		      SEXP as_matrix, SEXP as_raw)
 {
-	int as_matrix0, as_raw0, Loffset, Roffset;
+	int Lquery_len, as_matrix0, as_raw0, Loffset, Roffset;
 	CharAE buf;
 	SEXP encoding, ans_Loffset, ans_Roffset, ans;
 
+	Lquery_len = INTEGER(Lquery_length)[0];
 	as_matrix0 = as_matrix != R_NilValue && LOGICAL(as_matrix)[0];
 	as_raw0 = as_raw != R_NilValue && LOGICAL(as_raw)[0];
 	buf = _new_CharAE(0);
-	safe_encodeII(query_start, query_width, query_space,
+	safe_encodeII(query_start, query_width, query_space, Lquery_len,
 		      subject_start, subject_width, subject_space,
 		      as_matrix0, &Loffset, &Roffset, &buf);
 	PROTECT(encoding = make_encoding_from_CharAE(&buf, as_raw0 ? 2 : 1,
@@ -528,9 +556,10 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 	return ans;
 }
 
-/* --- .Call ENTRY POINT ---
+/* --- .Call ENTRY POINT ---/
  * 'query_starts', 'query_widths', 'query_spaces': lists of integer vectors.
  * The 3 lists are assumed to have the same length (M) and shape.
+ * 'Lquery_lengths': NULL or integer vector of length M.
  * 'subject_starts', 'subject_widths', 'subject_spaces': lists of integer
  * vectors. The 3 lists are assumed to have the same length (N) and shape.
  * Return a named list with the 3 following components (all of the same
@@ -541,11 +570,11 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
  *        II).
  */
 SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
-				SEXP query_spaces,
+				SEXP query_spaces, SEXP Lquery_lengths,
 				SEXP subject_starts, SEXP subject_widths,
 				SEXP subject_spaces)
 {
-	int q_len, s_len, ans_len, i, j, k;
+	int q_len, s_len, ans_len, Lquery_len, i, j, k;
 	SEXP ans_Loffset, ans_Roffset, ans_encoding, ans_encoding_elt, ans,
 	     query_start, query_width, query_space,
 	     subject_start, subject_width, subject_space;
@@ -562,6 +591,7 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 	PROTECT(ans_Roffset = NEW_INTEGER(ans_len));
 	PROTECT(ans_encoding = NEW_CHARACTER(ans_len));
 	query_space = subject_space = R_NilValue;
+	Lquery_len = 0;
 	buf = _new_CharAE(0);
 	for (i = j = k = 0; k < ans_len; i++, j++, k++) {
 		if (i >= q_len)
@@ -572,11 +602,14 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 		query_width = VECTOR_ELT(query_widths, i);
 		if (query_spaces != R_NilValue)
 			query_space = VECTOR_ELT(query_spaces, i);
+		if (Lquery_lengths != R_NilValue)
+			Lquery_len = INTEGER(Lquery_lengths)[i];
 		subject_start = VECTOR_ELT(subject_starts, j);
 		subject_width = VECTOR_ELT(subject_widths, j);
 		if (subject_spaces != R_NilValue)
 			subject_space = VECTOR_ELT(subject_spaces, j);
 		safe_encodeII(query_start, query_width, query_space,
+			      Lquery_len,
 			      subject_start, subject_width, subject_space,
 			      0,
 			      INTEGER(ans_Loffset) + k,
