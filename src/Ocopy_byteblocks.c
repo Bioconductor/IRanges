@@ -20,8 +20,10 @@ static char translate_byte(char byte, const int *lkup, int lkup_length)
 	int lkup_key, lkup_val;
 
 	lkup_key = (unsigned char) byte;
-	if (lkup_key >= lkup_length || (lkup_val = lkup[lkup_key]) == NA_INTEGER)
-		error("key %d not in lookup table", lkup_key);
+	if (lkup_key >= lkup_length
+	 || (lkup_val = lkup[lkup_key]) == NA_INTEGER)
+		error("key %d (char '%c') is not in lookup table",
+		      lkup_key, byte);
 	return (char) lkup_val;
 }
 
