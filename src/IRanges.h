@@ -522,6 +522,11 @@ SEXP Integer_duplicated4_hash(
 	SEXP d
 );
 
+SEXP Integer_explode_bits(
+	SEXP x,
+	SEXP bitpos
+);
+
 SEXP Integer_sorted_merge(
 	SEXP x,
 	SEXP y

@@ -286,6 +286,35 @@ SEXP Integer_duplicated4_hash(SEXP a, SEXP b, SEXP c, SEXP d)
 
 
 /****************************************************************************
+ * Bitwise operations.
+ */
+
+SEXP Integer_explode_bits(SEXP x, SEXP bitpos)
+{
+	SEXP ans;
+	int ans_nrow, ans_ncol, i, j, *ans_elt, bitmask;
+	const int *x_elt, *bitpos_elt;
+
+	ans_nrow = LENGTH(x);
+	ans_ncol = LENGTH(bitpos);
+	PROTECT(ans = allocMatrix(INTSXP, ans_nrow, ans_ncol));
+	ans_elt = INTEGER(ans);
+	for (j = 0, bitpos_elt = INTEGER(bitpos);
+	     j < ans_ncol;
+	     j++, bitpos_elt++)
+	{
+		if (*bitpos_elt == NA_INTEGER || *bitpos_elt < 1)
+			error("'bitpos' must contain values >= 1");
+		bitmask = 1 << (*bitpos_elt - 1);
+		for (i = 0, x_elt = INTEGER(x); i < ans_nrow; i++, x_elt++)
+			*(ans_elt++) = (*x_elt & bitmask) != 0;
+	}
+	UNPROTECT(1);
+	return ans;
+}
+
+
+/****************************************************************************
  * --- .Call ENTRY POINT ---
  * Creates the (sorted) union of two sorted integer vectors
  */

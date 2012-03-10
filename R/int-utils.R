@@ -289,6 +289,84 @@ duplicatedIntegerQuads <- function(a, b, c, d,
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Bitwise operations.
+###
+### The bitwise operations in this section don't treat the integer NA (aka
+### NA_integer_) in any particular way: at the C level an NA_integer_ is
+### just a 32-bit pattern like any other int in C.
+###
+
+makePowersOfTwo <- function(nbit)
+{
+    if (!isSingleInteger(nbit) || nbit < 0L)
+        stop("'nbit' must be a single non-negative integer")
+    if (nbit == 0L)
+        return(integer(0))
+    as.integer(cumprod(c(1L, rep.int(2L, nbit-1L))))
+}
+
+### Returns an integer matrix with 'length(x)' rows and 'length(bitpos)' cols.
+explodeIntBits <- function(x, bitpos=1:32)
+{
+    if (!is.integer(x))
+        stop("'x' must be an integer vector")
+    if (!is.integer(bitpos))
+        stop("'bitpos' must be an integer vector")
+    ## Old implementation: not very efficient and also broken on NAs and
+    ## negative integers!
+    #if (length(bitpos) == 0L)
+    #    return(matrix(nrow=length(x), ncol=0L))
+    #nbit <- max(bitpos)
+    #if (is.na(nbit) || min(bitpos) <= 0L)
+    #    stop("'bitpos' must contain potive values only")
+    #ans <- matrix(nrow=length(x), ncol=nbit)
+    #for (i in seq_len(ncol(ans))) {
+    #    ans[ , i] <- x %% 2L
+    #    x <- x %/% 2L
+    #}
+    #ans[ , bitpos, drop=FALSE]
+    .Call2("Integer_explode_bits", x, bitpos, PACKAGE="IRanges")
+}
+
+### FIXME: Broken if ncol(x) = 32.
+implodeIntBits <- function(x)
+{
+    if (!is.matrix(x))
+        stop("'x' must be a matrix")
+    tx <- t(x)
+    data <- tx * makePowersOfTwo(nrow(tx))
+    ## In some circumstances (e.g. if 'tx' has 0 col), the "dim" attribute
+    ## gets lost during the above multiplication.
+    if (is.null(dim(data)))
+        dim(data) <- dim(tx)
+    as.integer(colSums(data))
+}
+
+intbitsNOT <- function(x)
+{
+    stop("not yet implemented")  # fix implodeIntBits() first!
+    xbits <- explodeIntBits(x)
+    implodeIntBits(!xbits)
+}
+
+intbitsAND <- function(x, y)
+{
+    stop("not yet implemented")  # fix implodeIntBits() first!
+    xbits <- explodeIntBits(x)
+    ybits <- explodeIntBits(y)
+    implodeIntBits(xbits & ybits)
+}
+
+intbitsOR <- function(x, y)
+{
+    stop("not yet implemented")  # fix implodeIntBits() first!
+    xbits <- explodeIntBits(x)
+    ybits <- explodeIntBits(y)
+    implodeIntBits(xbits | ybits)
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Others.
 ###
 
@@ -322,42 +400,5 @@ reverseIntegerInjection <- function(injection, N)
     is_not_na <- !is.na(injection)
     ans[injection[is_not_na]] <- seq_len(M)[is_not_na]
     ans
-}
-
-makePowersOfTwo <- function(nbit)
-{
-    if (!isSingleInteger(nbit) || nbit < 0L)
-        stop("'nbit' must be a single non-negative integer")
-    if (nbit == 0L)
-        return(integer(0))
-    as.integer(cumprod(c(1L, rep.int(2L, nbit-1L))))
-}
-
-### Doesn't produce a meaningful result on negative ints.
-explodeIntBits <- function(x, nbit)
-{
-    if (!is.integer(x))
-        stop("'x' must be an integer vector")
-    if (!isSingleInteger(nbit) || nbit < 0L)
-        stop("'nbit' must be a single non-negative integer")
-    ans <- matrix(nrow=length(x), ncol=nbit)
-    for (i in seq_len(ncol(ans))) {
-        ans[ , i] <- x %% 2L
-        x <- x %/% 2L
-    }
-    ans
-}
-
-implodeIntBits <- function(x)
-{
-    if (!is.matrix(x))
-        stop("'x' must be a matrix")
-    tx <- t(x)
-    data <- tx * makePowersOfTwo(nrow(tx))
-    ## In some circumstances (e.g. if 'tx' has 0 col), the "dim" attribute
-    ## gets lost during the above multiplication.
-    if (is.null(dim(data)))
-        dim(data) <- dim(tx)
-    as.integer(colSums(data))
 }
 
