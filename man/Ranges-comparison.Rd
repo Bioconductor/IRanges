@@ -2,29 +2,28 @@
 
 \alias{Ranges-comparison}
 
-\alias{==}
 \alias{==,Ranges,Ranges-method}
 \alias{!=,Ranges,Ranges-method}
 \alias{duplicated,Ranges-method}
 \alias{unique,Ranges-method}
 
-\alias{<=}
 \alias{<=,Ranges,Ranges-method}
-\alias{>=}
 \alias{>=,Ranges,Ranges-method}
-\alias{<}
 \alias{<,Ranges,Ranges-method}
-\alias{>}
 \alias{>,Ranges,Ranges-method}
 \alias{order,Ranges-method}
 \alias{sort,Ranges-method}
 \alias{rank,Ranges-method}
 
+\alias{compare}
+\alias{compare,Ranges,Ranges-method}
 
-\title{Ranges comparison}
+
+\title{Comparing and ordering ranges}
 
 \description{
-  Equality and ordering of ranges, and related methods.
+  Methods for comparing and ordering the elements in one or more
+  \link{Ranges} objects.
 }
 
 \usage{
@@ -55,10 +54,14 @@
 
 \S4method{rank}{Ranges}(x, na.last=TRUE,
      ties.method=c("average", "first", "random", "max", "min"))
+
+## ==== Generalized range-wise comparison ====
+## -------------------------------------------
+compare(x, y)
 }
 
 \arguments{
-  \item{e1,e2,x}{
+  \item{e1, e2, x, y}{
     \link{Ranges} objects.
   }
   \item{incomparables}{
@@ -137,6 +140,43 @@
       Returns the sample ranks of the ranges in \code{x}.
       See \code{\link[base]{rank}} in the base package for more details.
     }
+    \item{}{
+      \code{compare(x, y)}:
+      Performs "generalized range-wise comparison" of \code{x} and \code{y},
+      that is, returns an integer vector where the i-th element is a code
+      describing how the i-th element in \code{x} is positioned relatively
+      to the i-th element in \code{y}.
+
+      Here is a summary of the 13 valid codes and their meaning:
+      \preformatted{
+        -6: x[i]: .oooo.......         6: x[i]: .......oooo.
+            y[i]: .......oooo.            y[i]: .oooo.......
+
+        -5: x[i]: ..oooo......         5: x[i]: ......oooo..
+            y[i]: ......oooo..            y[i]: ..oooo......
+
+        -4: x[i]: ...oooo.....         4: x[i]: .....oooo...
+            y[i]: .....oooo...            y[i]: ...oooo.....
+
+        -3: x[i]: ...oooooo...         3: x[i]: .....oooo...
+            y[i]: .....oooo...            y[i]: ...oooooo...
+
+        -2: x[i]: ..oooooooo..         2: x[i]: ....oooo....
+            y[i]: ....oooo....            y[i]: ..oooooooo..
+
+        -1: x[i]: ...oooo.....         1: x[i]: ...oooooo...
+            y[i]: ...oooooo...            y[i]: ...oooo.....
+
+                        0: x[i]: ...oooooo...
+                           y[i]: ...oooooo...
+      }
+      Note that this way of comparing ranges is a refinement over the
+      standard ranges comparison defined by the \code{==}, \code{!=},
+      \code{<=}, \code{>=}, \code{<} and \code{>} operators. In particular
+      a code that is \code{< 0}, \code{= 0}, or \code{> 0}, corresponds to
+      \code{x[i] < y[i]}, \code{x[i] == y[i]}, or \code{x[i] > y[i]},
+      respectively.
+    }
   }
 }
 
@@ -154,16 +194,37 @@
   x <- IRanges(start=c(20L, 8L, 20L, 22L, 25L, 20L, 22L, 22L),
                width=c( 4L, 0L, 11L,  5L,  0L,  9L,  5L,  0L))
   x
+
+  ## ---------------------------------------------------------------------
+  ## A. EQUALITY AND RELATED METHODS
+  ## ---------------------------------------------------------------------
   which(width(x) == 0)  # 3 empty ranges
   x[2] == x[2]  # TRUE
   x[2] == x[5]  # FALSE
   x == x[4]
   duplicated(x)
   unique(x)
+
+  ## ---------------------------------------------------------------------
+  ## B. ORDERING AND RELATED METHODS
+  ## ---------------------------------------------------------------------
   x >= x[3]
   order(x)
   sort(x)
   rank(x, ties.method="first")
+
+  ## ---------------------------------------------------------------------
+  ## C. GENERALIZED RANGE-WISE COMPARISON OF 2 Ranges OBJECTS
+  ## ---------------------------------------------------------------------
+  x0 <- IRanges(1:11, width=4)
+  x0
+  y0 <- IRanges(6, 9)
+  compare(x0, y0)
+  compare(IRanges(4:6, width=6), y0)
+  compare(IRanges(6:8, width=2), y0)
+  compare(x0, y0) < 0   # equivalent to 'x0 < y0'
+  compare(x0, y0) == 0  # equivalent to 'x0 == y0'
+  compare(x0, y0) > 0   # equivalent to 'x0 > y0'
 }
 
 \keyword{methods}
