@@ -732,7 +732,32 @@ SEXP IRanges_gaps(
 );
 
 
-/* coverage */
+/* Ranges_comparison.c */
+
+int _check_Ranges_start_width(
+	SEXP start,
+	SEXP width,
+	const int **start_p,
+	const int **width_p,
+	const char *what
+);
+
+int _overlap_code(
+	int x_start,
+	int x_width,
+	int y_start,
+	int y_width
+);
+
+SEXP Ranges_compare(
+	SEXP x_start,
+	SEXP x_width,
+	SEXP y_start,
+	SEXP y_width
+);
+
+
+/* coverage.c */
 
 SEXP IRanges_coverage(
 	SEXP x,
@@ -991,13 +1016,6 @@ SEXP make_all_group_inner_hits(
 
 
 /* OverlapEncodings_class.c */
-
-SEXP Ranges_compare(
-	SEXP x_start,
-	SEXP x_width,
-	SEXP y_start,
-	SEXP y_width
-);
 
 SEXP encode_overlaps1(
 	SEXP query_start,

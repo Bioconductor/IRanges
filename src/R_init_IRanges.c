@@ -70,7 +70,10 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(IRanges_reduce, 4),
 	CALLMETHOD_DEF(IRanges_gaps, 3),
 
-/* coverage */
+/* Ranges_comparison.c */
+	CALLMETHOD_DEF(Ranges_compare, 4),
+
+/* coverage.c */
 	CALLMETHOD_DEF(IRanges_coverage, 4),
 
 /* Grouping_class.c */
@@ -121,7 +124,6 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(make_all_group_inner_hits, 2),
 
 /* OverlapEncodings_class.c */
-	CALLMETHOD_DEF(Ranges_compare, 4),
 	CALLMETHOD_DEF(encode_overlaps1, 9),
 	CALLMETHOD_DEF(RangesList_encode_overlaps, 7),
 

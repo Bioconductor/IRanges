@@ -132,6 +132,7 @@ export(
     threebands,
     reduce,
     gaps,
+    compare,
     findOverlaps, countOverlaps,
     subsetByOverlaps,
     nearest, precede, follow,
@@ -193,7 +194,7 @@ export(
     matchMatrix, queryHits, subjectHits, matching, map,
 
     ## OverlapEncodings
-    compare, Loffset, Roffset, encoding,
+    Loffset, Roffset, encoding,
     encodeOverlaps1, RangesList_encodeOverlaps, encodeOverlaps,
 
     ## Other generic functions:
@@ -287,6 +288,7 @@ exportMethods(
     threebands,
     reduce,
     gaps,
+    compare,
     findOverlaps, countOverlaps,
     subsetByOverlaps,
     nearest, precede, follow,
@@ -336,6 +338,6 @@ exportMethods(
     rdapply,
     universe, "universe<-", space, score, "score<-",
     matchMatrix, queryHits, subjectHits, queryLength, subjectLength,
-    compare, Loffset, Roffset, encoding, encodeOverlaps
+    Loffset, Roffset, encoding, encodeOverlaps
 )
 
