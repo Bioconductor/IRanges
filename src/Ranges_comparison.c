@@ -41,34 +41,34 @@ int _check_Ranges_start_width(SEXP start, SEXP width,
  * with respect to each other. They are summarized in the following table
  * together with the codes we assign them:
  *
- *                   numeric code & |                 numeric code &
- *                  1-letter code & |                1-letter code &
- *                        long code |                      long code
- *   -------------  --------------- | -------------  ---------------
- *   x: oooo        -6   'a'  "x y" | x:       oooo   6   'm'  "y x"
- *   y:       oooo                  | y: oooo                       
- *   -------------  --------------- | -------------  ---------------
- *   x:  oooo       -5   'b'  "xy"  | x:      oooo    5   'l'  "yx" 
- *   y:      oooo                   | y:  oooo                      
- *   -------------  --------------- | -------------  ---------------
- *   x:   oooo      -4   'c'  "x=y" | x:     oooo     4   'k'  "y=x"
- *   y:     oooo                    | y:   oooo                     
- *   -------------  --------------- | -------------  ---------------
- *   x:   oooooo    -3   'd'  "x="  | x:     oooo     3   'j'  "y=" 
- *   y:     oooo                    | y:   oooooo                   
- *   -------------  --------------- | -------------  ---------------
- *   x:  oooooooo   -2   'e'  "x=x" | x:    oooo      2   'i'  "y=y"
- *   y:    oooo                     | y:  oooooooo                  
- *   -------------  --------------- | -------------  ---------------
- *   x:   oooo      -1   'f'  "=y"  | x:   oooooo     1   'h'  "=x" 
- *   y:   oooooo                    | y:   oooo                     
- *   -------------  -------------------------------  ---------------
- *                \   x:   oooooo     0   'g'  "="    /
- *                 \  y:   oooooo                    /
- *                  \-------------------------------/
+ *                     numeric code & |                   numeric code &
+ *                    1-letter code & |                  1-letter code &
+ *                          long code |                        long code
+ *   ---------------  --------------- | ---------------  ---------------
+ *   x: .oooo.......  -6   'a'  "x y" | x: .......oooo.   6   'm'  "y x"
+ *   y: .......oooo.                  | y: .oooo.......                 
+ *   ---------------  --------------- | ---------------  ---------------
+ *   x: ..oooo......  -5   'b'  "xy"  | x: ......oooo..   5   'l'  "yx" 
+ *   y: ......oooo..                  | y: ..oooo......                 
+ *   ---------------  --------------- | ---------------  ---------------
+ *   x: ...oooo.....  -4   'c'  "x=y" | x: .....oooo...   4   'k'  "y=x"
+ *   y: .....oooo...                  | y: ...oooo.....                 
+ *   ---------------  --------------- | ---------------  ---------------
+ *   x: ...oooooo...  -3   'd'  "x="  | x: ....oooo....   3   'j'  "y=" 
+ *   y: ....oooo....                  | y: ...oooooo...                 
+ *   ---------------  --------------- | ---------------  ---------------
+ *   x: ..oooooooo..  -2   'e'  "x=x" | x: ....oooo....   2   'i'  "y=y"
+ *   y: ....oooo....                  | y: ..oooooooo..                 
+ *   ---------------  --------------- | ---------------  ---------------
+ *   x: ...oooo.....  -1   'f'  "=y"  | x: ...oooooo...   1   'h'  "=x" 
+ *   y: ...oooooo...                  | y: ...oooo.....                 
+ *   ---------------  ---------------------------------  ---------------
+ *                 \   x: ...oooooo...   0   'g'  "="    /
+ *                  \  y: ...oooooo...                  /
+ *                   \---------------------------------/
  * Notes:
  *   o This way of comparing ranges is a refinement over the standard ranges
- *     comparison defined by the <, >, <=, >=, == and != operators. In
+ *     comparison defined by the ==, !=, <=, >=, < and > operators. In
  *     particular a numeric code that is < 0, = 0, or > 0 corresponds to
  *     x < y, x == y, or x > y, respectively.
  *   o In this file we use the term "overlap" in a loose way even when there
