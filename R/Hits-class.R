@@ -151,6 +151,46 @@ setMethod("ranges", "Hits", function(x, query, subject) {
   IRanges(pmax.int(qstart, sstart), pmin.int(send, qend))
 })
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Set operations
+###
+
+compatibleHits <- function(x, y) {
+  subjectLength(x) == subjectLength(y) && queryLength(x) == queryLength(y)
+}
+
+setMethod("%in%", c("Hits", "Hits"), function(x, table) {
+  if (!compatibleHits(x, table))
+    stop("'x' and 'table' are incompatible by subject and query length")
+  qhits <- c(queryHits(table), queryHits(x))
+  shits <- c(subjectHits(table), subjectHits(x))
+  dup <- duplicatedIntegerPairs(qhits, shits)
+  tail(dup, -length(table))  
+})
+
+setMethod("setdiff", c("Hits", "Hits"), function(x, y) {
+  if (!compatibleHits(x, y))
+    stop("'x' and 'y' are incompatible by subject and query length")
+  x[!(x %in% y)]
+})
+
+setMethod("union", c("Hits", "Hits"), function(x, y) {
+  if (!compatibleHits(x, y))
+    stop("'x' and 'y' are incompatible by subject and query length")
+  qhits <- c(queryHits(x), queryHits(y))
+  shits <- c(subjectHits(x), subjectHits(y))
+  dup <- duplicatedIntegerPairs(qhits, shits)
+  new("Hits", queryHits = qhits[!dup], subjectHits = shits[!dup],
+      queryLength = queryLength(x), subjectLength = subjectLength(x))
+})
+
+setMethod("intersect", c("Hits", "Hits"), function(x, y) {
+  if (!compatibleHits(x, y))
+    stop("'x' and 'y' are incompatible by subject and query length")
+  x[x %in% y]
+})
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### makeAllGroupInnerHits()
 ###
@@ -207,6 +247,7 @@ setMethod("show", "Hits", function(object) {
   cat(labeledLine("queryHits", queryHits(object), count = FALSE))
   cat(labeledLine("subjectHits", subjectHits(object), count = FALSE))
 })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### TODO: many convenience methods
