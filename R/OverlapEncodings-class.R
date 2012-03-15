@@ -6,19 +6,7 @@
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The OverlapEncodings class.
 ###
-### The OverlapEncodings class is a container for storing a vector of OVM's.
-### An OVM ("overlaps matrix") is an M x N matrix of 1-letter codes
-### representing all the range-to-range overlaps between a query with M ranges
-### and a subject with N ranges.
-###
 
-### Slots:
-###   o Loffset ("left offset"): nb of cols on the left of the OVM that contain
-###     only "m"'s.
-###   o Roffset ("right offset"): nb of cols on the right of the OVM that
-###     contain only "a"'s.
-###   o encoding: linear sequence of symbols representing the trimmed OVM (i.e.
-###     after removing Loffset cols on the left and Roffset cols on the right).
 setClass("OverlapEncodings",
     contains="Vector",
     representation(

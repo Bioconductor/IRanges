@@ -187,8 +187,8 @@ rangeComparisonCodeToLetter(code)
       to return predefined codes only but methods for other objects (e.g.
       for \link[GenomicRanges]{GenomicRanges} objects) can return
       non-predefined codes. Like for the predefined codes, the sign of any
-      non-predefined code must tell whether \code{x[i]} is less than,
-      equal to, or greater than \code{y[i]}.
+      non-predefined code must tell whether \code{x[i]} is less than, or
+      greater than \code{y[i]}.
     }
     \item{}{
       \code{rangeComparisonCodeToLetter(x)}:

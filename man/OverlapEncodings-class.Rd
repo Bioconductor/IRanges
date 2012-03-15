@@ -101,20 +101,59 @@ encodeOverlaps(query, subject, hits=NULL)
       \enumerate{
         \item All the ranges in \code{Qi} are compared with \code{tSi[1]},
               then with \code{tSi[2]}, etc...
-              At each step, comparing all the ranges in \code{Qi} with
-              \code{tSi[k]} is done with
-              \code{\link{rangeComparisonCodeToLetter}(\link{compare}(Qi, tSi[k]))}.
-              This returns a vector of single letters of length \code{M}
-              where \code{M} is \code{length(Qi)}
-              (see \code{?\link{compare}} for the meaning of those letters).
-              This vector is then turned into a single string of \code{M}
-              letters by pasting all the individual letters together.
-        \item The words obtained at the previous step (1 word per range
-              in \code{tSi} are pasted together into a single character
-              string and separated by colons (\code{":"}). One colon is
-              added at the beginning of the string and another one at the end.
-        \item TODO
+              At each step (one step per range in \code{tSi}), comparing
+              all the ranges in \code{Qi} with \code{tSi[k]} is done with
+              \code{rangeComparisonCodeToLetter(compare(Qi, tSi[k]))}.
+              So at each step, we end up with a vector of \code{M}
+              single letters (where \code{M} is \code{length(Qi)}).
+        \item Each vector obtained previously (1 vector per range in
+              \code{tSi}, all of them of length \code{M}) is turned
+              into a single string by pasting its individual letters together.
+        \item All the strings obtained previously (1 per range in \code{tSi})
+              are pasted together into a single long string and separated
+              by colons (\code{":"}). An additional colon is prepended to
+              the long string and another one appended to it.
+        \item Finally, the value of \code{M} is prepended to the long
+              string. The final string is the encoding.
       }
+    }
+  }
+}
+
+\section{Coercing an OverlapEncodings object}{
+  In the following code snippets, \code{x} is an OverlapEncodings object.
+
+  \describe{
+    \item{}{
+      \code{as.data.frame(x)}:
+      Return \code{x} as a data frame with columns \code{"Loffset"},
+      \code{"Roffset"} and \code{"encoding"}.
+    }
+  }
+}
+
+\section{Compute overlap encodings}{
+  In the following code snippets, \code{query} and \code{subject} are
+  2 list-like objects where each top-level element contains multiple ranges.
+
+  \describe{
+    \item{}{
+      \code{encodeOverlaps(query, subject)}:
+      When used with the \code{query} and \code{subject} arguments only,
+      \code{query} and \code{subject} must have the same length.
+      \code{encodeOverlaps(query, subject)} computes the overlap encodings
+      and returns them in an OverlapEncodings object of the same length as
+      the input.
+    }
+    \item{}{
+      \code{encodeOverlaps(query, subject, hits)}:
+      When used with 3 arguments, the 3rd argument \code{hits} must be
+      a \link{Hits} object and is typically the result of a call to
+      \code{\link{findOverlaps}(query, subject)}.
+      \code{encodeOverlaps(query, subject, hits)} is equivalent to
+      \code{encodeOverlaps(query[queryHits(hits)], subject[subjectHits(hits)])}.
+      Note that here \code{query} and \code{subject} don't need to have
+      the same length anymore.
     }
   }
 }
@@ -123,7 +162,25 @@ encodeOverlaps(query, subject, hits=NULL)
 
 \seealso{
   \link{compare},
-  \link{Vector-class}
+  \link{Hits-class},
+  \link{findOverlaps}
+}
+
+\examples{
+read1 <- IRanges(c(7, 15, 22), c(9, 19, 23))
+read2 <- IRanges(c(5, 15), c(9, 17))
+read3 <- IRanges(c(16, 22), c(19, 24))
+query <- IRangesList(read1, read2, read3)
+tx <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
+subject <- IRangesList(tx)
+ovenc <- encodeOverlaps(query, subject)
+ovenc
+
+length(ovenc)
+Loffset(ovenc)
+Roffset(ovenc)
+encoding(ovenc)
+as.data.frame(ovenc)
 }
 
 \keyword{methods}
