@@ -249,9 +249,7 @@ setMethod("encodeOverlaps", c("Ranges", "Ranges", "missing"),
         ### TODO: Maybe add an extra arg to compare() to let the user choose
         ### the type of output i.e. numeric or 1-letter codes.
         codes <- compare(query, subject)
-        numTo1Letter <- function(codes)
-            safeExplode(rawToChar(as.raw(as.integer(charToRaw("g")) + codes)))
-        factor(numTo1Letter(codes), levels=numTo1Letter(-6:6))
+        rangeComparisonCodeToLetter(codes)
     }
 )
 

@@ -22,6 +22,15 @@ setMethod("compare", c("Ranges", "Ranges"),
     }
 )
 
+rangeComparisonCodeToLetter <- function(code)
+{
+    if (!is.integer(code))
+        stop("'code' must be an integer vector")
+    code2letter <- function(code)
+        safeExplode(rawToChar(as.raw(as.integer(charToRaw("g")) + code)))
+    factor(code2letter(code), levels=code2letter(-6:6))
+}
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Equality and related methods.

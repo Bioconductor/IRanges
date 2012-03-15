@@ -17,6 +17,7 @@
 
 \alias{compare}
 \alias{compare,Ranges,Ranges-method}
+\alias{rangeComparisonCodeToLetter}
 
 
 \title{Comparing and ordering ranges}
@@ -58,6 +59,7 @@
 ## ==== Generalized range-wise comparison ====
 ## -------------------------------------------
 compare(x, y)
+rangeComparisonCodeToLetter(code)
 }
 
 \arguments{
@@ -91,6 +93,9 @@ compare(x, y)
   \item{ties.method}{
     A character string specifying how ties are treated. Only \code{"first"}
     is supported for now.
+  }
+  \item{code}{
+    A vector of codes as returned by \code{compare}.
   }
 }
 
@@ -144,8 +149,8 @@ compare(x, y)
       \code{compare(x, y)}:
       Performs "generalized range-wise comparison" of \code{x} and \code{y},
       that is, returns an integer vector where the i-th element is a code
-      describing how the i-th element in \code{x} is positioned relatively
-      to the i-th element in \code{y}.
+      describing how the i-th element in \code{x} is qualitatively positioned
+      relatively to the i-th element in \code{y}.
 
       Here is a summary of the 13 valid codes and their meaning:
       \preformatted{
@@ -225,6 +230,8 @@ compare(x, y)
   compare(x0, y0) < 0   # equivalent to 'x0 < y0'
   compare(x0, y0) == 0  # equivalent to 'x0 == y0'
   compare(x0, y0) > 0   # equivalent to 'x0 > y0'
+
+  rangeComparisonCodeToLetter(compare(x0, y0))
 }
 
 \keyword{methods}

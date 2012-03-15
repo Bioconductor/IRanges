@@ -132,7 +132,7 @@ export(
     threebands,
     reduce,
     gaps,
-    compare,
+    compare, rangeComparisonCodeToLetter,
     findOverlaps, countOverlaps,
     subsetByOverlaps,
     nearest, precede, follow,
