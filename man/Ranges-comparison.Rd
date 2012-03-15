@@ -152,7 +152,7 @@ rangeComparisonCodeToLetter(code)
       describing how the i-th element in \code{x} is qualitatively positioned
       relatively to the i-th element in \code{y}.
 
-      Here is a summary of the 13 valid codes and their meaning:
+      Here is a summary of the 13 predefined codes and their meanings:
       \preformatted{
         -6: x[i]: .oooo.......         6: x[i]: .......oooo.
             y[i]: .......oooo.            y[i]: .oooo.......
@@ -175,12 +175,29 @@ rangeComparisonCodeToLetter(code)
                         0: x[i]: ...oooooo...
                            y[i]: ...oooooo...
       }
+
       Note that this way of comparing ranges is a refinement over the
       standard ranges comparison defined by the \code{==}, \code{!=},
       \code{<=}, \code{>=}, \code{<} and \code{>} operators. In particular
       a code that is \code{< 0}, \code{= 0}, or \code{> 0}, corresponds to
       \code{x[i] < y[i]}, \code{x[i] == y[i]}, or \code{x[i] > y[i]},
       respectively.
+
+      The \code{compare} method for \link{Ranges} objects is guaranteed
+      to return predefined codes only but methods for other objects (e.g.
+      for \link[GenomicRanges]{GenomicRanges} objects) can return
+      non-predefined codes. Like for the predefined codes, the sign of any
+      non-predefined code must tell whether \code{x[i]} is less than,
+      equal to, or greater than \code{y[i]}.
+    }
+    \item{}{
+      \code{rangeComparisonCodeToLetter(x)}:
+      Translate the codes returned by \code{compare}. The 13 predefined
+      codes are translated as follow: -6 -> a; -5 -> b; -4 -> c; -3 -> d;
+      -2 -> e; -1 -> f; 0 -> g; 1 -> h; 2 -> i; 3 -> j; 4 -> k; 5-> l; 6 -> m.
+      Any non-predefined code is translated to X.
+      The translated codes are returned in a factor with 14 levels:
+      a, b, ..., l, m, X.
     }
   }
 }
@@ -231,6 +248,7 @@ rangeComparisonCodeToLetter(code)
   compare(x0, y0) == 0  # equivalent to 'x0 == y0'
   compare(x0, y0) > 0   # equivalent to 'x0 > y0'
 
+  rangeComparisonCodeToLetter(-10:10)
   rangeComparisonCodeToLetter(compare(x0, y0))
 }
 

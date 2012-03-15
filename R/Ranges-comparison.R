@@ -26,9 +26,10 @@ rangeComparisonCodeToLetter <- function(code)
 {
     if (!is.integer(code))
         stop("'code' must be an integer vector")
-    code2letter <- function(code)
-        safeExplode(rawToChar(as.raw(as.integer(charToRaw("g")) + code)))
-    factor(code2letter(code), levels=code2letter(-6:6))
+    code <- code + 7L
+    code[code < 1L | 14L < code] <- 14L
+    levels <- c(letters[1:13], "X")
+    structure(code, levels=levels, class="factor")
 }
 
 
