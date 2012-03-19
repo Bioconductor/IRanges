@@ -25,6 +25,7 @@
 \alias{encodeOverlaps,Ranges,Ranges,missing-method}
 
 \alias{encodeOverlaps1}
+\alias{RangesList_encodeOverlaps}
 
 
 \title{OverlapEncodings objects}
@@ -37,16 +38,39 @@
 
 \usage{
 ## OverlapEncodings accessors:
-length(x)
+\S4method{length}{OverlapEncodings}(x)
 Loffset(x)
 Roffset(x)
 encoding(x)
 
 ## Coercing an OverlapEncodings object:
-as.data.frame(x)
+\S4method{as.data.frame}{OverlapEncodings}(x)
 
 ## Compute overlap encodings:
 encodeOverlaps(query, subject, hits=NULL)
+}
+
+\arguments{
+  \item{x}{
+    An OverlapEncodings object.
+  }
+  \item{query, subject}{
+    2 list-like objects, usually of the same length, where each top-level
+    element contains multiple ranges. E.g. \link{RangesList} objects.
+    If the 2 objects don't have the same length, the shortest is recycled
+    to the length of the longest (the standard recycling rules apply).
+  }
+  \item{hits}{
+    An optional \link{Hits} object that is typically the result of a call
+    to \code{\link{findOverlaps}(query, subject)}.
+    Supplying \code{hits} is a convenient way to do
+    \code{encodeOverlaps(query[queryHits(hits)], subject[subjectHits(hits)])},
+    that is,
+    calling \code{encodeOverlaps(query, subject, hits)} will perform the
+    above.
+    In that case, \code{query} and \code{subject} are generally not expected
+    to have the same length anymore.
+  }
 }
 
 \details{
@@ -140,7 +164,9 @@ encodeOverlaps(query, subject, hits=NULL)
     \item{}{
       \code{encodeOverlaps(query, subject)}:
       When used with the \code{query} and \code{subject} arguments only,
-      \code{query} and \code{subject} must have the same length.
+      \code{query} and \code{subject} are expected to have the same length.
+      If not, the shortest is recycled to the length of the longest (the
+      standard recycling rules apply).
       \code{encodeOverlaps(query, subject)} computes the overlap encodings
       and returns them in an OverlapEncodings object of the same length as
       the input.
@@ -152,8 +178,8 @@ encodeOverlaps(query, subject, hits=NULL)
       \code{\link{findOverlaps}(query, subject)}.
       \code{encodeOverlaps(query, subject, hits)} is equivalent to
       \code{encodeOverlaps(query[queryHits(hits)], subject[subjectHits(hits)])}.
-      Note that here \code{query} and \code{subject} don't need to have
-      the same length anymore.
+      Note that here \code{query} and \code{subject} are generally not
+      expected to have the same length anymore.
     }
   }
 }
