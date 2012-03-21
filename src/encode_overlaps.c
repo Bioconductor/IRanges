@@ -5,11 +5,10 @@
 #include "IRanges.h"
 
 
-/****************************************************************************
+/*
  * A low-level helper for "superficial" checking of the 'space' vector
  * associated with a Ranges object.
  */
-
 static const int *check_Ranges_space(SEXP space, int len, const char *what)
 {
 	if (space == R_NilValue)
@@ -21,117 +20,6 @@ static const int *check_Ranges_space(SEXP space, int len, const char *what)
 		      "the same length as 'start(%s)'", what, what);
 	return INTEGER(space);
 }
-
-
-/****************************************************************************
- * Encode "all ranges against all ranges" overlaps between 2 Ranges objects.
- *
- * Comparing the M ranges in a gapped read with the N ranges in a transcript
- * produces a M x N matrix of 1-letter codes. We call this matrix an OVM
- * ("overlaps matrix"). For example, if the read contains 2 gaps and the
- * transcript has 7 exons, the OVM has 3 rows and 7 columns and would
- * typically look like:
- *
- *      A = mjaaaaa   B = mjaaaaa   C = mjaaaaa   D = mmmjaaa   E = mmmiaaa
- *          mmgaaaa       mmgaaaa       mmaaaaa       mmmmmga       mmmkiaa
- *          mmmfaaa       mmmgaaa       mmfaaaa       mmmmmmf       mmmmmmm
- *
- *   A, B: Compatible splicing.
- *   C: Compatible splicing modulo 1 inserted exon (splicing would be
- *      compatible if one exon was inserted between exons #2 and #3).
- *   D: Compatible splicing modulo 1 dropped exon (splicing would be compatible
- *      if exon #5 was dropped).
- *   E: Incompatible splicing. 1st range in the read is within exon #4, 2nd
- *      range overlaps with exon #4 and is within exon #5 (this implies that
- *      exon #4 and #5 overlap), and 3rd range is beyond the bounds of
- *      the transcript (on the downstream side),
- *
- * Note that we make no assumption that the exons in the transcript are
- * ordered from 5' to 3' or non overlapping. They only need to be ordered by
- * ascending *rank*, which most of the time means that they are ordered from
- * 5' to 3' (or 3' to 5') and with non-empty gaps (introns) between them.
- * However, this is not always the case: we've seen at least one exception in
- * the transcript annotations provided by UCSC where 2 consecutive exons are
- * overlapping!
- * We call "normal" a transcript where the exons ordered by rank are also
- * ordered from 5' to 3' or 3' to 5' and with non-empty gaps between them.
- *
- * We need to encode OVMs in a way that is compact and more "regex friendly"
- * i.e. more suitable for detection of different read-to-transcript splicing
- * situations with regular expressions.
- * We are currently considering 2 types of encodings but this is still a
- * work in progress and it's not clear at the moment which encoding is best.
- * The 2 encodings share the same first step where we trim the OVM by removing
- * cols on its left that contain only "m"'s and cols on its right that contain
- * only "a"'s. We call Loffset ("left offset") and Roffset ("right offset")
- * the numbers of cols removed on the left and on the right, respectively:
- *
- *       Loffset   Roffset
- *   A         1         3
- *   B         1         3
- *   C         1         4
- *   D         3         0
- *   E         3         0
- *
- * Then we encode the trimmed OVM (M x n matrix). The 2 encodings described
- * below don't loose information i.e. the OVM can always be reconstructed
- * from Loffset, Roffset, and the encoding.
- *
- * Type I encoding
- * ---------------
- *
- *   1) The trimmed OVM is walked row by row from the top left to the bottom
- *      right.
- *   2) For each row, the sequence between the m-prefix and the a-suffix is
- *      reported with curly brackets ("{" and "}") placed around it.
- *   3) The 2 sequences S(i) and S(i+1) reported for 2 consecutive rows (rows
- *      i and i+1) are separated by a number of ">"'s or "<"'s indicating the
- *      horizontal gap between the end of S(i) and the start of S(i+1).
- *      A null, positive or negative gap is represented by an empty string,
- *      one or more ">"'s (suggesting a shift to the right), or one or more
- *      "<"'s (suggesting a shift to the left), respectively.
- *   4) The length of the m-prefix in the first row and the length of the
- *      a-suffix in the last row are called the initial and final gaps,
- *      respectively. They are reported at the beginning and end of the linear
- *      sequence, respectively.
- *
- *          Loffset   Roffset   Type I encoding
- *      A         1         3   "{j}{g}{f}"
- *      B         1         3   "{j}{g}{g}"
- *      C         1         4   "{j}{}{f}"
- *      D         3         0   "{j}>{g}{f}"
- *      E         3         0   "{i}<{ki}>>{}"
- *
- *   In the best case (no negative gaps), the length of this linear sequence
- *   is 2M + n. If there is at least one negative gap, then the sequence is
- *   longer. In the worst case (no m-prefix and no a-suffix in any of the
- *   rows), then its length is 2M + n*(2M-1).
- *
- *   Examples of regular expressions that can be used on this encoding:
- *
- *     a. For detecting reads with 1 gap and a splicing that is compatible
- *        with the transcript:
- *            ^\{[jg]\}\{[gf]\}$
- *        Note: replace single backslash by double backslash when putting this
- *        in a character string in R for use with grep().
- *
- *     b. For detecting reads (with or without gaps) with a splicing that is
- *        compatible with the transcript:
- *            ^(\{[i]\}|(\{j\})?(\{g\})*(\{f\})?)$
- *
- *     c. For detecting reads with a splicing that is not compatible with the
- *        transcript but that would be compatible if one exon was dropped:
- *            ^\{[jg]\}(\{g\})*>(\{g\})*\{[gf]\}$
- *
- *     Problem: those regex work only on OVMs that have at most 1 letter on
- *     each row between the m-prefix and the a-suffix. This is not guaranteed
- *     to be the case for a transcript that is not "normal".
- *
- * Type II encoding
- * ----------------
- *
- * Coming soon...
- */
 
 static void CharAE_append_char(CharAE *char_ae, char c, int times)
 {
@@ -181,11 +69,11 @@ static void CharAE_append_int(CharAE *char_ae, int d)
  * A special 1-letter code 'X' is used for ranges that are not on the same
  * space.
  */
-static void encodeII(
-		const int *q_start, const int *q_width,
-		const int *q_space, int q_len, int Lq_len,
-		const int *s_start, const int *s_width,
-		const int *s_space, int s_len,
+static void one_overlap_encoding(
+		const int *q_start, const int *q_width, const int *q_space,
+		int q_len, int Lq_len,
+		const int *s_start, const int *s_width, const int *s_space,
+		int s_len,
 		int as_matrix, int *Loffset, int *Roffset, CharAE *out)
 {
 	int out_nelt0, i, starti, widthi, spacei, j, startj, widthj, spacej,
@@ -258,7 +146,7 @@ static void encodeII(
 	return;
 }
 
-static void safe_encodeII(
+static void safe_one_overlap_encoding(
 		SEXP query_start, SEXP query_width, SEXP query_space,
 		int Lquery_len,
 		SEXP subject_start, SEXP subject_width, SEXP subject_space,
@@ -276,9 +164,9 @@ static void safe_encodeII(
 	s_len = _check_Ranges_start_width(subject_start, subject_width,
 					  &s_start, &s_width, "subject");
 	s_space = check_Ranges_space(subject_space, s_len, "subject");
-	encodeII(q_start, q_width, q_space, q_len, Lquery_len,
-		 s_start, s_width, s_space, s_len,
-		 as_matrix, Loffset, Roffset, out);
+	one_overlap_encoding(q_start, q_width, q_space, q_len, Lquery_len,
+		s_start, s_width, s_space, s_len,
+		as_matrix, Loffset, Roffset, out);
 	return;
 }
 
@@ -383,9 +271,10 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 	as_matrix0 = as_matrix != R_NilValue && LOGICAL(as_matrix)[0];
 	as_raw0 = as_raw != R_NilValue && LOGICAL(as_raw)[0];
 	buf = _new_CharAE(0);
-	safe_encodeII(query_start, query_width, query_space, Lquery_len,
-		      subject_start, subject_width, subject_space,
-		      as_matrix0, &Loffset, &Roffset, &buf);
+	safe_one_overlap_encoding(
+		query_start, query_width, query_space, Lquery_len,
+		subject_start, subject_width, subject_space,
+		as_matrix0, &Loffset, &Roffset, &buf);
 	PROTECT(encoding = make_encoding_from_CharAE(&buf, as_raw0 ? 2 : 1,
 						as_matrix0,
 						LENGTH(query_start),
@@ -455,13 +344,13 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 		subject_width = VECTOR_ELT(subject_widths, j);
 		if (subject_spaces != R_NilValue)
 			subject_space = VECTOR_ELT(subject_spaces, j);
-		safe_encodeII(query_start, query_width, query_space,
-			      Lquery_len,
-			      subject_start, subject_width, subject_space,
-			      0,
-			      INTEGER(ans_Loffset) + k,
-			      INTEGER(ans_Roffset) + k,
-			      &buf);
+		safe_one_overlap_encoding(
+			query_start, query_width, query_space, Lquery_len,
+			subject_start, subject_width, subject_space,
+			0,
+			INTEGER(ans_Loffset) + k,
+			INTEGER(ans_Roffset) + k,
+			&buf);
 		PROTECT(ans_encoding_elt = make_encoding_from_CharAE(&buf, 0,
 						0, q_len, Lquery_len, s_len));
 		SET_STRING_ELT(ans_encoding, k, ans_encoding_elt);

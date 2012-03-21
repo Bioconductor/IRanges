@@ -87,33 +87,6 @@ setMethod("encodeOverlaps", c("ANY", "ANY", "Hits"),
     }
 )
 
-### "Parallel" overlap encoding between 2 RangesList objects.
-### Between many reads and one transcript.
-###   > read1 <- IRanges(c(7, 15, 22), c(9, 19, 23))
-###   > read2 <- IRanges(c(5, 15), c(9, 17))
-###   > read3 <- IRanges(c(16, 22), c(19, 24))
-###   > query <- IRangesList(read1, read2, read3)
-###   > tx <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
-###   > subject <- IRangesList(tx)
-###   > ovenc <- encodeOverlaps(query, subject)
-###   > ovenc
-###   OverlapEncodings of length 3
-###       Loffset Roffset       encoding
-###   [1]       1       0 3:jmm:agm:aaf:
-###   [2]       1       1       2:jm:af:
-###   [3]       2       0       2:jm:af:
-### Reads compatible with transcript 'tx':
-###   ## Regex to use for reads with 1 range (no gaps):
-###   > pattern1 <- ":[fgij]:"
-###   ## Regex to use for reads with 2 ranges (1 gap):
-###   > pattern2 <- ":[jg].:.[gf]:"
-###   ## Regex to use for reads with 3 ranges (2 gaps):
-###   > pattern3 <- ":[jg]..:.g.:..[gf]:"
-###   ## Regex to use for reads with up to 2 gaps:
-###   > pattern123 <- ":([fgij]|[jg].:.[gf]|[jg]..:.g.:..[gf]):"
-###   > grep(pattern123, encoding(ovenc))
-###   [1] 1 2 3
-### All the reads are compatible with this transcript!
 setMethod("encodeOverlaps", c("RangesList", "RangesList", "missing"),
     function(query, subject, hits=NULL)
     {
