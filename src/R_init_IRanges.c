@@ -123,7 +123,7 @@ static const R_CallMethodDef callMethods[] = {
 /* Hits_class.c */
 	CALLMETHOD_DEF(make_all_group_inner_hits, 2),
 
-/* OverlapEncodings_class.c */
+/* encode_overlaps.c */
 	CALLMETHOD_DEF(encode_overlaps1, 9),
 	CALLMETHOD_DEF(RangesList_encode_overlaps, 7),
 

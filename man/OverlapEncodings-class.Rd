@@ -1,7 +1,6 @@
 \name{OverlapEncodings-class}
 \docType{class}
 
-% OverlapEncodings objects:
 \alias{class:OverlapEncodings}
 \alias{OverlapEncodings-class}
 \alias{OverlapEncodings}
@@ -16,23 +15,12 @@
 \alias{as.data.frame,OverlapEncodings-method}
 \alias{show,OverlapEncodings-method}
 
-% encodeOverlaps():
-\alias{encodeOverlaps}
-\alias{encodeOverlaps,ANY,ANY,Hits-method}
-\alias{encodeOverlaps,RangesList,RangesList,missing-method}
-\alias{encodeOverlaps,RangesList,Ranges,missing-method}
-\alias{encodeOverlaps,Ranges,RangesList,missing-method}
-\alias{encodeOverlaps,Ranges,Ranges,missing-method}
-
-\alias{encodeOverlaps1}
-\alias{RangesList_encodeOverlaps}
-
 
 \title{OverlapEncodings objects}
 
 \description{
   The OverlapEncodings class is a container for storing the
-  "overlap encodings" returned by the \code{encodeOverlaps}
+  "overlap encodings" returned by the \code{\link{encodeOverlaps}}
   function.
 }
 
@@ -45,51 +33,31 @@ encoding(x)
 
 ## Coercing an OverlapEncodings object:
 \S4method{as.data.frame}{OverlapEncodings}(x)
-
-## Compute overlap encodings:
-encodeOverlaps(query, subject, hits=NULL)
 }
 
 \arguments{
   \item{x}{
     An OverlapEncodings object.
   }
-  \item{query, subject}{
-    2 list-like objects, usually of the same length, where each top-level
-    element contains multiple ranges. E.g. \link{RangesList} objects.
-    If the 2 objects don't have the same length, the shortest is recycled
-    to the length of the longest (the standard recycling rules apply).
-  }
-  \item{hits}{
-    An optional \link{Hits} object that is typically the result of a call
-    to \code{\link{findOverlaps}(query, subject)}.
-    Supplying \code{hits} is a convenient way to do
-    \code{encodeOverlaps(query[queryHits(hits)], subject[subjectHits(hits)])},
-    that is,
-    calling \code{encodeOverlaps(query, subject, hits)} will perform the
-    above.
-    In that case, \code{query} and \code{subject} are generally not expected
-    to have the same length anymore.
-  }
 }
 
 \details{
-  Given 2 \link{RangesList} objects of the same length \code{query}
-  and \code{subject}, or, more generally, given 2 list-like objects
-  of the same length where each top-level element contains multiple
-  ranges, the "overlap encoding" of the i-th element in \code{query}
-  and i-th element in \code{subject} is a character string describing
-  how the ranges in \code{query[[i]]} are qualitatively positioned
-  relatively to the ranges in \code{subject[[i]]}.
+  Given a \code{query} and a \code{subject} of the same length, both
+  list-like objects with top-level elements typically containing multiple
+  ranges (e.g. \link{RangesList} objects), the "overlap encoding" of the
+  i-th element in \code{query} and i-th element in \code{subject} is a
+  character string describing how the ranges in \code{query[[i]]} are
+  \emph{qualitatively} positioned relatively to the ranges in
+  \code{subject[[i]]}.
 
-  The \code{encodeOverlaps} function computes those overlap encodings
-  and return them in an OverlapEncodings object of the same length
-  as \code{query} and \code{subject}.
+  The \code{\link{encodeOverlaps}} function computes those overlap
+  encodings and return them in an OverlapEncodings object of the same
+  length as \code{query} and \code{subject}.
 }
 
 \section{OverlapEncodings accessors}{
   In the following code snippets, \code{x} is an OverlapEncodings object
-  typically obtained by a call to \code{encodeOverlaps(query, subject)}.
+  typically obtained by a call to \code{\link{encodeOverlaps}(query, subject)}.
 
   \describe{
     \item{}{
@@ -156,51 +124,16 @@ encodeOverlaps(query, subject, hits=NULL)
   }
 }
 
-\section{Compute overlap encodings}{
-  In the following code snippets, \code{query} and \code{subject} are
-  2 list-like objects where each top-level element contains multiple ranges.
-
-  \describe{
-    \item{}{
-      \code{encodeOverlaps(query, subject)}:
-      When used with the \code{query} and \code{subject} arguments only,
-      \code{query} and \code{subject} are expected to have the same length.
-      If not, the shortest is recycled to the length of the longest (the
-      standard recycling rules apply).
-      \code{encodeOverlaps(query, subject)} computes the overlap encodings
-      and returns them in an OverlapEncodings object of the same length as
-      the input.
-    }
-    \item{}{
-      \code{encodeOverlaps(query, subject, hits)}:
-      When used with 3 arguments, the 3rd argument \code{hits} must be
-      a \link{Hits} object and is typically the result of a call to
-      \code{\link{findOverlaps}(query, subject)}.
-      \code{encodeOverlaps(query, subject, hits)} is equivalent to
-      \code{encodeOverlaps(query[queryHits(hits)], subject[subjectHits(hits)])}.
-      Note that here \code{query} and \code{subject} are generally not
-      expected to have the same length anymore.
-    }
-  }
-}
-
 \author{H. Pages}
 
 \seealso{
+  \link{encodeOverlaps},
   \link{compare},
-  \link{Hits-class},
-  \link{findOverlaps}
+  \link{RangesList-class}
 }
 
 \examples{
-read1 <- IRanges(c(7, 15, 22), c(9, 19, 23))
-read2 <- IRanges(c(5, 15), c(9, 17))
-read3 <- IRanges(c(16, 22), c(19, 24))
-query <- IRangesList(read1, read2, read3)
-tx <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
-subject <- IRangesList(tx)
-ovenc <- encodeOverlaps(query, subject)
-ovenc
+example(encodeOverlaps)  # to make 'ovenc'
 
 length(ovenc)
 Loffset(ovenc)

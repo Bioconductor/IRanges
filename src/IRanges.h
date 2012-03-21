@@ -1015,7 +1015,7 @@ SEXP make_all_group_inner_hits(
 );
 
 
-/* OverlapEncodings_class.c */
+/* encode_overlaps.c */
 
 SEXP encode_overlaps1(
 	SEXP query_start,
