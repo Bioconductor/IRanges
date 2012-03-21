@@ -28,9 +28,9 @@
 ## OverlapEncodings accessors:
 
 \S4method{length}{OverlapEncodings}(x)
-\S4method{Loffset}(x)
-\S4method{Roffset}(x)
-\S4method{encoding}(x)
+\S4method{Loffset}{OverlapEncodings}(x)
+\S4method{Roffset}{OverlapEncodings}(x)
+\S4method{encoding}{OverlapEncodings}(x)
 
 ## Coercing an OverlapEncodings object:
 
