@@ -34,12 +34,18 @@
 
 ## Coercing an OverlapEncodings object:
 
-\S4method{as.data.frame}{OverlapEncodings}(x)
+\S4method{as.data.frame}{OverlapEncodings}(x, row.names=NULL, optional=FALSE, ...)
 }
 
 \arguments{
   \item{x}{
     An OverlapEncodings object.
+  }
+  \item{row.names}{
+    \code{NULL} or a character vector.
+  }
+  \item{optional, ...}{
+    Ignored.
   }
 }
 
