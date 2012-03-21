@@ -26,12 +26,14 @@
 
 \usage{
 ## OverlapEncodings accessors:
+
 \S4method{length}{OverlapEncodings}(x)
-Loffset(x)
-Roffset(x)
-encoding(x)
+\S4method{Loffset}(x)
+\S4method{Roffset}(x)
+\S4method{encoding}(x)
 
 ## Coercing an OverlapEncodings object:
+
 \S4method{as.data.frame}{OverlapEncodings}(x)
 }
 
