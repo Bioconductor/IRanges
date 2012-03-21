@@ -59,7 +59,7 @@
   \code{subject[[i]]}.
 
   The \code{\link{encodeOverlaps}} function computes those overlap
-  encodings and return them in an OverlapEncodings object of the same
+  encodings and returns them in an OverlapEncodings object of the same
   length as \code{query} and \code{subject}.
 }
 
@@ -75,8 +75,8 @@
     }
     \item{}{
       \code{Loffset(x)}, \code{Roffset(x)}:
-      Integer vectors of the same length as \code{x} containing the
-      "left-offsets" and "right-offsets" of the encodings.
+      Get the "left-offsets" and "right-offsets" of the encodings,
+      respectively. Both are integer vectors of the same length as \code{x}.
 
       Let's denote \code{Qi = query[[i]]}, \code{Si = subject[[i]]},
       and [q1,q2] the range covered by \code{Qi} i.e.
