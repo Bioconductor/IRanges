@@ -32,7 +32,12 @@
 \alias{min,CompressedNormalIRangesList-method}
 \alias{min,SimpleNormalIRangesList-method}
 \alias{summary,CompressedIRangesList-method}
+\alias{Ops,CompressedIRangesList,ANY-method}
 
+% setops
+\alias{intersect,CompressedIRangesList,CompressedIRangesList-method}
+\alias{setdiff,CompressedIRangesList,CompressedIRangesList-method}
+\alias{union,CompressedIRangesList,CompressedIRangesList-method}
 
 % NormalIRangesList objects:
 \alias{class:NormalIRangesList}

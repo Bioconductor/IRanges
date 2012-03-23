@@ -13,6 +13,11 @@
 \alias{subjectHits,Hits-method}
 \alias{queryHits}
 \alias{queryHits,Hits-method}
+\alias{queryLength}
+\alias{subjectLength}
+\alias{queryLength,Hits-method}
+\alias{subjectLength,Hits-method}
+\alias{[,Hits-method}
 
 % coercion
 \alias{as.matrix,Hits-method}
@@ -24,6 +29,16 @@
 \alias{coerce,Hits,List-method}
 \alias{coerce,RangesMatching,list-method}
 \alias{coerce,RangesMatching,List-method}
+\alias{coerce,Hits,DataFrame-method}
+
+% setops
+\alias{\%in\%,Hits,Hits-method}
+\alias{intersect,Hits,Hits-method}
+\alias{setdiff,Hits,Hits-method}
+\alias{union,Hits,Hits-method}
+
+% show
+\alias{show,Hits-method}
 
 \title{Set of hits between 2 vector-like objects}
 \description{The \code{Hits} class stores a set of "hits"
@@ -62,8 +77,13 @@
       between a query index (first column) and subject index (second
       column).
     }
-    \item{}{\code{as.data.frame(x)}: Same as \code{as.matrix(x)} except that
-      it returns a data frame instead of a matrix.
+    \item{}{
+      \code{as(from, "DataFrame")}: Creates a \code{DataFrame} by
+      combining the the result of \code{as.matrix(from)}
+      with \code{elementMetadata(from)}.
+    }
+    \item{}{\code{as.data.frame(x)}: Attempts to coerce the result of
+      \code{as(from, "DataFrame")} to a \code{data.frame}.
     }
     \item{}{\code{as.table(x)}: counts the number of hits for each
       query element in \code{x} and outputs the counts as a \code{table}.
@@ -76,6 +96,15 @@
     }
     \item{}{\code{as(x, "List")}: Like \code{as.list}, above.
     }
+  }
+}
+
+\section{Extraction}{
+  \describe{
+    \item{}{\code{x[i]}: Extracts a subset of the hits. The index
+    argument \code{i} may be \code{logical} or \code{numeric}. If
+    numeric, be sure that \code{i} does not contain any duplicates,
+    which would violate the set property of \code{Hits}.}
   }
 }
 
@@ -92,13 +121,22 @@
       arguments would be redundant.
     }
     \item{}{\code{length(x)}: get the number of hits}
-    \item{}{\code{nrow(x)}: get the number of elements in the query}
-    \item{}{\code{ncol(x)}: get the number of elements in the subject}
+    \item{}{\code{queryLength(x)}, \code{nrow(x)}: get the number of
+      elements in the query}
+    \item{}{\code{subjectLength(x)}, \code{ncol(x)}: get the number of
+      elements in the subject}
     \item{}{
       \code{dim(x)}: get a two-element integer vector, essentially
       \code{c(nrow(x), ncol(x))}.
     }
   }
+}
+
+\section{Set Operations}{
+  A \code{Hits} object is a set of matchings, each from a \code{query}
+  index to a \code{subject} index. The basic set operation API has been
+  implemented to treat \code{Hits} in this manner. This includes
+  \code{\%in\%}, \code{intersect}, \code{union}, and \code{setdiff}.
 }
 
 \author{ Michael Lawrence }

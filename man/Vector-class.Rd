@@ -49,6 +49,9 @@
 
 \alias{c,Vector-method}
 \alias{append,Vector,Vector-method}
+\alias{mstack}
+\alias{mstack,Vector-method}
+\alias{split<-,Vector-method}
 
 \alias{tapply,Vector-method}
 \alias{shiftApply}
@@ -60,6 +63,13 @@
 \alias{aggregate,data.frame-method}
 \alias{aggregate,ts-method}
 
+\alias{rename}
+\alias{rename,Vector-method}
+
+\alias{unique,Vector-method}
+
+\alias{coerce,Vector,data.frame-method}
+\alias{as.data.frame,Vector-method}
 
 \title{Vector objects}
 
@@ -99,6 +109,14 @@
     \item{}{
       \code{names(x)}, \code{names(x) <- value}:
       Get or set the names of the elements in the Vector.
+    }
+    \item{}{
+      \code{rename(x, value, ...)}:
+      Replace the names of \code{x} according to a mapping defined by a named
+      character vector, formed by concatenating \code{value} with any
+      arguments in \code{...}. The names of the character vector
+      indicate the source names, and the corresponding values the
+      destination names.
     }
     \item{}{
       \code{nlevels(x)}:
@@ -183,6 +201,14 @@
       integer vector, logical vector or logical Rle.
     }
     \item{}{
+      \code{split(x, f, drop = FALSE) <- value}: Virtually
+      splits \code{x} by the factor \code{f}, replaces the elements of
+      the resulting list with the elements from the list \code{value},
+      and restores \code{x} to its original form. Note that this works
+      for any \code{Vector}, even though \code{split} itself is
+      not universally supported.
+    }
+    \item{}{
       \code{head(x, n = 6L)}:
       If \code{n} is non-negative, returns the first n elements of the Vector
       object.
@@ -237,6 +263,10 @@
       \code{Vector} \code{values} onto \code{x} at the position given by
       \code{after}. \code{values} must have an \code{elementType} that extends
       that of \code{x}.
+    }
+    \item{}{\code{mstack(..., .indName = "name")}: A variant of
+      \code{\link{stack}}, where the list is taken as the list of
+      arguments in \code{...}, each of which should be a \code{Vector}.
     }
   }
 }
@@ -293,6 +323,27 @@
         \item{\code{simplify}}{A logical value specifying whether or not the
           result should be simplified to a vector or matrix if possible.}
       }
+    }
+  }
+}
+
+\section{Utilities}{
+  \describe{
+    \item{}{\code{unique(x)}: Returns the unique elements in
+      \code{x}. Requires that the \code{Vector} derivative support
+      \code{duplicated}.
+    }
+  }
+}
+
+\section{Coercion}{
+  \describe{
+    \item{}{\code{as(from, "data.frame")}, \code{as.data.frame(from)}:
+      Coerces \code{from}, a \code{Vector}, to a \code{data.frame} by
+      first coercing the \code{Vector} to a \code{vector} via
+      \code{as.vector}. Note that many \code{Vector} derivatives do not
+      support \code{as.vector}, so this coercion is possible only for
+      certain types.
     }
   }
 }

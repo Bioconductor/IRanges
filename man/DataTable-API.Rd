@@ -33,11 +33,17 @@
 
 \alias{cbind,DataTable-method}
 \alias{rbind,DataTable-method}
+\alias{merge,DataTable,DataTable-method}
+\alias{merge,data.frame,DataTable-method}
+\alias{merge,DataTable,data.frame-method}
 
 \alias{aggregate,DataTable-method}
 \alias{by,DataTable-method}
 
 \alias{as.env,DataTable-method}
+
+\alias{duplicated,DataTable-method}
+\alias{unique,DataTable-method}
 
 \alias{show,DataTable-method}
 
@@ -178,6 +184,12 @@
       \code{rbind(...)}: Creates a new \code{DataTable} by combining the rows of
       the \code{DataTable} objects in \code{...}.
     }
+    \item{}{
+      \code{merge(x, y, ...)}: Merges two \code{DataTable}
+      objects \code{x} and \code{y}, with arguments in \code{...} being
+      the same as those allowed by the base \code{\link{merge}}. It is
+      allowed for either \code{x} or \code{y} to be a \code{data.frame}.
+    }
   }
 }
 
@@ -211,6 +223,17 @@
       Apply \code{FUN} to each group of \code{data}, a \code{DataTable},
       formed by the factor (or list of factors) \code{INDICES}. Exactly 
       the same contract as \code{\link{as.data.frame}}.
+    }
+  }
+}
+
+\section{Utilities}{
+  \describe{
+    \item{}{\code{duplicated(x)}: Returns a logical vector indicating the rows
+      that are identical to a previous row.
+    }
+    \item{}{\code{unique(x)}: Returns a new \code{DataTable} after
+      removing the duplicated rows from \code{x}.
     }
   }
 }

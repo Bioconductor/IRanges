@@ -24,6 +24,7 @@
 
 % coercion
 \alias{as.data.frame,DataFrame-method}
+\alias{as.matrix,DataFrame-method}
 \alias{coerce,matrix,DataFrame-method}
 \alias{coerce,vector,DataFrame-method}
 \alias{coerce,list,DataFrame-method}
@@ -203,6 +204,9 @@
     }
     \item{}{\code{as(from, "data.frame")}: Coerces a \code{DataFrame}
       to a \code{data.frame} by calling \code{as.data.frame(from)}.
+    }
+    \item{}{\code{as.matrix(x)}: Coerces the \code{DataFrame} to a
+      \code{matrix}, if possible.
     }
   }
 }

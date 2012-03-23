@@ -11,15 +11,14 @@
 
 \alias{runLength}
 \alias{runLength,Rle-method}
-\alias{runLength,RleList-method}
 \alias{runValue}
 \alias{runValue,Rle-method}
-\alias{runValue,RleList-method}
 \alias{nrun}
 \alias{nrun,Rle-method}
 \alias{start,Rle-method}
 \alias{end,Rle-method}
 \alias{width,Rle-method}
+\alias{ranges,Rle-method}
 
 \alias{runLength<-}
 \alias{runLength<-,Rle-method}
@@ -103,6 +102,7 @@
 \alias{pmin,Rle-method}
 \alias{pmax.int,Rle-method}
 \alias{pmin.int,Rle-method}
+\alias{which.max,Rle-method}
 \alias{diff,Rle-method}
 \alias{mean,Rle-method}
 \alias{var,Rle,missing-method}
@@ -577,6 +577,10 @@
        \code{pmin(..., na.rm = FALSE)}, \code{pmin.int(..., na.rm = FALSE)}:
        Parallel minima of the Rle input values. Removes \code{NA}s when
        \code{na.rm = TRUE}.
+    }
+    \item{}{
+      \code{which.max(x)}: Returns the index of the first element matching
+      the maximum value of \code{x}.
     }
     \item{}{
       \code{mean(x, na.rm = FALSE)}:

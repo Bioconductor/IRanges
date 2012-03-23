@@ -14,6 +14,7 @@
 \alias{coerce,RleViewsList,IRangesList-method}
 \alias{coerce,RleViewsList,CompressedIRangesList-method}
 \alias{coerce,RleViewsList,SimpleIRangesList-method}
+\alias{coerce,RleViewsList,RangedData-method}
 
 \title{List of RleViews}
 \description{An extension of \linkS4class{ViewsList} that holds only
@@ -60,6 +61,12 @@
     \item{}{
       \code{as(from, "SimpleIRangesList")}: Creates a \code{SimpleIRangesList}
       object containing the view locations in \code{from}.
+    }
+    \item{}{
+      \code{as(from, "RangedData")}: Creates a \code{RangedData} using
+      the ranges given by the runs of \code{subject(from)} in each of
+      the windows, with a value column \code{score} taken as the
+      corresponding subject values.
     }
   }
 }

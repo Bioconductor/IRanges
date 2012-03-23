@@ -14,6 +14,9 @@
 \alias{class:characterORNULL}
 \alias{characterORNULL-class}
 \alias{characterORNULL}
+\alias{class:functionORNULL}
+\alias{functionORNULL-class}
+\alias{functionORNULL}
 \alias{coerce,ANY,vector-method}
 
 % More low-level helper functions (from R/normarg-utils.R):

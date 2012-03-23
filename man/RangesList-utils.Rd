@@ -15,6 +15,7 @@
 
 % inter-interval operations
 \alias{disjoin,RangesList-method}
+\alias{disjointBins,RangesList-method}
 \alias{gaps,RangesList-method}
 \alias{gaps,CompressedIRangesList-method}
 \alias{reduce,RangesList-method}
@@ -49,6 +50,7 @@
 
 # Inter-interval operations
 \S4method{disjoin}{RangesList}(x)
+\S4method{disjointBins}{RangesList}(x)
 \S4method{gaps}{RangesList}(x, start=NA, end=NA)
 \S4method{range}{RangesList}(x, ..., na.rm = FALSE)
 \S4method{reduce}{RangesList}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
@@ -153,6 +155,10 @@
   The \code{disjoin} method returns disjoint ranges by finding the 
   within element union of the end points of \code{x}.
 
+  The \code{disjointBins} method computes, independently for each
+  element of \code{x}, bin assignments such that a range does not
+  overlap any other range in its bin.
+
   The \code{gaps} method takes the complement (via \code{\link{gaps}})
   of each element in the list and returns the result as a
   \code{RangesList}.
@@ -182,9 +188,12 @@
   A \code{RangesList} object. For \code{flank}, \code{narrow}, \code{resize},
   \code{restrict}, and \code{shift}, the length is the same as that of
   \code{x}.
+
+  For \code{disjointBins}, an \code{IntegerList} with the bin
+  assignments for each element of \code{x}.
 }
 
-\author{Michael Lawrence, H. Pages, P. Aboyoun}
+\author{M. Lawrence, H. Pages, P. Aboyoun}
 
 \seealso{
   \code{\linkS4class{RangesList}}, \code{\link{Ranges-utils}}

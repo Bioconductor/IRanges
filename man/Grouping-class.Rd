@@ -15,6 +15,7 @@
 \alias{vmembers,Grouping-method}
 \alias{togroup}
 \alias{togroup,ANY-method}
+\alias{tofactor}
 \alias{togrouplength}
 \alias{togrouplength,Grouping-method}
 \alias{show,Grouping-method}
@@ -170,6 +171,10 @@
       an integer vector of length NO.
       If \code{j} is not NULL, \code{togroup(x, j)} is equivalent to
       \code{y <- togroup(x); y[j]}.
+    }
+    \item{}{
+      \code{tofactor(x)}: Like \code{togroup}, except a factor is formed
+      with the level set defined as \code{seq_len(length(x))}.
     }
     \item{}{
       \code{togrouplength(x, j=NULL)}:

@@ -126,6 +126,7 @@
 \alias{unique,AtomicList-method}
 \alias{unique,CompressedRleList-method}
 \alias{unique,SimpleRleList-method}
+\alias{drop,AtomicList-method}
 
 \alias{!,CompressedLogicalList-method}
 \alias{!,SimpleLogicalList-method}
@@ -137,6 +138,7 @@
 \alias{which,SimpleRleList-method}
 \alias{which.max,CompressedRleList-method}
 \alias{which.min,CompressedRleList-method}
+\alias{all,CompressedRleList-method}
 
 \alias{diff,IntegerList-method}
 \alias{diff,NumericList-method}
@@ -238,6 +240,14 @@
 \alias{gsub,ANY,ANY,CompressedRleList-method}
 \alias{gsub,ANY,ANY,SimpleRleList-method}
 
+\alias{runLength,SimpleRleList-method}
+\alias{runValue,SimpleRleList-method}
+\alias{runLength,CompressedRleList-method}
+\alias{runValue,CompressedRleList-method}
+
+\alias{ranges,SimpleRleList-method}
+\alias{ranges,CompressedRleList-method}
+
 \alias{show,AtomicList-method}
 \alias{show,RleList-method}
 
@@ -260,6 +270,13 @@
 \alias{coerce,AtomicList,character-method}
 \alias{coerce,AtomicList,raw-method}
 \alias{coerce,AtomicList,factor-method}
+\alias{coerce,AtomicList,CharacterList-method}
+\alias{coerce,AtomicList,ComplexList-method}
+\alias{coerce,AtomicList,IntegerList-method}
+\alias{coerce,AtomicList,LogicalList-method}
+\alias{coerce,AtomicList,NumericList-method}
+\alias{coerce,AtomicList,RawList-method}
+\alias{coerce,AtomicList,RleList-method}
 
 \alias{as.data.frame,AtomicList-method}
 \alias{coerce,AtomicList,data.frame-method}
@@ -327,6 +344,16 @@
       \linkS4class{CompressedNormalIRangesList}/\linkS4class{SimpleNormalIRangesList}
       instance from a LogicalList or logical RleList instance.
     }
+    \item{}{\code{as(from, "CharacterList")},
+      \code{as(from, "ComplexList")},
+      \code{as(from, "IntegerList")},
+      \code{as(from, "LogicalList")},
+      \code{as(from, "NumericList")},
+      \code{as(from, "RawList")},
+      \code{as(from, "RleList")}:
+      Coerces an \code{AtomicList} \code{from} to another derivative of
+      \code{AtomicList}.
+    }
     \item{}{\code{as(from, "AtomicList")}: If \code{from} is a vector,
       converts it to an \code{AtomicList} of the appropriate type.
     }
@@ -390,6 +417,18 @@
     }
     \item{}{\code{runValue(x)}: Gets the run values of each element of the
       list, as an AtomicList.
+    }
+    \item{}{\code{ranges(x)}: Gets the run ranges as a
+      \code{RangesList}.
+    }
+  }
+}
+
+\section{Specialized Methods}{
+  \describe{
+    \item{}{\code{drop(x)}: Checks if every element of \code{x} is of
+      length one, and, if so, unlists \code{x}. Otherwise, an error is
+      thrown.
     }
   }
 }

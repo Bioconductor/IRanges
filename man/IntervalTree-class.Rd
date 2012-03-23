@@ -32,7 +32,7 @@
 \alias{countOverlaps,RangesList,RangedData-method}
 \alias{countOverlaps,RangedData,RangesList-method}
 \alias{subsetByOverlaps}
-\alias{subsetByOverlaps,Ranges,Ranges-method}
+\alias{subsetByOverlaps,ANY,ANY-method}
 \alias{subsetByOverlaps,RangesList,RangesList-method}
 \alias{subsetByOverlaps,RangedData,RangedData-method}
 \alias{subsetByOverlaps,RangesList,RangedData-method}

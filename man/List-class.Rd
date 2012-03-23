@@ -32,6 +32,7 @@
 \alias{as.env,List-method}
 \alias{stack,List-method}
 \alias{relist,ANY,List-method}
+\alias{unsplit,List-method}
 
 \alias{Reduce,List-method}
 \alias{Filter,List-method}
@@ -43,6 +44,7 @@
 \alias{eval,expression,List-method}
 \alias{eval,language,List-method}
 \alias{with,List-method}
+\alias{within,List-method}
 
 \title{List objects}
 
@@ -175,6 +177,11 @@
       \code{skeleton}, a \code{List} object. This makes sense when
       \code{flesh[i]} corresponds somehow to \code{unlist(skeleton)[i]}.
     }
+    \item{}{\code{unsplit(value, f, drop = FALSE)}: Unlists
+      \code{value}, where the order of the returned vector is as
+      if \code{value} were originally created by splitting that vector
+      on the factor \code{f}.
+    }
   }
 }
 
@@ -228,6 +235,12 @@
     }
     \item{}{\code{with(data, expr, \dots)}:
       Equivalent to \code{eval(quote(expr), data, ...)}.
+    }
+    \item{}{\code{within(data, expr, \dots)}:
+      Similar to \code{with}, except assignments made during evaluation
+      are taken as assignments into \code{data}, i.e., new symbols have
+      their value appended to \code{data}, and assigning new values to
+      existing symbols results in replacement.
     }
   }
 }
