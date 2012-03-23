@@ -191,7 +191,7 @@ export(
     columnMetadata, "columnMetadata<-",
 
     ## Hits API
-    matchMatrix, queryHits, subjectHits, matching, map,
+    matchMatrix, queryHits, subjectHits, hits, map,
 
     ## OverlapEncodings
     Loffset, Roffset, encoding,
