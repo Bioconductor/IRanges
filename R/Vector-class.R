@@ -104,9 +104,11 @@ setReplaceMethod("values", "Vector",
 setGeneric("rename", function(x, value, ...) standardGeneric("rename"))
 
 setMethod("rename", "Vector", function(x, value, ...) {
-  if (missing(value))
-    newNames <- c(...)
-  else newNames <- c(value, ...)
+  newNames <- tail(names(match.call()), -2)
+  badOldNames <- setdiff(names(newNames), names(x))
+  if (length(badOldNames))
+    stop("Some 'from' names in value not found on 'x': ",
+         paste(badOldNames, collapse = ", "))
   names(x)[match(names(newNames), names(x))] <- newNames
   x
 })
@@ -853,7 +855,7 @@ setReplaceMethod("split", "Vector", function(x, f, drop = FALSE, ..., value) {
 })
 
 multisplit <- function(x, f) {
-  if (!is.list(x) && !is(f, "List"))
+  if (!is.list(f) && !is(f, "List"))
     stop("'f' must be a list")
   if (length(x) != length(f))
     stop("Length of 'f' must equal length of 'x'")
@@ -870,6 +872,17 @@ setMethod("mstack", "Vector", function(..., .indName = "name") {
   values(combined) <- cbind(values(combined), .stack.ind(args, .indName))
   combined
 })
+setMethod("mstack", "vector",
+          function(..., .indName = "name", .valuesName = "value")
+          {
+            if (!isSingleString(.indName))
+              stop("'.indName' must be a single, non-NA string")
+            args <- list(...)
+            combined <- do.call(c, unname(args))
+            df <- DataFrame(combined, .stack.ind(args, .indName))
+            colnames(df)[1] <- .valuesName
+            df
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping methods.
