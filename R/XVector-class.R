@@ -154,8 +154,10 @@ setMethod("seqselect", "XVector",
     function(x, start=NULL, end=NULL, width=NULL)
     {
         xv <- Views(x, start=start, end=end, width=width)
-        ## TODO: Implement a fast "unlist" method for Views objects.
-        do.call(c, as.list(xv))  # i.e. 'unlist(xv)'
+        if (length(xv))
+          ## TODO: Implement a fast "unlist" method for Views objects.
+          do.call(c, as.list(xv))  # i.e. 'unlist(xv)'
+        else new(class(subject(xv)))
     }
 )
 
