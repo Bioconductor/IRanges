@@ -155,14 +155,16 @@ static void safe_one_overlap_encoding(
 	int q_len, s_len;
 	const int *q_start, *q_width, *q_space, *s_start, *s_width, *s_space;
 
-	q_len = _check_Ranges_start_width(query_start, query_width,
-					  &q_start, &q_width, "query");
+	q_len = _check_integer_pairs(query_start, query_width,
+				     &q_start, &q_width,
+				     "start(query)", "width(query)");
 	if (Lquery_len != 0 && (Lquery_len < 1 || Lquery_len >= q_len))
 		error("number of ranges in query coming from the left "
 		      "segment must be >= 1 and < length(query)");
 	q_space = check_Ranges_space(query_space, q_len, "query");
-	s_len = _check_Ranges_start_width(subject_start, subject_width,
-					  &s_start, &s_width, "subject");
+	s_len = _check_integer_pairs(subject_start, subject_width,
+				     &s_start, &s_width,
+				     "start(subject)", "width(subject)");
 	s_space = check_Ranges_space(subject_space, s_len, "subject");
 	one_overlap_encoding(q_start, q_width, q_space, q_len, Lquery_len,
 		s_start, s_width, s_space, s_len,

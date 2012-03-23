@@ -106,9 +106,44 @@ SEXP Integer_diff_with_0(SEXP x)
 
 /****************************************************************************
  * The .Call entry points in this section are the workhorses behind
- * orderInteger(), orderIntegerPairs(), duplicatedIntegerPairs(),
- * orderIntegerQuads() and duplicatedIntegerQuads().
+ * orderInteger(), orderIntegerPairs(), matchIntegerPairs(), and
+ * duplicatedIntegerPairs().
  */
+
+/*
+ * Nothing deep, just checking that 'a' and 'b' are integer vectors of the
+ * same length. We don't look at the individual elements in them, and,
+ * in particular, we don't check for NAs.
+ */
+int _check_integer_pairs(SEXP a, SEXP b,
+		const int **a_p, const int **b_p,
+		const char *a_argname, const char *b_argname)
+{
+	int len;
+
+	if (!IS_INTEGER(a) || !IS_INTEGER(b))
+		error("'%s' and '%s' must be integer vectors",
+		      a_argname, b_argname);
+	len = LENGTH(a);
+	if (LENGTH(b) != len)
+		error("'%s' and '%s' must have the same length",
+		      a_argname, b_argname);
+	*a_p = INTEGER(a);
+	*b_p = INTEGER(b);
+	return len;
+}
+
+static int compar_integer_pairs(int a1, int b1,
+				int a2, int b2)
+{
+	int ret;
+
+	ret = a1 - a2;
+	if (ret != 0)
+		return ret;
+	ret = b1 - b2;
+	return ret;
+}
 
 /* --- .Call ENTRY POINT --- */
 SEXP Integer_order(SEXP x, SEXP decreasing)
@@ -128,11 +163,12 @@ SEXP Integer_order(SEXP x, SEXP decreasing)
 SEXP Integer_order2(SEXP a, SEXP b, SEXP decreasing)
 {
 	int ans_length;
+	const int *a_p, *b_p;
 	SEXP ans;
 
-	ans_length = LENGTH(a);
+	ans_length = _check_integer_pairs(a, b, &a_p, &b_p, "a", "b");
 	PROTECT(ans = NEW_INTEGER(ans_length));
-	_get_order_of_two_int_arrays(INTEGER(a), INTEGER(b),
+	_get_order_of_two_int_arrays(a_p, b_p,
 			ans_length, LOGICAL(decreasing)[0], INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
@@ -141,22 +177,22 @@ SEXP Integer_order2(SEXP a, SEXP b, SEXP decreasing)
 /* --- .Call ENTRY POINT --- */
 SEXP Integer_duplicated2_quick(SEXP a, SEXP b)
 {
-	int ans_length, *o1, *o2, *ans0, *a0, *b0, i;
+	int ans_length, *o1, *o2, *ans0, i, ret;
+	const int *a_p, *b_p;
 	SEXP ans;
 
-	if (!IS_INTEGER(a) || !IS_INTEGER(b) || LENGTH(a) != LENGTH(b))
-		error("'a' and 'b' must be integer vectors of equal length");
-	ans_length = LENGTH(a);
-	a0 = INTEGER(a);
-	b0 = INTEGER(b);
+	ans_length = _check_integer_pairs(a, b, &a_p, &b_p, "a", "b");
 	o1 = (int *) R_alloc(sizeof(int), ans_length);
-	_get_order_of_two_int_arrays(a0, b0, ans_length, 0, o1, 0);
+	_get_order_of_two_int_arrays(a_p, b_p, ans_length, 0, o1, 0);
 	PROTECT(ans = NEW_LOGICAL(ans_length));
 	ans0 = LOGICAL(ans);
 	if (ans_length >= 1) {
 		ans0[*o1] = 0;
-		for (i = 1, o2 = o1 + 1; i < ans_length; i++, o1++, o2++)
-			ans0[*o2] = a0[*o2] == a0[*o1] && b0[*o2] == b0[*o1];
+		for (i = 1, o2 = o1 + 1; i < ans_length; i++, o1++, o2++) {
+			ret = compar_integer_pairs(a_p[*o1], b_p[*o1],
+						   a_p[*o2], b_p[*o2]);
+			ans0[*o2] = ret == 0;
+		}
 	}
 	UNPROTECT(1);
 	return ans;
@@ -208,13 +244,12 @@ static Rboolean is_duplicated2_hash(const int *a, const int *b,
 /* --- .Call ENTRY POINT --- */
 SEXP Integer_duplicated2_hash(SEXP a, SEXP b)
 {
-	int ans_length, *ans0, *a0, *b0;
+	int ans_length, *ans0;
+	const int *a_p, *b_p;
 	struct hash *tbl;
 	SEXP ans;
 
-	if (!IS_INTEGER(a) || !IS_INTEGER(b) || LENGTH(a) != LENGTH(b))
-		error("'a' and 'b' must be integer vectors of equal length");
-	ans_length = LENGTH(a);
+	ans_length = _check_integer_pairs(a, b, &a_p, &b_p, "a", "b");
 	tbl = (struct hash *) R_alloc(sizeof(struct hash), 1);
 	MKsetup(ans_length, tbl);
 	tbl->lkup = (int *) R_alloc(sizeof(int), tbl->M);
@@ -223,55 +258,141 @@ SEXP Integer_duplicated2_hash(SEXP a, SEXP b)
 
 	PROTECT(ans = NEW_LOGICAL(ans_length));
 	ans0 = LOGICAL(ans);
-	a0 = INTEGER(a);
-	b0 = INTEGER(b);
 	for (int i = 0; i < ans_length; i++)
-		ans0[i] = is_duplicated2_hash(a0, b0, i, tbl);
+		ans0[i] = is_duplicated2_hash(a_p, b_p, i, tbl);
 	UNPROTECT(1);
 	return ans;
+}
+
+
+/****************************************************************************
+ * The .Call entry points in this section are the workhorses behind
+ * orderIntegerQuads(), matchIntegerQuads() and duplicatedIntegerQuads().
+ */
+
+/*
+ * Nothing deep, just checking that 'a', 'b', 'c' and 'd' are integer vectors
+ * of the same length. We don't look at the individual elements in them, and,
+ * in particular, we don't check for NAs.
+ */
+int _check_integer_quads(SEXP a, SEXP b, SEXP c, SEXP d,
+		const int **a_p, const int **b_p,
+			const int **c_p, const int **d_p,
+		const char *a_argname, const char *b_argname,
+			const char *c_argname, const char *d_argname)
+{
+	int len;
+
+	if (!IS_INTEGER(a) || !IS_INTEGER(b)
+	 || !IS_INTEGER(c) || !IS_INTEGER(d))
+		error("'%s', '%s', '%s' and '%s' must be integer vectors",
+		      a_argname, b_argname, c_argname, d_argname);
+	len = LENGTH(a);
+	if (LENGTH(b) != len || LENGTH(c) != len || LENGTH(d) != len)
+		error("'%s', '%s', '%s' and '%s' must have the same length",
+		      a_argname, b_argname, c_argname, d_argname);
+	*a_p = INTEGER(a);
+	*b_p = INTEGER(b);
+	*c_p = INTEGER(c);
+	*d_p = INTEGER(d);
+	return len;
+}
+
+static int compar_integer_quads(int a1, int b1, int c1, int d1,
+				int a2, int b2, int c2, int d2)
+{
+	int ret;
+
+	ret = compar_integer_pairs(a1, b1, a2, b2);
+	if (ret != 0)
+		return ret;
+	ret = c1 - c2;
+	if (ret != 0)
+		return ret;
+	ret = d1 - d2;
+	return ret;
 }
 
 /* --- .Call ENTRY POINT --- */
 SEXP Integer_order4(SEXP a, SEXP b, SEXP c, SEXP d, SEXP decreasing)
 {
 	int ans_length;
+	const int *a_p, *b_p, *c_p, *d_p;
 	SEXP ans;
 
-	ans_length = LENGTH(a);
+	ans_length = _check_integer_quads(a, b, c, d,
+					  &a_p, &b_p, &c_p, &d_p,
+					  "a", "b", "c", "d");
 	PROTECT(ans = NEW_INTEGER(ans_length));
-	_get_order_of_four_int_arrays(INTEGER(a), INTEGER(b),
-			INTEGER(c), INTEGER(d),
+	_get_order_of_four_int_arrays(a_p, b_p, c_p, d_p,
 			ans_length, LOGICAL(decreasing)[0], INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP Integer_duplicated4_quick(SEXP a, SEXP b, SEXP c, SEXP d)
+/*
+SEXP Integer_match4_quick(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
+			  SEXP a2, SEXP b2, SEXP c2, SEXP d2, SEXP nomatch)
 {
-	int ans_length, *o1, *o2, *ans0, *a0, *b0, *c0, *d0, i;
+	int len1, len2, *o1, *o2, *ans0, i, j;
+	const int *a1_p, *b1_p, *c1_p, *d1_p, *a2_p, *b2_p, *c2_p, *d2_p;
 	SEXP ans;
 
-	if (!IS_INTEGER(a) || !IS_INTEGER(b)
-	 || !IS_INTEGER(c) || !IS_INTEGER(d)
-	 || LENGTH(a) != LENGTH(b) || LENGTH(b) != LENGTH(c)
-	 || LENGTH(c) != LENGTH(d))
-		error("the input must be integer vectors of equal length");
-	ans_length = LENGTH(a);
-	a0 = INTEGER(a);
-	b0 = INTEGER(b);
-	c0 = INTEGER(c);
-	d0 = INTEGER(d);
+	len1 = _check_integer_quads(a1, b1, c1, d1,
+				    &a1_p, &b1_p, &c1_p, &d1_p,
+				    "a1", "b1", "c1", "d1");
+	len2 = _check_integer_quads(a2, b2, c2, d2,
+				    &a2_p, &b2_p, &c2_p, &d2_p,
+				    "a2", "b2", "c2", "d2");
+	o1 = (int *) R_alloc(sizeof(int), len1);
+	o2 = (int *) R_alloc(sizeof(int), len2);
+	_get_order_of_four_int_arrays(a1_p, b1_p, c1_p, d1_p, len1, 0, o1, 0);
+	_get_order_of_four_int_arrays(a2_p, b2_p, c2_p, d2_p, len2, 0, o2, 0);
+	PROTECT(ans = NEW_INTEGER(len1));
+	ans0 = INTEGER(ans);
+	j = 0;
+	for (i = 0; i < len1; i++, o1++) {
+		while (j < len2 && )
+		ans0[*o1] = *o2 + 1;
+	}
+	UNPROTECT(1);
+	return ans;
+}
+*/
+
+/* --- .Call ENTRY POINT --- */
+/*
+SEXP Integer_match4_hash(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
+			 SEXP a2, SEXP b2, SEXP c2, SEXP d2, SEXP nomatch)
+{
+	error("not implemented yet, sorry!");
+	return R_NilValue;
+}
+*/
+
+/* --- .Call ENTRY POINT --- */
+SEXP Integer_duplicated4_quick(SEXP a, SEXP b, SEXP c, SEXP d)
+{
+	int ans_length, *o1, *o2, *ans0, i, ret;
+	const int *a_p, *b_p, *c_p, *d_p;
+	SEXP ans;
+
+	ans_length = _check_integer_quads(a, b, c, d,
+					  &a_p, &b_p, &c_p, &d_p,
+					  "a", "b", "c", "d");
 	o1 = (int *) R_alloc(sizeof(int), ans_length);
-	_get_order_of_four_int_arrays(a0, b0, c0, d0,
-			ans_length, 0, o1, 0);
+	_get_order_of_four_int_arrays(a_p, b_p, c_p, d_p, ans_length, 0, o1, 0);
 	PROTECT(ans = NEW_LOGICAL(ans_length));
 	ans0 = LOGICAL(ans);
 	if (ans_length >= 1) {
 		ans0[*o1] = 0;
-		for (i = 1, o2 = o1 + 1; i < ans_length; i++, o1++, o2++)
-			ans0[*o2] = a0[*o2] == a0[*o1] && b0[*o2] == b0[*o1] &&
-				    c0[*o2] == c0[*o1] && d0[*o2] == d0[*o1];
+		for (i = 1, o2 = o1 + 1; i < ans_length; i++, o1++, o2++) {
+			ret = compar_integer_quads(
+					a_p[*o1], b_p[*o1], c_p[*o1], d_p[*o1],
+					a_p[*o2], b_p[*o2], c_p[*o2], d_p[*o2]);
+			ans0[*o2] = ret == 0;
+		}
 	}
 	UNPROTECT(1);
 	return ans;

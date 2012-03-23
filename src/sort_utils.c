@@ -94,9 +94,7 @@ static int compar_aabb(int i1, int i2)
 	if (ret != 0)
 		return ret;
 	ret = bb[i1] - bb[i2];
-	if (ret != 0)
-		return ret;
-	return 0;
+	return ret;
 }
 
 static int compar2_for_asc_order(const void *p1, const void *p2)
@@ -158,9 +156,7 @@ static int compar_aabbccdd(int i1, int i2)
 	if (ret != 0)
 		return ret;
 	ret = dd[i1] - dd[i2];
-	if (ret != 0)
-		return ret;
-	return 0;
+	return ret;
 }
 
 static int compar4_for_asc_order(const void *p1, const void *p2)

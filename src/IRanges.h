@@ -484,6 +484,15 @@ SEXP Integer_order(
 	SEXP decreasing
 );
 
+int _check_integer_pairs(
+	SEXP a,
+	SEXP b,
+	const int **a_p,
+	const int **b_p,
+	const char *a_argname,
+	const char *b_argname
+);
+
 SEXP Integer_order2(
 	SEXP a,
 	SEXP b,
@@ -498,6 +507,21 @@ SEXP Integer_duplicated2_quick(
 SEXP Integer_duplicated2_hash(
 	SEXP a,
 	SEXP b
+);
+
+int _check_integer_quads(
+	SEXP a,
+	SEXP b,
+	SEXP c,
+	SEXP d,
+	const int **a_p,
+	const int **b_p,
+	const int **c_p,
+	const int **d_p,
+	const char *a_argname,
+	const char *b_argname,
+	const char *c_argname,
+	const char *d_argname
 );
 
 SEXP Integer_order4(
@@ -733,14 +757,6 @@ SEXP IRanges_gaps(
 
 
 /* Ranges_comparison.c */
-
-int _check_Ranges_start_width(
-	SEXP start,
-	SEXP width,
-	const int **start_p,
-	const int **width_p,
-	const char *what
-);
 
 int _overlap_code(
 	int x_start,

@@ -6,35 +6,6 @@
 
 
 /****************************************************************************
- * A low-level helper for "superficial" checking of the 'start' and 'width'
- * vectors associated with a Ranges object.
- *
- * TODO: This helper has nothing specific to the compare() functionality and
- * could be used more generally for checking the input of C functions that
- * deal with Ranges objects. Therefore it should probably go somewhere else
- * and be used more systematically across the IRanges C code.
- */
-
-int _check_Ranges_start_width(SEXP start, SEXP width,
-			      const int **start_p, const int **width_p,
-			      const char *what)
-{
-	int len;
-
-	if (!IS_INTEGER(start) || !IS_INTEGER(width))
-		error("'start(%s)' and 'width(%s)' must be "
-		      "integer vectors", what, what);
-	len = LENGTH(start);
-	if (LENGTH(width) != len)
-		error("'start(%s)' and 'width(%s)' must have "
-		      "the same length", what, what);
-	*start_p = INTEGER(start);
-	*width_p = INTEGER(width);
-	return len;
-}
-
-
-/****************************************************************************
  * Generalized comparison of 2 integer ranges.
  *
  * There are 13 different ways 2 integer ranges x and y can be positioned
@@ -165,10 +136,12 @@ SEXP Ranges_compare(SEXP x_start, SEXP x_width,
 	const int *x_start_p, *x_width_p, *y_start_p, *y_width_p;
 	SEXP ans;
 
-	m = _check_Ranges_start_width(x_start, x_width,
-				      &x_start_p, &x_width_p, "x");
-	n = _check_Ranges_start_width(y_start, y_width,
-				      &y_start_p, &y_width_p, "y");
+	m = _check_integer_pairs(x_start, x_width,
+				 &x_start_p, &x_width_p,
+				 "start(x)", "width(x)");
+	n = _check_integer_pairs(y_start, y_width,
+				 &y_start_p, &y_width_p,
+				 "start(y)", "width(y)");
 	if (m == 0 || n == 0)
 		ans_len = 0;
 	else
