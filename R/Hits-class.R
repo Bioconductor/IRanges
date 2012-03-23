@@ -68,6 +68,11 @@ setMethod("[", "Hits",
             if (!isTRUEorFALSE(drop))
               stop("'drop' must be TRUE or FALSE")
             if (!missing(i)) {
+              if (is.character(i))
+                stop("Cannot subset a Hits object by character")
+              if (!is.logical(i) && any(duplicated(i)))
+                stop("Elements in a non-logical 'i' cannot be duplicated, ",
+                     "because the Hits object would no longer be a set.")
               iInfo <- .bracket.Index(i, length(x))
               if (!is.null(iInfo[["msg"]]))
                 stop(iInfo[["msg"]])
@@ -94,6 +99,12 @@ setMethod("as.matrix", "Hits",
     function(x) cbind(queryHits=queryHits(x), subjectHits=subjectHits(x))
 )
 
+setAs("Hits", "DataFrame", function(from) {
+  DataFrame(as.matrix(from),
+            if (!is.null(values(from))) values(from)
+            else new("DataFrame", nrows = length(from)))
+})
+
 setMethod("as.data.frame", "Hits",
     function(x, row.names=NULL, optional=FALSE, ...)
     {
@@ -101,11 +112,7 @@ setMethod("as.data.frame", "Hits",
             stop("'row.names' must be NULL or a character vector")
         if (!identical(optional, FALSE) || length(list(...)))
             warning("'optional' and arguments in '...' are ignored")
-        data.frame(queryHits=queryHits(x),
-                   subjectHits=subjectHits(x),
-                   row.names=row.names,
-                   check.names=FALSE,
-                   stringsAsFactors=FALSE)
+        as.data.frame(as(x, "DataFrame"), row.names = row.names)
     }
 )
 
@@ -244,8 +251,8 @@ setMethod("show", "Hits", function(object) {
   cat("Hits of length ", length(object), "\n", sep = "")
   cat("queryLength: ", queryLength(object), "\n", sep = "")
   cat("subjectLength: ", subjectLength(object), "\n", sep = "")
-  cat(labeledLine("queryHits", queryHits(object), count = FALSE))
-  cat(labeledLine("subjectHits", subjectHits(object), count = FALSE))
+  df_show <- capture.output(show(as(object, "DataFrame")))
+  cat(paste(tail(df_show, -1), "\n"))
 })
 
 
