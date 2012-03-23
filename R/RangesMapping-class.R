@@ -17,33 +17,33 @@
 ## we have an accessor for each, and support a coercion.
 
 setClass("RangesMapping",
-         representation(matching = "Hits", space = "Rle",
+         representation(hits = "Hits", space = "Rle",
                         ranges = "Ranges"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessors
 ###
 
-matching <- function(x) x@matching
+hits <- function(x) x@hits
 
 setMethod("space", "RangesMapping", function(x) x@space)
 
 setMethod("ranges", "RangesMapping", function(x) x@ranges)
 
-setMethod("dim", "RangesMapping", function(x) dim(matching(x)))
+setMethod("dim", "RangesMapping", function(x) dim(hits(x)))
 
 setMethod("length", "RangesMapping", function(x) length(ranges(x)))
 
-setMethod("subjectHits", "RangesMapping", function(x) subjectHits(matching(x)))
+setMethod("subjectHits", "RangesMapping", function(x) subjectHits(hits(x)))
 
-setMethod("queryHits", "RangesMapping", function(x) queryHits(matching(x)))
+setMethod("queryHits", "RangesMapping", function(x) queryHits(hits(x)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
 ###
 
 setAs("RangesMapping", "RangedData", function(from) {
-  RangedData(ranges(from), space = space(from), as.matrix(matching(from)))
+  RangedData(ranges(from), space = space(from), as(hits(from), "DataFrame"))
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
