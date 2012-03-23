@@ -114,8 +114,6 @@ orderInteger <- function(x, decreasing=FALSE, na.last=NA)
 ###   identical(oo, oo2)  # TRUE
 ###
 ### For efficiency reasons, we don't support (and don't even check) for NAs.
-### TODO: What happens if 'a' and 'b' don't have the same length? Shouldn't
-### we check for that?
 orderIntegerPairs <- function(a, b, decreasing=FALSE)
 {
     if (!is.integer(a) && !is.factor(a))
@@ -212,8 +210,6 @@ runEndsOfIntegerPairs <- function(a, b)
 ###   order(a, b, c, d)
 ###
 ### For efficiency reasons, we don't support (and don't even check) for NAs.
-### TODO: What happens if the input vectors don't have the same length?
-### Shouldn't we check for that?
 orderIntegerQuads <- function(a, b, c, d, decreasing=FALSE)
 {
     if (!is.integer(a) && !is.factor(a))
@@ -225,6 +221,14 @@ orderIntegerQuads <- function(a, b, c, d, decreasing=FALSE)
     if (!is.integer(d) && !is.factor(d))
         stop("'d' must be an integer vector or factor")
     .Call2("Integer_order4", a, b, c, d, decreasing, PACKAGE="IRanges")
+}
+
+matchIntegerQuads <- function(a1, b1, c1, d1, a2, b2, c2, d2,
+                              nomatch=NA_integer_)
+{
+    .Call2("Integer_match4_quick",
+           a1, b1, c1, d1, a2, b2, c2, d2, nomatch,
+           PACKAGE="IRanges")
 }
 
 ### For 'a', 'b', 'c' and 'd' integer vectors of equal length with no NAs,
@@ -271,7 +275,7 @@ duplicatedIntegerQuads <- function(a, b, c, d,
         return(rev(duplicatedIntegerQuads(rev(a), rev(b), rev(c), rev(d),
                                           method=method)))
     if (method == "auto") {
-	## TODO: Implement "hash" and uncomment the 3 lines below.
+        ## TODO: Implement "hash" and uncomment the 3 lines below.
         #if (length(a) <= 2^29)
         #    method <- "hash"
         #else

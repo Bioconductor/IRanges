@@ -31,6 +31,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(Integer_duplicated2_quick, 2),
 	CALLMETHOD_DEF(Integer_duplicated2_hash, 2),
 	CALLMETHOD_DEF(Integer_order4, 5),
+	CALLMETHOD_DEF(Integer_match4_quick, 9),
 	CALLMETHOD_DEF(Integer_duplicated4_quick, 4),
 	CALLMETHOD_DEF(Integer_duplicated4_hash, 4),
 	CALLMETHOD_DEF(Integer_explode_bits, 2),

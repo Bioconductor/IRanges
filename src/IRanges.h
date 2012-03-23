@@ -45,6 +45,24 @@ void _get_order_of_four_int_arrays(
 	int out_shift
 );
 
+void _get_matches_of_ordered_integer_quads(
+	const int *a1,
+	const int *b1,
+	const int *c1,
+	const int *d1,
+	const int *o1,
+	int nelt1,
+	const int *a2,
+	const int *b2,
+	const int *c2,
+	const int *d2,
+	const int *o2,
+	int nelt2,
+	int nomatch,
+	int *out,
+	int out_shift
+);
+
 
 /* AEbufs.c */
 
@@ -530,6 +548,18 @@ SEXP Integer_order4(
 	SEXP c,
 	SEXP d,
 	SEXP decreasing
+);
+
+SEXP Integer_match4_quick(
+	SEXP a1,
+	SEXP b1,
+	SEXP c1,
+	SEXP d1,
+	SEXP a2,
+	SEXP b2,
+	SEXP c2,
+	SEXP d2,
+	SEXP nomatch
 );
 
 SEXP Integer_duplicated4_quick(

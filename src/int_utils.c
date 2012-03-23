@@ -331,11 +331,10 @@ SEXP Integer_order4(SEXP a, SEXP b, SEXP c, SEXP d, SEXP decreasing)
 }
 
 /* --- .Call ENTRY POINT --- */
-/*
 SEXP Integer_match4_quick(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 			  SEXP a2, SEXP b2, SEXP c2, SEXP d2, SEXP nomatch)
 {
-	int len1, len2, *o1, *o2, *ans0, i, j;
+	int len1, len2, nomatch0, *o1, *o2;
 	const int *a1_p, *b1_p, *c1_p, *d1_p, *a2_p, *b2_p, *c2_p, *d2_p;
 	SEXP ans;
 
@@ -345,21 +344,18 @@ SEXP Integer_match4_quick(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 	len2 = _check_integer_quads(a2, b2, c2, d2,
 				    &a2_p, &b2_p, &c2_p, &d2_p,
 				    "a2", "b2", "c2", "d2");
+	nomatch0 = INTEGER(nomatch)[0];
 	o1 = (int *) R_alloc(sizeof(int), len1);
 	o2 = (int *) R_alloc(sizeof(int), len2);
 	_get_order_of_four_int_arrays(a1_p, b1_p, c1_p, d1_p, len1, 0, o1, 0);
 	_get_order_of_four_int_arrays(a2_p, b2_p, c2_p, d2_p, len2, 0, o2, 0);
 	PROTECT(ans = NEW_INTEGER(len1));
-	ans0 = INTEGER(ans);
-	j = 0;
-	for (i = 0; i < len1; i++, o1++) {
-		while (j < len2 && )
-		ans0[*o1] = *o2 + 1;
-	}
+	_get_matches_of_ordered_integer_quads(a1_p, b1_p, c1_p, d1_p, o1, len1,
+					      a2_p, b2_p, c2_p, d2_p, o2, len2,
+					      nomatch0, INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
 }
-*/
 
 /* --- .Call ENTRY POINT --- */
 /*
@@ -389,8 +385,8 @@ SEXP Integer_duplicated4_quick(SEXP a, SEXP b, SEXP c, SEXP d)
 		ans0[*o1] = 0;
 		for (i = 1, o2 = o1 + 1; i < ans_length; i++, o1++, o2++) {
 			ret = compar_integer_quads(
-					a_p[*o1], b_p[*o1], c_p[*o1], d_p[*o1],
-					a_p[*o2], b_p[*o2], c_p[*o2], d_p[*o2]);
+				a_p[*o1], b_p[*o1], c_p[*o1], d_p[*o1],
+				a_p[*o2], b_p[*o2], c_p[*o2], d_p[*o2]);
 			ans0[*o2] = ret == 0;
 		}
 	}

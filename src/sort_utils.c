@@ -139,6 +139,18 @@ void _get_order_of_two_int_arrays(const int *a, const int *b, int nelt,
 	return;
 }
 
+static int compar_integer_pairs(int a1, int b1,
+				int a2, int b2)
+{
+	int ret;
+
+	ret = a1 - a2;
+	if (ret != 0)
+		return ret;
+	ret = b1 - b2;
+	return ret;
+}
+
 
 /****************************************************************************
  * Getting the order of 4 int arrays of the same length.
@@ -201,6 +213,46 @@ void _get_order_of_four_int_arrays(const int *a, const int *b,
 		out[i] = out_shift;
 	compar = desc ? compar4_for_desc_order : compar4_for_asc_order;
 	qsort(out, nelt, sizeof(int), compar);
+	return;
+}
+
+static int compar_integer_quads(int a1, int b1, int c1, int d1,
+				int a2, int b2, int c2, int d2)
+{
+	int ret;
+
+	ret = compar_integer_pairs(a1, b1, a2, b2);
+	if (ret != 0)
+		return ret;
+	ret = c1 - c2;
+	if (ret != 0)
+		return ret;
+	ret = d1 - d2;
+	return ret;
+}
+
+void _get_matches_of_ordered_integer_quads(
+		const int *a1, const int *b1, const int *c1, const int *d1,
+		const int *o1, int nelt1,
+		const int *a2, const int *b2, const int *c2, const int *d2,
+		const int *o2, int nelt2,
+		int nomatch, int *out, int out_shift)
+{
+	int i1, i2, ret;
+
+	i2 = 0;
+	ret = 0;
+	for (i1 = 0; i1 < nelt1; i1++, o1++) {
+		while (i2 < nelt2) {
+			ret = compar_integer_quads(
+				a1[*o1], b1[*o1], c1[*o1], d1[*o1],
+				a2[*o2], b2[*o2], c2[*o2], d2[*o2]);
+			if (ret <= 0)
+				break;
+			i2++, o2++;
+		}
+		out[*o1] = ret == 0 ? *o2 + out_shift : nomatch;
+	}
 	return;
 }
 
