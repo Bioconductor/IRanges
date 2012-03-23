@@ -362,7 +362,7 @@ setGeneric("subsetByOverlaps",
         standardGeneric("subsetByOverlaps")
 )
 
-setMethod("subsetByOverlaps", c("Ranges", "Ranges"),
+setMethod("subsetByOverlaps", c("ANY", "ANY"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within", "equal"))
     {
