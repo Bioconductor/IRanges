@@ -92,6 +92,15 @@ orderInteger <- function(x, decreasing=FALSE, na.last=NA)
 ### Fast ordering/comparing of integer pairs.
 ###
 
+normargIntegerOrFactor <- function(arg, argname)
+{
+    if (is.factor(arg))
+        arg <- as.integer(arg)
+    else if (!is.integer(arg))
+        stop("'", argname, "' must be an integer vector or factor")
+    arg
+}
+
 ### For 'a' and 'b' integer vectors of equal length with no NAs,
 ### 'orderIntegerPairs(a, b)' is equivalent to (but faster than):
 ###
@@ -116,10 +125,8 @@ orderInteger <- function(x, decreasing=FALSE, na.last=NA)
 ### For efficiency reasons, we don't support (and don't even check) for NAs.
 orderIntegerPairs <- function(a, b, decreasing=FALSE)
 {
-    if (!is.integer(a) && !is.factor(a))
-        stop("'a' must be an integer vector or factor")
-    if (!is.integer(b) && !is.factor(b))
-        stop("'b' must be an integer vector or factor")
+    a <- normargIntegerOrFactor(a, "a")
+    b <- normargIntegerOrFactor(b, "b")
     .Call2("Integer_order2", a, b, decreasing, PACKAGE="IRanges")
 }
 
@@ -133,14 +140,8 @@ duplicatedIntegerPairs <- function(a, b,
                                    fromLast=FALSE,
                                    method=c("auto", "quick", "hash"))
 {
-    if (is.factor(a))
-        a <- as.integer(a)
-    else if (!is.integer(a))
-        stop("'a' must be an integer vector or factor")
-    if (is.factor(b))
-        b <- as.integer(b)
-    else if (!is.integer(b))
-        stop("'b' must be an integer vector or factor")
+    a <- normargIntegerOrFactor(a, "a")
+    b <- normargIntegerOrFactor(b, "b")
     if (length(a) != length(b))
         stop("'a' and 'b' must have the same length")
     if (!isTRUEorFALSE(fromLast))
@@ -212,14 +213,10 @@ runEndsOfIntegerPairs <- function(a, b)
 ### For efficiency reasons, we don't support (and don't even check) for NAs.
 orderIntegerQuads <- function(a, b, c, d, decreasing=FALSE)
 {
-    if (!is.integer(a) && !is.factor(a))
-        stop("'a' must be an integer vector or factor")
-    if (!is.integer(b) && !is.factor(b))
-        stop("'b' must be an integer vector or factor")
-    if (!is.integer(c) && !is.factor(c))
-        stop("'c' must be an integer vector or factor")
-    if (!is.integer(d) && !is.factor(d))
-        stop("'d' must be an integer vector or factor")
+    a <- normargIntegerOrFactor(a, "a")
+    b <- normargIntegerOrFactor(b, "b")
+    c <- normargIntegerOrFactor(c, "c")
+    d <- normargIntegerOrFactor(d, "d")
     .Call2("Integer_order4", a, b, c, d, decreasing, PACKAGE="IRanges")
 }
 
@@ -242,22 +239,10 @@ duplicatedIntegerQuads <- function(a, b, c, d,
                                    fromLast=FALSE,
                                    method=c("auto", "quick", "hash"))
 {
-    if (is.factor(a))
-        a <- as.integer(a)
-    else if (!is.integer(a))
-        stop("'a' must be an integer vector or factor")
-    if (is.factor(b))
-        b <- as.integer(b)
-    else if (!is.integer(b))
-        stop("'b' must be an integer vector or factor")
-    if (is.factor(c))
-        c <- as.integer(c)
-    else if (!is.integer(c))
-        stop("'c' must be an integer vector or factor")
-    if (is.factor(d))
-        d <- as.integer(d)
-    else if (!is.integer(d))
-        stop("'d' must be an integer vector or factor")
+    a <- normargIntegerOrFactor(a, "a")
+    b <- normargIntegerOrFactor(b, "b")
+    c <- normargIntegerOrFactor(c, "c")
+    d <- normargIntegerOrFactor(d, "d")
     lengths <- c(length(a), length(b), length(c), length(d))
     if (sum(!duplicated(lengths)) != 1L)
         stop("all the input vectors must have the same length")
