@@ -79,7 +79,7 @@ int _reduce_ranges(const int *start, const int *width, int length,
 	if (min_gapwidth < 0)
 		error("IRanges internal error in _reduce_ranges(): "
 		      "negative min_gapwidth not supported");
-	_get_order_of_two_int_arrays(start, width, length, 0, tmpbuf, 0);
+	_get_order_of_int_pairs(start, width, length, 0, tmpbuf, 0);
 	out_length = 0;
 	for (i = 0; i < length; i++) {
 		j = tmpbuf[i];
@@ -188,7 +188,7 @@ int _gaps_ranges(const int *start, const int *width, int length,
 		max_end = restrict_start - 1;
 	else
 		max_end = NA_INTEGER;
-	_get_order_of_two_int_arrays(start, width, length, 0, tmpbuf, 0);
+	_get_order_of_int_pairs(start, width, length, 0, tmpbuf, 0);
 	out_length = 0;
 	for (i = 0; i < length; i++) {
 		j = tmpbuf[i];

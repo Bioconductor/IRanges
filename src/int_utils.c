@@ -133,18 +133,6 @@ int _check_integer_pairs(SEXP a, SEXP b,
 	return len;
 }
 
-static int compar_integer_pairs(int a1, int b1,
-				int a2, int b2)
-{
-	int ret;
-
-	ret = a1 - a2;
-	if (ret != 0)
-		return ret;
-	ret = b1 - b2;
-	return ret;
-}
-
 /* --- .Call ENTRY POINT --- */
 SEXP Integer_order(SEXP x, SEXP decreasing)
 {
@@ -154,7 +142,7 @@ SEXP Integer_order(SEXP x, SEXP decreasing)
 	ans_length = LENGTH(x);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	_get_order_of_int_array(INTEGER(x), ans_length,
-			LOGICAL(decreasing)[0], INTEGER(ans), 1);
+				LOGICAL(decreasing)[0], INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
 }
@@ -168,32 +156,48 @@ SEXP Integer_order2(SEXP a, SEXP b, SEXP decreasing)
 
 	ans_length = _check_integer_pairs(a, b, &a_p, &b_p, "a", "b");
 	PROTECT(ans = NEW_INTEGER(ans_length));
-	_get_order_of_two_int_arrays(a_p, b_p,
-			ans_length, LOGICAL(decreasing)[0], INTEGER(ans), 1);
+	_get_order_of_int_pairs(a_p, b_p, ans_length,
+				LOGICAL(decreasing)[0], INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP Integer_duplicated2_quick(SEXP a, SEXP b)
+SEXP Integer_match2_quick(SEXP a1, SEXP b1, SEXP a2, SEXP b2, SEXP nomatch)
 {
-	int ans_length, *o1, *o2, *ans0, i, ret;
+	int len1, len2, nomatch0, *o1, *o2;
+	const int *a1_p, *b1_p, *a2_p, *b2_p;
+	SEXP ans;
+
+	len1 = _check_integer_pairs(a1, b1, &a1_p, &b1_p, "a1", "b1");
+	len2 = _check_integer_pairs(a2, b2, &a2_p, &b2_p, "a2", "b2");
+	nomatch0 = INTEGER(nomatch)[0];
+	o1 = (int *) R_alloc(sizeof(int), len1);
+	o2 = (int *) R_alloc(sizeof(int), len2);
+	_get_order_of_int_pairs(a1_p, b1_p, len1, 0, o1, 0);
+	_get_order_of_int_pairs(a2_p, b2_p, len2, 0, o2, 0);
+	PROTECT(ans = NEW_INTEGER(len1));
+	_get_matches_of_ordered_int_pairs(a1_p, b1_p, o1, len1,
+					  a2_p, b2_p, o2, len2,
+					  nomatch0, INTEGER(ans), 1);
+	UNPROTECT(1);
+	return ans;
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP Integer_selfmatch2_quick(SEXP a, SEXP b)
+{
+	int len, *o1;
 	const int *a_p, *b_p;
 	SEXP ans;
 
-	ans_length = _check_integer_pairs(a, b, &a_p, &b_p, "a", "b");
-	o1 = (int *) R_alloc(sizeof(int), ans_length);
-	_get_order_of_two_int_arrays(a_p, b_p, ans_length, 0, o1, 0);
-	PROTECT(ans = NEW_LOGICAL(ans_length));
-	ans0 = LOGICAL(ans);
-	if (ans_length >= 1) {
-		ans0[*o1] = 0;
-		for (i = 1, o2 = o1 + 1; i < ans_length; i++, o1++, o2++) {
-			ret = compar_integer_pairs(a_p[*o1], b_p[*o1],
-						   a_p[*o2], b_p[*o2]);
-			ans0[*o2] = ret == 0;
-		}
-	}
+	len = _check_integer_pairs(a, b, &a_p, &b_p, "a", "b");
+	o1 = (int *) R_alloc(sizeof(int), len);
+	_get_order_of_int_pairs(a_p, b_p, len, 0, o1, 0);
+	PROTECT(ans = NEW_INTEGER(len));
+	_get_matches_of_ordered_int_pairs(a_p, b_p, o1, len,
+					  a_p, b_p, o1, len,
+					  -1, INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
 }
@@ -298,21 +302,6 @@ int _check_integer_quads(SEXP a, SEXP b, SEXP c, SEXP d,
 	return len;
 }
 
-static int compar_integer_quads(int a1, int b1, int c1, int d1,
-				int a2, int b2, int c2, int d2)
-{
-	int ret;
-
-	ret = compar_integer_pairs(a1, b1, a2, b2);
-	if (ret != 0)
-		return ret;
-	ret = c1 - c2;
-	if (ret != 0)
-		return ret;
-	ret = d1 - d2;
-	return ret;
-}
-
 /* --- .Call ENTRY POINT --- */
 SEXP Integer_order4(SEXP a, SEXP b, SEXP c, SEXP d, SEXP decreasing)
 {
@@ -324,8 +313,8 @@ SEXP Integer_order4(SEXP a, SEXP b, SEXP c, SEXP d, SEXP decreasing)
 					  &a_p, &b_p, &c_p, &d_p,
 					  "a", "b", "c", "d");
 	PROTECT(ans = NEW_INTEGER(ans_length));
-	_get_order_of_four_int_arrays(a_p, b_p, c_p, d_p,
-			ans_length, LOGICAL(decreasing)[0], INTEGER(ans), 1);
+	_get_order_of_int_quads(a_p, b_p, c_p, d_p, ans_length,
+				LOGICAL(decreasing)[0], INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
 }
@@ -347,12 +336,32 @@ SEXP Integer_match4_quick(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 	nomatch0 = INTEGER(nomatch)[0];
 	o1 = (int *) R_alloc(sizeof(int), len1);
 	o2 = (int *) R_alloc(sizeof(int), len2);
-	_get_order_of_four_int_arrays(a1_p, b1_p, c1_p, d1_p, len1, 0, o1, 0);
-	_get_order_of_four_int_arrays(a2_p, b2_p, c2_p, d2_p, len2, 0, o2, 0);
+	_get_order_of_int_quads(a1_p, b1_p, c1_p, d1_p, len1, 0, o1, 0);
+	_get_order_of_int_quads(a2_p, b2_p, c2_p, d2_p, len2, 0, o2, 0);
 	PROTECT(ans = NEW_INTEGER(len1));
-	_get_matches_of_ordered_integer_quads(a1_p, b1_p, c1_p, d1_p, o1, len1,
-					      a2_p, b2_p, c2_p, d2_p, o2, len2,
-					      nomatch0, INTEGER(ans), 1);
+	_get_matches_of_ordered_int_quads(a1_p, b1_p, c1_p, d1_p, o1, len1,
+					  a2_p, b2_p, c2_p, d2_p, o2, len2,
+					  nomatch0, INTEGER(ans), 1);
+	UNPROTECT(1);
+	return ans;
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP Integer_selfmatch4_quick(SEXP a, SEXP b, SEXP c, SEXP d)
+{
+	int len, *o1;
+	const int *a_p, *b_p, *c_p, *d_p;
+	SEXP ans;
+
+	len = _check_integer_quads(a, b, c, d,
+				   &a_p, &b_p, &c_p, &d_p,
+				   "a", "b", "c", "d");
+	o1 = (int *) R_alloc(sizeof(int), len);
+	_get_order_of_int_quads(a_p, b_p, c_p, d_p, len, 0, o1, 0);
+	PROTECT(ans = NEW_INTEGER(len));
+	_get_matches_of_ordered_int_quads(a_p, b_p, c_p, d_p, o1, len,
+					  a_p, b_p, c_p, d_p, o1, len,
+					  -1, INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
 }
@@ -366,33 +375,6 @@ SEXP Integer_match4_hash(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 	return R_NilValue;
 }
 */
-
-/* --- .Call ENTRY POINT --- */
-SEXP Integer_duplicated4_quick(SEXP a, SEXP b, SEXP c, SEXP d)
-{
-	int ans_length, *o1, *o2, *ans0, i, ret;
-	const int *a_p, *b_p, *c_p, *d_p;
-	SEXP ans;
-
-	ans_length = _check_integer_quads(a, b, c, d,
-					  &a_p, &b_p, &c_p, &d_p,
-					  "a", "b", "c", "d");
-	o1 = (int *) R_alloc(sizeof(int), ans_length);
-	_get_order_of_four_int_arrays(a_p, b_p, c_p, d_p, ans_length, 0, o1, 0);
-	PROTECT(ans = NEW_LOGICAL(ans_length));
-	ans0 = LOGICAL(ans);
-	if (ans_length >= 1) {
-		ans0[*o1] = 0;
-		for (i = 1, o2 = o1 + 1; i < ans_length; i++, o1++, o2++) {
-			ret = compar_integer_quads(
-				a_p[*o1], b_p[*o1], c_p[*o1], d_p[*o1],
-				a_p[*o2], b_p[*o2], c_p[*o2], d_p[*o2]);
-			ans0[*o2] = ret == 0;
-		}
-	}
-	UNPROTECT(1);
-	return ans;
-}
 
 /* --- .Call ENTRY POINT --- */
 SEXP Integer_duplicated4_hash(SEXP a, SEXP b, SEXP c, SEXP d)

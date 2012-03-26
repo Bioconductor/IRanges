@@ -409,7 +409,7 @@ SEXP IntegerIntervalTree_overlap_all(SEXP r_tree, SEXP r_ranges, SEXP r_order)
     *r_elt = ((IntegerIntervalNode *)result->val)->index;
 
   int *row = (int *) R_alloc((long) nhits, sizeof(int));
-  _get_order_of_two_int_arrays(r_query_col, r_subject_col, nhits, 0, row, 0);
+  _get_order_of_int_pairs(r_query_col, r_subject_col, nhits, 0, row, 0);
 
   PROTECT(r_results = NEW_OBJECT(MAKE_CLASS("Hits")));
 

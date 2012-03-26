@@ -25,7 +25,7 @@ void _get_order_of_int_array(
 	int out_shift
 );
 
-void _get_order_of_two_int_arrays(
+void _get_order_of_int_pairs(
 	const int *a,
 	const int *b,
 	int nelt,
@@ -34,7 +34,21 @@ void _get_order_of_two_int_arrays(
 	int out_shift
 );
 
-void _get_order_of_four_int_arrays(
+void _get_matches_of_ordered_int_pairs(
+	const int *a1,
+	const int *b1,
+	const int *o1,
+	int nelt1,
+	const int *a2,
+	const int *b2,
+	const int *o2,
+	int nelt2,
+	int nomatch,
+	int *out,
+	int out_shift
+);
+
+void _get_order_of_int_quads(
 	const int *a,
 	const int *b,
 	const int *c,
@@ -45,7 +59,7 @@ void _get_order_of_four_int_arrays(
 	int out_shift
 );
 
-void _get_matches_of_ordered_integer_quads(
+void _get_matches_of_ordered_int_quads(
 	const int *a1,
 	const int *b1,
 	const int *c1,
@@ -517,7 +531,15 @@ SEXP Integer_order2(
 	SEXP decreasing
 );
 
-SEXP Integer_duplicated2_quick(
+SEXP Integer_match2_quick(
+	SEXP a1,
+	SEXP b1,
+	SEXP a2,
+	SEXP b2,
+	SEXP nomatch
+);
+
+SEXP Integer_selfmatch2_quick(
 	SEXP a,
 	SEXP b
 );
@@ -562,7 +584,7 @@ SEXP Integer_match4_quick(
 	SEXP nomatch
 );
 
-SEXP Integer_duplicated4_quick(
+SEXP Integer_selfmatch4_quick(
 	SEXP a,
 	SEXP b,
 	SEXP c,

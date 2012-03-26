@@ -92,13 +92,25 @@ orderInteger <- function(x, decreasing=FALSE, na.last=NA)
 ### Fast ordering/comparing of integer pairs.
 ###
 
-normargIntegerOrFactor <- function(arg, argname)
+.normargIntegerOrFactor <- function(arg, argname)
 {
     if (is.factor(arg))
         arg <- as.integer(arg)
     else if (!is.integer(arg))
         stop("'", argname, "' must be an integer vector or factor")
     arg
+}
+
+.normargMethod <- function(method=c("auto", "quick", "hash"), a_len)
+{
+    method <- match.arg(method)
+    if (method == "auto") {
+        if (a_len <= 2^29)
+            method <- "hash"
+        else
+            method <- "quick"
+    }
+    method
 }
 
 ### For 'a' and 'b' integer vectors of equal length with no NAs,
@@ -125,9 +137,48 @@ normargIntegerOrFactor <- function(arg, argname)
 ### For efficiency reasons, we don't support (and don't even check) for NAs.
 orderIntegerPairs <- function(a, b, decreasing=FALSE)
 {
-    a <- normargIntegerOrFactor(a, "a")
-    b <- normargIntegerOrFactor(b, "b")
+    a <- .normargIntegerOrFactor(a, "a")
+    b <- .normargIntegerOrFactor(b, "b")
     .Call2("Integer_order2", a, b, decreasing, PACKAGE="IRanges")
+}
+
+matchIntegerPairs <- function(a1, b1, a2, b2, nomatch=NA_integer_)
+{
+    a1 <- .normargIntegerOrFactor(a1, "a1")
+    b1 <- .normargIntegerOrFactor(b1, "b1")
+    a2 <- .normargIntegerOrFactor(a1, "a2")
+    b2 <- .normargIntegerOrFactor(b1, "b2")
+    .Call2("Integer_match2_quick",
+           a1, b1, a2, b2, nomatch,
+           PACKAGE="IRanges")
+}
+
+.selfmatchIntegerPairs_quick <- function(a, b)
+{
+    .Call2("Integer_selfmatch2_quick", a, b, PACKAGE="IRanges")
+}
+
+.selfmatchIntegerPairs_hash <- function(a, b)
+{
+    stop("not implemented yet, sorry!")
+}
+
+selfmatchIntegerPairs <- function(a, b, method=c("auto", "quick", "hash"))
+{
+    a <- .normargIntegerOrFactor(a, "a")
+    b <- .normargIntegerOrFactor(b, "b")
+    if (length(a) != length(b))
+        stop("'a' and 'b' must have the same length")
+    #method <- .normargMethod(method, length(a))
+    ## TODO: Implement "hash", then delete the line below and uncomment the
+    ## line above.
+    method <- .normargMethod(method, .Machine$integer.max)
+    if (method == "quick") {
+        ans <- .selfmatchIntegerPairs_quick(a, b)
+    } else {
+        ans <- .selfmatchIntegerPairs_hash(a, b)
+    }
+    ans
 }
 
 ### For 'a' and 'b' integer vectors of equal length with no NAs,
@@ -136,17 +187,29 @@ orderIntegerPairs <- function(a, b, decreasing=FALSE)
 ###   duplicated(cbind(a, b))
 ###
 ### For efficiency reasons, we don't support (and don't even check) for NAs.
+
+.duplicatedIntegerPairs_quick <- function(a, b)
+{
+    ans <- .selfmatchIntegerPairs_quick(a, b)
+    ans != seq_len(length(ans))
+}
+
+### Author: Martin Morgan
+.duplicatedIntegerPairs_hash <- function(a, b)
+{
+    .Call2("Integer_duplicated2_hash", a, b, PACKAGE="IRanges")
+}
+
 duplicatedIntegerPairs <- function(a, b,
                                    fromLast=FALSE,
                                    method=c("auto", "quick", "hash"))
 {
-    a <- normargIntegerOrFactor(a, "a")
-    b <- normargIntegerOrFactor(b, "b")
+    a <- .normargIntegerOrFactor(a, "a")
+    b <- .normargIntegerOrFactor(b, "b")
     if (length(a) != length(b))
         stop("'a' and 'b' must have the same length")
     if (!isTRUEorFALSE(fromLast))
         stop("'fromLast' must be TRUE or FALSE")
-    method <- match.arg(method)
     if (length(a) == 0L)
         return(logical(0L))
     if (length(a) == 1L)
@@ -156,17 +219,11 @@ duplicatedIntegerPairs <- function(a, b,
     ## TODO: Add support for fromLast=TRUE to "quick" and "hash" methods.
     if (fromLast)
         return(rev(duplicatedIntegerPairs(rev(a), rev(b), method=method)))
-    if (method == "auto") {
-        if (length(a) <= 2^29)
-            method <- "hash"
-        else
-            method <- "quick"
-    }
+    method <- .normargMethod(method, length(a))
     if (method == "quick") {
-        ans <- .Call2("Integer_duplicated2_quick", a, b, PACKAGE="IRanges")
+        ans <- .duplicatedIntegerPairs_quick(a, b)
     } else {
-        ## Author: Martin Morgan
-        ans <- .Call2("Integer_duplicated2_hash", a, b, PACKAGE="IRanges")
+        ans <- .duplicatedIntegerPairs_hash(a, b)
     }
     ans
 }
@@ -213,19 +270,60 @@ runEndsOfIntegerPairs <- function(a, b)
 ### For efficiency reasons, we don't support (and don't even check) for NAs.
 orderIntegerQuads <- function(a, b, c, d, decreasing=FALSE)
 {
-    a <- normargIntegerOrFactor(a, "a")
-    b <- normargIntegerOrFactor(b, "b")
-    c <- normargIntegerOrFactor(c, "c")
-    d <- normargIntegerOrFactor(d, "d")
+    a <- .normargIntegerOrFactor(a, "a")
+    b <- .normargIntegerOrFactor(b, "b")
+    c <- .normargIntegerOrFactor(c, "c")
+    d <- .normargIntegerOrFactor(d, "d")
     .Call2("Integer_order4", a, b, c, d, decreasing, PACKAGE="IRanges")
 }
 
 matchIntegerQuads <- function(a1, b1, c1, d1, a2, b2, c2, d2,
                               nomatch=NA_integer_)
 {
+    a1 <- .normargIntegerOrFactor(a1, "a1")
+    b1 <- .normargIntegerOrFactor(b1, "b1")
+    c1 <- .normargIntegerOrFactor(c1, "c1")
+    d1 <- .normargIntegerOrFactor(d1, "d1")
+    a2 <- .normargIntegerOrFactor(a1, "a2")
+    b2 <- .normargIntegerOrFactor(b1, "b2")
+    c2 <- .normargIntegerOrFactor(c1, "c2")
+    d2 <- .normargIntegerOrFactor(d1, "d2")
     .Call2("Integer_match4_quick",
            a1, b1, c1, d1, a2, b2, c2, d2, nomatch,
            PACKAGE="IRanges")
+}
+
+.selfmatchIntegerQuads_quick <- function(a, b, c, d)
+{
+    .Call2("Integer_selfmatch4_quick", a, b, c, d, PACKAGE="IRanges")
+}
+
+.selfmatchIntegerQuads_hash <- function(a, b, c, d)
+{
+    stop("not implemented yet, sorry!")
+}
+
+selfmatchIntegerQuads <- function(a, b, c, d,
+                                  method=c("auto", "quick", "hash"))
+{
+    a <- .normargIntegerOrFactor(a, "a")
+    b <- .normargIntegerOrFactor(b, "b")
+    c <- .normargIntegerOrFactor(c, "c")
+    d <- .normargIntegerOrFactor(d, "d")
+    if (length(a) != length(b) ||
+        length(b) != length(c) ||
+        length(c) != length(d))
+        stop("'a', 'b', 'c' and 'd' must have the same length")
+    #method <- .normargMethod(method, length(a))
+    ## TODO: Implement "hash", then delete the line below and uncomment the
+    ## line above.
+    method <- .normargMethod(method, .Machine$integer.max)
+    if (method == "quick") {
+        ans <- .selfmatchIntegerQuads_quick(a, b, c, d)
+    } else {
+        ans <- .selfmatchIntegerQuads_hash(a, b, c, d)
+    }
+    ans
 }
 
 ### For 'a', 'b', 'c' and 'd' integer vectors of equal length with no NAs,
@@ -235,20 +333,32 @@ matchIntegerQuads <- function(a1, b1, c1, d1, a2, b2, c2, d2,
 ###   duplicated(cbind(a, b, c, d))
 ###
 ### For efficiency reasons, we don't support (and don't even check) for NAs.
+
+.duplicatedIntegerQuads_quick <- function(a, b, c, d)
+{
+    ans <- .selfmatchIntegerQuads_quick(a, b, c, d)
+    ans != seq_len(length(ans))
+}
+
+.duplicatedIntegerQuads_hash <- function(a, b, c, d)
+{
+    .Call2("Integer_duplicated4_hash", a, b, c, d, PACKAGE="IRanges")
+}
+
 duplicatedIntegerQuads <- function(a, b, c, d,
                                    fromLast=FALSE,
                                    method=c("auto", "quick", "hash"))
 {
-    a <- normargIntegerOrFactor(a, "a")
-    b <- normargIntegerOrFactor(b, "b")
-    c <- normargIntegerOrFactor(c, "c")
-    d <- normargIntegerOrFactor(d, "d")
-    lengths <- c(length(a), length(b), length(c), length(d))
-    if (sum(!duplicated(lengths)) != 1L)
-        stop("all the input vectors must have the same length")
+    a <- .normargIntegerOrFactor(a, "a")
+    b <- .normargIntegerOrFactor(b, "b")
+    c <- .normargIntegerOrFactor(c, "c")
+    d <- .normargIntegerOrFactor(d, "d")
+    if (length(a) != length(b) ||
+        length(b) != length(c) ||
+        length(c) != length(d))
+        stop("'a', 'b', 'c' and 'd' must have the same length")
     if (!isTRUEorFALSE(fromLast))
         stop("'fromLast' must be TRUE or FALSE")
-    method <- match.arg(method)
     if (length(a) == 0L)
         return(logical(0L))
     if (length(a) == 1L)
@@ -259,19 +369,14 @@ duplicatedIntegerQuads <- function(a, b, c, d,
     if (fromLast)
         return(rev(duplicatedIntegerQuads(rev(a), rev(b), rev(c), rev(d),
                                           method=method)))
-    if (method == "auto") {
-        ## TODO: Implement "hash" and uncomment the 3 lines below.
-        #if (length(a) <= 2^29)
-        #    method <- "hash"
-        #else
-            method <- "quick"
-    }
+    #method <- .normargMethod(method, length(a))
+    ## TODO: Implement "hash", then delete the line below and uncomment the
+    ## line above.
+    method <- .normargMethod(method, .Machine$integer.max)
     if (method == "quick") {
-        ans <- .Call2("Integer_duplicated4_quick", a, b, c, d,
-                      PACKAGE="IRanges")
+        ans <- .duplicatedIntegerQuads_quick(a, b, c, d)
     } else {
-        ans <- .Call2("Integer_duplicated4_hash", a, b, c, d,
-                      PACKAGE="IRanges")
+        ans <- .duplicatedIntegerQuads_hash(a, b, c, d)
     }
     ans
 }

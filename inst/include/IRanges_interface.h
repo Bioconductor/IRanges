@@ -31,7 +31,7 @@ void get_order_of_int_array(
 	int out_shift
 );
 
-void get_order_of_two_int_arrays(
+void get_order_of_int_pairs(
 	const int *a,
 	const int *b,
 	int nelt,
@@ -40,7 +40,7 @@ void get_order_of_two_int_arrays(
 	int out_shift
 );
 
-void get_order_of_four_int_arrays(
+void get_order_of_int_quads(
 	const int *a,
 	const int *b,
 	const int *c,
