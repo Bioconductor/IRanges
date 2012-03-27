@@ -206,64 +206,73 @@ SEXP Integer_selfmatch2_quick(SEXP a, SEXP b)
  * Author: Martin Morgan
  * Modified from R_HOME/src/main/unique.c
  */
-struct hash {
+struct hashtable {
 	int K, M, Mminus1;
 	int *lkup;
 };
 
-static void MKsetup(int n, struct hash *h)
+static void init_hashtable(struct hashtable *htable, int n)
 {
-	int n2 = 2 * n;
+	int n2, i;
 
 	/* max supported value for n is 2^29 */
 	if (n < 0 || n > 536870912) /* protect against overflow to -ve */
 		error("length %d is too large for hashing", n);
-	h->M = 2;
-	h->K = 1;
-	while (h->M < n2) {
-		h->M *= 2;
-		h->K += 1;
+	n2 = 2 * n;
+	htable->M = 2;
+	htable->K = 1;
+	while (htable->M < n2) {
+		htable->M *= 2;
+		htable->K += 1;
 	}
-	h->Mminus1 = h->M - 1;
+	htable->Mminus1 = htable->M - 1;
+	htable->lkup = (int *) R_alloc(sizeof(int), htable->M);
+	for (i = 0; i < htable->M; i++)
+		htable->lkup[i] = NA_INTEGER;
+	return;
 }
 
-static Rboolean is_duplicated2_hash(const int *a, const int *b,
-		const int idx, struct hash *tbl)
+static int lookup_hashtable(const int *a, const int *b, const int i,
+		struct hashtable *htable)
 {
-	const int aa = a[idx], bb = b[idx];
-	int *h = tbl->lkup, hi;
+	int a_i, b_i, h, *lkup, i2;
 
+	a_i = a[i];
+	b_i = b[i];
 	/* use 2 consecutive prime numbers (seems to work well, no serious
 	   justification for it) */
-	int i = (3929449U * aa + 3929461U * bb) & tbl->Mminus1;
-	while ((hi = h[i]) != NA_INTEGER) {
-		if (aa == a[hi] && bb == b[hi])
-			return TRUE;
-		i = (i + 1) % tbl->M;
+	h = (3929449U * a_i + 3929461U * b_i) & htable->Mminus1;
+	lkup = htable->lkup;
+	while ((i2 = lkup[h]) != NA_INTEGER) {
+		if (a[i2] == a_i && b[i2] == b_i)
+			break;
+		h = (h + 1) % htable->M;
 	}
-	h[i] = idx;
-	return FALSE;
+	return h;
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP Integer_duplicated2_hash(SEXP a, SEXP b)
+SEXP Integer_selfmatch2_hash(SEXP a, SEXP b)
 {
-	int ans_length, *ans0;
+	int ans_length, *ans0, i, h, i2;
 	const int *a_p, *b_p;
-	struct hash *tbl;
+	struct hashtable htable;
 	SEXP ans;
 
 	ans_length = _check_integer_pairs(a, b, &a_p, &b_p, "a", "b");
-	tbl = (struct hash *) R_alloc(sizeof(struct hash), 1);
-	MKsetup(ans_length, tbl);
-	tbl->lkup = (int *) R_alloc(sizeof(int), tbl->M);
-	for (int i = 0; i < tbl->M; i++)
-		tbl->lkup[i] = NA_INTEGER;
-
-	PROTECT(ans = NEW_LOGICAL(ans_length));
-	ans0 = LOGICAL(ans);
-	for (int i = 0; i < ans_length; i++)
-		ans0[i] = is_duplicated2_hash(a_p, b_p, i, tbl);
+	init_hashtable(&htable, ans_length);
+	PROTECT(ans = NEW_INTEGER(ans_length));
+	ans0 = INTEGER(ans);
+	for (i = 0; i < ans_length; i++) {
+		h = lookup_hashtable(a_p, b_p, i, &htable);
+		i2 = htable.lkup[h];
+		if (i2 == NA_INTEGER) {
+			htable.lkup[h] = i;
+			ans0[i] = i + 1;
+		} else {
+			ans0[i] = i2 + 1;
+		}
+	}
 	UNPROTECT(1);
 	return ans;
 }

@@ -544,7 +544,7 @@ SEXP Integer_selfmatch2_quick(
 	SEXP b
 );
 
-SEXP Integer_duplicated2_hash(
+SEXP Integer_selfmatch2_hash(
 	SEXP a,
 	SEXP b
 );

@@ -158,9 +158,10 @@ matchIntegerPairs <- function(a1, b1, a2, b2, nomatch=NA_integer_)
     .Call2("Integer_selfmatch2_quick", a, b, PACKAGE="IRanges")
 }
 
+### Author: Martin Morgan
 .selfmatchIntegerPairs_hash <- function(a, b)
 {
-    stop("not implemented yet, sorry!")
+    .Call2("Integer_selfmatch2_hash", a, b, PACKAGE="IRanges")
 }
 
 selfmatchIntegerPairs <- function(a, b, method=c("auto", "quick", "hash"))
@@ -169,10 +170,7 @@ selfmatchIntegerPairs <- function(a, b, method=c("auto", "quick", "hash"))
     b <- .normargIntegerOrFactor(b, "b")
     if (length(a) != length(b))
         stop("'a' and 'b' must have the same length")
-    #method <- .normargMethod(method, length(a))
-    ## TODO: Implement "hash", then delete the line below and uncomment the
-    ## line above.
-    method <- .normargMethod(method, .Machine$integer.max)
+    method <- .normargMethod(method, length(a))
     if (method == "quick") {
         ans <- .selfmatchIntegerPairs_quick(a, b)
     } else {
@@ -187,19 +185,6 @@ selfmatchIntegerPairs <- function(a, b, method=c("auto", "quick", "hash"))
 ###   duplicated(cbind(a, b))
 ###
 ### For efficiency reasons, we don't support (and don't even check) for NAs.
-
-.duplicatedIntegerPairs_quick <- function(a, b)
-{
-    ans <- .selfmatchIntegerPairs_quick(a, b)
-    ans != seq_len(length(ans))
-}
-
-### Author: Martin Morgan
-.duplicatedIntegerPairs_hash <- function(a, b)
-{
-    .Call2("Integer_duplicated2_hash", a, b, PACKAGE="IRanges")
-}
-
 duplicatedIntegerPairs <- function(a, b,
                                    fromLast=FALSE,
                                    method=c("auto", "quick", "hash"))
@@ -219,13 +204,8 @@ duplicatedIntegerPairs <- function(a, b,
     ## TODO: Add support for fromLast=TRUE to "quick" and "hash" methods.
     if (fromLast)
         return(rev(duplicatedIntegerPairs(rev(a), rev(b), method=method)))
-    method <- .normargMethod(method, length(a))
-    if (method == "quick") {
-        ans <- .duplicatedIntegerPairs_quick(a, b)
-    } else {
-        ans <- .duplicatedIntegerPairs_hash(a, b)
-    }
-    ans
+    sm <- selfmatchIntegerPairs(a, b, method=method)
+    sm != seq_len(length(sm))
 }
 
 ### For 'a' and 'b' integer vectors of equal length with no NAs,
