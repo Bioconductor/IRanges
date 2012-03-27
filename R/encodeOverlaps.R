@@ -83,7 +83,7 @@ setGeneric("encodeOverlaps",
 setMethod("encodeOverlaps", c("ANY", "ANY", "Hits"),
     function(query, subject, hits=NULL, ...)
     {
-        encodeOverlaps(query[queryHits(hits)], subject[subjectHits(hits)])
+        encodeOverlaps(query[queryHits(hits)], subject[subjectHits(hits)], ...)
     }
 )
 
