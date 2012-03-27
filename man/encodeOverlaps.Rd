@@ -73,7 +73,7 @@ encodeOverlaps(query, subject, hits=NULL)
 ## In the context of an RNA-seq experiment, encoding the overlaps
 ## between 2 GRangesList objects, one containing the reads (the query),
 ## and one containing the transcripts (the subject), can be used for
-## detecting hits between reads and transcripts that are compatible
+## detecting hits between reads and transcripts that are "compatible"
 ## with the splicing of the transcript. Here we illustrate this with 2
 ## RangesList objects, in order to keep things simple:
 
@@ -93,11 +93,11 @@ ovenc <- encodeOverlaps(query, subject)
 ovenc
 encoding(ovenc)
 
-## Reads that are compatible with the transcript can be detected with
+## Reads that are "compatible" with the transcript can be detected with
 ## a regular expression (the regular expression below assumes that
 ## reads have at most 2 gaps):
 regex0 <- "(:[fgij]:|:[jg].:.[gf]:|:[jg]..:.g.:..[gf]:)"
-grepl(regex0, encoding(ovenc))  # read4 is NOT compatible
+grepl(regex0, encoding(ovenc))  # read4 is NOT "compatible"
 
 ## This was for illustration purpose only. In practise you don't need
 ## (and should not) use this regular expression, but use instead the
