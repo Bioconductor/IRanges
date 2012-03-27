@@ -76,19 +76,19 @@ RangesList_encodeOverlaps <- function(query.starts, query.widths,
                              encoding=encoding, check=FALSE)
 }
 
-setGeneric("encodeOverlaps", signature=c("query", "subject", "hits"),
-    function(query, subject, hits=NULL) standardGeneric("encodeOverlaps")
+setGeneric("encodeOverlaps",
+    function(query, subject, hits=NULL, ...) standardGeneric("encodeOverlaps")
 )
 
 setMethod("encodeOverlaps", c("ANY", "ANY", "Hits"),
-    function(query, subject, hits=NULL)
+    function(query, subject, hits=NULL, ...)
     {
         encodeOverlaps(query[queryHits(hits)], subject[subjectHits(hits)])
     }
 )
 
 setMethod("encodeOverlaps", c("RangesList", "RangesList", "missing"),
-    function(query, subject, hits=NULL)
+    function(query, subject, hits=NULL, ...)
     {
         RangesList_encodeOverlaps(as.list(start(query)),
                                   as.list(width(query)),
@@ -98,7 +98,7 @@ setMethod("encodeOverlaps", c("RangesList", "RangesList", "missing"),
 )
 
 setMethod("encodeOverlaps", c("RangesList", "Ranges", "missing"),
-    function(query, subject, hits=NULL)
+    function(query, subject, hits=NULL, ...)
     {
         RangesList_encodeOverlaps(as.list(start(query)),
                                   as.list(width(query)),
@@ -108,7 +108,7 @@ setMethod("encodeOverlaps", c("RangesList", "Ranges", "missing"),
 )
 
 setMethod("encodeOverlaps", c("Ranges", "RangesList", "missing"),
-    function(query, subject, hits=NULL)
+    function(query, subject, hits=NULL, ...)
     {
         RangesList_encodeOverlaps(as.list(start(query)),
                                   as.list(width(query)),
@@ -131,7 +131,7 @@ setMethod("encodeOverlaps", c("Ranges", "RangesList", "missing"),
 ###   [1] f i j
 ###   Levels: a b c d e f g h i j k l m X
 setMethod("encodeOverlaps", c("Ranges", "Ranges", "missing"),
-    function(query, subject,  hits=NULL)
+    function(query, subject,  hits=NULL, ...)
     {
         rangeComparisonCodeToLetter(compare(query, subject))
     }
