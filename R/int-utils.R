@@ -142,15 +142,38 @@ orderIntegerPairs <- function(a, b, decreasing=FALSE)
     .Call2("Integer_order2", a, b, decreasing, PACKAGE="IRanges")
 }
 
-matchIntegerPairs <- function(a1, b1, a2, b2, nomatch=NA_integer_)
+.matchIntegerPairs_quick <- function(a1, b1, a2, b2, nomatch=NA_integer_)
 {
-    a1 <- .normargIntegerOrFactor(a1, "a1")
-    b1 <- .normargIntegerOrFactor(b1, "b1")
-    a2 <- .normargIntegerOrFactor(a1, "a2")
-    b2 <- .normargIntegerOrFactor(b1, "b2")
     .Call2("Integer_match2_quick",
            a1, b1, a2, b2, nomatch,
            PACKAGE="IRanges")
+}
+
+.matchIntegerPairs_hash <- function(a1, b1, a2, b2, nomatch=NA_integer_)
+{
+    .Call2("Integer_match2_hash",
+           a1, b1, a2, b2, nomatch,
+           PACKAGE="IRanges")
+}
+
+matchIntegerPairs <- function(a1, b1, a2, b2, nomatch=NA_integer_,
+                              method=c("auto", "quick", "hash"))
+{
+    a1 <- .normargIntegerOrFactor(a1, "a1")
+    b1 <- .normargIntegerOrFactor(b1, "b1")
+    if (length(a1) != length(b1))
+        stop("'a1' and 'b1' must have the same length")
+    a2 <- .normargIntegerOrFactor(a2, "a2")
+    b2 <- .normargIntegerOrFactor(b2, "b2")
+    if (length(a2) != length(b2))
+        stop("'a2' and 'b2' must have the same length")
+    method <- .normargMethod(method, length(a2))
+    if (method == "quick") {
+        ans <- .matchIntegerPairs_quick(a1, b1, a2, b2, nomatch=nomatch)
+    } else {
+        ans <- .matchIntegerPairs_hash(a1, b1, a2, b2, nomatch=nomatch)
+    }
+    ans
 }
 
 .selfmatchIntegerPairs_quick <- function(a, b)
@@ -264,10 +287,10 @@ matchIntegerQuads <- function(a1, b1, c1, d1, a2, b2, c2, d2,
     b1 <- .normargIntegerOrFactor(b1, "b1")
     c1 <- .normargIntegerOrFactor(c1, "c1")
     d1 <- .normargIntegerOrFactor(d1, "d1")
-    a2 <- .normargIntegerOrFactor(a1, "a2")
-    b2 <- .normargIntegerOrFactor(b1, "b2")
-    c2 <- .normargIntegerOrFactor(c1, "c2")
-    d2 <- .normargIntegerOrFactor(d1, "d2")
+    a2 <- .normargIntegerOrFactor(a2, "a2")
+    b2 <- .normargIntegerOrFactor(b2, "b2")
+    c2 <- .normargIntegerOrFactor(c2, "c2")
+    d2 <- .normargIntegerOrFactor(d2, "d2")
     .Call2("Integer_match4_quick",
            a1, b1, c1, d1, a2, b2, c2, d2, nomatch,
            PACKAGE="IRanges")

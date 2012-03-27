@@ -232,23 +232,52 @@ static void init_hashtable(struct hashtable *htable, int n)
 	return;
 }
 
-static int lookup_hashtable(const int *a, const int *b, const int i,
-		struct hashtable *htable)
+static int lookup_hashtable(int a1, int b1,
+		const int *a2, const int *b2, struct hashtable *htable)
 {
-	int a_i, b_i, h, *lkup, i2;
+	int h, *lkup, i2;
 
-	a_i = a[i];
-	b_i = b[i];
 	/* use 2 consecutive prime numbers (seems to work well, no serious
 	   justification for it) */
-	h = (3929449U * a_i + 3929461U * b_i) & htable->Mminus1;
+	h = (3929449U * a1 + 3929461U * b1) & htable->Mminus1;
 	lkup = htable->lkup;
 	while ((i2 = lkup[h]) != NA_INTEGER) {
-		if (a[i2] == a_i && b[i2] == b_i)
+		if (a2[i2] == a1 && b2[i2] == b1)
 			break;
 		h = (h + 1) % htable->M;
 	}
 	return h;
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP Integer_match2_hash(SEXP a1, SEXP b1, SEXP a2, SEXP b2, SEXP nomatch)
+{
+	int len1, len2, nomatch0, *ans0, i, h, i2;
+	const int *a1_p, *b1_p, *a2_p, *b2_p;
+	struct hashtable htable;
+	SEXP ans;
+
+	len1 = _check_integer_pairs(a1, b1, &a1_p, &b1_p, "a1", "b1");
+	len2 = _check_integer_pairs(a2, b2, &a2_p, &b2_p, "a2", "b2");
+	nomatch0 = INTEGER(nomatch)[0];
+	init_hashtable(&htable, len2);
+	for (i = 0; i < len2; i++) {
+		h = lookup_hashtable(a2_p[i], b2_p[i], a2_p, b2_p, &htable);
+		if (htable.lkup[h] == NA_INTEGER)
+			htable.lkup[h] = i;
+	}
+	PROTECT(ans = NEW_INTEGER(len1));
+	ans0 = INTEGER(ans);
+	for (i = 0; i < len1; i++) {
+		h = lookup_hashtable(a1_p[i], b1_p[i], a2_p, b2_p, &htable);
+		i2 = htable.lkup[h];
+		if (i2 == NA_INTEGER)
+			ans0[i] = nomatch0;
+		else
+			ans0[i] = i2 + 1;
+	}
+	UNPROTECT(1);
+	return ans;
 }
 
 /* --- .Call ENTRY POINT --- */
@@ -264,7 +293,7 @@ SEXP Integer_selfmatch2_hash(SEXP a, SEXP b)
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < ans_length; i++) {
-		h = lookup_hashtable(a_p, b_p, i, &htable);
+		h = lookup_hashtable(a_p[i], b_p[i], a_p, b_p, &htable);
 		i2 = htable.lkup[h];
 		if (i2 == NA_INTEGER) {
 			htable.lkup[h] = i;
