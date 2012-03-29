@@ -1,3 +1,64 @@
+CHANGES IN VERSION 1.14.0
+-------------------------
+
+NEW FEATURES
+
+    o The map generic and RangesMapping class for mapping ranges
+      between sequences according to some alignment. Some useful
+      methods are implemented in GenomicRanges.
+
+    o The Hits class has experimental support for basic set
+      operations, including setdiff, union and intersect.
+
+    o Add a number of data manipulation functions and methods,
+      including mstack, multisplit, rename, unsplit for Vector.
+
+    o subsetByOverlaps() should now work again on an RleViews object.
+
+    o DataFrame now supports storing an array (like a matrix) in a column.
+
+    o Added as.matrix,DataFrame method.
+
+    o Added merge,DataTable,DataTable method.
+
+    o Added disjointBins,RangesList method.
+
+    o Added ranges,Rle and ranges,RleList methods.
+
+    o Added which.max,Rle method.
+
+    o Added drop,AtomicList method.
+
+    o Added tofactor() wrapper around togroup().
+
+    o Added AtomicList to Character/Numeric/Logical/Integer/Raw/ComplexList
+      coercions.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o RangesMatching has been renamed to Hits and extends Vector, so
+      that it supports element metadata and other features. 
+
+    o RangesMatchingList has been renamed to HitsList.
+
+    o The 2 columns of the matrix returned by the "as.matrix" method for Hits
+      objects are now named queryHits/subjectHits instead of query/subject, for
+      consistency with the queryHits() and subjectHits() getters.
+
+    o queryLength()/subjectLength() are recommended alternatives to dim,Hits.
+
+    o breakInChunks() returns a PartitioningByWidth object.
+
+DEPRECATED AND DEFUNCT
+
+    o matchMatrix,Hits is deprecated.
+
+BUG FIXES
+
+    o within,RangedData/List now support replacing columns
+
+    o aggregate() override no longer breaks on . ~ x formulas
+
 CHANGES IN VERSION 1.12.0
 -------------------------
 
