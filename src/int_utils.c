@@ -546,7 +546,8 @@ SEXP Integer_mseq(SEXP from, SEXP to)
 	ans_length = 0;
 	for (i = 0, from_elt = INTEGER(from), to_elt = INTEGER(to); i < n;
 		 i++, from_elt++, to_elt++) {
-		ans_length += *to_elt - *from_elt + 1;
+		ans_length += (*from_elt <= *to_elt ? *to_elt - *from_elt
+						    : *from_elt - *to_elt) + 1;
 	}
 
 	PROTECT(ans = NEW_INTEGER(ans_length));
@@ -565,6 +566,81 @@ SEXP Integer_mseq(SEXP from, SEXP to)
 			for (j = *from_elt; j >= *to_elt; j--) {
 				*ans_elt = j;
 				ans_elt++;
+			}
+		}
+	}
+	UNPROTECT(1);
+	return ans;
+}
+
+SEXP Integer_fancy_mseq(SEXP lengths, SEXP offset, SEXP rev)
+{
+	int lengths_length, offset_length, rev_length, ans_length,
+	    i, length, *ans_elt, i2, i3, offset_elt, rev_elt, j;
+	const int *lengths_elt;
+	SEXP ans;
+
+	lengths_length = LENGTH(lengths);
+	offset_length = LENGTH(offset);
+	rev_length = LENGTH(rev);
+	if (lengths_length != 0) {
+		if (offset_length == 0)
+			error("'offset' has length 0 but not 'lengths'");
+		if (rev_length == 0)
+			error("'rev' has length 0 but not 'lengths'");
+	}
+	ans_length = 0;
+	for (i = 0, lengths_elt = INTEGER(lengths);
+	     i < lengths_length;
+	     i++, lengths_elt++)
+	{
+		length = *lengths_elt;
+		if (length == NA_INTEGER)
+			error("'lengths' contains NAs");
+		if (length < 0)
+			length = -length;
+		ans_length += length;
+	}
+	PROTECT(ans = NEW_INTEGER(ans_length));
+	ans_elt = INTEGER(ans);
+	for (i = i2 = i3 = 0, lengths_elt = INTEGER(lengths);
+	     i < lengths_length;
+	     i++, i2++, i3++, lengths_elt++)
+	{
+		if (i2 >= offset_length)
+			i2 = 0; /* recycle */
+		if (i3 >= rev_length)
+			i3 = 0; /* recycle */
+		length = *lengths_elt;
+		offset_elt = INTEGER(offset)[i2];
+		if (length != 0 && offset_elt == NA_INTEGER) {
+			UNPROTECT(1);
+			error("'offset' contains NAs");
+		}
+		rev_elt = INTEGER(rev)[i3];
+		if (length >= 0) {
+			if (length >= 2 && rev_elt == NA_LOGICAL) {
+				UNPROTECT(1);
+				error("'rev' contains NAs");
+			}
+			if (rev_elt) {
+				for (j = length; j >= 1; j--)
+					*(ans_elt++) = j + offset_elt;
+			} else {
+				for (j = 1; j <= length; j++)
+					*(ans_elt++) = j + offset_elt;
+			}
+		} else {
+			if (length <= -2 && rev_elt == NA_LOGICAL) {
+				UNPROTECT(1);
+				error("'rev' contains NAs");
+			}
+			if (rev_elt) {
+				for (j = length; j <= -1; j++)
+					*(ans_elt++) = j - offset_elt;
+			} else {
+				for (j = -1; j >= length; j--)
+					*(ans_elt++) = j - offset_elt;
 			}
 		}
 	}

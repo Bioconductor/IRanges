@@ -479,6 +479,24 @@ mseq <- function(from, to)
     .Call2("Integer_mseq", from, to, PACKAGE="IRanges")
 }
 
+fancy_mseq <- function(lengths, offset=0L, rev=FALSE)
+{
+    if (!is.integer(lengths))
+        lengths <- as.integer(lengths)
+    if (!is.integer(offset))
+        offset <- as.integer(offset)
+    if (!is.logical(rev))
+        stop("'rev' must be a logical vector")
+    #unlist(lapply(seq_len(length(lengths)),
+    #              function(i) {
+    #                  tmp <- seq_len(lengths[i]) + offset[i]
+    #                  if (rev[i])
+    #                      tmp <- rev(tmp)
+    #                  tmp
+    #              }))
+    .Call2("Integer_fancy_mseq", lengths, offset, rev, PACKAGE="IRanges")
+}
+
 findIntervalAndStartFromWidth <- function(x, width)
     .Call2("findIntervalAndStartFromWidth", x, width, PACKAGE="IRanges")
 

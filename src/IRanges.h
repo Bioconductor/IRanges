@@ -621,6 +621,12 @@ SEXP Integer_mseq(
 	SEXP to
 );
 
+SEXP Integer_fancy_mseq(
+	SEXP lengths,
+	SEXP offset,
+	SEXP rev
+);
+
 SEXP _find_interv_and_start_from_width(
 	const int *x,
 	int x_len,
