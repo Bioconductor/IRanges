@@ -51,6 +51,7 @@
 \alias{append,Vector,Vector-method}
 \alias{mstack}
 \alias{mstack,Vector-method}
+\alias{mstack,vector-method}
 \alias{split<-,Vector-method}
 
 \alias{tapply,Vector-method}
@@ -266,7 +267,8 @@
     }
     \item{}{\code{mstack(..., .indName = "name")}: A variant of
       \code{\link{stack}}, where the list is taken as the list of
-      arguments in \code{...}, each of which should be a \code{Vector}.
+      arguments in \code{...}, each of which should be a \code{Vector}
+      or \code{vector} (mixing the two will not work).
     }
   }
 }
