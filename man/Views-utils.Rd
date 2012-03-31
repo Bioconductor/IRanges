@@ -3,6 +3,7 @@
 
 \alias{slice}
 \alias{slice,integer-method}
+\alias{slice,numeric-method}
 \alias{slice,Rle-method}
 \alias{slice,RleList-method}
 \alias{slice,XInteger-method}
