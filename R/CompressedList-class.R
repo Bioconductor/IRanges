@@ -677,6 +677,25 @@ setMethod("mendoapply", "CompressedList",
                                            SIMPLIFY = FALSE))
           })
 
+setMethod("revElements", "CompressedList",
+    function(x, i)
+    {
+        if (missing(i))
+            i <- seq_len(length(x))
+        i <- normalizeSingleBracketSubscript(i, x)
+        if (length(x) == 0L)
+            return(x)
+        elt_lens <- elementLengths(x)
+        offset <- cumsum(c(0L, elt_lens[-length(elt_lens)]))
+        rev <- logical(length(x))
+        rev[i] <- TRUE
+        ii <- fancy_mseq(elt_lens, offset=offset, rev=rev)
+        x@unlistData <- x@unlistData[ii]
+        x
+    }
+)
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###

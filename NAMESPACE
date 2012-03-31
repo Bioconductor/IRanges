@@ -107,9 +107,6 @@ export(
     endoapply,
     mendoapply,
 
-    ## Casting apply functions and the like
-    seqapply, mseqapply, tseqapply, seqsplit, seqby, multisplit,
-    
     ## Generic functions in the Vector API:
     elementType, elementLengths,
     metadata, elementMetadata, "metadata<-", "elementMetadata<-",
@@ -119,6 +116,10 @@ export(
     seqselect, "seqselect<-",
     rename,
 
+    ## Non-generic and generic functions in the List API:
+    seqapply, mseqapply, tseqapply, seqsplit, seqby, multisplit,
+    revElements,
+    
     ## Generic functions in the Ranges API:
     width,
     mid,
@@ -275,6 +276,7 @@ exportMethods(
     isConstant,
     isEmpty,
     seqselect, "seqselect<-",
+    revElements,
 
     width,
     mid,

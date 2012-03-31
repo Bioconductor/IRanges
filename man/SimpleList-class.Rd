@@ -44,6 +44,7 @@
 \alias{lapply,SimpleList-method}
 \alias{mendoapply,CompressedList-method}
 \alias{mendoapply,SimpleList-method}
+\alias{revElements,CompressedList-method}
 
 % coercion
 \alias{as.list,CompressedList-method}

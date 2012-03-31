@@ -25,6 +25,8 @@
 \alias{mapply,List-method}
 \alias{endoapply,List-method}
 \alias{mendoapply,List-method}
+\alias{revElements}
+\alias{revElements,List-method}
 
 \alias{coerce,List,list-method}
 \alias{as.list,List-method}
@@ -143,6 +145,12 @@
       Similar to \code{\link[base]{mapply}}, but performs an endomorphism
       across multiple objects, i.e. returns an object of
       \code{class(list(...)[[1]])}.
+    }
+    \item{}{
+      \code{revElements(x, i)}:
+      A convenient way to do \code{x[i] <- endoapply(x[i], rev)}.
+      There is a fast method for \link{CompressedList} objects,
+      otherwise expect it to be rather slow.
     }
   }
 }

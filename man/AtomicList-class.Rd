@@ -475,18 +475,19 @@
   col3 <- IntegerList(int2)
   append(col1, col2)
   append(col1, col2, 0)
-  c(col1, col2, col3)
+  col123 <- c(col1, col2, col3)
+  col123
+
+  ## revElements
+  revElements(col123)
+  revElements(col123, 4:5)
 
   ## group generics
   2 * col1
   col1 + col1
   col1 > 2
-  log(col1)
-  sum(col1)
-
-  ## get the mean for each element
-  sapply(col1, mean)
-
+  sum(col1)  # equivalent to (but faster than) 'sapply(col1, sum)'
+  mean(col1)  # equivalent to (but faster than) 'sapply(col1, mean)'
 }
 \keyword{methods}
 \keyword{classes}
