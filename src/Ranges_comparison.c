@@ -25,8 +25,8 @@
  *   x: ...oooo.....  -4   'c'  "x=y" | x: .....oooo...   4   'k'  "y=x"
  *   y: .....oooo...                  | y: ...oooo.....                 
  *   ---------------  --------------- | ---------------  ---------------
- *   x: ...oooooo...  -3   'd'  "x="  | x: ....oooo....   3   'j'  "y=" 
- *   y: ....oooo....                  | y: ...oooooo...                 
+ *   x: ...oooooo...  -3   'd'  "x="  | x: .....oooo...   3   'j'  "y=" 
+ *   y: .....oooo...                  | y: ...oooooo...                 
  *   ---------------  --------------- | ---------------  ---------------
  *   x: ..oooooooo..  -2   'e'  "x=x" | x: ....oooo....   2   'i'  "y=y"
  *   y: ....oooo....                  | y: ..oooooooo..                 
@@ -54,7 +54,8 @@
  *     substitutes "x" by "y" and "y" by "x" in the corresponding long code.
  *   o Reflecting ranges x and y relative to an arbitrary position (i.e. doing
  *     a symetry with respect to a vertical axis) has the effect of reversing
- *     the associated long code e.g. "x=y" becomes "y=x".
+ *     the associated long code e.g. "x=y" becomes "y=x". The effect on the
+ *     numeric code is implemented by the _invert_overlap_code() function.
  *
  * 'x_start', 'x_width', 'y_start' and 'y_width' are assumed to be non NA (not
  * checked). 'x_start' and 'y_start' must be 1-based. 'x_width' and 'y_width'
@@ -95,8 +96,18 @@ int _overlap_code(int x_start, int x_width, int y_start, int y_width)
 	return 4;
 }
 
+int _invert_overlap_code(int code)
+{
+	if (code == -2 || code == 0 || code == 2)
+		return code;
+	if (code <= -4 || code >= 4)
+		return - code;
+	/* Only possible values left: -3, -1, 1, 3 */
+	return code < 0 ? code + 4 : code - 4;
+}
+
 /* "Parallel" generalized comparison of 2 Ranges objects. */
-static void _ranges_pcompare(
+static void ranges_compar(
 		const int *x_start, const int *x_width, int x_len,
 		const int *y_start, const int *y_width, int y_len,
 		int *out, int out_len, int with_warning)
@@ -132,24 +143,24 @@ static void _ranges_pcompare(
 SEXP Ranges_compare(SEXP x_start, SEXP x_width,
 		    SEXP y_start, SEXP y_width)
 {
-	int m, n, ans_len;
+	int x_len, y_len, ans_len;
 	const int *x_start_p, *x_width_p, *y_start_p, *y_width_p;
 	SEXP ans;
 
-	m = _check_integer_pairs(x_start, x_width,
-				 &x_start_p, &x_width_p,
-				 "start(x)", "width(x)");
-	n = _check_integer_pairs(y_start, y_width,
-				 &y_start_p, &y_width_p,
-				 "start(y)", "width(y)");
-	if (m == 0 || n == 0)
+	x_len = _check_integer_pairs(x_start, x_width,
+				     &x_start_p, &x_width_p,
+				     "start(x)", "width(x)");
+	y_len = _check_integer_pairs(y_start, y_width,
+				     &y_start_p, &y_width_p,
+				     "start(y)", "width(y)");
+	if (x_len == 0 || y_len == 0)
 		ans_len = 0;
 	else
-		ans_len = m >= n ? m : n;
+		ans_len = x_len >= y_len ? x_len : y_len;
 	PROTECT(ans = NEW_INTEGER(ans_len));
-	_ranges_pcompare(x_start_p, x_width_p, m,
-			 y_start_p, y_width_p, n,
-			 INTEGER(ans), ans_len, 1);
+	ranges_compar(x_start_p, x_width_p, x_len,
+		      y_start_p, y_width_p, y_len,
+		      INTEGER(ans), ans_len, 1);
 	UNPROTECT(1);
 	return ans;
 }

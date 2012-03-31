@@ -831,6 +831,10 @@ int _overlap_code(
 	int y_width
 );
 
+int _invert_overlap_code(
+	int code
+);
+
 SEXP Ranges_compare(
 	SEXP x_start,
 	SEXP x_width,
@@ -1103,7 +1107,7 @@ SEXP encode_overlaps1(
 	SEXP query_start,
 	SEXP query_width,
 	SEXP query_space,
-	SEXP Lquery_length,
+	SEXP query_break,
 	SEXP subject_start,
 	SEXP subject_width,
 	SEXP subject_space,
@@ -1115,7 +1119,7 @@ SEXP RangesList_encode_overlaps(
 	SEXP query_starts,
 	SEXP query_widths,
 	SEXP query_spaces,
-	SEXP Lquery_lengths,
+	SEXP query_breaks,
 	SEXP subject_starts,
 	SEXP subject_widths,
 	SEXP subject_spaces

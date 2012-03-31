@@ -7,38 +7,74 @@
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### encodeOverlaps1() - A low-level utility.
 ###
-###   > query <- IRanges(c(7, 15, 22), c(9, 19, 23))
-###   > subject <- IRanges(c(1, 4, 15, 22), c(2, 9, 19, 25))
+###   > query <- IRanges(start=c(7, 15, 22), end=c(9, 19, 23))
+###   > subject <- IRanges(start=c(1, 4, 15, 22, 1, 30, 25),
+###                        end=c(2, 9, 19, 25, 10, 38, 25))
 ###   > encodeOverlaps1(query, subject, as.matrix=TRUE)
-###        [,1] [,2] [,3] [,4]
-###   [1,] "m"  "j"  "a"  "a" 
-###   [2,] "m"  "m"  "g"  "a" 
-###   [3,] "m"  "m"  "m"  "f" 
-###   > encodeOverlaps1(query, subject)  # Type II encoding
+###       [,1] [,2] [,3] [,4] [,5] [,6] [,7]
+###   [1,] "m"  "j"  "a"  "a"  "i"  "a"  "a" 
+###   [2,] "m"  "m"  "g"  "a"  "m"  "a"  "a" 
+###   [3,] "m"  "m"  "m"  "f"  "m"  "a"  "a" 
+###   > encodeOverlaps1(query, subject)
 ###   $Loffset
 ###   [1] 1
 ###   
 ###   $Roffset
-###   [1] 0
+###   [1] 2
 ###   
 ###   $encoding
-###   [1] "3:jmm:agm:aaf:"
+###   [1] "3:jmm:agm:aaf:imm:"
 ###
+###   > query.space <- c(0, 1, 0)
+###   > encodeOverlaps1(query, subject, query.space=query.space)$encoding
+###   [1] "3:mXm:jXm:aXm:aXf:iXm:aXa:aXa:"
+###   > query.space <- rep(-1, length(query))
+###   > subject.space <- rep(-1, length(subject))
+###   > encodeOverlaps1(rev(query), rev(subject),
+###                     query.space=query.space, subject.space=subject.space)
+###   $Loffset
+###   [1] 2
+###
+###   $Roffset
+###   [1] 1
+###
+###   $encoding
+###   [1] "3:aai:jmm:agm:aaf:"
+###
+###   > encodeOverlaps1(query, subject, query.break=2)$encoding
+###   [1] "2--1:jm--m:ag--m:aa--f:im--m:"
+###   > encodeOverlaps1(rev(query), rev(subject),
+###                     query.space=query.space, subject.space=subject.space,
+###                     query.break=1)$encoding
+###   [1] "1--2:a--ai:j--mm:a--gm:a--af:"
+
+### 'query.space' must be either an integer vector of the same length as
+### 'query', or NULL. If NULL, then it's interpreted as
+### 'integer(length(query))' i.e. all the ranges in 'query' are considered to
+### be on space 0.
 encodeOverlaps1 <- function(query, subject,
                             query.space=NULL, subject.space=NULL,
-                            Lquery.length=0L,
+                            query.break=0L,
                             as.matrix=FALSE, as.raw=FALSE)
 {
-    if (!isSingleNumber(Lquery.length))
-        stop("'Lquery.length' must be a single integer value")
-    if (!is.integer(Lquery.length))
-        Lquery.length <- as.integer(Lquery.length)
+    if (!is(query, "Ranges"))
+        stop("'query' must be a Ranges object")
+    if (!is(subject, "Ranges"))
+        stop("'subject' must be a Ranges object")
+    if (is.numeric(query.space) && !is.integer(query.space))
+        query.space <- as.integer(query.space)
+    if (is.numeric(subject.space) && !is.integer(subject.space))
+        subject.space <- as.integer(subject.space)
+    if (!isSingleNumber(query.break))
+        stop("'query.break' must be a single integer value")
+    if (!is.integer(query.break))
+        query.break <- as.integer(query.break)
     if (!isTRUEorFALSE(as.matrix))
         stop("'as.matrix' must be TRUE or FALSE")
     if (!isTRUEorFALSE(as.raw))
         stop("'as.raw' must be TRUE or FALSE")
     .Call2("encode_overlaps1",
-           start(query), width(query), query.space, Lquery.length,
+           start(query), width(query), query.space, query.break,
            start(subject), width(subject), subject.space,
            as.matrix, as.raw,
            PACKAGE="IRanges")
@@ -65,10 +101,10 @@ findRangesOverlaps <- function(query, subject)
 RangesList_encodeOverlaps <- function(query.starts, query.widths,
                                       subject.starts, subject.widths,
                                       query.spaces=NULL, subject.spaces=NULL,
-                                      Lquery.lengths=NULL)
+                                      query.breaks=NULL)
 {
     C_ans <- .Call2("RangesList_encode_overlaps",
-                    query.starts, query.widths, query.spaces, Lquery.lengths,
+                    query.starts, query.widths, query.spaces, query.breaks,
                     subject.starts, subject.widths, subject.spaces,
                     PACKAGE="IRanges")
     encoding <- factor(C_ans$encoding)
