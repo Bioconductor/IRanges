@@ -10,8 +10,14 @@ NEW FEATURES
     o The Hits class has experimental support for basic set
       operations, including setdiff, union and intersect.
 
-    o Add a number of data manipulation functions and methods,
+    o Added a number of data manipulation functions and methods,
       including mstack, multisplit, rename, unsplit for Vector.
+
+    o Added compare() generic for generalized range-wise comparison of 2
+      range-based objects.
+
+    o Added OverlapEncodings class and encodeOverlaps() generic for dealing
+      with "overlap encodings".
 
     o subsetByOverlaps() should now work again on an RleViews object.
 
@@ -31,8 +37,13 @@ NEW FEATURES
 
     o Added tofactor() wrapper around togroup().
 
+    o Added coercions from vector to any AtomicList subtype (compressed and
+      uncompressed).
+
     o Added AtomicList to Character/Numeric/Logical/Integer/Raw/ComplexList
       coercions.
+
+    o Added revElements() for reversing individual elements of a List object.
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
@@ -49,15 +60,35 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o breakInChunks() returns a PartitioningByWidth object.
 
+    o The 'weight' arg in "coverage" methods for IRanges, Views and
+      MaskCollection objects now can also be a single string naming a column
+      in elementMetadata(x).
+
+    o "countOverlaps" methods now propagate the names of the query.
+
 DEPRECATED AND DEFUNCT
 
     o matchMatrix,Hits is deprecated.
+
+    o Moved the following deprecated features to defunct status:
+      - use of as.data.frame() or as( , "data.frame") on an AtomicList object;
+      - all coercion methods from AtomicList to atomic vectors;
+      - subsetting an IRanges by Ranges;
+      - subsetting a RangesList or RangedData by RangesList.
 
 BUG FIXES
 
     o within,RangedData/List now support replacing columns
 
     o aggregate() override no longer breaks on . ~ x formulas
+
+    o "[", "c", "rep.int" and "seqselect" methods for Rle objects are now
+      safer and will raise an error if the object to be returned has a
+      length > .Machine$integer.max 
+
+    o Avoid blowing up memory by not expanding 'logical' Rle's into logical
+      vectors internally in "slice" method for RleList objects.
+
 
 CHANGES IN VERSION 1.12.0
 -------------------------
