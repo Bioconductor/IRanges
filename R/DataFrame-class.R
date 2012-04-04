@@ -133,9 +133,11 @@ setValidity2("DataFrame", .valid.DataFrame)
 ### Constructor.
 ###
 
-DataFrame <- function(..., row.names = NULL)
+DataFrame <- function(..., row.names = NULL, check.names = TRUE)
 {
   ## build up listData, with names from arguments
+  if (!isTRUEorFALSE(check.names))
+    stop("'check.names' must be TRUE or FALSE")
   nr <- 0
   listData <- list(...)
   varlist <- vector("list", length(listData))
@@ -180,7 +182,10 @@ DataFrame <- function(..., row.names = NULL)
     if (!all(nrows == nr))
       stop("different row counts implied by arguments")
     varlist <- unlist(varlist, recursive = FALSE, use.names = FALSE)
-    names(varlist) <- make.names(unlist(varnames[ncols > 0L]), unique = TRUE)
+    nms <- unlist(varnames[ncols > 0L])
+    if (check.names)
+      nms <- make.names(nms, unique = TRUE)
+    names(varlist) <- nms
   } else names(varlist) <- character(0)
   
   if (!is.null(row.names)) {
