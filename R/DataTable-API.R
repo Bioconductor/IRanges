@@ -395,17 +395,17 @@ setMethod("show", "DataTable",
                   nms <- rownames(object)
                   if (nr < 20) {
                       out <-
-                        as.matrix(format(do.call(data.frame,
-                                                 lapply(object, showAsCell))))
+                        as.matrix(format(as.data.frame(lapply(object,
+                                                              showAsCell))))
                       if (!is.null(nms))
                           rownames(out) <- nms
                   } else {
                       out <-
-                        rbind(as.matrix(format(do.call(data.frame,
+                        rbind(as.matrix(format(as.data.frame(
                                               lapply(object, function(x)
                                                      showAsCell(head(x, 9)))))),
                               rbind(rep.int("...", nc)),
-                              as.matrix(format(do.call(data.frame,
+                              as.matrix(format(as.data.frame(
                                               lapply(object, function(x) 
                                                      showAsCell(tail(x, 9)))))))
                       if (is.null(nms)) {
