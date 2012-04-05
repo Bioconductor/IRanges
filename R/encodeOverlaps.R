@@ -108,8 +108,10 @@ RangesList_encodeOverlaps <- function(query.starts, query.widths,
                     subject.starts, subject.widths, subject.spaces,
                     PACKAGE="IRanges")
     encoding <- factor(C_ans$encoding)
+    flippedQuery <- logical(length(encoding))
     new2("OverlapEncodings", Loffset=C_ans$Loffset, Roffset=C_ans$Roffset,
-                             encoding=encoding, check=FALSE)
+                             encoding=encoding, flippedQuery=flippedQuery,
+                             check=FALSE)
 }
 
 setGeneric("encodeOverlaps",

@@ -7,9 +7,10 @@
 setClass("OverlapEncodings",
     contains="Vector",
     representation(
-        Loffset="integer",    # no NAs, >= 0
-        Roffset="integer",    # no NAs, >= 0
-        encoding="factor"     # no NAs
+        Loffset="integer",      # no NAs, >= 0
+        Roffset="integer",      # no NAs, >= 0
+        encoding="factor",      # no NAs
+        flippedQuery="logical"  # no NAs
     )
 )
 
@@ -27,6 +28,9 @@ setMethod("Roffset", "OverlapEncodings", function(x) x@Roffset)
 setGeneric("encoding", function(x) standardGeneric("encoding"))
 setMethod("encoding", "OverlapEncodings", function(x) x@encoding)
 
+setGeneric("flippedQuery", function(x) standardGeneric("flippedQuery"))
+setMethod("flippedQuery", "OverlapEncodings", function(x) x@flippedQuery)
+
 setMethod("length", "OverlapEncodings", function(x) length(encoding(x)))
 
 
@@ -42,6 +46,7 @@ setMethod("as.data.frame", "OverlapEncodings",
         data.frame(Loffset=Loffset(x),
                    Roffset=Roffset(x),
                    encoding=encoding(x),
+                   flippedQuery=flippedQuery(x),
                    row.names=row.names,
                    check.rows=TRUE,
                    check.names=FALSE,
@@ -74,6 +79,7 @@ setMethod("show", "OverlapEncodings",
               data.frame(Loffset=sketch(Loffset(object)),
                          Roffset=sketch(Roffset(object)),
                          encoding=sketch(encoding(object)),
+                         flippedQuery=sketch(flippedQuery(object)),
                          row.names=c(paste("[", 1:9, "]", sep=""), "...",
                                      paste("[", (lo-8L):lo, "]", sep="")),
                          check.rows=TRUE,

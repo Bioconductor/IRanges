@@ -195,7 +195,7 @@ export(
     matchMatrix, queryHits, subjectHits, hits, map,
 
     ## OverlapEncodings
-    Loffset, Roffset, encoding,
+    Loffset, Roffset, encoding, flippedQuery,
     encodeOverlaps1, RangesList_encodeOverlaps, encodeOverlaps,
 
     ## Other generic functions:

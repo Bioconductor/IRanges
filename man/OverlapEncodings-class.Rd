@@ -12,6 +12,8 @@
 \alias{Roffset,OverlapEncodings-method}
 \alias{encoding}
 \alias{encoding,OverlapEncodings-method}
+\alias{flippedQuery}
+\alias{flippedQuery,OverlapEncodings-method}
 \alias{as.data.frame,OverlapEncodings-method}
 \alias{show,OverlapEncodings-method}
 
@@ -31,6 +33,7 @@
 \S4method{Loffset}{OverlapEncodings}(x)
 \S4method{Roffset}{OverlapEncodings}(x)
 \S4method{encoding}{OverlapEncodings}(x)
+\S4method{flippedQuery}{OverlapEncodings}(x)
 
 ## Coercing an OverlapEncodings object:
 
@@ -117,6 +120,13 @@
               string. The final string is the encoding.
       }
     }
+    \item{}{
+      \code{flippedQuery(x)}:
+      Whether or not the top-level element in query used for computing the
+      encoding was "flipped" before the encoding was computed.
+      Note that this flipping generally affects the "left-offset",
+      "right-offset", in addition to the encoding itself.
+    }
   }
 }
 
@@ -147,6 +157,7 @@ length(ovenc)
 Loffset(ovenc)
 Roffset(ovenc)
 encoding(ovenc)
+flippedQuery(ovenc)
 as.data.frame(ovenc)
 }
 
