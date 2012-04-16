@@ -91,7 +91,7 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
 ## (x ~ y) in its first argument. Thus, we need some computing on the
 ## language, which may not be very robust.
 setMethod("aggregate", "formula", function(x, data, ...) {
-  mc <- sys.call(1)
+  mc <- sys.call(-1)
   mc[[1]] <- quote(stats:::aggregate.formula)
   if (is(data, "DataFrame")) {
     data <- as.data.frame(data)
