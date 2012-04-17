@@ -69,6 +69,22 @@
 
 \alias{unique,Vector-method}
 
+\alias{as.logical,Vector-method}
+\alias{as.integer,Vector-method}
+\alias{as.numeric,Vector-method}
+\alias{as.double,Vector-method}
+\alias{as.complex,Vector-method}
+\alias{as.character,Vector-method}
+\alias{as.raw,Vector-method}
+\alias{coerce,Vector,vector-method}
+\alias{coerce,Vector,logical-method}
+\alias{coerce,Vector,integer-method}
+\alias{coerce,Vector,numeric-method}
+\alias{coerce,Vector,double-method}
+\alias{coerce,Vector,complex-method}
+\alias{coerce,Vector,character-method}
+\alias{coerce,Vector,raw-method}
+
 \alias{coerce,Vector,data.frame-method}
 \alias{as.data.frame,Vector-method}
 

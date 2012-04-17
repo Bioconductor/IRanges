@@ -35,6 +35,19 @@
 \alias{coerce,RangesList,SimpleNormalIRangesList-method}
 \alias{coerce,RangesList,RangedData-method}
 
+\alias{coerce,LogicalList,IRangesList-method}
+\alias{coerce,LogicalList,CompressedIRangesList-method}
+\alias{coerce,LogicalList,SimpleIRangesList-method}
+\alias{coerce,LogicalList,NormalIRangesList-method}
+\alias{coerce,LogicalList,CompressedNormalIRangesList-method}
+\alias{coerce,LogicalList,SimpleNormalIRangesList-method}
+\alias{coerce,RleList,IRangesList-method}
+\alias{coerce,RleList,CompressedIRangesList-method}
+\alias{coerce,RleList,SimpleIRangesList-method}
+\alias{coerce,RleList,NormalIRangesList-method}
+\alias{coerce,RleList,CompressedNormalIRangesList-method}
+\alias{coerce,RleList,SimpleNormalIRangesList-method}
+
 % operations
 \alias{Ops,RangesList,ANY-method}
 

@@ -229,6 +229,26 @@ setMethod("as.list", "CompressedAtomicList",
 
 setAs("CompressedAtomicList", "list", function(from) as.list(from))
 
+### Equivalent to 'as.vector(as.list(x), mode=mode)' but faster on
+### CompressedAtomicList objects (10x, 75x, or more, depending on 'length(x)').
+setMethod("as.vector", "AtomicList",
+    function(x, mode="any")
+    {
+        valid_modes <- c("any", .ATOMIC_TYPES, "double", "list")
+        mode <- match.arg(mode, valid_modes)
+        if (mode %in% c("any", "list"))
+            return(as.list(x))
+        elt_lens <- elementLengths(x)
+        if (any(elt_lens > 1L))
+            stop("coercing an AtomicList object to an atomic vector ",
+             "is supported only for objects\n",
+             "  with top-level elements of length <= 1")
+        ans <- base::rep.int(as.vector(NA, mode=mode), length(x))
+        ans[elt_lens == 1L] <- as.vector(unlist(x, use.names=FALSE), mode=mode)
+        ans
+    }
+)
+
 setAs("vector", "AtomicList", function(from) SimpleAtomicList(as.list(from)))
 
 setMethod("lapply", "CompressedAtomicList",
@@ -1115,68 +1135,4 @@ setMethod("showAsCell", "AtomicList",
                 str
               }), use.names = FALSE)
           })
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Old stuff (deprecated or defunct).
-###
-
-setMethod("as.vectorORfactor", "AtomicList",
-    function(x)
-    {
-        msg <- c("  Use of 'as.vector()', 'as.logical()', 'as.integer()', ",
-                 "'as.numeric()',\n  'as.complex()', 'as.character()', ",
-                 "'as.raw()', 'as.factor()', or any of their\n",
-                 "  'as(...)' equivalent, for unlisting an AtomicList ",
-                 "object is defunct.\n",
-                 "  Please use 'unlist()' instead, eventually followed ",
-                 "by the appropriate\n  coercion.")
-        .Defunct(msg=paste(msg, collapse=""))
-    }
-)
-
-setMethod("as.vector", "AtomicList",
-    function(x, mode="any") as.vector(as.vectorORfactor(x), mode = mode)
-)
-setMethod("as.logical", "AtomicList",
-    function(x) as.logical(as.vectorORfactor(x))
-)
-setMethod("as.integer", "AtomicList",
-    function(x) as.integer(as.vectorORfactor(x))
-)
-setMethod("as.numeric", "AtomicList",
-    function(x) as.numeric(as.vectorORfactor(x))
-)
-setMethod("as.complex", "AtomicList",
-    function(x) as.complex(as.vectorORfactor(x))
-)
-setMethod("as.character", "AtomicList",
-    function(x) as.character(as.vectorORfactor(x))
-)
-setMethod("as.raw", "AtomicList",
-    function(x) as.raw(as.vectorORfactor(x))
-)
-setMethod("as.factor", "AtomicList",
-    function(x) as.factor(as.vectorORfactor(x))
-)
-
-setAs("AtomicList", "vector", function(from) as.vector(from))
-setAs("AtomicList", "logical", function(from) as.logical(from))
-setAs("AtomicList", "integer", function(from) as.integer(from))
-setAs("AtomicList", "numeric", function(from) as.numeric(from))
-setAs("AtomicList", "complex", function(from) as.complex(from))
-setAs("AtomicList", "character", function(from) as.character(from))
-setAs("AtomicList", "raw", function(from) as.raw(from))
-setAs("AtomicList", "factor", function(from) as.factor(from))
-
-setMethod("as.data.frame", "AtomicList",
-    function(x, row.names=NULL, optional=FALSE, ...)
-    {
-        msg <- c("  Use of 'as.data.frame()' or 'as( , \"data.frame\") ",
-                 "on an AtomicList object\n  is defunct.")
-        .Defunct(msg=paste(msg, collapse=""))
-    }
-)
-
-setAs("AtomicList", "data.frame", function(from) as.data.frame(from))
 

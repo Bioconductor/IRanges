@@ -763,6 +763,37 @@ setMethod("unique", "Vector",
 ### Coercion.
 ###
 
+setMethod("as.logical", "Vector",
+    function(x) as.vector(x, mode="logical")
+)
+setMethod("as.integer", "Vector",
+    function(x) as.vector(x, mode="integer")
+)
+setMethod("as.numeric", "Vector",
+    function(x) as.vector(x, mode="numeric")
+)
+setMethod("as.double", "Vector",
+    function(x) as.vector(x, mode="double")
+)
+setMethod("as.complex", "Vector",
+    function(x) as.vector(x, mode="complex")
+)
+setMethod("as.character", "Vector",
+    function(x) as.vector(x, mode="character")
+)
+setMethod("as.raw", "Vector",
+    function(x) as.vector(x, mode="raw")
+)
+
+setAs("Vector", "vector", function(from) as.vector(from))
+setAs("Vector", "logical", function(from) as.logical(from))
+setAs("Vector", "integer", function(from) as.integer(from))
+setAs("Vector", "numeric", function(from) as.numeric(from))
+setAs("Vector", "double", function(from) as.double(from))
+setAs("Vector", "complex", function(from) as.complex(from))
+setAs("Vector", "character", function(from) as.character(from))
+setAs("Vector", "raw", function(from) as.raw(from))
+
 setAs("Vector", "data.frame", function(from) as.data.frame(from))
 
 setMethod("as.data.frame", "Vector",

@@ -50,8 +50,10 @@
 
 \alias{as.list,CompressedAtomicList-method}
 \alias{coerce,CompressedAtomicList,list-method}
+\alias{as.vector,AtomicList,ANY-method}
 \alias{coerce,vector,AtomicList-method}
 \alias{lapply,CompressedAtomicList-method}
+
 \alias{coerce,vector,CompressedLogicalList-method}
 \alias{coerce,vector,SimpleLogicalList-method}
 \alias{coerce,vector,CompressedIntegerList-method}
@@ -67,18 +69,13 @@
 \alias{coerce,vector,CompressedRleList-method}
 \alias{coerce,vector,SimpleRleList-method}
 
-\alias{coerce,LogicalList,IRangesList-method}
-\alias{coerce,LogicalList,CompressedIRangesList-method}
-\alias{coerce,LogicalList,SimpleIRangesList-method}
-\alias{coerce,LogicalList,NormalIRangesList-method}
-\alias{coerce,LogicalList,CompressedNormalIRangesList-method}
-\alias{coerce,LogicalList,SimpleNormalIRangesList-method}
-\alias{coerce,RleList,IRangesList-method}
-\alias{coerce,RleList,CompressedIRangesList-method}
-\alias{coerce,RleList,SimpleIRangesList-method}
-\alias{coerce,RleList,NormalIRangesList-method}
-\alias{coerce,RleList,CompressedNormalIRangesList-method}
-\alias{coerce,RleList,SimpleNormalIRangesList-method}
+\alias{coerce,AtomicList,LogicalList-method}
+\alias{coerce,AtomicList,IntegerList-method}
+\alias{coerce,AtomicList,NumericList-method}
+\alias{coerce,AtomicList,ComplexList-method}
+\alias{coerce,AtomicList,CharacterList-method}
+\alias{coerce,AtomicList,RawList-method}
+\alias{coerce,AtomicList,RleList-method}
 
 \alias{seqselect<-,CompressedAtomicList-method}
 \alias{seqselect<-,SimpleAtomicList-method}
@@ -251,35 +248,6 @@
 \alias{show,AtomicList-method}
 \alias{show,RleList-method}
 
-% Old stuff (deprecated or defunct).
-\alias{as.vectorORfactor,AtomicList-method}
-\alias{as.vector,AtomicList,ANY-method}
-\alias{as.logical,AtomicList-method}
-\alias{as.integer,AtomicList-method}
-\alias{as.numeric,AtomicList-method}
-\alias{as.complex,AtomicList-method}
-\alias{as.character,AtomicList-method}
-\alias{as.raw,AtomicList-method}
-\alias{as.factor,AtomicList-method}
-
-\alias{coerce,AtomicList,vector-method}
-\alias{coerce,AtomicList,logical-method}
-\alias{coerce,AtomicList,integer-method}
-\alias{coerce,AtomicList,numeric-method}
-\alias{coerce,AtomicList,complex-method}
-\alias{coerce,AtomicList,character-method}
-\alias{coerce,AtomicList,raw-method}
-\alias{coerce,AtomicList,factor-method}
-\alias{coerce,AtomicList,CharacterList-method}
-\alias{coerce,AtomicList,ComplexList-method}
-\alias{coerce,AtomicList,IntegerList-method}
-\alias{coerce,AtomicList,LogicalList-method}
-\alias{coerce,AtomicList,NumericList-method}
-\alias{coerce,AtomicList,RawList-method}
-\alias{coerce,AtomicList,RleList-method}
-
-\alias{as.data.frame,AtomicList-method}
-\alias{coerce,AtomicList,data.frame-method}
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}
 \description{An extension of \code{\linkS4class{List}} that holds
