@@ -288,18 +288,6 @@ setMethod("updateObject", signature(object="IRangesList"),
               object
           })
 
-## "RangesMatchingList" -> "RangesMatchingList"
-setMethod("updateObject", signature(object="RangesMatchingList"),
-          function(object, ..., verbose=FALSE) {
-              if (verbose) message("updateObject(object = 'RangesMatchingList')")
-              if (!("metadata" %in% names(attributes(object)))) {
-                  object <-
-                    toSimpleList(asS4(object), "RangesMatchingList",
-                                 "RangesMatching")
-              }
-              object
-          })
-
 ## "Rle" -> "Rle"
 setMethod("updateObject", signature(object="Rle"),
           function(object, ..., verbose=FALSE) {

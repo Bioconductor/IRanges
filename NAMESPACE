@@ -48,7 +48,7 @@ exportClasses(
     DataFrameList, SimpleDataFrameList,
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
     RangedData, RangedDataList, FilterRules, RDApplyParams,
-    Hits, RangesMatching, HitsList, RangesMatchingList,
+    Hits, HitsList,
     OverlapEncodings,
     RangedSelection, RangesMapping
 )
@@ -338,7 +338,7 @@ exportMethods(
     iteratorFun, "iteratorFun<-",
     rdapply,
     universe, "universe<-", space, score, "score<-",
-    matchMatrix, queryHits, subjectHits, queryLength, subjectLength,
+    queryHits, subjectHits, queryLength, subjectLength,
     Loffset, Roffset, encoding, encodeOverlaps
 )
 

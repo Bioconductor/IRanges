@@ -1,11 +1,9 @@
 \name{Hits-class}
 \docType{class}
 \alias{Hits-class}
-\alias{RangesMatching-class}
 
 % accessors
 \alias{matchMatrix}
-\alias{matchMatrix,Hits-method}
 \alias{dim,Hits-method}
 \alias{ranges,Hits-method}
 \alias{length,Hits-method}
@@ -27,8 +25,6 @@
 \alias{as.list,Hits-method}
 \alias{coerce,Hits,list-method}
 \alias{coerce,Hits,List-method}
-\alias{coerce,RangesMatching,list-method}
-\alias{coerce,RangesMatching,List-method}
 \alias{coerce,Hits,DataFrame-method}
 
 % setops

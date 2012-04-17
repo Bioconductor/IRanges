@@ -12,28 +12,21 @@ setClass("Hits",
     )
 )
 
-### TODO: Drop this class in BioC 2.11
-setClass("RangesMatching", contains="Hits")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessors
 ###
 
-setGeneric("matchMatrix", function(x, ...) standardGeneric("matchMatrix"))
-setMethod("matchMatrix", "Hits",
-    function(x)
-    {
-        msg <- c("'matchMatrix' is deprecated.",
-                 "Use 'as.matrix' instead.",
-                 "See help(\"Deprecated\")")
-        .Deprecated(msg=paste(msg, collapse="\n"))
-        as.matrix(x)
-    }
-)
+matchMatrix <- function(...)
+{
+    msg <- c("'matchMatrix' is defunct.",
+             "Use 'as.matrix' instead.",
+             "See help(\"Defunct\")")
+    .Defunct(msg=paste(msg, collapse="\n"))
+}
 
 setMethod("dim", "Hits", function(x) {
-  .Deprecated("queryLength or subjectLength")
-  c(queryLength(x), subjectLength(x))
+  .Defunct("queryLength or subjectLength")
 })
 
 setMethod("length", "Hits", function(x) {
@@ -125,8 +118,6 @@ setMethod("as.list", "Hits",
 
 setAs("Hits", "list", function(from) as.list(from))
 setAs("Hits", "List", function(from) castList(as.list(from)))
-setAs("RangesMatching", "list", function(from) as.list(from))
-setAs("RangesMatching", "List", function(from) castList(as.list(from)))
 
 ## count up the hits for each query
 

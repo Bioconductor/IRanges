@@ -1,7 +1,6 @@
 \name{HitsList-class}
 \docType{class}
 \alias{HitsList-class}
-\alias{RangesMatchingList-class}
 
 % coercion
 \alias{as.matrix,HitsList-method}

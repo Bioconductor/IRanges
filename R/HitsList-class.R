@@ -10,13 +10,6 @@ setClass("HitsList",
     prototype(elementType="Hits")
 )
 
-### TODO: Drop this class in BioC 2.11
-setClass("RangesMatchingList",
-    contains="HitsList",
-    prototype=prototype(
-        elementType="RangesMatching"
-    )
-)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessors
@@ -56,8 +49,7 @@ HitsList <- function(list_of_hits, subject)
 
 RangesMatchingList <- function(...)
 {
-    .Deprecated("HitsList")
-    as(HitsList(...), "RangesMatchingList")
+    .Defunct("HitsList")
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

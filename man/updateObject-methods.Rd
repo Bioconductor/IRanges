@@ -16,7 +16,6 @@
 \alias{updateObject,RangedData-method}
 \alias{updateObject,RangedDataList-method}
 \alias{updateObject,RangesList-method}
-\alias{updateObject,RangesMatchingList-method}
 \alias{updateObject,RawList-method}
 \alias{updateObject,RDApplyParams-method}
 \alias{updateObject,Rle-method}
