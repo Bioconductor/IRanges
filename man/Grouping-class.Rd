@@ -83,13 +83,6 @@
 \alias{start,PartitioningByWidth-method}
 \alias{coerce,Ranges,PartitioningByWidth-method}
 
-% Defunct stuff:
-\alias{class:Binning}
-\alias{Binning-class}
-\alias{Binning}
-
-\alias{length,Binning-method}
-
 
 \title{Grouping objects}
 

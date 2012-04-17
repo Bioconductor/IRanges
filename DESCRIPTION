@@ -51,7 +51,6 @@ Collate: validity-utils.R
 	RleViews-class.R
 	RleViews-utils.R
 	AtomicList-impl.R
-	Binning-class.R
 	DataFrame-class.R
 	DataFrame-utils.R
 	DataFrameList-class.R
