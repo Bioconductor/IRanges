@@ -93,7 +93,7 @@ test_Ranges_zoom <- function() {
 checkMatching <- function(a, q, s, r, c) {
   mat <- cbind(queryHits = as.integer(q), subjectHits = as.integer(s))
   checkIdentical(as.matrix(a), mat)
-  checkIdentical(dim(a), as.integer(c(r, c)))
+  checkIdentical(c(queryLength(a), subjectLength(a)), as.integer(c(r, c)))
 }
 
 test_Ranges_adjacency <- function() {
