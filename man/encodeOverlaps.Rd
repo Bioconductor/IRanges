@@ -20,7 +20,7 @@
 }
 
 \usage{
-encodeOverlaps(query, subject, hits=NULL)
+encodeOverlaps(query, subject, hits=NULL, ...)
 }
 
 \arguments{
@@ -41,6 +41,9 @@ encodeOverlaps(query, subject, hits=NULL)
     above.
     In that case, \code{query} and \code{subject} are not expected to have
     the same length anymore.
+  }
+  \item{...}{
+    Additional arguments for methods.
   }
 }
 
