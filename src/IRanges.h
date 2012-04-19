@@ -599,7 +599,19 @@ SEXP Integer_selfmatch4_quick(
 	SEXP d
 );
 
-SEXP Integer_duplicated4_hash(
+SEXP Integer_match4_hash(
+	SEXP a1,
+	SEXP b1,
+	SEXP c1,
+	SEXP d1,
+	SEXP a2,
+	SEXP b2,
+	SEXP c2,
+	SEXP d2,
+	SEXP nomatch
+);
+
+SEXP Integer_selfmatch4_hash(
 	SEXP a,
 	SEXP b,
 	SEXP c,

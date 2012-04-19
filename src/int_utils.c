@@ -3,6 +3,82 @@
 
 
 /****************************************************************************
+ * Hash table management.
+ * Author: Martin Morgan
+ * Modified from R_HOME/src/main/unique.c
+ */
+
+struct htab {
+	int K, M, Mminus1;
+	int *lkup;
+};
+
+static void htab_init(struct htab *htab, int n)
+{
+	int n2, i;
+
+	/* max supported value for n is 2^29 */
+	if (n < 0 || n > 536870912) /* protect against overflow to -ve */
+		error("length %d is too large for hashing", n);
+	n2 = 2 * n;
+	htab->M = 2;
+	htab->K = 1;
+	while (htab->M < n2) {
+		htab->M *= 2;
+		htab->K += 1;
+	}
+	htab->Mminus1 = htab->M - 1;
+	htab->lkup = (int *) R_alloc(sizeof(int), htab->M);
+	for (i = 0; i < htab->M; i++)
+		htab->lkup[i] = NA_INTEGER;
+	return;
+}
+
+static int htab_search_int_pair(int a1, int b1,
+		const int *a2, const int *b2,
+		const struct htab *htab)
+{
+	unsigned int h;
+	const int *lkup;
+	int i2;
+
+	/* use 2 consecutive prime numbers (seems to work well, no serious
+	   justification for it) */
+	h = 3951551U * a1 + 3951553U * b1;
+	h &= htab->Mminus1;
+	lkup = htab->lkup;
+	while ((i2 = lkup[h]) != NA_INTEGER) {
+		if (a2[i2] == a1 && b2[i2] == b1)
+			break;
+		h = (h + 1) % htab->M;
+	}
+	return h;
+}
+
+static int htab_search_int_quad(int a1, int b1, int c1, int d1,
+		const int *a2, const int *b2, const int *c2, const int *d2,
+		const struct htab *htab)
+{
+	unsigned int h;
+	const int *lkup;
+	int i2;
+
+	/* use 4 consecutive prime numbers (seems to work well, no serious
+	   justification for it) */
+	h = 3951551U * a1 + 3951553U * b1 + 3951557U * c1 + 3951559U * d1;
+	h &= htab->Mminus1;
+	lkup = htab->lkup;
+	while ((i2 = lkup[h]) != NA_INTEGER) {
+		if (a2[i2] == a1 && b2[i2] == b1 &&
+		    c2[i2] == c1 && d2[i2] == d1)
+			break;
+		h = (h + 1) % htab->M;
+	}
+	return h;
+}
+
+
+/****************************************************************************
  * --- .Call ENTRY POINT ---
  * any(is.na(x) | x < lower | x > upper)
  */
@@ -62,7 +138,7 @@ int _sum_non_neg_ints(const int *x, int x_len, const char *varname)
 			if (varname == NULL)
 				return -2;
 			error("integer overflow while summing elements "
-                              "in '%s'", varname);
+			      "in '%s'", varname);
 		}
 	}
 	return sum;
@@ -202,75 +278,32 @@ SEXP Integer_selfmatch2_quick(SEXP a, SEXP b)
 	return ans;
 }
 
-/*
- * Author: Martin Morgan
- * Modified from R_HOME/src/main/unique.c
- */
-struct hashtable {
-	int K, M, Mminus1;
-	int *lkup;
-};
-
-static void init_hashtable(struct hashtable *htable, int n)
-{
-	int n2, i;
-
-	/* max supported value for n is 2^29 */
-	if (n < 0 || n > 536870912) /* protect against overflow to -ve */
-		error("length %d is too large for hashing", n);
-	n2 = 2 * n;
-	htable->M = 2;
-	htable->K = 1;
-	while (htable->M < n2) {
-		htable->M *= 2;
-		htable->K += 1;
-	}
-	htable->Mminus1 = htable->M - 1;
-	htable->lkup = (int *) R_alloc(sizeof(int), htable->M);
-	for (i = 0; i < htable->M; i++)
-		htable->lkup[i] = NA_INTEGER;
-	return;
-}
-
-static int lookup_hashtable(int a1, int b1,
-		const int *a2, const int *b2, struct hashtable *htable)
-{
-	int h, *lkup, i2;
-
-	/* use 2 consecutive prime numbers (seems to work well, no serious
-	   justification for it) */
-	h = (3929449U * a1 + 3929461U * b1) & htable->Mminus1;
-	lkup = htable->lkup;
-	while ((i2 = lkup[h]) != NA_INTEGER) {
-		if (a2[i2] == a1 && b2[i2] == b1)
-			break;
-		h = (h + 1) % htable->M;
-	}
-	return h;
-}
-
 /* --- .Call ENTRY POINT --- */
 SEXP Integer_match2_hash(SEXP a1, SEXP b1, SEXP a2, SEXP b2, SEXP nomatch)
 {
 	int len1, len2, nomatch0, *ans0, i, h, i2;
 	const int *a1_p, *b1_p, *a2_p, *b2_p;
-	struct hashtable htable;
+	struct htab htab;
 	SEXP ans;
 
 	len1 = _check_integer_pairs(a1, b1, &a1_p, &b1_p, "a1", "b1");
 	len2 = _check_integer_pairs(a2, b2, &a2_p, &b2_p, "a2", "b2");
 	nomatch0 = INTEGER(nomatch)[0];
-	init_hashtable(&htable, len2);
+	htab_init(&htab, len2);
 	for (i = 0; i < len2; i++) {
-		h = lookup_hashtable(a2_p[i], b2_p[i], a2_p, b2_p, &htable);
-		if (htable.lkup[h] == NA_INTEGER)
-			htable.lkup[h] = i;
+		h = htab_search_int_pair(a2_p[i], b2_p[i],
+					    a2_p, b2_p,
+					    &htab);
+		if (htab.lkup[h] == NA_INTEGER)
+			htab.lkup[h] = i;
 	}
 	PROTECT(ans = NEW_INTEGER(len1));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < len1; i++) {
-		h = lookup_hashtable(a1_p[i], b1_p[i], a2_p, b2_p, &htable);
-		i2 = htable.lkup[h];
+		h = htab_search_int_pair(a1_p[i], b1_p[i],
+					    a2_p, b2_p,
+					    &htab);
+		i2 = htab.lkup[h];
 		if (i2 == NA_INTEGER)
 			ans0[i] = nomatch0;
 		else
@@ -285,18 +318,20 @@ SEXP Integer_selfmatch2_hash(SEXP a, SEXP b)
 {
 	int ans_length, *ans0, i, h, i2;
 	const int *a_p, *b_p;
-	struct hashtable htable;
+	struct htab htab;
 	SEXP ans;
 
 	ans_length = _check_integer_pairs(a, b, &a_p, &b_p, "a", "b");
-	init_hashtable(&htable, ans_length);
+	htab_init(&htab, ans_length);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < ans_length; i++) {
-		h = lookup_hashtable(a_p[i], b_p[i], a_p, b_p, &htable);
-		i2 = htable.lkup[h];
+		h = htab_search_int_pair(a_p[i], b_p[i],
+					 a_p, b_p,
+					 &htab);
+		i2 = htab.lkup[h];
 		if (i2 == NA_INTEGER) {
-			htable.lkup[h] = i;
+			htab.lkup[h] = i;
 			ans0[i] = i + 1;
 		} else {
 			ans0[i] = i2 + 1;
@@ -405,20 +440,73 @@ SEXP Integer_selfmatch4_quick(SEXP a, SEXP b, SEXP c, SEXP d)
 }
 
 /* --- .Call ENTRY POINT --- */
-/*
 SEXP Integer_match4_hash(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 			 SEXP a2, SEXP b2, SEXP c2, SEXP d2, SEXP nomatch)
 {
-	error("not implemented yet, sorry!");
-	return R_NilValue;
+	int len1, len2, nomatch0, *ans0, i, h, i2;
+	const int *a1_p, *b1_p, *c1_p, *d1_p, *a2_p, *b2_p, *c2_p, *d2_p;
+	struct htab htab;
+	SEXP ans;
+
+	len1 = _check_integer_quads(a1, b1, c1, d1,
+				    &a1_p, &b1_p, &c1_p, &d1_p,
+				    "a1", "b1", "c1", "d1");
+	len2 = _check_integer_quads(a2, b2, c2, d2,
+				    &a2_p, &b2_p, &c2_p, &d2_p,
+				    "a2", "b2", "c2", "d2");
+	nomatch0 = INTEGER(nomatch)[0];
+	htab_init(&htab, len2);
+	for (i = 0; i < len2; i++) {
+		h = htab_search_int_quad(a2_p[i], b2_p[i], c2_p[i], d2_p[i],
+					 a2_p, b2_p, c2_p, d2_p,
+					 &htab);
+		if (htab.lkup[h] == NA_INTEGER)
+			htab.lkup[h] = i;
+	}
+	PROTECT(ans = NEW_INTEGER(len1));
+	ans0 = INTEGER(ans);
+	for (i = 0; i < len1; i++) {
+		h = htab_search_int_quad(a1_p[i], b1_p[i], c1_p[i], d1_p[i],
+					 a2_p, b2_p, c2_p, d2_p,
+					 &htab);
+		i2 = htab.lkup[h];
+		if (i2 == NA_INTEGER)
+			ans0[i] = nomatch0;
+		else
+			ans0[i] = i2 + 1;
+	}
+	UNPROTECT(1);
+	return ans;
 }
-*/
 
 /* --- .Call ENTRY POINT --- */
-SEXP Integer_duplicated4_hash(SEXP a, SEXP b, SEXP c, SEXP d)
+SEXP Integer_selfmatch4_hash(SEXP a, SEXP b, SEXP c, SEXP d)
 {
-	error("not implemented yet, sorry!");
-	return R_NilValue;
+	int ans_length, *ans0, i, h, i2;
+	const int *a_p, *b_p, *c_p, *d_p;
+	struct htab htab;
+	SEXP ans;
+
+	ans_length = _check_integer_quads(a, b, c, d,
+					  &a_p, &b_p, &c_p, &d_p,
+					  "a", "b", "c", "d");
+	htab_init(&htab, ans_length);
+	PROTECT(ans = NEW_INTEGER(ans_length));
+	ans0 = INTEGER(ans);
+	for (i = 0; i < ans_length; i++) {
+		h = htab_search_int_quad(a_p[i], b_p[i], c_p[i], d_p[i],
+					 a_p, b_p, c_p, d_p,
+					 &htab);
+		i2 = htab.lkup[h];
+		if (i2 == NA_INTEGER) {
+			htab.lkup[h] = i;
+			ans0[i] = i + 1;
+		} else {
+			ans0[i] = i2 + 1;
+		}
+	}
+	UNPROTECT(1);
+	return ans;
 }
 
 
