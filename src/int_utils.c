@@ -9,8 +9,9 @@
  */
 
 struct htab {
-	int K, M, Mminus1;
-	int *lkup;
+	int K, M;
+	unsigned int Mminus1;
+	int *slots;
 };
 
 static void htab_init(struct htab *htab, int n)
@@ -28,53 +29,64 @@ static void htab_init(struct htab *htab, int n)
 		htab->K += 1;
 	}
 	htab->Mminus1 = htab->M - 1;
-	htab->lkup = (int *) R_alloc(sizeof(int), htab->M);
+	htab->slots = (int *) R_alloc(sizeof(int), htab->M);
 	for (i = 0; i < htab->M; i++)
-		htab->lkup[i] = NA_INTEGER;
+		htab->slots[i] = NA_INTEGER;
 	return;
 }
 
-static int htab_search_int_pair(int a1, int b1,
-		const int *a2, const int *b2,
-		const struct htab *htab)
+static int get_hslot_val(const struct htab *htab, int hslot)
 {
-	unsigned int h;
-	const int *lkup;
-	int i2;
+	return htab->slots[hslot];
+}
+
+static void set_hslot_val(struct htab *htab, int hslot, int val)
+{
+	htab->slots[hslot] = val;
+	return;
+}
+
+static int get_hslot_for_int_pair(const struct htab *htab,
+		int a1, int b1,
+		const int *a2, const int *b2)
+{
+	unsigned int hval;
+	int hslot, i2;
+	const int *slots;
 
 	/* use 2 consecutive prime numbers (seems to work well, no serious
 	   justification for it) */
-	h = 3951551U * a1 + 3951553U * b1;
-	h &= htab->Mminus1;
-	lkup = htab->lkup;
-	while ((i2 = lkup[h]) != NA_INTEGER) {
+	hval = 3951551U * a1 + 3951553U * b1;
+	hslot = hval & htab->Mminus1;
+	slots = htab->slots;
+	while ((i2 = slots[hslot]) != NA_INTEGER) {
 		if (a2[i2] == a1 && b2[i2] == b1)
 			break;
-		h = (h + 1) % htab->M;
+		hslot = (hslot + 1) % htab->M;
 	}
-	return h;
+	return hslot;
 }
 
-static int htab_search_int_quad(int a1, int b1, int c1, int d1,
-		const int *a2, const int *b2, const int *c2, const int *d2,
-		const struct htab *htab)
+static int get_hslot_for_int_quad(const struct htab *htab,
+		int a1, int b1, int c1, int d1,
+		const int *a2, const int *b2, const int *c2, const int *d2)
 {
-	unsigned int h;
-	const int *lkup;
-	int i2;
+	unsigned int hval;
+	int hslot, i2;
+	const int *slots;
 
 	/* use 4 consecutive prime numbers (seems to work well, no serious
 	   justification for it) */
-	h = 3951551U * a1 + 3951553U * b1 + 3951557U * c1 + 3951559U * d1;
-	h &= htab->Mminus1;
-	lkup = htab->lkup;
-	while ((i2 = lkup[h]) != NA_INTEGER) {
+	hval = 3951551U * a1 + 3951553U * b1 + 3951557U * c1 + 3951559U * d1;
+	hslot = hval & htab->Mminus1;
+	slots = htab->slots;
+	while ((i2 = slots[hslot]) != NA_INTEGER) {
 		if (a2[i2] == a1 && b2[i2] == b1 &&
 		    c2[i2] == c1 && d2[i2] == d1)
 			break;
-		h = (h + 1) % htab->M;
+		hslot = (hslot + 1) % htab->M;
 	}
-	return h;
+	return hslot;
 }
 
 
@@ -281,7 +293,7 @@ SEXP Integer_selfmatch2_quick(SEXP a, SEXP b)
 /* --- .Call ENTRY POINT --- */
 SEXP Integer_match2_hash(SEXP a1, SEXP b1, SEXP a2, SEXP b2, SEXP nomatch)
 {
-	int len1, len2, nomatch0, *ans0, i, h, i2;
+	int len1, len2, nomatch0, *ans0, i, hslot, i2;
 	const int *a1_p, *b1_p, *a2_p, *b2_p;
 	struct htab htab;
 	SEXP ans;
@@ -291,19 +303,19 @@ SEXP Integer_match2_hash(SEXP a1, SEXP b1, SEXP a2, SEXP b2, SEXP nomatch)
 	nomatch0 = INTEGER(nomatch)[0];
 	htab_init(&htab, len2);
 	for (i = 0; i < len2; i++) {
-		h = htab_search_int_pair(a2_p[i], b2_p[i],
-					    a2_p, b2_p,
-					    &htab);
-		if (htab.lkup[h] == NA_INTEGER)
-			htab.lkup[h] = i;
+		hslot = get_hslot_for_int_pair(&htab,
+					a2_p[i], b2_p[i],
+					a2_p, b2_p);
+		if (get_hslot_val(&htab, hslot) == NA_INTEGER)
+			set_hslot_val(&htab, hslot, i);
 	}
 	PROTECT(ans = NEW_INTEGER(len1));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < len1; i++) {
-		h = htab_search_int_pair(a1_p[i], b1_p[i],
-					    a2_p, b2_p,
-					    &htab);
-		i2 = htab.lkup[h];
+		hslot = get_hslot_for_int_pair(&htab,
+					a1_p[i], b1_p[i],
+					a2_p, b2_p);
+		i2 = get_hslot_val(&htab, hslot);
 		if (i2 == NA_INTEGER)
 			ans0[i] = nomatch0;
 		else
@@ -316,7 +328,7 @@ SEXP Integer_match2_hash(SEXP a1, SEXP b1, SEXP a2, SEXP b2, SEXP nomatch)
 /* --- .Call ENTRY POINT --- */
 SEXP Integer_selfmatch2_hash(SEXP a, SEXP b)
 {
-	int ans_length, *ans0, i, h, i2;
+	int ans_length, *ans0, i, hslot, i2;
 	const int *a_p, *b_p;
 	struct htab htab;
 	SEXP ans;
@@ -326,12 +338,12 @@ SEXP Integer_selfmatch2_hash(SEXP a, SEXP b)
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < ans_length; i++) {
-		h = htab_search_int_pair(a_p[i], b_p[i],
-					 a_p, b_p,
-					 &htab);
-		i2 = htab.lkup[h];
+		hslot = get_hslot_for_int_pair(&htab,
+					a_p[i], b_p[i],
+					a_p, b_p);
+		i2 = get_hslot_val(&htab, hslot);
 		if (i2 == NA_INTEGER) {
-			htab.lkup[h] = i;
+			set_hslot_val(&htab, hslot, i);
 			ans0[i] = i + 1;
 		} else {
 			ans0[i] = i2 + 1;
@@ -443,7 +455,7 @@ SEXP Integer_selfmatch4_quick(SEXP a, SEXP b, SEXP c, SEXP d)
 SEXP Integer_match4_hash(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 			 SEXP a2, SEXP b2, SEXP c2, SEXP d2, SEXP nomatch)
 {
-	int len1, len2, nomatch0, *ans0, i, h, i2;
+	int len1, len2, nomatch0, *ans0, i, hslot, i2;
 	const int *a1_p, *b1_p, *c1_p, *d1_p, *a2_p, *b2_p, *c2_p, *d2_p;
 	struct htab htab;
 	SEXP ans;
@@ -457,19 +469,19 @@ SEXP Integer_match4_hash(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 	nomatch0 = INTEGER(nomatch)[0];
 	htab_init(&htab, len2);
 	for (i = 0; i < len2; i++) {
-		h = htab_search_int_quad(a2_p[i], b2_p[i], c2_p[i], d2_p[i],
-					 a2_p, b2_p, c2_p, d2_p,
-					 &htab);
-		if (htab.lkup[h] == NA_INTEGER)
-			htab.lkup[h] = i;
+		hslot = get_hslot_for_int_quad(&htab,
+					a2_p[i], b2_p[i], c2_p[i], d2_p[i],
+					a2_p, b2_p, c2_p, d2_p);
+		if (get_hslot_val(&htab, hslot) == NA_INTEGER)
+			set_hslot_val(&htab, hslot, i);
 	}
 	PROTECT(ans = NEW_INTEGER(len1));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < len1; i++) {
-		h = htab_search_int_quad(a1_p[i], b1_p[i], c1_p[i], d1_p[i],
-					 a2_p, b2_p, c2_p, d2_p,
-					 &htab);
-		i2 = htab.lkup[h];
+		hslot = get_hslot_for_int_quad(&htab,
+					a1_p[i], b1_p[i], c1_p[i], d1_p[i],
+					a2_p, b2_p, c2_p, d2_p);
+		i2 = get_hslot_val(&htab, hslot);
 		if (i2 == NA_INTEGER)
 			ans0[i] = nomatch0;
 		else
@@ -482,7 +494,7 @@ SEXP Integer_match4_hash(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 /* --- .Call ENTRY POINT --- */
 SEXP Integer_selfmatch4_hash(SEXP a, SEXP b, SEXP c, SEXP d)
 {
-	int ans_length, *ans0, i, h, i2;
+	int ans_length, *ans0, i, hslot, i2;
 	const int *a_p, *b_p, *c_p, *d_p;
 	struct htab htab;
 	SEXP ans;
@@ -494,12 +506,12 @@ SEXP Integer_selfmatch4_hash(SEXP a, SEXP b, SEXP c, SEXP d)
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < ans_length; i++) {
-		h = htab_search_int_quad(a_p[i], b_p[i], c_p[i], d_p[i],
-					 a_p, b_p, c_p, d_p,
-					 &htab);
-		i2 = htab.lkup[h];
+		hslot = get_hslot_for_int_quad(&htab,
+					a_p[i], b_p[i], c_p[i], d_p[i],
+					a_p, b_p, c_p, d_p);
+		i2 = get_hslot_val(&htab, hslot);
 		if (i2 == NA_INTEGER) {
-			htab.lkup[h] = i;
+			set_hslot_val(&htab, hslot, i);
 			ans0[i] = i + 1;
 		} else {
 			ans0[i] = i2 + 1;
