@@ -339,6 +339,7 @@ exportMethods(
     rdapply,
     universe, "universe<-", space, score, "score<-",
     queryHits, subjectHits, queryLength, subjectLength,
-    Loffset, Roffset, encoding, encodeOverlaps
+    Loffset, Roffset, encoding, encodeOverlaps,
+    expand
 )
 
