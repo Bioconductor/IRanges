@@ -1085,32 +1085,38 @@ setMethod("ranges", "CompressedRleList", function(x) {
 ### The "show" method.
 ###
 
+.showAtomicList <- function(object, minLines, ...)
+{
+    len <- length(object)
+    k <- min(minLines, len)
+    d <- len - minLines 
+    for (i in seq_len(k)) {
+        nm <- names(object)[i]
+        if (length(nm) > 0 && nchar(nm) > 0)
+            label <- paste("[[\"", nm, "\"]]", sep = "")
+        else
+            label <- paste("[[", i, "]]", sep = "")
+        if (length(object[[i]]) == 0) {
+            cat(label, " ", sep = "")
+            print(object[[i]])
+        } else {
+            cat(labeledLine(label, object[[i]], labelSep = "",
+                            count = FALSE))
+        }
+    }
+    if (d > 0)
+        cat("...\n<", d,
+            ifelse(d == 1,
+                   " more element>\n", " more elements>\n"), sep="")
+}
+
 setMethod("show", "AtomicList",
-          function(object) {
-              lo <- length(object)
-              k <- min(10, length(object))
-              diffK <- lo - 10
-              cat(class(object), " of length ", lo, "\n", sep = "")
-              for (i in seq_len(k)) {
-                  nm <- names(object)[i]
-                  if (length(nm) > 0 && nchar(nm) > 0)
-                      label <- paste("[[\"", nm, "\"]]", sep = "")
-                  else
-                      label <- paste("[[", i, "]]", sep = "")
-                  if (length(object[[i]]) == 0) {
-                      cat(label, " ", sep = "")
-                      print(object[[i]])
-                  } else {
-                      cat(labeledLine(label, object[[i]], labelSep = "",
-                                      count = FALSE))
-                  }
-              }
-              if (diffK > 0)
-                  cat("...\n<", diffK,
-                      ifelse(diffK == 1,
-                             " more element>\n", " more elements>\n"),
-                      sep="")
-          })
+          function(object) 
+          {
+              cat(class(object), " of length ", length(object), "\n", sep = "")
+              .showAtomicList(object, 10) 
+          }
+)
 
 setMethod("show", "RleList",
           function(object) {
