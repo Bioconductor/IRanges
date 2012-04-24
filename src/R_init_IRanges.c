@@ -198,6 +198,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(debug_XVectorList_class, 0),
 
 /* XRawList_comparison.c */
+	CALLMETHOD_DEF(XRawList_compare, 2),
 	CALLMETHOD_DEF(XRawList_is_unsorted, 2),
 	CALLMETHOD_DEF(XRawList_order, 2),
 	CALLMETHOD_DEF(XRawList_rank, 2),

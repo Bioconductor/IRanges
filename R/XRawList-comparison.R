@@ -3,6 +3,45 @@
 ### -------------------------------------------------------------------------
 ###
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### compare() and related methods.
+###
+
+setMethod("compare", c("XRawList", "XRawList"),
+    function(x, y)
+        .Call2("XRawList_compare", x, y, PACKAGE="IRanges")
+)
+
+setMethod("==", c("XRawList", "XRawList"),
+    function(e1, e2) compare(e1, e2) == 0L
+)
+
+setMethod("!=", c("XRawList", "XRawList"),
+    function(e1, e2) compare(e1, e2) != 0L
+)
+
+setMethod("<=", c("XRawList", "XRawList"),
+    function(e1, e2) compare(e1, e2) <= 0L
+)
+
+setMethod(">=", c("XRawList", "XRawList"),
+    function(e1, e2) compare(e1, e2) >= 0L
+)
+
+setMethod("<", c("XRawList", "XRawList"),
+    function(e1, e2) compare(e1, e2) < 0L
+)
+
+setMethod(">", c("XRawList", "XRawList"),
+    function(e1, e2) compare(e1, e2) > 0L
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Order and rank of the elements in an XRawList object.
+###
+
 setMethod("is.unsorted", "XRawList",
     function(x, na.rm=FALSE, strictly=FALSE)
     {
@@ -48,6 +87,12 @@ setMethod("rank", "XRawList",
         .Call2("XRawList_rank", x, ties.method, PACKAGE="IRanges")
     }
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Matches between 2 XRawList objects, and self-matches within an XRawList
+### object.
+###
 
 setMethod("match", c("XRawList", "XRawList"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL)

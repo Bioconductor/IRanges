@@ -1567,6 +1567,11 @@ SEXP _new_XIntegerList_from_IntAEAE(
 
 /* XRawList_comparison.c */
 
+SEXP XRawList_compare(
+	SEXP x,
+	SEXP y
+);
+
 SEXP XRawList_is_unsorted(
 	SEXP x,
 	SEXP strictly

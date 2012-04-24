@@ -33,6 +33,58 @@ static int equal_cachedCharSeqs(const cachedCharSeq *x1,
 
 
 /****************************************************************************
+ * "Parallel" comparison of 2 XRawList objects.
+ */
+
+static void cachedXRawList_pcompar(const cachedXVectorList *x,
+				   const cachedXVectorList *y,
+				   int *out, int out_len, int with_warning)
+{
+	int x_len, y_len, i, j, k;
+	cachedCharSeq x_elt, y_elt;
+
+	x_len = _get_cachedXVectorList_length(x);
+	y_len = _get_cachedXVectorList_length(y);
+	for (i = j = k = 0; k < out_len; i++, j++, k++) {
+		if (i >= x_len)
+			i = 0; /* recycle i */
+		if (j >= y_len)
+			j = 0; /* recycle j */
+		x_elt = _get_cachedXRawList_elt(x, i);
+		y_elt = _get_cachedXRawList_elt(y, j);
+		out[k] = compar_cachedCharSeqs(&x_elt, &y_elt);
+	}
+	/* Warning message appropriate only when 'out_len' is
+	   'max(x_len, y_len)' */
+	if (with_warning && out_len != 0 && (i != x_len || j != y_len))
+		warning("longer object length is not a multiple "
+			"of shorter object length");
+	return;
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP XRawList_compare(SEXP x, SEXP y)
+{
+	cachedXVectorList cached_x, cached_y;
+	int x_len, y_len, ans_len;
+	SEXP ans;
+
+	cached_x = _cache_XVectorList(x);
+	cached_y = _cache_XVectorList(y);
+	x_len = _get_cachedXVectorList_length(&cached_x);
+	y_len = _get_cachedXVectorList_length(&cached_y);
+	if (x_len == 0 || y_len == 0)
+		ans_len = 0;
+	else
+		ans_len = x_len >= y_len ? x_len : y_len;
+	PROTECT(ans = NEW_INTEGER(ans_len));
+	cachedXRawList_pcompar(&cached_x, &cached_y, INTEGER(ans), ans_len, 1);
+	UNPROTECT(1);
+	return ans;
+}
+
+
+/****************************************************************************
  * Order and rank of the elements in an XRawList object.
  */
 
