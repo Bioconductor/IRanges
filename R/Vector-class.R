@@ -754,16 +754,23 @@ setMethod("subset", "Vector",
           })
 
 setMethod("unique", "Vector",
-          function(x, incomparables = FALSE, ...)
-          {
-            x[!duplicated(x, incomparables = incomparables, ...)]
-          })
-
+    function(x, incomparables=FALSE, ...)
+    {
+        x[!duplicated(x, incomparables=incomparables, ...)]
+    }
+)
 
 setMethod("sort", "Vector",
     function(x, decreasing=FALSE, ...)
     {
         x[order(x, decreasing=decreasing, ...)]
+    }
+)
+
+setMethod("%in%", c("Vector", "Vector"),
+    function(x, table)
+    {
+        !is.na(match(x, table))
     }
 )
 

@@ -69,6 +69,7 @@
 
 \alias{unique,Vector-method}
 \alias{sort,Vector-method}
+\alias{\%in\%,Vector-method}
 
 \alias{as.logical,Vector-method}
 \alias{as.integer,Vector-method}
