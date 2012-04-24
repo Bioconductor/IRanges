@@ -78,6 +78,22 @@ void _get_matches_of_ordered_int_quads(
 );
 
 
+/* hash_utils.c */
+
+struct htab _new_htab(int n);
+
+int _get_hslot_val(
+	const struct htab *htab,
+	int hslot
+);
+
+void _set_hslot_val(
+	struct htab *htab,
+	int hslot,
+	int val
+);
+
+
 /* AEbufs.c */
 
 SEXP debug_AEbufs();
@@ -1546,6 +1562,34 @@ SEXP _new_XIntegerList_from_IntAEAE(
 	const char *classname,
 	const char *element_type,
 	const IntAEAE *int_aeae
+);
+
+
+/* XRawList_comparison.c */
+
+SEXP XRawList_is_unsorted(
+	SEXP x,
+	SEXP strictly
+);
+
+SEXP XRawList_order(
+	SEXP x,
+	SEXP decreasing
+);
+
+SEXP XRawList_rank(
+	SEXP x,
+	SEXP ties_method
+);
+
+SEXP XRawList_match_hash(
+	SEXP x1,
+	SEXP x2,
+	SEXP nomatch
+);
+
+SEXP XRawList_selfmatch_hash(
+	SEXP x
 );
 
 

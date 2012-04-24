@@ -197,6 +197,13 @@ static const R_CallMethodDef callMethods[] = {
 /* XVectorList_class.c */
 	CALLMETHOD_DEF(debug_XVectorList_class, 0),
 
+/* XRawList_comparison.c */
+	CALLMETHOD_DEF(XRawList_is_unsorted, 2),
+	CALLMETHOD_DEF(XRawList_order, 2),
+	CALLMETHOD_DEF(XRawList_rank, 2),
+	CALLMETHOD_DEF(XRawList_match_hash, 3),
+	CALLMETHOD_DEF(XRawList_selfmatch_hash, 1),
+
 /* XIntegerViews_utils.c */
 	CALLMETHOD_DEF(XInteger_slice, 3),
 	CALLMETHOD_DEF(XIntegerViews_summary1, 3),

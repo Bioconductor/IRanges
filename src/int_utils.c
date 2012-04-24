@@ -2,50 +2,6 @@
 #include <limits.h> /* for INT_MAX */
 
 
-/****************************************************************************
- * Hash table management.
- * Author: Martin Morgan
- * Modified from R_HOME/src/main/unique.c
- */
-
-struct htab {
-	int K, M;
-	unsigned int Mminus1;
-	int *slots;
-};
-
-static void htab_init(struct htab *htab, int n)
-{
-	int n2, i;
-
-	/* max supported value for n is 2^29 */
-	if (n < 0 || n > 536870912) /* protect against overflow to -ve */
-		error("length %d is too large for hashing", n);
-	n2 = 2 * n;
-	htab->M = 2;
-	htab->K = 1;
-	while (htab->M < n2) {
-		htab->M *= 2;
-		htab->K += 1;
-	}
-	htab->Mminus1 = htab->M - 1;
-	htab->slots = (int *) R_alloc(sizeof(int), htab->M);
-	for (i = 0; i < htab->M; i++)
-		htab->slots[i] = NA_INTEGER;
-	return;
-}
-
-static int get_hslot_val(const struct htab *htab, int hslot)
-{
-	return htab->slots[hslot];
-}
-
-static void set_hslot_val(struct htab *htab, int hslot, int val)
-{
-	htab->slots[hslot] = val;
-	return;
-}
-
 static int get_hslot_for_int_pair(const struct htab *htab,
 		int a1, int b1,
 		const int *a2, const int *b2)
@@ -301,13 +257,13 @@ SEXP Integer_match2_hash(SEXP a1, SEXP b1, SEXP a2, SEXP b2, SEXP nomatch)
 	len1 = _check_integer_pairs(a1, b1, &a1_p, &b1_p, "a1", "b1");
 	len2 = _check_integer_pairs(a2, b2, &a2_p, &b2_p, "a2", "b2");
 	nomatch0 = INTEGER(nomatch)[0];
-	htab_init(&htab, len2);
+	htab = _new_htab(len2);
 	for (i = 0; i < len2; i++) {
 		hslot = get_hslot_for_int_pair(&htab,
 					a2_p[i], b2_p[i],
 					a2_p, b2_p);
-		if (get_hslot_val(&htab, hslot) == NA_INTEGER)
-			set_hslot_val(&htab, hslot, i);
+		if (_get_hslot_val(&htab, hslot) == NA_INTEGER)
+			_set_hslot_val(&htab, hslot, i);
 	}
 	PROTECT(ans = NEW_INTEGER(len1));
 	ans0 = INTEGER(ans);
@@ -315,7 +271,7 @@ SEXP Integer_match2_hash(SEXP a1, SEXP b1, SEXP a2, SEXP b2, SEXP nomatch)
 		hslot = get_hslot_for_int_pair(&htab,
 					a1_p[i], b1_p[i],
 					a2_p, b2_p);
-		i2 = get_hslot_val(&htab, hslot);
+		i2 = _get_hslot_val(&htab, hslot);
 		if (i2 == NA_INTEGER)
 			ans0[i] = nomatch0;
 		else
@@ -334,16 +290,16 @@ SEXP Integer_selfmatch2_hash(SEXP a, SEXP b)
 	SEXP ans;
 
 	ans_length = _check_integer_pairs(a, b, &a_p, &b_p, "a", "b");
-	htab_init(&htab, ans_length);
+	htab = _new_htab(ans_length);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < ans_length; i++) {
 		hslot = get_hslot_for_int_pair(&htab,
 					a_p[i], b_p[i],
 					a_p, b_p);
-		i2 = get_hslot_val(&htab, hslot);
+		i2 = _get_hslot_val(&htab, hslot);
 		if (i2 == NA_INTEGER) {
-			set_hslot_val(&htab, hslot, i);
+			_set_hslot_val(&htab, hslot, i);
 			ans0[i] = i + 1;
 		} else {
 			ans0[i] = i2 + 1;
@@ -467,13 +423,13 @@ SEXP Integer_match4_hash(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 				    &a2_p, &b2_p, &c2_p, &d2_p,
 				    "a2", "b2", "c2", "d2");
 	nomatch0 = INTEGER(nomatch)[0];
-	htab_init(&htab, len2);
+	htab = _new_htab(len2);
 	for (i = 0; i < len2; i++) {
 		hslot = get_hslot_for_int_quad(&htab,
 					a2_p[i], b2_p[i], c2_p[i], d2_p[i],
 					a2_p, b2_p, c2_p, d2_p);
-		if (get_hslot_val(&htab, hslot) == NA_INTEGER)
-			set_hslot_val(&htab, hslot, i);
+		if (_get_hslot_val(&htab, hslot) == NA_INTEGER)
+			_set_hslot_val(&htab, hslot, i);
 	}
 	PROTECT(ans = NEW_INTEGER(len1));
 	ans0 = INTEGER(ans);
@@ -481,7 +437,7 @@ SEXP Integer_match4_hash(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 		hslot = get_hslot_for_int_quad(&htab,
 					a1_p[i], b1_p[i], c1_p[i], d1_p[i],
 					a2_p, b2_p, c2_p, d2_p);
-		i2 = get_hslot_val(&htab, hslot);
+		i2 = _get_hslot_val(&htab, hslot);
 		if (i2 == NA_INTEGER)
 			ans0[i] = nomatch0;
 		else
@@ -502,16 +458,16 @@ SEXP Integer_selfmatch4_hash(SEXP a, SEXP b, SEXP c, SEXP d)
 	ans_length = _check_integer_quads(a, b, c, d,
 					  &a_p, &b_p, &c_p, &d_p,
 					  "a", "b", "c", "d");
-	htab_init(&htab, ans_length);
+	htab = _new_htab(ans_length);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < ans_length; i++) {
 		hslot = get_hslot_for_int_quad(&htab,
 					a_p[i], b_p[i], c_p[i], d_p[i],
 					a_p, b_p, c_p, d_p);
-		i2 = get_hslot_val(&htab, hslot);
+		i2 = _get_hslot_val(&htab, hslot);
 		if (i2 == NA_INTEGER) {
-			set_hslot_val(&htab, hslot, i);
+			_set_hslot_val(&htab, hslot, i);
 			ans0[i] = i + 1;
 		} else {
 			ans0[i] = i2 + 1;

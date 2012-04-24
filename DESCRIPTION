@@ -84,6 +84,7 @@ Collate: validity-utils.R
 	XDouble-class.R
 	XVectorList-class.R
 	XRawList-class.R
+	XRawList-comparison.R
 	XIntegerViews-class.R
 	XIntegerViews-utils.R
 	XDoubleViews-class.R

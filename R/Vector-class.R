@@ -759,6 +759,15 @@ setMethod("unique", "Vector",
             x[!duplicated(x, incomparables = incomparables, ...)]
           })
 
+
+setMethod("sort", "Vector",
+    function(x, decreasing=FALSE, ...)
+    {
+        x[order(x, decreasing=decreasing, ...)]
+    }
+)
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###

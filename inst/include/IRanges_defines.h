@@ -19,6 +19,14 @@
 #include <R_ext/Rdynload.h>
 
 
+/* Hash table -- modified from R_HOME/src/main/unique.c */
+struct htab {
+        int K, M;
+        unsigned int Mminus1;
+        int *slots;
+};
+
+
 /*
  * Auto-Extending buffers used for temporary storage of incoming data whose
  * size is not known in advance:
