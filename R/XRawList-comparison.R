@@ -97,6 +97,10 @@ setMethod("rank", "XRawList",
 setMethod("match", c("XRawList", "XRawList"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL)
     {
+        if (!is.numeric(nomatch) || length(nomatch) != 1L)
+            stop("'nomatch' must be a single integer value")
+        if (!is.integer(nomatch))
+            nomatch <- as.integer(nomatch)
         if (!is.null(incomparables))
             stop("\"match\" method for XRawList objects ",
                  "only accepts 'incomparables=NULL'")
