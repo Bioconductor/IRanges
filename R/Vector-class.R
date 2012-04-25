@@ -375,8 +375,10 @@ setReplaceMethod("[", "Vector",
                      } else {
                          iInfo <- .bracket.Index(i, length(x), names(x))
                          if (is.null(iInfo[["msg"]])) {
-                             if (iInfo[["useIdx"]])
-                                 seqselect(x, iInfo[["idx"]], width = 1) <- value
+                             if (iInfo[["useIdx"]]) {
+                                 w <- rep.int(1L, length(iInfo[["idx"]]))
+                                 seqselect(x, iInfo[["idx"]], width = w) <- value
+                             }
                              else
                                  seqselect(x, start = 1, end = length(x)) <- value
                          } else if (is.atomic(i)) {
