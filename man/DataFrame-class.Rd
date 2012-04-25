@@ -118,14 +118,16 @@
 }
 
 \section{Constructor}{
-  \describe{\code{DataFrame(..., row.names = NULL)}:
+  \describe{\code{DataFrame(..., row.names = NULL, check.names = TRUE)}:
     Constructs a \code{DataFrame} in similar fashion to
     \code{\link{data.frame}}. Each argument in \code{...} is coerced to
     a \code{DataFrame} and combined column-wise. No special effort is
     expended to automatically determine the row names from the
     arguments. The row names should be given in
     \code{row.names}; otherwise, there are no row names. This is by
-    design, as row names are normally undesirable when data is large.
+    design, as row names are normally undesirable when data is
+    large. If \code{check.names} is \code{TRUE}, the column names will
+    be checked for syntactic validity and made unique, if necessary.
 
     To store an object of a class that does not support coercion to
     \code{DataFrame}, wrap it in \code{I()}. The class must still have
