@@ -76,9 +76,8 @@ setReplaceMethod("colnames", "DataFrame",
                    if (!is.character(value)) 
                        stop("'value' must be a character vector ",
                             "in colnames(x) <- value")
-                     if (length(value) > length(x))
-                       stop("more column names than columns")
-                     value <- make.names(value, unique=TRUE)
+                   if (length(value) > length(x))
+                     stop("more column names than columns")
                    names(x) <- value
                    x
                  })
