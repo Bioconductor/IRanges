@@ -161,6 +161,8 @@ compatibleHits <- function(x, y) {
 setMethod("%in%", c("Hits", "Hits"), function(x, table) {
   if (!compatibleHits(x, table))
     stop("'x' and 'table' are incompatible by subject and query length")
+  if (!length(table))
+    return(rep.int(FALSE, length(x)))
   qhits <- c(queryHits(table), queryHits(x))
   shits <- c(subjectHits(table), subjectHits(x))
   dup <- duplicatedIntegerPairs(qhits, shits)
