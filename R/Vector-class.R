@@ -769,12 +769,16 @@ setMethod("sort", "Vector",
     }
 )
 
-setMethod("%in%", c("Vector", "Vector"),
-    function(x, table)
-    {
-        !is.na(match(x, table))
-    }
-)
+`.%in%.default.method` <- function(x, table) {!is.na(match(x, table))}
+setMethod("%in%", c("ANY", "Vector"), `.%in%.default.method`)
+setMethod("%in%", c("Vector", "ANY"), `.%in%.default.method`)
+### Not strictly required! Defining the above 2 methods covers that case but
+### with the following note:
+###   > hits %in% hits
+###   Note: Method with signature "Vector#ANY" chosen for function "%in%",
+###    target signature "Hits#Hits".
+###    "ANY#Vector" would also be valid
+setMethod("%in%", c("Vector", "Vector"), `.%in%.default.method`)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

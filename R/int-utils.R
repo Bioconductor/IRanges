@@ -167,6 +167,10 @@ matchIntegerPairs <- function(a1, b1, a2, b2, nomatch=NA_integer_,
     b2 <- .normargIntegerOrFactor(b2, "b2")
     if (length(a2) != length(b2))
         stop("'a2' and 'b2' must have the same length")
+    if (!is.numeric(nomatch) || length(nomatch) != 1L)
+        stop("'nomatch' must be a single integer value")
+    if (!is.integer(nomatch))
+        nomatch <- as.integer(nomatch)
     method <- .normargMethod(method, length(a2))
     if (method == "quick") {
         ans <- .matchIntegerPairs_quick(a1, b1, a2, b2, nomatch=nomatch)
@@ -316,6 +320,10 @@ matchIntegerQuads <- function(a1, b1, c1, d1, a2, b2, c2, d2,
         length(b2) != length(c2) ||
         length(c2) != length(d2))
         stop("'a2', 'b2', 'c2' and 'd2' must have the same length")
+    if (!is.numeric(nomatch) || length(nomatch) != 1L)
+        stop("'nomatch' must be a single integer value")
+    if (!is.integer(nomatch))
+        nomatch <- as.integer(nomatch)
     method <- .normargMethod(method, length(a2))
     if (method == "quick") {
         ans <- .matchIntegerQuads_quick(a1, b1, c1, d1, a2, b2, c2, d2,

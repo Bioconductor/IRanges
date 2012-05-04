@@ -9,6 +9,10 @@ setClass("Hits",
         subjectHits="integer",   # integer vector of length N
         queryLength="integer",   # single integer
         subjectLength="integer"  # single integer
+    ),
+    prototype(
+        queryLength=0L,
+        subjectLength=0L
     )
 )
 
@@ -158,16 +162,19 @@ compatibleHits <- function(x, y) {
   subjectLength(x) == subjectLength(y) && queryLength(x) == queryLength(y)
 }
 
-setMethod("%in%", c("Hits", "Hits"), function(x, table) {
-  if (!compatibleHits(x, table))
-    stop("'x' and 'table' are incompatible by subject and query length")
-  if (!length(table))
-    return(rep.int(FALSE, length(x)))
-  qhits <- c(queryHits(table), queryHits(x))
-  shits <- c(subjectHits(table), subjectHits(x))
-  dup <- duplicatedIntegerPairs(qhits, shits)
-  tail(dup, -length(table))  
-})
+setMethod("match", c("Hits", "Hits"),
+    function(x, table, nomatch=NA_integer_, incomparables=NULL)
+    {
+        if (!compatibleHits(x, table))
+            stop("'x' and 'table' are incompatible by subject and query length")
+        if (!is.null(incomparables))
+            stop("\"match\" method for Hits objects ",
+                 "only accepts 'incomparables=NULL'")
+        matchIntegerPairs(queryHits(x), subjectHits(x),
+                          queryHits(table), subjectHits(table),
+                          nomatch=nomatch)
+    }
+)
 
 setMethod("setdiff", c("Hits", "Hits"), function(x, y) {
   if (!compatibleHits(x, y))
@@ -190,6 +197,7 @@ setMethod("intersect", c("Hits", "Hits"), function(x, y) {
     stop("'x' and 'y' are incompatible by subject and query length")
   x[x %in% y]
 })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### makeAllGroupInnerHits()

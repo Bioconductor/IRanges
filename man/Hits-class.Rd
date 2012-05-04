@@ -1,6 +1,8 @@
 \name{Hits-class}
 \docType{class}
+
 \alias{Hits-class}
+\alias{Hits}
 
 % accessors
 \alias{matchMatrix}
@@ -28,7 +30,7 @@
 \alias{coerce,Hits,DataFrame-method}
 
 % setops
-\alias{\%in\%,Hits,Hits-method}
+\alias{match,Hits,Hits-method}
 \alias{intersect,Hits,Hits-method}
 \alias{setdiff,Hits,Hits-method}
 \alias{union,Hits,Hits-method}
@@ -129,7 +131,7 @@
 }
 
 \section{Set Operations}{
-  A \code{Hits} object is a set of matchings, each from a \code{query}
+  A \code{Hits} object is a set of hits, each from a \code{query}
   index to a \code{subject} index. The basic set operation API has been
   implemented to treat \code{Hits} in this manner. This includes
   \code{\%in\%}, \code{intersect}, \code{union}, and \code{setdiff}.
@@ -143,13 +145,13 @@
   query <- IRanges(c(1, 4, 9), c(5, 7, 10))
   subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
   tree <- IntervalTree(subject)
-  matchings <- findOverlaps(query, tree)
+  overlaps <- findOverlaps(query, tree)
 
-  as.matrix(matchings)
-  as.data.frame(matchings)
+  as.matrix(overlaps)
+  as.data.frame(overlaps)
 
-  as.table(matchings) # hits per query
-  as.table(t(matchings)) # hits per subject
+  as.table(overlaps) # hits per query
+  as.table(t(overlaps)) # hits per subject
 }
 \keyword{methods}
 \keyword{classes}
