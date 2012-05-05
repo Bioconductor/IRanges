@@ -258,5 +258,123 @@ setMethod("show", "Hits", function(object) {
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### TODO: many convenience methods
+### Remap the query and/or subject hits.
+###
+
+### Returns 'arg' as a NULL, an integer vector, or a factor.
+.normargMap <- function(arg, sidename, old.length)
+{
+    if (is.null(arg))
+        return(arg)
+    if (!is.factor(arg)) {
+        if (!is.numeric(arg))
+            stop("'" , sidename, ".map' must be a vector of integers")
+        if (!is.integer(arg))
+            arg <- as.integer(arg)
+    }
+    if (length(arg) != old.length)
+        stop("'" , sidename, ".map' must have the length of the ", sidename)
+    arg
+}
+
+.normargNewLength <- function(arg, sidename, map)
+{
+    if (!isSingleNumberOrNA(arg))
+        stop("'new.", sidename, "Length' must be a single number or NA")
+    if (!is.integer(arg))
+        arg <- as.integer(arg)
+    if (is.null(map)) {
+        if (!is.na(arg))
+            stop("'new.", sidename, "Length' must be NA ",
+                 "when '" , sidename, ".map' is NULL")
+        return(arg)
+    }
+    if (is.factor(map)) {
+        if (is.na(arg))
+            return(nlevels(map))
+        if (arg < nlevels(map))
+            stop("supplied 'new.", sidename, "Length' must ",
+                 "be >= 'nlevels(", sidename, ".map)'")
+        return(arg)
+    }
+    if (is.na(arg))
+        stop("'new.", sidename, "Length' must be specified when ",
+             "'" , sidename, ".map' is specified and is not a factor")
+    arg
+}
+
+### Remaps the hits in 'x' thru a "query map" and/or a "subject map" map.
+### The query hits are remapped thru the "query map" which is specified via
+### the 'query.map' and 'new.queryLength' arguments. The subject hits are
+### remapped thru the "subject map" which is specified via the 'subject.map'
+### and 'new.subjectLength' arguments.
+### The "query map" is conceptually a function (aka the mapping function) from
+### the 1..M interval to the 1..N interval where N is 'queryLength(x)' and M
+### is the value specified by the user via the 'new.queryLength' argument. The
+### mapping function must be an application in the mathematical sense i.e. each
+### integer in 1..M must be assigned a value in 1..N. The mapping function
+### doesn't need to be injective or surjective. The mapping function however is
+### not represented by an R function but by an integer vector of length M with
+### no NAs. More precisely 'query.map' can be NULL (identity map), or a vector
+### of 'queryLength(x)' non-NA integers that are >= 1 and <= 'new.queryLength',
+### or a factor of length 'queryLength(x)' with no NAs (a factor is treated as
+### an integer vector, and, if missing, 'new.queryLength' is taken to be its
+### number of levels). Note that a factor will typically be used to represent a
+### non-injective mapping function.
+### The same apply for the "subject map".
+### remapHits() returns a Hits object where all the query hits and subject hits
+### have been remapped thru the 2 specified maps. This remapping is actually
+### only the 1st step of the transformation and is followed by 2 additional
+### steps: (2) the removal of duplicated hits, and (3) the reordering of the
+### hits (first by query hits, then by subject hits). Note that if the 2 maps
+### are injective then the remapping won't introduce duplicated hits, so, in
+### that case, step (2) is a no-op (but is still performed). Also if the "query
+### map" is strictly ascending and the "subject map" ascending then the
+### remapping will preserve the order of the hits, so, in that case, step (3)
+### is a no-op (but is still performed).
+remapHits <- function(x, query.map=NULL, new.queryLength=NA,
+                         subject.map=NULL, new.subjectLength=NA)
+{
+    if (!is(x, "Hits"))
+        stop("'x' must be a Hits object")
+    query.map <- .normargMap(query.map, "query", queryLength(x))
+    new.queryLength <- .normargNewLength(new.queryLength,
+                                         "query", query.map)
+    subject.map <- .normargMap(subject.map, "subject", subjectLength(x))
+    new.subjectLength <- .normargNewLength(new.subjectLength,
+                                           "subject", subject.map)
+    query_hits <- queryHits(x)
+    subject_hits <- subjectHits(x)
+    if (is.null(query.map)) {
+        new.queryLength <- queryLength(x)
+    } else {
+        if (is.factor(query.map))
+            query.map <- as.integer(query.map)
+        if (anyMissingOrOutside(query.map, 1L, new.queryLength))
+            stop("'query.map' cannot contain NAs, or values that ",
+                 "are < 1, or > 'new.queryLength'")
+        query_hits <- query.map[query_hits]
+    }
+    if (is.null(subject.map)) {
+        new.subjectLength <- subjectLength(x)
+    } else {
+        if (is.factor(subject.map))
+            subject.map <- as.integer(subject.map)
+        if (anyMissingOrOutside(subject.map, 1L, new.subjectLength))
+            stop("'subject.map' cannot contain NAs, or values that ",
+                 "are < 1, or > 'new.subjectLength'")
+        subject_hits <- subject.map[subject_hits]
+    }
+    not_dup <- !duplicatedIntegerPairs(query_hits, subject_hits)
+    query_hits <- query_hits[not_dup]
+    subject_hits <- subject_hits[not_dup]
+    oo <- orderIntegerPairs(query_hits, subject_hits)
+    new("Hits", queryHits=query_hits[oo], subjectHits=subject_hits[oo],
+                queryLength=new.queryLength, subjectLength=new.subjectLength)
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### TODO: More convenience methods
+###
 
