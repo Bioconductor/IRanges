@@ -252,15 +252,20 @@ SEXP XRawList_rank(SEXP x, SEXP ties_method)
  * object.
  */
 
-/* 
- * Taken from http://www.cse.yorku.ca/~oz/hash.html
- * Note that this is NOT the same as the hash function used for the Global
- * CHARSXP cache in base R (see char_hash() function in
- * R_HOME/src/main/envir.c) which was taken from the same place but replaced
- * the use of unsigned char by (plain) char. As a consequence, the hash values
- * returned by djb2_hash() and char_hash() will be different on a platform
- * where (plain) char is equivalent to signed char (e.g. gcc on Intel 32- or
- * 64-bit Linux).
+/*
+ * We use the Bernstein's function to hash arbitrary arrays of bytes.
+ * See http://www.strchr.com/hash_functions for an empirical comparison of hash
+ * functions and http://www.cse.yorku.ca/~oz/hash.html for an implementation of
+ * the Bernstein's function. Note that this implementation is NOT the same as
+ * the hash function used for the Global CHARSXP cache in base R
+ * (see char_hash() function in R_HOME/src/main/envir.c) which was taken from
+ * the same place but slightly modified by replacing the use of unsigned char
+ * with (plain) char. As a consequence, the hash values returned by djb2_hash()
+ * and char_hash() will be different on a platform where (plain) char is
+ * equivalent to signed char (e.g. gcc on Intel 32- or 64-bit Linux).
+ *
+ * TODO: Some people recommend to use XOR operation instead of addition in
+ * 'hval * 33 + *s'. Try and see if that makes any difference.
  */
 static unsigned int djb2_hash(const unsigned char *s, int len)
 {
