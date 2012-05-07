@@ -758,6 +758,7 @@ setMethod("subset", "Vector",
 setMethod("unique", "Vector",
     function(x, incomparables=FALSE, ...)
     {
+        names(x) <- NULL  # for consistency with base::unique() on vectors
         x[!duplicated(x, incomparables=incomparables, ...)]
     }
 )
