@@ -151,10 +151,11 @@ test_DataFrame_dimnames_replace <- function() {
   checkIdentical(colnames(sw), cn)
   cn <- as.character(seq_len(ncol(swiss)))
   colnames(sw) <- cn
-  checkIdentical(colnames(sw), make.names(cn, unique=TRUE))
+  colnames(swiss) <- cn
+  checkIdentical(colnames(sw), colnames(swiss))
   colnames(sw) <- cn[1]
   colnames(swiss) <- cn[1]
-  checkIdentical(colnames(sw), c("X1", NA, NA, NA, NA, NA))
+  checkIdentical(colnames(sw), colnames(swiss))
   rn <- seq(nrow(sw))
   rownames(sw) <- rn
   checkIdentical(rownames(sw), as.character(rn))
