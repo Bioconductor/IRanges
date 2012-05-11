@@ -154,7 +154,7 @@ setValidity2("Vector", .valid.Vector)
 normalizeSingleBracketSubscript <- function(i, x)
 {
     if (is.null(i))
-        return(NULL)
+        return(integer(0))
     if (is(i, "Ranges")) {
         ## Subsetting by ranges will be re-introduced later but it will do
         ## the right thing.
@@ -194,9 +194,9 @@ normalizeSingleBracketSubscript <- function(i, x)
     if (is.character(i) || is.factor(i)) {
         if (is.null(names(x)))
             stop("cannot subset by character when names are NULL")
-        i <- match(i, names(x))
+        i <- match(i, names(x), incomparables=c(NA_character_, ""))
         if (anyMissing(i))
-            stop("subsetting by character would result in NA's")
+            stop("subscript contains invalid names")
         return(i)
     }
     stop("invalid subscript type")
@@ -218,14 +218,6 @@ mk_singleBracketReplacementValue <- function(x, value)
     if (is(value, "SplitDataFrameList") && length(x) != 0L)
         colnames(value) <- colnames(x)[[1L]]
     value
-}
-
-.bracket.Vector <-
-function(x, i, j, ..., drop)
-{
-    if (!is.null(elementMetadata(x)))
-        elementMetadata(x) <- elementMetadata(x)[i,,drop=FALSE]
-    x
 }
 
 ## 'allowAppend' allows new elements in 'idx' for appending. Ideally,

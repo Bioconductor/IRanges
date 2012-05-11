@@ -256,54 +256,21 @@ setMethod("[[", "MaskCollection",
     }
 )
 
-### Supported 'i' types: numeric/logical/character vector, NULL and missing.
-### Unlike "[[" above, when subsetting by names, only the first match is
-### returned if a name provided by the user matches more than 1 element (note
-### that this kind of problem could be avoided if the unicity of names were
-### enforced by the validity method for MaskCollection objects).
+### Always behaves like an endomorphism (i.e. ignores the 'drop' argument and
+### behaves like if it was actually set to FALSE).
 setMethod("[", "MaskCollection",
-    function(x, i, j, ..., drop)
+    function(x, i, j, ..., drop=TRUE)
     {
         if (!missing(j) || length(list(...)) > 0)
             stop("invalid subsetting")
         if (missing(i))
-            return(x)
-        if (!is.atomic(i))
-            stop("invalid subscript type")
-        lx <- length(x)
-        if (lx == 0)
-            return(x[FALSE])  # x[0] would work too
-        if (is.numeric(i)) {
-            if (!is.integer(i))
-                i <- as.integer(i)
-            if (anyMissingOrOutside(i, -lx, lx))
-                stop("subscript contains NAs or out of bounds indices")
-            ipos <- i[i > 0]
-            if (anyDuplicated(ipos))
-                stop("subscript contains duplicated positive values")
-        } else if (is.logical(i)) {
-            if (anyMissing(i))
-                stop("subscript contains NAs")
-            li <- length(i)
-            if (li > lx)
-                stop("subscript out of bounds")
-            if (li < lx)
-                i <- rep(i, length.out = lx)
-            i <- which(i)
-        } else if (is.character(i) || is.factor(i)) {
-            if (anyMissing(i))
-                stop("subscript contains NAs")
-            if (is.null(names(x)))
-                stop("cannot subset by names a ", class(x), " object with no names")
-            if (any(i == ""))
-                stop("subscript contains the empty string (\"\")")
+            i <- seq_len(length(x))
+        else
+            i <- normalizeSingleBracketSubscript(i, x)
+        if (any(i > 0L)) {  # then 'all(i >= 0)' must be TRUE
+            i <- i[i > 0L]
             if (anyDuplicated(i))
-                stop("subscript contains duplicated names")
-            i <- match(i, names(x))
-            if (anyMissing(i))
-                stop("subscript contains invalid names")
-        } else {
-            stop("invalid subscript type")
+                stop("subscript would generate duplicated elements")
         }
         slot(x, "nir_list", check=FALSE) <- nir_list(x)[i]
         slot(x, "active", check=FALSE) <- active(x)[i]
@@ -311,7 +278,8 @@ setMethod("[", "MaskCollection",
             slot(x, "NAMES", check=FALSE) <- names(x)[i]
         if (!is.null(desc(x)))
             slot(x, "desc", check=FALSE) <- desc(x)[i]
-        .bracket.Vector(x, i)
+        elementMetadata(x) <- elementMetadata(x)[i, , drop=FALSE]
+        x
     }
 )
 

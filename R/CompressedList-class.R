@@ -682,7 +682,8 @@ setMethod("revElements", "CompressedList",
     {
         if (missing(i))
             i <- seq_len(length(x))
-        i <- normalizeSingleBracketSubscript(i, x)
+        else
+            i <- normalizeSingleBracketSubscript(i, x)
         if (length(x) == 0L)
             return(x)
         elt_lens <- elementLengths(x)

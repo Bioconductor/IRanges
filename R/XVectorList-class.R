@@ -74,15 +74,13 @@ setMethod("seqselect", "GroupedIRanges",
 )
 
 setMethod("window", "GroupedIRanges",
-    function(x, start = NA, end = NA, width = NA,
-             frequency = NULL, delta = NULL, ...)
+    function(x, start=NA, end=NA, width=NA,
+             frequency=NULL, delta=NULL, ...)
     {
-        x <-
-          callNextMethod(x, start=start, end=end, width=width,
-                         frequency=frequency, delta=delta, ...)
-        x@group <-
-          callGeneric(x@group, start=start, end=end, width=width,
-                      frequency=frequency, delta=delta, ...)
+        x <- callNextMethod(x, start=start, end=end, width=width,
+                            frequency=frequency, delta=delta)
+        x@group <- window(x@group, start=start, end=end, width=width,
+                          frequency=frequency, delta=delta, ...)
         x
     }
 )
@@ -214,20 +212,19 @@ setMethod("[[", "XVectorList",
     }
 )
 
-### Supported 'i' types: numeric vector, logical vector, NULL and missing.
-### TODO: Support subsetting by names.
+### Always behaves like an endomorphism (i.e. ignores the 'drop' argument and
+### behaves like if it was actually set to FALSE).
 setMethod("[", "XVectorList",
     function(x, i, j, ... , drop=TRUE)
     {
         if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
-        if (missing(i))
-            return(x)
-        if (is.character(i))
-            stop("cannot subset a ", class(x), " object by names")
+        if (missing(i)) 
+            i <- seq_len(length(x))
+        else
+            i <- normalizeSingleBracketSubscript(i, x)
         x@ranges <- x@ranges[i]
-        ## Subset the element metadata.
-        x@elementMetadata <- x@elementMetadata[i,,drop=FALSE]
+        elementMetadata(x) <- elementMetadata(x)[i, , drop=FALSE]
         ## Drop unused pool elements.
         x <- .dropUnusedPoolElts(x)
         x
@@ -237,7 +234,9 @@ setMethod("[", "XVectorList",
 setMethod("seqselect", "XVectorList",
     function(x, start=NULL, end=NULL, width=NULL)
     {
-        x@ranges <- callGeneric(x@ranges, start=start, end=end, width=width)
+        x@ranges <- seqselect(x@ranges, start=start, end=end, width=width)
+        elementMetadata(x) <- seqselect(elementMetadata(x),
+                                        start=start, end=end, width=width)
         x
     }
 )
@@ -245,9 +244,11 @@ setMethod("seqselect", "XVectorList",
 setMethod("window", "XVectorList",
     function(x, start=NA, end=NA, width=NA, frequency=NULL, delta=NULL, ...)
     {
-        x@ranges <-
-          callGeneric(x@ranges, start=start, end=end, width=width,
-                      frequency=frequency, delta=delta, ...)
+        x@ranges <- window(x@ranges, start=start, end=end, width=width,
+                           frequency=frequency, delta=delta, ...)
+        elementMetadata(x) <- window(elementMetadata(x),
+                                     start=start, end=end, width=width,
+                                     frequency=frequency, delta=delta, ...)
         x
     }
 )

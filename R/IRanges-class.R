@@ -428,65 +428,23 @@ setMethod("update", "IRanges",
 ### Subsetting.
 ###
 
-.IRanges.checkAndTranslateSingleBracketSubscript <- function(x, i)
-{
-    if (!is(i, "Ranges") && !is.atomic(i))
-        stop("invalid subscript type")
-    lx <- length(x)
-    if (is.numeric(i)) {
-        if (!is.integer(i))
-            i <- as.integer(i)
-        if (anyMissingOrOutside(i, -lx, lx))
-            stop("subscript contains NAs or out of bounds indices")
-        if (is(x, "NormalIRanges") && all(i >= 0L)) {
-            i <- i[i != 0L]
-            if (isNotStrictlySorted(i))
-                stop("positive numeric subscript must be strictly increasing ",
-                     "for NormalIRanges objects")
-        }
-        return(i)
-    }
-    if (is.logical(i)) {
-        if (anyMissing(i))
-            stop("subscript contains NAs")
-        li <- length(i)
-        if (li > lx)
-            stop("subscript out of bounds")
-        if (li < lx)
-            i <- rep(i, length.out=lx)
-        return(which(i))
-    }
-    if (is.character(i) || is.factor(i)) {
-        if (is.null(names(x)))
-            stop("cannot subset by character when names are NULL")
-        i <- match(i, names(x))
-        if (anyMissing(i))
-            stop("subsetting by character would result in NA's")
-        return(i)
-    }
-    if (is(i, "Ranges"))
-        stop("'[' subsetting by Ranges is defunct.\n",
-             "Use 'subsetByOverlaps' instead.")
-    if (is.null(i))
-        return(NULL)
-    stop("invalid subscript type")
-}
-
-### Supported 'i' types: numeric vector, logical vector, character vector,
-### Ranges object, NULL and missing.
+### Always behaves like an endomorphism (i.e. ignores the 'drop' argument and
+### behaves like if it was actually set to FALSE).
 setMethod("[", "IRanges",
-    function(x, i, j, ..., drop)
+    function(x, i, j, ..., drop=TRUE)
     {
         if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
         if (missing(i))
-            return(x)
-        i <- .IRanges.checkAndTranslateSingleBracketSubscript(x, i)
+            i <- seq_len(length(x))
+        else
+            i <- normalizeSingleBracketSubscript(i, x)
         slot(x, "start", check=FALSE) <- start(x)[i]
         slot(x, "width", check=FALSE) <- width(x)[i]
         if (!is.null(names(x)))
             slot(x, "NAMES", check=FALSE) <- names(x)[i]
-        .bracket.Vector(x, i)
+        elementMetadata(x) <- elementMetadata(x)[i, , drop=FALSE]
+        x
     }
 )
 
@@ -497,7 +455,8 @@ setReplaceMethod("[", "IRanges",
             stop("invalid subsetting")
         if (missing(i))
             i <- seq_len(length(x))
-        i <- .IRanges.checkAndTranslateSingleBracketSubscript(x, i)
+        else
+            i <- normalizeSingleBracketSubscript(i, x)
         ans_start <- start(x)
         ans_start[i] <- start(value)
         ans_width <- width(x)

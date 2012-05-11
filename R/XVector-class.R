@@ -80,23 +80,23 @@ setMethod("c", "XVector",
 ### Subsetting.
 ###
 
-### Ignores the 'drop' argument (so it always behaves like an endomorphism).
+### Always behaves like an endomorphism (i.e. ignores the 'drop' argument and
+### behaves like if it was actually set to FALSE).
 setMethod("[", "XVector",
     function(x, i, j, ..., drop=TRUE)
     {
         if (!missing(j) || length(list(...)) > 0)
             stop("invalid subsetting")
         if (missing(i))
-            return(x)
-        if (!is.numeric(i))
-            stop("invalid subsetting")
-        if (!is.integer(i))
-            i <- as.integer(i)
+            i <- seq_len(length(x))
+        else
+            i <- normalizeSingleBracketSubscript(i, x)
         new_shared <- SharedVector(class(x@shared), length=length(i))
         SharedVector.copy(new_shared, x@offset + i, src=x@shared)
         x@shared <- new_shared
         x@offset <- 0L
         x@length <- length(new_shared)
+        elementMetadata(x) <- elementMetadata(x)[i, , drop=FALSE]
         x
     }
 )
@@ -131,6 +131,8 @@ setMethod("subseq", "XVector",
         solved_SEW <- solveSubseqSEW(length(x), start, end, width)
         x@offset <- x@offset + start(solved_SEW) - 1L
         x@length <- width(solved_SEW)
+        elementMetadata(x) <- window(elementMetadata(x),
+                                     start=start, end=end, width=width)
         x
     }
 )
@@ -154,31 +156,34 @@ setMethod("seqselect", "XVector",
     function(x, start=NULL, end=NULL, width=NULL)
     {
         xv <- Views(x, start=start, end=end, width=width)
-        if (length(xv))
-          ## TODO: Implement a fast "unlist" method for Views objects.
-          do.call(c, as.list(xv))  # i.e. 'unlist(xv)'
-        else new(class(subject(xv)))
+        if (length(xv) == 0L)
+            return(x[NULL])
+        ## TODO: Implement a fast "unlist" method for Views objects.
+        ans <- do.call(c, as.list(xv))  # i.e. 'unlist(xv)'
+        elementMetadata(ans) <- seqselect(elementMetadata(x),
+                                          start=start, end=end, width=width)
+        ans
     }
 )
 
 setMethod("window", "XVector",
-        function(x, start = NA, end = NA, width = NA,
-                frequency = NULL, delta = NULL, ...)
-        {
-            if (is.null(frequency) && is.null(delta)) {
-                subseq(x, start = start, end = end, width = width)
-            } else {
-                solved_SEW <- solveWindowSEW(length(x), start, end, width)
-                idx <-
-                  stats:::window.default(seq_len(length(x)),
-                                         start = start(solved_SEW),
-                                         end = end(solved_SEW),
-                                         frequency = frequency,
-                                         deltat = delta, ...)
-                attributes(idx) <- NULL
-                x[idx]
-            }
-        })
+    function(x, start=NA, end=NA, width=NA,
+             frequency=NULL, delta=NULL, ...)
+    {
+        if (is.null(frequency) && is.null(delta)) {
+            ans <- subseq(x, start=start, end=end, width=width)
+            return(ans)
+        }
+        solved_SEW <- solveWindowSEW(length(x), start, end, width)
+        idx <- stats:::window.default(seq_len(length(x)),
+                                      start=start(solved_SEW),
+                                      end=end(solved_SEW),
+                                      frequency=frequency,
+                                      deltat=delta, ...)
+        attributes(idx) <- NULL
+        x[idx]
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
