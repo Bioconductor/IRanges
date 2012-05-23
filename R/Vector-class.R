@@ -106,7 +106,7 @@ setGeneric("rename", function(x, value, ...) standardGeneric("rename"))
 setMethod("rename", "Vector", function(x, value, ...) {
   if (missing(value))
     newNames <- c(...)
-  else newNames <- c(value = value, ...)
+  else newNames <- c(value, ...)
   badOldNames <- setdiff(names(newNames), names(x))
   if (length(badOldNames))
     stop("Some 'from' names in value not found on 'x': ",
