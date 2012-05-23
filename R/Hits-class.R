@@ -67,7 +67,8 @@ setMethod("[", "Hits",
             if (!missing(i)) {
               if (is.character(i))
                 stop("Cannot subset a Hits object by character")
-              if (!is.logical(i) && any(duplicated(i)))
+              if (!(is.logical(i) || (is(i, "Rle") && is.logical(runValue(i))))
+                  && any(duplicated(i)))
                 stop("Elements in a non-logical 'i' cannot be duplicated, ",
                      "because the Hits object would no longer be a set.")
               iInfo <- .bracket.Index(i, length(x))
