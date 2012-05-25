@@ -118,10 +118,33 @@ setGeneric("encodeOverlaps",
     function(query, subject, hits=NULL, ...) standardGeneric("encodeOverlaps")
 )
 
-setMethod("encodeOverlaps", c("ANY", "ANY", "Hits"),
+setMethod("encodeOverlaps", c("Vector", "Vector", "Hits"),
     function(query, subject, hits=NULL, ...)
     {
-        encodeOverlaps(query[queryHits(hits)], subject[subjectHits(hits)], ...)
+        ## Note that we could drop the names of 'query' before we subset it
+        ## (like we do below for 'subject') but we must NOT drop its
+        ## elementMetadata because it can contain columns (e.g. query.break)
+        ## needed for computing the overlap encodings!
+        query <- query[queryHits(hits)]
+        ## 'subject' will typically come with a lot of "metadata stuff"
+        ## attached to it (for example if it was obtained with
+        ## 'exonsBy(txdb, by="tx", use.names=TRUE)'). However this stuff is
+        ## not needed for computing the overlap encodings, so we drop it.
+        ## This will typically make subsetting by 'subjectHits(hits)' more
+        ## efficient (i.e. less memory needed, and faster). Note that the cost
+        ## of dropping this stuff (which triggers copies of 'subject') is
+        ## generally low because, unlike the 'query' (which can contain
+        ## millions of reads), the 'subject' is typically small (less than
+        ## 200k transcripts). More precisely, if 'query' is a GRangesList
+        ## object of length 17M (obtained by reading in a BAM file
+        ## corresponding to the full lane of paired-end reads coming from an
+        ## RNA-seq experiment and aligned against hg19), the observed ratio
+        ## between 'object.size(query)' and 'object.size(subject)' was > 75.
+        if (is(subject, "CompressedList"))
+            elementMetadata(subject@unlistData) <- NULL
+        names(subject) <- elementMetadata(subject) <- NULL
+        subject <- subject[subjectHits(hits)]
+        encodeOverlaps(query, subject, ...)
     }
 )
 
