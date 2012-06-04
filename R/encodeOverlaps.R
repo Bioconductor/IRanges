@@ -120,6 +120,8 @@ Hits_encodeOverlaps <- function(query.starts, query.widths,
                                 query.spaces=NULL, subject.spaces=NULL,
                                 query.breaks=NULL)
 {
+    if (!is(hits, "Hits"))
+        stop("'hits' must be a Hits object")
     if (queryLength(hits) != length(query.starts) ||
         subjectLength(hits) != length(subject.starts))
         stop("'hits' is not compatible with 'query' and 'subject'")
