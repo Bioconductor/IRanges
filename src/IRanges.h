@@ -1153,6 +1153,18 @@ SEXP RangesList_encode_overlaps(
 	SEXP subject_spaces
 );
 
+SEXP Hits_encode_overlaps(
+	SEXP query_starts,
+	SEXP query_widths,
+	SEXP query_spaces,
+	SEXP query_breaks,
+	SEXP subject_starts,
+	SEXP subject_widths,
+	SEXP subject_spaces,
+	SEXP query_hits,
+	SEXP subject_hits
+);
+
 
 /* SharedVector_class.c */
 

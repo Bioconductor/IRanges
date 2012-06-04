@@ -114,6 +114,27 @@ RangesList_encodeOverlaps <- function(query.starts, query.widths,
                              check=FALSE)
 }
 
+Hits_encodeOverlaps <- function(query.starts, query.widths,
+                                subject.starts, subject.widths,
+                                hits,
+                                query.spaces=NULL, subject.spaces=NULL,
+                                query.breaks=NULL)
+{
+    if (queryLength(hits) != length(query.starts) ||
+        subjectLength(hits) != length(subject.starts))
+        stop("'hits' is not compatible with 'query' and 'subject'")
+    C_ans <- .Call2("Hits_encode_overlaps",
+                    query.starts, query.widths, query.spaces, query.breaks,
+                    subject.starts, subject.widths, subject.spaces,
+                    queryHits(hits), subjectHits(hits),
+                    PACKAGE="IRanges")
+    encoding <- factor(C_ans$encoding)
+    flippedQuery <- logical(length(encoding))
+    new2("OverlapEncodings", Loffset=C_ans$Loffset, Roffset=C_ans$Roffset,
+                             encoding=encoding, flippedQuery=flippedQuery,
+                             check=FALSE)
+}
+
 setGeneric("encodeOverlaps",
     function(query, subject, hits=NULL, ...) standardGeneric("encodeOverlaps")
 )
@@ -121,6 +142,9 @@ setGeneric("encodeOverlaps",
 setMethod("encodeOverlaps", c("Vector", "Vector", "Hits"),
     function(query, subject, hits=NULL, ...)
     {
+        if (queryLength(hits) != length(query) ||
+            subjectLength(hits) != length(subject))
+            stop("'hits' is not compatible with 'query' and 'subject'")
         ## Note that we could drop the names of 'query' before we subset it
         ## (like we do below for 'subject') but we must NOT drop its
         ## elementMetadata because it can contain columns (e.g. query.break)
@@ -155,6 +179,17 @@ setMethod("encodeOverlaps", c("RangesList", "RangesList", "missing"),
                                   as.list(width(query)),
                                   as.list(start(subject)),
                                   as.list(width(subject)))
+    }
+)
+
+setMethod("encodeOverlaps", c("RangesList", "RangesList", "Hits"),
+    function(query, subject, hits=NULL, ...)
+    {
+        Hits_encodeOverlaps(as.list(start(query)),
+                            as.list(width(query)),
+                            as.list(start(subject)),
+                            as.list(width(subject)),
+                            hits)
     }
 )
 

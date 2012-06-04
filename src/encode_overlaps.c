@@ -393,3 +393,57 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 	return ans;
 }
 
+/* --- .Call ENTRY POINT ---/
+ * Same arguments as RangesList_encode_overlaps() plus 'query_hits' and
+ * 'subject_hits', both integer vectors of the same length.
+ */
+SEXP Hits_encode_overlaps(SEXP query_starts, SEXP query_widths,
+			  SEXP query_spaces, SEXP query_breaks,
+			  SEXP subject_starts, SEXP subject_widths,
+			  SEXP subject_spaces,
+			  SEXP query_hits, SEXP subject_hits)
+{
+	int q_len, s_len, ans_len, i, j, k;
+	const int *q_hits, *s_hits;
+	SEXP ans_Loffset, ans_Roffset, ans_encoding, ans_encoding_elt, ans;
+	CharAE buf;
+
+	/* TODO: Add some basic checking of the input values. */
+	q_len = LENGTH(query_starts);
+	s_len = LENGTH(subject_starts);
+	ans_len = _check_integer_pairs(query_hits, subject_hits,
+				       &q_hits, &s_hits,
+				       "queryHits(hits)", "subjectHits(hits)");
+	PROTECT(ans_Loffset = NEW_INTEGER(ans_len));
+	PROTECT(ans_Roffset = NEW_INTEGER(ans_len));
+	PROTECT(ans_encoding = NEW_CHARACTER(ans_len));
+	buf = _new_CharAE(0);
+	for (k = 0; k < ans_len; k++) {
+		i = q_hits[k];
+		j = s_hits[k];
+		if (i == NA_INTEGER || i < 1 || i > q_len ||
+		    j == NA_INTEGER || j < 1 || j > s_len) {
+			UNPROTECT(3);
+			error("'queryHits(hits)' or 'subjectHits(hits)' "
+			      "contain invalid indices");
+		}
+		i--;
+		j--;
+		PROTECT(ans_encoding_elt = RangesList_encode_overlaps_ij(
+				query_starts, query_widths,
+				query_spaces, query_breaks,
+				subject_starts, subject_widths, subject_spaces,
+				i, j,
+				INTEGER(ans_Loffset) + k,
+				INTEGER(ans_Roffset) + k,
+				&buf));
+		SET_STRING_ELT(ans_encoding, k, ans_encoding_elt);
+		UNPROTECT(1);
+		_CharAE_set_nelt(&buf, 0);
+	}
+	PROTECT(ans = make_LIST_from_ovenc_parts(ans_Loffset, ans_Roffset,
+						 ans_encoding));
+	UNPROTECT(4);
+	return ans;
+}
+
