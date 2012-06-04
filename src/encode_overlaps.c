@@ -68,7 +68,7 @@ static void CharAE_append_int(CharAE *char_ae, int d)
  * A special 1-letter code 'X' is used for ranges that are not on the same
  * space.
  */
-static void one_overlap_encoding(
+static void unsafe_overlap_encoding(
 		const int *q_start, const int *q_width, const int *q_space,
 		int q_len, int q_break,
 		const int *s_start, const int *s_width, const int *s_space,
@@ -149,7 +149,7 @@ static void one_overlap_encoding(
 	return;
 }
 
-static void safe_one_overlap_encoding(
+static void overlap_encoding(
 		SEXP query_start, SEXP query_width, SEXP query_space,
 		int query_break,
 		SEXP subject_start, SEXP subject_width, SEXP subject_space,
@@ -169,16 +169,17 @@ static void safe_one_overlap_encoding(
 				     &s_start, &s_width,
 				     "start(subject)", "width(subject)");
 	s_space = check_Ranges_space(subject_space, s_len, "subject");
-	one_overlap_encoding(q_start, q_width, q_space, q_len, query_break,
-		s_start, s_width, s_space, s_len,
-		as_matrix, Loffset, Roffset, out);
+	unsafe_overlap_encoding(q_start, q_width, q_space, q_len, query_break,
+				s_start, s_width, s_space, s_len,
+				as_matrix, Loffset, Roffset, out);
 	return;
 }
 
 /* type: 0=CHARSXP, 1=STRSXP, 2=RAWSXP
-   as_matrix: 0 or 1, ignored when type is 0 */
-static SEXP make_encoding_from_CharAE(const CharAE *buf, int type,
-				      int as_matrix,
+   as_matrix: 0 or 1, ignored when type is 0
+   q_len, q_break, s_len: ignored when type is 0 */
+static SEXP make_encoding_from_CharAE(const CharAE *buf,
+				      int type, int as_matrix,
 				      int q_len, int q_break, int s_len)
 {
 	SEXP ans, ans_elt, ans_dim;
@@ -276,12 +277,12 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 	as_matrix0 = as_matrix != R_NilValue && LOGICAL(as_matrix)[0];
 	as_raw0 = as_raw != R_NilValue && LOGICAL(as_raw)[0];
 	buf = _new_CharAE(0);
-	safe_one_overlap_encoding(
+	overlap_encoding(
 		query_start, query_width, query_space, query_break0,
 		subject_start, subject_width, subject_space,
 		as_matrix0, &Loffset, &Roffset, &buf);
-	PROTECT(encoding = make_encoding_from_CharAE(&buf, as_raw0 ? 2 : 1,
-						as_matrix0,
+	PROTECT(encoding = make_encoding_from_CharAE(&buf,
+						as_raw0 ? 2 : 1, as_matrix0,
 						LENGTH(query_start),
 						query_break0,
 						LENGTH(subject_start)));
@@ -295,6 +296,42 @@ SEXP encode_overlaps1(SEXP query_start, SEXP query_width,
 						 encoding));
 	UNPROTECT(4);
 	return ans;
+}
+
+static SEXP RangesList_encode_overlaps_ij(
+		SEXP query_starts, SEXP query_widths,
+		SEXP query_spaces, SEXP query_breaks,
+		SEXP subject_starts, SEXP subject_widths,
+		SEXP subject_spaces,
+		int i, int j, int *Loffset, int *Roffset, CharAE *buf)
+{
+	SEXP query_start, query_width, query_space,
+	     subject_start, subject_width, subject_space;
+	int query_break;
+
+	query_start = VECTOR_ELT(query_starts, i);
+	query_width = VECTOR_ELT(query_widths, i);
+	if (query_spaces == R_NilValue)
+		query_space = R_NilValue;
+	else
+		query_space = VECTOR_ELT(query_spaces, i);
+	if (query_breaks == R_NilValue)
+		query_break = 0;
+	else
+		query_break = INTEGER(query_breaks)[i];
+
+	subject_start = VECTOR_ELT(subject_starts, j);
+	subject_width = VECTOR_ELT(subject_widths, j);
+	if (subject_spaces == R_NilValue)
+		subject_space = R_NilValue;
+	else
+		subject_space = VECTOR_ELT(subject_spaces, j);
+
+	overlap_encoding(
+		query_start, query_width, query_space, query_break,
+		subject_start, subject_width, subject_space,
+		0, Loffset, Roffset, buf);
+	return make_encoding_from_CharAE(buf, 0, 0, 0, 0, 0);
 }
 
 /* --- .Call ENTRY POINT ---/
@@ -315,10 +352,8 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 				SEXP subject_starts, SEXP subject_widths,
 				SEXP subject_spaces)
 {
-	int q_len, s_len, ans_len, query_break, i, j, k;
-	SEXP ans_Loffset, ans_Roffset, ans_encoding, ans_encoding_elt, ans,
-	     query_start, query_width, query_space,
-	     subject_start, subject_width, subject_space;
+	int q_len, s_len, ans_len, i, j, k;
+	SEXP ans_Loffset, ans_Roffset, ans_encoding, ans_encoding_elt, ans;
 	CharAE buf;
 
 	/* TODO: Add some basic checking of the input values. */
@@ -331,33 +366,20 @@ SEXP RangesList_encode_overlaps(SEXP query_starts, SEXP query_widths,
 	PROTECT(ans_Loffset = NEW_INTEGER(ans_len));
 	PROTECT(ans_Roffset = NEW_INTEGER(ans_len));
 	PROTECT(ans_encoding = NEW_CHARACTER(ans_len));
-	query_space = subject_space = R_NilValue;
-	query_break = 0;
 	buf = _new_CharAE(0);
 	for (i = j = k = 0; k < ans_len; i++, j++, k++) {
 		if (i >= q_len)
 			i = 0; /* recycle i */
 		if (j >= s_len)
 			j = 0; /* recycle j */
-		query_start = VECTOR_ELT(query_starts, i);
-		query_width = VECTOR_ELT(query_widths, i);
-		if (query_spaces != R_NilValue)
-			query_space = VECTOR_ELT(query_spaces, i);
-		if (query_breaks != R_NilValue)
-			query_break = INTEGER(query_breaks)[i];
-		subject_start = VECTOR_ELT(subject_starts, j);
-		subject_width = VECTOR_ELT(subject_widths, j);
-		if (subject_spaces != R_NilValue)
-			subject_space = VECTOR_ELT(subject_spaces, j);
-		safe_one_overlap_encoding(
-			query_start, query_width, query_space, query_break,
-			subject_start, subject_width, subject_space,
-			0,
-			INTEGER(ans_Loffset) + k,
-			INTEGER(ans_Roffset) + k,
-			&buf);
-		PROTECT(ans_encoding_elt = make_encoding_from_CharAE(&buf, 0,
-						0, q_len, query_break, s_len));
+		PROTECT(ans_encoding_elt = RangesList_encode_overlaps_ij(
+				query_starts, query_widths,
+				query_spaces, query_breaks,
+				subject_starts, subject_widths, subject_spaces,
+				i, j,
+				INTEGER(ans_Loffset) + k,
+				INTEGER(ans_Roffset) + k,
+				&buf));
 		SET_STRING_ELT(ans_encoding, k, ans_encoding_elt);
 		UNPROTECT(1);
 		_CharAE_set_nelt(&buf, 0);
