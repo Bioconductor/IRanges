@@ -16,7 +16,7 @@ setClass("OverlapEncodings",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Getters.
+### Slot getters.
 ###
 
 setGeneric("Loffset", function(x) standardGeneric("Loffset"))
@@ -28,10 +28,111 @@ setMethod("Roffset", "OverlapEncodings", function(x) x@Roffset)
 setGeneric("encoding", function(x) standardGeneric("encoding"))
 setMethod("encoding", "OverlapEncodings", function(x) x@encoding)
 
+setMethod("levels", "OverlapEncodings", function(x) levels(encoding(x)))
+
 setGeneric("flippedQuery", function(x) standardGeneric("flippedQuery"))
 setMethod("flippedQuery", "OverlapEncodings", function(x) x@flippedQuery)
 
 setMethod("length", "OverlapEncodings", function(x) length(encoding(x)))
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The ngap(), Lngap(), and Rngap() getters.
+###
+
+.extract_ngap_from_encoding_levels <- function(x, L.or.R=NA)
+{
+    if (!is.character(x))
+        stop("'x' must be a character vector")
+    if (length(x) == 0L)
+        return(integer(0))
+    tmp <- strsplit(sub(":.*", "", x), "--", fixed=TRUE)
+    elt_lens <- elementLengths(tmp)
+    is_single_end_encoding <- elt_lens == 1L
+    is_paired_end_encoding <- elt_lens == 2L
+    if (!all(is_single_end_encoding | is_paired_end_encoding))
+        stop("'x' contains ill-formed encodings")
+    any_single_end <- any(is_single_end_encoding)
+    any_paired_end <- any(is_paired_end_encoding)
+    if (any_single_end && any_paired_end)
+        warning("'x' contains a mix of single-end and paired-end encodings")
+    ans <- integer(length(x))
+    if (any_single_end) {
+        if (identical(L.or.R, NA)) {
+            tmp1 <- tmp[is_single_end_encoding]
+            ngap1 <- suppressWarnings(as.integer(unlist(tmp1, use.names=FALSE)))
+            if (any(is.na(ngap1)))
+                stop("'x' contains ill-formed encodings")
+            ngap1 <- ngap1 - 1L
+            if (min(ngap1) < 0L)
+                warning("some encodings in 'x' have a negative number of gaps")
+        } else {
+            ngap1 <- NA_integer_
+        }
+        ans[is_single_end_encoding] <- ngap1
+    }
+    if (any_paired_end) {
+        tmp2 <- tmp[is_paired_end_encoding]
+        ngap2 <- suppressWarnings(as.integer(unlist(tmp2, use.names=FALSE)))
+        if (any(is.na(ngap2)))
+            stop("'x' contains ill-formed encodings")
+        ngap2 <- ngap2 - 1L
+        if (min(ngap2) < 0L)
+            warning("some encodings in 'x' have a negative number of gaps")
+        Lngap2 <- ngap2[c(TRUE, FALSE)]
+        Rngap2 <- ngap2[c(FALSE, TRUE)]
+        if (identical(L.or.R, NA)) {
+            ngap2 <- Lngap2 + Rngap2
+        } else if (identical(L.or.R, "L")) {
+            ngap2 <- Lngap2
+        } else if (identical(L.or.R, "R")) {
+            ngap2 <- Rngap2
+        } else {
+            stop("invalid supplied 'L.or.R' argument")
+        }
+        ans[is_paired_end_encoding] <- ngap2
+    }
+    ans
+}
+
+setGeneric("Lngap", function(x) standardGeneric("Lngap"))
+setGeneric("Rngap", function(x) standardGeneric("Rngap"))
+
+setMethod("ngap", "character",
+    function(x) .extract_ngap_from_encoding_levels(x)
+)
+setMethod("Lngap", "character",
+    function(x) .extract_ngap_from_encoding_levels(x, L.or.R="L")
+)
+setMethod("Rngap", "character",
+    function(x) .extract_ngap_from_encoding_levels(x, L.or.R="R")
+)
+
+setMethod("ngap", "factor",
+    function(x)
+    {
+        levels_ngap <- ngap(levels(x))
+        levels_ngap[as.integer(x)]
+    }
+)
+setMethod("Lngap", "factor",
+    function(x)
+    {
+        levels_Lngap <- Lngap(levels(x))
+        levels_Lngap[as.integer(x)]
+    }
+)
+setMethod("Rngap", "factor",
+    function(x)
+    {
+        levels_Rngap <- Rngap(levels(x))
+        levels_Rngap[as.integer(x)]
+    }
+)
+
+setMethod("ngap", "OverlapEncodings", function(x) ngap(encoding(x)))
+setMethod("Lngap", "OverlapEncodings", function(x) Lngap(encoding(x)))
+setMethod("Rngap", "OverlapEncodings", function(x) Rngap(encoding(x)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

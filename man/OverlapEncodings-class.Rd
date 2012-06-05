@@ -12,8 +12,22 @@
 \alias{Roffset,OverlapEncodings-method}
 \alias{encoding}
 \alias{encoding,OverlapEncodings-method}
+\alias{levels,OverlapEncodings-method}
 \alias{flippedQuery}
 \alias{flippedQuery,OverlapEncodings-method}
+
+\alias{ngap,character-method}
+\alias{ngap,factor-method}
+\alias{ngap,OverlapEncodings-method}
+\alias{Lngap}
+\alias{Lngap,character-method}
+\alias{Lngap,factor-method}
+\alias{Lngap,OverlapEncodings-method}
+\alias{Rngap}
+\alias{Rngap,character-method}
+\alias{Rngap,factor-method}
+\alias{Rngap,OverlapEncodings-method}
+
 \alias{as.data.frame,OverlapEncodings-method}
 \alias{show,OverlapEncodings-method}
 
@@ -33,16 +47,32 @@
 \S4method{Loffset}{OverlapEncodings}(x)
 \S4method{Roffset}{OverlapEncodings}(x)
 \S4method{encoding}{OverlapEncodings}(x)
+\S4method{levels}{OverlapEncodings}(x)
 \S4method{flippedQuery}{OverlapEncodings}(x)
+
+\S4method{ngap}{OverlapEncodings}(x)
+\S4method{Lngap}{OverlapEncodings}(x)
+\S4method{Rngap}{OverlapEncodings}(x)
 
 ## Coercing an OverlapEncodings object:
 
 \S4method{as.data.frame}{OverlapEncodings}(x, row.names=NULL, optional=FALSE, ...)
+
+## Low-level related utilities:
+
+\S4method{ngap}{character}(x)
+\S4method{Lngap}{character}(x)
+\S4method{Rngap}{character}(x)
+
+\S4method{ngap}{factor}(x)
+\S4method{Lngap}{factor}(x)
+\S4method{Rngap}{factor}(x)
 }
 
 \arguments{
   \item{x}{
-    An OverlapEncodings object.
+    An OverlapEncodings object. For the low-level utilities, \code{x} can also
+    be a character vector or factor containing encodings.
   }
   \item{row.names}{
     \code{NULL} or a character vector.
@@ -157,8 +187,13 @@ length(ovenc)
 Loffset(ovenc)
 Roffset(ovenc)
 encoding(ovenc)
+levels(ovenc)
+nlevels(ovenc)
 flippedQuery(ovenc)
+ngap(ovenc)
+
 as.data.frame(ovenc)
+ngap(levels(ovenc))
 }
 
 \keyword{methods}

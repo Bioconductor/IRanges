@@ -195,7 +195,7 @@ export(
     hits, map,
 
     ## OverlapEncodings
-    Loffset, Roffset, encoding, flippedQuery,
+    Loffset, Roffset, encoding, flippedQuery, Lngap, Rngap,
     encodeOverlaps1, RangesList_encodeOverlaps, encodeOverlaps,
 
     ## Other generic functions:
@@ -340,7 +340,7 @@ exportMethods(
     rdapply,
     universe, "universe<-", space, score, "score<-",
     queryHits, subjectHits, queryLength, subjectLength,
-    Loffset, Roffset, encoding, encodeOverlaps,
+    Loffset, Roffset, encoding, flippedQuery, Lngap, Rngap, encodeOverlaps,
     expand
 )
 
