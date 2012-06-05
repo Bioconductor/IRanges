@@ -54,7 +54,7 @@
 ### be on space 0.
 encodeOverlaps1 <- function(query, subject,
                             query.space=NULL, subject.space=NULL,
-                            query.break=0L,
+                            query.break=0L, flip.query=FALSE,
                             as.matrix=FALSE, as.raw=FALSE)
 {
     if (!is(query, "Ranges"))
@@ -69,12 +69,15 @@ encodeOverlaps1 <- function(query, subject,
         stop("'query.break' must be a single integer value")
     if (!is.integer(query.break))
         query.break <- as.integer(query.break)
+    if (!isTRUEorFALSE(flip.query))
+        stop("'flip.query' must be TRUE or FALSE")
     if (!isTRUEorFALSE(as.matrix))
         stop("'as.matrix' must be TRUE or FALSE")
     if (!isTRUEorFALSE(as.raw))
         stop("'as.raw' must be TRUE or FALSE")
     .Call2("encode_overlaps1",
-           start(query), width(query), query.space, query.break,
+           start(query), width(query), query.space,
+           query.break, flip.query,
            start(subject), width(subject), subject.space,
            as.matrix, as.raw,
            PACKAGE="IRanges")
@@ -116,24 +119,29 @@ RangesList_encodeOverlaps <- function(query.starts, query.widths,
 
 Hits_encodeOverlaps <- function(query.starts, query.widths,
                                 subject.starts, subject.widths,
-                                hits,
+                                hits, flip.query=NULL,
                                 query.spaces=NULL, subject.spaces=NULL,
                                 query.breaks=NULL)
 {
     if (!is(hits, "Hits"))
         stop("'hits' must be a Hits object")
+    if (is.null(flip.query)) {
+        flip.query <- logical(length(hits))
+    } else if (!is.logical(flip.query) || length(flip.query) != length(hits)) {
+        stop("'flip.query' must be a logical vector ",
+             "of the same length as 'hits'")
+    }
     if (queryLength(hits) != length(query.starts) ||
         subjectLength(hits) != length(subject.starts))
         stop("'hits' is not compatible with 'query' and 'subject'")
     C_ans <- .Call2("Hits_encode_overlaps",
                     query.starts, query.widths, query.spaces, query.breaks,
                     subject.starts, subject.widths, subject.spaces,
-                    queryHits(hits), subjectHits(hits),
+                    queryHits(hits), subjectHits(hits), flip.query,
                     PACKAGE="IRanges")
     encoding <- factor(C_ans$encoding)
-    flippedQuery <- logical(length(encoding))
     new2("OverlapEncodings", Loffset=C_ans$Loffset, Roffset=C_ans$Roffset,
-                             encoding=encoding, flippedQuery=flippedQuery,
+                             encoding=encoding, flippedQuery=flip.query,
                              check=FALSE)
 }
 

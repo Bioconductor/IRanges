@@ -129,9 +129,9 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(make_all_group_inner_hits, 2),
 
 /* encode_overlaps.c */
-	CALLMETHOD_DEF(encode_overlaps1, 9),
+	CALLMETHOD_DEF(encode_overlaps1, 10),
 	CALLMETHOD_DEF(RangesList_encode_overlaps, 7),
-	CALLMETHOD_DEF(Hits_encode_overlaps, 9),
+	CALLMETHOD_DEF(Hits_encode_overlaps, 10),
 
 /* SharedVector_class.c */
 	CALLMETHOD_DEF(debug_SharedVector_class, 0),

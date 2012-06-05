@@ -1136,6 +1136,7 @@ SEXP encode_overlaps1(
 	SEXP query_width,
 	SEXP query_space,
 	SEXP query_break,
+	SEXP flip_query,
 	SEXP subject_start,
 	SEXP subject_width,
 	SEXP subject_space,
@@ -1162,7 +1163,8 @@ SEXP Hits_encode_overlaps(
 	SEXP subject_widths,
 	SEXP subject_spaces,
 	SEXP query_hits,
-	SEXP subject_hits
+	SEXP subject_hits,
+	SEXP flip_query
 );
 
 
