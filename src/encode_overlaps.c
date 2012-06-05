@@ -128,7 +128,7 @@ static void unsafe_overlap_encoding(
 			for (i = q_len - 1; i >= 0; i--) {
 				starti = q_start[i];
 				widthi = q_width[i];
-				spacei = q_space == NULL ? 0 : q_space[i];
+				spacei = q_space == NULL ? 0 : - q_space[i];
 				letter = overlap_letter(starti, widthi, spacei,
 							startj, widthj, spacej);
 				CharAE_append_char(out, letter, 1);

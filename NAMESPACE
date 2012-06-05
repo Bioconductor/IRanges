@@ -196,8 +196,7 @@ export(
 
     ## OverlapEncodings
     Loffset, Roffset, encoding, flippedQuery,
-    encodeOverlaps1, RangesList_encodeOverlaps, Hits_encodeOverlaps,
-    encodeOverlaps,
+    encodeOverlaps1, RangesList_encodeOverlaps, encodeOverlaps,
 
     ## Other generic functions:
     xvcopy, compact,

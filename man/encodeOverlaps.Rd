@@ -1,12 +1,9 @@
 \name{encodeOverlaps}
 
 \alias{encodeOverlaps}
-\alias{encodeOverlaps,Vector,Vector,Hits-method}
-\alias{encodeOverlaps,RangesList,RangesList,missing-method}
-\alias{encodeOverlaps,RangesList,RangesList,Hits-method}
-\alias{encodeOverlaps,RangesList,Ranges,missing-method}
-\alias{encodeOverlaps,Ranges,RangesList,missing-method}
-\alias{encodeOverlaps,Ranges,Ranges,missing-method}
+\alias{encodeOverlaps,RangesList,RangesList-method}
+\alias{encodeOverlaps,RangesList,Ranges-method}
+\alias{encodeOverlaps,Ranges,RangesList-method}
 
 \alias{encodeOverlaps1}
 \alias{RangesList_encodeOverlaps}

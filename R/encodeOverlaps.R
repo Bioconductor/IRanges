@@ -98,148 +98,112 @@ findRangesOverlaps <- function(query, subject)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### encodeOverlaps()
+### The RangesList_encodeOverlaps() helper.
+###
+### This is the power horse behind all the "encodeOverlaps" methods.
 ###
 
-RangesList_encodeOverlaps <- function(query.starts, query.widths,
-                                      subject.starts, subject.widths,
-                                      query.spaces=NULL, subject.spaces=NULL,
-                                      query.breaks=NULL)
+.RangesList_encodeOverlaps <- function(query.starts, query.widths,
+                                       query.spaces, query.breaks,
+                                       subject.starts, subject.widths,
+                                       subject.spaces)
 {
-    C_ans <- .Call2("RangesList_encode_overlaps",
-                    query.starts, query.widths, query.spaces, query.breaks,
-                    subject.starts, subject.widths, subject.spaces,
-                    PACKAGE="IRanges")
-    encoding <- factor(C_ans$encoding)
-    flippedQuery <- logical(length(encoding))
-    new2("OverlapEncodings", Loffset=C_ans$Loffset, Roffset=C_ans$Roffset,
-                             encoding=encoding, flippedQuery=flippedQuery,
-                             check=FALSE)
+    .Call2("RangesList_encode_overlaps",
+           query.starts, query.widths, query.spaces, query.breaks,
+           subject.starts, subject.widths, subject.spaces,
+           PACKAGE="IRanges")
 }
 
-Hits_encodeOverlaps <- function(query.starts, query.widths,
-                                subject.starts, subject.widths,
-                                hits, flip.query=NULL,
-                                query.spaces=NULL, subject.spaces=NULL,
-                                query.breaks=NULL)
+.Hits_encode_overlaps <- function(query.starts, query.widths,
+                                  query.spaces, query.breaks,
+                                  subject.starts, subject.widths,
+                                  subject.spaces,
+                                  hits, flip.query)
 {
-    if (!is(hits, "Hits"))
-        stop("'hits' must be a Hits object")
-    if (is.null(flip.query)) {
-        flip.query <- logical(length(hits))
-    } else if (!is.logical(flip.query) || length(flip.query) != length(hits)) {
-        stop("'flip.query' must be a logical vector ",
-             "of the same length as 'hits'")
-    }
     if (queryLength(hits) != length(query.starts) ||
         subjectLength(hits) != length(subject.starts))
         stop("'hits' is not compatible with 'query' and 'subject'")
-    C_ans <- .Call2("Hits_encode_overlaps",
-                    query.starts, query.widths, query.spaces, query.breaks,
-                    subject.starts, subject.widths, subject.spaces,
-                    queryHits(hits), subjectHits(hits), flip.query,
-                    PACKAGE="IRanges")
+    .Call2("Hits_encode_overlaps",
+           query.starts, query.widths, query.spaces, query.breaks,
+           subject.starts, subject.widths, subject.spaces,
+           queryHits(hits), subjectHits(hits), flip.query,
+           PACKAGE="IRanges")
+}
+
+RangesList_encodeOverlaps <- function(query.starts, query.widths,
+                                      subject.starts, subject.widths,
+                                      hits, flip.query=NULL,
+                                      query.spaces=NULL, subject.spaces=NULL,
+                                      query.breaks=NULL)
+{
+    if (is.null(hits)) {
+        C_ans <- .RangesList_encodeOverlaps(query.starts, query.widths,
+                                            query.spaces, query.breaks,
+                                            subject.starts, subject.widths,
+                                            subject.spaces)
+        flip.query <- logical(length(encoding))
+    } else {
+        if (!is(hits, "Hits"))
+            stop("'hits' must be a Hits object")
+        if (is.null(flip.query)) {
+            flip.query <- logical(length(hits))
+        } else {
+            if (!is.logical(flip.query))
+                stop("'flip.query' must be a logical vector")
+            if (length(flip.query) != length(hits))
+                stop("'flip.query' must have the same length as 'hits'")
+        }
+        C_ans <- .Hits_encode_overlaps(query.starts, query.widths,
+                                       query.spaces, query.breaks,
+                                       subject.starts, subject.widths,
+                                       subject.spaces,
+                                       hits, flip.query)
+    }
     encoding <- factor(C_ans$encoding)
     new2("OverlapEncodings", Loffset=C_ans$Loffset, Roffset=C_ans$Roffset,
                              encoding=encoding, flippedQuery=flip.query,
                              check=FALSE)
 }
 
-setGeneric("encodeOverlaps",
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### encodeOverlaps()
+###
+
+setGeneric("encodeOverlaps", signature=c("query", "subject"),
     function(query, subject, hits=NULL, ...) standardGeneric("encodeOverlaps")
 )
 
-setMethod("encodeOverlaps", c("Vector", "Vector", "Hits"),
-    function(query, subject, hits=NULL, ...)
-    {
-        if (queryLength(hits) != length(query) ||
-            subjectLength(hits) != length(subject))
-            stop("'hits' is not compatible with 'query' and 'subject'")
-        ## Note that we could drop the names of 'query' before we subset it
-        ## (like we do below for 'subject') but we must NOT drop its
-        ## elementMetadata because it can contain columns (e.g. query.break)
-        ## needed for computing the overlap encodings!
-        query <- query[queryHits(hits)]
-        ## 'subject' will typically come with a lot of "metadata stuff"
-        ## attached to it (for example if it was obtained with
-        ## 'exonsBy(txdb, by="tx", use.names=TRUE)'). However this stuff is
-        ## not needed for computing the overlap encodings, so we drop it.
-        ## This will typically make subsetting by 'subjectHits(hits)' more
-        ## efficient (i.e. less memory needed, and faster). Note that the cost
-        ## of dropping this stuff (which triggers copies of 'subject') is
-        ## generally low because, unlike the 'query' (which can contain
-        ## millions of reads), the 'subject' is typically small (less than
-        ## 200k transcripts). More precisely, if 'query' is a GRangesList
-        ## object of length 17M (obtained by reading in a BAM file
-        ## corresponding to the full lane of paired-end reads coming from an
-        ## RNA-seq experiment and aligned against hg19), the observed ratio
-        ## between 'object.size(query)' and 'object.size(subject)' was > 75.
-        if (is(subject, "CompressedList"))
-            elementMetadata(subject@unlistData) <- NULL
-        names(subject) <- elementMetadata(subject) <- NULL
-        subject <- subject[subjectHits(hits)]
-        encodeOverlaps(query, subject, ...)
-    }
-)
-
-setMethod("encodeOverlaps", c("RangesList", "RangesList", "missing"),
+setMethod("encodeOverlaps", c("RangesList", "RangesList"),
     function(query, subject, hits=NULL, ...)
     {
         RangesList_encodeOverlaps(as.list(start(query)),
                                   as.list(width(query)),
                                   as.list(start(subject)),
-                                  as.list(width(subject)))
+                                  as.list(width(subject)),
+                                  hits)
     }
 )
 
-setMethod("encodeOverlaps", c("RangesList", "RangesList", "Hits"),
-    function(query, subject, hits=NULL, ...)
-    {
-        Hits_encodeOverlaps(as.list(start(query)),
-                            as.list(width(query)),
-                            as.list(start(subject)),
-                            as.list(width(subject)),
-                            hits)
-    }
-)
-
-setMethod("encodeOverlaps", c("RangesList", "Ranges", "missing"),
+setMethod("encodeOverlaps", c("RangesList", "Ranges"),
     function(query, subject, hits=NULL, ...)
     {
         RangesList_encodeOverlaps(as.list(start(query)),
                                   as.list(width(query)),
                                   as.list(start(subject)),
-                                  as.list(width(subject)))
+                                  as.list(width(subject)),
+                                  hits)
     }
 )
 
-setMethod("encodeOverlaps", c("Ranges", "RangesList", "missing"),
+setMethod("encodeOverlaps", c("Ranges", "RangesList"),
     function(query, subject, hits=NULL, ...)
     {
         RangesList_encodeOverlaps(as.list(start(query)),
                                   as.list(width(query)),
                                   as.list(start(subject)),
-                                  as.list(width(subject)))
-    }
-)
-
-### Not sure we need to bother with methods that do 1-to-1 range overlap
-### encodings. What would be the use cases?
-###   > query <- IRanges(1:11, width=4)
-###   > subject <- IRanges(6, 9)
-###   > encodeOverlaps(query, subject)
-###    [1] a b c c c g k k k l m
-###   Levels: a b c d e f g h i j k l m X
-###   > encodeOverlaps(IRanges(4:6, width=6), subject)
-###   [1] d e h
-###   Levels: a b c d e f g h i j k l m X
-###   > encodeOverlaps(IRanges(6:8, width=2), subject)
-###   [1] f i j
-###   Levels: a b c d e f g h i j k l m X
-setMethod("encodeOverlaps", c("Ranges", "Ranges", "missing"),
-    function(query, subject,  hits=NULL, ...)
-    {
-        rangeComparisonCodeToLetter(compare(query, subject))
+                                  as.list(width(subject)),
+                                  hits)
     }
 )
 
