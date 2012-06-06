@@ -83,14 +83,15 @@ setClass("SimpleRleList",
 ### Constructors
 ###
 
-LogicalList <- function(..., compress = TRUE)
+LogicalList <- function(..., compress = TRUE, coerce = TRUE)
 {
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
+    if (!isTRUEorFALSE(coerce))
+      stop("'coerce' must be TRUE or FALSE")
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1L]]))
         listData <- listData[[1L]]
-    listData <- coerceListElements(listData, "logical")
     if (coerce)
       listData <-
         lapply(listData, function(x) structure(as.logical(x), names = names(x)))
