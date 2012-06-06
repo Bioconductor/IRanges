@@ -83,15 +83,14 @@ setClass("SimpleRleList",
 ### Constructors
 ###
 
-LogicalList <- function(..., compress = TRUE, coerce = TRUE)
+LogicalList <- function(..., compress = TRUE)
 {
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
-    if (!isTRUEorFALSE(coerce))
-        stop("'coerce' must be TRUE or FALSE")
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1L]]))
         listData <- listData[[1L]]
+    listData <- coerceListElements(listData, "logical")
     if (coerce)
       listData <-
         lapply(listData, function(x) structure(as.logical(x), names = names(x)))
@@ -696,15 +695,20 @@ setMethod("Summary", "AtomicList",
             sapply(x, .Generic, na.rm = na.rm)
           })
 
-setMethod("sum", "CompressedAtomicList",
-          function(x, ..., na.rm = FALSE) {
-            x_flat <- unlist(x, use.names = FALSE)
-            ans <- vector(class(x_flat), length(x))
-            non_empty <- elementLengths(x) > 0
-            ans[non_empty] <- rowsum(x_flat, togroup(x), reorder = FALSE,
-                                     na.rm = na.rm)[,1]
-            setNames(ans, names(x))
-          })
+rowsumCompressedList <- function(x, ..., na.rm = FALSE) {
+  x_flat <- unlist(x, use.names = FALSE)
+  ans <- vector(class(x_flat), length(x))
+  non_empty <- elementLengths(x) > 0
+  if (is.logical(x_flat))
+    x_flat <- as.integer(x_flat)
+  ans[non_empty] <- rowsum(x_flat, togroup(x), reorder = FALSE,
+                           na.rm = na.rm)[,1]
+  setNames(ans, names(x))
+}
+
+setMethod("sum", "CompressedNumericList", rowsumCompressedList)
+setMethod("sum", "CompressedIntegerList", rowsumCompressedList)
+setMethod("sum", "CompressedLogicalList", rowsumCompressedList)
 
 setMethod("Summary", "CompressedRleList",
           function(x, ..., na.rm = FALSE) {
