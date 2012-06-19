@@ -37,6 +37,82 @@ setMethod("length", "OverlapEncodings", function(x) length(encoding(x)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The Lencoding() and Rencoding() getters.
+###
+
+.extract_LRencoding_from_encoding_levels <- function(x, L.or.R)
+{
+    if (!is.character(x))
+        stop("'x' must be a character vector")
+    if (length(x) == 0L)
+        return(character(0))
+    encoding_blocks <- strsplit(x, ":", fixed=TRUE)
+    nblock <- elementLengths(encoding_blocks)
+    tmp <- strsplit(unlist(encoding_blocks, use.names=FALSE), "--", fixed=TRUE)
+    tmp_elt_lens <- elementLengths(tmp)
+    tmp_is_single_end <- tmp_elt_lens == 1L
+    tmp_is_paired_end <- tmp_elt_lens == 2L
+    nblock1 <- sum(LogicalList(relist(tmp_is_single_end, encoding_blocks)))
+    nblock2 <- sum(LogicalList(relist(tmp_is_paired_end, encoding_blocks)))
+    is_single_end_encoding <- nblock1 == nblock
+    is_paired_end_encoding <- nblock2 == nblock
+    if (!all(is_single_end_encoding | nblock1 == 0L) ||
+        !all(is_paired_end_encoding | nblock2 == 0L) ||
+        !all(is_single_end_encoding | is_paired_end_encoding))
+        stop("'x' contains ill-formed encodings")
+    any_single_end <- any(is_single_end_encoding)
+    any_paired_end <- any(is_paired_end_encoding)
+    if (any_single_end && any_paired_end)
+        warning("'x' contains a mix of single-end and paired-end encodings")
+    ans <- character(length(x))
+    ans[] <- NA_character_
+    if (any_paired_end) {
+        tmp2 <- unlist(tmp[tmp_is_paired_end], use.names=FALSE)
+        encodings_blocks2 <- encoding_blocks[is_paired_end_encoding]
+        if (identical(L.or.R, "L")) {
+            tmp2 <- tmp2[c(TRUE, FALSE)]
+        } else if (identical(L.or.R, "R")) {
+            tmp2 <- tmp2[c(FALSE, TRUE)]
+        } else {
+            stop("invalid supplied 'L.or.R' argument")
+        }
+        ans2 <- sapply(relist(tmp2, encodings_blocks2),
+                       function(blocks) paste(blocks, collapse=":"))
+        ans[is_paired_end_encoding] <- paste(ans2, ":", sep="")
+    }
+    ans
+}
+
+setGeneric("Lencoding", function(x) standardGeneric("Lencoding"))
+setGeneric("Rencoding", function(x) standardGeneric("Rencoding"))
+
+setMethod("Lencoding", "character",
+    function(x) .extract_LRencoding_from_encoding_levels(x, L.or.R="L")
+)
+setMethod("Rencoding", "character",
+    function(x) .extract_LRencoding_from_encoding_levels(x, L.or.R="R")
+)
+
+setMethod("Lencoding", "factor",
+    function(x)
+    {
+        levels_Lencoding <- Lencoding(levels(x))
+        factor(levels_Lencoding)[as.integer(x)]
+    }
+)
+setMethod("Rencoding", "factor",
+    function(x)
+    {
+        levels_Rencoding <- Rencoding(levels(x))
+        factor(levels_Rencoding)[as.integer(x)]
+    }
+)
+
+setMethod("Lencoding", "OverlapEncodings", function(x) Lencoding(encoding(x)))
+setMethod("Rencoding", "OverlapEncodings", function(x) Rencoding(encoding(x)))
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The ngap(), Lngap(), and Rngap() getters.
 ###
 

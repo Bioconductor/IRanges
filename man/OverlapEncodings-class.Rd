@@ -16,6 +16,11 @@
 \alias{flippedQuery}
 \alias{flippedQuery,OverlapEncodings-method}
 
+\alias{Lencoding}
+\alias{Lencoding,OverlapEncodings-method}
+\alias{Rencoding}
+\alias{Rencoding,OverlapEncodings-method}
+
 \alias{ngap,character-method}
 \alias{ngap,factor-method}
 \alias{ngap,OverlapEncodings-method}
@@ -49,6 +54,9 @@
 \S4method{encoding}{OverlapEncodings}(x)
 \S4method{levels}{OverlapEncodings}(x)
 \S4method{flippedQuery}{OverlapEncodings}(x)
+
+\S4method{Lencoding}{OverlapEncodings}(x)
+\S4method{Rencoding}{OverlapEncodings}(x)
 
 \S4method{ngap}{OverlapEncodings}(x)
 \S4method{Lngap}{OverlapEncodings}(x)
