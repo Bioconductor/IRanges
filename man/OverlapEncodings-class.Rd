@@ -17,8 +17,12 @@
 \alias{flippedQuery,OverlapEncodings-method}
 
 \alias{Lencoding}
+\alias{Lencoding,character-method}
+\alias{Lencoding,factor-method}
 \alias{Lencoding,OverlapEncodings-method}
 \alias{Rencoding}
+\alias{Rencoding,character-method}
+\alias{Rencoding,factor-method}
 \alias{Rencoding,OverlapEncodings-method}
 
 \alias{ngap,character-method}
@@ -68,10 +72,14 @@
 
 ## Low-level related utilities:
 
+\S4method{Lencoding}{character}(x)
+\S4method{Rencoding}{character}(x)
 \S4method{ngap}{character}(x)
 \S4method{Lngap}{character}(x)
 \S4method{Rngap}{character}(x)
 
+\S4method{Lencoding}{factor}(x)
+\S4method{Rencoding}{factor}(x)
 \S4method{ngap}{factor}(x)
 \S4method{Lngap}{factor}(x)
 \S4method{Rngap}{factor}(x)
@@ -102,6 +110,9 @@
   The \code{\link{encodeOverlaps}} function computes those overlap
   encodings and returns them in an OverlapEncodings object of the same
   length as \code{query} and \code{subject}.
+
+  The topic of working with overlap encodings is covered in details
+  in the "Overlap encodings" vignette in the GenomicRanges package.
 }
 
 \section{OverlapEncodings accessors}{
@@ -116,7 +127,7 @@
     }
     \item{}{
       \code{Loffset(x)}, \code{Roffset(x)}:
-      Get the "left-offsets" and "right-offsets" of the encodings,
+      Get the "left offsets" and "right offsets" of the encodings,
       respectively. Both are integer vectors of the same length as \code{x}.
 
       Let's denote \code{Qi = query[[i]]}, \code{Si = subject[[i]]},
@@ -149,21 +160,49 @@
               single letters (where \code{M} is \code{length(Qi)}).
         \item Each vector obtained previously (1 vector per range in
               \code{tSi}, all of them of length \code{M}) is turned
-              into a single string by pasting its individual letters together.
-        \item All the strings obtained previously (1 per range in \code{tSi})
-              are pasted together into a single long string and separated
-              by colons (\code{":"}). An additional colon is prepended to
-              the long string and another one appended to it.
-        \item Finally, the value of \code{M} is prepended to the long
-              string. The final string is the encoding.
+              into a single string (called "encoding block") by pasting
+              its individual letters together.
+        \item All the encoding blocks (1 per range in \code{tSi}) are pasted
+              together into a single long string and separated by colons
+              (\code{":"}). An additional colon is prepended to the long
+              string and another one appended to it.
+        \item Finally, a special block containing the value of \code{M} is
+              prepended to the long string. The final string is the encoding.
       }
+    }
+    \item{}{
+      \code{levels(x)}: Equivalent to \code{levels(encoding(x))}.
     }
     \item{}{
       \code{flippedQuery(x)}:
       Whether or not the top-level element in query used for computing the
       encoding was "flipped" before the encoding was computed.
-      Note that this flipping generally affects the "left-offset",
-      "right-offset", in addition to the encoding itself.
+      Note that this flipping generally affects the "left offset",
+      "right offset", in addition to the encoding itself.
+    }
+    \item{}{
+      \code{Lencoding(x)}, \code{Rencoding(x)}:
+      Extract the "left encodings" and "right encodings" of paired-end
+      encodings.
+
+      Paired-end encodings are obtained by encoding paired-end overlaps
+      i.e. overlaps between paired-end reads and transcripts (typically).
+      The difference between a single-end encoding and a paired-end encoding
+      is that all the blocks in the latter contain a \code{"--"} separator
+      to mark the separation between the "left encoding" and the "right
+      encoding".
+
+      See the "Overlap encodings" vignette in the GenomicRanges package
+      for examples of paired-end encodings.
+    }
+    \item{}{
+      \code{ngap(x)}, \code{Lngap(x)}, \code{Rngap(x)}:
+      Extract the number of gaps in each encoding by looking at their first
+      block (aka special block).
+      If an element \code{xi} in \code{x} is a paired-end encoding,
+      then \code{Lngap(xi)}, \code{Rngap(xi)}, and \code{ngap(xi)},
+      return \code{ngap(Lencoding(xi))}, \code{ngap(Rencoding(xi))},
+      and \code{Lngap(xi) + Rngap(xi)}, respectively.
     }
   }
 }
@@ -183,9 +222,12 @@
 \author{H. Pages}
 
 \seealso{
-  \link{encodeOverlaps},
-  \link{compare},
-  \link{RangesList-class}
+  \itemize{
+    \item The "Overlap encodings" vignette in the GenomicRanges package.
+    \item \code{\link{encodeOverlaps}}.
+    \item \code{\link{compare}}.
+    \item The \link{RangesList} class.
+  }
 }
 
 \examples{
