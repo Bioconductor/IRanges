@@ -15,16 +15,12 @@ SEXP debug_Ocopy_byteblocks()
 	return R_NilValue;
 }
 
-static char translate_byte(char byte, const int *lkup, int lkup_length)
+static int translate_byte(char byte, const int *lkup, int lkup_length)
 {
-	int lkup_key, lkup_val;
+	int key;
 
-	lkup_key = (unsigned char) byte;
-	if (lkup_key >= lkup_length
-	 || (lkup_val = lkup[lkup_key]) == NA_INTEGER)
-		error("key %d (char '%c') not in lookup table",
-		      lkup_key, byte);
-	return (char) lkup_val;
+	key = (unsigned char) byte;
+	return key >= lkup_length ? NA_INTEGER : lkup[key];
 }
 
 
@@ -219,7 +215,7 @@ void _Ocopy_bytes_from_i1i2_with_lkup(int i1, int i2,
 {
 	const char *b;
 	char src_elt;
-	int i, j;
+	int i, j, tmp;
 
 	if (i1 > i2)
 		return;
@@ -228,14 +224,20 @@ void _Ocopy_bytes_from_i1i2_with_lkup(int i1, int i2,
 	if (dest_nbytes <= 0)
 		error("no destination to copy to");
 	b = src + i1;
-	for (i = i1, j = 0; i <= i2; i++, j++) {
+	j = 0;
+	for (i = i1; i <= i2; i++) {
 		if (j >= dest_nbytes) { /* recycle */
 			j = 0;
 		}
 		src_elt = *(b++);
-		if (lkup != NULL)
-			src_elt = translate_byte(src_elt, lkup, lkup_length);
-		dest[j] = src_elt;
+		if (lkup != NULL) {
+			tmp = translate_byte(src_elt, lkup, lkup_length);
+			if (tmp == NA_INTEGER)
+				error("key %d (char '%c') not in lookup table",
+				      (int) src_elt, src_elt);
+			src_elt = tmp;
+		}
+		dest[j++] = src_elt;
 	}
 	if (j < dest_nbytes)
 		warning("number of items to replace is not a multiple "
@@ -259,11 +261,12 @@ void _Ocopy_bytes_from_subscript_with_lkup(const int *subscript, int n,
 		const int *lkup, int lkup_length)
 {
 	char src_elt;
-	int j, k, sub_k;
+	int j, k, sub_k, tmp;
 
 	if (n != 0 && dest_nbytes <= 0)
 		error("no destination to copy to");
-	for (k = j = 0; k < n; k++, j++) {
+	j = 0;
+	for (k = 0; k < n; k++) {
 		if (j >= dest_nbytes) { /* recycle */
 			j = 0;
 		}
@@ -274,9 +277,14 @@ void _Ocopy_bytes_from_subscript_with_lkup(const int *subscript, int n,
 		if (sub_k < 0 || sub_k >= src_nbytes)
 			error("subscript out of bounds");
 		src_elt = src[sub_k];
-		if (lkup != NULL)
-			src_elt = translate_byte(src_elt, lkup, lkup_length);
-		dest[j] = src_elt;
+		if (lkup != NULL) {
+			tmp = translate_byte(src_elt, lkup, lkup_length);
+			if (tmp == NA_INTEGER)
+				error("key %d (char '%c') not in lookup table",
+				      (int) src_elt, src_elt);
+			src_elt = tmp;
+		}
+		dest[j++] = src_elt;
 	}
 	if (j < dest_nbytes)
 		warning("number of items to replace is not a multiple "
@@ -300,7 +308,7 @@ void _Ocopy_bytes_to_i1i2_with_lkup(int i1, int i2,
 		const int *lkup, int lkup_length)
 {
 	char *a, src_elt;
-	int i, j;
+	int i, j, tmp;
 
 	if (i1 > i2)
 		return;
@@ -314,8 +322,13 @@ void _Ocopy_bytes_to_i1i2_with_lkup(int i1, int i2,
 			j = 0;
 		}
 		src_elt = src[j];
-		if (lkup != NULL)
-			src_elt = translate_byte(src_elt, lkup, lkup_length);
+		if (lkup != NULL) {
+			tmp = translate_byte(src_elt, lkup, lkup_length);
+			if (tmp == NA_INTEGER)
+				error("key %d (char '%c') not in lookup table",
+				      (int) src_elt, src_elt);
+			src_elt = tmp;
+		}
 		*(a++) = src_elt;
 	}
 	if (j < src_nbytes)
@@ -340,7 +353,7 @@ void _Ocopy_bytes_to_subscript_with_lkup(const int *subscript, int n,
 		const int *lkup, int lkup_length)
 {
 	char src_elt;
-	int j, k, sub_k;
+	int j, k, sub_k, tmp;
 
 	if (n != 0 && src_nbytes <= 0)
 		error("no value provided");
@@ -355,8 +368,13 @@ void _Ocopy_bytes_to_subscript_with_lkup(const int *subscript, int n,
 		if (sub_k < 0 || sub_k >= dest_nbytes)
 			error("subscript out of bounds");
 		src_elt = src[j];
-		if (lkup != NULL)
-			src_elt = translate_byte(src_elt, lkup, lkup_length);
+		if (lkup != NULL) {
+			tmp = translate_byte(src_elt, lkup, lkup_length);
+			if (tmp == NA_INTEGER)
+				error("key %d (char '%c') not in lookup table",
+				      (int) src_elt, src_elt);
+			src_elt = tmp;
+		}
 		dest[sub_k] = src_elt;
 	}
 	if (j < src_nbytes)
@@ -423,7 +441,7 @@ void _Orevcopy_bytes_from_i1i2_with_lkup(int i1, int i2,
 {
 	const char *b;
 	char src_elt;
-	int i, j;
+	int i, j, tmp;
 
 	if (i1 > i2)
 		return;
@@ -432,14 +450,20 @@ void _Orevcopy_bytes_from_i1i2_with_lkup(int i1, int i2,
 	if (dest_nbytes <= 0)
 		error("no destination to copy to");
 	b = src + i1;
-	for (i = i1, j = dest_nbytes - 1; i <= i2; i++, j--) {
+	j = dest_nbytes - 1;
+	for (i = i1; i <= i2; i++) {
 		if (j < 0) { /* recycle */
 			j = dest_nbytes - 1;
 		}
 		src_elt = *(b++);
-		if (lkup != NULL)
-			src_elt = translate_byte(src_elt, lkup, lkup_length);
-		dest[j] = src_elt;
+		if (lkup != NULL) {
+			tmp = translate_byte(src_elt, lkup, lkup_length);
+			if (tmp == NA_INTEGER)
+				error("key %d (char '%c') not in lookup table",
+				      (int) src_elt, src_elt);
+			src_elt = tmp;
+		}
+		dest[j--] = src_elt;
 	}
 	if (j >= 0)
 		warning("number of items to replace is not a multiple "
