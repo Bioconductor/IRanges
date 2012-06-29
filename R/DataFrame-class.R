@@ -111,8 +111,6 @@ setReplaceMethod("colnames", "DataFrame",
   ## DataFrames with no columns can have NULL column name
   if (is.null(names(x)) && ncol(x) != 0)
     return("column names should not be NULL")
-  if (anyDuplicated(names(x)))
-    return("duplicate column names")
   if (length(names(x)) != ncol(x))
     return("number of columns and number of column names differ")
   NULL
@@ -568,7 +566,8 @@ setAs("vector", "DataFrame",
 
 ## note that any element named 'row.names' will be interpreted differently
 ## is this a bug or a feature?
-setAs("list", "DataFrame", function(from) do.call(DataFrame, from))
+setAs("list", "DataFrame",
+      function(from) do.call(DataFrame, c(from, check.names = FALSE)))
 
 setAs("NULL", "DataFrame", function(from) as(list(), "DataFrame"))
 
