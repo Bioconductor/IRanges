@@ -499,6 +499,12 @@ setAs("DataFrame", "data.frame",
         as.data.frame(from)
       })
 
+injectIntoScope <- function(x, ...) {
+  nms <- sapply(tail(substitute(list(...)), -1), deparse)
+  environment(x) <- list2env(setNames(list(...), nms), parent = environment(x))
+  x
+}
+
 setMethod("as.data.frame", "DataFrame",
           function(x, row.names=NULL, optional=FALSE, ...)
           {
@@ -507,15 +513,16 @@ setMethod("as.data.frame", "DataFrame",
               row.names <- rownames(x)
             if (!length(l) && is.null(row.names))
               row.names <- seq_len(nrow(x))
-            do.call(data.frame,
-                    c(lapply(l,
-                             function(y) {
-                               if(is.list(y) || is(y, "SimpleList") ||
-                                  is(y, "CompressedList"))
-                                 stop("conversion of list columns to a ",
-                                      "data.frame is not supported")
-                               as.data.frame(y, optional = TRUE, ...)
-                             }), list(row.names = row.names)))
+            l <- lapply(l,
+                   function(y) {
+                     if (is(y, "SimpleList") || is(y, "CompressedList"))
+                       y <- as.list(y)
+                     if (is.list(y))
+                       y <- I(y)
+                     y
+                   })
+            IRanges.data.frame <- injectIntoScope(data.frame, as.data.frame)
+            do.call(IRanges.data.frame, c(l, list(row.names = row.names)))
           })
 
 setMethod("as.matrix", "DataFrame", function(x) {
@@ -580,7 +587,7 @@ setAs("integer", "DataFrame",
 
 setAs("Vector", "DataFrame",
       function(from) {
-        new2("DataFrame", listData = structure(list(unname(from)), names = "X"),
+        new2("DataFrame", listData = setNames(list(unname(from)), "X"),
              nrows = length(from), rownames = names(from), check=FALSE)
       })
 
