@@ -50,7 +50,20 @@ setMethod("[[", "SharedRaw_Pool",
         ans <- SharedRaw()
         ans@xp <- x@xp_list[[i]]
         ans@.link_to_cached_object <- x@.link_to_cached_object_list[[i]]
-        return(ans)
+        ans
+    }
+)
+
+setReplaceMethod("[[", "SharedRaw_Pool",
+    function(x, i, j, ..., value)
+    {
+        if (!isSingleInteger(i) || i < 1L || i > length(x))
+            stop("invalid subscript")
+        if (class(value) != "SharedRaw")
+            stop("replacement value must be a SharedRaw instance")
+        x@xp_list[[i]] <- value@xp
+        x@.link_to_cached_object_list[[i]] <- value@.link_to_cached_object
+        x
     }
 )
 

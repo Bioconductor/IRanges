@@ -76,7 +76,7 @@ setMethod("xvcopy", "XRawList",
             SharedVector.mcopy(shared, 0L,
                                y@pool[[group]], start(frame), width(frame),
                                lkup=lkup, reverse=reverse)
-            y@pool@xp_list[[group]] <- shared@xp
+            y@pool[[group]] <- shared
             inframe <- attr(frame, "inframe")
             if (reverse)
                 ## We supply start=1 so reverse() doesn't have to determine
