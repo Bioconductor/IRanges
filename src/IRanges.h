@@ -9,6 +9,24 @@
 		NAME ## _symbol = install(# NAME); \
 }
 
+
+/* safe_arithm.c */
+
+void _reset_ovflow_flag();
+
+int _get_ovflow_flag();
+
+int _safe_int_add(
+	int x,
+	int y
+);
+
+int _safe_int_mult(
+	int x,
+	int y
+);
+
+
 /* sort_utils.c */
 
 void _sort_int_array(
