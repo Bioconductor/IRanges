@@ -266,8 +266,8 @@ setMethod("as.vector", "AtomicList",
         elt_lens <- elementLengths(x)
         if (any(elt_lens > 1L))
             stop("coercing an AtomicList object to an atomic vector ",
-             "is supported only for objects\n",
-             "  with top-level elements of length <= 1")
+                 "is supported only for\n",
+                 "  objects with top-level elements of length <= 1")
         ans <- base::rep.int(as.vector(NA, mode=mode), length(x))
         ans[elt_lens == 1L] <- as.vector(unlist(x, use.names=FALSE), mode=mode)
         ans
