@@ -381,6 +381,75 @@ setMethod("as.env", "List",
               env
           })
 
+### NOT exported. Assumes 'names1' is not NULL.
+make.unlist.result.names <- function(names1, names2)
+{
+    if (is.null(names2))
+        return(names1)
+    idx2 <- names2 != "" | is.na(names2)
+    idx1 <- names1 != "" | is.na(names1)
+    idx <- idx1 & idx2
+    if (any(idx))
+        names1[idx] <- paste(names1[idx], names2[idx], sep = ".")
+    idx <- !idx1 & idx2
+    if (any(idx))
+        names1[idx] <- names2[idx]
+    names1
+}
+
+setMethod("unlist", "List",
+    function(x, recursive=TRUE, use.names=TRUE)
+    {
+        if (!identical(recursive, TRUE))
+            warning("'recursive' argument currently ignored")
+        if (!isTRUEorFALSE(use.names))
+            stop("'use.names' must be TRUE or FALSE")
+        if (length(x) == 0L)
+            return(NULL)
+        x_names <- names(x)
+        if (!is.null(x_names))
+            names(x) <- NULL
+        xx <- as.list(x)
+        if (length(dim(xx[[1L]])) < 2L) {
+            ans <- do.call(c, xx)
+            ans_names0 <- names(ans)
+            if (use.names) {
+                if (!is.null(x_names)) {
+                    ans_names <- rep.int(x_names, elementLengths(x))
+                    ans_names <- make.unlist.result.names(ans_names, ans_names0)
+                    try_result <- try(names(ans) <- ans_names, silent=TRUE)
+                    if (inherits(try_result, "try-error"))
+                        warning("failed to set names on the result ",
+                                "of unlisting a ", class(x), " object")
+                }
+            } else {
+                if (!is.null(ans_names0))
+                    names(ans) <- NULL
+            }
+        } else {
+            ans <- do.call(rbind, xx)
+            if (!use.names)
+                rownames(ans) <- NULL
+        }
+        ans
+    }
+)
+
+setMethod("relist", signature(skeleton = "List"),
+          function(flesh, skeleton) {
+            list <- seqsplit(flesh, tofactor(skeleton))
+            names(list) <- names(skeleton)
+            list
+          })
+
+setMethod("unsplit", "List", function(value, f, drop = FALSE) {
+  value_flat <- unlist(value, use.names = FALSE)
+  if (length(value_flat) != length(f))
+    stop("Length of 'unlist(value)' must equal length of 'f'")
+  seqsplit(value_flat, f, drop = drop) <- value
+  value_flat
+})
+
 .stack.ind <- function(x, indName = "space") {
   if (length(names(x)) > 0) {
     spaceLabels <- names(x)
@@ -401,20 +470,6 @@ setMethod("stack", "List",
             df
           })
 
-setMethod("relist", signature(skeleton = "List"),
-          function(flesh, skeleton) {
-            list <- seqsplit(flesh, tofactor(skeleton))
-            names(list) <- names(skeleton)
-            list
-          })
-
-setMethod("unsplit", "List", function(value, f, drop = FALSE) {
-  value_flat <- unlist(value, use.names = FALSE)
-  if (length(value_flat) != length(f))
-    stop("Length of 'unlist(value)' must equal length of 'f'")
-  seqsplit(value_flat, f, drop = drop) <- value
-  value_flat
-})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Functional Programming.

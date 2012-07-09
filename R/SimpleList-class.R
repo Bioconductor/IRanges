@@ -381,33 +381,6 @@ setMethod("as.list", "SimpleList",
               ans
           })
 
-setMethod("unlist", "SimpleList",
-          function(x, recursive = TRUE, use.names = TRUE) {
-              if (!missing(recursive))
-                  warning("'recursive' argument currently ignored")
-              if (length(x) == 0)
-                  ans <- NULL
-              else {
-                  ans <- .compress.list(as.list(x))
-                  if (length(dim(ans)) < 2 && use.names) {
-                      if (!is.null(names(x))) {
-                          nms <- rep.int(names(x), elementLengths(x))
-                          if (!is.null(names(ans)))
-                              nms <- paste(nms, names(ans), sep = ".")
-                          else nms <- make.unique(nms, sep = "")
-                          res <- try(names(ans) <- nms, silent=TRUE)
-                          if (is(res, "try-error"))
-                              warning("failed to set names on the result ",
-                                      "of unlisting a ", class(x), " object")
-                      }
-                  } else {
-                      if (!use.names)
-                          rownames(ans) <- NULL
-                  }
-              }
-              ans
-          })
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
 ###

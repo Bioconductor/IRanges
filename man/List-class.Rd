@@ -32,9 +32,10 @@
 \alias{as.list,List-method}
 \alias{as.env}
 \alias{as.env,List-method}
-\alias{stack,List-method}
+\alias{unlist,List-method}
 \alias{relist,ANY,List-method}
 \alias{unsplit,List-method}
+\alias{stack,List-method}
 
 \alias{Reduce,List-method}
 \alias{Filter,List-method}
@@ -172,13 +173,8 @@
       \code{as.list(x, ...)}, \code{as(from, "list")}:
       Turns \code{x} into a standard list.
     }
-    \item{}{\code{stack(x, indName = "space", valuesName = "values")}:
-      As with \code{\link[utils:stack]{stack}} on a \code{list},
-      constructs a \code{DataFrame} with two columns: one for the
-      unlisted values, the other indicating the name of the element from
-      which each value was obtained. \code{indName} specifies the column
-      name for the index (source name) column and \code{valuesName}
-      specifies the column name for the values.
+    \item{}{\code{unlist(x, recursive = TRUE, use.names = TRUE)}: Concatenates
+      the elements of \code{x} into a single \code{elementType(x)} object.
     }
     \item{}{\code{relist(flesh, skeleton)}: Convert \code{flesh} to a
       list with the same structure (element lengths) as
@@ -189,6 +185,14 @@
       \code{value}, where the order of the returned vector is as
       if \code{value} were originally created by splitting that vector
       on the factor \code{f}.
+    }
+    \item{}{\code{stack(x, indName = "space", valuesName = "values")}:
+      As with \code{\link[utils:stack]{stack}} on a \code{list},
+      constructs a \code{DataFrame} with two columns: one for the
+      unlisted values, the other indicating the name of the element from
+      which each value was obtained. \code{indName} specifies the column
+      name for the index (source name) column and \code{valuesName}
+      specifies the column name for the values.
     }
   }
 }

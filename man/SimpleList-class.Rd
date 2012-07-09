@@ -50,7 +50,6 @@
 \alias{as.list,CompressedList-method}
 \alias{as.list,SimpleList-method}
 \alias{unlist,CompressedList-method}
-\alias{unlist,SimpleList-method}
 
 % show
 \alias{show,CompressedList-method}

@@ -718,9 +718,7 @@ setMethod("unlist", "CompressedList",
                   if (length(dim(ans)) < 2 && use.names) {
                       if (!is.null(names(x))) {
                           nms <- rep.int(names(x), elementLengths(x))
-                          if (!is.null(names(ans)))
-                              nms <- paste(nms, names(ans), sep = ".")
-                          else nms <- make.unique(nms, sep = "")
+                          nms <- make.unlist.result.names(nms, names(ans))
                           res <- try(names(ans) <- nms, silent=TRUE)
                           if (is(res, "try-error"))
                               warning("failed to set names on the result ",
