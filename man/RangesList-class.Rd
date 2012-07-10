@@ -180,6 +180,10 @@
 }
 
 \author{ Michael Lawrence }
+\seealso{
+  \code{\linkS4class{List}}, the parent of this class, for more
+  functionality.
+}
 \examples{
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
