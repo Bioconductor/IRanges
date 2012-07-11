@@ -174,7 +174,7 @@ static int compute_Rbyte_runs(const Rbyte *values, int nvalues,
 
 
 /****************************************************************************
- * The _<type>_Rle_constructor() helper functions.
+ * The C level Rle smart constructors.
  *
  * 'lengths' must be either NULL or an int array of length 'nvalues' with
  * no NA or negative values.
@@ -183,7 +183,7 @@ static int compute_Rbyte_runs(const Rbyte *values, int nvalues,
  * also seems slightly faster on my machine).
  */
 
-static SEXP _logical_Rle_constructor(const int *values, int nvalues,
+SEXP _logical_Rle_constructor(const int *values, int nvalues,
 		const int *lengths, int nobuf)
 {
 	int nrun, *buf_lengths;
@@ -215,7 +215,7 @@ static SEXP _logical_Rle_constructor(const int *values, int nvalues,
 	return ans;
 }
 
-static SEXP _integer_Rle_constructor(const int *values, int nvalues,
+SEXP _integer_Rle_constructor(const int *values, int nvalues,
 		const int *lengths, int nobuf)
 {
 	int nrun, *buf_lengths;
@@ -247,7 +247,7 @@ static SEXP _integer_Rle_constructor(const int *values, int nvalues,
 	return ans;
 }
 
-static SEXP _numeric_Rle_constructor(const double *values, int nvalues,
+SEXP _numeric_Rle_constructor(const double *values, int nvalues,
 		const int *lengths, int nobuf)
 {
 	int nrun, *buf_lengths;
@@ -279,7 +279,7 @@ static SEXP _numeric_Rle_constructor(const double *values, int nvalues,
 	return ans;
 }
 
-static SEXP _complex_Rle_constructor(const Rcomplex *values, int nvalues,
+SEXP _complex_Rle_constructor(const Rcomplex *values, int nvalues,
 		const int *lengths, int nobuf)
 {
 	int nrun, *buf_lengths;
@@ -312,7 +312,7 @@ static SEXP _complex_Rle_constructor(const Rcomplex *values, int nvalues,
 	return ans;
 }
 
-static SEXP _character_Rle_constructor(SEXP values,
+SEXP _character_Rle_constructor(SEXP values,
 		const int *lengths, int nobuf)
 {
 	int nvalues, nrun, *buf_lengths, i;
@@ -345,7 +345,7 @@ static SEXP _character_Rle_constructor(SEXP values,
 	return ans;
 }
 
-static SEXP _raw_Rle_constructor(const Rbyte *values, int nvalues,
+SEXP _raw_Rle_constructor(const Rbyte *values, int nvalues,
 		const int *lengths, int nobuf)
 {
 	int nrun, *buf_lengths;
