@@ -1,180 +1,6 @@
 #include "IRanges.h"
 
 
-/****************************************************************************
- * The _fill_Rle_slots_with_<things>() low-level helper functions.
- *
- * To compute only the nb of Rle runs without actually filling the slots
- * (degraded mode), set 'ans_lengths' to NULL.
- */
-
-static int _fill_Rle_slots_with_int_vals(int *ans_values,
-		int *ans_lengths,
-		const int *values, int n,
-		const int *lengths)
-{
-	int i, nrun, lengths_elt;
-	int val0;
-
-	for (i = nrun = 0, lengths_elt = 1; i < n; i++, values++) {
-		if (lengths != NULL) {
-			lengths_elt = lengths[i];
-			if (lengths_elt == 0)
-				continue;
-		}
-		if (nrun != 0 && *values == val0) {
-			if (ans_lengths != NULL)
-				ans_lengths[nrun - 1] += lengths_elt;
-			continue;
-		}
-		val0 = *values;
-		if (ans_lengths != NULL) {
-			ans_lengths[nrun] = lengths_elt;
-			ans_values[nrun] = val0;
-		}
-		nrun++;
-	}
-	return nrun;
-}
-
-static int _fill_Rle_slots_with_double_vals(double *ans_values,
-		int *ans_lengths,
-		const double *values, int n,
-		const int *lengths)
-{
-	int i, nrun, lengths_elt;
-	double val0;
-
-	for (i = nrun = 0, lengths_elt = 1; i < n; i++, values++) {
-		if (lengths != NULL) {
-			lengths_elt = lengths[i];
-			if (lengths_elt == 0)
-				continue;
-		}
-		if (nrun != 0 && ((*values == val0) ||
-				  (R_IsNA(*values) && R_IsNA(val0)) ||
-				  (R_IsNaN(*values) && R_IsNaN(val0))))
-		{
-			if (ans_lengths != NULL)
-				ans_lengths[nrun - 1] += lengths_elt;
-			continue;
-		}
-		val0 = *values;
-		if (ans_lengths != NULL) {
-			ans_lengths[nrun] = lengths_elt;
-			ans_values[nrun] = val0;
-		}
-		nrun++;
-	}
-	return nrun;
-}
-
-static int _fill_Rle_slots_with_Rcomplex_vals(Rcomplex *ans_values,
-		int *ans_lengths,
-		const Rcomplex *values, int n,
-		const int *lengths)
-{
-	int i, nrun, lengths_elt;
-	Rcomplex val0;
-
-	for (i = nrun = 0, lengths_elt = 1; i < n; i++, values++) {
-		if (lengths != NULL) {
-			lengths_elt = lengths[i];
-			if (lengths_elt == 0)
-				continue;
-		}
-		if (nrun != 0 && ((values->r == val0.r) ||
-				  (R_IsNA(values->r) && R_IsNA(val0.r)) ||
-				  (R_IsNaN(values->r) && R_IsNaN(val0.r)))
-			      && ((values->i == val0.i) ||
-				  (R_IsNA(values->i) && R_IsNA(val0.i)) ||
-				  (R_IsNaN(values->i) && R_IsNaN(val0.i))))
-		{
-			if (ans_lengths != NULL)
-				ans_lengths[nrun - 1] += lengths_elt;
-			continue;
-		}
-		val0 = *values;
-		if (ans_lengths != NULL) {
-			ans_lengths[nrun] = lengths_elt;
-			ans_values[nrun] = val0;
-		}
-		nrun++;
-	}
-	return nrun;
-}
-
-static int _fill_Rle_slots_with_strings(SEXP ans_values,
-		int *ans_lengths,
-		SEXP values,
-		const int *lengths)
-{
-	int n, i, nrun, lengths_elt;
-	SEXP values_elt, val0;
-
-	n = LENGTH(values);
-	for (i = nrun = 0, lengths_elt = 1; i < n; i++) {
-		if (lengths != NULL) {
-			lengths_elt = lengths[i];
-			if (lengths_elt == 0)
-				continue;
-		}
-		values_elt = STRING_ELT(values, i);
-		if (nrun != 0 && values_elt == val0) {
-			if (ans_lengths != NULL)
-				ans_lengths[nrun - 1] += lengths_elt;
-			continue;
-		}
-		val0 = values_elt;
-		if (ans_lengths != NULL) {
-			ans_lengths[nrun] = lengths_elt;
-			SET_STRING_ELT(ans_values, nrun, val0);
-		}
-		nrun++;
-	}
-	return nrun;
-}
-
-static int _fill_Rle_slots_with_Rbyte_vals(Rbyte *ans_values,
-		int *ans_lengths,
-		const Rbyte *values, int n,
-		const int *lengths)
-{
-	int i, nrun, lengths_elt;
-	Rbyte val0;
-
-	for (i = nrun = 0, lengths_elt = 1; i < n; i++, values++) {
-		if (lengths != NULL) {
-			lengths_elt = lengths[i];
-			if (lengths_elt == 0)
-				continue;
-		}
-		if (nrun != 0 && *values == val0) {
-			if (ans_lengths != NULL)
-				ans_lengths[nrun - 1] += lengths_elt;
-			continue;
-		}
-		val0 = *values;
-		if (ans_lengths != NULL) {
-			ans_lengths[nrun] = lengths_elt;
-			ans_values[nrun] = val0;
-		}
-		nrun++;
-	}
-	return nrun;
-}
-
-
-/****************************************************************************
- * The _Rle_<type>_constructor() helper functions.
- *
- * 'lengths' must have length 0, or have the same length as 'values' and
- * contain non-NA non-negative integers.
- * If 'nobuf' is 1, then a 2-pass algo is used that doesn't use the
- * intermediate buffers, typically leading to 20%-30% less memory used (it
- * also seems slightly faster on my machine).
- */
-
 static SEXP _new_Rle(SEXP values, SEXP lengths)
 {
 	SEXP classdef, ans;
@@ -187,229 +13,364 @@ static SEXP _new_Rle(SEXP values, SEXP lengths)
 	return ans;
 }
 
-static SEXP _Rle_logical_constructor(SEXP values, SEXP lengths, int nobuf)
+
+/****************************************************************************
+ * The compute_<run-type>_runs() low-level helper functions.
+ *
+ * To compute only the nb of runs without actually computing the runs
+ * (degraded mode), set 'run_lengths' to NULL.
+ */
+
+static int compute_int_runs(const int *values, int nvalues,
+		const int *lengths,
+		int *run_values, int *run_lengths)
 {
-	int n, nrun, *buf_lengths;
+	int i, nrun, lengths_elt;
+	int val0;
+
+	for (i = nrun = 0, lengths_elt = 1; i < nvalues; i++, values++) {
+		if (lengths != NULL) {
+			lengths_elt = lengths[i];
+			if (lengths_elt == 0)
+				continue;
+		}
+		if (nrun != 0 && *values == val0) {
+			if (run_lengths != NULL)
+				run_lengths[nrun - 1] += lengths_elt;
+			continue;
+		}
+		val0 = *values;
+		if (run_lengths != NULL) {
+			run_lengths[nrun] = lengths_elt;
+			run_values[nrun] = val0;
+		}
+		nrun++;
+	}
+	return nrun;
+}
+
+static int compute_double_runs(const double *values, int nvalues,
+		const int *lengths,
+		double *run_values, int *run_lengths)
+{
+	int i, nrun, lengths_elt;
+	double val0;
+
+	for (i = nrun = 0, lengths_elt = 1; i < nvalues; i++, values++) {
+		if (lengths != NULL) {
+			lengths_elt = lengths[i];
+			if (lengths_elt == 0)
+				continue;
+		}
+		if (nrun != 0 && ((*values == val0) ||
+				  (R_IsNA(*values) && R_IsNA(val0)) ||
+				  (R_IsNaN(*values) && R_IsNaN(val0))))
+		{
+			if (run_lengths != NULL)
+				run_lengths[nrun - 1] += lengths_elt;
+			continue;
+		}
+		val0 = *values;
+		if (run_lengths != NULL) {
+			run_lengths[nrun] = lengths_elt;
+			run_values[nrun] = val0;
+		}
+		nrun++;
+	}
+	return nrun;
+}
+
+static int compute_Rcomplex_runs(const Rcomplex *values, int nvalues,
+		const int *lengths,
+		Rcomplex *run_values, int *run_lengths)
+{
+	int i, nrun, lengths_elt;
+	Rcomplex val0;
+
+	for (i = nrun = 0, lengths_elt = 1; i < nvalues; i++, values++) {
+		if (lengths != NULL) {
+			lengths_elt = lengths[i];
+			if (lengths_elt == 0)
+				continue;
+		}
+		if (nrun != 0 && ((values->r == val0.r) ||
+				  (R_IsNA(values->r) && R_IsNA(val0.r)) ||
+				  (R_IsNaN(values->r) && R_IsNaN(val0.r)))
+			      && ((values->i == val0.i) ||
+				  (R_IsNA(values->i) && R_IsNA(val0.i)) ||
+				  (R_IsNaN(values->i) && R_IsNaN(val0.i))))
+		{
+			if (run_lengths != NULL)
+				run_lengths[nrun - 1] += lengths_elt;
+			continue;
+		}
+		val0 = *values;
+		if (run_lengths != NULL) {
+			run_lengths[nrun] = lengths_elt;
+			run_values[nrun] = val0;
+		}
+		nrun++;
+	}
+	return nrun;
+}
+
+static int compute_CHARSXP_runs(SEXP values,
+		const int *lengths,
+		SEXP run_values, int *run_lengths)
+{
+	int nvalues, i, nrun, lengths_elt;
+	SEXP values_elt, val0;
+
+	nvalues = LENGTH(values);
+	for (i = nrun = 0, lengths_elt = 1; i < nvalues; i++) {
+		if (lengths != NULL) {
+			lengths_elt = lengths[i];
+			if (lengths_elt == 0)
+				continue;
+		}
+		values_elt = STRING_ELT(values, i);
+		if (nrun != 0 && values_elt == val0) {
+			if (run_lengths != NULL)
+				run_lengths[nrun - 1] += lengths_elt;
+			continue;
+		}
+		val0 = values_elt;
+		if (run_lengths != NULL) {
+			run_lengths[nrun] = lengths_elt;
+			SET_STRING_ELT(run_values, nrun, val0);
+		}
+		nrun++;
+	}
+	return nrun;
+}
+
+static int compute_Rbyte_runs(const Rbyte *values, int nvalues,
+		const int *lengths,
+		Rbyte *run_values, int *run_lengths)
+{
+	int i, nrun, lengths_elt;
+	Rbyte val0;
+
+	for (i = nrun = 0, lengths_elt = 1; i < nvalues; i++, values++) {
+		if (lengths != NULL) {
+			lengths_elt = lengths[i];
+			if (lengths_elt == 0)
+				continue;
+		}
+		if (nrun != 0 && *values == val0) {
+			if (run_lengths != NULL)
+				run_lengths[nrun - 1] += lengths_elt;
+			continue;
+		}
+		val0 = *values;
+		if (run_lengths != NULL) {
+			run_lengths[nrun] = lengths_elt;
+			run_values[nrun] = val0;
+		}
+		nrun++;
+	}
+	return nrun;
+}
+
+
+/****************************************************************************
+ * The _<type>_Rle_constructor() helper functions.
+ *
+ * 'lengths' must be either NULL or an int array of length 'nvalues' with
+ * no NA or negative values.
+ * If 'nobuf' is 1, then a 2-pass algo is used that doesn't use the
+ * intermediate buffers, typically leading to 20%-30% less memory used (it
+ * also seems slightly faster on my machine).
+ */
+
+static SEXP _logical_Rle_constructor(const int *values, int nvalues,
+		const int *lengths, int nobuf)
+{
+	int nrun, *buf_lengths;
 	int *buf_values;
 	SEXP ans_lengths, ans_values, ans;
 
-	n = LENGTH(values);
 	if (nobuf) {
-		/* 1st pass: compute the nb of runs */
-		nrun = _fill_Rle_slots_with_int_vals(NULL,
-				NULL,
-				LOGICAL(values), n,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		/* 1st pass: compute only the nb of runs */
+		buf_values = NULL;
+		buf_lengths = NULL;
 	} else {
-		buf_lengths = (int *) R_alloc(n, sizeof(int));
-		buf_values = (int *) R_alloc(n, sizeof(int));
-		nrun = _fill_Rle_slots_with_int_vals(buf_values,
-				buf_lengths,
-				LOGICAL(values), n,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		buf_values = (int *) R_alloc(nvalues, sizeof(int));
+		buf_lengths = (int *) R_alloc(nvalues, sizeof(int));
 	}
-	PROTECT(ans_lengths = NEW_INTEGER(nrun));
+	nrun = compute_int_runs(values, nvalues, lengths,
+				buf_values, buf_lengths);
 	PROTECT(ans_values = NEW_LOGICAL(nrun));
+	PROTECT(ans_lengths = NEW_INTEGER(nrun));
 	if (nobuf) {
 		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
-		_fill_Rle_slots_with_int_vals(LOGICAL(ans_values),
-				INTEGER(ans_lengths),
-				LOGICAL(values), n,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		compute_int_runs(values, nvalues, lengths,
+				LOGICAL(ans_values), INTEGER(ans_lengths));
 	} else {
-		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
 		memcpy(LOGICAL(ans_values), buf_values, nrun * sizeof(int));
+		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
 	}
 	PROTECT(ans = _new_Rle(ans_values, ans_lengths));
 	UNPROTECT(3);
 	return ans;
 }
 
-static SEXP _Rle_integer_constructor(SEXP values, SEXP lengths, int nobuf)
+static SEXP _integer_Rle_constructor(const int *values, int nvalues,
+		const int *lengths, int nobuf)
 {
-	int n, nrun, *buf_lengths;
+	int nrun, *buf_lengths;
 	int *buf_values;
 	SEXP ans_lengths, ans_values, ans;
 
-	n = LENGTH(values);
 	if (nobuf) {
-		/* 1st pass: compute the nb of runs */
-		nrun = _fill_Rle_slots_with_int_vals(NULL,
-				NULL,
-				INTEGER(values), n,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		/* 1st pass: compute only the nb of runs */
+		buf_values = NULL;
+		buf_lengths = NULL;
 	} else {
-		buf_lengths = (int *) R_alloc(n, sizeof(int));
-		buf_values = (int *) R_alloc(n, sizeof(int));
-		nrun = _fill_Rle_slots_with_int_vals(buf_values,
-				buf_lengths,
-				INTEGER(values), n,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		buf_values = (int *) R_alloc(nvalues, sizeof(int));
+		buf_lengths = (int *) R_alloc(nvalues, sizeof(int));
 	}
-	PROTECT(ans_lengths = NEW_INTEGER(nrun));
+	nrun = compute_int_runs(values, nvalues, lengths,
+				buf_values, buf_lengths);
 	PROTECT(ans_values = NEW_INTEGER(nrun));
+	PROTECT(ans_lengths = NEW_INTEGER(nrun));
 	if (nobuf) {
 		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
-		_fill_Rle_slots_with_int_vals(INTEGER(ans_values),
-				INTEGER(ans_lengths),
-				INTEGER(values), n,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		compute_int_runs(values, nvalues, lengths,
+				INTEGER(ans_values), INTEGER(ans_lengths));
 	} else {
-		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
 		memcpy(INTEGER(ans_values), buf_values, nrun * sizeof(int));
+		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
 	}
 	PROTECT(ans = _new_Rle(ans_values, ans_lengths));
 	UNPROTECT(3);
 	return ans;
 }
 
-static SEXP _Rle_real_constructor(SEXP values, SEXP lengths, int nobuf)
+static SEXP _numeric_Rle_constructor(const double *values, int nvalues,
+		const int *lengths, int nobuf)
 {
-	int n, nrun, *buf_lengths;
+	int nrun, *buf_lengths;
 	double *buf_values;
 	SEXP ans_lengths, ans_values, ans;
 
-	n = LENGTH(values);
 	if (nobuf) {
-		/* 1st pass: compute the nb of runs */
-		nrun = _fill_Rle_slots_with_double_vals(NULL,
-				NULL,
-				REAL(values), n,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		/* 1st pass: compute only the nb of runs */
+		buf_values = NULL;
+		buf_lengths = NULL;
 	} else {
-		buf_lengths = (int *) R_alloc(n, sizeof(int));
-		buf_values = (double *) R_alloc(n, sizeof(double));
-		nrun = _fill_Rle_slots_with_double_vals(buf_values,
-				buf_lengths,
-				REAL(values), n,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		buf_values = (double *) R_alloc(nvalues, sizeof(double));
+		buf_lengths = (int *) R_alloc(nvalues, sizeof(int));
 	}
-	PROTECT(ans_lengths = NEW_INTEGER(nrun));
+	nrun = compute_double_runs(values, nvalues, lengths,
+				buf_values, buf_lengths);
 	PROTECT(ans_values = NEW_NUMERIC(nrun));
+	PROTECT(ans_lengths = NEW_INTEGER(nrun));
 	if (nobuf) {
 		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
-		_fill_Rle_slots_with_double_vals(REAL(ans_values),
-				INTEGER(ans_lengths),
-				REAL(values), n,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		compute_double_runs(values, nvalues, lengths,
+				REAL(ans_values), INTEGER(ans_lengths));
 	} else {
-		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
 		memcpy(REAL(ans_values), buf_values, nrun * sizeof(double));
+		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
 	}
 	PROTECT(ans = _new_Rle(ans_values, ans_lengths));
 	UNPROTECT(3);
 	return ans;
 }
 
-static SEXP _Rle_complex_constructor(SEXP values, SEXP lengths, int nobuf)
+static SEXP _complex_Rle_constructor(const Rcomplex *values, int nvalues,
+		const int *lengths, int nobuf)
 {
-	int n, nrun, *buf_lengths;
+	int nrun, *buf_lengths;
 	Rcomplex *buf_values;
 	SEXP ans_lengths, ans_values, ans;
 
-	n = LENGTH(values);
 	if (nobuf) {
-		/* 1st pass: compute the nb of runs */
-		nrun = _fill_Rle_slots_with_Rcomplex_vals(NULL,
-				NULL,
-				COMPLEX(values), n,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		/* 1st pass: compute only the nb of runs */
+		buf_values = NULL;
+		buf_lengths = NULL;
 	} else {
-		buf_lengths = (int *) R_alloc(n, sizeof(int));
-		buf_values = (Rcomplex *) R_alloc(n, sizeof(Rcomplex));
-		nrun = _fill_Rle_slots_with_Rcomplex_vals(buf_values,
-				buf_lengths,
-				COMPLEX(values), n,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		buf_values = (Rcomplex *) R_alloc(nvalues, sizeof(Rcomplex));
+		buf_lengths = (int *) R_alloc(nvalues, sizeof(int));
 	}
-	PROTECT(ans_lengths = NEW_INTEGER(nrun));
+	nrun = compute_Rcomplex_runs(values, nvalues, lengths,
+				buf_values, buf_lengths);
 	PROTECT(ans_values = NEW_COMPLEX(nrun));
+	PROTECT(ans_lengths = NEW_INTEGER(nrun));
 	if (nobuf) {
 		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
-		_fill_Rle_slots_with_Rcomplex_vals(COMPLEX(ans_values),
-				INTEGER(ans_lengths),
-				COMPLEX(values), n,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		compute_Rcomplex_runs(values, nvalues, lengths,
+				COMPLEX(ans_values), INTEGER(ans_lengths));
 	} else {
-		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
 		memcpy(COMPLEX(ans_values), buf_values,
 					    nrun * sizeof(Rcomplex));
+		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
 	}
 	PROTECT(ans = _new_Rle(ans_values, ans_lengths));
 	UNPROTECT(3);
 	return ans;
 }
 
-static SEXP _Rle_string_constructor(SEXP values, SEXP lengths, int nobuf)
+static SEXP _character_Rle_constructor(SEXP values,
+		const int *lengths, int nobuf)
 {
-	int n, nrun, *buf_lengths, i;
+	int nvalues, nrun, *buf_lengths, i;
 	SEXP buf_values, ans_lengths, ans_values, ans;
 
-	n = LENGTH(values);
+	nvalues = LENGTH(values);
 	if (nobuf) {
-		/* 1st pass: compute the nb of runs */
-		nrun = _fill_Rle_slots_with_strings(NULL,
-				NULL,
-				values,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		/* 1st pass: compute only the nb of runs */
+		buf_values = NULL;
+		buf_lengths = NULL;
 	} else {
-		buf_lengths = (int *) R_alloc(n, sizeof(int));
-		PROTECT(buf_values = NEW_CHARACTER(n));
-		nrun = _fill_Rle_slots_with_strings(buf_values,
-				buf_lengths,
-				values,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		PROTECT(buf_values = NEW_CHARACTER(nvalues));
+		buf_lengths = (int *) R_alloc(nvalues, sizeof(int));
 	}
-	PROTECT(ans_lengths = NEW_INTEGER(nrun));
+	nrun = compute_CHARSXP_runs(values, lengths,
+				buf_values, buf_lengths);
 	PROTECT(ans_values = NEW_CHARACTER(nrun));
+	PROTECT(ans_lengths = NEW_INTEGER(nrun));
 	if (nobuf) {
 		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
-		_fill_Rle_slots_with_strings(ans_values,
-				INTEGER(ans_lengths),
-				values,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		compute_CHARSXP_runs(values, lengths,
+				ans_values, INTEGER(ans_lengths));
 	} else {
-		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
 		for (i = 0; i < nrun; i++)
 		    SET_STRING_ELT(ans_values, i, STRING_ELT(buf_values, i));
+		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
 	}
 	PROTECT(ans = _new_Rle(ans_values, ans_lengths));
 	UNPROTECT(nobuf ? 3 : 4);
 	return ans;
 }
 
-static SEXP _Rle_raw_constructor(SEXP values, SEXP lengths, int nobuf)
+static SEXP _raw_Rle_constructor(const Rbyte *values, int nvalues,
+		const int *lengths, int nobuf)
 {
-	int n, nrun, *buf_lengths;
+	int nrun, *buf_lengths;
 	Rbyte *buf_values;
 	SEXP ans_lengths, ans_values, ans;
 
-	n = LENGTH(values);
 	if (nobuf) {
-		/* 1st pass: compute the nb of runs */
-		nrun = _fill_Rle_slots_with_Rbyte_vals(NULL,
-				NULL,
-				RAW(values), n,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		/* 1st pass: compute only the nb of runs */
+		buf_values = NULL;
+		buf_lengths = NULL;
 	} else {
-		buf_lengths = (int *) R_alloc(n, sizeof(int));
-		buf_values = (Rbyte *) R_alloc(n, sizeof(Rbyte));
-		nrun = _fill_Rle_slots_with_Rbyte_vals(buf_values,
-				buf_lengths,
-				RAW(values), n,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		buf_values = (Rbyte *) R_alloc(nvalues, sizeof(Rbyte));
+		buf_lengths = (int *) R_alloc(nvalues, sizeof(int));
 	}
-	PROTECT(ans_lengths = NEW_INTEGER(nrun));
+	nrun = compute_Rbyte_runs(values, nvalues, lengths,
+				buf_values, buf_lengths);
 	PROTECT(ans_values = NEW_RAW(nrun));
+	PROTECT(ans_lengths = NEW_INTEGER(nrun));
 	if (nobuf) {
 		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
-		_fill_Rle_slots_with_Rbyte_vals(RAW(ans_values),
-				INTEGER(ans_lengths),
-				RAW(values), n,
-				LENGTH(lengths) ? INTEGER(lengths) : NULL);
+		compute_Rbyte_runs(values, nvalues, lengths,
+				RAW(ans_values), INTEGER(ans_lengths));
 	} else {
-		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
 		memcpy(RAW(ans_values), buf_values, nrun * sizeof(Rbyte));
+		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
 	}
 	PROTECT(ans = _new_Rle(ans_values, ans_lengths));
 	UNPROTECT(3);
@@ -423,28 +384,37 @@ static SEXP _Rle_raw_constructor(SEXP values, SEXP lengths, int nobuf)
 
 SEXP Rle_constructor(SEXP values, SEXP lengths, SEXP check, SEXP nobuf)
 {
-	int nobuf0;
+	int nvalues, nobuf0;
+	const int *lengths_p;
 
+	nvalues = LENGTH(values);
 	if (LOGICAL(check)[0] && LENGTH(lengths) > 0) {
-		if (LENGTH(lengths) != LENGTH(values))
+		if (LENGTH(lengths) != nvalues)
 			error("'length(lengths)' != 'length(values)'");
 		_sum_non_neg_ints(INTEGER(lengths), LENGTH(lengths),
 				  "lengths");
 	}
+	lengths_p = LENGTH(lengths) > 0 ? INTEGER(lengths) : NULL;
 	nobuf0 = LOGICAL(nobuf)[0];
 	switch (TYPEOF(values)) {
 	    case LGLSXP:
-		return _Rle_logical_constructor(values, lengths, nobuf0);
+		return _logical_Rle_constructor(LOGICAL(values), nvalues,
+						lengths_p, nobuf0);
 	    case INTSXP:
-		return _Rle_integer_constructor(values, lengths, nobuf0);
+		return _integer_Rle_constructor(INTEGER(values), nvalues,
+						lengths_p, nobuf0);
 	    case REALSXP:
-		return _Rle_real_constructor(values, lengths, nobuf0);
+		return _numeric_Rle_constructor(REAL(values), nvalues,
+						lengths_p, nobuf0);
 	    case CPLXSXP:
-		return _Rle_complex_constructor(values, lengths, nobuf0);
+		return _complex_Rle_constructor(COMPLEX(values), nvalues,
+						lengths_p, nobuf0);
 	    case STRSXP:
-		return _Rle_string_constructor(values, lengths, nobuf0);
+		return _character_Rle_constructor(values,
+						lengths_p, nobuf0);
 	    case RAWSXP:
-		return _Rle_raw_constructor(values, lengths, nobuf0);
+		return _raw_Rle_constructor(RAW(values), nvalues,
+						lengths_p, nobuf0);
 	}
 	error("Rle of type '%s' is not supported",
 	      CHAR(type2str(TYPEOF(values))));
