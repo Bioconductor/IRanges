@@ -67,8 +67,8 @@ coverage(x, shift=0L, width=NULL, weight=1L, \dots)
     returns a vector with \code{width(x)} elements.
   }
   \item{weight}{
-    For most methods, an integer vector specifying how much each element
-    in \code{x} counts. For \link{RangesList} and \link{RangedData}
+    For most methods, an integer or numeric vector specifying how much each
+    element in \code{x} counts. For \link{RangesList} and \link{RangedData}
     objects, a list or vector of the same length as \code{x} to be used
     for the corresponding element in \code{x}.
     For \link{IRanges}, \link{Views}, \link{MaskCollection} and
@@ -91,15 +91,11 @@ coverage(x, shift=0L, width=NULL, weight=1L, \dots)
 }
 
 \value{
-  For most methods, an \link{Rle} object representing the coverage of
-  \code{x}. For \link{RangesList} and \link{RangedData} objects, a
+  For most methods, an integer-\link{Rle} (if \code{typeof(weight)} is
+  \code{"integer"}) or numeric-\link{Rle} (if \code{typeof(weight)} is
+  \code{"double"}) object representing the coverage of \code{x}.
+  For \link{RangesList} and \link{RangedData} objects, a
   \link{SimpleRleList} object representing a list of coverage vectors.
-
-  An integer value called the "coverage" can be associated to each position
-  in \code{x}, indicating how many times this position is covered by the
-  elements contained in \code{x}.
-  For example, if \code{x} is a \link{Views} object, the coverage of
-  a given position in \code{subject(x)} is the number of views it belongs to.
 }
 
 \author{H. Pages and P. Aboyoun}
@@ -112,20 +108,30 @@ coverage(x, shift=0L, width=NULL, weight=1L, \dots)
 }
 
 \examples{
-  x <- IRanges(start=c(-2L, 6L, 9L, -4L, 1L, 0L, -6L, 10L),
-               width=c( 5L, 0L, 6L,  1L, 4L, 3L,  2L,  3L))
-  coverage(x)
-  coverage(x, shift=7)
-  coverage(x, shift=7, width=27)
-  coverage(restrict(x, 1, 10))
-  coverage(reduce(x), shift=7)
-  coverage(gaps(shift(x, 7), start=1, end=27))
+x <- IRanges(start=c(-2L, 6L, 9L, -4L, 1L, 0L, -6L, 10L),
+             width=c( 5L, 0L, 6L,  1L, 4L, 3L,  2L,  3L))
+coverage(x)
+coverage(x, shift=7)
+coverage(x, shift=7, width=27)
+coverage(restrict(x, 1, 10))
+coverage(reduce(x), shift=7)
+coverage(gaps(shift(x, 7), start=1, end=27))
 
-  mask1 <- Mask(mask.width=29, start=c(11, 25, 28), width=c(5, 2, 2))
-  mask2 <- Mask(mask.width=29, start=c(3, 10, 27), width=c(5, 8, 1))
-  mask3 <- Mask(mask.width=29, start=c(7, 12), width=c(2, 4))
-  mymasks <- append(append(mask1, mask2), mask3)
-  coverage(mymasks)
+cvg1 <- coverage(x[c(TRUE, FALSE)], width=99)
+cvg2 <- coverage(x[c(FALSE, TRUE)], width=99)
+stopifnot(identical(coverage(x, width=99), cvg1 + cvg2))
+stopifnot(identical(coverage(x, width=99, weight=c(5L, -11L)),
+                    cvg1 * 5L + cvg2 * -11L))
+
+cvg3 <- coverage(x, weight=1.5)
+cvg3  # numeric-Rle
+stopifnot(identical(cvg3, coverage(x) * 1.5))
+
+mask1 <- Mask(mask.width=29, start=c(11, 25, 28), width=c(5, 2, 2))
+mask2 <- Mask(mask.width=29, start=c(3, 10, 27), width=c(5, 8, 1))
+mask3 <- Mask(mask.width=29, start=c(7, 12), width=c(2, 4))
+mymasks <- append(append(mask1, mask2), mask3)
+coverage(mymasks)
 }
 
 \keyword{methods}

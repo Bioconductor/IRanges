@@ -58,11 +58,28 @@ setMethod("coverage", "numeric",
     }
 )
 
-.IRanges.coverage <- function(x, width, weight, method = "sort")
+.Ranges.integer.coverage <- function(x, width, weight, method="sort")
 {
     .Call2("Ranges_integer_coverage",
            start(x), width(x), width, weight, method,
            PACKAGE="IRanges")
+}
+
+.Ranges.numeric.coverage <- function(x, width, weight, method="sort")
+{
+    .Call2("Ranges_numeric_coverage",
+           start(x), width(x), width, weight, method,
+           PACKAGE="IRanges")
+}
+
+.Ranges.coverage <- function(x, width, weight, method="sort")
+{
+    weight_type <- typeof(weight)
+    FUN <- switch(weight_type,
+        "integer"=.Ranges.integer.coverage,
+        "double"=.Ranges.numeric.coverage,
+        stop("type of 'weight' must be integer or double, got ", weight_type))
+    FUN(x, width, weight, method=method)
 }
 
 setMethod("coverage", "IRanges",
@@ -79,7 +96,7 @@ setMethod("coverage", "IRanges",
                      weight, "\" columns")
             weight <- x_elementMetadata[[weight]]
         } 
-        weight <- recycleIntegerArg(weight, "weight", length(x))
+        weight <- recycleNumericArg(weight, "weight", length(x))
         if (is.null(width)) {
             width <- max(end(sx))
             ## By keeping all ranges, 'rsx' and 'weight' remain of the same
@@ -90,7 +107,7 @@ setMethod("coverage", "IRanges",
         }
         if (width <= 0L)  # could be < 0 now if supplied width was NULL
             return(Rle())
-        .IRanges.coverage(rsx, width, weight, method)
+        .Ranges.coverage(rsx, width, weight, method)
     }
 )
 
@@ -125,7 +142,7 @@ setMethod("coverage", "MaskCollection",
                      weight, "\" columns")
             weight <- x_elementMetadata[[weight]]
         } 
-        weight <- recycleIntegerArg(weight, "weight", length(x))
+        weight <- recycleNumericArg(weight, "weight", length(x))
         if (is.null(width))
             width <- width(x)
         if (width <= 0L)  # should never be < 0
@@ -137,7 +154,7 @@ setMethod("coverage", "MaskCollection",
                 next()
             snir <- shift(nir, shift[i])
             rsnir <- restrict(snir, start=1L, end=width)
-            ans <- ans + .IRanges.coverage(rsnir, width, weight[i], method)
+            ans <- ans + .Ranges.coverage(rsnir, width, weight[i], method)
         }
         ans
     }
@@ -167,7 +184,8 @@ setMethod("coverage", "RangesList",
         if (lx != 0 &&
             ((!is.list(weight) && !is(weight, "IntegerList") &&
               !is(weight, "NumericList")) || length(weight) == 0))
-            stop("'weight' must be a non-empty list of integers")
+            stop("'weight' must be a non-empty list or List of ",
+                 "integer or numeric values")
         if (length(weight) < lx)
             weight <- rep(weight, length.out = lx)
         indices <- names(x)
