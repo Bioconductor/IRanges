@@ -27,58 +27,58 @@ static int compar_SEids_for_asc_order(const void *p1, const void *p2)
 }
 
 /* Initialize the buffer of Start/End ids. */
-static int init_SEids(int *SEids, const int *x_width, int x_length,
-		const int *weight, int weight_length)
+static int init_SEids(int *SEids, const int *x_width, int x_len,
+		const int *weight, int weight_len)
 {
-	int SEids_length, index, SEid;
+	int SEids_len, index, SEid;
 
-	SEids_length = 0;
-	for (index = 0; index < x_length; index++, x_width++) {
+	SEids_len = 0;
+	for (index = 0; index < x_len; index++, x_width++) {
 		if (*x_width > 0 && *weight != 0) {
 			SEid = 2 * index;
 			*(SEids++) = SEid; /* Start id */
 			*(SEids++) = SEid + 1; /* End id */
-			SEids_length += 2;
+			SEids_len += 2;
 		}
-		if (weight_length != 1)
+		if (weight_len != 1)
 			weight++;
 	}
-	return SEids_length;
+	return SEids_len;
 }
 
 /* Sort the buffer of Start/End ids. */
-static void sort_SEids(int *SEids, int SEids_length,
+static void sort_SEids(int *SEids, int SEids_len,
 		const int *x_start, const int *x_width)
 {
 	base_start = x_start;
 	base_width = x_width;
-	qsort(SEids, SEids_length, sizeof(int), compar_SEids_for_asc_order);
+	qsort(SEids, SEids_len, sizeof(int), compar_SEids_for_asc_order);
 	return;
 }
 
-static SEXP IRanges_coverage_sort(const int *x_start, const int *x_width,
-		int x_length, const int *weight, int weight_length,
-		int ans_length)
+static SEXP coverage_sort(const int *x_start, const int *x_width,
+		int x_len, const int *weight, int weight_len,
+		int ans_len)
 {
-	int *SEids, SEids_length, zero,
+	int *SEids, SEids_len, zero,
 	    *values_buf, *lengths_buf,
 	    max_nrun, prev_pos, curr_pos, prev_value, curr_value, curr_weight,
 	    i, index, is_end;
 	const int *SEids_elt;
 
 	// use SEid / 2 and SEid % 2 to find start, width
-	SEids = (int *) R_alloc((long) 2 * x_length, sizeof(int));
-	SEids_length = init_SEids(SEids, x_width, x_length,
-				  weight, weight_length);
-	if (SEids_length == 0) {
+	SEids = (int *) R_alloc((long) 2 * x_len, sizeof(int));
+	SEids_len = init_SEids(SEids, x_width, x_len,
+				  weight, weight_len);
+	if (SEids_len == 0) {
 		//return an Rle with one run of 0's
 		zero = 0;
-		return _integer_Rle_constructor(&zero, 1, &ans_length, 0);
+		return _integer_Rle_constructor(&zero, 1, &ans_len, 0);
 	}
-	sort_SEids(SEids, SEids_length, x_start, x_width);
+	sort_SEids(SEids, SEids_len, x_start, x_width);
 
-	values_buf = (int *) R_alloc((long) SEids_length, sizeof(int));
-	lengths_buf = (int *) R_alloc((long) SEids_length, sizeof(int));
+	values_buf = (int *) R_alloc((long) SEids_len, sizeof(int));
+	lengths_buf = (int *) R_alloc((long) SEids_len, sizeof(int));
 
 	// pos is either a start position or an end position + 1
 	max_nrun = 0;
@@ -87,12 +87,12 @@ static SEXP IRanges_coverage_sort(const int *x_start, const int *x_width,
 	curr_value = 0;
 	curr_weight = weight[0];
 	_reset_ovflow_flag(); /* we use _safe_int_add() in loop below */
-	for (i = 0, SEids_elt = SEids; i < SEids_length; i++, SEids_elt++) {
+	for (i = 0, SEids_elt = SEids; i < SEids_len; i++, SEids_elt++) {
 		if (i % 100000 == 99999)
 			R_CheckUserInterrupt();
 		index = *SEids_elt / 2;
 		is_end = *SEids_elt % 2;
-		if (weight_length != 1)
+		if (weight_len != 1)
 			curr_weight = weight[index];
 		curr_pos = x_start[index];
 		if (is_end) {
@@ -112,7 +112,7 @@ static SEXP IRanges_coverage_sort(const int *x_start, const int *x_width,
 		warning("NAs produced by integer overflow");
 
 	// extend vector length if user-supplied width exceeds coverage domain
-	curr_pos = ans_length + 1;
+	curr_pos = ans_len + 1;
 	if (curr_pos != prev_pos) {
 		lengths_buf[max_nrun] = curr_pos - prev_pos;
 		values_buf[max_nrun] = 0;
@@ -121,61 +121,68 @@ static SEXP IRanges_coverage_sort(const int *x_start, const int *x_width,
 	return _integer_Rle_constructor(values_buf, max_nrun, lengths_buf, 0);
 }
 
-static SEXP IRanges_coverage_hash(
-		const int *x_start, const int *x_width, int x_length,
-		const int *weight, int weight_length,
-		int ans_length)
+static SEXP coverage_hash(
+		const int *x_start, const int *x_width, int x_len,
+		const int *weight, int weight_len,
+		int ans_len)
 {
 	int *cvg_buf, i, cvg_offset, *cvg_p, j, buflength;
 
-	cvg_buf = (int *) R_alloc((long) ans_length, sizeof(int));
-	memset(cvg_buf, 0, ans_length * sizeof(int));
+	cvg_buf = (int *) R_alloc((long) ans_len, sizeof(int));
+	memset(cvg_buf, 0, ans_len * sizeof(int));
 	_reset_ovflow_flag(); /* we use _safe_int_add() in loop below */
-	for (i = 0; i < x_length; i++, x_start++, x_width++) {
+	for (i = 0; i < x_len; i++, x_start++, x_width++) {
 		if (i % 100000 == 99999)
 			R_CheckUserInterrupt();
 		cvg_offset = *x_start - 1;
 		cvg_p = cvg_buf + cvg_offset;
 		for (j = 0; j < *x_width; j++, cvg_offset++, cvg_p++)
 		{
-			if (cvg_offset >= ans_length)
+			if (cvg_offset >= ans_len)
 				continue;
 			*cvg_p = _safe_int_add(*cvg_p, *weight);
 		}
-		if (weight_length != 1)
+		if (weight_len != 1)
 			weight++;
 	}
 	if (_get_ovflow_flag())
 		warning("NAs produced by integer overflow");
 	/* the nb of runs must be <= 2 * length(x) + 1 */
-	buflength = 2 * x_length + 1;
-	return _integer_Rle_constructor(cvg_buf, ans_length, NULL, buflength);
+	buflength = 2 * x_len + 1;
+	return _integer_Rle_constructor(cvg_buf, ans_len, NULL, buflength);
 }
 
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP IRanges_coverage(SEXP x, SEXP weight, SEXP width, SEXP method)
+/* --- .Call ENTRY POINT --- */
+SEXP Ranges_integer_coverage(SEXP x_start, SEXP x_width,
+		SEXP width, SEXP weight, SEXP method)
 {
-	int x_length, width0, weight_length, zero;
-	const int *weight_p, *x_start_p, *x_width_p;
+	int x_len, width0, weight_len, zero;
+	const int *x_start_p, *x_width_p, *weight_p;
 	const char *method_ptr = CHAR(STRING_ELT(method, 0));
 
-	x_length = _get_IRanges_length(x);
+	x_len = _check_integer_pairs(x_start, x_width,
+				     &x_start_p, &x_width_p,
+				     "start(x)", "width(x)");
 	width0 = INTEGER(width)[0];
-	weight_length = LENGTH(weight);
+	weight_len = LENGTH(weight);
 	weight_p = INTEGER(weight);
-	if (x_length == 0 || (weight_length == 1 && weight_p[0] == 0)) {
+	if (x_len == 0 || (weight_len == 1 && weight_p[0] == 0)) {
 		//return an Rle with one run of 0's
 		zero = 0;
 		return _integer_Rle_constructor(&zero, 1, &width0, 0);
 	}
-	x_start_p = INTEGER(_get_IRanges_start(x));
-	x_width_p = INTEGER(_get_IRanges_width(x));
 	if (strcmp(method_ptr, "sort") == 0)
-		return IRanges_coverage_sort(x_start_p, x_width_p, x_length,
-					     weight_p, weight_length, width0);
-	return IRanges_coverage_hash(x_start_p, x_width_p, x_length,
-				     weight_p, weight_length, width0);
+		return coverage_sort(x_start_p, x_width_p, x_len,
+				     weight_p, weight_len, width0);
+	return coverage_hash(x_start_p, x_width_p, x_len,
+			     weight_p, weight_len, width0);
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP Ranges_numeric_coverage(SEXP x_start, SEXP x_width,
+		SEXP width, SEXP weight, SEXP method)
+{
+	error("work in progress");
+	return R_NilValue;
 }
 

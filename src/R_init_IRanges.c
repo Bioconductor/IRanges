@@ -79,7 +79,8 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(Ranges_compare, 4),
 
 /* coverage.c */
-	CALLMETHOD_DEF(IRanges_coverage, 4),
+	CALLMETHOD_DEF(Ranges_integer_coverage, 5),
+	CALLMETHOD_DEF(Ranges_numeric_coverage, 5),
 
 /* Grouping_class.c */
 	CALLMETHOD_DEF(debug_Grouping_class, 0),

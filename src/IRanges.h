@@ -891,13 +891,21 @@ SEXP Ranges_compare(
 
 /* coverage.c */
 
-SEXP IRanges_coverage(
-	SEXP x,
-	SEXP weight,
+SEXP Ranges_integer_coverage(
+	SEXP x_start,
+	SEXP x_width,
 	SEXP width,
+	SEXP weight,
 	SEXP method
 );
 
+SEXP Ranges_numeric_coverage(
+	SEXP x_start,
+	SEXP x_width,
+	SEXP width,
+	SEXP weight,
+	SEXP method
+);
 
 /* Grouping_class.c */
 
