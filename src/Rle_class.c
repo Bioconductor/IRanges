@@ -176,33 +176,42 @@ static int compute_Rbyte_runs(const Rbyte *values, int nvalues,
 /****************************************************************************
  * The C level Rle smart constructors.
  *
- * 'lengths' must be either NULL or an int array of length 'nvalues' with
- * no NA or negative values.
- * If 'nobuf' is 1, then a 2-pass algo is used that doesn't use the
- * intermediate buffers, typically leading to 20%-30% less memory used (it
- * also seems slightly faster on my machine).
+ * 'lengths' must be either (a) an int array of length 'nvalues' with no NA
+ * or negative values, or (b) NULL. If (b) then it's treated as an array of
+ * length 'nvalues' filled with 1's (i.e. each element is set to 1).
+ * 'buflength' is the length of the temporary buffers allocated internally by
+ * the smart constructor for computing the runs. If set to 0, then a 2-pass
+ * algo is used that doesn't use any temporary buffer, typically leading to
+ * 20%-30% less memory used (it also seems slightly faster on my machine).
+ * Setting 'buflength' to 'nvalues' is safe because the number of runs can
+ * only be <= 'nvalues'. If 'buflength' is > 'nvalues', then 'nvalues' is used
+ * instead.
+ * WARNING: Avoid using a 'buflength' that is > 0 and < 'nvalues' unless you
+ * know what you are doing!
  */
 
 SEXP _logical_Rle_constructor(const int *values, int nvalues,
-		const int *lengths, int nobuf)
+		const int *lengths, int buflength)
 {
 	int nrun, *buf_lengths;
 	int *buf_values;
 	SEXP ans_lengths, ans_values, ans;
 
-	if (nobuf) {
+	if (buflength > nvalues)
+		buflength = nvalues;
+	if (buflength == 0) {
 		/* 1st pass: compute only the nb of runs */
 		buf_values = NULL;
 		buf_lengths = NULL;
 	} else {
-		buf_values = (int *) R_alloc(nvalues, sizeof(int));
-		buf_lengths = (int *) R_alloc(nvalues, sizeof(int));
+		buf_values = (int *) R_alloc(buflength, sizeof(int));
+		buf_lengths = (int *) R_alloc(buflength, sizeof(int));
 	}
 	nrun = compute_int_runs(values, nvalues, lengths,
 				buf_values, buf_lengths);
 	PROTECT(ans_values = NEW_LOGICAL(nrun));
 	PROTECT(ans_lengths = NEW_INTEGER(nrun));
-	if (nobuf) {
+	if (buflength == 0) {
 		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
 		compute_int_runs(values, nvalues, lengths,
 				LOGICAL(ans_values), INTEGER(ans_lengths));
@@ -216,25 +225,27 @@ SEXP _logical_Rle_constructor(const int *values, int nvalues,
 }
 
 SEXP _integer_Rle_constructor(const int *values, int nvalues,
-		const int *lengths, int nobuf)
+		const int *lengths, int buflength)
 {
 	int nrun, *buf_lengths;
 	int *buf_values;
 	SEXP ans_lengths, ans_values, ans;
 
-	if (nobuf) {
+	if (buflength > nvalues)
+		buflength = nvalues;
+	if (buflength == 0) {
 		/* 1st pass: compute only the nb of runs */
 		buf_values = NULL;
 		buf_lengths = NULL;
 	} else {
-		buf_values = (int *) R_alloc(nvalues, sizeof(int));
-		buf_lengths = (int *) R_alloc(nvalues, sizeof(int));
+		buf_values = (int *) R_alloc(buflength, sizeof(int));
+		buf_lengths = (int *) R_alloc(buflength, sizeof(int));
 	}
 	nrun = compute_int_runs(values, nvalues, lengths,
 				buf_values, buf_lengths);
 	PROTECT(ans_values = NEW_INTEGER(nrun));
 	PROTECT(ans_lengths = NEW_INTEGER(nrun));
-	if (nobuf) {
+	if (buflength == 0) {
 		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
 		compute_int_runs(values, nvalues, lengths,
 				INTEGER(ans_values), INTEGER(ans_lengths));
@@ -248,25 +259,27 @@ SEXP _integer_Rle_constructor(const int *values, int nvalues,
 }
 
 SEXP _numeric_Rle_constructor(const double *values, int nvalues,
-		const int *lengths, int nobuf)
+		const int *lengths, int buflength)
 {
 	int nrun, *buf_lengths;
 	double *buf_values;
 	SEXP ans_lengths, ans_values, ans;
 
-	if (nobuf) {
+	if (buflength > nvalues)
+		buflength = nvalues;
+	if (buflength == 0) {
 		/* 1st pass: compute only the nb of runs */
 		buf_values = NULL;
 		buf_lengths = NULL;
 	} else {
-		buf_values = (double *) R_alloc(nvalues, sizeof(double));
-		buf_lengths = (int *) R_alloc(nvalues, sizeof(int));
+		buf_values = (double *) R_alloc(buflength, sizeof(double));
+		buf_lengths = (int *) R_alloc(buflength, sizeof(int));
 	}
 	nrun = compute_double_runs(values, nvalues, lengths,
 				buf_values, buf_lengths);
 	PROTECT(ans_values = NEW_NUMERIC(nrun));
 	PROTECT(ans_lengths = NEW_INTEGER(nrun));
-	if (nobuf) {
+	if (buflength == 0) {
 		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
 		compute_double_runs(values, nvalues, lengths,
 				REAL(ans_values), INTEGER(ans_lengths));
@@ -280,25 +293,27 @@ SEXP _numeric_Rle_constructor(const double *values, int nvalues,
 }
 
 SEXP _complex_Rle_constructor(const Rcomplex *values, int nvalues,
-		const int *lengths, int nobuf)
+		const int *lengths, int buflength)
 {
 	int nrun, *buf_lengths;
 	Rcomplex *buf_values;
 	SEXP ans_lengths, ans_values, ans;
 
-	if (nobuf) {
+	if (buflength > nvalues)
+		buflength = nvalues;
+	if (buflength == 0) {
 		/* 1st pass: compute only the nb of runs */
 		buf_values = NULL;
 		buf_lengths = NULL;
 	} else {
-		buf_values = (Rcomplex *) R_alloc(nvalues, sizeof(Rcomplex));
-		buf_lengths = (int *) R_alloc(nvalues, sizeof(int));
+		buf_values = (Rcomplex *) R_alloc(buflength, sizeof(Rcomplex));
+		buf_lengths = (int *) R_alloc(buflength, sizeof(int));
 	}
 	nrun = compute_Rcomplex_runs(values, nvalues, lengths,
 				buf_values, buf_lengths);
 	PROTECT(ans_values = NEW_COMPLEX(nrun));
 	PROTECT(ans_lengths = NEW_INTEGER(nrun));
-	if (nobuf) {
+	if (buflength == 0) {
 		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
 		compute_Rcomplex_runs(values, nvalues, lengths,
 				COMPLEX(ans_values), INTEGER(ans_lengths));
@@ -313,25 +328,27 @@ SEXP _complex_Rle_constructor(const Rcomplex *values, int nvalues,
 }
 
 SEXP _character_Rle_constructor(SEXP values,
-		const int *lengths, int nobuf)
+		const int *lengths, int buflength)
 {
 	int nvalues, nrun, *buf_lengths, i;
 	SEXP buf_values, ans_lengths, ans_values, ans;
 
 	nvalues = LENGTH(values);
-	if (nobuf) {
+	if (buflength > nvalues)
+		buflength = nvalues;
+	if (buflength == 0) {
 		/* 1st pass: compute only the nb of runs */
 		buf_values = NULL;
 		buf_lengths = NULL;
 	} else {
-		PROTECT(buf_values = NEW_CHARACTER(nvalues));
-		buf_lengths = (int *) R_alloc(nvalues, sizeof(int));
+		PROTECT(buf_values = NEW_CHARACTER(buflength));
+		buf_lengths = (int *) R_alloc(buflength, sizeof(int));
 	}
 	nrun = compute_CHARSXP_runs(values, lengths,
 				buf_values, buf_lengths);
 	PROTECT(ans_values = NEW_CHARACTER(nrun));
 	PROTECT(ans_lengths = NEW_INTEGER(nrun));
-	if (nobuf) {
+	if (buflength == 0) {
 		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
 		compute_CHARSXP_runs(values, lengths,
 				ans_values, INTEGER(ans_lengths));
@@ -341,30 +358,32 @@ SEXP _character_Rle_constructor(SEXP values,
 		memcpy(INTEGER(ans_lengths), buf_lengths, nrun * sizeof(int));
 	}
 	PROTECT(ans = _new_Rle(ans_values, ans_lengths));
-	UNPROTECT(nobuf ? 3 : 4);
+	UNPROTECT(buflength == 0 ? 3 : 4);
 	return ans;
 }
 
 SEXP _raw_Rle_constructor(const Rbyte *values, int nvalues,
-		const int *lengths, int nobuf)
+		const int *lengths, int buflength)
 {
 	int nrun, *buf_lengths;
 	Rbyte *buf_values;
 	SEXP ans_lengths, ans_values, ans;
 
-	if (nobuf) {
+	if (buflength > nvalues)
+		buflength = nvalues;
+	if (buflength == 0) {
 		/* 1st pass: compute only the nb of runs */
 		buf_values = NULL;
 		buf_lengths = NULL;
 	} else {
-		buf_values = (Rbyte *) R_alloc(nvalues, sizeof(Rbyte));
-		buf_lengths = (int *) R_alloc(nvalues, sizeof(int));
+		buf_values = (Rbyte *) R_alloc(buflength, sizeof(Rbyte));
+		buf_lengths = (int *) R_alloc(buflength, sizeof(int));
 	}
 	nrun = compute_Rbyte_runs(values, nvalues, lengths,
 				buf_values, buf_lengths);
 	PROTECT(ans_values = NEW_RAW(nrun));
 	PROTECT(ans_lengths = NEW_INTEGER(nrun));
-	if (nobuf) {
+	if (buflength == 0) {
 		/* 2nd pass: fill 'ans_values' and 'ans_lengths' */
 		compute_Rbyte_runs(values, nvalues, lengths,
 				RAW(ans_values), INTEGER(ans_lengths));
@@ -382,9 +401,9 @@ SEXP _raw_Rle_constructor(const Rbyte *values, int nvalues,
  * The Rle constructor (.Call ENTRY POINT).
  */
 
-SEXP Rle_constructor(SEXP values, SEXP lengths, SEXP check, SEXP nobuf)
+SEXP Rle_constructor(SEXP values, SEXP lengths, SEXP check, SEXP buflength)
 {
-	int nvalues, nobuf0;
+	int nvalues, buflength0;
 	const int *lengths_p;
 
 	nvalues = LENGTH(values);
@@ -395,26 +414,26 @@ SEXP Rle_constructor(SEXP values, SEXP lengths, SEXP check, SEXP nobuf)
 				  "lengths");
 	}
 	lengths_p = LENGTH(lengths) > 0 ? INTEGER(lengths) : NULL;
-	nobuf0 = LOGICAL(nobuf)[0];
+	buflength0 = INTEGER(buflength)[0];
 	switch (TYPEOF(values)) {
 	    case LGLSXP:
 		return _logical_Rle_constructor(LOGICAL(values), nvalues,
-						lengths_p, nobuf0);
+						lengths_p, buflength0);
 	    case INTSXP:
 		return _integer_Rle_constructor(INTEGER(values), nvalues,
-						lengths_p, nobuf0);
+						lengths_p, buflength0);
 	    case REALSXP:
 		return _numeric_Rle_constructor(REAL(values), nvalues,
-						lengths_p, nobuf0);
+						lengths_p, buflength0);
 	    case CPLXSXP:
 		return _complex_Rle_constructor(COMPLEX(values), nvalues,
-						lengths_p, nobuf0);
+						lengths_p, buflength0);
 	    case STRSXP:
 		return _character_Rle_constructor(values,
-						lengths_p, nobuf0);
+						lengths_p, buflength0);
 	    case RAWSXP:
 		return _raw_Rle_constructor(RAW(values), nvalues,
-						lengths_p, nobuf0);
+						lengths_p, buflength0);
 	}
 	error("Rle of type '%s' is not supported",
 	      CHAR(type2str(TYPEOF(values))));

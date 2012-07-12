@@ -1042,48 +1042,48 @@ SEXP _logical_Rle_constructor(
 	const int *values,
 	int nvalues,
 	const int *lengths,
-	int nobuf
+	int buflength
 );
 
 SEXP _integer_Rle_constructor(
 	const int *values,
 	int nvalues,
 	const int *lengths,
-	int nobuf
+	int buflength
 );
 
 SEXP _numeric_Rle_constructor(
 	const double *values,
 	int nvalues,
 	const int *lengths,
-	int nobuf
+	int buflength
 );
 
 SEXP _complex_Rle_constructor(
 	const Rcomplex *values,
 	int nvalues,
 	const int *lengths,
-	int nobuf
+	int buflength
 );
 
 SEXP _character_Rle_constructor(
 	SEXP values,
 	const int *lengths,
-	int nobuf
+	int buflength
 );
 
 SEXP _raw_Rle_constructor(
 	const Rbyte *values,
 	int nvalues,
 	const int *lengths,
-	int nobuf
+	int buflength
 );
 
 SEXP Rle_constructor(
 	SEXP values,
 	SEXP lengths,
 	SEXP check,
-	SEXP nobuf
+	SEXP buflength
 );
 
 SEXP Rle_start(SEXP x);

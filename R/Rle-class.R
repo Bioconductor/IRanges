@@ -80,7 +80,7 @@ setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "integer"),
               if (!isTRUEorFALSE(check))
                   stop("'check' must be TRUE or FALSE")
               ans <- .Call2("Rle_constructor",
-                            values, lengths, check, TRUE,
+                            values, lengths, check, 0L,
                             PACKAGE="IRanges")
               if (is.factor(values)) {
                   ans@values <-
