@@ -7,126 +7,110 @@
 static const int *base_start;
 static const int *base_width;
 
-static int cmp_sw_subset_for_ordering(const void *p1, const void *p2)
+static int compar_SEids_for_asc_order(const void *p1, const void *p2)
 {
-	int i1, i2;
-	int s1, s2;
+	int SEid1, SEid2, index1, index2, s1, s2;
 
-	i1 = *((const int *) p1);
-	i2 = *((const int *) p2);
-	// if i is index for width, then s = end + 1
-	// if i is index for start, then s = start
-	s1 = (i1 % 2) ? *(base_start + i1 / 2) + *(base_width + i1 / 2) : *(base_start + i1 / 2);
-	s2 = (i2 % 2) ? *(base_start + i2 / 2) + *(base_width + i2 / 2) : *(base_start + i2 / 2);
+	SEid1 = *((const int *) p1);
+	SEid2 = *((const int *) p2);
+	index1 = SEid1 / 2;
+	index2 = SEid2 / 2;
+	/* If SEid is a Start id, then s = start
+	   If SEid is an End id, then s = end + 1 */
+	s1 = base_start[index1];
+	if (SEid1 % 2)
+		s1 += base_width[index1];
+	s2 = base_start[index2];
+	if (SEid2 % 2)
+		s2 += base_width[index2];
 	return s1 - s2;
+}
 
+/* Initialize the buffer of Start/End ids. */
+static int init_SEids(int *SEids, const int *x_width, int x_length,
+		const int *weight, int weight_length)
+{
+	int SEids_length, index, SEid;
+
+	SEids_length = 0;
+	for (index = 0; index < x_length; index++, x_width++) {
+		if (*x_width > 0 && *weight != 0) {
+			SEid = 2 * index;
+			*(SEids++) = SEid; /* Start id */
+			*(SEids++) = SEid + 1; /* End id */
+			SEids_length += 2;
+		}
+		if (weight_length != 1)
+			weight++;
+	}
+	return SEids_length;
+}
+
+/* Sort the buffer of Start/End ids. */
+static void sort_SEids(int *SEids, int SEids_length,
+		const int *x_start, const int *x_width)
+{
+	base_start = x_start;
+	base_width = x_width;
+	qsort(SEids, SEids_length, sizeof(int), compar_SEids_for_asc_order);
+	return;
 }
 
 static SEXP IRanges_coverage_sort(const int *x_start, const int *x_width,
 		int x_length, const int *weight, int weight_length,
 		int ans_length)
 {
-	int i;
-	int max_nrun = 0;
-	int *values_buf, *lengths_buf;
+	int *SEids, SEids_length, zero,
+	    *values_buf, *lengths_buf,
+	    max_nrun, prev_pos, curr_pos, prev_value, curr_value, curr_weight,
+	    i, index, is_end;
+	const int *SEids_elt;
 
-	// use i / 2 and  i % 2 to find start, width
-	int *order = (int *) R_alloc((long) 2 * x_length, sizeof(int));
-	memset(order, -1, 2 * x_length * sizeof(int));
-
-	int order_length = 0;
-	int *order_elt;
-	const int *wd, *wt;
-	wt = weight;
-	order_elt = order;
-	for (i = 0, wd = x_width; i < x_length; i++, wd++) {
-		if (*wd > 0 && *wt != 0) {
-			// start order
-			*order_elt = 2 * i;
-			order_elt++;
-			order_length++;
-			// width order
-			*order_elt = 2 * i + 1;
-			order_elt++;
-			order_length++;
-		}
-		if (weight_length != 1)
-			wt++;
-	}
-	if (order_length == 0) {
+	// use SEid / 2 and SEid % 2 to find start, width
+	SEids = (int *) R_alloc((long) 2 * x_length, sizeof(int));
+	SEids_length = init_SEids(SEids, x_width, x_length,
+				  weight, weight_length);
+	if (SEids_length == 0) {
 		//return an Rle with one run of 0's
-		int zero = 0;
+		zero = 0;
 		return _integer_Rle_constructor(&zero, 1, &ans_length, 0);
 	}
+	sort_SEids(SEids, SEids_length, x_start, x_width);
 
-	base_start = x_start;
-	base_width = x_width;
-	qsort(order, order_length, sizeof(int), cmp_sw_subset_for_ordering);
-	values_buf = (int *) R_alloc((long) order_length, sizeof(int));
-	lengths_buf = (int *) R_alloc((long) order_length, sizeof(int));
-
-	int index, is_end;
-	int prev_pos, curr_pos, prev_weight, curr_weight;
+	values_buf = (int *) R_alloc((long) SEids_length, sizeof(int));
+	lengths_buf = (int *) R_alloc((long) SEids_length, sizeof(int));
 
 	// pos is either a start position or an end position + 1
+	max_nrun = 0;
 	prev_pos = 1;
-	prev_weight = 0;
-	curr_weight = 0;
-	if (weight_length == 1) {
-		_reset_ovflow_flag(); /* we use _safe_int_add() in loop below */
-		for (i = 0, order_elt = order; i < order_length;
-			 i++, order_elt++) {
-			if (i % 100000 == 99999)
-				R_CheckUserInterrupt();
-			index = *order_elt / 2;
-			is_end = *order_elt % 2;
-			if (is_end) {
-				curr_pos = x_start[index] + x_width[index];
-				curr_weight = _safe_int_add(curr_weight,
-							    -weight[0]);
-			} else {
-				curr_pos = x_start[index];
-				curr_weight = _safe_int_add(curr_weight,
-							    weight[0]);
-			}
-			if (curr_pos != prev_pos) {
-				lengths_buf[max_nrun] = curr_pos - prev_pos;
-				values_buf[max_nrun] = prev_weight;
-				max_nrun++;
-				prev_pos = curr_pos;
-			}
-			prev_weight = curr_weight;
+	prev_value = 0;
+	curr_value = 0;
+	curr_weight = weight[0];
+	_reset_ovflow_flag(); /* we use _safe_int_add() in loop below */
+	for (i = 0, SEids_elt = SEids; i < SEids_length; i++, SEids_elt++) {
+		if (i % 100000 == 99999)
+			R_CheckUserInterrupt();
+		index = *SEids_elt / 2;
+		is_end = *SEids_elt % 2;
+		if (weight_length != 1)
+			curr_weight = weight[index];
+		curr_pos = x_start[index];
+		if (is_end) {
+			curr_weight = - curr_weight;
+			curr_pos += x_width[index];
 		}
-		if (_get_ovflow_flag())
-			warning("NAs produced by integer overflow");
-	} else {
-		_reset_ovflow_flag(); /* we use _safe_int_add() in loop below */
-		for (i = 0, order_elt = order; i < order_length;
-			 i++, order_elt++) {
-			if (i % 100000 == 99999)
-				R_CheckUserInterrupt();
-			index = *order_elt / 2;
-			is_end = *order_elt % 2;
-			if (is_end) {
-				curr_pos = x_start[index] + x_width[index];
-				curr_weight = _safe_int_add(curr_weight,
-							    -weight[index]);
-			} else {
-				curr_pos = x_start[index];
-				curr_weight = _safe_int_add(curr_weight,
-							    weight[index]);
-			}
-			if (curr_pos != prev_pos) {
-				lengths_buf[max_nrun] = curr_pos - prev_pos;
-				values_buf[max_nrun] = prev_weight;
-				max_nrun++;
-				prev_pos = curr_pos;
-			}
-			prev_weight = curr_weight;
+		curr_value = _safe_int_add(curr_value, curr_weight);
+		if (curr_pos != prev_pos) {
+			lengths_buf[max_nrun] = curr_pos - prev_pos;
+			values_buf[max_nrun] = prev_value;
+			max_nrun++;
+			prev_pos = curr_pos;
 		}
-		if (_get_ovflow_flag())
-			warning("NAs produced by integer overflow");
+		prev_value = curr_value;
 	}
+	if (_get_ovflow_flag())
+		warning("NAs produced by integer overflow");
+
 	// extend vector length if user-supplied width exceeds coverage domain
 	curr_pos = ans_length + 1;
 	if (curr_pos != prev_pos) {
