@@ -93,106 +93,77 @@ static void sort_SEids(int *SEids, int SEids_len,
  * double_coverage_sort(), double_coverage_hash()
  */
 
-static int compute_int_coverage_in_bufs(const int *SEids, int SEids_len,
+/* 'values_buf' and 'lengths_buf' must have a length >= SEids_len + 1 */
+static void compute_int_coverage_in_bufs(const int *SEids, int SEids_len,
 		const int *x_start, const int *x_width,
 		const int *weight, int weight_len, int ans_len,
 		int *values_buf, int *lengths_buf)
 {
-	int max_nrun, prev_pos, curr_pos, prev_value, curr_value, curr_weight,
-	    i, index, is_end;
-	const int *SEids_elt;
+	int curr_val, curr_pos, curr_weight,
+	    i, prev_pos, index;
 
-	// pos is either a start position or an end position + 1
-	max_nrun = 0;
-	prev_pos = 1;
-	prev_value = 0;
-	curr_value = 0;
+	*(values_buf++) = curr_val = 0;
+	curr_pos = 1;
 	curr_weight = weight[0];
 	_reset_ovflow_flag(); /* we use _safe_int_add() in loop below */
-	for (i = 0, SEids_elt = SEids; i < SEids_len; i++, SEids_elt++) {
+	for (i = 0; i < SEids_len; i++, SEids++) {
 		if (i % 500000 == 499999)
 			R_CheckUserInterrupt();
-		index = SEid_TO_INDEX(*SEids_elt);
-		is_end = SEid_IS_END(*SEids_elt);
+		prev_pos = curr_pos;
+		index = SEid_TO_INDEX(*SEids);
+		curr_pos = x_start[index];
 		if (weight_len != 1)
 			curr_weight = weight[index];
-		curr_pos = x_start[index];
-		if (is_end) {
+		if (SEid_IS_END(*SEids)) {
 			curr_weight = - curr_weight;
 			curr_pos += x_width[index];
 		}
-		curr_value = _safe_int_add(curr_value, curr_weight);
-		if (curr_pos != prev_pos) {
-			lengths_buf[max_nrun] = curr_pos - prev_pos;
-			values_buf[max_nrun] = prev_value;
-			max_nrun++;
-			prev_pos = curr_pos;
-		}
-		prev_value = curr_value;
+		curr_val = _safe_int_add(curr_val, curr_weight);
+		*(values_buf++) = curr_val;
+		*(lengths_buf++) = curr_pos - prev_pos;
 	}
 	if (_get_ovflow_flag())
 		warning("NAs produced by integer overflow");
-	// extend vector length if user-supplied width exceeds coverage domain
-	curr_pos = ans_len + 1;
-	if (curr_pos != prev_pos) {
-		lengths_buf[max_nrun] = curr_pos - prev_pos;
-		values_buf[max_nrun] = 0;
-		max_nrun++;
-	}
-	return max_nrun;
+	*lengths_buf = ans_len + 1 - curr_pos;
+	return;
 }
 
-static int compute_double_coverage_in_bufs(const int *SEids, int SEids_len,
+static void compute_double_coverage_in_bufs(const int *SEids, int SEids_len,
 		const int *x_start, const int *x_width,
 		const double *weight, int weight_len, int ans_len,
 		double *values_buf, int *lengths_buf)
 {
-	int max_nrun, prev_pos, curr_pos, i, index, is_end;
-	double prev_value, curr_value, curr_weight;
-	const int *SEids_elt;
+	double curr_val, curr_weight;
+	int curr_pos, i, prev_pos, index;
 
-	// pos is either a start position or an end position + 1
-	max_nrun = 0;
-	prev_pos = 1;
-	prev_value = 0;
-	curr_value = 0;
+	*(values_buf++) = curr_val = 0.0;
+	curr_pos = 1;
 	curr_weight = weight[0];
-	for (i = 0, SEids_elt = SEids; i < SEids_len; i++, SEids_elt++) {
+	for (i = 0; i < SEids_len; i++, SEids++) {
 		if (i % 500000 == 499999)
 			R_CheckUserInterrupt();
-		index = SEid_TO_INDEX(*SEids_elt);
-		is_end = SEid_IS_END(*SEids_elt);
+		prev_pos = curr_pos;
+		index = SEid_TO_INDEX(*SEids);
+		curr_pos = x_start[index];
 		if (weight_len != 1)
 			curr_weight = weight[index];
-		curr_pos = x_start[index];
-		if (is_end) {
+		if (SEid_IS_END(*SEids)) {
 			curr_weight = - curr_weight;
 			curr_pos += x_width[index];
 		}
-		curr_value += curr_weight;
-		if (curr_pos != prev_pos) {
-			lengths_buf[max_nrun] = curr_pos - prev_pos;
-			values_buf[max_nrun] = prev_value;
-			max_nrun++;
-			prev_pos = curr_pos;
-		}
-		prev_value = curr_value;
+		curr_val += curr_weight;
+		*(values_buf++) = curr_val;
+		*(lengths_buf++) = curr_pos - prev_pos;
 	}
-	// extend vector length if user-supplied width exceeds coverage domain
-	curr_pos = ans_len + 1;
-	if (curr_pos != prev_pos) {
-		lengths_buf[max_nrun] = curr_pos - prev_pos;
-		values_buf[max_nrun] = 0;
-		max_nrun++;
-	}
-	return max_nrun;
+	*lengths_buf = ans_len + 1 - curr_pos;
+	return;
 }
 
 static SEXP int_coverage_sort(const int *x_start, const int *x_width,
 		int x_len, const int *weight, int weight_len,
 		int ans_len)
 {
-	int *SEids, SEids_len, zero, *values_buf, *lengths_buf, max_nrun;
+	int *SEids, SEids_len, zero, buf_len, *values_buf, *lengths_buf;
 
 	SEids = (int *) R_alloc((long) 2 * x_len, sizeof(int));
 	SEids_len = init_SEids_int_weight(SEids, x_width, x_len,
@@ -203,19 +174,20 @@ static SEXP int_coverage_sort(const int *x_start, const int *x_width,
 		return _integer_Rle_constructor(&zero, 1, &ans_len, 0);
 	}
 	sort_SEids(SEids, SEids_len, x_start, x_width);
-	values_buf = (int *) R_alloc((long) SEids_len, sizeof(int));
-	lengths_buf = (int *) R_alloc((long) SEids_len, sizeof(int));
-	max_nrun = compute_int_coverage_in_bufs(SEids, SEids_len,
+	buf_len = SEids_len + 1;
+	values_buf = (int *) R_alloc((long) buf_len, sizeof(int));
+	lengths_buf = (int *) R_alloc((long) buf_len, sizeof(int));
+	compute_int_coverage_in_bufs(SEids, SEids_len,
 			x_start, x_width, weight, weight_len, ans_len,
 			values_buf, lengths_buf);
-	return _integer_Rle_constructor(values_buf, max_nrun, lengths_buf, 0);
+	return _integer_Rle_constructor(values_buf, buf_len, lengths_buf, 0);
 }
 
 static SEXP double_coverage_sort(const int *x_start, const int *x_width,
 		int x_len, const double *weight, int weight_len,
 		int ans_len)
 {
-	int *SEids, SEids_len, *lengths_buf, max_nrun;
+	int *SEids, SEids_len, buf_len, *lengths_buf;
 	double zero, *values_buf;
 
 	SEids = (int *) R_alloc((long) 2 * x_len, sizeof(int));
@@ -227,12 +199,13 @@ static SEXP double_coverage_sort(const int *x_start, const int *x_width,
 		return _numeric_Rle_constructor(&zero, 1, &ans_len, 0);
 	}
 	sort_SEids(SEids, SEids_len, x_start, x_width);
-	values_buf = (double *) R_alloc((long) SEids_len, sizeof(double));
-	lengths_buf = (int *) R_alloc((long) SEids_len, sizeof(int));
-	max_nrun = compute_double_coverage_in_bufs(SEids, SEids_len,
+	buf_len = SEids_len + 1;
+	values_buf = (double *) R_alloc((long) buf_len, sizeof(double));
+	lengths_buf = (int *) R_alloc((long) buf_len, sizeof(int));
+	compute_double_coverage_in_bufs(SEids, SEids_len,
 			x_start, x_width, weight, weight_len, ans_len,
 			values_buf, lengths_buf);
-	return _numeric_Rle_constructor(values_buf, max_nrun, lengths_buf, 0);
+	return _numeric_Rle_constructor(values_buf, buf_len, lengths_buf, 0);
 }
 
 static SEXP int_coverage_hash(
