@@ -1,12 +1,20 @@
 /****************************************************************************
+ *                                                                          *
  *               Weighted coverage of a set of integer ranges               *
+ *               --------------------------------------------               *
+ *                                                                          *
  *                 Authors: Patrick Aboyoun and Herve Pages                 *
  * Code based on timing enhancements by Charles C. Berry <ccberry@ucsd.edu> *
+ *                                                                          *
  ****************************************************************************/
 #include "IRanges.h"
 #include <stdlib.h> /* for qsort() */
 #include <R_ext/Utils.h> /* for R_CheckUserInterrupt() */
 
+
+/****************************************************************************
+ *                              "sort" method                               *
+ ****************************************************************************/
 
 /****************************************************************************
  * Basic manipulation of the SEids buffer (Start/End ids).
@@ -87,10 +95,8 @@ static void sort_SEids(int *SEids, int SEids_len,
 	return;
 }
 
-
 /****************************************************************************
- * int_coverage_sort(), int_coverage_hash(),
- * double_coverage_sort(), double_coverage_hash()
+ * int_coverage_sort(), double_coverage_sort()
  */
 
 /* 'values_buf' and 'lengths_buf' must have a length >= SEids_len + 1 */
@@ -208,32 +214,35 @@ static SEXP double_coverage_sort(const int *x_start, const int *x_width,
 	return _numeric_Rle_constructor(values_buf, buf_len, lengths_buf, 0);
 }
 
+
+/****************************************************************************
+ *                              "hash" method                               *
+ ****************************************************************************/
+
 static SEXP int_coverage_hash(
 		const int *x_start, const int *x_width, int x_len,
 		const int *weight, int weight_len,
 		int ans_len)
 {
-	int *cvg_buf, i, cvg_offset, *cvg_p, j, buflength;
+	int *cvg_buf, i, *cvg_p, cumsum, buflength;
 
-	cvg_buf = (int *) R_alloc((long) ans_len, sizeof(int));
+	cvg_buf = (int *) R_alloc((long) ans_len + 1, sizeof(int));
 	memset(cvg_buf, 0, ans_len * sizeof(int));
 	_reset_ovflow_flag(); /* we use _safe_int_add() in loop below */
 	for (i = 0; i < x_len; i++, x_start++, x_width++) {
-		if (*weight != 0) {
-			if (i % 500000 == 499999)
-				R_CheckUserInterrupt();
-			cvg_offset = *x_start - 1;
-			cvg_p = cvg_buf + cvg_offset;
-			//for (j = 0; j < *x_width; j++, cvg_offset++, cvg_p++)
-			for (j = 0; j < *x_width; j++, cvg_p++)
-			{
-				//if (cvg_offset >= ans_len)
-				//	continue;
-				*cvg_p = _safe_int_add(*cvg_p, *weight);
-			}
-		}
+		if (i % 500000 == 499999)
+			R_CheckUserInterrupt();
+		cvg_p = cvg_buf + *x_start - 1;
+		*cvg_p = _safe_int_add(*cvg_p,   *weight);
+		cvg_p += *x_width;
+		*cvg_p = _safe_int_add(*cvg_p, - *weight);
 		if (weight_len != 1)
 			weight++;
+	}
+	cumsum = 0;
+	for (i = 0, cvg_p = cvg_buf; i < ans_len; i++, cvg_p++) {
+		cumsum = _safe_int_add(*cvg_p, cumsum);
+		*cvg_p = cumsum;
 	}
 	if (_get_ovflow_flag())
 		warning("NAs produced by integer overflow");
@@ -247,28 +256,26 @@ static SEXP double_coverage_hash(
 		const double *weight, int weight_len,
 		int ans_len)
 {
-	double *cvg_buf, *cvg_p;
-	int i, cvg_offset, j, buflength;
+	double *cvg_buf, *cvg_p, cumsum;
+	int i, buflength;
 
-	cvg_buf = (double *) R_alloc((long) ans_len, sizeof(double));
-	for (j = 0, cvg_p = cvg_buf; j < ans_len; j++, cvg_p++)
+	cvg_buf = (double *) R_alloc((long) ans_len + 1, sizeof(double));
+	for (i = 0, cvg_p = cvg_buf; i < ans_len; i++, cvg_p++)
 		*cvg_p = 0.0;
 	for (i = 0; i < x_len; i++, x_start++, x_width++) {
-		if (*weight != 0.0) {
-			if (i % 500000 == 499999)
-				R_CheckUserInterrupt();
-			cvg_offset = *x_start - 1;
-			cvg_p = cvg_buf + cvg_offset;
-			//for (j = 0; j < *x_width; j++, cvg_offset++, cvg_p++)
-			for (j = 0; j < *x_width; j++, cvg_p++)
-			{
-				//if (cvg_offset >= ans_len)
-				//	continue;
-				*cvg_p += *weight;
-			}
-		}
+		if (i % 500000 == 499999)
+			R_CheckUserInterrupt();
+		cvg_p = cvg_buf + *x_start - 1;
+		*cvg_p += *weight;
+		cvg_p += *x_width;
+		*cvg_p -= *weight;
 		if (weight_len != 1)
 			weight++;
+	}
+	cumsum = 0.0;
+	for (i = 0, cvg_p = cvg_buf; i < ans_len; i++, cvg_p++) {
+		cumsum += *cvg_p;
+		*cvg_p = cumsum;
 	}
 	/* the nb of runs must be <= 2 * length(x) + 1 */
 	buflength = 2 * x_len + 1;
@@ -278,6 +285,11 @@ static SEXP double_coverage_hash(
 
 /****************************************************************************
  *                        --- .Call ENTRY POINTS ---                        *
+ *                                                                          *
+ * IMPORTANT: For the functions below, the 'x_start' and 'x_width' args     *
+ * must come from a Ranges object 'x' that has already been "restricted" to *
+ * the [1,width] interval, that is, 'x_start' must be >= 1 and 'x_width'    *
+ * must be <= width for all the ranges in 'x'.                              *
  ****************************************************************************/
 
 SEXP Ranges_integer_coverage(SEXP x_start, SEXP x_width,
@@ -293,8 +305,10 @@ SEXP Ranges_integer_coverage(SEXP x_start, SEXP x_width,
 	width0 = INTEGER(width)[0];
 	weight_len = LENGTH(weight);
 	weight_p = INTEGER(weight);
-	if (x_len == 0 || (weight_len == 1 && weight_p[0] == 0)) {
-		//return an Rle with one run of 0's
+	if (x_len == 0 || width0 == 0
+	 || (weight_len == 1 && weight_p[0] == 0))
+	{
+		//return an Rle with no run (empty Rle) or one run of 0's
 		zero = 0;
 		return _integer_Rle_constructor(&zero, 1, &width0, 0);
 	}
@@ -320,8 +334,10 @@ SEXP Ranges_numeric_coverage(SEXP x_start, SEXP x_width,
 	width0 = INTEGER(width)[0];
 	weight_len = LENGTH(weight);
 	weight_p = REAL(weight);
-	if (x_len == 0 || (weight_len == 1 && weight_p[0] == 0.0)) {
-		//return an Rle with one run of 0's
+	if (x_len == 0 || width0 == 0
+	 || (weight_len == 1 && weight_p[0] == 0.0))
+	{
+		//return an Rle with no run (empty Rle) or one run of 0's
 		zero = 0.0;
 		return _numeric_Rle_constructor(&zero, 1, &width0, 0);
 	}
