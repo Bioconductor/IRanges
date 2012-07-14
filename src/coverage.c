@@ -105,12 +105,12 @@ static void compute_int_coverage_in_bufs(const int *SEids, int SEids_len,
 		const int *weight, int weight_len, int ans_len,
 		int *values_buf, int *lengths_buf)
 {
-	int curr_val, curr_pos, curr_weight,
+	int weight0, curr_val, curr_pos, curr_weight,
 	    i, prev_pos, index;
 
+	weight0 = weight[0];
 	*(values_buf++) = curr_val = 0;
 	curr_pos = 1;
-	curr_weight = weight[0];
 	_reset_ovflow_flag(); /* we use _safe_int_add() in loop below */
 	for (i = 0; i < SEids_len; i++, SEids++) {
 		if (i % 500000 == 499999)
@@ -118,8 +118,7 @@ static void compute_int_coverage_in_bufs(const int *SEids, int SEids_len,
 		prev_pos = curr_pos;
 		index = SEid_TO_INDEX(*SEids);
 		curr_pos = x_start[index];
-		if (weight_len != 1)
-			curr_weight = weight[index];
+		curr_weight = weight_len == 1 ? weight0 : weight[index];
 		if (SEid_IS_END(*SEids)) {
 			curr_weight = - curr_weight;
 			curr_pos += x_width[index];
@@ -139,20 +138,19 @@ static void compute_double_coverage_in_bufs(const int *SEids, int SEids_len,
 		const double *weight, int weight_len, int ans_len,
 		double *values_buf, int *lengths_buf)
 {
-	double curr_val, curr_weight;
+	double weight0, curr_val, curr_weight;
 	int curr_pos, i, prev_pos, index;
 
+	weight0 = weight[0];
 	*(values_buf++) = curr_val = 0.0;
 	curr_pos = 1;
-	curr_weight = weight[0];
 	for (i = 0; i < SEids_len; i++, SEids++) {
 		if (i % 500000 == 499999)
 			R_CheckUserInterrupt();
 		prev_pos = curr_pos;
 		index = SEid_TO_INDEX(*SEids);
 		curr_pos = x_start[index];
-		if (weight_len != 1)
-			curr_weight = weight[index];
+		curr_weight = weight_len == 1 ? weight0 : weight[index];
 		if (SEid_IS_END(*SEids)) {
 			curr_weight = - curr_weight;
 			curr_pos += x_width[index];
