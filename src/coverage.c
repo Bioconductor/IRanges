@@ -4,7 +4,8 @@
  *               --------------------------------------------               *
  *                                                                          *
  *                 Authors: Patrick Aboyoun and Herve Pages                 *
- * Code based on timing enhancements by Charles C. Berry <ccberry@ucsd.edu> *
+ *            Code for "sort" method based on timing enhancements           *
+ *                  by Charles C. Berry <ccberry@ucsd.edu>                  *
  *                                                                          *
  ****************************************************************************/
 #include "IRanges.h"
