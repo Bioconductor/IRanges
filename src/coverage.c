@@ -21,8 +21,8 @@
  * Basic manipulation of the SEids buffer (Start/End ids).
  */
 
-#define SEid_TO_INDEX(SEid) ((SEid) / 2)
-#define SEid_IS_END(SEid) ((SEid) % 2)
+#define SEid_TO_1BASED_INDEX(SEid) ((SEid) >= 0 ? (SEid) : -(SEid))
+#define SEid_IS_END(SEid) ((SEid) >= 0)
 
 static const int *base_start;
 static const int *base_width;
@@ -33,8 +33,8 @@ static int compar_SEids_for_asc_order(const void *p1, const void *p2)
 
 	SEid1 = *((const int *) p1);
 	SEid2 = *((const int *) p2);
-	index1 = SEid_TO_INDEX(SEid1);
-	index2 = SEid_TO_INDEX(SEid2);
+	index1 = SEid_TO_1BASED_INDEX(SEid1);
+	index2 = SEid_TO_1BASED_INDEX(SEid2);
 	/* If SEid is a Start id, then s = start
 	   If SEid is an End id, then s = end + 1 */
 	s1 = base_start[index1];
@@ -50,14 +50,13 @@ static int compar_SEids_for_asc_order(const void *p1, const void *p2)
 static int init_SEids_int_weight(int *SEids, const int *x_width, int x_len,
 		const int *weight, int weight_len)
 {
-	int SEids_len, index, SEid;
+	int SEids_len, index;
 
 	SEids_len = 0;
-	for (index = 0; index < x_len; index++, x_width++) {
-		if (*x_width > 0 && *weight != 0) {
-			SEid = 2 * index;
-			*(SEids++) = SEid; /* Start id */
-			*(SEids++) = SEid + 1; /* End id */
+	for (index = 1; index <= x_len; index++, x_width++) {
+		if (*x_width != 0 && *weight != 0) {
+			*(SEids++) = index; /* Start id */
+			*(SEids++) = - index; /* End id */
 			SEids_len += 2;
 		}
 		if (weight_len != 1)
@@ -70,14 +69,13 @@ static int init_SEids_int_weight(int *SEids, const int *x_width, int x_len,
 static int init_SEids_double_weight(int *SEids, const int *x_width, int x_len,
 		const double *weight, int weight_len)
 {
-	int SEids_len, index, SEid;
+	int SEids_len, index;
 
 	SEids_len = 0;
-	for (index = 0; index < x_len; index++, x_width++) {
-		if (*x_width > 0 && *weight != 0.0) {
-			SEid = 2 * index;
-			*(SEids++) = SEid; /* Start id */
-			*(SEids++) = SEid + 1; /* End id */
+	for (index = 1; index <= x_len; index++, x_width++) {
+		if (*x_width != 0 && *weight != 0.0) {
+			*(SEids++) = index; /* Start id */
+			*(SEids++) = - index; /* End id */
 			SEids_len += 2;
 		}
 		if (weight_len != 1)
@@ -90,8 +88,8 @@ static int init_SEids_double_weight(int *SEids, const int *x_width, int x_len,
 static void sort_SEids(int *SEids, int SEids_len,
 		const int *x_start, const int *x_width)
 {
-	base_start = x_start;
-	base_width = x_width;
+	base_start = x_start - 1;
+	base_width = x_width - 1;
 	qsort(SEids, SEids_len, sizeof(int), compar_SEids_for_asc_order);
 	return;
 }
@@ -117,7 +115,7 @@ static void compute_int_coverage_in_bufs(const int *SEids, int SEids_len,
 		if (i % 500000 == 499999)
 			R_CheckUserInterrupt();
 		prev_pos = curr_pos;
-		index = SEid_TO_INDEX(*SEids);
+		index = SEid_TO_1BASED_INDEX(*SEids) - 1;
 		curr_pos = x_start[index];
 		curr_weight = weight_len == 1 ? weight0 : weight[index];
 		if (SEid_IS_END(*SEids)) {
@@ -149,7 +147,7 @@ static void compute_double_coverage_in_bufs(const int *SEids, int SEids_len,
 		if (i % 500000 == 499999)
 			R_CheckUserInterrupt();
 		prev_pos = curr_pos;
-		index = SEid_TO_INDEX(*SEids);
+		index = SEid_TO_1BASED_INDEX(*SEids) - 1;
 		curr_pos = x_start[index];
 		curr_weight = weight_len == 1 ? weight0 : weight[index];
 		if (SEid_IS_END(*SEids)) {
