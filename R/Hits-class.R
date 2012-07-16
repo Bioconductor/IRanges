@@ -199,6 +199,24 @@ setMethod("intersect", c("Hits", "Hits"), function(x, y) {
   x[x %in% y]
 })
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Utilities
+###
+
+countHits <- tabulate
+
+setGeneric("countSubjects", function(x, ...) standardGeneric("countSubjects"))
+
+setMethod("countSubjects", "Hits", function(x) {
+  countHits(subjectHits(x), subjectLength(x))
+})
+
+setGeneric("countQueries", function(x, ...) standardGeneric("countQueries"))
+
+setMethod("countQueries", "Hits", function(x) {
+  countHits(queryHits(x), queryLength(x))
+})
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### makeAllGroupInnerHits()
