@@ -917,7 +917,10 @@ setMethod("mstack", "Vector", function(..., .indName = "name") {
     stop("'.indName' must be a single, non-NA string")
   args <- list(...)
   combined <- do.call(c, unname(args))
-  values(combined) <- cbind(values(combined), .stack.ind(args, .indName))
+  df <- .stack.ind(args, .indName)
+  if (!is.null(values(combined)))
+    df <- cbind(values(combined), df)
+  values(combined) <- df
   combined
 })
 setMethod("mstack", "vector",
