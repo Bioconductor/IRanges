@@ -58,21 +58,33 @@ setMethod("coverage", "numeric",
     }
 )
 
-.Ranges.integer.coverage <- function(x, width, weight, method="sort")
+.select.method <- function(x, width)
 {
+    ## Based on empirical observation.
+    if (length(x) <= 0.25 * width)
+        return("sort")
+    return("hash")
+}
+
+.Ranges.integer.coverage <- function(x, width, weight, method="auto")
+{
+    if (method == "auto")
+        method <- .select.method(x, width)
     .Call2("Ranges_integer_coverage",
            start(x), width(x), width, weight, method,
            PACKAGE="IRanges")
 }
 
-.Ranges.numeric.coverage <- function(x, width, weight, method="sort")
+.Ranges.numeric.coverage <- function(x, width, weight, method="auto")
 {
+    if (method == "auto")
+        method <- .select.method(x, width)
     .Call2("Ranges_numeric_coverage",
            start(x), width(x), width, weight, method,
            PACKAGE="IRanges")
 }
 
-.Ranges.coverage <- function(x, width, weight, method="sort")
+.Ranges.coverage <- function(x, width, weight, method="auto")
 {
     weight_type <- typeof(weight)
     FUN <- switch(weight_type,
@@ -83,7 +95,8 @@ setMethod("coverage", "numeric",
 }
 
 setMethod("coverage", "IRanges",
-    function(x, shift=0L, width=NULL, weight=1L, method=c("sort", "hash"))
+    function(x, shift=0L, width=NULL, weight=1L,
+             method=c("auto", "sort", "hash"))
     {
         method <- match.arg(method)
         sx <- shift(x, shift)
@@ -112,7 +125,8 @@ setMethod("coverage", "IRanges",
 )
 
 setMethod("coverage", "Views",
-    function(x, shift=0L, width=NULL, weight=1L, method=c("sort", "hash"))
+    function(x, shift=0L, width=NULL, weight=1L,
+             method=c("auto", "sort", "hash"))
     {
         method <- match.arg(method)
         if (is.null(width))
@@ -129,7 +143,8 @@ setMethod("coverage", "Views",
 ### just calling coverage() on the single IRanges object resulting from
 ### unlisting 'x' ('shift' and 'weight' must be modified consequently).
 setMethod("coverage", "MaskCollection",
-    function(x, shift=0L, width=NULL, weight=1L, method=c("sort", "hash"))
+    function(x, shift=0L, width=NULL, weight=1L,
+             method=c("auto", "sort", "hash"))
     {
         method <- match.arg(method)
         shift <- recycleIntegerArg(shift, "shift", length(x))
@@ -165,7 +180,7 @@ setMethod("coverage", "RangesList",
              shift = structure(rep(list(0L), length(x)), names = names(x)),
              width = structure(rep(list(NULL), length(x)), names = names(x)),
              weight = structure(rep(list(1L), length(x)), names = names(x)),
-             method=c("sort", "hash"))
+             method=c("auto", "sort", "hash"))
     {
         method <- match.arg(method)
         lx <- length(x)
@@ -223,7 +238,7 @@ setMethod("coverage", "RangedData",
              shift = structure(rep(list(0L), length(x)), names = names(x)),
              width = structure(rep(list(NULL), length(x)), names = names(x)),
              weight = structure(rep(list(1L), length(x)), names = names(x)),
-             method = c("sort", "hash"))
+             method = c("auto", "sort", "hash"))
     {
         method <- match.arg(method)
         ranges <- ranges(x)

@@ -221,7 +221,7 @@ static SEXP int_coverage_hash(
 		const int *weight, int weight_len,
 		int ans_len)
 {
-	int *cvg_buf, i, *cvg_p, cumsum, buflength;
+	int *cvg_buf, i, *cvg_p, cumsum;
 
 	cvg_buf = (int *) R_alloc((long) ans_len + 1, sizeof(int));
 	memset(cvg_buf, 0, ans_len * sizeof(int));
@@ -243,9 +243,7 @@ static SEXP int_coverage_hash(
 	}
 	if (_get_ovflow_flag())
 		warning("NAs produced by integer overflow");
-	/* the nb of runs must be <= 2 * length(x) + 1 */
-	buflength = 2 * x_len + 1;
-	return _integer_Rle_constructor(cvg_buf, ans_len, NULL, buflength);
+	return _integer_Rle_constructor(cvg_buf, ans_len, NULL, 0);
 }
 
 static SEXP double_coverage_hash(
@@ -254,7 +252,7 @@ static SEXP double_coverage_hash(
 		int ans_len)
 {
 	double *cvg_buf, *cvg_p, cumsum;
-	int i, buflength;
+	int i;
 
 	cvg_buf = (double *) R_alloc((long) ans_len + 1, sizeof(double));
 	for (i = 0, cvg_p = cvg_buf; i < ans_len; i++, cvg_p++)
@@ -274,9 +272,7 @@ static SEXP double_coverage_hash(
 		cumsum += *cvg_p;
 		*cvg_p = cumsum;
 	}
-	/* the nb of runs must be <= 2 * length(x) + 1 */
-	buflength = 2 * x_len + 1;
-	return _numeric_Rle_constructor(cvg_buf, ans_len, NULL, buflength);
+	return _numeric_Rle_constructor(cvg_buf, ans_len, NULL, 0);
 }
 
 

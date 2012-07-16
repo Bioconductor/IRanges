@@ -20,7 +20,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, \dots)
        shift = structure(rep(list(0L), length(x)), names = names(x)),
        width = structure(rep(list(NULL), length(x)), names = names(x)),
        weight = structure(rep(list(1L), length(x)), names = names(x)),
-       method = c("sort", "hash"))
+       method = c("auto", "sort", "hash"))
 }
 
 \arguments{
@@ -77,13 +77,19 @@ coverage(x, shift=0L, width=NULL, weight=1L, \dots)
     \link{RangedData}) to be used as the weights.
   }
   \item{method}{
-    Settings \code{method} to \code{hash} is intended only for large
-    \code{x} objects. If \code{method} is set to the \code{sort}
-    default, then \code{x} is sorted during the calculation of the
-    coverage \link{Rle}. If \code{method} is set to \code{hash}, then
-    \code{x} is hashed to a vector of size \code{width}. Note that
-    setting \code{method} to \code{hash} saves time on large \code{x}
-    vectors, but at the expense of additional memory usage.
+    If \code{method} is set to \code{"sort"}, then \code{x} is sorted
+    previous to the calculation of the coverage. If \code{method} is set
+    to \code{hash}, then \code{x} is hashed directly to a vector of length
+    \code{width} without previous sorting.
+
+    The \code{"hash"} method is faster than the \code{"sort"} method when
+    \code{x} is large (i.e. contains a lot of ranges). When \code{x} is small
+    and \code{width} is big (e.g. \code{x} represents a small set of reads
+    aligned to a big chromosome), then \code{method="sort"} is faster and
+    uses less memory than \code{method="hash"}.
+
+    Using \code{method="auto"} selects the best method based on
+    \code{length(x)} and \code{width}.
   }
   \item{\dots}{
     Further arguments to be passed to or from other methods.
