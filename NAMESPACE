@@ -341,6 +341,7 @@ exportMethods(
     rdapply,
     universe, "universe<-", space, score, "score<-",
     queryHits, subjectHits, queryLength, subjectLength,
+    countQueryHits, countSubjectHits,
     Loffset, Roffset, encoding, flippedQuery,
     Lencoding, Rencoding, Lngap, Rngap, encodeOverlaps,
     expand

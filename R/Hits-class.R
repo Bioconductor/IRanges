@@ -116,13 +116,18 @@ setMethod("as.data.frame", "Hits",
 
 ## a list, with an element for each query, containing the subject hits
 setMethod("as.list", "Hits",
-          function(x, values = seq(subjectLength(x))) {
+          function(x, values = seq_len(subjectLength(x))) {
             unname(split(values[subjectHits(x)],
-                         factor(queryHits(x), levels = seq(queryLength(x)))))
+                         factor(queryHits(x),
+                                levels = seq_len(queryLength(x)))))
           })
 
 setAs("Hits", "list", function(from) as.list(from))
-setAs("Hits", "List", function(from) castList(as.list(from)))
+setAs("Hits", "List", function(from) {
+  unname(seqsplit(subjectHits(x),
+                  factor(queryHits(x),
+                         levels = seq_len(queryLength(x)))))
+})
 
 ## count up the hits for each query
 
@@ -205,15 +210,16 @@ setMethod("intersect", c("Hits", "Hits"), function(x, y) {
 
 countHits <- tabulate
 
-setGeneric("countSubjects", function(x, ...) standardGeneric("countSubjects"))
+setGeneric("countSubjectHits",
+           function(x, ...) standardGeneric("countSubjectHits"))
 
-setMethod("countSubjects", "Hits", function(x) {
+setMethod("countSubjectHits", "Hits", function(x) {
   countHits(subjectHits(x), subjectLength(x))
 })
 
-setGeneric("countQueries", function(x, ...) standardGeneric("countQueries"))
+setGeneric("countQueryHits", function(x, ...) standardGeneric("countQueryHits"))
 
-setMethod("countQueries", "Hits", function(x) {
+setMethod("countQueryHits", "Hits", function(x) {
   countHits(queryHits(x), queryLength(x))
 })
 
