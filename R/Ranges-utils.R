@@ -248,7 +248,15 @@ setMethod("shift", "Ranges",
     function(x, shift=0L, use.names=TRUE)
     {
         shift <- recycleIntegerArg(shift, "shift", length(x))
-        x <- update(x, start=start(x) + shift, width=width(x), check=FALSE)
+        ## Note that we won't do anything with 'new_end', we just want to
+        ## fail in case of integer overflow.
+        errorIfWarning(new_start <- start(x) + shift)
+        errorIfWarning(new_end <- new_start + width(x) - 1L)
+        if (is(x, "IRanges")) {
+            x@start <- new_start
+        } else {
+            x <- update(x, start=new_start, width=width(x), check=FALSE)
+        }
         if (!normargUseNames(use.names))
             names(x) <- NULL
         x

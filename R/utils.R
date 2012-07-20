@@ -17,6 +17,13 @@ setOldClass("xtabs", "table")
 ### Unless stated otherwise, nothing in this section is exported.
 ###
 
+errorIfWarning <- function(expr)
+{
+    old_options <- options(warn=2)        
+    on.exit(options(old_options))
+    eval(expr)
+}
+
 AEbufs.use.malloc <- function(x)
     .Call("AEbufs_use_malloc", x, PACKAGE="IRanges")
 

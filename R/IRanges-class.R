@@ -298,12 +298,12 @@ unsafe.update <- function(object, ...)
     argnames <- names(args)
     sew <- c("start", "end", "width")
     narg_in_sew <- sum(sew %in% argnames)
-    if (narg_in_sew == 3)
-        stop("only two out of the ",
+    if (narg_in_sew == 3L)
+        stop("at most 2 out of the ",
              paste("'", sew, "'", sep="", collapse=", "),
              " arguments can be supplied")
-    do_atomic_update <- narg_in_sew == 2 && (is.null(names(object))
-                                             || ("names" %in% argnames))
+    do_atomic_update <- narg_in_sew == 2L &&
+                        (is.null(names(object)) || ("names" %in% argnames))
     if (do_atomic_update) {
         if ("end" %in% argnames) {
             if ("width" %in% argnames) {
