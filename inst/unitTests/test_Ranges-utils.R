@@ -1,3 +1,9 @@
+test_Ranges_shift <- function() {
+  ir1 <- IRanges(1:20, width=222000000)
+  ## The returned object would have end values > INT_MAX
+  checkException(shift(ir1, 1:20 * 99000000L))
+}
+ 
 test_Ranges_order <- function() {
   ir1 <- IRanges(c(2,5,1,5), c(3,7,3,6))
   ir1.sort <- IRanges(c(1,2,5,5), c(3,3,6,7))
