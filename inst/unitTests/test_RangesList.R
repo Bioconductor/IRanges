@@ -255,3 +255,30 @@ test_IRangesList_annotation <- function() {
 ##   overlap(rl1[1], rl2, select = "first")
 ##   overlap(rl1[1], rl2, select = "first", drop = TRUE)
 ## }
+
+test_CompressedIRangesList_disjoin <- function()
+{
+    r0 <- IRanges(10, 20)
+    checkTrue(validObject(disjoin(IRangesList())))
+    ## unnamed; incl. 0-width
+    irl <- IRangesList(IRanges())
+    checkIdentical(irl, disjoin(irl))
+    irl <- IRangesList(r0, IRanges(), r0)
+    checkIdentical(irl, disjoin(irl))
+    irl <- IRangesList(r0, IRanges(), IRanges(), r0)
+    checkIdentical(irl, disjoin(irl))
+    ## named; incl. 0-width
+    irl <- IRangesList(a=IRanges())
+    checkIdentical(irl, disjoin(irl))
+    irl <- IRangesList(a=r0, b=IRanges(), c=r0)
+    checkIdentical(irl, disjoin(irl))
+    irl <- IRangesList(a=r0, b=IRanges(), c=IRanges(), d=r0)
+    checkIdentical(irl, disjoin(irl))
+    ## no interference between separate elements
+    r0 <- IRanges(10, c(15, 20))
+    dr0 <- disjoin(r0)
+    irl <- IRangesList(r0, r0)
+    checkIdentical(IRangesList(dr0, dr0), disjoin(irl))
+    irl <- IRangesList(r0, IRanges(), r0)
+    checkIdentical(IRangesList(dr0, IRanges(), dr0), disjoin(irl))
+}
