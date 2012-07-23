@@ -260,14 +260,14 @@ test_CompressedIRangesList_disjoin <- function()
 {
     r0 <- IRanges(10, 20)
     checkTrue(validObject(disjoin(IRangesList())))
-    ## unnamed; incl. 0-width
+    ## unnamed; incl. 0-length
     irl <- IRangesList(IRanges())
     checkIdentical(irl, disjoin(irl))
     irl <- IRangesList(r0, IRanges(), r0)
     checkIdentical(irl, disjoin(irl))
     irl <- IRangesList(r0, IRanges(), IRanges(), r0)
     checkIdentical(irl, disjoin(irl))
-    ## named; incl. 0-width
+    ## named; incl. 0-length
     irl <- IRangesList(a=IRanges())
     checkIdentical(irl, disjoin(irl))
     irl <- IRangesList(a=r0, b=IRanges(), c=r0)
@@ -281,4 +281,11 @@ test_CompressedIRangesList_disjoin <- function()
     checkIdentical(IRangesList(dr0, dr0), disjoin(irl))
     irl <- IRangesList(r0, IRanges(), r0)
     checkIdentical(IRangesList(dr0, IRanges(), dr0), disjoin(irl))
+    ## 0-width
+    ## 1-width
+    r0 <- IRanges(c(1, 10), 10)
+    irl <- IRangesList(r0, IRanges())
+    checkIdentical(disjoin(r0), disjoin(irl)[[1]])
+    irl <- IRangesList(IRanges(), r0)
+    checkIdentical(disjoin(r0), disjoin(irl)[[2]])
 }

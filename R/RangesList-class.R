@@ -441,35 +441,31 @@ setMethod("disjoin", "RangesList", function(x) endoapply(x, disjoin))
 setMethod("disjoin", "CompressedIRangesList",
           function(x, ...)
           {
-              .unlist <- function(x)
-                  ## un-named unlist
-                  unlist(x, use.names=FALSE)
               .wunlist <- function(x)
-                  ## unlist Compressed*List, coercing integer(0) to 0
+                  ## unlist CompressedIntegerList, with integer(0) as 0
               {
                   w <- integer(length(x))
-                  w[width(x@partitioning) != 0L] <- .unlist(x)
+                  w[elementLengths(x) != 0L] <- unlist(x, use.names=FALSE)
                   w
               }
 
               rng <- range(x)
-              if (sum(.unlist(width(rng) + 1)) > .Machine$integer.max)
+              if (sum(.wunlist(width(rng) + 1)) > .Machine$integer.max)
                   return(endoapply(x, disjoin,  ...))
 
               ## localize coordinates
               off0 <- head(.wunlist(width(rng) + 1L), -1L)
               offset <- c(1L, cumsum(off0)) - .wunlist(start(rng))
-              local <- .unlist(shift(x, offset))
+              local <- unlist(shift(x, offset), use.names=FALSE)
 
               ## disjoin
               lvls <- names(x)
               if (is.null(lvls))
                   lvls <- seq_along(x)
-
               d <- disjoin(local, ...)
-
-              map <- rep(lvls, elementLengths(x))
-              f <- map[findOverlaps(d, local, select="arbitrary")]
+              vec <- unlist(start(shift(rng, offset)), use.names=FALSE)
+              lvls0 <- lvls[elementLengths(rng) != 0]
+              f <- lvls0[findInterval(start(d), vec)]
               d <- split(d, factor(f, levels=lvls))
               if (is.null(names(x)))
                   names(d) <- NULL
