@@ -309,14 +309,16 @@ tseqapply <- function(X, INDEX, FUN = NULL, ...) {
 seqsplit <- function(x, f, drop=FALSE) {
   cl <- class(x)
   cl <- c(cl, names(getClass(cl)@contains))
-  substring(cl, 1, 1) <- toupper(substring(cl, 1, 1))
+  substring(cl, 1L, 1L) <- toupper(substring(cl, 1L, 1L))
   compressedClass <- paste("Compressed", cl, "List", sep = "")
   clExists <- which(sapply(compressedClass,
                            function(ccl) !is.null(getClassDef(ccl))))
-  if (length(clExists))
-    newCompressedList(compressedClass[clExists[1L]], x, splitFactor = f,
-                      drop = drop)
-  else castList(split(x, f, drop))
+  if (length(clExists) == 0L)
+    return(castList(split(x, f, drop)))
+  compressedClass1 <- compressedClass[clExists[1L]]
+  if (is(f, "PartitioningByEnd"))
+    return(newCompressedList0(compressedClass1, x, f))
+  newCompressedList(compressedClass1, x, splitFactor = f, drop = drop)
 }
 
 seqby <- function(data, INDICES, FUN, ...) {

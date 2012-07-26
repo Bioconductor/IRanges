@@ -598,10 +598,20 @@ setValidity2("PartitioningByEnd", .valid.PartitioningByEnd)
 
 PartitioningByEnd <- function(end=integer(), names=NULL)
 {
-    if (!is.numeric(end))
-        stop("'end' must contain integer values")
-    if (!is.integer(end))
-        end <- as.integer(end)
+    if (is(end, "CompressedList")) {
+        if (!is.null(names))
+            warning("'names' argument is ignored when 'end' is ",
+                    "a CompressedList object")
+        return(end@partitioning)
+    }
+    if (is(end, "List") || is.list(end)) {
+        end <- cumsum(elementLengths(end))
+    } else {
+        if (!is.numeric(end))
+            stop("'end' must contain integer values")
+        if (!is.integer(end))
+            end <- as.integer(end)
+    }
     new2("PartitioningByEnd", end=unname(end), NAMES=names, check=FALSE)
 }
 
@@ -678,12 +688,14 @@ setValidity2("PartitioningByWidth", .valid.PartitioningByWidth)
 
 PartitioningByWidth <- function(width=integer(), names=NULL)
 {
-    if (is(width, "List") || is.list(width))
+    if (is(width, "List") || is.list(width)) {
         width <- elementLengths(width)
-    if (!is.numeric(width))
-        stop("'width' must contain integer values")
-    if (!is.integer(width))
-        width <- as.integer(width)
+    } else {
+        if (!is.numeric(width))
+            stop("'width' must contain integer values")
+        if (!is.integer(width))
+            width <- as.integer(width)
+    }
     new2("PartitioningByWidth", width=unname(width), NAMES=names, check=FALSE)
 }
 
@@ -696,4 +708,68 @@ setAs("Ranges", "PartitioningByWidth",
         ans
     }
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### findOverlaps()
+###
+
+### A simple findOverlaps method that doesn't use IntervalTree but works only
+### on a subject with *adjacent* ranges sorted non-decreasingly.
+### Can be 30% faster or more than the real findOverlaps() (IntervalTree-based)
+### when 'query' is such that 'start(query)' and 'end(query)' are also sorted
+### non-decreasingly (which is the case if for example 'query' is a
+### Partitioning object).
+### TODO: Add a "findOverlaps" method for Partitioning,Partitioning in the
+### findOverlaps-methods.R file that calls this.
+findOverlaps_Ranges_Partitioning <- function(query, subject,
+                                             hit.empty.query.ranges=FALSE,
+                                             hit.empty.subject.ranges=FALSE)
+{
+    if (!is(query, "Ranges"))
+        stop("'query' must be a Ranges object")
+    if (!is(subject, "Partitioning"))
+        stop("'subject' must be a Partitioning object")
+    if (!isTRUEorFALSE(hit.empty.query.ranges) ||
+        !isTRUEorFALSE(hit.empty.subject.ranges))
+        stop("'hit.empty.query.ranges' and 'hit.empty.subject.ranges' ",
+             "must be TRUE or FALSE")
+    q_len <- length(query)
+    q_start <- start(query)
+    q_end <- end(query)
+    s_len <- length(subject)
+    s_end <- end(subject)
+    if (!hit.empty.query.ranges) {
+        q_idx <- which(width(query) != 0L)
+        q_start <- q_start[q_idx]
+        q_end <- q_end[q_idx]
+    }
+    if (!hit.empty.subject.ranges) {
+        s_idx <- which(width(subject) != 0L)
+        s_end <- s_end[s_idx]
+    }
+    vec <- c(0L, s_end) + 0.5
+    q_start2subject <- findInterval(q_start, vec)
+    q_end2subject <- findInterval(q_end, vec)
+    q_hits <- rep.int(seq_len(length(q_start)),
+                      q_end2subject - q_start2subject + 1L)
+    s_hits <- mseq(q_start2subject, q_end2subject)
+    ## If 'query' is a Partitioning object, all hits are guaranteed to be
+    ## valid.
+    if (!is(query, "Partitioning")) {
+        ## Remove invalid hits.
+        is_valid <- 1L <= s_hits & s_hits <= length(s_end)
+        q_hits <- q_hits[is_valid]
+        s_hits <- s_hits[is_valid]
+    }
+    ## Remap hits to original query/subject.
+    if (!hit.empty.query.ranges)
+        q_hits <- q_idx[q_hits]
+    if (!hit.empty.subject.ranges)
+        s_hits <- s_idx[s_hits]
+
+    ## Make and return Hits object.
+    new2("Hits", queryHits=q_hits, subjectHits=s_hits,
+                 queryLength=q_len, subjectLength=s_len)
+}   
 

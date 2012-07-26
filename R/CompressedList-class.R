@@ -42,6 +42,12 @@ setReplaceMethod("names", "CompressedList",
 ### Constructor.
 ###
 
+newCompressedList0 <- function(Class, unlistData, partitioning)
+{
+    new2(Class, unlistData=unlistData,
+                partitioning=partitioning, check=FALSE)
+}
+
 .compress.list <- function(x) {
     if (length(x) > 0) {
         if (length(dim(x[[1L]])) < 2) {
@@ -179,6 +185,7 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
          new2("PartitioningByEnd", end = end, NAMES = NAMES, check=FALSE),
          ..., check=FALSE)
 }
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.

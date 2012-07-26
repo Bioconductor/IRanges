@@ -647,7 +647,7 @@ setMethod("cumsum", "CompressedAtomicList",
           function(x) {
               xunlist <- unlist(x, use.names=FALSE)
               xcumsum <- cumsum(as.numeric(xunlist))
-              partition <- PartitioningByWidth(elementLengths(x))
+              partition <- PartitioningByEnd(x)
               ans <- xcumsum - rep(xcumsum[start(partition)] -
                   xunlist[start(partition)], width(partition))
               CompressedAtomicList(ans, partitioning=x@partitioning)
@@ -1087,19 +1087,32 @@ setAtomicListMethod("gsub", inputBaseClass = "CharacterList",
 ### Rle methods
 ###
 
-setMethod("runValue", "SimpleRleList", function(x) {
+setMethod("runValue", "RleList", function(x) {
   seqapply(x, runValue)
 })
 
-setMethod("runValue", "CompressedRleList", function(x) {
-  rle <- unlist(x, use.names=FALSE)
-  rlePart <- PartitioningByWidth(runLength(rle))
-  listPart <- PartitioningByWidth(elementLengths(x))
-  ol <- findOverlaps(rlePart, listPart)
-  setNames(seqsplit(runValue(rle)[queryHits(ol)], subjectHits(ol)), names(x))
-})
+setMethod("runValue", "CompressedRleList",
+    function(x)
+    {
+        rle <- unlist(x, use.names=FALSE)
+        rlePart <- PartitioningByWidth(runLength(rle))
+        listPart <- PartitioningByEnd(x)
+        ## 'rlePart' cannot contain empty ranges so using
+        ## Using 'hit.empty.query.ranges=TRUE' won't affect the result
+        ## (because 'rlePart' cannot contain empty ranges) but it makes
+        ## findOverlaps_Ranges_Partitioning() just a little bit faster.
+        hits <- findOverlaps_Ranges_Partitioning(rlePart, listPart,
+                                                 hit.empty.query.ranges=TRUE)
+        ans_end <- cumsum(tabulate(subjectHits(hits), nbins=length(x)))
+        ans_partitioning <- PartitioningByEnd(ans_end)
+        ans_unlistData <- runValue(rle)[queryHits(hits)]
+        ans <- seqsplit(ans_unlistData, ans_partitioning)
+        names(ans) <- names(x)
+        ans
+    }
+)
 
-setMethod("runLength", "SimpleRleList", function(x) {
+setMethod("runLength", "RleList", function(x) {
   seqapply(x, runLength)
 })
 
@@ -1107,19 +1120,32 @@ setMethod("runLength", "CompressedRleList", function(x) {
   width(ranges(x))
 })
 
-setMethod("ranges", "SimpleRleList", function(x) {
+setMethod("ranges", "RleList", function(x) {
   seqapply(x, ranges)
 })
 
-setMethod("ranges", "CompressedRleList", function(x) {
-  rle <- unlist(x, use.names=FALSE)
-  rlePart <- PartitioningByWidth(runLength(rle))
-  listPart <- PartitioningByWidth(elementLengths(x))
-  ol <- findOverlaps(rlePart, listPart)
-  ranges <- shift(ranges(ol, rlePart, listPart),
-                  1L - start(listPart)[subjectHits(ol)])
-  setNames(seqsplit(ranges, subjectHits(ol)), names(x))
-})
+setMethod("ranges", "CompressedRleList",
+    function(x)
+    {
+        rle <- unlist(x, use.names=FALSE)
+        rlePart <- PartitioningByWidth(runLength(rle))
+        listPart <- PartitioningByEnd(x)
+        ## 'rlePart' cannot contain empty ranges so using
+        ## Using 'hit.empty.query.ranges=TRUE' won't affect the result
+        ## (because 'rlePart' cannot contain empty ranges) but it makes
+        ## findOverlaps_Ranges_Partitioning() just a little bit faster.
+        hits <- findOverlaps_Ranges_Partitioning(rlePart, listPart,
+                                                 hit.empty.query.ranges=TRUE)
+        ans_end <- cumsum(tabulate(subjectHits(hits), nbins=length(x)))
+        ans_partitioning <- PartitioningByEnd(ans_end)
+        ans_unlistData <- shift(ranges(hits, rlePart, listPart),
+                                1L - start(listPart)[subjectHits(hits)])
+        ans <- seqsplit(ans_unlistData, ans_partitioning)
+        names(ans) <- names(x)
+        ans
+    }
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.

@@ -237,12 +237,12 @@
 \alias{gsub,ANY,ANY,CompressedRleList-method}
 \alias{gsub,ANY,ANY,SimpleRleList-method}
 
-\alias{runLength,SimpleRleList-method}
-\alias{runValue,SimpleRleList-method}
+\alias{runLength,RleList-method}
+\alias{runValue,RleList-method}
 \alias{runLength,CompressedRleList-method}
 \alias{runValue,CompressedRleList-method}
 
-\alias{ranges,SimpleRleList-method}
+\alias{ranges,RleList-method}
 \alias{ranges,CompressedRleList-method}
 
 \alias{show,AtomicList-method}
