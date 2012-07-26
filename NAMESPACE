@@ -125,26 +125,13 @@ export(
     "start<-",
     "width<-",
     "end<-",
-    shift,
-    restrict,
-    narrow,
-    resize,
-    threebands,
-    reduce,
-    gaps,
+    isNormal, whichFirstNotNormal,
     compare, rangeComparisonCodeToLetter,
-    findOverlaps, countOverlaps,
-    subsetByOverlaps,
-    nearest, precede, follow,
-    distance, distanceToNearest,
-    reflect,
-    flank,
+    shift, narrow, flank, reflect, resize, restrict, threebands,
+    reduce, gaps, disjoin, isDisjoint, disjointBins,
     punion, pintersect, psetdiff, pgap,
-    disjoin, disjointBins,
-    isNormal,
-    isDisjoint,
-    whichFirstNotNormal,
-    coverage,
+    findOverlaps, countOverlaps, subsetByOverlaps,
+    nearest, precede, follow, distance, distanceToNearest,
     
     ## Generic functions in the Rle API:
     Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
@@ -201,7 +188,10 @@ export(
 
     ## Other generic functions:
     xvcopy, compact,
-    reverse
+    reverse,
+
+    ## coverage.R:
+    coverage
 )
 
 exportMethods(
@@ -284,22 +274,13 @@ exportMethods(
     "start<-",
     "width<-",
     "end<-",
-    shift,
-    restrict,
-    narrow,
-    resize,
-    threebands,
-    reduce,
-    gaps,
+    isNormal, whichFirstNotNormal,
     compare,
-    findOverlaps, countOverlaps,
-    subsetByOverlaps,
-    nearest, precede, follow,
-    distance, distanceToNearest,
-    reflect,
-    flank,
+    shift, narrow, flank, reflect, resize, restrict, threebands,
+    range, reduce, gaps, disjoin, isDisjoint, disjointBins,
     punion, pintersect, psetdiff, pgap,
-    disjoin, disjointBins,
+    findOverlaps, countOverlaps, subsetByOverlaps,
+    nearest, precede, follow, distance, distanceToNearest,
 
     Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
     findRange, findRun,
@@ -311,12 +292,6 @@ exportMethods(
 
     as.env,
 
-    isNormal,
-    isDisjoint,
-    whichFirstNotNormal,
-    xvcopy, compact,
-    reverse,
-    coverage,
     nir_list,
     active, "active<-",
     desc, "desc<-",
@@ -344,6 +319,9 @@ exportMethods(
     countQueryHits, countSubjectHits,
     Loffset, Roffset, encoding, flippedQuery,
     Lencoding, Rencoding, Lngap, Rngap, encodeOverlaps,
+    xvcopy, compact,
+    reverse,
+    coverage,
     expand
 )
 

@@ -25,7 +25,6 @@ setClass("Ranges", contains="IntegerList", representation("VIRTUAL"))
 ###
 ###   Testing a Ranges object:
 ###     isEmpty
-###     isDisjoint
 ###     isNormal, whichFirstNotNormal
 ###
 ###   Core endomorphisms:
@@ -179,20 +178,6 @@ setMethod("showAsCell", "Ranges",
 
 ### A Ranges object is considered empty iff all its ranges are empty.
 setMethod("isEmpty", "Ranges", function(x) all(width(x) == 0L))
-
-setGeneric("isDisjoint", function(x, ...) standardGeneric("isDisjoint"))
-
-setMethod("isDisjoint", "Ranges",
-    function(x)
-    {
-        x <- x[width(x) > 0L]
-        if (length(x) < 2)
-            return(TRUE)
-        starts <- start(x)
-        startord <- orderInteger(starts)
-        all(starts[startord][-1L] - end(x)[startord][-length(x)] >= 1L)
-    }
-)
 
 setGeneric("isNormal", function(x) standardGeneric("isNormal"))
 

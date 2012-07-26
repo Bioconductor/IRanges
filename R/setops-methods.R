@@ -2,33 +2,31 @@
 ### Set operations on IRanges objects
 ### -------------------------------------------------------------------------
 ###
+### I. Vector-wise set operations: union, intersect, setdiff
+###
+### All the functions in that group are implemented to behave like
+### endomorphisms with respect to their first argument 'x'.
+### If 'x' is an IRanges object then the returned IRanges object is also
+### guaranteed to be normal (note that if 'x' is an IRanges *instance* then
+### the returned object is still an IRanges instance, so it is *not* promoted
+### to NormalIRanges).
+### Finally, the functions in that group interpret each supplied IRanges
+### object ('x' or 'y') as a set of integer values. Therefore, if 2 IRanges
+### objects 'x1' and 'x2' represent the same set of integers, then each of
+### these functions will return the same result when 'x1' is replaced by 'x2'
+### in the input.
+###
+### II. Element-wise (aka "parallel") set operations: punion, pintersect,
+###     psetdiff, pgap
+###
+### The functions in that group take 2 *objects* of the same length and
+### return an object of the same class and length as the first argument.
+###
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Vector-wise set operations.
+### union()
 ###
-### All the functions in that section are implemented to behave like
-### endomorphisms with respect to their first argument 'x' (an IRanges
-### object).
-### The returned IRanges object is guaranteed to be normal (note that, in
-### case of an IRanges *instance*, it is *not* promoted to NormalIRanges).
-### Finally, each of these function interprets each supplied IRanges object
-### ('x' or 'y') as a set of integer values. Therefore, if 2 IRanges objects
-### 'x1' and 'x2' represent the same set of integers, then each of these
-### functions will return the same result when 'x1' is replaced by 'x2' in
-### the input.
-###
-
-setMethod("gaps", "IRanges",
-    function(x, start=NA, end=NA)
-    {
-        start <- normargSingleStartOrNA(start)
-        end <- normargSingleEndOrNA(end)
-        C_ans <- .Call2("IRanges_gaps", x, start, end, PACKAGE="IRanges")
-        initialize(x, start=C_ans$start, width=C_ans$width, NAMES=NULL,
-                   elementMetadata=NULL)
-    }
-)
 
 setMethod("union", c("IRanges", "IRanges"),
     function(x, y, ...)
@@ -48,6 +46,28 @@ setMethod("union", c("IRanges", "IRanges"),
     }
 )
 
+setMethod("union", c("RangesList", "RangesList"),
+          function(x, y) mendoapply(union, x, y))
+
+setMethod("union", c("CompressedIRangesList", "CompressedIRangesList"),
+          function(x, y) {
+            len <- max(length(x), length(y))
+            if (length(x) != len)
+              x <- x[recycleVector(seq_len(length(x)), len)]
+            if (length(y) != len)
+              y <- y[recycleVector(seq_len(length(y)), len)]
+            xy <- c(unlist(x, use.names = FALSE), unlist(y, use.names = FALSE))
+            xy_list <- split(xy, factor(c(togroup(x), togroup(y)),
+                                        seq_len(length(x))))
+            names(xy_list) <- names(x)
+            reduce(xy_list, drop.empty.ranges=TRUE)
+          })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### intersect()
+###
+
 setMethod("intersect", c("IRanges", "IRanges"),
     function(x, y, ...)
     {
@@ -58,6 +78,25 @@ setMethod("intersect", c("IRanges", "IRanges"),
         setdiff(x, gaps(y, start=start, end=end))
     }
 )
+
+setMethod("intersect", c("RangesList", "RangesList"),
+          function(x, y) mendoapply(intersect, x, y))
+
+setMethod("intersect", c("CompressedIRangesList", "CompressedIRangesList"),
+          function(x, y) {
+            nonempty <- elementLengths(x) != 0L
+            rx <- unlist(range(x), use.names = FALSE)
+            startx <- integer()
+            startx[nonempty] <- start(rx)
+            endx <- integer()
+            endx[nonempty] <- end(rx)
+            setdiff(x, gaps(y, start = startx, end = endx))
+          })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### setdiff()
+###
 
 setMethod("setdiff", c("IRanges", "IRanges"),
     function(x, y, ...)
@@ -70,12 +109,23 @@ setMethod("setdiff", c("IRanges", "IRanges"),
     }
 )
 
+setMethod("setdiff", c("RangesList", "RangesList"),
+          function(x, y) mendoapply(setdiff, x, y))
+
+setMethod("setdiff", c("CompressedIRangesList", "CompressedIRangesList"),
+          function(x, y) {
+            nonempty <- elementLengths(x) != 0L
+            rx <- unlist(range(x), use.names = FALSE)
+            startx <- integer()
+            startx[nonempty] <- start(rx)
+            endx <- integer()
+            endx[nonempty] <- end(rx)
+            gaps(union(gaps(x), y), start = startx, end = endx)
+          })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Element-wise (aka "parallel") set operations.
-###
-### The functions below take 2 IRanges *objects* and return an IRanges
-### *instance*. Hence they are NOT endomorphisms.
+### punion()
 ###
 
 setGeneric("punion", signature=c("x", "y"),
@@ -106,6 +156,11 @@ setMethod("punion", c("IRanges", "IRanges"),
         IRanges(start=ans_start, end=ans_end, names=ans_names)
     }
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### pintersect()
+###
 
 setGeneric("pintersect", signature=c("x", "y"),
     function(x, y, ...) standardGeneric("pintersect")
@@ -165,6 +220,11 @@ setMethod("pintersect", c("IRanges", "IRanges"),
     }
 )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### psetdiff()
+###
+
 setGeneric("psetdiff", signature=c("x", "y"),
     function(x, y, ...) standardGeneric("psetdiff")
 )
@@ -195,6 +255,11 @@ setMethod("psetdiff", c("IRanges", "IRanges"),
     }
 )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### pgap()
+###
+
 setGeneric("pgap", signature=c("x", "y"),
     function(x, y, ...) standardGeneric("pgap")
 )
@@ -214,3 +279,4 @@ setMethod("pgap", c("IRanges", "IRanges"),
         IRanges(start=ans_start, width=ans_width, names=ans_names)
     }
 )
+

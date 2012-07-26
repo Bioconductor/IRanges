@@ -2,23 +2,20 @@
 
 \alias{Ranges-utils}
 
-\alias{flank}
-\alias{flank,Ranges-method}
-\alias{flank,NormalIRanges-method}
-\alias{narrow}
-\alias{narrow,Ranges-method}
-\alias{narrow,NormalIRanges-method}
-\alias{reflect}
-\alias{reflect,Ranges-method}
-\alias{reflect,NormalIRanges-method}
-\alias{resize}
-\alias{resize,Ranges-method}
-\alias{resize,NormalIRanges-method}
-\alias{restrict}
-\alias{restrict,Ranges-method}
-\alias{restrict,NormalIRanges-method}
 \alias{shift}
 \alias{shift,Ranges-method}
+\alias{narrow}
+\alias{narrow,Ranges-method}
+\alias{flank}
+\alias{flank,Ranges-method}
+\alias{reflect}
+\alias{reflect,Ranges-method}
+\alias{resize}
+\alias{resize,Ranges-method}
+\alias{Ops,Ranges,numeric-method}
+
+\alias{restrict}
+\alias{restrict,Ranges-method}
 
 \alias{range,Ranges-method}
 \alias{range,IRanges-method}
@@ -38,12 +35,12 @@
 }
 
 \usage{
-flank(x, width, start=TRUE, both=FALSE, use.names=TRUE,...)
-narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
-reflect(x, bounds, use.names=TRUE)
-resize(x, width, fix="start", use.names=TRUE,...)
-restrict(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
 shift(x, shift=0L, use.names=TRUE)
+narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
+flank(x, width, start=TRUE, both=FALSE, use.names=TRUE,...)
+reflect(x, bounds, use.names=TRUE)
+restrict(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
+resize(x, width, fix="start", use.names=TRUE,...)
 
 \S4method{range}{Ranges}(x, ..., na.rm = FALSE)
 \S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
@@ -136,6 +133,23 @@ threebands(x, start=NA, end=NA, width=NA)
 }
 
 \details{
+  \code{shift} returns an object of the same type and length as \code{x}
+  containing intervals with start and end values shifted by integer vector 
+  \code{shift}. The \code{use.names} argument determines whether or not to
+  keep the names on the ranges.
+
+  \code{narrow} narrows the ranges in \code{x} i.e. each range in the
+  returned \link{Ranges} object is a subrange of the corresponding
+  range in \code{x}.
+  The supplied start/end/width values are solved by a call to
+  \code{solveUserSEW(width(x), start=start, end=end, width=width)}
+  and therefore must be compliant with the rules of the SEW
+  (Start/End/Width) interface (see \code{?\link{solveUserSEW}}
+  for the details).
+  Then each subrange is derived from the original range according
+  to the solved start/end/width values for this range. Note that those
+  solved values are interpreted relatively to the original range.
+
   \code{flank} generates flanking ranges for each range in \code{x}. If
   \code{start} is \code{TRUE} for a given range, the flanking occurs at
   the start, otherwise the end. The widths of the flanks are given by
@@ -167,18 +181,6 @@ threebands(x, start=NA, end=NA, width=NA)
     ---***xxxx
   }
 
-  \code{narrow} narrows the ranges in \code{x} i.e. each range in the
-  returned \link{Ranges} object is a subrange of the corresponding
-  range in \code{x}.
-  The supplied start/end/width values are solved by a call to
-  \code{solveUserSEW(width(x), start=start, end=end, width=width)}
-  and therefore must be compliant with the rules of the SEW
-  (Start/End/Width) interface (see \code{?\link{solveUserSEW}}
-  for the details).
-  Then each subrange is derived from the original range according
-  to the solved start/end/width values for this range. Note that those
-  solved values are interpreted relatively to the original range.
-
   \code{reflect} "reflects" or reverses each range in \code{x} relative to
   the corresponding range in \code{bounds}, which is recycled as
   necessary. Reflection preserves the width of a range, but shifts it
@@ -192,13 +194,11 @@ threebands(x, start=NA, end=NA, width=NA)
     [.....xxx..]
   }
 
-  \code{resize} resizes the ranges to the specified width where either the
-  start, end, or center is used as an anchor.
-
   \code{restrict} restricts the ranges in \code{x} to the interval(s)
   specified by the \code{start} and \code{end} arguments.
 
-  \code{shift} shifts all the ranges in \code{x}.
+  \code{resize} resizes the ranges to the specified width where either the
+  start, end, or center is used as an anchor.
 
   \code{range} first combines \code{x} and the arguments in \code{...}.
   If the combined \link{IRanges} object contains at least 1 range,
@@ -234,9 +234,6 @@ threebands(x, start=NA, end=NA, width=NA)
 \author{H. Pages, M. Lawrence, P. Aboyoun}
 
 \seealso{
-  \code{threebands} could be described as a parallel variant
-  of \code{\link{disjoin}}.
-  
   \link{Ranges-class},
   \link{IRanges-setops},
   \code{\link{solveUserSEW}}

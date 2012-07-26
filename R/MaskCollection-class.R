@@ -330,7 +330,7 @@ setMethod("append", c("MaskCollection", "MaskCollection"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Some useful endomorphisms: "collapse", "gaps" and "narrow".
+### collapse()
 ###
 
 setGeneric("collapse", function(x) standardGeneric("collapse"))
@@ -358,39 +358,6 @@ setMethod("collapse", "MaskCollection",
         x@active <- TRUE
         x@NAMES <- as.character(NA)
         x@desc <- as.character(NA)
-        x
-    }
-)
-
-### 'start' and 'end' are ignored.
-setMethod("gaps", "MaskCollection",
-    function(x, start=NA, end=NA)
-    {
-        start <- 1L
-        end <- width(x)
-        x@nir_list <- lapply(nir_list(x),
-            function(nir) gaps(nir, start=start, end=end)
-        )
-        x@NAMES <- as.character(NA)
-        x@desc <- as.character(NA)
-        x
-    }
-)
-
-setMethod("narrow", "MaskCollection",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-    {
-        solved_SEW <- solveSubseqSEW(width(x), start, end, width)
-        solved_start <- start(solved_SEW)
-        solved_end <- end(solved_SEW)
-        solved_width <- width(solved_SEW)
-        x@nir_list <- lapply(nir_list(x),
-            function(nir) shift(restrict(nir, start=solved_start, end=solved_end),
-                                1L - solved_start)
-        )
-        x@width <- solved_width
-        if (!normargUseNames(use.names))
-            names(x) <- NULL
         x
     }
 )

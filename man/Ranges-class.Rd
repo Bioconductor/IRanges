@@ -34,7 +34,6 @@
 \alias{whichFirstNotNormal}
 \alias{whichFirstNotNormal,Ranges-method}
 \alias{update,Ranges-method}
-\alias{Ops,Ranges,numeric-method}
 
 % Old stuff:
 \alias{first}

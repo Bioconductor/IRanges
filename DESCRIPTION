@@ -36,11 +36,9 @@ Collate: validity-utils.R
 	AtomicList-class.R
 	Ranges-class.R
 	Ranges-comparison.R
-	Ranges-utils.R
 	IRanges-class.R
 	IRanges-constructor.R
 	IRanges-utils.R
-	IRanges-setops.R
 	DataTable-API.R
 	DataTable-stats.R
 	Views-class.R
@@ -71,7 +69,6 @@ Collate: validity-utils.R
 	IntervalTree-class.R
 	IntervalTree-utils.R
 	OverlapEncodings-class.R
-	encodeOverlaps.R
 	RangedSelection-class.R
 	read.Mask.R
 	SharedVector-class.R
@@ -89,11 +86,17 @@ Collate: validity-utils.R
 	XIntegerViews-utils.R
 	XDoubleViews-class.R
 	XDoubleViews-utils.R
-	compact.R
-	reverse.R
-	coverage.R
-	methods-expand.R
-	test_IRanges_package.R
+	intra-range-methods.R
+	inter-range-methods.R
+	setops-methods.R
+	findOverlaps-methods.R
+	nearest-methods.R
+	encodeOverlaps-methods.R
+	compact-methods.R
+	reverse-methods.R
+	coverage-methods.R
+	expand-methods.R
 	updateObject-methods.R
+	test_IRanges_package.R
 	debug.R
 	zzz.R
