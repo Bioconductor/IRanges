@@ -596,23 +596,64 @@ setMethod("width", "PartitioningByEnd", function(x) diffWithInitialZero(end(x)))
 
 setValidity2("PartitioningByEnd", .valid.PartitioningByEnd)
 
-PartitioningByEnd <- function(end=integer(), names=NULL)
+PartitioningByEnd <- function(x=integer(), NG=NULL, names=NULL)
 {
-    if (is(end, "CompressedList")) {
+    if (is(x, "CompressedList")) {
+        ## Behaves like a getter for the 'partitioning' slot.
+        if (!is.null(NG))
+            warning("when 'x' is a CompressedList object, ",
+                    "the 'NG' argument is ignored")
         if (!is.null(names))
-            warning("'names' argument is ignored when 'end' is ",
+            warning("when 'x' is a CompressedList object, ",
+                    "the 'names' argument is ignored")
+        return(x@partitioning)
+    }
+    if (is.list(x) || is(x, "List")) {
+        if (!is.null(NG))
+            warning("'NG' argument is ignored when 'x' is ",
                     "a CompressedList object")
-        return(end@partitioning)
-    }
-    if (is(end, "List") || is.list(end)) {
-        end <- cumsum(elementLengths(end))
+        x <- cumsum(elementLengths(x))
     } else {
-        if (!is.numeric(end))
-            stop("'end' must contain integer values")
-        if (!is.integer(end))
-            end <- as.integer(end)
+        if (!is.numeric(x))
+            stop("'x' must be either a list-like object ",
+                 "or a sorted integer vector")
+        if (!is.integer(x))
+            x <- as.integer(x)
+        if (isNotSorted(x))
+            stop("when 'x' is an integer vector, it must be sorted")
+        if (!is.null(NG)) {
+            ## When 'NG' (number of groups) is supplied, then 'x' is considered
+            ## to represent the group assignment of a collection of 'length(x)'
+            ## objects. Therefore the values in 'x' must be >= 1 and <= 'NG'.
+            ## ADDITIONALLY, 'x' must be *sorted* (not strictly) so it can be
+            ## reconstructed from the object returned by PartitioningByEnd()
+            ## by doing togroup() on that object.
+            if (!isSingleNumber(NG))
+                stop("'NG' must be either NULL or a single integer")
+            if (!is.integer(NG))
+                NG <- as.integer(NG)
+            NO <- length(x)  # nb of objects
+            if (NG == 0L) {
+                if (NO != 0L)
+                    stop("when 'NG' is 0, 'x' must be of length 0")
+            } else {
+                ## 'x' is expected to be non-decreasing and with values >= 1
+                ## and <= 'NG'.
+                x <- cumsum(tabulate(x, nbins=NG))
+                ## 'x[NG]' is guaranteed to be <= 'NO'.
+                if (x[NG] != NO)
+                    stop("when 'NG' is supplied, values in 'x' must ",
+                         "be >= 1 and <= 'NG'")
+            }
+        }
     }
-    new2("PartitioningByEnd", end=unname(end), NAMES=names, check=FALSE)
+    ans_end <- unname(x)
+    if (!is.null(names)) {
+        if (!is.character(names) || length(names) != length(ans_end))
+            stop("'names' must be either NULL or a character vector of length ",
+                 "'NG' (if supplied) or 'length(x)' (if 'NG' is not supplied)")
+    }
+    new2("PartitioningByEnd", end=ans_end, NAMES=names, check=FALSE)
 }
 
 setAs("Ranges", "PartitioningByEnd",
@@ -686,17 +727,53 @@ setMethod("start", "PartitioningByWidth",
 
 setValidity2("PartitioningByWidth", .valid.PartitioningByWidth)
 
-PartitioningByWidth <- function(width=integer(), names=NULL)
+PartitioningByWidth <- function(x=integer(), NG=NULL, names=NULL)
 {
-    if (is(width, "List") || is.list(width)) {
-        width <- elementLengths(width)
+    if (is.list(x) || is(x, "List")) {
+        if (!is.null(NG))
+            warning("'NG' argument is ignored when 'x' is ",
+                    "a CompressedList object")
+        x <- elementLengths(x)
     } else {
-        if (!is.numeric(width))
-            stop("'width' must contain integer values")
-        if (!is.integer(width))
-            width <- as.integer(width)
+        if (!is.numeric(x))
+            stop("'x' must be either a list-like object or an integer vector")
+        if (!is.integer(x))
+            x <- as.integer(x)
+        if (!is.null(NG)) {
+            ## When 'NG' (number of groups) is supplied, then 'x' is considered
+            ## to represent the group assignment of a collection of 'length(x)'
+            ## objects. Therefore the values in 'x' must be >= 1 and <= 'NG'.
+            ## ADDITIONALLY, 'x' must be *sorted* (not strictly) so it can be
+            ## reconstructed from the object returned by PartitioningByWidth()
+            ## by doing togroup() on that object.
+            if (isNotSorted(x))
+                stop("when 'x' is an integer vector, it must be sorted")
+            if (!isSingleNumber(NG))
+                stop("'NG' must be either NULL or a single integer")
+            if (!is.integer(NG))
+                NG <- as.integer(NG)
+            NO <- length(x)  # nb of objects
+            if (NG == 0L) {
+                if (NO != 0L)
+                    stop("when 'NG' is 0, 'x' must be of length 0")
+            } else {
+                ## 'x' is expected to be non-decreasing and with values >= 1
+                ## and <= 'NG'.
+                x <- tabulate(x, nbins=NG)
+                ## 'sum(x)' is guaranteed to be <= 'NO'.
+                if (sum(x) != NO)
+                    stop("when 'NG' is supplied, values in 'x' must ",
+                         "be >= 1 and <= 'NG'")
+            }
+        }
     }
-    new2("PartitioningByWidth", width=unname(width), NAMES=names, check=FALSE)
+    ans_width <- unname(x)
+    if (!is.null(names)) {
+        if (!is.character(names) || length(names) != length(ans_width))
+            stop("'names' must be either NULL or a character vector of length ",
+                 "'NG' (if supplied) or 'length(x)' (if 'NG' is not supplied)")
+    }
+    new2("PartitioningByWidth", width=ans_width, NAMES=names, check=FALSE)
 }
 
 setAs("Ranges", "PartitioningByWidth",

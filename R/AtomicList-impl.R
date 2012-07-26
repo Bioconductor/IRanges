@@ -1103,8 +1103,7 @@ setMethod("runValue", "CompressedRleList",
         ## findOverlaps_Ranges_Partitioning() just a little bit faster.
         hits <- findOverlaps_Ranges_Partitioning(rlePart, listPart,
                                                  hit.empty.query.ranges=TRUE)
-        ans_end <- cumsum(tabulate(subjectHits(hits), nbins=length(x)))
-        ans_partitioning <- PartitioningByEnd(ans_end)
+        ans_partitioning <- PartitioningByEnd(subjectHits(hits), NG=length(x))
         ans_unlistData <- runValue(rle)[queryHits(hits)]
         ans <- seqsplit(ans_unlistData, ans_partitioning)
         names(ans) <- names(x)
@@ -1136,8 +1135,7 @@ setMethod("ranges", "CompressedRleList",
         ## findOverlaps_Ranges_Partitioning() just a little bit faster.
         hits <- findOverlaps_Ranges_Partitioning(rlePart, listPart,
                                                  hit.empty.query.ranges=TRUE)
-        ans_end <- cumsum(tabulate(subjectHits(hits), nbins=length(x)))
-        ans_partitioning <- PartitioningByEnd(ans_end)
+        ans_partitioning <- PartitioningByEnd(subjectHits(hits), NG=length(x))
         ans_unlistData <- shift(ranges(hits, rlePart, listPart),
                                 1L - start(listPart)[subjectHits(hits)])
         ans <- seqsplit(ans_unlistData, ans_partitioning)

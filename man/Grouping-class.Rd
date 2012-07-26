@@ -135,7 +135,8 @@
       \code{grouplength(x, i=NULL)}:
       Returns the number of objects in G_i.
       Works in a vectorized fashion (unlike \code{x[[i]]}).
-      \code{grouplength(x)} is equivalent to \code{grouplength(x, seq_len(length(x)))}.
+      \code{grouplength(x)} is equivalent to
+      \code{grouplength(x, seq_len(length(x)))}.
       If \code{i} is not NULL, \code{grouplength(x, i)} is equivalent to
       \code{sapply(i, function(ii) length(x[[ii]]))}.
     }
@@ -226,18 +227,58 @@
       [DOCUMENT ME]
     }
     \item{}{
-      \code{PartitioningByEnd(end=integer(), names=NULL)}:
-      Return the PartitioningByEnd object made of the partitions ending
-      at the values specified by \code{end}. \code{end} must contain
-      sorted non-negative integer values. If the \code{names} argument
-      is non NULL, it is used to name the partitions.
+      \code{PartitioningByEnd(x=integer(), NG=NULL, names=NULL)}:
+      \code{x} must be either a list-like object or a sorted integer vector.
+      \code{NG} must be either \code{NULL} or a single integer.
+      \code{names} must be either \code{NULL} or a character vector of
+      length \code{NG} (if supplied) or \code{length(x)} (if \code{NG}
+      is not supplied).
+
+      Returns the following PartitioningByEnd object \code{y}:
+      \itemize{
+        \item If \code{x} is a list-like object, then the returned object
+              \code{y} has the same length as \code{x} and is such that
+              \code{width(y)} is identical to \code{elementLengths(x)}.
+        \item If \code{x} is an integer vector and \code{NG} is not supplied,
+              then \code{x} must be sorted (checked) and contain non-NA
+              non-negative values (NOT checked).
+              The returned object \code{y} has the same length as \code{x}
+              and is such that \code{end(y)} is identical to \code{x}.
+        \item If \code{x} is an integer vector and \code{NG} is supplied,
+              then \code{x} must be sorted (checked) and contain values
+              >= 1 and <= \code{NG} (checked).
+              The returned object \code{y} is of length \code{NG} and is
+              such that \code{togroup(y)} is identical to \code{x}.
+      }
+      If the \code{names} argument is supplied, it is used to name the
+      partitions.
     }
     \item{}{
-      \code{PartitioningByWidth(width=integer(), names=NULL)}:
-      Return the PartitioningByWidth object made of the partitions with
-      the widths specified by \code{width}. \code{width} must contain
-      non-negative integer values. If the \code{names} argument
-      is non NULL, it is used to name the partitions.
+      \code{PartitioningByWidth(x=integer(), NG=NULL, names=NULL)}:
+      \code{x} must be either a list-like object or an integer vector.
+      \code{NG} must be either \code{NULL} or a single integer.
+      \code{names} must be either \code{NULL} or a character vector of
+      length \code{NG} (if supplied) or \code{length(x)} (if \code{NG}
+      is not supplied).
+
+      Returns the following PartitioningByWidth object \code{y}:
+      \itemize{
+        \item If \code{x} is a list-like object, then the returned object
+              \code{y} has the same length as \code{x} and is such that
+              \code{width(y)} is identical to \code{elementLengths(x)}.
+        \item If \code{x} is an integer vector and \code{NG} is not supplied,
+              then \code{x} must contain non-NA non-negative values (NOT
+              checked).
+              The returned object \code{y} has the same length as \code{x}
+              and is such that \code{width(y)} is identical to \code{x}.
+        \item If \code{x} is an integer vector and \code{NG} is supplied,
+              then \code{x} must be sorted (checked) and contain values
+              >= 1 and <= \code{NG} (checked).
+              The returned object \code{y} is of length \code{NG} and is
+              such that \code{togroup(y)} is identical to \code{x}.
+      }
+      If the \code{names} argument is supplied, it is used to name the
+      partitions.
     }
   }
   Note that these constructors don't recycle their \code{names} argument
@@ -245,7 +286,7 @@
   vectors).
 }
 
-\author{H. Pages and P. Aboyoun}
+\author{H. Pages}
 
 \seealso{
   \link{List-class},
@@ -257,103 +298,108 @@
 }
 
 \examples{
-  showClass("Grouping")  # shows (some of) the known subclasses
+showClass("Grouping")  # shows (some of) the known subclasses
 
-  ## ---------------------------------------------------------------------
-  ## A. H2LGrouping OBJECTS
-  ## ---------------------------------------------------------------------
-  high2low <- c(NA, NA, 2, 2, NA, NA, NA, 6, NA, 1, 2, NA, 6, NA, NA, 2)
-  x <- H2LGrouping(high2low)
-  x
+## ---------------------------------------------------------------------
+## A. H2LGrouping OBJECTS
+## ---------------------------------------------------------------------
+high2low <- c(NA, NA, 2, 2, NA, NA, NA, 6, NA, 1, 2, NA, 6, NA, NA, 2)
+h2l <- H2LGrouping(high2low)
+h2l
 
-  ## The Grouping core API:
-  length(x)
-  nobj(x)  # same as 'length(x)' for H2LGrouping objects
-  x[[1]]
-  x[[2]]
-  x[[3]]
-  x[[4]]
-  x[[5]]
-  grouplength(x)  # same as 'unname(sapply(x, length))'
-  grouplength(x, 5:2)
-  members(x, 5:2)  # all the members are put together and sorted
-  togroup(x)
-  togroup(x, 5:2)
-  togrouplength(x)  # same as 'grouplength(x, togroup(x))'
-  togrouplength(x, 5:2)
+## The Grouping core API:
+length(h2l)
+nobj(h2l)  # same as 'length(h2l)' for H2LGrouping objects
+h2l[[1]]
+h2l[[2]]
+h2l[[3]]
+h2l[[4]]
+h2l[[5]]
+grouplength(h2l)  # same as 'unname(sapply(h2l, length))'
+grouplength(h2l, 5:2)
+members(h2l, 5:2)  # all the members are put together and sorted
+togroup(h2l)
+togroup(h2l, 5:2)
+togrouplength(h2l)  # same as 'grouplength(h2l, togroup(h2l))'
+togrouplength(h2l, 5:2)
 
-  ## The List API:
-  as.list(x)
-  sapply(x, length)
+## The List API:
+as.list(h2l)
+sapply(h2l, length)
 
-  ## ---------------------------------------------------------------------
-  ## B. Dups OBJECTS
-  ## ---------------------------------------------------------------------
-  x_dups <- as(x, "Dups")
-  x_dups
-  duplicated(x_dups)  # same as 'duplicated(togroup(x_dups))'
+## ---------------------------------------------------------------------
+## B. Dups OBJECTS
+## ---------------------------------------------------------------------
+dups1 <- as(h2l, "Dups")
+dups1
+duplicated(dups1)  # same as 'duplicated(togroup(dups1))'
 
-  ### The purpose of a Dups object is to describe the groups of duplicated
-  ### elements in a vector-like object:
-  x <- c(2, 77, 4, 4, 7, 2, 8, 8, 4, 99)
-  x_high2low <- high2low(x)
-  x_high2low  # same length as 'x'
-  x_dups <- Dups(x_high2low)
-  x_dups
-  togroup(x_dups)
-  duplicated(x_dups)
-  togrouplength(x_dups)  # frequency for each element
-  table(x)
+### The purpose of a Dups object is to describe the groups of duplicated
+### elements in a vector-like object:
+x <- c(2, 77, 4, 4, 7, 2, 8, 8, 4, 99)
+x_high2low <- high2low(x)
+x_high2low  # same length as 'x'
+dups2 <- Dups(x_high2low)
+dups2
+togroup(dups2)
+duplicated(dups2)
+togrouplength(dups2)  # frequency for each element
+table(x)
 
-  ## ---------------------------------------------------------------------
-  ## C. Partitioning OBJECTS
-  ## ---------------------------------------------------------------------
-  x <- PartitioningByEnd(end=c(4, 7, 7, 8, 15), names=LETTERS[1:5])
-  x  # the 3rd partition is empty
+## ---------------------------------------------------------------------
+## C. Partitioning OBJECTS
+## ---------------------------------------------------------------------
+pbe1 <- PartitioningByEnd(c(4, 7, 7, 8, 15), names=LETTERS[1:5])
+pbe1  # the 3rd partition is empty
 
-  ## The Grouping core API:
-  length(x)
-  nobj(x)
-  x[[1]]
-  x[[2]]
-  x[[3]]
-  grouplength(x)  # same as 'unname(sapply(x, length))' and 'width(x)'
-  togroup(x)
-  togrouplength(x)  # same as 'grouplength(x, togroup(x))'
-  names(x)
+## The Grouping core API:
+length(pbe1)
+nobj(pbe1)
+pbe1[[1]]
+pbe1[[2]]
+pbe1[[3]]
+grouplength(pbe1)  # same as 'unname(sapply(pbe1, length))' and 'width(pbe1)'
+togroup(pbe1)
+togrouplength(pbe1)  # same as 'grouplength(pbe1, togroup(pbe1))'
+names(pbe1)
 
-  ## The Ranges core API:
-  start(x)
-  end(x)
-  width(x)
+## The Ranges core API:
+start(pbe1)
+end(pbe1)
+width(pbe1)
 
-  ## The List API:
-  as.list(x)
-  sapply(x, length)
+## The List API:
+as.list(pbe1)
+sapply(pbe1, length)
 
-  ## Replacing the names:
-  names(x)[3] <- "empty partition"
-  x
+## Replacing the names:
+names(pbe1)[3] <- "empty partition"
+pbe1
 
-  ## Coercion to an IRanges object:
-  as(x, "IRanges")
+## Coercion to an IRanges object:
+as(pbe1, "IRanges")
 
-  ## Other examples:
-  PartitioningByEnd(end=c(0, 0, 19), names=LETTERS[1:3])
-  PartitioningByEnd()  # no partition
-  PartitioningByEnd(end=integer(9))  # all partitions are empty
+## Other examples:
+PartitioningByEnd(c(0, 0, 19), names=LETTERS[1:3])
+PartitioningByEnd()  # no partition
+PartitioningByEnd(integer(9))  # all partitions are empty
+x <- c(1L, 5L, 5L, 6L, 8L)
+pbe2 <- PartitioningByEnd(x, NG=10L)
+stopifnot(identical(togroup(pbe2), x))
+pbw2 <- PartitioningByWidth(x, NG=10L)
+stopifnot(identical(togroup(pbw2), x))
 
-  ## ---------------------------------------------------------------------
-  ## D. RELATIONSHIP BETWEEN Partitioning OBJECTS AND successiveIRanges()
-  ## ---------------------------------------------------------------------
-  mywidths <- c(4, 3, 0, 1, 7)
+## ---------------------------------------------------------------------
+## D. RELATIONSHIP BETWEEN Partitioning OBJECTS AND successiveIRanges()
+## ---------------------------------------------------------------------
+mywidths <- c(4, 3, 0, 1, 7)
 
-  ## The 3 following calls produce the same ranges:
-  x1 <- successiveIRanges(mywidths)  # IRanges instance.
-  x2 <- PartitioningByEnd(end=cumsum(mywidths))  # PartitioningByEnd instance.
-  x3 <- PartitioningByWidth(width=mywidths)  # PartitioningByWidth instance.
-  stopifnot(identical(as(x1, "PartitioningByEnd"), x2))
-  stopifnot(identical(as(x1, "PartitioningByWidth"), x3))
+## The 3 following calls produce the same ranges:
+ir <- successiveIRanges(mywidths)  # IRanges instance.
+pbe <- PartitioningByEnd(cumsum(mywidths))  # PartitioningByEnd instance.
+pbw <- PartitioningByWidth(mywidths)  # PartitioningByWidth instance.
+stopifnot(identical(as(ir, "PartitioningByEnd"), pbe))
+stopifnot(identical(as(ir, "PartitioningByWidth"), pbw))
 }
 
 \keyword{methods}
