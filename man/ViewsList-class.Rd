@@ -15,20 +15,6 @@
 \alias{universe,ViewsList-method}
 \alias{universe<-,ViewsList-method}
 
-% overlaps
-\alias{findOverlaps,ViewsList,ViewsList-method}
-\alias{findOverlaps,ANY,ViewsList-method}
-\alias{findOverlaps,ViewsList,ANY-method}
-\alias{countOverlaps,ViewsList,ViewsList-method}
-\alias{countOverlaps,ANY,ViewsList-method}
-\alias{countOverlaps,ViewsList,ANY-method}
-\alias{match,ViewsList,ViewsList-method}
-\alias{match,ANY,ViewsList-method}
-\alias{match,ViewsList,ANY-method}
-\alias{\%in\%,ViewsList,ViewsList-method}
-\alias{\%in\%,ANY,ViewsList-method}
-\alias{\%in\%,ViewsList,ANY-method}
-
 
 \title{List of Views}
 \description{An extension of \linkS4class{List} that holds only
@@ -52,7 +38,9 @@
 
 \seealso{
   \link{List-class},
-  \link{RleViewsList-class}
+  \link{RleViewsList-class}.
+
+  \code{\link{findOverlaps}}.
 }
 
 \examples{

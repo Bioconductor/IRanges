@@ -24,18 +24,6 @@
 \alias{gaps,Views-method}
 \alias{reduce,Views-method}
 \alias{elementLengths,Views-method}
-\alias{findOverlaps,Views,Views-method}
-\alias{findOverlaps,ANY,Views-method}
-\alias{findOverlaps,Views,ANY-method}
-\alias{countOverlaps,Views,Views-method}
-\alias{countOverlaps,ANY,Views-method}
-\alias{countOverlaps,Views,ANY-method}
-\alias{match,Views,Views-method}
-\alias{match,ANY,Views-method}
-\alias{match,Views,ANY-method}
-\alias{\%in\%,Views,Views-method}
-\alias{\%in\%,ANY,Views-method}
-\alias{\%in\%,Views,ANY-method}
 \alias{newViews}
 \alias{Views}
 \alias{coerce,Vector,Views-method}
@@ -180,6 +168,8 @@
   \link{XDoubleViews-class},
   \link{RleViews-class},
   \link[Biostrings]{XStringViews-class}.
+
+  \code{\link{findOverlaps}}.
 }
 
 \examples{

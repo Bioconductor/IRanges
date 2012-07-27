@@ -15,40 +15,6 @@
 \alias{start,IntervalTree-method}
 \alias{end,IntervalTree-method}
 
-% overlap computation
-\alias{findOverlaps}
-\alias{findOverlaps,Ranges,IntervalTree-method}
-\alias{findOverlaps,Ranges,Ranges-method}
-\alias{findOverlaps,ANY,missing-method}
-\alias{findOverlaps,integer,Ranges-method}
-\alias{findOverlaps,RangesList,RangesList-method}
-\alias{findOverlaps,RangedData,RangedData-method}
-\alias{findOverlaps,RangesList,RangedData-method}
-\alias{findOverlaps,RangedData,RangesList-method}
-\alias{countOverlaps}
-\alias{countOverlaps,Ranges,Ranges-method}
-\alias{countOverlaps,RangesList,RangesList-method}
-\alias{countOverlaps,RangedData,RangedData-method}
-\alias{countOverlaps,RangesList,RangedData-method}
-\alias{countOverlaps,RangedData,RangesList-method}
-\alias{subsetByOverlaps}
-\alias{subsetByOverlaps,ANY,ANY-method}
-\alias{subsetByOverlaps,RangesList,RangesList-method}
-\alias{subsetByOverlaps,RangedData,RangedData-method}
-\alias{subsetByOverlaps,RangesList,RangedData-method}
-\alias{subsetByOverlaps,RangedData,RangesList-method}
-\alias{\%in\%,Ranges,Ranges-method}
-\alias{\%in\%,RangesList,RangesList-method}
-\alias{\%in\%,RangedData,RangedData-method}
-\alias{\%in\%,RangedData,RangesList-method}
-\alias{\%in\%,RangesList,RangedData-method}
-\alias{match,Ranges,Ranges-method}
-\alias{match,RangesList,RangesList-method}
-\alias{match,RangedData,RangedData-method}
-\alias{match,RangesList,RangedData-method}
-\alias{match,RangedData,RangesList-method}
-
-
 \title{Interval Search Trees}
 \description{
   Efficiently perform overlap queries with an interval tree.
@@ -61,136 +27,17 @@
   algorithm from the reference below, but heavily adapts it for the use
   case of large, sorted query sets.
 
-  The simplest approach is to call the \code{findOverlaps} function on a
-  \code{Ranges} or other object with range information, as described in
-  the following section.
+  The simplest approach for finding overlaps is to call the
+  \code{\link{findOverlaps}} function on a \link{Ranges} or other object
+  with range information. See the man page of \code{\link{findOverlaps}}
+  for how to use this and other related functions.
 
-  An \code{IntervalTree} object is a derivative of
-  \code{\linkS4class{Ranges}} and stores its ranges as a tree that is
-  optimized for overlap queries. Thus, for repeated queries against the
-  same subject, it is more efficient to create an \code{IntervalTree}
-  once for the subject using the constructor described below and then
-  perform the queries against the \code{IntervalTree} instance.
-}
-
-\section{Finding Overlaps}{
-  This main purpose of the interval tree is to optimize the search for
-  ranges overlapping those in a query set. The interface for this
-  operation is the \code{\link{findOverlaps}} function.
-
-  \describe{
-    \item{}{
-      \code{findOverlaps(query, subject = query, maxgap = 0L, minoverlap = 1L,
-        type = c("any", "start", "end", "within", "equal"),
-        select = c("all", "first", "last", "arbitrary"),
-        drop = FALSE, ignoreSelf = FALSE, ignoreRedundant = FALSE)}:
-
-      Find the intervals in \code{query}, a \code{Ranges},
-      \code{RangesList}, \code{RangedData}, or \code{integer} vector (to
-      be converted to length-one ranges), that overlap with the
-      intervals \code{subject}, a \code{Ranges}, \code{RangesList}, or
-      \code{RangedData}. If \code{query} is unsorted, it is sorted
-      first, so it is usually better to sort up-front, to avoid a sort
-      with each \code{findOverlaps} call.
-
-      If \code{subject} is omitted, \code{query} is queried against
-      itself. In this case, and only this case, the \code{ignoreSelf}
-      and \code{ignoreRedundant} arguments are allowed. By default,
-      the result will contain hits for each range against itself, and if
-      there is a hit from A to B, there is also a hit for B to A. If
-      \code{ignoreSelf} is \code{TRUE}, all self matches are dropped. If
-      \code{ignoreRedundant} is \code{TRUE}, only one of A->B and B->A
-      is returned.
-
-      Intervals with a separation of \code{maxgap} or less and a minimum
-      of \code{minoverlap} overlapping positions, allowing for
-      \code{maxgap}, are considered to be overlapping.  \code{maxgap}
-      should be a scalar, non-negative, integer. \code{minoverlap}
-      should be a scalar, positive integer.
-
-      When \code{select} is "all", the results are returned as a
-      \code{\linkS4class{Hits}} object. When \code{select}
-      is \code{"first"}, \code{"last"}, or \code{"arbitrary"} the results
-      are returned as an integer vector of length \code{query} containing
-      the first, last, or arbitrary overlapping interval in \code{subject},
-      with \code{NA} indicating intervals that did not overlap any intervals
-      in \code{subject}.
-
-      If \code{query} is a \code{\linkS4class{RangesList}} or
-      \code{\linkS4class{RangedData}}, \code{subject} must be a
-      \code{RangesList} or \code{RangedData}.  If both lists have names,
-      each element from the subject is paired with the element from the
-      query with the matching name, if any. Otherwise, elements are
-      paired by position. The overlap is then computed between the pairs
-      as described above. If \code{select} is \code{"all"}, a
-      \code{\linkS4class{Hits}} is returned. For all other
-      \code{select} the return value depends on the \code{drop} argument.
-      When \code{select != "all" && !drop}, an \code{\linkS4class{IntegerList}}
-      is returned, where each element of the result corresponds to a space in
-      \code{query}. When\code{select != "all" && drop}, an integer vector is
-      returned containing indices that are offset to align with the unlisted
-      \code{query}.
-
-      By default, any overlap is accepted. By specifying the \code{type}
-      parameter, one can select for specific types of overlap. The types
-      correspond to operations in Allen's Interval Algebra (see
-      references). If \code{type} is \code{start} or \code{end}, the
-      intervals are required to have matching starts or ends,
-      respectively. While this operation seems trivial, the naive
-      implementation using \code{outer} would be much less
-      efficient. Specifying \code{equal} as the type returns the
-      intersection of the \code{start} and \code{end} matches. If
-      \code{type} is \code{within}, the query interval must be wholly
-      contained within the subject interval. Note that all matches must
-      additionally satisfy the \code{minoverlap} constraint described above.
-
-      The \code{maxgap} parameter has special meaning with the special
-      overlap types. For \code{start}, \code{end}, and \code{equal},
-      it specifies the maximum difference in the starts, ends or both,
-      respectively. For \code{within}, it is the maximum amount by which
-      the query may be wider than the subject.
-    }
-    \item{}{
-      \code{countOverlaps(query, subject, maxgap = 0L, minoverlap = 1L,
-        type = c("any", "start", "end", "within", "equal"))}:
-      Returns the overlap hit count for each range in \code{query} using the
-      specified \code{findOverlaps} parameters. Both \code{query} and
-      \code{subject} should be \code{Ranges}, \code{RangesList} or
-      \code{RangedData} objects.
-    }
-    \item{}{
-      \code{subsetByOverlaps(query, subject, maxgap = 0L, minoverlap = 1L,
-        type = c("any", "start", "end", "within", "equal"))}:
-      Returns the subset of \code{query} that has an overlap hit with a range
-      in \code{subject} using the specified \code{findOverlaps} parameters.
-      Both \code{query} and \code{subject} should be \code{Ranges},
-      \code{RangesList} or \code{RangedData} objects.
-    }
-    \item{}{
-      \code{x \%in\% table}:
-      Shortcut for finding the ranges in \code{x} that overlap any of
-      the ranges in \code{table}. Both \code{x} and \code{table} should
-      be \code{Ranges}, \code{RangesList} or \code{RangedData}
-      objects. For \code{Ranges} objects, the result is a \code{logical}
-      vector of length equal to the number of ranges in \code{x}. For
-      \code{RangesList} and \code{RangedData} objects, the result is a
-      \code{\linkS4class{LogicalList}} object, where each element of the
-      result corresponds to a space in \code{x}.
-    }
-    \item{}{
-      \code{match(x, table, nomatch = NA_integer_, incomparables =
-        NULL)}:
-      Returns an integer vector of length \code{length(x)}, containing
-      the index of the first overlapping range in \code{table} for each
-      range in \code{x}. If a range in \code{x} does not overlap any
-      ranges in \code{table}, its value is \code{nomatch}. The \code{x}
-      and \code{table} arguments should either be both \code{Ranges}
-      objects or both \code{RangesList} objects, in which case the
-      indices are into the unlisted \code{table}. The
-      \code{incomparables} argument is currently ignored.
-    }
-  }
-  
+  An \code{IntervalTree} object is a derivative of \link{Ranges} and
+  stores its ranges as a tree that is optimized for overlap queries.
+  Thus, for repeated queries against the same subject, it is more
+  efficient to create an \code{IntervalTree} once for the subject using
+  the constructor described below and then perform the queries against
+  the \code{IntervalTree} instance.
 }
 
 \section{Constructor}{
@@ -270,14 +117,12 @@
   Charles E.; Rivest, Ronald L.; Stein, Clifford. Introduction to
   Algorithms, second edition, MIT Press and McGraw-Hill. ISBN
   0-262-53196-8
-  
-  Allen's Interval Algebra:
-  James F. Allen: Maintaining knowledge about temporal intervals. In:
-  Communications of the ACM. 26/11/1983. ACM Press. S. 832-843, ISSN 0001-0782
 }
 
 \author{Michael Lawrence}
 \seealso{
+  \code{\link{findOverlaps}} for finding/counting interval overlaps between
+  two "range-based" objects,
   \code{\linkS4class{Ranges}}, the parent of this class,
   \code{\linkS4class{Hits}}, set of hits between 2 vector-like objects.
 }
@@ -286,43 +131,16 @@
   subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
   tree <- IntervalTree(subject)
 
-  ## at most one hit per query
-  findOverlaps(query, tree, select = "first")
-  findOverlaps(query, tree, select = "last")
-  findOverlaps(query, tree, select = "arbitrary")
-
-  ## allow multiple hits
   findOverlaps(query, tree)
-
-  ## overlap as long as distance <= 1
-  findOverlaps(query, tree, maxgap = 1L)
-
-  ## shortcut
-  findOverlaps(query, subject)
 
   ## query and subject are easily interchangeable
   query <- IRanges(c(1, 4, 9), c(5, 7, 10))
   subject <- IRanges(c(2, 2), c(5, 4))
   tree <- IntervalTree(subject)
+
   t(findOverlaps(query, tree))
   # the same as:
   findOverlaps(subject, query)
-
-  ## one Ranges with itself
-  findOverlaps(query)
-
-  ## single points as query
-  subject <- IRanges(c(1, 6, 13), c(4, 9, 14))
-  findOverlaps(c(3L, 7L, 10L), subject, select = "first")
-
-  ## alternative overlap types
-  query <- IRanges(c(1, 5, 3, 4), width=c(2, 2, 4, 6))
-  subject <- IRanges(c(1, 3, 5, 6), width=c(4, 4, 5, 4))
-
-  findOverlaps(query, tree, type = "start")
-  findOverlaps(query, tree, type = "start", maxgap = 1L)
-  findOverlaps(query, tree, type = "end", select = "first")
-  findOverlaps(query, tree, type = "within", maxgap = 1L)
 }
 
 \keyword{classes}

@@ -454,78 +454,6 @@ setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### %in%
-###
-
-setMethod("%in%", c("Ranges", "Ranges"),
-    function(x, table)
-    {
-        if (!is(x, "IRanges"))
-            x <- as(x, "IRanges")
-        subject <- IntervalTree(table)
-        if (isNotSorted(start(x))) { ## x must be sorted
-            x_ord <- order(x)
-            x <- x[x_ord]
-        } else {
-            x_ord <- seq_len(length(x))
-        }
-        IRanges:::.IntervalTreeCall(subject, "overlap_any", x, x_ord)
-    }
-)
-
-setMethod("%in%", c("Views", "Views"),
-    function(x, table) ranges(x) %in% ranges(table)
-)
-
-setMethod("%in%", c("ANY", "Views"),
-    function(x, table) x %in% ranges(table)
-)
-
-setMethod("%in%", c("Views", "ANY"),
-    function(x, table) ranges(x) %in% table
-)
-
-setMethod("%in%", c("RangesList", "RangesList"),
-          function(x, table)
-          {
-            x <- as.list(x)
-            table <- as.list(table)
-            if (!is.null(names(x)) && !is.null(names(table))) {
-              table <- table[names(x)]
-              names(table) <- names(x) # get rid of NA's in names
-            } else {
-              table <- table[seq_along(x)]
-            }
-            ## NULL's are introduced where they do not match
-            ## We replace those with empty IRanges
-            table[sapply(table, is.null)] <- IRanges()
-            LogicalList(lapply(structure(seq_len(length(x)), names = names(x)),
-                               function(i) x[[i]] %in% table[[i]]))
-          })
-
-setMethod("%in%", c("ViewsList", "ViewsList"),
-    function(x, table) ranges(x) %in% ranges(table)
-)
-
-setMethod("%in%", c("ANY", "ViewsList"),
-    function(x, table) x %in% ranges(table)
-)
-
-setMethod("%in%", c("ViewsList", "ANY"),
-    function(x, table) ranges(x) %in% table
-)
-
-setMethod("%in%", c("RangedData", "RangedData"),
-          function(x, table) ranges(x) %in% ranges(table))
-
-setMethod("%in%", c("RangesList", "RangedData"),
-          function(x, table) x %in% ranges(table))
-
-setMethod("%in%", c("RangedData", "RangesList"),
-          function(x, table) ranges(x) %in% table)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### match()
 ###
 
@@ -625,4 +553,76 @@ setMethod("match", c("RangesList", "RangedData"),
               match(x, ranges(table), nomatch = nomatch,
                     incomparables = incomparables)
           })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### %in%
+###
+
+setMethod("%in%", c("Ranges", "Ranges"),
+    function(x, table)
+    {
+        if (!is(x, "IRanges"))
+            x <- as(x, "IRanges")
+        subject <- IntervalTree(table)
+        if (isNotSorted(start(x))) { ## x must be sorted
+            x_ord <- order(x)
+            x <- x[x_ord]
+        } else {
+            x_ord <- seq_len(length(x))
+        }
+        IRanges:::.IntervalTreeCall(subject, "overlap_any", x, x_ord)
+    }
+)
+
+setMethod("%in%", c("Views", "Views"),
+    function(x, table) ranges(x) %in% ranges(table)
+)
+
+setMethod("%in%", c("ANY", "Views"),
+    function(x, table) x %in% ranges(table)
+)
+
+setMethod("%in%", c("Views", "ANY"),
+    function(x, table) ranges(x) %in% table
+)
+
+setMethod("%in%", c("RangesList", "RangesList"),
+          function(x, table)
+          {
+            x <- as.list(x)
+            table <- as.list(table)
+            if (!is.null(names(x)) && !is.null(names(table))) {
+              table <- table[names(x)]
+              names(table) <- names(x) # get rid of NA's in names
+            } else {
+              table <- table[seq_along(x)]
+            }
+            ## NULL's are introduced where they do not match
+            ## We replace those with empty IRanges
+            table[sapply(table, is.null)] <- IRanges()
+            LogicalList(lapply(structure(seq_len(length(x)), names = names(x)),
+                               function(i) x[[i]] %in% table[[i]]))
+          })
+
+setMethod("%in%", c("ViewsList", "ViewsList"),
+    function(x, table) ranges(x) %in% ranges(table)
+)
+
+setMethod("%in%", c("ANY", "ViewsList"),
+    function(x, table) x %in% ranges(table)
+)
+
+setMethod("%in%", c("ViewsList", "ANY"),
+    function(x, table) ranges(x) %in% table
+)
+
+setMethod("%in%", c("RangedData", "RangedData"),
+          function(x, table) ranges(x) %in% ranges(table))
+
+setMethod("%in%", c("RangedData", "RangesList"),
+          function(x, table) ranges(x) %in% table)
+
+setMethod("%in%", c("RangesList", "RangedData"),
+          function(x, table) x %in% ranges(table))
 
