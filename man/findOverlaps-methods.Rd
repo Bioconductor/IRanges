@@ -77,7 +77,7 @@
   can be an \link{IntervalTree} object. And if the subject is a
   \link{Ranges} object, the query can be an integer vector.)
 
-  See \code{?`\link{findOverlaps,GenomicRanges,GenomicRanges-method}`}
+  See \code{?`\link[GenomicRanges]{findOverlaps,GenomicRanges,GenomicRanges-method}`}
   in the GenomicRanges package for methods that operate on
   \link[GenomicRanges]{GRanges} or \link[GenomicRanges]{GRangesList}
   objects.
@@ -252,8 +252,8 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
     \item The \link{Hits} class for representing a set of hits between
           2 vector-like objects.
 
-    \item \link{findOverlaps,GenomicRanges,GenomicRanges-method} in
-          the GenomicRanges package for methods that operate on
+    \item \link[GenomicRanges]{findOverlaps,GenomicRanges,GenomicRanges-method}
+          in the GenomicRanges package for methods that operate on
           \link[GenomicRanges]{GRanges} or \link[GenomicRanges]{GRangesList}
           objects.
 
