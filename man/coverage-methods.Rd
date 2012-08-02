@@ -16,10 +16,7 @@
 
 \usage{
 coverage(x, shift=0L, width=NULL, weight=1L, \dots)
-\S4method{coverage}{RangesList}(x,
-       shift = structure(rep(list(0L), length(x)), names = names(x)),
-       width = structure(rep(list(NULL), length(x)), names = names(x)),
-       weight = structure(rep(list(1L), length(x)), names = names(x)),
+\S4method{coverage}{RangesList}(x, shift=0L, width=NULL, weight=1L,
        method = c("auto", "sort", "hash"))
 }
 

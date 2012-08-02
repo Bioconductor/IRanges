@@ -27,6 +27,38 @@ setGeneric("coverage", signature="x",
     width
 }
 
+### Can be used by any "coverage" method returning an RleList to transform
+### their 'shift', 'width', and 'weight' arguments into lists of the same
+### length as the returned RleList.
+### 'refnames' must be either NULL or a character vector of length
+### 'length.out'.
+normarg_for_multiple_coverage <- function(arg, argname, length.out,
+                                          refnames, default.argval)
+{
+    if (is.null(arg)) {
+        arg <- list(NULL)
+    } else if (is.numeric(arg)) {
+        arg <- as.list(arg)
+    } else if (!is.list(arg) && !is(arg, "List")) {
+        stop("'arg' must be NULL, or a numeric vector, or a list-like object")
+    }
+    arg_names <- names(arg)
+    if (is.null(arg_names)) {
+        arg <- recycleArg(arg, argname, length.out)
+        return(arg)
+    }
+    if (is.null(refnames))
+        stop("'", argname, "' cannot be named when 'x' is not")
+    arg2ref <- match(arg_names, refnames)
+    if (any(is.na(arg2ref)))
+        stop("'", argname, "' has names not in 'names(x)'")
+    if (anyDuplicated(arg_names))
+        stop("'", argname, "' has duplicated names")
+    arg2 <- rep.int(as(list(default.argval), class(arg)), length.out)
+    arg2[arg2ref] <- arg
+    return(arg2)
+}
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Methods.
@@ -176,60 +208,49 @@ setMethod("coverage", "MaskCollection",
 )
 
 setMethod("coverage", "RangesList",
-    function(x,
-             shift = structure(rep(list(0L), length(x)), names = names(x)),
-             width = structure(rep(list(NULL), length(x)), names = names(x)),
-             weight = structure(rep(list(1L), length(x)), names = names(x)),
+    function(x, shift=0L, width=NULL, weight=1L,
              method=c("auto", "sort", "hash"))
     {
-        method <- match.arg(method)
-        lx <- length(x)
-        if (lx != 0 &&
-            ((!is.list(shift) && !is(shift, "IntegerList") &&
-              !is(shift, "NumericList")) || length(shift) == 0))
-            stop("'shift' must be a non-empty list of integers")
-        if (length(shift) < lx)
-            shift <- rep(shift, length.out = lx)
-        if (lx != 0 &&
-            ((!is.list(width) && !is(width, "IntegerList") &&
-              !is(width, "NumericList")) || length(width) == 0))
-            stop("'width' must be a non-empty list")
-        if (length(width) < lx)
-            width <- rep(width, length.out = lx)
-        if (lx != 0 &&
-            ((!is.list(weight) && !is(weight, "IntegerList") &&
-              !is(weight, "NumericList")) || length(weight) == 0))
-            stop("'weight' must be a non-empty list or List of ",
-                 "integer or numeric values")
-        if (length(weight) < lx)
-            weight <- rep(weight, length.out = lx)
-        indices <- names(x)
-        if (is.null(indices)) {
-            indices <- seq_len(lx)
-        } else {
-            if (is.null(names(shift)))
-                names(shift) <- indices
-            if (length(setdiff(names(shift), indices)) > 0)
-                stop("'x' and 'shift' have mismatching names")
-            if (is.null(names(width)))
-                names(width) <- indices
-            if (length(setdiff(names(width), indices)) > 0)
-                stop("'x' and 'width' have mismatching names")
-            if (is.null(names(weight)))
-                names(weight) <- indices
-            if (length(setdiff(names(weight), indices)) > 0)
-                stop("'x' and 'weight' have mismatching names")
-            names(indices) <- indices
+        x_mcols <- elementMetadata(x)
+        x_mcolnames <- colnames(x_mcols)
+        if (isSingleString(shift)) {
+            if (!(shift %in% x_mcolnames))
+                stop("the string supplied for 'shift' (\"", shift, "\")",
+                     "is not a valid meta column name of 'x'")
+            shift <- x_mcols[[shift]]
         }
+        if (isSingleString(width)) {
+            if (!(width %in% x_mcolnames))
+                stop("the string supplied for 'width' (\"", width, "\")",
+                     "is not a valid meta column name of 'x'")
+            width <- x_mcols[[width]]
+        }
+        if (isSingleString(weight)) {
+            if (!(weight %in% x_mcolnames))
+                stop("the string supplied for 'weight' (\"", weight, "\")",
+                     "is not a valid meta column name of 'x'")
+            weight <- x_mcols[[weight]]
+        }
+        x_len <- length(x)
+        shift <- normarg_for_multiple_coverage(shift, "shift", x_len,
+                                               names(x), 0L)
+        width <- normarg_for_multiple_coverage(width, "width", x_len,
+                                               names(x), NULL)
+        weight <- normarg_for_multiple_coverage(weight, "weight", x_len,
+                                               names(x), 1L)
+        method <- match.arg(method)
+        ans_listData <- lapply(seq_len(x_len),
+                               function(i) {
+                                   coverage(as(x[[i]], "IRanges"),
+                                            shift=shift[[i]],
+                                            width=width[[i]],
+                                            weight=weight[[i]],
+                                            method=method)
+                               })
         newSimpleList("SimpleRleList",
-                      lapply(indices,
-                             function(i) {
-                                 coverage(as(x[[i]], "IRanges"),
-                                         shift = shift[[i]], width = width[[i]],
-                                         weight = weight[[i]], method = method)
-                             }),
-                      metadata = metadata(x),
-                      elementMetadata = elementMetadata(x))
+                      ans_listData,
+                      metadata=metadata(x),
+                      elementMetadata=elementMetadata(x))
     }
 )
 
