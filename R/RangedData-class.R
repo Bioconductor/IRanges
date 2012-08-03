@@ -674,18 +674,53 @@ setAs("Ranges", "RangedData",
       })
 
 setAs("RangesList", "RangedData",
-      function(from)
-      {
-        dfs <- do.call("SplitDataFrameList", lapply(from, function(x) {
-          df <- new2("DataFrame", nrows = length(x), check=FALSE)
-          rownames(df) <- names(x)
-          df
-        }))
-        new2("RangedData", ranges = from, values = dfs,
-             metadata = metadata(from),
-             elementMetadata = elementMetadata(from),
-             check = FALSE)
-      })
+    function(from)
+    {
+        from_names <- names(from)
+        if (is.null(from_names) || anyDuplicated(from_names))
+            stop("cannot coerce a RangesList object with no names ",
+                 "or duplicated names to a RangedData object")
+        unlisted_from <- unlist(from, use.names=FALSE)
+        unlisted_values <- elementMetadata(unlisted_from)
+        elementMetadata(unlisted_from) <- NULL
+        ans_ranges <- relist(unlisted_from, skeleton=from)
+        metadata(ans_ranges) <- metadata(from)
+        if (!is(unlisted_values, "DataFrame")) {
+            if (!is.null(unlisted_values))
+                warning("could not propagate the inner meta columns of 'from' ",
+                        "(accessed with 'elementMetadata(unlist(from))') ",
+                        "to the data columns (aka values) of the returned ",
+                        "RangedData object")
+            unlisted_values <- new2("DataFrame",
+                                    nrows=length(unlisted_from),
+                                    check=FALSE)
+        }
+        ans_values <- newCompressedList0("CompressedSplitDataFrameList",
+                                         unlisted_values,
+                                         PartitioningByEnd(ans_ranges))
+        new2("RangedData",
+             ranges=ans_ranges,
+             values=ans_values,
+             #metadata=metadata(from),
+             elementMetadata=elementMetadata(from),
+             check=FALSE)
+    }
+)
+
+.fromRangedDataToCompressedIRangesList <- function(from)
+{
+    ans <- ranges(from)
+    ## Propagate 'values(from)'.
+    ans_unlisted_values <- unlist(values(from), use.names=FALSE)
+    elementMetadata(ans@unlistData) <- ans_unlisted_values
+    ans
+}
+
+setAs("RangedData", "CompressedIRangesList",
+    .fromRangedDataToCompressedIRangesList
+)
+setAs("RangedData", "IRangesList", .fromRangedDataToCompressedIRangesList)
+setAs("RangedData", "RangesList", .fromRangedDataToCompressedIRangesList)
 
 setMethod("as.env", "RangedData", function(x, enclos = parent.frame()) {
   env <- callNextMethod()

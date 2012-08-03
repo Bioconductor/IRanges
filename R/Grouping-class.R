@@ -76,7 +76,11 @@ setMethod("togroup", "ANY",
     }
 )
 
-tofactor <- function(x) factor(togroup(x), seq_len(length(x)))
+tofactor <- function(x)
+{
+    .Deprecated("PartitioningByEnd")
+    factor(togroup(x), seq_len(length(x)))
+}
 
 setGeneric("togrouplength", signature="x",
     function(x, j=NULL) standardGeneric("togrouplength")

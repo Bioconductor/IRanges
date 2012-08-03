@@ -41,10 +41,15 @@
 \alias{coerce,RangedData,DataFrame-method}
 \alias{coerce,Rle,RangedData-method}
 \alias{coerce,RleList,RangedData-method}
-\alias{as.env,RangedData-method}
-\alias{coerce,DataTable,RangedData-method}
+\alias{coerce,RleViewsList,RangedData-method}
 \alias{coerce,Ranges,RangedData-method}
+\alias{coerce,RangesList,RangedData-method}
+\alias{coerce,RangedData,CompressedIRangesList-method}
+\alias{coerce,RangedData,IRangesList-method}
+\alias{coerce,RangedData,RangesList-method}
+\alias{as.env,RangedData-method}
 \alias{coerce,data.frame,RangedData-method}
+\alias{coerce,DataTable,RangedData-method}
 
 % Combining and splitting
 \alias{c,RangedData-method}
@@ -296,9 +301,22 @@
           Converts each run to a range and stores the run values in a
           column named "score".
         }
-        \item{\code{\linkS4class{Ranges}}, \code{\linkS4class{RangesList}}}{
+        \item{\code{\linkS4class{RleViewsList}}}{
+          Creates a \code{RangedData} using the ranges given by the runs
+          of \code{subject(from)} in each of the windows, with a value column
+          \code{score} taken as the corresponding subject values.
+        }
+        \item{\code{\linkS4class{Ranges}}}{
           Creates a \code{RangedData} with only the ranges in \code{from};
           no data columns.
+        }
+        \item{\code{\linkS4class{RangesList}}}{
+          Creates a \code{RangedData} with the ranges in \code{from}.
+          Also propagates the inner meta columns of the \code{RangesList}
+          (accessed with \code{elementMetadata(unlist(from))}) to the
+          data columns (aka values) of the \code{RangedData}.
+          This makes it a \emph{lossless} coercion and the exact reverse of the
+          coercion from \code{RangedData} to \code{RangesList}.
         }
         \item{\code{data.frame} or \code{DataTable}}{Constructs a
           \code{RangedData}, using the columns \dQuote{start},
@@ -307,6 +325,15 @@
           result. Any \dQuote{width} column is ignored.
         }
       }
+    }
+    \item{}{
+      \code{as(from, "RangesList")}:
+      Creates a \code{CompressedIRangesList} (a subclass of \code{RangesList})
+      made of the ranges in \code{from}.
+      Also propagates the data columns (aka values) of the \code{RangedData}
+      to the inner meta columns of the \code{RangesList}.
+      This makes it a \emph{lossless} coercion and the exact reverse of the
+      coercion from \code{RangesList} to \code{RangedData}.
     }
     \item{}{\code{as.env(x, enclos = parent.frame())}:
       Creates an \code{environment} with a symbol for each variable in

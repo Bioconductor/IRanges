@@ -167,10 +167,6 @@
       \code{y <- togroup(x); y[j]}.
     }
     \item{}{
-      \code{tofactor(x)}: Like \code{togroup}, except a factor is formed
-      with the level set defined as \code{seq_len(length(x))}.
-    }
-    \item{}{
       \code{togrouplength(x, j=NULL)}:
       Returns the number of objects that belong to the same group as O_j
       (including O_j itself).

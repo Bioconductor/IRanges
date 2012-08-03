@@ -33,7 +33,6 @@
 \alias{coerce,RangesList,NormalIRangesList-method}
 \alias{coerce,RangesList,CompressedNormalIRangesList-method}
 \alias{coerce,RangesList,SimpleNormalIRangesList-method}
-\alias{coerce,RangesList,RangedData-method}
 
 \alias{coerce,LogicalList,IRangesList-method}
 \alias{coerce,LogicalList,CompressedIRangesList-method}
@@ -140,10 +139,6 @@
       calling
       \code{data.frame(space=rep(names(x), elementLengths(x)),
                        as.data.frame(unlist(x, use.names=FALSE)))}.
-    }
-    \item{}{\code{as(from, "RangedData")}: Coerces \code{from} to a
-      \code{\linkS4class{RangedData}} with zero columns and the same
-      ranges as in \code{from}.
     }
     \item{}{\code{as(from, "SimpleIRangesList")}: Coerces \code{from},
       to a \code{\linkS4class{SimpleIRangesList}}, requiring

@@ -439,7 +439,7 @@ setMethod("unlist", "List",
 
 setMethod("relist", signature(skeleton = "List"),
           function(flesh, skeleton) {
-            list <- seqsplit(flesh, tofactor(skeleton))
+            list <- seqsplit(flesh, PartitioningByEnd(skeleton))
             names(list) <- names(skeleton)
             list
           })
