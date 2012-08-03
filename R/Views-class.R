@@ -173,8 +173,20 @@ setAs("Views", "NormalIRanges",
     function(from) asNormalIRanges(ranges(from), force=TRUE)
 )
 
-setMethod("as.matrix", "Views", function(x, ...) as.matrix(ranges(x)))
+setGeneric("windowMatrix", function(x, ...) standardGeneric("windowMatrix"))
 
+setMethod("windowMatrix", "Views", function(x, rev = FALSE) {
+  common_width <- unique(width(ranges(x)))
+  if (length(common_width) > 1L)
+    stop("all views must be of the same width")
+  rev <- recycleVector(rev, length(x))
+  part <- PartitioningByWidth(ranges(x))
+  ord <- mseq(ifelse(rev, end(part), start(part)),
+              ifelse(rev, start(part), end(part)))
+  v <- seqselect(subject(x), ranges(x))[ord]
+  matrix(as.vector(v), ncol = common_width, byrow = TRUE,
+         dimnames = list(names(x), NULL))
+})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Extracting a view.
