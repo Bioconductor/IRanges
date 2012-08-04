@@ -83,25 +83,29 @@ setClass("SimpleRleList",
 ### Constructors
 ###
 
-LogicalList <- function(..., compress = TRUE, coerce = TRUE)
+coerceElements <- function(x, type) {
+  asFUN <- get(paste0("as.", type))
+  isFUN <- get(paste0("is.", type))
+  isType <- as.logical(lapply(x, isFUN))
+  x[!isType] <- lapply(x[!isType], function(xi) setNames(asFUN(xi), names(xi)))
+  x
+}
+
+LogicalList <- function(..., compress = TRUE)
 {
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
-    if (!isTRUEorFALSE(coerce))
-      stop("'coerce' must be TRUE or FALSE")
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1L]]))
         listData <- listData[[1L]]
-    if (coerce)
-      listData <-
-        lapply(listData, function(x) structure(as.logical(x), names = names(x)))
+    listData <- coerceElements(listData, "logical")
     if (compress)
         newCompressedList("CompressedLogicalList", listData)
     else
         newSimpleList("SimpleLogicalList", listData)
 }
 
-.dotargsAsListOfIntegerVectors <- function(dotargs, coerce = TRUE)
+.dotargsAsListOfIntegerVectors <- function(dotargs)
 {
     if (length(dotargs) == 1) {
         arg1 <- dotargs[[1L]]
@@ -112,115 +116,91 @@ LogicalList <- function(..., compress = TRUE, coerce = TRUE)
         if (is.list(arg1))
             dotargs <- arg1
     }
-    if (coerce)
-      dotargs <-
-        lapply(dotargs, function(x) structure(as.integer(x), names = names(x)))
+    listData <- coerceElements(listData, "integer")
     dotargs
 }
 
-IntegerList <- function(..., compress = TRUE, coerce = TRUE)
+IntegerList <- function(..., compress = TRUE)
 {
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
-    if (!isTRUEorFALSE(coerce))
-        stop("'coerce' must be TRUE or FALSE")
     dotargs <- list(...)
     if (length(dotargs) == 1 && is(dotargs[[1L]], "IntegerList")) {
         if (is(dotargs[[1L]], "CompressedIntegerList") && compress
          || is(dotargs[[1L]], "SimpleIntegerList") && !compress)
             return(dotargs[[1L]])
     }
-    listData <- .dotargsAsListOfIntegerVectors(dotargs, coerce = coerce)
+    listData <- .dotargsAsListOfIntegerVectors(dotargs)
     if (compress)
         newCompressedList("CompressedIntegerList", listData)
     else
         newSimpleList("SimpleIntegerList", listData)
 }
 
-NumericList <- function(..., compress = TRUE, coerce = TRUE)
+NumericList <- function(..., compress = TRUE)
 {
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
-    if (!isTRUEorFALSE(coerce))
-        stop("'coerce' must be TRUE or FALSE")
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1L]]))
         listData <- listData[[1L]]
-    if (coerce)
-      listData <-
-        lapply(listData, function(x) structure(as.numeric(x), names = names(x)))
+    listData <- coerceElements(listData, "double")
     if (compress)
         newCompressedList("CompressedNumericList", listData)
     else
         newSimpleList("SimpleNumericList", listData)
 }
 
-ComplexList <- function(..., compress = TRUE, coerce = TRUE)
+ComplexList <- function(..., compress = TRUE)
 {
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
-    if (!isTRUEorFALSE(coerce))
-        stop("'coerce' must be TRUE or FALSE")
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1L]]))
         listData <- listData[[1L]]
-    if (coerce)
-      listData <-
-        lapply(listData, function(x) structure(as.complex(x), names = names(x)))
+    listData <- coerceElements(listData, "complex")
     if (compress)
         newCompressedList("CompressedComplexList", listData)
     else
         newSimpleList("SimpleComplexList", listData)
 }
 
-CharacterList <- function(..., compress = TRUE, coerce = TRUE)
+CharacterList <- function(..., compress = TRUE)
 {
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
-    if (!isTRUEorFALSE(coerce))
-        stop("'coerce' must be TRUE or FALSE")
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1L]]))
         listData <- listData[[1L]]
-    if (coerce)
-      listData <-
-        lapply(listData,
-               function(x) structure(as.character(x), names = names(x)))
+    listData <- coerceElements(listData, "character")
     if (compress)
         newCompressedList("CompressedCharacterList", listData)
     else
         newSimpleList("SimpleCharacterList", listData)
 }
 
-RawList <- function(..., compress = TRUE, coerce = TRUE)
+RawList <- function(..., compress = TRUE)
 {
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
-    if (!isTRUEorFALSE(coerce))
-        stop("'coerce' must be TRUE or FALSE")
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1L]]))
         listData <- listData[[1L]]
-    if (coerce)
-      listData <-
-        lapply(listData, function(x) structure(as.raw(x), names = names(x)))
+    listData <- coerceElements(listData, "raw")
     if (compress)
         newCompressedList("CompressedRawList", listData)
     else
         newSimpleList("SimpleRawList", listData)
 }
 
-RleList <- function(..., compress = FALSE, coerce = TRUE)
+RleList <- function(..., compress = FALSE)
 {
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
-    if (!isTRUEorFALSE(coerce))
-        stop("'coerce' must be TRUE or FALSE")
     listData <- list(...)
     if (length(listData) == 1 && is.list(listData[[1L]]))
         listData <- listData[[1L]]
-    if (coerce)
-        listData <- lapply(listData,  as, "Rle")
+    listData <- lapply(listData, as, "Rle")
     if (compress)
         newCompressedList("CompressedRleList", listData)
     else
