@@ -53,7 +53,7 @@ setReplaceMethod("universe", "ViewsList",
 ### Coercion
 ###
 
-setMethod("windowMatrix", "ViewsList",
+setMethod("as.matrix", "ViewsList",
           function(x, rev = FALSE, use.names = FALSE)
           {
             if (!isTRUEorFALSE(use.names))
@@ -61,7 +61,7 @@ setMethod("windowMatrix", "ViewsList",
             if (length(unique(unlist(width(x), use.names = FALSE))) > 1L)
               stop("all views must be of the same width")
             rev <- normargAtomicList1(rev, LogicalList, length(x))
-            m <- do.call(rbind, mapply(windowMatrix, x, rev, SIMPLIFY = FALSE))
+            m <- do.call(rbind, mapply(as.matrix, x, rev, SIMPLIFY = FALSE))
             nms <- names(x)
             if (!is.null(nms) && use.names) {
               nms <- rep(nms, elementLengths(x))

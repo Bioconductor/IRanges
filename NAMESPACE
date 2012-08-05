@@ -162,7 +162,6 @@ export(
     runmean, runsum, runwtsum, runq,
     viewApply, viewMins, viewMaxs, viewSums, viewMeans,
     viewWhichMins, viewWhichMaxs, viewRangeMins, viewRangeMaxs,
-    windowMatrix,
 
     ## rdapply API
     rangedData, "rangedData<-", applyFun, "applyFun<-", applyParams,

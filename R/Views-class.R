@@ -173,9 +173,7 @@ setAs("Views", "NormalIRanges",
     function(from) asNormalIRanges(ranges(from), force=TRUE)
 )
 
-setGeneric("windowMatrix", function(x, ...) standardGeneric("windowMatrix"))
-
-setMethod("windowMatrix", "Views", function(x, rev = FALSE) {
+setMethod("as.matrix", "Views", function(x, rev = FALSE) {
   common_width <- unique(width(ranges(x)))
   if (length(common_width) > 1L)
     stop("all views must be of the same width")
