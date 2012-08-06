@@ -116,8 +116,7 @@ LogicalList <- function(..., compress = TRUE)
         if (is.list(arg1))
             dotargs <- arg1
     }
-    listData <- coerceElements(listData, "integer")
-    dotargs
+    coerceElements(dotargs, "integer")
 }
 
 IntegerList <- function(..., compress = TRUE)
