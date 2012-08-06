@@ -1,266 +1,367 @@
 #include "IRanges.h"
 #include <R_ext/Utils.h>
 
-
-SEXP Rle_integer_runsum(SEXP x, SEXP k)
+SEXP Rle_integer_runsum(SEXP x, SEXP k, SEXP na_rm)
 {
-	int i, j, nrun, window_len, buf_len, x_vec_len, ans_len;
-	int prev_offset, curr_offset;
-	int stat;
-	int *prev_length, *curr_length, *buf_lengths, *buf_lengths_elt;
-	int *prev_value, *curr_value, *buf_values, *buf_values_elt;
-	SEXP values, lengths,  ans, ans_values, ans_lengths;
+ int i, j, nrun, window_len, buf_len, x_vec_len, ans_len;
+    int prev_offset, curr_offset;
+    int stat, stat_na;
+    int *prev_length, *curr_length, *buf_lengths, *buf_lengths_elt;
+    int *prev_value, *curr_value, *buf_values, *buf_values_elt;
+    int *prev_value_na, *curr_value_na;
+    SEXP values, lengths, ans, ans_values, ans_lengths;
+    SEXP orig_values, na_index;
+    const int narm = LOGICAL(na_rm)[0];
 
-	if (!IS_INTEGER(k) || LENGTH(k) != 1 ||
-		INTEGER(k)[0] == NA_INTEGER ||
-		INTEGER(k)[0] <= 0)
-		error("'k' must be a positive integer");
+    if (!IS_INTEGER(k) || LENGTH(k) != 1
+                       || INTEGER(k)[0] == NA_INTEGER
+                       || INTEGER(k)[0] <= 0)
+        error("'k' must be a positive integer");
 
-	values = GET_SLOT(x, install("values"));
-	lengths = GET_SLOT(x, install("lengths"));
+    /* Set NA values to 0
+     * Create NA index : 1 = NA; 0 = not NA 
+     */
+    orig_values = GET_SLOT(x, install("values"));
+    values = PROTECT(Rf_allocVector(INTSXP, LENGTH(orig_values)));
+    na_index = PROTECT(Rf_allocVector(INTSXP, LENGTH(orig_values)));
+    int *vlu = INTEGER(orig_values);
+    for(i = 0; i < LENGTH(orig_values); i++) {
+        if (vlu[i] == NA_INTEGER) {
+            INTEGER(na_index)[i] = 1;
+            INTEGER(values)[i] = 0;
+        } else {
+            INTEGER(na_index)[i] = 0;
+            INTEGER(values)[i] = INTEGER(orig_values)[i];
+        }
+    }
 
-	nrun = LENGTH(lengths);
-	window_len = INTEGER(k)[0];
+lengths = GET_SLOT(x, install("lengths"));
+    nrun = LENGTH(lengths);
+    window_len = INTEGER(k)[0];
+    ans_len = 0;
+    x_vec_len = 0;
+    buf_len = - window_len + 1;
+    for(i = 0, curr_length = INTEGER(lengths); i < nrun; i++, curr_length++) {
+        x_vec_len += *curr_length;
+        buf_len += *curr_length;
+        if (window_len < *curr_length)
+            buf_len -= *curr_length - window_len;
+    }
 
-	ans_len = 0;
-	x_vec_len = 0;
-	buf_len = - window_len + 1;
-	for(i = 0, curr_length = INTEGER(lengths); i < nrun; i++, curr_length++) {
-		x_vec_len += *curr_length;
-		buf_len += *curr_length;
-		if (window_len < *curr_length)
-			buf_len -= *curr_length - window_len;
-	}
+    buf_values = NULL;
+    buf_lengths = NULL;
+    if (buf_len > 0) {
+        buf_values = (int *) R_alloc((long) buf_len, sizeof(int));
+        buf_lengths = (int *) R_alloc((long) buf_len, sizeof(int));
+        memset(buf_lengths, 0, buf_len * sizeof(int));
 
-	buf_values = NULL;
-	buf_lengths = NULL;
-	if (buf_len > 0) {
-		buf_values = (int *) R_alloc((long) buf_len, sizeof(int));
-		buf_lengths = (int *) R_alloc((long) buf_len, sizeof(int));
-		memset(buf_lengths, 0, buf_len * sizeof(int));
+        stat = 0;
+        stat_na = 0;
+        buf_values_elt = buf_values;
+        buf_lengths_elt = buf_lengths;
+        prev_value = INTEGER(values);
+        curr_value = INTEGER(values);
+        prev_length = INTEGER(lengths);
+        curr_length = INTEGER(lengths);
+        prev_offset = INTEGER(lengths)[0];
+        curr_offset = INTEGER(lengths)[0];
+        prev_value_na = INTEGER(na_index);
+        curr_value_na = INTEGER(na_index);
 
-		stat = 0;
-		buf_values_elt = buf_values;
-		buf_lengths_elt = buf_lengths;
-		prev_value = INTEGER(values);
-		curr_value = INTEGER(values);
-		prev_length = INTEGER(lengths);
-		curr_length = INTEGER(lengths);
-		prev_offset = INTEGER(lengths)[0];
-		curr_offset = INTEGER(lengths)[0];
-		for (i = 0; i < buf_len; i++) {
-			if (i % 100000 == 99999)
-				R_CheckUserInterrupt();
-			// calculate stat
-			if (i == 0) {
-				if (*curr_value == NA_INTEGER)
-					error("some values are NA");
-				j = 0;
-		    	ans_len = 1;
-				while (j < window_len) {
-					if (curr_offset == 0) {
-						curr_value++;
-						curr_length++;
-						curr_offset = *curr_length;
-						if (*curr_value == NA_INTEGER)
-							error("some values are NA");
-					}
-					int times =
-						curr_offset < window_len - j ?
-							curr_offset : window_len - j;
-					stat += times * (*curr_value);
-					curr_offset -= times;
-					j += times;
-				}
-			} else {
-				stat += (*curr_value - *prev_value);
-				if (stat != *buf_values_elt) {
-			    	ans_len++;
-			    	buf_values_elt++;
-			    	buf_lengths_elt++;
-			    }
-			}
-	    	*buf_values_elt = stat;
-		    // determine length
-	    	if (i == 0) {
-			    if (prev_value == curr_value) {
-			    	*buf_lengths_elt += *curr_length - window_len + 1;
-			    	prev_offset = window_len;
-			    	curr_offset = 0;
-			    } else {
-			    	*buf_lengths_elt += 1;
-			    }
-	    	} else {
-			    if ((prev_offset == 1) && (window_len < *curr_length) &&
-			    	((prev_value + 1) == curr_value)) {
-			    	*buf_lengths_elt += *curr_length - window_len + 1;
-			    	prev_offset = window_len;
-			    	curr_offset = 0;
-					prev_value++;
-					prev_length++;
-			    } else {
-			    	*buf_lengths_elt += 1;
-			    	prev_offset--;
-				    curr_offset--;
-					if (prev_offset == 0) {
-						prev_value++;
-						prev_length++;
-						prev_offset = *prev_length;
-					}
-			    }
-	    	}
-			if ((curr_offset == 0) && (i != buf_len - 1)) {
-				curr_value++;
-				curr_length++;
-				curr_offset = *curr_length;
-				if (*curr_value == NA_INTEGER)
-					error("some values are NA");
-			}
-		}
-	}
+       for (i = 0; i < buf_len; i++) {
+            if (i % 100000 == 99999)
+                R_CheckUserInterrupt();
+            /* calculate stat */
+            if (i == 0) {
+                j = 0;
+                ans_len = 1;
+                while (j < window_len) {
+                    if (curr_offset == 0) {
+                        curr_value++;
+                        curr_value_na++;
+                        curr_length++;
+                        curr_offset = *curr_length;
+                    }
+                    int times = curr_offset < window_len - j ?
+                                curr_offset : window_len - j;
+                    stat += times * (*curr_value);
+                    stat_na += times * (*curr_value_na);
+                    curr_offset -= times;
+                    j += times;
+                }
+            } else {
+                stat += (*curr_value - *prev_value);
+                stat_na += (*curr_value_na - *prev_value_na);
+                /* increment values and lengths based on stat */
+                if (narm | stat_na == 0) {
+                    if (stat != *buf_values_elt) {
+                        ans_len++;
+                        buf_values_elt++;
+                        buf_lengths_elt++;
+                    }
+                } else {
+                    if ((stat_na != 0) & (*buf_values_elt != NA_INTEGER)) {
+                       ans_len++;
+                       buf_values_elt++;
+                       buf_lengths_elt++;
+                    }
+                }
 
-	PROTECT(ans_values = NEW_INTEGER(ans_len));
-	PROTECT(ans_lengths = NEW_INTEGER(ans_len));
-	memcpy(INTEGER(ans_values), buf_values, ans_len * sizeof(int));
-	memcpy(INTEGER(ans_lengths), buf_lengths, ans_len * sizeof(int));
+            }
+           /* NA handling */
+            if (!narm & (stat_na != 0))
+                *buf_values_elt = NA_INTEGER;
+            else
+                *buf_values_elt = stat;
 
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, install("values"), ans_values);
-	SET_SLOT(ans, install("lengths"), ans_lengths);
-	UNPROTECT(3);
+            /* determine length */
+            if (i == 0) {
+                if (prev_value == curr_value) {
+                    /* NA handling */
+                    if (!narm & (*curr_value_na == 1)) {
+                        if (prev_value_na  == curr_value_na)
+                            *buf_lengths_elt += *curr_length - window_len + 1;
+                        else
+                            *buf_lengths_elt += *curr_length - window_len + 1;
+                    } else {
+                        *buf_lengths_elt += *curr_length - window_len + 1;
+                    }
+                    prev_offset = window_len;
+                    curr_offset = 0;
+                } else {
+                    *buf_lengths_elt += 1;
+                }
+            } else {
+                if ((prev_offset == 1) && (window_len < *curr_length) &&
+                ((prev_value + 1) == curr_value)) {
+                    /* moving through run lengths > window size
+                     * no NA handling necessary
+                     */
+                    *buf_lengths_elt += *curr_length - window_len + 1;
+                    prev_offset = window_len;
+                    curr_offset = 0;
+                    prev_value++;
+                    prev_value_na++;
+                    prev_length++;
+                } else {
+                    /* NA handling */
+                    if (!narm & (*curr_value_na == 1)) {
+                        if (prev_value_na  == curr_value_na)
+                            *buf_lengths_elt += *curr_length - window_len + 1;
+                        else
+                            *buf_lengths_elt += 1;
+                    } else {
+                        *buf_lengths_elt += 1;
+                    }
+                    prev_offset--;
+                    curr_offset--;
+                    if (prev_offset == 0) {
+                        prev_value++;
+                        prev_value_na++;
+                        prev_length++;
+                        prev_offset = *prev_length;
+                    }
+                }
+            }
+            if ((curr_offset == 0) && (i != buf_len - 1)) {
+                curr_value++;
+                curr_value_na++;
+                curr_length++;
+                curr_offset = *curr_length;
+            }
+        }
+    }
 
-	return ans;
+    PROTECT(ans_values = NEW_INTEGER(ans_len));
+    PROTECT(ans_lengths = NEW_INTEGER(ans_len));
+    memcpy(INTEGER(ans_values), buf_values, ans_len * sizeof(int));
+    memcpy(INTEGER(ans_lengths), buf_lengths, ans_len * sizeof(int));
+
+    PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
+    SET_SLOT(ans, install("values"), ans_values);
+    SET_SLOT(ans, install("lengths"), ans_lengths);
+    UNPROTECT(5);
+
+    return ans;
 }
 
-
-SEXP Rle_real_runsum(SEXP x, SEXP k)
+SEXP Rle_real_runsum(SEXP x, SEXP k, SEXP na_rm)
 {
-	int i, j, nrun, window_len, buf_len, x_vec_len, ans_len;
-	int prev_offset, curr_offset;
-	double stat;
-	int *prev_length, *curr_length, *buf_lengths, *buf_lengths_elt;
-	double *prev_value, *curr_value, *buf_values, *buf_values_elt;
-	SEXP values, lengths,  ans, ans_values, ans_lengths;
+    int i, j, nrun, window_len, buf_len, x_vec_len, ans_len;
+    int prev_offset, curr_offset, m_offset;
+    double stat;
+    int *prev_length, *curr_length, *buf_lengths, *buf_lengths_elt;
+    double *prev_value, *curr_value, *buf_values, *buf_values_elt;
+    double *m_value;
+    int *m_length;
+    SEXP values, lengths, ans, ans_values, ans_lengths;
+    SEXP orig_values;
+    const int narm = LOGICAL(na_rm)[0];
 
-	if (!IS_INTEGER(k) || LENGTH(k) != 1 ||
-		INTEGER(k)[0] == NA_INTEGER ||
-		INTEGER(k)[0] <= 0)
-		error("'k' must be a positive integer");
+    if (!IS_INTEGER(k) || LENGTH(k) != 1 
+                       || INTEGER(k)[0] == NA_INTEGER 
+                       || INTEGER(k)[0] <= 0)
+    error("'k' must be a positive integer");
 
-	values = GET_SLOT(x, install("values"));
-	lengths = GET_SLOT(x, install("lengths"));
+    if (narm) {
+        /* set NA and NaN values to 0 */
+        orig_values = GET_SLOT(x, install("values"));
+        values = PROTECT(Rf_allocVector(REALSXP, LENGTH(orig_values)));
+        double *vlu = REAL(orig_values);
+        for(i = 0; i < LENGTH(orig_values); i++) {
+            if (ISNAN(vlu[i])) {
+                REAL(values)[i] = 0; 
+            } else {
+                REAL(values)[i] = REAL(orig_values)[i];
+            } 
+        }
+    } else {
+        values = GET_SLOT(x, install("values"));
+    }
+    lengths = GET_SLOT(x, install("lengths"));
+    nrun = LENGTH(lengths);
+    window_len = INTEGER(k)[0];
+    ans_len = 0;
+    x_vec_len = 0;
+    buf_len = - window_len + 1;
+    for(i = 0, curr_length = INTEGER(lengths); i < nrun; i++, curr_length++) {
+        x_vec_len += *curr_length;
+        buf_len += *curr_length;
+        if (window_len < *curr_length)
+            buf_len -= *curr_length - window_len;
+    }
 
-	nrun = LENGTH(lengths);
-	window_len = INTEGER(k)[0];
+    buf_values = NULL;
+    buf_lengths = NULL;
+    if (buf_len > 0) {
+        buf_values = (double *) R_alloc((long) buf_len, sizeof(double));
+        buf_lengths = (int *) R_alloc((long) buf_len, sizeof(int));
+        memset(buf_lengths, 0, buf_len * sizeof(int));
+ 
+        stat = 0;
+        buf_values_elt = buf_values;
+        buf_lengths_elt = buf_lengths;
+        prev_value = REAL(values);
+        curr_value = REAL(values);
+        prev_length = INTEGER(lengths);
+        curr_length = INTEGER(lengths);
+        prev_offset = INTEGER(lengths)[0];
+        curr_offset = INTEGER(lengths)[0];
 
-	ans_len = 0;
-	x_vec_len = 0;
-	buf_len = - window_len + 1;
-	for(i = 0, curr_length = INTEGER(lengths); i < nrun; i++, curr_length++) {
-		x_vec_len += *curr_length;
-		buf_len += *curr_length;
-		if (window_len < *curr_length)
-			buf_len -= *curr_length - window_len;
-	}
+        for (i = 0; i < buf_len; i++) {
+            if (i % 100000 == 99999)
+                R_CheckUserInterrupt();
+            /* calculate stat */
+            if (i == 0) {
+                j = 0;
+                stat = 0;
+                ans_len = 1;
+                while (j < window_len) {
+                    if (curr_offset == 0) {
+                        curr_value++;
+                        curr_length++;
+                        curr_offset = *curr_length;
+                    }
+                    int times = curr_offset < window_len - j ?
+                                curr_offset : window_len - j;
+                    stat += times * (*curr_value);
+                    curr_offset -= times;
+                    j += times;
+                }
+            } else {
+                j = 0;
+                stat = 0;
+                m_offset = prev_offset - 1;
+                m_value = prev_value;
+                m_length = prev_length;
 
-	buf_values = NULL;
-	buf_lengths = NULL;
-	if (buf_len > 0) {
-		buf_values = (double *) R_alloc((long) buf_len, sizeof(double));
-		buf_lengths = (int *) R_alloc((long) buf_len, sizeof(int));
-		memset(buf_lengths, 0, buf_len * sizeof(int));
+                while (j < window_len) {
+                    if (m_offset == 0) {
+                        m_value++;
+                        m_length++;
+                        m_offset = *m_length;
+                    }
+                    int times = m_offset < window_len - j ?
+                                m_offset : window_len - j;
+                    stat += times * (*m_value);
+                    m_offset -= times;
+                    j += times;
+                }
+                if (!R_FINITE(stat) & !R_FINITE(*buf_values_elt)) {
+                    if (R_IsNA(stat) & !R_IsNA(*buf_values_elt) ||
+                        !R_IsNA(stat) & R_IsNA(*buf_values_elt) ||
+                        R_IsNaN(stat) & !R_IsNaN(*buf_values_elt) ||
+                        !R_IsNaN(stat) & R_IsNaN(*buf_values_elt) ||
+                        (stat == R_PosInf) & (*buf_values_elt != R_PosInf) ||
+                        (stat != R_PosInf) & (*buf_values_elt == R_PosInf) ||
+                        (stat == R_NegInf) & (*buf_values_elt != R_NegInf) ||
+                        (stat != R_NegInf) & (*buf_values_elt == R_NegInf)) {
+                        ans_len++;
+                        buf_values_elt++;
+                        buf_lengths_elt++;
+                    }
+                } else {
+                    if (stat != *buf_values_elt) {
+                        ans_len++;
+                        buf_values_elt++;
+                        buf_lengths_elt++;
+                    }
+                }
+            }
+            *buf_values_elt = stat;
 
-		stat = 0;
-		buf_values_elt = buf_values;
-		buf_lengths_elt = buf_lengths;
-		prev_value = REAL(values);
-		curr_value = REAL(values);
-		prev_length = INTEGER(lengths);
-		curr_length = INTEGER(lengths);
-		prev_offset = INTEGER(lengths)[0];
-		curr_offset = INTEGER(lengths)[0];
-		for (i = 0; i < buf_len; i++) {
-			if (i % 100000 == 99999)
-				R_CheckUserInterrupt();
-			// calculate stat
-			if (i == 0) {
-				if (!R_FINITE(*curr_value))
-					error("some values are NA, NaN, +/-Inf");
-				j = 0;
-		    	ans_len = 1;
-				while (j < window_len) {
-					if (curr_offset == 0) {
-						curr_value++;
-						curr_length++;
-						curr_offset = *curr_length;
-						if (!R_FINITE(*curr_value))
-							error("some values are NA, NaN, +/-Inf");
-					}
-					int times =
-						curr_offset < window_len - j ?
-							curr_offset : window_len - j;
-					stat += times * (*curr_value);
-					curr_offset -= times;
-					j += times;
-				}
-			} else {
-				stat += (*curr_value - *prev_value);
-				if (stat != *buf_values_elt) {
-			    	ans_len++;
-			    	buf_values_elt++;
-			    	buf_lengths_elt++;
-			    }
-			}
-	    	*buf_values_elt = stat;
-		    // determine length
-	    	if (i == 0) {
-			    if (prev_value == curr_value) {
-			    	*buf_lengths_elt += *curr_length - window_len + 1;
-			    	prev_offset = window_len;
-			    	curr_offset = 0;
-			    } else {
-			    	*buf_lengths_elt += 1;
-			    }
-	    	} else {
-			    if ((prev_offset == 1) && (window_len < *curr_length) &&
-			    	((prev_value + 1) == curr_value)) {
-			    	*buf_lengths_elt += *curr_length - window_len + 1;
-			    	prev_offset = window_len;
-			    	curr_offset = 0;
-					prev_value++;
-					prev_length++;
-			    } else {
-			    	*buf_lengths_elt += 1;
-			    	prev_offset--;
-				    curr_offset--;
-					if (prev_offset == 0) {
-						prev_value++;
-						prev_length++;
-						prev_offset = *prev_length;
-					}
-			    }
-	    	}
-			if ((curr_offset == 0) && (i != buf_len - 1)) {
-				curr_value++;
-				curr_length++;
-				curr_offset = *curr_length;
-				if (!R_FINITE(*curr_value))
-					error("some values are NA, NaN, +/-Inf");
-			}
-		}
-	}
+            /* determine length */
+            if (i == 0) {
+                if (prev_value == curr_value) {
+                    *buf_lengths_elt += *curr_length - window_len + 1;
+                    prev_offset = window_len;
+                    curr_offset = 0;
+                } else {
+                    *buf_lengths_elt += 1;
+                }
+            } else {
+                if ((prev_offset == 1) && (window_len < *curr_length) &&
+                ((prev_value + 1) == curr_value)) {
+                    /* moving through run lengths > window size */
+                    *buf_lengths_elt += *curr_length - window_len + 1;
+                    prev_offset = window_len;
+                    curr_offset = 0;
+                    prev_value++;
+                    prev_length++;
+                } else {
+                    *buf_lengths_elt += 1;
+                    prev_offset--;
+                    curr_offset--;
+                    if (prev_offset == 0) {
+                        prev_value++;
+                        prev_length++;
+                        prev_offset = *prev_length;
+                    }
+                }
+            }
+            if ((curr_offset == 0) && (i != buf_len - 1)) {
+            curr_value++;
+            curr_length++;
+            curr_offset = *curr_length;
+            }
+        }
+    }
 
-	PROTECT(ans_values = NEW_NUMERIC(ans_len));
-	PROTECT(ans_lengths = NEW_INTEGER(ans_len));
-	memcpy(REAL(ans_values), buf_values, ans_len * sizeof(double));
-	memcpy(INTEGER(ans_lengths), buf_lengths, ans_len * sizeof(int));
+    PROTECT(ans_values = NEW_NUMERIC(ans_len));
+    PROTECT(ans_lengths = NEW_INTEGER(ans_len));
+    memcpy(REAL(ans_values), buf_values, ans_len * sizeof(double));
+    memcpy(INTEGER(ans_lengths), buf_lengths, ans_len * sizeof(int));
+ 
+    PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
+    SET_SLOT(ans, install("values"), ans_values);
+    SET_SLOT(ans, install("lengths"), ans_lengths);
 
-	PROTECT(ans = NEW_OBJECT(MAKE_CLASS("Rle")));
-	SET_SLOT(ans, install("values"), ans_values);
-	SET_SLOT(ans, install("lengths"), ans_lengths);
-	UNPROTECT(3);
+    if (narm)
+        UNPROTECT(4);
+    else
+        UNPROTECT(3);
 
-	return ans;
+    return ans;
 }
 
 
@@ -268,21 +369,21 @@ SEXP Rle_real_runsum(SEXP x, SEXP k)
  * --- .Call ENTRY POINT ---
  */
 
-SEXP Rle_runsum(SEXP x, SEXP k)
+SEXP Rle_runsum(SEXP x, SEXP k, SEXP na_rm)
 {
-	SEXP ans = R_NilValue;
-	switch(TYPEOF(GET_SLOT(x, install("values")))) {
+        SEXP ans = R_NilValue;
+        switch(TYPEOF(GET_SLOT(x, install("values")))) {
     case INTSXP:
-    	PROTECT(ans = Rle_integer_runsum(x, k));
-    	break;
+        PROTECT(ans = Rle_integer_runsum(x, k, na_rm));
+        break;
     case REALSXP:
-    	PROTECT(ans = Rle_real_runsum(x, k));
+        PROTECT(ans = Rle_real_runsum(x, k, na_rm));
         break;
     default:
-		error("runsum only supported for integer and numeric Rle objects");
-	}
-	UNPROTECT(1);
-	return ans;
+        error("runsum only supported for integer and numeric Rle objects");
+        }
+        UNPROTECT(1);
+        return ans;
 }
 
 

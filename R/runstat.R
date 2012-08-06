@@ -3,11 +3,11 @@
 ###
 
 setGeneric("runsum", signature="x",
-           function(x, k, endrule = c("drop", "constant"))
+           function(x, k, endrule = c("drop", "constant"), na.rm = FALSE)
                standardGeneric("runsum"))
 
 setGeneric("runmean", signature="x",
-           function(x, k, endrule = c("drop", "constant"))
+           function(x, k, endrule = c("drop", "constant"), na.rm = FALSE)
                standardGeneric("runmean"))
 
 setGeneric("runwtsum", signature="x",

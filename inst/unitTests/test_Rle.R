@@ -342,3 +342,117 @@ test_Rle_factor <- function() {
     checkIdentical(Rle(x), xRle)
     checkIdentical(x, xRle[TRUE,drop=TRUE])
 }
+
+.naive_runsum <- function(x, k, na.rm=FALSE)
+    sapply(0:(length(x)-k),
+        function(offset) sum(x[1:k + offset], na.rm=na.rm)) 
+
+test_Rle_runsum_real <- function() {
+
+    x0 <- c(NA, NaN, Inf, -Inf) 
+    x <- Rle(x0)
+    ## na.rm = TRUE 
+    target1 <- .naive_runsum(x0, 4, na.rm=TRUE)
+    target2 <- .naive_runsum(x, 4, na.rm=TRUE)
+    checkIdentical(target1, target2) 
+    current <- as.vector(runsum(x, 4, na.rm=TRUE))
+    checkIdentical(target1, current)
+    ## na.rm = FALSE 
+    target1 <- .naive_runsum(x0, 4, na.rm=FALSE)
+    target2 <- .naive_runsum(x, 4, na.rm=FALSE)
+    checkIdentical(target1, target2) 
+    current <- as.vector(runsum(x, 4, na.rm=FALSE))
+    checkIdentical(target1, current) 
+
+    x0 <- c(NA, NaN, NA, Inf, NA, -Inf, Inf, -Inf, NaN, Inf, NaN, -Inf)
+    x <- Rle(x0)
+    for (k in 1:2) {
+        target1 <- .naive_runsum(x0, k, na.rm=TRUE)
+        target2 <- .naive_runsum(x, k, na.rm=TRUE)
+        checkIdentical(target1, target2)
+        current <- as.vector(runsum(x, k, na.rm=TRUE))
+        checkIdentical(target1, current) 
+ 
+        target1 <- .naive_runsum(x0, k, na.rm=FALSE)
+        target2 <- .naive_runsum(x, k, na.rm=FALSE)
+        ## FIXME : Currently fails with k=2
+        ##         Problem with adding NA and NaN in Rle's 
+        #checkIdentical(target1, target2)
+        current <- as.vector(runsum(x, k, na.rm=FALSE))
+        checkIdentical(target1, current)
+    } 
+}
+
+test_Rle_runsum_integer <- function() {
+
+    x0 <- c(NA_integer_, 1L, 1L)
+    x <- Rle(x0)
+    for (k in 1:3) {
+        target1 <- .naive_runsum(x0, k, na.rm=TRUE)
+        target2 <- .naive_runsum(x, k, na.rm=TRUE)
+        checkIdentical(target1, target2) 
+        current <- as.vector(runsum(x, k, na.rm=TRUE))
+        checkIdentical(target1, current)
+
+        target1 <- .naive_runsum(x0, k, na.rm=FALSE)
+        target2 <- .naive_runsum(x, k, na.rm=FALSE)
+        checkIdentical(target1, target2) 
+        current <- as.vector(runsum(x, k, na.rm=FALSE))
+        checkIdentical(target1, current)
+    }
+
+    x0 <- c(1L, NA_integer_, 1L)
+    x <- Rle(x0)
+    for (k in 1:3) {
+        target1 <- .naive_runsum(x0, k, na.rm=TRUE)
+        target2 <- .naive_runsum(x, k, na.rm=TRUE)
+        checkIdentical(target1, target2) 
+        current <- as.vector(runsum(x, k, na.rm=TRUE))
+        checkIdentical(target1, current)
+
+        target1 <- .naive_runsum(x0, k, na.rm=FALSE)
+        target2 <- .naive_runsum(x, k, na.rm=FALSE)
+        checkIdentical(target1, target2) 
+        current <- as.vector(runsum(x, k, na.rm=FALSE))
+        checkIdentical(target1, current)
+    }
+}
+
+.naive_runmean <- function(x, k, na.rm=FALSE)
+    sapply(0:(length(x)-k),
+        function(offset) mean(x[1:k + offset], na.rm=na.rm)) 
+
+test_Rle_runmean <- function() {
+
+    x0 <- c(NA, 1, 1)
+    x <- Rle(x0)
+    for (k in 1:3) {
+        target1 <- .naive_runmean(x0, k, na.rm=TRUE)
+        target2 <- .naive_runmean(x, k, na.rm=TRUE)
+        checkIdentical(target1, target2) 
+        current <- as.vector(runmean(x, k, na.rm=TRUE))
+        checkIdentical(target1, current)
+
+        target1 <- .naive_runmean(x0, k, na.rm=FALSE)
+        target2 <- .naive_runmean(x, k, na.rm=FALSE)
+        checkIdentical(target1, target2) 
+        current <- as.vector(runmean(x, k, na.rm=FALSE))
+        checkIdentical(target1, current)
+    }
+
+    x0 <- c(0, NA, NaN, 0, NA, Inf, 0, NA, -Inf, 0, Inf, -Inf)
+    x <- Rle(x0)
+    for (k in 1:2) {
+        target1 <- .naive_runmean(x0, k, na.rm=TRUE)
+        target2 <- .naive_runmean(x, k, na.rm=TRUE)
+        checkIdentical(target1, target2)
+        current <- as.vector(runmean(x, k, na.rm=TRUE))
+        checkIdentical(target1, current) 
+ 
+        target1 <- .naive_runmean(x0, k, na.rm=FALSE)
+        target2 <- .naive_runmean(x, k, na.rm=FALSE)
+        checkIdentical(target1, target2)
+        current <- as.vector(runmean(x, k, na.rm=FALSE))
+        checkIdentical(target1, current)
+    } 
+}

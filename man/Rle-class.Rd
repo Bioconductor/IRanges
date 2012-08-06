@@ -657,7 +657,7 @@
       }
     }
     \item{}{
-      \code{runmean(x, k, endrule = c("drop", "constant"))}:
+      \code{runmean(x, k, endrule = c("drop", "constant"), na.rm = FALSE)}:
       Calculates the means for fixed width running windows across \code{x}.
       \describe{
         \item{\code{k}}{An integer indicating the fixed width of the running
@@ -672,6 +672,10 @@
               smoothed ends \emph{constant};}
           }
         }
+        \item{\code{na.rm}}{A logical indicating if NA values should be
+          removed. When \code{TRUE}, NA and NaN values are treated as 0 
+          and the window size (i.e., denominator of mean calculation) is 
+          adjusted to the number of non-NA and non-NaN values.} 
       }
     }
     \item{}{
@@ -700,7 +704,7 @@
       }
     }
     \item{}{
-      \code{runsum(x, k, endrule = c("drop", "constant"))}:
+      \code{runsum(x, k, endrule = c("drop", "constant"), na.rm = FALSE)}:
       Calculates the sums for fixed width running windows across \code{x}.
       \describe{
         \item{\code{k}}{An integer indicating the fixed width of the running
@@ -715,6 +719,10 @@
               smoothed ends \emph{constant};}
           }
         }
+        \item{\code{na.rm}}{A logical indicating if NA and NaN values should 
+          be removed. When \code{TRUE}, the sum is computed as if the NA
+          and NaN values were 0. If \code{FALSE}, the return value will be
+          NA or NaN if the window contains such values.}
       }
     }
     \item{}{
@@ -882,6 +890,32 @@
   z <- Rle(z, seq_len(length(z)))
   chartr("a", "@", z)
   toupper(z)
+
+  ## ---------------------------------------------------------------------
+  ## runsum() and runmean()
+  ## ---------------------------------------------------------------------
+
+  ## runsum()
+  ## The .naive_runsum() function demonstrates the semantics of 
+  ## runsum(). This test ensures the behavior is consistent with
+  ## base::sum().
+ 
+  .naive_runsum <- function(x, k, na.rm=FALSE)
+      sapply(0:(length(x)-k),
+          function(offset) sum(x[1:k + offset], na.rm=na.rm))
+
+  x0 <- c(1, Inf, 3, 4, 5, NA)
+  x <- Rle(x0)
+  target1 <- .naive_runsum(x0, 3, na.rm=TRUE)
+  target2 <- .naive_runsum(x, 3, na.rm=TRUE)
+  stopifnot(target1 == target2)
+  current <- as.vector(runsum(x, 3, na.rm=TRUE))
+  stopifnot(target1 == current)
+
+  ## runmean()
+  x <- Rle(c(2, 1, NA, 2, 1, 3))
+  runmean(x, k=2, na.rm=TRUE)
+  runmean(x, k=2, na.rm=FALSE)
 }
 
 \keyword{methods}

@@ -1071,9 +1071,16 @@ setMethod("smoothEnds", "Rle", function(y, k = 3)
           })
 
 setMethod("runmean", "Rle",
-          function(x, k, endrule = c("drop", "constant"))
+          function(x, k, endrule = c("drop", "constant"), na.rm = FALSE)
           {
-              runsum(x, k, endrule = endrule) / k
+              sums <- runsum(x, k, endrule, na.rm)
+              if (na.rm) {
+                  d <- Rle(rep(1L, length(x)))
+                  d[is.na(x)] <- 0L 
+                  sums / runsum(d, k, endrule, na.rm)
+              } else {
+                  sums / k
+              }
           })
 
 setMethod("runmed", "Rle",
@@ -1099,12 +1106,13 @@ setMethod("runmed", "Rle",
           })
 
 setMethod("runsum", "Rle",
-          function(x, k, endrule = c("drop", "constant"))
+          function(x, k, endrule = c("drop", "constant"), na.rm = FALSE)
           {
               endrule <- match.arg(endrule)
               n <- length(x)
               k <- normargRunK(k = k, n = n, endrule = endrule)
-              ans <- .Call2("Rle_runsum", x, as.integer(k), PACKAGE="IRanges")
+              ans <- .Call2("Rle_runsum", x, as.integer(k), as.logical(na.rm), 
+                            PACKAGE="IRanges")
               if (endrule == "constant") {
                   j <- (k + 1L) %/% 2L
                   runLength(ans)[1L] <- runLength(ans)[1L] + (j - 1L)

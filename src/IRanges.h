@@ -1139,7 +1139,8 @@ SEXP Rle_seqselect(
 
 SEXP Rle_runsum(
 	SEXP x,
-	SEXP k
+	SEXP k,
+	SEXP na_rm 
 );
 
 SEXP Rle_runwtsum(

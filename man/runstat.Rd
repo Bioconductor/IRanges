@@ -16,8 +16,8 @@
 }
 
 \usage{
-runsum(x, k, endrule = c("drop", "constant"))
-runmean(x, k, endrule = c("drop", "constant"))
+runsum(x, k, endrule = c("drop", "constant"), na.rm = FALSE)
+runmean(x, k, endrule = c("drop", "constant"), na.rm = FALSE)
 runwtsum(x, k, wt, endrule = c("drop", "constant"))
 runq(x, k, i, endrule = c("drop", "constant"))
 }
@@ -46,6 +46,12 @@ runq(x, k, i, endrule = c("drop", "constant"))
         first values and analogously for the last ones making the
         smoothed ends \emph{constant};}
     }
+  }
+  \item{na.rm}{
+    A logical indicating if NA and NaN values should be removed. When 
+    \code{TRUE}, the sum is computed as if the NA and NaN values were 0. 
+    If \code{FALSE}, the return value will be NA or NaN if the window
+    contains such values. 
   }
 }
 
