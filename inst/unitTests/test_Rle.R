@@ -364,7 +364,7 @@ test_Rle_runsum_real <- function() {
     current <- as.vector(runsum(x, 4, na.rm=FALSE))
     checkIdentical(target1, current) 
 
-    x0 <- c(NA, NaN, NA, Inf, NA, -Inf, Inf, -Inf, NaN, Inf, NaN, -Inf)
+    x0 <- c(NA, Inf, NA, -Inf, Inf, -Inf, NaN, Inf, NaN, -Inf)
     x <- Rle(x0)
     for (k in 1:2) {
         target1 <- .naive_runsum(x0, k, na.rm=TRUE)
@@ -372,15 +372,33 @@ test_Rle_runsum_real <- function() {
         checkIdentical(target1, target2)
         current <- as.vector(runsum(x, k, na.rm=TRUE))
         checkIdentical(target1, current) 
- 
+
         target1 <- .naive_runsum(x0, k, na.rm=FALSE)
         target2 <- .naive_runsum(x, k, na.rm=FALSE)
-        ## FIXME : Currently fails with k=2
-        ##         Problem with adding NA and NaN in Rle's 
-        #checkIdentical(target1, target2)
+        checkIdentical(target1, target2)
         current <- as.vector(runsum(x, k, na.rm=FALSE))
         checkIdentical(target1, current)
-    } 
+    }
+ 
+    ## NOTE : Inconsistent behavior in base::sum()
+    ## sum(x, y) and x + y:
+    ## > sum(NaN, NA)
+    ##   [1] NA
+    ## > NaN + NA
+    ##   [1] NaN
+    ## also between sum(c(x, y)) and sum(x, y):
+    ##  > sum(c(NaN, NA))
+    ##  [1] NaN
+    ##  > sum(NaN, NA)
+    ##  [1] NA 
+    ## Because of this we have a special test
+    x0 <- c(NA, NaN, NA)
+    x <- Rle(x0)
+    target1 <- c(x0[1] + x0[2], x0[2] + x0[3]) 
+    target2 <- as.vector(c(x[1] + x[2], x[2] + x[3]))
+    checkIdentical(target1, target2)
+    current <- as.vector(runsum(x, k=2, na.rm=FALSE))
+    checkIdentical(target1, current)
 }
 
 test_Rle_runsum_integer <- function() {
