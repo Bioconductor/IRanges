@@ -48,10 +48,7 @@ runq(x, k, i, endrule = c("drop", "constant"))
     }
   }
   \item{na.rm}{
-    A logical indicating if NA and NaN values should be removed. When 
-    \code{TRUE}, the sum is computed as if the NA and NaN values were 0. 
-    If \code{FALSE}, the return value will be NA or NaN if the window
-    contains such values. 
+    When \code{TRUE}, \code{NA} and \code{NaN} values are removed.
   }
 }
 

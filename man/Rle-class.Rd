@@ -672,10 +672,8 @@
               smoothed ends \emph{constant};}
           }
         }
-        \item{\code{na.rm}}{A logical indicating if NA values should be
-          removed. When \code{TRUE}, NA and NaN values are treated as 0 
-          and the window size (i.e., denominator of mean calculation) is 
-          adjusted to the number of non-NA and non-NaN values.} 
+        \item{\code{na.rm}}{A logical indicating if NA and NaN values 
+          should be removed.}
       }
     }
     \item{}{
@@ -721,8 +719,7 @@
         }
         \item{\code{na.rm}}{A logical indicating if NA and NaN values should 
           be removed. When \code{TRUE}, the sum is computed as if the NA
-          and NaN values were 0. If \code{FALSE}, the return value will be
-          NA or NaN if the window contains such values.}
+          and NaN values were 0.}
       }
     }
     \item{}{
