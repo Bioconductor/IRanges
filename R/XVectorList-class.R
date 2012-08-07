@@ -337,7 +337,9 @@ setReplaceMethod("[", "XVectorList",
         ans <- c(x, value)
         idx <- seq_len(length(x))
         idx[i] <- length(x) + seq_len(length(value))
-        ans[idx]
+        ans <- ans[idx]
+        names(ans) <- names(x)
+        ans
     }
 )
 
