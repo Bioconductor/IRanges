@@ -107,7 +107,7 @@ export(
     mendoapply,
 
     ## Generic functions in the Vector API:
-    elementType, elementLengths,
+    splitAs,
     metadata, elementMetadata, "metadata<-", "elementMetadata<-",
     values, "values<-",   
     isConstant,
@@ -116,6 +116,7 @@ export(
     rename,
 
     ## Non-generic and generic functions in the List API:
+    elementType, elementLengths,
     seqapply, mseqapply, tseqapply, seqsplit, seqby, multisplit,
     revElements,
     
@@ -262,11 +263,12 @@ exportMethods(
     endoapply,
     mendoapply,
 
-    elementType, elementLengths,
+    splitAs,
     metadata, elementMetadata, "metadata<-", "elementMetadata<-",
     isConstant,
     isEmpty,
     seqselect, "seqselect<-",
+    elementType, elementLengths,
     revElements,
 
     width,

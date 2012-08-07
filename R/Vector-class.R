@@ -52,6 +52,29 @@ setMethod("showAsCell", "Vector", function(object)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### splitAs()
+###
+
+setGeneric("splitAs", function(x) standardGeneric("splitAs"))
+
+setMethod("splitAs", "ANY",
+    function(x)
+    {
+        cl <- class(x)
+        cl <- c(cl, names(getClass(cl)@contains))
+        substring(cl, 1L, 1L) <- toupper(substring(cl, 1L, 1L))
+        compressedClass <- paste("Compressed", cl, "List", sep = "")
+        clExists <- which(sapply(compressedClass,
+                                 function(ccl) !is.null(getClassDef(ccl))))
+        if (length(clExists) == 0L)
+            stop("don't know what class to use for storing a split ",
+                 class(x), " object")
+        compressedClass[clExists[1L]]
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
