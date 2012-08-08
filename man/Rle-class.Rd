@@ -467,10 +467,17 @@
       }
     }
     \item{}{
-      \code{split(x, f, drop = FALSE)}:
+      \code{split(x, f, drop=FALSE)}:
       Splits \code{x} according to \code{f} to create a
-      \linkS4class{CompressedRleList} object. Empty list elements are removed
-      if \code{drop} is \code{TRUE}.
+      \link{CompressedRleList} object.
+      If \code{f} is a list-like object then \code{drop} is ignored
+      and \code{f} is treated as if it was
+      \code{rep(seq_len(length(f)), sapply(f, length))},
+      so the returned object has the same shape as \code{f} (it also
+      receives the names of \code{f}).
+      Otherwise, if \code{f} is not a list-like object, empty list
+      elements are removed from the returned object if \code{drop} is
+      \code{TRUE}.
     }
     \item{}{
       \code{splitRanges(x)}:
