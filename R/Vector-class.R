@@ -910,36 +910,77 @@ setMethod("splitAsListReturnedClass", "ANY",
     }
 )
 
-splitAsList <- function(x, f, drop=FALSE)
+.split_listlike_as_CompressedList <- function(x, f, drop, Class)
 {
-    ans_class <- splitAsListReturnedClass(x)
-    if (!extends(ans_class, "CompressedList"))
-        stop("don't know how to split a ", class(x), " object as a List")
     x_len <- length(x)
-    if (is.list(f) || is(f, "List")) {
-        if (!identical(drop, FALSE))
-            warning("'drop' is ignored when 'f' is a list-like object")
-        if (length(f) == 0L && x_len != 0L) {
-            ## We use the same message as split.default()
-            stop("Group length is 0 but data length > 0")
-        }
-    } else {
-        if (is(f, "Rle"))
-            f <- rep.int(runValue(f), runLength(f))
-        f <- split(seq_len(x_len), f, drop=drop)
-        idx <- unlist(f, use.names=FALSE)
-        x <- x[idx]
-    }
-    if (!is(f, "PartitioningByEnd")) {
-        f_names <- names(f)
+    if (!identical(drop, FALSE))
+        warning("'drop' is ignored when 'f' is a list-like object")
+    ## We use the same message as split.default()
+    if (length(f) == 0L && x_len != 0L)
+        stop("Group length is 0 but data length > 0")
+    if (!is(f, "PartitioningByEnd"))
         f <- PartitioningByEnd(f)
-        if (is.null(names(f)))
-            names(f) <- f_names
-    }
     f_len <- length(f)
     if (f_len != 0L && end(f)[f_len] != x_len)
         stop("shape of 'f' is not compatible with 'length(x)'")
-    newCompressedList0(ans_class, x, f)
+    newCompressedList0(Class, x, f)
+}
+
+.split_nonlistlike_as_CompressedList <- function(x, f, drop, Class)
+{
+    x_len <- length(x)
+    if (is(f, "Rle"))
+        f <- rep.int(runValue(f), runLength(f))
+    if (!(is.atomic(f) && is.vector(f)) && !is.factor(f))
+        stop("'f' must be an atomic vector or a factor (possibly in ",
+             "an Rle form), or a list-like object")
+    f_len <- length(f)
+    if (f_len < x_len) {
+        ## We use the same message as split.default()
+        if (f_len == 0L)
+            stop("Group length is 0 but data length > 0")
+        if (x_len %% f_len != 0L)
+            warning("data length is not a multiple of split variable")
+        f <- rep(f, length.out=x_len)
+    }
+    if (is.integer(f)) {
+        if (f_len > x_len)
+            stop("'f' cannot be longer than data when it's an integer vector")
+        idx <- orderInteger(f)
+        tmp <- Rle(f[idx])
+        f <- cumsum(runLength(tmp))
+        names(f) <- as.character(runValue(tmp))
+        if (!identical(drop, FALSE))
+            warning("'drop' is ignored when 'f' is an integer vector")
+    } else {
+        if (!is.factor(f))
+            f <- as.factor(f)
+        f_levels <- levels(f)
+        f <- as.integer(f)
+        if (f_len > x_len)
+            f <- head(f, n=x_len)
+        idx <- orderInteger(f)
+        f <- tabulate(f, nbins=length(f_levels))
+        names(f) <- f_levels
+        if (drop)
+            f <- f[f != 0L]
+        f <- cumsum(f)
+    }
+    x <- x[idx]
+    f <- PartitioningByEnd(f)
+    newCompressedList0(Class, x, f)
+}
+
+splitAsList <- function(x, f, drop=FALSE)
+{
+    if (!isTRUEorFALSE(drop))
+        stop("'drop' must be TRUE or FALSE")
+    ans_class <- splitAsListReturnedClass(x)
+    if (!extends(ans_class, "CompressedList"))
+        stop("don't know how to split a ", class(x), " object as a List")
+    if (is.list(f) || is(f, "List"))
+        return(.split_listlike_as_CompressedList(x, f, drop, ans_class))
+    .split_nonlistlike_as_CompressedList(x, f, drop, ans_class)
 }
 
 setMethod("split", "Vector",
