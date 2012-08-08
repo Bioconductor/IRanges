@@ -106,8 +106,8 @@ export(
     endoapply,
     mendoapply,
 
-    ## Generic functions in the Vector API:
-    splitAs,
+    ## Vector API:
+    splitAsListReturnedClass, splitAsList,
     metadata, elementMetadata, "metadata<-", "elementMetadata<-",
     values, "values<-",   
     isConstant,
@@ -263,7 +263,7 @@ exportMethods(
     endoapply,
     mendoapply,
 
-    splitAs,
+    splitAsListReturnedClass,
     metadata, elementMetadata, "metadata<-", "elementMetadata<-",
     isConstant,
     isEmpty,

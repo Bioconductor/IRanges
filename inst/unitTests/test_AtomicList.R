@@ -95,6 +95,7 @@ test_AtomicList_numerical <- function() {
             vec3[c(1,10,21,41)] <- c(100L, 30L, 400L, 470L)
             list3 <- do.call(type, list(one = vec3, rev(vec3), compress = compress))
             checkIdentical(as.list(smoothEnds(list3)), lapply(list3, smoothEnds))
+if (FALSE) {
             checkIdentical(as.list(runmed(list3, 7)),
                            lapply(list3, function(x) {
                                       y <- runmed(x, 7)
@@ -102,6 +103,7 @@ test_AtomicList_numerical <- function() {
                                           y <- as.vector(y)
                                       y
                                   }))
+}
         }
     }
 }

@@ -351,9 +351,8 @@ setMethod("seqselect", "CompressedList",
                   } else if (is(start, "IntegerList")) {
                       i <-
                         unlist(start +
-                               newCompressedList("CompressedIntegerList",
-                                                 start(x@partitioning) - 1L,
-                                                 end = seq_len(lx)))
+                               splitAsList(start(x@partitioning) - 1L,
+                                           PartitioningByEnd(seq_len(lx))))
                       unlistData <- seqselect(x@unlistData, i)
                       partitionEnd <- cumsum(unname(elementLengths(start)))
                   } else {
@@ -411,9 +410,8 @@ setReplaceMethod("seqselect", "CompressedList",
                          } else if (is(start, "IntegerList")) {
                              i <-
                                unlist(start +
-                                      newCompressedList("CompressedIntegerList",
-                                                        start(x@partitioning) - 1L,
-                                                        end = seq_len(length(x))))
+                                      splitAsList(start(x@partitioning) - 1L,
+                                                  PartitioningByEnd(seq_len(length(x)))))
                              start <- rep.int(FALSE, sum(elementLengths(x)))
                              start[i] <- TRUE
                          } else {

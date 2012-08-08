@@ -890,9 +890,11 @@ setMethod("append", c("Vector", "Vector"),
 ### Splitting.
 ###
 
-setGeneric("splitAs", function(x) standardGeneric("splitAs"))
+setGeneric("splitAsListReturnedClass",
+    function(x) standardGeneric("splitAsListReturnedClass")
+)
 
-setMethod("splitAs", "ANY",
+setMethod("splitAsListReturnedClass", "ANY",
     function(x)
     {
         cl <- class(x)
@@ -902,44 +904,46 @@ setMethod("splitAs", "ANY",
         clExists <- which(sapply(compressedClass,
                                  function(ccl) !is.null(getClassDef(ccl))))
         if (length(clExists) == 0L)
-            stop("don't know what class to use for storing a split ",
-                 class(x), " object")
+            stop("don't know what class to use for storing the result of ",
+                 "splitting a ", class(x), " object as a List")
         compressedClass[clExists[1L]]
     }
 )
 
-setMethod("split", "Vector",
-    function(x, f, drop=FALSE, ...)
-    {
-        ans_class <- splitAs(x)
-        if (!extends(ans_class, "CompressedList"))
-            stop("don't know how to split a ", class(x), " object, sorry")
-        x_len <- length(x)
-        if (is.list(f) || is(f, "List")) {
-            if (!identical(drop, FALSE))
-                warning("'drop' is ignored when 'f' is a list-like object")
-            if (length(f) == 0L && x_len != 0L) {
-                ## We use the same message as split.default()
-                stop("Group length is 0 but data length > 0")
-            }
-        } else {
-            if (is(f, "Rle"))
-                f <- rep.int(runValue(f), runLength(f))
-            f <- split(seq_len(x_len), f, drop=drop)
-            idx <- unlist(f, use.names=FALSE)
-            x <- x[idx]
+splitAsList <- function(x, f, drop=FALSE)
+{
+    ans_class <- splitAsListReturnedClass(x)
+    if (!extends(ans_class, "CompressedList"))
+        stop("don't know how to split a ", class(x), " object as a List")
+    x_len <- length(x)
+    if (is.list(f) || is(f, "List")) {
+        if (!identical(drop, FALSE))
+            warning("'drop' is ignored when 'f' is a list-like object")
+        if (length(f) == 0L && x_len != 0L) {
+            ## We use the same message as split.default()
+            stop("Group length is 0 but data length > 0")
         }
-        if (!is(f, "PartitioningByEnd")) {
-            f_names <- names(f)
-            f <- PartitioningByEnd(f)
-            if (is.null(names(f)))
-                names(f) <- f_names
-        }
-        f_len <- length(f)
-        if (f_len != 0L && end(f)[f_len] != x_len)
-            stop("shape of 'f' is not compatible with 'length(x)'")
-        newCompressedList0(ans_class, x, f)
+    } else {
+        if (is(f, "Rle"))
+            f <- rep.int(runValue(f), runLength(f))
+        f <- split(seq_len(x_len), f, drop=drop)
+        idx <- unlist(f, use.names=FALSE)
+        x <- x[idx]
     }
+    if (!is(f, "PartitioningByEnd")) {
+        f_names <- names(f)
+        f <- PartitioningByEnd(f)
+        if (is.null(names(f)))
+            names(f) <- f_names
+    }
+    f_len <- length(f)
+    if (f_len != 0L && end(f)[f_len] != x_len)
+        stop("shape of 'f' is not compatible with 'length(x)'")
+    newCompressedList0(ans_class, x, f)
+}
+
+setMethod("split", "Vector",
+    function(x, f, drop=FALSE, ...) splitAsList(x, f, drop=drop)
 )
 
 `seqsplit<-` <- function(x, f, drop = FALSE, ..., value) {

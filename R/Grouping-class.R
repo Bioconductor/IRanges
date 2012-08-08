@@ -651,13 +651,15 @@ PartitioningByEnd <- function(x=integer(), NG=NULL, names=NULL)
             }
         }
     }
-    ans_end <- unname(x)
-    if (!is.null(names)) {
-        if (!is.character(names) || length(names) != length(ans_end))
+    if (is.null(names)) {
+        ans_names <- names(x)
+    } else {
+        if (!is.character(names) || length(names) != length(x))
             stop("'names' must be either NULL or a character vector of length ",
                  "'NG' (if supplied) or 'length(x)' (if 'NG' is not supplied)")
+        ans_names <- names
     }
-    new2("PartitioningByEnd", end=ans_end, NAMES=names, check=FALSE)
+    new2("PartitioningByEnd", end=unname(x), NAMES=ans_names, check=FALSE)
 }
 
 setAs("Ranges", "PartitioningByEnd",
@@ -771,13 +773,15 @@ PartitioningByWidth <- function(x=integer(), NG=NULL, names=NULL)
             }
         }
     }
-    ans_width <- unname(x)
-    if (!is.null(names)) {
-        if (!is.character(names) || length(names) != length(ans_width))
+    if (is.null(names)) {
+        ans_names <- names(x)
+    } else {
+        if (!is.character(names) || length(names) != length(x))
             stop("'names' must be either NULL or a character vector of length ",
                  "'NG' (if supplied) or 'length(x)' (if 'NG' is not supplied)")
+        ans_names <- names
     }
-    new2("PartitioningByWidth", width=ans_width, NAMES=names, check=FALSE)
+    new2("PartitioningByWidth", width=unname(x), NAMES=ans_names, check=FALSE)
 }
 
 setAs("Ranges", "PartitioningByWidth",
