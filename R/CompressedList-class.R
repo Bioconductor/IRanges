@@ -44,8 +44,14 @@ setReplaceMethod("names", "CompressedList",
 
 newCompressedList0 <- function(Class, unlistData, partitioning)
 {
-    new2(Class, unlistData=unlistData,
+    ans <- new2(Class, unlistData=unlistData,
                 partitioning=partitioning, check=FALSE)
+    ans_elementMetadata <- elementMetadata(ans)
+    if (is(ans_elementMetadata, "DataFrame")) {
+        ans_elementMetadata <- new("DataFrame", nrows=length(ans))
+        elementMetadata(ans) <- ans_elementMetadata
+    }
+    ans
 }
 
 .compress.list <- function(x) {
