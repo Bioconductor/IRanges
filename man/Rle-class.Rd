@@ -85,7 +85,6 @@
 \alias{shiftApply,Rle,Rle-method}
 \alias{show,Rle-method}
 \alias{sort,Rle-method}
-\alias{split,Rle-method}
 \alias{splitRanges}
 \alias{splitRanges,Rle-method}
 \alias{splitRanges,vectorORfactor-method}

@@ -49,6 +49,8 @@
 
 \alias{c,Vector-method}
 \alias{append,Vector,Vector-method}
+
+\alias{split,Vector-method}
 \alias{mstack}
 \alias{mstack,Vector-method}
 \alias{mstack,vector-method}

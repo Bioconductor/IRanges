@@ -26,7 +26,6 @@
 
 % general
 \alias{show,IRangesList-method}
-\alias{split,IRanges-method}
 \alias{max,CompressedNormalIRangesList-method}
 \alias{max,SimpleNormalIRangesList-method}
 \alias{min,CompressedNormalIRangesList-method}

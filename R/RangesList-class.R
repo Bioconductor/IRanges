@@ -681,11 +681,8 @@ setMethod("summary", "CompressedIRangesList",
 ### Splitting.
 ###
 
-setMethod("split", "Ranges",
-          function(x, f, drop = FALSE, ...)
-          do.call(RangesList, callNextMethod()))
+### Seems broken to me. We probably don't need this anyway!
+#setMethod("split", "Ranges",
+#          function(x, f, drop = FALSE, ...)
+#          do.call(RangesList, callNextMethod()))
 
-setMethod("split", "IRanges",
-          function(x, f, drop = FALSE, ...)
-          newCompressedList("CompressedIRangesList", x,
-                            splitFactor = f, drop = drop))

@@ -736,12 +736,6 @@ setMethod("sort", "Rle",
                   check = FALSE)
           })
 
-setMethod("split", "Rle",
-          function(x, f, drop=FALSE) {
-              newCompressedList("CompressedRleList", x, splitFactor = f,
-                                drop = drop)
-          })
-
 setGeneric("splitRanges", signature = "x",
            function(x) standardGeneric("splitRanges"))
 

@@ -53,9 +53,6 @@
 % show
 \alias{show,RangesList-method}
 
-% split
-\alias{split,Ranges-method}
-
 \title{List of Ranges}
 \description{An extension of \linkS4class{List} that holds only
   \linkS4class{Ranges} objects. Useful for storing ranges over a set

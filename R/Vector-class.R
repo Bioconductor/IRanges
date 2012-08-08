@@ -52,29 +52,6 @@ setMethod("showAsCell", "Vector", function(object)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### splitAs()
-###
-
-setGeneric("splitAs", function(x) standardGeneric("splitAs"))
-
-setMethod("splitAs", "ANY",
-    function(x)
-    {
-        cl <- class(x)
-        cl <- c(cl, names(getClass(cl)@contains))
-        substring(cl, 1L, 1L) <- toupper(substring(cl, 1L, 1L))
-        compressedClass <- paste("Compressed", cl, "List", sep = "")
-        clExists <- which(sapply(compressedClass,
-                                 function(ccl) !is.null(getClassDef(ccl))))
-        if (length(clExists) == 0L)
-            stop("don't know what class to use for storing a split ",
-                 class(x), " object")
-        compressedClass[clExists[1L]]
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
@@ -854,7 +831,7 @@ setMethod("!=", signature(e1="Vector", e2="Vector"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Combining and splitting.
+### Combining.
 ###
 
 .addNAElementMetadataRow <- function(x) {
@@ -907,6 +884,63 @@ setMethod("append", c("Vector", "Vector"),
               else
                   c(window(x, 1L, after), values, window(x, after + 1L, xlen))
              })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Splitting.
+###
+
+setGeneric("splitAs", function(x) standardGeneric("splitAs"))
+
+setMethod("splitAs", "ANY",
+    function(x)
+    {
+        cl <- class(x)
+        cl <- c(cl, names(getClass(cl)@contains))
+        substring(cl, 1L, 1L) <- toupper(substring(cl, 1L, 1L))
+        compressedClass <- paste("Compressed", cl, "List", sep = "")
+        clExists <- which(sapply(compressedClass,
+                                 function(ccl) !is.null(getClassDef(ccl))))
+        if (length(clExists) == 0L)
+            stop("don't know what class to use for storing a split ",
+                 class(x), " object")
+        compressedClass[clExists[1L]]
+    }
+)
+
+setMethod("split", "Vector",
+    function(x, f, drop=FALSE, ...)
+    {
+        ans_class <- splitAs(x)
+        if (!extends(ans_class, "CompressedList"))
+            stop("don't know how to split a ", class(x), " object, sorry")
+        x_len <- length(x)
+        if (is.list(f) || is(f, "List")) {
+            if (!identical(drop, FALSE))
+                warning("'drop' is ignored when 'f' is a list-like object")
+            if (length(f) == 0L && x_len != 0L) {
+                ## We use the same message as split.default()
+                stop("Group length is 0 but data length > 0")
+            }
+        } else {
+            if (is(f, "Rle"))
+                f <- rep.int(runValue(f), runLength(f))
+            f <- split(seq_len(x_len), f, drop=drop)
+            idx <- unlist(f, use.names=FALSE)
+            x <- x[idx]
+        }
+        if (!is(f, "PartitioningByEnd")) {
+            f_names <- names(f)
+            f <- PartitioningByEnd(f)
+            if (is.null(names(f)))
+                names(f) <- f_names
+        }
+        f_len <- length(f)
+        if (f_len != 0L && end(f)[f_len] != x_len)
+            stop("shape of 'f' is not compatible with 'length(x)'")
+        newCompressedList0(ans_class, x, f)
+    }
+)
 
 `seqsplit<-` <- function(x, f, drop = FALSE, ..., value) {
   if (!isTRUEorFALSE(drop))
