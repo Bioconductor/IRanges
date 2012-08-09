@@ -247,6 +247,7 @@ setMethod("coverage", "RangesList",
                                             weight=weight[[i]],
                                             method=method)
                                })
+        names(ans_listData) <- names(x)
         newSimpleList("SimpleRleList",
                       ans_listData,
                       metadata=metadata(x),
