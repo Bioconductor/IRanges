@@ -225,7 +225,8 @@
   \itemize{
     \item The "Overlap encodings" vignette in the GenomicRanges package.
     \item \code{\link{encodeOverlaps}}.
-    \item \code{\link{compare}}.
+    \item \code{\link{compare}} for the interpretation of the string
+      returned by \code{encoding}.
     \item The \link{RangesList} class.
   }
 }
