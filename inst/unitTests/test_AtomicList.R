@@ -99,7 +99,7 @@ if (FALSE) {
             checkIdentical(as.list(runmed(list3, 7)),
                            lapply(list3, function(x) {
                                       y <- runmed(x, 7)
-                                      if (type != "RleList")
+                                      if (type != "RleList" && compress)
                                           y <- as.vector(y)
                                       y
                                   }))
