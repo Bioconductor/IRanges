@@ -42,16 +42,22 @@ setReplaceMethod("names", "CompressedList",
 ### Constructor.
 ###
 
+reconcileElementMetadata <- function(x) {
+  x_elementMetadata <- elementMetadata(x)
+  if (is(x_elementMetadata, "DataFrame") &&
+      nrow(x_elementMetadata) == 0L && ncol(x_elementMetadata) == 0L)
+    {
+      x_elementMetadata <- new("DataFrame", nrows=length(x))
+      elementMetadata(x) <- x_elementMetadata
+    }
+  x
+}
+
 newCompressedList0 <- function(Class, unlistData, partitioning)
 {
     ans <- new2(Class, unlistData=unlistData,
                 partitioning=partitioning, check=FALSE)
-    ans_elementMetadata <- elementMetadata(ans)
-    if (is(ans_elementMetadata, "DataFrame")) {
-        ans_elementMetadata <- new("DataFrame", nrows=length(ans))
-        elementMetadata(ans) <- ans_elementMetadata
-    }
-    ans
+    reconcileElementMetadata(ans)
 }
 
 .compress.list <- function(x) {
@@ -186,10 +192,12 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
         }
     }
 
-    new2(listClass, unlistData = unlistData,
-         partitioning =
-         new2("PartitioningByEnd", end = end, NAMES = NAMES, check=FALSE),
-         ..., check=FALSE)
+    ans <- new2(listClass, unlistData = unlistData,
+                partitioning =
+                new2("PartitioningByEnd", end = end, NAMES = NAMES,
+                     check=FALSE),
+                ..., check=FALSE)
+    reconcileElementMetadata(ans)
 }
 
 
