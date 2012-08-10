@@ -53,25 +53,20 @@ static int get_bucket_idx_for_int_quad(const struct htab *htab,
 
 SEXP Integer_any_missing_or_outside(SEXP x, SEXP lower, SEXP upper)
 {
-	  SEXP ans;
-	  int i, n, *x_ptr, lower_value, upper_value;
+	int x_len, lower0, upper0, ans, i;
+	const int *x_p;
 
-	  n = length(x);
-	  lower_value = INTEGER(lower)[0];
-	  upper_value = INTEGER(upper)[0];
-
-	  PROTECT(ans = NEW_LOGICAL(1));
-	  LOGICAL(ans)[0] = 0;
-      for (i = 0, x_ptr = INTEGER(x); i < n; i++, x_ptr++) {
-        if ((*x_ptr == NA_INTEGER) ||
-        	(*x_ptr < lower_value) ||
-        	(*x_ptr > upper_value)) {
-          LOGICAL(ans)[0] = 1;
-          break;
-        }
-      }
-      UNPROTECT(1);
-      return(ans);
+	x_len = length(x);
+	lower0 = INTEGER(lower)[0];
+	upper0 = INTEGER(upper)[0];
+	ans = 0;
+	for (i = 0, x_p = INTEGER(x); i < x_len; i++, x_p++) {
+		if (*x_p == NA_INTEGER || *x_p < lower0 || *x_p > upper0) {
+			ans = 1;
+			break;
+		}
+	}
+	return ScalarLogical(ans);
 }
 
 
@@ -473,6 +468,57 @@ SEXP Integer_selfmatch4_hash(SEXP a, SEXP b, SEXP c, SEXP d)
 			ans0[i] = i2 + 1;
 		}
 	}
+	UNPROTECT(1);
+	return ans;
+}
+
+
+/****************************************************************************
+ * An enhanced version of base::tabulate() that: (1) handles integer weights
+ * (NA and negative weights are OK), and (2) throws an error if 'strict' is
+ * TRUE and if 'x' contains NAs or values not in the [1, 'nbins'] interval.
+ */
+
+SEXP Integer_tabulate2(SEXP x, SEXP nbins, SEXP weight, SEXP strict)
+{
+	SEXP ans;
+	int x_len, nbins0, weight_len, strict0, *one_based_ans_p,
+	    i, j, x_elt, weight_elt, ans_elt;
+	const int *x_p, *weight_p;
+
+	x_len = LENGTH(x);
+	nbins0 = INTEGER(nbins)[0];
+	weight_len = LENGTH(weight);
+	weight_p = INTEGER(weight);
+	strict0 = LOGICAL(strict)[0];
+	j = 0;
+	PROTECT(ans = NEW_INTEGER(nbins0));
+	memset(INTEGER(ans), 0, nbins0 * sizeof(int));
+	one_based_ans_p = INTEGER(ans) - 1;
+	// We do unsafe arithmetic, which is 40% faster than safe arithmetic.
+	// For now, the only use case for tabulate2() is fast tabulation of
+	// integer- and factor-Rle's (passing the run values and run lengths
+	// to 'x' and 'weight', respectively), so we are safe (the cumulated
+	// run lengths of an Rle must be < 2^31).
+	//_reset_ovflow_flag();
+	for (i = j = 0, x_p = INTEGER(x); i < x_len; i++, j++, x_p++) {
+		if (j >= weight_len)
+			j = 0; /* recycle */
+		x_elt = *x_p;
+		if (x_elt == NA_INTEGER || x_elt < 1 || x_elt > nbins0) {
+			if (!strict0)
+				continue;
+			UNPROTECT(1);
+			error("'x' contains NAs or values not in the "
+			      "[1, 'nbins'] interval");
+		}
+		weight_elt = weight_p[j];
+		//ans_elt = one_based_ans_p[x_elt];
+		//one_based_ans_p[x_elt] = _safe_int_add(ans_elt, weight_elt);
+		one_based_ans_p[x_elt] += weight_elt;
+	}
+	//if (_get_ovflow_flag())
+	//	warning("NAs produced by integer overflow");
 	UNPROTECT(1);
 	return ans;
 }

@@ -652,6 +652,13 @@ SEXP Integer_selfmatch4_hash(
 	SEXP d
 );
 
+SEXP Integer_tabulate2(
+	SEXP x,
+	SEXP nbins,
+	SEXP weight,
+	SEXP strict
+);
+
 SEXP Integer_explode_bits(
 	SEXP x,
 	SEXP bitpos

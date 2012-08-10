@@ -395,6 +395,32 @@ duplicatedIntegerQuads <- function(a, b, c, d,
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### tabulate2()
+###
+### An enhanced version of base::tabulate() that: (1) handles integer weights
+### (NA and negative weights are OK), and (2) throws an error if 'strict' is
+### TRUE and if 'x' contains NAs or values not in the [1, 'nbins'] interval.
+### Unlike with base::tabulate(), 'nbins' needs to be specified (no default
+### value). Also for now, it only works if 'x' is an integer vector.
+###
+
+tabulate2 <- function(x, nbins, weight=1L, strict=FALSE)
+{
+    if (!is.integer(x))
+        stop("'x' must be an integer vector")
+    if (!isSingleNumber(nbins))
+        stop("'nbins' must be a single integer")
+    if (!is.integer(nbins))
+        nbins <- as.integer(nbins)
+    if (!is.integer(weight))
+        stop("'weight' must be an integer vector")
+    if (!isTRUEorFALSE(strict))
+        stop("'strict' must be TRUE or FALSE")
+    .Call2("Integer_tabulate2", x, nbins, weight, strict, PACKAGE="IRanges")
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Bitwise operations.
 ###
 ### The bitwise operations in this section don't treat the integer NA (aka
