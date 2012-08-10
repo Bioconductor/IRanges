@@ -928,17 +928,7 @@ setMethod("splitAsListReturnedClass", "ANY",
 
 .split_by_integer_as_CompressedList <- function(x, f, drop, Class)
 {
-    x_len <- length(x)
-    f_len <- length(f)
-    if (f_len < x_len) {
-        ## We use the same message as split.default()
-        if (f_len == 0L)
-            stop("Group length is 0 but data length > 0")
-        if (x_len %% f_len != 0L)
-            warning("data length is not a multiple of split variable")
-        f <- rep(f, length.out=x_len)
-    }
-    if (f_len > x_len)
+    if (length(f) > length(x))
         stop("'f' cannot be longer than data when it's an integer vector")
     idx <- orderInteger(f)
     tmp <- Rle(f[idx])
@@ -955,14 +945,6 @@ setMethod("splitAsListReturnedClass", "ANY",
 {
     x_len <- length(x)
     f_len <- length(f)
-    if (f_len < x_len) {
-        ## We use the same message as split.default()
-        if (f_len == 0L)
-            stop("Group length is 0 but data length > 0")
-        if (x_len %% f_len != 0L)
-            warning("data length is not a multiple of split variable")
-        f <- rep(f, length.out=x_len)
-    }
     f_levels <- levels(f)
     f <- as.integer(f)
     if (f_len > x_len)
@@ -982,14 +964,22 @@ setMethod("splitAsListReturnedClass", "ANY",
 {
     f_vals <- runValue(f)
     if (!(is.atomic(f_vals) && is.vector(f_vals)) && !is.factor(f_vals))
-        stop("'f' must be an atomic vector or a factor (possibly in ",
-             "an Rle form), or a list-like object")
-    f_lens <- runLength(f)
+        stop("'f' must be an atomic vector or a factor (possibly ",
+             "in Rle form), or a list-like object")
+    x_len <- length(x)
+    f_len <- length(f)
     if (is.integer(f_vals)) {
-        stop("NOT READY YET, SORRY!")
+        stop("SPLITTING BY AN integer-Rle SPLIT VARIABLE ",
+             "IS NOT YET SUPPORTED, SORRY!")
     } else {
         if (!is.factor(f_vals))
             f_vals <- as.factor(f_vals)
+        if (f_len > x_len) {
+            runValue(f) <- f_vals
+            f <- head(f, n=x_len)
+            f_vals <- runValue(f)
+        }
+        f_lens <- runLength(f)
         f_levels <- levels(f_vals)
         f_vals <- as.integer(f_vals)
         idx <- orderInteger(f_vals)
@@ -1021,6 +1011,16 @@ splitAsList <- function(x, f, drop=FALSE)
         stop("don't know how to split a ", class(x), " object as a List")
     if (is.list(f) || is(f, "List"))
         return(.split_by_listlike_as_CompressedList(x, f, drop, ans_class))
+    x_len <- length(x)
+    f_len <- length(f)
+    if (f_len < x_len) {
+        ## We use the same message as split.default()
+        if (f_len == 0L)
+            stop("Group length is 0 but data length > 0")
+        if (x_len %% f_len != 0L)
+            warning("data length is not a multiple of split variable")
+        f <- rep(f, length.out=x_len)
+    }
     if (is.integer(f))
         return(.split_by_integer_as_CompressedList(x, f, drop, ans_class))
     if (is.atomic(f) && is.vector(f))
