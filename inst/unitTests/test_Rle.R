@@ -343,6 +343,10 @@ test_Rle_factor <- function() {
     checkIdentical(x, xRle[TRUE,drop=TRUE])
 }
 
+## ---------------------------------------------
+## runsum(), runmean(), runwtsum() methods
+## ---------------------------------------------
+
 .naive_runsum <- function(x, k, na.rm=FALSE)
     sapply(0:(length(x)-k),
         function(offset) sum(x[1:k + offset], na.rm=na.rm)) 
@@ -473,4 +477,224 @@ test_Rle_runmean <- function() {
         current <- as.vector(runmean(x, k, na.rm=FALSE))
         checkIdentical(target1, current)
     } 
+}
+
+.naive_runwtsum <- function(x, k, wt, na.rm=FALSE)
+    sapply(0:(length(x)-k),
+        function(offset) {
+            xwt <- x[1:k + offset] * wt 
+            sum(xwt, na.rm=na.rm)}) 
+
+test_Rle_runwtsum_real <- function() {
+
+    x0 <- c(NA, NaN, Inf, -Inf) 
+    x <- Rle(x0)
+    wt <- rep(1, 4)
+    ## na.rm = TRUE 
+    target1 <- .naive_runwtsum(x0, 4, wt, na.rm=TRUE)
+    target2 <- .naive_runwtsum(x, 4, wt, na.rm=TRUE)
+    checkIdentical(target1, target2) 
+    current <- as.vector(runwtsum(x, 4, wt, na.rm=TRUE))
+    checkIdentical(target1, current)
+    ## na.rm = FALSE 
+    target1 <- .naive_runwtsum(x0, 4, wt, na.rm=FALSE)
+    target2 <- .naive_runwtsum(x, 4, wt, na.rm=FALSE)
+    checkIdentical(target1, target2) 
+    current <- as.vector(runwtsum(x, 4, wt, na.rm=FALSE))
+    checkIdentical(target1, current) 
+
+    x0 <- c(NA, Inf, NA, -Inf, Inf, -Inf, NaN, Inf, NaN, -Inf)
+    x <- Rle(x0)
+    for (k in 1:2) {
+        if (k==1)
+            wt <- 1
+        else
+            wt <- c(1, 1) 
+        target1 <- .naive_runwtsum(x0, k, wt, na.rm=TRUE)
+        target2 <- .naive_runwtsum(x, k, wt, na.rm=TRUE)
+        checkIdentical(target1, target2)
+        current <- as.vector(runwtsum(x, k, wt, na.rm=TRUE))
+        checkIdentical(target1, current) 
+
+        target1 <- .naive_runwtsum(x0, k, wt, na.rm=FALSE)
+        target2 <- .naive_runwtsum(x, k, wt, na.rm=FALSE)
+        checkIdentical(target1, target2)
+        current <- as.vector(runwtsum(x, k, wt, na.rm=FALSE))
+        checkIdentical(target1, current)
+    }
+ 
+    x0 <- c(1, NA, 1, NaN, 1, NA)
+    x <- Rle(x0)
+    for (k in 1:2) {
+        if (k==1)
+            wt <- 2 
+        else
+            wt <- c(1, 1)
+        target1 <- .naive_runwtsum(x0, k, wt, na.rm=FALSE)
+        target2 <- .naive_runwtsum(x, k, wt, na.rm=FALSE)
+        checkIdentical(target1, target2)
+        current <- as.vector(runwtsum(x, k, wt, na.rm=FALSE))
+        checkIdentical(target1, current)
+    }
+}
+
+test_Rle_runwtsum_integer <- function() {
+
+    x0 <- c(NA_integer_, 1L, 1L)
+    x <- Rle(x0)
+    iwt <- rep(2L, 3)
+    for (k in 1:3) {
+        wt <- iwt[1:k]
+        target1 <- .naive_runwtsum(x0, k, wt, na.rm=TRUE)
+        target2 <- .naive_runwtsum(x, k, wt, na.rm=TRUE)
+        checkIdentical(target1, target2) 
+        current <- as.vector(runwtsum(x, k, wt, na.rm=TRUE))
+        checkIdentical(as.numeric(target1), current)
+
+        target1 <- .naive_runwtsum(x0, k, wt, na.rm=FALSE)
+        target2 <- .naive_runwtsum(x, k, wt, na.rm=FALSE)
+        checkIdentical(target1, target2) 
+        current <- as.vector(runwtsum(x, k, wt, na.rm=FALSE))
+        checkIdentical(as.numeric(target1), current)
+    }
+
+    x0 <- c(1L, NA_integer_, 1L)
+    x <- Rle(x0)
+    iwt <- rep(2L, 3)
+    for (k in 1:3) {
+        wt <- iwt[1:k]
+        target1 <- .naive_runwtsum(x0, k, wt, na.rm=TRUE)
+        target2 <- .naive_runwtsum(x, k, wt, na.rm=TRUE)
+        checkIdentical(target1, target2) 
+        current <- as.vector(runwtsum(x, k, wt, na.rm=TRUE))
+        checkIdentical(as.numeric(target1), current)
+
+        target1 <- .naive_runwtsum(x0, k, wt, na.rm=FALSE)
+        target2 <- .naive_runwtsum(x, k, wt, na.rm=FALSE)
+        checkIdentical(target1, target2) 
+        current <- as.vector(runwtsum(x, k, wt, na.rm=FALSE))
+        checkIdentical(as.numeric(target1), current)
+    }
+}
+
+.naive_runq <- function(x, k, i, na.rm=FALSE)
+    sapply(0:(length(x)-k),
+        function(offset) {
+            xsub <- x[1:k + offset]
+            if (!na.rm) { 
+                ## Manually handle NA's because they are not allowed
+                ## in 'x' of quantile(x, ...) when na.rm=FALSE.
+                if (any(is.na(xsub)))
+                    NA 
+                else
+                    quantile(xsub, probs=i/k, na.rm=na.rm, names=FALSE, type=3)
+            } else {
+                ## If all NA's, just return first NA value.
+                ## Not handled in quantile().
+                if (all(is.na(xsub))) {
+                    xsub[1]
+                } else {
+                    xsub <- xsub[!is.na(xsub)]
+                    quantile(xsub, probs=i/k, na.rm=na.rm, names=FALSE, type=3)
+                }
+            }
+        }, USE.NAMES=FALSE)
+
+test_Rle_runq_real <- function() {
+
+    x0 <- c(NA_real_)
+    x <- Rle(x0)
+    k <- length(x); i <- 1
+    target1 <- as.numeric(.naive_runq(x0, k, i, na.rm=TRUE))
+    current <- as.numeric(runq(x, k, i, na.rm=TRUE))
+    checkIdentical(target1, current)
+
+    x0 <- c(3, NA, 1, NaN, 4, Inf, 2, -Inf)
+    x <- Rle(x0)
+    k <- length(x)
+    for (i in c(1, length(x))) {
+        target1 <- as.numeric(.naive_runq(x0, k, i, na.rm=TRUE))
+        current <- as.numeric(runq(x, k, i, na.rm=TRUE))
+        checkIdentical(target1, current)
+        
+        target1 <- as.numeric(.naive_runq(x0, k, i, na.rm=FALSE))
+        current <- as.numeric(runq(x, k, i, na.rm=FALSE))
+        checkIdentical(target1, current)
+    }
+
+    x0 <- c(3, NA, 1, NaN, 4, Inf, 2, -Inf)
+    x <- Rle(x0)
+    i <- 1 
+    ## NOTE : special case k=1, returns NA not NaN
+    target1 <- c(3, NA, 1, NA, 4, Inf, 2, -Inf)
+    current <- as.numeric(runq(x, k=1, i=1, na.rm=TRUE))
+    checkIdentical(target1, current)
+    for (k in c(2:length(x))) {
+        target1 <- as.numeric(.naive_runq(x0, k, i, na.rm=TRUE))
+        current <- as.numeric(runq(x, k, i, na.rm=TRUE))
+        checkIdentical(target1, current)
+        
+        target1 <- as.numeric(.naive_runq(x0, k, i, na.rm=FALSE))
+        current <- as.numeric(runq(x, k, i, na.rm=FALSE))
+        checkIdentical(target1, current)
+    }
+
+    x0 <- c(1, 2, 3, 4, 5)
+    x <- Rle(x0)
+    k <- length(x); i <- 4 
+    target1 <- .naive_runq(x0, k, i, na.rm=TRUE)
+    current <- as.vector(runq(x, k, i, na.rm=TRUE))
+    checkIdentical(target1, current)
+
+    x0 <- c(1, 2, 3, NA, NA)
+    x <- Rle(x0)
+    k <- length(x); i <- 4 
+    target1 <- .naive_runq(x0, k, i, na.rm=TRUE)
+    current <- as.vector(runq(x, k, i, na.rm=TRUE))
+    checkIdentical(target1, current)
+}
+
+test_Rle_runq_integer <- function() {
+
+    x0 <- c(NA_integer_)
+    x <- Rle(x0)
+    k <- length(x); i <- 1
+    target1 <- as.numeric(.naive_runq(x0, k, i, na.rm=TRUE))
+    current <- as.numeric(runq(x, k, i, na.rm=TRUE))
+    checkIdentical(target1, current)
+
+    x0 <- NA_integer_
+    x <- Rle(x0)
+    k <- i <- 1 
+    target1 <- unlist(.naive_runq(x0, k, i, na.rm=TRUE))
+    target2 <- as.vector(do.call(c, (.naive_runq(x, k, i, na.rm=TRUE))))
+    checkIdentical(target1, target2) 
+    current <- as.vector(runq(x, k, i, na.rm=TRUE))
+    checkIdentical(as.integer(unname(target1)), current)
+
+    x0 <- c(NA_integer_, 2L, 1L)
+    x <- Rle(x0)
+    k <- 3 
+    for (i in 1:3) {
+        target1 <- unlist(.naive_runq(x0, k, i, na.rm=TRUE))
+        current <- as.vector(runq(x, k, i, na.rm=TRUE))
+        checkIdentical(unname(target1), current)
+
+        target1 <- unlist(.naive_runq(x0, k, i, na.rm=FALSE))
+        current <- as.integer(runq(x, k, i, na.rm=FALSE))
+        checkIdentical(as.integer(target1), current)
+    }
+
+    x0 <- c(3L, 2L, NA_integer_, NA_integer_, 1L, 2L)
+    x <- Rle(x0)
+    i <- 1
+    for (k in 1:6) {
+        target1 <- unlist(.naive_runq(x0, k, i, na.rm=TRUE))
+        current <- as.vector(runq(x, k, i, na.rm=TRUE))
+        checkIdentical(target1, current)
+
+        target1 <- unlist(.naive_runq(x0, k, i, na.rm=FALSE))
+        current <- as.integer(runq(x, k, i, na.rm=FALSE))
+        checkIdentical(as.integer(target1), current)
+    }
 }

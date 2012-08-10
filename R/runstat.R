@@ -11,9 +11,9 @@ setGeneric("runmean", signature="x",
                standardGeneric("runmean"))
 
 setGeneric("runwtsum", signature="x",
-           function(x, k, wt, endrule = c("drop", "constant"))
+           function(x, k, wt, endrule = c("drop", "constant"), na.rm = FALSE)
                standardGeneric("runwtsum"))
 
 setGeneric("runq", signature="x",
-           function(x, k, i, endrule = c("drop", "constant"))
+           function(x, k, i, endrule = c("drop", "constant"), na.rm = FALSE)
                standardGeneric("runq"))

@@ -18,8 +18,8 @@
 \usage{
 runsum(x, k, endrule = c("drop", "constant"), na.rm = FALSE)
 runmean(x, k, endrule = c("drop", "constant"), na.rm = FALSE)
-runwtsum(x, k, wt, endrule = c("drop", "constant"))
-runq(x, k, i, endrule = c("drop", "constant"))
+runwtsum(x, k, wt, endrule = c("drop", "constant"), na.rm = FALSE)
+runq(x, k, i, endrule = c("drop", "constant"), na.rm = FALSE)
 }
 
 \arguments{
@@ -34,7 +34,7 @@ runq(x, k, i, endrule = c("drop", "constant"))
     A numeric vector of length \code{k} that provides the weights to use.
   }
   \item{i}{
-    An integer indicating which order statistic to calculate.
+    An integer in [0, k] indicating which order statistic to calculate.
   }
   \item{endrule}{
     A character string indicating how the values at the beginning
@@ -48,7 +48,9 @@ runq(x, k, i, endrule = c("drop", "constant"))
     }
   }
   \item{na.rm}{
-    When \code{TRUE}, \code{NA} and \code{NaN} values are removed.
+    When \code{TRUE}, the \code{NA} and \code{NaN} values are removed. 
+    When \code{FALSE}, an \code{NA} is returned if either \code{NA} or
+    \code{NaN} are in the specified window.
   }
 }
 
@@ -62,7 +64,7 @@ runq(x, k, i, endrule = c("drop", "constant"))
   An object of the same class as \code{x}.
 }
 
-\author{P. Aboyoun}
+\author{P. Aboyoun and V. Obenchain}
 
 \seealso{
   \code{\link[stats]{runmed}}, \link{Rle-class}, \link{RleList-class}
@@ -75,6 +77,14 @@ runq(x, k, i, endrule = c("drop", "constant"))
   runmean(x, k = 3)
   runwtsum(x, k = 3, wt = c(0.25, 0.5, 0.25))
   runq(x, k = 5, i = 3, endrule = "constant")
+
+  ## Missing and non-finite values
+  x <- Rle(c(1, 2, NA, 0, 3, Inf, 4, NaN))
+  runsum(x, k = 2)
+  runsum(x, k = 2, na.rm = TRUE)
+  runmean(x, k = 2, na.rm = TRUE)
+  runwtsum(x, k = 2, wt =  c(0.25, 0.5), na.rm = TRUE)
+  runq(x, k = 2, i = 2, na.rm = TRUE) ## max value in window
 }
 
 \keyword{methods}

@@ -1146,13 +1146,15 @@ SEXP Rle_runsum(
 SEXP Rle_runwtsum(
 	SEXP x,
 	SEXP k,
-	SEXP wt
+	SEXP wt,
+	SEXP na_rm 
 );
 
 SEXP Rle_runq(
 	SEXP x,
 	SEXP k,
-	SEXP which
+	SEXP which,
+	SEXP na_rm 
 );
 
 

@@ -705,6 +705,8 @@
               end-point rule is applied, see \code{\link[stats]{smoothEnds}}.}
           }
         }
+        \item{\code{na.rm}}{A logical indicating if NA and NaN values 
+          should be removed.}
       }
     }
     \item{}{
@@ -724,12 +726,11 @@
           }
         }
         \item{\code{na.rm}}{A logical indicating if NA and NaN values should 
-          be removed. When \code{TRUE}, the sum is computed as if the NA
-          and NaN values were 0.}
+          be removed.} 
       }
     }
     \item{}{
-      \code{runwtsum(x, k, wt, endrule = c("drop", "constant"))}:
+      \code{runwtsum(x, k, wt, endrule = c("drop", "constant"), na.rm = FALSE)}:
       Calculates the sums for fixed width running windows across \code{x}.
       \describe{
         \item{\code{k}}{An integer indicating the fixed width of the running
@@ -746,6 +747,8 @@
               smoothed ends \emph{constant};}
           }
         }
+        \item{\code{na.rm}}{A logical indicating if NA and NaN values should 
+          be removed.} 
       }
     }
     \item{}{
@@ -767,6 +770,8 @@
               smoothed ends \emph{constant};}
           }
         }
+        \item{\code{na.rm}}{A logical indicating if NA and NaN values should 
+          be removed.} 
       }
     }
   }
@@ -895,10 +900,9 @@
   toupper(z)
 
   ## ---------------------------------------------------------------------
-  ## runsum() and runmean()
+  ## runsum, runmean, runwtsum, and runq functions
   ## ---------------------------------------------------------------------
 
-  ## runsum()
   ## The .naive_runsum() function demonstrates the semantics of 
   ## runsum(). This test ensures the behavior is consistent with
   ## base::sum().
@@ -909,16 +913,19 @@
 
   x0 <- c(1, Inf, 3, 4, 5, NA)
   x <- Rle(x0)
-  target1 <- .naive_runsum(x0, 3, na.rm=TRUE)
-  target2 <- .naive_runsum(x, 3, na.rm=TRUE)
+  target1 <- .naive_runsum(x0, 3, na.rm = TRUE)
+  target2 <- .naive_runsum(x, 3, na.rm = TRUE)
   stopifnot(target1 == target2)
-  current <- as.vector(runsum(x, 3, na.rm=TRUE))
+  current <- as.vector(runsum(x, 3, na.rm = TRUE))
   stopifnot(target1 == current)
 
-  ## runmean()
-  x <- Rle(c(2, 1, NA, 2, 1, 3))
-  runmean(x, k=2, na.rm=TRUE)
-  runmean(x, k=2, na.rm=FALSE)
+  x <- Rle(c(2, 1, NA, 0, 1, -Inf))
+  runmean(x, k = 3)
+  runmean(x, k = 3, na.rm = TRUE)
+  runwtsum(x, k = 3, wt = c(0.25, 0.50, 0.25))
+  runwtsum(x, k = 3, wt = c(0.25, 0.50, 0.25), na.rm = TRUE)
+  runq(x, k = 3, i = 1, na.rm = TRUE) ## smallest value in window
+  runq(x, k = 3, i = 3, na.rm = TRUE) ## largest value in window
 }
 
 \keyword{methods}
