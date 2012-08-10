@@ -56,12 +56,14 @@ setReplaceMethod("universe", "ViewsList",
 setMethod("as.matrix", "ViewsList",
           function(x, rev = FALSE, use.names = FALSE)
           {
+            browser()
             if (!isTRUEorFALSE(use.names))
               stop("use.names must be TRUE or FALSE")
-            if (length(unique(unlist(width(x), use.names = FALSE))) > 1L)
-              stop("all views must be of the same width")
             rev <- normargAtomicList1(rev, LogicalList, length(x))
-            m <- do.call(rbind, mapply(as.matrix, x, rev, SIMPLIFY = FALSE))
+            max_width <- max(max(width(restrict(ranges(x), start = 1L))))
+            m <- do.call(rbind, mapply(as.matrix, x, rev,
+                                       IntegerList(max_width),
+                                       SIMPLIFY = FALSE))
             nms <- names(x)
             if (!is.null(nms) && use.names) {
               nms <- rep(nms, elementLengths(x))

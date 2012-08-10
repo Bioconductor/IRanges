@@ -173,16 +173,21 @@ setAs("Views", "NormalIRanges",
     function(from) asNormalIRanges(ranges(from), force=TRUE)
 )
 
-setMethod("as.matrix", "Views", function(x, rev = FALSE) {
-  common_width <- unique(width(ranges(x)))
-  if (length(common_width) > 1L)
-    stop("all views must be of the same width")
+setMethod("as.matrix", "Views", function(x, rev = FALSE, max_width = NA) {
+  x_ranges <- restrict(ranges(x), start = 1L)
+  if (is.na(max_width)) {
+    max_width <- max(width(x_ranges))
+  }
   rev <- recycleVector(rev, length(x))
-  part <- PartitioningByWidth(ranges(x))
+  part <- PartitioningByWidth(x_ranges)
   ord <- mseq(ifelse(rev, end(part), start(part)),
               ifelse(rev, start(part), end(part)))
-  v <- seqselect(subject(x), ranges(x))[ord]
-  matrix(as.vector(v), ncol = common_width, byrow = TRUE,
+  v <- seqselect(subject(x), x_ranges)[ord]
+  v_fill <- rep.int(NA, max_width * length(x))
+  part <- PartitioningByWidth(rep(max_width, length(x)))
+  i <- as.integer(IRanges(start(part), width = width(x_ranges)))
+  v_fill[i] <- as.vector(v)
+  matrix(v_fill, ncol = max_width, byrow = TRUE,
          dimnames = list(names(x), NULL))
 })
 
