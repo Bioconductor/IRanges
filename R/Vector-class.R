@@ -103,7 +103,7 @@ setReplaceMethod("values", "Vector",
 
 setGeneric("rename", function(x, value, ...) standardGeneric("rename"))
 
-setMethod("rename", "Vector", function(x, value, ...) {
+.renameVector <- function(x, value, ...) {
   if (missing(value))
     newNames <- c(...)
   else newNames <- c(value, ...)
@@ -113,7 +113,10 @@ setMethod("rename", "Vector", function(x, value, ...) {
          paste(badOldNames, collapse = ", "))
   names(x)[match(names(newNames), names(x))] <- newNames
   x
-})
+}
+
+setMethod("rename", "vector", .renameVector)
+setMethod("rename", "Vector", .renameVector)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
