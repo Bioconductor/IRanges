@@ -277,10 +277,10 @@ SEXP Rle_real_runsum(SEXP x, SEXP k, SEXP na_rm)
 				j += times;
 			}
 			if (!R_FINITE(stat) && !R_FINITE(*buf_values_elt)) {
-				if (ISNA(stat) && !ISNA(*buf_values_elt) ||
-				    !ISNA(stat) && ISNA(*buf_values_elt) ||
-				    ISNAN(stat) && !ISNAN(*buf_values_elt) ||
-				    !ISNAN(stat) && ISNAN(*buf_values_elt) ||
+				if (R_IsNA(stat) && !R_IsNA(*buf_values_elt) ||
+				    !R_IsNA(stat) && R_IsNA(*buf_values_elt) ||
+				    R_IsNaN(stat) && !R_IsNaN(*buf_values_elt) ||
+				    !R_IsNaN(stat) && R_IsNaN(*buf_values_elt) ||
 				    (stat == R_PosInf) && (*buf_values_elt != R_PosInf) ||
 				    (stat != R_PosInf) && (*buf_values_elt == R_PosInf) ||
 				    (stat == R_NegInf) && (*buf_values_elt != R_NegInf) ||
@@ -580,10 +580,10 @@ SEXP Rle_real_runwtsum(SEXP x, SEXP k, SEXP wt, SEXP na_rm)
 			if (ans_len == 0) {
 				ans_len = 1;
 			} else if (!R_FINITE(stat) && !R_FINITE(*buf_values_elt)) {
-				if (ISNA(stat) && !ISNA(*buf_values_elt) ||
-				   !ISNA(stat) && ISNA(*buf_values_elt) ||
-				   ISNAN(stat) && !ISNAN(*buf_values_elt) ||
-				   !ISNAN(stat) && ISNAN(*buf_values_elt) ||
+				if (R_IsNA(stat) && !R_IsNA(*buf_values_elt) ||
+				   !R_IsNA(stat) && R_IsNA(*buf_values_elt) ||
+				   R_IsNaN(stat) && !R_IsNaN(*buf_values_elt) ||
+				   !R_IsNaN(stat) && R_IsNaN(*buf_values_elt) ||
 				   (stat == R_PosInf) && (*buf_values_elt != R_PosInf) ||
 				   (stat != R_PosInf) && (*buf_values_elt == R_PosInf) ||
 				   (stat == R_NegInf) && (*buf_values_elt != R_NegInf) ||
