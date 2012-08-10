@@ -124,9 +124,9 @@ setMethod("as.list", "Hits",
 
 setAs("Hits", "list", function(from) as.list(from))
 setAs("Hits", "List", function(from) {
-  unname(seqsplit(subjectHits(x),
-                  factor(queryHits(x),
-                         levels = seq_len(queryLength(x)))))
+  unname(seqsplit(subjectHits(from),
+                  factor(queryHits(from),
+                         levels = seq_len(queryLength(from)))))
 })
 
 ## count up the hits for each query
