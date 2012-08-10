@@ -2,47 +2,47 @@
 #include <limits.h> /* for INT_MAX */
 
 
-static int get_hslot_for_int_pair(const struct htab *htab,
+static int get_bucket_idx_for_int_pair(const struct htab *htab,
 		int a1, int b1,
 		const int *a2, const int *b2)
 {
 	unsigned int hval;
-	int hslot, i2;
-	const int *slots;
+	int bucket_idx, i2;
+	const int *buckets;
 
 	/* use 2 consecutive prime numbers (seems to work well, no serious
 	   justification for it) */
 	hval = 3951551U * a1 + 3951553U * b1;
-	hslot = hval & htab->Mminus1;
-	slots = htab->slots;
-	while ((i2 = slots[hslot]) != NA_INTEGER) {
+	bucket_idx = hval & htab->Mminus1;
+	buckets = htab->buckets;
+	while ((i2 = buckets[bucket_idx]) != NA_INTEGER) {
 		if (a2[i2] == a1 && b2[i2] == b1)
 			break;
-		hslot = (hslot + 1) % htab->M;
+		bucket_idx = (bucket_idx + 1) % htab->M;
 	}
-	return hslot;
+	return bucket_idx;
 }
 
-static int get_hslot_for_int_quad(const struct htab *htab,
+static int get_bucket_idx_for_int_quad(const struct htab *htab,
 		int a1, int b1, int c1, int d1,
 		const int *a2, const int *b2, const int *c2, const int *d2)
 {
 	unsigned int hval;
-	int hslot, i2;
-	const int *slots;
+	int bucket_idx, i2;
+	const int *buckets;
 
 	/* use 4 consecutive prime numbers (seems to work well, no serious
 	   justification for it) */
 	hval = 3951551U * a1 + 3951553U * b1 + 3951557U * c1 + 3951559U * d1;
-	hslot = hval & htab->Mminus1;
-	slots = htab->slots;
-	while ((i2 = slots[hslot]) != NA_INTEGER) {
+	bucket_idx = hval & htab->Mminus1;
+	buckets = htab->buckets;
+	while ((i2 = buckets[bucket_idx]) != NA_INTEGER) {
 		if (a2[i2] == a1 && b2[i2] == b1 &&
 		    c2[i2] == c1 && d2[i2] == d1)
 			break;
-		hslot = (hslot + 1) % htab->M;
+		bucket_idx = (bucket_idx + 1) % htab->M;
 	}
-	return hslot;
+	return bucket_idx;
 }
 
 
@@ -249,7 +249,7 @@ SEXP Integer_selfmatch2_quick(SEXP a, SEXP b)
 /* --- .Call ENTRY POINT --- */
 SEXP Integer_match2_hash(SEXP a1, SEXP b1, SEXP a2, SEXP b2, SEXP nomatch)
 {
-	int len1, len2, nomatch0, *ans0, i, hslot, i2;
+	int len1, len2, nomatch0, *ans0, i, bucket_idx, i2;
 	const int *a1_p, *b1_p, *a2_p, *b2_p;
 	struct htab htab;
 	SEXP ans;
@@ -259,19 +259,19 @@ SEXP Integer_match2_hash(SEXP a1, SEXP b1, SEXP a2, SEXP b2, SEXP nomatch)
 	nomatch0 = INTEGER(nomatch)[0];
 	htab = _new_htab(len2);
 	for (i = 0; i < len2; i++) {
-		hslot = get_hslot_for_int_pair(&htab,
+		bucket_idx = get_bucket_idx_for_int_pair(&htab,
 					a2_p[i], b2_p[i],
 					a2_p, b2_p);
-		if (_get_hslot_val(&htab, hslot) == NA_INTEGER)
-			_set_hslot_val(&htab, hslot, i);
+		if (_get_hbucket_val(&htab, bucket_idx) == NA_INTEGER)
+			_set_hbucket_val(&htab, bucket_idx, i);
 	}
 	PROTECT(ans = NEW_INTEGER(len1));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < len1; i++) {
-		hslot = get_hslot_for_int_pair(&htab,
+		bucket_idx = get_bucket_idx_for_int_pair(&htab,
 					a1_p[i], b1_p[i],
 					a2_p, b2_p);
-		i2 = _get_hslot_val(&htab, hslot);
+		i2 = _get_hbucket_val(&htab, bucket_idx);
 		if (i2 == NA_INTEGER)
 			ans0[i] = nomatch0;
 		else
@@ -284,7 +284,7 @@ SEXP Integer_match2_hash(SEXP a1, SEXP b1, SEXP a2, SEXP b2, SEXP nomatch)
 /* --- .Call ENTRY POINT --- */
 SEXP Integer_selfmatch2_hash(SEXP a, SEXP b)
 {
-	int ans_length, *ans0, i, hslot, i2;
+	int ans_length, *ans0, i, bucket_idx, i2;
 	const int *a_p, *b_p;
 	struct htab htab;
 	SEXP ans;
@@ -294,12 +294,12 @@ SEXP Integer_selfmatch2_hash(SEXP a, SEXP b)
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < ans_length; i++) {
-		hslot = get_hslot_for_int_pair(&htab,
+		bucket_idx = get_bucket_idx_for_int_pair(&htab,
 					a_p[i], b_p[i],
 					a_p, b_p);
-		i2 = _get_hslot_val(&htab, hslot);
+		i2 = _get_hbucket_val(&htab, bucket_idx);
 		if (i2 == NA_INTEGER) {
-			_set_hslot_val(&htab, hslot, i);
+			_set_hbucket_val(&htab, bucket_idx, i);
 			ans0[i] = i + 1;
 		} else {
 			ans0[i] = i2 + 1;
@@ -411,7 +411,7 @@ SEXP Integer_selfmatch4_quick(SEXP a, SEXP b, SEXP c, SEXP d)
 SEXP Integer_match4_hash(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 			 SEXP a2, SEXP b2, SEXP c2, SEXP d2, SEXP nomatch)
 {
-	int len1, len2, nomatch0, *ans0, i, hslot, i2;
+	int len1, len2, nomatch0, *ans0, i, bucket_idx, i2;
 	const int *a1_p, *b1_p, *c1_p, *d1_p, *a2_p, *b2_p, *c2_p, *d2_p;
 	struct htab htab;
 	SEXP ans;
@@ -425,19 +425,19 @@ SEXP Integer_match4_hash(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 	nomatch0 = INTEGER(nomatch)[0];
 	htab = _new_htab(len2);
 	for (i = 0; i < len2; i++) {
-		hslot = get_hslot_for_int_quad(&htab,
+		bucket_idx = get_bucket_idx_for_int_quad(&htab,
 					a2_p[i], b2_p[i], c2_p[i], d2_p[i],
 					a2_p, b2_p, c2_p, d2_p);
-		if (_get_hslot_val(&htab, hslot) == NA_INTEGER)
-			_set_hslot_val(&htab, hslot, i);
+		if (_get_hbucket_val(&htab, bucket_idx) == NA_INTEGER)
+			_set_hbucket_val(&htab, bucket_idx, i);
 	}
 	PROTECT(ans = NEW_INTEGER(len1));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < len1; i++) {
-		hslot = get_hslot_for_int_quad(&htab,
+		bucket_idx = get_bucket_idx_for_int_quad(&htab,
 					a1_p[i], b1_p[i], c1_p[i], d1_p[i],
 					a2_p, b2_p, c2_p, d2_p);
-		i2 = _get_hslot_val(&htab, hslot);
+		i2 = _get_hbucket_val(&htab, bucket_idx);
 		if (i2 == NA_INTEGER)
 			ans0[i] = nomatch0;
 		else
@@ -450,7 +450,7 @@ SEXP Integer_match4_hash(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 /* --- .Call ENTRY POINT --- */
 SEXP Integer_selfmatch4_hash(SEXP a, SEXP b, SEXP c, SEXP d)
 {
-	int ans_length, *ans0, i, hslot, i2;
+	int ans_length, *ans0, i, bucket_idx, i2;
 	const int *a_p, *b_p, *c_p, *d_p;
 	struct htab htab;
 	SEXP ans;
@@ -462,12 +462,12 @@ SEXP Integer_selfmatch4_hash(SEXP a, SEXP b, SEXP c, SEXP d)
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < ans_length; i++) {
-		hslot = get_hslot_for_int_quad(&htab,
+		bucket_idx = get_bucket_idx_for_int_quad(&htab,
 					a_p[i], b_p[i], c_p[i], d_p[i],
 					a_p, b_p, c_p, d_p);
-		i2 = _get_hslot_val(&htab, hslot);
+		i2 = _get_hbucket_val(&htab, bucket_idx);
 		if (i2 == NA_INTEGER) {
-			_set_hslot_val(&htab, hslot, i);
+			_set_hbucket_val(&htab, bucket_idx, i);
 			ans0[i] = i + 1;
 		} else {
 			ans0[i] = i2 + 1;

@@ -100,14 +100,14 @@ void _get_matches_of_ordered_int_quads(
 
 struct htab _new_htab(int n);
 
-int _get_hslot_val(
+int _get_hbucket_val(
 	const struct htab *htab,
-	int hslot
+	int bucket_idx
 );
 
-void _set_hslot_val(
+void _set_hbucket_val(
 	struct htab *htab,
-	int hslot,
+	int bucket_idx,
 	int val
 );
 

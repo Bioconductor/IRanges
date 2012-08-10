@@ -21,9 +21,9 @@
 
 /* Hash table -- modified from R_HOME/src/main/unique.c */
 struct htab {
-        int K, M;
-        unsigned int Mminus1;
-        int *slots;
+	int K, M;
+	unsigned int Mminus1;
+	int *buckets;
 };
 
 
@@ -80,9 +80,9 @@ typedef struct char_ae {
 } CharAE; 
 
 typedef struct char_aeae {
-        int buflength;
-        CharAE *elts;
-        int _nelt;
+	int buflength;
+	CharAE *elts;
+	int _nelt;
 	int _AE_malloc_stack_idx;
 } CharAEAE; 
 

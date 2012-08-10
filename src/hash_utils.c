@@ -22,9 +22,9 @@ static void htab_init(struct htab *htab, int n)
 		htab->K += 1;
 	}
 	htab->Mminus1 = htab->M - 1;
-	htab->slots = (int *) R_alloc(sizeof(int), htab->M);
+	htab->buckets = (int *) R_alloc(sizeof(int), htab->M);
 	for (i = 0; i < htab->M; i++)
-		htab->slots[i] = NA_INTEGER;
+		htab->buckets[i] = NA_INTEGER;
 	return;
 }
 
@@ -36,14 +36,14 @@ struct htab _new_htab(int n)
 	return htab;
 }
 
-int _get_hslot_val(const struct htab *htab, int hslot)
+int _get_hbucket_val(const struct htab *htab, int bucket_idx)
 {
-	return htab->slots[hslot];
+	return htab->buckets[bucket_idx];
 }
 
-void _set_hslot_val(struct htab *htab, int hslot, int val)
+void _set_hbucket_val(struct htab *htab, int bucket_idx, int val)
 {
-	htab->slots[hslot] = val;
+	htab->buckets[bucket_idx] = val;
 	return;
 }
 

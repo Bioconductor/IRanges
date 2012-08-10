@@ -277,31 +277,31 @@ static unsigned int djb2_hash(const unsigned char *s, int len)
 	return hval;
 }
 
-static int get_hslot_for_cachedCharSeq(const struct htab *htab,
+static int get_bucket_idx_for_cachedCharSeq(const struct htab *htab,
 		const cachedCharSeq *charseq1,
 		const cachedXVectorList *charseqs2)
 {
 	unsigned int hval;
-	int hslot, i2;
-	const int *slots;
+	int bucket_idx, i2;
+	const int *buckets;
 	cachedCharSeq charseq2;
 
 	hval = djb2_hash((unsigned char *) charseq1->seq, charseq1->length);
-	hslot = hval & htab->Mminus1;
-	slots = htab->slots;
-	while ((i2 = slots[hslot]) != NA_INTEGER) {
+	bucket_idx = hval & htab->Mminus1;
+	buckets = htab->buckets;
+	while ((i2 = buckets[bucket_idx]) != NA_INTEGER) {
 		charseq2 = _get_cachedXRawList_elt(charseqs2, i2);
 		if (equal_cachedCharSeqs(charseq1, &charseq2))
 			break;
-		hslot = (hslot + 1) % htab->M;
+		bucket_idx = (bucket_idx + 1) % htab->M;
 	}
-	return hslot;
+	return bucket_idx;
 }
 
 /* --- .Call ENTRY POINT --- */
 SEXP XRawList_match_hash(SEXP x1, SEXP x2, SEXP nomatch)
 {
-	int len1, len2, nomatch0, *ans0, i, hslot, i2;
+	int len1, len2, nomatch0, *ans0, i, bucket_idx, i2;
 	cachedXVectorList cached_x1, cached_x2;
 	cachedCharSeq charseq;
 	struct htab htab;
@@ -315,18 +315,18 @@ SEXP XRawList_match_hash(SEXP x1, SEXP x2, SEXP nomatch)
 	htab = _new_htab(len2);
 	for (i = 0; i < len2; i++) {
 		charseq = _get_cachedXRawList_elt(&cached_x2, i);
-		hslot = get_hslot_for_cachedCharSeq(&htab,
+		bucket_idx = get_bucket_idx_for_cachedCharSeq(&htab,
 					&charseq, &cached_x2);
-		if (_get_hslot_val(&htab, hslot) == NA_INTEGER)
-			_set_hslot_val(&htab, hslot, i);
+		if (_get_hbucket_val(&htab, bucket_idx) == NA_INTEGER)
+			_set_hbucket_val(&htab, bucket_idx, i);
 	}
 	PROTECT(ans = NEW_INTEGER(len1));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < len1; i++) {
 		charseq = _get_cachedXRawList_elt(&cached_x1, i);
-		hslot = get_hslot_for_cachedCharSeq(&htab,
+		bucket_idx = get_bucket_idx_for_cachedCharSeq(&htab,
 					&charseq, &cached_x2);
-		i2 = _get_hslot_val(&htab, hslot);
+		i2 = _get_hbucket_val(&htab, bucket_idx);
 		if (i2 == NA_INTEGER)
 			ans0[i] = nomatch0;
 		else
@@ -339,7 +339,7 @@ SEXP XRawList_match_hash(SEXP x1, SEXP x2, SEXP nomatch)
 /* --- .Call ENTRY POINT --- */
 SEXP XRawList_selfmatch_hash(SEXP x)
 {
-	int ans_length, *ans0, i, hslot, i2;
+	int ans_length, *ans0, i, bucket_idx, i2;
 	cachedXVectorList cached_x;
 	cachedCharSeq charseq;
 	struct htab htab;
@@ -352,11 +352,11 @@ SEXP XRawList_selfmatch_hash(SEXP x)
 	ans0 = INTEGER(ans);
 	for (i = 0; i < ans_length; i++) {
 		charseq = _get_cachedXRawList_elt(&cached_x, i);
-		hslot = get_hslot_for_cachedCharSeq(&htab,
+		bucket_idx = get_bucket_idx_for_cachedCharSeq(&htab,
 					&charseq, &cached_x);
-		i2 = _get_hslot_val(&htab, hslot);
+		i2 = _get_hbucket_val(&htab, bucket_idx);
 		if (i2 == NA_INTEGER) {
-			_set_hslot_val(&htab, hslot, i);
+			_set_hbucket_val(&htab, bucket_idx, i);
 			ans0[i] = i + 1;
 		} else {
 			ans0[i] = i2 + 1;
