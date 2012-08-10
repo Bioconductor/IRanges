@@ -910,7 +910,7 @@ setMethod("splitAsListReturnedClass", "ANY",
     }
 )
 
-.split_listlike_as_CompressedList <- function(x, f, drop, Class)
+.split_by_listlike_as_CompressedList <- function(x, f, drop, Class)
 {
     x_len <- length(x)
     if (!identical(drop, FALSE))
@@ -926,14 +926,9 @@ setMethod("splitAsListReturnedClass", "ANY",
     newCompressedList0(Class, x, f)
 }
 
-.split_nonlistlike_as_CompressedList <- function(x, f, drop, Class)
+.split_by_integer_as_CompressedList <- function(x, f, drop, Class)
 {
     x_len <- length(x)
-    if (is(f, "Rle"))
-        f <- rep.int(runValue(f), runLength(f))
-    if (!(is.atomic(f) && is.vector(f)) && !is.factor(f))
-        stop("'f' must be an atomic vector or a factor (possibly in ",
-             "an Rle form), or a list-like object")
     f_len <- length(f)
     if (f_len < x_len) {
         ## We use the same message as split.default()
@@ -943,30 +938,76 @@ setMethod("splitAsListReturnedClass", "ANY",
             warning("data length is not a multiple of split variable")
         f <- rep(f, length.out=x_len)
     }
-    if (is.integer(f)) {
-        if (f_len > x_len)
-            stop("'f' cannot be longer than data when it's an integer vector")
-        idx <- orderInteger(f)
-        tmp <- Rle(f[idx])
-        f <- cumsum(runLength(tmp))
-        names(f) <- as.character(runValue(tmp))
-        if (!identical(drop, FALSE))
-            warning("'drop' is ignored when 'f' is an integer vector")
+    if (f_len > x_len)
+        stop("'f' cannot be longer than data when it's an integer vector")
+    idx <- orderInteger(f)
+    tmp <- Rle(f[idx])
+    f <- cumsum(runLength(tmp))
+    names(f) <- as.character(runValue(tmp))
+    if (!identical(drop, FALSE))
+        warning("'drop' is ignored when 'f' is an integer vector")
+    x <- x[idx]
+    f <- PartitioningByEnd(f)
+    newCompressedList0(Class, x, f)
+}
+
+.split_by_factor_as_CompressedList <- function(x, f, drop, Class)
+{
+    x_len <- length(x)
+    f_len <- length(f)
+    if (f_len < x_len) {
+        ## We use the same message as split.default()
+        if (f_len == 0L)
+            stop("Group length is 0 but data length > 0")
+        if (x_len %% f_len != 0L)
+            warning("data length is not a multiple of split variable")
+        f <- rep(f, length.out=x_len)
+    }
+    f_levels <- levels(f)
+    f <- as.integer(f)
+    if (f_len > x_len)
+        f <- head(f, n=x_len)
+    idx <- orderInteger(f)
+    f <- tabulate(f, nbins=length(f_levels))
+    names(f) <- f_levels
+    if (drop)
+        f <- f[f != 0L]
+    f <- cumsum(f)
+    x <- x[idx]
+    f <- PartitioningByEnd(f)
+    newCompressedList0(Class, x, f)
+}
+
+.split_by_Rle_as_CompressedList <- function(x, f, drop, Class)
+{
+    f_vals <- runValue(f)
+    if (!(is.atomic(f_vals) && is.vector(f_vals)) && !is.factor(f_vals))
+        stop("'f' must be an atomic vector or a factor (possibly in ",
+             "an Rle form), or a list-like object")
+    f_lens <- runLength(f)
+    if (is.integer(f_vals)) {
+        stop("NOT READY YET, SORRY!")
     } else {
-        if (!is.factor(f))
-            f <- as.factor(f)
-        f_levels <- levels(f)
-        f <- as.integer(f)
-        if (f_len > x_len)
-            f <- head(f, n=x_len)
-        idx <- orderInteger(f)
-        f <- tabulate(f, nbins=length(f_levels))
+        if (!is.factor(f_vals))
+            f_vals <- as.factor(f_vals)
+        f_levels <- levels(f_vals)
+        f_vals <- as.integer(f_vals)
+        idx <- orderInteger(f_vals)
+        xranges <- successiveIRanges(f_lens)[idx]
+        ## If we had a fast tabulate() for Rle, we could do:
+        ##   f <- tabulate(f, nbins=length(f_levels))
+        ## Or if we had a weighted version of tabulate(), we could do:
+        ##   f <- tabulate(f_vals, weight=f_lens, nbins=length(f_levels))
+        ## But we don't have any of those so for now we do:
+        f <- integer(length(f_levels))
+        tmp <- Rle(f_vals[idx], f_lens[idx])
+        f[runValue(tmp)] <- runLength(tmp)
         names(f) <- f_levels
         if (drop)
             f <- f[f != 0L]
         f <- cumsum(f)
     }
-    x <- x[idx]
+    x <- seqselect(x, xranges)
     f <- PartitioningByEnd(f)
     newCompressedList0(Class, x, f)
 }
@@ -979,8 +1020,17 @@ splitAsList <- function(x, f, drop=FALSE)
     if (!extends(ans_class, "CompressedList"))
         stop("don't know how to split a ", class(x), " object as a List")
     if (is.list(f) || is(f, "List"))
-        return(.split_listlike_as_CompressedList(x, f, drop, ans_class))
-    .split_nonlistlike_as_CompressedList(x, f, drop, ans_class)
+        return(.split_by_listlike_as_CompressedList(x, f, drop, ans_class))
+    if (is.integer(f))
+        return(.split_by_integer_as_CompressedList(x, f, drop, ans_class))
+    if (is.atomic(f) && is.vector(f))
+        f <- as.factor(f)
+    if (is.factor(f))
+        return(.split_by_factor_as_CompressedList(x, f, drop, ans_class))
+    if (is(f, "Rle"))
+        return(.split_by_Rle_as_CompressedList(x, f, drop, ans_class))
+    stop("'f' must be an atomic vector or a factor (possibly ",
+         "in Rle form), or a list-like object")
 }
 
 setMethod("split", "Vector",
