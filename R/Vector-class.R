@@ -987,14 +987,11 @@ setMethod("splitAsListReturnedClass", "ANY",
         f_vals <- as.integer(f_vals)
         idx <- orderInteger(f_vals)
         xranges <- successiveIRanges(f_lens)[idx]
-        ## If we had a fast tabulate() for Rle, we could do:
-        ##   f <- tabulate(f, nbins=length(f_levels))
-        ## Or if we had a weighted version of tabulate(), we could do:
-        ##   f <- tabulate(f_vals, weight=f_lens, nbins=length(f_levels))
-        ## But we don't have any of those so for now we do:
-        f <- integer(length(f_levels))
-        tmp <- Rle(f_vals[idx], f_lens[idx])
-        f[runValue(tmp)] <- runLength(tmp)
+        ## Using tabulate2() is 5x faster than doing:
+        ##   f <- integer(length(f_levels))
+        ##   tmp <- Rle(f_vals[idx], f_lens[idx])
+        ##   f[runValue(tmp)] <- runLength(tmp)
+        f <- tabulate2(f_vals, nbins=length(f_levels), weight=f_lens)
         names(f) <- f_levels
         if (drop)
             f <- f[f != 0L]
