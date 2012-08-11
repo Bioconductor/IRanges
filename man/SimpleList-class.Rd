@@ -51,10 +51,6 @@
 \alias{as.list,SimpleList-method}
 \alias{unlist,CompressedList-method}
 
-% show
-\alias{show,CompressedList-method}
-\alias{show,SimpleList-method}
-
 
 \title{Simple and Compressed List Classes}
 \description{The (non-virtual) SimpleList and (virtual) CompressedList classes

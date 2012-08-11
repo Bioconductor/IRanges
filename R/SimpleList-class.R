@@ -381,15 +381,3 @@ setMethod("as.list", "SimpleList",
               ans
           })
 
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "show" method.
-###
-
-setMethod("show", "SimpleList",
-          function(object)
-          {
-              lo <- length(object)
-              cat(class(object), " of length ", lo, "\n", sep = "")
-              if (!is.null(names(object)))
-                  cat(labeledLine("names", names(object)))
-          })

@@ -363,35 +363,35 @@ setMethod("merge", c("RangesList", "RangesList"),
 ### The "show" method.
 ###
 
-.RangesList_show <- function(object)
+.RangesList_show <- function(x)
 {
-  k <- length(object)
-  cumsumN <- cumsum(elementLengths(object))
-  N <- tail(cumsumN, 1)
-  cat(class(object), " of length ", k, "\n", sep = "")
-  if (k == 0L) {
-    return(NULL)
-  } else if ((k == 1L) || (N <= 20L)) {
-    show(as.list(object))
-  } else {
-    sketch <- function(x) c(head(x, 3), "...", tail(x, 3))
-    if (k >= 3 && cumsumN[3L] <= 20)
-      showK <- 3
-    else if (k >= 2 && cumsumN[2L] <= 20)
-      showK <- 2
-    else
-      showK <- 1
-    diffK <- k - showK
-    show(as.list(object[seq_len(showK)]))
-    if (diffK > 0)
-      cat("...\n<", k - showK,
-          ifelse(diffK == 1,
-                 " more element>\n", " more elements>\n"),
-          sep="")
-  }
+    x_len <- length(x)
+    cat(class(x), " of length ", x_len, "\n", sep = "")
+    if (x_len == 0L)
+        return(invisible(NULL))
+    cumsumN <- end(PartitioningByEnd(x))
+    N <- tail(cumsumN, 1)
+    if (x_len <= 5L && N <= 20L) {
+        show(as.list(x))
+        return(invisible(NULL))
+    }
+    if (x_len >= 3L && cumsumN[3L] <= 20L) {
+        showK <- 3L
+    } else if (x_len >= 2L && cumsumN[2L] <= 20L) {
+        showK <- 2L
+    } else {
+        showK <- 1L
+    }
+    show(as.list(x[seq_len(showK)]))
+    diffK <- x_len - showK
+    if (diffK > 0L)
+        cat("...\n<", x_len - showK,
+            ifelse(diffK == 1L,
+                   " more element>\n", " more elements>\n"),
+            sep="")
 }
+
 setMethod("show", "RangesList", .RangesList_show)
-setMethod("show", "IRangesList", .RangesList_show)
 
 setMethod("showAsCell", "RangesList",
           function(object)

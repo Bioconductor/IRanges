@@ -74,6 +74,20 @@ setMethod("isEmpty", "ANY",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "show" method.
+###
+
+setMethod("show", "List",
+          function(object)
+          {
+              lo <- length(object)
+              cat(class(object), " of length ", lo, "\n", sep = "")
+              if (!is.null(names(object)))
+                  cat(labeledLine("names", names(object)))
+          })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### List-like API: Element extraction.
 ###
 

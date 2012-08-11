@@ -17,6 +17,8 @@
 \alias{isEmpty}
 \alias{isEmpty,ANY-method}
 
+\alias{show,List-method}
+
 \alias{[[,List-method}
 \alias{$,List-method}
 
