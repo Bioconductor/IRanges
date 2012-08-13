@@ -16,10 +16,10 @@
 }
 
 \usage{
-runsum(x, k, endrule = c("drop", "constant"), na.rm = FALSE)
-runmean(x, k, endrule = c("drop", "constant"), na.rm = FALSE)
-runwtsum(x, k, wt, endrule = c("drop", "constant"), na.rm = FALSE)
-runq(x, k, i, endrule = c("drop", "constant"), na.rm = FALSE)
+runsum(x, k, endrule = c("drop", "constant"), ...)
+runmean(x, k, endrule = c("drop", "constant"), ...)
+runwtsum(x, k, wt, endrule = c("drop", "constant"), ...)
+runq(x, k, i, endrule = c("drop", "constant"), ...)
 }
 
 \arguments{
@@ -47,10 +47,10 @@ runq(x, k, i, endrule = c("drop", "constant"), na.rm = FALSE)
         smoothed ends \emph{constant};}
     }
   }
-  \item{na.rm}{
-    When \code{TRUE}, the \code{NA} and \code{NaN} values are removed. 
-    When \code{FALSE}, an \code{NA} is returned if either \code{NA} or
-    \code{NaN} are in the specified window.
+  \item{\dots}{Additional arguments passed to methods. Specifically,
+    \code{na.rm}. When \code{na.rm = TRUE}, the \code{NA} and \code{NaN} 
+    values are removed. When \code{na.rm = FALSE}, \code{NA} is returned 
+    if either \code{NA} or \code{NaN} are in the specified window.
   }
 }
 

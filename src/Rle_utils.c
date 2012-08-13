@@ -9,7 +9,7 @@ SEXP Rle_integer_runsum(SEXP x, SEXP k, SEXP na_rm)
 	int *prev_length, *curr_length, *buf_lengths, *buf_lengths_elt;
 	int *prev_value, *curr_value, *buf_values, *buf_values_elt;
 	int *prev_value_na, *curr_value_na;
-	SEXP values, lengths, ans, ans_values, ans_lengths;
+	SEXP values, lengths;
 	SEXP orig_values, na_index;
 	const int narm = LOGICAL(na_rm)[0];
 	
@@ -183,7 +183,7 @@ SEXP Rle_real_runsum(SEXP x, SEXP k, SEXP na_rm)
 	double *prev_value, *curr_value, *buf_values, *buf_values_elt;
 	double *m_value;
 	int *m_length;
-	SEXP values, lengths, ans, ans_values, ans_lengths;
+	SEXP values, lengths;
 	SEXP orig_values;
 	const int narm = LOGICAL(na_rm)[0];
 
@@ -277,14 +277,18 @@ SEXP Rle_real_runsum(SEXP x, SEXP k, SEXP na_rm)
 				j += times;
 			}
 			if (!R_FINITE(stat) && !R_FINITE(*buf_values_elt)) {
-				if (R_IsNA(stat) && !R_IsNA(*buf_values_elt) ||
-				    !R_IsNA(stat) && R_IsNA(*buf_values_elt) ||
-				    R_IsNaN(stat) && !R_IsNaN(*buf_values_elt) ||
-				    !R_IsNaN(stat) && R_IsNaN(*buf_values_elt) ||
-				    (stat == R_PosInf) && (*buf_values_elt != R_PosInf) ||
-				    (stat != R_PosInf) && (*buf_values_elt == R_PosInf) ||
-				    (stat == R_NegInf) && (*buf_values_elt != R_NegInf) ||
-				    (stat != R_NegInf) && (*buf_values_elt == R_NegInf)) {
+				if ((R_IsNA(stat) && !R_IsNA(*buf_values_elt)) 
+                                    || (!R_IsNA(stat) && R_IsNA(*buf_values_elt)) 
+				    || (R_IsNaN(stat) && !R_IsNaN(*buf_values_elt)) 
+				    || (!R_IsNaN(stat) && R_IsNaN(*buf_values_elt)) 
+				    || ((stat == R_PosInf) && 
+						(*buf_values_elt != R_PosInf)) 
+				    || ((stat != R_PosInf) && 
+						(*buf_values_elt == R_PosInf)) 
+				    || ((stat == R_NegInf) && 
+						(*buf_values_elt != R_NegInf)) 
+				    || ((stat != R_NegInf) && 
+						(*buf_values_elt == R_NegInf))) {
 					ans_len++;
 					buf_values_elt++;
 					buf_lengths_elt++;
@@ -372,7 +376,7 @@ SEXP Rle_integer_runwtsum(SEXP x, SEXP k, SEXP wt, SEXP na_rm)
 	int *lengths_elt, *curr_length, *buf_lengths, *buf_lengths_elt;
 	int *values_elt, *curr_value;
 	double *wt_elt, *buf_values, *buf_values_elt;
-	SEXP values, lengths, ans, ans_values, ans_lengths;
+	SEXP values, lengths;
 	SEXP orig_values, na_index;
 	const int narm = LOGICAL(na_rm)[0];
 	
@@ -507,7 +511,7 @@ SEXP Rle_real_runwtsum(SEXP x, SEXP k, SEXP wt, SEXP na_rm)
 	int *lengths_elt, *curr_length, *buf_lengths, *buf_lengths_elt;
 	double *values_elt, *curr_value;
 	double *wt_elt, *buf_values, *buf_values_elt;
-	SEXP values, lengths,  ans, ans_values, ans_lengths;
+	SEXP values, lengths;
 	SEXP orig_values;
 	const int narm = LOGICAL(na_rm)[0];
 
@@ -580,14 +584,18 @@ SEXP Rle_real_runwtsum(SEXP x, SEXP k, SEXP wt, SEXP na_rm)
 			if (ans_len == 0) {
 				ans_len = 1;
 			} else if (!R_FINITE(stat) && !R_FINITE(*buf_values_elt)) {
-				if (R_IsNA(stat) && !R_IsNA(*buf_values_elt) ||
-				   !R_IsNA(stat) && R_IsNA(*buf_values_elt) ||
-				   R_IsNaN(stat) && !R_IsNaN(*buf_values_elt) ||
-				   !R_IsNaN(stat) && R_IsNaN(*buf_values_elt) ||
-				   (stat == R_PosInf) && (*buf_values_elt != R_PosInf) ||
-				   (stat != R_PosInf) && (*buf_values_elt == R_PosInf) ||
-				   (stat == R_NegInf) && (*buf_values_elt != R_NegInf) ||
-				   (stat != R_NegInf) && (*buf_values_elt == R_NegInf)) {
+				if ((R_IsNA(stat) && !R_IsNA(*buf_values_elt)) 
+                                    || (!R_IsNA(stat) && R_IsNA(*buf_values_elt)) 
+				    || (R_IsNaN(stat) && !R_IsNaN(*buf_values_elt)) 
+				    || (!R_IsNaN(stat) && R_IsNaN(*buf_values_elt)) 
+				    || ((stat == R_PosInf) && 
+						(*buf_values_elt != R_PosInf)) 
+				    || ((stat != R_PosInf) && 
+						(*buf_values_elt == R_PosInf)) 
+				    || ((stat == R_NegInf) && 
+						(*buf_values_elt != R_NegInf)) 
+				    || ((stat != R_NegInf) && 
+						(*buf_values_elt == R_NegInf))) {
 					ans_len++;
 					buf_values_elt++;
 					buf_lengths_elt++;
@@ -652,7 +660,7 @@ SEXP Rle_integer_runq(SEXP x, SEXP k, SEXP which, SEXP na_rm)
 	int stat, count_na, window_len_na;
 	int *lengths_elt, *curr_length, *buf_lengths, *buf_lengths_elt;
 	int *window, *values_elt, *curr_value, *buf_values, *buf_values_elt;
-	SEXP values, lengths,  ans, ans_values, ans_lengths;
+	SEXP values, lengths;
 	const int narm = LOGICAL(na_rm)[0];
 	const int constw = INTEGER(which)[0];
 	const int constk = INTEGER(k)[0];
@@ -775,7 +783,7 @@ SEXP Rle_real_runq(SEXP x, SEXP k, SEXP which, SEXP na_rm)
 	int count_na, window_len_na;
 	int *lengths_elt, *curr_length, *buf_lengths, *buf_lengths_elt;
 	double *window, *values_elt, *curr_value, *buf_values, *buf_values_elt;
-	SEXP values, lengths,  ans, ans_values, ans_lengths;
+	SEXP values, lengths;
 	const int narm = LOGICAL(na_rm)[0];
 	const int constw = INTEGER(which)[0];
 	const int constk = INTEGER(k)[0];

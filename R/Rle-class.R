@@ -1081,6 +1081,8 @@ setMethod("runmed", "Rle",
           function(x, k, endrule = c("median", "keep", "drop", "constant"),
                    algorithm = NULL, print.level = 0)
           {
+              if (!all(is.finite(as.vector(x))))
+                  stop("NA/NaN/Inf not supported in runmed,Rle-method")
               endrule <- match.arg(endrule)
               n <- length(x)
               k <- normargRunK(k = k, n = n, endrule = endrule)

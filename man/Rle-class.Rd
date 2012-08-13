@@ -705,8 +705,6 @@
               end-point rule is applied, see \code{\link[stats]{smoothEnds}}.}
           }
         }
-        \item{\code{na.rm}}{A logical indicating if NA and NaN values 
-          should be removed.}
       }
     }
     \item{}{
@@ -919,13 +917,30 @@
   current <- as.vector(runsum(x, 3, na.rm = TRUE))
   stopifnot(target1 == current)
 
+  ## runmean() and runwtsum() :
   x <- Rle(c(2, 1, NA, 0, 1, -Inf))
   runmean(x, k = 3)
   runmean(x, k = 3, na.rm = TRUE)
   runwtsum(x, k = 3, wt = c(0.25, 0.50, 0.25))
   runwtsum(x, k = 3, wt = c(0.25, 0.50, 0.25), na.rm = TRUE)
+
+  ## runq() :
   runq(x, k = 3, i = 1, na.rm = TRUE) ## smallest value in window
   runq(x, k = 3, i = 3, na.rm = TRUE) ## largest value in window
+
+  ## When na.rm = TRUE, it is possible the number of non-NA 
+  ## values in the window will be less than the 'i' specified.
+  ## Here we request the 4th smallest value in the window,
+  ## which tranlates to the value at the 4/5 (0.8) percentile.
+  x <- Rle(c(1, 2, 3, 4, 5))
+  runq(x, k=length(x), i=4, na.rm=TRUE)
+
+  ## The same request on a Rle with two missing values
+  ## finds the value at the 0.8 percentile of the vector 
+  ## at the new length of 3 after the NA's have been removed.
+  ## This translates to round((0.8) * 3).
+  x <- Rle(c(1, 2, 3, NA, NA))
+  runq(x, k=length(x), i=4, na.rm=TRUE)
 }
 
 \keyword{methods}
