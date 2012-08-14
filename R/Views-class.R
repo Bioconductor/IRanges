@@ -173,21 +173,30 @@ setAs("Views", "NormalIRanges",
     function(from) asNormalIRanges(ranges(from), force=TRUE)
 )
 
-setMethod("as.matrix", "Views", function(x, rev = FALSE, max_width = NA) {
+setMethod("as.matrix", "Views", function(x, rev = FALSE, max.width = NA) {
+  ## TODO: Supress this warning in BioC 2.12.
+  msg <- c("as.matrix() on a Views object 'x' has changed ",
+           "behavior: now the views\n  in 'x' must be of equal width ",
+           "and each view is converted into a row of the\n",
+           "  returned matrix. To achieve the old behavior, ",
+           "do 'as.matrix(ranges(x))'.\n  To supress this warning, do ",
+           "'suppressWarnings(as.matrix(x))'.\n  This warning will be ",
+           "removed in BioC 2.12.")
+  warning(msg)
   x_ranges <- restrict(ranges(x), start = 1L)
-  if (is.na(max_width)) {
-    max_width <- max(width(x_ranges))
+  if (is.na(max.width)) {
+    max.width <- max(width(x_ranges))
   }
   rev <- recycleVector(rev, length(x))
   part <- PartitioningByWidth(x_ranges)
   ord <- mseq(ifelse(rev, end(part), start(part)),
               ifelse(rev, start(part), end(part)))
   v <- seqselect(subject(x), x_ranges)[ord]
-  v_fill <- rep.int(NA, max_width * length(x))
-  part <- PartitioningByWidth(rep(max_width, length(x)))
+  v_fill <- rep.int(NA, max.width * length(x))
+  part <- PartitioningByWidth(rep(max.width, length(x)))
   i <- as.integer(IRanges(start(part), width = width(x_ranges)))
   v_fill[i] <- as.vector(v)
-  matrix(v_fill, ncol = max_width, byrow = TRUE,
+  matrix(v_fill, ncol = max.width, byrow = TRUE,
          dimnames = list(names(x), NULL))
 })
 
