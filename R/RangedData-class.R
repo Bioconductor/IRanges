@@ -681,14 +681,14 @@ setAs("RangesList", "RangedData",
             stop("cannot coerce a RangesList object with no names ",
                  "or duplicated names to a RangedData object")
         unlisted_from <- unlist(from, use.names=FALSE)
-        unlisted_values <- elementMetadata(unlisted_from)
-        elementMetadata(unlisted_from) <- NULL
+        unlisted_values <- mcols(unlisted_from)
+        mcols(unlisted_from) <- NULL
         ans_ranges <- relist(unlisted_from, skeleton=from)
         metadata(ans_ranges) <- metadata(from)
         if (!is(unlisted_values, "DataFrame")) {
             if (!is.null(unlisted_values))
-                warning("could not propagate the inner meta columns of 'from' ",
-                        "(accessed with 'elementMetadata(unlist(from))') ",
+                warning("could not propagate the inner metadata columns of ",
+                        "'from' (accessed with 'mcols(unlist(from))') ",
                         "to the data columns (aka values) of the returned ",
                         "RangedData object")
             unlisted_values <- new2("DataFrame",
@@ -712,7 +712,7 @@ setAs("RangesList", "RangedData",
     ans <- ranges(from)
     ## Propagate 'values(from)'.
     ans_unlisted_values <- unlist(values(from), use.names=FALSE)
-    elementMetadata(ans@unlistData) <- ans_unlisted_values
+    mcols(ans@unlistData) <- ans_unlisted_values
     ans
 }
 

@@ -48,7 +48,7 @@ NEW FEATURES
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o RangesMatching has been renamed to Hits and extends Vector, so
-      that it supports element metadata and other features. 
+      that it supports metadata columns and other features. 
 
     o RangesMatchingList has been renamed to HitsList.
 

@@ -77,8 +77,8 @@
     }
     \item{}{
       \code{as(from, "DataFrame")}: Creates a \code{DataFrame} by
-      combining the the result of \code{as.matrix(from)}
-      with \code{elementMetadata(from)}.
+      combining the result of \code{as.matrix(from)}
+      with \code{mcols(from)}.
     }
     \item{}{\code{as.data.frame(x)}: Attempts to coerce the result of
       \code{as(from, "DataFrame")} to a \code{data.frame}.

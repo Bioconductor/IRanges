@@ -158,7 +158,7 @@
         \item{}{\code{columnMetadata(x)}: Get the \code{DataFrame} of
           metadata along the value columns, i.e., where each column in
           \code{x} is represented by a row in the metadata. Note that
-          calling \code{elementMetadata(x)} returns the metadata on each
+          calling \code{mcols(x)} returns the metadata on each
           space in \code{x}.
         }
         \item{}{\code{columnMetadata(x) <- value}: Set the \code{DataFrame}
@@ -312,9 +312,9 @@
         }
         \item{\code{\linkS4class{RangesList}}}{
           Creates a \code{RangedData} with the ranges in \code{from}.
-          Also propagates the inner meta columns of the \code{RangesList}
-          (accessed with \code{elementMetadata(unlist(from))}) to the
-          data columns (aka values) of the \code{RangedData}.
+          Also propagates the \emph{inner} metadata columns of the
+          \code{RangesList} (accessed with \code{mcols(unlist(from))})
+          to the data columns (aka values) of the \code{RangedData}.
           This makes it a \emph{lossless} coercion and the exact reverse of the
           coercion from \code{RangedData} to \code{RangesList}.
         }
@@ -331,7 +331,7 @@
       Creates a \code{CompressedIRangesList} (a subclass of \code{RangesList})
       made of the ranges in \code{from}.
       Also propagates the data columns (aka values) of the \code{RangedData}
-      to the inner meta columns of the \code{RangesList}.
+      to the inner metadata columns of the \code{RangesList}.
       This makes it a \emph{lossless} coercion and the exact reverse of the
       coercion from \code{RangesList} to \code{RangedData}.
     }

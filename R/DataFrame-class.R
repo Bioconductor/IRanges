@@ -446,8 +446,8 @@ setReplaceMethod("[", "DataFrame",
                    if (length(newcn)) {
                      oldcn <- head(colnames(x), length(x) - length(newcn))
                      colnames(x) <- make.unique(c(oldcn, newcn))
-                     if (!is.null(elementMetadata(x)))
-                       elementMetadata(x)[tail(names(x),length(newcn)),] <-
+                     if (!is.null(mcols(x)))
+                       mcols(x)[tail(names(x),length(newcn)),] <-
                          DataFrame(NA)
                    }
                    if (length(newrn)) {

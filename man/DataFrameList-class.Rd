@@ -77,7 +77,7 @@
       metadata along the columns, i.e., where each column in \code{x} is
       represented by a row in the metadata. The metadata is common
       across all elements of \code{x}. Note that
-      calling \code{elementMetadata(x)} returns the metadata on
+      calling \code{mcols(x)} returns the metadata on
       the \code{DataFrame} elements of \code{x}.
     }
     \item{}{\code{columnMetadata(x) <- value}: Set the \code{DataFrame}

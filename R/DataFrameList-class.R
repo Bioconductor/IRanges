@@ -188,12 +188,12 @@ setGeneric("columnMetadata", function(x, ...) standardGeneric("columnMetadata"))
 
 setMethod("columnMetadata", "SimpleSplitDataFrameList", function(x) {
   if (length(x))
-    elementMetadata(x[[1]])
+    mcols(x[[1]])
   else NULL
 })
 
 setMethod("columnMetadata", "CompressedSplitDataFrameList", function(x) {
-  elementMetadata(x@unlistData)
+  mcols(x@unlistData)
 })
 
 setGeneric("columnMetadata<-",
@@ -202,7 +202,7 @@ setGeneric("columnMetadata<-",
 setReplaceMethod("columnMetadata", "SimpleSplitDataFrameList",
                  function(x, value) {
                    x@listData <- lapply(x@listData, function(xi) {
-                     elementMetadata(xi) <- value
+                     mcols(xi) <- value
                      xi
                    })
                    x
@@ -210,7 +210,7 @@ setReplaceMethod("columnMetadata", "SimpleSplitDataFrameList",
 
 setReplaceMethod("columnMetadata", "CompressedSplitDataFrameList",
                  function(x, value) {
-                   elementMetadata(x@unlistData) <- value
+                   mcols(x@unlistData) <- value
                  })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -223,11 +223,11 @@ setReplaceMethod("columnMetadata", "CompressedSplitDataFrameList",
     l <- as.list(x, use.names = FALSE)
     if (!all(sapply(l, function(df) identical(firstNames, colnames(df)))))
       return("column counts or names differ across elements")
-    firstMetaData <- elementMetadata(x[[1L]]) # could be NULL
+    firstMetaData <- mcols(x[[1L]]) # could be NULL
     if (!all(sapply(l, function(df) {
-      identical(firstMetaData, elementMetadata(df))
+      identical(firstMetaData, mcols(df))
     })))
-      return("elementMetadata must be identical across elements")
+      return("metadata columns must be identical across elements")
   }
   NULL
 }

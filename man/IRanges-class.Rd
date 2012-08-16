@@ -83,22 +83,19 @@
 \section{Combining}{
   \describe{
     \item{}{
-      \code{c(x, ..., .ignoreElementMetadata=TRUE)} Combining \code{IRanges}
-      objects is straightforward when they do not have any
-      \code{\link{elementMetadata}} set. If only one of the \code{IRanges}
-      object has its \code{\link{elementMetadata}} set, this is also trivial:
-      the resulting (combined) \code{IRanges} object will take the single
-      \code{elementMetadata} as the default, and set the corresponding
-      \code{elementMetadata} for the other \code{IRanges} object to \code{NA}.
+      \code{c(x, ..., ignore.mcols=FALSE)} Combining \code{IRanges}
+      objects is straightforward when they do not have any metadata columns.
+      If only one of the \code{IRanges} object has metadata columns, then
+      the corresponding metadata columns are attached to the other
+      \code{IRanges} object and set to \code{NA}.
       When multiple \code{IRanges} object have their own
-      \code{elementMetadata}, the user must ensure that each such
+      \code{metadata columns}, the user must ensure that each such
       \code{linkS4class{DataFrame}} have identical layouts to each other
       (same columns defined), in order for the combination to be successful,
       otherwise an error will be thrown. The user can call
-      \code{c(x, ..., .ignoreElementMetadata=TRUE)} in order to combine
-      \code{IRanges} objects with differing \code{elementMetadata},
-      which will result in the combined object having NO elementMetadata
-      defined.
+      \code{c(x, ..., ignore.mcols=TRUE)} in order to combine
+      \code{IRanges} objects with differing sets of metadata columns,
+      which will result in the combined object having NO metadata columns.
     }
   }
 }
@@ -142,15 +139,15 @@
   
   ## Combining IRanges objects
   ir1 <- IRanges(c(1, 10, 20), width=5)
-  elementMetadata(ir1) <- DataFrame(score=runif(3))
+  mcols(ir1) <- DataFrame(score=runif(3))
   ir2 <- IRanges(c(101, 110, 120), width=10)
-  elementMetadata(ir2) <- DataFrame(score=runif(3))
+  mcols(ir2) <- DataFrame(score=runif(3))
   ir3 <- IRanges(c(1001, 1010, 1020), width=20)
-  elementMetadata(ir3) <- DataFrame(value=runif(3))
+  mcols(ir3) <- DataFrame(value=runif(3))
   some.iranges <- c(ir1, ir2)
   ## all.iranges <- c(ir1, ir2, ir3) ## This will raise an error
-  all.iranges <- c(ir1, ir2, ir3, .ignoreElementMetadata=TRUE)
-  stopifnot(is.null(elementMetadata(all.iranges)))
+  all.iranges <- c(ir1, ir2, ir3, ignore.mcols=TRUE)
+  stopifnot(is.null(mcols(all.iranges)))
 
   ## ---------------------------------------------------------------------
   ## B. A NOTE ABOUT PERFORMANCE

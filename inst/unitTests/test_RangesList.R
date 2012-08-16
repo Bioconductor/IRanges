@@ -226,11 +226,11 @@ test_IRangesList_annotation <- function() {
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   for (compress in c(TRUE, FALSE)) {
     rl <- IRangesList(range1, range2, compress = compress)
-    elementMetadata(rl) <- DataFrame(a = 1:2)
-    checkIdentical(elementMetadata(rl)[,1], 1:2)
-    checkIdentical(elementMetadata(rl[2:1])[,1], 2:1)
-    checkIdentical(elementMetadata(c(rl,rl))[,1], rep(1:2,2))
-    checkIdentical(elementMetadata(append(rl,rl))[,1], rep(1:2,2))
+    mcols(rl) <- DataFrame(a = 1:2)
+    checkIdentical(mcols(rl)[,1], 1:2)
+    checkIdentical(mcols(rl[2:1])[,1], 2:1)
+    checkIdentical(mcols(c(rl,rl))[,1], rep(1:2,2))
+    checkIdentical(mcols(append(rl,rl))[,1], rep(1:2,2))
   }
 }
 

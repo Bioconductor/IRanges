@@ -10,10 +10,14 @@
 \alias{nlevels,Vector-method}
 \alias{elementMetadata}
 \alias{elementMetadata,Vector-method}
+\alias{mcols}
+\alias{mcols,Vector-method}
 \alias{values}
 \alias{values,Vector-method}
 \alias{elementMetadata<-}
 \alias{elementMetadata<-,Vector-method}
+\alias{mcols<-}
+\alias{mcols<-,Vector-method}
 \alias{values<-}
 \alias{values<-,Vector-method}
 
@@ -99,16 +103,23 @@
 \description{
   The Vector virtual class serves as the heart of the IRanges package
   and has over 90 subclasses. It serves a similar role as \link[base]{vector}
-  in base R. The Vector class includes two slots: \code{metadata}
-  (via extension of the \linkS4class{Annotated} class) and
-  \code{elementMetadata}. Their purpose is defined below.
+  in base R.
 
-  The Vector class supports the storage of global and element-wise metadata
-  with its \code{metadata} and \code{elementMetadata} slots. The
-  \code{metadata} slot can store a list of metadata pertaining to the whole
-  object and the \code{elementMetadata} slot can store a
-  \linkS4class{DataTable} (or \code{NULL}) for element-wise metadata with a
-  row for each element and a column for each metadata variable.
+  The Vector class supports the storage of \emph{global} and
+  \emph{element-wise} metadata:
+  \enumerate{
+  \item The \emph{global} metadata annotates the object as a whole:
+        this metadata is accessed via the \code{metadata} accessor and
+        is represented as an ordinary list;
+  \item The \emph{element-wise} metadata annotates individual elements
+        of the object: this metadata is accessed via the \code{mcols}
+        accessor (\code{mcols} stands for \emph{metadata columns}) and
+        is represented as a \link{DataTable} object (i.e. as an instance
+        of a concrete subclass of \link{DataTable}, e.g. a \link{DataFrame}
+        object), with a row for each element and a column for each
+        metadata variable. Note that the element-wise metadata can also
+        be \code{NULL}.
+  }
 
   To be functional, a class that inherits from Vector must define at
   least a \code{length}, \code{names} and \code{"["} method.
@@ -146,15 +157,16 @@
       Returns the number of factor levels.
     }
     \item{}{
-      \code{elementMetadata(x), elementMetadata(x) <- value}:
-      Get or set the \linkS4class{DataTable} holding local metadata on each
-      element. The rows are either not named or named according to the names
-      of the elements.
-      Optional, may be \code{NULL}.
+      \code{mcols(x)}, \code{mcols(x) <- value}:
+      Get or set the metadata columns. The metadata columns must be
+      \code{NULL} or represented as a \link{DataTable} object holding
+      element-wise metadata. The rows of the \link{DataTable} object are
+      either not named or named according to the names of the elements.
     }
     \item{}{
-      \code{values(x), values(x) <- value}:
-      Alternative to \code{elementMetadata} functions.
+       \code{elementMetadata(x)}, \code{elementMetadata(x) <- value},
+       \code{values(x)}, \code{values(x) <- value}:
+       Alternatives to \code{mcols} functions. Their use is discouraged.
     }
   }
 }
@@ -381,7 +393,7 @@
   as \link[base]{list} in base R.
 
   \linkS4class{DataTable} which is the type of objects returned by the
-  \code{elementMetadata} accessor.
+  \code{mcols} accessor.
 
   \linkS4class{Annotated} which Vector extends.
 }

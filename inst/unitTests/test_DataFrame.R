@@ -266,9 +266,9 @@ test_DataFrame_replace <- function() {
   checkIdentical(as.data.frame(sw1), swiss1)
 
   sw1 <- sw
-  elementMetadata(sw1) <- DataFrame(id = seq_len(ncol(sw1)))
+  mcols(sw1) <- DataFrame(id = seq_len(ncol(sw1)))
   sw1["NewCol"] <- DataFrame(seq(nrow(sw1)))
-  checkIdentical(elementMetadata(sw1),
+  checkIdentical(mcols(sw1),
                  DataFrame(id = c(seq_len(ncol(sw1)-1), NA),
                            row.names = colnames(sw1)))
 }
@@ -334,11 +334,11 @@ test_DataFrame_looping <- function() {
 
 test_DataFrame_annotation <- function() {
   df <- DataFrame(x = c(1L, 3L, NA), y = c(10L, 2L, NA))
-  elementMetadata(df) <- DataFrame(a = 1:2)
-  checkIdentical(elementMetadata(df)[,1], 1:2)
-  checkIdentical(elementMetadata(df[2:1])[,1], 2:1)
-  checkIdentical(elementMetadata(cbind(df,df))[,1], rep(1:2,2))
+  mcols(df) <- DataFrame(a = 1:2)
+  checkIdentical(mcols(df)[,1], 1:2)
+  checkIdentical(mcols(df[2:1])[,1], 2:1)
+  checkIdentical(mcols(cbind(df,df))[,1], rep(1:2,2))
   df$z <- 1:3
-  checkIdentical(elementMetadata(df),
+  checkIdentical(mcols(df),
                  DataFrame(a = c(1L, 2L, NA), row.names = c("x", "y", "z")))
 }

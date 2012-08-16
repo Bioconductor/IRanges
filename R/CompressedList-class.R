@@ -42,13 +42,13 @@ setReplaceMethod("names", "CompressedList",
 ### Constructor.
 ###
 
-reconcileElementMetadata <- function(x) {
-  x_elementMetadata <- elementMetadata(x)
-  if (is(x_elementMetadata, "DataFrame") &&
-      nrow(x_elementMetadata) == 0L && ncol(x_elementMetadata) == 0L)
+.reconcileMetadatacols <- function(x) {
+  x_mcols <- mcols(x)
+  if (is(x_mcols, "DataFrame") &&
+      nrow(x_mcols) == 0L && ncol(x_mcols) == 0L)
     {
-      x_elementMetadata <- new("DataFrame", nrows=length(x))
-      elementMetadata(x) <- x_elementMetadata
+      x_mcols <- new("DataFrame", nrows=length(x))
+      mcols(x) <- x_mcols
     }
   x
 }
@@ -57,7 +57,7 @@ newCompressedList0 <- function(Class, unlistData, partitioning)
 {
     ans <- new2(Class, unlistData=unlistData,
                 partitioning=partitioning, check=FALSE)
-    reconcileElementMetadata(ans)
+    .reconcileMetadatacols(ans)
 }
 
 .compress.list <- function(x) {
@@ -71,8 +71,13 @@ newCompressedList0 <- function(Class, unlistData, partitioning)
     x
 }
 
+### Value for elementMetadata slot can be passed either with
+###   newCompressedList(..., elementMetadata=somestuff)
+### or with
+###   newCompressedList(..., mcols=somestuff)
+### The latter is the new recommended form.
 newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
-                              splitFactor=NULL, drop=FALSE, ...)
+                              splitFactor=NULL, drop=FALSE, ..., mcols)
 {
     if (!extends(listClass, "CompressedList"))
         stop("cannot create a ", listClass, " as a 'CompressedList'")
@@ -192,12 +197,18 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
         }
     }
 
-    ans <- new2(listClass, unlistData = unlistData,
-                partitioning =
-                new2("PartitioningByEnd", end = end, NAMES = NAMES,
-                     check=FALSE),
-                ..., check=FALSE)
-    reconcileElementMetadata(ans)
+    ans_partitioning <- new2("PartitioningByEnd", end=end, NAMES=NAMES,
+                             check=FALSE)
+    if (missing(mcols)) {
+        ans <- new2(listClass, unlistData=unlistData,
+                    partitioning=ans_partitioning, ...,
+                    check=FALSE)
+    } else {
+        ans <- new2(listClass, unlistData=unlistData,
+                    partitioning=ans_partitioning, ..., elementMetadata=mcols,
+                    check=FALSE)
+    }
+    .reconcileMetadatacols(ans)
 }
 
 
@@ -317,7 +328,7 @@ setReplaceMethod("[", "CompressedList",
         ## Restore the original decoration.
         metadata(ans) <- metadata(x)
         names(ans) <- names(x)
-        elementMetadata(ans) <- elementMetadata(x)
+        mcols(ans) <- mcols(x)
         ans
     }
 )
@@ -554,7 +565,7 @@ setReplaceMethod("[[", "CompressedList",
                            new2("PartitioningByEnd", end = cumsum(widths),
                                 NAMES = NAMES, check=FALSE)
                          if (i > length(x))
-                           x <- .addNAElementMetadataRow(x)
+                           x <- rbindRowOfNAsToMetadatacols(x)
                          x
                      }
                  })
@@ -593,8 +604,8 @@ setMethod("c", "CompressedList",
                   unlistData <- do.call(c, lapply(tls, slot, "unlistData"))
               else
                   unlistData <- do.call(rbind, lapply(tls, slot, "unlistData"))
-              elementMetadata <- do.call(.rbind.elementMetadata, tls)
-              rownames(elementMetadata) <- NULL
+              mcols <- do.call(rbind.mcols, tls)
+              rownames(mcols) <- NULL
               partitionEnd <-
                 cumsum(do.call(c,
                                lapply(tls, function(y) {
@@ -614,7 +625,7 @@ setMethod("c", "CompressedList",
                   NAMES <- NULL
               x <- newCompressedList(class(tls[[1L]]), unlistData,
                                      end = partitionEnd, NAMES = NAMES)
-              slot(x, "elementMetadata", check=FALSE) <- elementMetadata
+              slot(x, "elementMetadata", check=FALSE) <- mcols
               x
           })
 

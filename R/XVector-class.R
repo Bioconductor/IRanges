@@ -96,7 +96,7 @@ setMethod("[", "XVector",
         x@shared <- new_shared
         x@offset <- 0L
         x@length <- length(new_shared)
-        elementMetadata(x) <- elementMetadata(x)[i, , drop=FALSE]
+        mcols(x) <- mcols(x)[i, , drop=FALSE]
         x
     }
 )
@@ -131,8 +131,8 @@ setMethod("subseq", "XVector",
         solved_SEW <- solveSubseqSEW(length(x), start, end, width)
         x@offset <- x@offset + start(solved_SEW) - 1L
         x@length <- width(solved_SEW)
-        elementMetadata(x) <- window(elementMetadata(x),
-                                     start=start, end=end, width=width)
+        mcols(x) <- window(mcols(x),
+                           start=start, end=end, width=width)
         x
     }
 )
@@ -160,8 +160,8 @@ setMethod("seqselect", "XVector",
             return(x[NULL])
         ## TODO: Implement a fast "unlist" method for Views objects.
         ans <- do.call(c, as.list(xv))  # i.e. 'unlist(xv)'
-        elementMetadata(ans) <- seqselect(elementMetadata(x),
-                                          start=start, end=end, width=width)
+        mcols(ans) <- seqselect(mcols(x),
+                                start=start, end=end, width=width)
         ans
     }
 )

@@ -443,7 +443,7 @@ setMethod("[", "IRanges",
         slot(x, "width", check=FALSE) <- width(x)[i]
         if (!is.null(names(x)))
             slot(x, "NAMES", check=FALSE) <- names(x)[i]
-        elementMetadata(x) <- elementMetadata(x)[i, , drop=FALSE]
+        mcols(x) <- mcols(x)[i, , drop=FALSE]
         x
     }
 )
@@ -607,10 +607,21 @@ setMethod("window", "IRanges",
 ###
 
 setMethod("c", "IRanges",
-    function(x, ..., .ignoreElementMetadata=FALSE, recursive=FALSE)
+    function(x, ..., ignore.mcols=FALSE, .ignoreElementMetadata=FALSE,
+             recursive=FALSE)
     {
         if (!identical(recursive, FALSE))
             stop("'recursive' argument not supported")
+        if (!isTRUEorFALSE(ignore.mcols))
+            stop("'ignore.mcols' must be TRUE or FALSE")
+        if (!isTRUEorFALSE(.ignoreElementMetadata))
+            stop("'.ignoreElementMetadata' must be TRUE or FALSE")
+        if (.ignoreElementMetadata) {
+            msg <- c("the '.ignoreElementMetadata' argument is deprecated, ",
+                     "please use 'ignore.mcols'\n  instead")
+            .Deprecated(msg=msg)
+            ignore.mcols <- TRUE
+        }
         if (missing(x)) {
             args <- unname(list(...))
             x <- args[[1L]]
@@ -638,10 +649,10 @@ setMethod("c", "IRanges",
         }
         ans <- update(x, start=new_start, width=new_width, names=new_names, check=FALSE)
         
-        if (.ignoreElementMetadata) {
-          elementMetadata(ans) <- NULL
+        if (ignore.mcols) {
+          mcols(ans) <- NULL
         } else  {
-          elementMetadata(ans) <- do.call(.rbind.elementMetadata, args)
+          mcols(ans) <- do.call(rbind.mcols, args)
         }
         
         validObject(ans)

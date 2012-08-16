@@ -108,8 +108,10 @@ export(
 
     ## Vector API:
     splitAsListReturnedClass, splitAsList,
-    metadata, elementMetadata, "metadata<-", "elementMetadata<-",
-    values, "values<-",   
+    metadata, "metadata<-",
+    elementMetadata, "elementMetadata<-",
+    mcols, "mcols<-",
+    values, "values<-",
     isConstant,
     isEmpty,
     seqselect, "seqselect<-",
@@ -264,7 +266,9 @@ exportMethods(
     mendoapply,
 
     splitAsListReturnedClass,
-    metadata, elementMetadata, "metadata<-", "elementMetadata<-",
+    metadata, "metadata<-",
+    elementMetadata, "elementMetadata<-",
+    mcols, "mcols<-",
     isConstant,
     isEmpty,
     seqselect, "seqselect<-",

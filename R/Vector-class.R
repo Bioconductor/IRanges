@@ -62,26 +62,37 @@ setMethod("NROW", "Vector", function(x) length(x))
 ### method.
 setMethod("nlevels", "Vector", function(x) length(levels(x)))
 
+### 3 accessors for the same slot: elementMetadata(), mcols(), and values().
+### mcols() is the recommended one, use of elementMetadata() or values() is
+### discouraged.
 setGeneric("elementMetadata",
            function(x, ...) standardGeneric("elementMetadata"))
+
 setMethod("elementMetadata", "Vector",
-          function(x) {
+          function(x, ...) {
               if ("elementMetadata" %in% names(attributes(x))) {
-                  emd <- x@elementMetadata
-                  if (!is.null(emd) && !is.null(names(x)))
-                      rownames(emd) <- make.unique(head(names(x), nrow(emd)))
+                  x_mcols <- x@elementMetadata
+                  if (!is.null(x_mcols) && !is.null(names(x)))
+                      rownames(x_mcols) <- make.unique(head(names(x), nrow(x_mcols)))
               } else {
-                  emd <- NULL
+                  x_mcols <- NULL
               }
-              emd
+              x_mcols
           })
+
+setGeneric("mcols", function(x, ...) standardGeneric("mcols"))
+
+setMethod("mcols", "Vector", function(x, ...) elementMetadata(x, ...))
+
 setGeneric("values", function(x, ...) standardGeneric("values"))
+
 setMethod("values", "Vector", function(x, ...) elementMetadata(x, ...))
 
 setGeneric("elementMetadata<-",
            function(x, ..., value) standardGeneric("elementMetadata<-"))
+
 setReplaceMethod("elementMetadata", "Vector",
-                 function(x, value) {
+                 function(x, ..., value) {
                      if (!is(value, "DataTableORNULL"))
                          stop("replacement 'elementMetadata' value must be a DataTable object or NULL")
                      if ("elementMetadata" %in% names(attributes(x))) {
@@ -94,7 +105,15 @@ setReplaceMethod("elementMetadata", "Vector",
                      }
                      x
                  })
+
+setGeneric("mcols<-", function(x, ..., value) standardGeneric("mcols<-"))
+
+setReplaceMethod("mcols", "Vector",
+    function(x, ..., value) `elementMetadata<-`(x, ..., value=value)
+)
+
 setGeneric("values<-", function(x, ..., value) standardGeneric("values<-"))
+
 setReplaceMethod("values", "Vector",
                  function(x, value) {
                      elementMetadata(x) <- value
@@ -122,21 +141,21 @@ setMethod("rename", "Vector", .renameVector)
 ### Validity.
 ###
 
-.valid.Vector.elementMetadata <- function(x)
+.valid.Vector.mcols <- function(x)
 {
-    emd <- elementMetadata(x)
-    if (!is(emd, "DataTableORNULL"))
-        return("'elementMetadata(x)' must be a DataTable object or NULL")
-    if (is.null(emd))
+    x_mcols <- mcols(x)
+    if (!is(x_mcols, "DataTableORNULL"))
+        return("'mcols(x)' must be a DataTable object or NULL")
+    if (is.null(x_mcols))
         return(NULL)
-    ## 'emd' is a DataTable object.
-    if (nrow(emd) != length(x)) {
-        msg <- c("number of rows in DataTable 'elementMetadata(x)' ",
+    ## 'x_mcols' is a DataTable object.
+    if (nrow(x_mcols) != length(x)) {
+        msg <- c("number of rows in DataTable 'mcols(x)' ",
                  "must match length of 'x'")
         return(paste(msg, collapse=""))
     }
-    if (!is.null(rownames(emd)) && !identical(rownames(emd), names(x))) {
-        msg <- c("the rownames of DataTable 'elementMetadata(x)' ",
+    if (!is.null(rownames(x_mcols)) && !identical(rownames(x_mcols), names(x))) {
+        msg <- c("the rownames of DataTable 'mcols(x)' ",
                  "must match the names of 'x'")
         return(paste(msg, collapse=""))
     }
@@ -145,7 +164,7 @@ setMethod("rename", "Vector", .renameVector)
 
 .valid.Vector <- function(x)
 {
-    c(.valid.Vector.elementMetadata(x))
+    c(.valid.Vector.mcols(x))
 }
 setValidity2("Vector", .valid.Vector)
 
@@ -837,37 +856,37 @@ setMethod("!=", signature(e1="Vector", e2="Vector"),
 ### Combining.
 ###
 
-.addNAElementMetadataRow <- function(x) {
-  emd <- elementMetadata(x)
-  if (!is.null(emd))
-    elementMetadata(x)[nrow(emd)+1L,] <- NA
+rbindRowOfNAsToMetadatacols <- function(x) {
+  x_mcols <- mcols(x)
+  if (!is.null(x_mcols))
+    mcols(x)[nrow(x_mcols)+1L,] <- NA
   x
 }
 
-.rbind.elementMetadata <- function(x, ...)
+rbind.mcols <- function(x, ...)
 {
     l <- list(x, ...)
-    emd <- lapply(l, elementMetadata)
-    noEmd <- sapply(emd, is.null)
-    if (all(noEmd))
+    l_mcols <- lapply(l, mcols)
+    no_mcols <- sapply(l_mcols, is.null)
+    if (all(no_mcols))
         return(NULL)
     newDf <- function(nr)
       new("DataFrame", listData = structure(list(), names = character(0)),
           nrows = nr)
-    emd[noEmd] <- lapply(elementLengths(l[noEmd]), newDf)
-    allCols <- unique(do.call(c, lapply(emd, colnames)))
+    l_mcols[no_mcols] <- lapply(elementLengths(l[no_mcols]), newDf)
+    allCols <- unique(do.call(c, lapply(l_mcols, colnames)))
     fillCols <- function(df) {
       if (nrow(df))
           df[setdiff(allCols, colnames(df))] <- DataFrame(NA)
       df
     }
-    do.call(rbind, lapply(emd, fillCols))
+    do.call(rbind, lapply(l_mcols, fillCols))
 }
 
 .c.Vector <- function(x, ..., recursive = FALSE)
 {
-    if (!is.null(elementMetadata(x)))
-      elementMetadata(x) <- .rbind.elementMetadata(x, ...)
+    if (!is.null(mcols(x)))
+      mcols(x) <- rbind.mcols(x, ...)
     x
 }
 
@@ -1090,9 +1109,9 @@ setMethod("mstack", "Vector", function(..., .indName = "name") {
   args <- list(...)
   combined <- do.call(c, unname(args))
   df <- .stack.ind(args, .indName)
-  if (!is.null(values(combined)))
-    df <- cbind(values(combined), df)
-  values(combined) <- df
+  if (!is.null(mcols(combined)))
+    df <- cbind(mcols(combined), df)
+  mcols(combined) <- df
   combined
 })
 setMethod("mstack", "vector",

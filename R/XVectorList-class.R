@@ -224,7 +224,7 @@ setMethod("[", "XVectorList",
         else
             i <- normalizeSingleBracketSubscript(i, x)
         x@ranges <- x@ranges[i]
-        elementMetadata(x) <- elementMetadata(x)[i, , drop=FALSE]
+        mcols(x) <- mcols(x)[i, , drop=FALSE]
         ## Drop unused pool elements.
         x <- .dropUnusedPoolElts(x)
         x
@@ -235,7 +235,7 @@ setMethod("seqselect", "XVectorList",
     function(x, start=NULL, end=NULL, width=NULL)
     {
         x@ranges <- seqselect(x@ranges, start=start, end=end, width=width)
-        elementMetadata(x) <- seqselect(elementMetadata(x),
+        mcols(x) <- seqselect(mcols(x),
                                         start=start, end=end, width=width)
         x
     }
@@ -246,7 +246,7 @@ setMethod("window", "XVectorList",
     {
         x@ranges <- window(x@ranges, start=start, end=end, width=width,
                            frequency=frequency, delta=delta, ...)
-        elementMetadata(x) <- window(elementMetadata(x),
+        mcols(x) <- window(mcols(x),
                                      start=start, end=end, width=width,
                                      frequency=frequency, delta=delta, ...)
         x
@@ -317,8 +317,8 @@ setMethod("c", "XVectorList",
             x@pool <- c(x@pool, arg@pool)
             x@ranges <- c(x@ranges, ranges)
         }
-        ## Combine the element metadata.
-        elementMetadata(x) <- do.call(rbind, lapply(args, elementMetadata))
+        ## Combine the metadata columns.
+        mcols(x) <- do.call(rbind, lapply(args, mcols))
         ## Drop duplicated pool elements.
         x <- .dropDuplicatedPoolElts(x)
         validObject(x)

@@ -278,7 +278,7 @@ setMethod("[", "MaskCollection",
             slot(x, "NAMES", check=FALSE) <- names(x)[i]
         if (!is.null(desc(x)))
             slot(x, "desc", check=FALSE) <- desc(x)[i]
-        elementMetadata(x) <- elementMetadata(x)[i, , drop=FALSE]
+        mcols(x) <- mcols(x)[i, , drop=FALSE]
         x
     }
 )

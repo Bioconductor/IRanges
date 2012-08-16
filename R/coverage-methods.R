@@ -134,12 +134,12 @@ setMethod("coverage", "IRanges",
         sx <- shift(x, shift)
         width <- .normargWidth(width, length(x))
         if (isSingleString(weight)) {
-            x_elementMetadata <- elementMetadata(x)
-            if (!is(x_elementMetadata, "DataTable")
-             || sum(colnames(x_elementMetadata) == weight) != 1L)
-                stop("'elementMetadata(x)' has 0 or more than 1 \"",
+            x_mcols <- mcols(x)
+            if (!is(x_mcols, "DataTable")
+             || sum(colnames(x_mcols) == weight) != 1L)
+                stop("'mcols(x)' has 0 or more than 1 \"",
                      weight, "\" columns")
-            weight <- x_elementMetadata[[weight]]
+            weight <- x_mcols[[weight]]
         } 
         weight <- recycleNumericArg(weight, "weight", length(x))
         if (is.null(width)) {
@@ -182,12 +182,12 @@ setMethod("coverage", "MaskCollection",
         shift <- recycleIntegerArg(shift, "shift", length(x))
         width <- .normargWidth(width, length(x))
         if (isSingleString(weight)) {
-            x_elementMetadata <- elementMetadata(x)
-            if (!is(x_elementMetadata, "DataTable")
-             || sum(colnames(x_elementMetadata) == weight) != 1L)
-                stop("'elementMetadata(x)' has 0 or more than 1 \"",
+            x_mcols <- mcols(x)
+            if (!is(x_mcols, "DataTable")
+             || sum(colnames(x_mcols) == weight) != 1L)
+                stop("'mcols(x)' has 0 or more than 1 \"",
                      weight, "\" columns")
-            weight <- x_elementMetadata[[weight]]
+            weight <- x_mcols[[weight]]
         } 
         weight <- recycleNumericArg(weight, "weight", length(x))
         if (is.null(width))
@@ -211,24 +211,24 @@ setMethod("coverage", "RangesList",
     function(x, shift=0L, width=NULL, weight=1L,
              method=c("auto", "sort", "hash"))
     {
-        x_mcols <- elementMetadata(x)
+        x_mcols <- mcols(x)
         x_mcolnames <- colnames(x_mcols)
         if (isSingleString(shift)) {
             if (!(shift %in% x_mcolnames))
                 stop("the string supplied for 'shift' (\"", shift, "\")",
-                     "is not a valid meta column name of 'x'")
+                     "is not a valid metadata column name of 'x'")
             shift <- x_mcols[[shift]]
         }
         if (isSingleString(width)) {
             if (!(width %in% x_mcolnames))
                 stop("the string supplied for 'width' (\"", width, "\")",
-                     "is not a valid meta column name of 'x'")
+                     "is not a valid metadata column name of 'x'")
             width <- x_mcols[[width]]
         }
         if (isSingleString(weight)) {
             if (!(weight %in% x_mcolnames))
                 stop("the string supplied for 'weight' (\"", weight, "\")",
-                     "is not a valid meta column name of 'x'")
+                     "is not a valid metadata column name of 'x'")
             weight <- x_mcols[[weight]]
         }
         x_len <- length(x)
@@ -251,7 +251,7 @@ setMethod("coverage", "RangesList",
         newSimpleList("SimpleRleList",
                       ans_listData,
                       metadata=metadata(x),
-                      elementMetadata=elementMetadata(x))
+                      mcols=mcols(x))
     }
 )
 
@@ -266,8 +266,8 @@ setMethod("coverage", "RangedData",
         ranges <- ranges(x)
         if (length(metadata(x)) > 0)
             metadata(ranges) <- metadata(x)
-        if (!is.null(elementMetadata(x)))
-            elementMetadata(x) <- elementMetadata(x)
+        if (!is.null(mcols(x)))
+            mcols(x) <- mcols(x)
         varnames <- colnames(x)
         if (isSingleString(shift) && (shift %in% varnames))
             shift <- values(x)[, shift]

@@ -416,13 +416,23 @@ To Do:
 \section{Vector Annotations}
 
 Often when one has a collection of objects, there is a need to attach
-metadata that describes the collection in some way. The
-\Rclass{Vector} class definition contains two slots for storing
-metadata: the \Robject{metadata} slot, which stores an ordinary
-\Rclass{list} for storing metadata about the whole object, and
-\Robject{elementMetadata}, which can store and object that inherits
-from \Rclass{DataTable} whose rows annotate the corresponding element
-of the \Rclass{Vector} object.
+metadata that describes the collection in some way. 
+Two kinds of metadata can be attached to a \Rclass{Vector} object:
+\begin{enumerate}
+\item Metadata about the object as a whole: this metadata is accessed
+      via the \Rfunction{metadata} accessor and is represented as an
+      ordinary \Rclass{list};
+\item Metadata about the individual elements of the object: this metadata
+      is accessed via the \Rfunction{mcols} accessor (\Rfunction{mcols}
+      stands for {\it metadata columns}) and is represented as a
+      \Rclass{DataTable} object (i.e. as an instance of a concrete
+      subclass of \Rclass{DataTable}, e.g. a \Rclass{DataFrame} object).
+      This \Rclass{DataTable} object can be thought of as the result of
+      binding together one or several vector-like objects (the metadata
+      columns) of the same length as the \Rclass{Vector} object. Each
+      row of the \Rclass{DataTable} object annotates the corresponding
+      element of the \Rclass{Vector} object.
+\end{enumerate}
 
 \section{Vector Ranges}
 

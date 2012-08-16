@@ -15,7 +15,7 @@ setMethod("split", "DataFrame",
 setMethod("cbind", "DataFrame",
           function(..., deparse.level=1) {
             ans <- DataFrame(...)
-            elementMetadata(ans) <- .rbind.elementMetadata(...)
+            mcols(ans) <- rbind.mcols(...)
             ans
           })
 
@@ -77,10 +77,10 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
   }
   rownames(ans) <- rn
 
-  if (!is.null(elementMetadata(df))) {
-    emd <- elementMetadata(df)
-    if (all(sapply(args, function(x) identical(elementMetadata(x), emd))))
-      elementMetadata(ans) <- emd
+  if (!is.null(mcols(df))) {
+    df_mcols <- mcols(df)
+    if (all(sapply(args, function(x) identical(mcols(x), df_mcols))))
+      mcols(ans) <- df_mcols
   }
   
   ans

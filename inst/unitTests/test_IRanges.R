@@ -26,16 +26,16 @@ test_IRanges_combine <- function() {
   checkIdentical(do.call(c, unname(as.list(srange))),
                  IRanges(c(2,3,1,1), c(2,8,5,3)))
 
-  i1 <- IRanges(1, 10)
-  i2 <- IRanges(c(1, 15), width=5)
-  values(i2) <- DataFrame(score=1:2)
-  checkIdentical(elementMetadata(c(i1, i2)),
+  ir1 <- IRanges(1, 10)
+  ir2 <- IRanges(c(1, 15), width=5)
+  mcols(ir2) <- DataFrame(score=1:2)
+  checkIdentical(mcols(c(ir1, ir2)),
                  DataFrame(score = c(NA, TRUE, TRUE)))
   
-  ## Combining multiple IRanges object with varying elementMetadata
-  values(i1) <- DataFrame(gc=0.78)
-  checkException(c(i1, i2), silent=TRUE)
-  checkIdentical(values(c(i1, i2, .ignoreElementMetadata=TRUE)), NULL)
+  ## Combining multiple IRanges object with varying mcols
+  mcols(ir1) <- DataFrame(gc=0.78)
+  checkException(c(ir1, ir2), silent=TRUE)
+  checkIdentical(mcols(c(ir1, ir2, ignore.mcols=TRUE)), NULL)
 }
 
 test_IRanges_reduce <- function() {
@@ -99,10 +99,10 @@ test_IRanges_subset <- function() { # by range
 
 test_IRanges_annotation <- function() {
   range <- IRanges(c(1, 4), c(5, 7))
-  elementMetadata(range) <- DataFrame(a = 1:2)
-  checkIdentical(elementMetadata(range)[,1], 1:2)
-  checkIdentical(elementMetadata(range[2:1])[,1], 2:1)
-  checkIdentical(elementMetadata(c(range,range))[,1], rep(1:2,2))
+  mcols(range) <- DataFrame(a = 1:2)
+  checkIdentical(mcols(range)[,1], 1:2)
+  checkIdentical(mcols(range[2:1])[,1], 2:1)
+  checkIdentical(mcols(c(range,range))[,1], rep(1:2,2))
 }
 
 test_IRanges_coverage <- function() {

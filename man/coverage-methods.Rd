@@ -68,10 +68,12 @@ coverage(x, shift=0L, width=NULL, weight=1L, \dots)
     element in \code{x} counts. For \link{RangesList} and \link{RangedData}
     objects, a list or vector of the same length as \code{x} to be used
     for the corresponding element in \code{x}.
-    For \link{IRanges}, \link{Views}, \link{MaskCollection} and
-    \link{RangedData} objects, this can also be a single string naming
-    a column in \code{elementMetadata(x)} (or in \code{x} for
-    \link{RangedData}) to be used as the weights.
+    For \link{IRanges}, \link{Views}, and \link{MaskCollection} objects,
+    this can also be a single string naming a metadata column (i.e. a
+    column in \code{mcols(x)}) to be used as the weights.
+    For \link{RangedData} objects, this can also be a single string naming
+    a column of values (i.e. a column in \code{values(x)}) to be used as
+    the weights.
   }
   \item{method}{
     If \code{method} is set to \code{"sort"}, then \code{x} is sorted

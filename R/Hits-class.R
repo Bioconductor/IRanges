@@ -99,7 +99,7 @@ setMethod("as.matrix", "Hits",
 
 setAs("Hits", "DataFrame", function(from) {
   DataFrame(as.matrix(from),
-            if (!is.null(values(from))) values(from)
+            if (!is.null(mcols(from))) mcols(from)
             else new("DataFrame", nrows = length(from)))
 })
 

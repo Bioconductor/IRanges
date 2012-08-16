@@ -288,11 +288,11 @@ test_List_annotation <- function() {
   int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)
   for (compress in c(TRUE, FALSE)) {
     ilist <- IntegerList(int1, int2, compress=compress)
-    elementMetadata(ilist) <- DataFrame(a=1:2)
-    checkIdentical(elementMetadata(ilist)[,1], 1:2)
-    checkIdentical(elementMetadata(ilist[2:1])[,1], 2:1)
-    checkIdentical(elementMetadata(c(ilist,ilist))[,1], rep(1:2,2))
-    checkIdentical(elementMetadata(append(ilist,ilist))[,1], rep(1:2,2))
+    mcols(ilist) <- DataFrame(a=1:2)
+    checkIdentical(mcols(ilist)[,1], 1:2)
+    checkIdentical(mcols(ilist[2:1])[,1], 2:1)
+    checkIdentical(mcols(c(ilist,ilist))[,1], rep(1:2,2))
+    checkIdentical(mcols(append(ilist,ilist))[,1], rep(1:2,2))
   }
 }
 

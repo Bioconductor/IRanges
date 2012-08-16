@@ -19,13 +19,12 @@ setMethod("viewApply", "RleViewsList",
                                        ans <-
                                          newSimpleList("SimpleList", ans,
                                                        metadata = metadata(X[[i]]),
-                                                       elementMetadata =
-                                                           elementMetadata(X[[i]]))
+                                                       mcols = mcols(X[[i]]))
                                    }
                                    ans
                                }),
                         metadata = metadata(X),
-                        elementMetadata = elementMetadata(X)))
+                        mcols = mcols(X)))
 
 .summaryRleViewsList <- function(x, FUN, na.rm = FALSE, outputListType = NULL)
 {
@@ -48,7 +47,7 @@ setMethod("viewApply", "RleViewsList",
                  function(i) FUN(x[[i]], na.rm = na.rm))
     }
     newSimpleList(outputListType, listData, metadata = metadata(x),
-                  elementMetadata = elementMetadata(x))
+                  mcols = mcols(x))
 }
 setMethod("viewMins", "RleViewsList",
           function(x, na.rm = FALSE)

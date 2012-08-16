@@ -170,8 +170,7 @@ setMethod("append", c("FilterRules", "FilterRules"),
             active(ans) <-
               structure(append(active(x), active(values), after),
                         names = names(ans))
-            elementMetadata(ans) <-
-              rbind(elementMetadata(x), elementMetadata(values))
+            mcols(ans) <- rbind(mcols(x), mcols(values))
             ans
           })
 
@@ -194,8 +193,7 @@ setMethod("c", "FilterRules",
             active(ans) <-
               structure(unlist(lapply(args, active), use.names = FALSE),
                         names = names(ans))
-            elementMetadata(ans) <-
-              do.call(rbind, lapply(args, elementMetadata))
+            mcols(ans) <- do.call(rbind, lapply(args, mcols))
             ans
           })
 

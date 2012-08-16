@@ -458,13 +458,13 @@ setAs("RangesList", "CompressedIRangesList",
       function(from)
       newCompressedList("CompressedIRangesList", lapply(from, as, "IRanges"),
                         metadata = metadata(from),
-                        elementMetadata = elementMetadata(from)))
+                        mcols = mcols(from)))
 
 setAs("RangesList", "SimpleIRangesList",
       function(from)
       newSimpleList("SimpleIRangesList", lapply(from, as, "IRanges"),
                     metadata = metadata(from),
-                    elementMetadata = elementMetadata(from)))
+                    mcols = mcols(from)))
 
 setAs("RangesList", "NormalIRangesList",
       function(from)
@@ -480,14 +480,14 @@ setAs("RangesList", "CompressedNormalIRangesList",
       newCompressedList("CompressedNormalIRangesList",
                         lapply(from, as, "NormalIRanges"),
                         metadata = metadata(from),
-                        elementMetadata = elementMetadata(from)))
+                        mcols = mcols(from)))
 
 setAs("RangesList", "SimpleNormalIRangesList",
       function(from)
         newSimpleList("SimpleNormalIRangesList",
                       lapply(from, as, "NormalIRanges"),
                       metadata = metadata(from),
-                      elementMetadata = elementMetadata(from)))
+                      mcols = mcols(from)))
 
 setAs("CompressedIRangesList", "CompressedNormalIRangesList",
       function(from)
@@ -525,14 +525,14 @@ setAs("LogicalList", "CompressedIRangesList",
       newCompressedList("CompressedIRangesList",
                         lapply(from, as, "IRanges"),
                         metadata = metadata(from),
-                        elementMetadata = elementMetadata(from)))
+                        mcols = mcols(from)))
 
 setAs("LogicalList", "SimpleIRangesList",
       function(from)
       newSimpleList("SimpleIRangesList",
                     lapply(from, as, "IRanges"),
                     metadata = metadata(from),
-                    elementMetadata = elementMetadata(from)))
+                    mcols = mcols(from)))
 
 setAs("LogicalList", "NormalIRangesList",
       function(from)
@@ -548,14 +548,14 @@ setAs("LogicalList", "CompressedNormalIRangesList",
       newCompressedList("CompressedNormalIRangesList",
                         lapply(from, as, "NormalIRanges"),
                         metadata = metadata(from),
-                        elementMetadata = elementMetadata(from)))
+                        mcols = mcols(from)))
 
 setAs("LogicalList", "SimpleNormalIRangesList",
       function(from)
       newSimpleList("SimpleNormalIRangesList",
                     lapply(from, as, "NormalIRanges"),
                     metadata = metadata(from),
-                    elementMetadata = elementMetadata(from)))
+                    mcols = mcols(from)))
 
 setAs("RleList", "IRangesList",
       function(from)
@@ -577,7 +577,7 @@ setAs("RleList", "CompressedIRangesList",
         newCompressedList("CompressedIRangesList",
                           lapply(from, as, "IRanges"),
                           metadata = metadata(from),
-                          elementMetadata = elementMetadata(from))
+                          mcols = mcols(from))
       })
 
 setAs("RleList", "SimpleIRangesList",
@@ -591,7 +591,7 @@ setAs("RleList", "SimpleIRangesList",
         newSimpleList("SimpleIRangesList",
                       lapply(from, as, "IRanges"),
                       metadata = metadata(from),
-                      elementMetadata = elementMetadata(from))
+                      mcols = mcols(from))
       })
 
 
@@ -615,7 +615,7 @@ setAs("RleList", "CompressedNormalIRangesList",
         newCompressedList("CompressedNormalIRangesList",
                           lapply(from, as, "NormalIRanges"),
                           metadata = metadata(from),
-                          elementMetadata = elementMetadata(from))
+                          mcols = mcols(from))
       })
 
 setAs("RleList", "SimpleNormalIRangesList",
@@ -629,7 +629,7 @@ setAs("RleList", "SimpleNormalIRangesList",
         newSimpleList("SimpleNormalIRangesList",
                       lapply(from, as, "NormalIRanges"),
                       metadata = metadata(from),
-                      elementMetadata = elementMetadata(from))
+                      mcols = mcols(from))
       })
 
 

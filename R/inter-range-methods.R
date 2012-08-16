@@ -53,7 +53,7 @@ setMethod("range", "RangesList",
                 partitioning=ans_partitioning,
                 check=FALSE)
     names(ans) <- names(x)
-    elementMetadata(ans) <- elementMetadata(x)
+    mcols(ans) <- mcols(x)
     ans
 }
 
