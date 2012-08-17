@@ -295,13 +295,15 @@ castList <- function(x, ...) {
         cl <- tail(cl, -1)
         pkg <- tail(pkg, -1)
       }
-      if (!length(pkg))
-        ns <- list(topenv())
-      connms <- constructorName(cl)
-      ns <- lapply(pkg, getNamespace)
-      coni <- head(which(mapply(exists, connms, ns)), 1)
-      if (length(coni))
-        cons <- get(connms[coni], ns[[coni]])
+      if (length(cl)) {
+        if (!length(pkg))
+          ns <- list(topenv())
+        connms <- constructorName(cl)
+        ns <- lapply(pkg, getNamespace)
+        coni <- head(which(mapply(exists, connms, ns)), 1)
+        if (length(coni))
+          cons <- get(connms[coni], ns[[coni]])
+      }
     }
   }
   cons(x, ...)
