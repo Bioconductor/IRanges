@@ -267,7 +267,7 @@ castList <- function(x, ...) {
     cl <- cl[[1]]
     pkg <- packageSlot(cl)
   } else if (length(clnames)) {
-    contains <- lapply(cl, function(x) getClass(x)@contains)
+    contains <- lapply(cl, function(x) getClass(x, TRUE)@contains)
     clnames <- c(clnames,
                  unlist(lapply(contains, names), use.names=FALSE))
     contab <- table(factor(clnames, unique(clnames)))
@@ -288,7 +288,7 @@ castList <- function(x, ...) {
       cons <- get(consym, ns)
     else {
       if (length(cl) == 1L) {
-        contains <- getClass(cl)@contains
+        contains <- getClass(cl, TRUE)@contains
         cl <- names(contains)
         pkg <- sapply(contains, packageSlot)
       } else {
