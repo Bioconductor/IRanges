@@ -237,7 +237,7 @@ exportMethods(
     ifelse,
     c,
     merge,
-    split, splitRanges, relist,
+    split, splitRanges,
     with, within,
     t,
     is.na, na.omit, na.exclude, complete.cases,
@@ -265,7 +265,7 @@ exportMethods(
     endoapply,
     mendoapply,
 
-    splitAsListReturnedClass,
+    splitAsListReturnedClass, relist,
     metadata, "metadata<-",
     elementMetadata, "elementMetadata<-",
     mcols, "mcols<-",

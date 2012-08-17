@@ -1084,7 +1084,7 @@ setMethod("runValue", "CompressedRleList",
                                                  hit.empty.query.ranges=TRUE)
         ans_partitioning <- PartitioningByEnd(subjectHits(hits), NG=length(x))
         ans_unlistData <- runValue(rle)[queryHits(hits)]
-        ans <- seqsplit(ans_unlistData, ans_partitioning)
+        ans <- relist(ans_unlistData, ans_partitioning)
         names(ans) <- names(x)
         ans
     }
@@ -1117,7 +1117,7 @@ setMethod("ranges", "CompressedRleList",
         ans_partitioning <- PartitioningByEnd(subjectHits(hits), NG=length(x))
         ans_unlistData <- shift(ranges(hits, rlePart, listPart),
                                 1L - start(listPart)[subjectHits(hits)])
-        ans <- seqsplit(ans_unlistData, ans_partitioning)
+        ans <- relist(ans_unlistData, ans_partitioning)
         names(ans) <- names(x)
         ans
     }

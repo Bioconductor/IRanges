@@ -447,13 +447,6 @@ setMethod("unlist", "List",
     }
 )
 
-setMethod("relist", signature(skeleton = "List"),
-          function(flesh, skeleton) {
-            list <- seqsplit(flesh, PartitioningByEnd(skeleton))
-            names(list) <- names(skeleton)
-            list
-          })
-
 setMethod("unsplit", "List", function(value, f, drop = FALSE) {
   value_flat <- unlist(value, use.names = FALSE)
   if (length(value_flat) != length(f))

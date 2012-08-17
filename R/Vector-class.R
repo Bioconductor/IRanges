@@ -909,7 +909,7 @@ setMethod("append", c("Vector", "Vector"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Splitting.
+### Splitting / relisting.
 ###
 
 setGeneric("splitAsListReturnedClass",
@@ -932,7 +932,34 @@ setMethod("splitAsListReturnedClass", "ANY",
     }
 )
 
-.split_by_listlike_as_CompressedList <- function(x, f, drop, Class)
+setMethod("relist", c("ANY", "PartitioningByEnd"),
+    function(flesh, skeleton)
+    {
+        ans_class <- splitAsListReturnedClass(flesh)
+        if (!extends(ans_class, "CompressedList"))
+            stop("don't know how to split or relist a ",
+                 class(x), " object as a List")
+        skeleton_len <- length(skeleton)
+        if (skeleton_len == 0L) {
+            flesh_len2 <- 0L
+        } else {
+            flesh_len2 <- end(skeleton)[skeleton_len]
+        }
+        if (length(flesh) != flesh_len2)
+            stop("shape of 'skeleton' is not compatible ",
+                 "with length of 'flesh'")
+        newCompressedList0(ans_class, flesh, skeleton)
+    }
+)
+
+setMethod("relist", c("ANY", "List"),
+    function(flesh, skeleton)
+    {
+        relist(flesh, PartitioningByEnd(skeleton))
+    }
+)
+
+.split_by_listlike_as_CompressedList <- function(x, f, drop)
 {
     x_len <- length(x)
     if (!identical(drop, FALSE))
@@ -945,10 +972,10 @@ setMethod("splitAsListReturnedClass", "ANY",
     f_len <- length(f)
     if (f_len != 0L && end(f)[f_len] != x_len)
         stop("shape of 'f' is not compatible with 'length(x)'")
-    newCompressedList0(Class, x, f)
+    relist(x, f)
 }
 
-.split_by_integer_as_CompressedList <- function(x, f, drop, Class)
+.split_by_integer_as_CompressedList <- function(x, f, drop)
 {
     if (length(f) > length(x))
         stop("'f' cannot be longer than data when it's an integer vector")
@@ -960,10 +987,10 @@ setMethod("splitAsListReturnedClass", "ANY",
         warning("'drop' is ignored when 'f' is an integer vector")
     x <- x[idx]
     f <- PartitioningByEnd(f)
-    newCompressedList0(Class, x, f)
+    relist(x, f)
 }
 
-.split_by_factor_as_CompressedList <- function(x, f, drop, Class)
+.split_by_factor_as_CompressedList <- function(x, f, drop)
 {
     x_len <- length(x)
     f_len <- length(f)
@@ -979,10 +1006,10 @@ setMethod("splitAsListReturnedClass", "ANY",
     f <- cumsum(f)
     x <- x[idx]
     f <- PartitioningByEnd(f)
-    newCompressedList0(Class, x, f)
+    relist(x, f)
 }
 
-.split_by_integer_Rle_as_CompressedList <- function(x, f, drop, Class)
+.split_by_integer_Rle_as_CompressedList <- function(x, f, drop)
 {
     if (length(f) > length(x))
         stop("'f' cannot be longer than data when it's an integer-Rle")
@@ -997,10 +1024,10 @@ setMethod("splitAsListReturnedClass", "ANY",
         warning("'drop' is ignored when 'f' is an integer-Rle")
     x <- seqselect(x, xranges)
     f <- PartitioningByEnd(f)
-    newCompressedList0(Class, x, f)
+    relist(x, f)
 }
 
-.split_by_Rle_as_CompressedList <- function(x, f, drop, Class)
+.split_by_Rle_as_CompressedList <- function(x, f, drop)
 {
     x_len <- length(x)
     f_len <- length(f)
@@ -1032,18 +1059,15 @@ setMethod("splitAsListReturnedClass", "ANY",
     f <- cumsum(f)
     x <- seqselect(x, xranges)
     f <- PartitioningByEnd(f)
-    newCompressedList0(Class, x, f)
+    relist(x, f)
 }
 
 splitAsList <- function(x, f, drop=FALSE)
 {
     if (!isTRUEorFALSE(drop))
         stop("'drop' must be TRUE or FALSE")
-    ans_class <- splitAsListReturnedClass(x)
-    if (!extends(ans_class, "CompressedList"))
-        stop("don't know how to split a ", class(x), " object as a List")
     if (is.list(f) || is(f, "List"))
-        return(.split_by_listlike_as_CompressedList(x, f, drop, ans_class))
+        return(.split_by_listlike_as_CompressedList(x, f, drop))
     x_len <- length(x)
     f_len <- length(f)
     if (f_len < x_len) {
@@ -1055,11 +1079,11 @@ splitAsList <- function(x, f, drop=FALSE)
         f <- rep(f, length.out=x_len)
     }
     if (is.integer(f))
-        return(.split_by_integer_as_CompressedList(x, f, drop, ans_class))
+        return(.split_by_integer_as_CompressedList(x, f, drop))
     if (is.atomic(f) && is.vector(f))
         f <- as.factor(f)
     if (is.factor(f))
-        return(.split_by_factor_as_CompressedList(x, f, drop, ans_class))
+        return(.split_by_factor_as_CompressedList(x, f, drop))
     if (!is(f, "Rle"))
         stop("'f' must be an atomic vector or a factor (possibly ",
              "in Rle form), or a list-like object")
@@ -1068,8 +1092,8 @@ splitAsList <- function(x, f, drop=FALSE)
         stop("'f' must be an atomic vector or a factor (possibly ",
              "in Rle form), or a list-like object")
     if (is.integer(f_vals))
-        return(.split_by_integer_Rle_as_CompressedList(x, f, drop, ans_class))
-    return(.split_by_Rle_as_CompressedList(x, f, drop, ans_class))
+        return(.split_by_integer_Rle_as_CompressedList(x, f, drop))
+    return(.split_by_Rle_as_CompressedList(x, f, drop))
 }
 
 setMethod("split", "Vector",
