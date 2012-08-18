@@ -77,7 +77,7 @@ newCompressedList0 <- function(Class, unlistData, partitioning)
 ###   newCompressedList(..., mcols=somestuff)
 ### The latter is the new recommended form.
 newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
-                              splitFactor=NULL, drop=FALSE, ..., mcols)
+                              drop=FALSE, ..., mcols)
 {
     if (!extends(listClass, "CompressedList"))
         stop("cannot create a ", listClass, " as a 'CompressedList'")
@@ -101,102 +101,7 @@ newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
         }
     } else if (!extends(class(unlistData), elementTypeData)) {
         stop("'unlistData' not of class ", elementTypeData)
-    } else if (!is.null(splitFactor)) {
-        if (length(dim(unlistData)) < 2) {
-            dataLength <- length(unlistData)
-        } else {
-            dataLength <- nrow(unlistData)
-        }
-        splitLength <- length(splitFactor)
-        if (is(splitFactor, "Rle")) {
-            isInt <- is.integer(runValue(splitFactor))
-            isFactor <- is.factor(runValue(splitFactor))
-            if (dataLength != splitLength) {
-                if (splitLength == 0) {
-                    stop("Group length is 0 but data length > 0")
-                } else if (dataLength %% splitLength != 0) {
-                    warning("data length is not a multiple of split variable")
-                }
-                if (!isFactor) {
-                    runValue(splitFactor) <- factor(runValue(splitFactor))
-                    isFactor <- TRUE
-                }
-                splitFactor <- rep(splitFactor, length.out = dataLength)
-            }
-            if (anyMissing(runValue(splitFactor))) {
-                keep <- !is.na(splitFactor)
-                unlistData <- seqselect(unlistData, keep)
-                splitFactor <- seqselect(splitFactor, keep)
-            }
-            if (!isInt && !isFactor) {
-                uniqueFactors <- sort(unique(splitFactor))
-                runValue(splitFactor) <-
-                  structure(match(runValue(splitFactor), uniqueFactors),
-                            levels = as.character(uniqueFactors),
-                            class = "factor")
-            } else if (isFactor && drop) {
-                runValue(splitFactor) <- runValue(splitFactor)[drop = TRUE]
-            }
-            if (isNotSorted(runValue(splitFactor))) {
-                orderElts <- orderAsRanges(splitFactor)
-                unlistData <- seqselect(unlistData, orderElts)
-                splitFactor <- sort(splitFactor)
-            }
-            if (isInt || drop) {
-                NAMES <- as.character(runValue(splitFactor))
-                end <- cumsum(runLength(splitFactor))
-            } else {
-                NAMES <- levels(runValue(splitFactor))
-                width <- structure(rep.int(0L, length(NAMES)), names = NAMES)
-                width[as.character(runValue(splitFactor))] <-
-                  runLength(splitFactor)
-                end <- cumsum(unname(width))
-            }
-        } else {
-            isInt <- is.integer(splitFactor)
-            isFactor <- is.factor(splitFactor)
-            if (dataLength != splitLength) {
-                if (splitLength == 0) {
-                    stop("Group length is 0 but data length > 0")
-                } else if (dataLength %% splitLength != 0) {
-                    warning("data length is not a multiple of split variable")
-                }
-                if (!isFactor) {
-                    splitFactor <- factor(splitFactor)
-                    isFactor <- TRUE
-                }
-                splitFactor <- rep(splitFactor, length.out = dataLength)
-            }
-            if (anyMissing(splitFactor)) {
-                keep <- !is.na(splitFactor)
-                unlistData <- seqselect(unlistData, keep)
-                splitFactor <- seqselect(splitFactor, keep)
-            }
-            if (!isInt && !isFactor) {
-                uniqueFactors <- sort(unique(splitFactor))
-                splitFactor <-
-                  structure(match(splitFactor, uniqueFactors),
-                            levels = as.character(uniqueFactors),
-                            class = "factor")
-            } else if (isFactor && drop) {
-                splitFactor <- splitFactor[drop = TRUE]
-            }
-            if (isNotSorted(splitFactor)) {
-                orderElts <- orderInteger(splitFactor)
-                unlistData <- seqselect(unlistData, orderElts)
-                splitFactor <- seqselect(splitFactor, orderElts)
-            }
-            if (isInt) {
-                splitFactor <- Rle(splitFactor)
-                NAMES <- as.character(runValue(splitFactor))
-                end <- cumsum(runLength(splitFactor))
-            } else {
-                NAMES <- levels(splitFactor)
-                end <- cumsum(tabulate(splitFactor, length(NAMES)))
-            }
-        }
     }
-
     ans_partitioning <- new2("PartitioningByEnd", end=end, NAMES=NAMES,
                              check=FALSE)
     if (missing(mcols)) {

@@ -945,9 +945,8 @@ setMethod("relist", c("ANY", "PartitioningByEnd"),
         } else {
             flesh_len2 <- end(skeleton)[skeleton_len]
         }
-        if (length(flesh) != flesh_len2)
-            stop("shape of 'skeleton' is not compatible ",
-                 "with length of 'flesh'")
+        if (NROW(flesh) != flesh_len2)
+            stop("shape of 'skeleton' is not compatible with 'NROW(flesh)'")
         newCompressedList0(ans_class, flesh, skeleton)
     }
 )
@@ -970,41 +969,47 @@ setMethod("relist", c("ANY", "List"),
 
 .splitAsList_by_integer <- function(x, f, drop)
 {
-    if (length(f) > length(x))
-        stop("'f' cannot be longer than data when it's an integer vector")
+    if (length(f) > NROW(x))
+        stop("'f' cannot be longer than 'NROW(x)' when it's an integer vector")
     idx <- orderInteger(f)
     tmp <- Rle(f[idx])
     f <- cumsum(runLength(tmp))
     names(f) <- as.character(runValue(tmp))
     if (!identical(drop, FALSE))
         warning("'drop' is ignored when 'f' is an integer vector")
-    x <- x[idx]
+    if (length(dim(x)) < 2L)
+        x <- x[idx]
+    else
+        x <- x[idx, , drop=FALSE]
     f <- PartitioningByEnd(f)
     relist(x, f)
 }
 
 .splitAsList_by_factor <- function(x, f, drop)
 {
-    x_len <- length(x)
+    x_NROW <- NROW(x)
     f_len <- length(f)
     f_levels <- levels(f)
     f <- as.integer(f)
-    if (f_len > x_len)
-        f <- head(f, n=x_len)
+    if (f_len > x_NROW)
+        f <- head(f, n=x_NROW)
     idx <- orderInteger(f)
     f <- tabulate(f, nbins=length(f_levels))
     names(f) <- f_levels
     if (drop)
         f <- f[f != 0L]
     f <- cumsum(f)
-    x <- x[idx]
+    if (length(dim(x)) < 2L)
+        x <- x[idx]
+    else
+        x <- x[idx, , drop=FALSE]
     f <- PartitioningByEnd(f)
     relist(x, f)
 }
 
 .splitAsList_by_integer_Rle <- function(x, f, drop)
 {
-    if (length(f) > length(x))
+    if (length(f) > NROW(x))
         stop("'f' cannot be longer than data when it's an integer-Rle")
     f_vals <- runValue(f)
     f_lens <- runLength(f)
@@ -1022,18 +1027,18 @@ setMethod("relist", c("ANY", "List"),
 
 .splitAsList_by_Rle <- function(x, f, drop)
 {
-    x_len <- length(x)
+    x_NROW <- NROW(x)
     f_len <- length(f)
     f_vals <- runValue(f)
     if (!is.factor(f_vals)) {
         f_vals <- as.factor(f_vals)
-        if (f_len > x_len) {
+        if (f_len > x_NROW) {
             runValue(f) <- f_vals
-            f <- head(f, n=x_len)
+            f <- head(f, n=x_NROW)
             f_vals <- runValue(f)
         }
-    } else if (f_len > x_len) {
-        f <- head(f, n=x_len)
+    } else if (f_len > x_NROW) {
+        f <- head(f, n=x_NROW)
         f_vals <- runValue(f)
     }
     f_lens <- runLength(f)
@@ -1061,15 +1066,14 @@ splitAsList <- function(x, f, drop=FALSE)
         stop("'drop' must be TRUE or FALSE")
     if (is.list(f) || is(f, "List"))
         return(.splitAsList_by_listlike(x, f, drop))
-    x_len <- length(x)
+    x_NROW <- NROW(x)
     f_len <- length(f)
-    if (f_len < x_len) {
-        ## We use the same message as split.default()
+    if (f_len < x_NROW) {
         if (f_len == 0L)
-            stop("Group length is 0 but data length > 0")
-        if (x_len %% f_len != 0L)
-            warning("data length is not a multiple of split variable")
-        f <- rep(f, length.out=x_len)
+            stop("'length(f)' is 0 but 'NROW(x)' is > 0")
+        if (x_NROW %% f_len != 0L)
+            warning("'NROW(x)' is not a multiple of 'length(f)'")
+        f <- rep(f, length.out=x_NROW)
     }
     if (is.integer(f))
         return(.splitAsList_by_integer(x, f, drop))

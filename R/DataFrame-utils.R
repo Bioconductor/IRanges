@@ -6,11 +6,13 @@
 ### Splitting and combining.
 ###
 
-setMethod("split", "DataFrame",
-          function(x, f, drop=FALSE) {
-            newCompressedList("CompressedSplitDataFrameList", x,
-                              splitFactor = f, drop = drop)
-          })
+setMethod("splitAsListReturnedClass", "data.frame",
+    function(x) "CompressedSplitDataFrameList"
+)
+
+setMethod("splitAsListReturnedClass", "DataFrame",
+    function(x) "CompressedSplitDataFrameList"
+)
 
 setMethod("cbind", "DataFrame",
           function(..., deparse.level=1) {

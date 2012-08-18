@@ -40,7 +40,6 @@
 % splitting and combining
 \alias{cbind,DataFrame-method}
 \alias{rbind,DataFrame-method}
-\alias{split,DataFrame-method}
 
 % aggregation
 \alias{aggregate,formula-method}

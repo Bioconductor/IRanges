@@ -326,9 +326,7 @@ seqsplit <- function(x, f, drop=FALSE) {
   ans_class <- try(splitAsListReturnedClass(x), silent=TRUE)
   if (inherits(ans_class, "try-error"))
     return(castList(split(x, f, drop)))
-  if (is(f, "PartitioningByEnd"))
-    return(newCompressedList0(ans_class, x, f))
-  newCompressedList(ans_class, x, splitFactor=f, drop=drop)
+  splitAsList(x, f, drop=drop)
 }
 
 seqby <- function(data, INDICES, FUN, ...) {
