@@ -20,8 +20,7 @@ setClass("SimpleViewsList",
 ###
 
 setMethod("ranges", "SimpleViewsList",
-    function(x, ...)
-        newSimpleList("SimpleIRangesList", lapply(x, ranges))
+    function(x, ...) newList("SimpleIRangesList", lapply(x, ranges))
 )
 
 setMethod("start", "SimpleViewsList", function(x, ...) start(ranges(x)))

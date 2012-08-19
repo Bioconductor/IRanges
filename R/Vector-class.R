@@ -958,6 +958,13 @@ setMethod("relist", c("ANY", "List"),
     }
 )
 
+setMethod("relist", c("Vector", "list"),
+    function(flesh, skeleton)
+    {
+        relist(flesh, PartitioningByEnd(skeleton))
+    }
+)
+
 .splitAsList_by_listlike <- function(x, f, drop)
 {
     if (!identical(drop, FALSE))

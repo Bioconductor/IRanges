@@ -286,8 +286,8 @@ setMethod("viewApply", "Views",
                          ...),
                  simplify = simplify)
         if (!simplify) {
-            ans <- newSimpleList("SimpleList", ans, metadata = metadata(X),
-                                 mcols = mcols(X))
+            ans <- newList("SimpleList", ans, metadata = metadata(X),
+                           mcols = mcols(X))
         }
         ans
     }

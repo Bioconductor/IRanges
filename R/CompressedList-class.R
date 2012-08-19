@@ -42,78 +42,11 @@ setReplaceMethod("names", "CompressedList",
 ### Constructor.
 ###
 
-.reconcileMetadatacols <- function(x) {
-  x_mcols <- mcols(x)
-  if (is(x_mcols, "DataFrame") &&
-      nrow(x_mcols) == 0L && ncol(x_mcols) == 0L)
-    {
-      x_mcols <- new("DataFrame", nrows=length(x))
-      mcols(x) <- x_mcols
-    }
-  x
-}
-
 newCompressedList0 <- function(Class, unlistData, partitioning)
 {
     ans <- new2(Class, unlistData=unlistData,
                 partitioning=partitioning, check=FALSE)
-    .reconcileMetadatacols(ans)
-}
-
-.compress.list <- function(x) {
-    if (length(x) > 0) {
-        if (length(dim(x[[1L]])) < 2) {
-            x <- do.call(c, unname(x))
-        } else {
-            x <- do.call(rbind, unname(x))
-        }
-    }
-    x
-}
-
-### Value for elementMetadata slot can be passed either with
-###   newCompressedList(..., elementMetadata=somestuff)
-### or with
-###   newCompressedList(..., mcols=somestuff)
-### The latter is the new recommended form.
-newCompressedList <- function(listClass, unlistData, end=NULL, NAMES=NULL,
-                              drop=FALSE, ..., mcols)
-{
-    if (!extends(listClass, "CompressedList"))
-        stop("cannot create a ", listClass, " as a 'CompressedList'")
-    elementTypeData <- elementType(new(listClass))
-    if (is.list(unlistData)) {
-        if (missing(NAMES))
-            NAMES <- names(unlistData)
-        if (length(unlistData) == 0) {
-            end <- integer(0)
-            unlistData <- new(elementTypeData)
-        } else {
-            if (length(dim(unlistData[[1L]])) < 2) {
-                end <-
-                  cumsum(unlist(lapply(unlistData, length), use.names = FALSE))
-            } else {
-                end <-
-                  cumsum(unlist(lapply(unlistData, nrow), use.names = FALSE))
-            }
-            unlistData <-
-              .compress.list(lapply(unlistData, as, elementTypeData))
-        }
-    } else if (!extends(class(unlistData), elementTypeData)) {
-        stop("'unlistData' not of class ", elementTypeData)
-    }
-    ans_partitioning <- new2("PartitioningByEnd", end=end, NAMES=NAMES,
-                             check=FALSE)
-    if (missing(mcols)) {
-        ans <- new2(listClass, unlistData=unlistData,
-                    partitioning=ans_partitioning, ...,
-                    check=FALSE)
-    } else {
-        ans <- new2(listClass, unlistData=unlistData,
-                    partitioning=ans_partitioning, ..., elementMetadata=mcols,
-                    check=FALSE)
-    }
-    .reconcileMetadatacols(ans)
+    reconcileMetadatacols(ans)
 }
 
 
@@ -401,7 +334,7 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
             disableValidity(oldValidityStatus)
         }
         if (COMPRESS) {
-            elts <- .compress.list(elts)
+            elts <- compress_listData(elts)
         } else {
             for (i in seq_len(length(elts))) {
                 obj <- elts[[i]]
@@ -465,7 +398,7 @@ setReplaceMethod("[[", "CompressedList",
                              NAMES <- names(x)
                          }
                          slot(x, "unlistData", check=FALSE) <-
-                           .compress.list(listData)
+                           compress_listData(listData)
                          slot(x, "partitioning", check=FALSE) <-
                            new2("PartitioningByEnd", end = cumsum(widths),
                                 NAMES = NAMES, check=FALSE)
@@ -509,8 +442,8 @@ setMethod("c", "CompressedList",
                   unlistData <- do.call(c, lapply(tls, slot, "unlistData"))
               else
                   unlistData <- do.call(rbind, lapply(tls, slot, "unlistData"))
-              mcols <- do.call(rbind.mcols, tls)
-              rownames(mcols) <- NULL
+              ans_mcols <- do.call(rbind.mcols, tls)
+              rownames(ans_mcols) <- NULL
               partitionEnd <-
                 cumsum(do.call(c,
                                lapply(tls, function(y) {
@@ -518,7 +451,7 @@ setMethod("c", "CompressedList",
                                           names(z) <- NULL
                                           z
                                       })))
-              NAMES <-
+              ans_names <-
                 do.call(c,
                         lapply(tls, function(y) {
                                    nms <- names(y)
@@ -526,12 +459,11 @@ setMethod("c", "CompressedList",
                                        nms <- rep.int("", length(y))
                                    nms
                                }))
-              if (all(nchar(NAMES) == 0L))
-                  NAMES <- NULL
-              x <- newCompressedList(class(tls[[1L]]), unlistData,
-                                     end = partitionEnd, NAMES = NAMES)
-              slot(x, "elementMetadata", check=FALSE) <- mcols
-              x
+              if (any(nchar(ans_names) != 0L))
+                  names(partitionEnd) <- ans_names
+              ans <- relist(unlistData, PartitioningByEnd(partitionEnd))
+              mcols(ans) <- ans_mcols
+              ans
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -567,7 +499,7 @@ setMethod("aggregate", "CompressedList",
                                          ..., simplify = simplify))
                   ans <- try(SimpleAtomicList(result), silent = TRUE)
                   if (inherits(ans, "try-error"))
-                      ans <- newSimpleList("SimpleList", result)
+                      ans <- newList("SimpleList", result)
               } else {
                   ans <- callNextMethod()
               }
@@ -589,7 +521,7 @@ setMethod("aggregate", "CompressedList",
         }
     }
     initialize(X,
-               unlistData = .compress.list(listData),
+               unlistData = compress_listData(listData),
                partitioning = 
                new2("PartitioningByEnd", end = end, NAMES = names(X),
                     check=FALSE))

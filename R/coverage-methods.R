@@ -248,10 +248,10 @@ setMethod("coverage", "RangesList",
                                             method=method)
                                })
         names(ans_listData) <- names(x)
-        newSimpleList("SimpleRleList",
-                      ans_listData,
-                      metadata=metadata(x),
-                      mcols=mcols(x))
+        newList("SimpleRleList",
+                ans_listData,
+                metadata=metadata(x),
+                mcols=mcols(x))
     }
 )
 

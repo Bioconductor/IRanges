@@ -43,8 +43,7 @@ HitsList <- function(list_of_hits, subject)
   if (!is.null(names(list_of_hits)) && !is.null(names(subject)))
     subjectToQuery <- match(names(list_of_hits), names(subject))
   subjectOffsets <- subjectOffsets[subjectToQuery]
-  newSimpleList("HitsList", list_of_hits,
-                subjectOffsets = subjectOffsets)
+  newList("HitsList", list_of_hits, subjectOffsets = subjectOffsets)
 }
 
 RangesMatchingList <- function(...)

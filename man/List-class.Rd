@@ -87,7 +87,8 @@
     }
     \item{}{
       \code{elementLengths(x)}:
-      Get the 'length' of each of the elements.
+      Get the length (or nb of row for a matrix-like object) of each of
+      the elements. Equivalent to \code{sapply(x, NROW)}.
     }
     \item{}{
       \code{isEmpty(x)}:

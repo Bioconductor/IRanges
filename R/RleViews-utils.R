@@ -10,8 +10,8 @@ setMethod("viewApply", "RleViews",
                 aggregate(subject(X), start = structure(start(X), names = names(X)),
                           end = end(X), FUN = FUN, ..., simplify = simplify)
               if (!simplify) {
-                  ans <- newSimpleList("SimpleList", ans, metadata=metadata(X),
-                                       mcols=mcols(X))
+                  ans <- newList("SimpleList", ans, metadata=metadata(X),
+                                 mcols=mcols(X))
               }
               ans
           })

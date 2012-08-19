@@ -31,13 +31,13 @@ setMethod("elementLengths", "ANY",
     {
         x <- as.list(x)
         ans <-
-          try(.Call2("listofvectors_lengths", x, PACKAGE="IRanges"), silent=TRUE)
+          try(.Call2("sapply_NROW", x, PACKAGE="IRanges"), silent=TRUE)
         if (!inherits(ans, "try-error")) {
             names(ans) <- names(x)
             return(ans)
         }
         ## From here, 'length(x)' is guaranteed to be != 0
-        return(sapply(x, length))
+        return(sapply(x, NROW))
     }
 )
 
@@ -53,7 +53,7 @@ setMethod("elementLengths", "List",
         }
         if (length(dim(y[[1L]])) < 2L)
             return(elementLengths(y))
-        return(sapply(y, nrow))
+        return(sapply(y, NROW))
     }
 )
 
@@ -71,6 +71,82 @@ setMethod("isEmpty", "ANY",
                   return(logical(0))
               sapply(x, function(xx) all(isEmpty(xx)))
           })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Constructors.
+###
+
+compress_listData <- function(x) {
+    if (length(x) > 0L) {
+        if (length(dim(x[[1L]])) < 2L) {
+            x <- do.call(c, unname(x))
+        } else {
+            x <- do.call(rbind, unname(x))
+        }
+    }
+    x
+}
+
+reconcileMetadatacols <- function(x) {
+  x_mcols <- mcols(x)
+  if (is(x_mcols, "DataFrame") &&
+      nrow(x_mcols) == 0L && ncol(x_mcols) == 0L)
+    {
+      x_mcols <- new("DataFrame", nrows=length(x))
+      mcols(x) <- x_mcols
+    }
+  x
+}
+
+### NOT exported.
+### Value for elementMetadata slot can be passed either with
+###   newList(..., elementMetadata=somestuff)
+### or with
+###   newList(..., mcols=somestuff)
+### The latter is the new recommended form.
+newList <- function(Class, listData, ..., mcols)
+{
+    if (!extends(Class, "SimpleList") && !extends(Class, "CompressedList"))
+        stop("class ", Class, " must extend SimpleList or CompressedList")
+    if (!is.list(listData))
+        stop("'listData' must be a list object")
+    if (is.array(listData)) { # drop any unwanted dimensions
+        tmp_names <- names(listData)
+        dim(listData) <- NULL # clears the names
+        names(listData) <- tmp_names
+    }
+    class(listData) <- "list"
+    ans_elementType <- elementType(new(Class))
+    if (!all(sapply(listData,
+                    function(x) extends(class(x), ans_elementType))))
+        stop("all elements in 'listData' must be ", ans_elementType, " objects")
+    if (extends(Class, "SimpleList")) {
+        if (missing(mcols))
+            return(new2(Class, listData=listData, ..., check=FALSE))
+        return(new2(Class, listData=listData, ..., elementMetadata=mcols,
+                    check=FALSE))
+    }
+    ans_partitioning <- PartitioningByEnd(listData)
+    if (length(listData) == 0L) {
+        if (missing(mcols))
+            return(new2(Class, partitioning=ans_partitioning, ..., check=FALSE))
+        return(new2(Class, partitioning=ans_partitioning, ...,
+                    elementMetadata=mcols, check=FALSE))
+    }
+    ans_unlistData <- compress_listData(listData)
+    if (missing(mcols)) {
+        ans <- new2(Class, unlistData=ans_unlistData,
+                    partitioning=ans_partitioning, ...,
+                    check=FALSE)
+    } else {
+        ans <- new2(Class, unlistData=ans_unlistData,
+                    partitioning=ans_partitioning, ...,
+                    elementMetadata=mcols,
+                    check=FALSE)
+    }
+    reconcileMetadatacols(ans)
+}
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

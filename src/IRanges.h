@@ -528,7 +528,7 @@ const char *_get_classname(SEXP x);
 
 SEXP address_asSTRSXP(SEXP s);
 
-SEXP listofvectors_lengths(SEXP x);
+SEXP sapply_NROW(SEXP x);
 
 
 /* int_utils.c */

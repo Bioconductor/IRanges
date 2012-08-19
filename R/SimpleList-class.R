@@ -37,30 +37,6 @@ SimpleList <- function(...) {
     new("SimpleList", listData = list)
 }
 
-### Value for elementMetadata slot can be passed either with
-###   newCompressedList(..., elementMetadata=somestuff)
-### or with
-###   newCompressedList(..., mcols=somestuff)
-### The latter is the new recommended form.
-newSimpleList <- function(listClass, listData, ..., mcols) {
-    if (!is.list(listData))
-        stop("'listData' must be a list object")
-    if (is.array(listData)) { # drop any unwanted dimensions
-        tmp_names <- names(listData)
-        dim(listData) <- NULL # clears the names
-        names(listData) <- tmp_names
-    }
-    class(listData) <- "list"
-    if (!extends(listClass, "SimpleList"))
-        stop("cannot create a ", listClass, " as a 'SimpleList'")
-    elementTypeData <- elementType(new(listClass))
-    if (!all(sapply(listData,
-                    function(x) extends(class(x), elementTypeData))))
-        stop("all elements in 'listData' must be ", elementTypeData, " objects")
-    if (missing(mcols))
-        return(new2(listClass, listData=listData, ..., check=FALSE))
-    new2(listClass, listData=listData, ..., elementMetadata=mcols, check=FALSE)
-}
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
@@ -345,7 +321,7 @@ setMethod("aggregate", "SimpleList",
                                          ..., simplify = simplify))
                   ans <- try(SimpleAtomicList(result), silent = TRUE)
                   if (inherits(ans, "try-error"))
-                      ans <- newSimpleList("SimpleList", result)
+                      ans <- newList("SimpleList", result)
               } else {
                   ans <- callNextMethod()
               }

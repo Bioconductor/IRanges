@@ -202,15 +202,14 @@ setMethod("reduce", "RangedData",
                        drop.empty.ranges = drop.empty.ranges,
                        min.gapwidth = min.gapwidth,
                        with.inframe.attrib = with.inframe.attrib)
+              listData <- new2("DataFrame", nrows=sum(elementLengths(ranges)),
+                               check=FALSE)
+              end <- cumsum(elementLengths(ranges))
+              names(end) <- names(ranges)
+              partitioning <- PartitioningByEnd(end)
               initialize(x,
                          ranges = ranges,
-                         values =
-                         newCompressedList("CompressedSplitDataFrameList",
-                                           new2("DataFrame",
-                                                nrows = sum(elementLengths(ranges)),
-                                                check = FALSE),
-                                           end = cumsum(elementLengths(ranges)),
-                                           NAMES = names(ranges)))
+                         values = relist(listData, partitioning))
             } else {
               endoapply(x[,by], FUN)
             }

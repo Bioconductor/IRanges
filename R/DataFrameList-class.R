@@ -246,7 +246,7 @@ DataFrameList <- function(...)
     listData <- listData[[1L]]
   if (length(listData) > 0 && !is(listData[[1L]], "DataFrame"))
     listData <- lapply(listData, as, "DataFrame")
-  newSimpleList("SimpleDataFrameList", listData)
+  newList("SimpleDataFrameList", listData)
 }
 
 SplitDataFrameList <- function(..., compress = TRUE, cbindArgs = FALSE)
@@ -265,9 +265,9 @@ SplitDataFrameList <- function(..., compress = TRUE, cbindArgs = FALSE)
     listData <- lapply(listData, as, "DataFrame")
   
   if (compress)
-    newCompressedList("CompressedSplitDataFrameList", listData)
+    newList("CompressedSplitDataFrameList", listData)
   else
-    newSimpleList("SimpleSplitDataFrameList", listData)
+    newList("SimpleSplitDataFrameList", listData)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -43,8 +43,7 @@ setMethod("processSelfMatching", "HitsList",
             if (select != "all")
               IntegerList(ans)
             else
-              newSimpleList("HitsList", ans,
-                            subjectOffsets = x@subjectOffsets)
+              newList("HitsList", ans, subjectOffsets = x@subjectOffsets)
           })
 
 ## not for exporting, just a debugging utility

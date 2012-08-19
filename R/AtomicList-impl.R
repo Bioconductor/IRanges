@@ -100,9 +100,9 @@ LogicalList <- function(..., compress = TRUE)
         listData <- listData[[1L]]
     listData <- coerceElements(listData, "logical")
     if (compress)
-        newCompressedList("CompressedLogicalList", listData)
+        newList("CompressedLogicalList", listData)
     else
-        newSimpleList("SimpleLogicalList", listData)
+        newList("SimpleLogicalList", listData)
 }
 
 .dotargsAsListOfIntegerVectors <- function(dotargs)
@@ -131,9 +131,9 @@ IntegerList <- function(..., compress = TRUE)
     }
     listData <- .dotargsAsListOfIntegerVectors(dotargs)
     if (compress)
-        newCompressedList("CompressedIntegerList", listData)
+        newList("CompressedIntegerList", listData)
     else
-        newSimpleList("SimpleIntegerList", listData)
+        newList("SimpleIntegerList", listData)
 }
 
 NumericList <- function(..., compress = TRUE)
@@ -145,9 +145,9 @@ NumericList <- function(..., compress = TRUE)
         listData <- listData[[1L]]
     listData <- coerceElements(listData, "double")
     if (compress)
-        newCompressedList("CompressedNumericList", listData)
+        newList("CompressedNumericList", listData)
     else
-        newSimpleList("SimpleNumericList", listData)
+        newList("SimpleNumericList", listData)
 }
 
 ComplexList <- function(..., compress = TRUE)
@@ -159,9 +159,9 @@ ComplexList <- function(..., compress = TRUE)
         listData <- listData[[1L]]
     listData <- coerceElements(listData, "complex")
     if (compress)
-        newCompressedList("CompressedComplexList", listData)
+        newList("CompressedComplexList", listData)
     else
-        newSimpleList("SimpleComplexList", listData)
+        newList("SimpleComplexList", listData)
 }
 
 CharacterList <- function(..., compress = TRUE)
@@ -173,9 +173,9 @@ CharacterList <- function(..., compress = TRUE)
         listData <- listData[[1L]]
     listData <- coerceElements(listData, "character")
     if (compress)
-        newCompressedList("CompressedCharacterList", listData)
+        newList("CompressedCharacterList", listData)
     else
-        newSimpleList("SimpleCharacterList", listData)
+        newList("SimpleCharacterList", listData)
 }
 
 RawList <- function(..., compress = TRUE)
@@ -187,9 +187,9 @@ RawList <- function(..., compress = TRUE)
         listData <- listData[[1L]]
     listData <- coerceElements(listData, "raw")
     if (compress)
-        newCompressedList("CompressedRawList", listData)
+        newList("CompressedRawList", listData)
     else
-        newSimpleList("SimpleRawList", listData)
+        newList("SimpleRawList", listData)
 }
 
 RleList <- function(..., compress = FALSE)
@@ -201,9 +201,9 @@ RleList <- function(..., compress = FALSE)
         listData <- listData[[1L]]
     listData <- lapply(listData, as, "Rle")
     if (compress)
-        newCompressedList("CompressedRleList", listData)
+        newList("CompressedRleList", listData)
     else
-        newSimpleList("SimpleRleList", listData)
+        newList("SimpleRleList", listData)
 }
 
 
