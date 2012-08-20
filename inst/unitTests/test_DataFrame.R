@@ -268,7 +268,7 @@ test_DataFrame_replace <- function() {
   sw1 <- sw
   mcols(sw1) <- DataFrame(id = seq_len(ncol(sw1)))
   sw1["NewCol"] <- DataFrame(seq(nrow(sw1)))
-  checkIdentical(mcols(sw1),
+  checkIdentical(mcols(sw1, use.names=TRUE),
                  DataFrame(id = c(seq_len(ncol(sw1)-1), NA),
                            row.names = colnames(sw1)))
 }
@@ -339,6 +339,6 @@ test_DataFrame_annotation <- function() {
   checkIdentical(mcols(df[2:1])[,1], 2:1)
   checkIdentical(mcols(cbind(df,df))[,1], rep(1:2,2))
   df$z <- 1:3
-  checkIdentical(mcols(df),
+  checkIdentical(mcols(df, use.names=TRUE),
                  DataFrame(a = c(1L, 2L, NA), row.names = c("x", "y", "z")))
 }

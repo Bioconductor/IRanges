@@ -66,23 +66,29 @@ setMethod("nlevels", "Vector", function(x) length(levels(x)))
 ### mcols() is the recommended one, use of elementMetadata() or values() is
 ### discouraged.
 setGeneric("elementMetadata",
-           function(x, ...) standardGeneric("elementMetadata"))
+    function(x, use.names=FALSE, ...) standardGeneric("elementMetadata")
+)
 
 setMethod("elementMetadata", "Vector",
-          function(x, ...) {
-              if ("elementMetadata" %in% names(attributes(x))) {
-                  x_mcols <- x@elementMetadata
-                  if (!is.null(x_mcols) && !is.null(names(x)))
-                      rownames(x_mcols) <- make.unique(head(names(x), nrow(x_mcols)))
-              } else {
-                  x_mcols <- NULL
-              }
-              x_mcols
-          })
+    function(x, use.names=FALSE, ...)
+    {
+        if (!isTRUEorFALSE(use.names)) 
+            stop("'use.names' must be TRUE or FALSE")
+        ans <- x@elementMetadata
+        if (use.names && !is.null(ans))
+            rownames(ans) <- names(x)
+        ans
+    }
+)
 
-setGeneric("mcols", function(x, ...) standardGeneric("mcols"))
+setGeneric("mcols",
+    function(x, use.names=FALSE, ...) standardGeneric("mcols")
+)
 
-setMethod("mcols", "Vector", function(x, ...) elementMetadata(x, ...))
+setMethod("mcols", "Vector",
+    function(x, use.names=FALSE, ...)
+        elementMetadata(x, use.names=use.names, ...)
+)
 
 setGeneric("values", function(x, ...) standardGeneric("values"))
 
@@ -136,6 +142,7 @@ setGeneric("rename", function(x, value, ...) standardGeneric("rename"))
 
 setMethod("rename", "vector", .renameVector)
 setMethod("rename", "Vector", .renameVector)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.

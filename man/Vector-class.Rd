@@ -157,15 +157,19 @@
       Returns the number of factor levels.
     }
     \item{}{
-      \code{mcols(x)}, \code{mcols(x) <- value}:
-      Get or set the metadata columns. The metadata columns must be
-      \code{NULL} or represented as a \link{DataTable} object holding
-      element-wise metadata. The rows of the \link{DataTable} object are
-      either not named or named according to the names of the elements.
+      \code{mcols(x, use.names=FALSE)}, \code{mcols(x) <- value}:
+      Get or set the metadata columns.
+      If \code{use.names=TRUE} and if the metadata columns are not \code{NULL},
+      then the names of \code{x} are propagated as the row names of the
+      returned \link{DataTable} object.
+      When setting the metadata columns, the supplied value must be \code{NULL}
+      or a \link{DataTable} object holding element-wise metadata.
     }
     \item{}{
-       \code{elementMetadata(x)}, \code{elementMetadata(x) <- value},
-       \code{values(x)}, \code{values(x) <- value}:
+       \code{elementMetadata(x, use.names=FALSE)},
+       \code{elementMetadata(x) <- value},
+       \code{values(x, use.names=FALSE)},
+       \code{values(x) <- value}:
        Alternatives to \code{mcols} functions. Their use is discouraged.
     }
   }
