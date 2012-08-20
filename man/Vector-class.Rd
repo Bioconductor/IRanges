@@ -159,7 +159,7 @@
     \item{}{
       \code{mcols(x, use.names=FALSE)}, \code{mcols(x) <- value}:
       Get or set the metadata columns.
-      If \code{use.names=TRUE} and if the metadata columns are not \code{NULL},
+      If \code{use.names=TRUE} and the metadata columns are not \code{NULL},
       then the names of \code{x} are propagated as the row names of the
       returned \link{DataTable} object.
       When setting the metadata columns, the supplied value must be \code{NULL}
