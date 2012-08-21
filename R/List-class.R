@@ -663,18 +663,18 @@ setMethod("Position", "List",
   
 setMethod("eval", c("expression", "List"),
     function(expr, envir, enclos = parent.frame())
-        eval(expr, as.env(envir), enclos)
+          eval(expr, as.env(envir, enclos))
 )
 
 setMethod("eval", c("language", "List"),
     function(expr, envir, enclos = parent.frame())
-        eval(expr, as.env(envir), enclos)
+          eval(expr, as.env(envir, enclos))
 )
 
 setMethod("with", "List",
           function(data, expr, ...)
           {
-              eval(substitute(expr), data, parent.frame(2))
+            eval(substitute(expr), data, parent.frame())
           })
 
 setMethod("within", "List",
