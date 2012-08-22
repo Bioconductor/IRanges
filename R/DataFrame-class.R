@@ -526,7 +526,9 @@ setMethod("as.data.frame", "DataFrame",
           })
 
 setMethod("as.matrix", "DataFrame", function(x) {
-  m <- do.call(cbind, as.list(x))
+  if (length(x) == 0L)
+    m <- matrix(logical(), nrow = nrow(x), ncol = 0L)
+  else m <- do.call(cbind, as.list(x))
   rownames(m) <- rownames(x)
   m
 })
