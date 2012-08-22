@@ -467,6 +467,14 @@ setMethod("as.env", "List",
               env
           })
 
+setAs("ANY", "List", function(from) {
+  relist(from, PartitioningByEnd(seq_len(length(from))))
+})
+
+## Special cased, because integer extends ANY (somehow) and numeric,
+## so ambiguities are introduced due to method caching.
+setAs("integer", "List", getMethod(coerce, c("ANY", "List")))
+
 ### NOT exported. Assumes 'names1' is not NULL.
 make.unlist.result.names <- function(names1, names2)
 {
