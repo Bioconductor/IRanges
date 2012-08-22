@@ -102,8 +102,8 @@ setReplaceMethod("[[", "FilterRules",
                      warning("arguments beyond 'i' ignored")
                    if (missing(i))
                      stop("subscript is missing")
-                   value <- FilterRules.parseRule(value)
-                   x <- callNextMethod(x, i, value = value)
+                   rule <- FilterRules.parseRule(value)
+                   x <- callNextMethod(x, i, value = rule)
                    if (is.numeric(i) && is.character(value))
                      names(x)[i] <- value
                    active <- x@active ## in case we expanded
@@ -121,7 +121,7 @@ setMethod("[", "FilterRules",
             if (!missing(j) || length(list(...)) > 0)
               stop("invalid subsetting")
             if (!missing(i)) {
-              x@active <- x@active[i]
+              x@active <- setNames(setNames(x@active, names(x))[i], NULL)
               x <- callNextMethod(x, i)
             }
             x
@@ -224,18 +224,28 @@ setMethod("eval", signature(expr="FilterRules", envir="ANY"),
 setGeneric("evalSeparately",
            function(expr, envir = parent.frame(),
                     enclos = if (is.list(envir) ||
-                      is.pairlist(envir)) parent.frame() else baseenv())
+                      is.pairlist(envir)) parent.frame() else baseenv(),
+                    ...)
            standardGeneric("evalSeparately"))
 
 setMethod("evalSeparately", "FilterRules",
           function(expr, envir = parent.frame(),
                    enclos = if (is.list(envir) ||
-                     is.pairlist(envir)) parent.frame() else baseenv())
+                     is.pairlist(envir)) parent.frame() else baseenv(),
+                   serial = FALSE)
           {
+            if (!isTRUEorFALSE(serial))
+              stop("'serial' must be TRUE or FALSE")
             inds <- seq_len(length(expr))
             names(inds) <- names(expr)
-            sapply(inds,
-                   function(i) eval(expr[i], envir = envir, enclos = enclos))
+            passed <- rep.int(TRUE, length(envir))
+            sapply(inds, function(i) {
+              result <- eval(expr[i], envir = envir, enclos = enclos)
+              if (serial) {
+                passed <<- passed & result
+                passed
+              } else result
+            })
           })
 
 setGeneric("subsetByFilter",
@@ -249,7 +259,23 @@ setMethod("subsetByFilter", c("ANY", "FilterRules"), function(x, filter) {
 ### Summary
 ###
 
-setMethod("summary", "FilterRules", function(object, subject) {
-  mat <- evalSeparately(object, subject)
-  c(colSums(mat), Combined = sum(rowSums(mat) == ncol(mat)))
-})
+setMethod("summary", "FilterRules",
+          function(object, subject, serial = FALSE, discarded = FALSE,
+                   percent = FALSE)
+          {
+            if (!isTRUEorFALSE(serial))
+              stop("'serial' must be TRUE or FALSE")
+            if (!isTRUEorFALSE(discarded))
+              stop("'discarded' must be TRUE or FALSE")
+            if (!isTRUEorFALSE(percent))
+              stop("'percent' must be TRUE or FALSE")
+            mat <- evalSeparately(object, subject, serial = serial)
+            counts <- c("<initial>" = length(subject), colSums(mat),
+                        "<final>" = sum(rowSums(mat) == ncol(mat)))
+            if (discarded) {
+              counts <- length(subject) - counts
+            }
+            if (percent) {
+              round(counts / length(subject), 3)
+            } else counts
+          })
