@@ -577,6 +577,22 @@ setAs("RleList", "CompressedIRangesList",
                 mcols = mcols(from))
       })
 
+setAs("CompressedRleList", "CompressedIRangesList",
+      function(from)
+      {
+        if ((length(from) > 0) &&
+            (!is.logical(runValue(from[[1L]])) ||
+             anyMissing(runValue(from[[1L]]))))
+          stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
+               "with NAs to a CompressedIRangesList object")
+        ranges <- as(unlist(from, use.names = FALSE), "IRanges")
+        to <- diceRangesByList(ranges, from)
+        metadata(to) <- metadata(from)
+        mcols(to) <- mcols(from)
+        to
+      })
+
+  
 setAs("RleList", "SimpleIRangesList",
       function(from)
       {

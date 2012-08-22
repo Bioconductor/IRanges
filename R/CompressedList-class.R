@@ -191,12 +191,11 @@ setMethod("seqselect", "CompressedList",
                   if (is(start, "RangesList")) {
                       unlistData <-
                         seqselect(x@unlistData,
-                                  shift(unlist(start),
+                                  shift(unlist(start, use.names = FALSE),
                                         rep.int(start(x@partitioning) - 1L,
                                                 elementLengths(start))))
-                      partitionEnd <-
-                        cumsum(unlist(lapply(start, function(x) sum(width(x))),
-                                      use.names = FALSE))
+                      partitionEnd <- cumsum(unlist(sum(width(start)),
+                                                    use.names = FALSE))
                   } else if (is(start, "LogicalList")) {
                       xeltlen <- elementLengths(x)
                       whichRep <- which(xeltlen != elementLengths(start))

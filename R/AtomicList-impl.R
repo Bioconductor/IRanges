@@ -6,7 +6,6 @@
 ## - order/sort: unlist, order by split factor first
 ## - sum/mean: unlist, rowsum() with split factor
 ## - cumsum: unlist, cumsum and subtract offsets
-## - paste: when collapsing, unlist, collapse, using embedded delimiter
 
 .ATOMIC_TYPES <- c("logical", "integer", "numeric", "complex",
                    "character", "raw")
@@ -278,10 +277,13 @@ setMethod("drop", "AtomicList", function(x) {
 vector2AtomicList <- function(type, compress)
 {
     function(from) {
-        if (!is.list(from))
-            from <- as.list(from)
-        constructor <- paste(type, "List", sep="")
-        get(constructor)(from, compress=compress)
+        if (class(from) == tolower(type) && compress) {
+          as(from, "List")
+        } else {
+          from <- as.list(from)
+          constructor <- paste(type, "List", sep="")
+          get(constructor)(from, compress=compress)
+        }
     }
 }
 
@@ -494,6 +496,12 @@ setMethod("Ops",
               SimpleAtomicList(Map(.Generic, e1, e2))
           })
 
+repLengthOneElements <- function(x, times) {
+  x@unlistData <- rep(x@unlistData, times)
+  x@partitioning@end <- cumsum(times)
+  x
+}
+
 setMethod("Ops",
           signature(e1 = "CompressedAtomicList", e2 = "CompressedAtomicList"),
           function(e1, e2)
@@ -509,26 +517,32 @@ setMethod("Ops",
               n1 <- elementLengths(e1)
               n2 <- elementLengths(e2)
               if (any(n1 != n2)) {
-                  u1 <- as.list(e1)
-                  u2 <- as.list(e2)
-                  zeroLength <- which((n1 == 0L) | (n2 == 0L))
-                  empty1 <- e1[[1L]][integer(0)]
-                  empty2 <- e2[[1L]][integer(0)]
-                  for (i in zeroLength) {
+                  if (all(n1 == 1L)) {
+                    e1 <- repLengthOneElements(e1, n2)
+                  } else if (all(n2 == 1L)) {
+                    e2 <- repLengthOneElements(e2, n1)
+                  } else {
+                    u1 <- as.list(e1)
+                    u2 <- as.list(e2)
+                    zeroLength <- which((n1 == 0L) | (n2 == 0L))
+                    empty1 <- e1[[1L]][integer(0)]
+                    empty2 <- e2[[1L]][integer(0)]
+                    for (i in zeroLength) {
                       u1[[i]] <- empty1
                       u2[[i]] <- empty2
-                  }
-                  n1[zeroLength] <- 0L
-                  n2[zeroLength] <- 0L
-                  for (i in which(n1 < n2))
+                    }
+                    n1[zeroLength] <- 0L
+                    n2[zeroLength] <- 0L
+                    for (i in which(n1 < n2))
                       u1[[i]] <- rep(u1[[i]], length.out = n2[i])
-                  for (i in which(n2 < n1))
+                    for (i in which(n2 < n1))
                       u2[[i]] <- rep(u2[[i]], length.out = n1[i])
-                  partitioningEnd <- cumsum(pmax.int(n1, n2))
-                  e1@unlistData <- unlist(u1)
-                  e1@partitioning@end <- partitioningEnd
-                  e2@unlistData <- unlist(u2)
-                  e2@partitioning@end <- partitioningEnd
+                    partitioningEnd <- cumsum(pmax.int(n1, n2))
+                    e1@unlistData <- unlist(u1)
+                    e1@partitioning@end <- partitioningEnd
+                    e2@unlistData <- unlist(u2)
+                    e2@partitioning@end <- partitioningEnd
+                  }
               }
               partitioning <- e1@partitioning
               names(partitioning) <- nms
@@ -693,9 +707,11 @@ setMethod("sum", "CompressedLogicalList", rowsumCompressedList)
 setMethod("Summary", "CompressedRleList",
           function(x, ..., na.rm = FALSE) {
             toViewFun <- list(max = viewMaxs, min = viewMins, sum = viewSums)
-            if (!is.null(viewFun <- toViewFun[[.Generic]]))
-              structure(viewFun(as(x, "RleViews"), na.rm = na.rm),
-                        names=names(x))
+            if (!is.null(viewFun <- toViewFun[[.Generic]])) {
+              ans <- viewFun(as(x, "RleViews"), na.rm = na.rm)
+              names(ans) <- names(x)
+              ans
+            }
             else sapply(x, .Generic, na.rm = na.rm)
           })
 
@@ -1102,24 +1118,28 @@ setMethod("ranges", "RleList", function(x) {
   seqapply(x, ranges)
 })
 
+diceRangesByList <- function(x, list) {
+  listPart <- PartitioningByEnd(list)
+  ## 'x' cannot contain empty ranges so using
+  ## 'hit.empty.query.ranges=TRUE' won't affect the result but
+  ## it makes findOverlaps_Ranges_Partitioning() just a little
+  ## bit faster.
+  hits <- findOverlaps_Ranges_Partitioning(x, listPart,
+                                           hit.empty.query.ranges=TRUE)
+  ans_partitioning <- PartitioningByEnd(subjectHits(hits), NG=length(list))
+  ans_unlistData <- shift(ranges(hits, x, listPart),
+                          1L - start(listPart)[subjectHits(hits)])
+  ans <- relist(ans_unlistData, ans_partitioning)
+  names(ans) <- names(list)
+  ans
+}
+
 setMethod("ranges", "CompressedRleList",
     function(x)
     {
-        rle <- unlist(x, use.names=FALSE)
-        rlePart <- PartitioningByWidth(runLength(rle))
-        listPart <- PartitioningByEnd(x)
-        ## 'rlePart' cannot contain empty ranges so using
-        ## Using 'hit.empty.query.ranges=TRUE' won't affect the result
-        ## (because 'rlePart' cannot contain empty ranges) but it makes
-        ## findOverlaps_Ranges_Partitioning() just a little bit faster.
-        hits <- findOverlaps_Ranges_Partitioning(rlePart, listPart,
-                                                 hit.empty.query.ranges=TRUE)
-        ans_partitioning <- PartitioningByEnd(subjectHits(hits), NG=length(x))
-        ans_unlistData <- shift(ranges(hits, rlePart, listPart),
-                                1L - start(listPart)[subjectHits(hits)])
-        ans <- relist(ans_unlistData, ans_partitioning)
-        names(ans) <- names(x)
-        ans
+      rle <- unlist(x, use.names=FALSE)
+      rlePart <- PartitioningByWidth(runLength(rle))
+      diceRangesByList(rlePart, x)
     }
 )
 
