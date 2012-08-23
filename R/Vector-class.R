@@ -929,12 +929,14 @@ setMethod("splitAsListReturnedClass", "ANY",
         cl <- class(x)
         cl <- c(cl, names(getClass(cl)@contains))
         substring(cl, 1L, 1L) <- toupper(substring(cl, 1L, 1L))
-        compressedClass <- paste("Compressed", cl, "List", sep = "")
-        clExists <- which(sapply(compressedClass,
-                                 function(ccl) !is.null(getClassDef(ccl))))
-        if (length(clExists) == 0L)
-            stop("don't know what class to use for storing the result of ",
-                 "splitting a ", class(x), " object as a List")
+        compressedClass <- c(paste0("Compressed", cl, "List"),
+                             paste0(cl, "List"))
+        clExists <- which(sapply(compressedClass, isClass) &
+                          sapply(compressedClass, extends, "CompressedList"))
+        if (length(clExists) == 0L) {
+          stop("don't know what class to use for storing the result of ",
+               "splitting a ", class(x), " object as a List")
+        }
         compressedClass[clExists[1L]]
     }
 )
