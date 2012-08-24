@@ -146,7 +146,7 @@ setMethod("narrow", "XVectorList", narrowXVectorList)
 ### flank()
 ###
 
-setGeneric("flank",
+setGeneric("flank", signature="x",
     function(x, width, start=TRUE, both=FALSE, use.names=TRUE, ...)
         standardGeneric("flank")
 )
@@ -208,7 +208,7 @@ setMethod("flank", "CompressedIRangesList",
 ### reflect()
 ###
 
-setGeneric("reflect",
+setGeneric("reflect", signature="x",
     function(x, bounds, use.names=TRUE)
         standardGeneric("reflect")
 )
@@ -510,7 +510,9 @@ setMethod("threebands", "XVectorList",
 ### Zooming (symmetrically scales the width).
 ###
 ### TODO: Implement a zoom() generic and methods and make the "Ops" method
-### below a simple convenience wrapper for zoom().
+### below a simple convenience wrapper for zoom(). Recommend the use of zoom()
+### over "Ops" methods in packages and scripts. Reserve "Ops" methods as a
+### convenience when working interactively.
 ###
 
 setMethod("Ops", c("Ranges", "numeric"),

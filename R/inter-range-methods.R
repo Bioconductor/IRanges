@@ -66,6 +66,12 @@ setMethod("range", "CompressedIRangesList",
     }
 )
 
+setMethod("range", "RangedData", function(x, ..., na.rm) {
+  args <- list(x, ...)
+  rangeLists <- lapply(args, ranges)
+  do.call(range, rangeLists)
+})
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### reduce()

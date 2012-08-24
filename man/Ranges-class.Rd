@@ -4,7 +4,6 @@
 % Classes:
 \alias{class:Ranges}
 \alias{Ranges-class}
-\alias{RangesORmissing-class}
 \alias{Ranges}
 
 % Generics and methods:
@@ -20,8 +19,6 @@
 \alias{width<-}
 \alias{end<-}
 \alias{isEmpty,Ranges-method}
-\alias{isDisjoint}
-\alias{isDisjoint,Ranges-method}
 \alias{as.matrix,Ranges-method}
 \alias{as.data.frame,Ranges-method}
 \alias{as.integer,Ranges-method}
@@ -93,12 +90,16 @@
   Ranges objects. Not all the functions described below will necessarily
   work with all kinds of Ranges objects but they should work at least
   for \link{IRanges} objects.
-  Also more operations on Ranges objects are described in the man page
-  for \link{Ranges-utils} (\code{\link{shift}}, \code{\link{restrict}},
-  \code{\link{narrow}}, \code{\link{reduce}}, etc...),
-  for \link{IntervalTree} objects (\code{\link{findOverlaps}}),
-  and for \link{RangesList} objects (\code{split} method for Ranges
-  objects).
+
+  Note that many more operations on Ranges objects are described in other
+  man pages of the IRanges package. See for example the man page for intra
+  range transformations (e.g. \code{shift()}, see
+  \code{?`\link{intra-range-methods}`}), or the man page for inter range
+  transformations (e.g. \code{reduce()}, see
+  \code{?`\link{inter-range-methods}`}), or the man page for
+  \code{findOverlaps} methods (see \code{?`\link{findOverlaps-methods}`}),
+  or the man page for \link{RangesList} objects where the \code{split}
+  method for Ranges objects is documented.
 
   \describe{
     \item{}{
@@ -139,11 +140,6 @@
     \item{}{
       \code{isEmpty(x)}:
       Return a logical value indicating whether \code{x} is empty or not.
-    }
-    \item{}{
-      \code{isDisjoint(x)}:
-      Return a logical value indicating whether the ranges \code{x} are
-      disjoint (i.e. non-overlapping).
     }
     \item{}{
       \code{as.matrix(x, ...)}:
@@ -320,11 +316,6 @@
   x
   x[is.na(names(x))]  # 5 ranges
   x[!is.na(names(x))]  # 2 ranges
-
-  ## Check for disjointedness
-  isDisjoint(IRanges(c(2,5,1), c(3,7,3))) ## FALSE
-  isDisjoint(IRanges(c(2,9,5), c(3,9,6))) ## TRUE
-  isDisjoint(IRanges(1, 5)) ## TRUE
 
   ir <- IRanges(c(1,5), c(3,10))
   ir*1 # no change

@@ -2,9 +2,6 @@
 
 \alias{IRanges-setops}
 
-\alias{gaps}
-\alias{gaps,IRanges-method}
-\alias{gaps,Ranges-method}
 \alias{union,IRanges,IRanges-method}
 \alias{intersect,IRanges,IRanges-method}
 \alias{setdiff,IRanges,IRanges-method}
@@ -25,7 +22,6 @@
 
 \usage{
 ## Vector-wise operations:
-gaps(x, start=NA, end=NA)
 \S4method{union}{IRanges,IRanges}(x, y,...)
 \S4method{intersect}{IRanges,IRanges}(x, y,...)
 \S4method{setdiff}{IRanges,IRanges}(x, y,...)
@@ -40,11 +36,6 @@ gaps(x, start=NA, end=NA)
 \arguments{
   \item{x, y}{
     \link{IRanges} objects.
-  }
-  \item{start, end}{
-    A single integer or \code{NA}. Use these arguments to specify the
-    interval of reference i.e. which interval the returned gaps
-    should be relative to.
   }
   \item{fill.gap}{
     Logical indicating whether or not to force a union by using the rule
@@ -65,11 +56,6 @@ gaps(x, start=NA, end=NA)
 }
 
 \details{
-  \code{gaps} returns the "normal" \link{IRanges} object (of the same
-  class as \code{x}) representing the set of integers that remain
-  after the set of integers represented by \code{x} has been removed
-  from the interval specified by the \code{start} and \code{end} arguments.
-
   The \code{union}, \code{intersect} and \code{setdiff} methods
   for \link{IRanges} objects return a "normal" \link{IRanges}
   object (of the same class as \code{x}) representing the union,
@@ -111,17 +97,16 @@ gaps(x, start=NA, end=NA)
   \link[BiocGenerics]{union},
 
   \link{Ranges-class},
-  \link{Ranges-utils},
+
+  \link{intra-range-methods} for intra range transformations,
+
+  \link{inter-range-methods} for inter range transformations,
+
   \link{IRanges-class},
   \link{IRanges-utils}
 }
 
 \examples{
-  x0 <- IRanges(start=c(-2, 6, 9, -4, 1, 0, -6, 10),
-                width=c( 5, 0, 6,  1, 4, 3,  2,  3))
-  gaps(x0)
-  gaps(x0, start=-6, end=20)  # Regions of the -6:20 range that are not masked by 'x0'.
-
   x <- IRanges(c(1, 5, -2, 0, 14), c(10, 9, 3, 11, 17))
   y <- Views(as(4:-17, "XInteger"), start=c(14, 0, -5, 6, 18), end=c(20, 2, 2, 8, 20))
 

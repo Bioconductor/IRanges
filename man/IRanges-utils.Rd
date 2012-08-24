@@ -85,8 +85,12 @@ asNormalIRanges(x, force=TRUE)
 
 \seealso{
   \link{Ranges-class},
-  \link{Ranges-utils},
   \link{IRanges-class},
+
+  \link{intra-range-methods} for intra range transformations,
+
+  \link{inter-range-methods} for inter range transformations,
+
   \link{IRanges-setops},
   \code{\link{solveUserSEW}},
   \code{\link{successiveViews}}

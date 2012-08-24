@@ -30,7 +30,6 @@
 \alias{min,CompressedNormalIRangesList-method}
 \alias{min,SimpleNormalIRangesList-method}
 \alias{summary,CompressedIRangesList-method}
-\alias{Ops,CompressedIRangesList,ANY-method}
 
 % setops
 \alias{intersect,CompressedIRangesList,CompressedIRangesList-method}
@@ -48,7 +47,6 @@
 \alias{CompressedNormalIRangesList}
 \alias{SimpleNormalIRangesList}
 
-\alias{isDisjoint,RangesList-method}
 \alias{isNormal,CompressedIRangesList-method}
 \alias{isNormal,RangesList-method}
 \alias{isNormal,SimpleIRangesList-method}

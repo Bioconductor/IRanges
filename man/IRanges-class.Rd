@@ -117,13 +117,15 @@
 
 \seealso{
   \link{Ranges-class},
-  \link{Ranges-utils},
+
   \link{IRanges-constructor},
   \link{IRanges-utils},
-  \link{IRanges-setops}.
 
-  Some direct subclasses of the IRanges class (other than NormalIRanges):
-  \link{Views-class}.
+  \link{intra-range-methods} for intra range transformations,
+
+  \link{inter-range-methods} for inter range transformations,
+
+  \link{IRanges-setops}
 }
 
 \examples{

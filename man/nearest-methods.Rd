@@ -1,12 +1,20 @@
-\name{nearest}
+\name{nearest-methods}
+
+\alias{nearest-methods}
+
+\alias{class:RangesORmissing}
+\alias{RangesORmissing-class}
+\alias{RangesORmissing}
 
 \alias{nearest}
 \alias{precede}
 \alias{follow}
+\alias{distance}
 \alias{distanceToNearest}
 \alias{nearest,Ranges,RangesORmissing-method}
 \alias{precede,Ranges,RangesORmissing-method}
 \alias{follow,Ranges,RangesORmissing-method}
+\alias{distance,Ranges,Ranges-method}
 \alias{distanceToNearest,Ranges,RangesORmissing-method}
 
 \title{Nearest neighbor finding}

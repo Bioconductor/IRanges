@@ -41,8 +41,6 @@
 % Endomorphisms:
 \alias{collapse}
 \alias{collapse,MaskCollection-method}
-\alias{gaps,MaskCollection-method}
-\alias{narrow,MaskCollection-method}
 
 % Coercion:
 \alias{coerce,MaskCollection,NormalIRanges-method}
@@ -197,18 +195,6 @@
       Return a MaskCollection object of length 1 obtained by collapsing
       all the active masks in \code{x}.
     }
-    \item{}{
-      \code{gaps(x)}:
-      Invert the masks in \code{x}.
-    }
-    \item{}{
-      \code{narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)}:
-      If \code{y} is a sequence that \code{x} has been put on top of,
-      then \code{narrow} will return the set of submasks that go on top
-      of the subsequence obtained by calling \code{subseq} on \code{y}
-      (\code{narrow} must be called on \code{x} with the same arguments
-      that have been used to call \code{subseq} on \code{y}).
-    }
   }
 }
 
@@ -233,7 +219,6 @@
   length(mymasks)
   width(mymasks)
   collapse(mymasks)
-  gaps(mymasks)
 
   ## Names and descriptions:
   names(mymasks) <- c("A", "B", "C")  # names should be short and unique...
@@ -256,9 +241,6 @@
   length(mymasks[[2]])
   mymasks[[2]][-3]
   append(mymasks[-2], gaps(mymasks[2]))
-  mymasks2 <- narrow(mymasks, start=8)
-  mymasks2
-  mymasks2[[2]]
 }
 
 \keyword{methods}

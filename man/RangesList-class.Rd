@@ -47,9 +47,6 @@
 \alias{coerce,RleList,CompressedNormalIRangesList-method}
 \alias{coerce,RleList,SimpleNormalIRangesList-method}
 
-% operations
-\alias{Ops,RangesList,ANY-method}
-
 % show
 \alias{show,RangesList-method}
 

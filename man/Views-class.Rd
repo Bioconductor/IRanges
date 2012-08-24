@@ -19,10 +19,6 @@
 \alias{width<-,Views-method}
 \alias{names<-,Views-method}
 \alias{[,Views-method}
-\alias{shift,Views-method}
-\alias{narrow,Views-method}
-\alias{gaps,Views-method}
-\alias{reduce,Views-method}
 \alias{elementLengths,Views-method}
 \alias{newViews}
 \alias{Views}
@@ -138,15 +134,6 @@
        \code{trim(narrow(x, start=start, end=end, width=width, use.names=use.names))}.
     }
     \item{}{
-       \code{gaps(x, start=NA, end=NA)}:
-       \code{start} and \code{end} can be single integers or NAs.
-       The gap extraction will be restricted to the window specified by
-       \code{start} and \code{end}. \code{start=NA} and \code{end=NA}
-       are interpreted as \code{start=1} and \code{end=length(subject(x))},
-       respectively, so, if \code{start} and \code{end} are not specified,
-       then gaps are extracted with respect to the entire subject.
-    }
-    \item{}{
        \code{successiveViews(subject, width, gapwidth=0, from=1)}:
        Equivalent to \code{Views(subject, successiveIRanges(width, gapwidth, from))}.
        See \code{?successiveIRanges} for a description of the \code{width},
@@ -186,10 +173,6 @@
   v2 <- Views(subject, start=4:-1, end=6)
   trim(v2)
   subviews(v2, end=-2)
-
-  ## gaps() 
-  v3 <- Views(subject, start=c(8, 3), end=c(14, 4))
-  gaps(v3)
 
   ## Views on a big XInteger subject:
   subject <- XInteger(99999, sample(99, 99999, replace=TRUE) - 50)

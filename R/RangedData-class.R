@@ -134,12 +134,6 @@ setReplaceMethod("score", "RangedData",
                      x
                  })
 
-setMethod("range", "RangedData", function(x, ..., na.rm) {
-  args <- list(x, ...)
-  rangeLists <- lapply(args, ranges)
-  do.call(range, rangeLists)
-})
-
 ## values delegates
 setMethod("nrow", "RangedData",
           function(x) {

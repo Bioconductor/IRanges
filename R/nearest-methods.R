@@ -4,11 +4,73 @@
 ###
 
 
+setClassUnion("RangesORmissing", c("Ranges", "missing"))
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### precede() and follow()
+###
+
+setGeneric("precede", function(x, subject = x, ...) standardGeneric("precede"))
+
+setMethod("precede", c("Ranges", "RangesORmissing"),
+    function(x, subject, select = c("first", "all"))
+    {
+      select <- match.arg(select)
+      s <- start(subject)
+      ord <- NULL
+      if (isNotSorted(s)) {
+        ord <- orderInteger(s)
+        s <- s[ord]
+      }
+      if (select == "all") {
+        srle <- Rle(s)
+        s <- runValue(srle)
+      }
+      i <- findInterval(end(x), s) + 1L
+      i[i > length(s)] <- NA
+      if (select == "all") {
+        .vectorToHits(i, srle, ord)
+      } else {
+        if (!is.null(ord))
+          i <- ord[i]
+        i
+      }
+    }
+)
+
+setGeneric("follow", function(x, subject = x, ...) standardGeneric("follow"))
+
+setMethod("follow", c("Ranges", "RangesORmissing"),
+    function(x, subject, select = c("last", "all"))
+    {
+      select <- match.arg(select)
+      e <- end(subject)
+      ord <- NULL
+      if (isNotSorted(e)) {
+        ord <- orderInteger(e)
+        e <- e[ord]
+      }
+      if (select == "all") {
+        srle <- Rle(e)
+        e <- runValue(srle)
+      }
+      i <- findInterval(start(x) - 1L, e)
+      i[i == 0] <- NA        
+      if (select == "all") {
+        .vectorToHits(i, srle, ord)
+      } else {
+        if (!is.null(ord))
+          i <- ord[i]
+        i
+      }
+    }
+)
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### nearest()
 ###
-
-setClassUnion("RangesORmissing", c("Ranges", "missing"))
 
 .hitsMatrixToVector <- function(hitsMatrix, queryLength) {
   hitsMatrix <-
@@ -93,72 +155,6 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
             }
             ol
           })
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### precede()
-###
-
-setGeneric("precede", function(x, subject = x, ...) standardGeneric("precede"))
-
-setMethod("precede", c("Ranges", "RangesORmissing"),
-    function(x, subject, select = c("first", "all"))
-    {
-      select <- match.arg(select)
-      s <- start(subject)
-      ord <- NULL
-      if (isNotSorted(s)) {
-        ord <- orderInteger(s)
-        s <- s[ord]
-      }
-      if (select == "all") {
-        srle <- Rle(s)
-        s <- runValue(srle)
-      }
-      i <- findInterval(end(x), s) + 1L
-      i[i > length(s)] <- NA
-      if (select == "all") {
-        .vectorToHits(i, srle, ord)
-      } else {
-        if (!is.null(ord))
-          i <- ord[i]
-        i
-      }
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### follow()
-###
-
-setGeneric("follow", function(x, subject = x, ...) standardGeneric("follow"))
-
-setMethod("follow", c("Ranges", "RangesORmissing"),
-    function(x, subject, select = c("last", "all"))
-    {
-      select <- match.arg(select)
-      e <- end(subject)
-      ord <- NULL
-      if (isNotSorted(e)) {
-        ord <- orderInteger(e)
-        e <- e[ord]
-      }
-      if (select == "all") {
-        srle <- Rle(e)
-        e <- runValue(srle)
-      }
-      i <- findInterval(start(x) - 1L, e)
-      i[i == 0] <- NA        
-      if (select == "all") {
-        .vectorToHits(i, srle, ord)
-      } else {
-        if (!is.null(ord))
-          i <- ord[i]
-        i
-      }
-    }
-)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
