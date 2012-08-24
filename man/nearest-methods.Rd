@@ -17,7 +17,7 @@
 \alias{distance,Ranges,Ranges-method}
 \alias{distanceToNearest,Ranges,RangesORmissing-method}
 
-\title{Nearest neighbor finding}
+\title{Finding the nearest range neighbor}
 
 \description{
   The \code{nearest}, \code{precede} and \code{follow} methods find
