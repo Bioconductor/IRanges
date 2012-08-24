@@ -388,7 +388,7 @@ setMethod("merge", c("RangesList", "RangesList"),
             sep="")
 }
 
-setMethod("show", "RangesList", .RangesList_show)
+setMethod("show", "RangesList", function(object) .RangesList_show(object))
 
 setMethod("showAsCell", "RangesList",
           function(object)
