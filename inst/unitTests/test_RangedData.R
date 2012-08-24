@@ -164,7 +164,6 @@ test_RangedData_subset <- function() {
   score <- score[c(1, 3, 2)]
 
   checkException(rd[list()], silent = TRUE)
-  checkException(rd[-18], silent = TRUE)
   checkException(rd[10], silent = TRUE)
   checkException(rd[c(NA, 2)], silent = TRUE)
   checkException(rd["one"], silent = TRUE)

@@ -390,7 +390,7 @@ setReplaceMethod("[", "DataFrame",
                               "existing columns")
                      }
                      if (useI) {
-                       if (!length(newrn) && max(i) > nrow(x))
+                       if (length(newrn) == 0L && li > 0L && max(i) > nrow(x))
                          newrn <- as.character(seq.int(nrow(x) + 1L, max(i)))
                        x@listData[j] <-
                          lapply(x@listData[j], function(y) {y[i] <- value; y})
@@ -423,7 +423,7 @@ setReplaceMethod("[", "DataFrame",
                        newcn <- newcn[j > length(x)]
                      }
                      if (useI) {
-                       if (!length(newrn) && max(i) > nrow(x)) {
+                       if (length(newrn) == 0L && li > 0L && max(i) > nrow(x)) {
                          if (!is.null(rownames(value))) {
                            newrn <- rep(rownames(value), length.out = length(i))
                            newrn <- newrn[i > nrow(x)]

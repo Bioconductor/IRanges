@@ -76,10 +76,10 @@ setMethod("[", "SimpleList",
                       if (is.numeric(i)) {
                           if (!is.integer(i))
                               i <- as.integer(i)
-                          if (anyMissingOrOutside(i, -lx, lx))
+                          if (anyMissingOrOutside(i, upper = lx))
                               stop("subscript contains NAs or out of bounds indices")
                           if (anyMissingOrOutside(i, 0L, lx)) {
-                              if (anyMissingOrOutside(i, -lx, 0L))
+                              if (anyMissingOrOutside(i, upper = 0L))
                                   stop("negative and positive indices cannot be mixed")
                               i <- seq_len(lx)[i]
                           }

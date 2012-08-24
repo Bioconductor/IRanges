@@ -83,7 +83,7 @@ test_DataFrame_subset <- function() {
   checkException(sw[1:3, drop=TRUE], silent = TRUE) # drop ignored
   checkException(sw[drop=TRUE], silent = TRUE)
   checkException(sw[foo = "bar"], silent = TRUE) # invalid argument
-  options(warn=0)
+  ##options(warn=0)
   checkException(sw["Sion",], silent = TRUE) # no row names
   checkException(sw[,"Fert"], silent = TRUE) # bad column name
 

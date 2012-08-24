@@ -52,7 +52,6 @@ test_List_subset <- function() {
     checkException(collection[1,2], silent=TRUE)
     checkException(collection[list()], silent=TRUE)
     if (compress) {
-      checkException(collection[-3], silent=TRUE)
       checkException(collection[5], silent=TRUE)
       checkException(collection[c(NA, 2)], silent=TRUE)
       checkException(collection[c(TRUE, TRUE, TRUE)], silent=TRUE)

@@ -198,7 +198,7 @@ normalizeSingleBracketSubscript <- function(i, x)
     if (is.numeric(i)) {
         if (!is.integer(i))
             i <- as.integer(i)
-        if (anyMissingOrOutside(i, -lx, lx))
+        if (anyMissingOrOutside(i, upper = lx))
             stop("subscript contains NAs or out of bounds indices")
         i <- i[i != 0L]
         if (any(i < 0L) && any(i > 0L))
@@ -261,8 +261,8 @@ function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE,
     if (is.numeric(idx)) {
         if (!is.integer(idx))
             idx <- as.integer(idx)
-        if (anyMissingOrOutside(idx, -lx,
-                                if (!allowAppend) lx else .Machine$integer.max))
+        if (anyMissingOrOutside(idx, upper = if (!allowAppend) lx
+                                             else .Machine$integer.max))
         {
             msg <- "subscript contains NAs or out of bounds indices"
         } else {
