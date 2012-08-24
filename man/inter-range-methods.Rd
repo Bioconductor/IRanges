@@ -263,8 +263,9 @@ gaps(x0)
 gaps(x0, start=-6, end=20)
 
 ## On a Views object
-v3 <- Views(subject, start=c(8, 3), end=c(14, 4))
-gaps(v3)
+subject <- XInteger(10, 3:-6)
+v <- Views(subject, start=c(8, 3), end=c(14, 4))
+gaps(v)
 
 ## On a RangesList object. These 4 are the same:
 res1 <- gaps(collection)

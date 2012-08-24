@@ -176,10 +176,10 @@
 
   ## Views on a big XInteger subject:
   subject <- XInteger(99999, sample(99, 99999, replace=TRUE) - 50)
-  v4 <- Views(subject, start=1:99*1000, end=1:99*1001)
-  v4
-  v4[-1]
-  v4[[5]]
+  v3 <- Views(subject, start=1:99*1000, end=1:99*1001)
+  v3
+  v3[-1]
+  v3[[5]]
 
   ## 31 adjacent views:
   successiveViews(subject, 40:10)
