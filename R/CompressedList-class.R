@@ -219,7 +219,7 @@ setMethod("seqselect", "CompressedList",
                                unlistData = unlistData,
                                partitioning = 
                                  new2("PartitioningByEnd",
-                                      end = partitionEnd, NAMES = names(x),
+                                      end = unname(partitionEnd), NAMES = names(x),
                                       check=FALSE))
               } else {
                   if (!is.null(end) || !is.null(width))
