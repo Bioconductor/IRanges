@@ -185,6 +185,9 @@ disjointBins(x, ...)
     \item \link{intra-range-methods} for intra range transformations.
     \item The \link{Ranges}, \link{Views}, \link{RangesList},
           \link{MaskCollection}, and \link{RangedData} classes.
+    \item The \link[GenomicRanges]{inter-range-methods} man page in the
+          GenomicRanges package for methods that operate on
+          \link[GenomicRanges]{GenomicRanges} and other objects.
     \item \link{IRanges-setops} for set operations on \link{IRanges}
           objects.
     \item \code{\link{solveUserSEW}} for the SEW (Start/End/Width)

@@ -101,6 +101,10 @@ select = c("arbitrary", "all"))
 
 \seealso{
   \code{\link{findOverlaps}} for finding just the overlapping ranges.
+
+  The \link[GenomicRanges]{nearest-methods} man page in the GenomicRanges
+  package for methods that operate on \link[GenomicRanges]{GenomicRanges}
+  and other objects.
 }
 
 \examples{

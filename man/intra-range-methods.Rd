@@ -279,6 +279,9 @@ threebands(x, start=NA, end=NA, width=NA)
     \item \link{inter-range-methods} for inter range transformations.
     \item The \link{Ranges}, \link{Views}, \link{RangesList},
           \link{MaskCollection}, and \link{XVectorList} classes.
+    \item The \link[GenomicRanges]{intra-range-methods} man page in the
+          GenomicRanges package for methods that operate on
+          \link[GenomicRanges]{GenomicRanges} and other objects.
     \item \link{IRanges-setops} for set operations on \link{IRanges}
           objects.
     \item \code{\link{solveUserSEW}} for the SEW (Start/End/Width)
