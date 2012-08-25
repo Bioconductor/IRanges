@@ -368,6 +368,8 @@ setReplaceMethod("[", "DataFrame",
                    if (!length(j)) # nothing to replace
                      return(x)
                    useI <- iInfo[["useIdx"]]
+                   if (is(value, "list") || is(value, "List"))
+                     value <- as(value, "DataFrame")
                    if (!is(value, "DataFrame")) {
                      if (useI)
                        li <- length(i)
@@ -576,7 +578,9 @@ setAs("vector", "DataFrame",
 ## note that any element named 'row.names' will be interpreted differently
 ## is this a bug or a feature?
 setAs("list", "DataFrame",
-      function(from) do.call(DataFrame, c(from, check.names = FALSE)))
+      function(from) {
+        do.call(DataFrame, c(from, check.names = FALSE))
+      })
 
 setAs("NULL", "DataFrame", function(from) as(list(), "DataFrame"))
 
