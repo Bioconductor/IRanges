@@ -284,7 +284,7 @@ setMethod("sapply", "List", .sapplyDefault)
     isListOrVector <- function(x) is.vector(x) | is(x, "List")
     if (any(!sapply(seqs, isListOrVector)))
         stop("all objects in ... should be a vector or 'List'")
-    elens <- elementLengths(seqs)
+    elens <- sapply(seqs, length) ## elementLengths uses NROW, inappropriate
     if (any(elens == 0L))
       return(list())
     N <- max(elens)
@@ -474,6 +474,15 @@ setAs("ANY", "List", function(from) {
 ## Special cased, because integer extends ANY (somehow) and numeric,
 ## so ambiguities are introduced due to method caching.
 setAs("integer", "List", getMethod(coerce, c("ANY", "List")))
+
+convertList <- function(from, type = NULL) {
+  v <- unlist(from, use.names = FALSE)
+  if (!is.null(type))
+    v <- as(v, type)
+  relist(v, PartitioningByEnd(from))
+}
+
+setAs("list", "List", function(from) convertList(from))
 
 ### NOT exported. Assumes 'names1' is not NULL.
 make.unlist.result.names <- function(names1, names2)

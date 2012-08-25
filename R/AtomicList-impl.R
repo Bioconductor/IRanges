@@ -277,8 +277,10 @@ setMethod("drop", "AtomicList", function(x) {
 vector2AtomicList <- function(type, compress)
 {
     function(from) {
-        if (class(from) == tolower(type) && compress) {
-          as(from, "List")
+        if (compress) {
+          if (is.list(from))
+            convertList(from, tolower(type))
+          else as(as(from, tolower(type)), "List")
         } else {
           from <- as.list(from)
           constructor <- paste(type, "List", sep="")
@@ -302,49 +304,75 @@ setAs("vector", "SimpleRawList", vector2AtomicList("Raw", FALSE))
 setAs("vector", "CompressedRleList", vector2AtomicList("Rle", TRUE))
 setAs("vector", "SimpleRleList", vector2AtomicList("Rle", FALSE))
 
-
-### FIXME: We could also use the constructors here, but those need to
-### be modified to accept a List as a singular argument and to more
-### efficiently coerce each element. Another issue is that coercion
-### traditionally strips off the names, but the constructors will
-### preserve the names.
-coerceAtomicList <- function(from, converter) {
-  relist(converter(unlist(from, use.names = FALSE)), from)
-}
-
-### FIXME: could special case CompressedAtomicList and take
-### shortcuts. Is it worth it?
-
-### FIXME: could have separate coercions to Compressed/Simple lists,
-### to be consistent with the 'list' coercions above, but does the
-### user want to worry about that?
-
-setAs("AtomicList", "LogicalList", function(from) {
-  coerceAtomicList(from, as.logical)
+setAs("ANY", "LogicalList", function(from) {
+  as(as.logical(from), "List")
+})
+setAs("ANY", "IntegerList", function(from) {
+  as(as.integer(from), "List")
+})
+setAs("ANY", "NumericList", function(from) {
+  as(as.numeric(from), "List")
+})
+setAs("ANY", "ComplexList", function(from) {
+  as(as.complex(from), "List")
+})
+setAs("ANY", "CharacterList", function(from) {
+  as(as.character(from), "List")
+})
+setAs("ANY", "RawList", function(from) {
+  as(as.raw(from), "List")
+})
+setAs("ANY", "RleList", function(from) {
+  as(Rle(from), "List")
 })
 
-setAs("AtomicList", "IntegerList", function(from) {
-  coerceAtomicList(from, as.integer)
+setAs("List", "LogicalList", function(from) {
+  convertList(from, "logical")
+})
+setAs("list", "LogicalList", function(from) {
+  convertList(from, "logical")
 })
 
-setAs("AtomicList", "NumericList", function(from) {
-  coerceAtomicList(from, as.numeric)
+setAs("List", "IntegerList", function(from) {
+  convertList(from, "integer")
+})
+setAs("list", "IntegerList", function(from) {
+  convertList(from, "integer")
 })
 
-setAs("AtomicList", "ComplexList", function(from) {
-  coerceAtomicList(from, as.complex)
+setAs("List", "NumericList", function(from) {
+  convertList(from, "numeric")
+})
+setAs("list", "NumericList", function(from) {
+  convertList(from, "numeric")
 })
 
-setAs("AtomicList", "CharacterList", function(from) {
-  coerceAtomicList(from, as.character)
+setAs("List", "ComplexList", function(from) {
+  convertList(from, "complex")
+})
+setAs("list", "ComplexList", function(from) {
+  convertList(from, "complex")
 })
 
-setAs("AtomicList", "RawList", function(from) {
-  coerceAtomicList(from, as.raw)
+setAs("List", "CharacterList", function(from) {
+  convertList(from, "character")
+})
+setAs("list", "CharacterList", function(from) {
+  convertList(from, "character")
 })
 
-setAs("AtomicList", "RleList", function(from) {
-  coerceAtomicList(from, Rle)
+setAs("List", "RawList", function(from) {
+  convertList(from, "raw")
+})
+setAs("list", "RawList", function(from) {
+  convertList(from, "raw")
+})
+
+setAs("List", "RleList", function(from) {
+  convertList(from, "Rle")
+})
+setAs("list", "RleList", function(from) {
+  convertList(from, "Rle")
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
