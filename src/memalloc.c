@@ -285,11 +285,9 @@ size_t aliSize;
 
 if (newAlloced > carefulMaxToAlloc)
     {
-    char maxAlloc[32];
-    char allocRequest[32];
     /*    sprintLongWithCommas(maxAlloc, (long long)carefulMaxToAlloc);
           sprintLongWithCommas(allocRequest, (long long)newAlloced);*/
-    errAbort("Allocated too much memory - more than %d bytes (%d)",
+    errAbort("Allocated too much memory - more than %ld bytes (%ld)",
 	carefulMaxToAlloc, newAlloced);
     }
 carefulAlloced = newAlloced;

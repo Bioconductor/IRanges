@@ -5,12 +5,12 @@
 
 static SEXP rownames_symbol = NULL, nrows_symbol = NULL;
 
-static SEXP set_DataFrame_rownames(SEXP x, SEXP value) {
+static void set_DataFrame_rownames(SEXP x, SEXP value) {
   INIT_STATIC_SYMBOL(rownames)
   SET_SLOT(x, rownames_symbol, value);
 }
 
-static SEXP set_DataFrame_nrows(SEXP x, SEXP value) {
+static void set_DataFrame_nrows(SEXP x, SEXP value) {
   INIT_STATIC_SYMBOL(nrows)
   SET_SLOT(x, nrows_symbol, value);
 }
