@@ -1,3 +1,9 @@
+checkMatching <- function(a, q, s, r, c) {
+  mat <- cbind(queryHits = as.integer(q), subjectHits = as.integer(s))
+  checkIdentical(as.matrix(a), mat)
+  checkIdentical(c(queryLength(a), subjectLength(a)), as.integer(c(r, c)))
+}
+
 test_Ranges_adjacency <- function() {
   query <- IRanges(c(1, 3, 9), c(3, 7, 10))
   subject <- IRanges(c(3, 10, 2), c(3, 12, 5))
