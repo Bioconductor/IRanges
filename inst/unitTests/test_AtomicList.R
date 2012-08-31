@@ -137,5 +137,45 @@ test_RleList_methods <- function() {
     checkIdentical(runValue(x1), runValue(x2))
     checkIdentical(runLength(x1), runLength(x2))
     checkIdentical(ranges(x1), ranges(x2))
+
+    ## na.rm
+    x <- RleList(c(NA,1,1), 
+                 c(1L,NA_integer_,1L), 
+                 c(1,Inf,1,-Inf),compress=FALSE)
+
+    target <- RleList(c(1,2), c(1L,1L), c(Inf,Inf,-Inf))
+    current <- runsum(x,2, na.rm = TRUE)
+    checkIdentical(target, current)
+    target <- RleList(c(NA,2), c(NA_integer_,NA_integer_), c(Inf,Inf,-Inf))
+    current <- runsum(x,2, na.rm = FALSE)
+    checkIdentical(target, current)
+
+    target <- RleList(c(2,4), c(2,2), c(Inf, Inf, -Inf))
+    current <- runwtsum(x,2, c(2,2), na.rm = TRUE)
+    checkIdentical(target, current)
+    target <- RleList(c(NA,4), c(NA_real_,NA_real_), c(Inf,Inf,-Inf))
+    current <- runwtsum(x,2, c(2,2), na.rm = FALSE)
+    checkIdentical(target, current)
+
+    target <- RleList(c(1,1), c(1,1), c(Inf,Inf,-Inf))
+    current <- runmean(x, 2, na.rm = TRUE)
+    checkIdentical(target, current)
+    target <- RleList(c(NA,1), c(NA_real_, NA_real_), c(Inf, Inf, -Inf))
+    current <- runmean(x, 2, na.rm = FALSE)
+    checkIdentical(target, current)
+
+    x <- RleList(c(NA,1,2), 
+                 c(2L,NA_integer_,1L), 
+                 c(1,Inf,1,-Inf),compress=FALSE)
+    target <- RleList(c(1,2), c(2L,1L), c(Inf,Inf,1))
+    current <- runq(x, 2, 2, na.rm = TRUE)
+    checkIdentical(target, current)
+    target <- RleList(c(NA,2), c(NA_integer_, NA_integer_), c(Inf, Inf, 1))
+    current <- runq(x, 2, 2, na.rm = FALSE)
+    checkIdentical(target, current)
 }
+
+
+
+
 
