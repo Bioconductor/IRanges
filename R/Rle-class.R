@@ -264,22 +264,28 @@ setMethod("Math2", "Rle",
           })
 
 setMethod("Summary", "Rle",
-          function(x, ..., na.rm = FALSE)
-              switch(.Generic,
-                     all =, any =, min =, max =, range =
-                     callGeneric(runValue(x), ..., na.rm = na.rm),
-                     sum = tryCatch({
-                         sum(runValue(x) * runLength(x), ..., na.rm = na.rm)},
-                         warning=function(w) {
-                             if(grep("Integer overflow", w$message, fixed=TRUE))
-                                 warning("Integer overflow - use runValue(x) ",
-                                         " <- as.double(runValue(x))",
-                                         call.=FALSE)
-                                 if (is.integer(runValue(x)))
-                                     NA_integer_
-                                 else
-                                     NA}), 
-                     prod = prod(runValue(x) ^ runLength(x), ..., na.rm = na.rm)))
+    function(x, ..., na.rm = FALSE)
+    {
+        switch(.Generic,
+        all =, any =, min =, max =, range =
+            callGeneric(runValue(x), ..., na.rm=na.rm),
+        sum = 
+            withCallingHandlers({
+                sum(runValue(x) * runLength(x), ..., na.rm=na.rm)
+            }, warning=function(warn) {
+                msg <- conditionMessage(warn)
+                exp <- gettext("Integer overflow - use sum(as.numeric(.))",
+                               domain="R")
+                if (msg == exp) {
+                    msg <- sub("sum\\(as.numeric\\(.\\)\\)",
+                               "runValue(.) <- as.numeric(runValue(.))", msg)
+                    warning(msg)
+                }
+                invokeRestart("muffleWarning")
+            }), 
+        prod = prod(runValue(x) ^ runLength(x), ..., na.rm=na.rm))
+    }
+) 
 
 setMethod("Complex", "Rle",
           function(z)
