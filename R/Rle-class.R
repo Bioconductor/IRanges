@@ -268,7 +268,17 @@ setMethod("Summary", "Rle",
               switch(.Generic,
                      all =, any =, min =, max =, range =
                      callGeneric(runValue(x), ..., na.rm = na.rm),
-                     sum = sum(runValue(x) * runLength(x), ..., na.rm = na.rm),
+                     sum = tryCatch({
+                         sum(runValue(x) * runLength(x), ..., na.rm = na.rm)},
+                         warning=function(w) {
+                             if(grep("Integer overflow", w$message, fixed=TRUE))
+                                 warning("Integer overflow - use runValue(x) ",
+                                         " <- as.double(runValue(x))",
+                                         call.=FALSE)
+                                 if (is.integer(runValue(x)))
+                                     NA_integer_
+                                 else
+                                     NA}), 
                      prod = prod(runValue(x) ^ runLength(x), ..., na.rm = na.rm)))
 
 setMethod("Complex", "Rle",
@@ -921,6 +931,8 @@ setMethod("pmin.int", "Rle", function(..., na.rm = FALSE)
 setMethod("mean", "Rle",
           function(x, na.rm = FALSE)
           {
+            if (is.integer(runValue(x)))
+                runValue(x) <- as.double(runValue(x))
             if (na.rm)
                 n <- length(x) - sum(runLength(x)[is.na(runValue(x))])
             else
