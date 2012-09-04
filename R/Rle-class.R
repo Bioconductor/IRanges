@@ -279,9 +279,11 @@ setMethod("Summary", "Rle",
                 if (msg == exp) {
                     msg <- sub("sum\\(as.numeric\\(.\\)\\)",
                                "runValue(.) <- as.numeric(runValue(.))", msg)
-                    warning(msg)
+                    warning(simpleWarning(msg, conditionCall(warn)))
+                    invokeRestart("muffleWarning")
+                } else {
+                    warn
                 }
-                invokeRestart("muffleWarning")
             }), 
         prod = prod(runValue(x) ^ runLength(x), ..., na.rm=na.rm))
     }

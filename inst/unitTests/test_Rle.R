@@ -696,3 +696,31 @@ test_Rle_runq_integer <- function() {
         checkIdentical(as.integer(target1), current)
     }
 }
+
+test_Rle_Integer_overflow <- function() {
+
+    x0 <- Rle(values=as.integer(c(1,(2^31)-1,1)))
+    checkIdentical(NA_integer_, suppressWarnings(sum(x0)))
+
+    testWarning <- NULL
+    suppressWarnings(withCallingHandlers({sum(x0)
+    }, warning=function(warn) {
+        msg <- conditionMessage(warn)
+        exp <- gettext("Integer overflow - use runValue(.) <- as.numeric(runValue(.))",
+                       domain="R")
+        if (msg == exp)
+            testWarning <<- TRUE 
+    }))
+    checkTrue(testWarning)
+
+    x <- Rle(values=c(1,(2^31)-1,1))
+    checkIdentical(mean(x0), mean(x))
+}
+
+
+
+
+
+
+
+
