@@ -60,7 +60,7 @@ FilterRules.parseRule <- function(expr) {
   } else if (is.language(expr) || is.logical(expr))
     as.expression(expr)
   else if (is.function(expr))
-    expr
+    new("FilterClosure", expr)
   else stop("would not evaluate to logical: ", expr)
 }
 
@@ -279,3 +279,25 @@ setMethod("summary", "FilterRules",
               round(counts / length(subject), 3)
             } else counts
           })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### FilterRule closures
+###
+
+setClass("FilterClosure", contains = "function")
+
+setGeneric("params", function(x, ...) standardGeneric("params"))
+
+setMethod("params", "FilterClosure", 
+          function(x) {
+            as.list(environment(x))
+          })
+
+setMethod("show", "FilterClosure", function(object) {
+  p <- params(object)
+  cat("filter (",
+      paste(names(p), "=", sapply(p, deparse, control = NULL),
+            collapse = ", "),
+      ")\n", sep = "")
+  print(body(object))
+})
