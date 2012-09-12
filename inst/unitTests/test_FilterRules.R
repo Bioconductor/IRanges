@@ -18,6 +18,7 @@ test_FilterRules_construct <- function() {
   filts <- c(parsedFilts, list(find_eboxes = function(rd) rep(FALSE, nrow(rd))))
   filters <- FilterRules(filts, active = FALSE)
   checkTrue(validObject(filters))
+  filts$find_eboxes <- new("FilterClosure", filts$find_eboxes)
   checkIdentical(as.list(filters), filts)
   checkIdentical(active(filters), structure(rep(FALSE, 3), names=names(filts)))
 
@@ -69,7 +70,7 @@ test_FilterRules_append <- function() {
   checkIdentical(unlist(as.list(filters)), filts)
   fun <- function(rd) rep(FALSE, nrow(rd))
   filters[[4]] <- fun
-  filts <- c(filts, X = fun)
+  filts <- c(filts, X = new("FilterClosure", fun))
   checkIdentical(unlist(as.list(filters)), filts)
   
   checkException(filters[[]] <- "threeprime", silent = TRUE)
