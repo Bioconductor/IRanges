@@ -206,15 +206,17 @@ setMethod("eval", signature(expr="FilterRules", envir="ANY"),
                    enclos = if(is.list(envir) || is.pairlist(envir))
                    parent.frame() else baseenv())
           {
-            result <- TRUE
+            result <- rep.int(TRUE, length(envir))
             for (rule in as.list(expr)[active(expr)]) {
               if (is.expression(rule))
                 val <- eval(rule, envir, enclos)
               else val <- rule(envir)
               if (!is.logical(val))
                 stop("filter rule evaluated to non-logical: ", rule)
-              if (max(length(result), length(val)) %%
-                  min(length(result), length(val)) != 0)
+              if ((length(envir) == 0L && length(val) > 0L) ||
+                  (length(envir) > 0L &&
+                   (max(length(envir), length(val)) %%
+                    min(length(envir), length(val)) != 0)))
                 stop("filter rule evaluated to inconsistent length: ", rule)
               result <- val & result
             }
@@ -239,13 +241,13 @@ setMethod("evalSeparately", "FilterRules",
             inds <- seq_len(length(expr))
             names(inds) <- names(expr)
             passed <- rep.int(TRUE, length(envir))
-            sapply(inds, function(i) {
+            do.call(cbind, lapply(inds, function(i) {
               result <- eval(expr[i], envir = envir, enclos = enclos)
               if (serial) {
                 passed <<- passed & result
                 passed
               } else result
-            })
+            }))
           })
 
 setGeneric("subsetByFilter",
