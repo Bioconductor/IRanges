@@ -52,3 +52,5 @@ setAs("RangesMapping", "RangedData", function(from) {
 
 setGeneric("map", function(from, to, ...) standardGeneric("map"))
 
+setGeneric("pmap", function(from, to, ...) standardGeneric("pmap"))
+

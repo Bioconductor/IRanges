@@ -182,7 +182,7 @@ export(
 
     ## Hits API
     matchMatrix, queryHits, subjectHits, remapHits,
-    hits, map,
+    hits, map, pmap,
 
     ## OverlapEncodings
     Loffset, Roffset, encoding, flippedQuery,
