@@ -13,8 +13,8 @@ setMethod("rbind", "DataFrameList",
           function(..., deparse.level=1) mendoapply(rbind, ...))
 
 setMethod("stack", "DataFrameList",
-          function(x, indName = "space")
+          function(x, index.var = "name")
           {
-            DataFrame(.stack.ind(x, indName), x,
+            DataFrame(.stack.ind(x, index.var), x,
                       row.names = unlist(lapply(x, rownames)))
           })

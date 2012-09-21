@@ -546,7 +546,7 @@ setMethod("unsplit", "List", function(value, f, drop = FALSE) {
   value_flat
 })
 
-.stack.ind <- function(x, indName = "space") {
+.stack.ind <- function(x, index.var = "name") {
   if (length(names(x)) > 0) {
     spaceLabels <- names(x)
   } else {
@@ -554,15 +554,15 @@ setMethod("unsplit", "List", function(value, f, drop = FALSE) {
   }
   ind <- Rle(factor(spaceLabels, levels = unique(spaceLabels)),
              elementLengths(x))
-  do.call(DataFrame, structure(list(ind), names = indName))
+  do.call(DataFrame, structure(list(ind), names = index.var))
 }
 
 setMethod("stack", "List",
-          function(x, indName = "space", valuesName = "values")
+          function(x, index.var = "name", value.var = "value")
           {
-            df <- DataFrame(.stack.ind(x, indName),
+            df <- DataFrame(.stack.ind(x, index.var),
                             as(unlist(x, use.names=FALSE), "DataFrame"))
-            colnames(df)[2] <- valuesName
+            colnames(df)[2] <- value.var
             df
           })
 

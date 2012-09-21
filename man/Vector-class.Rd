@@ -303,7 +303,7 @@
       \code{after}. \code{values} must have an \code{elementType} that extends
       that of \code{x}.
     }
-    \item{}{\code{mstack(..., .indName = "name")}: A variant of
+    \item{}{\code{mstack(..., .index.var = "name")}: A variant of
       \code{\link{stack}}, where the list is taken as the list of
       arguments in \code{...}, each of which should be a \code{Vector}
       or \code{vector} (mixing the two will not work).

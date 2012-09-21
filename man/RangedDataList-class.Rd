@@ -25,9 +25,9 @@
 
 \section{Other methods}{
   \describe{
-    \item{}{\code{stack(x, indName = "sample")}: Concantenates the elements
+    \item{}{\code{stack(x, index.var = "name")}: Concantenates the elements
       of \code{x} into a \code{RangedData}, with a column
-      named by \code{indName} that groups the records by their original
+      named by \code{index.var} that groups the records by their original
       element in \code{x}.
     }
   }

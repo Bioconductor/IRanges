@@ -159,8 +159,8 @@
       \code{data.frame}, with the rownames specified in
       \code{row.names}. The \code{optional} argument is ignored.
     }
-    \item{}{\code{stack(x, indName = "space")}: Unlists \code{x} and
-      adds a column named \code{indName} to the result, indicating the
+    \item{}{\code{stack(x, index.var = "name")}: Unlists \code{x} and
+      adds a column named \code{index.var} to the result, indicating the
       element of \code{x} from which each row was obtained.
     }
   }

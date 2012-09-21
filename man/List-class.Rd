@@ -189,12 +189,12 @@
       if \code{value} were originally created by splitting that vector
       on the factor \code{f}.
     }
-    \item{}{\code{stack(x, indName = "space", valuesName = "values")}:
+    \item{}{\code{stack(x, index.var = "name", value.var = "value")}:
       As with \code{\link[utils:stack]{stack}} on a \code{list},
       constructs a \code{DataFrame} with two columns: one for the
       unlisted values, the other indicating the name of the element from
-      which each value was obtained. \code{indName} specifies the column
-      name for the index (source name) column and \code{valuesName}
+      which each value was obtained. \code{index.var} specifies the column
+      name for the index (source name) column and \code{value.var}
       specifies the column name for the values.
     }
   }

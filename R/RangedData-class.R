@@ -852,13 +852,13 @@ setMethod("unlist", "RangedDataList",
           })
 
 setMethod("stack", "RangedDataList",
-          function(x, indName = "sample") {
+          function(x, index.var = "name") {
             rd <- do.call(rbind, unname(as.list(x)))
             spaces <- unlist(lapply(x, space), use.names=FALSE)
             ids <- names(x)
             if (is.null(ids))
               ids <- seq_len(length(x))
             spaceOrd <- order(factor(spaces, names(rd)))
-            rd[[indName]] <- rep(factor(ids), sapply(x, nrow))[spaceOrd]
+            rd[[index.var]] <- rep(factor(ids), sapply(x, nrow))[spaceOrd]
             rd
           })
