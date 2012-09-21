@@ -218,7 +218,8 @@ setMethod("eval", signature(expr="FilterRules", envir="ANY"),
                    (max(length(envir), length(val)) %%
                     min(length(envir), length(val)) != 0)))
                 stop("filter rule evaluated to inconsistent length: ", rule)
-              result <- val & result
+              envir <- envir[val]
+              result[result] <- val
             }
             result
           })
