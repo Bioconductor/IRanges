@@ -1140,26 +1140,26 @@ multisplit <- function(x, f) {
 
 setGeneric("mstack", function(...) standardGeneric("mstack"))
 
-setMethod("mstack", "Vector", function(..., .indName = "name") {
-  if (!isSingleString(.indName))
-    stop("'.indName' must be a single, non-NA string")
+setMethod("mstack", "Vector", function(..., .index.var = "name") {
+  if (!isSingleString(.index.var))
+    stop("'.index.var' must be a single, non-NA string")
   args <- list(...)
   combined <- do.call(c, unname(args))
-  df <- .stack.ind(args, .indName)
+  df <- .stack.ind(args, .index.var)
   if (!is.null(mcols(combined)))
     df <- cbind(mcols(combined), df)
   mcols(combined) <- df
   combined
 })
 setMethod("mstack", "vector",
-          function(..., .indName = "name", .valuesName = "value")
+          function(..., .index.var = "name", .value.var = "value")
           {
-            if (!isSingleString(.indName))
-              stop("'.indName' must be a single, non-NA string")
+            if (!isSingleString(.index.var))
+              stop("'.index.var' must be a single, non-NA string")
             args <- list(...)
             combined <- do.call(c, unname(args))
-            df <- DataFrame(combined, .stack.ind(args, .indName))
-            colnames(df)[1] <- .valuesName
+            df <- DataFrame(combined, .stack.ind(args, .index.var))
+            colnames(df)[1] <- .value.var
             df
           })
 
