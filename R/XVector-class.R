@@ -71,7 +71,9 @@ setMethod("c", "XVector",
             SharedVector.mcopy(ans_shared, dest_offset, src, src_start, width)
             dest_offset <- dest_offset + width
         }
-        new2(class(x), shared=ans_shared, length=ans_length, check=FALSE)
+        ans <- new2(class(x), length=ans_length, check=FALSE)
+        ans@shared <- ans_shared
+        ans
     }
 )
 
