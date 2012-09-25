@@ -201,24 +201,33 @@ setMethod("c", "FilterRules",
 ### Evaluating
 ###
 
+subsetFirstDim <- function(x, i) {
+  ndim <- max(length(dim(x)), 1L)
+  args <- rep(alist(foo=), ndim)
+  names(args) <- NULL
+  args[[1]] <- i
+  args <- c(list(x), args, list(drop = FALSE))
+  do.call(`[`, args)
+}
+
 setMethod("eval", signature(expr="FilterRules", envir="ANY"),
           function(expr, envir = parent.frame(),
                    enclos = if(is.list(envir) || is.pairlist(envir))
                    parent.frame() else baseenv())
           {
-            result <- rep.int(TRUE, length(envir))
+            result <- rep.int(TRUE, NROW(envir))
             for (rule in as.list(expr)[active(expr)]) {
               if (is.expression(rule))
                 val <- eval(rule, envir, enclos)
               else val <- rule(envir)
               if (!is.logical(val))
                 stop("filter rule evaluated to non-logical: ", rule)
-              if ((length(envir) == 0L && length(val) > 0L) ||
-                  (length(envir) > 0L &&
-                   (max(length(envir), length(val)) %%
-                    min(length(envir), length(val)) != 0)))
+              if ((NROW(envir) == 0L && length(val) > 0L) ||
+                  (NROW(envir) > 0L &&
+                   (max(NROW(envir), length(val)) %%
+                    min(NROW(envir), length(val)) != 0)))
                 stop("filter rule evaluated to inconsistent length: ", rule)
-              envir <- envir[val]
+              envir <- subsetFirstDim(envir, val)
               result[result] <- val
             }
             result
@@ -255,7 +264,7 @@ setGeneric("subsetByFilter",
            function(x, filter, ...) standardGeneric("subsetByFilter"))
 
 setMethod("subsetByFilter", c("ANY", "FilterRules"), function(x, filter) {
-  x[eval(filter, x)]
+  subsetFirstDim(x, eval(filter, x))
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
