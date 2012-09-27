@@ -176,33 +176,30 @@ setMethod("pintersect", c("IRanges", "IRanges"),
         ans_end <- pmin.int(end(x), end(y))
         ans_width <- ans_end - ans_start + 1L
 
-        keep_empty_x <- which(width(x) == 0L)
-        if (length(keep_empty_x) > 0) {
-            keep_empty_x <-
-              intersect(keep_empty_x,
-                        (start(x) >= start(y) & start(x) <= end(y)) | 
-                        (start(x) == start(y) & width(y) == 0L))
+        keep_empty_x <- width(x) == 0L
+        if (any(keep_empty_x)) {
+            keep_empty_x <- keep_empty_x &
+              ((start(x) >= start(y) & start(x) <= end(y)) | 
+               (start(x) == start(y) & width(y) == 0L))
         }
-        if (length(keep_empty_x) > 0) {
+        if (any(keep_empty_x)) {
             ans_start[keep_empty_x] <- start(x)[keep_empty_x]
             ans_width[keep_empty_x] <- 0L
         }
 
-        keep_empty_y <- which(width(y) == 0L)
-        if (length(keep_empty_y) > 0) {
-            keep_empty_y <-
-              intersect(keep_empty_y,
-                        start(y) >= start(x) & start(y) <= end(x))
+        keep_empty_y <- width(y) == 0L
+        if (any(keep_empty_y)) {
+            keep_empty_y <- keep_empty_y &
+              start(y) >= start(x) & start(y) <= end(x)
         }
-        if (length(keep_empty_y) > 0) {
+        if (any(keep_empty_y)) {
             ans_start[keep_empty_y] <- start(y)[keep_empty_y]
             ans_width[keep_empty_y] <- 0L
         }
 
-        check_empty <-
-          setdiff(which(ans_width < 0L),
-                  c(keep_empty_x, keep_empty_y))
-        if (length(check_empty) > 0) {
+        check_empty <- ans_width < 0L
+        check_empty[keep_empty_x | keep_empty_y] <- FALSE
+        if (any(check_empty)) {
             resolve.empty <- match.arg(resolve.empty)
             if (resolve.empty == "none") {
                 stop("some intersections produce ambiguous empty ranges.\n",
