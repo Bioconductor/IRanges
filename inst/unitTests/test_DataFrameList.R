@@ -105,7 +105,7 @@ test_SplitDataFrameList_subset <- function() {
 test_SplitDataFrameList_as_data.frame <- function() {
     checkDFL2dfl <- function(DFL, dfl) {
         df <-
-          data.frame(space =
+          data.frame(name =
                      factor(rep(seq_len(length(dfl)),
                                 unlist(lapply(dfl, nrow), use.names = FALSE)),
                             labels = names(dfl)),
