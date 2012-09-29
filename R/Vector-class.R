@@ -723,6 +723,22 @@ setReplaceMethod("seqselect", "factor",
 ### Simple helper functions for some common subsetting operations.
 ###
 
+### Not exported.
+extractROWS <- function(x, i)
+{
+    ## We need a temporary workaround for Hits object, until dim() work again
+    ## on them. Right now (i.e. in BioC 2.11) it doesn't work because the
+    ## dim,Hits method is defunct. When dim,Hits is gone (in BioC 2.12), then
+    ## dim() will work again on Hits objects and will return NULL.
+    ## TODO: Remove the 2 lines below when "dim" method for Hits objects is
+    ## gone (in BioC 2.12).
+    if (is(x, "Hits"))
+        return(x[i])
+    if (length(dim(x)) < 2L)
+        return(x[i])
+    x[i, , drop=FALSE]
+}
+
 setMethod("head", "Vector",
           function(x, n = 6L, ...)
           {
@@ -924,19 +940,13 @@ setGeneric("splitAsListReturnedClass",
 )
 
 setMethod("splitAsListReturnedClass", "ANY",
-    function(x)
-    {
-      listClassName("Compressed", class(x))
-    }
+    function(x) listClassName("Compressed", class(x))
 )
 
 setMethod("relist", c("ANY", "PartitioningByEnd"),
     function(flesh, skeleton)
     {
         ans_class <- splitAsListReturnedClass(flesh)
-        if (!extends(ans_class, "CompressedList"))
-            stop("don't know how to split or relist a ",
-                 class(x), " object as a List")
         skeleton_len <- length(skeleton)
         if (skeleton_len == 0L) {
             flesh_len2 <- 0L
@@ -945,7 +955,14 @@ setMethod("relist", c("ANY", "PartitioningByEnd"),
         }
         if (NROW(flesh) != flesh_len2)
             stop("shape of 'skeleton' is not compatible with 'NROW(flesh)'")
-        newCompressedList0(ans_class, flesh, skeleton)
+        if (extends(ans_class, "CompressedList"))
+            return(newCompressedList0(ans_class, flesh, skeleton))
+        if (!extends(ans_class, "SimpleList"))
+            stop("don't know how to split or relist a ", class(flesh),
+                 " object as a ", ans_class, " object")
+        listData <- lapply(seq_len(skeleton_len),
+                           function(i) extractROWS(flesh, skeleton[[i]]))
+        newList(ans_class, listData)
     }
 )
 
@@ -982,10 +999,7 @@ setMethod("relist", c("Vector", "list"),
     names(f) <- as.character(runValue(tmp))
     if (!identical(drop, FALSE))
         warning("'drop' is ignored when 'f' is an integer vector")
-    if (length(dim(x)) < 2L)
-        x <- x[idx]
-    else
-        x <- x[idx, , drop=FALSE]
+    x <- extractROWS(x, idx)
     f <- PartitioningByEnd(f)
     relist(x, f)
 }
@@ -1004,10 +1018,7 @@ setMethod("relist", c("Vector", "list"),
     if (drop)
         f <- f[f != 0L]
     f <- cumsum(f)
-    if (length(dim(x)) < 2L)
-        x <- x[idx]
-    else
-        x <- x[idx, , drop=FALSE]
+    x <- extractROWS(x, idx)
     f <- PartitioningByEnd(f)
     relist(x, f)
 }

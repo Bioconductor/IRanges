@@ -56,11 +56,7 @@ newCompressedList0 <- function(Class, unlistData, partitioning)
 
 .valid.CompressedList.partitioning <- function(x)
 {
-    if (length(dim(x@unlistData)) < 2) {
-        dataLength <- length(x@unlistData)
-    } else {
-        dataLength <- nrow(x@unlistData)
-    }
+    dataLength <- NROW(x@unlistData)
     if (nobj(x@partitioning) != dataLength)
         "improper partitioning"
     else NULL
@@ -290,10 +286,8 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
     kOK <- length(whichNonZeroLength)
     if ((k > 0) && all(nonZeroLength)) {
         zeroLengthElt <- NULL
-    } else if (length(dim(X@unlistData)) < 2) {
-        zeroLengthElt <- FUN(X@unlistData[integer(0)], ...)
     } else {
-        zeroLengthElt <- FUN(X@unlistData[integer(0), , drop = FALSE], ...)
+        zeroLengthElt <- FUN(extractROWS(X@unlistData, integer(0)), ...)
     }
     useFastSubset <- (is.vector(X@unlistData) || is(X@unlistData, "Vector"))
     if (!COMPRESS && (k == 0)) {
@@ -320,15 +314,11 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
                   lapply(seq_len(kOK), function(j)
                          FUN(window(X@unlistData, start = eltStarts[j],
                                     end = eltEnds[j]), ...))
-            } else if (length(dim(X@unlistData)) < 2) {
-                elts[whichNonZeroLength] <-
-                  lapply(seq_len(kOK), function(j)
-                         FUN(X@unlistData[eltStarts[j]:eltEnds[j]], ...))
             } else {
                 elts[whichNonZeroLength] <-
                   lapply(seq_len(kOK), function(j)
-                         FUN(X@unlistData[eltStarts[j]:eltEnds[j], ,
-                                          drop = FALSE], ...))
+                         FUN(extractROWS(X@unlistData,
+                                         eltStarts[j]:eltEnds[j]), ...))
             }
             disableValidity(oldValidityStatus)
         }
@@ -384,9 +374,7 @@ setReplaceMethod("[[", "CompressedList",
                          listData[[i]] <- value
                          widths <- elementLengths(x)
                          names(widths) <- NULL
-                         widths[i] <-
-                           ifelse(length(dim(value)) < 2, length(value),
-                                  nrow(value))
+                         widths[i] <- NROW(value)
                          if ((i == length(x) + 1L) &&
                              (!is.null(names(x)) || nchar(nameValue) > 0)) {
                              NAMES <- names(x)
@@ -513,11 +501,7 @@ setMethod("aggregate", "CompressedList",
     if (length(listData) == 0) {
         end <- integer(0)
     } else {
-        if (length(dim(listData[[1L]])) < 2) {
-            end <- cumsum(unlist(lapply(listData, length), use.names = FALSE))
-        } else {
-            end <- cumsum(unlist(lapply(listData, nrow), use.names = FALSE))
-        }
+        end <- cumsum(unlist(lapply(listData, NROW), use.names = FALSE))
     }
     initialize(X,
                unlistData = compress_listData(listData),

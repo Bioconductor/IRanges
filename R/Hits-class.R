@@ -161,6 +161,13 @@ setMethod("ranges", "Hits", function(x, query, subject) {
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Splitting / relisting.
+###
+
+setMethod("splitAsListReturnedClass", "Hits", function(x) "HitsList")
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Set operations
 ###
 

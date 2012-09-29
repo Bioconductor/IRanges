@@ -172,14 +172,9 @@ setMethod("seqselect", "SimpleList",
                                seqselect(x@listData[[i]], start[[i]]))
                   } else if (is(start, "LogicalList") ||
                              is(start, "IntegerList")) {
-                      if (length(dim(x@listData[[1L]])) < 2)
-                          listData <-
-                            lapply(indices,
-                                   function(i) x@listData[[i]][start[[i]]])
-                      else
-                          listData <-
-                            lapply(indices, function(i)
-                                   x@listData[[i]][start[[i]], , drop = FALSE])
+                      listData <-
+                        lapply(indices, function(i)
+                               extractROWS(x@listData[[i]], start[[i]]))
                   } else {
                       stop("unrecognized 'start' type")
                   }
