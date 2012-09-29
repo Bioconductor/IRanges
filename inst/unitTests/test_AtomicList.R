@@ -98,7 +98,7 @@ test_AtomicList_numerical <- function() {
             checkIdentical(as.list(runmed(list3, 7)),
                            lapply(list3, function(x) {
                                       y <- runmed(x, 7)
-                                      if (type != "RleList" && compress)
+                                      if (type != "RleList")
                                           y <- as.vector(y)
                                       y
                                   }))
