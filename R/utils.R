@@ -77,6 +77,15 @@ setClassUnion("characterORNULL", c("character", "NULL"))
 ###   [1]  3  2  1  0 -1 -2 -3 -4 -5
 setAs("ANY", "vector", function(from) as.vector(from))
 
+coercerToClass <- function(class) {
+  if (extends(class, "vector"))
+    .as <- get(paste0("as.", class))
+  else .as <- function(from) as(from, class)
+  function(from) {
+    setNames(.as(from), names(from))
+  }
+}
+
 ### Gets or sets the default value of the given slot of the given class by
 ### reading or altering the prototype of the class. setDefaultSlotValue() is
 ### typically used in the .onLoad() hook of a package when the DLL of the
@@ -194,3 +203,7 @@ selectSome <- function (obj, maxToShow = 5)
     }
 }
 
+capitalize <- function(x) {
+  substring(x, 1, 1) <- toupper(substring(x, 1, 1))
+  x
+}

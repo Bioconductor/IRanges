@@ -37,7 +37,6 @@ SimpleList <- function(...) {
     new("SimpleList", listData = list)
 }
 
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
@@ -364,3 +363,25 @@ setMethod("as.list", "SimpleList",
               ans
           })
 
+setAs("ANY", "SimpleList", function(from) {
+  coerceToSimpleList(from)
+})
+
+coerceToSimpleList <- function(from, element.type, ...) {
+  if (missing(element.type)) {
+    if (is(from, "List"))
+      element.type <- from@elementType
+    else if (is.list(from))
+      element.type <- NULL
+    else element.type <- class(from)
+  }
+  SimpleListClass <- listClassName("Simple", element.type)
+  if (!is(from, SimpleListClass)) {
+    listData <- as.list(from)
+    if (!is.null(element.type))
+      listData <- lapply(listData, coercerToClass(element.type), ...)
+    newList(SimpleListClass, listData)
+  } else {
+    from
+  }
+}

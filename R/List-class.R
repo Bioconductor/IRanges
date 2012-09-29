@@ -277,6 +277,14 @@ setMethod("lapply", "List",
 environment(.sapplyDefault) <- topenv()
 setMethod("sapply", "List", .sapplyDefault)
 
+.mclapplyDefault <- parallel::mclapply
+environment(.mclapplyDefault) <- topenv()
+setMethod("mclapply", "List", .mclapplyDefault)
+
+.mcmapplyDefault <- parallel::mcmapply
+environment(.mcmapplyDefault) <- topenv()
+setMethod("mcmapply", "List", .mcmapplyDefault)
+
 .mapply_List <- function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
                          USE.NAMES = TRUE)
 {
@@ -467,22 +475,54 @@ setMethod("as.env", "List",
               env
           })
 
+listClassName <- function(impl, element.type) {
+  if (is.null(impl))
+    impl <- ""
+  if (!is.null(element.type)) {
+    cl <- c(element.type, names(getClass(element.type)@contains))
+    cl <- capitalize(cl)
+  } else {
+    cl <- ""
+  }
+  listClass <- c(paste0(impl, cl, "List"), paste0(cl, "List"))
+  clExists <- which(sapply(listClass, isClass) &
+                    sapply(listClass, extends, paste0(impl, "List")))
+  if (length(clExists) == 0L) {
+    stop("Could not find a '", impl,
+         "List' subclass for values of type '", cl, "'")
+  }
+  listClass[clExists[1L]]
+}
+
+coerceToList <- function(from, element.type = NULL, ...) {
+  if (is(from, listClassName(NULL, element.type)))
+    return(from)
+  if (is.list(from) || is(from, "List")) {
+    if (is.list(from)) {
+      v <- compress_listData(from)
+    } else {
+      v <- unlist(from, use.names = FALSE)
+    }
+    part <- PartitioningByEnd(from)
+  } else {
+    v <- from
+    part <- PartitioningByEnd(seq_len(length(from)))
+  }
+  if (!is.null(element.type)) {
+    v <- coercerToClass(element.type)(v, ...)
+  }
+  to <- relist(v, part)
+  names(to) <- names(from)
+  to
+}
+
 setAs("ANY", "List", function(from) {
-  relist(from, PartitioningByEnd(seq_len(length(from))))
+  coerceToList(from)
 })
 
 ## Special cased, because integer extends ANY (somehow) and numeric,
 ## so ambiguities are introduced due to method caching.
 setAs("integer", "List", getMethod(coerce, c("ANY", "List")))
-
-convertList <- function(from, type = NULL) {
-  v <- unlist(from, use.names = FALSE)
-  if (!is.null(type))
-    v <- as(v, type)
-  relist(v, PartitioningByEnd(from))
-}
-
-setAs("list", "List", function(from) convertList(from))
 
 ### NOT exported. Assumes 'names1' is not NULL.
 make.unlist.result.names <- function(names1, names2)

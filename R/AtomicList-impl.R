@@ -82,129 +82,110 @@ setClass("SimpleRleList",
 ### Constructors
 ###
 
-coerceElements <- function(x, type) {
-  asFUN <- get(paste0("as.", type))
-  isFUN <- get(paste0("is.", type))
-  isType <- as.logical(lapply(x, isFUN))
-  x[!isType] <- lapply(x[!isType], function(xi) setNames(asFUN(xi), names(xi)))
-  x
+.dotargsAsList <- function(type, ...) {
+  listData <- list(...)
+  if (length(listData) == 1) {
+      arg1 <- listData[[1]]
+      if (is.list(arg1) || is(arg1, "List"))
+        listData <- arg1
+      else if (type == "integer" && class(arg1) == "character")
+        listData <- strsplitAsListOfIntegerVectors(arg1) # weird special case
+  }
+  listData
 }
 
-LogicalList <- function(..., compress = TRUE)
-{
+AtomicListConstructor <- function(type, compress.default = TRUE) {
+  constructor <- eval(substitute(function(..., compress = compress.default) {
     if (!isTRUEorFALSE(compress))
-        stop("'compress' must be TRUE or FALSE")
-    listData <- list(...)
-    if (length(listData) == 1 && is.list(listData[[1L]]))
-        listData <- listData[[1L]]
-    listData <- coerceElements(listData, "logical")
-    if (compress)
-        newList("CompressedLogicalList", listData)
-    else
-        newList("SimpleLogicalList", listData)
+      stop("'compress' must be TRUE or FALSE")
+    listData <- .dotargsAsList(type, ...)
+    CompressedOrSimple <- if (compress) "Compressed" else "Simple"
+    if (is(listData, listClassName(CompressedOrSimple, type)))
+      listData
+    else CoercerToAtomicList(type, compress)(listData)
+  }, list(type = type)))
+  formals(constructor)$compress <- compress.default
+  constructor
 }
 
-.dotargsAsListOfIntegerVectors <- function(dotargs)
-{
-    if (length(dotargs) == 1) {
-        arg1 <- dotargs[[1L]]
-        if (is(arg1, "IntegerList"))
-            return(as.list(arg1))
-        if (is.character(arg1))
-            return(strsplitAsListOfIntegerVectors(arg1))
-        if (is.list(arg1))
-            dotargs <- arg1
-    }
-    coerceElements(dotargs, "integer")
+LogicalList <- AtomicListConstructor("logical")
+IntegerList <- AtomicListConstructor("integer")
+NumericList <- AtomicListConstructor("numeric")
+ComplexList <- AtomicListConstructor("complex")
+CharacterList <- AtomicListConstructor("character")
+RawList <- AtomicListConstructor("raw")
+RleList <- AtomicListConstructor("Rle", compress.default = FALSE)
+
+atomicElementListClass <- function(x) {
+  if (is(x, "Rle"))
+    ans <- "RleList"
+  else if (is.raw(x))
+    ans <- "RawList"
+  else if (is.logical(x))
+    ans <- "LogicalList"
+  else if (is.integer(x))
+    ans <- "IntegerList"
+  else if (is.numeric(x))
+    ans <- "NumericList"
+  else if (is.complex(x))
+    ans <- "ComplexList"
+  else if (is.character(x))
+    ans <- "CharacterList"
+  else
+    ans <- NA_character_
+  ans
 }
 
-IntegerList <- function(..., compress = TRUE)
-{
-    if (!isTRUEorFALSE(compress))
-        stop("'compress' must be TRUE or FALSE")
-    dotargs <- list(...)
-    if (length(dotargs) == 1 && is(dotargs[[1L]], "IntegerList")) {
-        if (is(dotargs[[1L]], "CompressedIntegerList") && compress
-         || is(dotargs[[1L]], "SimpleIntegerList") && !compress)
-            return(dotargs[[1L]])
-    }
-    listData <- .dotargsAsListOfIntegerVectors(dotargs)
-    if (compress)
-        newList("CompressedIntegerList", listData)
-    else
-        newList("SimpleIntegerList", listData)
+### FIXME: these seem very similar to castList().
+
+SimpleAtomicList <- function(listData) {
+  classOrder <-
+    c("RleList", "CharacterList", "ComplexList", "NumericList",
+      "IntegerList", "LogicalList", "RawList")
+  uniqueClasses <-
+    unique(unlist(lapply(listData, atomicElementListClass), use.names=FALSE))
+  if (anyMissing(uniqueClasses))
+    stop("cannot create a SimpleAtomicList with non-atomic elements")
+  baseClass <- classOrder[min(match(uniqueClasses, classOrder))]
+  do.call(baseClass, c(listData, compress = FALSE))
 }
 
-NumericList <- function(..., compress = TRUE)
-{
-    if (!isTRUEorFALSE(compress))
-        stop("'compress' must be TRUE or FALSE")
-    listData <- list(...)
-    if (length(listData) == 1 && is.list(listData[[1L]]))
-        listData <- listData[[1L]]
-    listData <- coerceElements(listData, "double")
-    if (compress)
-        newList("CompressedNumericList", listData)
-    else
-        newList("SimpleNumericList", listData)
+CompressedAtomicList <- function(unlistData, partitioning) {
+  classOrder <-
+    c("RleList", "CharacterList", "ComplexList", "NumericList",
+      "IntegerList", "LogicalList", "RawList")
+  baseClass <- atomicElementListClass(unlistData)
+  if (is.na(baseClass))
+    stop("cannot create a CompressedAtomicList with non-atomic elements")
+  new2(paste("Compressed", baseClass, sep = ""), unlistData = unlistData,
+       partitioning = partitioning, check = FALSE)
 }
 
-ComplexList <- function(..., compress = TRUE)
-{
-    if (!isTRUEorFALSE(compress))
-        stop("'compress' must be TRUE or FALSE")
-    listData <- list(...)
-    if (length(listData) == 1 && is.list(listData[[1L]]))
-        listData <- listData[[1L]]
-    listData <- coerceElements(listData, "complex")
-    if (compress)
-        newList("CompressedComplexList", listData)
-    else
-        newList("SimpleComplexList", listData)
+CompressedAtomicListFromList <- function(listData) {
+  classOrder <-
+    c("RleList", "CharacterList", "ComplexList", "NumericList",
+      "IntegerList", "LogicalList", "RawList")
+  uniqueClasses <-
+    unique(unlist(lapply(listData, atomicElementListClass), use.names=FALSE))
+  if (anyMissing(uniqueClasses))
+    stop("cannot create a SimpleAtomicList with non-atomic elements")
+  baseClass <- classOrder[min(match(uniqueClasses, classOrder))]
+  do.call(baseClass, c(listData, compress = TRUE))
 }
 
-CharacterList <- function(..., compress = TRUE)
-{
-    if (!isTRUEorFALSE(compress))
-        stop("'compress' must be TRUE or FALSE")
-    listData <- list(...)
-    if (length(listData) == 1 && is.list(listData[[1L]]))
-        listData <- listData[[1L]]
-    listData <- coerceElements(listData, "character")
-    if (compress)
-        newList("CompressedCharacterList", listData)
-    else
-        newList("SimpleCharacterList", listData)
-}
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Iteration
+###
 
-RawList <- function(..., compress = TRUE)
-{
-    if (!isTRUEorFALSE(compress))
-        stop("'compress' must be TRUE or FALSE")
-    listData <- list(...)
-    if (length(listData) == 1 && is.list(listData[[1L]]))
-        listData <- listData[[1L]]
-    listData <- coerceElements(listData, "raw")
-    if (compress)
-        newList("CompressedRawList", listData)
-    else
-        newList("SimpleRawList", listData)
-}
-
-RleList <- function(..., compress = FALSE)
-{
-    if (!isTRUEorFALSE(compress))
-        stop("'compress' must be TRUE or FALSE")
-    listData <- list(...)
-    if (length(listData) == 1 && is.list(listData[[1L]]))
-        listData <- listData[[1L]]
-    listData <- lapply(listData, as, "Rle")
-    if (compress)
-        newList("CompressedRleList", listData)
-    else
-        newList("SimpleRleList", listData)
-}
-
+setMethod("lapply", "CompressedAtomicList",
+          function(X, FUN, ...)
+          {
+            if (is(X, "CompressedRleList")) {
+              callNextMethod(X, FUN, ...)
+            } else {
+              lapply(as.list(X), FUN, ...)
+            }
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
@@ -252,18 +233,6 @@ setMethod("as.vector", "AtomicList",
     }
 )
 
-setAs("vector", "AtomicList", function(from) SimpleAtomicList(as.list(from)))
-
-setMethod("lapply", "CompressedAtomicList",
-          function(X, FUN, ...)
-          {
-              if (is(X, "CompressedRleList")) {
-                  callNextMethod(X, FUN, ...)
-              } else {
-                  lapply(as.list(X), FUN, ...)
-              }
-          })
-
 setMethod("drop", "AtomicList", function(x) {
   lens <- elementLengths(x)
   if (any(lens > 1))
@@ -274,253 +243,56 @@ setMethod("drop", "AtomicList", function(x) {
   x_dropped
 })
 
-vector2AtomicList <- function(type, compress)
-{
-    function(from) {
-        if (compress) {
-          if (is.list(from))
-            convertList(from, tolower(type))
-          else as(as(from, tolower(type)), "List")
-        } else {
-          from <- as.list(from)
-          constructor <- paste(type, "List", sep="")
-          get(constructor)(from, compress=compress)
-        }
-    }
+CoercerToAtomicList <- function(type, compress) {
+  .coerceToList <- if (compress) coerceToList else coerceToSimpleList
+  function(from) {
+    .coerceToList(from, type)
+  }
 }
 
-setAs("vector", "CompressedLogicalList", vector2AtomicList("Logical", TRUE))
-setAs("vector", "SimpleLogicalList", vector2AtomicList("Logical", FALSE))
-setAs("vector", "CompressedIntegerList", vector2AtomicList("Integer", TRUE))
-setAs("vector", "SimpleIntegerList", vector2AtomicList("Integer", FALSE))
-setAs("vector", "CompressedNumericList", vector2AtomicList("Numeric", TRUE))
-setAs("vector", "SimpleNumericList", vector2AtomicList("Numeric", FALSE))
-setAs("vector", "CompressedComplexList", vector2AtomicList("Complex", TRUE))
-setAs("vector", "SimpleComplexList", vector2AtomicList("Complex", FALSE))
-setAs("vector", "CompressedCharacterList", vector2AtomicList("Character", TRUE))
-setAs("vector", "SimpleCharacterList", vector2AtomicList("Character", FALSE))
-setAs("vector", "CompressedRawList", vector2AtomicList("Raw", TRUE))
-setAs("vector", "SimpleRawList", vector2AtomicList("Raw", FALSE))
-setAs("vector", "CompressedRleList", vector2AtomicList("Rle", TRUE))
-setAs("vector", "SimpleRleList", vector2AtomicList("Rle", FALSE))
+setAtomicListCoercions <- function(type) {
+  CompressedClass <- listClassName("Compressed", type)
+  SimpleClass <- listClassName("Simple", type)
+  Class <- listClassName("", type)
+  setAs("ANY", CompressedClass, CoercerToAtomicList(type, compress = TRUE))
+  setAs("ANY", SimpleClass, CoercerToAtomicList(type, compress = FALSE))
+  setAs("ANY", Class, CoercerToAtomicList(type, compress = TRUE))
+}
 
-setAs("ANY", "LogicalList", function(from) {
-  as(as.logical(from), "List")
-})
-setAs("ANY", "IntegerList", function(from) {
-  as(as.integer(from), "List")
-})
-setAs("ANY", "NumericList", function(from) {
-  as(as.numeric(from), "List")
-})
-setAs("ANY", "ComplexList", function(from) {
-  as(as.complex(from), "List")
-})
-setAs("ANY", "CharacterList", function(from) {
-  as(as.character(from), "List")
-})
-setAs("ANY", "RawList", function(from) {
-  as(as.raw(from), "List")
-})
-setAs("ANY", "RleList", function(from) {
-  as(Rle(from), "List")
-})
-
-setAs("List", "LogicalList", function(from) {
-  convertList(from, "logical")
-})
-setAs("list", "LogicalList", function(from) {
-  convertList(from, "logical")
-})
-
-setAs("List", "IntegerList", function(from) {
-  convertList(from, "integer")
-})
-setAs("list", "IntegerList", function(from) {
-  convertList(from, "integer")
-})
-
-setAs("List", "NumericList", function(from) {
-  convertList(from, "numeric")
-})
-setAs("list", "NumericList", function(from) {
-  convertList(from, "numeric")
-})
-
-setAs("List", "ComplexList", function(from) {
-  convertList(from, "complex")
-})
-setAs("list", "ComplexList", function(from) {
-  convertList(from, "complex")
-})
-
-setAs("List", "CharacterList", function(from) {
-  convertList(from, "character")
-})
-setAs("list", "CharacterList", function(from) {
-  convertList(from, "character")
-})
-
-setAs("List", "RawList", function(from) {
-  convertList(from, "raw")
-})
-setAs("list", "RawList", function(from) {
-  convertList(from, "raw")
-})
-
-setAs("List", "RleList", function(from) {
-  convertList(from, "Rle")
-})
-setAs("list", "RleList", function(from) {
-  convertList(from, "Rle")
-})
+setAtomicListCoercions("logical")
+setAtomicListCoercions("integer")
+setAtomicListCoercions("numeric")
+setAtomicListCoercions("complex")
+setAtomicListCoercions("character")
+setAtomicListCoercions("raw")
+setAtomicListCoercions("Rle")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Group generic methods
 ###
 
-atomicElementListClass <- function(x) {
-    if (is(x, "Rle"))
-        ans <- "RleList"
-    else if (is.raw(x))
-        ans <- "RawList"
-    else if (is.logical(x))
-        ans <- "LogicalList"
-    else if (is.integer(x))
-        ans <- "IntegerList"
-    else if (is.numeric(x))
-        ans <- "NumericList"
-    else if (is.complex(x))
-        ans <- "ComplexList"
-    else if (is.character(x))
-        ans <- "CharacterList"
-    else
-        ans <- NA_character_
-    ans
+emptyOpsReturnValue <- function(.Generic, e1, e2, compress) {
+  dummy.vector <- do.call(.Generic,
+                          list(vector(e1@elementType), vector(e2@elementType)))
+  CoercerToAtomicList(NULL, compress)(dummy.vector)
 }
 
-SimpleAtomicList <- function(listData) {
-    classOrder <-
-      c("RleList", "CharacterList", "ComplexList", "NumericList",
-        "IntegerList", "LogicalList", "RawList")
-    uniqueClasses <-
-      unique(unlist(lapply(listData, atomicElementListClass), use.names=FALSE))
-    if (anyMissing(uniqueClasses))
-        stop("cannot create a SimpleAtomicList with non-atomic elements")
-    baseClass <- classOrder[min(match(uniqueClasses, classOrder))]
-    do.call(baseClass, c(listData, compress = FALSE))
+recycleList <- function(x, length.out) {
+  if (length.out %% length(x) > 0L)
+    warning("shorter object is not a multiple of longer object length")
+  rep(x, length.out = length.out)
 }
-
-CompressedAtomicList <- function(unlistData, partitioning) {
-    classOrder <-
-      c("RleList", "CharacterList", "ComplexList", "NumericList",
-        "IntegerList", "LogicalList", "RawList")
-    baseClass <- atomicElementListClass(unlistData)
-    if (is.na(baseClass))
-        stop("cannot create a CompressedAtomicList with non-atomic elements")
-    new2(paste("Compressed", baseClass, sep = ""), unlistData = unlistData,
-         partitioning = partitioning, check = FALSE)
-}
-
-CompressedAtomicListFromList <- function(listData) {
-    classOrder <-
-      c("RleList", "CharacterList", "ComplexList", "NumericList",
-        "IntegerList", "LogicalList", "RawList")
-    uniqueClasses <-
-      unique(unlist(lapply(listData, atomicElementListClass), use.names=FALSE))
-    if (anyMissing(uniqueClasses))
-        stop("cannot create a SimpleAtomicList with non-atomic elements")
-    baseClass <- classOrder[min(match(uniqueClasses, classOrder))]
-    do.call(baseClass, c(listData, compress = TRUE))
-}
-
-setReplaceMethod("seqselect", "SimpleAtomicList",
-                 function(x, start = NULL, end = NULL, width = NULL, value)
-                 {
-                     classOrder <-
-                       c("RleList", "CharacterList", "ComplexList",
-                         "NumericList", "IntegerList", "LogicalList", "RawList")
-                     if (!is.null(value) && !is(value, "AtomicList")) {
-                         if (is.list(value))
-                             value <- SimpleAtomicList(value)
-                         else
-                             value <- SimpleAtomicList(list(value))
-                     }
-                     if (!is.null(value) && !is(value, class(x))) {
-                         xClass <-
-                           which(unlist(lapply(classOrder,
-                                               function(y) is(x, y))))
-                         vClass <-
-                           which(unlist(lapply(classOrder,
-                                               function(y) is(value, y))))
-                         if (xClass < vClass) {
-                             value <-
-                               do.call(classOrder[xClass],
-                                       c(value@listData, compress = FALSE))
-                         } else {
-                             x <-
-                               do.call(classOrder[vClass],
-                                             c(x@listData, compress = FALSE))
-                         }
-                     }
-                     callNextMethod()
-                 })
-
-setReplaceMethod("seqselect", "CompressedAtomicList",
-                 function(x, start = NULL, end = NULL, width = NULL, value)
-                 {
-                     classOrder <-
-                       c("Rle" = "RleList",
-                         "character" = "CharacterList",
-                         "complex" = "ComplexList",
-                         "numeric" = "NumericList",
-                         "integer" = "IntegerList",
-                         "logical", "LogicalList",
-                         "raw" = "RawList")
-                     if (!is.null(value) && !is(value, "AtomicList")) {
-                         if (!is.list(value))
-                             value <- list(value)
-                         partitioning <-
-                           PartitioningByEnd(cumsum(unlist(lapply(value, length),
-                                                           use.names=FALSE)),
-                                             names = names(value))
-                         value <-
-                           CompressedAtomicList(do.call(c, unname(value)),
-                                                partitioning)
-                     }
-                     if (!is.null(value) && !is(value, class(x))) {
-                         xClass <-
-                           which(unlist(lapply(classOrder,
-                                               function(y) is(x, y))))
-                         vClass <-
-                           which(unlist(lapply(classOrder,
-                                               function(y) is(value, y))))
-                         if (xClass < vClass) {
-                             value <-
-                               new2(class(x),
-                                    unlistData =
-                                    as(value@unlistData, names(classOrder)[xClass]),
-                                    partitioning = value@partitioning, check = FALSE)
-                         } else {
-                             x <-
-                               new2(class(value),
-                                    unlistData =
-                                    as(x@unlistData, names(classOrder)[vClass]),
-                                       partitioning = x@partitioning, check = FALSE)
-                         }
-                     }
-                     callNextMethod()
-                 })
 
 setMethod("Ops",
           signature(e1 = "SimpleAtomicList", e2 = "SimpleAtomicList"),
           function(e1, e2)
           {
-              n <- length(e1)
-              if (n != length(e2))
-                  stop("cannot perform Ops on unequal length lists")
-              if (n == 0)
-                  return(e1)
+              if (length(e1) == 0L || length(e2) == 0L) {
+                return(emptyOpsReturnValue(.Generic, e1, e2, compress = FALSE))
+              }
+              n <- max(length(e1), length(e2))
+              e1 <- recycleList(e1, n)
+              e2 <- recycleList(e2, n)
               SimpleAtomicList(Map(.Generic, e1, e2))
           })
 
@@ -534,11 +306,12 @@ setMethod("Ops",
           signature(e1 = "CompressedAtomicList", e2 = "CompressedAtomicList"),
           function(e1, e2)
           {
-              n <- length(e1)
-              if (n != length(e2))
-                  stop("cannot perform Ops on unequal length lists")
-              if (n == 0)
-                  return(e1)
+              if (length(e1) == 0L || length(e2) == 0L) {
+                return(emptyOpsReturnValue(.Generic, e1, e2, compress = TRUE))
+              }
+              n <- max(length(e1), length(e2))
+              e1 <- recycleList(e1, n)
+              e2 <- recycleList(e2, n)
               nms <- names(e1)
               if (is.null(nms))
                   nms <- names(e2)
@@ -623,7 +396,7 @@ setMethod("Ops",
           signature(e1 = "AtomicList", e2 = "atomic"),
           function(e1, e2)
           {
-              e2 <- SimpleAtomicList(rep(list(e2), length(e1)))
+              e2 <- as(e2, "List")
               callGeneric(e1, e2)
           })
 
@@ -631,7 +404,7 @@ setMethod("Ops",
           signature(e1 = "atomic", e2 = "AtomicList"),
           function(e1, e2)
           {
-              e1 <- SimpleAtomicList(rep(list(e1), length(e2)))
+              e1 <- as(e1, "List")
               callGeneric(e1, e2)
           })
 
@@ -639,22 +412,24 @@ setMethod("Ops",
           signature(e1 = "CompressedAtomicList", e2 = "atomic"),
           function(e1, e2)
           {
-              if (length(e2) == 1)
-                  CompressedAtomicList(callGeneric(e1@unlistData, e2),
-                                       partitioning = e1@partitioning)
-              else
-                  callNextMethod()
+              if (length(e2) > 1) {
+                  e2 <- recycleVector(e2, length(e1))
+                  e2 <- rep(e2, elementLengths(e1))
+              }
+              CompressedAtomicList(callGeneric(e1@unlistData, e2),
+                                   partitioning = e1@partitioning)
           })
 
 setMethod("Ops",
           signature(e1 = "atomic", e2 = "CompressedAtomicList"),
           function(e1, e2)
           {
-              if (length(e1) == 1)
-                  CompressedAtomicList(callGeneric(e1, e2@unlistData),
-                                       partitioning = e2@partitioning)
-              else
-                  callNextMethod()
+              if (length(e1) > 1) {
+                  e1 <- recycleVector(e1, length(e2))
+                  e1 <- rep(e1, elementLengths(e2))
+              }
+              CompressedAtomicList(callGeneric(e1, e2@unlistData),
+                                   partitioning = e2@partitioning)
           })
 
 setMethod("Math", "CompressedAtomicList",
@@ -952,6 +727,84 @@ setMethod("unique", "SimpleRleList",
                                                  incomparables = incomparables,
                                                  ...)
                                       })))
+
+setReplaceMethod("seqselect", "SimpleAtomicList",
+                 function(x, start = NULL, end = NULL, width = NULL, value)
+                 {
+                   classOrder <-
+                     c("RleList", "CharacterList", "ComplexList",
+                       "NumericList", "IntegerList", "LogicalList", "RawList")
+                   if (!is.null(value) && !is(value, "AtomicList")) {
+                     if (is.list(value))
+                       value <- SimpleAtomicList(value)
+                     else
+                       value <- SimpleAtomicList(list(value))
+                   }
+                   if (!is.null(value) && !is(value, class(x))) {
+                     xClass <-
+                       which(unlist(lapply(classOrder,
+                                           function(y) is(x, y))))
+                     vClass <-
+                       which(unlist(lapply(classOrder,
+                                           function(y) is(value, y))))
+                     if (xClass < vClass) {
+                       value <-
+                         do.call(classOrder[xClass],
+                                 c(value@listData, compress = FALSE))
+                     } else {
+                       x <-
+                         do.call(classOrder[vClass],
+                                 c(x@listData, compress = FALSE))
+                     }
+                   }
+                   callNextMethod()
+                 })
+
+setReplaceMethod("seqselect", "CompressedAtomicList",
+                 function(x, start = NULL, end = NULL, width = NULL, value)
+                 {
+                   classOrder <-
+                     c("Rle" = "RleList",
+                       "character" = "CharacterList",
+                       "complex" = "ComplexList",
+                       "numeric" = "NumericList",
+                       "integer" = "IntegerList",
+                       "logical", "LogicalList",
+                       "raw" = "RawList")
+                   if (!is.null(value) && !is(value, "AtomicList")) {
+                     if (!is.list(value))
+                       value <- list(value)
+                     partitioning <-
+                       PartitioningByEnd(cumsum(unlist(lapply(value, length),
+                                                       use.names=FALSE)),
+                                         names = names(value))
+                     value <-
+                       CompressedAtomicList(do.call(c, unname(value)),
+                                            partitioning)
+                   }
+                   if (!is.null(value) && !is(value, class(x))) {
+                     xClass <-
+                       which(unlist(lapply(classOrder,
+                                           function(y) is(x, y))))
+                     vClass <-
+                       which(unlist(lapply(classOrder,
+                                           function(y) is(value, y))))
+                     if (xClass < vClass) {
+                       value <-
+                         new2(class(x),
+                              unlistData =
+                              as(value@unlistData, names(classOrder)[xClass]),
+                              partitioning = value@partitioning, check = FALSE)
+                     } else {
+                       x <-
+                         new2(class(value),
+                              unlistData =
+                              as(x@unlistData, names(classOrder)[vClass]),
+                              partitioning = x@partitioning, check = FALSE)
+                     }
+                   }
+                   callNextMethod()
+                 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Logical methods
