@@ -117,6 +117,7 @@ setAs("Rle", "complex", function(from) as.complex(from))
 setAs("Rle", "character", function(from) as.character(from))
 setAs("Rle", "raw", function(from) as.raw(from))
 setAs("Rle", "factor", function(from) as.factor(from))
+setAs("Rle", "list", function(from) as.list(from))
 setAs("Rle", "data.frame", function(from) as.data.frame(from))
 
 setAs("Rle", "IRanges",
@@ -143,6 +144,7 @@ setMethod("as.complex", "Rle", function(x) rep.int(as.complex(runValue(x)), runL
 setMethod("as.character", "Rle", function(x) rep.int(as.character(runValue(x)), runLength(x)))
 setMethod("as.raw", "Rle", function(x) rep.int(as.raw(runValue(x)), runLength(x)))
 setMethod("as.factor", "Rle", function(x) rep.int(as.factor(runValue(x)), runLength(x)))
+setMethod("as.list", "Rle", function(x) as.list(as.vector(x)))
 
 setGeneric("as.vectorORfactor",
            function(x, ...) standardGeneric("as.vectorORfactor"))
