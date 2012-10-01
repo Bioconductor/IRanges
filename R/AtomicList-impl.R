@@ -360,7 +360,7 @@ setMethod("Ops",
                   "numeric" = "NumericList", "integer" = "IntegerList",
                   "logical" = "LogicalList", "raw" = "RawList",
                   "Rle" = "RleList")
-              if (sum(elementLengths(e1)) < .Machine$integer.max)
+              if (sum(as.numeric(elementLengths(e1))) < .Machine$integer.max)
                   e1 <-
                     do.call(classMap[e1@elementType],
                             c(e1@listData, compress = TRUE))
@@ -381,7 +381,7 @@ setMethod("Ops",
                   "numeric" = "NumericList", "integer" = "IntegerList",
                   "logical" = "LogicalList", "raw" = "RawList",
                   "Rle" = "RleList")
-              if (sum(elementLengths(e2)) < .Machine$integer.max)
+              if (sum(as.numeric(elementLengths(e2))) < .Machine$integer.max)
                   e2 <-
                     do.call(classMap[e2@elementType],
                             c(e2@listData, compress = TRUE))
