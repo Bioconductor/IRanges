@@ -409,6 +409,22 @@ setMethod("Ops",
           })
 
 setMethod("Ops",
+          signature(e1 = "SimpleAtomicList", e2 = "atomic"),
+          function(e1, e2)
+          {
+              e2 <- as(e2, "SimpleList")
+              callGeneric(e1, e2)
+          })
+
+setMethod("Ops",
+          signature(e1 = "atomic", e2 = "SimpleAtomicList"),
+          function(e1, e2)
+          {
+              e1 <- as(e1, "SimpleList")
+              callGeneric(e1, e2)
+          })
+
+setMethod("Ops",
           signature(e1 = "CompressedAtomicList", e2 = "atomic"),
           function(e1, e2)
           {

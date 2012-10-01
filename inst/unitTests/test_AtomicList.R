@@ -173,9 +173,45 @@ test_RleList_methods <- function() {
     target <- RleList(c(NA,2), c(NA_integer_, NA_integer_), c(Inf, Inf, 1))
     current <- runq(x, 2, 2, na.rm = FALSE)
     checkIdentical(target, current)
+
+    ## Binary operations between an RleList and an atomic vector:
+    a1 <- Rle(1, 999722111)
+    a2 <- 20 * a1
+    a <- RleList(a1, a2, compress=TRUE)
+    b1 <- c(a1, a1)
+    b2 <- 20 * b1
+    b <- RleList(b1, b2, compress=FALSE)
+    ## FIXME: 'a1 <= 19:21' is taking forever and eats up all the memory in
+    ## BioC <= 2.12! Seems like 'a1' is expanded to integer vector first, which
+    ## is not good :-/
+    #for (y in list(8L, 8, 19:21)) {
+    for (y in list(8L, 8)) {
+        ## With a CompressedRleList
+        target <- RleList(a1 <= y, a2 <= y, compress=TRUE)
+        current <- a <= y
+        checkIdentical(target, current)
+        target <- RleList(a1 + y, a2 + y, compress=TRUE)
+        current <- a + y
+        checkIdentical(target, current)
+        target <- RleList(a1 * y, a2 * y, compress=TRUE)
+        current <- a * y
+        checkIdentical(target, current)
+        target <- RleList(a1 / y, a2 / y, compress=TRUE)
+        current <- a / y
+        checkIdentical(target, current)
+        ## With a SimpleRleList
+        target <- RleList(b1 <= y, b2 <= y, compress=FALSE)
+        current <- b <= y
+        checkIdentical(target, current)
+        target <- RleList(b1 + y, b2 + y, compress=FALSE)
+        current <- b + y
+        checkIdentical(target, current)
+        target <- RleList(b1 * y, b2 * y, compress=FALSE)
+        current <- b * y
+        checkIdentical(target, current)
+        target <- RleList(b1 / y, b2 / y, compress=FALSE)
+        current <- b / y
+        checkIdentical(target, current)
+    }
 }
-
-
-
-
 
