@@ -342,35 +342,6 @@ setMethod("show", "Hits", function(object) {
     arg
 }
 
-### Remaps the hits in 'x' thru a "query map" and/or a "subject map" map.
-### The query hits are remapped thru the "query map" which is specified via
-### the 'query.map' and 'new.queryLength' arguments. The subject hits are
-### remapped thru the "subject map" which is specified via the 'subject.map'
-### and 'new.subjectLength' arguments.
-### The "query map" is conceptually a function (aka the mapping function) from
-### the 1..M interval to the 1..N interval where N is 'queryLength(x)' and M
-### is the value specified by the user via the 'new.queryLength' argument. The
-### mapping function must be an application in the mathematical sense i.e. each
-### integer in 1..M must be assigned a value in 1..N. The mapping function
-### doesn't need to be injective or surjective. The mapping function however is
-### not represented by an R function but by an integer vector of length M with
-### no NAs. More precisely 'query.map' can be NULL (identity map), or a vector
-### of 'queryLength(x)' non-NA integers that are >= 1 and <= 'new.queryLength',
-### or a factor of length 'queryLength(x)' with no NAs (a factor is treated as
-### an integer vector, and, if missing, 'new.queryLength' is taken to be its
-### number of levels). Note that a factor will typically be used to represent a
-### non-injective mapping function.
-### The same apply for the "subject map".
-### remapHits() returns a Hits object where all the query hits and subject hits
-### have been remapped thru the 2 specified maps. This remapping is actually
-### only the 1st step of the transformation and is followed by 2 additional
-### steps: (2) the removal of duplicated hits, and (3) the reordering of the
-### hits (first by query hits, then by subject hits). Note that if the 2 maps
-### are injective then the remapping won't introduce duplicated hits, so, in
-### that case, step (2) is a no-op (but is still performed). Also if the "query
-### map" is strictly ascending and the "subject map" ascending then the
-### remapping will preserve the order of the hits, so, in that case, step (3)
-### is a no-op (but is still performed).
 remapHits <- function(x, query.map=NULL, new.queryLength=NA,
                          subject.map=NULL, new.subjectLength=NA)
 {

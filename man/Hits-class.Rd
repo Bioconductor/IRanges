@@ -38,6 +38,8 @@
 % show
 \alias{show,Hits-method}
 
+\alias{remapHits}
+
 \title{Set of hits between 2 vector-like objects}
 \description{The \code{Hits} class stores a set of "hits"
   between the elements in one vector-like object (called the "query")
@@ -137,21 +139,70 @@
   \code{\%in\%}, \code{intersect}, \code{union}, and \code{setdiff}.
 }
 
+\section{Other operations}{
+  \describe{
+    \item{}{\code{queryHits(x, query.map=NULL, new.queryLength=NA,
+                               subject.map=NULL, new.subjectLength=NA)}:
+      Remaps the hits in \code{x} thru a "query map" and/or a "subject map"
+      map. The query hits are remapped thru the "query map", which is specified
+      via the \code{query.map} and \code{new.queryLength} arguments. The
+      subject hits are remapped thru the "subject map", which is specified via
+      the \code{subject.map} and \code{new.subjectLength} arguments.
+
+      The "query map" is conceptually a function (in the mathematical sense)
+      and is also known as the "mapping function". It must be defined on the
+      1..M interval and take values in the 1..N interval, where N is
+      \code{queryLength(x)} and M is the value specified by the user via the
+      \code{new.queryLength} argument. Note that this mapping function doesn't
+      need to be injective or surjective. Also it is not represented by an R
+      function but by an integer vector of length M with no NAs. More precisely
+      \code{query.map} can be NULL (identity map), or a vector of
+      \code{queryLength(x)} non-NA integers that are >= 1 and
+      <= \code{new.queryLength}, or a factor of length \code{queryLength(x)}
+      with no NAs (a factor is treated as an integer vector, and, if missing,
+      \code{new.queryLength} is taken to be its number of levels). Note that
+      a factor will typically be used to represent a mapping function that is
+      not injective.
+
+      The same apply to the "subject map".
+
+      \code{remapHits} returns a Hits object where all the query and subject
+      hits (accessed with \code{queryHits} and \code{subjectHits},
+      respectively) have been remapped thru the 2 specified maps. This
+      remapping is actually only the 1st step of the transformation, and is
+      followed by 2 additional steps: (2) the removal of duplicated hits,
+      and (3) the reordering of the hits (first by query hits, then by subject
+      hits). Note that if the 2 maps are injective then the remapping won't
+      introduce duplicated hits, so, in that case, step (2) is a no-op (but
+      is still performed). Also if the "query map" is strictly ascending and
+      the "subject map" ascending then the remapping will preserve the order
+      of the hits, so, in that case, step (3) is also a no-op (but is still
+      performed).
+    }
+  }
+}
+
 \author{ Michael Lawrence }
 \seealso{
 \code{\link{findOverlaps}}, which generates an instance of this class.
 }
 \examples{
-  query <- IRanges(c(1, 4, 9), c(5, 7, 10))
-  subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
-  tree <- IntervalTree(subject)
-  overlaps <- findOverlaps(query, tree)
+query <- IRanges(c(1, 4, 9), c(5, 7, 10))
+subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
+tree <- IntervalTree(subject)
+overlaps <- findOverlaps(query, tree)
 
-  as.matrix(overlaps)
-  as.data.frame(overlaps)
+as.matrix(overlaps)
+as.data.frame(overlaps)
 
-  as.table(overlaps) # hits per query
-  as.table(t(overlaps)) # hits per subject
+as.table(overlaps) # hits per query
+as.table(t(overlaps)) # hits per subject
+
+hits1 <- remapHits(overlaps, subject.map=factor(c("e", "e", "d"), letters[1:5]))
+hits1
+hits2 <- remapHits(overlaps, subject.map=c(5, 5, 4), new.subjectLength=5)
+hits2
+stopifnot(identical(hits1, hits2))
 }
 \keyword{methods}
 \keyword{classes}

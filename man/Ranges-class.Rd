@@ -270,7 +270,8 @@
 
 \seealso{
   \link{Ranges-comparison},
-  \link{Ranges-utils},
+  \link{intra-range-methods},
+  \link{inter-range-methods},
   \link{IRanges-class},
   \link{IRanges-utils},
   \link{IRanges-setops},
