@@ -420,7 +420,7 @@ setMethod("as.data.frame", "RangesList",
             }
             data.frame(space =
                        factor(rep.int(seq_len(length(x)), elementLengths(x)),
-                              level = spaceLevels,
+                              levels = spaceLevels,
                               labels = spaceLabels),
                        as.data.frame(unlist(x, use.names = FALSE)),
                        row.names = row.names,
