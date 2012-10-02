@@ -34,7 +34,7 @@
 \alias{Ops,Ranges,numeric-method}
 \alias{Ops,Ranges,ANY-method}
 \alias{Ops,CompressedIRangesList,ANY-method}
-
+\alias{Ops,RangesList,ANY-method}
 
 \title{Intra range transformations of a Ranges, Views, RangesList,
        MaskCollection, or XVectorList object}

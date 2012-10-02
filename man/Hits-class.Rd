@@ -17,6 +17,10 @@
 \alias{subjectLength}
 \alias{queryLength,Hits-method}
 \alias{subjectLength,Hits-method}
+\alias{countQueryHits}
+\alias{countQueryHits,Hits-method}
+\alias{countSubjectHits}
+\alias{countSubjectHits,Hits-method}
 \alias{[,Hits-method}
 
 % coercion
@@ -111,7 +115,14 @@
 \section{Accessors}{
   \describe{
     \item{}{\code{queryHits(x)}: Equivalent to \code{as.data.frame(x)[[1]]}.}
-    \item{}{\code{subjectHits(x)}: Equivalent to \code{as.data.frame(x)[[2]]}.}
+    \item{}{\code{subjectHits(x)}: Equivalent
+      to \code{as.data.frame(x)[[2]]}.}
+    \item{}{\code{countQueryHits(x)}: Counts the number of hits for
+      each query, returning an integer vector.
+    }
+    \item{}{\code{countSubjectHits(x)}: Counts the number of hits for
+      each subject, returning an integer vector.
+    }
     \item{}{\code{ranges(x, query, subject)}: returns a \code{Ranges}
       holding the intersection of the ranges in the
       \code{Ranges} objects \code{query} and \code{subject}, which

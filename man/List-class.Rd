@@ -31,6 +31,8 @@
 \alias{revElements,List-method}
 
 \alias{coerce,List,list-method}
+\alias{coerce,ANY,List-method}
+\alias{coerce,integer,List-method}
 \alias{as.list,List-method}
 \alias{as.env}
 \alias{as.env,List-method}
@@ -74,6 +76,15 @@
   To be functional, a class that inherits from List must define at least
   a \code{"[["} method (in addition to the minimum set of \link{Vector}
   methods).
+}
+
+\section{Construction}{
+  \code{List} objects are typically constructed by calling the
+  constructor of a concrete implementation, such as
+  \code{\link{RangesList}} or \code{\link{IntegerList}}. A
+  general and convenient way to convert any vector-like object into a
+  \code{List} is to call \code{as(x, "List")}. This will typically yield
+  an object from a subclass of \code{\linkS4class{CompressedList}}.
 }
 
 \section{Accessors}{

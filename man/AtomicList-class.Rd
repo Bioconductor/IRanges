@@ -76,6 +76,8 @@
 \alias{coerce,AtomicList,CharacterList-method}
 \alias{coerce,AtomicList,RawList-method}
 \alias{coerce,AtomicList,RleList-method}
+\alias{RleList,AtomicList,RleList-method}
+\alias{coerce,CompressedRleList,CompressedIRangesList-method}
 
 \alias{seqselect<-,CompressedAtomicList-method}
 \alias{seqselect<-,SimpleAtomicList-method}
@@ -96,6 +98,9 @@
 \alias{Summary,CompressedRleList-method}
 \alias{Complex,CompressedAtomicList-method}
 \alias{Complex,SimpleAtomicList-method}
+\alias{sum,CompressedIntegerList-method}
+\alias{sum,CompressedLogicalList-method}
+\alias{sum,CompressedNumericList-method}
 
 \alias{\%in\%,CompressedAtomicList,atomic-method}
 \alias{\%in\%,SimpleAtomicList,atomic-method}

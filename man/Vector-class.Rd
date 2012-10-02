@@ -72,6 +72,7 @@
 
 \alias{rename}
 \alias{rename,Vector-method}
+\alias{rename,vector-method}
 
 \alias{unique,Vector-method}
 \alias{sort,Vector-method}
@@ -150,7 +151,7 @@
       character vector, formed by concatenating \code{value} with any
       arguments in \code{...}. The names of the character vector
       indicate the source names, and the corresponding values the
-      destination names.
+      destination names. This also works on a plain old \code{vector}.
     }
     \item{}{
       \code{nlevels(x)}:

@@ -27,6 +27,11 @@
 % general 
 \alias{summary,FilterRules-method}
 
+% filter closures
+\alias{params}
+\alias{params,FilterClosure-method}
+\alias{show,FilterClosure-method}
+
 \title{Collection of Filter Rules}
 \description{A \code{FilterRules} object is a collection of filter
   rules, which can be either \code{expression} or \code{function}
@@ -168,6 +173,22 @@
       Returns an integer vector with the number of elements
       in \code{subject} that pass each rule in \code{object}, along with
       a count of the elements that pass all filters.
+    }
+  }
+}
+
+\section{Filter Closures}{
+  When a closure (function) is included as a filter in a
+  \code{FilterRules} object, it is converted to a \code{FilterClosure},
+  which is currently nothing more than a marker class that extends
+  \code{function}. When a \code{FilterClosure} filter is extracted,
+  there are some accessors and utilities for manipulating it:
+  \describe{
+    \item{}{\code{params}: Gets a named list of the objects that are
+      present in the enclosing environment (without inheritance). This
+      assumes that a filter is constructed via a constructor function,
+      and the objects in the frame of the constructor (typically, the
+      formal arguments) are the parameters of the filter.
     }
   }
 }

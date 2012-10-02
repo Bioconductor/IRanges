@@ -15,6 +15,8 @@
 \alias{universe,ViewsList-method}
 \alias{universe<-,ViewsList-method}
 
+% coercion
+\alias{as.matrix,ViewsList-method}
 
 \title{List of Views}
 \description{An extension of \linkS4class{List} that holds only
@@ -31,7 +33,9 @@
   universe identifier (e.g. a genome) in which all of its spaces exist.
 
   As a \linkS4class{List} subclass, ViewsList inherits all the methods
-  available for \linkS4class{List} objects.
+  available for \linkS4class{List} objects. It also presents an API that
+  is very similar to that of \linkS4class{Views}, where operations are
+  vectorized over the elements and generally return lists.
 }
 
 \author{P. Aboyoun and H. Pages}

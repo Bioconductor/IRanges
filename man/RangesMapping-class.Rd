@@ -4,6 +4,7 @@
 
 % generic
 \alias{map}
+\alias{pmap}
 
 % accessors
 \alias{hits}
@@ -19,16 +20,25 @@
 
 \title{Mapping of ranges to another sequence}
 
-\description{The \code{map} generic converts a set of ranges to the
-  equivalent ranges on another sequence, through some sort of alignment
-  between sequences, and outputs an \code{RangesMapping} object. There
-  are three primary components of that object: the transformed \code{ranges},
-  the \code{space} (destination sequence) for the ranges, and
-  the \code{hits}, a \code{\linkS4class{Hits}} object of the same length
+\description{
+  The \code{map} generic converts a set of ranges to the equivalent
+  ranges on another sequence, through some sort of alignment between
+  sequences, and outputs a \code{RangesMapping} object. There are three
+  primary components of that object: the transformed \code{ranges}, the
+  \code{space} (destination sequence) for the ranges, and the
+  \code{hits}, a \code{\linkS4class{Hits}} object of the same length
   that matches each input range to a destination sequence (useful when
-  the alignment is one/many to many).}
+  the alignment is one/many to many). The \code{pmap} function is
+  simpler: it treats the two inputs as parallel vectors, maps each input
+  range via the corresponding alignment, and returns the mapped
+  ranges. There is one result per input element, instead of the
+  many-to-many result from \code{map}.
+}
 
-\usage{map(from, to, ...)}
+\usage{
+map(from, to, ...)
+pmap(from, to, ...)
+}
 
 \arguments{
   \item{from}{Typically an object containing ranges to map.}

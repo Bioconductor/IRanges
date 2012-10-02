@@ -36,6 +36,8 @@
 \alias{as.raw,Rle-method}
 \alias{as.factor,Rle-method}
 \alias{as.data.frame,Rle-method}
+\alias{as.list,Rle-method}
+\alias{coerce,Rle,list-method}
 \alias{coerce,vector,Rle-method}
 \alias{coerce,logical,Rle-method}
 \alias{coerce,integer,Rle-method}

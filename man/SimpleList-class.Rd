@@ -50,7 +50,7 @@
 \alias{as.list,CompressedList-method}
 \alias{as.list,SimpleList-method}
 \alias{unlist,CompressedList-method}
-
+\alias{coerce,ANY,SimpleList-method}
 
 \title{Simple and Compressed List Classes}
 \description{The (non-virtual) SimpleList and (virtual) CompressedList classes
@@ -65,13 +65,20 @@
 }
 
 \section{Constructor}{
-  The SimpleList class constructor is used to create SimpleList objects:
-  
+  \code{List} objects are typically constructed by calling the
+  constructor of a concrete implementation, such as
+  \code{\link{RangesList}} or \code{\link{IntegerList}}. The simplest,
+  most generic implementation is \code{SimpleList}, which has the
+  following constructor:
   \describe{
     \item{}{\code{SimpleList(...)}: takes possibly named objects as elements
     for the new SimpleList object.
     }
   }
+
+  Calling \code{as(x, "List")} will convert a vector-like object into a
+  \code{List}, usually a \code{CompressedList}. To explicitly request
+  a \code{SimpleList} derivative, call \code{as(x, "SimpleList")}
 }
 
 \section{Coercion}{
