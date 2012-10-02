@@ -55,7 +55,6 @@ setReplaceMethod("universe", "ViewsList",
 setMethod("as.matrix", "ViewsList",
           function(x, rev = FALSE, use.names = FALSE)
           {
-            browser()
             if (!isTRUEorFALSE(use.names))
               stop("use.names must be TRUE or FALSE")
             rev <- normargAtomicList1(rev, LogicalList, length(x))
