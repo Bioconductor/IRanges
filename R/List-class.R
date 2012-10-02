@@ -277,14 +277,6 @@ setMethod("lapply", "List",
 environment(.sapplyDefault) <- topenv()
 setMethod("sapply", "List", .sapplyDefault)
 
-.mclapplyDefault <- parallel::mclapply
-environment(.mclapplyDefault) <- topenv()
-setMethod("mclapply", "List", .mclapplyDefault)
-
-.mcmapplyDefault <- parallel::mcmapply
-environment(.mcmapplyDefault) <- topenv()
-setMethod("mcmapply", "List", .mcmapplyDefault)
-
 .mapply_List <- function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
                          USE.NAMES = TRUE)
 {
