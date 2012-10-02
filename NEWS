@@ -1,3 +1,184 @@
+CHANGES IN VERSION 1.16.0
+-------------------------
+
+NEW FEATURES
+
+    o as( , "SimpleList"), as( , "CompressedList"), and as( , "List") now
+      work on atomic vectors, and each element of the vector corresponds to
+      an element of the returned List (this is consistent with as.list).
+
+    o Add as.list,Rle method.
+
+    o Add as.matrix,Views method. Each view corresponds to a row in the
+      returned matrix. Rows corresponding to views shorter than the longest
+      view are right-padded with NAs.
+
+    o Add FilterClosure closure class for functions placed into a
+      FilterRules. Has methods for getting parameters and showing.
+
+    o Support 'na.rm' argument in "runsum", "runwtsum", "runq", and "runmean"
+      methods for Rle and RleList objects.
+
+    o Add splitAsList() and splitAsListReturnedClass().
+
+    o Improve summary,FilterRules to support serial evaluation, discarded
+      counts (instead of passed) and percentages.
+
+    o Make rename work on ordinary vector (in addition to Vector).
+
+    o Add coercion from RangedData to CompressedIRangesList, IRangesList, or
+      RangesList. It propagates the data columns (aka values) of the RangedData
+      object to the inner metadata columns of the RangesList object.
+
+    o Add 'NG' arg to PartitioningByEnd() and PartitioningByWidth()
+      constructors.
+
+    o Make PartitioningByEnd() work on list-like objects (like
+      PartitioningByWidth()).
+
+    o Fast disjoin() for moderate-sized CompressedIRangesList.
+
+    o Add countQueryHits() and countSubjectHits().
+
+    o coverage() now supports method="auto" and this is the new default.
+
+    o Add the flippedQuery(), levels(), ngap(), Lngap(), Rngap(), Lencoding(),
+      and Rencoding() getters for OverlapEncodings objects.
+
+    o Add "encodeOverlaps" method for GRangesList objects.
+
+    o Enhance "[" methods for IRanges, XVector, XVectorList, and MaskCollection
+      objects, as well as "[<-" method for IRanges objects, by supporting the
+      following subscript types: NULL, Rle, numeric, logical, character, and
+      factor. (All the methods listed above already supported some of those
+      types but no method supported them all).
+
+    o Add remapHits() for remapping the query and subject hits of a Hits
+      object.
+
+    o Add match,Hits method.
+
+    o Add %in%,Vector method.
+
+    o Add "compare", "==", "!=", "<=", ">=", "<", ">", "is.unsorted", "order",
+      "rank", "match", and "duplicated" methods for XRawList objects. unique()
+      and sort() also work on these objects via the "unique" and "sort" methods
+      for Vector objects.
+
+    o Add expand() for expanding a DataFrame based on the contents of one or
+      more designated columms.
+
+    o After being deprecated (in BioC 2.9) and defunct (in BioC 2.10), the
+      "as.vector" method for AtomicList objects is back, but now it mimics
+      what as.vector() does on an ordinary list i.e. it's equivalent to
+      'as.vector(as.list(x), mode=mode)'. Also coercions from AtomicList to
+      logical/integer/numeric/double/complex/character/raw are back and based
+      on the "as.vector" method for AtomicList objects i.e. they work only on
+      objects with top-level elements of length <= 1.
+
+    o DataFrame constructor now supports 'check.names' argument.
+
+    o Add revElements() generic with methods for List and CompressedList
+      objects.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+ 
+    o Splitting / relisting a Hits object now returns a HitsList instead of
+      an ordinary list.
+
+    o Operations in the Ops group between a List and an atomic vector operand
+      now coerce the atomic vector to List (SimpleList or CompressedList)
+      before performing the operation. Also, operands are recycled and a better
+      job is done returning zero length results of the correct type.
+
+    o Change the warning for 'Integer overflow ...' thrown by sum() on
+      integer-Rle's
+
+    o DataFrame now coerces List/list value to DataFrame in [<-.
+
+    o Fix as.matrix,DataFrame for zero column DataFrames. Returns an nrow()x0
+      logical matrix.
+
+    o union,Hits method now sorts the returned hits first by query hit, then
+      by subject hit.
+
+    o Add mcols() accessor as the preferred way (over elementMetadata() and
+      values()) to access the metadata columns of a Vector object.
+
+    o By default, mcols(x) and elementMetadata(x) do NOT propagate the names
+      of x as the row names of the returned DataTable anymore. However the
+      user can still get the old behavior by doing mcols(x, use.names=TRUE).
+
+    o [<-,XVectorList now preserves the original names instead of propagating
+      the names of the replacement value, which is consistent with how [<-
+      operates on an ordinary vector/list.
+
+    o coverage() now returns a numeric-Rle when passed numeric weights.
+
+    o When called on a List object with use.names=TRUE, unlist() no longer
+      tries to mimic the kind of non-sense name mangling that base::unlist()
+      does (e.g. on list(a=1:3)) in a pointless effort to return a vector
+      with unique names.
+
+    o Remove 'hits' argument from signature of encodeOverlaps() generic
+      function.
+
+    o unique,Vector now drops the names for consistency with base::unique().
+
+    o Remove make.names() coercion in colnames<-,DataFrame for consistency
+      with data.frame.
+
+DEPRECATED AND DEFUNCT
+
+    o Deprecated tofactor().
+
+    o Remove RangesMatching, RangesMatchingList, and Binning classes.
+
+    o Change from deprecated to defunct: matchMatrix(), "dim" method for Hits
+      objects, and RangesMatchingList().
+
+BUG FIXES
+
+    o Fix bug in pintersect,IRanges,IRanges when input had empty ranges
+      (broken since 2010-03-04).
+
+    o Avoid integer overflow in mean,Rle method by coercing integer-Rle
+      to numeric-Rle internally.
+
+    o Change evaluation frame of with,List to parent.frame(), and get the
+      enclosure correct in eval,List.
+
+    o Many fixes and improvements to coercion from RangesList to RangedData
+      (see commit 68195 for the details).
+
+    o Fix "runValue" and "ranges" methods for CompressedRleList objects
+      (broken for a very long time).
+
+    o shift,Ranges method now fails in case of integer overflow instead of
+      returning an invalid Ranges object.
+
+    o mstack() now works on Vector objects with NULL metadata columns.
+
+    o In case of integer overflow, coverage() now puts NAs in the returned
+      Rle and issues a warning.
+
+    o Fix bug in xvcopy,XRawList objects that prevented sequences from being
+      removed from the cache of a BSgenome object. See commit 67171 for the
+      details.
+
+    o Fix issues related to duplicate column names in DataFrame (see commit
+      67163 for the details).
+
+    o Fix a bunch of subsetting methods that were not subsetting the metadata
+      columns: "[", "subseq", and "seqselect" methods for XVector objects,
+      "seqselect" and "window" methods for XVectorList objects, and "[" method
+      for MaskCollection objects.         
+
+    o Fix empty replacement with [<-,Vector
+
+    o Make %in% robust on an empty 'table' argument when operating on Hits
+      objects.
+
 CHANGES IN VERSION 1.14.0
 -------------------------
 
