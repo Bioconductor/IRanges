@@ -86,6 +86,7 @@ Collate: validity-utils.R
 	XIntegerViews-utils.R
 	XDoubleViews-class.R
 	XDoubleViews-utils.R
+	funprog-methods.R
 	intra-range-methods.R
 	inter-range-methods.R
 	setops-methods.R

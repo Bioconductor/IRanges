@@ -211,44 +211,6 @@
   }
 }
 
-\section{Functional Programming}{
-  The R base package defines some Higher-Order functions that are commonly
-  found in Functional Programming Languages. See \code{?\link[base]{Reduce}}
-  for the details, and, in particular, for a description of their arguments.
-  The IRanges package provides methods for List objects, so, in addition
-  to be a vector, the \code{x} argument can also be a List object.
-
-  \describe{
-    \item{}{
-      \code{Reduce(f, x, init, right = FALSE, accumulate = FALSE)}:
-      Uses a binary function to successively combine the elements of \code{x}
-      and a possibly given initial value.
-      See \code{?\link[base]{Reduce}} (in the base package) for the details.
-    }
-    \item{}{
-      \code{Filter(f, x)}:
-      Extracts the elements of \code{x} for which function \code{f} is TRUE.
-      See \code{?\link[base]{Filter}} (in the base package) for the details.
-    }
-    \item{}{
-      \code{Find(f, x, right = FALSE, nomatch = NULL)}:
-      Extracts the first or last such element in \code{x}.
-      See \code{?\link[base]{Find}} (in the base package) for the details.
-    }
-    \item{}{
-      \code{Map(f, ...)}:
-      Applies a function to the corresponding elements of given List
-      objects.
-      See \code{?\link[base]{Map}} (in the base package) for the details.
-    }
-    \item{}{
-      \code{Position(f, x, right = FALSE, nomatch = NA_integer_)}:
-      Extracts the first or last such position in \code{x}.
-      See \code{?\link[base]{Position}} (in the base package) for the details.
-    }
-  }
-}
-
 \section{Evaluating}{
   In the code snippets below, \code{envir} and \code{data} are List
   objects.
@@ -274,13 +236,15 @@
 \author{P. Aboyoun and H. Pages}
 
 \seealso{
-  \linkS4class{Vector} for the parent class.
-
-  \linkS4class{SimpleList} and \linkS4class{CompressedList} for direct
-  extensions.
-
-  \linkS4class{IRanges} and \linkS4class{CompressedLogicalList} for example
-  implementations.
+  \itemize{
+    \item \link{Vector} for the parent class.
+    \item The \link{SimpleList} and \link{CompressedList} classes for direct
+          extensions.
+    \item The \link{IRanges} class and constructor for an example of
+          a concrete \link{List} subclass.
+    \item \link{funprog-methods} for using functional programming methods
+          on List objects.
+  }
 }
 
 \examples{
