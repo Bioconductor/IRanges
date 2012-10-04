@@ -239,7 +239,7 @@
   \itemize{
     \item \link{Vector} for the parent class.
     \item The \link{SimpleList} and \link{CompressedList} classes for direct
-          extensions.
+          extensions of the \link{List} class.
     \item The \link{IRanges} class and constructor for an example of
           a concrete \link{List} subclass.
     \item \link{funprog-methods} for using functional programming methods
