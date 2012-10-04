@@ -41,12 +41,6 @@
 \alias{unsplit,List-method}
 \alias{stack,List-method}
 
-\alias{Reduce,List-method}
-\alias{Filter,List-method}
-\alias{Find,List-method}
-\alias{Map,List-method}
-\alias{Position,List-method}
-
 \alias{eval}
 \alias{eval,expression,List-method}
 \alias{eval,language,List-method}
