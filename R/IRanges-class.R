@@ -617,10 +617,9 @@ setMethod("c", "IRanges",
         if (!isTRUEorFALSE(.ignoreElementMetadata))
             stop("'.ignoreElementMetadata' must be TRUE or FALSE")
         if (.ignoreElementMetadata) {
-            msg <- c("the '.ignoreElementMetadata' argument is deprecated, ",
+            msg <- c("the '.ignoreElementMetadata' argument is defunct, ",
                      "please use 'ignore.mcols'\n  instead")
-            .Deprecated(msg=msg)
-            ignore.mcols <- TRUE
+            .Defunct(msg=msg)
         }
         if (missing(x)) {
             args <- unname(list(...))
