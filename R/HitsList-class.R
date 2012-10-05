@@ -46,10 +46,6 @@ HitsList <- function(list_of_hits, subject)
   newList("HitsList", list_of_hits, subjectOffsets = subjectOffsets)
 }
 
-RangesMatchingList <- function(...)
-{
-    .Defunct("HitsList")
-}
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion

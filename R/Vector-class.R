@@ -726,14 +726,6 @@ setReplaceMethod("seqselect", "factor",
 ### Not exported.
 extractROWS <- function(x, i)
 {
-    ## We need a temporary workaround for Hits object, until dim() work again
-    ## on them. Right now (i.e. in BioC 2.11) it doesn't work because the
-    ## dim,Hits method is defunct. When dim,Hits is gone (in BioC 2.12), then
-    ## dim() will work again on Hits objects and will return NULL.
-    ## TODO: Remove the 2 lines below when "dim" method for Hits objects is
-    ## gone (in BioC 2.12).
-    if (is(x, "Hits"))
-        return(x[i])
     if (length(dim(x)) < 2L)
         return(x[i])
     x[i, , drop=FALSE]

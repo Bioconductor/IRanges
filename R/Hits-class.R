@@ -21,18 +21,6 @@ setClass("Hits",
 ### Accessors
 ###
 
-matchMatrix <- function(...)
-{
-    msg <- c("'matchMatrix' is defunct.",
-             "Use 'as.matrix' instead.",
-             "See help(\"Defunct\")")
-    .Defunct(msg=paste(msg, collapse="\n"))
-}
-
-setMethod("dim", "Hits", function(x) {
-  .Defunct("queryLength or subjectLength")
-})
-
 setMethod("length", "Hits", function(x) {
   length(queryHits(x))
 })

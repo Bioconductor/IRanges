@@ -5,8 +5,6 @@
 \alias{Hits}
 
 % accessors
-\alias{matchMatrix}
-\alias{dim,Hits-method}
 \alias{ranges,Hits-method}
 \alias{length,Hits-method}
 \alias{subjectHits}
@@ -136,10 +134,6 @@
       elements in the query}
     \item{}{\code{subjectLength(x)}, \code{ncol(x)}: get the number of
       elements in the subject}
-    \item{}{
-      \code{dim(x)}: get a two-element integer vector, essentially
-      \code{c(nrow(x), ncol(x))}.
-    }
   }
 }
 
