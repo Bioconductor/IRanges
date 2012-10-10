@@ -276,7 +276,7 @@ setMethod("Summary", "Rle",
                 sum(runValue(x) * runLength(x), ..., na.rm=na.rm)
             }, warning=function(warn) {
                 msg <- conditionMessage(warn)
-                exp <- gettext("Integer overflow - use sum(as.numeric(.))",
+                exp <- gettext("integer overflow - use sum(as.numeric(.))",
                                domain="R")
                 if (msg == exp) {
                     msg <- sub("sum\\(as.numeric\\(.\\)\\)",

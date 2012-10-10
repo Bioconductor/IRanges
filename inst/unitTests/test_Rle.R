@@ -706,7 +706,7 @@ test_Rle_Integer_overflow <- function() {
     suppressWarnings(withCallingHandlers({sum(x0)
     }, warning=function(warn) {
         msg <- conditionMessage(warn)
-        exp <- gettext("Integer overflow - use runValue(.) <- as.numeric(runValue(.))",
+        exp <- gettext("integer overflow - use runValue(.) <- as.numeric(runValue(.))",
                        domain="R")
         if (msg == exp)
             testWarning <<- TRUE 
