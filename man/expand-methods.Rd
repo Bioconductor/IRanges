@@ -5,41 +5,38 @@
 
 \title{The expand method for uncompressing compressed data columns}
 \description{
-  The expand method takes an object like a \code{DataFrame} and expands
-  it row-wise such that columns which are compressed can each be
-  represented as a separate row.
+  Expand an object with compressed columns such that all compressed
+  values are represented as separate rows.
 }
 
 \usage{
-  expand(x, colnames, keepEmptyRows)
+  expand(x, colnames, keepEmptyRows, ...)
 }
 
 
 \arguments{
   \item{x}{
-    A DataFrame containing some columns that are compressed.  Such as a
-    \code{CompressedCharacterList}.
+    A \code{DataFrame} containing some columns that are compressed (e.g.,
+    \code{CompressedCharacterList}).
   }
   \item{colnames}{
-    A character vector containing the names of the comnpressed columns
-    that need to be expanded.  The result will be expanded for each
-    named column name in turn, so you can control the order in which the
-    columns are expanded by the ordering of this character vector.
+    A \code{character} or \code{numeric} vector containing the names 
+    or indices of the compressed columns to expand. The order of expansion 
+    is controlled by the column order in this vector.
   }
   \item{keepEmptyRows}{
-    TRUE or FALSE value to indicate whether or not empty values in the
-    colnames columns should be set to NA and the adjacent data retained.
-    If set to TRUE, and then you expanded based on a collumn which
-    contains some empty elements, then any data next to those empty
-    elements will NOT be dropped from the final result.  If set to
-    false, then data adjacent to empty elements in expanded columns will
-    be dropped.
+    A \code{logical} indicating if rows containing empty values in the 
+    specified \code{colnames} should be retained or dropped. When \code{TRUE},
+    empty values are set to NA and all rows are kept. When \code{FALSE},
+    rows with empty values in the \code{colnames} columns are dropped.
+  }
+  \item{\dots}{Arguments passed to other methods.
   }
 }
 
 \value{
-  A \code{DataFrame} that has been expanded row-wise to allow expansion
-  of the \code{CharacterList} columns specified.
+  A \code{DataFrame} that has been expanded row-wise to match the dimension
+  of the uncompressed columns.
 }
 
 \author{Herve Pages and Marc Carlson}

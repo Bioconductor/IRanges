@@ -2,9 +2,9 @@
 ## require(IRanges)
 
 setGeneric("expand", signature="x",
-           function(x, colnames, keepEmptyRows) standardGeneric("expand"))
-
-
+           function(x, colnames, keepEmptyRows, ...) 
+               standardGeneric("expand")
+)
 
 ## A helper function to do the work
 .expandOneCol <- function(x, colname, keepEmptyRows)
@@ -25,7 +25,6 @@ setGeneric("expand", signature="x",
     ans
 }
 
-
 ## A better helper
 .expand <- function(x, colnames, keepEmptyRows){
   for(i in seq_len(length(colnames))){
@@ -34,10 +33,8 @@ setGeneric("expand", signature="x",
   x
 }
 
-
-## method for DataFrame
 setMethod("expand", "DataFrame",
-    function(x, colnames, keepEmptyRows){
+    function(x, colnames, keepEmptyRows, ...){
       .expand(x, colnames, keepEmptyRows)
     }
 )
