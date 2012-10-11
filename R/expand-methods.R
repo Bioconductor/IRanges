@@ -1,5 +1,7 @@
-## Sets up the generics etc. for expand() method.
-## require(IRanges)
+### =========================================================================
+### expand methods
+### -------------------------------------------------------------------------
+###
 
 setGeneric("expand", signature="x",
            function(x, colnames, keepEmptyRows, ...) 
