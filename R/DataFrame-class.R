@@ -162,7 +162,9 @@ DataFrame <- function(..., row.names = NULL, check.names = TRUE)
       nrows[i] <- nrow(element)
       ncols[i] <- ncol(element)
       varlist[[i]] <- as.list(element, use.names = FALSE)
-      if ((length(dim(listData[[i]])) > 1) || (ncol(element) > 1)) {
+      if (((length(dim(listData[[i]])) > 1) || (ncol(element) > 1)) &&
+          !is(listData[[i]], "AsIs"))
+      {
         if (emptynames[i])
           varnames[[i]] <- colnames(element)
         else
