@@ -590,11 +590,14 @@ setMethod("unsplit", "List", function(value, f, drop = FALSE) {
 }
 
 setMethod("stack", "List",
-          function(x, index.var = "name", value.var = "value")
+          function(x, index.var = "name", value.var = "value", name.var = NULL)
           {
             df <- DataFrame(.stack.ind(x, index.var),
                             as(unlist(x, use.names=FALSE), "DataFrame"))
             colnames(df)[2] <- value.var
+            if (!is.null(name.var)) {
+              df[[name.var]] <- as.character(unlist(lapply(x, names)))
+            }
             df
           })
 
