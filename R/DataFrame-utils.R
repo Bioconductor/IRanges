@@ -35,7 +35,7 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
   } else {
     args <- args[hasrows]
   }
-
+  
   df <- args[[1L]]
 
   for (i in 2:length(args)) {
@@ -58,13 +58,21 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
         levs <- unique(unlist(lapply(cols, levels), use.names=FALSE))
         cols <- lapply(cols, as.character)
       }
-      combined <- do.call(c, unname(cols))
+      rectangular <- length(dim(cols[[i]])) == 2L
+      if (rectangular) {
+        combined <- do.call(rbind, unname(cols))
+      } else {
+        combined <- do.call(c, unname(cols))
+      }
       if (factors[i])
         combined <- factor(combined, levs)
       ## this coercion needed only because we extracted ([[) above
       ## which brings external -> internal
       ## external objects should support external combination (c)
-      as(combined, cl[i])
+      combined <- as(combined, cl[i])
+      if (rectangular)
+        combined <- I(combined)
+      combined
     })
     names(cols) <- colnames(df)
     ans <- do.call(DataFrame, cols)
