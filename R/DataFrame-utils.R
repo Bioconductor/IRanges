@@ -58,7 +58,7 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
         levs <- unique(unlist(lapply(cols, levels), use.names=FALSE))
         cols <- lapply(cols, as.character)
       }
-      rectangular <- length(dim(cols[[i]])) == 2L
+      rectangular <- length(dim(cols[[1]])) == 2L
       if (rectangular) {
         combined <- do.call(rbind, unname(cols))
       } else {
