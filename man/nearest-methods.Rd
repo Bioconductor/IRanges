@@ -102,9 +102,16 @@ select = c("arbitrary", "all"))
 \seealso{
   \code{\link{findOverlaps}} for finding just the overlapping ranges.
 
-  The \link[GenomicRanges]{nearest-methods} man page in the GenomicRanges
-  package for methods that operate on \link[GenomicRanges]{GenomicRanges}
-  and other objects.
+  The ?\code{\link[GenomicRanges]{nearest-methods}} man page in the 
+  GenomicRanges package documents the following for 
+  \link[GenomicRanges]{GenomicRanges} and other objects,
+  \itemize{
+    \item \code{precede}
+    \item \code{follow}
+    \item \code{nearest}
+    \item \code{distance}
+    \item \code{distanceToNearest}
+  }
 }
 
 \examples{
@@ -116,12 +123,12 @@ select = c("arbitrary", "all"))
 
   query <- IRanges(c(1, 3, 9), c(3, 7, 10))
   subject <- IRanges(c(3, 2, 10), c(3, 13, 12))
-  
+ 
   precede(query, subject) # c(3L, 3L, NA)
   precede(IRanges(), subject) # integer()
   precede(query, IRanges()) # rep(NA_integer_, 3)
   precede(query) # c(3L, 3L, NA)
-  
+ 
   follow(query, subject) # c(NA, NA, 1L)
   follow(IRanges(), subject) # integer()
   follow(query, IRanges()) # rep(NA_integer_, 3)
