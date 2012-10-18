@@ -4,7 +4,7 @@
 ###
 
 setGeneric("expand", signature="x",
-           function(x, colnames, keepEmptyRows, ...) 
+           function(x, ...) 
                standardGeneric("expand")
 )
 

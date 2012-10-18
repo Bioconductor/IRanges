@@ -10,9 +10,8 @@
 }
 
 \usage{
-  expand(x, colnames, keepEmptyRows, ...)
+\S4method{expand}{DataFrame}(x, colnames, keepEmptyRows, ...)
 }
-
 
 \arguments{
   \item{x}{
