@@ -68,8 +68,11 @@ int _overlap_code(int x_start, int x_width, int y_start, int y_width)
 	x_end_plus1 = x_start + x_width;
 	if (x_end_plus1 < y_start)
 		return -6;
-	if (x_end_plus1 == y_start)
+	if (x_end_plus1 == y_start) {
+		if (x_width == 0 && y_width == 0)
+			return 0;
 		return -5;
+	}
 	y_end_plus1 = y_start + y_width;
 	if (y_end_plus1 < x_start)
 		return 6;
