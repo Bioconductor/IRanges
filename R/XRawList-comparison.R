@@ -17,24 +17,8 @@ setMethod("==", c("XRawList", "XRawList"),
     function(e1, e2) compare(e1, e2) == 0L
 )
 
-setMethod("!=", c("XRawList", "XRawList"),
-    function(e1, e2) compare(e1, e2) != 0L
-)
-
 setMethod("<=", c("XRawList", "XRawList"),
     function(e1, e2) compare(e1, e2) <= 0L
-)
-
-setMethod(">=", c("XRawList", "XRawList"),
-    function(e1, e2) compare(e1, e2) >= 0L
-)
-
-setMethod("<", c("XRawList", "XRawList"),
-    function(e1, e2) compare(e1, e2) < 0L
-)
-
-setMethod(">", c("XRawList", "XRawList"),
-    function(e1, e2) compare(e1, e2) > 0L
 )
 
 

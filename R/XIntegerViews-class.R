@@ -247,12 +247,3 @@ setMethod("==", signature(e1="integer", e2="XIntegerViews"),
     function(e1, e2) e2 == e1
 )
 
-### TODO: Define "!=" method for ANY,ANY to cover the 2 cases below
-### (currently there is a method for Vector,Vector but it doesn't cover them).
-setMethod("!=", signature(e1="XIntegerViews", e2="integer"),
-    function(e1, e2) !(e1 == e2)
-)
-setMethod("!=", signature(e1="integer", e2="XIntegerViews"),
-    function(e1, e2) !(e1 == e2)
-)
-

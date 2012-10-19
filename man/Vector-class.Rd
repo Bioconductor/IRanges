@@ -48,8 +48,18 @@
 \alias{rep.int,Vector-method}
 \alias{subset,Vector-method}
 
-\alias{!=}
 \alias{!=,Vector,Vector-method}
+\alias{!=,Vector,ANY-method}
+\alias{!=,ANY,Vector-method}
+\alias{>=,Vector,Vector-method}
+\alias{>=,Vector,ANY-method}
+\alias{>=,ANY,Vector-method}
+\alias{<,Vector,Vector-method}
+\alias{<,Vector,ANY-method}
+\alias{<,ANY,Vector-method}
+\alias{>,Vector,Vector-method}
+\alias{>,Vector,ANY-method}
+\alias{>,ANY,Vector-method}
 
 \alias{c,Vector-method}
 \alias{append,Vector,Vector-method}

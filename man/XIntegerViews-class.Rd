@@ -19,9 +19,6 @@
 \alias{==,XInteger,XIntegerViews-method}
 \alias{==,integer,XIntegerViews-method}
 
-\alias{!=,XIntegerViews,integer-method}
-\alias{!=,integer,XIntegerViews-method}
-
 
 \title{The XIntegerViews class}
 

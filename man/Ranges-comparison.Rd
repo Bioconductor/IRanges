@@ -2,22 +2,19 @@
 
 \alias{Ranges-comparison}
 
-\alias{==,Ranges,Ranges-method}
-\alias{!=,Ranges,Ranges-method}
-\alias{duplicated,Ranges-method}
-\alias{unique,Ranges-method}
-
-\alias{<=,Ranges,Ranges-method}
-\alias{>=,Ranges,Ranges-method}
-\alias{<,Ranges,Ranges-method}
-\alias{>,Ranges,Ranges-method}
-\alias{order,Ranges-method}
-\alias{sort,Ranges-method}
-\alias{rank,Ranges-method}
-
 \alias{compare}
 \alias{compare,Ranges,Ranges-method}
 \alias{rangeComparisonCodeToLetter}
+
+\alias{==,Ranges,Ranges-method}
+\alias{<=,Ranges,Ranges-method}
+
+\alias{duplicated,Ranges-method}
+\alias{unique,Ranges-method}
+
+\alias{order,Ranges-method}
+\alias{sort,Ranges-method}
+\alias{rank,Ranges-method}
 
 
 \title{Comparing and ordering ranges}

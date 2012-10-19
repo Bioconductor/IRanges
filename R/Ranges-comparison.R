@@ -7,12 +7,17 @@
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### compare()
 ###
+### Doing 'compare(x, y)' on 2 vector-like objects 'x' and 'y' of length 1
+### must return an integer less than, equal to, or greater than zero if the
+### single element in 'x' is considered to be respectively less than, equal
+### to, or greater than the single element in 'y'.
+###
 
 setGeneric("compare", function(x, y) standardGeneric("compare"))
 
-### TODO: Seems like using compare() to implement "==", "!=", "<=", ">=",
-### "<" and ">" methods for Ranges objects would make them slightly faster
-### (between 1.5x and 2.5x) and also slightly more memory efficient.
+### Ranges are ordered by starting position first and then by width.
+### This way, the space of ranges is totally ordered.
+### This "compare" method returns codes that reflect this order.
 setMethod("compare", c("Ranges", "Ranges"),
     function(x, y)
     {
@@ -34,24 +39,25 @@ rangeComparisonCodeToLetter <- function(code)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Equality and related methods.
+### Element-wise (aka "parallel") comparison of 2 Ranges objects.
+###
+### We only need to implement "==" and "<=" methods. The other binary
+### comparison operations (!=, >=, <, >) will work out-of-the-box on Ranges
+### objects thanks to the corresponding methods defined for Vector objects.
 ###
 
 setMethod("==", signature(e1="Ranges", e2="Ranges"),
-    function(e1, e2)
-    {
-        (start(e1) == start(e2)) & (width(e1) == width(e2))
-    }
+    function(e1, e2) { compare(e1, e2) == 0L }
 )
 
-setMethod("!=", signature(e1="Ranges", e2="Ranges"),
-    function(e1, e2)
-    {
-        ## Should be slightly more efficient than '!(e1 == e2)', at least in
-        ## theory.
-        (start(e1) != start(e2)) | (width(e1) != width(e2))
-    }
+setMethod("<=", signature(e1="Ranges", e2="Ranges"),
+    function(e1, e2) { compare(e1, e2) <= 0L }
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Unique and duplicated elements within a Ranges object.
+###
 
 setMethod("duplicated", "Ranges",
     function(x, incomparables=FALSE, fromLast=FALSE,
@@ -77,35 +83,11 @@ setMethod("unique", "Ranges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Ordering and related methods.
+### order() and related methods.
 ###
-### Ranges are ordered by starting position first and then by width.
-### This way, the space of ranges is totally ordered.
 ### The "order", "sort" and "rank" methods for Ranges objects are consistent
-### with this order.
+### with the order implied by compare().
 ###
-
-setMethod("<=", signature(e1="Ranges", e2="Ranges"),
-    function(e1, e2)
-    {
-         (start(e1) < start(e2)) | ((start(e1) == start(e2)) & (width(e1) <= width(e2)))
-    }
-)
-
-setMethod(">=", signature(e1="Ranges", e2="Ranges"),
-    function(e1, e2) {e2 <= e1}
-)
-
-setMethod("<", signature(e1="Ranges", e2="Ranges"),
-    function(e1, e2)
-    {
-         (start(e1) < start(e2)) | ((start(e1) == start(e2)) & (width(e1) < width(e2)))
-    }
-)
-
-setMethod(">", signature(e1="Ranges", e2="Ranges"),
-    function(e1, e2) {e2 < e1}
-)
 
 setMethod("order", "Ranges",
     function(..., na.last=TRUE, decreasing=FALSE)
