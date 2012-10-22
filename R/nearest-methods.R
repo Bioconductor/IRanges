@@ -164,15 +164,16 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
 setGeneric("distance",
            function(x, y, ...) standardGeneric("distance"))
 
-setMethod("distance", c("Ranges", "Ranges"), function(x, y) {
-  if (length(x) != length(y))
-    stop("'x' and 'y' must have the same length")
-  ans_end_plus1 <- pmax.int(start(x), start(y))
-  ans_start <- pmin.int(end(x), end(y))
-  ans <- ans_end_plus1 - ans_start
-  pmax(ans, if (length(x)) 0L else integer())
-})
-
+setMethod("distance", c("Ranges", "Ranges"), 
+    function(x, y) 
+    {
+        warning("The behavior of distance() has changed in ",
+                "Bioconductor 2.12. See ?distance for details.")
+        max_start <- pmax.int(start(x), start(y))
+        min_end <- pmin.int(end(x), end(y))
+        pmax.int(max_start - min_end - 1L, 0L) 
+    }
+)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### distanceToNearest()
@@ -190,7 +191,7 @@ setMethod("distanceToNearest", c("Ranges", "RangesORmissing"),
               x_nearest <- nearest(x, select = select)
             } else x_nearest <- nearest(x, subject, select = select)
             if (select == "arbitrary")
-              x_nearest <- cbind(queryHits = seq(length(x)),
+              x_nearest <- cbind(queryHits = seq_len(length(x)),
                                  subjectHits = x_nearest)
             else x_nearest <- as.matrix(x_nearest)
             x <- x[x_nearest[,1]]
