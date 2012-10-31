@@ -1159,7 +1159,7 @@ setMethod("mstack", "Vector", function(..., .index.var = "name") {
   if (!isSingleString(.index.var))
     stop("'.index.var' must be a single, non-NA string")
   args <- list(...)
-  combined <- do.call(c, args)
+  combined <- do.call(c, unname(args))
   df <- .stack.ind(args, .index.var)
   if (!is.null(mcols(combined)))
     df <- cbind(mcols(combined), df)
