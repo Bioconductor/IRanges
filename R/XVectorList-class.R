@@ -109,6 +109,8 @@ setMethod("length", "XVectorList", function(x) length(x@ranges))
 
 setMethod("width", "XVectorList", function(x) width(x@ranges))
 
+setMethod("elementLengths", "XVectorList", function(x) width(x))
+
 setMethod("names", "XVectorList", function(x) names(x@ranges))
 
 setReplaceMethod("names", "XVectorList",
