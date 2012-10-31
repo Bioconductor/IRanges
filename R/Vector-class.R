@@ -258,6 +258,8 @@ function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE,
 {
     msg <- NULL
     newNames <- character(0)
+    if (is(idx, "Rle") && is.integer(runValue(idx)))
+      idx <- as.integer(idx)
     if (is.numeric(idx)) {
         if (!is.integer(idx))
             idx <- as.integer(idx)
@@ -1150,19 +1152,21 @@ multisplit <- function(x, f) {
   seqsplit(rep(x, elementLengths(f)), unlist(f, use.names = FALSE))
 }
 
-setGeneric("mstack", function(...) standardGeneric("mstack"))
+setGeneric("mstack", function(..., .index.var = "name")
+           standardGeneric("mstack"), signature = "...")
 
 setMethod("mstack", "Vector", function(..., .index.var = "name") {
   if (!isSingleString(.index.var))
     stop("'.index.var' must be a single, non-NA string")
   args <- list(...)
-  combined <- do.call(c, unname(args))
+  combined <- do.call(c, args)
   df <- .stack.ind(args, .index.var)
   if (!is.null(mcols(combined)))
     df <- cbind(mcols(combined), df)
   mcols(combined) <- df
   combined
 })
+
 setMethod("mstack", "vector",
           function(..., .index.var = "name", .value.var = "value")
           {
