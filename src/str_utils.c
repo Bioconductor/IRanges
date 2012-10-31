@@ -134,6 +134,9 @@ SEXP strsplit_as_list_of_ints(SEXP x, SEXP sep)
  */
 static int get_svn_time(time_t t, char *out, size_t out_size)
 {
+#if defined(__INTEL_COMPILER)
+	return -1;
+#else /* defined(__INTEL_COMPILER) */
 	struct tm result;
 	int utc_offset, n;
 
@@ -146,16 +149,16 @@ static int get_svn_time(time_t t, char *out, size_t out_size)
 	//localtime_r() not available on Windows+MinGW
 	//localtime_r(&t, &result);
 	result = *localtime(&t);
-#if !(defined(__APPLE__) || defined(__FreeBSD__))
+#if defined(__APPLE__) || defined(__FreeBSD__)
+	//'struct tm' has no member named 'tm_gmtoff' on Windows+MinGW
+	utc_offset = result.tm_gmtoff / 3600;
+#else /* defined(__APPLE__) || defined(__FreeBSD__) */
 	tzset();
 	//timezone is not portable (is a function, not a long, on OS X Tiger)
 	utc_offset = - (timezone / 3600);
 	if (result.tm_isdst > 0)
 		utc_offset++;
-#else
-	//'struct tm' has no member named 'tm_gmtoff' on Windows + MinGW
-	utc_offset = result.tm_gmtoff / 3600;
-#endif
+#endif /* defined(__APPLE__) || defined(__FreeBSD__) */
 	n = snprintf(out, out_size, svn_format,
 		result.tm_year + 1900,
 		result.tm_mon + 1,
@@ -169,6 +172,7 @@ static int get_svn_time(time_t t, char *out, size_t out_size)
 		mon2str[result.tm_mon],
 		result.tm_year + 1900);
 	return n >= out_size ? -1 : 0;
+#endif /* defined(__INTEL_COMPILER) */
 }
 
 /* --- .Call ENTRY POINT --- */
