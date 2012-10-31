@@ -832,6 +832,17 @@ setAtomicListMethod("which", inputBaseClass = "LogicalList",
                     outputBaseClass = "IntegerList",
                     rleListOutputBaseClass = "IntegerList")
 
+setMethod("which", "CompressedLogicalList", function(x) {
+  x.flat <- unlist(x, use.names = FALSE)
+  part <- PartitioningByEnd(x)
+  which.global <- which(x.flat)
+  group <- findInterval(which.global, start(part))
+  which.local <- which.global - start(part)[group] + 1L
+  ans <- seqsplit(which.local, factor(group, seq_len(length(x))))
+  names(ans) <- names(x)
+  ans
+})
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Numerical methods
 ###
