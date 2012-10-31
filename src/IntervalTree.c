@@ -140,8 +140,7 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
     PROTECT(result_inds = allocVector(INTSXP, nranges));
   }
   memset(INTEGER(result_inds), 0, LENGTH(result_inds) * sizeof(int));
-  //Rprintf("result_inds: %d\n", nranges + (result_ints != NULL));
-
+  
   if (!p) { /* tree is empty */
     UNPROTECT(1);
     return result_inds;
