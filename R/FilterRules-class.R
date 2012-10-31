@@ -254,7 +254,8 @@ setMethod("evalSeparately", "FilterRules",
             do.call(cbind, lapply(inds, function(i) {
               result <- eval(expr[i], envir = envir, enclos = enclos)
               if (serial) {
-                passed <<- passed & result
+                envir <<- subsetFirstDim(envir, result)
+                passed[passed] <<- result
                 passed
               } else result
             }))
