@@ -210,7 +210,7 @@ setMethod("intersect", c("Hits", "Hits"), function(x, y) {
 ### Utilities
 ###
 
-countHits <- tabulate
+countHits <- tabulate2
 
 setGeneric("countSubjectHits",
            function(x, ...) standardGeneric("countSubjectHits"))
