@@ -596,7 +596,8 @@ setMethod("stack", "List",
                             as(unlist(x, use.names=FALSE), "DataFrame"))
             colnames(df)[2] <- value.var
             if (!is.null(name.var)) {
-              df[[name.var]] <- as.character(unlist(lapply(x, names)))
+              nms <- as.character(unlist(lapply(x, names)))
+              df[[name.var]] <- factor(nms, unique(nms))
             }
             df
           })
