@@ -1168,14 +1168,14 @@ setMethod("mstack", "Vector", function(..., .index.var = "name") {
 })
 
 setMethod("mstack", "vector",
-          function(..., .index.var = "name", .value.var = "value")
+          function(..., .index.var = "name")
           {
             if (!isSingleString(.index.var))
               stop("'.index.var' must be a single, non-NA string")
             args <- list(...)
             combined <- do.call(c, unname(args))
             df <- DataFrame(combined, .stack.ind(args, .index.var))
-            colnames(df)[1] <- .value.var
+            colnames(df)[1] <- "value"
             df
           })
 
