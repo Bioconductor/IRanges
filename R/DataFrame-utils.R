@@ -112,3 +112,7 @@ setMethod("aggregate", "formula", function(x, data, ...) {
     DataFrame(eval(mc, parent.frame(2)))
   } else eval(mc, parent.frame(2)) ## for e.g. data.frame
 })
+
+setMethod("mstack", "DataFrame", function(..., .index.var = "name") {
+  stack(DataFrameList(...), index.var = .index.var)
+})
