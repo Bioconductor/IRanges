@@ -360,10 +360,11 @@ setMethod("merge", c("RangesList", "RangesList"),
 ### The "show" method.
 ###
 
-.RangesList_show <- function(x)
+showRangesList <- function(x, with.header=TRUE)
 {
     x_len <- length(x)
-    cat(class(x), " of length ", x_len, "\n", sep = "")
+    if (with.header)
+        cat(class(x), " of length ", x_len, "\n", sep = "")
     if (x_len == 0L)
         return(invisible(NULL))
     cumsumN <- end(PartitioningByEnd(x))
@@ -388,7 +389,7 @@ setMethod("merge", c("RangesList", "RangesList"),
             sep="")
 }
 
-setMethod("show", "RangesList", function(object) .RangesList_show(object))
+setMethod("show", "RangesList", function(object) showRangesList(object))
 
 setMethod("showAsCell", "RangesList",
           function(object)
