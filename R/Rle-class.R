@@ -348,7 +348,9 @@ setReplaceMethod("[", "Rle",
             return(callNextMethod(x = x, i = i, value = value))
         x <- as.vectorORfactor(x)
         value <- as.vector(value)
-        i <- as.vector(i)
+        if (is(i, "Ranges"))
+          i <- as.integer(i)
+        else i <- as.vector(i)
         Rle(callGeneric(x = x, i = i, value = value))
     }
 )
