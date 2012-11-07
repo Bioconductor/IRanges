@@ -810,15 +810,18 @@ setMethod("table", "Rle",
         ## then xtabs(length ~ value...)
         x <- sort(...)
         if (is.factor(runValue(x))) {
-            dat <- numeric(length(levels(x)))
-            dat[levels(x) %in% runValue(x)] <- runLength(x)
-            structure(array(dat, dim=length(levels(x)),
-                      dimnames=structure(list(levels(x)), names="")),
-                      class="table")
+            nms <- union(levels(x), runValue(x))
+            dat <- numeric(length(nms))
+            dat[nms %in% runValue(x)] <- runLength(x)
+            structure(array(dat, 
+                dim=length(nms),
+                dimnames=structure(list(nms), names="")),
+                class="table")
         } else {
-            structure(array(runLength(x), dim=nrun(x),
-                      dimnames=structure(list(as.character(runValue(x))), 
-                      names="")), class="table")
+            structure(array(runLength(x), 
+                dim=nrun(x),
+                dimnames=structure(list(as.character(runValue(x))), names="")), 
+                class="table")
         }
     }
 )
