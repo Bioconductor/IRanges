@@ -341,6 +341,14 @@ test_Rle_factor <- function() {
     xRle[] <- xRle
     checkIdentical(Rle(x), xRle)
     checkIdentical(x, xRle[TRUE,drop=TRUE])
+
+    lvs <- as.character(0:5)
+    x <- factor(rep(c(2,3,1,2,3,2), each=2), levels=lvs)
+    xRle <- Rle(x)
+    tbl <- table(xRle)
+    checkIdentical(dim(tbl), 6L)
+    checkIdentical(names(tbl), lvs)
+    checkIdentical(as.vector(tbl), c(0, 2, 6, 4, 0, 0))
 }
 
 ## ---------------------------------------------

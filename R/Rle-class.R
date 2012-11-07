@@ -802,19 +802,26 @@ setMethod("summary", "Rle",
               value
           })
 
-setMethod("table", "Rle",
-          function(...)
-          {
-            ## idea for doing this over multiple Rles
-            ## use disjoin(), findRun() to find matching runs,
-            ## then xtabs(length ~ value...)
-              x <- sort(...)
-              structure(array(runLength(x), dim = nrun(x),
-                              dimnames =
-                              structure(list(as.character(runValue(x))), 
-                                        names = "")),
-                        class = "table")
-          })
+setMethod("table", "Rle", 
+    function(...)
+    {
+        ## idea for doing this over multiple Rles
+        ## use disjoin(), findRun() to find matching runs,
+        ## then xtabs(length ~ value...)
+        x <- sort(...)
+        if (is.factor(runValue(x))) {
+            dat <- numeric(length(levels(x)))
+            dat[levels(x) %in% runValue(x)] <- runLength(x)
+            structure(array(dat, dim=length(levels(x)),
+                      dimnames=structure(list(levels(x)), names="")),
+                      class="table")
+        } else {
+            structure(array(runLength(x), dim=nrun(x),
+                      dimnames=structure(list(as.character(runValue(x))), 
+                      names="")), class="table")
+        }
+    }
+)
 
 setMethod("unique", "Rle",
           function(x, incomparables = FALSE, ...)

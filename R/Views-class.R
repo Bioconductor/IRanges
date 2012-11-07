@@ -221,7 +221,7 @@ setMethod("[[", "Views",
 ###
 
 setGeneric("trim", signature="x",
-    function(x, use.names=TRUE) standardGeneric("trim")
+    function(x, use.names=TRUE, ...) standardGeneric("trim")
 )
 
 setMethod("trim", "Views",
