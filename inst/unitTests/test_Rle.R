@@ -146,7 +146,6 @@ test_Rle_general <- function() {
     checkIdentical(as.vector(subset(xRle, rep(c(TRUE, FALSE), length.out = length(x)))),
                    subset(x, rep(c(TRUE, FALSE), length.out = length(x))))
     checkIdentical(summary(x), summary(xRle))
-    checkIdentical(table(as.vector(x)), table(xRle))
     checkIdentical(tail(x, 8), as.vector(tail(xRle, 8)))
     checkIdentical(tail(x, -3), as.vector(tail(xRle, -3)))
     checkException(tapply(xRle), silent = TRUE)
@@ -341,26 +340,73 @@ test_Rle_factor <- function() {
     xRle[] <- xRle
     checkIdentical(Rle(x), xRle)
     checkIdentical(x, xRle[TRUE,drop=TRUE])
-
-    lvs <- as.character(0:5)
-    x <- factor(rep(c(2,3,1,2,3,2), each=2), levels=lvs)
-    xRle <- Rle(x)
-    tbl <- table(xRle)
-    checkIdentical(dim(tbl), 6L)
-    checkIdentical(names(tbl), lvs)
-    checkIdentical(as.vector(tbl), c(0, 2, 6, 4, 0, 0))
-
-    x <- factor(c("b", "d", NA, "a", NA, "b"))
-    xRle <- Rle(x)
-    tbl <- table(xRle)
-    checkIdentical(names(tbl), c("a", "b", "d", NA))
-    checkIdentical(as.vector(tbl), c(1, 2, 1, 2))
-    x <- factor(c(NA, NA, NA))
-    checkIdentical(as.vector(table(Rle(x))), 3)
 }
 
 ## ---------------------------------------------
-## runsum(), runmean(), runwtsum() Rle methods
+## table() and sort()
+## ---------------------------------------------
+
+test_Rle_sort <- function()
+{
+    ## atomic
+    ix <- c(NA, 3L, NA)
+    nx <- c(2, 5, 1, 2, NA, 5, NA)
+    cx <- c("c", "B", NA, "a")
+    lx <- c(FALSE, FALSE, NA, TRUE, NA)
+    checkIdentical(sort(nx), as.numeric(sort(Rle(nx))))
+    checkIdentical(sort(nx, na.last=TRUE), 
+        as.numeric(sort(Rle(nx), na.last=TRUE)))
+    checkIdentical(sort(nx, na.last=FALSE), 
+        as.numeric(sort(Rle(nx), na.last=FALSE)))
+    checkIdentical(sort(ix), as.integer(sort(Rle(ix))))
+    checkIdentical(sort(cx), as.character(sort(Rle(cx))))
+    checkIdentical(sort(lx), as.logical(sort(Rle(lx))))
+    checkIdentical(sort(numeric()), as.numeric(sort(Rle(numeric()))))
+    checkIdentical(sort(character()), as.character(sort(Rle(character()))))
+    
+    ## factor 
+    nf <- factor(nx)
+    checkIdentical(sort(nf), as.factor(sort(Rle(nf))))
+    checkIdentical(sort(nf, decreasing=TRUE, na.last=TRUE), 
+        as.factor(sort(Rle(nf), decreasing=TRUE, na.last=TRUE)))
+    checkIdentical(sort(nf, na.last=FALSE), 
+        as.factor(sort(Rle(nf), na.last=FALSE)))
+    checkIdentical(sort(factor()), as.factor(sort(Rle(factor()))))
+
+    ## factor, unused levels
+    nf <- factor(nx, levels=1:6)
+    checkIdentical(levels(sort(nf)), levels(sort(Rle(nf))))
+}
+
+test_Rle_table <- function()
+{
+    ## atomic
+    ix <- c(NA, 3L, NA)
+    nx <- c(2, 5, 1, 2, NA, 5, NA)
+    cx <- c("c", "B", NA, "a")
+    lx <- c(FALSE, FALSE, NA, TRUE, NA)
+    checkIdentical(table(ix), table("ix"=Rle(ix)))
+    checkIdentical(table(nx), table("nx"=Rle(nx)))
+    checkIdentical(table(cx), table("cx"=Rle(cx)))
+    checkIdentical(table(lx), table("lx"=Rle(lx)))
+    checkIdentical(table(numeric()), table(Rle(numeric())))
+    checkIdentical(table(character()), table(Rle(character())))
+    
+    ## factor
+    nf <- factor(nx)
+    checkIdentical(table("nx"=nx), table("nx"=Rle(nx)))
+    checkIdentical(table(factor()), table(Rle(factor())))
+    
+    ## factor, unused levels
+    nf <- factor(nx, levels=1:6)
+    cf <- factor(cx, levels=c("a", "c", "B", "b"))
+    checkIdentical(as.factor(table(nf)), as.factor(table(Rle(nf))))
+    checkIdentical(as.factor(table(cf)), as.factor(table(Rle(cf))))
+}
+
+
+## ---------------------------------------------
+## runsum(), runmean(), runwtsum()
 ## ---------------------------------------------
 
 .naive_runsum <- function(x, k, na.rm=FALSE)

@@ -739,24 +739,24 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
           })
 
 setMethod("sort", "Rle",
-          function(x, decreasing = FALSE, na.last = NA, ...)
-          {
-              if (is.na(na.last)) {
-                  na.last <- TRUE
-                  if (anyMissing(x))
-                      x <- x[!is.na(x)]
-              }
-              if (is.integer(runValue(x)) || is.factor(runValue(x))) {
-                  ord <- orderInteger(runValue(x), decreasing = decreasing,
-                                      na.last = na.last)
-              } else {
-                  ord <-
-                    order(runValue(x), decreasing = decreasing,
-                          na.last = na.last)
-              }
-              Rle(values = runValue(x)[ord], lengths = runLength(x)[ord],
-                  check = FALSE)
-          })
+    function(x, decreasing=FALSE, na.last=NA, ...)
+    {
+        if (is.na(na.last)) {
+            if (anyMissing(runValue(x)))
+                x <- x[!is.na(x)]
+        }
+        if (is.integer(runValue(x)) || is.factor(runValue(x)))
+            ord <- orderInteger(runValue(x), decreasing=decreasing,
+                                na.last=na.last)
+        else
+            ord <- order(runValue(x), decreasing=decreasing,
+                         na.last=na.last)
+
+        Rle(values=runValue(x)[ord], 
+            lengths=runLength(x)[ord],
+            check=FALSE)
+    }
+)
 
 setGeneric("splitRanges", signature = "x",
            function(x) standardGeneric("splitRanges"))
@@ -805,26 +805,48 @@ setMethod("summary", "Rle",
 setMethod("table", "Rle", 
     function(...)
     {
-        ## idea for doing this over multiple Rles
-        ## use disjoin(), findRun() to find matching runs,
-        ## then xtabs(length ~ value...)
-        x <- sort(...)
+        ## Currently only 1 Rle is supported. An approach for multiple 
+        ## Rle's could be disjoin(), findRun() to find matches, then 
+        ## xtabs(length ~ value ...).
+        x <- sort(list(...)[[1L]]) 
         if (is.factor(runValue(x))) {
-            nms <- union(levels(x), runValue(x))
-            dat <- numeric(length(nms))
-            dat[nms %in% runValue(x)] <- runLength(x)
-            structure(array(dat, 
-                dim=length(nms),
-                dimnames=structure(list(nms), names="")),
-                class="table")
+            dn <- levels(x)
+            tab <- integer(length(dn))
+            tab[dn %in% runValue(x)] <- runLength(x)
+            dims <- length(dn)
         } else {
-            structure(array(runLength(x), 
-                dim=nrun(x),
-                dimnames=structure(list(as.character(runValue(x))), names="")), 
-                class="table")
+            dn <- as.character(runValue(x)) 
+            tab <- runLength(x) 
+            dims <- nrun(x)
         }
+        ## Adjust 'dn' for consistency with base::table
+        if (length(dn) == 0L)
+            dn <- NULL
+        dn <- list(dn)
+        names(dn) <- .list.names(...) 
+        y <- array(tab, dims, dimnames=dn)
+        class(y) <- "table"
+        y 
     }
 )
+
+.list.names <- function(...) {
+    l <- as.list(substitute(list(...)))[-1L]
+    deparse.level <- 1 
+    nm <- names(l)
+    fixup <- if (is.null(nm))
+        seq_along(l)
+    else nm == ""
+    dep <- vapply(l[fixup], function(x) switch(deparse.level +
+        1, "", if (is.symbol(x)) as.character(x) else "",
+        deparse(x, nlines = 1)[1L]), "")
+    if (is.null(nm))
+        dep
+    else {
+        nm[fixup] <- dep
+        nm
+    }
+}
 
 setMethod("unique", "Rle",
           function(x, incomparables = FALSE, ...)

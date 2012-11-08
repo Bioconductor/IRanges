@@ -499,7 +499,9 @@
     }
     \item{}{
       \code{table(...)}:
-      Returns a table containing the counts of the unique values.
+      Returns a table containing the counts of the unique values. Supported
+      arguments include \code{useNA} with values of `no' and `ifany'.
+      Multiple Rle's must be combined with \code{c()} before calling \code{table}.
     }
     \item{}{
       \code{tail(x, n = 6L)}:
