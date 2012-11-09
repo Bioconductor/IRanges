@@ -205,6 +205,64 @@ setMethod("flank", "CompressedIRangesList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### promoters() 
+###
+
+setGeneric("promoters", signature="x",
+    function(x, upstream=2000, downstream=200, ...)
+        standardGeneric("promoters")
+)
+
+setMethod("promoters", "Ranges",
+    function(x, upstream=2000, downstream=200, ...)
+    {
+        if (is(x, "NormalIRanges"))
+            stop("promoters on a NormalIRanges object is not supported")
+        if (!isSingleNumber(upstream))
+            stop("'upstream' must be a single integer")
+        if (!is.integer(upstream))
+            upstream <- as.numeric(upstream)
+        if (!isSingleNumber(downstream))
+            stop("'downstream' must be a single integer")
+        if (!is.integer(downstream))
+            downstream <- as.numeric(downstream)
+        if (upstream < 0 | downstream < 0)
+            stop("'upstream' and 'downstream' must be integers >= 0")
+        st <- start(x)
+        start(x) <- st - upstream
+        end(x) <- st + downstream - 1L
+        x
+    }
+)
+
+setMethod("promoters", "Views",
+    function(x, upstream=2000, downstream=200, ...)
+    {
+        x@ranges <- promoters(ranges(x), upstream, downstream)
+        x
+    }
+)
+
+setMethod("promoters", "RangesList",
+          function(x, upstream=2000, downstream=200, ...) 
+          {
+              endoapply(x, promoters, upstream = upstream, 
+                         downstream = downstream)
+          }
+)
+
+setMethod("promoters", "CompressedIRangesList",
+          function(x, upstream=2000, downstream=200, ...)
+          {
+              slot(x, "unlistData", check=FALSE) <-
+                promoters(x@unlistData, upstream = upstream, 
+                          downstream = downstream, ...)
+              x
+          }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### reflect()
 ###
 
@@ -557,4 +615,10 @@ setMethod("Ops", c("CompressedIRangesList", "ANY"),
           {
             relist(callGeneric(unlist(e1, use.names = FALSE), e2), e1)
           })
+
+
+
+
+
+
 

@@ -27,6 +27,38 @@ test_Ranges_flank <- function() {
   checkException(flank(ir1, NA), silent = TRUE)
 }
 
+test_promoters <- function() {
+  ir <- IRanges(c(10, 10), width=c(0, 1))
+  checkIdentical(width(promoters(ir, 0, 0)), c(0L, 0L))
+  checkIdentical(width(promoters(ir, 1, 0)), c(1L, 1L))
+  checkIdentical(start(promoters(ir, 1, 0)), c(9L, 9L))
+  checkIdentical(width(promoters(ir, 0, 1)), c(1L, 1L))
+  checkIdentical(start(promoters(ir, 0, 1)), c(10L, 10L))
+  ir <- IRanges(c(5, 2, 20), width=1)
+  checkIdentical(start(promoters(ir, 5, 2)), c(0L, -3L, 15L))
+
+  rl <- RangesList("A"=IRanges(5:7, width=1), "B"=IRanges(10:12, width=5))
+  current <- promoters(rl, 0, 0) 
+  checkIdentical(names(current), names(rl))
+  checkIdentical(start(current), start(rl))
+  current <- promoters(rl, 2, 0) 
+  checkIdentical(unique(unlist(width(current))), 2L)
+
+  subject <- XInteger(10, 3:-6)
+  view <- Views(subject, start=4:2, end=4:6)
+  current <- promoters(view, 0, 0) 
+  checkIdentical(start(current), start(view))
+  current <- promoters(view, 2, 0) 
+  checkIdentical(unique(width(current)), 2L)
+ 
+  cmp <- IRangesList("A"=IRanges(5:7, width=1), "B"=IRanges(10:12, width=5))
+  current <- promoters(rl, 0, 0) 
+  checkIdentical(names(current), names(rl))
+  checkIdentical(start(current), start(rl))
+  current <- promoters(rl, 2, 0) 
+  checkIdentical(unique(unlist(width(current))), 2L)
+}
+
 test_Ranges_reflect <- function() {
   ir1 <- IRanges(c(2,5,1), c(3,7,3))
   bounds <- IRanges(c(0, 5, 3), c(10, 6, 9))

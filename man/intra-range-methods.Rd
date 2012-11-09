@@ -18,6 +18,11 @@
 \alias{flank,Ranges-method}
 \alias{flank,RangesList-method}
 \alias{flank,CompressedIRangesList-method}
+\alias{promoters}
+\alias{promoters,Ranges-method}
+\alias{promoters,Views-method}
+\alias{promoters,RangesList-method}
+\alias{promoters,CompressedIRangesList-method}
 \alias{reflect}
 \alias{reflect,Ranges-method}
 \alias{resize}
@@ -70,6 +75,9 @@ narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
 
 ## flank()
 flank(x, width, start=TRUE, both=FALSE, use.names=TRUE, ...)
+
+## promoters()
+promoters(x, upstream=2000, downstream=200, ...)
 
 ## reflect()
 reflect(x, bounds, use.names=TRUE)
@@ -170,6 +178,11 @@ threebands(x, start=NA, end=NA, width=NA)
             to use as an anchor for each element in \code{x}.
     }
   }
+  \item{upstream, downstream}{
+    Single \code{integer} values >= 0L. \code{upstream} defines the number 
+    of nucleotides toward the 5' end and \code{downstream} defines the number
+    toward the 3' end, relative to the transcription start site. 
+  }
   \item{keep.all.ranges}{
     \code{TRUE} or \code{FALSE}. Should ranges that don't overlap with
     the restriction interval(s) be kept?
@@ -249,6 +262,14 @@ threebands(x, start=NA, end=NA, width=NA)
 
   \code{restrict} restricts the ranges in \code{x} to the interval(s)
   specified by the \code{start} and \code{end} arguments.
+
+  \code{promoters} generates promoter ranges for each range in \code{x}
+  relative to the transcription start site (TSS). The TSS is \code{start(x)} 
+  and the promoter range is defined around this point with the 
+  \code{upstream} and \code{downstream} arguments. \code{upstream} is 
+  the number of nucleotides in the 5' direction and \code{downstream} the 
+  number in the 3' direction. The full range is
+  (start(x) - upstream) to (start(x) + downstream - 1).
 
   \code{resize} resizes the ranges to the specified width where either the
   start, end, or center is used as an anchor.
@@ -345,6 +366,19 @@ flank(ir3, -2, start=FALSE, both=TRUE)
 
 ## On a RangesList object
 flank(collection, width=10)
+
+## ---------------------------------------------------------------------
+## promoters()
+## ---------------------------------------------------------------------
+
+## On a Ranges object
+ir4 <- IRanges(20:23, width=3)
+promoters(ir4, upstream=0, downstream=0) ## no change
+promoters(ir4, upstream=0, downstream=1) ## start value only
+promoters(ir4, upstream=1, downstream=0) ## single upstream nucleotide 
+
+## On a RangesList object
+promoters(collection, upstream=5, downstream=2)
 
 ## ---------------------------------------------------------------------
 ## reflect()
