@@ -181,7 +181,13 @@ threebands(x, start=NA, end=NA, width=NA)
   \item{upstream, downstream}{
     Single \code{integer} values >= 0L. \code{upstream} defines the number 
     of nucleotides toward the 5' end and \code{downstream} defines the number
-    toward the 3' end, relative to the transcription start site. 
+    toward the 3' end, relative to the transcription start site. Promoter 
+    regions are formed by merging the upstream and downstream ranges.
+
+    Default values for \code{upstream} and \code{downstream} were chosen based
+    on our current understanding of gene regulation. On average, promoter
+    regions in the mammalian genome are 5000 bp upstream and downstream of the 
+    transcription start site.
   }
   \item{keep.all.ranges}{
     \code{TRUE} or \code{FALSE}. Should ranges that don't overlap with
@@ -247,6 +253,17 @@ threebands(x, start=NA, end=NA, width=NA)
     ---***xxxx
   }
 
+  \code{promoters} generates promoter ranges for each range in \code{x}
+  relative to the transcription start site (TSS), where TSS is 
+  \code{start(x)}. The promoter range is expanded around the TSS 
+  according to the \code{upsteam} and \code{downstream} arguments.
+  \code{upstream} represents the number of nucleotides in the 5' 
+  direction and \code{downstream} the number in the 3' direction. 
+  The full range is defined as, 
+  (start(x) - upstream) to (start(x) + downstream - 1). 
+  For documentation for using \code{promoters} on \code{GenomicRanges}
+  objects see ?\code{`promoters,GRanges-method'}.
+
   \code{reflect} "reflects" or reverses each range in \code{x} relative to
   the corresponding range in \code{bounds}, which is recycled as
   necessary. Reflection preserves the width of a range, but shifts it
@@ -262,14 +279,6 @@ threebands(x, start=NA, end=NA, width=NA)
 
   \code{restrict} restricts the ranges in \code{x} to the interval(s)
   specified by the \code{start} and \code{end} arguments.
-
-  \code{promoters} generates promoter ranges for each range in \code{x}
-  relative to the transcription start site (TSS). The TSS is \code{start(x)} 
-  and the promoter range is defined around this point with the 
-  \code{upstream} and \code{downstream} arguments. \code{upstream} is 
-  the number of nucleotides in the 5' direction and \code{downstream} the 
-  number in the 3' direction. The full range is
-  (start(x) - upstream) to (start(x) + downstream - 1).
 
   \code{resize} resizes the ranges to the specified width where either the
   start, end, or center is used as an anchor.
