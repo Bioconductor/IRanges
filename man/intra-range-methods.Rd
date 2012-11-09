@@ -262,7 +262,7 @@ threebands(x, start=NA, end=NA, width=NA)
   The full range is defined as, 
   (start(x) - upstream) to (start(x) + downstream - 1). 
   For documentation for using \code{promoters} on \code{GenomicRanges}
-  objects see ?\code{`promoters,GRanges-method'}.
+  objects see ?\code{"promoters,GRanges-method"}.
 
   \code{reflect} "reflects" or reverses each range in \code{x} relative to
   the corresponding range in \code{bounds}, which is recycled as
