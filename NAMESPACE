@@ -115,7 +115,7 @@ export(
     values, "values<-",
     isConstant,
     isEmpty,
-    seqselect, "seqselect<-",
+    subsetByRanges, seqselect, "seqselect<-",
     rename,
 
     ## Non-generic and generic functions in the List API:
@@ -272,7 +272,7 @@ exportMethods(
     mcols, "mcols<-",
     isConstant,
     isEmpty,
-    seqselect, "seqselect<-",
+    subsetByRanges, seqselect, "seqselect<-",
     elementType, elementLengths,
     revElements,
 

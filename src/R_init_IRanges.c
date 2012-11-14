@@ -58,6 +58,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(compact_bitvector_set_op, 3),
 
 /* Vector_class.c */
+	CALLMETHOD_DEF(vector_subsetByRanges, 3),
 	CALLMETHOD_DEF(vector_seqselect, 3),
 
 /* IRanges_class.c */

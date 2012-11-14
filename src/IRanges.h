@@ -454,69 +454,6 @@ void _Ocopy_bytes_from_i1i2_to_complex(
 );
 
 
-/* vector_copy.c */
-
-int _vector_memcmp(
-	SEXP x1,
-	int x1_offset,
-	SEXP x2,
-	int x2_offset,
-	int nelt
-);
-
-void _vector_Ocopy(
-	SEXP out,
-	int out_offset,
-	SEXP in,
-	int in_offset,
-	int nelt,
-	SEXP lkup,
-	int reverse,
-	int Omode
-);
-
-void _vector_Ocopy_from_offset(
-	SEXP out,
-	SEXP in,
-	int in_offset,
-	int nelt,
-	SEXP lkup,
-	int reverse
-);
-
-void _vector_Ocopy_to_offset(
-	SEXP out,
-	SEXP in,
-	int out_offset,
-	int nelt,
-	SEXP lkup
-);
-
-void _vector_Ocopy_from_subscript(
-	SEXP out,
-	SEXP in,
-	SEXP subscript,
-	SEXP lkup
-);
-
-void _vector_Ocopy_to_subscript(
-	SEXP out,
-	SEXP in,
-	SEXP subscript,
-	SEXP lkup
-);
-
-void _vector_mcopy(
-	SEXP out,
-	int out_offset,
-	SEXP in,
-	SEXP in_start,
-	SEXP in_width,
-	SEXP lkup,
-	int reverse
-);
-
-
 /* anyMissing.c */
 
 SEXP anyMissing(SEXP x);
@@ -693,6 +630,77 @@ SEXP findIntervalAndStartFromWidth(
 );
 
 
+/* vector_copy.c */
+
+int _vector_memcmp(
+	SEXP x1,
+	int x1_offset,
+	SEXP x2,
+	int x2_offset,
+	int nelt
+);
+
+void _vector_copy(
+	SEXP out,
+	int out_offset,
+	SEXP in,
+	int in_offset,
+	int nelt
+);
+
+void _vector_Ocopy(
+	SEXP out,
+	int out_offset,
+	SEXP in,
+	int in_offset,
+	int nelt,
+	SEXP lkup,
+	int reverse,
+	int Omode
+);
+
+void _vector_Ocopy_from_offset(
+	SEXP out,
+	SEXP in,
+	int in_offset,
+	int nelt,
+	SEXP lkup,
+	int reverse
+);
+
+void _vector_Ocopy_to_offset(
+	SEXP out,
+	SEXP in,
+	int out_offset,
+	int nelt,
+	SEXP lkup
+);
+
+void _vector_Ocopy_from_subscript(
+	SEXP out,
+	SEXP in,
+	SEXP subscript,
+	SEXP lkup
+);
+
+void _vector_Ocopy_to_subscript(
+	SEXP out,
+	SEXP in,
+	SEXP subscript,
+	SEXP lkup
+);
+
+void _vector_mcopy(
+	SEXP out,
+	int out_offset,
+	SEXP in,
+	SEXP in_start,
+	SEXP in_width,
+	SEXP lkup,
+	int reverse
+);
+
+
 /* str_utils.c */
 
 SEXP safe_strexplode(SEXP s);
@@ -724,6 +732,12 @@ const char *_get_List_elementType(SEXP x);
 void _set_List_elementType(
 	SEXP x,
 	const char *type
+);
+
+SEXP vector_subsetByRanges(
+	SEXP x,
+	SEXP start,
+	SEXP width
 );
 
 SEXP vector_seqselect(

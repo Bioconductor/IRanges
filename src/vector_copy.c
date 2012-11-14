@@ -1,11 +1,6 @@
 /****************************************************************************
  *                   Low-level utilities for copying data                   *
  *                from a vector to a vector of the same type                *
- *                ------------------------------------------                *
- *                                                                          *
- * NOTE: Only "raw" (RAWSXP), "logical" (LGLSXP), "integer" (INTSXP),       *
- *       "double" (REALSXP) and "complex" (CPLXSXP) vectors are supported   *
- *       at the moment.                                                     *
  ****************************************************************************/
 #include "IRanges.h"
 
@@ -16,6 +11,7 @@
  * ============================
  */
 
+/* NOTE: Doesn't support STRSXP and VECSXP. */ 
 int _vector_memcmp(SEXP x1, int x1_offset, SEXP x2, int x2_offset, int nelt)
 {
 	const void *s1 = NULL, *s2 = NULL; /* gcc -Wall */
@@ -57,17 +53,84 @@ int _vector_memcmp(SEXP x1, int x1_offset, SEXP x2, int x2_offset, int nelt)
 
 
 /****************************************************************************
- * B. THE DO-IT-ALL _vector_Ocopy() FUNCTION
- * =========================================
+ * B. _vector_copy() and _vector_Ocopy()
+ * =====================================
  *
- * 'Omode' controls on which side recycling must happen:
+ * TODO: Do we need both? Maybe merge them.
+ */
+
+void _vector_copy(SEXP out, int out_offset, SEXP in, int in_offset, int nelt)
+{
+	void *dest;
+	const void *src;
+	size_t eltsize;
+	int i;
+	SEXP in_elt; // out_elt;
+
+	if (out_offset < 0 || out_offset + nelt > LENGTH(out)
+	 || in_offset < 0 || in_offset + nelt > LENGTH(in))
+		error("subscripts out of bounds");
+	switch (TYPEOF(out)) {
+	    case RAWSXP:
+		dest = (void *) (RAW(out) + out_offset);
+		src = (const void *) (RAW(in) + in_offset);
+		eltsize = sizeof(Rbyte);
+		break;
+	    case LGLSXP:
+		dest = (void *) (LOGICAL(out) + out_offset);
+		src = (const void *) (LOGICAL(in) + in_offset);
+		eltsize = sizeof(int);
+		break;
+	    case INTSXP:
+		dest = (void *) (INTEGER(out) + out_offset);
+		src = (const void *) (INTEGER(in) + in_offset);
+		eltsize = sizeof(int);
+		break;
+	    case REALSXP:
+		dest = (void *) (REAL(out) + out_offset);
+		src = (const void *) (REAL(in) + in_offset);
+		eltsize = sizeof(double);
+		break;
+	    case CPLXSXP:
+		dest = (void *) (COMPLEX(out) + out_offset);
+		src = (const void *) (COMPLEX(in) + in_offset);
+		eltsize = sizeof(Rcomplex);
+		break;
+	    case STRSXP:
+		for (i = 0; i < nelt; i++) {
+			in_elt = STRING_ELT(in, in_offset + i);
+			SET_STRING_ELT(out, out_offset + i, in_elt);
+			//PROTECT(out_elt = duplicate(in_elt));
+			//SET_STRING_ELT(out, out_offset + i, out_elt);
+			//UNPROTECT(1);
+		}
+		return;
+	    case VECSXP:
+		for (i = 0; i < nelt; i++) {
+			in_elt = VECTOR_ELT(in, in_offset + i);
+			SET_VECTOR_ELT(out, out_offset + i, in_elt);
+			//PROTECT(out_elt = duplicate(in_elt));
+			//SET_VECTOR_ELT(out, out_offset + i, out_elt);
+			//UNPROTECT(1);
+		}
+		return;
+	    default:
+		error("IRanges internal error in _vector_copy(): "
+		      "%s type not supported", CHAR(type2str(TYPEOF(out))));
+		return; // gcc -Wall
+	}
+	memcpy(dest, src, nelt * eltsize);
+	return;
+}
+
+/* 'Omode' controls on which side recycling must happen:
  *   - Omode =  0: straight copying (no recycling);
  *   - Omode =  1: cyclic writing to 'out';
  *   - Omode = -1: cyclic reading from 'in' (doesn't support reverse mode).
+ * TODO: Add support for STRSXP and VECSXP.
  */
-
-void _vector_Ocopy(SEXP out, int out_offset, SEXP in, int in_offset,
-		int nelt, SEXP lkup, int reverse, int Omode)
+void _vector_Ocopy(SEXP out, int out_offset, SEXP in, int in_offset, int nelt,
+		SEXP lkup, int reverse, int Omode)
 {
 	void (*Ocopy_bytes)(int, int,
 		char *, int, const char *, int, const int *, int);
@@ -77,6 +140,10 @@ void _vector_Ocopy(SEXP out, int out_offset, SEXP in, int in_offset,
 	char *dest = NULL, *src = NULL; /* gcc -Wall */
 	size_t blocksize = 0; /* gcc -Wall */
 
+	if (lkup == R_NilValue && reverse == 0 && Omode == 0) {
+		_vector_copy(out, out_offset, in, in_offset, nelt);
+		return;
+	}
 	if (Omode >= 0) {
 		if (out_offset < 0)
 			error("subscripts out of bounds");
@@ -103,7 +170,7 @@ void _vector_Ocopy(SEXP out, int out_offset, SEXP in, int in_offset,
 		src_nelt = LENGTH(in) - in_offset;
 		if (reverse)
 			error("IRanges internal error in _vector_Ocopy(): "
-			      "reverse mode not supported when Omode=-1");
+			      "reverse mode not supported when Omode = -1");
 		Ocopy_bytes = _Ocopy_bytes_to_i1i2_with_lkup;
 		Ocopy_byteblocks = _Ocopy_byteblocks_to_i1i2;
 		i1 = out_offset;
@@ -146,7 +213,7 @@ void _vector_Ocopy(SEXP out, int out_offset, SEXP in, int in_offset,
 	    default:
 		error("IRanges internal error in _vector_Ocopy(): "
 		      "%s type not supported", CHAR(type2str(TYPEOF(out))));
-		break; // gcc -Wall
+		return; // gcc -Wall
 	}
 	Ocopy_byteblocks(i1, i2, dest, dest_nelt, src, src_nelt, blocksize);
 	return;
@@ -226,6 +293,7 @@ void _vector_Ocopy_to_offset(SEXP out, SEXP in, int out_offset, int nelt,
  * RECYCLING: Cyclic writing to 'out'.
  * In addition, "raw" vectors support fast on-the-fly translation via the
  * 'lkup' table.
+ * TODO: Add support for STRSXP and VECSXP.
  */
 void _vector_Ocopy_from_subscript(SEXP out, SEXP in, SEXP subscript, SEXP lkup)
 {
@@ -274,6 +342,7 @@ void _vector_Ocopy_from_subscript(SEXP out, SEXP in, SEXP subscript, SEXP lkup)
  * RECYCLING: Cyclic reading from 'in'.
  * In addition, "raw" vectors support fast on-the-fly translation via the
  * 'lkup' table.
+ * TODO: Add support for STRSXP and VECSXP.
  */
 void _vector_Ocopy_to_subscript(SEXP out, SEXP in, SEXP subscript, SEXP lkup)
 {
@@ -333,19 +402,20 @@ void _vector_mcopy(SEXP out, int out_offset,
 		SEXP in, SEXP in_start, SEXP in_width,
 		SEXP lkup, int reverse)
 {
-	int i1, i2, j, in_offset, nelt;
+	int nranges, i1, i2, j, in_offset, nelt;
+	const int *in_start_p, *in_width_p;
 
-	for (i1 = 0, i2 = LENGTH(in_start) - 1;
-	     i1 < LENGTH(in_start);
-	     i1++, i2--)
-	{
+	nranges = _check_integer_pairs(in_start, in_width,
+				       &in_start_p, &in_width_p,
+				       "start", "width");
+	for (i1 = 0, i2 = nranges - 1; i1 < nranges; i1++, i2--) {
 		j = reverse ? i2 : i1;
-		in_offset = INTEGER(in_start)[j] - 1;
-		nelt = INTEGER(in_width)[j];
+		in_offset = in_start_p[j] - 1;
+		nelt = in_width_p[j];
 		if (nelt < 0)
 			error("negative widths are not allowed");
 		_vector_Ocopy(out, out_offset, in, in_offset, nelt,
-			lkup, reverse, 0);
+			      lkup, reverse, 0);
 		out_offset += nelt;
 	}
 	return;

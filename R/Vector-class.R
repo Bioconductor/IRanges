@@ -180,6 +180,14 @@ setValidity2("Vector", .valid.Vector)
 ### Subsetting.
 ###
 
+### Not exported.
+extractROWS <- function(x, i)
+{
+    if (length(dim(x)) < 2L)
+        return(x[i])
+    x[i, , drop=FALSE]
+}
+
 normalizeSingleBracketSubscript <- function(i, x)
 {
     if (is.null(i))
@@ -536,6 +544,40 @@ setReplaceMethod("window", "factor",
                      factor(callGeneric(), levels = levels)
                  })
 
+### Replacement for seqselect().
+setGeneric("subsetByRanges", signature="x",
+    function(x, start=NULL, end=NULL, width=NULL)
+        standardGeneric("subsetByRanges")
+)
+
+setMethod("subsetByRanges", "ANY",
+    function(x, start=NULL, end=NULL, width=NULL)
+    {
+        idx <- subsetByRanges(seq_len(NROW(x)),
+                              start=start, end=end, width=width)
+        extractROWS(x, idx)
+    }
+)
+
+setMethod("subsetByRanges", "NULL",
+    function(x, start=NULL, end=NULL, width=NULL) NULL
+)
+
+setMethod("subsetByRanges", "vector",
+    function(x, start=NULL, end=NULL, width=NULL)
+    {
+        if (!is(start, "Ranges")) {
+            start <- IRanges(start=start, end=end, width=width)
+        } else if (!is.null(end) || !is.null(width)) {
+            stop("'end' and 'width' must be NULLs ",
+                 "when 'start' is a Ranges object")
+        }
+        .Call2("vector_subsetByRanges", x, start(start), width(start),
+               PACKAGE="IRanges")
+    }
+)
+
+### TODO: Deprecate seqselect() at some point in favor of subsetByRanges().
 setGeneric("seqselect", signature="x",
            function(x, start=NULL, end=NULL, width=NULL)
            standardGeneric("seqselect"))
@@ -724,14 +766,6 @@ setReplaceMethod("seqselect", "factor",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Simple helper functions for some common subsetting operations.
 ###
-
-### Not exported.
-extractROWS <- function(x, i)
-{
-    if (length(dim(x)) < 2L)
-        return(x[i])
-    x[i, , drop=FALSE]
-}
 
 setMethod("head", "Vector",
           function(x, n = 6L, ...)

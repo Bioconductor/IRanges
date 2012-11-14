@@ -465,6 +465,25 @@ setReplaceMethod("[", "IRanges",
     }
 )
 
+setMethod("subsetByRanges", "IRanges",
+    function(x, start=NULL, end=NULL, width=NULL)
+    {
+        if (!is(start, "Ranges")) {
+            start <- IRanges(start=start, end=end, width=width)
+        } else if (!is.null(end) || !is.null(width)) {
+            stop("'end' and 'width' must be NULLs ",
+                 "when 'start' is a Ranges object")
+        }
+        ans_start <- subsetByRanges(start(x), start)
+        ans_width <- subsetByRanges(width(x), start)
+        ans_names <- subsetByRanges(names(x), start)
+        ans_mcols <- subsetByRanges(mcols(x), start)
+        initialize(x, start=ans_start, width=ans_width, NAMES=names(x),
+                      elementMetadata=ans_mcols)
+    }
+)
+
+### TODO: Deprecate seqselect() at some point in favor of subsetByRanges().
 setMethod("seqselect", "IRanges",
     function(x, start=NULL, end=NULL, width=NULL)
     {

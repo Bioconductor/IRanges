@@ -38,8 +38,47 @@ void _set_List_elementType(SEXP x, const char *type)
  * Other stuff.
  */
 
-/*
- * --- .Call ENTRY POINT ---
+/* --- .Call ENTRY POINT ---
+ * 'start' and 'width': integer vectors of the same length. They are assumed
+ * to come from a valid Ranges object i.e. no NAs and values in 'width' must
+ * be >= 0.
+ */
+SEXP vector_subsetByRanges(SEXP x, SEXP start, SEXP width)
+{
+	int x_len, nranges, ans_len, i, offset_i, width_i, end_i;
+	const int *start_p, *width_p;
+	SEXP ans, x_names, ans_names;
+
+	x_len = LENGTH(x);
+	nranges = _check_integer_pairs(start, width,
+				       &start_p, &width_p,
+				       "start", "width");
+	for (i = ans_len = 0; i < nranges; i++) {
+		width_i = width_p[i];
+		if (width_i == NA_INTEGER || width_i < 0)
+			error("'width' cannot contain NAs or negative values");
+		offset_i = start_p[i] - 1;
+		end_i = offset_i + width_i;
+		if (offset_i < 0 || end_i > x_len)
+			error("some ranges are out of bounds");
+		ans_len += width_i;
+	}
+	PROTECT(ans = allocVector(TYPEOF(x), ans_len));
+	_vector_mcopy(ans, 0, x, start, width, R_NilValue, 0);
+	x_names = GET_NAMES(x);
+	if (x_names != R_NilValue) {
+		PROTECT(ans_names = NEW_CHARACTER(ans_len));
+		_vector_mcopy(ans_names, 0, x_names, start, width,
+			      R_NilValue, 0);
+		SET_NAMES(ans, ans_names);
+		UNPROTECT(1);
+	}
+	UNPROTECT(1);
+	return ans;
+}
+
+/* --- .Call ENTRY POINT ---
+ * TODO: Remove this at some point (use vector_subsetByRanges instead).
  */
 SEXP vector_seqselect(SEXP x, SEXP start, SEXP width)
 {
@@ -92,7 +131,9 @@ SEXP vector_seqselect(SEXP x, SEXP start, SEXP width)
 			memcpy(RAW(ans) + ans_offset, RAW(x) + s, w * sizeof(char));
 			break;
 		    default:
-			UNIMPLEMENTED_TYPE("vector_seqselect", x);
+			error("IRanges internal error in vector_seqselect(): "
+			      "%s type not supported",
+			      CHAR(type2str(TYPEOF(x))));
 		}
 	}
 	ans_names = GET_NAMES(x);
