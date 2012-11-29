@@ -211,7 +211,7 @@ setMethod("subset", "DataTable",
               if (missing(subset)) 
                   i <- TRUE
               else {
-                  i <- eval(substitute(subset), x, parent.frame())
+                  i <- eval(substitute(subset), x, parent.frame(2))
                   i <- try(as.logical(i), silent=TRUE)
                   if (inherits(i, "try-error"))
                     stop("'subset' must be coercible to logical")
@@ -222,7 +222,7 @@ setMethod("subset", "DataTable",
               else {
                   nl <- as.list(seq_len(ncol(x)))
                   names(nl) <- colnames(x)
-                  j <- eval(substitute(select), nl, parent.frame())
+                  j <- eval(substitute(select), nl, parent.frame(2))
               }
               x[i, j, drop = drop]
           })
@@ -363,7 +363,7 @@ setMethod("duplicated", "DataTable",
 ###
 
 setMethod("as.env", "DataTable",
-          function(x, enclos = parent.frame()) {
+          function(x, enclos = parent.frame(2)) {
               env <- new.env(parent = enclos)
               lapply(colnames(x),
                      function(col) {

@@ -449,7 +449,7 @@ setMethod("as.list", "List", function(x, ...) lapply(x, identity))
 setGeneric("as.env", function(x, ...) standardGeneric("as.env"))
 
 setMethod("as.env", "List",
-          function(x, enclos = parent.frame()) {
+          function(x, enclos = parent.frame(2)) {
               nms <- names(x)
               if (is.null(nms))
                   stop("cannot convert to environment when names are NULL")

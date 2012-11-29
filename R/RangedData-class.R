@@ -716,7 +716,7 @@ setAs("RangedData", "CompressedIRangesList",
 setAs("RangedData", "IRangesList", .fromRangedDataToCompressedIRangesList)
 setAs("RangedData", "RangesList", .fromRangedDataToCompressedIRangesList)
 
-setMethod("as.env", "RangedData", function(x, enclos = parent.frame()) {
+setMethod("as.env", "RangedData", function(x, enclos = parent.frame(2)) {
   env <- callNextMethod(x, enclos)
   makeAccessorBinding <- function(fun, name = deparse(substitute(fun))) {
     makeActiveBinding(name, function() {

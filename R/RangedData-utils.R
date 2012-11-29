@@ -32,8 +32,7 @@ setMethod("rdapply", "RDApplyParams", function(x) {
   simplify <- simplify(x)
   reducerFun <- reducerFun(x)
   reducerParams <- reducerParams(x)
-  ### FIXME: parent.frame() is useless, so the search will just hit .GlobalEnv
-  enclos <- parent.frame(3) 
+  enclos <- parent.frame(2) 
   inds <- seq(length(rd))
   names(inds) <- names(rd)
   ##   if (length(excludePattern)) {
@@ -67,7 +66,7 @@ setMethod("within", "RangedData",
           {
             e <- list2env(as.list(as(data, "DataFrame")))
             e$ranges <- ranges(data)
-            eval(substitute(expr), e, parent.frame())
+            eval(substitute(expr), e, parent.frame(2))
             reserved <- c("ranges", "start", "end", "width", "space")
             l <- mget(setdiff(ls(e), reserved), e)
             l <- l[!sapply(l, is.null)]
