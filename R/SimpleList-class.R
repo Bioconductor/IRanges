@@ -357,7 +357,6 @@ as.list.SimpleList <- function(x, use.names = TRUE)
         names(ans) <- NULL
     ans
 }
-
 setMethod("as.list", "SimpleList", as.list.SimpleList)
 
 setAs("ANY", "SimpleList", function(from) {

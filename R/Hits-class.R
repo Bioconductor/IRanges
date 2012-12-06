@@ -109,7 +109,6 @@ as.list.Hits <- function(x, values = seq_len(subjectLength(x)))
                  factor(queryHits(x),
                         levels = seq_len(queryLength(x)))))
 }
-
 setMethod("as.list", "Hits", as.list.Hits)
 
 setAs("Hits", "list", function(from) as.list(from))
