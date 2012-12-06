@@ -82,7 +82,7 @@ setMethod("end", "RangesList",
           function(x) newList("SimpleIntegerList", lapply(x, end)))
 setMethod("width", "RangesList",
           function(x) newList("SimpleIntegerList", lapply(x, width)))
-setGeneric(".SEW<-", signature="x",
+setGeneric(".SEW<-", signature="x",  # not exported
            function(x, FUN, check=TRUE, value) standardGeneric(".SEW<-"))
 setReplaceMethod(".SEW", "RangesList",
                  function(x, FUN, check=TRUE, value)
@@ -428,13 +428,16 @@ setMethod("as.data.frame", "RangesList",
                        stringsAsFactors = FALSE)
           })
 
+as.list.CompressedNormalIRangesList <- function(x, use.names = TRUE)
+{
+    .CompressedList.list.subscript(X = x,
+                                   INDEX = seq_len(length(x)),
+                                   USE.NAMES = use.names,
+                                   FUN = newNormalIRangesFromIRanges,
+                                   COMPRESS = FALSE)
+}
 setMethod("as.list", "CompressedNormalIRangesList",
-          function(x, use.names = TRUE)
-          .CompressedList.list.subscript(X = x,
-                                         INDEX = seq_len(length(x)),
-                                         USE.NAMES = use.names,
-                                         FUN = newNormalIRangesFromIRanges,
-                                         COMPRESS = FALSE))
+          as.list.CompressedNormalIRangesList)
 
 setMethod("unlist", "SimpleNormalIRangesList",
           function(x, recursive = TRUE, use.names = TRUE)

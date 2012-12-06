@@ -350,13 +350,15 @@ setMethod("mendoapply", "SimpleList",
 ### Coercion.
 ###
 
-setMethod("as.list", "SimpleList",
-          function(x, use.names = TRUE) {
-              ans <- x@listData
-              if (!use.names)
-                  names(ans) <- NULL
-              ans
-          })
+as.list.SimpleList <- function(x, use.names = TRUE)
+{
+    ans <- x@listData
+    if (!use.names)
+        names(ans) <- NULL
+    ans
+}
+
+setMethod("as.list", "SimpleList", as.list.SimpleList)
 
 setAs("ANY", "SimpleList", function(from) {
   coerceToSimpleList(from)

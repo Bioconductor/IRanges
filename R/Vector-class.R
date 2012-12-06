@@ -28,7 +28,10 @@ setClass("Vector",
 ### Internal utility (not exported).
 ###
 
-setGeneric("showAsCell", function(object) standardGeneric("showAsCell"))
+setGeneric("showAsCell",  # not exported
+    function(object) standardGeneric("showAsCell")
+)
+
 setMethod(IRanges:::showAsCell, "ANY", function(object) {
   if (length(dim(object)) > 2)
     dim(object) <- c(nrow(object), prod(tail(dim(object), -1)))

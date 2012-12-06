@@ -144,9 +144,10 @@ setMethod("as.complex", "Rle", function(x) rep.int(as.complex(runValue(x)), runL
 setMethod("as.character", "Rle", function(x) rep.int(as.character(runValue(x)), runLength(x)))
 setMethod("as.raw", "Rle", function(x) rep.int(as.raw(runValue(x)), runLength(x)))
 setMethod("as.factor", "Rle", function(x) rep.int(as.factor(runValue(x)), runLength(x)))
-setMethod("as.list", "Rle", function(x) as.list(as.vector(x)))
+as.list.Rle <- function(x) as.list(as.vector(x))
+setMethod("as.list", "Rle", as.list.Rle)
 
-setGeneric("as.vectorORfactor",
+setGeneric("as.vectorORfactor",  # not exported
            function(x, ...) standardGeneric("as.vectorORfactor"))
 setMethod("as.vectorORfactor", "Rle",
           function(x) rep.int(runValue(x), runLength(x)))
@@ -475,7 +476,7 @@ setMethod("match", "Rle",
                         incomparables = incomparables), 
                   lengths = runLength(x), check = FALSE))
 
-setGeneric("orderAsRanges", signature = c("x"),
+setGeneric("orderAsRanges", signature = c("x"),  # not exported
            function(x, na.last = TRUE, decreasing = FALSE)
                standardGeneric("orderAsRanges"))
 

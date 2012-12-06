@@ -444,7 +444,8 @@ setMethod("revElements", "List",
 
 setAs("List", "list", function(from) as.list(from))
 
-setMethod("as.list", "List", function(x, ...) lapply(x, identity))
+as.list.List <- function(x, ...) lapply(x, identity)
+setMethod("as.list", "List", as.list.List)
 
 setGeneric("as.env", function(x, ...) standardGeneric("as.env"))
 

@@ -3,7 +3,7 @@
 ### -------------------------------------------------------------------------
 
 ## internal generic
-setGeneric("processSelfMatching",
+setGeneric("processSelfMatching",  # not exported
            function(x, select = c("all", "first", "last", "arbitrary"),
                     ignoreSelf = FALSE, ignoreRedundant = FALSE)
            standardGeneric("processSelfMatching"))

@@ -103,12 +103,14 @@ setMethod("as.data.frame", "Hits",
 )
 
 ## a list, with an element for each query, containing the subject hits
-setMethod("as.list", "Hits",
-          function(x, values = seq_len(subjectLength(x))) {
-            unname(split(values[subjectHits(x)],
-                         factor(queryHits(x),
-                                levels = seq_len(queryLength(x)))))
-          })
+as.list.Hits <- function(x, values = seq_len(subjectLength(x)))
+{
+    unname(split(values[subjectHits(x)],
+                 factor(queryHits(x),
+                        levels = seq_len(queryLength(x)))))
+}
+
+setMethod("as.list", "Hits", as.list.Hits)
 
 setAs("Hits", "list", function(from) as.list(from))
 setAs("Hits", "List", function(from) {

@@ -54,8 +54,36 @@ exportClasses(
     RangedSelection, RangesMapping
 )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Export S3 methods
+###
+
+S3method(as.list, List)
+S3method(as.list, SimpleList)
+S3method(as.list, CompressedList)
+S3method(as.list, Rle)
+S3method(as.list, CompressedNormalIRangesList)
+S3method(as.list, Hits)
+
+### We also export them thru the export() directive so that (a) they can be
+### called directly, (b) tab-completion on the name of the generic shows them,
+### and (c) methods() doesn't asterisk them.
 export(
-    ## Non-generic functions:
+    as.list.List,
+    as.list.SimpleList,
+    as.list.CompressedList,
+    as.list.Rle,
+    as.list.CompressedNormalIRangesList,
+    as.list.Hits
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Export non-generic functions
+###
+
+export(
     setValidity2, new2,
     .Call2,
     isTRUEorFALSE, isSingleInteger, isSingleNumber, isSingleString,
@@ -65,19 +93,27 @@ export(
     safeExplode,
     strsplitAsListOfIntegerVectors,
     svn.time,
+    multisplit,
+    seqapply, mseqapply, tseqapply, seqsplit, seqby,
+    splitAsList,
     solveUserSEW0, IRanges, solveUserSEW,
     successiveIRanges,
     breakInChunks,
     whichAsIRanges,
     asNormalIRanges,
+    rangeComparisonCodeToLetter,
     IntervalTree,
     H2LGrouping, Dups, PartitioningByEnd, PartitioningByWidth,
+    tofactor,
     RangedData, RangedDataList,
     RangedSelection,
     FilterRules, RDApplyParams,
     RangesList,
     IRangesList,
     RleViewsList,
+    remapHits,
+    hits,
+    encodeOverlaps1, RangesList_encodeOverlaps,
     MaskCollection.show_frame,
     Mask,
     read.gapMask,
@@ -101,101 +137,157 @@ export(
     SimpleList, DataFrame,
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList,
-    DataFrameList, SplitDataFrameList,
+    DataFrameList, SplitDataFrameList
+)
 
-    ## Generic endomorphism functions
-    endoapply,
-    mendoapply,
 
-    ## Vector API:
-    splitAsListReturnedClass, splitAsList,
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Export S4 generic functions
+###
+
+export(
+    ## isConstant.R:
+    isConstant,
+
+    ## endoapply.R:
+    endoapply, mendoapply,
+
+    ## runstat.R:
+    runsum, runmean, runwtsum, runq,
+
+    ## Annotated-class.R:
     metadata, "metadata<-",
+
+    ## Vector-class.R:
     elementMetadata, "elementMetadata<-",
     mcols, "mcols<-",
     values, "values<-",
-    isConstant,
-    isEmpty,
-    subsetByRanges, seqselect, "seqselect<-",
     rename,
+    subsetByRanges, seqselect, "seqselect<-",
+    splitAsListReturnedClass,
+    mstack,
+    shiftApply,
 
-    ## Non-generic and generic functions in the List API:
+    ## List-class.R:
     elementType, elementLengths,
-    seqapply, mseqapply, tseqapply, seqsplit, seqby, multisplit,
-    revElements,
+    isEmpty, revElements,
+    as.env,
     
-    ## Generic functions in the Ranges API:
+    ## Ranges-class.R:
     width,
     mid,
     "start<-",
     "width<-",
     "end<-",
     isNormal, whichFirstNotNormal,
-    compare, rangeComparisonCodeToLetter,
-    shift, narrow, flank, reflect, resize, promoters, restrict, 
-    threebands, reduce, gaps, disjoin, isDisjoint, disjointBins,
-    punion, pintersect, psetdiff, pgap,
-    findOverlaps, countOverlaps, subsetByOverlaps,
-    nearest, precede, follow, distance, distanceToNearest,
-    
-    ## Generic functions in the Rle API:
-    Rle, runLength, runValue, nrun, "runLength<-", "runValue<-", shiftApply,
-    findRange, findRun,
 
-    ## Generic functions in the Grouping API:
-    nobj, grouplength, members, vmembers, togroup, togrouplength, tofactor,
+    ## Ranges-comparison.R
+    compare,
+
+    ## DataTable-API.R:
+    by,
+
+    ## Views-class.R:
+    subject,
+    ranges, "ranges<-",
+    Views,
+    trim, subviews,
+    viewApply, viewMins, viewMaxs, viewSums, viewMeans,
+    viewWhichMins, viewWhichMaxs, viewRangeMins, viewRangeMaxs,
+
+    ## Grouping-class.R:
+    nobj, grouplength, members, vmembers, togroup, togrouplength,
     high2low, low2high, grouprank, togrouprank,
 
-    ## Generic functions in the GappedRanges API:
+    ## Rle-class.R:
+    runLength, runValue, nrun, "runLength<-", "runValue<-",
+    Rle, 
+    findRange, findRun,
+    splitRanges,
+
+    ## RleViews-class.R:
+    slice,
+
+    ## DataFrameList-class.R:
+    columnMetadata, "columnMetadata<-",
+
+    ## RangesList-class.R:
+    universe, "universe<-", space,
+
+    ## GappedRanges-class.R:
     ngap,
 
-    ## Generic functions in the DataTable API:
-    as.env,
-    
-    ## MaskCollection API
+    ## MaskCollection-class.R:
     nir_list,
     active, "active<-",
     desc, "desc<-",
     maskedwidth, maskedratio,
     collapse,
-    ranges, "ranges<-",
-    subseq, "subseq<-",
 
-    ## Views API
-    subject, Views, subviews, trim,
-    slice,
-    runmean, runsum, runwtsum, runq,
-    viewApply, viewMins, viewMaxs, viewSums, viewMeans,
-    viewWhichMins, viewWhichMaxs, viewRangeMins, viewRangeMaxs,
+    ## RangedData-class.R:
+    score, "score<-",
 
-    ## rdapply API
-    rangedData, "rangedData<-", applyFun, "applyFun<-", applyParams,
-    "applyParams<-", simplify, "simplify<-",
-    ##excludePattern, "excludePattern<-",
-    filterRules, "filterRules<-",
-    evalSeparately, subsetByFilter, params,
-    reducerFun, "reducerFun<-", reducerParams, "reducerParams<-",
-    iteratorFun, "iteratorFun<-",
+    ## RangedData-utils.R:
     rdapply,
 
-    ## RangedData API
-    universe, "universe<-", space, score, "score<-",
-    columnMetadata, "columnMetadata<-",
+    ## FilterRules-class.R:
+    evalSeparately, subsetByFilter, params,
 
-    ## Hits API
-    queryHits, subjectHits, remapHits,
-    hits, map, pmap,
+    ## RDApplyParams-class.R:
+    rangedData, "rangedData<-",
+    applyFun, "applyFun<-",
+    applyParams, "applyParams<-",
+    ##excludePattern, "excludePattern<-",
+    filterRules, "filterRules<-",
+    simplify, "simplify<-",
+    reducerFun, "reducerFun<-",
+    reducerParams, "reducerParams<-",
+    iteratorFun, "iteratorFun<-",
 
-    ## OverlapEncodings
+    ## Hits-class.R:
+    queryHits, subjectHits,
+    queryLength, subjectLength,
+    countSubjectHits, countQueryHits,
+
+    ## RangesMapping-class.R:
+    map, pmap,
+
+    ## OverlapEncodings-class.R:
     Loffset, Roffset, encoding, flippedQuery,
     Lencoding, Rencoding, Lngap, Rngap,
-    encodeOverlaps1, RangesList_encodeOverlaps, encodeOverlaps,
 
-    ## Other generic functions:
+    ## XVector-class.R:
+    subseq, "subseq<-",
+
+    ## intra-range-methods.R:
+    shift, narrow, flank, reflect, resize, promoters, restrict, threebands,
+
+    ## inter-range-methods.R:
+    reduce, gaps, disjoin, isDisjoint, disjointBins,
+
+    ## setops-methods.R:
+    punion, pintersect, psetdiff, pgap,
+
+    ## findOverlaps-methods.R:
+    findOverlaps, countOverlaps, subsetByOverlaps,
+
+    ## nearest-methods.R:
+    precede, follow, nearest, distance, distanceToNearest,
+
+    ## encodeOverlaps-methods.R:
+    encodeOverlaps,
+
+    ## compact-methods.R:
     xvcopy, compact,
+
+    ## reverse-methods.R:
     reverse,
 
-    ## coverage.R:
-    coverage
+    ## coverage-methods.R:
+    coverage,
+
+    ## expand-methods.R:
+    expand
 )
 
 exportMethods(

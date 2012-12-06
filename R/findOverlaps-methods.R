@@ -457,11 +457,6 @@ setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
 ### match()
 ###
 
-setGeneric("match",
-    function(x, table, nomatch = NA_integer_, incomparables = NULL)
-        standardGeneric("match")
-)
-
 setMethod("match", c("Ranges", "Ranges"),
     function(x, table, nomatch = NA_integer_, incomparables = NULL)
     {
