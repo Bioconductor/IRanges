@@ -444,7 +444,17 @@ setMethod("revElements", "List",
 
 setAs("List", "list", function(from) as.list(from))
 
-as.list.List <- function(x, ...) lapply(x, identity)
+.as.list.List <- function(x, use.names=TRUE)
+{
+    if (!isTRUEorFALSE(use.names))
+        stop("'use.names' must be TRUE or FALSE")
+    ans <- lapply(x, identity)
+    if (!use.names)
+        names(ans) <- NULL
+    ans
+}
+### S3/S4 combo
+as.list.List <- function(x, ...) .as.list.List(x, ...)
 setMethod("as.list", "List", as.list.List)
 
 setGeneric("as.env", function(x, ...) standardGeneric("as.env"))

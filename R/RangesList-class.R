@@ -428,7 +428,7 @@ setMethod("as.data.frame", "RangesList",
                        stringsAsFactors = FALSE)
           })
 
-as.list.CompressedNormalIRangesList <- function(x, use.names = TRUE)
+.as.list.CompressedNormalIRangesList <- function(x, use.names = TRUE)
 {
     .CompressedList.list.subscript(X = x,
                                    INDEX = seq_len(length(x)),
@@ -436,8 +436,11 @@ as.list.CompressedNormalIRangesList <- function(x, use.names = TRUE)
                                    FUN = newNormalIRangesFromIRanges,
                                    COMPRESS = FALSE)
 }
+### S3/S4 combo
+as.list.CompressedNormalIRangesList <- function(x, ...)
+    .as.list.CompressedNormalIRangesList(x, ...)
 setMethod("as.list", "CompressedNormalIRangesList",
-          as.list.CompressedNormalIRangesList)
+    as.list.CompressedNormalIRangesList)
 
 setMethod("unlist", "SimpleNormalIRangesList",
           function(x, recursive = TRUE, use.names = TRUE)

@@ -144,7 +144,9 @@ setMethod("as.complex", "Rle", function(x) rep.int(as.complex(runValue(x)), runL
 setMethod("as.character", "Rle", function(x) rep.int(as.character(runValue(x)), runLength(x)))
 setMethod("as.raw", "Rle", function(x) rep.int(as.raw(runValue(x)), runLength(x)))
 setMethod("as.factor", "Rle", function(x) rep.int(as.factor(runValue(x)), runLength(x)))
-as.list.Rle <- function(x) as.list(as.vector(x))
+.as.list.Rle <- function(x) as.list(as.vector(x))
+### S3/S4 combo
+as.list.Rle <- function(x, ...) .as.list.Rle(x, ...)
 setMethod("as.list", "Rle", as.list.Rle)
 
 setGeneric("as.vectorORfactor",  # not exported
