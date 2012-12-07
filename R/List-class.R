@@ -453,7 +453,7 @@ setAs("List", "list", function(from) as.list(from))
         names(ans) <- NULL
     ans
 }
-### S3/S4 combo
+### S3/S4 combo for as.list.List
 as.list.List <- function(x, ...) .as.list.List(x, ...)
 setMethod("as.list", "List", as.list.List)
 

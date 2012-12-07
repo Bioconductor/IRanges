@@ -359,7 +359,7 @@ setMethod("mendoapply", "SimpleList",
         names(ans) <- NULL
     ans
 }
-### S3/S4 combo
+### S3/S4 combo for as.list.SimpleList
 as.list.SimpleList <- function(x, ...) .as.list.SimpleList(x, ...)
 setMethod("as.list", "SimpleList", as.list.SimpleList)
 

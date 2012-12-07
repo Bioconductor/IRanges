@@ -10,7 +10,6 @@
 \alias{<=,Ranges,Ranges-method}
 
 \alias{duplicated,Ranges-method}
-\alias{unique,Ranges-method}
 
 \alias{order,Ranges-method}
 \alias{sort,Ranges-method}
@@ -25,26 +24,21 @@
 }
 
 \usage{
-## ==== Equality and related methods ====
-## --------------------------------------
+## Element-wise (aka "parallel") comparison of 2 Ranges objects
+## ------------------------------------------------------------
 
 \S4method{==}{Ranges,Ranges}(e1, e2)
 
-\S4method{!=}{Ranges,Ranges}(e1, e2)
+\S4method{<=}{Ranges,Ranges}(e1, e2)
+
+## Duplicated elements within a Ranges object
+## ------------------------------------------
 
 \S4method{duplicated}{Ranges}(x, incomparables=FALSE, fromLast=FALSE,
            method=c("auto", "quick", "hash"), ...)
 
-\S4method{unique}{Ranges}(x, incomparables=FALSE, fromLast=FALSE,
-       method=c("auto", "quick", "hash"), ...)
-
-## ==== Ordering and related methods ====
-## --------------------------------------
-
-\S4method{<=}{Ranges,Ranges}(e1, e2)
-\S4method{>=}{Ranges,Ranges}(e1, e2)
-\S4method{<}{Ranges,Ranges}(e1, e2)
-\S4method{>}{Ranges,Ranges}(e1, e2)
+## Ordering and related methods
+## ----------------------------
 
 \S4method{order}{Ranges}(..., na.last=TRUE, decreasing=FALSE)
 
@@ -53,8 +47,9 @@
 \S4method{rank}{Ranges}(x, na.last=TRUE,
      ties.method=c("average", "first", "random", "max", "min"))
 
-## ==== Generalized range-wise comparison ====
-## -------------------------------------------
+## Generalized range-wise (aka "parallel") comparison of 2 Ranges objects
+## ----------------------------------------------------------------------
+
 compare(x, y)
 rangeComparisonCodeToLetter(code)
 }

@@ -56,30 +56,22 @@ setMethod("<=", signature(e1="Ranges", e2="Ranges"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Unique and duplicated elements within a Ranges object.
+### Duplicated elements within a Ranges object.
 ###
 
-setMethod("duplicated", "Ranges",
-    function(x, incomparables=FALSE, fromLast=FALSE,
-             method=c("auto", "quick", "hash"), ...)
-    {
-        if (!identical(incomparables, FALSE))
-            stop("\"duplicated\" method for Ranges objects ",
-                 "only accepts 'incomparables=FALSE'")
-        duplicatedIntegerPairs(start(x), width(x),
-                               fromLast=fromLast, method=method)
-    }
-)
-
-### Relies on a "[" method for 'x'.
-setMethod("unique", "Ranges",
-    function(x, incomparables=FALSE, fromLast=FALSE,
-             method=c("auto", "quick", "hash"), ...)
-    {
-        x[!duplicated(x, incomparables=incomparables,
-                         fromLast=fromLast, method=method, ...)]
-    }
-)
+.duplicated.Ranges <- function(x, incomparables=FALSE, fromLast=FALSE,
+                               method=c("auto", "quick", "hash"))
+{
+    if (!identical(incomparables, FALSE))
+        stop("\"duplicated\" method for Ranges objects ",
+             "only accepts 'incomparables=FALSE'")
+    duplicatedIntegerPairs(start(x), width(x),
+                           fromLast=fromLast, method=method)
+}
+### S3/S4 combo for duplicated.Ranges
+duplicated.Ranges <- function(x, incomparables=FALSE, ...)
+    .duplicated.Ranges(x, incomparables=incomparables, ...)
+setMethod("duplicated", "Ranges", duplicated.Ranges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -436,7 +436,7 @@ setMethod("as.data.frame", "RangesList",
                                    FUN = newNormalIRangesFromIRanges,
                                    COMPRESS = FALSE)
 }
-### S3/S4 combo
+### S3/S4 combo for as.list.CompressedNormalIRangesList
 as.list.CompressedNormalIRangesList <- function(x, ...)
     .as.list.CompressedNormalIRangesList(x, ...)
 setMethod("as.list", "CompressedNormalIRangesList",

@@ -66,8 +66,21 @@ S3method(as.list, Rle)
 S3method(as.list, CompressedNormalIRangesList)
 S3method(as.list, Hits)
 
+S3method(duplicated, Ranges)
+S3method(duplicated, Dups)
+S3method(duplicated, DataTable)
+S3method(duplicated, Rle)
+S3method(duplicated, XRawList)
+
 S3method(levels, Rle)
 S3method(levels, OverlapEncodings)
+
+S3method(unique, Vector)
+S3method(unique, AtomicList)
+S3method(unique, CompressedRleList)
+S3method(unique, SimpleRleList)
+S3method(unique, DataTable)
+S3method(unique, Rle)
 
 ### We also export them thru the export() directive so that (a) they can be
 ### called directly, (b) tab-completion on the name of the generic shows them,
@@ -80,8 +93,21 @@ export(
     as.list.CompressedNormalIRangesList,
     as.list.Hits,
 
+    duplicated.Ranges,
+    duplicated.Dups,
+    duplicated.DataTable,
+    duplicated.Rle,
+    duplicated.XRawList,
+
     levels.Rle,
-    levels.OverlapEncodings
+    levels.OverlapEncodings,
+
+    unique.Vector,
+    unique.AtomicList,
+    unique.CompressedRleList,
+    unique.SimpleRleList,
+    unique.DataTable,
+    unique.Rle
 )
 
 

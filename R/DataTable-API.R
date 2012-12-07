@@ -345,18 +345,18 @@ setMethod("by", "DataTable",
 ### Comparison
 ###
 
-setMethod("unique", "DataTable", function (x, incomparables = FALSE, ...) 
-          {
-            x[!duplicated(x, incomparables = incomparables, ...), ]
-          })
+### S3/S4 combo for duplicated.DataTable
+duplicated.DataTable <- function (x, incomparables=FALSE, fromLast=FALSE, ...)
+{
+    duplicated(as.data.frame(x),
+               incomparables=incomparables, fromLast=fromLast, ...)
+}
 
-setMethod("duplicated", "DataTable",
-          function (x, incomparables = FALSE, fromLast = FALSE, ...) 
-          {
-            x <- as.data.frame(x)
-            callGeneric()
-          })
+setMethod("duplicated", "DataTable", duplicated.DataTable)
 
+### S3/S4 combo for unique.DataTable
+unique.DataTable <- unique.data.frame
+setMethod("unique", "DataTable", unique.DataTable)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion

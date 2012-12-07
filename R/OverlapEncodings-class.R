@@ -28,7 +28,7 @@ setMethod("Roffset", "OverlapEncodings", function(x) x@Roffset)
 setGeneric("encoding", function(x) standardGeneric("encoding"))
 setMethod("encoding", "OverlapEncodings", function(x) x@encoding)
 
-### S3/S4 combo
+### S3/S4 combo for levels.OverlapEncodings
 levels.OverlapEncodings <- function(x) levels(encoding(x))
 setMethod("levels", "OverlapEncodings", levels.OverlapEncodings)
 

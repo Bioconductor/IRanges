@@ -818,13 +818,10 @@ setMethod("subset", "Vector",
               x[subset & !is.na(subset)]
           })
 
-setMethod("unique", "Vector",
-    function(x, incomparables=FALSE, ...)
-    {
-        names(x) <- NULL  # for consistency with base::unique() on vectors
-        x[!duplicated(x, incomparables=incomparables, ...)]
-    }
-)
+### S3/S4 combo for unique.Vector
+unique.Vector <- function(x, incomparables=FALSE, ...)
+    x[!duplicated(x, incomparables=incomparables, ...)]
+setMethod("unique", "Vector", unique.Vector)
 
 setMethod("sort", "Vector",
     function(x, decreasing=FALSE, ...)

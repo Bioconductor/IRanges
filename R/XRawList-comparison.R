@@ -97,14 +97,16 @@ setMethod("match", c("XRawList", "XRawList"),
     .Call2("XRawList_selfmatch_hash", x, PACKAGE="IRanges")
 }
 
-setMethod("duplicated", "XRawList",
-    function(x, incomparables=FALSE)
-    {
-        if (!identical(incomparables, FALSE))
-            stop("\"duplicated\" method for XRawList objects ",
-                 "only accepts 'incomparables=FALSE'")
-        sm <- .selfmatchXRawList(x)
-        sm != seq_len(length(sm))
-    }
-)
+.duplicated.XRawList <- function(x, incomparables=FALSE)
+{
+    if (!identical(incomparables, FALSE))
+        stop("\"duplicated\" method for XRawList objects ",
+             "only accepts 'incomparables=FALSE'")
+    sm <- .selfmatchXRawList(x)
+    sm != seq_len(length(sm))
+}
+### S3/S4 combo for duplicated.XRawList
+duplicated.XRawList <- function(x, incomparables=FALSE, ...)
+    .duplicated.XRawList(x, incomparables=incomparables, ...)
+setMethod("duplicated", "XRawList", duplicated.XRawList)
 

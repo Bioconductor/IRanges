@@ -722,27 +722,34 @@ setMethod("table", "CompressedAtomicList",
               names(dimnames(ans)) <- NULL
               ans
           })
-setAtomicListMethod("unique", endoapply = TRUE)
-setMethod("unique", "CompressedRleList",
-          function(x, incomparables = FALSE, ...)
-          {
-              if (is.factor(runValue(x@unlistData)))
-                  runValue(x@unlistData) <- as.character(runValue(x@unlistData))
-              CompressedAtomicListFromList(lapply(x, unique,
-                                                  incomparables = incomparables,
-                                                  ...))
-          })
-setMethod("unique", "SimpleRleList",
-          function(x, incomparables = FALSE, ...)
-              SimpleAtomicList(lapply(x,
-                                      function(y) {
-                                          if (is.factor(runValue(y)))
-                                              runValue(y) <-
-                                                as.character(runValue(y))
-                                          unique(y,
-                                                 incomparables = incomparables,
-                                                 ...)
-                                      })))
+
+### S3/S4 combo for unique.AtomicList
+unique.AtomicList <- function(x, incomparables=FALSE, ...)
+    endoapply(x, unique, incomparables=incomparables, ...)
+setMethod("unique", "AtomicList", unique.AtomicList)
+
+### S3/S4 combo for unique.CompressedRleList
+unique.CompressedRleList <- function(x, incomparables=FALSE, ...)
+{
+    if (is.factor(runValue(x@unlistData)))
+        runValue(x@unlistData) <- as.character(runValue(x@unlistData))
+    CompressedAtomicListFromList(lapply(x, unique,
+                                        incomparables = incomparables,
+                                        ...))
+}
+setMethod("unique", "CompressedRleList", unique.CompressedRleList)
+
+### S3/S4 combo for unique.SimpleRleList
+unique.SimpleRleList <- function(x, incomparables=FALSE, ...)
+{
+    SimpleAtomicList(lapply(x,
+        function(y) {
+            if (is.factor(runValue(y)))
+                runValue(y) <- as.character(runValue(y))
+            unique(y, incomparables = incomparables, ...)
+        }))
+}
+setMethod("unique", "SimpleRleList", unique.SimpleRleList)
 
 setReplaceMethod("seqselect", "SimpleAtomicList",
                  function(x, start = NULL, end = NULL, width = NULL, value)

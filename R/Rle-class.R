@@ -144,8 +144,9 @@ setMethod("as.complex", "Rle", function(x) rep.int(as.complex(runValue(x)), runL
 setMethod("as.character", "Rle", function(x) rep.int(as.character(runValue(x)), runLength(x)))
 setMethod("as.raw", "Rle", function(x) rep.int(as.raw(runValue(x)), runLength(x)))
 setMethod("as.factor", "Rle", function(x) rep.int(as.factor(runValue(x)), runLength(x)))
+
 .as.list.Rle <- function(x) as.list(as.vector(x))
-### S3/S4 combo
+### S3/S4 combo for as.list.Rle
 as.list.Rle <- function(x, ...) .as.list.Rle(x, ...)
 setMethod("as.list", "Rle", as.list.Rle)
 
@@ -851,9 +852,17 @@ setMethod("table", "Rle",
     }
 }
 
-setMethod("unique", "Rle",
-          function(x, incomparables = FALSE, ...)
-              unique(runValue(x), incomparables = incomparables, ...))
+.duplicated.Rle <- function(x, incomparables=FALSE, fromLast=FALSE)
+    stop("no \"duplicated\" method for Rle objects yet, sorry")
+### S3/S4 combo for duplicated.Rle
+duplicated.Rle <- function(x, incomparables=FALSE, ...)
+    .duplicated.Rle(x, incomparables=incomparables, ...)
+setMethod("duplicated", "Rle", duplicated.Rle)
+
+### S3/S4 combo for unique.Rle
+unique.Rle <- function(x, incomparables=FALSE, ...)
+    unique(runValue(x), incomparables=incomparables, ...)
+setMethod("unique", "Rle", unique.Rle)
 
 setMethod("window", "Rle",
           function(x, start = NA, end = NA, width = NA,
@@ -1369,7 +1378,7 @@ setMethod("paste", "Rle",
 ### Other factor data methods
 ###
 
-### S3/S4 combo
+### S3/S4 combo for levels.Rle
 levels.Rle <- function(x) levels(runValue(x))
 setMethod("levels", "Rle", levels.Rle)
 

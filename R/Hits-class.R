@@ -109,7 +109,7 @@ setMethod("as.data.frame", "Hits",
                  factor(queryHits(x),
                         levels = seq_len(queryLength(x)))))
 }
-### S3/S4 combo
+### S3/S4 combo for as.list.Hits
 as.list.Hits <- function(x, ...) .as.list.Hits(x, ...)
 setMethod("as.list", "Hits", as.list.Hits)
 
