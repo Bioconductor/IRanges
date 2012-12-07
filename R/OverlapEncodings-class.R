@@ -28,7 +28,9 @@ setMethod("Roffset", "OverlapEncodings", function(x) x@Roffset)
 setGeneric("encoding", function(x) standardGeneric("encoding"))
 setMethod("encoding", "OverlapEncodings", function(x) x@encoding)
 
-setMethod("levels", "OverlapEncodings", function(x) levels(encoding(x)))
+### S3/S4 combo
+levels.OverlapEncodings <- function(x) levels(encoding(x))
+setMethod("levels", "OverlapEncodings", levels.OverlapEncodings)
 
 setGeneric("flippedQuery", function(x) standardGeneric("flippedQuery"))
 setMethod("flippedQuery", "OverlapEncodings", function(x) x@flippedQuery)

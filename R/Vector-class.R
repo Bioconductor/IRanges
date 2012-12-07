@@ -60,11 +60,6 @@ setMethod("showAsCell", "Vector", function(object)
 
 setMethod("NROW", "Vector", function(x) length(x))
 
-### Same definition as base::nlevels() but needed anyway because the call to
-### levels(x) in base::nlevels() won't dispatch on the appropriate "levels"
-### method.
-setMethod("nlevels", "Vector", function(x) length(levels(x)))
-
 ### 3 accessors for the same slot: elementMetadata(), mcols(), and values().
 ### mcols() is the recommended one, use of elementMetadata() or values() is
 ### discouraged.

@@ -66,6 +66,9 @@ S3method(as.list, Rle)
 S3method(as.list, CompressedNormalIRangesList)
 S3method(as.list, Hits)
 
+S3method(levels, Rle)
+S3method(levels, OverlapEncodings)
+
 ### We also export them thru the export() directive so that (a) they can be
 ### called directly, (b) tab-completion on the name of the generic shows them,
 ### and (c) methods() doesn't asterisk them.
@@ -75,7 +78,10 @@ export(
     as.list.CompressedList,
     as.list.Rle,
     as.list.CompressedNormalIRangesList,
-    as.list.Hits
+    as.list.Hits,
+
+    levels.Rle,
+    levels.OverlapEncodings
 )
 
 
@@ -314,7 +320,7 @@ exportMethods(
     mean, var, cov, cor, sd, median, quantile, mad, IQR, smoothEnds, runmed,
     subset, window, "window<-", aggregate,
     nchar, substr, substring, chartr, tolower, toupper, sub, gsub,
-    levels, "levels<-", nlevels,
+    levels, "levels<-",
     as.vector,
     as.logical, as.integer, as.numeric, as.complex, as.character, as.raw,
     as.factor,

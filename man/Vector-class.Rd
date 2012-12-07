@@ -7,7 +7,6 @@
 \alias{Vector}
 
 \alias{NROW,Vector-method}
-\alias{nlevels,Vector-method}
 \alias{elementMetadata}
 \alias{elementMetadata,Vector-method}
 \alias{mcols}

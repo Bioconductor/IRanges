@@ -1369,7 +1369,9 @@ setMethod("paste", "Rle",
 ### Other factor data methods
 ###
 
-setMethod("levels", "Rle", function(x) levels(runValue(x)))
+### S3/S4 combo
+levels.Rle <- function(x) levels(runValue(x))
+setMethod("levels", "Rle", levels.Rle)
 
 setReplaceMethod("levels", "Rle",
                  function(x, value) {
