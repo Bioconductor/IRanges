@@ -125,7 +125,7 @@
 \alias{sort,AtomicList-method}
 \alias{table,SimpleAtomicList-method}
 \alias{table,CompressedAtomicList-method}
-\alias{unique,AtomicList-method}
+\alias{duplicated,AtomicList-method}
 \alias{unique,CompressedRleList-method}
 \alias{unique,SimpleRleList-method}
 \alias{drop,AtomicList-method}
@@ -367,7 +367,7 @@
 
   \describe{
     \item{General}{\code{\%in\%}, \code{is.na}, \code{match}, \code{sort},
-                   \code{table}, \code{unique}}
+                   \code{table}, \code{duplicated}, \code{unique}}
     \item{Logical}{\code{!}, \code{which}, \code{which.max}, \code{which.min}}
     \item{Numeric}{\code{diff},
                    \code{pmax}, \code{pmax.int}, \code{pmin}, \code{pmin.int},

@@ -723,10 +723,19 @@ setMethod("table", "CompressedAtomicList",
               ans
           })
 
-### S3/S4 combo for unique.AtomicList
-unique.AtomicList <- function(x, incomparables=FALSE, ...)
-    endoapply(x, unique, incomparables=incomparables, ...)
-setMethod("unique", "AtomicList", unique.AtomicList)
+### S3/S4 combo for duplicated.AtomicList
+duplicated.AtomicList <- function(x, incomparables=FALSE,
+                                     fromLast=FALSE, ...)
+{
+    if (is(x, "CompressedList"))
+        ans_class <- "CompressedLogicalList"
+    else
+        ans_class <- "SimpleLogicalList"
+    ans_listData <- lapply(x, duplicated, incomparables=incomparables,
+                                          fromLast=fromLast, ...)
+    newList(ans_class, ans_listData)
+}
+setMethod("duplicated", "AtomicList", duplicated.AtomicList)
 
 ### S3/S4 combo for unique.CompressedRleList
 unique.CompressedRleList <- function(x, incomparables=FALSE, ...)

@@ -34,8 +34,7 @@
 ## Duplicated elements within a Ranges object
 ## ------------------------------------------
 
-\S4method{duplicated}{Ranges}(x, incomparables=FALSE, fromLast=FALSE,
-           method=c("auto", "quick", "hash"), ...)
+\S4method{duplicated}{Ranges}(x, incomparables=FALSE, ...)
 
 ## Ordering and related methods
 ## ----------------------------
@@ -59,22 +58,26 @@ rangeComparisonCodeToLetter(code)
     \link{Ranges} objects.
   }
   \item{incomparables}{
-    Must be \code{FALSE}.
-  }
-  \item{fromLast}{
-    See default S3 method for \code{\link[base]{duplicated}}.
-  }
-  \item{method}{
-    Use a Quicksort-based (\code{method="quick"})
-    or a hash-based (\code{method="hash"}) algorithm.
-    The latter tends to give better performance, except maybe for some
-    pathological input that we've not been able to determine so far.
-    When \code{method="auto"} is specified, the hash-based algorithm
-    is used as long as the length of \code{x} is <= 2^29, otherwise the
-    Quicksort-based algorithm is used.
+    Not used (must be \code{FALSE}).
   }
   \item{...}{
-    \link{Ranges} objects for \code{order}.
+    For \code{duplicated}: the following additional arguments are supported:
+    \describe{
+      \item{\code{fromLast}}{
+        See default S3 method for \code{\link[base]{duplicated}}.
+      }
+      \item{\code{method}}{
+        Use a Quicksort-based (\code{method="quick"}) or a
+        hash-based (\code{method="hash"}) algorithm.
+        The latter tends to give better performance, except maybe for some
+        pathological input that we've not been able to determine so far.
+        When \code{method="auto"} is specified, the hash-based algorithm
+        is used as long as the length of \code{x} is <= 2^29, otherwise the
+        Quicksort-based algorithm is used.
+      }
+    }
+
+    For \code{order}: additional \link{Ranges} objects used for breaking ties.
   }
   \item{na.last}{
     Ignored.
