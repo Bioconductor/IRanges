@@ -40,49 +40,48 @@ setReplaceMethod("dimnames", "DataTable",
 ### Subsetting.
 ###
 
-setMethod("window", "DataTable",
-          function(x, start = NA, end = NA, width = NA,
-                   frequency = NULL, delta = NULL, ...)
-          {
-              solved_SEW <- solveWindowSEW(nrow(x), start, end, width)
-              if (is.null(frequency) && is.null(delta)) {
-                  x[as.integer(solved_SEW),,drop = FALSE]
-              } else {
-                  idx <-
-                    stats:::window.default(seq_len(nrow(x)),
-                                           start = start(solved_SEW),
-                                           end = end(solved_SEW),
-                                           frequency = frequency,
-                                           deltat = delta, ...)
-                  attributes(idx) <- NULL
-                  x[idx,,drop = FALSE]
-              }
-          })
+### S3/S4 combo for window.DataTable
+window.DataTable <- function(x, start=NA, end=NA, width=NA,
+                                frequency=NULL, delta=NULL, ...)
+{
+    solved_SEW <- solveWindowSEW(nrow(x), start, end, width)
+    if (is.null(frequency) && is.null(delta)) {
+        x[as.integer(solved_SEW), , drop=FALSE]
+    } else {
+        idx <- stats:::window.default(seq_len(nrow(x)),
+                                      start=start(solved_SEW),
+                                      end=end(solved_SEW),
+                                      frequency=frequency,
+                                      deltat=delta, ...)
+        attributes(idx) <- NULL
+        x[idx, , drop=FALSE]
+    }
+}
+setMethod("window", "DataTable", window.DataTable)
 
-setReplaceMethod("window", "DataTable",
-                 function(x, start = NA, end = NA, width = NA,
-                          keepLength = TRUE, ..., value)
-                 {
-                     if (!isTRUEorFALSE(keepLength))
-                         stop("'keepLength' must be TRUE or FALSE")
-                     solved_SEW <- solveWindowSEW(nrow(x), start, end, width)
-                     if (!is.null(value)) {
-                         if (!is(value, class(x))) {
-                             value <- try(as(value, class(x)), silent = TRUE)
-                             if (inherits(value, "try-error"))
-                                 stop("'value' must be a ", class(x),
-                                      " object or NULL")
-                         }
-                         if (keepLength && (nrow(value) != width(solved_SEW)))
-                             value <-
-                               value[rep(seq_len(nrow(value)),
-                                         length.out = width(solved_SEW)), ,
-                                     drop=FALSE]
-                     }
-                     rbind(window(x, end = start(solved_SEW) - 1L),
-                           value,
-                           window(x, start = end(solved_SEW) + 1L))
-                 })
+### S3/S4 combo for window<-.DataTable
+`window<-.DataTable` <- function(x, start=NA, end=NA, width=NA,
+                                    keepLength=TRUE, ..., value)
+{
+    if (!isTRUEorFALSE(keepLength))
+        stop("'keepLength' must be TRUE or FALSE")
+    solved_SEW <- solveWindowSEW(nrow(x), start, end, width)
+    if (!is.null(value)) {
+        if (!is(value, class(x))) {
+            value <- try(as(value, class(x)), silent = TRUE)
+            if (inherits(value, "try-error"))
+                stop("'value' must be a ", class(x), " object or NULL")
+        }
+        if (keepLength && (nrow(value) != width(solved_SEW)))
+            value <- value[rep(seq_len(nrow(value)),
+                               length.out = width(solved_SEW)), ,
+                           drop=FALSE]
+    }
+    rbind(window(x, end=start(solved_SEW) - 1L),
+          value,
+          window(x, start=end(solved_SEW) + 1L))
+}
+setReplaceMethod("window", "DataTable", `window<-.DataTable`)
 
 setMethod("seqselect", "DataTable",
           function(x, start=NULL, end=NULL, width=NULL)

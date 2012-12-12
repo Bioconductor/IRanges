@@ -522,10 +522,11 @@ setReplaceMethod("seqselect", "RangedData",
                  stop("operation not supported")
                  )
 
-setReplaceMethod("window", "RangedData",
-                 function(x, start = NA, end = NA, width = NA, keepLength = TRUE, ..., value)
-                 stop("operation not supported")
-                 )
+### S3/S4 combo for window<-.RangedData
+`window<-.RangedData` <- function(x, start=NA, end=NA, width=NA,
+                                     keepLength=TRUE, ..., value)
+    stop("operation not supported")
+setReplaceMethod("window", "RangedData", `window<-.RangedData`)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.

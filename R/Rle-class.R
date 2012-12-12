@@ -864,37 +864,35 @@ unique.Rle <- function(x, incomparables=FALSE, ...)
     unique(runValue(x), incomparables=incomparables, ...)
 setMethod("unique", "Rle", unique.Rle)
 
-setMethod("window", "Rle",
-          function(x, start = NA, end = NA, width = NA,
-                   frequency = NULL, delta = NULL, ...)
-          {
-              solved_SEW <- solveWindowSEW(length(x), start, end, width)
-              if (is.null(frequency) && is.null(delta)) {
-                  info <-
-                    getStartEndRunAndOffset(x, start(solved_SEW), end(solved_SEW))
-                  runStart <- info[["start"]][["run"]]
-                  offsetStart <- info[["start"]][["offset"]]
-                  runEnd <- info[["end"]][["run"]]
-                  offsetEnd <- info[["end"]][["offset"]]
-                  ans <-
-                    .Call2("Rle_window",
-                          x, runStart, runEnd, offsetStart, offsetEnd,
-                          new("Rle"), PACKAGE = "IRanges")
-                  if (is.factor(runValue(x)))
-                      attributes(runValue(ans)) <-
-                        list(levels = levels(x), class = "factor")
-                  ans
-              } else {
-                  idx <-
-                    stats:::window.default(seq_len(length(x)),
-                                           start = start(solved_SEW),
-                                           end = end(solved_SEW),
-                                           frequency = frequency,
-                                           deltat = delta, ...)
-                  attributes(idx) <- NULL
-                  x[idx]
-              }
-          })
+### S3/S4 combo for window.Rle
+window.Rle <- function(x, start=NA, end=NA, width=NA,
+                          frequency=NULL, delta=NULL, ...)
+{
+    solved_SEW <- solveWindowSEW(length(x), start, end, width)
+    if (is.null(frequency) && is.null(delta)) {
+        info <- getStartEndRunAndOffset(x, start(solved_SEW), end(solved_SEW))
+        runStart <- info[["start"]][["run"]]
+        offsetStart <- info[["start"]][["offset"]]
+        runEnd <- info[["end"]][["run"]]
+        offsetEnd <- info[["end"]][["offset"]]
+        ans <- .Call2("Rle_window",
+                      x, runStart, runEnd, offsetStart, offsetEnd,
+                      new("Rle"), PACKAGE = "IRanges")
+        if (is.factor(runValue(x)))
+            attributes(runValue(ans)) <-
+                list(levels = levels(x), class = "factor")
+            ans
+        } else {
+            idx <- stats:::window.default(seq_len(length(x)),
+                                          start = start(solved_SEW),
+                                          end = end(solved_SEW),
+                                          frequency = frequency,
+                                          deltat = delta, ...)
+            attributes(idx) <- NULL
+            x[idx]
+        }
+}
+setMethod("window", "Rle", window.Rle)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other logical data methods

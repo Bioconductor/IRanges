@@ -168,24 +168,24 @@ setMethod("seqselect", "XVector",
     }
 )
 
-setMethod("window", "XVector",
-    function(x, start=NA, end=NA, width=NA,
-             frequency=NULL, delta=NULL, ...)
-    {
-        if (is.null(frequency) && is.null(delta)) {
-            ans <- subseq(x, start=start, end=end, width=width)
-            return(ans)
-        }
-        solved_SEW <- solveWindowSEW(length(x), start, end, width)
-        idx <- stats:::window.default(seq_len(length(x)),
-                                      start=start(solved_SEW),
-                                      end=end(solved_SEW),
-                                      frequency=frequency,
-                                      deltat=delta, ...)
-        attributes(idx) <- NULL
-        x[idx]
+### S3/S4 combo for window.XVector
+window.XVector <- function(x, start=NA, end=NA, width=NA,
+                              frequency=NULL, delta=NULL, ...)
+{
+    if (is.null(frequency) && is.null(delta)) {
+        ans <- subseq(x, start=start, end=end, width=width)
+        return(ans)
     }
-)
+    solved_SEW <- solveWindowSEW(length(x), start, end, width)
+    idx <- stats:::window.default(seq_len(length(x)),
+                                  start=start(solved_SEW),
+                                  end=end(solved_SEW),
+                                  frequency=frequency,
+                                  deltat=delta, ...)
+    attributes(idx) <- NULL
+    x[idx]
+}
+setMethod("window", "XVector", window.XVector)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

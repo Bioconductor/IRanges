@@ -535,27 +535,27 @@ setReplaceMethod("seqselect", "IRanges",
     }
 )
 
-setMethod("window", "IRanges",
-    function(x, start = NA, end = NA, width = NA,
-             frequency = NULL, delta = NULL, ...)
-    {
-        slot(x, "start", check=FALSE) <-
-          window(start(x), start = start, end = end, width = width,
-                 frequency = frequency, delta = delta)
-        slot(x, "width", check=FALSE) <-
-          window(width(x), start = start, end = end, width = width,
-                 frequency = frequency, delta = delta)
-        if (!is.null(elementMetadata(x)))
-          slot(x, "elementMetadata", check=FALSE) <-
-            window(elementMetadata(x), start = start, end = end, width = width,
-                   frequency = frequency, delta = delta)
-        if (!is.null(names(x)))
-            slot(x, "NAMES", check=FALSE) <-
-              window(names(x), start = start, end = end, width = width,
-                     frequency = frequency, delta = delta)
-        x
-    }
-)
+### S3/S4 combo for window.IRanges
+window.IRanges <- function(x, start=NA, end=NA, width=NA,
+                              frequency=NULL, delta=NULL, ...)
+{
+    slot(x, "start", check=FALSE) <-
+        window(start(x), start=start, end=end, width=width,
+                         frequency=frequency, delta=delta)
+    slot(x, "width", check=FALSE) <-
+        window(width(x), start=start, end=end, width=width,
+                         frequency=frequency, delta=delta)
+    if (!is.null(elementMetadata(x)))
+        slot(x, "elementMetadata", check=FALSE) <-
+            window(elementMetadata(x), start=start, end=end, width=width,
+                                       frequency=frequency, delta=delta)
+    if (!is.null(names(x)))
+        slot(x, "NAMES", check=FALSE) <-
+            window(names(x), start=start, end=end, width=width,
+                             frequency=frequency, delta=delta)
+    x
+}
+setMethod("window", "IRanges", window.IRanges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

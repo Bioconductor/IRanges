@@ -159,14 +159,15 @@ setMethod("seqselect", "GappedRanges",
     }
 )
 
-setMethod("window", "GappedRanges",
-    function(x, start=NA, end=NA, width=NA, frequency=NULL, delta=NULL, ...)
-    {
-        x@cnirl <- window(x@cnirl, start=start, end=end, width=width,
-                          frequency=frequency, delta=delta, ...)
-        x
-    }
-)
+### S3/S4 combo for window.GappedRanges
+window.GappedRanges <- function(x, start=NA, end=NA, width=NA,
+                                   frequency=NULL, delta=NULL, ...)
+{
+    x@cnirl <- window(x@cnirl, start=start, end=end, width=width,
+                               frequency=frequency, delta=delta, ...)
+    x
+}
+setMethod("window", "GappedRanges", window.GappedRanges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

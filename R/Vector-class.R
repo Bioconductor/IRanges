@@ -433,114 +433,106 @@ solveWindowSEW <- function(seq_length, start, end, width)
     solved_SEW
 }
 
-setMethod("window", "Vector",
-          function(x, start = NA, end = NA, width = NA,
-                   frequency = NULL, delta = NULL, ...)
-          {
-              solved_SEW <- solveWindowSEW(length(x), start, end, width)
-              if (is.null(frequency) && is.null(delta)) {
-                  x[as.integer(solved_SEW)]
-              } else {
-                  idx <-
-                    stats:::window.default(seq_len(length(x)),
-                                           start = start(solved_SEW),
-                                           end = end(solved_SEW),
-                                           frequency = frequency,
-                                           deltat = delta, ...)
-                  attributes(idx) <- NULL
-                  x[idx]
-              }
-          })
+### S3/S4 combo for window.Vector
+window.Vector <- function(x, start=NA, end=NA, width=NA,
+                             frequency=NULL, delta=NULL, ...)
+{
+    solved_SEW <- solveWindowSEW(length(x), start, end, width)
+    if (is.null(frequency) && is.null(delta)) {
+        x[as.integer(solved_SEW)]
+    } else {
+        idx <- stats:::window.default(seq_len(length(x)),
+                                      start = start(solved_SEW),
+                                      end = end(solved_SEW),
+                                      frequency = frequency,
+                                      deltat = delta, ...)
+        attributes(idx) <- NULL
+        x[idx]
+    }
+}
+setMethod("window", "Vector", window.Vector)
 
-setMethod("window", "NULL",
-        function(x, start = NA, end = NA, width = NA,
-                 frequency = NULL, delta = NULL, ...) NULL)
+### S3/S4 combo for window.NULL
+window.NULL <- function(x, start=NA, end=NA, width=NA,
+                           frequency=NULL, delta=NULL, ...)
+{
+    NULL
+}
+setMethod("window", "NULL", window.NULL)
 
-setMethod("window", "vector",
-          function(x, start = NA, end = NA, width = NA,
-                   frequency = NULL, delta = NULL, ...)
-          {
-              solved_SEW <- solveWindowSEW(length(x), start, end, width)
-              if (is.null(frequency) && is.null(delta)) {
-                  .Call2("vector_seqselect",
-                        x, start(solved_SEW), width(solved_SEW),
-                        PACKAGE="IRanges")
-              } else {
-                  idx <-
-                    stats:::window.default(seq_len(length(x)),
-                                           start = start(solved_SEW),
-                                           end = end(solved_SEW),
-                                           frequency = frequency,
-                                           deltat = delta, ...)
-                  attributes(idx) <- NULL
-                  x[idx]
-              }
-          })
+### S3/S4 combo for window.vector
+### FIXME: This method alters the semantic of stats::window() on ordinary
+### vectors (the result has no 'tsp' attribute). Not really acceptable.
+window.vector <- function(x, start=NA, end=NA, width=NA,
+                             frequency=NULL, delta=NULL, ...)
+{
+    solved_SEW <- solveWindowSEW(length(x), start, end, width)
+    if (is.null(frequency) && is.null(delta)) {
+        .Call2("vector_seqselect",
+               x, start(solved_SEW), width(solved_SEW),
+               PACKAGE="IRanges")
+    } else {
+        idx <- stats:::window.default(seq_len(length(x)),
+                                      start=start(solved_SEW),
+                                      end=end(solved_SEW),
+                                      frequency=frequency,
+                                      deltat=delta, ...)
+        attributes(idx) <- NULL
+        x[idx]
+    }
+}
+setMethod("window", "vector", window.vector)
 
-setMethod("window", "factor",
-          function(x, start = NA, end = NA, width = NA,
-                   frequency = NULL, delta = NULL, ...)
-          {
-              labels <- levels(x)
-              factor(callGeneric(as.integer(x), start = start, end = end,
-                                 width = width, frequency = frequency,
-                                 delta = delta, ...),
-                     levels = seq_len(length(labels)), labels = labels)
-          })
+### S3/S4 combo for window.factor
+### FIXME: This method alters the semantic of stats::window() on factors
+### (the result has no 'tsp' attribute). Not really acceptable.
+window.factor <- function(x, start=NA, end=NA, width=NA,
+                             frequency=NULL, delta=NULL, ...)
+{
+    labels <- levels(x)
+    factor(callGeneric(as.integer(x), start=start, end=end,
+                       width=width, frequency=frequency,
+                       delta=delta, ...),
+           levels=seq_len(length(labels)), labels=labels)
+}
+setMethod("window", "factor", window.factor)
 
-setReplaceMethod("window", "Vector",
-                 function(x, start = NA, end = NA, width = NA,
-                          keepLength = TRUE, ..., value)
-                 {
-                     if (!isTRUEorFALSE(keepLength))
-                         stop("'keepLength' must be TRUE or FALSE")
-                     solved_SEW <- solveWindowSEW(length(x), start, end, width)
-                     if (!is.null(value)) {
-                         if (!is(value, class(x))) {
-                             value <- try(as(value, class(x)), silent = TRUE)
-                             if (inherits(value, "try-error"))
-                                 stop("'value' must be a ", class(x),
-                                      " object or NULL")
-                         }
-                         if (keepLength && (length(value) != width(solved_SEW)))
-                             value <- rep(value, length.out = width(solved_SEW))
-                     }
-                     c(window(x, end = start(solved_SEW) - 1L),
-                       value,
-                       window(x, start = end(solved_SEW) + 1L))
-                 })
+### S3/S4 combo for window<-.Vector
+`window<-.Vector` <- function(x, start=NA, end=NA, width=NA,
+                                 keepLength=TRUE, ..., value)
+{
+    if (!isTRUEorFALSE(keepLength))
+        stop("'keepLength' must be TRUE or FALSE")
+    solved_SEW <- solveWindowSEW(length(x), start, end, width)
+    if (!is.null(value)) {
+        if (!is(value, class(x))) {
+            value <- try(as(value, class(x)), silent = TRUE)
+            if (inherits(value, "try-error"))
+                stop("'value' must be a ", class(x), " object or NULL")
+        }
+        if (keepLength && (length(value) != width(solved_SEW)))
+            value <- rep(value, length.out = width(solved_SEW))
+    }
+    c(window(x, end=start(solved_SEW) - 1L),
+      value,
+      window(x, start=end(solved_SEW) + 1L))
+}
+setReplaceMethod("window", "Vector", `window<-.Vector`)
 
-setReplaceMethod("window", "vector",
-                 function(x, start = NA, end = NA, width = NA,
-                          keepLength = TRUE, ..., value)
-                 {
-                     if (!isTRUEorFALSE(keepLength))
-                         stop("'keepLength' must be TRUE or FALSE")
-                     solved_SEW <- solveWindowSEW(length(x), start, end, width)
-                     if (!is.null(value)) {
-                         if (!is(value, class(x))) {
-                             value <- try(as(value, class(x)), silent = TRUE)
-                             if (inherits(value, "try-error"))
-                                 stop("'value' must be a ", class(x),
-                                      " object or NULL")
-                         }
-                         if (keepLength && (length(value) != width(solved_SEW)))
-                             value <- rep(value, length.out = width(solved_SEW))
-                     }
-                     c(window(x, end = start(solved_SEW) - 1L),
-                       value,
-                       window(x, start = end(solved_SEW) + 1L))
-                 })
+### S3/S4 combo for window<-.vector
+`window<-.vector` <- `window<-.Vector`
+setReplaceMethod("window", "vector", `window<-.vector`)
 
-setReplaceMethod("window", "factor",
-                 function(x, start = NA, end = NA, width = NA,
-                          keepLength = TRUE, ..., value)
-                 {
-                     levels <- levels(x)
-                     x <- as.character(x)
-                     value <- as.character(value)
-                     factor(callGeneric(), levels = levels)
-                 })
+### S3/S4 combo for window<-.factor
+`window<-.factor` <- function(x, start=NA, end=NA, width=NA,
+                                 keepLength=TRUE, ..., value)
+{
+    levels <- levels(x)
+    x <- as.character(x)
+    value <- as.character(value)
+    factor(callGeneric(), levels=levels)
+}
+setReplaceMethod("window", "factor", `window<-.factor`)
 
 ### Replacement for seqselect().
 setGeneric("subsetByRanges", signature="x",
