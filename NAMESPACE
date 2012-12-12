@@ -90,6 +90,9 @@ S3method(window, DataTable)
 S3method(window, IRanges)
 S3method(window, Rle)
 S3method(window, GappedRanges)
+S3method(window, XVector)
+S3method(window, GroupedIRanges)
+S3method(window, XVectorList)
 
 S3method(`window<-`, Vector)
 S3method(`window<-`, vector)
@@ -132,6 +135,9 @@ export(
     window.IRanges,
     window.Rle,
     window.GappedRanges,
+    window.XVector,
+    window.GroupedIRanges,
+    window.XVectorList,
 
     "window<-.Vector",
     "window<-.vector",
