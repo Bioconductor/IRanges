@@ -325,9 +325,6 @@ setMethod("aggregate", "DataTable",
               }
           })
 
-setGeneric("by", function(data, INDICES, FUN, ..., simplify = TRUE)
-           standardGeneric("by"))
-
 .by.data.frame <- by.data.frame # so it will find our generic
 environment(.by.data.frame) <- topenv()
 setMethod("by", "DataTable",
