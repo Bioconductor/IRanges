@@ -302,7 +302,7 @@ setMethod("[", "DataFrame",
                 x@listData <- lapply(as.list(x), function(y) {
                   if (length(dim(y)) > 1)
                     y[i, , drop = FALSE]
-                  else y[i, drop = FALSE]
+                  else y[i]
                 })
                 dim[1L] <- length(seq(dim[1L])[i]) #may have 0 cols, no rownames
                 x@nrows <- dim[1L]
