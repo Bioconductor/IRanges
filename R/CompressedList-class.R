@@ -406,11 +406,22 @@ setReplaceMethod("$", "CompressedList",
 ### Combining and splitting.
 ###
 
+### Not exported. 'x' *must* be unnamed (not checked).
+unlist_list_of_CompressedList <- function(x)
+{
+    ans_unlistData <- do.call(bindROWS, lapply(x, slot, "unlistData"))
+    ans_eltlens <- unlist(lapply(x, elementLengths))
+    ans <- relist(ans_unlistData, PartitioningByEnd(cumsum(ans_eltlens)))
+    ans_mcols <- do.call(rbind.mcols, x)
+    rownames(ans_mcols) <- NULL
+    mcols(ans) <- ans_mcols
+    ans
+}
+
 ## NOTE: while the 'c' function does not have an 'x', the generic does
 ## c() is a primitive, so 'x' can be missing; dispatch is by position,
 ## although sometimes this does not work so well, so it's best to keep
 ## names off the parameters whenever feasible.
-
 setMethod("c", "CompressedList",
           function(x, ..., recursive = FALSE) {
               if (recursive)
@@ -425,32 +436,7 @@ setMethod("c", "CompressedList",
               if (!all(sapply(ecs, extends, ecs[[1L]])))
                   stop("all arguments in '...' must have an element class ",
                        "that extends that of the first argument")
-              if (length(dim(tls[[1L]]@unlistData)) < 2)
-                  unlistData <- do.call(c, lapply(tls, slot, "unlistData"))
-              else
-                  unlistData <- do.call(rbind, lapply(tls, slot, "unlistData"))
-              ans_mcols <- do.call(rbind.mcols, tls)
-              rownames(ans_mcols) <- NULL
-              partitionEnd <-
-                cumsum(do.call(c,
-                               lapply(tls, function(y) {
-                                          z <- elementLengths(y)
-                                          names(z) <- NULL
-                                          z
-                                      })))
-              ans_names <-
-                do.call(c,
-                        lapply(tls, function(y) {
-                                   nms <- names(y)
-                                   if (is.null(nms))
-                                       nms <- rep.int("", length(y))
-                                   nms
-                               }))
-              if (any(nchar(ans_names) != 0L))
-                  names(partitionEnd) <- ans_names
-              ans <- relist(unlistData, PartitioningByEnd(partitionEnd))
-              mcols(ans) <- ans_mcols
-              ans
+              unlist_list_of_CompressedList(tls)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

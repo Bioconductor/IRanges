@@ -55,6 +55,26 @@ setMethod("showAsCell", "Vector", function(object)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Low-level internal helpers (not exported).
+###
+
+extractROWS <- function(x, i)
+{
+    if (length(dim(x)) < 2L)
+        return(x[i])
+    x[i, , drop=FALSE]
+}
+
+bindROWS <- function(...)
+{
+    args <- list(...)
+    if (length(dim(args[[1L]])) < 2L)
+        return(c(...))
+    rbind(...)
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
@@ -177,14 +197,6 @@ setValidity2("Vector", .valid.Vector)
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
 ###
-
-### Not exported.
-extractROWS <- function(x, i)
-{
-    if (length(dim(x)) < 2L)
-        return(x[i])
-    x[i, , drop=FALSE]
-}
 
 normalizeSingleBracketSubscript <- function(i, x)
 {
@@ -928,9 +940,7 @@ rbind.mcols <- function(x, ...)
     no_mcols <- sapply(l_mcols, is.null)
     if (all(no_mcols))
         return(NULL)
-    newDf <- function(nr)
-      new("DataFrame", listData = structure(list(), names = character(0)),
-          nrows = nr)
+    newDf <- function(nr) new("DataFrame", nrows = nr)
     l_mcols[no_mcols] <- lapply(elementLengths(l[no_mcols]), newDf)
     allCols <- unique(do.call(c, lapply(l_mcols, colnames)))
     fillCols <- function(df) {
