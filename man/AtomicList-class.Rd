@@ -102,18 +102,13 @@
 \alias{sum,CompressedLogicalList-method}
 \alias{sum,CompressedNumericList-method}
 
-\alias{\%in\%,CompressedAtomicList,atomic-method}
-\alias{\%in\%,SimpleAtomicList,atomic-method}
-\alias{\%in\%,CompressedRleList,atomic-method}
-\alias{\%in\%,SimpleRleList,atomic-method}
-\alias{\%in\%,CompressedAtomicList,AtomicList-method}
-\alias{\%in\%,SimpleAtomicList,AtomicList-method}
-\alias{\%in\%,CompressedRleList,AtomicList-method}
-\alias{\%in\%,SimpleRleList,AtomicList-method}
 \alias{is.na,CompressedAtomicList-method}
 \alias{is.na,SimpleAtomicList-method}
 \alias{is.na,CompressedRleList-method}
 \alias{is.na,SimpleRleList-method}
+\alias{duplicated,AtomicList-method}
+\alias{unique,CompressedRleList-method}
+\alias{unique,SimpleRleList-method}
 \alias{match,CompressedAtomicList,atomic-method}
 \alias{match,SimpleAtomicList,atomic-method}
 \alias{match,CompressedRleList,atomic-method}
@@ -122,12 +117,17 @@
 \alias{match,SimpleAtomicList,AtomicList-method}
 \alias{match,CompressedRleList,AtomicList-method}
 \alias{match,SimpleRleList,AtomicList-method}
-\alias{sort,AtomicList-method}
+\alias{\%in\%,CompressedAtomicList,atomic-method}
+\alias{\%in\%,SimpleAtomicList,atomic-method}
+\alias{\%in\%,CompressedRleList,atomic-method}
+\alias{\%in\%,SimpleRleList,atomic-method}
+\alias{\%in\%,CompressedAtomicList,AtomicList-method}
+\alias{\%in\%,SimpleAtomicList,AtomicList-method}
+\alias{\%in\%,CompressedRleList,AtomicList-method}
+\alias{\%in\%,SimpleRleList,AtomicList-method}
 \alias{table,SimpleAtomicList-method}
 \alias{table,CompressedAtomicList-method}
-\alias{duplicated,AtomicList-method}
-\alias{unique,CompressedRleList-method}
-\alias{unique,SimpleRleList-method}
+\alias{sort,RleList-method}
 \alias{drop,AtomicList-method}
 
 \alias{!,CompressedLogicalList-method}
@@ -159,46 +159,16 @@
 \alias{pmin.int,NumericList-method}
 \alias{pmin.int,RleList-method}
 
-\alias{mean,LogicalList-method}
-\alias{mean,IntegerList-method}
-\alias{mean,NumericList-method}
-\alias{mean,RleList-method}
-\alias{var,LogicalList,missing-method}
-\alias{var,LogicalList,AtomicList-method}
-\alias{var,IntegerList,missing-method}
-\alias{var,IntegerList,AtomicList-method}
-\alias{var,NumericList,missing-method}
-\alias{var,NumericList,AtomicList-method}
-\alias{var,RleList,missing-method}
-\alias{var,RleList,AtomicList-method}
-\alias{cov,LogicalList,AtomicList-method}
-\alias{cov,IntegerList,AtomicList-method}
-\alias{cov,NumericList,AtomicList-method}
-\alias{cov,RleList,AtomicList-method}
-\alias{cor,LogicalList,AtomicList-method}
-\alias{cor,IntegerList,AtomicList-method}
-\alias{cor,NumericList,AtomicList-method}
-\alias{cor,RleList,AtomicList-method}
-\alias{sd,LogicalList-method}
-\alias{sd,IntegerList-method}
-\alias{sd,NumericList-method}
-\alias{sd,RleList-method}
-\alias{median,LogicalList-method}
-\alias{median,IntegerList-method}
-\alias{median,NumericList-method}
-\alias{median,RleList-method}
-\alias{quantile,LogicalList-method}
-\alias{quantile,IntegerList-method}
-\alias{quantile,NumericList-method}
-\alias{quantile,RleList-method}
-\alias{mad,LogicalList-method}
-\alias{mad,IntegerList-method}
-\alias{mad,NumericList-method}
-\alias{mad,RleList-method}
-\alias{IQR,LogicalList-method}
-\alias{IQR,IntegerList-method}
-\alias{IQR,NumericList-method}
-\alias{IQR,RleList-method}
+\alias{mean,AtomicList-method}
+\alias{var,AtomicList,missing-method}
+\alias{var,AtomicList,AtomicList-method}
+\alias{cov,AtomicList,AtomicList-method}
+\alias{cor,AtomicList,AtomicList-method}
+\alias{sd,AtomicList-method}
+\alias{median,AtomicList-method}
+\alias{quantile,AtomicList-method}
+\alias{mad,AtomicList-method}
+\alias{IQR,AtomicList-method}
 \alias{cumsum,CompressedAtomicList-method}
 \alias{cumprod,CompressedAtomicList-method}
 \alias{cummin,CompressedAtomicList-method}
@@ -366,8 +336,10 @@
   operation on each element of the list separately. The methods are: 
 
   \describe{
-    \item{General}{\code{\%in\%}, \code{is.na}, \code{match}, \code{sort},
-                   \code{table}, \code{duplicated}, \code{unique}}
+    \item{General}{\code{is.na},
+                   \code{duplicated}, \code{unique},
+                   \code{match}, \code{\%in\%}, \code{table},
+                   \code{order}, \code{sort}}
     \item{Logical}{\code{!}, \code{which}, \code{which.max}, \code{which.min}}
     \item{Numeric}{\code{diff},
                    \code{pmax}, \code{pmax.int}, \code{pmin}, \code{pmin.int},
@@ -460,7 +432,7 @@
   col1 + col1
   col1 > 2
   sum(col1)  # equivalent to (but faster than) 'sapply(col1, sum)'
-  mean(col1)  # equivalent to (but faster than) 'sapply(col1, mean)'
+  mean(col1)  # equivalent to 'sapply(col1, mean)'
 }
 \keyword{methods}
 \keyword{classes}

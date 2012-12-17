@@ -12,7 +12,6 @@
 \alias{duplicated,Ranges-method}
 
 \alias{order,Ranges-method}
-\alias{sort,Ranges-method}
 \alias{rank,Ranges-method}
 
 
@@ -40,8 +39,6 @@
 ## ----------------------------
 
 \S4method{order}{Ranges}(..., na.last=TRUE, decreasing=FALSE)
-
-\S4method{sort}{Ranges}(x, decreasing=FALSE, ...)
 
 \S4method{rank}{Ranges}(x, na.last=TRUE,
      ties.method=c("average", "first", "random", "max", "min"))
@@ -105,8 +102,8 @@ rangeComparisonCodeToLetter(code)
 
   Ranges are ordered by starting position first, and then by width.
   This way, the space of ranges is totally ordered.
-  The \code{order}, \code{sort} and \code{rank} methods for \link{Ranges}
-  objects are consistent with this order.
+  On a \link{Ranges} object, \code{order}, \code{sort}, and \code{rank}
+  are consistent with this order.
 
   \describe{
     \item{}{

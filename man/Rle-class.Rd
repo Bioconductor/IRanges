@@ -86,6 +86,7 @@
 \alias{seqselect<-,Rle-method}
 \alias{shiftApply,Rle,Rle-method}
 \alias{show,Rle-method}
+\alias{order,Rle-method}
 \alias{sort,Rle-method}
 \alias{splitRanges}
 \alias{splitRanges,Rle-method}
@@ -456,6 +457,12 @@
     \item{}{
       \code{show(object)}:
       Prints out the Rle object in a user-friendly way.
+    }
+    \item{}{
+      \code{order(..., na.last = TRUE, decreasing = FALSE)}:
+      Returns a permutation which rearranges its first argument
+      into ascending or descending order, breaking ties by further
+      arguments. See \code{\link[BiocGenerics]{order}}.
     }
     \item{}{
       \code{sort(x, decreasing = FALSE, na.last = NA)}:

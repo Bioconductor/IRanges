@@ -76,6 +76,10 @@ S3method(duplicated, XRawList)
 S3method(levels, Rle)
 S3method(levels, OverlapEncodings)
 
+S3method(sort, Vector)
+S3method(sort, Rle)
+S3method(sort, RleList)
+
 S3method(unique, Vector)
 S3method(unique, DataTable)
 S3method(unique, Rle)
@@ -121,6 +125,10 @@ export(
     levels.Rle,
     levels.OverlapEncodings,
 
+    sort.Vector,
+    sort.Rle,
+    sort.RleList,
+
     unique.Vector,
     unique.DataTable,
     unique.Rle,
@@ -163,7 +171,7 @@ exportMethods(
     nrow, NROW, ncol, NCOL, dim,
     rownames, colnames, dimnames,
     "rownames<-", "colnames<-", "dimnames<-",
-    sort, rank, is.unsorted,
+    order, sort, rank, is.unsorted,
     rev,
     rep,
     head, tail,
@@ -202,7 +210,6 @@ exportMethods(
     lapply, sapply,
     mapply,
     pmax, pmin, pmax.int, pmin.int,
-    order,
     paste,
     Reduce, Filter, Find, Map, Position,
     rep.int,

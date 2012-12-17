@@ -150,15 +150,12 @@ setMethod("as.factor", "Rle", function(x) rep.int(as.factor(runValue(x)), runLen
 as.list.Rle <- function(x, ...) .as.list.Rle(x, ...)
 setMethod("as.list", "Rle", as.list.Rle)
 
-setGeneric("as.vectorORfactor",  # not exported
-           function(x, ...) standardGeneric("as.vectorORfactor"))
-setMethod("as.vectorORfactor", "Rle",
-          function(x) rep.int(runValue(x), runLength(x)))
+decodeRle <- function(x) rep.int(runValue(x), runLength(x))
 
 setMethod("as.data.frame", "Rle",
     function(x, row.names = NULL, optional = FALSE, ...)
     {
-        value <- as.vectorORfactor(x)
+        value <- decodeRle(x)
         as.data.frame(value, row.names = row.names,
                       optional = optional, ...)
     }
@@ -332,7 +329,7 @@ setMethod("[", "Rle",
                                 lengths = ansList[["lengths"]])
                       }
                   } else if (drop) {
-                      x <- as.vectorORfactor(x)
+                      x <- decodeRle(x)
                   }
               }
               x
@@ -344,13 +341,13 @@ setReplaceMethod("[", "Rle",
         if (missing(i)) {
             if (length(value) <= 1L)
                 return(callNextMethod(x = x, value = value))
-            x <- as.vectorORfactor(x)
+            x <- decodeRle(x)
             value <- as.vector(value)
             return(Rle(callGeneric(x = x, value = value)))
         }
         if (length(value) <= 1L && length(i) != 0L)
             return(callNextMethod(x = x, i = i, value = value))
-        x <- as.vectorORfactor(x)
+        x <- decodeRle(x)
         value <- as.vector(value)
         if (is(i, "Ranges"))
           i <- as.integer(i)
@@ -742,25 +739,35 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
               ans
           })
 
-setMethod("sort", "Rle",
-    function(x, decreasing=FALSE, na.last=NA, ...)
+setMethod("order", "Rle",
+    function(..., na.last=TRUE, decreasing=FALSE)
     {
-        if (is.na(na.last)) {
-            if (anyMissing(runValue(x)))
-                x <- x[!is.na(x)]
-        }
-        if (is.integer(runValue(x)) || is.factor(runValue(x)))
-            ord <- orderInteger(runValue(x), decreasing=decreasing,
-                                na.last=na.last)
-        else
-            ord <- order(runValue(x), decreasing=decreasing,
-                         na.last=na.last)
-
-        Rle(values=runValue(x)[ord], 
-            lengths=runLength(x)[ord],
-            check=FALSE)
+        args <- lapply(unname(list(...)),
+                       function(x) {if (is(x, "Rle")) decodeRle(x) else x})
+        do.call(order, c(args, list(na.last=na.last, decreasing=decreasing)))
     }
 )
+
+### S3/S4 combo for sort.Rle
+.sort.Rle <- function(x, decreasing=FALSE, na.last=NA, ...)
+{
+    if (is.na(na.last)) {
+        if (anyMissing(runValue(x)))
+            x <- x[!is.na(x)]
+    }
+    if (is.integer(runValue(x)) || is.factor(runValue(x)))
+        ord <- orderInteger(runValue(x), decreasing=decreasing,
+                            na.last=na.last)
+    else
+        ord <- order(runValue(x), decreasing=decreasing,
+                     na.last=na.last)
+    Rle(values=runValue(x)[ord], 
+        lengths=runLength(x)[ord],
+        check=FALSE)
+}
+sort.Rle <- function(x, decreasing=FALSE, ...)
+    .sort.Rle(x, decreasing=decreasing, ...)
+setMethod("sort", "Rle", sort.Rle)
 
 setGeneric("splitRanges", signature = "x",
            function(x) standardGeneric("splitRanges"))

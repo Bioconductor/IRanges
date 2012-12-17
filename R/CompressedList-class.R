@@ -406,7 +406,7 @@ setReplaceMethod("$", "CompressedList",
 ### Combining and splitting.
 ###
 
-### Not exported. 'x' *must* be unnamed (not checked).
+### Not exported. 'x' *must* be an unnamed list of length >= 1 (not checked).
 unlist_list_of_CompressedList <- function(x)
 {
     ans_unlistData <- do.call(bindROWS, lapply(x, slot, "unlistData"))

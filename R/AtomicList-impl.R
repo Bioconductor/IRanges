@@ -673,55 +673,8 @@ setAtomicListMethod <- function(f,
 ### General methods
 ###
 
-setAtomicListMethod("%in%", outputBaseClass = "LogicalList",
-                    remainingSignature = "atomic")
-setAtomicListMethod("%in%", outputBaseClass = "LogicalList",
-                    remainingSignature = "AtomicList", mapply = TRUE)
 setAtomicListMethod("is.na", outputBaseClass = "LogicalList",
                     applyToUnlist = TRUE)
-setAtomicListMethod("match", outputBaseClass = "IntegerList",
-                    remainingSignature = "atomic")
-setAtomicListMethod("match", outputBaseClass = "IntegerList",
-                    remainingSignature = "AtomicList", mapply = TRUE)
-setAtomicListMethod("sort", endoapply = TRUE)
-setAtomicListMethod("order", outputBaseClass = "IntegerList")
-setMethod("table", "SimpleAtomicList",
-          function(...)
-          {
-              args <- list(...)
-              if (length(args) > 1)
-                  stop("Only one argument in '...' supported")
-              x <- args[[1L]]
-              values <-
-                as.character(sort(unique(unlist(lapply(x, unique),
-                                                use.names=FALSE))))
-              zeros <- structure(rep.int(0L, length(values)), names = values)
-              if (is.null(names(x)))
-                  names(x) <- as.character(seq_len(length(x)))
-              structure(do.call(rbind,
-                                lapply(x, function(elt) {
-                                           eltTable <- table(elt)
-                                           out <- zeros
-                                           out[names(eltTable)] <- eltTable
-                                           out
-                                       })), class = "table")
-          })
-setMethod("table", "CompressedAtomicList",
-          function(...)
-          {
-              args <- list(...)
-              if (length(args) > 1)
-                  stop("Only one argument in '...' supported")
-              x <- args[[1L]]
-              nms <- names(x)
-              if (is.null(nms)) {
-                  nms <- as.character(seq_len(length(x)))
-              }
-              nms <- factor(rep.int(nms, elementLengths(x)), levels = nms)
-              ans <- table(nms, as.vector(unlist(x, use.names = FALSE)))
-              names(dimnames(ans)) <- NULL
-              ans
-          })
 
 ### S3/S4 combo for duplicated.AtomicList
 duplicated.AtomicList <- function(x, incomparables=FALSE,
@@ -759,6 +712,62 @@ unique.SimpleRleList <- function(x, incomparables=FALSE, ...)
         }))
 }
 setMethod("unique", "SimpleRleList", unique.SimpleRleList)
+
+setAtomicListMethod("match", outputBaseClass = "IntegerList",
+                    remainingSignature = "atomic")
+setAtomicListMethod("match", outputBaseClass = "IntegerList",
+                    remainingSignature = "AtomicList", mapply = TRUE)
+
+setAtomicListMethod("%in%", outputBaseClass = "LogicalList",
+                    remainingSignature = "atomic")
+setAtomicListMethod("%in%", outputBaseClass = "LogicalList",
+                    remainingSignature = "AtomicList", mapply = TRUE)
+
+setMethod("table", "SimpleAtomicList",
+          function(...)
+          {
+              args <- list(...)
+              if (length(args) > 1)
+                  stop("Only one argument in '...' supported")
+              x <- args[[1L]]
+              values <-
+                as.character(sort(unique(unlist(lapply(x, unique),
+                                                use.names=FALSE))))
+              zeros <- structure(rep.int(0L, length(values)), names = values)
+              if (is.null(names(x)))
+                  names(x) <- as.character(seq_len(length(x)))
+              structure(do.call(rbind,
+                                lapply(x, function(elt) {
+                                           eltTable <- table(elt)
+                                           out <- zeros
+                                           out[names(eltTable)] <- eltTable
+                                           out
+                                       })), class = "table")
+          })
+
+setMethod("table", "CompressedAtomicList",
+          function(...)
+          {
+              args <- list(...)
+              if (length(args) > 1)
+                  stop("Only one argument in '...' supported")
+              x <- args[[1L]]
+              nms <- names(x)
+              if (is.null(nms)) {
+                  nms <- as.character(seq_len(length(x)))
+              }
+              nms <- factor(rep.int(nms, elementLengths(x)), levels = nms)
+              ans <- table(nms, as.vector(unlist(x, use.names = FALSE)))
+              names(dimnames(ans)) <- NULL
+              ans
+          })
+
+setAtomicListMethod("order", outputBaseClass = "IntegerList")
+
+### S3/S4 combo for sort.RleList
+sort.RleList <- function(x, decreasing=FALSE, ...)
+    endoapply(x, sort, decreasing=decreasing, ...)
+setMethod("sort", "RleList", sort.RleList)
 
 setReplaceMethod("seqselect", "SimpleAtomicList",
                  function(x, start = NULL, end = NULL, width = NULL, value)
@@ -877,49 +886,65 @@ for (i in c("IntegerList", "NumericList", "RleList")) {
     setMethod("pmin.int", i, function(..., na.rm = FALSE)
                   mendoapply(pmin.int, ..., MoreArgs = list(na.rm = na.rm)))
 }
-for (i in c("LogicalList", "IntegerList", "NumericList", "RleList")) {
-    setAtomicListMethod("mean", inputBaseClass = i)
-    setMethod("var", signature = c(x = i, y = "missing"),
-              function(x, y = NULL, na.rm = FALSE, use)
-              {
-                  if (missing(use))
-                      use <- ifelse(na.rm, "na.or.complete", "everything")
-                  sapply(x, var, na.rm = na.rm, use = use, simplify = TRUE)
-              })
-    setMethod("var", signature = c(x = i, y = "AtomicList"),
-              function(x, y = NULL, na.rm = FALSE, use)
-              {
-                  if (missing(use))
-                      use <- ifelse(na.rm, "na.or.complete", "everything")
-                  mapply(var, x, y, MoreArgs = list(na.rm = na.rm, use = use),
-                         SIMPLIFY = TRUE)
-              })
-    setMethod("cov", signature = c(x = i, y = "AtomicList"),
-              function(x, y = NULL, use = "everything",
-                       method = c("pearson", "kendall", "spearman"))
-                  mapply(cov, x, y,
-                         MoreArgs = list(use = use, method = match.arg(method)),
-                         SIMPLIFY = TRUE))
-    setMethod("cor", signature = c(x = i, y = "AtomicList"),
-              function(x, y = NULL, use = "everything",
-                       method = c("pearson", "kendall", "spearman"))
-                  mapply(cor, x, y,
-                         MoreArgs = list(use = use, method = match.arg(method)),
-                         SIMPLIFY = TRUE))
-    setAtomicListMethod("sd", inputBaseClass = i)
-    setAtomicListMethod("median", inputBaseClass = i)
-    setAtomicListMethod("quantile", inputBaseClass = i)
-    setMethod("mad", i,
-              function(x, center = median(x), constant = 1.4826, na.rm = FALSE, 
-                       low = FALSE, high = FALSE)
-              {
-                  if (!missing(center))
-                      stop("'center' argument is not supported")
-                  sapply(x, mad, constant = constant, na.rm = na.rm,
-                         low = low, high = high, simplify = TRUE)
-              })
-    setAtomicListMethod("IQR", inputBaseClass = i)
+
+setMethod("mean", "AtomicList",
+    function(x, ...) sapply(x, mean, ...)
+)
+
+setMethod("var", c("AtomicList", "missing"),
+    function(x, y=NULL, na.rm=FALSE, use)
+    {
+        if (missing(use))
+            use <- ifelse(na.rm, "na.or.complete", "everything")
+        sapply(x, var, na.rm=na.rm, use=use)
     }
+)
+setMethod("var", c("AtomicList", "AtomicList"),
+    function(x, y=NULL, na.rm=FALSE, use)
+    {
+        if (missing(use))
+            use <- ifelse(na.rm, "na.or.complete", "everything")
+        mapply(var, x, y, MoreArgs=list(na.rm=na.rm, use=use))
+    }
+)
+
+setMethod("cov", c("AtomicList", "AtomicList"),
+    function(x, y=NULL,
+             use="everything", method=c("pearson", "kendall", "spearman"))
+        mapply(cov, x, y, MoreArgs=list(use=use, method=match.arg(method)))
+)
+
+setMethod("cor", c("AtomicList", "AtomicList"),
+    function(x, y=NULL,
+             use="everything", method=c("pearson", "kendall", "spearman"))
+        mapply(cor, x, y, MoreArgs=list(use=use, method=match.arg(method)))
+)
+
+setMethod("sd", "AtomicList",
+    function(x, na.rm=FALSE) sapply(x, sd, na.rm=na.rm)
+)
+
+setMethod("median", "AtomicList",
+    function(x, na.rm=FALSE) sapply(x, median, na.rm=na.rm)
+)
+
+setMethod("quantile", "AtomicList",
+    function(x, ...) sapply(x, quantile, ...)
+)
+
+setMethod("mad", "AtomicList",
+    function(x, center=median(x), constant=1.4826, na.rm=FALSE,
+                low=FALSE, high=FALSE)
+    {
+        if (!missing(center))
+            stop("'center' argument is not supported")
+        sapply(x, mad, constant=constant, na.rm=na.rm, low=low, high=high)
+    }
+)
+
+setMethod("IQR", "AtomicList",
+    function(x, na.rm=FALSE, type=7) sapply(x, IQR, na.rm=na.rm, type=type)
+)
 
 setMethod("which.max", "CompressedRleList",
           function(x) {

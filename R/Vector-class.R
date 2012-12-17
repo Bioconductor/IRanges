@@ -824,15 +824,8 @@ setMethod("subset", "Vector",
 
 ### S3/S4 combo for unique.Vector
 unique.Vector <- function(x, incomparables=FALSE, ...)
-    x[!duplicated(x, incomparables=incomparables, ...)]
+    extractROWS(x, !duplicated(x, incomparables=incomparables, ...))
 setMethod("unique", "Vector", unique.Vector)
-
-setMethod("sort", "Vector",
-    function(x, decreasing=FALSE, ...)
-    {
-        x[order(x, decreasing=decreasing, ...)]
-    }
-)
 
 `.%in%.default.method` <- function(x, table) {!is.na(match(x, table))}
 setMethod("%in%", c("ANY", "Vector"), `.%in%.default.method`)
@@ -844,6 +837,13 @@ setMethod("%in%", c("Vector", "ANY"), `.%in%.default.method`)
 ###    target signature "Hits#Hits".
 ###    "ANY#Vector" would also be valid
 setMethod("%in%", c("Vector", "Vector"), `.%in%.default.method`)
+
+### S3/S4 combo for sort.Vector
+.sort.Vector <- function(x, decreasing=FALSE, na.last=NA)
+    extractROWS(x, order(x, na.last=na.last, decreasing=decreasing))
+sort.Vector <- function (x, decreasing=FALSE, ...)
+    .sort.Vector(x, decreasing=decreasing, ...)
+setMethod("sort", "Vector", sort.Vector)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

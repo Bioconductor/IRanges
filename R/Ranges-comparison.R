@@ -77,8 +77,8 @@ setMethod("duplicated", "Ranges", duplicated.Ranges)
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### order() and related methods.
 ###
-### The "order", "sort" and "rank" methods for Ranges objects are consistent
-### with the order implied by compare().
+### The "order" and "rank" methods for Ranges objects are consistent with the
+### order implied by compare().
 ###
 
 setMethod("order", "Ranges",
@@ -97,14 +97,6 @@ setMethod("order", "Ranges",
         order_args[2L*seq_len(length(args)) - 1L] <- lapply(args, start)
         order_args[2L*seq_len(length(args))] <- lapply(args, end)
         do.call(order, c(order_args, na.last=na.last, decreasing=decreasing))
-    }
-)
-
-### Relies on a "[" method for 'x'.
-setMethod("sort", "Ranges",
-    function(x, decreasing=FALSE, ...) 
-    {
-        x[order(x, decreasing=decreasing)]
     }
 )
 
