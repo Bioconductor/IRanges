@@ -129,14 +129,14 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 	cachedIRanges cached_ir;
 	int max_in_length, x_length, i;
 	RangeAE in_ranges, out_ranges;
-	IntAE tmpbuf;
+	IntAE order_buf;
 
 	cached_x = _cache_CompressedIRangesList(x);
 	max_in_length = get_cachedCompressedIRangesList_max_eltLengths(
 				&cached_x);
 	in_ranges = _new_RangeAE(0, 0);
 	out_ranges = _new_RangeAE(0, 0);
-	tmpbuf = _new_IntAE(max_in_length, 0, 0);
+	order_buf = _new_IntAE(max_in_length, 0, 0);
 	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
 	PROTECT(ans_partitioning_end = NEW_INTEGER(x_length));
 	for (i = 0; i < x_length; i++) {
@@ -146,7 +146,7 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 		_reduce_ranges(in_ranges.start.elts, in_ranges.width.elts,
 			_RangeAE_get_nelt(&in_ranges),
 			LOGICAL(drop_empty_ranges)[0], INTEGER(min_gapwidth)[0],
-			tmpbuf.elts, &out_ranges, NULL);
+			order_buf.elts, &out_ranges, NULL, NULL);
 		INTEGER(ans_partitioning_end)[i] = _RangeAE_get_nelt(&out_ranges);
 	}
 	PROTECT(ans_unlistData = _new_IRanges_from_RangeAE("IRanges",
@@ -170,14 +170,14 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 	cachedIRanges cached_ir;
 	int max_in_length, x_length, start_length, *start_elt, *end_elt, i;
 	RangeAE in_ranges, out_ranges;
-	IntAE tmpbuf;
+	IntAE order_buf;
 
 	cached_x = _cache_CompressedIRangesList(x);
 	max_in_length = get_cachedCompressedIRangesList_max_eltLengths(
 				&cached_x);
 	in_ranges = _new_RangeAE(0, 0);
 	out_ranges = _new_RangeAE(0, 0);
-	tmpbuf = _new_IntAE(max_in_length, 0, 0);
+	order_buf = _new_IntAE(max_in_length, 0, 0);
 	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
 	start_length = LENGTH(start);
 	if ((start_length != 1 && start_length != x_length) ||
@@ -193,7 +193,7 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 		_gaps_ranges(in_ranges.start.elts, in_ranges.width.elts,
 			_RangeAE_get_nelt(&in_ranges),
 			*start_elt, *end_elt,
-			tmpbuf.elts, &out_ranges);
+			order_buf.elts, &out_ranges);
 		INTEGER(ans_partitioning_end)[i] = _RangeAE_get_nelt(&out_ranges);
 		if (start_length != 1) {
 			start_elt++;

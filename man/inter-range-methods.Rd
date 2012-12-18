@@ -59,28 +59,36 @@
 }
 
 \usage{
-## range()
+## ============ range() ============
 \S4method{range}{Ranges}(x, ..., na.rm=FALSE)
+
 \S4method{range}{RangesList}(x, ..., na.rm=FALSE)
 
-## reduce()
+## ============ reduce() ============
 reduce(x, ...)
-\S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, min.gapwidth=1L, with.inframe.attrib=FALSE)
-\S4method{reduce}{Views}(x, drop.empty.ranges=FALSE, min.gapwidth=1L, with.inframe.attrib=FALSE)
-\S4method{reduce}{RangesList}(x, drop.empty.ranges=FALSE, min.gapwidth=1L, with.inframe.attrib=FALSE)
-\S4method{reduce}{RangedData}(x, by = character(), drop.empty.ranges=FALSE,
+
+\S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
+       with.mapping=TRUE, with.inframe.attrib=FALSE)
+
+\S4method{reduce}{Views}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
+       with.mapping=TRUE, with.inframe.attrib=FALSE)
+
+\S4method{reduce}{RangesList}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
+       with.mapping=TRUE, with.inframe.attrib=FALSE)
+
+\S4method{reduce}{RangedData}(x, by=character(), drop.empty.ranges=FALSE,
        min.gapwidth=1L, with.inframe.attrib=FALSE)
 
-## gaps()
+## ============ gaps() ============
 gaps(x, start=NA, end=NA)
 
-## disjoin()
+## ============ disjoin() ============
 disjoin(x, ...)
 
-## isDisjoint()
+## ============ isDisjoint() ============
 isDisjoint(x, ...)
 
-## disjointBins()
+## ============ disjointBins() ============
 disjointBins(x, ...)
 }
 
@@ -88,6 +96,29 @@ disjointBins(x, ...)
   \item{x}{
     A \link{Ranges}, \link{Views}, \link{RangesList}, \link{MaskCollection},
     or \link{RangedData} object.
+  }
+  \item{...}{
+    For \code{range}, additional \code{Ranges} or \code{RangesList}
+    to consider.
+  }
+  \item{na.rm}{Ignored.}
+  \item{drop.empty.ranges}{
+    \code{TRUE} or \code{FALSE}. Should empty ranges be dropped?
+  }
+  \item{min.gapwidth}{
+    Ranges separated by a gap of at least \code{min.gapwidth} positions
+    are not merged.
+  }
+  \item{with.mapping}{
+    \code{TRUE} or \code{FALSE}. Should the mapping from reduced to original
+    ranges be stored in the returned object? If yes (the default), then it is
+    stored as metadata column \code{"mapping"} of type \link{IntegerList}.
+  }
+  \item{with.inframe.attrib}{
+    \code{TRUE} or \code{FALSE}. For internal use.
+  }
+  \item{by}{
+    A character vector.
   }
   \item{start, end}{
     \itemize{
@@ -100,24 +131,6 @@ disjointBins(x, ...)
       \link{RangesList} top-level element.
     }
   }
-  \item{drop.empty.ranges}{
-    \code{TRUE} or \code{FALSE}. Should empty ranges be dropped?
-  }
-  \item{min.gapwidth}{
-    Ranges separated by a gap of at least \code{min.gapwidth} positions
-    are not merged.
-  }
-  \item{with.inframe.attrib}{
-    \code{TRUE} or \code{FALSE}. For internal use.
-  }
-  \item{by}{
-    A character vector.
-  }
-  \item{...}{
-    For \code{range}, additional \code{Ranges} or \code{RangesList}
-    to consider.
-  }
-  \item{na.rm}{Ignored}
 }
 
 \details{
@@ -200,25 +213,25 @@ disjointBins(x, ...)
 ## range()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object
+## On a Ranges object:
 x <- IRanges(start=c(-2, 6, 9, -4, 1, 0, -6, 3, 10),
              width=c( 5, 0, 6,  1, 4, 3,  2, 0,  3))
 range(x)
 
-## On a RangesList object
+## On a RangesList object:
 range1 <- IRanges(start=c(1, 2, 3), end=c(5, 2, 8))
 range2 <- IRanges(start=c(15, 45, 20, 1), end=c(15, 100, 80, 5))
 range3 <- IRanges(start=c(-2, 6, 7), width=c(8, 0, 0))  # with empty ranges
 collection <- IRangesList(one=range1, range2, range3)
 range(collection)
 
-irl1 <- IRangesList(a = IRanges(c(1,2),c(4,3)), b = IRanges(c(4,6),c(10,7)))
-irl2 <- IRangesList(c = IRanges(c(0,2),c(4,5)), a = IRanges(c(4,5),c(6,7)))
+irl1 <- IRangesList(a=IRanges(c(1,2),c(4,3)), b=IRanges(c(4,6),c(10,7)))
+irl2 <- IRangesList(c=IRanges(c(0,2),c(4,5)), a=IRanges(c(4,5),c(6,7)))
 range(irl1, irl2)  # matched by names
 names(irl2) <- NULL
 range(irl1, irl2)  # now by position
 
-## On a RangedData object
+## On a RangedData object:
 ranges <- IRanges(c(1,2,3),c(4,5,6))
 score <- c(10L, 2L, NA)
 rd <- RangedData(ranges, score)
@@ -230,15 +243,27 @@ range(rd, rd2)
 ## reduce()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object
+## On a Ranges object:
 reduce(x)
 reduce(x, drop.empty.ranges=TRUE)
 
+## Use the mapping from reduced to original ranges to split the DataFrame
+## of original metadata columns by reduced range:
+ir0 <- IRanges(c(11:13, 2, 7:6), width=3)
+mcols(ir0) <- DataFrame(id=letters[1:6], score=1:6)
+ir <- reduce(ir0)
+ir
+mapping <- mcols(ir)$mapping
+mapping  # an IntegerList
+relist(mcols(ir0)[unlist(mapping), ], mapping)  # a SplitDataFrameList
+
 ## On a RangesList object. These 4 are the same:
 res1 <- reduce(collection)
-res2 <- IRangesList(one=reduce(range1), reduce(range2), reduce(range3))
-res3 <- do.call(IRangesList, lapply(collection, reduce))
-res4 <- endoapply(collection, reduce)
+res2 <- IRangesList(one=reduce(range1, with.mapping=FALSE),
+                    reduce(range2, with.mapping=FALSE),
+                    reduce(range3, with.mapping=FALSE))
+res3 <- do.call(IRangesList, lapply(collection, reduce, with.mapping=FALSE))
+res4 <- endoapply(collection, reduce, with.mapping=FALSE)
 
 stopifnot(identical(res2, res1))
 stopifnot(identical(res3, res1))
@@ -246,7 +271,7 @@ stopifnot(identical(res4, res1))
 
 reduce(collection, drop.empty.ranges=TRUE)
 
-## On a RangedData object
+## On a RangedData object:
 rd <- RangedData(
         RangesList(
           chrA=IRanges(start=c(1, 4, 6), width=c(3, 2, 4)),
@@ -259,13 +284,13 @@ reduce(rd)
 ## gaps()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object
+## On a Ranges object:
 x0 <- IRanges(start=c(-2, 6, 9, -4, 1, 0, -6, 10),
               width=c( 5, 0, 6,  1, 4, 3,  2,  3))
 gaps(x0)
 gaps(x0, start=-6, end=20)
 
-## On a Views object
+## On a Views object:
 subject <- XInteger(10, 3:-6)
 v <- Views(subject, start=c(8, 3), end=c(14, 4))
 gaps(v)
@@ -280,7 +305,7 @@ stopifnot(identical(res2, res1))
 stopifnot(identical(res3, res1))
 stopifnot(identical(res4, res1))
 
-## On a MaskCollection object
+## On a MaskCollection object:
 mask1 <- Mask(mask.width=29, start=c(11, 25, 28), width=c(5, 2, 2))
 mask2 <- Mask(mask.width=29, start=c(3, 10, 27), width=c(5, 8, 1))
 mask3 <- Mask(mask.width=29, start=c(7, 12), width=c(2, 4))
@@ -292,34 +317,34 @@ gaps(mymasks)
 ## disjoin()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object
+## On a Ranges object:
 ir <- IRanges(c(1, 1, 4, 10), c(6, 3, 8, 10))
 disjoin(ir)  # IRanges(c(1, 4, 7, 10), c(3, 6, 8, 10))
 
-## On a RangesList object
+## On a RangesList object:
 disjoin(collection)
 
 ## ---------------------------------------------------------------------
 ## isDisjoint()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object
+## On a Ranges object:
 isDisjoint(IRanges(c(2,5,1), c(3,7,3)))  # FALSE
 isDisjoint(IRanges(c(2,9,5), c(3,9,6)))  # TRUE
 isDisjoint(IRanges(1, 5))  # TRUE
 
-## On a RangesList object
+## On a RangesList object:
 isDisjoint(collection)
 
 ## ---------------------------------------------------------------------
 ## disjointBins()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object
-disjointBins(IRanges(1, 5)) # 1L
-disjointBins(IRanges(c(3, 1, 10), c(5, 12, 13))) # c(2L, 1L, 2L)
+## On a Ranges object:
+disjointBins(IRanges(1, 5))  # 1L
+disjointBins(IRanges(c(3, 1, 10), c(5, 12, 13)))  # c(2L, 1L, 2L)
 
-## On a RangesList object
+## On a RangesList object:
 disjointBins(collection)
 }
 

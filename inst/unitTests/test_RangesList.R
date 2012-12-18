@@ -173,27 +173,6 @@ test_RangesList_range <- function() {
   }
 }
 
-test_RangesList_reduce <- function() {
-  for (compress in c(TRUE, FALSE)) {
-    range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
-    range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
-    range3 <- IRanges(start=c(3,-2,6,7,-10,-2,3), width=c(1,0,0,0,0,8,0))
-    range4 <- IRanges()
-    collection <- IRangesList(one = range1, range2, range3, range4,
-                              compress = compress)
-    checkIdentical(reduce(collection),
-                   IRangesList(one = reduce(range1), reduce(range2),
-                               reduce(range3), reduce(range4),
-                               compress = compress))
-    checkIdentical(reduce(collection, drop.empty.ranges=TRUE),
-                   IRangesList(one = reduce(range1, drop.empty.ranges=TRUE),
-                               reduce(range2, drop.empty.ranges=TRUE),
-                               reduce(range3, drop.empty.ranges=TRUE),
-                               reduce(range4, drop.empty.ranges=TRUE),
-                               compress = compress))
-  }
-}
-
 test_RangesList_setops <- function() {
   rl1 <- RangesList(IRanges(c(1,2),c(4,3)), IRanges(c(4,6),c(10,7)))
   rl2 <- RangesList(IRanges(c(0,2),c(4,5)), IRanges(c(4,5),c(6,7)))

@@ -69,22 +69,24 @@ SEXP IRanges_range(SEXP x)
 
 /* WARNING: The reduced ranges are *appended* to 'out_ranges'!
    Returns the number of ranges that were appended. */
-int _reduce_ranges(const int *start, const int *width, int length,
+int _reduce_ranges(const int *x_start, const int *x_width, int x_len,
 		int drop_empty_ranges, int min_gapwidth,
-		int *tmpbuf, RangeAE *out_ranges, int *out_inframe_start)
+		int *order_buf, RangeAE *out_ranges,
+		IntAEAE *mapping, int *out_inframe_start)
 {
-	int out_length, i, j, start_j, width_j, end_j,
-	    append_or_drop, max_end, gapwidth, delta;
+	int out_len, out_len0, i, j, start_j, width_j, end_j,
+	    append_or_drop, max_end, gapwidth, delta, width_inc;
+	IntAE tmp, *mapping_elt;
 
 	if (min_gapwidth < 0)
 		error("IRanges internal error in _reduce_ranges(): "
 		      "negative min_gapwidth not supported");
-	_get_order_of_int_pairs(start, width, length, 0, tmpbuf, 0);
-	out_length = 0;
-	for (i = 0; i < length; i++) {
-		j = tmpbuf[i];
-		start_j = start[j];
-		width_j = width[j];
+	_get_order_of_int_pairs(x_start, x_width, x_len, 0, order_buf, 0);
+	out_len = out_len0 = _RangeAE_get_nelt(out_ranges);
+	for (i = 0; i < x_len; i++) {
+		j = order_buf[i];
+		start_j = x_start[j];
+		width_j = x_width[j];
 		end_j = start_j + width_j - 1;
 		if (i == 0) {
 			/* 'append_or_drop' is a toggle that indicates how
@@ -105,65 +107,96 @@ int _reduce_ranges(const int *start, const int *width, int length,
 		if (append_or_drop) {
 			if (width_j != 0
 			 || (!drop_empty_ranges
-			     && (out_length == 0
+			     && (out_len == out_len0
 			         || start_j != out_ranges->start.elts[
-					_RangeAE_get_nelt(out_ranges) - 1]))) {
+					out_len - 1]))) {
 				/* Append to 'out_ranges'. */
 				_RangeAE_insert_at(out_ranges,
-					_RangeAE_get_nelt(out_ranges),
+					out_len,
 					start_j, width_j);
-				out_length++;
+				if (mapping != NULL) {
+					/* Append to 'mapping'. */
+					tmp = _new_IntAE(1, 1, j + 1);
+					_IntAEAE_insert_at(mapping,
+							   out_len,
+							   &tmp);
+					mapping_elt = mapping->elts + out_len;
+				}
+				out_len++;
 				append_or_drop = 0;
 			}
 			max_end = end_j;
 			if (i != 0)
 				delta += gapwidth;
-		} else if (end_j > max_end) {
-			/* Merge with last range in 'out_ranges'. */
-			out_ranges->width.elts[_RangeAE_get_nelt(out_ranges) - 1] += end_j - max_end;
-			max_end = end_j;
+		} else {
+			width_inc = end_j - max_end;
+			if (width_inc > 0) {
+				/* Merge with last range in 'out_ranges'. */
+				out_ranges->width.elts[out_len - 1] += width_inc;
+				max_end = end_j;
+			}
+			if (!(width_j == 0 && drop_empty_ranges)
+			 && mapping != NULL) {
+				_IntAE_insert_at(mapping_elt,
+						 _IntAE_get_nelt(mapping_elt),
+						 j + 1);
+			}
 		}
 		if (out_inframe_start != NULL) 
 			out_inframe_start[j] = start_j - delta;
 	}
-	return out_length;
+	return out_len - out_len0;
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP IRanges_reduce(SEXP x, SEXP drop_empty_ranges, SEXP min_gapwidth,
-		SEXP with_inframe_start)
+SEXP Ranges_reduce(SEXP x_start, SEXP x_width, SEXP drop_empty_ranges,
+		SEXP min_gapwidth, SEXP with_mapping, SEXP with_inframe_start)
 {
-	int x_length, *inframe_start;
-	SEXP x_start, x_width, ans, ans_names, ans_inframe_start;
+	int x_len, *inframe_start;
+	const int *x_start_p, *x_width_p;
+	SEXP ans, ans_names, ans_mapping, ans_inframe_start;
 	RangeAE out_ranges;
-	IntAE tmpbuf;
+	IntAE order_buf;
+	IntAEAE tmp, *mapping;
 
-	x_length = _get_IRanges_length(x);
-	x_start = _get_IRanges_start(x);
-	x_width = _get_IRanges_width(x);
+	x_len = _check_integer_pairs(x_start, x_width,
+				     &x_start_p, &x_width_p,
+				     "start(x)", "width(x)");
+	if (LOGICAL(with_mapping)[0]) {
+		tmp = _new_IntAEAE(0, 0);
+		mapping = &tmp;
+	} else {
+		mapping = NULL;
+	}
 	if (LOGICAL(with_inframe_start)[0]) {
-		PROTECT(ans_inframe_start = NEW_INTEGER(x_length));
+		PROTECT(ans_inframe_start = NEW_INTEGER(x_len));
 		inframe_start = INTEGER(ans_inframe_start);
 	} else {
 		inframe_start = NULL;
 	}
 	out_ranges = _new_RangeAE(0, 0);
-	tmpbuf = _new_IntAE(x_length, 0, 0);
-	_reduce_ranges(INTEGER(x_start), INTEGER(x_width), x_length,
+	order_buf = _new_IntAE(x_len, 0, 0);
+	_reduce_ranges(x_start_p, x_width_p, x_len,
 		LOGICAL(drop_empty_ranges)[0], INTEGER(min_gapwidth)[0],
-		tmpbuf.elts, &out_ranges, inframe_start);
+		order_buf.elts, &out_ranges, mapping, inframe_start);
 
-	PROTECT(ans = NEW_LIST(3));
-	PROTECT(ans_names = NEW_CHARACTER(3));
+	PROTECT(ans = NEW_LIST(4));
+	PROTECT(ans_names = NEW_CHARACTER(4));
 	SET_STRING_ELT(ans_names, 0, mkChar("start"));
 	SET_STRING_ELT(ans_names, 1, mkChar("width"));
-	SET_STRING_ELT(ans_names, 2, mkChar("inframe.start"));
+	SET_STRING_ELT(ans_names, 2, mkChar("mapping"));
+	SET_STRING_ELT(ans_names, 3, mkChar("inframe.start"));
 	SET_NAMES(ans, ans_names);
 	UNPROTECT(1);
 	SET_VECTOR_ELT(ans, 0, _new_INTEGER_from_IntAE(&(out_ranges.start)));
 	SET_VECTOR_ELT(ans, 1, _new_INTEGER_from_IntAE(&(out_ranges.width)));
+	if (mapping != NULL) {
+		PROTECT(ans_mapping = _new_LIST_from_IntAEAE(mapping, 0));
+		SET_VECTOR_ELT(ans, 2, ans_mapping);
+		UNPROTECT(1);
+	}
 	if (inframe_start != NULL) {
-		SET_VECTOR_ELT(ans, 2, ans_inframe_start);
+		SET_VECTOR_ELT(ans, 3, ans_inframe_start);
 		UNPROTECT(1);
 	}
 	UNPROTECT(1);
@@ -179,7 +212,7 @@ SEXP IRanges_reduce(SEXP x, SEXP drop_empty_ranges, SEXP min_gapwidth,
    Returns the number of ranges that were appended. */
 int _gaps_ranges(const int *start, const int *width, int length,
 		int restrict_start, int restrict_end,
-		int *tmpbuf, RangeAE *out_ranges)
+		int *order_buf, RangeAE *out_ranges)
 {
 	int out_length, i, j, start_j, width_j, end_j,
 	    max_end, gapstart, gapwidth;
@@ -188,10 +221,10 @@ int _gaps_ranges(const int *start, const int *width, int length,
 		max_end = restrict_start - 1;
 	else
 		max_end = NA_INTEGER;
-	_get_order_of_int_pairs(start, width, length, 0, tmpbuf, 0);
+	_get_order_of_int_pairs(start, width, length, 0, order_buf, 0);
 	out_length = 0;
 	for (i = 0; i < length; i++) {
-		j = tmpbuf[i];
+		j = order_buf[i];
 		width_j = width[j];
 		if (width_j == 0)
 			continue;
@@ -239,16 +272,16 @@ SEXP IRanges_gaps(SEXP x, SEXP start, SEXP end)
 	int x_length;
 	SEXP x_start, x_width, ans, ans_names;
 	RangeAE out_ranges;
-	IntAE tmpbuf;
+	IntAE order_buf;
 
 	x_length = _get_IRanges_length(x);
 	x_start = _get_IRanges_start(x);
 	x_width = _get_IRanges_width(x);
 	out_ranges = _new_RangeAE(0, 0);
-	tmpbuf = _new_IntAE(x_length, 0, 0);
+	order_buf = _new_IntAE(x_length, 0, 0);
 	_gaps_ranges(INTEGER(x_start), INTEGER(x_width), x_length,
 		INTEGER(start)[0], INTEGER(end)[0],
-		tmpbuf.elts, &out_ranges);
+		order_buf.elts, &out_ranges);
 
 	PROTECT(ans = NEW_LIST(2));
 	PROTECT(ans_names = NEW_CHARACTER(2));

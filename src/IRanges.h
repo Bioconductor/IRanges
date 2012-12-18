@@ -855,20 +855,23 @@ SEXP debug_IRanges_utils();
 SEXP IRanges_range(SEXP x);
 
 int _reduce_ranges(
-	const int *start,
-	const int *width,
-	int length,
+	const int *x_start,
+	const int *x_width,
+	int x_len,
 	int drop_empty_ranges,
 	int min_gapwidth,
-	int *tmpbuf,
+	int *order_buf,
 	RangeAE *out_ranges,
+	IntAEAE *mapping,
 	int *out_inframe_start
 );
 
-SEXP IRanges_reduce(
-	SEXP x,
+SEXP Ranges_reduce(
+	SEXP x_start,
+	SEXP x_width,
 	SEXP drop_empty_ranges,
 	SEXP min_gapwidth,
+	SEXP with_mapping,
 	SEXP with_inframe_start
 );
 
@@ -878,7 +881,7 @@ int _gaps_ranges(
 	int length,
 	int restrict_start,
 	int restrict_end,
-	int *tmpbuf,
+	int *order_buf,
 	RangeAE *out_ranges
 );
 
