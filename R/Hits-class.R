@@ -159,7 +159,7 @@ setMethod("splitAsListReturnedClass", "Hits", function(x) "HitsList")
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Set operations
+### match()
 ###
 
 compatibleHits <- function(x, y) {
@@ -180,34 +180,6 @@ setMethod("match", c("Hits", "Hits"),
     }
 )
 
-setMethod("setdiff", c("Hits", "Hits"), function(x, y) {
-  if (!compatibleHits(x, y))
-    stop("'x' and 'y' are incompatible by subject and query length")
-  x[!(x %in% y)]
-})
-
-setMethod("union", c("Hits", "Hits"),
-    function(x, y)
-    {
-        m <- match(y, x)
-        y <- y[is.na(m)]
-        q_hits <- c(queryHits(x), queryHits(y))
-        s_hits <- c(subjectHits(x), subjectHits(y))
-        oo <- orderIntegerPairs(q_hits, s_hits)
-        q_hits <- q_hits[oo]
-        s_hits <- s_hits[oo]
-        new2("Hits",
-             queryHits=q_hits, subjectHits=s_hits,
-             queryLength=queryLength(x), subjectLength=subjectLength(x),
-             check=FALSE)
-    }
-)
-
-setMethod("intersect", c("Hits", "Hits"), function(x, y) {
-  if (!compatibleHits(x, y))
-    stop("'x' and 'y' are incompatible by subject and query length")
-  x[x %in% y]
-})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Utilities

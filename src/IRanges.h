@@ -747,6 +747,27 @@ SEXP vector_seqselect(
 );
 
 
+/* Ranges_comparison.c */
+
+int _overlap_code(
+	int x_start,
+	int x_width,
+	int y_start,
+	int y_width
+);
+
+int _invert_overlap_code(
+	int code
+);
+
+SEXP Ranges_compare(
+	SEXP x_start,
+	SEXP x_width,
+	SEXP y_start,
+	SEXP y_width
+);
+
+
 /* IRanges_class.c */
 
 SEXP debug_IRanges_class();
@@ -848,89 +869,6 @@ SEXP solve_user_SEW(
 );
 
 
-/* IRanges_utils.c */
-
-SEXP debug_IRanges_utils();
-
-SEXP IRanges_range(SEXP x);
-
-int _reduce_ranges(
-	const int *x_start,
-	const int *x_width,
-	int x_len,
-	int drop_empty_ranges,
-	int min_gapwidth,
-	int *order_buf,
-	RangeAE *out_ranges,
-	IntAEAE *mapping,
-	int *out_inframe_start
-);
-
-SEXP Ranges_reduce(
-	SEXP x_start,
-	SEXP x_width,
-	SEXP drop_empty_ranges,
-	SEXP min_gapwidth,
-	SEXP with_mapping,
-	SEXP with_inframe_start
-);
-
-int _gaps_ranges(
-	const int *start,
-	const int *width,
-	int length,
-	int restrict_start,
-	int restrict_end,
-	int *order_buf,
-	RangeAE *out_ranges
-);
-
-SEXP IRanges_gaps(
-	SEXP x,
-	SEXP start,
-	SEXP end
-);
-
-
-/* Ranges_comparison.c */
-
-int _overlap_code(
-	int x_start,
-	int x_width,
-	int y_start,
-	int y_width
-);
-
-int _invert_overlap_code(
-	int code
-);
-
-SEXP Ranges_compare(
-	SEXP x_start,
-	SEXP x_width,
-	SEXP y_start,
-	SEXP y_width
-);
-
-
-/* coverage.c */
-
-SEXP Ranges_integer_coverage(
-	SEXP x_start,
-	SEXP x_width,
-	SEXP width,
-	SEXP weight,
-	SEXP method
-);
-
-SEXP Ranges_numeric_coverage(
-	SEXP x_start,
-	SEXP x_width,
-	SEXP width,
-	SEXP weight,
-	SEXP method
-);
-
 /* Grouping_class.c */
 
 SEXP debug_Grouping_class();
@@ -1001,70 +939,6 @@ SEXP _new_CompressedList(
 	const char *classname,
 	SEXP unlistData,
 	SEXP partitioning
-);
-
-
-/* CompressedIRangesList_class.c */
-
-cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x);
-
-int _get_cachedCompressedIRangesList_length(
-	const cachedCompressedIRangesList *cached_x
-);
-
-cachedIRanges _get_cachedCompressedIRangesList_elt(
-	const cachedCompressedIRangesList *cached_x,
-	int i
-);
-
-int _get_cachedCompressedIRangesList_eltLength(
-	const cachedCompressedIRangesList *cached_x,
-	int i
-);
-
-SEXP CompressedIRangesList_isNormal(
-	SEXP x,
-	SEXP use_names
-);
-
-SEXP CompressedIRangesList_reduce(
-	SEXP x,
-	SEXP drop_empty_ranges,
-	SEXP min_gapwidth
-);
-
-SEXP CompressedIRangesList_gaps(
-	SEXP x,
-	SEXP start,
-	SEXP end
-);
-
-SEXP CompressedIRangesList_summary(
-	SEXP object
-);
-
-SEXP CompressedNormalIRangesList_min(
-	SEXP x,
-	SEXP use_names
-);
-
-SEXP CompressedNormalIRangesList_max(
-	SEXP x,
-	SEXP use_names
-);
-
-
-/* GappedRanges_class.c */
-
-SEXP valid_GappedRanges(SEXP x, SEXP ans_type);
-
-
-/* RangedData_class.c */
-
-SEXP _new_RangedData(
-	const char *classname,
-	SEXP ranges,
-	SEXP values
 );
 
 
@@ -1215,50 +1089,75 @@ SEXP RleViews_viewWhichMaxs(
 );
 
 
+/* CompressedIRangesList_class.c */
+
+cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x);
+
+int _get_cachedCompressedIRangesList_length(
+	const cachedCompressedIRangesList *cached_x
+);
+
+cachedIRanges _get_cachedCompressedIRangesList_elt(
+	const cachedCompressedIRangesList *cached_x,
+	int i
+);
+
+int _get_cachedCompressedIRangesList_eltLength(
+	const cachedCompressedIRangesList *cached_x,
+	int i
+);
+
+SEXP CompressedIRangesList_isNormal(
+	SEXP x,
+	SEXP use_names
+);
+
+SEXP CompressedIRangesList_reduce(
+	SEXP x,
+	SEXP drop_empty_ranges,
+	SEXP min_gapwidth
+);
+
+SEXP CompressedIRangesList_gaps(
+	SEXP x,
+	SEXP start,
+	SEXP end
+);
+
+SEXP CompressedIRangesList_summary(
+	SEXP object
+);
+
+SEXP CompressedNormalIRangesList_min(
+	SEXP x,
+	SEXP use_names
+);
+
+SEXP CompressedNormalIRangesList_max(
+	SEXP x,
+	SEXP use_names
+);
+
+
+/* GappedRanges_class.c */
+
+SEXP valid_GappedRanges(SEXP x, SEXP ans_type);
+
+
+/* RangedData_class.c */
+
+SEXP _new_RangedData(
+	const char *classname,
+	SEXP ranges,
+	SEXP values
+);
+
+
 /* Hits_class.c */
 
 SEXP make_all_group_inner_hits(
 	SEXP group_sizes,
 	SEXP hit_type
-);
-
-
-/* encode_overlaps.c */
-
-SEXP encode_overlaps1(
-	SEXP query_start,
-	SEXP query_width,
-	SEXP query_space,
-	SEXP query_break,
-	SEXP flip_query,
-	SEXP subject_start,
-	SEXP subject_width,
-	SEXP subject_space,
-	SEXP as_matrix,
-	SEXP as_raw
-);
-
-SEXP RangesList_encode_overlaps(
-	SEXP query_starts,
-	SEXP query_widths,
-	SEXP query_spaces,
-	SEXP query_breaks,
-	SEXP subject_starts,
-	SEXP subject_widths,
-	SEXP subject_spaces
-);
-
-SEXP Hits_encode_overlaps(
-	SEXP query_starts,
-	SEXP query_widths,
-	SEXP query_spaces,
-	SEXP query_breaks,
-	SEXP subject_starts,
-	SEXP subject_widths,
-	SEXP subject_spaces,
-	SEXP query_hits,
-	SEXP subject_hits,
-	SEXP flip_query
 );
 
 
@@ -1334,9 +1233,9 @@ SEXP _new_SharedDouble_Pool(SEXP tags);
 SEXP _new_SharedVector_Pool1(SEXP shared);
 
 
-/* SharedRaw_utils.c */
+/* SharedRaw_class.c */
 
-SEXP debug_SharedRaw_utils();
+SEXP debug_SharedRaw_class();
 
 SEXP SharedRaw_new(
 	SEXP length,
@@ -1433,9 +1332,9 @@ SEXP SharedRaw_read_complexes_from_subscript(
 );
 
 
-/* SharedInteger_utils.c */
+/* SharedInteger_class.c */
 
-SEXP debug_SharedInteger_utils();
+SEXP debug_SharedInteger_class();
 
 SEXP SharedInteger_new(
 	SEXP length,
@@ -1469,9 +1368,9 @@ SEXP SharedInteger_write_ints_to_subscript(
 );
 
 
-/* SharedDouble_utils.c */
+/* SharedDouble_class.c */
 
-SEXP debug_SharedDouble_utils();
+SEXP debug_SharedDouble_class();
 
 SEXP SharedDouble_new(
 	SEXP length,
@@ -1746,6 +1645,108 @@ SEXP XDoubleViews_summary1(
 SEXP XDoubleViews_summary2(
 	SEXP x,
 	SEXP na_rm,
+	SEXP method
+);
+
+
+/* inter_range_methods.c */
+
+SEXP debug_inter_range_methods();
+
+SEXP IRanges_range(SEXP x);
+
+int _reduce_ranges(
+	const int *x_start,
+	const int *x_width,
+	int x_len,
+	int drop_empty_ranges,
+	int min_gapwidth,
+	int *order_buf,
+	RangeAE *out_ranges,
+	IntAEAE *mapping,
+	int *out_inframe_start
+);
+
+SEXP Ranges_reduce(
+	SEXP x_start,
+	SEXP x_width,
+	SEXP drop_empty_ranges,
+	SEXP min_gapwidth,
+	SEXP with_mapping,
+	SEXP with_inframe_start
+);
+
+int _gaps_ranges(
+	const int *start,
+	const int *width,
+	int length,
+	int restrict_start,
+	int restrict_end,
+	int *order_buf,
+	RangeAE *out_ranges
+);
+
+SEXP IRanges_gaps(
+	SEXP x,
+	SEXP start,
+	SEXP end
+);
+
+
+/* encodeOverlaps_methods.c */
+
+SEXP encode_overlaps1(
+	SEXP query_start,
+	SEXP query_width,
+	SEXP query_space,
+	SEXP query_break,
+	SEXP flip_query,
+	SEXP subject_start,
+	SEXP subject_width,
+	SEXP subject_space,
+	SEXP as_matrix,
+	SEXP as_raw
+);
+
+SEXP RangesList_encode_overlaps(
+	SEXP query_starts,
+	SEXP query_widths,
+	SEXP query_spaces,
+	SEXP query_breaks,
+	SEXP subject_starts,
+	SEXP subject_widths,
+	SEXP subject_spaces
+);
+
+SEXP Hits_encode_overlaps(
+	SEXP query_starts,
+	SEXP query_widths,
+	SEXP query_spaces,
+	SEXP query_breaks,
+	SEXP subject_starts,
+	SEXP subject_widths,
+	SEXP subject_spaces,
+	SEXP query_hits,
+	SEXP subject_hits,
+	SEXP flip_query
+);
+
+
+/* coverage_methods.c */
+
+SEXP Ranges_integer_coverage(
+	SEXP x_start,
+	SEXP x_width,
+	SEXP width,
+	SEXP weight,
+	SEXP method
+);
+
+SEXP Ranges_numeric_coverage(
+	SEXP x_start,
+	SEXP x_width,
+	SEXP width,
+	SEXP weight,
 	SEXP method
 );
 

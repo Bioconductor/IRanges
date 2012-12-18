@@ -1,20 +1,20 @@
 ### =========================================================================
-### Set operations on IRanges objects
+### Set operations
 ### -------------------------------------------------------------------------
 ###
 ### I. Vector-wise set operations: union, intersect, setdiff
 ###
 ### All the functions in that group are implemented to behave like
 ### endomorphisms with respect to their first argument 'x'.
-### If 'x' is an IRanges object then the returned IRanges object is also
-### guaranteed to be normal (note that if 'x' is an IRanges *instance* then
-### the returned object is still an IRanges instance, so it is *not* promoted
-### to NormalIRanges).
-### Finally, the functions in that group interpret each supplied IRanges
+###
+### On IRanges objects, the functions in that group interpret each supplied
 ### object ('x' or 'y') as a set of integer values. Therefore, if 2 IRanges
 ### objects 'x1' and 'x2' represent the same set of integers, then each of
 ### these functions will return the same result when 'x1' is replaced by 'x2'
-### in the input.
+### in the input. The returned IRanges object is guaranteed to be normal
+### (note that if 'x' is an IRanges *instance* then the returned object is
+### still an IRanges *instance*, that is, it is *not* promoted to
+### NormalIRanges).
 ###
 ### II. Element-wise (aka "parallel") set operations: punion, pintersect,
 ###     psetdiff, pgap
@@ -63,6 +63,23 @@ setMethod("union", c("CompressedIRangesList", "CompressedIRangesList"),
             reduce(xy_list, drop.empty.ranges=TRUE)
           })
 
+setMethod("union", c("Hits", "Hits"),
+    function(x, y)
+    {
+        m <- match(y, x)
+        y <- y[is.na(m)]
+        q_hits <- c(queryHits(x), queryHits(y))
+        s_hits <- c(subjectHits(x), subjectHits(y))
+        oo <- orderIntegerPairs(q_hits, s_hits)
+        q_hits <- q_hits[oo]
+        s_hits <- s_hits[oo]
+        new2("Hits",
+             queryHits=q_hits, subjectHits=s_hits,
+             queryLength=queryLength(x), subjectLength=subjectLength(x),
+             check=FALSE)
+    }
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### intersect()
@@ -93,6 +110,12 @@ setMethod("intersect", c("CompressedIRangesList", "CompressedIRangesList"),
             setdiff(x, gaps(y, start = startx, end = endx))
           })
 
+setMethod("intersect", c("Hits", "Hits"), function(x, y) {
+  if (!compatibleHits(x, y))
+    stop("'x' and 'y' are incompatible by subject and query length")
+  x[x %in% y]
+})
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### setdiff()
@@ -122,6 +145,12 @@ setMethod("setdiff", c("CompressedIRangesList", "CompressedIRangesList"),
             endx[nonempty] <- end(rx)
             gaps(union(gaps(x), y), start = startx, end = endx)
           })
+
+setMethod("setdiff", c("Hits", "Hits"), function(x, y) {
+  if (!compatibleHits(x, y))
+    stop("'x' and 'y' are incompatible by subject and query length")
+  x[!(x %in% y)]
+})
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

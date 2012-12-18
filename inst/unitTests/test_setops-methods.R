@@ -1,21 +1,4 @@
-
-test_gaps <- function() {
-  checkIdentical(gaps(IRanges()), IRanges())
-  checkIdentical(gaps(IRanges(), start=1, end=4),
-                 IRanges(start=1, end=4))
-
-  x <- IRanges(start=2, end=3)
-  checkIdentical(gaps(x), IRanges())
-  checkIdentical(gaps(x, start=2), IRanges())
-  checkIdentical(gaps(x, start=4), IRanges())
-  checkIdentical(gaps(x, start=0), IRanges(start=0, end=1))
-  checkIdentical(gaps(x, end=3), IRanges())
-  checkIdentical(gaps(x, end=1), IRanges())
-  checkIdentical(gaps(x, end=5), IRanges(start=4, end=5))
-  checkIdentical(gaps(x, start=0, end=5), IRanges(start=c(0,4), end=c(1,5)))
-}
-
-test_union <- function() {
+test_IRanges_union <- function() {
   x <- IRanges(c(1, 4, 9), c(5, 7, 10))
   y <- IRanges(c(2, 2, 10), c(2, 3, 12))
   ans <- union(x, y)
@@ -23,7 +6,7 @@ test_union <- function() {
   checkIdentical(ans, ans0)
 }
 
-test_intersect <- function() {
+test_IRanges_intersect <- function() {
   x <- IRanges(c(1, 4, 9), c(5, 7, 10))
   y <- IRanges(c(2, 2, 10), c(2, 3, 12))
   ans <- intersect(x, y)
@@ -31,7 +14,7 @@ test_intersect <- function() {
   checkIdentical(ans, ans0)  
 }
 
-test_setdiff <- function() {
+test_IRanges_setdiff <- function() {
   x <- IRanges(c(1, 4, 9), c(5, 7, 10))
   y <- IRanges(c(2, 2, 10), c(2, 3, 12))
   ans <- setdiff(x, y)
@@ -42,7 +25,7 @@ test_setdiff <- function() {
   checkIdentical(ans, ans0)
 }
 
-test_punion <- function() {
+test_IRanges_punion <- function() {
   x <- IRanges(start=c(1,11,21,31,41,51,61,71), end=c(5,10,25,35,40,55,65,75))
   y <- IRanges(start=c(1, 8,18,35,43,48,63,78), end=c(4,15,22,36,45,50,62,79))
   ans0 <- IRanges(start=c(1,8,18,31,41,48,61,71), end=c(5,15,25,36,45,55,65,79))
@@ -50,7 +33,7 @@ test_punion <- function() {
   checkIdentical(punion(y, x, fill.gap=TRUE), ans0)
 }
 
-test_pintersect <- function() {
+test_IRanges_pintersect <- function() {
   x <- IRanges(start=c(22,22,22,22,22,22), end=c(28,28,28,28,21,21))
   y <- IRanges(start=c(25,30,29,25,22,22), end=c(30,40,40,24,21,29))
   ansMaxStart <- IRanges(start=c(25,30,29,25,22,22), end=c(28,29,28,24,21,21))
@@ -75,7 +58,7 @@ test_pintersect <- function() {
   checkIdentical(pintersect(y, x, resolve.empty = "start.x"), ansStartY)
 }
 
-test_psetdiff <- function() {
+test_IRanges_psetdiff <- function() {
   x <- IRanges(start=c(1,11,21,31,41,51,61,71), end=c(5,10,25,35,40,55,65,75))
   y <- IRanges(start=c(1, 8,18,35,43,48,63,78), end=c(4,15,22,36,45,50,62,79))
 
@@ -88,12 +71,23 @@ test_psetdiff <- function() {
   checkIdentical(ans, ans0)
 }
 
-test_pgap <- function() {
+test_IRanges_pgap <- function() {
   x <- IRanges(start=c(1,11,21,31,41,51,61,71), end=c(5,10,25,35,40,55,65,75))
   y <- IRanges(start=c(1, 8,18,35,43,48,63,78), end=c(4,15,22,36,45,50,62,79))
 
   ans <- pgap(x, y)
   checkIdentical(width(ans), c(0L, 0L, 0L, 0L, 2L, 0L, 0L, 2L))
   checkIdentical(start(ans)[width(ans) != 0L], c(41L, 76L))
+}
+
+test_RangesList_setops <- function() {
+  rl1 <- RangesList(IRanges(c(1,2),c(4,3)), IRanges(c(4,6),c(10,7)))
+  rl2 <- RangesList(IRanges(c(0,2),c(4,5)), IRanges(c(4,5),c(6,7)))
+  checkIdentical(union(rl1, rl2),
+                 RangesList(union(rl1[[1]], rl2[[1]]), union(rl1[[2]], rl2[[2]])))
+  checkIdentical(intersect(rl1, rl2),
+                 RangesList(intersect(rl1[[1]], rl2[[1]]), intersect(rl1[[2]], rl2[[2]])))
+  checkIdentical(setdiff(rl1, rl2),
+                 RangesList(setdiff(rl1[[1]], rl2[[1]]), setdiff(rl1[[2]], rl2[[2]])))
 }
 

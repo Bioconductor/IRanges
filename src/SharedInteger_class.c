@@ -1,12 +1,12 @@
 /****************************************************************************
- *                       Fast SharedDouble utilities                        *
+ *             Low-level manipulation of SharedInteger objects              *
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"
 
 static int debug = 0;
 
-SEXP debug_SharedDouble_utils()
+SEXP debug_SharedInteger_class()
 {
 #ifdef DEBUG_IRANGES
 	debug = !debug;
@@ -19,32 +19,31 @@ SEXP debug_SharedDouble_utils()
 }
 
 
-SEXP SharedDouble_new(SEXP length, SEXP val)
+SEXP SharedInteger_new(SEXP length, SEXP val)
 {
 	SEXP tag, ans;
-	int tag_length, i;
-	double val0;
+	int tag_length, i, val0;
 
 	tag_length = INTEGER(length)[0];
 	if (val == R_NilValue) {
-		PROTECT(tag = NEW_NUMERIC(tag_length));
+		PROTECT(tag = NEW_INTEGER(tag_length));
 	} else if (LENGTH(val) == 1) {
-		PROTECT(tag = NEW_NUMERIC(tag_length));
-		val0 = REAL(val)[0];
+		PROTECT(tag = NEW_INTEGER(tag_length));
+		val0 = INTEGER(val)[0];
 		for (i = 0; i < tag_length; i++)
-			REAL(tag)[i] = val0;
+			INTEGER(tag)[i] = val0;
 	} else if (LENGTH(val) == tag_length) {
 		PROTECT(tag = duplicate(val));
 	} else {
 		error("when 'val' is not a single value, its length must "
 		      "be equal to the value of the 'length' argument");
 	}
-	PROTECT(ans = _new_SharedVector("SharedDouble", tag));
+	PROTECT(ans = _new_SharedVector("SharedInteger", tag));
 	UNPROTECT(2);
 	return ans;
 }
 
-SEXP SharedDouble_get_show_string(SEXP x)
+SEXP SharedInteger_get_show_string(SEXP x)
 {
 	SEXP tag;
 	int tag_length;
@@ -53,20 +52,20 @@ SEXP SharedDouble_get_show_string(SEXP x)
 	tag = _get_SharedVector_tag(x);
 	tag_length = LENGTH(tag);
 	snprintf(buf, sizeof(buf),
-		"%d-number SharedDouble object (data starting at memory address %p)",
-		tag_length, REAL(tag));
+		"%d-integer SharedInteger object (data starting at memory address %p)",
+		tag_length, INTEGER(tag));
 	return mkString(buf);
 }
 
 
 /* ==========================================================================
- * Read/write numerics to a SharedDouble object
+ * Read/write integers to a SharedInteger object.
  * --------------------------------------------------------------------------
  */
 
-SEXP SharedDouble_read_nums_from_i1i2(SEXP src, SEXP imin, SEXP imax)
+SEXP SharedInteger_read_ints_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 {
-	SEXP src_tag, ans;
+	SEXP src_tag, tag;
 	int i1, i2, n;
 
 	src_tag = _get_SharedVector_tag(src);
@@ -74,33 +73,33 @@ SEXP SharedDouble_read_nums_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 	i2 = INTEGER(imax)[0] - 1;
 	n = i2 - i1 + 1;
 
-	PROTECT(ans = NEW_NUMERIC(n));
+	PROTECT(tag = NEW_INTEGER(n));
 	_Ocopy_byteblocks_from_i1i2(i1, i2,
-			(char *) REAL(ans), LENGTH(ans),
-			(char *) REAL(src_tag), LENGTH(src_tag), sizeof(double));
+			(char *) INTEGER(tag), LENGTH(tag),
+			(char *) INTEGER(src_tag), LENGTH(src_tag), sizeof(int));
 	UNPROTECT(1);
-	return ans;
+	return tag;
 }
 
-SEXP SharedDouble_read_nums_from_subscript(SEXP src, SEXP subscript)
+SEXP SharedInteger_read_ints_from_subscript(SEXP src, SEXP subscript)
 {
-	SEXP src_tag, ans;
+	SEXP src_tag, tag;
 	int n;
 
 	src_tag = _get_SharedVector_tag(src);
 	n = LENGTH(subscript);
-	PROTECT(ans = NEW_NUMERIC(n));
+	PROTECT(tag = NEW_INTEGER(n));
 	_Ocopy_byteblocks_from_subscript(INTEGER(subscript), n,
-			(char *) REAL(ans), n,
-			(char *) REAL(src_tag), LENGTH(src_tag), sizeof(double));
+			(char *) INTEGER(tag), n,
+			(char *) INTEGER(src_tag), LENGTH(src_tag), sizeof(int));
 	UNPROTECT(1);
-	return ans;
+	return tag;
 }
 
 /*
- * 'val' must be a numeric vector.
+ * 'val' must be an integer vector.
  */
-SEXP SharedDouble_write_nums_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
+SEXP SharedInteger_write_ints_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 {
 	SEXP dest_tag;
 	int i1, i2;
@@ -109,19 +108,19 @@ SEXP SharedDouble_write_nums_to_i1i2(SEXP dest, SEXP imin, SEXP imax, SEXP val)
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	_Ocopy_byteblocks_to_i1i2(i1, i2,
-			(char *) REAL(dest_tag), LENGTH(dest_tag),
-			(char *) REAL(val), LENGTH(val), sizeof(double));
+			(char *) INTEGER(dest_tag), LENGTH(dest_tag),
+			(char *) INTEGER(val), LENGTH(val), sizeof(int));
 	return dest;
 }
 
-SEXP SharedDouble_write_nums_to_subscript(SEXP dest, SEXP subscript, SEXP val)
+SEXP SharedInteger_write_ints_to_subscript(SEXP dest, SEXP subscript, SEXP val)
 {
 	SEXP dest_tag;
 
 	dest_tag = _get_SharedVector_tag(dest);
 	_Ocopy_byteblocks_to_subscript(INTEGER(subscript), LENGTH(subscript),
-			(char *) REAL(dest_tag), LENGTH(dest_tag),
-			(char *) REAL(val), LENGTH(val), sizeof(double));
+			(char *) INTEGER(dest_tag), LENGTH(dest_tag),
+			(char *) INTEGER(val), LENGTH(val), sizeof(int));
 	return dest;
 }
 

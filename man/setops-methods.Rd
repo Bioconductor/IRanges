@@ -1,10 +1,22 @@
-\name{IRanges-setops}
+\name{setops-methods}
 
-\alias{IRanges-setops}
+\alias{setops-methods}
 
 \alias{union,IRanges,IRanges-method}
+\alias{union,RangesList,RangesList-method}
+\alias{union,CompressedIRangesList,CompressedIRangesList-method}
+\alias{union,Hits,Hits-method}
+
 \alias{intersect,IRanges,IRanges-method}
+\alias{intersect,RangesList,RangesList-method}
+\alias{intersect,CompressedIRangesList,CompressedIRangesList-method}
+\alias{intersect,Hits,Hits-method}
+
 \alias{setdiff,IRanges,IRanges-method}
+\alias{setdiff,RangesList,RangesList-method}
+\alias{setdiff,CompressedIRangesList,CompressedIRangesList-method}
+\alias{setdiff,Hits,Hits-method}
+
 \alias{punion}
 \alias{punion,IRanges,IRanges-method}
 \alias{pintersect}
@@ -14,7 +26,7 @@
 \alias{pgap}
 \alias{pgap,IRanges,IRanges-method}
 
-\title{Set operations on IRanges objects}
+\title{Set operations on IRanges, RangesList, and Hits objects}
 
 \description{
   Performs set operations on \link{IRanges} objects.
@@ -133,6 +145,13 @@
   end(y)[4] <- 99
   psetdiff(x, ranges(y))
   pgap(x, ranges(y))
+
+  ## On RangesList objects:
+  irl1 <- IRangesList(a = IRanges(c(1,2),c(4,3)), b = IRanges(c(4,6),c(10,7)))
+  irl2 <- IRangesList(c = IRanges(c(0,2),c(4,5)), a = IRanges(c(4,5),c(6,7)))
+  union(irl1, irl2)
+  intersect(irl1, irl2)
+  setdiff(irl1, irl2)
 }
 
 \keyword{utilities}

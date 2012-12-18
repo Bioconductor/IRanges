@@ -312,7 +312,7 @@ threebands(x, start=NA, end=NA, width=NA)
     \item The \link[GenomicRanges]{intra-range-methods} man page in the
           GenomicRanges package for methods that operate on
           \link[GenomicRanges]{GenomicRanges} and other objects.
-    \item \link{IRanges-setops} for set operations on \link{IRanges}
+    \item \link{setops-methods} for set operations on \link{IRanges}
           objects.
     \item \code{\link{solveUserSEW}} for the SEW (Start/End/Width)
           interface.

@@ -173,17 +173,6 @@ test_RangesList_range <- function() {
   }
 }
 
-test_RangesList_setops <- function() {
-  rl1 <- RangesList(IRanges(c(1,2),c(4,3)), IRanges(c(4,6),c(10,7)))
-  rl2 <- RangesList(IRanges(c(0,2),c(4,5)), IRanges(c(4,5),c(6,7)))
-  checkIdentical(union(rl1, rl2),
-                 RangesList(union(rl1[[1]], rl2[[1]]), union(rl1[[2]], rl2[[2]])))
-  checkIdentical(intersect(rl1, rl2),
-                 RangesList(intersect(rl1[[1]], rl2[[1]]), intersect(rl1[[2]], rl2[[2]])))
-  checkIdentical(setdiff(rl1, rl2),
-                 RangesList(setdiff(rl1[[1]], rl2[[1]]), setdiff(rl1[[2]], rl2[[2]])))
-}
-
 test_IRangesList_construction <- function() {
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))

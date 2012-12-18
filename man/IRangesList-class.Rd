@@ -31,11 +31,6 @@
 \alias{min,SimpleNormalIRangesList-method}
 \alias{summary,CompressedIRangesList-method}
 
-% setops
-\alias{intersect,CompressedIRangesList,CompressedIRangesList-method}
-\alias{setdiff,CompressedIRangesList,CompressedIRangesList-method}
-\alias{union,CompressedIRangesList,CompressedIRangesList-method}
-
 % NormalIRangesList objects:
 \alias{class:NormalIRangesList}
 \alias{class:CompressedNormalIRangesList}
@@ -112,6 +107,11 @@
 \seealso{
   \code{\linkS4class{RangesList}}, the parent of this class, for more
   functionality.
+
+  \link{intra-range-methods} and \link{inter-range-methods} for
+  intra and inter range transformations of IRangesList objects.
+
+  \link{setops-methods} for set operations on IRangesList objects.
 }
 \examples{
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))

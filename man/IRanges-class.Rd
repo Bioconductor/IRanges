@@ -125,7 +125,7 @@
 
   \link{inter-range-methods} for inter range transformations,
 
-  \link{IRanges-setops}
+  \link{setops-methods}
 }
 
 \examples{
@@ -136,7 +136,7 @@
   ## ---------------------------------------------------------------------
   ## All the methods defined for Ranges objects work on IRanges objects.
   ## See ?Ranges for some examples.
-  ## Also see ?`IRanges-utils` and ?`IRanges-setops` for additional
+  ## Also see ?`IRanges-utils` and ?`setops-methods` for additional
   ## operations on IRanges objects.
   
   ## Combining IRanges objects

@@ -91,7 +91,7 @@ asNormalIRanges(x, force=TRUE)
 
   \link{inter-range-methods} for inter range transformations,
 
-  \link{IRanges-setops},
+  \link{setops-methods},
   \code{\link{solveUserSEW}},
   \code{\link{successiveViews}}
 }

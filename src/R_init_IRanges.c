@@ -61,6 +61,9 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(vector_subsetByRanges, 3),
 	CALLMETHOD_DEF(vector_seqselect, 3),
 
+/* Ranges_comparison.c */
+	CALLMETHOD_DEF(Ranges_compare, 4),
+
 /* IRanges_class.c */
 	CALLMETHOD_DEF(debug_IRanges_class, 0),
 	CALLMETHOD_DEF(IRanges_isNormal, 1),
@@ -71,40 +74,11 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(solve_user_SEW0, 3),
 	CALLMETHOD_DEF(solve_user_SEW, 6),
 
-/* IRanges_utils.c */
-	CALLMETHOD_DEF(debug_IRanges_utils, 0),
-	CALLMETHOD_DEF(IRanges_range, 1),
-	CALLMETHOD_DEF(Ranges_reduce, 6),
-	CALLMETHOD_DEF(IRanges_gaps, 3),
-
-/* Ranges_comparison.c */
-	CALLMETHOD_DEF(Ranges_compare, 4),
-
-/* coverage.c */
-	CALLMETHOD_DEF(Ranges_integer_coverage, 5),
-	CALLMETHOD_DEF(Ranges_numeric_coverage, 5),
-
 /* Grouping_class.c */
 	CALLMETHOD_DEF(debug_Grouping_class, 0),
 
 	CALLMETHOD_DEF(H2LGrouping_members, 2),
 	CALLMETHOD_DEF(H2LGrouping_vmembers, 2),
-
-/* SimpleIRangesList_class.c */
-	CALLMETHOD_DEF(SimpleIRangesList_isNormal, 1),
-	CALLMETHOD_DEF(SimpleNormalIRangesList_min, 1),
-	CALLMETHOD_DEF(SimpleNormalIRangesList_max, 1),
-
-/* CompressedIRangesList_class.c */
-	CALLMETHOD_DEF(CompressedIRangesList_isNormal, 2),
-	CALLMETHOD_DEF(CompressedIRangesList_reduce, 3),
-	CALLMETHOD_DEF(CompressedIRangesList_gaps, 3),
-	CALLMETHOD_DEF(CompressedIRangesList_summary, 1),
-	CALLMETHOD_DEF(CompressedNormalIRangesList_min, 2),
-	CALLMETHOD_DEF(CompressedNormalIRangesList_max, 2),
-
-/* GappedRanges_class.c */
-	CALLMETHOD_DEF(valid_GappedRanges, 2),
 
 /* Rle_class.c */
 	CALLMETHOD_DEF(Rle_constructor, 4),
@@ -128,13 +102,24 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(RleViews_viewWhichMins, 2),
 	CALLMETHOD_DEF(RleViews_viewWhichMaxs, 2),
 
+/* SimpleIRangesList_class.c */
+	CALLMETHOD_DEF(SimpleIRangesList_isNormal, 1),
+	CALLMETHOD_DEF(SimpleNormalIRangesList_min, 1),
+	CALLMETHOD_DEF(SimpleNormalIRangesList_max, 1),
+
+/* CompressedIRangesList_class.c */
+	CALLMETHOD_DEF(CompressedIRangesList_isNormal, 2),
+	CALLMETHOD_DEF(CompressedIRangesList_reduce, 3),
+	CALLMETHOD_DEF(CompressedIRangesList_gaps, 3),
+	CALLMETHOD_DEF(CompressedIRangesList_summary, 1),
+	CALLMETHOD_DEF(CompressedNormalIRangesList_min, 2),
+	CALLMETHOD_DEF(CompressedNormalIRangesList_max, 2),
+
+/* GappedRanges_class.c */
+	CALLMETHOD_DEF(valid_GappedRanges, 2),
+
 /* Hits_class.c */
 	CALLMETHOD_DEF(make_all_group_inner_hits, 2),
-
-/* encode_overlaps.c */
-	CALLMETHOD_DEF(encode_overlaps1, 10),
-	CALLMETHOD_DEF(RangesList_encode_overlaps, 7),
-	CALLMETHOD_DEF(Hits_encode_overlaps, 10),
 
 /* SharedVector_class.c */
 	CALLMETHOD_DEF(debug_SharedVector_class, 0),
@@ -150,8 +135,8 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(SharedVector_Ocopy_from_subscript, 4),
 	CALLMETHOD_DEF(SharedVector_mcopy, 7),
 
-/* SharedRaw_utils.c */
-	CALLMETHOD_DEF(debug_SharedRaw_utils, 0),
+/* SharedRaw_class.c */
+	CALLMETHOD_DEF(debug_SharedRaw_class, 0),
 
 	CALLMETHOD_DEF(SharedRaw_new, 2),
 
@@ -173,8 +158,8 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(SharedRaw_read_complexes_from_i1i2, 4),
 	CALLMETHOD_DEF(SharedRaw_read_complexes_from_subscript, 3),
 
-/* SharedInteger_utils.c */
-	CALLMETHOD_DEF(debug_SharedInteger_utils, 0),
+/* SharedInteger_class.c */
+	CALLMETHOD_DEF(debug_SharedInteger_class, 0),
 
 	CALLMETHOD_DEF(SharedInteger_new, 2),
 	CALLMETHOD_DEF(SharedInteger_get_show_string, 1),
@@ -184,8 +169,8 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(SharedInteger_write_ints_to_i1i2, 4),
 	CALLMETHOD_DEF(SharedInteger_write_ints_to_subscript, 3),
 
-/* SharedDouble_utils.c */
-	CALLMETHOD_DEF(debug_SharedDouble_utils, 0),
+/* SharedDouble_class.c */
+	CALLMETHOD_DEF(debug_SharedDouble_class, 0),
 
 	CALLMETHOD_DEF(SharedDouble_new, 2),
 	CALLMETHOD_DEF(SharedDouble_get_show_string, 1),
@@ -218,6 +203,21 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(XDouble_slice, 5),
 	CALLMETHOD_DEF(XDoubleViews_summary1, 3),
 	CALLMETHOD_DEF(XDoubleViews_summary2, 3),
+
+/* inter_range_methods.c */
+	CALLMETHOD_DEF(debug_inter_range_methods, 0),
+	CALLMETHOD_DEF(IRanges_range, 1),
+	CALLMETHOD_DEF(Ranges_reduce, 6),
+	CALLMETHOD_DEF(IRanges_gaps, 3),
+
+/* encodeOverlaps_methods.c */
+	CALLMETHOD_DEF(encode_overlaps1, 10),
+	CALLMETHOD_DEF(RangesList_encode_overlaps, 7),
+	CALLMETHOD_DEF(Hits_encode_overlaps, 10),
+
+/* coverage_methods.c */
+	CALLMETHOD_DEF(Ranges_integer_coverage, 5),
+	CALLMETHOD_DEF(Ranges_numeric_coverage, 5),
 
 	{NULL, NULL, 0}
 };

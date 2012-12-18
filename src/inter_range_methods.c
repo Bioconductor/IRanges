@@ -1,5 +1,5 @@
 /****************************************************************************
- *                          Fast IRanges utilities                          *
+ *                         Fast inter-range methods                         *
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"
@@ -9,7 +9,7 @@
 
 static int debug = 0;
 
-SEXP debug_IRanges_utils()
+SEXP debug_inter_range_methods()
 {
 #ifdef DEBUG_IRANGES
 	debug = !debug;

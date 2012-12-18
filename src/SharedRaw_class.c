@@ -1,12 +1,12 @@
 /****************************************************************************
- *                         Fast SharedRaw utilities                         *
+ *               Low-level manipulation of SharedRaw objects                *
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"
 
 static int debug = 0;
 
-SEXP debug_SharedRaw_utils()
+SEXP debug_SharedRaw_class()
 {
 #ifdef DEBUG_IRANGES
 	debug = !debug;

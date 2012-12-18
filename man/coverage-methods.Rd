@@ -1,4 +1,6 @@
-\name{coverage}
+\name{coverage-methods}
+
+\alias{coverage-methods}
 
 \alias{coverage}
 \alias{coverage,numeric-method}

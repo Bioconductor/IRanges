@@ -274,7 +274,7 @@
   \link{inter-range-methods},
   \link{IRanges-class},
   \link{IRanges-utils},
-  \link{IRanges-setops},
+  \link{setops-methods},
   \link{RangedData-class},
   \link{IntervalTree-class},
   \code{\link{update}},

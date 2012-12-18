@@ -33,9 +33,6 @@
 
 % setops
 \alias{match,Hits,Hits-method}
-\alias{intersect,Hits,Hits-method}
-\alias{setdiff,Hits,Hits-method}
-\alias{union,Hits,Hits-method}
 
 % show
 \alias{show,Hits-method}
@@ -137,13 +134,6 @@
   }
 }
 
-\section{Set Operations}{
-  A \code{Hits} object is a set of hits, each from a \code{query}
-  index to a \code{subject} index. The basic set operation API has been
-  implemented to treat \code{Hits} in this manner. This includes
-  \code{\%in\%}, \code{intersect}, \code{union}, and \code{setdiff}.
-}
-
 \section{Other operations}{
   \describe{
     \item{}{\code{queryHits(x, query.map=NULL, new.queryLength=NA,
@@ -190,6 +180,7 @@
 \author{ Michael Lawrence }
 \seealso{
 \code{\link{findOverlaps}}, which generates an instance of this class.
+\link{setops-methods} for set operations on Hits objects.
 }
 \examples{
 query <- IRanges(c(1, 4, 9), c(5, 7, 10))
