@@ -109,8 +109,6 @@ static const R_CallMethodDef callMethods[] = {
 
 /* CompressedIRangesList_class.c */
 	CALLMETHOD_DEF(CompressedIRangesList_isNormal, 2),
-	CALLMETHOD_DEF(CompressedIRangesList_reduce, 3),
-	CALLMETHOD_DEF(CompressedIRangesList_gaps, 3),
 	CALLMETHOD_DEF(CompressedIRangesList_summary, 1),
 	CALLMETHOD_DEF(CompressedNormalIRangesList_min, 2),
 	CALLMETHOD_DEF(CompressedNormalIRangesList_max, 2),
@@ -208,7 +206,10 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(debug_inter_range_methods, 0),
 	CALLMETHOD_DEF(IRanges_range, 1),
 	CALLMETHOD_DEF(Ranges_reduce, 6),
-	CALLMETHOD_DEF(IRanges_gaps, 3),
+	CALLMETHOD_DEF(CompressedIRangesList_reduce, 4),
+	CALLMETHOD_DEF(IRanges_gaps, 4),
+	CALLMETHOD_DEF(CompressedIRangesList_gaps, 3),
+	CALLMETHOD_DEF(Ranges_disjointBins, 2),
 
 /* encodeOverlaps_methods.c */
 	CALLMETHOD_DEF(encode_overlaps1, 10),

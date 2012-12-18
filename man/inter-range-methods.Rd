@@ -59,12 +59,14 @@
 }
 
 \usage{
-## ============ range() ============
+## range()
+## -------
 \S4method{range}{Ranges}(x, ..., na.rm=FALSE)
 
 \S4method{range}{RangesList}(x, ..., na.rm=FALSE)
 
-## ============ reduce() ============
+## reduce()
+## --------
 reduce(x, ...)
 
 \S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
@@ -79,16 +81,20 @@ reduce(x, ...)
 \S4method{reduce}{RangedData}(x, by=character(), drop.empty.ranges=FALSE,
        min.gapwidth=1L, with.inframe.attrib=FALSE)
 
-## ============ gaps() ============
+## gaps()
+## ------
 gaps(x, start=NA, end=NA)
 
-## ============ disjoin() ============
+## disjoin()
+## --------
 disjoin(x, ...)
 
-## ============ isDisjoint() ============
+## isDisjoint()
+## ------------
 isDisjoint(x, ...)
 
-## ============ disjointBins() ============
+## disjointBins()
+## --------------
 disjointBins(x, ...)
 }
 
@@ -259,11 +265,9 @@ relist(mcols(ir0)[unlist(mapping), ], mapping)  # a SplitDataFrameList
 
 ## On a RangesList object. These 4 are the same:
 res1 <- reduce(collection)
-res2 <- IRangesList(one=reduce(range1, with.mapping=FALSE),
-                    reduce(range2, with.mapping=FALSE),
-                    reduce(range3, with.mapping=FALSE))
-res3 <- do.call(IRangesList, lapply(collection, reduce, with.mapping=FALSE))
-res4 <- endoapply(collection, reduce, with.mapping=FALSE)
+res2 <- IRangesList(one=reduce(range1), reduce(range2), reduce(range3))
+res3 <- do.call(IRangesList, lapply(collection, reduce))
+res4 <- endoapply(collection, reduce)
 
 stopifnot(identical(res2, res1))
 stopifnot(identical(res3, res1))

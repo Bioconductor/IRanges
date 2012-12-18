@@ -130,20 +130,3 @@ test_Ranges_distanceToNearest <- function()
   checkIdentical(current$subjectHits, c(1L, 2L))
 }
 
-test_Ranges_disjoin <- function() 
-{
-  checkIdentical(disjoin(IRanges()), IRanges())
-  ir <- IRanges(c(1, 1, 4, 10), c(6, 3, 8, 10))
-  checkIdentical(disjoin(ir), IRanges(c(1, 4, 7, 10), c(3, 6, 8, 10)))
-}
-
-test_Ranges_disjointBins <- function() 
-{
-  checkIdentical(disjointBins(IRanges()), integer())
-  checkIdentical(disjointBins(IRanges(1, 5)), 1L)
-  checkIdentical(disjointBins(IRanges(c(1, 3), c(5, 12))), c(1L, 2L))
-  checkIdentical(disjointBins(IRanges(c(1, 3, 10), c(5, 12, 13))),
-                 c(1L, 2L, 1L))
-  checkIdentical(disjointBins(IRanges(c(3, 1, 10), c(5, 12, 13))),
-                 c(2L, 1L, 2L))
-}

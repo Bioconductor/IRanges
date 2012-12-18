@@ -103,22 +103,17 @@ test_RangesList_reduce <- function() {
     range4 <- IRanges()
     collection <- IRangesList(one = range1, range2, range3, range4,
                               compress = compress)
-    checkIdentical(reduce(collection, with.mapping=FALSE),
-                   IRangesList(one = reduce(range1, with.mapping=FALSE),
-                               reduce(range2, with.mapping=FALSE),
-                               reduce(range3, with.mapping=FALSE),
-                               reduce(range4, with.mapping=FALSE),
+    checkIdentical(reduce(collection),
+                   IRangesList(one = reduce(range1),
+                               reduce(range2),
+                               reduce(range3),
+                               reduce(range4),
                                compress = compress))
-    checkIdentical(reduce(collection, drop.empty.ranges=TRUE,
-                                      with.mapping=FALSE),
-                   IRangesList(one = reduce(range1, drop.empty.ranges=TRUE,
-                                                    with.mapping=FALSE),
-                               reduce(range2, drop.empty.ranges=TRUE,
-                                              with.mapping=FALSE),
-                               reduce(range3, drop.empty.ranges=TRUE,
-                                              with.mapping=FALSE),
-                               reduce(range4, drop.empty.ranges=TRUE,
-                                              with.mapping=FALSE),
+    checkIdentical(reduce(collection, drop.empty.ranges=TRUE),
+                   IRangesList(one = reduce(range1, drop.empty.ranges=TRUE),
+                               reduce(range2, drop.empty.ranges=TRUE),
+                               reduce(range3, drop.empty.ranges=TRUE),
+                               reduce(range4, drop.empty.ranges=TRUE),
                                compress = compress))
   }
 }
@@ -139,6 +134,47 @@ test_IRanges_gaps <- function() {
   checkIdentical(gaps(x, start=0, end=5), IRanges(start=c(0,4), end=c(1,5)))
 }
 
+test_Ranges_disjoin <- function()
+{
+  checkIdentical(disjoin(IRanges()), IRanges())
+  ir <- IRanges(c(1, 1, 4, 10), c(6, 3, 8, 10))
+  checkIdentical(disjoin(ir), IRanges(c(1, 4, 7, 10), c(3, 6, 8, 10)))
+}
+
+test_CompressedIRangesList_disjoin <- function()
+{
+    r0 <- IRanges(10, 20)
+    checkTrue(validObject(disjoin(IRangesList())))
+    ## unnamed; incl. 0-length
+    irl <- IRangesList(IRanges())
+    checkIdentical(irl, disjoin(irl))
+    irl <- IRangesList(r0, IRanges(), r0)
+    checkIdentical(irl, disjoin(irl))
+    irl <- IRangesList(r0, IRanges(), IRanges(), r0)
+    checkIdentical(irl, disjoin(irl))
+    ## named; incl. 0-length
+    irl <- IRangesList(a=IRanges())
+    checkIdentical(irl, disjoin(irl))
+    irl <- IRangesList(a=r0, b=IRanges(), c=r0)
+    checkIdentical(irl, disjoin(irl))
+    irl <- IRangesList(a=r0, b=IRanges(), c=IRanges(), d=r0)
+    checkIdentical(irl, disjoin(irl))
+    ## no interference between separate elements
+    r0 <- IRanges(10, c(15, 20))
+    dr0 <- disjoin(r0)
+    irl <- IRangesList(r0, r0)
+    checkIdentical(IRangesList(dr0, dr0), disjoin(irl))
+    irl <- IRangesList(r0, IRanges(), r0)
+    checkIdentical(IRangesList(dr0, IRanges(), dr0), disjoin(irl))
+    ## 0-width
+    ## 1-width
+    r0 <- IRanges(c(1, 10), 10)
+    irl <- IRangesList(r0, IRanges())
+    checkIdentical(disjoin(r0), disjoin(irl)[[1]])
+    irl <- IRangesList(IRanges(), r0)
+    checkIdentical(disjoin(r0), disjoin(irl)[[2]])
+}
+
 test_Ranges_isDisjoint <- function() {
   ir1 <- IRanges(c(2,5,1), c(3,7,3))
   ir2 <- IRanges(c(2,9,5), c(3,9,6))
@@ -146,5 +182,16 @@ test_Ranges_isDisjoint <- function() {
   checkIdentical(isDisjoint(ir1), FALSE)
   checkIdentical(isDisjoint(ir2), TRUE)
   checkIdentical(isDisjoint(ir3), TRUE)
+}
+
+test_Ranges_disjointBins <- function()
+{
+  checkIdentical(disjointBins(IRanges()), integer())
+  checkIdentical(disjointBins(IRanges(1, 5)), 1L)
+  checkIdentical(disjointBins(IRanges(c(1, 3), c(5, 12))), c(1L, 2L))
+  checkIdentical(disjointBins(IRanges(c(1, 3, 10), c(5, 12, 13))),
+                 c(1L, 2L, 1L))
+  checkIdentical(disjointBins(IRanges(c(3, 1, 10), c(5, 12, 13))),
+                 c(2L, 1L, 2L))
 }
 

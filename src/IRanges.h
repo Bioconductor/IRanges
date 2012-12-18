@@ -1112,18 +1112,6 @@ SEXP CompressedIRangesList_isNormal(
 	SEXP use_names
 );
 
-SEXP CompressedIRangesList_reduce(
-	SEXP x,
-	SEXP drop_empty_ranges,
-	SEXP min_gapwidth
-);
-
-SEXP CompressedIRangesList_gaps(
-	SEXP x,
-	SEXP start,
-	SEXP end
-);
-
 SEXP CompressedIRangesList_summary(
 	SEXP object
 );
@@ -1655,18 +1643,6 @@ SEXP debug_inter_range_methods();
 
 SEXP IRanges_range(SEXP x);
 
-int _reduce_ranges(
-	const int *x_start,
-	const int *x_width,
-	int x_len,
-	int drop_empty_ranges,
-	int min_gapwidth,
-	int *order_buf,
-	RangeAE *out_ranges,
-	IntAEAE *mapping,
-	int *out_inframe_start
-);
-
 SEXP Ranges_reduce(
 	SEXP x_start,
 	SEXP x_width,
@@ -1676,20 +1652,29 @@ SEXP Ranges_reduce(
 	SEXP with_inframe_start
 );
 
-int _gaps_ranges(
-	const int *start,
-	const int *width,
-	int length,
-	int restrict_start,
-	int restrict_end,
-	int *order_buf,
-	RangeAE *out_ranges
+SEXP CompressedIRangesList_reduce(
+	SEXP x,
+	SEXP drop_empty_ranges,
+	SEXP min_gapwidth,
+	SEXP with_mapping
 );
 
 SEXP IRanges_gaps(
+	SEXP x_start,
+	SEXP x_width,
+	SEXP start,
+	SEXP end
+);
+
+SEXP CompressedIRangesList_gaps(
 	SEXP x,
 	SEXP start,
 	SEXP end
+);
+
+SEXP Ranges_disjointBins(
+	SEXP x_start,
+	SEXP x_width
 );
 
 

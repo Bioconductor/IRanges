@@ -97,14 +97,17 @@ setMethod("reduce", "IRanges",
             stop("'with.mapping' must be TRUE or FALSE")
         if (!isTRUEorFALSE(with.inframe.attrib))
             stop("'with.inframe.attrib' must be TRUE or FALSE")
-        C_ans <- .Call2("Ranges_reduce", start(x), width(x),
-                                         drop.empty.ranges, min.gapwidth,
-                                         with.mapping, with.inframe.attrib,
-                                         PACKAGE="IRanges")
+        C_ans <- .Call2("Ranges_reduce",
+                        start(x), width(x),
+                        drop.empty.ranges, min.gapwidth,
+                        with.mapping, with.inframe.attrib,
+                        PACKAGE="IRanges")
         ans <- unsafe.update(x, start=C_ans$start, width=C_ans$width,
                                 names=NULL)
-        if (with.mapping)
-            mcols(ans) <- DataFrame(mapping=IntegerList(C_ans$mapping))
+        if (with.mapping) {
+            mapping <- IntegerList(C_ans$mapping)
+            mcols(ans) <- DataFrame(mapping=mapping)
+        }
         if (with.inframe.attrib) {
             inframe <- new2("IRanges", start=C_ans$inframe.start,
                                        width=width(x), check=FALSE)
@@ -150,7 +153,6 @@ setMethod("reduce", "RangesList",
 
 ### 'with.inframe.attrib' is ignored for now.
 ### TODO: Support 'with.inframe.attrib=TRUE'.
-### FIXME: Implement 'with.mapping' (ignored for now).
 setMethod("reduce", "CompressedIRangesList",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
                 with.mapping=TRUE, with.inframe.attrib=FALSE)
@@ -163,12 +165,23 @@ setMethod("reduce", "CompressedIRangesList",
             min.gapwidth <- as.integer(min.gapwidth)
         if (min.gapwidth < 0L)
             stop("'min.gapwidth' must be non-negative")
+        if (!isTRUEorFALSE(with.mapping))
+            stop("'with.mapping' must be TRUE or FALSE")
         if (!identical(with.inframe.attrib, FALSE))
             stop("'with.inframe.attrib' argument not yet supported ",
                  "when reducing a CompressedIRangesList object")
-        .Call2("CompressedIRangesList_reduce",
-               x, drop.empty.ranges, min.gapwidth,
-               PACKAGE="IRanges")
+        C_ans <- .Call2("CompressedIRangesList_reduce",
+                        x, drop.empty.ranges, min.gapwidth, with.mapping,
+                        PACKAGE="IRanges")
+        ans_unlistData <- new2("IRanges", start=C_ans$start, width=C_ans$width,
+                                          check=FALSE)
+        if (with.mapping) {
+            mapping <- IntegerList(C_ans$mapping)
+            mcols(ans_unlistData) <- DataFrame(mapping=mapping)
+        }
+        ans_partitioning <- PartitioningByEnd(C_ans$partitioning_by_end)
+        names(ans_partitioning) <- names(x)
+        relist(ans_unlistData, ans_partitioning)
     }
 )
 
@@ -244,9 +257,11 @@ setMethod("gaps", "IRanges",
     {
         start <- normargSingleStartOrNA(start)
         end <- normargSingleEndOrNA(end)
-        C_ans <- .Call2("IRanges_gaps", x, start, end, PACKAGE="IRanges")
+        C_ans <- .Call2("IRanges_gaps",
+                        start(x), width(x), start, end,
+                        PACKAGE="IRanges")
         initialize(x, start=C_ans$start, width=C_ans$width, NAMES=NULL,
-                   elementMetadata=NULL)
+                      elementMetadata=NULL)
     }
 )
 
