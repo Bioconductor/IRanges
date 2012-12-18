@@ -83,7 +83,7 @@ setGeneric("reduce", signature="x",
 
 setMethod("reduce", "IRanges",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                with.mapping=TRUE, with.inframe.attrib=FALSE)
+                with.mapping=FALSE, with.inframe.attrib=FALSE)
     {
         if (!isTRUEorFALSE(drop.empty.ranges))
             stop("'drop.empty.ranges' must be TRUE or FALSE")
@@ -119,7 +119,7 @@ setMethod("reduce", "IRanges",
 
 setMethod("reduce", "Ranges",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                with.mapping=TRUE, with.inframe.attrib=FALSE)
+                with.mapping=FALSE, with.inframe.attrib=FALSE)
     {
         ir <- as(x, "IRanges")
         y <- reduce(ir, drop.empty.ranges=drop.empty.ranges,
@@ -132,7 +132,7 @@ setMethod("reduce", "Ranges",
 
 setMethod("reduce", "Views",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                with.mapping=TRUE, with.inframe.attrib=FALSE)
+                with.mapping=FALSE, with.inframe.attrib=FALSE)
     {
         x@ranges <- reduce(ranges(x),
                            drop.empty.ranges=drop.empty.ranges,
@@ -145,7 +145,7 @@ setMethod("reduce", "Views",
 
 setMethod("reduce", "RangesList",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                with.mapping=TRUE, with.inframe.attrib=FALSE)
+                with.mapping=FALSE, with.inframe.attrib=FALSE)
         endoapply(x, reduce, drop.empty.ranges = drop.empty.ranges,
                      min.gapwidth = min.gapwidth,
                      with.mapping=with.mapping,
@@ -155,7 +155,7 @@ setMethod("reduce", "RangesList",
 ### TODO: Support 'with.inframe.attrib=TRUE'.
 setMethod("reduce", "CompressedIRangesList",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                with.mapping=TRUE, with.inframe.attrib=FALSE)
+                with.mapping=FALSE, with.inframe.attrib=FALSE)
     {
         if (!isTRUEorFALSE(drop.empty.ranges))
             stop("'drop.empty.ranges' must be TRUE or FALSE")

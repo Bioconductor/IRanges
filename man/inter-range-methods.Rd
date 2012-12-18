@@ -70,13 +70,13 @@
 reduce(x, ...)
 
 \S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-       with.mapping=TRUE, with.inframe.attrib=FALSE)
+       with.mapping=FALSE, with.inframe.attrib=FALSE)
 
 \S4method{reduce}{Views}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-       with.mapping=TRUE, with.inframe.attrib=FALSE)
+       with.mapping=FALSE, with.inframe.attrib=FALSE)
 
 \S4method{reduce}{RangesList}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-       with.mapping=TRUE, with.inframe.attrib=FALSE)
+       with.mapping=FALSE, with.inframe.attrib=FALSE)
 
 \S4method{reduce}{RangedData}(x, by=character(), drop.empty.ranges=FALSE,
        min.gapwidth=1L, with.inframe.attrib=FALSE)
@@ -86,7 +86,7 @@ reduce(x, ...)
 gaps(x, start=NA, end=NA)
 
 ## disjoin()
-## --------
+## ---------
 disjoin(x, ...)
 
 ## isDisjoint()
@@ -117,8 +117,8 @@ disjointBins(x, ...)
   }
   \item{with.mapping}{
     \code{TRUE} or \code{FALSE}. Should the mapping from reduced to original
-    ranges be stored in the returned object? If yes (the default), then it is
-    stored as metadata column \code{"mapping"} of type \link{IntegerList}.
+    ranges be stored in the returned object? If yes, then it is stored as
+    metadata column \code{"mapping"} of type \link{IntegerList}.
   }
   \item{with.inframe.attrib}{
     \code{TRUE} or \code{FALSE}. For internal use.
@@ -251,16 +251,21 @@ range(rd, rd2)
 
 ## On a Ranges object:
 reduce(x)
+y <- reduce(x, with.mapping=TRUE)
+mcols(y)$mapping  # an IntegerList
+
 reduce(x, drop.empty.ranges=TRUE)
+y <- reduce(x, drop.empty.ranges=TRUE, with.mapping=TRUE)
+mcols(y)$mapping
 
 ## Use the mapping from reduced to original ranges to split the DataFrame
 ## of original metadata columns by reduced range:
 ir0 <- IRanges(c(11:13, 2, 7:6), width=3)
 mcols(ir0) <- DataFrame(id=letters[1:6], score=1:6)
-ir <- reduce(ir0)
+ir <- reduce(ir0, with.mapping=TRUE)
 ir
 mapping <- mcols(ir)$mapping
-mapping  # an IntegerList
+mapping
 relist(mcols(ir0)[unlist(mapping), ], mapping)  # a SplitDataFrameList
 
 ## On a RangesList object. These 4 are the same:

@@ -129,50 +129,49 @@
 }
 
 \examples{
-  showClass("IRanges")  # shows (some of) the known subclasses
+showClass("IRanges")  # shows (some of) the known subclasses
 
-  ## ---------------------------------------------------------------------
-  ## A. MANIPULATING IRanges OBJECTS
-  ## ---------------------------------------------------------------------
-  ## All the methods defined for Ranges objects work on IRanges objects.
-  ## See ?Ranges for some examples.
-  ## Also see ?`IRanges-utils` and ?`setops-methods` for additional
-  ## operations on IRanges objects.
+## ---------------------------------------------------------------------
+## A. MANIPULATING IRanges OBJECTS
+## ---------------------------------------------------------------------
+## All the methods defined for Ranges objects work on IRanges objects.
+## See ?Ranges for some examples.
+## Also see ?`IRanges-utils` and ?`setops-methods` for additional
+## operations on IRanges objects.
   
-  ## Combining IRanges objects
-  ir1 <- IRanges(c(1, 10, 20), width=5)
-  mcols(ir1) <- DataFrame(score=runif(3))
-  ir2 <- IRanges(c(101, 110, 120), width=10)
-  mcols(ir2) <- DataFrame(score=runif(3))
-  ir3 <- IRanges(c(1001, 1010, 1020), width=20)
-  mcols(ir3) <- DataFrame(value=runif(3))
-  some.iranges <- c(ir1, ir2)
-  ## all.iranges <- c(ir1, ir2, ir3) ## This will raise an error
-  all.iranges <- c(ir1, ir2, ir3, ignore.mcols=TRUE)
-  stopifnot(is.null(mcols(all.iranges)))
+## Combining IRanges objects
+ir1 <- IRanges(c(1, 10, 20), width=5)
+mcols(ir1) <- DataFrame(score=runif(3))
+ir2 <- IRanges(c(101, 110, 120), width=10)
+mcols(ir2) <- DataFrame(score=runif(3))
+ir3 <- IRanges(c(1001, 1010, 1020), width=20)
+mcols(ir3) <- DataFrame(value=runif(3))
+some.iranges <- c(ir1, ir2)
+## all.iranges <- c(ir1, ir2, ir3) ## This will raise an error
+all.iranges <- c(ir1, ir2, ir3, ignore.mcols=TRUE)
+stopifnot(is.null(mcols(all.iranges)))
 
-  ## ---------------------------------------------------------------------
-  ## B. A NOTE ABOUT PERFORMANCE
-  ## ---------------------------------------------------------------------
-  ## Using an IRanges object for storing a big set of ranges is more
-  ## efficient than using a standard R data frame:
-  N <- 2000000L  # nb of ranges
-  W <- 180L      # width of each range
-  start <- 1L
-  end <- 50000000L
-  set.seed(777)
-  range_starts <- sort(sample(end-W+1L, N))
-  range_widths <- rep.int(W, N)
-  ## Instantiation is faster
-  system.time(x <- IRanges(start=range_starts, width=range_widths))
-  system.time(y <- data.frame(start=range_starts, width=range_widths))
-  ## Subsetting is faster
-  system.time(x16 <- x[c(TRUE, rep.int(FALSE, 15))])
-  system.time(y16 <- y[c(TRUE, rep.int(FALSE, 15)), ])
-  ## Internal representation is more compact
-  object.size(x16)
-  object.size(y16)
-  
+## ---------------------------------------------------------------------
+## B. A NOTE ABOUT PERFORMANCE
+## ---------------------------------------------------------------------
+## Using an IRanges object for storing a big set of ranges is more
+## efficient than using a standard R data frame:
+N <- 2000000L  # nb of ranges
+W <- 180L      # width of each range
+start <- 1L
+end <- 50000000L
+set.seed(777)
+range_starts <- sort(sample(end-W+1L, N))
+range_widths <- rep.int(W, N)
+## Instantiation is faster
+system.time(x <- IRanges(start=range_starts, width=range_widths))
+system.time(y <- data.frame(start=range_starts, width=range_widths))
+## Subsetting is faster
+system.time(x16 <- x[c(TRUE, rep.int(FALSE, 15))])
+system.time(y16 <- y[c(TRUE, rep.int(FALSE, 15)), ])
+## Internal representation is more compact
+object.size(x16)
+object.size(y16)
 }
 
 \keyword{methods}
