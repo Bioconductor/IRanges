@@ -244,7 +244,7 @@ rangeComparisonCodeToLetter(code)
 \seealso{
   \itemize{
     \item The \link{Ranges} class.
-    \item \link[IRanges]{GenomicRanges-comparison} in the GenomicRanges
+    \item \link[GenomicRanges]{GenomicRanges-comparison} in the GenomicRanges
           package for comparing and ordering genomic ranges.
     \item \link{intra-range-methods} and \link{inter-range-methods} for
           intra and inter range transformations.
