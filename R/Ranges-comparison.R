@@ -17,7 +17,9 @@ setGeneric("compare", function(x, y) standardGeneric("compare"))
 
 ### Ranges are ordered by starting position first and then by width.
 ### This way, the space of ranges is totally ordered.
-### This "compare" method returns codes that reflect this order.
+### This "compare" method returns one of the 13 predefined codes (>= -6 and
+### <= 6) described in the man page. The signs of those codes reflect this
+### order.
 setMethod("compare", c("Ranges", "Ranges"),
     function(x, y)
     {
@@ -42,8 +44,8 @@ rangeComparisonCodeToLetter <- function(code)
 ### Element-wise (aka "parallel") comparison of 2 Ranges objects.
 ###
 ### We only need to implement "==" and "<=" methods. The other comparison
-### binary operators (!=, >=, <, >) will then work out-of-the-box on Ranges
-### objects thanks to the methods for Vector objects.
+### binary operators (!=, >=, <, >) will then work out-of-the-box on
+### Ranges objects thanks to the methods for Vector objects.
 ###
 
 setMethod("==", signature(e1="Ranges", e2="Ranges"),
@@ -58,8 +60,8 @@ setMethod("<=", signature(e1="Ranges", e2="Ranges"),
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### duplicated()
 ###
-### unique() will work out-of-the-box on Ranges objects thanks to the method
-### for Vector objects.
+### unique() will work out-of-the-box on a Ranges object thanks to the
+### method for Vector objects.
 ###
 
 .duplicated.Ranges <- function(x, incomparables=FALSE, fromLast=FALSE,
@@ -74,7 +76,7 @@ setMethod("<=", signature(e1="Ranges", e2="Ranges"),
 ### S3/S4 combo for duplicated.Ranges
 duplicated.Ranges <- function(x, incomparables=FALSE, ...)
     .duplicated.Ranges(x, incomparables=incomparables, ...)
-setMethod("duplicated", "Ranges", duplicated.Ranges)
+setMethod("duplicated", "Ranges", .duplicated.Ranges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -124,6 +126,7 @@ match.if.overlap.warning.msg <- function(classname)
 ### TODO: Remove 'match.if.overlap' arg in BioC 2.14.
 setMethod("match", c("Ranges", "Ranges"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL,
+                       method=c("auto", "quick", "hash"),
                        match.if.overlap=FALSE)
     {
         if (!isSingleNumberOrNA(nomatch))
@@ -147,13 +150,14 @@ setMethod("match", c("Ranges", "Ranges"),
         ##     findOverlaps(x, table, type="equal", select="first")
         ## except when 'x' and 'table' both contain empty ranges.
         matchIntegerPairs(start(x), width(x), start(table), width(table),
-                          nomatch=nomatch)
+                          nomatch=nomatch, method=method)
     }
 )
 
-### This method is temporarily needed in order to issue the warning.
-### TODO: Remove it in BioC 2.13 when the 'match.if.overlap' arg of match()
-### is gone.
+### The only reason for overriding the method for Vector objects is to issue
+### the warning.
+### TODO: Remove this method in BioC 2.14 when the 'match.if.overlap' arg of
+### match() is gone.
 setMethod("%in%", c("Ranges", "Ranges"),
     function(x, table)
     {
@@ -168,7 +172,7 @@ setMethod("%in%", c("Ranges", "Ranges"),
 ###
 ### The "order" and "rank" methods for Ranges objects are consistent with the
 ### order implied by compare().
-### sort() will work out-of-the-box on Ranges objects thanks to the method
+### sort() will work out-of-the-box on a Ranges object thanks to the method
 ### for Vector objects.
 ###
 
@@ -177,25 +181,29 @@ setMethod("order", "Ranges",
     {
         if (!isTRUEorFALSE(decreasing))
             stop("'decreasing' must be TRUE or FALSE")
-        ## all arguments in '...' are guaranteed to be Ranges objects
+        ## All arguments in '...' are guaranteed to be Ranges objects.
         args <- list(...)
-        if (length(args) == 1) {
+        if (length(args) == 1L) {
             x <- args[[1L]]
             return(orderIntegerPairs(start(x), width(x),
-                                     decreasing = decreasing))
+                                     decreasing=decreasing))
         }
         order_args <- vector("list", 2L*length(args))
-        order_args[2L*seq_len(length(args)) - 1L] <- lapply(args, start)
-        order_args[2L*seq_len(length(args))] <- lapply(args, end)
-        do.call(order, c(order_args, na.last=na.last, decreasing=decreasing))
+        idx <- 2L*seq_len(length(args))
+        order_args[idx - 1L] <- lapply(args, start)
+        order_args[idx] <- lapply(args, end)
+        do.call(order, c(order_args,
+                         list(na.last=na.last, decreasing=decreasing)))
     }
 )
 
 setMethod("rank", "Ranges",
-    function(x, na.last=TRUE, ties.method=c("average", "first", "random", "max", "min"))
+    function(x, na.last=TRUE,
+             ties.method=c("average", "first", "random", "max", "min"))
     {
         if (!missing(ties.method) && !identical(ties.method, "first"))
-            stop("only 'ties.method=\"first\"' is supported when ranking ranges")
+            stop("only 'ties.method=\"first\"' is supported ",
+                 "when ranking ranges")
         xo <- order(x)
         ## 'ans' is the reverse permutation of 'xo'
         ans <- integer(length(xo))

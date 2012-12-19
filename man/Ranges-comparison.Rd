@@ -36,13 +36,14 @@
 ## duplicated()
 ## ------------
 
-\S4method{duplicated}{Ranges}(x, incomparables=FALSE, ...)
+\S4method{duplicated}{Ranges}(x, incomparables=FALSE, fromLast=FALSE,
+           method=c("auto", "quick", "hash"))
 
 ## match()
 ## -------
 
 \S4method{match}{Ranges,Ranges}(x, table, nomatch=NA_integer_, incomparables=NULL,
-      match.if.overlap=FALSE)
+      method=c("auto", "quick", "hash"), match.if.overlap=FALSE)
 
 ## order() and related methods
 ## ----------------------------
@@ -56,6 +57,8 @@
 ## ------------------------------------------------------------------------
 
 compare(x, y)
+\S4method{compare}{Ranges,Ranges}(x, y)
+
 rangeComparisonCodeToLetter(code)
 }
 
@@ -66,24 +69,17 @@ rangeComparisonCodeToLetter(code)
   \item{incomparables}{
     Not supported.
   }
-  \item{...}{
-    For \code{duplicated}: the following additional arguments are supported:
-    \describe{
-      \item{\code{fromLast}}{
-        See default S3 method for \code{\link[base]{duplicated}}.
-      }
-      \item{\code{method}}{
-        Use a Quicksort-based (\code{method="quick"}) or a
-        hash-based (\code{method="hash"}) algorithm.
-        The latter tends to give better performance, except maybe for some
-        pathological input that we've not been able to determine so far.
-        When \code{method="auto"} is specified, the hash-based algorithm
-        is used as long as the length of \code{x} is <= 2^29, otherwise the
-        Quicksort-based algorithm is used.
-      }
-    }
-
-    For \code{order}: additional \link{Ranges} objects used for breaking ties.
+  \item{fromLast}{
+    See default S3 method for \code{\link[base]{duplicated}}.
+  }
+  \item{method}{
+    Use a Quicksort-based (\code{method="quick"}) or a
+    hash-based (\code{method="hash"}) algorithm.
+    The latter tends to give better performance, except maybe for some
+    pathological input that we've not been able to determine so far.
+    When \code{method="auto"} is specified, the hash-based algorithm
+    is used as long as the length of \code{x} is <= 2^29, otherwise the
+    Quicksort-based algorithm is used.
   }
   \item{nomatch}{
     The value to be returned in the case when no match is found.
@@ -94,9 +90,9 @@ rangeComparisonCodeToLetter(code)
     \code{match()} will issue a warning.
 
     Starting with BioC 2.12, the default behavior of \code{match()} on
-    \link{Ranges} objects has changed to use \emph{equality} instead of
-    \emph{overlap} for comparing elements between \link{Ranges} objects
-    \code{x} and \code{table}. Now \code{x[i]} and \code{table[j]} are
+    \link{Ranges} objects has changed to use \emph{equality} instead
+    of \emph{overlap} for comparing elements between \link{Ranges}
+    objects \code{x} and \code{table}. Now \code{x[i]} and \code{table[j]} are
     considered to match when they are equal (i.e. \code{x[i] == table[j]}),
     instead of when they overlap. This new behavior is consistent with
     \code{base::\link[base]{match}()}.
@@ -107,6 +103,9 @@ rangeComparisonCodeToLetter(code)
     \code{findOverlaps(x, table, select="first")}
     which is the recommended way. Alternatively, you can call \code{match()}
     with \code{match.if.overlap=TRUE}.
+  }
+  \item{...}{
+    Additional \link{Ranges} objects used for breaking ties.
   }
   \item{na.last}{
     Ignored.
@@ -245,6 +244,13 @@ rangeComparisonCodeToLetter(code)
 \seealso{
   \itemize{
     \item The \link{Ranges} class.
+    \item \link[IRanges]{GenomicRanges-comparison} in the GenomicRanges
+          package for comparing and ordering genomic ranges.
+    \item \link{intra-range-methods} and \link{inter-range-methods} for
+          intra and inter range transformations.
+    \item \link{setops-methods} for set operations on \link{IRanges}
+          objects.
+    \item \code{\link{findOverlaps}} for finding overlapping ranges.
     \item \code{\link{==}},
           \code{\link[BiocGenerics]{duplicated}},
           \code{\link[BiocGenerics]{unique}},
@@ -254,11 +260,6 @@ rangeComparisonCodeToLetter(code)
           \code{\link[BiocGenerics]{sort}},
           \code{\link[BiocGenerics]{rank}} for general information about
           those functions.
-    \item \link{intra-range-methods} and \link{inter-range-methods} for
-          intra and inter range transformations.
-    \item \link{setops-methods} for set operations on \link{IRanges}
-          objects.
-    \item \code{\link{findOverlaps}} for finding overlapping ranges.
   }
 }
 

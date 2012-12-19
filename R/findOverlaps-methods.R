@@ -462,7 +462,8 @@ setMethod("match", c("Views", "Views"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on Views objects is deprecated.\nUse '",
+        msg <- c("match() on Views objects is deprecated.\n",
+                 "Please use '",
                  "findOverlaps(ranges(x), ranges(table), select=\"first\")",
                  "' instead.")
         .Deprecated(msg=msg)
@@ -475,7 +476,8 @@ setMethod("match", c("ANY", "Views"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on a Views subject is deprecated.\nUse '",
+        msg <- c("match() on a Views subject is deprecated.\n",
+                 "Please use '",
                  "findOverlaps(x, ranges(table), select=\"first\")",
                  "' instead.")
         .Deprecated(msg=msg)
@@ -488,7 +490,8 @@ setMethod("match", c("Views", "ANY"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on a Views query is deprecated.\nUse '",
+        msg <- c("match() on a Views query is deprecated.\n",
+                 "Please use '",
                  "findOverlaps(ranges(x), table, select=\"first\")",
                  "' instead.")
         .Deprecated(msg=msg)
@@ -501,7 +504,8 @@ setMethod("match", c("RangesList", "RangesList"),
           {
             if (!identical(nomatch, NA_integer_))
                 stop("'nomatch' arg is not supported")
-            msg <- c("match() on RangesList objects is deprecated.\nUse '",
+            msg <- c("match() on RangesList objects is deprecated.\n",
+                     "Please use '",
                      "findOverlaps(x, table, select=\"first\", drop=TRUE)",
                      "' instead.")
             .Deprecated(msg=msg)
@@ -513,7 +517,8 @@ setMethod("match", c("ViewsList", "ViewsList"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on ViewsList objects is deprecated.\nUse '",
+        msg <- c("match() on ViewsList objects is deprecated.\n",
+                 "Please use '",
                  "findOverlaps(ranges(x), ranges(table), select=\"first\", ",
                  "drop=TRUE)",
                  "' instead.")
@@ -527,7 +532,8 @@ setMethod("match", c("ANY", "ViewsList"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on a ViewsList subject is deprecated.\nUse '",
+        msg <- c("match() on a ViewsList subject is deprecated.\n",
+                 "Please use '",
                  "findOverlaps(x, ranges(table), select=\"first\", ",
                  "drop=TRUE)",
                  "' instead.")
@@ -541,7 +547,8 @@ setMethod("match", c("ViewsList", "ANY"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on a ViewsList query is deprecated.\nUse '",
+        msg <- c("match() on a ViewsList query is deprecated.\n",
+                 "Please use '",
                  "findOverlaps(ranges(x), table, select=\"first\", ",
                  "drop=TRUE)",
                  "' instead.")
@@ -555,7 +562,8 @@ setMethod("match", c("RangedData", "RangedData"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on RangedData objects is deprecated.\nUse '",
+        msg <- c("match() on RangedData objects is deprecated.\n",
+                 "Please use '",
                  "findOverlaps(ranges(x), ranges(table), select=\"first\", ",
                  "drop=TRUE)",
                  "' instead.")
@@ -569,7 +577,8 @@ setMethod("match", c("RangedData", "RangesList"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on a RangedData query is deprecated.\nUse '",
+        msg <- c("match() on a RangedData query is deprecated.\n",
+                 "Please use '",
                  "findOverlaps(ranges(x), table, select=\"first\", ",
                  "drop=TRUE)",
                  "' instead.")
@@ -583,7 +592,8 @@ setMethod("match", c("RangesList", "RangedData"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on a RangedData subject is deprecated.\nUse '",
+        msg <- c("match() on a RangedData subject is deprecated.\n",
+                 "Please use '",
                  "findOverlaps(x, ranges(table), select=\"first\", ",
                  "drop=TRUE)",
                  "' instead.")
