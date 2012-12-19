@@ -11,6 +11,9 @@
 
 \alias{duplicated,Ranges-method}
 
+\alias{match,Ranges,Ranges-method}
+\alias{\%in\%,Ranges,Ranges-method}
+
 \alias{order,Ranges-method}
 \alias{rank,Ranges-method}
 
@@ -30,12 +33,18 @@
 
 \S4method{<=}{Ranges,Ranges}(e1, e2)
 
-## Duplicated elements within a Ranges object
-## ------------------------------------------
+## duplicated()
+## ------------
 
 \S4method{duplicated}{Ranges}(x, incomparables=FALSE, ...)
 
-## Ordering and related methods
+## match()
+## -------
+
+\S4method{match}{Ranges,Ranges}(x, table, nomatch=NA_integer_, incomparables=NULL,
+      match.if.overlap=FALSE)
+
+## order() and related methods
 ## ----------------------------
 
 \S4method{order}{Ranges}(..., na.last=TRUE, decreasing=FALSE)
@@ -43,19 +52,19 @@
 \S4method{rank}{Ranges}(x, na.last=TRUE,
      ties.method=c("average", "first", "random", "max", "min"))
 
-## Generalized range-wise (aka "parallel") comparison of 2 Ranges objects
-## ----------------------------------------------------------------------
+## Generalized element-wise (aka "parallel") comparison of 2 Ranges objects
+## ------------------------------------------------------------------------
 
 compare(x, y)
 rangeComparisonCodeToLetter(code)
 }
 
 \arguments{
-  \item{e1, e2, x, y}{
+  \item{e1, e2, x, table, y}{
     \link{Ranges} objects.
   }
   \item{incomparables}{
-    Not used (must be \code{FALSE}).
+    Not supported.
   }
   \item{...}{
     For \code{duplicated}: the following additional arguments are supported:
@@ -75,6 +84,29 @@ rangeComparisonCodeToLetter(code)
     }
 
     For \code{order}: additional \link{Ranges} objects used for breaking ties.
+  }
+  \item{nomatch}{
+    The value to be returned in the case when no match is found.
+    It is coerced to an \code{integer}.
+  }
+  \item{match.if.overlap}{
+    You temporarily need to explicitly provide this argument otherwise
+    \code{match()} will issue a warning.
+
+    Starting with BioC 2.12, the default behavior of \code{match()} on
+    \link{Ranges} objects has changed to use \emph{equality} instead of
+    \emph{overlap} for comparing elements between \link{Ranges} objects
+    \code{x} and \code{table}. Now \code{x[i]} and \code{table[j]} are
+    considered to match when they are equal (i.e. \code{x[i] == table[j]}),
+    instead of when they overlap. This new behavior is consistent with
+    \code{base::\link[base]{match}()}.
+
+    If you need the new behavior, use \code{match.if.overlap=FALSE}.
+
+    If you need the old behavior, you can either do:
+    \code{findOverlaps(x, table, select="first")}
+    which is the recommended way. Alternatively, you can call \code{match()}
+    with \code{match.if.overlap=TRUE}.
   }
   \item{na.last}{
     Ignored.
@@ -118,6 +150,19 @@ rangeComparisonCodeToLetter(code)
       \code{unique(x)}:
       Removes duplicate ranges from \code{x}.
       See \code{\link[base]{unique}} in the base package for more details.
+    }
+    \item{}{
+      \code{match(x, table, nomatch=NA_integer_)}:
+      Returns an integer vector of length \code{length(x)},
+      containing the index of the first matching range in \code{table}
+      (or \code{nomatch} if there is no matching range) for each range
+      in \code{x}.
+    }
+    \item{}{
+      \code{x \%in\% table}:
+      A shortcut for finding the ranges in \code{x} that match any of
+      the ranges in \code{table}. Returns a logical vector of length
+      equal to the number of ranges in \code{x}.
     }
     \item{}{
       \code{order(...)}:
@@ -195,54 +240,79 @@ rangeComparisonCodeToLetter(code)
   }
 }
 
+\author{H. Pages}
+
 \seealso{
-  \link{Ranges-class},
-  \link{IRanges-class},
-  \code{\link[base]{duplicated}},
-  \code{\link[base]{unique}},
-  \code{\link[BiocGenerics]{order}},
-  \code{\link[base]{sort}},
-  \code{\link[base]{rank}}
+  \itemize{
+    \item The \link{Ranges} class.
+    \item \code{\link{==}},
+          \code{\link[BiocGenerics]{duplicated}},
+          \code{\link[BiocGenerics]{unique}},
+          \code{\link[BiocGenerics]{match}},
+          \code{\link{\%in\%}},
+          \code{\link[BiocGenerics]{order}},
+          \code{\link[BiocGenerics]{sort}},
+          \code{\link[BiocGenerics]{rank}} for general information about
+          those functions.
+    \item \link{intra-range-methods} and \link{inter-range-methods} for
+          intra and inter range transformations.
+    \item \link{setops-methods} for set operations on \link{IRanges}
+          objects.
+    \item \code{\link{findOverlaps}} for finding overlapping ranges.
+  }
 }
 
 \examples{
-  x <- IRanges(start=c(20L, 8L, 20L, 22L, 25L, 20L, 22L, 22L),
-               width=c( 4L, 0L, 11L,  5L,  0L,  9L,  5L,  0L))
-  x
+x <- IRanges(start=c(20L, 8L, 20L, 22L, 25L, 20L, 22L, 22L),
+             width=c( 4L, 0L, 11L,  5L,  0L,  9L,  5L,  0L))
+x
 
-  ## ---------------------------------------------------------------------
-  ## A. EQUALITY AND RELATED METHODS
-  ## ---------------------------------------------------------------------
-  which(width(x) == 0)  # 3 empty ranges
-  x[2] == x[2]  # TRUE
-  x[2] == x[5]  # FALSE
-  x == x[4]
-  duplicated(x)
-  unique(x)
+## ---------------------------------------------------------------------
+## A. ELEMENT-WISE (AKA "PARALLEL") COMPARISON OF 2 Ranges OBJECTS
+## ---------------------------------------------------------------------
+which(width(x) == 0)  # 3 empty ranges
+x[2] == x[2]  # TRUE
+x[2] == x[5]  # FALSE
+x == x[4]
+x >= x[3]
 
-  ## ---------------------------------------------------------------------
-  ## B. ORDERING AND RELATED METHODS
-  ## ---------------------------------------------------------------------
-  x >= x[3]
-  order(x)
-  sort(x)
-  rank(x, ties.method="first")
+## ---------------------------------------------------------------------
+## B. duplicated(), unique(), match(), %in%
+## ---------------------------------------------------------------------
+duplicated(x)
+unique(x)
 
-  ## ---------------------------------------------------------------------
-  ## C. GENERALIZED RANGE-WISE COMPARISON OF 2 Ranges OBJECTS
-  ## ---------------------------------------------------------------------
-  x0 <- IRanges(1:11, width=4)
-  x0
-  y0 <- IRanges(6, 9)
-  compare(x0, y0)
-  compare(IRanges(4:6, width=6), y0)
-  compare(IRanges(6:8, width=2), y0)
-  compare(x0, y0) < 0   # equivalent to 'x0 < y0'
-  compare(x0, y0) == 0  # equivalent to 'x0 == y0'
-  compare(x0, y0) > 0   # equivalent to 'x0 > y0'
+table <- x[c(2:4, 8)]
+match(x, table)  # warning!
+## Specify 'match.if.overlap=FALSE' to suppress the warning:
+match(x, table, match.if.overlap=FALSE)
 
-  rangeComparisonCodeToLetter(-10:10)
-  rangeComparisonCodeToLetter(compare(x0, y0))
+x \%in\% table  # warning!
+## Use suppressWarnings() to suppress the warning:
+suppressWarnings(x \%in\% table)
+
+## ---------------------------------------------------------------------
+## C. order() AND RELATED METHODS
+## ---------------------------------------------------------------------
+order(x)
+sort(x)
+rank(x, ties.method="first")
+
+## ---------------------------------------------------------------------
+## D. GENERALIZED ELEMENT-WISE COMPARISON OF 2 Ranges OBJECTS
+## ---------------------------------------------------------------------
+x0 <- IRanges(1:11, width=4)
+x0
+y0 <- IRanges(6, 9)
+compare(x0, y0)
+compare(IRanges(4:6, width=6), y0)
+compare(IRanges(6:8, width=2), y0)
+compare(x0, y0) < 0   # equivalent to 'x0 < y0'
+compare(x0, y0) == 0  # equivalent to 'x0 == y0'
+compare(x0, y0) > 0   # equivalent to 'x0 > y0'
+
+rangeComparisonCodeToLetter(-10:10)
+rangeComparisonCodeToLetter(compare(x0, y0))
 }
 
 \keyword{methods}

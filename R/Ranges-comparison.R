@@ -41,9 +41,9 @@ rangeComparisonCodeToLetter <- function(code)
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Element-wise (aka "parallel") comparison of 2 Ranges objects.
 ###
-### We only need to implement "==" and "<=" methods. The other binary
-### comparison operations (!=, >=, <, >) will work out-of-the-box on Ranges
-### objects thanks to the corresponding methods defined for Vector objects.
+### We only need to implement "==" and "<=" methods. The other comparison
+### binary operators (!=, >=, <, >) will then work out-of-the-box on Ranges
+### objects thanks to the methods for Vector objects.
 ###
 
 setMethod("==", signature(e1="Ranges", e2="Ranges"),
@@ -56,7 +56,10 @@ setMethod("<=", signature(e1="Ranges", e2="Ranges"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Duplicated elements within a Ranges object.
+### duplicated()
+###
+### unique() will work out-of-the-box on Ranges objects thanks to the method
+### for Vector objects.
 ###
 
 .duplicated.Ranges <- function(x, incomparables=FALSE, fromLast=FALSE,
@@ -75,10 +78,98 @@ setMethod("duplicated", "Ranges", duplicated.Ranges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### match()
+###
+### %in% will work out-of-the-box on Ranges objects thanks to the method
+### for Vector objects.
+###
+
+match.if.overlap.warning.msg <- function(classname)
+{
+    msg <- c("Starting with BioC 2.12, the default behavior of match() ",
+             "on %s\n  objects has changed to use *equality* instead ",
+             "of *overlap* for comparing\n  elements between %s objects ",
+             "'x' and 'table'. Now 'x[i]' and\n  'table[j]' are ",
+             "considered to match when they are equal (i.e. 'x[i] ==\n  ",
+             "table[j]'), instead of when they overlap. ",
+             "This new behavior is consistent\n  with base::match(). ",
+             "If you need the old behavior, you can either do:\n",
+             "    findOverlaps(x, table, select=\"first\")  # recommended\n  ",
+             "or, alternatively, call match() with 'match.if.overlap=TRUE' ",
+             "(explicitly\n  provide this argument to suppress this warning).")
+    fmt <- paste0(msg, collapse="")
+    sprintf(fmt, classname, classname)
+}
+
+`%in%.warning.msg` <- function(classname)
+{
+    msg <- c("Starting with BioC 2.12, the behavior of %%in%% ",
+             "on %s objects\n  has changed to use *equality* instead ",
+             "of *overlap* for comparing\n  elements between %s objects ",
+             "'x' and 'table'. Now 'x[i]' and \n  'table[j]' are ",
+             "considered to match when they are equal (i.e. 'x[i] ==\n  ",
+             "table[j]'), instead of when they overlap. ",
+             "This new behavior is consistent\n  with base::`%%in%%`(). ",
+             "If you need the old behavior, you can do:\n",
+             "    !is.na(findOverlaps(x, table, select=\"arbitrary\"))\n  ",
+             "You can use suppressWarnings() to suppress this warning.")
+    fmt <- paste0(msg, collapse="")
+    sprintf(fmt, classname, classname)
+}
+
+### Unfortunately, the early version of this method was doing overlaps, not
+### equality. We temporarily add the 'match.if.overlap' argument so the old
+### behavior is still available.
+### TODO: Deprecate 'match.if.overlap' arg in BioC 2.13.
+### TODO: Remove 'match.if.overlap' arg in BioC 2.14.
+setMethod("match", c("Ranges", "Ranges"),
+    function(x, table, nomatch=NA_integer_, incomparables=NULL,
+                       match.if.overlap=FALSE)
+    {
+        if (!isSingleNumberOrNA(nomatch))
+            stop("'nomatch' must be a single number or NA")
+        if (!is.integer(nomatch))
+            nomatch <- as.integer(nomatch)
+        if (!is.null(incomparables))
+            stop("\"match\" method for Ranges objects ",
+                 "only accepts 'incomparables=NULL'")
+        if (missing(match.if.overlap))
+            warning(match.if.overlap.warning.msg("Ranges"))
+        if (!isTRUEorFALSE(match.if.overlap))
+            stop("'match.if.overlap' must be TRUE or FALSE")
+        if (match.if.overlap) {
+            ans <- findOverlaps(x, table, select="first")
+            if (!is.na(nomatch) && anyMissing(ans))
+                ans[is.na(ans)] <- nomatch
+            return(ans)
+        }
+        ## Equivalent to (but faster than):
+        ##     findOverlaps(x, table, type="equal", select="first")
+        ## except when 'x' and 'table' both contain empty ranges.
+        matchIntegerPairs(start(x), width(x), start(table), width(table),
+                          nomatch=nomatch)
+    }
+)
+
+### This method is temporarily needed in order to issue the warning.
+### TODO: Remove it in BioC 2.13 when the 'match.if.overlap' arg of match()
+### is gone.
+setMethod("%in%", c("Ranges", "Ranges"),
+    function(x, table)
+    {
+        warning(`%in%.warning.msg`("Ranges"))
+        !is.na(match(x, table, match.if.overlap=FALSE))
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### order() and related methods.
 ###
 ### The "order" and "rank" methods for Ranges objects are consistent with the
 ### order implied by compare().
+### sort() will work out-of-the-box on Ranges objects thanks to the method
+### for Vector objects.
 ###
 
 setMethod("order", "Ranges",

@@ -457,134 +457,178 @@ setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
 ### match()
 ###
 
-setMethod("match", c("Ranges", "Ranges"),
-    function(x, table, nomatch = NA_integer_, incomparables = NULL)
-    {
-        if (length(nomatch) != 1)
-            stop("'nomatch' must be of length 1") 
-        ans <- findOverlaps(x, table, select = "first")
-        if (!is.na(nomatch) && anyMissing(ans))
-            ans[is.na(ans)] <- nomatch
-        ans
-    }
-)
-
 setMethod("match", c("Views", "Views"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL)
     {
-        match(ranges(x), ranges(table),
-              nomatch=nomatch, incomparables=incomparables)
+        if (!identical(nomatch, NA_integer_))
+            stop("'nomatch' arg is not supported")
+        msg <- c("match() on Views objects is deprecated.\nUse '",
+                 "findOverlaps(ranges(x), ranges(table), select=\"first\")",
+                 "' instead.")
+        .Deprecated(msg=msg)
+        findOverlaps(ranges(x), ranges(table), select="first")
     }
 )
 
 setMethod("match", c("ANY", "Views"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL)
     {
-        match(x, ranges(table),
-              nomatch=nomatch, incomparables=incomparables)
+        if (!identical(nomatch, NA_integer_))
+            stop("'nomatch' arg is not supported")
+        msg <- c("match() on a Views subject is deprecated.\nUse '",
+                 "findOverlaps(x, ranges(table), select=\"first\")",
+                 "' instead.")
+        .Deprecated(msg=msg)
+        findOverlaps(x, ranges(table), select="first")
     }
 )
 
 setMethod("match", c("Views", "ANY"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL)
     {
-        match(ranges(x), table,
-              nomatch=nomatch, incomparables=incomparables)
+        if (!identical(nomatch, NA_integer_))
+            stop("'nomatch' arg is not supported")
+        msg <- c("match() on a Views query is deprecated.\nUse '",
+                 "findOverlaps(ranges(x), table, select=\"first\")",
+                 "' instead.")
+        .Deprecated(msg=msg)
+        findOverlaps(ranges(x), table, select="first")
     }
 )
 
 setMethod("match", c("RangesList", "RangesList"),
           function(x, table, nomatch = NA_integer_, incomparables = NULL)
           {
-            if (length(nomatch) != 1)
-              stop("'nomatch' must be of length 1")
-            ans <- findOverlaps(x, table, select = "first", drop=TRUE)
-            if (!is.na(nomatch) && anyMissing(ans))
-              ans[is.na(ans)] <- as.integer(nomatch)
-            ans
+            if (!identical(nomatch, NA_integer_))
+                stop("'nomatch' arg is not supported")
+            msg <- c("match() on RangesList objects is deprecated.\nUse '",
+                     "findOverlaps(x, table, select=\"first\", drop=TRUE)",
+                     "' instead.")
+            .Deprecated(msg=msg)
+            findOverlaps(x, table, select="first", drop=TRUE)
           })
 
 setMethod("match", c("ViewsList", "ViewsList"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL)
     {
-        match(ranges(x), ranges(table),
-              nomatch=nomatch, incomparables=incomparables)
+        if (!identical(nomatch, NA_integer_))
+            stop("'nomatch' arg is not supported")
+        msg <- c("match() on ViewsList objects is deprecated.\nUse '",
+                 "findOverlaps(ranges(x), ranges(table), select=\"first\", ",
+                 "drop=TRUE)",
+                 "' instead.")
+        .Deprecated(msg=msg)
+        findOverlaps(ranges(x), ranges(table), select="first", drop=TRUE)
     }
 )
 
 setMethod("match", c("ANY", "ViewsList"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL)
     {
-        match(x, ranges(table),
-              nomatch=nomatch, incomparables=incomparables)
+        if (!identical(nomatch, NA_integer_))
+            stop("'nomatch' arg is not supported")
+        msg <- c("match() on a ViewsList subject is deprecated.\nUse '",
+                 "findOverlaps(x, ranges(table), select=\"first\", ",
+                 "drop=TRUE)",
+                 "' instead.")
+        .Deprecated(msg=msg)
+        findOverlaps(x, ranges(table), select="first", drop=TRUE)
     }
 )
 
 setMethod("match", c("ViewsList", "ANY"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL)
     {
-        match(ranges(x), table,
-              nomatch=nomatch, incomparables=incomparables)
+        if (!identical(nomatch, NA_integer_))
+            stop("'nomatch' arg is not supported")
+        msg <- c("match() on a ViewsList query is deprecated.\nUse '",
+                 "findOverlaps(ranges(x), table, select=\"first\", ",
+                 "drop=TRUE)",
+                 "' instead.")
+        .Deprecated(msg=msg)
+        findOverlaps(ranges(x), table, select="first", drop=TRUE)
     }
 )
 
 setMethod("match", c("RangedData", "RangedData"),
-          function(x, table, nomatch = NA_integer_, incomparables = NULL)
-          {
-              match(ranges(x), ranges(table), nomatch = nomatch,
-                    incomparables = incomparables)
-          })
+    function(x, table, nomatch = NA_integer_, incomparables = NULL)
+    {
+        if (!identical(nomatch, NA_integer_))
+            stop("'nomatch' arg is not supported")
+        msg <- c("match() on RangedData objects is deprecated.\nUse '",
+                 "findOverlaps(ranges(x), ranges(table), select=\"first\", ",
+                 "drop=TRUE)",
+                 "' instead.")
+        .Deprecated(msg=msg)
+        findOverlaps(ranges(x), ranges(table), select="first", drop=TRUE)
+    }
+)
 
 setMethod("match", c("RangedData", "RangesList"),
-          function(x, table, nomatch = NA_integer_, incomparables = NULL)
-          {
-              match(ranges(x), table, nomatch = nomatch,
-                    incomparables = incomparables)
-          })
+    function(x, table, nomatch = NA_integer_, incomparables = NULL)
+    {
+        if (!identical(nomatch, NA_integer_))
+            stop("'nomatch' arg is not supported")
+        msg <- c("match() on a RangedData query is deprecated.\nUse '",
+                 "findOverlaps(ranges(x), table, select=\"first\", ",
+                 "drop=TRUE)",
+                 "' instead.")
+        .Deprecated(msg=msg)
+        findOverlaps(ranges(x), table, select="first", drop=TRUE)
+    }
+)
 
 setMethod("match", c("RangesList", "RangedData"),
-          function(x, table, nomatch = NA_integer_, incomparables = NULL)
-          {
-              match(x, ranges(table), nomatch = nomatch,
-                    incomparables = incomparables)
-          })
+    function(x, table, nomatch = NA_integer_, incomparables = NULL)
+    {
+        if (!identical(nomatch, NA_integer_))
+            stop("'nomatch' arg is not supported")
+        msg <- c("match() on a RangedData subject is deprecated.\nUse '",
+                 "findOverlaps(x, ranges(table), select=\"first\", ",
+                 "drop=TRUE)",
+                 "' instead.")
+        .Deprecated(msg=msg)
+        findOverlaps(x, ranges(table), select="first", drop=TRUE)
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### %in%
 ###
 
-setMethod("%in%", c("Ranges", "Ranges"),
+setMethod("%in%", c("Views", "Views"),
     function(x, table)
     {
-        if (!is(x, "IRanges"))
-            x <- as(x, "IRanges")
-        subject <- IntervalTree(table)
-        if (isNotSorted(start(x))) { ## x must be sorted
-            x_ord <- order(x)
-            x <- x[x_ord]
-        } else {
-            x_ord <- seq_len(length(x))
-        }
-        IRanges:::.IntervalTreeCall(subject, "overlap_any", x, x_ord)
+        msg <- "%in% between Views objects is deprecated."
+        .Deprecated(msg=msg)
+        ranges(x) %in% ranges(table)
     }
 )
 
-setMethod("%in%", c("Views", "Views"),
-    function(x, table) ranges(x) %in% ranges(table)
-)
-
 setMethod("%in%", c("ANY", "Views"),
-    function(x, table) x %in% ranges(table)
+    function(x, table)
+    {
+        msg <- "%in% between any object and a Views object is deprecated."
+        .Deprecated(msg=msg)
+        x %in% ranges(table)
+    }
 )
 
 setMethod("%in%", c("Views", "ANY"),
-    function(x, table) ranges(x) %in% table
+    function(x, table)
+    {
+        msg <- "%in% between a Views object and any object is deprecated."
+        .Deprecated(msg=msg)
+        ranges(x) %in% table
+    }
 )
 
 setMethod("%in%", c("RangesList", "RangesList"),
           function(x, table)
           {
+            msg <- "%in% between RangesList objects is deprecated."
+            .Deprecated(msg=msg)
             x <- as.list(x)
             table <- as.list(table)
             if (!is.null(names(x)) && !is.null(names(table))) {
@@ -601,23 +645,53 @@ setMethod("%in%", c("RangesList", "RangesList"),
           })
 
 setMethod("%in%", c("ViewsList", "ViewsList"),
-    function(x, table) ranges(x) %in% ranges(table)
+    function(x, table)
+    {
+        msg <- "%in% between ViewsList objects is deprecated."
+        .Deprecated(msg=msg)
+        ranges(x) %in% ranges(table)
+    }
 )
 
 setMethod("%in%", c("ANY", "ViewsList"),
-    function(x, table) x %in% ranges(table)
+    function(x, table)
+    {
+        msg <- "%in% between any object and a ViewsList object is deprecated."
+        .Deprecated(msg=msg)
+        x %in% ranges(table)
+    }
 )
 
 setMethod("%in%", c("ViewsList", "ANY"),
-    function(x, table) ranges(x) %in% table
+    function(x, table)
+    {
+        msg <- "%in% between a ViewsList object and any object is deprecated."
+        .Deprecated(msg=msg)
+        ranges(x) %in% table
+    }
 )
 
 setMethod("%in%", c("RangedData", "RangedData"),
-          function(x, table) ranges(x) %in% ranges(table))
+          function(x, table)
+          {
+              msg <- "%in% between RangedData objects is deprecated."
+              .Deprecated(msg=msg)
+              ranges(x) %in% ranges(table)
+          })
 
 setMethod("%in%", c("RangedData", "RangesList"),
-          function(x, table) ranges(x) %in% table)
+          function(x, table) {
+              msg <- c("%in% between a RangedData and a RangesList object ",
+                       "is deprecated.")
+              .Deprecated(msg=msg)
+              ranges(x) %in% table
+          })
 
 setMethod("%in%", c("RangesList", "RangedData"),
-          function(x, table) x %in% ranges(table))
+          function(x, table) {
+              msg <- c("%in% between a RangesList and a RangedData object ",
+                       "is deprecated.")
+              .Deprecated(msg=msg)
+              x %in% ranges(table)
+          })
 

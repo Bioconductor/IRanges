@@ -38,7 +38,6 @@
 \alias{subsetByOverlaps,RangedData,RangesList-method}
 \alias{subsetByOverlaps,RangesList,RangedData-method}
 
-\alias{match,Ranges,Ranges-method}
 \alias{match,Views,Views-method}
 \alias{match,ANY,Views-method}
 \alias{match,Views,ANY-method}
@@ -50,7 +49,6 @@
 \alias{match,RangedData,RangesList-method}
 \alias{match,RangesList,RangedData-method}
 
-\alias{\%in\%,Ranges,Ranges-method}
 \alias{\%in\%,Views,Views-method}
 \alias{\%in\%,ANY,Views-method}
 \alias{\%in\%,Views,ANY-method}
@@ -93,10 +91,6 @@ countOverlaps(query, subject, maxgap=0L, minoverlap=1L,
 
 subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
                  type=c("any", "start", "end", "within", "equal"), ...)
-
-\S4method{match}{Ranges,Ranges}(x, table, nomatch=NA_integer_, incomparables=NULL)
-
-# Also:  x \%in\% table
 }
 
 \arguments{
@@ -184,18 +178,6 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
             details.
     }
   }
-  \item{x, table}{
-    Should either be both \code{Ranges} or \code{Views} objects, or
-    both \code{RangesList} or \code{RangedData} objects, in which case
-    the indices are into the unlisted \code{table}.
-  }
-  \item{nomatch}{
-    The value \code{match} will assign to ranges in \code{x} that do not
-    overlap any ranges in \code{table}.
-  }
-  \item{incomparables}{
-    Currently ignored.
-  }
 }
 
 \details{
@@ -225,18 +207,6 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
   \code{subsetByOverlaps} returns the subset of \code{query} that
   has an overlap hit with a range in \code{subject} using the specified
   \code{findOverlaps} parameters.
-
-  \code{match} returns an integer vector of length \code{length(x)},
-  containing the index of the first overlapping range in \code{table}
-  (or \code{nomatch} if there is no overlapping range) for each range
-  in \code{x}.
-
-  \code{x \%in\% table} is a shortcut for finding the ranges in \code{x}
-  that overlap any of the ranges in \code{table}.
-  For \code{Ranges} objects, it returns a logical vector of length
-  equal to the number of ranges in \code{x}. For \link{RangesList}
-  and \link{RangedData} objects, it returns a \link{LogicalList} object,
-  where each element of the result corresponds to a space in \code{x}.
 }
 
 \references{
