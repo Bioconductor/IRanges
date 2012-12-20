@@ -100,7 +100,7 @@ setMethod("findOverlaps", c("Ranges", "Ranges"),
                          select = match.arg(select))
           })
 
-setMethod("findOverlaps", c("ANY", "missing"),
+setMethod("findOverlaps", c("Vector", "missing"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
                    select = c("all", "first", "last", "arbitrary"),
@@ -134,7 +134,7 @@ setMethod("findOverlaps", c("Views", "Views"),
     }
 )
 
-setMethod("findOverlaps", c("ANY", "Views"),
+setMethod("findOverlaps", c("Vector", "Views"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"))
@@ -145,7 +145,7 @@ setMethod("findOverlaps", c("ANY", "Views"),
     }
 )
 
-setMethod("findOverlaps", c("Views", "ANY"),
+setMethod("findOverlaps", c("Views", "Vector"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"))
@@ -214,7 +214,7 @@ setMethod("findOverlaps", c("ViewsList", "ViewsList"),
     }
 )
 
-setMethod("findOverlaps", c("ANY", "ViewsList"),
+setMethod("findOverlaps", c("Vector", "ViewsList"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
@@ -226,7 +226,7 @@ setMethod("findOverlaps", c("ANY", "ViewsList"),
     }
 )
 
-setMethod("findOverlaps", c("ViewsList", "ANY"),
+setMethod("findOverlaps", c("ViewsList", "Vector"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
@@ -282,43 +282,23 @@ setGeneric("countOverlaps",
         standardGeneric("countOverlaps")
 )
 
-setMethod("countOverlaps", c("Ranges", "Ranges"),
+setMethod("countOverlaps", c("ANY", "Vector"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within", "equal"))
     {
         counts <- queryHits(findOverlaps(query, subject, maxgap = maxgap,
                                          minoverlap = minoverlap, type = type))
         structure(tabulate(counts, length(query)), names=names(query))
+
     }
 )
 
-setMethod("countOverlaps", c("Views", "Views"),
-    function(query, subject, maxgap=0L, minoverlap=1L,
-             type=c("any", "start", "end", "within", "equal"))
+setMethod("countOverlaps", c("ANY", "missing"),
+    function(query, subject, maxgap = 0L, minoverlap = 1L,
+             type = c("any", "start", "end", "within", "equal"))
     {
-         countOverlaps(ranges(query), ranges(subject),
-                       maxgap=maxgap, minoverlap=minoverlap,
-                       type=type)
-    }
-)
-
-setMethod("countOverlaps", c("ANY", "Views"),
-    function(query, subject, maxgap=0L, minoverlap=1L,
-             type=c("any", "start", "end", "within", "equal"))
-    {
-         countOverlaps(query, ranges(subject),
-                       maxgap=maxgap, minoverlap=minoverlap,
-                       type=type)
-    }
-)
-
-setMethod("countOverlaps", c("Views", "ANY"),
-    function(query, subject, maxgap=0L, minoverlap=1L,
-             type=c("any", "start", "end", "within", "equal"))
-    {
-         countOverlaps(ranges(query), subject,
-                       maxgap=maxgap, minoverlap=minoverlap,
-                       type=type)
+        countOverlaps(query, query, maxgap = maxgap,
+                      minoverlap = minoverlap, type = type)
     }
 )
 
@@ -343,7 +323,7 @@ setMethod("countOverlaps", c("ViewsList", "ViewsList"),
     }
 )
 
-setMethod("countOverlaps", c("ANY", "ViewsList"),
+setMethod("countOverlaps", c("Vector", "ViewsList"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"))
     {
@@ -353,7 +333,7 @@ setMethod("countOverlaps", c("ANY", "ViewsList"),
     }
 )
 
-setMethod("countOverlaps", c("ViewsList", "ANY"),
+setMethod("countOverlaps", c("ViewsList", "Vector"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"))
     {
@@ -396,7 +376,7 @@ setGeneric("subsetByOverlaps",
         standardGeneric("subsetByOverlaps")
 )
 
-setMethod("subsetByOverlaps", c("ANY", "ANY"),
+setMethod("subsetByOverlaps", c("Vector", "Vector"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within", "equal"))
     {
@@ -406,16 +386,6 @@ setMethod("subsetByOverlaps", c("ANY", "ANY"),
                                   select = "arbitrary"))]
     }
 )
-
-setMethod("subsetByOverlaps", c("RangesList", "RangesList"),
-          function(query, subject, maxgap = 0L, minoverlap = 1L,
-                   type = c("any", "start", "end", "within", "equal"))
-          {
-              type <- match.arg(type)
-              query[!is.na(findOverlaps(query, subject, maxgap = maxgap,
-                                        minoverlap = minoverlap, type = type,
-                                        select = "arbitrary"))]
-          })
 
 setMethod("subsetByOverlaps", c("RangedData", "RangedData"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
@@ -471,7 +441,7 @@ setMethod("match", c("Views", "Views"),
     }
 )
 
-setMethod("match", c("ANY", "Views"),
+setMethod("match", c("Vector", "Views"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL)
     {
         if (!identical(nomatch, NA_integer_))
@@ -485,7 +455,7 @@ setMethod("match", c("ANY", "Views"),
     }
 )
 
-setMethod("match", c("Views", "ANY"),
+setMethod("match", c("Views", "Vector"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL)
     {
         if (!identical(nomatch, NA_integer_))
@@ -527,7 +497,7 @@ setMethod("match", c("ViewsList", "ViewsList"),
     }
 )
 
-setMethod("match", c("ANY", "ViewsList"),
+setMethod("match", c("Vector", "ViewsList"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL)
     {
         if (!identical(nomatch, NA_integer_))
@@ -542,7 +512,7 @@ setMethod("match", c("ANY", "ViewsList"),
     }
 )
 
-setMethod("match", c("ViewsList", "ANY"),
+setMethod("match", c("ViewsList", "Vector"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL)
     {
         if (!identical(nomatch, NA_integer_))
@@ -616,19 +586,19 @@ setMethod("%in%", c("Views", "Views"),
     }
 )
 
-setMethod("%in%", c("ANY", "Views"),
+setMethod("%in%", c("Vector", "Views"),
     function(x, table)
     {
-        msg <- "%in% between any object and a Views object is deprecated."
+        msg <- "%in% between a Vector and a Views object is deprecated."
         .Deprecated(msg=msg)
         x %in% ranges(table)
     }
 )
 
-setMethod("%in%", c("Views", "ANY"),
+setMethod("%in%", c("Views", "Vector"),
     function(x, table)
     {
-        msg <- "%in% between a Views object and any object is deprecated."
+        msg <- "%in% between a Views and a Vector object is deprecated."
         .Deprecated(msg=msg)
         ranges(x) %in% table
     }
@@ -663,19 +633,19 @@ setMethod("%in%", c("ViewsList", "ViewsList"),
     }
 )
 
-setMethod("%in%", c("ANY", "ViewsList"),
+setMethod("%in%", c("Vector", "ViewsList"),
     function(x, table)
     {
-        msg <- "%in% between any object and a ViewsList object is deprecated."
+        msg <- "%in% between a Vector and a ViewsList object is deprecated."
         .Deprecated(msg=msg)
         x %in% ranges(table)
     }
 )
 
-setMethod("%in%", c("ViewsList", "ANY"),
+setMethod("%in%", c("ViewsList", "Vector"),
     function(x, table)
     {
-        msg <- "%in% between a ViewsList object and any object is deprecated."
+        msg <- "%in% between a ViewsList and a Vector object is deprecated."
         .Deprecated(msg=msg)
         ranges(x) %in% table
     }
