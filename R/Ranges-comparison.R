@@ -95,9 +95,9 @@ match.if.overlap.warning.msg <- function(classname)
              "considered to match when they are equal (i.e. 'x[i] ==\n  ",
              "table[j]'), instead of when they overlap. ",
              "This new behavior is consistent\n  with base::match(). ",
-             "If you need the old behavior, you can either do:\n",
-             "    findOverlaps(x, table, select=\"first\")  # recommended\n  ",
-             "or, alternatively, call match() with 'match.if.overlap=TRUE' ",
+             "If you need the old behavior, you can either do:\n\n",
+             "    findOverlaps(x, table, select=\"first\")  # recommended\n\n",
+             "  or, alternatively, call match() with 'match.if.overlap=TRUE' ",
              "(explicitly\n  provide this argument to suppress this warning).")
     fmt <- paste0(msg, collapse="")
     sprintf(fmt, classname, classname)
@@ -112,8 +112,8 @@ match.if.overlap.warning.msg <- function(classname)
              "considered to match when they are equal (i.e. 'x[i] ==\n  ",
              "table[j]'), instead of when they overlap. ",
              "This new behavior is consistent\n  with base::`%%in%%`(). ",
-             "If you need the old behavior, you can do:\n",
-             "    !is.na(findOverlaps(x, table, select=\"arbitrary\"))\n  ",
+             "If you need the old behavior, you can do:\n\n",
+             "    !is.na(findOverlaps(x, table, select=\"arbitrary\"))\n\n  ",
              "You can use suppressWarnings() to suppress this warning.")
     fmt <- paste0(msg, collapse="")
     sprintf(fmt, classname, classname)
@@ -191,7 +191,7 @@ setMethod("order", "Ranges",
         order_args <- vector("list", 2L*length(args))
         idx <- 2L*seq_len(length(args))
         order_args[idx - 1L] <- lapply(args, start)
-        order_args[idx] <- lapply(args, end)
+        order_args[idx] <- lapply(args, width)
         do.call(order, c(order_args,
                          list(na.last=na.last, decreasing=decreasing)))
     }
@@ -204,10 +204,10 @@ setMethod("rank", "Ranges",
         if (!missing(ties.method) && !identical(ties.method, "first"))
             stop("only 'ties.method=\"first\"' is supported ",
                  "when ranking ranges")
-        xo <- order(x)
-        ## 'ans' is the reverse permutation of 'xo'
-        ans <- integer(length(xo))
-        ans[xo] <- seq_len(length(xo))
+        oo <- order(x)
+        ## 'ans' is the reverse permutation of 'oo'
+        ans <- integer(length(oo))
+        ans[oo] <- seq_len(length(oo))
         ans
     }
 )
