@@ -276,7 +276,7 @@ setMethod("findOverlaps", c("RangesList", "RangedData"),
 ### countOverlaps()
 ###
 
-setGeneric("countOverlaps",
+setGeneric("countOverlaps", signature = c("query", "subject"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within", "equal"), ...)
         standardGeneric("countOverlaps")
@@ -363,63 +363,6 @@ setMethod("countOverlaps", c("RangesList", "RangedData"),
           {
               countOverlaps(query, ranges(subject), maxgap = maxgap,
                             minoverlap = minoverlap, type = match.arg(type))
-          })
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### subsetByOverlaps()
-###
-
-setGeneric("subsetByOverlaps",
-    function(query, subject, maxgap = 0L, minoverlap = 1L,
-             type = c("any", "start", "end", "within", "equal"), ...)
-        standardGeneric("subsetByOverlaps")
-)
-
-setMethod("subsetByOverlaps", c("Vector", "Vector"),
-    function(query, subject, maxgap = 0L, minoverlap = 1L,
-             type = c("any", "start", "end", "within", "equal"))
-    {
-        type <- match.arg(type)
-        query[!is.na(findOverlaps(query, subject, maxgap = maxgap,
-                                  minoverlap = minoverlap, type = type,
-                                  select = "arbitrary"))]
-    }
-)
-
-setMethod("subsetByOverlaps", c("RangedData", "RangedData"),
-          function(query, subject, maxgap = 0L, minoverlap = 1L,
-                   type = c("any", "start", "end", "within", "equal"))
-          {
-              query[unlist(!is.na(findOverlaps(ranges(query), ranges(subject),
-                                               maxgap = maxgap,
-                                               minoverlap = minoverlap,
-                                               type = match.arg(type),
-                                               select = "arbitrary")),
-                           use.names=FALSE),]
-          })
-
-setMethod("subsetByOverlaps", c("RangedData", "RangesList"),
-          function(query, subject, maxgap = 0L, minoverlap = 1L,
-                   type = c("any", "start", "end", "within", "equal"))
-          {
-              query[unlist(!is.na(findOverlaps(ranges(query), subject,
-                                               maxgap = maxgap,
-                                               minoverlap = minoverlap,
-                                               type = match.arg(type),
-                                               select = "arbitrary")),
-                           use.names=FALSE),]
-          })
-
-setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
-          function(query, subject, maxgap = 0L, minoverlap = 1L,
-                  type = c("any", "start", "end", "within", "equal"))
-          {
-              query[!is.na(findOverlaps(query, ranges(subject),
-                                        maxgap = maxgap,
-                                        minoverlap = minoverlap,
-                                        type = match.arg(type),
-                                        select = "arbitrary"))]
           })
 
 
@@ -574,104 +517,211 @@ setMethod("match", c("RangesList", "RangedData"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### %in%
+### %in% is deprecated. Replacing it with overlaps().
 ###
 
-setMethod("%in%", c("Views", "Views"),
-    function(x, table)
+### Same args and signature as countOverlaps() and subsetByOverlaps().
+setGeneric("overlaps", signature=c("query", "subject"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"), ...)
+        standardGeneric("overlaps")
+)
+
+setMethod("overlaps", c("Ranges", "Ranges"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"), ...)
     {
-        msg <- "%in% between Views objects is deprecated."
-        .Deprecated(msg=msg)
-        ranges(x) %in% ranges(table)
+        !is.na(findOverlaps(query, subject, maxgap=maxgap,
+                            minoverlap=minoverlap, type=type,
+                            select="arbitrary"))
     }
 )
 
-setMethod("%in%", c("Vector", "Views"),
-    function(x, table)
+setMethod("overlaps", c("Views", "Views"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"), ...)
     {
-        msg <- "%in% between a Vector and a Views object is deprecated."
-        .Deprecated(msg=msg)
-        x %in% ranges(table)
+        overlaps(ranges(query), ranges(subject), maxgap=maxgap,
+                 minoverlap=minoverlap, type=type, ...)
     }
 )
 
-setMethod("%in%", c("Views", "Vector"),
-    function(x, table)
+setMethod("overlaps", c("Views", "Vector"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"), ...)
     {
-        msg <- "%in% between a Views and a Vector object is deprecated."
-        .Deprecated(msg=msg)
-        ranges(x) %in% table
+        overlaps(ranges(query), subject, maxgap=maxgap,
+                 minoverlap=minoverlap, type=type, ...)
     }
 )
 
-setMethod("%in%", c("RangesList", "RangesList"),
-          function(x, table)
+setMethod("overlaps", c("Vector", "Views"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"), ...)
+    {
+        overlaps(query, ranges(subject), maxgap=maxgap,
+                 minoverlap=minoverlap, type=type, ...)
+    }
+)
+
+setMethod("overlaps", c("RangesList", "RangesList"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"), ...)
+    {
+        query <- as.list(query)
+        subject <- as.list(subject)
+        if (!is.null(names(query)) && !is.null(names(subject))) {
+            subject <- subject[names(query)]
+            names(subject) <- names(query) # get rid of NA's in names
+        } else {
+            subject <- subject[seq_along(query)]
+        }
+        ## NULL's are introduced where they do not match
+        ## We replace those with empty IRanges
+        subject[sapply(subject, is.null)] <- IRanges()
+        LogicalList(lapply(structure(seq_len(length(query)),
+                                     names = names(query)),
+                           function(i)
+                               overlaps(query[[i]], subject[[i]],
+                                        maxgap=maxgap,
+                                        minoverlap=minoverlap,
+                                        type=type, ...)))
+    }
+)
+
+setMethod("overlaps", c("ViewsList", "ViewsList"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"), ...)
+    {
+        overlaps(ranges(query), ranges(subject), maxgap=maxgap,
+                 minoverlap=minoverlap, type=type, ...)
+    }
+)
+
+setMethod("overlaps", c("ViewsList", "Vector"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"), ...)
+    {
+        overlaps(ranges(query), subject, maxgap=maxgap,
+                 minoverlap=minoverlap, type=type, ...)
+    }
+)
+
+setMethod("overlaps", c("Vector", "ViewsList"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"), ...)
+    {
+        overlaps(query, ranges(subject), maxgap=maxgap,
+                 minoverlap=minoverlap, type=type, ...)
+    }
+)
+
+setMethod("overlaps", c("RangedData", "RangedData"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"), ...)
+    {
+        overlaps(ranges(query), ranges(subject), maxgap=maxgap,
+                 minoverlap=minoverlap, type=type, ...)
+    }
+)
+
+setMethod("overlaps", c("RangedData", "RangesList"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"), ...)
+    {
+        overlaps(ranges(query), subject, maxgap=maxgap,
+                 minoverlap=minoverlap, type=type, ...)
+    }
+)
+
+setMethod("overlaps", c("RangesList", "RangedData"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"), ...)
+    {
+        overlaps(query, ranges(subject), maxgap=maxgap,
+                 minoverlap=minoverlap, type=type, ...)
+    }
+)
+
+`%in%.definition` <- function(x, table)
+{
+    msg <- c("%in% between a ", class(x), " and a ", class(table),
+             " object is deprecated.\nPlease use ",
+             "'overlaps(query, subject)' instead.")
+    .Deprecated(msg=msg)
+    overlaps(x, table)
+}
+
+.signatures <- list(
+    c("Views", "Views"),
+    c("Views", "Vector"),
+    c("Vector", "Views"),
+    c("RangesList", "RangesList"),
+    c("ViewsList", "ViewsList"),
+    c("ViewsList", "Vector"),
+    c("Vector", "ViewsList"),
+    c("RangedData", "RangedData"),
+    c("RangedData", "RangesList"),
+    c("RangesList", "RangedData")
+)
+
+for (sig in .signatures)
+    setMethod("%in%", sig, `%in%.definition`)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### subsetByOverlaps()
+###
+
+setGeneric("subsetByOverlaps", signature = c("query", "subject"),
+    function(query, subject, maxgap = 0L, minoverlap = 1L,
+             type = c("any", "start", "end", "within", "equal"), ...)
+        standardGeneric("subsetByOverlaps")
+)
+
+setMethod("subsetByOverlaps", c("Vector", "Vector"),
+    function(query, subject, maxgap = 0L, minoverlap = 1L,
+             type = c("any", "start", "end", "within", "equal"))
+    {
+        type <- match.arg(type)
+        query[!is.na(findOverlaps(query, subject, maxgap = maxgap,
+                                  minoverlap = minoverlap, type = type,
+                                  select = "arbitrary"))]
+    }
+)
+
+setMethod("subsetByOverlaps", c("RangedData", "RangedData"),
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
+                   type = c("any", "start", "end", "within", "equal"))
           {
-            msg <- "%in% between RangesList objects is deprecated."
-            .Deprecated(msg=msg)
-            x <- as.list(x)
-            table <- as.list(table)
-            if (!is.null(names(x)) && !is.null(names(table))) {
-              table <- table[names(x)]
-              names(table) <- names(x) # get rid of NA's in names
-            } else {
-              table <- table[seq_along(x)]
-            }
-            ## NULL's are introduced where they do not match
-            ## We replace those with empty IRanges
-            table[sapply(table, is.null)] <- IRanges()
-            LogicalList(lapply(structure(seq_len(length(x)), names = names(x)),
-                               function(i) x[[i]] %in% table[[i]]))
+              query[unlist(!is.na(findOverlaps(ranges(query), ranges(subject),
+                                               maxgap = maxgap,
+                                               minoverlap = minoverlap,
+                                               type = match.arg(type),
+                                               select = "arbitrary")),
+                           use.names=FALSE),]
           })
 
-setMethod("%in%", c("ViewsList", "ViewsList"),
-    function(x, table)
-    {
-        msg <- "%in% between ViewsList objects is deprecated."
-        .Deprecated(msg=msg)
-        ranges(x) %in% ranges(table)
-    }
-)
-
-setMethod("%in%", c("Vector", "ViewsList"),
-    function(x, table)
-    {
-        msg <- "%in% between a Vector and a ViewsList object is deprecated."
-        .Deprecated(msg=msg)
-        x %in% ranges(table)
-    }
-)
-
-setMethod("%in%", c("ViewsList", "Vector"),
-    function(x, table)
-    {
-        msg <- "%in% between a ViewsList and a Vector object is deprecated."
-        .Deprecated(msg=msg)
-        ranges(x) %in% table
-    }
-)
-
-setMethod("%in%", c("RangedData", "RangedData"),
-          function(x, table)
+setMethod("subsetByOverlaps", c("RangedData", "RangesList"),
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
+                   type = c("any", "start", "end", "within", "equal"))
           {
-              msg <- "%in% between RangedData objects is deprecated."
-              .Deprecated(msg=msg)
-              ranges(x) %in% ranges(table)
+              query[unlist(!is.na(findOverlaps(ranges(query), subject,
+                                               maxgap = maxgap,
+                                               minoverlap = minoverlap,
+                                               type = match.arg(type),
+                                               select = "arbitrary")),
+                           use.names=FALSE),]
           })
 
-setMethod("%in%", c("RangedData", "RangesList"),
-          function(x, table) {
-              msg <- c("%in% between a RangedData and a RangesList object ",
-                       "is deprecated.")
-              .Deprecated(msg=msg)
-              ranges(x) %in% table
-          })
-
-setMethod("%in%", c("RangesList", "RangedData"),
-          function(x, table) {
-              msg <- c("%in% between a RangesList and a RangedData object ",
-                       "is deprecated.")
-              .Deprecated(msg=msg)
-              x %in% ranges(table)
+setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
+          function(query, subject, maxgap = 0L, minoverlap = 1L,
+                  type = c("any", "start", "end", "within", "equal"))
+          {
+              query[!is.na(findOverlaps(query, ranges(subject),
+                                        maxgap = maxgap,
+                                        minoverlap = minoverlap,
+                                        type = match.arg(type),
+                                        select = "arbitrary"))]
           })
 

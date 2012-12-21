@@ -29,12 +29,6 @@
 \alias{countOverlaps,RangedData,RangesList-method}
 \alias{countOverlaps,RangesList,RangedData-method}
 
-\alias{subsetByOverlaps}
-\alias{subsetByOverlaps,Vector,Vector-method}
-\alias{subsetByOverlaps,RangedData,RangedData-method}
-\alias{subsetByOverlaps,RangedData,RangesList-method}
-\alias{subsetByOverlaps,RangesList,RangedData-method}
-
 \alias{match,Views,Views-method}
 \alias{match,Vector,Views-method}
 \alias{match,Views,Vector-method}
@@ -46,16 +40,35 @@
 \alias{match,RangedData,RangesList-method}
 \alias{match,RangesList,RangedData-method}
 
+\alias{overlaps}
+\alias{overlaps,Ranges,Ranges-method}
+\alias{overlaps,Views,Views-method}
+\alias{overlaps,Views,Vector-method}
+\alias{overlaps,Vector,Views-method}
+\alias{overlaps,RangesList,RangesList-method}
+\alias{overlaps,ViewsList,ViewsList-method}
+\alias{overlaps,ViewsList,Vector-method}
+\alias{overlaps,Vector,ViewsList-method}
+\alias{overlaps,RangedData,RangedData-method}
+\alias{overlaps,RangedData,RangesList-method}
+\alias{overlaps,RangesList,RangedData-method}
+
 \alias{\%in\%,Views,Views-method}
-\alias{\%in\%,Vector,Views-method}
 \alias{\%in\%,Views,Vector-method}
+\alias{\%in\%,Vector,Views-method}
 \alias{\%in\%,RangesList,RangesList-method}
 \alias{\%in\%,ViewsList,ViewsList-method}
-\alias{\%in\%,Vector,ViewsList-method}
 \alias{\%in\%,ViewsList,Vector-method}
+\alias{\%in\%,Vector,ViewsList-method}
 \alias{\%in\%,RangedData,RangedData-method}
 \alias{\%in\%,RangedData,RangesList-method}
 \alias{\%in\%,RangesList,RangedData-method}
+
+\alias{subsetByOverlaps}
+\alias{subsetByOverlaps,Vector,Vector-method}
+\alias{subsetByOverlaps,RangedData,RangedData-method}
+\alias{subsetByOverlaps,RangedData,RangesList-method}
+\alias{subsetByOverlaps,RangesList,RangedData-method}
 
 
 \title{findOverlaps (and related) methods for Ranges, Views, RangesList,
@@ -85,6 +98,9 @@ findOverlaps(query, subject, maxgap=0L, minoverlap=1L,
 
 countOverlaps(query, subject, maxgap=0L, minoverlap=1L,
               type=c("any", "start", "end", "within", "equal"), ...)
+
+overlaps(query, subject, maxgap=0L, minoverlap=1L,
+         type=c("any", "start", "end", "within", "equal"), ...)
 
 subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
                  type=c("any", "start", "end", "within", "equal"), ...)
@@ -200,6 +216,13 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
 
   \code{countOverlaps} returns the overlap hit count for each range
   in \code{query} using the specified \code{findOverlaps} parameters.
+
+  \code{overlaps} finds the ranges in \code{query} that overlap any
+  of the ranges in \code{subject}. For \link{Ranges} or \link{Views}
+  objects, it returns a logical vector of length equal to the number of
+  ranges in \code{query}. For \link{RangesList}, \link{RangedData}, or
+  \link{ViewsList} objects, it returns a \link{LogicalList} object,
+  where each element of the result corresponds to a space in \code{query}.
 
   \code{subsetByOverlaps} returns the subset of \code{query} that
   has an overlap hit with a range in \code{subject} using the specified

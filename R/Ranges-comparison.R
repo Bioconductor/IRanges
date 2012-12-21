@@ -112,9 +112,10 @@ match.if.overlap.warning.msg <- function(classname)
              "considered to match when they are equal (i.e. 'x[i] ==\n  ",
              "table[j]'), instead of when they overlap. ",
              "This new behavior is consistent\n  with base::`%%in%%`(). ",
-             "If you need the old behavior, you can do:\n\n",
-             "    !is.na(findOverlaps(x, table, select=\"arbitrary\"))\n\n  ",
-             "You can use suppressWarnings() to suppress this warning.")
+             "If you need the old behavior, please use:\n\n",
+             "    overlaps(query, subject)\n\n  ",
+             "If you need the new behavior, you can use suppressWarnings()\n  ",
+             "to suppress this warning.")
     fmt <- paste0(msg, collapse="")
     sprintf(fmt, classname, classname)
 }
