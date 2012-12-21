@@ -643,7 +643,7 @@ setMethod("overlapsAny", c("RangesList", "RangedData"),
     }
 )
 
-`%in%.definition` <- function(x, table)
+`.%in%.definition` <- function(x, table)
 {
     msg <- c("%in% between a ", class(x), " and a ", class(table),
              " object is deprecated.\nPlease use ",
@@ -666,7 +666,7 @@ setMethod("overlapsAny", c("RangesList", "RangedData"),
 )
 
 for (sig in .signatures)
-    setMethod("%in%", sig, `%in%.definition`)
+    setMethod("%in%", sig, `.%in%.definition`)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
