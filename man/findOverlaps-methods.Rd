@@ -40,18 +40,18 @@
 \alias{match,RangedData,RangesList-method}
 \alias{match,RangesList,RangedData-method}
 
-\alias{overlaps}
-\alias{overlaps,Ranges,Ranges-method}
-\alias{overlaps,Views,Views-method}
-\alias{overlaps,Views,Vector-method}
-\alias{overlaps,Vector,Views-method}
-\alias{overlaps,RangesList,RangesList-method}
-\alias{overlaps,ViewsList,ViewsList-method}
-\alias{overlaps,ViewsList,Vector-method}
-\alias{overlaps,Vector,ViewsList-method}
-\alias{overlaps,RangedData,RangedData-method}
-\alias{overlaps,RangedData,RangesList-method}
-\alias{overlaps,RangesList,RangedData-method}
+\alias{overlapsAny}
+\alias{overlapsAny,Ranges,Ranges-method}
+\alias{overlapsAny,Views,Views-method}
+\alias{overlapsAny,Views,Vector-method}
+\alias{overlapsAny,Vector,Views-method}
+\alias{overlapsAny,RangesList,RangesList-method}
+\alias{overlapsAny,ViewsList,ViewsList-method}
+\alias{overlapsAny,ViewsList,Vector-method}
+\alias{overlapsAny,Vector,ViewsList-method}
+\alias{overlapsAny,RangedData,RangedData-method}
+\alias{overlapsAny,RangedData,RangesList-method}
+\alias{overlapsAny,RangesList,RangedData-method}
 
 \alias{\%in\%,Views,Views-method}
 \alias{\%in\%,Views,Vector-method}
@@ -99,7 +99,7 @@ findOverlaps(query, subject, maxgap=0L, minoverlap=1L,
 countOverlaps(query, subject, maxgap=0L, minoverlap=1L,
               type=c("any", "start", "end", "within", "equal"), ...)
 
-overlaps(query, subject, maxgap=0L, minoverlap=1L,
+overlapsAny(query, subject, maxgap=0L, minoverlap=1L,
          type=c("any", "start", "end", "within", "equal"), ...)
 
 subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
@@ -217,7 +217,7 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
   \code{countOverlaps} returns the overlap hit count for each range
   in \code{query} using the specified \code{findOverlaps} parameters.
 
-  \code{overlaps} finds the ranges in \code{query} that overlap any
+  \code{overlapsAny} finds the ranges in \code{query} that overlap any
   of the ranges in \code{subject}. For \link{Ranges} or \link{Views}
   objects, it returns a logical vector of length equal to the number of
   ranges in \code{query}. For \link{RangesList}, \link{RangedData}, or

@@ -113,7 +113,7 @@ match.if.overlap.warning.msg <- function(classname)
              "table[j]'), instead of when they overlap. ",
              "This new behavior is consistent\n  with base::`%%in%%`(). ",
              "If you need the old behavior, please use:\n\n",
-             "    overlaps(query, subject)\n\n  ",
+             "    overlapsAny(query, subject)\n\n  ",
              "If you need the new behavior, you can use suppressWarnings()\n  ",
              "to suppress this warning.")
     fmt <- paste0(msg, collapse="")
