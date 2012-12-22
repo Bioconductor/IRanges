@@ -4,12 +4,6 @@
 \alias{setValidity2}
 \alias{new2}
 
-% Some low-level classes and helper functions (from R/utils.R):
-\alias{AsIs-class}
-\alias{xtabs-class}
-\alias{file-class}
-\alias{connection-class}
-
 \alias{.Call2}
 \alias{class:characterORNULL}
 \alias{characterORNULL-class}

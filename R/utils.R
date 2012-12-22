@@ -1,17 +1,4 @@
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Register S3 classes as S4 classes.
-###
-### We register the old-style (a.k.a. S3) classes below as formally defined
-### classes (a.k.a. S4) because we are using them in some method signatures.
-### Note that dispatch still works without this registration but causes
-### 'R CMD INSTALL' to (gently) complain.
-###
-
-setOldClass("AsIs")
-setOldClass("xtabs", "table")
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Some low-level helper functions and classes.
 ###
 ### Unless stated otherwise, nothing in this section is exported.

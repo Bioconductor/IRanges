@@ -9,11 +9,11 @@ Description: The package provides efficient low-level and highly reusable S4
 	collections of instances of the basic classes. All classes in
 	the package use consistent naming and share the same rich and
 	consistent "Vector API" as much as possible.
-Version: 1.17.22
+Version: 1.17.23
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Infrastructure, DataRepresentation
-Depends: R (>= 2.8.0), methods, utils, stats, BiocGenerics (>= 0.1.4)
+Depends: R (>= 2.8.0), methods, utils, stats, BiocGenerics (>= 0.5.6)
 Imports: methods, utils, stats, BiocGenerics, stats4
 Suggests: GenomicRanges, RUnit, BSgenome.Celegans.UCSC.ce2
 License: Artistic-2.0

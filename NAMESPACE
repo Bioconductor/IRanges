@@ -11,7 +11,6 @@ importFrom(stats4, summary, update)
 importFrom(parallel, mclapply, mcmapply)
 
 exportClasses(
-    AsIs, xtabs,
     characterORNULL, functionORNULL,
     Annotated,
     DataTable, DataTableORNULL,
