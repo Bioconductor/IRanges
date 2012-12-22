@@ -61,8 +61,10 @@ stopIfProblems <- function(problems)
 
 ### 'signatures' must be a list of character vectors. To use when many methods
 ### share the same implementation.
-setMethods <- function(f, signatures=list(), ...)
+setMethods <- function(f, signatures=list(), definition,
+                       where=topenv(parent.frame()), ...)
 {
-    for (signature in signatures) setMethod(f, signature=signature, ...)
+    for (signature in signatures)
+        setMethod(f, signature=signature, definition, where=where, ...)
 }
 
