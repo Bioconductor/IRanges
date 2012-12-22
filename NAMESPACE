@@ -229,7 +229,7 @@ exportMethods(
 ###
 
 export(
-    setValidity2, new2,
+    setValidity2, new2, setMethods,
     .Call2,
     isTRUEorFALSE, isSingleInteger, isSingleNumber, isSingleString,
     isSingleNumberOrNA, isSingleStringOrNA,

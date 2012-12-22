@@ -367,7 +367,7 @@ setMethod("countOverlaps", c("RangesList", "RangedData"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### match()
+### match() is deprecated
 ###
 
 setMethod("match", c("Views", "Views"),
@@ -665,8 +665,7 @@ setMethod("overlapsAny", c("RangesList", "RangedData"),
     c("RangesList", "RangedData")
 )
 
-for (sig in .signatures)
-    setMethod("%in%", sig, `.%in%.definition`)
+setMethods("%in%", .signatures, `.%in%.definition`)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

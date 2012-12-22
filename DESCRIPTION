@@ -21,7 +21,7 @@ ExtraLicenses: The following files in the 'src' directory are licensed for all
   use by Jim Kent, in a manner compatible with the Artistic 2.0 license:
   common.c/h, memalloc.c/h, localmem.c/h, hash.c/h, errabort.c/h, rbTree.c/h,
   dlist.c/h, errCatch.h
-Collate: validity-utils.R
+Collate: S4-utils.R
 	utils.R
 	isConstant.R
 	normarg-utils.R

@@ -3,6 +3,7 @@
 
 \alias{setValidity2}
 \alias{new2}
+\alias{setMethods}
 
 \alias{.Call2}
 \alias{class:characterORNULL}

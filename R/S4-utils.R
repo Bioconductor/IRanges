@@ -59,3 +59,10 @@ new2 <- function(..., check=TRUE)
 stopIfProblems <- function(problems)
     if (!is.null(problems)) stop(paste(problems, collapse="\n  "))
 
+### 'signatures' must be a list of character vectors. To use when many methods
+### share the same implementation.
+setMethods <- function(f, signatures=list(), ...)
+{
+    for (signature in signatures) setMethod(f, signature=signature, ...)
+}
+
