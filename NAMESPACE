@@ -328,6 +328,7 @@ export(
 
     ## Ranges-comparison.R
     compare,
+    findMatches, countMatches,
 
     ## Views-class.R:
     subject,
@@ -456,6 +457,7 @@ exportMethods(
     "end<-",
     isNormal, whichFirstNotNormal,
     compare,
+    findMatches, countMatches,
     subject,
     ranges, "ranges<-",
     Views,

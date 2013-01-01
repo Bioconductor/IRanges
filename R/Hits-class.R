@@ -137,19 +137,6 @@ setMethod("t", "Hits", function(x) {
   x
 })
 
-setMethod("ranges", "Hits", function(x, query, subject) {
-  if (!is(query, "Ranges") || length(query) != queryLength(x))
-    stop("'query' must be a Ranges of length equal to number of queries")
-  if (!is(subject, "Ranges") || length(subject) != subjectLength(x))
-    stop("'subject' must be a Ranges of length equal to number of subjects")
-  m <- as.matrix(x)
-  qstart <- start(query)[m[,1L]]
-  qend <- end(query)[m[,1L]]
-  sstart <- start(subject)[m[,2L]]
-  send <- end(subject)[m[,2L]]
-  IRanges(pmax.int(qstart, sstart), pmin.int(send, qend))
-})
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Splitting / relisting.

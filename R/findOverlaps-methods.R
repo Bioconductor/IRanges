@@ -134,23 +134,23 @@ setMethod("findOverlaps", c("Views", "Views"),
     }
 )
 
-setMethod("findOverlaps", c("Vector", "Views"),
-    function(query, subject, maxgap=0L, minoverlap=1L,
-             type=c("any", "start", "end", "within", "equal"),
-             select=c("all", "first", "last", "arbitrary"))
-    {
-        findOverlaps(query, ranges(subject),
-                     maxgap=maxgap, minoverlap=minoverlap,
-                     type=type, select=select)
-    }
-)
-
 setMethod("findOverlaps", c("Views", "Vector"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"))
     {
         findOverlaps(ranges(query), subject,
+                     maxgap=maxgap, minoverlap=minoverlap,
+                     type=type, select=select)
+    }
+)
+
+setMethod("findOverlaps", c("Vector", "Views"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"),
+             select=c("all", "first", "last", "arbitrary"))
+    {
+        findOverlaps(query, ranges(subject),
                      maxgap=maxgap, minoverlap=minoverlap,
                      type=type, select=select)
     }
@@ -214,18 +214,6 @@ setMethod("findOverlaps", c("ViewsList", "ViewsList"),
     }
 )
 
-setMethod("findOverlaps", c("Vector", "ViewsList"),
-    function(query, subject, maxgap=0L, minoverlap=1L,
-             type=c("any", "start", "end", "within", "equal"),
-             select=c("all", "first", "last", "arbitrary"),
-             drop=FALSE)
-    {
-        findOverlaps(query, ranges(subject),
-                     maxgap=maxgap, minoverlap=minoverlap,
-                     type=type, select=select, drop=drop)
-    }
-)
-
 setMethod("findOverlaps", c("ViewsList", "Vector"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
@@ -233,6 +221,18 @@ setMethod("findOverlaps", c("ViewsList", "Vector"),
              drop=FALSE)
     {
         findOverlaps(ranges(query), subject,
+                     maxgap=maxgap, minoverlap=minoverlap,
+                     type=type, select=select, drop=drop)
+    }
+)
+
+setMethod("findOverlaps", c("Vector", "ViewsList"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"),
+             select=c("all", "first", "last", "arbitrary"),
+             drop=FALSE)
+    {
+        findOverlaps(query, ranges(subject),
                      maxgap=maxgap, minoverlap=minoverlap,
                      type=type, select=select, drop=drop)
     }
@@ -323,21 +323,21 @@ setMethod("countOverlaps", c("ViewsList", "ViewsList"),
     }
 )
 
-setMethod("countOverlaps", c("Vector", "ViewsList"),
-    function(query, subject, maxgap=0L, minoverlap=1L,
-             type=c("any", "start", "end", "within", "equal"))
-    {
-         countOverlaps(query, ranges(subject),
-                       maxgap=maxgap, minoverlap=minoverlap,
-                       type=type)
-    }
-)
-
 setMethod("countOverlaps", c("ViewsList", "Vector"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"))
     {
          countOverlaps(ranges(query), subject,
+                       maxgap=maxgap, minoverlap=minoverlap,
+                       type=type)
+    }
+)
+
+setMethod("countOverlaps", c("Vector", "ViewsList"),
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"))
+    {
+         countOverlaps(query, ranges(subject),
                        maxgap=maxgap, minoverlap=minoverlap,
                        type=type)
     }
@@ -384,20 +384,6 @@ setMethod("match", c("Views", "Views"),
     }
 )
 
-setMethod("match", c("Vector", "Views"),
-    function(x, table, nomatch=NA_integer_, incomparables=NULL)
-    {
-        if (!identical(nomatch, NA_integer_))
-            stop("'nomatch' arg is not supported")
-        msg <- c("match() on a Views subject is deprecated.\n",
-                 "Please use '",
-                 "findOverlaps(x, ranges(table), select=\"first\")",
-                 "' instead.")
-        .Deprecated(msg=msg)
-        findOverlaps(x, ranges(table), select="first")
-    }
-)
-
 setMethod("match", c("Views", "Vector"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL)
     {
@@ -409,6 +395,20 @@ setMethod("match", c("Views", "Vector"),
                  "' instead.")
         .Deprecated(msg=msg)
         findOverlaps(ranges(x), table, select="first")
+    }
+)
+
+setMethod("match", c("Vector", "Views"),
+    function(x, table, nomatch=NA_integer_, incomparables=NULL)
+    {
+        if (!identical(nomatch, NA_integer_))
+            stop("'nomatch' arg is not supported")
+        msg <- c("match() on a Views subject is deprecated.\n",
+                 "Please use '",
+                 "findOverlaps(x, ranges(table), select=\"first\")",
+                 "' instead.")
+        .Deprecated(msg=msg)
+        findOverlaps(x, ranges(table), select="first")
     }
 )
 
@@ -440,21 +440,6 @@ setMethod("match", c("ViewsList", "ViewsList"),
     }
 )
 
-setMethod("match", c("Vector", "ViewsList"),
-    function(x, table, nomatch=NA_integer_, incomparables=NULL)
-    {
-        if (!identical(nomatch, NA_integer_))
-            stop("'nomatch' arg is not supported")
-        msg <- c("match() on a ViewsList subject is deprecated.\n",
-                 "Please use '",
-                 "findOverlaps(x, ranges(table), select=\"first\", ",
-                 "drop=TRUE)",
-                 "' instead.")
-        .Deprecated(msg=msg)
-        findOverlaps(x, ranges(table), select="first", drop=TRUE)
-    }
-)
-
 setMethod("match", c("ViewsList", "Vector"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL)
     {
@@ -467,6 +452,21 @@ setMethod("match", c("ViewsList", "Vector"),
                  "' instead.")
         .Deprecated(msg=msg)
         findOverlaps(ranges(x), table, select="first", drop=TRUE)
+    }
+)
+
+setMethod("match", c("Vector", "ViewsList"),
+    function(x, table, nomatch=NA_integer_, incomparables=NULL)
+    {
+        if (!identical(nomatch, NA_integer_))
+            stop("'nomatch' arg is not supported")
+        msg <- c("match() on a ViewsList subject is deprecated.\n",
+                 "Please use '",
+                 "findOverlaps(x, ranges(table), select=\"first\", ",
+                 "drop=TRUE)",
+                 "' instead.")
+        .Deprecated(msg=msg)
+        findOverlaps(x, ranges(table), select="first", drop=TRUE)
     }
 )
 
@@ -723,4 +723,53 @@ setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
                                         type = match.arg(type),
                                         select = "arbitrary"))]
           })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### "ranges" method for Hits objects
+###
+### Extracts the actual regions of intersection between the overlapping ranges.
+### Not much value. Could be replaced by 1-liner:
+###   pintersect(query[queryHits(x)], subject[subjectHits(x)])
+###
+
+setMethod("ranges", "Hits", function(x, query, subject) {
+  if (!is(query, "Ranges") || length(query) != queryLength(x))
+    stop("'query' must be a Ranges of length equal to number of queries")
+  if (!is(subject, "Ranges") || length(subject) != subjectLength(x))
+    stop("'subject' must be a Ranges of length equal to number of subjects")
+  m <- as.matrix(x)
+  qstart <- start(query)[m[,1L]]
+  qend <- end(query)[m[,1L]]
+  sstart <- start(subject)[m[,2L]]
+  send <- end(subject)[m[,2L]]
+  IRanges(pmax.int(qstart, sstart), pmin.int(send, qend))
+})
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The only reason for defining the methods below is to prevent the default
+### "findMatches" or "countMatches" methods to be called and return something
+### wrong (and the reason they would return something wrong is because they
+### are based on match() and expect it to do equality, not overlaps).
+### TODO: Remove these methods in BioC 2.14 when the "match" methods for all
+### the signatures in '.signatures' are gone.
+
+setMethods("findMatches", .signatures,
+    function(x, table, select=c("all", "first", "last"), ...)
+    {
+        msg <- c("findMatches() between a ", class(x), " and a ",
+                 class(table), " object is not supported")
+        stop(msg)
+    }
+)
+
+setMethods("countMatches", .signatures,
+    function(x, table, ...)
+    {
+        msg <- c("countMatches() between a ", class(x), " and a ",
+                 class(table), " object is not supported")
+        stop(msg)
+    }
+)
 

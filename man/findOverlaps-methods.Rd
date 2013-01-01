@@ -8,12 +8,12 @@
 \alias{findOverlaps,Vector,missing-method}
 \alias{findOverlaps,integer,Ranges-method}
 \alias{findOverlaps,Views,Views-method}
-\alias{findOverlaps,Vector,Views-method}
 \alias{findOverlaps,Views,Vector-method}
+\alias{findOverlaps,Vector,Views-method}
 \alias{findOverlaps,RangesList,RangesList-method}
 \alias{findOverlaps,ViewsList,ViewsList-method}
-\alias{findOverlaps,Vector,ViewsList-method}
 \alias{findOverlaps,ViewsList,Vector-method}
+\alias{findOverlaps,Vector,ViewsList-method}
 \alias{findOverlaps,RangedData,RangedData-method}
 \alias{findOverlaps,RangedData,RangesList-method}
 \alias{findOverlaps,RangesList,RangedData-method}
@@ -23,19 +23,19 @@
 \alias{countOverlaps,ANY,missing-method}
 \alias{countOverlaps,RangesList,RangesList-method}
 \alias{countOverlaps,ViewsList,ViewsList-method}
-\alias{countOverlaps,Vector,ViewsList-method}
 \alias{countOverlaps,ViewsList,Vector-method}
+\alias{countOverlaps,Vector,ViewsList-method}
 \alias{countOverlaps,RangedData,RangedData-method}
 \alias{countOverlaps,RangedData,RangesList-method}
 \alias{countOverlaps,RangesList,RangedData-method}
 
 \alias{match,Views,Views-method}
-\alias{match,Vector,Views-method}
 \alias{match,Views,Vector-method}
+\alias{match,Vector,Views-method}
 \alias{match,RangesList,RangesList-method}
 \alias{match,ViewsList,ViewsList-method}
-\alias{match,Vector,ViewsList-method}
 \alias{match,ViewsList,Vector-method}
+\alias{match,Vector,ViewsList-method}
 \alias{match,RangedData,RangedData-method}
 \alias{match,RangedData,RangesList-method}
 \alias{match,RangesList,RangedData-method}
@@ -69,6 +69,30 @@
 \alias{subsetByOverlaps,RangedData,RangedData-method}
 \alias{subsetByOverlaps,RangedData,RangesList-method}
 \alias{subsetByOverlaps,RangesList,RangedData-method}
+
+\alias{ranges,Hits-method}
+
+\alias{findMatches,Views,Views-method}
+\alias{findMatches,Views,Vector-method}
+\alias{findMatches,Vector,Views-method}
+\alias{findMatches,RangesList,RangesList-method}
+\alias{findMatches,ViewsList,ViewsList-method}
+\alias{findMatches,ViewsList,Vector-method}
+\alias{findMatches,Vector,ViewsList-method}
+\alias{findMatches,RangedData,RangedData-method}
+\alias{findMatches,RangedData,RangesList-method}
+\alias{findMatches,RangesList,RangedData-method}
+
+\alias{countMatches,Views,Views-method}
+\alias{countMatches,Views,Vector-method}
+\alias{countMatches,Vector,Views-method}
+\alias{countMatches,RangesList,RangesList-method}
+\alias{countMatches,ViewsList,ViewsList-method}
+\alias{countMatches,ViewsList,Vector-method}
+\alias{countMatches,Vector,ViewsList-method}
+\alias{countMatches,RangedData,RangedData-method}
+\alias{countMatches,RangedData,RangesList-method}
+\alias{countMatches,RangesList,RangedData-method}
 
 
 \title{findOverlaps (and related) methods for Ranges, Views, RangesList,
@@ -104,6 +128,8 @@ overlapsAny(query, subject, maxgap=0L, minoverlap=1L,
 
 subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
                  type=c("any", "start", "end", "within", "equal"), ...)
+
+\S4method{ranges}{Hits}(x, query, subject)
 }
 
 \arguments{
@@ -191,6 +217,9 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
             details.
     }
   }
+  \item{x}{
+    \link{Hits} object returned by \code{findOverlaps}.
+  }
 }
 
 \details{
@@ -227,6 +256,12 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
   \code{subsetByOverlaps} returns the subset of \code{query} that
   has an overlap hit with a range in \code{subject} using the specified
   \code{findOverlaps} parameters.
+
+  \code{ranges(x, query, subject)} returns a \code{Ranges} of the same
+  length as \link{Hits} object \code{x} holding the regions of intersection
+  between the overlapping ranges in objects \code{query} and \code{subject},
+  which should be the same query and subject used in the call to
+  \code{findOverlaps} that generated \code{x}.
 }
 
 \references{
@@ -257,40 +292,44 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
 }
 
 \examples{
-  query <- IRanges(c(1, 4, 9), c(5, 7, 10))
-  subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
-  tree <- IntervalTree(subject)
+query <- IRanges(c(1, 4, 9), c(5, 7, 10))
+subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
+tree <- IntervalTree(subject)
 
-  ## at most one hit per query
-  findOverlaps(query, tree, select = "first")
-  findOverlaps(query, tree, select = "last")
-  findOverlaps(query, tree, select = "arbitrary")
+## at most one hit per query
+findOverlaps(query, tree, select = "first")
+findOverlaps(query, tree, select = "last")
+findOverlaps(query, tree, select = "arbitrary")
 
-  ## overlap as long as distance <= 1
-  findOverlaps(query, tree, maxgap = 1L)
+## overlap as long as distance <= 1
+findOverlaps(query, tree, maxgap = 1L)
 
-  ## shortcut
-  findOverlaps(query, subject)
+## shortcut
+findOverlaps(query, subject)
 
-  query <- IRanges(c(1, 4, 9), c(5, 7, 10))
-  subject <- IRanges(c(2, 2), c(5, 4))
-  tree <- IntervalTree(subject)
+query <- IRanges(c(1, 4, 9), c(5, 7, 10))
+subject <- IRanges(c(2, 2), c(5, 4))
+tree <- IntervalTree(subject)
 
-  ## one Ranges with itself
-  findOverlaps(query)
+## one Ranges with itself
+findOverlaps(query)
 
-  ## single points as query
-  subject <- IRanges(c(1, 6, 13), c(4, 9, 14))
-  findOverlaps(c(3L, 7L, 10L), subject, select = "first")
+## single points as query
+subject <- IRanges(c(1, 6, 13), c(4, 9, 14))
+findOverlaps(c(3L, 7L, 10L), subject, select = "first")
 
-  ## alternative overlap types
-  query <- IRanges(c(1, 5, 3, 4), width=c(2, 2, 4, 6))
-  subject <- IRanges(c(1, 3, 5, 6), width=c(4, 4, 5, 4))
+## alternative overlap types
+query <- IRanges(c(1, 5, 3, 4), width=c(2, 2, 4, 6))
+subject <- IRanges(c(1, 3, 5, 6), width=c(4, 4, 5, 4))
 
-  findOverlaps(query, tree, type = "start")
-  findOverlaps(query, tree, type = "start", maxgap = 1L)
-  findOverlaps(query, tree, type = "end", select = "first")
-  findOverlaps(query, tree, type = "within", maxgap = 1L)
+findOverlaps(query, subject, type = "start")
+findOverlaps(query, subject, type = "start", maxgap = 1L)
+findOverlaps(query, subject, type = "end", select = "first")
+ov <- findOverlaps(query, subject, type = "within", maxgap = 1L)
+ov
+
+## extract the regions of intersection between the overlapping ranges
+ranges(ov, query, subject)
 }
 
 \keyword{methods}

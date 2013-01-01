@@ -14,6 +14,13 @@
 \alias{match,Ranges,Ranges-method}
 \alias{\%in\%,Ranges,Ranges-method}
 
+\alias{findMatches}
+\alias{findMatches,ANY,ANY-method}
+\alias{findMatches,Ranges,Ranges-method}
+\alias{countMatches}
+\alias{countMatches,ANY,ANY-method}
+\alias{countMatches,Ranges,Ranges-method}
+
 \alias{order,Ranges-method}
 \alias{rank,Ranges-method}
 
@@ -45,6 +52,12 @@
 \S4method{match}{Ranges,Ranges}(x, table, nomatch=NA_integer_, incomparables=NULL,
       method=c("auto", "quick", "hash"), match.if.overlap=FALSE)
 
+## findMatches() / countMatches()
+## ------------------------------
+
+findMatches(x, table, select=c("all", "first", "last"), ...)
+countMatches(x, table, ...)
+
 ## order() and related methods
 ## ----------------------------
 
@@ -65,6 +78,8 @@ rangeComparisonCodeToLetter(code)
 \arguments{
   \item{e1, e2, x, table, y}{
     \link{Ranges} objects.
+    For \code{findMatches} and \code{countMatches}, \code{x} and \code{table}
+    can also be atomic vectors.
   }
   \item{incomparables}{
     Not supported.
@@ -77,9 +92,10 @@ rangeComparisonCodeToLetter(code)
     hash-based (\code{method="hash"}) algorithm.
     The latter tends to give better performance, except maybe for some
     pathological input that we've not been able to determine so far.
-    When \code{method="auto"} is specified, the hash-based algorithm
-    is used as long as the length of \code{x} is <= 2^29, otherwise the
-    Quicksort-based algorithm is used.
+
+    When \code{method="auto"} is specified, the most efficient algorithm will
+    be used, that is, the hash-based algorithm if \code{length(x) <= 2^29},
+    otherwise the Quicksort-based algorithm.
   }
   \item{nomatch}{
     The value to be returned in the case when no match is found.
@@ -104,8 +120,18 @@ rangeComparisonCodeToLetter(code)
     which is the recommended way. Alternatively, you can call \code{match()}
     with \code{match.if.overlap=TRUE}.
   }
+  \item{select}{
+    Not supported yet. Note that you can use \code{match} if you want to do
+    \code{select="first"}. Otherwise you're welcome to request this on the
+    Bioconductor mailing list.
+  }
   \item{...}{
-    Additional \link{Ranges} objects used for breaking ties.
+    For \code{findMatches}, \code{countMatches}: arguments to be passed
+    down to \code{match} e.g. to specify one of the supported methods
+    (note that, by default, i.e. with \code{method="auto"}, the most
+    efficient algorithm will be used).
+
+    For \code{order}: additional \link{Ranges} objects used for breaking ties.
   }
   \item{na.last}{
     Ignored.
@@ -152,7 +178,7 @@ rangeComparisonCodeToLetter(code)
     }
     \item{}{
       \code{match(x, table, nomatch=NA_integer_)}:
-      Returns an integer vector of length \code{length(x)},
+      Returns an integer vector of the length of \code{x},
       containing the index of the first matching range in \code{table}
       (or \code{nomatch} if there is no matching range) for each range
       in \code{x}.
@@ -162,6 +188,17 @@ rangeComparisonCodeToLetter(code)
       A shortcut for finding the ranges in \code{x} that match any of
       the ranges in \code{table}. Returns a logical vector of length
       equal to the number of ranges in \code{x}.
+    }
+    \item{}{
+      \code{findMatches(x, table, select=c("all", "first", "last"), ...)}:
+      An enhanced version of \code{match} that returns all the matches in
+      a \link{Hits} object.
+    }
+    \item{}{
+      \code{countMatches(x, table, ...)}:
+      Returns an integer vector of the length of \code{x},
+      containing the number of matches in \code{table} for each element
+      in \code{x}.
     }
     \item{}{
       \code{order(...)}:
@@ -283,24 +320,34 @@ x >= x[3]
 duplicated(x)
 unique(x)
 
-table <- x[c(2:4, 8)]
-match(x, table)  # warning!
-## Specify 'match.if.overlap=FALSE' to suppress the warning:
+table <- x[c(2:4, 7:8)]
+match(x, table)  # Warning! The warning will be removed in BioC 2.13.
+
+## In the meantime, specify 'match.if.overlap=FALSE' to suppress the warning:
 match(x, table, match.if.overlap=FALSE)
 
-x \%in\% table  # warning!
-## Use suppressWarnings() to suppress the warning:
+x \%in\% table  # Warning! The warning will be removed in BioC 2.13.
+## In the meantime, use suppressWarnings() to suppress the warning:
 suppressWarnings(x \%in\% table)
 
 ## ---------------------------------------------------------------------
-## C. order() AND RELATED METHODS
+## C. findMatches(), countMatches()
+## ---------------------------------------------------------------------
+findMatches(x, table)
+countMatches(x, table)
+
+x_levels <- unique(x)
+countMatches(x_levels, x)
+
+## ---------------------------------------------------------------------
+## D. order() AND RELATED METHODS
 ## ---------------------------------------------------------------------
 order(x)
 sort(x)
 rank(x, ties.method="first")
 
 ## ---------------------------------------------------------------------
-## D. GENERALIZED ELEMENT-WISE COMPARISON OF 2 Ranges OBJECTS
+## E. GENERALIZED ELEMENT-WISE COMPARISON OF 2 Ranges OBJECTS
 ## ---------------------------------------------------------------------
 x0 <- IRanges(1:11, width=4)
 x0

@@ -5,7 +5,6 @@
 \alias{Hits}
 
 % accessors
-\alias{ranges,Hits-method}
 \alias{length,Hits-method}
 \alias{subjectHits}
 \alias{subjectHits,Hits-method}
@@ -60,10 +59,6 @@
   To transpose a \code{Hits} \code{x}, so that the subject and query
   are interchanged, call \code{t(x)}. This allows, for example, counting
   the number of hits for each subject element using \code{as.table}.
-
-  When the Hits object is the result of a call to \code{\link{findOverlaps}},
-  the actual regions of intersection between the overlapping ranges
-  can be obtained with the \code{ranges} accessor.
 }
 
 \section{Coercion}{
@@ -117,14 +112,6 @@
     }
     \item{}{\code{countSubjectHits(x)}: Counts the number of hits for
       each subject, returning an integer vector.
-    }
-    \item{}{\code{ranges(x, query, subject)}: returns a \code{Ranges}
-      holding the intersection of the ranges in the
-      \code{Ranges} objects \code{query} and \code{subject}, which
-      should be the same subject and query used in the call to
-      \code{findOverlaps} that generated \code{x}. Eventually, we might
-      store the query and subject inside \code{x}, in which case the
-      arguments would be redundant.
     }
     \item{}{\code{length(x)}: get the number of hits}
     \item{}{\code{queryLength(x)}, \code{nrow(x)}: get the number of
