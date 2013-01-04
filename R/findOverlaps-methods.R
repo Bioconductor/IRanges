@@ -751,7 +751,7 @@ setMethod("ranges", "Hits", function(x, query, subject) {
 ### The only reason for defining the methods below is to prevent the default
 ### "findMatches" or "countMatches" methods to be called and return something
 ### wrong (and the reason they would return something wrong is because they
-### are based on match() and expect it to do equality, not overlaps).
+### are based on match() which does overlaps instead of equality).
 ### TODO: Remove these methods in BioC 2.14 when the "match" methods for all
 ### the signatures in '.signatures' are gone.
 

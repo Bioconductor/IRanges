@@ -315,11 +315,14 @@ x == x[4]
 x >= x[3]
 
 ## ---------------------------------------------------------------------
-## B. duplicated(), unique(), match(), %in%
+## B. duplicated(), unique()
 ## ---------------------------------------------------------------------
 duplicated(x)
 unique(x)
 
+## ---------------------------------------------------------------------
+## C. match(), %in%
+## ---------------------------------------------------------------------
 table <- x[c(2:4, 7:8)]
 match(x, table)  # Warning! The warning will be removed in BioC 2.13.
 
@@ -331,7 +334,7 @@ x \%in\% table  # Warning! The warning will be removed in BioC 2.13.
 suppressWarnings(x \%in\% table)
 
 ## ---------------------------------------------------------------------
-## C. findMatches(), countMatches()
+## D. findMatches(), countMatches()
 ## ---------------------------------------------------------------------
 findMatches(x, table)
 countMatches(x, table)
@@ -340,14 +343,14 @@ x_levels <- unique(x)
 countMatches(x_levels, x)
 
 ## ---------------------------------------------------------------------
-## D. order() AND RELATED METHODS
+## E. order() AND RELATED METHODS
 ## ---------------------------------------------------------------------
 order(x)
 sort(x)
 rank(x, ties.method="first")
 
 ## ---------------------------------------------------------------------
-## E. GENERALIZED ELEMENT-WISE COMPARISON OF 2 Ranges OBJECTS
+## F. GENERALIZED ELEMENT-WISE COMPARISON OF 2 Ranges OBJECTS
 ## ---------------------------------------------------------------------
 x0 <- IRanges(1:11, width=4)
 x0

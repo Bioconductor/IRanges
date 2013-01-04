@@ -193,10 +193,10 @@ setGeneric("findMatches", signature=c("x", "table"),
 ### "put the smallest object on the right" optimization trick.
 .findAllMatchesInSmallTable <- function(x, table, ..., transpose=FALSE)
 {
-    m <- match(x, table, ...)
-    table_high2low <- match(table, table, ...)
-    table_low2high <- makeLow2highFromHigh2low(table_high2low)
-    hits_per_x <- table_low2high[m]
+    x2 <- match(x, table, ...)
+    table2 <- match(table, table, ...)
+    table_low2high <- makeLow2highFromHigh2low(table2)
+    hits_per_x <- table_low2high[x2]
     x_hits <- rep.int(seq_along(hits_per_x),
                       elementLengths(hits_per_x))
     if (length(x_hits) == 0L) {
