@@ -7,6 +7,23 @@ test_Ranges_range <- function() {
   checkException(range(ir1, c(2,3)), silent = TRUE)
 }
 
+test_RangesList_range <- function() {
+  for (compress in c(TRUE, FALSE)) {
+    rl1 <- IRangesList(a = IRanges(c(1,2),c(4,3)), b = IRanges(c(4,6),c(10,7)),
+                       compress = compress)
+    rl2 <- IRangesList(c = IRanges(c(0,2),c(4,5)), a = IRanges(c(4,5),c(6,7)),
+                       compress = compress)
+    ans <- IRangesList(a = IRanges(1,7), b = IRanges(4,10), c = IRanges(0,5),
+                       compress = compress)
+    checkIdentical(range(rl1, rl2), ans)
+    names(rl2) <- NULL
+    ans <- IRangesList(IRanges(0,5), IRanges(4,10), compress = compress)
+    checkIdentical(range(rl1, rl2), ans)
+    ## must be same length
+    checkException(range(rl2, rep.int(rl2, 2L)), silent=TRUE)
+  }
+}
+
 test_IRanges_reduce <- function() {
   x <- IRanges()
   current <- reduce(x)
@@ -142,6 +159,17 @@ test_IRanges_gaps <- function() {
   checkIdentical(gaps(x, end=1), IRanges())
   checkIdentical(gaps(x, end=5), IRanges(start=4, end=5))
   checkIdentical(gaps(x, start=0, end=5), IRanges(start=c(0,4), end=c(1,5)))
+}
+
+test_RangesList_gaps <- function() {
+  range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
+  range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
+  for (compress in c(TRUE, FALSE)) {
+    collection <- IRangesList(one = range1, range2, compress = compress)
+    checkIdentical(gaps(collection),
+                   IRangesList(one = gaps(range1), gaps(range2),
+                               compress = compress))
+  }
 }
 
 test_Ranges_disjoin <- function()

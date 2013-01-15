@@ -112,7 +112,9 @@ recycleArg <- function(arg, argname, length.out)
     if (length.out == 0L) {
         if (length(arg) > 1L)
             stop("invalid length for '", argname, "'")
-        return(recycleVector(arg, length.out))
+        if (length(arg) == 1L && is.na(arg))
+            stop("'", argname, "' contains NAs")
+        return(recycleVector(arg, length.out))  # drops the names
     }
     if (length(arg) == 0L)
         stop("'", argname, "' has no elements")
@@ -121,7 +123,7 @@ recycleArg <- function(arg, argname, length.out)
     if (anyMissing(arg))
         stop("'", argname, "' contains NAs")
     if (length(arg) < length.out)
-        arg <- recycleVector(arg, length.out)  # will drop the name
+        arg <- recycleVector(arg, length.out)  # drops the names
     else
         arg <- unname(arg)
     arg

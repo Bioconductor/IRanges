@@ -121,6 +121,26 @@ setMethod("narrow", "CompressedIRangesList",
               x
           })
 
+### FIXME: This is a quick and dirty implementation that is TOTALLY
+### inefficient. It needs to be improved a lot!
+### FIXME: It's also broken because it can return a GappedRanges object with
+### empty elements (not allowed).
+#setMethod("narrow", "GappedRanges",
+#    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+#    {
+#        solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
+#        start2 <- start(x) + start(solved_SEW) - 1L
+#        end2 <- start2 + width(solved_SEW) - 1L
+
+#        for (i in seq_len(length(x))) {
+#            x@cnirl[[i]] <- restrict(x[[i]], start=start2[i], end=end2[i])
+#        }
+#        if (!normargUseNames(use.names))
+#            names(x) <- NULL
+#        x
+#    }
+#)
+
 setMethod("narrow", "MaskCollection",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
@@ -150,19 +170,18 @@ setGeneric("flank", signature="x",
     function(x, width, start=TRUE, both=FALSE, use.names=TRUE, ...)
         standardGeneric("flank")
 )
+
 setMethod("flank", "Ranges",
     function(x, width, start=TRUE, both=FALSE, use.names=TRUE)
     {
         if (is(x, "NormalIRanges"))
             stop("flanking a NormalIRanges object is not supported")
-        if (!is.numeric(width))
-            stop("'width' must be numeric")
+        width <- recycleIntegerArg(width, "width", length(x))
         if (!is.logical(start) || anyMissing(start))
             stop("'start' must be logical without NA's")
+        start <- recycleVector(start, length(x))
         if (!isTRUEorFALSE(both))
             stop("'both' must be TRUE or FALSE")
-        start <- recycleVector(start, length(x))
-        width <- recycleVector(width, length(x))
         if (both) {
             ans_start <-
               ifelse(start, start(x) - abs(width), end(x) - abs(width) + 1L)
@@ -615,10 +634,4 @@ setMethod("Ops", c("CompressedIRangesList", "ANY"),
           {
             relist(callGeneric(unlist(e1, use.names = FALSE), e2), e1)
           })
-
-
-
-
-
-
 

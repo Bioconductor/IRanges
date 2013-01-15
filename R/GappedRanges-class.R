@@ -171,31 +171,6 @@ setMethod("window", "GappedRanges", window.GappedRanges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "narrow" endomorphism.
-###
-
-### FIXME: This is a quick and dirty implementation that is TOTALLY
-### inefficient. It needs to be improved a lot!
-### FIXME: It's also broken because it can return a GappedRanges object with
-### empty elements (not allowed).
-#setMethod("narrow", "GappedRanges",
-#    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-#    {
-#        solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
-#        start2 <- start(x) + start(solved_SEW) - 1L
-#        end2 <- start2 + width(solved_SEW) - 1L
-
-#        for (i in seq_len(length(x))) {
-#            x@cnirl[[i]] <- restrict(x[[i]], start=start2[i], end=end2[i])
-#        }
-#        if (!normargUseNames(use.names))
-#            names(x) <- NULL
-#        x
-#    }
-#)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining.
 ###
 
