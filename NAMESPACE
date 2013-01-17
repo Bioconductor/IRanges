@@ -258,6 +258,7 @@ export(
     RleViewsList,
     remapHits,
     hits,
+    "%over%", "%within%",
     encodeOverlaps1, RangesList_encodeOverlaps,
     MaskCollection.show_frame,
     Mask,

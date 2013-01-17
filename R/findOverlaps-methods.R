@@ -517,7 +517,9 @@ setMethod("match", c("RangesList", "RangedData"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### %in% is deprecated. Replacing it with overlapsAny().
+### overlapsAny()
+###
+### %in% is deprecated. Replacing it with %over%.
 ###
 
 ### Same args and signature as countOverlaps() and subsetByOverlaps().
@@ -643,13 +645,18 @@ setMethod("overlapsAny", c("RangesList", "RangedData"),
     }
 )
 
+### Convenience wrappers for the 2 most common use cases.
+`%over%` <- function(query, subject) overlapsAny(query, subject)
+`%within%` <- function(query, subject) overlapsAny(query, subject,
+                                                   type="within")
+
 `.%in%.definition` <- function(x, table)
 {
     msg <- c("%in% between a ", class(x), " and a ", class(table),
              " object is deprecated.\nPlease use ",
-             "'overlapsAny(query, subject)' instead.")
+             "'query %over% subject' instead.")
     .Deprecated(msg=msg)
-    overlapsAny(x, table)
+    x %over% table
 }
 
 .signatures <- list(

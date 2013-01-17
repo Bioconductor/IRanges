@@ -53,6 +53,9 @@
 \alias{overlapsAny,RangedData,RangesList-method}
 \alias{overlapsAny,RangesList,RangedData-method}
 
+\alias{\%over\%}
+\alias{\%within\%}
+
 \alias{\%in\%,Views,Views-method}
 \alias{\%in\%,Views,Vector-method}
 \alias{\%in\%,Vector,Views-method}
@@ -95,8 +98,7 @@
 \alias{countMatches,RangesList,RangedData-method}
 
 
-\title{findOverlaps (and related) methods for Ranges, Views, RangesList,
-       ViewsList, and RangedData objects}
+\title{Finding overlapping ranges}
 
 \description{
   Various methods for finding/counting interval overlaps between two
@@ -124,7 +126,9 @@ countOverlaps(query, subject, maxgap=0L, minoverlap=1L,
               type=c("any", "start", "end", "within", "equal"), ...)
 
 overlapsAny(query, subject, maxgap=0L, minoverlap=1L,
-         type=c("any", "start", "end", "within", "equal"), ...)
+            type=c("any", "start", "end", "within", "equal"), ...)
+query \%over\% subject
+query \%within\% subject
 
 subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
                  type=c("any", "start", "end", "within", "equal"), ...)
@@ -253,6 +257,13 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
   \link{ViewsList} objects, it returns a \link{LogicalList} object,
   where each element of the result corresponds to a space in \code{query}.
 
+  \code{\%over\%} and \code{\%within\%} are convenience wrappers for the
+  2 most common use cases. Currently defined as
+  \code{`\%over\%` <- function(query, subject) overlapsAny(query, subject)}
+  and
+  \code{`\%within\%` <- function(query, subject)
+                        overlapsAny(query, subject, type="within")}.
+
   \code{subsetByOverlaps} returns the subset of \code{query} that
   has an overlap hit with a range in \code{subject} using the specified
   \code{findOverlaps} parameters.
@@ -296,12 +307,20 @@ query <- IRanges(c(1, 4, 9), c(5, 7, 10))
 subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
 tree <- IntervalTree(subject)
 
+## ---------------------------------------------------------------------
+## findOverlaps()
+## ---------------------------------------------------------------------
+
 ## at most one hit per query
 findOverlaps(query, tree, select = "first")
 findOverlaps(query, tree, select = "last")
 findOverlaps(query, tree, select = "arbitrary")
 
-## overlap as long as distance <= 1
+## overlap even if adjacent only
+## (FIXME: the gap between 2 adjacent ranges should be still considered
+## 0. So either we have an argument naming problem, or we should modify
+## the handling of the 'maxgap' argument so that the user would need to
+## specify maxgap = 0L to obtain the result below.)
 findOverlaps(query, tree, maxgap = 1L)
 
 ## shortcut
@@ -327,6 +346,20 @@ findOverlaps(query, subject, type = "start", maxgap = 1L)
 findOverlaps(query, subject, type = "end", select = "first")
 ov <- findOverlaps(query, subject, type = "within", maxgap = 1L)
 ov
+
+## ---------------------------------------------------------------------
+## overlapsAny()
+## ---------------------------------------------------------------------
+
+overlapsAny(query, subject, type="start")
+overlapsAny(query, subject, type="end")
+query \%over\% subject    # same as overlapsAny(query, subject)
+query \%within\% subject  # same as overlapsAny(query, subject,
+                        #                     type="within")
+
+## ---------------------------------------------------------------------
+## "ranges" METHOD FOR Hits OBJECTS
+## ---------------------------------------------------------------------
 
 ## extract the regions of intersection between the overlapping ranges
 ranges(ov, query, subject)
