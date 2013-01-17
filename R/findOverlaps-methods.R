@@ -652,9 +652,8 @@ setMethod("overlapsAny", c("RangesList", "RangedData"),
 
 `.%in%.definition` <- function(x, table)
 {
-    msg <- c("%in% between a ", class(x), " and a ", class(table),
-             " object is deprecated.\nPlease use ",
-             "'query %over% subject' instead.")
+    msg <- c("%in% between a ", class(x), " and a ", class(table), " object ",
+             "is deprecated.\nPlease use 'query %over% subject' instead.")
     .Deprecated(msg=msg)
     x %over% table
 }
