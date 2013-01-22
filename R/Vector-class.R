@@ -32,7 +32,7 @@ setGeneric("showAsCell",  # not exported
     function(object) standardGeneric("showAsCell")
 )
 
-setMethod(IRanges:::showAsCell, "ANY", function(object) {
+setMethod("showAsCell", "ANY", function(object) {
   if (length(dim(object)) > 2)
     dim(object) <- c(nrow(object), prod(tail(dim(object), -1)))
   if (NCOL(object) > 1) {
@@ -42,10 +42,10 @@ setMethod(IRanges:::showAsCell, "ANY", function(object) {
       attempt <- paste(attempt, "...")
     attempt
   } else {
-    attempt <- try(data.frame(object), silent=TRUE)
+    attempt <- try(as.vector(object), silent=TRUE)
     if (is(attempt, "try-error"))
       rep.int("########", length(object))
-    object
+    else attempt
   }
 })
 setMethod("showAsCell", "list", function(object)
