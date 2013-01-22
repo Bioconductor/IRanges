@@ -579,7 +579,7 @@ setAs("xtabs", "DataFrame",
         as(from, "DataFrame")
       })
 
-setAs("vector", "DataFrame",
+setAs("ANY", "DataFrame",
       function(from) {
         new2("DataFrame", listData = structure(list(unname(from)), names = "X"),
              nrows = length(from), rownames = names(from), check=FALSE)
@@ -599,12 +599,6 @@ setAs("NULL", "DataFrame", function(from) as(list(), "DataFrame"))
 setAs("integer", "DataFrame",
       function(from) {
         selectMethod("coerce", c("vector", "DataFrame"))(from)
-      })
-
-setAs("Vector", "DataFrame",
-      function(from) {
-        new2("DataFrame", listData = setNames(list(unname(from)), "X"),
-             nrows = length(from), rownames = names(from), check=FALSE)
       })
 
 setAs("AsIs", "DataFrame",
