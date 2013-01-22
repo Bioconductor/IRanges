@@ -8,21 +8,21 @@ test_DataFrame_construction <- function() {
   checkException(DataFrame(score, row.names = "a"), silent = TRUE)
   ## dups in rn
   checkException(DataFrame(score, row.names = c("a", "b", "a")), silent = TRUE)
-  
+ 
   DF <- DataFrame() # no args
   checkTrue(validObject(DF))
   row.names <- c("one", "two", "three")
   DF <- DataFrame(row.names = row.names) # no args, but row.names
   checkTrue(validObject(DF))
   checkIdentical(rownames(DF), row.names)
-  
+ 
   DF <- DataFrame(score) # single, unnamed arg
   checkTrue(validObject(DF))
   checkIdentical(DF[["score"]], score)
   DF <- DataFrame(score, row.names = row.names) #with row names
   checkTrue(validObject(DF))
   checkIdentical(rownames(DF), row.names)
-  
+ 
   DF <- DataFrame(vals = score) # named vector arg
   checkTrue(validObject(DF))
   checkIdentical(DF[["vals"]], score)
@@ -278,18 +278,16 @@ test_DataFrame_combine <- function() {
   data(swiss)
   sw <- DataFrame(swiss, row.names=rownames(swiss))
   rn <- rownames(swiss)
-  
+ 
   ## split
-  
   swsplit <- split(sw, sw[["Education"]])
   checkTrue(validObject(swsplit))
   swisssplit <- split(swiss, swiss$Education)
   checkIdentical(as.list(lapply(swsplit, as.data.frame)), swisssplit)
   checkTrue(validObject(split(DataFrame(IRanges(1:26, 1:26), LETTERS),
                               letters)))
-  
+ 
   ## rbind
-
   checkIdentical(rbind(DataFrame(), DataFrame()), DataFrame())
   zr <- sw[FALSE,]
   checkIdentical(rbind(DataFrame(), zr, zr[,1:2]), zr)
@@ -308,9 +306,9 @@ test_DataFrame_combine <- function() {
   df12 <- rbind(df1, df2)
   rownames(df12) <- NULL
   checkIdentical(as.data.frame(rbind(DF1, DF2)), df12)
-  
+ 
   rownames(sw) <- rn
-  checkIdentical(rownames(rbind(sw, DataFrame(swiss))), NULL)  
+  checkIdentical(rownames(rbind(sw, DataFrame(swiss))), NULL)
   swsplit <- split(sw, sw[["Education"]])
   rownames(swiss) <- rn
   swisssplit <- split(swiss, swiss$Education)
@@ -342,3 +340,38 @@ test_DataFrame_annotation <- function() {
   checkIdentical(mcols(df, use.names=TRUE),
                  DataFrame(a = c(1L, 2L, NA), row.names = c("x", "y", "z")))
 }
+
+## '[<-' setter
+test_DataFrame_Setter <- function() {
+
+  .SingleBracket <- function(df0, df1, idx) {
+    target <- df0
+    for (i in seq_len(length(df0))[idx])
+        target[[i]] <- df1[[i]]
+    df <- df0
+    df[idx] <- df1[idx]
+    stopifnot(identical(target, df))
+    df <- DataFrame(df0)
+    df[idx] <- DataFrame(df1)[idx]
+    if (!identical(DataFrame(target), df))
+        FALSE
+    else
+        TRUE
+  }
+
+  df0 <- data.frame(x=11:12, y=21:22, z=31:32)
+  df1 <- data.frame(matrix(LETTERS[1:6], ncol=3))
+
+  checkTrue(.SingleBracket(df0, df1, c(FALSE, FALSE, TRUE)))
+  checkTrue(.SingleBracket(df0, df1, c(TRUE, FALSE, TRUE)))
+  checkTrue(.SingleBracket(df0, df1, c(TRUE, TRUE, TRUE)))
+  checkTrue(.SingleBracket(df0, df1, TRUE))
+ 
+  target <- df0
+  target[] <- df1[]
+  df <- DataFrame(df0)
+  df[] <- DataFrame(df1)[]
+  checkIdentical(DataFrame(target), df)
+}
+
+ 

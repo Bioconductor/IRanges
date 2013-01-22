@@ -333,13 +333,16 @@ setReplaceMethod("[", "DataFrame",
                  {
                    if (length(list(...)) > 0)
                      warning("parameters in '...' not supported")
-
                    if (nargs() < 4) {
                      iInfo <- list(msg = NULL, useIdx = FALSE, idx = NULL)
                      if (missing(i)) {
                        jInfo <-
                          list(msg = NULL, useIdx = FALSE, idx = seq_len(ncol(x)))
                      } else {
+                       if (length(i) == 1) {
+                         if (is.logical(i) == 1 && i)
+                             i <- rep(i, ncol(x))
+                       }
                        jInfo <- .bracket.Index(i, ncol(x), colnames(x),
                                                allowAppend = TRUE)
                      }
@@ -442,8 +445,13 @@ setReplaceMethod("[", "DataFrame",
                          x@listData[[j[k]]] <- v
                        }
                      } else {
-                       for (k in seq_len(length(j)))
-                         x@listData[[j[k]]] <- value[[vc[k]]]
+                       if (is.logical(j)) {
+                         for (k in seq_len(length(j)))
+                           x@listData[[k]] <- value[[vc[k]]]
+                       } else {
+                         for (k in seq_len(length(j)))
+                           x@listData[[j[k]]] <- value[[vc[k]]]
+                       }
                      }
                    }
                    ## update row and col names, making them unique
