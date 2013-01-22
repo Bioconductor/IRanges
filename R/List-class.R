@@ -608,6 +608,8 @@ setMethod("stack", "List",
             colnames(df)[2] <- value.var
             if (!is.null(name.var)) {
               nms <- as.character(unlist(lapply(x, names)))
+              if (length(nms) == 0L)
+                nms <- as.character(unlist(lapply(elementLengths(x), seq_len)))
               df[[name.var]] <- factor(nms, unique(nms))
             }
             df
