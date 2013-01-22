@@ -345,6 +345,9 @@ setReplaceMethod("[", "Rle",
             value <- as.vector(value)
             return(Rle(callGeneric(x = x, value = value)))
         }
+        logical.i <- is.logical(i) || (is(i, "Rle") && is.logical(runValue(i)))
+        if (length(i) == 0L || (logical.i && !any(i, na.rm = TRUE)))
+          return(x)
         if (length(value) <= 1L && length(i) != 0L)
             return(callNextMethod(x = x, i = i, value = value))
         x <- decodeRle(x)
