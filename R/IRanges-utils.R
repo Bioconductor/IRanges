@@ -58,6 +58,18 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
 
 breakInChunks <- function(totalsize, chunksize)
 {
+    if (!isSingleNumber(totalsize))
+        stop("'totalsize' must be a single integer")
+    if (!is.integer(totalsize))
+        totalsize <- as.integer(totalsize)
+    if (totalsize < 0L)
+        stop("'totalsize' must be a non-negative integer")
+    if (!isSingleNumber(chunksize))
+        stop("'chunksize' must be a single integer")
+    if (!is.integer(chunksize))
+        chunksize <- as.integer(chunksize)
+    if (chunksize <= 0L)
+        stop("'chunksize' must be a positive integer")
     quot <- totalsize %/% chunksize
     ans_width <- rep.int(chunksize, quot)
     rem <- totalsize %% chunksize

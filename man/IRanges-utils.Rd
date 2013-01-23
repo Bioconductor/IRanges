@@ -42,10 +42,11 @@ asNormalIRanges(x, force=TRUE)
     A single integer specifying the starting position of the first range.
   }
   \item{totalsize}{
-    A single integer. The total size of the object to break.
+    A single non-negative integer. The total size of the object to break.
   }
   \item{chunksize}{
-   A single integer. The size of the chunks (last chunk might be smaller).
+   A single positive integer. The size of the chunks (last chunk might be
+   smaller).
   }
   \item{x}{
     A logical vector for \code{whichAsIRanges}.
