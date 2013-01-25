@@ -1005,8 +1005,30 @@ setMethod("relist", c("ANY", "PartitioningByEnd"),
         if (!extends(ans_class, "SimpleList"))
             stop("don't know how to split or relist a ", class(flesh),
                  " object as a ", ans_class, " object")
-        listData <- lapply(seq_len(skeleton_len),
-                           function(i) extractROWS(flesh, skeleton[[i]]))
+        listData <- lapply(skeleton, function(i) extractROWS(flesh, i))
+
+        ## TODO: Once "window" method have been revisited/tested and
+        ## 'window(flesh, start=start, end=end)' is guaranteed to do the
+        ## right thing for any 'flesh' object (in particular it subsets a
+        ## data.frame-like object along the rows), then replace the line above
+        ## by the code below (which should be more efficient):
+
+        #skeleton_start <- start(skeleton)
+        #skeleton_end <- end(skeleton)
+        #FUN <- function(start, end) window(flesh, start=start, end=end)
+        #names(skeleton_start) <- names(skeleton)
+        #listData <- mapply(FUN, skeleton_start, skeleton_end)
+
+        ## or, if we don't trust mapply():
+
+        #skeleton_start <- start(skeleton)
+        #skeleton_end <- end(skeleton)
+        #X <- seq_len(skeleton_len)
+        #names(X) <- names(skeleton)
+        #listData <- lapply(X, function(i) window(flesh,
+        #                                         start=skeleton_start[i],
+        #                                         end=skeleton_end[i]))
+
         newList(ans_class, listData)
     }
 )
