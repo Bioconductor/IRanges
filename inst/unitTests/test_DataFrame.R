@@ -1,5 +1,5 @@
 test_DataFrame_construction <- function() {
-  score <- c(1L, 3L, NA)
+  score <- c(X=1L, Y=3L, Z=NA)
   counts <- c(10L, 2L, NA)
 
   ## na in rn
@@ -37,16 +37,16 @@ test_DataFrame_construction <- function() {
   mat <- cbind(score)
   DF <- DataFrame(mat) # single column matrix with column name
   checkTrue(validObject(DF))
-  checkIdentical(DF[["score"]], score)
+  checkIdentical(DF[["score"]], unname(score))
   mat <- cbind(score, counts)
   DF <- DataFrame(mat) # two column matrix with col names
   checkTrue(validObject(DF))
-  checkIdentical(DF[["score"]], score)
+  checkIdentical(DF[["score"]], unname(score))
   checkIdentical(DF[["counts"]], counts)
   colnames(mat) <- NULL
   DF <- DataFrame(mat) # two column matrix without col names
   checkTrue(validObject(DF))
-  checkIdentical(DF[["V1"]], score)
+  checkIdentical(DF[["V1"]], unname(score))
 
   sw <- DataFrame(swiss, row.names = rownames(swiss)) # a data.frame
   checkIdentical(as.data.frame(sw), swiss)
@@ -57,16 +57,22 @@ test_DataFrame_construction <- function() {
   checkIdentical(as.data.frame(sw), data.frame(swiss[1:3,], score))
   sw <- DataFrame(score = score, swiss = swiss[1:3,]) # named data.frame/matrix
   checkIdentical(as.data.frame(sw),
-                 data.frame(score = score, swiss = swiss[1:3,]))
+                 data.frame(score = unname(score), swiss = swiss[1:3,]))
 
   ## recycling
   DF <- DataFrame(1, score)
   checkIdentical(DF[[1]], rep(1, 3)) 
+  checkIdentical(DF[[2]], score) 
 }
 
 test_DataFrame_coerce <- function() {
-    ## need to introduce character() dim names
-    checkTrue(validObject(as(matrix(0L, 0L, 0L), "DataFrame")))
+  ## need to introduce character() dim names
+  checkTrue(validObject(as(matrix(0L, 0L, 0L), "DataFrame")))
+
+  score <- c(X=1L, Y=3L, Z=NA)
+  DF <- as(score, "DataFrame")
+  checkTrue(validObject(DF))
+  checkIdentical(DF[[1]], score)
 }
 
 test_DataFrame_subset <- function() {
@@ -289,6 +295,9 @@ test_DataFrame_combine <- function() {
  
   ## rbind
   checkIdentical(rbind(DataFrame(), DataFrame()), DataFrame())
+  score <- c(X=1L, Y=3L, Z=NA)
+  DF <- DataFrame(score)
+  checkIdentical(rbind(DF, DF)[[1]], c(score, score))
   zr <- sw[FALSE,]
   checkIdentical(rbind(DataFrame(), zr, zr[,1:2]), zr)
   checkIdentical(as.data.frame(rbind(DataFrame(), zr, sw)), swiss)

@@ -581,7 +581,7 @@ setAs("xtabs", "DataFrame",
 
 setAs("ANY", "DataFrame",
       function(from) {
-        new2("DataFrame", listData = setNames(list(unname(from)), "X"),
+        new2("DataFrame", listData = setNames(list(from), "X"),
              nrows = length(from), rownames = names(from), check=FALSE)
       })
 
