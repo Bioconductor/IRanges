@@ -399,7 +399,9 @@ setReplaceMethod("[", "DataFrame",
                      if (useI) {
                        if (length(newrn) == 0L && li > 0L && max(i) > nrow(x))
                          newrn <- as.character(seq.int(nrow(x) + 1L, max(i)))
-                       x@listData[j] <-
+                       if (length(x@listData[j][[1]]) == 0L)
+                         x@listData[j] <- list(rep(NA, nrow(x))) 
+                       x@listData[j] <- 
                          lapply(x@listData[j], function(y) {y[i] <- value; y})
                      } else {
                        x@listData[j] <- list(value)
