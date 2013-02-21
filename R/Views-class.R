@@ -88,6 +88,7 @@ setMethod("[", "Views",
         if (missing(i))
             return(x)
         x@ranges <- ranges(x)[i]
+        mcols(x) <- mcols(x)[i, , drop=FALSE]
         x
     }
 )
