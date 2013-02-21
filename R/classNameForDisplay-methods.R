@@ -12,13 +12,19 @@ setMethod("classNameForDisplay", "ANY",
    }
 )
 
-.classNameForDisplay_Compressed <- function(x)
+.classNameForDisplay_shorten <- function(x)
 {
-    sub("^Compressed", "", class(x))
+    sub("^(Compressed|Simple)", "", class(x))
 }
 
 setMethod("classNameForDisplay", "CompressedList",
-    .classNameForDisplay_Compressed)
+    .classNameForDisplay_shorten)
 
 setMethod("classNameForDisplay", "CompressedNormalIRangesList",
-    .classNameForDisplay_Compressed)
+    .classNameForDisplay_shorten)
+
+setMethod("classNameForDisplay", "SimpleList",
+    .classNameForDisplay_shorten)
+
+setMethod("classNameForDisplay", "SimpleNormalIRangesList",
+    .classNameForDisplay_shorten)
