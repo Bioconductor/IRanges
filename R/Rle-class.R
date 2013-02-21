@@ -1411,9 +1411,9 @@ setMethod("show", "Rle",
               lo <- length(object)
               nr <- nrun(object)
               halfWidth <- getOption("width") %/% 2L
-              cat(class(runValue(object)), "-Rle of length ", lo,
-                  " with ", nr, ifelse(nr == 1, " run\n", " runs\n"),
-                  sep = "")
+              cat(classNameForDisplay(runValue(object)),
+                  "-Rle of length ", lo, " with ", nr,
+                  ifelse(nr == 1, " run\n", " runs\n"), sep = "")
               first <- max(1L, halfWidth)
               showMatrix <-
                 rbind(as.character(head(runLength(object), first)),

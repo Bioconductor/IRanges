@@ -431,7 +431,10 @@ export(
     coverage,
 
     ## expand-methods.R:
-    expand
+    expand,
+
+    ## classNameForDisplay-methods.R
+    classNameForDisplay
 )
 
 ### Exactly the same list as above.
@@ -508,6 +511,7 @@ exportMethods(
     xvcopy, compact,
     reverse,
     coverage,
-    expand
+    expand,
+    classNameForDisplay
 )
 

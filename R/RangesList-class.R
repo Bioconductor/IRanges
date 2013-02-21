@@ -364,7 +364,8 @@ showRangesList <- function(x, with.header=TRUE)
 {
     x_len <- length(x)
     if (with.header)
-        cat(class(x), " of length ", x_len, "\n", sep = "")
+        cat(classNameForDisplay(x), " of length ", x_len, "\n",
+            sep = "")
     if (x_len == 0L)
         return(invisible(NULL))
     cumsumN <- end(PartitioningByEnd(x))

@@ -778,9 +778,9 @@ setMethod("show", "RangedData", function(object) {
         rownames(out) <- nms
       classinfo <-
         matrix(c("<factor>", "<IRanges>", "|",
-                 unlist(lapply(values, function(x)
-                               paste("<", class(x), ">", sep = "")),
-                        use.names = FALSE)), nrow = 1,
+                 unlist(lapply(values, function(x) {
+                     paste("<", classNameForDisplay(x), ">", sep = "")
+                 }), use.names = FALSE)), nrow = 1,
                dimnames = list("", colnames(out)))
     } else {
       top <- object[1:9, ]
@@ -814,9 +814,9 @@ setMethod("show", "RangedData", function(object) {
       }
       classinfo <-
         matrix(c("<factor>", "<IRanges>", "|",
-                 unlist(lapply(topValues, function(x)
-                               paste("<", class(x), ">", sep = "")),
-                        use.names = FALSE)), nrow = 1,
+                 unlist(lapply(topValues, function(x) {
+                     paste("<", classNameForDisplay(x), ">", sep = "")
+                 }), use.names = FALSE)), nrow = 1,
                dimnames = list("", colnames(out)))
     }
     out <- rbind(classinfo, out)

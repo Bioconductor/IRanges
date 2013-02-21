@@ -9,7 +9,7 @@ Description: The package provides efficient low-level and highly reusable S4
 	collections of instances of the basic classes. All classes in
 	the package use consistent naming and share the same rich and
 	consistent "Vector API" as much as possible.
-Version: 1.17.32
+Version: 1.17.33
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Infrastructure, DataRepresentation
@@ -98,6 +98,7 @@ Collate: S4-utils.R
 	coverage-methods.R
 	expand-methods.R
 	updateObject-methods.R
+	classNameForDisplay-methods.R
 	test_IRanges_package.R
 	debug.R
 	zzz.R

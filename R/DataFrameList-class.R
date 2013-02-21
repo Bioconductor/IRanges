@@ -472,7 +472,8 @@ setMethod("show", "SplitDataFrameList", function(object)
             k <- length(object)
             cumsumN <- cumsum(elementLengths(object))
             N <- tail(cumsumN, 1)
-            cat(class(object), " of length ", k, "\n", sep = "")
+            cat(classNameForDisplay(object), " of length ", k, "\n",
+                sep = "")
             if (k == 0L) {
               cat("<0 elements>\n")
             } else if ((k == 1L) || (N <= 20L)) {

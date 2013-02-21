@@ -1128,7 +1128,8 @@ setMethod("ranges", "CompressedRleList",
 setMethod("show", "AtomicList",
           function(object) 
           {
-              cat(class(object), " of length ", length(object), "\n", sep = "")
+              cat(classNameForDisplay(object), " of length ",
+                  length(object), "\n", sep = "")
               .showAtomicList(object, 10) 
           }
 )
@@ -1138,7 +1139,8 @@ setMethod("show", "RleList",
               lo <- length(object)
               k <- min(5, length(object))
               diffK <- lo - 5
-              cat(class(object), " of length ", lo, "\n", sep = "")
+              cat(classNameForDisplay(object), " of length ", lo,
+                  "\n", sep = "")
               show(as.list(head(object, k)))
               if (diffK > 0)
                   cat("...\n<", diffK,
