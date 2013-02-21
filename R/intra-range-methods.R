@@ -333,7 +333,7 @@ setMethod("resize", "Ranges",
             stop("'width' values must be non-negative")
         if (!(is.character(fix) ||
               (is(fix, "Rle") && is.character(runValue(fix)))) || 
-            (length(fix) == 0) ||
+            (length(fix) == 0L && length(x) > 0L) ||
             (length(setdiff(unique(fix),
                             c("start", "end", "center"))) > 0)) {
             stop("'fix' must be a character vector or character Rle ",
