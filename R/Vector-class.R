@@ -814,12 +814,23 @@ setMethod("rep.int", "Vector",
 )
 
 setMethod("subset", "Vector",
-          function (x, subset, ...) 
-          {
-              if (!is.logical(subset) ||
-                  (is(subset, "Rle") && !is.logical(runValue(subset)))) 
-                  stop("'subset' must be logical")
-              x[subset & !is.na(subset)]
+          function(x, subset, select, drop = FALSE, ...) {
+            if (missing(subset)) 
+              i <- TRUE
+            else {
+              i <- eval(substitute(subset), mcols(x), parent.frame(2))
+              i <- try(as.logical(i), silent = TRUE)
+              if (inherits(i, "try-error")) 
+                stop("'subset' must be coercible to logical")
+              i <- i & !is.na(i)
+            }
+            if (!missing(select)) {
+              nl <- as.list(seq_len(ncol(mcols(x))))
+              names(nl) <- colnames(mcols(x))
+              j <- eval(substitute(select), nl, parent.frame(2))
+              mcols(x) <- mcols(x)[,j]
+            }
+            x[i, drop = drop]
           })
 
 ### S3/S4 combo for unique.Vector
