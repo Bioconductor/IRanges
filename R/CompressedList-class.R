@@ -418,14 +418,15 @@ unlist_list_of_CompressedList <- function(x)
     ans
 }
 
-## NOTE: while the 'c' function does not have an 'x', the generic does
+## NOTE: while the 'c' function does not have an 'x', the generic does.
 ## c() is a primitive, so 'x' can be missing; dispatch is by position,
 ## although sometimes this does not work so well, so it's best to keep
 ## names off the parameters whenever feasible.
 setMethod("c", "CompressedList",
           function(x, ..., recursive = FALSE) {
-              if (recursive)
-                  stop("'recursive' mode is not supported")
+              if (!identical(recursive, FALSE))
+                  stop("\"c\" method for CompressedList objects ",
+                       "does not support the 'recursive' argument")
               if (missing(x))
                   tls <- unname(list(...))
               else
@@ -550,8 +551,9 @@ setMethod("as.list", "CompressedList", as.list.CompressedList)
 
 setMethod("unlist", "CompressedList",
           function(x, recursive = TRUE, use.names = TRUE) {
-              if (!missing(recursive))
-                  warning("'recursive' argument currently ignored")
+              if (!identical(recursive, TRUE))
+                  stop("\"unlist\" method for CompressedList objects ",
+                       "does not support the 'recursive' argument")
               ans <- x@unlistData
               if (length(x) > 0) {
                   if (length(dim(ans)) < 2 && use.names) {

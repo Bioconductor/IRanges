@@ -630,7 +630,8 @@ setMethod("c", "IRanges",
              recursive=FALSE)
     {
         if (!identical(recursive, FALSE))
-            stop("'recursive' argument not supported")
+            stop("\"c\" method for IRanges objects ",
+                 "does not support the 'recursive' argument")
         if (!isTRUEorFALSE(ignore.mcols))
             stop("'ignore.mcols' must be TRUE or FALSE")
         if (!isTRUEorFALSE(.ignoreElementMetadata))

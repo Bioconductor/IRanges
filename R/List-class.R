@@ -548,7 +548,8 @@ setMethod("unlist", "List",
     function(x, recursive=TRUE, use.names=TRUE)
     {
         if (!identical(recursive, TRUE))
-            warning("'recursive' argument currently ignored")
+            stop("\"unlist\" method for List objects ",
+                 "does not support the 'recursive' argument")
         if (!isTRUEorFALSE(use.names))
             stop("'use.names' must be TRUE or FALSE")
         if (length(x) == 0L)

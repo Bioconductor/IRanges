@@ -165,7 +165,8 @@ setMethod("c", "SharedVector_Pool",
     function(x, ..., recursive=FALSE)
     {
         if (!identical(recursive, FALSE))
-            stop("'recursive' argument not supported")
+            stop("\"c\" method for SharedVector_Pool objects ",
+                 "does not support the 'recursive' argument")
         x@xp_list <-
             do.call(c, lapply(unname(list(x, ...)),
                               function(arg) arg@xp_list))

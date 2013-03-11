@@ -533,8 +533,9 @@ setReplaceMethod("window", "RangedData", `window<-.RangedData`)
 ###
 
 setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
-  if (recursive)
-    stop("'recursive' mode not supported")
+  if (!identical(recursive, FALSE))
+    stop("\"c\" method for RangedData objects ",
+         "does not support the 'recursive' argument")
   if (missing(x))
     rds <- unname(list(...))
   else
@@ -844,8 +845,9 @@ RangedDataList <- function(...)
 
 setMethod("unlist", "RangedDataList",
           function(x, recursive = TRUE, use.names = TRUE) {
-            if (!missing(recursive))
-              warning("'recursive' argument currently ignored")
+            if (!identical(recursive, TRUE))
+              stop("\"unlist\" method for RangedDataList objects ",
+                   "does not support the 'recursive' argument")
             ans <- do.call(rbind, unname(as.list(x)))
             if (!use.names)
               rownames(ans) <- NULL

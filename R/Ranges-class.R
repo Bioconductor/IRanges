@@ -103,8 +103,9 @@ setMethod("as.integer", "Ranges",
 setMethod("unlist", "Ranges",
     function(x, recursive = TRUE, use.names = TRUE)
     {
-        if (!missing(recursive))
-            warning("'recursive' argument currently ignored")
+        if (!identical(recursive, TRUE))
+            stop("\"unlist\" method for Ranges objects ",
+                 "does not support the 'recursive' argument")
         ans <- as.integer(x)
         if (use.names) {
             if (!is.null(names(x))) {

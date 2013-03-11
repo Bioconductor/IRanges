@@ -89,7 +89,8 @@ setMethod("c", "GroupedIRanges",
     function(x, ..., recursive=FALSE)
     {
         if (!identical(recursive, FALSE))
-            stop("'recursive' argument not supported")
+            stop("\"c\" method for GroupedIRanges objects ",
+                 "does not support the 'recursive' argument")
         old_val <- disableValidity()
         on.exit(disableValidity(old_val))
         disableValidity(TRUE)
@@ -298,7 +299,8 @@ setMethod("c", "XVectorList",
     function(x, ..., recursive=FALSE)
     {
         if (!identical(recursive, FALSE))
-            stop("'recursive' argument not supported")
+            stop("\"c\" method for XVectorList objects ",
+                 "does not support the 'recursive' argument")
         if (missing(x)) {
             args <- unname(list(...))
             x <- args[[1L]]

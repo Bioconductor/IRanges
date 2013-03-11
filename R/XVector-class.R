@@ -42,7 +42,8 @@ setMethod("c", "XVector",
     function(x, ..., recursive=FALSE)
     {
         if (!identical(recursive, FALSE))
-            stop("'recursive' mode not supported")
+            stop("\"c\" method for XVector objects ",
+                 "does not support the 'recursive' argument")
         if (missing(x)) {
             args <- unname(list(...))
             x <- args[[1L]]

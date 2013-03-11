@@ -176,8 +176,9 @@ setMethod("append", c("FilterRules", "FilterRules"),
 
 setMethod("c", "FilterRules",
           function(x, ..., recursive = FALSE) {
-            if (recursive)
-              stop("'recursive' mode is not supported")
+            if (!identical(recursive, FALSE))
+              stop("\"c\" method for FilterRules objects ",
+                   "does not support the 'recursive' argument")
             if (missing(x))
               args <- unname(list(...))
             else

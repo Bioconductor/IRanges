@@ -421,8 +421,9 @@ setMethod("aggregate", "Rle",
 setMethod("c", "Rle", 
           function(x, ..., recursive = FALSE)
           {
-              if (recursive)
-                  stop("'recursive' mode is not supported")
+              if (!identical(recursive, FALSE))
+                  stop("\"c\" method for Rle objects ",
+                       "does not support the 'recursive' argument")
               args <- RleList(unname(list(x, ...)))
               args <- args[elementLengths(args) > 0]
               if (length(args) == 0)
