@@ -550,26 +550,44 @@ as.list.CompressedList <- function(x, ...) .as.list.CompressedList(x, ...)
 setMethod("as.list", "CompressedList", as.list.CompressedList)
 
 setMethod("unlist", "CompressedList",
-          function(x, recursive = TRUE, use.names = TRUE) {
-              if (!identical(recursive, TRUE))
-                  stop("\"unlist\" method for CompressedList objects ",
-                       "does not support the 'recursive' argument")
-              ans <- x@unlistData
-              if (length(x) > 0) {
-                  if (length(dim(ans)) < 2 && use.names) {
-                      if (!is.null(names(x))) {
-                          nms <- rep.int(names(x), elementLengths(x))
-                          nms <- make.unlist.result.names(nms, names(ans))
-                          res <- try(names(ans) <- nms, silent=TRUE)
-                          if (is(res, "try-error"))
-                              warning("failed to set names on the result ",
-                                      "of unlisting a ", class(x), " object")
-                      }
-                  } else {
-                      if (!use.names)
-                          rownames(ans) <- NULL
-                  }
-              }
-              ans
-          })
+    function(x, recursive=TRUE, use.names=TRUE)
+    {
+        if (!identical(recursive, TRUE))
+            stop("\"unlist\" method for CompressedList objects ",
+                 "does not support the 'recursive' argument")
+        if (!isTRUEorFALSE(use.names))
+            stop("'use.names' must be TRUE or FALSE")
+        ans <- x@unlistData
+        if (length(dim(ans)) < 2L) {
+            ## If 'use.names' is FALSE or 'x' has no *outer* names, then we
+            ## don't do anything to 'ans' i.e. we just keep whatever names
+            ## are on it (which are the *inner* names of 'x'). Note that this
+            ## behavior is NOT consistent with unlist,List or base::unlist as
+            ## both of them will return a vector with no names when 'use.names'
+            ## is FALSE.
+            ## FIXME: Make unlist,CompressedList and unlist,List behave
+            ## consistently in *any* situation.
+            ## Otherwise (i.e. if 'use.names' is TRUE and 'x' has *outer*
+            ## names), we make up new names for 'ans' by prepending the *outer*
+            ## names of 'x' to its *inner* names. Note that this differs from
+            ## what base::unlist does but this is a feature and is consistent
+            ## with what unlist,List does.
+            if (use.names && !is.null(names(x))) {
+                nms <- rep.int(names(x), elementLengths(x))
+                nms <- make.unlist.result.names(nms, names(ans))
+                res <- try(names(ans) <- nms, silent=TRUE)
+                if (is(res, "try-error"))
+                    warning("failed to set names on the result ",
+                            "of unlisting a ", class(x), " object")
+            }
+        } else {
+            ## What we do with the rownames of a 2-D object is not consistent
+            ## with what we do with the names of a 1-D object! Are there any
+            ## good reasons for this?
+            if (!use.names)
+                rownames(ans) <- NULL
+        }
+        ans
+    }
+)
 

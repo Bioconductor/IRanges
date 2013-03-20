@@ -571,6 +571,9 @@ setMethod("unlist", "List",
                                 "of unlisting a ", class(x), " object")
                 }
             } else {
+                ## This is consistent with base::unlist but is not consistent
+                ## with unlist,CompressedList. See comments and FIXME note in
+                ## the unlist,CompressedList code for more details.
                 if (!is.null(ans_names0))
                     names(ans) <- NULL
             }
