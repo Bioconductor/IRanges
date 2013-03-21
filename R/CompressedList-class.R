@@ -41,6 +41,11 @@ setReplaceMethod("names", "CompressedList",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
 ###
+### Use
+###     IRanges:::newCompressedList0(getClass("MyClass"),
+###                                  unlistData, partitioning)
+### when calling this from another package.
+###
 
 newCompressedList0 <- function(Class, unlistData, partitioning)
 {

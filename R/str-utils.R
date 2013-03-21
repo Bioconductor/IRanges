@@ -1,3 +1,9 @@
+capitalize <- function(x)
+{
+    substring(x, 1L, 1L) <- toupper(substring(x, 1L, 1L))
+    x
+}
+
 ### Safe alternative to 'strsplit(x, NULL, fixed=TRUE)[[1L]]'.
 safeExplode <- function(x)
 {

@@ -73,14 +73,19 @@ coercerToClass <- function(class) {
   }
 }
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Manipulating the prototype of an S4 class.
+###
+
 ### Gets or sets the default value of the given slot of the given class by
 ### reading or altering the prototype of the class. setDefaultSlotValue() is
 ### typically used in the .onLoad() hook of a package when the DLL of the
 ### package needs to be loaded *before* the default value of a slot can be
 ### computed.
-getDefaultSlotValue <- function(classname, slotname)
+getDefaultSlotValue <- function(classname, slotname, where=.GlobalEnv)
 {
-    classdef <- getClass(classname)
+    classdef <- getClass(classname, where=where)
     if (!(slotname %in% names(attributes(classdef@prototype))))
         stop("prototype for class \"", classname, "\" ",
              "has no \"", slotname, "\" attribute")
@@ -89,7 +94,7 @@ getDefaultSlotValue <- function(classname, slotname)
 
 setDefaultSlotValue <- function(classname, slotname, value, where=.GlobalEnv)
 {
-    classdef <- getClass(classname)
+    classdef <- getClass(classname, where=where)
     if (!(slotname %in% names(attributes(classdef@prototype))))
         stop("prototype for class \"", classname, "\" ",
              "has no \"", slotname, "\" attribute")
@@ -97,8 +102,24 @@ setDefaultSlotValue <- function(classname, slotname, value, where=.GlobalEnv)
     assignClassDef(classname, classdef, where=where)
 }
 
+setPrototypeFromObject <- function(classname, object, where=.GlobalEnv)
+{
+    classdef <- getClass(classname, where=where)
+    if (class(object) != classname)
+        stop("'object' must be a ", classname, " instance")
+    object_attribs <- attributes(object)
+    object_attribs$class <- NULL
+    ## Sanity check.
+    stopifnot(identical(names(object_attribs),
+                        names(attributes(classdef@prototype))))
+    attributes(classdef@prototype) <- object_attribs
+    assignClassDef(classname, classdef, where=where)
+}
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Pretty printing
+###
 
 ### Works as long as length(), "[" and as.numeric() work on 'x'.
 ### Not exported.
@@ -190,7 +211,3 @@ selectSome <- function (obj, maxToShow = 5)
     }
 }
 
-capitalize <- function(x) {
-  substring(x, 1, 1) <- toupper(substring(x, 1, 1))
-  x
-}
