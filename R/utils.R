@@ -100,6 +100,9 @@ setDefaultSlotValue <- function(classname, slotname, value, where=.GlobalEnv)
              "has no \"", slotname, "\" attribute")
     attr(classdef@prototype, slotname) <- value
     assignClassDef(classname, classdef, where=where)
+    ## Re-compute the complete definition of the class. methods::setValidity()
+    ## does that after calling assignClassDef() so we do it too.
+    resetClass(classname, classdef, where=where)
 }
 
 setPrototypeFromObject <- function(classname, object, where=.GlobalEnv)
@@ -114,6 +117,9 @@ setPrototypeFromObject <- function(classname, object, where=.GlobalEnv)
                         names(attributes(classdef@prototype))))
     attributes(classdef@prototype) <- object_attribs
     assignClassDef(classname, classdef, where=where)
+    ## Re-compute the complete definition of the class. methods::setValidity()
+    ## does that after calling assignClassDef() so we do it too.
+    resetClass(classname, classdef, where=where)
 }
 
 
