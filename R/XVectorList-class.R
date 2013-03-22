@@ -401,6 +401,26 @@ setReplaceMethod("[[", "XVectorList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Looping methods.
+###
+
+setMethod("endoapply", "XVectorList",
+    function(X, FUN, ...)
+    {
+        Xconstructor <- get(class(X))
+        ## If there is no constructor for 'class(X)' or if the constructor
+        ## doesn't work on a list (here we try on an empty list), then we
+        ## call the default method i.e. the method for List objects. This will
+        ## be much slower but still better than failing.
+        if (!is.function(Xconstructor) ||
+            inherits(try(Xconstructor(list()), silent=TRUE), "try-error"))
+            return(callNextMethod())
+        Xconstructor(lapply(X, FUN, ...))
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Show method for data column.
 ###
 

@@ -29,6 +29,8 @@
 \alias{[<-,XVectorList-method}
 \alias{[[<-,XVectorList-method}
 
+\alias{endoapply,XVectorList-method}
+
 \alias{unlist_list_of_XVectorList}
 \alias{unsplit_list_of_XVectorList}
 
