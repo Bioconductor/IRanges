@@ -124,36 +124,6 @@ setReplaceMethod("names", "XVectorList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### XVectorList constructors.
-###
-
-### Takes one XVector object ('xvector') and an IRanges object defining
-### 1-based ranges on 'xvector' (conceptually equivalent to defining views
-### on subject 'xvector').
-unsafe.newXVectorList1 <- function(classname, xvector, ranges)
-{
-    if (is.null(classname))
-        classname <- paste(class(xvector), "List", sep="")
-    ans_pool <- as(xvector@shared, "SharedVector_Pool")
-    ranges_group <- rep.int(1L, length(ranges))
-    ans_ranges <- new2("GroupedIRanges",
-                       shift(ranges, xvector@offset),
-                       group=ranges_group, check=FALSE)
-    new2(classname, pool=ans_pool, ranges=ans_ranges, check=FALSE)
-}
-
-### Produces an XVectorList object of the given length with empty elements.
-XVectorList <- function(classname, length=0L)
-{
-    elt <- new(elementType(new(classname)))
-    ans1_pool <- as(elt@shared, "SharedVector_Pool")
-    ans1_ranges <- new("GroupedIRanges", IRanges(start=1L, width=0L), group=1L)
-    ans1 <- new2(classname, pool=ans1_pool, ranges=ans1_ranges, check=FALSE)
-    rep.int(ans1, length)
-}
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### 2 internal bookkeeping functions to keep the XVectorList "pool" slot
 ### clean and tidy.
 ###
@@ -174,7 +144,8 @@ XVectorList <- function(classname, length=0L)
     x
 }
 
-### Used in "c" method for XVectorList objects.
+### Used in "c" method for XVectorList objects and in
+### new_XVectorList_from_list_of_XVector() constructor.
 .dropDuplicatedPoolElts <- function(x)
 {
     pool_len <- length(x@pool)
@@ -186,6 +157,75 @@ XVectorList <- function(classname, length=0L)
     x@pool <- x@pool[keep_idx]
     x@ranges@group <- remap[x@ranges@group]
     x
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### XVectorList constructors.
+###
+
+### Takes one XVector object ('xvector') and an IRanges object defining
+### 1-based ranges on 'xvector' (conceptually equivalent to defining views
+### on subject 'xvector').
+unsafe.newXVectorList1 <- function(classname, xvector, ranges)
+{
+    if (is.null(classname))
+        classname <- paste(class(xvector), "List", sep="")
+    ans_pool <- as(xvector@shared, "SharedVector_Pool")
+    ranges_group <- rep.int(1L, length(ranges))
+    ans_ranges <- new2("GroupedIRanges",
+                       shift(ranges, xvector@offset),
+                       group=ranges_group, check=FALSE)
+    new2(classname, pool=ans_pool, ranges=ans_ranges, check=FALSE)
+}
+
+new_XVectorList_from_list_of_XVector <- function(classname, x)
+{
+    if (!is.list(x))
+        stop("'x' must be a list")
+    x_names <- names(x)
+    if (!is.null(x_names))
+        names(x) <- NULL
+    ans_elementType <- elementType(new(classname))
+    x_len <- length(x)
+    if (x_len != 0L) {
+        ok <- lapply(x, function(x_elt) is(x_elt, ans_elementType))
+        if (!all(unlist(ok)))
+            stop("all elements in 'x' must be ", ans_elementType,
+                 " objects")
+    }
+    elt0 <- new(ans_elementType)
+    ans_pool_class <- class(elt0@shared)
+    shared_list <- lapply(x, function(x_elt) x_elt@shared)
+    ans_pool <- new_SharedVector_Pool_from_list_of_SharedVector(ans_pool_class,
+                                                                shared_list)
+    if (x_len == 0L) {
+        ans_ranges <- new2("GroupedIRanges", check=FALSE)
+    } else {
+        ans_ranges_start <- unlist(lapply(x, function(x_elt) x_elt@offset)) +
+                            1L
+        ans_ranges_width <- unlist(lapply(x, function(x_elt) x_elt@length))
+        ans_ranges_group <- seq_len(x_len)
+        ans_ranges <- new2("GroupedIRanges", start=ans_ranges_start,
+                                             width=ans_ranges_width,
+                                             group=ans_ranges_group,
+                                             check=FALSE)
+    }
+    ans <- new2(classname, pool=ans_pool, ranges=ans_ranges, check=FALSE)
+    ans <- .dropDuplicatedPoolElts(ans)
+    if (!is.null(x_names))
+        names(ans) <- x_names
+    ans
+}
+
+### Produces an XVectorList object of the given length with empty elements.
+XVectorList <- function(classname, length=0L)
+{
+    elt0 <- new(elementType(new(classname)))
+    ans1_pool <- as(elt0@shared, "SharedVector_Pool")
+    ans1_ranges <- new("GroupedIRanges", IRanges(start=1L, width=0L), group=1L)
+    ans1 <- new2(classname, pool=ans1_pool, ranges=ans1_ranges, check=FALSE)
+    rep.int(ans1, length)
 }
 
 

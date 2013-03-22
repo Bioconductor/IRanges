@@ -128,6 +128,49 @@ setMethod("show", "SharedVector",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### SharedVector_Pool low-level constructors.
+###
+
+### 'SharedVector_subclass' should be the name of a SharedVector concrete
+### subclass (i.e. currently one of "SharedRaw", "SharedInteger", or
+### "SharedDouble").
+new_SharedVector_Pool_from_list_of_SharedVector <-
+    function(SharedVector_subclass, x)
+{
+    if (length(x) != 0L) {
+        ## We use 'class(x_elt) == SharedVector_subclass' instead of more
+        ## common idiom 'is(x_elt, SharedVector_subclass)' because (1) it's
+        ## faster, and (2) the SharedVector concrete subclasses should never
+        ## be extended anyway (i.e. they're conceptually "final classes" to
+        ## use Java terminology).
+        ok <- lapply(x, function(x_elt) class(x_elt) == SharedVector_subclass)
+        if (!all(unlist(ok)))
+            stop("all elements in 'x' must be ", SharedVector_subclass,
+                 " instances")
+    }
+    ans_xp_list <- lapply(x, function(x_elt) x_elt@xp)
+    ans_link_to_cached_object_list <- lapply(x,
+                                        function(x_elt)
+                                          x_elt@.link_to_cached_object)
+    ans_class <- paste(SharedVector_subclass, "_Pool", sep="")
+    new2(ans_class,
+         xp_list=ans_xp_list,
+         .link_to_cached_object_list=ans_link_to_cached_object_list,
+         check=FALSE)
+}
+
+### If 'x' is a SharedVector object, then
+###
+###     new_SharedVector_Pool_from_SharedVector(x)[[1L]]
+###
+### will be identical to 'x'.
+new_SharedVector_Pool_from_SharedVector <- function(x)
+{
+    new_SharedVector_Pool_from_list_of_SharedVector(class(x), list(x))
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### SharedVector_Pool low-level methods.
 ###
 
@@ -147,17 +190,8 @@ setMethod("show", "SharedVector_Pool",
     }
 )
 
-### If 'x' is a SharedVector object, then 'as(x, "SharedVector_Pool")[[1L]]'
-### is identical to 'x'.
 setAs("SharedVector", "SharedVector_Pool",
-    function(from)
-    {
-        ans_class <- paste(class(from), "_Pool", sep="")
-        new2(ans_class,
-             xp_list=list(from@xp),
-             .link_to_cached_object_list=list(from@.link_to_cached_object),
-             check=FALSE)
-    }
+    function(from) new_SharedVector_Pool_from_SharedVector(from)
 )
 
 ### For internal use only. No argument checking!
