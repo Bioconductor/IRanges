@@ -139,7 +139,7 @@ setMethod("show", "Ranges",
         cat(class(object), " of length ", lo, "\n", sep="")
         if (lo == 0L)
             return(NULL)
-        if (lo < (nhalf*2 + 1L) | (lo < (nhead + ntail + 1L))) {
+        if (lo < (nhalf*2+1L) | (lo < (nhead + ntail + 1L))) {
             showme <-
               as.data.frame(object,
                             row.names=paste0("[", seq_len(lo), "]"))
@@ -164,7 +164,7 @@ setMethod("show", "Ranges",
 {
     len <- length(x)
     p1 <- ifelse (nhead == 0, 0L, 1L)
-    p2 <- ifelse (ntail == 0, 0L, ntail - 1L)
+    p2 <- ifelse (ntail == 0, 0L, ntail-1L)
     s1 <- s2 <- character(0) 
  
     if (rownames) {
