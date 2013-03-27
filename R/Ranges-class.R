@@ -129,35 +129,57 @@ setMethod("[[", "Ranges",
 setMethod("show", "Ranges",
     function(object)
     {
+        nhalf <- 5L
         lo <- length(object)
+        if (is.null(nhead <- getOption("showHeadLines")))
+            nhead <- nhalf 
+        if (is.null(ntail <- getOption("showTailLines")))
+            ntail <- nhalf 
+
         cat(class(object), " of length ", lo, "\n", sep="")
         if (lo == 0L)
             return(NULL)
-        if (lo < 20L) {
+        if (lo < (nhalf*2 + 1L) | (lo < (nhead + ntail + 1L))) {
             showme <-
               as.data.frame(object,
-                            row.names=paste("[", seq_len(lo), "]", sep=""))
+                            row.names=paste0("[", seq_len(lo), "]"))
         } else {
-            sketch <- function(x)
-              c(as.character(window(x, 1L, 9L)),
-                "...",
-                as.character(window(x, length(x)-8L, length(x))))
             showme <-
-              data.frame(start=sketch(start(object)),
-                         end=sketch(end(object)),
-                         width=sketch(width(object)),
-                         row.names=c(paste("[", 1:9, "]", sep=""), "...",
-                                     paste("[", (lo-8L):lo, "]", sep="")),
+              data.frame(start=.sketch(start(object), nhead, ntail),
+                         end=.sketch(end(object), nhead, ntail),
+                         width=.sketch(width(object), nhead, ntail),
+                         row.names=.sketch(start(object), nhead, ntail, TRUE),
                          check.rows=TRUE,
                          check.names=FALSE,
                          stringsAsFactors=FALSE)
             NAMES <- names(object)
             if (!is.null(NAMES))
-                showme$names <- sketch(NAMES)
+                showme$names <- .sketch(NAMES, nhead, ntail)
         }
         show(showme)
     }
 )
+
+.sketch <- function(x, nhead, ntail, rownames=FALSE)
+{
+    len <- length(x)
+    p1 <- ifelse (nhead == 0, 0L, 1L)
+    p2 <- ifelse (ntail == 0, 0L, ntail - 1L)
+    s1 <- s2 <- character(0) 
+ 
+    if (rownames) {
+        if (nhead > 0) 
+            s1 <- paste0("[", p1:nhead, "]")
+        if (ntail > 0) 
+            s2 <- paste0("[", (len-p2):len, "]")
+    } else { 
+        if (nhead > 0) 
+            s1 <- paste0(as.character(x[p1:nhead])) 
+        if (ntail > 0) 
+            s2 <- paste0(as.character(x[(len-p2):len])) 
+    }
+    c(s1, "...", s2)
+}
 
 setMethod("showAsCell", "Ranges",
     function(object)
