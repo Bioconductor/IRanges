@@ -1,3 +1,13 @@
+CHANGES IN VERSION 1.18.0
+-------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Add global options 'showHeadLines' and 'showTailLines' to
+      control the number of head/tails lines displayed in
+      show,Ranges and show,DataTable.
+
+
 CHANGES IN VERSION 1.16.0
 -------------------------
 
@@ -80,10 +90,6 @@ NEW FEATURES
 
     o Add revElements() generic with methods for List and CompressedList
       objects.
-
-    o Add global options 'showHeadLines' and 'showTailLines' to
-      control the number of head/tails lines displayed in
-      show,Ranges.
 
 SIGNIFICANT USER-VISIBLE CHANGES
  

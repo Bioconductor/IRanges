@@ -381,6 +381,12 @@ setMethod("as.env", "DataTable",
 setMethod("show", "DataTable",
           function(object)
           {
+              nhalf <- 5L
+              if (is.null(nhead <- getOption("showHeadLines")))
+                  nhead <- nhalf 
+              if (is.null(ntail <- getOption("showTailLines")))
+                  ntail <- nhalf 
+
               nr <- nrow(object)
               nc <- ncol(object)
               cat(class(object), " with ",
@@ -389,7 +395,7 @@ setMethod("show", "DataTable",
                   sep = "")
               if (nr > 0 && nc > 0) {
                   nms <- rownames(object)
-                  if (nr < 20) {
+                  if (nr < (nhalf*2+1L) | (nr < (nhead+ntail+1L))) {
                       out <-
                         as.matrix(format(as.data.frame(
                                          lapply(object, showAsCell),
@@ -400,20 +406,14 @@ setMethod("show", "DataTable",
                       out <-
                         rbind(as.matrix(format(as.data.frame(
                                                lapply(object, function(x)
-                                                      showAsCell(head(x, 9))),
+                                                      showAsCell(head(x, nhead))),
                                                optional = TRUE))),
                               rbind(rep.int("...", nc)),
                               as.matrix(format(as.data.frame(
                                                lapply(object, function(x) 
-                                                      showAsCell(tail(x, 9))),
+                                                      showAsCell(tail(x, ntail))),
                                                optional = TRUE))))
-                      if (is.null(nms)) {
-                          rownames(out) <-
-                            c(as.character(1:9), "...",
-                              as.character((nr-8L):nr))
-                      } else {
-                          rownames(out) <- c(head(nms, 9), "...", tail(nms, 9))
-                      }
+                  rownames(out) <- .rownames(nms, nr, nhead, ntail) 
                   }
                   classinfo <-
                     matrix(unlist(lapply(object, function(x) {
@@ -425,3 +425,23 @@ setMethod("show", "DataTable",
                   print(out, quote = FALSE, right = TRUE)
               }
           })
+
+.rownames <- function(nms, nrow, nhead, ntail)
+{
+    p1 <- ifelse (nhead == 0, 0L, 1L)
+    p2 <- ifelse (ntail == 0, 0L, ntail-1L)
+    s1 <- s2 <- character(0)
+
+    if (is.null(nms)) {
+        if (nhead > 0) 
+            s1 <- paste0(as.character(p1:nhead))
+        if (ntail > 0) 
+            s2 <- paste0(as.character((nrow-p2):nrow))
+    } else { 
+        if (nhead > 0) 
+            s1 <- paste0(head(nms, nhead))
+        if (ntail > 0) 
+            s2 <- paste0(tail(nms, ntail))
+    }
+    c(s1, "...", s2)
+}

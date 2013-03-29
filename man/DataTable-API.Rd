@@ -235,6 +235,15 @@
     \item{}{\code{unique(x)}: Returns a new \code{DataTable} after
       removing the duplicated rows from \code{x}.
     }
+    \item{}{
+      \code{show(x)}:
+      By default the \code{show} method displays 5 head and 5 tail
+      lines. The number of lines can be altered by setting the global
+      options \code{showHeadLines} and \code{showTailLines}. If the 
+      object length is less than the sum of the options, the full object 
+      is displayed. These options affect GRanges, GappedAlignments, 
+      Ranges, DataTable and XString objects.
+    }
   }
 }
 
