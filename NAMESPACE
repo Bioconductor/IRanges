@@ -70,6 +70,7 @@ S3method(duplicated, Dups)
 S3method(duplicated, DataTable)
 S3method(duplicated, Rle)
 S3method(duplicated, AtomicList)
+S3method(duplicated, CompressedAtomicList)
 S3method(duplicated, XRawList)
 
 S3method(levels, Rle)
@@ -82,6 +83,7 @@ S3method(sort, RleList)
 S3method(unique, Vector)
 S3method(unique, DataTable)
 S3method(unique, Rle)
+S3method(unique, CompressedAtomicList)
 S3method(unique, CompressedRleList)
 S3method(unique, SimpleRleList)
 
@@ -119,6 +121,7 @@ export(
     duplicated.DataTable,
     duplicated.Rle,
     duplicated.AtomicList,
+    duplicated.CompressedAtomicList,
     duplicated.XRawList,
 
     levels.Rle,
@@ -131,6 +134,7 @@ export(
     unique.Vector,
     unique.DataTable,
     unique.Rle,
+    unique.CompressedAtomicList,
     unique.CompressedRleList,
     unique.SimpleRleList,
 
