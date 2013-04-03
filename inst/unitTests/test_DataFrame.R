@@ -382,15 +382,12 @@ test_DataFrame_Setter <- function() {
   df[] <- DataFrame(df1)[]
   checkIdentical(DataFrame(target), df)
 
-  DF <- DataFrame("A"=1:5,row.names=letters[1:5])
-  df <- data.frame("A"=1:5,row.names=letters[1:5])
-  checkIdentical(DF['a','B'] <- 1, df['a','B'] <- 1)
-  DF <- DataFrame("A"=1:5,row.names=letters[1:5])
-  df <- data.frame("A"=1:5,row.names=letters[1:5])
-  checkIdentical(DF['c','B'] <- 1, df['c','B'] <- 1)
-  DF <- DataFrame("A"=1:5,row.names=letters[1:5])
-  df <- data.frame("A"=1:5,row.names=letters[1:5])
-  checkIdentical(DF['e','B'] <- 1, df['e','B'] <- 1)
+  for (i in c('a', 'c', 'e')) {
+      DF <- DataFrame(A=1:5, row.names=letters[1:5])
+      df <- data.frame(A=1:5, row.names=letters[1:5])
+      DF[i, 'B'] <- df[i, 'B'] <- 1
+      checkIdentical(as.data.frame(DF), df)
+  }
 }
 
  
