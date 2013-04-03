@@ -189,13 +189,20 @@ setMethod("distanceToNearest", c("Ranges", "RangesORmissing"),
             if (missing(subject)) {
               subject <- x
               x_nearest <- nearest(x, select = select)
-            } else x_nearest <- nearest(x, subject, select = select)
-            if (select == "arbitrary")
-              x_nearest <- cbind(queryHits = seq_len(length(x)),
-                                 subjectHits = x_nearest)
-            else x_nearest <- as.matrix(x_nearest)
-            x <- x[x_nearest[,1]]
-            subject <- subject[x_nearest[,2]]
-            DataFrame(x_nearest, distance = distance(x, subject))
+            } else {
+              x_nearest <- nearest(x, subject, select = select)
+            }
+            #if (select == "arbitrary") {
+            #  x_nearest <- cbind(queryHits = seq_len(length(x)),
+            #                     subjectHits = x_nearest)
+            #} else {
+            #  x_nearest <- as.matrix(x_nearest)
+            #}
+            distance = distance(x[x_nearest[,1]], subject[x_nearest[,2]])
+            new("Hits", queryHits=x_nearest[,1],
+                        subjectHits=x_nearest[,2],
+                        queryLength=length(x), 
+                        subjectLength=length(subject),
+                        elementMetadata=DataFrame(distance=distance))
           })
 

@@ -3,6 +3,9 @@ CHANGES IN VERSION 1.18.0
 
 NEW FEATURES
 
+    o "distanceToNearest" methods now return a Hits instead of
+      a DataFrame object. 
+
     o Add global options 'showHeadLines' and 'showTailLines' to
       control the number of head/tails lines displayed by "show" methods
       for Ranges, DataTable, and Hits objects.
