@@ -1,12 +1,175 @@
 CHANGES IN VERSION 1.18.0
 -------------------------
 
-SIGNIFICANT USER-VISIBLE CHANGES
+NEW FEATURES
 
     o Add global options 'showHeadLines' and 'showTailLines' to
-      control the number of head/tails lines displayed in
-      show,Ranges and show,DataTable.
+      control the number of head/tails lines displayed by "show" methods
+      for Ranges, DataTable, and Hits objects.
 
+    o "subset" method for Vector objects now considers metadata columns.
+
+    o Add classNameForDisplay() generic and use it in all "show" methods
+      defined in IRanges and GenomicRanges.
+
+    o as(x, "DataFrame") now works on *any* R object.
+
+    o Add findMatches(), an enhanced version of match() that returns all the
+      matches between 'x' and 'table'. The hits are returned in a Hits object.
+      Also add countMatches() for counting the number of matches in 'table'
+      for each element in 'x'.
+
+    o Add overlapsAny() as a replacement for %in% (now deprecated on
+      range-based objects), and %over% and %within% as convenience wrappers
+      for overlapsAny(). %over% is the replacement for %in%.
+
+    o Add 'with.mapping' arg to "reduce" methods for IRanges, Ranges, Views,
+      RangesList, and CompressedIRangesList objects.
+
+    o Add "order" method for Rle objects.
+
+    o Add subsetByRanges() generic with methods for ANY, NULL, vector, and
+      IRanges for now. This is work-in-progress and more methods will be added
+      soon. The long term plan is to make this a replacement for seqselect(),
+      but with a faster and cleaner implementation.
+
+    o Add promoters() generic with methods for Ranges, RangesList, Views, and
+      CompressedIRangesList objects.
+
+    o elementLengths() now works on XVectorList objects (and thus works on
+      DNAStringSet objects and family defined in the Biostrings package).
+      Note that this is the first step towards having relist() work on XVector
+      objects (e.g. DNAString objects) eventhough this is not ready yet.
+
+    o Add "mstack" method for DataFrame objects.
+
+    o Add 'name.var' argument to "stack" method for List objects for naming
+      the optional column formed when the elements themselves have named
+      elements.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o The behavior of distance() has changed. Adjacent and overlapping ranges
+      now return a distance of 0L. See ?distance man page for details.
+      A temporary warning will be emitted by distance() until the release of
+      Bioconductor 2.13.
+
+    o Change arg list of expand() generic: function(x, ...) instead of
+      function(x, colnames, keepEmptyRows).
+
+    o Dramatic duplicated() and unique() speedups on CompressedAtomicList
+      objects.
+
+    o Significant endoapply() speedup on XVectorList objects (this benefits
+      DNAStringSet objects and family defined in the Biostrings package).
+
+    o 2x speedup to "c" method for CompressedList objects.
+
+    o classNameForDisplay() strips 'Simple' or 'Compressed', which affects
+      all the "show" methods based on it. So now:
+
+        > IntegerList(1:4, 2:-3)
+        IntegerList of length 2
+        [[1]] 1 2 3 4
+        [[2]] 2 1 0 -1 -2 -3
+
+      instead of:
+
+        > IntegerList(1:4, 2:-3)
+        CompressedIntegerList of length 2
+        [[1]] 1 2 3 4
+        [[2]] 2 1 0 -1 -2 -3
+
+    o Optimization of "[<-" method for Rle objects when no indices are
+      selected (just return self).
+
+    o "stack" method for List objects now creates a factor for the optional
+      name variable.
+
+    o Evaluating FilterRules now subsets by each filter individually, rather
+      than subsetting by all at the end.
+
+    o Optimized which() on CompressedLogicalList objects.
+
+    o All the binary comparison operations (==, <=, etc...) on Ranges objects
+      are now using compare() behind the scene. This makes them slightly faster
+      and also slightly more memory efficient.
+
+DEPRECATED AND DEFUNCT
+
+    o %in% is now deprecated on range-based objects. Please use %over% instead.
+      More precisely:
+        - "match" and "%in%" methods that operate on Views, ViewsList,
+          RangesList, or RangedData objects (20 methods in total) are now
+          deprecated.
+        - Behavior of match() and %in% on Ranges objects was changed (and
+          will issue a warning) to use equality instead of overlap for
+          comparing elements between Ranges objects 'x' and 'table'. The old
+          behavior is still available for match() via new 'match.if.overlap'
+          arg that is FALSE by default (the arg will be deprecated in BioC 2.13
+          and removed in BioC 2.14).
+
+    o tofactor() is now defunct.
+
+    o '.ignoreElementMetadata' argument of "c" method for IRanges objects is
+      now defunct.
+
+BUG FIXES
+
+    o Small fix to "unlist" method for CompressedList objects when 'use.names'
+      is TRUE and 'x' is a zero-length named List (the zero-length vector
+      returned in that case was not named, now it is).
+
+    o "resize" method for Ranges objects now allows zero-length 'fix' when
+      'x' is zero-length.
+
+    o Subsetting a Views object now subsets its metadata columns.
+
+    o Names on the vector-like columns of a DataFrame object are now preserved
+      when calling DataFrame(), or when coercing to DataFrame, or when
+      combining DataFrame objects with rbind().
+
+    o relist() now propagates the names on 'skeleton' when returning
+      a SimpleList.
+
+    o Better argument checking in breakInChunks().
+
+    o Fix broken "showAsCell" method for ANY. Now tries to coerce
+      uni-dimensional objects to vector instead of data.frame (which never
+      worked anyway, due to a bug).
+
+    o Fix long standing bug in "flank" method for Ranges objects: it no longer
+      returns an invalid object when NAs are passed thru the 'width' arg.
+      Now it's an error to try to do so.
+
+    o Fix issue with some of the "as.env" methods not being able to find the
+      environment of the caller.
+
+    o Fix bug in "showAsCell" method for AtomicList objects: now returns
+      character(0) instead of NULL on an object of length 0.
+
+    o sort() now drops NA's when 'na.last=NA' on an Rle object (consistent
+      with base::sort).
+
+    o table() now handles NA's appropriately on an Rle object.
+
+    o table() now returns all the levels on a factor-Rle object.
+
+    o Fix sub-replacement of Rles when using Ranges as the index.
+
+    o Fix bug in [<- method for DataFrame objects. The fix corrects the way
+      a new column created by a subset assignment is filled. Previously, if
+      the first row was set, say, to '1', all values in the column were set
+      to '1' when they needed to be set to NA (for consistency with data.frame).
+
+    o Fix bug in compare() (was not returning 0 when comparing a 0-width range
+      to itself).
+
+    o Fix naming of column when passing an AsIs matrix to DataFrame() -- no
+      more .X suffix.
+
+    o Fix "rbind" method for DataFrame objects when some columns are matrix
+      objects.
 
 CHANGES IN VERSION 1.16.0
 -------------------------
