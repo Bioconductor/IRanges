@@ -367,7 +367,7 @@ setMethod("countOverlaps", c("RangesList", "RangedData"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### match() is deprecated
+### match() is defunct
 ###
 
 setMethod("match", c("Views", "Views"),
@@ -375,12 +375,11 @@ setMethod("match", c("Views", "Views"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on Views objects is deprecated.\n",
+        msg <- c("match() on Views objects is defunct.\n",
                  "Please use '",
                  "findOverlaps(ranges(x), ranges(table), select=\"first\")",
                  "' instead.")
-        .Deprecated(msg=msg)
-        findOverlaps(ranges(x), ranges(table), select="first")
+        .Defunct(msg=msg)
     }
 )
 
@@ -389,12 +388,11 @@ setMethod("match", c("Views", "Vector"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on a Views query is deprecated.\n",
+        msg <- c("match() on a Views query is defunct.\n",
                  "Please use '",
                  "findOverlaps(ranges(x), table, select=\"first\")",
                  "' instead.")
-        .Deprecated(msg=msg)
-        findOverlaps(ranges(x), table, select="first")
+        .Defunct(msg=msg)
     }
 )
 
@@ -403,12 +401,11 @@ setMethod("match", c("Vector", "Views"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on a Views subject is deprecated.\n",
+        msg <- c("match() on a Views subject is defunct.\n",
                  "Please use '",
                  "findOverlaps(x, ranges(table), select=\"first\")",
                  "' instead.")
-        .Deprecated(msg=msg)
-        findOverlaps(x, ranges(table), select="first")
+        .Defunct(msg=msg)
     }
 )
 
@@ -417,12 +414,11 @@ setMethod("match", c("RangesList", "RangesList"),
           {
             if (!identical(nomatch, NA_integer_))
                 stop("'nomatch' arg is not supported")
-            msg <- c("match() on RangesList objects is deprecated.\n",
+            msg <- c("match() on RangesList objects is defunct.\n",
                      "Please use '",
                      "findOverlaps(x, table, select=\"first\", drop=TRUE)",
                      "' instead.")
-            .Deprecated(msg=msg)
-            findOverlaps(x, table, select="first", drop=TRUE)
+            .Defunct(msg=msg)
           })
 
 setMethod("match", c("ViewsList", "ViewsList"),
@@ -430,13 +426,12 @@ setMethod("match", c("ViewsList", "ViewsList"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on ViewsList objects is deprecated.\n",
+        msg <- c("match() on ViewsList objects is defunct.\n",
                  "Please use '",
                  "findOverlaps(ranges(x), ranges(table), select=\"first\", ",
                  "drop=TRUE)",
                  "' instead.")
-        .Deprecated(msg=msg)
-        findOverlaps(ranges(x), ranges(table), select="first", drop=TRUE)
+        .Defunct(msg=msg)
     }
 )
 
@@ -445,13 +440,12 @@ setMethod("match", c("ViewsList", "Vector"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on a ViewsList query is deprecated.\n",
+        msg <- c("match() on a ViewsList query is defunct.\n",
                  "Please use '",
                  "findOverlaps(ranges(x), table, select=\"first\", ",
                  "drop=TRUE)",
                  "' instead.")
-        .Deprecated(msg=msg)
-        findOverlaps(ranges(x), table, select="first", drop=TRUE)
+        .Defunct(msg=msg)
     }
 )
 
@@ -460,13 +454,12 @@ setMethod("match", c("Vector", "ViewsList"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on a ViewsList subject is deprecated.\n",
+        msg <- c("match() on a ViewsList subject is defunct.\n",
                  "Please use '",
                  "findOverlaps(x, ranges(table), select=\"first\", ",
                  "drop=TRUE)",
                  "' instead.")
-        .Deprecated(msg=msg)
-        findOverlaps(x, ranges(table), select="first", drop=TRUE)
+        .Defunct(msg=msg)
     }
 )
 
@@ -475,13 +468,12 @@ setMethod("match", c("RangedData", "RangedData"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on RangedData objects is deprecated.\n",
+        msg <- c("match() on RangedData objects is defunct.\n",
                  "Please use '",
                  "findOverlaps(ranges(x), ranges(table), select=\"first\", ",
                  "drop=TRUE)",
                  "' instead.")
-        .Deprecated(msg=msg)
-        findOverlaps(ranges(x), ranges(table), select="first", drop=TRUE)
+        .Defunct(msg=msg)
     }
 )
 
@@ -490,13 +482,12 @@ setMethod("match", c("RangedData", "RangesList"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on a RangedData query is deprecated.\n",
+        msg <- c("match() on a RangedData query is defunct.\n",
                  "Please use '",
                  "findOverlaps(ranges(x), table, select=\"first\", ",
                  "drop=TRUE)",
                  "' instead.")
-        .Deprecated(msg=msg)
-        findOverlaps(ranges(x), table, select="first", drop=TRUE)
+        .Defunct(msg=msg)
     }
 )
 
@@ -505,13 +496,12 @@ setMethod("match", c("RangesList", "RangedData"),
     {
         if (!identical(nomatch, NA_integer_))
             stop("'nomatch' arg is not supported")
-        msg <- c("match() on a RangedData subject is deprecated.\n",
+        msg <- c("match() on a RangedData subject is defunct.\n",
                  "Please use '",
                  "findOverlaps(x, ranges(table), select=\"first\", ",
                  "drop=TRUE)",
                  "' instead.")
-        .Deprecated(msg=msg)
-        findOverlaps(x, ranges(table), select="first", drop=TRUE)
+        .Defunct(msg=msg)
     }
 )
 
@@ -519,7 +509,7 @@ setMethod("match", c("RangesList", "RangedData"),
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### overlapsAny()
 ###
-### %in% is deprecated. Replacing it with %over%.
+### %in% is defunct. Replacing it with %over%.
 ###
 
 ### Same args and signature as countOverlaps() and subsetByOverlaps().
@@ -653,9 +643,8 @@ setMethod("overlapsAny", c("RangesList", "RangedData"),
 `.%in%.definition` <- function(x, table)
 {
     msg <- c("%in% between a ", class(x), " and a ", class(table), " object ",
-             "is deprecated.\nPlease use 'query %over% subject' instead.")
-    .Deprecated(msg=msg)
-    x %over% table
+             "is defunct.\nPlease use 'query %over% subject' instead.")
+    .Defunct(msg=msg)
 }
 
 .signatures <- list(
