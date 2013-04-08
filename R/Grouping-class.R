@@ -76,11 +76,6 @@ setMethod("togroup", "ANY",
     }
 )
 
-tofactor <- function(x)
-{
-    .Defunct("PartitioningByEnd")
-}
-
 setGeneric("togrouplength", signature="x",
     function(x, j=NULL) standardGeneric("togrouplength")
 )

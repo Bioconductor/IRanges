@@ -202,12 +202,6 @@ normalizeSingleBracketSubscript <- function(i, x)
 {
     if (is.null(i))
         return(integer(0))
-    if (is(i, "Ranges")) {
-        ## Subsetting by ranges will be re-introduced later but it will do
-        ## the right thing.
-        stop("'[' subsetting by Ranges is defunct.\n",
-             "Use 'subsetByOverlaps' instead.")
-    }
     if (is(i, "Rle"))
         i <- as.vector(i)
     if (!is.atomic(i))

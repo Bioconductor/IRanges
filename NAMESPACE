@@ -253,7 +253,6 @@ export(
     rangeComparisonCodeToLetter,
     IntervalTree,
     H2LGrouping, Dups, PartitioningByEnd, PartitioningByWidth,
-    tofactor,
     RangedData, RangedDataList,
     RangedSelection,
     FilterRules, RDApplyParams,

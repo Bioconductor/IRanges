@@ -626,21 +626,13 @@ setMethod("window", "IRanges", window.IRanges)
 ###
 
 setMethod("c", "IRanges",
-    function(x, ..., ignore.mcols=FALSE, .ignoreElementMetadata=FALSE,
-             recursive=FALSE)
+    function(x, ..., ignore.mcols=FALSE, recursive=FALSE)
     {
         if (!identical(recursive, FALSE))
             stop("\"c\" method for IRanges objects ",
                  "does not support the 'recursive' argument")
         if (!isTRUEorFALSE(ignore.mcols))
             stop("'ignore.mcols' must be TRUE or FALSE")
-        if (!isTRUEorFALSE(.ignoreElementMetadata))
-            stop("'.ignoreElementMetadata' must be TRUE or FALSE")
-        if (.ignoreElementMetadata) {
-            msg <- c("the '.ignoreElementMetadata' argument is defunct, ",
-                     "please use 'ignore.mcols'\n  instead")
-            .Defunct(msg=msg)
-        }
         if (missing(x)) {
             args <- unname(list(...))
             x <- args[[1L]]
