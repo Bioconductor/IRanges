@@ -86,23 +86,6 @@ setMethod("duplicated", "Ranges", .duplicated.Ranges)
 ### for Vector objects.
 ###
 
-match.if.overlap.warning.msg <- function(classname)
-{
-    msg <- c("Starting with BioC 2.12, the default behavior of match() ",
-             "on %s\n  objects has changed to use *equality* instead ",
-             "of *overlap* for comparing\n  elements between %s objects ",
-             "'x' and 'table'. Now 'x[i]' and\n  'table[j]' are ",
-             "considered to match when they are equal (i.e. 'x[i] ==\n  ",
-             "table[j]'), instead of when they overlap. ",
-             "This new behavior is consistent\n  with base::match(). ",
-             "If you need the old behavior, you can either do:\n\n",
-             "    findOverlaps(x, table, select=\"first\")  # recommended\n\n",
-             "  or, alternatively, call match() with 'match.if.overlap=TRUE' ",
-             "(explicitly\n  provide this argument to suppress this warning).")
-    fmt <- paste0(msg, collapse="")
-    sprintf(fmt, classname, classname)
-}
-
 `%in%.warning.msg` <- function(classname)
 {
     msg <- c("Starting with BioC 2.12, the behavior of %%in%% ",
@@ -124,7 +107,7 @@ match.if.overlap.warning.msg <- function(classname)
 ### equality. We temporarily add the 'match.if.overlap' argument so the old
 ### behavior is still available.
 ### TODO: Deprecate 'match.if.overlap' arg in BioC 2.13.
-### TODO: Remove 'match.if.overlap' arg in BioC 2.14.
+### TODO: Defunct 'match.if.overlap' arg in BioC 2.14.
 setMethod("match", c("Ranges", "Ranges"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL,
                        method=c("auto", "quick", "hash"),
@@ -137,11 +120,14 @@ setMethod("match", c("Ranges", "Ranges"),
         if (!is.null(incomparables))
             stop("\"match\" method for Ranges objects ",
                  "only accepts 'incomparables=NULL'")
-        if (missing(match.if.overlap))
-            warning(match.if.overlap.warning.msg("Ranges"))
         if (!isTRUEorFALSE(match.if.overlap))
             stop("'match.if.overlap' must be TRUE or FALSE")
         if (match.if.overlap) {
+            msg <- c("In the near future (starting with BioC 2.14), the ",
+                     "\"match\" method for Ranges\n  objects won't support ",
+                     "the 'match.if.overlap' argument anymore. Please use\n",
+                     "  'findOverlaps(x, table, select=\"first\")' instead.")
+            .Deprecated(msg=msg)
             ans <- findOverlaps(x, table, select="first")
             if (!is.na(nomatch) && anyMissing(ans))
                 ans[is.na(ans)] <- nomatch
@@ -158,7 +144,7 @@ setMethod("match", c("Ranges", "Ranges"),
 ### The only reason for overriding the method for Vector objects is to issue
 ### the warning.
 ### TODO: Remove this method in BioC 2.14 when the 'match.if.overlap' arg of
-### match() is gone.
+### match() is defunct.
 setMethod("%in%", c("Ranges", "Ranges"),
     function(x, table)
     {
@@ -236,7 +222,7 @@ setMethod("findMatches", c("ANY", "ANY"),
 ### otherwise would be issued when the user calls findMatches() on Ranges
 ### objects.
 ### TODO: Remove this method in BioC 2.14 when the 'match.if.overlap' arg of
-### match() is gone.
+### match() is defunct.
 setMethod("findMatches", c("Ranges", "Ranges"),
     function(x, table, select=c("all", "first", "last"), ...)
     {
@@ -280,7 +266,7 @@ setMethod("countMatches", c("ANY", "ANY"), .countMatches.default)
 ### otherwise would be issued when the user calls countMatches() on Ranges
 ### objects.
 ### TODO: Remove this method in BioC 2.14 when the 'match.if.overlap' arg of
-### match() is gone.
+### match() is defunct.
 setMethod("countMatches", c("Ranges", "Ranges"),
     function(x, table, ...)
         .countMatches.default(x, table, match.if.overlap=FALSE, ...)
