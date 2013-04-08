@@ -123,10 +123,12 @@ setMethod("match", c("Ranges", "Ranges"),
         if (!isTRUEorFALSE(match.if.overlap))
             stop("'match.if.overlap' must be TRUE or FALSE")
         if (match.if.overlap) {
-            msg <- c("In the near future (starting with BioC 2.14), the ",
-                     "\"match\" method for Ranges\n  objects won't support ",
-                     "the 'match.if.overlap' argument anymore. Please use\n",
-                     "  'findOverlaps(x, table, select=\"first\")' instead.")
+            msg <- c("  In the near future (starting with BioC 2.14), ",
+                     "match() on Ranges objects\n  won't support ",
+                     "the 'match.if.overlap' argument anymore. Please use\n\n",
+                     "    findOverlaps(x, table, select=\"first\")\n\n",
+                     "  instead of\n\n",
+                     "    match(x, table, match.if.overlap=TRUE)")
             .Deprecated(msg=msg)
             ans <- findOverlaps(x, table, select="first")
             if (!is.na(nomatch) && anyMissing(ans))
