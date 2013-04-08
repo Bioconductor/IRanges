@@ -102,23 +102,11 @@ rangeComparisonCodeToLetter(code)
     It is coerced to an \code{integer}.
   }
   \item{match.if.overlap}{
-    You temporarily need to explicitly provide this argument otherwise
-    \code{match()} will issue a warning.
-
-    Starting with BioC 2.12, the default behavior of \code{match()} on
-    \link{Ranges} objects has changed to use \emph{equality} instead
-    of \emph{overlap} for comparing elements between \link{Ranges}
-    objects \code{x} and \code{table}. Now \code{x[i]} and \code{table[j]} are
-    considered to match when they are equal (i.e. \code{x[i] == table[j]}),
-    instead of when they overlap. This new behavior is consistent with
-    \code{base::\link[base]{match}()}.
-
-    If you need the new behavior, use \code{match.if.overlap=FALSE}.
-
-    If you need the old behavior, you can either do:
+    This argument is deprecated in BioC 2.13 and won't be supported
+    anymore in BioC 2.14. Please use
     \code{findOverlaps(x, table, select="first")}
-    which is the recommended way. Alternatively, you can call \code{match()}
-    with \code{match.if.overlap=TRUE}.
+    instead of
+    \code{match(x, table, match.if.overlap=TRUE)}.
   }
   \item{select}{
     Not supported yet. Note that you can use \code{match} if you want to do
@@ -324,12 +312,9 @@ unique(x)
 ## C. match(), %in%
 ## ---------------------------------------------------------------------
 table <- x[c(2:4, 7:8)]
-match(x, table)  # Warning! The warning will be removed in BioC 2.13.
+match(x, table)
 
-## In the meantime, specify 'match.if.overlap=FALSE' to suppress the warning:
-match(x, table, match.if.overlap=FALSE)
-
-x \%in\% table  # Warning! The warning will be removed in BioC 2.13.
+x \%in\% table  # Warning! The warning will be removed in BioC 2.14.
 ## In the meantime, use suppressWarnings() to suppress the warning:
 suppressWarnings(x \%in\% table)
 

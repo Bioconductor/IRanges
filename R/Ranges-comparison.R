@@ -103,10 +103,6 @@ setMethod("duplicated", "Ranges", .duplicated.Ranges)
     sprintf(fmt, classname, classname)
 }
 
-### Unfortunately, the early version of this method was doing overlaps, not
-### equality. We temporarily add the 'match.if.overlap' argument so the old
-### behavior is still available.
-### TODO: Deprecate 'match.if.overlap' arg in BioC 2.13.
 ### TODO: Defunct 'match.if.overlap' arg in BioC 2.14.
 setMethod("match", c("Ranges", "Ranges"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL,
@@ -151,7 +147,7 @@ setMethod("%in%", c("Ranges", "Ranges"),
     function(x, table)
     {
         warning(`%in%.warning.msg`("Ranges"))
-        !is.na(match(x, table, match.if.overlap=FALSE))
+        !is.na(match(x, table))
     }
 )
 
