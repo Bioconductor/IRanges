@@ -241,7 +241,7 @@
       lines. The number of lines can be altered by setting the global
       options \code{showHeadLines} and \code{showTailLines}. If the 
       object length is less than the sum of the options, the full object 
-      is displayed. These options affect GRanges, GappedAlignments, 
+      is displayed. These options affect GRanges, GAlignments, 
       Ranges, DataTable and XString objects.
     }
   }
