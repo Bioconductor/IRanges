@@ -203,6 +203,8 @@ setMethod("c", "FilterRules",
 ###
 
 subsetFirstDim <- function(x, i) {
+  if (all(i))
+    return(x)
   ndim <- max(length(dim(x)), 1L)
   args <- rep(alist(foo=), ndim)
   names(args) <- NULL
@@ -224,6 +226,7 @@ setMethod("eval", signature(expr="FilterRules", envir="ANY"),
               if (!is.logical(val))
                 stop("filter rule evaluated to non-logical: ", rule)
               if ((NROW(envir) == 0L && length(val) > 0L) ||
+                  (NROW(envir) > 0L && length(val) == 0L) || 
                   (NROW(envir) > 0L &&
                    (max(NROW(envir), length(val)) %%
                     min(NROW(envir), length(val)) != 0)))
