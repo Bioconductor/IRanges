@@ -335,8 +335,59 @@ setMethod("subseq", "XVectorList",
 ### specific method at all.
 ###
 
+### 'Class' must be the name of a concrete subclass that extends XVectorList.
+unlist_list_of_XVectorList <- function(Class, x,
+                                       use.names=TRUE, ignore.mcols=FALSE)
+{
+    if (!isSingleString(Class))
+        stop("'Class' must be a single character string")
+    if (!extends(Class, "XVectorList"))
+        stop("'Class' must be the name of a class that extends XVectorList")
+    if (!is.list(x))
+        stop("'x' must be a list")
+    if (!isTRUEorFALSE(use.names))
+        stop("'use.names' must be TRUE or FALSE")
+    if (use.names)
+        stop("'use.names=TRUE' is not supported yet")
+    if (!isTRUEorFALSE(ignore.mcols))
+        stop("'ignore.mcols' must be TRUE or FALSE")
+
+    ## TODO: Implement (in C) fast elementIsNull(x), that does
+    ## 'sapply(x, is.null)' on list 'x', and use it here.
+    null_idx <- which(sapply(x, is.null))
+    if (length(null_idx) != 0L)
+        x <- x[-null_idx]
+    if (length(x) == 0L)
+        return(new(Class))
+    ## TODO: Implement (in C) fast elementIs(x, class), that does
+    ## 'sapply(x, is, class)' on list 'x', and use it here.
+    ## 'elementIs(x, "NULL")' should work and be equivalent to
+    ## 'elementIsNull(x)'.
+    if (!all(sapply(x, is, Class)))
+        stop("all elements in 'x' must be ", Class, " objects (or NULLs)")
+
+    ## Combine "pool" and "ranges" slots.
+    pool_slots <- lapply(x, function(xi) xi@pool)
+    ranges_slots <- lapply(x, function(xi) xi@ranges)
+    breakpoints <- cumsum(elementLengths(pool_slots))
+    offsets <- c(0L, breakpoints[-length(breakpoints)])
+    offsets <- rep.int(offsets, elementLengths(ranges_slots))
+    ans_pool <- do.call(c, pool_slots)
+    ans_ranges <- do.call(c, ranges_slots)
+    ans_ranges@group <- ans_ranges@group + offsets
+
+    ## Combine "mcols" slots.
+    ans_mcols <- do.call(rbind.mcols, x)
+
+    ## Make 'ans' and return it.
+    ans <- new(Class, pool=ans_pool,
+                      ranges=ans_ranges,
+                      elementMetadata=ans_mcols)
+    .dropDuplicatedPoolElts(ans)
+}
+
 setMethod("c", "XVectorList",
-    function(x, ..., recursive=FALSE)
+    function(x, ..., ignore.mcols=FALSE, recursive=FALSE)
     {
         if (!identical(recursive, FALSE))
             stop("\"c\" method for XVectorList objects ",
@@ -347,26 +398,8 @@ setMethod("c", "XVectorList",
         } else {
             args <- unname(list(x, ...))
         }
-        if (length(args) == 1L)
-            return(x)
-        arg_is_null <- sapply(args, is.null)
-        if (any(arg_is_null))
-            args[arg_is_null] <- NULL  # remove NULL elements by setting them to NULL!
-        if (!all(sapply(args, is, class(x))))
-            stop("all arguments in '...' must be ", class(x), " objects (or NULLs)")
-        ## Combine the "pool" and "ranges" slots.
-        for (arg in args[-1L]) {
-            ranges <- arg@ranges
-            ranges@group <- ranges@group + length(x@pool)
-            x@pool <- c(x@pool, arg@pool)
-            x@ranges <- c(x@ranges, ranges)
-        }
-        ## Combine the metadata columns.
-        mcols(x) <- do.call(rbind, lapply(args, mcols))
-        ## Drop duplicated pool elements.
-        x <- .dropDuplicatedPoolElts(x)
-        validObject(x)
-        x
+        unlist_list_of_XVectorList(class(x), args,
+                                   use.names=FALSE, ignore.mcols=ignore.mcols)
     }
 )
 
@@ -428,19 +461,10 @@ setMethod("showAsCell", "XVectorList", function(object) as.character(object))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Two helper functions for unlisting and unsplitting a list of XVectorList
-### objects. Not for the end user.
+### unsplit_list_of_XVectorList()
 ###
-
-unlist_list_of_XVectorList <- function(classname, x)
-{
-    ## Prepending the list with 'new(classname)' guarantees that we dispatch
-    ## on the right "c" method, even when 'x' is an empty list. Note that this
-    ## code would work on a list of objects with another type, not only
-    ## XVectorList objects, as long as they have a "c" method.
-    do.call(c, c(list(new(classname)), unname(x)))
-}
-
+### Not intended for the end user.
+###
 ### 'f' must be a factor with number of levels equal to 'length(x)' and
 ### length equal to 'sum(elementLengths(x))'. 
 unsplit_list_of_XVectorList <- function(classname, x, f)
