@@ -347,6 +347,7 @@ unlist_list_of_XVectorList <- function(Class, x,
         stop("'x' must be a list")
     if (!isTRUEorFALSE(use.names))
         stop("'use.names' must be TRUE or FALSE")
+    ### TODO: Support 'use.names=TRUE'.
     if (use.names)
         stop("'use.names=TRUE' is not supported yet")
     if (!isTRUEorFALSE(ignore.mcols))
