@@ -336,6 +336,7 @@ setMethod("subseq", "XVectorList",
 ###
 
 ### 'Class' must be the name of a concrete subclass that extends XVectorList.
+### Returns an instance of class 'Class'.
 unlist_list_of_XVectorList <- function(Class, x,
                                        use.names=TRUE, ignore.mcols=FALSE)
 {
@@ -354,27 +355,35 @@ unlist_list_of_XVectorList <- function(Class, x,
         stop("'ignore.mcols' must be TRUE or FALSE")
 
     ## TODO: Implement (in C) fast elementIsNull(x), that does
-    ## 'sapply(x, is.null)' on list 'x', and use it here.
-    null_idx <- which(sapply(x, is.null))
+    ## 'sapply(x, is.null, USE.NAMES=FALSE)' on list 'x', and use it here.
+    null_idx <- which(sapply(x, is.null, USE.NAMES=FALSE))
     if (length(null_idx) != 0L)
         x <- x[-null_idx]
     if (length(x) == 0L)
         return(new(Class))
     ## TODO: Implement (in C) fast elementIs(x, class), that does
-    ## 'sapply(x, is, class)' on list 'x', and use it here.
+    ## 'sapply(x, is, class, USE.NAMES=FALSE)' on list 'x', and use it here.
     ## 'elementIs(x, "NULL")' should work and be equivalent to
     ## 'elementIsNull(x)'.
-    if (!all(sapply(x, is, Class)))
+    if (!all(sapply(x, is, Class, USE.NAMES=FALSE)))
         stop("all elements in 'x' must be ", Class, " objects (or NULLs)")
+    x_names <- names(x)
+    names(x) <- NULL  # so lapply(x, ...) below returns an unnamed list
 
-    ## Combine "pool" and "ranges" slots.
+    ## Combine "pool" slots.
     pool_slots <- lapply(x, function(xi) xi@pool)
+    ## TODO: Implement unlist_list_of_SharedRaw_Pool() and use it here.
+    ans_pool <- do.call(c, pool_slots)
+
+    ## Combine "ranges" slots.
     ranges_slots <- lapply(x, function(xi) xi@ranges)
+    ## TODO: Implement unlist_list_of_GroupedRanges() (that takes an 'offsets'
+    ## arg) and use it here.
+    ans_ranges <- do.call(c, ranges_slots)
+
     breakpoints <- cumsum(elementLengths(pool_slots))
     offsets <- c(0L, breakpoints[-length(breakpoints)])
     offsets <- rep.int(offsets, elementLengths(ranges_slots))
-    ans_pool <- do.call(c, pool_slots)
-    ans_ranges <- do.call(c, ranges_slots)
     ans_ranges@group <- ans_ranges@group + offsets
 
     ## Combine "mcols" slots.
@@ -394,10 +403,10 @@ setMethod("c", "XVectorList",
             stop("\"c\" method for XVectorList objects ",
                  "does not support the 'recursive' argument")
         if (missing(x)) {
-            args <- unname(list(...))
+            args <- list(...)
             x <- args[[1L]]
         } else {
-            args <- unname(list(x, ...))
+            args <- list(x, ...)
         }
         unlist_list_of_XVectorList(class(x), args,
                                    use.names=FALSE, ignore.mcols=ignore.mcols)
