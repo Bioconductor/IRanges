@@ -25,7 +25,7 @@
 \alias{runValue<-}
 \alias{runValue<-,Rle-method}
 
-\alias{as.vector,Rle,ANY-method}
+\alias{as.vector,Rle-method}
 \alias{as.vectorORfactor}
 \alias{as.vectorORfactor,Rle-method}
 \alias{as.logical,Rle-method}
@@ -220,7 +220,7 @@
 
   \describe{
     \item{}{
-      \code{as.vector(x, mode = "any")}, \code{as(from, "vector")}:
+      \code{as.vector(x, mode="any")}, \code{as(from, "vector")}:
       Creates an atomic vector based on the values contained in
       \code{x}. The vector will be coerced to the requested \code{mode},
       unless \code{mode} is "any", in which case the most appropriate

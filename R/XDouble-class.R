@@ -55,7 +55,13 @@ setAs("numeric", "XVector", function(from) as(from, "XDouble"))
 setMethod("as.numeric", "XDouble",
     function(x, ...) SharedDouble.read(x@shared, x@offset + 1L, x@offset + x@length)
 )
-setMethod("as.vector", c("XDouble", "missing"),
-    function(x, mode) as.numeric(x)
+setMethod("as.vector", "XDouble",
+    function(x, mode="any")
+    {
+        if (!identical(mode, "any"))
+            stop("\"as.vector\" method for XDouble objects ",
+                 "does not support the 'mode' argument")
+        as.numeric(x)
+    }
 )
 

@@ -35,7 +35,7 @@ setClassUnion("characterORNULL", c("character", "NULL"))
 ### bug in R:
 ###
 ###   setClass("A", representation(stuff="numeric"))
-###   setMethod("as.vector", c("A", "missing"), function(x, mode) x@stuff)
+###   setMethod("as.vector", "A", function(x, mode="any") x@stuff)
 ###
 ###   a <- new("A", stuff=3:-5)
 ###   > as.vector(a)

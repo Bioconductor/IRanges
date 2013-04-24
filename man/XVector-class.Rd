@@ -29,7 +29,7 @@
 \alias{coerce,numeric,XRaw-method}
 \alias{as.raw,XRaw-method}
 \alias{as.integer,XRaw-method}
-\alias{as.vector,XRaw,missing-method}
+\alias{as.vector,XRaw-method}
 
 % XInteger class, functions and methods:
 \alias{class:XInteger}
@@ -39,7 +39,7 @@
 \alias{coerce,numeric,XInteger-method}
 \alias{coerce,integer,XVector-method}
 \alias{as.integer,XInteger-method}
-\alias{as.vector,XInteger,missing-method}
+\alias{as.vector,XInteger-method}
 
 % XDouble class, functions and methods:
 \alias{class:XDouble}
@@ -50,7 +50,7 @@
 \alias{coerce,numeric,XDouble-method}
 \alias{coerce,numeric,XVector-method}
 \alias{as.numeric,XDouble-method}
-\alias{as.vector,XDouble,missing-method}
+\alias{as.vector,XDouble-method}
 \alias{show,XDouble-method}
 
 

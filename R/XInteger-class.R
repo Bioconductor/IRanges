@@ -52,7 +52,13 @@ setAs("integer", "XVector", function(from) as(from, "XInteger"))
 setMethod("as.integer", "XInteger",
     function(x, ...) SharedInteger.read(x@shared, x@offset + 1L, x@offset + x@length)
 )
-setMethod("as.vector", c("XInteger", "missing"),
-    function(x, mode) as.integer(x)
+setMethod("as.vector", "XInteger",
+    function(x, mode="any")
+    { 
+        if (!identical(mode, "any"))
+            stop("\"as.vector\" method for XInteger objects ",
+                 "does not support the 'mode' argument")
+        as.integer(x)
+    }
 )
 

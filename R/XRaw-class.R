@@ -49,7 +49,13 @@ setMethod("as.raw", "XRaw", function(x) as.raw(as.integer(x)))
 setMethod("as.integer", "XRaw",
     function(x, ...) SharedRaw.readInts(x@shared, x@offset + 1L, x@offset + x@length)
 )
-setMethod("as.vector", c("XRaw", "missing"),
-    function(x, mode) as.raw(x)
+setMethod("as.vector", "XRaw",
+    function(x, mode="any")
+    { 
+        if (!identical(mode, "any"))
+            stop("\"as.vector\" method for XRaw objects ",
+                 "does not support the 'mode' argument")
+        as.raw(x)
+    }
 )
 
