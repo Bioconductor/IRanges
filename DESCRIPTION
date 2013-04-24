@@ -13,7 +13,7 @@ Version: 1.19.3
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Infrastructure, DataRepresentation
-Depends: R (>= 2.8.0), methods, utils, stats, BiocGenerics (>= 0.7.1)
+Depends: R (>= 2.8.0), methods, utils, stats, BiocGenerics (>= 0.7.2)
 Imports: methods, utils, stats, BiocGenerics, stats4
 Suggests: GenomicRanges, RUnit, BSgenome.Celegans.UCSC.ce2
 License: Artistic-2.0
