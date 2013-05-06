@@ -219,18 +219,22 @@ setMethod("eval", signature(expr="FilterRules", envir="ANY"),
                    parent.frame() else baseenv())
           {
             result <- rep.int(TRUE, NROW(envir))
-            for (rule in as.list(expr)[active(expr)]) {
+            rules <- as.list(expr)[active(expr)]
+            for (i in seq_along(rules)) {
+              rule <- rules[[i]]
               if (is.expression(rule))
                 val <- eval(rule, envir, enclos)
               else val <- rule(envir)
               if (!is.logical(val))
-                stop("filter rule evaluated to non-logical: ", rule)
+                stop("filter rule evaluated to non-logical: ",
+                     names(rules)[i])
               if ((NROW(envir) == 0L && length(val) > 0L) ||
                   (NROW(envir) > 0L && length(val) == 0L) || 
                   (NROW(envir) > 0L &&
                    (max(NROW(envir), length(val)) %%
                     min(NROW(envir), length(val)) != 0)))
-                stop("filter rule evaluated to inconsistent length: ", rule)
+                stop("filter rule evaluated to inconsistent length: ",
+                     names(rule)[i])
               envir <- subsetFirstDim(envir, val)
               result[result] <- val
             }
