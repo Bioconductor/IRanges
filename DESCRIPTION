@@ -86,6 +86,7 @@ Collate: S4-utils.R
 	XIntegerViews-utils.R
 	XDoubleViews-class.R
 	XDoubleViews-utils.R
+	OnDiskRaw-class.R
 	funprog-methods.R
 	intra-range-methods.R
 	inter-range-methods.R
