@@ -5,20 +5,156 @@
 
 setClass("OnDiskRaw",
     representation("VIRTUAL",
-        filepath="character",
-        length="integer",
-        .cache="environment"
+        filepath="character",          # a single string
+        length="integer",              # a single non-negative integer
+        .cache="environment",
+        .objname_in_cache="character"  # a single string
+    ),
+    prototype(
+        .objname_in_cache="anonymous"
     )
 )
 
 setMethod("length", "OnDiskRaw", function(x) x@length)
 
+### Load a sequence of values from an on-disk raw vector, and return them in
+### a raw vector. Every OnDiskRaw concrete subclass needs to implement a
+### "loadSequence" method.
 setGeneric("loadSequence", signature="x",
     function(x, offset=0, length=NA) standardGeneric("loadSequence")
 )
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Check/normalize 'offset' and 'length' args against the length of an
+### object.
+###
+
+normargOffset <- function(offset, obj_length)
+{
+    if (!isSingleNumber(offset))
+        stop("'offset' must be a single integer")
+    if (!is.integer(offset))
+        offset <- as.integer(offset)
+    if (offset < 0L)
+        stop("'offset' cannot be negative")
+    if (offset > obj_length)
+        stop("'offset' cannot be greater than object length")
+    offset
+}
+
+normargLength <- function(length, obj_length, offset)
+{
+    if (!isSingleNumberOrNA(length))
+        stop("'length' must be a single integer or NA")
+    if (!is.integer(length))
+        length <- as.integer(length)
+    if (is.na(length)) {
+        length <- obj_length - offset
+    } else {
+        if (length < 0L)
+            stop("'length' cannot be negative")
+        if (offset + length > obj_length)
+            stop("invalid 'offset' / 'length' combination: would result in ",
+                 "reading data\n  beyond the object")
+    }
+    length
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### readXRaw()
+###
+### Reads raw data from an OnDiskRaw object and returns it as an XRaw (or
+### derived) object. Provides a cache mechanism if the full on-disk object
+### is requested. Based on loadSequence().
+###
+
+### Increment NLINKS counter in 'cache' environment.
+.inc_NLINKS <- function(cache)
+{
+    NLINKS <- try(get("NLINKS", envir=cache, inherits=FALSE), silent=TRUE)
+    if (is(NLINKS, "try-error"))
+        NLINKS <- 0L
+    NLINKS <- NLINKS + 1L
+    assign("NLINKS", NLINKS, envir=cache)
+}
+
+### Decrement NLINKS counter in 'cache' environment.
+.dec_NLINKS <- function(cache)
+{
+    NLINKS <- get("NLINKS", envir=cache, inherits=FALSE) - 1L
+    assign("NLINKS", NLINKS, envir=cache)
+}
+
+### Return a new link to a cached object.
+### 'objname' is the name of the cached object.
+### 'cache' is the caching environment.
+### When the number of links for a given cached object reaches 0, then the
+### object is removed from the cache.
+.makeLinkToCachedObject <- function(objname, cache)
+{
+    .inc_NLINKS(cache)
+    ans <- new.env(parent=emptyenv())
+    reg.finalizer(ans,
+        function(e) {
+            if (.dec_NLINKS(cache) == 0L) {
+                if (getOption("verbose"))
+                    cat("uncaching ", objname, "\n", sep="")
+                remove(list=objname, envir=cache)
+            }
+        }
+    )
+    ans
+}
+
+### 'Class' must be "XRaw" or the name of an XRaw concrete subclass.
+### Returns an instance of class 'Class'.
+readXRaw <- function(Class, ondiskraw, offset=0, length=NA)
+{
+    if (!is(ondiskraw, "OnDiskRaw"))
+        stop("'ondiskraw' must be an OnDiskRaw object")
+    ## Check 'offset'.
+    offset <- normargOffset(offset, length(ondiskraw))
+    ## Check 'length'.
+    length <- normargLength(length, length(ondiskraw), offset)
+
+    cache <- ondiskraw@.cache
+    objname <- ondiskraw@.objname_in_cache
+    ## The 'if (exists(objname, envir=cache)) get(objname, envir=cache)'
+    ## idiom is NOT reliable and should be avoided.
+    ## Because the symbol (objname) can disappear from the cache between
+    ## the moment we test for its presence and the moment we try to get it.
+    ## It's not paranoia: I've actually seen this happen! One possible
+    ## explanation for this is that the symbol was candidate for removal
+    ## from the cache but that removal didn't happen yet because gc() had
+    ## not yet been called (removal from the cache is implemented thru the
+    ## finalizers registered on the objects that are copied from the cache
+    ## and made available to the user). Then the call to get() would trigger
+    ## garbbage collection and that in turn would trigger the removal of
+    ## the symbol *before* get() had a chance to get to it. So it's better to
+    ## use 'try(get(...))': it's atomic, and should be 100% reliable!
+    ans_shared <- try(get(objname, envir=cache, inherits=FALSE), silent=TRUE)
+    if (is(ans_shared, "try-error")) {
+        val <- loadSequence(ondiskraw, offset=offset, length=length)
+        ans_shared <- SharedRaw(length, val)
+        if (offset != 0L || length != length(ondiskraw)) {
+            ans <- new(Class, shared=ans_shared, offset=0L, length=length)
+            return(ans)
+        }
+        if (getOption("verbose"))
+            cat("caching ", objname, "\n", sep="")
+        assign(objname, ans_shared, envir=cache)
+    }
+    ans_shared@.link_to_cached_object <- .makeLinkToCachedObject(objname,
+                                                                 cache)
+    new(Class, shared=ans_shared, offset=offset, length=length)
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### .loadSequence()
+###
 ### Load a sequence of values from a file containing a linear array of
 ### fixed-size atomic values (logical, integer, double, complex, or raw).
 ###
@@ -79,28 +215,10 @@ setGeneric("loadSequence", signature="x",
     if (obj_length < 0L)
         stop("'obj_length' cannot be negative")
     ## Check 'offset'.
-    if (!isSingleNumber(offset))
-        stop("'offset' must be a single integer")
-    if (!is.integer(offset))
-        offset <- as.integer(offset)
-    if (offset < 0L)
-        stop("'offset' cannot be negative")
-    if (offset > obj_length)
-        stop("'offset' cannot be greater than object length")
+    offset <- normargOffset(offset, obj_length)
     ## Check 'length'.
-    if (!isSingleNumberOrNA(length))
-        stop("'length' must be a single integer or NA")
-    if (!is.integer(length))
-        length <- as.integer(length)
-    if (is.na(length)) {
-        length <- obj_length - offset
-    } else {
-        if (length < 0L)
-            stop("'length' cannot be negative")
-        if (offset + length > obj_length)
-            stop("invalid 'offset' / 'length' combination (would result in ",
-                 "reading data beyond the object)")
-    }
+    length <- normargLength(length, obj_length, offset)
+
     con <- get(file_type)(filepath, open="rb")
     on.exit(close(con))
     n <- obj_offset + as.double(offset) * .sizeOnDisk(what)
@@ -153,7 +271,7 @@ setMethod("loadSequence", "DirectRaw",
 ### Supports RDX2 and RDA2 formats only. These are the formats produced
 ### when calling save() with 'ascii=FALSE' (the default) and 'ascii=TRUE',
 ### respectively.
-.extractRdaTypeAndFormat <- function(filepath)
+.getRdaTypeAndFormat <- function(filepath)
 {
     if (!isSingleString(filepath))
         stop("'filepath' must be a single string")
@@ -184,7 +302,7 @@ setMethod("loadSequence", "DirectRaw",
     list(file_type=class(con)[1L], file_format=file_format)
 }
 
-.filepos_envir <- new.env(hash=TRUE, parent=emptyenv())
+.filepos_envir <- new.env(parent=emptyenv())
 
 .get_filepos <- function()
     get("filepos", envir=.filepos_envir, inherits=FALSE)
@@ -203,7 +321,7 @@ setMethod("loadSequence", "DirectRaw",
     readBin(con, what, n=n, endian="big")
 }
 
-### The length of a serialized object seems to be encoded only for a CHARSXP,
+### The length of a serialized object seems to be stored only for a CHARSXP,
 ### an atomic vector (LGLSXP, INTSXP, REALSXP, CPLXSXP, STRSXP, RAWSXP),
 ### a list (VECSXP), and an expressions vector (EXPRSXP).
 ### See src/main/serialize.c in R source tree.
@@ -213,16 +331,16 @@ setMethod("loadSequence", "DirectRaw",
                         VECSXP=19L, EXPRSXP=20L)
 
 ### Supports RDX2 and RDA2 formats only.
-.extractObjectInfoFromRda <- function(filepath)
+.getFirstObjectInfoFromRda <- function(filepath)
 {
-    type_and_format <- .extractRdaTypeAndFormat(filepath)
+    type_and_format <- .getRdaTypeAndFormat(filepath)
     file_type <- type_and_format$file_type
     file_format <- type_and_format$file_format
     con <- get(file_type)(filepath, open="rb")
     on.exit(close(con))
-    .set_filepos(0)
     obj_length <- NA_integer_
     obj_offset <- NA_real_
+    .set_filepos(0)
     if (file_format == "RDX2") {
         .readBin2(con, "raw", n=31L)
         obj_name_len <- .readBin2(con, "integer", n=1L)
@@ -276,11 +394,11 @@ setMethod("loadSequence", "DirectRaw",
     c(type_and_format, ans2)
 }
 
-### Supports logical, integer, double, complex, and raw vectors only.
+### Works on a serialized logical, integer, double, complex, or raw vector.
 ### Extracts only the vector values. All attributes are ignored.
 .loadSequenceFromRda <- function(filepath, offset=0, length=NA)
 {
-    info <- .extractObjectInfoFromRda(filepath)
+    info <- .getFirstObjectInfoFromRda(filepath)
     file_type <- info$file_type
     file_format <- info$file_format
     obj_type <- info$obj_type
@@ -320,7 +438,7 @@ setClass("SerializedRaw",
 
 SerializedRaw <- function(filepath)
 {
-    info <- .extractObjectInfoFromRda(filepath)
+    info <- .getFirstObjectInfoFromRda(filepath)
     file_type <- info$file_type
     file_format <- info$file_format
     obj_type <- info$obj_type
@@ -331,7 +449,7 @@ SerializedRaw <- function(filepath)
         stop("Object in file was serialized in the ", file_format, " format, ",
              "which is not a binary\n  format. save() should be called with ",
              "'ascii=FALSE' (the default) in order to\n  produce a binary ",
-             "file that can be used to construct a SerializedRaw object.")
+             "file that can be used in a SerializedRaw object.")
     ## TODO: Remove this when seek() is fixed.
     if (file_type != "file")
         warning("The '", filepath, "' file is compressed (type: \"",
