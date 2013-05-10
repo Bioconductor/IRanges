@@ -322,3 +322,23 @@ setMethod("show", "FilterClosure", function(object) {
       ")\n", sep = "")
   print(body(object))
 })
+
+### ------------------------------------------------------------------------- 
+### FilterMatrix: coordinates results from multiple filters 
+###
+
+.valid.FilterMatrix <- function(object)
+{
+  c(if (!is.logical(object))
+      "values must be logical",
+    if (!identical(names(object@filters), colnames(object)))
+      "names(object@filters) must be identical to colnames(object)") 
+}
+
+setClass("FilterMatrix", representation(filters = "FilterRules"),
+         contains = "matrix",
+         validity = .valid.FilterMatrix)
+
+FilterMatrix <- function(matrix, filters) {
+  new("FilterMatrix", matrix, filters = filters)
+}

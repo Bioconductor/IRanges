@@ -41,7 +41,7 @@ exportClasses(
     DataFrame,
     DataFrameList, SimpleDataFrameList,
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
-    RangedData, RangedDataList, FilterRules, RDApplyParams,
+    RangedData, RangedDataList, FilterRules, FilterMatrix, RDApplyParams,
     Hits, HitsList,
     OverlapEncodings,
     RangedSelection, RangesMapping
