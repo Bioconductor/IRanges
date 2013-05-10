@@ -342,8 +342,6 @@ SEXP anyMissing(SEXP x);
 
 const char *_get_classname(SEXP x);
 
-SEXP address_asSTRSXP(SEXP s);
-
 SEXP sapply_NROW(SEXP x);
 
 

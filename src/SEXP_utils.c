@@ -6,20 +6,6 @@ const char *_get_classname(SEXP x)
 	return CHAR(STRING_ELT(GET_CLASS(x), 0));
 }
 
-/*
- * --- .Call ENTRY POINT ---
- * From R:
- *   .Call("address_asSTRSXP", 6:4, PACKAGE="IRanges")
- *   .Call("address_asSTRSXP", new("externalptr"), PACKAGE="IRanges")
- */
-SEXP address_asSTRSXP(SEXP s)
-{
-	char buf[40]; /* should be enough, even for 128-bit addresses */
-
-	snprintf(buf, sizeof(buf), "%p", s);
-	return mkString(buf);
-}
-
 static int get_NROW(SEXP x)
 {
 	SEXP x_dim, x_rownames;
