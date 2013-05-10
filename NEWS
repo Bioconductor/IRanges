@@ -503,4 +503,3 @@ BUG FIXES
 
    o Fix some long-standing issues with the XIntegerViews code (better
      handling of "out of limits" or empty views, overflows, NAs).
-
