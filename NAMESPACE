@@ -240,7 +240,7 @@ export(
     H2LGrouping, Dups, PartitioningByEnd, PartitioningByWidth,
     RangedData, RangedDataList,
     RangedSelection,
-    FilterRules, RDApplyParams,
+    FilterRules, FilterMatrix, RDApplyParams,
     RangesList,
     IRangesList,
     RleViewsList,
