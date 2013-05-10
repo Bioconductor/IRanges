@@ -159,8 +159,6 @@ setMethod("narrow", "MaskCollection",
     }
 )
 
-setMethod("narrow", "XVectorList", narrowXVectorList)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### flank()
@@ -567,18 +565,6 @@ setMethod("threebands", "IRanges",
         right@start <- end(middle) + 1L
         right@width <- end(x) - end(middle)
         list(left=left, middle=middle, right=right)
-    }
-)
-
-setMethod("threebands", "XVectorList",
-    function(x, start=NA, end=NA, width=NA)
-    {
-        threeranges <- threebands(x@ranges, start=start, end=end, width=width)
-        left <- right <- x
-        left@ranges <- threeranges$left
-        x@ranges <- threeranges$middle
-        right@ranges <- threeranges$right
-        list(left=left, middle=x, right=right)
     }
 )
 

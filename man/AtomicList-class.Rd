@@ -274,6 +274,7 @@
 
 \alias{show,AtomicList-method}
 \alias{show,RleList-method}
+\alias{showAsCell,AtomicList-method}
 
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}

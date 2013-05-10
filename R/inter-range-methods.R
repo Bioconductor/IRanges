@@ -40,7 +40,7 @@ setMethod("range", "RangesList",
     ## same shape as 'x'.
     x_start <- start(x)
     x_end <- end(x)
-    ## 'sv' and 'ev' are XIntegerViews objects.
+    ## 'sv' and 'ev' are XIntegerViews objects (see XVector package).
     sv <- Views(x_start@unlistData, x_start@partitioning)
     ev <- Views(x_end@unlistData, x_end@partitioning)
     is_not_empty_view <- width(sv) != 0L  # same as 'width(ev) != 0L'

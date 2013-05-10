@@ -86,6 +86,7 @@
 \alias{seqselect<-,Rle-method}
 \alias{shiftApply,Rle,Rle-method}
 \alias{show,Rle-method}
+\alias{showAsCell,Rle-method}
 \alias{order,Rle-method}
 \alias{sort,Rle-method}
 \alias{splitRanges}

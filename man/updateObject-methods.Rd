@@ -24,16 +24,14 @@
 \alias{updateObject,SplitXDataFrameList-method}
 \alias{updateObject,XDataFrame-method}
 \alias{updateObject,XDataFrameList-method}
-\alias{updateObject,XVector-method}
-\alias{updateObject,XIntegerViews-method}
 
-\title{Update an object of a class defined in IRanges to its current
-       class definition}
+\title{Update an object of a class defined in the IRanges package to its
+       current class definition}
 
 \description{
   The IRanges package provides an extensive collection of
   \code{\link[BiocGenerics]{updateObject}} methods for updating
-  almost any instance of a class defined in this package.
+  almost any instance of a class defined in the package.
 }
 \usage{
 ## Showing usage of method defined for IntegerList objects only (usage

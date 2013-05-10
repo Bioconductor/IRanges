@@ -44,9 +44,10 @@
   Its primary purpose is to introduce concepts and provide some facilities
   that can be shared by the concrete classes that derive from it.
 
-  Some direct subclasses of the Views class are: \link{XIntegerViews},
-  \link{XDoubleViews}, \link{RleViews}, \link[Biostrings]{XStringViews}
-  (defined in the Biostrings package), etc...
+  Some direct subclasses of the Views class are: \link{RleViews},
+  \link[XVector]{XIntegerViews} (defined in the XVector package),
+  \link[Biostrings]{XStringViews} (defined in the Biostrings package),
+  etc...
 }
 
 \section{Constructor}{
@@ -148,41 +149,33 @@
   \link{IRanges-class},
   \link{Vector-class},
   \link{IRanges-utils},
-  \link{XVector}.
+  \link[XVector]{XVector}.
 
   Some direct subclasses of the Views class:
-  \link{XIntegerViews-class},
-  \link{XDoubleViews-class},
   \link{RleViews-class},
+  \link[XVector]{XIntegerViews-class},
+  \link[XVector]{XDoubleViews-class},
   \link[Biostrings]{XStringViews-class}.
 
   \code{\link{findOverlaps}}.
 }
 
 \examples{
-  showClass("Views")  # shows (some of) the known subclasses
+showClass("Views")  # shows (some of) the known subclasses
 
-  ## Create a set of 4 views on an XInteger subject of length 10:
-  subject <- XInteger(10, 3:-6)
-  v1 <- Views(subject, start=4:1, end=4:7)
+## Create a set of 4 views on an XInteger subject of length 10:
+subject <- Rle(3:-6)
+v1 <- Views(subject, start=4:1, end=4:7)
 
-  ## Extract the 2nd view:
-  v1[[2]]
+## Extract the 2nd view:
+v1[[2]]
 
-  ## Some views can be "out of limits"
-  v2 <- Views(subject, start=4:-1, end=6)
-  trim(v2)
-  subviews(v2, end=-2)
+## Some views can be "out of limits"
+v2 <- Views(subject, start=4:-1, end=6)
+trim(v2)
+subviews(v2, end=-2)
 
-  ## Views on a big XInteger subject:
-  subject <- XInteger(99999, sample(99, 99999, replace=TRUE) - 50)
-  v3 <- Views(subject, start=1:99*1000, end=1:99*1001)
-  v3
-  v3[-1]
-  v3[[5]]
-
-  ## 31 adjacent views:
-  successiveViews(subject, 40:10)
+## See ?`XIntegerViews-class` in the XVector package for more examples.
 }
 
 \keyword{methods}

@@ -300,7 +300,7 @@ gaps(x0)
 gaps(x0, start=-6, end=20)
 
 ## On a Views object:
-subject <- XInteger(10, 3:-6)
+subject <- Rle(1:-3, 6:2)
 v <- Views(subject, start=c(8, 3), end=c(14, 4))
 gaps(v)
 

@@ -25,6 +25,7 @@
 \alias{unlist,Ranges-method}
 \alias{[[,Ranges-method}
 \alias{show,Ranges-method}
+\alias{showAsCell,Ranges-method}
 \alias{[,Ranges-method}
 \alias{isNormal}
 \alias{isNormal,Ranges-method}

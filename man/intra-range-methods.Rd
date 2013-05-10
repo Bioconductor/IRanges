@@ -13,7 +13,6 @@
 \alias{narrow,RangesList-method}
 \alias{narrow,CompressedIRangesList-method}
 \alias{narrow,MaskCollection-method}
-\alias{narrow,XVectorList-method}
 \alias{flank}
 \alias{flank,Ranges-method}
 \alias{flank,RangesList-method}
@@ -35,14 +34,13 @@
 \alias{restrict,CompressedIRangesList-method}
 \alias{threebands}
 \alias{threebands,IRanges-method}
-\alias{threebands,XVectorList-method}
 \alias{Ops,Ranges,numeric-method}
 \alias{Ops,Ranges,ANY-method}
 \alias{Ops,CompressedIRangesList,ANY-method}
 \alias{Ops,RangesList,ANY-method}
 
 \title{Intra range transformations of a Ranges, Views, RangesList,
-       MaskCollection, or XVectorList object}
+       or MaskCollection object}
 
 \description{
   Except for \code{threebands()},
@@ -94,8 +92,8 @@ threebands(x, start=NA, end=NA, width=NA)
 
 \arguments{
   \item{x}{
-    A \link{Ranges}, \link{Views}, \link{RangesList}, \link{MaskCollection},
-    or \link{XVectorList} object.
+    A \link{Ranges}, \link{Views}, \link{RangesList}, or \link{MaskCollection}
+    object.
   }
   \item{shift}{
     An integer vector containing the shift information. Recycled as 
@@ -308,7 +306,10 @@ threebands(x, start=NA, end=NA, width=NA)
   \itemize{
     \item \link{inter-range-methods} for inter range transformations.
     \item The \link{Ranges}, \link{Views}, \link{RangesList},
-          \link{MaskCollection}, and \link{XVectorList} classes.
+          and \link{MaskCollection} classes.
+    \item The \link[XVector]{intra-range-methods} man page in the
+          XVector package for methods that operate on
+          \link[XVector]{XVectorList} objects.
     \item The \link[GenomicRanges]{intra-range-methods} man page in the
           GenomicRanges package for methods that operate on
           \link[GenomicRanges]{GenomicRanges} and other objects.

@@ -4,48 +4,38 @@
 \alias{reverse,character-method}
 \alias{reverse,IRanges-method}
 \alias{reverse,NormalIRanges-method}
-\alias{reverse,SharedRaw-method}
-\alias{reverse,SharedVector_Pool-method}
 \alias{reverse,Views-method}
 \alias{reverse,MaskCollection-method}
-\alias{reverse,XVector-method}
-\alias{rev,XVector-method}
-\alias{reverse,XVectorList-method}
 
 
 \title{reverse}
 
 \description{
-  A generic function with methods for reversing a character vector,
-  a \link{Views} object, an \link{XVector} object, an \link{XVectorList}
-  object, or a \link{MaskCollection} object.
+  A generic function for reversing vector-like or list-like objects.
+  This man page describes methods for reversing a character vector,
+  a \link{Views} object, or a \link{MaskCollection} object.
   Note that \code{reverse} is similar to but not the same as
   \code{\link[base]{rev}}.
 }
 
 \usage{
-reverse(x, \dots)
+reverse(x, ...)
 }
 
 \arguments{
   \item{x}{
-    A character vector, a \link{Views} object, an \link{XVector} object,
-    an \link{XVectorList} object, or a \link{MaskCollection} object.
+    A vector-like or list-like object.
   }
-  \item{\dots}{
+  \item{...}{
     Additional arguments to be passed to or from methods.
   }
 }
 
 \details{
-  On an \link{XVector} object, \code{reverse} and \code{\link[base]{rev}}
-  are equivalent, i.e. they both reverse the order of their elements.
-
-  On a character vector, a \link{Views} object, or an \link{XVectorList}
-  object, \code{reverse} reverses each element individually, without
-  modifying the top-level order of the elements.
-  In particular, on \link{XVectorList} object \code{x}, \code{reverse} is
-  equivalent to \code{endoapply(x, rev)}.
+  On a character vector or a \link{Views} object, \code{reverse} reverses
+  each element individually, without modifying the top-level order of the
+  elements. More precisely, each individual string of a character vector
+  is reversed.
 }
 
 \value{
@@ -53,9 +43,8 @@ reverse(x, \dots)
 }
 
 \seealso{
+  \link[XVector]{reverse-methods},
   \link{Views-class},
-  \link{XVector-class},
-  \link{XVectorList-class},
   \link{MaskCollection-class},
   \code{\link{endoapply}},
   \code{\link[base]{rev}}
@@ -64,19 +53,13 @@ reverse(x, \dots)
 \examples{
 ## On a character vector:
 reverse(c("Hi!", "How are you?"))
+rev(c("Hi!", "How are you?"))
 
 ## On a Views object:
-v <- successiveViews(as(12:-2, "XInteger"), 1:5)
+v <- successiveViews(Rle(c(-0.5, 12.3, 4.88), 4:2), 1:4)
 v
 reverse(v)
-
-## On an XVectorList object:
-\dontrun{
-  library(Biostrings)
-  library(drosophila2probe)
-  probes <- DNAStringSet(drosophila2probe)
-  reverse(probes)
-}
+rev(v)
 
 ## On a MaskCollection object:
 mask1 <- Mask(mask.width=29, start=c(11, 25, 28), width=c(5, 2, 2))

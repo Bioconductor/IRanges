@@ -72,7 +72,7 @@ setMethod("reverse", "NormalIRanges",
 setMethod("reverse", "Views",
     function(x, ...)
     {
-        x@subject <- reverse(subject(x))
+        x@subject <- rev(subject(x))
         x@ranges <- reverse(ranges(x), start=1L, end=length(subject(x)))
         x
     }
@@ -89,9 +89,4 @@ setMethod("reverse", "MaskCollection",
         x
     }
 )
-
-setMethod("reverse", "XVector", function(x, ...) xvcopy(x, reverse=TRUE))
-setMethod("rev", "XVector", function(x) reverse(x))
-
-setMethod("reverse", "XVectorList", function(x, ...) xvcopy(x, reverse=TRUE))
 

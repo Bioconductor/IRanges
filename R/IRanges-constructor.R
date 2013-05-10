@@ -89,8 +89,9 @@ IRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL)
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The SEW interface: start=NA/end=NA/width=NA
 ###
-### Some of the functions that support the SEW interface: narrow(), subseq(),
-### xvcopy(), Biostrings::BStringSet() (and family), BSgenome::getSeq(), etc...
+### Some of the functions that support the SEW interface: narrow(),
+### XVector::subseq(), XVector::xvcopy(), Biostrings::BStringSet() (and
+### family), BSgenome::getSeq(), etc...
 ###
 
 .normargSEW <- function(x, argname)

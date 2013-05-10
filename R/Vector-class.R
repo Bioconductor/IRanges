@@ -25,7 +25,7 @@ setClass("Vector",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Internal utility (not exported).
+### Internal utility.
 ###
 
 setGeneric("showAsCell",  # not exported

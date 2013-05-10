@@ -120,7 +120,8 @@
 
 \examples{
   x <- IRanges(c(1, 5, -2, 0, 14), c(10, 9, 3, 11, 17))
-  y <- Views(as(4:-17, "XInteger"), start=c(14, 0, -5, 6, 18), end=c(20, 2, 2, 8, 20))
+  subject <- Rle(1:-3, 6:2)
+  y <- Views(subject, start=c(14, 0, -5, 6, 18), end=c(20, 2, 2, 8, 20))
 
   ## Vector-wise operations:
   union(x, ranges(y))

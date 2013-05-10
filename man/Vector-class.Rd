@@ -6,6 +6,11 @@
 \alias{Vector-class}
 \alias{Vector}
 
+\alias{showAsCell}
+\alias{showAsCell,ANY-method}
+\alias{showAsCell,list-method}
+\alias{showAsCell,Vector-method}
+
 \alias{NROW,Vector-method}
 \alias{elementMetadata}
 \alias{elementMetadata,Vector-method}
@@ -401,15 +406,15 @@
 \author{P. Aboyoun}
 
 \seealso{
-  \linkS4class{Rle} and \linkS4class{XRaw} for example implementations.
+  \link{Rle} and \link[XVector]{XRaw} for example implementations.
 
-  \linkS4class{List} for a direct extension that serves a similar role
+  \link{List} for a direct extension that serves a similar role
   as \link[base]{list} in base R.
 
-  \linkS4class{DataTable} which is the type of objects returned by the
+  \link{DataTable} which is the type of objects returned by the
   \code{mcols} accessor.
 
-  \linkS4class{Annotated} which Vector extends.
+  \link{Annotated} which Vector extends.
 }
 
 \examples{

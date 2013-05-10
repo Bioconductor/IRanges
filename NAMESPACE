@@ -21,13 +21,7 @@ exportClasses(
     IntervalTree,
     Grouping, H2LGrouping, Dups,
     Partitioning, PartitioningByEnd, PartitioningByWidth,
-    SharedVector, SharedVector_Pool,
-    SharedRaw, SharedRaw_Pool,
-    SharedInteger, SharedDouble,
     Views,
-    XVector, XRaw, XInteger, XDouble,
-    GroupedIRanges, XVectorList, XRawList,
-    XIntegerViews,
     Rle, RleViews,
     MaskCollection,
     AtomicList, CompressedAtomicList, SimpleAtomicList,
@@ -71,7 +65,6 @@ S3method(duplicated, DataTable)
 S3method(duplicated, Rle)
 S3method(duplicated, AtomicList)
 S3method(duplicated, CompressedAtomicList)
-S3method(duplicated, XRawList)
 
 S3method(levels, Rle)
 S3method(levels, OverlapEncodings)
@@ -95,9 +88,6 @@ S3method(window, DataTable)
 S3method(window, IRanges)
 S3method(window, Rle)
 S3method(window, GappedRanges)
-S3method(window, XVector)
-S3method(window, GroupedIRanges)
-S3method(window, XVectorList)
 
 S3method(`window<-`, Vector)
 S3method(`window<-`, vector)
@@ -122,7 +112,6 @@ export(
     duplicated.Rle,
     duplicated.AtomicList,
     duplicated.CompressedAtomicList,
-    duplicated.XRawList,
 
     levels.Rle,
     levels.OverlapEncodings,
@@ -146,9 +135,6 @@ export(
     window.IRanges,
     window.Rle,
     window.GappedRanges,
-    window.XVector,
-    window.GroupedIRanges,
-    window.XVectorList,
 
     "window<-.Vector",
     "window<-.vector",
@@ -179,7 +165,6 @@ exportMethods(
     as.data.frame,
     as.list,
     as.table,
-    toString,
     coerce,
     c,
     show,
@@ -271,17 +256,6 @@ export(
     read.rmMask,
     read.trfMask,
     ##read.chain,
-    SharedVector.compare,
-    SharedVector.copy,
-    SharedRaw,
-    SharedRaw.readInts, SharedRaw.writeInts,
-    SharedRaw.read, SharedRaw.write,
-    SharedRaw.readComplexes,
-    #SharedInteger, SharedInteger.read, SharedInteger.write,
-    #SharedDouble, SharedDouble.read, SharedDouble.write,
-    XRaw, XInteger, XDouble, XNumeric,
-    XVectorList,
-    unlist_list_of_XVectorList, unsplit_list_of_XVectorList,
     newViews, successiveViews,
     SimpleList, DataFrame,
     LogicalList, IntegerList, NumericList, ComplexList,
@@ -308,6 +282,7 @@ export(
     metadata, "metadata<-",
 
     ## Vector-class.R:
+    showAsCell,
     elementMetadata, "elementMetadata<-",
     mcols, "mcols<-",
     values, "values<-",
@@ -403,9 +378,6 @@ export(
     Loffset, Roffset, encoding, flippedQuery,
     Lencoding, Rencoding, Lngap, Rngap,
 
-    ## XVector-class.R:
-    subseq, "subseq<-",
-
     ## intra-range-methods.R:
     shift, narrow, flank, reflect, resize, promoters, restrict, threebands,
 
@@ -423,9 +395,6 @@ export(
 
     ## encodeOverlaps-methods.R:
     encodeOverlaps,
-
-    ## compact-methods.R:
-    xvcopy, compact,
 
     ## reverse-methods.R:
     reverse,
@@ -446,6 +415,7 @@ exportMethods(
     endoapply, mendoapply,
     runsum, runmean, runwtsum, runq,
     metadata, "metadata<-",
+    showAsCell,
     elementMetadata, "elementMetadata<-",
     mcols, "mcols<-",
     values, "values<-",
@@ -504,14 +474,12 @@ exportMethods(
     map, pmap,
     Loffset, Roffset, encoding, flippedQuery,
     Lencoding, Rencoding, Lngap, Rngap,
-    subseq, "subseq<-",
     shift, narrow, flank, reflect, resize, promoters, restrict, threebands,
     reduce, gaps, disjoin, isDisjoint, disjointBins,
     punion, pintersect, psetdiff, pgap,
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
     precede, follow, nearest, distance, distanceToNearest,
     encodeOverlaps,
-    xvcopy, compact,
     reverse,
     coverage,
     expand,

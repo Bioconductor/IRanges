@@ -71,12 +71,9 @@ virtual class.
 \subsection{Atomic Vectors}
 
 In \R{}, atomic sequences are typically stored in atomic vectors. The
-\IRanges{} package includes two additional atomic sequence object types:
+\IRanges{} package includes an additional atomic sequence object type,
 \Rclass{Rle}, which compresses an atomic sequence through run-length
-encoding, and \Rclass{XVector}, which refers to its data through an
-external pointer. \Rclass{XVector} and its derivatives are considered
-low-level infrastructure and, as such, will not be covered by this
-vignette.
+encoding.
 
 We begin our discussion of atomic sequences using two \R{} 
 \Rclass{integer} vectors.

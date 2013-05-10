@@ -53,6 +53,7 @@
 
 % show
 \alias{show,RangesList-method}
+\alias{showAsCell,RangesList-method}
 
 \title{List of Ranges}
 \description{An extension of \linkS4class{List} that holds only
