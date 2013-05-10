@@ -808,7 +808,7 @@ setMethod("subset", "Vector",
               nl <- as.list(seq_len(ncol(mcols(x))))
               names(nl) <- colnames(mcols(x))
               j <- eval(substitute(select), nl, parent.frame(2))
-              mcols(x) <- mcols(x)[,j]
+              mcols(x) <- mcols(x)[,j,drop=FALSE]
             }
             x[i, drop = drop]
           })
