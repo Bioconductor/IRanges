@@ -41,7 +41,7 @@
 \seealso{
   \link{Views-class},
   \link{Rle-class},
-  \link{Views-utils}
+  \link{view-summarization-methods}
 }
 
 \examples{

@@ -879,7 +879,7 @@ setMethod("unique", "Rle", unique.Rle)
 window.Rle <- function(x, start=NA, end=NA, width=NA,
                           frequency=NULL, delta=NULL, ...)
 {
-    solved_SEW <- solveWindowSEW(length(x), start, end, width)
+    solved_SEW <- solveUserSEWForSingleSeq(length(x), start, end, width)
     if (is.null(frequency) && is.null(delta)) {
         info <- getStartEndRunAndOffset(x, start(solved_SEW), end(solved_SEW))
         runStart <- info[["start"]][["run"]]

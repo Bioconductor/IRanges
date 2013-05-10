@@ -425,25 +425,11 @@ setReplaceMethod("[", "Vector",
                      x
                  })
 
-### Returns an IRanges instance of length 1.
-### Not exported.
-solveWindowSEW <- function(seq_length, start, end, width)
-{
-    solved_SEW <-
-      try(solveUserSEW(seq_length, start=start, end=end, width=width),
-          silent = TRUE)
-    if (inherits(solved_SEW, "try-error"))
-        stop("Invalid sequence coordinates.\n",
-             "  Please make sure the supplied 'start', 'end' and 'width' arguments\n",
-             "  are defining a region that is within the limits of the sequence.")
-    solved_SEW
-}
-
 ### S3/S4 combo for window.Vector
 window.Vector <- function(x, start=NA, end=NA, width=NA,
                              frequency=NULL, delta=NULL, ...)
 {
-    solved_SEW <- solveWindowSEW(length(x), start, end, width)
+    solved_SEW <- solveUserSEWForSingleSeq(length(x), start, end, width)
     if (is.null(frequency) && is.null(delta)) {
         x[as.integer(solved_SEW)]
     } else {
@@ -472,7 +458,7 @@ setMethod("window", "NULL", window.NULL)
 window.vector <- function(x, start=NA, end=NA, width=NA,
                              frequency=NULL, delta=NULL, ...)
 {
-    solved_SEW <- solveWindowSEW(length(x), start, end, width)
+    solved_SEW <- solveUserSEWForSingleSeq(length(x), start, end, width)
     if (is.null(frequency) && is.null(delta)) {
         .Call2("vector_seqselect",
                x, start(solved_SEW), width(solved_SEW),
@@ -509,7 +495,7 @@ setMethod("window", "factor", window.factor)
 {
     if (!isTRUEorFALSE(keepLength))
         stop("'keepLength' must be TRUE or FALSE")
-    solved_SEW <- solveWindowSEW(length(x), start, end, width)
+    solved_SEW <- solveUserSEWForSingleSeq(length(x), start, end, width)
     if (!is.null(value)) {
         if (!is(value, class(x))) {
             value <- try(as(value, class(x)), silent = TRUE)

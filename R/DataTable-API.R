@@ -44,7 +44,7 @@ setReplaceMethod("dimnames", "DataTable",
 window.DataTable <- function(x, start=NA, end=NA, width=NA,
                                 frequency=NULL, delta=NULL, ...)
 {
-    solved_SEW <- solveWindowSEW(nrow(x), start, end, width)
+    solved_SEW <- solveUserSEWForSingleSeq(nrow(x), start, end, width)
     if (is.null(frequency) && is.null(delta)) {
         x[as.integer(solved_SEW), , drop=FALSE]
     } else {
@@ -65,7 +65,7 @@ setMethod("window", "DataTable", window.DataTable)
 {
     if (!isTRUEorFALSE(keepLength))
         stop("'keepLength' must be TRUE or FALSE")
-    solved_SEW <- solveWindowSEW(nrow(x), start, end, width)
+    solved_SEW <- solveUserSEWForSingleSeq(nrow(x), start, end, width)
     if (!is.null(value)) {
         if (!is(value, class(x))) {
             value <- try(as(value, class(x)), silent = TRUE)

@@ -144,7 +144,7 @@ setMethod("narrow", "CompressedIRangesList",
 setMethod("narrow", "MaskCollection",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
-        solved_SEW <- solveSubseqSEW(width(x), start, end, width)
+        solved_SEW <- solveUserSEWForSingleSeq(width(x), start, end, width)
         solved_start <- start(solved_SEW)
         solved_end <- end(solved_SEW)
         solved_width <- width(solved_SEW)

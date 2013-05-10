@@ -153,3 +153,16 @@ solveUserSEW <- function(refwidths, start=NA, end=NA, width=NA,
           PACKAGE="IRanges")
 }
 
+### Returns an IRanges instance of length 1. Not exported.
+solveUserSEWForSingleSeq <- function(x_length, start, end, width)
+{
+    solved_SEW <-
+      try(solveUserSEW(x_length, start=start, end=end, width=width),
+          silent = TRUE)
+    if (is(solved_SEW, "try-error"))
+        stop("Invalid sequence coordinates.\n",
+             "  Please make sure the supplied 'start', 'end' and 'width' arguments\n",
+             "  are defining a region that is within the limits of the sequence.")
+    solved_SEW
+}
+

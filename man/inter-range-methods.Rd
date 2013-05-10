@@ -224,12 +224,14 @@ x <- IRanges(start=c(-2, 6, 9, -4, 1, 0, -6, 3, 10),
              width=c( 5, 0, 6,  1, 4, 3,  2, 0,  3))
 range(x)
 
-## On a RangesList object:
+## On a RangesList object (XVector package required):
 range1 <- IRanges(start=c(1, 2, 3), end=c(5, 2, 8))
 range2 <- IRanges(start=c(15, 45, 20, 1), end=c(15, 100, 80, 5))
 range3 <- IRanges(start=c(-2, 6, 7), width=c(8, 0, 0))  # with empty ranges
 collection <- IRangesList(one=range1, range2, range3)
-range(collection)
+if (require(XVector)) {
+    range(collection)
+}
 
 irl1 <- IRangesList(a=IRanges(c(1,2),c(4,3)), b=IRanges(c(4,6),c(10,7)))
 irl2 <- IRangesList(c=IRanges(c(0,2),c(4,5)), a=IRanges(c(4,5),c(6,7)))

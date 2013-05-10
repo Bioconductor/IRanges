@@ -40,6 +40,10 @@ setMethod("range", "RangesList",
     ## same shape as 'x'.
     x_start <- start(x)
     x_end <- end(x)
+    ## TEMPORARY HACK!
+    if (!require(XVector, quietly=TRUE))
+        stop("the XVector package is required by the \"range\" method ",
+             "for CompressedIRangesList objects")
     ## 'sv' and 'ev' are XIntegerViews objects (see XVector package).
     sv <- Views(x_start@unlistData, x_start@partitioning)
     ev <- Views(x_end@unlistData, x_end@partitioning)

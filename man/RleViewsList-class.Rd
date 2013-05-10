@@ -24,7 +24,8 @@
 
 \details{
   For more information on methods available for RleViewsList objects consult
-  the man pages for \link{ViewsList-class} and \link{Views-utils}.
+  the man pages for \link{ViewsList-class} and
+  \link{view-summarization-methods}.
 }
 
 \section{Constructor}{
@@ -68,7 +69,7 @@
 
 \seealso{
   \link{ViewsList-class},
-  \link{Views-utils}
+  \link{view-summarization-methods}
 }
 
 \examples{
