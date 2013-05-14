@@ -327,9 +327,6 @@ export(
     findRange, findRun,
     splitRanges,
 
-    ## RleViews-class.R:
-    slice,
-
     ## DataFrameList-class.R:
     columnMetadata, "columnMetadata<-",
 
@@ -402,10 +399,13 @@ export(
     ## coverage-methods.R:
     coverage,
 
+    ## slice-methods.R:
+    slice,
+
     ## expand-methods.R:
     expand,
 
-    ## classNameForDisplay-methods.R
+    ## classNameForDisplay-methods.R:
     classNameForDisplay
 )
 
@@ -447,7 +447,6 @@ exportMethods(
     Rle,
     findRange, findRun,
     splitRanges,
-    slice,
     columnMetadata, "columnMetadata<-",
     universe, "universe<-", space,
     ngap,
@@ -482,6 +481,7 @@ exportMethods(
     encodeOverlaps,
     reverse,
     coverage,
+    slice,
     expand,
     classNameForDisplay
 )

@@ -16,7 +16,7 @@ setClass("RleViews",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### User-friendly constructors.
+### User-friendly constructor.
 ###
 
 setMethod("Views", "Rle",
@@ -26,49 +26,6 @@ setMethod("Views", "Rle",
                  Class="RleViews")
 )
 
-setGeneric("slice", signature="x",
-           function(x, lower=-Inf, upper=Inf, ...) standardGeneric("slice"))
-
-setMethod("slice", "Rle",
-          function(x, lower = -Inf, upper = Inf,
-                   includeLower = TRUE, includeUpper = TRUE,
-                   rangesOnly = FALSE)
-          {
-              if (!isSingleNumber(lower)) {
-                  stop("'lower' must be a single number")
-              }
-              if (!isSingleNumber(upper)) {
-                  stop("'upper' must be a single number")
-              }
-              if (!isTRUEorFALSE(includeLower)) {
-                  stop("'includeLower' must be TRUE or FALSE")
-              }
-              if (!isTRUEorFALSE(includeUpper)) {
-                  stop("'includeUpper' must be TRUE or FALSE")
-              }
-              if (!isTRUEorFALSE(rangesOnly)) {
-                  stop("'rangesOnly' must be TRUE or FALSE")
-              }
-              if (lower == -Inf) {
-                  ranges <- Rle(TRUE, length(x))
-              } else if (includeLower) {
-                  ranges <- (x >= lower)
-              } else {
-                  ranges <- (x > lower)
-              }
-              if (upper < Inf) {
-                  if (includeUpper) {
-                      ranges <- ranges & (x <= upper)
-                  } else {
-                      ranges <- ranges & (x < upper)
-                  }
-              }
-              if (rangesOnly) {
-                  as(ranges, "IRanges")
-              } else {
-                  Views(x, ranges)
-              }
-          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.

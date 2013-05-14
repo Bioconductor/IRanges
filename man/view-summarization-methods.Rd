@@ -1,9 +1,6 @@
 \name{view-summarization-methods}
-\alias{view-summarization-methods}
 
-\alias{slice}
-\alias{slice,Rle-method}
-\alias{slice,RleList-method}
+\alias{view-summarization-methods}
 
 \alias{viewApply}
 \alias{viewApply,Views-method}
@@ -46,20 +43,16 @@
 \title{Summarize views on a vector-like object with numeric values}
 
 \description{
-  The \code{slice} function creates a \link{Views} object that contains
-  the indices where the data are within the specified bounds.
+  \code{viewApply} applies a function on each view of a \link{Views} or
+  \link{ViewsList} object.
 
-  The \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewMeans}
-  functions calculate the minima, maxima, sums, and means on views respectively.
+  \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewMeans}
+  calculate the minima, maxima, sums, and means on the views of a
+  \link{Views} or \link{ViewsList} object, respectively.
 }
 
 \usage{
 viewApply(X, FUN, ..., simplify = TRUE)
-
-slice(x, lower=-Inf, upper=Inf, ...)
-\S4method{slice}{Rle}(x, lower=-Inf, upper=Inf,
-                      includeLower=TRUE, includeUpper=TRUE,
-                      rangesOnly = FALSE)
 
 viewMins(x, na.rm=FALSE)
 \S4method{min}{Views}(x, ..., na.rm = FALSE)
@@ -94,20 +87,7 @@ viewRangeMaxs(x, na.rm=FALSE)
     to a vector or matrix if possible.
   }
   \item{x}{
-    An \link{Rle} or \link{RleList} object for \code{slice}.
-
-    An \link{RleViews} or \link{RleViewsList} object for the \code{view*}
-    functions.
-  }
-  \item{lower, upper}{
-    The lower and upper bounds for the slice.
-  }
-  \item{includeLower, includeUpper}{
-    Logical indicating whether or not the specified boundary is open or closed.
-  }
-  \item{rangesOnly}{
-    A logical indicating whether or not to drop the original data from the
-    output.
+    An \link{RleViews} or \link{RleViewsList} object.
   }
   \item{na.rm}{
     Logical indicating whether or not to include missing values in the results.
@@ -115,9 +95,6 @@ viewRangeMaxs(x, na.rm=FALSE)
 }
 
 \details{
-  The \code{slice} function is useful for finding areas of absolute maxima
-  (peaks), absolute minima (troughs), or fluctuations within specified limits.
-
   The \code{viewMins}, \code{viewMaxs}, \code{viewSums}, and \code{viewMeans}
   functions provide efficient methods for calculating the specified numeric
   summary by performing the looping in compiled code.
@@ -128,14 +105,7 @@ viewRangeMaxs(x, na.rm=FALSE)
 }
 
 \value{
-  For \code{slice}: The method for \link{Rle} objects returns an
-  \link{RleViews} object if \code{rangesOnly=FALSE} or an \link{IRanges}
-  object if \code{rangesOnly=TRUE}.
-  The method for \link{RleList} objects returns an \link{RleViewsList}
-  object if \code{rangesOnly=FALSE} or an \link{IRangesList} object
-  if \code{rangesOnly=TRUE}.
-
-  For all the \code{view*} functions (except \code{viewRangeMins} and
+  For all the functions in this man page (except \code{viewRangeMins} and
   \code{viewRangeMaxs}): A numeric vector of the length of \code{x}
   if \code{x} is an \link{RleViews} object, or a \link{List} object of
   the length of \code{x} if it's an \link{RleViewsList} object.
@@ -155,9 +125,17 @@ viewRangeMaxs(x, na.rm=FALSE)
 \author{P. Aboyoun}
 
 \seealso{
-  \link[XVector]{view-summarization-methods},
-  \link{Rle-class}, \link{RleViews-class}, \link{RleViewsList-class},
-  \code{\link{which.min}}, \code{\link{colSums}}
+  \itemize{
+    \item The \code{\link{slice}} function for slicing an \link{Rle} or
+          \link{RleList} object.
+
+    \item \link[XVector]{view-summarization-methods} in the XVector package
+          for more view summarization methods.
+
+    \item The \link{RleViews} and \link{RleViewsList} classes.
+
+    \item The \code{\link{which.min}} and \code{\link{colSums}} functions.
+  }
 }
 
 \examples{
@@ -166,7 +144,6 @@ x <- IRanges(start=c(1L, 9L, 4L, 1L, 5L, 10L),
              width=c(5L, 6L, 3L, 4L, 3L,  3L))
 cvg <- coverage(x)
 cvg_views <- slice(cvg, lower=2)
-slice(cvg, lower=2, rangesOnly=TRUE)
 
 viewApply(cvg_views, diff)
 

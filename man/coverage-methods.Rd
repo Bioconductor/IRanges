@@ -17,7 +17,8 @@
 }
 
 \usage{
-coverage(x, shift=0L, width=NULL, weight=1L, \dots)
+coverage(x, shift=0L, width=NULL, weight=1L, ...)
+
 \S4method{coverage}{RangesList}(x, shift=0L, width=NULL, weight=1L,
        method = c("auto", "sort", "hash"))
 }
@@ -92,7 +93,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, \dots)
     Using \code{method="auto"} selects the best method based on
     \code{length(x)} and \code{width}.
   }
-  \item{\dots}{
+  \item{...}{
     Further arguments to be passed to or from other methods.
   }
 }
@@ -108,10 +109,17 @@ coverage(x, shift=0L, width=NULL, weight=1L, \dots)
 \author{H. Pages and P. Aboyoun}
 
 \seealso{
-  \link{IRanges-class},
-  \link{Views-class},
-  \link{Rle-class},
-  \link{MaskCollection-class}
+  \itemize{
+    \item \link[GenomicRanges]{coverage-methods} in the GenomicRanges package
+          for more \code{coverage} methods.
+
+    \item The \code{\link{slice}} function for slicing the \link{Rle} or
+          \link{RleList} object returned by \code{coverage}.
+
+    \item The \link{IRanges}, \link{Rle}, and \link{RleList} classes.
+
+    \item The \link{MaskCollection} class.
+  }
 }
 
 \examples{
