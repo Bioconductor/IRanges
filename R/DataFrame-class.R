@@ -581,11 +581,14 @@ setAs("xtabs", "DataFrame",
         as(from, "DataFrame")
       })
 
-setAs("ANY", "DataFrame",
-      function(from) {
-        new2("DataFrame", listData = setNames(list(from), "X"),
-             nrows = length(from), rownames = names(from), check=FALSE)
-      })
+.defaultAsDataFrame <- function(from) {
+  new2("DataFrame", listData = setNames(list(from), "X"),
+       nrows = length(from), rownames = names(from), check=FALSE)
+}
+
+setAs("ANY", "DataFrame", .defaultAsDataFrame)
+## overriding the default inheritance-based coercion from methods package
+setAs("SimpleList", "DataFrame", .defaultAsDataFrame)
 
 ## note that any element named 'row.names' will be interpreted differently
 ## is this a bug or a feature?
