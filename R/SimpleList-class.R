@@ -13,9 +13,6 @@ setClass("SimpleList",
 ### Accessor methods.
 ###
 
-### A SimpleList object is considered empty iff all its elements are empty.
-setMethod("isEmpty", "SimpleList", function(x) all(elementLengths(x) == 0L))
-
 setMethod("length", "SimpleList", function(x) length(as.list(x)))
 
 setMethod("names", "SimpleList", function(x) names(as.list(x)))

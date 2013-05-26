@@ -20,6 +20,9 @@ setClass("List",
 ### Accessor methods.
 ###
 
+### A List object is considered empty iff all its elements are empty.
+setMethod("isEmpty", "List", function(x) all(elementLengths(x) == 0L))
+
 setGeneric("elementType", function(x, ...) standardGeneric("elementType"))
 setMethod("elementType", "List", function(x) x@elementType)
 setMethod("elementType", "vector", function(x) mode(x))
