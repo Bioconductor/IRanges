@@ -349,6 +349,20 @@ compare(x0, y0) > 0   # equivalent to 'x0 > y0'
 
 rangeComparisonCodeToLetter(-10:10)
 rangeComparisonCodeToLetter(compare(x0, y0))
+
+## Handling of zero-width ranges (a.k.a. empty ranges):
+x <- IRanges(11:17, width=0)
+x
+compare(x, x[4])
+compare(x, IRanges(12, 15))
+
+## Note that x[2] and x[6] are empty ranges on the edge of non-empty
+## range IRanges(12, 15). Even though -1 and 3 could also be considered
+## valid codes for describing these configurations, compare()
+## considers x[2] and x[6] to be *adjacent* to IRanges(12, 15), and
+## thus returns codes -5 and 5:
+compare(x[2], IRanges(12, 15))  # -5
+compare(x[6], IRanges(12, 15))  #  5
 }
 
 \keyword{methods}

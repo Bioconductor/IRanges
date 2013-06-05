@@ -420,12 +420,15 @@ setGeneric("isDisjoint", function(x, ...) standardGeneric("isDisjoint"))
 setMethod("isDisjoint", "Ranges",
     function(x)
     {
-        x <- x[width(x) > 0L]
-        if (length(x) < 2L)
+        x_len <- length(x)
+        if (x_len < 2L)
             return(TRUE)
-        starts <- start(x)
-        startord <- orderInteger(starts)
-        all(starts[startord][-1L] - end(x)[startord][-length(x)] >= 1L)
+        x_start <- start(x)
+        x_end <- end(x)
+        oo <- order(x)
+        start2 <- x_start[oo]
+        end2 <- x_end[oo]
+        all(start2[-1L] > end2[-x_len])
     }
 )
 
