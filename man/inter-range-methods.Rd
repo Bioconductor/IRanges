@@ -186,22 +186,14 @@ disjointBins(x, ...)
   it's contained in B without being on the edge of B (in which case it would
   be ambiguous whether A is contained in or adjacent to B). In other words,
   single empty range A is considered to overlap with single range B iff
-  \preformatted{
-  start(B) < start(A) and end(A) < end(B)
-  }
+  \preformatted{    start(B) < start(A) and end(A) < end(B)}
   Because A is an empty range it verifies \code{end(A) = start(A) - 1}
   so the above is equivalent to:
-  \preformatted{
-  start(B) < start(A) <= end(B)
-  }
+  \preformatted{    start(B) < start(A) <= end(B)}
   and also equivalent to:
-  \preformatted{
-  start(B) <= end(A) < end(B)
-  }
-  Finally, this is also equivalent to:
-  \preformatted{
-  compare(A, B) == 2
-  }
+  \preformatted{    start(B) <= end(A) < end(B)}
+  Finally, it is also equivalent to:
+  \preformatted{    compare(A, B) == 2}
   See \code{?\link{compare}} for the meaning of the codes returned by the
   \code{\link{compare}} function.
 
