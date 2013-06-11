@@ -532,6 +532,15 @@ fancy_mseq <- function(lengths, offset=0L, rev=FALSE)
     .Call2("Integer_fancy_mseq", lengths, offset, rev, PACKAGE="IRanges")
 }
 
+make_XYZxyz_to_XxYyZz_subscript <- function(N)
+{
+    idx2 <- seq_len(N) * 2L
+    idx1 <- idx2 - 1L
+    ans <- integer(N * 2L)
+    ans[c(idx1, idx2)] <- seq_along(ans)
+    ans
+}
+
 findIntervalAndStartFromWidth <- function(x, width)
     .Call2("findIntervalAndStartFromWidth", x, width, PACKAGE="IRanges")
 
