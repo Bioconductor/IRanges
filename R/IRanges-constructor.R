@@ -120,33 +120,56 @@ solveUserSEW <- function(refwidths, start=NA, end=NA, width=NA,
         stop("'refwidths' must be a vector of integers")
     if (!is.integer(refwidths))
         refwidths <- as.integer(refwidths)
-    if (!isTRUEorFALSE(rep.refwidths))
-        stop("'rep.refwidths' must be TRUE or FALSE")
-    if (rep.refwidths && length(refwidths) != 1L)
-        stop("use 'rep.refwidths=TRUE' only when 'refwidths' is of length 1")
+
     start <- .normargSEW(start, "start")
     end <- .normargSEW(end, "end")
     width <- .normargSEW(width, "width")
     ## From here, 'refwidths', 'start', 'end' and 'width' are guaranteed to be
     ## integer vectors. NAs in 'start', 'end' and 'width' are OK but not in
-    ## 'refwidths' so this needs to be checked by C function solve_user_SEW().
-    Lsew <- c(length(start), length(end), length(width))
-    maxLsew <- max(Lsew)
-    if (min(Lsew) == 0L && maxLsew != 0L)
-        stop("'start', 'end' and 'width' cannot be a mix of zero-length ",
-             "and non zero-length vectors")
-    if (rep.refwidths) {
-        refwidths <- rep.int(refwidths, maxLsew)
-    } else {
-        if (maxLsew > length(refwidths) && maxLsew > 1L)
-            stop("'start', 'end' or 'width' is longer than 'refwidths'")
-        if (length(refwidths) != 0L && maxLsew == 0L)
-            stop("cannot recycle empty 'start', 'end' and 'width'")
-    }
+    ## 'refwidths' so this should be checked at the C level.
+
+    if (!isTRUEorFALSE(rep.refwidths))
+        stop("'rep.refwidths' must be TRUE or FALSE")
+
     if (!isTRUEorFALSE(translate.negative.coord))
         stop("'translate.negative.coord' must be TRUE or FALSE")
     if (!isTRUEorFALSE(allow.nonnarrowing))
         stop("'allow.nonnarrowing' must be TRUE or FALSE")
+
+    Lsew <- c(length(start), length(end), length(width))
+    maxLsew <- max(Lsew)
+    minLsew <- min(Lsew)
+    if (minLsew == 0L && maxLsew > 1L)
+        stop("'start', 'end' and 'width' cannot mix zero-length ",
+             "and longer-than-one vectors")
+
+    ## Check 'start', 'end', and 'width' *without* recycling them. Recycling
+    ## is done at the C level.
+    if (rep.refwidths) {
+        if (length(refwidths) != 1L)
+            stop("'rep.refwidths=TRUE' can be used only when 'refwidths' ",
+                 "is of length 1")
+        ## 'ans_len' is the length of the longest of 'start', 'end'
+        ## and 'width'.
+        if (minLsew == 0L) {
+            ans_len <- 0L
+        } else {
+            ans_len <- maxLsew
+        }
+        refwidths <- rep.int(refwidths, ans_len)
+    } else {
+        ans_len <- length(refwidths)
+        if (ans_len == 0L) {
+            if (maxLsew > 1L)
+                stop("'start', 'end' or 'width' is longer than 'refwidths'")
+        } else {
+            if (minLsew == 0L)
+                stop("cannot recycle empty 'start', 'end' or 'width'")
+            if (maxLsew > ans_len)
+                stop("'start', 'end' or 'width' is longer than 'refwidths'")
+        }
+    }
+
     .Call2("solve_user_SEW",
           refwidths, start, end, width,
           translate.negative.coord, allow.nonnarrowing,
