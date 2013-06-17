@@ -381,11 +381,17 @@ setMethod("as.env", "DataTable",
 setMethod("show", "DataTable",
           function(object)
           {
-              nhalf <- 5L
-              if (is.null(nhead <- getOption("showHeadLines")))
-                  nhead <- nhalf 
-              if (is.null(ntail <- getOption("showTailLines")))
-                  ntail <- nhalf 
+              default <- 5L
+              nhead <- getOption("showHeadLines", default=default)
+              if (!is.infinite(nhead))
+                  nhead <- as.integer(nhead)
+              if (is.na(nhead))
+                  nhead <- default 
+              ntail <- getOption("showTailLines", default=default)
+              if (!is.infinite(ntail))
+                  ntail <- as.integer(ntail)
+              if (is.na(ntail))
+                  ntail <- default 
 
               nr <- nrow(object)
               nc <- ncol(object)
@@ -395,7 +401,7 @@ setMethod("show", "DataTable",
                   sep = "")
               if (nr > 0 && nc > 0) {
                   nms <- rownames(object)
-                  if (nr < (nhalf*2+1L) | (nr < (nhead+ntail+1L))) {
+                  if (nr < (nhead + ntail + 1L)) {
                       out <-
                         as.matrix(format(as.data.frame(
                                          lapply(object, showAsCell),
