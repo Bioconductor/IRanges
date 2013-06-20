@@ -26,27 +26,31 @@ solveUserSEW0 <- function(start=NULL, end=NULL, width=NULL)
     start <- .normargSEW0(start, "start")
     end <- .normargSEW0(end, "end")
     width <- .normargSEW0(width, "width")
-    l1 <- length(start)
-    l2 <- length(end)
-    l3 <- length(width)
-    max123 <- max(l1, l2, l3)
-    if (max123 == 0L)
+    L1 <- length(start)
+    L2 <- length(end)
+    L3 <- length(width)
+    L123 <- c(L1, L2, L3)
+    max123 <- max(L123)
+    ## We want IRanges(start=integer(0), width=5) and
+    ## IRanges(end=integer(0), width=5) to work and return an empty IRanges
+    ## object.
+    if (max123 == 0L || L1 == 0L && L2 == 0L && L3 == 1L)
         return(new("IRanges"))
     ## Recycle start/end/width.
-    if (l1 < max123) {
-        if (l1 == 0L)
+    if (L1 < max123) {
+        if (L1 == 0L)
             start <- rep.int(NA_integer_, max123)
         else
             start <- recycleVector(start, max123)
     }
-    if (l2 < max123) {
-        if (l2 == 0L)
+    if (L2 < max123) {
+        if (L2 == 0L)
             end <- rep.int(NA_integer_, max123)
         else
             end <- recycleVector(end, max123)
     }
-    if (l3 < max123) {
-        if (l3 == 0L)
+    if (L3 < max123) {
+        if (L3 == 0L)
             width <- rep.int(NA_integer_, max123)
         else
             width <- recycleVector(width, max123)
