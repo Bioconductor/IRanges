@@ -46,6 +46,9 @@
 \alias{unique,DataTable-method}
 
 \alias{show,DataTable-method}
+\alias{get_showHeadLines}
+\alias{get_showTailLines}
+
 
 \title{The DataTable API}
 

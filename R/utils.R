@@ -217,3 +217,27 @@ selectSome <- function (obj, maxToShow = 5)
     }
 }
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### showHeadLines and showTailLines robust to NA, Inf and non-integer 
+###
+
+get_showHeadLines <- function()
+{
+    .get_showLines(5L, "showHeadLines") 
+}
+
+get_showTailLines <- function()
+{
+    .get_showLines(5L, "showTailLines") 
+}
+
+.get_showLines <- function(default, option)
+{
+    opt <- getOption(option, default=default)
+    if (!is.infinite(opt))
+        opt <- as.integer(opt)
+    if (is.na(opt))
+        opt <- default
+    opt 
+}
+

@@ -260,7 +260,8 @@ export(
     SimpleList, DataFrame,
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList,
-    DataFrameList, SplitDataFrameList
+    DataFrameList, SplitDataFrameList,
+    get_showHeadLines, get_showTailLines
 )
 
 

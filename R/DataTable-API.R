@@ -381,18 +381,8 @@ setMethod("as.env", "DataTable",
 setMethod("show", "DataTable",
           function(object)
           {
-              default <- 5L
-              nhead <- getOption("showHeadLines", default=default)
-              if (!is.infinite(nhead))
-                  nhead <- as.integer(nhead)
-              if (is.na(nhead))
-                  nhead <- default 
-              ntail <- getOption("showTailLines", default=default)
-              if (!is.infinite(ntail))
-                  ntail <- as.integer(ntail)
-              if (is.na(ntail))
-                  ntail <- default 
-
+              nhead <- get_showHeadLines()
+              ntail <- get_showTailLines()
               nr <- nrow(object)
               nc <- ncol(object)
               cat(class(object), " with ",
