@@ -244,7 +244,7 @@ setMethod("drop", "AtomicList", function(x) {
 })
 
 CoercerToAtomicList <- function(type, compress) {
-  .coerceToList <- if (compress) coerceToList else coerceToSimpleList
+  .coerceToList <- if (compress) coerceToCompressedList else coerceToSimpleList
   function(from) {
     .coerceToList(from, type)
   }

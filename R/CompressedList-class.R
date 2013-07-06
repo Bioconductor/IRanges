@@ -593,3 +593,24 @@ setMethod("unlist", "CompressedList",
     }
 )
 
+coerceToCompressedList <- function(from, element.type = NULL, ...) {
+  if (is(from, listClassName("Compressed", element.type)))
+    return(from)
+  if (is.list(from) || is(from, "List")) {
+    if (is.list(from)) {
+      v <- compress_listData(from)
+    } else {
+      v <- unlist(from, use.names = FALSE)
+    }
+    part <- PartitioningByEnd(from)
+  } else {
+    v <- from
+    part <- PartitioningByEnd(seq_len(length(from)))
+  }
+  if (!is.null(element.type)) {
+    v <- coercerToClass(element.type)(v, ...)
+  }
+  to <- relist(v, part)
+  names(to) <- names(from)
+  to
+}

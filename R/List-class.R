@@ -318,6 +318,33 @@ setMethod("replaceElements", c("List", "List"), function(x, i, value) {
   }, x, i, value)
 })
 
+## low-level 'list' methods
+
+setMethod("extractElements", c("list", "RangesList"),
+          function(x, i) {
+            indices <- seq_len(length(x))
+            names(indices) <- names(x)
+            lapply(indices, function(j) subsetByRanges(l[[j]], i[[j]]))
+          })
+
+setMethod("extractElements", c("list", "AtomicList"),
+          function(x, i) {
+            indices <- seq_len(length(x))
+            names(indices) <- names(x)
+            lapply(indices, function(j) extractROWS(l[[j]], i[[j]]))
+          })
+
+setMethod("replaceElements", c("list", "List"),
+          function(x, i, value) {
+            indices <- seq_len(length(x))
+            names(indices) <- names(x)
+            lapply(indices, function(j) {
+              y <- l[[j]]
+              seqselect(y, i[[j]]) <- value[[j]]
+              y
+            })
+          })
+
 setMethod("[", "List",
           function(x, i, j, ..., drop)
           {
@@ -735,23 +762,7 @@ listClassName <- function(impl, element.type) {
 coerceToList <- function(from, element.type = NULL, ...) {
   if (is(from, listClassName(NULL, element.type)))
     return(from)
-  if (is.list(from) || is(from, "List")) {
-    if (is.list(from)) {
-      v <- compress_listData(from)
-    } else {
-      v <- unlist(from, use.names = FALSE)
-    }
-    part <- PartitioningByEnd(from)
-  } else {
-    v <- from
-    part <- PartitioningByEnd(seq_len(length(from)))
-  }
-  if (!is.null(element.type)) {
-    v <- coercerToClass(element.type)(v, ...)
-  }
-  to <- relist(v, part)
-  names(to) <- names(from)
-  to
+  coerceToCompressedList(from, element.type, ...)
 }
 
 setAs("ANY", "List", function(from) {
