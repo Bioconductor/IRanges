@@ -41,6 +41,8 @@ setMethod("showAsCell", "ANY", function(object) {
     if (ncol(object) > 3)
       attempt <- paste(attempt, "...")
     attempt
+  } else if (NCOL(object) == 0L) {
+    rep.int("", NROW(object))
   } else {
     attempt <- try(as.vector(object), silent=TRUE)
     if (is(attempt, "try-error"))
