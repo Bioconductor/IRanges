@@ -247,7 +247,7 @@ setReplaceMethod("[[", "DataFrame",
                    if (is.numeric(i) && (i < 1L || i > ncol(x) + 1L))
                      stop("subscript out of bounds")
                    if (!is.null(value) && (nrx != lv)) {
-                     if ((nrx == 0) || (nrx %% lv != 0))
+                     if ((nrx == 0) || (lv == 0) || (nrx %% lv != 0))
                        stop(paste(lv, "elements in value to replace",
                                   nrx, "elements"))
                      else
