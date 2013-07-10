@@ -639,6 +639,7 @@ setMethod("overlapsAny", c("RangesList", "RangedData"),
 `%over%` <- function(query, subject) overlapsAny(query, subject)
 `%within%` <- function(query, subject) overlapsAny(query, subject,
                                                    type="within")
+`%outside%` <- function(query, subject) !overlapsAny(query, subject)
 
 `.%in%.definition` <- function(x, table)
 {
