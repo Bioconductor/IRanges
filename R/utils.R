@@ -127,6 +127,60 @@ setPrototypeFromObject <- function(classname, object, where=.GlobalEnv)
 ### Pretty printing
 ###
 
+### 'makeNakedMat.FUN' must be a function returning a character matrix.
+makePrettyMatrixForCompactPrinting <- function(x, makeNakedMat.FUN)
+{
+  lx <- NROW(x)
+  nhead <- get_showHeadLines()
+  ntail <- get_showTailLines()
+
+  if (lx < (nhead + ntail + 1L)) {
+    ans <- makeNakedMat.FUN(x)
+    ans_rownames <- .rownames2(names(x), lx)
+  } else {
+    top_idx <- 1:nhead
+    if (nhead == 0)
+      top_idx <- 0 
+    bottom_idx=(lx-ntail+1L):lx
+    if (ntail == 0)
+      bottom_idx <- 0 
+    ans_top <- makeNakedMat.FUN(x[top_idx,,drop=FALSE])
+    ans_bottom <- makeNakedMat.FUN(x[bottom_idx,,drop=FALSE])
+    ans <- rbind(ans_top,
+                 matrix(rep.int("...", ncol(ans_top)), nrow=1L),
+                 ans_bottom)
+    ans_rownames <- .rownames2(names(x), lx, top_idx, bottom_idx)
+  }
+  rownames(ans) <- format(ans_rownames, justify="right")
+  ans
+}
+
+.rownames2 <- function(names=NULL, len=NULL, tindex=NULL, bindex=NULL)
+{
+  if (is.null(tindex) && is.null(bindex)) {
+    ## all lines
+    if (len == 0L)
+      character(0)
+    else if (is.null(names))
+      paste0("[", seq_len(len), "]")
+    else
+      names
+  } else {
+    ## head and tail 
+    if (!is.null(names)) {
+      c(names[tindex], "...", names[bindex])
+    } else {
+      s1 <- paste0("[", tindex, "]")
+      s2 <- paste0("[", bindex, "]")
+      if (all(tindex == 0)) 
+        s1 <- character(0) 
+      if (all(bindex == 0)) 
+        s2 <- character(0) 
+      c(s1, "...", s2)
+    }
+  }
+}
+
 ### Works as long as length(), "[" and as.numeric() work on 'x'.
 ### Not exported.
 toNumSnippet <- function(x, max.width)
