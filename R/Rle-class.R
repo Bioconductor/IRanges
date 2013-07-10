@@ -931,9 +931,19 @@ setMethod("which.max", "Rle",
             start(x)[which.max(runValue(x))]
           })
 
-setMethod("ifelse", "Rle", function (test, yes, no) 
+## base::ifelse works fine for S4 'test', but not for S4 yes/no
+setMethod("ifelse", c(yes = "Rle"), function (test, yes, no) 
           {
-            test <- as.vector(test)
+            yes <- as.vector(yes)
+            as(callGeneric(), "Rle")
+          })
+setMethod("ifelse", c(no = "Rle"), function (test, yes, no) 
+          {
+            no <- as.vector(no)
+            as(callGeneric(), "Rle")
+          })
+setMethod("ifelse", c(yes = "Rle", no = "Rle"), function (test, yes, no) 
+          {
             yes <- as.vector(yes)
             no <- as.vector(no)
             as(callGeneric(), "Rle")
