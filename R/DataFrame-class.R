@@ -443,7 +443,10 @@ setReplaceMethod("[", "DataFrame",
                          if (j[k] > length(x))
                            v <- NULL
                          else v <- x@listData[[j[k]]]
-                         v[i] <- value[[vc[k]]]
+                         rv <- value[[vc[k]]]
+                         if (length(dim(rv)) == 2)
+                           v[i,] <- rv
+                         else v[i] <- rv
                          x@listData[[j[k]]] <- v
                        }
                      } else {
