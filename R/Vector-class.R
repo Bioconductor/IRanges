@@ -622,6 +622,15 @@ setMethod("seqselect", "factor",
               ans
           })
 
+setMethod("seqselect", "matrix",
+          function(x, start=NULL, end=NULL, width=NULL)
+          {
+            ans <-
+              callGeneric(seq_len(length(x)), start = start, end = end,
+                          width = width)
+            x[ans,,drop=FALSE]
+          })
+
 setMethod("seqselect", "ANY",
           function(x, start=NULL, end=NULL, width=NULL)
           {
@@ -1169,8 +1178,16 @@ splitAsList <- function(x, f, drop=FALSE)
     return(.splitAsList_by_Rle(x, f, drop))
 }
 
-setMethod("split", "Vector",
+setMethod("split", c("Vector", "ANY"),
     function(x, f, drop=FALSE, ...) splitAsList(x, f, drop=drop)
+)
+
+setMethod("split", c("ANY", "Vector"),
+          function(x, f, drop=FALSE, ...) splitAsList(x, f, drop=drop)
+)
+
+setMethod("split", c("Vector", "Vector"),
+          function(x, f, drop=FALSE, ...) splitAsList(x, f, drop=drop)
 )
 
 `seqsplit<-` <- function(x, f, drop = FALSE, ..., value) {
