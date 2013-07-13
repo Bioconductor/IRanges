@@ -61,7 +61,6 @@ setReplaceMethod("applyParams", "RDApplyParams", function(x, value) {
 ##   x
 ## })
 
-setGeneric("filterRules", function(x, ...) standardGeneric("filterRules"))
 setMethod("filterRules", "RDApplyParams", function(x) x@filterRules)
 
 setGeneric("filterRules<-",

@@ -331,14 +331,47 @@ setMethod("show", "FilterClosure", function(object) {
 {
   c(if (!is.logical(object))
       "values must be logical",
-    if (!identical(names(object@filters), colnames(object)))
-      "names(object@filters) must be identical to colnames(object)") 
+    if (!is.null(names(filterRules)))
+      "filterRules must not be named",
+    if (length(object@filterRules) != ncol(object))
+      "length(filterRules) must equal ncol(object)") 
 }
 
-setClass("FilterMatrix", representation(filters = "FilterRules"),
+setClass("FilterMatrix", representation(filterRules = "FilterRules"),
          contains = "matrix",
          validity = .valid.FilterMatrix)
 
-FilterMatrix <- function(matrix, filters) {
-  new("FilterMatrix", matrix, filters = filters)
+setGeneric("filterRules", function(x, ...) standardGeneric("filterRules"))
+
+setMethod("filterRules", "FilterMatrix", function(x) {
+  setNames(x@filterRules, colnames(x))
+})
+
+setMethod("[", "FilterMatrix", function(x, i, j, ..., drop = TRUE) {
+  ans <- callNextMethod()
+  if (is.matrix(ans)) {
+    filterRules <- filterRules(x)
+    if (!missing(j))
+      filterRules <- filterRules[j]
+    ans <- FilterMatrix(matrix = ans, filterRules = filterRules)
+  }
+  ans
+})
+
+FilterMatrix <- function(..., filterRules, matrix = base::matrix(...)) {
+  stopifnot(ncol(matrix) == length(filterRules))  
+  if (is.null(colnames(matrix)))
+    colnames(matrix) <- names(filterRules)
+  else if (!is.null(names(filterRules)) &&
+           !identical(names(filterRules), colnames(matrix)))
+    stop("if names(filterRules) and colnames(matrix) are both not NULL,",
+         " the names must match")
+  names(filterRules) <- NULL
+  new("FilterMatrix", matrix, filterRules = filterRules)
 }
+
+setMethod("show", "FilterMatrix", function(object) {
+  cat(class(object), " (", nrow(object), " x ", ncol(object), ")\n", sep = "")
+  mat <- makePrettyMatrixForCompactPrinting(object, function(x) x@.Data)
+  print(mat, quote = FALSE, right = TRUE)
+})
