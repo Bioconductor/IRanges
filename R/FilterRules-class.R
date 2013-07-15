@@ -64,17 +64,18 @@ FilterRules.parseRule <- function(expr) {
   else stop("would not evaluate to logical: ", expr)
 }
 
-## takes logical expressions, or character vectors to parse
+## takes logical expressions, character vectors, or functions to parse
 
 FilterRules <- function(exprs = list(), ..., active = TRUE) {
   exprs <- c(as.list(substitute(list(...)))[-1L], exprs)
   if (length(names(exprs)) == 0) {
-    names(exprs) <- unlist(lapply(exprs, deparse))
-    chars <- unlist(sapply(exprs, is.character))
-    names(exprs)[chars] <- unlist(exprs[chars])
+    funs <- as.logical(sapply(exprs, is.function))
+    nonfuns <- exprs[!funs]
+    names(nonfuns) <- unlist(lapply(nonfuns, deparse))
+    chars <- as.logical(sapply(nonfuns, is.character))
+    names(nonfuns)[chars] <- unlist(nonfuns[chars])
+    names(exprs)[!funs] <- names(nonfuns)
   }
-  names(exprs) <- make.names(names(exprs), unique = TRUE)
-
   exprs <- lapply(exprs, FilterRules.parseRule)
 
   active <- rep(active, length.out = length(exprs))
@@ -259,7 +260,7 @@ setMethod("evalSeparately", "FilterRules",
             inds <- seq_len(length(expr))
             names(inds) <- names(expr)
             passed <- rep.int(TRUE, length(envir))
-            do.call(cbind, lapply(inds, function(i) {
+            m <- do.call(cbind, lapply(inds, function(i) {
               result <- eval(expr[i], envir = envir, enclos = enclos)
               if (serial) {
                 envir <<- subsetFirstDim(envir, result)
@@ -267,6 +268,7 @@ setMethod("evalSeparately", "FilterRules",
                 passed
               } else result
             }))
+            FilterMatrix(matrix = m, filterRules = expr)
           })
 
 setGeneric("subsetByFilter",
@@ -356,6 +358,21 @@ setMethod("[", "FilterMatrix", function(x, i, j, ..., drop = TRUE) {
     ans <- FilterMatrix(matrix = ans, filterRules = filterRules)
   }
   ans
+})
+
+setMethod("rbind", "FilterMatrix", function(..., deparse.level = 1) {
+  ans <- base::rbind(...)
+  args <- list(...)
+  rulesList <- lapply(args, filterRules)
+  if (any(!sapply(rulesList, identical, rulesList[[1]])))
+    stop("cannot rbind filter matrices with non-identical rule sets")
+  FilterMatrix(matrix = ans, filterRules = rulesList[[1]])
+})
+
+setMethod("cbind", "FilterMatrix", function(..., deparse.level = 1) {
+  ans <- base::cbind(...)
+  rules <- do.call(c, lapply(list(...), function(x) x@filterRules))
+  FilterMatrix(matrix = ans, filterRules = rules)
 })
 
 FilterMatrix <- function(..., filterRules, matrix = base::matrix(...)) {

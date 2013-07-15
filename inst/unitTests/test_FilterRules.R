@@ -7,7 +7,7 @@ test_FilterRules_construct <- function() {
 
   filters <- FilterRules()
   checkTrue(validObject(filters))
-  checkIdentical(as.list(filters), structure(list(), names = character()))
+  checkIdentical(as.list(filters), list())
   
   filters <- FilterRules(filts)
   checkTrue(validObject(filters))
