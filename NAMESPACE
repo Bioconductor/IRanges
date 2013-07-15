@@ -18,7 +18,7 @@ exportClasses(
     List, SimpleList, CompressedList,
     Ranges, RangesORmissing,
     IRanges, NormalIRanges,
-    IntervalTree,
+    IntervalTree, IntervalForest, 
     Grouping, H2LGrouping, Dups,
     Partitioning, PartitioningByEnd, PartitioningByWidth,
     Views,
@@ -42,7 +42,7 @@ exportClasses(
     DataFrameList, SimpleDataFrameList,
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
     RangedData, RangedDataList, FilterRules, FilterMatrix, RDApplyParams,
-    Hits, HitsList,
+    Hits, HitsList, CompressedHitsList, 
     OverlapEncodings,
     RangedSelection, RangesMapping
 )
@@ -236,7 +236,7 @@ export(
     whichAsIRanges,
     asNormalIRanges,
     rangeComparisonCodeToLetter,
-    IntervalTree,
+    IntervalTree, IntervalForest, 
     H2LGrouping, Dups, PartitioningByEnd, PartitioningByWidth,
     RangedData, RangedDataList,
     RangedSelection,
@@ -245,6 +245,7 @@ export(
     IRangesList,
     RleViewsList,
     remapHits,
+    CompressedHitsList, 
     hits,
     "%over%", "%within%", "%outside%",
     encodeOverlaps1, RangesList_encodeOverlaps,
@@ -486,4 +487,3 @@ exportMethods(
     expand,
     classNameForDisplay
 )
-

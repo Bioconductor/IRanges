@@ -4,6 +4,7 @@
 
 \alias{findOverlaps}
 \alias{findOverlaps,Ranges,IntervalTree-method}
+\alias{findOverlaps,RangesList,IntervalForest-method}
 \alias{findOverlaps,Ranges,Ranges-method}
 \alias{findOverlaps,Vector,missing-method}
 \alias{findOverlaps,integer,Ranges-method}
@@ -22,6 +23,7 @@
 \alias{countOverlaps,ANY,Vector-method}
 \alias{countOverlaps,ANY,missing-method}
 \alias{countOverlaps,RangesList,RangesList-method}
+\alias{countOverlaps,RangesList,IntervalForest-method}
 \alias{countOverlaps,ViewsList,ViewsList-method}
 \alias{countOverlaps,ViewsList,Vector-method}
 \alias{countOverlaps,Vector,ViewsList-method}
@@ -46,6 +48,7 @@
 \alias{overlapsAny,Views,Vector-method}
 \alias{overlapsAny,Vector,Views-method}
 \alias{overlapsAny,RangesList,RangesList-method}
+\alias{overlapsAny,RangesList,IntervalForest-method}
 \alias{overlapsAny,ViewsList,ViewsList-method}
 \alias{overlapsAny,ViewsList,Vector-method}
 \alias{overlapsAny,Vector,ViewsList-method}
@@ -108,13 +111,16 @@
   and a subject that are both either a \link{Ranges}, \link{Views},
   \link{RangesList}, \link{ViewsList}, or \link{RangedData} object.
   (In addition, if the query is a \link{Ranges} object, the subject
-  can be an \link{IntervalTree} object. And if the subject is a
-  \link{Ranges} object, the query can be an integer vector.)
+  can be an \link{IntervalTree} object; if the query is a \link{RangesList} object,
+  the subject can be a \link{IntervalForest} object. And if the subject is a \link{Ranges} 
+  object, the query can be an integer vector.)
 
   See \code{?`\link[GenomicRanges]{findOverlaps,GenomicRanges,GenomicRanges-method}`}
   in the GenomicRanges package for methods that operate on
   \link[GenomicRanges]{GRanges} or \link[GenomicRanges]{GRangesList}
-  objects.
+  objects. See also the \code{?`\link[GenomicRanges]{GIntervalTree}`} class and the
+  \code{?`\link[GenomicRanges]{findOverlaps,GenomicRanges,GIntervalTree-method}`} method 
+  for finding overlaps with persistent \link{IntervalForest} objects.
 }
 
 \usage{
@@ -141,9 +147,10 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
     Each of them can be a \link{Ranges}, \link{Views}, \link{RangesList},
     \link{ViewsList}, or \link{RangedData} object.
     In addition, if \code{query} is a \link{Ranges} object, \code{subject}
-    can be an \link{IntervalTree} object.
-    And if \code{subject} is a \link{Ranges} object, \code{query} can
-    be an integer vector to be converted to length-one ranges.
+    can be an \link{IntervalTree} object; if \code{query} is a \link{RangesList} object,
+    then \code{subject} can be an \link{IntervalForest} object. 
+    And if \code{subject} is a \link{Ranges} object, \code{query} can be an 
+    integer vector to be converted to length-one ranges.
     If \code{query} is a \link{RangesList} or \link{RangedData},
     \code{subject} must be a \link{RangesList} or \link{RangedData}.
 
@@ -239,16 +246,29 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
   Thus, for repeated queries against the same subject, it is more
   efficient to create an \link{IntervalTree} once for the subject
   using the \code{\link{IntervalTree}} constructor and then perform
-  the queries against the \link{IntervalTree} instance.
+  the queries against the \link{IntervalTree} instance. An \link{IntervalForest}
+  object is a derivative of \link{RangesList} and stores its ranges
+  as a set of trees optimizized for partitioned overlap queries.
+  Again, for repeated queries against the same subject list, it is more
+  efficient to create an \link{IntervalForest} once and then perform
+  the queries against the \link{IntervalForest} instance.
 }
 
 \value{
   \code{findOverlaps} returns either a \link{Hits} object when
   \code{select="all"} (the default), or an integer vector when
-  \code{select} is not \code{"all"}.
+  \code{select} is not \code{"all"}. For \link{RangesList} objects
+  it returns a \link{HitsList-class} object when \code{select="all"}, or
+  an \link{IntegerList} when \code{select} is not \code{"all"}. 
+  When \code{subject} is an \link{IntervalForest} object, 
+  it returns a \link{CompressedHitsList} or \link{CompressedIntegerList}
+  respectively.
 
   \code{countOverlaps} returns the overlap hit count for each range
   in \code{query} using the specified \code{findOverlaps} parameters.
+  For \link{RangesList} objects, it returns an \link{IntegerList} object.
+  When \code{subject} is an \link{IntervalForest} it returns a
+  \link{CompressedIntegerList}.
 
   \code{overlapsAny} finds the ranges in \code{query} that overlap any
   of the ranges in \code{subject}. For \link{Ranges} or \link{Views}
@@ -256,6 +276,8 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
   ranges in \code{query}. For \link{RangesList}, \link{RangedData}, or
   \link{ViewsList} objects, it returns a \link{LogicalList} object,
   where each element of the result corresponds to a space in \code{query}.
+  When \code{subject} is an \link{IntervalForest} object, it returns
+  a \link{CompressedLogicalList} object.
 
   \code{\%over\%} and \code{\%within\%} are convenience wrappers for the
   2 most common use cases. Currently defined as
@@ -281,11 +303,11 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
   Communications of the ACM. 26/11/1983. ACM Press. S. 832-843, ISSN 0001-0782
 }
 
-\author{Michael Lawrence}
+\author{Michael Lawrence with contributions by Hector Corrada Bravo}
 
 \seealso{
   \itemize{
-    \item The \link{Hits} class for representing a set of hits between
+    \item The \link{Hits} and \link{HitsList} classes for representing a set of hits between
           2 vector-like objects.
 
     \item \link[GenomicRanges]{findOverlaps,GenomicRanges,GenomicRanges-method}
@@ -293,7 +315,13 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
           \link[GenomicRanges]{GRanges} or \link[GenomicRanges]{GRangesList}
           objects.
 
+    \item \link[GenomicRanges]{findOverlaps,GenomicRanges,GIntervalTree-method} in
+          the GenomicRanges package for methods that use \link{IntervalForest} objects
+          to find overlaps.
+
     \item The \code{\link{IntervalTree}} class and constructor.
+
+    \item The \code{\link{IntervalForest}} class and constructor.
 
     \item The \link{Ranges}, \link{Views}, \link{RangesList},
           \link{ViewsList}, and \link{RangedData} classes.
@@ -363,6 +391,41 @@ query \%within\% subject  # same as overlapsAny(query, subject,
 
 ## extract the regions of intersection between the overlapping ranges
 ranges(ov, query, subject)
+
+## ---------------------------------------------------------------------
+## using IntervalForest objects
+## ---------------------------------------------------------------------
+query <- IRanges(c(1, 4, 9), c(5, 7, 10))
+qpartition <- factor(c("a","a","b"))
+qlist <- split(query, qpartition)
+
+subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
+spartition <- factor(c("a","a","b"))
+slist <- split(subject, spartition)
+
+forest <- IntervalForest(slist)
+
+## at most one hit per query
+findOverlaps(qlist, forest, select = "first")
+findOverlaps(qlist, forest, select = "last")
+findOverlaps(qlist, forest, select = "arbitrary")
+
+query <- IRanges(c(1, 5, 3, 4), width=c(2, 2, 4, 6))
+qpartition <- factor(c("a","a","b","b"))
+qlist <- split(query, qpartition)
+
+subject <- IRanges(c(1, 3, 5, 6), width=c(4, 4, 5, 4))
+spartition <- factor(c("a","a","b","b"))
+slist <- split(subject, spartition)
+forest <- IntervalForest(slist)
+
+overlapsAny(qlist, forest, type="start")
+overlapsAny(qlist, forest, type="end")
+qlist %over% forest
+
+subsetByOverlaps(qlist, forest)
+countOverlaps(qlist, forest)
+
 }
 
 \keyword{methods}

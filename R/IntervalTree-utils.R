@@ -46,6 +46,21 @@ setMethod("processSelfMatching", "HitsList",
               newList("HitsList", ans, subjectOffsets = x@subjectOffsets)
           })
 
+setMethod("processSelfMatching", "CompressedHitsList",
+          function(x, select = c("all", "first", "last", "arbitrary"),
+                   ignoreSelf = FALSE, ignoreRedundant = FALSE)
+          {
+            select <- match.arg(select)
+            ans <- processSelfMatching(x@unlistData, select = select, 
+                          ignoreSelf = ignoreSelf, ignoreRedundant = ignoreRedundant)
+
+            if (select != "all")
+              new2("CompressedIntegerList", unlistData=ans, partitioning=x@partitioning)
+            else
+              new2("CompressedHitsList", unlistData=ans, partitioning=x@partitioning)
+          })
+
+          
 ## not for exporting, just a debugging utility
 IntervalTreeDump <- function(object) {
   .IntervalTreeCall(object, "dump")
