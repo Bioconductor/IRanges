@@ -288,19 +288,8 @@ setMethod("summary", "FilterRules",
           {
             if (!isTRUEorFALSE(serial))
               stop("'serial' must be TRUE or FALSE")
-            if (!isTRUEorFALSE(discarded))
-              stop("'discarded' must be TRUE or FALSE")
-            if (!isTRUEorFALSE(percent))
-              stop("'percent' must be TRUE or FALSE")
             mat <- evalSeparately(object, subject, serial = serial)
-            counts <- c("<initial>" = length(subject), colSums(mat),
-                        "<final>" = sum(rowSums(mat) == ncol(mat)))
-            if (discarded) {
-              counts <- length(subject) - counts
-            }
-            if (percent) {
-              round(counts / length(subject), 3)
-            } else counts
+            summary(mat, discarded = discarded, percent = percent)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -392,3 +381,20 @@ setMethod("show", "FilterMatrix", function(object) {
   mat <- makePrettyMatrixForCompactPrinting(object, function(x) x@.Data)
   print(mat, quote = FALSE, right = TRUE)
 })
+
+setMethod("summary", "FilterMatrix",
+          function(object, discarded = FALSE, percent = FALSE)
+          {
+            if (!isTRUEorFALSE(discarded))
+              stop("'discarded' must be TRUE or FALSE")
+            if (!isTRUEorFALSE(percent))
+              stop("'percent' must be TRUE or FALSE")
+            counts <- c("<initial>" = nrow(object), colSums(object),
+                        "<final>" = sum(rowSums(object) == ncol(object)))
+            if (discarded) {
+              counts <- nrow(object) - counts
+            }
+            if (percent) {
+              round(counts / nrow(object), 3)
+            } else counts
+          })
