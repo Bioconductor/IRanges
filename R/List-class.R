@@ -307,7 +307,7 @@ setMethod("extractElements", c("List", "RleList"), function(x, i) {
   extractElements(x, as(i, "IRangesList"))
 })
 setMethod("extractElements", c("List", "list"), function(x, i) {
-  extractElements(x, castList(i))
+  extractElements(x, asList(i))
 })
 
 setMethod("replaceElements", c("List", "List"), function(x, i, value) {
@@ -601,7 +601,7 @@ setMethod("mendoapply", "List",
               X
           })
 
-castList <- function(x, ...) {
+asList <- function(x, ...) {
   if (is(x, "List"))
     return(x)
   if (!is.list(x))
@@ -659,27 +659,27 @@ castList <- function(x, ...) {
 ## clapply, cmapply, ctapply, csplit, cby.
 
 seqapply <- function(X, FUN, ...) {
-  castList(lapply(X, FUN, ...))
+  asList(lapply(X, FUN, ...))
 }
 
 mseqapply <- function(FUN, ..., MoreArgs = NULL, USE.NAMES = TRUE) {
-  castList(.mapply_List(FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = FALSE,
+  asList(.mapply_List(FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = FALSE,
                         USE.NAMES = USE.NAMES))
 }
 
 tseqapply <- function(X, INDEX, FUN = NULL, ...) {
-  castList(tapply(X, INDEX, FUN, ..., simplify = FALSE))
+  asList(tapply(X, INDEX, FUN, ..., simplify = FALSE))
 }
 
 seqsplit <- function(x, f, drop=FALSE) {
   ans_class <- try(splitAsListReturnedClass(x), silent=TRUE)
   if (inherits(ans_class, "try-error"))
-    return(castList(split(x, f, drop)))
+    return(asList(split(x, f, drop)))
   splitAsList(x, f, drop=drop)
 }
 
 seqby <- function(data, INDICES, FUN, ...) {
-  castList(by(data, INDICES, FUN, ..., simplify = FALSE))
+  asList(by(data, INDICES, FUN, ..., simplify = FALSE))
 }
 
 setGeneric("revElements", signature="x",
