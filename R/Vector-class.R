@@ -477,6 +477,15 @@ window.vector <- function(x, start=NA, end=NA, width=NA,
 }
 setMethod("window", "vector", window.vector)
 
+window.matrix <- function(x, start=NA, end=NA, width=NA,
+                          frequency=NULL, delta=NULL, ...)
+{
+  ind <- window.vector(seq_len(nrow(x)), start=start, end=end, width=width,
+                       frequency=frequency, delta=delta, ...)
+  x[ind,,drop=FALSE]
+}
+setMethod("window", "matrix", window.matrix)
+
 ### S3/S4 combo for window.factor
 ### FIXME: This method alters the semantic of stats::window() on factors
 ### (the result has no 'tsp' attribute). Not really acceptable.
