@@ -236,7 +236,8 @@ setMethod("eval", signature(expr="FilterRules", envir="ANY"),
                     min(NROW(envir), length(val)) != 0)))
                 stop("filter rule evaluated to inconsistent length: ",
                      names(rule)[i])
-              envir <- subsetFirstDim(envir, val)
+              if (length(rules) > 1L)
+                envir <- subsetFirstDim(envir, val)
               result[result] <- val
             }
             result
