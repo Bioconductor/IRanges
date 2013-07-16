@@ -635,7 +635,7 @@ setMethod("seqselect", "matrix",
           function(x, start=NULL, end=NULL, width=NULL)
           {
             ans <-
-              callGeneric(seq_len(length(x)), start = start, end = end,
+              callGeneric(seq_len(nrow(x)), start = start, end = end,
                           width = width)
             x[ans,,drop=FALSE]
           })
