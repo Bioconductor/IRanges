@@ -47,8 +47,8 @@
   \link{ViewsList} object.
 
   \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewMeans}
-  calculate the minima, maxima, sums, and means on the views of a
-  \link{Views} or \link{ViewsList} object, respectively.
+  calculate respectively the minima, maxima, sums, and means of the views
+  in a \link{Views} or \link{ViewsList} object.
 }
 
 \usage{
@@ -56,19 +56,24 @@ viewApply(X, FUN, ..., simplify = TRUE)
 
 viewMins(x, na.rm=FALSE)
 \S4method{min}{Views}(x, ..., na.rm = FALSE)
+
 viewMaxs(x, na.rm=FALSE)
 \S4method{max}{Views}(x, ..., na.rm = FALSE)
+
 viewSums(x, na.rm=FALSE)
 \S4method{sum}{Views}(x, ..., na.rm = FALSE)
+
 viewMeans(x, na.rm=FALSE)
 \S4method{mean}{Views}(x, ...)
 
 viewWhichMins(x, na.rm=FALSE)
 \S4method{which.min}{Views}(x)
+
 viewWhichMaxs(x, na.rm=FALSE)
 \S4method{which.max}{Views}(x)
 
 viewRangeMins(x, na.rm=FALSE)
+
 viewRangeMaxs(x, na.rm=FALSE)
 }
 
@@ -79,7 +84,7 @@ viewRangeMaxs(x, na.rm=FALSE)
   \item{FUN}{
     The function to be applied to each view in \code{X}.
   }
-  \item{\dots}{
+  \item{...}{
     Additional arguments to be passed on.
   }
   \item{simplify}{
@@ -129,8 +134,8 @@ viewRangeMaxs(x, na.rm=FALSE)
     \item The \code{\link{slice}} function for slicing an \link{Rle} or
           \link{RleList} object.
 
-    \item \link[XVector]{view-summarization-methods} in the XVector package
-          for more view summarization methods.
+    \item \link[XVector]{view-summarization-methods} in the \pkg{XVector}
+          package for more view summarization methods.
 
     \item The \link{RleViews} and \link{RleViewsList} classes.
 

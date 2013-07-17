@@ -68,6 +68,9 @@ slice(x, lower=-Inf, upper=Inf, ...)
     \item \link{view-summarization-methods} for summarizing the views
           returned by \code{slice}.
 
+    \item \link[XVector]{slice-methods} in the \pkg{XVector} package
+          for more \code{slice} methods.
+
     \item \code{\link{coverage}} for computing the coverage across a set
           of ranges.
 
@@ -81,7 +84,7 @@ slice(x, lower=-Inf, upper=Inf, ...)
 x <- IRanges(start=c(1L, 9L, 4L, 1L, 5L, 10L),
              width=c(5L, 6L, 3L, 4L, 3L,  3L))
 cvg <- coverage(x)
-cvg_views <- slice(cvg, lower=2)
+slice(cvg, lower=2)
 slice(cvg, lower=2, rangesOnly=TRUE)
 }
 
