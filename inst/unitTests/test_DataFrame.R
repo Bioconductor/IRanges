@@ -53,11 +53,11 @@ test_DataFrame_construction <- function() {
   rownames(swiss) <- NULL # strip row names to make them comparable
   sw <- DataFrame(swiss) # a data.frame
   checkIdentical(as.data.frame(sw), swiss)
-  sw <- DataFrame(swiss[1:3,], score) # mixed data.frame and matrix args
+  sw <- DataFrame(swiss[1:3,], score = unname(score))
   checkIdentical(as.data.frame(sw), data.frame(swiss[1:3,], score))
   sw <- DataFrame(score = score, swiss = swiss[1:3,]) # named data.frame/matrix
   checkIdentical(as.data.frame(sw),
-                 data.frame(score = unname(score), swiss = swiss[1:3,]))
+                 data.frame(score = score, swiss = swiss[1:3,]))
 
   ## recycling
   DF <- DataFrame(1, score)
@@ -90,7 +90,6 @@ test_DataFrame_subset <- function() {
   checkException(sw[drop=TRUE], silent = TRUE)
   checkException(sw[foo = "bar"], silent = TRUE) # invalid argument
   ##options(warn=0)
-  checkException(sw["Sion",], silent = TRUE) # no row names
   checkException(sw[,"Fert"], silent = TRUE) # bad column name
 
   sw <- DataFrame(swiss)
@@ -100,7 +99,8 @@ test_DataFrame_subset <- function() {
 
   checkIdentical(sw[NULL], DataFrame(swiss[NULL])) # NULL subsetting
   checkIdentical(sw[,NULL], DataFrame(swiss[,NULL]))
-  checkIdentical(as.data.frame(sw[NULL,]), data.frame(swiss[NULL,]))
+  checkIdentical(as.data.frame(sw[NULL,]),
+                 structure(data.frame(swiss[NULL,]), row.names = character()))
 
   rownames(sw) <- rn
 
@@ -317,7 +317,8 @@ test_DataFrame_combine <- function() {
   checkIdentical(as.data.frame(rbind(DF1, DF2)), df12)
  
   rownames(sw) <- rn
-  checkIdentical(rownames(rbind(sw, DataFrame(swiss))), NULL)
+  checkIdentical(rownames(rbind(sw, DataFrame(swiss))),
+                 rownames(rbind(swiss, swiss)))
   swsplit <- split(sw, sw[["Education"]])
   rownames(swiss) <- rn
   swisssplit <- split(swiss, swiss$Education)

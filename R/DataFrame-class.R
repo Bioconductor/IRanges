@@ -140,17 +140,15 @@ DataFrame <- function(..., row.names = NULL, check.names = TRUE)
   varlist <- vector("list", length(listData))
   if (length(listData) > 0) {
     dotnames <- names(listData)
-    dotvalues <- 
-      sapply(as.list(substitute(list(...)))[-1L],
-             function(arg) deparse(arg)[1L])
     if (is.null(dotnames)) {
-      emptynames <- rep.int(TRUE, length(listData))
-      names(listData) <- dotvalues
+      emptynames <- rep.int(TRUE, length(listData))      
     } else {
       emptynames <- !nzchar(dotnames)
-      if (any(emptynames)) {
-        names(listData)[emptynames] <- dotvalues[emptynames]
-      }
+    }
+    if (any(emptynames)) {
+      qargs <- as.list(substitute(list(...)))[-1L]
+      dotvalues <- sapply(qargs[emptynames], function(arg) deparse(arg)[1L])
+      names(listData)[emptynames] <- dotvalues
     }
     varnames <- as.list(names(listData))
     nrows <- ncols <- integer(length(varnames))
@@ -171,6 +169,8 @@ DataFrame <- function(..., row.names = NULL, check.names = TRUE)
           varnames[[i]] <- paste(varnames[[i]], colnames(element), sep = ".")
       } else if (is.list(listData[[i]]) && length(names(listData[[i]])))
           varnames[[i]] <- names(element)
+      if (is.null(row.names))
+        row.names <- rownames(element)
     }
     nr <- max(nrows)
     for (i in which((nrows > 0L) & (nrows < nr) & (nr %% nrows == 0L))) {
@@ -186,7 +186,7 @@ DataFrame <- function(..., row.names = NULL, check.names = TRUE)
       nms <- make.names(nms, unique = TRUE)
     names(varlist) <- nms
   } else names(varlist) <- character(0)
-  
+
   if (!is.null(row.names)) {
     if (anyMissing(row.names))
       stop("missing values in 'row.names'")
@@ -195,7 +195,7 @@ DataFrame <- function(..., row.names = NULL, check.names = TRUE)
     if (anyDuplicated(row.names))
       stop("duplicate row names")
     row.names <- as.character(row.names)
-  }
+  } 
   
   new2("DataFrame", listData=varlist, rownames=row.names,
        nrows=as.integer(max(nr, length(row.names))), check=FALSE)
@@ -585,8 +585,9 @@ setAs("xtabs", "DataFrame",
       })
 
 .defaultAsDataFrame <- function(from) {
+  row.names <- if (!anyDuplicated(names(from))) names(from) else NULL
   new2("DataFrame", listData = setNames(list(from), "X"),
-       nrows = length(from), rownames = names(from), check=FALSE)
+       nrows = length(from), rownames = row.names, check=FALSE)
 }
 
 setAs("ANY", "DataFrame", .defaultAsDataFrame)
