@@ -7,19 +7,13 @@
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### compare()
 ###
-### Doing 'compare(x, y)' on 2 vector-like objects 'x' and 'y' of length 1
-### must return an integer less than, equal to, or greater than zero if the
-### single element in 'x' is considered to be respectively less than, equal
-### to, or greater than the single element in 'y'.
-###
-
-setGeneric("compare", function(x, y) standardGeneric("compare"))
-
 ### Ranges are ordered by starting position first and then by width.
 ### This way, the space of ranges is totally ordered.
 ### This "compare" method returns one of the 13 predefined codes (>= -6 and
 ### <= 6) described in the man page. The signs of those codes reflect this
 ### order.
+###
+
 setMethod("compare", c("Ranges", "Ranges"),
     function(x, y)
     {
@@ -38,23 +32,6 @@ rangeComparisonCodeToLetter <- function(code)
     levels <- c(letters[1:13], "X")
     structure(code, levels=levels, class="factor")
 }
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Element-wise (aka "parallel") comparison of 2 Ranges objects.
-###
-### We only need to implement "==" and "<=" methods. The other comparison
-### binary operators (!=, >=, <, >) will then work out-of-the-box on
-### Ranges objects thanks to the methods for Vector objects.
-###
-
-setMethod("==", signature(e1="Ranges", e2="Ranges"),
-    function(e1, e2) { compare(e1, e2) == 0L }
-)
-
-setMethod("<=", signature(e1="Ranges", e2="Ranges"),
-    function(e1, e2) { compare(e1, e2) <= 0L }
-)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

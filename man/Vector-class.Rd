@@ -52,19 +52,6 @@
 \alias{rep.int,Vector-method}
 \alias{subset,Vector-method}
 
-\alias{!=,Vector,Vector-method}
-\alias{!=,Vector,ANY-method}
-\alias{!=,ANY,Vector-method}
-\alias{>=,Vector,Vector-method}
-\alias{>=,Vector,ANY-method}
-\alias{>=,ANY,Vector-method}
-\alias{<,Vector,Vector-method}
-\alias{<,Vector,ANY-method}
-\alias{<,ANY,Vector-method}
-\alias{>,Vector,Vector-method}
-\alias{>,Vector,ANY-method}
-\alias{>,ANY,Vector-method}
-
 \alias{c,Vector-method}
 \alias{append,Vector,Vector-method}
 
@@ -87,12 +74,6 @@
 \alias{rename}
 \alias{rename,Vector-method}
 \alias{rename,vector-method}
-
-\alias{unique,Vector-method}
-\alias{\%in\%,ANY,Vector-method}
-\alias{\%in\%,Vector,ANY-method}
-\alias{\%in\%,Vector,Vector-method}
-\alias{sort,Vector-method}
 
 \alias{as.logical,Vector-method}
 \alias{as.integer,Vector-method}
@@ -378,15 +359,6 @@
         \item{\code{simplify}}{A logical value specifying whether or not the
           result should be simplified to a vector or matrix if possible.}
       }
-    }
-  }
-}
-
-\section{Utilities}{
-  \describe{
-    \item{}{\code{unique(x)}: Returns the unique elements in
-      \code{x}. Requires that the \code{Vector} derivative support
-      \code{duplicated}.
     }
   }
 }

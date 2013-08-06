@@ -833,29 +833,6 @@ setMethod("subset", "Vector",
             x[i, drop = drop]
           })
 
-### S3/S4 combo for unique.Vector
-unique.Vector <- function(x, incomparables=FALSE, ...)
-    extractROWS(x, !duplicated(x, incomparables=incomparables, ...))
-setMethod("unique", "Vector", unique.Vector)
-
-`.%in%.default.method` <- function(x, table) {!is.na(match(x, table))}
-setMethod("%in%", c("ANY", "Vector"), `.%in%.default.method`)
-setMethod("%in%", c("Vector", "ANY"), `.%in%.default.method`)
-### Not strictly required! Defining the above 2 methods covers that case but
-### with the following note:
-###   > hits %in% hits
-###   Note: Method with signature "Vector#ANY" chosen for function "%in%",
-###    target signature "Hits#Hits".
-###    "ANY#Vector" would also be valid
-setMethod("%in%", c("Vector", "Vector"), `.%in%.default.method`)
-
-### S3/S4 combo for sort.Vector
-.sort.Vector <- function(x, decreasing=FALSE, na.last=NA)
-    extractROWS(x, order(x, na.last=na.last, decreasing=decreasing))
-sort.Vector <- function (x, decreasing=FALSE, ...)
-    .sort.Vector(x, decreasing=decreasing, ...)
-setMethod("sort", "Vector", sort.Vector)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
@@ -900,37 +877,6 @@ setMethod("as.data.frame", "Vector",
             x <- as.vector(x)
             callGeneric()
           })
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Comparison.
-###
-
-### We base everything on == and <=.
-### Maybe this is how `!=`, `>=`, '<', and '>' should have been defined in
-### the base package so nobody would ever need to bother implementing such
-### obvious things (then people just need to implement "==" and "<=" methods
-### for their objects and everything works out-of-the-box).
-.non.equal <- function(e1, e2) { !(e1 == e2) }
-.greater.or.equal.to <- function(e1, e2) { e2 <= e1 }
-.lower.than <- function(e1, e2) { !(e2 <= e1) }
-.greater.than <- function(e1, e2) { !(e1 <= e2) }
-
-setMethod("!=", signature(e1="Vector", e2="Vector"), .non.equal)
-setMethod("!=", signature(e1="Vector", e2="ANY"), .non.equal)
-setMethod("!=", signature(e1="ANY", e2="Vector"), .non.equal)
-
-setMethod(">=", signature(e1="Vector", e2="Vector"), .greater.or.equal.to)
-setMethod(">=", signature(e1="Vector", e2="ANY"), .greater.or.equal.to)
-setMethod(">=", signature(e1="ANY", e2="Vector"), .greater.or.equal.to)
-
-setMethod("<", signature(e1="Vector", e2="Vector"), .lower.than)
-setMethod("<", signature(e1="Vector", e2="ANY"), .lower.than)
-setMethod("<", signature(e1="ANY", e2="Vector"), .lower.than)
-
-setMethod(">", signature(e1="Vector", e2="Vector"), .greater.than)
-setMethod(">", signature(e1="Vector", e2="ANY"), .greater.than)
-setMethod(">", signature(e1="ANY", e2="Vector"), .greater.than)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

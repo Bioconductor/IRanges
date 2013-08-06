@@ -2,12 +2,8 @@
 
 \alias{Ranges-comparison}
 
-\alias{compare}
 \alias{compare,Ranges,Ranges-method}
 \alias{rangeComparisonCodeToLetter}
-
-\alias{==,Ranges,Ranges-method}
-\alias{<=,Ranges,Ranges-method}
 
 \alias{duplicated,Ranges-method}
 
@@ -36,9 +32,9 @@
 ## Element-wise (aka "parallel") comparison of 2 Ranges objects
 ## ------------------------------------------------------------
 
-\S4method{==}{Ranges,Ranges}(e1, e2)
+\S4method{compare}{Ranges,Ranges}(x, y)
 
-\S4method{<=}{Ranges,Ranges}(e1, e2)
+rangeComparisonCodeToLetter(code)
 
 ## duplicated()
 ## ------------
@@ -65,18 +61,10 @@ countMatches(x, table, ...)
 
 \S4method{rank}{Ranges}(x, na.last=TRUE,
      ties.method=c("average", "first", "random", "max", "min"))
-
-## Generalized element-wise (aka "parallel") comparison of 2 Ranges objects
-## ------------------------------------------------------------------------
-
-compare(x, y)
-\S4method{compare}{Ranges,Ranges}(x, y)
-
-rangeComparisonCodeToLetter(code)
 }
 
 \arguments{
-  \item{e1, e2, x, table, y}{
+  \item{x, y, table}{
     \link{Ranges} objects.
     For \code{findMatches} and \code{countMatches}, \code{x} and \code{table}
     can also be atomic vectors.
@@ -152,61 +140,6 @@ rangeComparisonCodeToLetter(code)
 
   \describe{
     \item{}{
-      \code{duplicated(x)}:
-      Determines which elements of \code{x} are equal to elements
-      with smaller subscripts, and returns a logical vector indicating
-      which elements are duplicates.
-      It is semantically equivalent to \code{duplicated(as.data.frame(x))}.
-      See \code{\link[base]{duplicated}} in the base package for more details.
-    }
-    \item{}{
-      \code{unique(x)}:
-      Removes duplicate ranges from \code{x}.
-      See \code{\link[base]{unique}} in the base package for more details.
-    }
-    \item{}{
-      \code{match(x, table, nomatch=NA_integer_)}:
-      Returns an integer vector of the length of \code{x},
-      containing the index of the first matching range in \code{table}
-      (or \code{nomatch} if there is no matching range) for each range
-      in \code{x}.
-    }
-    \item{}{
-      \code{x \%in\% table}:
-      A shortcut for finding the ranges in \code{x} that match any of
-      the ranges in \code{table}. Returns a logical vector of length
-      equal to the number of ranges in \code{x}.
-    }
-    \item{}{
-      \code{findMatches(x, table, select=c("all", "first", "last"), ...)}:
-      An enhanced version of \code{match} that returns all the matches in
-      a \link{Hits} object.
-    }
-    \item{}{
-      \code{countMatches(x, table, ...)}:
-      Returns an integer vector of the length of \code{x},
-      containing the number of matches in \code{table} for each element
-      in \code{x}.
-    }
-    \item{}{
-      \code{order(...)}:
-      Returns a permutation which rearranges its first argument (a \link{Ranges}
-      object) into ascending order, breaking ties by further arguments (also
-      \link{Ranges} objects).
-      See \code{\link[BiocGenerics]{order}} in the BiocGenerics package
-      for more information.
-    }
-    \item{}{
-      \code{sort(x)}:
-      Sorts \code{x}.
-      See \code{\link[base]{sort}} in the base package for more details.
-    }
-    \item{}{
-      \code{rank(x, na.last=TRUE, ties.method=c("average", "first", "random", "max", "min"))}:
-      Returns the sample ranks of the ranges in \code{x}.
-      See \code{\link[base]{rank}} in the base package for more details.
-    }
-    \item{}{
       \code{compare(x, y)}:
       Performs "generalized range-wise comparison" of \code{x} and \code{y},
       that is, returns an integer vector where the i-th element is a code
@@ -261,6 +194,63 @@ rangeComparisonCodeToLetter(code)
       The translated codes are returned in a factor with 14 levels:
       a, b, ..., l, m, X.
     }
+    \item{}{
+      \code{duplicated(x)}:
+      Determines which elements of \code{x} are equal to elements
+      with smaller subscripts, and returns a logical vector indicating
+      which elements are duplicates.
+      It is semantically equivalent to \code{duplicated(as.data.frame(x))}.
+      See \code{\link[base]{duplicated}} in the \pkg{base} package for more
+      details.
+    }
+    \item{}{
+      \code{unique(x)}:
+      Removes duplicate ranges from \code{x}.
+      See \code{\link[base]{unique}} in the \pkg{base} package for more
+      details.
+    }
+    \item{}{
+      \code{match(x, table, nomatch=NA_integer_)}:
+      Returns an integer vector of the length of \code{x},
+      containing the index of the first matching range in \code{table}
+      (or \code{nomatch} if there is no matching range) for each range
+      in \code{x}.
+    }
+    \item{}{
+      \code{x \%in\% table}:
+      A shortcut for finding the ranges in \code{x} that match any of
+      the ranges in \code{table}. Returns a logical vector of length
+      equal to the number of ranges in \code{x}.
+    }
+    \item{}{
+      \code{findMatches(x, table, select=c("all", "first", "last"), ...)}:
+      An enhanced version of \code{match} that returns all the matches in
+      a \link{Hits} object.
+    }
+    \item{}{
+      \code{countMatches(x, table, ...)}:
+      Returns an integer vector of the length of \code{x},
+      containing the number of matches in \code{table} for each element
+      in \code{x}.
+    }
+    \item{}{
+      \code{order(...)}:
+      Returns a permutation which rearranges its first argument (a \link{Ranges}
+      object) into ascending order, breaking ties by further arguments (also
+      \link{Ranges} objects).
+      See \code{\link[BiocGenerics]{order}} in the \pkg{BiocGenerics} package
+      for more information.
+    }
+    \item{}{
+      \code{sort(x)}:
+      Sorts \code{x}.
+      See \code{\link[base]{sort}} in the \pkg{base} package for more details.
+    }
+    \item{}{
+      \code{rank(x, na.last=TRUE, ties.method=c("average", "first", "random", "max", "min"))}:
+      Returns the sample ranks of the ranges in \code{x}.
+      See \code{\link[base]{rank}} in the \pkg{base} package for more details.
+    }
   }
 }
 
@@ -269,22 +259,21 @@ rangeComparisonCodeToLetter(code)
 \seealso{
   \itemize{
     \item The \link{Ranges} class.
-    \item \link[GenomicRanges]{GenomicRanges-comparison} in the GenomicRanges
-          package for comparing and ordering genomic ranges.
+
+    \item \link[GenomicRanges]{GenomicRanges-comparison} in the
+          \pkg{GenomicRanges} package for comparing and ordering genomic
+          ranges.
+
     \item \link{intra-range-methods} and \link{inter-range-methods} for
           intra and inter range transformations.
+
     \item \link{setops-methods} for set operations on \link{IRanges}
           objects.
+
     \item \code{\link{findOverlaps}} for finding overlapping ranges.
-    \item \code{\link{==}},
-          \code{\link[BiocGenerics]{duplicated}},
-          \code{\link[BiocGenerics]{unique}},
-          \code{\link[BiocGenerics]{match}},
-          \code{\link{\%in\%}},
-          \code{\link[BiocGenerics]{order}},
-          \code{\link[BiocGenerics]{sort}},
-          \code{\link[BiocGenerics]{rank}} for general information about
-          those functions.
+
+    \item \link{Vector-comparison} for the default methods for comparing
+          and/or ordering vector-like objects.
   }
 }
 
