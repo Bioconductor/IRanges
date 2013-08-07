@@ -41,11 +41,13 @@
 
 \alias{sort,Vector-method}
 
+\alias{table,Vector-method}
 
-\title{Comparing and ordering vector-like objects}
+
+\title{Compare, order, tabulate vector-like objects}
 
 \description{
-  Generic functions and default methods for comparing and/or ordering
+  Generic functions and methods for comparing, ordering, and tabulating
   vector-like objects.
 }
 
@@ -101,6 +103,11 @@ countMatches(x, table, ...)
 ## ------
 
 \S4method{sort}{Vector}(x, decreasing=FALSE, ...)
+
+## table()
+## -------
+
+\S4method{table}{Vector}(...)
 }
 
 \arguments{
@@ -119,26 +126,32 @@ countMatches(x, table, ...)
     See \code{?\link[base]{base::sort}}.
   }
   \item{...}{
-    Extra arguments supported by specific methods.
+    A \link{Vector} object for \code{table} (the \code{table} method
+    for \link{Vector} objects currently only supports one argument).
 
-    The default \code{unique} method, which is implemented on top of
-    \code{duplicated}, passes the extra arguments to its call to
-    \code{duplicated}.
+    Otherwise, extra arguments supported by specific methods.
+    In particular:
+    \itemize{
+      \item The \code{unique} method for \link{Vector} objects, which is
+            implemented on top of \code{duplicated}, passes the extra
+            arguments to its call to \code{duplicated}.
 
-    The default \code{findMatches} and \code{countMatches} methods, which are
-    implemented on top of \code{match}, pass the extra arguments to
-    their calls to \code{match}.
+      \item The default \code{findMatches} and \code{countMatches} methods,
+            which are implemented on top of \code{match}, pass the extra
+            arguments to their calls to \code{match}.
 
-    The default \code{sort} method, which is implemented on top of
-    \code{order}, only accepts extra argument \code{na.last} and passes it
-    to its call to \code{order}.
+      \item The \code{sort} method for \link{Vector} objects, which is
+            implemented on top of \code{order}, only accepts extra argument
+            \code{na.last} and passes it to its call to \code{order}.
+    }
   }
 }
 
 \details{
-  The \pkg{IRanges} package defines default methods for the 6 traditional
-  binary comparison operators \code{==}, \code{!=}, \code{<=}, \code{>=},
-  \code{<}, and \code{>}. These default methods are defined as follow:
+  The 6 traditional binary comparison operators are: \code{==}, \code{!=},
+  \code{<=}, \code{>=}, \code{<}, and \code{>}. The \pkg{IRanges} package
+  defines methods for each of these operators and for \link{Vector} objects
+  as follow:
   \preformatted{
 setMethod("==", c("Vector", "Vector"),
     function(e1, e2) { compare(e1, e2) == 0L }
@@ -160,7 +173,7 @@ setMethod(">", c("Vector", "Vector"),
 )
   }
   With these definitions, the 6 binary operators will work out-of-the-box
-  on \link{Vector} objects for which \code{compare} is implemented.
+  on \link{Vector} objects for which \code{compare} works the expected way.
   If \code{compare} is not implemented, then it's enough to implement
   \code{==} and \code{<=} methods to have the 4 remaining operators
   (\code{!=}, \code{>=}, \code{<}, and \code{>}) work out-of-the-box.
@@ -168,15 +181,16 @@ setMethod(">", c("Vector", "Vector"),
   Note that no \code{compare} method is actually implemented for the
   \link{Vector} class. Specific \code{compare} methods need to be implemented
   for specific subclasses (e.g. for \link{Ranges} objects). These specific
-  methods must obey the rules describe in the Value section below.
+  methods must obey the rules described in the Value section below.
 
-  Using a similar approach, the default methods for \code{unique},
-  \code{\%in\%}, and \code{sort} will work out-of-the-box on a \link{Vector}
-  object for which \code{duplicated}, \code{match}, and \code{order} are
-  implemented, respectively. Note that no \code{duplicated}, \code{match},
-  or \code{order} method is actually implemented for the \link{Vector} class.
-  Specific methods need to be implemented for specific subclasses (e.g.
-  for \link{Ranges} objects).
+  Using a similar approach, the \code{unique}, \code{\%in\%}, and \code{sort}
+  methods for \link{Vector} objects are implemented on top of
+  \code{duplicated}, \code{match}, and \code{order}, respectively,
+  so they will work out-of-the-box on \link{Vector} objects for which
+  \code{duplicated}, \code{match}, and \code{order} work the expected way.
+  Note that no \code{duplicated}, \code{match}, or \code{order} method is
+  actually implemented for the \link{Vector} class. Specific methods need
+  to be implemented for specific subclasses (e.g. for \link{Ranges} objects).
 
   \code{findMatches} is an enhanced version of \code{match} which, by default
   (i.e. if \code{select="all"}), returns all the matches in a \link{Hits}
@@ -185,6 +199,15 @@ setMethod(">", c("Vector", "Vector"),
   \code{countMatches} returns an integer vector of the length of \code{x},
   containing the number of matches in \code{table} for each element
   in \code{x}.
+
+  The default \code{findMatches} and \code{countMatches} methods are
+  implemented on top of \code{match} so they will work out-of-the-box on
+  \link{Vector} objects for which \code{match} works the expected way.
+
+  The \code{table} method for \link{Vector} objects is implemented on top
+  of \code{match}, \code{order}, and \code{as.character}, so it will work
+  out-of-the-box on a \link{Vector} object for which \code{match},
+  \code{order}, and \code{as.character} work the expected way.
 }
 
 \value{
@@ -198,7 +221,7 @@ setMethod(">", c("Vector", "Vector"),
   that is, in that case it must return an integer vector of the same length
   as \code{x} and \code{y} where the i-th element is the result of compairing
   \code{x[i]} and \code{y[i]}. If \code{x} and \code{y} don't have the same
-  length and are not zero-length vectors, then the shortest must first
+  length and are not zero-length vectors, then the shortest must first be
   recycled to the length of the longest. If one of them is a zero-length
   vector then \code{compare(x, y)} must return a zero-length integer vector.
 
@@ -212,6 +235,9 @@ setMethod(">", c("Vector", "Vector"),
   For \code{countMatches}: an integer vector of the length of \code{x},
   containing the number of matches in \code{table} for each element
   in \code{x}.
+
+  For \code{table}: a 1D array of integer values promoted to the
+  \code{"table"} class. See \code{?BiocGeneric::table} for more information.
 }
 
 \author{H. Pages}
@@ -245,10 +271,10 @@ setMethod(">", c("Vector", "Vector"),
 
 ## ---------------------------------------------------------------------
 ## B. FOR DEVELOPPERS: HOW TO IMPLEMENT THE BINARY COMPARISON OPERATORS
-##    FOR YOUR CLASS
+##    FOR YOUR Vector SUBCLASS
 ## ---------------------------------------------------------------------
 
-## The answer is: don't implement them, just implement compare() and the
+## The answer is: don't implement them. Just implement compare() and the
 ## binary comparison operators will work out-of-the-box. Here is an
 ## example:
 

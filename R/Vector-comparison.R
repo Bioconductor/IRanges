@@ -18,7 +18,7 @@
 
 setGeneric("compare", function(x, y) standardGeneric("compare"))
 
-### The 2 default methods below are implemented on top of compare().
+### The methods below are implemented on top of compare().
 
 setMethods("==", .BIN_COMP_OP_SIGNATURES,
     function(e1, e2) { compare(e1, e2) == 0L }
@@ -28,7 +28,7 @@ setMethods("<=", .BIN_COMP_OP_SIGNATURES,
     function(e1, e2) { compare(e1, e2) <= 0L }
 )
 
-### The 4 default methods below are implemented on top of == and <=.
+### The methods below are implemented on top of == and <=.
 
 setMethods("!=", .BIN_COMP_OP_SIGNATURES, function(e1, e2) { !(e1 == e2) })
 
@@ -42,7 +42,7 @@ setMethods(">", .BIN_COMP_OP_SIGNATURES, function(e1, e2) { !(e1 <= e2) })
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### unique()
 ###
-### The default method below is implemented on top of duplicated().
+### The method below is implemented on top of duplicated().
 ###
 
 ### S3/S4 combo for unique.Vector
@@ -54,7 +54,7 @@ setMethod("unique", "Vector", unique.Vector)
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### %in%
 ###
-### The default method below is implemented on top of match().
+### The method below is implemented on top of match().
 ###
 
 setMethods("%in%", .BIN_COMP_OP_SIGNATURES,
@@ -65,8 +65,8 @@ setMethods("%in%", .BIN_COMP_OP_SIGNATURES,
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### findMatches() & countMatches()
 ###
-### The default "findMatches" and "countMatches" methods below are implemented
-### on top of match().
+### The default "findMatches" and "countMatches" methods below are
+### implemented on top of match().
 ###
 
 setGeneric("findMatches", signature=c("x", "table"),
@@ -159,7 +159,7 @@ setMethod("countMatches", c("ANY", "ANY"), .countMatches.default)
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### sort()
 ###
-### The default method below is implemented on top of order().
+### The method below is implemented on top of order().
 ###
 
 ### S3/S4 combo for sort.Vector
@@ -168,4 +168,67 @@ setMethod("countMatches", c("ANY", "ANY"), .countMatches.default)
 sort.Vector <- function (x, decreasing=FALSE, ...)
     .sort.Vector(x, decreasing=decreasing, ...)
 setMethod("sort", "Vector", sort.Vector)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### table()
+###
+### The method below is implemented on top of match(), order(), and
+### as.character().
+###
+
+### This is a copy/paste of the list.names() function locally defined inside
+### base::table().
+.list.names <- function(...) {
+    deparse.level <- 1
+    l <- as.list(substitute(list(...)))[-1L]
+    nm <- names(l)
+    fixup <- if (is.null(nm))
+        seq_along(l)
+    else nm == ""
+    dep <- vapply(l[fixup], function(x) switch(deparse.level +
+        1, "", if (is.symbol(x)) as.character(x) else "",
+        deparse(x, nlines = 1)[1L]), "")
+    if (is.null(nm))
+        dep
+    else {
+        nm[fixup] <- dep
+        nm
+    }
+}
+
+.compute_table <- function(x)
+{
+    xx <- match(x, x)  # replace with selfmatch(x) when it's available
+    #xx <- selfmatch(x)
+    t <- tabulate(xx, nbins=length(xx))
+    keep_idx <- which(t != 0L)
+    x2 <- x[keep_idx]
+    t2 <- t[keep_idx]
+    oo <- order(x2)
+    x2 <- x2[oo]
+    t2 <- t2[oo]
+    ans <- array(t2)
+    dimnames(ans) <- list(as.character(x2))
+    ans
+}
+
+setMethod("table", "Vector",
+    function(...)
+    {
+        args <- list(...)
+        if (length(args) > 1L)
+            stop("the \"table\" method for Vector objects currently ",
+                 "only supports one argument")
+        x <- args[[1L]]
+
+        ## Compute the table as an array.
+        ans <- .compute_table(x)
+
+        ## Some cosmetic adjustments.
+        names(dimnames(ans)) <- .list.names(...)
+        class(ans) <- "table"
+        ans
+    }
+)
 
