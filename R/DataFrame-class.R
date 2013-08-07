@@ -31,7 +31,7 @@ setMethod("rownames", "DataFrame",
             rn <- x@rownames
             if (is.null(rn) && !do.NULL) {
               nr <- NROW(x)
-              if (nr > 0L) 
+              if (nr > 0L)
                 rn <- paste(prefix, seq_len(nr), sep = "")
               else
                 rn <- character(0L)
@@ -50,7 +50,7 @@ setMethod("colnames", "DataFrame",
             if (length(x@listData) != 0L)
                 stop("DataFrame object with NULL colnames, please fix it ",
                      "with colnames(x) <- value")
-            return(character(0)) 
+            return(character(0))
           })
 
 setReplaceMethod("rownames", "DataFrame",
@@ -73,7 +73,7 @@ setReplaceMethod("rownames", "DataFrame",
 setReplaceMethod("colnames", "DataFrame",
                  function(x, value)
                  {
-                   if (!is.character(value)) 
+                   if (!is.character(value))
                        stop("'value' must be a character vector ",
                             "in colnames(x) <- value")
                    if (length(value) > length(x))
@@ -141,7 +141,7 @@ DataFrame <- function(..., row.names = NULL, check.names = TRUE)
   if (length(listData) > 0) {
     dotnames <- names(listData)
     if (is.null(dotnames)) {
-      emptynames <- rep.int(TRUE, length(listData))      
+      emptynames <- rep.int(TRUE, length(listData))
     } else {
       emptynames <- !nzchar(dotnames)
     }
@@ -195,8 +195,8 @@ DataFrame <- function(..., row.names = NULL, check.names = TRUE)
     if (anyDuplicated(row.names))
       stop("duplicate row names")
     row.names <- as.character(row.names)
-  } 
-  
+  }
+
   new2("DataFrame", listData=varlist, rownames=row.names,
        nrows=as.integer(max(nr, length(row.names))), check=FALSE)
 }
@@ -267,7 +267,7 @@ setMethod("[", "DataFrame",
 
             ## no ',' -- forward to list
             ## NOTE: matrix-style subsetting by logical matrix not supported
-            if ((nargs() - !missing(drop)) < 3) { 
+            if ((nargs() - !missing(drop)) < 3) {
               if (!missing(drop))
                 warning("parameter 'drop' ignored by list-style subsetting")
               if (missing(i))
@@ -318,7 +318,7 @@ setMethod("[", "DataFrame",
               drop <- dim[2L] == 1
             if (drop) {
               ## one column left
-              if (dim[2L] == 1) 
+              if (dim[2L] == 1)
                 return(x[[1L]])
               ## one row left
               if (dim[1L] == 1)
@@ -400,8 +400,8 @@ setReplaceMethod("[", "DataFrame",
                        if (length(newrn) == 0L && li > 0L && max(i) > nrow(x))
                          newrn <- as.character(seq.int(nrow(x) + 1L, max(i)))
                        if (length(x@listData[j][[1]]) == 0L)
-                         x@listData[j] <- list(rep(NA, nrow(x))) 
-                       x@listData[j] <- 
+                         x@listData[j] <- list(rep(NA, nrow(x)))
+                       x@listData[j] <-
                          lapply(x@listData[j], function(y) {y[i] <- value; y})
                      } else {
                        x@listData[j] <- list(value)
@@ -446,7 +446,7 @@ setReplaceMethod("[", "DataFrame",
                          rv <- value[[vc[k]]]
                          if (length(dim(rv)) == 2)
                            v[i,] <- rv
-                         else v[i] <- rv
+                         else v[i] <- as(rv, class(v))
                          x@listData[[j[k]]] <- v
                        }
                      } else {
