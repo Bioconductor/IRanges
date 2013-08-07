@@ -34,16 +34,25 @@
 \alias{\%in\%,Vector,ANY-method}
 \alias{\%in\%,ANY,Vector-method}
 
+\alias{findMatches}
+\alias{findMatches,ANY,ANY-method}
+\alias{countMatches}
+\alias{countMatches,ANY,ANY-method}
+
 \alias{sort,Vector-method}
 
 
 \title{Comparing and ordering vector-like objects}
 
 \description{
-  Default methods for comparing and/or ordering vector-like objects.
+  Generic functions and default methods for comparing and/or ordering
+  vector-like objects.
 }
 
 \usage{
+## Element-wise (aka "parallel") comparison of 2 Vector objects
+## ------------------------------------------------------------
+
 compare(x, y)
 
 \S4method{==}{Vector,Vector}(e1, e2)
@@ -70,11 +79,26 @@ compare(x, y)
 \S4method{>}{Vector,ANY}(e1, e2)
 \S4method{>}{ANY,Vector}(e1, e2)
 
+## unique()
+## --------
+
 \S4method{unique}{Vector}(x, incomparables=FALSE, ...)
+
+## %in%
+## ----
 
 \S4method{\%in\%}{Vector,Vector}(x, table)
 \S4method{\%in\%}{Vector,ANY}(x, table)
 \S4method{\%in\%}{ANY,Vector}(x, table)
+
+## findMatches() & countMatches()
+## ------------------------------
+
+findMatches(x, table, select=c("all", "first", "last"), ...)
+countMatches(x, table, ...)
+
+## sort()
+## ------
 
 \S4method{sort}{Vector}(x, decreasing=FALSE, ...)
 }
@@ -86,15 +110,28 @@ compare(x, y)
   \item{incomparables}{
     See \code{?\link[base]{base::unique}}.
   }
+  \item{select}{
+    Only \code{select="all"} is supported at the moment.
+    Note that you can use \code{match} if you want to do \code{select="first"}.
+    Otherwise you're welcome to request this on the Bioconductor mailing list.
+  }
   \item{decreasing}{
     See \code{?\link[base]{base::sort}}.
   }
   \item{...}{
-    For \code{unique}: extra arguments supported by specific \code{unique}
-    methods.
+    Extra arguments supported by specific methods.
 
-    For \code{sort}: only extra argument \code{na.last} is accepted (not
-    necessarily supported by all \link{Vector} subclasses).
+    The default \code{unique} method, which is implemented on top of
+    \code{duplicated}, passes the extra arguments to its call to
+    \code{duplicated}.
+
+    The default \code{findMatches} and \code{countMatches} methods, which are
+    implemented on top of \code{match}, pass the extra arguments to
+    their calls to \code{match}.
+
+    The default \code{sort} method, which is implemented on top of
+    \code{order}, only accepts extra argument \code{na.last} and passes it
+    to its call to \code{order}.
   }
 }
 
@@ -136,10 +173,18 @@ setMethod(">", c("Vector", "Vector"),
   Using a similar approach, the default methods for \code{unique},
   \code{\%in\%}, and \code{sort} will work out-of-the-box on a \link{Vector}
   object for which \code{duplicated}, \code{match}, and \code{order} are
-  implemented, respectively. Note that none of these methods is actually
-  implemented for the \link{Vector} class. Specific \code{duplicated},
-  \code{match}, and \code{order} methods need to be implemented for specific
-  subclasses (e.g. for \link{Ranges} objects).
+  implemented, respectively. Note that no \code{duplicated}, \code{match},
+  or \code{order} method is actually implemented for the \link{Vector} class.
+  Specific methods need to be implemented for specific subclasses (e.g.
+  for \link{Ranges} objects).
+
+  \code{findMatches} is an enhanced version of \code{match} which, by default
+  (i.e. if \code{select="all"}), returns all the matches in a \link{Hits}
+  object.
+
+  \code{countMatches} returns an integer vector of the length of \code{x},
+  containing the number of matches in \code{table} for each element
+  in \code{x}.
 }
 
 \value{
@@ -160,6 +205,13 @@ setMethod(">", c("Vector", "Vector"),
   For \code{unique}, \code{\%in\%}, and \code{sort}: see
   \code{?\link[BiocGenerics]{BiocGenerics::unique}}, \code{?\link{`\%in\%`}},
   and \code{?\link[BiocGenerics]{BiocGenerics::sort}}.
+
+  For \code{findMatches}: a \link{Hits} object by default (i.e. if
+  \code{select="all"}).
+
+  For \code{countMatches}: an integer vector of the length of \code{x},
+  containing the number of matches in \code{table} for each element
+  in \code{x}.
 }
 
 \author{H. Pages}
@@ -179,11 +231,28 @@ setMethod(">", c("Vector", "Vector"),
           \code{\link[BiocGenerics]{sort}},
           \code{\link[BiocGenerics]{rank}} for general information about
           the comparison/ordering operators and functions.
+
+    \item The \link{Hits} class.
   }
 }
 
 \examples{
-## 1. Implement a simple Vector subclass:
+## ---------------------------------------------------------------------
+## A. SIMPLE EXAMPLES
+## ---------------------------------------------------------------------
+
+## See ?`Ranges-comparison` for examples using Ranges objects.
+
+## ---------------------------------------------------------------------
+## B. FOR DEVELOPPERS: HOW TO IMPLEMENT THE BINARY COMPARISON OPERATORS
+##    FOR YOUR CLASS
+## ---------------------------------------------------------------------
+
+## The answer is: don't implement them, just implement compare() and the
+## binary comparison operators will work out-of-the-box. Here is an
+## example:
+
+## (1) Implement a simple Vector subclass.
 
 setClass("Raw", contains="Vector", representation(data="raw"))
 
@@ -197,9 +266,7 @@ x <- new("Raw", data=charToRaw("AB.x0a-BAA+C"))
 stopifnot(identical(length(x), 12L))
 stopifnot(identical(x[7:3], new("Raw", data=charToRaw("-a0x."))))
 
-## 2. We only need to implement a "compare" method for our Vector
-##    subclass to get the 6 classic binary comparison operators (==,
-##    !=, <=, >=, <, >) work out-of-the-box:
+## (2) Implement a "compare" method for Raw objects.
 
 setMethod("compare", c("Raw", "Raw"),
     function(x, y) {as.integer(x@data) - as.integer(y@data)}

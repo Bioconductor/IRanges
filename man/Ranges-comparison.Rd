@@ -10,11 +10,7 @@
 \alias{match,Ranges,Ranges-method}
 \alias{\%in\%,Ranges,Ranges-method}
 
-\alias{findMatches}
-\alias{findMatches,ANY,ANY-method}
 \alias{findMatches,Ranges,Ranges-method}
-\alias{countMatches}
-\alias{countMatches,ANY,ANY-method}
 \alias{countMatches,Ranges,Ranges-method}
 
 \alias{order,Ranges-method}
@@ -24,8 +20,7 @@
 \title{Comparing and ordering ranges}
 
 \description{
-  Methods for comparing and ordering the elements in one or more
-  \link{Ranges} objects.
+  Methods for comparing and/or ordering \link{Ranges} objects.
 }
 
 \usage{
@@ -48,12 +43,6 @@ rangeComparisonCodeToLetter(code)
 \S4method{match}{Ranges,Ranges}(x, table, nomatch=NA_integer_, incomparables=NULL,
       method=c("auto", "quick", "hash"), match.if.overlap=FALSE)
 
-## findMatches() / countMatches()
-## ------------------------------
-
-findMatches(x, table, select=c("all", "first", "last"), ...)
-countMatches(x, table, ...)
-
 ## order() and related methods
 ## ----------------------------
 
@@ -66,8 +55,6 @@ countMatches(x, table, ...)
 \arguments{
   \item{x, y, table}{
     \link{Ranges} objects.
-    For \code{findMatches} and \code{countMatches}, \code{x} and \code{table}
-    can also be atomic vectors.
   }
   \item{incomparables}{
     Not supported.
@@ -96,18 +83,9 @@ countMatches(x, table, ...)
     instead of
     \code{match(x, table, match.if.overlap=TRUE)}.
   }
-  \item{select}{
-    Not supported yet. Note that you can use \code{match} if you want to do
-    \code{select="first"}. Otherwise you're welcome to request this on the
-    Bioconductor mailing list.
-  }
   \item{...}{
-    For \code{findMatches}, \code{countMatches}: arguments to be passed
-    down to \code{match} e.g. to specify one of the supported methods
-    (note that, by default, i.e. with \code{method="auto"}, the most
-    efficient algorithm will be used).
-
-    For \code{order}: additional \link{Ranges} objects used for breaking ties.
+    One or more \link{Ranges} objects. The additional \link{Ranges} objects
+    are used to break ties.
   }
   \item{na.last}{
     Ignored.
@@ -223,17 +201,6 @@ countMatches(x, table, ...)
       equal to the number of ranges in \code{x}.
     }
     \item{}{
-      \code{findMatches(x, table, select=c("all", "first", "last"), ...)}:
-      An enhanced version of \code{match} that returns all the matches in
-      a \link{Hits} object.
-    }
-    \item{}{
-      \code{countMatches(x, table, ...)}:
-      Returns an integer vector of the length of \code{x},
-      containing the number of matches in \code{table} for each element
-      in \code{x}.
-    }
-    \item{}{
       \code{order(...)}:
       Returns a permutation which rearranges its first argument (a \link{Ranges}
       object) into ascending order, breaking ties by further arguments (also
@@ -272,8 +239,8 @@ countMatches(x, table, ...)
 
     \item \code{\link{findOverlaps}} for finding overlapping ranges.
 
-    \item \link{Vector-comparison} for the default methods for comparing
-          and/or ordering vector-like objects.
+    \item \link{Vector-comparison} for the generic functions and default
+          methods for comparing and/or ordering vector-like objects.
   }
 }
 
