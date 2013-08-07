@@ -402,8 +402,7 @@ SEXP _IntegerIntervalForest_overlap(IntervalForest *forest, SEXP r_ranges, SEXP 
     m < nranges; p_partitionLengths++, p_partitionIndices++, r_elt++) {
     cur_partition = *p_partitionIndices;
 
-    if (cur_partition != NA_INTEGER) {
-        tree = forest->trees[cur_partition-1];
+    if (cur_partition != NA_INTEGER && (tree = forest->trees[cur_partition-1])->n > 0) {
         _IntegerIntervalTree_overlapHelper(tree, cached_r_ranges, *p_partitionLengths, 
                                            m, &r_elt, find_type, result_ints);
     } else {

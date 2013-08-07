@@ -56,16 +56,16 @@ HitsList <- function(list_of_hits, subject)
   newList("HitsList", list_of_hits, subjectOffsets = subjectOffsets)
 }
 
-CompressedHitsList <- function(hits, subject)
+CompressedHitsList <- function(hits, query)
 {
-  if (!(is(subject, "IntervalForest") || is(subject, "CompressedIRangesList")))
-    stop("'subject' must be an 'IntervalForest' or 'CompressedIRangesList' object")
+  if (!(is(query, "CompressedIRangesList")))
+    stop("'query' must be a 'CompressedIRangesList' object")
   if (!is(hits, "Hits"))
     stop("'hits' must be a 'Hits' object")
 
-  sspace <- space(subject)
-  hspace <- as.integer(sspace[subjectHits(hits)])
-  partitioning <- PartitioningByEnd(hspace, names=names(subject), NG=length(names(subject)))
+  qspace <- space(query)
+  hspace <- as.integer(qspace[queryHits(hits)])
+  partitioning <- PartitioningByEnd(hspace, names=names(query@partitioning), NG=length(names(query@partitioning)))
   newCompressedList0("CompressedHitsList", unlistData=hits, partitioning=partitioning)
 }
 

@@ -270,7 +270,7 @@ setMethod("findOverlaps", c("RangesList", "IntervalForest"),
 
             # turn it into compressed list            
             if (origSelect == "all")
-              return(CompressedHitsList(res, subject))
+              return(CompressedHitsList(res, queryList))
 
             if (!drop) {
               return(newCompressedList0("CompressedIntegerList", unlistData=res, partitioning=partitioning))

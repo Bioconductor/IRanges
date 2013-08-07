@@ -272,6 +272,29 @@ test_IntervalForest_findOverlaps <- function() {
 # 
 #   checkException(findOverlaps(query, NULL), silent = TRUE)
 #   checkException(findOverlaps(NULL, query), silent = TRUE)
+
+  # check empty subject partition
+  query <- IRanges(start=1:2,width=1)
+  qpartition <- factor(c("a","b"))
+  qlist <- split(query, qpartition)
+
+  subject <- query[1]
+  slist <- new2("CompressedIRangesList", unlistData=subject, 
+    partitioning=PartitioningByEnd(1L, NG=length(qlist@partitioning@end), names=qlist@partitioning@NAMES))
+  forest <- IntervalForest(slist)  
+
+  olaps1 <- findOverlaps(qlist, slist)
+  olaps2 <- findOverlaps(qlist, forest)
+  checkIdentical(as.matrix(olaps1), as.matrix(olaps2))
+
+  subject <- query[2]
+  slist <- new2("CompressedIRangesList", unlistData=subject, 
+    partitioning=PartitioningByEnd(2L, NG=length(qlist@partitioning@end), names=qlist@partitioning@NAMES))
+  forest <- IntervalForest(slist)
+
+  olaps1 <- findOverlaps(qlist, slist)
+  olaps2 <- findOverlaps(qlist, forest)
+  checkIdentical(as.matrix(olaps1), as.matrix(olaps2))
 }
 
 test_IntervalForest_asRangesList <- function() {
