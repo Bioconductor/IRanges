@@ -40,10 +40,50 @@ setMethods(">", .BIN_COMP_OP_SIGNATURES, function(e1, e2) { !(e1 <= e2) })
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### unique()
+### selfmatch()
 ###
-### The method below is implemented on top of duplicated().
+### The default "selfmatch" method below is implemented on top of match().
 ###
+
+setGeneric("selfmatch",
+    function(x, ...) standardGeneric("selfmatch")
+)
+
+### Default "selfmatch" method. Args in ... are propagated to match().
+setMethod("selfmatch", "ANY", function(x, ...) match(x, x, ...))
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### duplicated() & unique()
+###
+### The "duplicated" method below is implemented on top of selfmatch().
+### The "unique" method below is implemented on top of duplicated().
+###
+
+### S3/S4 combo for duplicated.Vector
+duplicated.Vector <- function(x, incomparables=FALSE, ...)
+{
+    if (!identical(incomparables, FALSE)) 
+        stop("the \"duplicated\" method for Vector objects ", 
+             "only accepts 'incomparables=FALSE'")
+    args <- list(...)
+    if ("fromLast" %in% names(args)) {
+        fromLast <- args$fromLast
+        if (!isTRUEorFALSE(fromLast)) 
+            stop("'fromLast' must be TRUE or FALSE")
+        args$fromLast <- NULL
+        if (fromLast)
+            x <- rev(x)
+    } else {
+        fromLast <- FALSE
+    }
+    xx <- do.call(selfmatch, c(list(x), args))
+    ans <- xx != seq_along(xx)
+    if (fromLast)
+        ans <- rev(ans)
+    ans
+}
+setMethod("duplicated", "Vector", duplicated.Vector)
 
 ### S3/S4 combo for unique.Vector
 unique.Vector <- function(x, incomparables=FALSE, ...)
@@ -98,7 +138,7 @@ setGeneric("countMatches", signature=c("x", "table"),
 .findAllMatchesInSmallTable <- function(x, table, ..., transpose=FALSE)
 {
     x2 <- match(x, table, ...)
-    table2 <- match(table, table, ...)
+    table2 <- selfmatch(table, ...)
     table_low2high <- makeLow2highFromHigh2low(table2)
     hits_per_x <- table_low2high[x2]
     x_hits <- rep.int(seq_along(hits_per_x),
@@ -119,7 +159,8 @@ setGeneric("countMatches", signature=c("x", "table"),
     }
 }
 
-### Default "findMatches" method. Args in ... are passed down to match().
+### Default "findMatches" method. Args in ... are propagated to match() and
+### selfmatch().
 setMethod("findMatches", c("ANY", "ANY"),
     function(x, table, select=c("all", "first", "last"), ...)
     {
@@ -136,7 +177,8 @@ setMethod("findMatches", c("ANY", "ANY"),
     }
 )
 
-### Default "countMatches" method. Args in ... are passed down to match().
+### Default "countMatches" method. Args in ... are propagated to match() and
+### selfmatch().
 .countMatches.default <- function(x, table, ...)
 {
     x_len <- length(x)
@@ -144,9 +186,9 @@ setMethod("findMatches", c("ANY", "ANY"),
     if (x_len <= table_len) {
         table2 <- match(table, x, ...)  # can contain NAs
         nbins <- x_len
-        x2 <- match(x, x, ...)  # no NAs
+        x2 <- selfmatch(x, ...)  # no NAs
     } else {
-        table2 <- match(table, table, ...)  # no NAs
+        table2 <- selfmatch(table, ...)  # no NAs
         nbins <- table_len + 1L
         x2 <- match(x, table, nomatch=nbins, ...)
     }
@@ -173,7 +215,7 @@ setMethod("sort", "Vector", sort.Vector)
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### table()
 ###
-### The method below is implemented on top of match(), order(), and
+### The method below is implemented on top of selfmatch(), order(), and
 ### as.character().
 ###
 
@@ -199,8 +241,7 @@ setMethod("sort", "Vector", sort.Vector)
 
 .compute_table <- function(x)
 {
-    xx <- match(x, x)  # replace with selfmatch(x) when it's available
-    #xx <- selfmatch(x)
+    xx <- selfmatch(x)
     t <- tabulate(xx, nbins=length(xx))
     keep_idx <- which(t != 0L)
     x2 <- x[keep_idx]

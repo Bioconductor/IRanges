@@ -59,6 +59,7 @@ S3method(as.list, Rle)
 S3method(as.list, CompressedNormalIRangesList)
 S3method(as.list, Hits)
 
+S3method(duplicated, Vector)
 S3method(duplicated, Ranges)
 S3method(duplicated, Dups)
 S3method(duplicated, DataTable)
@@ -106,6 +107,7 @@ export(
     as.list.CompressedNormalIRangesList,
     as.list.Hits,
 
+    duplicated.Vector,
     duplicated.Ranges,
     duplicated.Dups,
     duplicated.DataTable,
@@ -309,6 +311,7 @@ export(
 
     ## Ranges-comparison.R
     compare,
+    selfmatch,
     findMatches, countMatches,
 
     ## Views-class.R:
@@ -436,6 +439,7 @@ exportMethods(
     "end<-",
     isNormal, whichFirstNotNormal,
     compare,
+    selfmatch,
     findMatches, countMatches,
     subject,
     ranges, "ranges<-",
