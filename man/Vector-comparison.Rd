@@ -133,8 +133,8 @@ countMatches(x, table, ...)
     on top of \code{duplicated}, propagates this argument to its call to
     \code{duplicated}.
 
-    See \code{?\link[base]{base::duplicated}} and
-    \code{?\link[base]{base::unique}} for more information about this
+    See \code{?base::\link[base]{duplicated}} and
+    \code{?base::\link[base]{unique}} for more information about this
     argument.
   }
   \item{select}{
@@ -143,7 +143,7 @@ countMatches(x, table, ...)
     Otherwise you're welcome to request this on the Bioconductor mailing list.
   }
   \item{decreasing}{
-    See \code{?\link[base]{base::sort}}.
+    See \code{?base::\link[base]{sort}}.
   }
   \item{...}{
     A \link{Vector} object for \code{table} (the \code{table} method
@@ -160,7 +160,7 @@ countMatches(x, table, ...)
             implemented on top of \code{selfmatch}, accepts extra argument
             \code{fromLast} and propagates the other extra arguments to its
             call to \code{selfmatch}.
-            See \code{?\link[base]{base::duplicated}} for more information
+            See \code{?base::\link[base]{duplicated}} for more information
             about this argument.
 
       \item The \code{unique} method for \link{Vector} objects, which is
@@ -214,9 +214,9 @@ countMatches(x, table, ...)
   For \code{selfmatch}: an integer vector of the same length as \code{x}.
 
   For \code{duplicated}, \code{unique}, and \code{\%in\%}: see
-  \code{?\link[BiocGenerics]{BiocGenerics::duplicated}},
-  \code{?\link[BiocGenerics]{BiocGenerics::unique}},
-  and \code{?\link{`\%in\%`}}.
+  \code{?BiocGenerics::\link[BiocGenerics]{duplicated}},
+  \code{?BiocGenerics::\link[BiocGenerics]{unique}},
+  and \code{?`\link{\%in\%}`}.
 
   For \code{findMatches}: a \link{Hits} object by default (i.e. if
   \code{select="all"}).
@@ -225,18 +225,23 @@ countMatches(x, table, ...)
   containing the number of matches in \code{table} for each element
   in \code{x}.
 
-  For \code{sort}: see \code{?\link[BiocGenerics]{BiocGenerics::sort}}.
+  For \code{sort}: see \code{?BiocGenerics::\link[BiocGenerics]{sort}}.
 
   For \code{table}: a 1D array of integer values promoted to the
-  \code{"table"} class. See \code{?BiocGeneric::table} for more information.
+  \code{"table"} class. See \code{?BiocGeneric::\link[BiocGenerics]{table}}
+  for more information.
 }
 
 \note{
-  The 6 traditional binary comparison operators are: \code{==}, \code{!=},
-  \code{<=}, \code{>=}, \code{<}, and \code{>}. The \pkg{IRanges} package
-  defines methods for each of these operators and for \link{Vector} objects
-  as follow:
-  \preformatted{
+  The following notes are for developpers who want to implement a
+  \link{Vector} subclass:
+
+  \enumerate{
+    \item The 6 traditional binary comparison operators are: \code{==},
+          \code{!=}, \code{<=}, \code{>=}, \code{<}, and \code{>}.
+          The \pkg{IRanges} package defines methods for each of these
+          operators and for \link{Vector} objects as follow:
+          \preformatted{
 setMethod("==", c("Vector", "Vector"),
     function(e1, e2) { compare(e1, e2) == 0L }
 )
@@ -255,44 +260,50 @@ setMethod("<", c("Vector", "Vector"),
 setMethod(">", c("Vector", "Vector"),
     function(e1, e2) { !(e1 <= e2) }
 )
+          }
+          With these definitions, the 6 binary operators work out-of-the-box
+          on \link{Vector} objects for which \code{compare} works the expected
+          way. If \code{compare} is not implemented, then it's enough to
+          implement \code{==} and \code{<=} methods to have the 4 remaining
+          operators (\code{!=}, \code{>=}, \code{<}, and \code{>}) work
+          out-of-the-box.
+
+    \item No \code{compare} method is actually implemented for the
+          \link{Vector} class. Specific \code{compare} methods need to be
+          implemented for specific \link{Vector} subclasses (e.g. for
+          \link{Ranges} objects). These specific methods must obey the rules
+          described in the Details section above.
+
+    \item The \code{duplicated}, \code{unique}, and \code{\%in\%} methods for
+          \link{Vector} objects are implemented on top of \code{selfmatch},
+          \code{duplicated}, and \code{match}, respectively, so they work
+          out-of-the-box on \link{Vector} objects for which \code{selfmatch},
+          \code{duplicated}, and \code{match} work the expected way.
+
+    \item Also the default \code{findMatches} and \code{countMatches} methods
+          are implemented on top of \code{match} and \code{selfmatch} so they
+          work out-of-the-box on \link{Vector} objects for which those things
+          work the expected way.
+
+    \item However, since \code{selfmatch} itself is also implemented on top of
+          \code{match}, then having \code{match} work the expected way is
+          actually enough to get \code{selfmatch}, \code{duplicated},
+          \code{unique}, \code{\%in\%}, \code{findMatches}, and
+          \code{countMatches} work out-of-the-box on \link{Vector} objects.
+
+    \item The \code{sort} method for \link{Vector} objects is implemented on
+          top of \code{order}, so it works out-of-the-box on \link{Vector}
+          objects for which \code{order} works the expected way.
+
+    \item The \code{table} method for \link{Vector} objects is implemented on
+          top of \code{selfmatch}, \code{order}, and \code{as.character}, so
+          it works out-of-the-box on a \link{Vector} object for which those
+          things work the expected way.
+
+    \item No \code{match} or \code{order} method is actually implemented for
+          the \link{Vector} class. Specific methods need to be implemented for
+          specific \link{Vector} subclasses (e.g. for \link{Ranges} objects).
   }
-  With these definitions, the 6 binary operators work out-of-the-box
-  on \link{Vector} objects for which \code{compare} works the expected way.
-  If \code{compare} is not implemented, then it's enough to implement
-  \code{==} and \code{<=} methods to have the 4 remaining operators
-  (\code{!=}, \code{>=}, \code{<}, and \code{>}) work out-of-the-box.
-
-  Note that no \code{compare} method is actually implemented for the
-  \link{Vector} class. Specific \code{compare} methods need to be implemented
-  for specific subclasses (e.g. for \link{Ranges} objects). These specific
-  methods must obey the rules described in the Details section above.
-
-  The \code{duplicated}, \code{unique}, and \code{\%in\%} methods for
-  \link{Vector} objects are implemented on top of \code{selfmatch},
-  \code{duplicated}, and \code{match}, respectively, so they work
-  out-of-the-box on \link{Vector} objects for which \code{selfmatch},
-  \code{duplicated}, and \code{match} work the expected way.
-  Also the default \code{findMatches} and \code{countMatches} methods are
-  implemented on top of \code{match} and \code{selfmatch} so they work 
-  out-of-the-box on \link{Vector} objects for which \code{match} and
-  \code{selfmatch} work the expected way.
-
-  However, since \code{selfmatch} itself is also implemented on top of
-  \code{match}, then having \code{match} work the expected way is enough
-  to get all the others work out-of-the-box on \link{Vector} objects.
-
-  No \code{match}, or \code{order} method is actually implemented for the
-  \link{Vector} class. Specific methods need to be implemented for specific
-  subclasses (e.g. for \link{Ranges} objects).
-
-  The \code{sort} method for \link{Vector} objects is implemented on top
-  of \code{order}, so it works out-of-the-box on \link{Vector} objects
-  for which \code{order} works the expected way.
-
-  The \code{table} method for \link{Vector} objects is implemented on top
-  of \code{selfmatch}, \code{order}, and \code{as.character}, so it works 
-  out-of-the-box on a \link{Vector} object for which \code{selfmatch},
-  \code{order}, and \code{as.character} work the expected way.
 }
 
 \author{H. Pages}
@@ -303,17 +314,20 @@ setMethod(">", c("Vector", "Vector"),
 
     \item \link{Ranges-comparison} for comparing and ordering ranges.
 
-    \item \code{\link{==}},
-          \code{\link[BiocGenerics]{duplicated}},
-          \code{\link[BiocGenerics]{unique}},
-          \code{\link[BiocGenerics]{match}},
-          \code{\link{\%in\%}},
-          \code{\link[BiocGenerics]{order}},
-          \code{\link[BiocGenerics]{sort}},
-          \code{\link[BiocGenerics]{rank}} for general information about
-          the comparison/ordering operators and functions.
+    \item \code{\link{==}} and \code{\link{\%in\%}} in the \pkg{base} package,
+          and \code{BiocGenerics::\link[BiocGenerics]{match}},
+          \code{BiocGenerics::\link[BiocGenerics]{duplicated}},
+          \code{BiocGenerics::\link[BiocGenerics]{unique}},
+          \code{BiocGenerics::\link[BiocGenerics]{order}},
+          \code{BiocGenerics::\link[BiocGenerics]{sort}},
+          \code{BiocGenerics::\link[BiocGenerics]{rank}} in the
+          \pkg{BiocGenerics} package for general information about the
+          comparison/ordering operators and functions.
 
     \item The \link{Hits} class.
+
+    \item \code{BiocGeneric::\link[BiocGenerics]{table}} in the
+          \pkg{BiocGenerics} package.
   }
 }
 
