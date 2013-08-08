@@ -35,32 +35,7 @@ rangeComparisonCodeToLetter <- function(code)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### duplicated()
-###
-### unique() will work out-of-the-box on a Ranges object thanks to the
-### method for Vector objects.
-###
-
-.duplicated.Ranges <- function(x, incomparables=FALSE, fromLast=FALSE,
-                               method=c("auto", "quick", "hash"))
-{
-    if (!identical(incomparables, FALSE))
-        stop("\"duplicated\" method for Ranges objects ",
-             "only accepts 'incomparables=FALSE'")
-    duplicatedIntegerPairs(start(x), width(x),
-                           fromLast=fromLast, method=method)
-}
-### S3/S4 combo for duplicated.Ranges
-duplicated.Ranges <- function(x, incomparables=FALSE, ...)
-    .duplicated.Ranges(x, incomparables=incomparables, ...)
-setMethod("duplicated", "Ranges", .duplicated.Ranges)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### match()
-###
-### %in% will work out-of-the-box on Ranges objects thanks to the method
-### for Vector objects.
 ###
 
 `%in%.warning.msg` <- function(classname)
@@ -116,10 +91,45 @@ setMethod("match", c("Ranges", "Ranges"),
     }
 )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### selfmatch()
+###
+
+### 'match.if.overlap' arg is ignored.
+### TODO: Defunct 'match.if.overlap' arg in BioC 2.14.
+setMethod("selfmatch", "Ranges",
+    function(x, method=c("auto", "quick", "hash"), match.if.overlap=FALSE)
+        selfmatchIntegerPairs(start(x), width(x), method=method)
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### duplicated()
+###
+### duplicated() would normally work out-of-the-box on Ranges objects thanks
+### to the method for Vector objects. However the method for AtomicList
+### vector is in the way and breaks this grand scheme. So we need to override
+### it with a specific method for Ranges objects that calls the method for
+### Vector objects.
+###
+
+### S3/S4 combo for duplicated.Ranges
+duplicated.Ranges <- duplicated.Vector
+setMethod("duplicated", "Ranges", duplicated.Ranges)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### %in%
+###
+### %in% will work out-of-the-box on Ranges objects thanks to the method
+### for Vector objects.
 ### The only reason for overriding the method for Vector objects is to issue
 ### the warning.
-### TODO: Remove this method in BioC 2.14 when the 'match.if.overlap' arg of
-### match() is defunct.
+### TODO: Remove this method in BioC 2.14 when the 'match.if.overlap' arg
+### of match() is defunct.
+###
+
 setMethod("%in%", c("Ranges", "Ranges"),
     function(x, table)
     {
@@ -132,11 +142,13 @@ setMethod("%in%", c("Ranges", "Ranges"),
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### findMatches() & countMatches()
 ###
+### findMatches() & countMatches() will work out-of-the-box on Ranges objects
+### thanks to the methods for Vector objects.
 ### The only reason for defining the 2 methods below is to prevent the
 ### warnings that otherwise would be issued when the user calls findMatches()
 ### or countMatches() on Ranges objects.
 ### TODO: Remove these methods in BioC 2.14 when the 'match.if.overlap' arg
-### of the "match" method is defunct.
+### of match() is defunct.
 ###
 
 setMethod("findMatches", c("Ranges", "Ranges"),
@@ -163,8 +175,6 @@ setMethod("countMatches", c("Ranges", "Ranges"),
 ###
 ### The "order" and "rank" methods for Ranges objects are consistent with
 ### the order implied by compare().
-### sort() will work out-of-the-box on a Ranges object thanks to the method
-### for Vector objects.
 ###
 
 setMethod("order", "Ranges",

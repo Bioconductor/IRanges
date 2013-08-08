@@ -203,7 +203,7 @@ countMatches(x, table, ...)
   (i.e. if \code{select="all"}), returns all the matches in a \link{Hits}
   object.
 
-  \code{countMatches} returns an integer vector of the length of \code{x},
+  \code{countMatches} returns an integer vector of the length of \code{x}
   containing the number of matches in \code{table} for each element
   in \code{x}.
 }
@@ -221,7 +221,7 @@ countMatches(x, table, ...)
   For \code{findMatches}: a \link{Hits} object by default (i.e. if
   \code{select="all"}).
 
-  For \code{countMatches}: an integer vector of the length of \code{x},
+  For \code{countMatches}: an integer vector of the length of \code{x}
   containing the number of matches in \code{table} for each element
   in \code{x}.
 
