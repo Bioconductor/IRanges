@@ -1,4 +1,5 @@
 #include "IRanges.h"
+#include "common.h"		/* roundingScale */
 #include <R_ext/Utils.h>
 
 SEXP Rle_integer_runsum(SEXP x, SEXP k, SEXP na_rm)
@@ -94,7 +95,7 @@ SEXP Rle_integer_runsum(SEXP x, SEXP k, SEXP na_rm)
 				stat += (*curr_value - *prev_value);
 				stat_na += (*curr_value_na - *prev_value_na);
 				/* increment values and lengths based on stat */
-				if (narm | stat_na == 0) {
+				if (narm | (stat_na == 0)) {
 					if (stat != *buf_values_elt) {
 						ans_len++;
 						buf_values_elt++;
@@ -458,7 +459,7 @@ SEXP Rle_integer_runwtsum(SEXP x, SEXP k, SEXP wt, SEXP na_rm)
 				ans_len = 1;
 			} else {
 				/* increment values and lengths based on stat */
-				if (narm | stat_na == 0) {
+				    if (narm | (stat_na == 0)) {
 					if (stat != *buf_values_elt) {
 						ans_len++;
 						buf_values_elt++;
@@ -504,9 +505,7 @@ SEXP Rle_integer_runwtsum(SEXP x, SEXP k, SEXP wt, SEXP na_rm)
 SEXP Rle_real_runwtsum(SEXP x, SEXP k, SEXP wt, SEXP na_rm)
 {
 	int i, j, nrun, window_len, buf_len, x_vec_len, ans_len;
-	int start_offset, curr_offset, m_offset;
-	int *m_length;
-	double *m_value;
+	int start_offset, curr_offset;
 	double stat;
 	int *lengths_elt, *curr_length, *buf_lengths, *buf_lengths_elt;
 	double *values_elt, *curr_value;

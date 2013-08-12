@@ -483,7 +483,7 @@ SEXP Integer_tabulate2(SEXP x, SEXP nbins, SEXP weight, SEXP strict)
 {
 	SEXP ans;
 	int x_len, nbins0, weight_len, strict0, *one_based_ans_p,
-	    i, j, x_elt, weight_elt, ans_elt;
+	    i, j, x_elt, weight_elt;
 	const int *x_p, *weight_p;
 
 	x_len = LENGTH(x);

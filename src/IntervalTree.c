@@ -166,7 +166,6 @@ SEXP IntegerIntervalForest_new(SEXP r_ranges, SEXP r_partitionLengths, SEXP r_np
   SEXP r_forest;
   
   cachedIRanges cached_r_ranges = _cache_IRanges(r_ranges);
-  int nranges = _get_cachedIRanges_length(&cached_r_ranges);
   int i, m, last, start, end;
   int npartitions = *INTEGER(r_npartitions);
   int *partitionLengths = INTEGER(r_partitionLengths);
