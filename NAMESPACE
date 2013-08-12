@@ -59,6 +59,17 @@ S3method(as.list, Rle)
 S3method(as.list, CompressedNormalIRangesList)
 S3method(as.list, Hits)
 
+S3method(as.data.frame, DataFrame)
+S3method(as.data.frame, DataFrameList)
+S3method(as.data.frame, GappedRanges)
+S3method(as.data.frame, Hits)
+S3method(as.data.frame, OverlapEncodings)
+S3method(as.data.frame, RangedData)
+S3method(as.data.frame, Ranges)
+S3method(as.data.frame, RangesList)
+S3method(as.data.frame, Rle)
+S3method(as.data.frame, Vector)
+
 S3method(duplicated, Vector)
 S3method(duplicated, Ranges)
 S3method(duplicated, Dups)
@@ -106,6 +117,17 @@ export(
     as.list.Rle,
     as.list.CompressedNormalIRangesList,
     as.list.Hits,
+
+    as.data.frame.DataFrame,
+    as.data.frame.DataFrameList,
+    as.data.frame.GappedRanges,
+    as.data.frame.Hits,
+    as.data.frame.OverlapEncodings,
+    as.data.frame.RangedData,
+    as.data.frame.Ranges,
+    as.data.frame.RangesList,
+    as.data.frame.Rle,
+    as.data.frame.Vector,
 
     duplicated.Vector,
     duplicated.Ranges,

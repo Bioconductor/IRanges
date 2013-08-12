@@ -37,6 +37,7 @@
 \alias{RangedData}
 
 % Coercion:
+\alias{as.data.frame.RangedData}
 \alias{as.data.frame,RangedData-method}
 \alias{coerce,RangedData,DataFrame-method}
 \alias{coerce,Rle,RangedData-method}

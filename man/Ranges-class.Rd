@@ -20,6 +20,7 @@
 \alias{end<-}
 \alias{isEmpty,Ranges-method}
 \alias{as.matrix,Ranges-method}
+\alias{as.data.frame.Ranges}
 \alias{as.data.frame,Ranges-method}
 \alias{as.integer,Ranges-method}
 \alias{unlist,Ranges-method}

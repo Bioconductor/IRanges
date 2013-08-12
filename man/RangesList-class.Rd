@@ -26,6 +26,7 @@
 \alias{[,SimpleRangesList-method}
 
 % coercion
+\alias{as.data.frame.RangesList}
 \alias{as.data.frame,RangesList-method}
 \alias{coerce,RangesList,IRangesList-method}
 \alias{coerce,RangesList,CompressedIRangesList-method}

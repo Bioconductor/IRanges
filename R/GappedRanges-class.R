@@ -81,15 +81,16 @@ setAs("GappedRanges", "RangesList", function(from) from@cnirl)
 ### The "show" method.
 ###
 
-setMethod("as.data.frame", "GappedRanges",
+as.data.frame.GappedRanges <- 
     function(x, row.names=NULL, optional=FALSE, ...)
-    {
-        ans <- callNextMethod(unname(x), row.names, optional, ...)
-        ans$ngap <- ngap(x)
-        ans$names <- names(x)
-        return(ans)
-    }
-)
+{
+    ans <- as.data.frame.Ranges(unname(x), row.names, optional, ...)
+    ans$ngap <- ngap(x)
+    ans$names <- names(x)
+    ans
+}
+
+setMethod("as.data.frame", "GappedRanges", as.data.frame.GappedRanges)
 
 setMethod("show", "GappedRanges",
     function(object)

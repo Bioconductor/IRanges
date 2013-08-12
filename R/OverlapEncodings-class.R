@@ -217,22 +217,22 @@ setMethod("Rngap", "OverlapEncodings", function(x) Rngap(encoding(x)))
 ### Coercion.
 ###
 
-setMethod("as.data.frame", "OverlapEncodings",
+as.data.frame.OverlapEncodings <- 
     function(x, row.names=NULL, optional=FALSE, ...)
-    {
-        if (!(is.null(row.names) || is.character(row.names)))
-            stop("'row.names' must be NULL or a character vector")
-        data.frame(Loffset=Loffset(x),
-                   Roffset=Roffset(x),
-                   encoding=encoding(x),
-                   flippedQuery=flippedQuery(x),
-                   row.names=row.names,
-                   check.rows=TRUE,
-                   check.names=FALSE,
-                   stringsAsFactors=FALSE)
-    }
-)
+{
+    if (!(is.null(row.names) || is.character(row.names)))
+        stop("'row.names' must be NULL or a character vector")
+    data.frame(Loffset=Loffset(x),
+               Roffset=Roffset(x),
+               encoding=encoding(x),
+               flippedQuery=flippedQuery(x),
+               row.names=row.names,
+               check.rows=TRUE,
+               check.names=FALSE,
+               stringsAsFactors=FALSE)
+}
 
+setMethod("as.data.frame", "OverlapEncodings", as.data.frame.OverlapEncodings)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### "show" method.

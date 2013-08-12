@@ -35,6 +35,7 @@
 \alias{as.character,Rle-method}
 \alias{as.raw,Rle-method}
 \alias{as.factor,Rle-method}
+\alias{as.data.frame.Rle}
 \alias{as.data.frame,Rle-method}
 \alias{as.list,Rle-method}
 \alias{coerce,Rle,list-method}

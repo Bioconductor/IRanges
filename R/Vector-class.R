@@ -871,12 +871,14 @@ setAs("Vector", "raw", function(from) as.raw(from))
 
 setAs("Vector", "data.frame", function(from) as.data.frame(from))
 
-setMethod("as.data.frame", "Vector",
+as.data.frame.Vector <- 
           function(x, row.names=NULL, optional=FALSE, ...)
-          {
-            x <- as.vector(x)
-            callGeneric()
-          })
+{
+    x <- as.vector(x)
+    as.data.frame(x, row.names=NULL, optional=optional, ...)
+}
+
+setMethod("as.data.frame", "Vector", as.data.frame.Vector)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

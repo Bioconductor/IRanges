@@ -22,6 +22,7 @@
 
 % coercion
 \alias{as.matrix,Hits-method}
+\alias{as.data.frame.Hits}
 \alias{as.data.frame,Hits-method}
 \alias{as.table,Hits-method}
 \alias{t,Hits-method}

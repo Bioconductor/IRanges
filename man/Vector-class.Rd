@@ -92,6 +92,7 @@
 \alias{coerce,Vector,raw-method}
 
 \alias{coerce,Vector,data.frame-method}
+\alias{as.data.frame.Vector}
 \alias{as.data.frame,Vector-method}
 
 \title{Vector objects}

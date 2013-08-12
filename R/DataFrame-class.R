@@ -522,25 +522,27 @@ injectIntoScope <- function(x, ...) {
   x
 }
 
-setMethod("as.data.frame", "DataFrame",
-          function(x, row.names=NULL, optional=FALSE, ...)
-          {
-            l <- as(x, "list")
-            if (is.null(row.names))
-              row.names <- rownames(x)
-            if (!length(l) && is.null(row.names))
-              row.names <- seq_len(nrow(x))
-            l <- lapply(l,
-                   function(y) {
-                     if (is(y, "SimpleList") || is(y, "CompressedList"))
-                       y <- as.list(y)
-                     if (is.list(y))
-                       y <- I(y)
-                     y
-                   })
-            IRanges.data.frame <- injectIntoScope(data.frame, as.data.frame)
-            do.call(IRanges.data.frame, c(l, list(row.names = row.names)))
-          })
+as.data.frame.DataFrame <- 
+    function(x, row.names=NULL, optional=FALSE, ...)
+{
+    l <- as(x, "list")
+    if (is.null(row.names))
+        row.names <- rownames(x)
+    if (!length(l) && is.null(row.names))
+        row.names <- seq_len(nrow(x))
+    l <- lapply(l,
+                function(y) {
+                    if (is(y, "SimpleList") || is(y, "CompressedList"))
+                        y <- as.list(y)
+                    if (is.list(y))
+                        y <- I(y)
+                    y
+                })
+    IRanges.data.frame <- injectIntoScope(data.frame, as.data.frame)
+    do.call(IRanges.data.frame, c(l, list(row.names = row.names)))
+}
+
+setMethod("as.data.frame", "DataFrame", as.data.frame.DataFrame)
 
 setMethod("as.matrix", "DataFrame", function(x) {
   if (length(x) == 0L)

@@ -21,6 +21,7 @@
 \alias{coerce,GappedRanges,CompressedIRangesList-method}
 \alias{coerce,GappedRanges,IRangesList-method}
 \alias{coerce,GappedRanges,RangesList-method}
+\alias{as.data.frame.GappedRanges}
 \alias{as.data.frame,GappedRanges-method}
 \alias{show,GappedRanges-method}
 \alias{[[,GappedRanges-method}

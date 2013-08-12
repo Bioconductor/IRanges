@@ -75,22 +75,23 @@ setMethod("as.matrix", "Ranges",
                dimnames=list(names(x), NULL))
 )
 
-setMethod("as.data.frame", "Ranges",
+as.data.frame.Ranges <- 
     function(x, row.names=NULL, optional=FALSE, ...)
-    {
-        if (!(is.null(row.names) || is.character(row.names)))
-            stop("'row.names' must be NULL or a character vector")
-        ans <- data.frame(start=start(x),
-                          end=end(x),
-                          width=width(x),
-                          row.names=row.names,
-                          check.rows=TRUE,
-                          check.names=FALSE,
-                          stringsAsFactors=FALSE)
-        ans$names <- names(x)
-        ans
-    }
-)
+{
+    if (!(is.null(row.names) || is.character(row.names)))
+        stop("'row.names' must be NULL or a character vector")
+    ans <- data.frame(start=start(x),
+                      end=end(x),
+                      width=width(x),
+                      row.names=row.names,
+                      check.rows=TRUE,
+                      check.names=FALSE,
+                      stringsAsFactors=FALSE)
+    ans$names <- names(x)
+    ans
+}
+
+setMethod("as.data.frame", "Ranges", as.data.frame.Ranges)
 
 setMethod("as.integer", "Ranges",
     function(x, ...)

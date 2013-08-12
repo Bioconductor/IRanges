@@ -37,6 +37,7 @@
 \alias{Rngap,factor-method}
 \alias{Rngap,OverlapEncodings-method}
 
+\alias{as.data.frame.OverlapEncodings}
 \alias{as.data.frame,OverlapEncodings-method}
 \alias{show,OverlapEncodings-method}
 

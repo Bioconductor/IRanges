@@ -152,14 +152,15 @@ setMethod("as.list", "Rle", as.list.Rle)
 
 decodeRle <- function(x) rep.int(runValue(x), runLength(x))
 
-setMethod("as.data.frame", "Rle",
+as.data.frame.Rle <- 
     function(x, row.names = NULL, optional = FALSE, ...)
-    {
-        value <- decodeRle(x)
-        as.data.frame(value, row.names = row.names,
-                      optional = optional, ...)
-    }
-)
+{
+    value <- decodeRle(x)
+    as.data.frame(value, row.names = row.names,
+                  optional = optional, ...)
+}
+
+setMethod("as.data.frame", "Rle", as.data.frame.Rle)
 
 getStartEndRunAndOffset <- function(x, start, end) {
     .Call2("Rle_getStartEndRunAndOffset", x, start, end, PACKAGE="IRanges")

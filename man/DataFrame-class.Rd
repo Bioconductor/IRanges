@@ -23,6 +23,7 @@
 \alias{seqselect,DataFrame-method}
 
 % coercion
+\alias{as.data.frame.DataFrame}
 \alias{as.data.frame,DataFrame-method}
 \alias{as.matrix,DataFrame-method}
 \alias{coerce,matrix,DataFrame-method}
