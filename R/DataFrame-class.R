@@ -446,7 +446,7 @@ setReplaceMethod("[", "DataFrame",
                          rv <- value[[vc[k]]]
                          if (length(dim(rv)) == 2)
                            v[i,] <- rv
-                         else v[i] <- as(rv, class(v))
+                         else v[i] <- if (is.null(v)) rv else as(rv, class(v))
                          x@listData[[j[k]]] <- v
                        }
                      } else {
