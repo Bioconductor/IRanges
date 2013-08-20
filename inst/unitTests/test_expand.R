@@ -24,7 +24,7 @@ test_expand <- function(){
   checkIdentical(res3$aa,
     c("a","a","d1","d2","b1","b1","b1","b2","b2","b2","b3","b3","b3",NA,"c"))
   checkIdentical(as.character(as.data.frame(res3[14,])),
-                 c("NA", "NA", "14"))
+                 c(NA, NA, "14"))
   ## test two columns with dropping
   res4 <- expand(df, colnames=c("aa","bb"),  keepEmptyRows=FALSE)
   checkTrue(dim(res4)[1]==14)

@@ -513,7 +513,7 @@ setMethod("seqselect", "DataFrame",
 ## Break DataFrame into a normal R data.frame
 setAs("DataFrame", "data.frame",
       function(from) {
-        as.data.frame(from)
+        as.data.frame(from, optional=TRUE)
       })
 
 injectIntoScope <- function(x, ...) {
@@ -523,8 +523,10 @@ injectIntoScope <- function(x, ...) {
 }
 
 as.data.frame.DataFrame <- 
-    function(x, row.names=NULL, optional=FALSE, ...)
+  function(x, row.names=NULL, optional=FALSE, ...)
 {
+    if (length(list(...)))
+        warning("Arguments in '...' ignored")
     l <- as(x, "list")
     if (is.null(row.names))
         row.names <- rownames(x)
@@ -539,7 +541,9 @@ as.data.frame.DataFrame <-
                     y
                 })
     IRanges.data.frame <- injectIntoScope(data.frame, as.data.frame)
-    do.call(IRanges.data.frame, c(l, list(row.names = row.names)))
+    do.call(IRanges.data.frame,
+            c(l, list(row.names=row.names),
+              check.names=!optional, stringsAsFactors=FALSE))
 }
 
 setMethod("as.data.frame", "DataFrame", as.data.frame.DataFrame)

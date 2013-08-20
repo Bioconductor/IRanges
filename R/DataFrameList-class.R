@@ -446,8 +446,7 @@ as.data.frame.DataFrameList <-
     stacked <- stack(x)
     if (is.null(row.names))
         row.names <- rownames(stacked)
-    data.frame(as.data.frame(stacked, row.names = row.names),
-               stringsAsFactors = FALSE)
+    as.data.frame(stacked, row.names = row.names, optional = optional)
 }
 
 setMethod("as.data.frame", "DataFrameList", as.data.frame.DataFrameList)

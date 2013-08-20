@@ -270,13 +270,13 @@ setMethod("rbind", "DataTable", function(..., deparse.level=1)
 
 ## FIXME: do not cheat by going through data.frame
 setMethod("merge", c("DataTable", "DataTable"), function(x, y, ...) {
-  DataFrame(merge(as.data.frame(x), as.data.frame(y), ...))
+  DataFrame(merge(as(x, "data.frame"), as(y, "data.frame"), ...))
 })
 setMethod("merge", c("data.frame", "DataTable"), function(x, y, ...) {
-  DataFrame(merge(x, as.data.frame(y), ...))
+  DataFrame(merge(x, as(y, "data.frame"), ...))
 })
 setMethod("merge", c("DataTable", "data.frame"), function(x, y, ...) {
-  DataFrame(merge(as.data.frame(x), y, ...))
+  DataFrame(merge(as(x, "data.frame"), y, ...))
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -344,7 +344,7 @@ setMethod("by", "DataTable",
 ### S3/S4 combo for duplicated.DataTable
 duplicated.DataTable <- function (x, incomparables=FALSE, fromLast=FALSE, ...)
 {
-    duplicated(as.data.frame(x),
+    duplicated(as(x, "data.frame"),
                incomparables=incomparables, fromLast=fromLast, ...)
 }
 
