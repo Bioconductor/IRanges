@@ -365,59 +365,61 @@ setMethod("%in%", "Rle",
               Rle(values = runValue(x) %in% table, lengths = runLength(x),
                   check = FALSE))
 
-setMethod("aggregate", "Rle",
-          function(x, by, FUN, start = NULL, end = NULL, width = NULL,
-                   frequency = NULL, delta = NULL, ..., simplify = TRUE)
-          {
-              FUN <- match.fun(FUN)
-              if (!missing(by)) {
-                  start <- start(by)
-                  end <- end(by)
-              } else {
-                  if (!is.null(width)) {
-                      if (is.null(start))
-                          start <- end - width + 1L
-                      else if (is.null(end))
-                          end <- start + width - 1L
-                  }
-                  start <- as(start, "integer")
-                  end <- as(end, "integer")
-              }
-              if (length(start) != length(end))
-                  stop("'start', 'end', and 'width' arguments have unequal length")
-              n <- length(start)
-              if (!is.null(names(start)))
-                  indices <- structure(seq_len(n), names = names(start))
-              else
-                  indices <- structure(seq_len(n), names = names(end))
-              if (is.null(frequency) && is.null(delta)) {
-                  info <- getStartEndRunAndOffset(x, start, end)
-                  runStart <- info[["start"]][["run"]]
-                  offsetStart <- info[["start"]][["offset"]]
-                  runEnd <- info[["end"]][["run"]]
-                  offsetEnd <- info[["end"]][["offset"]]
-                  ## Performance Optimization
-                  ## Use a stripped down loop with empty Rle object
-                  newRle <- new(class(x))
-                  sapply(indices,
-                         function(i)
-                             FUN(.Call2("Rle_window",
-                                       x, runStart[i], runEnd[i],
-                                       offsetStart[i], offsetEnd[i],
-                                       newRle, PACKAGE = "IRanges"),
-                                 ...),
-                         simplify = simplify)
-              } else {
-                  frequency <- rep(frequency, length.out = n)
-                  delta <- rep(delta, length.out = n)
-                  sapply(indices,
-                         function(i)
-                             FUN(window(x, start = start[i], end = end[i],
-                                        frequency = frequency[i], delta = delta[i]),
-                                 ...),
-                         simplify = simplify)
-              }
-          })
+aggregate.Rle <- 
+    function(x, by, FUN, start = NULL, end = NULL, width = NULL,
+             frequency = NULL, delta = NULL, ..., simplify = TRUE)
+{
+    FUN <- match.fun(FUN)
+    if (!missing(by)) {
+        start <- start(by)
+        end <- end(by)
+    } else {
+        if (!is.null(width)) {
+            if (is.null(start))
+                start <- end - width + 1L
+            else if (is.null(end))
+                end <- start + width - 1L
+        }
+        start <- as(start, "integer")
+        end <- as(end, "integer")
+    }
+    if (length(start) != length(end))
+        stop("'start', 'end', and 'width' arguments have unequal length")
+    n <- length(start)
+    if (!is.null(names(start)))
+        indices <- structure(seq_len(n), names = names(start))
+    else
+        indices <- structure(seq_len(n), names = names(end))
+    if (is.null(frequency) && is.null(delta)) {
+        info <- getStartEndRunAndOffset(x, start, end)
+        runStart <- info[["start"]][["run"]]
+        offsetStart <- info[["start"]][["offset"]]
+        runEnd <- info[["end"]][["run"]]
+        offsetEnd <- info[["end"]][["offset"]]
+        ## Performance Optimization
+        ## Use a stripped down loop with empty Rle object
+        newRle <- new(class(x))
+        sapply(indices,
+               function(i)
+               FUN(.Call2("Rle_window",
+                          x, runStart[i], runEnd[i],
+                          offsetStart[i], offsetEnd[i],
+                          newRle, PACKAGE = "IRanges"),
+                   ...),
+               simplify = simplify)
+    } else {
+        frequency <- rep(frequency, length.out = n)
+        delta <- rep(delta, length.out = n)
+        sapply(indices,
+               function(i)
+               FUN(window(x, start = start[i], end = end[i],
+                          frequency = frequency[i], delta = delta[i]),
+                   ...),
+               simplify = simplify)
+    }
+}
+
+setMethod("aggregate", "Rle", aggregate.Rle)
 
 setMethod("c", "Rle", 
           function(x, ..., recursive = FALSE)
@@ -550,13 +552,15 @@ setMethod("rep.int", "Rle",
               x
           })
 
-setMethod("rev", "Rle",
-          function(x)
-          {
-              x@values <- rev(runValue(x))
-              x@lengths <- rev(runLength(x))
-              x
-          })
+rev.Rle <-
+    function(x)
+{
+    x@values <- rev(runValue(x))
+    x@lengths <- rev(runLength(x))
+    x
+}
+
+setMethod("rev", "Rle", rev.Rle)
 
 setMethod("seqselect", "Rle",
           function(x, start = NULL, end = NULL, width = NULL)
@@ -772,6 +776,7 @@ setMethod("order", "Rle",
 }
 sort.Rle <- function(x, decreasing=FALSE, ...)
     .sort.Rle(x, decreasing=decreasing, ...)
+
 setMethod("sort", "Rle", sort.Rle)
 
 setGeneric("splitRanges", signature = "x",
@@ -788,35 +793,38 @@ setMethod("splitRanges", "vectorORfactor",
               callGeneric(Rle(x))
           })
 
-setMethod("summary", "Rle",
-          function (object, ..., digits = max(3, getOption("digits") - 3)) 
-          {
-              value <-
-                if (is.logical(runValue(object))) 
-                    c(ValueMode = "logical", {
-                          tb <- table(object, exclude = NULL)
-                          if (!is.null(n <- dimnames(tb)[[1L]]) && any(iN <- is.na(n)))
-                              dimnames(tb)[[1L]][iN] <- "NA's"
-                          tb
-                      })
-                else if (is.numeric(runValue(object))) {
-                    nas <- is.na(object)
-                    object <- object[!nas]
-                    qq <- quantile(object)
-                    qq <- signif(c(qq[1L:3L], mean(object), qq[4L:5L]), digits)
-                    names(qq) <- c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.")
-                    if (any(nas)) 
-                        c(qq, `NA's` = sum(nas))
-                    else
-                        qq
-                }
-                else
-                    c(Length = length(object),
-                      Class = class(object),
-                      ValueMode = mode(runValue(object)))
-              class(value) <- c("summaryDefault", "table")
-              value
-          })
+summary.Rle <- 
+    function (object, ..., digits = max(3, getOption("digits") - 3)) 
+{
+    value <-
+        if (is.logical(runValue(object))) 
+            c(ValueMode = "logical", {
+                tb <- table(object, exclude = NULL)
+                if (!is.null(n <- dimnames(tb)[[1L]]) && any(iN <- is.na(n)))
+                    dimnames(tb)[[1L]][iN] <- "NA's"
+                tb
+            })
+        else if (is.numeric(runValue(object))) {
+            nas <- is.na(object)
+            object <- object[!nas]
+            qq <- quantile(object)
+            qq <- signif(c(qq[1L:3L], mean(object), qq[4L:5L]), digits)
+            names(qq) <-
+                c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.")
+            if (any(nas)) 
+                c(qq, `NA's` = sum(nas))
+            else
+                qq
+        }
+        else
+            c(Length = length(object),
+              Class = class(object),
+              ValueMode = mode(runValue(object)))
+    class(value) <- c("summaryDefault", "table")
+    value
+}
+
+setMethod("summary", "Rle", summary.Rle)
 
 setMethod("table", "Rle", 
     function(...)
@@ -954,23 +962,26 @@ setMethod("ifelse", c(yes = "Rle", no = "Rle"), function (test, yes, no)
 ### Other numerical data methods
 ###
 
+.diff.Rle <- 
+    function(x, lag = 1, differences = 1)
+{
+    if (!isSingleNumber(lag) || lag < 1L ||
+        !isSingleNumber(differences) || differences < 1L) 
+        stop("'lag' and 'differences' must be integers >= 1")
+    lag <- as.integer(lag)
+    differences <- as.integer(differences)
+    if (lag * differences >= length(x))
+        return(Rle(vector(class(runValue(x)))))
+    for (i in seq_len(differences)) {
+        n <- length(x)
+        x <- window(x, 1L + lag, n) - window(x, 1L, n - lag)
+    }
+    x
+}
 
-setMethod("diff", "Rle",
-          function(x, lag = 1, differences = 1)
-          {
-              if (!isSingleNumber(lag) || lag < 1L ||
-                  !isSingleNumber(differences) || differences < 1L) 
-                  stop("'lag' and 'differences' must be integers >= 1")
-              lag <- as.integer(lag)
-              differences <- as.integer(differences)
-              if (lag * differences >= length(x))
-                  return(Rle(vector(class(runValue(x)))))
-              for (i in seq_len(differences)) {
-                  n <- length(x)
-                  x <- window(x, 1L + lag, n) - window(x, 1L, n - lag)
-              }
-              x
-          })
+diff.Rle <- function(x, ...) .diff.Rle(x, ...)
+
+setMethod("diff", "Rle", .diff.Rle)
 
 .psummary.Rle <- function(FUN, ..., MoreArgs = NULL) {
     rlist <- RleList(..., compress = FALSE)
@@ -1004,17 +1015,21 @@ setMethod("pmax.int", "Rle", function(..., na.rm = FALSE)
 setMethod("pmin.int", "Rle", function(..., na.rm = FALSE)
             .psummary.Rle(pmin.int, ..., MoreArgs = list(na.rm = na.rm)))
 
-setMethod("mean", "Rle",
-          function(x, na.rm = FALSE)
-          {
-            if (is.integer(runValue(x)))
-                runValue(x) <- as.double(runValue(x))
-            if (na.rm)
-                n <- length(x) - sum(runLength(x)[is.na(runValue(x))])
-            else
-                n <- length(x)
-            sum(x, na.rm = na.rm) / n
-          })
+.mean.Rle <-
+    function(x, na.rm = FALSE)
+{
+    if (is.integer(runValue(x)))
+        runValue(x) <- as.double(runValue(x))
+    if (na.rm)
+        n <- length(x) - sum(runLength(x)[is.na(runValue(x))])
+    else
+        n <- length(x)
+    sum(x, na.rm = na.rm) / n
+}
+
+mean.Rle <- function(x, ...) .mean.Rle(x, ...)
+
+setMethod("mean", "Rle", .mean.Rle)
 
 setMethod("var", signature = c(x = "Rle", y = "missing"),
           function(x, y = NULL, na.rm = FALSE, use)
@@ -1095,36 +1110,54 @@ setMethod("cor", signature = c(x = "Rle", y = "Rle"),
 setMethod("sd", signature = c(x = "Rle"),
           function(x, na.rm = FALSE) sqrt(var(x, na.rm = na.rm)))
 
-.medianDefault <- stats::median.default
-environment(.medianDefault) <- topenv()
-setMethod("median", "Rle",
-          function(x, na.rm = FALSE)
-          {
-              if (na.rm)
-                  x <- x[!is.na(x)]
-              oldOption <- getOption("dropRle")
-              options("dropRle" = TRUE)
-              on.exit(options("dropRle" = oldOption))
-              .medianDefault(x, na.rm = FALSE)
-          })
+median.Rle <-
+    function(x, na.rm = FALSE)
+    ## FIXME: code duplication needed for S3 / S4 dispatch
+    ## drop NA's here, so dropRle==TRUE allows x[FALSE][NA] in median.default
+{
+    if (na.rm)
+        x <- x[!is.na(x)]
+    oldOption <- getOption("dropRle")
+    options("dropRle" = TRUE)
+    on.exit(options("dropRle" = oldOption))
+    NextMethod("median", na.rm=FALSE)
+}
 
-.quantileDefault <- stats::quantile.default
-environment(.quantileDefault) <- topenv()
+setMethod("median", "Rle", 
+    function(x, na.rm = FALSE)
+{
+    if (na.rm)
+        x <- x[!is.na(x)]
+    oldOption <- getOption("dropRle")
+    options("dropRle" = TRUE)
+    on.exit(options("dropRle" = oldOption))
+    callNextMethod(x=x, na.rm=FALSE)
+})
+
+quantile.Rle <- 
+    function(x, probs = seq(0, 1, 0.25), na.rm = FALSE, names = TRUE,
+             type = 7, ...)
+{
+    if (na.rm)
+        x <- x[!is.na(x)]
+    oldOption <- getOption("dropRle")
+    options("dropRle" = TRUE)
+    on.exit(options("dropRle" = oldOption))
+    NextMethod("quantile", na.rm=FALSE)
+}
+
 setMethod("quantile", "Rle",
-          function(x, probs = seq(0, 1, 0.25), na.rm = FALSE, names = TRUE, 
-                   type = 7, ...)
-          {
-              if (na.rm)
-                  x <- x[!is.na(x)]
-              oldOption <- getOption("dropRle")
-              options("dropRle" = TRUE)
-              on.exit(options("dropRle" = oldOption))
-              .quantileDefault(x, probs = probs, na.rm = FALSE, names = names,
-                               type = type, ...)
-          })
+    function(x, probs = seq(0, 1, 0.25), na.rm = FALSE, names = TRUE,
+             type = 7, ...)
+{
+    if (na.rm)
+        x <- x[!is.na(x)]
+    oldOption <- getOption("dropRle")
+    options("dropRle" = TRUE)
+    on.exit(options("dropRle" = oldOption))
+    callNextMethod(x=x, probs=probs, na.rm=FALSE, names=names, type=type, ...)
+})
 
-.madDefault <- stats::mad
-environment(.madDefault) <- topenv()
 setMethod("mad", "Rle",
           function(x, center = median(x), constant = 1.4826, na.rm = FALSE,
                    low = FALSE, high = FALSE)
@@ -1134,22 +1167,20 @@ setMethod("mad", "Rle",
               oldOption <- getOption("dropRle")
               options("dropRle" = TRUE)
               on.exit(options("dropRle" = oldOption))
-              .madDefault(x, center = center, constant = constant, na.rm = FALSE, 
-                          low = low, high = high)
+              callNextMethod(x=x, center=center, constant=constant,
+                             na.rm=FALSE, low=FALSE, high=FALSE)
           })
 
 setMethod("IQR", "Rle",
           function(x, na.rm = FALSE)
               diff(quantile(x, c(0.25, 0.75), na.rm = na.rm, names = FALSE)))
 
-.smoothEndsDefault <- stats::smoothEnds
-environment(.smoothEndsDefault) <- topenv()
 setMethod("smoothEnds", "Rle", function(y, k = 3)
           {
               oldOption <- getOption("dropRle")
               options("dropRle" = TRUE)
               on.exit(options("dropRle" = oldOption))
-              .smoothEndsDefault(y, k = k)
+              callNextMethod(y = y, k = k)
           })
 
 setMethod("runmean", "Rle",

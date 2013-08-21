@@ -52,6 +52,8 @@ exportClasses(
 ### Export S3 methods
 ###
 
+S3method(aggregate, Rle)
+
 S3method(as.list, List)
 S3method(as.list, SimpleList)
 S3method(as.list, CompressedList)
@@ -70,6 +72,8 @@ S3method(as.data.frame, RangesList)
 S3method(as.data.frame, Rle)
 S3method(as.data.frame, Vector)
 
+S3method(diff, Rle)
+
 S3method(duplicated, Vector)
 S3method(duplicated, Ranges)
 S3method(duplicated, Dups)
@@ -81,9 +85,19 @@ S3method(duplicated, CompressedAtomicList)
 S3method(levels, Rle)
 S3method(levels, OverlapEncodings)
 
+S3method(mean, Rle)
+
+S3method(median, Rle)
+
+S3method(quantile, Rle)
+
+S3method(rev, Rle)
+
 S3method(sort, Vector)
 S3method(sort, Rle)
 S3method(sort, RleList)
+
+S3method(summary, Rle)
 
 S3method(unique, Vector)
 S3method(unique, DataTable)
@@ -111,6 +125,8 @@ S3method(`window<-`, RangedData)
 ### called directly, (b) tab-completion on the name of the generic shows them,
 ### and (c) methods() doesn't asterisk them.
 export(
+    aggregate.Rle,
+
     as.list.List,
     as.list.SimpleList,
     as.list.CompressedList,
@@ -129,6 +145,8 @@ export(
     as.data.frame.Rle,
     as.data.frame.Vector,
 
+    diff.Rle,
+
     duplicated.Vector,
     duplicated.Ranges,
     duplicated.Dups,
@@ -140,10 +158,20 @@ export(
     levels.Rle,
     levels.OverlapEncodings,
 
+    mean.Rle,
+
+    median.Rle,
+
+    quantile.Rle,
+
+    rev.Rle,
+
     sort.Vector,
     sort.Rle,
     sort.RleList,
 
+    summary.Rle,
+    
     unique.Vector,
     unique.DataTable,
     unique.Rle,

@@ -37,6 +37,7 @@
 \alias{as.factor,Rle-method}
 \alias{as.data.frame.Rle}
 \alias{as.data.frame,Rle-method}
+\alias{as.list.Rle}
 \alias{as.list,Rle-method}
 \alias{coerce,Rle,list-method}
 \alias{coerce,vector,Rle-method}
@@ -70,6 +71,7 @@
 \alias{[,Rle-method}
 \alias{[<-,Rle-method}
 \alias{\%in\%,Rle,ANY-method}
+\alias{aggregate.Rle}
 \alias{aggregate,Rle-method}
 \alias{c,Rle-method}
 \alias{findRange}
@@ -82,6 +84,7 @@
 \alias{match,Rle,ANY-method}
 \alias{rep,Rle-method}
 \alias{rep.int,Rle-method}
+\alias{rev.Rle}
 \alias{rev,Rle-method}
 \alias{seqselect,Rle-method}
 \alias{seqselect<-,Rle-method}
@@ -89,13 +92,17 @@
 \alias{show,Rle-method}
 \alias{showAsCell,Rle-method}
 \alias{order,Rle-method}
+\alias{sort.Rle}
 \alias{sort,Rle-method}
 \alias{splitRanges}
 \alias{splitRanges,Rle-method}
 \alias{splitRanges,vectorORfactor-method}
+\alias{summary.Rle}
 \alias{summary,Rle-method}
 \alias{table,Rle-method}
+\alias{unique.Rle}
 \alias{unique,Rle-method}
+\alias{window.Rle}
 \alias{window,Rle-method}
 
 \alias{!,Rle-method}
@@ -107,15 +114,20 @@
 \alias{pmax.int,Rle-method}
 \alias{pmin.int,Rle-method}
 \alias{which.max,Rle-method}
+\alias{diff.Rle}
 \alias{diff,Rle-method}
+\alias{mean.Rle}
 \alias{mean,Rle-method}
 \alias{var,Rle,missing-method}
 \alias{var,Rle,Rle-method}
 \alias{cov,Rle,Rle-method}
 \alias{cor,Rle,Rle-method}
 \alias{sd,Rle-method}
+\alias{median.Rle}
 \alias{median,Rle-method}
+\alias{quantile.Rle}
 \alias{quantile,Rle-method}
+\alias{mad.Rle}
 \alias{mad,Rle-method}
 \alias{IQR,Rle-method}
 \alias{smoothEnds,Rle-method}
@@ -135,6 +147,7 @@
 \alias{gsub,ANY,ANY,Rle-method}
 \alias{paste,Rle-method}
 
+\alias{levels.Rle}
 \alias{levels,Rle-method}
 \alias{levels<-,Rle-method}
 
