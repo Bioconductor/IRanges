@@ -114,7 +114,7 @@ NumericList <- AtomicListConstructor("numeric")
 ComplexList <- AtomicListConstructor("complex")
 CharacterList <- AtomicListConstructor("character")
 RawList <- AtomicListConstructor("raw")
-RleList <- AtomicListConstructor("Rle", compress.default = FALSE)
+RleList <- AtomicListConstructor("Rle")
 
 atomicElementListClass <- function(x) {
   if (is(x, "Rle"))

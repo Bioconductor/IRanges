@@ -589,12 +589,7 @@ setMethod("seqselect", "Vector",
                   if (length(ir) == 0) {
                       x <- x[integer(0)]
                   } else {
-                      x <-
-                        do.call(c,
-                                lapply(seq_len(length(ir)), function(i)
-                                       window(x,
-                                              start = start(ir)[i],
-                                              width = width(ir)[i])))
+                      x <- x[as.integer(ir)]
                   }
               }
               x

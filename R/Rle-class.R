@@ -427,7 +427,7 @@ setMethod("c", "Rle",
               if (!identical(recursive, FALSE))
                   stop("\"c\" method for Rle objects ",
                        "does not support the 'recursive' argument")
-              args <- RleList(unname(list(x, ...)))
+              args <- RleList(unname(list(x, ...)), compress=FALSE)
               args <- args[elementLengths(args) > 0]
               if (length(args) == 0)
                   x

@@ -141,7 +141,7 @@ test_RleList_methods <- function() {
     ## na.rm
     x <- RleList(c(NA,1,1), 
                  c(1L,NA_integer_,1L), 
-                 c(1,Inf,1,-Inf),compress=FALSE)
+                 c(1,Inf,1,-Inf),compress=TRUE)
 
     target <- RleList(c(1,2), c(1L,1L), c(Inf,Inf,-Inf))
     current <- runsum(x,2, na.rm = TRUE)
@@ -166,7 +166,7 @@ test_RleList_methods <- function() {
 
     x <- RleList(c(NA,1,2), 
                  c(2L,NA_integer_,1L), 
-                 c(1,Inf,1,-Inf),compress=FALSE)
+                 c(1,Inf,1,-Inf),compress=TRUE)
     target <- RleList(c(1,2), c(2L,1L), c(Inf,Inf,1))
     current <- runq(x, 2, 2, na.rm = TRUE)
     checkIdentical(target, current)

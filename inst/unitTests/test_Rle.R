@@ -413,6 +413,13 @@ test_Rle_table <- function()
     sapply(0:(length(x)-k),
         function(offset) sum(x[1:k + offset], na.rm=na.rm)) 
 
+checkIdenticalIfNaNsWereNAs <- function(x, y)
+{
+    x[is.nan(x)] <- NA_real_
+    y[is.nan(y)] <- NA_real_
+    checkIdentical(x, y)
+}
+
 test_Rle_runsum_real <- function() {
 
     x0 <- c(NA, NaN, Inf, -Inf) 
@@ -420,30 +427,30 @@ test_Rle_runsum_real <- function() {
     ## na.rm = TRUE 
     target1 <- .naive_runsum(x0, 4, na.rm=TRUE)
     target2 <- .naive_runsum(x, 4, na.rm=TRUE)
-    checkIdentical(target1, target2) 
+    checkIdenticalIfNaNsWereNAs(target1, target2) 
     current <- as.vector(runsum(x, 4, na.rm=TRUE))
-    checkIdentical(target1, current)
+    checkIdenticalIfNaNsWereNAs(target1, current)
     ## na.rm = FALSE 
     target1 <- .naive_runsum(x0, 4, na.rm=FALSE)
     target2 <- .naive_runsum(x, 4, na.rm=FALSE)
-    checkIdentical(target1, target2) 
+    checkIdenticalIfNaNsWereNAs(target1, target2) 
     current <- as.vector(runsum(x, 4, na.rm=FALSE))
-    checkIdentical(target1, current) 
+    checkIdenticalIfNaNsWereNAs(target1, current) 
 
     x0 <- c(NA, Inf, NA, -Inf, Inf, -Inf, NaN, Inf, NaN, -Inf)
     x <- Rle(x0)
     for (k in 1:2) {
         target1 <- .naive_runsum(x0, k, na.rm=TRUE)
         target2 <- .naive_runsum(x, k, na.rm=TRUE)
-        checkIdentical(target1, target2)
+        checkIdenticalIfNaNsWereNAs(target1, target2)
         current <- as.vector(runsum(x, k, na.rm=TRUE))
-        checkIdentical(target1, current) 
+        checkIdenticalIfNaNsWereNAs(target1, current) 
 
         target1 <- .naive_runsum(x0, k, na.rm=FALSE)
         target2 <- .naive_runsum(x, k, na.rm=FALSE)
-        checkIdentical(target1, target2)
+        checkIdenticalIfNaNsWereNAs(target1, target2)
         current <- as.vector(runsum(x, k, na.rm=FALSE))
-        checkIdentical(target1, current)
+        checkIdenticalIfNaNsWereNAs(target1, current)
     }
  
     ## NOTE : Inconsistent behavior in base::sum()
