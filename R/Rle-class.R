@@ -427,7 +427,7 @@ setMethod("c", "Rle",
               if (!identical(recursive, FALSE))
                   stop("\"c\" method for Rle objects ",
                        "does not support the 'recursive' argument")
-              args <- RleList(unname(list(x, ...)), compress=FALSE)
+              args <- RleList(unname(list(x, ...)), compress = FALSE)
               args <- args[elementLengths(args) > 0]
               if (length(args) == 0)
                   x
@@ -1413,7 +1413,7 @@ setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle")
 setMethod("paste", "Rle",
           function(..., sep = " ", collapse = NULL)
           {
-              rleList <- RleList(..., compress=FALSE)
+              rleList <- RleList(..., compress = FALSE)
               ans <- rleList[[1L]]
               if (length(rleList) > 1) {
                   for (i in 2:length(rleList)) {

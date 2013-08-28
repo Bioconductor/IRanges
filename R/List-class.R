@@ -85,6 +85,8 @@ compress_listData <- function(x) {
         } else {
             x <- do.call(rbind, unname(x))
         }
+    } else {
+        x <- vector()
     }
     x
 }
