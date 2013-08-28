@@ -1413,7 +1413,7 @@ setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle")
 setMethod("paste", "Rle",
           function(..., sep = " ", collapse = NULL)
           {
-              rleList <- RleList(...)
+              rleList <- RleList(..., compress=FALSE)
               ans <- rleList[[1L]]
               if (length(rleList) > 1) {
                   for (i in 2:length(rleList)) {
