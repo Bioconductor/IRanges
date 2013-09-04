@@ -41,4 +41,18 @@ setMethod("expand", "DataFrame",
     }
 )
 
+## Assume that the named columns have the same geometry and expand
+## them simultaneously; this is different from the cartesian product
+## expansion above.
+.expandByColumnSet <- function(x, colnames, keepEmptyRows) {
+  if (length(colnames) == 0L)
+    return(x)
+  if(keepEmptyRows) {
+    emptyRows <- elementLengths(col) == 0L
+    x[emptyRows, colnames] <- rep(NA, sum(emptyRows))
+  }
+  ans <- x[togroup(x[[colnames[1L]]]),]
+  ans[colnames] <- lapply(x[colnames], unlist, use.names = FALSE)
+  ans
+}
 
