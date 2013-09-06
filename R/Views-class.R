@@ -207,7 +207,7 @@ setMethod("as.matrix", "Views", function(x, rev = FALSE, max.width = NA) {
 setMethod("[[", "Views",
     function(x, i, j, ...)
     {
-        i <- checkAndTranslateDbleBracketSubscript(x, i)
+        i <- normalizeDoubleBracketSubscript(i, x)
         start <- start(x)[i]
         end <- end(x)[i]
         if (start < 1L || end > length(subject(x)))

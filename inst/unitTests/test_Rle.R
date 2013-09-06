@@ -30,7 +30,7 @@ test_Rle_replace <- function() {
     checkIdentical(x, Rle(letters, 26:1))
 }
 
-test_Rle_coersion <- function() {
+test_Rle_coercion <- function() {
     x <- rep(6:10, 1:5)
     xRle <- Rle(x)
     y <- c(TRUE,TRUE,FALSE,FALSE,TRUE,FALSE,TRUE,TRUE,TRUE)

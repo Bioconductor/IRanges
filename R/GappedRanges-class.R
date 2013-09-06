@@ -133,7 +133,7 @@ setMethod("show", "GappedRanges",
 setMethod("[[", "GappedRanges",
     function(x, i, j, ..., exact=TRUE)
     {
-        i <- checkAndTranslateDbleBracketSubscript(x, i)
+        i <- normalizeDoubleBracketSubscript(i, x)
         newNormalIRangesFromIRanges(x@cnirl[[i]], check=FALSE)
     }
 )

@@ -435,10 +435,8 @@ setMethod("[", "IRanges",
     {
         if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
-        if (missing(i))
-            i <- seq_len(length(x))
-        else
-            i <- normalizeSingleBracketSubscript(i, x)
+        i <- normalizeSingleBracketSubscript(i, x,
+                 error.if.not.strictly.increasing=is(x, "NormalIRanges"))
         slot(x, "start", check=FALSE) <- start(x)[i]
         slot(x, "width", check=FALSE) <- width(x)[i]
         if (!is.null(names(x)))
@@ -453,15 +451,15 @@ setReplaceMethod("[", "IRanges",
     {
         if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
-        if (missing(i))
-            i <- seq_len(length(x))
-        else
-            i <- normalizeSingleBracketSubscript(i, x)
+        i <- normalizeSingleBracketSubscript(i, x)
         ans_start <- start(x)
         ans_start[i] <- start(value)
         ans_width <- width(x)
         ans_width[i] <- width(value)
-        initialize(x, start=ans_start, width=ans_width, NAMES=names(x))
+        ans <- initialize(x, start=ans_start, width=ans_width, NAMES=names(x))
+        if (is(x, "NormalIRanges"))
+            validObject(ans)
+        ans
     }
 )
 

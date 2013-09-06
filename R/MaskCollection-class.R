@@ -251,7 +251,7 @@ setMethod("maskedratio", "MaskCollection", function(x) maskedwidth(x) / width(x)
 setMethod("[[", "MaskCollection",
     function(x, i, j, ...)
     {
-        i <- checkAndTranslateDbleBracketSubscript(x, i)
+        i <- normalizeDoubleBracketSubscript(i, x)
         nir_list(x)[[i]]
     }
 )

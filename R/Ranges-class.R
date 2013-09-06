@@ -120,7 +120,7 @@ setMethod("unlist", "Ranges",
 setMethod("[[", "Ranges",
     function(x, i, j, ...)
     {
-        i <- checkAndTranslateDbleBracketSubscript(x, i)
+        i <- normalizeDoubleBracketSubscript(i, x)
         ans_shift <- start(x)[i] - 1L
         ans_length <- width(x)[i]
         seq_len(ans_length) + ans_shift

@@ -303,38 +303,29 @@ setMethod("Complex", "Rle",
 ###
 
 setMethod("[", "Rle",
-          function(x, i, j, ..., drop = getOption("dropRle", FALSE))
-          {
-              if (!missing(j) || length(list(...)) > 0)
-                  stop("invalid subsetting")
-              if (!missing(i)) {
-                  lx <- length(x)
-                  iInfo <- .bracket.Index(i, lx, asRanges = TRUE)
-                  if (!is.null(iInfo[["msg"]]))
-                      stop(iInfo[["msg"]])
-                  if (iInfo[["useIdx"]]) {
-                      i <- iInfo[["idx"]]
-                      ansList <-
-                        .Call2("Rle_seqselect", x, start(i), width(i),
-                              PACKAGE="IRanges")
-                      if (is.factor(runValue(x))) {
-                          attributes(ansList[["values"]]) <-
-                            list(levels = levels(x), class = "factor")
-                      }
-                      if (drop) {
-                          x <-
-                            rep.int(ansList[["values"]], ansList[["lengths"]])
-                      } else {
-                          x <-
-                            Rle(values  = ansList[["values"]],
-                                lengths = ansList[["lengths"]])
-                      }
-                  } else if (drop) {
-                      x <- decodeRle(x)
-                  }
-              }
-              x
-          })
+    function(x, i, j, ..., drop = getOption("dropRle", FALSE))
+    {
+        if (!missing(j) || length(list(...)) > 0)
+            stop("invalid subsetting")
+        if (missing(i) || !is(i, "IRanges")) {
+            i <- normalizeSingleBracketSubscript(i, x)
+            i <- as(i, "IRanges")
+        }
+        ansList <- .Call2("Rle_seqselect",
+                          x, start(i), width(i),
+                          PACKAGE="IRanges")
+        ans_values <- ansList[["values"]]
+        ans_lengths <- ansList[["lengths"]]
+        if (is.factor(runValue(x)))
+            attributes(ans_values) <- list(levels=levels(x), class="factor")
+        if (drop) {
+            ans <- rep.int(ans_values, ans_lengths)
+        } else {
+            ans <- Rle(ans_values, ans_lengths)
+        }
+        ans
+    }
+)
 
 setReplaceMethod("[", "Rle",
     function(x, i, j,..., value)

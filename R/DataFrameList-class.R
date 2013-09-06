@@ -327,6 +327,16 @@ setMethod("[", "CompressedSplitDataFrameList",
             x
           })
 
+setMethod("normalizeSingleBracketReplacementValue", "SplitDataFrameList",
+    function(value, x)
+    {
+        value <- callNextMethod()  # call default method
+        if (length(x) != 0L && ncol(x)[[1L]] == ncol(value)[[1L]])
+            colnames(value)[[1L]] <- colnames(x)[[1L]]
+        value
+    }
+)
+
 setReplaceMethod("[", "SimpleSplitDataFrameList",
                  function(x, i, j,..., value)
                  {
@@ -376,6 +386,7 @@ setReplaceMethod("[", "CompressedSplitDataFrameList",
                  {
                      if (length(list(...)) > 0)
                          stop("invalid replacement")
+                     value <- normalizeSingleBracketReplacementValue(value, x)
                      if (missing(j)) {
                          if (missing(i))
                              x <- callNextMethod(x = x, value = value)

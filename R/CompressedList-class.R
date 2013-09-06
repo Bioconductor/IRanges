@@ -145,8 +145,7 @@ setReplaceMethod("[", "CompressedList",
         lv <- length(value)
         if (lv == 0L)
             stop("replacement has length zero")
-        if (!is(value, class(x)))
-            value <- mk_singleBracketReplacementValue(x, value)
+        value <- normalizeSingleBracketReplacementValue(value, x)
         if (li != lv) {
             if (li %% lv != 0L)
                 warning("number of items to replace is not a multiple ",
@@ -350,11 +349,10 @@ setMethod("[[", "CompressedList",
               ## "[[" methods for other Vector subtypes don't support it.
               if (is.vector(i) && length(i) == 1L && is.na(i))
                   return(NULL)
-              index <- checkAndTranslateDbleBracketSubscript(x, i,
-                           error.if.nomatch=FALSE)
-              if (is.na(index))
+              i <- normalizeDoubleBracketSubscript(i, x, error.if.nomatch=FALSE)
+              if (is.na(i))
                   return(NULL)
-              .CompressedList.list.subscript(X = x, INDEX = index,
+              .CompressedList.list.subscript(X = x, INDEX = i,
                                              USE.NAMES = FALSE)
           })
 
@@ -519,10 +517,7 @@ setMethod("mendoapply", "CompressedList",
 setMethod("revElements", "CompressedList",
     function(x, i)
     {
-        if (missing(i))
-            i <- seq_len(length(x))
-        else
-            i <- normalizeSingleBracketSubscript(i, x)
+        i <- normalizeSingleBracketSubscript(i, x)
         if (length(x) == 0L)
             return(x)
         elt_lens <- elementLengths(x)

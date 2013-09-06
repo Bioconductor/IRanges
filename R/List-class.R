@@ -171,42 +171,6 @@ setMethod("show", "List",
 ### List-like API: Element extraction.
 ###
 
-### Supported types for 'i' are: numeric or character vector.
-### If 'i' is a single string with no match in 'names(x)', then raises an
-### error by default (i.e. if 'error.if.nomatch=TRUE'), otherwise returns
-### NA_integer_.
-checkAndTranslateDbleBracketSubscript <- function(x, i, error.if.nomatch=TRUE)
-{
-    if (!is.numeric(i) && !is.character(i))
-        stop("invalid subscript type '", class(i), "'")
-    if (length(i) < 1L)
-        stop("attempt to extract less than one element")
-    if (length(i) > 1L)
-        stop("attempt to extract more than one element")
-    if (is.na(i))
-        stop("invalid subscript NA")
-    if (is.numeric(i)) {
-        if (!is.integer(i))
-            i <- as.integer(i)
-        if (i < 1L || length(x) < i)
-            stop("subscript out of bounds")
-        return(i)
-    }
-    ## 'i' is a character string
-    x_names <- names(x)
-    if (is.null(x_names)) {
-        if (error.if.nomatch)
-            stop("attempt to extract by name when elements have no names")
-        return(NA_integer_)
-    }
-    #if (i == "")
-    #    stop("invalid subscript \"\"")
-    ans <- match(i, x_names)
-    if (is.na(ans) && error.if.nomatch)
-        stop("subscript \"", i, "\" matches no name")
-    ans
-}
-
 setMethod("$", "List", function(x, name) x[[name, exact=FALSE]])
 
 ### Fancy subsetting of a List object by a list-like subscript.
@@ -222,8 +186,7 @@ subsetListByList_replace <- function(x, i, value, byrow=FALSE)
     lv <- length(value)
     if (lv == 0L)
         stop("replacement has length zero")
-    if (!is(value, class(x)))
-        value <- mk_singleBracketReplacementValue(x, value)
+    value <- normalizeSingleBracketReplacementValue(value, x)
     if (li != lv) {
         if (li %% lv != 0L)
             warning("number of items to replace is not a multiple ",
@@ -348,52 +311,19 @@ setMethod("replaceElements", c("list", "List"),
           })
 
 setMethod("[", "List",
-          function(x, i, j, ..., drop)
-          {
-            if (!missing(j) || length(list(...)) > 0)
-              stop("invalid subsetting")
-            if (!missing(i)) {
-              if (is(i, "RangesList") || is(i, "RleList") ||
-                  is(i, "LogicalList") || is(i, "IntegerList")) {
-                x <- seqselect(x, i)
-              } else {
-                lx <- length(x)
-                if (is.numeric(i)) {
-                  if (!is.integer(i))
-                    i <- as.integer(i)
-                  if (anyMissingOrOutside(i, upper = lx))
-                    stop("subscript contains NAs or out of bounds indices")
-                  if (anyMissingOrOutside(i, 0L, lx)) {
-                    if (anyMissingOrOutside(i, upper = 0L))
-                      stop("negative and positive indices cannot be mixed")
-                    i <- seq_len(lx)[i]
-                  }
-                } else if (is.logical(i)) {
-                  if (anyMissing(i))
-                    stop("subscript contains NAs")
-                  li <- length(i)
-                  if (li > lx)
-                    stop("subscript out of bounds")
-                  if (li < lx)
-                    i <- rep(i, length.out = lx)
-                  i <- which(i)
-                } else if (is.character(i) || is.factor(i)) {
-                  nms <- names(x)
-                  if (is.null(nms))
-                    stop("cannot subset by character when names are NULL")
-                  i <- match(i, nms)
-                  if (anyMissing(i))
-                    stop("mismatching names")
-                } else if (is.null(i)) {
-                  i <- integer(0)
-                } else {
-                  stop("invalid subscript type")
-                }
-                x <- extractElements(x, i)
-              }
-            }
-            x
-          })
+    function(x, i, j, ..., drop)
+    {
+        if (!missing(j) || length(list(...)) > 0)
+            stop("invalid subsetting")
+        if (missing(i))
+            return(x)
+        if (is(i, "RangesList") || is(i, "RleList") ||
+            is(i, "LogicalList") || is(i, "IntegerList"))
+            return(seqselect(x, i))
+        i <- normalizeSingleBracketSubscript(i, x)
+        extractElements(x, i)
+    }
+)
 
 setReplaceMethod("[", "List",
                  function(x, i, j, ..., value)
@@ -415,8 +345,7 @@ setReplaceMethod("[", "List",
                    lv <- length(value)
                    if (lv == 0L)
                      stop("replacement has length zero")
-                   if (!is(value, class(x)))
-                     value <- mk_singleBracketReplacementValue(x, value)
+                   value <- normalizeSingleBracketReplacementValue(value, x)
                    if (li != lv) {
                      if (li %% lv != 0L)
                        warning("number of items to replace is not a multiple ",
@@ -506,12 +435,10 @@ setMethod("[[", "List",
             ## "[[" methods for other List subtypes don't support it.
             if (is.vector(i) && length(i) == 1L && is.na(i))
               return(NULL)
-            index <-
-              checkAndTranslateDbleBracketSubscript(x, i,
-                                                    error.if.nomatch=FALSE)
-            if (is.na(index))
+            i <- normalizeDoubleBracketSubscript(i, x, error.if.nomatch=FALSE)
+            if (is.na(i))
               return(NULL)
-            extractElement(x, index)
+            extractElement(x, i)
           })
 
 setReplaceMethod("[[", "List",
