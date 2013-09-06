@@ -18,7 +18,9 @@
 \alias{dimnames<-,DataTable-method}
 
 \alias{window,DataTable-method}
+\alias{window.DataTable}
 \alias{window<-,DataTable-method}
+\alias{window.DataTable}
 \alias{seqselect,DataTable-method}
 \alias{seqselect<-,DataTable-method}
 \alias{head,DataTable-method}
@@ -43,7 +45,9 @@
 \alias{as.env,DataTable-method}
 
 \alias{duplicated,DataTable-method}
+\alias{duplicated.DataTable}
 \alias{unique,DataTable-method}
+\alias{unique.DataTable}
 
 \alias{show,DataTable-method}
 \alias{get_showHeadLines}

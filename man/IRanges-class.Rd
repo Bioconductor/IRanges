@@ -19,6 +19,7 @@
 \alias{seqselect,IRanges-method}
 \alias{seqselect<-,IRanges-method}
 \alias{window,IRanges-method}
+\alias{window.IRanges}
 \alias{c,IRanges-method}
 
 % NormalIRanges objects:

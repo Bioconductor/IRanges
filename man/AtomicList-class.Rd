@@ -142,6 +142,8 @@
 \alias{Ops,atomic,AtomicList-method}
 \alias{Ops,CompressedAtomicList,atomic-method}
 \alias{Ops,atomic,CompressedAtomicList-method}
+\alias{Ops,SimpleAtomicList,atomic-method}
+\alias{Ops,atomic,SimpleAtomicList-method}
 \alias{Math,CompressedAtomicList-method}
 \alias{Math,SimpleAtomicList-method}
 \alias{Math2,CompressedAtomicList-method}
@@ -159,8 +161,14 @@
 \alias{is.na,CompressedRleList-method}
 \alias{is.na,SimpleRleList-method}
 \alias{duplicated,AtomicList-method}
+\alias{duplicated.AtomicList}
+\alias{duplicated,CompressedAtomicList-method}
+\alias{duplicated.CompressedAtomicList}
+\alias{unique.CompressedAtomicList}
 \alias{unique,CompressedRleList-method}
+\alias{unique.CompressedRleList}
 \alias{unique,SimpleRleList-method}
+\alias{unique.SimpleRleList}
 \alias{match,CompressedAtomicList,atomic-method}
 \alias{match,SimpleAtomicList,atomic-method}
 \alias{match,CompressedRleList,atomic-method}
@@ -180,6 +188,7 @@
 \alias{table,SimpleAtomicList-method}
 \alias{table,CompressedAtomicList-method}
 \alias{sort,RleList-method}
+\alias{sort.RleList}
 \alias{drop,AtomicList-method}
 
 \alias{!,CompressedLogicalList-method}

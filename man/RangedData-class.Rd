@@ -66,6 +66,7 @@
 \alias{seqselect,RangedData-method}
 \alias{seqselect<-,RangedData-method}
 \alias{window<-,RangedData-method}
+\alias{window<-.RangedData}
 
 % Utilities:
 \alias{within,RangedData-method}

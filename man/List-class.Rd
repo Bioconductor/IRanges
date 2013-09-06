@@ -16,11 +16,16 @@
 \alias{elementLengths,ANY-method}
 \alias{isEmpty}
 \alias{isEmpty,ANY-method}
+\alias{isEmpty,List-method}
 
 \alias{show,List-method}
 
 \alias{[[,List-method}
+\alias{[[<-,List-method}
 \alias{$,List-method}
+\alias{$<-,List-method}
+\alias{[,List-method}
+\alias{[<-,List-method}
 
 \alias{lapply,List-method}
 \alias{sapply,List-method}
@@ -185,9 +190,10 @@
       the elements of \code{x} into a single \code{elementType(x)} object.
     }
     \item{}{\code{relist(flesh, skeleton)}: Convert \code{flesh} to a
-      list with the same structure (element lengths) as
-      \code{skeleton}, a \code{List} object. This makes sense when
-      \code{flesh[i]} corresponds somehow to \code{unlist(skeleton)[i]}.
+      list with the same structure (element lengths) as \code{skeleton},
+      a \code{List} or \code{PartitioningByEnd} object. This makes sense
+      when \code{flesh[i]} corresponds somehow to
+      \code{unlist(skeleton)[i]}.
     }
     \item{}{\code{unsplit(value, f, drop = FALSE)}: Unlists
       \code{value}, where the order of the returned vector is as

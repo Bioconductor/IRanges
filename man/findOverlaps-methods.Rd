@@ -58,6 +58,7 @@
 
 \alias{\%over\%}
 \alias{\%within\%}
+\alias{\%outside\%}
 
 \alias{\%in\%,Views,Views-method}
 \alias{\%in\%,Views,Vector-method}
@@ -135,6 +136,7 @@ overlapsAny(query, subject, maxgap=0L, minoverlap=1L,
             type=c("any", "start", "end", "within", "equal"), ...)
 query \%over\% subject
 query \%within\% subject
+query \%outside\% subject
 
 subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
                  type=c("any", "start", "end", "within", "equal"), ...)
@@ -284,7 +286,8 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
   \code{`\%over\%` <- function(query, subject) overlapsAny(query, subject)}
   and
   \code{`\%within\%` <- function(query, subject)
-                        overlapsAny(query, subject, type="within")}.
+                        overlapsAny(query, subject,
+  type="within")}. \code{\%outside\%} is simply the inverse of \code{\%over\%}.
 
   \code{subsetByOverlaps} returns the subset of \code{query} that
   has an overlap hit with a range in \code{subject} using the specified

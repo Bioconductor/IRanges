@@ -28,12 +28,19 @@
 \alias{[,Vector-method}
 \alias{[<-,Vector-method}
 \alias{window,Vector-method}
+\alias{window.Vector}
 \alias{window,NULL-method}
+\alias{window.NULL}
 \alias{window,vector-method}
+\alias{window.vector}
 \alias{window,factor-method}
+\alias{window.factor}
 \alias{window<-,Vector-method}
+\alias{window<-.Vector}
 \alias{window<-,vector-method}
+\alias{window<-.vector}
 \alias{window<-,factor-method}
+\alias{window<-.factor}
 \alias{seqselect}
 \alias{seqselect,Vector-method}
 \alias{seqselect,NULL-method}
@@ -60,6 +67,7 @@
 \alias{mstack,Vector-method}
 \alias{mstack,vector-method}
 \alias{split<-,Vector-method}
+\alias{relist,ANY,Vector,list-method}
 
 \alias{tapply,Vector-method}
 \alias{shiftApply}

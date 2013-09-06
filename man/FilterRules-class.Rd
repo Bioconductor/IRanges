@@ -61,7 +61,7 @@
 }
 
 \section{Accessor methods}{
-  In the code snippets below, \code{x} is a \code{RangedData} object.
+  In the code snippets below, \code{x} is a \code{FilterRules} object.
 
   \describe{
     \item{}{\code{active(x)}: Get the logical vector of length
@@ -223,8 +223,19 @@
   ## specify both exprs and additional args
   filters <- FilterRules(filts, diffexp = de)
 
-  filts <- c("peaks", "promoters", "introns")
+  filts <- c("promoters", "peaks", "introns")
   filters <- FilterRules(filts)
+
+  ## evaluation
+  df <- DataFrame(peaks = c(TRUE, TRUE, FALSE, FALSE),
+                  promoters = c(TRUE, FALSE, FALSE, TRUE),
+                  introns = c(TRUE, FALSE, FALSE, FALSE))
+  eval(filters, df)
+  fm <- evalSeparately(filters, df)
+  identical(filterRules(fm), filters)
+  summary(fm)
+  summary(fm, percent = TRUE)
+  fm <- evalSeparately(filters, df, serial = TRUE)
 
   ## set the active state directly
   

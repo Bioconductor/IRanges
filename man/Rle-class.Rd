@@ -102,12 +102,16 @@
 \alias{table,Rle-method}
 \alias{unique.Rle}
 \alias{unique,Rle-method}
+\alias{duplicated,Rle-method}
+\alias{duplicated.Rle}
 \alias{window.Rle}
 \alias{window,Rle-method}
 
 \alias{!,Rle-method}
 \alias{which,Rle-method}
-\alias{ifelse,Rle-method}
+\alias{ifelse,ANY,ANY,Rle-method}
+\alias{ifelse,ANY,Rle,ANY-method}
+\alias{ifelse,ANY,Rle,Rle-method}
 
 \alias{pmax,Rle-method}
 \alias{pmin,Rle-method}

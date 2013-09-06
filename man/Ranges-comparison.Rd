@@ -10,6 +10,7 @@
 \alias{selfmatch,Ranges-method}
 
 \alias{duplicated,Ranges-method}
+\alias{duplicated.Ranges}
 
 \alias{\%in\%,Ranges,Ranges-method}
 

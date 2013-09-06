@@ -27,6 +27,7 @@
 \alias{as.table,Hits-method}
 \alias{t,Hits-method}
 \alias{as.list,Hits-method}
+\alias{as.list.Hits}
 \alias{coerce,Hits,list-method}
 \alias{coerce,Hits,List-method}
 \alias{coerce,Hits,DataFrame-method}

@@ -32,7 +32,9 @@
 \alias{selfmatch,ANY-method}
 
 \alias{duplicated,Vector-method}
+\alias{duplicated.Vector}
 \alias{unique,Vector-method}
+\alias{unique.Vector}
 
 \alias{\%in\%,Vector,Vector-method}
 \alias{\%in\%,Vector,ANY-method}
@@ -44,6 +46,7 @@
 \alias{countMatches,ANY,ANY-method}
 
 \alias{sort,Vector-method}
+\alias{sort.Vector}
 
 \alias{table,Vector-method}
 

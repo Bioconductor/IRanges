@@ -37,6 +37,8 @@
 \alias{coerce,AsIs,DataFrame-method}
 \alias{coerce,DataFrame,data.frame-method}
 \alias{coerce,xtabs,DataFrame-method}
+\alias{coerce,ANY,DataFrame-method}
+\alias{coerce,SimpleList,DataFrame-method}
 
 % splitting and combining
 \alias{cbind,DataFrame-method}
@@ -160,6 +162,11 @@
       \code{...}. Very similar to \code{\link{cbind.data.frame}}, except
       row names, if any, are dropped. Consider the \code{DataFrame}
       as an alternative that allows one to specify row names.
+    }
+    \item{}{
+      \code{mstack(..., .index.var = "name")}: Stacks the data frames
+      passed as through \dots, using \code{.index.var} as the index
+      column name. See \code{\link{stack}}.
     }
   }
 }

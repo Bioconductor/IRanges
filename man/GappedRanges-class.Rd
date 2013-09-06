@@ -29,6 +29,7 @@
 \alias{[,GappedRanges-method}
 \alias{seqselect,GappedRanges-method}
 \alias{window,GappedRanges-method}
+\alias{window.GappedRanges}
 \alias{c,GappedRanges-method}
 
 

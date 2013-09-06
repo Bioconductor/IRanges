@@ -49,6 +49,7 @@
 \alias{Dups}
 
 \alias{duplicated,Dups-method}
+\alias{duplicated.Dups}
 \alias{show,Dups-method}
 
 % Partitioning objects:
@@ -83,6 +84,7 @@
 \alias{start,PartitioningByWidth-method}
 \alias{coerce,Ranges,PartitioningByWidth-method}
 
+\alias{relist,ANY,PartitioningByEnd-method}
 
 \title{Grouping objects}
 
