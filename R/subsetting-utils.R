@@ -132,6 +132,35 @@ setMethod("normalizeSingleBracketReplacementValue", "ANY",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Internal generics to ease implementation of subsetting for new List
+### subclasses. The index 'i' will always be 'integer', unless the
+### subclass overrides that behavior somehow (eventually there might be
+### a generic for normalizing the arguments to '[' to an arbitrary
+### type). For replacement, 'value' is guaranteed to be compatible.
+###
+
+### Used by "[".
+setGeneric("extractElements",
+    function(x, i) standardGeneric("extractElements")
+)
+
+### Used by "[<-".
+setGeneric("replaceElements",
+    function(x, i, value) standardGeneric("replaceElements")
+)
+
+### Used by "[[".
+setGeneric("extractElement",
+    function(x, i) standardGeneric("extractElement")
+)
+
+### Used by "[[<-".
+setGeneric("replaceElement",
+    function(x, i, value) standardGeneric("replaceElement")
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### TODO: .bracket.Index() needs to go away
 ###
 

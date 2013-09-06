@@ -203,29 +203,52 @@ setValidity2("Vector", .valid.Vector)
 setMethod("[", "Vector", function(x, i, j, ..., drop)
           stop("missing '[' method for Vector class ", class(x)))
 
+### Works on any Vector object for which c() and [ work. Assumes 'i' is an
+### integer vector and 'value' is compatible with 'x'.
+setMethod("replaceElements", "Vector",
+    function(x, i, value)
+    {
+        ## Assuming that objects of class 'class(x)' can be combined with c().
+        ans <- c(x, value)
+        idx <- seq_len(length(x))
+        idx[i] <- length(x) + seq_len(length(value))
+        ## Assuming that [ works on objects of class 'class(x)'.
+        ans <- ans[idx]
+        ## Restore the original decoration.
+        metadata(ans) <- metadata(x)
+        names(ans) <- names(x)
+        mcols(ans) <- mcols(x)
+        ans
+    }
+)
+
 setReplaceMethod("[", "Vector",
-                 function(x, i, j,..., value) {
-                     if (!missing(j) || length(list(...)) > 0)
-                         stop("invalid replacement")
-                     if (missing(i)) {
-                         seqselect(x, start = 1, end = length(x)) <- value
-                     } else {
-                         iInfo <- .bracket.Index(i, length(x), names(x))
-                         if (is.null(iInfo[["msg"]])) {
-                             if (iInfo[["useIdx"]]) {
-                                 w <- rep.int(1L, length(iInfo[["idx"]]))
-                                 seqselect(x, iInfo[["idx"]], width = w) <- value
-                             }
-                             else
-                                 seqselect(x, start = 1, end = length(x)) <- value
-                         } else if (is.atomic(i)) {
-                             stop(iInfo[["msg"]])
-                         } else {
-                             seqselect(x, i) <- value
-                         }
-                     }
-                     x
-                 })
+    function(x, i, j, ..., value)
+    {
+        if (!missing(j) || length(list(...)) > 0L)
+            stop("invalid subsetting")
+        i <- normalizeSingleBracketSubscript(i, x)
+        li <- length(i)
+        if (li == 0L) {
+            ## Surprisingly, in that case, `[<-` on standard vectors does not
+            ## even look at 'value'. So neither do we...
+            return(x)
+        }
+        lv <- length(value)
+        if (lv == 0L)
+            stop("replacement has length zero")
+        value <- normalizeSingleBracketReplacementValue(value, x)
+        if (li != lv) {
+            if (li %% lv != 0L)
+                warning("number of items to replace is not a multiple ",
+                        "of replacement length")
+            ## Assuming that rep() works on 'value' and also replicates its
+            ## names.
+            value <- rep(value, length.out = li)
+        }
+        replaceElements(x, i, value)
+    }
+)
 
 ### S3/S4 combo for window.Vector
 window.Vector <- function(x, start=NA, end=NA, width=NA,

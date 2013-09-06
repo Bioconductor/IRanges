@@ -226,34 +226,6 @@ subsetListByList_replace <- function(x, i, value, byrow=FALSE)
     return(x)
 }
 
-## Internal generics to ease implementation of new List
-## subclasses. The index 'i' will always be 'integer', unless the
-## subclass overrides that behavior somehow (eventually there might be
-## a generic for normalizing the arguments to '[' to an arbitrary
-## type). For replacement, 'value' is guaranteed to be compatible.
-
-setGeneric("extractElements", function(x, i) standardGeneric("extractElements"))
-setMethod("extractElements", "List", function(x, i) {
-  stop("Multi-element extraction is not supported for '", class(x), "'.",
-       "This breaks the contract of Vector derivatives.")
-})
-setGeneric("replaceElements",
-           function(x, i, value) standardGeneric("replaceElements"))
-setMethod("replaceElements", "List", function(x, i, value) {
-  stop("Multi-element replacement is not supported for '", class(x), "'.")
-})
-
-setGeneric("extractElement", function(x, i) standardGeneric("extractElement"))
-setMethod("extractElement", "List", function(x, i) {
-  stop("Singular element extraction is not supported for '", class(x), "'.",
-       "This breaks the contract of List derivatives.")
-})
-setGeneric("replaceElement",
-           function(x, i, value) standardGeneric("replaceElement"))
-setMethod("replaceElement", "List", function(x, i, value) {
-  stop("Singular element replacement is not supported for '", class(x), "'.")
-})
-
 ## Default implementations are provided for List-based
 ## indexing. Subclasses are encouraged to override for efficiency.
 setMethod("extractElements", c("List", "RangesList"), function(x, i) {
@@ -326,37 +298,15 @@ setMethod("[", "List",
 )
 
 setReplaceMethod("[", "List",
-                 function(x, i, j, ..., value)
-                 {
-                   if (!missing(j) || length(list(...)) > 0L)
-                     stop("invalid subsetting")
-                   if (missing(i))
-                     i <- seq_len(length(x))
-                   else if (is.list(i) || is(i, "List")) 
-                     return(subsetListByList_replace(x, i, value))
-                   else
-                     i <- normalizeSingleBracketSubscript(i, x)
-                   li <- length(i)
-                   if (li == 0L) {
-                     ## Surprisingly, in that case, `[<-` on standard vectors 
-                     ## does not even look at 'value'. So neither do we...
-                     return(x)
-                   }
-                   lv <- length(value)
-                   if (lv == 0L)
-                     stop("replacement has length zero")
-                   value <- normalizeSingleBracketReplacementValue(value, x)
-                   if (li != lv) {
-                     if (li %% lv != 0L)
-                       warning("number of items to replace is not a multiple ",
-                               "of replacement length")
-                     ## Assuming that rep() works on 'value' and also replicates
-                     ## its names.
-                     value <- rep(value, length.out = li)
-                   }
-                   replaceElements(x, i, value)
-                 }
-                 )
+    function(x, i, j, ..., value)
+    {
+        if (!missing(j) || length(list(...)) > 0L)
+            stop("invalid subsetting")
+        if (!missing(i) && (is.list(i) || is(i, "List")))
+            return(subsetListByList_replace(x, i, value))
+        callNextMethod(x, i, value=value)
+    }
+)
 
 setMethod("seqselect", "List",
           function(x, start=NULL, end=NULL, width=NULL)

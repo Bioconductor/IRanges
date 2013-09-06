@@ -307,7 +307,7 @@ setMethod("[", "Rle",
     {
         if (!missing(j) || length(list(...)) > 0)
             stop("invalid subsetting")
-        if (missing(i) || !is(i, "IRanges")) {
+        if (missing(i) || !is(i, "Ranges")) {
             i <- normalizeSingleBracketSubscript(i, x)
             i <- as(i, "IRanges")
         }
@@ -330,24 +330,34 @@ setMethod("[", "Rle",
 setReplaceMethod("[", "Rle",
     function(x, i, j,..., value)
     {
-        if (missing(i)) {
-            if (length(value) <= 1L)
-                return(callNextMethod(x = x, value = value))
-            x <- decodeRle(x)
-            value <- as.vector(value)
-            return(Rle(callGeneric(x = x, value = value)))
+        if (!missing(j) || length(list(...)) > 0L)
+            stop("invalid subsetting")
+        if (missing(i) || !is(i, "Ranges"))
+            i <- normalizeSingleBracketSubscript(i, x)
+        li <- length(i)
+        if (li == 0L) {
+            ## Surprisingly, in that case, `[<-` on standard vectors does not
+            ## even look at 'value'. So neither do we...
+            return(x)
         }
-        logical.i <- is.logical(i) || (is(i, "Rle") && is.logical(runValue(i)))
-        if (length(i) == 0L || (logical.i && !any(i, na.rm = TRUE)))
-          return(x)
-        if (length(value) <= 1L && length(i) != 0L)
-            return(callNextMethod(x = x, i = i, value = value))
-        x <- decodeRle(x)
-        value <- as.vector(value)
-        if (is(i, "Ranges"))
-          i <- as.integer(i)
-        else i <- as.vector(i)
-        Rle(callGeneric(x = x, i = i, value = value))
+        lv <- length(value)
+        if (lv == 0L)
+            stop("replacement has length zero")
+        if (lv == 1L) {
+            ## "seqselect<-" method for Rle objects only supports a 'value'
+            ## of length 1.
+            if (!is(i, "Ranges"))
+                i <- as(i, "IRanges")
+            seqselect(x, i) <- value
+        } else {
+            x <- decodeRle(x)
+            if (is(i, "Ranges"))
+                i <- as.integer(i)
+            value <- as.vector(value)
+            x[i] <- value
+            x <- Rle(x)
+        }
+        x
     }
 )
 

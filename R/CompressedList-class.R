@@ -123,51 +123,6 @@ setMethod("[", "CompressedList",
               x
           })
 
-### The code is generic and does nothing specific to CompressedList.
-### Could be made the method for Vector objects.
-setReplaceMethod("[", "CompressedList",
-    function(x, i, j, ..., value)
-    {
-        if (!missing(j) || length(list(...)) > 0L)
-            stop("invalid subsetting")
-        if (missing(i))
-            i <- seq_len(length(x))
-        else if (is.list(i) || is(i, "List"))
-            return(subsetListByList_replace(x, i, value))
-        else
-            i <- normalizeSingleBracketSubscript(i, x)
-        li <- length(i)
-        if (li == 0L) {
-            ## Surprisingly, in that case, `[<-` on standard vectors does not
-            ## even look at 'value'. So neither do we...
-            return(x)
-        }
-        lv <- length(value)
-        if (lv == 0L)
-            stop("replacement has length zero")
-        value <- normalizeSingleBracketReplacementValue(value, x)
-        if (li != lv) {
-            if (li %% lv != 0L)
-                warning("number of items to replace is not a multiple ",
-                        "of replacement length")
-            ## Assuming that rep() works on 'value' and also replicates its
-            ## names.
-            value <- rep(value, length.out = li)
-        }
-        ## Assuming that c() works on objects of class 'class(x)'.
-        ans <- c(x, value)
-        idx <- seq_len(length(x))
-        idx[i] <- length(x) + seq_len(length(value))
-        ## Assuming that [ works on objects of class 'class(x)'.
-        ans <- ans[idx]
-        ## Restore the original decoration.
-        metadata(ans) <- metadata(x)
-        names(ans) <- names(x)
-        mcols(ans) <- mcols(x)
-        ans
-    }
-)
-
 setMethod("seqselect", "CompressedList",
           function(x, start=NULL, end=NULL, width=NULL)
           {
