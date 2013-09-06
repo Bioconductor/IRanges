@@ -260,7 +260,7 @@ setMethod("evalSeparately", "FilterRules",
               stop("'serial' must be TRUE or FALSE")
             inds <- seq_len(length(expr))
             names(inds) <- names(expr)
-            passed <- rep.int(TRUE, length(envir))
+            passed <- rep.int(TRUE, NROW(envir))
             m <- do.call(cbind, lapply(inds, function(i) {
               result <- eval(expr[i], envir = envir, enclos = enclos)
               if (serial) {
@@ -340,6 +340,10 @@ setMethod("filterRules", "FilterMatrix", function(x) {
 })
 
 setMethod("[", "FilterMatrix", function(x, i, j, ..., drop = TRUE) {
+  if (!missing(i))
+    i <- as.vector(i)
+  if (!missing(j))
+    j <- as.vector(j)
   ans <- callNextMethod()
   if (is.matrix(ans)) {
     filterRules <- filterRules(x)
@@ -365,7 +369,7 @@ setMethod("cbind", "FilterMatrix", function(..., deparse.level = 1) {
   FilterMatrix(matrix = ans, filterRules = rules)
 })
 
-FilterMatrix <- function(..., filterRules, matrix = base::matrix(...)) {
+FilterMatrix <- function(matrix, filterRules) {
   stopifnot(ncol(matrix) == length(filterRules))  
   if (is.null(colnames(matrix)))
     colnames(matrix) <- names(filterRules)
