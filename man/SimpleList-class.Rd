@@ -24,8 +24,6 @@
 \alias{[[<-,SimpleList-method}
 \alias{$<-,CompressedList-method}
 \alias{$<-,SimpleList-method}
-\alias{seqselect,CompressedList-method}
-\alias{seqselect,SimpleList-method}
 \alias{seqselect<-,CompressedList-method}
 \alias{seqselect<-,SimpleList-method}
 
