@@ -26,7 +26,6 @@
 \alias{$<-,List-method}
 \alias{[,List-method}
 \alias{[<-,List-method}
-\alias{seqselect,List-method}
 \alias{seqselect<-,List-method}
 
 \alias{lapply,List-method}

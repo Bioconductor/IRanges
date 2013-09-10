@@ -383,22 +383,6 @@ setReplaceMethod("[", "List",
     }
 )
 
-setMethod("seqselect", "List",
-          function(x, start=NULL, end=NULL, width=NULL)
-          {
-            lx <- length(x)
-            if ((lx > 0) && is.null(end) && is.null(width) &&
-                !is.null(start) && !is(start, "Ranges")) {
-              if (lx != length(start))
-                stop("'length(start)' must equal 'length(x)' when ",
-                     "'end' and 'width' are NULL")
-              x <- extractElements(x, start)
-            } else {
-              x <- callNextMethod()
-            }
-            x
-          })
-
 setReplaceMethod("seqselect", "List",
                  function(x, start = NULL, end = NULL, width = NULL, value)
                  {

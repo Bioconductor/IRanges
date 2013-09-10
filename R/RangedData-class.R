@@ -481,8 +481,8 @@ setMethod("[", "RangedData",
                 }
                 isplit <- split(i, igroup)
                 names(isplit) <- names(x)
-                ranges <- seqselect(ranges, isplit)
-                values <- seqselect(values, isplit)
+                ranges <- subsetListByList(ranges, isplit)
+                values <- subsetListByList(values, isplit)
                 if (drop) {
                   ok <- (elementLengths(ranges) > 0)
                   ranges <- ranges[ok]

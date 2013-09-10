@@ -43,7 +43,6 @@
 \alias{window<-,factor-method}
 \alias{window<-.factor}
 \alias{seqselect}
-\alias{seqselect,Vector-method}
 \alias{seqselect,NULL-method}
 \alias{seqselect,ANY-method}
 \alias{seqselect,vector-method}

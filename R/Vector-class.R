@@ -372,26 +372,6 @@ setGeneric("seqselect", signature="x",
            function(x, start=NULL, end=NULL, width=NULL)
            standardGeneric("seqselect"))
 
-setMethod("seqselect", "Vector",
-          function(x, start=NULL, end=NULL, width=NULL)
-          {
-              if (!is.null(end) || !is.null(width))
-                  start <- IRanges(start = start, end = end, width = width)
-              irInfo <-
-                .bracket.Index(start, length(x), names(x), asRanges = TRUE)
-              if (!is.null(irInfo[["msg"]]))
-                  stop(irInfo[["msg"]])
-              if (irInfo[["useIdx"]]) {
-                  ir <- irInfo[["idx"]]
-                  if (length(ir) == 0) {
-                      x <- x[integer(0)]
-                  } else {
-                      x <- x[as.integer(ir)]
-                  }
-              }
-              x
-          })
-
 setMethod("seqselect", "NULL",
           function(x, start=NULL, end=NULL, width=NULL) NULL)
 
