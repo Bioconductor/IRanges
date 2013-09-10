@@ -382,7 +382,7 @@ setReplaceMethod("[", "DataFrame",
                        li <- nrow(x)
                      lv <- length(value)
                      if (li != lv) {
-                       if ((li == 0) || (li %% lv != 0))
+                       if (li %% lv != 0)
                          stop(paste(lv, "rows in value to replace",
                                     li, " rows"))
                        else
