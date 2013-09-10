@@ -464,72 +464,16 @@ setReplaceMethod("[", "IRanges",
 )
 
 setMethod("subsetByRanges", "IRanges",
-    function(x, start=NULL, end=NULL, width=NULL)
+    function(x, i)
     {
-        if (!is(start, "Ranges")) {
-            start <- IRanges(start=start, end=end, width=width)
-        } else if (!is.null(end) || !is.null(width)) {
-            stop("'end' and 'width' must be NULLs ",
-                 "when 'start' is a Ranges object")
-        }
-        ans_start <- subsetByRanges(start(x), start)
-        ans_width <- subsetByRanges(width(x), start)
-        ans_names <- subsetByRanges(names(x), start)
-        ans_mcols <- subsetByRanges(mcols(x), start)
+        if (!is(i, "Ranges"))
+            stop("'i' must be a Ranges object")
+        ans_start <- subsetByRanges(start(x), i)
+        ans_width <- subsetByRanges(width(x), i)
+        ans_names <- subsetByRanges(names(x), i)
+        ans_mcols <- subsetByRanges(mcols(x), i)
         initialize(x, start=ans_start, width=ans_width, NAMES=names(x),
                       elementMetadata=ans_mcols)
-    }
-)
-
-### TODO: Deprecate seqselect() at some point in favor of subsetByRanges().
-setMethod("seqselect", "IRanges",
-    function(x, start=NULL, end=NULL, width=NULL)
-    {
-        if (!is.null(end) || !is.null(width))
-            start <- IRanges(start = start, end = end, width = width)
-        irInfo <- .bracket.Index(start, length(x), names(x), asRanges = TRUE)
-        if (!is.null(irInfo[["msg"]]))
-            stop(irInfo[["msg"]])
-        if (irInfo[["useIdx"]]) {
-            ir <- irInfo[["idx"]]
-            x <-
-              initialize(x,
-                         start = seqselect(start(x), ir),
-                         width = seqselect(width(x), ir),
-                         NAMES = seqselect(names(x), ir),
-                         elementMetadata = seqselect(elementMetadata(x), ir))
-        }
-        x
-    }
-)
-
-setReplaceMethod("seqselect", "IRanges",
-    function(x, start = NULL, end = NULL, width = NULL, value)
-    {
-        if (is.null(end) && is.null(width)) {
-            if (is.null(start))
-                ir <- IRanges(start = 1, width = length(x))
-            else if (is(start, "Ranges"))
-                ir <- start
-            else {
-                if (is.logical(start) && length(start) != length(x))
-                    start <- rep(start, length.out = length(x))
-                ir <- as(start, "IRanges")
-            }
-        } else {
-            ir <- IRanges(start=start, end=end, width=width, names=NULL)
-        }
-        ir <- reduce(ir)
-        if (length(ir) == 0)
-            return(x)
-        if (anyMissingOrOutside(start(ir), 1L, length(x)) ||
-            anyMissingOrOutside(end(ir), 1L, length(x)))
-            stop("some ranges are out of bounds")
-        ans_start <- start(x)
-        seqselect(ans_start, ir) <- start(value)
-        ans_width <- width(x)
-        seqselect(ans_width, ir) <- width(value)
-        initialize(x, start=ans_start, width=ans_width, NAMES=names(x))
     }
 )
 

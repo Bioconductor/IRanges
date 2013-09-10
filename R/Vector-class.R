@@ -342,33 +342,27 @@ setReplaceMethod("window", "factor", `window<-.factor`)
 
 ### Replacement for seqselect().
 setGeneric("subsetByRanges", signature="x",
-    function(x, start=NULL, end=NULL, width=NULL)
-        standardGeneric("subsetByRanges")
+    function(x, i) standardGeneric("subsetByRanges")
 )
 
 setMethod("subsetByRanges", "ANY",
-    function(x, start=NULL, end=NULL, width=NULL)
+    function(x, i)
     {
-        idx <- subsetByRanges(seq_len(NROW(x)),
-                              start=start, end=end, width=width)
-        extractROWS(x, idx)
+        i <- subsetByRanges(seq_len(NROW(x)), i)
+        extractROWS(x, i)
     }
 )
 
 setMethod("subsetByRanges", "NULL",
-    function(x, start=NULL, end=NULL, width=NULL) NULL
+    function(x, i) NULL
 )
 
 setMethod("subsetByRanges", "vector",
-    function(x, start=NULL, end=NULL, width=NULL)
+    function(x, i)
     {
-        if (!is(start, "Ranges")) {
-            start <- IRanges(start=start, end=end, width=width)
-        } else if (!is.null(end) || !is.null(width)) {
-            stop("'end' and 'width' must be NULLs ",
-                 "when 'start' is a Ranges object")
-        }
-        .Call2("vector_subsetByRanges", x, start(start), width(start),
+        if (!is(i, "Ranges"))
+            stop("'i' must be a Ranges object")
+        .Call2("vector_subsetByRanges", x, start(i), width(i),
                PACKAGE="IRanges")
     }
 )

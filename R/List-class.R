@@ -309,12 +309,6 @@ subsetListByList_replace <- function(x, i, value, byrow=FALSE)
 setMethod("extractElements", c("List", "RangesList"), function(x, i) {
   subsetByRanges(x, i)
 })
-setMethod("subsetByRanges", "List",
-          function(x, start=NULL, end=NULL, width=NULL) {
-            if (is(start, "RangesList"))
-              mendoapply(subsetByRanges, x, start)
-            else callNextMethod()
-          })
 setMethod("extractElements", c("List", "AtomicList"), function(x, i) {
   mendoapply(extractROWS, x, i)
 })
