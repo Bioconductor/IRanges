@@ -165,6 +165,7 @@
 \alias{duplicated,CompressedAtomicList-method}
 \alias{duplicated.CompressedAtomicList}
 \alias{unique.CompressedAtomicList}
+\alias{unique,CompressedAtomicList-method}
 \alias{unique,CompressedRleList-method}
 \alias{unique.CompressedRleList}
 \alias{unique,SimpleRleList-method}

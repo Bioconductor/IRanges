@@ -55,7 +55,7 @@
 % Combining and splitting
 \alias{c,RangedData-method}
 \alias{rbind,RangedData-method}
-\alias{split,RangedData-method}
+\alias{split,RangedData,ANY-method}
 
 % Subsetting:
 \alias{[,RangedData-method}

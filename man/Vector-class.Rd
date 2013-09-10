@@ -35,6 +35,7 @@
 \alias{window.vector}
 \alias{window,factor-method}
 \alias{window.factor}
+\alias{window.matrix}
 \alias{window<-,Vector-method}
 \alias{window<-.Vector}
 \alias{window<-,vector-method}
@@ -47,6 +48,7 @@
 \alias{seqselect,ANY-method}
 \alias{seqselect,vector-method}
 \alias{seqselect,factor-method}
+\alias{seqselect,matrix-method}
 \alias{seqselect<-}
 \alias{seqselect<-,Vector-method}
 \alias{seqselect<-,vector-method}
@@ -61,7 +63,8 @@
 \alias{c,Vector-method}
 \alias{append,Vector,Vector-method}
 
-\alias{split,Vector-method}
+\alias{split,Vector,Vector-method}
+\alias{split,ANY,Vector-method}
 \alias{mstack}
 \alias{mstack,Vector-method}
 \alias{mstack,vector-method}
