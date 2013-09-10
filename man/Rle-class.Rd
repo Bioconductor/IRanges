@@ -86,7 +86,6 @@
 \alias{rep.int,Rle-method}
 \alias{rev.Rle}
 \alias{rev,Rle-method}
-\alias{seqselect,Rle-method}
 \alias{seqselect<-,Rle-method}
 \alias{shiftApply,Rle,Rle-method}
 \alias{show,Rle-method}

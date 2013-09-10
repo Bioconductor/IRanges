@@ -144,18 +144,10 @@ setMethod("elementLengths", "GappedRanges",
     function(x) elementLengths(x@cnirl)
 )
 
-setMethod("[", "GappedRanges",
-    function(x, i, j, ... , drop=TRUE)
+setMethod("extractElements", "GappedRanges",
+    function(x, i)
     {
-        x@cnirl <- x@cnirl[i]
-        x
-    }
-)
-
-setMethod("seqselect", "GappedRanges",
-    function(x, start=NULL, end=NULL, width=NULL)
-    {
-        x@cnirl <- seqselect(x@cnirl, start=start, end=end, width=width)
+        x@cnirl <- extractElements(x@cnirl, i)
         x
     }
 )

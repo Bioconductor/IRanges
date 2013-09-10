@@ -302,15 +302,11 @@ setMethod("Complex", "Rle",
 ### General methods
 ###
 
-setMethod("[", "Rle",
-    function(x, i, j, ..., drop = getOption("dropRle", FALSE))
+setMethod("extractElements", "Rle",
+    function(x, i)
     {
-        if (!missing(j) || length(list(...)) > 0)
-            stop("invalid subsetting")
-        if (missing(i) || !is(i, "Ranges")) {
-            i <- normalizeSingleBracketSubscript(i, x)
+        if (!is(i, "Ranges"))
             i <- as(i, "IRanges")
-        }
         ansList <- .Call2("Rle_seqselect",
                           x, start(i), width(i),
                           PACKAGE="IRanges")
@@ -318,11 +314,20 @@ setMethod("[", "Rle",
         ans_lengths <- ansList[["lengths"]]
         if (is.factor(runValue(x)))
             attributes(ans_values) <- list(levels=levels(x), class="factor")
-        if (drop) {
-            ans <- rep.int(ans_values, ans_lengths)
-        } else {
-            ans <- Rle(ans_values, ans_lengths)
-        }
+        Rle(ans_values, ans_lengths)
+    }
+)
+
+setMethod("[", "Rle",
+    function(x, i, j, ..., drop=getOption("dropRle", FALSE))
+    {
+        if (!missing(j) || length(list(...)) > 0)
+            stop("invalid subsetting")
+        if (missing(i) || !is(i, "Ranges"))
+            i <- normalizeSingleBracketSubscript(i, x)
+        ans <- extractElements(x, i)
+        if (drop)
+            ans <- decodeRle(ans)
         ans
     }
 )
@@ -562,14 +567,6 @@ rev.Rle <-
 }
 
 setMethod("rev", "Rle", rev.Rle)
-
-setMethod("seqselect", "Rle",
-          function(x, start = NULL, end = NULL, width = NULL)
-          {
-              if (!is.null(end) || !is.null(width))
-                  start <- IRanges(start = start, end = end, width = width)
-              x[start]
-          })
 
 setReplaceMethod("seqselect", "Rle",
                  function(x, start = NULL, end = NULL, width = NULL, value)
