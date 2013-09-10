@@ -50,7 +50,6 @@ test_List_subset <- function() {
     unnamed <- IntegerList(int1, int2, compress=compress)
 
     checkException(collection[1,2], silent=TRUE)
-    checkException(collection[list()], silent=TRUE)
     if (compress) {
       checkException(collection[5], silent=TRUE)
       checkException(collection[c(NA, 2)], silent=TRUE)
@@ -61,6 +60,7 @@ test_List_subset <- function() {
 
     empty <- IntegerList(compress=compress)
     names(empty) <- character(0)
+    checkIdentical(collection[0], empty)
     checkIdentical(collection[numeric()], empty)
     checkIdentical(collection[logical()], empty)
     checkIdentical(collection[character()], empty)
@@ -68,6 +68,7 @@ test_List_subset <- function() {
     checkIdentical(collection[], collection)
     checkIdentical(collection[FALSE], empty)
     checkIdentical(collection[c(FALSE, FALSE)], empty)
+    checkIdentical(collection[list()], empty)
     checkIdentical(collection[TRUE], collection)
     checkIdentical(collection[c(TRUE, FALSE)],
                    IntegerList(one=int1, compress=compress))

@@ -50,7 +50,6 @@
 \alias{seqselect<-}
 \alias{seqselect<-,Vector-method}
 \alias{seqselect<-,vector-method}
-\alias{seqselect<-,factor-method}
 
 \alias{head,Vector-method}
 \alias{tail,Vector-method}

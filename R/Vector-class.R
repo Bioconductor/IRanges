@@ -57,26 +57,6 @@ setMethod("showAsCell", "Vector", function(object)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Low-level internal helpers (not exported).
-###
-
-extractROWS <- function(x, i)
-{
-    if (length(dim(x)) < 2L)
-        return(x[i])
-    x[i, , drop=FALSE]
-}
-
-bindROWS <- function(...)
-{
-    args <- list(...)
-    if (length(dim(args[[1L]])) < 2L)
-        return(c(...))
-    rbind(...)
-}
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
@@ -422,22 +402,19 @@ setMethod("seqselect", "NULL",
           function(x, start=NULL, end=NULL, width=NULL) NULL)
 
 setMethod("seqselect", "vector",
-          function(x, start=NULL, end=NULL, width=NULL)
-          {
-              if (!is.null(end) || !is.null(width))
-                  start <- IRanges(start = start, end = end, width = width)
-              irInfo <-
-                .bracket.Index(start, length(x), names(x), asRanges = TRUE)
-              if (!is.null(irInfo[["msg"]]))
-                  stop(irInfo[["msg"]])
-              if (irInfo[["useIdx"]]) {
-                  ir <- irInfo[["idx"]]
-                  x <-
-                    .Call2("vector_seqselect", x, start(ir), width(ir),
-                          PACKAGE="IRanges")
-              }
-              x
-          })
+    function(x, start=NULL, end=NULL, width=NULL)
+    {
+        if (!is(start, "Ranges")) {
+            start <- IRanges(start=start, end=end, width=width)
+        } else if (!is.null(end) || !is.null(width)) {
+            stop("when 'start' is a Ranges object, ",
+                 "'end' and 'width' must be NULL")
+        }
+        .Call2("vector_seqselect",
+               x, start(start), width(start),
+               PACKAGE="IRanges")
+    }
+)
 
 setMethod("seqselect", "factor",
           function(x, start=NULL, end=NULL, width=NULL)
@@ -535,52 +512,20 @@ setReplaceMethod("seqselect", "Vector",
                      do.call(c, subseqs)
                  })
 
-setReplaceMethod("seqselect", "vector",
-                 function(x, start = NULL, end = NULL, width = NULL, value)
-                 {
-                     if (is.null(end) && is.null(width)) {
-                         if (is.null(start))
-                             ir <- IRanges(start = 1, width = length(x))
-                         else if (is(start, "Ranges"))
-                             ir <- start
-                         else {
-                             if (is.logical(start) && length(start) != length(x))
-                                 start <- rep(start, length.out = length(x))
-                             ir <- as(start, "IRanges")
-                         }
-                     } else {
-                         ir <- IRanges(start=start, end=end, width=width, names=NULL)
-                     }
-                     ir <- reduce(ir)
-                     if (length(ir) == 0)
-                         return(x)
-                     if (anyMissingOrOutside(start(ir), 1L, length(x)) ||
-                         anyMissingOrOutside(end(ir), 1L, length(x)))
-                         stop("some ranges are out of bounds")
-                     i <- unlist(ir)
-                     if (is.null(value)) {
-                         x <- x[-i]
-                     } else {
-                         ## allow conventional vector type promotion rules
-                         if (!is(value, "vector") && !is(value, class(x))) {
-                             value <- try(as(value, class(x)), silent = TRUE)
-                             if (inherits(value, "try-error"))
-                                 stop("'value' must be a ", class(x),
-                                      " object or NULL")
-                         }
-                         x[i] <- value
-                     }
-                     x
-                 })
-
-setReplaceMethod("seqselect", "factor",
-                 function(x, start = NULL, end = NULL, width = NULL, value)
-                 {
-                     levels <- levels(x)
-                     x <- as.character(x)
-                     value <- as.character(value)
-                     factor(callGeneric(), levels = levels)
-                 })
+setReplaceMethod("seqselect", "vectorORfactor",
+    function(x, start=NULL, end=NULL, width=NULL, value)
+    {
+        if (!is(start, "Ranges")) {
+            start <- IRanges(start=start, end=end, width=width)
+        } else if (!is.null(end) || !is.null(width)) {
+            stop("when 'start' is a Ranges object, ",
+                 "'end' and 'width' must be NULL")
+        }
+        i <- as.integer(start)
+        x[i] <- value
+        x
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -132,6 +132,18 @@ setMethod("normalizeSingleBracketReplacementValue", "ANY",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### extractROWS()
+###
+
+extractROWS <- function(x, i)
+{
+    if (length(dim(x)) < 2L)
+        return(x[i])
+    x[i, , drop=FALSE]
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Internal generics to ease implementation of subsetting for new List
 ### subclasses. The index 'i' will always be 'integer', unless the
 ### subclass overrides that behavior somehow (eventually there might be

@@ -84,44 +84,22 @@ setValidity2("CompressedList", .valid.CompressedList)
 ### Subsetting.
 ###
 
-### Supported 'i' types: numeric, character, logical, NULL and missing.
-setMethod("[", "CompressedList",
-          function(x, i, j, ..., drop)
-          {
-              if (!missing(j) || length(list(...)) > 0)
-                  stop("invalid subsetting")
-              if (!missing(i)) {
-                  if (is(i, "RangesList") || is(i, "RleList") ||
-                      is(i, "LogicalList") ||
-                      (is(i, "IntegerList") && !is(i, "Ranges"))) {
-                      x <- seqselect(x, i)
-                  } else {
-                      irInfo <-
-                        .bracket.Index(i, length(x), names(x), asRanges = TRUE)
-                      if (!is.null(irInfo[["msg"]]))
-                          stop(irInfo[["msg"]])
-                      if (irInfo[["useIdx"]]) {
-                          i <- irInfo[["idx"]]
-                          ir <-
-                            IRanges(end =
-                                    seqselect(end(x@partitioning), i),
-                                    width =
-                                    seqselect(width(x@partitioning), i))
-                          x <-
-                            initialize(x,
-                                       elementMetadata =
-                                       seqselect(x@elementMetadata, i),
-                                       unlistData = seqselect(x@unlistData, ir),
-                                       partitioning =
-                                       new2("PartitioningByEnd",
-                                            end = cumsum(width(ir)),
-                                            NAMES = seqselect(names(x), i),
-                                            check=FALSE))
-                      }
-                  }
-              }
-              x
-          })
+setMethod("extractElements", "CompressedList",
+    function(x, i)
+    {
+        ir <- IRanges(end=end(x@partitioning)[i],
+                      width=width(x@partitioning)[i])
+        ans_unlistData <- seqselect(x@unlistData, ir)
+        ans_partitioning <- new2("PartitioningByEnd",
+                                 end=cumsum(width(ir)),
+                                 NAMES=names(x)[i],
+                                 check=FALSE)
+        ans_elementMetadata <- x@elementMetadata[i, , drop=FALSE]
+        initialize(x, unlistData=ans_unlistData,
+                      partitioning=ans_partitioning,
+                      elementMetadata=ans_elementMetadata)
+    }
+)
 
 setMethod("seqselect", "CompressedList",
           function(x, start=NULL, end=NULL, width=NULL)
@@ -361,10 +339,18 @@ setReplaceMethod("$", "CompressedList",
 ### Combining and splitting.
 ###
 
+.bindROWS <- function(...)
+{
+    args <- list(...)
+    if (length(dim(args[[1L]])) < 2L)
+        return(c(...))
+    rbind(...)
+}
+
 ### Not exported. 'x' *must* be an unnamed list of length >= 1 (not checked).
 unlist_list_of_CompressedList <- function(x)
 {
-    ans_unlistData <- do.call(bindROWS, lapply(x, slot, "unlistData"))
+    ans_unlistData <- do.call(.bindROWS, lapply(x, slot, "unlistData"))
     ans_eltlens <- unlist(lapply(x, elementLengths))
     ans <- relist(ans_unlistData, PartitioningByEnd(cumsum(ans_eltlens)))
     ans_mcols <- do.call(rbind.mcols, x)

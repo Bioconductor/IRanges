@@ -475,6 +475,13 @@ setAs("RangesList", "SimpleIRangesList",
               metadata = metadata(from),
               mcols = mcols(from)))
 
+setAs("RangesList", "SimpleRangesList",
+      function(from)
+      newList("SimpleRangesList",
+              lapply(from, as, "Ranges"),
+              metadata = metadata(from),
+              mcols = mcols(from)))
+
 setAs("RangesList", "NormalIRangesList",
       function(from)
       {

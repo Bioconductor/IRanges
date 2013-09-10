@@ -173,10 +173,64 @@ setMethod("show", "List",
 
 setMethod("$", "List", function(x, name) x[[name, exact=FALSE]])
 
+### Assumes 'i' to be either a LogicalList or a logical-RleList of the same
+### length as 'x'. Truncate or recycle each list element of 'i' to the length
+### of the corresponding element in 'x'.
+.normalizeSubsetListByListSubscript <- function(i, x)
+{
+    x_eltlens <- unname(elementLengths(x))
+    i_eltlens <- unname(elementLengths(i))
+    idx <- which(x_eltlens != i_eltlens)
+    ## FIXME: This is rough and doesn't follow exactly the truncate-or-recycle
+    ## semantic of normalizeSingleBracketSubscript() on a logical vector or
+    ## logical Rle.
+    for (k in idx)
+        i[[k]] <- rep(i[[k]], length.out=x_eltlens[k])
+    return(i)
+}
+
 ### Fancy subsetting of a List object by a list-like subscript.
-### NOT efficient because it loops over the elements of 'i'.
+subsetListByList <- function(x, i)
+{
+    lx <- length(x)
+    li <- length(i)
+    if (is.null(names(i))) {
+        if (li > lx)
+            stop("list-like subscript is longer than ",
+                 "list-like object to subset")
+        ans <- x[seq_len(li)]
+    } else {
+        if (is.null(names(x)))
+            stop("cannot subscript an unnamed list-like object ",
+                 "by a named list-like object")
+        j <- match(names(i), names(x))
+        if (anyMissing(j))
+            stop("list-like subscript has names not in ",
+                 "list-like object to subset")
+        ans <- x[j]
+    }
+    if (is(i, "LogicalList")
+     || is(i, "RleList") && is(runValue(i), "LogicalList"))
+    {
+        i <- .normalizeSubsetListByListSubscript(i, x)
+        unlisted_ans <- unlist(ans, use.names=FALSE)
+        unlisted_i <- unlist(i, use.names=FALSE)
+        unlisted_ans <- extractROWS(unlisted_ans, unlisted_i)
+        group <- rep.int(seq_along(ans), elementLengths(ans))
+        ans_skeleton <- PartitioningByEnd(group[unlisted_i], NG=length(ans),
+                                          names=names(ans))
+        ans <- as(relist(unlisted_ans, ans_skeleton), class(x))
+        return(ans)
+    }
+    ## NOT efficient because it loops over the elements of 'i'.
+    for (ii in seq_len(li))
+        ans[[ii]] <- extractROWS(ans[[ii]], i[[ii]])
+    return(ans)
+}
+
 subsetListByList_replace <- function(x, i, value, byrow=FALSE)
 {
+    lx <- length(x)
     li <- length(i)
     if (li == 0L) {
         ## Surprisingly, in that case, `[<-` on standard vectors does not
@@ -196,7 +250,7 @@ subsetListByList_replace <- function(x, i, value, byrow=FALSE)
         value <- rep(value, length.out = li)
     }
     if (is.null(names(i))) {
-        if (length(i) > length(x))
+        if (li > lx)
             stop("list-like subscript is longer than ",
                  "list-like object to subset")
         for (ii in seq_len(li)) {
@@ -287,11 +341,12 @@ setMethod("[", "List",
     {
         if (!missing(j) || length(list(...)) > 0)
             stop("invalid subsetting")
-        if (missing(i))
-            return(x)
-        if (is(i, "RangesList") || is(i, "RleList") ||
-            is(i, "LogicalList") || is(i, "IntegerList"))
-            return(seqselect(x, i))
+        if (!missing(i)) {
+            if (is(i, "Ranges"))
+                return(seqselect(x, i))
+            if (is.list(i) || is(i, "List"))
+                return(subsetListByList(x, i))
+        }
         i <- normalizeSingleBracketSubscript(i, x)
         extractElements(x, i)
     }
@@ -302,8 +357,10 @@ setReplaceMethod("[", "List",
     {
         if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
-        if (!missing(i) && (is.list(i) || is(i, "List")))
-            return(subsetListByList_replace(x, i, value))
+        if (!missing(i)) {
+            if (is.list(i) || is(i, "List"))
+                return(subsetListByList_replace(x, i, value))
+        }
         callNextMethod(x, i, value=value)
     }
 )
