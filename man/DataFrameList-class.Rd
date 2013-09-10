@@ -37,8 +37,7 @@
 % subsetting
 \alias{[,SimpleSplitDataFrameList-method}
 \alias{[,CompressedSplitDataFrameList-method}
-\alias{[<-,SimpleSplitDataFrameList-method}
-\alias{[<-,CompressedSplitDataFrameList-method}
+\alias{[<-,SplitDataFrameList-method}
 
 % coercion
 \alias{as.data.frame.DataFrameList}

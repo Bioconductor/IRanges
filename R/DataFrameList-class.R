@@ -337,101 +337,66 @@ setMethod("normalizeSingleBracketReplacementValue", "SplitDataFrameList",
     }
 )
 
-setReplaceMethod("[", "SimpleSplitDataFrameList",
-                 function(x, i, j,..., value)
-                 {
-                     if (length(list(...)) > 0)
-                         stop("invalid replacement")
-                     if (missing(j)) {
-                         if (missing(i))
-                             x <- callNextMethod(x = x, value = value)
-                         else
-                             x <- callNextMethod(x = x, i = i, value = value)
-                     } else {
-                         jInfo <-
-                           .bracket.Index(j, ncol(x)[[1L]], colnames(x)[[1L]])
-                         if (!is.null(jInfo[["msg"]]))
-                           stop("subsetting by column: ", jInfo[["msg"]])
-                         if (!jInfo[["useIdx"]]) {
-                             if (missing(i))
-                                 x[] <- value
-                             else
-                                 x[i] <- value
-                         } else {
-                             j <- jInfo[["idx"]]
-                             y <- x[, j, drop=FALSE]
-                             if (missing(i)) {
-                                 y[] <- value
-                             } else if (is.list(i) || is(i, "List")) {
-                                 y <- subsetListByList_replace(y, i, value,
-                                                               byrow=TRUE)
-                             } else {
-                                 y[i] <- value
-                             }
-                             indices <-
-                               structure(seq_len(length(x)), names = names(x))
-                             x@listData <-
-                               lapply(indices, function(k) {
-                                          z <- x@listData[[k]]
-                                          z[j] <- y[[k]]
-                                          z
-                                      })
-                         }
-                     }
-                     x
-                 })
-
-setReplaceMethod("[", "CompressedSplitDataFrameList",
-                 function(x, i, j,..., value)
-                 {
-                     if (length(list(...)) > 0)
-                         stop("invalid replacement")
-                     value <- normalizeSingleBracketReplacementValue(value, x)
-                     if (missing(j)) {
-                         if (missing(i))
-                             x <- callNextMethod(x = x, value = value)
-                         else
-                             x <- callNextMethod(x = x, i = i, value = value)
-                     } else {
-                         jInfo <-
-                           .bracket.Index(j, ncol(x)[[1L]], colnames(x)[[1L]])
-                         if (!is.null(jInfo[["msg"]]))
-                           stop("subsetting by column: ", jInfo[["msg"]])
-                         if (!jInfo[["useIdx"]]) {
-                             if (missing(i))
-                                 x[] <- value
-                             else
-                                 x[i] <- value
-                         } else {
-                             j <- jInfo[["idx"]]
-                             y <- x[, j, drop=FALSE]
-                             if (missing(i)) {
-                                 y[] <- value
-                             } else if (is.list(i) || is(i, "List")) {
-                                 y <- subsetListByList_replace(y, i, value,
-                                                               byrow=TRUE)
-                             } else {
-                                 y[i] <- value
-                             }
-                             xels <- elementLengths(x)
-                             yels <- elementLengths(y)
-                             if (any(xels != yels)) {
-                                 ends <- cumsum(elementLengths(y))
-                                 starts <- c(1L, head(ends, -1) + 1L)
-                                 indices <-
-                                   unlist(lapply(seq_len(length(y)),
-                                                 function(k) {
-                                                     rep(starts[k]:ends[k],
-                                                         length.out = xels[k])
-                                                 }))
-                                 y@unlistData <-
-                                   y@unlistData[indices, , drop = FALSE]
-                             }
-                             x@unlistData[, j] <- y@unlistData
-                         }
-                     }
-                     x
-                 })
+setReplaceMethod("[", "SplitDataFrameList",
+    function(x, i, j,..., value)
+    {
+        if (length(list(...)) > 0L)
+            stop("invalid replacement")
+        value <- normalizeSingleBracketReplacementValue(value, x)
+        if (missing(j)) {
+            if (missing(i))
+                ans <- callNextMethod(x=x, value=value)
+            else
+                ans <- callNextMethod(x=x, i=i, value=value)
+            return(ans)
+        }
+        jInfo <- .bracket.Index(j, ncol(x)[[1L]], colnames(x)[[1L]])
+        if (!is.null(jInfo[["msg"]]))
+            stop("subsetting by column: ", jInfo[["msg"]])
+        if (!jInfo[["useIdx"]]) {
+            if (missing(i))
+                ans <- callNextMethod(x=x, value=value)
+            else
+                ans <- callNextMethod(x=x, i=i, value=value)
+            return(ans)
+        }
+        j <- jInfo[["idx"]]
+        y <- x[, j, drop=FALSE]
+        if (missing(i)) {
+            y[] <- value
+        } else if (is.list(i) || (is(i, "List") && !is(i, "Ranges"))) {
+            y <- subsetListByList_replace(y, i, value, byrow=TRUE)
+        } else {
+            y[i] <- value
+        }
+        if (is(x, "CompressedList")) {
+            xels <- elementLengths(x)
+            yels <- elementLengths(y)
+            if (any(xels != yels)) {
+                ends <- cumsum(elementLengths(y))
+                starts <- c(1L, head(ends, -1L) + 1L)
+                indices <- unlist(lapply(seq_len(length(y)),
+                                         function(k) {
+                                             rep(starts[k]:ends[k],
+                                                 length.out=xels[k])
+                                         }))
+                y@unlistData <- y@unlistData[indices, , drop=FALSE]
+            }
+            x@unlistData[, j] <- y@unlistData
+        } else if (is(x, "SimpleList")) {
+            indices <- structure(seq_len(length(x)), names = names(x))
+            x@listData <- lapply(indices,
+                                 function(k) {
+                                     z <- x@listData[[k]]
+                                     z[j] <- y[[k]]
+                                     z
+                                 })
+        } else {
+            stop(class(x), " objects not supported")
+        }
+        x
+    }
+)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion

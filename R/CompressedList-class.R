@@ -89,7 +89,7 @@ setMethod("extractElements", "CompressedList",
     {
         ir <- IRanges(end=end(x@partitioning)[i],
                       width=width(x@partitioning)[i])
-        ans_unlistData <- seqselect(x@unlistData, ir)
+        ans_unlistData <- subsetByRanges(x@unlistData, ir)
         ans_partitioning <- new2("PartitioningByEnd",
                                  end=cumsum(width(ir)),
                                  NAMES=names(x)[i],
@@ -119,9 +119,9 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
     } else if(COMPRESS && missing(FUN) && useFastSubset) {
         nzINDEX <- INDEX[whichNonZeroLength]
         elts <-
-          seqselect(X@unlistData,
-                    start = start(X@partitioning)[nzINDEX],
-                    width = width(X@partitioning)[nzINDEX])
+          subsetByRanges(X@unlistData,
+                         IRanges(start = start(X@partitioning),
+                                 width = width(X@partitioning))[nzINDEX])
     } else {
         elts <- rep(list(zeroLengthElt), k)
         if (kOK > 0) {

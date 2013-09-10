@@ -53,27 +53,40 @@ SimpleList <- function(...) {
 }
 setValidity2("SimpleList", .valid.SimpleList)
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
 ###
 
-setMethod("extractElements", "SimpleList", function(x, i) {
-  initialize(x, listData=as.list(x)[i])
-})
+setMethod("extractElements", "SimpleList",
+    function(x, i)
+    {
+        initialize(x, listData=extractElements(x@listData, i))
+    }
+)
 
-setMethod("replaceElements", "SimpleList", function(x, i, value) {
-  x@listData[i] <- value@listData
-  x
-})
+setMethod("replaceElements", "SimpleList",
+    function(x, i, value)
+    {
+        initialize(x, listData=replaceElements(x@listData, i, value@listData))
+    }
+)
 
-setMethod("extractElement", "SimpleList", function(x, i) {
-  as.list(x)[[i]]
-})
+setMethod("extractElement", "SimpleList",
+    function(x, i)
+    {
+        x@listData[[i]]
+    }
+)
 
-setMethod("replaceElement", "SimpleList", function(x, i, value) {
-  x@listData[[i]] <- value
-  x
-})
+setMethod("replaceElement", "SimpleList",
+    function(x, i, value)
+    {
+        x@listData[[i]] <- value
+        x
+    }
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.

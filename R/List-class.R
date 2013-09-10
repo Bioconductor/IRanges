@@ -333,56 +333,6 @@ setReplaceMethod("[", "List",
     }
 )
 
-setReplaceMethod("seqselect", "List",
-                 function(x, start = NULL, end = NULL, width = NULL, value)
-                 {
-                   lx <- length(x)
-                   if ((lx > 0) && is.null(end) && is.null(width) &&
-                       !is.null(start) && !is(start, "Ranges")) {
-                     if (lx != length(start))
-                       stop("'length(start)' must equal 'length(x)' when ",
-                            "'end' and 'width' are NULL")
-                     if (is.list(start)) {
-                       if (is.logical(start[[1L]]))
-                         start <- LogicalList(start)
-                       else if (is.numeric(start[[1L]]))
-                         start <- IntegerList(start)
-                     } else if (is(start, "RleList")) {
-                       start <- IRangesList(start)
-                     } else if (is(start, "IntegerList")) {
-                       newstart <-
-                         LogicalList(lapply(elementLengths(x), rep,
-                                            x = FALSE))
-                       for (i in seq_len(length(newstart)))
-                         newstart[[i]][start[[i]]] <- TRUE
-                       start <- newstart
-                     }
-                     indices <- structure(seq_len(lx), names = names(x))
-                     if (is(start, "RangesList") ||
-                         is(start, "AtomicList")) {
-                       if (!is(value, "SimpleList") &&
-                           !is(value, "CompressedList") &&
-                           !is.list(value))
-                         value <- list(value)
-                       li <- length(start)
-                       lv <- length(value)
-                       if (li != lv) {
-                         if ((li == 0) || (li %% lv != 0))
-                           stop(paste(lv, "elements in value to replace",
-                                      li, "elements"))
-                         else
-                           value <- rep(value, length.out = li)
-                       }
-                       replaceElements(x, start, value)
-                     } else {
-                       stop("unrecognized 'start' type")
-                     }
-                   } else {
-                     x <- callNextMethod()
-                   }
-                   x
-                 })
-
 setMethod("[[", "List",
           function(x, i, j, ...) {
             dotArgs <- list(...)

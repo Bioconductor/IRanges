@@ -180,6 +180,35 @@ setValidity2("Vector", .valid.Vector)
 ### Subsetting.
 ###
 
+setGeneric("subsetByRanges", signature="x",
+    function(x, i) standardGeneric("subsetByRanges")
+)
+
+setMethod("subsetByRanges", "NULL",
+    function(x, i) NULL
+)
+
+setMethod("subsetByRanges", "vector",
+    function(x, i)
+    {
+        if (!is(i, "Ranges"))
+            stop("'i' must be a Ranges object")
+        .Call2("vector_subsetByRanges", x, start(i), width(i),
+               PACKAGE="IRanges")
+    }
+)
+
+setMethod("subsetByRanges", "Vector",
+    function(x, i)
+    {
+        if (!is(i, "Ranges"))
+            stop("'i' must be a Ranges object")
+        ans <- extractElements(x, i)
+        mcols(ans) <- subsetByRanges(mcols(ans), i)
+        ans
+    }
+)
+
 setMethod("extractElements", "NULL",
     function(x, i) NULL
 )
@@ -383,33 +412,6 @@ setReplaceMethod("window", "vector", `window<-.vector`)
     factor(callGeneric(), levels=levels)
 }
 setReplaceMethod("window", "factor", `window<-.factor`)
-
-### Replacement for seqselect().
-setGeneric("subsetByRanges", signature="x",
-    function(x, i) standardGeneric("subsetByRanges")
-)
-
-setMethod("subsetByRanges", "ANY",
-    function(x, i)
-    {
-        i <- subsetByRanges(seq_len(NROW(x)), i)
-        extractROWS(x, i)
-    }
-)
-
-setMethod("subsetByRanges", "NULL",
-    function(x, i) NULL
-)
-
-setMethod("subsetByRanges", "vector",
-    function(x, i)
-    {
-        if (!is(i, "Ranges"))
-            stop("'i' must be a Ranges object")
-        .Call2("vector_subsetByRanges", x, start(i), width(i),
-               PACKAGE="IRanges")
-    }
-)
 
 ### TODO: Deprecate seqselect() at some point in favor of subsetByRanges().
 setGeneric("seqselect", signature="x",
@@ -843,7 +845,7 @@ setMethod("relist", c("Vector", "list"),
     names(f) <- as.character(runValue(tmp))
     if (!identical(drop, FALSE))
         warning("'drop' is ignored when 'f' is an integer-Rle")
-    x <- seqselect(x, xranges)
+    x <- subsetByRanges(x, xranges)
     f <- PartitioningByEnd(f)
     relist(x, f)
 }
@@ -878,7 +880,7 @@ setMethod("relist", c("Vector", "list"),
     if (drop)
         f <- f[f != 0L]
     f <- cumsum(f)
-    x <- seqselect(x, xranges)
+    x <- subsetByRanges(x, xranges)
     f <- PartitioningByEnd(f)
     relist(x, f)
 }
@@ -1022,7 +1024,7 @@ function (X, INDEX, FUN = NULL, ..., simplify = TRUE)
     if (is.null(FUN))
         return(as.vector(group))
     groupRanges <- splitRanges(group)
-    ans <- lapply(groupRanges, function(i) FUN(seqselect(X, i), ...))
+    ans <- lapply(groupRanges, function(i) FUN(subsetByRanges(X, i), ...))
     index <- as.integer(names(ans))
     if (simplify && all(unlist(lapply(ans, length), use.names=FALSE) == 1L)) {
         ansmat <- array(dim = extent, dimnames = namelist)

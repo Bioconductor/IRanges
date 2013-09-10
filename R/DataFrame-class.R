@@ -259,6 +259,25 @@ setReplaceMethod("[[", "DataFrame",
                    x
                  })
 
+setMethod("extractElements", "DataFrame",
+    function(x, i)
+    {
+        slot(x, "listData", check=FALSE) <-
+            lapply(structure(seq_len(ncol(x)), names=names(x)),
+                   function(j) extractElements(x[[j]], i))
+        if (is(i, "Ranges"))
+            li <- sum(width(i))
+        else
+            li <- length(i)
+        slot(x, "nrows", check=FALSE) <- li
+        if (!is.null(rownames(x))) {
+            slot(x, "rownames", check=FALSE) <-
+                make.unique(extractElements(rownames(x), i))
+        }
+        x
+    }
+)
+
 setMethod("[", "DataFrame",
           function(x, i, j, ..., drop)
           {
@@ -275,7 +294,11 @@ setMethod("[", "DataFrame",
               iInfo <- .bracket.Index(i, ncol(x), colnames(x))
               if (!is.null(iInfo[["msg"]]))
                 stop("subsetting as list: ", iInfo[["msg"]])
-              x <- callNextMethod(x, iInfo[["idx"]])
+              x <- initialize(x,
+                       listData=extractElements(x@listData,
+                                                iInfo[["idx"]]),
+                       elementMetadata=x@elementMetadata[iInfo[["idx"]], ,
+                                                         drop=FALSE])
               if (anyDuplicated(names(x)))
                 names(x) <- make.names(names(x))
               return(x)
@@ -286,7 +309,11 @@ setMethod("[", "DataFrame",
               jInfo <- .bracket.Index(j, ncol(x), colnames(x))
               if (!is.null(jInfo[["msg"]]))
                 stop("selecting cols: ", jInfo[["msg"]])
-              x <- callNextMethod(x, jInfo[["idx"]])
+              x <- initialize(x,
+                       listData=extractElements(x@listData,
+                                                jInfo[["idx"]]),
+                       elementMetadata=x@elementMetadata[jInfo[["idx"]], ,
+                                                         drop=FALSE])
               if (anyDuplicated(names(x)))
                 names(x) <- make.unique(names(x))
               dim[2L] <- length(x)
@@ -478,33 +505,6 @@ setReplaceMethod("[", "DataFrame",
                    x
                  })
 
-setMethod("seqselect", "DataFrame",
-          function(x, start=NULL, end=NULL, width=NULL)
-          {
-              if (!is.null(end) || !is.null(width))
-                  start <- IRanges(start = start, end = end, width = width)
-              irInfo <-
-                .bracket.Index(start, nrow(x), rownames(x), asRanges = TRUE)
-              if (!is.null(irInfo[["msg"]]))
-                  stop(irInfo[["msg"]])
-              if (irInfo[["useIdx"]]) {
-                  ir <- irInfo[["idx"]]
-                  if (length(ir) == 0) {
-                      x <- x[integer(0),,drop=FALSE]
-                  } else {
-                      slot(x, "listData", check=FALSE) <-
-                        lapply(structure(seq_len(ncol(x)),
-                                         names = names(x)),
-                               function(i) seqselect(x[[i]], ir))
-                      slot(x, "nrows", check=FALSE) <- sum(width(ir))
-                      if (!is.null(rownames(x))) {
-                          slot(x, "rownames", check=FALSE) <-
-                            make.unique(seqselect(rownames(x), ir))
-                      }
-                  }
-              }
-              x
-          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
