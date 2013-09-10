@@ -58,42 +58,11 @@ setValidity2("SimpleList", .valid.SimpleList)
 ###
 
 setMethod("extractElements", "SimpleList", function(x, i) {
-  initialize(x,
-             elementMetadata =
-             seqselect(x@elementMetadata, i),
-             listData = as.list(x)[i])
+  initialize(x, listData=as.list(x)[i])
 })
 
 setMethod("replaceElements", "SimpleList", function(x, i, value) {
   x@listData[i] <- value@listData
-  x
-})
-
-## Slightly? optimized List-indexed extraction
-setMethod("extractElements", c("SimpleList", "RangesList"), function(x, i) {
-  indices <- structure(seq_len(length(x)), names = names(x))
-  listData <- lapply(indices,
-                     function(j) subsetByRanges(x@listData[[j]], i[[j]]))
-  slot(x, "listData", check=FALSE) <- listData
-  x
-})
-setMethod("extractElements", c("SimpleList", "AtomicList"), function(x, i) {
-  indices <- structure(seq_len(length(x)), names = names(x))
-  listData <- lapply(indices, function(j)
-                     extractROWS(x@listData[[j]], i[[j]]))
-  slot(x, "listData", check=FALSE) <- listData
-  x
-})
-
-## Slightly? optimized List-indexed replacement
-setMethod("replaceElements", c("SimpleList", "List"), function(x, i, value) {
-  indices <- seq_len(length(x))
-  x@listData <-
-    lapply(indices, function(j) {
-      y <- x@listData[[j]]
-      seqselect(y, i[[j]]) <- value[[j]]
-      y
-    })
   x
 })
 

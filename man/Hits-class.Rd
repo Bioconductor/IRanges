@@ -18,7 +18,6 @@
 \alias{countQueryHits,Hits-method}
 \alias{countSubjectHits}
 \alias{countSubjectHits,Hits-method}
-\alias{[,Hits-method}
 
 % coercion
 \alias{as.matrix,Hits-method}
@@ -95,12 +94,9 @@
   }
 }
 
-\section{Extraction}{
+\section{Subsetting}{
   \describe{
-    \item{}{\code{x[i]}: Extracts a subset of the hits. The index
-    argument \code{i} may be \code{logical} or \code{numeric}. If
-    numeric, be sure that \code{i} does not contain any duplicates,
-    which would violate the set property of \code{Hits}.}
+    \item{}{\code{x[i]}: Subset the Hits object.}
   }
 }
 

@@ -94,10 +94,8 @@ setMethod("extractElements", "CompressedList",
                                  end=cumsum(width(ir)),
                                  NAMES=names(x)[i],
                                  check=FALSE)
-        ans_elementMetadata <- x@elementMetadata[i, , drop=FALSE]
         initialize(x, unlistData=ans_unlistData,
-                      partitioning=ans_partitioning,
-                      elementMetadata=ans_elementMetadata)
+                      partitioning=ans_partitioning)
     }
 )
 

@@ -41,39 +41,23 @@ setGeneric("subjectLength", function(x, ...) standardGeneric("subjectLength"))
 
 setMethod("subjectLength", "Hits", function(x) x@subjectLength)
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Extraction
+### Subsetting.
 ###
 
-setMethod("[", "Hits",
-          function(x, i, j, ... , drop=FALSE)
-          {
-            if (!missing(j) || length(list(...)) > 0L)
-              stop("invalid subsetting")
-            if (!isTRUEorFALSE(drop))
-              stop("'drop' must be TRUE or FALSE")
-            if (!missing(i)) {
-              if (is.character(i))
-                stop("Cannot subset a Hits object by character")
-              if (!(is.logical(i) || (is(i, "Rle") && is.logical(runValue(i))))
-                  && any(duplicated(i)))
-                stop("Elements in a non-logical 'i' cannot be duplicated, ",
-                     "because the Hits object would no longer be a set.")
-              iInfo <- .bracket.Index(i, length(x))
-              if (!is.null(iInfo[["msg"]]))
-                stop(iInfo[["msg"]])
-              if (iInfo[["useIdx"]]) {
-                i <- iInfo[["idx"]]
-                x@queryHits <- x@queryHits[i]
-                x@subjectHits <- x@subjectHits[i]
-                x@elementMetadata <- x@elementMetadata[i,,drop=FALSE]
-              }
-            }
-            if (drop)
-              as.matrix(x)
-            else x
-          }
-          )
+setMethod("extractElements", "Hits",
+    function(x, i)
+    {
+        if (isNotStrictlySorted(i))
+            stop("subscript cannot contain duplicates and must preserve the ",
+                 "order of elements when subsetting a ", class(x), " object")
+        x@queryHits <- x@queryHits[i]
+        x@subjectHits <- x@subjectHits[i]
+        x
+    }
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion

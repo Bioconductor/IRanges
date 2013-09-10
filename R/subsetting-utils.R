@@ -4,11 +4,8 @@
 
 
 ### Returns an integer vector with values >= 1 and <= length(x).
-normalizeSingleBracketSubscript <- function(i, x,
-                                       error.if.not.strictly.increasing=FALSE)
+normalizeSingleBracketSubscript <- function(i, x)
 {
-    if (!isTRUEorFALSE(error.if.not.strictly.increasing))
-        stop("'error.if.not.strictly.increasing' must be TRUE or FALSE")
     lx <- length(x)
     if (missing(i))
         return(seq_len(lx))
@@ -35,9 +32,6 @@ normalizeSingleBracketSubscript <- function(i, x,
         ## all negative.
         if (any_neg)
             return(seq_along(x)[i])
-        if (error.if.not.strictly.increasing && isNotStrictlySorted(i))
-            stop("positive subscript must be strictly increasing ",
-                 "when subsetting a ", class(x), " object")
         return(i)
     }
     if (is.logical(i)) {
@@ -152,22 +146,22 @@ extractROWS <- function(x, i)
 ###
 
 ### Used by "[".
-setGeneric("extractElements",
+setGeneric("extractElements", signature="x",
     function(x, i) standardGeneric("extractElements")
 )
 
 ### Used by "[<-".
-setGeneric("replaceElements",
+setGeneric("replaceElements", signature="x",
     function(x, i, value) standardGeneric("replaceElements")
 )
 
 ### Used by "[[".
-setGeneric("extractElement",
+setGeneric("extractElement", signature="x",
     function(x, i) standardGeneric("extractElement")
 )
 
 ### Used by "[[<-".
-setGeneric("replaceElement",
+setGeneric("replaceElement", signature="x",
     function(x, i, value) standardGeneric("replaceElement")
 )
 

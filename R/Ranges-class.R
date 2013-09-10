@@ -226,17 +226,16 @@ setMethod("whichFirstNotNormal", "Ranges",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Core endomorphisms.
 ###
-### TODO: "[" and most of the Ranges endomorphisms below are only defined for
-### IRanges objects. Need to fix up the update mechanism, so that they can be
-### defined on 'Ranges'. "[" and other endomorphisms below are currently
-### implemented as wrappers that coerce to IRanges, which is not a general,
-### long-term solution.
+### TODO: "extractElements" and most of the Ranges endomorphisms are only
+### defined for IRanges objects. Need to fix up the update mechanism, so that
+### they can be defined on Ranges. "extractElements" and other endomorphisms
+### are currently implemented as wrappers that coerce to IRanges, which is not
+### efficient so not a general, long-term solution.
 
-setMethod("[", "Ranges",
-    function(x, i, j, ..., drop)
+setMethod("extractElements", "Ranges",
+    function(x, i)
     {
-        if (!missing(j) || length(list(...)) > 0L)
-            stop("invalid subsetting")
-        as(callGeneric(as(x, "IRanges"), i=i, ...), class(x))
+        as(callGeneric(as(x, "IRanges"), i), class(x))
     }
 )
+

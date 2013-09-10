@@ -428,20 +428,16 @@ setMethod("update", "IRanges",
 ### Subsetting.
 ###
 
-### Always behaves like an endomorphism (i.e. ignores the 'drop' argument and
-### behaves like if it was actually set to FALSE).
-setMethod("[", "IRanges",
-    function(x, i, j, ..., drop=TRUE)
+setMethod("extractElements", "IRanges",
+    function(x, i)
     {
-        if (!missing(j) || length(list(...)) > 0L)
-            stop("invalid subsetting")
-        i <- normalizeSingleBracketSubscript(i, x,
-                 error.if.not.strictly.increasing=is(x, "NormalIRanges"))
+        if (is(x, "NormalIRanges") && isNotStrictlySorted(i))
+            stop("subscript cannot contain duplicates and must preserve the ",
+                 "order of elements when subsetting a ", class(x), " object")
         slot(x, "start", check=FALSE) <- start(x)[i]
         slot(x, "width", check=FALSE) <- width(x)[i]
         if (!is.null(names(x)))
             slot(x, "NAMES", check=FALSE) <- names(x)[i]
-        mcols(x) <- mcols(x)[i, , drop=FALSE]
         x
     }
 )

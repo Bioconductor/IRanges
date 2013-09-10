@@ -180,8 +180,21 @@ setValidity2("Vector", .valid.Vector)
 ### Subsetting.
 ###
 
-setMethod("[", "Vector", function(x, i, j, ..., drop)
-          stop("missing '[' method for Vector class ", class(x)))
+setMethod("[", "Vector",
+    function(x, i, j, ..., drop)
+    {
+        if (!missing(j) || length(list(...)) > 0)
+            stop("invalid subsetting")
+        if (!missing(i)) {
+            if (is(i, "Ranges"))
+                return(subsetByRanges(x, i))
+        }
+        i <- normalizeSingleBracketSubscript(i, x)
+        extractElements(x, i)
+        mcols(ans) <- mcols(x)[i, , drop=FALSE]
+        ans
+    }
+)
 
 ### Works on any Vector object for which c() and [ work. Assumes 'i' is an
 ### integer vector and 'value' is compatible with 'x'.

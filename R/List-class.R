@@ -304,56 +304,6 @@ subsetListByList_replace <- function(x, i, value, byrow=FALSE)
     return(x)
 }
 
-## Default implementations are provided for List-based
-## indexing. Subclasses are encouraged to override for efficiency.
-setMethod("extractElements", c("List", "RangesList"), function(x, i) {
-  subsetByRanges(x, i)
-})
-setMethod("extractElements", c("List", "AtomicList"), function(x, i) {
-  mendoapply(extractROWS, x, i)
-})
-setMethod("extractElements", c("List", "RleList"), function(x, i) {
-  extractElements(x, as(i, "IRangesList"))
-})
-setMethod("extractElements", c("List", "list"), function(x, i) {
-  extractElements(x, asList(i))
-})
-
-setMethod("replaceElements", c("List", "List"), function(x, i, value) {
-  value <- as(value, "List")
-  mendoapply(function(xi, ii, valuei) {
-    seqselect(xi, ii) <- valuei
-    xi
-  }, x, i, value)
-})
-
-## low-level 'list' methods
-
-setMethod("extractElements", c("list", "RangesList"),
-          function(x, i) {
-            indices <- seq_len(length(x))
-            names(indices) <- names(x)
-            lapply(indices, function(j) subsetByRanges(x[[j]], i[[j]]))
-          })
-
-setMethod("extractElements", c("list", "AtomicList"),
-          function(x, i) {
-            indices <- seq_len(length(x))
-            names(indices) <- names(x)
-            lapply(indices, function(j) extractROWS(x[[j]], i[[j]]))
-          })
-
-setMethod("replaceElements", c("list", "List"),
-          function(x, i, value) {
-            indices <- seq_len(length(x))
-            names(indices) <- names(x)
-            lapply(indices, function(j) {
-              y <- x[[j]]
-              seqselect(y, i[[j]]) <- value[[j]]
-              y
-            })
-          })
-
 setMethod("[", "List",
     function(x, i, j, ..., drop)
     {
@@ -361,12 +311,14 @@ setMethod("[", "List",
             stop("invalid subsetting")
         if (!missing(i)) {
             if (is(i, "Ranges"))
-                return(seqselect(x, i))
+                return(subsetByRanges(x, i))
             if (is.list(i) || is(i, "List"))
                 return(subsetListByList(x, i))
         }
         i <- normalizeSingleBracketSubscript(i, x)
-        extractElements(x, i)
+        ans <- extractElements(x, i)
+        mcols(ans) <- mcols(x)[i, , drop=FALSE]
+        ans
     }
 )
 
