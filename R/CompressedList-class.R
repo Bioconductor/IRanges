@@ -101,54 +101,6 @@ setMethod("extractElements", "CompressedList",
     }
 )
 
-setReplaceMethod("seqselect", "CompressedList",
-                 function(x, start = NULL, end = NULL, width = NULL, value)
-                 {
-                     lx <- length(x)
-                     if ((lx > 0) && is.null(end) && is.null(width) &&
-                         !is.null(start) && !is(start, "Ranges")) {
-                         if (lx != length(start))
-                             stop("'length(start)' must equal 'length(x)' ",
-                                  "when 'end' and 'width' are NULL")
-                         if (is.list(start)) {
-                             if (is.logical(start[[1L]]))
-                                 start <- LogicalList(start)
-                             else if (is.numeric(start[[1L]]))
-                                 start <- IntegerList(start)
-                         } else if (is(start, "RleList")) {
-                             start <- IRangesList(start)
-                         }
-                         if (is(start, "RangesList")) {
-                             start <-
-                               shift(unlist(start),
-                                     rep.int(start(x@partitioning) - 1L,
-                                             elementLengths(start)))
-                         } else if (is(start, "LogicalList")) {
-                             xeltlen <- elementLengths(x)
-                             whichRep <- which(xeltlen != elementLengths(start))
-                             for (i in whichRep) {
-                                 start[[i]] <-
-                                   rep(start[[i]], length.out = xeltlen[i])
-                             }
-                             start <- unlist(start)
-                         } else if (is(start, "IntegerList")) {
-                             i <-
-                               unlist(start +
-                                      relist(start(x@partitioning) - 1L,
-                                             PartitioningByEnd(seq_len(length(x)))))
-                             start <- rep.int(FALSE, sum(elementLengths(x)))
-                             start[i] <- TRUE
-                         } else {
-                             stop("unrecognized 'start' type")
-                         }
-                         seqselect(x@unlistData, start) <-
-                           unlist(value, use.names=FALSE)
-                     } else {
-                         x <- callNextMethod()
-                     }
-                     x
-                 })
-
 .CompressedList.list.subscript <-
 function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
          ...) {

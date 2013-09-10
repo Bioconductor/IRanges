@@ -24,8 +24,6 @@
 \alias{[[<-,SimpleList-method}
 \alias{$<-,CompressedList-method}
 \alias{$<-,SimpleList-method}
-\alias{seqselect<-,CompressedList-method}
-\alias{seqselect<-,SimpleList-method}
 
 % splitting and combining
 \alias{c,CompressedList-method}
@@ -111,20 +109,6 @@
       \code{RangesList}, logical \code{RleList}, \code{LogicalList}, or
       \code{IntegerList} object to perform subsetting within the list
       elements rather than across them.
-    }
-    \item{}{
-      \code{seqselect(x, start=NULL, end=NULL, width=NULL)}:
-      In addition to normal usage, the \code{start} parameter can be a
-      \code{RangesList}, logical \code{RleList}, \code{LogicalList}, or
-      \code{IntegerList} object to perform sequence extraction within the
-      list elements rather than across them.
-    }
-    \item{}{
-      \code{seqselect(x, start=NULL, end=NULL, width=NULL) <- value}:
-      In addition to normal usage, the \code{start} parameter can be a
-      \code{RangesList}, logical \code{RleList}, \code{LogicalList}, or
-      \code{IntegerList} object to perform sequence replacement within the
-      list elements rather than across them.
     }
   }
 }
