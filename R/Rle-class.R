@@ -307,8 +307,7 @@ setMethod("extractElements", "Rle",
     {
         if (!is(i, "Ranges"))
             i <- as(i, "IRanges")
-        ansList <- .Call2("Rle_seqselect",
-                          x, start(i), width(i),
+        ansList <- .Call2("Rle_seqselect", x, start(i), width(i),
                           PACKAGE="IRanges")
         ans_values <- ansList[["values"]]
         ans_lengths <- ansList[["lengths"]]
@@ -319,7 +318,7 @@ setMethod("extractElements", "Rle",
 )
 
 setMethod("[", "Rle",
-    function(x, i, j, ..., drop=getOption("dropRle", FALSE))
+    function(x, i, j, ..., drop=getOption("dropRle", default=FALSE))
     {
         if (!missing(j) || length(list(...)) > 0)
             stop("invalid subsetting")
@@ -332,6 +331,98 @@ setMethod("[", "Rle",
     }
 )
 
+setMethod("replaceElements", "Rle",
+    function(x, i, value)
+    {
+        lv <- length(value)
+        if (lv != 1L) {
+            x <- decodeRle(x)
+            if (is(i, "Ranges"))
+                i <- as.integer(i)
+            value <- as.vector(value)
+            x[i] <- value
+            return(Rle(x))
+        }
+
+        ## From here, 'value' is guaranteed to be of length 1.
+        if (!is(i, "Ranges"))
+            i <- as(i, "IRanges")
+        ir <- reduce(i)
+        if (length(ir) == 0L)
+            return(x)
+
+        isFactorRle <- is.factor(runValue(x))
+        value <- normalizeSingleBracketReplacementValue(value, x)
+        value <- as.vector(value)
+        if (isFactorRle) {
+            value <- factor(value, levels=levels(x))
+            dummy_value <- factor(levels(x), levels=levels(x))
+        }
+        if (anyMissingOrOutside(start(ir), 1L, length(x)) ||
+            anyMissingOrOutside(end(ir), 1L, length(x)))
+            stop("some ranges are out of bounds")
+
+        valueWidths <- width(ir)
+        ir <- gaps(ir, start=1, end=length(x))
+        k <- length(ir)
+        start <- start(ir)
+        end <- end(ir)
+
+        info <- getStartEndRunAndOffset(x, start, end)
+        runStart <- info[["start"]][["run"]]
+        offsetStart <- info[["start"]][["offset"]]
+        runEnd <- info[["end"]][["run"]]
+        offsetEnd <- info[["end"]][["offset"]]
+
+        if ((length(ir) == 0L) || (start(ir)[1L] != 1L)) {
+            k <- k + 1L
+            runStart <- c(1L, runStart)
+            offsetStart <- c(0L, offsetStart)
+            runEnd <- c(0L, runEnd)
+            offsetEnd <- c(0L, offsetEnd)
+        } 
+        if ((length(ir) > 0L) && (end(ir[length(ir)]) != length(x))) {
+            k <- k + 1L
+            runStart <- c(runStart, 1L)
+            offsetStart <- c(offsetStart, 0L)
+            runEnd <- c(runEnd, 0L)
+            offsetEnd <- c(offsetEnd, 0L)
+        }
+
+        subseqs <- vector("list", length(valueWidths) + k)
+        if (k > 0L) {
+            if (isFactorRle) {
+                subseqs[seq(1L, length(subseqs), by=2L)] <-
+                    lapply(seq_len(k), function(i) {
+                           ans <- .Call2("Rle_window_aslist",
+                                         x, runStart[i], runEnd[i],
+                                         offsetStart[i], offsetEnd[i],
+                                         PACKAGE="IRanges")
+                           ans[["values"]] <- dummy_value[ans[["values"]]]
+                           ans})
+            } else {
+                subseqs[seq(1L, length(subseqs), by=2L)] <-
+                    lapply(seq_len(k), function(i)
+                           .Call2("Rle_window_aslist",
+                                  x, runStart[i], runEnd[i],
+                                  offsetStart[i], offsetEnd[i],
+                                  PACKAGE="IRanges"))
+            }
+        }
+        if (length(valueWidths) > 0L) {
+            subseqs[seq(2L, length(subseqs), by=2L)] <-
+                lapply(seq_len(length(valueWidths)), function(i)
+                       list(values=value,
+                            lengths=valueWidths[i]))
+        }
+        values <- unlist(lapply(subseqs, "[[", "values"))
+        if (isFactorRle)
+            values <- dummy_value[values]
+        Rle(values=values,
+            lengths=unlist(lapply(subseqs, "[[", "lengths")))
+    }
+)
+
 setReplaceMethod("[", "Rle",
     function(x, i, j,..., value)
     {
@@ -339,7 +430,10 @@ setReplaceMethod("[", "Rle",
             stop("invalid subsetting")
         if (missing(i) || !is(i, "Ranges"))
             i <- normalizeSingleBracketSubscript(i, x)
-        li <- length(i)
+        if (is(i, "Ranges"))
+            li <- sum(width(i))
+        else
+            li <- length(i)
         if (li == 0L) {
             ## Surprisingly, in that case, `[<-` on standard vectors does not
             ## even look at 'value'. So neither do we...
@@ -348,21 +442,7 @@ setReplaceMethod("[", "Rle",
         lv <- length(value)
         if (lv == 0L)
             stop("replacement has length zero")
-        if (lv == 1L) {
-            ## "seqselect<-" method for Rle objects only supports a 'value'
-            ## of length 1.
-            if (!is(i, "Ranges"))
-                i <- as(i, "IRanges")
-            seqselect(x, i) <- value
-        } else {
-            x <- decodeRle(x)
-            if (is(i, "Ranges"))
-                i <- as.integer(i)
-            value <- as.vector(value)
-            x[i] <- value
-            x <- Rle(x)
-        }
-        x
+        replaceElements(x, i, value)
     }
 )
 
@@ -567,108 +647,6 @@ rev.Rle <-
 }
 
 setMethod("rev", "Rle", rev.Rle)
-
-setReplaceMethod("seqselect", "Rle",
-                 function(x, start = NULL, end = NULL, width = NULL, value)
-                 {
-                     isFactorRle <- is.factor(runValue(x))
-                     if (!is.null(value)) {
-                         if (length(value) > 1)
-                             stop("'value' must be of length 1 or 'NULL'")
-
-                         if (!is(value, class(x))) {
-                             value <- try(as(value, class(x)), silent = TRUE)
-                             if (inherits(value, "try-error"))
-                                 stop("'value' must be a ", class(x),
-                                      " object or NULL")
-                         }
-
-                         value <- as.vector(value)
-                         if (isFactorRle)
-                             value <- factor(value, levels = levels(x))
-                     }
-                     if (is.null(end) && is.null(width)) {
-                         if (is.null(start))
-                             ir <- IRanges(start = 1, width = length(x))
-                         else if (is(start, "Ranges"))
-                             ir <- start
-                         else {
-                             if (is.logical(start) && length(start) != length(x))
-                                 start <- rep(start, length.out = length(x))
-                             ir <- as(start, "IRanges")
-                         }
-                     } else {
-                         ir <- IRanges(start=start, end=end, width=width, names=NULL)
-                     }
-                     ir <- reduce(ir)
-                     if (length(ir) == 0)
-                         return(x)
-                     if (anyMissingOrOutside(start(ir), 1L, length(x)) ||
-                         anyMissingOrOutside(end(ir), 1L, length(x)))
-                         stop("some ranges are out of bounds")
-                     valueWidths <- width(ir)
-                     ir <- gaps(ir, start = 1, end = length(x))
-
-                     k <- length(ir)
-                     start <- start(ir)
-                     end <- end(ir)
-                     info <- getStartEndRunAndOffset(x, start, end)
-                     runStart <- info[["start"]][["run"]]
-                     offsetStart <- info[["start"]][["offset"]]
-                     runEnd <- info[["end"]][["run"]]
-                     offsetEnd <- info[["end"]][["offset"]]
-
-                     if ((length(ir) == 0) || (start(ir)[1L] != 1)) {
-                         k <- k + 1L
-                         runStart <- c(1L, runStart)
-                         offsetStart <- c(0L, offsetStart)
-                         runEnd <- c(0L, runEnd)
-                         offsetEnd <- c(0L, offsetEnd)
-                     } 
-                     if ((length(ir) > 0) &&
-                         (end(ir[length(ir)]) != length(x))) {
-                         k <- k + 1L
-                         runStart <- c(runStart, 1L)
-                         offsetStart <- c(offsetStart, 0L)
-                         runEnd <- c(runEnd, 0L)
-                         offsetEnd <- c(offsetEnd, 0L)
-                     }
-
-                     subseqs <- vector("list", length(valueWidths) + k)
-                     if (k > 0) {
-                         if (!isFactorRle)
-                             subseqs[seq(1, length(subseqs), by = 2)] <-
-                               lapply(seq_len(k), function(i)
-                                          .Call2("Rle_window_aslist",
-                                                x, runStart[i], runEnd[i],
-                                                offsetStart[i], offsetEnd[i],
-                                                PACKAGE = "IRanges"))
-                         else
-                             subseqs[seq(1, length(subseqs), by = 2)] <-
-                               lapply(seq_len(k), function(i) {
-                                          ans <-
-                                            .Call2("Rle_window_aslist",
-                                                  x, runStart[i], runEnd[i],
-                                                  offsetStart[i], offsetEnd[i],
-                                                  PACKAGE = "IRanges")
-                                          ans[["values"]] <-
-                                            factor(levels(x),
-                                                   levels = levels(x))[ans[["values"]]]
-                                          ans
-                                      })
-                     }
-                     if (length(valueWidths) > 0) {
-                         subseqs[seq(2, length(subseqs), by = 2)] <-
-                           lapply(seq_len(length(valueWidths)), function(i)
-                                      list(values = value,
-                                           lengths = valueWidths[i]))
-                     }
-                     values <- unlist(lapply(subseqs, "[[", "values"))
-                     if (isFactorRle)
-                         values <- factor(levels(x), levels = levels(x))[values]
-                     Rle(values  = values,
-                         lengths = unlist(lapply(subseqs, "[[", "lengths")))
-                 })
 
 setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
           function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE,

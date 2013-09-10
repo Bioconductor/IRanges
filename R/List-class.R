@@ -327,10 +327,8 @@ setReplaceMethod("[", "List",
     {
         if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
-        if (!missing(i)) {
-            if (is.list(i) || is(i, "List"))
+        if (!missing(i) && (is.list(i) || (is(i, "List") && !is(i, "Ranges"))))
                 return(subsetListByList_replace(x, i, value))
-        }
         callNextMethod(x, i, value=value)
     }
 )

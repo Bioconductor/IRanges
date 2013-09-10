@@ -86,7 +86,6 @@
 \alias{rep.int,Rle-method}
 \alias{rev.Rle}
 \alias{rev,Rle-method}
-\alias{seqselect<-,Rle-method}
 \alias{shiftApply,Rle,Rle-method}
 \alias{show,Rle-method}
 \alias{showAsCell,Rle-method}
@@ -325,17 +324,19 @@
 
   \describe{
     \item{}{
-      \code{x[i, drop = !is.null(getOption("dropRle")) && getOption("dropRle")]}:
+      \code{x[i, drop=getOption("dropRle", default=FALSE)]}:
       Subsets \code{x} by index \code{i}, where \code{i} can be positive
       integers, negative integers, a logical vector of the same length as
       \code{x}, an Rle object of the same length as \code{x}
       containing logical values, or an \link{IRanges} object.
-      When \code{drop = FALSE} returns an Rle object. When \code{drop = TRUE},
+      When \code{drop=FALSE} returns an Rle object. When \code{drop=TRUE},
       returns an atomic vector.
     }
     \item{}{
       \code{x[i] <- value}:
-      Equivalent to \code{seqselect(x, i) <- value}.
+      Replaces elements in \code{x} specified by \code{i} with corresponding
+      elements in \code{value}. Supports the same types for \code{i} as
+      \code{x[i]}.
     }
     \item{}{
       \code{x \%in\% table}:
@@ -435,21 +436,6 @@
     \item{}{
       \code{rev(x)}:
       Reverses the order of the values in \code{x}.
-    }
-    \item{}{
-      \code{seqselect(x, start = NULL, end = NULL, width = NULL)}:
-      Creates a new Rle object using consecutive subsequences from \code{x}
-      specified by two of the three following values:  \code{start}, \code{end},
-      and \code{width}. See \link{seqselect} for more details.
-    }
-    \item{}{
-      \code{seqselect(x, start=NULL, end=NULL, width=NULL) <- value}:
-      Similar to \code{window<-}, except that multiple consecutive subsequences
-      can be replaced by a constant \code{value}. As such two of the three
-      \code{start}, \code{end}, and \code{width} arguments can be used to
-      specify the consecutive subsequences. Alternatively, \code{start} can take
-      a Ranges object or something that can be converted to a Ranges object like
-      an integer vector, logical vector or logical Rle.
     }
     \item{}{
       \code{shiftApply(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)}:

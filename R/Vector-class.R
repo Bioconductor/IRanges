@@ -247,8 +247,12 @@ setReplaceMethod("[", "Vector",
     {
         if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
-        i <- normalizeSingleBracketSubscript(i, x)
-        li <- length(i)
+        if (missing(i) || !is(i, "Ranges"))
+            i <- normalizeSingleBracketSubscript(i, x)
+        if (is(i, "Ranges"))
+            li <- sum(width(i))
+        else
+            li <- length(i)
         if (li == 0L) {
             ## Surprisingly, in that case, `[<-` on standard vectors does not
             ## even look at 'value'. So neither do we...
@@ -264,7 +268,7 @@ setReplaceMethod("[", "Vector",
                         "of replacement length")
             ## Assuming that rep() works on 'value' and also replicates its
             ## names.
-            value <- rep(value, length.out = li)
+            value <- rep(value, length.out=li)
         }
         replaceElements(x, i, value)
     }
