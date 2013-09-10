@@ -21,8 +21,6 @@
 \alias{window.DataTable}
 \alias{window<-,DataTable-method}
 \alias{window.DataTable}
-\alias{seqselect,DataTable-method}
-\alias{seqselect<-,DataTable-method}
 \alias{head,DataTable-method}
 \alias{tail,DataTable-method}
 \alias{subset,DataTable-method}
