@@ -226,6 +226,8 @@ setMethod("eval", signature(expr="FilterRules", envir="ANY"),
               if (is.expression(rule))
                 val <- eval(rule, envir, enclos)
               else val <- rule(envir)
+              if (is(val, "Rle"))
+                val <- as.vector(val)
               if (!is.logical(val))
                 stop("filter rule evaluated to non-logical: ",
                      names(rules)[i])
