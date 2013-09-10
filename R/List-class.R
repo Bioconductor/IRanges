@@ -315,14 +315,14 @@ setMethod("extractElements", c("list", "RangesList"),
           function(x, i) {
             indices <- seq_len(length(x))
             names(indices) <- names(x)
-            lapply(indices, function(j) subsetByRanges(l[[j]], i[[j]]))
+            lapply(indices, function(j) subsetByRanges(x[[j]], i[[j]]))
           })
 
 setMethod("extractElements", c("list", "AtomicList"),
           function(x, i) {
             indices <- seq_len(length(x))
             names(indices) <- names(x)
-            lapply(indices, function(j) extractROWS(l[[j]], i[[j]]))
+            lapply(indices, function(j) extractROWS(x[[j]], i[[j]]))
           })
 
 setMethod("replaceElements", c("list", "List"),
@@ -330,7 +330,7 @@ setMethod("replaceElements", c("list", "List"),
             indices <- seq_len(length(x))
             names(indices) <- names(x)
             lapply(indices, function(j) {
-              y <- l[[j]]
+              y <- x[[j]]
               seqselect(y, i[[j]]) <- value[[j]]
               y
             })

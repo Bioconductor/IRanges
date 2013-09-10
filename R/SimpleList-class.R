@@ -87,6 +87,7 @@ setMethod("extractElements", c("SimpleList", "AtomicList"), function(x, i) {
 
 ## Slightly? optimized List-indexed replacement
 setMethod("replaceElements", c("SimpleList", "List"), function(x, i, value) {
+  indices <- seq_len(length(x))
   x@listData <-
     lapply(indices, function(j) {
       y <- x@listData[[j]]
