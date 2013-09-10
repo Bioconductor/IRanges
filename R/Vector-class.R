@@ -207,7 +207,7 @@ setMethod("[", "Vector",
                 return(subsetByRanges(x, i))
         }
         i <- normalizeSingleBracketSubscript(i, x)
-        extractElements(x, i)
+        ans <- extractElements(x, i)
         mcols(ans) <- mcols(x)[i, , drop=FALSE]
         ans
     }
