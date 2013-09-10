@@ -434,42 +434,22 @@ setMethod("extractElements", "IRanges",
         if (is(x, "NormalIRanges") && isNotStrictlySorted(i))
             stop("subscript cannot contain duplicates and must preserve the ",
                  "order of elements when subsetting a ", class(x), " object")
-        slot(x, "start", check=FALSE) <- start(x)[i]
-        slot(x, "width", check=FALSE) <- width(x)[i]
-        if (!is.null(names(x)))
-            slot(x, "NAMES", check=FALSE) <- names(x)[i]
-        x
+        ans_start <- extractElements(start(x), i)
+        ans_width <- extractElements(width(x), i)
+        ans_names <- extractElements(names(x), i)
+        initialize(x, start=ans_start, width=ans_width, NAMES=ans_names)
     }
 )
 
-setReplaceMethod("[", "IRanges",
-    function(x, i, j,..., value)
+setMethod("replaceElements", "IRanges",
+    function(x, i, value)
     {
-        if (!missing(j) || length(list(...)) > 0L)
-            stop("invalid subsetting")
-        i <- normalizeSingleBracketSubscript(i, x)
-        ans_start <- start(x)
-        ans_start[i] <- start(value)
-        ans_width <- width(x)
-        ans_width[i] <- width(value)
-        ans <- initialize(x, start=ans_start, width=ans_width, NAMES=names(x))
+        ans_start <- replaceElements(start(x), i, start(value))
+        ans_width <- replaceElements(width(x), i, width(value))
+        ans <- initialize(x, start=ans_start, width=ans_width)
         if (is(x, "NormalIRanges"))
             validObject(ans)
         ans
-    }
-)
-
-setMethod("subsetByRanges", "IRanges",
-    function(x, i)
-    {
-        if (!is(i, "Ranges"))
-            stop("'i' must be a Ranges object")
-        ans_start <- subsetByRanges(start(x), i)
-        ans_width <- subsetByRanges(width(x), i)
-        ans_names <- subsetByRanges(names(x), i)
-        ans_mcols <- subsetByRanges(mcols(x), i)
-        initialize(x, start=ans_start, width=ans_width, NAMES=names(x),
-                      elementMetadata=ans_mcols)
     }
 )
 

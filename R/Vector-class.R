@@ -180,6 +180,23 @@ setValidity2("Vector", .valid.Vector)
 ### Subsetting.
 ###
 
+setMethod("extractElements", "NULL",
+    function(x, i) NULL
+)
+
+setMethod("extractElements", "vectorORfactor",
+    function(x, i)
+    {
+        if (!is(i, "Ranges"))
+            return(x[i])
+        ans <- .Call2("vector_seqselect", x, start(i), width(i),
+                      PACKAGE="IRanges")
+        if (is.factor(x))
+            attributes(ans) <- list(levels=levels(x), class="factor")
+        ans
+    }
+)
+
 setMethod("[", "Vector",
     function(x, i, j, ..., drop)
     {
@@ -193,6 +210,16 @@ setMethod("[", "Vector",
         extractElements(x, i)
         mcols(ans) <- mcols(x)[i, , drop=FALSE]
         ans
+    }
+)
+
+setMethod("replaceElements", "vectorORfactor",
+    function(x, i, value)
+    {
+        if (is(i, "Ranges"))
+            i <- as.integer(i)
+        x[i] <- value
+        x
     }
 )
 

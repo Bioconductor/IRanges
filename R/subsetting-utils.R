@@ -138,11 +138,10 @@ extractROWS <- function(x, i)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Internal generics to ease implementation of subsetting for new List
-### subclasses. The index 'i' will always be 'integer', unless the
-### subclass overrides that behavior somehow (eventually there might be
-### a generic for normalizing the arguments to '[' to an arbitrary
-### type). For replacement, 'value' is guaranteed to be compatible.
+### Internal generics to ease implementation of subsetting for new Vector
+### subclasses. The index 'i' will always be a vector of positive integers
+### >= 1 and <= length(x) or a Ranges object. For replacements, 'value' is
+### guaranteed to have gone thru normalizeSingleBracketReplacementValue().
 ###
 
 ### Used by "[".

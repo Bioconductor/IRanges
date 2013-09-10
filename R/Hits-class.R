@@ -52,8 +52,8 @@ setMethod("extractElements", "Hits",
         if (isNotStrictlySorted(i))
             stop("subscript cannot contain duplicates and must preserve the ",
                  "order of elements when subsetting a ", class(x), " object")
-        x@queryHits <- x@queryHits[i]
-        x@subjectHits <- x@subjectHits[i]
+        x@queryHits <- extractElements(x@queryHits, i)
+        x@subjectHits <- extractElements(x@subjectHits, i)
         x
     }
 )
