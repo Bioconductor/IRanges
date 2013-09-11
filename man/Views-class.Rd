@@ -28,6 +28,7 @@
 \alias{coerce,Views,NormalIRanges-method}
 \alias{as.matrix,Views-method}
 \alias{[[,Views-method}
+\alias{c,Views-method}
 \alias{trim}
 \alias{trim,Views-method}
 \alias{subviews}
@@ -115,6 +116,15 @@
       \code{window(subject(x), start=start(x)[i], end=end(x)[i])}
       or an error if the view is "out of limits" (i.e. \code{start(x)[i] < 1}
       or \code{end(x)[i] > length(subject(x))}).
+    }
+  }
+}
+
+\section{Combining}{
+  \describe{
+    \item{}{
+      \code{c(x, ..., ignore.mcols=FALSE)} Combine \code{Views} objects
+      with same subject.
     }
   }
 }

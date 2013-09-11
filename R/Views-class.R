@@ -218,6 +218,47 @@ setMethod("[[", "Views",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Combining Views objects.
+###
+
+setMethod("c", "Views",
+    function(x, ..., ignore.mcols=FALSE, recursive=FALSE)
+    {
+        if (!identical(recursive, FALSE))
+            stop("\"c\" method for Views objects ",
+                 "does not support the 'recursive' argument")
+        if (!isTRUEorFALSE(ignore.mcols))
+            stop("'ignore.mcols' must be TRUE or FALSE")
+        if (missing(x)) {
+            args <- unname(list(...))
+            x <- args[[1L]]
+        } else {
+            args <- unname(list(x, ...))
+        }
+        if (length(args) == 1L)
+            return(x)
+        arg_is_null <- sapply(args, is.null)
+        if (any(arg_is_null))
+            args[arg_is_null] <- NULL  # remove NULL elements by setting them to NULL!
+        if (!all(sapply(args, is, class(x))))
+            stop("all arguments in '...' must be ", class(x), " objects (or NULLs)")
+        ok <- sapply(args, function(arg)
+                     isTRUE(all.equal(subject(arg), subject(x))))
+        if (!all(ok))
+            stop("all Views objects to combine must have the same subject")
+        x@ranges <- do.call(c, lapply(args, ranges))
+        if (ignore.mcols) {
+            mcols(x) <- NULL
+        } else  {
+            mcols(x) <- do.call(rbind.mcols, args)
+        }
+        validObject(x)
+        x
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "trim" function.
 ###
 
