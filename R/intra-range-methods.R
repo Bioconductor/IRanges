@@ -369,17 +369,17 @@ setMethod("resize", "Ranges",
         if (!identical(runValue(fix), "start")) {
             fixEnd <- as(fix == "end", "IRanges")
             if (length(fixEnd) > 0) {
-                value <- extractElements(ans_start, fixEnd) +
-                         (extractElements(width(x), fixEnd) -
-                          extractElements(ans_width, fixEnd))
-                ans_start <- replaceElements(ans_start, fixEnd, value)
+                value <- extractROWS(ans_start, fixEnd) +
+                         (extractROWS(width(x), fixEnd) -
+                          extractROWS(ans_width, fixEnd))
+                ans_start <- replaceROWS(ans_start, fixEnd, value)
             }
             fixCenter <- as(fix == "center", "IRanges")
             if (length(fixCenter) > 0) {
-                value <- extractElements(ans_start, fixCenter) +
-                         (extractElements(width(x), fixCenter) -
-                          extractElements(ans_width, fixCenter)) %/% 2L
-                ans_start <- replaceElements(ans_start, fixCenter, value)
+                value <- extractROWS(ans_start, fixCenter) +
+                         (extractROWS(width(x), fixCenter) -
+                          extractROWS(ans_width, fixCenter)) %/% 2L
+                ans_start <- replaceROWS(ans_start, fixCenter, value)
             }
         }
         x <- update(x, start=ans_start, width=ans_width, check=FALSE)

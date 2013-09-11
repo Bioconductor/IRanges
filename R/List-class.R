@@ -344,7 +344,7 @@ setMethod("[[", "List",
             i <- normalizeDoubleBracketSubscript(i, x, error.if.nomatch=FALSE)
             if (is.na(i))
               return(NULL)
-            extractElement(x, i)
+            getListElement(x, i)
           })
 
 setReplaceMethod("[[", "List",
@@ -353,7 +353,7 @@ setReplaceMethod("[[", "List",
                    if (!missing(j) || length(list(...)) > 0)
                      stop("invalid replacement")
                    origLen <- length(x)
-                   x <- replaceElement(x, i, value)
+                   x <- setListElement(x, i, value)
                    if (origLen < length(x))
                      x <- rbindRowOfNAsToMetadatacols(x)
                    x

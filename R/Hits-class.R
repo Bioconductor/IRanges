@@ -46,14 +46,18 @@ setMethod("subjectLength", "Hits", function(x) x@subjectLength)
 ### Subsetting.
 ###
 
-setMethod("extractElements", "Hits",
+setMethod("extractROWS", "Hits",
     function(x, i)
     {
-        if (isNotStrictlySorted(i))
+        if (missing(i) || !is(i, "Ranges"))
+            i <- normalizeSingleBracketSubscript(i, x)
+        if ((is.integer(i) && isNotStrictlySorted(i))
+         || (is(i, "Ranges") && !isNornal(i)))
             stop("subscript cannot contain duplicates and must preserve the ",
                  "order of elements when subsetting a ", class(x), " object")
-        x@queryHits <- extractElements(x@queryHits, i)
-        x@subjectHits <- extractElements(x@subjectHits, i)
+        x@queryHits <- extractROWS(x@queryHits, i)
+        x@subjectHits <- extractROWS(x@subjectHits, i)
+        x@elementMetadata <- extractROWS(x@elementMetadata, i)
         x
     }
 )

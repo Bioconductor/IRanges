@@ -302,7 +302,7 @@ setMethod("Complex", "Rle",
 ### General methods
 ###
 
-setMethod("extractElements", "Rle",
+setMethod("extractROWS", "Rle",
     function(x, i)
     {
         if (!is(i, "Ranges"))
@@ -313,7 +313,9 @@ setMethod("extractElements", "Rle",
         ans_lengths <- ansList[["lengths"]]
         if (is.factor(runValue(x)))
             attributes(ans_values) <- list(levels=levels(x), class="factor")
-        Rle(ans_values, ans_lengths)
+        ans <- Rle(ans_values, ans_lengths)
+        mcols(ans) <- extractROWS(mcols(ans), i)
+        ans
     }
 )
 
@@ -324,16 +326,18 @@ setMethod("[", "Rle",
             stop("invalid subsetting")
         if (missing(i) || !is(i, "Ranges"))
             i <- normalizeSingleBracketSubscript(i, x)
-        ans <- extractElements(x, i)
+        ans <- extractROWS(x, i)
         if (drop)
             ans <- decodeRle(ans)
         ans
     }
 )
 
-setMethod("replaceElements", "Rle",
+setMethod("replaceROWS", "Rle",
     function(x, i, value)
     {
+        if (missing(i) || !is(i, "Ranges"))
+            i <- normalizeSingleBracketSubscript(i, x)
         lv <- length(value)
         if (lv != 1L) {
             x <- decodeRle(x)
@@ -442,7 +446,7 @@ setReplaceMethod("[", "Rle",
         lv <- length(value)
         if (lv == 0L)
             stop("replacement has length zero")
-        replaceElements(x, i, value)
+        replaceROWS(x, i, value)
     }
 )
 

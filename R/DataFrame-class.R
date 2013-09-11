@@ -259,12 +259,14 @@ setReplaceMethod("[[", "DataFrame",
                    x
                  })
 
-setMethod("extractElements", "DataFrame",
+setMethod("extractROWS", "DataFrame",
     function(x, i)
     {
+        if (missing(i) || !is(i, "Ranges"))
+            i <- normalizeSingleBracketSubscript(i, x)
         slot(x, "listData", check=FALSE) <-
             lapply(structure(seq_len(ncol(x)), names=names(x)),
-                   function(j) extractElements(x[[j]], i))
+                   function(j) extractROWS(x[[j]], i))
         if (is(i, "Ranges"))
             li <- sum(width(i))
         else
@@ -272,8 +274,10 @@ setMethod("extractElements", "DataFrame",
         slot(x, "nrows", check=FALSE) <- li
         if (!is.null(rownames(x))) {
             slot(x, "rownames", check=FALSE) <-
-                make.unique(extractElements(rownames(x), i))
+                make.unique(extractROWS(rownames(x), i))
         }
+        slot(x, "elementMetadata", check=FALSE) <-
+            extractROWS(x@elementMetadata, i)
         x
     }
 )
@@ -295,8 +299,7 @@ setMethod("[", "DataFrame",
               if (!is.null(iInfo[["msg"]]))
                 stop("subsetting as list: ", iInfo[["msg"]])
               x <- initialize(x,
-                       listData=extractElements(x@listData,
-                                                iInfo[["idx"]]),
+                       listData=extractROWS(x@listData, iInfo[["idx"]]),
                        elementMetadata=x@elementMetadata[iInfo[["idx"]], ,
                                                          drop=FALSE])
               if (anyDuplicated(names(x)))
@@ -310,8 +313,7 @@ setMethod("[", "DataFrame",
               if (!is.null(jInfo[["msg"]]))
                 stop("selecting cols: ", jInfo[["msg"]])
               x <- initialize(x,
-                       listData=extractElements(x@listData,
-                                                jInfo[["idx"]]),
+                       listData=extractROWS(x@listData, jInfo[["idx"]]),
                        elementMetadata=x@elementMetadata[jInfo[["idx"]], ,
                                                          drop=FALSE])
               if (anyDuplicated(names(x)))

@@ -58,28 +58,33 @@ setValidity2("SimpleList", .valid.SimpleList)
 ### Subsetting.
 ###
 
-setMethod("extractElements", "SimpleList",
+setMethod("extractROWS", "SimpleList",
     function(x, i)
     {
-        initialize(x, listData=extractElements(x@listData, i))
+        if (missing(i) || !is(i, "Ranges"))
+            i <- normalizeSingleBracketSubscript(i, x)
+        initialize(x, listData=extractROWS(x@listData, i),
+                      elementMetadata=extractROWS(x@elementMetadata, i))
     }
 )
 
-setMethod("replaceElements", "SimpleList",
+setMethod("replaceROWS", "SimpleList",
     function(x, i, value)
     {
-        initialize(x, listData=replaceElements(x@listData, i, value@listData))
+        if (missing(i) || !is(i, "Ranges"))
+            i <- normalizeSingleBracketSubscript(i, x)
+        initialize(x, listData=replaceROWS(x@listData, i, value@listData))
     }
 )
 
-setMethod("extractElement", "SimpleList",
+setMethod("getListElement", "SimpleList",
     function(x, i)
     {
         x@listData[[i]]
     }
 )
 
-setMethod("replaceElement", "SimpleList",
+setMethod("setListElement", "SimpleList",
     function(x, i, value)
     {
         x@listData[[i]] <- value

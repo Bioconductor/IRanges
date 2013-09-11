@@ -226,13 +226,13 @@ setMethod("whichFirstNotNormal", "Ranges",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Core endomorphisms.
 ###
-### TODO: "extractElements" and most of the Ranges endomorphisms are only
+### TODO: "extractROWS" and most of the Ranges endomorphisms are only
 ### defined for IRanges objects. Need to fix up the update mechanism, so that
-### they can be defined on Ranges. "extractElements" and other endomorphisms
+### they can be defined on Ranges. "extractROWS" and other endomorphisms
 ### are currently implemented as wrappers that coerce to IRanges, which is not
 ### efficient so not a general, long-term solution.
 
-setMethod("extractElements", "Ranges",
+setMethod("extractROWS", "Ranges",
     function(x, i)
     {
         as(callGeneric(as(x, "IRanges"), i), class(x))

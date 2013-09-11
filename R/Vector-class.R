@@ -195,32 +195,11 @@ setMethod("extractROWS", "NULL",
 setMethod("extractROWS", "vectorORfactor",
     function(x, i)
     {
-        if (missing(i) || !is(i, "Ranges"))
+        if (missing(i) || !is(i, "Ranges")) {
             i <- normalizeSingleBracketSubscript(i, x)
-        extractElements(x, i)
-    }
-)
-
-setMethod("extractROWS", "Vector",
-    function(x, i)
-    {
-        if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x)
-        ans <- extractElements(x, i)
-        mcols(ans) <- extractROWS(mcols(ans), i)
-        ans
-    }
-) 
-
-setMethod("extractElements", "NULL",
-    function(x, i) NULL
-)
-
-setMethod("extractElements", "vectorORfactor",
-    function(x, i)
-    {
-        if (!is(i, "Ranges"))
             return(x[i])
+        }
+        ## Which one is faster, vector_seqselect or vector_subsetByRanges?
         ans <- .Call2("vector_seqselect", x, start(i), width(i),
                       PACKAGE="IRanges")
         #ans <- .Call2("vector_subsetByRanges", x, start(i), width(i),
@@ -244,21 +223,29 @@ setMethod("[", "Vector",
     }
 )
 
-setMethod("replaceElements", "vectorORfactor",
+setMethod("replaceROWS", "vectorORfactor",
     function(x, i, value)
     {
-        if (is(i, "Ranges"))
+        if (missing(i) || !is(i, "Ranges")) {
+            i <- normalizeSingleBracketSubscript(i, x)
+        } else {
             i <- as.integer(i)
+        }
         x[i] <- value
         x
     }
 )
 
-### Works on any Vector object for which c() and [ work. Assumes 'i' is an
-### integer vector and 'value' is compatible with 'x'.
-setMethod("replaceElements", "Vector",
+### Works on any Vector object for which c() and [ work. Assumes 'value' is
+### compatible with 'x'.
+setMethod("replaceROWS", "Vector",
     function(x, i, value)
     {
+        if (missing(i) || !is(i, "Ranges")) {
+            i <- normalizeSingleBracketSubscript(i, x)
+        } else {
+            i <- as.integer(i)
+        }
         ## Assuming that objects of class 'class(x)' can be combined with c().
         ans <- c(x, value)
         idx <- seq_len(length(x))
@@ -301,7 +288,7 @@ setReplaceMethod("[", "Vector",
             ## names.
             value <- rep(value, length.out=li)
         }
-        replaceElements(x, i, value)
+        replaceROWS(x, i, value)
     }
 )
 
@@ -430,7 +417,7 @@ setMethod("seqselect", "ANY",
             stop("'end' and 'width' must be NULL ",
                  "when 'start' is a Ranges object")
         }
-        i <- extractElements(seq_len(NROW(x)), start)
+        i <- extractROWS(seq_len(NROW(x)), start)
         extractROWS(x, i)
     }
 )
@@ -450,7 +437,7 @@ setReplaceMethod("seqselect", "ANY",
             stop("'end' and 'width' must be NULL ",
                  "when 'start' is a Ranges object")
         }
-        i <- extractElements(seq_len(NROW(x)), start)
+        i <- extractROWS(seq_len(NROW(x)), start)
         if (length(dim(x)) < 2L)
             x[i] <- value
         else

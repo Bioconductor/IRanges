@@ -126,12 +126,21 @@ setMethod("normalizeSingleBracketReplacementValue", "ANY",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Internal generics to ease implementation of subsetting for new Vector
+### subclasses.
+###
+
 ### extractROWS(), replaceROWS()
 ###
+### Most new Vector subclasses should only need to implement an "extractROWS"
+### method to have "[" work out-of-the-box and a "replaceROWS" method to have
+### "[<-" work out-of-the-box.
 ### Must support the following 'i' types: Ranges and anything that can be
 ### handled by normalizeSingleBracketSubscript().
-### For replacements, 'value' is guaranteed to have gone thru
-### normalizeSingleBracketReplacementValue().
+### For replaceROWS(), it's OK to assume that 'value' is "compatible" i.e.
+### that it has gone thru normalizeSingleBracketReplacementValue().
+### See "extractROWS" and "replaceROWS" methods for IRanges objects for an
+### example.
 ###
 
 setGeneric("extractROWS", signature="x",
@@ -142,33 +151,15 @@ setGeneric("replaceROWS", signature="x",
     function(x, i, value) standardGeneric("replaceROWS")
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Internal generics to ease implementation of subsetting for new Vector
-### subclasses.
-### The index 'i' will always be a vector of positive integers
-### >= 1 and <= NROW(x) or a Ranges object. For replacements, 'value' is
-### guaranteed to have gone thru normalizeSingleBracketReplacementValue().
+### getListElement(), setListElement()
 ###
 
-### Used by "[".
-setGeneric("extractElements", signature="x",
-    function(x, i) standardGeneric("extractElements")
+setGeneric("getListElement", signature="x",
+    function(x, i) standardGeneric("getListElement")
 )
 
-### Used by "[<-".
-setGeneric("replaceElements", signature="x",
-    function(x, i, value) standardGeneric("replaceElements")
-)
-
-### Used by "[[".
-setGeneric("extractElement", signature="x",
-    function(x, i) standardGeneric("extractElement")
-)
-
-### Used by "[[<-".
-setGeneric("replaceElement", signature="x",
-    function(x, i, value) standardGeneric("replaceElement")
+setGeneric("setListElement", signature="x",
+    function(x, i, value) standardGeneric("setListElement")
 )
 
 
