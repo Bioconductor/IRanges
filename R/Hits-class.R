@@ -52,7 +52,7 @@ setMethod("extractROWS", "Hits",
         if (missing(i) || !is(i, "Ranges"))
             i <- normalizeSingleBracketSubscript(i, x)
         if ((is.integer(i) && isNotStrictlySorted(i))
-         || (is(i, "Ranges") && !isNornal(i)))
+         || (is(i, "Ranges") && !isNormal(i)))
             stop("subscript cannot contain duplicates and must preserve the ",
                  "order of elements when subsetting a ", class(x), " object")
         x@queryHits <- extractROWS(x@queryHits, i)

@@ -435,7 +435,7 @@ setMethod("extractROWS", "IRanges",
             i <- normalizeSingleBracketSubscript(i, x)
         if (is(x, "NormalIRanges")
          && ((is.integer(i) && isNotStrictlySorted(i))
-          || (is(i, "Ranges") && !isNornal(i))))
+          || (is(i, "Ranges") && !isNormal(i))))
             stop("subscript cannot contain duplicates and must preserve the ",
                  "order of elements when subsetting a ", class(x), " object")
         ans_start <- extractROWS(start(x), i)
