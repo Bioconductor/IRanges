@@ -80,15 +80,13 @@ setReplaceMethod("names", "Views",
     }
 )
 
-setMethod("[", "Views",
-    function(x, i, j, ..., drop)
+setMethod("extractROWS", "Views",
+    function(x, i)
     {
-        if (!missing(j) || length(list(...)) > 0L)
-            stop("invalid subsetting")
-        if (missing(i))
-            return(x)
-        x@ranges <- ranges(x)[i]
-        mcols(x) <- mcols(x)[i, , drop=FALSE]
+        if (missing(i) || !is(i, "Ranges"))
+            i <- normalizeSingleBracketSubscript(i, x)
+        x@ranges <- extractROWS(ranges(x), i)
+        mcols(x) <- extractROWS(mcols(x), i)
         x
     }
 )
