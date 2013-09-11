@@ -211,40 +211,42 @@ subsetListByList <- function(x, i)
     }
     if (li == 0L)
         return(ans)
-    if (is(i, "LogicalList")
-     || is(i, "RleList") && is(runValue(i), "LogicalList"))
-    {
-        unlisted_ans <- unlist(ans, use.names=FALSE)
-        i <- .normalizeLogicalListSubscript(i, ans)
-        unlisted_i <- unlist(i, use.names=FALSE)
-        unlisted_ans <- extractROWS(unlisted_ans, unlisted_i)
-        group <- rep.int(seq_along(ans), elementLengths(ans))
-        ans_skeleton <- PartitioningByEnd(group[unlisted_i], NG=length(ans),
-                                          names=names(ans))
-        ans <- as(relist(unlisted_ans, ans_skeleton), class(x))
-        return(ans)
-    }
-    if (is(i, "IntegerList")) {
-        unlisted_ans <- unlist(ans, use.names=FALSE)
-        offsets <- c(0L, end(PartitioningByEnd(ans))[-length(ans)])
-        i <- i + offsets
-        unlisted_i <- unlist(i, use.names=FALSE)
-        unlisted_ans <- extractROWS(unlisted_ans, unlisted_i)
-        ans_breakpoints <- cumsum(unname(elementLengths(i)))
-        ans_skeleton <- PartitioningByEnd(ans_breakpoints, names=names(ans))
-        ans <- as(relist(unlisted_ans, ans_skeleton), class(x))
-        return(ans)
-    }
-    if (is(i, "RangesList")) {
-        unlisted_ans <- unlist(ans, use.names=FALSE)
-        offsets <- c(0L, end(PartitioningByEnd(ans))[-length(ans)])
-        unlisted_i <- shift(unlist(i, use.names=FALSE),
-                            shift=rep.int(offsets, elementLengths(i)))
-        unlisted_ans <- extractROWS(unlisted_ans, unlisted_i)
-        ans_breakpoints <- cumsum(unlist(sum(width(i)), use.names=FALSE))
-        ans_skeleton <- PartitioningByEnd(ans_breakpoints, names=names(ans))
-        ans <- as(relist(unlisted_ans, ans_skeleton), class(x))
-        return(ans)
+    if (!is(ans, "SimpleList")) {
+        if (is(i, "LogicalList")
+         || is(i, "RleList") && is(runValue(i), "LogicalList"))
+        {
+            unlisted_ans <- unlist(ans, use.names=FALSE)
+            i <- .normalizeLogicalListSubscript(i, ans)
+            unlisted_i <- unlist(i, use.names=FALSE)
+            unlisted_ans <- extractROWS(unlisted_ans, unlisted_i)
+            group <- rep.int(seq_along(ans), elementLengths(ans))
+            ans_skeleton <- PartitioningByEnd(group[unlisted_i], NG=length(ans),
+                                              names=names(ans))
+            ans <- as(relist(unlisted_ans, ans_skeleton), class(x))
+            return(ans)
+        }
+        if (is(i, "IntegerList")) {
+            unlisted_ans <- unlist(ans, use.names=FALSE)
+            offsets <- c(0L, end(PartitioningByEnd(ans))[-length(ans)])
+            i <- i + offsets
+            unlisted_i <- unlist(i, use.names=FALSE)
+            unlisted_ans <- extractROWS(unlisted_ans, unlisted_i)
+            ans_breakpoints <- cumsum(unname(elementLengths(i)))
+            ans_skeleton <- PartitioningByEnd(ans_breakpoints, names=names(ans))
+            ans <- as(relist(unlisted_ans, ans_skeleton), class(x))
+            return(ans)
+        }
+        if (is(i, "RangesList")) {
+            unlisted_ans <- unlist(ans, use.names=FALSE)
+            offsets <- c(0L, end(PartitioningByEnd(ans))[-length(ans)])
+            unlisted_i <- shift(unlist(i, use.names=FALSE),
+                                shift=rep.int(offsets, elementLengths(i)))
+            unlisted_ans <- extractROWS(unlisted_ans, unlisted_i)
+            ans_breakpoints <- cumsum(unlist(sum(width(i)), use.names=FALSE))
+            ans_skeleton <- PartitioningByEnd(ans_breakpoints, names=names(ans))
+            ans <- as(relist(unlisted_ans, ans_skeleton), class(x))
+            return(ans)
+        }
     }
     ## NOT efficient because it loops over the elements of 'i'.
     for (ii in seq_len(li))
