@@ -595,6 +595,7 @@ If the sequence is a \Rclass{Vector} subclass (i.e. not an ordinary
 \Rclass{Ranges} instance.
 %
 <<bracket-ranges>>=
+irextract <- IRanges(start = c(4501, 4901) , width = 100)
 xRle[irextract]
 @
 %
