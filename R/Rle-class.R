@@ -305,8 +305,11 @@ setMethod("Complex", "Rle",
 setMethod("extractROWS", "Rle",
     function(x, i)
     {
-        if (!is(i, "Ranges"))
+        if (!is(i, "Ranges")) {
+            i <- normalizeSingleBracketSubscript(i, x)
             i <- as(i, "IRanges")
+        }
+        i <- i[width(i) != 0L]
         ansList <- .Call2("Rle_seqselect", x, start(i), width(i),
                           PACKAGE="IRanges")
         ans_values <- ansList[["values"]]
