@@ -3,12 +3,19 @@
 ### -------------------------------------------------------------------------
 
 
-### Returns an integer vector with values >= 1 and <= NROW(x).
-normalizeSingleBracketSubscript <- function(i, x)
+### Returns an integer vector with values >= 1 and <= N where N = length(x)
+### if 'byrow=FALSE' and N = nrow(x) if 'byrow=TRUE'.
+normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE)
 {
-    lx <- NROW(x)
+    if (!isTRUEorFALSE(byrow))
+        stop("'byrow' must be TRUE or FALSE")
+    if (byrow) {
+        N <- nrow(x)
+    } else {
+        N <- length(x)
+    }
     if (missing(i))
-        return(seq_len(lx))
+        return(seq_len(N))
     if (is.null(i))
         return(integer(0))
     if (is(i, "Rle"))
@@ -18,7 +25,7 @@ normalizeSingleBracketSubscript <- function(i, x)
     if (is.numeric(i)) {
         if (!is.integer(i))
             i <- as.integer(i)
-        if (anyMissingOrOutside(i, upper=lx))
+        if (anyMissingOrOutside(i, upper=N))
             stop("subscript contains NAs or out of bounds indices")
         nonzero_idx <- which(i != 0L)
         i <- i[nonzero_idx]
@@ -31,30 +38,36 @@ normalizeSingleBracketSubscript <- function(i, x)
         ## From here, indices are guaranteed to be either all positive or
         ## all negative.
         if (any_neg)
-            return(seq_along(x)[i])
+            return(seq_len(N)[i])
         return(i)
     }
     if (is.logical(i)) {
         if (anyMissing(i))
             stop("subscript contains NAs")
         li <- length(i)
-        if (li > lx) {
-            if (any(i[(lx+1L):li]))
+        if (li > N) {
+            if (any(i[(N+1L):li]))
                 stop("subscript is a logical vector with out of bounds ",
                      "TRUE values")
-            i <- i[seq_len(lx)]
+            i <- i[seq_len(N)]
         }
-        if (li < lx)
-            i <- rep(i, length.out=lx)
+        if (li < N)
+            i <- rep(i, length.out=N)
         return(which(i))
     }
     if (is.character(i) || is.factor(i)) {
-        x_names <- names(x)
+        if (byrow) {
+            x_names <- rownames(x)
+            what <- "rownames"
+        } else {
+            x_names <- names(x)
+            what <- "names"
+        }
         if (is.null(x_names))
-            stop("cannot subset by character when names are NULL")
+            stop("cannot subset by character when ", what, " are NULL")
         i <- match(i, x_names, incomparables=c(NA_character_, ""))
         if (anyMissing(i))
-            stop("subscript contains invalid names")
+            stop("subscript contains invalid ", what)
         return(i)
     }
     stop("invalid subscript type")

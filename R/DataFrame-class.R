@@ -239,7 +239,7 @@ setMethod("extractROWS", "DataFrame",
     function(x, i)
     {
         if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x)
+            i <- normalizeSingleBracketSubscript(i, x, byrow=TRUE)
         slot(x, "listData", check=FALSE) <-
             lapply(structure(seq_len(ncol(x)), names=names(x)),
                    function(j) extractROWS(x[[j]], i))
