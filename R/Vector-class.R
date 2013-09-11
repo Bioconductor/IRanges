@@ -180,34 +180,37 @@ setValidity2("Vector", .valid.Vector)
 ### Subsetting.
 ###
 
-setGeneric("subsetByRanges", signature="x",
-    function(x, i) standardGeneric("subsetByRanges")
-)
+subsetByRanges <- function(x, i)
+{
+    .Deprecated("extractROWS")
+    if (!is(i, "Ranges"))
+        stop("'i' must be a Ranges object")
+    extractROWS(x, i)
+}
 
-setMethod("subsetByRanges", "NULL",
+setMethod("extractROWS", "NULL",
     function(x, i) NULL
 )
 
-setMethod("subsetByRanges", "vector",
+setMethod("extractROWS", "vectorORfactor",
     function(x, i)
     {
-        if (!is(i, "Ranges"))
-            stop("'i' must be a Ranges object")
-        .Call2("vector_subsetByRanges", x, start(i), width(i),
-               PACKAGE="IRanges")
+        if (missing(i) || !is(i, "Ranges"))
+            i <- normalizeSingleBracketSubscript(i, x)
+        extractElements(x, i)
     }
 )
 
-setMethod("subsetByRanges", "Vector",
+setMethod("extractROWS", "Vector",
     function(x, i)
     {
-        if (!is(i, "Ranges"))
-            stop("'i' must be a Ranges object")
+        if (missing(i) || !is(i, "Ranges"))
+            i <- normalizeSingleBracketSubscript(i, x)
         ans <- extractElements(x, i)
-        mcols(ans) <- subsetByRanges(mcols(ans), i)
+        mcols(ans) <- extractROWS(mcols(ans), i)
         ans
     }
-)
+) 
 
 setMethod("extractElements", "NULL",
     function(x, i) NULL
@@ -220,6 +223,8 @@ setMethod("extractElements", "vectorORfactor",
             return(x[i])
         ans <- .Call2("vector_seqselect", x, start(i), width(i),
                       PACKAGE="IRanges")
+        #ans <- .Call2("vector_subsetByRanges", x, start(i), width(i),
+        #              PACKAGE="IRanges")
         if (is.factor(x))
             attributes(ans) <- list(levels=levels(x), class="factor")
         ans
@@ -229,16 +234,13 @@ setMethod("extractElements", "vectorORfactor",
 setMethod("[", "Vector",
     function(x, i, j, ..., drop)
     {
-        if (!missing(j) || length(list(...)) > 0)
+        if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
         if (!missing(i)) {
             if (is(i, "Ranges"))
-                return(subsetByRanges(x, i))
+                return(extractROWS(x, i))
         }
-        i <- normalizeSingleBracketSubscript(i, x)
-        ans <- extractElements(x, i)
-        mcols(ans) <- mcols(x)[i, , drop=FALSE]
-        ans
+        extractROWS(x, i)
     }
 )
 
@@ -755,7 +757,7 @@ setMethod("relist", c("Vector", "list"),
     names(f) <- as.character(runValue(tmp))
     if (!identical(drop, FALSE))
         warning("'drop' is ignored when 'f' is an integer-Rle")
-    x <- subsetByRanges(x, xranges)
+    x <- extractROWS(x, xranges)
     f <- PartitioningByEnd(f)
     relist(x, f)
 }
@@ -790,7 +792,7 @@ setMethod("relist", c("Vector", "list"),
     if (drop)
         f <- f[f != 0L]
     f <- cumsum(f)
-    x <- subsetByRanges(x, xranges)
+    x <- extractROWS(x, xranges)
     f <- PartitioningByEnd(f)
     relist(x, f)
 }
@@ -934,7 +936,7 @@ function (X, INDEX, FUN = NULL, ..., simplify = TRUE)
     if (is.null(FUN))
         return(as.vector(group))
     groupRanges <- splitRanges(group)
-    ans <- lapply(groupRanges, function(i) FUN(subsetByRanges(X, i), ...))
+    ans <- lapply(groupRanges, function(i) FUN(extractROWS(X, i), ...))
     index <- as.integer(names(ans))
     if (simplify && all(unlist(lapply(ans, length), use.names=FALSE) == 1L)) {
         ansmat <- array(dim = extent, dimnames = namelist)

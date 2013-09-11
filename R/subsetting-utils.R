@@ -3,10 +3,10 @@
 ### -------------------------------------------------------------------------
 
 
-### Returns an integer vector with values >= 1 and <= length(x).
+### Returns an integer vector with values >= 1 and <= NROW(x).
 normalizeSingleBracketSubscript <- function(i, x)
 {
-    lx <- length(x)
+    lx <- NROW(x)
     if (missing(i))
         return(seq_len(lx))
     if (is.null(i))
@@ -126,21 +126,28 @@ setMethod("normalizeSingleBracketReplacementValue", "ANY",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### extractROWS()
+### extractROWS(), replaceROWS()
+###
+### Must support the following 'i' types: Ranges and anything that can be
+### handled by normalizeSingleBracketSubscript().
+### For replacements, 'value' is guaranteed to have gone thru
+### normalizeSingleBracketReplacementValue().
 ###
 
-extractROWS <- function(x, i)
-{
-    if (length(dim(x)) < 2L)
-        return(x[i])
-    x[i, , drop=FALSE]
-}
+setGeneric("extractROWS", signature="x",
+    function(x, i) standardGeneric("extractROWS")
+)
+
+setGeneric("replaceROWS", signature="x",
+    function(x, i, value) standardGeneric("replaceROWS")
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Internal generics to ease implementation of subsetting for new Vector
-### subclasses. The index 'i' will always be a vector of positive integers
-### >= 1 and <= length(x) or a Ranges object. For replacements, 'value' is
+### subclasses.
+### The index 'i' will always be a vector of positive integers
+### >= 1 and <= NROW(x) or a Ranges object. For replacements, 'value' is
 ### guaranteed to have gone thru normalizeSingleBracketReplacementValue().
 ###
 

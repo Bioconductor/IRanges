@@ -87,7 +87,12 @@ setMethod("duplicated", "Vector", duplicated.Vector)
 
 ### S3/S4 combo for unique.Vector
 unique.Vector <- function(x, incomparables=FALSE, ...)
-    extractROWS(x, !duplicated(x, incomparables=incomparables, ...))
+{
+    i <- !duplicated(x, incomparables=incomparables, ...)
+    if (length(dim(x)) < 2L)
+        return(x[i])
+    x[i, , drop=FALSE]
+}
 setMethod("unique", "Vector", unique.Vector)
 
 
@@ -206,7 +211,12 @@ setMethod("countMatches", c("ANY", "ANY"), .countMatches.default)
 
 ### S3/S4 combo for sort.Vector
 .sort.Vector <- function(x, decreasing=FALSE, na.last=NA)
-    extractROWS(x, order(x, na.last=na.last, decreasing=decreasing))
+{
+    i <- order(x, na.last=na.last, decreasing=decreasing)
+    if (length(dim(x)) < 2L)
+        return(x[i])
+    x[i, , drop=FALSE]
+}
 sort.Vector <- function (x, decreasing=FALSE, ...)
     .sort.Vector(x, decreasing=decreasing, ...)
 setMethod("sort", "Vector", sort.Vector)

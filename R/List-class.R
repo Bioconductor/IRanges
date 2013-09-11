@@ -240,7 +240,7 @@ subsetListByList <- function(x, i)
         offsets <- c(0L, end(PartitioningByEnd(ans))[-length(ans)])
         unlisted_i <- shift(unlist(i, use.names=FALSE),
                             shift=rep.int(offsets, elementLengths(i)))
-        unlisted_ans <- subsetByRanges(unlisted_ans, unlisted_i)
+        unlisted_ans <- extractROWS(unlisted_ans, unlisted_i)
         ans_breakpoints <- cumsum(unlist(sum(width(i)), use.names=FALSE))
         ans_skeleton <- PartitioningByEnd(ans_breakpoints, names=names(ans))
         ans <- as(relist(unlisted_ans, ans_skeleton), class(x))
@@ -307,18 +307,15 @@ subsetListByList_replace <- function(x, i, value, byrow=FALSE)
 setMethod("[", "List",
     function(x, i, j, ..., drop)
     {
-        if (!missing(j) || length(list(...)) > 0)
+        if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
         if (!missing(i)) {
             if (is(i, "Ranges"))
-                return(subsetByRanges(x, i))
+                return(extractROWS(x, i))
             if (is.list(i) || is(i, "List"))
                 return(subsetListByList(x, i))
         }
-        i <- normalizeSingleBracketSubscript(i, x)
-        ans <- extractElements(x, i)
-        mcols(ans) <- mcols(x)[i, , drop=FALSE]
-        ans
+        extractROWS(x, i)
     }
 )
 
