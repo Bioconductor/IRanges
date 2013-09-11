@@ -220,7 +220,8 @@ subsetListByList <- function(x, i)
             unlisted_i <- unlist(i, use.names=FALSE)
             unlisted_ans <- extractROWS(unlisted_ans, unlisted_i)
             group <- rep.int(seq_along(ans), elementLengths(ans))
-            ans_skeleton <- PartitioningByEnd(group[unlisted_i], NG=length(ans),
+            group <- extractROWS(group, unlisted_i)
+            ans_skeleton <- PartitioningByEnd(group, NG=length(ans),
                                               names=names(ans))
             ans <- as(relist(unlisted_ans, ans_skeleton), class(x))
             return(ans)
