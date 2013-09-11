@@ -226,11 +226,7 @@ setMethod("[", "Vector",
 setMethod("replaceROWS", "vectorORfactor",
     function(x, i, value)
     {
-        if (missing(i) || !is(i, "Ranges")) {
-            i <- normalizeSingleBracketSubscript(i, x)
-        } else {
-            i <- as.integer(i)
-        }
+        i <- extractROWS(seq_len(NROW(x)), i)
         x[i] <- value
         x
     }
@@ -241,11 +237,7 @@ setMethod("replaceROWS", "vectorORfactor",
 setMethod("replaceROWS", "Vector",
     function(x, i, value)
     {
-        if (missing(i) || !is(i, "Ranges")) {
-            i <- normalizeSingleBracketSubscript(i, x)
-        } else {
-            i <- as.integer(i)
-        }
+        i <- extractROWS(seq_len(NROW(x)), i)
         ## Assuming that objects of class 'class(x)' can be combined with c().
         ans <- c(x, value)
         idx <- seq_len(length(x))
