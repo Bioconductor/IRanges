@@ -240,7 +240,7 @@ subsetListByList <- function(x, i)
         offsets <- c(0L, end(PartitioningByEnd(ans))[-length(ans)])
         unlisted_i <- shift(unlist(i, use.names=FALSE),
                             shift=rep.int(offsets, elementLengths(i)))
-        unlisted_ans <- seqselect(unlisted_ans, unlisted_i)
+        unlisted_ans <- subsetByRanges(unlisted_ans, unlisted_i)
         ans_breakpoints <- cumsum(unlist(sum(width(i)), use.names=FALSE))
         ans_skeleton <- PartitioningByEnd(ans_breakpoints, names=names(ans))
         ans <- as(relist(unlisted_ans, ans_skeleton), class(x))

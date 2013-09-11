@@ -413,136 +413,46 @@ setReplaceMethod("window", "vector", `window<-.vector`)
 }
 setReplaceMethod("window", "factor", `window<-.factor`)
 
-### TODO: Deprecate seqselect() at some point in favor of subsetByRanges().
 setGeneric("seqselect", signature="x",
-           function(x, start=NULL, end=NULL, width=NULL)
-           standardGeneric("seqselect"))
+    function(x, start=NULL, end=NULL, width=NULL)
+        standardGeneric("seqselect")
+)
 
-setMethod("seqselect", "NULL",
-          function(x, start=NULL, end=NULL, width=NULL) NULL)
-
-setMethod("seqselect", "vector",
+setMethod("seqselect", "ANY",
     function(x, start=NULL, end=NULL, width=NULL)
     {
+        .Deprecated(msg="seqselect() is deprecated.")
         if (!is(start, "Ranges")) {
             start <- IRanges(start=start, end=end, width=width)
         } else if (!is.null(end) || !is.null(width)) {
-            stop("when 'start' is a Ranges object, ",
-                 "'end' and 'width' must be NULL")
+            stop("'end' and 'width' must be NULL ",
+                 "when 'start' is a Ranges object")
         }
-        .Call2("vector_seqselect",
-               x, start(start), width(start),
-               PACKAGE="IRanges")
+        i <- extractElements(seq_len(NROW(x)), start)
+        extractROWS(x, i)
     }
 )
 
-setMethod("seqselect", "factor",
-          function(x, start=NULL, end=NULL, width=NULL)
-          {
-              ans <-
-                callGeneric(as.integer(x), start = start, end = end,
-                            width = width)
-              attributes(ans) <- list(levels = levels(x), class = "factor")
-              ans
-          })
-
-setMethod("seqselect", "matrix",
-          function(x, start=NULL, end=NULL, width=NULL)
-          {
-            ans <-
-              callGeneric(seq_len(nrow(x)), start = start, end = end,
-                          width = width)
-            x[ans,,drop=FALSE]
-          })
-
-setMethod("seqselect", "ANY",
-          function(x, start=NULL, end=NULL, width=NULL)
-          {
-            ans <-
-              callGeneric(seq_len(length(x)), start = start, end = end,
-                          width = width)
-            x[ans]
-          })
-
 setGeneric("seqselect<-", signature="x",
-           function(x, start = NULL, end = NULL, width = NULL, value)
-           standardGeneric("seqselect<-"))
+    function(x, start=NULL, end=NULL, width=NULL, value)
+        standardGeneric("seqselect<-")
+)
 
-setReplaceMethod("seqselect", "Vector",
-                 function(x, start = NULL, end = NULL, width = NULL, value)
-                 {
-                     if (is.null(end) && is.null(width)) {
-                         if (is.null(start))
-                             ir <- IRanges(start = 1, width = length(x))
-                         else if (is(start, "Ranges"))
-                             ir <- start
-                         else {
-                             if (is.logical(start) && length(start) != length(x))
-                                 start <- rep(start, length.out = length(x))
-                             ir <- as(start, "IRanges")
-                         }
-                     } else {
-                         ir <- IRanges(start=start, end=end, width=width, names=NULL)
-                     }
-                     ir <- reduce(ir)
-                     if (length(ir) == 0)
-                         return(x)
-                     if (anyMissingOrOutside(start(ir), 1L, length(x)) ||
-                         anyMissingOrOutside(end(ir), 1L, length(x)))
-                         stop("some ranges are out of bounds")
-                     lr <- sum(width(ir))
-                     lv <- length(value)
-                     if (!is.null(value)) {
-                         if (!is(value, class(x))) {
-                             value <- try(as(value, class(x)), silent = TRUE)
-                             if (inherits(value, "try-error"))
-                                 stop("'value' must be a ", class(x),
-                                      " object or NULL")
-                         }
-                         if (lr != lv) {
-                             if ((lr == 0) || (lr %% lv != 0))
-                                 stop(paste(lv, "elements in value to replace",
-                                            lr, "elements"))
-                             else
-                                 value <- rep(value, length.out = lr)
-                         }
-                         names(value) <- seqselect(names(x), ir)
-                     }
-                     irValues <- PartitioningByEnd(cumsum(width(ir)))
-                     ir <- gaps(ir, start = 1, end = length(x))
-                     if ((length(ir) == 0) || (start(ir)[1L] != 1))
-                         ir <- c(IRanges(start = 1, width = 0), ir)
-                     if (end(ir[length(ir)]) != length(x))
-                         ir <- c(ir, IRanges(start = length(x), width = 0))
-                     subseqs <- vector("list", length(irValues) + length(ir))
-                     if (length(ir) > 0) {
-                         subseqs[seq(1, length(subseqs), by = 2)] <-
-                           lapply(seq_len(length(ir)), function(i)
-                                  window(x,
-                                         start = start(ir)[i],
-                                         width = width(ir)[i]))
-                     }
-                     if (length(irValues) > 0) {
-                         subseqs[seq(2, length(subseqs), by = 2)] <-
-                           lapply(seq_len(length(irValues)), function(i)
-                                  window(value,
-                                         start = start(irValues)[i],
-                                         width = width(irValues)[i]))
-                     }
-                     do.call(c, subseqs)
-                 })
-
-setReplaceMethod("seqselect", "vectorORfactor",
+setReplaceMethod("seqselect", "ANY",
     function(x, start=NULL, end=NULL, width=NULL, value)
     {
+        .Deprecated(msg="seqselect() is deprecated.")
         if (!is(start, "Ranges")) {
             start <- IRanges(start=start, end=end, width=width)
         } else if (!is.null(end) || !is.null(width)) {
-            stop("when 'start' is a Ranges object, ",
-                 "'end' and 'width' must be NULL")
+            stop("'end' and 'width' must be NULL ",
+                 "when 'start' is a Ranges object")
         }
-        i <- as.integer(start)
-        x[i] <- value
+        i <- extractElements(seq_len(NROW(x)), start)
+        if (length(dim(x)) < 2L)
+            x[i] <- value
+        else
+            x[i, ] <- value
         x
     }
 )

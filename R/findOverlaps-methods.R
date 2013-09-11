@@ -52,12 +52,14 @@ setGeneric("findOverlaps", signature = c("query", "subject"),
     for (i in seq(len=length(partitioning))) {
       curStart <- start(partitioning)[i]
       curEnd <- end(partitioning)[i]
+      cur <- IRanges(curStart, curEnd)
 
-      qStarts <- seqselect(start(query), start=start(partitioning)[i], end=end(partitioning)[i])
+      qStarts <- extractElements(start(query), cur)
       if (isNotSorted(qStarts)) {
         isSorted <- FALSE
-        ind <- seqselect(query_ord,start=curStart,end=curEnd)
-        seqselect(query_ord,start=curStart,end=curEnd) <- ind[sort.list(qStarts, method="quick",na.last=NA)]
+        ind <- extractElements(query_ord, cur)
+        query_ord <- replaceElements(query_ord, cur,
+                         ind[sort.list(qStarts, method="quick", na.last=NA)])
       }
     }
     if (!isSorted) {

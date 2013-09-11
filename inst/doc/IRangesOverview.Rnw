@@ -115,9 +115,6 @@ sequence extraction:
 \begin{enumerate}
 \item \Rfunction{window} - Produces a subsequence over a specified region
   with or without regular interval subsampling.
-\item \Rfunction{seqselect} - Concatenates multiple consecutive
-  subsequences into a new sequence. The result may or may not be a
-  subsequence.
 \item \Rfunction{subset} - Extracts the subsequence specified by a logical
   vector.
 \item \Rfunction{head} - Extracts a consecutive subsequence containing the
@@ -141,7 +138,6 @@ tail(xSnippet)
 rev(xSnippet)
 rep(xSnippet, 2)
 window(xSnippet, delta = 2)
-seqselect(xSnippet, start = c(6,1), end = c(10, 5))
 subset(xSnippet, xSnippet >= 5L)
 @
 
@@ -444,7 +440,7 @@ ignoring the underlying sequence values. A list of indices would be a
 simple way to select a subsequence. However, a sparser representation
 for consecutive subsequences would be a range, a pairing of a start
 position and a width, as used when extracting sequences with
-\Rfunction{window} and \Rfunction{seqselect}, above.
+\Rfunction{window} above.
 
 When analyzing subsequences in \IRanges{}, each range is treated as an
 observation. The virtual \Rclass{Ranges} class represents lists of
@@ -590,18 +586,12 @@ start(rl)
 
 \subsection{Vector Extraction}
 
-As the elements of \Rclass{Ranges} objects encode consecutive
+As the elements of a \Rclass{Ranges} object encode consecutive
 subsequences, they may be used directly in sequence extraction. Note
 that when a \textit{normal} \Rclass{Ranges} is given as the index, the
-result a subsequence, as no elements are repeated or reordered.
-%
-<<seqselect-ranges>>=
-irextract <- IRanges(start = c(4501, 4901) , width = 100)
-seqselect(xRle, irextract)
-@
-%
+result is a subsequence, as no elements are repeated or reordered.
 If the sequence is a \Rclass{Vector} subclass (i.e. not an ordinary
-\Rclass{vector}), the canonical \Rfunction{[} function also accepts a
+\Rclass{vector}), the canonical \Rfunction{[} function accepts a
 \Rclass{Ranges} instance.
 %
 <<bracket-ranges>>=
@@ -821,25 +811,10 @@ respectively. These are relatively self-explanatory.
 
 \section{Vector Views}
 
-When we extract a sequence with \Rfunction{seqselect}, we can pass
-multiple ranges, each selecting a single consecutive
-subsequence. Those subsequences are extracted and concatenated into a
-single sequence. There are many cases where the user wishes to avoid
-the concatenation step and instead treat each consecutive subsequence
-as a separate element in a list.  
-
-While one could simply store each extracted sequence as an element in
-a list object like a \Rclass{SimpleList}, this is undesirable for a
-couple of reasons. First, the user often wants to preserve the
-original sequence and declare a set of interesting regions as an
-overlay. This allows retrieving sequence values even after the ranges
-have been adjusted. Another benefit of an overlay approach is
-performance: the sequence values need not be copied.
-
-For representing such an overlay, the \IRanges{} package provides the
-virtual \Rclass{Views} class, which derives from \Rclass{IRanges} but
-also stores a sequence. Each range is said to represent a
-\textit{view} onto the sequence.
+The \IRanges{} package provides the virtual \Rclass{Views} class, which
+stores a sequence together with an \Rclass{IRanges} object defining ranges
+on the sequence. Each range is said to represent a \textit{view} onto
+the sequence.
 
 Here, we will demonstrate the \Rclass{RleViews} class, where the
 sequence is of class \Rclass{Rle}. Other \Rclass{Views}

@@ -87,12 +87,12 @@ setValidity2("CompressedList", .valid.CompressedList)
 setMethod("extractElements", "CompressedList",
     function(x, i)
     {
-        ir <- IRanges(end=end(x@partitioning)[i],
-                      width=width(x@partitioning)[i])
+        ir <- IRanges(end=extractElements(end(x@partitioning), i),
+                      width=extractElements(width(x@partitioning), i))
         ans_unlistData <- subsetByRanges(x@unlistData, ir)
         ans_partitioning <- new2("PartitioningByEnd",
                                  end=cumsum(width(ir)),
-                                 NAMES=names(x)[i],
+                                 NAMES=extractElements(names(x), i),
                                  check=FALSE)
         initialize(x, unlistData=ans_unlistData,
                       partitioning=ans_partitioning)

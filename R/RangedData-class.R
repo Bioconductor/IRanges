@@ -508,20 +508,6 @@ setReplaceMethod("[", "RangedData",
                  stop("operation not supported")
                  )
 
-setMethod("seqselect", "RangedData",
-          function(x, start=NULL, end=NULL, width=NULL)
-          initialize(x,
-                     ranges =
-                     seqselect(ranges(x), start=start, end=end, width=width),
-                     values =
-                     seqselect(values(x), start=start, end=end, width=width))
-          )
-
-setReplaceMethod("seqselect", "RangedData",
-                 function(x, start = NULL, end = NULL, width = NULL, value)
-                 stop("operation not supported")
-                 )
-
 ### S3/S4 combo for window<-.RangedData
 `window<-.RangedData` <- function(x, start=NA, end=NA, width=NA,
                                      keepLength=TRUE, ..., value)
@@ -649,7 +635,7 @@ setAs("RleViewsList", "RangedData", function(from) {
   from_ranges <- restrict(ranges(from), 1L, elementLengths(subject),
                           keep.all.ranges = TRUE)
 ### FIXME: do we want to insert NAs for out of bounds views?
-  score <- seqselect(subject, from_ranges)
+  score <- extractElements(subject, from_ranges)
   score_part <- seqapply(width(from_ranges), PartitioningByWidth)
   score_ranges <- ranges(score)
   ol <- findOverlaps(score_ranges, score_part)

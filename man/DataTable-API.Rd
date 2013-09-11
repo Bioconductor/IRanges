@@ -124,16 +124,6 @@
       left subsequence window compares to the number of rows of \code{value}.
     }
     \item{}{
-      \code{seqselect(x, start=NULL, end=NULL, width=NULL)}:
-      Similar to \code{window}, except that multiple subsequences can be
-      requested. The requested subsequences are concatenated.
-    }
-    \item{}{
-      \code{seqselect(x, start=NULL, end=NULL, width=NULL) <- value}:
-      Similar to \code{window<-}, except that multiple consecutive subsequences
-      can be replaced by a \code{value} that spans those windows.
-    }
-    \item{}{
       \code{head(x, n = 6L)}:
       If \code{n} is non-negative, returns the first n rows of the DataTable
       object.
