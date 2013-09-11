@@ -60,20 +60,31 @@ normalizeSingleBracketSubscript <- function(i, x)
     stop("invalid subscript type")
 }
 
-### Supported types for 'i': numeric and character vectors only.
-### If 'i' is a single string with no match in 'names(x)', then raises an
-### error by default (i.e. if 'error.if.nomatch=TRUE'), otherwise returns
-### NA_integer_.
-normalizeDoubleBracketSubscript <- function(i, x, error.if.nomatch=TRUE)
+### Supported types for 'i': single NA, numeric and character vectors only.
+### Always returns a single integer. When called with 'error.if.nomatch=FALSE',
+### returns an NA_integer_ if no match is found. Otherwise (the default),
+### raises an error if no match is found so the returned integer is guaranteed
+### to be a non-NA positive integer referring to a valid position in 'x'.
+normalizeDoubleBracketSubscript <- function(i, x, exact=TRUE,
+                                            error.if.nomatch=TRUE)
 {
+    if (!isTRUEorFALSE(exact))
+        stop("'exact' must be TRUE or FALSE")
+    if (!isTRUEorFALSE(error.if.nomatch))
+        stop("'error.if.nomatch' must be TRUE or FALSE")
+    if (missing(i))
+        stop("subscript is missing")
+    if (is.vector(i) && length(i) == 1L && is.na(i)) {
+        if (error.if.nomatch)
+            stop("subsetting by NA returns no match")
+        return(NA_integer_)
+    }
     if (!is.numeric(i) && !is.character(i))
         stop("invalid subscript type '", class(i), "'")
     if (length(i) < 1L)
         stop("attempt to extract less than one element")
     if (length(i) > 1L)
         stop("attempt to extract more than one element")
-    if (is.na(i))
-        stop("invalid subscript NA")
     if (is.numeric(i)) {
         if (!is.integer(i))
             i <- as.integer(i)
@@ -90,7 +101,14 @@ normalizeDoubleBracketSubscript <- function(i, x, error.if.nomatch=TRUE)
     }
     #if (i == "")
     #    stop("invalid subscript \"\"")
-    ans <- match(i, x_names)
+    if (exact) {
+        ans <- match(i, x_names)
+    } else {
+        ## Because 'i' has length 1, it doesn't matter whether we use
+        ## 'duplicates.ok=FALSE' (the default) or 'duplicates.ok=TRUE' but
+        ## the latter seems just a little bit faster.
+        ans <- pmatch(i, x_names, duplicates.ok=TRUE)
+    }
     if (is.na(ans) && error.if.nomatch)
         stop("subscript \"", i, "\" matches no name")
     ans
@@ -155,7 +173,7 @@ setGeneric("replaceROWS", signature="x",
 ###
 
 setGeneric("getListElement", signature="x",
-    function(x, i) standardGeneric("getListElement")
+    function(x, i, exact=TRUE) standardGeneric("getListElement")
 )
 
 setGeneric("setListElement", signature="x",

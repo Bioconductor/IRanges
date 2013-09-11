@@ -330,21 +330,17 @@ setReplaceMethod("[", "List",
 )
 
 setMethod("[[", "List",
-          function(x, i, j, ...) {
-            dotArgs <- list(...)
-            if (length(dotArgs) > 0)
-              dotArgs <- dotArgs[names(dotArgs) != "exact"]
-            if (!missing(j) || length(dotArgs) > 0)
-              stop("incorrect number of subscripts")
-            ## H.P.: Do we really need to support subsetting by NA? Other
-            ## "[[" methods for other List subtypes don't support it.
-            if (is.vector(i) && length(i) == 1L && is.na(i))
-              return(NULL)
-            i <- normalizeDoubleBracketSubscript(i, x, error.if.nomatch=FALSE)
-            if (is.na(i))
-              return(NULL)
-            getListElement(x, i)
-          })
+    function(x, i, j, ...)
+    {
+        dotArgs <- list(...)
+        if (length(dotArgs) > 0L)
+            dotArgs <- dotArgs[names(dotArgs) != "exact"]
+        if (!missing(j) || length(dotArgs) > 0L)
+            stop("incorrect number of subscripts")
+        ## '...' is either empty or contains only the 'exact' arg.
+        getListElement(x, i, ...)
+    }
+)
 
 setReplaceMethod("[[", "List",
                  function(x, i, j, ..., value)

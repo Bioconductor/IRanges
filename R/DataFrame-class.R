@@ -205,30 +205,6 @@ DataFrame <- function(..., row.names = NULL, check.names = TRUE)
 ### Subsetting.
 ###
 
-setMethod("[[", "DataFrame",
-          function(x, i, j, ...)
-          {
-            dotArgs <- list(...)
-            if (length(dotArgs) > 0)
-              dotArgs <- dotArgs[names(dotArgs) != "exact"]
-            if (!missing(j) || length(dotArgs) > 0)
-              stop("invalid subsetting")
-            if (missing(i))
-              stop("subscript is missing")
-            if (!is.character(i) && !is.numeric(i))
-              stop("invalid subscript type")
-            if (length(i) < 1L)
-              stop("attempt to select less than one element")
-            if (length(i) > 1L)
-              stop("attempt to select more than one element")
-            if (!is.character(i) && !is.na(i) && (i < 1L || i > length(x)))
-              stop("subscript out of bounds")
-            els <- as.list(x, use.names = FALSE)
-            names(els) <- names(x)
-            els[[i, ...]]
-          }
-          )
-
 setReplaceMethod("[[", "DataFrame",
                  function(x, i, j,..., value)
                  {

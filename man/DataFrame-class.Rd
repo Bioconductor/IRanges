@@ -18,7 +18,6 @@
 % subsetting
 \alias{[,DataFrame-method}
 \alias{[<-,DataFrame-method}
-\alias{[[,DataFrame-method}
 \alias{[[<-,DataFrame-method}
 
 % coercion

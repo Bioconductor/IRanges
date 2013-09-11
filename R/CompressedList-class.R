@@ -163,23 +163,16 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
     elts
 }
 
-setMethod("[[", "CompressedList",
-          function(x, i, j, ...) {
-              dotArgs <- list(...)
-              if (length(dotArgs) > 0)
-                  dotArgs <- dotArgs[names(dotArgs) != "exact"]
-              if (!missing(j) || length(dotArgs) > 0)
-                  stop("incorrect number of subscripts")
-              ## H.P.: Do we really need to support subsetting by NA? Other
-              ## "[[" methods for other Vector subtypes don't support it.
-              if (is.vector(i) && length(i) == 1L && is.na(i))
-                  return(NULL)
-              i <- normalizeDoubleBracketSubscript(i, x, error.if.nomatch=FALSE)
-              if (is.na(i))
-                  return(NULL)
-              .CompressedList.list.subscript(X = x, INDEX = i,
-                                             USE.NAMES = FALSE)
-          })
+setMethod("getListElement", "CompressedList",
+    function(x, i, exact=TRUE)
+    {
+        i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
+                                             error.if.nomatch=FALSE)
+        if (is.na(i))
+            return(NULL)
+        .CompressedList.list.subscript(X=x, INDEX=i, USE.NAMES=FALSE)
+    }
+)
 
 setReplaceMethod("[[", "CompressedList",
                  function(x, i, j,..., value)
