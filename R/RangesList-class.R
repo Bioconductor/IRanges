@@ -299,8 +299,9 @@ setMethod("[", "SimpleRangesList", rangesListSingleSquareBracket)
 setMethod("[", "CompressedIRangesList", rangesListSingleSquareBracket)
 setMethod("[", "SimpleIRangesList", rangesListSingleSquareBracket)
 
-setMethod("[[", "CompressedNormalIRangesList",
-          function(x, i, j, ...) newNormalIRangesFromIRanges(callNextMethod()))
+setMethod("getListElement", "CompressedNormalIRangesList",
+    function(x, i, exact=TRUE) newNormalIRangesFromIRanges(callNextMethod())
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

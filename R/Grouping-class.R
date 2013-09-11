@@ -151,10 +151,11 @@ setMethod("low2high", "H2LGrouping", function(x) x@low2high)
 setMethod("length", "H2LGrouping", function(x) length(x@low2high))
 setMethod("nobj", "H2LGrouping", function(x) length(x@high2low))
 
-setMethod("[[", "H2LGrouping",
-    function(x, i, j, ...)
+setMethod("getListElement", "H2LGrouping",
+    function(x, i, exact=TRUE)
     {
-        i <- normalizeDoubleBracketSubscript(i, x)
+        i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
+                                             error.if.nomatch=TRUE)
         if (is.na(x@high2low[i]))
             c(i, x@low2high[[i]])
         else
@@ -478,10 +479,11 @@ setClass("Partitioning",
 ### The default methods below assume that the "length + start/end/width" API
 ### is already implemented.
 
-setMethod("[[", "Partitioning",
-    function(x, i, j, ...)
+setMethod("getListElement", "Partitioning",
+    function(x, i, exact=TRUE)
     {
-        i <- normalizeDoubleBracketSubscript(i, x)
+        i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
+                                             error.if.nomatch=TRUE)
         ## The purpose of the code below is to extract 'start(x)[i] - 1'
         ## (stored in 'ans_shift') and 'width(x)[i]' (stored in 'ans_length')
         ## in the fastest possible way. Looks like a convoluted way to

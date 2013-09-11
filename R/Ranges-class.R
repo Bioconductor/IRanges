@@ -117,10 +117,11 @@ setMethod("unlist", "Ranges",
     }
 )
 
-setMethod("[[", "Ranges",
-    function(x, i, j, ...)
+setMethod("getListElement", "Ranges",
+    function(x, i, exact=TRUE)
     {
-        i <- normalizeDoubleBracketSubscript(i, x)
+        i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
+                                             error.if.nomatch=TRUE)
         ans_shift <- start(x)[i] - 1L
         ans_length <- width(x)[i]
         seq_len(ans_length) + ans_shift

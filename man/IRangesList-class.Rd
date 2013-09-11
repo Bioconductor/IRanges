@@ -47,7 +47,6 @@
 \alias{isNormal,SimpleIRangesList-method}
 \alias{whichFirstNotNormal,RangesList-method}
 
-\alias{[[,CompressedNormalIRangesList-method}
 \alias{unlist,SimpleNormalIRangesList-method}
 
 % coercion

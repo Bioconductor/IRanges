@@ -33,7 +33,6 @@
 \alias{low2high,H2LGrouping-method}
 \alias{length,H2LGrouping-method}
 \alias{nobj,H2LGrouping-method}
-\alias{[[,H2LGrouping-method}
 \alias{grouplength,H2LGrouping-method}
 \alias{members,H2LGrouping-method}
 \alias{vmembers,H2LGrouping-method}
@@ -57,7 +56,6 @@
 \alias{Partitioning-class}
 \alias{Partitioning}
 
-\alias{[[,Partitioning-method}
 \alias{grouplength,Partitioning-method}
 \alias{names,Partitioning-method}
 \alias{names<-,Partitioning-method}

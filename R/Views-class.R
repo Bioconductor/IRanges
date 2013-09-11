@@ -202,10 +202,11 @@ setMethod("as.matrix", "Views", function(x, rev = FALSE, max.width = NA) {
 ### Extracting a view.
 ###
 
-setMethod("[[", "Views",
-    function(x, i, j, ...)
+setMethod("getListElement", "Views",
+    function(x, i, exact=TRUE)
     {
-        i <- normalizeDoubleBracketSubscript(i, x)
+        i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
+                                             error.if.nomatch=TRUE)
         start <- start(x)[i]
         end <- end(x)[i]
         if (start < 1L || end > length(subject(x)))

@@ -130,10 +130,11 @@ setMethod("show", "GappedRanges",
 ###
 
 ### WARNING: We override the *semantic* of the "[[" method for Ranges objects.
-setMethod("[[", "GappedRanges",
-    function(x, i, j, ..., exact=TRUE)
+setMethod("getListElement", "GappedRanges",
+    function(x, i, exact=TRUE)
     {
-        i <- normalizeDoubleBracketSubscript(i, x)
+        i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
+                                             error.if.nomatch=TRUE)
         newNormalIRangesFromIRanges(x@cnirl[[i]], check=FALSE)
     }
 )

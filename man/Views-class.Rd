@@ -26,7 +26,6 @@
 \alias{coerce,Views,IRanges-method}
 \alias{coerce,Views,NormalIRanges-method}
 \alias{as.matrix,Views-method}
-\alias{[[,Views-method}
 \alias{c,Views-method}
 \alias{trim}
 \alias{trim,Views-method}

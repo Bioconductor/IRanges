@@ -34,7 +34,6 @@
 \alias{maskedratio,MaskCollection-method}
 
 % Subsetting and appending:
-\alias{[[,MaskCollection-method}
 \alias{[,MaskCollection-method}
 \alias{append,MaskCollection,MaskCollection-method}
 
