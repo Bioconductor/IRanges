@@ -312,13 +312,9 @@ setMethod("[", "List",
     {
         if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
-        if (!missing(i)) {
-            if (is(i, "Ranges"))
-                return(extractROWS(x, i))
-            if (is.list(i) || is(i, "List"))
-                return(subsetListByList(x, i))
-        }
-        extractROWS(x, i)
+        if (!missing(i) && (is.list(i) || (is(i, "List") && !is(i, "Ranges"))))
+            return(subsetListByList(x, i))
+        callNextMethod(x, i)
     }
 )
 

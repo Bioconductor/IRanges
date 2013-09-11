@@ -215,10 +215,6 @@ setMethod("[", "Vector",
     {
         if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
-        if (!missing(i)) {
-            if (is(i, "Ranges"))
-                return(extractROWS(x, i))
-        }
         extractROWS(x, i)
     }
 )

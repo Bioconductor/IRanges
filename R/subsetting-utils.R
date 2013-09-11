@@ -126,17 +126,14 @@ setMethod("normalizeSingleBracketReplacementValue", "ANY",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Internal generics to ease implementation of subsetting for new Vector
-### subclasses.
-###
-
-### extractROWS(), replaceROWS()
+### 2 internal generics to ease implementation of [ and [<- subsetting for
+### new Vector subclasses.
 ###
 ### Most new Vector subclasses should only need to implement an "extractROWS"
-### method to have "[" work out-of-the-box and a "replaceROWS" method to have
-### "[<-" work out-of-the-box.
-### Must support the following 'i' types: Ranges and anything that can be
-### handled by normalizeSingleBracketSubscript().
+### and a "replaceROWS" method to have "[" and "[<-" work out-of-the-box,
+### respectively.
+### Must support the following 'i' types: missing, Ranges and anything that
+### can be handled by normalizeSingleBracketSubscript().
 ### For replaceROWS(), it's OK to assume that 'value' is "compatible" i.e.
 ### that it has gone thru normalizeSingleBracketReplacementValue().
 ### See "extractROWS" and "replaceROWS" methods for IRanges objects for an
@@ -151,7 +148,10 @@ setGeneric("replaceROWS", signature="x",
     function(x, i, value) standardGeneric("replaceROWS")
 )
 
-### getListElement(), setListElement()
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### 2 internal generics to ease implementation of [[ and [[<- subsetting for
+### new List subclasses.
 ###
 
 setGeneric("getListElement", signature="x",
