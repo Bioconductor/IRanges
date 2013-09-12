@@ -443,14 +443,12 @@ setMethod("head", "Vector",
           function(x, n = 6L, ...)
           {
               stopifnot(length(n) == 1L)
+              xlen <- length(x)
               if (n < 0L)
-                  n <- max(length(x) + n, 0L)
+                  n <- max(xlen + n, 0L)
               else
-                  n <- min(n, length(x))
-              if (n == 0L)
-                  x[integer(0)]
-              else
-                  window(x, 1L, n)
+                  n <- min(n, xlen)
+              extractROWS(x, IRanges(start=1L, width=n))
           })
 
 setMethod("tail", "Vector",
@@ -462,10 +460,7 @@ setMethod("tail", "Vector",
                   n <- max(xlen + n, 0L)
               else
                   n <- min(n, xlen)
-              if (n == 0L)
-                  x[integer(0)]
-              else
-                  window(x, xlen - n + 1L, xlen)
+              extractROWS(x, IRanges(end=xlen, width=n))
           })
 
 setMethod("rev", "Vector",
