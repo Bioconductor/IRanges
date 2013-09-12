@@ -189,70 +189,83 @@ setMethod("$", "List", function(x, name) x[[name, exact=FALSE]])
     return(i)
 }
 
-### Fancy subsetting of a List object by a list-like subscript.
+### Subset a List object by a list-like subscript.
 subsetListByList <- function(x, i)
 {
-    lx <- length(x)
+    x_class <- class(x)
     li <- length(i)
     if (is.null(names(i))) {
+        lx <- length(x)
         if (li > lx)
             stop("list-like subscript is longer than ",
                  "list-like object to subset")
-        ans <- x[seq_len(li)]
+        if (li < lx)
+            x <- x[seq_len(li)]
     } else {
         if (is.null(names(x)))
             stop("cannot subscript an unnamed list-like object ",
                  "by a named list-like object")
-        j <- match(names(i), names(x))
-        if (anyMissing(j))
-            stop("list-like subscript has names not in ",
-                 "list-like object to subset")
-        ans <- x[j]
+        if (!identical(names(i), names(x))) {
+            j <- match(names(i), names(x))
+            if (anyMissing(j))
+                stop("list-like subscript has names not in ",
+                     "list-like object to subset")
+            x <- x[j]
+        }
     }
+    ## From here, 'x' and 'i' are guaranteed to have the same length.
     if (li == 0L)
-        return(ans)
-    if (!is(ans, "SimpleList")) {
-        if (is(i, "LogicalList")
-         || is(i, "RleList") && is(runValue(i), "LogicalList"))
-        {
-            unlisted_ans <- unlist(ans, use.names=FALSE)
-            i <- .normalizeLogicalListSubscript(i, ans)
+        return(x)
+    if (!is(x, "SimpleList")) {
+        if (!is(i, "List"))
+            i <- as(i, "List")
+        ## List element pseudo-type: same as "elementType" except for RleList
+        ## objects.
+        if (is(i, "RleList"))
+            leptype <- elementType(runValue(i))
+        else
+            leptype <- elementType(i)
+        x_names <- names(x)
+        if (extends(leptype, "logical")) {
+            unlisted_x <- unlist(x, use.names=FALSE)
+            i <- .normalizeLogicalListSubscript(i, x)
             unlisted_i <- unlist(i, use.names=FALSE)
-            unlisted_ans <- extractROWS(unlisted_ans, unlisted_i)
-            group <- rep.int(seq_along(ans), elementLengths(ans))
+            unlisted_ans <- extractROWS(unlisted_x, unlisted_i)
+            group <- rep.int(seq_along(x), elementLengths(x))
             group <- extractROWS(group, unlisted_i)
-            ans_skeleton <- PartitioningByEnd(group, NG=length(ans),
-                                              names=names(ans))
-            ans <- as(relist(unlisted_ans, ans_skeleton), class(x))
+            ans_skeleton <- PartitioningByEnd(group, NG=length(x),
+                                              names=x_names)
+            ans <- as(relist(unlisted_ans, ans_skeleton), x_class)
             return(ans)
         }
-        if (is(i, "IntegerList")) {
-            unlisted_ans <- unlist(ans, use.names=FALSE)
-            offsets <- c(0L, end(PartitioningByEnd(ans))[-length(ans)])
+        if (extends(leptype, "numeric")) {
+            unlisted_x <- unlist(x, use.names=FALSE)
+            offsets <- c(0L, end(PartitioningByEnd(x))[-length(x)])
             i <- i + offsets
             unlisted_i <- unlist(i, use.names=FALSE)
-            unlisted_ans <- extractROWS(unlisted_ans, unlisted_i)
+            unlisted_ans <- extractROWS(unlisted_x, unlisted_i)
             ans_breakpoints <- cumsum(unname(elementLengths(i)))
-            ans_skeleton <- PartitioningByEnd(ans_breakpoints, names=names(ans))
-            ans <- as(relist(unlisted_ans, ans_skeleton), class(x))
+            ans_skeleton <- PartitioningByEnd(ans_breakpoints, names=x_names)
+            ans <- as(relist(unlisted_ans, ans_skeleton), x_class)
             return(ans)
         }
-        if (is(i, "RangesList")) {
-            unlisted_ans <- unlist(ans, use.names=FALSE)
-            offsets <- c(0L, end(PartitioningByEnd(ans))[-length(ans)])
-            unlisted_i <- shift(unlist(i, use.names=FALSE),
+        if (extends(leptype, "Ranges")) {
+            unlisted_x <- unlist(x, use.names=FALSE)
+            offsets <- c(0L, end(PartitioningByEnd(x))[-length(x)])
+            unlisted_i <- unlist(i, use.names=FALSE)
+            unlisted_i <- shift(unlisted_i,
                                 shift=rep.int(offsets, elementLengths(i)))
-            unlisted_ans <- extractROWS(unlisted_ans, unlisted_i)
+            unlisted_ans <- extractROWS(unlisted_x, unlisted_i)
             ans_breakpoints <- cumsum(unlist(sum(width(i)), use.names=FALSE))
-            ans_skeleton <- PartitioningByEnd(ans_breakpoints, names=names(ans))
-            ans <- as(relist(unlisted_ans, ans_skeleton), class(x))
+            ans_skeleton <- PartitioningByEnd(ans_breakpoints, names=x_names)
+            ans <- as(relist(unlisted_ans, ans_skeleton), x_class)
             return(ans)
         }
     }
-    ## NOT efficient because it loops over the elements of 'i'.
-    for (ii in seq_len(li))
-        ans[[ii]] <- extractROWS(ans[[ii]], i[[ii]])
-    return(ans)
+    ## NOT efficient because it loops over the elements of 'x'.
+    for (k in seq_len(li))
+        x[[k]] <- extractROWS(x[[k]], i[[k]])
+    return(x)
 }
 
 subsetListByList_replace <- function(x, i, value, byrow=FALSE)
