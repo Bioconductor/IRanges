@@ -253,8 +253,6 @@ setMethod("extractROWS", "DataFrame",
             slot(x, "rownames", check=FALSE) <-
                 make.unique(extractROWS(rownames(x), i))
         }
-        slot(x, "elementMetadata", check=FALSE) <-
-            extractROWS(x@elementMetadata, i)
         x
     }
 )
