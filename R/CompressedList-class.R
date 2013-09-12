@@ -138,8 +138,9 @@ function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
             if (useFastSubset) {
                 elts[whichNonZeroLength] <-
                   lapply(seq_len(kOK), function(j)
-                         FUN(window(X@unlistData, start = eltStarts[j],
-                                    end = eltEnds[j]), ...))
+                         FUN(extractROWS(X@unlistData,
+                                         IRanges(eltStarts[j], eltEnds[j])),
+                             ...))
             } else {
                 elts[whichNonZeroLength] <-
                   lapply(seq_len(kOK), function(j)
