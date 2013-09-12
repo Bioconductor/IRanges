@@ -35,7 +35,7 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
   } else {
     args <- args[hasrows]
   }
-  
+
   df <- args[[1L]]
 
   for (i in 2:length(args)) {
@@ -54,6 +54,9 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
     factors <- unlist(lapply(as.list(df, use.names = FALSE), is.factor))
     cols <- lapply(seq_len(length(df)), function(i) {
       cols <- lapply(args, `[[`, cn[i])
+      isRle <- sapply(cols, is, "Rle")
+      if (any(isRle) && !all(isRle))
+        cols <- lapply(cols, as.vector)
       if (factors[i]) { # combine factor levels, coerce to character
         levs <- unique(unlist(lapply(cols, levels), use.names=FALSE))
         cols <- lapply(cols, as.character)
@@ -92,7 +95,7 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
     if (all(sapply(args, function(x) identical(mcols(x), df_mcols))))
       mcols(ans) <- df_mcols
   }
-  
+
   ans
 })
 

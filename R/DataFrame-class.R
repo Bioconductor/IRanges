@@ -160,15 +160,16 @@ DataFrame <- function(..., row.names = NULL, check.names = TRUE)
       nrows[i] <- nrow(element)
       ncols[i] <- ncol(element)
       varlist[[i]] <- as.list(element, use.names = FALSE)
-      if (((length(dim(listData[[i]])) > 1) || (ncol(element) > 1)) &&
-          !is(listData[[i]], "AsIs"))
-      {
-        if (emptynames[i])
-          varnames[[i]] <- colnames(element)
-        else
-          varnames[[i]] <- paste(varnames[[i]], colnames(element), sep = ".")
-      } else if (is.list(listData[[i]]) && length(names(listData[[i]])))
-          varnames[[i]] <- names(element)
+      if (!is(listData[[i]], "AsIs")) {
+        if (((length(dim(listData[[i]])) > 1) || (ncol(element) > 1)))
+          {
+            if (emptynames[i])
+              varnames[[i]] <- colnames(element)
+            else
+              varnames[[i]] <- paste(varnames[[i]], colnames(element), sep = ".")
+          } else if (is.list(listData[[i]]) && length(names(listData[[i]])))
+            varnames[[i]] <- names(element)
+      }
       if (is.null(row.names))
         row.names <- rownames(element)
     }
@@ -585,10 +586,9 @@ setAs("integer", "DataFrame",
 
 setAs("AsIs", "DataFrame",
       function(from) {
-        if (length(class(from)) > 1)
-          class(from) <- tail(class(from), -1)
-        else from <- unclass(from)
         df <- new2("DataFrame", nrows = NROW(from), check=FALSE)
         df[[1]] <- from
         df
       })
+
+setAs("ANY", "AsIs", function(from) I(from))

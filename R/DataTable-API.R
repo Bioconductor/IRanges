@@ -321,7 +321,7 @@ setMethod("show", "DataTable",
                   }
                   classinfo <-
                     matrix(unlist(lapply(object, function(x) {
-                        paste0("<", setdiff(classNameForDisplay(x), "AsIs")[1],
+                        paste0("<", classNameForDisplay(x)[1],
                                ">")
                     }), use.names = FALSE), nrow = 1,
                            dimnames = list("", colnames(out)))
