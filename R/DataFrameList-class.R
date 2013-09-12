@@ -350,8 +350,7 @@ setReplaceMethod("[", "SplitDataFrameList",
                 ans <- callNextMethod(x=x, i=i, value=value)
             return(ans)
         }
-        tmp <- setNames(seq_len(ncol(x)[[1L]]), colnames(x)[[1L]])
-        j <- normalizeSingleBracketSubscript(j, tmp)
+        j <- extractROWS(setNames(seq_len(ncol(x)[[1L]]), colnames(x)[[1L]]), j)
         y <- x[, j, drop=FALSE]
         if (missing(i)) {
             y[] <- value

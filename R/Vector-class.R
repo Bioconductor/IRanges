@@ -222,7 +222,7 @@ setMethod("[", "Vector",
 setMethod("replaceROWS", "vectorORfactor",
     function(x, i, value)
     {
-        i <- IRanges:::extractROWS(setNames(seq_along(x), names(x)), i)
+        i <- extractROWS(setNames(seq_along(x), names(x)), i)
         x[i] <- value
         x
     }
@@ -233,10 +233,10 @@ setMethod("replaceROWS", "vectorORfactor",
 setMethod("replaceROWS", "Vector",
     function(x, i, value)
     {
-        i <- IRanges:::extractROWS(setNames(seq_along(x), names(x)), i)
+        idx <- seq_along(x)
+        i <- extractROWS(setNames(idx, names(x)), i)
         ## Assuming that objects of class 'class(x)' can be combined with c().
         ans <- c(x, value)
-        idx <- seq_len(length(x))
         idx[i] <- length(x) + seq_len(length(value))
         ## Assuming that [ works on objects of class 'class(x)'.
         ans <- ans[idx]

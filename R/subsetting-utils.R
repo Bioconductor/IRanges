@@ -23,8 +23,11 @@ normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE,
         return(seq_len(N))
     if (is.null(i))
         return(integer(0))
-    if (is(i, "Rle"))
+    if (is(i, "Rle")) {
         i <- as.vector(i)
+    } else if (allow.append && is(i, "Ranges")) {
+        i <- as.integer(i)
+    }
     if (!is.atomic(i))
         stop("invalid subscript type")
     if (is.numeric(i)) {
