@@ -275,7 +275,7 @@ SplitDataFrameList <- function(..., compress = TRUE, cbindArgs = FALSE)
 ###
 
 setMethod("[", "SimpleSplitDataFrameList",
-          function(x, i, j, ..., drop)
+          function(x, i, j, ..., drop=TRUE)
           {
             if (!missing(j))
               x@listData <- lapply(x@listData, function(y) y[,j,drop=FALSE])
@@ -302,7 +302,7 @@ setMethod("[", "SimpleSplitDataFrameList",
           })
 
 setMethod("[", "CompressedSplitDataFrameList",
-          function(x, i, j, ..., drop)
+          function(x, i, j, ..., drop=TRUE)
           {
             if (!missing(j))
               x@unlistData <- x@unlistData[, j, drop=FALSE]

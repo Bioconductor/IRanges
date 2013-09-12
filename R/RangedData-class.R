@@ -389,7 +389,7 @@ setReplaceMethod("$", "RangedData", function(x, name, value) {
 ## - list style ([i]):  subsets by range space (e.g. chromosome)
 ## - matrix style ([i,j]): subsets the data frame
 setMethod("[", "RangedData",
-          function(x, i, j, ..., drop=FALSE)
+          function(x, i, j, ..., drop=TRUE)
           {
             if (length(list(...)) > 0)
               stop("parameters in '...' not supported")

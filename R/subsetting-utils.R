@@ -3,12 +3,14 @@
 ### -------------------------------------------------------------------------
 
 
-### Returns an integer vector with values >= 1 and <= N where N = length(x)
+### Returns an integer vector with values >= 1 and <= N, where N = length(x)
 ### if 'byrow=FALSE' and N = nrow(x) if 'byrow=TRUE'.
-normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE)
+normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE)
 {
     if (!isTRUEorFALSE(byrow))
         stop("'byrow' must be TRUE or FALSE")
+    if (!isTRUEorFALSE(exact))
+        stop("'exact' must be TRUE or FALSE")
     if (byrow) {
         N <- nrow(x)
     } else {
@@ -65,7 +67,11 @@ normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE)
         }
         if (is.null(x_names))
             stop("cannot subset by character when ", what, " are NULL")
-        i <- match(i, x_names, incomparables=c(NA_character_, ""))
+        if (exact) {
+            i <- match(i, x_names, incomparables=c(NA_character_, ""))
+        } else {
+            i <- pmatch(i, x_names, duplicates.ok=TRUE)
+        }
         if (anyMissing(i))
             stop("subscript contains invalid ", what)
         return(i)
@@ -115,11 +121,11 @@ normalizeDoubleBracketSubscript <- function(i, x, exact=TRUE,
     #if (i == "")
     #    stop("invalid subscript \"\"")
     if (exact) {
-        ans <- match(i, x_names)
+        ans <- match(i, x_names, incomparables=c(NA_character_, ""))
     } else {
         ## Because 'i' has length 1, it doesn't matter whether we use
         ## 'duplicates.ok=FALSE' (the default) or 'duplicates.ok=TRUE' but
-        ## the latter seems just a little bit faster.
+        ## the latter seems to be just a little bit faster.
         ans <- pmatch(i, x_names, duplicates.ok=TRUE)
     }
     if (is.na(ans) && error.if.nomatch)

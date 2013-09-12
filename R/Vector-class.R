@@ -211,7 +211,7 @@ setMethod("extractROWS", "vectorORfactor",
 )
 
 setMethod("[", "Vector",
-    function(x, i, j, ..., drop)
+    function(x, i, j, ..., drop=TRUE)
     {
         if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")

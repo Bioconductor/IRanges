@@ -308,7 +308,7 @@ subsetListByList_replace <- function(x, i, value, byrow=FALSE)
 }
 
 setMethod("[", "List",
-    function(x, i, j, ..., drop)
+    function(x, i, j, ..., drop=TRUE)
     {
         if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")

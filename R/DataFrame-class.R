@@ -239,7 +239,7 @@ setMethod("extractROWS", "DataFrame",
     function(x, i)
     {
         if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x, byrow=TRUE)
+            i <- normalizeSingleBracketSubscript(i, x, byrow=TRUE, exact=FALSE)
         slot(x, "listData", check=FALSE) <-
             lapply(structure(seq_len(ncol(x)), names=names(x)),
                    function(j) extractROWS(x[[j]], i))
@@ -259,79 +259,69 @@ setMethod("extractROWS", "DataFrame",
 )
 
 setMethod("[", "DataFrame",
-          function(x, i, j, ..., drop)
-          {
-            if (length(list(...)) > 0)
-              warning("parameters in '...' not supported")
+    function(x, i, j, ..., drop=TRUE)
+    {
+        if (!isTRUEorFALSE(drop))
+            stop("'drop' must be TRUE or FALSE")
+        if (length(list(...)) > 0L)
+            warning("parameters in '...' not supported")
 
-            ## no ',' -- forward to list
-            ## NOTE: matrix-style subsetting by logical matrix not supported
-            if ((nargs() - !missing(drop)) < 3) {
-              if (!missing(drop))
-                warning("parameter 'drop' ignored by list-style subsetting")
-              if (missing(i))
-                return(x)
-              iInfo <- .bracket.Index(i, ncol(x), colnames(x))
-              if (!is.null(iInfo[["msg"]]))
-                stop("subsetting as list: ", iInfo[["msg"]])
-              x <- initialize(x,
-                       listData=extractROWS(x@listData, iInfo[["idx"]]),
-                       elementMetadata=x@elementMetadata[iInfo[["idx"]], ,
-                                                         drop=FALSE])
-              if (anyDuplicated(names(x)))
+        ## We do list-style subsetting when [ was called with no ','.
+        ## NOTE: matrix-style subsetting by logical matrix not supported.
+        list_style_subsetting <- (nargs() - !missing(drop)) < 3L
+        if (list_style_subsetting || !missing(j)) {
+            if (list_style_subsetting) {
+                if (!missing(drop))
+                    warning("'drop' argument ignored by list-style subsetting")
+                if (missing(i))
+                    return(x)
+                j <- i
+            }
+            if (!is(j, "Ranges"))
+                j <- normalizeSingleBracketSubscript(j, x)
+            new_listData <- extractROWS(x@listData, j)
+            new_mcols <- extractROWS(mcols(x), j)
+            x <- initialize(x, listData=new_listData,
+                               elementMetadata=new_mcols)
+            if (anyDuplicated(names(x)))
                 names(x) <- make.names(names(x))
-              return(x)
-            }
-
-            dim <- dim(x)
-            if (!missing(j)) {
-              jInfo <- .bracket.Index(j, ncol(x), colnames(x))
-              if (!is.null(jInfo[["msg"]]))
-                stop("selecting cols: ", jInfo[["msg"]])
-              x <- initialize(x,
-                       listData=extractROWS(x@listData, jInfo[["idx"]]),
-                       elementMetadata=x@elementMetadata[jInfo[["idx"]], ,
-                                                         drop=FALSE])
-              if (anyDuplicated(names(x)))
-                names(x) <- make.unique(names(x))
-              dim[2L] <- length(x)
-            }
-
-            if (!missing(i)) {
-              iInfo <- .bracket.Index(i, nrow(x), rownames(x), dup.nms = TRUE)
-              if (!is.null(iInfo[["msg"]]))
-                stop("selecting rows: ", iInfo[["msg"]])
-              useI <- iInfo[["useIdx"]]
-              i <- iInfo[["idx"]]
-              if (useI) {
-                x@listData <- lapply(as.list(x), function(y) {
-                  if (length(dim(y)) > 1)
-                    y[i, , drop = FALSE]
-                  else y[i]
-                })
-                dim[1L] <- length(seq(dim[1L])[i]) #may have 0 cols, no rownames
-                x@nrows <- dim[1L]
-                rn <- rownames(x)[i]
-                if (anyDuplicated(rn))
-                  x@rownames <- make.unique(rn)
-                else
-                  x@rownames <- rn
-              }
-            }
-
-            if (missing(drop)) ## drop by default if only one column left
-              drop <- dim[2L] == 1
-            if (drop) {
-              ## one column left
-              if (dim[2L] == 1)
+            if (list_style_subsetting)
+                return(x)
+        }
+        if (!missing(i))
+            x <- extractROWS(x, i)
+        if (missing(drop))  # drop by default if only one column left
+            drop <- ncol(x) == 1L
+        if (drop) {
+            ## one column left
+            if (ncol(x) == 1L)
                 return(x[[1L]])
-              ## one row left
-              if (dim[1L] == 1)
+            ## one row left
+            if (nrow(x) == 1L)
                 return(as(x, "list"))
-            }
+        }
+        x
+    }
+)
 
-            x
-          })
+setMethod("replaceROWS", "DataFrame",
+    function(x, i, value)
+    {
+        if (missing(i) || !is(i, "Ranges"))
+            i <- normalizeSingleBracketSubscript(i, x, byrow=TRUE)
+        x_ncol <- ncol(x)
+        value_ncol <- ncol(value)
+        if (value_ncol > x_ncol)
+            stop("provided ", value_ncol, " variables ",
+                 "to replace ", x_ncol, " variables")
+        slot(x, "listData", check=FALSE) <-
+            lapply(structure(seq_len(ncol(x)), names=names(x)),
+                   function(j)
+                       replaceROWS(x[[j]], i,
+                                   value[[((j - 1L) %% value_ncol) + 1L]]))
+        x
+    }
+)
 
 setReplaceMethod("[", "DataFrame",
                  function(x, i, j, ..., value)
