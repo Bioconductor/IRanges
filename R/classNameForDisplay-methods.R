@@ -31,3 +31,8 @@ setMethod("classNameForDisplay", "SimpleList",
 
 setMethod("classNameForDisplay", "SimpleNormalIRangesList",
     .classNameForDisplay_shorten)
+
+setMethod("classNameForDisplay", "AsIs", function(x) {
+  class(x) <- setdiff(class(x), "AsIs")
+  classNameForDisplay(x)
+})
