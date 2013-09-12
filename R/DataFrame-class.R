@@ -328,46 +328,45 @@ setReplaceMethod("[", "DataFrame",
                  {
                    if (length(list(...)) > 0)
                      warning("parameters in '...' not supported")
+                   useI <- FALSE
+                   newrn <- newcn <- NULL
                    if (nargs() < 4) {
-                     iInfo <- list(msg = NULL, useIdx = FALSE, idx = NULL)
+                     i2 <- seq_len(nrow(x))
                      if (missing(i)) {
-                       jInfo <-
-                         list(msg = NULL, useIdx = FALSE, idx = seq_len(ncol(x)))
+                       j2 <- seq_len(ncol(x))
                      } else {
                        if (length(i) == 1) {
                          if (is.logical(i) == 1 && i)
                              i <- rep(i, ncol(x))
                        }
-                       jInfo <- .bracket.Index(i, ncol(x), colnames(x),
-                                               allowAppend = TRUE)
+                       j2 <- normalizeSingleBracketSubscript(i, x,
+                                                             allow.append=TRUE)
+                       if (is.character(i))
+                           newcn <- i[j2 > ncol(x)]
                      }
                    } else {
                      if (missing(i)) {
-                       iInfo <- list(msg = NULL, useIdx = FALSE, idx = NULL)
+                       i2 <- seq_len(nrow(x))
                      } else {
-                       iInfo <-
-                         .bracket.Index(i, nrow(x), rownames(x),
-                                        allowAppend = TRUE)
+                       useI <- TRUE
+                       i2 <- normalizeSingleBracketSubscript(i, x, byrow=TRUE,
+                                                             allow.append=TRUE)
+                       if (is.character(i))
+                           newrn <- i[i2 > nrow(x)]
                      }
                      if (missing(j)) {
-                       jInfo <-
-                         list(msg = NULL, useIdx = FALSE, idx = seq_len(ncol(x)))
+                       j2 <- seq_len(ncol(x))
                      } else {
-                       jInfo <- .bracket.Index(j, ncol(x), colnames(x),
-                                               allowAppend = TRUE)
+                       j2 <- normalizeSingleBracketSubscript(j, x,
+                                                             allow.append=TRUE)
+                       if (is.character(j))
+                           newcn <- j[j2 > ncol(x)]
                      }
                    }
-                   if (!is.null(iInfo[["msg"]]))
-                     stop("replacing rows: ", iInfo[["msg"]])
-                   if (!is.null(jInfo[["msg"]]))
-                     stop("replacing cols: ", jInfo[["msg"]])
-                   i <- iInfo[["idx"]]
-                   j <- jInfo[["idx"]]
-                   newcn <- jInfo[["newNames"]]
-                   newrn <- iInfo[["newNames"]]
+                   i <- i2
+                   j <- j2
                    if (!length(j)) # nothing to replace
                      return(x)
-                   useI <- iInfo[["useIdx"]]
                    if (is(value, "list") || is(value, "List"))
                      value <- as(value, "DataFrame")
                    if (!is(value, "DataFrame")) {
@@ -388,7 +387,7 @@ setReplaceMethod("[", "DataFrame",
                        newcn <- paste("V", seq.int(length(x) + 1L, max(j)),
                                       sep = "")
                        if (length(newcn) != sum(j > length(x)))
-                         stop("new columns would leave holes after",
+                         stop("new columns would leave holes after ",
                               "existing columns")
                      }
                      if (useI) {

@@ -350,17 +350,8 @@ setReplaceMethod("[", "SplitDataFrameList",
                 ans <- callNextMethod(x=x, i=i, value=value)
             return(ans)
         }
-        jInfo <- .bracket.Index(j, ncol(x)[[1L]], colnames(x)[[1L]])
-        if (!is.null(jInfo[["msg"]]))
-            stop("subsetting by column: ", jInfo[["msg"]])
-        if (!jInfo[["useIdx"]]) {
-            if (missing(i))
-                ans <- callNextMethod(x=x, value=value)
-            else
-                ans <- callNextMethod(x=x, i=i, value=value)
-            return(ans)
-        }
-        j <- jInfo[["idx"]]
+        tmp <- setNames(seq_len(ncol(x)[[1L]]), colnames(x)[[1L]])
+        j <- normalizeSingleBracketSubscript(j, tmp)
         y <- x[, j, drop=FALSE]
         if (missing(i)) {
             y[] <- value

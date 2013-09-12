@@ -5,12 +5,15 @@
 
 ### Returns an integer vector with values >= 1 and <= N, where N = length(x)
 ### if 'byrow=FALSE' and N = nrow(x) if 'byrow=TRUE'.
-normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE)
+normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE,
+                                            allow.append=FALSE)
 {
     if (!isTRUEorFALSE(byrow))
         stop("'byrow' must be TRUE or FALSE")
     if (!isTRUEorFALSE(exact))
         stop("'exact' must be TRUE or FALSE")
+    if (!isTRUEorFALSE(allow.append))
+        stop("'allow.append' must be TRUE or FALSE")
     if (byrow) {
         N <- nrow(x)
     } else {
@@ -27,8 +30,13 @@ normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE)
     if (is.numeric(i)) {
         if (!is.integer(i))
             i <- as.integer(i)
-        if (anyMissingOrOutside(i, upper=N))
-            stop("subscript contains NAs or out of bounds indices")
+        if (allow.append) {
+            if (any(is.na(i)))
+                stop("subscript contains NAs")
+        } else {
+            if (anyMissingOrOutside(i, upper=N))
+                stop("subscript contains NAs or out of bounds indices")
+        }
         nonzero_idx <- which(i != 0L)
         i <- i[nonzero_idx]
         if (length(i) == 0L)
@@ -47,7 +55,7 @@ normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE)
         if (anyMissing(i))
             stop("subscript contains NAs")
         li <- length(i)
-        if (li > N) {
+        if (!allow.append && li > N) {
             if (any(i[(N+1L):li]))
                 stop("subscript is a logical vector with out of bounds ",
                      "TRUE values")
@@ -65,12 +73,20 @@ normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE)
             x_names <- names(x)
             what <- "names"
         }
-        if (is.null(x_names))
-            stop("cannot subset by character when ", what, " are NULL")
+        if (is.null(x_names)) {
+            if (!allow.append)
+                stop("cannot subset by character when ", what, " are NULL")
+            return(N + seq_along(i))
+        }
         if (exact) {
             i <- match(i, x_names, incomparables=c(NA_character_, ""))
         } else {
             i <- pmatch(i, x_names, duplicates.ok=TRUE)
+        }
+        if (allow.append) {
+            na_idx <- which(is.na(i))
+            i[na_idx] <- N + seq_along(na_idx)
+            return(i)
         }
         if (anyMissing(i))
             stop("subscript contains invalid ", what)
@@ -198,146 +214,4 @@ setGeneric("getListElement", signature="x",
 setGeneric("setListElement", signature="x",
     function(x, i, value) standardGeneric("setListElement")
 )
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### TODO: .bracket.Index() needs to go away
-###
-
-## 'allowAppend' allows new elements in 'idx' for appending. Ideally,
-## all list-like sequences should allow appending through [<-, but
-## this is only supported by DataFrame for now. 
-.bracket.Index <-
-function(idx, lx, nms = NULL, dup.nms = FALSE, asRanges = FALSE,
-         allowAppend = FALSE)
-{
-    msg <- NULL
-    newNames <- character(0)
-    if (is(idx, "Rle") && is.integer(runValue(idx)))
-      idx <- as.integer(idx)
-    if (is.numeric(idx)) {
-        if (!is.integer(idx))
-            idx <- as.integer(idx)
-        if (anyMissingOrOutside(idx, upper = if (!allowAppend) lx
-                                             else .Machine$integer.max))
-        {
-            msg <- "subscript contains NAs or out of bounds indices"
-        } else {
-            anyPos <- anyMissingOrOutside(idx, upper = 0L)
-            anyNeg <- anyMissingOrOutside(idx, 0L)
-            if (anyPos && anyNeg)
-                msg <- "negative and positive indices cannot be mixed"
-        }
-    } else if (is.logical(idx)) {
-        if (anyMissing(idx))
-            msg <- "subscript contains NAs"
-        else if (!allowAppend && length(idx) > lx)
-            msg <- "subscript out of bounds"
-    } else if (is.character(idx) || is.factor(idx)) {
-        if (anyMissing(idx))
-            msg <- "subscript contains NAs"
-        else if (!allowAppend && is.null(nms) && length(idx) > 0)
-            msg <- "cannot subset by character when names are NULL"
-        else if (!allowAppend) {
-            if (dup.nms)
-                m <- pmatch(idx, nms, duplicates.ok = TRUE)
-            else
-                m <- match(idx, nms)
-            if (!dup.nms && anyMissing(m))
-                msg <- "mismatching names"
-        }
-    } else if (is(idx, "Rle")) {
-        if (anyMissing(runValue(idx)))
-            msg <- "subscript contains NAs"
-        else if (!allowAppend && length(idx) > lx)
-            msg <- "subscript out of bounds"
-    } else if (is(idx, "Ranges")) {
-        rng <- range(idx)
-        if ((length(rng) > 0) && (start(rng) < 1 || end(rng) > lx))
-            stop("range index out of bounds")
-        else if (anyMissingOrOutside(width(idx), 1L)) {
-            idx <- idx[width(idx) > 0L]
-        }
-    } else if (!is.null(idx)) {
-        msg <- "invalid subscript type"
-    }
-    if (!is.null(msg)) {
-        useIdx <- NULL
-        idx <- NULL
-    } else {
-        useIdx <- TRUE
-        if (asRanges) {
-            if (length(idx) == 0) {
-                idx <- IRanges()
-            } else if (is.character(idx)) {
-                if (allowAppend) {
-                    m <- match(idx, nms)
-                    nam <- is.na(m)
-                    m[nam] <- lx + seq(sum(nam))
-                    newNames <- idx[nam]
-                    idx <- as(m, "IRanges")
-                } else idx <-
-                    as(pmatch(idx, nms, duplicates.ok = TRUE), "IRanges")
-            } else if (is.logical(idx)) {
-                if (all(idx)) {
-                    useIdx <- FALSE
-                } else {
-                    if (length(idx) < lx)
-                        idx <- rep(idx, length.out = lx)
-                    idx <- as(idx, "NormalIRanges")
-                }
-            } else if (is.integer(idx)) {
-                if (anyNeg)
-                    idx <- seq_len(lx)[idx]
-                idx <- as(idx, "IRanges")
-            } else if (is(idx, "Rle")) {
-                if (all(runValue(idx))) {
-                    useIdx <- FALSE
-                } else {
-                    if (length(idx) < lx)
-                        idx <- rep(idx, length.out = lx)
-                    idx <- as(idx, "NormalIRanges")
-                }
-            }
-            if (length(idx) == 1 && start(idx) == 1 && end(idx) == lx)
-                useIdx <- FALSE
-        } else {
-            if (length(idx) == 0) {
-                idx <- integer()
-            } else if (is.character(idx)) {
-                if (allowAppend) {
-                    m <- match(idx, nms)
-                    nam <- is.na(m)
-                    newNames <- idx[nam]
-                    m[nam] <- lx + seq_len(sum(nam))
-                    idx <- m
-                } else idx <- pmatch(idx, nms, duplicates.ok = TRUE)
-            } else if (is.logical(idx)) {
-                if (all(idx)) {
-                    useIdx <- FALSE
-                } else {
-                    if (length(idx) < lx)
-                        idx <- rep(idx, length.out = lx)
-                    idx <- which(idx)
-                }
-            } else if (is.integer(idx) && anyNeg) {
-                idx <- seq_len(lx)[idx]
-            } else if (is(idx, "Rle")) {
-                if (all(runValue(idx))) {
-                    useIdx <- FALSE
-                } else {
-                    if (length(idx) < lx)
-                        idx <- rep(idx, length.out = lx)
-                    idx <- which(idx)
-                }
-            } else if (is(idx, "Ranges")) {
-                if (length(idx) == 1 && start(idx) == 1 && end(idx) == lx)
-                    useIdx <- FALSE
-                else
-                    idx <- as.integer(idx)
-            }
-        }
-    }
-    list(msg = msg, useIdx = useIdx, idx = idx, newNames = newNames)
-}
 
