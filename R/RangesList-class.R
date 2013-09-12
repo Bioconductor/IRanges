@@ -462,19 +462,25 @@ setAs("RangesList", "IRangesList",
           as(from, "SimpleIRangesList")
       })
 
-setAs("RangesList", "CompressedIRangesList",
-      function(from)
-      newList("CompressedIRangesList",
-              lapply(from, as, "IRanges"),
-              metadata = metadata(from),
-              mcols = mcols(from)))
+setAs("RangesList", "CompressedIRangesList", function(from) {
+  if (is(from, "CompressedList"))
+    coerceToCompressedList(from, "IRanges")
+  ## this case handles RangesList of Partitioning objects (not combinable)
+  else newList("CompressedIRangesList",
+               lapply(from, as, "IRanges"),
+               metadata = metadata(from),
+               mcols = mcols(from))
+})
 
-setAs("RangesList", "SimpleIRangesList",
-      function(from)
-      newList("SimpleIRangesList",
-              lapply(from, as, "IRanges"),
-              metadata = metadata(from),
-              mcols = mcols(from)))
+.RangesListToSimpleIRangesList <- function(from)
+  newList("SimpleIRangesList",
+          lapply(from, as, "IRanges"),
+          metadata = metadata(from),
+          mcols = mcols(from))
+
+## otherwise, SimpleRangesList->SimpleIRangesList uses a methods package default
+setAs("SimpleRangesList", "SimpleIRangesList", .RangesListToSimpleIRangesList)
+setAs("RangesList", "SimpleIRangesList", .RangesListToSimpleIRangesList)
 
 setAs("RangesList", "SimpleRangesList",
       function(from)
