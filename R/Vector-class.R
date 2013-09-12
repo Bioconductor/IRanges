@@ -813,6 +813,10 @@ setMethod("split", c("ANY", "Vector"),
           function(x, f, drop=FALSE, ...) splitAsList(x, f, drop=drop)
 )
 
+setMethod("split", c("list", "Vector"),
+          function(x, f, drop=FALSE, ...) split(x, as.vector(f), drop=drop)
+          )
+
 setMethod("split", c("Vector", "Vector"),
           function(x, f, drop=FALSE, ...) splitAsList(x, f, drop=drop)
 )
