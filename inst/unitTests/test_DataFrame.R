@@ -59,6 +59,10 @@ test_DataFrame_construction <- function() {
   checkIdentical(as.data.frame(sw),
                  data.frame(score = score, swiss = swiss[1:3,]))
 
+  ## identity
+  df <- DataFrame(A=I(list(1:3)))
+  checkIdentical(as.data.frame(df), data.frame(A=I(list(1:3))))
+  
   ## recycling
   DF <- DataFrame(1, score)
   checkIdentical(DF[[1]], rep(1, 3)) 
@@ -306,7 +310,10 @@ test_DataFrame_combine <- function() {
   rownames(sw) <- NULL
   swsplit <- split(sw, sw[["Education"]])
   checkIdentical(as.data.frame(do.call(rbind, as.list(swsplit))), swissrbind)
-
+  DF <- DataFrame(A=I(list(1:3)))
+  df <- as.data.frame(DF)
+  checkIdentical(as.data.frame(rbind(DF, DF)), rbind(df, df))
+  
   ## combining factors
   df1 <- data.frame(species = c("Mouse", "Chicken"), n = c(5, 6))
   DF1 <- DataFrame(df1)
