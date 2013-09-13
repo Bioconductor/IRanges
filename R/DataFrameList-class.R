@@ -402,8 +402,8 @@ setAs("DataFrameList", "DataFrame", function(from) {
 
 setAs("SplitDataFrameList", "DataFrame", function(from) unlist(from))
 
-as.data.frame.DataFrameList <-
-    function(x, row.names=NULL, optional=FALSE, ...)
+### S3/S4 combo for as.data.frame.DataFrameList
+as.data.frame.DataFrameList <- function(x, row.names=NULL, optional=FALSE, ...)
 {
     if (!(is.null(row.names) || is.character(row.names)))
         stop("'row.names' must be NULL or a character vector")
@@ -414,7 +414,6 @@ as.data.frame.DataFrameList <-
         row.names <- rownames(stacked)
     as.data.frame(stacked, row.names = row.names, optional = optional)
 }
-
 setMethod("as.data.frame", "DataFrameList", as.data.frame.DataFrameList)
 
 setAs("ANY", "SimpleSplitDataFrameList",

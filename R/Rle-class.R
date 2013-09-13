@@ -145,21 +145,20 @@ setMethod("as.character", "Rle", function(x) rep.int(as.character(runValue(x)), 
 setMethod("as.raw", "Rle", function(x) rep.int(as.raw(runValue(x)), runLength(x)))
 setMethod("as.factor", "Rle", function(x) rep.int(as.factor(runValue(x)), runLength(x)))
 
-.as.list.Rle <- function(x) as.list(as.vector(x))
 ### S3/S4 combo for as.list.Rle
+.as.list.Rle <- function(x) as.list(as.vector(x))
 as.list.Rle <- function(x, ...) .as.list.Rle(x, ...)
 setMethod("as.list", "Rle", as.list.Rle)
 
 decodeRle <- function(x) rep.int(runValue(x), runLength(x))
 
-as.data.frame.Rle <- 
-    function(x, row.names = NULL, optional = FALSE, ...)
+### S3/S4 combo for as.data.frame.Rle
+as.data.frame.Rle <- function(x, row.names=NULL, optional=FALSE, ...)
 {
     value <- decodeRle(x)
-    as.data.frame(value, row.names = row.names,
-                  optional = optional, ...)
+    as.data.frame(value, row.names=row.names,
+                  optional=optional, ...)
 }
-
 setMethod("as.data.frame", "Rle", as.data.frame.Rle)
 
 getStartEndRunAndOffset <- function(x, start, end) {
@@ -458,9 +457,9 @@ setMethod("%in%", "Rle",
               Rle(values = runValue(x) %in% table, lengths = runLength(x),
                   check = FALSE))
 
-aggregate.Rle <- 
-    function(x, by, FUN, start = NULL, end = NULL, width = NULL,
-             frequency = NULL, delta = NULL, ..., simplify = TRUE)
+### S3/S4 combo for aggregate.Rle
+aggregate.Rle <- function(x, by, FUN, start=NULL, end=NULL, width=NULL,
+                          frequency=NULL, delta=NULL, ..., simplify=TRUE)
 {
     FUN <- match.fun(FUN)
     if (!missing(by)) {
@@ -511,7 +510,6 @@ aggregate.Rle <-
                simplify = simplify)
     }
 }
-
 setMethod("aggregate", "Rle", aggregate.Rle)
 
 setMethod("c", "Rle", 
@@ -645,14 +643,13 @@ setMethod("rep.int", "Rle",
               x
           })
 
-rev.Rle <-
-    function(x)
+### S3/S4 combo for rev.Rle
+rev.Rle <- function(x)
 {
     x@values <- rev(runValue(x))
     x@lengths <- rev(runLength(x))
     x
 }
-
 setMethod("rev", "Rle", rev.Rle)
 
 setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
@@ -759,7 +756,6 @@ setMethod("order", "Rle",
 }
 sort.Rle <- function(x, decreasing=FALSE, ...)
     .sort.Rle(x, decreasing=decreasing, ...)
-
 setMethod("sort", "Rle", sort.Rle)
 
 setGeneric("splitRanges", signature = "x",
@@ -776,8 +772,8 @@ setMethod("splitRanges", "vectorORfactor",
               callGeneric(Rle(x))
           })
 
-summary.Rle <- 
-    function (object, ..., digits = max(3, getOption("digits") - 3)) 
+### S3/S4 combo for summary.Rle
+summary.Rle <- function(object, ..., digits=max(3, getOption("digits") - 3)) 
 {
     value <-
         if (is.logical(runValue(object))) 
@@ -806,7 +802,6 @@ summary.Rle <-
     class(value) <- c("summaryDefault", "table")
     value
 }
-
 setMethod("summary", "Rle", summary.Rle)
 
 setMethod("table", "Rle", 
@@ -855,9 +850,9 @@ setMethod("table", "Rle",
     }
 }
 
+### S3/S4 combo for duplicated.Rle
 .duplicated.Rle <- function(x, incomparables=FALSE, fromLast=FALSE)
     stop("no \"duplicated\" method for Rle objects yet, sorry")
-### S3/S4 combo for duplicated.Rle
 duplicated.Rle <- function(x, incomparables=FALSE, ...)
     .duplicated.Rle(x, incomparables=incomparables, ...)
 setMethod("duplicated", "Rle", duplicated.Rle)
@@ -924,29 +919,30 @@ setMethod("which.max", "Rle",
           })
 
 ## base::ifelse works fine for S4 'test', but not for S4 yes/no
-setMethod("ifelse", c(yes = "Rle"), function (test, yes, no) 
+setMethod("ifelse", c(yes = "Rle"), function(test, yes, no) 
           {
             yes <- as.vector(yes)
             as(callGeneric(), "Rle")
           })
-setMethod("ifelse", c(no = "Rle"), function (test, yes, no) 
+setMethod("ifelse", c(no = "Rle"), function(test, yes, no) 
           {
             no <- as.vector(no)
             as(callGeneric(), "Rle")
           })
-setMethod("ifelse", c(yes = "Rle", no = "Rle"), function (test, yes, no) 
+setMethod("ifelse", c(yes = "Rle", no = "Rle"), function(test, yes, no) 
           {
             yes <- as.vector(yes)
             no <- as.vector(no)
             as(callGeneric(), "Rle")
           })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other numerical data methods
 ###
 
-.diff.Rle <- 
-    function(x, lag = 1, differences = 1)
+### S3/S4 combo for diff.Rle
+.diff.Rle <- function(x, lag = 1, differences = 1)
 {
     if (!isSingleNumber(lag) || lag < 1L ||
         !isSingleNumber(differences) || differences < 1L) 
@@ -961,9 +957,7 @@ setMethod("ifelse", c(yes = "Rle", no = "Rle"), function (test, yes, no)
     }
     x
 }
-
 diff.Rle <- function(x, ...) .diff.Rle(x, ...)
-
 setMethod("diff", "Rle", .diff.Rle)
 
 .psummary.Rle <- function(FUN, ..., MoreArgs = NULL) {
@@ -998,8 +992,8 @@ setMethod("pmax.int", "Rle", function(..., na.rm = FALSE)
 setMethod("pmin.int", "Rle", function(..., na.rm = FALSE)
             .psummary.Rle(pmin.int, ..., MoreArgs = list(na.rm = na.rm)))
 
-.mean.Rle <-
-    function(x, na.rm = FALSE)
+### S3/S4 combo for mean.Rle
+.mean.Rle <- function(x, na.rm = FALSE)
 {
     if (is.integer(runValue(x)))
         runValue(x) <- as.double(runValue(x))
@@ -1009,9 +1003,7 @@ setMethod("pmin.int", "Rle", function(..., na.rm = FALSE)
         n <- length(x)
     sum(x, na.rm = na.rm) / n
 }
-
 mean.Rle <- function(x, ...) .mean.Rle(x, ...)
-
 setMethod("mean", "Rle", .mean.Rle)
 
 setMethod("var", signature = c(x = "Rle", y = "missing"),
@@ -1093,10 +1085,10 @@ setMethod("cor", signature = c(x = "Rle", y = "Rle"),
 setMethod("sd", signature = c(x = "Rle"),
           function(x, na.rm = FALSE) sqrt(var(x, na.rm = na.rm)))
 
-median.Rle <-
-    function(x, na.rm = FALSE)
-    ## FIXME: code duplication needed for S3 / S4 dispatch
-    ## drop NA's here, so dropRle==TRUE allows x[FALSE][NA] in median.default
+### S3/S4 combo for median.Rle
+### FIXME: code duplication needed for S3 / S4 dispatch
+### drop NA's here, so dropRle==TRUE allows x[FALSE][NA] in median.default
+median.Rle <- function(x, na.rm = FALSE)
 {
     if (na.rm)
         x <- x[!is.na(x)]
@@ -1105,7 +1097,6 @@ median.Rle <-
     on.exit(options("dropRle" = oldOption))
     NextMethod("median", na.rm=FALSE)
 }
-
 setMethod("median", "Rle", 
     function(x, na.rm = FALSE)
 {
@@ -1117,6 +1108,8 @@ setMethod("median", "Rle",
     callNextMethod(x=x, na.rm=FALSE)
 })
 
+### S3/S4 combo for quantile.Rle
+### FIXME: code duplication needed for S3 / S4 dispatch
 quantile.Rle <- 
     function(x, probs = seq(0, 1, 0.25), na.rm = FALSE, names = TRUE,
              type = 7, ...)
@@ -1128,7 +1121,6 @@ quantile.Rle <-
     on.exit(options("dropRle" = oldOption))
     NextMethod("quantile", na.rm=FALSE)
 }
-
 setMethod("quantile", "Rle",
     function(x, probs = seq(0, 1, 0.25), na.rm = FALSE, names = TRUE,
              type = 7, ...)

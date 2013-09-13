@@ -19,8 +19,6 @@
 
 \alias{window<-,DataTable-method}
 \alias{window<-.DataTable}
-\alias{head,DataTable-method}
-\alias{tail,DataTable-method}
 \alias{subset,DataTable-method}
 \alias{na.omit}
 \alias{na.omit,DataTable-method}

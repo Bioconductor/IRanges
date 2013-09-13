@@ -217,8 +217,9 @@ setMethod("Rngap", "OverlapEncodings", function(x) Rngap(encoding(x)))
 ### Coercion.
 ###
 
-as.data.frame.OverlapEncodings <- 
-    function(x, row.names=NULL, optional=FALSE, ...)
+### S3/S4 combo for as.data.frame.OverlapEncodings
+as.data.frame.OverlapEncodings <- function(x, row.names=NULL,
+                                           optional=FALSE, ...)
 {
     if (!(is.null(row.names) || is.character(row.names)))
         stop("'row.names' must be NULL or a character vector")
@@ -231,8 +232,8 @@ as.data.frame.OverlapEncodings <-
                check.names=FALSE,
                stringsAsFactors=FALSE)
 }
-
 setMethod("as.data.frame", "OverlapEncodings", as.data.frame.OverlapEncodings)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### "show" method.
@@ -251,9 +252,9 @@ setMethod("show", "OverlapEncodings",
                             row.names=paste("[", seq_len(lo), "]", sep=""))
         } else {
             sketch <- function(x)
-              c(as.character(window(x, 1L, 9L)),
+              c(as.character(head(x, n=9L)),
                 "...",
-                as.character(window(x, length(x)-8L, length(x))))
+                as.character(tail(x, n=9L)))
             showme <-
               data.frame(Loffset=sketch(Loffset(object)),
                          Roffset=sketch(Roffset(object)),

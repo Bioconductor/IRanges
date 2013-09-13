@@ -211,7 +211,7 @@ setMethod("getListElement", "Views",
         end <- end(x)[i]
         if (start < 1L || end > length(subject(x)))
             stop("view is out of limits")
-        window(subject(x), start=start, end=end)
+        extractROWS(subject(x), IRanges(start, end))
     }
 )
 
@@ -322,7 +322,7 @@ setMethod("viewApply", "Views",
         ans <-
           sapply(structure(seq_len(length(X)), names = names(X)),
                  function(i)
-                     FUN(window(Xsubject, start = Xstart[i], width = Xwidth[i]),
+                     FUN(extractROWS(Xsubject, IRanges(Xstart[i], Xwidth[i])),
                          ...),
                  simplify = simplify)
         if (!simplify) {

@@ -409,8 +409,8 @@ setMethod("showAsCell", "RangesList",
 ### Coercion.
 ###
 
-as.data.frame.RangesList <- 
-          function(x, row.names=NULL, optional=FALSE, ...)
+### S3/S4 combo for as.data.frame.RangesList
+as.data.frame.RangesList <- function(x, row.names=NULL, optional=FALSE, ...)
 {
     if (!(is.null(row.names) || is.character(row.names)))
         stop("'row.names'  must be NULL or a character vector")
@@ -429,7 +429,6 @@ as.data.frame.RangesList <-
                row.names = row.names,
                stringsAsFactors = FALSE)
 }
-
 setMethod("as.data.frame", "RangesList", as.data.frame.RangesList)
 
 .as.list.CompressedNormalIRangesList <- function(x, use.names = TRUE)

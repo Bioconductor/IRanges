@@ -79,8 +79,8 @@ setAs("Hits", "DataFrame", function(from) {
             else new("DataFrame", nrows = length(from)))
 })
 
-as.data.frame.Hits <- 
-    function(x, row.names=NULL, optional=FALSE, ...)
+### S3/S4 combo for as.data.frame.Hits
+as.data.frame.Hits <- function(x, row.names=NULL, optional=FALSE, ...)
 {
     if (!(is.null(row.names) || is.character(row.names)))
         stop("'row.names' must be NULL or a character vector")
@@ -88,17 +88,16 @@ as.data.frame.Hits <-
         warning("'optional' and arguments in '...' are ignored")
     as.data.frame(as(x, "DataFrame"), row.names = row.names)
 }
-
 setMethod("as.data.frame", "Hits", as.data.frame.Hits)
 
-## a list, with an element for each query, containing the subject hits
-.as.list.Hits <- function(x, values = seq_len(subjectLength(x)))
+### S3/S4 combo for as.list.Hits
+### Returns a list, with an element for each query, containing the subject hits
+.as.list.Hits <- function(x, values=seq_len(subjectLength(x)))
 {
     unname(split(values[subjectHits(x)],
                  factor(queryHits(x),
                         levels = seq_len(queryLength(x)))))
 }
-### S3/S4 combo for as.list.Hits
 as.list.Hits <- function(x, ...) .as.list.Hits(x, ...)
 setMethod("as.list", "Hits", as.list.Hits)
 

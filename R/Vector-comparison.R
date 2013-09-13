@@ -217,7 +217,7 @@ setMethod("countMatches", c("ANY", "ANY"), .countMatches.default)
         return(x[i])
     x[i, , drop=FALSE]
 }
-sort.Vector <- function (x, decreasing=FALSE, ...)
+sort.Vector <- function(x, decreasing=FALSE, ...)
     .sort.Vector(x, decreasing=decreasing, ...)
 setMethod("sort", "Vector", sort.Vector)
 

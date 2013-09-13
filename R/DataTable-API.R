@@ -64,37 +64,8 @@ setReplaceMethod("dimnames", "DataTable",
 }
 setReplaceMethod("window", "DataTable", `window<-.DataTable`)
 
-setMethod("head", "DataTable",
-          function(x, n = 6L, ...)
-          {
-              stopifnot(length(n) == 1L)
-              if (n < 0L)
-                  n <- max(nrow(x) + n, 0L)
-              else
-                  n <- min(n, nrow(x))
-              if (n == 0L)
-                  x[integer(0),,drop = FALSE]
-              else
-                  window(x, 1L, n)
-          })
-
-setMethod("tail", "DataTable",
-          function(x, n = 6L, ...)
-          {
-              stopifnot(length(n) == 1L)
-              xlen <- nrow(x)
-              if (n < 0L) 
-                  n <- max(xlen + n, 0L)
-              else
-                  n <- min(n, xlen)
-              if (n == 0L)
-                  x[integer(0),,drop = FALSE]
-              else
-                  window(x, xlen - n + 1L, xlen)
-          })
-
 setMethod("subset", "DataTable",
-          function (x, subset, select, drop = FALSE, ...) 
+          function(x, subset, select, drop = FALSE, ...) 
           {
               if (missing(subset)) 
                   i <- TRUE
@@ -231,7 +202,7 @@ setMethod("by", "DataTable",
 ###
 
 ### S3/S4 combo for duplicated.DataTable
-duplicated.DataTable <- function (x, incomparables=FALSE, fromLast=FALSE, ...)
+duplicated.DataTable <- function(x, incomparables=FALSE, fromLast=FALSE, ...)
 {
     duplicated(as(x, "data.frame"),
                incomparables=incomparables, fromLast=fromLast, ...)

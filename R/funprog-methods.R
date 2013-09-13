@@ -5,7 +5,7 @@
 
 #.ReduceDefault <- base::Reduce
 #environment(.ReduceDefault) <- topenv()
-.ReduceDefault <- function (f, x, init, right = FALSE, accumulate = FALSE) 
+.ReduceDefault <- function(f, x, init, right = FALSE, accumulate = FALSE) 
 {
     mis <- missing(init)
     len <- length(x)

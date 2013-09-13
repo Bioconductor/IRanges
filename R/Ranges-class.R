@@ -75,8 +75,8 @@ setMethod("as.matrix", "Ranges",
                dimnames=list(names(x), NULL))
 )
 
-as.data.frame.Ranges <- 
-    function(x, row.names=NULL, optional=FALSE, ...)
+### S3/S4 combo for as.data.frame.Ranges
+as.data.frame.Ranges <- function(x, row.names=NULL, optional=FALSE, ...)
 {
     if (!(is.null(row.names) || is.character(row.names)))
         stop("'row.names' must be NULL or a character vector")
@@ -90,7 +90,6 @@ as.data.frame.Ranges <-
     ans$names <- names(x)
     ans
 }
-
 setMethod("as.data.frame", "Ranges", as.data.frame.Ranges)
 
 setMethod("as.integer", "Ranges",

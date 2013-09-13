@@ -255,7 +255,7 @@ function(obj, width = getOption("width"), sep = " ", ellipsis = "...")
 }
 
 ## taken directly from Biobase
-selectSome <- function (obj, maxToShow = 5) 
+selectSome <- function(obj, maxToShow = 5) 
 {
     len <- length(obj)
     if (maxToShow < 3) 

@@ -54,13 +54,6 @@ exportClasses(
 
 S3method(aggregate, Rle)
 
-S3method(as.list, List)
-S3method(as.list, SimpleList)
-S3method(as.list, CompressedList)
-S3method(as.list, Rle)
-S3method(as.list, CompressedNormalIRangesList)
-S3method(as.list, Hits)
-
 S3method(as.data.frame, DataFrame)
 S3method(as.data.frame, DataFrameList)
 S3method(as.data.frame, GappedRanges)
@@ -72,6 +65,13 @@ S3method(as.data.frame, RangesList)
 S3method(as.data.frame, Rle)
 S3method(as.data.frame, Vector)
 
+S3method(as.list, List)
+S3method(as.list, SimpleList)
+S3method(as.list, CompressedList)
+S3method(as.list, Rle)
+S3method(as.list, CompressedNormalIRangesList)
+S3method(as.list, Hits)
+
 S3method(diff, Rle)
 
 S3method(duplicated, Vector)
@@ -81,6 +81,8 @@ S3method(duplicated, DataTable)
 S3method(duplicated, Rle)
 S3method(duplicated, AtomicList)
 S3method(duplicated, CompressedAtomicList)
+
+S3method(head, Vector)
 
 S3method(levels, Rle)
 S3method(levels, OverlapEncodings)
@@ -98,6 +100,8 @@ S3method(sort, Rle)
 S3method(sort, RleList)
 
 S3method(summary, Rle)
+
+S3method(tail, Vector)
 
 S3method(unique, Vector)
 S3method(unique, DataTable)
@@ -125,13 +129,6 @@ S3method(`window<-`, RangedData)
 export(
     aggregate.Rle,
 
-    as.list.List,
-    as.list.SimpleList,
-    as.list.CompressedList,
-    as.list.Rle,
-    as.list.CompressedNormalIRangesList,
-    as.list.Hits,
-
     as.data.frame.DataFrame,
     as.data.frame.DataFrameList,
     as.data.frame.GappedRanges,
@@ -143,6 +140,13 @@ export(
     as.data.frame.Rle,
     as.data.frame.Vector,
 
+    as.list.List,
+    as.list.SimpleList,
+    as.list.CompressedList,
+    as.list.Rle,
+    as.list.CompressedNormalIRangesList,
+    as.list.Hits,
+
     diff.Rle,
 
     duplicated.Vector,
@@ -152,6 +156,8 @@ export(
     duplicated.Rle,
     duplicated.AtomicList,
     duplicated.CompressedAtomicList,
+
+    head.Vector,
 
     levels.Rle,
     levels.OverlapEncodings,
@@ -169,6 +175,8 @@ export(
     sort.RleList,
 
     summary.Rle,
+
+    tail.Vector,
     
     unique.Vector,
     unique.DataTable,
