@@ -284,73 +284,29 @@ setReplaceMethod("[", "Vector",
 window.Vector <- function(x, start=NA, end=NA, width=NA,
                              frequency=NULL, delta=NULL, ...)
 {
-    solved_SEW <- solveUserSEWForSingleSeq(length(x), start, end, width)
-    if (is.null(frequency) && is.null(delta)) {
-        x[as.integer(solved_SEW)]
-    } else {
-        idx <- stats:::window.default(seq_len(length(x)),
-                                      start = start(solved_SEW),
-                                      end = end(solved_SEW),
-                                      frequency = frequency,
-                                      deltat = delta, ...)
-        attributes(idx) <- NULL
-        x[idx]
+    i <- solveUserSEWForSingleSeq(NROW(x), start, end, width)
+    if (!is.null(frequency) || !is.null(delta)) {
+        i <- stats:::window.default(seq_len(NROW(x)),
+                                    start=start(i),
+                                    end=end(i),
+                                    frequency=frequency,
+                                    deltat=delta, ...)
+        attributes(i) <- NULL
     }
+    extractROWS(x, i)
 }
 setMethod("window", "Vector", window.Vector)
-
-### S3/S4 combo for window.NULL
-window.NULL <- function(x, start=NA, end=NA, width=NA,
-                           frequency=NULL, delta=NULL, ...)
-{
-    NULL
-}
-setMethod("window", "NULL", window.NULL)
 
 ### S3/S4 combo for window.vector
 ### FIXME: This method alters the semantic of stats::window() on ordinary
 ### vectors (the result has no 'tsp' attribute). Not really acceptable.
-window.vector <- function(x, start=NA, end=NA, width=NA,
-                             frequency=NULL, delta=NULL, ...)
-{
-    solved_SEW <- solveUserSEWForSingleSeq(length(x), start, end, width)
-    if (is.null(frequency) && is.null(delta)) {
-        .Call2("vector_seqselect",
-               x, start(solved_SEW), width(solved_SEW),
-               PACKAGE="IRanges")
-    } else {
-        idx <- stats:::window.default(seq_len(length(x)),
-                                      start=start(solved_SEW),
-                                      end=end(solved_SEW),
-                                      frequency=frequency,
-                                      deltat=delta, ...)
-        attributes(idx) <- NULL
-        x[idx]
-    }
-}
+window.vector <- window.Vector
 setMethod("window", "vector", window.vector)
-
-window.matrix <- function(x, start=NA, end=NA, width=NA,
-                          frequency=NULL, delta=NULL, ...)
-{
-  ind <- window.vector(seq_len(nrow(x)), start=start, end=end, width=width,
-                       frequency=frequency, delta=delta, ...)
-  x[ind,,drop=FALSE]
-}
-setMethod("window", "matrix", window.matrix)
 
 ### S3/S4 combo for window.factor
 ### FIXME: This method alters the semantic of stats::window() on factors
 ### (the result has no 'tsp' attribute). Not really acceptable.
-window.factor <- function(x, start=NA, end=NA, width=NA,
-                             frequency=NULL, delta=NULL, ...)
-{
-    labels <- levels(x)
-    factor(callGeneric(as.integer(x), start=start, end=end,
-                       width=width, frequency=frequency,
-                       delta=delta, ...),
-           levels=seq_len(length(labels)), labels=labels)
-}
+window.factor <- window.Vector
 setMethod("window", "factor", window.factor)
 
 ### S3/S4 combo for window<-.Vector
@@ -399,14 +355,9 @@ setMethod("seqselect", "ANY",
     function(x, start=NULL, end=NULL, width=NULL)
     {
         .Deprecated(msg="seqselect() is deprecated.")
-        if (!is(start, "Ranges")) {
+        if (!is.null(end) || !is.null(width))
             start <- IRanges(start=start, end=end, width=width)
-        } else if (!is.null(end) || !is.null(width)) {
-            stop("'end' and 'width' must be NULL ",
-                 "when 'start' is a Ranges object")
-        }
-        i <- extractROWS(seq_len(NROW(x)), start)
-        extractROWS(x, i)
+        extractROWS(x, start)
     }
 )
 
@@ -419,18 +370,9 @@ setReplaceMethod("seqselect", "ANY",
     function(x, start=NULL, end=NULL, width=NULL, value)
     {
         .Deprecated(msg="seqselect() is deprecated.")
-        if (!is(start, "Ranges")) {
+        if (!is.null(end) || !is.null(width))
             start <- IRanges(start=start, end=end, width=width)
-        } else if (!is.null(end) || !is.null(width)) {
-            stop("'end' and 'width' must be NULL ",
-                 "when 'start' is a Ranges object")
-        }
-        i <- extractROWS(seq_len(NROW(x)), start)
-        if (length(dim(x)) < 2L)
-            x[i] <- value
-        else
-            x[i, ] <- value
-        x
+        replaceROWS(x, start, value)
     }
 )
 
@@ -631,7 +573,7 @@ setMethod("relist", c("ANY", "PartitioningByEnd"),
                  " object as a ", ans_class, " object")
         listData <- lapply(skeleton, function(i) extractROWS(flesh, i))
 
-        ## TODO: Once "window" method have been revisited/tested and
+        ## TODO: Once "window" methods have been revisited/tested and
         ## 'window(flesh, start=start, end=end)' is guaranteed to do the
         ## right thing for any 'flesh' object (in particular it subsets a
         ## data.frame-like object along the rows), then replace the line above

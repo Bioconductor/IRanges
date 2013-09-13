@@ -181,7 +181,7 @@ solveUserSEW <- function(refwidths, start=NA, end=NA, width=NA,
 }
 
 ### Returns an IRanges instance of length 1. Not exported.
-solveUserSEWForSingleSeq <- function(x_length, start, end, width)
+solveUserSEWForSingleSeq <- function(x_length, start=NA, end=NA, width=NA)
 {
     solved_SEW <-
       try(solveUserSEW(x_length, start=start, end=end, width=width),

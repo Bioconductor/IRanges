@@ -885,15 +885,15 @@ window.Rle <- function(x, start=NA, end=NA, width=NA,
             attributes(runValue(ans)) <-
                 list(levels = levels(x), class = "factor")
             ans
-        } else {
-            idx <- stats:::window.default(seq_len(length(x)),
-                                          start = start(solved_SEW),
-                                          end = end(solved_SEW),
-                                          frequency = frequency,
-                                          deltat = delta, ...)
-            attributes(idx) <- NULL
-            x[idx]
-        }
+    } else {
+        idx <- stats:::window.default(seq_len(length(x)),
+                                      start = start(solved_SEW),
+                                      end = end(solved_SEW),
+                                      frequency = frequency,
+                                      deltat = delta, ...)
+        attributes(idx) <- NULL
+        x[idx]
+    }
 }
 setMethod("window", "Rle", window.Rle)
 

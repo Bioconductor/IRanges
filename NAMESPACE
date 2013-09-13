@@ -107,13 +107,9 @@ S3method(unique, CompressedRleList)
 S3method(unique, SimpleRleList)
 
 S3method(window, Vector)
-S3method(window, NULL)
 S3method(window, vector)
 S3method(window, factor)
-S3method(window, DataTable)
-S3method(window, IRanges)
 S3method(window, Rle)
-S3method(window, GappedRanges)
 
 S3method(`window<-`, Vector)
 S3method(`window<-`, vector)
@@ -181,13 +177,9 @@ export(
     unique.SimpleRleList,
 
     window.Vector,
-    window.NULL,
     window.vector,
     window.factor,
-    window.DataTable,
-    window.IRanges,
     window.Rle,
-    window.GappedRanges,
 
     "window<-.Vector",
     "window<-.vector",

@@ -25,8 +25,6 @@
 \alias{as.data.frame,GappedRanges-method}
 \alias{show,GappedRanges-method}
 \alias{elementLengths,GappedRanges-method}
-\alias{window,GappedRanges-method}
-\alias{window.GappedRanges}
 \alias{c,GappedRanges-method}
 
 

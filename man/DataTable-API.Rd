@@ -17,10 +17,8 @@
 \alias{dimnames,DataTable-method}
 \alias{dimnames<-,DataTable-method}
 
-\alias{window,DataTable-method}
-\alias{window.DataTable}
 \alias{window<-,DataTable-method}
-\alias{window.DataTable}
+\alias{window<-.DataTable}
 \alias{head,DataTable-method}
 \alias{tail,DataTable-method}
 \alias{subset,DataTable-method}
@@ -98,19 +96,7 @@
       to coerce the returned sequence to a standard vector.
     }
     \item{}{
-      \code{window(x, start = NA, end = NA, width = NA, frequency = NULL, delta = NULL, ...)}:
-      Extract the subsequence window from the DataTable object using:
-      \describe{
-        \item{\code{start}, \code{end}, \code{width}}{The start, end, or width
-          of the window. Two of the three are required.}
-        \item{\code{frequency}, \code{delta}}{Optional arguments that specify
-          the sampling frequency and increment within the window.}
-      }
-      In general, this is more efficient than using \code{"["} operator.
-    }
-    \item{}{
-      \code{window(x, start = NA, end = NA, width = NA, keepLength =
-        TRUE) <- value}:
+      \code{window(x, start=NA, end=NA, width=NA, keepLength=TRUE) <- value}:
       Replace the subsequence window specified on the left (i.e. the subsequence
       in \code{x} specified by \code{start}, \code{end} and \code{width})
       by \code{value}.

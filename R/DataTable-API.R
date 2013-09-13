@@ -40,25 +40,6 @@ setReplaceMethod("dimnames", "DataTable",
 ### Subsetting.
 ###
 
-### S3/S4 combo for window.DataTable
-window.DataTable <- function(x, start=NA, end=NA, width=NA,
-                                frequency=NULL, delta=NULL, ...)
-{
-    solved_SEW <- solveUserSEWForSingleSeq(nrow(x), start, end, width)
-    if (is.null(frequency) && is.null(delta)) {
-        x[as.integer(solved_SEW), , drop=FALSE]
-    } else {
-        idx <- stats:::window.default(seq_len(nrow(x)),
-                                      start=start(solved_SEW),
-                                      end=end(solved_SEW),
-                                      frequency=frequency,
-                                      deltat=delta, ...)
-        attributes(idx) <- NULL
-        x[idx, , drop=FALSE]
-    }
-}
-setMethod("window", "DataTable", window.DataTable)
-
 ### S3/S4 combo for window<-.DataTable
 `window<-.DataTable` <- function(x, start=NA, end=NA, width=NA,
                                     keepLength=TRUE, ..., value)

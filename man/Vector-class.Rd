@@ -29,13 +29,10 @@
 \alias{[<-,Vector-method}
 \alias{window,Vector-method}
 \alias{window.Vector}
-\alias{window,NULL-method}
-\alias{window.NULL}
 \alias{window,vector-method}
 \alias{window.vector}
 \alias{window,factor-method}
 \alias{window.factor}
-\alias{window.matrix}
 \alias{window<-,Vector-method}
 \alias{window<-.Vector}
 \alias{window<-,vector-method}
@@ -195,7 +192,7 @@
       Replacement version of \code{x[i]}.
     }
     \item{}{
-      \code{window(x, start = NA, end = NA, width = NA, frequency = NULL, delta = NULL, ...)}:
+      \code{window(x, start=NA, end=NA, width=NA, frequency=NULL, delta=NULL, ...)}:
       Extract the subsequence window from the Vector object using:
       \describe{
         \item{\code{start}, \code{end}, \code{width}}{The start, end, or width
@@ -206,7 +203,7 @@
       In general, this is more efficient than using \code{"["} operator.
     }
     \item{}{
-      \code{window(x, start = NA, end = NA, width = NA, keepLength = TRUE) <- value}:
+      \code{window(x, start=NA, end=NA, width=NA, keepLength=TRUE) <- value}:
       Replace the subsequence window specified on the left (i.e. the subsequence
       in \code{x} specified by \code{start}, \code{end} and \code{width})
       by \code{value}.

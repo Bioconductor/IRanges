@@ -14,8 +14,6 @@
 \alias{names<-,IRanges-method}
 \alias{isNormal,IRanges-method}
 \alias{update,IRanges-method}
-\alias{window,IRanges-method}
-\alias{window.IRanges}
 \alias{c,IRanges-method}
 
 % NormalIRanges objects:
