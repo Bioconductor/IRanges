@@ -280,6 +280,11 @@ setReplaceMethod("[", "Vector",
     }
 )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Simple helper functions for some common subsetting operations.
+###
+
 ### S3/S4 combo for window.Vector
 window.Vector <- function(x, start=NA, end=NA, width=NA,
                              frequency=NULL, delta=NULL, ...)
@@ -308,6 +313,10 @@ setMethod("window", "vector", window.vector)
 ### (the result has no 'tsp' attribute). Not really acceptable.
 window.factor <- window.Vector
 setMethod("window", "factor", window.factor)
+
+### S3/S4 combo for window.NULL
+window.NULL <- window.Vector
+setMethod("window", "NULL", window.NULL)
 
 ### S3/S4 combo for window<-.Vector
 `window<-.Vector` <- function(x, start=NA, end=NA, width=NA,
@@ -376,20 +385,15 @@ setReplaceMethod("seqselect", "ANY",
     }
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Simple helper functions for some common subsetting operations.
-###
-
 setMethod("head", "Vector",
           function(x, n = 6L, ...)
           {
               stopifnot(length(n) == 1L)
-              xlen <- length(x)
+              x_len <- length(x)
               if (n < 0L)
-                  n <- max(xlen + n, 0L)
+                  n <- max(x_len + n, 0L)
               else
-                  n <- min(n, xlen)
+                  n <- min(n, x_len)
               extractROWS(x, IRanges(start=1L, width=n))
           })
 
@@ -397,12 +401,12 @@ setMethod("tail", "Vector",
           function(x, n = 6L, ...)
           {
               stopifnot(length(n) == 1L)
-              xlen <- length(x)
+              x_len <- length(x)
               if (n < 0L) 
-                  n <- max(xlen + n, 0L)
+                  n <- max(x_len + n, 0L)
               else
-                  n <- min(n, xlen)
-              extractROWS(x, IRanges(end=xlen, width=n))
+                  n <- min(n, x_len)
+              extractROWS(x, IRanges(end=x_len, width=n))
           })
 
 setMethod("rev", "Vector",
@@ -532,13 +536,13 @@ setMethod("append", c("Vector", "Vector"),
           function(x, values, after=length(x)) {
               if (!isSingleNumber(after))
                   stop("'after' must be a single number")
-              xlen <- length(x)
+              x_len <- length(x)
               if (after == 0L)
                   c(values, x)
-              else if (after >= xlen)
+              else if (after >= x_len)
                   c(x, values)
               else
-                  c(window(x, 1L, after), values, window(x, after + 1L, xlen))
+                  c(window(x, 1L, after), values, window(x, after + 1L, x_len))
              })
 
 

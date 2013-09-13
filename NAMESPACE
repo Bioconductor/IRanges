@@ -109,6 +109,7 @@ S3method(unique, SimpleRleList)
 S3method(window, Vector)
 S3method(window, vector)
 S3method(window, factor)
+S3method(window, NULL)
 S3method(window, Rle)
 
 S3method(`window<-`, Vector)
@@ -179,6 +180,7 @@ export(
     window.Vector,
     window.vector,
     window.factor,
+    window.NULL,
     window.Rle,
 
     "window<-.Vector",

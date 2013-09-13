@@ -33,6 +33,8 @@
 \alias{window.vector}
 \alias{window,factor-method}
 \alias{window.factor}
+\alias{window,NULL-method}
+\alias{window.NULL}
 \alias{window<-,Vector-method}
 \alias{window<-.Vector}
 \alias{window<-,vector-method}
