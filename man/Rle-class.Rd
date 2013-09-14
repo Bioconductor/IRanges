@@ -527,7 +527,7 @@
       value that means that all values can be compared. 
     }
     \item{}{
-      \code{window(x, start = NA, end = NA, width = NA, frequency = NULL, delta = NULL, ...)}:
+      \code{window(x, start=NA, end=NA, width=NA, frequency=NULL, delta=NULL, ...)}:
       Extract the subsequence window from \code{x} specified by:
       \describe{
         \item{\code{start}, \code{end}, \code{width}}{The start, end, or width
@@ -537,18 +537,16 @@
       }
     }
     \item{}{
-      \code{window(x, start = NA, end = NA, width = NA, keepLength = TRUE) <- value}:
-      Replace the subsequence window specified on the left (i.e. the subsequence
-      in \code{x} specified by \code{start}, \code{end} and \code{width})
-      by \code{value}.
-      \code{value} must either be of class Rle, belong to a subclass of Rle, be
-      coercible to Rle, or be \code{NULL}.
-      If \code{keepLength} is \code{TRUE}, the elements of \code{value} are
-      repeated to create an Rle with the same number of elements as the
-      width of the subsequence window it is replacing.
-      If \code{keepLength} is \code{FALSE}, this replacement method can modify
-      the length of \code{x}, depending on how the length of the left
-      subsequence window compares to the length of \code{value}.
+      \code{window(x, start=NA, end=NA, width=NA) <- value}:
+      Replace the subsequence window specified on the left (i.e. the 
+      subsequence in \code{x} specified by \code{start}, \code{end} and
+      \code{width}) by \code{value}.
+      \code{value} must either be of class Rle, belong to a 
+      subclass of Rle, or be coercible to Rle or a
+      subclass of Rle.
+      The elements of \code{value} are repeated to create an Rle with the
+      same number of elements as the width of the subsequence window it is
+      replacing.
     }
   }
 }

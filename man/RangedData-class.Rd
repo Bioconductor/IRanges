@@ -59,12 +59,9 @@
 
 % Subsetting:
 \alias{[,RangedData-method}
-\alias{[<-,RangedData-method}
 \alias{[[,RangedData-method}
 \alias{[[<-,RangedData-method}
 \alias{$<-,RangedData-method}
-\alias{window<-,RangedData-method}
-\alias{window<-.RangedData}
 
 % Utilities:
 \alias{within,RangedData-method}

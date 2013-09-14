@@ -119,8 +119,6 @@ S3method(window, Rle)
 S3method(`window<-`, Vector)
 S3method(`window<-`, vector)
 S3method(`window<-`, factor)
-S3method(`window<-`, DataTable)
-S3method(`window<-`, RangedData)
 
 ### We also export them thru the export() directive so that (a) they can be
 ### called directly, (b) tab-completion on the name of the generic shows them,
@@ -193,9 +191,7 @@ export(
 
     "window<-.Vector",
     "window<-.vector",
-    "window<-.factor",
-    "window<-.DataTable",
-    "window<-.RangedData"
+    "window<-.factor"
 )
 
 

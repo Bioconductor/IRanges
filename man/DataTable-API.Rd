@@ -94,35 +94,21 @@
       to coerce the returned sequence to a standard vector.
     }
     \item{}{
-      \code{window(x, start=NA, end=NA, width=NA, keepLength=TRUE) <- value}:
-      Replace the subsequence window specified on the left (i.e. the subsequence
-      in \code{x} specified by \code{start}, \code{end} and \code{width})
-      by \code{value}.
-      \code{value} must either be of class \code{class(x)}, belong to a subclass
-      of \code{class(x)}, be coercible to \code{class(x)}, or be \code{NULL}.
-      If \code{keepLength} is \code{TRUE}, the number of rows of \code{value}
-      are repeated to create a DataTable with the same number of rows as the
-      width of the subsequence window it is replacing.
-      If \code{keepLength} is \code{FALSE}, this replacement method can modify
-      the number of rows of \code{x}, depending on how the number of rows of the
-      left subsequence window compares to the number of rows of \code{value}.
-    }
-    \item{}{
-      \code{head(x, n = 6L)}:
+      \code{head(x, n=6L)}:
       If \code{n} is non-negative, returns the first n rows of the DataTable
       object.
       If \code{n} is negative, returns all but the last \code{abs(n)} rows of
       the DataTable object.
     }
     \item{}{
-      \code{tail(x, n = 6L)}:
+      \code{tail(x, n=6L)}:
       If \code{n} is non-negative, returns the last n rows of the DataTable
       object.
       If \code{n} is negative, returns all but the first \code{abs(n)} rows of
       the DataTable object.
     }
     \item{}{
-      \code{subset(x, subset, select, drop = FALSE)}:
+      \code{subset(x, subset, select, drop=FALSE)}:
       Return a new DataTable object using:
       \describe{
         \item{subset}{logical expression indicating rows to keep, where missing

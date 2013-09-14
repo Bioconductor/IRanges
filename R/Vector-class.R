@@ -183,9 +183,8 @@ setValidity2("Vector", .valid.Vector)
 setMethod("extractROWS", "NULL", function(x, i) NULL)
 
 .extractROWSFromArray <- function(x, i) {
-  if (is(i, "Ranges")) {
+  if (is(i, "Ranges"))
     i <- extractROWS(seq_len(nrow(x)), i)
-  }
   ## dynamically call [i,,,..,drop=FALSE] with as many "," as length(dim)-1
   i <- normalizeSingleBracketSubscript(i, x, byrow=TRUE)
   ndim <- max(length(dim(x)), 1L)
@@ -197,18 +196,16 @@ setMethod("extractROWS", "NULL", function(x, i) NULL)
 }
 
 setMethod("extractROWS", "matrix", function(x, i) {
-  if (missing(i)) {
+  if (missing(i))
     return(x)
-  }  
   return(.extractROWSFromArray(x, i))
 })
 
 setMethod("extractROWS", "vectorORfactor",
     function(x, i)
     {
-        if (missing(i)) {
+        if (missing(i))
             return(x)
-        }
         if (!is(i, "Ranges")) {
             i <- normalizeSingleBracketSubscript(i, x)
             return(x[i])
@@ -278,17 +275,15 @@ setReplaceMethod("[", "Vector",
             ## even look at 'value'. So neither do we...
             return(x)
         }
-        lv <- length(value)
+        lv <- NROW(value)
         if (lv == 0L)
             stop("replacement has length zero")
         value <- normalizeSingleBracketReplacementValue(value, x)
         if (li != lv) {
             if (li %% lv != 0L)
-                warning("number of items to replace is not a multiple ",
-                        "of replacement length")
-            ## Assuming that rep() works on 'value' and also replicates its
-            ## names.
-            value <- rep(value, length.out=li)
+                warning("number of values supplied is not a sub-multiple ",
+                        "of the number of values to be replaced")
+            value <- extractROWS(value, rep(seq_len(lv), length.out=li))
         }
         replaceROWS(x, i, value)
     }
@@ -407,24 +402,28 @@ window.NULL <- window.Vector
 setMethod("window", "NULL", window.NULL)
 
 ### S3/S4 combo for window<-.Vector
-`window<-.Vector` <- function(x, start=NA, end=NA, width=NA,
-                                 keepLength=TRUE, ..., value)
+`window<-.Vector` <- function(x, start=NA, end=NA, width=NA, ..., value)
 {
-    if (!isTRUEorFALSE(keepLength))
-        stop("'keepLength' must be TRUE or FALSE")
-    solved_SEW <- solveUserSEWForSingleSeq(length(x), start, end, width)
-    if (!is.null(value)) {
-        if (!is(value, class(x))) {
-            value <- try(as(value, class(x)), silent = TRUE)
-            if (inherits(value, "try-error"))
-                stop("'value' must be a ", class(x), " object or NULL")
-        }
-        if (keepLength && (length(value) != width(solved_SEW)))
-            value <- rep(value, length.out = width(solved_SEW))
+    i <- solveUserSEWForSingleSeq(NROW(x), start, end, width)
+    li <- width(i)
+    if (li == 0L) {
+        ## Surprisingly, in that case, `[<-` on standard vectors does not
+        ## even look at 'value'. So neither do we...
+        return(x)
     }
-    c(window(x, end=start(solved_SEW) - 1L),
+    lv <- NROW(value)
+    if (lv == 0L)
+        stop("replacement has length zero")
+    value <- normalizeSingleBracketReplacementValue(value, x)
+    if (li != lv) {
+        if (li %% lv != 0L)
+            warning("number of values supplied is not a sub-multiple ",
+                    "of the number of values to be replaced")
+        value <- extractROWS(value, rep(seq_len(lv), length.out=li))
+    }
+    c(window(x, end=start(i)-1L),
       value,
-      window(x, start=end(solved_SEW) + 1L))
+      window(x, start=end(i)+1L))
 }
 setReplaceMethod("window", "Vector", `window<-.Vector`)
 
@@ -433,8 +432,7 @@ setReplaceMethod("window", "Vector", `window<-.Vector`)
 setReplaceMethod("window", "vector", `window<-.vector`)
 
 ### S3/S4 combo for window<-.factor
-`window<-.factor` <- function(x, start=NA, end=NA, width=NA,
-                                 keepLength=TRUE, ..., value)
+`window<-.factor` <- function(x, start=NA, end=NA, width=NA, ..., value)
 {
     levels <- levels(x)
     x <- as.character(x)
@@ -444,12 +442,13 @@ setReplaceMethod("window", "vector", `window<-.vector`)
 setReplaceMethod("window", "factor", `window<-.factor`)
 
 setMethod("rev", "Vector",
-          function(x) {
-              if (length(x) == 0)
-                  x
-              else
-                  x[length(x):1]  
-          })
+    function(x)
+    {
+        if (length(x) == 0L)
+            return(x)
+        x[length(x):1]
+    }
+)
 
 setMethod("rep", "Vector", function(x, ...)
           x[rep(seq_len(length(x)), ...)])

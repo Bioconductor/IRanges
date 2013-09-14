@@ -283,10 +283,8 @@ subsetListByList_replace <- function(x, i, value, byrow=FALSE)
     value <- normalizeSingleBracketReplacementValue(value, x)
     if (li != lv) {
         if (li %% lv != 0L)
-            warning("number of items to replace is not a multiple ",
-                    "of replacement length")
-        ## Assuming that rep() works on 'value' and also replicates its
-        ## names.
+            warning("number of values supplied is not a sub-multiple ",
+                    "of the number of values to be replaced")
         value <- rep(value, length.out = li)
     }
     if (is.null(names(i))) {

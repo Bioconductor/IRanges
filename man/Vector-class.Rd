@@ -207,18 +207,16 @@
       In general, this is more efficient than using \code{"["} operator.
     }
     \item{}{
-      \code{window(x, start=NA, end=NA, width=NA, keepLength=TRUE) <- value}:
-      Replace the subsequence window specified on the left (i.e. the subsequence
-      in \code{x} specified by \code{start}, \code{end} and \code{width})
-      by \code{value}.
-      \code{value} must either be of class \code{class(x)}, belong to a subclass
-      of \code{class(x)}, be coercible to \code{class(x)}, or be \code{NULL}.
-      If \code{keepLength} is \code{TRUE}, the elements of \code{value} are
-      repeated to create a Vector with the same number of elements as the
-      width of the subsequence window it is replacing.
-      If \code{keepLength} is \code{FALSE}, this replacement method can modify
-      the length of \code{x}, depending on how the length of the left
-      subsequence window compares to the length of \code{value}.
+      \code{window(x, start=NA, end=NA, width=NA) <- value}:
+      Replace the subsequence window specified on the left (i.e. the
+      subsequence in \code{x} specified by \code{start}, \code{end} and
+      \code{width}) by \code{value}.
+      \code{value} must either be of class \code{class(x)}, belong to a
+      subclass of \code{class(x)}, or be coercible to \code{class(x)} or a
+      subclass of \code{class(x)}.
+      The elements of \code{value} are repeated to create a Vector with the
+      same number of elements as the width of the subsequence window it is
+      replacing.
     }
     \item{}{
       \code{split(x, f, drop = FALSE) <- value}: Virtually
