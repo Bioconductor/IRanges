@@ -182,10 +182,34 @@ setValidity2("Vector", .valid.Vector)
 
 setMethod("extractROWS", "NULL", function(x, i) NULL)
 
+.extractROWSFromArray <- function(x, i) {
+  if (is(i, "Ranges")) {
+    i <- extractROWS(seq_len(nrow(x)), i)
+  }
+  ## dynamically call [i,,,..,drop=FALSE] with as many "," as length(dim)-1
+  i <- normalizeSingleBracketSubscript(i, x, byrow=TRUE)
+  ndim <- max(length(dim(x)), 1L)
+  args <- rep(alist(foo=), ndim)
+  names(args) <- NULL
+  args[[1]] <- i
+  args <- c(list(x), args, list(drop = FALSE))
+  do.call(`[`, args)
+}
+
+setMethod("extractROWS", "matrix", function(x, i) {
+  if (missing(i)) {
+    return(x)
+  }  
+  return(.extractROWSFromArray(x, i))
+})
+
 setMethod("extractROWS", "vectorORfactor",
     function(x, i)
     {
-        if (missing(i) || !is(i, "Ranges")) {
+        if (missing(i)) {
+            return(x)
+        }
+        if (!is(i, "Ranges")) {
             i <- normalizeSingleBracketSubscript(i, x)
             return(x[i])
         }
