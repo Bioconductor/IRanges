@@ -316,6 +316,7 @@ setMethod("extractROWS", "Rle",
         if (is.factor(runValue(x)))
             attributes(ans_values) <- list(levels=levels(x), class="factor")
         ans <- Rle(ans_values, ans_lengths)
+        ans <- as(ans, class(x))
         mcols(ans) <- extractROWS(mcols(ans), i)
         ans
     }
