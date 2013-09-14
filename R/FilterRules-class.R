@@ -203,17 +203,6 @@ setMethod("c", "FilterRules",
 ### Evaluating
 ###
 
-subsetFirstDim <- function(x, i) {
-  if (all(i))
-    return(x)
-  ndim <- max(length(dim(x)), 1L)
-  args <- rep(alist(foo=), ndim)
-  names(args) <- NULL
-  args[[1]] <- i
-  args <- c(list(x), args, list(drop = FALSE))
-  do.call(`[`, args)
-}
-
 setMethod("eval", signature(expr="FilterRules", envir="ANY"),
           function(expr, envir = parent.frame(),
                    enclos = if(is.list(envir) || is.pairlist(envir))
@@ -239,7 +228,7 @@ setMethod("eval", signature(expr="FilterRules", envir="ANY"),
                 stop("filter rule evaluated to inconsistent length: ",
                      names(rule)[i])
               if (length(rules) > 1L)
-                envir <- subsetFirstDim(envir, val)
+                envir <- subset(envir, val)
               result[result] <- val
             }
             result
@@ -266,7 +255,7 @@ setMethod("evalSeparately", "FilterRules",
             m <- do.call(cbind, lapply(inds, function(i) {
               result <- eval(expr[i], envir = envir, enclos = enclos)
               if (serial) {
-                envir <<- subsetFirstDim(envir, result)
+                envir <<- subset(envir, result)
                 passed[passed] <<- result
                 passed
               } else result
@@ -278,7 +267,7 @@ setGeneric("subsetByFilter",
            function(x, filter, ...) standardGeneric("subsetByFilter"))
 
 setMethod("subsetByFilter", c("ANY", "FilterRules"), function(x, filter) {
-  subsetFirstDim(x, eval(filter, x))
+  subset(x, eval(filter, x))
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
