@@ -55,7 +55,7 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
     cols <- lapply(seq_len(length(df)), function(i) {
       cols <- lapply(args, `[[`, cn[i])
       isRle <- sapply(cols, is, "Rle")
-      if (any(isRle) && !all(isRle))
+      if (any(isRle) && !all(isRle)) # would fail dispatch to c,Rle
         cols <- lapply(cols, as.vector)
       if (factors[i]) { # combine factor levels, coerce to character
         levs <- unique(unlist(lapply(cols, levels), use.names=FALSE))
@@ -73,12 +73,10 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
       ## which brings external -> internal
       ## external objects should support external combination (c)
       combined <- as(combined, cl[i])
-      if (rectangular)
-        combined <- I(combined)
       combined
     })
     names(cols) <- colnames(df)
-    ans <- DataFrame(cols)
+    ans <- new("DataFrame", listData = cols, nrows = length(cols[[1]]))
   }
 
   rn <- unlist(lapply(args, rownames), use.names=FALSE)
