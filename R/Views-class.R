@@ -320,11 +320,12 @@ setMethod("viewApply", "Views",
         Xstart <- start(X)
         Xwidth <- width(X)
         ans <-
-          sapply(structure(seq_len(length(X)), names = names(X)),
-                 function(i)
-                     FUN(extractROWS(Xsubject, IRanges(Xstart[i], Xwidth[i])),
-                         ...),
-                 simplify = simplify)
+          sapply(structure(seq_len(length(X)), names=names(X)),
+              function(i)
+                  FUN(extractROWS(Xsubject,
+                                  IRanges(start=Xstart[i], width=Xwidth[i])),
+                      ...),
+              simplify = simplify)
         if (!simplify) {
             ans <- newList("SimpleList", ans, metadata = metadata(X),
                            mcols = mcols(X))
