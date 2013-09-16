@@ -236,6 +236,7 @@ subsetListByList <- function(x, i)
             ans_skeleton <- PartitioningByEnd(group, NG=length(x),
                                               names=x_names)
             ans <- as(relist(unlisted_ans, ans_skeleton), x_class)
+            metadata(ans) <- metadata(x)
             return(ans)
         }
         if (extends(leptype, "numeric")) {
@@ -247,6 +248,7 @@ subsetListByList <- function(x, i)
             ans_breakpoints <- cumsum(unname(elementLengths(i)))
             ans_skeleton <- PartitioningByEnd(ans_breakpoints, names=x_names)
             ans <- as(relist(unlisted_ans, ans_skeleton), x_class)
+            metadata(ans) <- metadata(x)
             return(ans)
         }
         if (extends(leptype, "Ranges")) {
@@ -259,6 +261,7 @@ subsetListByList <- function(x, i)
             ans_breakpoints <- cumsum(unlist(sum(width(i)), use.names=FALSE))
             ans_skeleton <- PartitioningByEnd(ans_breakpoints, names=x_names)
             ans <- as(relist(unlisted_ans, ans_skeleton), x_class)
+            metadata(ans) <- metadata(x)
             return(ans)
         }
     }
