@@ -400,7 +400,9 @@ setAs("DataFrameList", "DataFrame", function(from) {
   unlist(from)
 })
 
-setAs("SplitDataFrameList", "DataFrame", function(from) unlist(from))
+setAs("SplitDataFrameList", "DataFrame",
+    function(from) unlist(from, use.names=FALSE)
+)
 
 ### S3/S4 combo for as.data.frame.DataFrameList
 as.data.frame.DataFrameList <- function(x, row.names=NULL, optional=FALSE, ...)

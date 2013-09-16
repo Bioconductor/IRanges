@@ -371,7 +371,7 @@ setReplaceMethod("[[", "RangedData",
                      nrows <- elementLengths(values(x))
                      inds <- seq_len(length(x))
                      spaces <- factor(rep.int(inds, nrows), inds)
-                     values <- unlist(values(x))
+                     values <- unlist(values(x), use.names=FALSE)
                      values[[i]] <- value
                      x@values <- split(values, spaces)
                      names(x@values) <- names(x)
@@ -433,8 +433,8 @@ setMethod("[", "RangedData",
               }
               if (!missing(i)) {
                 if (is(i, "RangesList"))
-                  stop("'[' subsetting by RangesList is defunct.\n",
-                       "Use 'subsetByOverlaps' instead.")
+                  stop("subsetting a RangedData object ",
+                       "by a RangesList subscript is not supported")
                 if (is(i, "LogicalList")) {
                   xeltlen <- elementLengths(ranges(x))
                   whichRep <- which(xeltlen != elementLengths(i))
