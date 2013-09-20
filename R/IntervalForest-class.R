@@ -109,7 +109,7 @@ setMethod("elementLengths", "IntervalForest",
     }
 )
 
-setMethod("length", "IntervalForest", function(x) nobj(x@partitioning))
+setMethod("length", "IntervalForest", function(x) length(x@partitioning))
 setMethod("names", "IntervalForest", function(x) names(x@partitioning))
 
 ### - - - - 
