@@ -152,7 +152,7 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
 
             # make initial findOverlaps call
             fun <- paste("overlap_", select, sep = "")
-            result <- .IntervalTreeCall(subject, fun, query, query_ord)
+            result <- IntervalTreeCall(subject, fun, query, query_ord)
 
             # postprocess results
             .postProcess_findOverlaps_result(result, unsortedQuery, origQuery, subject, type, minoverlap, maxgap, origSelect)

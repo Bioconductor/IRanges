@@ -10,10 +10,10 @@ setClass("IntervalTree",
 ### Accessors
 ###
 
-setMethod("length", "IntervalTree", function(x) .IntervalTreeCall(x, "length"))
+setMethod("length", "IntervalTree", function(x) IntervalTreeCall(x, "length"))
 
-setMethod("start", "IntervalTree", function(x) .IntervalTreeCall(x, "start"))
-setMethod("end", "IntervalTree", function(x) .IntervalTreeCall(x, "end"))
+setMethod("start", "IntervalTree", function(x) IntervalTreeCall(x, "start"))
+setMethod("end", "IntervalTree", function(x) IntervalTreeCall(x, "end"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor
@@ -28,7 +28,7 @@ IntervalTree <- function(ranges) {
 ###
 
 setAs("IntervalTree", "IRanges", function(from) {
-  .IntervalTreeCall(from, "asIRanges")
+  IntervalTreeCall(from, "asIRanges")
 })
 
 setAs("IRanges", "IntervalTree", function(from) {
@@ -45,8 +45,11 @@ setAs("Ranges", "IntervalTree", function(from) {
 ### Low-level utilities
 ###
 
-.IntervalTreeCall <- function(object, fun, ...) {
-  validObject(object)
+IntervalTreeCall <- function(object, fun, ...) {
+  #validObject(object)  # causes an infinite recursion, because calls
+                        # .valid.Vector.length(), which calls length(),
+                        # which calls IntervalTreeCall(), which calls
+                        # validObject(), etc...
   fun <- paste("IntervalTree", fun, sep = "_")
   if (object@mode == "integer") {
     fun <- paste("Integer", fun, sep = "")

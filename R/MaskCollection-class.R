@@ -147,14 +147,8 @@ setReplaceMethod("desc", "MaskCollection",
 
 .valid.MaskCollection.names <- function(x)
 {
-    if (!is.character(x@NAMES))
-        return("the 'NAMES' slot must contain a character vector")
-    if (is.null(names(x)))
-        return(NULL)
     if (anyMissing(names(x)))
         return("the names must be non-NA strings")
-    if (length(names(x)) != length(x))
-        return("number of names and number of elements differ")
     NULL
 }
 

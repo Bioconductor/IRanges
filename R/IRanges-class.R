@@ -149,24 +149,11 @@ setMethod("min", "NormalIRanges",
     NULL
 }
 
-.valid.IRanges.names <- function(x)
-{
-    x_names <- names(x)
-    if (is.null(x_names))
-        return(NULL)
-    if (!is.character(x_names) || !is.null(names(x_names)))
-        return("'names(x)' must be NULL or an unnamed character vector")
-    if (length(x_names) != length(x))
-        return("'names(x)' and 'x' must have the same length")
-    NULL
-}
-
 .valid.IRanges <- function(x)
 {
     c(.valid.IRanges.start(x),
       .valid.IRanges.width(x),
-      .valid.IRanges.end(x),
-      .valid.IRanges.names(x))
+      .valid.IRanges.end(x))
 }
 
 setValidity2("IRanges", .valid.IRanges)

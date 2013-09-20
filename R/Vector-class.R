@@ -148,6 +148,28 @@ setMethod("rename", "Vector", .renameVector)
 ### Validity.
 ###
 
+.valid.Vector.length <- function(x)
+{
+    x_len <- length(x)
+    if (!isSingleInteger(x_len) || x_len < 0L)
+        return("'length(x)' must be a single non-negative integer")
+    if (!is.null(names(x_len)))
+        return("'length(x)' must be an unnamed number")
+    NULL
+}
+
+.valid.Vector.names <- function(x)
+{
+    x_names <- names(x)
+    if (is.null(x_names))
+        return(NULL)
+    if (!is.character(x_names) || !is.null(names(x_names)))
+        return("'names(x)' must be NULL or an unnamed character vector")
+    if (length(x_names) != length(x))
+        return("when not NULL, 'names(x)' must have the length of 'x'")
+    NULL
+}
+
 .valid.Vector.mcols <- function(x)
 {
     x_mcols <- mcols(x)
@@ -171,7 +193,9 @@ setMethod("rename", "Vector", .renameVector)
 
 .valid.Vector <- function(x)
 {
-    c(.valid.Vector.mcols(x))
+    c(.valid.Vector.length(x),
+      .valid.Vector.names(x),
+      .valid.Vector.mcols(x))
 }
 setValidity2("Vector", .valid.Vector)
 
