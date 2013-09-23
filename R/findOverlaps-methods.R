@@ -27,8 +27,8 @@ setGeneric("findOverlaps", signature = c("query", "subject"),
   query <- as(query, "IRanges")
   query_ord <- NULL
   res$origQuery <- query
-  adjust <- maxgap - minoverlap + 1L
-  if (adjust > 0L)
+  adjust <- (maxgap - minoverlap + 1L) * (width(query) > 0L)
+  if (sum(adjust) > 0L)
     query <-
       resize(query, width(query) + 2L * adjust, fix = "center")
   res$unsortedQuery <- query
