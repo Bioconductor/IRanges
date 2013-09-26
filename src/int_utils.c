@@ -142,6 +142,29 @@ SEXP Integer_diff_with_0(SEXP x)
 	return ans;
 }
 
+/****************************************************************************
+ * --- .Call ENTRY POINT ---
+ * diff(c(x, last))
+ */
+
+SEXP Integer_diff_with_last(SEXP x, SEXP last)
+{
+  int i, len, *x_ptr1, *x_ptr2, *ans_ptr;
+  SEXP ans;
+
+  len = LENGTH(x);
+  PROTECT(ans = NEW_INTEGER(len));
+  if (len > 0) {
+    for (i = 1, x_ptr1 = INTEGER(x), x_ptr2 = INTEGER(x) + 1,
+           ans_ptr = INTEGER(ans); i < len;
+         i++, x_ptr1++, x_ptr2++, ans_ptr++) {
+      *ans_ptr = *x_ptr2 - *x_ptr1;
+    }
+    INTEGER(ans)[len - 1] = INTEGER(last)[0] - INTEGER(x)[len - 1];
+  }
+  UNPROTECT(1);
+  return ans;
+}
 
 /****************************************************************************
  * The .Call entry points in this section are the workhorses behind

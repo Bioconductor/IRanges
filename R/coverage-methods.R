@@ -118,6 +118,9 @@ setMethod("coverage", "numeric",
 
 .Ranges.coverage <- function(x, width, weight, method="auto")
 {
+    if (length(x) > 0L && start(x)[1] == 1L &&
+        diffWithLast(start(x), width) == width(x))
+        return(new2("Rle", values = weight, lengths = width(x), check = FALSE))
     weight_type <- typeof(weight)
     FUN <- switch(weight_type,
         "integer"=.Ranges.integer.coverage,

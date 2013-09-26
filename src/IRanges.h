@@ -359,6 +359,8 @@ SEXP Integer_sum_non_neg_vals(SEXP x);
 
 SEXP Integer_diff_with_0(SEXP x);
 
+SEXP Integer_diff_with_last(SEXP x, SEXP last);
+
 SEXP Integer_order(
 	SEXP x,
 	SEXP decreasing

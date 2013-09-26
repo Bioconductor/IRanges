@@ -22,6 +22,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(Integer_any_missing_or_outside, 3),
 	CALLMETHOD_DEF(Integer_sum_non_neg_vals, 1),
 	CALLMETHOD_DEF(Integer_diff_with_0, 1),
+        CALLMETHOD_DEF(Integer_diff_with_last, 2),
 	CALLMETHOD_DEF(Integer_order, 2),
 	CALLMETHOD_DEF(Integer_order2, 3),
 	CALLMETHOD_DEF(Integer_match2_quick, 5),

@@ -33,6 +33,20 @@ diffWithInitialZero <- function(x)
     .Call2("Integer_diff_with_0", x, PACKAGE="IRanges")
 }
 
+### Equivalent to (but much faster than):
+###
+###   diff(c(x, last))
+###
+### except that NAs are not supported.
+diffWithLast <- function(x, last)
+{
+  if (!is.integer(x))
+    stop("'x' must be an integer vector")
+  if (!isSingleInteger(last))
+    stop("'last' must be a single, non-NA integer")
+  .Call2("Integer_diff_with_last", x, last, PACKAGE="IRanges")
+}
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Fast ordering of an integer vector.
