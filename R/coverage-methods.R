@@ -118,9 +118,10 @@ setMethod("coverage", "numeric",
 
 .Ranges.coverage <- function(x, width, weight, method="auto")
 {
-    if (length(x) > 0L && start(x)[1] == 1L &&
-        diffWithLast(start(x), width) == width(x))
-        return(new2("Rle", values = weight, lengths = width(x), check = FALSE))
+    ## Fast path when 'x' is a tiling of the [1, width] interval.
+    if (length(x) > 0L && start(x)[1L] == 1L
+     && all(diffWithLast(start(x), width + 1L) == width(x)))
+        return(Rle(weight, width(x))
     weight_type <- typeof(weight)
     FUN <- switch(weight_type,
         "integer"=.Ranges.integer.coverage,
