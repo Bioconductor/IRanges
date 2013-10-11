@@ -933,7 +933,9 @@ function(X, INDEX, FUN = NULL, ..., simplify = TRUE)
     }
     ansmat
 }
-setMethod("tapply", "Vector", .tapplyDefault)
+setMethod("tapply", c("Vector", "ANY"), .tapplyDefault)
+setMethod("tapply", c("ANY", "Vector"), .tapplyDefault)
+setMethod("tapply", c("Vector", "Vector"), .tapplyDefault)
 
 .shiftApplyInternal <-
 function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)
