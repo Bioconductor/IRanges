@@ -1082,8 +1082,8 @@ setMethod("ranges", "CompressedRleList",
             cat(label, " ", sep = "")
             print(object[[i]])
         } else {
-            cat(labeledLine(label, object[[i]], labelSep = "",
-                            count = FALSE))
+            cat(BiocGenerics:::labeledLine(label, object[[i]], labelSep = "",
+                                           count = FALSE))
         }
     }
     if (d > 0)

@@ -557,6 +557,11 @@ setMethod("is.na", "Rle",
               Rle(values = is.na(runValue(x)), lengths = runLength(x),
                   check = FALSE))
 
+setGeneric("is.unsorted",
+           function(x, na.rm = FALSE, strictly = FALSE)
+           standardGeneric("is.unsorted"),
+           signature = "x")
+
 setMethod("is.unsorted", "Rle",
           function(x, na.rm = FALSE, strictly = FALSE)
           {
@@ -1449,10 +1454,12 @@ setMethod("show", "Rle",
                     paste("\"", showMatrix[2L,], "\"", sep = "")
               }
               showMatrix <- format(showMatrix, justify = "right")
-              cat(labeledLine("  Lengths", showMatrix[1L,], count = FALSE))
-              cat(labeledLine("  Values ", showMatrix[2L,], count = FALSE))
+              cat(BiocGenerics:::labeledLine("  Lengths", showMatrix[1L,],
+                                             count = FALSE))
+              cat(BiocGenerics:::labeledLine("  Values ", showMatrix[2L,],
+                                             count = FALSE))
               if (is.factor(runValue(object)))
-                  cat(labeledLine("Levels", levels(object)))
+                  cat(BiocGenerics:::labeledLine("Levels", levels(object)))
           })
 
 setMethod("showAsCell", "Rle", function(object) as.vector(object))
