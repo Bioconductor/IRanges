@@ -63,5 +63,5 @@ setMethod("processSelfMatching", "CompressedHitsList",
           
 ## not for exporting, just a debugging utility
 IntervalTreeDump <- function(object) {
-  .IntervalTreeCall(object, "dump")
+  IntervalTreeCall(object, "dump")
 }
