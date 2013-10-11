@@ -557,11 +557,6 @@ setMethod("is.na", "Rle",
               Rle(values = is.na(runValue(x)), lengths = runLength(x),
                   check = FALSE))
 
-setGeneric("is.unsorted",
-           function(x, na.rm = FALSE, strictly = FALSE)
-           standardGeneric("is.unsorted"),
-           signature = "x")
-
 setMethod("is.unsorted", "Rle",
           function(x, na.rm = FALSE, strictly = FALSE)
           {
