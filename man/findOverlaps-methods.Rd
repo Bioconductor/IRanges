@@ -310,7 +310,7 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
 
 \seealso{
   \itemize{
-    \item The \link{Hits} and \link{HitsList} classes for representing a set of hits between
+    \item The \link{Hits} and \linkS4class{HitsList} classes for representing a set of hits between
           2 vector-like objects.
 
     \item \link[GenomicRanges]{findOverlaps,GenomicRanges,GenomicRanges-method}

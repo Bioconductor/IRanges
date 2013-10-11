@@ -36,6 +36,7 @@
 \alias{revElements,List-method}
 
 \alias{coerce,List,list-method}
+\alias{as.list.List}
 \alias{coerce,ANY,List-method}
 \alias{coerce,integer,List-method}
 \alias{as.list,List-method}

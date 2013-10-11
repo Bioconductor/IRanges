@@ -37,10 +37,12 @@
 \alias{coerce,xtabs,DataFrame-method}
 \alias{coerce,ANY,DataFrame-method}
 \alias{coerce,SimpleList,DataFrame-method}
+\alias{coerce,ANY,AsIs-method}
 
 % splitting and combining
 \alias{cbind,DataFrame-method}
 \alias{rbind,DataFrame-method}
+\alias{mstack,DataFrame-method}
 
 % aggregation
 \alias{aggregate,formula-method}

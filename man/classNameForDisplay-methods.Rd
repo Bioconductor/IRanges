@@ -2,6 +2,7 @@
 
 \alias{classNameForDisplay}
 \alias{classNameForDisplay,ANY-method}
+\alias{classNameForDisplay,AsIs-method}
 \alias{classNameForDisplay,CompressedList-method}
 \alias{classNameForDisplay,CompressedNormalIRangesList-method}
 \alias{classNameForDisplay,SimpleList-method}

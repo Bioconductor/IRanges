@@ -60,13 +60,17 @@
 
 \alias{split,Vector,Vector-method}
 \alias{split,ANY,Vector-method}
+\alias{split,Vector,ANY-method}
+\alias{split,list,Vector-method}
 \alias{mstack}
 \alias{mstack,Vector-method}
 \alias{mstack,vector-method}
 \alias{split<-,Vector-method}
-\alias{relist,ANY,Vector,list-method}
+\alias{relist,Vector,list-method}
 
-\alias{tapply,Vector-method}
+\alias{tapply,ANY,Vector-method}
+\alias{tapply,Vector,ANY-method}
+\alias{tapply,Vector,Vector-method}
 \alias{shiftApply}
 \alias{shiftApply,Vector,Vector-method}
 \alias{shiftApply,vector,vector-method}
