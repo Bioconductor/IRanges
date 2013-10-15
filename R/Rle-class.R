@@ -557,6 +557,10 @@ setMethod("is.na", "Rle",
               Rle(values = is.na(runValue(x)), lengths = runLength(x),
                   check = FALSE))
 
+setMethod("anyNA", "Rle",
+          function(x)
+              anyNA(runValue(x)))
+
 setMethod("is.unsorted", "Rle",
           function(x, na.rm = FALSE, strictly = FALSE)
           {
@@ -1109,8 +1113,6 @@ setMethod("median", "Rle",
     callNextMethod(x=x, na.rm=FALSE)
 })
 
-### S3/S4 combo for quantile.Rle
-### FIXME: code duplication needed for S3 / S4 dispatch
 quantile.Rle <- 
     function(x, probs = seq(0, 1, 0.25), na.rm = FALSE, names = TRUE,
              type = 7, ...)
@@ -1122,17 +1124,6 @@ quantile.Rle <-
     on.exit(options("dropRle" = oldOption))
     NextMethod("quantile", na.rm=FALSE)
 }
-setMethod("quantile", "Rle",
-    function(x, probs = seq(0, 1, 0.25), na.rm = FALSE, names = TRUE,
-             type = 7, ...)
-{
-    if (na.rm)
-        x <- x[!is.na(x)]
-    oldOption <- getOption("dropRle")
-    options("dropRle" = TRUE)
-    on.exit(options("dropRle" = oldOption))
-    callNextMethod(x=x, probs=probs, na.rm=FALSE, names=names, type=type, ...)
-})
 
 setMethod("mad", "Rle",
           function(x, center = median(x), constant = 1.4826, na.rm = FALSE,

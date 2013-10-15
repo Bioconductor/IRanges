@@ -143,6 +143,7 @@ setGeneric("rename", function(x, value, ...) standardGeneric("rename"))
 setMethod("rename", "vector", .renameVector)
 setMethod("rename", "Vector", .renameVector)
 
+setMethod("anyNA", "Vector", function(x) any(is.na(x)))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
