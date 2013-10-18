@@ -130,6 +130,27 @@ setMethod("coverage", "numeric",
     FUN(x, width, weight, method=method)
 }
 
+### 'x': a CompressedIRangesList object of length N.
+### 'shift': a list of length N. Each element must be a numeric (double or
+###          integer) vector.
+### 'width': a list of length N. Each element must be a NULL, or a single
+###          non-negative number.
+### 'weight': a list of length N. Each element must be a numeric (double or
+###          integer) vector.
+### 'method': either "auto", "sort", or "hash".
+### Returns a SimpleRleList of length N.
+.CompressedIRangesList.coverage <- function(x, shift, width, weight, method)
+{
+    ans_listData <- .Call2("CompressedIRangesList_coverage",
+                           x, shift, width, weight, method,
+                           PACKAGE="IRanges")
+    names(ans_listData) <- names(x)
+    newList("SimpleRleList",
+            ans_listData,
+            metadata=metadata(x),
+            mcols=mcols(x))
+}
+
 setMethod("coverage", "IRanges",
     function(x, shift=0L, width=NULL, weight=1L,
              method=c("auto", "sort", "hash"))

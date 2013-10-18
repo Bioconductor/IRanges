@@ -1071,3 +1071,11 @@ SEXP Ranges_numeric_coverage(
 	SEXP method
 );
 
+SEXP CompressedIRangesList_coverage(
+	SEXP x,
+	SEXP shift,
+	SEXP width,
+	SEXP weight,
+	SEXP method
+);
+
