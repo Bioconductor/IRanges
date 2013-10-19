@@ -50,17 +50,17 @@ static int compar_SEids_for_asc_order(const void *p1, const void *p2)
 static int init_SEids_int_weight(int *SEids, const int *x_width, int x_len,
 		const int *weight, int weight_len)
 {
-	int SEids_len, index;
+	int SEids_len, i, j, index;
 
 	SEids_len = 0;
-	for (index = 1; index <= x_len; index++, x_width++) {
-		if (*x_width != 0 && *weight != 0) {
-			*(SEids++) = index; /* Start id */
-			*(SEids++) = - index; /* End id */
-			SEids_len += 2;
-		}
-		if (weight_len != 1)
-			weight++;
+	for (i = j = 0, index = 1; i < x_len; i++, j++, index++) {
+		if (j >= weight_len)
+			j = 0; /* recycle j */
+		if (x_width[i] == 0 || weight[j] == 0)
+			continue;
+		*(SEids++) = index; /* Start id */
+		*(SEids++) = - index; /* End id */
+		SEids_len += 2;
 	}
 	return SEids_len;
 }
@@ -69,17 +69,17 @@ static int init_SEids_int_weight(int *SEids, const int *x_width, int x_len,
 static int init_SEids_double_weight(int *SEids, const int *x_width, int x_len,
 		const double *weight, int weight_len)
 {
-	int SEids_len, index;
+	int SEids_len, i, j, index;
 
 	SEids_len = 0;
-	for (index = 1; index <= x_len; index++, x_width++) {
-		if (*x_width != 0 && *weight != 0.0) {
-			*(SEids++) = index; /* Start id */
-			*(SEids++) = - index; /* End id */
-			SEids_len += 2;
-		}
-		if (weight_len != 1)
-			weight++;
+	for (i = j = 0, index = 1; i < x_len; i++, j++, index++) {
+		if (j >= weight_len)
+			j = 0; /* recycle j */
+		if (x_width[i] == 0 || weight[j] == 0.0)
+			continue;
+		*(SEids++) = index; /* Start id */
+		*(SEids++) = - index; /* End id */
+		SEids_len += 2;
 	}
 	return SEids_len;
 }
@@ -104,10 +104,9 @@ static void compute_int_coverage_in_bufs(const int *SEids, int SEids_len,
 		const int *weight, int weight_len, int cvg_len,
 		int *values_buf, int *lengths_buf)
 {
-	int weight0, curr_val, curr_pos, curr_weight,
-	    i, prev_pos, index;
+	int curr_val, curr_weight,
+	    curr_pos, i, prev_pos, index;
 
-	weight0 = weight[0];
 	*(values_buf++) = curr_val = 0;
 	curr_pos = 1;
 	_reset_ovflow_flag(); /* we use _safe_int_add() in loop below */
@@ -117,7 +116,7 @@ static void compute_int_coverage_in_bufs(const int *SEids, int SEids_len,
 		prev_pos = curr_pos;
 		index = SEid_TO_1BASED_INDEX(*SEids) - 1;
 		curr_pos = x_start[index];
-		curr_weight = weight_len == 1 ? weight0 : weight[index];
+		curr_weight = weight[index % weight_len];
 		if (SEid_IS_END(*SEids)) {
 			curr_weight = - curr_weight;
 			curr_pos += x_width[index];
@@ -137,10 +136,9 @@ static void compute_double_coverage_in_bufs(const int *SEids, int SEids_len,
 		const double *weight, int weight_len, int cvg_len,
 		double *values_buf, int *lengths_buf)
 {
-	double weight0, curr_val, curr_weight;
+	double curr_val, curr_weight;
 	int curr_pos, i, prev_pos, index;
 
-	weight0 = weight[0];
 	*(values_buf++) = curr_val = 0.0;
 	curr_pos = 1;
 	for (i = 0; i < SEids_len; i++, SEids++) {
@@ -149,7 +147,7 @@ static void compute_double_coverage_in_bufs(const int *SEids, int SEids_len,
 		prev_pos = curr_pos;
 		index = SEid_TO_1BASED_INDEX(*SEids) - 1;
 		curr_pos = x_start[index];
-		curr_weight = weight_len == 1 ? weight0 : weight[index];
+		curr_weight = weight[index % weight_len];
 		if (SEid_IS_END(*SEids)) {
 			curr_weight = - curr_weight;
 			curr_pos += x_width[index];
@@ -234,20 +232,22 @@ static SEXP int_coverage_hash(
 		const int *weight, int weight_len,
 		int cvg_len)
 {
-	int *cvg_buf, i, *cvg_p, cumsum;
+	int *cvg_buf, *cvg_p, w, cumsum,
+	    i, j;
 
 	cvg_buf = (int *) R_alloc((long) cvg_len + 1, sizeof(int));
 	memset(cvg_buf, 0, cvg_len * sizeof(int));
 	_reset_ovflow_flag(); /* we use _safe_int_add() in loop below */
-	for (i = 0; i < x_len; i++, x_start++, x_width++) {
+	for (i = j = 0; i < x_len; i++, j++, x_start++, x_width++) {
 		if (i % 500000 == 499999)
 			R_CheckUserInterrupt();
+		if (j >= weight_len)
+			j = 0; /* recycle j */
 		cvg_p = cvg_buf + *x_start - 1;
-		*cvg_p = _safe_int_add(*cvg_p,   *weight);
+		w = weight[j];
+		*cvg_p = _safe_int_add(*cvg_p, w);
 		cvg_p += *x_width;
-		*cvg_p = _safe_int_add(*cvg_p, - *weight);
-		if (weight_len != 1)
-			weight++;
+		*cvg_p = _safe_int_add(*cvg_p, - w);
 	}
 	cumsum = 0;
 	for (i = 0, cvg_p = cvg_buf; i < cvg_len; i++, cvg_p++) {
@@ -264,21 +264,22 @@ static SEXP double_coverage_hash(
 		const double *weight, int weight_len,
 		int cvg_len)
 {
-	double *cvg_buf, *cvg_p, cumsum;
-	int i;
+	double *cvg_buf, *cvg_p, w, cumsum;
+	int i, j;
 
 	cvg_buf = (double *) R_alloc((long) cvg_len + 1, sizeof(double));
 	for (i = 0, cvg_p = cvg_buf; i < cvg_len; i++, cvg_p++)
 		*cvg_p = 0.0;
-	for (i = 0; i < x_len; i++, x_start++, x_width++) {
+	for (i = j = 0; i < x_len; i++, j++, x_start++, x_width++) {
 		if (i % 500000 == 499999)
 			R_CheckUserInterrupt();
+		if (j >= weight_len)
+			j = 0; /* recycle j */
 		cvg_p = cvg_buf + *x_start - 1;
-		*cvg_p += *weight;
+		w = weight[j];
+		*cvg_p += w;
 		cvg_p += *x_width;
-		*cvg_p -= *weight;
-		if (weight_len != 1)
-			weight++;
+		*cvg_p -= w;
 	}
 	cumsum = 0.0;
 	for (i = 0, cvg_p = cvg_buf; i < cvg_len; i++, cvg_p++) {
@@ -306,29 +307,46 @@ static SEXP coverage_hash(const int *x_start, const int *x_width, int x_len,
  ****************************************************************************/
 
 /*
- * 'shift' is assumed to be an integer or numeric vector.
- * 'i' is assumed to be a valid 0-based index in 'shift'.
+ * This is probably overly cautious. Could be that the cast from double to int
+ * with (int) already does exactly this (i.e. produces an NA_INTEGER for all
+ * the cases explicitely handled here) and is portable.
  */
-static int get_shift_elt(SEXP shift, int i)
+static int double2int(double x)
 {
-	int shift_elt;
-	double tmp;
-
-	if (IS_INTEGER(shift))
-		shift_elt = INTEGER(shift)[i];
-	else if ((tmp = REAL(shift)[i]) == NA_REAL)
-		shift_elt = NA_INTEGER;
-	else
-		shift_elt = tmp;
-	if (shift_elt == NA_INTEGER)
-		error("'shift' contains NAs");
-	return shift_elt;
+	if (x == R_PosInf
+	 || x == R_NegInf
+	 || ISNAN(x) /* NA or NaN */
+	 || x >= (double) INT_MAX + 1.00
+	 || x <= (double) INT_MIN)
+		return NA_INTEGER;
+	return (int) x;
 }
 
-static int shift_and_clip(const cachedIRanges *cached_x, SEXP shift,
-		SEXP width, RangeAE *ranges_buf)
+/*
+ * Args:
+ *   cached_x: a cachedIRanges struct holding the input ranges, those ranges
+ *             being those of a fictive IRanges object 'x'.
+ *   shift: an integer or numeric vector that is parallel to 'x'.
+ *   width: either NULL, a single NA, or a single non-negative integer.
+ * After the input ranges are shifted:
+ *   - If 'width' is a non-negative integer, then the ranges are clipped with
+ *     respect to the [1, width] interval and the function returns 'width' (as
+ *     an int).
+ *   - If 'width' is NULL or NA, then the ranges are clipped with respect to
+ *     the [1, +inf) interval (i.e. they're only clipped on the left) and the
+ *     function returns 'max(end(x))' or 0 if 'x' is empty.
+ * The shifted and clipped ranges are returned in 'out_ranges'.
+ * Let's call 'cvg_len' the value returned by the function. If the output
+ * ranges are in a tiling configuration with respect to the [1, cvg_len]
+ * interval (i.e. they're non-overlapping, ordered from left to right, and
+ * they fully cover the interval), then '*out_ranges_are_tiles' is set to 1.
+ * Otherwise, it's set to 0.
+ */
+static int shift_and_clip_ranges(const cachedIRanges *cached_x,
+		SEXP shift, SEXP width,
+		RangeAE *out_ranges, int *out_ranges_are_tiles)
 {
-	int x_len, shift_len, cvg_len, auto_cvg_len,
+	int x_len, shift_len, cvg_len, auto_cvg_len, prev_end,
 	    i, j, x_start, x_end, shift_elt, tmp;
 
 	x_len = _get_cachedIRanges_length(cached_x);
@@ -354,42 +372,56 @@ static int shift_and_clip(const cachedIRanges *cached_x, SEXP shift,
 			error("when 'width' is a logical vector, "
 			      "it must be a single NA");
 		cvg_len = NA_INTEGER;
-	} else if (IS_NUMERIC(width)) {
-		if (LENGTH(width) != 1)
-			error("when 'width' is a numeric vector, "
-			      "it must be of length 1");
-		if (REAL(width)[0] == NA_REAL)
-			cvg_len = NA_INTEGER;
-		else
-			cvg_len = REAL(width)[0];
 	} else if (IS_INTEGER(width)) {
 		if (LENGTH(width) != 1)
 			error("when 'width' is an integer vector, "
 			      "it must be of length 1");
 		cvg_len = INTEGER(width)[0];
+	} else if (IS_NUMERIC(width)) {
+		if (LENGTH(width) != 1)
+			error("when 'width' is a numeric vector, "
+			      "it must be of length 1");
+		cvg_len = double2int(REAL(width)[0]);
 	} else {
 		error("'width' must be either NULL, a single NA, "
 		      "or a single non-negative integer");
 	}
-	if ((auto_cvg_len = cvg_len == NA_INTEGER))
+
+	if (cvg_len == 0) {
+		*out_ranges_are_tiles = 1;
+		return 0;
+	}
+	auto_cvg_len = cvg_len == NA_INTEGER;
+	if (auto_cvg_len)
 		cvg_len = 0;
 	else if (cvg_len < 0)
 		error("'width' cannot be negative");
+	if (x_len == 0) {
+		*out_ranges_are_tiles = auto_cvg_len;
+		return cvg_len;
+	}
 
-	_RangeAE_set_nelt(ranges_buf, 0);
+	*out_ranges_are_tiles = 1;
+	_RangeAE_set_nelt(out_ranges, 0);
+	prev_end = 0;
 	for (i = j = 0; i < x_len; i++, j++) {
 		if (j >= shift_len)
 			j = 0; /* recycle j */
 		x_start = _get_cachedIRanges_elt_start(cached_x, i);
 		x_end = _get_cachedIRanges_elt_end(cached_x, i);
-		shift_elt = get_shift_elt(shift, j);
+		if (IS_INTEGER(shift)) {
+			shift_elt = INTEGER(shift)[j];
+			if (shift_elt == NA_INTEGER)
+				error("'shift' contains NAs");
+		} else {
+			shift_elt = double2int(REAL(shift)[j]);
+			if (shift_elt == NA_INTEGER)
+				error("'shift' contains NAs, NaNs, or numbers "
+				      "that cannot be turned into integers");
+		}
 		/* Risk of integer overflow! */
 		x_start += shift_elt;
 		x_end += shift_elt;
-		if (x_start < 1)
-			x_start = 1;
-		else if (!auto_cvg_len && x_start > (tmp = cvg_len + 1))
-			x_start = tmp;
 		if (x_end < 0) {
 			x_end = 0;
 		} else if (x_end > cvg_len) {
@@ -398,9 +430,21 @@ static int shift_and_clip(const cachedIRanges *cached_x, SEXP shift,
 			else
 				x_end = cvg_len;
 		}
-		_RangeAE_insert_at(ranges_buf, i,
+		if (x_start < 1)
+			x_start = 1;
+		else if (x_start > (tmp = cvg_len + 1))
+			x_start = tmp;
+		if (*out_ranges_are_tiles) {
+			if (x_start == prev_end + 1)
+				prev_end = x_end;
+			else
+				*out_ranges_are_tiles = 0;
+		}
+		_RangeAE_insert_at(out_ranges, i,
 				   x_start, x_end - x_start + 1);
 	}
+	if (*out_ranges_are_tiles && x_end != cvg_len)
+		*out_ranges_are_tiles = 0;
 	return cvg_len;
 }
 
@@ -408,13 +452,14 @@ static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
 		SEXP shift, SEXP width, SEXP weight, SEXP method,
 		RangeAE *ranges_buf)
 {
-	int x_len, cvg_len, weight_len, effective_method, izero;
+	int x_len, cvg_len, out_ranges_are_tiles, weight_len,
+	    effective_method, take_short_path;
 	const int *x_start, *x_width;
 	const char *method0;
-	double dzero;
 
 	x_len = _get_cachedIRanges_length(cached_x);
-	cvg_len = shift_and_clip(cached_x, shift, width, ranges_buf);
+	cvg_len = shift_and_clip_ranges(cached_x, shift, width, ranges_buf,
+					&out_ranges_are_tiles);
 	x_start = ranges_buf->start.elts;
 	x_width = ranges_buf->width.elts;
 
@@ -449,17 +494,37 @@ static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
 		error("'method' must be \"auto\", \"sort\", or \"hash\"");
 	}
 
-	if (x_len == 0 || cvg_len == 0) {
-		/* Short path for trivial case: returns an Rle with no run
-		   (empty Rle) or one run of 0's */
-		if (IS_INTEGER(weight)) {
-			izero = 0;
-			return _integer_Rle_constructor(&izero, 1, &cvg_len, 0);
-		} else {
-			dzero = 0.0;
-			return _numeric_Rle_constructor(&dzero, 1, &cvg_len, 0);
+	//Rprintf("out_ranges_are_tiles = %d\n", out_ranges_are_tiles);
+	//Rprintf("x_len = %d\n", x_len);
+	//Rprintf("cvg_len = %d\n", cvg_len);
+
+	if (out_ranges_are_tiles) {
+		take_short_path = 0;
+		if (cvg_len == 0) {
+			take_short_path = 1;
+			x_len = 0;
+		} else if (weight_len == 1) {
+			take_short_path = 1;
+			x_len = 1;
+			x_width = &cvg_len;
+		} else if (weight_len == x_len) {
+			take_short_path = 1;
+		}
+		if (take_short_path) {
+			/* Short path for the tiling case. */
+			//Rprintf("taking short path\n");
+			if (IS_INTEGER(weight)) {
+				return _integer_Rle_constructor(
+							INTEGER(weight), x_len,
+							x_width, 0);
+			} else {
+				return _numeric_Rle_constructor(
+							REAL(weight), x_len,
+							x_width, 0);
+			}
 		}
 	}
+	//Rprintf("taking normal path\n");
 	return effective_method == 1 ?
 	       coverage_sort(x_start, x_width, x_len, weight, cvg_len) :
 	       coverage_hash(x_start, x_width, x_len, weight, cvg_len);
