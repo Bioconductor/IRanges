@@ -1055,17 +1055,9 @@ SEXP Hits_encode_overlaps(
 
 /* coverage_methods.c */
 
-SEXP Ranges_integer_coverage(
-	SEXP x_start,
-	SEXP x_width,
-	SEXP width,
-	SEXP weight,
-	SEXP method
-);
-
-SEXP Ranges_numeric_coverage(
-	SEXP x_start,
-	SEXP x_width,
+SEXP IRanges_coverage(
+	SEXP x,
+	SEXP shift,
 	SEXP width,
 	SEXP weight,
 	SEXP method

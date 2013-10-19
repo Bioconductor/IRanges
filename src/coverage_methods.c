@@ -13,6 +13,9 @@
 #include <R_ext/Utils.h> /* for R_CheckUserInterrupt() */
 
 
+static const char *x_label, *shift_label, *width_label, *weight_label;
+
+
 /****************************************************************************
  *                              "sort" method                               *
  ****************************************************************************/
@@ -62,6 +65,9 @@ static int init_SEids_int_weight(int *SEids, const int *x_width, int x_len,
 		*(SEids++) = - index; /* End id */
 		SEids_len += 2;
 	}
+	if (j != weight_len)
+		warning("'%s' length is not a divisor of '%s' length",
+			weight_label, x_label);
 	return SEids_len;
 }
 
@@ -81,6 +87,9 @@ static int init_SEids_double_weight(int *SEids, const int *x_width, int x_len,
 		*(SEids++) = - index; /* End id */
 		SEids_len += 2;
 	}
+	if (j != weight_len)
+		warning("'%s' length is not a divisor of '%s' length",
+			weight_label, x_label);
 	return SEids_len;
 }
 
@@ -249,6 +258,9 @@ static SEXP int_coverage_hash(
 		cvg_p += *x_width;
 		*cvg_p = _safe_int_add(*cvg_p, - w);
 	}
+	if (j != weight_len)
+		warning("'%s' length is not a divisor of '%s' length",
+			weight_label, x_label);
 	cumsum = 0;
 	for (i = 0, cvg_p = cvg_buf; i < cvg_len; i++, cvg_p++) {
 		cumsum = _safe_int_add(*cvg_p, cumsum);
@@ -281,6 +293,9 @@ static SEXP double_coverage_hash(
 		cvg_p += *x_width;
 		*cvg_p -= w;
 	}
+	if (j != weight_len)
+		warning("'%s' length is not a divisor of '%s' length",
+			weight_label, x_label);
 	cumsum = 0.0;
 	for (i = 0, cvg_p = cvg_buf; i < cvg_len; i++, cvg_p++) {
 		cumsum += *cvg_p;
@@ -353,15 +368,17 @@ static int shift_and_clip_ranges(const cachedIRanges *cached_x,
 
 	/* Check 'shift'. */
 	if (!(IS_INTEGER(shift) || IS_NUMERIC(shift)))
-		error("'shift' must be a vector of integers");
+		error("'%s' must be a vector of integers", shift_label);
 	shift_len = LENGTH(shift);
 	if (shift_len > x_len) {
 		if (shift_len != 1)
-			error("'shift' is longer than 'x'");
+			error("'%s' is longer than '%s'", shift_label,
+			      x_label);
 	} else if (shift_len < x_len) {
 		if (shift_len == 0)
-			error("cannot recycle zero-length 'shift' "
-			      "to the length of 'x'");
+			error("cannot recycle zero-length '%s' "
+			      "to the length of '%s'", shift_label,
+			      x_label);
 	}
 
 	/* Infer 'cvg_len' from 'width'. */
@@ -369,22 +386,22 @@ static int shift_and_clip_ranges(const cachedIRanges *cached_x,
 		cvg_len = NA_INTEGER;
 	} else if (IS_LOGICAL(width)) {
 		if (LENGTH(width) != 1 || LOGICAL(width)[0] != NA_INTEGER)
-			error("when 'width' is a logical vector, "
-			      "it must be a single NA");
+			error("when '%s' is a logical vector, "
+			      "it must be a single NA", width_label);
 		cvg_len = NA_INTEGER;
 	} else if (IS_INTEGER(width)) {
 		if (LENGTH(width) != 1)
-			error("when 'width' is an integer vector, "
-			      "it must be of length 1");
+			error("when '%s' is an integer vector, "
+			      "it must be of length 1", width_label);
 		cvg_len = INTEGER(width)[0];
 	} else if (IS_NUMERIC(width)) {
 		if (LENGTH(width) != 1)
-			error("when 'width' is a numeric vector, "
-			      "it must be of length 1");
+			error("when '%s' is a numeric vector, "
+			      "it must be of length 1", width_label);
 		cvg_len = double2int(REAL(width)[0]);
 	} else {
-		error("'width' must be either NULL, a single NA, "
-		      "or a single non-negative integer");
+		error("'%s' must be either NULL, a single NA, "
+		      "or a single non-negative integer", width_label);
 	}
 
 	if (cvg_len == 0) {
@@ -395,7 +412,7 @@ static int shift_and_clip_ranges(const cachedIRanges *cached_x,
 	if (auto_cvg_len)
 		cvg_len = 0;
 	else if (cvg_len < 0)
-		error("'width' cannot be negative");
+		error("'%s' cannot be negative", width_label);
 	if (x_len == 0) {
 		*out_ranges_are_tiles = auto_cvg_len;
 		return cvg_len;
@@ -412,12 +429,13 @@ static int shift_and_clip_ranges(const cachedIRanges *cached_x,
 		if (IS_INTEGER(shift)) {
 			shift_elt = INTEGER(shift)[j];
 			if (shift_elt == NA_INTEGER)
-				error("'shift' contains NAs");
+				error("'%s' contains NAs", shift_label);
 		} else {
 			shift_elt = double2int(REAL(shift)[j]);
 			if (shift_elt == NA_INTEGER)
-				error("'shift' contains NAs, NaNs, or numbers "
-				      "that cannot be turned into integers");
+				error("'%s' contains NAs, NaNs, or numbers "
+				      "that cannot be turned into integers",
+				      shift_label);
 		}
 		/* Risk of integer overflow! */
 		x_start += shift_elt;
@@ -443,6 +461,9 @@ static int shift_and_clip_ranges(const cachedIRanges *cached_x,
 		_RangeAE_insert_at(out_ranges, i,
 				   x_start, x_end - x_start + 1);
 	}
+	if (j != shift_len)
+		warning("'%s' length is not a divisor of '%s' length",
+			shift_label, x_label);
 	if (*out_ranges_are_tiles && x_end != cvg_len)
 		*out_ranges_are_tiles = 0;
 	return cvg_len;
@@ -465,15 +486,18 @@ static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
 
 	/* Check 'weight'. */
 	if (!(IS_INTEGER(weight) || IS_NUMERIC(weight)))
-		error("'weight' must be an integer or numeric vector");
+		error("'%s' must be an integer or numeric vector",
+		      weight_label);
 	weight_len = LENGTH(weight);
 	if (weight_len > x_len) {
 		if (weight_len != 1)
-			error("'weight' is longer than 'x'");
+			error("'%s' is longer than '%s'",
+			      weight_label, x_label);
 	} else if (weight_len < x_len) {
 		if (weight_len == 0)
-			error("cannot recycle zero-length 'weight' "
-			      "to the length of 'x'");
+			error("cannot recycle zero-length '%s' "
+			      "to the length of '%s'",
+			      weight_label, x_label);
 	}
 
 	/* Infer 'effective_method' from 'method' and 'cvg_len'. */
@@ -530,82 +554,41 @@ static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
 	       coverage_hash(x_start, x_width, x_len, weight, cvg_len);
 }
 
-
-/****************************************************************************
- *                        --- .Call ENTRY POINTS ---                        *
- *                                                                          *
- * IMPORTANT: For the functions below, the 'x_start' and 'x_width' args     *
- * must come from a Ranges object 'x' that has already been "restricted" to *
- * the [1,width] interval, that is, 'x_start' must be >= 1 and 'x_width'    *
- * must be <= width for all the ranges in 'x'.                              *
- ****************************************************************************/
-
-SEXP Ranges_integer_coverage(SEXP x_start, SEXP x_width,
-		SEXP width, SEXP weight, SEXP method)
+/* --- .Call ENTRY POINT ---
+ * Args:
+ *   x:      an IRanges object.
+ *   shift:  a numeric (integer or double) vector.
+ *   width:  a NULL, a single NA, or a single non-negative number.
+ *   weight: a numeric (integer or double) vector.
+ *   method: either "auto", "sort", or "hash".
+ * Returns an Rle object.
+ */
+SEXP IRanges_coverage(SEXP x, SEXP shift, SEXP width, SEXP weight, SEXP method)
 {
-	int x_len, width0, weight_len, zero;
-	const int *x_start_p, *x_width_p, *weight_p;
-	const char *method_ptr = CHAR(STRING_ELT(method, 0));
+	cachedIRanges cached_x;
+	int x_len;
+	RangeAE ranges_buf;
 
-	x_len = _check_integer_pairs(x_start, x_width,
-				     &x_start_p, &x_width_p,
-				     "start(x)", "width(x)");
-	width0 = INTEGER(width)[0];
-	weight_len = LENGTH(weight);
-	weight_p = INTEGER(weight);
-	if (x_len == 0 || width0 == 0
-	 || (weight_len == 1 && weight_p[0] == 0))
-	{
-		//return an Rle with no run (empty Rle) or one run of 0's
-		zero = 0;
-		return _integer_Rle_constructor(&zero, 1, &width0, 0);
-	}
-	if (strcmp(method_ptr, "sort") == 0)
-		return int_coverage_sort(x_start_p, x_width_p, x_len,
-					 weight_p, weight_len, width0);
-	return int_coverage_hash(x_start_p, x_width_p, x_len,
-				 weight_p, weight_len, width0);
+	cached_x = _cache_IRanges(x);
+	x_len = _get_cachedIRanges_length(&cached_x);
+	ranges_buf = _new_RangeAE(x_len, 0);
+	x_label = "x";
+	shift_label = "shift";
+	width_label = "width";
+	weight_label = "weight";
+	return cachedIRanges_coverage(&cached_x, shift, width, weight, method,
+				      &ranges_buf);
 }
-
-SEXP Ranges_numeric_coverage(SEXP x_start, SEXP x_width,
-		SEXP width, SEXP weight, SEXP method)
-{
-	int x_len, width0, weight_len;
-	const int *x_start_p, *x_width_p;
-	const double *weight_p;
-	double zero;
-	const char *method_ptr = CHAR(STRING_ELT(method, 0));
-
-	x_len = _check_integer_pairs(x_start, x_width,
-				     &x_start_p, &x_width_p,
-				     "start(x)", "width(x)");
-	width0 = INTEGER(width)[0];
-	weight_len = LENGTH(weight);
-	weight_p = REAL(weight);
-	if (x_len == 0 || width0 == 0
-	 || (weight_len == 1 && weight_p[0] == 0.0))
-	{
-		//return an Rle with no run (empty Rle) or one run of 0's
-		zero = 0.0;
-		return _numeric_Rle_constructor(&zero, 1, &width0, 0);
-	}
-	if (strcmp(method_ptr, "sort") == 0)
-		return double_coverage_sort(x_start_p, x_width_p, x_len,
-					    weight_p, weight_len, width0);
-	return double_coverage_hash(x_start_p, x_width_p, x_len,
-				    weight_p, weight_len, width0);
-}
-
 
 /* --- .Call ENTRY POINT ---
  * Args:
  *   x:      a CompressedIRangesList object of length N.
- *   shift:  a list of length N. Each element must be a numeric (double or
- *           integer) vector.
- *   width:  a list of length N. Each element must be a NULL, or a single
- *           non-negative number.
- *   weight: a list of length N. Each element must be a numeric (double or
- *           integer) vector.
+ *   shift:  a list of length N. Each element must be a numeric (integer or
+ *           double) vector.
+ *   width:  a list of length N. Each element must be a NULL, a single NA,
+ *           or a single non-negative number.
+ *   weight: a list of length N. Each element must be a numeric (integer or
+ *           double) vector.
  *   method: either "auto", "sort", or "hash".
  * Returns a list of N RleList objects.
  */
@@ -617,6 +600,8 @@ SEXP CompressedIRangesList_coverage(SEXP x, SEXP shift,
 	RangeAE ranges_buf;
 	SEXP ans, ans_elt, shift_elt, width_elt, weight_elt;
 	cachedIRanges cached_x_elt;
+	char x_label_buf[40], shift_label_buf[40],
+	     width_label_buf[40], weight_label_buf[40];
 
 	cached_x = _cache_CompressedIRangesList(x);
 	x_len = _get_cachedCompressedIRangesList_length(&cached_x);
@@ -624,6 +609,10 @@ SEXP CompressedIRangesList_coverage(SEXP x, SEXP shift,
 	width_len = LENGTH(width);
 	weight_len = LENGTH(weight);
 	ranges_buf = _new_RangeAE(0, 0);
+	x_label = x_label_buf;
+	shift_label = shift_label_buf;
+	width_label = width_label_buf;
+	weight_label = weight_label_buf;
 	PROTECT(ans = NEW_LIST(x_len));
 	for (i = j = k = l = 0; i < x_len; i++, j++, k++, l++) {
 		if (j >= shift_len)
@@ -637,6 +626,14 @@ SEXP CompressedIRangesList_coverage(SEXP x, SEXP shift,
 		shift_elt = VECTOR_ELT(shift, j);
 		width_elt = VECTOR_ELT(width, k);
 		weight_elt = VECTOR_ELT(weight, l);
+		snprintf(x_label_buf, sizeof(x_label_buf),
+			 "x[[%d]]", i + 1);
+		snprintf(shift_label_buf, sizeof(shift_label_buf),
+			 "shift[[%d]]", j + 1);
+		snprintf(width_label_buf, sizeof(width_label_buf),
+			 "width[[%d]]", k + 1);
+		snprintf(weight_label_buf, sizeof(weight_label_buf),
+			 "weight[[%d]]", l + 1);
 		PROTECT(ans_elt = cachedIRanges_coverage(&cached_x_elt,
 						shift_elt, width_elt,
 						weight_elt, method,
