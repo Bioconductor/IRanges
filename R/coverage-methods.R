@@ -3,6 +3,127 @@
 ### -------------------------------------------------------------------------
 ###
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### .IRanges.coverage() and .CompressedIRangesList.coverage()
+###
+### These 2 internal helpers are the workhorses behind most "coverage"
+### methods. All the hard work is almost entirely performed at the C level.
+### Only some argument checking/normalization plus the "folding" of the
+### result are performed in R.
+###
+
+.fold_and_truncate_coverage <- function(cvg, circle.length, width)
+{
+    cvg <- fold(cvg, circle.length)
+    if (is.na(width))
+        return(cvg)
+    head(cvg, n=width)
+}
+
+
+### 'shift' and 'weight' checked at the C level.
+### Returns an Rle object.
+.IRanges.coverage <- function(x,
+                              shift=0L, width=NULL,
+                              weight=1L, circle.length=NA,
+                              method=c("auto", "sort", "hash"))
+{
+    ## Check 'x'.
+    if (!is(x, "IRanges"))
+        stop("'x' must be an IRanges object")
+    ## Check 'width'.
+    if (is.null(width)) {
+        width <- NA_integer_
+    } else if (!isSingleNumberOrNA(width)) {
+        stop("'width' must be NULL or a single integer")
+    } else if (!is.integer(width)) {
+        width <- as.integer(width)
+    }
+    ## Check 'circle.length'.
+    if (!isSingleNumberOrNA(circle.length))
+        stop("'circle.length' must be a single integer")
+    if (!is.integer(circle.length))
+        circle.length <- as.integer(circle.length)
+
+    ## Check 'method'.
+    method <- match.arg(method)
+
+    ## Ready to go...
+    ans <- .Call2("IRanges_coverage", x,
+                              shift, width,
+                              weight, circle.length,
+                              method,
+                              PACKAGE="IRanges")
+    if (is.na(circle.length))
+        return(ans)
+    .fold_and_truncate_coverage(ans, circle.length, width)
+}
+
+### 'shift' and 'weight' checked at the C level.
+### Returns a SimpleRleList object of the length of 'x'.
+.CompressedIRangesList.coverage <- function(x,
+                                            shift=0L, width=NULL,
+                                            weight=1L, circle.length=NA,
+                                            method=c("auto", "sort", "hash"))
+{
+    ## Check 'x'.
+    if (!is(x, "CompressedIRangesList"))
+        stop("'x' must be a CompressedIRangesList object")
+    ## Check 'width'.
+    if (is.null(width)) {
+        width <- NA_integer_
+    } else if (!is.numeric(width)) {
+        stop("'width' must be NULL or an integer vector")
+    } else if (!is.integer(width)) {
+        width <- as.integer(width)
+    }
+    ## Check 'circle.length'.
+    if (identical(circle.length, NA)) {
+        circle.length <- NA_integer_
+    } else if (!is.numeric(circle.length)) {
+        stop("'circle.length' must be an integer vector")
+    } else if (!is.integer(circle.length)) {
+        circle.length <- as.integer(circle.length)
+    }
+
+    ## Check 'method'.
+    method <- match.arg(method)
+
+    ## Ready to go...
+    ans_listData <- .Call2("CompressedIRangesList_coverage", x,
+                              as.list(shift), width,
+                              as.list(weight), circle.length,
+                              method,
+                              PACKAGE="IRanges")
+
+    ## "Fold" the coverage vectors in 'ans_listData' associated with a
+    ## circular sequence.
+    ## Note that the C code should have raised an error or warning already if
+    ## the length of 'circle.length' or 'width' didn't allow proprer recycling
+    ## to the length of 'x'. So using silent 'rep( , length.out=length(x))' is
+    ## safe.
+    circle.length <- rep(circle.length, length.out=length(x))
+    fold_idx <- which(!is.na(circle.length))
+    if (length(fold_idx) != 0L) {
+        width <- rep(width, length.out=length(x))
+        ## Because we "fold" the coverage vectors in an lapply() loop, it will
+        ## be inefficient if 'x' has a lot of list elements associated with a
+        ## circular sequence.
+        ans_listData[fold_idx] <- lapply(fold_idx,
+            function(i)
+                .fold_and_truncate_coverage(ans_listData[[i]],
+                                            circle.length[i],
+                                            width[i]))
+    }
+
+    names(ans_listData) <- names(x)
+    newList("SimpleRleList",
+            ans_listData,
+            metadata=metadata(x),
+            mcols=mcols(x))
+}
+
 setGeneric("coverage", signature="x",
     function(x, shift=0L, width=NULL, weight=1L, ...)
         standardGeneric("coverage")
@@ -91,61 +212,6 @@ setMethod("coverage", "numeric",
     }
 )
 
-### 'shift', 'weight', and 'method' checked at the C level.
-.IRanges.coverage <- function(x, shift, width, weight, circle.length, method)
-{
-    ## Check 'x'.
-    if (!is(x, "IRanges"))
-        stop("'x' must be an IRanges object")
-    ## Check 'width'.
-    if (is.null(width)) {
-        width <- NA_integer_
-    } else if (!isSingleNumberOrNA(width)) {
-        stop("'width' must be NULL or a single integer")
-    } else if (!is.integer(width)) {
-        width <- as.integer(width)
-    }
-    ## Check 'circle.length'.
-    if (!isSingleNumberOrNA(circle.length))
-        stop("'circle.length' must be a single integer")
-    if (!is.integer(circle.length))
-        circle.length <- as.integer(circle.length)
-    ## Ready to go...
-    .Call2("IRanges_coverage", x, shift, width, weight, circle.length, method,
-           PACKAGE="IRanges")
-}
-
-### 'shift', 'weight', and 'method' checked at the C level.
-.CompressedIRangesList.coverage <- function(x, shift, width, weight,
-                                            circle.length, method)
-{
-    ## Check 'x'.
-    if (!is(x, "CompressedIRangesList"))
-        stop("'x' must be a CompressedIRangesList object")
-    ## Check 'width'.
-    if (is.null(width)) {
-        width <- NA_integer_
-    } else if (!is.numeric(width)) {
-        stop("'width' must be NULL or an integer vector")
-    } else if (!is.integer(width)) {
-        width <- as.integer(width)
-    }
-    ## Check 'circle.length'.
-    if (!is.numeric(circle.length))
-        stop("'circle.length' must be an integer vector")
-    if (!is.integer(circle.length))
-        circle.length <- as.integer(circle.length)
-    ## Ready to go...
-    ans_listData <- .Call2("CompressedIRangesList_coverage",
-                           x, shift, width, weight, circle.length, method,
-                           PACKAGE="IRanges")
-    names(ans_listData) <- names(x)
-    newList("SimpleRleList",
-            ans_listData,
-            metadata=metadata(x),
-            mcols=mcols(x))
-}
-
 setMethod("coverage", "Ranges",
     function(x, shift=0L, width=NULL, weight=1L,
              method=c("auto", "sort", "hash"))
@@ -160,7 +226,7 @@ setMethod("coverage", "Ranges",
             weight <- x_mcols[[weight]]
         }
         .IRanges.coverage(as(x, "IRanges"),
-                          shift, width, weight, NA_integer_, method)
+                          shift=shift, width=width, weight=weight, method)
     }
 )
 
@@ -212,8 +278,9 @@ setMethod("coverage", "RangesList",
                                                names(x), 1L)
         method <- match.arg(method)
         .CompressedIRangesList.coverage(as(x, "CompressedIRangesList"),
-                                        shift, width, weight,
-                                        NA_integer_, method)
+                                        shift=shift, width=width,
+                                        weight=weight,
+                                        method=method)
     }
 )
 

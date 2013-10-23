@@ -469,7 +469,9 @@ static int shift_and_clip_ranges(const cachedIRanges *cached_x,
 		x_start += shift_elt;
 		x_end += shift_elt;
 		if (circle_len != NA_INTEGER) {
-			tmp = (x_start - 1) % circle_len + 1;
+			tmp = x_start % circle_len;
+			if (tmp <= 0)
+				tmp += circle_len;
 			x_end += tmp - x_start;
 			x_start = tmp;
 		}
