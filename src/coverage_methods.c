@@ -15,6 +15,15 @@
 
 static const char *x_label, *shift_label, *width_label, *weight_label;
 
+static void check_recycling_was_round(int last_pos_in_current, int current_len,
+		const char *current_label, const char *target_label)
+{
+	if (current_len >= 2 && last_pos_in_current < current_len)
+		warning("'%s' length is not a divisor of '%s' length",
+			current_label, target_label);
+	return;
+}
+
 
 /****************************************************************************
  *                              "sort" method                               *
@@ -65,9 +74,7 @@ static int init_SEids_int_weight(int *SEids, const int *x_width, int x_len,
 		*(SEids++) = - index; /* End id */
 		SEids_len += 2;
 	}
-	if (j != weight_len)
-		warning("'%s' length is not a divisor of '%s' length",
-			weight_label, x_label);
+	check_recycling_was_round(j, weight_len, weight_label, x_label);
 	return SEids_len;
 }
 
@@ -87,9 +94,7 @@ static int init_SEids_double_weight(int *SEids, const int *x_width, int x_len,
 		*(SEids++) = - index; /* End id */
 		SEids_len += 2;
 	}
-	if (j != weight_len)
-		warning("'%s' length is not a divisor of '%s' length",
-			weight_label, x_label);
+	check_recycling_was_round(j, weight_len, weight_label, x_label);
 	return SEids_len;
 }
 
@@ -258,9 +263,7 @@ static SEXP int_coverage_hash(
 		cvg_p += *x_width;
 		*cvg_p = _safe_int_add(*cvg_p, - w);
 	}
-	if (j != weight_len)
-		warning("'%s' length is not a divisor of '%s' length",
-			weight_label, x_label);
+	check_recycling_was_round(j, weight_len, weight_label, x_label);
 	cumsum = 0;
 	for (i = 0, cvg_p = cvg_buf; i < cvg_len; i++, cvg_p++) {
 		cumsum = _safe_int_add(*cvg_p, cumsum);
@@ -293,9 +296,7 @@ static SEXP double_coverage_hash(
 		cvg_p += *x_width;
 		*cvg_p -= w;
 	}
-	if (j != weight_len)
-		warning("'%s' length is not a divisor of '%s' length",
-			weight_label, x_label);
+	check_recycling_was_round(j, weight_len, weight_label, x_label);
 	cumsum = 0.0;
 	for (i = 0, cvg_p = cvg_buf; i < cvg_len; i++, cvg_p++) {
 		cumsum += *cvg_p;
@@ -316,6 +317,56 @@ static SEXP coverage_hash(const int *x_start, const int *x_width, int x_len,
 	       double_coverage_hash(x_start, x_width, x_len,
 				REAL(weight), weight_len, cvg_len);
 }
+
+
+/****************************************************************************
+ * Helper functions for checking args of type SEXP.                         *
+ * They either pass (and return nothing) or raise an error with an          *
+ * informative message.                                                     *
+ ****************************************************************************/
+
+static void check_arg_is_integer(SEXP arg, const char *arg_label)
+{
+	if (!IS_INTEGER(arg))
+		error("'%s' must be an integer vector", arg_label);
+	return;
+}
+
+static void check_arg_is_numeric(SEXP arg, const char *arg_label)
+{
+	if (!(IS_INTEGER(arg) || IS_NUMERIC(arg)))
+		error("'%s' must be an integer or numeric vector", arg_label);
+	return;
+}
+
+static void check_arg_is_list(SEXP arg, const char *arg_label)
+{
+	if (!IS_LIST(arg))
+		error("'%s' must be a list", arg_label);
+	return;
+}
+
+/*
+ * Check that 'arg_len' is equal to 'x_len', or that it's the length of an
+ * argument that can be recycled to the length of 'x'.
+ * Assumes that 'arg_len' and 'x_len' are >= 0.
+ */
+static void check_arg_len(int arg_len, int x_len,
+		const char *arg_label, const char *x_label)
+{
+	if (arg_len < x_len) {
+		if (arg_len == 0)
+			error("cannot recycle zero-length '%s' "
+			      "to the length of '%s'",
+			      arg_label, x_label);
+	} else if (arg_len > x_len) {
+		if (arg_len >= 2)
+			error("'%s' is longer than '%s'",
+			      arg_label, x_label);
+	}
+	return;
+}
+
 
 /****************************************************************************
  *                         cachedIRanges_coverage()                         *
@@ -339,16 +390,16 @@ static int double2int(double x)
 
 /*
  * Args:
- *   cached_x: a cachedIRanges struct holding the input ranges, those ranges
- *             being those of a fictive IRanges object 'x'.
- *   shift: an integer or numeric vector that is parallel to 'x'.
- *   width: either NULL, a single NA, or a single non-negative integer.
+ *   cached_x:   A cachedIRanges struct holding the input ranges, those
+ *               ranges being those of a fictive IRanges object 'x'.
+ *   shift:      An integer or numeric vector that is parallel to 'x'.
+ *   width:      A single integer. NA or >= 0..
+ *   circle_len: A single positive integer or NA.
  * After the input ranges are shifted:
  *   - If 'width' is a non-negative integer, then the ranges are clipped with
- *     respect to the [1, width] interval and the function returns 'width' (as
- *     an int).
- *   - If 'width' is NULL or NA, then the ranges are clipped with respect to
- *     the [1, +inf) interval (i.e. they're only clipped on the left) and the
+ *     respect to the [1, width] interval and the function returns 'width'.
+ *   - If 'width' is NA, then the ranges are clipped with respect to the
+ *     [1, +inf) interval (i.e. they're only clipped on the left) and the
  *     function returns 'max(end(x))' or 0 if 'x' is empty.
  * The shifted and clipped ranges are returned in 'out_ranges'.
  * Let's call 'cvg_len' the value returned by the function. If the output
@@ -358,7 +409,7 @@ static int double2int(double x)
  * Otherwise, it's set to 0.
  */
 static int shift_and_clip_ranges(const cachedIRanges *cached_x,
-		SEXP shift, SEXP width,
+		SEXP shift, int width, int circle_len,
 		RangeAE *out_ranges, int *out_ranges_are_tiles)
 {
 	int x_len, shift_len, cvg_len, auto_cvg_len, prev_end,
@@ -367,58 +418,35 @@ static int shift_and_clip_ranges(const cachedIRanges *cached_x,
 	x_len = _get_cachedIRanges_length(cached_x);
 
 	/* Check 'shift'. */
-	if (!(IS_INTEGER(shift) || IS_NUMERIC(shift)))
-		error("'%s' must be a vector of integers", shift_label);
+	check_arg_is_numeric(shift, shift_label);
 	shift_len = LENGTH(shift);
-	if (shift_len > x_len) {
-		if (shift_len != 1)
-			error("'%s' is longer than '%s'", shift_label,
-			      x_label);
-	} else if (shift_len < x_len) {
-		if (shift_len == 0)
-			error("cannot recycle zero-length '%s' "
-			      "to the length of '%s'", shift_label,
-			      x_label);
-	}
+	check_arg_len(shift_len, x_len, shift_label, x_label);
 
-	/* Infer 'cvg_len' from 'width'. */
-	if (width == R_NilValue) {
-		cvg_len = NA_INTEGER;
-	} else if (IS_LOGICAL(width)) {
-		if (LENGTH(width) != 1 || LOGICAL(width)[0] != NA_INTEGER)
-			error("when '%s' is a logical vector, "
-			      "it must be a single NA", width_label);
-		cvg_len = NA_INTEGER;
-	} else if (IS_INTEGER(width)) {
-		if (LENGTH(width) != 1)
-			error("when '%s' is an integer vector, "
-			      "it must be of length 1", width_label);
-		cvg_len = INTEGER(width)[0];
-	} else if (IS_NUMERIC(width)) {
-		if (LENGTH(width) != 1)
-			error("when '%s' is a numeric vector, "
-			      "it must be of length 1", width_label);
-		cvg_len = double2int(REAL(width)[0]);
-	} else {
-		error("'%s' must be either NULL, a single NA, "
-		      "or a single non-negative integer", width_label);
-	}
-
-	if (cvg_len == 0) {
-		*out_ranges_are_tiles = 1;
-		return 0;
-	}
-	auto_cvg_len = cvg_len == NA_INTEGER;
-	if (auto_cvg_len)
-		cvg_len = 0;
-	else if (cvg_len < 0)
+	/* Infer 'cvg_len' from 'width' and 'circle_len'. */
+	*out_ranges_are_tiles = 1;
+	if (width == NA_INTEGER) {
+		auto_cvg_len = 1;
+	} else if (width < 0) {
 		error("'%s' cannot be negative", width_label);
+	} else if (width == 0) {
+		return width;
+	} else if (circle_len == NA_INTEGER) {
+		auto_cvg_len = 0;
+	} else if (circle_len <= 0) {
+		error("length of underlying circular sequence is <= 0");
+	} else if (width > circle_len) {
+		error("'%s' cannot be greater than length of "
+		      "underlying circular sequence", width_label);
+	} else {
+		auto_cvg_len = 1;
+	}
+	cvg_len = auto_cvg_len ? 0 : width;
 	if (x_len == 0) {
-		*out_ranges_are_tiles = auto_cvg_len;
+		if (cvg_len != 0)
+			*out_ranges_are_tiles = 0;
 		return cvg_len;
 	}
 
-	*out_ranges_are_tiles = 1;
 	_RangeAE_set_nelt(out_ranges, 0);
 	prev_end = 0;
 	for (i = j = 0; i < x_len; i++, j++) {
@@ -440,6 +468,11 @@ static int shift_and_clip_ranges(const cachedIRanges *cached_x,
 		/* Risk of integer overflow! */
 		x_start += shift_elt;
 		x_end += shift_elt;
+		if (circle_len != NA_INTEGER) {
+			tmp = (x_start - 1) % circle_len + 1;
+			x_end += tmp - x_start;
+			x_start = tmp;
+		}
 		if (x_end < 0) {
 			x_end = 0;
 		} else if (x_end > cvg_len) {
@@ -461,17 +494,15 @@ static int shift_and_clip_ranges(const cachedIRanges *cached_x,
 		_RangeAE_insert_at(out_ranges, i,
 				   x_start, x_end - x_start + 1);
 	}
-	if (j != shift_len)
-		warning("'%s' length is not a divisor of '%s' length",
-			shift_label, x_label);
+	check_recycling_was_round(j, shift_len, shift_label, x_label);
 	if (*out_ranges_are_tiles && x_end != cvg_len)
 		*out_ranges_are_tiles = 0;
 	return cvg_len;
 }
 
 static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
-		SEXP shift, SEXP width, SEXP weight, SEXP method,
-		RangeAE *ranges_buf)
+		SEXP shift, int width, SEXP weight, int circle_len,
+		SEXP method, RangeAE *ranges_buf)
 {
 	int x_len, cvg_len, out_ranges_are_tiles, weight_len,
 	    effective_method, take_short_path;
@@ -479,26 +510,15 @@ static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
 	const char *method0;
 
 	x_len = _get_cachedIRanges_length(cached_x);
-	cvg_len = shift_and_clip_ranges(cached_x, shift, width, ranges_buf,
-					&out_ranges_are_tiles);
+	cvg_len = shift_and_clip_ranges(cached_x, shift, width, circle_len,
+					ranges_buf, &out_ranges_are_tiles);
 	x_start = ranges_buf->start.elts;
 	x_width = ranges_buf->width.elts;
 
 	/* Check 'weight'. */
-	if (!(IS_INTEGER(weight) || IS_NUMERIC(weight)))
-		error("'%s' must be an integer or numeric vector",
-		      weight_label);
+	check_arg_is_numeric(weight, weight_label);
 	weight_len = LENGTH(weight);
-	if (weight_len > x_len) {
-		if (weight_len != 1)
-			error("'%s' is longer than '%s'",
-			      weight_label, x_label);
-	} else if (weight_len < x_len) {
-		if (weight_len == 0)
-			error("cannot recycle zero-length '%s' "
-			      "to the length of '%s'",
-			      weight_label, x_label);
-	}
+	check_arg_len(weight_len, x_len, weight_label, x_label);
 
 	/* Infer 'effective_method' from 'method' and 'cvg_len'. */
 	if (!IS_CHARACTER(method) || LENGTH(method) != 1)
@@ -556,14 +576,16 @@ static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
 
 /* --- .Call ENTRY POINT ---
  * Args:
- *   x:      an IRanges object.
- *   shift:  a numeric (integer or double) vector.
- *   width:  a NULL, a single NA, or a single non-negative number.
- *   weight: a numeric (integer or double) vector.
- *   method: either "auto", "sort", or "hash".
+ *   x:          An IRanges object.
+ *   shift:      A numeric (integer or double) vector.
+ *   width:      A single integer. NA or >= 0..
+ *   weight:     A numeric (integer or double) vector.
+ *   circle_len: A single integer. NA or > 0.
+ *   method:     Either "auto", "sort", or "hash".
  * Returns an Rle object.
  */
-SEXP IRanges_coverage(SEXP x, SEXP shift, SEXP width, SEXP weight, SEXP method)
+SEXP IRanges_coverage(SEXP x, SEXP shift, SEXP width, SEXP weight,
+		SEXP circle_len, SEXP method)
 {
 	cachedIRanges cached_x;
 	int x_len;
@@ -571,76 +593,117 @@ SEXP IRanges_coverage(SEXP x, SEXP shift, SEXP width, SEXP weight, SEXP method)
 
 	cached_x = _cache_IRanges(x);
 	x_len = _get_cachedIRanges_length(&cached_x);
+
+	/* Check 'width'. */
+	check_arg_is_integer(width, "width");
+	if (LENGTH(width) != 1)
+		error("'%s' must be a single integer", "width");
+
+	/* Check 'circle_len'. */
+	check_arg_is_integer(circle_len, "circle.length");
+	if (LENGTH(circle_len) != 1)
+		error("'%s' must be a single integer", "circle.length");
+
 	ranges_buf = _new_RangeAE(x_len, 0);
 	x_label = "x";
 	shift_label = "shift";
 	width_label = "width";
 	weight_label = "weight";
-	return cachedIRanges_coverage(&cached_x, shift, width, weight, method,
-				      &ranges_buf);
+	return cachedIRanges_coverage(&cached_x,
+				      shift, INTEGER(width)[0],
+				      weight, INTEGER(circle_len)[0],
+				      method, &ranges_buf);
 }
 
 /* --- .Call ENTRY POINT ---
  * Args:
- *   x:      a CompressedIRangesList object of length N.
- *   shift:  a list of length N. Each element must be a numeric (integer or
- *           double) vector.
- *   width:  a list of length N. Each element must be a NULL, a single NA,
- *           or a single non-negative number.
- *   weight: a list of length N. Each element must be a numeric (integer or
- *           double) vector.
- *   method: either "auto", "sort", or "hash".
+ *   x:           A CompressedIRangesList object of length N.
+ *   shift:       A list of length N. Each element must be a numeric (integer
+ *                or double) vector.
+ *   width:       An integer vector of length N. Values must be NAs or >= 0.
+ *                or a single non-negative number.
+ *   weight:      A list of length N. Each element must be a numeric (integer
+ *                or double) vector.
+ *   circle_lens: An integer vector of length N. Values must be NAs or > 0.
+ *   method:      Either "auto", "sort", or "hash".
  * Returns a list of N RleList objects.
  */
-SEXP CompressedIRangesList_coverage(SEXP x, SEXP shift,
-		SEXP width, SEXP weight, SEXP method)
+SEXP CompressedIRangesList_coverage(SEXP x,
+		SEXP shift, SEXP width, SEXP weight, SEXP circle_lens,
+		SEXP method)
 {
 	cachedCompressedIRangesList cached_x;
-	int x_len, shift_len, width_len, weight_len, i, j, k, l;
+	int x_len, shift_len, width_len, weight_len, circle_lens_len,
+	    i, j, k, l, m;
 	RangeAE ranges_buf;
-	SEXP ans, ans_elt, shift_elt, width_elt, weight_elt;
+	SEXP ans, ans_elt, shift_elt, weight_elt;
 	cachedIRanges cached_x_elt;
 	char x_label_buf[40], shift_label_buf[40],
 	     width_label_buf[40], weight_label_buf[40];
 
 	cached_x = _cache_CompressedIRangesList(x);
 	x_len = _get_cachedCompressedIRangesList_length(&cached_x);
+
+	/* Check 'shift'. */
+	check_arg_is_list(shift, "shift");
 	shift_len = LENGTH(shift);
+	check_arg_len(shift_len, x_len, "shift", "x");
+
+	/* Check 'width'. */
+	check_arg_is_integer(width, "width");
 	width_len = LENGTH(width);
+	check_arg_len(width_len, x_len, "width", "x");
+
+	/* Check 'weight'. */
+	check_arg_is_list(weight, "weight");
 	weight_len = LENGTH(weight);
+	check_arg_len(weight_len, x_len, "weight", "x");
+
+	/* Check 'circle_lens'. */
+	check_arg_is_integer(circle_lens, "circle.length");
+	circle_lens_len = LENGTH(circle_lens);
+	check_arg_len(circle_lens_len, x_len, "circle.length", "x");
+
 	ranges_buf = _new_RangeAE(0, 0);
 	x_label = x_label_buf;
 	shift_label = shift_label_buf;
 	width_label = width_label_buf;
 	weight_label = weight_label_buf;
 	PROTECT(ans = NEW_LIST(x_len));
-	for (i = j = k = l = 0; i < x_len; i++, j++, k++, l++) {
+	for (i = j = k = l = m = 0; i < x_len; i++, j++, k++, l++, m++) {
 		if (j >= shift_len)
 			j = 0; /* recycle j */
 		if (k >= width_len)
 			k = 0; /* recycle k */
 		if (l >= weight_len)
 			l = 0; /* recycle l */
-		cached_x_elt = _get_cachedCompressedIRangesList_elt(&cached_x,
-						i);
-		shift_elt = VECTOR_ELT(shift, j);
-		width_elt = VECTOR_ELT(width, k);
-		weight_elt = VECTOR_ELT(weight, l);
+		if (m >= circle_lens_len)
+			m = 0; /* recycle m */
 		snprintf(x_label_buf, sizeof(x_label_buf),
 			 "x[[%d]]", i + 1);
 		snprintf(shift_label_buf, sizeof(shift_label_buf),
 			 "shift[[%d]]", j + 1);
 		snprintf(width_label_buf, sizeof(width_label_buf),
-			 "width[[%d]]", k + 1);
+			 "width[%d]", k + 1);
 		snprintf(weight_label_buf, sizeof(weight_label_buf),
 			 "weight[[%d]]", l + 1);
+		cached_x_elt = _get_cachedCompressedIRangesList_elt(&cached_x,
+						i);
+		shift_elt = VECTOR_ELT(shift, j);
+		weight_elt = VECTOR_ELT(weight, l);
 		PROTECT(ans_elt = cachedIRanges_coverage(&cached_x_elt,
-						shift_elt, width_elt,
-						weight_elt, method,
-						&ranges_buf));
+						shift_elt,
+						INTEGER(width)[k],
+						weight_elt,
+						INTEGER(circle_lens)[m],
+						method, &ranges_buf));
 		SET_VECTOR_ELT(ans, i, ans_elt);
 		UNPROTECT(1);
 	}
+	check_recycling_was_round(j, shift_len, "shift", "x");
+	check_recycling_was_round(k, width_len, "width", "x");
+	check_recycling_was_round(l, weight_len, "weight", "x");
+	check_recycling_was_round(m, circle_lens_len, "circle.length", "x");
 	UNPROTECT(1);
 	return ans;
 }

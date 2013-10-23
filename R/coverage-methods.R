@@ -91,16 +91,53 @@ setMethod("coverage", "numeric",
     }
 )
 
-.IRanges.coverage <- function(x, shift, width, weight, method)
+### 'shift', 'weight', and 'method' checked at the C level.
+.IRanges.coverage <- function(x, shift, width, weight, circle.length, method)
 {
-    .Call2("IRanges_coverage", x, shift, width, weight, method,
+    ## Check 'x'.
+    if (!is(x, "IRanges"))
+        stop("'x' must be an IRanges object")
+    ## Check 'width'.
+    if (is.null(width)) {
+        width <- NA_integer_
+    } else if (!isSingleNumberOrNA(width)) {
+        stop("'width' must be NULL or a single integer")
+    } else if (!is.integer(width)) {
+        width <- as.integer(width)
+    }
+    ## Check 'circle.length'.
+    if (!isSingleNumberOrNA(circle.length))
+        stop("'circle.length' must be a single integer")
+    if (!is.integer(circle.length))
+        circle.length <- as.integer(circle.length)
+    ## Ready to go...
+    .Call2("IRanges_coverage", x, shift, width, weight, circle.length, method,
            PACKAGE="IRanges")
 }
 
-.CompressedIRangesList.coverage <- function(x, shift, width, weight, method)
+### 'shift', 'weight', and 'method' checked at the C level.
+.CompressedIRangesList.coverage <- function(x, shift, width, weight,
+                                            circle.length, method)
 {
+    ## Check 'x'.
+    if (!is(x, "CompressedIRangesList"))
+        stop("'x' must be a CompressedIRangesList object")
+    ## Check 'width'.
+    if (is.null(width)) {
+        width <- NA_integer_
+    } else if (!is.numeric(width)) {
+        stop("'width' must be NULL or an integer vector")
+    } else if (!is.integer(width)) {
+        width <- as.integer(width)
+    }
+    ## Check 'circle.length'.
+    if (!is.numeric(circle.length))
+        stop("'circle.length' must be an integer vector")
+    if (!is.integer(circle.length))
+        circle.length <- as.integer(circle.length)
+    ## Ready to go...
     ans_listData <- .Call2("CompressedIRangesList_coverage",
-                           x, shift, width, weight, method,
+                           x, shift, width, weight, circle.length, method,
                            PACKAGE="IRanges")
     names(ans_listData) <- names(x)
     newList("SimpleRleList",
@@ -122,7 +159,8 @@ setMethod("coverage", "Ranges",
                      weight, "\" columns")
             weight <- x_mcols[[weight]]
         }
-        .IRanges.coverage(as(x, "IRanges"), shift, width, weight, method)
+        .IRanges.coverage(as(x, "IRanges"),
+                          shift, width, weight, NA_integer_, method)
     }
 )
 
@@ -174,7 +212,8 @@ setMethod("coverage", "RangesList",
                                                names(x), 1L)
         method <- match.arg(method)
         .CompressedIRangesList.coverage(as(x, "CompressedIRangesList"),
-                                        shift, width, weight, method)
+                                        shift, width, weight,
+                                        NA_integer_, method)
     }
 )
 

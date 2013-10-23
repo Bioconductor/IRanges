@@ -1060,6 +1060,7 @@ SEXP IRanges_coverage(
 	SEXP shift,
 	SEXP width,
 	SEXP weight,
+	SEXP circle_len,
 	SEXP method
 );
 
@@ -1068,6 +1069,7 @@ SEXP CompressedIRangesList_coverage(
 	SEXP shift,
 	SEXP width,
 	SEXP weight,
+	SEXP circle_lens,
 	SEXP method
 );
 
