@@ -11,7 +11,8 @@
 \title{Coverage across a set of ranges}
 
 \description{
-  Counts the number of times a position is represented in a set of ranges. 
+  For each position in the space underlying a set of ranges, counts the
+  number of ranges that cover it.
 }
 
 \usage{
@@ -26,54 +27,87 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
 
 \arguments{
   \item{x}{
-    A \link{Ranges}, \link{Views}, \link{RangesList}, \link{RangedData}
-    object, or any object for which a \code{coverage} method is defined.
+    A \link{Ranges}, \link{Views}, or \link{RangesList} object.
+    See \code{?`\link[GenomicRanges]{coverage-methods}`} in the
+    \pkg{GenomicRanges} package for \code{coverage} methods for
+    other objects.
   }
   \item{shift}{
-    For most methods, an integer vector (recycled to the length of
-    \code{x}) specifying how each element in \code{x} should be
-    (horizontally) shifted before the coverage is computed. Only shifted
-    indices in the range [1, \code{width}] will be included in the coverage
-    calculation.
-    For \link{RangesList} and \link{RangedData} objects, a list or vector
-    of the same length as \code{x} to be used for the corresponding element
-    in \code{x}. In addition for \link{RangedData} objects, can also be
-    a character vector of length 1 denoting the column to use in
-    \code{values(x)}.
+    Specifies how much each range in \code{x} should be shifted before the
+    coverage is computed.
+    \itemize{
+      \item If \code{x} is a \link{Ranges} or \link{Views} object:
+            \code{shift} must be an integer or numeric vector parallel to
+            \code{x} (recycled if necessary) and with no NAs.
+      \item If \code{x} is a \link{RangesList} object:
+            \code{shift} must be a numeric vector or list-like object of
+            the same length as \code{x} (recycled if necessary).
+            If it's a numeric vector, it's first turned into a list with
+            \code{as.list}.
+            After recycling, each list element \code{shift[[i]]} must be an
+            integer or numeric vector parallel to \code{x[[i]]} (recycled
+            if necessary) and with no NAs.
+    }
+    A positive shift value will shift the corresponding range in \code{x} to
+    the right, and a negative value to the left.
   }
   \item{width}{
-    For most methods, the length of the returned coverage vector. For
-    \link{RangesList} and \link{RangedData} objects, a list or vector of
-    the same length as \code{x} to be used for the corresponding element
-    in \code{x}. In addition for \link{RangedData} objects, can also be
-    a character vector of length 1 denoting the column to use in
-    \code{values(x)}.
+    \itemize{
+      \item If \code{x} is a \link{Ranges} object:
+            \code{width} must be \code{NULL} (the default), an NA, or a
+            single non-negative integer.
+            After being shifted, the ranges in \code{x} are always clipped
+            on the left to keep only their positive portion i.e. their
+            intersection with the [1, +inf) interval. If \code{width} is
+            a single non-negative integer, then they're also clipped on the
+            right to keep only their intersection with the [1, width] interval.
+            In that case \code{coverage} returns a vector of length
+            \code{width}.
+            Otherwise, it returns a vector that extends to the last position
+            in the underlying space covered by the shifted ranges.
 
-    If \code{width=NULL} (the default), then the specific \code{coverage}
-    method that is actually selected will choose the length of the returned
-    vector "in a way that makes sense".
+      \item If \code{x} is a \link{Views} object:
+            Same as for a \link{Ranges} object, except that, if
+            \code{width} is \code{NULL} then it's treated as if it
+            was \code{length(subject(x))}.
 
-    For example, when \code{width=NULL}, the method for \link{Ranges} objects
-    returns a vector that has just enough elements to have its last
-    element aligned with the rightmost end of all the ranges in \code{x} after
-    those ranges have been shifted (see the \code{shift} argument above).
-    This ensures that any longer coverage vector would be a "padded with zeros"
-    version of the vector returned when \code{width=NULL}.
-
-    When \code{width=NULL}, the method for \link{Views} objects
-    returns a vector of the same length as \code{subject(x)}.
+      \item If \code{x} is a \link{RangesList} object:
+            \code{width} must be \code{NULL} or an integer vector parallel
+            to \code{x} (i.e. with one element per list element in \code{x}).
+            If not \code{NULL}, the vector must contain NAs or non-negative
+            integers and it will be recycled to the length of \code{x} if
+            necessary.
+            If \code{NULL}, it is replaced by \code{NA} and recycled to the
+            length of \code{x}.
+            Finally \code{width[i]} is used to compute the coverage vector
+            for \code{x[[i]]} and is therefore treated like explained above
+            (when \code{x} is a \link{Ranges} object).
+    }
   }
   \item{weight}{
-    For most methods, an integer or numeric vector specifying how much each
-    element in \code{x} counts. For \link{RangesList} and \link{RangedData}
-    objects, a list or vector of the same length as \code{x} to be used
-    for the corresponding element in \code{x}.
-    For \link{Ranges} and \link{Views} objects, this can also be a single
-    string naming a metadata column (i.e. a column in \code{mcols(x)}) to be
-    used as the weights.
-    For \link{RangedData} objects, this can also be a single string naming
-    a column of values (i.e. a column in \code{values(x)}) to be used as
-    the weights.
+    Specifies the weight of each range in \code{x}.
+    \itemize{
+      \item If \code{x} is a \link{Ranges} or \link{Views} object:
+            \code{weight} must be an integer or numeric vector parallel to
+            \code{x} (recycled if necessary).
+      \item If \code{x} is a \link{RangesList} object:
+            \code{weight} must be a numeric vector or list-like object of
+            the same length as \code{x} (recycled if necessary).
+            If it's a numeric vector, it's first turned into a list with
+            \code{as.list}.
+            After recycling, each list element \code{weight[[i]]} must be an
+            integer or numeric vector parallel to \code{x[[i]]} (recycled
+            if necessary).
+    }
+    If \code{weight} is an integer vector or list-like object of integer
+    vectors, the coverage vector(s) will be returned as integer-\link{Rle}
+    object(s). If it's a numeric vector or list-like object of numeric
+    vectors, the coverage vector(s) will be returned as numeric-\link{Rle}
+    object(s).
+
+    Finally note that \code{weight} can also be specified as a single string
+    naming a metadata column in \code{x} (i.e. a column in \code{mcols(x)})
+    to be used as the weights.
   }
   \item{method}{
     If \code{method} is set to \code{"sort"}, then \code{x} is sorted
@@ -96,19 +130,24 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
 }
 
 \value{
-  For most methods, an integer-\link{Rle} (if \code{typeof(weight)} is
-  \code{"integer"}) or numeric-\link{Rle} (if \code{typeof(weight)} is
-  \code{"double"}) object representing the coverage of \code{x}.
-  For \link{RangesList} and \link{RangedData} objects, a
-  \link{SimpleRleList} object representing a list of coverage vectors.
+  If \code{x} is a \link{Ranges} or \link{Views} object:
+  An integer- or numeric-\link{Rle} object depending on whether \code{weight}
+  is an integer or numeric vector.
+
+  If \code{x} is a \link{RangesList} object:
+  A \link{SimpleRleList} object with one coverage vector per list element
+  in \code{x}. The i-th coverage vector can be either an integer- or
+  numeric-\link{Rle} object depending on the type of \code{weight[[i]]}
+  (after \code{weight} has gone thru \code{as.list} and recycling, like
+  described previously).
 }
 
 \author{H. Pages and P. Aboyoun}
 
 \seealso{
   \itemize{
-    \item \link[GenomicRanges]{coverage-methods} in the GenomicRanges package
-          for more \code{coverage} methods.
+    \item \link[GenomicRanges]{coverage-methods} in the \pkg{GenomicRanges}
+          package for more \code{coverage} methods.
 
     \item The \code{\link{slice}} function for slicing the \link{Rle} or
           \link{RleList} object returned by \code{coverage}.

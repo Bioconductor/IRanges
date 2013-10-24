@@ -3,7 +3,7 @@
  *               Weighted coverage of a set of integer ranges               *
  *               --------------------------------------------               *
  *                                                                          *
- *                 Authors: Patrick Aboyoun and Herve Pages                 *
+ *                 Authors: Herve Pages and Patrick Aboyoun                 *
  *            Code for "sort" method based on timing enhancements           *
  *                  by Charles C. Berry <ccberry@ucsd.edu>                  *
  *                                                                          *
@@ -392,9 +392,10 @@ static int double2int(double x)
  * Args:
  *   cached_x:   A cachedIRanges struct holding the input ranges, those
  *               ranges being those of a fictive IRanges object 'x'.
- *   shift:      An integer or numeric vector that is parallel to 'x'.
- *   width:      A single integer. NA or >= 0..
- *   circle_len: A single positive integer or NA.
+ *   shift:      A numeric (integer or double) vector parallel to 'x' with
+ *               no NAs.
+ *   width:      A single integer. NA or >= 0.
+ *   circle_len: A single integer. NA or > 0.
  * After the input ranges are shifted:
  *   - If 'width' is a non-negative integer, then the ranges are clipped with
  *     respect to the [1, width] interval and the function returns 'width'.
@@ -502,6 +503,18 @@ static int shift_and_clip_ranges(const cachedIRanges *cached_x,
 	return cvg_len;
 }
 
+/*
+ * Args:
+ *   cached_x:   A cachedIRanges struct holding the input ranges, those
+ *               ranges being those of a fictive IRanges object 'x'.
+ *   shift:      A numeric (integer or double) vector parallel to 'x' with
+ *               no NAs.
+ *   width:      A single integer. NA or >= 0.
+ *   weight:     A numeric (integer or double) vector.
+ *   circle_len: A single integer. NA or > 0.
+ *   method:     Either "auto", "sort", or "hash".
+ * Returns an Rle object.
+ */
 static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
 		SEXP shift, int width, SEXP weight, int circle_len,
 		SEXP method, RangeAE *ranges_buf)
@@ -579,8 +592,8 @@ static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
 /* --- .Call ENTRY POINT ---
  * Args:
  *   x:          An IRanges object.
- *   shift:      A numeric (integer or double) vector.
- *   width:      A single integer. NA or >= 0..
+ *   shift:      A numeric (integer or double) vector with no NAs.
+ *   width:      A single integer. NA or >= 0.
  *   weight:     A numeric (integer or double) vector.
  *   circle_len: A single integer. NA or > 0.
  *   method:     Either "auto", "sort", or "hash".
@@ -621,7 +634,7 @@ SEXP IRanges_coverage(SEXP x, SEXP shift, SEXP width, SEXP weight,
  * Args:
  *   x:           A CompressedIRangesList object of length N.
  *   shift:       A list of length N. Each element must be a numeric (integer
- *                or double) vector.
+ *                or double) vector with no NAs.
  *   width:       An integer vector of length N. Values must be NAs or >= 0.
  *                or a single non-negative number.
  *   weight:      A list of length N. Each element must be a numeric (integer

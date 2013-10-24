@@ -85,8 +85,8 @@
 
     ## Check 'shift'.
     if (!is.list(shift)) {
-        if (!is(shift, "List"))
-            stop("'shift' must be a list-like object")
+        if (!(is.numeric(shift) || is(shift, "List")))
+            stop("'shift' must be a numeric vector or list-like object")
         shift <- as.list(shift)
     }
     .check_arg_names(shift, "shift", x_names)
@@ -103,8 +103,8 @@
 
     ## Check 'weight'.
     if (!is.list(weight)) {
-        if (!is(weight, "List"))
-            stop("'weight' must be a list-like object")
+        if (!(is.numeric(weight) || is(weight, "List")))
+            stop("'weight' must be a numeric vector or list-like object")
         weight <- as.list(weight)
     }
     .check_arg_names(weight, "weight", x_names)
