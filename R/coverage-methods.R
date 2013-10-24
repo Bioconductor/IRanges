@@ -1,7 +1,6 @@
 ### =========================================================================
 ### coverage()
 ### -------------------------------------------------------------------------
-###
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -21,8 +20,6 @@
     head(cvg, n=width)
 }
 
-
-### 'shift' and 'weight' checked at the C level.
 ### Returns an Rle object.
 .IRanges.coverage <- function(x,
                               shift=0L, width=NULL,
@@ -32,6 +29,9 @@
     ## Check 'x'.
     if (!is(x, "IRanges"))
         stop("'x' must be an IRanges object")
+
+    ## Check 'shift' at the C level.
+
     ## Check 'width'.
     if (is.null(width)) {
         width <- NA_integer_
@@ -40,6 +40,9 @@
     } else if (!is.integer(width)) {
         width <- as.integer(width)
     }
+
+    ## Check 'weight' at the C level.
+
     ## Check 'circle.length'.
     if (!isSingleNumberOrNA(circle.length))
         stop("'circle.length' must be a single integer")
@@ -55,12 +58,20 @@
                               weight, circle.length,
                               method,
                               PACKAGE="IRanges")
+
     if (is.na(circle.length))
         return(ans)
     .fold_and_truncate_coverage(ans, circle.length, width)
 }
 
-### 'shift' and 'weight' checked at the C level.
+.check_arg_names <- function(arg, arg.label, x_names)
+{
+    arg_names <- names(arg)
+    if (!(is.null(arg_names) || identical(arg_names, x_names)))
+        stop("when '", arg.label, "' has names, ",
+             "they must be identical to the names of 'x'")
+}
+
 ### Returns a SimpleRleList object of the length of 'x'.
 .CompressedIRangesList.coverage <- function(x,
                                             shift=0L, width=NULL,
@@ -70,6 +81,16 @@
     ## Check 'x'.
     if (!is(x, "CompressedIRangesList"))
         stop("'x' must be a CompressedIRangesList object")
+    x_names <- names(x)
+
+    ## Check 'shift'.
+    if (!is.list(shift)) {
+        if (!is(shift, "List"))
+            stop("'shift' must be a list-like object")
+        shift <- as.list(shift)
+    }
+    .check_arg_names(shift, "shift", x_names)
+
     ## Check 'width'.
     if (is.null(width)) {
         width <- NA_integer_
@@ -78,6 +99,16 @@
     } else if (!is.integer(width)) {
         width <- as.integer(width)
     }
+    .check_arg_names(width, "width", x_names)
+
+    ## Check 'weight'.
+    if (!is.list(weight)) {
+        if (!is(weight, "List"))
+            stop("'weight' must be a list-like object")
+        weight <- as.list(weight)
+    }
+    .check_arg_names(weight, "weight", x_names)
+
     ## Check 'circle.length'.
     if (identical(circle.length, NA)) {
         circle.length <- NA_integer_
@@ -86,14 +117,15 @@
     } else if (!is.integer(circle.length)) {
         circle.length <- as.integer(circle.length)
     }
+    .check_arg_names(circle.length, "circle.length", x_names)
 
     ## Check 'method'.
     method <- match.arg(method)
 
     ## Ready to go...
     ans_listData <- .Call2("CompressedIRangesList_coverage", x,
-                              as.list(shift), width,
-                              as.list(weight), circle.length,
+                              shift, width,
+                              weight, circle.length,
                               method,
                               PACKAGE="IRanges")
 
@@ -124,99 +156,20 @@
             mcols=mcols(x))
 }
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### coverage() generic and methods.
+###
+
 setGeneric("coverage", signature="x",
     function(x, shift=0L, width=NULL, weight=1L, ...)
         standardGeneric("coverage")
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Argument checking.
-###
-
-.normargWidth <- function(width, nseq)
-{
-    if (is.null(width)) {
-        if (nseq == 0L)
-            width <- 0L
-    } else {
-        if (!isSingleNumber(width) || width < 0)
-            stop("'width' must be NULL or a single non-negative integer")
-        if (!is.integer(width))
-            width <- as.integer(width)
-    }
-    width
-}
-
-### Can be used by any "coverage" method returning an RleList to transform
-### their 'shift', 'width', and 'weight' arguments into lists of the same
-### length as the returned RleList.
-### 'refnames' must be either NULL or a character vector of length
-### 'length.out'.
-normarg_for_multiple_coverage <- function(arg, argname, length.out,
-                                          refnames, default.argval)
-{
-    if (is.null(arg)) {
-        arg <- list(NULL)
-    } else if (is.numeric(arg)) {
-        arg <- as.list(arg)
-    } else if (!is.list(arg) && !is(arg, "List")) {
-        stop("'", argname, "' must be NULL, or a numeric vector, ",
-             "or a list-like object")
-    }
-    arg_names <- names(arg)
-    if (is.null(arg_names)) {
-        arg <- recycleArg(arg, argname, length.out)
-        return(arg)
-    }
-    if (is.null(refnames))
-        stop("'", argname, "' cannot be named when 'x' is not")
-    arg2ref <- match(arg_names, refnames)
-    if (any(is.na(arg2ref)))
-        stop("'", argname, "' has names not in 'names(x)'")
-    if (anyDuplicated(arg_names))
-        stop("'", argname, "' has duplicated names")
-    arg2 <- rep.int(as(list(default.argval), class(arg)), length.out)
-    arg2[arg2ref] <- arg
-    return(arg2)
-}
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Methods.
-###
-
-setMethod("coverage", "numeric",
-    function(x, shift=0L, width=NULL, weight=1L)
-    {
-        shift <- recycleIntegerArg(shift, "shift", length(x))
-        width <- .normargWidth(width, length(x))
-        weight <- recycleIntegerArg(weight, "weight", length(x))
-        if (!is.integer(x))
-            x <- as.integer(x)
-        if (anyMissing(x))
-            stop("'x' contains NAs")
-        sx <- x + shift
-        if (is.null(width)) {
-            width <- max(sx)
-            ii <- which(1L <= sx)
-        } else {
-            ii <- which(1L <= sx & sx <= width)
-        }
-        if (width <= 0L)  # could be < 0 now if supplied width was NULL
-            return(Rle())
-        ## Restrict 'sx' (i.e. keep >= 1 and <= width values only)
-        rsx <- sx[ii]
-        rw <- weight[ii]
-        Rle(sapply(seq_len(width), function(i) sum(rw[rsx == i])))
-    }
-)
-
 setMethod("coverage", "Ranges",
     function(x, shift=0L, width=NULL, weight=1L,
-             method=c("auto", "sort", "hash"))
+                method=c("auto", "sort", "hash"))
     {
-        method <- match.arg(method)
         if (isSingleString(weight)) {
             x_mcols <- mcols(x)
             if (!is(x_mcols, "DataTable")
@@ -226,15 +179,15 @@ setMethod("coverage", "Ranges",
             weight <- x_mcols[[weight]]
         }
         .IRanges.coverage(as(x, "IRanges"),
-                          shift=shift, width=width, weight=weight, method)
+                          shift=shift, width=width, weight=weight,
+                          method=method)
     }
 )
 
 setMethod("coverage", "Views",
     function(x, shift=0L, width=NULL, weight=1L,
-             method=c("auto", "sort", "hash"))
+                method=c("auto", "sort", "hash"))
     {
-        method <- match.arg(method)
         if (is.null(width))
             width <- length(subject(x))
         coverage(as(x, "IRanges"),
@@ -247,7 +200,7 @@ setMethod("coverage", "Views",
 
 setMethod("coverage", "RangesList",
     function(x, shift=0L, width=NULL, weight=1L,
-             method=c("auto", "sort", "hash"))
+                method=c("auto", "sort", "hash"))
     {
         x_mcols <- mcols(x)
         x_mcolnames <- colnames(x_mcols)
@@ -269,14 +222,6 @@ setMethod("coverage", "RangesList",
                      "is not a valid metadata column name of 'x'")
             weight <- x_mcols[[weight]]
         }
-        x_len <- length(x)
-        shift <- normarg_for_multiple_coverage(shift, "shift", x_len,
-                                               names(x), 0L)
-        width <- normarg_for_multiple_coverage(width, "width", x_len,
-                                               names(x), NULL)
-        weight <- normarg_for_multiple_coverage(weight, "weight", x_len,
-                                               names(x), 1L)
-        method <- match.arg(method)
         .CompressedIRangesList.coverage(as(x, "CompressedIRangesList"),
                                         shift=shift, width=width,
                                         weight=weight,

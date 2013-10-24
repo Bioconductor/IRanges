@@ -3,7 +3,6 @@
 \alias{coverage-methods}
 
 \alias{coverage}
-\alias{coverage,numeric-method}
 \alias{coverage,Ranges-method}
 \alias{coverage,Views-method}
 \alias{coverage,RangesList-method}
