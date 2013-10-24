@@ -158,11 +158,19 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
 }
 
 \examples{
+## ---------------------------------------------------------------------
+## A. COVERAGE OF AN IRanges OBJECT
+## ---------------------------------------------------------------------
+
 x <- IRanges(start=c(-2L, 6L, 9L, -4L, 1L, 0L, -6L, 10L),
              width=c( 5L, 0L, 6L,  1L, 4L, 3L,  2L,  3L))
 coverage(x)
 coverage(x, shift=7)
 coverage(x, shift=7, width=27)
+coverage(x, shift=c(-4, 2))  # 'shift' is recycled
+coverage(x, shift=c(-4, 2), width=12)
+coverage(x, shift=-max(end(x)))
+
 coverage(restrict(x, 1, 10))
 coverage(reduce(x), shift=7)
 coverage(gaps(shift(x, 7), start=1, end=27))
@@ -176,6 +184,83 @@ stopifnot(identical(coverage(x, width=99, weight=c(5L, -11L)),
 cvg3 <- coverage(x, weight=1.5)
 cvg3  # numeric-Rle
 stopifnot(identical(cvg3, coverage(x) * 1.5))
+
+## ---------------------------------------------------------------------
+## B. SOME MATHEMATICAL PROPERTIES OF THE coverage() FUNCTION
+## ---------------------------------------------------------------------
+
+## The coverage vector is not affected by reordering the input ranges:
+set.seed(24)
+x <- IRanges(sample(1000, 30, replace=TRUE), width=15:10)
+cvg0 <- coverage(x)
+stopifnot(identical(coverage(sample(x)), cvg0))
+
+## Of course, if the ranges are shifted and/or assigned weights, then
+## this doesn't hold anymore, unless the 'shift' and/or 'weight'
+## arguments are reordered accordingly.
+
+## Linearity: Multiplying the weights by a scalar has the effect of
+## multiplying the coverage vector by the same scalar:
+weight <- runif(30)
+cvg1 <- coverage(x, weight=weight)
+stopifnot(all.equal(coverage(x, weight=-2.68 * weight), -2.68 * cvg1))
+
+## Linearity: Concatenating 2 input Ranges objects => summing of the
+## coverages.
+## [TODO]
+
+## If none of the input range is clipped during the "shift and clip"
+## process, then 'sum(cvg)' is equal to 'sum(width(x) * weight)':
+stopifnot(sum(cvg1) == sum(width(x) * weight))
+
+## Repeating any input range N number of times is equivalent to
+## multiplying its assigned weight by N:
+times <- sample(0:10L, length(x), replace=TRUE)
+stopifnot(all.equal(coverage(rep(x, times), weight=rep(weight, times)),
+                    coverage(x, weight=weight * times)))
+stopifnot(identical(coverage(rep(x, times)), coverage(x, weight=times)))
+
+## If 'weight' is not supplied, then disjoining or reducing the ranges
+## before calling coverage() has the effect of "shaving" the coverage
+## vector at the elevation of 1:
+shaved_cvg0 <- cvg0
+runValue(shaved_cvg0) <- pmin(runValue(cvg0), 1L)
+shaved_cvg0
+stopifnot(identical(coverage(disjoin(x)), shaved_cvg0))
+stopifnot(identical(coverage(reduce(x)), shaved_cvg0))
+
+## Some sanity checks:
+dummy.coverage <- function(x, shift=0L, width=NULL)
+{
+    y <- unlist(shift(x, shift))
+    if (is.null(width))
+        width <- max(c(0L, y))
+    Rle(tabulate(y,  nbins=width))
+}
+
+check_real_vs_dummy <- function(x, shift=0L, width=NULL)
+{
+    res1 <- coverage(x, shift=shift, width=width)
+    res2 <- dummy.coverage(x, shift=shift, width=width)
+    stopifnot(identical(res1, res2))
+}
+check_real_vs_dummy(x)
+check_real_vs_dummy(x, shift=7)
+check_real_vs_dummy(x, shift=7, width=27)
+check_real_vs_dummy(x, shift=c(-4, 2))
+check_real_vs_dummy(x, shift=c(-4, 2), width=12)
+check_real_vs_dummy(x, shift=-max(end(x)))
+
+## With a set of distinct single positions:
+x3 <- IRanges(sample(50000, 20000), width=1)
+stopifnot(identical(sort(start(x3)), which(coverage(x3) != 0L)))
+
+## ---------------------------------------------------------------------
+## C. COVERAGE OF AN IRangesList OBJECT
+## ---------------------------------------------------------------------
+
+## [TODO]
+
 }
 
 \keyword{methods}
