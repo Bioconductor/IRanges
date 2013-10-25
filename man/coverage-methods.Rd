@@ -19,10 +19,10 @@
 coverage(x, shift=0L, width=NULL, weight=1L, ...)
 
 \S4method{coverage}{Ranges}(x, shift=0L, width=NULL, weight=1L,
-       method = c("auto", "sort", "hash"))
+            method=c("auto", "sort", "hash"))
 
 \S4method{coverage}{RangesList}(x, shift=0L, width=NULL, weight=1L,
-       method = c("auto", "sort", "hash"))
+            method=c("auto", "sort", "hash"))
 }
 
 \arguments{
@@ -136,10 +136,10 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
 
   If \code{x} is a \link{RangesList} object:
   A \link{SimpleRleList} object with one coverage vector per list element
-  in \code{x}. The i-th coverage vector can be either an integer- or
-  numeric-\link{Rle} object depending on the type of \code{weight[[i]]}
-  (after \code{weight} has gone thru \code{as.list} and recycling, like
-  described previously).
+  in \code{x}, and with \code{x} names propagated to it. The i-th coverage
+  vector can be either an integer- or numeric-\link{Rle} object, depending
+  on the type of \code{weight[[i]]} (after \code{weight} has gone thru
+  \code{as.list} and recycling, like described previously).
 }
 
 \author{H. Pages and P. Aboyoun}
@@ -175,23 +175,18 @@ coverage(restrict(x, 1, 10))
 coverage(reduce(x), shift=7)
 coverage(gaps(shift(x, 7), start=1, end=27))
 
-cvg1 <- coverage(x[c(TRUE, FALSE)], width=99)
-cvg2 <- coverage(x[c(FALSE, TRUE)], width=99)
-stopifnot(identical(coverage(x, width=99), cvg1 + cvg2))
-stopifnot(identical(coverage(x, width=99, weight=c(5L, -11L)),
-                    cvg1 * 5L + cvg2 * -11L))
-
-cvg3 <- coverage(x, weight=1.5)
-cvg3  # numeric-Rle
-stopifnot(identical(cvg3, coverage(x) * 1.5))
+## With weights:
+coverage(x, weight=as.integer(10^(0:7)))  # integer-Rle
+coverage(x, weight=c(2.8, -10))  # numeric-Rle, 'shift' is recycled
 
 ## ---------------------------------------------------------------------
 ## B. SOME MATHEMATICAL PROPERTIES OF THE coverage() FUNCTION
 ## ---------------------------------------------------------------------
 
-## The coverage vector is not affected by reordering the input ranges:
+## PROPERTY 1: The coverage vector is not affected by reordering the
+## input ranges:
 set.seed(24)
-x <- IRanges(sample(1000, 30, replace=TRUE), width=15:10)
+x <- IRanges(sample(1000, 40, replace=TRUE), width=17:10)
 cvg0 <- coverage(x)
 stopifnot(identical(coverage(sample(x)), cvg0))
 
@@ -199,37 +194,84 @@ stopifnot(identical(coverage(sample(x)), cvg0))
 ## this doesn't hold anymore, unless the 'shift' and/or 'weight'
 ## arguments are reordered accordingly.
 
-## Linearity: Multiplying the weights by a scalar has the effect of
+## PROPERTY 2: The coverage of the concatenation of 2 Ranges objects 'x'
+## and 'y' is the sum of the 2 individual coverage vectors:
+y <- IRanges(sample(-20:280, 36, replace=TRUE), width=28)
+stopifnot(identical(coverage(c(x, y), width=100),
+                    coverage(x, width=100) + coverage(y, width=100)))
+
+## Note that, because adding 2 vectors in R recycles the shortest to
+## the length of the longest, the following is generally FALSE:
+identical(coverage(c(x, y)), coverage(x) + coverage(y))  # FALSE
+
+## It would only be TRUE if the 2 coverage vectors we add had the same
+## length, which would only happen by chance. By using the same 'width'
+## value when we computed the 2 coverages previously, we made sure they
+## had the same length.
+
+## Because of properties 1 & 2, we have:
+x1 <- x[c(TRUE, FALSE)]  # pick up 1st, 3rd, 5th, etc... ranges
+x2 <- x[c(FALSE, TRUE)]  # pick up 2nd, 4th, 6th, etc... ranges
+cvg1 <- coverage(x1, width=100)
+cvg2 <- coverage(x2, width=100)
+stopifnot(identical(coverage(x, width=100), cvg1 + cvg2))
+
+## PROPERTY 3: Multiplying the weights by a scalar has the effect of
 ## multiplying the coverage vector by the same scalar:
-weight <- runif(30)
-cvg1 <- coverage(x, weight=weight)
-stopifnot(all.equal(coverage(x, weight=-2.68 * weight), -2.68 * cvg1))
+weight <- runif(40)
+cvg3 <- coverage(x, weight=weight)
+stopifnot(all.equal(coverage(x, weight=-2.68 * weight), -2.68 * cvg3))
 
-## Linearity: Concatenating 2 input Ranges objects => summing of the
-## coverages.
-## [TODO]
+## Because of properties 1 & 2 & 3, we have:
+stopifnot(identical(coverage(x, width=100, weight=c(5L, -11L)),
+                    5L * cvg1 - 11L * cvg2))
 
-## If none of the input range is clipped during the "shift and clip"
-## process, then 'sum(cvg)' is equal to 'sum(width(x) * weight)':
-stopifnot(sum(cvg1) == sum(width(x) * weight))
+## PROPERTY 4: Using the sum of 2 weight vectors produces the same
+## result as using the 2 weight vectors separately and summing the
+## 2 results:
+weight2 <- 10 * runif(40) + 3.7
+stopifnot(all.equal(coverage(x, weight=weight + weight2),
+                    cvg3 + coverage(x, weight=weight2)))
 
-## Repeating any input range N number of times is equivalent to
-## multiplying its assigned weight by N:
+## PROPERTY 5: Repeating any input range N number of times is
+## equivalent to multiplying its assigned weight by N:
 times <- sample(0:10L, length(x), replace=TRUE)
 stopifnot(all.equal(coverage(rep(x, times), weight=rep(weight, times)),
                     coverage(x, weight=weight * times)))
+
+## In particular, if 'weight' is not supplied:
 stopifnot(identical(coverage(rep(x, times)), coverage(x, weight=times)))
 
-## If 'weight' is not supplied, then disjoining or reducing the ranges
-## before calling coverage() has the effect of "shaving" the coverage
-## vector at the elevation of 1:
+## PROPERTY 6: If none of the input range is clipped during the
+## "shift and clip" process, then 'sum(cvg)' is equal to
+## 'sum(width(x) * weight)':
+stopifnot(sum(cvg3) == sum(width(x) * weight))
+
+## In particular, if 'weight' is not supplied:
+stopifnot(sum(cvg0) == sum(width(x)))
+
+## Note that this property is sometimes used in the context of a
+## ChIP-Seq analysis to estimate "the number of reads in a peak", that
+## is, the number of short reads that belong to a peak in the coverage
+## vector computed from the genomic locations (a.k.a. genomic ranges)
+## of the aligned reads. Because of property 6, the number of reads in
+## a peak is approximately the area under the peak divided by the short
+## read length.
+
+## PROPERTY 7: If 'weight' is not supplied, then disjoining or reducing
+## the ranges before calling coverage() has the effect of "shaving" the
+## coverage vector at elevation 1:
+table(cvg0)
 shaved_cvg0 <- cvg0
 runValue(shaved_cvg0) <- pmin(runValue(cvg0), 1L)
-shaved_cvg0
+table(shaved_cvg0)
+
 stopifnot(identical(coverage(disjoin(x)), shaved_cvg0))
 stopifnot(identical(coverage(reduce(x)), shaved_cvg0))
 
-## Some sanity checks:
+## ---------------------------------------------------------------------
+## C. SOME SANITY CHECKS
+## ---------------------------------------------------------------------
 dummy.coverage <- function(x, shift=0L, width=NULL)
 {
     y <- unlist(shift(x, shift))
@@ -256,11 +298,26 @@ x3 <- IRanges(sample(50000, 20000), width=1)
 stopifnot(identical(sort(start(x3)), which(coverage(x3) != 0L)))
 
 ## ---------------------------------------------------------------------
-## C. COVERAGE OF AN IRangesList OBJECT
+## D. COVERAGE OF AN IRangesList OBJECT
 ## ---------------------------------------------------------------------
+x <- IRangesList(A=IRanges(3*(4:-1), width=1:3), B=IRanges(2:10, width=5))
+cvg <- coverage(x)
+cvg
 
-## [TODO]
+stopifnot(identical(cvg[[1]], coverage(x[[1]])))
+stopifnot(identical(cvg[[2]], coverage(x[[2]])))
 
+coverage(x, width=c(50, 9))
+coverage(x, width=c(NA, 9))
+coverage(x, width=9)  # 'width' is recycled
+
+## Each list element in 'shift' and 'weight' is recycled to the length
+## of the corresponding element in 'x'.
+weight <- list(as.integer(10^(0:5)), -0.77)
+cvg2 <- coverage(x, weight=weight)
+cvg2  # 1st coverage vector is an integer-Rle, 2nd is a numeric-Rle
+
+identical(mapply(coverage, x=x, weight=weight), as.list(cvg2))
 }
 
 \keyword{methods}
