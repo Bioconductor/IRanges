@@ -38,20 +38,21 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
     \itemize{
       \item If \code{x} is a \link{Ranges} or \link{Views} object:
             \code{shift} must be an integer or numeric vector parallel to
-            \code{x} (recycled if necessary) and with no NAs.
+            \code{x} (will get recycled if necessary) and with no NAs.
       \item If \code{x} is a \link{RangesList} object:
             \code{shift} must be a numeric vector or list-like object of
-            the same length as \code{x} (recycled if necessary).
+            the same length as \code{x} (will get recycled if necessary).
             If it's a numeric vector, it's first turned into a list with
             \code{as.list}.
             After recycling, each list element \code{shift[[i]]} must be an
-            integer or numeric vector parallel to \code{x[[i]]} (recycled
-            if necessary) and with no NAs.
+            integer or numeric vector parallel to \code{x[[i]]} (will get
+            recycled if necessary) and with no NAs.
     }
     A positive shift value will shift the corresponding range in \code{x} to
     the right, and a negative value to the left.
   }
   \item{width}{
+    Specifies the length of the returned coverage vector(s).
     \itemize{
       \item If \code{x} is a \link{Ranges} object:
             \code{width} must be \code{NULL} (the default), an NA, or a
@@ -75,7 +76,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
             \code{width} must be \code{NULL} or an integer vector parallel
             to \code{x} (i.e. with one element per list element in \code{x}).
             If not \code{NULL}, the vector must contain NAs or non-negative
-            integers and it will be recycled to the length of \code{x} if
+            integers and it will get recycled to the length of \code{x} if
             necessary.
             If \code{NULL}, it is replaced with \code{NA} and recycled to the
             length of \code{x}.
@@ -85,19 +86,19 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
     }
   }
   \item{weight}{
-    Specifies the weight of each range in \code{x}.
+    Assigns a weight to each range in \code{x}.
     \itemize{
       \item If \code{x} is a \link{Ranges} or \link{Views} object:
             \code{weight} must be an integer or numeric vector parallel to
-            \code{x} (recycled if necessary).
+            \code{x} (will get recycled if necessary).
       \item If \code{x} is a \link{RangesList} object:
             \code{weight} must be a numeric vector or list-like object of
-            the same length as \code{x} (recycled if necessary).
+            the same length as \code{x} (will get recycled if necessary).
             If it's a numeric vector, it's first turned into a list with
             \code{as.list}.
             After recycling, each list element \code{weight[[i]]} must be an
-            integer or numeric vector parallel to \code{x[[i]]} (recycled
-            if necessary).
+            integer or numeric vector parallel to \code{x[[i]]} (will get
+            recycled if necessary).
     }
     If \code{weight} is an integer vector or list-like object of integer
     vectors, the coverage vector(s) will be returned as integer-\link{Rle}
@@ -166,7 +167,7 @@ x <- IRanges(start=c(-2L, 6L, 9L, -4L, 1L, 0L, -6L, 10L),
 coverage(x)
 coverage(x, shift=7)
 coverage(x, shift=7, width=27)
-coverage(x, shift=c(-4, 2))  # 'shift' is recycled
+coverage(x, shift=c(-4, 2))  # 'shift' gets recycled
 coverage(x, shift=c(-4, 2), width=12)
 coverage(x, shift=-max(end(x)))
 
@@ -176,7 +177,7 @@ coverage(gaps(shift(x, 7), start=1, end=27))
 
 ## With weights:
 coverage(x, weight=as.integer(10^(0:7)))  # integer-Rle
-coverage(x, weight=c(2.8, -10))  # numeric-Rle, 'shift' is recycled
+coverage(x, weight=c(2.8, -10))  # numeric-Rle, 'shift' gets recycled
 
 ## ---------------------------------------------------------------------
 ## B. SOME MATHEMATICAL PROPERTIES OF THE coverage() FUNCTION
@@ -310,9 +311,9 @@ stopifnot(identical(cvg[[2]], coverage(x[[2]])))
 
 coverage(x, width=c(50, 9))
 coverage(x, width=c(NA, 9))
-coverage(x, width=9)  # 'width' is recycled
+coverage(x, width=9)  # 'width' gets recycled
 
-## Each list element in 'shift' and 'weight' is recycled to the length
+## Each list element in 'shift' and 'weight' gets recycled to the length
 ## of the corresponding element in 'x'.
 weight <- list(as.integer(10^(0:5)), -0.77)
 cvg2 <- coverage(x, weight=weight)

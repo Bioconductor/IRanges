@@ -392,8 +392,8 @@ static int double2int(double x)
  * Args:
  *   cached_x:   A cachedIRanges struct holding the input ranges, those
  *               ranges being those of a fictive IRanges object 'x'.
- *   shift:      A numeric (integer or double) vector parallel to 'x' with
- *               no NAs.
+ *   shift:      A numeric (integer or double) vector parallel to 'x' (will
+ *               get recycled if necessary) with no NAs.
  *   width:      A single integer. NA or >= 0.
  *   circle_len: A single integer. NA or > 0.
  * After the input ranges are shifted:
@@ -507,10 +507,11 @@ static int shift_and_clip_ranges(const cachedIRanges *cached_x,
  * Args:
  *   cached_x:   A cachedIRanges struct holding the input ranges, those
  *               ranges being those of a fictive IRanges object 'x'.
- *   shift:      A numeric (integer or double) vector parallel to 'x' with
- *               no NAs.
+ *   shift:      A numeric (integer or double) vector parallel to 'x' (will
+ *               get recycled if necessary) with no NAs.
  *   width:      A single integer. NA or >= 0.
- *   weight:     A numeric (integer or double) vector.
+ *   weight:     A numeric (integer or double) vector parallel to 'x' (will
+ *               get recycled if necessary).
  *   circle_len: A single integer. NA or > 0.
  *   method:     Either "auto", "sort", or "hash".
  * Returns an Rle object.
@@ -558,7 +559,6 @@ static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
 	//Rprintf("cvg_len = %d\n", cvg_len);
 
 	if (out_ranges_are_tiles) {
-		take_short_path = 0;
 		if (cvg_len == 0) {
 			take_short_path = 1;
 			x_len = 0;
@@ -568,19 +568,17 @@ static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
 			x_width = &cvg_len;
 		} else if (weight_len == x_len) {
 			take_short_path = 1;
+		} else {
+			take_short_path = 0;
 		}
 		if (take_short_path) {
 			/* Short path for the tiling case. */
 			//Rprintf("taking short path\n");
-			if (IS_INTEGER(weight)) {
-				return _integer_Rle_constructor(
-							INTEGER(weight), x_len,
+			return IS_INTEGER(weight) ?
+			       _integer_Rle_constructor(INTEGER(weight), x_len,
+							x_width, 0) :
+			       _numeric_Rle_constructor(REAL(weight), x_len,
 							x_width, 0);
-			} else {
-				return _numeric_Rle_constructor(
-							REAL(weight), x_len,
-							x_width, 0);
-			}
 		}
 	}
 	//Rprintf("taking normal path\n");
@@ -592,9 +590,11 @@ static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
 /* --- .Call ENTRY POINT ---
  * Args:
  *   x:          An IRanges object.
- *   shift:      A numeric (integer or double) vector with no NAs.
+ *   shift:      A numeric (integer or double) vector parallel to 'x' (will
+ *               get recycled if necessary) with no NAs.
  *   width:      A single integer. NA or >= 0.
- *   weight:     A numeric (integer or double) vector.
+ *   weight:     A numeric (integer or double) vector parallel to 'x' (will
+ *               get recycled if necessary).
  *   circle_len: A single integer. NA or > 0.
  *   method:     Either "auto", "sort", or "hash".
  * Returns an Rle object.
@@ -633,13 +633,19 @@ SEXP IRanges_coverage(SEXP x, SEXP shift, SEXP width, SEXP weight,
 /* --- .Call ENTRY POINT ---
  * Args:
  *   x:           A CompressedIRangesList object of length N.
- *   shift:       A list of length N. Each element must be a numeric (integer
- *                or double) vector with no NAs.
- *   width:       An integer vector of length N. Values must be NAs or >= 0.
+ *   shift:       A list of length N (will get recycled if necessary). After
+ *                recycling, each list element must be a numeric (integer or
+ *                double) vector parallel to x[[i]] that will itself get
+ *                recycled if necessary, and with no NAs.
+ *   width:       An integer vector of length N (will get recycled if
+ *                necessary). Values must be NAs or >= 0.
  *                or a single non-negative number.
- *   weight:      A list of length N. Each element must be a numeric (integer
- *                or double) vector.
- *   circle_lens: An integer vector of length N. Values must be NAs or > 0.
+ *   weight:      A list of length N (will get recycled if necessary). After
+ *                recycling, each list element must be a numeric (integer or
+ *                double) vector parallel to x[[i]] that will itself get
+ *                recycled if necessary.
+ *   circle_lens: An integer vector of length N (will get recycled if
+ *                necessary). Values must be NAs or > 0.
  *   method:      Either "auto", "sort", or "hash".
  * Returns a list of N RleList objects.
  */
