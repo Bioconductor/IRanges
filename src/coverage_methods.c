@@ -351,7 +351,7 @@ static void check_arg_is_list(SEXP arg, const char *arg_label)
  * argument that can be recycled to the length of 'x'.
  * Assumes that 'arg_len' and 'x_len' are >= 0.
  */
-static void check_arg_len(int arg_len, int x_len,
+static void check_arg_is_recyclable(int arg_len, int x_len,
 		const char *arg_label, const char *x_label)
 {
 	if (arg_len < x_len) {
@@ -421,7 +421,7 @@ static int shift_and_clip_ranges(const cachedIRanges *cached_x,
 	/* Check 'shift'. */
 	check_arg_is_numeric(shift, shift_label);
 	shift_len = LENGTH(shift);
-	check_arg_len(shift_len, x_len, shift_label, x_label);
+	check_arg_is_recyclable(shift_len, x_len, shift_label, x_label);
 
 	/* Infer 'cvg_len' from 'width' and 'circle_len'. */
 	*out_ranges_are_tiles = 1;
@@ -533,7 +533,7 @@ static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
 	/* Check 'weight'. */
 	check_arg_is_numeric(weight, weight_label);
 	weight_len = LENGTH(weight);
-	check_arg_len(weight_len, x_len, weight_label, x_label);
+	check_arg_is_recyclable(weight_len, x_len, weight_label, x_label);
 
 	/* Infer 'effective_method' from 'method' and 'cvg_len'. */
 	if (!IS_CHARACTER(method) || LENGTH(method) != 1)
@@ -662,22 +662,22 @@ SEXP CompressedIRangesList_coverage(SEXP x,
 	/* Check 'shift'. */
 	check_arg_is_list(shift, "shift");
 	shift_len = LENGTH(shift);
-	check_arg_len(shift_len, x_len, "shift", "x");
+	check_arg_is_recyclable(shift_len, x_len, "shift", "x");
 
 	/* Check 'width'. */
 	check_arg_is_integer(width, "width");
 	width_len = LENGTH(width);
-	check_arg_len(width_len, x_len, "width", "x");
+	check_arg_is_recyclable(width_len, x_len, "width", "x");
 
 	/* Check 'weight'. */
 	check_arg_is_list(weight, "weight");
 	weight_len = LENGTH(weight);
-	check_arg_len(weight_len, x_len, "weight", "x");
+	check_arg_is_recyclable(weight_len, x_len, "weight", "x");
 
 	/* Check 'circle_lens'. */
 	check_arg_is_integer(circle_lens, "circle.length");
 	circle_lens_len = LENGTH(circle_lens);
-	check_arg_len(circle_lens_len, x_len, "circle.length", "x");
+	check_arg_is_recyclable(circle_lens_len, x_len, "circle.length", "x");
 
 	ranges_buf = _new_RangeAE(0, 0);
 	x_label = x_label_buf;

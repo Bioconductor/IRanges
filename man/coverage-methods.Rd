@@ -77,7 +77,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
             If not \code{NULL}, the vector must contain NAs or non-negative
             integers and it will be recycled to the length of \code{x} if
             necessary.
-            If \code{NULL}, it is replaced by \code{NA} and recycled to the
+            If \code{NULL}, it is replaced with \code{NA} and recycled to the
             length of \code{x}.
             Finally \code{width[i]} is used to compute the coverage vector
             for \code{x[[i]]} and is therefore treated like explained above
@@ -105,9 +105,9 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
     vectors, the coverage vector(s) will be returned as numeric-\link{Rle}
     object(s).
 
-    Finally note that \code{weight} can also be specified as a single string
+    Alternatively, \code{weight} can also be specified as a single string
     naming a metadata column in \code{x} (i.e. a column in \code{mcols(x)})
-    to be used as the weights.
+    to be used as the \code{weight} vector.
   }
   \item{method}{
     If \code{method} is set to \code{"sort"}, then \code{x} is sorted
@@ -135,7 +135,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
   is an integer or numeric vector.
 
   If \code{x} is a \link{RangesList} object:
-  A \link{SimpleRleList} object with one coverage vector per list element
+  An \link{RleList} object with one coverage vector per list element
   in \code{x}, and with \code{x} names propagated to it. The i-th coverage
   vector can be either an integer- or numeric-\link{Rle} object, depending
   on the type of \code{weight[[i]]} (after \code{weight} has gone thru
@@ -321,3 +321,4 @@ identical(mapply(coverage, x=x, weight=weight), as.list(cvg2))
 }
 
 \keyword{methods}
+\keyword{utilities}
