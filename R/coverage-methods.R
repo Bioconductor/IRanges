@@ -230,18 +230,12 @@ setMethod("coverage", "RangesList",
 )
 
 setMethod("coverage", "RangedData",
-    function(x,
-             shift = structure(rep(list(0L), length(x)), names = names(x)),
-             width = structure(rep(list(NULL), length(x)), names = names(x)),
-             weight = structure(rep(list(1L), length(x)), names = names(x)),
-             method = c("auto", "sort", "hash"))
+    function(x, shift=0L, width=NULL, weight=1L,
+                method=c("auto", "sort", "hash"))
     {
-        method <- match.arg(method)
-        ranges <- ranges(x)
+        x_ranges <- ranges(x)
         if (length(metadata(x)) > 0)
-            metadata(ranges) <- metadata(x)
-        if (!is.null(mcols(x)))
-            mcols(x) <- mcols(x)
+            metadata(x_ranges) <- metadata(x)
         varnames <- colnames(x)
         if (isSingleString(shift) && (shift %in% varnames))
             shift <- values(x)[, shift]
@@ -249,7 +243,8 @@ setMethod("coverage", "RangedData",
             width <- values(x)[, width]
         if (isSingleString(weight) && (weight %in% varnames))
             weight <- values(x)[, weight]
-        coverage(ranges, shift = shift, width = width, weight = weight, method = method)
+        coverage(x_ranges, shift=shift, width=width, weight=weight,
+                           method=method)
     }
 )
 

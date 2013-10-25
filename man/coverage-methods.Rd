@@ -161,7 +161,6 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
 ## ---------------------------------------------------------------------
 ## A. COVERAGE OF AN IRanges OBJECT
 ## ---------------------------------------------------------------------
-
 x <- IRanges(start=c(-2L, 6L, 9L, -4L, 1L, 0L, -6L, 10L),
              width=c( 5L, 0L, 6L,  1L, 4L, 3L,  2L,  3L))
 coverage(x)
@@ -242,9 +241,11 @@ stopifnot(all.equal(coverage(rep(x, times), weight=rep(weight, times)),
 ## In particular, if 'weight' is not supplied:
 stopifnot(identical(coverage(rep(x, times)), coverage(x, weight=times)))
 
-## PROPERTY 6: If none of the input range is clipped during the
-## "shift and clip" process, then 'sum(cvg)' is equal to
-## 'sum(width(x) * weight)':
+## PROPERTY 6: If none of the input range actually gets clipped during
+## the "shift and clip" process, then:
+##
+##     sum(cvg) = sum(width(x) * weight)
+##
 stopifnot(sum(cvg3) == sum(width(x) * weight))
 
 ## In particular, if 'weight' is not supplied:
