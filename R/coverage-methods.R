@@ -237,12 +237,39 @@ setMethod("coverage", "RangedData",
         if (length(metadata(x)) > 0)
             metadata(x_ranges) <- metadata(x)
         varnames <- colnames(x)
+
         if (isSingleString(shift) && (shift %in% varnames))
             shift <- values(x)[, shift]
-        if (isSingleString(width) && (width %in% varnames))
-            width <- values(x)[, width]
+
+        ## Some packages like TEQC pass 'width' as a named list-like object
+        ## where each list element is a single number, an NA, or a NULL,
+        ## when calling coverage() on a RangedData object. They do so because,
+        ## for whatever reason, we've been supporting this for a while, and
+        ## also because the default value for the 'width' argument of this
+        ## method used to be such a list (a named list of NULLs).
+        ## However, it never really made sense to support a named list-like
+        ## object for 'width' and it makes even less sense now that the
+        ## signature of this method has been modified (as of BioC 2.13) to use
+        ## the same arg defaults as the coverage() generic and all other
+        ## methods.
+        ## TODO: Deprecate support for this. Preferred form: NULL or an
+        ## integer vector (like in .CompressedIRangesList.coverage()).
+        if (is.list(width) || is(width, "List")) {
+            if (!identical(names(width), names(x)))
+                stop("when 'width' is a list-like object, it must be named ",
+                     "and its names must be identical to 'x' names")
+            width_eltlens <- elementLengths(width)
+            if (!all(width_eltlens <= 1L))
+                stop("when 'width' is a list, each list element should ",
+                     "contain at most 1 element or be NULL")
+            width[width_eltlens == 0L] <- NA_integer_
+            width <- unlist(width, use.names=FALSE)
+            names(width) <- names(x)
+        }
+
         if (isSingleString(weight) && (weight %in% varnames))
             weight <- values(x)[, weight]
+
         coverage(x_ranges, shift=shift, width=width, weight=weight,
                            method=method)
     }
