@@ -72,6 +72,31 @@
              "they must be identical to ", x_names.label)
 }
 
+## Some packages like easyRNASeq or TEQC pass 'width' as a named list-like
+## object where each list element is a single number, an NA, or a NULL, when
+## calling coverage() on a RangesList or RangedData object. They do so because,
+## for whatever reason, we've been supporting this for a while, and also
+## because, in the case of the method for RangedData objects, the arg default
+## for 'width' used to be such a list (a named list of NULLs in that case).
+## However, it never really made sense to support a named list-like object for
+## 'width', and it makes even less sense now that the signature of the method
+## for RangedData objects has been modified (as of BioC 2.13) to use the same
+## arg defaults as the coverage() generic and all other methods.
+## TODO: Deprecate support for this. Preferred 'width' form: NULL or an integer
+## vector. An that's it.
+.unlist_width <- function(width, x_names, x_names.label)
+{
+    if (!identical(names(width), x_names))
+        stop("when 'width' is a list-like object, it must be named ",
+             "and its names must be identical to ", x_names.label)
+    width_eltlens <- elementLengths(width)
+    if (!all(width_eltlens <= 1L))
+        stop("when 'width' is a list-like object, each list element ",
+             "should contain at most 1 element or be NULL")
+    width[width_eltlens == 0L] <- NA_integer_
+    setNames(unlist(width, use.names=FALSE), x_names)
+}
+
 ### Returns a SimpleRleList object of the length of 'x'.
 .CompressedIRangesList.coverage <- function(x,
                                             shift=0L, width=NULL,
@@ -84,7 +109,7 @@
         stop("'x' must be a CompressedIRangesList object")
     x_names <- names(x)
 
-    ## Check 'shift'.
+    ## Check and normalize 'shift'.
     if (!is.list(shift)) {
         if (!(is.numeric(shift) || is(shift, "List")))
             stop("'shift' must be a numeric vector or list-like object")
@@ -92,17 +117,25 @@
     }
     .check_arg_names(shift, "shift", x_names, x_names.label)
 
-    ## Check 'width'.
+    ## Check and normalize 'width'.
     if (is.null(width)) {
         width <- NA_integer_
-    } else if (!is.numeric(width)) {
-        stop("'width' must be NULL or an integer vector")
-    } else if (!is.integer(width)) {
-        width <- setNames(as.integer(width), names(width))
+    } else {
+        if (is.numeric(width)) {
+            .check_arg_names(width, "width", x_names, x_names.label)
+        } else if (is.list(width) || is(width, "List")) {
+            width <- .unlist_width(width, x_names, x_names.label)
+        } else {
+            ## We purposedly omit to mention that 'width' can also be a named
+            ## list-like object because this will be deprecated soon (this is
+            ## why it's not documented in man/coverage-methods.Rd either).
+            stop("'width' must be NULL or an integer vector")
+        }
+        if (!is.integer(width))
+            width <- setNames(as.integer(width), names(width))
     }
-    .check_arg_names(width, "width", x_names, x_names.label)
 
-    ## Check 'weight'.
+    ## Check and normalize 'weight'.
     if (!is.list(weight)) {
         if (!(is.numeric(weight) || is(weight, "List")))
             stop("'weight' must be a numeric vector or list-like object")
@@ -110,7 +143,7 @@
     }
     .check_arg_names(weight, "weight", x_names, x_names.label)
 
-    ## Check 'circle.length'.
+    ## Check and normalize 'circle.length'.
     if (identical(circle.length, NA)) {
         circle.length <- NA_integer_
     } else if (!is.numeric(circle.length)) {
@@ -121,7 +154,7 @@
     }
     .check_arg_names(circle.length, "circle.length", x_names, x_names.label)
 
-    ## Check 'method'.
+    ## Check and normalize 'method'.
     method <- match.arg(method)
 
     ## Ready to go...
@@ -242,32 +275,6 @@ setMethod("coverage", "RangedData",
 
         if (isSingleString(shift) && (shift %in% varnames))
             shift <- values(x)[, shift]
-
-        ## Some packages like TEQC pass 'width' as a named list-like object
-        ## where each list element is a single number, an NA, or a NULL,
-        ## when calling coverage() on a RangedData object. They do so because,
-        ## for whatever reason, we've been supporting this for a while, and
-        ## also because the default value for the 'width' argument of this
-        ## method used to be such a list (a named list of NULLs).
-        ## However, it never really made sense to support a named list-like
-        ## object for 'width' and it makes even less sense now that the
-        ## signature of this method has been modified (as of BioC 2.13) to use
-        ## the same arg defaults as the coverage() generic and all other
-        ## methods.
-        ## TODO: Deprecate support for this. Preferred form: NULL or an
-        ## integer vector (like in .CompressedIRangesList.coverage()).
-        if (is.list(width) || is(width, "List")) {
-            if (!identical(names(width), names(x)))
-                stop("when 'width' is a list-like object, it must be named ",
-                     "and its names must be identical to 'x' names")
-            width_eltlens <- elementLengths(width)
-            if (!all(width_eltlens <= 1L))
-                stop("when 'width' is a list, each list element should ",
-                     "contain at most 1 element or be NULL")
-            width[width_eltlens == 0L] <- NA_integer_
-            width <- unlist(width, use.names=FALSE)
-            names(width) <- names(x)
-        }
 
         if (isSingleString(weight) && (weight %in% varnames))
             weight <- values(x)[, weight]
