@@ -30,7 +30,7 @@
     if (!is(x, "IRanges"))
         stop("'x' must be an IRanges object")
 
-    ## Check 'shift' at the C level.
+    ## 'shift' will be checked at the C level.
 
     ## Check 'width'.
     if (is.null(width)) {
@@ -41,7 +41,7 @@
         width <- as.integer(width)
     }
 
-    ## Check 'weight' at the C level.
+    ## 'weight' will be checked at the C level.
 
     ## Check 'circle.length'.
     if (!isSingleNumberOrNA(circle.length))
@@ -64,19 +64,20 @@
     .fold_and_truncate_coverage(ans, circle.length, width)
 }
 
-.check_arg_names <- function(arg, arg.label, x_names)
+.check_arg_names <- function(arg, arg.label, x_names, x_names.label)
 {
     arg_names <- names(arg)
     if (!(is.null(arg_names) || identical(arg_names, x_names)))
         stop("when '", arg.label, "' has names, ",
-             "they must be identical to the names of 'x'")
+             "they must be identical to ", x_names.label)
 }
 
 ### Returns a SimpleRleList object of the length of 'x'.
 .CompressedIRangesList.coverage <- function(x,
                                             shift=0L, width=NULL,
                                             weight=1L, circle.length=NA,
-                                            method=c("auto", "sort", "hash"))
+                                            method=c("auto", "sort", "hash"),
+                                            x_names.label="'x' names")
 {
     ## Check 'x'.
     if (!is(x, "CompressedIRangesList"))
@@ -89,7 +90,7 @@
             stop("'shift' must be a numeric vector or list-like object")
         shift <- as.list(shift)
     }
-    .check_arg_names(shift, "shift", x_names)
+    .check_arg_names(shift, "shift", x_names, x_names.label)
 
     ## Check 'width'.
     if (is.null(width)) {
@@ -97,9 +98,9 @@
     } else if (!is.numeric(width)) {
         stop("'width' must be NULL or an integer vector")
     } else if (!is.integer(width)) {
-        width <- as.integer(width)
+        width <- setNames(as.integer(width), names(width))
     }
-    .check_arg_names(width, "width", x_names)
+    .check_arg_names(width, "width", x_names, x_names.label)
 
     ## Check 'weight'.
     if (!is.list(weight)) {
@@ -107,7 +108,7 @@
             stop("'weight' must be a numeric vector or list-like object")
         weight <- as.list(weight)
     }
-    .check_arg_names(weight, "weight", x_names)
+    .check_arg_names(weight, "weight", x_names, x_names.label)
 
     ## Check 'circle.length'.
     if (identical(circle.length, NA)) {
@@ -115,9 +116,10 @@
     } else if (!is.numeric(circle.length)) {
         stop("'circle.length' must be an integer vector")
     } else if (!is.integer(circle.length)) {
-        circle.length <- as.integer(circle.length)
+        circle.length <- setNames(as.integer(circle.length),
+                                  names(circle.length))
     }
-    .check_arg_names(circle.length, "circle.length", x_names)
+    .check_arg_names(circle.length, "circle.length", x_names, x_names.label)
 
     ## Check 'method'.
     method <- match.arg(method)
