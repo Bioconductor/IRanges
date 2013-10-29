@@ -194,7 +194,7 @@ setMethod("lapply", "CompressedAtomicList",
 setMethod("as.list", "CompressedAtomicList",
           function(x, use.names = TRUE) {
               if (is(x, "CompressedRleList")) {
-                  callNextMethod()
+                  callNextMethod(x, use.names = use.names)
               } else {
                   codes <- seq_len(length(x))
                   ans <-

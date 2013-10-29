@@ -1,3 +1,29 @@
+test_AtomicList_constructors <- function() {
+    subclasses <- c(logical="LogicalList",
+                    integer="IntegerList",
+                    #double="NumericList",
+                    numeric="NumericList",
+                    complex="ComplexList",
+                    character="CharacterList",
+                    raw="RawList",
+                    Rle="RleList")
+    for (elt_type in names(subclasses)) {
+        subclass <- subclasses[[elt_type]]
+        constructor <- get(subclass)
+        vec1 <- get(elt_type)(6)
+        vec2 <- get(elt_type)(8)
+        target <- list(A=vec1, B=vec2)
+        for (compress in c(TRUE, FALSE)) {
+            current <- constructor(A=vec1, B=vec2, compress=compress)
+            checkTrue(is(current, subclass))
+            checkIdentical(compress, is(current, "CompressedList"))
+            checkIdentical(elt_type, elementType(current))
+            checkIdentical(target, as.list(current))
+            checkIdentical(unname(target), as.list(current, use.names=FALSE))
+        }
+    }
+}
+
 test_AtomicList_GroupGenerics <- function() {
     vec1 <- c(1L,2L,3L,5L,2L,8L)
     vec2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)
