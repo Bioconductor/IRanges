@@ -107,17 +107,11 @@
       pair-wise fashion. The return value is the length of the longest
       of \code{x} and \code{y}.
 
-      In Bioconductor >=2.12 the distance calculation has been changed to
-      accommodate zero-width ranges in a consistent and intuitive manner.
-      Because of this change, a warning will be emitted when \code{distance}
-      is called. This warning is temporary and will be removed in 
-      Bioconductor 2.13. To suppress the warning, code can be wrapped in 
-      \code{suppressWarnings()}.
-
-      The modified \code{distance} calculation can be explained by a `block' 
-      model where a range is represented by a series of blocks of size 1. 
-      Blocks are adjacent to each other and there is no gap between them. A 
-      visual representation of IRanges(4,7) would be
+      The \code{distance} calculation changed in BioC 2.12 to accommodate
+      zero-width ranges in a consistent and intuitive manner. The new distance
+      can be explained by a \emph{block} model where a range is represented by
+      a series of blocks of size 1. Blocks are adjacent to each other and there
+      is no gap between them. A visual representation of IRanges(4,7) would be
  
       \preformatted{
         +-----+-----+-----+-----+
@@ -125,8 +119,8 @@
       }
 
       The distance between two consecutive blocks is 0L (prior to 
-      Bioconductor 2.12 it was 1L). The distance calculation now returns 
-      the number of gaps between two ranges.
+      Bioconductor 2.12 it was 1L). The new distance calculation now returns 
+      the size of the gap between two ranges.
 
       This change to distance affects the notion of overlaps in that
       we no longer say: 

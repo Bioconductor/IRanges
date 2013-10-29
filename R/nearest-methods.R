@@ -167,8 +167,6 @@ setGeneric("distance",
 setMethod("distance", c("Ranges", "Ranges"), 
     function(x, y) 
     {
-        warning("The behavior of distance() has changed in ",
-                "Bioconductor 2.12. See ?distance for details.")
         max_start <- pmax.int(start(x), start(y))
         min_end <- pmin.int(end(x), end(y))
         pmax.int(max_start - min_end - 1L, 0L) 

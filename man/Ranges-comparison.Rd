@@ -12,11 +12,6 @@
 \alias{duplicated,Ranges-method}
 \alias{duplicated.Ranges}
 
-\alias{\%in\%,Ranges,Ranges-method}
-
-\alias{findMatches,Ranges,Ranges-method}
-\alias{countMatches,Ranges,Ranges-method}
-
 \alias{order,Ranges-method}
 \alias{rank,Ranges-method}
 
@@ -78,12 +73,11 @@ rangeComparisonCodeToLetter(code)
     otherwise the Quicksort-based algorithm.
   }
   \item{match.if.overlap}{
-    For \code{match}: This argument is deprecated in BioC 2.13 and won't be
-    supported anymore in BioC 2.14. Please use
+    For \code{match}: This argument is defunct in BioC 2.14. Please use
     \code{findOverlaps(x, table, select="first")}
-    instead of
+    if you need to do
     \code{match(x, table, match.if.overlap=TRUE)}.
-    For \code{selfmatch}: This argument is ignored and will be removed soon.
+    For \code{selfmatch}: This argument is defunct in BioC 2.14.
   }
   \item{...}{
     One or more \link{Ranges} objects. The additional \link{Ranges} objects
@@ -307,14 +301,12 @@ x2 == x2[4]
 x2 >= x2[3]
 
 ## ---------------------------------------------------------------------
-## B. match(), selfmatch(), duplicated(), unique(), %in%
+## B. match(), selfmatch(), %in%, duplicated(), unique()
 ## ---------------------------------------------------------------------
 table <- x2[c(2:4, 7:8)]
 match(x2, table)
 
-x2 \%in\% table  # Warning! The warning will be removed in BioC 2.14.
-## In the meantime, use suppressWarnings() to suppress the warning:
-suppressWarnings(x2 \%in\% table)
+x2 \%in\% table
 
 duplicated(x2)
 unique(x2)

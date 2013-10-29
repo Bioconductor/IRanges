@@ -173,14 +173,6 @@ setAs("Views", "NormalIRanges",
 )
 
 setMethod("as.matrix", "Views", function(x, rev = FALSE, max.width = NA) {
-  ## TODO: Supress this warning in BioC 2.12.
-  msg <- c("as.matrix() on a Views object 'x' has changed ",
-           "behavior: now each view is converted into a row of the\n",
-           "  returned matrix. To achieve the old behavior, ",
-           "do 'as.matrix(ranges(x))'.\n  To supress this warning, do ",
-           "'suppressWarnings(as.matrix(x))'.\n  This warning will be ",
-           "removed in BioC 2.12.")
-  warning(msg)
   x_ranges <- restrict(ranges(x), start = 1L)
   if (is.na(max.width)) {
     max.width <- max(width(x_ranges))
