@@ -31,17 +31,6 @@
 \alias{countOverlaps,RangedData,RangesList-method}
 \alias{countOverlaps,RangesList,RangedData-method}
 
-\alias{match,Views,Views-method}
-\alias{match,Views,Vector-method}
-\alias{match,Vector,Views-method}
-\alias{match,RangesList,RangesList-method}
-\alias{match,ViewsList,ViewsList-method}
-\alias{match,ViewsList,Vector-method}
-\alias{match,Vector,ViewsList-method}
-\alias{match,RangedData,RangedData-method}
-\alias{match,RangedData,RangesList-method}
-\alias{match,RangesList,RangedData-method}
-
 \alias{overlapsAny}
 \alias{overlapsAny,Ranges,Ranges-method}
 \alias{overlapsAny,Views,Views-method}
@@ -60,17 +49,6 @@
 \alias{\%within\%}
 \alias{\%outside\%}
 
-\alias{\%in\%,Views,Views-method}
-\alias{\%in\%,Views,Vector-method}
-\alias{\%in\%,Vector,Views-method}
-\alias{\%in\%,RangesList,RangesList-method}
-\alias{\%in\%,ViewsList,ViewsList-method}
-\alias{\%in\%,ViewsList,Vector-method}
-\alias{\%in\%,Vector,ViewsList-method}
-\alias{\%in\%,RangedData,RangedData-method}
-\alias{\%in\%,RangedData,RangesList-method}
-\alias{\%in\%,RangesList,RangedData-method}
-
 \alias{subsetByOverlaps}
 \alias{subsetByOverlaps,Vector,Vector-method}
 \alias{subsetByOverlaps,RangedData,RangedData-method}
@@ -78,28 +56,6 @@
 \alias{subsetByOverlaps,RangesList,RangedData-method}
 
 \alias{ranges,Hits-method}
-
-\alias{findMatches,Views,Views-method}
-\alias{findMatches,Views,Vector-method}
-\alias{findMatches,Vector,Views-method}
-\alias{findMatches,RangesList,RangesList-method}
-\alias{findMatches,ViewsList,ViewsList-method}
-\alias{findMatches,ViewsList,Vector-method}
-\alias{findMatches,Vector,ViewsList-method}
-\alias{findMatches,RangedData,RangedData-method}
-\alias{findMatches,RangedData,RangesList-method}
-\alias{findMatches,RangesList,RangedData-method}
-
-\alias{countMatches,Views,Views-method}
-\alias{countMatches,Views,Vector-method}
-\alias{countMatches,Vector,Views-method}
-\alias{countMatches,RangesList,RangesList-method}
-\alias{countMatches,ViewsList,ViewsList-method}
-\alias{countMatches,ViewsList,Vector-method}
-\alias{countMatches,Vector,ViewsList-method}
-\alias{countMatches,RangedData,RangedData-method}
-\alias{countMatches,RangedData,RangesList-method}
-\alias{countMatches,RangesList,RangedData-method}
 
 
 \title{Finding overlapping ranges}
