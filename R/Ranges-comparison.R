@@ -53,7 +53,7 @@ setMethod("match", c("Ranges", "Ranges"),
         if (!isTRUEorFALSE(match.if.overlap))
             stop("'match.if.overlap' must be TRUE or FALSE")
         if (match.if.overlap) {
-            msg <- c("  Starting with BioC 2.14), ",
+            msg <- c("  Starting with BioC 2.14, ",
                      "match() on Ranges objects\n  does not support ",
                      "the 'match.if.overlap' argument anymore. Please use\n\n",
                      "    findOverlaps(x, table, select=\"first\")\n\n",
