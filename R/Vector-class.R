@@ -391,7 +391,7 @@ window.factor <- window.Vector
 setMethod("window", "factor", window.factor)
 
 ### S3/S4 combo for window.NULL
-window.NULL <- window.Vector
+window.NULL <- function(x, ...) NULL
 setMethod("window", "NULL", window.NULL)
 
 ### S3/S4 combo for window<-.Vector
@@ -823,7 +823,7 @@ setMethod("mstack", "Vector", function(..., .index.var = "name") {
   if (!isSingleString(.index.var))
     stop("'.index.var' must be a single, non-NA string")
   args <- list(...)
-  combined <- do.call(c, unname(args))
+  combined <- compress_listData(args)
   df <- .stack.ind(args, .index.var)
   if (!is.null(mcols(combined)))
     df <- cbind(mcols(combined), df)
@@ -837,9 +837,10 @@ setMethod("mstack", "vector",
             if (!isSingleString(.index.var))
               stop("'.index.var' must be a single, non-NA string")
             args <- list(...)
-            combined <- do.call(c, unname(args))
-            df <- DataFrame(combined, .stack.ind(args, .index.var))
-            colnames(df)[1] <- "value"
+            combined <- compress_listData(args)
+            df <- DataFrame(.stack.ind(args, .index.var), combined)
+            if (ncol(df) == 2L)
+              colnames(df)[2] <- "value"
             df
           })
 
