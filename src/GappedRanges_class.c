@@ -4,11 +4,11 @@
 #include "IRanges.h"
 
 
-static const char *is_valid_GappedRanges_elt(const cachedIRanges *cached_ir)
+static const char *is_valid_GappedRanges_elt(const IRanges_holder *ir_holder)
 {
-	if (_get_cachedIRanges_length(cached_ir) == 0)
+	if (_get_length_from_IRanges_holder(ir_holder) == 0)
 		return "IRanges object has no ranges";
-	if (!_is_normal_cachedIRanges(cached_ir))
+	if (!_is_normal_IRanges_holder(ir_holder))
 		return "IRanges object is not normal";
 	return NULL;
 }
@@ -30,23 +30,23 @@ static const char *is_valid_GappedRanges_elt(const cachedIRanges *cached_ir)
 SEXP valid_GappedRanges(SEXP x, SEXP ans_type)
 {
 	SEXP cnirl, ans;
-	cachedCompressedIRangesList cached_cnirl;
-	int x_length, ans_type0, i;
-	cachedIRanges cached_ir;
+	CompressedIRangesList_holder cnirl_holder;
+	int x_len, ans_type0, i;
+	IRanges_holder ir_holder;
 	const char *errmsg;
 	char string_buf[80];
 
 	cnirl = GET_SLOT(x, install("cnirl"));
-	cached_cnirl = _cache_CompressedIRangesList(cnirl);
-	x_length = _get_cachedCompressedIRangesList_length(&cached_cnirl);
+	cnirl_holder = _hold_CompressedIRangesList(cnirl);
+	x_len = _get_length_from_CompressedIRangesList_holder(&cnirl_holder);
 	ans_type0 = INTEGER(ans_type)[0];
 	if (ans_type0 == 1)
-		PROTECT(ans = NEW_LOGICAL(x_length));
+		PROTECT(ans = NEW_LOGICAL(x_len));
 	else
 		ans = R_NilValue;
-	for (i = 0; i < x_length; i++) {
-		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_cnirl, i);
-		errmsg = is_valid_GappedRanges_elt(&cached_ir);
+	for (i = 0; i < x_len; i++) {
+		ir_holder = _get_elt_from_CompressedIRangesList_holder(&cnirl_holder, i);
+		errmsg = is_valid_GappedRanges_elt(&ir_holder);
 		if (ans_type0 == 1) {
 			LOGICAL(ans)[i] = errmsg == NULL;
 			continue;

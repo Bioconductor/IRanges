@@ -11,28 +11,28 @@
 SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 {
 	char type = '?';
-	int i, start, width, ans_length, index, lower_run, upper_run, upper_bound;
+	int i, start, width, ans_len, index, lower_run, upper_run, upper_bound;
 	int max_index, *lengths_elt;
 	SEXP ans, subject, values, lengths, ranges, names;
-	cachedIRanges cached_ranges;
+	IRanges_holder ranges_holder;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
 	ranges = GET_SLOT(x, install("ranges"));
-	cached_ranges = _cache_IRanges(ranges);
-	ans_length = _get_cachedIRanges_length(&cached_ranges);
+	ranges_holder = _hold_IRanges(ranges);
+	ans_len = _get_length_from_IRanges_holder(&ranges_holder);
 
 	ans = R_NilValue;
 	switch (TYPEOF(values)) {
     case LGLSXP:
     case INTSXP:
 		type = 'i';
-		PROTECT(ans = NEW_INTEGER(ans_length));
+		PROTECT(ans = NEW_INTEGER(ans_len));
 		break;
     case REALSXP:
 		type = 'r';
-		PROTECT(ans = NEW_NUMERIC(ans_length));
+		PROTECT(ans = NEW_NUMERIC(ans_len));
 		break;
     default:
 		error("Rle must contain either 'integer' or 'numeric' values");
@@ -45,11 +45,11 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 	max_index = LENGTH(lengths) - 1;
 	index = 0;
 	upper_run = *lengths_elt;
-	for (i = 0; i < ans_length; i++) {
+	for (i = 0; i < ans_len; i++) {
 		if (i % 100000 == 99999)
 			R_CheckUserInterrupt();
-		start = _get_cachedIRanges_elt_start(&cached_ranges, i);
-		width = _get_cachedIRanges_elt_width(&cached_ranges, i);
+		start = _get_start_elt_from_IRanges_holder(&ranges_holder, i);
+		width = _get_width_elt_from_IRanges_holder(&ranges_holder, i);
 		if (type == 'i') {
 			INTEGER(ans)[i] = INT_MAX;
 		} else if (type == 'r') {
@@ -121,28 +121,28 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 {
 	char type = '?';
-	int i, start, width, ans_length, index, lower_run, upper_run, upper_bound;
+	int i, start, width, ans_len, index, lower_run, upper_run, upper_bound;
 	int max_index, *lengths_elt;
 	SEXP ans, subject, values, lengths, ranges, names;
-	cachedIRanges cached_ranges;
+	IRanges_holder ranges_holder;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
 	ranges = GET_SLOT(x, install("ranges"));
-	cached_ranges = _cache_IRanges(ranges);
-	ans_length = _get_cachedIRanges_length(&cached_ranges);
+	ranges_holder = _hold_IRanges(ranges);
+	ans_len = _get_length_from_IRanges_holder(&ranges_holder);
 
 	ans = R_NilValue;
 	switch (TYPEOF(values)) {
     case LGLSXP:
     case INTSXP:
 		type = 'i';
-		PROTECT(ans = NEW_INTEGER(ans_length));
+		PROTECT(ans = NEW_INTEGER(ans_len));
 		break;
     case REALSXP:
 		type = 'r';
-		PROTECT(ans = NEW_NUMERIC(ans_length));
+		PROTECT(ans = NEW_NUMERIC(ans_len));
 		break;
     default:
 		error("Rle must contain either 'integer' or 'numeric' values");
@@ -155,11 +155,11 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 	max_index = LENGTH(lengths) - 1;
 	index = 0;
 	upper_run = *lengths_elt;
-	for (i = 0; i < ans_length; i++) {
+	for (i = 0; i < ans_len; i++) {
 		if (i % 100000 == 99999)
 			R_CheckUserInterrupt();
-		start = _get_cachedIRanges_elt_start(&cached_ranges, i);
-		width = _get_cachedIRanges_elt_width(&cached_ranges, i);
+		start = _get_start_elt_from_IRanges_holder(&ranges_holder, i);
+		width = _get_width_elt_from_IRanges_holder(&ranges_holder, i);
 		if (type == 'i') {
 			INTEGER(ans)[i] = R_INT_MIN;
 		} else if (type == 'r') {
@@ -231,33 +231,33 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 {
 	char type = '?';
-	int i, start, width, ans_length, index,
+	int i, start, width, ans_len, index,
 	    lower_run, upper_run, lower_bound, upper_bound;
 	int max_index, *lengths_elt;
 	SEXP ans, subject, values, lengths, ranges, names;
-	cachedIRanges cached_ranges;
+	IRanges_holder ranges_holder;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
 	ranges = GET_SLOT(x, install("ranges"));
-	cached_ranges = _cache_IRanges(ranges);
-	ans_length = _get_cachedIRanges_length(&cached_ranges);
+	ranges_holder = _hold_IRanges(ranges);
+	ans_len = _get_length_from_IRanges_holder(&ranges_holder);
 
 	ans = R_NilValue;
 	switch (TYPEOF(values)) {
     case LGLSXP:
     case INTSXP:
 		type = 'i';
-		PROTECT(ans = NEW_INTEGER(ans_length));
+		PROTECT(ans = NEW_INTEGER(ans_len));
 		break;
     case REALSXP:
 		type = 'r';
-		PROTECT(ans = NEW_NUMERIC(ans_length));
+		PROTECT(ans = NEW_NUMERIC(ans_len));
 		break;
     case CPLXSXP:
 		type = 'c';
-		PROTECT(ans = NEW_COMPLEX(ans_length));
+		PROTECT(ans = NEW_COMPLEX(ans_len));
 		break;
     default:
 		error("Rle must contain either 'integer', 'numeric', or 'complex' values");
@@ -270,11 +270,11 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 	max_index = LENGTH(lengths) - 1;
 	index = 0;
 	upper_run = *lengths_elt;
-	for (i = 0; i < ans_length; i++) {
+	for (i = 0; i < ans_len; i++) {
 		if (i % 100000 == 99999)
 			R_CheckUserInterrupt();
-		start = _get_cachedIRanges_elt_start(&cached_ranges, i);
-		width = _get_cachedIRanges_elt_width(&cached_ranges, i);
+		start = _get_start_elt_from_IRanges_holder(&ranges_holder, i);
+		width = _get_width_elt_from_IRanges_holder(&ranges_holder, i);
 		if (type == 'i') {
 			INTEGER(ans)[i] = 0;
 		} else if (type == 'r') {
@@ -385,33 +385,33 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 SEXP RleViews_viewMeans(SEXP x, SEXP na_rm)
 {
 	char type = '?';
-	int i, n, start, width, ans_length, index,
+	int i, n, start, width, ans_len, index,
 	    lower_run, upper_run, lower_bound, upper_bound;
 	int max_index, *lengths_elt;
 	SEXP ans, subject, values, lengths, ranges, names;
-	cachedIRanges cached_ranges;
+	IRanges_holder ranges_holder;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
 	ranges = GET_SLOT(x, install("ranges"));
-	cached_ranges = _cache_IRanges(ranges);
-	ans_length = _get_cachedIRanges_length(&cached_ranges);
+	ranges_holder = _hold_IRanges(ranges);
+	ans_len = _get_length_from_IRanges_holder(&ranges_holder);
 
 	ans = R_NilValue;
 	switch (TYPEOF(values)) {
     case LGLSXP:
     case INTSXP:
 		type = 'i';
-		PROTECT(ans = NEW_NUMERIC(ans_length));
+		PROTECT(ans = NEW_NUMERIC(ans_len));
 		break;
     case REALSXP:
 		type = 'r';
-		PROTECT(ans = NEW_NUMERIC(ans_length));
+		PROTECT(ans = NEW_NUMERIC(ans_len));
 		break;
     case CPLXSXP:
 		type = 'c';
-		PROTECT(ans = NEW_COMPLEX(ans_length));
+		PROTECT(ans = NEW_COMPLEX(ans_len));
 		break;
     default:
 		error("Rle must contain either 'integer', 'numeric', or 'complex' values");
@@ -424,11 +424,11 @@ SEXP RleViews_viewMeans(SEXP x, SEXP na_rm)
 	max_index = LENGTH(lengths) - 1;
 	index = 0;
 	upper_run = *lengths_elt;
-	for (i = 0; i < ans_length; i++) {
+	for (i = 0; i < ans_len; i++) {
 		if (i % 100000 == 99999)
 			R_CheckUserInterrupt();
-		start = _get_cachedIRanges_elt_start(&cached_ranges, i);
-		width = _get_cachedIRanges_elt_width(&cached_ranges, i);
+		start = _get_start_elt_from_IRanges_holder(&ranges_holder, i);
+		width = _get_width_elt_from_IRanges_holder(&ranges_holder, i);
 		if (width <= 0) {
 			if (type == 'i') {
 				REAL(ans)[i] = R_NaN;
@@ -573,18 +573,18 @@ SEXP RleViews_viewMeans(SEXP x, SEXP na_rm)
 SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 {
 	char type = '?';
-	int i, start, width, ans_length, index,
+	int i, start, width, ans_len, index,
 	    lower_run, upper_run, lower_bound, upper_bound;
 	int max_index, *ans_elt, *lengths_elt;
 	SEXP curr, ans, subject, values, lengths, ranges, names;
-	cachedIRanges cached_ranges;
+	IRanges_holder ranges_holder;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
 	ranges = GET_SLOT(x, install("ranges"));
-	cached_ranges = _cache_IRanges(ranges);
-	ans_length = _get_cachedIRanges_length(&cached_ranges);
+	ranges_holder = _hold_IRanges(ranges);
+	ans_len = _get_length_from_IRanges_holder(&ranges_holder);
 
 	curr = R_NilValue;
 	switch (TYPEOF(values)) {
@@ -604,16 +604,16 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 	if (!IS_LOGICAL(na_rm) || LENGTH(na_rm) != 1 || LOGICAL(na_rm)[0] == NA_LOGICAL)
 		error("'na.rm' must be TRUE or FALSE");
 
-	PROTECT(ans = NEW_INTEGER(ans_length));
+	PROTECT(ans = NEW_INTEGER(ans_len));
 	lengths_elt = INTEGER(lengths);
 	max_index = LENGTH(lengths) - 1;
 	index = 0;
 	upper_run = *lengths_elt;
-	for (i = 0, ans_elt = INTEGER(ans); i < ans_length; i++, ans_elt++) {
+	for (i = 0, ans_elt = INTEGER(ans); i < ans_len; i++, ans_elt++) {
 		if (i % 100000 == 99999)
 			R_CheckUserInterrupt();
-		start = _get_cachedIRanges_elt_start(&cached_ranges, i);
-		width = _get_cachedIRanges_elt_width(&cached_ranges, i);
+		start = _get_start_elt_from_IRanges_holder(&ranges_holder, i);
+		width = _get_width_elt_from_IRanges_holder(&ranges_holder, i);
 		*ans_elt = NA_INTEGER;
 		if (width > 0) {
 			if (type == 'i') {
@@ -689,18 +689,18 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 {
 	char type = '?';
-	int i, start, width, ans_length, index,
+	int i, start, width, ans_len, index,
 	    lower_run, upper_run, lower_bound, upper_bound;
 	int max_index, *ans_elt, *lengths_elt;
 	SEXP curr, ans, subject, values, lengths, ranges, names;
-	cachedIRanges cached_ranges;
+	IRanges_holder ranges_holder;
 
 	subject = GET_SLOT(x, install("subject"));
 	values = GET_SLOT(subject, install("values"));
 	lengths = GET_SLOT(subject, install("lengths"));
 	ranges = GET_SLOT(x, install("ranges"));
-	cached_ranges = _cache_IRanges(ranges);
-	ans_length = _get_cachedIRanges_length(&cached_ranges);
+	ranges_holder = _hold_IRanges(ranges);
+	ans_len = _get_length_from_IRanges_holder(&ranges_holder);
 
 	curr = R_NilValue;
 	switch (TYPEOF(values)) {
@@ -720,16 +720,16 @@ SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
 	if (!IS_LOGICAL(na_rm) || LENGTH(na_rm) != 1 || LOGICAL(na_rm)[0] == NA_LOGICAL)
 		error("'na.rm' must be TRUE or FALSE");
 
-	PROTECT(ans = NEW_INTEGER(ans_length));
+	PROTECT(ans = NEW_INTEGER(ans_len));
 	lengths_elt = INTEGER(lengths);
 	max_index = LENGTH(lengths) - 1;
 	index = 0;
 	upper_run = *lengths_elt;
-	for (i = 0, ans_elt = INTEGER(ans); i < ans_length; i++, ans_elt++) {
+	for (i = 0, ans_elt = INTEGER(ans); i < ans_len; i++, ans_elt++) {
 		if (i % 100000 == 99999)
 			R_CheckUserInterrupt();
-		start = _get_cachedIRanges_elt_start(&cached_ranges, i);
-		width = _get_cachedIRanges_elt_width(&cached_ranges, i);
+		start = _get_start_elt_from_IRanges_holder(&ranges_holder, i);
+		width = _get_width_elt_from_IRanges_holder(&ranges_holder, i);
 		*ans_elt = NA_INTEGER;
 		if (width > 0) {
 			if (type == 'i') {

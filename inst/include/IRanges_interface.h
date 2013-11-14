@@ -343,19 +343,19 @@ SEXP get_IRanges_names(SEXP x);
 
 int get_IRanges_length(SEXP x);
 
-cachedIRanges cache_IRanges(SEXP x);
+IRanges_holder hold_IRanges(SEXP x);
 
-int get_cachedIRanges_length(const cachedIRanges *cached_x);
+int get_length_from_IRanges_holder(const IRanges_holder *x_holder);
 
-int get_cachedIRanges_elt_width(const cachedIRanges *cached_x, int i);
+int get_width_elt_from_IRanges_holder(const IRanges_holder *x_holder, int i);
 
-int get_cachedIRanges_elt_start(const cachedIRanges *cached_x, int i);
+int get_start_elt_from_IRanges_holder(const IRanges_holder *x_holder, int i);
 
-int get_cachedIRanges_elt_end(const cachedIRanges *cached_x, int i);
+int get_end_elt_from_IRanges_holder(const IRanges_holder *x_holder, int i);
 
-SEXP get_cachedIRanges_elt_name(const cachedIRanges *cached_x, int i);
+SEXP get_names_elt_from_IRanges_holder(const IRanges_holder *x_holder, int i);
 
-cachedIRanges sub_cachedIRanges(const cachedIRanges *cached_x, int offset, int length);
+IRanges_holder get_linear_subset_from_IRanges_holder(const IRanges_holder *x_holder, int offset, int length);
 
 void set_IRanges_names(SEXP x, SEXP names);
 
@@ -410,9 +410,9 @@ SEXP new_CompressedList(const char *classname, SEXP unlistData, SEXP partitionin
  * (see CompressedIRangesList_class.c)
  */
 
-cachedCompressedIRangesList cache_CompressedIRangesList(SEXP x);
+CompressedIRangesList_holder hold_CompressedIRangesList(SEXP x);
 
-cachedIRanges get_cachedCompressedIRangesList_elt(const cachedCompressedIRangesList *cached_x, int i);
+IRanges_holder get_elt_from_CompressedIRangesList_holder(const CompressedIRangesList_holder *x_holder, int i);
 
 /*
  * Low-level manipulation of RangedData objects.

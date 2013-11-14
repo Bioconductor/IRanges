@@ -12,15 +12,15 @@
 SEXP SimpleIRangesList_isNormal(SEXP x)
 {
 	SEXP list_ir, ans, ans_names;
-	cachedIRanges cached_ir;
-	int x_length, i;
+	IRanges_holder ir_holder;
+	int x_len, i;
 
 	list_ir = GET_SLOT(x, install("listData"));
-	x_length = LENGTH(list_ir);
-	PROTECT(ans = NEW_LOGICAL(x_length));
-	for (i = 0; i < x_length; i++) {
-		cached_ir = _cache_IRanges(VECTOR_ELT(list_ir, i));
-		LOGICAL(ans)[i] = _is_normal_cachedIRanges(&cached_ir);
+	x_len = LENGTH(list_ir);
+	PROTECT(ans = NEW_LOGICAL(x_len));
+	for (i = 0; i < x_len; i++) {
+		ir_holder = _hold_IRanges(VECTOR_ELT(list_ir, i));
+		LOGICAL(ans)[i] = _is_normal_IRanges_holder(&ir_holder);
 	}
 	PROTECT(ans_names = duplicate(GET_NAMES(list_ir)));
 	SET_NAMES(ans, ans_names);
@@ -34,20 +34,20 @@ SEXP SimpleIRangesList_isNormal(SEXP x)
 SEXP SimpleNormalIRangesList_min(SEXP x)
 {
 	SEXP list_ir, ans, ans_names;
-	cachedIRanges cached_ir;
-	int x_length, ir_length, i;
+	IRanges_holder ir_holder;
+	int x_len, ir_len, i;
 	int *ans_elt;
 
 	list_ir = GET_SLOT(x, install("listData"));
-	x_length = LENGTH(list_ir);
-	PROTECT(ans = NEW_INTEGER(x_length));
-	for (i = 0, ans_elt = INTEGER(ans); i < x_length; i++, ans_elt++) {
-		cached_ir = _cache_IRanges(VECTOR_ELT(list_ir, i));
-		ir_length = _get_cachedIRanges_length(&cached_ir);
-		if (ir_length == 0) {
+	x_len = LENGTH(list_ir);
+	PROTECT(ans = NEW_INTEGER(x_len));
+	for (i = 0, ans_elt = INTEGER(ans); i < x_len; i++, ans_elt++) {
+		ir_holder = _hold_IRanges(VECTOR_ELT(list_ir, i));
+		ir_len = _get_length_from_IRanges_holder(&ir_holder);
+		if (ir_len == 0) {
 			*ans_elt = INT_MAX;
 		} else {
-			*ans_elt = _get_cachedIRanges_elt_start(&cached_ir, 0);
+			*ans_elt = _get_start_elt_from_IRanges_holder(&ir_holder, 0);
 		}
 	}
 	PROTECT(ans_names = duplicate(GET_NAMES(list_ir)));
@@ -62,20 +62,20 @@ SEXP SimpleNormalIRangesList_min(SEXP x)
 SEXP SimpleNormalIRangesList_max(SEXP x)
 {
 	SEXP list_ir, ans, ans_names;
-	cachedIRanges cached_ir;
-	int x_length, ir_length, i;
+	IRanges_holder ir_holder;
+	int x_len, ir_len, i;
 	int *ans_elt;
 
 	list_ir = GET_SLOT(x, install("listData"));
-	x_length = LENGTH(list_ir);
-	PROTECT(ans = NEW_INTEGER(x_length));
-	for (i = 0, ans_elt = INTEGER(ans); i < x_length; i++, ans_elt++) {
-		cached_ir = _cache_IRanges(VECTOR_ELT(list_ir, i));
-		ir_length = _get_cachedIRanges_length(&cached_ir);
-		if (ir_length == 0) {
+	x_len = LENGTH(list_ir);
+	PROTECT(ans = NEW_INTEGER(x_len));
+	for (i = 0, ans_elt = INTEGER(ans); i < x_len; i++, ans_elt++) {
+		ir_holder = _hold_IRanges(VECTOR_ELT(list_ir, i));
+		ir_len = _get_length_from_IRanges_holder(&ir_holder);
+		if (ir_len == 0) {
 			*ans_elt = R_INT_MIN;
 		} else {
-			*ans_elt = _get_cachedIRanges_elt_end(&cached_ir, ir_length - 1);
+			*ans_elt = _get_end_elt_from_IRanges_holder(&ir_holder, ir_len - 1);
 		}
 	}
 	PROTECT(ans_names = duplicate(GET_NAMES(list_ir)));

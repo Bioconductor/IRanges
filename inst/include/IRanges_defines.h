@@ -88,10 +88,10 @@ typedef struct char_aeae {
 
 
 /*
- * cached_* structs.
+ * *_holder structs.
  */
 
-typedef struct cached_iranges {
+typedef struct iranges_holder {
 	const char *classname;
 	int is_constant_width;
 	int offset;
@@ -100,13 +100,13 @@ typedef struct cached_iranges {
 	const int *start;
 	const int *end;
 	SEXP names;
-} cachedIRanges;
+} IRanges_holder;
 
-typedef struct cached_compressedirangeslist {
+typedef struct compressed_iranges_list_holder {
 	const char *classname;
 	int length;
 	const int *end;
-	cachedIRanges cached_unlistData;
-} cachedCompressedIRangesList;
+	IRanges_holder unlistData_holder;
+} CompressedIRangesList_holder;
 
 #endif

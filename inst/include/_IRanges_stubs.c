@@ -385,39 +385,39 @@ DEFINE_CCALLABLE_STUB(int, get_IRanges_length,
 	(     x)
 )
 
-DEFINE_CCALLABLE_STUB(cachedIRanges, cache_IRanges,
+DEFINE_CCALLABLE_STUB(IRanges_holder, hold_IRanges,
 	(SEXP x),
 	(     x)
 )
 
-DEFINE_CCALLABLE_STUB(int, get_cachedIRanges_length,
-	(const cachedIRanges *cached_x),
-	(                     cached_x)
+DEFINE_CCALLABLE_STUB(int, get_length_from_IRanges_holder,
+	(const IRanges_holder *x_holder),
+	(                      x_holder)
 )
 
-DEFINE_CCALLABLE_STUB(int, get_cachedIRanges_elt_width,
-	(const cachedIRanges *cached_x, int i),
-	(                     cached_x,     i)
+DEFINE_CCALLABLE_STUB(int, get_width_elt_from_IRanges_holder,
+	(const IRanges_holder *x_holder, int i),
+	(                      x_holder,     i)
 )
 
-DEFINE_CCALLABLE_STUB(int, get_cachedIRanges_elt_start,
-	(const cachedIRanges *cached_x, int i),
-	(                     cached_x,     i)
+DEFINE_CCALLABLE_STUB(int, get_start_elt_from_IRanges_holder,
+	(const IRanges_holder *x_holder, int i),
+	(                      x_holder,     i)
 )
 
-DEFINE_CCALLABLE_STUB(int, get_cachedIRanges_elt_end,
-	(const cachedIRanges *cached_x, int i),
-	(                     cached_x,     i)
+DEFINE_CCALLABLE_STUB(int, get_end_elt_from_IRanges_holder,
+	(const IRanges_holder *x_holder, int i),
+	(                      x_holder,     i)
 )
 
-DEFINE_CCALLABLE_STUB(SEXP, get_cachedIRanges_elt_name,
-	(const cachedIRanges *cached_x, int i),
-	(                     cached_x,     i)
+DEFINE_CCALLABLE_STUB(SEXP, get_names_elt_from_IRanges_holder,
+	(const IRanges_holder *x_holder, int i),
+	(                      x_holder,     i)
 )
 
-DEFINE_CCALLABLE_STUB(cachedIRanges, sub_cachedIRanges,
-	(const cachedIRanges *cached_x, int offset, int length),
-	(                     cached_x,     offset,     length)
+DEFINE_CCALLABLE_STUB(IRanges_holder, get_linear_subset_from_IRanges_holder,
+	(const IRanges_holder *x_holder, int offset, int length),
+	(                      x_holder,     offset,     length)
 )
 
 DEFINE_NOVALUE_CCALLABLE_STUB(set_IRanges_names,
@@ -510,14 +510,14 @@ DEFINE_CCALLABLE_STUB(SEXP, new_CompressedList,
  * Stubs for callables defined in CompressedIRangesList_class.c
  */
 
-DEFINE_CCALLABLE_STUB(cachedCompressedIRangesList, cache_CompressedIRangesList,
+DEFINE_CCALLABLE_STUB(CompressedIRangesList_holder, hold_CompressedIRangesList,
 	(SEXP x),
 	(     x)
 )
 
-DEFINE_CCALLABLE_STUB(cachedIRanges, get_cachedCompressedIRangesList_elt,
-	(const cachedCompressedIRangesList *cached_x, int i),
-	(                                   cached_x,     i)
+DEFINE_CCALLABLE_STUB(IRanges_holder, get_elt_from_CompressedIRangesList_holder,
+	(const CompressedIRangesList_holder *x_holder, int i),
+	(                                    x_holder,     i)
 )
 
 /*

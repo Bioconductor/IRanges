@@ -221,13 +221,13 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_get_IRanges_width);
 	REGISTER_CCALLABLE(_get_IRanges_names);
 	REGISTER_CCALLABLE(_get_IRanges_length);
-	REGISTER_CCALLABLE(_cache_IRanges);
-	REGISTER_CCALLABLE(_get_cachedIRanges_length);
-	REGISTER_CCALLABLE(_get_cachedIRanges_elt_width);
-	REGISTER_CCALLABLE(_get_cachedIRanges_elt_start);
-	REGISTER_CCALLABLE(_get_cachedIRanges_elt_end);
-	REGISTER_CCALLABLE(_get_cachedIRanges_elt_name);
-	REGISTER_CCALLABLE(_sub_cachedIRanges);
+	REGISTER_CCALLABLE(_hold_IRanges);
+	REGISTER_CCALLABLE(_get_length_from_IRanges_holder);
+	REGISTER_CCALLABLE(_get_width_elt_from_IRanges_holder);
+	REGISTER_CCALLABLE(_get_start_elt_from_IRanges_holder);
+	REGISTER_CCALLABLE(_get_end_elt_from_IRanges_holder);
+	REGISTER_CCALLABLE(_get_names_elt_from_IRanges_holder);
+	REGISTER_CCALLABLE(_get_linear_subset_from_IRanges_holder);
 	REGISTER_CCALLABLE(_set_IRanges_names);
 	REGISTER_CCALLABLE(_copy_IRanges_slots);
 	REGISTER_CCALLABLE(_new_IRanges);
@@ -252,8 +252,8 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_new_CompressedList);
 
 /* CompressedIRangesList_class.c */
-	REGISTER_CCALLABLE(_cache_CompressedIRangesList);
-	REGISTER_CCALLABLE(_get_cachedCompressedIRangesList_elt);
+	REGISTER_CCALLABLE(_hold_CompressedIRangesList);
+	REGISTER_CCALLABLE(_get_elt_from_CompressedIRangesList_holder);
 
 /* RangedData_class.c */
 	REGISTER_CCALLABLE(_new_RangedData);

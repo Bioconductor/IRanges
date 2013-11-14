@@ -60,62 +60,62 @@ int _get_IRanges_length(SEXP x)
  * C-level abstract getters.
  */
 
-cachedIRanges _cache_IRanges(SEXP x)
+IRanges_holder _hold_IRanges(SEXP x)
 {
-	cachedIRanges cached_x;
+	IRanges_holder x_holder;
 
-	cached_x.classname = _get_classname(x);
-	cached_x.is_constant_width = 0;
-	cached_x.offset = 0;
-	cached_x.length = _get_IRanges_length(x);
-	cached_x.width = INTEGER(_get_IRanges_width(x));
-	cached_x.start = INTEGER(_get_IRanges_start(x));
-	cached_x.end = NULL;
-	cached_x.names = _get_IRanges_names(x);
-	return cached_x;
+	x_holder.classname = _get_classname(x);
+	x_holder.is_constant_width = 0;
+	x_holder.offset = 0;
+	x_holder.length = _get_IRanges_length(x);
+	x_holder.width = INTEGER(_get_IRanges_width(x));
+	x_holder.start = INTEGER(_get_IRanges_start(x));
+	x_holder.end = NULL;
+	x_holder.names = _get_IRanges_names(x);
+	return x_holder;
 }
 
-int _get_cachedIRanges_length(const cachedIRanges *cached_x)
+int _get_length_from_IRanges_holder(const IRanges_holder *x_holder)
 {
-	return cached_x->length;
+	return x_holder->length;
 }
 
-int _get_cachedIRanges_elt_width(const cachedIRanges *cached_x, int i)
+int _get_width_elt_from_IRanges_holder(const IRanges_holder *x_holder, int i)
 {
-	return cached_x->is_constant_width ?
-	       cached_x->width[0] : cached_x->width[i];
+	return x_holder->is_constant_width ?
+	       x_holder->width[0] : x_holder->width[i];
 }
 
-int _get_cachedIRanges_elt_start(const cachedIRanges *cached_x, int i)
+int _get_start_elt_from_IRanges_holder(const IRanges_holder *x_holder, int i)
 {
-	if (cached_x->start)
-		return cached_x->start[i];
-	return cached_x->end[i] - _get_cachedIRanges_elt_width(cached_x, i) + 1;
+	if (x_holder->start)
+		return x_holder->start[i];
+	return x_holder->end[i] - _get_width_elt_from_IRanges_holder(x_holder, i) + 1;
 }
 
-int _get_cachedIRanges_elt_end(const cachedIRanges *cached_x, int i)
+int _get_end_elt_from_IRanges_holder(const IRanges_holder *x_holder, int i)
 {
-	if (cached_x->end)
-		return cached_x->end[i];
-	return cached_x->start[i] + _get_cachedIRanges_elt_width(cached_x, i) - 1;
+	if (x_holder->end)
+		return x_holder->end[i];
+	return x_holder->start[i] + _get_width_elt_from_IRanges_holder(x_holder, i) - 1;
 }
 
-SEXP _get_cachedIRanges_elt_name(const cachedIRanges *cached_x, int i)
+SEXP _get_names_elt_from_IRanges_holder(const IRanges_holder *x_holder, int i)
 {
-	return STRING_ELT(cached_x->names, cached_x->offset + i);
+	return STRING_ELT(x_holder->names, x_holder->offset + i);
 }
 
-cachedIRanges _sub_cachedIRanges(const cachedIRanges *cached_x, int offset, int length)
+IRanges_holder _get_linear_subset_from_IRanges_holder(const IRanges_holder *x_holder, int offset, int length)
 {
-	cachedIRanges cached_y;
+	IRanges_holder y_holder;
 
-	cached_y = *cached_x;
-	cached_y.offset += offset;
-	cached_y.length = length;
-	cached_y.start += offset;
-	if (!cached_y.is_constant_width)
-		cached_y.width += offset;
-	return cached_y;
+	y_holder = *x_holder;
+	y_holder.offset += offset;
+	y_holder.length = length;
+	y_holder.start += offset;
+	if (!y_holder.is_constant_width)
+		y_holder.width += offset;
+	return y_holder;
 }
 
 
@@ -264,20 +264,20 @@ SEXP _alloc_IRanges(const char *classname, int length)
  * Validity functions.
  */
 
-int _is_normal_cachedIRanges(const cachedIRanges *cached_ir)
+int _is_normal_IRanges_holder(const IRanges_holder *x_holder)
 {
-	int ir_length, i;
+	int x_len, i;
 
-	ir_length = _get_cachedIRanges_length(cached_ir);
-	if (ir_length == 0)
+	x_len = _get_length_from_IRanges_holder(x_holder);
+	if (x_len == 0)
 		return 1;
-	if (_get_cachedIRanges_elt_width(cached_ir, 0) <= 0)
+	if (_get_width_elt_from_IRanges_holder(x_holder, 0) <= 0)
 		return 0;
-	for (i = 1; i < ir_length; i++) {
-		if (_get_cachedIRanges_elt_width(cached_ir, i) <= 0)
+	for (i = 1; i < x_len; i++) {
+		if (_get_width_elt_from_IRanges_holder(x_holder, i) <= 0)
 			return 0;
-		if (_get_cachedIRanges_elt_start(cached_ir, i)
-		 <= _get_cachedIRanges_elt_end(cached_ir, i - 1) + 1)
+		if (_get_start_elt_from_IRanges_holder(x_holder, i)
+		 <= _get_end_elt_from_IRanges_holder(x_holder, i - 1) + 1)
 			return 0;
 	}
 	return 1;
@@ -286,10 +286,10 @@ int _is_normal_cachedIRanges(const cachedIRanges *cached_ir)
 /* --- .Call ENTRY POINT --- */
 SEXP IRanges_isNormal(SEXP x)
 {
-	cachedIRanges cached_ir;
+	IRanges_holder ir_holder;
 
-	cached_ir = _cache_IRanges(x);
-	return ScalarLogical(_is_normal_cachedIRanges(&cached_ir));
+	ir_holder = _hold_IRanges(x);
+	return ScalarLogical(_is_normal_IRanges_holder(&ir_holder));
 }
 
 

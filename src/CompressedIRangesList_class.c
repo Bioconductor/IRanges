@@ -12,51 +12,51 @@
  * C-level abstract getters.
  */
 
-cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x)
+CompressedIRangesList_holder _hold_CompressedIRangesList(SEXP x)
 {
-	cachedCompressedIRangesList cached_x;
+	CompressedIRangesList_holder x_holder;
 	SEXP x_end;
 
-	cached_x.classname = _get_classname(x);
+	x_holder.classname = _get_classname(x);
 	x_end = _get_PartitioningByEnd_end(
 			_get_CompressedList_partitioning(x));
-	cached_x.length = LENGTH(x_end);
-	cached_x.end = INTEGER(x_end);
-	cached_x.cached_unlistData = _cache_IRanges(
+	x_holder.length = LENGTH(x_end);
+	x_holder.end = INTEGER(x_end);
+	x_holder.unlistData_holder = _hold_IRanges(
 			_get_CompressedList_unlistData(x));
-	return cached_x;
+	return x_holder;
 }
 
-int _get_cachedCompressedIRangesList_length(
-		const cachedCompressedIRangesList *cached_x)
+int _get_length_from_CompressedIRangesList_holder(
+		const CompressedIRangesList_holder *x_holder)
 {
-	return cached_x->length;
+	return x_holder->length;
 }
 
-cachedIRanges _get_cachedCompressedIRangesList_elt(
-		const cachedCompressedIRangesList *cached_x, int i)
+IRanges_holder _get_elt_from_CompressedIRangesList_holder(
+		const CompressedIRangesList_holder *x_holder, int i)
 {
 	int offset, length;
 
-	offset = i == 0 ? 0 : cached_x->end[i - 1];
-	length = cached_x->end[i] - offset;
-	return _sub_cachedIRanges(&(cached_x->cached_unlistData),
+	offset = i == 0 ? 0 : x_holder->end[i - 1];
+	length = x_holder->end[i] - offset;
+	return _get_linear_subset_from_IRanges_holder(&(x_holder->unlistData_holder),
 			offset, length);
 }
 
-int _get_cachedCompressedIRangesList_eltLength(
-		const cachedCompressedIRangesList *cached_x, int i)
+int _get_eltlens_from_CompressedIRangesList_holder(
+		const CompressedIRangesList_holder *x_holder, int i)
 {
 /*
-	cachedIRanges cached_ir;
+	IRanges_holder ir_holder;
 
-	cached_ir = _get_cachedCompressedIRangesList_elt(cached_x, i);
-	return _get_cachedIRanges_length(&cached_ir);
+	ir_holder = _get_elt_from_CompressedIRangesList_holder(x_holder, i);
+	return _get_length_from_IRanges_holder(&ir_holder);
 */
 	int offset;
 
-	offset = i == 0 ? 0 : cached_x->end[i - 1];
-	return cached_x->end[i] - offset; /* faster than the above */
+	offset = i == 0 ? 0 : x_holder->end[i - 1];
+	return x_holder->end[i] - offset; /* faster than the above */
 }
 
 
@@ -68,16 +68,16 @@ int _get_cachedCompressedIRangesList_eltLength(
 SEXP CompressedIRangesList_isNormal(SEXP x, SEXP use_names)
 {
 	SEXP ans, ans_names;
-	cachedCompressedIRangesList cached_x;
-	cachedIRanges cached_ir;
-	int x_length, i;
+	CompressedIRangesList_holder x_holder;
+	IRanges_holder ir_holder;
+	int x_len, i;
 
-	cached_x = _cache_CompressedIRangesList(x);
-	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
-	PROTECT(ans = NEW_LOGICAL(x_length));
-	for (i = 0; i < x_length; i++) {
-		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
-		LOGICAL(ans)[i] = _is_normal_cachedIRanges(&cached_ir);
+	x_holder = _hold_CompressedIRangesList(x);
+	x_len = _get_length_from_CompressedIRangesList_holder(&x_holder);
+	PROTECT(ans = NEW_LOGICAL(x_len));
+	for (i = 0; i < x_len; i++) {
+		ir_holder = _get_elt_from_CompressedIRangesList_holder(&x_holder, i);
+		LOGICAL(ans)[i] = _is_normal_IRanges_holder(&ir_holder);
 	}
 	if (LOGICAL(use_names)[0]) {
 		PROTECT(ans_names = duplicate(_get_CompressedList_names(x)));
@@ -139,21 +139,21 @@ SEXP CompressedIRangesList_summary(SEXP object)
 SEXP CompressedNormalIRangesList_min(SEXP x, SEXP use_names)
 {
 	SEXP ans, ans_names;
-	cachedCompressedIRangesList cached_x;
-	cachedIRanges cached_ir;
-	int x_length, ir_length, i;
+	CompressedIRangesList_holder x_holder;
+	IRanges_holder ir_holder;
+	int x_len, ir_len, i;
 	int *ans_elt;
 
-	cached_x = _cache_CompressedIRangesList(x);
-	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
-	PROTECT(ans = NEW_INTEGER(x_length));
-	for (i = 0, ans_elt = INTEGER(ans); i < x_length; i++, ans_elt++) {
-		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
-		ir_length = _get_cachedIRanges_length(&cached_ir);
-		if (ir_length == 0) {
+	x_holder = _hold_CompressedIRangesList(x);
+	x_len = _get_length_from_CompressedIRangesList_holder(&x_holder);
+	PROTECT(ans = NEW_INTEGER(x_len));
+	for (i = 0, ans_elt = INTEGER(ans); i < x_len; i++, ans_elt++) {
+		ir_holder = _get_elt_from_CompressedIRangesList_holder(&x_holder, i);
+		ir_len = _get_length_from_IRanges_holder(&ir_holder);
+		if (ir_len == 0) {
 			*ans_elt = INT_MAX;
 		} else {
-			*ans_elt = _get_cachedIRanges_elt_start(&cached_ir, 0);
+			*ans_elt = _get_start_elt_from_IRanges_holder(&ir_holder, 0);
 		}
 	}
 	if (LOGICAL(use_names)[0]) {
@@ -169,21 +169,21 @@ SEXP CompressedNormalIRangesList_min(SEXP x, SEXP use_names)
 SEXP CompressedNormalIRangesList_max(SEXP x, SEXP use_names)
 {
 	SEXP ans, ans_names;
-	cachedCompressedIRangesList cached_x;
-	cachedIRanges cached_ir;
-	int x_length, ir_length, i;
+	CompressedIRangesList_holder x_holder;
+	IRanges_holder ir_holder;
+	int x_len, ir_len, i;
 	int *ans_elt;
 
-	cached_x = _cache_CompressedIRangesList(x);
-	x_length = _get_cachedCompressedIRangesList_length(&cached_x);
-	PROTECT(ans = NEW_INTEGER(x_length));
-	for (i = 0, ans_elt = INTEGER(ans); i < x_length; i++, ans_elt++) {
-		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
-		ir_length = _get_cachedIRanges_length(&cached_ir);
-		if (ir_length == 0) {
+	x_holder = _hold_CompressedIRangesList(x);
+	x_len = _get_length_from_CompressedIRangesList_holder(&x_holder);
+	PROTECT(ans = NEW_INTEGER(x_len));
+	for (i = 0, ans_elt = INTEGER(ans); i < x_len; i++, ans_elt++) {
+		ir_holder = _get_elt_from_CompressedIRangesList_holder(&x_holder, i);
+		ir_len = _get_length_from_IRanges_holder(&ir_holder);
+		if (ir_len == 0) {
 			*ans_elt = R_INT_MIN;
 		} else {
-			*ans_elt = _get_cachedIRanges_elt_end(&cached_ir, ir_length - 1);
+			*ans_elt = _get_end_elt_from_IRanges_holder(&ir_holder, ir_len - 1);
 		}
 	}
 	if (LOGICAL(use_names)[0]) {

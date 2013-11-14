@@ -26,31 +26,31 @@ SEXP debug_inter_range_methods()
  * Low-level helper functions.
  */
 
-static int get_cachedCompressedIRangesList_eltlens_max(
-		const cachedCompressedIRangesList *cached_x)
+static int get_elt_from_CompressedIRangesList_holderlens_max(
+		const CompressedIRangesList_holder *x_holder)
 {
 	int x_len, ir_len_max, i, ir_len;
 
-	x_len = _get_cachedCompressedIRangesList_length(cached_x);
+	x_len = _get_length_from_CompressedIRangesList_holder(x_holder);
 	ir_len_max = 0;
 	for (i = 0; i < x_len; i++) {
-		ir_len = _get_cachedCompressedIRangesList_eltLength(
-				cached_x, i);
+		ir_len = _get_eltlens_from_CompressedIRangesList_holder(
+				x_holder, i);
 		if (ir_len > ir_len_max)
 			ir_len_max = ir_len;
 	}
 	return ir_len_max;
 }
 
-static int append_cachedIRanges_to_RangeAE(RangeAE *range_ae,
-		const cachedIRanges *cached_ir)
+static int append_IRanges_holder_to_RangeAE(RangeAE *range_ae,
+		const IRanges_holder *ir_holder)
 {
 	int ir_len, j, start, width;
 
-	ir_len = _get_cachedIRanges_length(cached_ir);
+	ir_len = _get_length_from_IRanges_holder(ir_holder);
 	for (j = 0; j < ir_len; j++) {
-		start = _get_cachedIRanges_elt_start(cached_ir, j);
-		width = _get_cachedIRanges_elt_width(cached_ir, j);
+		start = _get_start_elt_from_IRanges_holder(ir_holder, j);
+		width = _get_width_elt_from_IRanges_holder(ir_holder, j);
 		_RangeAE_insert_at(range_ae, _RangeAE_get_nelt(range_ae),
 				start, width);
 	}
@@ -247,30 +247,30 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 {
 	SEXP ans, ans_names, ans_mapping, ans_partitioning_end;
 	     //ans_unlistData, ans_partitioning;
-	cachedCompressedIRangesList cached_x;
-	cachedIRanges cached_ir;
+	CompressedIRangesList_holder x_holder;
+	IRanges_holder ir_holder;
 	int x_len, in_len_max, i;
 	IntAE order_buf;
 	RangeAE in_ranges, out_ranges;
 	IntAEAE tmp, *mapping;
 
-	cached_x = _cache_CompressedIRangesList(x);
-	x_len = _get_cachedCompressedIRangesList_length(&cached_x);
+	x_holder = _hold_CompressedIRangesList(x);
+	x_len = _get_length_from_CompressedIRangesList_holder(&x_holder);
 	if (LOGICAL(with_mapping)[0]) {
 		tmp = _new_IntAEAE(0, 0);
 		mapping = &tmp;
 	} else {
 		mapping = NULL;
 	}
-	in_len_max = get_cachedCompressedIRangesList_eltlens_max(&cached_x);
+	in_len_max = get_elt_from_CompressedIRangesList_holderlens_max(&x_holder);
 	order_buf = _new_IntAE(in_len_max, 0, 0);
 	in_ranges = _new_RangeAE(0, 0);
 	out_ranges = _new_RangeAE(0, 0);
 	PROTECT(ans_partitioning_end = NEW_INTEGER(x_len));
 	for (i = 0; i < x_len; i++) {
-		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
+		ir_holder = _get_elt_from_CompressedIRangesList_holder(&x_holder, i);
 		_RangeAE_set_nelt(&in_ranges, 0);
-		append_cachedIRanges_to_RangeAE(&in_ranges, &cached_ir);
+		append_IRanges_holder_to_RangeAE(&in_ranges, &ir_holder);
 		reduce_ranges(in_ranges.start.elts, in_ranges.width.elts,
 			_RangeAE_get_nelt(&in_ranges),
 			LOGICAL(drop_empty_ranges)[0], INTEGER(min_gapwidth)[0],
@@ -408,15 +408,15 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 {
 	SEXP ans, ans_names, ans_unlistData,
 	     ans_partitioning, ans_partitioning_end;
-	cachedCompressedIRangesList cached_x;
-	cachedIRanges cached_ir;
+	CompressedIRangesList_holder x_holder;
+	IRanges_holder ir_holder;
 	int x_len, in_len_max, start_len, *start_elt, *end_elt, i;
 	IntAE order_buf;
 	RangeAE in_ranges, out_ranges;
 
-	cached_x = _cache_CompressedIRangesList(x);
-	x_len = _get_cachedCompressedIRangesList_length(&cached_x);
-	in_len_max = get_cachedCompressedIRangesList_eltlens_max(&cached_x);
+	x_holder = _hold_CompressedIRangesList(x);
+	x_len = _get_length_from_CompressedIRangesList_holder(&x_holder);
+	in_len_max = get_elt_from_CompressedIRangesList_holderlens_max(&x_holder);
 	order_buf = _new_IntAE(in_len_max, 0, 0);
 	in_ranges = _new_RangeAE(0, 0);
 	out_ranges = _new_RangeAE(0, 0);
@@ -428,9 +428,9 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 	start_elt = INTEGER(start);
 	end_elt = INTEGER(end);
 	for (i = 0; i < x_len; i++) {
-		cached_ir = _get_cachedCompressedIRangesList_elt(&cached_x, i);
+		ir_holder = _get_elt_from_CompressedIRangesList_holder(&x_holder, i);
 		_RangeAE_set_nelt(&in_ranges, 0);
-		append_cachedIRanges_to_RangeAE(&in_ranges, &cached_ir);
+		append_IRanges_holder_to_RangeAE(&in_ranges, &ir_holder);
 		gaps_ranges(in_ranges.start.elts, in_ranges.width.elts,
 			_RangeAE_get_nelt(&in_ranges),
 			*start_elt, *end_elt,

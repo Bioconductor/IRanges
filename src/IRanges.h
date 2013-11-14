@@ -604,32 +604,32 @@ SEXP _get_IRanges_names(SEXP x);
 
 int _get_IRanges_length(SEXP x);
 
-cachedIRanges _cache_IRanges(SEXP x);
+IRanges_holder _hold_IRanges(SEXP x);
 
-int _get_cachedIRanges_length(const cachedIRanges *cached_x);
+int _get_length_from_IRanges_holder(const IRanges_holder *x_holder);
 
-int _get_cachedIRanges_elt_width(
-	const cachedIRanges *cached_x,
+int _get_width_elt_from_IRanges_holder(
+	const IRanges_holder *x_holder,
 	int i
 );
 
-int _get_cachedIRanges_elt_start(
-	const cachedIRanges *cached_x,
+int _get_start_elt_from_IRanges_holder(
+	const IRanges_holder *x_holder,
 	int i
 );
 
-int _get_cachedIRanges_elt_end(
-	const cachedIRanges *cached_x,
+int _get_end_elt_from_IRanges_holder(
+	const IRanges_holder *x_holder,
 	int i
 );
 
-SEXP _get_cachedIRanges_elt_name(
-	const cachedIRanges *cached_x,
+SEXP _get_names_elt_from_IRanges_holder(
+	const IRanges_holder *x_holder,
 	int i
 );
 
-cachedIRanges _sub_cachedIRanges(
-	const cachedIRanges *cached_x,
+IRanges_holder _get_linear_subset_from_IRanges_holder(
+	const IRanges_holder *x_holder,
 	int offset,
 	int length
 );
@@ -666,7 +666,7 @@ SEXP _alloc_IRanges(
 	int length
 );
 
-int _is_normal_cachedIRanges(const cachedIRanges *cached_ir);
+int _is_normal_IRanges_holder(const IRanges_holder *x_holder);
 
 SEXP IRanges_isNormal(SEXP x);
 
@@ -915,19 +915,19 @@ SEXP RleViews_viewWhichMaxs(
 
 /* CompressedIRangesList_class.c */
 
-cachedCompressedIRangesList _cache_CompressedIRangesList(SEXP x);
+CompressedIRangesList_holder _hold_CompressedIRangesList(SEXP x);
 
-int _get_cachedCompressedIRangesList_length(
-	const cachedCompressedIRangesList *cached_x
+int _get_length_from_CompressedIRangesList_holder(
+	const CompressedIRangesList_holder *x_holder
 );
 
-cachedIRanges _get_cachedCompressedIRangesList_elt(
-	const cachedCompressedIRangesList *cached_x,
+IRanges_holder _get_elt_from_CompressedIRangesList_holder(
+	const CompressedIRangesList_holder *x_holder,
 	int i
 );
 
-int _get_cachedCompressedIRangesList_eltLength(
-	const cachedCompressedIRangesList *cached_x,
+int _get_eltlens_from_CompressedIRangesList_holder(
+	const CompressedIRangesList_holder *x_holder,
 	int i
 );
 

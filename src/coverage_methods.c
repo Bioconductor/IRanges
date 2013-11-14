@@ -369,7 +369,7 @@ static void check_arg_is_recyclable(int arg_len, int x_len,
 
 
 /****************************************************************************
- *                         cachedIRanges_coverage()                         *
+ *                  compute_coverage_from_IRanges_holder()                  *
  ****************************************************************************/
 
 /*
@@ -390,7 +390,7 @@ static int double2int(double x)
 
 /*
  * Args:
- *   cached_x:   A cachedIRanges struct holding the input ranges, those
+ *   x_holder:   A IRanges_holder struct holding the input ranges, those
  *               ranges being those of a fictive IRanges object 'x'.
  *   shift:      A numeric (integer or double) vector parallel to 'x' (will
  *               get recycled if necessary) with no NAs.
@@ -409,14 +409,14 @@ static int double2int(double x)
  * they fully cover the interval), then '*out_ranges_are_tiles' is set to 1.
  * Otherwise, it's set to 0.
  */
-static int shift_and_clip_ranges(const cachedIRanges *cached_x,
+static int shift_and_clip_ranges(const IRanges_holder *x_holder,
 		SEXP shift, int width, int circle_len,
 		RangeAE *out_ranges, int *out_ranges_are_tiles)
 {
 	int x_len, shift_len, cvg_len, auto_cvg_len, prev_end,
 	    i, j, x_start, x_end, shift_elt, tmp;
 
-	x_len = _get_cachedIRanges_length(cached_x);
+	x_len = _get_length_from_IRanges_holder(x_holder);
 
 	/* Check 'shift'. */
 	check_arg_is_numeric(shift, shift_label);
@@ -453,8 +453,8 @@ static int shift_and_clip_ranges(const cachedIRanges *cached_x,
 	for (i = j = 0; i < x_len; i++, j++) {
 		if (j >= shift_len)
 			j = 0; /* recycle j */
-		x_start = _get_cachedIRanges_elt_start(cached_x, i);
-		x_end = _get_cachedIRanges_elt_end(cached_x, i);
+		x_start = _get_start_elt_from_IRanges_holder(x_holder, i);
+		x_end = _get_end_elt_from_IRanges_holder(x_holder, i);
 		if (IS_INTEGER(shift)) {
 			shift_elt = INTEGER(shift)[j];
 			if (shift_elt == NA_INTEGER)
@@ -505,7 +505,7 @@ static int shift_and_clip_ranges(const cachedIRanges *cached_x,
 
 /*
  * Args:
- *   cached_x:   A cachedIRanges struct holding the input ranges, those
+ *   x_holder:   A IRanges_holder struct holding the input ranges, those
  *               ranges being those of a fictive IRanges object 'x'.
  *   shift:      A numeric (integer or double) vector parallel to 'x' (will
  *               get recycled if necessary) with no NAs.
@@ -516,7 +516,8 @@ static int shift_and_clip_ranges(const cachedIRanges *cached_x,
  *   method:     Either "auto", "sort", or "hash".
  * Returns an Rle object.
  */
-static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
+static SEXP compute_coverage_from_IRanges_holder(
+		const IRanges_holder *x_holder,
 		SEXP shift, int width, SEXP weight, int circle_len,
 		SEXP method, RangeAE *ranges_buf)
 {
@@ -525,8 +526,8 @@ static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
 	const int *x_start, *x_width;
 	const char *method0;
 
-	x_len = _get_cachedIRanges_length(cached_x);
-	cvg_len = shift_and_clip_ranges(cached_x, shift, width, circle_len,
+	x_len = _get_length_from_IRanges_holder(x_holder);
+	cvg_len = shift_and_clip_ranges(x_holder, shift, width, circle_len,
 					ranges_buf, &out_ranges_are_tiles);
 	x_start = ranges_buf->start.elts;
 	x_width = ranges_buf->width.elts;
@@ -602,12 +603,12 @@ static SEXP cachedIRanges_coverage(const cachedIRanges *cached_x,
 SEXP IRanges_coverage(SEXP x, SEXP shift, SEXP width, SEXP weight,
 		SEXP circle_len, SEXP method)
 {
-	cachedIRanges cached_x;
+	IRanges_holder x_holder;
 	int x_len;
 	RangeAE ranges_buf;
 
-	cached_x = _cache_IRanges(x);
-	x_len = _get_cachedIRanges_length(&cached_x);
+	x_holder = _hold_IRanges(x);
+	x_len = _get_length_from_IRanges_holder(&x_holder);
 
 	/* Check 'width'. */
 	check_arg_is_integer(width, "width");
@@ -624,10 +625,10 @@ SEXP IRanges_coverage(SEXP x, SEXP shift, SEXP width, SEXP weight,
 	shift_label = "shift";
 	width_label = "width";
 	weight_label = "weight";
-	return cachedIRanges_coverage(&cached_x,
-				      shift, INTEGER(width)[0],
-				      weight, INTEGER(circle_len)[0],
-				      method, &ranges_buf);
+	return compute_coverage_from_IRanges_holder(&x_holder,
+				shift, INTEGER(width)[0],
+				weight, INTEGER(circle_len)[0],
+				method, &ranges_buf);
 }
 
 /* --- .Call ENTRY POINT ---
@@ -653,17 +654,17 @@ SEXP CompressedIRangesList_coverage(SEXP x,
 		SEXP shift, SEXP width, SEXP weight, SEXP circle_lens,
 		SEXP method)
 {
-	cachedCompressedIRangesList cached_x;
+	CompressedIRangesList_holder x_holder;
 	int x_len, shift_len, width_len, weight_len, circle_lens_len,
 	    i, j, k, l, m;
 	RangeAE ranges_buf;
 	SEXP ans, ans_elt, shift_elt, weight_elt;
-	cachedIRanges cached_x_elt;
+	IRanges_holder x_elt_holder;
 	char x_label_buf[40], shift_label_buf[40],
 	     width_label_buf[40], weight_label_buf[40];
 
-	cached_x = _cache_CompressedIRangesList(x);
-	x_len = _get_cachedCompressedIRangesList_length(&cached_x);
+	x_holder = _hold_CompressedIRangesList(x);
+	x_len = _get_length_from_CompressedIRangesList_holder(&x_holder);
 
 	/* Check 'shift'. */
 	check_arg_is_list(shift, "shift");
@@ -708,11 +709,12 @@ SEXP CompressedIRangesList_coverage(SEXP x,
 			 "width[%d]", k + 1);
 		snprintf(weight_label_buf, sizeof(weight_label_buf),
 			 "weight[[%d]]", l + 1);
-		cached_x_elt = _get_cachedCompressedIRangesList_elt(&cached_x,
+		x_elt_holder = _get_elt_from_CompressedIRangesList_holder(&x_holder,
 						i);
 		shift_elt = VECTOR_ELT(shift, j);
 		weight_elt = VECTOR_ELT(weight, l);
-		PROTECT(ans_elt = cachedIRanges_coverage(&cached_x_elt,
+		PROTECT(ans_elt = compute_coverage_from_IRanges_holder(
+						&x_elt_holder,
 						shift_elt,
 						INTEGER(width)[k],
 						weight_elt,

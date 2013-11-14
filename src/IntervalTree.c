@@ -121,15 +121,15 @@ struct rbTree *_IntegerIntervalTree_new(void) {
 
 SEXP IntegerIntervalTree_new(SEXP r_ranges) {
   struct rbTree *tree = _IntegerIntervalTree_new();
-  cachedIRanges cached_r_ranges = _cache_IRanges(r_ranges);
-  int nranges = _get_cachedIRanges_length(&cached_r_ranges);
+  IRanges_holder r_ranges_holder = _hold_IRanges(r_ranges);
+  int nranges = _get_length_from_IRanges_holder(&r_ranges_holder);
   int i, start, end;
   SEXP r_tree;
 
   pushRHandlers();
   for (i = 0; i < nranges; i++) {
-    start = _get_cachedIRanges_elt_start(&cached_r_ranges, i);
-    end = _get_cachedIRanges_elt_end(&cached_r_ranges, i);
+    start = _get_start_elt_from_IRanges_holder(&r_ranges_holder, i);
+    end = _get_end_elt_from_IRanges_holder(&r_ranges_holder, i);
     if (end >= start) /* only add non-empty ranges */
       _IntegerIntervalTree_add(tree, start, end, i+1);
   }
@@ -165,7 +165,7 @@ IntervalForest *_IntegerIntervalForest_new(int npartitions) {
 SEXP IntegerIntervalForest_new(SEXP r_ranges, SEXP r_partitionLengths, SEXP r_npartitions) {
   SEXP r_forest;
   
-  cachedIRanges cached_r_ranges = _cache_IRanges(r_ranges);
+  IRanges_holder r_ranges_holder = _hold_IRanges(r_ranges);
   int i, m, last, start, end;
   int npartitions = *INTEGER(r_npartitions);
   int *partitionLengths = INTEGER(r_partitionLengths);
@@ -181,8 +181,8 @@ SEXP IntegerIntervalForest_new(SEXP r_ranges, SEXP r_partitionLengths, SEXP r_np
   pushRHandlers();
   for (i = 0, last = 0; i < npartitions; i++, partitionLengths++) {
     for (m = 0; m < *partitionLengths; m++) {
-      start = _get_cachedIRanges_elt_start(&cached_r_ranges, last + m);
-      end = _get_cachedIRanges_elt_end(&cached_r_ranges, last + m);
+      start = _get_start_elt_from_IRanges_holder(&r_ranges_holder, last + m);
+      end = _get_end_elt_from_IRanges_holder(&r_ranges_holder, last + m);
       tree = _IntegerIntervalForest_getTree(forest, i);
       
       if (end >= start)
@@ -215,7 +215,7 @@ SEXP IntegerIntervalForest_new(SEXP r_ranges, SEXP r_partitionLengths, SEXP r_np
  * of overlap hit indices and the last element is the total number
  * of overlaps.
  * Running time: less than O(mk + mlogn) */
-void _IntegerIntervalTree_overlapHelper(struct rbTree *tree, cachedIRanges cached_r_ranges,
+void _IntegerIntervalTree_overlapHelper(struct rbTree *tree, IRanges_holder r_ranges_holder,
                     int nranges, int offset, int **r_elt,
                     int find_type, 
                     struct slRef **result_ints)
@@ -231,8 +231,8 @@ void _IntegerIntervalTree_overlapHelper(struct rbTree *tree, cachedIRanges cache
   }
 
   for (m = 0; m < nranges; m++, (*r_elt)++) {
-    int start = _get_cachedIRanges_elt_start(&cached_r_ranges, m+offset);
-    int end = _get_cachedIRanges_elt_end(&cached_r_ranges, m+offset);
+    int start = _get_start_elt_from_IRanges_holder(&r_ranges_holder, m+offset);
+    int end = _get_end_elt_from_IRanges_holder(&r_ranges_holder, m+offset);
     if (end < start) { /* empty query range */
       if (find_type == FIND_ALL)
         *((*r_elt)+1) = *(*r_elt);
@@ -345,8 +345,8 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
 {
   SEXP result_inds;
 
-  cachedIRanges cached_r_ranges = _cache_IRanges(r_ranges);
-  int nranges = _get_cachedIRanges_length(&cached_r_ranges);
+  IRanges_holder r_ranges_holder = _hold_IRanges(r_ranges);
+  int nranges = _get_length_from_IRanges_holder(&r_ranges_holder);
   
   if (find_type == FIND_ALL) {
     PROTECT(result_inds = allocVector(INTSXP, nranges + 1));
@@ -358,7 +358,7 @@ SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
   memset(INTEGER(result_inds), 0, LENGTH(result_inds) * sizeof(int));
 
   int *r_elt = INTEGER(result_inds);
-  _IntegerIntervalTree_overlapHelper(tree, cached_r_ranges, nranges, 0, &r_elt,
+  _IntegerIntervalTree_overlapHelper(tree, r_ranges_holder, nranges, 0, &r_elt,
     find_type, result_ints);
 
   UNPROTECT(1);
@@ -381,8 +381,8 @@ SEXP _IntegerIntervalForest_overlap(IntervalForest *forest, SEXP r_ranges, SEXP 
   int m; /* query counter */
   int k; /* helper counter */
 
-  cachedIRanges cached_r_ranges = _cache_IRanges(r_ranges);
-  int nranges = _get_cachedIRanges_length(&cached_r_ranges);
+  IRanges_holder r_ranges_holder = _hold_IRanges(r_ranges);
+  int nranges = _get_length_from_IRanges_holder(&r_ranges_holder);
   if (find_type == FIND_ALL) {
     PROTECT(result_inds = allocVector(INTSXP, nranges + 1));
   } else if (find_type == FIND_ANY) {
@@ -402,7 +402,7 @@ SEXP _IntegerIntervalForest_overlap(IntervalForest *forest, SEXP r_ranges, SEXP 
     cur_partition = *p_partitionIndices;
 
     if (cur_partition != NA_INTEGER && (tree = forest->trees[cur_partition-1])->n > 0) {
-        _IntegerIntervalTree_overlapHelper(tree, cached_r_ranges, *p_partitionLengths, 
+        _IntegerIntervalTree_overlapHelper(tree, r_ranges_holder, *p_partitionLengths, 
                                            m, &r_elt, find_type, result_ints);
     } else {
       for (k=0; k<*p_partitionLengths; k++) {
@@ -768,14 +768,14 @@ _IntegerIntervalTree_nearest(struct rbTree *tree, int *query, int len,
 /*
 SEXP IntegerIntervalTree_nearest(SEXP r_tree, SEXP r_ranges, SEXP r_self) {
   struct rbTree *tree = R_ExternalPtrAddr(r_tree);
-  cachedIRanges cached_r_ranges = _cache_IRanges(r_ranges);
-  int nranges = _get_cachedIRanges_length(&cached_r_ranges);
+  IRanges_holder r_ranges_holder = _hold_IRanges(r_ranges);
+  int nranges = _get_length_from_IRanges_holder(&r_ranges_holder);
 
 
   int *end = R_alloc(nranges, sizeof(int));
     
   for (i = 0; i < nranges; i++)
-    end[i] = _get_cachedIRanges_elt_end(&cached_r_ranges, i);
+    end[i] = _get_end_elt_from_IRanges_holder(&r_ranges_holder, i);
   
 }
 */
