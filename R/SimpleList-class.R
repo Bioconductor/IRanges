@@ -143,6 +143,7 @@ setMethod("aggregate", "SimpleList",
 
 setMethod("endoapply", "SimpleList",
           function(X, FUN, ...) {
+              FUN <- match.fun(FUN)
               listData <- lapply(X, FUN = FUN, ...)
               elementTypeX <- elementType(X)
               if (!all(sapply(listData,
@@ -156,6 +157,7 @@ setMethod("mendoapply", "SimpleList",
           function(FUN, ..., MoreArgs = NULL) {
               X <- list(...)[[1L]]
               elementTypeX <- elementType(X)
+              FUN <- match.fun(FUN)
               listData <-
                 mapply(FUN = FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = FALSE)
               if (!all(sapply(listData,
