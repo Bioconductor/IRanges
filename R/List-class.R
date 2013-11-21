@@ -435,6 +435,7 @@ setMethod("mendoapply", "List",
           function(FUN, ..., MoreArgs = NULL) {
               X <- list(...)[[1L]]
               elementTypeX <- elementType(X)
+              FUN <- match.fun(FUN)
               listData <-
                 mapply(FUN = FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = FALSE)
               for (i in seq_len(length(listData))) {

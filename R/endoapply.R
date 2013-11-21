@@ -7,10 +7,11 @@ setGeneric("endoapply", signature = "X",
            function(X, FUN, ...) standardGeneric("endoapply"))
 
 setMethod("endoapply", "list",
-          function(X, FUN, ...) lapply(X = X, FUN = FUN, ...))
+          function(X, FUN, ...) lapply(X = X, FUN = match.fun(FUN), ...))
 
 setMethod("endoapply", "data.frame",
-          function(X, FUN, ...) as.data.frame(lapply(X = X, FUN = FUN, ...)))
+          function(X, FUN, ...)
+          as.data.frame(lapply(X = X, FUN = match.fun(FUN), ...)))
 
 ### =========================================================================
 ### mendoapply()
@@ -24,5 +25,5 @@ setMethod("mendoapply", "list", function(FUN, ..., MoreArgs = NULL)
           mapply(FUN = FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = FALSE))
 
 setMethod("mendoapply", "data.frame", function(FUN, ..., MoreArgs = NULL)
-          as.data.frame(mapply(FUN = FUN, ..., MoreArgs = MoreArgs,
+          as.data.frame(mapply(FUN = match.fun(FUN), ..., MoreArgs = MoreArgs,
                                SIMPLIFY = FALSE)))
