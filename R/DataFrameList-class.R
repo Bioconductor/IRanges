@@ -355,7 +355,7 @@ setReplaceMethod("[", "SplitDataFrameList",
         if (missing(i)) {
             y[] <- value
         } else if (is.list(i) || (is(i, "List") && !is(i, "Ranges"))) {
-            y <- subsetListByList_replace(y, i, value, byrow=TRUE)
+            y <- lsubset_List_by_List(y, i, value)
         } else {
             y[i] <- value
         }
