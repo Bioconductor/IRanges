@@ -901,3 +901,9 @@ setMethod("within", "List",
               data[[nm]] <- NULL
             data
           })
+
+setMethod("do.call", c("ANY", "List"),
+          function (what, args, quote = FALSE, envir = parent.frame()) {
+            args <- as.list(args)
+            callGeneric()
+          })
