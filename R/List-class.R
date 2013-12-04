@@ -743,7 +743,7 @@ listClassName <- function(impl, element.type) {
   if (is.null(impl))
     impl <- ""
   if (!is.null(element.type)) {
-    cl <- c(element.type, names(getClass(element.type)@contains))
+    cl <- c(element.type, names(getClass(element.type)@contains), "")
     cl <- capitalize(cl)
   } else {
     cl <- ""
@@ -753,7 +753,8 @@ listClassName <- function(impl, element.type) {
                     sapply(listClass, extends, paste0(impl, "List")))
   if (length(clExists) == 0L) {
     stop("Could not find a '", impl,
-         "List' subclass for values of type '", cl, "'")
+         "List' subclass for values of type ",
+         paste("'", cl, "'", collapse = ", "))
   }
   listClass[clExists[1L]]
 }
