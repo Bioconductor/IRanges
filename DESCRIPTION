@@ -75,6 +75,7 @@ Collate: S4-utils.R
 	RangedSelection-class.R
 	read.Mask.R
 	funprog-methods.R
+	reverse-methods.R
 	intra-range-methods.R
 	inter-range-methods.R
 	coverage-methods.R
@@ -83,7 +84,6 @@ Collate: S4-utils.R
 	findOverlaps-methods.R
 	nearest-methods.R
 	encodeOverlaps-methods.R
-	reverse-methods.R
 	expand-methods.R
 	updateObject-methods.R
 	classNameForDisplay-methods.R

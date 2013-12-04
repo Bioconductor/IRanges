@@ -429,6 +429,9 @@ export(
     Loffset, Roffset, encoding, flippedQuery,
     Lencoding, Rencoding, Lngap, Rngap,
 
+    ## reverse-methods.R:
+    reverse,
+
     ## intra-range-methods.R:
     shift, narrow, flank, reflect, resize, promoters, restrict, threebands,
 
@@ -452,9 +455,6 @@ export(
 
     ## encodeOverlaps-methods.R:
     encodeOverlaps,
-
-    ## reverse-methods.R:
-    reverse,
 
     ## expand-methods.R:
     expand,
@@ -527,6 +527,7 @@ exportMethods(
     map, pmap,
     Loffset, Roffset, encoding, flippedQuery,
     Lencoding, Rencoding, Lngap, Rngap,
+    reverse,
     shift, narrow, flank, reflect, resize, promoters, restrict, threebands,
     reduce, gaps, disjoin, isDisjoint, disjointBins,
     coverage,
@@ -535,7 +536,6 @@ exportMethods(
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
     precede, follow, nearest, distance, distanceToNearest,
     encodeOverlaps,
-    reverse,
     expand,
     classNameForDisplay
 )
