@@ -1014,6 +1014,27 @@ SEXP Ranges_disjointBins(
 );
 
 
+/* coverage_methods.c */
+
+SEXP IRanges_coverage(
+	SEXP x,
+	SEXP shift,
+	SEXP width,
+	SEXP weight,
+	SEXP circle_len,
+	SEXP method
+);
+
+SEXP CompressedIRangesList_coverage(
+	SEXP x,
+	SEXP shift,
+	SEXP width,
+	SEXP weight,
+	SEXP circle_lens,
+	SEXP method
+);
+
+
 /* encodeOverlaps_methods.c */
 
 SEXP encode_overlaps1(
@@ -1050,26 +1071,5 @@ SEXP Hits_encode_overlaps(
 	SEXP query_hits,
 	SEXP subject_hits,
 	SEXP flip_query
-);
-
-
-/* coverage_methods.c */
-
-SEXP IRanges_coverage(
-	SEXP x,
-	SEXP shift,
-	SEXP width,
-	SEXP weight,
-	SEXP circle_len,
-	SEXP method
-);
-
-SEXP CompressedIRangesList_coverage(
-	SEXP x,
-	SEXP shift,
-	SEXP width,
-	SEXP weight,
-	SEXP circle_lens,
-	SEXP method
 );
 

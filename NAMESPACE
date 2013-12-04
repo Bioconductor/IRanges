@@ -435,6 +435,12 @@ export(
     ## inter-range-methods.R:
     reduce, gaps, disjoin, isDisjoint, disjointBins,
 
+    ## coverage-methods.R:
+    coverage,
+
+    ## slice-methods.R:
+    slice,
+
     ## setops-methods.R:
     punion, pintersect, psetdiff, pgap,
 
@@ -449,12 +455,6 @@ export(
 
     ## reverse-methods.R:
     reverse,
-
-    ## coverage-methods.R:
-    coverage,
-
-    ## slice-methods.R:
-    slice,
 
     ## expand-methods.R:
     expand,
@@ -529,13 +529,13 @@ exportMethods(
     Lencoding, Rencoding, Lngap, Rngap,
     shift, narrow, flank, reflect, resize, promoters, restrict, threebands,
     reduce, gaps, disjoin, isDisjoint, disjointBins,
+    coverage,
+    slice,
     punion, pintersect, psetdiff, pgap,
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
     precede, follow, nearest, distance, distanceToNearest,
     encodeOverlaps,
     reverse,
-    coverage,
-    slice,
     expand,
     classNameForDisplay
 )

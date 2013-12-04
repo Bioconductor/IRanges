@@ -77,13 +77,13 @@ Collate: S4-utils.R
 	funprog-methods.R
 	intra-range-methods.R
 	inter-range-methods.R
+	coverage-methods.R
+	slice-methods.R
 	setops-methods.R
 	findOverlaps-methods.R
 	nearest-methods.R
 	encodeOverlaps-methods.R
 	reverse-methods.R
-	coverage-methods.R
-	slice-methods.R
 	expand-methods.R
 	updateObject-methods.R
 	classNameForDisplay-methods.R
