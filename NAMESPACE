@@ -429,14 +429,14 @@ export(
     Loffset, Roffset, encoding, flippedQuery,
     Lencoding, Rencoding, Lngap, Rngap,
 
-    ## reverse-methods.R:
-    reverse,
-
     ## intra-range-methods.R:
     shift, narrow, flank, reflect, resize, promoters, restrict, threebands,
 
     ## inter-range-methods.R:
     reduce, gaps, disjoin, isDisjoint, disjointBins,
+
+    ## reverse-methods.R:
+    reverse,
 
     ## coverage-methods.R:
     coverage,
@@ -527,9 +527,9 @@ exportMethods(
     map, pmap,
     Loffset, Roffset, encoding, flippedQuery,
     Lencoding, Rencoding, Lngap, Rngap,
-    reverse,
     shift, narrow, flank, reflect, resize, promoters, restrict, threebands,
     reduce, gaps, disjoin, isDisjoint, disjointBins,
+    reverse,
     coverage,
     slice,
     punion, pintersect, psetdiff, pgap,
