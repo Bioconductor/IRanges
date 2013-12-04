@@ -584,7 +584,12 @@ setGeneric("splitAsListReturnedClass",
 )
 
 setMethod("splitAsListReturnedClass", "ANY",
-    function(x) listClassName("Compressed", class(x))
+    function(x) {
+      cn <- listClassName("Compressed", class(x))
+      if (cn == "CompressedList")
+        cn <- "SimpleList"
+      cn
+    }
 )
 
 setMethod("relist", c("ANY", "PartitioningByEnd"),
