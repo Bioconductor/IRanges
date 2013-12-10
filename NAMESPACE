@@ -460,7 +460,10 @@ export(
     expand,
 
     ## classNameForDisplay-methods.R:
-    classNameForDisplay
+    classNameForDisplay,
+
+    ## tile-methods.R:
+    tile
 )
 
 ### Exactly the same list as above.
@@ -537,5 +540,6 @@ exportMethods(
     precede, follow, nearest, distance, distanceToNearest,
     encodeOverlaps,
     expand,
-    classNameForDisplay
+    classNameForDisplay,
+    tile
 )
