@@ -155,6 +155,10 @@ setMethod("match", c("Hits", "Hits"),
     }
 )
 
+setMethod("selfmatch", "Hits",
+          function (x, method = c("auto", "quick", "hash")) {
+            selfmatchIntegerPairs(queryHits(x), subjectHits(x), method = method)
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Utilities
