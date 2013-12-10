@@ -583,11 +583,11 @@ setGeneric("splitAsListReturnedClass",
     function(x) standardGeneric("splitAsListReturnedClass")
 )
 
-setMethod("splitAsListReturnedClass", "ANY",
+setMethod(IRanges:::splitAsListReturnedClass, "ANY",
     function(x) {
       cn <- listClassName("Compressed", class(x))
       if (cn == "CompressedList")
-        cn <- "SimpleList"
+        cn <- listClassName("Simple", class(x))
       cn
     }
 )
