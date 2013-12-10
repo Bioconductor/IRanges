@@ -1025,6 +1025,25 @@ setMethod("runValue", "CompressedRleList",
     }
 )
 
+setReplaceMethod("runValue", "CompressedRleList",
+                 function(x, value) {
+                   if (!identical(elementLengths(x), elementLengths(value)))
+                     stop("elementLengths() of 'x' and 'value' must match")
+                   runValue(x@unlistData) <- unlist(value, use.names=FALSE)
+                   x
+                 })
+
+setReplaceMethod("runValue", "SimpleRleList",
+                 function(x, value) {
+                   if (!identical(elementLengths(x), elementLengths(value)))
+                     stop("elementLengths() of 'x' and 'value' must match")
+                   x@listData <- mapply(function(rle, v) {
+                     runValue(rle) <- v
+                     rle
+                   }, x, value, SIMPLIFY=FALSE)
+                   x
+                 })
+
 setMethod("runLength", "RleList", function(x) {
   seqapply(x, runLength)
 })
