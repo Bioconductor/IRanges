@@ -36,7 +36,7 @@ setMethod("length", "Ranges", function(x) length(start(x)))
 
 ### Without this definition, we inherit the method for Vector objects
 ### which is very inefficient on Ranges objects!
-setMethod("elementLengths", "Ranges", function(x) width(x))
+setMethod("elementLengths", "Ranges", function(x) setNames(width(x), names(x)))
 
 ### The "start" and "end" generics are defined in the stats package.
 setGeneric("width", function(x) standardGeneric("width"))
