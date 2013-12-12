@@ -44,7 +44,6 @@
 \alias{as.env,List-method}
 \alias{unlist,List-method}
 \alias{relist,ANY,List-method}
-\alias{unsplit,List-method}
 \alias{stack,List-method}
 
 \alias{eval}
@@ -195,11 +194,6 @@
       a \code{List} or \code{PartitioningByEnd} object. This makes sense
       when \code{flesh[i]} corresponds somehow to
       \code{unlist(skeleton)[i]}.
-    }
-    \item{}{\code{unsplit(value, f, drop = FALSE)}: Unlists
-      \code{value}, where the order of the returned vector is as
-      if \code{value} were originally created by splitting that vector
-      on the factor \code{f}.
     }
     \item{}{\code{stack(x, index.var = "name", value.var = "value")}:
       As with \code{\link[utils:stack]{stack}} on a \code{list},

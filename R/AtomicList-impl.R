@@ -136,7 +136,7 @@ atomicElementListClass <- function(x) {
   ans
 }
 
-### FIXME: these seem very similar to asList().
+### FIXME: these seem very similar to .asList().
 
 SimpleAtomicList <- function(listData) {
   classOrder <-

@@ -1,9 +1,13 @@
 \name{seqapply}
+
 \alias{seqapply}
 \alias{mseqapply}
 \alias{tseqapply}
 \alias{seqsplit}
 \alias{seqby}
+
+\alias{unsplit,List-method}
+\alias{split<-,Vector-method}
 
 \title{
 Apply function and cast to Vector
@@ -17,11 +21,16 @@ Apply function and cast to Vector
 }
 
 \usage{
+## The 'seqapply' family:
 seqapply(X, FUN, ...)
 mseqapply(FUN, ..., MoreArgs = NULL, USE.NAMES = TRUE)
 tseqapply(X, INDEX, FUN = NULL, ...)
 seqsplit(x, f, drop = FALSE)
 seqby(data, INDICES, FUN, ...)
+
+## Reverse seqsplit():
+\S4method{unsplit}{List}(value, f, drop = FALSE)
+\S4method{split}{Vector}(x, f, drop = FALSE, ...) <- value
 }
 
 \arguments{
@@ -60,10 +69,14 @@ seqby(data, INDICES, FUN, ...)
   \item{\dots}{
     Extra arguments to pass to \code{FUN}
   }
+  \item{value}{
+    The \link{List} object to unsplit.
+  }
 }
 
 \details{
-  These functions should be used just like their base equivalent:
+  The functions in the \code{seqapply} family should be used just like
+  their base equivalent:
   \describe{
     \item{\code{seqapply}}{=> \code{lapply}}
     \item{\code{mseqapply}}{=> \code{mapply}}
@@ -80,10 +93,20 @@ seqby(data, INDICES, FUN, ...)
   exhausted. If \code{ClassList} is found, it is called with the list of
   return values as its only argument, under the assumption that
   a \code{Vector}-derived instance will be constructed.
+
+  \code{unsplit} unlists \code{value}, where the order of the returned
+  vector is as if \code{value} were originally created by splitting that
+  vector on the factor \code{f}.
+
+  \code{split(x, f, drop = FALSE) <- value}: Virtually splits \code{x} by
+  the factor \code{f}, replaces the elements of the resulting list with the
+  elements from the list \code{value}, and restores \code{x} to its original
+  form. Note that this works for any \code{Vector}, even though \code{split}
+  itself is not universally supported.
 }
 
 \value{
-  A \code{Vector} object
+  A \code{List} object for the functions in the \code{seqapply} family.
 }
 
 \author{

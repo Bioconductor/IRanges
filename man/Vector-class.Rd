@@ -64,7 +64,6 @@
 \alias{mstack}
 \alias{mstack,Vector-method}
 \alias{mstack,vector-method}
-\alias{split<-,Vector-method}
 \alias{relist,Vector,list-method}
 
 \alias{tapply,ANY,Vector-method}
@@ -220,14 +219,6 @@
       The elements of \code{value} are repeated to create a Vector with the
       same number of elements as the width of the subsequence window it is
       replacing.
-    }
-    \item{}{
-      \code{split(x, f, drop = FALSE) <- value}: Virtually
-      splits \code{x} by the factor \code{f}, replaces the elements of
-      the resulting list with the elements from the list \code{value},
-      and restores \code{x} to its original form. Note that this works
-      for any \code{Vector}, even though \code{split} itself is
-      not universally supported.
     }
     \item{}{
       \code{head(x, n = 6L)}:

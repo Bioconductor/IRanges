@@ -784,30 +784,10 @@ setMethod("split", c("Vector", "Vector"),
           function(x, f, drop=FALSE, ...) splitAsList(x, f, drop=drop)
 )
 
-`seqsplit<-` <- function(x, f, drop = FALSE, ..., value) {
-  if (!isTRUEorFALSE(drop))
-    stop("'drop' must be TRUE or FALSE")
-  if (length(x) != length(f))
-    stop("Length of 'f' must equal the length of 'x'")
-  ind <- seqsplit(seq_len(length(x)), f, drop = drop)
-  if (length(ind) != length(value))
-    stop("Length of 'value' must equal the length of a split on 'f'")
-  x[unlist(ind, use.names=FALSE)] <- unlist(value, use.names = FALSE)
-  x
-}
 
-setReplaceMethod("split", "Vector", function(x, f, drop = FALSE, ..., value) {
-  seqsplit(x, f, drop = drop, ...) <- value
-  x
-})
-
-multisplit <- function(x, f) {
-  if (!is.list(f) && !is(f, "List"))
-    stop("'f' must be a list")
-  if (length(x) != length(f))
-    stop("Length of 'f' must equal length of 'x'")
-  seqsplit(rep(x, elementLengths(f)), unlist(f, use.names = FALSE))
-}
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### mstack()
+###
 
 setGeneric("mstack", function(..., .index.var = "name")
            standardGeneric("mstack"), signature = "...")
@@ -836,6 +816,7 @@ setMethod("mstack", "vector",
               colnames(df)[2] <- "value"
             df
           })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping methods.

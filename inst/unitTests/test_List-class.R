@@ -247,22 +247,6 @@ test_List_unlist <- function() {
   }
 }
 
-test_List_unsplit <- function() {
-  ir <- IRanges(1:5, 11:15)
-  f <- factor(c("a", "b", "a", "b", "b"), c("b", "a", "c"))
-
-  rl <- split(ir, f)
-  checkIdentical(unsplit(rl, f), ir)  
-
-  rl <- split(ir, f, drop=TRUE)
-  checkIdentical(unsplit(rl, Rle(f), drop=TRUE), ir)
-  checkException(unsplit(rl, f, drop=FALSE), silent=TRUE)
-
-  v <- 1:5
-  l <- seqsplit(v, f)
-  checkIdentical(unsplit(l, Rle(f)), v)    
-}
-
 test_List_annotation <- function() {
   int1 <- c(1L,2L,3L,5L,2L,8L)
   int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)
