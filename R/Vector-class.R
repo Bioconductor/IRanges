@@ -651,15 +651,6 @@ setMethod("relist", c("Vector", "list"),
     }
 )
 
-.splitAsList_by_listlike <- function(x, f, drop)
-{
-    if (!identical(drop, FALSE))
-        warning("'drop' is ignored when 'f' is a list-like object")
-    if (!is(f, "PartitioningByEnd"))
-        f <- PartitioningByEnd(f)
-    relist(x, f)
-}
-
 .splitAsList_by_integer <- function(x, f, drop)
 {
     if (length(f) > NROW(x))
@@ -751,8 +742,8 @@ splitAsList <- function(x, f, drop=FALSE)
 {
     if (!isTRUEorFALSE(drop))
         stop("'drop' must be TRUE or FALSE")
-    if (is.list(f) || is(f, "List"))
-        return(.splitAsList_by_listlike(x, f, drop))
+    if (!((is.vector(f) && is.atomic(f)) || is.factor(f) || is(f, "Rle")))
+        stop("'f' must be an atomic vector or a factor (possibly in Rle form)")
     x_NROW <- NROW(x)
     f_len <- length(f)
     if (f_len < x_NROW) {
@@ -764,17 +755,14 @@ splitAsList <- function(x, f, drop=FALSE)
     }
     if (is.integer(f))
         return(.splitAsList_by_integer(x, f, drop))
-    if (is.atomic(f) && is.vector(f))
+    if (is.vector(f) && is.atomic(f))
         f <- as.factor(f)
     if (is.factor(f))
         return(.splitAsList_by_factor(x, f, drop))
-    if (!is(f, "Rle"))
-        stop("'f' must be an atomic vector or a factor (possibly ",
-             "in Rle form), or a list-like object")
+    ## From now on, 'f' is guaranteed to be an Rle.
     f_vals <- runValue(f)
-    if (!(is.atomic(f_vals) && is.vector(f_vals)) && !is.factor(f_vals))
-        stop("'f' must be an atomic vector or a factor (possibly ",
-             "in Rle form), or a list-like object")
+    if (!((is.vector(f_vals) && is.atomic(f_vals)) || is.factor(f_vals)))
+        stop("'f' must be an atomic vector or a factor (possibly in Rle form)")
     if (is.integer(f_vals))
         return(.splitAsList_by_integer_Rle(x, f, drop))
     return(.splitAsList_by_Rle(x, f, drop))
