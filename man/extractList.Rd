@@ -88,35 +88,37 @@ splitAsListReturnedClass(x)
 }
 
 \details{
-On most objects \code{x}, \code{extractList(x, i)} is equivalent to
-\code{relist(x[unlist(i)], i)}. An exception is made when \code{x} is
-a data-frame-like object: in that case the subsetting happens along
-the rows i.e. \code{extractList(x, i)} is equivalent to
-\code{relist(x[unlist(i), ], i)}.
-
-This is more or less how the default method is implemented, except for
-some optimizations when \code{i} is a \link{Ranges} object.
-
-\code{relist} and \code{split} can be seen as specialized versions of
-\code{extractList}:
+  By default, \code{extractList(x, i)} is equivalent to:
 \preformatted{
-    relist(x, skeleton) is equivalent to
-    extractList(x, PartitioningByEnd(skeleton))
+    relist(x[unlist(i)], i)
+}
+  An exception is made when \code{x} is a data-frame-like object. In that
+  case \code{x} is subsetted along the rows, that is, \code{extractList(x, i)}
+  is equivalent to:
+\preformatted{
+    relist(x[unlist(i), ], i)
+}
+  This is more or less how the default method is implemented, except for
+  some optimizations when \code{i} is a \link{Ranges} object.
+
+  \code{relist} and \code{split} can be seen as specialized versions of
+  \code{extractList}:
+\preformatted{
+    relist(flesh, skeleton) is equivalent to
+    extractList(flesh, PartitioningByEnd(skeleton))
 
     split(x, f) is equivalent to
     extractList(x, split(seq_along(f), f))
 }
-However, whenever possible, \code{relist} or \code{split} should be used
-instead of \code{extractList} as they will always perform more efficiently.
-Also their names carry meaning and are familiar to most R users/developpers
-so they'll make your code easier to read.
+  It is good practise to use \code{extractList} only for cases not covered
+  by \code{relist} or \code{split}. Whenever possible, using \code{relist}
+  or \code{split} is preferred as they will always perform more efficiently.
+  In addition their names carry meaning and are familiar to most R
+  users/developpers so they'll make your code easier to read/understand.
 
-\code{extractList} should only be used for cases not covered by
-\code{relist} or \code{split}.
-
-Note that, unlike \code{relist} and \code{split} which are reversible
-(with \code{unlist} and \code{unsplit}, respectively), \code{extractList}
-is not (in general).
+  Note that the transformation performed by \code{relist} or \code{split}
+  is always reversible (via \code{unlist} and \code{unsplit}, respectively),
+  but the transformation performed by \code{extractList} is not.
 }
 
 \value{
@@ -127,7 +129,7 @@ is not (in general).
   \code{splitAsList} and the \code{split} method behave like
   \code{base::split} except that they return a \link{List} object.
   The difference between \code{splitAsList} and \code{split} is that the
-  former will always return a \link{List} object while the latter can return
+  former always returns a \link{List} object while the latter can return
   an ordinary list (e.g. when \code{x} and \code{f} are ordinary vectors
   and/or factors).
 
