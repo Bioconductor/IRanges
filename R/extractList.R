@@ -2,38 +2,7 @@
 ### Group elements of a vector-like object into a list-like object
 ### -------------------------------------------------------------------------
 ###
-### Why extractList?
-### ----------------
-###
-### relist() and split() are 2 common ways of grouping the elements (or ROWS)
-### of a vector-like object into a list-like object.
-###
-### Because relist() and split() both impose severe restrictions on the kind
-### of grouping that they support (e.g. all the elements of the vector-like
-### object need to go into a group and they can go in one group only), we also
-### introduce the extractList() generic as a more general/flexible tool that
-### allows *arbitrary* grouping.
-### Relationship with unlist():
-###
-###     relist(x, skeleton) is equivalent to
-###         extractList(x, PartitioningByEnd(skeleton))
-###
-### Relationship with split():
-###
-###     split(x, f) is equivalent to
-###         extractList(x, split(seq_along(f), f))
-###
-### Note that, unlike relist() and split() which are reversible (with unlist()
-### and unsplit(), respectively), extractList() is not.
-###
-### relist(), split(), and extractList() have in common that they return a
-### list-like object where the list elements must have the same class as the
-### original vector-like object. Thus they need to be able to "guess" the
-### class of the list-like container to use for the returned value. This
-### functionality is provided by the splitAsListReturnedClass() generic.
-###
-### What goes in this file?
-### -----------------------
+### What should go in this file?
 ###
 ### - splitAsListReturnedClass() generic and default method.
 ### - All "relist" and "split" methods defined in IRanges should be here.
@@ -127,7 +96,7 @@ setMethod("relist", c("Vector", "list"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### split()
+### splitAsList() and split()
 ###
 
 .splitAsList_by_integer <- function(x, f, drop)
@@ -248,26 +217,26 @@ splitAsList <- function(x, f, drop=FALSE)
 }
 
 setMethod("split", c("Vector", "ANY"),
-    function(x, f, drop=FALSE, ...) splitAsList(x, f, drop=drop)
+    function(x, f, drop=FALSE) splitAsList(x, f, drop=drop)
 )
 
 setMethod("split", c("ANY", "Vector"),
-          function(x, f, drop=FALSE, ...) splitAsList(x, f, drop=drop)
+    function(x, f, drop=FALSE) splitAsList(x, f, drop=drop)
+)
+
+setMethod("split", c("Vector", "Vector"),
+    function(x, f, drop=FALSE) splitAsList(x, f, drop=drop)
 )
 
 setMethod("split", c("list", "Vector"),
-          function(x, f, drop=FALSE, ...) split(x, as.vector(f), drop=drop)
-          )
-
-setMethod("split", c("Vector", "Vector"),
-          function(x, f, drop=FALSE, ...) splitAsList(x, f, drop=drop)
+    function(x, f, drop=FALSE, ...) split(x, as.vector(f), drop=drop, ...)
 )
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### extractList()
 ###
-### Would extractGroups  be a better name for this?
+### Would extractGroups be a better name for this?
 ### Or extractGroupedROWS? (analog to extractROWS, except that the ROWS are
 ### grouped).
 ###

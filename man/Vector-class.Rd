@@ -57,14 +57,9 @@
 \alias{c,Vector-method}
 \alias{append,Vector,Vector-method}
 
-\alias{split,Vector,Vector-method}
-\alias{split,ANY,Vector-method}
-\alias{split,Vector,ANY-method}
-\alias{split,list,Vector-method}
 \alias{mstack}
 \alias{mstack,Vector-method}
 \alias{mstack,vector-method}
-\alias{relist,Vector,list-method}
 
 \alias{tapply,ANY,Vector-method}
 \alias{tapply,Vector,ANY-method}

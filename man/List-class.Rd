@@ -43,7 +43,6 @@
 \alias{as.env}
 \alias{as.env,List-method}
 \alias{unlist,List-method}
-\alias{relist,ANY,List-method}
 \alias{stack,List-method}
 
 \alias{eval}
@@ -188,12 +187,6 @@
     }
     \item{}{\code{unlist(x, recursive = TRUE, use.names = TRUE)}: Concatenates
       the elements of \code{x} into a single \code{elementType(x)} object.
-    }
-    \item{}{\code{relist(flesh, skeleton)}: Convert \code{flesh} to a
-      list with the same structure (element lengths) as \code{skeleton},
-      a \code{List} or \code{PartitioningByEnd} object. This makes sense
-      when \code{flesh[i]} corresponds somehow to
-      \code{unlist(skeleton)[i]}.
     }
     \item{}{\code{stack(x, index.var = "name", value.var = "value")}:
       As with \code{\link[utils:stack]{stack}} on a \code{list},

@@ -82,8 +82,6 @@
 \alias{start,PartitioningByWidth-method}
 \alias{coerce,Ranges,PartitioningByWidth-method}
 
-\alias{relist,ANY,PartitioningByEnd-method}
-
 \title{Grouping objects}
 
 \description{
