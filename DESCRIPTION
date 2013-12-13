@@ -50,6 +50,7 @@ Collate: S4-utils.R
 	Rle-class.R
 	RleViews-class.R
 	RleViews-utils.R
+	extractList.R
 	seqapply.R
 	multisplit.R
 	AtomicList-impl.R
