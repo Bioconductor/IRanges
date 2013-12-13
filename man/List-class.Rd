@@ -225,11 +225,17 @@
 
 \seealso{
   \itemize{
-    \item \link{Vector} for the parent class.
+    \item \link{Vector} objects for the parent class.
+
     \item The \link{SimpleList} and \link{CompressedList} classes for direct
           extensions of the \link{List} class.
+
     \item The \link{IRanges} class and constructor for an example of
           a concrete \link{List} subclass.
+
+    \item \link{extractList} for grouping elements of a vector-like object
+          into a list-like object.
+
     \item \link{funprog-methods} for using functional programming methods
           on List objects.
   }

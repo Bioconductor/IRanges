@@ -88,8 +88,13 @@ splitAsListReturnedClass(x)
 }
 
 \details{
-\code{extractList(x, i)} is equivalent to \code{relist(x[unlist(i)], i)}.
-This is more or less how the default method is implemented except for
+On most objects \code{x}, \code{extractList(x, i)} is equivalent to
+\code{relist(x[unlist(i)], i)}. An exception is made when \code{x} is
+a data-frame-like object: in that case the subsetting happens along
+the rows i.e. \code{extractList(x, i)} is equivalent to
+\code{relist(x[unlist(i), ], i)}.
+
+This is more or less how the default method is implemented, except for
 some optimizations when \code{i} is a \link{Ranges} object.
 
 \code{relist} and \code{split} can be seen as specialized versions of
@@ -149,11 +154,20 @@ is not (in general).
           functions in the \pkg{base} package.
 
     \item \link{Vector} and \link{List} objects.
+
+    \item \link{Ranges}, \link{Rle} and \link{DataFrame} objects.
   }
 }
 
 \examples{
-extractList(Rle(101:105, 6:2), IRanges(6, 16:12))
+## On an Rle object:
+x <- Rle(101:105, 6:2)
+i <- IRanges(6:10, 16:12, names=letters[1:5])
+extractList(x, i)
+
+## On a DataFrame object:
+df <- DataFrame(X=x, Y=LETTERS[1:20])
+extractList(df, i)
 }
 
 \keyword{manip}
