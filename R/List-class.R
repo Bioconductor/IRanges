@@ -675,7 +675,7 @@ listClassName <- function(impl, element.type) {
          "List' subclass for values of type ",
          paste("'", cl, "'", collapse = ", "))
   }
-  listClass[clExists[1L]]
+  listClass[[clExists[[1L]]]]
 }
 
 coerceToList <- function(from, element.type = NULL, ...) {

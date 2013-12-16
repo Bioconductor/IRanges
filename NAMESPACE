@@ -1,7 +1,7 @@
 useDynLib(IRanges)
 
 import(methods)
-importFrom(utils, head, read.table, tail, stack, relist)
+importFrom(utils, head, read.table, tail, stack)
 importFrom(stats, start, end, var, cov, cor, sd, median, quantile, mad,
            IQR, smoothEnds, runmed, window, "window<-", aggregate,
            na.omit, na.exclude, complete.cases, setNames)
@@ -381,6 +381,7 @@ export(
     splitRanges,
 
     ## extractList.R:
+    relistReturnedClass,
     splitAsListReturnedClass,
     extractList,
 
@@ -506,6 +507,7 @@ exportMethods(
     Rle,
     findRange, findRun,
     splitRanges,
+    relistReturnedClass,
     splitAsListReturnedClass,
     extractList,
     columnMetadata, "columnMetadata<-",
