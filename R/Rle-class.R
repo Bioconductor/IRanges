@@ -96,6 +96,9 @@ setMethod("Rle", signature = c(values = "vectorORfactor", lengths = "numeric"),
               Rle(values = values, lengths = as.integer(lengths),
                   check = check))
 
+setMethod("Rle", signature = c(values = "Rle", lengths = "missing"),
+          function(values, lengths, check = TRUE) values)
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
 ###
