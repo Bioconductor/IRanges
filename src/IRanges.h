@@ -511,6 +511,8 @@ SEXP findIntervalAndStartFromWidth(
 
 /* str_utils.c */
 
+SEXP unstrsplit_list(SEXP x, SEXP sep);
+
 SEXP safe_strexplode(SEXP s);
 
 SEXP strsplit_as_list_of_ints(SEXP x, SEXP sep);

@@ -42,6 +42,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(findIntervalAndStartFromWidth, 2),
 
 /* str_utils.c */
+	CALLMETHOD_DEF(unstrsplit_list, 2),
 	CALLMETHOD_DEF(safe_strexplode, 1),
 	CALLMETHOD_DEF(strsplit_as_list_of_ints, 2),
 	CALLMETHOD_DEF(svn_time, 0),
