@@ -84,7 +84,10 @@ strsplitAsListOfIntegerVectors(x, sep=",")
 \author{H. Pages}
 
 \seealso{
-  \code{\link{strsplit}}
+  \itemize{
+    \item The \code{\link[base]{strsplit}} function in the \pkg{base}
+          package.
+  }
 }
 
 \examples{
