@@ -47,7 +47,7 @@ static SEXP join_strings(SEXP x, const char *sep, int sep_len)
 
 	if (!IS_CHARACTER(x)) {
 		snprintf(errmsg_buf, sizeof(errmsg_buf),
-			 "join_strings() input is not a character vector");
+			 "join_strings() expects a character vector");
 		return R_NilValue;
 	}
 	x_len = LENGTH(x);
