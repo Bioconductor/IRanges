@@ -997,6 +997,10 @@ setAtomicListMethod("gsub", inputBaseClass = "CharacterList",
                     applyToUnlist = TRUE)
 ### TODO: grep, grepl
 
+setMethod("unstrsplit", "CharacterList",
+    function(x, sep=",") unstrsplit(as.list(x), sep=sep)
+)
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Rle methods
 ###

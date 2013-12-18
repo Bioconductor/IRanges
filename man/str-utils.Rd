@@ -38,7 +38,7 @@ strsplitAsListOfIntegerVectors(x, sep=",")
 \details{
   \subsection{unstrsplit}{
     \code{unstrsplit(x, sep)} is equivalent to (but much faster than)
-    \code{sapply(x, paste0, collapse=sep}. It's performing the reverse
+    \code{sapply(x, paste0, collapse=sep)}. It's performing the reverse
     transformation of \code{\link{strsplit}( , fixed=TRUE)}, that is,
     if \code{x} is a character vector with no NAs and \code{sep} a single
     string, then \code{unstrsplit(strsplit(x, split=sep, fixed=TRUE), sep)}
@@ -98,7 +98,15 @@ unstrsplit(x, sep=" => ")
 data(islands)
 x <- names(islands)
 y <- strsplit(x, split=" ", fixed=TRUE)
-stopifnot(identical(unstrsplit(y, sep=" "), x))
+x2 <- unstrsplit(y, sep=" ")
+stopifnot(identical(x, x2))
+
+## But...
+names(x) <- x
+y <- strsplit(x, split="in", fixed=TRUE)
+x2 <- unstrsplit(y, sep="in")
+y[x != x2]
+## ... in other words, strsplit() behavior suck :-/
 
 ## ---------------------------------------------------------------------
 ## strsplitAsListOfIntegerVectors()

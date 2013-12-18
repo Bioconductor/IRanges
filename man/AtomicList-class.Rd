@@ -270,6 +270,7 @@
 \alias{gsub,ANY,ANY,SimpleCharacterList-method}
 \alias{gsub,ANY,ANY,CompressedRleList-method}
 \alias{gsub,ANY,ANY,SimpleRleList-method}
+\alias{unstrsplit,CharacterList-method}
 
 \alias{runLength,RleList-method}
 \alias{runValue,RleList-method}
@@ -435,6 +436,9 @@
       length one, and, if so, unlists \code{x}. Otherwise, an error is
       thrown.
     }
+    \item{}{\code{unstrsplit(x, sep=",")}}: A fast
+    \code{sapply(x, paste0, collapse=sep)}. See \code{?\link{unstrsplit}}
+    for the details.
   }
 }
 
@@ -442,57 +446,57 @@
 \seealso{\code{\linkS4class{List}} for the applicable methods.}
 
 \examples{
-  int1 <- c(1L,2L,3L,5L,2L,8L)
-  int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)
-  collection <- IntegerList(int1, int2)
+int1 <- c(1L,2L,3L,5L,2L,8L)
+int2 <- c(15L,45L,20L,1L,15L,100L,80L,5L)
+collection <- IntegerList(int1, int2)
 
-  ## names
-  names(collection) <- c("one", "two")
-  names(collection)
-  names(collection) <- NULL # clear names
-  names(collection)
-  names(collection) <- "one"
-  names(collection) # c("one", NA)
+## names
+names(collection) <- c("one", "two")
+names(collection)
+names(collection) <- NULL # clear names
+names(collection)
+names(collection) <- "one"
+names(collection) # c("one", NA)
 
-  ## extraction
-  collection[[1]] # range1
-  collection[["1"]] # NULL, does not exist
-  collection[["one"]] # range1
-  collection[[NA_integer_]] # NULL
+## extraction
+collection[[1]] # range1
+collection[["1"]] # NULL, does not exist
+collection[["one"]] # range1
+collection[[NA_integer_]] # NULL
 
-  ## subsetting
-  collection[numeric()] # empty
-  collection[NULL] # empty
-  collection[] # identity
-  collection[c(TRUE, FALSE)] # first element
-  collection[2] # second element
-  collection[c(2,1)] # reversed
-  collection[-1] # drop first
-  collection$one
+## subsetting
+collection[numeric()] # empty
+collection[NULL] # empty
+collection[] # identity
+collection[c(TRUE, FALSE)] # first element
+collection[2] # second element
+collection[c(2,1)] # reversed
+collection[-1] # drop first
+collection$one
 
-  ## replacement
-  collection$one <- int2
-  collection[[2]] <- int1
+## replacement
+collection$one <- int2
+collection[[2]] <- int1
 
-  ## combining
-  col1 <- IntegerList(one = int1, int2)
-  col2 <- IntegerList(two = int2, one = int1)
-  col3 <- IntegerList(int2)
-  append(col1, col2)
-  append(col1, col2, 0)
-  col123 <- c(col1, col2, col3)
-  col123
+## combining
+col1 <- IntegerList(one = int1, int2)
+col2 <- IntegerList(two = int2, one = int1)
+col3 <- IntegerList(int2)
+append(col1, col2)
+append(col1, col2, 0)
+col123 <- c(col1, col2, col3)
+col123
 
-  ## revElements
-  revElements(col123)
-  revElements(col123, 4:5)
+## revElements
+revElements(col123)
+revElements(col123, 4:5)
 
-  ## group generics
-  2 * col1
-  col1 + col1
-  col1 > 2
-  sum(col1)  # equivalent to (but faster than) 'sapply(col1, sum)'
-  mean(col1)  # equivalent to 'sapply(col1, mean)'
+## group generics
+2 * col1
+col1 + col1
+col1 > 2
+sum(col1)  # equivalent to (but faster than) 'sapply(col1, sum)'
+mean(col1)  # equivalent to 'sapply(col1, mean)'
 }
 \keyword{methods}
 \keyword{classes}
