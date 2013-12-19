@@ -709,8 +709,8 @@ SEXP CompressedIRangesList_coverage(SEXP x,
 			 "width[%d]", k + 1);
 		snprintf(weight_label_buf, sizeof(weight_label_buf),
 			 "weight[[%d]]", l + 1);
-		x_elt_holder = _get_elt_from_CompressedIRangesList_holder(&x_holder,
-						i);
+		x_elt_holder = _get_elt_from_CompressedIRangesList_holder(
+						&x_holder, i);
 		shift_elt = VECTOR_ELT(shift, j);
 		weight_elt = VECTOR_ELT(weight, l);
 		PROTECT(ans_elt = compute_coverage_from_IRanges_holder(
