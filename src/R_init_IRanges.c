@@ -250,6 +250,10 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_new_DataFrame);
 
 /* CompressedList_class.c */
+	REGISTER_CCALLABLE(_get_CompressedList_unlistData);
+	REGISTER_CCALLABLE(_get_CompressedList_partitioning);
+	REGISTER_CCALLABLE(_get_CompressedList_length);
+	REGISTER_CCALLABLE(_get_CompressedList_names);
 	REGISTER_CCALLABLE(_new_CompressedList);
 
 /* CompressedIRangesList_class.c */

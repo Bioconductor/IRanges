@@ -66,11 +66,11 @@ IRanges_holder _hold_IRanges(SEXP x)
 
 	x_holder.classname = _get_classname(x);
 	x_holder.is_constant_width = 0;
-	x_holder.offset = 0;
 	x_holder.length = _get_IRanges_length(x);
 	x_holder.width = INTEGER(_get_IRanges_width(x));
 	x_holder.start = INTEGER(_get_IRanges_start(x));
 	x_holder.end = NULL;
+	x_holder.SEXP_offset = 0;
 	x_holder.names = _get_IRanges_names(x);
 	return x_holder;
 }
@@ -90,31 +90,34 @@ int _get_start_elt_from_IRanges_holder(const IRanges_holder *x_holder, int i)
 {
 	if (x_holder->start)
 		return x_holder->start[i];
-	return x_holder->end[i] - _get_width_elt_from_IRanges_holder(x_holder, i) + 1;
+	return x_holder->end[i] -
+	       _get_width_elt_from_IRanges_holder(x_holder, i) + 1;
 }
 
 int _get_end_elt_from_IRanges_holder(const IRanges_holder *x_holder, int i)
 {
 	if (x_holder->end)
 		return x_holder->end[i];
-	return x_holder->start[i] + _get_width_elt_from_IRanges_holder(x_holder, i) - 1;
+	return x_holder->start[i] +
+	       _get_width_elt_from_IRanges_holder(x_holder, i) - 1;
 }
 
 SEXP _get_names_elt_from_IRanges_holder(const IRanges_holder *x_holder, int i)
 {
-	return STRING_ELT(x_holder->names, x_holder->offset + i);
+	return STRING_ELT(x_holder->names, x_holder->SEXP_offset + i);
 }
 
-IRanges_holder _get_linear_subset_from_IRanges_holder(const IRanges_holder *x_holder, int offset, int length)
+IRanges_holder _get_linear_subset_from_IRanges_holder(
+		const IRanges_holder *x_holder, int offset, int length)
 {
 	IRanges_holder y_holder;
 
 	y_holder = *x_holder;
-	y_holder.offset += offset;
 	y_holder.length = length;
 	y_holder.start += offset;
 	if (!y_holder.is_constant_width)
 		y_holder.width += offset;
+	y_holder.SEXP_offset += offset;
 	return y_holder;
 }
 

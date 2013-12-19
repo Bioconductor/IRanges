@@ -403,6 +403,14 @@ SEXP new_DataFrame(const char *classname, SEXP vars, SEXP rownames, SEXP nrows);
  * (see CompressedList_class.c)
  */
 
+SEXP get_CompressedList_unlistData(SEXP x);
+
+SEXP get_CompressedList_partitioning(SEXP x);
+
+int get_CompressedList_length(SEXP x);
+
+SEXP get_CompressedList_names(SEXP x);
+
 SEXP new_CompressedList(const char *classname, SEXP unlistData, SEXP partitioning);
 
 /*

@@ -40,7 +40,8 @@ IRanges_holder _get_elt_from_CompressedIRangesList_holder(
 
 	offset = i == 0 ? 0 : x_holder->end[i - 1];
 	length = x_holder->end[i] - offset;
-	return _get_linear_subset_from_IRanges_holder(&(x_holder->unlistData_holder),
+	return _get_linear_subset_from_IRanges_holder(
+			&(x_holder->unlistData_holder),
 			offset, length);
 }
 

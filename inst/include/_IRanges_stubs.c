@@ -501,6 +501,26 @@ DEFINE_CCALLABLE_STUB(SEXP, new_DataFrame,
  * Stubs for callables defined in CompressedList_class.c
  */
 
+DEFINE_CCALLABLE_STUB(SEXP, get_CompressedList_unlistData,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, get_CompressedList_partitioning,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(int, get_CompressedList_length,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, get_CompressedList_names,
+	(SEXP x),
+	(     x)
+)
+
 DEFINE_CCALLABLE_STUB(SEXP, new_CompressedList,
 	(const char *classname, SEXP unlistData, SEXP partitioning),
 	(            classname,      unlistData,      partitioning)

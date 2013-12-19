@@ -94,11 +94,11 @@ typedef struct char_aeae {
 typedef struct iranges_holder {
 	const char *classname;
 	int is_constant_width;
-	int offset;
 	int length;
 	const int *width;
 	const int *start;
 	const int *end;
+	int SEXP_offset;  /* offset in 'names' member below */
 	SEXP names;
 } IRanges_holder;
 
