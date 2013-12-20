@@ -246,13 +246,18 @@ setMethod("extractROWS", "vectorORfactor",
     }
 )
 
-setMethod("extractROWS", "Date",
+setMethod("extractROWS", "ANY",
           function(x, i)
           {
             if (missing(i))
               return(x)
-            i <- extractROWS(seq_along(x), i)
-            x[i]
+            if (is.list(x) || is.atomic(x)) {
+              i <- extractROWS(seq_along(x), i)
+              x[i]
+            } else {
+              stop("extractROWS does not support objects of class ",
+                   paste(class(x), collapse=", "))
+            }
           })
 
 setMethod("[", "Vector",
