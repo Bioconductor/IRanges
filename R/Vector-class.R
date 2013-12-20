@@ -246,6 +246,15 @@ setMethod("extractROWS", "vectorORfactor",
     }
 )
 
+setMethod("extractROWS", "Date",
+          function(x, i)
+          {
+            if (missing(i))
+              return(x)
+            i <- extractROWS(seq_along(x), i)
+            x[i]
+          })
+
 setMethod("[", "Vector",
     function(x, i, j, ..., drop=TRUE)
     {
