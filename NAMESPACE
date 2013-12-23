@@ -44,7 +44,8 @@ exportClasses(
     RangedData, RangedDataList, FilterRules, FilterMatrix, RDApplyParams,
     Hits, HitsList, CompressedHitsList, 
     OverlapEncodings,
-    RangedSelection, RangesMapping
+    RangedSelection, RangesMapping,
+    expressionORfunction
 )
 
 
@@ -310,7 +311,7 @@ export(
     read.trfMask,
     ##read.chain,
     newViews, successiveViews,
-    SimpleList, DataFrame,
+    SimpleList, List, DataFrame,
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList,
     DataFrameList, SplitDataFrameList,

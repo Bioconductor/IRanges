@@ -151,6 +151,12 @@ newList <- function(Class, listData, ..., mcols)
     reconcileMetadatacols(ans)
 }
 
+List <- function(...) {
+  list <- list(...)
+  if (length(list) == 1 && is.list(list[[1L]])) 
+    list <- list[[1L]]
+  as(list, "List")
+}
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
