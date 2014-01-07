@@ -673,7 +673,7 @@ listClassName <- function(impl, element.type) {
   } else {
     cl <- ""
   }
-  listClass <- c(paste0(impl, cl, "List"), paste0(cl, "List"))
+  listClass <- c(paste0(cl, "List"), paste0(impl, cl, "List"))
   clExists <- which(sapply(listClass, isClass) &
                     sapply(listClass, extends, paste0(impl, "List")))
   if (length(clExists) == 0L) {
