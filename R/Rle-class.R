@@ -1414,6 +1414,15 @@ setReplaceMethod("levels", "Rle",
                      x
                  })
 
+droplevels.Rle <- function(x) {
+  if (!is.factor(runValue(x))) {
+    stop("levels can only be dropped when runValue(x) is a factor")
+  }
+  runValue(x) <- droplevels(runValue(x))
+  x
+}
+setMethod("droplevels", "Rle", droplevels.Rle)
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method
 ###

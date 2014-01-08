@@ -471,6 +471,26 @@ setReplaceMethod("[", "DataFrame",
                    x
                  })
 
+hasNonDefaultMethod <- function(f, signature) {
+  any(selectMethod(f, signature)@defined != "ANY")
+}
+
+hasS3Method <- function(f, signature) {
+  !is.null(getS3method(f, signature, optional=TRUE))
+}
+
+droplevels.DataFrame <- function(x, except=NULL) {
+  canDropLevels <- function(xi) {
+    hasNonDefaultMethod(droplevels, class(xi)) ||
+      hasS3Method("droplevels", class(xi))
+  }
+  drop.levels <- vapply(x, canDropLevels, NA)
+  if (!is.null(except)) 
+    drop.levels[except] <- FALSE
+  x@listData[drop.levels] <- lapply(x@listData[drop.levels], droplevels)
+  x
+}
+setMethod("droplevels", "DataFrame", droplevels.DataFrame)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
