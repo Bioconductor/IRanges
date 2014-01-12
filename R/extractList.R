@@ -24,10 +24,7 @@ setGeneric("relistReturnedClass",
 setMethod("relistReturnedClass", "ANY",
     function(x)
     {
-        cn <- listClassName("Compressed", class(x))
-        if (cn == "CompressedList")
-            cn <- listClassName("Simple", class(x))
-        cn
+        selectListClassName(class(x))
     }
 )
 

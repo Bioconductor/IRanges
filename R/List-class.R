@@ -684,10 +684,44 @@ listClassName <- function(impl, element.type) {
   listClass[[clExists[[1L]]]]
 }
 
+selectListClassName <- function(x) {
+  cn <- listClassName("Compressed", x)
+  if (cn == "CompressedList")
+    cn <- listClassName("Simple", x)
+  cn
+}
+
+listElementType <- function(x) {
+  cl <- lapply(x, class)
+  clnames <- unique(unlist(cl, use.names=FALSE))
+  if (length(clnames == 1L)) {
+    clnames
+  } else {
+    contains <- lapply(cl, function(x) getClass(x, TRUE)@contains)
+    clnames <- c(clnames,
+                 unlist(lapply(contains, names), use.names=FALSE))
+    cltab <- table(factor(clnames, unique(clnames)))
+    clnames <- names(cltab)[cltab == length(x)]
+    if (length(clnames) > 0L) {
+      clnames[1]
+    } else {
+      NULL
+    }
+  }
+}
+
 coerceToList <- function(from, element.type = NULL, ...) {
-  if (is(from, listClassName(NULL, element.type)))
+  if (is(from, listClassName(NULL, element.type))) {
     return(from)
-  coerceToCompressedList(from, element.type, ...)
+  }
+  if (is.null(element.type)) {
+    if (is.list(from)) {
+      element.type <- listElementType(from)
+    } else {
+      element.type <- class(from)
+    }
+  }
+  as(from, selectListClassName(element.type))
 }
 
 setAs("ANY", "List", function(from) {

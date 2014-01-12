@@ -3,6 +3,11 @@
 ### -------------------------------------------------------------------------
 ###
 
+## FIXME: these functions should probably be deprecated; we no longer
+## use the term 'sequence' in the Vector API, and the wrappers are
+## trivially simple. With one exception: mseqapply. We would need to
+## export the convenient mapply_List, probably with a better
+## name. Maybe Mapply?
 
 .asList <- function(x, ...) {
   if (is(x, "List"))
@@ -58,9 +63,6 @@
   cons(x, ...)
 }
 
-## FIXME: these functions should probably be renamed to c[apply], i.e.,
-## clapply, cmapply, ctapply, csplit, cby.
-
 seqapply <- function(X, FUN, ...) {
   .asList(lapply(X, FUN, ...))
 }
@@ -84,6 +86,9 @@ seqsplit <- function(x, f, drop=FALSE) {
 seqby <- function(data, INDICES, FUN, ...) {
   .asList(by(data, INDICES, FUN, ..., simplify = FALSE))
 }
+
+### These would be excluded from the deprecation
+### (seqsplit<- renamed to splitAsList<-)
 
 ## NOT exported.
 `seqsplit<-` <- function(x, f, drop = FALSE, ..., value) {
