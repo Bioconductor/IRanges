@@ -32,12 +32,6 @@
 \alias{whichFirstNotNormal,Ranges-method}
 \alias{update,Ranges-method}
 
-% Old stuff:
-\alias{first}
-\alias{first,Ranges-method}
-\alias{last}
-\alias{last,Ranges-method}
-
 
 \title{Ranges objects}
 
