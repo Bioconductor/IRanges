@@ -350,18 +350,23 @@
 \author{P. Aboyoun}
 
 \seealso{
-  \link{Rle} and \link[XVector]{XRaw} for example implementations.
+  \itemize{
+    \item \link{Rle} and \link[XVector]{XRaw} for example implementations.
 
-  \link{List} for a direct extension that serves a similar role
-  as \link[base]{list} in base R.
+    \item \link{VectorComparisonAPI} for comparing, ordering, and
+          tabulating vector-like objects.
 
-  \link{extractList} for grouping elements of a vector-like object
-  into a list-like object.
+    \item \link{List} for a direct extension that serves a similar role
+          as \link[base]{list} in base R.
 
-  \link{DataTable} which is the type of objects returned by the
-  \code{mcols} accessor.
+    \item \link{extractList} for grouping elements of a vector-like object
+          into a list-like object.
 
-  \link{Annotated} which Vector extends.
+    \item \link{DataTable} which is the type of objects returned by the
+          \code{mcols} accessor.
+
+    \item \link{Annotated} which Vector extends.
+  }
 }
 
 \examples{

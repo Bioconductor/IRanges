@@ -29,11 +29,11 @@ Collate: S4-utils.R
 	int-utils.R
 	str-utils.R
 	compact_bitvector.R
+	VectorComparisonAPI.R
 	endoapply.R
 	runstat.R
 	Annotated-class.R
 	Vector-class.R
-	VectorComparisonAPI.R
 	List-class.R
 	AtomicList-class.R
 	Ranges-class.R

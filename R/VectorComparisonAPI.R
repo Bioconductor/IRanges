@@ -4,6 +4,8 @@
 ###
 
 
+setClass("VectorComparisonAPI")
+
 ### Method signatures for binary comparison operators.
 .BIN_COMP_OP_SIGNATURES <- list(
     c("VectorComparisonAPI", "VectorComparisonAPI"),

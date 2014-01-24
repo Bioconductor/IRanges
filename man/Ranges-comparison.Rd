@@ -253,9 +253,8 @@ rangeComparisonCodeToLetter(code)
 
     \item \code{\link{findOverlaps}} for finding overlapping ranges.
 
-    \item \link{Vector-comparison} for the generic functions and
-          methods for comparing, ordering, and tabulating vector-like
-          objects.
+    \item \link{VectorComparisonAPI} for comparing, ordering, and
+          tabulating vector-like objects.
   }
 }
 
