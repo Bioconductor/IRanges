@@ -1,14 +1,14 @@
 ### =========================================================================
-### Comparing and ordering vector-like objects
+### Comparing, ordering, and tabulating vector-like objects
 ### -------------------------------------------------------------------------
 ###
 
 
 ### Method signatures for binary comparison operators.
 .BIN_COMP_OP_SIGNATURES <- list(
-    c("Vector", "Vector"),
-    c("Vector", "ANY"),
-    c("ANY", "Vector")
+    c("VectorComparisonAPI", "VectorComparisonAPI"),
+    c("VectorComparisonAPI", "ANY"),
+    c("ANY", "VectorComparisonAPI")
 )
 
 
@@ -60,11 +60,11 @@ setMethod("selfmatch", "ANY", function(x, ...) match(x, x, ...))
 ### The "unique" method below is implemented on top of duplicated().
 ###
 
-### S3/S4 combo for duplicated.Vector
-duplicated.Vector <- function(x, incomparables=FALSE, ...)
+### S3/S4 combo for duplicated.VectorComparisonAPI
+duplicated.VectorComparisonAPI <- function(x, incomparables=FALSE, ...)
 {
     if (!identical(incomparables, FALSE)) 
-        stop("the \"duplicated\" method for Vector objects ", 
+        stop("the \"duplicated\" method for VectorComparisonAPI objects ", 
              "only accepts 'incomparables=FALSE'")
     args <- list(...)
     if ("fromLast" %in% names(args)) {
@@ -83,17 +83,17 @@ duplicated.Vector <- function(x, incomparables=FALSE, ...)
         ans <- rev(ans)
     ans
 }
-setMethod("duplicated", "Vector", duplicated.Vector)
+setMethod("duplicated", "VectorComparisonAPI", duplicated.VectorComparisonAPI)
 
-### S3/S4 combo for unique.Vector
-unique.Vector <- function(x, incomparables=FALSE, ...)
+### S3/S4 combo for unique.VectorComparisonAPI
+unique.VectorComparisonAPI <- function(x, incomparables=FALSE, ...)
 {
     i <- !duplicated(x, incomparables=incomparables, ...)
     if (length(dim(x)) < 2L)
         return(x[i])
     x[i, , drop=FALSE]
 }
-setMethod("unique", "Vector", unique.Vector)
+setMethod("unique", "VectorComparisonAPI", unique.VectorComparisonAPI)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -209,17 +209,17 @@ setMethod("countMatches", c("ANY", "ANY"), .countMatches.default)
 ### The method below is implemented on top of order().
 ###
 
-### S3/S4 combo for sort.Vector
-.sort.Vector <- function(x, decreasing=FALSE, na.last=NA)
+### S3/S4 combo for sort.VectorComparisonAPI
+.sort.VectorComparisonAPI <- function(x, decreasing=FALSE, na.last=NA)
 {
     i <- order(x, na.last=na.last, decreasing=decreasing)
     if (length(dim(x)) < 2L)
         return(x[i])
     x[i, , drop=FALSE]
 }
-sort.Vector <- function(x, decreasing=FALSE, ...)
-    .sort.Vector(x, decreasing=decreasing, ...)
-setMethod("sort", "Vector", sort.Vector)
+sort.VectorComparisonAPI <- function(x, decreasing=FALSE, ...)
+    .sort.VectorComparisonAPI(x, decreasing=decreasing, ...)
+setMethod("sort", "VectorComparisonAPI", sort.VectorComparisonAPI)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -264,13 +264,13 @@ setMethod("sort", "Vector", sort.Vector)
     ans
 }
 
-setMethod("table", "Vector",
+setMethod("table", "VectorComparisonAPI",
     function(...)
     {
         args <- list(...)
-        if (length(args) > 1L)
-            stop("the \"table\" method for Vector objects currently ",
-                 "only supports one argument")
+        if (length(args) != 1L)
+            stop("\"table\" method for VectorComparisonAPI objects ",
+                 "can only take one input object")
         x <- args[[1L]]
 
         ## Compute the table as an array.

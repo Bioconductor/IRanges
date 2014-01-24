@@ -14,9 +14,10 @@ setClassUnion("vectorORfactor", c("vector", "factor"))
 setClass("DataTable", representation("VIRTUAL"))
 setClassUnion("DataTableORNULL", c("DataTable", "NULL"))
 
+setClass("VectorComparisonAPI")
 
 setClass("Vector",
-    contains="Annotated",
+    contains=c("Annotated", "VectorComparisonAPI"),
     representation(
         "VIRTUAL",
         elementMetadata="DataTableORNULL"

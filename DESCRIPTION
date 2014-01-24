@@ -33,7 +33,7 @@ Collate: S4-utils.R
 	runstat.R
 	Annotated-class.R
 	Vector-class.R
-	Vector-comparison.R
+	VectorComparisonAPI.R
 	List-class.R
 	AtomicList-class.R
 	Ranges-class.R

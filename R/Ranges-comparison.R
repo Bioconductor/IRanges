@@ -99,14 +99,14 @@ setMethod("selfmatch", "Ranges",
 ### duplicated()
 ###
 ### duplicated() would normally work out-of-the-box on Ranges objects thanks
-### to the method for Vector objects. However the method for AtomicList
-### vector is in the way and breaks this grand scheme. So we need to override
-### it with a specific method for Ranges objects that calls the method for
-### Vector objects.
+### to the method for VectorComparisonAPI objects. However the method for
+### AtomicList objects is in the way and breaks this grand scheme. So we need
+### to override it with a specific method for Ranges objects that calls the
+### method for VectorComparisonAPI objects.
 ###
 
 ### S3/S4 combo for duplicated.Ranges
-duplicated.Ranges <- duplicated.Vector
+duplicated.Ranges <- duplicated.VectorComparisonAPI
 setMethod("duplicated", "Ranges", duplicated.Ranges)
 
 

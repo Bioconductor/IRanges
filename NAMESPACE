@@ -74,7 +74,7 @@ S3method(as.list, Hits)
 
 S3method(diff, Rle)
 
-S3method(duplicated, Vector)
+S3method(duplicated, VectorComparisonAPI)
 S3method(duplicated, Ranges)
 S3method(duplicated, Dups)
 S3method(duplicated, DataTable)
@@ -95,7 +95,7 @@ S3method(quantile, Rle)
 
 S3method(rev, Rle)
 
-S3method(sort, Vector)
+S3method(sort, VectorComparisonAPI)
 S3method(sort, Rle)
 S3method(sort, RleList)
 
@@ -103,7 +103,7 @@ S3method(summary, Rle)
 
 S3method(tail, Vector)
 
-S3method(unique, Vector)
+S3method(unique, VectorComparisonAPI)
 S3method(unique, DataTable)
 S3method(unique, Rle)
 S3method(unique, CompressedAtomicList)
@@ -147,7 +147,7 @@ export(
 
     diff.Rle,
 
-    duplicated.Vector,
+    duplicated.VectorComparisonAPI,
     duplicated.Ranges,
     duplicated.Dups,
     duplicated.DataTable,
@@ -168,7 +168,7 @@ export(
 
     rev.Rle,
 
-    sort.Vector,
+    sort.VectorComparisonAPI,
     sort.Rle,
     sort.RleList,
 
@@ -176,7 +176,7 @@ export(
 
     tail.Vector,
     
-    unique.Vector,
+    unique.VectorComparisonAPI,
     unique.DataTable,
     unique.Rle,
     unique.CompressedAtomicList,
