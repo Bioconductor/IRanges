@@ -242,8 +242,8 @@ countMatches(x, table, ...)
 }
 
 \note{
-  Note that VectorComparisonAPI is a virtual class with no slot that is
-  a direct parent of the \link{Vector} class.
+  VectorComparisonAPI is a virtual class with no slot that is a direct
+  parent of the \link{Vector} class.
 
   The following notes are for developers who want to implement the
   VectorComparisonAPI interface for their vector-like class:
