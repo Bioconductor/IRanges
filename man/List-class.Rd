@@ -29,7 +29,6 @@
 
 \alias{lapply,List-method}
 \alias{sapply,List-method}
-\alias{mapply,List-method}
 \alias{endoapply,List-method}
 \alias{mendoapply,List-method}
 \alias{revElements}
@@ -141,12 +140,6 @@
       base package, the \code{sapply} method for List objects is a
       user-friendly version of \code{lapply} by default returning a vector
       or matrix if appropriate.
-    }
-    \item{}{
-      \code{mapply(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = TRUE)}:
-      Like the standard \code{\link[base]{mapply}} function defined in the
-      base package, the \code{mapply} method for List objects is a
-      multivariate version of \code{sapply}.
     }
     \item{}{
       \code{endoapply(X, FUN, ...)}:

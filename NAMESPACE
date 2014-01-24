@@ -251,7 +251,6 @@ exportMethods(
     cbind, rbind,
     eval,
     lapply, sapply,
-    mapply,
     pmax, pmin, pmax.int, pmin.int,
     paste,
     Reduce, Filter, Find, Map, Position,

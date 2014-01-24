@@ -576,8 +576,6 @@ mapply_List <- function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
            USE.NAMES = USE.NAMES)
 }
 
-setMethod("mapply", "List", mapply_List)
-
 setMethod("endoapply", "List",
           function(X, FUN, ...) {
               elementTypeX <- elementType(X)
