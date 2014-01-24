@@ -8,7 +8,6 @@ importFrom(stats, start, end, var, cov, cor, sd, median, quantile, mad,
 
 import(BiocGenerics)
 importFrom(stats4, summary, update)
-importFrom(parallel, mclapply, mcmapply)
 
 exportClasses(
     characterORNULL, functionORNULL,
