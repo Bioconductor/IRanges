@@ -116,7 +116,7 @@ relistReturnedClass(x)
   by \code{relist} or \code{split}. Whenever possible, using \code{relist}
   or \code{split} is preferred as they will always perform more efficiently.
   In addition their names carry meaning and are familiar to most R
-  users/developpers so they'll make your code easier to read/understand.
+  users/developers so they'll make your code easier to read/understand.
 
   Note that the transformation performed by \code{relist} or \code{split}
   is always reversible (via \code{unlist} and \code{unsplit}, respectively),
