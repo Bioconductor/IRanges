@@ -43,8 +43,9 @@
 \alias{threebands,IRanges-method}
 \alias{Ops,Ranges,numeric-method}
 \alias{Ops,Ranges,ANY-method}
-\alias{Ops,CompressedIRangesList,ANY-method}
-\alias{Ops,RangesList,ANY-method}
+\alias{Ops,CompressedIRangesList,numeric-method}
+\alias{Ops,RangesList,numeric-method}
+
 
 \title{Intra range transformations of a Ranges, Views, RangesList,
        or MaskCollection object}

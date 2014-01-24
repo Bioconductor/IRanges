@@ -651,7 +651,7 @@ setMethod("Ops", c("Ranges", "numeric"),
     }
 )
 
-setMethod("Ops", c("RangesList", "ANY"),
+setMethod("Ops", c("RangesList", "numeric"),
           function(e1, e2)
           {
             for (i in seq_len(length(e1)))
@@ -659,7 +659,7 @@ setMethod("Ops", c("RangesList", "ANY"),
             e1
           })
 
-setMethod("Ops", c("CompressedIRangesList", "ANY"),
+setMethod("Ops", c("CompressedIRangesList", "numeric"),
           function(e1, e2)
           {
             relist(callGeneric(unlist(e1, use.names = FALSE), e2), e1)
