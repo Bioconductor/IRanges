@@ -249,9 +249,8 @@ countMatches(x, table, ...)
   VectorComparisonAPI interface for their vector-like class:
 
   \enumerate{
-    \item Make sure your vector-like class is a subclass of the
-          VectorComparisonAPI class (it does if it's a subclass of
-          \link{Vector}).
+    \item Make sure your vector-like class is a subclass of
+          VectorComparisonAPI (it does if it's a subclass of \link{Vector}).
 
     \item The 6 traditional binary comparison operators are: \code{==},
           \code{!=}, \code{<=}, \code{>=}, \code{<}, and \code{>}.
@@ -390,6 +389,8 @@ stopifnot(identical(length(x), 12L))
 stopifnot(identical(x[7:3], new("Raw", data=charToRaw("-a0x."))))
 
 ## (2) Implement a "compare" method for Raw objects.
+
+extends("Raw", "VectorComparisonAPI")  # TRUE
 
 setMethod("compare", c("Raw", "Raw"),
     function(x, y) {as.integer(x@data) - as.integer(y@data)}
