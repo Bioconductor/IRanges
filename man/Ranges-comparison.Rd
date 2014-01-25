@@ -9,9 +9,6 @@
 
 \alias{selfmatch,Ranges-method}
 
-\alias{duplicated,Ranges-method}
-\alias{duplicated.Ranges}
-
 \alias{order,Ranges-method}
 \alias{rank,Ranges-method}
 
@@ -253,7 +250,7 @@ rangeComparisonCodeToLetter(code)
 
     \item \code{\link{findOverlaps}} for finding overlapping ranges.
 
-    \item \link{VectorComparisonAPI} for comparing, ordering, and
+    \item \link{Vector-comparison} for comparing, ordering, and
           tabulating vector-like objects.
   }
 }

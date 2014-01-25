@@ -535,6 +535,18 @@ setReplaceMethod("$", "List",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### compareRecursively()
+###
+### NOT exported!
+### See R/List-comparison.R for the details.
+###
+
+setGeneric("compareRecursively",
+    function(x) standardGeneric("compareRecursively")
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping methods.
 ###
 

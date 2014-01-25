@@ -15,7 +15,7 @@ setClass("DataTable", representation("VIRTUAL"))
 setClassUnion("DataTableORNULL", c("DataTable", "NULL"))
 
 setClass("Vector",
-    contains=c("Annotated", "VectorComparisonAPI"),
+    contains="Annotated",
     representation(
         "VIRTUAL",
         elementMetadata="DataTableORNULL"

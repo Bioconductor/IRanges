@@ -353,7 +353,7 @@
   \itemize{
     \item \link{Rle} and \link[XVector]{XRaw} for example implementations.
 
-    \item \link{VectorComparisonAPI} for comparing, ordering, and
+    \item \link{Vector-comparison} for comparing, ordering, and
           tabulating vector-like objects.
 
     \item \link{List} for a direct extension that serves a similar role

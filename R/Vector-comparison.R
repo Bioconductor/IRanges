@@ -4,13 +4,33 @@
 ###
 
 
-setClass("VectorComparisonAPI")
+### Funcions/operators for comparing, ordering, tabulating:
+###
+###     compare
+###     ==
+###     !=
+###     <=
+###     >=
+###     <
+###     >
+###     match
+###     selfmatch
+###     duplicated
+###     unique
+###     %in%
+###     findMatches
+###     countMatches
+###     order
+###     sort
+###     rank
+###     table
+
 
 ### Method signatures for binary comparison operators.
-.BIN_COMP_OP_SIGNATURES <- list(
-    c("VectorComparisonAPI", "VectorComparisonAPI"),
-    c("VectorComparisonAPI", "ANY"),
-    c("ANY", "VectorComparisonAPI")
+.OP2_SIGNATURES <- list(
+    c("Vector", "Vector"),
+    c("Vector", "ANY"),
+    c("ANY", "Vector")
 )
 
 
@@ -22,23 +42,23 @@ setGeneric("compare", function(x, y) standardGeneric("compare"))
 
 ### The methods below are implemented on top of compare().
 
-setMethods("==", .BIN_COMP_OP_SIGNATURES,
+setMethods("==", .OP2_SIGNATURES,
     function(e1, e2) { compare(e1, e2) == 0L }
 )
 
-setMethods("<=", .BIN_COMP_OP_SIGNATURES,
+setMethods("<=", .OP2_SIGNATURES,
     function(e1, e2) { compare(e1, e2) <= 0L }
 )
 
 ### The methods below are implemented on top of == and <=.
 
-setMethods("!=", .BIN_COMP_OP_SIGNATURES, function(e1, e2) { !(e1 == e2) })
+setMethods("!=", .OP2_SIGNATURES, function(e1, e2) { !(e1 == e2) })
 
-setMethods(">=", .BIN_COMP_OP_SIGNATURES, function(e1, e2) { e2 <= e1 })
+setMethods(">=", .OP2_SIGNATURES, function(e1, e2) { e2 <= e1 })
 
-setMethods("<", .BIN_COMP_OP_SIGNATURES, function(e1, e2) { !(e2 <= e1) })
+setMethods("<", .OP2_SIGNATURES, function(e1, e2) { !(e2 <= e1) })
 
-setMethods(">", .BIN_COMP_OP_SIGNATURES, function(e1, e2) { !(e1 <= e2) })
+setMethods(">", .OP2_SIGNATURES, function(e1, e2) { !(e1 <= e2) })
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -62,11 +82,11 @@ setMethod("selfmatch", "ANY", function(x, ...) match(x, x, ...))
 ### The "unique" method below is implemented on top of duplicated().
 ###
 
-### S3/S4 combo for duplicated.VectorComparisonAPI
-duplicated.VectorComparisonAPI <- function(x, incomparables=FALSE, ...)
+### S3/S4 combo for duplicated.Vector
+duplicated.Vector <- function(x, incomparables=FALSE, ...)
 {
     if (!identical(incomparables, FALSE)) 
-        stop("the \"duplicated\" method for VectorComparisonAPI objects ", 
+        stop("the \"duplicated\" method for Vector objects ", 
              "only accepts 'incomparables=FALSE'")
     args <- list(...)
     if ("fromLast" %in% names(args)) {
@@ -85,17 +105,15 @@ duplicated.VectorComparisonAPI <- function(x, incomparables=FALSE, ...)
         ans <- rev(ans)
     ans
 }
-setMethod("duplicated", "VectorComparisonAPI", duplicated.VectorComparisonAPI)
+setMethod("duplicated", "Vector", duplicated.Vector)
 
-### S3/S4 combo for unique.VectorComparisonAPI
-unique.VectorComparisonAPI <- function(x, incomparables=FALSE, ...)
+### S3/S4 combo for unique.Vector
+unique.Vector <- function(x, incomparables=FALSE, ...)
 {
     i <- !duplicated(x, incomparables=incomparables, ...)
-    if (length(dim(x)) < 2L)
-        return(x[i])
-    x[i, , drop=FALSE]
+    extractROWS(x, i)
 }
-setMethod("unique", "VectorComparisonAPI", unique.VectorComparisonAPI)
+setMethod("unique", "Vector", unique.Vector)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -104,7 +122,7 @@ setMethod("unique", "VectorComparisonAPI", unique.VectorComparisonAPI)
 ### The method below is implemented on top of match().
 ###
 
-setMethods("%in%", .BIN_COMP_OP_SIGNATURES,
+setMethods("%in%", .OP2_SIGNATURES,
     function(x, table) { !is.na(match(x, table)) }
 )
 
@@ -211,17 +229,15 @@ setMethod("countMatches", c("ANY", "ANY"), .countMatches.default)
 ### The method below is implemented on top of order().
 ###
 
-### S3/S4 combo for sort.VectorComparisonAPI
-.sort.VectorComparisonAPI <- function(x, decreasing=FALSE, na.last=NA)
+### S3/S4 combo for sort.Vector
+.sort.Vector <- function(x, decreasing=FALSE, na.last=NA)
 {
     i <- order(x, na.last=na.last, decreasing=decreasing)
-    if (length(dim(x)) < 2L)
-        return(x[i])
-    x[i, , drop=FALSE]
+    extractROWS(x, i)
 }
-sort.VectorComparisonAPI <- function(x, decreasing=FALSE, ...)
-    .sort.VectorComparisonAPI(x, decreasing=decreasing, ...)
-setMethod("sort", "VectorComparisonAPI", sort.VectorComparisonAPI)
+sort.Vector <- function(x, decreasing=FALSE, ...)
+    .sort.Vector(x, decreasing=decreasing, ...)
+setMethod("sort", "Vector", sort.Vector)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -266,12 +282,12 @@ setMethod("sort", "VectorComparisonAPI", sort.VectorComparisonAPI)
     ans
 }
 
-setMethod("table", "VectorComparisonAPI",
+setMethod("table", "Vector",
     function(...)
     {
         args <- list(...)
         if (length(args) != 1L)
-            stop("\"table\" method for VectorComparisonAPI objects ",
+            stop("\"table\" method for Vector objects ",
                  "can only take one input object")
         x <- args[[1L]]
 

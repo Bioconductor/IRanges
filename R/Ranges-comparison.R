@@ -4,6 +4,9 @@
 ###
 
 
+setMethod("compareRecursively", "Ranges", function(x) FALSE)
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### compare()
 ###
@@ -93,21 +96,6 @@ setMethod("selfmatch", "Ranges",
         selfmatchIntegerPairs(start(x), width(x), method=method)
     }
 )
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### duplicated()
-###
-### duplicated() would normally work out-of-the-box on Ranges objects thanks
-### to the method for VectorComparisonAPI objects. However the method for
-### AtomicList objects is in the way and breaks this grand scheme. So we need
-### to override it with a specific method for Ranges objects that calls the
-### method for VectorComparisonAPI objects.
-###
-
-### S3/S4 combo for duplicated.Ranges
-duplicated.Ranges <- duplicated.VectorComparisonAPI
-setMethod("duplicated", "Ranges", duplicated.Ranges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

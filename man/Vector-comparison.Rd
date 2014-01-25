@@ -1,55 +1,54 @@
-\name{VectorComparisonAPI}
+\name{Vector-comparison}
 
-\alias{VectorComparisonAPI}
 \alias{Vector-comparison}
 
 \alias{compare}
 
-\alias{==,VectorComparisonAPI,VectorComparisonAPI-method}
-\alias{==,VectorComparisonAPI,ANY-method}
-\alias{==,ANY,VectorComparisonAPI-method}
+\alias{==,Vector,Vector-method}
+\alias{==,Vector,ANY-method}
+\alias{==,ANY,Vector-method}
 
-\alias{<=,VectorComparisonAPI,VectorComparisonAPI-method}
-\alias{<=,VectorComparisonAPI,VectorComparisonAPI-method}
-\alias{<=,VectorComparisonAPI,VectorComparisonAPI-method}
+\alias{<=,Vector,Vector-method}
+\alias{<=,Vector,ANY-method}
+\alias{<=,ANY,Vector-method}
 
-\alias{!=,VectorComparisonAPI,VectorComparisonAPI-method}
-\alias{!=,VectorComparisonAPI,ANY-method}
-\alias{!=,ANY,VectorComparisonAPI-method}
+\alias{!=,Vector,Vector-method}
+\alias{!=,Vector,ANY-method}
+\alias{!=,ANY,Vector-method}
 
-\alias{>=,VectorComparisonAPI,VectorComparisonAPI-method}
-\alias{>=,VectorComparisonAPI,VectorComparisonAPI-method}
-\alias{>=,VectorComparisonAPI,VectorComparisonAPI-method}
+\alias{>=,Vector,Vector-method}
+\alias{>=,Vector,ANY-method}
+\alias{>=,ANY,Vector-method}
 
-\alias{<,VectorComparisonAPI,VectorComparisonAPI-method}
-\alias{<,VectorComparisonAPI,ANY-method}
-\alias{<,ANY,VectorComparisonAPI-method}
+\alias{<,Vector,Vector-method}
+\alias{<,Vector,ANY-method}
+\alias{<,ANY,Vector-method}
 
-\alias{>,VectorComparisonAPI,VectorComparisonAPI-method}
-\alias{>,VectorComparisonAPI,ANY-method}
-\alias{>,ANY,VectorComparisonAPI-method}
+\alias{>,Vector,Vector-method}
+\alias{>,Vector,ANY-method}
+\alias{>,ANY,Vector-method}
 
 \alias{selfmatch}
 \alias{selfmatch,ANY-method}
 
-\alias{duplicated,VectorComparisonAPI-method}
-\alias{duplicated.VectorComparisonAPI}
-\alias{unique,VectorComparisonAPI-method}
-\alias{unique.VectorComparisonAPI}
+\alias{duplicated,Vector-method}
+\alias{duplicated.Vector}
+\alias{unique,Vector-method}
+\alias{unique.Vector}
 
-\alias{\%in\%,VectorComparisonAPI,VectorComparisonAPI-method}
-\alias{\%in\%,VectorComparisonAPI,ANY-method}
-\alias{\%in\%,ANY,VectorComparisonAPI-method}
+\alias{\%in\%,Vector,Vector-method}
+\alias{\%in\%,Vector,ANY-method}
+\alias{\%in\%,ANY,Vector-method}
 
 \alias{findMatches}
 \alias{findMatches,ANY,ANY-method}
 \alias{countMatches}
 \alias{countMatches,ANY,ANY-method}
 
-\alias{sort,VectorComparisonAPI-method}
-\alias{sort.VectorComparisonAPI}
+\alias{sort,Vector-method}
+\alias{sort.Vector}
 
-\alias{table,VectorComparisonAPI-method}
+\alias{table,Vector-method}
 
 
 \title{Compare, order, tabulate vector-like objects}
@@ -57,9 +56,6 @@
 \description{
   Generic functions and methods for comparing, ordering, and tabulating
   vector-like objects.
-
-  All the functions described in this man page form the
-  \emph{VectorComparisonAPI} interface.
 }
 
 \usage{
@@ -68,29 +64,29 @@
 
 compare(x, y)
 
-\S4method{==}{VectorComparisonAPI,VectorComparisonAPI}(e1, e2)
-\S4method{==}{VectorComparisonAPI,ANY}(e1, e2)
-\S4method{==}{ANY,VectorComparisonAPI}(e1, e2)
+\S4method{==}{Vector,Vector}(e1, e2)
+\S4method{==}{Vector,ANY}(e1, e2)
+\S4method{==}{ANY,Vector}(e1, e2)
 
-\S4method{<=}{VectorComparisonAPI,VectorComparisonAPI}(e1, e2)
-\S4method{<=}{VectorComparisonAPI,ANY}(e1, e2)
-\S4method{<=}{ANY,VectorComparisonAPI}(e1, e2)
+\S4method{<=}{Vector,Vector}(e1, e2)
+\S4method{<=}{Vector,ANY}(e1, e2)
+\S4method{<=}{ANY,Vector}(e1, e2)
 
-\S4method{!=}{VectorComparisonAPI,VectorComparisonAPI}(e1, e2)
-\S4method{!=}{VectorComparisonAPI,ANY}(e1, e2)
-\S4method{!=}{ANY,VectorComparisonAPI}(e1, e2)
+\S4method{!=}{Vector,Vector}(e1, e2)
+\S4method{!=}{Vector,ANY}(e1, e2)
+\S4method{!=}{ANY,Vector}(e1, e2)
 
-\S4method{>=}{VectorComparisonAPI,VectorComparisonAPI}(e1, e2)
-\S4method{>=}{VectorComparisonAPI,ANY}(e1, e2)
-\S4method{>=}{ANY,VectorComparisonAPI}(e1, e2)
+\S4method{>=}{Vector,Vector}(e1, e2)
+\S4method{>=}{Vector,ANY}(e1, e2)
+\S4method{>=}{ANY,Vector}(e1, e2)
 
-\S4method{<}{VectorComparisonAPI,VectorComparisonAPI}(e1, e2)
-\S4method{<}{VectorComparisonAPI,ANY}(e1, e2)
-\S4method{<}{ANY,VectorComparisonAPI}(e1, e2)
+\S4method{<}{Vector,Vector}(e1, e2)
+\S4method{<}{Vector,ANY}(e1, e2)
+\S4method{<}{ANY,Vector}(e1, e2)
 
-\S4method{>}{VectorComparisonAPI,VectorComparisonAPI}(e1, e2)
-\S4method{>}{VectorComparisonAPI,ANY}(e1, e2)
-\S4method{>}{ANY,VectorComparisonAPI}(e1, e2)
+\S4method{>}{Vector,Vector}(e1, e2)
+\S4method{>}{Vector,ANY}(e1, e2)
+\S4method{>}{ANY,Vector}(e1, e2)
 
 ## selfmatch()
 ## -----------
@@ -100,16 +96,16 @@ selfmatch(x, ...)
 ## duplicated() & unique()
 ## -----------------------
 
-\S4method{duplicated}{VectorComparisonAPI}(x, incomparables=FALSE, ...)
+\S4method{duplicated}{Vector}(x, incomparables=FALSE, ...)
 
-\S4method{unique}{VectorComparisonAPI}(x, incomparables=FALSE, ...)
+\S4method{unique}{Vector}(x, incomparables=FALSE, ...)
 
 ## %in%
 ## ----
 
-\S4method{\%in\%}{VectorComparisonAPI,VectorComparisonAPI}(x, table)
-\S4method{\%in\%}{VectorComparisonAPI,ANY}(x, table)
-\S4method{\%in\%}{ANY,VectorComparisonAPI}(x, table)
+\S4method{\%in\%}{Vector,Vector}(x, table)
+\S4method{\%in\%}{Vector,ANY}(x, table)
+\S4method{\%in\%}{ANY,Vector}(x, table)
 
 ## findMatches() & countMatches()
 ## ------------------------------
@@ -120,12 +116,12 @@ countMatches(x, table, ...)
 ## sort()
 ## ------
 
-\S4method{sort}{VectorComparisonAPI}(x, decreasing=FALSE, ...)
+\S4method{sort}{Vector}(x, decreasing=FALSE, ...)
 
 ## table()
 ## -------
 
-\S4method{table}{VectorComparisonAPI}(...)
+\S4method{table}{Vector}(...)
 }
 
 \arguments{
@@ -133,12 +129,12 @@ countMatches(x, table, ...)
     Vector-like objects.
   }
   \item{incomparables}{
-    The \code{duplicated} method for VectorComparisonAPI objects
-    does NOT support this argument.
+    The \code{duplicated} method for \link{Vector} objects does NOT
+    support this argument.
 
-    The \code{unique} method for VectorComparisonAPI objects,
-    which is implemented on top of \code{duplicated}, propagates this
-    argument to its call to \code{duplicated}.
+    The \code{unique} method for \link{Vector} objects, which is
+    implemented on top of \code{duplicated}, propagates this argument
+    to its call to \code{duplicated}.
 
     See \code{?base::\link[base]{duplicated}} and
     \code{?base::\link[base]{unique}} for more information about this
@@ -153,9 +149,8 @@ countMatches(x, table, ...)
     See \code{?base::\link[base]{sort}}.
   }
   \item{...}{
-    A VectorComparisonAPI object for \code{table} (the \code{table}
-    method for VectorComparisonAPI objects can only take one input
-    object).
+    A \link{Vector} object for \code{table} (the \code{table} method for
+    \link{Vector} objects can only take one input object).
 
     Otherwise, extra arguments supported by specific methods.
     In particular:
@@ -164,26 +159,25 @@ countMatches(x, table, ...)
             of \code{match}, propagates the extra arguments to its call to
             \code{match}.
 
-      \item The \code{duplicated} method for VectorComparisonAPI
-            objects, which is implemented on top of \code{selfmatch},
-            accepts extra argument \code{fromLast} and propagates the other
-            extra arguments to its call to \code{selfmatch}.
+      \item The \code{duplicated} method for \link{Vector} objects, which
+            is implemented on top of \code{selfmatch}, accepts extra
+            argument \code{fromLast} and propagates the other extra
+            arguments to its call to \code{selfmatch}.
             See \code{?base::\link[base]{duplicated}} for more information
             about this argument.
 
-      \item The \code{unique} method for VectorComparisonAPI objects,
-            which is implemented on top of \code{duplicated}, propagates
-            the extra arguments to its call to \code{duplicated}.
+      \item The \code{unique} method for \link{Vector} objects, which is
+            implemented on top of \code{duplicated}, propagates the extra
+            arguments to its call to \code{duplicated}.
 
       \item The default \code{findMatches} and \code{countMatches} methods,
             which are implemented on top of \code{match} and \code{selfmatch},
             propagate the extra arguments to their calls to \code{match} and
             \code{selfmatch}.
 
-      \item The \code{sort} method for VectorComparisonAPI objects,
-            which is implemented on top of \code{order}, only accepts extra
-            argument \code{na.last} and propagates it to its call to
-            \code{order}.
+      \item The \code{sort} method for \link{Vector} objects, which is
+            implemented on top of \code{order}, only accepts extra argument
+            \code{na.last} and propagates it to its call to \code{order}.
     }
   }
 }
@@ -242,87 +236,77 @@ countMatches(x, table, ...)
 }
 
 \note{
-  VectorComparisonAPI is a virtual class with no slot that is a direct
-  parent of the \link{Vector} class.
-
-  The following notes are for developers who want to implement the
-  VectorComparisonAPI interface for their vector-like class:
+  The following notes are for developers who want to implement comparing,
+  ordering, and tabulating methods for their own \link{Vector} subclass:
 
   \enumerate{
-    \item Make sure your vector-like class is a subclass of
-          VectorComparisonAPI (it does if it's a subclass of \link{Vector}).
-
     \item The 6 traditional binary comparison operators are: \code{==},
           \code{!=}, \code{<=}, \code{>=}, \code{<}, and \code{>}.
-          The \pkg{IRanges} package defines methods for each of these
-          operators and for VectorComparisonAPI objects as follow:
+          The \pkg{IRanges} package provides the following methods for
+          these operators:
           \preformatted{
-setMethod("==", c("VectorComparisonAPI", "VectorComparisonAPI"),
+setMethod("==", c("Vector", "Vector"),
     function(e1, e2) { compare(e1, e2) == 0L }
 )
-setMethod("<=", c("VectorComparisonAPI", "VectorComparisonAPI"),
+setMethod("<=", c("Vector", "Vector"),
     function(e1, e2) { compare(e1, e2) <= 0L }
 )
-setMethod("!=", c("VectorComparisonAPI", "VectorComparisonAPI"),
+setMethod("!=", c("Vector", "Vector"),
     function(e1, e2) { !(e1 == e2) }
 )
-setMethod(">=", c("VectorComparisonAPI", "VectorComparisonAPI"),
+setMethod(">=", c("Vector", "Vector"),
     function(e1, e2) { e2 <= e1 }
 )
-setMethod("<", c("VectorComparisonAPI", "VectorComparisonAPI"),
+setMethod("<", c("Vector", "Vector"),
     function(e1, e2) { !(e2 <= e1) }
 )
-setMethod(">", c("VectorComparisonAPI", "VectorComparisonAPI"),
+setMethod(">", c("Vector", "Vector"),
     function(e1, e2) { !(e1 <= e2) }
 )
           }
           With these definitions, the 6 binary operators work out-of-the-box
-          on VectorComparisonAPI objects for which \code{compare}
-          works the expected way. If \code{compare} is not implemented,
-          then it's enough to implement \code{==} and \code{<=} methods
-          to have the 4 remaining operators (\code{!=}, \code{>=}, \code{<},
-          and \code{>}) work out-of-the-box.
+          on \link{Vector} objects for which \code{compare} works the
+          expected way. If \code{compare} is not implemented, then it's
+          enough to implement \code{==} and \code{<=} methods to have the
+          4 remaining operators (\code{!=}, \code{>=}, \code{<}, and
+          \code{>}) work out-of-the-box.
 
     \item The \pkg{IRanges} package provides no \code{compare} method for
-          VectorComparisonAPI objects. Specific \code{compare} methods
-          need to be implemented for specific VectorComparisonAPI subclasses
-          (e.g. for \link{Ranges} objects). These specific methods must obey
-          the rules described in the Details section above.
+          \link{Vector} objects. Specific \code{compare} methods need to be
+          implemented for specific \link{Vector} subclasses (e.g. for
+          \link{Ranges} objects). These specific methods must obey the rules
+          described in the Details section above.
 
     \item The \code{duplicated}, \code{unique}, and \code{\%in\%} methods for
-          VectorComparisonAPI objects are implemented on top of
-          \code{selfmatch}, \code{duplicated}, and \code{match}, respectively,
-          so they work out-of-the-box on \link{Vector} objects for which
-          \code{selfmatch}, \code{duplicated}, and \code{match} work the
-          expected way.
+          \link{Vector} objects are implemented on top of \code{selfmatch},
+          \code{duplicated}, and \code{match}, respectively, so they work
+          out-of-the-box on \link{Vector} objects for which \code{selfmatch},
+         \code{duplicated}, and \code{match} work the expected way.
 
     \item Also the default \code{findMatches} and \code{countMatches} methods
           are implemented on top of \code{match} and \code{selfmatch} so they
-          work out-of-the-box on VectorComparisonAPI objects for which those
-          things work the expected way.
+          work out-of-the-box on \link{Vector} objects for which those things
+          work the expected way.
 
     \item However, since \code{selfmatch} itself is also implemented on top of
           \code{match}, then having \code{match} work the expected way is
           actually enough to get \code{selfmatch}, \code{duplicated},
           \code{unique}, \code{\%in\%}, \code{findMatches}, and
-          \code{countMatches} work out-of-the-box on VectorComparisonAPI
-          objects.
+          \code{countMatches} work out-of-the-box on \link{Vector} objects.
 
-    \item The \code{sort} method for VectorComparisonAPI objects is
-          implemented on top of \code{order}, so it works out-of-the-box
-          on VectorComparisonAPI objects for which \code{order} works the
-          expected way.
+    \item The \code{sort} method for \link{Vector} objects is implemented on
+          top of \code{order}, so it works out-of-the-box on \link{Vector}
+          objects for which \code{order} works the expected way.
 
-    \item The \code{table} method for VectorComparisonAPI objects is
-          implemented on top of \code{selfmatch}, \code{order}, and
-          \code{as.character}, so it works out-of-the-box on a
-          VectorComparisonAPI object for which those things work the
-          expected way.
+    \item The \code{table} method for \link{Vector} objects is implemented on
+          top of \code{selfmatch}, \code{order}, and \code{as.character}, so
+          it works out-of-the-box on a \link{Vector} object for which those
+          things work the expected way.
 
     \item The \pkg{IRanges} package provides no \code{match} or \code{order}
-          methods for VectorComparisonAPI objects. Specific methods need to
-          be implemented for specific VectorComparisonAPI subclasses (e.g.
-          for \link{Ranges} objects).
+          methods for \link{Vector} objects. Specific methods need to be
+          implemented for specific \link{Vector} subclasses (e.g. for
+          \link{Ranges} objects).
   }
 }
 
@@ -389,8 +373,6 @@ stopifnot(identical(length(x), 12L))
 stopifnot(identical(x[7:3], new("Raw", data=charToRaw("-a0x."))))
 
 ## (2) Implement a "compare" method for Raw objects.
-
-extends("Raw", "VectorComparisonAPI")  # TRUE
 
 setMethod("compare", c("Raw", "Raw"),
     function(x, y) {as.integer(x@data) - as.integer(y@data)}

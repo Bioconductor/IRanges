@@ -673,67 +673,6 @@ setAtomicListMethod <- function(f,
 ### General methods
 ###
 
-setAtomicListMethod("is.na", outputBaseClass = "LogicalList",
-                    applyToUnlist = TRUE)
-
-### S3/S4 combo for duplicated.AtomicList
-duplicated.AtomicList <- function(x, incomparables=FALSE,
-                                     fromLast=FALSE, ...)
-{
-    if (is(x, "CompressedList"))
-        ans_class <- "CompressedLogicalList"
-    else
-        ans_class <- "SimpleLogicalList"
-    ans_listData <- lapply(x, duplicated, incomparables=incomparables,
-                                          fromLast=fromLast, ...)
-    newList(ans_class, ans_listData)
-}
-setMethod("duplicated", "AtomicList", duplicated.AtomicList)
-
-### S3/S4 combo for duplicated.CompressedAtomicList
-.duplicated.CompressedAtomicList <- function(x, incomparables=FALSE,
-                                                fromLast=FALSE)
-{
-    if (!identical(incomparables, FALSE))
-        stop("\"duplicated\" method for CompressedAtomicList objects ",
-             "does not support the 'incomparables' argument")
-    x_unlistData <- x@unlistData
-    sm <- match(x_unlistData, x_unlistData)  # doesn't work on an Rle
-    x_group <- rep.int(seq_along(x), elementLengths(x))
-    ans_unlistData <- duplicatedIntegerPairs(x_group, sm, fromLast=fromLast)
-    relist(ans_unlistData, x)
-}
-duplicated.CompressedAtomicList <- function(x, incomparables=FALSE,
-                                               fromLast=FALSE,
-                                               ...)
-    .duplicated.CompressedAtomicList(x, incomparables=incomparables,
-                                        fromLast=fromLast,
-                                        ...)
-setMethod("duplicated", "CompressedAtomicList",
-          duplicated.CompressedAtomicList)
-
-### S3/S4 combo for unique.CompressedAtomicList
-.unique.CompressedAtomicList <- function(x, incomparables=FALSE,
-                                            fromLast=FALSE)
-{
-    if (!identical(incomparables, FALSE))
-        stop("\"unique\" method for CompressedAtomicList objects ",
-             "does not support the 'incomparables' argument")
-    is_dup <- duplicated(x, incomparables=incomparables, fromLast=fromLast)
-    x_unlistData <- x@unlistData
-    keep_idx <- which(!is_dup@unlistData)
-    ans_unlistData <- x_unlistData[keep_idx]
-    x_group <- rep.int(seq_along(x), elementLengths(x))
-    ans_group <- x_group[keep_idx]
-    ans_eltlens <- tabulate(ans_group, nbins=length(x))
-    ans_partitioning <- PartitioningByEnd(cumsum(ans_eltlens),
-                                          names=names(x))
-    relist(ans_unlistData, ans_partitioning)
-}
-unique.CompressedAtomicList <- function(x, incomparables=FALSE, ...)
-    .unique.CompressedAtomicList(x, incomparables=incomparables, ...)
-setMethod("unique", "CompressedAtomicList", unique.CompressedAtomicList)
-
 ### S3/S4 combo for unique.CompressedRleList
 unique.CompressedRleList <- function(x, incomparables=FALSE, ...)
 {
@@ -756,16 +695,6 @@ unique.SimpleRleList <- function(x, incomparables=FALSE, ...)
         }))
 }
 setMethod("unique", "SimpleRleList", unique.SimpleRleList)
-
-setAtomicListMethod("match", outputBaseClass = "IntegerList",
-                    remainingSignature = "atomic")
-setAtomicListMethod("match", outputBaseClass = "IntegerList",
-                    remainingSignature = "AtomicList", mapply = TRUE)
-
-setAtomicListMethod("%in%", outputBaseClass = "LogicalList",
-                    remainingSignature = "atomic")
-setAtomicListMethod("%in%", outputBaseClass = "LogicalList",
-                    remainingSignature = "AtomicList", mapply = TRUE)
 
 setMethod("table", "SimpleAtomicList",
           function(...)
@@ -806,20 +735,11 @@ setMethod("table", "CompressedAtomicList",
               ans
           })
 
-setAtomicListMethod("order", outputBaseClass = "IntegerList")
-
-### S3/S4 combo for sort.RleList
-sort.RleList <- function(x, decreasing=FALSE, ...)
-    endoapply(x, sort, decreasing=decreasing, ...)
-setMethod("sort", "RleList", sort.RleList)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Logical methods
 ###
 
-setAtomicListMethod("!", inputBaseClass = "LogicalList", 
-                    outputBaseClass = "LogicalList", applyToUnlist = TRUE)
 setAtomicListMethod("which", inputBaseClass = "LogicalList",
                     outputBaseClass = "IntegerList",
                     rleListOutputBaseClass = "IntegerList")

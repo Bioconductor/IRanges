@@ -38,10 +38,10 @@ encodeOverlaps(query, subject, hits=NULL, ...)
     and \code{subject} are \link[GenomicRanges]{GRangesList} objects,
     \code{hits} will typically be the result of a call to
     \code{\link{findOverlaps}(query, subject)}. See
-    \code{?`\link[GenomicRanges]{encodeOverlaps,GRangesList,GRangesList-method}`}
+    \code{?`\link[GenomicAlignments]{encodeOverlaps,GRangesList,GRangesList-method}`}
     for more information about the \code{encodeOverlaps} method for
     \link[GenomicRanges]{GRangesList} objects (you might need to load the
-    GenomicRanges package first).
+    \pkg{GenomicAlignments} package first).
 
     Supplying \code{hits} is a convenient way to do
     \code{encodeOverlaps(query[queryHits(hits)], subject[subjectHits(hits)])},
@@ -76,12 +76,12 @@ encodeOverlaps(query, subject, hits=NULL, ...)
           classes.
     \item The \code{\link{findOverlaps}} generic function for computing
           overlaps.
-    \item The \code{\link[GenomicRanges]{isCompatibleWithSplicing}} utility
-          function defined in the GenomicRanges package for detecting
-          encodings associated with "compatible" overlaps i.e. encodings that
-          show splicing "compatibility" between the read and the transcript
-          involved in the associated overlap. (You might need to load the
-          GenomicRanges package first.)
+    \item The \code{\link[GenomicAlignments]{isCompatibleWithSplicing}}
+          utility function defined in the \pkg{GenomicAlignments} package
+          for detecting encodings associated with "compatible" overlaps i.e.
+          encodings that show splicing "compatibility" between the read
+          and the transcript involved in the associated overlap. (You might
+          need to load the \pkg{GenomicAlignments} package first.)
   }
 }
 
@@ -121,15 +121,15 @@ grepl(regex0, encoding(ovenc))  # read4 is NOT "compatible"
 ## This was for illustration purpose only. In practise you don't need
 ## (and should not) use this regular expression, but use instead the
 ## isCompatibleWithSplicing() utility function defined in the
-## GenomicRanges package. See '?isCompatibleWithSplicing' in the
-## GenomicRanges package for more information.
+## GenomicAlignments package. See '?isCompatibleWithSplicing' in the
+## GenomicAlignments package for more information.
 
 ## ---------------------------------------------------------------------
 ## B. BETWEEN 2 GRangesList OBJECTS
 ## ---------------------------------------------------------------------
 ## With real RNA-seq data, the reads and transcripts will typically be
 ## stored in GRangesList objects. See '?isCompatibleWithSplicing' in the
-## GenomicRanges package for more information.
+## GenomicAlignments package for more information.
 }
 
 \keyword{methods}
