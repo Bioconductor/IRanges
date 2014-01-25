@@ -143,7 +143,11 @@ setMethods("match", .OP2_SIGNATURES,
     }
 )
 
-setMethod("match", c("List", "atomic"),
+### 2 of the 3 "match" methods defined above have signatures List,list and
+### List,List and therefore are more specific than the 2 methods below.
+### So in the methods below 'table' is guaranteed to be a vector that is not
+### a list or a Vector that is not a List.
+setMethods("match", list(c("List", "vector"), c("List", "Vector")),
     function(x, table, nomatch=NA_integer_, incomparables=NULL, ...)
     {
         match(x, list(table),
