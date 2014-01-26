@@ -130,11 +130,6 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(IRanges_coverage, 6),
 	CALLMETHOD_DEF(CompressedIRangesList_coverage, 6),
 
-/* encodeOverlaps_methods.c */
-	CALLMETHOD_DEF(encode_overlaps1, 10),
-	CALLMETHOD_DEF(RangesList_encode_overlaps, 7),
-	CALLMETHOD_DEF(Hits_encode_overlaps, 10),
-
 	{NULL, NULL, 0}
 };
 

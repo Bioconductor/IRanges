@@ -75,7 +75,6 @@ Collate: S4-utils.R
 	IntervalTree-class.R
 	IntervalTree-utils.R
 	IntervalForest-class.R
-	OverlapEncodings-class.R
 	RangedSelection-class.R
 	read.Mask.R
 	funprog-methods.R
@@ -87,7 +86,6 @@ Collate: S4-utils.R
 	setops-methods.R
 	findOverlaps-methods.R
 	nearest-methods.R
-	encodeOverlaps-methods.R
 	expand-methods.R
 	updateObject-methods.R
 	classNameForDisplay-methods.R

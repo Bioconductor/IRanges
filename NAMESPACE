@@ -42,7 +42,6 @@ exportClasses(
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
     RangedData, RangedDataList, FilterRules, FilterMatrix, RDApplyParams,
     Hits, HitsList, CompressedHitsList, 
-    OverlapEncodings,
     RangedSelection, RangesMapping,
     expressionORfunction
 )
@@ -58,7 +57,6 @@ S3method(as.data.frame, DataFrame)
 S3method(as.data.frame, DataFrameList)
 S3method(as.data.frame, GappedRanges)
 S3method(as.data.frame, Hits)
-S3method(as.data.frame, OverlapEncodings)
 S3method(as.data.frame, RangedData)
 S3method(as.data.frame, Ranges)
 S3method(as.data.frame, RangesList)
@@ -83,7 +81,6 @@ S3method(duplicated, CompressedList)
 S3method(head, Vector)
 
 S3method(levels, Rle)
-S3method(levels, OverlapEncodings)
 
 S3method(mean, Rle)
 
@@ -129,7 +126,6 @@ export(
     as.data.frame.DataFrameList,
     as.data.frame.GappedRanges,
     as.data.frame.Hits,
-    as.data.frame.OverlapEncodings,
     as.data.frame.RangedData,
     as.data.frame.Ranges,
     as.data.frame.RangesList,
@@ -154,7 +150,6 @@ export(
     head.Vector,
 
     levels.Rle,
-    levels.OverlapEncodings,
 
     mean.Rle,
 
@@ -295,7 +290,6 @@ export(
     CompressedHitsList, 
     hits,
     "%over%", "%within%", "%outside%",
-    encodeOverlaps1, RangesList_encodeOverlaps,
     MaskCollection.show_frame,
     Mask,
     read.gapMask,
@@ -427,10 +421,6 @@ export(
     ## RangesMapping-class.R:
     map, pmap,
 
-    ## OverlapEncodings-class.R:
-    Loffset, Roffset, encoding, flippedQuery,
-    Lencoding, Rencoding, Lngap, Rngap,
-
     ## intra-range-methods.R:
     shift, narrow, flank, reflect, resize, promoters, restrict, threebands,
 
@@ -454,9 +444,6 @@ export(
 
     ## nearest-methods.R:
     precede, follow, nearest, distance, distanceToNearest,
-
-    ## encodeOverlaps-methods.R:
-    encodeOverlaps,
 
     ## expand-methods.R:
     expand,
@@ -533,8 +520,6 @@ exportMethods(
     queryLength, subjectLength,
     countQueryHits, countSubjectHits,
     map, pmap,
-    Loffset, Roffset, encoding, flippedQuery,
-    Lencoding, Rencoding, Lngap, Rngap,
     shift, narrow, flank, reflect, resize, promoters, restrict, threebands,
     reduce, gaps, disjoin, isDisjoint, disjointBins,
     reverse,
@@ -543,7 +528,6 @@ exportMethods(
     punion, pintersect, psetdiff, pgap,
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
     precede, follow, nearest, distance, distanceToNearest,
-    encodeOverlaps,
     expand,
     classNameForDisplay,
     tile
