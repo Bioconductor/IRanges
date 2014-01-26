@@ -331,6 +331,20 @@ void vector_memcpy(
 );
 
 /*
+ * Comparing ranges.
+ * (see Ranges_comparison.c)
+ */
+
+int overlap_code(
+	int x_start,
+	int x_width,
+	int y_start,
+	int y_width
+);
+
+int invert_overlap_code(int code);
+
+/*
  * Low-level manipulation of IRanges objects.
  * (see IRanges_class.c)
  */

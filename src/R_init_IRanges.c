@@ -217,6 +217,10 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_vector_memcmp);
 	REGISTER_CCALLABLE(_vector_memcpy);
 
+/* Ranges_comparison.c */
+	REGISTER_CCALLABLE(_overlap_code);
+	REGISTER_CCALLABLE(_invert_overlap_code);
+
 /* IRanges_class.c */
 	REGISTER_CCALLABLE(_get_IRanges_start);
 	REGISTER_CCALLABLE(_get_IRanges_width);

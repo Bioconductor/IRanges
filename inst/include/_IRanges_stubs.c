@@ -362,6 +362,20 @@ DEFINE_NOVALUE_CCALLABLE_STUB(vector_memcpy,
 )
 
 /*
+ * Stubs for callables defined in Ranges_comparison.c
+ */
+
+DEFINE_CCALLABLE_STUB(int, overlap_code,
+	(int x_start, int x_width, int y_start, int y_width),
+	(    x_start,     x_width,     y_start,     y_width)
+)
+
+DEFINE_CCALLABLE_STUB(int, invert_overlap_code,
+	(int code),
+	(    code)
+)
+
+/*
  * Stubs for callables defined in IRanges_class.c
  */
 
