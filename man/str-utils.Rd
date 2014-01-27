@@ -109,7 +109,7 @@ names(x) <- x
 y <- strsplit(x, split="in", fixed=TRUE)
 x2 <- unstrsplit(y, sep="in")
 y[x != x2]
-## ... in other words, strsplit() behavior suck :-/
+## In other words: strsplit() behavior sucks :-/
 
 ## ---------------------------------------------------------------------
 ## strsplitAsListOfIntegerVectors()
