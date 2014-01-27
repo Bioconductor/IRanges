@@ -404,7 +404,7 @@
       length one, and, if so, unlists \code{x}. Otherwise, an error is
       thrown.
     }
-    \item{}{\code{unstrsplit(x, sep=",")}}: A fast
+    \item{}{\code{unstrsplit(x, sep="")}}: A fast
     \code{sapply(x, paste0, collapse=sep)}. See \code{?\link{unstrsplit}}
     for the details.
   }

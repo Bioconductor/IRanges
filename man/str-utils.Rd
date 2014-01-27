@@ -15,9 +15,9 @@
 }
 
 \usage{
-unstrsplit(x, sep=",")
+unstrsplit(x, sep="")  # 'sep' default is "" (empty string)
 
-strsplitAsListOfIntegerVectors(x, sep=",")
+strsplitAsListOfIntegerVectors(x, sep=",")  # 'sep' default is ","
 }
 
 \arguments{
@@ -96,6 +96,7 @@ strsplitAsListOfIntegerVectors(x, sep=",")
 ## ---------------------------------------------------------------------
 x <- list(A=c("abc", "XY"), B=NULL, C=letters[1:4])
 unstrsplit(x)
+unstrsplit(x, sep=",")
 unstrsplit(x, sep=" => ")
 
 data(islands)

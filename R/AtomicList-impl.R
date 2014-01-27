@@ -918,7 +918,7 @@ setAtomicListMethod("gsub", inputBaseClass = "CharacterList",
 ### TODO: grep, grepl
 
 setMethod("unstrsplit", "CharacterList",
-    function(x, sep=",") unstrsplit(as.list(x), sep=sep)
+    function(x, sep="") unstrsplit(as.list(x), sep=sep)
 )
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

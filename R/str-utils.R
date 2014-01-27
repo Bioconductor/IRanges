@@ -10,11 +10,11 @@ capitalize <- function(x)
 }
 
 setGeneric("unstrsplit", signature="x",
-    function(x, sep=",") standardGeneric("unstrsplit")
+    function(x, sep="") standardGeneric("unstrsplit")
 )
 
 setMethod("unstrsplit", "list",
-    function(x, sep=",") .Call2("unstrsplit_list", x, sep, PACKAGE="IRanges")
+    function(x, sep="") .Call2("unstrsplit_list", x, sep, PACKAGE="IRanges")
 )
 
 ### Safe alternative to 'strsplit(x, NULL, fixed=TRUE)[[1L]]'.
