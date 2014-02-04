@@ -20,8 +20,8 @@ test_tile <- function() {
                  IRangesList(IRanges(c(1, 2, 4), c(1, 3, 5)),
                              IRanges(c(2, 4), c(3, 5)),
                              IRanges(c(3, 4), c(3, 5))))
+  checkIdentical(elementLengths(tile(ir, width=4)), c(2L, 1L, 1L))
   checkException(tile(ir, n=4), silent=TRUE)
-  checkException(tile(ir, width=4), silent=TRUE)
   checkException(tile(ir, width=-1), silent=TRUE)
   checkException(tile(ir, n=-1), silent=TRUE)
 }

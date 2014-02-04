@@ -31,6 +31,8 @@
 \alias{whichFirstNotNormal}
 \alias{whichFirstNotNormal,Ranges-method}
 \alias{update,Ranges-method}
+\alias{tile}
+\alias{tile,Ranges-method}
 
 
 \title{Ranges objects}
@@ -130,6 +132,14 @@
                                      end=end(object)+2L)}
       is equivalent to
       \code{start(object) <- start(object)-2L; end(object) <- end(object)+2L}.
+    }
+    \item{}{
+      \code{tile(x, n, width, ...)}:
+      Splits each range in \code{x} into subranges as specified by \code{n}
+      (number of ranges) or \code{width}. Only one of \code{n} or \code{width} 
+      can be specified. The return value is a \code{IRangesList} the same 
+      length as \code{x}. Ranges with a width less than the \code{width}
+      argument are returned unchanged.
     }
     \item{}{
       \code{isEmpty(x)}:

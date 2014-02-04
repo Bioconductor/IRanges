@@ -5,7 +5,7 @@
 
 setGeneric("tile", function(x, n, width, ...) standardGeneric("tile"))
 
-setMethod("tile", "Ranges", function(x, n, width) {
+setMethod("tile", "Ranges", function(x, n, width, ...) {
   if (!missing(n)) {
     if (!missing(width))
       stop("only one of 'n' and 'width' can be specified")
@@ -18,8 +18,6 @@ setMethod("tile", "Ranges", function(x, n, width) {
   if (!missing(width)) {
     if (!missing(n))
       stop("only one of 'n' and 'width' can be specified")
-    if (any(width(x) < width))
-      stop("some width(x) are less than 'width'")
     if (any(width < 0L))
       stop("some 'width' are negative")
     n <- ceiling(width(x) / width)
