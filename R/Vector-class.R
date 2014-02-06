@@ -219,11 +219,42 @@ setMethod("extractROWS", "NULL", function(x, i) NULL)
   do.call(`[`, args)
 }
 
+.extractROWS_from_matrix <- function(x, i)
+{
+    if (missing(i))
+        return(x)
+    if (!is(i, "Ranges")) {
+        i <- normalizeSingleBracketSubscript(i, x, byrow=TRUE)
+        return(x[i, , drop=FALSE])
+    }
+    if (is.null(dimnames(x))) {
+        ans_dimnames <- NULL
+    } else {
+        ans_rownames <- extractROWS(rownames(x), i)
+        ans_dimnames <- list(ans_rownames, colnames(x))
+    }
+    #i_range <- .Call2("IRanges_range", xx, PACKAGE = "IRanges")
+    #if (start(i_range) < 1L || end(i_range) > nrow(i))
+    #    stop("'i' contains out of bounds ranges")
+    offsets <- rep((seq_len(ncol(x))-1L)*nrow(x), each=length(i))
+    i <- rep.int(i, ncol(x))
+    slot(i, "start", check=FALSE) <- i@start + offsets
+    #i <- shift(rep.int(i, ncol(x)), shift=offsets)
+    #ans <- matrix(extractROWS(x, i), ncol=ncol(x), dimnames=ans_dimnames)
+    ans <- extractROWS(x, i)
+    ans_attributes <- list(dim=c(length(ans) %/% ncol(x), ncol(x)),
+                           dimnames=ans_dimnames)
+    attributes(ans) <- ans_attributes
+    as(ans, class(x))
+}
+
+if (FALSE) {
 setMethod("extractROWS", "matrix", function(x, i) {
   if (missing(i))
     return(x)
   return(.extractROWSFromArray(x, i))
 })
+}
 
 setMethod("extractROWS", "vectorORfactor",
     function(x, i)
@@ -235,10 +266,10 @@ setMethod("extractROWS", "vectorORfactor",
             return(x[i])
         }
         ## Which one is faster, vector_seqselect or vector_subsetByRanges?
-        ans <- .Call2("vector_seqselect", x, start(i), width(i),
-                      PACKAGE="IRanges")
-        #ans <- .Call2("vector_subsetByRanges", x, start(i), width(i),
+        #ans <- .Call2("vector_seqselect", x, start(i), width(i),
         #              PACKAGE="IRanges")
+        ans <- .Call2("vector_subsetByRanges", x, start(i), width(i),
+                      PACKAGE="IRanges")
         if (is.factor(x))
             attributes(ans) <- list(levels=levels(x), class="factor")
         ans
