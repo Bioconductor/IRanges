@@ -413,7 +413,7 @@ setMethod("unlist", "CompressedList",
             }
             if (is(res, "try-error"))
                 warning("failed to set ", what, " on the result ",
-                        "of unlisting ", class(x), " object 'x'")
+                        "of unlisting a ", class(x), " object")
         }
         ans
     }
