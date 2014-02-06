@@ -373,7 +373,7 @@ export(
     splitRanges,
 
     ## extractList.R:
-    relistReturnedClass,
+    relistToClass,
     splitAsListReturnedClass,
     extractList,
 
@@ -493,7 +493,7 @@ exportMethods(
     Rle,
     findRange, findRun,
     splitRanges,
-    relistReturnedClass,
+    relistToClass,
     splitAsListReturnedClass,
     extractList,
     columnMetadata, "columnMetadata<-",

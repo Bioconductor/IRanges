@@ -1,7 +1,7 @@
 \name{extractList}
 
-\alias{relistReturnedClass}
-\alias{relistReturnedClass,ANY-method}
+\alias{relistToClass}
+\alias{relistToClass,ANY-method}
 \alias{splitAsListReturnedClass}
 \alias{splitAsListReturnedClass,ANY-method}
 
@@ -36,7 +36,7 @@
   they return a list-like value where each list element has the same class
   as the original vector-like object. Thus they need to be able to select
   the appropriate \link{List} concrete subclass to use for this returned
-  value. This selection is performed by \code{relistReturnedClass} and
+  value. This selection is performed by \code{relistToClass} and
   is based only on the class of the original object.
 }
 
@@ -59,10 +59,10 @@ splitAsList(x, f, drop=FALSE)
 
 extractList(x, i)
 
-## relistReturnedClass()
+## relistToClass()
 ## --------------------------
 
-relistReturnedClass(x)
+relistToClass(x)
 }
 
 \arguments{
@@ -139,9 +139,9 @@ relistReturnedClass(x)
   the same "shape" as \code{i} (i.e. same element lengths).
   If \code{i} has names, then they are propagated to the returned value.
 
-  All these functions (except \code{relistReturnedClass}) return a
+  All these functions (except \code{relistToClass}) return a
   list-like object where the list elements have the same class as \code{x}.
-  \code{relistReturnedClass} gives the exact class of the returned object.
+  \code{relistToClass} gives the exact class of the returned object.
 }
 
 \author{

@@ -130,12 +130,12 @@ setMethod("t", "Hits", function(x) {
 ### Splitting / relisting.
 ###
 
-setMethod("relistReturnedClass", "Hits", function(x) "HitsList")
+setMethod("relistToClass", "Hits", function(x) "HitsList")
 
 setMethod("splitAsListReturnedClass", "Hits",
     function(x)
     {
-        .Deprecated("relistReturnedClass")
+        .Deprecated("relistToClass")
         "HitsList"
     }
 )

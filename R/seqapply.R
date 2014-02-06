@@ -77,7 +77,7 @@ tseqapply <- function(X, INDEX, FUN = NULL, ...) {
 }
 
 seqsplit <- function(x, f, drop=FALSE) {
-  ans_class <- try(relistReturnedClass(x), silent=TRUE)
+  ans_class <- try(relistToClass(x), silent=TRUE)
   if (inherits(ans_class, "try-error"))
     return(.asList(split(x, f, drop)))
   splitAsList(x, f, drop=drop)

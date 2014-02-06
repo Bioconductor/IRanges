@@ -6,24 +6,24 @@
 ### Splitting and combining.
 ###
 
-setMethod("relistReturnedClass", "data.frame",
+setMethod("relistToClass", "data.frame",
     function(x) "CompressedSplitDataFrameList"
 )
 
-setMethod("relistReturnedClass", "DataFrame",
+setMethod("relistToClass", "DataFrame",
     function(x) "CompressedSplitDataFrameList"
 )
 
 setMethod("splitAsListReturnedClass", "data.frame",
     function(x) {
-        .Deprecated("relistReturnedClass")
+        .Deprecated("relistToClass")
         "CompressedSplitDataFrameList"
     }
 )
 
 setMethod("splitAsListReturnedClass", "DataFrame",
     function(x) {
-        .Deprecated("relistReturnedClass")
+        .Deprecated("relistToClass")
         "CompressedSplitDataFrameList"
     }
 )

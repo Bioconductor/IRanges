@@ -4,7 +4,7 @@
 ###
 ### What should go in this file?
 ###
-### - relistReturnedClass() generic and default method.
+### - relistToClass() generic and default method.
 ### - All "relist" and "split" methods defined in IRanges should be here.
 ### - extractList() generic and default method.
 ###
@@ -14,14 +14,14 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### relistReturnedClass()
+### relistToClass()
 ###
 
-setGeneric("relistReturnedClass",
-    function(x) standardGeneric("relistReturnedClass")
+setGeneric("relistToClass",
+    function(x) standardGeneric("relistToClass")
 )
 
-setMethod("relistReturnedClass", "ANY",
+setMethod("relistToClass", "ANY",
     function(x)
     {
         selectListClassName(class(x))
@@ -35,7 +35,7 @@ setGeneric("splitAsListReturnedClass",
 
 setMethod("splitAsListReturnedClass", "ANY",
     function(x) {
-      .Deprecated("relistReturnedClass")
+      .Deprecated("relistToClass")
       cn <- listClassName("Compressed", class(x))
       if (cn == "CompressedList")
         cn <- listClassName("Simple", class(x))
@@ -51,7 +51,7 @@ setMethod("splitAsListReturnedClass", "ANY",
 setMethod("relist", c("ANY", "PartitioningByEnd"),
     function(flesh, skeleton)
     {
-        ans_class <- relistReturnedClass(flesh)
+        ans_class <- relistToClass(flesh)
         skeleton_len <- length(skeleton)
         if (skeleton_len == 0L) {
             flesh_len2 <- 0L
