@@ -121,7 +121,7 @@
 
 \section{Other operations}{
   \describe{
-    \item{}{\code{queryHits(x, query.map=NULL, new.queryLength=NA,
+    \item{}{\code{remapHits(x, query.map=NULL, new.queryLength=NA,
                                subject.map=NULL, new.subjectLength=NA)}:
       Remaps the hits in \code{x} thru a "query map" and/or a "subject map"
       map. The query hits are remapped thru the "query map", which is specified

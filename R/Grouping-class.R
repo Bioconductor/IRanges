@@ -609,17 +609,17 @@ PartitioningByEnd <- function(x=integer(), NG=NULL, names=NULL)
     if (is(x, "CompressedList")) {
         ## Behaves like a getter for the 'partitioning' slot.
         if (!is.null(NG))
-            warning("when 'x' is a CompressedList object, ",
-                    "the 'NG' argument is ignored")
+            warning("'NG' argument is ignored when 'x' ",
+                    "is a list-like object")
         if (!is.null(names))
-            warning("when 'x' is a CompressedList object, ",
-                    "the 'names' argument is ignored")
+            warning("'names' argument is ignored when 'x' ",
+                    "is a CompressedList object")
         return(x@partitioning)
     }
     if (is.list(x) || is(x, "List")) {
         if (!is.null(NG))
-            warning("'NG' argument is ignored when 'x' is ",
-                    "a CompressedList object")
+            warning("'NG' argument is ignored when 'x' ",
+                    "is a list-like object")
         x <- cumsum(elementLengths(x))
     } else {
         if (!is.numeric(x))
@@ -741,8 +741,8 @@ PartitioningByWidth <- function(x=integer(), NG=NULL, names=NULL)
 {
     if (is.list(x) || is(x, "List")) {
         if (!is.null(NG))
-            warning("'NG' argument is ignored when 'x' is ",
-                    "a CompressedList object")
+            warning("'NG' argument is ignored when 'x' ",
+                    "is a list-like object")
         x <- elementLengths(x)
     } else {
         if (!is.numeric(x))

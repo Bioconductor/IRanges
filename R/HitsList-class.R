@@ -70,6 +70,20 @@ CompressedHitsList <- function(hits, query)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Going from Hits to HitsList with extractList() and family.
+###
+
+setMethod("relistToClass", "Hits", function(x) "HitsList")
+
+setMethod("splitAsListReturnedClass", "Hits",
+    function(x)
+    {
+        .Deprecated("relistToClass")
+        "HitsList"
+    }
+)
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
 ###
 

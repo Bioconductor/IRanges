@@ -90,23 +90,23 @@ as.data.frame.Hits <- function(x, row.names=NULL, optional=FALSE, ...)
 }
 setMethod("as.data.frame", "Hits", as.data.frame.Hits)
 
-### S3/S4 combo for as.list.Hits
-### Returns a list, with an element for each query, containing the subject hits
-.as.list.Hits <- function(x, values=seq_len(subjectLength(x)))
+### Turns Hits object 'from' into an IntegerList object with one list element
+### per element in the original query.
+.from_Hits_to_IntegerList <- function(from)
 {
-    unname(split(values[subjectHits(x)],
-                 factor(queryHits(x),
-                        levels = seq_len(queryLength(x)))))
+    ans_partitioning <- PartitioningByEnd(queryHits(from),
+                                          NG=queryLength(from))
+    relist(subjectHits(from), ans_partitioning)
 }
+setAs("Hits", "IntegerList", .from_Hits_to_IntegerList)
+setAs("Hits", "List", .from_Hits_to_IntegerList)
+
+### S3/S4 combo for as.list.Hits
+.as.list.Hits <- function(x) as.list(.from_Hits_to_IntegerList(x))
 as.list.Hits <- function(x, ...) .as.list.Hits(x, ...)
-setMethod("as.list", "Hits", as.list.Hits)
+setMethod("as.list", "Hits", .as.list.Hits)
 
 setAs("Hits", "list", function(from) as.list(from))
-setAs("Hits", "List", function(from) {
-  unname(seqsplit(subjectHits(from),
-                  factor(queryHits(from),
-                         levels = seq_len(queryLength(from)))))
-})
 
 ## count up the hits for each query
 
@@ -127,65 +127,25 @@ setMethod("t", "Hits", function(x) {
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Splitting / relisting.
+### countQueryHits() and countSubjectHits()
 ###
 
-setMethod("relistToClass", "Hits", function(x) "HitsList")
-
-setMethod("splitAsListReturnedClass", "Hits",
-    function(x)
-    {
-        .Deprecated("relistToClass")
-        "HitsList"
-    }
+setGeneric("countQueryHits",
+    function(x, ...) standardGeneric("countQueryHits")
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### match()
-###
-
-compatibleHits <- function(x, y) {
-  subjectLength(x) == subjectLength(y) && queryLength(x) == queryLength(y)
-}
-
-setMethod("match", c("Hits", "Hits"),
-    function(x, table, nomatch=NA_integer_, incomparables=NULL)
-    {
-        if (!compatibleHits(x, table))
-            stop("'x' and 'table' are incompatible by subject and query length")
-        if (!is.null(incomparables))
-            stop("\"match\" method for Hits objects ",
-                 "only accepts 'incomparables=NULL'")
-        matchIntegerPairs(queryHits(x), subjectHits(x),
-                          queryHits(table), subjectHits(table),
-                          nomatch=nomatch)
-    }
+setMethod("countQueryHits", "Hits",
+    function(x) tabulate(queryHits(x), nbins=queryLength(x))
 )
 
-setMethod("selfmatch", "Hits",
-          function (x, method = c("auto", "quick", "hash")) {
-            selfmatchIntegerPairs(queryHits(x), subjectHits(x), method = method)
-          })
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Utilities
-###
-
-countHits <- tabulate2
 
 setGeneric("countSubjectHits",
-           function(x, ...) standardGeneric("countSubjectHits"))
+    function(x, ...) standardGeneric("countSubjectHits")
+)
 
-setMethod("countSubjectHits", "Hits", function(x) {
-  countHits(subjectHits(x), subjectLength(x))
-})
-
-setGeneric("countQueryHits", function(x, ...) standardGeneric("countQueryHits"))
-
-setMethod("countQueryHits", "Hits", function(x) {
-  countHits(queryHits(x), queryLength(x))
-})
+setMethod("countSubjectHits", "Hits",
+    function(x) tabulate(subjectHits(x), nbins=subjectLength(x))
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -244,6 +204,34 @@ setMethod("show", "Hits", function(object) {
   df_show <- capture.output(show(as(object, "DataFrame")))
   cat(paste(tail(df_show, -1), "\n"))
 })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### match()
+###
+
+compatibleHits <- function(x, y) {
+  subjectLength(x) == subjectLength(y) && queryLength(x) == queryLength(y)
+}
+
+setMethod("match", c("Hits", "Hits"),
+    function(x, table, nomatch=NA_integer_, incomparables=NULL)
+    {
+        if (!compatibleHits(x, table))
+            stop("'x' and 'table' are incompatible by subject and query length")
+        if (!is.null(incomparables))
+            stop("\"match\" method for Hits objects ",
+                 "only accepts 'incomparables=NULL'")
+        matchIntegerPairs(queryHits(x), subjectHits(x),
+                          queryHits(table), subjectHits(table),
+                          nomatch=nomatch)
+    }
+)
+
+setMethod("selfmatch", "Hits",
+          function (x, method = c("auto", "quick", "hash")) {
+            selfmatchIntegerPairs(queryHits(x), subjectHits(x), method = method)
+          })
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
