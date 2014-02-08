@@ -27,6 +27,10 @@ AEbufs.free <- function()
     .Call(.NAME, ..., PACKAGE=PACKAGE)
 }
 
+top_prenv <- function(x) {
+  .Call2("top_prenv", substitute(x), parent.frame(), PACKAGE="IRanges")
+}
+
 ### Exported!
 setClassUnion("characterORNULL", c("character", "NULL"))
 

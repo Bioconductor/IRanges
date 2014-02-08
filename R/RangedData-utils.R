@@ -67,7 +67,7 @@ setMethod("within", "RangedData",
           {
             e <- list2env(as.list(as(data, "DataFrame")))
             e$ranges <- ranges(data)
-            eval(substitute(expr), e, parent.frame(2))
+            eval(substitute(expr), e, top_prexpr(expr))
             reserved <- c("ranges", "start", "end", "width", "space")
             l <- mget(setdiff(ls(e), reserved), e)
             l <- l[!sapply(l, is.null)]
