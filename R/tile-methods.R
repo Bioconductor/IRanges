@@ -3,7 +3,8 @@
 ### -------------------------------------------------------------------------
 ###
 
-setGeneric("tile", function(x, n, width, ...) standardGeneric("tile"))
+setGeneric("tile", function(x, n, width, ...) standardGeneric("tile"),
+           signature="x")
 
 setMethod("tile", "Ranges", function(x, n, width, ...) {
   if (!missing(n)) {
@@ -23,7 +24,7 @@ setMethod("tile", "Ranges", function(x, n, width, ...) {
     n <- ceiling(width(x) / width)
   }
   width <- IRanges::width(x) / n
-  ## The floor() is itentional for compatibility with Jim Kent's BigWig code
+  ## The floor() is intentional for compatibility with Jim Kent's BigWig code
   ## tileGenome() uses ceiling() instead
   tile.end <- floor(as.integer(IRanges(rep(1L, length(n)), width=n)) *
                     rep(width, n))
