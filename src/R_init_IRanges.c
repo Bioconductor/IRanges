@@ -17,7 +17,7 @@ static const R_CallMethodDef callMethods[] = {
 
 /* SEXP_utils.c */
 	CALLMETHOD_DEF(sapply_NROW, 1),
-        CALLMETHOD_DEF(top_promise, 2),
+        CALLMETHOD_DEF(top_prenv, 2),
 
 /* int_utils.c */
 	CALLMETHOD_DEF(Integer_any_missing_or_outside, 3),

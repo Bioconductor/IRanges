@@ -51,21 +51,14 @@ SEXP sapply_NROW(SEXP x)
 
 /*
  * --- .Call ENTRY POINT ---
- * Tries its best to get the top promise in a call stack.
+ * Gets the top environment associated with a (nested) promise.
  */
-SEXP top_promise(SEXP nm, SEXP env)
+SEXP top_prenv(SEXP nm, SEXP env)
 {
   SEXP promise = findVar(nm, env);
   while(TYPEOF(promise) == PROMSXP) {
     env = PRENV(promise);
     promise = PREXPR(promise);
-    if(TYPEOF(promise) == SYMSXP) {
-      SEXP var = findVar(promise, env);
-      if (TYPEOF(var) == PROMSXP) {
-        promise = var;
-      }
-    }
   }
-  setAttrib(promise, install("env"), env);
-  return promise;
+  return env;
 }
