@@ -468,7 +468,8 @@ setMethod("subset", "Vector",
             if (missing(subset)) 
               i <- TRUE
             else {
-              i <- eval(substitute(subset), mcols(x), top_prenv(subset))
+              promise <- top_promise(subset)
+              i <- eval(promise, mcols(x), attr(promise, "env"))
               i <- try(as.logical(i), silent = TRUE)
               if (inherits(i, "try-error")) 
                 stop("'subset' must be coercible to logical")
@@ -477,7 +478,8 @@ setMethod("subset", "Vector",
             if (!missing(select)) {
               nl <- as.list(seq_len(ncol(mcols(x))))
               names(nl) <- colnames(mcols(x))
-              j <- eval(substitute(select), nl, top_prenv(select))
+              promise <- top_promise(select)
+              j <- eval(promise, nl, attr(promise, "env"))
               mcols(x) <- mcols(x)[,j,drop=FALSE]
             }
             x[i, drop = drop]

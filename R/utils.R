@@ -27,8 +27,8 @@ AEbufs.free <- function()
     .Call(.NAME, ..., PACKAGE=PACKAGE)
 }
 
-top_prenv <- function(x) {
-  .Call2("top_prenv", substitute(x), parent.frame(), PACKAGE="IRanges")
+top_promise <- function(x) {
+  .Call2("top_promise", substitute(x), parent.frame(), PACKAGE="IRanges")
 }
 
 ### Exported!

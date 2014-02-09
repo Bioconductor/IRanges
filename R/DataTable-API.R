@@ -46,7 +46,8 @@ setMethod("subset", "DataTable",
               if (missing(subset)) 
                   i <- TRUE
               else {
-                  i <- eval(substitute(subset), x, top_prenv(subset))
+                  promise <- top_promise(subset)
+                  i <- eval(promise, x, attr(promise, "env"))
                   i <- try(as.logical(i), silent=TRUE)
                   if (inherits(i, "try-error"))
                     stop("'subset' must be coercible to logical")
@@ -57,7 +58,8 @@ setMethod("subset", "DataTable",
               else {
                   nl <- as.list(seq_len(ncol(x)))
                   names(nl) <- colnames(x)
-                  j <- eval(substitute(select), nl, top_prenv(select))
+                  promise <- top_promise(select)
+                  j <- eval(promise, nl, attr(promise, "env"))
               }
               x[i, j, drop = drop]
           })

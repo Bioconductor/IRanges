@@ -344,7 +344,7 @@ const char *_get_classname(SEXP x);
 
 SEXP sapply_NROW(SEXP x);
 
-SEXP top_prenv(SEXP nm, SEXP env);
+SEXP top_promise(SEXP nm, SEXP env);
 
 /* int_utils.c */
 
