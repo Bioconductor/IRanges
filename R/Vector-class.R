@@ -504,7 +504,7 @@ setMethod("eval", c("language", "Vector"),
 setMethod("with", "Vector",
           function(data, expr, ...)
           {
-            eval(substitute(expr), data, data, parent.frame())
+            eval(substitute(expr), data, parent.frame())
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
