@@ -463,12 +463,16 @@ setMethod("rep.int", "Vector",
     function(x, times) x[rep.int(seq_len(length(x)), times)]
 )
 
+setGeneric("fixedColumnNames", function(x) standardGeneric("fixedColumnNames"))
+
+setMethod("fixedColumnNames", "ANY", function(x) character())
+
 setMethod("subset", "Vector",
           function(x, subset, select, drop = FALSE, ...) {
             if (missing(subset)) 
               i <- TRUE
             else {
-              i <- eval(substitute(subset), mcols(x), top_prenv(subset))
+              i <- eval(substitute(subset), x, top_prenv(subset))
               i <- try(as.logical(i), silent = TRUE)
               if (inherits(i, "try-error")) 
                 stop("'subset' must be coercible to logical")
@@ -483,6 +487,25 @@ setMethod("subset", "Vector",
             x[i, drop = drop]
           })
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Evaluating.
+###
+
+setMethod("eval", c("expression", "Vector"),
+          function(expr, envir, enclos = parent.frame())
+          eval(expr, as.env(envir, enclos))
+          )
+
+setMethod("eval", c("language", "Vector"),
+          function(expr, envir, enclos = parent.frame())
+          eval(expr, as.env(envir, enclos))
+          )
+
+setMethod("with", "Vector",
+          function(data, expr, ...)
+          {
+            eval(substitute(expr), data, data, parent.frame())
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
@@ -529,6 +552,22 @@ as.data.frame.Vector <- function(x, row.names=NULL, optional=FALSE, ...)
 }
 setMethod("as.data.frame", "Vector", as.data.frame.Vector)
 
+setGeneric("as.env", function(x, ...) standardGeneric("as.env"))
+
+makeFixedColumnEnv <- function(x, parent) {
+  env <- new.env(parent=parent)
+  lapply(fixedColumnNames(x), function(nm) {
+    accessor <- get(nm, parent, mode="function")
+    makeActiveBinding(nm, function() {
+      accessor(x)
+    }, env)
+  })
+  env
+}
+
+setMethod("as.env", "Vector", function(x, enclos) {
+  makeFixedColumnEnv(x, as.env(mcols(x), enclos))
+})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining.

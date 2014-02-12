@@ -530,5 +530,5 @@ exportMethods(
     precede, follow, nearest, distance, distanceToNearest,
     expand,
     classNameForDisplay,
-    tile
+    tile, fixedColumnNames
 )

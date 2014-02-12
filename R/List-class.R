@@ -653,8 +653,6 @@ setAs("List", "list", function(from) as.list(from))
 as.list.List <- function(x, ...) .as.list.List(x, ...)
 setMethod("as.list", "List", as.list.List)
 
-setGeneric("as.env", function(x, ...) standardGeneric("as.env"))
-
 setMethod("as.env", "List",
           function(x, enclos = parent.frame(2)) {
               nms <- names(x)
@@ -830,22 +828,6 @@ setMethod("stack", "List",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Evaluating.
 ###
-  
-setMethod("eval", c("expression", "List"),
-    function(expr, envir, enclos = parent.frame())
-          eval(expr, as.env(envir, enclos))
-)
-
-setMethod("eval", c("language", "List"),
-    function(expr, envir, enclos = parent.frame())
-          eval(expr, as.env(envir, enclos))
-)
-
-setMethod("with", "List",
-          function(data, expr, ...)
-          {
-            eval(substitute(expr), data, parent.frame())
-          })
 
 setMethod("within", "List",
           function(data, expr, ...)
