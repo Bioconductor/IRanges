@@ -569,6 +569,10 @@ setMethod("as.env", "Vector", function(x, enclos) {
   makeFixedColumnEnv(x, as.env(mcols(x), enclos))
 })
 
+setMethod("as.env", "NULL", function(x, enclos) {
+  new.env(parent=enclos)
+})
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining.
 ###
