@@ -654,7 +654,7 @@ as.list.List <- function(x, ...) .as.list.List(x, ...)
 setMethod("as.list", "List", as.list.List)
 
 setMethod("as.env", "List",
-          function(x, enclos = parent.frame(2)) {
+          function(x, enclos = parent.frame(2), tform = identity) {
               nms <- names(x)
               if (is.null(nms))
                   stop("cannot convert to environment when names are NULL")
@@ -662,7 +662,7 @@ setMethod("as.env", "List",
               lapply(nms,
                      function(col) {
                          colFun <- function() {
-                             val <- x[[col]]
+                             val <- tform(x[[col]])
                              rm(list=col, envir=env)
                              assign(col, val, env)
                              val

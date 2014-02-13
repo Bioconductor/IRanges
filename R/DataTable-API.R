@@ -195,12 +195,12 @@ setMethod("unique", "DataTable", unique.DataTable)
 ###
 
 setMethod("as.env", "DataTable",
-          function(x, enclos = parent.frame(2)) {
+          function(x, enclos = parent.frame(2), tform = identity) {
               env <- new.env(parent = enclos)
               lapply(colnames(x),
                      function(col) {
                          colFun <- function() {
-                             val <- x[[col]]
+                             val <- tform(x[[col]])
                              rm(list=col, envir=env)
                              assign(col, val, env)
                              val

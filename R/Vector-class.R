@@ -554,22 +554,25 @@ setMethod("as.data.frame", "Vector", as.data.frame.Vector)
 
 setGeneric("as.env", function(x, ...) standardGeneric("as.env"))
 
-makeFixedColumnEnv <- function(x, parent) {
+makeFixedColumnEnv <- function(x, parent, tform = identity) {
   env <- new.env(parent=parent)
   lapply(fixedColumnNames(x), function(nm) {
     accessor <- get(nm, parent, mode="function")
     makeActiveBinding(nm, function() {
-      accessor(x)
+      val <- tform(accessor(x))
+      rm(list=nm, envir=env)
+      assign(nm, val, env)
+      val
     }, env)
   })
   env
 }
 
-setMethod("as.env", "Vector", function(x, enclos) {
-  makeFixedColumnEnv(x, as.env(mcols(x), enclos))
+setMethod("as.env", "Vector", function(x, enclos, tform = identity) {
+  makeFixedColumnEnv(x, as.env(mcols(x), enclos, tform), tform)
 })
 
-setMethod("as.env", "NULL", function(x, enclos) {
+setMethod("as.env", "NULL", function(x, enclos, tform = identity) {
   new.env(parent=enclos)
 })
 
@@ -839,4 +842,21 @@ setMethod("aggregate", "matrix", stats:::aggregate.default)
 setMethod("aggregate", "data.frame", stats:::aggregate.data.frame)
 
 setMethod("aggregate", "ts", stats:::aggregate.ts)
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Sorting methods.
+###
+
+s4ToVector <- function(x) {
+  if (isS4(x)) {
+    as.vector(x)
+  } else {
+    x
+  }
+}
+
+sortBy <- function(x, formula, decreasing = FALSE) {
+  mf <- model.frame(formula, as.env(x, environment(formula), s4ToVector))
+  x[do.call(order, c(decreasing=decreasing, mf))]
+}
 
