@@ -8,7 +8,7 @@
 \alias{coverage,RangesList-method}
 \alias{coverage,RangedData-method}
 
-\title{Coverage across a set of ranges}
+\title{Coverage of a set of ranges}
 
 \description{
   For each position in the space underlying a set of ranges, counts the
