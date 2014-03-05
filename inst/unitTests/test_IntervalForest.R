@@ -350,33 +350,17 @@ test_IntervalForest_reduce <- function() {
                               range3,
                               range4,
                               compress=TRUE))
-    for (with.mapping in c(FALSE, TRUE)) {
-      for (drop.empty.ranges in c(FALSE, TRUE)) {
-        if (!drop.empty.ranges || with.mapping) {
-          checkException( current <- reduce(collection, drop.empty.ranges=drop.empty.ranges,
-                                      with.mapping=with.mapping), silent=TRUE)
-      
-        } else {
-          current <- reduce(collection, drop.empty.ranges=drop.empty.ranges,
-                                      with.mapping=with.mapping)
-      
-          target <- IRangesList(one=reduce(range1,
-                                         drop.empty.ranges=drop.empty.ranges,
-                                         with.mapping=with.mapping),
-                              reduce(range2,
-                                     drop.empty.ranges=drop.empty.ranges,
-                                     with.mapping=with.mapping),
-                              reduce(range3,
-                                     drop.empty.ranges=drop.empty.ranges,
-                                     with.mapping=with.mapping),
-                              reduce(range4,
-                                     drop.empty.ranges=drop.empty.ranges,
-                                     with.mapping=with.mapping),
-                              compress=TRUE)
-          checkIdentical(target, as(current,"CompressedIRangesList"))
-      }
-    }
-  }
+
+  checkException(current <- reduce(collection, drop.empty.ranges=FALSE),
+                 silent=TRUE)
+
+  current <- reduce(collection, drop.empty.ranges=TRUE)
+  target <- IRangesList(one=reduce(range1, drop.empty.ranges=TRUE),
+                        reduce(range2, drop.empty.ranges=TRUE),
+                        reduce(range3, drop.empty.ranges=TRUE),
+                        reduce(range4, drop.empty.ranges=TRUE),
+                        compress=TRUE)
+  checkIdentical(target, as(current,"CompressedIRangesList"))
 }
 
 test_IntervalForest_narrow <- function() {

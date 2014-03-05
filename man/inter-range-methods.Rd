@@ -80,13 +80,13 @@
 reduce(x, ...)
 
 \S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-       with.mapping=FALSE, with.inframe.attrib=FALSE)
+       with.revmap=FALSE, with.mapping=FALSE, with.inframe.attrib=FALSE)
 
 \S4method{reduce}{Views}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-       with.mapping=FALSE, with.inframe.attrib=FALSE)
+       with.revmap=FALSE, with.mapping=FALSE, with.inframe.attrib=FALSE)
 
 \S4method{reduce}{RangesList}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-       with.mapping=FALSE, with.inframe.attrib=FALSE)
+       with.revmap=FALSE, with.mapping=FALSE, with.inframe.attrib=FALSE)
 
 \S4method{reduce}{RangedData}(x, by=character(), drop.empty.ranges=FALSE,
        min.gapwidth=1L, with.inframe.attrib=FALSE)
@@ -125,10 +125,13 @@ disjointBins(x, ...)
     Ranges separated by a gap of at least \code{min.gapwidth} positions
     are not merged.
   }
-  \item{with.mapping}{
+  \item{with.revmap}{
     \code{TRUE} or \code{FALSE}. Should the mapping from reduced to original
     ranges be stored in the returned object? If yes, then it is stored as
-    metadata column \code{"mapping"} of type \link{IntegerList}.
+    metadata column \code{"revmap"} of type \link{IntegerList}.
+  }
+  \item{with.mapping}{
+    Deprecated. Please use the \code{with.revmap} argument instead.
   }
   \item{with.inframe.attrib}{
     \code{TRUE} or \code{FALSE}. For internal use.
@@ -278,22 +281,22 @@ range(rd, rd2)
 
 ## On a Ranges object:
 reduce(x)
-y <- reduce(x, with.mapping=TRUE)
-mcols(y)$mapping  # an IntegerList
+y <- reduce(x, with.revmap=TRUE)
+mcols(y)$revmap  # an IntegerList
 
 reduce(x, drop.empty.ranges=TRUE)
-y <- reduce(x, drop.empty.ranges=TRUE, with.mapping=TRUE)
-mcols(y)$mapping
+y <- reduce(x, drop.empty.ranges=TRUE, with.revmap=TRUE)
+mcols(y)$revmap
 
 ## Use the mapping from reduced to original ranges to split the DataFrame
 ## of original metadata columns by reduced range:
 ir0 <- IRanges(c(11:13, 2, 7:6), width=3)
 mcols(ir0) <- DataFrame(id=letters[1:6], score=1:6)
-ir <- reduce(ir0, with.mapping=TRUE)
+ir <- reduce(ir0, with.revmap=TRUE)
 ir
-mapping <- mcols(ir)$mapping
-mapping
-relist(mcols(ir0)[unlist(mapping), ], mapping)  # a SplitDataFrameList
+revmap <- mcols(ir)$revmap
+revmap
+relist(mcols(ir0)[unlist(revmap), ], revmap)  # a SplitDataFrameList
 
 ## On a RangesList object. These 4 are the same:
 res1 <- reduce(collection)

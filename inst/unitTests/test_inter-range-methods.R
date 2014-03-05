@@ -31,47 +31,47 @@ test_IRanges_reduce <- function() {
 
   x <- IRanges(1:3, width=0)
 
-  current <- reduce(x, with.mapping=TRUE)
+  current <- reduce(x, with.revmap=TRUE)
   target <- x
-  mcols(target) <- DataFrame(mapping=as(seq_along(target), "IntegerList"))
+  mcols(target) <- DataFrame(revmap=as(seq_along(target), "IntegerList"))
   checkIdentical(target, current)
 
-  current <- reduce(x, drop.empty.ranges=TRUE, with.mapping=TRUE)
+  current <- reduce(x, drop.empty.ranges=TRUE, with.revmap=TRUE)
   target <- IRanges()
-  mcols(target) <- DataFrame(mapping=as(seq_along(target), "IntegerList"))
+  mcols(target) <- DataFrame(revmap=as(seq_along(target), "IntegerList"))
   checkIdentical(target, current)
 
   x <- IRanges(c(1:4, 10:11, 11), width=c(0,1,1,0,0,0,1))
 
-  current <- reduce(x, with.mapping=TRUE)
+  current <- reduce(x, with.revmap=TRUE)
   target <- IRanges(c(1:2, 10:11), width=c(0,2,0,1))
-  mcols(target) <- DataFrame(mapping=IntegerList(1,2:4,5,6:7))
+  mcols(target) <- DataFrame(revmap=IntegerList(1,2:4,5,6:7))
   checkIdentical(target, current)
 
-  current <- reduce(x, drop.empty.ranges=TRUE, with.mapping=TRUE)
+  current <- reduce(x, drop.empty.ranges=TRUE, with.revmap=TRUE)
   target <- IRanges(c(2, 11), width=c(2,1))
-  mcols(target) <- DataFrame(mapping=IntegerList(2:3,7))
+  mcols(target) <- DataFrame(revmap=IntegerList(2:3,7))
   checkIdentical(target, current)
 
   x <- IRanges(start=c(1,2,3), end=c(5,2,8))
-  y <- reduce(x, with.mapping=TRUE)
+  y <- reduce(x, with.revmap=TRUE)
 
   target <- IRanges(start=1, end=8)
-  mcols(target) <- DataFrame(mapping=IntegerList(1:3))
+  mcols(target) <- DataFrame(revmap=IntegerList(1:3))
   checkIdentical(target, y)
 
-  mcols(target)$mapping <- as(seq_along(target), "IntegerList")
-  checkIdentical(target, reduce(y, with.mapping=TRUE))
+  mcols(target)$revmap <- as(seq_along(target), "IntegerList")
+  checkIdentical(target, reduce(y, with.revmap=TRUE))
 
   x <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
-  y <- reduce(x, with.mapping=TRUE)
+  y <- reduce(x, with.revmap=TRUE)
 
   target <- IRanges(start=c(1,15,20), end=c(5,15,100))
-  mcols(target) <- DataFrame(mapping=IntegerList(4, 1, 3:2))
+  mcols(target) <- DataFrame(revmap=IntegerList(4, 1, 3:2))
   checkIdentical(target, y)
 
-  mcols(target)$mapping <- as(seq_along(target), "IntegerList")
-  checkIdentical(target, reduce(y, with.mapping=TRUE))
+  mcols(target)$revmap <- as(seq_along(target), "IntegerList")
+  checkIdentical(target, reduce(y, with.revmap=TRUE))
 
   x <- IRanges(start=c(7,3,-2,6,7,-10,-2,3), width=c(3,1,0,0,0,0,8,0))
   ## Before reduction:
@@ -122,22 +122,22 @@ test_RangesList_reduce <- function() {
                               range3,
                               range4,
                               compress=compress)
-    for (with.mapping in c(FALSE, TRUE)) {
+    for (with.revmap in c(FALSE, TRUE)) {
       for (drop.empty.ranges in c(FALSE, TRUE)) {
         current <- reduce(collection, drop.empty.ranges=drop.empty.ranges,
-                                      with.mapping=with.mapping)
+                                      with.revmap=with.revmap)
         target <- IRangesList(one=reduce(range1,
                                          drop.empty.ranges=drop.empty.ranges,
-                                         with.mapping=with.mapping),
+                                         with.revmap=with.revmap),
                               reduce(range2,
                                      drop.empty.ranges=drop.empty.ranges,
-                                     with.mapping=with.mapping),
+                                     with.revmap=with.revmap),
                               reduce(range3,
                                      drop.empty.ranges=drop.empty.ranges,
-                                     with.mapping=with.mapping),
+                                     with.revmap=with.revmap),
                               reduce(range4,
                                      drop.empty.ranges=drop.empty.ranges,
-                                     with.mapping=with.mapping),
+                                     with.revmap=with.revmap),
                               compress=compress)
         checkIdentical(target, current)
       }

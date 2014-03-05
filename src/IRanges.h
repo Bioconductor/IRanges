@@ -987,7 +987,7 @@ SEXP Ranges_reduce(
 	SEXP x_width,
 	SEXP drop_empty_ranges,
 	SEXP min_gapwidth,
-	SEXP with_mapping,
+	SEXP with_revmap,
 	SEXP with_inframe_start
 );
 
@@ -995,7 +995,7 @@ SEXP CompressedIRangesList_reduce(
 	SEXP x,
 	SEXP drop_empty_ranges,
 	SEXP min_gapwidth,
-	SEXP with_mapping
+	SEXP with_revmap
 );
 
 SEXP IRanges_gaps(
