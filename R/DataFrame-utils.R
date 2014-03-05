@@ -68,12 +68,13 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
     factors <- unlist(lapply(as.list(df, use.names = FALSE), is.factor))
     cols <- lapply(seq_len(length(df)), function(i) {
       cols <- lapply(args, `[[`, cn[i])
-      isRle <- sapply(cols, is, "Rle")
-      if (any(isRle) && !all(isRle)) # would fail dispatch to c,Rle
-        cols <- lapply(cols, as.vector)
       if (factors[i]) { # combine factor levels, coerce to character
         levs <- unique(unlist(lapply(cols, levels), use.names=FALSE))
         cols <- lapply(cols, as.character)
+      } else {
+        isRle <- sapply(cols, is, "Rle")
+        if (any(isRle) && !all(isRle)) # would fail dispatch to c,Rle
+          cols <- lapply(cols, as.vector)
       }
       rectangular <- length(dim(cols[[1]])) == 2L
       if (rectangular) {
