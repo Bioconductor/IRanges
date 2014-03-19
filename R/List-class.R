@@ -392,7 +392,7 @@ subset_List_by_List <- function(x, i)
     value_len <- length(value)
     if (value_len == i_len)
         return(value)
-    if (value_len %% i_len != 0L)
+    if (i_len %% value_len != 0L)
         warning("number of values supplied is not a sub-multiple ",
                 "of the number of values to be replaced")
     rep(value, length.out=i_len)
