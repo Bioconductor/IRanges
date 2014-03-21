@@ -901,6 +901,49 @@ window.Rle <- function(x, start=NA, end=NA, width=NA,
 setMethod("window", "Rle", window.Rle)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Set methods
+###
+### The return values of these do not have any duplicated values, so
+### it would obviously be more efficient to return plain vectors. That
+### might violate user expectations though.
+
+setMethod("union", c("Rle", "Rle"), function(x, y) {
+  Rle(union(runValue(x), runValue(y)))
+})
+
+setMethod("union", c("ANY", "Rle"), function(x, y) {
+  Rle(union(as.vector(x), runValue(y)))
+})
+
+setMethod("union", c("Rle", "ANY"), function(x, y) {
+  Rle(union(runValue(x), as.vector(y)))
+})
+
+setMethod("intersect", c("Rle", "Rle"), function(x, y) {
+  Rle(intersect(runValue(x), runValue(y)))
+})
+
+setMethod("intersect", c("ANY", "Rle"), function(x, y) {
+  Rle(intersect(as.vector(x), runValue(y)))
+})
+
+setMethod("intersect", c("Rle", "ANY"), function(x, y) {
+  Rle(intersect(runValue(x), as.vector(y)))
+})
+
+setMethod("setdiff", c("Rle", "Rle"), function(x, y) {
+  Rle(setdiff(runValue(x), runValue(y)))
+})
+
+setMethod("setdiff", c("ANY", "Rle"), function(x, y) {
+  Rle(setdiff(as.vector(x), runValue(y)))
+})
+
+setMethod("setdiff", c("Rle", "ANY"), function(x, y) {
+  Rle(setdiff(runValue(x), as.vector(y)))
+})
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other logical data methods
 ###
 
