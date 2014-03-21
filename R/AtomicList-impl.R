@@ -897,8 +897,20 @@ setMethod("runq", "RleList",
 ### Character
 ###
 
-setAtomicListMethod("nchar", inputBaseClass = "CharacterList",
-                    outputBaseClass = "IntegerList", applyToUnlist = TRUE)
+nchar_CompressedList <- function(x, type="chars", allowNA=FALSE)
+{
+        unlisted_x <- unlist(x, use.names=FALSE)
+        unlisted_ans <- nchar(unlisted_x, type=type, allowNA=allowNA)
+        relist(unlisted_ans, x)
+}
+
+setMethod("nchar", "CompressedCharacterList", nchar_CompressedList)
+setMethod("nchar", "SimpleCharacterList", nchar_CompressedList)
+
+setMethod("nchar", "CompressedRleList", nchar_CompressedList)
+setMethod("nchar", "SimpleRleList", nchar_CompressedList)
+
+
 ## need vectorized start, end
 ##setAtomicListMethod("substr")
 ##setAtomicListMethod("substring")
