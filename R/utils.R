@@ -28,7 +28,11 @@ AEbufs.free <- function()
 }
 
 top_prenv <- function(x) {
-  .Call2("top_prenv", substitute(x), parent.frame(), PACKAGE="IRanges")
+  sym <- substitute(x)
+  if (!is.name(sym)) {
+    stop("'x' did not substitute to a symbol")
+  }
+  .Call2("top_prenv", sym, parent.frame(), PACKAGE="IRanges")
 }
 
 ### Exported!
