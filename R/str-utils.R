@@ -17,6 +17,10 @@ setMethod("unstrsplit", "list",
     function(x, sep="") .Call2("unstrsplit_list", x, sep, PACKAGE="IRanges")
 )
 
+setMethod("unstrsplit", "character",
+    function(x, sep="") x
+)
+
 ### Safe alternative to 'strsplit(x, NULL, fixed=TRUE)[[1L]]'.
 safeExplode <- function(x)
 {
