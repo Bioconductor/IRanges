@@ -189,7 +189,7 @@ setMethod("flank", "Ranges",
         width <- recycleIntegerArg(width, "width", length(x))
         if (!is.logical(start) || anyMissing(start))
             stop("'start' must be logical without NA's")
-        start <- recycleVector(start, length(x))
+        start <- recycleVector(unname(start), length(x))
         if (!isTRUEorFALSE(both))
             stop("'both' must be TRUE or FALSE")
         if (both) {
