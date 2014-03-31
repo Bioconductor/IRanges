@@ -77,7 +77,11 @@ coercerToClass <- function(class) {
     .as <- get(paste0("as.", class))
   else .as <- function(from) as(from, class)
   function(from) {
-    setNames(.as(from), names(from))
+    to <- .as(from)
+    if (!identical(names(from), names(to))) {
+      names(to) <- names(from)
+    }
+    to
   }
 }
 
