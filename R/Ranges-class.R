@@ -93,11 +93,7 @@ as.data.frame.Ranges <- function(x, row.names=NULL, optional=FALSE, ...)
 setMethod("as.data.frame", "Ranges", as.data.frame.Ranges)
 
 setMethod("as.integer", "Ranges",
-    function(x, ...)
-    {
-        x <- x[width(x) > 0L]
-        mseq(start(x), end(x))
-    }
+    function(x, ...) fancy_mseq(width(x), offset=start(x)-1L)
 )
 
 setMethod("unlist", "Ranges",
