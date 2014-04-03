@@ -39,8 +39,6 @@
 \alias{revElements,CompressedList-method}
 
 % coercion
-\alias{as.list,CompressedList-method}
-\alias{as.list.CompressedList}
 \alias{as.list,SimpleList-method}
 \alias{as.list.SimpleList}
 \alias{unlist,CompressedList-method}

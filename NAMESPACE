@@ -65,7 +65,6 @@ S3method(as.data.frame, Vector)
 
 S3method(as.list, List)
 S3method(as.list, SimpleList)
-S3method(as.list, CompressedList)
 S3method(as.list, Rle)
 S3method(as.list, CompressedNormalIRangesList)
 S3method(as.list, Hits)
@@ -134,7 +133,6 @@ export(
 
     as.list.List,
     as.list.SimpleList,
-    as.list.CompressedList,
     as.list.Rle,
     as.list.CompressedNormalIRangesList,
     as.list.Hits,

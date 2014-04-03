@@ -363,17 +363,6 @@ setMethod("revElements", "CompressedList",
 ### Coercion.
 ###
 
-.as.list.CompressedList <- function(x, use.names = TRUE)
-{
-    .CompressedList.list.subscript(X = x,
-                                   INDEX = seq_len(length(x)),
-                                   USE.NAMES = use.names,
-                                   COMPRESS = FALSE)
-}
-### S3/S4 combo for as.list.CompressedList
-as.list.CompressedList <- function(x, ...) .as.list.CompressedList(x, ...)
-setMethod("as.list", "CompressedList", as.list.CompressedList)
-
 setMethod("unlist", "CompressedList",
     function(x, recursive=TRUE, use.names=TRUE)
     {
