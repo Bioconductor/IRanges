@@ -171,7 +171,10 @@ setMethod("getListElement", "CompressedList",
                                              error.if.nomatch=FALSE)
         if (is.na(i))
             return(NULL)
-        .CompressedList.list.subscript(X=x, INDEX=i, USE.NAMES=FALSE)
+        unlisted_x <- unlist(x, use.names=FALSE)
+        x_partitioning <- PartitioningByEnd(x)
+        i <- IRanges(start(x_partitioning)[i], end(x_partitioning)[i])
+        extractROWS(unlisted_x, i)
     }
 )
 
