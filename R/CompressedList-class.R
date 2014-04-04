@@ -103,67 +103,6 @@ setMethod("extractROWS", "CompressedList",
     }
 )
 
-.CompressedList.list.subscript <-
-function(X, INDEX, USE.NAMES = TRUE, COMPRESS = missing(FUN), FUN = identity,
-         ...) {
-    k <- length(INDEX)
-    nonZeroLength <- elementLengths(X)[INDEX] > 0L
-    whichNonZeroLength <- which(nonZeroLength)
-    kOK <- length(whichNonZeroLength)
-    if ((k > 0) && all(nonZeroLength)) {
-        zeroLengthElt <- NULL
-    } else {
-        zeroLengthElt <- FUN(extractROWS(X@unlistData, integer(0)), ...)
-    }
-    useFastSubset <- (is.vector(X@unlistData) || is(X@unlistData, "Vector"))
-    if (!COMPRESS && (k == 0)) {
-        elts <- list()
-    } else if (COMPRESS && (kOK == 0)) {
-        elts <- zeroLengthElt
-    } else if(COMPRESS && missing(FUN) && useFastSubset) {
-        nzINDEX <- INDEX[whichNonZeroLength]
-        elts <-
-          extractROWS(X@unlistData,
-                      IRanges(start=start(X@partitioning),
-                              width=width(X@partitioning))[nzINDEX])
-    } else {
-        elts <- rep(list(zeroLengthElt), k)
-        if (kOK > 0) {
-            nzINDEX <- INDEX[whichNonZeroLength]
-            eltStarts <- start(X@partitioning)[nzINDEX]
-            eltEnds <- end(X@partitioning)[nzINDEX]
-            oldValidityStatus <- disableValidity()
-            disableValidity(TRUE)
-            on.exit(disableValidity(oldValidityStatus))
-            if (useFastSubset) {
-                elts[whichNonZeroLength] <-
-                  lapply(seq_len(kOK), function(j)
-                         FUN(extractROWS(X@unlistData,
-                                         IRanges(eltStarts[j], eltEnds[j])),
-                             ...))
-            } else {
-                elts[whichNonZeroLength] <-
-                  lapply(seq_len(kOK), function(j)
-                         FUN(extractROWS(X@unlistData,
-                                         eltStarts[j]:eltEnds[j]), ...))
-            }
-            disableValidity(oldValidityStatus)
-        }
-        if (COMPRESS) {
-            elts <- compress_listData(elts)
-        } else {
-            for (i in seq_len(length(elts))) {
-                obj <- elts[[i]]
-                if (isS4(obj) && !isTRUE(validObject(obj, test = TRUE)))
-                    stop("invalid output element of class \"", class(obj), "\"")
-            }
-            if (USE.NAMES)
-                names(elts) <- names(X)[INDEX]
-        }
-    }
-    elts
-}
-
 setMethod("getListElement", "CompressedList",
     function(x, i, exact=TRUE)
     {
@@ -274,18 +213,57 @@ setMethod("c", "CompressedList",
 ### Looping.
 ###
 
+### Cannot really avoid the cost of extracting X[[i]] for all valid i but tries
+### to minimize this cost by using 2 tricks:
+###   1. Avoids looping on values of i for which X[[i]] has length 0. Instead
+###      FUN(X[[i]], ...) is computed only once (because it's the same for all
+###      these values of i) and placed at the corresponding positions in the
+###      returned list.
+###   2. Turn off object validation during the main loop. Note that there is no
+###      reason to restrict this trick to CompressedList objects and the same
+###      trick could be used in the "lapply" method for List objects.
+### Does NOT propagate the names.
+lapply_CompressedList <- function(X, FUN, ...)
+{
+    FUN <- match.fun(FUN)
+    ans <- vector(mode="list", length=length(X))
+    unlisted_X <- unlist(X, use.names=FALSE)
+    X_partitioning <- PartitioningByEnd(X)
+    X_elt_width <- width(X_partitioning)
+    empty_idx <- which(X_elt_width == 0L)
+    if (length(empty_idx) != 0L) 
+        ans[empty_idx] <- list(FUN(extractROWS(unlisted_X, integer(0)), ...))
+    non_empty_idx <- which(X_elt_width != 0L)
+    if (length(non_empty_idx) == 0L)
+        return(ans)
+    X_elt_start <- start(X_partitioning)
+    X_elt_end <- end(X_partitioning)
+    old_validity_status <- disableValidity()
+    disableValidity(TRUE)
+    on.exit(disableValidity(old_validity_status))
+    ans[non_empty_idx] <-
+      lapply(non_empty_idx,
+             function(i)
+                 FUN(extractROWS(unlisted_X,
+                                 IRanges(X_elt_start[i], X_elt_end[i])),
+                     ...))
+    disableValidity(old_validity_status)
+    for (i in non_empty_idx) {
+        obj <- ans[[i]]
+        if (isS4(obj) && !isTRUE(validObject(obj, test=TRUE)))
+            stop("invalid output element of class \"", class(obj), "\"")
+    }
+    ans
+}
+
 setMethod("lapply", "CompressedList",
-          function(X, FUN, ...)
-          {
-              if (length(X) == 0)
-                  list()
-              else
-                  .CompressedList.list.subscript(X = X,
-                                                 INDEX = seq_len(length(X)),
-                                                 USE.NAMES = TRUE,
-                                                 COMPRESS = FALSE,
-                                                 FUN = match.fun(FUN), ...)
-          })
+    function(X, FUN, ...)
+    {
+        ans <- lapply_CompressedList(X, FUN, ...)
+        names(ans) <- names(X)
+        ans
+    }
+)
 
 setMethod("aggregate", "CompressedList",
           function(x, by, FUN, start = NULL, end = NULL, width = NULL,
@@ -329,12 +307,7 @@ setMethod("aggregate", "CompressedList",
 
 setMethod("endoapply", "CompressedList",
           function(X, FUN, ...) {
-              .updateCompressedList(X,
-                                    .CompressedList.list.subscript(X = X,
-                                              INDEX = seq_len(length(X)),
-                                              USE.NAMES = FALSE,
-                                              COMPRESS = FALSE,
-                                              FUN = match.fun(FUN), ...))
+              .updateCompressedList(X, lapply_CompressedList(X, FUN, ...))
           })
 
 setMethod("mendoapply", "CompressedList",

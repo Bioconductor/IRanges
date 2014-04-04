@@ -431,15 +431,16 @@ as.data.frame.RangesList <- function(x, row.names=NULL, optional=FALSE, ...)
 }
 setMethod("as.data.frame", "RangesList", as.data.frame.RangesList)
 
-.as.list.CompressedNormalIRangesList <- function(x, use.names = TRUE)
-{
-    .CompressedList.list.subscript(X = x,
-                                   INDEX = seq_len(length(x)),
-                                   USE.NAMES = use.names,
-                                   FUN = newNormalIRangesFromIRanges,
-                                   COMPRESS = FALSE)
-}
 ### S3/S4 combo for as.list.CompressedNormalIRangesList
+.as.list.CompressedNormalIRangesList <- function(x, use.names=TRUE)
+{
+    if (!isTRUEorFALSE(use.names))
+        stop("'use.names' must be TRUE or FALSE")
+    ans <- lapply_CompressedList(x, newNormalIRangesFromIRanges)
+    if (use.names)
+        names(ans) <- names(x)
+    ans
+}
 as.list.CompressedNormalIRangesList <- function(x, ...)
     .as.list.CompressedNormalIRangesList(x, ...)
 setMethod("as.list", "CompressedNormalIRangesList",
