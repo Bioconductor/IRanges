@@ -535,6 +535,44 @@ setReplaceMethod("$", "List",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Simple helper functions for some common subsetting operations.
+###
+
+.normarg_n <- function(n, x_eltlens)
+{
+    if (!is.numeric(n))
+        stop("'n' must be an integer vector")
+    if (!is.integer(n))
+        n <- as.integer(n)
+    if (any(is.na(n)))
+        stop("'n' cannot contain NAs")
+    n <- pmin(x_eltlens, n)
+    neg_idx <- which(n < 0L)
+    if (length(neg_idx) != 0L)
+        n[neg_idx] <- pmax(n[neg_idx] + x_eltlens[neg_idx], 0L)
+    n
+}
+
+phead <- function(x, n=6L)
+{
+    x_eltlens <- unname(elementLengths(x))
+    n <- .normarg_n(n, x_eltlens)
+    unlisted_i <- IRanges(start=1L, width=n)
+    i <- relist(unlisted_i, PartitioningByEnd(seq_along(x)))
+    x[i]
+}
+
+ptail <- function(x, n=6L)
+{
+    x_eltlens <- unname(elementLengths(x))
+    n <- .normarg_n(n, x_eltlens)
+    unlisted_i <- IRanges(end=x_eltlens, width=n)
+    i <- relist(unlisted_i, PartitioningByEnd(seq_along(x)))
+    x[i]
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### compareRecursively()
 ###
 ### NOT exported!
