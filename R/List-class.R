@@ -560,7 +560,7 @@ phead <- function(x, n=6L)
 {
     x_eltlens <- unname(elementLengths(x))
     n <- .normarg_n(n, x_eltlens)
-    unlisted_i <- IRanges(start=1L, width=n)
+    unlisted_i <- IRanges(start=rep.int(1L, length(n)), width=n)
     i <- relist(unlisted_i, PartitioningByEnd(seq_along(x)))
     x[i]
 }
