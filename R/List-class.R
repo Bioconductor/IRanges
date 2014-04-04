@@ -538,6 +538,9 @@ setReplaceMethod("$", "List",
 ### Simple helper functions for some common subsetting operations.
 ###
 
+### phead() and ptail(): "parallel" versions of head() and tail() for List
+### objects. They're just fast equivalents of 'mapply(head, x, n)' and
+### 'mapply(tail, x, n)', respectively.
 .normarg_n <- function(n, x_eltlens)
 {
     if (!is.numeric(n))
