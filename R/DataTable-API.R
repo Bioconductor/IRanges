@@ -46,7 +46,7 @@ setMethod("subset", "DataTable",
               if (missing(subset)) 
                   i <- TRUE
               else {
-                  i <- eval(substitute(subset), x, top_prenv(subset))
+                  i <- safeEval(substitute(subset), x, top_prenv(subset))
                   i <- try(as.logical(i), silent=TRUE)
                   if (inherits(i, "try-error"))
                     stop("'subset' must be coercible to logical")

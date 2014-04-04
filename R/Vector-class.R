@@ -468,11 +468,11 @@ setGeneric("fixedColumnNames", function(x) standardGeneric("fixedColumnNames"))
 setMethod("fixedColumnNames", "ANY", function(x) character())
 
 setMethod("subset", "Vector",
-          function(x, subset, select, drop = FALSE, ...) {
+          function(x, subset, select, drop = FALSE) {
             if (missing(subset)) 
               i <- TRUE
             else {
-              i <- eval(substitute(subset), x, top_prenv(subset))
+              i <- safeEval(substitute(subset), x, top_prenv(subset))
               i <- try(as.logical(i), silent = TRUE)
               if (inherits(i, "try-error")) 
                 stop("'subset' must be coercible to logical")
@@ -486,6 +486,28 @@ setMethod("subset", "Vector",
             }
             x[i, drop = drop]
           })
+
+safeEval <- function(expr, envir, enclos) {
+  expr <- eval(call("bquote", expr, enclos))
+  if (!identical(enclos, .GlobalEnv)) {
+    enclos <- makeGlobalWarningEnv(expr, envir, enclos)
+  }
+  eval(expr, envir, enclos)
+}
+
+makeGlobalWarningEnv <- function(expr, envir, enclos) {
+  globals <- setdiff(all.names(expr, functions=FALSE), names(envir))
+  env <- new.env(parent=enclos)
+  lapply(globals, function(g) {
+    makeActiveBinding(g, function() {
+      val <- get(g, enclos)
+      warning("Symbol '", g, "' resolved from calling frame; ",
+              "escape with .(", g, ") for safety.")
+      val
+    }, env)
+  })
+  env
+}
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Evaluating.
