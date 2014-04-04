@@ -17,10 +17,6 @@
 \alias{width,CompressedIRangesList-method}
 \alias{start,CompressedIRangesList-method}
 
-% subset
-\alias{[,SimpleIRangesList-method}
-\alias{[,CompressedIRangesList-method}
-
 % coercion
 \alias{unlist,IRangesList-method}
 

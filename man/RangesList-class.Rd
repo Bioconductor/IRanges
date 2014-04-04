@@ -21,10 +21,6 @@
 \alias{universe}
 \alias{universe<-}
 
-% subset
-\alias{[,RangesList-method}
-\alias{[,SimpleRangesList-method}
-
 % coercion
 \alias{as.data.frame.RangesList}
 \alias{as.data.frame,RangesList-method}
@@ -111,22 +107,6 @@
       except every argument in \code{...} must be derived from
       \code{Ranges}. The universe is specified by the \code{universe}
       parameter, which should be a single string or NULL, to leave unspecified. 
-    }
-  }
-}
-
-\section{Subsetting}{
-  In the code snippets below, \code{x} is a \code{RangesList} object.
-
-  \describe{
-    \item{}{
-      \code{x[i]}: Subset \code{x} by index \code{i}, with the
-      same semantics as a basic \code{\linkS4class{Vector}},
-      except \code{i} may itself be a \code{RangesList}, in which case
-      only the ranges in \code{x} that overlap with those in \code{i}
-      are kept. See the
-      \code{\link[=findOverlaps,RangesList,RangesList-method]{findOverlaps}}
-      method for more details.
     }
   }
 }

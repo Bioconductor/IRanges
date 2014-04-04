@@ -283,22 +283,6 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
 ### Subsetting.
 ###
 
-### Support subsetting by another RangesList
-rangesListSingleSquareBracket <- function(x, i, j, ..., drop)
-{
-  if (!missing(j) || length(list(...)) > 0)
-    stop("invalid subsetting")
-  if (missing(i))
-    return(x)
-  if (is(i, "RangesList"))
-    stop("'[' subsetting by RangesList is defunct.\n",
-         "Use 'subsetByOverlaps' instead.")
-  callNextMethod(x, i)
-}
-setMethod("[", "SimpleRangesList", rangesListSingleSquareBracket)
-setMethod("[", "CompressedIRangesList", rangesListSingleSquareBracket)
-setMethod("[", "SimpleIRangesList", rangesListSingleSquareBracket)
-
 setMethod("getListElement", "CompressedNormalIRangesList",
     function(x, i, exact=TRUE) newNormalIRangesFromIRanges(callNextMethod())
 )
