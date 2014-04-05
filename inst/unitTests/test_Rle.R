@@ -141,7 +141,7 @@ test_Rle_general <- function() {
 
     checkIdentical(splitRanges(Rle(letters, 1:26)),
                    split(IRanges(end = cumsum(1:26), width = 1:26), letters))
-    checkIdentical(as.vector(subset(xRle, rep(c(TRUE, FALSE), length.out = length(x)))),
+    checkIdentical(as.vector(subset(xRle, rep(c(TRUE, FALSE), length.out = length(.(x))))),
                    subset(x, rep(c(TRUE, FALSE), length.out = length(x))))
     checkIdentical(summary(x), summary(xRle))
     checkIdentical(tail(x, 8), as.vector(tail(xRle, 8)))

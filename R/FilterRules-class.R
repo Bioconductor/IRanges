@@ -228,7 +228,7 @@ setMethod("eval", signature(expr="FilterRules", envir="ANY"),
                 stop("filter rule evaluated to inconsistent length: ",
                      names(rule)[i])
               if (length(rules) > 1L)
-                envir <- subset(envir, val)
+                envir <- subset(envir, .(val))
               result[result] <- val
             }
             result
@@ -255,7 +255,7 @@ setMethod("evalSeparately", "FilterRules",
             m <- do.call(cbind, lapply(inds, function(i) {
               result <- eval(expr[i], envir = envir, enclos = enclos)
               if (serial) {
-                envir <<- subset(envir, result)
+                envir <<- subset(envir, .(result))
                 passed[passed] <<- result
                 passed
               } else result
@@ -267,7 +267,7 @@ setGeneric("subsetByFilter",
            function(x, filter, ...) standardGeneric("subsetByFilter"))
 
 setMethod("subsetByFilter", c("ANY", "FilterRules"), function(x, filter) {
-  subset(x, eval(filter, x))
+  subset(x, .(eval(filter, x)))
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
