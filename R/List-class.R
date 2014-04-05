@@ -714,29 +714,22 @@ setMethod("as.env", "List",
           })
 
 listClassName <- function(impl, element.type) {
-  if (is.null(impl))
-    impl <- ""
+  listClass <- paste0(if (is.null(impl)) "Simple" else impl, "List")
   if (!is.null(element.type)) {
-    cl <- c(element.type, names(getClass(element.type)@contains), "")
+    cl <- c(element.type, names(getClass(element.type)@contains))
     cl <- capitalize(cl)
-  } else {
-    cl <- ""
+    listClass <- c(paste0(cl, "List"), paste0(cl, "Set"),
+                   paste0(impl, cl, "List"), listClass)
   }
-  listClass <- c(paste0(cl, "List"), paste0(impl, cl, "List"))
   clExists <- which(sapply(listClass, isClass) &
                     sapply(listClass, extends, paste0(impl, "List")))
-  if (length(clExists) == 0L) {
-    stop("Could not find a '", impl,
-         "List' subclass for values of type ",
-         paste("'", cl, "'", collapse = ", "))
-  }
   listClass[[clExists[[1L]]]]
 }
 
 selectListClassName <- function(x) {
   cn <- listClassName("Compressed", x)
   if (cn == "CompressedList")
-    cn <- listClassName("Simple", x)
+    cn <- listClassName(NULL, x)
   cn
 }
 
