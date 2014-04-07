@@ -228,7 +228,7 @@ setMethod("eval", signature(expr="FilterRules", envir="ANY"),
                 stop("filter rule evaluated to inconsistent length: ",
                      names(rule)[i])
               if (length(rules) > 1L)
-                envir <- subset(envir, .(val))
+                envir <- extractROWS(envir, val)
               result[result] <- val
             }
             result
