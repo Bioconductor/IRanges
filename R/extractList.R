@@ -112,6 +112,7 @@ setMethod("relist", c("Vector", "list"),
 ### splitAsList() and split()
 ###
 
+### 'f' is assumed to be an integer vector with no NAs.
 .splitAsList_by_integer <- function(x, f, drop)
 {
     if (length(f) > NROW(x))
@@ -127,6 +128,7 @@ setMethod("relist", c("Vector", "list"),
     relist(x, f)
 }
 
+### 'f' is assumed to be a factor with no NAs.
 .splitAsList_by_factor <- function(x, f, drop)
 {
     x_NROW <- NROW(x)
@@ -146,6 +148,7 @@ setMethod("relist", c("Vector", "list"),
     relist(x, f)
 }
 
+### 'f' is assumed to be an integer-Rle object with no NAs.
 .splitAsList_by_integer_Rle <- function(x, f, drop)
 {
     if (length(f) > NROW(x))
@@ -164,6 +167,7 @@ setMethod("relist", c("Vector", "list"),
     relist(x, f)
 }
 
+### 'f' is assumed to be an Rle object with no NAs.
 .splitAsList_by_Rle <- function(x, f, drop)
 {
     x_NROW <- NROW(x)
@@ -213,6 +217,12 @@ splitAsList <- function(x, f, drop=FALSE)
         if (x_NROW %% f_len != 0L)
             warning("'NROW(x)' is not a multiple of 'length(f)'")
         f <- rep(f, length.out=x_NROW)
+    }
+    na_idx <- which(is.na(f))
+    if (length(na_idx) != 0L) {
+        keep_idx <- seq_len(x_NROW)[-na_idx]
+        x <- extractROWS(x, keep_idx)
+        f <- f[keep_idx]
     }
     if (is.integer(f))
         return(.splitAsList_by_integer(x, f, drop))
