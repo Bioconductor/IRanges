@@ -208,7 +208,7 @@ setMethod("extractROWS", "NULL", function(x, i) NULL)
 
 .extractROWSWithBracket <- function(x, i) {
   if (is(i, "Ranges"))
-    i <- extractROWS(seq_len(nrow(x)), i)
+    i <- extractROWS(seq_len(NROW(x)), i)
   ## dynamically call [i,,,..,drop=FALSE] with as many "," as length(dim)-1
   ndim <- max(length(dim(x)), 1L)
   i <- normalizeSingleBracketSubscript(i, x, byrow = ndim > 1L)
