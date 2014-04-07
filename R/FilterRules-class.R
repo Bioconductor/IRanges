@@ -267,7 +267,7 @@ setGeneric("subsetByFilter",
            function(x, filter, ...) standardGeneric("subsetByFilter"))
 
 setMethod("subsetByFilter", c("ANY", "FilterRules"), function(x, filter) {
-  subset(x, .(eval(filter, x)))
+  extractROWS(x, eval(filter, x))
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
