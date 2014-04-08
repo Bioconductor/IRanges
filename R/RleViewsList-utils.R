@@ -34,7 +34,7 @@ setMethod("viewApply", "RleViewsList",
     } else {
         if (is.null(outputListType)) {
             valuesClass <- class(runValue(subject(x[[1L]])))
-            if (valuesClass == "integer")
+            if (valuesClass == "integer" || valuesClass == "logical")
                 outputListType <- "SimpleIntegerList"
             else if (valuesClass == "numeric")
                 outputListType <- "SimpleNumericList"
