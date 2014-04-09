@@ -110,6 +110,9 @@ orderInteger <- function(x, decreasing=FALSE, na.last=NA)
 {
     if (is.factor(arg))
         arg <- as.integer(arg)
+    else if (is(arg, "Rle") &&
+             (is(runValue(arg), "integer") || is(runValue(arg), "factor")))
+        arg <- as.integer(arg)
     else if (!is.integer(arg))
         stop("'", argname, "' must be an integer vector or factor")
     arg
