@@ -97,6 +97,12 @@
 \alias{as.data.frame.Vector}
 \alias{as.data.frame,Vector-method}
 
+\alias{with,Vector-method}
+\alias{eval,expression,Vector-method}
+\alias{eval,language,Vector-method}
+\alias{as.env,Vector-method}
+\alias{as.env,NULL-method}
+
 \title{Vector objects}
 
 \description{
@@ -163,6 +169,17 @@
       returned \link{DataTable} object.
       When setting the metadata columns, the supplied value must be \code{NULL}
       or a \link{DataTable} object holding element-wise metadata.
+    }
+    \item{}{
+      \code{with(x, expr)}: Evaluates \code{expr} within
+      \code{as.env(x)} via \code{eval(x)}.
+    }
+    \item{}{
+      \code{eval(expr, envir, enclos=parent.frame())}: Evaluates
+      \code{expr} within \code{envir}, where \code{envir} is coerced to
+      an environment with \code{as.env(envir, enclos)}. The \code{expr}
+      is first processed with \code{\link{bquote}}, such that any
+      escaped symbols are directly resolved in the calling frame.
     }
     \item{}{
        \code{elementMetadata(x, use.names=FALSE)},
@@ -343,6 +360,9 @@
       \code{as.vector}. Note that many \code{Vector} derivatives do not
       support \code{as.vector}, so this coercion is possible only for
       certain types.
+    }
+    \item{}{\code{as.env(x)}: Constructs an environment object
+      containing the elements of \code{mcols(x)}.
     }
   }
 }

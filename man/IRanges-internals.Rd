@@ -11,6 +11,8 @@
 \alias{class:functionORNULL}
 \alias{functionORNULL-class}
 \alias{functionORNULL}
+\alias{class:expressionORfunction}
+\alias{expressionORfunction-class}
 \alias{coerce,ANY,vector-method}
 
 % More low-level helper functions (from R/normarg-utils.R):
@@ -24,6 +26,9 @@
 \alias{recycleNumericArg}
 \alias{fold}
 
+% For implementation of IRanges extensions
+\alias{fixedColumnNames}
+\alias{fixedColumnNames,ANY-method}
 
 \title{IRanges internals}
 

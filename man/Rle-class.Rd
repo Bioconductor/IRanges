@@ -153,6 +153,15 @@
 \alias{levels,Rle-method}
 \alias{levels<-,Rle-method}
 
+\alias{setdiff,Rle,Rle-method}
+\alias{setdiff,ANY,Rle-method}
+\alias{setdiff,Rle,ANY-method}
+\alias{intersect,Rle,Rle-method}
+\alias{intersect,ANY,Rle-method}
+\alias{intersect,Rle,ANY-method}
+\alias{union,Rle,Rle-method}
+\alias{union,ANY,Rle-method}
+\alias{union,Rle,ANY-method}
 
 \title{Rle objects}
 
@@ -861,6 +870,25 @@
     \item{}{
       \code{nlevels(x)}:
       Returns the number of factor levels.
+    }
+  }
+}
+
+\section{Set Operations}{
+  In the code snippets below, \code{x} and \code{y} are Rle object or
+  some other vector-like object:
+  \describe{
+    \item{}{
+      \code{setdiff(x, y)}: Returns the unique elements in
+      \code{x} that are not in \code{y}.
+    }
+    \item{}{
+      \code{union(x, y)}:
+      Returns the unique elements in either \code{x} or \code{y}.
+    }
+    \item{}{
+      \code{intersect(x, y)}:
+      Returns the unique elements in both \code{x} and \code{y}.
     }
   }
 }

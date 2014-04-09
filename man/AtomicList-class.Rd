@@ -244,6 +244,8 @@
 \alias{runValue,RleList-method}
 \alias{runLength,CompressedRleList-method}
 \alias{runValue,CompressedRleList-method}
+\alias{runValue<-,CompressedRleList-method}
+\alias{runValue<-,SimpleRleList-method}
 
 \alias{ranges,RleList-method}
 \alias{ranges,CompressedRleList-method}
@@ -389,8 +391,8 @@
     \item{}{\code{runLength(x)}: Gets the run lengths of each element of the
       list, as an IntegerList.
     }
-    \item{}{\code{runValue(x)}: Gets the run values of each element of the
-      list, as an AtomicList.
+    \item{}{\code{runValue(x)}, \code{runValue(x) <- value}: Gets or
+      sets the run values of each element of the list, as an AtomicList.
     }
     \item{}{\code{ranges(x)}: Gets the run ranges as a
       \code{RangesList}.

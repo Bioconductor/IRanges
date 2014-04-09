@@ -2,6 +2,7 @@
 
 \alias{unstrsplit}
 \alias{unstrsplit,list-method}
+\alias{unstrsplit,character-method}
 \alias{safeExplode}
 \alias{strsplitAsListOfIntegerVectors}
 \alias{svn.time}
@@ -23,7 +24,7 @@ strsplitAsListOfIntegerVectors(x, sep=",")  # 'sep' default is ","
 \arguments{
   \item{x}{
     For \code{unstrsplit}: A list-like object where each list element is
-    a character vector.
+    a character vector, or a character vector (identity).
 
     For \code{strsplitAsListOfIntegerVectors}: A character vector where
     each element is a string containing comma-separated decimal integer values.
