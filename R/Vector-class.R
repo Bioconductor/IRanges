@@ -35,6 +35,7 @@ setMethod("showAsCell", "ANY", function(object) {
   if (length(dim(object)) > 2)
     dim(object) <- c(nrow(object), prod(tail(dim(object), -1)))
   if (NCOL(object) > 1) {
+    class(object) <- setdiff(class(object), "AsIs")
     df <- as.data.frame(object[, head(seq_len(ncol(object)), 3), drop = FALSE])
     attempt <- do.call(paste, df)
     if (ncol(object) > 3)
