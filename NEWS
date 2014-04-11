@@ -23,13 +23,18 @@ NEW FEATURES
     o Add some split methods that dispatch to splitAsList() even when only
       'f' is a Vector.
 
-    o Add set operations (setdiff, intersect, union) to Rle.
+    o Add set methods (setdiff, intersect, union) for Rle.
+
+    o Add anyNA methods for Rle and Vector.
 
     o Add support for subset(), with(), etc on Vector objects,
       where the expressions are evaluated in the scope of the
       mcols and fixed columns. For symbols that should resolve
       in the calling frame, it is supported and encouraged to escape
       them with bquote-style ".(x)".
+
+    o Add "tile" generic and methods for partitioning a ranges object
+      into tiles; useful for iterating over subregions.
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
