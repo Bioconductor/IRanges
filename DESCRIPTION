@@ -9,7 +9,7 @@ Description: The package provides efficient low-level and highly reusable S4
 	collections of instances of the basic classes. All classes in
 	the package use consistent naming and share the same rich and
 	consistent "Vector API" as much as possible.
-Version: 1.21.45
+Version: 1.21.46
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Infrastructure, DataRepresentation
@@ -50,7 +50,6 @@ Collate: S4-utils.R
 	Rle-class.R
 	RleViews-class.R
 	RleViews-utils.R
-	extractList.R
 	seqapply.R
 	multisplit.R
 	AtomicList-impl.R
@@ -59,16 +58,18 @@ Collate: S4-utils.R
 	DataFrame-utils.R
 	DataFrameList-class.R
 	DataFrameList-utils.R
-	RangesList-class.R
-	GappedRanges-class.R
+        RangesList-class.R
+        GappedRanges-class.R
 	ViewsList-class.R
 	RleViewsList-class.R
 	RleViewsList-utils.R
 	MaskCollection-class.R
-	RangedData-class.R
+        RangedData-class.R
 	FilterRules-class.R
 	RDApplyParams-class.R
 	RangedData-utils.R
+        Interaction-class.R
+        extractList.R
 	Hits-class.R
 	HitsList-class.R
 	RangesMapping-class.R
@@ -87,6 +88,7 @@ Collate: S4-utils.R
 	findOverlaps-methods.R
 	nearest-methods.R
 	expand-methods.R
+        eval-utils.R
 	updateObject-methods.R
 	classNameForDisplay-methods.R
         tile-methods.R
