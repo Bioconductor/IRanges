@@ -129,7 +129,7 @@ setMethod("!", "CompressedList",
 ### match()
 ###
 
-setMethods("match", .OP2_SIGNATURES,
+setMethods("match", c(.OP2_SIGNATURES, list(c("CompressedList", "list"))),
     function(x, table, nomatch=NA_integer_, incomparables=NULL, ...)
     {
         if (is(x, "RleList")) {
@@ -155,6 +155,14 @@ setMethods("match", list(c("List", "vector"), c("List", "Vector")),
     }
 )
 
+### The first match method catches CompressedList,list; 'table' is atomic
+setMethod("match", c("CompressedList", "vector"),
+          function(x, table, nomatch = NA_integer_, incomparables = NULL, ...)
+          {
+            m <- match(x@unlistData, table, nomatch=nomatch,
+                       incomparables=incomparables, ...)
+            relist(m, x)
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### duplicated() & unique()
