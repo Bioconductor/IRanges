@@ -50,6 +50,7 @@ Collate: S4-utils.R
 	Rle-class.R
 	RleViews-class.R
 	RleViews-utils.R
+        extractList.R
 	seqapply.R
 	multisplit.R
 	AtomicList-impl.R
@@ -68,7 +69,6 @@ Collate: S4-utils.R
 	FilterRules-class.R
 	RDApplyParams-class.R
 	RangedData-utils.R
-        extractList.R
 	Hits-class.R
 	HitsList-class.R
 	RangesMapping-class.R
