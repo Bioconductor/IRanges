@@ -112,23 +112,6 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
   ans
 })
 
-## We are overriding all 'formula' calls to aggregate, and
-## stats:::aggregate.formula depends on quoting a formula expression
-## (x ~ y) in its first argument. Thus, we need some computing on the
-## language, which may not be very robust.
-setMethod("aggregate", "formula", function(x, data, ...) {
-  mc <- sys.call(-1)
-  mc[[1]] <- quote(stats:::aggregate.formula)
-  if (is(data, "DataFrame")) {
-    data <- as(data, "data.frame")
-    ## depending on the formula, this may or not be a valid subclass
-    ## of DataFrame, so we just explicitly create a DataFrame here
-    ##DataFrame(callGeneric())
-    mc[[3]] <- data
-    DataFrame(eval(mc, parent.frame(2)))
-  } else eval(mc, parent.frame(2)) ## for e.g. data.frame
-})
-
 setMethod("mstack", "DataFrame", function(..., .index.var = "name") {
   stack(DataFrameList(...), index.var = .index.var)
 })
