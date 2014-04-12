@@ -72,14 +72,18 @@ orderInteger <- function(x, decreasing=FALSE, na.last=NA)
             return(seq_len(length(x)))
     }
     ## At this point 'x' is guaranteed to contain at least one non NA value.
+    has_NAs <- anyNA(x)
     if (!input_is_factor)
         x_delta <- max(x, na.rm=TRUE) - x_min
     if (x_delta < 100000L) {
+        if (!has_NAs) {
+            na.last <- TRUE
+        }
         ## "radix" method is stable.
         return(sort.list(x, decreasing=decreasing, na.last=na.last,
                          method="radix"))
     }
-    has_NAs <- anyMissing(x)
+    
     if (!has_NAs || is.na(na.last)) {
         if (has_NAs)
             x <- x[!is.na(x)]
