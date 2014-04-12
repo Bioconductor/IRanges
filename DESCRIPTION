@@ -68,7 +68,6 @@ Collate: S4-utils.R
 	FilterRules-class.R
 	RDApplyParams-class.R
 	RangedData-utils.R
-        Interaction-class.R
         extractList.R
 	Hits-class.R
 	HitsList-class.R
