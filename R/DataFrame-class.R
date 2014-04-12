@@ -547,9 +547,13 @@ setAs("data.frame", "DataFrame",
         rn <- attributes(from)[["row.names"]]
         if (is.integer(rn))
           rn <- NULL
+        nr <- nrow(from)
+### FIXME: this should be:
+        ## from <- as.list(from)
+### But unclass() causes deep copy
         rownames(from) <- NULL
-        new2("DataFrame", listData = as.list(from),
-             nrows = nrow(from), rownames = rn, check=FALSE)
+        class(from) <- NULL
+        new2("DataFrame", listData=from, nrows=nr, rownames=rn, check=FALSE)
       })
 
 # matrices and tables just go through data.frame
@@ -569,6 +573,7 @@ setAs("table", "DataFrame",
         do.call(DataFrame, c(df[1], lapply(df[factors], Rle), df["Freq"]))
       })
 
+setOldClass(c("xtabs", "table"))
 setAs("xtabs", "DataFrame",
       function(from) {
         class(from) <- "table"
