@@ -203,27 +203,37 @@ setMethod("relist", c("Vector", "list"),
     relist(x, f)
 }
 
-splitAsList <- function(x, f, drop=FALSE)
+setGeneric("splitAsList",
+           function(x, f, drop=FALSE) standardGeneric("splitAsList"),
+           signature = c("x", "f"))
+
+normSplitFactor <- function(f, x_NROW) {
+  f_len <- length(f)
+  if (f_len < x_NROW) {
+    if (f_len == 0L)
+      stop("split factor has length 0 but 'NROW(x)' is > 0")
+    if (x_NROW %% f_len != 0L)
+      warning("'NROW(x)' is not a multiple of split factor length")
+    f <- rep(f, length.out=x_NROW)
+  }
+  f
+}
+
+splitAsList_default <- function(x, f, drop=FALSE)
 {
     if (!isTRUEorFALSE(drop))
         stop("'drop' must be TRUE or FALSE")
-    if (!((is.vector(f) && is.atomic(f)) || is.factor(f) || is(f, "Rle")))
-        stop("'f' must be an atomic vector or a factor (possibly in Rle form)")
     x_NROW <- NROW(x)
-    f_len <- length(f)
-    if (f_len < x_NROW) {
-        if (f_len == 0L)
-            stop("'length(f)' is 0 but 'NROW(x)' is > 0")
-        if (x_NROW %% f_len != 0L)
-            warning("'NROW(x)' is not a multiple of 'length(f)'")
-        f <- rep(f, length.out=x_NROW)
-    }
-    na_idx <- which(is.na(f))
+
+    f <- normSplitFactor(f, x_NROW)
+    is_na <- is.na(f)
+    na_idx <- which(is_na)
     if (length(na_idx) != 0L) {
         keep_idx <- seq_len(x_NROW)[-na_idx]
         x <- extractROWS(x, keep_idx)
         f <- f[keep_idx]
     }
+    
     if (is.integer(f))
         return(.splitAsList_by_integer(x, f, drop))
     if (is.vector(f) && is.atomic(f))
@@ -238,6 +248,11 @@ splitAsList <- function(x, f, drop=FALSE)
         return(.splitAsList_by_integer_Rle(x, f, drop))
     return(.splitAsList_by_Rle(x, f, drop))
 }
+
+setMethod("splitAsList", c("ANY", "vectorORfactor"),
+          function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop))
+setMethod("splitAsList", c("ANY", "Rle"),
+          function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop))
 
 setMethod("split", c("Vector", "ANY"),
     function(x, f, drop=FALSE) splitAsList(x, f, drop=drop)
