@@ -1,8 +1,12 @@
+### =========================================================================
+### Statistical and data munging routines
+### -------------------------------------------------------------------------
+
+## TODO: lm, glm, loess, ...
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Statistical routines
 ###
-
-## TODO: lm, glm, loess, ...
 
 setMethod("xtabs", signature(data = "DataTable"),
           function(formula = ~., data, subset, na.action, exclude = c(NA, NaN),

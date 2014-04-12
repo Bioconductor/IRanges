@@ -5,6 +5,7 @@
 ## Possible optimizations for compressed lists:
 ## - order/sort: unlist, order by split factor first
 ## - sum/mean: unlist, rowsum() with split factor
+##   - or probably faster would be a rangeSums function
 ## - cumsum: unlist, cumsum and subtract offsets
 
 .ATOMIC_TYPES <- c("logical", "integer", "numeric", "complex",

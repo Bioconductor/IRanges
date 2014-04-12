@@ -148,6 +148,15 @@ setMethod("as.character", "Rle", function(x) rep.int(as.character(runValue(x)), 
 setMethod("as.raw", "Rle", function(x) rep.int(as.raw(runValue(x)), runLength(x)))
 setMethod("as.factor", "Rle", function(x) rep.int(as.factor(runValue(x)), runLength(x)))
 
+asFactorOrFactorRle <- function(x) {
+  if (is(x, "Rle")) {
+    runValue(x) <- as.factor(runValue(x))
+    x
+  } else {
+    as.factor(x)
+  }
+}
+
 ### S3/S4 combo for as.list.Rle
 .as.list.Rle <- function(x) as.list(as.vector(x))
 as.list.Rle <- function(x, ...) .as.list.Rle(x, ...)
@@ -645,6 +654,7 @@ setMethod("rep.int", "Rle",
               if (length(times) == n) {
                   runLength(x) <- diffWithInitialZero(cumsum(times)[end(x)])
               } else if (length(times) == 1) {
+                  times <- as.vector(times)
                   x <- Rle(values  = rep.int(runValue(x), times),
                            lengths = rep.int(runLength(x), times))
               }
@@ -765,6 +775,28 @@ setMethod("order", "Rle",
 sort.Rle <- function(x, decreasing=FALSE, ...)
     .sort.Rle(x, decreasing=decreasing, ...)
 setMethod("sort", "Rle", sort.Rle)
+
+setMethod("xtfrm", "Rle", function(x) {
+    initialize(x, runValue=xtfrm(runValue(x)))
+})
+
+setMethod("rank", "Rle", function (x, na.last = TRUE,
+                                   ties.method = c("average", "first", 
+                                     "random", "max", "min"))
+          {
+              ties.method <- match.arg(ties.method)
+              if (ties.method == "min" || ties.method == "first") {
+                  callNextMethod()
+              } else {
+                  x <- as.vector(x)
+                  ans <- callGeneric()
+                  if (ties.method %in% c("average", "max", "min")) {
+                      Rle(ans)
+                  } else {
+                      ans
+                  }
+              }
+          })
 
 setGeneric("splitRanges", signature = "x",
            function(x) standardGeneric("splitRanges"))

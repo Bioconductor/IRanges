@@ -221,7 +221,7 @@ exportMethods(
     min, max, range, which.max, which.min,
     diff,
     mean, var, cov, cor, sd, median, quantile, mad, IQR, smoothEnds, runmed,
-    subset, window, "window<-", aggregate,
+    subset, window, "window<-", aggregate, transform,
     nchar, substr, substring, chartr, tolower, toupper, sub, gsub,
     levels, "levels<-",
     unlist, stack, "split<-", unsplit,

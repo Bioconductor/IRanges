@@ -231,8 +231,14 @@ setMethod("extractROWS", "vectorORfactor",
     {
         if (missing(i))
             return(x)
+        if (is(i, "Rle")) {
+            if(is.logical(runValue(i))) {
+                i <- as(i, "IRanges")
+            } else {
+                i <- as.vector(i)
+            }
+        }
         if (!is(i, "Ranges")) {
-            i <- normalizeSingleBracketSubscript(i, x)
             return(x[i])
         }
         ## Which one is faster, vector_seqselect or vector_subsetByRanges?
@@ -463,11 +469,11 @@ setGeneric("fixedColumnNames", function(x) standardGeneric("fixedColumnNames"))
 setMethod("fixedColumnNames", "ANY", function(x) character())
 
 setMethod("subset", "Vector",
-          function(x, subset, select, drop = FALSE) {
+          function(x, subset, select, drop = FALSE, ...) {
             if (missing(subset)) 
               i <- TRUE
             else {
-              i <- safeEval(substitute(subset), x, top_prenv(subset))
+              i <- safeEval(substitute(subset), x, top_prenv(subset), ...)
               i <- try(as.logical(i), silent = TRUE)
               if (inherits(i, "try-error")) 
                 stop("'subset' must be coercible to logical")
@@ -476,33 +482,11 @@ setMethod("subset", "Vector",
             if (!missing(select)) {
               nl <- as.list(seq_len(ncol(mcols(x))))
               names(nl) <- colnames(mcols(x))
-              j <- eval(substitute(select), nl, top_prenv(select))
+              j <- safeEval(substitute(select), nl, top_prenv(select), ...)
               mcols(x) <- mcols(x)[,j,drop=FALSE]
             }
             x[i, drop = drop]
           })
-
-safeEval <- function(expr, envir, enclos) {
-  expr <- eval(call("bquote", expr, enclos))
-  if (!identical(enclos, .GlobalEnv)) {
-    enclos <- makeGlobalWarningEnv(expr, envir, enclos)
-  }
-  eval(expr, envir, enclos)
-}
-
-makeGlobalWarningEnv <- function(expr, envir, enclos) {
-  globals <- setdiff(all.names(expr, functions=FALSE), names(envir))
-  env <- new.env(parent=enclos)
-  lapply(globals, function(g) {
-    makeActiveBinding(g, function() {
-      val <- get(g, enclos)
-      warning("Symbol '", g, "' resolved from calling frame; ",
-              "escape with .(", g, ") for safety.")
-      val
-    }, env)
-  })
-  env
-}
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Evaluating.
@@ -521,7 +505,7 @@ setMethod("eval", c("language", "Vector"),
 setMethod("with", "Vector",
           function(data, expr, ...)
           {
-            eval(substitute(expr), data, parent.frame())
+            safeEval(substitute(expr), data, parent.frame(), ...)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -584,8 +568,13 @@ makeFixedColumnEnv <- function(x, parent, tform = identity) {
   env
 }
 
+addSelfRef <- function(x, env) {
+  env$.. <- x
+  env
+}
+
 setMethod("as.env", "Vector", function(x, enclos, tform = identity) {
-  makeFixedColumnEnv(x, as.env(mcols(x), enclos, tform), tform)
+  addSelfRef(x, makeFixedColumnEnv(x, as.env(mcols(x), enclos, tform), tform))
 })
 
 setMethod("as.env", "NULL", function(x, enclos, tform = identity) {
@@ -858,21 +847,3 @@ setMethod("aggregate", "matrix", stats:::aggregate.default)
 setMethod("aggregate", "data.frame", stats:::aggregate.data.frame)
 
 setMethod("aggregate", "ts", stats:::aggregate.ts)
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Sorting methods.
-###
-
-s4ToVector <- function(x) {
-  if (isS4(x)) {
-    as.vector(x)
-  } else {
-    x
-  }
-}
-
-sortBy <- function(x, formula, decreasing = FALSE) {
-  mf <- model.frame(formula, as.env(x, environment(formula), s4ToVector))
-  x[do.call(order, c(decreasing=decreasing, mf))]
-}
-

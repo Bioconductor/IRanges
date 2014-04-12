@@ -346,6 +346,8 @@ SEXP sapply_NROW(SEXP x);
 
 SEXP top_prenv(SEXP nm, SEXP env);
 
+SEXP top_prenv_dots(SEXP env);
+
 /* int_utils.c */
 
 SEXP Integer_any_missing_or_outside(SEXP x, SEXP lower, SEXP upper);

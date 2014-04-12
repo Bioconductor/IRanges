@@ -123,7 +123,7 @@ setMethod("unique", "Vector", unique.Vector)
 ###
 
 setMethods("%in%", .OP2_SIGNATURES,
-    function(x, table) { !is.na(match(x, table)) }
+    function(x, table) { match(x, table, nomatch=0L) > 0L }
 )
 
 
@@ -230,15 +230,51 @@ setMethod("countMatches", c("ANY", "ANY"), .countMatches.default)
 ###
 
 ### S3/S4 combo for sort.Vector
-.sort.Vector <- function(x, decreasing=FALSE, na.last=NA)
+.sort.Vector <- function(x, decreasing=FALSE, na.last=NA, by)
 {
-    i <- order(x, na.last=na.last, decreasing=decreasing)
+    if (!missing(by)) {
+        i <- orderBy(by, x, decreasing=decreasing, na.last=na.last)
+    } else {
+        i <- order(x, na.last=na.last, decreasing=decreasing)
+    }
     extractROWS(x, i)
 }
 sort.Vector <- function(x, decreasing=FALSE, ...)
     .sort.Vector(x, decreasing=decreasing, ...)
 setMethod("sort", "Vector", sort.Vector)
 
+formulaAsListCall <- function(formula) attr(terms(formula), "variables")
+
+orderBy <- function(formula, x, decreasing=FALSE, na.last=NA) {
+  terms <- eval(formulaAsListCall(formula),
+                as.env(x, emptyenv()), environment(formula))
+  do.call(order, c(decreasing=decreasing, na.last=na.last, terms))
+}
+
+setMethod("xtfrm", "Vector", function(x) {
+    as.vector(rank(x, ties.method = "min", na.last = "keep"))
+})
+
+setMethod("rank", "Vector",
+          function(x, na.last=TRUE,
+                   ties.method=c("average", "first", "random", "max", "min"))
+          {
+            if (missing(ties.method)) {
+              ties.method <- "first"
+            }
+            ties.method <- match.arg(ties.method)
+            if (ties.method == "first") {
+              oo <- order(x, na.last=na.last)
+              ## 'ans' is the reverse permutation of 'oo'
+              ans <- integer(length(oo))
+              ans[oo] <- seq_len(length(oo))
+              ans
+            } else if (ties.method == "min") {
+              rank(x, na.last=na.last, ties.method="first")[selfmatch(x)]
+            } else {
+              stop("only tie methods \"first\" and \"min\" are supported")
+            }
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### table()

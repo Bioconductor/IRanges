@@ -12,7 +12,7 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Basic methods.
+### Accessors.
 ###
 
 setMethod("NROW", "DataTable", function(x) nrow(x))
@@ -46,7 +46,7 @@ setMethod("subset", "DataTable",
               if (missing(subset)) 
                   i <- TRUE
               else {
-                  i <- safeEval(substitute(subset), x, top_prenv(subset))
+                  i <- safeEval(substitute(subset), x, top_prenv(subset), ...)
                   i <- try(as.logical(i), silent=TRUE)
                   if (inherits(i, "try-error"))
                     stop("'subset' must be coercible to logical")
@@ -57,7 +57,7 @@ setMethod("subset", "DataTable",
               else {
                   nl <- as.list(seq_len(ncol(x)))
                   names(nl) <- colnames(x)
-                  j <- eval(substitute(select), nl, top_prenv(select))
+                  j <- safeEval(substitute(select), nl, top_prenv(select), ...)
               }
               x[i, j, drop = drop]
           })
@@ -93,6 +93,24 @@ setMethod("complete.cases", "DataTable", function(...) {
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Transforming.
+###
+
+transform.DataTable <- function(`_data`, ...) {
+  exprs <- as.list(substitute(list(...))[-1L])
+  if (any(names(exprs) == "")) {
+    stop("all arguments in '...' must be named")
+  }
+  ## elements in '...' can originate from different environments
+  vals <- mapply(safeEval, exprs, list(`_data`), top_prenv_dots(...),
+                 SIMPLIFY=FALSE)
+  `_data`[,names(vals)] <- vals
+  `_data`
+}
+
+setMethod("transform", "DataTable", transform.DataTable)
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining.
 ###
 
@@ -104,62 +122,19 @@ setMethod("rbind", "DataTable", function(..., deparse.level=1)
           stop("missing 'rbind' method for DataTable class ",
                class(list(...)[[1L]])))
 
-## FIXME: do not cheat by going through data.frame
 setMethod("merge", c("DataTable", "DataTable"), function(x, y, ...) {
-  DataFrame(merge(as(x, "data.frame"), as(y, "data.frame"), ...))
+  as(merge(as(x, "data.frame"), as(y, "data.frame"), ...), class(x))
 })
 setMethod("merge", c("data.frame", "DataTable"), function(x, y, ...) {
-  DataFrame(merge(x, as(y, "data.frame"), ...))
+  as(merge(x, as(y, "data.frame"), ...), class(y))
 })
 setMethod("merge", c("DataTable", "data.frame"), function(x, y, ...) {
-  DataFrame(merge(as(x, "data.frame"), y, ...))
+  as(merge(as(x, "data.frame"), y, ...), class(x))
 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping methods.
 ###
-
-### FIXME: this is not the same signature/contract as for data.frame
-
-setMethod("aggregate", "DataTable",
-          function(x, by, FUN, start = NULL, end = NULL, width = NULL,
-                   frequency = NULL, delta = NULL, ..., simplify = TRUE)
-          {
-              FUN <- match.fun(FUN)
-              if (!missing(by)) {
-                  start <- start(by)
-                  end <- end(by)
-              } else {
-                  if (!is.null(width)) {
-                      if (is.null(start))
-                          start <- end - width + 1L
-                      else if (is.null(end))
-                          end <- start + width - 1L
-                  }
-                  start <- as(start, "integer")
-                  end <- as(end, "integer")
-              }
-              if (length(start) != length(end))
-                  stop("'start', 'end', and 'width' arguments have unequal length")
-              n <- length(start)
-              if (!is.null(names(start)))
-                  indices <- structure(seq_len(n), names = names(start))
-              else
-                  indices <- structure(seq_len(n), names = names(end))
-              if (is.null(frequency) && is.null(delta)) {
-                  sapply(indices, function(i)
-                         FUN(window(x, start = start[i], end = end[i]), ...),
-                         simplify = simplify)
-              } else {
-                  frequency <- rep(frequency, length.out = n)
-                  delta <- rep(delta, length.out = n)
-                  sapply(indices, function(i)
-                         FUN(window(x, start = start[i], end = end[i],
-                                    frequency = frequency[i], delta = delta[i]),
-                             ...),
-                         simplify = simplify)
-              }
-          })
 
 .by.data.frame <- by.data.frame # so it will find our generic
 environment(.by.data.frame) <- topenv()
@@ -174,7 +149,7 @@ setMethod("by", "DataTable",
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Comparison
+### Summary methods.
 ###
 
 ### S3/S4 combo for duplicated.DataTable
@@ -207,7 +182,7 @@ setMethod("as.env", "DataTable",
                          }
                          makeActiveBinding(col, colFun, env)
                      })
-              env
+              addSelfRef(x, env)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

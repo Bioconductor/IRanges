@@ -126,18 +126,3 @@ setMethod("order", "Ranges",
     }
 )
 
-setMethod("rank", "Ranges",
-    function(x, na.last=TRUE,
-             ties.method=c("average", "first", "random", "max", "min"))
-    {
-        if (!missing(ties.method) && !identical(ties.method, "first"))
-            stop("only 'ties.method=\"first\"' is supported ",
-                 "when ranking ranges")
-        oo <- order(x)
-        ## 'ans' is the reverse permutation of 'oo'
-        ans <- integer(length(oo))
-        ans[oo] <- seq_len(length(oo))
-        ans
-    }
-)
-
