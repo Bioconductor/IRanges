@@ -43,23 +43,9 @@ setReplaceMethod("dimnames", "DataTable",
 setMethod("subset", "DataTable",
           function(x, subset, select, drop = FALSE, ...) 
           {
-              if (missing(subset)) 
-                  i <- TRUE
-              else {
-                  i <- safeEval(substitute(subset), x, top_prenv(subset), ...)
-                  i <- try(as.logical(i), silent=TRUE)
-                  if (inherits(i, "try-error"))
-                    stop("'subset' must be coercible to logical")
-                  i <- i & !is.na(i)
-              }
-              if (missing(select)) 
-                  j <- TRUE
-              else {
-                  nl <- as.list(seq_len(ncol(x)))
-                  names(nl) <- colnames(x)
-                  j <- safeEval(substitute(select), nl, top_prenv(select), ...)
-              }
-              x[i, j, drop = drop]
+              i <- evalqForSubset(subset, x, ...)
+              j <- evalqForSelect(select, x, ...)
+              x[i, j, drop=drop]
           })
 
 setMethod("na.omit", "DataTable",

@@ -470,22 +470,10 @@ setMethod("fixedColumnNames", "ANY", function(x) character())
 
 setMethod("subset", "Vector",
           function(x, subset, select, drop = FALSE, ...) {
-            if (missing(subset)) 
-              i <- TRUE
-            else {
-              i <- safeEval(substitute(subset), x, top_prenv(subset), ...)
-              i <- try(as.logical(i), silent = TRUE)
-              if (inherits(i, "try-error")) 
-                stop("'subset' must be coercible to logical")
-              i <- i & !is.na(i)
-            }
-            if (!missing(select)) {
-              nl <- as.list(seq_len(ncol(mcols(x))))
-              names(nl) <- colnames(mcols(x))
-              j <- safeEval(substitute(select), nl, top_prenv(select), ...)
-              mcols(x) <- mcols(x)[,j,drop=FALSE]
-            }
-            x[i, drop = drop]
+            i <- evalqForSubset(subset, x, ...)
+            j <- evalqForSelect(select, mcols(x), ...)
+            mcols(x) <- mcols(x)[,j,drop=FALSE]
+            x[i, drop=drop]
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
