@@ -846,8 +846,8 @@ setMethod("mapEnd", "PartitioningMap", function(x) x@mapEnd)
     maporder <- mapOrder(x)
     if (length(maporder)) {
         maxorder <- max(maporder)
-        if (maxorder > max(end(x)))
-            return("max mapOrder value must be == mac(end(object))")
+        if (length(maporder) != max(end(x)))
+            return("length(mapOrder(object)) must == max(end(object))")
     }
     if (length(mapend) && length(maporder)) {
         if (maxend > maxorder)
