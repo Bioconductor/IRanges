@@ -82,6 +82,16 @@
 \alias{start,PartitioningByWidth-method}
 \alias{coerce,Ranges,PartitioningByWidth-method}
 
+\alias{class:PartitioningMap}
+\alias{PartitioningMap-class}
+\alias{PartitioningMap}
+
+\alias{mapOrder}
+\alias{mapEnd}
+\alias{mapOrder,PartitioningMap-method}
+\alias{mapEnd,PartitioningMap-method}
+\alias{show,PartitioningMap-method}
+
 \title{Grouping objects}
 
 \description{
@@ -204,10 +214,12 @@
   be used on a Partitioning object. See \code{?Ranges} for a description of
   the \link{Ranges} API.
 
-  The Partitioning class is virtual with 2 concrete subclasses:
+  The Partitioning class is virtual with 3 concrete subclasses:
   PartitioningByEnd (only stores the end of the groups, allowing fast
   mapping from groups to objects), and PartitioningByWidth (only stores
-  the width of the groups).
+  the width of the groups), and PartitioningMap which contains
+  PartitioningByEnd and two additional slots to re-order and re-list
+  the object to a related mapping.
 }
 
 \section{Constructors}{
@@ -273,6 +285,15 @@
       }
       If the \code{names} argument is supplied, it is used to name the
       partitions.
+    }
+    \item{}{
+      \code{PartitioningMap(x=integer(), mapOrder=integer(), mapEnd=integer())}:
+      \code{x} is a list-like object or a sorted integer vector used to
+               construct a PartitioningByEnd object.
+      \code{mapOrder} numeric vector of the mapped order.
+      \code{mapEnd} numeric vector of the mapped ends. 
+
+      Returns a PartitioningMap object.
     }
   }
   Note that these constructors don't recycle their \code{names} argument

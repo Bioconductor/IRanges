@@ -460,8 +460,8 @@ setMethod("high2low", "Vector",
 ### API is implemented on Partitioning objects (in addition to the Grouping
 ### API).
 ###
-### The Partitioning class is virtual with 2 concrete subclasses:
-### PartitioningByEnd and PartitioningByWidth.
+### The Partitioning class is virtual with 3 concrete subclasses:
+### PartitioningByEnd and PartitioningByWidth and PartitioningMap.
 ### Note that we put Ranges before Grouping in order to have Partitioning
 ### objects inherit the "show" method for Ranges objects.
 
@@ -798,6 +798,89 @@ setAs("Ranges", "PartitioningByWidth",
     }
 )
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### PartitioningMap
+### This object contains PartitioningByEnd and two additional slots
+### that specify how to re-order and re-list the object to a previous mapping.
+### 
+
+setClass("PartitioningMap",
+    contains="PartitioningByEnd",
+    representation(
+        mapOrder="integer",
+        mapEnd="integer"
+    ),
+    prototype(
+        mapOrder=integer(),
+        mapEnd=integer()
+    )
+)
+
+setGeneric("mapOrder", function(x) standardGeneric("mapOrder"))
+setMethod("mapOrder", "PartitioningMap", function(x) x@mapOrder)
+
+setGeneric("mapEnd", function(x) standardGeneric("mapEnd"))
+setMethod("mapEnd", "PartitioningMap", function(x) x@mapEnd)
+
+.valid.PartitioningMap <- function(x)
+{
+    if (!is.integer(mapEnd(x)))
+        return("the mapEnds must be integers")
+    if (length(x) == 0L)
+        return(NULL)
+    if (anyMissing(mapEnd(x)))
+        return("the mapEnds cannot be NAs")
+    if (isNotSorted(mapEnd(x)))
+        return("the mapEnds must be sorted")
+    if (any(mapEnd(x) < 0L))
+        return("the mapEnds cannot be negative")
+    if (!is.null(names(mapEnd(x))))
+        return("the mapEnds should not be named")
+
+    mapend <- mapEnd(x)
+    if (length(mapend)) {
+        maxend <- max(mapend)
+        if (maxend > length(x))
+            return("max mapEnd value must be <= length(object)")
+    }
+    maporder <- mapOrder(x)
+    if (length(maporder)) {
+        maxorder <- max(maporder)
+        if (maxorder > length(x))
+            return("max mapOrder value must be == length(object)")
+    }
+    if (length(mapend) && length(maporder)) {
+        if (maxend > maxorder)
+            return("the max mapEnd cannot exceed the max mapOrder")
+        if (maxorder > maxend)
+            return("the max mapOrder cannot exceed the max mapEnd")
+    }
+    NULL
+}
+
+setValidity2("PartitioningMap", .valid.PartitioningMap)
+
+PartitioningMap <- function(x=integer(), mapOrder=integer(),
+                            mapEnd=integer(), ...)
+{
+    new("PartitioningMap", PartitioningByEnd(x=x),
+        mapOrder=mapOrder, mapEnd=mapEnd, ...)
+}
+
+setAs("PartitioningByEnd", "PartitioningMap",
+    function(from)
+        new("PartitioningMap", from, mapOrder=numeric(), mapEnd=numeric())
+)
+
+setMethod("show", "PartitioningMap", 
+    function(object)
+    {
+    cat(class(object), " of length ", length(object), "\n")
+    cat("mapOrder: ", mapOrder(object), "\n")
+    cat("mapEnd: ", mapEnd(object), "\n")
+    print(PartitioningByEnd(object))
+    }
+) 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### findOverlaps()

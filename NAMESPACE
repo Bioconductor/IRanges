@@ -19,7 +19,7 @@ exportClasses(
     IRanges, NormalIRanges,
     IntervalTree, IntervalForest, 
     Grouping, H2LGrouping, Dups,
-    Partitioning, PartitioningByEnd, PartitioningByWidth,
+    Partitioning, PartitioningByEnd, PartitioningByWidth, PartitioningMap,
     Views,
     Rle, RleViews,
     MaskCollection,
@@ -278,7 +278,7 @@ export(
     asNormalIRanges,
     rangeComparisonCodeToLetter,
     IntervalTree, IntervalForest, 
-    H2LGrouping, Dups, PartitioningByEnd, PartitioningByWidth,
+    H2LGrouping, Dups, PartitioningByEnd, PartitioningByWidth, PartitioningMap,
     RangedData, RangedDataList,
     RangedSelection,
     FilterRules, FilterMatrix, RDApplyParams,
@@ -363,7 +363,7 @@ export(
 
     ## Grouping-class.R:
     nobj, grouplength, members, vmembers, togroup, togrouplength,
-    high2low, low2high, grouprank, togrouprank,
+    high2low, low2high, grouprank, togrouprank, mapOrder, mapEnd,
 
     ## Rle-class.R:
     runLength, runValue, nrun, "runLength<-", "runValue<-",
@@ -487,7 +487,7 @@ exportMethods(
     viewApply, viewMins, viewMaxs, viewSums, viewMeans,
     viewWhichMins, viewWhichMaxs, viewRangeMins, viewRangeMaxs,
     nobj, grouplength, members, vmembers, togroup, togrouplength,
-    high2low, low2high, grouprank, togrouprank,
+    high2low, low2high, grouprank, togrouprank, mapOrder, mapEnd,
     runLength, runValue, nrun, "runLength<-", "runValue<-",
     Rle,
     findRange, findRun,
