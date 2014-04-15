@@ -339,6 +339,42 @@ setMethod("revElements", "CompressedList",
 ### Coercion.
 ###
 
+setUnlistDataNames <- function(unlistData, grouping, use.names) {
+    ## If 'use.names' is FALSE or 'x' has no *outer* names, then we don't
+    ## do anything to 'ans' i.e. we just keep whatever names/rownames are
+    ## on it (which are the *inner* names/rownames of 'x'). Note that this
+    ## behavior is NOT consistent with unlist,List or base::unlist as
+    ## both of them will return a vector with no names/rownames when
+    ## 'use.names' is FALSE.
+    ## FIXME: Make unlist,CompressedList and unlist,List behave
+    ## consistently in *any* situation.
+    ## Otherwise (i.e. if 'use.names' is TRUE and 'x' has *outer* names),
+    ## we make up new names/rownames for 'ans' by prepending the *outer*
+    ## names of 'x' to its *inner* names/rownames. Note that this differs
+    ## from what base::unlist does but THIS IS A FEATURE and is consistent
+    ## with what unlist,List does.
+    if (use.names && !is.null(x_names <- names(grouping))) {
+        if (length(dim(unlistData)) < 2L) {
+            ans_ROWNAMES <- names(unlistData)
+        } else {
+            ans_ROWNAMES <- rownames(unlistData)
+        }
+        nms <- rep.int(x_names, elementLengths(grouping))
+        ans_ROWNAMES <- make.unlist.result.names(nms, ans_ROWNAMES)
+        if (length(dim(unlistData)) < 2L) {
+            res <- try(names(unlistData) <- ans_ROWNAMES, silent=TRUE)
+            what <- "names"
+        } else {
+            res <- try(rownames(unlistData) <- ans_ROWNAMES, silent=TRUE)
+            what <- "rownames"
+        }
+        if (is(res, "try-error"))
+            warning("failed to set ", what, " on the result ",
+                    "of unlisting a ", class(x), " object")
+    }
+    unlistData
+}
+
 setMethod("unlist", "CompressedList",
     function(x, recursive=TRUE, use.names=TRUE)
     {
@@ -347,40 +383,7 @@ setMethod("unlist", "CompressedList",
                  "does not support the 'recursive' argument")
         if (!isTRUEorFALSE(use.names))
             stop("'use.names' must be TRUE or FALSE")
-        ans <- x@unlistData
-        ## If 'use.names' is FALSE or 'x' has no *outer* names, then we don't
-        ## do anything to 'ans' i.e. we just keep whatever names/rownames are
-        ## on it (which are the *inner* names/rownames of 'x'). Note that this
-        ## behavior is NOT consistent with unlist,List or base::unlist as
-        ## both of them will return a vector with no names/rownames when
-        ## 'use.names' is FALSE.
-        ## FIXME: Make unlist,CompressedList and unlist,List behave
-        ## consistently in *any* situation.
-        ## Otherwise (i.e. if 'use.names' is TRUE and 'x' has *outer* names),
-        ## we make up new names/rownames for 'ans' by prepending the *outer*
-        ## names of 'x' to its *inner* names/rownames. Note that this differs
-        ## from what base::unlist does but THIS IS A FEATURE and is consistent
-        ## with what unlist,List does.
-        if (use.names && !is.null(x_names <- names(x))) {
-            if (length(dim(ans)) < 2L) {
-                ans_ROWNAMES <- names(ans)
-            } else {
-                ans_ROWNAMES <- rownames(ans)
-            }
-            nms <- rep.int(x_names, elementLengths(x))
-            ans_ROWNAMES <- make.unlist.result.names(nms, ans_ROWNAMES)
-            if (length(dim(ans)) < 2L) {
-                res <- try(names(ans) <- ans_ROWNAMES, silent=TRUE)
-                what <- "names"
-            } else {
-                res <- try(rownames(ans) <- ans_ROWNAMES, silent=TRUE)
-                what <- "rownames"
-            }
-            if (is(res, "try-error"))
-                warning("failed to set ", what, " on the result ",
-                        "of unlisting a ", class(x), " object")
-        }
-        ans
+        setUnlistDataNames(x@unlistData, x@partitioning, use.names)
     }
 )
 
