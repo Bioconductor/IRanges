@@ -9,16 +9,21 @@
 \alias{nobj}
 \alias{grouplength}
 \alias{grouplength,Grouping-method}
+\alias{show,Grouping-method}
+
+% ManyToOneGrouping objects:
+\alias{class:ManyToOneGrouping}
+\alias{ManyToOneGrouping-class}
+\alias{ManyToOneGrouping}
+
 \alias{members}
-\alias{members,Grouping-method}
+\alias{members,ManyToOneGrouping-method}
 \alias{vmembers}
-\alias{vmembers,Grouping-method}
+\alias{vmembers,ManyToOneGrouping-method}
 \alias{togroup}
 \alias{togroup,ANY-method}
-\alias{tofactor}
 \alias{togrouplength}
-\alias{togrouplength,Grouping-method}
-\alias{show,Grouping-method}
+\alias{togrouplength,ManyToOneGrouping-method}
 
 % H2LGrouping and Dups objects:
 \alias{class:H2LGrouping}
@@ -95,25 +100,46 @@
 \title{Grouping objects}
 
 \description{
-  In this man page, we call "grouping" the action of dividing a collection of
-  NO objects into NG groups (some of which may be empty). The Grouping class
-  and subclasses are containers for representing groupings.
+  We call \emph{grouping} an arbitrary mapping from a collection of NO objects
+  to a collection of NG groups, or, more formally, a bipartite graph
+  between integer sets [1, NO] and [1, NG]. Objects mapped to a given group
+  are said to belong to, or to be assigned to, or to be in that group.
+  Additionally, the objects in each group are ordered. So for example the
+  2 following groupings are considered different:
+\preformatted{
+  Grouping 1: NG = 3, NO = 5
+              group   objects
+                  1 : 4, 2
+                  2 :
+                  3 : 4
+
+  Grouping 2: NG = 3, NO = 5
+              group   objects
+                  1 : 2, 4
+                  2 :
+                  3 : 4
+}
+  There are no restriction on the mapping e.g. any object can be mapped
+  to 0, 1, or more groups, and can be mapped twice to the same group. Also
+  some or all the groups can be empty.
+
+  The Grouping class is a virtual class that formalizes the most general
+  kind of grouping. More specific groupings (e.g. many-to-one mappings)
+  are formalized via specific Grouping subclasses.
+
+  This man page documents the core Grouping API, and 2 important Grouping
+  subclasses: ManyToOneGrouping and Partitioning (the latter being a
+  particular case of the former).
 }
 
-\section{The Grouping core API}{
-  Let's give a formal description of the Grouping core API:
+\section{The core Grouping API}{
+  Let's give a formal description of the core Grouping API:
 
   Groups G_i are indexed from 1 to NG (1 <= i <= NG).
 
   Objects O_j are indexed from 1 to NO (1 <= j <= NO).
 
-  Every object must belong to one group and only one.
-
   Given that empty groups are allowed, NG can be greater than NO.
-
-  Grouping an empty collection of objects (NO = 0) is supported. In that
-  case, all the groups are empty. And only in that case, NG can be zero
-  too (meaning there are no groups).
 
   If \code{x} is a Grouping object:
   \describe{
@@ -127,7 +153,7 @@
     }
     \item{}{
       \code{nobj(x)}:
-      Returns the number of objects (NO). Equivalent to \code{length(togroup(x))}.
+      Returns the number of objects (NO).
     }
   }
   
@@ -136,8 +162,7 @@
     \item{}{
       \code{x[[i]]}:
       Returns the indices of the objects (the j's) that belong to G_i.
-      The j's are returned in ascending order.
-      This provides the mapping from groups to objects (one-to-many mapping).
+      This provides the mapping from groups to objects.
     }
     \item{}{
       \code{grouplength(x, i=NULL)}:
@@ -148,6 +173,28 @@
       If \code{i} is not NULL, \code{grouplength(x, i)} is equivalent to
       \code{sapply(i, function(ii) length(x[[ii]]))}.
     }
+  }
+
+  Note to developers: Given that \code{length}, \code{names} and \code{[[}
+  are expected to work on any Grouping object, those objects can be seen as
+  \link{List} objects. More precisely, the Grouping class actually extends
+  the \link{IntegerList} class. In particular, many other "list" operations
+  like \code{as.list}, \code{elementLengths}, and \code{unlist}, etc...
+  should work out-of-the-box on any Grouping object.
+}
+
+\section{ManyToOneGrouping objects}{
+  The ManyToOneGrouping class is a virtual class for representing groupings
+  where every object belongs to one group and only one.
+  The grouping of an empty collection of objects in an arbitrary number of
+  groups is a valid ManyToOneGrouping object.
+
+  Note that, for a ManyToOneGrouping object, if NG is 0 then NO must also
+  be 0.
+
+  The ManyToOneGrouping API extends the core Grouping API by adding a couple
+  more operations for going from groups to objects:
+  \describe{
     \item{}{
       \code{members(x, i)}:
       Equivalent to \code{x[[i]]} if \code{i} is a single integer.
@@ -162,7 +209,7 @@
     }
   }
 
-  Going from objects to groups:
+  And also by adding operations for going from objects to groups:
   \describe{
     \item{}{
       \code{togroup(x, j=NULL)}:
@@ -182,47 +229,17 @@
     }
   }
 
-  Given that \code{length}, \code{names} and \code{[[} are defined
-  for Grouping objects, those objects can be considered \link{List}
-  objects. In particular, \code{as.list} works out-of-the-box on them.
-
-  One important property of any Grouping object \code{x} is
+  One important property of any ManyToOneGrouping object \code{x} is
   that \code{unlist(as.list(x))} is always a permutation of 
   \code{seq_len(nobj(x))}. This is a direct consequence of the fact
   that every object in the grouping belongs to one group and only
   one.
 }
 
-\section{The H2LGrouping and Dups subclasses}{
+\section{2 ManyToOneGrouping concrete subclasses: H2LGrouping and Dups}{
   [DOCUMENT ME]
-}
 
-\section{The Partitioning subclass}{
-  A Partitioning container represents a block-grouping, i.e. a grouping
-  where each group contains objects that are neighbors in the original
-  collection of objects. More formally, a grouping \code{x} is a
-  block-grouping iff \code{togroup(x)} is sorted in increasing order
-  (not necessarily strictly increasing).
-
-  A block-grouping object can also be seen (and manipulated) as a
-  \link{Ranges} object where all the ranges are adjacent starting at 1
-  (i.e. it covers the 1:NO interval with no overlap between the ranges).
-
-  Note that a Partitioning object is both: a particular type of Grouping
-  object and a particular type of \link{Ranges} object. Therefore all the
-  methods that are defined for Grouping and \link{Ranges} objects can also
-  be used on a Partitioning object. See \code{?Ranges} for a description of
-  the \link{Ranges} API.
-
-  The Partitioning class is virtual with 3 concrete subclasses:
-  PartitioningByEnd (only stores the end of the groups, allowing fast
-  mapping from groups to objects), and PartitioningByWidth (only stores
-  the width of the groups), and PartitioningMap which contains
-  PartitioningByEnd and two additional slots to re-order and re-list
-  the object to a related mapping.
-}
-
-\section{Constructors}{
+  Constructors:
   \describe{
     \item{}{
       \code{H2LGrouping(high2low=integer())}:
@@ -232,6 +249,36 @@
       \code{Dups(high2low=integer())}:
       [DOCUMENT ME]
     }
+  }
+}
+
+\section{Partitioning objects}{
+  The Partitioning class is a virtual subclass of ManyToOneGrouping
+  for representing \emph{block-groupings} i.e. groupings where each
+  group contains objects that are neighbors in the original collection
+  of objects.
+  More formally, a grouping \code{x} is a block-grouping iff \code{togroup(x)}
+  is sorted in increasing order (not necessarily strictly increasing).
+
+  A Partitioning object can also be seen (and manipulated) as a
+  \link{Ranges} object where all the ranges are adjacent starting at 1
+  (i.e. it covers the 1:NO interval with no overlap between the ranges).
+
+  Note that a Partitioning object is both: a particular type of
+  ManyToOneGrouping object and a particular type of \link{Ranges} object.
+  Therefore all the methods that are defined for ManyToOneGrouping and
+  \link{Ranges} objects can also be used on a Partitioning object.
+  See \code{?Ranges} for a description of the \link{Ranges} API.
+
+  The Partitioning virtual class has 3 concrete subclasses:
+  PartitioningByEnd (only stores the end of the groups, allowing fast
+  mapping from groups to objects), and PartitioningByWidth (only stores
+  the width of the groups), and PartitioningMap which contains
+  PartitioningByEnd and two additional slots to re-order and re-list
+  the object to a related mapping.
+
+  Constructors:
+  \describe{
     \item{}{
       \code{PartitioningByEnd(x=integer(), NG=NULL, names=NULL)}:
       \code{x} must be either a list-like object or a sorted integer vector.
@@ -304,7 +351,7 @@
 \author{H. Pages}
 
 \seealso{
-  \link{List-class},
+  \link{IntegerList-class},
   \link{Ranges-class},
   \link{IRanges-class},
   \link{successiveIRanges},
@@ -322,7 +369,7 @@ high2low <- c(NA, NA, 2, 2, NA, NA, NA, 6, NA, 1, 2, NA, 6, NA, NA, 2)
 h2l <- H2LGrouping(high2low)
 h2l
 
-## The Grouping core API:
+## The core Grouping API:
 length(h2l)
 nobj(h2l)  # same as 'length(h2l)' for H2LGrouping objects
 h2l[[1]]
@@ -367,7 +414,7 @@ table(x)
 pbe1 <- PartitioningByEnd(c(4, 7, 7, 8, 15), names=LETTERS[1:5])
 pbe1  # the 3rd partition is empty
 
-## The Grouping core API:
+## The core Grouping API:
 length(pbe1)
 nobj(pbe1)
 pbe1[[1]]

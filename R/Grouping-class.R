@@ -2,11 +2,33 @@
 ### Grouping objects
 ### -------------------------------------------------------------------------
 ###
-### We call "grouping" the action of dividing a collection of NO objects into
-### NG groups (some of them eventually empty). The Grouping class and
-### subclasses are containers for representing groupings.
+### We call "grouping" an arbitrary mapping from a collection of NO objects
+### to a collection of NG groups, or, more formally, a bipartite graph
+### between integer sets [1, NO] and [1, NG]. Objects mapped to a given group
+### are said to belong to, or to be assigned to, or to be in that group.
+### Additionally, the objects in each group are ordered. So for example
+### the 2 following groupings are considered different:
+###
+###   Grouping 1: NG = 3, NO = 5
+###               group   objects
+###                   1 : 4, 2
+###                   2 :
+###                   3 : 4
+###
+###   Grouping 2: NG = 3, NO = 5
+###               group   objects
+###                   1 : 2, 4
+###                   2 :
+###                   3 : 4
+###
+### There are no restriction on the mapping e.g. any object can be mapped
+### to 0, 1, or more groups, and can be mapped twice to the same group. Also
+### some or all the groups can be empty.
 ###
 
+### The Grouping class is a virtual class that formalizes the most general
+### kind of grouping. More specific groupings (e.g. many-to-one mappings)
+### are formalized via specific Grouping subclasses.
 setClass("Grouping", contains="IntegerList", representation("VIRTUAL"))
 
 setGeneric("nobj", function(x) standardGeneric("nobj"))
@@ -24,11 +46,37 @@ setMethod("grouplength", "Grouping",
     }
 )
 
+setMethod("show", "Grouping",
+    function(object)
+    {
+        NG <- length(object)
+        NO <- nobj(object)
+        cat(class(object), " with ",
+            NG, ifelse(NG == 1, " group ", " groups "),
+            "and ", NO, ifelse(NO == 1, " object\n", " objects\n"),
+            sep="")
+        if (NG == 0L)
+            return(invisible(NULL))
+        empty_groups <- which(grouplength(object) == 0L)
+        cat("Nb of empty groups: ", length(empty_groups),
+            " (", 100.00 * length(empty_groups) / NG, "%)\n", sep="")
+    }
+)
+
+
+### -------------------------------------------------------------------------
+### ManyToOneGrouping objects
+### -------------------------
+
+### A ManyToOneGrouping object represents a grouping where every object in
+### the collection is mapped to one group and only one.
+setClass("ManyToOneGrouping", contains="Grouping", representation("VIRTUAL"))
+
 setGeneric("members", signature="x",
     function(x, i) standardGeneric("members")
 )
 
-setMethod("members", "Grouping",
+setMethod("members", "ManyToOneGrouping",
     function(x, i)
     {
         if (!is.numeric(i))
@@ -43,7 +91,7 @@ setGeneric("vmembers", signature="x",
     function(x, L) standardGeneric("vmembers")
 )
 
-setMethod("vmembers", "Grouping",
+setMethod("vmembers", "ManyToOneGrouping",
     function(x, L)
     {
         if (!is.list(L))
@@ -80,28 +128,10 @@ setGeneric("togrouplength", signature="x",
     function(x, j=NULL) standardGeneric("togrouplength")
 )
 
-setMethod("togrouplength", "Grouping",
+setMethod("togrouplength", "ManyToOneGrouping",
     function(x, j=NULL)
         grouplength(x, togroup(x, j))
 )
-
-setMethod("show", "Grouping",
-    function(object)
-    {
-        NG <- length(object)
-        NO <- nobj(object)
-        cat(class(object), " with ",
-            NG, ifelse(NG == 1, " group ", " groups "),
-            "and ", NO, ifelse(NO == 1, " object\n", " objects\n"),
-            sep="")
-        if (NG == 0L)
-            return(invisible(NULL))
-        empty_groups <- which(grouplength(object) == 0L)
-        cat("Nb of empty groups: ", length(empty_groups),
-            " (", 100.00 * length(empty_groups) / NG, "%)\n", sep="")
-    }
-)
-
 
 
 ### -------------------------------------------------------------------------
@@ -109,7 +139,7 @@ setMethod("show", "Grouping",
 ### -----------------------
 
 #setClass("BiIndexGrouping",
-#    contains="Grouping",
+#    contains="ManyToOneGrouping",
 #    representation(
 #        group2object="list",
 #        object2group="integer"
@@ -126,11 +156,11 @@ setMethod("show", "Grouping",
 ### H2LGrouping and Dups objects
 ### ----------------------------
 ###
-### High-to-Low Index Grouping objects.
+### High-to-Low Index ManyToOneGrouping objects.
 ###
 
 setClass("H2LGrouping",
-    contains="Grouping",
+    contains="ManyToOneGrouping",
     representation(
         high2low="integer",
         low2high="list"
@@ -163,7 +193,8 @@ setMethod("getListElement", "H2LGrouping",
     }
 )
 
-### Should be more efficient than the default method for Grouping objects.
+### Should be more efficient than the default method for ManyToOneGrouping
+### objects.
 setMethod("grouplength", "H2LGrouping",
     function(x, i=NULL)
     {
@@ -238,7 +269,7 @@ setMethod("togroup", "H2LGrouping",
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### More operations on H2LGrouping objects. These operations are NOT part of
-### the Grouping core API.
+### the core Grouping API.
 ###
 
 ### The rank of group G_i is the number of non-empty groups that are before
@@ -458,15 +489,15 @@ setMethod("high2low", "Vector",
 ### starting at 1 (i.e. it covers an integer interval starting at 1
 ### and with no overlap between the ranges). Therefore the "start/end/width"
 ### API is implemented on Partitioning objects (in addition to the Grouping
-### API).
+### and ManyToOneGrouping APIs).
 ###
 ### The Partitioning class is virtual with 3 concrete subclasses:
 ### PartitioningByEnd and PartitioningByWidth and PartitioningMap.
-### Note that we put Ranges before Grouping in order to have Partitioning
-### objects inherit the "show" method for Ranges objects.
+### Note that we put Ranges before ManyToOneGrouping in order to have
+### Partitioning objects inherit the "show" method for Ranges objects.
 
 setClass("Partitioning",
-    contains=c("Ranges", "Grouping"),
+    contains=c("Ranges", "ManyToOneGrouping"),
     representation(
         "VIRTUAL",
         NAMES="characterORNULL"  # R doesn't like @names !!
@@ -499,7 +530,8 @@ setMethod("getListElement", "Partitioning",
     }
 )
 
-### Should be more efficient than the default method for Grouping objects.
+### Should be more efficient than the default method for ManyToOneGrouping
+### objects.
 setMethod("grouplength", "Partitioning",
     function(x, i=NULL)
     {
