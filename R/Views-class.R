@@ -260,6 +260,10 @@ setGeneric("trim", signature="x",
 setMethod("trim", "Views",
     function(x, use.names=TRUE)
     {
+        if (length(x) == 0L)
+            return(x)
+        if (min(start(x)) >= 1L && max(end(x)) <= length(subject(x)))
+            return(x)
         x@ranges <- restrict(ranges(x), start=1L, end=length(subject(x)),
                              keep.all.ranges=TRUE,
                              use.names=use.names)

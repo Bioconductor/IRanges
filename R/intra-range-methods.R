@@ -420,7 +420,7 @@ setMethod("resize", "IntervalForest",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "restrict" method.
+### restrict()
 ###
 
 setGeneric("restrict", signature="x",
@@ -590,8 +590,9 @@ setMethod("restrict", "IntervalForest",
                "IntervalForest")
           })
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "threebands" method.
+### threebands()
 ###
 
 setGeneric("threebands", signature="x",
