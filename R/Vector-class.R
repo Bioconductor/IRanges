@@ -569,6 +569,12 @@ setMethod("as.env", "NULL", function(x, enclos, tform = identity) {
   new.env(parent=enclos)
 })
 
+as.list.Vector <- function(x) {
+  as.list(as(x, "List"))
+}
+
+setMethod("as.list", "Vector", as.list.Vector)
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining.
 ###

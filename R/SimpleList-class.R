@@ -188,12 +188,35 @@ setAs("ANY", "SimpleList", function(from) {
   coerceToSimpleList(from)
 })
 
+setAs("list", "List", function(from) {
+  coerceToSimpleList(from)
+})
+
+listElementType <- function(x) {
+  cl <- lapply(x, class)
+  clnames <- unique(unlist(cl, use.names=FALSE))
+  if (length(clnames == 1L)) {
+    clnames
+  } else {
+    contains <- lapply(cl, function(x) getClass(x, TRUE)@contains)
+    clnames <- c(clnames,
+                 unlist(lapply(contains, names), use.names=FALSE))
+    cltab <- table(factor(clnames, unique(clnames)))
+    clnames <- names(cltab)[cltab == length(x)]
+    if (length(clnames) > 0L) {
+      clnames[1]
+    } else {
+      NULL
+    }
+  }
+}
+
 coerceToSimpleList <- function(from, element.type, ...) {
   if (missing(element.type)) {
     if (is(from, "List"))
       element.type <- from@elementType
     else if (is.list(from))
-      element.type <- NULL
+      element.type <- listElementType(from)
     else element.type <- class(from)
   }
   SimpleListClass <- listClassName("Simple", element.type)

@@ -259,6 +259,7 @@ setAtomicListCoercions <- function(type) {
   setAs("ANY", SimpleClass, CoercerToAtomicList(type, compress = FALSE))
   setAs("ANY", Class, CoercerToAtomicList(type, compress = TRUE))
   setAs("SimpleList", Class, CoercerToAtomicList(type, compress = FALSE))
+  setAs("list", Class, CoercerToAtomicList(type, compress = FALSE))
 }
 
 setAtomicListCoercions("logical")
