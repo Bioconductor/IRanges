@@ -92,9 +92,7 @@
 \alias{PartitioningMap}
 
 \alias{mapOrder}
-\alias{mapEnd}
 \alias{mapOrder,PartitioningMap-method}
-\alias{mapEnd,PartitioningMap-method}
 \alias{show,PartitioningMap-method}
 
 \title{Grouping objects}
@@ -334,11 +332,10 @@
       partitions.
     }
     \item{}{
-      \code{PartitioningMap(x=integer(), mapOrder=integer(), mapEnd=integer())}:
+      \code{PartitioningMap(x=integer(), mapOrder=integer())}:
       \code{x} is a list-like object or a sorted integer vector used to
                construct a PartitioningByEnd object.
       \code{mapOrder} numeric vector of the mapped order.
-      \code{mapEnd} numeric vector of the mapped ends. 
 
       Returns a PartitioningMap object.
     }

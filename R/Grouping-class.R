@@ -831,33 +831,28 @@ setAs("Ranges", "PartitioningByWidth",
 )
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### PartitioningMap
-### This object contains PartitioningByEnd and two additional slots
-### that specify how to re-order and re-list the object to a previous mapping.
+### PartitioningMap contains PartitioningByEnd and one additional slot,
+### 'mapOrder', to specify a different order. This object is used by the 
+### pack() function in GenomicFiles and is put in @partitioning of a 
+### GRangesList of pack()ed ranges. 'mapOrder' records the order of the
+### unpacked() ranges. 
 ### 
 
 setClass("PartitioningMap",
     contains="PartitioningByEnd",
     representation(
-        mapOrder="integer",
-        mapEnd="integer"
+        mapOrder="integer"
     ),
     prototype(
-        mapOrder=integer(),
-        mapEnd=integer()
+        mapOrder=integer()
     )
 )
 
 setGeneric("mapOrder", function(x) standardGeneric("mapOrder"))
 setMethod("mapOrder", "PartitioningMap", function(x) x@mapOrder)
 
-setGeneric("mapEnd", function(x) standardGeneric("mapEnd"))
-setMethod("mapEnd", "PartitioningMap", function(x) x@mapEnd)
-
 .valid.PartitioningMap <- function(x)
 {
-    if (!is.integer(mapEnd(x)))
-        return("the mapEnds must be integers")
     if (length(x) == 0L)
         return(NULL)
     if (anyMissing(mapEnd(x)))
@@ -875,42 +870,25 @@ setMethod("mapEnd", "PartitioningMap", function(x) x@mapEnd)
         if (maxend > max(end(x)))
             return("max mapEnd value must be == max(end(object))")
     }
-    maporder <- mapOrder(x)
-    if (length(maporder)) {
-        maxorder <- max(maporder)
-        if (length(maporder) != max(end(x)))
-            return("length(mapOrder(object)) must == max(end(object))")
-    }
-    if (length(mapend) && length(maporder)) {
-        if (maxend > maxorder)
-            return("the max mapEnd cannot exceed the max mapOrder")
-        if (maxorder > maxend)
-            return("the max mapOrder cannot exceed the max mapEnd")
-    }
     NULL
 }
 
 setValidity2("PartitioningMap", .valid.PartitioningMap)
 
-PartitioningMap <- function(x=integer(), mapOrder=integer(),
-                            mapEnd=integer(), ...)
-{
-    new("PartitioningMap", PartitioningByEnd(x=x),
-        mapOrder=mapOrder, mapEnd=mapEnd, ...)
-}
+PartitioningMap <- function(x=integer(), mapOrder=integer(), ...)
+    new("PartitioningMap", PartitioningByEnd(x=x), mapOrder=mapOrder, ...)
 
 setAs("PartitioningByEnd", "PartitioningMap",
     function(from)
-        new("PartitioningMap", from, mapOrder=numeric(), mapEnd=numeric())
+        new("PartitioningMap", from, mapOrder=numeric())
 )
 
 setMethod("show", "PartitioningMap", 
     function(object)
     {
-    cat(class(object), " of length ", length(object), "\n")
-    cat("mapOrder: ", mapOrder(object), "\n")
-    cat("mapEnd: ", mapEnd(object), "\n")
-    print(PartitioningByEnd(object))
+        cat(class(object), " of length ", length(object), "\n")
+        cat("mapOrder: ", mapOrder(object), "\n")
+        print(PartitioningByEnd(object))
     }
 ) 
 

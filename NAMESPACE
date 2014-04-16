@@ -364,7 +364,7 @@ export(
 
     ## Grouping-class.R:
     nobj, grouplength, members, vmembers, togroup, togrouplength,
-    high2low, low2high, grouprank, togrouprank, mapOrder, mapEnd,
+    high2low, low2high, grouprank, togrouprank, mapOrder,
 
     ## Rle-class.R:
     runLength, runValue, nrun, "runLength<-", "runValue<-",
@@ -488,7 +488,7 @@ exportMethods(
     viewApply, viewMins, viewMaxs, viewSums, viewMeans,
     viewWhichMins, viewWhichMaxs, viewRangeMins, viewRangeMaxs,
     nobj, grouplength, members, vmembers, togroup, togrouplength,
-    high2low, low2high, grouprank, togrouprank, mapOrder, mapEnd,
+    high2low, low2high, grouprank, togrouprank, mapOrder,
     runLength, runValue, nrun, "runLength<-", "runValue<-",
     Rle,
     findRange, findRun,
