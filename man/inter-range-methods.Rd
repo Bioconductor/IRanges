@@ -131,7 +131,7 @@ disjointBins(x, ...)
     metadata column \code{"revmap"} of type \link{IntegerList}.
   }
   \item{with.mapping}{
-    Deprecated. Please use the \code{with.revmap} argument instead.
+    Defunct. Please use the \code{with.revmap} argument instead.
   }
   \item{with.inframe.attrib}{
     \code{TRUE} or \code{FALSE}. For internal use.

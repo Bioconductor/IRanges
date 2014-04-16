@@ -28,14 +28,14 @@ setMethod("relistToClass", "ANY",
     }
 )
 
-### Deprecated!
+### Defunct!
 setGeneric("splitAsListReturnedClass",
     function(x) standardGeneric("splitAsListReturnedClass")
 )
 
 setMethod("splitAsListReturnedClass", "ANY",
     function(x) {
-      .Deprecated("relistToClass")
+      .Defunct("relistToClass")
       cn <- listClassName("Compressed", class(x))
       if (cn == "CompressedList")
         cn <- listClassName("Simple", class(x))

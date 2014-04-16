@@ -16,14 +16,14 @@ setMethod("relistToClass", "DataFrame",
 
 setMethod("splitAsListReturnedClass", "data.frame",
     function(x) {
-        .Deprecated("relistToClass")
+        .Defunct("relistToClass")
         "CompressedSplitDataFrameList"
     }
 )
 
 setMethod("splitAsListReturnedClass", "DataFrame",
     function(x) {
-        .Deprecated("relistToClass")
+        .Defunct("relistToClass")
         "CompressedSplitDataFrameList"
     }
 )

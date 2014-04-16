@@ -78,7 +78,7 @@ setMethod("relistToClass", "Hits", function(x) "HitsList")
 setMethod("splitAsListReturnedClass", "Hits",
     function(x)
     {
-        .Deprecated("relistToClass")
+        .Defunct("relistToClass")
         "HitsList"
     }
 )

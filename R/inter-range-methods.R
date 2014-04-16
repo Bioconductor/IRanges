@@ -106,9 +106,9 @@ setMethod("reduce", "IRanges",
         if (!isTRUEorFALSE(with.revmap))
             stop("'with.revmap' must be TRUE or FALSE")
         if (!identical(with.mapping, FALSE)) {
-            msg <- c("  The 'with.mapping' argument is deprecated.\n",
+            msg <- c("  The 'with.mapping' argument is defunct.\n",
                      "  Please use the 'with.revmap' argument instead.")
-            .Deprecated(msg=msg)
+            .Defunct(msg=msg)
             if (!isTRUEorFALSE(with.mapping))
                 stop("'with.mapping' must be TRUE or FALSE")
             if (with.revmap && with.mapping)
@@ -197,9 +197,9 @@ setMethod("reduce", "CompressedIRangesList",
         if (!isTRUEorFALSE(with.revmap))
             stop("'with.revmap' must be TRUE or FALSE")
         if (!identical(with.mapping, FALSE)) {
-            msg <- c("  The 'with.mapping' argument is deprecated.\n",
+            msg <- c("  The 'with.mapping' argument is defunct.\n",
                      "  Please use the 'with.revmap' argument instead.")
-            .Deprecated(msg=msg)
+            .Defunct(msg=msg)
             if (!isTRUEorFALSE(with.mapping))
                 stop("'with.mapping' must be TRUE or FALSE")
             if (with.revmap && with.mapping)
