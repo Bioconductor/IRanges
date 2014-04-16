@@ -855,20 +855,17 @@ setMethod("mapOrder", "PartitioningMap", function(x) x@mapOrder)
 {
     if (length(x) == 0L)
         return(NULL)
-    if (anyMissing(mapEnd(x)))
-        return("the mapEnds cannot be NAs")
-    if (isNotSorted(mapEnd(x)))
-        return("the mapEnds must be sorted")
-    if (any(mapEnd(x) < 0L))
-        return("the mapEnds cannot be negative")
-    if (!is.null(names(mapEnd(x))))
-        return("the mapEnds should not be named")
+    if (anyMissing(mapOrder(x)))
+        return("mapOrder cannot contain NA values")
+    if (any(mapOrder(x) < 0L))
+        return("mapOrder values cannot be negative")
+    if (!is.null(names(mapOrder(x))))
+        return("the mapOrder should not be named")
 
-    mapend <- mapEnd(x)
-    if (length(mapend)) {
-        maxend <- max(mapend)
-        if (maxend > max(end(x)))
-            return("max mapEnd value must be == max(end(object))")
+    if (length(maporder <- mapOrder(x))) {
+        maxorder <- max(maporder)
+        if (max(maporder) > max(end(x)))
+            return("max mapOrder value must be == max(end(object))")
     }
     NULL
 }
