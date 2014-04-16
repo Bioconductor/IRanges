@@ -328,14 +328,6 @@ setReplaceMethod("[", "Vector",
     }
 )
 
-### Old stuff.
-
-seqselect <- function(x, start=NULL, end=NULL, width=NULL) .Defunct()
-
-`seqselect<-` <- function(x, start=NULL, end=NULL, width=NULL, value) .Defunct()
-
-subsetByRanges <- function(x, i) .Defunct()
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Simple helper functions for some common subsetting operations.

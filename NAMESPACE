@@ -268,7 +268,6 @@ export(
     strsplitAsListOfIntegerVectors,
     svn.time,
     phead, ptail,
-    seqselect, "seqselect<-", subsetByRanges,
     splitAsList,
     seqapply, mseqapply, tseqapply, seqsplit, seqby,
     multisplit,

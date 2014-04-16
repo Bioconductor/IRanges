@@ -41,9 +41,6 @@
 \alias{window<-.vector}
 \alias{window<-,factor-method}
 \alias{window<-.factor}
-\alias{seqselect}
-\alias{seqselect<-}
-\alias{subsetByRanges}
 
 \alias{head,Vector-method}
 \alias{head.Vector}

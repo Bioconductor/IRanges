@@ -31,13 +31,13 @@ rangeComparisonCodeToLetter(code)
 ## -------
 
 \S4method{match}{Ranges,Ranges}(x, table, nomatch=NA_integer_, incomparables=NULL,
-      method=c("auto", "quick", "hash"), match.if.overlap=FALSE)
+      method=c("auto", "quick", "hash"))
 
 ## selfmatch()
 ## -----------
 
 \S4method{selfmatch}{Ranges}(x,
-          method=c("auto", "quick", "hash"), match.if.overlap=FALSE)
+          method=c("auto", "quick", "hash"))
 
 ## order() and related methods
 ## ----------------------------
@@ -68,13 +68,6 @@ rangeComparisonCodeToLetter(code)
     When \code{method="auto"} is specified, the most efficient algorithm will
     be used, that is, the hash-based algorithm if \code{length(x) <= 2^29},
     otherwise the Quicksort-based algorithm.
-  }
-  \item{match.if.overlap}{
-    For \code{match}: This argument is defunct in BioC 2.14. Please use
-    \code{findOverlaps(x, table, select="first")}
-    if you need to do
-    \code{match(x, table, match.if.overlap=TRUE)}.
-    For \code{selfmatch}: This argument is defunct in BioC 2.14.
   }
   \item{...}{
     One or more \link{Ranges} objects. The additional \link{Ranges} objects

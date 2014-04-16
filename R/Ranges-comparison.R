@@ -43,8 +43,7 @@ rangeComparisonCodeToLetter <- function(code)
 
 setMethod("match", c("Ranges", "Ranges"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL,
-                       method=c("auto", "quick", "hash"),
-                       match.if.overlap=FALSE)
+                       method=c("auto", "quick", "hash"))
     {
         if (!isSingleNumberOrNA(nomatch))
             stop("'nomatch' must be a single number or NA")
@@ -53,21 +52,6 @@ setMethod("match", c("Ranges", "Ranges"),
         if (!is.null(incomparables))
             stop("\"match\" method for Ranges objects ",
                  "only accepts 'incomparables=NULL'")
-        if (!isTRUEorFALSE(match.if.overlap))
-            stop("'match.if.overlap' must be TRUE or FALSE")
-        if (match.if.overlap) {
-            msg <- c("  Starting with BioC 2.14, ",
-                     "match() on Ranges objects\n  does not support ",
-                     "the 'match.if.overlap' argument anymore. Please use\n\n",
-                     "    findOverlaps(x, table, select=\"first\")\n\n",
-                     "  if you need to do\n\n",
-                     "    match(x, table, match.if.overlap=TRUE)")
-            .Defunct(msg=msg)
-            ans <- findOverlaps(x, table, select="first")
-            if (!is.na(nomatch) && anyMissing(ans))
-                ans[is.na(ans)] <- nomatch
-            return(ans)
-        }
         ## Equivalent to (but faster than):
         ##     findOverlaps(x, table, type="equal", select="first")
         ## except when 'x' and 'table' both contain empty ranges.
@@ -81,20 +65,9 @@ setMethod("match", c("Ranges", "Ranges"),
 ### selfmatch()
 ###
 
-### 'match.if.overlap' arg is ignored.
 setMethod("selfmatch", "Ranges",
-    function(x, method=c("auto", "quick", "hash"), match.if.overlap=FALSE)
-    {
-        if (!isTRUEorFALSE(match.if.overlap))
-            stop("'match.if.overlap' must be TRUE or FALSE")
-        if (match.if.overlap) {
-            msg <- c("  Starting with BioC 2.14), ",
-                     "selfmatch() on a Ranges object\n  does not support ",
-                     "the 'match.if.overlap' argument anymore.")
-            .Defunct(msg=msg)
-        }
+    function(x, method=c("auto", "quick", "hash"))
         selfmatchIntegerPairs(start(x), width(x), method=method)
-    }
 )
 
 
