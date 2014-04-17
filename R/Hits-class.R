@@ -51,7 +51,7 @@ setMethod("extractROWS", "Hits",
     {
         if (missing(i) || !is(i, "Ranges"))
             i <- normalizeSingleBracketSubscript(i, x)
-        if ((is.integer(i) && isNotStrictlySorted(i))
+        if ((is.integer(i) && S4Vectors:::isNotStrictlySorted(i))
          || (is(i, "Ranges") && !isNormal(i)))
             stop("subscript cannot contain duplicates and must preserve the ",
                  "order of elements when subsetting a ", class(x), " object")

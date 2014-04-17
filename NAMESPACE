@@ -7,10 +7,11 @@ importFrom(stats, start, end, var, cov, cor, sd, median, quantile, mad,
            na.omit, na.exclude, complete.cases, setNames)
 
 import(BiocGenerics)
+import(S4Vectors)
 importFrom(stats4, summary, update)
 
 exportClasses(
-    characterORNULL, functionORNULL,
+    functionORNULL,
     Annotated,
     DataTable, DataTableORNULL,
     Vector,
@@ -259,12 +260,6 @@ exportMethods(
 ###
 
 export(
-    setValidity2, new2, setMethods,
-    .Call2,
-    isTRUEorFALSE, isSingleInteger, isSingleNumber, isSingleString,
-    isSingleNumberOrNA, isSingleStringOrNA,
-    recycleIntegerArg, recycleNumericArg,
-    fold,
     safeExplode,
     strsplitAsListOfIntegerVectors,
     svn.time,
@@ -303,8 +298,7 @@ export(
     SimpleList, List, DataFrame,
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList,
-    DataFrameList, SplitDataFrameList,
-    get_showHeadLines, get_showTailLines
+    DataFrameList, SplitDataFrameList
 )
 
 
@@ -313,9 +307,6 @@ export(
 ###
 
 export(
-    ## isConstant.R:
-    isConstant,
-
     ## str-utils.R:
     unstrsplit,
 
@@ -458,7 +449,6 @@ export(
 
 ### Exactly the same list as above.
 exportMethods(
-    isConstant,
     unstrsplit,
     endoapply, mendoapply,
     runsum, runmean, runwtsum, runq,

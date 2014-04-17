@@ -3,6 +3,7 @@
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"
+#include "S4Vectors_interface.h"
 
 static int debug = 0;
 
@@ -221,8 +222,8 @@ SEXP _new_IRanges_from_RangeAE(const char *classname, const RangeAE *range_ae)
 {
 	SEXP ans, start, width;
 
-	PROTECT(start = _new_INTEGER_from_IntAE(&(range_ae->start)));
-	PROTECT(width = _new_INTEGER_from_IntAE(&(range_ae->width)));
+	PROTECT(start = new_INTEGER_from_IntAE(&(range_ae->start)));
+	PROTECT(width = new_INTEGER_from_IntAE(&(range_ae->width)));
 	PROTECT(ans = _new_IRanges(classname, start, width, R_NilValue));
 	UNPROTECT(3);
 	return ans;
@@ -238,7 +239,7 @@ SEXP _new_list_of_IRanges_from_RangeAEAE(const char *element_type,
 	int nelt, i;
 	const RangeAE *elt;
 
-	nelt = _RangeAEAE_get_nelt(range_aeae);
+	nelt = RangeAEAE_get_nelt(range_aeae);
 	PROTECT(ans = NEW_LIST(nelt));
 	for (i = 0, elt = range_aeae->elts; i < nelt; i++, elt++) {
 		PROTECT(ans_elt = _new_IRanges_from_RangeAE(element_type, elt));

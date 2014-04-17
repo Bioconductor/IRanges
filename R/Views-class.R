@@ -177,7 +177,7 @@ setMethod("as.matrix", "Views", function(x, rev = FALSE, max.width = NA) {
   if (is.na(max.width)) {
     max.width <- max(width(x_ranges))
   }
-  rev <- recycleVector(rev, length(x))
+  rev <- S4Vectors:::recycleVector(rev, length(x))
   part <- PartitioningByWidth(x_ranges)
   ord <- mseq(ifelse(rev, end(part), start(part)),
               ifelse(rev, start(part), end(part)))

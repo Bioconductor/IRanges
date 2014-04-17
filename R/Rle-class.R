@@ -126,7 +126,7 @@ setAs("Rle", "data.frame", function(from) as.data.frame(from))
 setAs("Rle", "IRanges",
       function(from)
       {
-          if (!is.logical(runValue(from)) || anyMissing(runValue(from)))
+          if (!is.logical(runValue(from)) || S4Vectors:::anyMissing(runValue(from)))
               stop("cannot coerce a non-logical 'Rle' or a logical 'Rle' ",
                    "with NAs to an IRanges object")
           keep <- runValue(from)
@@ -546,7 +546,7 @@ setGeneric("findRange", signature = "vec",
 setMethod("findRange", signature = c(vec = "Rle"),
           function(x, vec) {
               run <- findRun(x, vec)
-              if (anyMissing(run))
+              if (S4Vectors:::anyMissing(run))
                 stop("all 'x' values must be in [1, 'length(vec)']")
               IRanges(start = start(vec)[run], width = width(vec)[run],
                       names = names(x))
@@ -759,7 +759,7 @@ setMethod("order", "Rle",
 .sort.Rle <- function(x, decreasing=FALSE, na.last=NA, ...)
 {
     if (is.na(na.last)) {
-        if (anyMissing(runValue(x)))
+        if (S4Vectors:::anyMissing(runValue(x)))
             x <- x[!is.na(x)]
     }
     if (is.integer(runValue(x)) || is.factor(runValue(x)))
@@ -1128,7 +1128,7 @@ setMethod("cov", signature = c(x = "Rle", y = "Rle"),
                   stop("only 'pearson' method is supported for Rle objects")
               na.rm <-
                 use %in% c("complete.obs", "pairwise.complete.obs", "na.or.complete")
-              if (use == "all.obs" && (anyMissing(x) || anyMissing(y)))
+              if (use == "all.obs" && (S4Vectors:::anyMissing(x) || S4Vectors:::anyMissing(y)))
                   stop("missing observations in cov/cor")
               var(x, y, na.rm = na.rm)
           })
@@ -1249,7 +1249,7 @@ setMethod("runmed", "Rle",
                   stop("NA/NaN/Inf not supported in runmed,Rle-method")
               endrule <- match.arg(endrule)
               n <- length(x)
-              k <- normargRunK(k = k, n = n, endrule = endrule)
+              k <- S4Vectors:::normargRunK(k = k, n = n, endrule = endrule)
               i <- (k + 1L) %/% 2L
               ans <- runq(x, k = k, i = i)
               if (endrule == "constant") {
@@ -1270,7 +1270,7 @@ setMethod("runsum", "Rle",
           {
               endrule <- match.arg(endrule)
               n <- length(x)
-              k <- normargRunK(k = k, n = n, endrule = endrule)
+              k <- S4Vectors:::normargRunK(k = k, n = n, endrule = endrule)
               ans <- .Call2("Rle_runsum", x, as.integer(k), as.logical(na.rm), 
                             PACKAGE="IRanges")
               if (endrule == "constant") {
@@ -1287,7 +1287,7 @@ setMethod("runwtsum", "Rle",
           {
               endrule <- match.arg(endrule)
               n <- length(x)
-              k <- normargRunK(k = k, n = n, endrule = endrule)
+              k <- S4Vectors:::normargRunK(k = k, n = n, endrule = endrule)
               ans <-
                 .Call2("Rle_runwtsum", x, as.integer(k), as.numeric(wt),
                       as.logical(na.rm), PACKAGE="IRanges")
@@ -1305,7 +1305,7 @@ setMethod("runq", "Rle",
           {
               endrule <- match.arg(endrule)
               n <- length(x)
-              k <- normargRunK(k = k, n = n, endrule = endrule)
+              k <- S4Vectors:::normargRunK(k = k, n = n, endrule = endrule)
               ans <-
                 .Call2("Rle_runq", x, as.integer(k), as.integer(i), 
                       as.logical(na.rm), PACKAGE="IRanges")

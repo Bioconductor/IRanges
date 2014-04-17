@@ -137,7 +137,7 @@
     if (!is.integer(mask.width))
         mask.width <- as.integer(mask.width)
     if (!is.null(gap.types) && (!is.character(gap.types)
-                                || anyMissing(gap.types)
+                                || S4Vectors:::anyMissing(gap.types)
                                 || anyDuplicated(gap.types)))
         stop("'gap.types' must be 'NULL' or a character vector ",
              "with no NAs and no duplicated")
@@ -178,7 +178,7 @@
              "for assembly gaps in sequence \"", seqname, "\"")
     if (use.gap.types) {
         names(ranges) <- data$gap_type
-        if (isNotStrictlySorted(start(ranges)))
+        if (S4Vectors:::isNotStrictlySorted(start(ranges)))
             ranges <- ranges[orderInteger(start(ranges))]
         if (!isNormal(ranges))
             stop("cannot use the gap types when some gaps are adjacent or overlap")
@@ -305,7 +305,7 @@ read.rmMask <- function(file, seqname="?", mask.width=NA, use.IDs=FALSE)
     ranges <- IRanges(start=data$begin_in_query, end=data$end_in_query)
     if (use.IDs) {
         names(ranges) <- data$ID
-        if (isNotStrictlySorted(start(ranges)))
+        if (S4Vectors:::isNotStrictlySorted(start(ranges)))
             ranges <- ranges[orderInteger(start(ranges))]
         if (!isNormal(ranges))
             stop("cannot use the repeat IDs when some repeats are adjacent or overlap")

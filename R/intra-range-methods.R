@@ -21,14 +21,14 @@ setMethod("shift", "Ranges",
         shift <- recycleIntegerArg(shift, "shift", length(x))
         ## Note that we won't do anything with 'new_end', we just want to
         ## fail in case of integer overflow.
-        errorIfWarning(new_start <- start(x) + shift)
-        errorIfWarning(new_end <- new_start + width(x) - 1L)
+        S4Vectors:::errorIfWarning(new_start <- start(x) + shift)
+        S4Vectors:::errorIfWarning(new_end <- new_start + width(x) - 1L)
         if (is(x, "IRanges")) {
             x@start <- new_start
         } else {
             x <- update(x, start=new_start, width=width(x), check=FALSE)
         }
-        if (!normargUseNames(use.names))
+        if (!S4Vectors:::normargUseNames(use.names))
             names(x) <- NULL
         x
     }
@@ -46,7 +46,7 @@ setMethod("shift", "RangesList",
           function(x, shift=0L, use.names = TRUE)
           {
               lx <- length(x)
-              shift <- normargAtomicList1(shift, IntegerList, lx)
+              shift <- S4Vectors:::normargAtomicList1(shift, IntegerList, lx)
               mendoapply("shift", x = x, shift = shift,
                          MoreArgs = list(use.names = use.names))
           })
@@ -56,7 +56,7 @@ setMethod("shift", "CompressedIRangesList",
           {
               lx <- length(x)
               eln <- elementLengths(x)
-              shift <- normargAtomicList2(shift, IntegerList, lx, eln)
+              shift <- S4Vectors:::normargAtomicList2(shift, IntegerList, lx, eln)
               slot(x, "unlistData", check=FALSE) <-
                 shift(x@unlistData, shift = shift, use.names = use.names)
               x
@@ -86,7 +86,7 @@ setMethod("narrow", "Ranges",
         ans_start <- start(x) + start(solved_SEW) - 1L
         ans_width <- width(solved_SEW)
         x <- update(x, start=ans_start, width=ans_width, check=FALSE)
-        if (!normargUseNames(use.names))
+        if (!S4Vectors:::normargUseNames(use.names))
             names(x) <- NULL
         x
     }
@@ -105,9 +105,9 @@ setMethod("narrow", "RangesList",
           function(x, start = NA, end = NA, width = NA, use.names = TRUE)
           {
               lx <- length(x)
-              start <- normargAtomicList1(start, IntegerList, lx)
-              end <- normargAtomicList1(end, IntegerList, lx)
-              width <- normargAtomicList1(width, IntegerList, lx)
+              start <- S4Vectors:::normargAtomicList1(start, IntegerList, lx)
+              end <- S4Vectors:::normargAtomicList1(end, IntegerList, lx)
+              width <- S4Vectors:::normargAtomicList1(width, IntegerList, lx)
               mendoapply(narrow, x = x, start = start, end = end, width = width,
                          MoreArgs = list(use.names = use.names))
           })
@@ -117,9 +117,9 @@ setMethod("narrow", "CompressedIRangesList",
           {
               lx <- length(x)
               eln <- elementLengths(x)
-              start <- normargAtomicList2(start, IntegerList, lx, eln)
-              end <- normargAtomicList2(end, IntegerList, lx, eln)
-              width <- normargAtomicList2(width, IntegerList, lx, eln)
+              start <- S4Vectors:::normargAtomicList2(start, IntegerList, lx, eln)
+              end <- S4Vectors:::normargAtomicList2(end, IntegerList, lx, eln)
+              width <- S4Vectors:::normargAtomicList2(width, IntegerList, lx, eln)
               slot(x, "unlistData", check=FALSE) <-
                 narrow(x@unlistData, start = start, end = end, width = width,
                        use.names = use.names)
@@ -147,7 +147,7 @@ setMethod("narrow", "IntervalForest",
 #        for (i in seq_len(length(x))) {
 #            x@cnirl[[i]] <- restrict(x[[i]], start=start2[i], end=end2[i])
 #        }
-#        if (!normargUseNames(use.names))
+#        if (!S4Vectors:::normargUseNames(use.names))
 #            names(x) <- NULL
 #        x
 #    }
@@ -165,7 +165,7 @@ setMethod("narrow", "MaskCollection",
                                 1L - solved_start)
         )
         x@width <- solved_width
-        if (!normargUseNames(use.names))
+        if (!S4Vectors:::normargUseNames(use.names))
             names(x) <- NULL
         x
     }
@@ -187,9 +187,9 @@ setMethod("flank", "Ranges",
         if (is(x, "NormalIRanges"))
             stop("flanking a NormalIRanges object is not supported")
         width <- recycleIntegerArg(width, "width", length(x))
-        if (!is.logical(start) || anyMissing(start))
+        if (!is.logical(start) || S4Vectors:::anyMissing(start))
             stop("'start' must be logical without NA's")
-        start <- recycleVector(unname(start), length(x))
+        start <- S4Vectors:::recycleVector(unname(start), length(x))
         if (!isTRUEorFALSE(both))
             stop("'both' must be TRUE or FALSE")
         if (both) {
@@ -203,7 +203,7 @@ setMethod("flank", "Ranges",
             ans_width <- abs(width)
         }
         x <- update(x, start=ans_start, width=ans_width, check=FALSE)
-        if (!normargUseNames(use.names))
+        if (!S4Vectors:::normargUseNames(use.names))
             names(x) <- NULL
         x
     }
@@ -213,8 +213,8 @@ setMethod("flank", "RangesList",
           function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
           {
               lx <- length(x)
-              width <- normargAtomicList1(width, IntegerList, lx)
-              start <- normargAtomicList1(start, LogicalList, lx)
+              width <- S4Vectors:::normargAtomicList1(width, IntegerList, lx)
+              start <- S4Vectors:::normargAtomicList1(start, LogicalList, lx)
               mendoapply(flank, x = x, width = width, start = start,
                          MoreArgs = list(both = both, use.names = use.names))
           })
@@ -224,8 +224,8 @@ setMethod("flank", "CompressedIRangesList",
           {
               lx <- length(x)
               eln <- elementLengths(x)
-              width <- normargAtomicList2(width, IntegerList, lx, eln)
-              start <- normargAtomicList2(start, LogicalList, lx, eln)
+              width <- S4Vectors:::normargAtomicList2(width, IntegerList, lx, eln)
+              start <- S4Vectors:::normargAtomicList2(start, LogicalList, lx, eln)
               slot(x, "unlistData", check=FALSE) <-
                 flank(x@unlistData, width = width, start = start, both = both,
                       use.names = use.names)
@@ -324,7 +324,7 @@ setMethod("reflect", "Ranges",
             bounds <- head(bounds, length(x))
         ans_start <- (2L * start(bounds) + width(bounds) - 1L) - end(x)
         x <- update(x, start=ans_start, width=width(x), check=FALSE)
-        if (!normargUseNames(use.names))
+        if (!S4Vectors:::normargUseNames(use.names))
             names(x) <- NULL
         x
     }
@@ -346,7 +346,7 @@ setMethod("resize", "Ranges",
         if (is(x, "NormalIRanges"))
             stop("resizing a NormalIRanges object is not supported")
         lx <- length(x)
-        if (!is.numeric(width) || anyMissing(width))
+        if (!is.numeric(width) || S4Vectors:::anyMissing(width))
             stop("'width' must be a numeric vector without NA's")
         if (!is.integer(width))
             width <- as.integer(width)
@@ -364,7 +364,7 @@ setMethod("resize", "Ranges",
             fix <- Rle(fix)
         if (length(fix) != lx)
             fix <- rep(fix, length.out = lx)
-        ans_width <- recycleVector(width, lx)
+        ans_width <- S4Vectors:::recycleVector(width, lx)
         ans_start <- start(x)
         if (!identical(runValue(fix), "start")) {
             fixEnd <- as(fix == "end", "IRanges")
@@ -383,7 +383,7 @@ setMethod("resize", "Ranges",
             }
         }
         x <- update(x, start=ans_start, width=ans_width, check=FALSE)
-        if (!normargUseNames(use.names))
+        if (!S4Vectors:::normargUseNames(use.names))
             names(x) <- NULL
         x
     }
@@ -393,8 +393,8 @@ setMethod("resize", "RangesList",
           function(x, width, fix = "start", use.names = TRUE)
           {
               lx <- length(x)
-              width <- normargAtomicList1(width, IntegerList, lx)
-              fix <- normargAtomicList1(fix, CharacterList, lx)
+              width <- S4Vectors:::normargAtomicList1(width, IntegerList, lx)
+              fix <- S4Vectors:::normargAtomicList1(fix, CharacterList, lx)
               mendoapply(resize, x = x, width = width, fix = fix,
                          MoreArgs = list(use.names = use.names))
           })
@@ -404,8 +404,8 @@ setMethod("resize", "CompressedIRangesList",
           {
               lx <- length(x)
               eln <- elementLengths(x)
-              width <- normargAtomicList2(width, IntegerList, lx, eln)
-              fix <- normargAtomicList2(fix, CharacterList, lx, eln)
+              width <- S4Vectors:::normargAtomicList2(width, IntegerList, lx, eln)
+              fix <- S4Vectors:::normargAtomicList2(fix, CharacterList, lx, eln)
               slot(x, "unlistData", check=FALSE) <-
                 resize(x@unlistData, width = width, fix = fix,
                        use.names = use.names)
@@ -451,11 +451,11 @@ setGeneric("restrict", signature="x",
 ### Note that the only mode compatible with a NormalIRanges object is 0L.
 Ranges.restrict <- function(x, start, end, drop.ranges.mode, use.names)
 {
-    if (!isNumericOrNAs(start))
+    if (!S4Vectors:::isNumericOrNAs(start))
         stop("'start' must be a vector of integers")
     if (!is.integer(start))
         start <- as.integer(start)
-    if (!isNumericOrNAs(end))
+    if (!S4Vectors:::isNumericOrNAs(end))
         stop("'end' must be a vector of integers")
     if (!is.integer(end))
         end <- as.integer(end)
@@ -465,9 +465,9 @@ Ranges.restrict <- function(x, start, end, drop.ranges.mode, use.names)
         if (length(end) == 0L || length(end) > length(x))
             stop("invalid 'end' length")
     }
-    start <- recycleVector(start, length(x))
-    end <- recycleVector(end, length(x))
-    use.names <- normargUseNames(use.names)
+    start <- S4Vectors:::recycleVector(start, length(x))
+    end <- S4Vectors:::recycleVector(end, length(x))
+    use.names <- S4Vectors:::normargUseNames(use.names)
 
     ans_start <- start(x)
     ans_end <- end(x)
@@ -526,7 +526,7 @@ setMethod("restrict", "Ranges",
     {
         if (!isTRUEorFALSE(keep.all.ranges))
             stop("'keep.all.ranges' must be TRUE or FALSE")
-        use.names <- normargUseNames(use.names)
+        use.names <- S4Vectors:::normargUseNames(use.names)
         if (is(x, "NormalIRanges")) {
             if (keep.all.ranges)
                 stop("'keep.all.ranges=TRUE' is not supported ",
@@ -547,8 +547,8 @@ setMethod("restrict", "RangesList",
                    use.names = TRUE)
           {
               lx <- length(x)
-              start <- normargAtomicList1(start, IntegerList, lx)
-              end <- normargAtomicList1(end, IntegerList, lx)
+              start <- S4Vectors:::normargAtomicList1(start, IntegerList, lx)
+              end <- S4Vectors:::normargAtomicList1(end, IntegerList, lx)
               mendoapply(restrict, x, start = start, end = end,
                          MoreArgs = list(keep.all.ranges = keep.all.ranges,
                            use.names = use.names))
@@ -563,8 +563,8 @@ setMethod("restrict", "CompressedIRangesList",
               if (keep.all.ranges) {
                   lx <- length(x)
                   eln <- elementLengths(x)
-                  start <- normargAtomicList2(start, IntegerList, lx, eln)
-                  end <- normargAtomicList2(end, IntegerList, lx, eln)
+                  start <- S4Vectors:::normargAtomicList2(start, IntegerList, lx, eln)
+                  end <- S4Vectors:::normargAtomicList2(end, IntegerList, lx, eln)
                   slot(x, "unlistData", check=FALSE) <-
                     restrict(x@unlistData, start = start, end = end,
                              keep.all.ranges = keep.all.ranges,
@@ -626,7 +626,7 @@ setMethod("threebands", "IRanges",
 setMethod("Ops", c("Ranges", "numeric"),
     function(e1, e2)
     {
-        if (anyMissing(e2))
+        if (S4Vectors:::anyMissing(e2))
             stop("NA not allowed as zoom factor")
         if ((length(e1) < length(e2) && length(e1)) ||
             (length(e1) && !length(e2)) ||

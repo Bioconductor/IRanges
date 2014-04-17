@@ -57,7 +57,7 @@ setReplaceMethod("rownames", "DataFrame",
                  function(x, value)
                  {
                    if (!is.null(value)) {
-                     if (anyMissing(value))
+                     if (S4Vectors:::anyMissing(value))
                        stop("missing values not allowed in rownames")
                      if (length(value) != nrow(x))
                        stop("invalid rownames length")
@@ -189,7 +189,7 @@ DataFrame <- function(..., row.names = NULL, check.names = TRUE)
   } else names(varlist) <- character(0)
 
   if (!is.null(row.names)) {
-    if (anyMissing(row.names))
+    if (S4Vectors:::anyMissing(row.names))
       stop("missing values in 'row.names'")
     if (length(varlist) && length(row.names) != nr)
       stop("invalid length of row names")

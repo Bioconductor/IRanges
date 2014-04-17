@@ -14,7 +14,7 @@ setMethod("tile", "Ranges", function(x, n, width, ...) {
       stop("some width(x) are less than 'n'")
     if (any(n < 0L))
       stop("some 'n' are negative")
-    n <- recycleVector(n, length(x))
+    n <- S4Vectors:::recycleVector(n, length(x))
   }
   if (!missing(width)) {
     if (!missing(n))

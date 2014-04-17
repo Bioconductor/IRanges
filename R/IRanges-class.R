@@ -119,7 +119,7 @@ setMethod("min", "NormalIRanges",
 .valid.IRanges.start <- function(x)
 {
     x_start <- start(x)
-    if (!is.integer(x_start) || !is.null(names(x_start)) || anyMissing(x_start))
+    if (!is.integer(x_start) || !is.null(names(x_start)) || S4Vectors:::anyMissing(x_start))
         return("'start(x)' must be an unnamed integer vector with no NAs")
     if (length(x_start) != length(width(x)))
         return("'start(x)' and 'width(x)' must have the same length")
@@ -129,7 +129,7 @@ setMethod("min", "NormalIRanges",
 .valid.IRanges.width <- function(x)
 {
     x_width <- width(x)
-    if (!is.integer(x_width) || !is.null(names(x_width)) || anyMissing(x_width))
+    if (!is.integer(x_width) || !is.null(names(x_width)) || S4Vectors:::anyMissing(x_width))
         return("'width(x)' must be an unnamed integer vector with no NAs")
     if (length(start(x)) != length(x_width))
         return("'start(x)' and 'width(x)' must have the same length")
@@ -144,7 +144,7 @@ setMethod("min", "NormalIRanges",
     ## obtained by doing 'start(x) + width(x) - 1L') could contain NAs
     ## in case of an integer overflow.
     x_end <- end(x)
-    if (anyMissing(x_end))
+    if (S4Vectors:::anyMissing(x_end))
         return("'end(x)' cannot contain NAs")
     NULL
 }
@@ -192,7 +192,7 @@ newNormalIRangesFromIRanges <- function(x, check=TRUE)
         stop("'check' must be TRUE or FALSE")
     ## Check only what needs to be checked.
     if (check)
-        stopIfProblems(.valid.NormalIRanges(x))
+        S4Vectors:::stopIfProblems(.valid.NormalIRanges(x))
     ## Make a "hard copy" of the slots. No need to check anything!
     new2("NormalIRanges", start=x@start, width=x@width, NAMES=x@NAMES, check=FALSE)
 }
@@ -241,7 +241,7 @@ setAs("numeric", "NormalIRanges",
 {
     old_start <- start(x)
     ## Use 'x@start[]' instead of just 'x@start' so the right value is recycled
-    x@start[] <- numeric2integer(value)
+    x@start[] <- S4Vectors:::numeric2integer(value)
     x@width <- width(x) - start(x) + old_start
     x
 }
@@ -250,7 +250,7 @@ setAs("numeric", "NormalIRanges",
 `unsafe.end<-` <- function(x, value)
 {
     ## Use 'x@width[]' instead of just 'x@width' so the right value is recycled
-    x@width[] <- width(x) + numeric2integer(value) - end(x)
+    x@width[] <- width(x) + S4Vectors:::numeric2integer(value) - end(x)
     x
 }
 
@@ -258,7 +258,7 @@ setAs("numeric", "NormalIRanges",
 `unsafe.width<-` <- function(x, value)
 {
     ## Use 'x@width[]' instead of just 'x@width' so the right value is recycled
-    x@width[] <- numeric2integer(value)
+    x@width[] <- S4Vectors:::numeric2integer(value)
     x
 }
 
@@ -281,7 +281,7 @@ setAs("numeric", "NormalIRanges",
 unsafe.update <- function(object, ...)
 {
     valid_argnames <- c("start", "end", "width", "names")
-    args <- extraArgsAsList(valid_argnames, ...)
+    args <- S4Vectors:::extraArgsAsList(valid_argnames, ...)
     argnames <- names(args)
     sew <- c("start", "end", "width")
     narg_in_sew <- sum(sew %in% argnames)
@@ -304,8 +304,8 @@ unsafe.update <- function(object, ...)
             start <- args$start
             width <- args$width
         }
-        object@start <- numeric2integer(start)
-        object@width <- numeric2integer(width)
+        object@start <- S4Vectors:::numeric2integer(start)
+        object@width <- S4Vectors:::numeric2integer(width)
         object@NAMES <- args$names
         return(object)
     }
@@ -421,7 +421,7 @@ setMethod("extractROWS", "IRanges",
         if (missing(i) || !is(i, "Ranges"))
             i <- normalizeSingleBracketSubscript(i, x)
         if (is(x, "NormalIRanges")
-         && ((is.integer(i) && isNotStrictlySorted(i))
+         && ((is.integer(i) && S4Vectors:::isNotStrictlySorted(i))
           || (is(i, "Ranges") && !isNormal(i))))
             stop("subscript cannot contain duplicates and must preserve the ",
                  "order of elements when subsetting a ", class(x), " object")
@@ -458,9 +458,9 @@ setMethod("replaceROWS", "IRanges",
 ### It's easy to implement specific "c" methods for IRanges subclasses.
 ### Typically they just need to do something like:
 ###
-###     old_val <- disableValidity()
-###     on.exit(disableValidity(old_val))
-###     disableValidity(TRUE)
+###     old_val <- S4Vectors:::disableValidity()
+###     on.exit(S4Vectors:::disableValidity(old_val))
+###     S4Vectors:::disableValidity(TRUE)
 ###     ans <- callNextMethod(x, ..., recursive=FALSE)
 ###     ...
 ###

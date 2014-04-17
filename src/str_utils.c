@@ -1,4 +1,5 @@
 #include "IRanges.h"
+#include "S4Vectors_interface.h"
 
 #include <limits.h>  /* for UINT_MAX and UINT_MIN */
 #include <ctype.h>   /* for isblank() and isdigit() */
@@ -157,7 +158,7 @@ static SEXP explode_string_as_integer_vector(SEXP s, char sep0)
 	long int val;
 
 	str = CHAR(s);
-	_IntAE_set_nelt(&int_ae_buf, offset = 0);
+	IntAE_set_nelt(&int_ae_buf, offset = 0);
 	while (str[offset]) {
 		ret = sscanf(str + offset, "%ld%n", &val, &n);
 		if (ret != 1) {
@@ -175,8 +176,8 @@ static SEXP explode_string_as_integer_vector(SEXP s, char sep0)
 				 offset + 1);
 			return R_NilValue;
 		}
-		_IntAE_insert_at(&int_ae_buf,
-			_IntAE_get_nelt(&int_ae_buf), (int) val);
+		IntAE_insert_at(&int_ae_buf,
+			IntAE_get_nelt(&int_ae_buf), (int) val);
 		if (str[offset] == '\0')
 			break;
 		if (str[offset] != sep0) {
@@ -187,7 +188,7 @@ static SEXP explode_string_as_integer_vector(SEXP s, char sep0)
 		}
 		offset++;
 	}
-	return _new_INTEGER_from_IntAE(&int_ae_buf);
+	return new_INTEGER_from_IntAE(&int_ae_buf);
 }
 
 /* --- .Call ENTRY POINT --- */
@@ -201,7 +202,7 @@ SEXP strsplit_as_list_of_ints(SEXP x, SEXP sep)
 	sep0 = CHAR(STRING_ELT(sep, 0))[0];
 	if (isdigit(sep0) || sep0 == '+' || sep0 == '-')
 		error("'sep' cannot be a digit, \"+\" or \"-\"");
-	int_ae_buf = _new_IntAE(0, 0, 0);
+	int_ae_buf = new_IntAE(0, 0, 0);
 	PROTECT(ans = NEW_LIST(ans_length));
 	for (i = 0; i < ans_length; i++) {
 		x_elt = STRING_ELT(x, i);

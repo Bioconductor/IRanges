@@ -41,19 +41,19 @@ solveUserSEW0 <- function(start=NULL, end=NULL, width=NULL)
         if (L1 == 0L)
             start <- rep.int(NA_integer_, max123)
         else
-            start <- recycleVector(start, max123)
+            start <- S4Vectors:::recycleVector(start, max123)
     }
     if (L2 < max123) {
         if (L2 == 0L)
             end <- rep.int(NA_integer_, max123)
         else
-            end <- recycleVector(end, max123)
+            end <- S4Vectors:::recycleVector(end, max123)
     }
     if (L3 < max123) {
         if (L3 == 0L)
             width <- rep.int(NA_integer_, max123)
         else
-            width <- recycleVector(width, max123)
+            width <- S4Vectors:::recycleVector(width, max123)
     }
     .Call2("solve_user_SEW0", start, end, width, PACKAGE="IRanges")
 }
@@ -100,7 +100,7 @@ IRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL)
 
 .normargSEW <- function(x, argname)
 {
-    if (!isNumericOrNAs(x))
+    if (!S4Vectors:::isNumericOrNAs(x))
         stop("'", argname, "' must be a vector of integers")
     if (!is.integer(x))
         x <- as.integer(x)

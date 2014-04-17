@@ -349,7 +349,7 @@ subset_List_by_List <- function(x, i)
                  "by a named list-like object")
         if (!identical(names(i), names(x))) {
             i2x <- match(names(i), names(x))
-            if (anyMissing(i2x))
+            if (S4Vectors:::anyMissing(i2x))
                 stop("list-like subscript has names not in ",
                      "list-like object to subset")
             x <- x[i2x]
@@ -465,7 +465,7 @@ lsubset_List_by_List <- function(x, i, value)
             stop("cannot subset an unnamed list-like object ",
                  "by a named list-like subscript")
         i2x <- match(names(i), names(x))
-        if (anyMissing(i2x))
+        if (S4Vectors:::anyMissing(i2x))
             stop("list-like subscript has names not in ",
                  "list-like object to subset")
         if (anyDuplicated(i2x))

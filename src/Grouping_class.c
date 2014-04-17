@@ -3,6 +3,7 @@
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"
+#include "S4Vectors_interface.h"
 
 static int debug = 0;
 
@@ -152,7 +153,7 @@ SEXP H2LGrouping_members(SEXP x, SEXP group_ids)
 		ans_elt += LENGTH(x_low2high_elt);
 	}
 
-	_sort_int_array(INTEGER(ans), ans_length, 0);
+	sort_int_array(INTEGER(ans), ans_length, 0);
 	UNPROTECT(1);
 	return ans;
 }

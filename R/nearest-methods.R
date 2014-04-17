@@ -19,7 +19,7 @@ setMethod("precede", c("Ranges", "RangesORmissing"),
       select <- match.arg(select)
       s <- start(subject)
       ord <- NULL
-      if (isNotSorted(s)) {
+      if (S4Vectors:::isNotSorted(s)) {
         ord <- orderInteger(s)
         s <- s[ord]
       }
@@ -47,7 +47,7 @@ setMethod("follow", c("Ranges", "RangesORmissing"),
       select <- match.arg(select)
       e <- end(subject)
       ord <- NULL
-      if (isNotSorted(e)) {
+      if (S4Vectors:::isNotSorted(e)) {
         ord <- orderInteger(e)
         e <- e[ord]
       }

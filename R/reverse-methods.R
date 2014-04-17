@@ -19,7 +19,7 @@ setMethod("reverse", "character",
 {
     if (length(x) == 0L)
         return(x)
-    args <- extraArgsAsList(NULL, ...)
+    args <- S4Vectors:::extraArgsAsList(NULL, ...)
     argnames <- names(args)
     n2p <- match(c("start", "end", "use.names"), argnames)
     if (is.na(n2p[1L])) {
@@ -30,7 +30,7 @@ setMethod("reverse", "character",
             stop("'start' must be a vector of integers")
         if (!is.integer(start))
             start <- as.integer(start)
-        if (anyMissing(start))
+        if (S4Vectors:::anyMissing(start))
             stop("'start' contains NAs")
     }
     if (is.na(n2p[2L])) {
@@ -41,10 +41,10 @@ setMethod("reverse", "character",
             stop("'end' must be a vector of integers")
         if (!is.integer(end))
             end <- as.integer(end)
-        if (anyMissing(end))
+        if (S4Vectors:::anyMissing(end))
             stop("'end' contains NAs")
     }
-    if (!is.na(n2p[3L]) && !normargUseNames(args[[n2p[3L]]]))
+    if (!is.na(n2p[3L]) && !S4Vectors:::normargUseNames(args[[n2p[3L]]]))
         unsafe.names(x) <- NULL
     ## WARNING: -end(x) *must* appear first in this expression if we want
     ## the supplied 'start' and 'end' to be recycled properly.

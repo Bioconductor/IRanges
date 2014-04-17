@@ -121,7 +121,7 @@ setReplaceMethod("[[", "CompressedList",
                  function(x, i, j,..., value)
                  {
                      nameValue <- if (is.character(i)) i else ""
-                     i <- normargSubset2_iOnly(x, i, j, ...,
+                     i <- S4Vectors:::normargSubset2_iOnly(x, i, j, ...,
                               .conditionPrefix="[[<-,CompressedList-method: ")
                      if (is.null(value)) {
                          if (i <= length(x)) # if name did not exist, could be +1
@@ -238,16 +238,16 @@ lapply_CompressedList <- function(X, FUN, ...)
         return(ans)
     X_elt_start <- start(X_partitioning)
     X_elt_end <- end(X_partitioning)
-    old_validity_status <- disableValidity()
-    disableValidity(TRUE)
-    on.exit(disableValidity(old_validity_status))
+    old_validity_status <- S4Vectors:::disableValidity()
+    S4Vectors:::disableValidity(TRUE)
+    on.exit(S4Vectors:::disableValidity(old_validity_status))
     ans[non_empty_idx] <-
       lapply(non_empty_idx,
              function(i)
                  FUN(extractROWS(unlisted_X,
                                  IRanges(X_elt_start[i], X_elt_end[i])),
                      ...))
-    disableValidity(old_validity_status)
+    S4Vectors:::disableValidity(old_validity_status)
     for (i in non_empty_idx) {
         obj <- ans[[i]]
         if (isS4(obj) && !isTRUE(validObject(obj, test=TRUE)))
@@ -402,7 +402,7 @@ coerceToCompressedList <- function(from, element.type = NULL, ...) {
     part <- PartitioningByEnd(seq_len(length(from)))
   }
   if (!is.null(element.type)) {
-    v <- coercerToClass(element.type)(v, ...)
+    v <- S4Vectors:::coercerToClass(element.type)(v, ...)
   }
   to <- relist(v, part)
   names(to) <- names(from)

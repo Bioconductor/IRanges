@@ -312,8 +312,8 @@ setGeneric("gaps", signature="x",
 setMethod("gaps", "IRanges",
     function(x, start=NA, end=NA)
     {
-        start <- normargSingleStartOrNA(start)
-        end <- normargSingleEndOrNA(end)
+        start <- S4Vectors:::normargSingleStartOrNA(start)
+        end <- S4Vectors:::normargSingleEndOrNA(end)
         C_ans <- .Call2("IRanges_gaps",
                         start(x), width(x), start, end,
                         PACKAGE="IRanges")
@@ -355,16 +355,16 @@ setMethod("gaps", "RangesList",
           function(x, start = NA, end = NA)
           {
               lx <- length(x)
-              if (!isNumericOrNAs(start))
+              if (!S4Vectors:::isNumericOrNAs(start))
                   stop("'start' must be an integer vector or NA")
               if (!is.integer(start))
                   start <- as.integer(start)
-              if (!isNumericOrNAs(end))
+              if (!S4Vectors:::isNumericOrNAs(end))
                   stop("'end' must be an integer vector or NA")
               if (!is.integer(end))
                   end <- as.integer(end)
-              start <- IntegerList(as.list(recycleVector(start, lx)))
-              end <- IntegerList(as.list(recycleVector(end, lx)))
+              start <- IntegerList(as.list(S4Vectors:::recycleVector(start, lx)))
+              end <- IntegerList(as.list(S4Vectors:::recycleVector(end, lx)))
               mendoapply(gaps, x, start = start, end = end)
           })
 
@@ -372,17 +372,17 @@ setMethod("gaps", "CompressedIRangesList",
           function(x, start = NA, end = NA)
           {
               lx <- length(x)
-              if (!isNumericOrNAs(start))
+              if (!S4Vectors:::isNumericOrNAs(start))
                   stop("'start' must be an integer vector or NA")
               if (!is.integer(start))
                   start <- as.integer(start)
-              if (!isNumericOrNAs(end))
+              if (!S4Vectors:::isNumericOrNAs(end))
                   stop("'end' must be an integer vector or NA")
               if (!is.integer(end))
                   end <- as.integer(end)
               if ((length(start) != 1) || (length(end) != 1)) {
-                  start <- recycleVector(start, lx)
-                  end <- recycleVector(end, lx)
+                  start <- S4Vectors:::recycleVector(start, lx)
+                  end <- S4Vectors:::recycleVector(end, lx)
               }
               .Call2("CompressedIRangesList_gaps", x, start, end,
                     PACKAGE="IRanges")
@@ -508,7 +508,7 @@ setMethod("disjointBins", "Ranges",
     function(x)
     {
         x_ord <- NULL
-        if (isNotSorted(start(x))) { # minimize work for sorted ranges (common)
+        if (S4Vectors:::isNotSorted(start(x))) { # minimize work for sorted ranges (common)
             x_ord <- order(x)
             x <- x[x_ord]
         }

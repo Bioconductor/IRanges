@@ -1,4 +1,6 @@
 #include "IRanges.h"
+#include "S4Vectors_interface.h"
+
 #include <limits.h> /* for INT_MAX */
 
 
@@ -203,8 +205,8 @@ SEXP Integer_order(SEXP x, SEXP decreasing)
 
 	ans_length = LENGTH(x);
 	PROTECT(ans = NEW_INTEGER(ans_length));
-	_get_order_of_int_array(INTEGER(x), ans_length,
-				LOGICAL(decreasing)[0], INTEGER(ans), 1);
+	get_order_of_int_array(INTEGER(x), ans_length,
+			       LOGICAL(decreasing)[0], INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
 }
@@ -218,8 +220,8 @@ SEXP Integer_order2(SEXP a, SEXP b, SEXP decreasing)
 
 	ans_length = _check_integer_pairs(a, b, &a_p, &b_p, "a", "b");
 	PROTECT(ans = NEW_INTEGER(ans_length));
-	_get_order_of_int_pairs(a_p, b_p, ans_length,
-				LOGICAL(decreasing)[0], INTEGER(ans), 1);
+	get_order_of_int_pairs(a_p, b_p, ans_length,
+			       LOGICAL(decreasing)[0], INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
 }
@@ -236,12 +238,12 @@ SEXP Integer_match2_quick(SEXP a1, SEXP b1, SEXP a2, SEXP b2, SEXP nomatch)
 	nomatch0 = INTEGER(nomatch)[0];
 	o1 = (int *) R_alloc(sizeof(int), len1);
 	o2 = (int *) R_alloc(sizeof(int), len2);
-	_get_order_of_int_pairs(a1_p, b1_p, len1, 0, o1, 0);
-	_get_order_of_int_pairs(a2_p, b2_p, len2, 0, o2, 0);
+	get_order_of_int_pairs(a1_p, b1_p, len1, 0, o1, 0);
+	get_order_of_int_pairs(a2_p, b2_p, len2, 0, o2, 0);
 	PROTECT(ans = NEW_INTEGER(len1));
-	_get_matches_of_ordered_int_pairs(a1_p, b1_p, o1, len1,
-					  a2_p, b2_p, o2, len2,
-					  nomatch0, INTEGER(ans), 1);
+	get_matches_of_ordered_int_pairs(a1_p, b1_p, o1, len1,
+					 a2_p, b2_p, o2, len2,
+					 nomatch0, INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
 }
@@ -255,11 +257,11 @@ SEXP Integer_selfmatch2_quick(SEXP a, SEXP b)
 
 	len = _check_integer_pairs(a, b, &a_p, &b_p, "a", "b");
 	o1 = (int *) R_alloc(sizeof(int), len);
-	_get_order_of_int_pairs(a_p, b_p, len, 0, o1, 0);
+	get_order_of_int_pairs(a_p, b_p, len, 0, o1, 0);
 	PROTECT(ans = NEW_INTEGER(len));
-	_get_matches_of_ordered_int_pairs(a_p, b_p, o1, len,
-					  a_p, b_p, o1, len,
-					  -1, INTEGER(ans), 1);
+	get_matches_of_ordered_int_pairs(a_p, b_p, o1, len,
+					 a_p, b_p, o1, len,
+					 -1, INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
 }
@@ -275,13 +277,13 @@ SEXP Integer_match2_hash(SEXP a1, SEXP b1, SEXP a2, SEXP b2, SEXP nomatch)
 	len1 = _check_integer_pairs(a1, b1, &a1_p, &b1_p, "a1", "b1");
 	len2 = _check_integer_pairs(a2, b2, &a2_p, &b2_p, "a2", "b2");
 	nomatch0 = INTEGER(nomatch)[0];
-	htab = _new_htab(len2);
+	htab = new_htab(len2);
 	for (i = 0; i < len2; i++) {
 		bucket_idx = get_bucket_idx_for_int_pair(&htab,
 					a2_p[i], b2_p[i],
 					a2_p, b2_p);
-		if (_get_hbucket_val(&htab, bucket_idx) == NA_INTEGER)
-			_set_hbucket_val(&htab, bucket_idx, i);
+		if (get_hbucket_val(&htab, bucket_idx) == NA_INTEGER)
+			set_hbucket_val(&htab, bucket_idx, i);
 	}
 	PROTECT(ans = NEW_INTEGER(len1));
 	ans0 = INTEGER(ans);
@@ -289,7 +291,7 @@ SEXP Integer_match2_hash(SEXP a1, SEXP b1, SEXP a2, SEXP b2, SEXP nomatch)
 		bucket_idx = get_bucket_idx_for_int_pair(&htab,
 					a1_p[i], b1_p[i],
 					a2_p, b2_p);
-		i2 = _get_hbucket_val(&htab, bucket_idx);
+		i2 = get_hbucket_val(&htab, bucket_idx);
 		if (i2 == NA_INTEGER)
 			ans0[i] = nomatch0;
 		else
@@ -308,16 +310,16 @@ SEXP Integer_selfmatch2_hash(SEXP a, SEXP b)
 	SEXP ans;
 
 	ans_length = _check_integer_pairs(a, b, &a_p, &b_p, "a", "b");
-	htab = _new_htab(ans_length);
+	htab = new_htab(ans_length);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < ans_length; i++) {
 		bucket_idx = get_bucket_idx_for_int_pair(&htab,
 					a_p[i], b_p[i],
 					a_p, b_p);
-		i2 = _get_hbucket_val(&htab, bucket_idx);
+		i2 = get_hbucket_val(&htab, bucket_idx);
 		if (i2 == NA_INTEGER) {
-			_set_hbucket_val(&htab, bucket_idx, i);
+			set_hbucket_val(&htab, bucket_idx, i);
 			ans0[i] = i + 1;
 		} else {
 			ans0[i] = i2 + 1;
@@ -372,8 +374,8 @@ SEXP Integer_order4(SEXP a, SEXP b, SEXP c, SEXP d, SEXP decreasing)
 					  &a_p, &b_p, &c_p, &d_p,
 					  "a", "b", "c", "d");
 	PROTECT(ans = NEW_INTEGER(ans_length));
-	_get_order_of_int_quads(a_p, b_p, c_p, d_p, ans_length,
-				LOGICAL(decreasing)[0], INTEGER(ans), 1);
+	get_order_of_int_quads(a_p, b_p, c_p, d_p, ans_length,
+			       LOGICAL(decreasing)[0], INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
 }
@@ -395,12 +397,12 @@ SEXP Integer_match4_quick(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 	nomatch0 = INTEGER(nomatch)[0];
 	o1 = (int *) R_alloc(sizeof(int), len1);
 	o2 = (int *) R_alloc(sizeof(int), len2);
-	_get_order_of_int_quads(a1_p, b1_p, c1_p, d1_p, len1, 0, o1, 0);
-	_get_order_of_int_quads(a2_p, b2_p, c2_p, d2_p, len2, 0, o2, 0);
+	get_order_of_int_quads(a1_p, b1_p, c1_p, d1_p, len1, 0, o1, 0);
+	get_order_of_int_quads(a2_p, b2_p, c2_p, d2_p, len2, 0, o2, 0);
 	PROTECT(ans = NEW_INTEGER(len1));
-	_get_matches_of_ordered_int_quads(a1_p, b1_p, c1_p, d1_p, o1, len1,
-					  a2_p, b2_p, c2_p, d2_p, o2, len2,
-					  nomatch0, INTEGER(ans), 1);
+	get_matches_of_ordered_int_quads(a1_p, b1_p, c1_p, d1_p, o1, len1,
+					 a2_p, b2_p, c2_p, d2_p, o2, len2,
+					 nomatch0, INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
 }
@@ -416,11 +418,11 @@ SEXP Integer_selfmatch4_quick(SEXP a, SEXP b, SEXP c, SEXP d)
 				   &a_p, &b_p, &c_p, &d_p,
 				   "a", "b", "c", "d");
 	o1 = (int *) R_alloc(sizeof(int), len);
-	_get_order_of_int_quads(a_p, b_p, c_p, d_p, len, 0, o1, 0);
+	get_order_of_int_quads(a_p, b_p, c_p, d_p, len, 0, o1, 0);
 	PROTECT(ans = NEW_INTEGER(len));
-	_get_matches_of_ordered_int_quads(a_p, b_p, c_p, d_p, o1, len,
-					  a_p, b_p, c_p, d_p, o1, len,
-					  -1, INTEGER(ans), 1);
+	get_matches_of_ordered_int_quads(a_p, b_p, c_p, d_p, o1, len,
+					 a_p, b_p, c_p, d_p, o1, len,
+					 -1, INTEGER(ans), 1);
 	UNPROTECT(1);
 	return ans;
 }
@@ -441,13 +443,13 @@ SEXP Integer_match4_hash(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 				    &a2_p, &b2_p, &c2_p, &d2_p,
 				    "a2", "b2", "c2", "d2");
 	nomatch0 = INTEGER(nomatch)[0];
-	htab = _new_htab(len2);
+	htab = new_htab(len2);
 	for (i = 0; i < len2; i++) {
 		bucket_idx = get_bucket_idx_for_int_quad(&htab,
 					a2_p[i], b2_p[i], c2_p[i], d2_p[i],
 					a2_p, b2_p, c2_p, d2_p);
-		if (_get_hbucket_val(&htab, bucket_idx) == NA_INTEGER)
-			_set_hbucket_val(&htab, bucket_idx, i);
+		if (get_hbucket_val(&htab, bucket_idx) == NA_INTEGER)
+			set_hbucket_val(&htab, bucket_idx, i);
 	}
 	PROTECT(ans = NEW_INTEGER(len1));
 	ans0 = INTEGER(ans);
@@ -455,7 +457,7 @@ SEXP Integer_match4_hash(SEXP a1, SEXP b1, SEXP c1, SEXP d1,
 		bucket_idx = get_bucket_idx_for_int_quad(&htab,
 					a1_p[i], b1_p[i], c1_p[i], d1_p[i],
 					a2_p, b2_p, c2_p, d2_p);
-		i2 = _get_hbucket_val(&htab, bucket_idx);
+		i2 = get_hbucket_val(&htab, bucket_idx);
 		if (i2 == NA_INTEGER)
 			ans0[i] = nomatch0;
 		else
@@ -476,16 +478,16 @@ SEXP Integer_selfmatch4_hash(SEXP a, SEXP b, SEXP c, SEXP d)
 	ans_length = _check_integer_quads(a, b, c, d,
 					  &a_p, &b_p, &c_p, &d_p,
 					  "a", "b", "c", "d");
-	htab = _new_htab(ans_length);
+	htab = new_htab(ans_length);
 	PROTECT(ans = NEW_INTEGER(ans_length));
 	ans0 = INTEGER(ans);
 	for (i = 0; i < ans_length; i++) {
 		bucket_idx = get_bucket_idx_for_int_quad(&htab,
 					a_p[i], b_p[i], c_p[i], d_p[i],
 					a_p, b_p, c_p, d_p);
-		i2 = _get_hbucket_val(&htab, bucket_idx);
+		i2 = get_hbucket_val(&htab, bucket_idx);
 		if (i2 == NA_INTEGER) {
-			_set_hbucket_val(&htab, bucket_idx, i);
+			set_hbucket_val(&htab, bucket_idx, i);
 			ans0[i] = i + 1;
 		} else {
 			ans0[i] = i2 + 1;
@@ -804,7 +806,7 @@ SEXP _find_interv_and_start_from_width(const int *x, int x_len,
 		start = 1;
 		interval = 1;
 		PROTECT(x_order = NEW_INTEGER(x_len));
-		_get_order_of_int_array(x, x_len, 0, INTEGER(x_order), 0);
+		get_order_of_int_array(x, x_len, 0, INTEGER(x_order), 0);
 		for (i = 0, x_order_elt = INTEGER(x_order); i < x_len;
 		     i++, x_order_elt++) {
 			x_elt = x + *x_order_elt;

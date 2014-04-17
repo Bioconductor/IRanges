@@ -53,9 +53,9 @@ setMethod("union", c("CompressedIRangesList", "CompressedIRangesList"),
           function(x, y) {
             len <- max(length(x), length(y))
             if (length(x) != len)
-              x <- x[recycleVector(seq_len(length(x)), len)]
+              x <- x[S4Vectors:::recycleVector(seq_len(length(x)), len)]
             if (length(y) != len)
-              y <- y[recycleVector(seq_len(length(y)), len)]
+              y <- y[S4Vectors:::recycleVector(seq_len(length(y)), len)]
             xy <- c(unlist(x, use.names = FALSE), unlist(y, use.names = FALSE))
             xy_list <- split(xy, factor(c(togroup(x), togroup(y)),
                                         seq_len(length(x))))

@@ -43,7 +43,7 @@ setMethod("viewWhichMaxs", "RleViews",
 setMethod("viewRangeMaxs", "RleViews",
           function(x, na.rm = FALSE) {
               maxs <- viewWhichMaxs(trim(x), na.rm = na.rm)
-              if (anyMissing(maxs))
+              if (S4Vectors:::anyMissing(maxs))
                   stop("missing values present, set 'na.rm = TRUE'")
               findRange(maxs, subject(x))
           })
@@ -51,7 +51,7 @@ setMethod("viewRangeMaxs", "RleViews",
 setMethod("viewRangeMins", "RleViews",
           function(x, na.rm = FALSE) {
               mins <- viewWhichMins(trim(x), na.rm = na.rm)
-              if (anyMissing(mins))
+              if (S4Vectors:::anyMissing(mins))
                   stop("missing values present, set 'na.rm = TRUE'")
               findRange(mins, subject(x))
           })

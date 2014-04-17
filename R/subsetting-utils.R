@@ -55,7 +55,7 @@ normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE,
         return(i)
     }
     if (is.logical(i)) {
-        if (anyMissing(i))
+        if (S4Vectors:::anyMissing(i))
             stop("subscript contains NAs")
         li <- length(i)
         if (!allow.append && li > N) {
@@ -91,7 +91,7 @@ normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE,
             i[na_idx] <- N + seq_along(na_idx)
             return(i)
         }
-        if (anyMissing(i))
+        if (S4Vectors:::anyMissing(i))
             stop("subscript contains invalid ", what)
         return(i)
     }

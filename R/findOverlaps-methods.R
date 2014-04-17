@@ -34,7 +34,7 @@ setGeneric("findOverlaps", signature = c("query", "subject"),
   res$unsortedQuery <- query
 
   if (is.null(partitioning)) {
-    if (isNotSorted(start(query))) { ## query must be sorted
+    if (S4Vectors:::isNotSorted(start(query))) { ## query must be sorted
       query_ord <- sort.list(start(query), method = "quick",
                              na.last = NA)
       query <- query[query_ord]
@@ -55,7 +55,7 @@ setGeneric("findOverlaps", signature = c("query", "subject"),
       cur <- IRanges(curStart, curEnd)
 
       qStarts <- extractROWS(start(query), cur)
-      if (isNotSorted(qStarts)) {
+      if (S4Vectors:::isNotSorted(qStarts)) {
         isSorted <- FALSE
         ind <- extractROWS(query_ord, cur)
         query_ord <- replaceROWS(query_ord, cur,

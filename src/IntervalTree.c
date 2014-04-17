@@ -1,4 +1,5 @@
 #include "IRanges.h"
+#include "S4Vectors_interface.h"
 
 #include "common.h"
 #include "rbTree.h"
@@ -666,7 +667,7 @@ SEXP _IntegerIntervalTree_overlap_all(SEXP r_query_start, SEXP r_order, struct s
     *r_elt = ((IntegerIntervalNode *)result->val)->indexPosition;
 
   int *row = (int *) R_alloc((long) nhits, sizeof(int));
-  _get_order_of_int_pairs(r_query_col, r_subject_col, nhits, 0, row, 0);
+  get_order_of_int_pairs(r_query_col, r_subject_col, nhits, 0, row, 0);
 
   PROTECT(r_results = NEW_OBJECT(MAKE_CLASS("Hits")));
 

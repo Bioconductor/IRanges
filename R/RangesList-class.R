@@ -576,7 +576,7 @@ setAs("RleList", "CompressedIRangesList",
       {
         if ((length(from) > 0) &&
             (!is.logical(runValue(from[[1L]])) ||
-             anyMissing(runValue(from[[1L]]))))
+             S4Vectors:::anyMissing(runValue(from[[1L]]))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a CompressedIRangesList object")
         newList("CompressedIRangesList",
@@ -590,7 +590,7 @@ setAs("CompressedRleList", "CompressedIRangesList",
       {
         if ((length(from) > 0) &&
             (!is.logical(runValue(from[[1L]])) ||
-             anyMissing(runValue(from[[1L]]))))
+             S4Vectors:::anyMissing(runValue(from[[1L]]))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a CompressedIRangesList object")
         ranges <- as(unlist(from, use.names = FALSE), "IRanges")
@@ -606,7 +606,7 @@ setAs("RleList", "SimpleIRangesList",
       {
         if ((length(from) > 0) &&
             (!is.logical(runValue(from[[1L]])) ||
-             anyMissing(runValue(from[[1L]]))))
+             S4Vectors:::anyMissing(runValue(from[[1L]]))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a SimpleIRangesList object")
         newList("SimpleIRangesList",
@@ -630,7 +630,7 @@ setAs("RleList", "CompressedNormalIRangesList",
       {
         if ((length(from) > 0) &&
             (!is.logical(runValue(from[[1L]])) ||
-             anyMissing(runValue(from[[1L]]))))
+             S4Vectors:::anyMissing(runValue(from[[1L]]))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a CompressedNormalIRangesList object")
         newList("CompressedNormalIRangesList",
@@ -644,7 +644,7 @@ setAs("RleList", "SimpleNormalIRangesList",
       {
         if ((length(from) > 0) &&
             (!is.logical(runValue(from[[1L]])) ||
-             anyMissing(runValue(from[[1L]]))))
+             S4Vectors:::anyMissing(runValue(from[[1L]]))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a SimpleNormalIRangesList object")
         newList("SimpleNormalIRangesList",
@@ -662,7 +662,7 @@ CompressedNormalIRangesList.max <- function(x, use.names)
 {
     if (!is(x, "CompressedNormalIRangesList"))
         stop("'x' must be a CompressedNormalIRangesList object")
-    use.names <- normargUseNames(use.names)
+    use.names <- S4Vectors:::normargUseNames(use.names)
     .Call2("CompressedNormalIRangesList_max", x, use.names, PACKAGE="IRanges")
 }
 
@@ -677,7 +677,7 @@ CompressedNormalIRangesList.min <- function(x, use.names)
 {
     if (!is(x, "CompressedNormalIRangesList"))
         stop("'x' must be a CompressedNormalIRangesList object")
-    use.names <- normargUseNames(use.names)
+    use.names <- S4Vectors:::normargUseNames(use.names)
     .Call2("CompressedNormalIRangesList_min", x, use.names, PACKAGE="IRanges")
 }
 

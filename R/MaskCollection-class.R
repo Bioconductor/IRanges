@@ -51,7 +51,7 @@ setGeneric("active<-", signature="x",
 setReplaceMethod("active", "MaskCollection",
     function(x, value)
     {
-        if (!is.logical(value) || anyMissing(value))
+        if (!is.logical(value) || S4Vectors:::anyMissing(value))
             stop("'value' must be a logical vector with no NAs")
         x@active[] <- value
         x
@@ -138,7 +138,7 @@ setReplaceMethod("desc", "MaskCollection",
 
 .valid.MaskCollection.active <- function(x)
 {
-    if (!is.logical(active(x)) || anyMissing(active(x)))
+    if (!is.logical(active(x)) || S4Vectors:::anyMissing(active(x)))
         return("the 'active' slot must be a logical vector with no NAs")
     if (length(active(x)) != length(x))
         return("the length of the 'active' slot differs from the length of the object")
@@ -147,7 +147,7 @@ setReplaceMethod("desc", "MaskCollection",
 
 .valid.MaskCollection.names <- function(x)
 {
-    if (anyMissing(names(x)))
+    if (S4Vectors:::anyMissing(names(x)))
         return("the names must be non-NA strings")
     NULL
 }
@@ -158,7 +158,7 @@ setReplaceMethod("desc", "MaskCollection",
         return("the 'desc' slot must contain a character vector")
     if (is.null(desc(x)))
         return(NULL)
-    if (anyMissing(desc(x)))
+    if (S4Vectors:::anyMissing(desc(x)))
         return("the descriptions must be non-NA strings")
     if (length(desc(x)) != length(x))
         return("number of descriptions and number of elements differ")
@@ -190,7 +190,7 @@ Mask <- function(mask.width, start=NULL, end=NULL, width=NULL)
 {
     nir <- asNormalIRanges(IRanges(start=start, end=end, width=width), force=FALSE)
     new2("MaskCollection", nir_list=list(nir),
-                           width=numeric2integer(mask.width),
+                           width=S4Vectors:::numeric2integer(mask.width),
                            active=TRUE, check=FALSE)
 }
 

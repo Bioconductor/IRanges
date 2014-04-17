@@ -57,7 +57,7 @@ setMethod("as.matrix", "ViewsList",
           {
             if (!isTRUEorFALSE(use.names))
               stop("use.names must be TRUE or FALSE")
-            rev <- normargAtomicList1(rev, LogicalList, length(x))
+            rev <- S4Vectors:::normargAtomicList1(rev, LogicalList, length(x))
             max_width <- max(max(width(restrict(ranges(x), start = 1L))))
             m <- do.call(rbind, mapply(as.matrix, x, rev,
                                        IntegerList(max_width),

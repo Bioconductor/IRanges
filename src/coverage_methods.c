@@ -9,6 +9,8 @@
  *                                                                          *
  ****************************************************************************/
 #include "IRanges.h"
+#include "S4Vectors_interface.h"
+
 #include <stdlib.h> /* for qsort() */
 #include <R_ext/Utils.h> /* for R_CheckUserInterrupt() */
 
@@ -123,7 +125,7 @@ static void compute_int_coverage_in_bufs(const int *SEids, int SEids_len,
 
 	*(values_buf++) = curr_val = 0;
 	curr_pos = 1;
-	_reset_ovflow_flag(); /* we use _safe_int_add() in loop below */
+	reset_ovflow_flag(); /* we use safe_int_add() in loop below */
 	for (i = 0; i < SEids_len; i++, SEids++) {
 		if (i % 500000 == 499999)
 			R_CheckUserInterrupt();
@@ -135,11 +137,11 @@ static void compute_int_coverage_in_bufs(const int *SEids, int SEids_len,
 			curr_weight = - curr_weight;
 			curr_pos += x_width[index];
 		}
-		curr_val = _safe_int_add(curr_val, curr_weight);
+		curr_val = safe_int_add(curr_val, curr_weight);
 		*(values_buf++) = curr_val;
 		*(lengths_buf++) = curr_pos - prev_pos;
 	}
-	if (_get_ovflow_flag())
+	if (get_ovflow_flag())
 		warning("NAs produced by integer overflow");
 	*lengths_buf = cvg_len + 1 - curr_pos;
 	return;
@@ -251,7 +253,7 @@ static SEXP int_coverage_hash(
 
 	cvg_buf = (int *) R_alloc((long) cvg_len + 1, sizeof(int));
 	memset(cvg_buf, 0, cvg_len * sizeof(int));
-	_reset_ovflow_flag(); /* we use _safe_int_add() in loop below */
+	reset_ovflow_flag(); /* we use safe_int_add() in loop below */
 	for (i = j = 0; i < x_len; i++, j++, x_start++, x_width++) {
 		if (i % 500000 == 499999)
 			R_CheckUserInterrupt();
@@ -259,17 +261,17 @@ static SEXP int_coverage_hash(
 			j = 0; /* recycle j */
 		cvg_p = cvg_buf + *x_start - 1;
 		w = weight[j];
-		*cvg_p = _safe_int_add(*cvg_p, w);
+		*cvg_p = safe_int_add(*cvg_p, w);
 		cvg_p += *x_width;
-		*cvg_p = _safe_int_add(*cvg_p, - w);
+		*cvg_p = safe_int_add(*cvg_p, - w);
 	}
 	check_recycling_was_round(j, weight_len, weight_label, x_label);
 	cumsum = 0;
 	for (i = 0, cvg_p = cvg_buf; i < cvg_len; i++, cvg_p++) {
-		cumsum = _safe_int_add(*cvg_p, cumsum);
+		cumsum = safe_int_add(*cvg_p, cumsum);
 		*cvg_p = cumsum;
 	}
-	if (_get_ovflow_flag())
+	if (get_ovflow_flag())
 		warning("NAs produced by integer overflow");
 	return _integer_Rle_constructor(cvg_buf, cvg_len, NULL, 0);
 }
@@ -448,7 +450,7 @@ static int shift_and_clip_ranges(const IRanges_holder *x_holder,
 		return cvg_len;
 	}
 
-	_RangeAE_set_nelt(out_ranges, 0);
+	RangeAE_set_nelt(out_ranges, 0);
 	prev_end = 0;
 	for (i = j = 0; i < x_len; i++, j++) {
 		if (j >= shift_len)
@@ -494,8 +496,8 @@ static int shift_and_clip_ranges(const IRanges_holder *x_holder,
 			else
 				*out_ranges_are_tiles = 0;
 		}
-		_RangeAE_insert_at(out_ranges, i,
-				   x_start, x_end - x_start + 1);
+		RangeAE_insert_at(out_ranges, i,
+				  x_start, x_end - x_start + 1);
 	}
 	check_recycling_was_round(j, shift_len, shift_label, x_label);
 	if (*out_ranges_are_tiles && x_end != cvg_len)
@@ -620,7 +622,7 @@ SEXP IRanges_coverage(SEXP x, SEXP shift, SEXP width, SEXP weight,
 	if (LENGTH(circle_len) != 1)
 		error("'%s' must be a single integer", "circle.length");
 
-	ranges_buf = _new_RangeAE(x_len, 0);
+	ranges_buf = new_RangeAE(x_len, 0);
 	x_label = "x";
 	shift_label = "shift";
 	width_label = "width";
@@ -686,7 +688,7 @@ SEXP CompressedIRangesList_coverage(SEXP x,
 	circle_lens_len = LENGTH(circle_lens);
 	check_arg_is_recyclable(circle_lens_len, x_len, "circle.length", "x");
 
-	ranges_buf = _new_RangeAE(0, 0);
+	ranges_buf = new_RangeAE(0, 0);
 	x_label = x_label_buf;
 	shift_label = shift_label_buf;
 	width_label = width_label_buf;

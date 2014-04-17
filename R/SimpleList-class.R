@@ -223,7 +223,7 @@ coerceToSimpleList <- function(from, element.type, ...) {
   if (!is(from, SimpleListClass)) {
     listData <- as.list(from)
     if (!is.null(element.type))
-      listData <- lapply(listData, coercerToClass(element.type), ...)
+      listData <- lapply(listData, S4Vectors:::coercerToClass(element.type), ...)
     newList(SimpleListClass, listData)
   } else {
     from

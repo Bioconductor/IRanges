@@ -215,7 +215,7 @@ setReplaceMethod("columnMetadata", "RangedData", function(x, value) {
   nms <- names(x)
   if (length(nms) != length(x))
     "length(names(x)) must equal length(x)"
-  else if (!is.character(nms) || anyMissing(nms) || anyDuplicated(nms))
+  else if (!is.character(nms) || S4Vectors:::anyMissing(nms) || anyDuplicated(nms))
     "names(x) must be a character vector without any NA's or duplicates"
   else NULL
 }
@@ -296,7 +296,7 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL, universe = NULL)
       stop("length of value(s) in '...' greater than length of 'ranges'")
     if (nrow(values) == 0 || N %% nrow(values) != 0)
       stop("length of 'ranges' not a multiple of length of value(s) in '...'")
-    rind <- recycleVector(seq_len(nrow(values)), N)
+    rind <- S4Vectors:::recycleVector(seq_len(nrow(values)), N)
     values <- values[rind,,drop=FALSE]
   }
   rownames(values) <- NAMES ## ensure these are identical
@@ -407,14 +407,14 @@ setMethod("[", "RangedData",
                     anyMissingOrOutside(i, upper = 0L))
                   return("negative and positive indices cannot be mixed")
               } else if (is.logical(i)) {
-                if (anyMissing(i))
+                if (S4Vectors:::anyMissing(i))
                   return("subscript contains NAs")
                 if (length(i) > lx)
                   return("subscript out of bounds")
               } else if ((is.character(i) || is.factor(i))) {
-                if (anyMissing(i))
+                if (S4Vectors:::anyMissing(i))
                   return("subscript contains NAs")
-                if (anyMissing(match(i, nms)))
+                if (S4Vectors:::anyMissing(match(i, nms)))
                   return("mismatching names")
               } else if (!is.null(i)) {
                 return("invalid subscript type")
@@ -469,7 +469,7 @@ setMethod("[", "RangedData",
                     dummy <- seq_len(nrow(x))
                     names(dummy) <- rownames(x)
                     i <- dummy[i]
-                    if (anyMissing(i)) ## cannot subset by NAs yet
+                    if (S4Vectors:::anyMissing(i)) ## cannot subset by NAs yet
                       stop("invalid rownames specified")
                   }
                   starts <- cumsum(c(1L, head(elementLengths(x), -1)))

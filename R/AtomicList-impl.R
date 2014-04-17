@@ -145,7 +145,7 @@ SimpleAtomicList <- function(listData) {
       "IntegerList", "LogicalList", "RawList")
   uniqueClasses <-
     unique(unlist(lapply(listData, atomicElementListClass), use.names=FALSE))
-  if (anyMissing(uniqueClasses))
+  if (S4Vectors:::anyMissing(uniqueClasses))
     stop("cannot create a SimpleAtomicList with non-atomic elements")
   baseClass <- classOrder[min(match(uniqueClasses, classOrder))]
   do.call(baseClass, c(listData, compress = FALSE))
@@ -168,7 +168,7 @@ CompressedAtomicListFromList <- function(listData) {
       "IntegerList", "LogicalList", "RawList")
   uniqueClasses <-
     unique(unlist(lapply(listData, atomicElementListClass), use.names=FALSE))
-  if (anyMissing(uniqueClasses))
+  if (S4Vectors:::anyMissing(uniqueClasses))
     stop("cannot create a SimpleAtomicList with non-atomic elements")
   baseClass <- classOrder[min(match(uniqueClasses, classOrder))]
   do.call(baseClass, c(listData, compress = TRUE))
@@ -432,7 +432,7 @@ setMethod("Ops",
           function(e1, e2)
           {
               if (length(e2) > 1) {
-                  e2 <- recycleVector(e2, length(e1))
+                  e2 <- S4Vectors:::recycleVector(e2, length(e1))
                   e2 <- rep(e2, elementLengths(e1))
               }
               CompressedAtomicList(callGeneric(e1@unlistData, e2),
@@ -444,7 +444,7 @@ setMethod("Ops",
           function(e1, e2)
           {
               if (length(e1) > 1) {
-                  e1 <- recycleVector(e1, length(e2))
+                  e1 <- S4Vectors:::recycleVector(e1, length(e2))
                   e1 <- rep(e1, elementLengths(e2))
               }
               CompressedAtomicList(callGeneric(e1, e2@unlistData),
