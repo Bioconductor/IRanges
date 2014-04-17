@@ -64,6 +64,7 @@ S3method(as.data.frame, RangesList)
 S3method(as.data.frame, Rle)
 S3method(as.data.frame, Vector)
 
+S3method(as.list, Vector)
 S3method(as.list, List)
 S3method(as.list, SimpleList)
 S3method(as.list, Rle)
