@@ -23,13 +23,7 @@ setMethod("classNameForDisplay", "ANY",
 setMethod("classNameForDisplay", "CompressedList",
     .classNameForDisplay_shorten)
 
-setMethod("classNameForDisplay", "CompressedNormalIRangesList",
-    .classNameForDisplay_shorten)
-
 setMethod("classNameForDisplay", "SimpleList",
-    .classNameForDisplay_shorten)
-
-setMethod("classNameForDisplay", "SimpleNormalIRangesList",
     .classNameForDisplay_shorten)
 
 setMethod("classNameForDisplay", "AsIs", function(x) {

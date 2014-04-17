@@ -4,9 +4,7 @@
 \alias{classNameForDisplay,ANY-method}
 \alias{classNameForDisplay,AsIs-method}
 \alias{classNameForDisplay,CompressedList-method}
-\alias{classNameForDisplay,CompressedNormalIRangesList-method}
 \alias{classNameForDisplay,SimpleList-method}
-\alias{classNameForDisplay,SimpleNormalIRangesList-method}
 
 \title{Provide a class name for displaying to users}
 
