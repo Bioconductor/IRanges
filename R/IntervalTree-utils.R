@@ -23,7 +23,7 @@ setMethod("processSelfMatching", "Hits",
             if (select != "all") { # relies on 'mat' sorted by subject
               if (select == "last")
                 mat <- mat[seq(nrow(mat), 1),,drop=FALSE]
-              .hitsMatrixToVector(mat, queryLength(x))
+              hitsMatrixToVector(mat, queryLength(x))
             } else {
               ## unname() required because in case 'm' has only 1 row
               ## 'm[ , 1L]' and 'm[ , 2L]' will return a named atomic vector

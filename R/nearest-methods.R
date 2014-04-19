@@ -72,7 +72,9 @@ setMethod("follow", c("Ranges", "RangesORmissing"),
 ### nearest()
 ###
 
-.hitsMatrixToVector <- function(hitsMatrix, queryLength) {
+### Used in GenomicRanges.
+### TODO: Move to Hits-class.R
+hitsMatrixToVector <- function(hitsMatrix, queryLength) {
   hitsMatrix <-
     hitsMatrix[S4Vectors:::diffWithInitialZero(hitsMatrix[,1L,drop=TRUE]) != 0L,,
                 drop=FALSE]
@@ -111,7 +113,7 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
             }
             if (select == "all") {
               m <- as.matrix(ol)
-              olv <- .hitsMatrixToVector(m, length(x))
+              olv <- hitsMatrixToVector(m, length(x))
             } else olv <- ol
             x <- x[is.na(olv)]
             before <- precede(x, subject,
@@ -120,9 +122,9 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
                             if (select == "all") "all" else "last")
             if (select == "all") {
               before_m <- as.matrix(before)
-              before <- .hitsMatrixToVector(before_m, length(x))
+              before <- hitsMatrixToVector(before_m, length(x))
               after_m <- as.matrix(after)
-              after <- .hitsMatrixToVector(after_m, length(x))
+              after <- hitsMatrixToVector(after_m, length(x))
             }
             leftdist <- (start(subject)[before] - end(x))
             rightdist <- (start(x) - end(subject)[after])
