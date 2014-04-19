@@ -30,7 +30,7 @@ setMethod("precede", c("Ranges", "RangesORmissing"),
       i <- findInterval(end(x), s) + 1L
       i[i > length(s)] <- NA
       if (select == "all") {
-        .vectorToHits(i, srle, ord)
+        vectorToHits(i, srle, ord)
       } else {
         if (!is.null(ord))
           i <- ord[i]
@@ -58,7 +58,7 @@ setMethod("follow", c("Ranges", "RangesORmissing"),
       i <- findInterval(start(x) - 1L, e)
       i[i == 0] <- NA        
       if (select == "all") {
-        .vectorToHits(i, srle, ord)
+        vectorToHits(i, srle, ord)
       } else {
         if (!is.null(ord))
           i <- ord[i]
@@ -83,7 +83,9 @@ hitsMatrixToVector <- function(hitsMatrix, queryLength) {
   ans
 }
 
-.vectorToHits <- function(i, srle, ord) {
+### Used in GenomicRanges.
+### TODO: Move to Hits-class.R
+vectorToHits <- function(i, srle, ord) {
   lx <- length(i)
   v <- !is.na(i)
   i <- i[v]
