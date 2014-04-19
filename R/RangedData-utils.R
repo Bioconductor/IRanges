@@ -67,7 +67,7 @@ setMethod("within", "RangedData",
           {
             e <- list2env(as.list(as(data, "DataFrame")))
             e$ranges <- ranges(data)
-            safeEval(substitute(expr), e, top_prenv(expr))
+            S4Vectors:::safeEval(substitute(expr), e, S4Vectors:::top_prenv(expr))
             reserved <- c("ranges", "start", "end", "width", "space")
             l <- mget(setdiff(ls(e), reserved), e)
             l <- l[!sapply(l, is.null)]

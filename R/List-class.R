@@ -26,20 +26,7 @@ setMethod("elementType", "vector", function(x) mode(x))
 
 setGeneric("elementLengths", function(x) standardGeneric("elementLengths"))
 
-setMethod("elementLengths", "ANY",
-    function(x)
-    {
-        x <- as.list(x)
-        ans <-
-          try(.Call2("sapply_NROW", x, PACKAGE="IRanges"), silent=TRUE)
-        if (!inherits(ans, "try-error")) {
-            names(ans) <- names(x)
-            return(ans)
-        }
-        ## From here, 'length(x)' is guaranteed to be != 0
-        return(sapply(x, NROW))
-    }
-)
+setMethod("elementLengths", "ANY", S4Vectors:::sapply_NROW)
 
 setMethod("elementLengths", "List",
     function(x)
@@ -185,7 +172,7 @@ setMethod("show", "List",
     unlisted_i <- unlist(i, use.names=FALSE)
     if (!is.integer(unlisted_i))
         unlisted_i <- as.integer(unlisted_i)
-    if (anyMissingOrOutside(unlisted_i, lower=1L))
+    if (S4Vectors:::anyMissingOrOutside(unlisted_i, lower=1L))
         return(FALSE)
     x_eltlens <- elementLengths(x)
     i_eltlens <- elementLengths(i)
@@ -717,7 +704,7 @@ listClassName <- function(impl, element.type) {
   listClass <- paste0(if (is.null(impl)) "Simple" else impl, "List")
   if (!is.null(element.type)) {
     cl <- c(element.type, names(getClass(element.type)@contains))
-    cl <- capitalize(cl)
+    cl <- S4Vectors:::capitalize(cl)
     listClass <- c(paste0(cl, "List"), paste0(cl, "Set"),
                    paste0(impl, cl, "List"), listClass)
   }
@@ -837,7 +824,7 @@ setMethod("within", "List",
             ## cannot use active bindings here, as they break for replacement
             e <- list2env(as.list(data))
             ##e <- as.env(data)
-            safeEval(substitute(expr), e, top_prenv(expr))
+            S4Vectors:::safeEval(substitute(expr), e, S4Vectors:::top_prenv(expr))
             l <- mget(ls(e), e)
             l <- l[!sapply(l, is.null)]
             nD <- length(del <- setdiff(names(data), (nl <- names(l))))

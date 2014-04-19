@@ -401,10 +401,10 @@ setMethod("[", "RangedData",
               if (is.numeric(i)) {
                 if (!is.integer(i))
                   i <- as.integer(i)
-                if (anyMissingOrOutside(i, upper = lx))
+                if (S4Vectors:::anyMissingOrOutside(i, upper = lx))
                   return("subscript contains NAs or out of bounds indices")
-                if (anyMissingOrOutside(i, 0L, lx) &&
-                    anyMissingOrOutside(i, upper = 0L))
+                if (S4Vectors:::anyMissingOrOutside(i, 0L, lx) &&
+                    S4Vectors:::anyMissingOrOutside(i, upper = 0L))
                   return("negative and positive indices cannot be mixed")
               } else if (is.logical(i)) {
                 if (S4Vectors:::anyMissing(i))

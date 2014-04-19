@@ -37,7 +37,7 @@ normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE,
             if (any(is.na(i)))
                 stop("subscript contains NAs")
         } else {
-            if (anyMissingOrOutside(i, upper=N))
+            if (S4Vectors:::anyMissingOrOutside(i, upper=N))
                 stop("subscript contains NAs or out of bounds indices")
         }
         nonzero_idx <- which(i != 0L)

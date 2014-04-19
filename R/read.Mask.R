@@ -179,7 +179,7 @@
     if (use.gap.types) {
         names(ranges) <- data$gap_type
         if (S4Vectors:::isNotStrictlySorted(start(ranges)))
-            ranges <- ranges[orderInteger(start(ranges))]
+            ranges <- ranges[S4Vectors:::orderInteger(start(ranges))]
         if (!isNormal(ranges))
             stop("cannot use the gap types when some gaps are adjacent or overlap")
         nir1 <- asNormalIRanges(ranges, force=FALSE)
@@ -306,7 +306,7 @@ read.rmMask <- function(file, seqname="?", mask.width=NA, use.IDs=FALSE)
     if (use.IDs) {
         names(ranges) <- data$ID
         if (S4Vectors:::isNotStrictlySorted(start(ranges)))
-            ranges <- ranges[orderInteger(start(ranges))]
+            ranges <- ranges[S4Vectors:::orderInteger(start(ranges))]
         if (!isNormal(ranges))
             stop("cannot use the repeat IDs when some repeats are adjacent or overlap")
         nir1 <- asNormalIRanges(ranges, force=FALSE)

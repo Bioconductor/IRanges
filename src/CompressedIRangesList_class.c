@@ -1,8 +1,9 @@
 /****************************************************************************
  *         Low-level manipulation of CompressedIRangesList objects          *
  ****************************************************************************/
-
 #include "IRanges.h"
+#include "S4Vectors_interface.h"
+
 #include <limits.h>
 
 #define R_INT_MIN	(1+INT_MIN)
@@ -17,7 +18,7 @@ CompressedIRangesList_holder _hold_CompressedIRangesList(SEXP x)
 	CompressedIRangesList_holder x_holder;
 	SEXP x_end;
 
-	x_holder.classname = _get_classname(x);
+	x_holder.classname = get_classname(x);
 	x_end = _get_PartitioningByEnd_end(
 			_get_CompressedList_partitioning(x));
 	x_holder.length = LENGTH(x_end);

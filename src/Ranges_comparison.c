@@ -3,6 +3,7 @@
  *                           Author: Herve Pages                            *
  ****************************************************************************/
 #include "IRanges.h"
+#include "S4Vectors_interface.h"
 
 
 /****************************************************************************
@@ -150,12 +151,12 @@ SEXP Ranges_compare(SEXP x_start, SEXP x_width,
 	const int *x_start_p, *x_width_p, *y_start_p, *y_width_p;
 	SEXP ans;
 
-	x_len = _check_integer_pairs(x_start, x_width,
-				     &x_start_p, &x_width_p,
-				     "start(x)", "width(x)");
-	y_len = _check_integer_pairs(y_start, y_width,
-				     &y_start_p, &y_width_p,
-				     "start(y)", "width(y)");
+	x_len = check_integer_pairs(x_start, x_width,
+				    &x_start_p, &x_width_p,
+				    "start(x)", "width(x)");
+	y_len = check_integer_pairs(y_start, y_width,
+				    &y_start_p, &y_width_p,
+				    "start(y)", "width(y)");
 	if (x_len == 0 || y_len == 0)
 		ans_len = 0;
 	else

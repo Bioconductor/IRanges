@@ -65,7 +65,7 @@ IRanges_holder _hold_IRanges(SEXP x)
 {
 	IRanges_holder x_holder;
 
-	x_holder.classname = _get_classname(x);
+	x_holder.classname = get_classname(x);
 	x_holder.is_constant_width = 0;
 	x_holder.length = _get_IRanges_length(x);
 	x_holder.width = INTEGER(_get_IRanges_width(x));

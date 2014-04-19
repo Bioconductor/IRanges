@@ -260,9 +260,6 @@ exportMethods(
 ###
 
 export(
-    safeExplode,
-    strsplitAsListOfIntegerVectors,
-    svn.time,
     phead, ptail,
     splitAsList,
     seqapply, mseqapply, tseqapply, seqsplit, seqby,
@@ -307,9 +304,6 @@ export(
 ###
 
 export(
-    ## str-utils.R:
-    unstrsplit,
-
     ## endoapply.R:
     endoapply, mendoapply,
 
@@ -449,7 +443,6 @@ export(
 
 ### Exactly the same list as above.
 exportMethods(
-    unstrsplit,
     endoapply, mendoapply,
     runsum, runmean, runwtsum, runq,
     metadata, "metadata<-",

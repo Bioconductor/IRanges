@@ -198,11 +198,11 @@ getStartEndRunAndOffset <- function(x, start, end) {
         if (n2 < n)
             e2 <- rep(e2, length.out = n)
         # ends <- sort(unique(c(end(e1), end(e2))))
-        ends <- sortedMerge(end(e1), end(e2))
-        which1 <- findIntervalAndStartFromWidth(ends, runLength(e1))[["interval"]]
-        which2 <- findIntervalAndStartFromWidth(ends, runLength(e2))[["interval"]]
+        ends <- S4Vectors:::sortedMerge(end(e1), end(e2))
+        which1 <- S4Vectors:::findIntervalAndStartFromWidth(ends, runLength(e1))[["interval"]]
+        which2 <- S4Vectors:::findIntervalAndStartFromWidth(ends, runLength(e2))[["interval"]]
     }
-    lengths <- diffWithInitialZero(ends)
+    lengths <- S4Vectors:::diffWithInitialZero(ends)
     values <- runValue(e1)[which1] * runValue(e2)[which2]
     sum(lengths * values, na.rm = na.rm)
 }
@@ -225,12 +225,13 @@ setMethod("Ops", signature(e1 = "Rle", e2 = "Rle"),
                   if (n2 < n)
                       e2 <- rep(e2, length.out = n)
                   # ends <- sort(unique(c(end(e1), end(e2))))
-                  ends <- sortedMerge(end(e1), end(e2))
-                  which1 <- findIntervalAndStartFromWidth(ends, runLength(e1))[["interval"]]
-                  which2 <- findIntervalAndStartFromWidth(ends, runLength(e2))[["interval"]]
+                  ends <- S4Vectors:::sortedMerge(end(e1), end(e2))
+                  which1 <- S4Vectors:::findIntervalAndStartFromWidth(ends, runLength(e1))[["interval"]]
+                  which2 <- S4Vectors:::findIntervalAndStartFromWidth(ends, runLength(e2))[["interval"]]
               }
               Rle(values = callGeneric(runValue(e1)[which1], runValue(e2)[which2]),
-                  lengths = diffWithInitialZero(ends), check = FALSE)
+                  lengths = S4Vectors:::diffWithInitialZero(ends),
+                  check = FALSE)
           })
 
 setMethod("Ops", signature(e1 = "Rle", e2 = "vector"),
@@ -377,8 +378,8 @@ setMethod("replaceROWS", "Rle",
             value <- factor(value, levels=levels(x))
             dummy_value <- factor(levels(x), levels=levels(x))
         }
-        if (anyMissingOrOutside(start(ir), 1L, length(x)) ||
-            anyMissingOrOutside(end(ir), 1L, length(x)))
+        if (S4Vectors:::anyMissingOrOutside(start(ir), 1L, length(x)) ||
+            S4Vectors:::anyMissingOrOutside(end(ir), 1L, length(x)))
             stop("some ranges are out of bounds")
 
         valueWidths <- width(ir)
@@ -558,8 +559,8 @@ setGeneric("findRun", signature = "vec",
 setMethod("findRun", signature = c(vec = "Rle"),
           function(x, vec) {
             runs <-
-              findIntervalAndStartFromWidth(as.integer(x),
-                                            runLength(vec))[["interval"]]
+              S4Vectors:::findIntervalAndStartFromWidth(as.integer(x),
+                                         runLength(vec))[["interval"]]
             runs[x == 0 | x > length(vec)] <- NA
             runs
           })
@@ -598,8 +599,8 @@ setGeneric("orderAsRanges", signature = c("x"),  # not exported
 setMethod("orderAsRanges", "Rle",
            function(x, na.last = TRUE, decreasing = FALSE)
            {
-               ord <- orderInteger(runValue(x), na.last = na.last,
-                                   decreasing = decreasing)
+               ord <- S4Vectors:::orderInteger(runValue(x), na.last = na.last,
+                                               decreasing = decreasing)
                new2("IRanges", start = start(x)[ord], width = runLength(x)[ord],
                     check = FALSE)
            })
@@ -649,10 +650,11 @@ setMethod("rep.int", "Rle",
               if (!is.integer(times))
                   times <- as.integer(times)
               if ((length(times) > 1 && length(times) < n) ||
-                  anyMissingOrOutside(times, 0L))
+                  S4Vectors:::anyMissingOrOutside(times, 0L))
                   stop("invalid 'times' argument")
               if (length(times) == n) {
-                  runLength(x) <- diffWithInitialZero(cumsum(times)[end(x)])
+                  runLength(x) <-
+                      S4Vectors:::diffWithInitialZero(cumsum(times)[end(x)])
               } else if (length(times) == 1) {
                   times <- as.vector(times)
                   x <- Rle(values  = rep.int(runValue(x), times),
@@ -681,12 +683,12 @@ setMethod("shiftApply", signature(X = "Rle", Y = "Rle"),
 
               if (!is.integer(SHIFT))
                   SHIFT <- as.integer(SHIFT)
-              if (length(SHIFT) == 0 || anyMissingOrOutside(SHIFT, 0L))
+              if (length(SHIFT) == 0 || S4Vectors:::anyMissingOrOutside(SHIFT, 0L))
                   stop("all 'SHIFT' values must be non-negative")
 
               if (!is.integer(OFFSET))
                   OFFSET <- as.integer(OFFSET)
-              if (length(OFFSET) == 0 || anyMissingOrOutside(OFFSET, 0L))
+              if (length(OFFSET) == 0 || S4Vectors:::anyMissingOrOutside(OFFSET, 0L))
                   stop("'OFFSET' must be non-negative")
 
               ## Perform X setup
@@ -763,8 +765,8 @@ setMethod("order", "Rle",
             x <- x[!is.na(x)]
     }
     if (is.integer(runValue(x)) || is.factor(runValue(x)))
-        ord <- orderInteger(runValue(x), decreasing=decreasing,
-                            na.last=na.last)
+        ord <- S4Vectors:::orderInteger(runValue(x), decreasing=decreasing,
+                                        na.last=na.last)
     else
         ord <- order(runValue(x), decreasing=decreasing,
                      na.last=na.last)
@@ -993,7 +995,7 @@ setMethod("which", "Rle",
               to <- end(x)[ok]
               if (length(from) == 0)
                   integer(0)
-              else mseq(from, to)
+              else S4Vectors:::mseq(from, to)
           })
 
 setMethod("which.max", "Rle",
@@ -1048,19 +1050,19 @@ setMethod("diff", "Rle", .diff.Rle)
     ends <- end(rlist[[1L]])
     if (length(rlist) > 1) {
         for (i in 2:length(rlist))
-            ends <- sortedMerge(ends, end(rlist[[i]]))
+            ends <- S4Vectors:::sortedMerge(ends, end(rlist[[i]]))
     }
     Rle(values =
         do.call(FUN,
                 c(lapply(rlist,
                          function(x) {
                              runs <-
-                               findIntervalAndStartFromWidth(ends,
-                                       runLength(x))[["interval"]]
+                               S4Vectors:::findIntervalAndStartFromWidth(ends,
+                                                   runLength(x))[["interval"]]
                              runValue(x)[runs]
                          }),
                  MoreArgs)),
-        lengths = diffWithInitialZero(ends), check = FALSE)
+        lengths = S4Vectors:::diffWithInitialZero(ends), check = FALSE)
 }
 
 setMethod("pmax", "Rle", function(..., na.rm = FALSE)
@@ -1432,9 +1434,9 @@ setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle")
         if (n2 < n)
             e2 <- rep(e2, length.out = n)
         # ends <- sort(unique(c(end(e1), end(e2))))
-        ends <- sortedMerge(end(e1), end(e2))
-        which1 <- findIntervalAndStartFromWidth(ends, runLength(e1))[["interval"]]
-        which2 <- findIntervalAndStartFromWidth(ends, runLength(e2))[["interval"]]
+        ends <- S4Vectors:::sortedMerge(end(e1), end(e2))
+        which1 <- S4Vectors:::findIntervalAndStartFromWidth(ends, runLength(e1))[["interval"]]
+        which2 <- S4Vectors:::findIntervalAndStartFromWidth(ends, runLength(e2))[["interval"]]
     }
     if (is.null(collapse) &&
         is.factor(runValue(e1)) && is.factor(runValue(e2))) {
@@ -1452,7 +1454,8 @@ setMethod("gsub", signature = c(pattern = "ANY", replacement = "ANY", x = "Rle")
           paste(runValue(e1)[which1], runValue(e2)[which2], sep = sep,
                 collapse = collapse)
     }
-    Rle(values = values, lengths = diffWithInitialZero(ends), check = FALSE)
+    Rle(values = values, lengths = S4Vectors:::diffWithInitialZero(ends),
+        check = FALSE)
 }
 
 setMethod("paste", "Rle",

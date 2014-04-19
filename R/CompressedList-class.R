@@ -328,7 +328,7 @@ setMethod("revElements", "CompressedList",
         offset <- cumsum(c(0L, elt_lens[-length(elt_lens)]))
         rev <- logical(length(x))
         rev[i] <- TRUE
-        ii <- fancy_mseq(elt_lens, offset=offset, rev=rev)
+        ii <- S4Vectors:::fancy_mseq(elt_lens, offset=offset, rev=rev)
         x@unlistData <- x@unlistData[ii]
         x
     }
@@ -339,7 +339,8 @@ setMethod("revElements", "CompressedList",
 ### Coercion.
 ###
 
-setUnlistDataNames <- function(unlistData, grouping, use.names) {
+setUnlistDataNames <- function(unlisted_x, grouping, use.names, x_class)
+{
     ## If 'use.names' is FALSE or 'x' has no *outer* names, then we don't
     ## do anything to 'ans' i.e. we just keep whatever names/rownames are
     ## on it (which are the *inner* names/rownames of 'x'). Note that this
@@ -354,25 +355,25 @@ setUnlistDataNames <- function(unlistData, grouping, use.names) {
     ## from what base::unlist does but THIS IS A FEATURE and is consistent
     ## with what unlist,List does.
     if (use.names && !is.null(x_names <- names(grouping))) {
-        if (length(dim(unlistData)) < 2L) {
-            ans_ROWNAMES <- names(unlistData)
+        if (length(dim(unlisted_x)) < 2L) {
+            ans_ROWNAMES <- names(unlisted_x)
         } else {
-            ans_ROWNAMES <- rownames(unlistData)
+            ans_ROWNAMES <- rownames(unlisted_x)
         }
         nms <- rep.int(x_names, elementLengths(grouping))
         ans_ROWNAMES <- make.unlist.result.names(nms, ans_ROWNAMES)
-        if (length(dim(unlistData)) < 2L) {
-            res <- try(names(unlistData) <- ans_ROWNAMES, silent=TRUE)
+        if (length(dim(unlisted_x)) < 2L) {
+            res <- try(names(unlisted_x) <- ans_ROWNAMES, silent=TRUE)
             what <- "names"
         } else {
-            res <- try(rownames(unlistData) <- ans_ROWNAMES, silent=TRUE)
+            res <- try(rownames(unlisted_x) <- ans_ROWNAMES, silent=TRUE)
             what <- "rownames"
         }
         if (is(res, "try-error"))
-            warning("failed to set ", what, " on the result ",
-                    "of unlisting a ", class(x), " object")
+            warning("failed to set ", what, " on the ",
+                    "unlisted ", x_class, " object")
     }
-    unlistData
+    unlisted_x
 }
 
 setMethod("unlist", "CompressedList",
@@ -383,7 +384,7 @@ setMethod("unlist", "CompressedList",
                  "does not support the 'recursive' argument")
         if (!isTRUEorFALSE(use.names))
             stop("'use.names' must be TRUE or FALSE")
-        setUnlistDataNames(x@unlistData, x@partitioning, use.names)
+        setUnlistDataNames(x@unlistData, x@partitioning, use.names, class(x))
     }
 )
 

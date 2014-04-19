@@ -222,16 +222,19 @@ setMethod("match", c("Hits", "Hits"),
         if (!is.null(incomparables))
             stop("\"match\" method for Hits objects ",
                  "only accepts 'incomparables=NULL'")
-        matchIntegerPairs(queryHits(x), subjectHits(x),
-                          queryHits(table), subjectHits(table),
-                          nomatch=nomatch)
+        S4Vectors:::matchIntegerPairs(queryHits(x), subjectHits(x),
+                                      queryHits(table), subjectHits(table),
+                                      nomatch=nomatch)
     }
 )
 
 setMethod("selfmatch", "Hits",
-          function (x, method = c("auto", "quick", "hash")) {
-            selfmatchIntegerPairs(queryHits(x), subjectHits(x), method = method)
-          })
+    function (x, method=c("auto", "quick", "hash"))
+    {
+        S4Vectors:::selfmatchIntegerPairs(queryHits(x), subjectHits(x),
+                                          method=method)
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -298,7 +301,7 @@ remapHits <- function(x, query.map=NULL, new.queryLength=NA,
     } else {
         if (is.factor(query.map))
             query.map <- as.integer(query.map)
-        if (anyMissingOrOutside(query.map, 1L, new.queryLength))
+        if (S4Vectors:::anyMissingOrOutside(query.map, 1L, new.queryLength))
             stop("'query.map' cannot contain NAs, or values that ",
                  "are < 1, or > 'new.queryLength'")
         query_hits <- query.map[query_hits]
@@ -308,15 +311,15 @@ remapHits <- function(x, query.map=NULL, new.queryLength=NA,
     } else {
         if (is.factor(subject.map))
             subject.map <- as.integer(subject.map)
-        if (anyMissingOrOutside(subject.map, 1L, new.subjectLength))
+        if (S4Vectors:::anyMissingOrOutside(subject.map, 1L, new.subjectLength))
             stop("'subject.map' cannot contain NAs, or values that ",
                  "are < 1, or > 'new.subjectLength'")
         subject_hits <- subject.map[subject_hits]
     }
-    not_dup <- !duplicatedIntegerPairs(query_hits, subject_hits)
+    not_dup <- !S4Vectors:::duplicatedIntegerPairs(query_hits, subject_hits)
     query_hits <- query_hits[not_dup]
     subject_hits <- subject_hits[not_dup]
-    oo <- orderIntegerPairs(query_hits, subject_hits)
+    oo <- S4Vectors:::orderIntegerPairs(query_hits, subject_hits)
     new("Hits", queryHits=query_hits[oo], subjectHits=subject_hits[oo],
                 queryLength=new.queryLength, subjectLength=new.subjectLength)
 }

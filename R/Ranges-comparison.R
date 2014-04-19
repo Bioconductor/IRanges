@@ -55,8 +55,9 @@ setMethod("match", c("Ranges", "Ranges"),
         ## Equivalent to (but faster than):
         ##     findOverlaps(x, table, type="equal", select="first")
         ## except when 'x' and 'table' both contain empty ranges.
-        matchIntegerPairs(start(x), width(x), start(table), width(table),
-                          nomatch=nomatch, method=method)
+        S4Vectors:::matchIntegerPairs(start(x), width(x),
+                                      start(table), width(table),
+                                      nomatch=nomatch, method=method)
     }
 )
 
@@ -67,7 +68,7 @@ setMethod("match", c("Ranges", "Ranges"),
 
 setMethod("selfmatch", "Ranges",
     function(x, method=c("auto", "quick", "hash"))
-        selfmatchIntegerPairs(start(x), width(x), method=method)
+        S4Vectors:::selfmatchIntegerPairs(start(x), width(x), method=method)
 )
 
 
@@ -87,8 +88,8 @@ setMethod("order", "Ranges",
         args <- list(...)
         if (length(args) == 1L) {
             x <- args[[1L]]
-            return(orderIntegerPairs(start(x), width(x),
-                                     decreasing=decreasing))
+            return(S4Vectors:::orderIntegerPairs(start(x), width(x),
+                                                 decreasing=decreasing))
         }
         order_args <- vector("list", 2L*length(args))
         idx <- 2L*seq_len(length(args))

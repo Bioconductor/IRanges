@@ -43,8 +43,8 @@ setReplaceMethod("dimnames", "DataTable",
 setMethod("subset", "DataTable",
           function(x, subset, select, drop = FALSE, ...) 
           {
-              i <- evalqForSubset(subset, x, ...)
-              j <- evalqForSelect(select, x, ...)
+              i <- S4Vectors:::evalqForSubset(subset, x, ...)
+              j <- S4Vectors:::evalqForSelect(select, x, ...)
               x[i, j, drop=drop]
           })
 
@@ -88,7 +88,8 @@ transform.DataTable <- function(`_data`, ...) {
     stop("all arguments in '...' must be named")
   }
   ## elements in '...' can originate from different environments
-  vals <- mapply(safeEval, exprs, list(`_data`), top_prenv_dots(...),
+  vals <- mapply(S4Vectors:::safeEval, exprs, list(`_data`),
+                 S4Vectors:::top_prenv_dots(...),
                  SIMPLIFY=FALSE)
   `_data`[,names(vals)] <- vals
   `_data`

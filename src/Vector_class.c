@@ -3,6 +3,7 @@
  *          Authors: Patrick Aboyoun, Michael Lawrence, Herve Pages         *
  ****************************************************************************/
 #include "IRanges.h"
+#include "S4Vectors_interface.h"
 
 
 /****************************************************************************
@@ -176,9 +177,9 @@ SEXP vector_subsetByRanges(SEXP x, SEXP start, SEXP width)
 	SEXP ans, x_names, ans_names;
 
 	x_len = LENGTH(x);
-	nranges = _check_integer_pairs(start, width,
-				       &start_p, &width_p,
-				       "start", "width");
+	nranges = check_integer_pairs(start, width,
+				      &start_p, &width_p,
+				      "start", "width");
 	for (i = ans_len = 0; i < nranges; i++) {
 		width_i = width_p[i];
 		if (width_i == NA_INTEGER || width_i < 0)

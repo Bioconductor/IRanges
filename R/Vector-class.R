@@ -462,8 +462,8 @@ setMethod("fixedColumnNames", "ANY", function(x) character())
 
 setMethod("subset", "Vector",
           function(x, subset, select, drop = FALSE, ...) {
-            i <- evalqForSubset(subset, x, ...)
-            j <- evalqForSelect(select, mcols(x), ...)
+            i <- S4Vectors:::evalqForSubset(subset, x, ...)
+            j <- S4Vectors:::evalqForSelect(select, mcols(x), ...)
             mcols(x) <- mcols(x)[,j,drop=FALSE]
             x[i, drop=drop]
           })
@@ -485,7 +485,7 @@ setMethod("eval", c("language", "Vector"),
 setMethod("with", "Vector",
           function(data, expr, ...)
           {
-            safeEval(substitute(expr), data, parent.frame(), ...)
+            S4Vectors:::safeEval(substitute(expr), data, parent.frame(), ...)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -731,12 +731,12 @@ function(SHIFT, X, Y, FUN, ..., OFFSET = 0L, simplify = TRUE, verbose = FALSE)
 
     if (!is.integer(SHIFT))
         SHIFT <- as.integer(SHIFT)
-    if (length(SHIFT) == 0 || anyMissingOrOutside(SHIFT, 0L))
+    if (length(SHIFT) == 0 || S4Vectors:::anyMissingOrOutside(SHIFT, 0L))
         stop("all 'SHIFT' values must be non-negative")
 
     if (!is.integer(OFFSET))
         OFFSET <- as.integer(OFFSET)
-    if (length(OFFSET) == 0 || anyMissingOrOutside(OFFSET, 0L))
+    if (length(OFFSET) == 0 || S4Vectors:::anyMissingOrOutside(OFFSET, 0L))
         stop("'OFFSET' must be non-negative")
 
     ## Perform X setup

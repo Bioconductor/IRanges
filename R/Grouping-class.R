@@ -118,7 +118,7 @@ setMethod("togroup", "ANY",
         if (!is.integer(j))
             j <- as.integer(j)
         bound <- length(to_group)
-        if (anyMissingOrOutside(j, -bound, bound))
+        if (S4Vectors:::anyMissingOrOutside(j, -bound, bound))
             stop("subscript 'j' contains NAs or out of bounds indices")
         to_group[j]
     }
@@ -207,7 +207,7 @@ setMethod("grouplength", "H2LGrouping",
         if (!is.integer(i))
             i <- as.integer(i)
         bound <- length(group_length)
-        if (anyMissingOrOutside(i, -bound, bound))
+        if (S4Vectors:::anyMissingOrOutside(i, -bound, bound))
             stop("subscript 'i' contains NAs or out of bounds indices")
         group_length[i]
     }
@@ -246,7 +246,7 @@ setMethod("togroup", "H2LGrouping",
         if (!is.integer(j))
             j <- as.integer(j)
         bound <- length(to_group)
-        if (anyMissingOrOutside(j, -bound, bound))
+        if (S4Vectors:::anyMissingOrOutside(j, -bound, bound))
             stop("subscript 'j' contains NAs or out of bounds indices")
         to_group[j]
     }
@@ -543,7 +543,7 @@ setMethod("grouplength", "Partitioning",
         if (!is.integer(i))
             i <- as.integer(i)
         bound <- length(x_width)
-        if (anyMissingOrOutside(i, -bound, bound))
+        if (S4Vectors:::anyMissingOrOutside(i, -bound, bound))
             stop("subscript 'i' contains NAs or out of bounds indices")
         x_width[i]
     }
@@ -615,7 +615,9 @@ setMethod("start", "PartitioningByEnd",
     }
 )
 
-setMethod("width", "PartitioningByEnd", function(x) diffWithInitialZero(end(x)))
+setMethod("width", "PartitioningByEnd",
+    function(x) S4Vectors:::diffWithInitialZero(end(x))
+)
 
 .valid.PartitioningByEnd <- function(x)
 {
@@ -932,7 +934,7 @@ findOverlaps_Ranges_Partitioning <- function(query, subject,
     q_end2subject <- findInterval(q_end, vec)
     q_hits <- rep.int(seq_len(length(q_start)),
                       q_end2subject - q_start2subject + 1L)
-    s_hits <- mseq(q_start2subject, q_end2subject)
+    s_hits <- S4Vectors:::mseq(q_start2subject, q_end2subject)
     ## If 'query' is a Partitioning object, all hits are guaranteed to be
     ## valid.
     if (!is(query, "Partitioning")) {

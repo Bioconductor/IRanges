@@ -198,9 +198,9 @@ SEXP Ranges_reduce(SEXP x_start, SEXP x_width, SEXP drop_empty_ranges,
 	IntAE order_buf;
 	IntAEAE tmp, *revmap;
 
-	x_len = _check_integer_pairs(x_start, x_width,
-				     &x_start_p, &x_width_p,
-				     "start(x)", "width(x)");
+	x_len = check_integer_pairs(x_start, x_width,
+				    &x_start_p, &x_width_p,
+				    "start(x)", "width(x)");
 	if (LOGICAL(with_revmap)[0]) {
 		tmp = new_IntAEAE(0, 0);
 		revmap = &tmp;
@@ -305,7 +305,7 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 	PROTECT(ans_partitioning = _new_PartitioningByEnd(
 			"PartitioningByEnd",
 			ans_partitioning_end, ans_names));
-	PROTECT(ans = _new_CompressedList(_get_classname(x),
+	PROTECT(ans = _new_CompressedList(get_classname(x),
 			ans_unlistData, ans_partitioning));
 	UNPROTECT(5);
 */
@@ -384,9 +384,9 @@ SEXP IRanges_gaps(SEXP x_start, SEXP x_width, SEXP start, SEXP end)
 	RangeAE out_ranges;
 	IntAE order_buf;
 
-	x_len = _check_integer_pairs(x_start, x_width,
-				     &x_start_p, &x_width_p,
-				     "start(x)", "width(x)");
+	x_len = check_integer_pairs(x_start, x_width,
+				    &x_start_p, &x_width_p,
+				    "start(x)", "width(x)");
 	out_ranges = new_RangeAE(0, 0);
 	order_buf = new_IntAE(x_len, 0, 0);
 	gaps_ranges(x_start_p, x_width_p, x_len,
@@ -449,7 +449,7 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 	PROTECT(ans_partitioning = _new_PartitioningByEnd(
 			"PartitioningByEnd",
 			ans_partitioning_end, ans_names));
-	PROTECT(ans = _new_CompressedList(_get_classname(x),
+	PROTECT(ans = _new_CompressedList(get_classname(x),
 			ans_unlistData, ans_partitioning));
 	UNPROTECT(5);
 	return ans;

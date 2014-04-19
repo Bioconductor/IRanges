@@ -26,7 +26,7 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
         width <- as.integer(width)  # this drops the names
     else if (!is.null(names(width)))
         names(width) <- NULL  # unname() used to be broken on 0-length vectors
-    if (anyMissingOrOutside(width, 0L))
+    if (S4Vectors:::anyMissingOrOutside(width, 0L))
         stop("'width' cannot contain NAs or negative values")
     if (!is.numeric(gapwidth))
         stop("'gapwidth' must be an integer vector")

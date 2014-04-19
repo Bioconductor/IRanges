@@ -350,7 +350,7 @@ setMethod("resize", "Ranges",
             stop("'width' must be a numeric vector without NA's")
         if (!is.integer(width))
             width <- as.integer(width)
-        if (anyMissingOrOutside(width, 0L))
+        if (S4Vectors:::anyMissingOrOutside(width, 0L))
             stop("'width' values must be non-negative")
         if (!(is.character(fix) ||
               (is(fix, "Rle") && is.character(runValue(fix)))) || 

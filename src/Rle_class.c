@@ -1,4 +1,5 @@
 #include "IRanges.h"
+#include "S4Vectors_interface.h"
 
 
 static SEXP _new_Rle(SEXP values, SEXP lengths)
@@ -410,8 +411,8 @@ SEXP Rle_constructor(SEXP values, SEXP lengths, SEXP check, SEXP buflength)
 	if (LOGICAL(check)[0] && LENGTH(lengths) > 0) {
 		if (LENGTH(lengths) != nvalues)
 			error("'length(lengths)' != 'length(values)'");
-		_sum_non_neg_ints(INTEGER(lengths), LENGTH(lengths),
-				  "lengths");
+		sum_non_neg_ints(INTEGER(lengths), LENGTH(lengths),
+				 "lengths");
 	}
 	lengths_p = LENGTH(lengths) > 0 ? INTEGER(lengths) : NULL;
 	buflength0 = INTEGER(buflength)[0];
@@ -508,9 +509,9 @@ static SEXP get_StartEndRunAndOffset_from_runLength(
 	SEXP ans_start, ans_start_names, ans_end, ans_end_names;
 	SEXP start_run, start_offset, end_run, end_offset;
 
-	PROTECT(info_start = _find_interv_and_start_from_width(start, length,
+	PROTECT(info_start = find_interv_and_start_from_width(start, length,
 					runlength, runlength_len));
-	PROTECT(info_end = _find_interv_and_start_from_width(end, length,
+	PROTECT(info_end = find_interv_and_start_from_width(end, length,
 					runlength, runlength_len));
 
 	start_run = VECTOR_ELT(info_start, 0);

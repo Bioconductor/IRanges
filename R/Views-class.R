@@ -179,8 +179,8 @@ setMethod("as.matrix", "Views", function(x, rev = FALSE, max.width = NA) {
   }
   rev <- S4Vectors:::recycleVector(rev, length(x))
   part <- PartitioningByWidth(x_ranges)
-  ord <- mseq(ifelse(rev, end(part), start(part)),
-              ifelse(rev, start(part), end(part)))
+  ord <- S4Vectors:::mseq(ifelse(rev, end(part), start(part)),
+                          ifelse(rev, start(part), end(part)))
   v <- extractROWS(subject(x), x_ranges)[ord]
   v_fill <- rep.int(NA, max.width * length(x))
   part <- PartitioningByWidth(rep(max.width, length(x)))

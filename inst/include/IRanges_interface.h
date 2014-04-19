@@ -13,25 +13,6 @@
 
 
 /*
- * SEXP_utils.c
- */
-
-const char *get_classname(SEXP x);
-
-/*
- * int_utils.c
- */
-
-int check_integer_pairs(
-	SEXP a,
-	SEXP b,
-	const int **a_p,
-	const int **b_p,
-	const char *a_argname,
-	const char *b_argname
-);
-
-/*
  * Low-level manipulation of Vector objects.
  * (see Vector_class.c)
  */

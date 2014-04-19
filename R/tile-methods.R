@@ -29,7 +29,7 @@ setMethod("tile", "Ranges", function(x, n, width, ...) {
   tile.end <- floor(as.integer(IRanges(rep(1L, length(n)), width=n)) *
                     rep(width, n))
   tile.end.abs <- tile.end + rep(start(x), n) - 1L
-  tile.width <- diffWithInitialZero(as.integer(tile.end.abs))
+  tile.width <- S4Vectors:::diffWithInitialZero(as.integer(tile.end.abs))
   p <- PartitioningByWidth(n)
   tile.width[start(p)] <- tile.end[start(p)]
   relist(IRanges(width=tile.width, end=tile.end.abs), p)

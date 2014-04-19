@@ -20,7 +20,7 @@ setMethod("precede", c("Ranges", "RangesORmissing"),
       s <- start(subject)
       ord <- NULL
       if (S4Vectors:::isNotSorted(s)) {
-        ord <- orderInteger(s)
+        ord <- S4Vectors:::orderInteger(s)
         s <- s[ord]
       }
       if (select == "all") {
@@ -48,7 +48,7 @@ setMethod("follow", c("Ranges", "RangesORmissing"),
       e <- end(subject)
       ord <- NULL
       if (S4Vectors:::isNotSorted(e)) {
-        ord <- orderInteger(e)
+        ord <- S4Vectors:::orderInteger(e)
         e <- e[ord]
       }
       if (select == "all") {
@@ -74,7 +74,7 @@ setMethod("follow", c("Ranges", "RangesORmissing"),
 
 .hitsMatrixToVector <- function(hitsMatrix, queryLength) {
   hitsMatrix <-
-    hitsMatrix[diffWithInitialZero(hitsMatrix[,1L,drop=TRUE]) != 0L,,
+    hitsMatrix[S4Vectors:::diffWithInitialZero(hitsMatrix[,1L,drop=TRUE]) != 0L,,
                 drop=FALSE]
   ans <- rep.int(NA_integer_, queryLength)
   ans[hitsMatrix[,1L,drop=TRUE]] <- hitsMatrix[,2L,drop=TRUE]
@@ -90,7 +90,7 @@ setMethod("follow", c("Ranges", "RangesORmissing"),
   m <- cbind(queryHits = rep(seq(lx)[v], w),
              subjectHits = if (!is.null(ord)) ord[subj] else subj)
   if (!is.null(ord))
-    m <- m[orderIntegerPairs(m[,1L], m[,2L]),,drop=FALSE]
+    m <- m[S4Vectors:::orderIntegerPairs(m[,1L], m[,2L]),,drop=FALSE]
   ## unname() required because in case 'm' has only 1 row
   ## 'm[ , 1L]' and 'm[ , 2L]' will return a named atomic vector
   new("Hits", queryHits = unname(m[ , 1L]), subjectHits = unname(m[ , 2L]),
@@ -144,7 +144,7 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
               left[leftdist == rightdist] <- TRUE
               m <- rbind(m, filterMatchMatrix(before_m, left),
                          filterMatchMatrix(after_m, right))
-              m <- m[orderIntegerPairs(m[,1L], m[,2L]),, drop=FALSE]
+              m <- m[S4Vectors:::orderIntegerPairs(m[,1L], m[,2L]),, drop=FALSE]
               ## unname() required because in case 'm' has only 1 row
               ## 'm[ , 1L]' and 'm[ , 2L]' will return a named atomic vector
               ol@queryHits <- unname(m[ , 1L])
