@@ -38,7 +38,7 @@ normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE,
                 stop("subscript contains NAs")
         } else {
             if (S4Vectors:::anyMissingOrOutside(i, upper=N))
-                stop("subscript contains NAs or out of bounds indices")
+                stop("subscript contains NAs or out-of-bounds indices")
         }
         nonzero_idx <- which(i != 0L)
         i <- i[nonzero_idx]
@@ -60,7 +60,7 @@ normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE,
         li <- length(i)
         if (!allow.append && li > N) {
             if (any(i[(N+1L):li]))
-                stop("subscript is a logical vector with out of bounds ",
+                stop("subscript is a logical vector with out-of-bounds ",
                      "TRUE values")
             i <- i[seq_len(N)]
         }
@@ -127,7 +127,7 @@ normalizeDoubleBracketSubscript <- function(i, x, exact=TRUE,
         if (!is.integer(i))
             i <- as.integer(i)
         if (i < 1L || length(x) < i)
-            stop("subscript out of bounds")
+            stop("subscript is out of bounds")
         return(i)
     }
     ## 'i' is a character string
