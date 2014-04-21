@@ -56,14 +56,6 @@ toNewTypeList <- function(object, simpleclass, compressedclass, newtype) {
 ### Update methods
 ### ###################################################################
 
-## "AnnotatedList" -> "SimpleList"
-setClass("AnnotatedList", representation("VIRTUAL"))
-setMethod("updateObject", signature(object="AnnotatedList"),
-          function(object, ..., verbose=FALSE) {
-              if (verbose) message("updateObject(object = 'AnnotatedList')")
-              toSimpleList(asS4(object), "SimpleList", "ANY")
-          })
-
 ## "LogicalList" -> "SimpleLogicalList" or "CompressedLogicalList"
 setMethod("updateObject", signature(object="LogicalList"),
           function(object, ..., verbose=FALSE) {

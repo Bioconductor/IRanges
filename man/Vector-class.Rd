@@ -382,7 +382,8 @@
     \item \link{DataTable} which is the type of objects returned by the
           \code{mcols} accessor.
 
-    \item \link{Annotated} which Vector extends.
+    \item The \link[S4Vectors]{Annotated} class in the \pkg{S4Vectors}
+          package, which Vector extends.
   }
 }
 

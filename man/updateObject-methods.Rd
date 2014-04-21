@@ -1,7 +1,6 @@
 \name{updateObject-methods}
 \alias{updateObject-methods}
 
-\alias{updateObject,AnnotatedList-method}
 \alias{updateObject,CharacterList-method}
 \alias{updateObject,ComplexList-method}
 \alias{updateObject,FilterRules-method}

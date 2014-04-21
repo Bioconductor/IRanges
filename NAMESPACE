@@ -12,7 +12,6 @@ importFrom(stats4, summary, update)
 
 exportClasses(
     functionORNULL,
-    Annotated,
     DataTable, DataTableORNULL,
     Vector,
     List, SimpleList, CompressedList,
@@ -310,9 +309,6 @@ export(
     ## runstat.R:
     runsum, runmean, runwtsum, runq,
 
-    ## Annotated-class.R:
-    metadata, "metadata<-",
-
     ## Vector-class.R:
     showAsCell,
     elementMetadata, "elementMetadata<-",
@@ -445,7 +441,6 @@ export(
 exportMethods(
     endoapply, mendoapply,
     runsum, runmean, runwtsum, runq,
-    metadata, "metadata<-",
     showAsCell,
     elementMetadata, "elementMetadata<-",
     mcols, "mcols<-",
