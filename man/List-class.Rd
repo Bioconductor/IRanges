@@ -42,6 +42,7 @@
 \alias{as.env,List-method}
 \alias{unlist,List-method}
 \alias{stack,List-method}
+\alias{as.data.frame.List}
 \alias{as.data.frame,List-method}
 
 \alias{eval}

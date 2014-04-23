@@ -820,8 +820,6 @@ as.data.frame.List <-
     function(x, row.names=NULL, optional=FALSE, value.name="value",
              use.outer.mcols=FALSE, group_name.as.factor=FALSE, ...)
 {
-    if (!length(x))
-        return(data.frame())
     if (!length(togroup(x)))
         return(data.frame())
     if (!isSingleString(value.name))
