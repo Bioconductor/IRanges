@@ -1,6 +1,10 @@
 \name{Vector-class}
 \docType{class}
 
+\alias{class:DataTableORNULL}
+\alias{DataTableORNULL-class}
+\alias{DataTableORNULL}
+
 % Vector class, functions and methods:
 \alias{class:Vector}
 \alias{Vector-class}
