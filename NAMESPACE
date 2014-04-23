@@ -12,7 +12,7 @@ importFrom(stats4, summary, update)
 
 exportClasses(
     functionORNULL,
-    DataTable, DataTableORNULL,
+    DataTableORNULL,
     Vector,
     List, SimpleList, CompressedList,
     Ranges, RangesORmissing,
@@ -75,7 +75,6 @@ S3method(diff, Rle)
 
 S3method(duplicated, Vector)
 S3method(duplicated, Dups)
-S3method(duplicated, DataTable)
 S3method(duplicated, Rle)
 S3method(duplicated, CompressedList)
 
@@ -100,7 +99,6 @@ S3method(summary, Rle)
 S3method(tail, Vector)
 
 S3method(unique, Vector)
-S3method(unique, DataTable)
 S3method(unique, Rle)
 S3method(unique, CompressedList)
 S3method(unique, CompressedRleList)
@@ -143,7 +141,6 @@ export(
 
     duplicated.Vector,
     duplicated.Dups,
-    duplicated.DataTable,
     duplicated.Rle,
     duplicated.CompressedList,
 
@@ -168,7 +165,6 @@ export(
     tail.Vector,
     
     unique.Vector,
-    unique.DataTable,
     unique.Rle,
     unique.CompressedList,
     unique.CompressedRleList,

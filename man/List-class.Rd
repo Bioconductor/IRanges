@@ -39,7 +39,6 @@
 \alias{coerce,ANY,List-method}
 \alias{coerce,integer,List-method}
 \alias{as.list,List-method}
-\alias{as.env}
 \alias{as.env,List-method}
 \alias{unlist,List-method}
 \alias{stack,List-method}

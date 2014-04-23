@@ -98,7 +98,7 @@
 \alias{eval,expression,Vector-method}
 \alias{eval,language,Vector-method}
 \alias{as.env,Vector-method}
-\alias{as.env,NULL-method}
+
 
 \title{Vector objects}
 

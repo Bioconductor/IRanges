@@ -9,9 +9,6 @@
 ### Is it the right place for this?
 setClassUnion("vectorORfactor", c("vector", "factor"))
 
-### Need to be defined before the Vector class. See DataTable-API.R for the
-### implementation of the DataTable API.
-setClass("DataTable", representation("VIRTUAL"))
 setClassUnion("DataTableORNULL", c("DataTable", "NULL"))
 
 setClass("Vector",
@@ -532,8 +529,6 @@ as.data.frame.Vector <- function(x, row.names=NULL, optional=FALSE, ...)
 }
 setMethod("as.data.frame", "Vector", as.data.frame.Vector)
 
-setGeneric("as.env", function(x, ...) standardGeneric("as.env"))
-
 makeFixedColumnEnv <- function(x, parent, tform = identity) {
   env <- new.env(parent=parent)
   lapply(fixedColumnNames(x), function(nm) {
@@ -548,17 +543,8 @@ makeFixedColumnEnv <- function(x, parent, tform = identity) {
   env
 }
 
-addSelfRef <- function(x, env) {
-  env$.. <- x
-  env
-}
-
 setMethod("as.env", "Vector", function(x, enclos, tform = identity) {
-  addSelfRef(x, makeFixedColumnEnv(x, as.env(mcols(x), enclos, tform), tform))
-})
-
-setMethod("as.env", "NULL", function(x, enclos, tform = identity) {
-  new.env(parent=enclos)
+  S4Vectors:::addSelfRef(x, makeFixedColumnEnv(x, as.env(mcols(x), enclos, tform), tform))
 })
 
 as.list.Vector <- function(x) {
