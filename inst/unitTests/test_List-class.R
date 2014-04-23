@@ -260,3 +260,49 @@ test_List_annotation <- function() {
   }
 }
 
+test_List_as.data.frame <- function() {
+  for (compress in c(TRUE, FALSE)) {
+    ## empty-ish
+    current <- as.data.frame(IntegerList(compress=compress))
+    checkIdentical(data.frame(), current)
+    current <- as.data.frame(IntegerList(NA, compress=compress))
+    expected <- data.frame(group=1L, group_name=NA_character_, 
+                           value=NA_integer_, stringsAsFactors=FALSE)
+    checkIdentical(expected, current)
+
+    ilist <- IntegerList(C=1:5, A=NA, B=10:11, compress=compress)
+    ## group, group_name, value
+    current <- as.data.frame(ilist)
+    checkTrue(ncol(current) == 3L)
+    checkIdentical(togroup(ilist), current$group)
+    checkIdentical(names(ilist)[togroup(ilist)], current$group_name)
+
+    current <- as.data.frame(ilist, group_name.as.factor=TRUE)
+    expected <- names(ilist)[togroup(ilist)]
+    checkTrue(is(current$group_name, "factor"))
+    checkIdentical(names(ilist), levels(current$group_name))
+    names(ilist) <- NULL
+    current <- as.data.frame(ilist, group_name.as.factor=TRUE)
+    checkIdentical(character(), levels(current$group_name))
+    checkException(as.data.frame(ilist, group_name.as.factor=NULL), silent=TRUE)
+ 
+    checkIdentical(unlist(ilist, use.names=FALSE), current$value)
+    current <- as.data.frame(ilist, value.name="test")
+    checkIdentical(unlist(ilist, use.names=FALSE), current$test)
+    checkException(as.data.frame(ilist, value.name=NULL), silent=TRUE)
+
+    ## outer mcols
+    mcols(ilist) <- DataFrame(foo=c("ccc", "aaa", "bbb"))
+    current <- as.data.frame(ilist, use.outer.mcols=TRUE)
+    expected <- c("group", "group_name", "value", "foo")
+    checkIdentical(expected, colnames(current))
+    checkException(as.data.frame(ilist, use.outer.mcols=NULL), silent=TRUE)
+
+    ## relist
+    names(ilist) <- c("C", "A", "B") 
+    mcols(ilist) <- NULL
+    current <- as.data.frame(ilist)
+    if (compress == TRUE)
+      checkIdentical(relist(current$value, ilist), ilist)
+  }
+}

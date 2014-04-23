@@ -40,8 +40,6 @@
 \alias{[<-,SplitDataFrameList-method}
 
 % coercion
-\alias{as.data.frame.DataFrameList}
-\alias{as.data.frame,DataFrameList-method}
 \alias{coerce,DataFrameList,DataFrame-method}
 \alias{coerce,SplitDataFrameList,DataFrame-method}
 \alias{coerce,ANY,CompressedSplitDataFrameList-method}
@@ -154,11 +152,6 @@
       on \code{from}. If \code{from} is a \code{List}, each element
       of \code{from} is passed as an argument
       to \code{SplitDataFrameList}, like calling \code{as.list} on a vector.}
-    \item{}{\code{as.data.frame(x, row.names=NULL, optional=FALSE, ...)}:
-      Unsplits the \code{DataFrame} and coerces it to a
-      \code{data.frame}, with the rownames specified in
-      \code{row.names}. The \code{optional} argument is ignored.
-    }
     \item{}{\code{stack(x, index.var = "name")}: Unlists \code{x} and
       adds a column named \code{index.var} to the result, indicating the
       element of \code{x} from which each row was obtained.

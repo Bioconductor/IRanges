@@ -55,7 +55,7 @@ exportClasses(
 S3method(aggregate, Rle)
 
 S3method(as.data.frame, DataFrame)
-S3method(as.data.frame, DataFrameList)
+S3method(as.data.frame, List)
 S3method(as.data.frame, GappedRanges)
 S3method(as.data.frame, Hits)
 S3method(as.data.frame, RangedData)
@@ -122,7 +122,7 @@ export(
     aggregate.Rle,
 
     as.data.frame.DataFrame,
-    as.data.frame.DataFrameList,
+    as.data.frame.List,
     as.data.frame.GappedRanges,
     as.data.frame.Hits,
     as.data.frame.RangedData,
