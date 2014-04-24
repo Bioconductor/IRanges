@@ -11,6 +11,9 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(vector_subsetByRanges, 3),
 	CALLMETHOD_DEF(vector_seqselect, 3),
 
+/* Ranges_class.c */
+	CALLMETHOD_DEF(valid_Ranges, 3),
+
 /* Ranges_comparison.c */
 	CALLMETHOD_DEF(Ranges_compare, 4),
 

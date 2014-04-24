@@ -48,6 +48,15 @@ SEXP vector_seqselect(
 );
 
 
+/* Ranges_class.c */
+
+SEXP valid_Ranges(
+	SEXP x_start,
+	SEXP x_end,
+	SEXP x_width
+);
+
+
 /* Ranges_comparison.c */
 
 int _overlap_code(

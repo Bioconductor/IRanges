@@ -102,64 +102,11 @@ setMethod("min", "NormalIRanges",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
-### Both 'start(x)' and 'width(x)' must be unnamed integer vectors of equal
-### length (eventually 0) with no NAs and such that 'all(width >= 0)' is TRUE.
-### 'names(x)' must be NULL or an unnamed character vector of the same length
-### as 'start(x)' (or 'width(x)').
+### Validity of IRanges objects is taken care of by the validity method for
+### Ranges objects.
 ###
-### Note that we use 'min(width(x)) < 0L' in .valid.IRanges.width() because
-### the 'min(x) < val' test is generally faster and more memory efficent than
-### the 'any(x < val)' test, especially when 'x' is a big vector (the speedup
-### is around 10x or more when 'length(x)' is >= 100000). The 2 tests are
-### equivalent when 'length(x)' != 0 and 'length(val)' == 1.
-###
-
-### IRanges objects
-
-.valid.IRanges.start <- function(x)
-{
-    x_start <- start(x)
-    if (!is.integer(x_start) || !is.null(names(x_start)) || S4Vectors:::anyMissing(x_start))
-        return("'start(x)' must be an unnamed integer vector with no NAs")
-    if (length(x_start) != length(width(x)))
-        return("'start(x)' and 'width(x)' must have the same length")
-    NULL
-}
-
-.valid.IRanges.width <- function(x)
-{
-    x_width <- width(x)
-    if (!is.integer(x_width) || !is.null(names(x_width)) || S4Vectors:::anyMissing(x_width))
-        return("'width(x)' must be an unnamed integer vector with no NAs")
-    if (length(start(x)) != length(x_width))
-        return("'start(x)' and 'width(x)' must have the same length")
-    if (length(x_width) != 0L && min(x_width) < 0L)
-        return("'widths(x)' cannot contain negative values")
-    NULL
-}
-
-.valid.IRanges.end <- function(x)
-{
-    ## Even if 'start(x)' and 'width(x)' are valid, 'end(x)' (which is
-    ## obtained by doing 'start(x) + width(x) - 1L') could contain NAs
-    ## in case of an integer overflow.
-    x_end <- end(x)
-    if (S4Vectors:::anyMissing(x_end))
-        return("'end(x)' cannot contain NAs")
-    NULL
-}
-
-.valid.IRanges <- function(x)
-{
-    c(.valid.IRanges.start(x),
-      .valid.IRanges.width(x),
-      .valid.IRanges.end(x))
-}
-
-setValidity2("IRanges", .valid.IRanges)
 
 ### NormalIRanges objects
-
 .valid.NormalIRanges <- function(x)
 {
     if (!isNormal(x))

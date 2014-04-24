@@ -11,25 +11,7 @@ setClass("Ranges", contains="IntegerList", representation("VIRTUAL"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The Ranges API (work still very much in progress):
-###
-###   Basic get/set methods:
-###     length
-###     start, width, end, names
-###     start<-, width<-, end<-, names<-
-###
-###   More basic stuff:
-###     as.matrix, as.data.frame
-###     as.integer, unlist
-###     show
-###
-###   Testing a Ranges object:
-###     isEmpty
-###     isNormal, whichFirstNotNormal
-###
-###   Core endomorphisms:
-###     update
-###     [, [<-, rep
+### Getters/setters.
 ###
 
 setMethod("length", "Ranges", function(x) length(start(x)))
@@ -69,6 +51,37 @@ setMethod("update", "Ranges",
         as(update(as(object, "IRanges"), ...), class(object))
 )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Validity.
+###
+
+### Checking the names(x) is taken care of by the validity method for Vector
+### objects.
+.valid.Ranges <- function(x)
+{
+    x_start <- start(x)
+    x_end <- end(x)
+    x_width <- width(x)
+    validity_failures <- .Call2("valid_Ranges",
+                                x_start, x_end, x_width,
+                                PACKAGE="IRanges");
+    if (!is.null(validity_failures))
+        return(validity_failures)
+    if (!(is.null(names(x_start)) &&
+          is.null(names(x_end)) &&
+          is.null(names(x_width))))
+        return("'start(x)' must be an unnamed integer vector with no NAs")
+    NULL
+}
+
+setValidity2("Ranges", .valid.Ranges)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion.
+###
+
 setMethod("as.matrix", "Ranges",
     function(x, ...)
         matrix(data=c(start(x), width(x)), ncol=2,
@@ -95,6 +108,13 @@ setMethod("as.data.frame", "Ranges", as.data.frame.Ranges)
 setMethod("as.integer", "Ranges",
     function(x, ...) S4Vectors:::fancy_mseq(width(x), offset=start(x)-1L)
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### More stuff.
+###
+### TODO: Reorganize this
+###
 
 setMethod("unlist", "Ranges",
     function(x, recursive=TRUE, use.names=TRUE)
