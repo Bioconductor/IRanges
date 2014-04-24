@@ -3,34 +3,24 @@
 ### -------------------------------------------------------------------------
 
 
-### Returns an integer vector with values >= 1 and <= N, where N = length(x)
-### if 'byrow=FALSE' and N = nrow(x) if 'byrow=TRUE'.
-normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE,
-                                            allow.append=FALSE)
-{
-    if (!isTRUEorFALSE(byrow))
-        stop("'byrow' must be TRUE or FALSE")
-    if (!isTRUEorFALSE(exact))
-        stop("'exact' must be TRUE or FALSE")
-    if (!isTRUEorFALSE(allow.append))
-        stop("'allow.append' must be TRUE or FALSE")
-    if (byrow) {
-        N <- nrow(x)
-    } else {
-        N <- length(x)
-    }
-    if (missing(i))
-        return(seq_len(N))
-    if (is.null(i))
-        return(integer(0))
-    if (is(i, "Rle")) {
-        i <- as.vector(i)
-    } else if (allow.append && is(i, "Ranges")) {
-        i <- as.integer(i)
-    }
-    if (!is.atomic(i))
-        stop("invalid subscript type")
-    if (is.numeric(i)) {
+setGeneric(".normalizeSingleBracketSubscript", signature="i",  # not exported
+    function(i, x, byrow=FALSE, exact=TRUE, allow.append=FALSE)
+        standardGeneric(".normalizeSingleBracketSubscript")
+)
+
+setMethod(".normalizeSingleBracketSubscript", "NULL",
+    function(i, x, byrow=FALSE, exact=TRUE, allow.append=FALSE)
+        integer(0)
+)
+
+setMethod(".normalizeSingleBracketSubscript", "numeric",
+    function(i, x, byrow=FALSE, exact=TRUE, allow.append=FALSE)
+    {
+        if (byrow) {
+            N <- nrow(x)
+        } else {
+            N <- length(x)
+        }
         if (!is.integer(i))
             i <- as.integer(i)
         if (allow.append) {
@@ -52,9 +42,18 @@ normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE,
         ## all negative.
         if (any_neg)
             return(seq_len(N)[i])
-        return(i)
+        i
     }
-    if (is.logical(i)) {
+)
+
+setMethod(".normalizeSingleBracketSubscript", "logical",
+    function(i, x, byrow=FALSE, exact=TRUE, allow.append=FALSE)
+    {
+        if (byrow) {
+            N <- nrow(x)
+        } else {
+            N <- length(x)
+        }
         if (S4Vectors:::anyMissing(i))
             stop("subscript contains NAs")
         li <- length(i)
@@ -66,36 +65,86 @@ normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE,
         }
         if (li < N)
             i <- rep(i, length.out=N)
-        return(which(i))
+        which(i)
     }
-    if (is.character(i) || is.factor(i)) {
-        if (byrow) {
-            x_names <- rownames(x)
-            what <- "rownames"
-        } else {
-            x_names <- names(x)
-            what <- "names"
-        }
-        if (is.null(x_names)) {
-            if (!allow.append)
-                stop("cannot subset by character when ", what, " are NULL")
-            return(N + seq_along(i))
-        }
-        if (exact) {
-            i <- match(i, x_names, incomparables=c(NA_character_, ""))
-        } else {
-            i <- pmatch(i, x_names, duplicates.ok=TRUE)
-        }
-        if (allow.append) {
-            na_idx <- which(is.na(i))
-            i[na_idx] <- N + seq_along(na_idx)
-            return(i)
-        }
-        if (S4Vectors:::anyMissing(i))
-            stop("subscript contains invalid ", what)
+)
+
+.normalizeSingleBracketSubscript.characterORfactor <-
+    function(i, x, byrow=FALSE, exact=TRUE, allow.append=FALSE)
+{
+    if (byrow) {
+        N <- nrow(x)
+        x_names <- rownames(x)
+        what <- "rownames"
+    } else {
+        N <- length(x)
+        x_names <- names(x)
+        what <- "names"
+    }
+    if (is.null(x_names)) {
+        if (!allow.append)
+            stop("cannot subset by character when ", what, " are NULL")
+        return(N + seq_along(i))
+    }
+    if (exact) {
+        i <- match(i, x_names, incomparables=c(NA_character_, ""))
+    } else {
+        i <- pmatch(i, x_names, duplicates.ok=TRUE)
+    }
+    if (allow.append) {
+        na_idx <- which(is.na(i))
+        i[na_idx] <- N + seq_along(na_idx)
         return(i)
     }
-    stop("invalid subscript type")
+    if (S4Vectors:::anyMissing(i))
+        stop("subscript contains invalid ", what)
+    i
+}
+
+setMethod(".normalizeSingleBracketSubscript", "character",
+    .normalizeSingleBracketSubscript.characterORfactor
+)
+
+setMethod(".normalizeSingleBracketSubscript", "factor",
+    .normalizeSingleBracketSubscript.characterORfactor
+)
+
+setMethod(".normalizeSingleBracketSubscript", "Rle",
+    function(i, x, byrow=FALSE, exact=TRUE, allow.append=FALSE)
+    {
+        i <- as.vector(i)
+        callGeneric()
+    }
+)
+
+setMethod(".normalizeSingleBracketSubscript", "Ranges",
+    function(i, x, byrow=FALSE, exact=TRUE, allow.append=FALSE)
+    {
+        i <- as.integer(i)
+        callGeneric()
+    }
+)
+
+### Returns an integer vector with values >= 1 and <= N, where N = length(x)
+### if 'byrow=FALSE' and N = nrow(x) if 'byrow=TRUE'.
+normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE,
+                                                  allow.append=FALSE)
+{
+    if (!isTRUEorFALSE(byrow))
+        stop("'byrow' must be TRUE or FALSE")
+    if (!isTRUEorFALSE(exact))
+        stop("'exact' must be TRUE or FALSE")
+    if (!isTRUEorFALSE(allow.append))
+        stop("'allow.append' must be TRUE or FALSE")
+    if (byrow) {
+        N <- nrow(x)
+    } else {
+        N <- length(x)
+    }
+    if (missing(i))
+        return(seq_len(N))
+    .normalizeSingleBracketSubscript(i, x, byrow=byrow, exact=exact,
+                                           allow.append=allow.append)
 }
 
 ### Supported types for 'i': single NA, numeric and character vectors only.
