@@ -828,6 +828,8 @@ as.data.frame.List <-
         stop("'use.outer.mcols' must be TRUE or FALSE")
     if (!isTRUEorFALSE(group_name.as.factor))
         stop("'group_name.as.factor' must be TRUE or FALSE")
+    if (!(is.null(row.names) || is.character(row.names)))
+        stop("'row.names'  must be NULL or a character vector")
 
     if (!length(group_name <- names(x)[togroup(x)]))
         group_name <- NA_character_

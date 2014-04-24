@@ -60,7 +60,6 @@ S3method(as.data.frame, GappedRanges)
 S3method(as.data.frame, Hits)
 S3method(as.data.frame, RangedData)
 S3method(as.data.frame, Ranges)
-S3method(as.data.frame, RangesList)
 S3method(as.data.frame, Rle)
 S3method(as.data.frame, Vector)
 
@@ -127,7 +126,6 @@ export(
     as.data.frame.Hits,
     as.data.frame.RangedData,
     as.data.frame.Ranges,
-    as.data.frame.RangesList,
     as.data.frame.Rle,
     as.data.frame.Vector,
 

@@ -22,8 +22,6 @@
 \alias{universe<-}
 
 % coercion
-\alias{as.data.frame.RangesList}
-\alias{as.data.frame,RangesList-method}
 \alias{coerce,RangesList,IRangesList-method}
 \alias{coerce,RangesList,CompressedIRangesList-method}
 \alias{coerce,RangesList,SimpleIRangesList-method}
@@ -116,11 +114,12 @@
   \code{RangesList} object.
 
   \describe{
-    \item{}{\code{as.data.frame(x, row.names = NULL, optional = FALSE)}:
-      Coerces \code{x} to a \code{data.frame}. Essentially the same as
-      calling
-      \code{data.frame(space=rep(names(x), elementLengths(x)),
-                       as.data.frame(unlist(x, use.names=FALSE)))}.
+    \item{}{
+      \code{as.data.frame(x, row.names = NULL, optional = FALSE,
+         value.name = "value", use.outer.mcols = FALSE, 
+         group_name.as.factor = FALSE, ...)}: 
+      Coerces \code{x} to a \code{data.frame}. See as.data.frame on the 
+      \code{List} man page for details (?\code{List}). 
     }
     \item{}{\code{as(from, "SimpleIRangesList")}: Coerces \code{from},
       to a \code{\linkS4class{SimpleIRangesList}}, requiring
