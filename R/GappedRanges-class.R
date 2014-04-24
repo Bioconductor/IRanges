@@ -144,7 +144,7 @@ setMethod("elementLengths", "GappedRanges",
     function(x) elementLengths(x@cnirl)
 )
 
-setMethod("extractROWS", "GappedRanges",
+setMethod("extractROWS", c("GappedRanges", "ANY"),
     function(x, i)
     {
         if (missing(i) || !is(i, "Ranges"))

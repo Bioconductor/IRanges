@@ -314,7 +314,7 @@ setMethod("Complex", "Rle",
 ### General methods
 ###
 
-setMethod("extractROWS", "Rle",
+setMethod("extractROWS", c("Rle", "ANY"),
     function(x, i)
     {
         if (!is(i, "Ranges")) {
@@ -349,7 +349,7 @@ setMethod("[", "Rle",
     }
 )
 
-setMethod("replaceROWS", "Rle",
+setMethod("replaceROWS", c("Rle", "ANY"),
     function(x, i, value)
     {
         if (missing(i) || !is(i, "Ranges"))

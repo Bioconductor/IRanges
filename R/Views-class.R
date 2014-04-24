@@ -80,7 +80,7 @@ setReplaceMethod("names", "Views",
     }
 )
 
-setMethod("extractROWS", "Views",
+setMethod("extractROWS", c("Views", "ANY"),
     function(x, i)
     {
         if (missing(i) || !is(i, "Ranges"))

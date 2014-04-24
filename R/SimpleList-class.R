@@ -58,7 +58,7 @@ setValidity2("SimpleList", .valid.SimpleList)
 ### Subsetting.
 ###
 
-setMethod("extractROWS", "SimpleList",
+setMethod("extractROWS", c("SimpleList", "ANY"),
     function(x, i)
     {
         if (missing(i) || !is(i, "Ranges"))
@@ -68,7 +68,7 @@ setMethod("extractROWS", "SimpleList",
     }
 )
 
-setMethod("replaceROWS", "SimpleList",
+setMethod("replaceROWS", c("SimpleList", "ANY"),
     function(x, i, value)
     {
         if (missing(i) || !is(i, "Ranges"))

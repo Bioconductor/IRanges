@@ -46,7 +46,7 @@ setMethod("subjectLength", "Hits", function(x) x@subjectLength)
 ### Subsetting.
 ###
 
-setMethod("extractROWS", "Hits",
+setMethod("extractROWS", c("Hits", "ANY"),
     function(x, i)
     {
         if (missing(i) || !is(i, "Ranges"))

@@ -202,7 +202,7 @@ setValidity2("Vector", .valid.Vector)
 ### Subsetting.
 ###
 
-setMethod("extractROWS", "NULL", function(x, i) NULL)
+setMethod("extractROWS", c("NULL", "ANY"), function(x, i) NULL)
 
 .extractROWSWithBracket <- function(x, i) {
   if (is(i, "Ranges"))
@@ -217,13 +217,13 @@ setMethod("extractROWS", "NULL", function(x, i) NULL)
   do.call(`[`, args)
 }
 
-setMethod("extractROWS", "matrix", function(x, i) {
+setMethod("extractROWS", c("matrix", "ANY"), function(x, i) {
   if (missing(i))
     return(x)
   return(.extractROWSWithBracket(x, i))
 })
 
-setMethod("extractROWS", "vectorORfactor",
+setMethod("extractROWS", c("vectorORfactor", "ANY"),
     function(x, i)
     {
         if (missing(i))
@@ -249,7 +249,7 @@ setMethod("extractROWS", "vectorORfactor",
     }
 )
 
-setMethod("extractROWS", "ANY",
+setMethod("extractROWS", c("ANY", "ANY"),
           function(x, i)
           {
             if (missing(i))
@@ -266,7 +266,7 @@ setMethod("[", "Vector",
     }
 )
 
-setMethod("replaceROWS", "vectorORfactor",
+setMethod("replaceROWS", c("vectorORfactor", "ANY"),
     function(x, i, value)
     {
         i <- extractROWS(setNames(seq_along(x), names(x)), i)
@@ -277,7 +277,7 @@ setMethod("replaceROWS", "vectorORfactor",
 
 ### Works on any Vector object for which c() and [ work. Assumes 'value' is
 ### compatible with 'x'.
-setMethod("replaceROWS", "Vector",
+setMethod("replaceROWS", c("Vector", "ANY"),
     function(x, i, value)
     {
         idx <- seq_along(x)

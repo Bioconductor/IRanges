@@ -236,7 +236,7 @@ setReplaceMethod("[[", "DataFrame",
                    x
                  })
 
-setMethod("extractROWS", "DataFrame",
+setMethod("extractROWS", c("DataFrame", "ANY"),
     function(x, i)
     {
         if (missing(i) || !is(i, "Ranges"))
@@ -303,7 +303,7 @@ setMethod("[", "DataFrame",
     }
 )
 
-setMethod("replaceROWS", "DataFrame",
+setMethod("replaceROWS", c("DataFrame", "ANY"),
     function(x, i, value)
     {
         if (missing(i) || !is(i, "Ranges"))

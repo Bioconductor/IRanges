@@ -98,7 +98,7 @@ setMethod(".normalizeSingleBracketSubscript", "factor",
 setMethod(".normalizeSingleBracketSubscript", "Rle",
     function(i, x_len, x_names, what, exact=TRUE, allow.append=FALSE)
     {
-        i <- as.vector(i)
+        i <- decodeRle(i)
         callGeneric()
     }
 )
@@ -136,6 +136,56 @@ normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE,
     .normalizeSingleBracketSubscript(i, x_len, x_names, what,
                                      exact=exact, allow.append=allow.append)
 }
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### 3 internal generics to ease implementation of [ and [<- subsetting for
+### Vector subclasses.
+###
+### A Vector subclass Foo only needs to implement an "extractROWS" and
+### a "replaceROWS" method with signature c("Foo", "ANY") to make "["
+### and "[<-" work out-of-the-box.
+### For replaceROWS(), it's OK to assume that 'value' is "compatible" i.e.
+### that it has gone thru normalizeSingleBracketReplacementValue().
+### See "extractROWS" and "replaceROWS" methods for IRanges objects for an
+### example.
+###
+
+setGeneric("extractROWS", signature=c("x", "i"),
+    function(x, i) standardGeneric("extractROWS")
+)
+
+setGeneric("replaceROWS", signature=c("x", "i"),
+    function(x, i, value) standardGeneric("replaceROWS")
+)
+
+### Dispatch on the 2nd argument!
+setGeneric("normalizeSingleBracketReplacementValue", signature="x",
+    function(value, x, i)
+        standardGeneric("normalizeSingleBracketReplacementValue")
+)
+
+### Default method.
+setMethod("normalizeSingleBracketReplacementValue", "ANY",
+    function(value, x)
+    {
+        if (is(value, class(x)))
+            return(value)
+        lv <- length(value)
+        value <- try(as(value, class(x)), silent=TRUE)
+        if (inherits(value, "try-error"))
+            stop("'value' must be a ", class(x), " object (or coercible ",
+                 "to a ", class(x), " object)")
+        if (length(value) != lv)
+            stop("coercing replacement value to ", class(x), "\n",
+                 "  changed its length!\n",
+                 "  Please do the explicit coercion ",
+                 "yourself with something like:\n",
+                 "    x[...] <- as(value, \"", class(x), "\")\n",
+                 "  but first make sure this coercion does what you want.")
+        value
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -196,58 +246,6 @@ normalizeDoubleBracketSubscript <- function(i, x, exact=TRUE,
         stop("subscript \"", i, "\" matches no name")
     ans
 }
-
-### Dispatch on the 2nd argument!
-setGeneric("normalizeSingleBracketReplacementValue", signature="x",
-    function(value, x, i)
-        standardGeneric("normalizeSingleBracketReplacementValue")
-)
-
-### Default method.
-setMethod("normalizeSingleBracketReplacementValue", "ANY",
-    function(value, x)
-    {
-        if (is(value, class(x)))
-            return(value)
-        lv <- length(value)
-        value <- try(as(value, class(x)), silent=TRUE)
-        if (inherits(value, "try-error"))
-            stop("'value' must be a ", class(x), " object (or coercible ",
-                 "to a ", class(x), " object)")
-        if (length(value) != lv)
-            stop("coercing replacement value to ", class(x), "\n",
-                 "  changed its length!\n",
-                 "  Please do the explicit coercion ",
-                 "yourself with something like:\n",
-                 "    x[...] <- as(value, \"", class(x), "\")\n",
-                 "  but first make sure this coercion does what you want.")
-        value
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### 2 internal generics to ease implementation of [ and [<- subsetting for
-### new Vector subclasses.
-###
-### Most new Vector subclasses should only need to implement an "extractROWS"
-### and a "replaceROWS" method to have "[" and "[<-" work out-of-the-box,
-### respectively.
-### Must support the following 'i' types: missing, Ranges and anything that
-### can be handled by normalizeSingleBracketSubscript().
-### For replaceROWS(), it's OK to assume that 'value' is "compatible" i.e.
-### that it has gone thru normalizeSingleBracketReplacementValue().
-### See "extractROWS" and "replaceROWS" methods for IRanges objects for an
-### example.
-###
-
-setGeneric("extractROWS", signature="x",
-    function(x, i) standardGeneric("extractROWS")
-)
-
-setGeneric("replaceROWS", signature="x",
-    function(x, i, value) standardGeneric("replaceROWS")
-)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
