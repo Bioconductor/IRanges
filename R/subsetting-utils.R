@@ -3,31 +3,31 @@
 ### -------------------------------------------------------------------------
 
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### normalizeDoubleBracketSubscript()
+###
+
+### Returns an integer vector with values >= 1 and <= x_len.
 setGeneric(".normalizeSingleBracketSubscript", signature="i",  # not exported
-    function(i, x, byrow=FALSE, exact=TRUE, allow.append=FALSE)
+    function(i, x_len, x_names, what, exact=TRUE, allow.append=FALSE)
         standardGeneric(".normalizeSingleBracketSubscript")
 )
 
 setMethod(".normalizeSingleBracketSubscript", "NULL",
-    function(i, x, byrow=FALSE, exact=TRUE, allow.append=FALSE)
+    function(i, x_len, x_names, what, exact=TRUE, allow.append=FALSE)
         integer(0)
 )
 
 setMethod(".normalizeSingleBracketSubscript", "numeric",
-    function(i, x, byrow=FALSE, exact=TRUE, allow.append=FALSE)
+    function(i, x_len, x_names, what, exact=TRUE, allow.append=FALSE)
     {
-        if (byrow) {
-            N <- nrow(x)
-        } else {
-            N <- length(x)
-        }
         if (!is.integer(i))
             i <- as.integer(i)
         if (allow.append) {
             if (any(is.na(i)))
                 stop("subscript contains NAs")
         } else {
-            if (S4Vectors:::anyMissingOrOutside(i, upper=N))
+            if (S4Vectors:::anyMissingOrOutside(i, upper=x_len))
                 stop("subscript contains NAs or out-of-bounds indices")
         }
         nonzero_idx <- which(i != 0L)
@@ -41,50 +41,36 @@ setMethod(".normalizeSingleBracketSubscript", "numeric",
         ## From here, indices are guaranteed to be either all positive or
         ## all negative.
         if (any_neg)
-            return(seq_len(N)[i])
+            return(seq_len(x_len)[i])
         i
     }
 )
 
 setMethod(".normalizeSingleBracketSubscript", "logical",
-    function(i, x, byrow=FALSE, exact=TRUE, allow.append=FALSE)
+    function(i, x_len, x_names, what, exact=TRUE, allow.append=FALSE)
     {
-        if (byrow) {
-            N <- nrow(x)
-        } else {
-            N <- length(x)
-        }
         if (S4Vectors:::anyMissing(i))
             stop("subscript contains NAs")
         li <- length(i)
-        if (!allow.append && li > N) {
-            if (any(i[(N+1L):li]))
+        if (!allow.append && li > x_len) {
+            if (any(i[(x_len+1L):li]))
                 stop("subscript is a logical vector with out-of-bounds ",
                      "TRUE values")
-            i <- i[seq_len(N)]
+            i <- i[seq_len(x_len)]
         }
-        if (li < N)
-            i <- rep(i, length.out=N)
+        if (li < x_len)
+            i <- rep(i, length.out=x_len)
         which(i)
     }
 )
 
 .normalizeSingleBracketSubscript.characterORfactor <-
-    function(i, x, byrow=FALSE, exact=TRUE, allow.append=FALSE)
+    function(i, x_len, x_names, what, exact=TRUE, allow.append=FALSE)
 {
-    if (byrow) {
-        N <- nrow(x)
-        x_names <- rownames(x)
-        what <- "rownames"
-    } else {
-        N <- length(x)
-        x_names <- names(x)
-        what <- "names"
-    }
     if (is.null(x_names)) {
         if (!allow.append)
             stop("cannot subset by character when ", what, " are NULL")
-        return(N + seq_along(i))
+        return(x_len + seq_along(i))
     }
     if (exact) {
         i <- match(i, x_names, incomparables=c(NA_character_, ""))
@@ -93,7 +79,7 @@ setMethod(".normalizeSingleBracketSubscript", "logical",
     }
     if (allow.append) {
         na_idx <- which(is.na(i))
-        i[na_idx] <- N + seq_along(na_idx)
+        i[na_idx] <- x_len + seq_along(na_idx)
         return(i)
     }
     if (S4Vectors:::anyMissing(i))
@@ -110,7 +96,7 @@ setMethod(".normalizeSingleBracketSubscript", "factor",
 )
 
 setMethod(".normalizeSingleBracketSubscript", "Rle",
-    function(i, x, byrow=FALSE, exact=TRUE, allow.append=FALSE)
+    function(i, x_len, x_names, what, exact=TRUE, allow.append=FALSE)
     {
         i <- as.vector(i)
         callGeneric()
@@ -118,7 +104,7 @@ setMethod(".normalizeSingleBracketSubscript", "Rle",
 )
 
 setMethod(".normalizeSingleBracketSubscript", "Ranges",
-    function(i, x, byrow=FALSE, exact=TRUE, allow.append=FALSE)
+    function(i, x_len, x_names, what, exact=TRUE, allow.append=FALSE)
     {
         i <- as.integer(i)
         callGeneric()
@@ -137,21 +123,31 @@ normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE,
     if (!isTRUEorFALSE(allow.append))
         stop("'allow.append' must be TRUE or FALSE")
     if (byrow) {
-        N <- nrow(x)
+        x_len <- nrow(x)
+        x_names <- rownames(x)
+        what <- "rownames"
     } else {
-        N <- length(x)
+        x_len <- length(x)
+        x_names <- names(x)
+        what <- "names"
     }
     if (missing(i))
-        return(seq_len(N))
-    .normalizeSingleBracketSubscript(i, x, byrow=byrow, exact=exact,
-                                           allow.append=allow.append)
+        return(seq_len(x_len))
+    .normalizeSingleBracketSubscript(i, x_len, x_names, what,
+                                     exact=exact, allow.append=allow.append)
 }
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### normalizeDoubleBracketSubscript()
+###
 ### Supported types for 'i': single NA, numeric and character vectors only.
 ### Always returns a single integer. When called with 'error.if.nomatch=FALSE',
 ### returns an NA_integer_ if no match is found. Otherwise (the default),
 ### raises an error if no match is found so the returned integer is guaranteed
 ### to be a non-NA positive integer referring to a valid position in 'x'.
+###
+
 normalizeDoubleBracketSubscript <- function(i, x, exact=TRUE,
                                             error.if.nomatch=TRUE)
 {
