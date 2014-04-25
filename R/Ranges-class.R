@@ -7,7 +7,10 @@
 ### points and on the domain of integers.
 ###
 
-setClass("Ranges", contains="IntegerList", representation("VIRTUAL"))
+setClass("Ranges",
+    contains=c("IntegerList", "SmartSubscript"),
+    representation("VIRTUAL")
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -207,7 +207,7 @@ setValidity2("Vector", .valid.Vector)
   i <- normalizeSingleBracketSubscript(i, x, byrow = ndim > 1L)
   args <- rep(alist(foo=), ndim)
   names(args) <- NULL
-  args[[1]] <- subscript(i)
+  args[[1]] <- i
   args <- c(list(x), args, list(drop = FALSE))
   do.call(`[`, args)
 }

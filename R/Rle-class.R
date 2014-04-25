@@ -9,7 +9,7 @@ setClass("Rle",
          representation(values = "vectorORfactor",
                         lengths = "integer"),
          prototype = prototype(values = logical()),
-         contains = "Vector",
+         contains = c("Vector", "SmartSubscript"),
          validity = function(object)
          {
              msg <- NULL
@@ -319,7 +319,7 @@ setMethod("extractROWS", "Rle",
     {
         if (missing(i) || !is(i, "Ranges")) {
             i <- normalizeSingleBracketSubscript(i, x)
-            i <- as(subscript(i), "IRanges")
+            i <- as(i, "IRanges")
         }
         i <- i[width(i) != 0L]
         ansList <- .Call2("Rle_seqselect", x, start(i), width(i),
@@ -358,7 +358,7 @@ setMethod("replaceROWS", "Rle",
 
         ## From here, 'value' is guaranteed to be of length 1.
         if (!is(i, "Ranges"))
-            i <- as(subscript(i), "IRanges")
+            i <- as(i, "IRanges")
         ir <- reduce(i)
         if (length(ir) == 0L)
             return(x)

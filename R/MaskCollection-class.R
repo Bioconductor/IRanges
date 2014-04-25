@@ -256,7 +256,7 @@ setMethod("getListElement", "MaskCollection",
 setMethod("extractROWS", "MaskCollection",
     function(x, i)
     {
-        i <- subscript(normalizeSingleBracketSubscript(i, x))
+        i <- normalizeSingleBracketSubscript(i, x)
         if (any(i > 0L)) {  # then 'all(i >= 0)' must be TRUE
             i <- i[i > 0L]
             if (anyDuplicated(i))
