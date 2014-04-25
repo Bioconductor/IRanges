@@ -817,8 +817,8 @@ setAs("List", "data.frame", function(from) as.data.frame(from))
 
 ### S3/S4 combo for as.data.frame.List
 as.data.frame.List <- 
-    function(x, row.names=NULL, optional=FALSE, value.name="value",
-             use.outer.mcols=FALSE, group_name.as.factor=FALSE, ...)
+    function(x, row.names=NULL, optional=FALSE, ..., value.name="value",
+             use.outer.mcols=FALSE, group_name.as.factor=FALSE)
 {
     if (!length(togroup(x)))
         return(data.frame())

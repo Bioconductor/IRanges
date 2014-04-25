@@ -158,8 +158,8 @@
     }
     \item{}{
       \code{as.data.frame(x, row.names = NULL, optional = FALSE,
-         value.name = "value", use.outer.mcols = FALSE, 
-         group_name.as.factor = FALSE, ...)}: 
+         ..., value.name = "value", use.outer.mcols = FALSE, 
+         group_name.as.factor = FALSE)}: 
       Coerces \code{x} to a \code{data.frame}. See as.data.frame on the 
       \code{List} man page for details (?\code{List}). 
     }
