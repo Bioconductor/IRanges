@@ -19,10 +19,7 @@ setMethod("shift", "Ranges",
             stop("'shift' must be a single number when shifting ",
                  "a NormalIRanges object")
         shift <- recycleIntegerArg(shift, "shift", length(x))
-        ## Note that we won't do anything with 'new_end', we just want to
-        ## fail in case of integer overflow.
-        S4Vectors:::errorIfWarning(new_start <- start(x) + shift)
-        S4Vectors:::errorIfWarning(new_end <- new_start + width(x) - 1L)
+        new_start <- start(x) + shift
         if (is(x, "IRanges")) {
             x@start <- new_start
         } else {
@@ -30,6 +27,7 @@ setMethod("shift", "Ranges",
         }
         if (!S4Vectors:::normargUseNames(use.names))
             names(x) <- NULL
+        validObject(x)
         x
     }
 )

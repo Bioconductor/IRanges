@@ -1,7 +1,32 @@
 test_Ranges_shift <- function() {
-  ir1 <- IRanges(1:20, width=222000000)
-  ## The returned object would have end values > INT_MAX
-  checkException(shift(ir1, 1:20 * 99000000L))
+  ir0 <- IRanges(0, 0)
+
+  ir1 <- shift(ir0, .Machine$integer.max)
+  checkTrue(validObject(ir1))
+  checkIdentical(.Machine$integer.max, start(ir1))
+  checkIdentical(.Machine$integer.max, end(ir1))
+  checkIdentical(1L, width(ir1))
+
+  checkIdentical(ir1, shift(ir1))
+  checkIdentical(ir1, shift(shift(ir1, -10), 10))
+
+  ir2 <- shift(ir0, -.Machine$integer.max)
+  checkTrue(validObject(ir2))
+  checkIdentical(-.Machine$integer.max, start(ir2))
+  checkIdentical(-.Machine$integer.max, end(ir2))
+  checkIdentical(1L, width(ir2))
+
+  checkIdentical(ir2, shift(ir2))
+  checkIdentical(ir2, shift(shift(ir2, 10), -10))
+
+  ## shift() would produce an object with ranges that are not within the
+  ## [-.Machine$integer.max, .Machine$integer.max] range.
+  checkException(suppressWarnings(shift(ir1, 1)), silent=TRUE)
+  checkException(suppressWarnings(shift(ir2, -1)), silent=TRUE)
+  ir3 <- IRanges(1999222000, width=1000)
+  checkException(suppressWarnings(shift(ir3, 188222000)), silent=TRUE)
+  ir4 <- IRanges(1:20, width=222000000)
+  checkException(suppressWarnings(shift(ir4, 1:20 * 99000000L)), silent=TRUE)
 }
  
 test_Ranges_narrow <- function() {

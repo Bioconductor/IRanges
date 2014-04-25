@@ -27,9 +27,9 @@ setGeneric("width", function(x) standardGeneric("width"))
 ### between the starts/widths/ends of a Ranges object. Of course Ranges
 ### subclasses need to implement at least 2 of them!
 ### Note that when width(x)[i] is 0, then end(x)[i] is start(x)[i] - 1
-setMethod("start", "Ranges", function(x, ...) {end(x) - width(x) + 1L})
+setMethod("start", "Ranges", function(x, ...) {1L - width(x) + end(x)})
 setMethod("width", "Ranges", function(x) {end(x) - start(x) + 1L})
-setMethod("end", "Ranges", function(x, ...) {start(x) + width(x) - 1L})
+setMethod("end", "Ranges", function(x, ...) {width(x) - 1L + start(x)})
 
 setGeneric("mid", function(x, ...) standardGeneric("mid"))
 setMethod("mid", "Ranges", function(x) start(x) + as.integer((width(x)-1) / 2))
@@ -56,8 +56,8 @@ setMethod("update", "Ranges",
 ### Validity.
 ###
 
-### Checking the names(x) is taken care of by the validity method for Vector
-### objects.
+### The checking of the names(x) is taken care of by the validity method for
+### Vector objects.
 .valid.Ranges <- function(x)
 {
     x_start <- start(x)
@@ -71,7 +71,8 @@ setMethod("update", "Ranges",
     if (!(is.null(names(x_start)) &&
           is.null(names(x_end)) &&
           is.null(names(x_width))))
-        return("'start(x)' must be an unnamed integer vector with no NAs")
+        return(paste0("'start(x)', 'end(x)', and 'width(x)' ",
+                      "cannot have names on them"))
     NULL
 }
 
