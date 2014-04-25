@@ -253,15 +253,10 @@ setMethod("getListElement", "MaskCollection",
 
 ### Always behaves like an endomorphism (i.e. ignores the 'drop' argument and
 ### behaves like if it was actually set to FALSE).
-setMethod("[", "MaskCollection",
-    function(x, i, j, ..., drop=TRUE)
+setMethod("extractROWS", "MaskCollection",
+    function(x, i)
     {
-        if (!missing(j) || length(list(...)) > 0)
-            stop("invalid subsetting")
-        if (missing(i))
-            i <- seq_len(length(x))
-        else
-            i <- normalizeSingleBracketSubscript(i, x)
+        i <- subscript(normalizeSingleBracketSubscript(i, x))
         if (any(i > 0L)) {  # then 'all(i >= 0)' must be TRUE
             i <- i[i > 0L]
             if (anyDuplicated(i))

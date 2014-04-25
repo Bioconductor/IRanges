@@ -327,7 +327,7 @@ setMethod("revElements", "CompressedList",
         elt_lens <- elementLengths(x)
         offset <- cumsum(c(0L, elt_lens[-length(elt_lens)]))
         rev <- logical(length(x))
-        rev[i] <- TRUE
+        rev[subscript(i)] <- TRUE
         ii <- S4Vectors:::fancy_mseq(elt_lens, offset=offset, rev=rev)
         x@unlistData <- x@unlistData[ii]
         x

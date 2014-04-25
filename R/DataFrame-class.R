@@ -340,6 +340,7 @@ setReplaceMethod("[", "DataFrame",
                        }
                        j2 <- normalizeSingleBracketSubscript(i, x,
                                                              allow.append=TRUE)
+                       j2 <- subscript(j2)
                        if (is.character(i))
                            newcn <- i[j2 > ncol(x)]
                      }
@@ -350,6 +351,7 @@ setReplaceMethod("[", "DataFrame",
                        useI <- TRUE
                        i2 <- normalizeSingleBracketSubscript(i, x, byrow=TRUE,
                                                              allow.append=TRUE)
+                       i2 <- subscript(i2)
                        if (is.character(i))
                            newrn <- i[i2 > nrow(x)]
                      }
@@ -358,6 +360,7 @@ setReplaceMethod("[", "DataFrame",
                      } else {
                        j2 <- normalizeSingleBracketSubscript(j, x,
                                                              allow.append=TRUE)
+                       j2 <- subscript(j2)
                        if (is.character(j))
                            newcn <- j[j2 > ncol(x)]
                      }

@@ -317,9 +317,9 @@ setMethod("Complex", "Rle",
 setMethod("extractROWS", "Rle",
     function(x, i)
     {
-        if (!is(i, "Ranges")) {
+        if (missing(i) || !is(i, "Ranges")) {
             i <- normalizeSingleBracketSubscript(i, x)
-            i <- as(i, "IRanges")
+            i <- as(subscript(i), "IRanges")
         }
         i <- i[width(i) != 0L]
         ansList <- .Call2("Rle_seqselect", x, start(i), width(i),
@@ -340,8 +340,6 @@ setMethod("[", "Rle",
     {
         if (!missing(j) || length(list(...)) > 0)
             stop("invalid subsetting")
-        if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x)
         ans <- extractROWS(x, i)
         if (drop)
             ans <- decodeRle(ans)
@@ -355,18 +353,12 @@ setMethod("replaceROWS", "Rle",
         if (missing(i) || !is(i, "Ranges"))
             i <- normalizeSingleBracketSubscript(i, x)
         lv <- length(value)
-        if (lv != 1L) {
-            x <- decodeRle(x)
-            if (is(i, "Ranges"))
-                i <- as.integer(i)
-            value <- as.vector(value)
-            x[i] <- value
-            return(Rle(x))
-        }
+        if (lv != 1L) 
+            return(Rle(replaceROWS(decodeRle(x), i, as.vector(value))))
 
         ## From here, 'value' is guaranteed to be of length 1.
         if (!is(i, "Ranges"))
-            i <- as(i, "IRanges")
+            i <- as(subscript(i), "IRanges")
         ir <- reduce(i)
         if (length(ir) == 0L)
             return(x)
