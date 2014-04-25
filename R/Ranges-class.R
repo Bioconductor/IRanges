@@ -249,7 +249,7 @@ setMethod("whichFirstNotNormal", "Ranges",
 ### are currently implemented as wrappers that coerce to IRanges, which is not
 ### efficient so not a general, long-term solution.
 
-setMethod("extractROWS", c("Ranges", "ANY"),
+setMethod("extractROWS", "Ranges",
     function(x, i)
     {
         as(callGeneric(as(x, "IRanges"), i), class(x))

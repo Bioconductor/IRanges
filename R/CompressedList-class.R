@@ -84,7 +84,7 @@ setValidity2("CompressedList", .valid.CompressedList)
 ### Subsetting.
 ###
 
-setMethod("extractROWS", c("CompressedList", "ANY"),
+setMethod("extractROWS", "CompressedList",
     function(x, i)
     {
         if (missing(i) || !is(i, "Ranges"))

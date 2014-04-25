@@ -504,7 +504,7 @@ setMethod("[", "RangedData",
           })
 
 ### Dummy "extractROWS" method.
-setMethod("extractROWS", c("RangedData", "ANY"),
+setMethod("extractROWS", "RangedData",
     function(x, i)
     {
         if (is(i, "Ranges"))

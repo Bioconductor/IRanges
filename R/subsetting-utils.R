@@ -3,6 +3,9 @@
 ### -------------------------------------------------------------------------
 
 
+setClassUnion("vectorORfactor", c("vector", "factor"))
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### normalizeDoubleBracketSubscript()
 ###
@@ -98,7 +101,11 @@ setMethod(".normalizeSingleBracketSubscript", "factor",
 setMethod(".normalizeSingleBracketSubscript", "Rle",
     function(i, x_len, x_names, what, exact=TRUE, allow.append=FALSE)
     {
-        i <- decodeRle(i)
+        if (is.logical(runValue(i))) {
+            i <- as(i, "IRanges")
+        } else {
+            i <- decodeRle(i)
+        }
         callGeneric()
     }
 )
@@ -142,21 +149,59 @@ normalizeSingleBracketSubscript <- function(i, x, byrow=FALSE, exact=TRUE,
 ### 3 internal generics to ease implementation of [ and [<- subsetting for
 ### Vector subclasses.
 ###
-### A Vector subclass Foo only needs to implement an "extractROWS" and
-### a "replaceROWS" method with signature c("Foo", "ANY") to make "["
-### and "[<-" work out-of-the-box.
+### A Vector subclass Foo should only need to implement an "extractROWS" and
+### a "replaceROWS" method with signature to make "[" and "[<-" work
+### out-of-the-box.
 ### For replaceROWS(), it's OK to assume that 'value' is "compatible" i.e.
 ### that it has gone thru normalizeSingleBracketReplacementValue().
 ### See "extractROWS" and "replaceROWS" methods for IRanges objects for an
 ### example.
 ###
 
-setGeneric("extractROWS", signature=c("x", "i"),
+setGeneric("extractROWS", signature="x",
     function(x, i) standardGeneric("extractROWS")
 )
 
-setGeneric("replaceROWS", signature=c("x", "i"),
+setMethod("extractROWS", "NULL", function(x, i) NULL)
+
+setMethod("extractROWS", "vectorORfactor",
+    function(x, i)
+    {
+        if (missing(i))
+            return(x)
+        if (is(i, "Rle")) {
+            if (is.logical(runValue(i))) {
+                i <- as(i, "IRanges")
+            } else {
+                i <- as.vector(i)
+            }
+        }
+        if (!is(i, "Ranges")) {
+            i <- normalizeSingleBracketSubscript(i, x)
+            return(x[i])
+        }
+        ## Which one is faster, vector_seqselect or vector_subsetByRanges?
+        ans <- .Call2("vector_seqselect", x, start(i), width(i),
+                      PACKAGE="IRanges")
+        #ans <- .Call2("vector_subsetByRanges", x, start(i), width(i),
+        #              PACKAGE="IRanges")
+        if (is.factor(x))
+            attributes(ans) <- list(levels=levels(x), class="factor")
+        ans
+    }
+)
+
+setGeneric("replaceROWS", signature="x",
     function(x, i, value) standardGeneric("replaceROWS")
+)
+
+setMethod("replaceROWS", "vectorORfactor",
+    function(x, i, value)
+    {
+        i <- normalizeSingleBracketSubscript(i, x, allow.append=TRUE)
+        x[i] <- value
+        x
+    }
 )
 
 ### Dispatch on the 2nd argument!

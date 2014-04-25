@@ -6,9 +6,6 @@
 ### sequence i.e. an ordered finite collection of elements.
 ###
 
-### Is it the right place for this?
-setClassUnion("vectorORfactor", c("vector", "factor"))
-
 setClassUnion("DataTableORNULL", c("DataTable", "NULL"))
 
 setClass("Vector",
@@ -202,11 +199,9 @@ setValidity2("Vector", .valid.Vector)
 ### Subsetting.
 ###
 
-setMethod("extractROWS", c("NULL", "ANY"), function(x, i) NULL)
-
 .extractROWSWithBracket <- function(x, i) {
-  if (is(i, "Ranges"))
-    i <- extractROWS(seq_len(NROW(x)), i)
+  if (missing(i))
+    return(x)
   ## dynamically call [i,,,..,drop=FALSE] with as many "," as length(dim)-1
   ndim <- max(length(dim(x)), 1L)
   i <- normalizeSingleBracketSubscript(i, x, byrow = ndim > 1L)
@@ -217,45 +212,9 @@ setMethod("extractROWS", c("NULL", "ANY"), function(x, i) NULL)
   do.call(`[`, args)
 }
 
-setMethod("extractROWS", c("matrix", "ANY"), function(x, i) {
-  if (missing(i))
-    return(x)
-  return(.extractROWSWithBracket(x, i))
-})
+setMethod("extractROWS", "matrix", .extractROWSWithBracket)
 
-setMethod("extractROWS", c("vectorORfactor", "ANY"),
-    function(x, i)
-    {
-        if (missing(i))
-            return(x)
-        if (is(i, "Rle")) {
-            if(is.logical(runValue(i))) {
-                i <- as(i, "IRanges")
-            } else {
-                i <- as.vector(i)
-            }
-        }
-        if (!is(i, "Ranges")) {
-            return(x[i])
-        }
-        ## Which one is faster, vector_seqselect or vector_subsetByRanges?
-        ans <- .Call2("vector_seqselect", x, start(i), width(i),
-                      PACKAGE="IRanges")
-        #ans <- .Call2("vector_subsetByRanges", x, start(i), width(i),
-        #              PACKAGE="IRanges")
-        if (is.factor(x))
-            attributes(ans) <- list(levels=levels(x), class="factor")
-        ans
-    }
-)
-
-setMethod("extractROWS", c("ANY", "ANY"),
-          function(x, i)
-          {
-            if (missing(i))
-              return(x)
-            .extractROWSWithBracket(x, i)
-          })
+setMethod("extractROWS", "ANY", .extractROWSWithBracket)
 
 setMethod("[", "Vector",
     function(x, i, j, ..., drop=TRUE)
@@ -266,18 +225,9 @@ setMethod("[", "Vector",
     }
 )
 
-setMethod("replaceROWS", c("vectorORfactor", "ANY"),
-    function(x, i, value)
-    {
-        i <- extractROWS(setNames(seq_along(x), names(x)), i)
-        x[i] <- value
-        x
-    }
-)
-
 ### Works on any Vector object for which c() and [ work. Assumes 'value' is
 ### compatible with 'x'.
-setMethod("replaceROWS", c("Vector", "ANY"),
+setMethod("replaceROWS", "Vector",
     function(x, i, value)
     {
         idx <- seq_along(x)

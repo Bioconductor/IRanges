@@ -362,7 +362,7 @@ setMethod("update", "IRanges",
 ### Subsetting.
 ###
 
-setMethod("extractROWS", c("IRanges", "ANY"),
+setMethod("extractROWS", "IRanges",
     function(x, i)
     {
         if (missing(i) || !is(i, "Ranges"))
@@ -381,7 +381,7 @@ setMethod("extractROWS", c("IRanges", "ANY"),
     }
 )
 
-setMethod("replaceROWS", c("IRanges", "ANY"),
+setMethod("replaceROWS", "IRanges",
     function(x, i, value)
     {
         if (missing(i) || !is(i, "Ranges"))
