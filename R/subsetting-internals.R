@@ -30,7 +30,7 @@ setMethod("NSBS", "Rle",
                 stop("subscript contains NAs")
             if (length(i) < x_NROW)
                 i <- rep(i, length.out=x_NROW)
-            i <- as(i, "IRanges")
+            i <- as(i, "NormalIRanges")
             return(callGeneric())
         }
         i_vals <- as.integer(NSBS(i_vals, x,
