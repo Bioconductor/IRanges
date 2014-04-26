@@ -650,15 +650,23 @@ setGeneric("revElements", signature="x",
     function(x, i) standardGeneric("revElements")
 )
 
-### This method explains the concept of revElements() but is NOT efficient
-### because endoapply() loops over the elements of 'i'.
+### These 2 methods explain the concept of revElements() but they are not
+### efficient because they loop over the elements of 'x[i]'.
 ### There is a fast method for CompressedList objects though.
+setMethod("revElements", "list",
+    function(x, i)
+    {
+        x[i] <- lapply(x[i], function(xx)
+                    extractROWS(xx, rev(seq_len(NROW(xx)))))
+        x
+    }
+)
+
 setMethod("revElements", "List",
     function(x, i)
     {
-        if (missing(i))
-            i <- seq_len(length(x))
-        x[i] <- endoapply(x[i], rev)
+        x[i] <- endoapply(x[i], function(xx)
+                    extractROWS(xx, rev(seq_len(NROW(xx)))))
         x
     }
 )
