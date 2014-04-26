@@ -324,6 +324,9 @@ setMethod("extractROWS", "Rle",
         } else {
             ir <- as(as.integer(i), "IRanges")
         }
+        ## Rle_seqselect .Call entry point will segfault if 'ir' contains
+        ## empty ranges!
+        ir <- ir[width(ir) != 0L]
         ansList <- .Call2("Rle_seqselect", x, start(ir), width(ir),
                           PACKAGE="IRanges")
         ans_values <- ansList[["values"]]
@@ -342,14 +345,11 @@ setMethod("[", "Rle",
     {
         if (!missing(j) || length(list(...)) > 0)
             stop("invalid subsetting")
-        if (missing(i)) {
-            ans <- x
-        } else {
-            ans <- extractROWS(x, i)
-        }
+        if (!missing(i))
+            x <- extractROWS(x, i)
         if (drop)
-            ans <- decodeRle(ans)
-        ans
+            x <- decodeRle(x)
+        x
     }
 )
 
