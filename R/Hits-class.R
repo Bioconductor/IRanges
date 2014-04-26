@@ -52,7 +52,7 @@ setMethod("extractROWS", "Hits",
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         if (!isStrictlySorted(i))
             stop("subscript must extract elements at strictly sorted ",
-                 "positions when subsetting a ", class(x), " object")
+                 "positions when\n  subsetting a ", class(x), " object")
         x@queryHits <- extractROWS(x@queryHits, i)
         x@subjectHits <- extractROWS(x@subjectHits, i)
         x@elementMetadata <- extractROWS(x@elementMetadata, i)
