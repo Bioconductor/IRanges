@@ -52,6 +52,8 @@ setMethod("isNormal", "IRanges",
     function(x) .Call2("IRanges_isNormal", x, PACKAGE="IRanges")
 )
 
+setMethod("isNormal", "NormalIRanges", function(x) TRUE)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "isEmpty" default method for Ranges objects would work just fine on a
@@ -385,8 +387,7 @@ setMethod("extractROWS", "IRanges",
 setMethod("replaceROWS", "IRanges",
     function(x, i, value)
     {
-        if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x)
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         ans_start <- replaceROWS(start(x), i, start(value))
         ans_width <- replaceROWS(width(x), i, width(value))
         ans <- initialize(x, start=ans_start, width=ans_width)

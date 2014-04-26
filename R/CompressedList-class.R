@@ -320,13 +320,13 @@ setMethod("mendoapply", "CompressedList",
 setMethod("revElements", "CompressedList",
     function(x, i)
     {
-        i <- normalizeSingleBracketSubscript(i, x)
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         if (length(x) == 0L)
             return(x)
         elt_lens <- elementLengths(x)
         offset <- cumsum(c(0L, elt_lens[-length(elt_lens)]))
         rev <- logical(length(x))
-        rev[i] <- TRUE
+        i <- replaceROWS(rev, i, TRUE)
         ii <- S4Vectors:::fancy_mseq(elt_lens, offset=offset, rev=rev)
         x@unlistData <- x@unlistData[ii]
         x

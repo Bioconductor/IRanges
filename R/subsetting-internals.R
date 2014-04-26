@@ -47,14 +47,14 @@ setMethod("NSBS", "Rle",
 
 setMethod("as.integer", "RleNSBS", function(x) decodeRle(x@subscript))
 
-setMethod("length", "RleNSBS", function(x) sum(runLength(x@subscript)))
+setMethod("length", "RleNSBS", function(x) length(x@subscript))
+
+setMethod("anyDuplicated", "RleNSBS",
+    function(x, incomparables=FALSE, ...) anyDuplicated(x@subscript)
+)
 
 setMethod("isStrictlySorted", "RleNSBS",
-    function(x)
-    {
-        all(runLength(x@subscript) == 1L) &&
-                    isStrictlySorted(runValue(x@subscript))
-    }
+    function(x) isStrictlySorted(x@subscript)
 )
 
 
@@ -98,9 +98,11 @@ setMethod("as.integer", "RangesNSBS", function(x) as.integer(x@subscript))
 
 setMethod("length", "RangesNSBS", function(x) sum(width(x@subscript)))
 
-setMethod("isStrictlySorted", "RangesNSBS",
-    function(x) is(x@subscript, "NormalIRanges")
+setMethod("anyDuplicated", "RangesNSBS",
+    function(x, incomparables=FALSE, ...) isDisjoint(x@subscript)
 )
+
+setMethod("isStrictlySorted", "RangesNSBS", function(x) isNormal(x@subscript))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

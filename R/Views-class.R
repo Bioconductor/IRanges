@@ -83,8 +83,7 @@ setReplaceMethod("names", "Views",
 setMethod("extractROWS", "Views",
     function(x, i)
     {
-        if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x)
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         x@ranges <- extractROWS(ranges(x), i)
         mcols(x) <- extractROWS(mcols(x), i)
         x

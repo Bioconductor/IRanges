@@ -318,13 +318,13 @@ setMethod("extractROWS", "Rle",
     function(x, i)
     {
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
+        ## TODO: Maybe make this the coercion method from NSBS to Ranges.
         if (is(i, "RangesNSBS")) {
-            i <- i@subscript
+            ir <- i@subscript
         } else {
-            i <- as(as.integer(i), "IRanges")
+            ir <- as(as.integer(i), "IRanges")
         }
-        i <- i[width(i) != 0L]
-        ansList <- .Call2("Rle_seqselect", x, start(i), width(i),
+        ansList <- .Call2("Rle_seqselect", x, start(ir), width(ir),
                           PACKAGE="IRanges")
         ans_values <- ansList[["values"]]
         ans_lengths <- ansList[["lengths"]]
@@ -356,16 +356,20 @@ setMethod("[", "Rle",
 setMethod("replaceROWS", "Rle",
     function(x, i, value)
     {
-        if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x)
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         lv <- length(value)
         if (lv != 1L) 
             return(Rle(replaceROWS(decodeRle(x), i, as.vector(value))))
 
         ## From here, 'value' is guaranteed to be of length 1.
-        if (!is(i, "Ranges"))
-            i <- as(i, "IRanges")
-        ir <- reduce(i)
+
+        ## TODO: Maybe make this the coercion method from NSBS to Ranges.
+        if (is(i, "RangesNSBS")) {
+            ir <- i@subscript
+        } else {
+            ir <- as(as.integer(i), "IRanges")
+        }
+        ir <- reduce(ir)
         if (length(ir) == 0L)
             return(x)
 
@@ -902,6 +906,15 @@ setMethod("duplicated", "Rle", duplicated.Rle)
 unique.Rle <- function(x, incomparables=FALSE, ...)
     unique(runValue(x), incomparables=incomparables, ...)
 setMethod("unique", "Rle", unique.Rle)
+
+### S3/S4 combo for anyDuplicated.Rle
+anyDuplicated.Rle <- function(x, incomparables=FALSE, ...)
+    all(runLength(x) == 1L) && anyDuplicated(runValue(x))
+setMethod("anyDuplicated", "Rle", anyDuplicated.Rle)
+
+setMethod("isStrictlySorted", "Rle",
+    function(x)  all(runLength(x) == 1L) && isStrictlySorted(runValue(x))
+)
 
 ### S3/S4 combo for window.Rle
 window.Rle <- function(x, start=NA, end=NA, width=NA,

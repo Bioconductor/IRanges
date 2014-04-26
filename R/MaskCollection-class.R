@@ -256,19 +256,16 @@ setMethod("getListElement", "MaskCollection",
 setMethod("extractROWS", "MaskCollection",
     function(x, i)
     {
-        i <- normalizeSingleBracketSubscript(i, x)
-        if (any(i > 0L)) {  # then 'all(i >= 0)' must be TRUE
-            i <- i[i > 0L]
-            if (anyDuplicated(i))
-                stop("subscript would generate duplicated elements")
-        }
-        slot(x, "nir_list", check=FALSE) <- nir_list(x)[i]
-        slot(x, "active", check=FALSE) <- active(x)[i]
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
+        if (anyDuplicated(i))
+            stop("subscript would generate duplicated elements")
+        slot(x, "nir_list", check=FALSE) <- extractROWS(nir_list(x), i)
+        slot(x, "active", check=FALSE) <- extractROWS(active(x), i)
         if (!is.null(names(x)))
-            slot(x, "NAMES", check=FALSE) <- names(x)[i]
+            slot(x, "NAMES", check=FALSE) <- extractROWS(names(x), i)
         if (!is.null(desc(x)))
-            slot(x, "desc", check=FALSE) <- desc(x)[i]
-        mcols(x) <- mcols(x)[i, , drop=FALSE]
+            slot(x, "desc", check=FALSE) <- extractROWS(desc(x), i)
+        mcols(x) <- extractROWS(mcols(x), i)
         x
     }
 )

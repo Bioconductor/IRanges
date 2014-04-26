@@ -21,6 +21,7 @@
 \alias{NormalIRanges-class}
 \alias{NormalIRanges}
 
+\alias{isNormal,NormalIRanges-method}
 \alias{isEmpty,NormalIRanges-method}
 \alias{max,NormalIRanges-method}
 \alias{min,NormalIRanges-method}
