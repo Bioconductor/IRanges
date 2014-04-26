@@ -369,11 +369,9 @@ setMethod("extractROWS", "IRanges",
     {
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         if (is(x, "NormalIRanges")) {
-            ### FIXME: Currently broken on an Rle subscript!
             if (!isStrictlySorted(i))
-                stop("subscript cannot contain duplicates and must preserve ",
-                     "the order of elements when subsetting a ", class(x),
-                     " object")
+                stop("subscript must extract elements at strictly sorted ",
+                     "positions when subsetting a ", class(x), " object")
         }
         ans_start <- extractROWS(start(x), i)
         ans_width <- extractROWS(width(x), i)
