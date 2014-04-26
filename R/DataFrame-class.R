@@ -239,16 +239,11 @@ setReplaceMethod("[[", "DataFrame",
 setMethod("extractROWS", "DataFrame",
     function(x, i)
     {
-        if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x, byrow=TRUE, exact=FALSE)
+        i <- normalizeSingleBracketSubscript(i, x, exact=FALSE, as.NSBS=TRUE)
         slot(x, "listData", check=FALSE) <-
             lapply(structure(seq_len(ncol(x)), names=names(x)),
                    function(j) extractROWS(x[[j]], i))
-        if (is(i, "Ranges"))
-            li <- sum(width(i))
-        else
-            li <- length(i)
-        slot(x, "nrows", check=FALSE) <- li
+        slot(x, "nrows", check=FALSE) <- length(i)
         if (!is.null(rownames(x))) {
             slot(x, "rownames", check=FALSE) <-
                 make.unique(extractROWS(rownames(x), i))
@@ -276,8 +271,10 @@ setMethod("[", "DataFrame",
                     return(x)
                 j <- i
             }
-            if (!is(j, "Ranges"))
-                j <- normalizeSingleBracketSubscript(j, x)
+            if (!is(j, "Ranges")) {
+                xstub <- setNames(seq_along(x), names(x))
+                j <- normalizeSingleBracketSubscript(j, xstub)
+            }
             new_listData <- extractROWS(x@listData, j)
             new_mcols <- extractROWS(mcols(x), j)
             x <- initialize(x, listData=new_listData,
@@ -306,8 +303,7 @@ setMethod("[", "DataFrame",
 setMethod("replaceROWS", "DataFrame",
     function(x, i, value)
     {
-        if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x, byrow=TRUE)
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         x_ncol <- ncol(x)
         value_ncol <- ncol(value)
         if (value_ncol > x_ncol)
@@ -338,7 +334,8 @@ setReplaceMethod("[", "DataFrame",
                          if (is.logical(i) == 1 && i)
                              i <- rep(i, ncol(x))
                        }
-                       j2 <- normalizeSingleBracketSubscript(i, x,
+                       xstub <- setNames(seq_along(x), names(x))
+                       j2 <- normalizeSingleBracketSubscript(i, xstub,
                                                              allow.append=TRUE)
                        if (is.character(i))
                            newcn <- i[j2 > ncol(x)]
@@ -348,7 +345,7 @@ setReplaceMethod("[", "DataFrame",
                        i2 <- seq_len(nrow(x))
                      } else {
                        useI <- TRUE
-                       i2 <- normalizeSingleBracketSubscript(i, x, byrow=TRUE,
+                       i2 <- normalizeSingleBracketSubscript(i, x,
                                                              allow.append=TRUE)
                        if (is.character(i))
                            newrn <- i[i2 > nrow(x)]
@@ -356,7 +353,8 @@ setReplaceMethod("[", "DataFrame",
                      if (missing(j)) {
                        j2 <- seq_len(ncol(x))
                      } else {
-                       j2 <- normalizeSingleBracketSubscript(j, x,
+                       xstub <- setNames(seq_along(x), names(x))
+                       j2 <- normalizeSingleBracketSubscript(j, xstub,
                                                              allow.append=TRUE)
                        if (is.character(j))
                            newcn <- j[j2 > ncol(x)]

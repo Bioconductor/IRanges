@@ -46,15 +46,15 @@ setMethod("subjectLength", "Hits", function(x) x@subjectLength)
 ### Subsetting.
 ###
 
+### FIXME: Currently broken on an Rle subscript!
 setMethod("extractROWS", "Hits",
     function(x, i)
     {
-        if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x)
-        if ((!is(i, "Ranges") && S4Vectors:::isNotStrictlySorted(i))
-         || (is(i, "Ranges") && !isNormal(i)))
-            stop("subscript cannot contain duplicates and must preserve the ",
-                 "order of elements when subsetting a ", class(x), " object")
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
+        if (!isStrictlySorted(i))
+            stop("subscript cannot contain duplicates and must preserve ",
+                 "the order of elements when subsetting a ", class(x),
+                 " object")
         x@queryHits <- extractROWS(x@queryHits, i)
         x@subjectHits <- extractROWS(x@subjectHits, i)
         x@elementMetadata <- extractROWS(x@elementMetadata, i)

@@ -190,6 +190,7 @@ exportMethods(
     nrow, NROW,
     ncol, NCOL,
     dim,
+    ROWNAMES,
     rownames, "rownames<-",
     colnames, "colnames<-",
     dimnames, "dimnames<-",

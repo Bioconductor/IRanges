@@ -61,8 +61,7 @@ setValidity2("SimpleList", .valid.SimpleList)
 setMethod("extractROWS", "SimpleList",
     function(x, i)
     {
-        if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x)
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         initialize(x, listData=extractROWS(x@listData, i),
                       elementMetadata=extractROWS(x@elementMetadata, i))
     }
@@ -71,8 +70,7 @@ setMethod("extractROWS", "SimpleList",
 setMethod("replaceROWS", "SimpleList",
     function(x, i, value)
     {
-        if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x)
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         initialize(x, listData=replaceROWS(x@listData, i, value@listData))
     }
 )

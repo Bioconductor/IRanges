@@ -55,6 +55,7 @@ setMethod("showAsCell", "Vector", function(object)
 ###
 
 setMethod("NROW", "Vector", function(x) length(x))
+setMethod("ROWNAMES", "Vector", function(x) names(x))
 
 ### 3 accessors for the same slot: elementMetadata(), mcols(), and values().
 ### mcols() is the recommended one, use of elementMetadata() or values() is
@@ -204,7 +205,7 @@ setValidity2("Vector", .valid.Vector)
     return(x)
   ## dynamically call [i,,,..,drop=FALSE] with as many "," as length(dim)-1
   ndim <- max(length(dim(x)), 1L)
-  i <- normalizeSingleBracketSubscript(i, x, byrow = ndim > 1L)
+  i <- normalizeSingleBracketSubscript(i, x)
   args <- rep(alist(foo=), ndim)
   names(args) <- NULL
   args[[1]] <- i
@@ -221,6 +222,8 @@ setMethod("[", "Vector",
     {
         if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
+        if (missing(i))
+            return(x)
         extractROWS(x, i)
     }
 )
@@ -250,12 +253,8 @@ setReplaceMethod("[", "Vector",
     {
         if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
-        if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x)
-        if (is(i, "Ranges"))
-            li <- sum(width(i))
-        else
-            li <- length(i)
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
+        li <- length(i)
         if (li == 0L) {
             ## Surprisingly, in that case, `[<-` on standard vectors does not
             ## even look at 'value'. So neither do we...

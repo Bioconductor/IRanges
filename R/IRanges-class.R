@@ -365,13 +365,14 @@ setMethod("update", "IRanges",
 setMethod("extractROWS", "IRanges",
     function(x, i)
     {
-        if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x)
-        if (is(x, "NormalIRanges")
-         && ((!is(i, "Ranges") && S4Vectors:::isNotStrictlySorted(i))
-          || (is(i, "Ranges") && !isNormal(i))))
-            stop("subscript cannot contain duplicates and must preserve the ",
-                 "order of elements when subsetting a ", class(x), " object")
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
+        if (is(x, "NormalIRanges")) {
+            ### FIXME: Currently broken on an Rle subscript!
+            if (!isStrictlySorted(i))
+                stop("subscript cannot contain duplicates and must preserve ",
+                     "the order of elements when subsetting a ", class(x),
+                     " object")
+        }
         ans_start <- extractROWS(start(x), i)
         ans_width <- extractROWS(width(x), i)
         ans_names <- extractROWS(names(x), i)

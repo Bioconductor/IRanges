@@ -147,8 +147,7 @@ setMethod("elementLengths", "GappedRanges",
 setMethod("extractROWS", "GappedRanges",
     function(x, i)
     {
-        if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x)
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         x@cnirl <- extractROWS(x@cnirl, i)
         x@elementMetadata <- extractROWS(x@elementMetadata, i)
         x

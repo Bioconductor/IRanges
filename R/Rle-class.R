@@ -9,7 +9,7 @@ setClass("Rle",
          representation(values = "vectorORfactor",
                         lengths = "integer"),
          prototype = prototype(values = logical()),
-         contains = c("Vector", "SmartSubscript"),
+         contains = "Vector",
          validity = function(object)
          {
              msg <- NULL
@@ -317,9 +317,11 @@ setMethod("Complex", "Rle",
 setMethod("extractROWS", "Rle",
     function(x, i)
     {
-        if (missing(i) || !is(i, "Ranges")) {
-            i <- normalizeSingleBracketSubscript(i, x)
-            i <- as(i, "IRanges")
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
+        if (is(i, "RangesNSBS")) {
+            i <- i@subscript
+        } else {
+            i <- as(as.integer(i), "IRanges")
         }
         i <- i[width(i) != 0L]
         ansList <- .Call2("Rle_seqselect", x, start(i), width(i),
@@ -340,7 +342,11 @@ setMethod("[", "Rle",
     {
         if (!missing(j) || length(list(...)) > 0)
             stop("invalid subsetting")
-        ans <- extractROWS(x, i)
+        if (missing(i)) {
+            ans <- x
+        } else {
+            ans <- extractROWS(x, i)
+        }
         if (drop)
             ans <- decodeRle(ans)
         ans
@@ -440,12 +446,8 @@ setReplaceMethod("[", "Rle",
     {
         if (!missing(j) || length(list(...)) > 0L)
             stop("invalid subsetting")
-        if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x)
-        if (is(i, "Ranges"))
-            li <- sum(width(i))
-        else
-            li <- length(i)
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
+        li <- length(i)
         if (li == 0L) {
             ## Surprisingly, in that case, `[<-` on standard vectors does not
             ## even look at 'value'. So neither do we...
@@ -622,9 +624,14 @@ setMethod("rep", "Rle",
                       } else if (length.out < n) {
                           x <- window(x, 1, length.out)
                       } else if (length.out > n) {
-                          x <-
-                            window(rep.int(x, ceiling(length.out / n)),
-                                   1, length.out)
+                          if (n == 0) {
+                              x <- Rle(rep(runValue(x), length.out=1),
+                                       length.out)
+                          } else {
+                              x <-
+                                window(rep.int(x, ceiling(length.out / n)),
+                                       1, length.out)
+                          }
                       }
                   }
               } else if (!missing(times)) {

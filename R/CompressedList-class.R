@@ -87,8 +87,7 @@ setValidity2("CompressedList", .valid.CompressedList)
 setMethod("extractROWS", "CompressedList",
     function(x, i)
     {
-        if (missing(i) || !is(i, "Ranges"))
-            i <- normalizeSingleBracketSubscript(i, x)
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         ir <- IRanges(end=extractROWS(end(x@partitioning), i),
                       width=extractROWS(width(x@partitioning), i))
         ans_unlistData <- extractROWS(x@unlistData, ir)
