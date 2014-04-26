@@ -4,7 +4,7 @@ import(methods)
 importFrom(utils, head, read.table, tail, stack)
 importFrom(stats, start, end, var, cov, cor, sd, median, quantile, mad,
            IQR, smoothEnds, runmed, window, "window<-", aggregate,
-           na.omit, na.exclude, complete.cases, setNames)
+           setNames)
 
 import(BiocGenerics)
 import(S4Vectors)
@@ -231,7 +231,7 @@ exportMethods(
     split,
     with, within,
     t,
-    is.na, na.omit, na.exclude, complete.cases,
+    is.na,
     by, 
     cbind, rbind,
     eval,
