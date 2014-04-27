@@ -215,6 +215,8 @@ setValidity2("Vector", .valid.Vector)
 
 setMethod("extractROWS", "matrix", .extractROWSWithBracket)
 
+setMethod("extractROWS", c("matrix", "Ranges"), .extractROWSWithBracket)
+
 setMethod("extractROWS", "ANY", .extractROWSWithBracket)
 
 setMethod("[", "Vector",
