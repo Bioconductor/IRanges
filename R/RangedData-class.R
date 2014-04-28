@@ -586,7 +586,7 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
 ### uses old methods from both RangesList and DataFrameList.
 ###
 ### These helpers are not exported.
-as.data.frame.RangesList <- function(x, row.names=NULL, optional=FALSE, ...)
+.as.data.frame.RangesList <- function(x, row.names=NULL, optional=FALSE, ...)
 {
     if (!(is.null(row.names) || is.character(row.names)))
         stop("'row.names'  must be NULL or a character vector")
@@ -606,7 +606,8 @@ as.data.frame.RangesList <- function(x, row.names=NULL, optional=FALSE, ...)
                stringsAsFactors = FALSE)
 }
 
-as.data.frame.DataFrameList <- function(x, row.names=NULL, optional=FALSE, ...)
+.as.data.frame.DataFrameList <- function(x, row.names=NULL, 
+                                         optional=FALSE, ...)
 {
     if (!(is.null(row.names) || is.character(row.names)))
         stop("'row.names' must be NULL or a character vector")
@@ -625,8 +626,8 @@ as.data.frame.RangedData <- function(x, row.names=NULL, optional=FALSE, ...)
         stop("'row.names'  must be NULL or a character vector")
     if (!missing(optional) || length(list(...)))
         warning("'optional' and arguments in '...' ignored")
-    data.frame(as.data.frame.RangesList(ranges(x)),
-               as.data.frame.DataFrameList(values(x))[-1L],
+    data.frame(.as.data.frame.RangesList(ranges(x)),
+               .as.data.frame.DataFrameList(values(x))[-1L],
                row.names = row.names,
                stringsAsFactors = FALSE)
 }
