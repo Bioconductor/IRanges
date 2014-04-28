@@ -576,6 +576,48 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
 ### Coercion
 ###
 
+### The 2 functions, as.data.frame.RangesList() and
+### as.data.frame.DataFrameList() are needed for as.data.frame.RangedData().
+###
+### A new as.data.frame,List method was implemented in BioC 2.15 and
+### is now used by all List classes. Because the RangedData class is being 
+### phased out, we want to retain the old behavior. In order to do that 
+### we have to keep these 2 helpers because as.data.frame.RangedData() 
+### uses old methods from both RangesList and DataFrameList.
+###
+### These helpers are not exported.
+as.data.frame.RangesList <- function(x, row.names=NULL, optional=FALSE, ...)
+{
+    if (!(is.null(row.names) || is.character(row.names)))
+        stop("'row.names'  must be NULL or a character vector")
+    x <- as(x, "CompressedIRangesList")
+    spaceLevels <- seq_len(length(x))
+    if (length(names(x)) > 0) {
+        spaceLabels <- names(x)
+    } else {
+        spaceLabels <- as.character(spaceLevels)
+    }
+    data.frame(space =
+               factor(rep.int(seq_len(length(x)), elementLengths(x)),
+                      levels = spaceLevels,
+                      labels = spaceLabels),
+               as.data.frame(unlist(x, use.names = FALSE)),
+               row.names = row.names,
+               stringsAsFactors = FALSE)
+}
+
+as.data.frame.DataFrameList <- function(x, row.names=NULL, optional=FALSE, ...)
+{
+    if (!(is.null(row.names) || is.character(row.names)))
+        stop("'row.names' must be NULL or a character vector")
+    if (!missing(optional) || length(list(...)))
+        warning("'optional' and arguments in '...' ignored")
+    stacked <- stack(x)
+    if (is.null(row.names))
+        row.names <- rownames(stacked)
+    as.data.frame(stacked, row.names = row.names, optional = optional)
+}
+
 ### S3/S4 combo for as.data.frame.RangedData
 as.data.frame.RangedData <- function(x, row.names=NULL, optional=FALSE, ...)
 {
@@ -583,8 +625,8 @@ as.data.frame.RangedData <- function(x, row.names=NULL, optional=FALSE, ...)
         stop("'row.names'  must be NULL or a character vector")
     if (!missing(optional) || length(list(...)))
         warning("'optional' and arguments in '...' ignored")
-    data.frame(as.data.frame(ranges(x)),
-               as.data.frame(values(x))[-1L],
+    data.frame(as.data.frame.RangesList(ranges(x)),
+               as.data.frame.DataFrameList(values(x))[-1L],
                row.names = row.names,
                stringsAsFactors = FALSE)
 }

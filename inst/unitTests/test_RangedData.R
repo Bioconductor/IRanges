@@ -311,3 +311,13 @@ test_RangedData_fromDataFrame <- function() {
                    space = c(1,1,2))
   checkIdentical(as(df, "RangedData"), rd)
 }
+
+test_RangedData_legacy_data.frame <- function() {
+    ranges <- IRanges(c(1,2,3),c(4,5,6))
+    rd <- RangedData(ranges)
+    current <- as.data.frame(rd)
+
+    expected <- data.frame(space = factor(rep(1, 3)), start = 1:3,
+                           end = 4:6, width = rep(4L, 3)) 
+    checkIdentical(current, expected)
+}
