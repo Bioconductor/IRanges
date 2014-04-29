@@ -48,13 +48,13 @@
 \alias{eval,language,Vector-method}
 
 
-\title{Vector objects}
+\title{Vector objects (old man page)}
 
 \description{
-  WARNING: Man page currently under reconstruction!
-
-  This man page is being refactored. Most of the things that used to be
-  documented here have been moved to \link[S4Vectors]{Vector-class}.
+  IMPORTANT NOTE - 4/29/2014: This man page is being refactored. Most of
+  the things that used to be documented here have been moved to the man
+  page for \link[S4Vectors]{Vector} objects located in the \pkg{S4Vectors}
+  package.
 }
 
 \section{Evaluation}{

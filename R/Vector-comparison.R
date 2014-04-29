@@ -67,10 +67,6 @@ setMethods(">", .OP2_SIGNATURES, function(e1, e2) { !(e1 <= e2) })
 ### The default "selfmatch" method below is implemented on top of match().
 ###
 
-setGeneric("selfmatch",
-    function(x, ...) standardGeneric("selfmatch")
-)
-
 ### Default "selfmatch" method. Args in ... are propagated to match().
 setMethod("selfmatch", "ANY", function(x, ...) match(x, x, ...))
 

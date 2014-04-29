@@ -40,7 +40,7 @@ exportClasses(
     DataFrameList, SimpleDataFrameList,
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
     RangedData, RangedDataList, FilterRules, FilterMatrix, RDApplyParams,
-    Hits, HitsList, CompressedHitsList, 
+    HitsList, CompressedHitsList, 
     RangedSelection, RangesMapping,
     expressionORfunction
 )
@@ -242,7 +242,10 @@ exportMethods(
     unique,
     xtabs,
     updateObject,
-    classNameForDisplay
+    classNameForDisplay,
+    queryHits, subjectHits,
+    queryLength, subjectLength,
+    selfmatch
 )
 
 
@@ -270,7 +273,6 @@ export(
     RangesList,
     IRangesList,
     RleViewsList,
-    remapHits,
     CompressedHitsList, 
     hits,
     "%over%", "%within%", "%outside%",
@@ -322,7 +324,6 @@ export(
 
     ## Ranges-comparison.R
     compare,
-    selfmatch,
     findMatches, countMatches,
 
     ## Views-class.R:
@@ -384,11 +385,6 @@ export(
     reducerParams, "reducerParams<-",
     iteratorFun, "iteratorFun<-",
 
-    ## Hits-class.R:
-    queryHits, subjectHits,
-    queryLength, subjectLength,
-    countQueryHits, countSubjectHits,
-
     ## RangesMapping-class.R:
     map, pmap,
 
@@ -441,7 +437,6 @@ exportMethods(
     "end<-",
     isNormal, whichFirstNotNormal,
     compare,
-    selfmatch,
     findMatches, countMatches,
     subject,
     ranges, "ranges<-",
@@ -478,9 +473,6 @@ exportMethods(
     reducerFun, "reducerFun<-",
     reducerParams, "reducerParams<-",
     iteratorFun, "iteratorFun<-",
-    queryHits, subjectHits,
-    queryLength, subjectLength,
-    countQueryHits, countSubjectHits,
     map, pmap,
     shift, narrow, flank, reflect, resize, promoters, restrict, threebands,
     reduce, gaps, disjoin, isDisjoint, disjointBins,
