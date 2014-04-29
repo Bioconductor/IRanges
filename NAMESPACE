@@ -12,8 +12,6 @@ importFrom(stats4, summary, update)
 
 exportClasses(
     functionORNULL,
-    DataTableORNULL,
-    Vector,
     List, SimpleList, CompressedList,
     Ranges, RangesORmissing,
     IRanges, NormalIRanges,
@@ -61,7 +59,6 @@ S3method(as.data.frame, Hits)
 S3method(as.data.frame, RangedData)
 S3method(as.data.frame, Ranges)
 S3method(as.data.frame, Rle)
-S3method(as.data.frame, Vector)
 
 S3method(as.list, Vector)
 S3method(as.list, List)
@@ -127,7 +124,6 @@ export(
     as.data.frame.RangedData,
     as.data.frame.Ranges,
     as.data.frame.Rle,
-    as.data.frame.Vector,
 
     as.list.List,
     as.list.SimpleList,
@@ -306,10 +302,7 @@ export(
 
     ## Vector-class.R:
     showAsCell,
-    elementMetadata, "elementMetadata<-",
-    mcols, "mcols<-",
     values, "values<-",
-    rename,
     mstack,
     shiftApply,
 
@@ -437,10 +430,7 @@ exportMethods(
     endoapply, mendoapply,
     runsum, runmean, runwtsum, runq,
     showAsCell,
-    elementMetadata, "elementMetadata<-",
-    mcols, "mcols<-",
     values, "values<-",
-    rename,
     mstack,
     shiftApply,
     elementType, elementLengths,
@@ -504,5 +494,5 @@ exportMethods(
     precede, follow, nearest, distance, distanceToNearest,
     expand,
     classNameForDisplay,
-    tile, fixedColumnNames
+    tile
 )

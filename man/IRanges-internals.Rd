@@ -7,9 +7,6 @@
 \alias{expressionORfunction-class}
 \alias{coerce,ANY,vector-method}
 
-% For implementation of IRanges extensions
-\alias{fixedColumnNames}
-\alias{fixedColumnNames,ANY-method}
 
 \title{IRanges internals}
 

@@ -512,7 +512,7 @@ setReplaceMethod("[[", "List",
                    origLen <- length(x)
                    x <- setListElement(x, i, value)
                    if (origLen < length(x))
-                     x <- rbindRowOfNAsToMetadatacols(x)
+                     x <- S4Vectors:::rbindRowOfNAsToMetadatacols(x)
                    x
                  })
 

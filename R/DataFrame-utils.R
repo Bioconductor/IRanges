@@ -31,7 +31,7 @@ setMethod("splitAsListReturnedClass", "DataFrame",
 setMethod("cbind", "DataFrame",
           function(..., deparse.level=1) {
             ans <- DataFrame(...)
-            mcols(ans) <- rbind.mcols(...)
+            mcols(ans) <- S4Vectors:::rbind.mcols(...)
             ans
           })
 

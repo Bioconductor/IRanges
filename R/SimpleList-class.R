@@ -106,7 +106,7 @@ setMethod("c", "SimpleList",
           function(x, ..., recursive = FALSE) {
               slot(x, "listData") <-
                 do.call(c, lapply(unname(list(x, ...)), as.list))
-              .c.Vector(x, ...)
+              S4Vectors:::.c.Vector(x, ...)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

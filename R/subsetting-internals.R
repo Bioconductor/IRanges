@@ -137,3 +137,7 @@ setMethod("extractROWS", c("vectorORfactor", "Ranges"),
     }
 )
 
+setMethod("extractROWS", c("matrix", "Ranges"),
+    S4Vectors:::extractROWSWithBracket
+)
+
