@@ -21,22 +21,6 @@ const char *get_List_elementType(SEXP x);
 
 void set_List_elementType(SEXP x, const char *type);
 
-int vector_memcmp(
-	SEXP x1,
-	int x1_offset,
-	SEXP x2,
-	int x2_offset,
-	int nelt
-);
-
-void vector_memcpy(
-	SEXP out,
-	int out_offset,
-	SEXP in,
-	int in_offset,
-	int nelt
-);
-
 /*
  * Comparing ranges.
  * (see Ranges_comparison.c)

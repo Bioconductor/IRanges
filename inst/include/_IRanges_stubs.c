@@ -41,16 +41,6 @@ DEFINE_NOVALUE_CCALLABLE_STUB(set_List_elementType,
 	(     x,             type)
 )
 
-DEFINE_CCALLABLE_STUB(int, vector_memcmp,
-	(SEXP x1, int x1_offset, SEXP x2, int x2_offset, int nelt),
-	(     x1,     x1_offset,      x2,     x2_offset,     nelt)
-)
-
-DEFINE_NOVALUE_CCALLABLE_STUB(vector_memcpy,
-	(SEXP out, int out_offset, SEXP in, int in_offset, int nelt),
-	(     out,     out_offset,      in,     in_offset,     nelt)
-)
-
 /*
  * Stubs for callables defined in Ranges_comparison.c
  */

@@ -96,8 +96,6 @@ void R_init_IRanges(DllInfo *info)
 /* Vector_class.c */
 	REGISTER_CCALLABLE(_get_List_elementType);
 	REGISTER_CCALLABLE(_set_List_elementType);
-	REGISTER_CCALLABLE(_vector_memcmp);
-	REGISTER_CCALLABLE(_vector_memcpy);
 
 /* Ranges_comparison.c */
 	REGISTER_CCALLABLE(_overlap_code);

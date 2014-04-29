@@ -19,22 +19,6 @@ void _set_List_elementType(
 	const char *type
 );
 
-int _vector_memcmp(
-	SEXP x1,
-	int x1_offset,
-	SEXP x2,
-	int x2_offset,
-	int nelt
-);
-
-void _vector_memcpy(
-	SEXP out,
-	int out_offset,
-	SEXP in,
-	int in_offset,
-	int nelt
-);
-
 SEXP vector_subsetByRanges(
 	SEXP x,
 	SEXP start,
