@@ -42,7 +42,7 @@ Collate: subsetting-internals.R
 	Rle-class.R
 	RleViews-class.R
 	RleViews-utils.R
-        extractList.R
+	extractList.R
 	seqapply.R
 	multisplit.R
 	AtomicList-impl.R
@@ -51,13 +51,13 @@ Collate: subsetting-internals.R
 	DataFrame-utils.R
 	DataFrameList-class.R
 	DataFrameList-utils.R
-        RangesList-class.R
-        GappedRanges-class.R
+	RangesList-class.R
+	GappedRanges-class.R
 	ViewsList-class.R
 	RleViewsList-class.R
 	RleViewsList-utils.R
 	MaskCollection-class.R
-        RangedData-class.R
+	RangedData-class.R
 	FilterRules-class.R
 	RDApplyParams-class.R
 	RangedData-utils.R
@@ -80,8 +80,7 @@ Collate: subsetting-internals.R
 	nearest-methods.R
 	expand-methods.R
 	updateObject-methods.R
-	classNameForDisplay-methods.R
-        tile-methods.R
+	tile-methods.R
 	test_IRanges_package.R
 	debug.R
 	zzz.R

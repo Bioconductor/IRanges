@@ -241,7 +241,8 @@ exportMethods(
     union, intersect, setdiff,
     unique,
     xtabs,
-    updateObject
+    updateObject,
+    classNameForDisplay
 )
 
 
@@ -418,9 +419,6 @@ export(
     ## expand-methods.R:
     expand,
 
-    ## classNameForDisplay-methods.R:
-    classNameForDisplay,
-
     ## tile-methods.R:
     tile
 )
@@ -493,6 +491,5 @@ exportMethods(
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
     precede, follow, nearest, distance, distanceToNearest,
     expand,
-    classNameForDisplay,
     tile
 )

@@ -55,6 +55,15 @@ setValidity2("SimpleList", .valid.SimpleList)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### classNameForDisplay()
+###
+
+setMethod("classNameForDisplay", "SimpleList",
+    function(x) sub("^Simple", "", class(x))
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
 ###
 

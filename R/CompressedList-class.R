@@ -163,6 +163,15 @@ setReplaceMethod("$", "CompressedList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### classNameForDisplay()
+###
+
+setMethod("classNameForDisplay", "CompressedList",
+    function(x) sub("^Compressed", "", class(x))
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.
 ###
 

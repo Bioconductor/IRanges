@@ -15,6 +15,10 @@
 \alias{names<-,CompressedList-method}
 \alias{names<-,SimpleList-method}
 
+% displaying
+\alias{classNameForDisplay,SimpleList-method}
+\alias{classNameForDisplay,CompressedList-method}
+
 % subsetting
 \alias{[,CompressedList-method}
 \alias{[,SimpleList-method}
@@ -87,6 +91,14 @@
   }
 }
 
+\section{Displaying}{
+  When a SimpleList or CompressedList object \code{x} is displayed,
+  the "Compressed" or "Simple" prefix is removed from the real class name
+  of \code{x}.
+  See \link[S4Vectors]{classNameForDisplay} in the \pkg{S4Vectors} package
+  for more information about this.
+}
+
 \section{Subsetting}{
   In the following code snippets, \code{x} is a SimpleList or CompressedList
   object.
@@ -133,6 +145,21 @@
 
 \examples{
 SimpleList(a = letters, ranges = IRanges(1:10, 1:10))
+
+## Displaying a SimpleList or CompressedList object:
+x1 <- IntegerList()
+class(x1)
+x2 <- IntegerList(compress=FALSE)
+class(x2)
+
+## The "Compressed" or "Simple" prefix is removed from the real class
+## name of the object:
+x1
+x2
+
+## This is controlled by internal helper classNameForDisplay():
+classNameForDisplay(x1)
+classNameForDisplay(x2)
 }
 \keyword{methods}
 \keyword{classes}
