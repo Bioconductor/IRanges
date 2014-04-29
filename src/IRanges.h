@@ -435,14 +435,6 @@ SEXP _new_RangedData(
 );
 
 
-/* Hits_class.c */
-
-SEXP make_all_group_inner_hits(
-	SEXP group_sizes,
-	SEXP hit_type
-);
-
-
 /* inter_range_methods.c */
 
 SEXP debug_inter_range_methods();

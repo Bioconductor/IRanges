@@ -69,9 +69,6 @@ static const R_CallMethodDef callMethods[] = {
 /* GappedRanges_class.c */
 	CALLMETHOD_DEF(valid_GappedRanges, 2),
 
-/* Hits_class.c */
-	CALLMETHOD_DEF(make_all_group_inner_hits, 2),
-
 /* inter_range_methods.c */
 	CALLMETHOD_DEF(debug_inter_range_methods, 0),
 	CALLMETHOD_DEF(IRanges_range, 1),
