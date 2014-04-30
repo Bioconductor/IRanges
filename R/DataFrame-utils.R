@@ -84,10 +84,6 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
       }
       if (factors[i])
         combined <- factor(combined, levs)
-      ## this coercion needed only because we extracted ([[) above
-      ## which brings external -> internal
-      ## external objects should support external combination (c)
-      combined <- as(combined, cl[i])
       combined
     })
     names(cols) <- colnames(df)

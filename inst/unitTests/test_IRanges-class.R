@@ -29,7 +29,7 @@ test_IRanges_combine <- function() {
   ir2 <- IRanges(c(1, 15), width=5)
   mcols(ir2) <- DataFrame(score=1:2)
   checkIdentical(mcols(c(ir1, ir2)),
-                 DataFrame(score = c(NA, TRUE, TRUE)))
+                 DataFrame(score = c(NA, 1L, 2L)))
   
   ## Combining multiple IRanges object with varying mcols
   mcols(ir1) <- DataFrame(gc=0.78)
