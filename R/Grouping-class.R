@@ -311,14 +311,6 @@ setMethod("togrouprank", "H2LGrouping",
     }
 )
 
-makeLow2highFromHigh2low <- function(high2low)
-{
-    ans <- vector(mode="list", length=length(high2low))
-    sparse_ans <- split(seq_along(high2low), high2low)
-    ans[as.integer(names(sparse_ans))] <- sparse_ans
-    ans
-}
-
 setReplaceMethod("length", "H2LGrouping",
     function(x, value)
     {
@@ -331,7 +323,7 @@ setReplaceMethod("length", "H2LGrouping",
         if (value > length(x))
             stop("cannot make a ", class(x), " instance longer")
         length(x@high2low) <- value
-        x@low2high <- makeLow2highFromHigh2low(x@high2low)
+        x@low2high <- S4Vector:::reverseSelfmatchMapping(x@high2low)
         x
     }
 )
@@ -361,7 +353,9 @@ setReplaceMethod("length", "H2LGrouping",
         return("the 'low2high' slot must contain a list")
     if (length(x@high2low) != length(x@low2high))
         return("the 'high2low' and 'low2high' slots must have the same length")
-    if (!identical(makeLow2highFromHigh2low(x@high2low), x@low2high)) {
+    if (!identical(S4Vectors:::reverseSelfmatchMapping(x@high2low),
+                   x@low2high))
+    {
         problem <- c("the 'low2high' slot must contain the reverse mapping ",
                      "of the 'high2low' slot")
         return(paste(problem, collapse=""))
@@ -412,7 +406,7 @@ setMethod("show", "Dups",
     if (!is.integer(high2low))
         high2low <- as.integer(high2low)
     new2(Class, high2low=high2low,
-         low2high=makeLow2highFromHigh2low(high2low),
+         low2high=S4Vectors:::reverseSelfmatchMapping(high2low),
          check=FALSE)
 }
 

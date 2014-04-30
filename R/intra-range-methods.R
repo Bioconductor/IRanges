@@ -4,6 +4,36 @@
 ###
 
 
+normargAtomicList1 <- function(arg, List, lx, argname = deparse(substitute(arg)))
+{
+    if (is.vector(arg))
+        arg <- List(as.list(S4Vectors:::recycleVector(arg, lx)))
+    else if (!is(arg, "AtomicList"))
+        stop("'", argname,"' must be a vector or AtomicList object")
+    arg
+}
+
+normargAtomicList2 <- function(arg, List, lx, eln, argname = deparse(substitute(arg)))
+{
+    if (!(is.vector(arg) && length(arg) == 1L)) {
+        if (is.vector(arg))
+          arg <- as(rep(S4Vectors:::recycleVector(arg, lx), eln),
+                    class(unlist(List())))
+        else {
+          if (!is(arg, "AtomicList"))
+            stop("'arg' must be a vector or AtomicList object")
+          if (!isTRUE(all.equal(elementLengths(arg), eln,
+                                check.attributes=FALSE)))
+            arg <- mapply(S4Vectors:::recycleVector, arg, List(as.list(eln)))
+          arg <- unlist(arg, use.names=FALSE)
+        }
+    } else if (is.list(arg)){
+        arg <- unlist(arg, use.names=FALSE)
+    }
+    arg
+}
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### shift()
 ###
@@ -44,7 +74,7 @@ setMethod("shift", "RangesList",
           function(x, shift=0L, use.names = TRUE)
           {
               lx <- length(x)
-              shift <- S4Vectors:::normargAtomicList1(shift, IntegerList, lx)
+              shift <- normargAtomicList1(shift, IntegerList, lx)
               mendoapply("shift", x = x, shift = shift,
                          MoreArgs = list(use.names = use.names))
           })
@@ -54,7 +84,7 @@ setMethod("shift", "CompressedIRangesList",
           {
               lx <- length(x)
               eln <- elementLengths(x)
-              shift <- S4Vectors:::normargAtomicList2(shift, IntegerList, lx, eln)
+              shift <- normargAtomicList2(shift, IntegerList, lx, eln)
               slot(x, "unlistData", check=FALSE) <-
                 shift(x@unlistData, shift = shift, use.names = use.names)
               x
@@ -103,9 +133,9 @@ setMethod("narrow", "RangesList",
           function(x, start = NA, end = NA, width = NA, use.names = TRUE)
           {
               lx <- length(x)
-              start <- S4Vectors:::normargAtomicList1(start, IntegerList, lx)
-              end <- S4Vectors:::normargAtomicList1(end, IntegerList, lx)
-              width <- S4Vectors:::normargAtomicList1(width, IntegerList, lx)
+              start <- normargAtomicList1(start, IntegerList, lx)
+              end <- normargAtomicList1(end, IntegerList, lx)
+              width <- normargAtomicList1(width, IntegerList, lx)
               mendoapply(narrow, x = x, start = start, end = end, width = width,
                          MoreArgs = list(use.names = use.names))
           })
@@ -115,9 +145,9 @@ setMethod("narrow", "CompressedIRangesList",
           {
               lx <- length(x)
               eln <- elementLengths(x)
-              start <- S4Vectors:::normargAtomicList2(start, IntegerList, lx, eln)
-              end <- S4Vectors:::normargAtomicList2(end, IntegerList, lx, eln)
-              width <- S4Vectors:::normargAtomicList2(width, IntegerList, lx, eln)
+              start <- normargAtomicList2(start, IntegerList, lx, eln)
+              end <- normargAtomicList2(end, IntegerList, lx, eln)
+              width <- normargAtomicList2(width, IntegerList, lx, eln)
               slot(x, "unlistData", check=FALSE) <-
                 narrow(x@unlistData, start = start, end = end, width = width,
                        use.names = use.names)
@@ -211,8 +241,8 @@ setMethod("flank", "RangesList",
           function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
           {
               lx <- length(x)
-              width <- S4Vectors:::normargAtomicList1(width, IntegerList, lx)
-              start <- S4Vectors:::normargAtomicList1(start, LogicalList, lx)
+              width <- normargAtomicList1(width, IntegerList, lx)
+              start <- normargAtomicList1(start, LogicalList, lx)
               mendoapply(flank, x = x, width = width, start = start,
                          MoreArgs = list(both = both, use.names = use.names))
           })
@@ -222,8 +252,8 @@ setMethod("flank", "CompressedIRangesList",
           {
               lx <- length(x)
               eln <- elementLengths(x)
-              width <- S4Vectors:::normargAtomicList2(width, IntegerList, lx, eln)
-              start <- S4Vectors:::normargAtomicList2(start, LogicalList, lx, eln)
+              width <- normargAtomicList2(width, IntegerList, lx, eln)
+              start <- normargAtomicList2(start, LogicalList, lx, eln)
               slot(x, "unlistData", check=FALSE) <-
                 flank(x@unlistData, width = width, start = start, both = both,
                       use.names = use.names)
@@ -391,8 +421,8 @@ setMethod("resize", "RangesList",
           function(x, width, fix = "start", use.names = TRUE)
           {
               lx <- length(x)
-              width <- S4Vectors:::normargAtomicList1(width, IntegerList, lx)
-              fix <- S4Vectors:::normargAtomicList1(fix, CharacterList, lx)
+              width <- normargAtomicList1(width, IntegerList, lx)
+              fix <- normargAtomicList1(fix, CharacterList, lx)
               mendoapply(resize, x = x, width = width, fix = fix,
                          MoreArgs = list(use.names = use.names))
           })
@@ -402,8 +432,8 @@ setMethod("resize", "CompressedIRangesList",
           {
               lx <- length(x)
               eln <- elementLengths(x)
-              width <- S4Vectors:::normargAtomicList2(width, IntegerList, lx, eln)
-              fix <- S4Vectors:::normargAtomicList2(fix, CharacterList, lx, eln)
+              width <- normargAtomicList2(width, IntegerList, lx, eln)
+              fix <- normargAtomicList2(fix, CharacterList, lx, eln)
               slot(x, "unlistData", check=FALSE) <-
                 resize(x@unlistData, width = width, fix = fix,
                        use.names = use.names)
@@ -545,8 +575,8 @@ setMethod("restrict", "RangesList",
                    use.names = TRUE)
           {
               lx <- length(x)
-              start <- S4Vectors:::normargAtomicList1(start, IntegerList, lx)
-              end <- S4Vectors:::normargAtomicList1(end, IntegerList, lx)
+              start <- normargAtomicList1(start, IntegerList, lx)
+              end <- normargAtomicList1(end, IntegerList, lx)
               mendoapply(restrict, x, start = start, end = end,
                          MoreArgs = list(keep.all.ranges = keep.all.ranges,
                            use.names = use.names))
@@ -561,8 +591,8 @@ setMethod("restrict", "CompressedIRangesList",
               if (keep.all.ranges) {
                   lx <- length(x)
                   eln <- elementLengths(x)
-                  start <- S4Vectors:::normargAtomicList2(start, IntegerList, lx, eln)
-                  end <- S4Vectors:::normargAtomicList2(end, IntegerList, lx, eln)
+                  start <- normargAtomicList2(start, IntegerList, lx, eln)
+                  end <- normargAtomicList2(end, IntegerList, lx, eln)
                   slot(x, "unlistData", check=FALSE) <-
                     restrict(x@unlistData, start = start, end = end,
                              keep.all.ranges = keep.all.ranges,

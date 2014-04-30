@@ -1,5 +1,7 @@
-\name{Hits-class}
+\name{Hits-class-leftovers}
 \docType{class}
+
+\alias{Hits-examples}
 
 % coercion
 \alias{as.data.frame.Hits}
@@ -11,7 +13,7 @@
 \alias{coerce,Hits,DataFrame-method}
 
 
-\title{Set of hits between 2 vector-like objects (old man page)}
+\title{Examples of basic manipulation of Hits objects}
 
 \description{
   IMPORTANT NOTE - 4/29/2014: This man page is being refactored. Most of

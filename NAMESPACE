@@ -69,7 +69,6 @@ S3method(as.list, Hits)
 
 S3method(diff, Rle)
 
-S3method(duplicated, Vector)
 S3method(duplicated, Dups)
 S3method(duplicated, Rle)
 S3method(duplicated, CompressedList)
@@ -86,7 +85,6 @@ S3method(quantile, Rle)
 
 S3method(rev, Rle)
 
-S3method(sort, Vector)
 S3method(sort, Rle)
 S3method(sort, List)
 
@@ -94,7 +92,6 @@ S3method(summary, Rle)
 
 S3method(tail, Vector)
 
-S3method(unique, Vector)
 S3method(unique, Rle)
 S3method(unique, CompressedList)
 S3method(unique, CompressedRleList)
@@ -133,7 +130,6 @@ export(
 
     diff.Rle,
 
-    duplicated.Vector,
     duplicated.Dups,
     duplicated.Rle,
     duplicated.CompressedList,
@@ -150,7 +146,6 @@ export(
 
     rev.Rle,
 
-    sort.Vector,
     sort.Rle,
     sort.List,
 
@@ -158,7 +153,6 @@ export(
 
     tail.Vector,
     
-    unique.Vector,
     unique.Rle,
     unique.CompressedList,
     unique.CompressedRleList,
@@ -201,9 +195,9 @@ exportMethods(
     coerce,
     c,
     show,
-    "==", "!=", "<=", ">=", "<", ">",
-    duplicated, match, "%in%",
-    order, sort, rank, is.unsorted,
+    "==", "<=",
+    match, duplicated, unique, anyDuplicated, "%in%",
+    order, sort, rank, xtfrm, is.unsorted,
     Ops, Math, Math2, Summary, Complex,
     summary,
     rev,
@@ -239,12 +233,13 @@ exportMethods(
     table,
     tapply,
     union, intersect, setdiff,
-    unique,
     xtabs,
     updateObject,
+    values, "values<-",
     classNameForDisplay,
     queryHits, subjectHits,
     queryLength, subjectLength,
+    compare,
     selfmatch
 )
 
@@ -303,9 +298,8 @@ export(
     ## runstat.R:
     runsum, runmean, runwtsum, runq,
 
-    ## Vector-class.R:
+    ## Vector-class-leftovers.R:
     showAsCell,
-    values, "values<-",
     mstack,
     shiftApply,
 
@@ -321,10 +315,6 @@ export(
     "width<-",
     "end<-",
     isNormal, whichFirstNotNormal,
-
-    ## Ranges-comparison.R
-    compare,
-    findMatches, countMatches,
 
     ## Views-class.R:
     subject,
@@ -424,7 +414,6 @@ exportMethods(
     endoapply, mendoapply,
     runsum, runmean, runwtsum, runq,
     showAsCell,
-    values, "values<-",
     mstack,
     shiftApply,
     elementType, elementLengths,
@@ -436,8 +425,6 @@ exportMethods(
     "width<-",
     "end<-",
     isNormal, whichFirstNotNormal,
-    compare,
-    findMatches, countMatches,
     subject,
     ranges, "ranges<-",
     Views,

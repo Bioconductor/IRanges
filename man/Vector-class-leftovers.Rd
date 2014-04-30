@@ -1,4 +1,4 @@
-\name{Vector-class}
+\name{Vector-class-leftovers}
 \docType{class}
 
 \alias{showAsCell,list-method}
