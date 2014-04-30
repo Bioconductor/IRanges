@@ -149,6 +149,41 @@ setMethod("subset", "Vector",
             x[i, drop=drop]
           })
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Combining.
+###
+
+rbindRowOfNAsToMetadatacols <- function(x) {
+  x_mcols <- mcols(x)
+  if (!is.null(x_mcols))
+    mcols(x)[nrow(x_mcols)+1L,] <- NA
+  x
+}
+
+rbind.mcols <- function(x, ...)
+{
+    args <- list(x, ...)
+    mcols_list <- lapply(args, mcols)
+    if (length(mcols_list) == 1L)
+        return(mcols_list[[1L]])
+    mcols_is_null <- sapply(mcols_list, is.null)
+    if (all(mcols_is_null))
+        return(NULL)
+    makeZeroColDataFrame <- function(nr) new("DataFrame", nrows=nr)
+    mcols_list[mcols_is_null] <- lapply(elementLengths(args)[mcols_is_null],
+                                        makeZeroColDataFrame)
+    colnames_list <- lapply(mcols_list, colnames)
+    allCols <- unique(unlist(colnames_list, use.names=FALSE))
+    fillCols <- function(df) {
+        if (nrow(df))
+            df[setdiff(allCols, colnames(df))] <- DataFrame(NA)
+        df
+    }
+    do.call(rbind, lapply(mcols_list, fillCols))
+}
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Evaluating.
 ###

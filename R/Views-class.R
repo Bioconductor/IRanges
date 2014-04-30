@@ -240,7 +240,7 @@ setMethod("c", "Views",
         if (ignore.mcols) {
             mcols(x) <- NULL
         } else  {
-            mcols(x) <- do.call(S4Vectors:::rbind.mcols, args)
+            mcols(x) <- do.call(rbind.mcols, args)
         }
         validObject(x)
         x
