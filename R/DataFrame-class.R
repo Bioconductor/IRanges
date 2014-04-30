@@ -549,7 +549,7 @@ setAs("data.frame", "DataFrame",
 ### FIXME: this should be:
         ## from <- as.list(from)
 ### But unclass() causes deep copy
-        rownames(from) <- NULL
+        attr(from, "row.names") <- NULL
         class(from) <- NULL
         new2("DataFrame", listData=from, nrows=nr, rownames=rn, check=FALSE)
       })
