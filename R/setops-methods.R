@@ -111,7 +111,7 @@ setMethod("intersect", c("CompressedIRangesList", "CompressedIRangesList"),
           })
 
 setMethod("intersect", c("Hits", "Hits"), function(x, y) {
-  if (!compatibleHits(x, y))
+  if (!S4Vectors:::compatibleHits(x, y))
     stop("'x' and 'y' are incompatible by subject and query length")
   x[x %in% y]
 })
@@ -147,7 +147,7 @@ setMethod("setdiff", c("CompressedIRangesList", "CompressedIRangesList"),
           })
 
 setMethod("setdiff", c("Hits", "Hits"), function(x, y) {
-  if (!compatibleHits(x, y))
+  if (!S4Vectors:::compatibleHits(x, y))
     stop("'x' and 'y' are incompatible by subject and query length")
   x[!(x %in% y)]
 })
