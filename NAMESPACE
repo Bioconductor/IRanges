@@ -10,6 +10,11 @@ import(BiocGenerics)
 import(S4Vectors)
 importFrom(stats4, summary, update)
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Export S4 classes
+###
+
 exportClasses(
     functionORNULL,
     List, SimpleList, CompressedList,
