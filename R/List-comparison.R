@@ -210,9 +210,7 @@ setMethod("unique", "List", unique.List)
 
 ### S3/S4 combo for unique.SimpleList
 unique.SimpleList <- function(x, incomparables=FALSE, ...) {
-  .op1_apply(unique, x,
-             incomparables=incomparables, ...,
-             ANS_CONSTRUCTOR=CharacterList)
+    as(lapply(x, unique, incomparables=incomparables, ...), class(x))
 }
 setMethod("unique", "SimpleList", unique.SimpleList)
 
