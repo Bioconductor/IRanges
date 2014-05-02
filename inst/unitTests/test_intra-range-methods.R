@@ -23,12 +23,22 @@ test_Ranges_shift <- function() {
   ## [-.Machine$integer.max, .Machine$integer.max] range.
   checkException(suppressWarnings(shift(ir1, 1)), silent=TRUE)
   checkException(suppressWarnings(shift(ir2, -1)), silent=TRUE)
-  ir3 <- IRanges(1999222000, width=1000)
-  checkException(suppressWarnings(shift(ir3, 188222000)), silent=TRUE)
+
+  ## IMPORTANT NOTE (H.P. - May 2, 2014)
+  ## Test known to fail with the Mavericks binary of R-3.1.0, because of a bug
+  ## in R basic arithmetic with this binary. Dan reported the bug first here
+  ## https://stat.ethz.ch/pipermail/r-sig-mac/2014-April/010838.html and then
+  ## here https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=15774
+  ## TODO: Remove conditional testing when the bug is fixed.
+  if (getOption("pkgType") != "mac.binary.mavericks") {
+      ir3 <- IRanges(1999222000, width=1000)
+      checkException(suppressWarnings(shift(ir3, 188222000)), silent=TRUE)
+  }
+
   ir4 <- IRanges(1:20, width=222000000)
   checkException(suppressWarnings(shift(ir4, 1:20 * 99000000L)), silent=TRUE)
 }
- 
+
 test_Ranges_narrow <- function() {
   ir1 <- IRanges(c(2,5,1), c(3,7,3))
   checkIdentical(narrow(ir1, start=1, end=2),
