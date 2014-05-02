@@ -338,6 +338,7 @@ void _IntegerIntervalTree_overlapHelper(struct rbTree *tree, IRanges_holder r_ra
       }
     }
   }
+  slFreeList(&active_head);
 }
 
 SEXP _IntegerIntervalTree_overlap(struct rbTree *tree, SEXP r_ranges,
