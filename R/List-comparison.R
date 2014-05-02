@@ -208,6 +208,14 @@ unique.List <- function(x, incomparables=FALSE, ...)
 }
 setMethod("unique", "List", unique.List)
 
+### S3/S4 combo for unique.SimpleList
+unique.SimpleList <- function(x, incomparables=FALSE, ...) {
+  .op1_apply(unique, x,
+             incomparables=incomparables, ...,
+             ANS_CONSTRUCTOR=CharacterList)
+}
+setMethod("unique", "SimpleList", unique.SimpleList)
+
 ### S3/S4 combo for unique.CompressedList
 .unique.CompressedList <- function(x, incomparables=FALSE,
                                       fromLast=FALSE)
