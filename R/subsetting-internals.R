@@ -99,7 +99,7 @@ setMethod("as.integer", "RangesNSBS", function(x) as.integer(x@subscript))
 setMethod("length", "RangesNSBS", function(x) sum(width(x@subscript)))
 
 setMethod("anyDuplicated", "RangesNSBS",
-    function(x, incomparables=FALSE, ...) isDisjoint(x@subscript)
+    function(x, incomparables=FALSE, ...) !isDisjoint(x@subscript)
 )
 
 setMethod("isStrictlySorted", "RangesNSBS", function(x) isNormal(x@subscript))

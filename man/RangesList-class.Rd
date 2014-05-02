@@ -21,6 +21,10 @@
 \alias{universe}
 \alias{universe<-}
 
+\alias{isNormal,RangesList-method}
+\alias{whichFirstNotNormal,RangesList-method}
+\alias{isDisjoint,RangesList-method}
+
 % coercion
 \alias{coerce,RangesList,IRangesList-method}
 \alias{coerce,RangesList,CompressedIRangesList-method}
@@ -161,35 +165,48 @@
   functionality.
 }
 \examples{
-  range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
-  range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
-  named <- RangesList(one = range1, two = range2)
-  length(named) # 2
-  start(named) # same as start(c(range1, range2))
-  names(named) # "one" and "two"
-  named[[1]] # range1
-  unnamed <- RangesList(range1, range2)
-  names(unnamed) # NULL
+## ---------------------------------------------------------------------
+## Basic manipulation
+## ---------------------------------------------------------------------
 
-  # edit the width of the ranges in the list
-  edited <- named
-  width(edited) <- rep(c(3,2), elementLengths(named))
-  edited
+range1 <- IRanges(start=c(1, 2, 3), end=c(5, 2, 8))
+range2 <- IRanges(start=c(15, 45, 20, 1), end=c(15, 100, 80, 5))
+named <- RangesList(one = range1, two = range2)
+length(named) # 2
+start(named) # same as start(c(range1, range2))
+names(named) # "one" and "two"
+named[[1]] # range1
+unnamed <- RangesList(range1, range2)
+names(unnamed) # NULL
 
-  # same as list(range1, range2)
-  as.list(RangesList(range1, range2))
+# edit the width of the ranges in the list
+edited <- named
+width(edited) <- rep(c(3,2), elementLengths(named))
+edited
 
-  # coerce to data.frame
-  as.data.frame(named)
+# same as list(range1, range2)
+as.list(RangesList(range1, range2))
 
-  # set the universe
-  universe(named) <- "hg18"
-  universe(named)
-  RangesList(range1, range2, universe = "hg18")
+# coerce to data.frame
+as.data.frame(named)
 
-  ## zoom in 2X
-  collection <- RangesList(one = range1, range2)
-  collection * 2
+# set the universe
+universe(named) <- "hg18"
+universe(named)
+RangesList(range1, range2, universe = "hg18")
+
+## zoom in 2X
+collection <- RangesList(one = range1, range2)
+collection * 2
+
+## ---------------------------------------------------------------------
+## isDisjoint()
+## ---------------------------------------------------------------------
+
+range3 <- IRanges(start=c(-2, 6, 7), width=c(8, 0, 0))  # with empty ranges
+collection <- IRangesList(one=range1, range2, range3)
+
+isDisjoint(collection)
 }
 \keyword{methods}
 \keyword{classes}

@@ -472,30 +472,6 @@ setMethod("disjoin", "IntervalForest",
           function(x, ...)
             as(disjoin(as(x, "CompressedIRangesList"), ...), "IntervalForest"))
 
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### isDisjoint()
-###
-
-setGeneric("isDisjoint", function(x, ...) standardGeneric("isDisjoint"))
-
-setMethod("isDisjoint", "Ranges",
-    function(x)
-    {
-        x_len <- length(x)
-        if (x_len < 2L)
-            return(TRUE)
-        x_start <- start(x)
-        x_end <- end(x)
-        oo <- order(x)
-        start2 <- x_start[oo]
-        end2 <- x_end[oo]
-        all(start2[-1L] > end2[-x_len])
-    }
-)
-
-setMethod("isDisjoint", "RangesList",
-          function(x) unlist(lapply(x, isDisjoint)))
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### disjointBins()

@@ -46,22 +46,17 @@ setMethod("names", "IRanges", function(x) x@NAMES)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Efficient "isNormal" method for IRanges objects.
+### isEmpty(), isNormal(), isDisjoint()
+###
 
 setMethod("isNormal", "IRanges",
     function(x) .Call2("IRanges_isNormal", x, PACKAGE="IRanges")
 )
 
-setMethod("isNormal", "NormalIRanges", function(x) TRUE)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "isEmpty" default method for Ranges objects would work just fine on a
-### NormalIRanges object but we can take advantage of the normality to make
-### it slightly more efficient.
-###
-
+### Fast methods for NormalIRanges objects.
 setMethod("isEmpty", "NormalIRanges", function(x) length(x) == 0L)
+setMethod("isNormal", "NormalIRanges", function(x) TRUE)
+setMethod("isDisjoint", "NormalIRanges", function(x) TRUE)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -33,10 +33,6 @@
 \alias{disjoin,IntervalForest-method}
 \alias{disjoin,CompressedIRangesList-method}
 
-\alias{isDisjoint}
-\alias{isDisjoint,Ranges-method}
-\alias{isDisjoint,RangesList-method}
-
 \alias{disjointBins}
 \alias{disjointBins,Ranges-method}
 \alias{disjointBins,RangesList-method}
@@ -46,11 +42,10 @@
        MaskCollection, or RangedData object}
 
 \description{
-  Except for \code{isDisjoint()} and \code{disjointBins()},
-  all the transformations described in this man page are \emph{endomorphisms} 
-  that operate on a single "range-based" object, that is, they transform the
-  ranges contained in the input object and return them in an object of the
-  \emph{same class} as the input object.
+  Except for \code{disjointBins()}, all the transformations described in this
+  man page are \emph{endomorphisms} that operate on a single "range-based"
+  object, that is, they transform the ranges contained in the input object
+  and return them in an object of the \emph{same class} as the input object.
 
   Range-based endomorphisms are grouped in 2 categories:
   \enumerate{
@@ -98,10 +93,6 @@ gaps(x, start=NA, end=NA)
 ## disjoin()
 ## ---------
 disjoin(x, ...)
-
-## isDisjoint()
-## ------------
-isDisjoint(x, ...)
 
 ## disjointBins()
 ## --------------
@@ -191,24 +182,6 @@ disjointBins(x, ...)
   consists of a range for every interval, of maximal length, over which
   the set of overlapping ranges in \code{x} is the same and at least of
   size 1.
-
-  \code{isDisjoint} returns a logical value indicating whether the
-  ranges \code{x} are disjoint (i.e. non-overlapping).
-  \code{isDisjoint} handles empty ranges (a.k.a. zero-width ranges) as follow:
-  single empty range A is considered to overlap with single range B iff
-  it's contained in B without being on the edge of B (in which case it would
-  be ambiguous whether A is contained in or adjacent to B). In other words,
-  single empty range A is considered to overlap with single range B iff
-  \preformatted{    start(B) < start(A) and end(A) < end(B)}
-  Because A is an empty range it verifies \code{end(A) = start(A) - 1}
-  so the above is equivalent to:
-  \preformatted{    start(B) < start(A) <= end(B)}
-  and also equivalent to:
-  \preformatted{    start(B) <= end(A) < end(B)}
-  Finally, it is also equivalent to:
-  \preformatted{    compare(A, B) == 2}
-  See \code{?\link{compare}} for the meaning of the codes returned by the
-  \code{\link{compare}} function.
 
   \code{disjointBins} segregates \code{x} into a set of bins so that the
   ranges in each bin are disjoint. Lower-indexed bins are filled
@@ -362,29 +335,6 @@ disjoin(ir)  # IRanges(c(1, 4, 7, 10), c(3, 6, 8, 10))
 
 ## On a RangesList object:
 disjoin(collection)
-
-## ---------------------------------------------------------------------
-## isDisjoint()
-## ---------------------------------------------------------------------
-
-## On a Ranges object:
-isDisjoint(IRanges(c(2,5,1), c(3,7,3)))  # FALSE
-isDisjoint(IRanges(c(2,9,5), c(3,9,6)))  # TRUE
-isDisjoint(IRanges(1, 5))  # TRUE
-
-## Handling of empty ranges:
-x <- IRanges(c(11, 16, 11, -2, 11), c(15, 29, 10, 10, 10))
-stopifnot(isDisjoint(x))
-
-## Sliding an empty range along a non-empty range:
-sapply(11:17,
-       function(i) compare(IRanges(i, width=0), IRanges(12, 15)))
-
-sapply(11:17,
-       function(i) isDisjoint(c(IRanges(i, width=0), IRanges(12, 15))))
-
-## On a RangesList object:
-isDisjoint(collection)
 
 ## ---------------------------------------------------------------------
 ## disjointBins()

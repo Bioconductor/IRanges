@@ -18,7 +18,6 @@
 \alias{start<-}
 \alias{width<-}
 \alias{end<-}
-\alias{isEmpty,Ranges-method}
 \alias{as.matrix,Ranges-method}
 \alias{as.data.frame.Ranges}
 \alias{as.data.frame,Ranges-method}
@@ -26,10 +25,13 @@
 \alias{unlist,Ranges-method}
 \alias{show,Ranges-method}
 \alias{showAsCell,Ranges-method}
+\alias{isEmpty,Ranges-method}
 \alias{isNormal}
 \alias{isNormal,Ranges-method}
 \alias{whichFirstNotNormal}
 \alias{whichFirstNotNormal,Ranges-method}
+\alias{isDisjoint}
+\alias{isDisjoint,Ranges-method}
 \alias{update,Ranges-method}
 \alias{tile}
 \alias{tile,Ranges-method}
@@ -249,14 +251,15 @@
 
   Here is a simple algorithm to determine whether \code{x} is "normal":
     (1) if \code{length(x) == 0}, then \code{x} is normal;
-    (2) if \code{length(x) == 1}, then \code{x} is normal iff \code{width(x) >= 1};
+    (2) if \code{length(x) == 1}, then \code{x} is normal iff
+        \code{width(x) >= 1};
     (3) if \code{length(x) >= 2}, then \code{x} is normal iff:
         \preformatted{  start(x)[i] <= end(x)[i] < start(x)[i+1] <= end(x)[i+1]}
         for every 1 <= \code{i} < \code{length(x)}.
 
   The obvious advantage of using a "normal" Ranges object to represent
   a given finite set of integers is that it is the smallest in terms of
-  of number of ranges and therefore in terms of storage space.
+  number of ranges and therefore in terms of storage space.
   Also the fact that we impose its ranges to be ordered from left to
   right makes it unique for this representation.
 
@@ -269,7 +272,7 @@
   \describe{
     \item{}{
       \code{isNormal(x)}:
-      Return a logical value indicating whether \code{x} is "normal" or not.
+      Return TRUE or FALSE indicating whether \code{x} is "normal" or not.
     }
     \item{}{
       \code{whichFirstNotNormal(x)}:
@@ -279,13 +282,48 @@
   }
 }
 
+\section{Disjoint ranges}{
+  A Ranges object \code{x} is considered to be "disjoint" if its ranges are
+  disjoint (i.e. non-overlapping).
+
+  The \code{isDisjoint} function is provided for testing whether a Ranges
+  object is "disjoint" or not:
+
+  \describe{
+    \item{}{
+      \code{isDisjoint(x)}:
+      Return TRUE or FALSE indicating whether \code{x} is "disjoint" or not.
+
+      \code{isDisjoint} handles empty ranges (a.k.a. zero-width ranges) as
+      follow: single empty range A is considered to overlap with single range B
+      iff it's contained in B without being on the edge of B (in which case it
+      would be ambiguous whether A is contained in or adjacent to B). In other
+      words, single empty range A is considered to overlap with single range B
+      iff
+      \preformatted{    start(B) < start(A) and end(A) < end(B)}
+      Because A is an empty range it verifies \code{end(A) = start(A) - 1}
+      so the above is equivalent to:
+      \preformatted{    start(B) < start(A) <= end(B)}
+      and also equivalent to:
+      \preformatted{    start(B) <= end(A) < end(B)}
+      Finally, it is also equivalent to:
+      \preformatted{    compare(A, B) == 2}
+      See \code{?`\link{Ranges-comparison}`} for the meaning of the codes
+      returned by the \code{\link{compare}} function.
+    }
+  }
+
+  Note that a "normal" Ranges object is always "disjoint" but the opposite
+  is not true.
+}
+
 \author{H. Pages and M. Lawrence}
 
 \seealso{
+  \link{IRanges-class},
   \link{Ranges-comparison},
   \link{intra-range-methods},
   \link{inter-range-methods},
-  \link{IRanges-class},
   \link{IRanges-utils},
   \link{setops-methods},
   \link{RangedData-class},
@@ -297,44 +335,67 @@
 }
 
 \examples{
-  x <- IRanges(start=c(2:-1, 13:15), width=c(0:3, 2:0))
-  x
-  length(x)
-  start(x)
-  width(x)
-  end(x)
-  isEmpty(x)
-  as.matrix(x)
-  as.data.frame(x)
+## ---------------------------------------------------------------------
+## Basic manipulation
+## ---------------------------------------------------------------------
+x <- IRanges(start=c(2:-1, 13:15), width=c(0:3, 2:0))
+x
+length(x)
+start(x)
+width(x)
+end(x)
+isEmpty(x)
+as.matrix(x)
+as.data.frame(x)
 
-  ## Subsetting:
-  x[4:2]                  # 3 ranges
-  x[-1]                   # 6 ranges
-  x[FALSE]                # 0 range
-  x0 <- x[width(x) == 0]  # 2 ranges
-  isEmpty(x0)
+## Subsetting:
+x[4:2]                  # 3 ranges
+x[-1]                   # 6 ranges
+x[FALSE]                # 0 range
+x0 <- x[width(x) == 0]  # 2 ranges
+isEmpty(x0)
 
-  ## Use the replacement methods to resize the ranges:
-  width(x) <- width(x) * 2 + 1
-  x
-  end(x) <- start(x)            # equivalent to width(x) <- 0
-  x
-  width(x) <- c(2, 0, 4) 
-  x
-  start(x)[3] <- end(x)[3] - 2  # resize the 3rd range
-  x
+## Use the replacement methods to resize the ranges:
+width(x) <- width(x) * 2 + 1
+x
+end(x) <- start(x)            # equivalent to width(x) <- 0
+x
+width(x) <- c(2, 0, 4) 
+x
+start(x)[3] <- end(x)[3] - 2  # resize the 3rd range
+x
 
-  ## Name the elements:
-  names(x)
-  names(x) <- c("range1", "range2")
-  x
-  x[is.na(names(x))]  # 5 ranges
-  x[!is.na(names(x))]  # 2 ranges
+## Name the elements:
+names(x)
+names(x) <- c("range1", "range2")
+x
+x[is.na(names(x))]  # 5 ranges
+x[!is.na(names(x))]  # 2 ranges
 
-  ir <- IRanges(c(1,5), c(3,10))
-  ir*1 # no change
-  ir*c(1,2) # zoom second range by 2X
-  ir*-2 # zoom out 2X  
+ir <- IRanges(c(1,5), c(3,10))
+ir*1 # no change
+ir*c(1,2) # zoom second range by 2X
+ir*-2 # zoom out 2X
+
+## ---------------------------------------------------------------------
+## isDisjoint()
+## ---------------------------------------------------------------------
+
+## On a Ranges object:
+isDisjoint(IRanges(c(2,5,1), c(3,7,3)))  # FALSE
+isDisjoint(IRanges(c(2,9,5), c(3,9,6)))  # TRUE
+isDisjoint(IRanges(1, 5))  # TRUE
+
+## Handling of empty ranges:
+x <- IRanges(c(11, 16, 11, -2, 11), c(15, 29, 10, 10, 10))
+stopifnot(isDisjoint(x))
+
+## Sliding an empty range along a non-empty range:
+sapply(11:17,
+       function(i) compare(IRanges(i, width=0), IRanges(12, 15)))
+
+sapply(11:17,
+       function(i) isDisjoint(c(IRanges(i, width=0), IRanges(12, 15))))
 }
 
 \keyword{methods}

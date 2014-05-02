@@ -39,9 +39,7 @@
 \alias{SimpleNormalIRangesList}
 
 \alias{isNormal,CompressedIRangesList-method}
-\alias{isNormal,RangesList-method}
 \alias{isNormal,SimpleIRangesList-method}
-\alias{whichFirstNotNormal,RangesList-method}
 
 \alias{unlist,SimpleNormalIRangesList-method}
 

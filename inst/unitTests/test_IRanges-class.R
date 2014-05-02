@@ -16,6 +16,22 @@ test_IRanges_names <- function() {
   checkException(names(range1) <- c("a", "b", "c", "d"), silent = TRUE)
 }
 
+test_Ranges_isDisjoint <- function() {
+  ir1 <- IRanges(c(2,5,1), c(3,7,3))
+  ir2 <- IRanges(c(2,9,5), c(3,9,6))
+  ir3 <- IRanges(1, 5)
+  checkIdentical(isDisjoint(ir1), FALSE)
+  checkIdentical(isDisjoint(ir2), TRUE)
+  checkIdentical(isDisjoint(ir3), TRUE)
+
+  ## Handling of zero-width ranges
+  current <- sapply(11:17,
+                    function(i)
+                      isDisjoint(IRanges(c(12, i), width=c(4, 0))))
+  target <- rep(c(TRUE, FALSE, TRUE), c(2, 3, 2))
+  checkIdentical(target, current)
+}
+
 test_IRanges_combine <- function() {
   range <- IRanges(start=c(1,2,3,1), end=c(5,2,8,3))
   srange <- split(range, start(range) == 1)
