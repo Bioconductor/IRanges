@@ -204,7 +204,7 @@ setMethod("relist", c("Vector", "list"),
 }
 
 setGeneric("splitAsList",
-           function(x, f, drop=FALSE) standardGeneric("splitAsList"),
+           function(x, f, drop=FALSE, ...) standardGeneric("splitAsList"),
            signature = c("x", "f"))
 
 normSplitFactor <- function(f, x_NROW) {
