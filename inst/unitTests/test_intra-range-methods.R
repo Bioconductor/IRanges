@@ -59,7 +59,9 @@ test_RangesList_narrow <- function() {
 }
 
 test_Ranges_flank <- function() {
-  ir1 <- IRanges(c(2,5,1), c(3,7,3))
+  checkIdentical(flank(IRanges(), 2), IRanges())
+
+  ir1 <- IRanges(c(2, 5, 1), c(3, 7, 3))
   checkIdentical(flank(ir1, 2), IRanges(c(0, 3, -1), c(1, 4, 0)))
   checkIdentical(flank(ir1, 2, FALSE), IRanges(c(4, 8, 4), c(5, 9, 5)))
   checkIdentical(flank(ir1, 2, c(FALSE, TRUE, FALSE)),

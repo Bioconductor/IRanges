@@ -220,15 +220,24 @@ setMethod("flank", "Ranges",
         start <- S4Vectors:::recycleVector(unname(start), length(x))
         if (!isTRUEorFALSE(both))
             stop("'both' must be TRUE or FALSE")
+        ans_start <- integer(length(x))
         if (both) {
-            ans_start <-
-              ifelse(start, start(x) - abs(width), end(x) - abs(width) + 1L)
-            ans_width <- 2L * abs(width)
+            idx1 <- which(start)
+            idx2 <- which(!start)
+            width <- abs(width)
+            ans_width <- 2L * width
+            ans_start[idx1] <- start(x)[idx1] - width[idx1]
+            ans_start[idx2] <- end(x)[idx2] - width[idx2] + 1L
         } else {
-            ans_start <-
-              ifelse(start, ifelse(width < 0L, start(x), start(x) - width),
-                     ifelse(width < 0L, end(x) + width + 1L, end(x) + 1L))
+            idx1a <- which(start & width >= 0L)
+            idx1b <- which(start & width < 0L)
+            idx2a <- which(!start & width >= 0L)
+            idx2b <- which(!start & width < 0L)
             ans_width <- abs(width)
+            ans_start[idx1a] <- start(x)[idx1a] - width[idx1a]
+            ans_start[idx1b] <- start(x)[idx1b]
+            ans_start[idx2a] <- end(x)[idx2a] + 1L
+            ans_start[idx2b] <- end(x)[idx2b] + width[idx2b] + 1L
         }
         x <- update(x, start=ans_start, width=ans_width, check=FALSE)
         if (!S4Vectors:::normargUseNames(use.names))
