@@ -87,7 +87,7 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
       combined
     })
     names(cols) <- colnames(df)
-    ans <- new("DataFrame", listData = cols, nrows = length(cols[[1]]))
+    ans <- new("DataFrame", listData = cols, nrows = NROW(cols[[1]]))
   }
 
   rn <- unlist(lapply(args, rownames), use.names=FALSE)
