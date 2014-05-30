@@ -230,10 +230,7 @@ setReplaceMethod("[[", "DataFrame",
                      else
                        value <- rep(value, length.out = nrx)
                    }
-                   x <- callNextMethod(x, i, value=value)
-                   ## ensure unique, valid names
-                   names(x) <- make.names(names(x), unique=TRUE)
-                   x
+                   callNextMethod(x, i, value=value)
                  })
 
 setMethod("extractROWS", "DataFrame",

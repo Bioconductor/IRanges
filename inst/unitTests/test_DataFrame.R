@@ -184,7 +184,7 @@ test_DataFrame_replace <- function() {
   DF[["counts"]] <- counts
   checkIdentical(DF[["counts"]], counts)
   DF[[3]] <- score
-  checkIdentical(DF[["X"]], score)
+  checkIdentical(DF[[3]], score)
   DF[[3]] <- NULL # deletion
   DF[["counts"]] <- NULL
   DF$counts <- counts
