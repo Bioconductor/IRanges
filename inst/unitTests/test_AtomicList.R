@@ -162,7 +162,7 @@ test_RleList_methods <- function() {
     x2 <- RleList(11:15, 15L, integer(0), 15:16, compress=TRUE)
     checkIdentical(runValue(x1), runValue(x2))
     checkIdentical(runLength(x1), runLength(x2))
-    checkIdentical(ranges(x1), ranges(x2))
+    checkIdentical(as(ranges(x1), "CompressedIRangesList"), ranges(x2))
 
     ## na.rm
     x <- RleList(c(NA,1,1), 

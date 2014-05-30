@@ -994,7 +994,7 @@ setMethod("runLength", "CompressedRleList", function(x) {
 })
 
 setMethod("ranges", "RleList", function(x) {
-  seqapply(x, ranges)
+  as(lapply(x, ranges), "List")
 })
 
 diceRangesByList <- function(x, list) {
