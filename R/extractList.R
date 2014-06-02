@@ -117,17 +117,17 @@ setMethod("relist", c("Vector", "list"),
 {
     if (length(f) > NROW(x))
         stop("'f' cannot be longer than 'NROW(x)' when it's an integer vector")
-    if (is.unsorted(f)) {
-      idx <- S4Vectors:::orderInteger(f)
-      tmp <- Rle(f[idx])
-      x <- extractROWS(x, idx)
-    } else {
-      tmp <- Rle(f)
-    }
-    f <- cumsum(runLength(tmp))
-    names(f) <- as.character(runValue(tmp))
     if (!identical(drop, FALSE))
         warning("'drop' is ignored when 'f' is an integer vector")
+    f_is_not_sorted <- S4Vectors:::isNotSorted(f)
+    if (f_is_not_sorted) {
+        idx <- S4Vectors:::orderInteger(f)
+        f <- f[idx]
+        x <- extractROWS(x, idx)
+    }
+    tmp <- Rle(f)
+    f <- cumsum(runLength(tmp))
+    names(f) <- as.character(runValue(tmp))
     f <- PartitioningByEnd(f)
     relist(x, f)
 }
