@@ -538,6 +538,16 @@ setMethod("overlapsAny", c("Ranges", "Ranges"),
     }
 )
 
+setMethod("overlapsAny", c("Vector", "missing"),
+          function(query, subject, maxgap=0L, minoverlap=1L,
+                   type=c("any", "start", "end", "within", "equal"), ...)
+    {
+        !is.na(findOverlaps(query, maxgap=maxgap,
+                            minoverlap=minoverlap, type=type,
+                            select="arbitrary", ...))
+    }
+)
+
 setMethod("overlapsAny", c("Views", "Views"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"), ...)
@@ -658,7 +668,7 @@ setMethod("overlapsAny", c("RangesList", "RangedData"),
     }
 )
 
-### Convenience wrappers for the 2 most common use cases.
+### Convenience wrappers for the 3 most common use cases.
 `%over%` <- function(query, subject) overlapsAny(query, subject)
 `%within%` <- function(query, subject) overlapsAny(query, subject,
                                                    type="within")
