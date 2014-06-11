@@ -177,7 +177,7 @@ setMethod("findOverlaps", c("Vector", "missing"),
             select <- match.arg(select)
             result <- findOverlaps(query, query,
                                    maxgap = maxgap, minoverlap = minoverlap,
-                                   type = type, select = "all")
+                                   type = match.arg(type), select = "all")
             processSelfMatching(result, select, ignoreSelf, ignoreRedundant)
           })
 
