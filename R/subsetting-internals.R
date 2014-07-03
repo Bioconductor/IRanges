@@ -45,7 +45,7 @@ setMethod("NSBS", "Rle",
 
 ### Other methods.
 
-setMethod("as.integer", "RleNSBS", function(x) decodeRle(x@subscript))
+setMethod("as.integer", "RleNSBS", function(x) S4Vectors:::decodeRle(x@subscript))
 
 setMethod("length", "RleNSBS", function(x) length(x@subscript))
 
