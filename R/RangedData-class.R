@@ -80,18 +80,18 @@ setMethod("width", "RangedData",
             width(unlist(ranges(x), use.names=FALSE))
           })
 setReplaceMethod("start", "RangedData",
-                 function(x, check=TRUE, value) {
-                   start(ranges(x), check=check) <- value
+                 function(x, ..., value) {
+                   start(ranges(x), ...) <- value
                    x
                  })
 setReplaceMethod("end", "RangedData",
-                 function(x, check=TRUE, value) {
-                   end(ranges(x), check=check) <- value
+                 function(x, ...., value) {
+                   end(ranges(x), ...) <- value
                    x
                  })
 setReplaceMethod("width", "RangedData",
-                 function(x, check=TRUE, value) {
-                   width(ranges(x), check=check) <- value
+                 function(x, ..., value) {
+                   width(ranges(x), ...) <- value
                    x
                  })
 setMethod("length", "RangedData", function(x) length(ranges(x)))

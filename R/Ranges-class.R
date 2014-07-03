@@ -20,9 +20,6 @@ setMethod("length", "Ranges", function(x) length(start(x)))
 ### which is very inefficient on Ranges objects!
 setMethod("elementLengths", "Ranges", function(x) setNames(width(x), names(x)))
 
-### The "start" and "end" generics are defined in the stats package.
-setGeneric("width", function(x) standardGeneric("width"))
-
 ### The 3 default methods below provide a formalization of the relationship
 ### between the starts/widths/ends of a Ranges object. Of course Ranges
 ### subclasses need to implement at least 2 of them!
@@ -33,18 +30,6 @@ setMethod("end", "Ranges", function(x, ...) {width(x) - 1L + start(x)})
 
 setGeneric("mid", function(x, ...) standardGeneric("mid"))
 setMethod("mid", "Ranges", function(x) start(x) + as.integer((width(x)-1) / 2))
-
-setGeneric("start<-", signature="x",
-    function(x, check=TRUE, value) standardGeneric("start<-")
-)
-
-setGeneric("width<-", signature="x",
-    function(x, check=TRUE, value) standardGeneric("width<-")
-)
-
-setGeneric("end<-", signature="x",
-    function(x, check=TRUE, value) standardGeneric("end<-")
-)
 
 setMethod("update", "Ranges",
     function(object, ...)

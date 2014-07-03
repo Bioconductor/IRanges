@@ -1,8 +1,10 @@
 ### =========================================================================
-### IMPORTANT NOTE - 4/29/2014: Most of the stuff that used to be in that
-### file is now in S4Vectors/R/Vector-class.R. The stuff that does not belong
-### to S4Vectors/R/Vector-class.R was temporarily left here but will need to
-### find a new home (in S4Vectors or in IRanges).
+### IMPORTANT NOTE - 4/29/2014
+### Most of the stuff that used to be in the IRanges/R/Hits-class.R file was
+### moved to the S4Vectors package (to R/Hits-class.R).
+### The stuff that could not be moved there was *temporarily* kept here in
+### Hits-class-leftovers.R but will need to find a new home (in S4Vectors
+### or in IRanges).
 ###
 
 

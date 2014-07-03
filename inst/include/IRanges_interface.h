@@ -134,10 +134,3 @@ IRanges_holder get_elt_from_CompressedIRangesList_holder(const CompressedIRanges
 
 SEXP new_RangedData(const char *classname, SEXP ranges, SEXP values);
 
-/*
- * Low-level manipulation of Rle objects.
- * (see Rle_class.c)
- */
-
-SEXP seqselect_Rle(SEXP x, const int *start, const int *width, int length);
-

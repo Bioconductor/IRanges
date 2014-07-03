@@ -19,18 +19,6 @@ void _set_List_elementType(
 	const char *type
 );
 
-SEXP vector_subsetByRanges(
-	SEXP x,
-	SEXP start,
-	SEXP width
-);
-
-SEXP vector_seqselect(
-	SEXP x,
-	SEXP start,
-	SEXP width
-);
-
 
 /* Ranges_class.c */
 
@@ -233,120 +221,6 @@ SEXP _new_CompressedList(
 	const char *classname,
 	SEXP unlistData,
 	SEXP partitioning
-);
-
-
-/* Rle_class.c */
-
-SEXP _logical_Rle_constructor(
-	const int *values,
-	int nvalues,
-	const int *lengths,
-	int buflength
-);
-
-SEXP _integer_Rle_constructor(
-	const int *values,
-	int nvalues,
-	const int *lengths,
-	int buflength
-);
-
-SEXP _numeric_Rle_constructor(
-	const double *values,
-	int nvalues,
-	const int *lengths,
-	int buflength
-);
-
-SEXP _complex_Rle_constructor(
-	const Rcomplex *values,
-	int nvalues,
-	const int *lengths,
-	int buflength
-);
-
-SEXP _character_Rle_constructor(
-	SEXP values,
-	const int *lengths,
-	int buflength
-);
-
-SEXP _raw_Rle_constructor(
-	const Rbyte *values,
-	int nvalues,
-	const int *lengths,
-	int buflength
-);
-
-SEXP Rle_constructor(
-	SEXP values,
-	SEXP lengths,
-	SEXP check,
-	SEXP buflength
-);
-
-SEXP Rle_start(SEXP x);
-
-SEXP Rle_end(SEXP x);
-
-SEXP Rle_getStartEndRunAndOffset(
-	SEXP x,
-	SEXP start,
-	SEXP end
-);
-
-SEXP Rle_window_aslist(
-	SEXP x,
-	SEXP runStart,
-	SEXP runEnd,
-	SEXP offsetStart,
-	SEXP offsetEnd
-);
-
-SEXP Rle_window(
-	SEXP x,
-	SEXP runStart,
-	SEXP runEnd,
-	SEXP offsetStart,
-	SEXP offsetEnd,
-	SEXP ans
-);
-
-SEXP _seqselect_Rle(
-	SEXP x,
-	const int *start,
-	const int *width,
-	int length
-);
-
-SEXP Rle_seqselect(
-	SEXP x,
-	SEXP start,
-	SEXP width
-);
-
-
-/* Rle_utils.c */
-
-SEXP Rle_runsum(
-	SEXP x,
-	SEXP k,
-	SEXP na_rm 
-);
-
-SEXP Rle_runwtsum(
-	SEXP x,
-	SEXP k,
-	SEXP wt,
-	SEXP na_rm 
-);
-
-SEXP Rle_runq(
-	SEXP x,
-	SEXP k,
-	SEXP which,
-	SEXP na_rm 
 );
 
 

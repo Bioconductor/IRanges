@@ -243,12 +243,3 @@ DEFINE_CCALLABLE_STUB(SEXP, new_RangedData,
 	(            classname,      ranges,      values)
 )
 
-/*
- * Stubs for callables defined in Rle_class.c
- */
-
-DEFINE_CCALLABLE_STUB(SEXP, seqselect_Rle,
-	(SEXP x, const int *start, const int *width, int length),
-	(     x,            start,            width,     length)
-)
-

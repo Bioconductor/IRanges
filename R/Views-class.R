@@ -49,25 +49,25 @@ setMethod("width", "Views", function(x) width(ranges(x)))
 setMethod("names", "Views", function(x) names(ranges(x)))
 
 setReplaceMethod("start", "Views",
-    function(x, check=TRUE, value)
+    function(x, ..., value)
     {
-        x@ranges <- `start<-`(ranges(x), check=check, value)
+        start(x@ranges, ...) <- value
         x
     }
 )
 
 setReplaceMethod("end", "Views",
-    function(x, check=TRUE, value)
+    function(x, ..., value)
     {
-        x@ranges <- `end<-`(ranges(x), check=check, value)
+        end(x@ranges, ...) <- value
         x
     }
 )
 
 setReplaceMethod("width", "Views",
-    function(x, check=TRUE, value)
+    function(x, ..., value)
     {
-        x@ranges <- `width<-`(ranges(x), check=check, value)
+        width(x@ranges, ...) <- value
         x
     }
 )
@@ -75,7 +75,7 @@ setReplaceMethod("width", "Views",
 setReplaceMethod("names", "Views",
     function(x, value)
     {
-        x@ranges <- `names<-`(ranges(x), value)
+        names(x@ranges) <- value
         x
     }
 )

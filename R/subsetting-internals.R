@@ -128,9 +128,9 @@ setMethod("extractROWS", c("vectorORfactor", "Ranges"),
     {
         ## Which one is faster, vector_seqselect or vector_subsetByRanges?
         ans <- .Call2("vector_seqselect", x, start(i), width(i),
-                      PACKAGE="IRanges")
+                      PACKAGE="S4Vectors")
         #ans <- .Call2("vector_subsetByRanges", x, start(i), width(i),
-        #              PACKAGE="IRanges")
+        #              PACKAGE="S4Vectors")
         if (is.factor(x))
             attributes(ans) <- list(levels=levels(x), class="factor")
         ans

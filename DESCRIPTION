@@ -9,12 +9,12 @@ Description: The package provides efficient low-level and highly reusable S4
 	collections of instances of the basic classes. All classes in
 	the package use consistent naming and share the same rich and
 	consistent "Vector API" as much as possible.
-Version: 1.99.16
+Version: 1.99.17
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Infrastructure, DataRepresentation
-Depends: R (>= 3.1.0), methods, utils, stats, BiocGenerics (>= 0.9.1),
-	S4Vectors (>= 0.0.6)
+Depends: R (>= 3.1.0), methods, utils, stats, BiocGenerics (>= 0.11.3),
+	S4Vectors (>= 0.1.0)
 Imports: methods, utils, stats, BiocGenerics, S4Vectors, stats4
 LinkingTo: S4Vectors
 Suggests: XVector, GenomicRanges, BSgenome.Celegans.UCSC.ce2, RUnit
@@ -25,7 +25,6 @@ ExtraLicenses: The following files in the 'src' directory are licensed for all
   dlist.c/h, errCatch.h
 Collate: subsetting-internals.R
 	endoapply.R
-	runstat.R
 	Vector-class-leftovers.R
 	Hits-class-leftovers.R
 	List-class.R
@@ -39,7 +38,7 @@ Collate: subsetting-internals.R
 	Grouping-class.R
 	SimpleList-class.R
 	CompressedList-class.R
-	Rle-class.R
+	Rle-class-leftovers.R
 	RleViews-class.R
 	RleViews-utils.R
 	extractList.R

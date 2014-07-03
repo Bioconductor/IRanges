@@ -279,40 +279,46 @@ unsafe.update <- function(object, ...)
 ### replacement methods below need to be overridden for this new class.
 ###
 
+.IRanges.replace_start <- function(x, check=TRUE, value)
+{
+    if (!isTRUEorFALSE(check))
+        stop("'check' must be TRUE or FALSE")
+    unsafe.start(x) <- value
+    if (check)
+        validObject(x)
+    x
+}
+
 setReplaceMethod("start", "IRanges",
-    function(x, check=TRUE, value)
-    {
-        if (!isTRUEorFALSE(check))
-            stop("'check' must be TRUE or FALSE")
-        unsafe.start(x) <- value
-        if (check)
-            validObject(x)
-        x
-    }
+    function(x, ..., value) .IRanges.replace_start(x, ..., value=value)
 )
 
-setReplaceMethod("width", "IRanges",
-    function(x, check=TRUE, value)
-    {
-        if (!isTRUEorFALSE(check))
-            stop("'check' must be TRUE or FALSE")
-        unsafe.width(x) <- value
-        if (check)
-            validObject(x)
-        x
-    }
-)
+.IRanges.replace_end <- function(x, check=TRUE, value)
+{
+    if (!isTRUEorFALSE(check))
+        stop("'check' must be TRUE or FALSE")
+    unsafe.end(x) <- value
+    if (check)
+        validObject(x)
+    x
+}
 
 setReplaceMethod("end", "IRanges",
-    function(x, check=TRUE, value)
-    {
-        if (!isTRUEorFALSE(check))
-            stop("'check' must be TRUE or FALSE")
-        unsafe.end(x) <- value
-        if (check)
-            validObject(x)
-        x
-    }
+    function(x, ..., value) .IRanges.replace_end(x, ..., value=value)
+)
+
+.IRanges.replace_width <- function(x, check=TRUE, value)
+{
+    if (!isTRUEorFALSE(check))
+        stop("'check' must be TRUE or FALSE")
+    unsafe.width(x) <- value
+    if (check)
+        validObject(x)
+    x
+}
+
+setReplaceMethod("width", "IRanges",
+    function(x, ..., value) .IRanges.replace_width(x, ..., value=value)
 )
 
 setReplaceMethod("names", "IRanges",

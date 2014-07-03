@@ -1,8 +1,8 @@
 useDynLib(IRanges)
 
 import(methods)
-importFrom(utils, head, read.table, tail, stack)
-importFrom(stats, start, end, var, cov, cor, sd, median, quantile, mad,
+importFrom(utils, head, tail, stack, read.table)
+importFrom(stats, var, cov, cor, sd, median, quantile, mad,
            IQR, smoothEnds, runmed, window, "window<-", aggregate,
            setNames)
 
@@ -25,7 +25,7 @@ exportClasses(
     H2LGrouping, Dups,
     Partitioning, PartitioningByEnd, PartitioningByWidth, PartitioningMap,
     Views,
-    Rle, RleViews,
+    RleViews,
     MaskCollection,
     AtomicList, CompressedAtomicList, SimpleAtomicList,
     LogicalList, CompressedLogicalList, SimpleLogicalList,
@@ -55,49 +55,28 @@ exportClasses(
 ### Export S3 methods
 ###
 
-S3method(aggregate, Rle)
-
 S3method(as.data.frame, DataFrame)
 S3method(as.data.frame, List)
 S3method(as.data.frame, GappedRanges)
 S3method(as.data.frame, Hits)
 S3method(as.data.frame, RangedData)
 S3method(as.data.frame, Ranges)
-S3method(as.data.frame, Rle)
 
 S3method(as.list, Vector)
 S3method(as.list, List)
 S3method(as.list, SimpleList)
-S3method(as.list, Rle)
 S3method(as.list, CompressedNormalIRangesList)
 S3method(as.list, Hits)
 
-S3method(diff, Rle)
-
 S3method(duplicated, Dups)
-S3method(duplicated, Rle)
 S3method(duplicated, CompressedList)
 
 S3method(head, Vector)
 
-S3method(levels, Rle)
-
-S3method(mean, Rle)
-
-S3method(median, Rle)
-
-S3method(quantile, Rle)
-
-S3method(rev, Rle)
-
-S3method(sort, Rle)
 S3method(sort, List)
-
-S3method(summary, Rle)
 
 S3method(tail, Vector)
 
-S3method(unique, Rle)
 S3method(unique, CompressedList)
 S3method(unique, CompressedRleList)
 S3method(unique, SimpleRleList)
@@ -117,48 +96,27 @@ S3method(`window<-`, factor)
 ### (but ?generic.<tab> shows all documented methods) and (c) methods()
 ### doesn't asterisk them.
 export(
-    aggregate.Rle,
-
     as.data.frame.DataFrame,
     as.data.frame.List,
     as.data.frame.GappedRanges,
     as.data.frame.Hits,
     as.data.frame.RangedData,
     as.data.frame.Ranges,
-    as.data.frame.Rle,
 
     as.list.List,
     as.list.SimpleList,
-    as.list.Rle,
     as.list.CompressedNormalIRangesList,
     as.list.Hits,
 
-    diff.Rle,
-
     duplicated.Dups,
-    duplicated.Rle,
     duplicated.CompressedList,
 
     head.Vector,
 
-    levels.Rle,
-
-    mean.Rle,
-
-    median.Rle,
-
-    quantile.Rle,
-
-    rev.Rle,
-
-    sort.Rle,
     sort.List,
-
-    summary.Rle,
 
     tail.Vector,
     
-    unique.Rle,
     unique.CompressedList,
     unique.CompressedRleList,
     unique.SimpleRleList,
@@ -191,8 +149,7 @@ exportMethods(
     dimnames, "dimnames<-",
     "[", "[<-", "[[", "[[<-", "$", "$<-",
     as.vector,
-    as.logical, as.integer, as.numeric, as.complex, as.character, as.raw,
-    as.factor,
+    as.integer,
     as.matrix,
     as.data.frame,
     as.list,
@@ -209,19 +166,17 @@ exportMethods(
     rep,
     head, tail,
     drop,
-    start, end,
+    start, "start<-", end, "end<-", width, "width<-",
     min, max, range, which.max, which.min,
     diff,
     mean, var, cov, cor, sd, median, quantile, mad, IQR, smoothEnds, runmed,
     subset, window, "window<-", aggregate, transform,
-    nchar, substr, substring, chartr, tolower, toupper, sub, gsub,
-    levels, "levels<-",
+    nchar, chartr, tolower, toupper, sub, gsub,
     unlist, stack, "split<-", unsplit,
     relist,
     update,
     append,
     "!", which,
-    ifelse,
     merge,
     split,
     with, within,
@@ -245,7 +200,10 @@ exportMethods(
     queryHits, subjectHits,
     queryLength, subjectLength,
     compare,
-    selfmatch
+    selfmatch,
+    runLength, "runValue<-",
+    shiftApply,
+    runsum, runmean, runwtsum, runq
 )
 
 
@@ -300,13 +258,9 @@ export(
     ## endoapply.R:
     endoapply, mendoapply,
 
-    ## runstat.R:
-    runsum, runmean, runwtsum, runq,
-
     ## Vector-class-leftovers.R:
     showAsCell,
     mstack,
-    shiftApply,
 
     ## List-class.R:
     elementType, elementLengths,
@@ -314,11 +268,7 @@ export(
     as.env,
     
     ## Ranges-class.R:
-    width,
     mid,
-    "start<-",
-    "width<-",
-    "end<-",
     isNormal, whichFirstNotNormal,
 
     ## Views-class.R:
@@ -333,11 +283,8 @@ export(
     nobj, grouplength, members, vmembers, togroup, togrouplength,
     high2low, low2high, grouprank, togrouprank, mapOrder,
 
-    ## Rle-class.R:
-    runLength, runValue, nrun, "runLength<-", "runValue<-",
-    Rle, 
-    findRange, findRun,
-    splitRanges,
+    ## Rle-class-leftovers.R:
+    findRange, splitRanges,
 
     ## extractList.R:
     relistToClass,
@@ -420,15 +367,10 @@ exportMethods(
     runsum, runmean, runwtsum, runq,
     showAsCell,
     mstack,
-    shiftApply,
     elementType, elementLengths,
     isEmpty, revElements,
     as.env,
-    width,
     mid,
-    "start<-",
-    "width<-",
-    "end<-",
     isNormal, whichFirstNotNormal,
     subject,
     ranges, "ranges<-",
@@ -438,10 +380,7 @@ exportMethods(
     viewWhichMins, viewWhichMaxs, viewRangeMins, viewRangeMaxs,
     nobj, grouplength, members, vmembers, togroup, togrouplength,
     high2low, low2high, grouprank, togrouprank, mapOrder,
-    runLength, runValue, nrun, "runLength<-", "runValue<-",
-    Rle,
-    findRange, findRun,
-    splitRanges,
+    findRange, splitRanges,
     relistToClass,
     splitAsListReturnedClass,
     extractList,

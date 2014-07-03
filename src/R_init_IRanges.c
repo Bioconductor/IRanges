@@ -7,10 +7,6 @@
 
 static const R_CallMethodDef callMethods[] = {
 
-/* Vector_class.c */
-	CALLMETHOD_DEF(vector_subsetByRanges, 3),
-	CALLMETHOD_DEF(vector_seqselect, 3),
-
 /* Ranges_class.c */
 	CALLMETHOD_DEF(valid_Ranges, 3),
 
@@ -32,20 +28,6 @@ static const R_CallMethodDef callMethods[] = {
 
 	CALLMETHOD_DEF(H2LGrouping_members, 2),
 	CALLMETHOD_DEF(H2LGrouping_vmembers, 2),
-
-/* Rle_class.c */
-	CALLMETHOD_DEF(Rle_constructor, 4),
-	CALLMETHOD_DEF(Rle_start, 1),
-	CALLMETHOD_DEF(Rle_end, 1),
-	CALLMETHOD_DEF(Rle_getStartEndRunAndOffset, 3),
-	CALLMETHOD_DEF(Rle_window_aslist, 5),
-	CALLMETHOD_DEF(Rle_window, 6),
-	CALLMETHOD_DEF(Rle_seqselect, 3),
-
-/* Rle_utils.c */
-	CALLMETHOD_DEF(Rle_runsum, 3),
-	CALLMETHOD_DEF(Rle_runwtsum, 4),
-	CALLMETHOD_DEF(Rle_runq, 4),
 
 /* RleViews_utils.c */
 	CALLMETHOD_DEF(RleViews_viewMins, 2),
@@ -144,8 +126,6 @@ void R_init_IRanges(DllInfo *info)
 /* RangedData_class.c */
 	REGISTER_CCALLABLE(_new_RangedData);
 
-/* Rle_class.c */
-	REGISTER_CCALLABLE(_seqselect_Rle);
 	return;
 }
 
