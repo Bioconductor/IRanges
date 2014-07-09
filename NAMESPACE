@@ -46,7 +46,7 @@ exportClasses(
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
     RangedData, RangedDataList, FilterRules, FilterMatrix, RDApplyParams,
     HitsList, CompressedHitsList, 
-    RangedSelection, RangesMapping,
+    RangedSelection,
     expressionORfunction
 )
 
@@ -232,7 +232,6 @@ export(
     IRangesList,
     RleViewsList,
     CompressedHitsList, 
-    hits,
     "%over%", "%within%", "%outside%",
     MaskCollection.show_frame,
     Mask,
@@ -266,7 +265,7 @@ export(
     elementType, elementLengths,
     isEmpty, revElements,
     as.env,
-    
+ 
     ## Ranges-class.R:
     mid,
     isNormal, whichFirstNotNormal,
@@ -327,7 +326,7 @@ export(
     reducerParams, "reducerParams<-",
     iteratorFun, "iteratorFun<-",
 
-    ## RangesMapping-class.R:
+    ## map.R:
     map, pmap,
 
     ## intra-range-methods.R:
