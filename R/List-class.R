@@ -808,6 +808,9 @@ setMethod("unlist", "List",
   do.call(DataFrame, structure(list(ind), names = index.var))
 }
 
+### FIXME: need a recursive argument, when TRUE we call stack on
+### unlist result, instead of coercing to DataFrame.
+
 setMethod("stack", "List",
           function(x, index.var = "name", value.var = "value", name.var = NULL)
           {
@@ -816,9 +819,14 @@ setMethod("stack", "List",
             colnames(df)[2] <- value.var
             if (!is.null(name.var)) {
               nms <- as.character(unlist(lapply(x, names)))
-              if (length(nms) == 0L)
-                nms <- as.character(unlist(lapply(elementLengths(x), seq_len)))
+              if (length(nms) == 0L) {
+                rngs <- IRanges(1L, width=elementLengths(x))
+                nms <- as.character(as.integer(rngs))
+              }
               df[[name.var]] <- factor(nms, unique(nms))
+            }
+            if (!is.null(mcols(x))) {
+              df <- cbind(df, mcols(x))
             }
             df
           })
