@@ -80,9 +80,13 @@ setGeneric("findOverlaps", signature = c("query", "subject"),
 
     m <- as.matrix(result)
     if (minoverlap > 1L) {
-
-      r <- ranges(result, unsortedQuery, subject)
-      m <- m[width(r) >= minoverlap, , drop=FALSE]
+      olap <- width(pintersect(origQuery[queryHits(result)],
+                               subject[subjectHits(result)],
+                               resolve.empty = "max.start"))
+      sep <- width(pgap(origQuery[queryHits(result)],
+                        subject[subjectHits(result)]))
+      olap <- ifelse(olap == 0L, -sep + 1L, olap) + maxgap
+      m <- m[olap >= minoverlap, , drop=FALSE]
       ## unname() required because in case 'm' has only 1 row
       ## 'm[ , 1L]' and 'm[ , 2L]' will return a named atomic vector
       result@queryHits <- unname(m[ , 1L])
@@ -752,4 +756,3 @@ setMethod("ranges", "Hits", function(x, query, subject) {
   send <- end(subject)[m[,2L]]
   IRanges(pmax.int(qstart, sstart), pmin.int(send, qend))
 })
-

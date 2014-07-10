@@ -64,6 +64,10 @@ test_IntervalTree_findOverlaps <- function() {
   result <- findOverlaps(query, tree, minoverlap = 2L, select = "arbitrary")
   checkIdentical(result, c(2L, NA, NA))
 
+  ## combining 'maxgap' and 'minoverlap'
+  result <- findOverlaps(query, tree, maxgap = 1L, minoverlap = 2L)
+  checkOverlap(result, c(1, 1, 3), c(1, 2, 3), 3, 3)
+  
   ## empty query range
   query <- IRanges(c(1, 4, 9, 10), c(5, 7, 10, 9))
   result <- findOverlaps(query, tree)
