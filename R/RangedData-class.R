@@ -85,7 +85,7 @@ setReplaceMethod("start", "RangedData",
                    x
                  })
 setReplaceMethod("end", "RangedData",
-                 function(x, ...., value) {
+                 function(x, ..., value) {
                    end(ranges(x), ...) <- value
                    x
                  })
