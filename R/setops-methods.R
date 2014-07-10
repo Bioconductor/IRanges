@@ -28,7 +28,7 @@
 ### union()
 ###
 
-setMethod("union", c("IRanges", "IRanges"),
+setMethod("union", c("Ranges", "Ranges"),
     function(x, y, ...)
     {
         ## We need to downgrade 'x' to an IRanges instance 'x0' so 'c(x0, y)'
@@ -85,7 +85,7 @@ setMethod("union", c("Hits", "Hits"),
 ### intersect()
 ###
 
-setMethod("intersect", c("IRanges", "IRanges"),
+setMethod("intersect", c("Ranges", "Ranges"),
     function(x, y, ...)
     {
         if (length(x) == 0L)
@@ -121,7 +121,7 @@ setMethod("intersect", c("Hits", "Hits"), function(x, y) {
 ### setdiff()
 ###
 
-setMethod("setdiff", c("IRanges", "IRanges"),
+setMethod("setdiff", c("Ranges", "Ranges"),
     function(x, y, ...)
     {
         if (length(x) == 0L)
@@ -161,7 +161,7 @@ setGeneric("punion", signature=c("x", "y"),
     function(x, y, ...) standardGeneric("punion")
 )
 
-setMethod("punion", c("IRanges", "IRanges"),
+setMethod("punion", c("Ranges", "Ranges"),
     function(x, y, fill.gap=FALSE, ...)
     {
         if (length(x) != length(y))
@@ -195,7 +195,7 @@ setGeneric("pintersect", signature=c("x", "y"),
     function(x, y, ...) standardGeneric("pintersect")
 )
 
-setMethod("pintersect", c("IRanges", "IRanges"),
+setMethod("pintersect", c("Ranges", "Ranges"),
     function(x, y, resolve.empty=c("none", "max.start", "start.x"), ...)
     {
         if (length(x) != length(y))
@@ -255,7 +255,7 @@ setGeneric("psetdiff", signature=c("x", "y"),
     function(x, y, ...) standardGeneric("psetdiff")
 )
 
-setMethod("psetdiff", c("IRanges", "IRanges"),
+setMethod("psetdiff", c("Ranges", "Ranges"),
     function(x, y, ...)
     {
         if (length(x) != length(y))
@@ -290,7 +290,7 @@ setGeneric("pgap", signature=c("x", "y"),
     function(x, y, ...) standardGeneric("pgap")
 )
 
-setMethod("pgap", c("IRanges", "IRanges"),
+setMethod("pgap", c("Ranges", "Ranges"),
     function(x, y, ...)
     {
         if (length(x) != length(y))
