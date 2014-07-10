@@ -5,9 +5,7 @@
 
 ## FIXME: these functions should probably be deprecated; we no longer
 ## use the term 'sequence' in the Vector API, and the wrappers are
-## trivially simple. With one exception: mseqapply. We would need to
-## export the convenient mapply_List, probably with a better
-## name. Maybe Mapply?
+## trivially simple.
 
 .asList <- function(x, ...) {
   if (is(x, "List"))
@@ -64,19 +62,23 @@
 }
 
 seqapply <- function(X, FUN, ...) {
+  .Deprecated("as(lapply(X, FUN, ...), 'List')")
   .asList(lapply(X, FUN, ...))
 }
 
 mseqapply <- function(FUN, ..., MoreArgs = NULL, USE.NAMES = TRUE) {
+  .Deprecated("as(mapply(FUN, ...), 'List')")
   .asList(mapply_List(FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = FALSE,
                       USE.NAMES = USE.NAMES))
 }
 
 tseqapply <- function(X, INDEX, FUN = NULL, ...) {
+  .Deprecated("as(tapply(X, INDEX, FUN, ...), 'List')")
   .asList(tapply(X, INDEX, FUN, ..., simplify = FALSE))
 }
 
 seqsplit <- function(x, f, drop=FALSE) {
+  .Deprecated("splitAsList")
   ans_class <- try(relistToClass(x), silent=TRUE)
   if (inherits(ans_class, "try-error"))
     return(.asList(split(x, f, drop)))
@@ -84,6 +86,7 @@ seqsplit <- function(x, f, drop=FALSE) {
 }
 
 seqby <- function(data, INDICES, FUN, ...) {
+  .Deprecated("as(by(X, INDICES, FUN, ...), 'List')")
   .asList(by(data, INDICES, FUN, ..., simplify = FALSE))
 }
 
