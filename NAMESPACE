@@ -329,6 +329,9 @@ export(
     ## map.R:
     map, pmap,
 
+    ## mapCoords.R:
+    mapCoords, pmapCoords,
+
     ## intra-range-methods.R:
     shift, narrow, flank, reflect, resize, promoters, restrict, threebands,
 

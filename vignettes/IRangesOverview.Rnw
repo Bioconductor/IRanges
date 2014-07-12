@@ -807,8 +807,7 @@ respectively. These are relatively self-explanatory.
 
 % \subsection{Mapping Ranges Between Vectors}
 
-% \Rclass{RangesMapping}
-% \Rfunction{map}
+% \Rfunction{mapCoords}
 
 \section{Vector Views}
 
