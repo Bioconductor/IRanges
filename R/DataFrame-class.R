@@ -551,15 +551,6 @@ setAs("data.frame", "DataFrame",
         new2("DataFrame", listData=from, nrows=nr, rownames=rn, check=FALSE)
       })
 
-# matrices and tables just go through data.frame
-setAs("matrix", "DataFrame", function(from) {
-    df <- as.data.frame(from)
-    if (0L == ncol(from))
-        ## colnames on matrix with 0 columns are 'NULL'
-        names(df) <- character()
-    as(df, "DataFrame")
-})
-
 setAs("table", "DataFrame",
       function(from) {
         df <- as.data.frame(from)
@@ -576,9 +567,17 @@ setAs("xtabs", "DataFrame",
       })
 
 .defaultAsDataFrame <- function(from) {
-  row.names <- if (!anyDuplicated(names(from))) names(from) else NULL
-  new2("DataFrame", listData = setNames(list(from), "X"),
-       nrows = length(from), rownames = row.names, check=FALSE)
+  if (length(dim(from)) == 2L) {
+    df <- as.data.frame(from)
+    if (0L == ncol(from))
+      ## colnames on matrix with 0 columns are 'NULL'
+      names(df) <- character()
+    as(df, "DataFrame")
+  } else {
+    row.names <- if (!anyDuplicated(names(from))) names(from) else NULL
+    new2("DataFrame", listData = setNames(list(from), "X"),
+         nrows = length(from), rownames = row.names, check=FALSE)
+  }
 }
 
 setAs("ANY", "DataFrame", .defaultAsDataFrame)
