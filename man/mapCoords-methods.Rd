@@ -13,10 +13,8 @@
   ranges on another sequence through some sort of alignment between
   sequences. The output is an object of the same class as \code{x}
   and in general will contain the mapped ranges with the matching data
-  as metadata. 
-
-  Matching data are the result of calling \code{findOverlaps} with
-  \code{type = "within"}. This operation matches each input range to a 
+  as metadata. Matching data are the result of calling \code{findOverlaps} 
+  with \code{type = "within"}. This operation matches each input range to a 
   destination sequence (useful when the alignment is one/many to many). 
 
   The \code{pmapCoords} function is simpler: it treats the two inputs as 
@@ -37,9 +35,11 @@ pmapCoords(x, to, ...)
 }
 
 \value{
-  An object the same class as \code{x}. The result of 
-  \code{findOverlaps} with type = ``within`` are inlcuded as 
-  metadata columns (`queryHits` and `subjectHits`).
+  An object the same class as \code{x}. 
+
+  In the case of \code{mapCoords}, the result of \code{findOverlaps} 
+  with type = ``within`` are inlcuded as metadata columns (`queryHits` 
+  and `subjectHits`).
 }
 
 \author{ Michael Lawrence }
@@ -56,7 +56,7 @@ pmapCoords(x, to, ...)
 }
 
 \examples{
-## See methods in GenomicRanges and GAlignmentsPackages.
+## See mapCoords methods in GenomicRanges and GAlignmentsPackages.
 }
 
 \keyword{methods}
