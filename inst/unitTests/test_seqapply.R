@@ -10,7 +10,7 @@ test_unsplit <- function() {
   checkException(unsplit(rl, f, drop=FALSE), silent=TRUE)
 
   v <- 1:5
-  l <- seqsplit(v, f)
+  l <- splitAsList(v, f)
   checkIdentical(unsplit(l, Rle(f)), v)    
 }
 

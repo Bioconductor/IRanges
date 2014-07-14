@@ -753,7 +753,7 @@ setMethod("which", "CompressedLogicalList", function(x) {
   which.global <- which(x.flat)
   group <- findInterval(which.global, start(part))
   which.local <- which.global - start(part)[group] + 1L
-  ans <- seqsplit(which.local, factor(group, seq_len(length(x))))
+  ans <- splitAsList(which.local, factor(group, seq_len(length(x))))
   names(ans) <- names(x)
   ans
 })
