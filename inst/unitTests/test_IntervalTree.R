@@ -156,7 +156,7 @@ test_IntervalTree_findOverlaps <- function() {
   ## combine minoverlap and maxgap
   result <- findOverlaps(query, tree, type = "start", maxgap = 1L,
                          minoverlap = 3L)
-  checkOverlap(result, c(3, 4, 4), c(2, 2, 3), 4, 4)
+  checkOverlap(result, c(1, 2, 3, 4, 4), c(1, 3, 2, 2, 3), 4, 4)
   
   ## 'end'
   result <- findOverlaps(query, tree, type = "end")
