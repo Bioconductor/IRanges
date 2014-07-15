@@ -9,8 +9,8 @@
 \title{Mapping of ranges to another sequence}
 
 \description{
-  \code{map} and \code{pmap} are deprecated. Use \code{mapRanges}
-  and \code{pmapRanges} instead. 
+  \code{map} and \code{pmap} are defunct. Use \code{mapCoords}
+  and \code{pmapCoords} instead. 
 
   The \code{map} generic converts a set of ranges to the equivalent
   ranges on another sequence, through some sort of alignment between
