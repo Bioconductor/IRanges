@@ -894,3 +894,28 @@ setMethod("do.call", c("ANY", "List"),
             args <- as.list(args)
             callGeneric()
           })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Element-wise appending for list-like objects
+###
+
+pc <- function(...) {
+  args <- list(...)
+  args <- Filter(Negate(is.null), args)
+  if (length(args) <= 1L) {
+    return(args[[1L]])
+  }
+  if (length(unique(elementLengths(args))) > 1L) {
+    stop("All arguments in '...' must have the same length")
+  }
+
+  ans_unlisted <- do.call(c, lapply(args, unlist, use.names=FALSE))
+  ans_group <- structure(do.call(c, lapply(args, togroup)),
+                         class="factor",
+                         levels=as.character(seq_along(args[[1L]])))
+  
+  ans <- splitAsList(ans_unlisted, ans_group)
+
+  names(ans) <- names(args[[1L]])
+  ans
+}

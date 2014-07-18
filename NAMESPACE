@@ -212,7 +212,7 @@ exportMethods(
 ###
 
 export(
-    phead, ptail,
+    phead, ptail, pc,
     splitAsList,
     seqapply, mseqapply, tseqapply, seqsplit, seqby,
     multisplit,
