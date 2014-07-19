@@ -173,15 +173,32 @@ SEXP build_NCL(SEXP x_start, SEXP x_end)
 static int bsearch_n1(int q_start, const int *slide, int slide_len,
 		     const int *s_end)
 {
-	int n, i;
+	int i, cmp, n1, n2, n;
 
-	// FIXME: Replace linear search with binary search.
-	for (n = 0; n < slide_len; n++) {
+	i = slide[0];
+	cmp = s_end[i - 1] - q_start;
+	if (cmp >= 0)
+		return 0;
+	i = slide[slide_len - 1];
+	cmp = s_end[i - 1] - q_start;
+	if (cmp < 0)
+		return slide_len;
+	if (cmp == 0)
+		return slide_len - 1;
+	n1 = 0;
+	n2 = slide_len - 1;
+	while (n2 - n1 >= 2) {
+		n = (n1 + n2) / 2;
 		i = slide[n];
-		if (s_end[i - 1] >= q_start)
-			break;
+		cmp = s_end[i - 1] - q_start;
+		if (cmp == 0)
+			return n;
+		if (cmp < 0)
+			n1 = n;
+		else
+			n2 = n;
 	}
-	return n;
+	return n2;
 }
 
 static void overlap_NCL(int q_start, int q_end,
@@ -210,6 +227,7 @@ static void overlap_NCL(int q_start, int q_end,
 			    VECTOR_ELT(s_ncl_elt1, n), s_start, s_end,
 			    out);
 	}
+	IntAE_qsort(out, 0);
 	return;
 }
 
