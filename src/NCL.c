@@ -1,11 +1,10 @@
 #include "IRanges.h"
 #include "S4Vectors_interface.h"
-#include <stdlib.h> /* for qsort() */
-#include <stdlib.h>  /* for malloc, free, realloc */
+#include <stdlib.h>  /* for malloc, realloc, free, qsort */
 
 static const int *aa, *bb;
 
-static int compar_int_pairs(const void *p1, const void *p2)
+static int qsort_compar(const void *p1, const void *p2)
 {
 	int i1, i2, ret;
 
@@ -50,6 +49,7 @@ static void NCL_extend(NCL *ncl)
 	int new_buflength;
 
 	size = sizeof(struct ncl_elt);
+	// FIXME: Handle malloc()/realloc() failure.
 	if (ncl->elts == NULL) {
 		new_buflength = 100;
 		ncl->elts = malloc(new_buflength * size);
@@ -126,7 +126,7 @@ static NCL new_NCL(const int *x_start, const int *x_end, int x_len)
 		oo[i] = i;
 	aa = x_start;
 	bb = x_end;
-	qsort(oo, x_len, sizeof(int), compar_int_pairs);
+	qsort(oo, x_len, sizeof(int), qsort_compar);
 
 	NCL_init(&ncl);
 	for (k = 0, d = -1; k < x_len; k++) {
@@ -166,5 +166,78 @@ SEXP build_NCL(SEXP x_start, SEXP x_end)
 	NCL_free(&ncl);
 	UNPROTECT(1);
 	return ans;
+}
+
+// Look for the first element in 'slide' that points to a range with
+// an end >= 'q_start'.
+static int bsearch_n1(int q_start, const int *slide, int slide_len,
+		     const int *s_end)
+{
+	int n, i;
+
+	// FIXME: Replace linear search with binary search.
+	for (n = 0; n < slide_len; n++) {
+		i = slide[n];
+		if (s_end[i - 1] >= q_start)
+			break;
+	}
+	return n;
+}
+
+static void overlap_NCL(int q_start, int q_end,
+			SEXP s_ncl, const int *s_start, const int *s_end,
+			IntAE *out)
+{
+	SEXP s_ncl_elt0, s_ncl_elt1;
+	const int *slide;
+        int slide_len, n, i;
+
+	if (s_ncl == R_NilValue)
+		return;
+	s_ncl_elt0 = VECTOR_ELT(s_ncl, 0); // integer vector
+	s_ncl_elt1 = VECTOR_ELT(s_ncl, 1); // list
+	slide = INTEGER(s_ncl_elt0);
+	slide_len = LENGTH(s_ncl_elt0);
+	for (n = bsearch_n1(q_start, slide, slide_len, s_end);
+	     n < slide_len;
+	     n++)
+	{
+		i = slide[n];
+		if (s_start[i - 1] > q_end)
+			break;
+		IntAE_insert_at(out, IntAE_get_nelt(out), i);
+		overlap_NCL(q_start, q_end,
+			    VECTOR_ELT(s_ncl_elt1, n), s_start, s_end,
+			    out);
+	}
+	return;
+}
+
+/* --- .Call ENTRY POINT ---
+ * Usage:
+ *   query <- IRanges(c(5, 1), c(7, 4))
+ *   .Call("overlaps_NCL", start(query), end(query),
+ *                         ncl, start(x), end(x), PACKAGE="IRanges")
+ */
+SEXP overlaps_NCL(SEXP q_start, SEXP q_end,
+		 SEXP s_ncl, SEXP s_start, SEXP s_end)
+{
+	int q_len, i;
+	const int *q_start_p, *q_end_p, *s_start_p, *s_end_p;
+	IntAEAE ans_buf;
+
+	q_len = check_integer_pairs(q_start, q_end,
+				    &q_start_p, &q_end_p,
+				    "start(query)", "end(query)");
+	check_integer_pairs(s_start, s_end,
+			    &s_start_p, &s_end_p,
+			    "start(subject)", "end(subject)");
+	ans_buf = new_IntAEAE(q_len, q_len);
+	for (i = 0; i < q_len; i++) {
+		overlap_NCL(q_start_p[i], q_end_p[i],
+			    s_ncl, s_start_p, s_end_p,
+			    ans_buf.elts + i);
+	}
+	return new_LIST_from_IntAEAE(&ans_buf, 1);
 }
 
