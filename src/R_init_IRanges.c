@@ -64,6 +64,9 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(IRanges_coverage, 6),
 	CALLMETHOD_DEF(CompressedIRangesList_coverage, 6),
 
+/* NCL.c */
+	CALLMETHOD_DEF(build_NCL, 2),
+
 	{NULL, NULL, 0}
 };
 

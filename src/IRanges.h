@@ -370,3 +370,11 @@ SEXP CompressedIRangesList_coverage(
 	SEXP method
 );
 
+
+/* NCL.c */
+
+SEXP build_NCL(
+	SEXP x_start,
+	SEXP x_end
+);
+
