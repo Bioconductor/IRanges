@@ -61,6 +61,7 @@ Collate: subsetting-internals.R
 	RDApplyParams-class.R
 	RangedData-utils.R
 	HitsList-class.R
+	NCList-class.R
 	IntervalTree-class.R
 	IntervalTree-utils.R
 	IntervalForest-class.R

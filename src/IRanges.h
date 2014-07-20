@@ -371,10 +371,18 @@ SEXP CompressedIRangesList_coverage(
 );
 
 
-/* NCL.c */
+/* NCList.c */
 
-SEXP build_NCL(
+SEXP NCList_build(
 	SEXP x_start,
 	SEXP x_end
+);
+
+SEXP NCList_find_overlaps(
+	SEXP q_start,
+	SEXP q_end,
+	SEXP s_nclist,
+	SEXP s_start,
+	SEXP s_end
 );
 
