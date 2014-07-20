@@ -166,8 +166,45 @@ SEXP NCList_build(SEXP x_start, SEXP x_end)
 	return ans;
 }
 
-// Look for the first element in 'slide' that points to a range with
-// an end >= 'q_start'.
+
+static SEXP new_Hits_from_IntAEAE(const IntAEAE *x, int s_len)
+{
+	SEXP classdef, ans, ans_queryHits, ans_subjectHits,
+	     ans_queryLength, ans_subjectLength;
+	int q_len, ans_len, i, x_elt_len, j, k;
+	const IntAE *x_elt;
+
+	q_len = IntAEAE_get_nelt(x);
+	ans_len = 0;
+	for (i = 0, x_elt = x->elts; i < q_len; i++, x_elt++)
+		ans_len += IntAE_get_nelt(x_elt);
+	PROTECT(ans_queryHits = NEW_INTEGER(ans_len));
+	PROTECT(ans_subjectHits = NEW_INTEGER(ans_len));
+	k = 0;
+	for (i = 0, x_elt = x->elts; i < q_len; i++, x_elt++) {
+		x_elt_len = IntAE_get_nelt(x_elt);
+		for (j = 0; j < x_elt_len; j++) {
+			INTEGER(ans_queryHits)[k] = i + 1;
+			INTEGER(ans_subjectHits)[k] = x_elt->elts[j];
+			k++;
+		}
+	}
+	PROTECT(classdef = MAKE_CLASS("Hits"));
+	PROTECT(ans = NEW_OBJECT(classdef));
+	SET_SLOT(ans, install("queryHits"), ans_queryHits);
+	SET_SLOT(ans, install("subjectHits"), ans_subjectHits);
+	PROTECT(ans_queryLength = ScalarInteger(q_len));
+	SET_SLOT(ans, install("queryLength"), ans_queryLength);
+	PROTECT(ans_subjectLength = ScalarInteger(s_len));
+	SET_SLOT(ans, install("subjectLength"), ans_subjectLength);
+	UNPROTECT(6);
+	return ans;
+}
+
+/*
+ * Look for the first element in 'slide' that points to a range with an
+ * end >= 'q_start'.
+ */
 static int bsearch_n1(int q_start, const int *slide, int slide_len,
 		     const int *s_end)
 {
@@ -238,22 +275,22 @@ static void NCList_overlap(int q_start, int q_end,
 SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 			  SEXP s_nclist, SEXP s_start, SEXP s_end)
 {
-	int q_len, m;
+	int q_len, s_len, m;
 	const int *q_start_p, *q_end_p, *s_start_p, *s_end_p;
 	IntAEAE ans_buf;
 
 	q_len = check_integer_pairs(q_start, q_end,
 				    &q_start_p, &q_end_p,
 				    "start(query)", "end(query)");
-	check_integer_pairs(s_start, s_end,
-			    &s_start_p, &s_end_p,
-			    "start(subject)", "end(subject)");
+	s_len = check_integer_pairs(s_start, s_end,
+				    &s_start_p, &s_end_p,
+				    "start(subject)", "end(subject)");
 	ans_buf = new_IntAEAE(q_len, q_len);
-	for (m = 0; m < q_len; m++) {
+	for (m = 0; m < q_len; m++)
 		NCList_overlap(q_start_p[m], q_end_p[m],
 			       s_nclist, s_start_p, s_end_p,
 			       ans_buf.elts + m);
-	}
-	return new_LIST_from_IntAEAE(&ans_buf, 1);
+	//new_LIST_from_IntAEAE(&ans_buf, 1);
+	return new_Hits_from_IntAEAE(&ans_buf, s_len);
 }
 
