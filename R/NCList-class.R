@@ -13,6 +13,13 @@ setClass("NCList",
     )
 )
 
+setMethod("length", "NCList", function(x) length(x@ranges))
+
+setMethod("start", "NCList", function(x, ...) start(x@ranges))
+setMethod("end", "NCList", function(x, ...) end(x@ranges))
+setMethod("width", "NCList", function(x) width(x@ranges))
+setMethod("names", "NCList", function(x) names(x@ranges))
+
 NCList <- function(x)
 {
     if (!is(x, "Ranges"))
