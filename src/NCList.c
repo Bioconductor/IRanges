@@ -12,13 +12,13 @@
 
 typedef struct nclist {
 	int buflength;
-	struct nclistelt *elts;
 	int nelt;
+	struct nclistelt *elts;
 } NCList;
 
 typedef struct nclistelt {
 	int i;
-	struct nclist sublist;
+	struct nclist *sublist;
 } NCListElt;
 
 
@@ -28,16 +28,17 @@ typedef struct nclistelt {
 
 static void init_NCList(NCList *nclist)
 {
-	nclist->buflength = 0;
+	nclist->nelt = nclist->buflength = 0;
 	nclist->elts = NULL;
-	nclist->nelt = 0;
 	return;
 }
 
 static void init_NCListElt(NCListElt *elt, int i)
 {
 	elt->i = i;
-	init_NCList(&(elt->sublist));
+	// FIXME: Handle malloc() failure.
+	elt->sublist = (NCList *) malloc(sizeof(NCList));
+	init_NCList(elt->sublist);
 	return;
 }
 
@@ -120,7 +121,7 @@ static void build_NCList(NCList *top_nclist,
 			new_elt = add_NCList_elt(top_nclist, i);
 		} else {
 			// append range i to sublist of stack[d]
-			new_elt = add_NCList_elt(&(stack[d]->sublist), i);
+			new_elt = add_NCList_elt(stack[d]->sublist, i);
 		}
 		stack[++d] = new_elt;
 	}
@@ -166,7 +167,7 @@ static int print_NCList(const NCList *nclist,
 			Rprintf("|");
 		Rprintf(format, elt->i + 1);
 		Rprintf(": [%d, %d]\n", x_start[elt->i], x_end[elt->i]);
-		tmp = print_NCList(&(elt->sublist),
+		tmp = print_NCList(elt->sublist,
 				   x_start, x_end, depth + 1,
 				   format);
 		if (tmp > max_depth)
@@ -206,8 +207,10 @@ static void free_NCList(const NCList *nclist)
 
 	if (nclist->elts == NULL)
 		return;
-	for (n = 0, elt = nclist->elts; n < nclist->nelt; n++, elt++)
-		free_NCList(&(elt->sublist));
+	for (n = 0, elt = nclist->elts; n < nclist->nelt; n++, elt++) {
+		free_NCList(elt->sublist);
+		free(elt->sublist);
+	}
 	free(nclist->elts);
 	return;
 }
@@ -235,7 +238,7 @@ static void NCList_unlist(const NCList *nclist, IntAE *out)
 
 	for (n = 0, elt = nclist->elts; n < nclist->nelt; n++, elt++) {
 		IntAE_insert_at(out, IntAE_get_nelt(out), elt->i + 1);
-		NCList_unlist(&(elt->sublist), out);
+		NCList_unlist(elt->sublist, out);
 	}
 	return;
 }
@@ -295,10 +298,10 @@ static void NCList_overlap(int q_start, int q_end,
 			break;
 		IntAE_insert_at(out, IntAE_get_nelt(out), elt->i + 1);
 		//if (start >= q_start && s_end[elt->i] <= q_end)
-		//	NCList_unlist(&(elt->sublist), out);
+		//	NCList_unlist(elt->sublist, out);
 		//else
 			NCList_overlap(q_start, q_end,
-				       &(elt->sublist),
+				       elt->sublist,
 				       s_start, s_end,
 				       out);
 	}
