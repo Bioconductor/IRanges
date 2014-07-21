@@ -378,6 +378,12 @@ SEXP NCList_build(
 	SEXP x_end
 );
 
+SEXP NCList_print(
+	SEXP x_nclist,
+	SEXP x_start,
+	SEXP x_end
+);
+
 SEXP NCList_free(SEXP x);
 
 SEXP NCList_find_overlaps(

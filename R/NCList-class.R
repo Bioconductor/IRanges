@@ -20,6 +20,10 @@ setMethod("end", "NCList", function(x, ...) end(x@ranges))
 setMethod("width", "NCList", function(x) width(x@ranges))
 setMethod("names", "NCList", function(x) names(x@ranges))
 
+### Usage:
+###   x <- IRanges(c(11, 10, 13, 10, 14,  8, 10, 11),
+###                c(15, 12, 18, 13, 14, 12, 15, 15))
+###   subject <- NCList(x)
 NCList <- function(x)
 {
     if (!is(x, "Ranges"))
@@ -33,7 +37,17 @@ NCList <- function(x)
     new2("NCList", nclist=ans_nclist, ranges=x, check=FALSE)
 }
 
-## NOT exported.
+### NOT exported.
+print_NCList <- function(x)
+{
+    if (!is(x, "NCList"))
+        stop("'x' must be an NCList object")
+    .Call("NCList_print", x@nclist, start(x@ranges), end(x@ranges),
+                          PACKAGE="IRanges")
+    invisible(NULL)
+}
+
+### NOT exported.
 findOverlaps_NCList <- function(query, subject)
 {
     if (!is(query, "Ranges"))
@@ -161,7 +175,7 @@ gc()
 stopifnot(identical(hits5, hits5b))
 
 ### TEST 6:
-### - NCList:       14.06 s / 23.8 s / 2930.3 Mb / 4263m (5931m)
+### - NCList:       14.06 s / 22.6 s / 2930.3 Mb / 4263m (5931m)
 ### - IntervalTree: 60 s    / 44.6 s / 2468.0 Mb / 3009m (7414m)
 library(IRanges)
 N <- 30000000L  # nb of ranges

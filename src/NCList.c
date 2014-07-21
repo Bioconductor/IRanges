@@ -7,6 +7,8 @@
 #include "S4Vectors_interface.h"
 
 #include <stdlib.h>  /* for malloc, realloc, free, qsort */
+#include <math.h>  /* for log10 */
+
 
 typedef struct nclist {
 	int buflength;
@@ -147,17 +149,65 @@ SEXP NCList_build(SEXP x_start, SEXP x_end)
 
 
 /****************************************************************************
+ * NCList_print()
+ */
+
+/* Print 1 line per range in 'nclist'. Return max depth. */
+static int print_NCList(const NCList *nclist,
+			const int *x_start, const int *x_end, int depth,
+			const char *format)
+{
+	int max_depth, n, d, tmp;
+	const NCListElt *elt;
+
+	max_depth = depth;
+	for (n = 0, elt = nclist->elts; n < nclist->nelt; n++, elt++) {
+		for (d = 0; d < depth; d++)
+			Rprintf("|");
+		Rprintf(format, elt->i + 1);
+		Rprintf(": [%d, %d]\n", x_start[elt->i], x_end[elt->i]);
+		tmp = print_NCList(&(elt->sublist),
+				   x_start, x_end, depth + 1,
+				   format);
+		if (tmp > max_depth)
+			max_depth = tmp;
+	}
+	return max_depth;
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP NCList_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
+{
+	NCList *top_nclist;
+	int x_len, max_digits, max_depth;
+	const int *x_start_p, *x_end_p;
+	char format[10];
+
+	top_nclist = (NCList *) R_ExternalPtrAddr(x_nclist);
+	x_len = check_integer_pairs(x_start, x_end,
+				    &x_start_p, &x_end_p,
+				    "start(x)", "end(x)");
+	max_digits = x_len ? (int) log10((double) x_len) + 1 : 0;
+	sprintf(format, "%c%d%c", '%', max_digits, 'd');
+	max_depth = print_NCList(top_nclist, x_start_p, x_end_p, 0, format);
+	Rprintf("max depth = %d\n", max_depth);
+	return R_NilValue;
+}
+
+
+/****************************************************************************
  * NCList_free()
  */
 
 static void free_NCList(const NCList *nclist)
 {
 	int n;
+	const NCListElt *elt;
 
 	if (nclist->elts == NULL)
 		return;
-	for (n = 0; n < nclist->nelt; n++)
-		free_NCList(&(nclist->elts[n].sublist));
+	for (n = 0, elt = nclist->elts; n < nclist->nelt; n++, elt++)
+		free_NCList(&(elt->sublist));
 	free(nclist->elts);
 	return;
 }
@@ -178,32 +228,46 @@ SEXP NCList_free(SEXP x)
  * NCList_find_overlaps()
  */
 
+static void NCList_unlist(const NCList *nclist, IntAE *out)
+{
+	int n;
+	const NCListElt *elt;
+
+	for (n = 0, elt = nclist->elts; n < nclist->nelt; n++, elt++) {
+		IntAE_insert_at(out, IntAE_get_nelt(out), elt->i + 1);
+		NCList_unlist(&(elt->sublist), out);
+	}
+	return;
+}
+
 /*
  * Look for the first element in 'nclist' that points to a range with an
  * end >= 'q_start'.
  */
 static int bsearch_n1(int q_start, const NCList *nclist, const int *s_end)
 {
-	int i, cmp, n1, n2, n;
+	int n1, n2, n, end;
 
-	i = nclist->elts[0].i;
-	cmp = s_end[i] - q_start;
-	if (cmp >= 0)
-		return 0;
-	i = nclist->elts[nclist->nelt - 1].i;
-	cmp = s_end[i] - q_start;
-	if (cmp < 0)
-		return nclist->nelt;
-	if (cmp == 0)
-		return nclist->nelt - 1;
+	/* Check first element. */
 	n1 = 0;
+	end = s_end[nclist->elts[n1].i];
+	if (end >= q_start)
+		return n1;
+
+	/* Check last element. */
 	n2 = nclist->nelt - 1;
+	end = s_end[nclist->elts[n2].i];
+	if (end < q_start)
+		return nclist->nelt;
+	if (end == q_start)
+		return n2;
+
+	/* Binary search. */
 	while ((n = (n1 + n2) / 2) != n1) {
-		i = nclist->elts[n].i;
-		cmp = s_end[i] - q_start;
-		if (cmp == 0)
+		end = s_end[nclist->elts[n].i];
+		if (end == q_start)
 			return n;
-		if (cmp < 0)
+		if (end < q_start)
 			n1 = n;
 		else
 			n2 = n;
@@ -216,22 +280,27 @@ static void NCList_overlap(int q_start, int q_end,
 			   const int *s_start, const int *s_end,
 			   IntAE *out)
 {
-        int n, i;
+	int n, start;
+	const NCListElt *elt;
 
 	if (nclist->nelt == 0)
 		return;
-	for (n = bsearch_n1(q_start, nclist, s_end);
+	n = bsearch_n1(q_start, nclist, s_end);
+	for (elt = nclist->elts + n;
 	     n < nclist->nelt;
-	     n++)
+	     n++, elt++)
 	{
-		i = nclist->elts[n].i;
-		if (s_start[i] > q_end)
+		start = s_start[elt->i];
+		if (start > q_end)
 			break;
-		IntAE_insert_at(out, IntAE_get_nelt(out), i + 1);
-		NCList_overlap(q_start, q_end,
-			       &(nclist->elts[n].sublist),
-			       s_start, s_end,
-			       out);
+		IntAE_insert_at(out, IntAE_get_nelt(out), elt->i + 1);
+		//if (start >= q_start && s_end[elt->i] <= q_end)
+		//	NCList_unlist(&(elt->sublist), out);
+		//else
+			NCList_overlap(q_start, q_end,
+				       &(elt->sublist),
+				       s_start, s_end,
+				       out);
 	}
 	return;
 }
@@ -289,10 +358,10 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 	q_len = check_integer_pairs(q_start, q_end,
 				    &q_start_p, &q_end_p,
 				    "start(query)", "end(query)");
+	top_nclist = (const NCList *) R_ExternalPtrAddr(s_nclist);
 	s_len = check_integer_pairs(s_start, s_end,
 				    &s_start_p, &s_end_p,
 				    "start(subject)", "end(subject)");
-	top_nclist = (const NCList *) R_ExternalPtrAddr(s_nclist);
 	buf = new_IntAEAE(q_len, q_len);
 	for (m = 0, buf_elt = buf.elts;
 	     m < q_len;
