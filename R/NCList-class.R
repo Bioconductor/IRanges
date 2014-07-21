@@ -133,8 +133,8 @@ system.time(hits4b <- findOverlaps(query, subject))
 gc()
 
 ### TEST 5:
-### - NCList:       1.9 s / 3.7 s / 426.2 Mb / 1084m
-### - IntervalTree:   7 s / 5.9 s / 417.6 Mb /  640m
+### - NCList:       1.9 s / 3.7 s / 426.2 Mb / 875m (961m)
+### - IntervalTree:   7 s / 5.9 s / 417.6 Mb / 640m (1221m)
 library(IRanges)
 N <- 5000000L  # nb of ranges
 W <- 50000L    # max range width
@@ -161,8 +161,8 @@ gc()
 stopifnot(identical(hits5, hits5b))
 
 ### TEST 6:
-### - NCList:       14.04 s / 23.2 s / 2930.3 Mb / 5505m
-### - IntervalTree: 60 s    / 44.6 s / 2468.0 Mb / 3009m
+### - NCList:       14.06 s / 23.8 s / 2930.3 Mb / 4263m (5931m)
+### - IntervalTree: 60 s    / 44.6 s / 2468.0 Mb / 3009m (7414m)
 library(IRanges)
 N <- 30000000L  # nb of ranges
 W <- 50000L    # max range width

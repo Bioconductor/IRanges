@@ -47,17 +47,17 @@ static void extend_NCList(NCList *nclist)
 	size = sizeof(NCListElt);
 	// FIXME: Handle malloc()/realloc() failure.
 	if (nclist->elts == NULL) {
-		new_buflength = 8;
+		new_buflength = 4;
 		nclist->elts = malloc(new_buflength * size);
 	} else {
-		if (nclist->buflength < 32768)
+		if (nclist->buflength < 16384)
 			new_buflength = 8 * nclist->buflength;
-		else if (nclist->buflength < 8388608)
+		else if (nclist->buflength < 4194304)
 			new_buflength = 4 * nclist->buflength;
-		else if (nclist->buflength < 134217728)
+		else if (nclist->buflength < 67108864)
 			new_buflength = 2 * nclist->buflength;
 		else
-			new_buflength = nclist->buflength + 67108864;
+			new_buflength = nclist->buflength + 33554432;
 		nclist->elts = realloc(nclist->elts, new_buflength * size);
 	}
 	nclist->buflength = new_buflength;
