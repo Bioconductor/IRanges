@@ -30,11 +30,12 @@ NCList <- function(x)
         stop("'x' must be a Ranges object")
     if (!is(x, "IRanges"))
         x <- as(x, "IRanges")
-    ans_nclist <- .Call("NCList_build", start(x), end(x), PACKAGE="IRanges")
-    reg.finalizer(ans_nclist,
+    x_nclist <- .Call("NCList_new", PACKAGE="IRanges")
+    reg.finalizer(x_nclist,
         function(e) .Call("NCList_free", e, PACKAGE="IRanges")
     )
-    new2("NCList", nclist=ans_nclist, ranges=x, check=FALSE)
+    .Call("NCList_build", x_nclist, start(x), end(x), PACKAGE="IRanges")
+    new2("NCList", nclist=x_nclist, ranges=x, check=FALSE)
 }
 
 ### NOT exported.
@@ -175,7 +176,7 @@ gc()
 stopifnot(identical(hits5, hits5b))
 
 ### TEST 6:
-### - NCList:       14.9 s / 22.8 s / 2930.3 Mb / 3866m (5535m)
+### - NCList:       14.9 s / 22.8 s / 2930.3 Mb / 3867m (5535m)
 ### - IntervalTree: 60 s   / 44.6 s / 2468.0 Mb / 3009m (7414m)
 library(IRanges)
 N <- 30000000L  # nb of ranges

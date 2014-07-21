@@ -7,12 +7,12 @@
 #include "S4Vectors_interface.h"
 
 #include <stdlib.h>  /* for malloc, realloc, free, qsort */
-#include <math.h>  /* for log10 */
+#include <math.h>    /* for log10 */
 
 
 typedef struct nclist {
-	int buflength;
-	int nelt;
+	int buflength;           /* always >= 0 */
+	int nelt;                /* always >= 0 and <= buflength */
 	struct nclistelt *elts;
 } NCList;
 
@@ -23,47 +23,70 @@ typedef struct nclistelt {
 
 
 /****************************************************************************
- * NCList_build()
+ * NCList_new()
  */
 
 static void init_NCList(NCList *nclist)
 {
-	nclist->nelt = nclist->buflength = 0;
+	nclist->buflength = nclist->nelt = 0;
 	nclist->elts = NULL;
 	return;
 }
 
+/* --- .Call ENTRY POINT --- */
+SEXP NCList_new()
+{
+	NCList *top_nclist;
+
+	top_nclist = (NCList *) malloc(sizeof(NCList));
+	if (top_nclist == NULL)
+		error("NCList_new: memory allocation failed");
+	init_NCList(top_nclist);
+	return R_MakeExternalPtr(top_nclist, R_NilValue, R_NilValue);
+}
+
+
+/****************************************************************************
+ * NCList_build()
+ */
+
 static void init_NCListElt(NCListElt *elt, int i)
 {
-	elt->i = i;
-	// FIXME: Handle malloc() failure.
 	elt->sublist = (NCList *) malloc(sizeof(NCList));
+	if (elt->sublist == NULL)
+		error("init_NCListElt: memory allocation failed");
+	elt->i = i;
 	init_NCList(elt->sublist);
 	return;
 }
 
 static void extend_NCList(NCList *nclist)
 {
-	size_t size;
-	int new_buflength;
+	int old_buflength, new_buflength;
+	size_t elt_size;
+	NCListElt *new_elts;
 
-	size = sizeof(NCListElt);
-	// FIXME: Handle malloc()/realloc() failure.
-	if (nclist->elts == NULL) {
+	old_buflength = nclist->buflength;
+	elt_size = sizeof(NCListElt);
+	if (old_buflength == 0) {
 		new_buflength = 4;
-		nclist->elts = malloc(new_buflength * size);
+		new_elts = (NCListElt *) malloc(new_buflength * elt_size);
 	} else {
-		if (nclist->buflength < 16384)
-			new_buflength = 8 * nclist->buflength;
-		else if (nclist->buflength < 4194304)
-			new_buflength = 4 * nclist->buflength;
-		else if (nclist->buflength < 67108864)
-			new_buflength = 2 * nclist->buflength;
+		if (old_buflength < 16384)
+			new_buflength = 8 * old_buflength;
+		else if (old_buflength < 4194304)
+			new_buflength = 4 * old_buflength;
+		else if (old_buflength < 67108864)
+			new_buflength = 2 * old_buflength;
 		else
-			new_buflength = nclist->buflength + 33554432;
-		nclist->elts = realloc(nclist->elts, new_buflength * size);
+			new_buflength = old_buflength + 33554432;
+		new_elts = (NCListElt *) realloc(nclist->elts,
+						 new_buflength * elt_size);
 	}
+	if (new_elts == NULL)
+		error("extend_NCList: memory allocation failed");
 	nclist->buflength = new_buflength;
+	nclist->elts = new_elts;
 	return;
 }
 
@@ -73,8 +96,9 @@ static NCListElt *add_NCList_elt(NCList *nclist, int i)
 
 	if (nclist->nelt == nclist->buflength)
 		extend_NCList(nclist);
-	new_elt = nclist->elts + nclist->nelt++;
+	new_elt = nclist->elts + nclist->nelt;
 	init_NCListElt(new_elt, i);
+	nclist->nelt++;
 	return new_elt;
 }
 
@@ -128,24 +152,20 @@ static void build_NCList(NCList *top_nclist,
 	return;
 }
 
-/* --- .Call ENTRY POINT ---
- * Usage:
- *   x <- IRanges(c(1, 4, 3), c(5, 4, 4))
- *   nclist <- .Call("NCList_build", start(x), end(x), PACKAGE="IRanges")
- */
-SEXP NCList_build(SEXP x_start, SEXP x_end)
+SEXP NCList_build(SEXP nclist, SEXP x_start, SEXP x_end)
 {
 	NCList *top_nclist;
 	int x_len;
 	const int *x_start_p, *x_end_p;
 
+	top_nclist = (NCList *) R_ExternalPtrAddr(nclist);
+	if (top_nclist == NULL)
+		error("NCList_build: pointer to NCList struct is NULL");
 	x_len = check_integer_pairs(x_start, x_end,
 				    &x_start_p, &x_end_p,
 				    "start(x)", "end(x)");
-	// FIXME: Handle malloc() failure.
-	top_nclist = (NCList *) malloc(sizeof(NCList));
 	build_NCList(top_nclist, x_start_p, x_end_p, x_len);
-	return R_MakeExternalPtr(top_nclist, R_NilValue, R_NilValue);
+	return R_NilValue;
 }
 
 
@@ -155,8 +175,8 @@ SEXP NCList_build(SEXP x_start, SEXP x_end)
 
 /* Print 1 line per range in 'nclist'. Return max depth. */
 static int print_NCList(const NCList *nclist,
-			const int *x_start, const int *x_end, int depth,
-			const char *format)
+			const int *x_start, const int *x_end,
+			int depth, const char *format)
 {
 	int max_depth, n, d, tmp;
 	const NCListElt *elt;
@@ -179,12 +199,14 @@ static int print_NCList(const NCList *nclist,
 /* --- .Call ENTRY POINT --- */
 SEXP NCList_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
 {
-	NCList *top_nclist;
+	const NCList *top_nclist;
 	int x_len, max_digits, max_depth;
 	const int *x_start_p, *x_end_p;
 	char format[10];
 
 	top_nclist = (NCList *) R_ExternalPtrAddr(x_nclist);
+	if (top_nclist == NULL)
+		error("NCList_print: pointer to NCList struct is NULL");
 	x_len = check_integer_pairs(x_start, x_end,
 				    &x_start_p, &x_end_p,
 				    "start(x)", "end(x)");
@@ -200,29 +222,30 @@ SEXP NCList_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
  * NCList_free()
  */
 
-static void free_NCList(const NCList *nclist)
+static void free_NCList(NCList *nclist)
 {
 	int n;
 	const NCListElt *elt;
 
-	if (nclist->elts == NULL)
-		return;
-	for (n = 0, elt = nclist->elts; n < nclist->nelt; n++, elt++) {
-		free_NCList(elt->sublist);
-		free(elt->sublist);
+	if (nclist->buflength != 0) {
+		for (n = 0, elt = nclist->elts; n < nclist->nelt; n++, elt++)
+			free_NCList(elt->sublist);
+		free(nclist->elts);
 	}
-	free(nclist->elts);
+	free(nclist);
 	return;
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP NCList_free(SEXP x)
+SEXP NCList_free(SEXP nclist)
 {
 	NCList *top_nclist;
 
-	top_nclist = (NCList *) R_ExternalPtrAddr(x);
+	top_nclist = (NCList *) R_ExternalPtrAddr(nclist);
+	if (top_nclist == NULL)
+		error("NCList_free: pointer to NCList struct is NULL");
 	free_NCList(top_nclist);
-	free(top_nclist);
+	R_SetExternalPtrAddr(nclist, NULL);
 	return R_NilValue;
 }
 
@@ -352,16 +375,18 @@ static SEXP new_Hits_from_IntAEAE(const IntAEAE *x, int s_len)
 SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 			  SEXP s_nclist, SEXP s_start, SEXP s_end)
 {
+	const NCList *top_nclist;
 	int q_len, s_len, m;
 	const int *q_start_p, *q_end_p, *s_start_p, *s_end_p;
-	const NCList *top_nclist;
 	IntAEAE buf;
 	IntAE *buf_elt;
 
+	top_nclist = (const NCList *) R_ExternalPtrAddr(s_nclist);
+	if (top_nclist == NULL)
+		error("NCList_find_overlaps: pointer to NCList struct is NULL");
 	q_len = check_integer_pairs(q_start, q_end,
 				    &q_start_p, &q_end_p,
 				    "start(query)", "end(query)");
-	top_nclist = (const NCList *) R_ExternalPtrAddr(s_nclist);
 	s_len = check_integer_pairs(s_start, s_end,
 				    &s_start_p, &s_end_p,
 				    "start(subject)", "end(subject)");
