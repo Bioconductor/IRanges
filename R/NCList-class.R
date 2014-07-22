@@ -177,7 +177,7 @@ gc()
 stopifnot(identical(hits5, hits5b))
 
 ### TEST 6 (requires at least 16 Gb of RAM):
-### - NCList:        30 s   / 35.5 s / 4222.0 Mb / 5493m (5891m)
+### - NCList:        30 s   / 35.5 s / 4222.0 Mb / 5494m (5891m)
 ### - IntervalTree: 106.4 s / 83.5 s / 3822.4 Mb / 4806m (11.2g)
 library(IRanges)
 N <- 50000000L  # nb of ranges
