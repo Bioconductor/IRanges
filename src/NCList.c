@@ -26,9 +26,9 @@ typedef struct nclistelt {
  * new_INTEGER_from_NCList()
  */
 
-#define	GET_NCLIST_NELT(nclist) ((nclist)[0])
-#define	GET_NCLIST_I(nclist, n) ((nclist)[((n)<<1)+1])
-#define	GET_SUBLIST_OFFSET(nclist, n) ((nclist)[((n)<<1)+2])
+#define	NCLIST_NELT(nclist) ((nclist)[0])
+#define	NCLIST_I(nclist, n) ((nclist)[((n)<<1)+1])
+#define	SUBLIST_OFFSET(nclist, n) ((nclist)[((n)<<1)+2])
 
 static int compute_length_of_NCList_as_INTEGER(const NCList *nclist)
 {
@@ -62,11 +62,11 @@ static int dump_NCList_as_int_array(const NCList *nclist, int *out)
 	if (nelt == 0)
 		return 0;
 	offset = 1 + 2 * nelt;
-	GET_NCLIST_NELT(out) = nelt;
+	NCLIST_NELT(out) = nelt;
 	for (n = 0, elt = nclist->elts; n < nelt; n++, elt++) {
-		GET_NCLIST_I(out, n) = elt->i;
+		NCLIST_I(out, n) = elt->i;
 		dump_len = dump_NCList_as_int_array(elt->sublist, out + offset);
-		GET_SUBLIST_OFFSET(out, n) = dump_len != 0 ? offset : -1;
+		SUBLIST_OFFSET(out, n) = dump_len != 0 ? offset : -1;
 		offset += dump_len;
 	}
 	return offset;
@@ -276,16 +276,16 @@ static int print_NCList(const int *nclist,
 	int max_depth, nelt, n, d, i, offset, tmp;
 
 	max_depth = depth;
-	nelt = GET_NCLIST_NELT(nclist);
+	nelt = NCLIST_NELT(nclist);
 	if (nelt == 0)
 		return max_depth;
 	for (n = 0; n < nelt; n++) {
 		for (d = 1; d < depth; d++)
 			Rprintf("|");
-		i = GET_NCLIST_I(nclist, n);
+		i = NCLIST_I(nclist, n);
 		Rprintf(format, i + 1);
 		Rprintf(": [%d, %d]\n", x_start[i], x_end[i]);
-		offset = GET_SUBLIST_OFFSET(nclist, n);
+		offset = SUBLIST_OFFSET(nclist, n);
 		if (offset != -1) {
 			tmp = print_NCList(nclist + offset,
 					   x_start, x_end, depth + 1,
@@ -366,14 +366,14 @@ static int bsearch_n1(int q_start, const int *nclist, const int *s_end)
 
 	/* Check first element. */
 	n1 = 0;
-	end = s_end[GET_NCLIST_I(nclist, n1)];
+	end = s_end[NCLIST_I(nclist, n1)];
 	if (end >= q_start)
 		return n1;
 
 	/* Check last element. */
-	nelt = GET_NCLIST_NELT(nclist);
+	nelt = NCLIST_NELT(nclist);
 	n2 = nelt - 1;
-	end = s_end[GET_NCLIST_I(nclist, n2)];
+	end = s_end[NCLIST_I(nclist, n2)];
 	if (end < q_start)
 		return nelt;
 	if (end == q_start)
@@ -381,7 +381,7 @@ static int bsearch_n1(int q_start, const int *nclist, const int *s_end)
 
 	/* Binary search. */
 	while ((n = (n1 + n2) / 2) != n1) {
-		end = s_end[GET_NCLIST_I(nclist, n)];
+		end = s_end[NCLIST_I(nclist, n)];
 		if (end == q_start)
 			return n;
 		if (end < q_start)
@@ -399,17 +399,17 @@ static void NCList_overlap(int q_start, int q_end,
 {
 	int nelt, n, i, start, offset;
 
-	nelt = GET_NCLIST_NELT(nclist);
+	nelt = NCLIST_NELT(nclist);
 	if (nelt == 0)
 		return;
 	n = bsearch_n1(q_start, nclist, s_end);
 	for ( ; n < nelt; n++) {
-		i = GET_NCLIST_I(nclist, n);
+		i = NCLIST_I(nclist, n);
 		start = s_start[i];
 		if (start > q_end)
 			break;
 		IntAE_insert_at(out, IntAE_get_nelt(out), i + 1);
-		offset = GET_SUBLIST_OFFSET(nclist, n);
+		offset = SUBLIST_OFFSET(nclist, n);
 		if (offset != -1)
 			NCList_overlap(q_start, q_end,
 				       nclist + offset,
