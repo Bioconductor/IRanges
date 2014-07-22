@@ -66,9 +66,9 @@ static const R_CallMethodDef callMethods[] = {
 
 /* NCList.c */
 	CALLMETHOD_DEF(NCList_new, 0),
+	CALLMETHOD_DEF(NCList_free, 1),
 	CALLMETHOD_DEF(NCList_build, 3),
 	CALLMETHOD_DEF(NCList_print, 3),
-	CALLMETHOD_DEF(NCList_free, 1),
 	CALLMETHOD_DEF(NCList_find_overlaps, 5),
 
 	{NULL, NULL, 0}

@@ -23,6 +23,69 @@ typedef struct nclistelt {
 
 
 /****************************************************************************
+ * new_INTEGER_from_NCList()
+ */
+
+#define	GET_NCLIST_NELT(nclist) ((nclist)[0])
+#define	GET_NCLIST_I(nclist, n) ((nclist)[((n)<<1)+1])
+#define	GET_SUBLIST_OFFSET(nclist, n) ((nclist)[((n)<<1)+2])
+
+static int compute_length_of_NCList_as_INTEGER(const NCList *nclist)
+{
+	int nelt, n;
+	unsigned int ans_len, dump_len;
+	const NCListElt *elt;
+
+	nelt = nclist->nelt;
+	if (nelt == 0)
+		return 0;
+	ans_len = 1U + 2U * (unsigned int) nelt;
+	for (n = 0, elt = nclist->elts; n < nelt; n++, elt++) {
+		dump_len = compute_length_of_NCList_as_INTEGER(elt->sublist);
+		ans_len += dump_len;
+		if (ans_len < dump_len)
+			goto too_big;
+	}
+	if (ans_len <= INT_MAX)
+		return (int) ans_len;
+too_big:
+	error("compute_length_of_NCList_as_INTEGER: "
+	      "NCList object is too big to fit in an integer vector");
+}
+
+static int dump_NCList_as_int_array(const NCList *nclist, int *out)
+{
+	int nelt, offset, dump_len, n;
+	const NCListElt *elt;
+
+	nelt = nclist->nelt;
+	if (nelt == 0)
+		return 0;
+	offset = 1 + 2 * nelt;
+	GET_NCLIST_NELT(out) = nelt;
+	for (n = 0, elt = nclist->elts; n < nelt; n++, elt++) {
+		GET_NCLIST_I(out, n) = elt->i;
+		dump_len = dump_NCList_as_int_array(elt->sublist, out + offset);
+		GET_SUBLIST_OFFSET(out, n) = dump_len != 0 ? offset : -1;
+		offset += dump_len;
+	}
+	return offset;
+}
+
+static SEXP new_INTEGER_from_NCList(const NCList *top_nclist)
+{
+	SEXP ans;
+	int ans_len;
+
+	ans_len = compute_length_of_NCList_as_INTEGER(top_nclist);
+	PROTECT(ans = NEW_INTEGER(ans_len));
+	dump_NCList_as_int_array(top_nclist, INTEGER(ans));
+	UNPROTECT(1);
+	return ans;
+}
+
+
+/****************************************************************************
  * NCList_new()
  */
 
@@ -43,6 +106,38 @@ SEXP NCList_new()
 		error("NCList_new: memory allocation failed");
 	init_NCList(top_nclist);
 	return R_MakeExternalPtr(top_nclist, R_NilValue, R_NilValue);
+}
+
+
+/****************************************************************************
+ * NCList_free()
+ */
+
+static void free_NCList(NCList *nclist)
+{
+	int n;
+	const NCListElt *elt;
+
+	if (nclist->buflength != 0) {
+		for (n = 0, elt = nclist->elts; n < nclist->nelt; n++, elt++)
+			free_NCList(elt->sublist);
+		free(nclist->elts);
+	}
+	free(nclist);
+	return;
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP NCList_free(SEXP nclist)
+{
+	NCList *top_nclist;
+
+	top_nclist = (NCList *) R_ExternalPtrAddr(nclist);
+	if (top_nclist == NULL)
+		error("NCList_free: pointer to NCList struct is NULL");
+	free_NCList(top_nclist);
+	R_SetExternalPtrAddr(nclist, NULL);
+	return R_NilValue;
 }
 
 
@@ -165,7 +260,7 @@ SEXP NCList_build(SEXP nclist, SEXP x_start, SEXP x_end)
 				    &x_start_p, &x_end_p,
 				    "start(x)", "end(x)");
 	build_NCList(top_nclist, x_start_p, x_end_p, x_len);
-	return R_NilValue;
+	return new_INTEGER_from_NCList(top_nclist);
 }
 
 
@@ -174,24 +269,30 @@ SEXP NCList_build(SEXP nclist, SEXP x_start, SEXP x_end)
  */
 
 /* Print 1 line per range in 'nclist'. Return max depth. */
-static int print_NCList(const NCList *nclist,
+static int print_NCList(const int *nclist,
 			const int *x_start, const int *x_end,
 			int depth, const char *format)
 {
-	int max_depth, n, d, tmp;
-	const NCListElt *elt;
+	int max_depth, nelt, n, d, i, offset, tmp;
 
 	max_depth = depth;
-	for (n = 0, elt = nclist->elts; n < nclist->nelt; n++, elt++) {
-		for (d = 0; d < depth; d++)
+	nelt = GET_NCLIST_NELT(nclist);
+	if (nelt == 0)
+		return max_depth;
+	for (n = 0; n < nelt; n++) {
+		for (d = 1; d < depth; d++)
 			Rprintf("|");
-		Rprintf(format, elt->i + 1);
-		Rprintf(": [%d, %d]\n", x_start[elt->i], x_end[elt->i]);
-		tmp = print_NCList(elt->sublist,
-				   x_start, x_end, depth + 1,
-				   format);
-		if (tmp > max_depth)
-			max_depth = tmp;
+		i = GET_NCLIST_I(nclist, n);
+		Rprintf(format, i + 1);
+		Rprintf(": [%d, %d]\n", x_start[i], x_end[i]);
+		offset = GET_SUBLIST_OFFSET(nclist, n);
+		if (offset != -1) {
+			tmp = print_NCList(nclist + offset,
+					   x_start, x_end, depth + 1,
+					   format);
+			if (tmp > max_depth)
+				max_depth = tmp;
+		}
 	}
 	return max_depth;
 }
@@ -199,53 +300,24 @@ static int print_NCList(const NCList *nclist,
 /* --- .Call ENTRY POINT --- */
 SEXP NCList_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
 {
-	const NCList *top_nclist;
+	const int *top_nclist;
 	int x_len, max_digits, max_depth;
 	const int *x_start_p, *x_end_p;
 	char format[10];
 
-	top_nclist = (NCList *) R_ExternalPtrAddr(x_nclist);
-	if (top_nclist == NULL)
-		error("NCList_print: pointer to NCList struct is NULL");
+	top_nclist = INTEGER(x_nclist);
 	x_len = check_integer_pairs(x_start, x_end,
 				    &x_start_p, &x_end_p,
 				    "start(x)", "end(x)");
-	max_digits = x_len ? (int) log10((double) x_len) + 1 : 0;
-	sprintf(format, "%c%d%c", '%', max_digits, 'd');
-	max_depth = print_NCList(top_nclist, x_start_p, x_end_p, 0, format);
-	Rprintf("max depth = %d\n", max_depth);
-	return R_NilValue;
-}
-
-
-/****************************************************************************
- * NCList_free()
- */
-
-static void free_NCList(NCList *nclist)
-{
-	int n;
-	const NCListElt *elt;
-
-	if (nclist->buflength != 0) {
-		for (n = 0, elt = nclist->elts; n < nclist->nelt; n++, elt++)
-			free_NCList(elt->sublist);
-		free(nclist->elts);
+	if (x_len == 0) {
+		max_depth = 0;
+	} else {
+		max_digits = (int) log10((double) x_len) + 1;
+		sprintf(format, "%c%d%c", '%', max_digits, 'd');
+		max_depth = print_NCList(top_nclist, x_start_p, x_end_p,
+					 1, format);
 	}
-	free(nclist);
-	return;
-}
-
-/* --- .Call ENTRY POINT --- */
-SEXP NCList_free(SEXP nclist)
-{
-	NCList *top_nclist;
-
-	top_nclist = (NCList *) R_ExternalPtrAddr(nclist);
-	if (top_nclist == NULL)
-		error("NCList_free: pointer to NCList struct is NULL");
-	free_NCList(top_nclist);
-	R_SetExternalPtrAddr(nclist, NULL);
+	Rprintf("max depth = %d\n", max_depth);
 	return R_NilValue;
 }
 
@@ -253,83 +325,6 @@ SEXP NCList_free(SEXP nclist)
 /****************************************************************************
  * NCList_find_overlaps()
  */
-
-static void NCList_unlist(const NCList *nclist, IntAE *out)
-{
-	int n;
-	const NCListElt *elt;
-
-	for (n = 0, elt = nclist->elts; n < nclist->nelt; n++, elt++) {
-		IntAE_insert_at(out, IntAE_get_nelt(out), elt->i + 1);
-		NCList_unlist(elt->sublist, out);
-	}
-	return;
-}
-
-/*
- * Look for the first element in 'nclist' that points to a range with an
- * end >= 'q_start'.
- */
-static int bsearch_n1(int q_start, const NCList *nclist, const int *s_end)
-{
-	int n1, n2, n, end;
-
-	/* Check first element. */
-	n1 = 0;
-	end = s_end[nclist->elts[n1].i];
-	if (end >= q_start)
-		return n1;
-
-	/* Check last element. */
-	n2 = nclist->nelt - 1;
-	end = s_end[nclist->elts[n2].i];
-	if (end < q_start)
-		return nclist->nelt;
-	if (end == q_start)
-		return n2;
-
-	/* Binary search. */
-	while ((n = (n1 + n2) / 2) != n1) {
-		end = s_end[nclist->elts[n].i];
-		if (end == q_start)
-			return n;
-		if (end < q_start)
-			n1 = n;
-		else
-			n2 = n;
-	}
-	return n2;
-}
-
-static void NCList_overlap(int q_start, int q_end,
-			   const NCList *nclist,
-			   const int *s_start, const int *s_end,
-			   IntAE *out)
-{
-	int n, start;
-	const NCListElt *elt;
-
-	if (nclist->nelt == 0)
-		return;
-	n = bsearch_n1(q_start, nclist, s_end);
-	for (elt = nclist->elts + n;
-	     n < nclist->nelt;
-	     n++, elt++)
-	{
-		start = s_start[elt->i];
-		if (start > q_end)
-			break;
-		IntAE_insert_at(out, IntAE_get_nelt(out), elt->i + 1);
-		//if (start >= q_start && s_end[elt->i] <= q_end)
-		//	NCList_unlist(elt->sublist, out);
-		//else
-			NCList_overlap(q_start, q_end,
-				       elt->sublist,
-				       s_start, s_end,
-				       out);
-	}
-	return;
-}
 
 static SEXP new_Hits_from_IntAEAE(const IntAEAE *x, int s_len)
 {
@@ -365,25 +360,76 @@ static SEXP new_Hits_from_IntAEAE(const IntAEAE *x, int s_len)
 	return ans;
 }
 
-/* --- .Call ENTRY POINT ---
- * Usage:
- *   query <- IRanges(c(5, 1), c(7, 4))
- *   .Call("NCList_find_overlaps", start(query), end(query),
- *                                 nclist, start(x), end(x),
- *                                 PACKAGE="IRanges")
- */
+static int bsearch_n1(int q_start, const int *nclist, const int *s_end)
+{
+	int n1, n2, nelt, n, end;
+
+	/* Check first element. */
+	n1 = 0;
+	end = s_end[GET_NCLIST_I(nclist, n1)];
+	if (end >= q_start)
+		return n1;
+
+	/* Check last element. */
+	nelt = GET_NCLIST_NELT(nclist);
+	n2 = nelt - 1;
+	end = s_end[GET_NCLIST_I(nclist, n2)];
+	if (end < q_start)
+		return nelt;
+	if (end == q_start)
+		return n2;
+
+	/* Binary search. */
+	while ((n = (n1 + n2) / 2) != n1) {
+		end = s_end[GET_NCLIST_I(nclist, n)];
+		if (end == q_start)
+			return n;
+		if (end < q_start)
+			n1 = n;
+		else
+			n2 = n;
+	}
+	return n2;
+}
+
+static void NCList_overlap(int q_start, int q_end,
+			   const int *nclist,
+			   const int *s_start, const int *s_end,
+			   IntAE *out)
+{
+	int nelt, n, i, start, offset;
+
+	nelt = GET_NCLIST_NELT(nclist);
+	if (nelt == 0)
+		return;
+	n = bsearch_n1(q_start, nclist, s_end);
+	for ( ; n < nelt; n++) {
+		i = GET_NCLIST_I(nclist, n);
+		start = s_start[i];
+		if (start > q_end)
+			break;
+		IntAE_insert_at(out, IntAE_get_nelt(out), i + 1);
+		offset = GET_SUBLIST_OFFSET(nclist, n);
+		if (offset != -1)
+			NCList_overlap(q_start, q_end,
+				       nclist + offset,
+				       s_start, s_end,
+				       out);
+	}
+	return;
+}
+
+/* --- .Call ENTRY POINT --- */
 SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 			  SEXP s_nclist, SEXP s_start, SEXP s_end)
 {
-	const NCList *top_nclist;
+	const int *top_nclist;
 	int q_len, s_len, m;
 	const int *q_start_p, *q_end_p, *s_start_p, *s_end_p;
 	IntAEAE buf;
 	IntAE *buf_elt;
 
-	top_nclist = (const NCList *) R_ExternalPtrAddr(s_nclist);
-	if (top_nclist == NULL)
-		error("NCList_find_overlaps: pointer to NCList struct is NULL");
+	top_nclist = INTEGER(s_nclist);
 	q_len = check_integer_pairs(q_start, q_end,
 				    &q_start_p, &q_end_p,
 				    "start(query)", "end(query)");
@@ -391,14 +437,16 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 				    &s_start_p, &s_end_p,
 				    "start(subject)", "end(subject)");
 	buf = new_IntAEAE(q_len, q_len);
-	for (m = 0, buf_elt = buf.elts;
-	     m < q_len;
-	     m++, buf_elt++, q_start_p++, q_end_p++)
-	{
-		NCList_overlap(*q_start_p, *q_end_p,
-			       top_nclist, s_start_p, s_end_p,
-			       buf_elt);
-		IntAE_qsort(buf_elt, 0);
+	if (s_len != 0) {
+		for (m = 0, buf_elt = buf.elts;
+		     m < q_len;
+		     m++, buf_elt++, q_start_p++, q_end_p++)
+		{
+			NCList_overlap(*q_start_p, *q_end_p,
+				       top_nclist, s_start_p, s_end_p,
+				       buf_elt);
+			IntAE_qsort(buf_elt, 0);
+		}
 	}
 	return new_Hits_from_IntAEAE(&buf, s_len);
 }

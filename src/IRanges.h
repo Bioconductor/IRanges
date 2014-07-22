@@ -375,6 +375,8 @@ SEXP CompressedIRangesList_coverage(
 
 SEXP NCList_new();
 
+SEXP NCList_free(SEXP x);
+
 SEXP NCList_build(
 	SEXP nclist,
 	SEXP x_start,
@@ -386,8 +388,6 @@ SEXP NCList_print(
 	SEXP x_start,
 	SEXP x_end
 );
-
-SEXP NCList_free(SEXP x);
 
 SEXP NCList_find_overlaps(
 	SEXP q_start,
