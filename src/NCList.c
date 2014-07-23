@@ -149,27 +149,41 @@ static int qsort_compar(const void *p1, const void *p2)
 	return ret;
 }
 
+/*
+ * Setting a hard limit on the max depth of NCList objects to prevent C stack
+ * overflows when running recursive code like NCList_overlap(). A better
+ * solution would be to not use recursive code at all when traversing an
+ * NCList object. Then NCList objects of arbitrary depth could be supported
+ * and it wouldn't be necessary to set the limit below.
+ */
+#define NCLIST_MAX_DEPTH 25000
 static preNCListElt **stack = NULL;
-static int stack_maxdepth = 0;
+static int stack_length = 0;
 
 static void extend_stack()
 {
-	int new_maxdepth;
+	int new_length;
 	preNCListElt **new_stack;
 
-	if (stack_maxdepth == 0) {
-		new_maxdepth = 1000;
-		new_stack = (preNCListElt **) malloc(new_maxdepth *
+	if (stack_length == 0) {
+		new_length = 1000;
+		new_stack = (preNCListElt **) malloc(new_length *
 						     sizeof(preNCListElt *));
 	} else {
-		new_maxdepth = 2 * stack_maxdepth;
+		if (stack_length == NCLIST_MAX_DEPTH)
+			error("extend_stack: cannot build an NCList object "
+			      "of depth >= %d", NCLIST_MAX_DEPTH);
+		if (stack_length <= NCLIST_MAX_DEPTH / 2)
+			new_length = 2 * stack_length;
+		else
+			new_length = NCLIST_MAX_DEPTH;
 		new_stack = (preNCListElt **) realloc(stack,
-						      new_maxdepth *
+						      new_length *
 						      sizeof(preNCListElt *));
 	}
 	if (new_stack == NULL)
 		error("extend_stack: memory allocation failed");
-	stack_maxdepth = new_maxdepth;
+	stack_length = new_length;
 	stack = new_stack;
 	return;
 }
@@ -195,7 +209,7 @@ static void build_preNCList(preNCList *top_pnclist,
 		i = oo[k];
 		current_end = x_end[i];
 		while (d >= 0 && x_end[stack[d]->i] < current_end)
-			d--;
+			d--;  // unstack
 		if (d == -1) {
 			// append range i to top-level
 			new_elt = add_preNCList_elt(top_pnclist, i);
@@ -203,9 +217,9 @@ static void build_preNCList(preNCList *top_pnclist,
 			// append range i to sublist of stack[d]
 			new_elt = add_preNCList_elt(stack[d]->sublist, i);
 		}
-		if (++d == stack_maxdepth)
+		if (++d == stack_length)
 			extend_stack();
-		stack[d] = new_elt;
+		stack[d] = new_elt;  // stack
 	}
 	return;
 }

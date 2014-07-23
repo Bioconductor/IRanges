@@ -209,7 +209,7 @@ gc()
 
 ### TEST 7 (worst case scenario for NCList):
 library(IRanges)
-x <- IRanges(50000:1, 100001:150000)
+x <- IRanges(25000:1, 100001:125000)
 query <- successiveIRanges(rep(100, 1020), from=-500)
 
 system.time(subject <- NCList(x))
