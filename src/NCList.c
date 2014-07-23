@@ -10,162 +10,99 @@
 #include <math.h>    /* for log10 */
 
 
-typedef struct nclist {
+typedef struct pnclist {
 	int buflength;           /* always >= 0 */
 	int nelt;                /* always >= 0 and <= buflength */
-	struct nclistelt *elts;
-} NCList;
+	struct pnclistelt *elts;
+} preNCList;
 
-typedef struct nclistelt {
+typedef struct pnclistelt {
 	int i;
-	struct nclist *sublist;
-} NCListElt;
+	struct pnclist *sublist;
+} preNCListElt;
 
 
 /****************************************************************************
- * new_INTEGER_from_NCList()
+ * preNCList_new()
  */
 
-#define	NCLIST_NELT(nclist) ((nclist)[0])
-#define	NCLIST_I(nclist, n) ((nclist)[((n)<<1)+1])
-#define	NCSUBLIST_OFFSET(nclist, n) ((nclist)[((n)<<1)+2])
-
-static int compute_length_of_NCList_as_INTEGER(const NCList *nclist)
+static void init_preNCList(preNCList *pnclist)
 {
-	int nelt, n;
-	unsigned int ans_len, dump_len;
-	const NCListElt *elt;
-
-	nelt = nclist->nelt;
-	if (nelt == 0)
-		return 0;
-	ans_len = 1U + 2U * (unsigned int) nelt;
-	for (n = 0, elt = nclist->elts; n < nelt; n++, elt++) {
-		dump_len = compute_length_of_NCList_as_INTEGER(elt->sublist);
-		ans_len += dump_len;
-		if (ans_len < dump_len)
-			goto too_big;
-	}
-	if (ans_len <= INT_MAX)
-		return (int) ans_len;
-too_big:
-	error("compute_length_of_NCList_as_INTEGER: "
-	      "NCList object is too big to fit in an integer vector");
-}
-
-static int dump_NCList_as_int_array(const NCList *nclist, int *out)
-{
-	int nelt, offset, dump_len, n;
-	const NCListElt *elt;
-
-	nelt = nclist->nelt;
-	if (nelt == 0)
-		return 0;
-	offset = 1 + 2 * nelt;
-	NCLIST_NELT(out) = nelt;
-	for (n = 0, elt = nclist->elts; n < nelt; n++, elt++) {
-		NCLIST_I(out, n) = elt->i;
-		dump_len = dump_NCList_as_int_array(elt->sublist, out + offset);
-		NCSUBLIST_OFFSET(out, n) = dump_len != 0 ? offset : -1;
-		offset += dump_len;
-	}
-	return offset;
-}
-
-static SEXP new_INTEGER_from_NCList(const NCList *top_nclist)
-{
-	SEXP ans;
-	int ans_len;
-
-	ans_len = compute_length_of_NCList_as_INTEGER(top_nclist);
-	PROTECT(ans = NEW_INTEGER(ans_len));
-	dump_NCList_as_int_array(top_nclist, INTEGER(ans));
-	UNPROTECT(1);
-	return ans;
-}
-
-
-/****************************************************************************
- * NCList_new()
- */
-
-static void init_NCList(NCList *nclist)
-{
-	nclist->buflength = nclist->nelt = 0;
-	nclist->elts = NULL;
+	pnclist->buflength = pnclist->nelt = 0;
+	pnclist->elts = NULL;
 	return;
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP NCList_new()
+SEXP preNCList_new()
 {
-	NCList *top_nclist;
+	preNCList *top_pnclist;
 
-	top_nclist = (NCList *) malloc(sizeof(NCList));
-	if (top_nclist == NULL)
-		error("NCList_new: memory allocation failed");
-	init_NCList(top_nclist);
-	return R_MakeExternalPtr(top_nclist, R_NilValue, R_NilValue);
+	top_pnclist = (preNCList *) malloc(sizeof(preNCList));
+	if (top_pnclist == NULL)
+		error("preNCList_new: memory allocation failed");
+	init_preNCList(top_pnclist);
+	return R_MakeExternalPtr(top_pnclist, R_NilValue, R_NilValue);
 }
 
 
 /****************************************************************************
- * NCList_free()
+ * preNCList_free()
  */
 
-static void free_NCList(NCList *nclist)
+static void free_preNCList(preNCList *pnclist)
 {
 	int n;
-	const NCListElt *elt;
+	const preNCListElt *elt;
 
-	if (nclist->buflength != 0) {
-		for (n = 0, elt = nclist->elts; n < nclist->nelt; n++, elt++)
-			free_NCList(elt->sublist);
-		free(nclist->elts);
+	if (pnclist->buflength != 0) {
+		for (n = 0, elt = pnclist->elts; n < pnclist->nelt; n++, elt++)
+			free_preNCList(elt->sublist);
+		free(pnclist->elts);
 	}
-	free(nclist);
+	free(pnclist);
 	return;
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP NCList_free(SEXP nclist)
+SEXP preNCList_free(SEXP pnclist)
 {
-	NCList *top_nclist;
+	preNCList *top_pnclist;
 
-	top_nclist = (NCList *) R_ExternalPtrAddr(nclist);
-	if (top_nclist == NULL)
-		error("NCList_free: pointer to NCList struct is NULL");
-	free_NCList(top_nclist);
-	R_SetExternalPtrAddr(nclist, NULL);
+	top_pnclist = (preNCList *) R_ExternalPtrAddr(pnclist);
+	if (top_pnclist == NULL)
+		error("preNCList_free: pointer to preNCList struct is NULL");
+	free_preNCList(top_pnclist);
+	R_SetExternalPtrAddr(pnclist, NULL);
 	return R_NilValue;
 }
 
 
 /****************************************************************************
- * NCList_build()
+ * preNCList_build()
  */
 
-static void init_NCListElt(NCListElt *elt, int i)
+static void init_preNCListElt(preNCListElt *elt, int i)
 {
-	elt->sublist = (NCList *) malloc(sizeof(NCList));
+	elt->sublist = (preNCList *) malloc(sizeof(preNCList));
 	if (elt->sublist == NULL)
-		error("init_NCListElt: memory allocation failed");
+		error("init_preNCListElt: memory allocation failed");
 	elt->i = i;
-	init_NCList(elt->sublist);
+	init_preNCList(elt->sublist);
 	return;
 }
 
-static void extend_NCList(NCList *nclist)
+static void extend_preNCList(preNCList *pnclist)
 {
 	int old_buflength, new_buflength;
 	size_t elt_size;
-	NCListElt *new_elts;
+	preNCListElt *new_elts;
 
-	old_buflength = nclist->buflength;
-	elt_size = sizeof(NCListElt);
+	old_buflength = pnclist->buflength;
+	elt_size = sizeof(preNCListElt);
 	if (old_buflength == 0) {
 		new_buflength = 4;
-		new_elts = (NCListElt *) malloc(new_buflength * elt_size);
+		new_elts = (preNCListElt *) malloc(new_buflength * elt_size);
 	} else {
 		if (old_buflength < 16384)
 			new_buflength = 8 * old_buflength;
@@ -175,25 +112,25 @@ static void extend_NCList(NCList *nclist)
 			new_buflength = 2 * old_buflength;
 		else
 			new_buflength = old_buflength + 33554432;
-		new_elts = (NCListElt *) realloc(nclist->elts,
-						 new_buflength * elt_size);
+		new_elts = (preNCListElt *) realloc(pnclist->elts,
+						    new_buflength * elt_size);
 	}
 	if (new_elts == NULL)
-		error("extend_NCList: memory allocation failed");
-	nclist->buflength = new_buflength;
-	nclist->elts = new_elts;
+		error("extend_preNCList: memory allocation failed");
+	pnclist->buflength = new_buflength;
+	pnclist->elts = new_elts;
 	return;
 }
 
-static NCListElt *add_NCList_elt(NCList *nclist, int i)
+static preNCListElt *add_preNCList_elt(preNCList *pnclist, int i)
 {
-	NCListElt *new_elt;
+	preNCListElt *new_elt;
 
-	if (nclist->nelt == nclist->buflength)
-		extend_NCList(nclist);
-	new_elt = nclist->elts + nclist->nelt;
-	init_NCListElt(new_elt, i);
-	nclist->nelt++;
+	if (pnclist->nelt == pnclist->buflength)
+		extend_preNCList(pnclist);
+	new_elt = pnclist->elts + pnclist->nelt;
+	init_preNCListElt(new_elt, i);
+	pnclist->nelt++;
 	return new_elt;
 }
 
@@ -212,13 +149,37 @@ static int qsort_compar(const void *p1, const void *p2)
 	return ret;
 }
 
-static void build_NCList(NCList *top_nclist,
-			 const int *x_start, const int *x_end, int x_len)
+static preNCListElt **stack = NULL;
+static int stack_maxdepth = 0;
+
+static void extend_stack()
 {
-	NCListElt *new_elt;
+	int new_maxdepth;
+	preNCListElt **new_stack;
+
+	if (stack_maxdepth == 0) {
+		new_maxdepth = 1000;
+		new_stack = (preNCListElt **) malloc(new_maxdepth *
+						     sizeof(preNCListElt *));
+	} else {
+		new_maxdepth = 2 * stack_maxdepth;
+		new_stack = (preNCListElt **) realloc(stack,
+						      new_maxdepth *
+						      sizeof(preNCListElt *));
+	}
+	if (new_stack == NULL)
+		error("extend_stack: memory allocation failed");
+	stack_maxdepth = new_maxdepth;
+	stack = new_stack;
+	return;
+}
+
+static void build_preNCList(preNCList *top_pnclist,
+			    const int *x_start, const int *x_end, int x_len)
+{
+	preNCListElt *new_elt;
 
 	int *oo, k, d, i, current_end;
-	static NCListElt *stack[1000];
 
 	// Determine order of 'x'. 'oo' will be such that 'x[oo]' is sorted
 	// first by ascending start then by descending end.
@@ -229,7 +190,7 @@ static void build_NCList(NCList *top_nclist,
 	bb = x_end;
 	qsort(oo, x_len, sizeof(int), qsort_compar);
 
-	init_NCList(top_nclist);
+	init_preNCList(top_pnclist);
 	for (k = 0, d = -1; k < x_len; k++) {
 		i = oo[k];
 		current_end = x_end[i];
@@ -237,30 +198,102 @@ static void build_NCList(NCList *top_nclist,
 			d--;
 		if (d == -1) {
 			// append range i to top-level
-			new_elt = add_NCList_elt(top_nclist, i);
+			new_elt = add_preNCList_elt(top_pnclist, i);
 		} else {
 			// append range i to sublist of stack[d]
-			new_elt = add_NCList_elt(stack[d]->sublist, i);
+			new_elt = add_preNCList_elt(stack[d]->sublist, i);
 		}
-		stack[++d] = new_elt;
+		if (++d == stack_maxdepth)
+			extend_stack();
+		stack[d] = new_elt;
 	}
 	return;
 }
 
-SEXP NCList_build(SEXP nclist, SEXP x_start, SEXP x_end)
+SEXP preNCList_build(SEXP pnclist, SEXP x_start, SEXP x_end)
 {
-	NCList *top_nclist;
+	preNCList *top_pnclist;
 	int x_len;
 	const int *x_start_p, *x_end_p;
 
-	top_nclist = (NCList *) R_ExternalPtrAddr(nclist);
-	if (top_nclist == NULL)
-		error("NCList_build: pointer to NCList struct is NULL");
+	top_pnclist = (preNCList *) R_ExternalPtrAddr(pnclist);
+	if (top_pnclist == NULL)
+		error("preNCList_build: pointer to preNCList struct is NULL");
 	x_len = check_integer_pairs(x_start, x_end,
 				    &x_start_p, &x_end_p,
 				    "start(x)", "end(x)");
-	build_NCList(top_nclist, x_start_p, x_end_p, x_len);
-	return new_INTEGER_from_NCList(top_nclist);
+	build_preNCList(top_pnclist, x_start_p, x_end_p, x_len);
+	return pnclist;
+}
+
+
+/****************************************************************************
+ * new_NCList_from_preNCList()
+ */
+
+#define	NCLIST_NELT(nclist) ((nclist)[0])
+#define	NCLIST_I(nclist, n) ((nclist)[((n)<<1)+1])
+#define	NCSUBLIST_OFFSET(nclist, n) ((nclist)[((n)<<1)+2])
+
+static int compute_length_of_preNCList_as_INTEGER(const preNCList *pnclist)
+{
+	int nelt, n;
+	unsigned int ans_len, dump_len;
+	const preNCListElt *elt;
+
+	nelt = pnclist->nelt;
+	if (nelt == 0)
+		return 0;
+	ans_len = 1U + 2U * (unsigned int) nelt;
+	for (n = 0, elt = pnclist->elts; n < nelt; n++, elt++) {
+		dump_len = compute_length_of_preNCList_as_INTEGER(elt->sublist);
+		ans_len += dump_len;
+		if (ans_len < dump_len)
+			goto too_big;
+	}
+	if (ans_len <= INT_MAX)
+		return (int) ans_len;
+too_big:
+	error("compute_length_of_preNCList_as_INTEGER: "
+	      "preNCList object is too big to fit in an integer vector");
+}
+
+static int dump_preNCList_as_int_array(const preNCList *pnclist, int *out)
+{
+	int nelt, offset, dump_len, n;
+	const preNCListElt *elt;
+
+	nelt = pnclist->nelt;
+	if (nelt == 0)
+		return 0;
+	offset = 1 + 2 * nelt;
+	NCLIST_NELT(out) = nelt;
+	for (n = 0, elt = pnclist->elts; n < nelt; n++, elt++) {
+		NCLIST_I(out, n) = elt->i;
+		dump_len = dump_preNCList_as_int_array(elt->sublist,
+						       out + offset);
+		NCSUBLIST_OFFSET(out, n) = dump_len != 0 ? offset : -1;
+		offset += dump_len;
+	}
+	return offset;
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP new_NCList_from_preNCList(SEXP pnclist)
+{
+	SEXP ans;
+	const preNCList *top_pnclist;
+	int ans_len;
+
+	top_pnclist = (preNCList *) R_ExternalPtrAddr(pnclist);
+	if (top_pnclist == NULL)
+		error("new_NCList_from_preNCList: "
+		      "pointer to preNCList struct is NULL");
+	ans_len = compute_length_of_preNCList_as_INTEGER(top_pnclist);
+	PROTECT(ans = NEW_INTEGER(ans_len));
+	dump_preNCList_as_int_array(top_pnclist, INTEGER(ans));
+	UNPROTECT(1);
+	return ans;
 }
 
 

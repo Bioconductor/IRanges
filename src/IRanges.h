@@ -373,14 +373,18 @@ SEXP CompressedIRangesList_coverage(
 
 /* NCList.c */
 
-SEXP NCList_new();
+SEXP preNCList_new();
 
-SEXP NCList_free(SEXP x);
+SEXP preNCList_free(SEXP x);
 
-SEXP NCList_build(
-	SEXP nclist,
+SEXP preNCList_build(
+	SEXP pnclist,
 	SEXP x_start,
 	SEXP x_end
+);
+
+SEXP new_NCList_from_preNCList(
+	SEXP pnclist
 );
 
 SEXP NCList_print(

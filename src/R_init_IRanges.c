@@ -65,9 +65,10 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(CompressedIRangesList_coverage, 6),
 
 /* NCList.c */
-	CALLMETHOD_DEF(NCList_new, 0),
-	CALLMETHOD_DEF(NCList_free, 1),
-	CALLMETHOD_DEF(NCList_build, 3),
+	CALLMETHOD_DEF(preNCList_new, 0),
+	CALLMETHOD_DEF(preNCList_free, 1),
+	CALLMETHOD_DEF(preNCList_build, 3),
+	CALLMETHOD_DEF(new_NCList_from_preNCList, 1),
 	CALLMETHOD_DEF(NCList_print, 3),
 	CALLMETHOD_DEF(NCList_find_overlaps, 5),
 

@@ -20,6 +20,16 @@ setMethod("end", "NCList", function(x, ...) end(x@ranges))
 setMethod("width", "NCList", function(x) width(x@ranges))
 setMethod("names", "NCList", function(x) names(x@ranges))
 
+### Returns an external pointer to the pre-NCList.
+.preNCList <- function(x)
+{
+    ans <- .Call("preNCList_new", PACKAGE="IRanges")
+    reg.finalizer(ans,
+        function(e) .Call("preNCList_free", e, PACKAGE="IRanges")
+    )
+    .Call("preNCList_build", ans, start(x), end(x), PACKAGE="IRanges")
+}
+
 ### Usage:
 ###   x <- IRanges(c(11, 10, 13, 10, 14,  8, 10, 11),
 ###                c(15, 12, 18, 13, 14, 12, 15, 15))
@@ -30,13 +40,10 @@ NCList <- function(x)
         stop("'x' must be a Ranges object")
     if (!is(x, "IRanges"))
         x <- as(x, "IRanges")
-    x_nclist <- .Call("NCList_new", PACKAGE="IRanges")
-    reg.finalizer(x_nclist,
-        function(e) .Call("NCList_free", e, PACKAGE="IRanges")
-    )
-    C_ans <- .Call("NCList_build", x_nclist, start(x), end(x),
-                                   PACKAGE="IRanges")
-    new2("NCList", nclist=C_ans, ranges=x, check=FALSE)
+    pnclist <- .preNCList(x)
+    ans_nclist <- .Call("new_NCList_from_preNCList", pnclist,
+                                                     PACKAGE="IRanges")
+    new2("NCList", nclist=ans_nclist, ranges=x, check=FALSE)
 }
 
 ### NOT exported.
@@ -198,6 +205,21 @@ gc()
 system.time(subject <- IntervalTree(x))
 gc()
 system.time(hits6b <- findOverlaps(query, subject))
+gc()
+
+### TEST 7 (worst case scenario for NCList):
+library(IRanges)
+x <- IRanges(50000:1, 100001:150000)
+query <- successiveIRanges(rep(100, 1020), from=-500)
+
+system.time(subject <- NCList(x))
+gc()
+system.time(hits7 <- IRanges:::findOverlaps_NCList(query, subject))
+gc()
+
+system.time(subject <- IntervalTree(x))
+gc()
+system.time(hits7b <- findOverlaps(query, subject))
 gc()
 
 }
