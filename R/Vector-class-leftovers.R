@@ -146,8 +146,10 @@ setMethod("rep.int", "Vector",
 setMethod("subset", "Vector",
           function(x, subset, select, drop = FALSE, ...) {
             i <- S4Vectors:::evalqForSubset(subset, x, ...)
-            j <- S4Vectors:::evalqForSelect(select, mcols(x), ...)
-            mcols(x) <- mcols(x)[,j,drop=FALSE]
+            if (!is.null(mcols(x))) {
+                j <- S4Vectors:::evalqForSelect(select, mcols(x), ...)
+                mcols(x) <- mcols(x)[,j,drop=FALSE]
+            }
             x[i, drop=drop]
           })
 
