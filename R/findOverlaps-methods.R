@@ -111,7 +111,7 @@ setGeneric("findOverlaps", signature = c("query", "subject"),
     }
     
     if (origSelect != "all") {
-      m <- m[!duplicated(m[,1L]), , drop=FALSE]
+      m <- m[!duplicated(m[,1L], fromLast = origSelect == "last"), , drop=FALSE]
       result <- rep.int(NA_integer_, length(query))
       ## unname() required because in case 'm' has only 1 row
       ## 'm[,2L]' will return a named atomic vector
