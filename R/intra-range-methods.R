@@ -201,6 +201,94 @@ setMethod("narrow", "MaskCollection",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### resize()
+###
+
+setGeneric("resize", signature="x",
+    function(x, width, fix="start", use.names=TRUE, ...)
+        standardGeneric("resize")
+)
+
+setMethod("resize", "Ranges",
+    function(x, width, fix="start", use.names=TRUE)
+    {
+        if (is(x, "NormalIRanges"))
+            stop("resizing a NormalIRanges object is not supported")
+        lx <- length(x)
+        if (!is.numeric(width) || S4Vectors:::anyMissing(width))
+            stop("'width' must be a numeric vector without NA's")
+        if (!is.integer(width))
+            width <- as.integer(width)
+        if (S4Vectors:::anyMissingOrOutside(width, 0L))
+            stop("'width' values must be non-negative")
+        if (!(is.character(fix) ||
+              (is(fix, "Rle") && is.character(runValue(fix)))) || 
+            (length(fix) == 0L && length(x) > 0L) ||
+            (length(setdiff(unique(fix),
+                            c("start", "end", "center"))) > 0)) {
+            stop("'fix' must be a character vector or character Rle ",
+                 "with values in \"start\", \"end\", and \"center\"")
+        }
+        if (!is(fix, "Rle"))
+            fix <- Rle(fix)
+        if (length(fix) != lx)
+            fix <- rep(fix, length.out = lx)
+        ans_width <- S4Vectors:::recycleVector(width, lx)
+        ans_start <- start(x)
+        if (!identical(runValue(fix), "start")) {
+            fixEnd <- as(fix == "end", "IRanges")
+            if (length(fixEnd) > 0) {
+                value <- extractROWS(ans_start, fixEnd) +
+                         (extractROWS(width(x), fixEnd) -
+                          extractROWS(ans_width, fixEnd))
+                ans_start <- replaceROWS(ans_start, fixEnd, value)
+            }
+            fixCenter <- as(fix == "center", "IRanges")
+            if (length(fixCenter) > 0) {
+                value <- extractROWS(ans_start, fixCenter) +
+                         (extractROWS(width(x), fixCenter) -
+                          extractROWS(ans_width, fixCenter)) %/% 2L
+                ans_start <- replaceROWS(ans_start, fixCenter, value)
+            }
+        }
+        x <- update(x, start=ans_start, width=ans_width, check=FALSE)
+        if (!S4Vectors:::normargUseNames(use.names))
+            names(x) <- NULL
+        x
+    }
+)
+
+setMethod("resize", "RangesList",
+          function(x, width, fix = "start", use.names = TRUE)
+          {
+              lx <- length(x)
+              width <- normargAtomicList1(width, IntegerList, lx)
+              fix <- normargAtomicList1(fix, CharacterList, lx)
+              mendoapply(resize, x = x, width = width, fix = fix,
+                         MoreArgs = list(use.names = use.names))
+          })
+
+setMethod("resize", "CompressedIRangesList",
+          function(x, width, fix = "start", use.names = TRUE)
+          {
+              lx <- length(x)
+              eln <- elementLengths(x)
+              width <- normargAtomicList2(width, IntegerList, lx, eln)
+              fix <- normargAtomicList2(fix, CharacterList, lx, eln)
+              slot(x, "unlistData", check=FALSE) <-
+                resize(x@unlistData, width = width, fix = fix,
+                       use.names = use.names)
+              x
+          })
+
+setMethod("resize", "IntervalForest",
+          function(x, width, fix = "start", use.names = TRUE)
+            as(resize(as(x, "CompressedIRangesList"),
+                      width = width, fix = fix, use.names = use.names),
+               "IntervalForest"))
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### flank()
 ###
 
@@ -366,94 +454,6 @@ setMethod("reflect", "Ranges",
         x
     }
 )
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### resize()
-###
-
-setGeneric("resize", signature="x",
-    function(x, width, fix="start", use.names=TRUE, ...)
-        standardGeneric("resize")
-)
-
-setMethod("resize", "Ranges",
-    function(x, width, fix="start", use.names=TRUE)
-    {
-        if (is(x, "NormalIRanges"))
-            stop("resizing a NormalIRanges object is not supported")
-        lx <- length(x)
-        if (!is.numeric(width) || S4Vectors:::anyMissing(width))
-            stop("'width' must be a numeric vector without NA's")
-        if (!is.integer(width))
-            width <- as.integer(width)
-        if (S4Vectors:::anyMissingOrOutside(width, 0L))
-            stop("'width' values must be non-negative")
-        if (!(is.character(fix) ||
-              (is(fix, "Rle") && is.character(runValue(fix)))) || 
-            (length(fix) == 0L && length(x) > 0L) ||
-            (length(setdiff(unique(fix),
-                            c("start", "end", "center"))) > 0)) {
-            stop("'fix' must be a character vector or character Rle ",
-                 "with values in \"start\", \"end\", and \"center\"")
-        }
-        if (!is(fix, "Rle"))
-            fix <- Rle(fix)
-        if (length(fix) != lx)
-            fix <- rep(fix, length.out = lx)
-        ans_width <- S4Vectors:::recycleVector(width, lx)
-        ans_start <- start(x)
-        if (!identical(runValue(fix), "start")) {
-            fixEnd <- as(fix == "end", "IRanges")
-            if (length(fixEnd) > 0) {
-                value <- extractROWS(ans_start, fixEnd) +
-                         (extractROWS(width(x), fixEnd) -
-                          extractROWS(ans_width, fixEnd))
-                ans_start <- replaceROWS(ans_start, fixEnd, value)
-            }
-            fixCenter <- as(fix == "center", "IRanges")
-            if (length(fixCenter) > 0) {
-                value <- extractROWS(ans_start, fixCenter) +
-                         (extractROWS(width(x), fixCenter) -
-                          extractROWS(ans_width, fixCenter)) %/% 2L
-                ans_start <- replaceROWS(ans_start, fixCenter, value)
-            }
-        }
-        x <- update(x, start=ans_start, width=ans_width, check=FALSE)
-        if (!S4Vectors:::normargUseNames(use.names))
-            names(x) <- NULL
-        x
-    }
-)
-
-setMethod("resize", "RangesList",
-          function(x, width, fix = "start", use.names = TRUE)
-          {
-              lx <- length(x)
-              width <- normargAtomicList1(width, IntegerList, lx)
-              fix <- normargAtomicList1(fix, CharacterList, lx)
-              mendoapply(resize, x = x, width = width, fix = fix,
-                         MoreArgs = list(use.names = use.names))
-          })
-
-setMethod("resize", "CompressedIRangesList",
-          function(x, width, fix = "start", use.names = TRUE)
-          {
-              lx <- length(x)
-              eln <- elementLengths(x)
-              width <- normargAtomicList2(width, IntegerList, lx, eln)
-              fix <- normargAtomicList2(fix, CharacterList, lx, eln)
-              slot(x, "unlistData", check=FALSE) <-
-                resize(x@unlistData, width = width, fix = fix,
-                       use.names = use.names)
-              x
-          })
-
-setMethod("resize", "IntervalForest",
-          function(x, width, fix = "start", use.names = TRUE)
-            as(resize(as(x, "CompressedIRangesList"),
-                      width = width, fix = fix, use.names = use.names),
-               "IntervalForest"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -335,7 +335,7 @@ export(
     mapCoords, pmapCoords,
 
     ## intra-range-methods.R:
-    shift, narrow, flank, reflect, resize, promoters, restrict, threebands,
+    shift, narrow, resize, flank, reflect, promoters, restrict, threebands,
 
     ## inter-range-methods.R:
     reduce, gaps, disjoin, isDisjoint, disjointBins,
@@ -409,7 +409,7 @@ exportMethods(
     reducerParams, "reducerParams<-",
     iteratorFun, "iteratorFun<-",
     map, pmap,
-    shift, narrow, flank, reflect, resize, promoters, restrict, threebands,
+    shift, narrow, resize, flank, reflect, promoters, restrict, threebands,
     reduce, gaps, disjoin, isDisjoint, disjointBins,
     reverse,
     coverage,

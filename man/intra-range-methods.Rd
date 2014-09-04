@@ -17,6 +17,13 @@
 \alias{narrow,CompressedIRangesList-method}
 \alias{narrow,MaskCollection-method}
 
+\alias{resize}
+\alias{resize,Ranges-method}
+\alias{resize,RangesList-method}
+\alias{resize,IntervalList-method}
+\alias{resize,CompressedIRangesList-method}
+\alias{resize,IntervalForest-method}
+
 \alias{flank}
 \alias{flank,Ranges-method}
 \alias{flank,RangesList-method}
@@ -32,13 +39,6 @@
 
 \alias{reflect}
 \alias{reflect,Ranges-method}
-
-\alias{resize}
-\alias{resize,Ranges-method}
-\alias{resize,RangesList-method}
-\alias{resize,IntervalList-method}
-\alias{resize,CompressedIRangesList-method}
-\alias{resize,IntervalForest-method}
 
 \alias{restrict}
 \alias{restrict,Ranges-method}
@@ -87,6 +87,9 @@ shift(x, shift=0L, use.names=TRUE)
 ## narrow()
 narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
 
+## resize()
+resize(x, width, fix="start", use.names=TRUE, ...)
+
 ## flank()
 flank(x, width, start=TRUE, both=FALSE, use.names=TRUE, ...)
 
@@ -95,9 +98,6 @@ promoters(x, upstream=2000, downstream=200, ...)
 
 ## reflect()
 reflect(x, bounds, use.names=TRUE)
-
-## resize()
-resize(x, width, fix="start", use.names=TRUE, ...)
 
 ## restrict()
 restrict(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
@@ -159,7 +159,7 @@ threebands(x, start=NA, end=NA, width=NA)
             is effectively doubled. Recycled as necessary so that each
             element corresponds to a range in \code{x}.
       \item If \code{x} is a \link{RangesList} object:
-            For \code{flank} and \code{resize}, either an integer vector or an
+            For \code{resize} and \code{flank}, either an integer vector or an
             \link{IntegerList} object containing the width of the flanking
             or resized regions. Recycled as necessary so that each element
             corresponds to a range in \code{x}. (Note for \code{flank}:
@@ -236,6 +236,9 @@ threebands(x, start=NA, end=NA, width=NA)
   to the solved start/end/width values for this range. Note that those
   solved values are interpreted relatively to the original range.
 
+  \code{resize} resizes the ranges to the specified width where either the
+  start, end, or center is used as an anchor.
+
   \code{flank} generates flanking ranges for each range in \code{x}. If
   \code{start} is \code{TRUE} for a given range, the flanking occurs at
   the start, otherwise the end. The widths of the flanks are given by
@@ -293,9 +296,6 @@ threebands(x, start=NA, end=NA, width=NA)
 
   \code{restrict} restricts the ranges in \code{x} to the interval(s)
   specified by the \code{start} and \code{end} arguments.
-
-  \code{resize} resizes the ranges to the specified width where either the
-  start, end, or center is used as an anchor.
 
   \code{threebands} extends the capability of \code{narrow} by returning
   the 3 ranges objects associated to the narrowing operation.
@@ -377,6 +377,17 @@ mymasks
 narrow(mymasks, start=8)
 
 ## ---------------------------------------------------------------------
+## resize()
+## ---------------------------------------------------------------------
+
+## On a Ranges object
+resize(ir2, 200)
+resize(ir2, 2, fix="end")
+
+## On a RangesList object
+resize(collection, width=200)
+
+## ---------------------------------------------------------------------
 ## flank()
 ## ---------------------------------------------------------------------
 
@@ -415,17 +426,6 @@ bounds <- IRanges(c(0, 5, 3), c(10, 6, 9))
 reflect(ir3, bounds)
 
 ## reflect() does not yet support RangesList objects!
-
-## ---------------------------------------------------------------------
-## resize()
-## ---------------------------------------------------------------------
-
-## On a Ranges object
-resize(ir2, 200)
-resize(ir2, 2, fix="end")
-
-## On a RangesList object
-resize(collection, width=200)
 
 ## ---------------------------------------------------------------------
 ## restrict()
