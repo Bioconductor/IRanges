@@ -158,13 +158,6 @@ setMethod("subset", "Vector",
 ### Combining.
 ###
 
-rbindRowOfNAsToMetadatacols <- function(x) {
-  x_mcols <- mcols(x)
-  if (!is.null(x_mcols))
-    mcols(x)[nrow(x_mcols)+1L,] <- NA
-  x
-}
-
 rbind.mcols <- function(x, ...)
 {
     args <- list(x, ...)

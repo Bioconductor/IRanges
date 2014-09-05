@@ -323,7 +323,7 @@ setReplaceMethod("length", "H2LGrouping",
         if (value > length(x))
             stop("cannot make a ", class(x), " instance longer")
         length(x@high2low) <- value
-        x@low2high <- S4Vector:::reverseSelfmatchMapping(x@high2low)
+        x@low2high <- S4Vectors:::reverseSelfmatchMapping(x@high2low)
         x
     }
 )

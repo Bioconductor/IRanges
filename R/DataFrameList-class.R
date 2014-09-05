@@ -246,7 +246,7 @@ DataFrameList <- function(...)
     listData <- listData[[1L]]
   if (length(listData) > 0 && !is(listData[[1L]], "DataFrame"))
     listData <- lapply(listData, as, "DataFrame")
-  newList("SimpleDataFrameList", listData)
+  new_SimpleList_from_list("SimpleDataFrameList", listData)
 }
 
 SplitDataFrameList <- function(..., compress = TRUE, cbindArgs = FALSE)
@@ -265,9 +265,9 @@ SplitDataFrameList <- function(..., compress = TRUE, cbindArgs = FALSE)
     listData <- lapply(listData, as, "DataFrame")
   
   if (compress)
-    newList("CompressedSplitDataFrameList", listData)
+    new_CompressedList_from_list("CompressedSplitDataFrameList", listData)
   else
-    newList("SimpleSplitDataFrameList", listData)
+    new_SimpleList_from_list("SimpleSplitDataFrameList", listData)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -355,7 +355,7 @@ setReplaceMethod("[", "SplitDataFrameList",
         if (missing(i)) {
             y[] <- value
         } else if (is.list(i) || (is(i, "List") && !is(i, "Ranges"))) {
-            y <- lsubset_List_by_List(y, i, value)
+            y <- S4Vectors:::lsubset_List_by_List(y, i, value)
         } else {
             y[i] <- value
         }

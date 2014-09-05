@@ -113,13 +113,4 @@ seqby(data, INDICES, FUN, ...)
   Michael Lawrence
 }
 
-\examples{
-starts <- IntegerList(c(1, 5), c(2, 8))
-ends <- IntegerList(c(3, 8), c(5, 9))
-rangesList <- mseqapply(IRanges, starts, ends)
-rangeDataFrame <- stack(rangesList, "space", "ranges")
-dataFrameList <- seqsplit(rangeDataFrame, rangeDataFrame$space)
-starts <- seqapply(dataFrameList[,"ranges"], start)
-}
-
 \keyword{manip}

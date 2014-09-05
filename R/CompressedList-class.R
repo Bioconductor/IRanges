@@ -44,11 +44,72 @@ setReplaceMethod("names", "CompressedList",
 ### when calling this from another package.
 ###
 
+compress_listData <- function(x) {
+    if (length(x) > 0L) {
+        if (length(dim(x[[1L]])) < 2L) {
+            x <- do.call(c, unname(x))
+        } else {
+            x <- do.call(rbind, unname(x))
+        }
+    } else {
+        x <- vector()
+    }
+    x
+}
+
+.reconcileMetadatacols <- function(x) {
+  x_mcols <- mcols(x)
+  if (is(x_mcols, "DataFrame") &&
+      nrow(x_mcols) == 0L && ncol(x_mcols) == 0L)
+    {
+      x_mcols <- new("DataFrame", nrows=length(x))
+      mcols(x) <- x_mcols
+    }
+  x
+}
+
+### Low-level. NOT exported.
 newCompressedList0 <- function(Class, unlistData, partitioning)
 {
     ans <- new2(Class, unlistData=unlistData,
                 partitioning=partitioning, check=FALSE)
-    reconcileMetadatacols(ans)
+    .reconcileMetadatacols(ans)
+}
+
+### Low-level. NOT exported.
+### Stuff to put in elementMetadata slot can be passed either with
+###   new_CompressedList_from_list(..., elementMetadata=somestuff)
+### or with
+###   new_CompressedList_from_list(..., mcols=somestuff)
+### The latter is the new recommended form.
+new_CompressedList_from_list <- function(Class, x, ..., mcols)
+{
+    if (!extends(Class, "CompressedList"))
+        stop("class ", Class, " must extend CompressedList")
+    if (!is.list(x))
+        stop("'x' must be a list")
+    ans_elementType <- elementType(new(Class))
+    if (!all(sapply(x, function(xi) extends(class(xi), ans_elementType))))
+        stop("all elements in 'listData' must be ", ans_elementType, " objects")
+    ans_partitioning <- PartitioningByEnd(x)
+    if (length(x) == 0L) {
+        if (missing(mcols))
+            return(new2(Class, partitioning=ans_partitioning, ..., check=FALSE))
+        return(new2(Class, partitioning=ans_partitioning, ...,
+                    elementMetadata=mcols, check=FALSE))
+    }
+    ans_unlistData <- compress_listData(x)
+    if (missing(mcols)) {
+        ans <- new2(Class, unlistData=ans_unlistData,
+                    partitioning=ans_partitioning, ...,
+                    check=FALSE)
+    } else {
+        ans <- new2(Class, unlistData=ans_unlistData,
+                    partitioning=ans_partitioning, ...,
+                    elementMetadata=mcols,
+                    check=FALSE)
+    }
+    .reconcileMetadatacols(ans)
 }
 
 
@@ -150,7 +211,7 @@ setReplaceMethod("[[", "CompressedList",
                            new2("PartitioningByEnd", end = cumsum(widths),
                                 NAMES = NAMES, check=FALSE)
                          if (i > length(x))
-                           x <- rbindRowOfNAsToMetadatacols(x)
+                           x <- S4Vectors:::rbindRowOfNAsToMetadatacols(x)
                          x
                      }
                  })
@@ -289,7 +350,7 @@ setMethod("aggregate", "CompressedList",
                                          ..., simplify = simplify))
                   ans <- try(SimpleAtomicList(result), silent = TRUE)
                   if (inherits(ans, "try-error"))
-                      ans <- newList("SimpleList", result)
+                      ans <- new_SimpleList_from_list("SimpleList", result)
               } else {
                   ans <- callNextMethod()
               }
@@ -369,7 +430,7 @@ setUnlistDataNames <- function(unlisted_x, grouping, use.names, x_class)
             ans_ROWNAMES <- rownames(unlisted_x)
         }
         nms <- rep.int(x_names, elementLengths(grouping))
-        ans_ROWNAMES <- make.unlist.result.names(nms, ans_ROWNAMES)
+        ans_ROWNAMES <- S4Vectors:::make_unlist_result_names(nms, ans_ROWNAMES)
         if (length(dim(unlisted_x)) < 2L) {
             res <- try(names(unlisted_x) <- ans_ROWNAMES, silent=TRUE)
             what <- "names"
@@ -397,7 +458,7 @@ setMethod("unlist", "CompressedList",
 )
 
 coerceToCompressedList <- function(from, element.type = NULL, ...) {
-  if (is(from, listClassName("Compressed", element.type)))
+  if (is(from, S4Vectors:::listClassName("Compressed", element.type)))
     return(from)
   if (is.list(from) || is(from, "List")) {
     if (is.list(from)) {

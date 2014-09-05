@@ -4,26 +4,26 @@
 ###
 
 setMethod("viewApply", "RleViewsList",
-          function(X, FUN, ..., simplify = TRUE)
-          newList("SimpleList",
-                  lapply(structure(seq_len(length(X)), names = names(X)),
-                         function(i) {
-                             ans <-
-                               aggregate(subject(X[[i]]),
-                                         start = structure(start(X[[i]]),
-                                            names = names(start(X[[i]]))),
-                                         end = end(X[[i]]),
-                                         FUN = FUN, ...,
-                                         simplify = simplify)
-                             if (!simplify) {
-                                 ans <- newList("SimpleList", ans,
-                                                metadata = metadata(X[[i]]),
-                                                mcols = mcols(X[[i]]))
-                             }
-                             ans
-                         }),
-                  metadata = metadata(X),
-                  mcols = mcols(X)))
+          function(X, FUN, ..., simplify = TRUE) {
+            ans_listData <- lapply(structure(seq_along(X), names=names(X)),
+              function(i) {
+                ans_elt <- aggregate(
+                             subject(X[[i]]),
+                             start=structure(start(X[[i]]),
+                                             names=names(start(X[[i]]))),
+                             end=end(X[[i]]),
+                             FUN=FUN,
+                             ...,
+                             simplify=simplify)
+                if (!simplify)
+                  ans_elt <- new_SimpleList_from_list("SimpleList", ans_elt,
+                                                      metadata=metadata(X[[i]]),
+                                                      mcols=mcols(X[[i]]))
+                ans_elt
+              })
+            new_SimpleList_from_list("SimpleList", ans_listData,
+                                     metadata=metadata(X),
+                                     mcols=mcols(X))})
 
 .summaryRleViewsList <- function(x, FUN, na.rm = FALSE, outputListType = NULL)
 {
@@ -45,7 +45,8 @@ setMethod("viewApply", "RleViewsList",
           lapply(structure(seq_len(length(x)), names = names(x)),
                  function(i) FUN(x[[i]], na.rm = na.rm))
     }
-    newList(outputListType, listData, metadata = metadata(x), mcols = mcols(x))
+    new_SimpleList_from_list(outputListType, listData,
+                             metadata = metadata(x), mcols = mcols(x))
 }
 setMethod("viewMins", "RleViewsList",
           function(x, na.rm = FALSE)

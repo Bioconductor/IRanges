@@ -77,11 +77,14 @@ setValidity2("NormalIRangesList", .valid.NormalIRangesList)
 ###
 
 setMethod("start", "RangesList",
-          function(x) newList("SimpleIntegerList", lapply(x, start)))
+          function(x) new_SimpleList_from_list("SimpleIntegerList",
+                                               lapply(x, start)))
 setMethod("end", "RangesList",
-          function(x) newList("SimpleIntegerList", lapply(x, end)))
+          function(x) new_SimpleList_from_list("SimpleIntegerList",
+                                               lapply(x, end)))
 setMethod("width", "RangesList",
-          function(x) newList("SimpleIntegerList", lapply(x, width)))
+          function(x) new_SimpleList_from_list("SimpleIntegerList",
+                                               lapply(x, width)))
 
 setGeneric(".replaceSEW", signature="x",  # not exported
            function(x, FUN, ..., value) standardGeneric(".replaceSEW"))
@@ -225,7 +228,7 @@ RangesList <- function(..., universe = NULL)
     ranges <- ranges[[1L]]
   if (!all(sapply(ranges, is, "Ranges")))
     stop("all elements in '...' must be Ranges objects")
-  ans <- newList("SimpleRangesList", ranges)
+  ans <- new_SimpleList_from_list("SimpleRangesList", ranges)
   universe(ans) <- universe
   ans
 }
@@ -264,9 +267,9 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
     if (!all(sapply(ranges, is, "IRanges")))
       stop("all elements in '...' must be IRanges objects")
     if (compress)
-      ans <- newList("CompressedIRangesList", ranges)
+      ans <- new_CompressedList_from_list("CompressedIRangesList", ranges)
     else
-      ans <- newList("SimpleIRangesList", ranges)
+      ans <- new_SimpleList_from_list("SimpleIRangesList", ranges)
   }
   universe(ans) <- universe
   ans
@@ -318,7 +321,11 @@ setMethod("getListElement", "CompressedNormalIRangesList",
                        do.call(c, r[!sapply(r, is.null)])
                      })
     names(ranges) <- names
-    newList(class(x), ranges)
+    if (is(x, "CompressedList"))
+      ans <- new_CompressedList_from_list(class(x), ranges)
+    else
+      ans <- new_SimpleList_from_list(class(x), ranges)
+    ans
 }
 
 setMethod("merge", c("RangesList", "missing"),
@@ -404,7 +411,8 @@ setMethod("as.list", "CompressedNormalIRangesList",
 setMethod("unlist", "SimpleNormalIRangesList",
           function(x, recursive = TRUE, use.names = TRUE)
           {
-            x <- newList("SimpleIRangesList", lapply(x, as, "IRanges"))
+            x <- new_SimpleList_from_list("SimpleIRangesList",
+                                          lapply(x, as, "IRanges"))
             callGeneric()
           })
 
@@ -421,17 +429,17 @@ setAs("RangesList", "CompressedIRangesList", function(from) {
   if (is(from, "CompressedList"))
     coerceToCompressedList(from, "IRanges")
   ## this case handles RangesList of Partitioning objects (not combinable)
-  else newList("CompressedIRangesList",
-               lapply(from, as, "IRanges"),
-               metadata = metadata(from),
-               mcols = mcols(from))
+  else new_CompressedList_from_list("CompressedIRangesList",
+                                    lapply(from, as, "IRanges"),
+                                    metadata = metadata(from),
+                                    mcols = mcols(from))
 })
 
 .RangesListToSimpleIRangesList <- function(from)
-  newList("SimpleIRangesList",
-          lapply(from, as, "IRanges"),
-          metadata = metadata(from),
-          mcols = mcols(from))
+  new_SimpleList_from_list("SimpleIRangesList",
+                           lapply(from, as, "IRanges"),
+                           metadata = metadata(from),
+                           mcols = mcols(from))
 
 ## otherwise, SimpleRangesList->SimpleIRangesList uses a methods package default
 setAs("SimpleRangesList", "SimpleIRangesList", .RangesListToSimpleIRangesList)
@@ -439,10 +447,10 @@ setAs("RangesList", "SimpleIRangesList", .RangesListToSimpleIRangesList)
 
 setAs("RangesList", "SimpleRangesList",
       function(from)
-      newList("SimpleRangesList",
-              lapply(from, as, "Ranges"),
-              metadata = metadata(from),
-              mcols = mcols(from)))
+      new_SimpleList_from_list("SimpleRangesList",
+                               lapply(from, as, "Ranges"),
+                               metadata = metadata(from),
+                               mcols = mcols(from)))
 
 setAs("RangesList", "NormalIRangesList",
       function(from)
@@ -455,17 +463,17 @@ setAs("RangesList", "NormalIRangesList",
 
 setAs("RangesList", "CompressedNormalIRangesList",
       function(from)
-      newList("CompressedNormalIRangesList",
-              lapply(from, as, "NormalIRanges"),
-              metadata = metadata(from),
-              mcols = mcols(from)))
+      new_CompressedList_from_list("CompressedNormalIRangesList",
+                                   lapply(from, as, "NormalIRanges"),
+                                   metadata = metadata(from),
+                                   mcols = mcols(from)))
 
 setAs("RangesList", "SimpleNormalIRangesList",
       function(from)
-      newList("SimpleNormalIRangesList",
-              lapply(from, as, "NormalIRanges"),
-              metadata = metadata(from),
-              mcols = mcols(from)))
+      new_SimpleList_from_list("SimpleNormalIRangesList",
+                               lapply(from, as, "NormalIRanges"),
+                               metadata = metadata(from),
+                               mcols = mcols(from)))
 
 setAs("CompressedIRangesList", "CompressedNormalIRangesList",
       function(from)
@@ -498,17 +506,17 @@ setAs("LogicalList", "IRangesList",
 
 setAs("LogicalList", "CompressedIRangesList",
       function(from)
-      newList("CompressedIRangesList",
-              lapply(from, as, "IRanges"),
-              metadata = metadata(from),
-              mcols = mcols(from)))
+      new_CompressedList_from_list("CompressedIRangesList",
+                                   lapply(from, as, "IRanges"),
+                                   metadata = metadata(from),
+                                   mcols = mcols(from)))
 
 setAs("LogicalList", "SimpleIRangesList",
       function(from)
-      newList("SimpleIRangesList",
-              lapply(from, as, "IRanges"),
-              metadata = metadata(from),
-              mcols = mcols(from)))
+      new_SimpleList_from_list("SimpleIRangesList",
+                               lapply(from, as, "IRanges"),
+                               metadata = metadata(from),
+                               mcols = mcols(from)))
 
 setAs("LogicalList", "NormalIRangesList",
       function(from)
@@ -521,17 +529,17 @@ setAs("LogicalList", "NormalIRangesList",
 
 setAs("LogicalList", "CompressedNormalIRangesList",
       function(from)
-      newList("CompressedNormalIRangesList",
-              lapply(from, as, "NormalIRanges"),
-              metadata = metadata(from),
-              mcols = mcols(from)))
+      new_CompressedList_from_list("CompressedNormalIRangesList",
+                                   lapply(from, as, "NormalIRanges"),
+                                   metadata = metadata(from),
+                                   mcols = mcols(from)))
 
 setAs("LogicalList", "SimpleNormalIRangesList",
       function(from)
-      newList("SimpleNormalIRangesList",
-              lapply(from, as, "NormalIRanges"),
-              metadata = metadata(from),
-              mcols = mcols(from)))
+      new_SimpleList_from_list("SimpleNormalIRangesList",
+                               lapply(from, as, "NormalIRanges"),
+                               metadata = metadata(from),
+                               mcols = mcols(from)))
 
 setAs("RleList", "IRangesList",
       function(from)
@@ -550,10 +558,10 @@ setAs("RleList", "CompressedIRangesList",
              S4Vectors:::anyMissing(runValue(from[[1L]]))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a CompressedIRangesList object")
-        newList("CompressedIRangesList",
-                lapply(from, as, "IRanges"),
-                metadata = metadata(from),
-                mcols = mcols(from))
+        new_CompressedList_from_list("CompressedIRangesList",
+                                     lapply(from, as, "IRanges"),
+                                     metadata = metadata(from),
+                                     mcols = mcols(from))
       })
 
 setAs("CompressedRleList", "CompressedIRangesList",
@@ -580,10 +588,10 @@ setAs("RleList", "SimpleIRangesList",
              S4Vectors:::anyMissing(runValue(from[[1L]]))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a SimpleIRangesList object")
-        newList("SimpleIRangesList",
-                lapply(from, as, "IRanges"),
-                metadata = metadata(from),
-                mcols = mcols(from))
+        new_SimpleList_from_list("SimpleIRangesList",
+                                 lapply(from, as, "IRanges"),
+                                 metadata = metadata(from),
+                                 mcols = mcols(from))
       })
 
 
@@ -604,10 +612,10 @@ setAs("RleList", "CompressedNormalIRangesList",
              S4Vectors:::anyMissing(runValue(from[[1L]]))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a CompressedNormalIRangesList object")
-        newList("CompressedNormalIRangesList",
-                lapply(from, as, "NormalIRanges"),
-                metadata = metadata(from),
-                mcols = mcols(from))
+        new_CompressedList_from_list("CompressedNormalIRangesList",
+                                     lapply(from, as, "NormalIRanges"),
+                                     metadata = metadata(from),
+                                     mcols = mcols(from))
       })
 
 setAs("RleList", "SimpleNormalIRangesList",
@@ -618,10 +626,10 @@ setAs("RleList", "SimpleNormalIRangesList",
              S4Vectors:::anyMissing(runValue(from[[1L]]))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a SimpleNormalIRangesList object")
-        newList("SimpleNormalIRangesList",
-                lapply(from, as, "NormalIRanges"),
-                metadata = metadata(from),
-                mcols = mcols(from))
+        new_SimpleList_from_list("SimpleNormalIRangesList",
+                                 lapply(from, as, "NormalIRanges"),
+                                 metadata = metadata(from),
+                                 mcols = mcols(from))
       })
 
 

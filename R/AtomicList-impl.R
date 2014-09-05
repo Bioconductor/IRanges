@@ -101,7 +101,7 @@ AtomicListConstructor <- function(type, compress.default = TRUE) {
       stop("'compress' must be TRUE or FALSE")
     listData <- .dotargsAsList(type, ...)
     CompressedOrSimple <- if (compress) "Compressed" else "Simple"
-    if (is(listData, listClassName(CompressedOrSimple, type)))
+    if (is(listData, S4Vectors:::listClassName(CompressedOrSimple, type)))
       listData
     else CoercerToAtomicList(type, compress)(listData)
   }, list(type = type)))
@@ -252,9 +252,9 @@ CoercerToAtomicList <- function(type, compress) {
 }
 
 setAtomicListCoercions <- function(type) {
-  CompressedClass <- listClassName("Compressed", type)
-  SimpleClass <- listClassName("Simple", type)
-  Class <- listClassName("", type)
+  CompressedClass <- S4Vectors:::listClassName("Compressed", type)
+  SimpleClass <- S4Vectors:::listClassName("Simple", type)
+  Class <- S4Vectors:::listClassName("", type)
   setAs("ANY", CompressedClass, CoercerToAtomicList(type, compress = TRUE))
   setAs("ANY", SimpleClass, CoercerToAtomicList(type, compress = FALSE))
   setAs("ANY", Class, CoercerToAtomicList(type, compress = TRUE))

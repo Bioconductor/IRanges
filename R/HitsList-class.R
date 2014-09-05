@@ -2,6 +2,8 @@
 ### HitsList objects
 ### -------------------------------------------------------------------------
 
+### FIXME: Rename this class SimpleHitsList and make HitsList a virtual
+### class that SimpleHitsList and CompressedHitsList extend directly.
 setClass("HitsList",
     contains="SimpleList",
     representation(
@@ -53,7 +55,8 @@ HitsList <- function(list_of_hits, subject)
   if (!is.null(names(list_of_hits)) && !is.null(names(subject)))
     subjectToQuery <- match(names(list_of_hits), names(subject))
   subjectOffsets <- subjectOffsets[subjectToQuery]
-  newList("HitsList", list_of_hits, subjectOffsets = subjectOffsets)
+  new_SimpleList_from_list("HitsList", list_of_hits,
+                           subjectOffsets = subjectOffsets)
 }
 
 CompressedHitsList <- function(hits, query)

@@ -9,12 +9,12 @@ Description: The package provides efficient low-level and highly reusable S4
 	collections of instances of the basic classes. All classes in
 	the package use consistent naming and share the same rich and
 	consistent "Vector API" as much as possible.
-Version: 1.99.25
+Version: 1.99.26
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Infrastructure, DataRepresentation
 Depends: R (>= 3.1.0), methods, utils, stats, BiocGenerics (>= 0.11.3),
-	S4Vectors (>= 0.1.0)
+	S4Vectors (>= 0.2.0)
 Imports: methods, utils, stats, BiocGenerics, S4Vectors, stats4
 LinkingTo: S4Vectors
 Suggests: XVector, GenomicRanges, BSgenome.Celegans.UCSC.ce2, RUnit
@@ -24,10 +24,10 @@ ExtraLicenses: The following files in the 'src' directory are licensed for all
   common.c/h, memalloc.c/h, localmem.c/h, hash.c/h, errabort.c/h, rbTree.c/h,
   dlist.c/h, errCatch.h
 Collate: subsetting-internals.R
-	endoapply.R
 	Vector-class-leftovers.R
 	Hits-class-leftovers.R
-	List-class.R
+	List-class-leftovers.R
+	List-comparison.R
 	AtomicList-class.R
 	Ranges-class.R
 	Ranges-comparison.R
@@ -45,7 +45,6 @@ Collate: subsetting-internals.R
 	seqapply.R
 	multisplit.R
 	AtomicList-impl.R
-	List-comparison.R
 	DataFrame-class.R
 	DataFrame-utils.R
 	DataFrameList-class.R
@@ -67,7 +66,6 @@ Collate: subsetting-internals.R
 	IntervalForest-class.R
 	RangedSelection-class.R
 	read.Mask.R
-	funprog-methods.R
 	intra-range-methods.R
 	inter-range-methods.R
 	reverse-methods.R

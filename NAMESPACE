@@ -17,7 +17,7 @@ importFrom(stats4, summary, update)
 
 exportClasses(
     functionORNULL,
-    List, SimpleList, CompressedList,
+    SimpleList, CompressedList,
     Ranges, RangesORmissing,
     IRanges, NormalIRanges,
     NCList,
@@ -57,14 +57,12 @@ exportClasses(
 ###
 
 S3method(as.data.frame, DataFrame)
-S3method(as.data.frame, List)
 S3method(as.data.frame, GappedRanges)
 S3method(as.data.frame, Hits)
 S3method(as.data.frame, RangedData)
 S3method(as.data.frame, Ranges)
 
 S3method(as.list, Vector)
-S3method(as.list, List)
 S3method(as.list, SimpleList)
 S3method(as.list, CompressedNormalIRangesList)
 S3method(as.list, Hits)
@@ -98,13 +96,11 @@ S3method(`window<-`, factor)
 ### doesn't asterisk them.
 export(
     as.data.frame.DataFrame,
-    as.data.frame.List,
     as.data.frame.GappedRanges,
     as.data.frame.Hits,
     as.data.frame.RangedData,
     as.data.frame.Ranges,
 
-    as.list.List,
     as.list.SimpleList,
     as.list.CompressedNormalIRangesList,
     as.list.Hits,
@@ -148,7 +144,7 @@ exportMethods(
     rownames, "rownames<-",
     colnames, "colnames<-",
     dimnames, "dimnames<-",
-    "[", "[<-", "[[", "[[<-", "$", "$<-",
+    "[", "[<-", "[[", "[[<-", "$<-",
     as.vector,
     as.integer,
     as.matrix,
@@ -186,10 +182,9 @@ exportMethods(
     by, 
     cbind, rbind,
     eval,
-    lapply, sapply,
+    lapply,
     pmax, pmin, pmax.int, pmin.int,
     paste,
-    Reduce, Filter, Find, Map, Position,
     rep.int,
     table,
     tapply,
@@ -204,7 +199,10 @@ exportMethods(
     selfmatch,
     runLength, "runValue<-",
     shiftApply,
-    runsum, runmean, runwtsum, runq
+    runsum, runmean, runwtsum, runq,
+    elementLengths, isEmpty, revElements,
+    endoapply, mendoapply,
+    as.env
 )
 
 
@@ -213,7 +211,6 @@ exportMethods(
 ###
 
 export(
-    phead, ptail, pc,
     splitAsList,
     seqapply, mseqapply, tseqapply, seqsplit, seqby,
     multisplit,
@@ -244,7 +241,7 @@ export(
     read.trfMask,
     ##read.chain,
     newViews, successiveViews,
-    SimpleList, List, DataFrame,
+    SimpleList, DataFrame,
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList,
     DataFrameList, SplitDataFrameList
@@ -256,18 +253,10 @@ export(
 ###
 
 export(
-    ## endoapply.R:
-    endoapply, mendoapply,
-
     ## Vector-class-leftovers.R:
     showAsCell,
     mstack,
 
-    ## List-class.R:
-    elementType, elementLengths,
-    isEmpty, revElements,
-    as.env,
- 
     ## Ranges-class.R:
     mid,
     isNormal, whichFirstNotNormal,
@@ -367,13 +356,9 @@ export(
 
 ### Exactly the same list as above.
 exportMethods(
-    endoapply, mendoapply,
     runsum, runmean, runwtsum, runq,
     showAsCell,
     mstack,
-    elementType, elementLengths,
-    isEmpty, revElements,
-    as.env,
     mid,
     isNormal, whichFirstNotNormal,
     subject,

@@ -87,7 +87,7 @@ FilterRules <- function(exprs = list(), ..., active = TRUE) {
   if (length(exprs) && length(exprs) %% length(active) > 0)
     stop("number of rules must be a multiple of length of 'active'")
 
-  ans <- newList("FilterRules", exprs, active = active)
+  ans <- new_SimpleList_from_list("FilterRules", exprs, active = active)
   validObject(ans)
   ans
 }

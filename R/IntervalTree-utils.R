@@ -43,7 +43,8 @@ setMethod("processSelfMatching", "HitsList",
             if (select != "all")
               IntegerList(ans)
             else
-              newList("HitsList", ans, subjectOffsets = x@subjectOffsets)
+              new_SimpleList_from_list("HitsList", ans,
+                                       subjectOffsets = x@subjectOffsets)
           })
 
 setMethod("processSelfMatching", "CompressedHitsList",

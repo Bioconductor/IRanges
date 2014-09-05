@@ -17,16 +17,16 @@
 ### relistToClass()
 ###
 
-setGeneric("relistToClass",
-    function(x) standardGeneric("relistToClass")
-)
+setGeneric("relistToClass", function(x) standardGeneric("relistToClass"))
 
-setMethod("relistToClass", "ANY",
-    function(x)
-    {
-        selectListClassName(class(x))
-    }
-)
+.selectListClassName <- function(x) {
+  cn <- S4Vectors:::listClassName("Compressed", x)
+  if (cn == "CompressedList")
+    cn <- S4Vectors:::listClassName("Simple", x)
+  cn
+}
+
+setMethod("relistToClass", "ANY", function(x) .selectListClassName(class(x)))
 
 ### Defunct!
 setGeneric("splitAsListReturnedClass",
@@ -36,9 +36,9 @@ setGeneric("splitAsListReturnedClass",
 setMethod("splitAsListReturnedClass", "ANY",
     function(x) {
       .Defunct("relistToClass")
-      cn <- listClassName("Compressed", class(x))
+      cn <- S4Vectors:::listClassName("Compressed", class(x))
       if (cn == "CompressedList")
-        cn <- listClassName("Simple", class(x))
+        cn <- S4Vectors:::listClassName("Simple", class(x))
       cn
     }
 )
@@ -89,7 +89,7 @@ setMethod("relist", c("ANY", "PartitioningByEnd"),
         #                                         start=skeleton_start[i],
         #                                         end=skeleton_end[i]))
 
-        newList(ans_class, listData)
+        new_SimpleList_from_list(ans_class, listData)
     }
 )
 

@@ -14,8 +14,9 @@ setClass("SimpleRleViewsList",
 ###
 
 setMethod("subject", "SimpleRleViewsList",
-          function(x)
-              newList("SimpleRleList", lapply(x, slot, "subject")))
+    function(x)
+        new_SimpleList_from_list("SimpleRleList", lapply(x, slot, "subject"))
+)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
@@ -50,7 +51,7 @@ RleViewsList <- function(..., rleList, rangesList, universe = NULL)
         if (!all(sapply(views, is, "RleViews")))
             stop("all elements in '...' must be RleViews objects")
     }
-    ans <- newList("SimpleRleViewsList", views)
+    ans <- new_SimpleList_from_list("SimpleRleViewsList", views)
     universe(ans) <- universe
     ans
 }

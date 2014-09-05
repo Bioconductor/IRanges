@@ -61,6 +61,31 @@
   cons(x, ...)
 }
 
+.mapply_List <- function(FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
+                        USE.NAMES = TRUE)
+{
+    seqs <- list(...)
+    isListOrVector <- function(x) is.vector(x) | is(x, "List")
+    if (any(!sapply(seqs, isListOrVector)))
+        stop("all objects in ... should be a vector or 'List'")
+    elens <- sapply(seqs, length) ## elementLengths uses NROW, inappropriate
+    if (any(elens == 0L))
+      return(list())
+    N <- max(elens)
+    if (any(N %% elens != 0L))
+        stop("all object lengths must be multiple of longest object length")
+    recycleExtract <- function(x, i) x[[(i - 1L) %% length(x) + 1L]]
+    FUNprime <- function(.__INDEX__, ...) {
+        do.call(FUN, c(lapply(seqs, recycleExtract, .__INDEX__), ...))
+    }
+    nms <- names(seqs[[1]])
+    if (is.null(nms) && is.character(seqs[[1]]))
+      nms <- seqs[[1]]
+    mapply(FUNprime, structure(seq_len(N), names = nms),
+           MoreArgs = MoreArgs, SIMPLIFY = SIMPLIFY,
+           USE.NAMES = USE.NAMES)
+}
+
 seqapply <- function(X, FUN, ...) {
   .Deprecated("as(lapply(X, FUN, ...), 'List')")
   .asList(lapply(X, FUN, ...))
@@ -68,8 +93,8 @@ seqapply <- function(X, FUN, ...) {
 
 mseqapply <- function(FUN, ..., MoreArgs = NULL, USE.NAMES = TRUE) {
   .Deprecated("as(mapply(FUN, ...), 'List')")
-  .asList(mapply_List(FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = FALSE,
-                      USE.NAMES = USE.NAMES))
+  .asList(.mapply_List(FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = FALSE,
+                       USE.NAMES = USE.NAMES))
 }
 
 tseqapply <- function(X, INDEX, FUN = NULL, ...) {

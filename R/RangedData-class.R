@@ -481,8 +481,8 @@ setMethod("[", "RangedData",
                 }
                 isplit <- split(i, igroup)
                 names(isplit) <- names(x)
-                ranges <- subset_List_by_List(ranges, isplit)
-                values <- subset_List_by_List(values, isplit)
+                ranges <- S4Vectors:::subset_List_by_List(ranges, isplit)
+                values <- S4Vectors:::subset_List_by_List(values, isplit)
                 if (drop) {
                   ok <- (elementLengths(ranges) > 0)
                   ranges <- ranges[ok]
@@ -869,7 +869,7 @@ RangedDataList <- function(...)
   listData <- list(...)
   if (length(listData) == 1 && is.list(listData[[1L]]))
     listData <- listData[[1L]]
-  newList("RangedDataList", listData)
+  new_SimpleList_from_list("RangedDataList", listData)
 }
 
 setMethod("unlist", "RangedDataList",

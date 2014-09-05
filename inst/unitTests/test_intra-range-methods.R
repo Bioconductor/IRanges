@@ -154,6 +154,7 @@ test_promoters <- function() {
   current <- promoters(rl, 2, 0) 
   checkIdentical(unique(unlist(width(current))), 2L)
 
+  library(XVector)
   subject <- XInteger(10, 3:-6)
   view <- Views(subject, start=4:2, end=4:6)
   current <- promoters(view, 0, 0) 

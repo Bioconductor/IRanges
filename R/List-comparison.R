@@ -15,10 +15,16 @@
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### compareRecursively()
 ###
+### NOT exported!
+###
 ### By default, List objects compare recursively. Exceptions to the rule
 ### (e.g. Ranges, XString, etc...) must define a "compareRecursively" method
 ### that returns FALSE.
 ###
+
+setGeneric("compareRecursively",
+    function(x) standardGeneric("compareRecursively")
+)
 
 setMethod("compareRecursively", "List", function(x) TRUE)
 setMethod("compareRecursively", "list", function(x) TRUE)

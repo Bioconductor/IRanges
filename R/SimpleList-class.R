@@ -27,12 +27,40 @@ setReplaceMethod("names", "SimpleList",
 ### Constructor.
 ###
 
-SimpleList <- function(...) {
-    list <- list(...)
-    if (length(list) == 1 && is.list(list[[1L]]))
-        list <- list[[1L]]
-    new("SimpleList", listData = list)
+### Low-level. NOT exported.
+### Stuff to put in elementMetadata slot can be passed either with
+###   new_SimpleList_from_list(..., elementMetadata=somestuff)
+### or with
+###   new_SimpleList_from_list(..., mcols=somestuff)
+### The latter is the new recommended form.
+new_SimpleList_from_list <- function(Class, x, ..., mcols)
+{
+    if (!extends(Class, "SimpleList"))
+        stop("class ", Class, " must extend SimpleList")
+    if (!is.list(x))
+        stop("'x' must be a list")
+    if (is.array(x)) { # drop any unwanted dimensions
+        tmp_names <- names(x)
+        dim(x) <- NULL # clears the names
+        names(x) <- tmp_names
+    }
+    class(x) <- "list"
+    ans_elementType <- elementType(new(Class))
+    if (!all(sapply(x, function(xi) extends(class(xi), ans_elementType))))
+        stop("all elements in 'x' must be ", ans_elementType, " objects")
+    if (missing(mcols))
+        return(new2(Class, listData=x, ..., check=FALSE))
+    new2(Class, listData=x, ..., elementMetadata=mcols, check=FALSE)
 }
+
+SimpleList <- function(...)
+{
+    args <- list(...)
+    if (length(args) == 1L && is.list(args[[1L]]))
+        args <- args[[1L]]
+    new("SimpleList", listData=args)
+}
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
@@ -143,7 +171,7 @@ setMethod("aggregate", "SimpleList",
                                          ..., simplify = simplify))
                   ans <- try(SimpleAtomicList(result), silent = TRUE)
                   if (inherits(ans, "try-error"))
-                      ans <- newList("SimpleList", result)
+                      ans <- new_SimpleList_from_list("SimpleList", result)
               } else {
                   ans <- callNextMethod()
               }
@@ -201,39 +229,20 @@ setAs("list", "List", function(from) {
   coerceToSimpleList(from)
 })
 
-listElementType <- function(x) {
-  cl <- lapply(x, class)
-  clnames <- unique(unlist(cl, use.names=FALSE))
-  if (length(clnames == 1L)) {
-    clnames
-  } else {
-    contains <- lapply(cl, function(x) getClass(x, TRUE)@contains)
-    clnames <- c(clnames,
-                 unlist(lapply(contains, names), use.names=FALSE))
-    cltab <- table(factor(clnames, unique(clnames)))
-    clnames <- names(cltab)[cltab == length(x)]
-    if (length(clnames) > 0L) {
-      clnames[1]
-    } else {
-      NULL
-    }
-  }
-}
-
 coerceToSimpleList <- function(from, element.type, ...) {
   if (missing(element.type)) {
     if (is(from, "List"))
       element.type <- from@elementType
     else if (is.list(from))
-      element.type <- listElementType(from)
+      element.type <- S4Vectors:::listElementType(from)
     else element.type <- class(from)
   }
-  SimpleListClass <- listClassName("Simple", element.type)
+  SimpleListClass <- S4Vectors:::listClassName("Simple", element.type)
   if (!is(from, SimpleListClass)) {
     listData <- as.list(from)
     if (!is.null(element.type))
       listData <- lapply(listData, S4Vectors:::coercerToClass(element.type), ...)
-    newList(SimpleListClass, listData)
+    new_SimpleList_from_list(SimpleListClass, listData)
   } else {
     from
   }

@@ -44,6 +44,7 @@
 \alias{aggregate,ts-method}
 
 \alias{with,Vector-method}
+\alias{eval}
 \alias{eval,expression,Vector-method}
 \alias{eval,language,Vector-method}
 
