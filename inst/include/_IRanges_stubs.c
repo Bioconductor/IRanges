@@ -28,20 +28,6 @@ void stubname Targs \
 
 
 /*
- * Stubs for callables defined in Vector_class.c
- */
-
-DEFINE_CCALLABLE_STUB(const char *, get_List_elementType,
-	(SEXP x),
-	(     x)
-)
-
-DEFINE_NOVALUE_CCALLABLE_STUB(set_List_elementType,
-	(SEXP x, const char *type),
-	(     x,             type)
-)
-
-/*
  * Stubs for callables defined in Ranges_comparison.c
  */
 

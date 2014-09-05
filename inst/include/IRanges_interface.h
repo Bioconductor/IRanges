@@ -13,15 +13,6 @@
 
 
 /*
- * Low-level manipulation of Vector objects.
- * (see Vector_class.c)
- */
-
-const char *get_List_elementType(SEXP x);
-
-void set_List_elementType(SEXP x, const char *type);
-
-/*
  * Comparing ranges.
  * (see Ranges_comparison.c)
  */

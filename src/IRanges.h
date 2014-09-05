@@ -10,16 +10,6 @@
 }
 
 
-/* Vector_class.c */
-
-const char *_get_List_elementType(SEXP x);
-
-void _set_List_elementType(
-	SEXP x,
-	const char *type
-);
-
-
 /* Ranges_class.c */
 
 SEXP valid_Ranges(

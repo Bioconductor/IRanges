@@ -80,10 +80,6 @@ void R_init_IRanges(DllInfo *info)
 {
 	R_registerRoutines(info, NULL, callMethods, NULL, NULL);
 
-/* Vector_class.c */
-	REGISTER_CCALLABLE(_get_List_elementType);
-	REGISTER_CCALLABLE(_set_List_elementType);
-
 /* Ranges_comparison.c */
 	REGISTER_CCALLABLE(_overlap_code);
 	REGISTER_CCALLABLE(_invert_overlap_code);
