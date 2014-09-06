@@ -15,7 +15,8 @@ setClass("SimpleRleViewsList",
 
 setMethod("subject", "SimpleRleViewsList",
     function(x)
-        new_SimpleList_from_list("SimpleRleList", lapply(x, slot, "subject"))
+        S4Vectors:::new_SimpleList_from_list("SimpleRleList",
+                                             lapply(x, slot, "subject"))
 )
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -51,7 +52,7 @@ RleViewsList <- function(..., rleList, rangesList, universe = NULL)
         if (!all(sapply(views, is, "RleViews")))
             stop("all elements in '...' must be RleViews objects")
     }
-    ans <- new_SimpleList_from_list("SimpleRleViewsList", views)
+    ans <- S4Vectors:::new_SimpleList_from_list("SimpleRleViewsList", views)
     universe(ans) <- universe
     ans
 }

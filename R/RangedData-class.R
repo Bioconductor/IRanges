@@ -869,7 +869,7 @@ RangedDataList <- function(...)
   listData <- list(...)
   if (length(listData) == 1 && is.list(listData[[1L]]))
     listData <- listData[[1L]]
-  new_SimpleList_from_list("RangedDataList", listData)
+  S4Vectors:::new_SimpleList_from_list("RangedDataList", listData)
 }
 
 setMethod("unlist", "RangedDataList",

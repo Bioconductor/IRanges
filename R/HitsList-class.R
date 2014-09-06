@@ -55,8 +55,8 @@ HitsList <- function(list_of_hits, subject)
   if (!is.null(names(list_of_hits)) && !is.null(names(subject)))
     subjectToQuery <- match(names(list_of_hits), names(subject))
   subjectOffsets <- subjectOffsets[subjectToQuery]
-  new_SimpleList_from_list("HitsList", list_of_hits,
-                           subjectOffsets = subjectOffsets)
+  S4Vectors:::new_SimpleList_from_list("HitsList", list_of_hits,
+                                       subjectOffsets = subjectOffsets)
 }
 
 CompressedHitsList <- function(hits, query)

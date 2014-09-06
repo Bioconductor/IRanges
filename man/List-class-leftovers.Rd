@@ -2,7 +2,7 @@
 \docType{class}
 
 \alias{stack,List-method}
-
+\alias{aggregate,List-method}
 
 \title{List objects (old man page)}
 
@@ -15,11 +15,12 @@
 
 \details{
   The only thing left here is the documentation of the \code{stack}
-  method for \link{List} objects. In the code snippet below, \code{x}
-  is a List object.
+  and \code{aggregate} methods for \link{List} objects. In the code snippets
+  below, \code{x} is a List object.
 
   \describe{
-    \item{}{\code{stack(x, index.var = "name", value.var = "value")}:
+    \item{}{
+      \code{stack(x, index.var = "name", value.var = "value")}:
       As with \code{\link[utils:stack]{stack}} on a \code{list},
       constructs a \code{DataFrame} with two columns: one for the
       unlisted values, the other indicating the name of the element from
@@ -27,12 +28,26 @@
       name for the index (source name) column and \code{value.var}
       specifies the column name for the values.
     }
+    \item{}{
+      \code{aggregate(x, by, FUN, start = NULL, end = NULL, width = NULL,
+                      frequency = NULL, delta = NULL, ..., simplify = TRUE))}:
+      In addition to normal usage, the \code{by} parameter can be a
+      \link{RangesList} to aggregate within the list elements rather
+      than across them. When \code{by} is a \link{RangesList}, the output is
+      either a \link{SimpleAtomicList} object, if possible, or a
+      \link[S4Vectors]{SimpleList} object, if not.
+    }
   }
 }
 
 \seealso{
-  The \link[S4Vectors]{List} class defined and documented in the
-  \pkg{S4Vectors} package.
+  \itemize{
+    \item The \link[S4Vectors]{List} class defined and documented in the
+          \pkg{S4Vectors} package.
+
+    \item \link{aggregate,Vector-method} for the \code{aggregate} method
+          for \link[S4Vectors]{Vector} objects.
+  }
 }
 
 \examples{

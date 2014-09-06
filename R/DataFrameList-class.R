@@ -246,7 +246,7 @@ DataFrameList <- function(...)
     listData <- listData[[1L]]
   if (length(listData) > 0 && !is(listData[[1L]], "DataFrame"))
     listData <- lapply(listData, as, "DataFrame")
-  new_SimpleList_from_list("SimpleDataFrameList", listData)
+  S4Vectors:::new_SimpleList_from_list("SimpleDataFrameList", listData)
 }
 
 SplitDataFrameList <- function(..., compress = TRUE, cbindArgs = FALSE)
@@ -267,7 +267,7 @@ SplitDataFrameList <- function(..., compress = TRUE, cbindArgs = FALSE)
   if (compress)
     new_CompressedList_from_list("CompressedSplitDataFrameList", listData)
   else
-    new_SimpleList_from_list("SimpleSplitDataFrameList", listData)
+    S4Vectors:::new_SimpleList_from_list("SimpleSplitDataFrameList", listData)
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -170,14 +170,6 @@ SEXP H2LGrouping_vmembers(
 );
 
 
-/* SimpleList_class.c */
-
-SEXP _new_SimpleList(
-	const char *classname,
-	SEXP listData
-);
-
-
 /* DataFrame_class.c */
 
 SEXP _new_DataFrame(

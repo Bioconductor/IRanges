@@ -77,14 +77,14 @@ setValidity2("NormalIRangesList", .valid.NormalIRangesList)
 ###
 
 setMethod("start", "RangesList",
-          function(x) new_SimpleList_from_list("SimpleIntegerList",
-                                               lapply(x, start)))
+          function(x) S4Vectors:::new_SimpleList_from_list("SimpleIntegerList",
+                                                           lapply(x, start)))
 setMethod("end", "RangesList",
-          function(x) new_SimpleList_from_list("SimpleIntegerList",
-                                               lapply(x, end)))
+          function(x) S4Vectors:::new_SimpleList_from_list("SimpleIntegerList",
+                                                           lapply(x, end)))
 setMethod("width", "RangesList",
-          function(x) new_SimpleList_from_list("SimpleIntegerList",
-                                               lapply(x, width)))
+          function(x) S4Vectors:::new_SimpleList_from_list("SimpleIntegerList",
+                                                           lapply(x, width)))
 
 setGeneric(".replaceSEW", signature="x",  # not exported
            function(x, FUN, ..., value) standardGeneric(".replaceSEW"))
@@ -228,7 +228,7 @@ RangesList <- function(..., universe = NULL)
     ranges <- ranges[[1L]]
   if (!all(sapply(ranges, is, "Ranges")))
     stop("all elements in '...' must be Ranges objects")
-  ans <- new_SimpleList_from_list("SimpleRangesList", ranges)
+  ans <- S4Vectors:::new_SimpleList_from_list("SimpleRangesList", ranges)
   universe(ans) <- universe
   ans
 }
@@ -269,7 +269,7 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
     if (compress)
       ans <- new_CompressedList_from_list("CompressedIRangesList", ranges)
     else
-      ans <- new_SimpleList_from_list("SimpleIRangesList", ranges)
+      ans <- S4Vectors:::new_SimpleList_from_list("SimpleIRangesList", ranges)
   }
   universe(ans) <- universe
   ans
@@ -324,7 +324,7 @@ setMethod("getListElement", "CompressedNormalIRangesList",
     if (is(x, "CompressedList"))
       ans <- new_CompressedList_from_list(class(x), ranges)
     else
-      ans <- new_SimpleList_from_list(class(x), ranges)
+      ans <- S4Vectors:::new_SimpleList_from_list(class(x), ranges)
     ans
 }
 
@@ -411,8 +411,8 @@ setMethod("as.list", "CompressedNormalIRangesList",
 setMethod("unlist", "SimpleNormalIRangesList",
           function(x, recursive = TRUE, use.names = TRUE)
           {
-            x <- new_SimpleList_from_list("SimpleIRangesList",
-                                          lapply(x, as, "IRanges"))
+            x <- S4Vectors:::new_SimpleList_from_list("SimpleIRangesList",
+                                                      lapply(x, as, "IRanges"))
             callGeneric()
           })
 
@@ -436,10 +436,10 @@ setAs("RangesList", "CompressedIRangesList", function(from) {
 })
 
 .RangesListToSimpleIRangesList <- function(from)
-  new_SimpleList_from_list("SimpleIRangesList",
-                           lapply(from, as, "IRanges"),
-                           metadata = metadata(from),
-                           mcols = mcols(from))
+  S4Vectors:::new_SimpleList_from_list("SimpleIRangesList",
+                                       lapply(from, as, "IRanges"),
+                                       metadata = metadata(from),
+                                       mcols = mcols(from))
 
 ## otherwise, SimpleRangesList->SimpleIRangesList uses a methods package default
 setAs("SimpleRangesList", "SimpleIRangesList", .RangesListToSimpleIRangesList)
@@ -447,10 +447,10 @@ setAs("RangesList", "SimpleIRangesList", .RangesListToSimpleIRangesList)
 
 setAs("RangesList", "SimpleRangesList",
       function(from)
-      new_SimpleList_from_list("SimpleRangesList",
-                               lapply(from, as, "Ranges"),
-                               metadata = metadata(from),
-                               mcols = mcols(from)))
+      S4Vectors:::new_SimpleList_from_list("SimpleRangesList",
+                                           lapply(from, as, "Ranges"),
+                                           metadata = metadata(from),
+                                           mcols = mcols(from)))
 
 setAs("RangesList", "NormalIRangesList",
       function(from)
@@ -470,10 +470,10 @@ setAs("RangesList", "CompressedNormalIRangesList",
 
 setAs("RangesList", "SimpleNormalIRangesList",
       function(from)
-      new_SimpleList_from_list("SimpleNormalIRangesList",
-                               lapply(from, as, "NormalIRanges"),
-                               metadata = metadata(from),
-                               mcols = mcols(from)))
+      S4Vectors:::new_SimpleList_from_list("SimpleNormalIRangesList",
+                                           lapply(from, as, "NormalIRanges"),
+                                           metadata = metadata(from),
+                                           mcols = mcols(from)))
 
 setAs("CompressedIRangesList", "CompressedNormalIRangesList",
       function(from)
@@ -513,10 +513,10 @@ setAs("LogicalList", "CompressedIRangesList",
 
 setAs("LogicalList", "SimpleIRangesList",
       function(from)
-      new_SimpleList_from_list("SimpleIRangesList",
-                               lapply(from, as, "IRanges"),
-                               metadata = metadata(from),
-                               mcols = mcols(from)))
+      S4Vectors:::new_SimpleList_from_list("SimpleIRangesList",
+                                           lapply(from, as, "IRanges"),
+                                           metadata = metadata(from),
+                                           mcols = mcols(from)))
 
 setAs("LogicalList", "NormalIRangesList",
       function(from)
@@ -536,10 +536,10 @@ setAs("LogicalList", "CompressedNormalIRangesList",
 
 setAs("LogicalList", "SimpleNormalIRangesList",
       function(from)
-      new_SimpleList_from_list("SimpleNormalIRangesList",
-                               lapply(from, as, "NormalIRanges"),
-                               metadata = metadata(from),
-                               mcols = mcols(from)))
+      S4Vectors:::new_SimpleList_from_list("SimpleNormalIRangesList",
+                                           lapply(from, as, "NormalIRanges"),
+                                           metadata = metadata(from),
+                                           mcols = mcols(from)))
 
 setAs("RleList", "IRangesList",
       function(from)
@@ -588,10 +588,10 @@ setAs("RleList", "SimpleIRangesList",
              S4Vectors:::anyMissing(runValue(from[[1L]]))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a SimpleIRangesList object")
-        new_SimpleList_from_list("SimpleIRangesList",
-                                 lapply(from, as, "IRanges"),
-                                 metadata = metadata(from),
-                                 mcols = mcols(from))
+        S4Vectors:::new_SimpleList_from_list("SimpleIRangesList",
+                                             lapply(from, as, "IRanges"),
+                                             metadata = metadata(from),
+                                             mcols = mcols(from))
       })
 
 
@@ -626,10 +626,10 @@ setAs("RleList", "SimpleNormalIRangesList",
              S4Vectors:::anyMissing(runValue(from[[1L]]))))
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a SimpleNormalIRangesList object")
-        new_SimpleList_from_list("SimpleNormalIRangesList",
-                                 lapply(from, as, "NormalIRanges"),
-                                 metadata = metadata(from),
-                                 mcols = mcols(from))
+        S4Vectors:::new_SimpleList_from_list("SimpleNormalIRangesList",
+                                             lapply(from, as, "NormalIRanges"),
+                                             metadata = metadata(from),
+                                             mcols = mcols(from))
       })
 
 

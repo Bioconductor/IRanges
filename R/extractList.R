@@ -89,7 +89,7 @@ setMethod("relist", c("ANY", "PartitioningByEnd"),
         #                                         start=skeleton_start[i],
         #                                         end=skeleton_end[i]))
 
-        new_SimpleList_from_list(ans_class, listData)
+        S4Vectors:::new_SimpleList_from_list(ans_class, listData)
     }
 )
 

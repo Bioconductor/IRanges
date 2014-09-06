@@ -16,14 +16,15 @@ setMethod("viewApply", "RleViewsList",
                              ...,
                              simplify=simplify)
                 if (!simplify)
-                  ans_elt <- new_SimpleList_from_list("SimpleList", ans_elt,
-                                                      metadata=metadata(X[[i]]),
-                                                      mcols=mcols(X[[i]]))
+                  ans_elt <- S4Vectors:::new_SimpleList_from_list("SimpleList",
+                                                     ans_elt,
+                                                     metadata=metadata(X[[i]]),
+                                                     mcols=mcols(X[[i]]))
                 ans_elt
               })
-            new_SimpleList_from_list("SimpleList", ans_listData,
-                                     metadata=metadata(X),
-                                     mcols=mcols(X))})
+            S4Vectors:::new_SimpleList_from_list("SimpleList", ans_listData,
+                                                 metadata=metadata(X),
+                                                 mcols=mcols(X))})
 
 .summaryRleViewsList <- function(x, FUN, na.rm = FALSE, outputListType = NULL)
 {
@@ -45,8 +46,9 @@ setMethod("viewApply", "RleViewsList",
           lapply(structure(seq_len(length(x)), names = names(x)),
                  function(i) FUN(x[[i]], na.rm = na.rm))
     }
-    new_SimpleList_from_list(outputListType, listData,
-                             metadata = metadata(x), mcols = mcols(x))
+    S4Vectors:::new_SimpleList_from_list(outputListType, listData,
+                                         metadata = metadata(x),
+                                         mcols = mcols(x))
 }
 setMethod("viewMins", "RleViewsList",
           function(x, na.rm = FALSE)

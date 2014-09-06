@@ -206,8 +206,8 @@ setMethod("with", "Vector",
 ### Coercion.
 ###
 
-as.list.Vector <- function(x) as.list(as(x, "List"))
-
+### S3/S4 combo for as.list.Vector
+as.list.Vector <- function(x, ...) as.list(as(x, "List"), ...)
 setMethod("as.list", "Vector", as.list.Vector)
 
 

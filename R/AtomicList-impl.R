@@ -245,7 +245,10 @@ setMethod("drop", "AtomicList", function(x) {
 })
 
 CoercerToAtomicList <- function(type, compress) {
-  .coerceToList <- if (compress) coerceToCompressedList else coerceToSimpleList
+  .coerceToList <- if (compress)
+                     coerceToCompressedList
+                   else
+                     S4Vectors:::coerceToSimpleList
   function(from) {
     .coerceToList(from, type)
   }

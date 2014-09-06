@@ -160,15 +160,6 @@ DEFINE_CCALLABLE_STUB(SEXP, new_PartitioningByEnd,
 )
 
 /*
- * Stubs for callables defined in SimpleList_class.c
- */
-
-DEFINE_CCALLABLE_STUB(SEXP, new_SimpleList,
-	(const char *classname, SEXP listData),
-	(            classname,      listData)
-)
-
-/*
  * Stubs for callables defined in DataFrame_class.c
  */
 

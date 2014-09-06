@@ -7,6 +7,18 @@
 ### or in IRanges).
 ###
 
+## NOTE: while the 'c' function does not have an 'x', the generic does
+## c() is a primitive, so 'x' can be missing; dispatch is by position,
+## although sometimes this does not work so well, so it's best to keep
+## names off the parameters whenever feasible.
+setMethod("c", "SimpleList",
+          function(x, ..., recursive = FALSE) {
+              slot(x, "listData") <-
+                do.call(c, lapply(unname(list(x, ...)), as.list))
+              if (!is.null(mcols(x)))
+                mcols(x) <- rbind.mcols(x, ...)
+              x
+          })
 
 .stack.ind <- function(x, index.var = "name") {
   if (length(names(x)) > 0) {
@@ -40,5 +52,29 @@ setMethod("stack", "List",
               df <- cbind(df, mcols(x))
             }
             df
+          })
+
+setMethod("aggregate", "List",
+          function(x, by, FUN, start = NULL, end = NULL, width = NULL,
+                   frequency = NULL, delta = NULL, ..., simplify = TRUE)
+          {
+              if (!missing(by) && is(by, "RangesList")) {
+                  if (length(x) != length(by))
+                      stop("for Ranges 'by', 'length(x) != length(by)'")
+                  y <- as.list(x)
+                  result <-
+                    lapply(structure(seq_len(length(x)), names = names(x)),
+                           function(i)
+                               aggregate(y[[i]], by = by[[i]], FUN = FUN,
+                                         frequency = frequency, delta = delta,
+                                         ..., simplify = simplify))
+                  ans <- try(SimpleAtomicList(result), silent = TRUE)
+                  if (inherits(ans, "try-error"))
+                      ans <- S4Vectors:::new_SimpleList_from_list("SimpleList",
+                                                                  result)
+              } else {
+                  ans <- callNextMethod()
+              }
+              ans
           })
 

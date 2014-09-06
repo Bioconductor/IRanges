@@ -110,9 +110,6 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_get_PartitioningByEnd_end);
 	REGISTER_CCALLABLE(_new_PartitioningByEnd);
 
-/* SimpleList_class.c */
-	REGISTER_CCALLABLE(_new_SimpleList);
-
 /* DataFrame_class.c */
 	REGISTER_CCALLABLE(_new_DataFrame);
 

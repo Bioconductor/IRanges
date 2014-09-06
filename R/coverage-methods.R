@@ -185,9 +185,9 @@
     }
 
     names(ans_listData) <- names(x)
-    new_SimpleList_from_list("SimpleRleList", ans_listData,
-                             metadata=metadata(x),
-                             mcols=mcols(x))
+    S4Vectors:::new_SimpleList_from_list("SimpleRleList", ans_listData,
+                                         metadata=metadata(x),
+                                         mcols=mcols(x))
 }
 
 

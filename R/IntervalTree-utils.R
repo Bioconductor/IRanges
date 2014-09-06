@@ -43,8 +43,9 @@ setMethod("processSelfMatching", "HitsList",
             if (select != "all")
               IntegerList(ans)
             else
-              new_SimpleList_from_list("HitsList", ans,
-                                       subjectOffsets = x@subjectOffsets)
+              S4Vectors:::new_SimpleList_from_list("HitsList",
+                                        ans,
+                                        subjectOffsets = x@subjectOffsets)
           })
 
 setMethod("processSelfMatching", "CompressedHitsList",

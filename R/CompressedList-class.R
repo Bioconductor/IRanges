@@ -2,6 +2,7 @@
 ### CompressedList objects
 ### -------------------------------------------------------------------------
 
+
 setClass("CompressedList",
          contains="List",
          representation(
@@ -10,6 +11,7 @@ setClass("CompressedList",
                         unlistData="ANY"
                        )
          )
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -34,6 +36,7 @@ setReplaceMethod("names", "CompressedList",
                      names(x@partitioning) <- value
                      x
                  })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
@@ -142,6 +145,82 @@ setValidity2("CompressedList", .valid.CompressedList)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion.
+###
+
+setUnlistDataNames <- function(unlisted_x, grouping, use.names, x_class)
+{
+    ## If 'use.names' is FALSE or 'x' has no *outer* names, then we don't
+    ## do anything to 'ans' i.e. we just keep whatever names/rownames are
+    ## on it (which are the *inner* names/rownames of 'x'). Note that this
+    ## behavior is NOT consistent with unlist,List or base::unlist as
+    ## both of them will return a vector with no names/rownames when
+    ## 'use.names' is FALSE.
+    ## FIXME: Make unlist,CompressedList and unlist,List behave
+    ## consistently in *any* situation.
+    ## Otherwise (i.e. if 'use.names' is TRUE and 'x' has *outer* names),
+    ## we make up new names/rownames for 'ans' by prepending the *outer*
+    ## names of 'x' to its *inner* names/rownames. Note that this differs
+    ## from what base::unlist does but THIS IS A FEATURE and is consistent
+    ## with what unlist,List does.
+    if (use.names && !is.null(x_names <- names(grouping))) {
+        if (length(dim(unlisted_x)) < 2L) {
+            ans_ROWNAMES <- names(unlisted_x)
+        } else {
+            ans_ROWNAMES <- rownames(unlisted_x)
+        }
+        nms <- rep.int(x_names, elementLengths(grouping))
+        ans_ROWNAMES <- S4Vectors:::make_unlist_result_names(nms, ans_ROWNAMES)
+        if (length(dim(unlisted_x)) < 2L) {
+            res <- try(names(unlisted_x) <- ans_ROWNAMES, silent=TRUE)
+            what <- "names"
+        } else {
+            res <- try(rownames(unlisted_x) <- ans_ROWNAMES, silent=TRUE)
+            what <- "rownames"
+        }
+        if (is(res, "try-error"))
+            warning("failed to set ", what, " on the ",
+                    "unlisted ", x_class, " object")
+    }
+    unlisted_x
+}
+
+setMethod("unlist", "CompressedList",
+    function(x, recursive=TRUE, use.names=TRUE)
+    {
+        if (!identical(recursive, TRUE))
+            stop("\"unlist\" method for CompressedList objects ",
+                 "does not support the 'recursive' argument")
+        if (!isTRUEorFALSE(use.names))
+            stop("'use.names' must be TRUE or FALSE")
+        setUnlistDataNames(x@unlistData, x@partitioning, use.names, class(x))
+    }
+)
+
+coerceToCompressedList <- function(from, element.type = NULL, ...) {
+  if (is(from, S4Vectors:::listClassName("Compressed", element.type)))
+    return(from)
+  if (is.list(from) || is(from, "List")) {
+    if (is.list(from)) {
+      v <- compress_listData(from)
+    } else {
+      v <- unlist(from, use.names = FALSE)
+    }
+    part <- PartitioningByEnd(from)
+  } else {
+    v <- from
+    part <- PartitioningByEnd(seq_len(length(from)))
+  }
+  if (!is.null(element.type)) {
+    v <- S4Vectors:::coercerToClass(element.type)(v, ...)
+  }
+  to <- relist(v, part)
+  names(to) <- names(from)
+  to
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
 ###
 
@@ -224,16 +303,7 @@ setReplaceMethod("$", "CompressedList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### classNameForDisplay()
-###
-
-setMethod("classNameForDisplay", "CompressedList",
-    function(x) sub("^Compressed", "", class(x))
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Combining and splitting.
+### Combining.
 ###
 
 .bindROWS <- function(...)
@@ -277,6 +347,7 @@ setMethod("c", "CompressedList",
                        "that extends that of the first argument")
               unlist_list_of_CompressedList(tls)
           })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping.
@@ -334,29 +405,6 @@ setMethod("lapply", "CompressedList",
     }
 )
 
-setMethod("aggregate", "CompressedList",
-          function(x, by, FUN, start = NULL, end = NULL, width = NULL,
-                   frequency = NULL, delta = NULL, ..., simplify = TRUE)
-          {
-              if (!missing(by) && is(by, "RangesList")) {
-                  if (length(x) != length(by))
-                      stop("for Ranges 'by', 'length(x) != length(by)'")
-                  y <- as.list(x)
-                  result <-
-                    lapply(structure(seq_len(length(x)), names = names(x)),
-                           function(i)
-                               aggregate(y[[i]], by = by[[i]], FUN = FUN,
-                                         frequency = frequency, delta = delta,
-                                         ..., simplify = simplify))
-                  ans <- try(SimpleAtomicList(result), silent = TRUE)
-                  if (inherits(ans, "try-error"))
-                      ans <- new_SimpleList_from_list("SimpleList", result)
-              } else {
-                  ans <- callNextMethod()
-              }
-              ans
-          })
-
 .updateCompressedList <- function(X, listData) {
     elementTypeX <- elementType(X)
     if (!all(sapply(listData,
@@ -405,76 +453,10 @@ setMethod("revElements", "CompressedList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion.
+### classNameForDisplay()
 ###
 
-setUnlistDataNames <- function(unlisted_x, grouping, use.names, x_class)
-{
-    ## If 'use.names' is FALSE or 'x' has no *outer* names, then we don't
-    ## do anything to 'ans' i.e. we just keep whatever names/rownames are
-    ## on it (which are the *inner* names/rownames of 'x'). Note that this
-    ## behavior is NOT consistent with unlist,List or base::unlist as
-    ## both of them will return a vector with no names/rownames when
-    ## 'use.names' is FALSE.
-    ## FIXME: Make unlist,CompressedList and unlist,List behave
-    ## consistently in *any* situation.
-    ## Otherwise (i.e. if 'use.names' is TRUE and 'x' has *outer* names),
-    ## we make up new names/rownames for 'ans' by prepending the *outer*
-    ## names of 'x' to its *inner* names/rownames. Note that this differs
-    ## from what base::unlist does but THIS IS A FEATURE and is consistent
-    ## with what unlist,List does.
-    if (use.names && !is.null(x_names <- names(grouping))) {
-        if (length(dim(unlisted_x)) < 2L) {
-            ans_ROWNAMES <- names(unlisted_x)
-        } else {
-            ans_ROWNAMES <- rownames(unlisted_x)
-        }
-        nms <- rep.int(x_names, elementLengths(grouping))
-        ans_ROWNAMES <- S4Vectors:::make_unlist_result_names(nms, ans_ROWNAMES)
-        if (length(dim(unlisted_x)) < 2L) {
-            res <- try(names(unlisted_x) <- ans_ROWNAMES, silent=TRUE)
-            what <- "names"
-        } else {
-            res <- try(rownames(unlisted_x) <- ans_ROWNAMES, silent=TRUE)
-            what <- "rownames"
-        }
-        if (is(res, "try-error"))
-            warning("failed to set ", what, " on the ",
-                    "unlisted ", x_class, " object")
-    }
-    unlisted_x
-}
-
-setMethod("unlist", "CompressedList",
-    function(x, recursive=TRUE, use.names=TRUE)
-    {
-        if (!identical(recursive, TRUE))
-            stop("\"unlist\" method for CompressedList objects ",
-                 "does not support the 'recursive' argument")
-        if (!isTRUEorFALSE(use.names))
-            stop("'use.names' must be TRUE or FALSE")
-        setUnlistDataNames(x@unlistData, x@partitioning, use.names, class(x))
-    }
+setMethod("classNameForDisplay", "CompressedList",
+    function(x) sub("^Compressed", "", class(x))
 )
 
-coerceToCompressedList <- function(from, element.type = NULL, ...) {
-  if (is(from, S4Vectors:::listClassName("Compressed", element.type)))
-    return(from)
-  if (is.list(from) || is(from, "List")) {
-    if (is.list(from)) {
-      v <- compress_listData(from)
-    } else {
-      v <- unlist(from, use.names = FALSE)
-    }
-    part <- PartitioningByEnd(from)
-  } else {
-    v <- from
-    part <- PartitioningByEnd(seq_len(length(from)))
-  }
-  if (!is.null(element.type)) {
-    v <- S4Vectors:::coercerToClass(element.type)(v, ...)
-  }
-  to <- relist(v, part)
-  names(to) <- names(from)
-  to
-}

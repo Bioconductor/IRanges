@@ -322,9 +322,9 @@ setMethod("viewApply", "Views",
                       ...),
               simplify = simplify)
         if (!simplify) {
-            ans <- new_SimpleList_from_list("SimpleList", ans,
-                                            metadata = metadata(X),
-                                            mcols = mcols(X))
+            ans <- S4Vectors:::new_SimpleList_from_list("SimpleList", ans,
+                                                        metadata = metadata(X),
+                                                        mcols = mcols(X))
         }
         ans
     }

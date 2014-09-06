@@ -10,7 +10,8 @@ setMethod("viewApply", "RleViews",
                 aggregate(subject(X), start = structure(start(X), names = names(X)),
                           end = end(X), FUN = FUN, ..., simplify = simplify)
               if (!simplify) {
-                  ans <- new_SimpleList_from_list("SimpleList", ans,
+                  ans <- S4Vectors:::new_SimpleList_from_list("SimpleList",
+                                                  ans,
                                                   metadata=metadata(X),
                                                   mcols=mcols(X))
               }

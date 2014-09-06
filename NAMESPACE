@@ -17,7 +17,7 @@ importFrom(stats4, summary, update)
 
 exportClasses(
     functionORNULL,
-    SimpleList, CompressedList,
+    CompressedList,
     Ranges, RangesORmissing,
     IRanges, NormalIRanges,
     NCList,
@@ -63,7 +63,6 @@ S3method(as.data.frame, RangedData)
 S3method(as.data.frame, Ranges)
 
 S3method(as.list, Vector)
-S3method(as.list, SimpleList)
 S3method(as.list, CompressedNormalIRangesList)
 S3method(as.list, Hits)
 
@@ -101,7 +100,7 @@ export(
     as.data.frame.RangedData,
     as.data.frame.Ranges,
 
-    as.list.SimpleList,
+    as.list.Vector,
     as.list.CompressedNormalIRangesList,
     as.list.Hits,
 
@@ -241,7 +240,7 @@ export(
     read.trfMask,
     ##read.chain,
     newViews, successiveViews,
-    SimpleList, DataFrame,
+    DataFrame,
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList,
     DataFrameList, SplitDataFrameList
