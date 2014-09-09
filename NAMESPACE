@@ -42,7 +42,6 @@ exportClasses(
     GappedRanges,
     ViewsList, SimpleViewsList,
     RleViewsList, SimpleRleViewsList,
-    DataFrame,
     DataFrameList, SimpleDataFrameList,
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
     RangedData, RangedDataList, FilterRules, FilterMatrix, RDApplyParams,
@@ -56,7 +55,6 @@ exportClasses(
 ### Export S3 methods
 ###
 
-S3method(as.data.frame, DataFrame)
 S3method(as.data.frame, GappedRanges)
 S3method(as.data.frame, Hits)
 S3method(as.data.frame, RangedData)
@@ -94,7 +92,6 @@ S3method(`window<-`, factor)
 ### (but ?generic.<tab> shows all documented methods) and (c) methods()
 ### doesn't asterisk them.
 export(
-    as.data.frame.DataFrame,
     as.data.frame.GappedRanges,
     as.data.frame.Hits,
     as.data.frame.RangedData,
@@ -139,7 +136,6 @@ exportMethods(
     nrow, NROW,
     ncol, NCOL,
     dim,
-    ROWNAMES,
     rownames, "rownames<-",
     colnames, "colnames<-",
     dimnames, "dimnames<-",
@@ -188,7 +184,6 @@ exportMethods(
     table,
     tapply,
     union, intersect, setdiff,
-    xtabs,
     updateObject,
     values, "values<-",
     classNameForDisplay,
@@ -240,7 +235,6 @@ export(
     read.trfMask,
     ##read.chain,
     newViews, successiveViews,
-    DataFrame,
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList,
     DataFrameList, SplitDataFrameList
