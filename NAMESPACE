@@ -89,8 +89,7 @@ S3method(`window<-`, factor)
 
 ### We also export them thru the export() directive so that (a) they can be
 ### called directly, (b) tab-completion on the name of the generic shows them,
-### (but ?generic.<tab> shows all documented methods) and (c) methods()
-### doesn't asterisk them.
+### and (c) methods() doesn't asterisk them.
 export(
     as.data.frame.GappedRanges,
     as.data.frame.Hits,
