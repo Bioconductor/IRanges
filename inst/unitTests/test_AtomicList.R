@@ -160,8 +160,8 @@ test_AtomicList_character <- function() {
 test_RleList_methods <- function() {
     x1 <- RleList(11:15, 15L, integer(0), 15:16, compress=FALSE)
     x2 <- RleList(11:15, 15L, integer(0), 15:16, compress=TRUE)
-    checkIdentical(runValue(x1), runValue(x2))
-    checkIdentical(runLength(x1), runLength(x2))
+    checkIdentical(as(runValue(x1), "CompressedIntegerList"), runValue(x2))
+    checkIdentical(as(runLength(x1), "CompressedIntegerList"), runLength(x2))
     checkIdentical(as(ranges(x1), "CompressedIRangesList"), ranges(x2))
 
     ## na.rm

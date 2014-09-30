@@ -741,6 +741,19 @@ setMethod("table", "CompressedAtomicList",
               ans
           })
 
+setMethod("duplicated", "CompressedIntegerList",
+          function(x, incomparables=FALSE, fromLast=FALSE)
+          {
+            if (!identical(incomparables, FALSE))
+              stop("\"duplicated\" method for CompressedList objects ",
+                   "does not support the 'incomparables' argument")
+            x_unlistData <- x@unlistData
+            x_group <- rep.int(seq_along(x), elementLengths(x))
+            ans_unlistData <-
+              S4Vectors:::duplicatedIntegerPairs(x_group, x_unlistData,
+                                                 fromLast=fromLast)
+            relist(ans_unlistData, x)
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Logical methods
@@ -944,7 +957,7 @@ setMethod("unstrsplit", "CharacterList",
 ###
 
 setMethod("runValue", "RleList", function(x) {
-  seqapply(x, runValue)
+  as(lapply(x, runValue), "List")
 })
 
 setMethod("runValue", "CompressedRleList",
@@ -989,7 +1002,7 @@ setReplaceMethod("runValue", "SimpleRleList",
                  })
 
 setMethod("runLength", "RleList", function(x) {
-  seqapply(x, runLength)
+  as(lapply(x, runLength), "IntegerList")
 })
 
 setMethod("runLength", "CompressedRleList", function(x) {
