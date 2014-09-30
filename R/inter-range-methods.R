@@ -501,5 +501,5 @@ setMethod("disjointBins", "Ranges",
 )
 
 setMethod("disjointBins", "RangesList",
-          function(x) as(lapply(x, disjointBins), "RangesList"))
+          function(x) as(lapply(x, disjointBins), "IntegerList"))
 
