@@ -632,6 +632,9 @@ setAs("RleList", "SimpleNormalIRangesList",
                                              mcols = mcols(from))
       })
 
+setAs("list", "RangesList", function(from) {
+  S4Vectors:::coerceToSimpleList(from, "Ranges")
+})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "max" and "min" methods for NormalIRangesList objects.
