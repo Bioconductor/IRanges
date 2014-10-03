@@ -157,8 +157,7 @@
 \alias{unique.CompressedRleList}
 \alias{unique,SimpleRleList-method}
 \alias{unique.SimpleRleList}
-\alias{table,SimpleAtomicList-method}
-\alias{table,CompressedAtomicList-method}
+\alias{table,AtomicList-method}
 \alias{drop,AtomicList-method}
 
 \alias{which,CompressedLogicalList-method}

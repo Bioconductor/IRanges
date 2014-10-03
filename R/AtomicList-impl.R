@@ -702,45 +702,6 @@ unique.SimpleRleList <- function(x, incomparables=FALSE, ...)
 }
 setMethod("unique", "SimpleRleList", unique.SimpleRleList)
 
-setMethod("table", "SimpleAtomicList",
-          function(...)
-          {
-              args <- list(...)
-              if (length(args) > 1)
-                  stop("Only one argument in '...' supported")
-              x <- args[[1L]]
-              values <-
-                as.character(sort(unique(unlist(lapply(x, unique),
-                                                use.names=FALSE))))
-              zeros <- structure(rep.int(0L, length(values)), names = values)
-              if (is.null(names(x)))
-                  names(x) <- as.character(seq_len(length(x)))
-              structure(do.call(rbind,
-                                lapply(x, function(elt) {
-                                           eltTable <- table(elt)
-                                           out <- zeros
-                                           out[names(eltTable)] <- eltTable
-                                           out
-                                       })), class = "table")
-          })
-
-setMethod("table", "CompressedAtomicList",
-          function(...)
-          {
-              args <- list(...)
-              if (length(args) > 1)
-                  stop("Only one argument in '...' supported")
-              x <- args[[1L]]
-              nms <- names(x)
-              if (is.null(nms)) {
-                  nms <- as.character(seq_len(length(x)))
-              }
-              nms <- factor(rep.int(nms, elementLengths(x)), levels = nms)
-              ans <- table(nms, as.vector(unlist(x, use.names = FALSE)))
-              names(dimnames(ans)) <- NULL
-              ans
-          })
-
 setMethod("duplicated", "CompressedIntegerList",
           function(x, incomparables=FALSE, fromLast=FALSE)
           {
@@ -754,6 +715,28 @@ setMethod("duplicated", "CompressedIntegerList",
                                                  fromLast=fromLast)
             relist(ans_unlistData, x)
           })
+
+setMethod("table", "AtomicList",
+    function(...)
+    {
+        args <- list(...)
+        if (length(args) != 1L)
+            stop("\"table\" method for AtomicList objects ",
+                 "can only take one input object")
+        x <- args[[1L]]
+        y1 <- togroup(x)
+        attributes(y1) <- list(levels=as.character(seq_along(x)),
+                               class="factor")
+        y2 <- unlist(x, use.names=FALSE)
+        ans <- table(y1, y2)
+        names(dimnames(ans)) <- NULL
+        x_names <- names(x)
+        if (!is.null(x_names))
+            rownames(ans) <- x_names
+        ans
+    }
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Logical methods

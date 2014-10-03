@@ -78,14 +78,3 @@ setMethod("aggregate", "List",
               ans
           })
 
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Statistics
-###
-
-setMethod("table", "List", function(...) {
-  args <- list(...)
-  if (length(args) > 1) 
-    stop("Only one argument in '...' supported")
-  x <- args[[1L]]
-  table(stack(x))
-})
