@@ -727,7 +727,7 @@ setMethod("table", "AtomicList",
         y1 <- togroup(x)
         attributes(y1) <- list(levels=as.character(seq_along(x)),
                                class="factor")
-        y2 <- unlist(x, use.names=FALSE)
+        y2 <- as.factor(unlist(x, use.names=FALSE))
         ans <- table(y1, y2)
         names(dimnames(ans)) <- NULL
         x_names <- names(x)
