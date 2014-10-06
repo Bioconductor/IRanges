@@ -716,6 +716,8 @@ setMethod("duplicated", "CompressedIntegerList",
             relist(ans_unlistData, x)
           })
 
+### Could actually be made the "table" method for List objects. Will work on
+### any List object 'x' for which 'as.factor(unlist(x))' works.
 setMethod("table", "AtomicList",
     function(...)
     {
