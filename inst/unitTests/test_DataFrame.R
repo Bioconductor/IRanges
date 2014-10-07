@@ -398,4 +398,11 @@ test_DataFrame_Setter <- function() {
   }
 }
 
- 
+test_DataFrame_droplevels <- function() {
+  df <- DataFrame(state.name, state.region, state.region.rle=Rle(state.region))
+  df2 <- head(df)
+  checkIdentical(lapply(droplevels(df2), levels),
+                 list(state.name=NULL,
+                      state.region=c("South", "West"),
+                      state.region.rle=c("South", "West")))
+}
