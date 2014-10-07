@@ -87,3 +87,6 @@ setMethod("slice", "RleList",
               }
           })
 
+setMethod("slice", "ANY", function(x, lower=-Inf, upper=Inf, ...) {
+  slice(as(x, "Rle"), lower=lower, upper=upper, ...)
+})
