@@ -44,6 +44,7 @@
 \alias{overlapsAny,RangedData,RangedData-method}
 \alias{overlapsAny,RangedData,RangesList-method}
 \alias{overlapsAny,RangesList,RangedData-method}
+\alias{overlapsAny,Vector,missing-method}
 
 \alias{\%over\%}
 \alias{\%within\%}

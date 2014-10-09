@@ -3,6 +3,7 @@
 \alias{slice-methods}
 
 \alias{slice}
+\alias{slice,ANY-method}
 \alias{slice,Rle-method}
 \alias{slice,RleList-method}
 
@@ -27,7 +28,8 @@ slice(x, lower=-Inf, upper=Inf, ...)
 
 \arguments{
   \item{x}{
-    An \link{Rle} or \link{RleList} object for the methods described here.
+    An \link{Rle} or \link{RleList} object, or any object coercible to
+    an Rle object.
   }
   \item{lower, upper}{
     The lower and upper bounds for the slice.

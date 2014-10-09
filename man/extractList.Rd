@@ -17,6 +17,7 @@
 
 \alias{extractList}
 \alias{extractList,ANY,ANY-method}
+\alias{extractList,ANY-method}
 
 \title{Group elements of a vector-like object into a list-like object}
 

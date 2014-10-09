@@ -48,6 +48,8 @@
 \alias{eval,expression,Vector-method}
 \alias{eval,language,Vector-method}
 
+\alias{as.list.Vector}
+\alias{as.list,Vector-method}
 
 \title{Vector objects (old man page)}
 
@@ -209,6 +211,15 @@
         \item{\code{simplify}}{A logical value specifying whether or not the
           result should be simplified to a vector or matrix if possible.}
       }
+    }
+  }
+}
+
+\section{Coercion}{
+  \describe{
+    \item{}{
+      \code{as.list(x)}: coerce a Vector to a list, where the \code{i}th
+      element of the result corresponds to \code{x[i]}.
     }
   }
 }
