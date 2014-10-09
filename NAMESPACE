@@ -66,6 +66,7 @@ S3method(as.list, Hits)
 
 S3method(duplicated, Dups)
 S3method(duplicated, CompressedList)
+S3method(duplicated, CompressedIntegerList)
 
 S3method(head, Vector)
 

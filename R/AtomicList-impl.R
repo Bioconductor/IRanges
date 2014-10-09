@@ -702,19 +702,22 @@ unique.SimpleRleList <- function(x, incomparables=FALSE, ...)
 }
 setMethod("unique", "SimpleRleList", unique.SimpleRleList)
 
+duplicated.CompressedIntegerList <- function(x, incomparables=FALSE,
+                                             fromLast=FALSE)
+{
+  if (!identical(incomparables, FALSE))
+    stop("\"duplicated\" method for CompressedList objects ",
+         "does not support the 'incomparables' argument")
+  x_unlistData <- x@unlistData
+  x_group <- rep.int(seq_along(x), elementLengths(x))
+  ans_unlistData <-
+    S4Vectors:::duplicatedIntegerPairs(x_group, x_unlistData,
+                                       fromLast=fromLast)
+  relist(ans_unlistData, x)
+}
+
 setMethod("duplicated", "CompressedIntegerList",
-          function(x, incomparables=FALSE, fromLast=FALSE)
-          {
-            if (!identical(incomparables, FALSE))
-              stop("\"duplicated\" method for CompressedList objects ",
-                   "does not support the 'incomparables' argument")
-            x_unlistData <- x@unlistData
-            x_group <- rep.int(seq_along(x), elementLengths(x))
-            ans_unlistData <-
-              S4Vectors:::duplicatedIntegerPairs(x_group, x_unlistData,
-                                                 fromLast=fromLast)
-            relist(ans_unlistData, x)
-          })
+          duplicated.CompressedIntegerList)
 
 ### Could actually be made the "table" method for List objects. Will work on
 ### any List object 'x' for which 'as.factor(unlist(x))' works.
