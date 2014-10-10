@@ -335,7 +335,7 @@ export(
     punion, pintersect, psetdiff, pgap,
 
     ## findOverlaps-methods.R:
-    findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
+    findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps, mergeByOverlaps,
 
     ## nearest-methods.R:
     precede, follow, nearest, distance, distanceToNearest,

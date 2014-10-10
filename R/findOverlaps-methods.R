@@ -737,6 +737,19 @@ setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Merge two sets of ranges by overlap into a DataFrame
+###
+
+mergeByOverlaps <- function(query, subject, ...) {
+  hits <- findOverlaps(query, subject, ...)
+  query_df <- as(extractROWS(query, queryHits(hits)), "DataFrame")
+  colnames(query_df)[1L] <- deparse(substitute(query))
+  subject_df <- as(extractROWS(subject, subjectHits(hits)), "DataFrame")
+  colnames(subject_df)[1L] <- deparse(substitute(subject))
+  cbind(query_df, subject_df)
+}
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### "ranges" method for Hits objects
 ###
 ### Extracts the actual regions of intersection between the overlapping ranges.

@@ -56,6 +56,8 @@
 \alias{subsetByOverlaps,RangedData,RangesList-method}
 \alias{subsetByOverlaps,RangesList,RangedData-method}
 
+\alias{mergeByOverlaps}
+
 \alias{ranges,Hits-method}
 
 
@@ -97,6 +99,8 @@ query \%outside\% subject
 
 subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
                  type=c("any", "start", "end", "within", "equal"), ...)
+
+mergeByOverlaps(query, subject, ...)
 
 \S4method{ranges}{Hits}(x, query, subject)
 }
@@ -250,6 +254,14 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
   has an overlap hit with a range in \code{subject} using the specified
   \code{findOverlaps} parameters.
 
+  \code{mergeByOverlaps} computes the overlap between query and subject
+  according to the arguments in \code{\dots}. It then extracts the
+  corresponding hits from each object and returns a \code{DataFrame}
+  containing one column for the query and one for the subject, as well
+  as any \code{mcols} that were present on either object. The query and
+  subject columns are named by quoting and deparsing the corresponding
+  argument.
+  
   \code{ranges(x, query, subject)} returns a \code{Ranges} of the same
   length as \link{Hits} object \code{x} holding the regions of intersection
   between the overlapping ranges in objects \code{query} and \code{subject},
