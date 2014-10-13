@@ -166,7 +166,7 @@ setMethod("relist", c("Vector", "list"),
     f_lens <- runLength(f)
     f_is_not_sorted <- S4Vectors:::isNotSorted(f_vals)
     if (f_is_not_sorted) {
-        idx <- orderInteger(f_vals)
+        idx <- S4Vectors:::orderInteger(f_vals)
         xranges <- successiveIRanges(f_lens)[idx]
         f_vals <- f_vals[idx]
         f_lens <- f_lens[idx]
