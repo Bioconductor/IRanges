@@ -143,7 +143,7 @@ setMethod("relist", c("Vector", "list"),
         f <- head(f, n=x_NROW)
     f_is_not_sorted <- S4Vectors:::isNotSorted(f)
     if (f_is_not_sorted) {
-        idx <- orderInteger(f)
+        idx <- S4Vectors:::orderInteger(f)
         x <- extractROWS(x, idx)
     }
     f <- tabulate(f, nbins=length(f_levels))
@@ -201,7 +201,7 @@ setMethod("relist", c("Vector", "list"),
     f_vals <- as.integer(f_vals)
     f_is_not_sorted <- S4Vectors:::isNotSorted(f_vals)
     if (f_is_not_sorted) {
-        idx <- orderInteger(f_vals)
+        idx <- S4Vectors:::orderInteger(f_vals)
         xranges <- successiveIRanges(f_lens)[idx]
         x <- extractROWS(x, xranges)
     }
