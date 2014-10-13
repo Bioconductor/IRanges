@@ -141,13 +141,16 @@ setMethod("relist", c("Vector", "list"),
     f <- as.integer(f)
     if (f_len > x_NROW)
         f <- head(f, n=x_NROW)
-    idx <- S4Vectors:::orderInteger(f)
+    f_is_not_sorted <- S4Vectors:::isNotSorted(f)
+    if (f_is_not_sorted) {
+        idx <- orderInteger(f)
+        x <- extractROWS(x, idx)
+    }
     f <- tabulate(f, nbins=length(f_levels))
     names(f) <- f_levels
     if (drop)
         f <- f[f != 0L]
     f <- cumsum(f)
-    x <- extractROWS(x, idx)
     f <- PartitioningByEnd(f)
     relist(x, f)
 }
@@ -157,16 +160,21 @@ setMethod("relist", c("Vector", "list"),
 {
     if (length(f) > NROW(x))
         stop("'f' cannot be longer than data when it's an integer-Rle")
-    f_vals <- runValue(f)
-    f_lens <- runLength(f)
-    idx <- S4Vectors:::orderInteger(f_vals)
-    xranges <- successiveIRanges(f_lens)[idx]
-    tmp <- Rle(f_vals[idx], f_lens[idx])
-    f <- cumsum(runLength(tmp))
-    names(f) <- as.character(runValue(tmp))
     if (!identical(drop, FALSE))
         warning("'drop' is ignored when 'f' is an integer-Rle")
-    x <- extractROWS(x, xranges)
+    f_vals <- runValue(f)
+    f_lens <- runLength(f)
+    f_is_not_sorted <- S4Vectors:::isNotSorted(f_vals)
+    if (f_is_not_sorted) {
+        idx <- orderInteger(f_vals)
+        xranges <- successiveIRanges(f_lens)[idx]
+        f_vals <- f_vals[idx]
+        f_lens <- f_lens[idx]
+        x <- extractROWS(x, xranges)
+    }
+    tmp <- Rle(f_vals, f_lens)
+    f <- cumsum(runLength(tmp))
+    names(f) <- as.character(runValue(tmp))
     f <- PartitioningByEnd(f)
     relist(x, f)
 }
@@ -191,8 +199,12 @@ setMethod("relist", c("Vector", "list"),
     f_lens <- runLength(f)
     f_levels <- levels(f_vals)
     f_vals <- as.integer(f_vals)
-    idx <- S4Vectors:::orderInteger(f_vals)
-    xranges <- successiveIRanges(f_lens)[idx]
+    f_is_not_sorted <- S4Vectors:::isNotSorted(f_vals)
+    if (f_is_not_sorted) {
+        idx <- orderInteger(f_vals)
+        xranges <- successiveIRanges(f_lens)[idx]
+        x <- extractROWS(x, xranges)
+    }
     ## Using S4Vectors:::tabulate2() is 5x faster than doing:
     ##   f <- integer(length(f_levels))
     ##   tmp <- Rle(f_vals[idx], f_lens[idx])
@@ -202,7 +214,6 @@ setMethod("relist", c("Vector", "list"),
     if (drop)
         f <- f[f != 0L]
     f <- cumsum(f)
-    x <- extractROWS(x, xranges)
     f <- PartitioningByEnd(f)
     relist(x, f)
 }
@@ -309,4 +320,3 @@ setMethod("extractList", c("ANY", "ANY"),
         relist(extractROWS(x, unlisted_i), i)
     }
 )
-

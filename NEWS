@@ -1,3 +1,85 @@
+CHANGES IN VERSION 2.0.0
+------------------------
+
+NEW FEATURES
+
+    o Add mapCoords() and pmapCoords() as replacements for map() and pmap().
+
+    o Add coercion from list to RangesList.
+
+    o Add slice,ANY method as a convenience for slice(as(x, "Rle"), ...).
+
+    o Add mergeByOverlaps(); acts like base::merge as far as it makes sense.
+
+    o Add overlapsAny,Vector,missing method.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Move Annotated, DataTable, Vector, Hits, Rle, List, SimpleList, and
+      DataFrame classes to new S4Vectors package.
+
+    o Move isConstant(), classNameForDisplay(), and low-level argument
+      checking helpers isSingleNumber(), isSingleString(), etc... to new
+      S4Vectors package.
+
+    o Rename Grouping class -> ManyToOneGrouping. Redefine Grouping class as
+      the parent of all groupings (it formalizes the most general kind of
+      grouping).
+
+    o Change splitAsList() to a generic.
+
+    o In rbind,DataFrame method, no longer coerce the combined column to the
+      class of the column in the first argument.
+
+    o Do not carry over row.names attribute from data.frame to DataFrame.
+
+    o No longer make names valid in [[<-,DataFrame method.
+
+    o Make the set operations dispatch on Ranges instead of IRanges; they
+      usually return an IRanges, but the input could be any implementation.
+
+    o Add '...' to splitAsList() generic.
+
+    o Speed up trim() on a Views object when trimming is actually not needed
+      (no-op).
+
+    o Speed up validation of IRanges objects by 2x.
+
+    o Speed up "flank" method for Ranges objects by 4x.
+
+DEPRECATED AND DEFUNCT
+
+    o Defunct map() and pmap().
+
+    o reduce() argument 'with.mapping' is now defunct.
+
+    o splitAsListReturnedClass() is now defunct.
+
+    o Deprecate seqapply(), mseqapply(), tseqapply(), seqsplit(), and seqby().
+
+BUG FIXES
+
+    o Fix rbind,DataFrame method when first column is a matrix.
+
+    o Fix a memory leak in the interval tree code.
+
+    o Fix handling of minoverlap > 1 in findOverlaps(), so that it behaves
+      more consistently and respects 'maxgap', as documented.
+
+    o Fix findOverlaps,IRanges method for select="last".
+
+    o Fix subset,Vector-method to handle objects with NULL mcols(x) (e.g.
+      Rle object).
+
+    o Fix internal helper rbind.mcols() for DataFrame (and potentially other
+      tables).
+
+    o ranges,SimpleRleList method now returns a SimpleRangesList (instead of
+      CompressedRangesList).
+
+    o Make flank() work on Ranges object of length 0.
+
+
 CHANGES IN VERSION 1.20.0
 -------------------------
 
