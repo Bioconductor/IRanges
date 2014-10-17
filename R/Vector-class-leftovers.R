@@ -180,28 +180,6 @@ rbind.mcols <- function(x, ...)
     do.call(rbind, lapply(mcols_list, fillCols))
 }
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Evaluating.
-###
-
-setMethod("eval", c("expression", "Vector"),
-          function(expr, envir, enclos = parent.frame())
-          eval(expr, as.env(envir, enclos))
-          )
-
-setMethod("eval", c("language", "Vector"),
-          function(expr, envir, enclos = parent.frame())
-          eval(expr, as.env(envir, enclos))
-          )
-
-setMethod("with", "Vector",
-          function(data, expr, ...)
-          {
-            S4Vectors:::safeEval(substitute(expr), data, parent.frame(), ...)
-          })
-
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
