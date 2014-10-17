@@ -197,10 +197,12 @@ setMethod("unlist", "CompressedList",
     }
 )
 
+setAs("ANY", "CompressedList", function(from) coerceToCompressedList(from))
+
 coerceToCompressedList <- function(from, element.type = NULL, ...) {
   if (is(from, S4Vectors:::listClassName("Compressed", element.type)))
     return(from)
-  if (is.list(from) || is(from, "List")) {
+  if (is.list(from) || (is(from, "List") && !is(from, "DataFrame"))) {
     if (is.list(from)) {
       v <- compress_listData(from)
     } else {
@@ -209,7 +211,7 @@ coerceToCompressedList <- function(from, element.type = NULL, ...) {
     part <- PartitioningByEnd(from)
   } else {
     v <- from
-    part <- PartitioningByEnd(seq_len(length(from)))
+    part <- PartitioningByEnd(seq_len(NROW(from)))
   }
   if (!is.null(element.type)) {
     v <- S4Vectors:::coercerToClass(element.type)(v, ...)
