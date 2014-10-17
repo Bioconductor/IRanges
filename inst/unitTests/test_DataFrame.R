@@ -406,3 +406,15 @@ test_DataFrame_droplevels <- function() {
                       state.region=c("South", "West"),
                       state.region.rle=c("South", "West")))
 }
+
+test_DataFrame_transform <- function() {
+  DF <- DataFrame(state.name, state.region, state.area)
+  df <- as.data.frame(DF)
+
+  checkIdentical(transform(DF), DF)
+
+  TF <- transform(DF, log.area = log(state.area), ratio = log.area / state.area)
+  tf <- transform(transform(df, log.area = log(state.area)),
+                  ratio = log.area / state.area)
+  checkIdentical(tf, as.data.frame(TF))
+}
