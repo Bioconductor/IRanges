@@ -35,3 +35,7 @@ setClass("RawList", representation("VIRTUAL"),
 setClass("RleList", representation("VIRTUAL"),
          prototype = prototype(elementType = "Rle"),
          contains = "AtomicList")
+
+setClass("FactorList", representation("VIRTUAL"),
+         prototype = prototype(elementType = "factor"),
+         contains = "IntegerList")
