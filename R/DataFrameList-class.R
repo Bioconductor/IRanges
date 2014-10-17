@@ -6,19 +6,17 @@ setClass("DataFrameList", representation("VIRTUAL"),
          prototype = prototype(elementType = "DataFrame"),
          contains = "List")
 setClass("SimpleDataFrameList",
-         prototype = prototype(elementType = "DataFrame"),
          contains = c("DataFrameList", "SimpleList"))
+setClass("CompressedDataFrameList",
+         prototype = prototype(unlistData = new("DataFrame")),
+         contains = c("DataFrameList", "CompressedList"))
 
 setClass("SplitDataFrameList", representation("VIRTUAL"),
-         prototype = prototype(elementType = "DataFrame"),
          contains = "DataFrameList")
 setClass("SimpleSplitDataFrameList",
-         prototype = prototype(elementType = "DataFrame"),
          contains = c("SplitDataFrameList", "SimpleDataFrameList"))
 setClass("CompressedSplitDataFrameList",
-         prototype = prototype(elementType = "DataFrame",
-                               unlistData = new("DataFrame")),
-         contains = c("SplitDataFrameList", "CompressedList"))
+         contains = c("SplitDataFrameList", "CompressedDataFrameList"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -107,16 +105,16 @@ setMethod("dimnames", "DataFrameList",
 setReplaceMethod("rownames", "SimpleDataFrameList",
                  function(x, value)
                  {
-                   if (is.null(value)) {
-                     x@listData <-
-                       lapply(x@listData, function(y) {rownames(x) <- NULL; x})
-                   } else if (is(value, "CharacterList")){
-                     if (length(x) != length(value))
+                   if (is.null(value) || is(value, "CharacterList")) {
+                     if (is.null(value))
+                       value <- list(NULL)
+                     else if (length(x) != length(value))
                        stop("replacement value must be the same length as x")
-                     for (i in seq_len(length(x)))
-                       rownames(x@listData[[i]]) <- value[[i]]
+                     x@listData <-
+                       mapply(function(y, rn) {rownames(y) <- rn; y},
+                              x@listData, value, SIMPLIFY=FALSE)
                    } else {
-                     stop("replacement value must either be NULL or a CharacterList")
+                     stop("replacement value must be NULL or a CharacterList")
                    }
                    x
                  })
@@ -254,20 +252,19 @@ SplitDataFrameList <- function(..., compress = TRUE, cbindArgs = FALSE)
   if (!isTRUEorFALSE(compress))
     stop("'compress' must be TRUE or FALSE")
   listData <- list(...)
-  if (length(listData) == 1 && is.list(listData[[1L]]) &&
-      !is.data.frame(listData[[1L]]))
+  if (length(listData) == 1 &&
+      (is.list(listData[[1L]]) || is(listData[[1L]], "List")) &&
+      !(is.data.frame(listData[[1L]]) || is(listData[[1L]], "DataFrame")))
     listData <- listData[[1L]]
   if (cbindArgs) {
     if (is.null(names(listData)))
       names(listData) <- paste("X", seq_len(length(listData)), sep = "")
     listData <- do.call(Map, c(list(DataFrame), listData))
-  } else if (any(!sapply(listData, is, "DataFrame")))
-    listData <- lapply(listData, as, "DataFrame")
-  
-  if (compress)
-    new_CompressedList_from_list("CompressedSplitDataFrameList", listData)
-  else
-    S4Vectors:::new_SimpleList_from_list("SimpleSplitDataFrameList", listData)
+  }
+
+  as(listData,
+     if (compress) "CompressedSplitDataFrameList"
+     else "SimpleSplitDataFrameList")
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -285,17 +282,7 @@ setMethod("[", "SimpleSplitDataFrameList",
             if (((nargs() - !missing(drop)) > 2) &&
                 (length(x@listData) > 0) && (ncol(x@listData[[1L]]) == 1) &&
                 (missing(drop) || drop)) {
-              uniqueClasses <-
-                unique(unlist(lapply(x@listData, function(y) class(y[[1L]]))))
-              if (all(uniqueClasses %in% 
-                      c("raw", "logical", "integer", "numeric", "character",
-                        "complex", "Rle")))
-                x <- SimpleAtomicList(lapply(x@listData, "[[", 1))
-              else if (identical(uniqueClasses, "IRanges"))
-                x <- IRangesList(lapply(x@listData, "[[", 1), compress=FALSE)
-              else if (unlist(lapply(uniqueClasses,
-                                     function(y) extends(y, "Ranges"))))
-                x <- RangesList(lapply(x@listData, "[[", 1))
+              x <- as(lapply(x@listData, "[[", 1), "List")
             }
 
             x
@@ -311,17 +298,7 @@ setMethod("[", "CompressedSplitDataFrameList",
 
             if (((nargs() - !missing(drop)) > 2) &&
                 (ncol(x@unlistData) == 1) && (missing(drop) || drop)) {
-              dataClass <- class(x@unlistData[[1L]])
-              if (dataClass %in% 
-                  c("raw", "logical", "integer", "numeric", "character",
-                    "complex", "Rle"))
-                x <-
-                  CompressedAtomicList(x@unlistData[[1L]],
-                                       partitioning = x@partitioning)
-              else if (dataClass == "IRanges")
-                x <-
-                  new2("CompressedIRangesList", unlistData = x@unlistData[[1L]],
-                       partitioning = x@partitioning)
+              x <- relist(x@unlistData[[1L]], x)
             }
 
             x
@@ -331,6 +308,7 @@ setMethod("normalizeSingleBracketReplacementValue", "SplitDataFrameList",
     function(value, x)
     {
         value <- callNextMethod()  # call default method
+        rownames(value) <- NULL
         if (length(x) != 0L && ncol(x)[[1L]] == ncol(value)[[1L]])
             colnames(value)[[1L]] <- colnames(x)[[1L]]
         value
@@ -350,26 +328,34 @@ setReplaceMethod("[", "SplitDataFrameList",
                 ans <- callNextMethod(x=x, i=i, value=value)
             return(ans)
         }
-        j <- extractROWS(setNames(seq_len(ncol(x)[[1L]]), colnames(x)[[1L]]), j)
-        y <- x[, j, drop=FALSE]
+        colind <- setNames(seq_along(commonColnames(x)), commonColnames(x))
+        if (missing(i) && is.character(j)) {
+            colnames(value) <- j
+        }
+        j <- normalizeSingleBracketSubscript(j, colind, allow.append=missing(i))
         if (missing(i)) {
-            y[] <- value
-        } else if (is.list(i) || (is(i, "List") && !is(i, "Ranges"))) {
-            y <- S4Vectors:::lsubset_List_by_List(y, i, value)
+            y <- value
         } else {
-            y[i] <- value
+            y <- x[, j, drop=FALSE]
+            if (is.list(i) || (is(i, "List") && !is(i, "Ranges"))) {
+                y <- S4Vectors:::lsubset_List_by_List(y, i, value)
+            } else {
+                y[i] <- value
+            }
+        }
+        if (length(y) < length(x)) {
+            y <- rep(y, length.out=length(x))
         }
         if (is(x, "CompressedList")) {
             xels <- elementLengths(x)
             yels <- elementLengths(y)
             if (any(xels != yels)) {
-                ends <- cumsum(elementLengths(y))
-                starts <- c(1L, head(ends, -1L) + 1L)
-                indices <- unlist(lapply(seq_len(length(y)),
-                                         function(k) {
-                                             rep(starts[k]:ends[k],
-                                                 length.out=xels[k])
-                                         }))
+                indices <- IRanges(start(y@partitioning), width=yels)
+                indices <- rep(indices, xels / yels)
+                if (sum(width(indices)) != sum(xels)) {
+                    stop("some element lengths of 'x' are not multiples of the ",
+                         "corresponding element lengths of 'value'")
+                }
                 y@unlistData <- y@unlistData[indices, , drop=FALSE]
             }
             x@unlistData[, j] <- y@unlistData
@@ -394,28 +380,47 @@ setReplaceMethod("[", "SplitDataFrameList",
 
 ## Casting DataFrameList -> DataFrame implies cast to SplitDataFrameList
 setAs("DataFrameList", "DataFrame", function(from) {
-  v <- .valid.SplitDataFrameList(from)
-  if (!is.null(v))
-    stop(v)
-  unlist(from)
+  as(as(from, "SplitDataFrameList"), "DataFrame")
 })
 
+setGeneric("commonColnames", function(x) standardGeneric("commonColnames"))
+
+setMethod("commonColnames", "CompressedSplitDataFrameList",
+          function(x) colnames(unlist(x, use.names=FALSE)))
+
+setMethod("commonColnames", "SplitDataFrameList",
+          function(x) colnames(as.list(x)[[1L]]))
+
 setAs("SplitDataFrameList", "DataFrame",
-    function(from) unlist(from, use.names=FALSE)
+    function(from) {
+      cols <- sapply(commonColnames(from), function(j) from[,j],
+                     simplify=FALSE)
+      DataFrame(cols)
+    }
 )
 
-setAs("ANY", "SimpleSplitDataFrameList",
-      function(from) SplitDataFrameList(from, compress=FALSE))
-setAs("ANY", "CompressedSplitDataFrameList",
-      function(from) SplitDataFrameList(from, compress=TRUE))
+setAs("ANY", "SplitDataFrameList",
+      function(from) as(from, "CompressedSplitDataFrameList"))
 
-## Behaves like as.list() on a vector, while SplitDataFrameList() is like list()
-setAs("List", "SimpleSplitDataFrameList",
-      function(from) do.call(SplitDataFrameList,
-                             c(as.list(from), compress=FALSE)))
-setAs("List", "CompressedSplitDataFrameList",
-      function(from) do.call(SplitDataFrameList,
-                             c(as.list(from), compress=TRUE)))
+setAs("list", "SplitDataFrameList",
+      function(from) as(from, "SimpleSplitDataFrameList"))
+
+setAs("SimpleList", "SplitDataFrameList",
+      function(from) as(from, "SimpleSplitDataFrameList"))
+
+setAs("DataFrame", "SplitDataFrameList",
+      function(from) as(from, "CompressedSplitDataFrameList"))
+
+setAs("ANY", "SimpleSplitDataFrameList",
+      function(from) {
+        new("SimpleSplitDataFrameList", as(from, "SimpleDataFrameList"))
+      })
+setAs("ANY", "CompressedSplitDataFrameList",
+      function(from) {
+        coerceToCompressedList(from, "DataFrame")
+      })
+
+setListCoercions("DataFrame")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Show
