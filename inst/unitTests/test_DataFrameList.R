@@ -209,3 +209,22 @@ test_SplitDataFrameList_replace <- function() {
         checkDFL2dfl(sw2split, swiss2split)
     }
 }
+
+test_DataFrameList_transform <- function() {
+  DF <- DataFrame(state.division, state.region, state.area)
+  DFL <- split(DF, DF$state.division) # NICER: split(DF, ~ state.devision)
+  DFL <- transform(DFL, total.area=sum(state.area[state.region!="South"]),
+                   fraction=ifelse(total.area == 0, 0, state.area/total.area))
+
+  ANS <- DataFrame(lapply(unlist(DFL, use.names=FALSE), unname))
+  
+  df <- as.data.frame(DF)
+  df$total.area <-
+    with(subset(df, state.region != "South"),
+         sapply(split(state.area, state.division), sum))[df$state.division]
+  df$fraction <- with(df, ifelse(total.area == 0, 0, state.area/total.area))
+  df <- df[order(df$state.division),]
+  rownames(df) <- NULL
+  
+  checkIdentical(ANS, DataFrame(df))
+}
