@@ -92,7 +92,7 @@ setGeneric("reduce", signature="x",
 
 setMethod("reduce", "IRanges",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                with.revmap=FALSE, with.mapping=FALSE,
+                with.revmap=FALSE,
                 with.inframe.attrib=FALSE)
     {
         if (!isTRUEorFALSE(drop.empty.ranges))
@@ -105,22 +105,12 @@ setMethod("reduce", "IRanges",
             stop("'min.gapwidth' must be non-negative")
         if (!isTRUEorFALSE(with.revmap))
             stop("'with.revmap' must be TRUE or FALSE")
-        if (!identical(with.mapping, FALSE)) {
-            msg <- c("  The 'with.mapping' argument is defunct.\n",
-                     "  Please use the 'with.revmap' argument instead.")
-            .Defunct(msg=msg)
-            if (!isTRUEorFALSE(with.mapping))
-                stop("'with.mapping' must be TRUE or FALSE")
-            if (with.revmap && with.mapping)
-                stop("'with.revmap' and 'with.mapping' cannot be ",
-                     "both set to TRUE")
-        }
         if (!isTRUEorFALSE(with.inframe.attrib))
             stop("'with.inframe.attrib' must be TRUE or FALSE")
         C_ans <- .Call2("Ranges_reduce",
                         start(x), width(x),
                         drop.empty.ranges, min.gapwidth,
-                        with.revmap || with.mapping,
+                        with.revmap,
                         with.inframe.attrib,
                         PACKAGE="IRanges")
         ans <- unsafe.update(x, start=C_ans$start, width=C_ans$width,
@@ -128,10 +118,6 @@ setMethod("reduce", "IRanges",
         if (with.revmap) {
             revmap <- IntegerList(C_ans$revmap)
             mcols(ans) <- DataFrame(revmap=revmap)
-        }
-        if (with.mapping) {
-            mapping <- IntegerList(C_ans$revmap)
-            mcols(ans) <- DataFrame(mapping=mapping)
         }
         if (with.inframe.attrib) {
             inframe <- new2("IRanges", start=C_ans$inframe.start,
@@ -144,13 +130,13 @@ setMethod("reduce", "IRanges",
 
 setMethod("reduce", "Ranges",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                with.revmap=FALSE, with.mapping=FALSE,
+                with.revmap=FALSE, 
                 with.inframe.attrib=FALSE)
     {
         ir <- as(x, "IRanges")
         y <- reduce(ir, drop.empty.ranges=drop.empty.ranges,
                         min.gapwidth=min.gapwidth,
-                        with.revmap=with.revmap, with.mapping=with.mapping,
+                        with.revmap=with.revmap,
                         with.inframe.attrib=with.inframe.attrib)
         as(y, class(x))
     }
@@ -158,13 +144,13 @@ setMethod("reduce", "Ranges",
 
 setMethod("reduce", "Views",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                with.revmap=FALSE, with.mapping=FALSE,
+                with.revmap=FALSE,
                 with.inframe.attrib=FALSE)
     {
         x@ranges <- reduce(ranges(x),
                            drop.empty.ranges=drop.empty.ranges,
                            min.gapwidth=min.gapwidth,
-                           with.revmap=with.revmap, with.mapping=with.mapping,
+                           with.revmap=with.revmap,
                            with.inframe.attrib=with.inframe.attrib)
         x
     }
@@ -172,18 +158,18 @@ setMethod("reduce", "Views",
 
 setMethod("reduce", "RangesList",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                with.revmap=FALSE, with.mapping=FALSE,
+                with.revmap=FALSE,
                 with.inframe.attrib=FALSE)
         endoapply(x, reduce, drop.empty.ranges = drop.empty.ranges,
                      min.gapwidth = min.gapwidth,
-                     with.revmap=with.revmap, with.mapping=FALSE,
+                     with.revmap=with.revmap,
                      with.inframe.attrib = with.inframe.attrib))
 
 ### 'with.inframe.attrib' is ignored for now.
 ### TODO: Support 'with.inframe.attrib=TRUE'.
 setMethod("reduce", "CompressedIRangesList",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                with.revmap=FALSE, with.mapping=FALSE,
+                with.revmap=FALSE,
                 with.inframe.attrib=FALSE)
     {
         if (!isTRUEorFALSE(drop.empty.ranges))
@@ -196,32 +182,18 @@ setMethod("reduce", "CompressedIRangesList",
             stop("'min.gapwidth' must be non-negative")
         if (!isTRUEorFALSE(with.revmap))
             stop("'with.revmap' must be TRUE or FALSE")
-        if (!identical(with.mapping, FALSE)) {
-            msg <- c("  The 'with.mapping' argument is defunct.\n",
-                     "  Please use the 'with.revmap' argument instead.")
-            .Defunct(msg=msg)
-            if (!isTRUEorFALSE(with.mapping))
-                stop("'with.mapping' must be TRUE or FALSE")
-            if (with.revmap && with.mapping)
-                stop("'with.revmap' and 'with.mapping' cannot be ",
-                     "both set to TRUE")
-        }
         if (!identical(with.inframe.attrib, FALSE))
             stop("'with.inframe.attrib' argument not yet supported ",
                  "when reducing a CompressedIRangesList object")
         C_ans <- .Call2("CompressedIRangesList_reduce",
                         x, drop.empty.ranges, min.gapwidth,
-                        with.revmap || with.mapping,
+                        with.revmap,
                         PACKAGE="IRanges")
         ans_unlistData <- new2("IRanges", start=C_ans$start, width=C_ans$width,
                                           check=FALSE)
         if (with.revmap) {
             revmap <- IntegerList(C_ans$revmap)
             mcols(ans_unlistData) <- DataFrame(revmap=revmap)
-        }
-        if (with.mapping) {
-            mapping <- IntegerList(C_ans$revmap)
-            mcols(ans_unlistData) <- DataFrame(mapping=mapping)
         }
         ans_partitioning <- PartitioningByEnd(C_ans$partitioning_by_end)
         names(ans_partitioning) <- names(x)

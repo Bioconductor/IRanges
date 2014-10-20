@@ -78,13 +78,6 @@ CompressedHitsList <- function(hits, query)
 
 setMethod("relistToClass", "Hits", function(x) "HitsList")
 
-setMethod("splitAsListReturnedClass", "Hits",
-    function(x)
-    {
-        .Defunct("relistToClass")
-        "HitsList"
-    }
-)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion

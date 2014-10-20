@@ -28,21 +28,6 @@ setGeneric("relistToClass", function(x) standardGeneric("relistToClass"))
 
 setMethod("relistToClass", "ANY", function(x) .selectListClassName(class(x)))
 
-### Defunct!
-setGeneric("splitAsListReturnedClass",
-    function(x) standardGeneric("splitAsListReturnedClass")
-)
-
-setMethod("splitAsListReturnedClass", "ANY",
-    function(x) {
-      .Defunct("relistToClass")
-      cn <- S4Vectors:::listClassName("Compressed", class(x))
-      if (cn == "CompressedList")
-        cn <- S4Vectors:::listClassName("Simple", class(x))
-      cn
-    }
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### relist()

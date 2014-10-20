@@ -14,20 +14,6 @@ setMethod("relistToClass", "DataFrame",
     function(x) "CompressedSplitDataFrameList"
 )
 
-setMethod("splitAsListReturnedClass", "data.frame",
-    function(x) {
-        .Defunct("relistToClass")
-        "CompressedSplitDataFrameList"
-    }
-)
-
-setMethod("splitAsListReturnedClass", "DataFrame",
-    function(x) {
-        .Defunct("relistToClass")
-        "CompressedSplitDataFrameList"
-    }
-)
-
 setMethod("cbind", "DataFrame",
           function(..., deparse.level=1) {
             ans <- DataFrame(...)

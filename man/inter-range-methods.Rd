@@ -75,13 +75,13 @@
 reduce(x, ...)
 
 \S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-       with.revmap=FALSE, with.mapping=FALSE, with.inframe.attrib=FALSE)
+       with.revmap=FALSE, with.inframe.attrib=FALSE)
 
 \S4method{reduce}{Views}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-       with.revmap=FALSE, with.mapping=FALSE, with.inframe.attrib=FALSE)
+       with.revmap=FALSE, with.inframe.attrib=FALSE)
 
 \S4method{reduce}{RangesList}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-       with.revmap=FALSE, with.mapping=FALSE, with.inframe.attrib=FALSE)
+       with.revmap=FALSE, with.inframe.attrib=FALSE)
 
 \S4method{reduce}{RangedData}(x, by=character(), drop.empty.ranges=FALSE,
        min.gapwidth=1L, with.inframe.attrib=FALSE)
@@ -120,9 +120,6 @@ disjointBins(x, ...)
     \code{TRUE} or \code{FALSE}. Should the mapping from reduced to original
     ranges be stored in the returned object? If yes, then it is stored as
     metadata column \code{"revmap"} of type \link{IntegerList}.
-  }
-  \item{with.mapping}{
-    Defunct. Please use the \code{with.revmap} argument instead.
   }
   \item{with.inframe.attrib}{
     \code{TRUE} or \code{FALSE}. For internal use.

@@ -271,7 +271,6 @@ export(
 
     ## extractList.R:
     relistToClass,
-    splitAsListReturnedClass,
     extractList,
 
     ## DataFrameList-class.R:
@@ -309,9 +308,6 @@ export(
     reducerFun, "reducerFun<-",
     reducerParams, "reducerParams<-",
     iteratorFun, "iteratorFun<-",
-
-    ## map.R:
-    map, pmap,
 
     ## mapCoords.R:
     mapCoords, pmapCoords,
@@ -364,7 +360,6 @@ exportMethods(
     high2low, low2high, grouprank, togrouprank, mapOrder,
     findRange, splitRanges,
     relistToClass,
-    splitAsListReturnedClass,
     extractList,
     columnMetadata, "columnMetadata<-",
     universe, "universe<-", space,
@@ -386,7 +381,6 @@ exportMethods(
     reducerFun, "reducerFun<-",
     reducerParams, "reducerParams<-",
     iteratorFun, "iteratorFun<-",
-    map, pmap,
     shift, narrow, resize, flank, reflect, promoters, restrict, threebands,
     reduce, gaps, disjoin, isDisjoint, disjointBins,
     reverse,

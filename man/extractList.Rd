@@ -2,8 +2,6 @@
 
 \alias{relistToClass}
 \alias{relistToClass,ANY-method}
-\alias{splitAsListReturnedClass}
-\alias{splitAsListReturnedClass,ANY-method}
 
 \alias{relist,ANY,PartitioningByEnd-method}
 \alias{relist,ANY,List-method}
