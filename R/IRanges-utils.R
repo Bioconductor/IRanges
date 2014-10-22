@@ -84,6 +84,8 @@ breakInChunks <- function(totalsize, chunksize)
 {
     totalsize <- .normarg_totalsize(totalsize)
     chunksize <- .normarg_chunksize(chunksize, totalsize)
+    if (totalsize == 0L)
+        return(PartitioningByWidth())
     quot <- totalsize %/% chunksize
     ans_width <- rep.int(chunksize, quot)
     rem <- totalsize %% chunksize
