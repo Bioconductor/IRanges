@@ -74,7 +74,7 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
     if (!is.integer(chunksize))
         chunksize <- as.integer(chunksize)
     if (chunksize < 0L)
-        stop("'blocksize' cannot be negative")
+        stop("'chunksize' cannot be negative")
     if (chunksize == 0L && totalsize != 0L)
         stop("'chunksize' can be 0 only if 'totalsize' is 0")
     chunksize
