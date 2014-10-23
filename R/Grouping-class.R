@@ -651,12 +651,19 @@ PartitioningByEnd <- function(x=integer(), NG=NULL, names=NULL)
         x <- cumsum(elementLengths(x))
     } else {
         if (!is.numeric(x))
-            stop("'x' must be either a list-like object ",
-                 "or a sorted integer vector")
+            stop("'x' must be either a list-like object or ",
+                 "a sorted vector of non-NA non-negative integers")
         if (!is.integer(x))
             x <- as.integer(x)
+        if (any(is.na(x)))
+            stop("when 'x' is an integer vector, ",
+                 "it cannot contain NAs")
+        if (length(x) != 0L && min(x) < 0L)
+            stop("when 'x' is an integer vector, ",
+                 "it cannot contain negative values")
         if (S4Vectors:::isNotSorted(x))
-            stop("when 'x' is an integer vector, it must be sorted")
+            stop("when 'x' is an integer vector, ",
+                 "it must be sorted")
         if (!is.null(NG)) {
             ## When 'NG' (number of groups) is supplied, then 'x' is considered
             ## to represent the group assignment of a collection of 'length(x)'
@@ -774,9 +781,16 @@ PartitioningByWidth <- function(x=integer(), NG=NULL, names=NULL)
         x <- elementLengths(x)
     } else {
         if (!is.numeric(x))
-            stop("'x' must be either a list-like object or an integer vector")
+            stop("'x' must be either a list-like object or ",
+                 "a vector of non-NA non-negative integers")
         if (!is.integer(x))
             x <- as.integer(x)
+        if (any(is.na(x)))
+            stop("when 'x' is an integer vector, ",
+                 "it cannot contain NAs")
+        if (length(x) != 0L && min(x) < 0L)
+            stop("when 'x' is an integer vector, ",
+                 "it cannot contain negative values")
         if (!is.null(NG)) {
             ## When 'NG' (number of groups) is supplied, then 'x' is considered
             ## to represent the group assignment of a collection of 'length(x)'
