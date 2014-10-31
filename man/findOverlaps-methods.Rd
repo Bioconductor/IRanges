@@ -4,13 +4,15 @@
 
 \alias{findOverlaps}
 \alias{findOverlaps,Ranges,IntervalTree-method}
-\alias{findOverlaps,RangesList,IntervalForest-method}
+\alias{findOverlaps,NCList,Ranges-method}
+\alias{findOverlaps,Ranges,NCList-method}
 \alias{findOverlaps,Ranges,Ranges-method}
 \alias{findOverlaps,Vector,missing-method}
 \alias{findOverlaps,integer,Ranges-method}
 \alias{findOverlaps,Views,Views-method}
 \alias{findOverlaps,Views,Vector-method}
 \alias{findOverlaps,Vector,Views-method}
+\alias{findOverlaps,RangesList,IntervalForest-method}
 \alias{findOverlaps,RangesList,RangesList-method}
 \alias{findOverlaps,ViewsList,ViewsList-method}
 \alias{findOverlaps,ViewsList,Vector-method}

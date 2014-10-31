@@ -57,16 +57,56 @@ print_NCList <- function(x)
 }
 
 ### NOT exported.
-findOverlaps_NCList <- function(query, subject)
+findOverlaps_NCList <- function(query, subject,
+                           maxgap=0L, minoverlap=1L,
+                           type=c("any", "start", "end", "within", "equal"),
+                           select=c("all", "first", "last", "arbitrary"))
 {
-    if (!is(query, "Ranges"))
-        stop("'query' must be a Ranges object")
-    if (!is(subject, "NCList"))
-        stop("'subject' must be an NCList object")
-    .Call("NCList_find_overlaps", start(query), end(query),
-                                  subject@nclist,
-                                  start(subject@ranges), end(subject@ranges),
-                                  PACKAGE="IRanges")
+    ## Check and normalize 'maxgap'.
+    if (!isSingleNumber(maxgap))
+        stop("'maxgap' must be a single integer")
+    if (!is.integer(maxgap))
+        maxgap <- as.integer(maxgap)
+    if (maxgap < 0L)
+        stop("'maxgap' cannot be negative")
+
+    ## Check and normalize 'minoverlap'.
+    if (!isSingleNumber(minoverlap))
+        stop("'minoverlap' must be a single integer")
+    if (!is.integer(minoverlap))
+        minoverlap <- as.integer(minoverlap)
+    if (minoverlap < 1L)
+        stop("'minoverlap' must be >= 1")
+
+    type <- match.arg(type)
+    select <- match.arg(select)
+
+    if (maxgap != 0L)
+        stop("support for 'maxgap' != 0 is not ready yet")
+    if (minoverlap != 1)
+        stop("support for 'minoverlap' != 1 is not ready yet")
+    if (type != "any")
+        stop("support for 'type' != \"any\" is not ready yet")
+    if (select != "all")
+        stop("support for 'select' != \"all\" is not ready yet")
+
+    if (is(subject, "NCList")) {
+        if (!is(query, "Ranges"))
+            stop("'query' must be a Ranges object")
+        C_ans <- .Call("NCList_find_overlaps",
+                       start(query), end(query),
+                       subject@nclist,
+                       start(subject@ranges), end(subject@ranges),
+                       PACKAGE="IRanges")
+    } else if (is(query, "NCList")) {
+        if (!is(subject, "Ranges"))
+            stop("'subject' must be a Ranges object")
+        stop("'algorithm=\"NCList\"' is not ready yet ",
+             "when 'query' is longer than 'subject'")
+    } else {
+        stop("'query' or 'subject' must be an NCList object")
+    }
+    C_ans
 }
 
 if (FALSE) {  #     <<<--- begin testing findOverlaps_NCList() --->>>
