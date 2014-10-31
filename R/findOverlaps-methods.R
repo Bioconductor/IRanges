@@ -198,14 +198,12 @@ setMethod("findOverlaps", c("Vector", "missing"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
-             ignoreSelf=FALSE, ignoreRedundant=FALSE,
-             algorithm=c("IntervalTree", "NCList"))
+             ignoreSelf=FALSE, ignoreRedundant=FALSE)
     {
         select <- match.arg(select)
         result <- findOverlaps(query, query,
                                maxgap=maxgap, minoverlap=minoverlap,
-                               type=match.arg(type), select="all",
-                               algorithm=match.arg(algorithm))
+                               type=match.arg(type), select="all")
         processSelfMatching(result, select, ignoreSelf, ignoreRedundant)
     }
 )
