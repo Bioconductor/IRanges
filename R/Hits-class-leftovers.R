@@ -29,19 +29,26 @@ as.data.frame.Hits <- function(x, row.names=NULL, optional=FALSE, ...)
 }
 setMethod("as.data.frame", "Hits", as.data.frame.Hits)
 
-### Turns Hits object 'from' into an IntegerList object with one list element
-### per element in the original query.
-.from_Hits_to_IntegerList <- function(from)
+### Turn Hits object 'from' into a PartitioningByEnd object that describes
+### the grouping of hits by query.
+.from_Hits_to_PartitioningByEnd <- function(from)
+    PartitioningByEnd(queryHits(from), NG=queryLength(from))
+setAs("Hits", "PartitioningByEnd", .from_Hits_to_PartitioningByEnd)
+setAs("Hits", "Partitioning", .from_Hits_to_PartitioningByEnd)
+
+### Turn Hits object 'from' into a CompressedIntegerList object with one list
+### element per element in the original query.
+.from_Hits_to_CompressedIntegerList <- function(from)
 {
-    ans_partitioning <- PartitioningByEnd(queryHits(from),
-                                          NG=queryLength(from))
+    ans_partitioning <- .from_Hits_to_PartitioningByEnd(from)
     relist(subjectHits(from), ans_partitioning)
 }
-setAs("Hits", "IntegerList", .from_Hits_to_IntegerList)
-setAs("Hits", "List", .from_Hits_to_IntegerList)
+setAs("Hits", "CompressedIntegerList", .from_Hits_to_CompressedIntegerList)
+setAs("Hits", "IntegerList", .from_Hits_to_CompressedIntegerList)
+setAs("Hits", "List", .from_Hits_to_CompressedIntegerList)
 
 ### S3/S4 combo for as.list.Hits
-.as.list.Hits <- function(x) as.list(.from_Hits_to_IntegerList(x))
+.as.list.Hits <- function(x) as.list(.from_Hits_to_CompressedIntegerList(x))
 as.list.Hits <- function(x, ...) .as.list.Hits(x, ...)
 setMethod("as.list", "Hits", .as.list.Hits)
 

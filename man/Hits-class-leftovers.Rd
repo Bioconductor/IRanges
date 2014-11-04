@@ -63,6 +63,16 @@ as.data.frame(overlaps)
 as.table(overlaps) # hits per query
 as.table(t(overlaps)) # hits per subject
 
+## Turn a Hits object into an IntegerList object with one list element
+## per element in the original query.
+as(overlaps, "IntegerList")
+as(overlaps, "List")  # same as as(overlaps, "IntegerList")
+
+## Turn a Hits object into a PartitioningByEnd object that describes
+## the grouping of hits by query.
+as(overlaps, "PartitioningByEnd")
+as(overlaps, "Partitioning")  # same as as(overlaps, "PartitioningByEnd")
+
 hits1 <- remapHits(overlaps, subject.map=factor(c("e", "e", "d"), letters[1:5]))
 hits1
 hits2 <- remapHits(overlaps, subject.map=c(5, 5, 4), new.subjectLength=5)

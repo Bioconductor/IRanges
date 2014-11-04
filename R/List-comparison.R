@@ -233,8 +233,7 @@ setMethod("unique", "SimpleList", unique.SimpleList)
     ans_unlistData <- x_unlistData[keep_idx]
     x_group <- rep.int(seq_along(x), elementLengths(x))
     ans_group <- x_group[keep_idx]
-    ans_eltlens <- tabulate(ans_group, nbins=length(x))
-    ans_partitioning <- PartitioningByEnd(cumsum(ans_eltlens),
+    ans_partitioning <- PartitioningByEnd(ans_group, NG=length(x),
                                           names=names(x))
     relist(ans_unlistData, ans_partitioning)
 }
