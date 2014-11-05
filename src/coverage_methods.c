@@ -413,7 +413,7 @@ static int double2int(double x)
  */
 static int shift_and_clip_ranges(const IRanges_holder *x_holder,
 		SEXP shift, int width, int circle_len,
-		RangeAE *out_ranges, int *out_ranges_are_tiles)
+		IntPairAE *out_ranges, int *out_ranges_are_tiles)
 {
 	int x_len, shift_len, cvg_len, auto_cvg_len, prev_end,
 	    i, j, x_start, x_end, shift_elt, tmp;
@@ -450,7 +450,7 @@ static int shift_and_clip_ranges(const IRanges_holder *x_holder,
 		return cvg_len;
 	}
 
-	RangeAE_set_nelt(out_ranges, 0);
+	IntPairAE_set_nelt(out_ranges, 0);
 	prev_end = 0;
 	for (i = j = 0; i < x_len; i++, j++) {
 		if (j >= shift_len)
@@ -496,8 +496,8 @@ static int shift_and_clip_ranges(const IRanges_holder *x_holder,
 			else
 				*out_ranges_are_tiles = 0;
 		}
-		RangeAE_insert_at(out_ranges, i,
-				  x_start, x_end - x_start + 1);
+		IntPairAE_insert_at(out_ranges, i,
+				    x_start, x_end - x_start + 1);
 	}
 	check_recycling_was_round(j, shift_len, shift_label, x_label);
 	if (*out_ranges_are_tiles && x_end != cvg_len)
@@ -521,7 +521,7 @@ static int shift_and_clip_ranges(const IRanges_holder *x_holder,
 static SEXP compute_coverage_from_IRanges_holder(
 		const IRanges_holder *x_holder,
 		SEXP shift, int width, SEXP weight, int circle_len,
-		SEXP method, RangeAE *ranges_buf)
+		SEXP method, IntPairAE *ranges_buf)
 {
 	int x_len, cvg_len, out_ranges_are_tiles, weight_len,
 	    effective_method, take_short_path;
@@ -531,8 +531,8 @@ static SEXP compute_coverage_from_IRanges_holder(
 	x_len = _get_length_from_IRanges_holder(x_holder);
 	cvg_len = shift_and_clip_ranges(x_holder, shift, width, circle_len,
 					ranges_buf, &out_ranges_are_tiles);
-	x_start = ranges_buf->start.elts;
-	x_width = ranges_buf->width.elts;
+	x_start = ranges_buf->a.elts;
+	x_width = ranges_buf->b.elts;
 
 	/* Check 'weight'. */
 	check_arg_is_numeric(weight, weight_label);
@@ -607,7 +607,7 @@ SEXP IRanges_coverage(SEXP x, SEXP shift, SEXP width, SEXP weight,
 {
 	IRanges_holder x_holder;
 	int x_len;
-	RangeAE ranges_buf;
+	IntPairAE ranges_buf;
 
 	x_holder = _hold_IRanges(x);
 	x_len = _get_length_from_IRanges_holder(&x_holder);
@@ -622,7 +622,7 @@ SEXP IRanges_coverage(SEXP x, SEXP shift, SEXP width, SEXP weight,
 	if (LENGTH(circle_len) != 1)
 		error("'%s' must be a single integer", "circle.length");
 
-	ranges_buf = new_RangeAE(x_len, 0);
+	ranges_buf = new_IntPairAE(x_len, 0);
 	x_label = "x";
 	shift_label = "shift";
 	width_label = "width";
@@ -659,7 +659,7 @@ SEXP CompressedIRangesList_coverage(SEXP x,
 	CompressedIRangesList_holder x_holder;
 	int x_len, shift_len, width_len, weight_len, circle_lens_len,
 	    i, j, k, l, m;
-	RangeAE ranges_buf;
+	IntPairAE ranges_buf;
 	SEXP ans, ans_elt, shift_elt, weight_elt;
 	IRanges_holder x_elt_holder;
 	char x_label_buf[40], shift_label_buf[40],
@@ -688,7 +688,7 @@ SEXP CompressedIRangesList_coverage(SEXP x,
 	circle_lens_len = LENGTH(circle_lens);
 	check_arg_is_recyclable(circle_lens_len, x_len, "circle.length", "x");
 
-	ranges_buf = new_RangeAE(0, 0);
+	ranges_buf = new_IntPairAE(0, 0);
 	x_label = x_label_buf;
 	shift_label = shift_label_buf;
 	width_label = width_label_buf;

@@ -99,14 +99,14 @@ SEXP _new_IRanges(
 	SEXP names
 );
 
-SEXP _new_IRanges_from_RangeAE(
+SEXP _new_IRanges_from_IntPairAE(
 	const char *classname,
-	const RangeAE *range_ae
+	const IntPairAE *intpair_ae
 );
 
-SEXP _new_list_of_IRanges_from_RangeAEAE(
+SEXP _new_list_of_IRanges_from_IntPairAEAE(
 	const char *element_type,
-	const RangeAEAE *range_aeae
+	const IntPairAEAE *intpair_aeae
 );
 
 SEXP _alloc_IRanges(

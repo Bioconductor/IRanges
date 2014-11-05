@@ -115,14 +115,14 @@ DEFINE_CCALLABLE_STUB(SEXP, new_IRanges,
 	(            classname,      start,      width,      names)
 )
 
-DEFINE_CCALLABLE_STUB(SEXP, new_IRanges_from_RangeAE,
-	(const char *classname, const RangeAE *range_ae),
-	(            classname,                range_ae)
+DEFINE_CCALLABLE_STUB(SEXP, new_IRanges_from_IntPairAE,
+	(const char *classname, const IntPairAE *intpair_ae),
+	(            classname,                  intpair_ae)
 )
 
-DEFINE_CCALLABLE_STUB(SEXP, new_list_of_IRanges_from_RangeAEAE,
-	(const char *element_type, const RangeAEAE *range_aeae),
-	(            element_type,                  range_aeae)
+DEFINE_CCALLABLE_STUB(SEXP, new_list_of_IRanges_from_IntPairAEAE,
+	(const char *element_type, const IntPairAEAE *intpair_aeae),
+	(            element_type,                    intpair_aeae)
 )
 
 DEFINE_CCALLABLE_STUB(SEXP, alloc_IRanges,

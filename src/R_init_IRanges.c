@@ -99,8 +99,8 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_set_IRanges_names);
 	REGISTER_CCALLABLE(_copy_IRanges_slots);
 	REGISTER_CCALLABLE(_new_IRanges);
-	REGISTER_CCALLABLE(_new_IRanges_from_RangeAE);
-	REGISTER_CCALLABLE(_new_list_of_IRanges_from_RangeAEAE);
+	REGISTER_CCALLABLE(_new_IRanges_from_IntPairAE);
+	REGISTER_CCALLABLE(_new_list_of_IRanges_from_IntPairAEAE);
 	REGISTER_CCALLABLE(_alloc_IRanges);
 
 /* Grouping_class.c */

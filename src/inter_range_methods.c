@@ -44,7 +44,7 @@ static int get_elt_from_CompressedIRangesList_holderlens_max(
 	return ir_len_max;
 }
 
-static int append_IRanges_holder_to_RangeAE(RangeAE *range_ae,
+static int append_IRanges_holder_to_IntPairAE(IntPairAE *intpair_ae,
 		const IRanges_holder *ir_holder)
 {
 	int ir_len, j, start, width;
@@ -53,8 +53,8 @@ static int append_IRanges_holder_to_RangeAE(RangeAE *range_ae,
 	for (j = 0; j < ir_len; j++) {
 		start = _get_start_elt_from_IRanges_holder(ir_holder, j);
 		width = _get_width_elt_from_IRanges_holder(ir_holder, j);
-		RangeAE_insert_at(range_ae, RangeAE_get_nelt(range_ae),
-				  start, width);
+		IntPairAE_insert_at(intpair_ae, IntPairAE_get_nelt(intpair_ae),
+				    start, width);
 	}
 	return ir_len;
 }
@@ -109,7 +109,7 @@ SEXP IRanges_range(SEXP x)
    Returns the number of ranges that were appended. */
 static int reduce_ranges(const int *x_start, const int *x_width, int x_len,
 		int drop_empty_ranges, int min_gapwidth,
-		int *order_buf, RangeAE *out_ranges,
+		int *order_buf, IntPairAE *out_ranges,
 		IntAEAE *revmap, int *out_inframe_start)
 {
 	int out_len, out_len0, i, j, start_j, width_j, end_j,
@@ -120,7 +120,7 @@ static int reduce_ranges(const int *x_start, const int *x_width, int x_len,
 		error("IRanges internal error in reduce_ranges(): "
 		      "negative min_gapwidth not supported");
 	get_order_of_int_pairs(x_start, x_width, x_len, 0, order_buf, 0);
-	out_len = out_len0 = RangeAE_get_nelt(out_ranges);
+	out_len = out_len0 = IntPairAE_get_nelt(out_ranges);
 	for (i = 0; i < x_len; i++) {
 		j = order_buf[i];
 		start_j = x_start[j];
@@ -146,10 +146,10 @@ static int reduce_ranges(const int *x_start, const int *x_width, int x_len,
 			if (width_j != 0
 			 || (!drop_empty_ranges
 			     && (out_len == out_len0
-			         || start_j != out_ranges->start.elts[
+			         || start_j != out_ranges->a.elts[
 					out_len - 1]))) {
 				/* Append to 'out_ranges'. */
-				RangeAE_insert_at(out_ranges,
+				IntPairAE_insert_at(out_ranges,
 					out_len,
 					start_j, width_j);
 				if (revmap != NULL) {
@@ -170,7 +170,7 @@ static int reduce_ranges(const int *x_start, const int *x_width, int x_len,
 			width_inc = end_j - max_end;
 			if (width_inc > 0) {
 				/* Merge with last range in 'out_ranges'. */
-				out_ranges->width.elts[out_len - 1] += width_inc;
+				out_ranges->b.elts[out_len - 1] += width_inc;
 				max_end = end_j;
 			}
 			if (!(width_j == 0 && drop_empty_ranges)
@@ -194,7 +194,7 @@ SEXP Ranges_reduce(SEXP x_start, SEXP x_width, SEXP drop_empty_ranges,
 	int x_len, *inframe_start;
 	const int *x_start_p, *x_width_p;
 	SEXP ans, ans_names, ans_revmap, ans_inframe_start;
-	RangeAE out_ranges;
+	IntPairAE out_ranges;
 	IntAE order_buf;
 	IntAEAE tmp, *revmap;
 
@@ -213,7 +213,7 @@ SEXP Ranges_reduce(SEXP x_start, SEXP x_width, SEXP drop_empty_ranges,
 	} else {
 		inframe_start = NULL;
 	}
-	out_ranges = new_RangeAE(0, 0);
+	out_ranges = new_IntPairAE(0, 0);
 	order_buf = new_IntAE(x_len, 0, 0);
 	reduce_ranges(x_start_p, x_width_p, x_len,
 		LOGICAL(drop_empty_ranges)[0], INTEGER(min_gapwidth)[0],
@@ -228,8 +228,8 @@ SEXP Ranges_reduce(SEXP x_start, SEXP x_width, SEXP drop_empty_ranges,
 	SET_STRING_ELT(ans_names, 3, mkChar("inframe.start"));
 	SET_NAMES(ans, ans_names);
 	UNPROTECT(1);
-	SET_VECTOR_ELT(ans, 0, new_INTEGER_from_IntAE(&(out_ranges.start)));
-	SET_VECTOR_ELT(ans, 1, new_INTEGER_from_IntAE(&(out_ranges.width)));
+	SET_VECTOR_ELT(ans, 0, new_INTEGER_from_IntAE(&(out_ranges.a)));
+	SET_VECTOR_ELT(ans, 1, new_INTEGER_from_IntAE(&(out_ranges.b)));
 	if (revmap != NULL) {
 		PROTECT(ans_revmap = new_LIST_from_IntAEAE(revmap, 0));
 		SET_VECTOR_ELT(ans, 2, ans_revmap);
@@ -253,7 +253,7 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 	IRanges_holder ir_holder;
 	int x_len, in_len_max, i;
 	IntAE order_buf;
-	RangeAE in_ranges, out_ranges;
+	IntPairAE in_ranges, out_ranges;
 	IntAEAE tmp, *revmap;
 
 	x_holder = _hold_CompressedIRangesList(x);
@@ -266,18 +266,18 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 	}
 	in_len_max = get_elt_from_CompressedIRangesList_holderlens_max(&x_holder);
 	order_buf = new_IntAE(in_len_max, 0, 0);
-	in_ranges = new_RangeAE(0, 0);
-	out_ranges = new_RangeAE(0, 0);
+	in_ranges = new_IntPairAE(0, 0);
+	out_ranges = new_IntPairAE(0, 0);
 	PROTECT(ans_partitioning_end = NEW_INTEGER(x_len));
 	for (i = 0; i < x_len; i++) {
 		ir_holder = _get_elt_from_CompressedIRangesList_holder(&x_holder, i);
-		RangeAE_set_nelt(&in_ranges, 0);
-		append_IRanges_holder_to_RangeAE(&in_ranges, &ir_holder);
-		reduce_ranges(in_ranges.start.elts, in_ranges.width.elts,
-			RangeAE_get_nelt(&in_ranges),
+		IntPairAE_set_nelt(&in_ranges, 0);
+		append_IRanges_holder_to_IntPairAE(&in_ranges, &ir_holder);
+		reduce_ranges(in_ranges.a.elts, in_ranges.b.elts,
+			IntPairAE_get_nelt(&in_ranges),
 			LOGICAL(drop_empty_ranges)[0], INTEGER(min_gapwidth)[0],
 			order_buf.elts, &out_ranges, revmap, NULL);
-		INTEGER(ans_partitioning_end)[i] = RangeAE_get_nelt(&out_ranges);
+		INTEGER(ans_partitioning_end)[i] = IntPairAE_get_nelt(&out_ranges);
 	}
 
 	/* Make 'ans' */
@@ -289,8 +289,8 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 	SET_STRING_ELT(ans_names, 3, mkChar("partitioning_by_end"));
 	SET_NAMES(ans, ans_names);
 	UNPROTECT(1);
-	SET_VECTOR_ELT(ans, 0, new_INTEGER_from_IntAE(&(out_ranges.start)));
-	SET_VECTOR_ELT(ans, 1, new_INTEGER_from_IntAE(&(out_ranges.width)));
+	SET_VECTOR_ELT(ans, 0, new_INTEGER_from_IntAE(&(out_ranges.a)));
+	SET_VECTOR_ELT(ans, 1, new_INTEGER_from_IntAE(&(out_ranges.b)));
 	if (revmap != NULL) {
 		PROTECT(ans_revmap = new_LIST_from_IntAEAE(revmap, 0));
 		SET_VECTOR_ELT(ans, 2, ans_revmap);
@@ -299,7 +299,7 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 	SET_VECTOR_ELT(ans, 3, ans_partitioning_end);
 	UNPROTECT(2);
 /*
-	PROTECT(ans_unlistData = _new_IRanges_from_RangeAE("IRanges",
+	PROTECT(ans_unlistData = _new_IRanges_from_IntPairAE("IRanges",
 			&out_ranges));
 	PROTECT(ans_names = duplicate(_get_CompressedList_names(x)));
 	PROTECT(ans_partitioning = _new_PartitioningByEnd(
@@ -321,7 +321,7 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
    Returns the number of ranges that were appended. */
 static int gaps_ranges(const int *x_start, const int *x_width, int x_len,
 		int restrict_start, int restrict_end,
-		int *order_buf, RangeAE *out_ranges)
+		int *order_buf, IntPairAE *out_ranges)
 {
 	int out_len, out_len0, i, j, start_j, width_j, end_j,
 	    max_end, gapstart, gapwidth;
@@ -331,7 +331,7 @@ static int gaps_ranges(const int *x_start, const int *x_width, int x_len,
 	else
 		max_end = NA_INTEGER;
 	get_order_of_int_pairs(x_start, x_width, x_len, 0, order_buf, 0);
-	out_len = out_len0 = RangeAE_get_nelt(out_ranges);
+	out_len = out_len0 = IntPairAE_get_nelt(out_ranges);
 	for (i = 0; i < x_len; i++) {
 		j = order_buf[i];
 		width_j = x_width[j];
@@ -349,7 +349,7 @@ static int gaps_ranges(const int *x_start, const int *x_width, int x_len,
 			gapwidth = start_j - gapstart;
 			if (gapwidth >= 1) {
 				/* Append to 'out_ranges'. */
-				RangeAE_insert_at(out_ranges,
+				IntPairAE_insert_at(out_ranges,
 					out_len,
 					gapstart, gapwidth);
 				out_len++;
@@ -367,7 +367,7 @@ static int gaps_ranges(const int *x_start, const int *x_width, int x_len,
 		gapstart = max_end + 1;
 		gapwidth = restrict_end - max_end;
 		/* Append to 'out_ranges'. */
-		RangeAE_insert_at(out_ranges,
+		IntPairAE_insert_at(out_ranges,
 			out_len,
 			gapstart, gapwidth);
 		out_len++;
@@ -381,13 +381,13 @@ SEXP IRanges_gaps(SEXP x_start, SEXP x_width, SEXP start, SEXP end)
 	int x_len;
 	const int *x_start_p, *x_width_p;
 	SEXP ans, ans_names;
-	RangeAE out_ranges;
+	IntPairAE out_ranges;
 	IntAE order_buf;
 
 	x_len = check_integer_pairs(x_start, x_width,
 				    &x_start_p, &x_width_p,
 				    "start(x)", "width(x)");
-	out_ranges = new_RangeAE(0, 0);
+	out_ranges = new_IntPairAE(0, 0);
 	order_buf = new_IntAE(x_len, 0, 0);
 	gaps_ranges(x_start_p, x_width_p, x_len,
 		INTEGER(start)[0], INTEGER(end)[0],
@@ -399,8 +399,8 @@ SEXP IRanges_gaps(SEXP x_start, SEXP x_width, SEXP start, SEXP end)
 	SET_STRING_ELT(ans_names, 1, mkChar("width"));
 	SET_NAMES(ans, ans_names);
 	UNPROTECT(1);
-	SET_VECTOR_ELT(ans, 0, new_INTEGER_from_IntAE(&(out_ranges.start)));
-	SET_VECTOR_ELT(ans, 1, new_INTEGER_from_IntAE(&(out_ranges.width)));
+	SET_VECTOR_ELT(ans, 0, new_INTEGER_from_IntAE(&(out_ranges.a)));
+	SET_VECTOR_ELT(ans, 1, new_INTEGER_from_IntAE(&(out_ranges.b)));
 	UNPROTECT(1);
 	return ans;
 }
@@ -414,14 +414,14 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 	IRanges_holder ir_holder;
 	int x_len, in_len_max, start_len, *start_elt, *end_elt, i;
 	IntAE order_buf;
-	RangeAE in_ranges, out_ranges;
+	IntPairAE in_ranges, out_ranges;
 
 	x_holder = _hold_CompressedIRangesList(x);
 	x_len = _get_length_from_CompressedIRangesList_holder(&x_holder);
 	in_len_max = get_elt_from_CompressedIRangesList_holderlens_max(&x_holder);
 	order_buf = new_IntAE(in_len_max, 0, 0);
-	in_ranges = new_RangeAE(0, 0);
-	out_ranges = new_RangeAE(0, 0);
+	in_ranges = new_IntPairAE(0, 0);
+	out_ranges = new_IntPairAE(0, 0);
 	start_len = LENGTH(start);
 	if ((start_len != 1 && start_len != x_len) || start_len != LENGTH(end))
 		error("'start' and 'end' should both be integer vectors "
@@ -431,19 +431,19 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 	end_elt = INTEGER(end);
 	for (i = 0; i < x_len; i++) {
 		ir_holder = _get_elt_from_CompressedIRangesList_holder(&x_holder, i);
-		RangeAE_set_nelt(&in_ranges, 0);
-		append_IRanges_holder_to_RangeAE(&in_ranges, &ir_holder);
-		gaps_ranges(in_ranges.start.elts, in_ranges.width.elts,
-			RangeAE_get_nelt(&in_ranges),
+		IntPairAE_set_nelt(&in_ranges, 0);
+		append_IRanges_holder_to_IntPairAE(&in_ranges, &ir_holder);
+		gaps_ranges(in_ranges.a.elts, in_ranges.b.elts,
+			IntPairAE_get_nelt(&in_ranges),
 			*start_elt, *end_elt,
 			order_buf.elts, &out_ranges);
-		INTEGER(ans_partitioning_end)[i] = RangeAE_get_nelt(&out_ranges);
+		INTEGER(ans_partitioning_end)[i] = IntPairAE_get_nelt(&out_ranges);
 		if (start_len != 1) {
 			start_elt++;
 			end_elt++;
 		}
 	}
-	PROTECT(ans_unlistData = _new_IRanges_from_RangeAE("IRanges",
+	PROTECT(ans_unlistData = _new_IRanges_from_IntPairAE("IRanges",
 			&out_ranges));
 	PROTECT(ans_names = duplicate(_get_CompressedList_names(x)));
 	PROTECT(ans_partitioning = _new_PartitioningByEnd(

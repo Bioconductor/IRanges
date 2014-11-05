@@ -218,12 +218,13 @@ SEXP _new_IRanges(const char *classname, SEXP start, SEXP width, SEXP names)
 	return ans;
 }
 
-SEXP _new_IRanges_from_RangeAE(const char *classname, const RangeAE *range_ae)
+SEXP _new_IRanges_from_IntPairAE(const char *classname,
+				 const IntPairAE *intpair_ae)
 {
 	SEXP ans, start, width;
 
-	PROTECT(start = new_INTEGER_from_IntAE(&(range_ae->start)));
-	PROTECT(width = new_INTEGER_from_IntAE(&(range_ae->width)));
+	PROTECT(start = new_INTEGER_from_IntAE(&(intpair_ae->a)));
+	PROTECT(width = new_INTEGER_from_IntAE(&(intpair_ae->b)));
 	PROTECT(ans = _new_IRanges(classname, start, width, R_NilValue));
 	UNPROTECT(3);
 	return ans;
@@ -232,17 +233,18 @@ SEXP _new_IRanges_from_RangeAE(const char *classname, const RangeAE *range_ae)
 /* TODO: Try to make this faster by making only 1 call to _new_IRanges() (or
    _alloc_IRanges()) and cloning and modifying this initial object inside the
    for loop. */
-SEXP _new_list_of_IRanges_from_RangeAEAE(const char *element_type,
-		const RangeAEAE *range_aeae)
+SEXP _new_list_of_IRanges_from_IntPairAEAE(const char *element_type,
+		const IntPairAEAE *intpair_aeae)
 {
 	SEXP ans, ans_elt;
 	int nelt, i;
-	const RangeAE *elt;
+	const IntPairAE *elt;
 
-	nelt = RangeAEAE_get_nelt(range_aeae);
+	nelt = IntPairAEAE_get_nelt(intpair_aeae);
 	PROTECT(ans = NEW_LIST(nelt));
-	for (i = 0, elt = range_aeae->elts; i < nelt; i++, elt++) {
-		PROTECT(ans_elt = _new_IRanges_from_RangeAE(element_type, elt));
+	for (i = 0, elt = intpair_aeae->elts; i < nelt; i++, elt++) {
+		PROTECT(ans_elt = _new_IRanges_from_IntPairAE(element_type,
+							      elt));
 		SET_VECTOR_ELT(ans, i, ans_elt);
 		UNPROTECT(1);
 	}

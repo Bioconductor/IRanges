@@ -59,9 +59,9 @@ void copy_IRanges_slots(SEXP x, SEXP x0);
 
 SEXP new_IRanges(const char *classname, SEXP start, SEXP width, SEXP names);
 
-SEXP new_IRanges_from_RangeAE(const char *classname, const RangeAE *range_ae);
+SEXP new_IRanges_from_IntPairAE(const char *classname, const IntPairAE *intpair_ae);
 
-SEXP new_list_of_IRanges_from_RangeAEAE(const char *element_type, const RangeAEAE *range_aeae);
+SEXP new_list_of_IRanges_from_IntPairAEAE(const char *element_type, const IntPairAEAE *intpair_aeae);
 
 SEXP alloc_IRanges(const char *classname, int length);
 
