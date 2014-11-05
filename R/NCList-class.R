@@ -93,20 +93,24 @@ findOverlaps_NCList <- function(query, subject,
     if (is(subject, "NCList")) {
         if (!is(query, "Ranges"))
             stop("'query' must be a Ranges object")
-        C_ans <- .Call("NCList_find_overlaps",
-                       start(query), end(query),
-                       subject@nclist,
-                       start(subject@ranges), end(subject@ranges),
-                       PACKAGE="IRanges")
+        hits <- .Call("NCList_find_overlaps",
+                      start(query), end(query),
+                      subject@nclist,
+                      start(subject@ranges), end(subject@ranges),
+                      PACKAGE="IRanges")
     } else if (is(query, "NCList")) {
         if (!is(subject, "Ranges"))
             stop("'subject' must be a Ranges object")
-        stop("'algorithm=\"NCList\"' is not ready yet ",
-             "when 'query' is longer than 'subject'")
+        hits <- .Call("NCList_find_overlaps",
+                      start(subject), end(subject),
+                      query@nclist,
+                      start(query@ranges), end(query@ranges),
+                      PACKAGE="IRanges")
+        hits <- S4Vectors:::Hits_revmap(hits)
     } else {
         stop("'query' or 'subject' must be an NCList object")
     }
-    C_ans
+    hits
 }
 
 if (FALSE) {  #     <<<--- begin testing findOverlaps_NCList() --->>>
@@ -148,13 +152,13 @@ system.time(hits2b <- findOverlaps(ex14, subject))
 gc()
 
 ### TEST 3: NO duplicate ranges in subject!
-### - NCList:       11.3 s /  4 s    / 1135.0 Mb / 1477m (1989m)
+### - NCList:       5.37 s /  2.33 s / 409.5 Mb / 1.079g (1.079g)
 ### - IntervalTree: 48.2 s / 13.25 s /  874.6 Mb / 2059m (3125m)
 library(IRanges)
-N <- 25000000L  # nb of ranges
+N <- 15000000L  # nb of ranges
 W <- 180L       # range width
 start <- 1L
-end <- 250000000L
+end <- 150000000L
 set.seed(777)
 range_starts <- sample(end-W+1L, N, replace=FALSE)
 range_widths <- rep.int(W, N)
@@ -175,10 +179,10 @@ gc()
 ### - NCList:       11.6 s /  4.2 s  / 1139.8 Mb / 1574m (2277m)
 ### - IntervalTree: 48.6 s / 13.24 s /  874.6 Mb / 2059m (3125m)
 library(IRanges)
-N <- 25000000L  # nb of ranges
+N <- 15000000L  # nb of ranges
 W <- 180L       # range width
 start <- 1L
-end <- 250000000L
+end <- 150000000L
 set.seed(777)
 range_starts <- sample(end-W+1L, N, replace=TRUE)
 range_widths <- rep.int(W, N)

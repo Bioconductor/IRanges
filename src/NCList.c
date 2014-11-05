@@ -375,8 +375,9 @@ static SEXP new_Hits_from_IntAEAE(const IntAEAE *x, int s_len)
 {
 	SEXP classdef, ans, ans_queryHits, ans_subjectHits,
 	     ans_queryLength, ans_subjectLength;
-	int q_len, ans_len, i, x_elt_len, j, k;
+	int q_len, ans_len, i, x_elt_len, j;
 	const IntAE *x_elt;
+	int *q_hits_p, *s_hits_p;
 
 	q_len = IntAEAE_get_nelt(x);
 	ans_len = 0;
@@ -384,14 +385,15 @@ static SEXP new_Hits_from_IntAEAE(const IntAEAE *x, int s_len)
 		ans_len += IntAE_get_nelt(x_elt);
 	PROTECT(ans_queryHits = NEW_INTEGER(ans_len));
 	PROTECT(ans_subjectHits = NEW_INTEGER(ans_len));
-	k = 0;
-	for (i = 0, x_elt = x->elts; i < q_len; i++, x_elt++) {
+	q_hits_p = INTEGER(ans_queryHits);
+	s_hits_p = INTEGER(ans_subjectHits);
+	for (i = 1, x_elt = x->elts; i <= q_len; i++, x_elt++) {
 		x_elt_len = IntAE_get_nelt(x_elt);
-		for (j = 0; j < x_elt_len; j++) {
-			INTEGER(ans_queryHits)[k] = i + 1;
-			INTEGER(ans_subjectHits)[k] = x_elt->elts[j];
-			k++;
-		}
+		for (j = 0; j < x_elt_len; j++)
+			*(q_hits_p++) = i;
+		memcpy(s_hits_p, x_elt->elts, x_elt_len * sizeof(int));
+		//sort_int_array(s_hits_p, x_elt_len, 0);
+		s_hits_p += x_elt_len;
 	}
 	PROTECT(classdef = MAKE_CLASS("Hits"));
 	PROTECT(ans = NEW_OBJECT(classdef));
@@ -402,6 +404,35 @@ static SEXP new_Hits_from_IntAEAE(const IntAEAE *x, int s_len)
 	PROTECT(ans_subjectLength = ScalarInteger(s_len));
 	SET_SLOT(ans, install("subjectLength"), ans_subjectLength);
 	UNPROTECT(6);
+	return ans;
+}
+
+static SEXP new_Hits_from_IntPairAE(const IntPairAE *x, int q_len, int s_len)
+{
+	SEXP classdef, ans,
+	     ans_queryHits, ans_subjectHits,
+	     ans_queryLength, ans_subjectLength;
+
+	PROTECT(classdef = MAKE_CLASS("Hits"));
+	PROTECT(ans = NEW_OBJECT(classdef));
+
+	PROTECT(ans_queryHits = new_INTEGER_from_IntAE(&(x->a)));
+	SET_SLOT(ans, install("queryHits"), ans_queryHits);
+	UNPROTECT(1);
+
+	PROTECT(ans_subjectHits = new_INTEGER_from_IntAE(&(x->b)));
+	SET_SLOT(ans, install("subjectHits"), ans_subjectHits);
+	UNPROTECT(1);
+
+	PROTECT(ans_queryLength = ScalarInteger(q_len));
+	SET_SLOT(ans, install("queryLength"), ans_queryLength);
+	UNPROTECT(1);
+
+	PROTECT(ans_subjectLength = ScalarInteger(s_len));
+	SET_SLOT(ans, install("subjectLength"), ans_subjectLength);
+	UNPROTECT(1);
+
+	UNPROTECT(2);
 	return ans;
 }
 
@@ -440,7 +471,7 @@ static int bsearch_n1(int q_start, const int *nclist, const int *s_end)
 static void NCList_overlap(int q_start, int q_end,
 			   const int *nclist,
 			   const int *s_start, const int *s_end,
-			   IntAE *out)
+			   IntAE *sh_buf)
 {
 	int nelt, n, i, start, offset;
 
@@ -451,13 +482,13 @@ static void NCList_overlap(int q_start, int q_end,
 		start = s_start[i];
 		if (start > q_end)
 			break;
-		IntAE_insert_at(out, IntAE_get_nelt(out), i + 1);
+		IntAE_insert_at(sh_buf, IntAE_get_nelt(sh_buf), i + 1);
 		offset = NCSUBLIST_OFFSET(nclist, n);
 		if (offset != -1)
 			NCList_overlap(q_start, q_end,
 				       nclist + offset,
 				       s_start, s_end,
-				       out);
+				       sh_buf);
 	}
 	return;
 }
@@ -467,10 +498,10 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 			  SEXP s_nclist, SEXP s_start, SEXP s_end)
 {
 	const int *top_nclist;
-	int q_len, s_len, m;
+	int q_len, s_len, m, i;
 	const int *q_start_p, *q_end_p, *s_start_p, *s_end_p;
-	IntAEAE buf;
-	IntAE *buf_elt;
+	IntPairAE hits_buf;
+	IntAE *qh_buf, *sh_buf;
 
 	top_nclist = INTEGER(s_nclist);
 	q_len = check_integer_pairs(q_start, q_end,
@@ -479,18 +510,22 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 	s_len = check_integer_pairs(s_start, s_end,
 				    &s_start_p, &s_end_p,
 				    "start(subject)", "end(subject)");
-	buf = new_IntAEAE(q_len, q_len);
+	hits_buf = new_IntPairAE(0, 0);
+	qh_buf = &(hits_buf.a);
+	sh_buf = &(hits_buf.b);
 	if (s_len != 0) {
-		for (m = 0, buf_elt = buf.elts;
-		     m < q_len;
-		     m++, buf_elt++, q_start_p++, q_end_p++)
-		{
+		for (m = 0; m < q_len; m++, q_start_p++, q_end_p++) {
 			NCList_overlap(*q_start_p, *q_end_p,
 				       top_nclist, s_start_p, s_end_p,
-				       buf_elt);
-			IntAE_qsort(buf_elt, 0);
+				       sh_buf);
+			for (i = IntAE_get_nelt(qh_buf);
+			     i < IntAE_get_nelt(sh_buf);
+			     i++)
+			{
+				IntAE_insert_at(qh_buf, i, m + 1);
+			}
 		}
 	}
-	return new_Hits_from_IntAEAE(&buf, s_len);
+	return new_Hits_from_IntPairAE(&hits_buf, q_len, s_len);
 }
 
