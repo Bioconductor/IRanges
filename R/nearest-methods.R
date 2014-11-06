@@ -189,17 +189,17 @@ setMethod("distanceToNearest", c("Ranges", "RangesORmissing"),
     {
         select <- match.arg(select)
         if (missing(subject)) {
-          subject <- x
-          x_nearest <- nearest(x, select = select)
+            subject <- x
+            x_nearest <- nearest(x, select = select)
         } else {
-          x_nearest <- nearest(x, subject, select = select)
+            x_nearest <- nearest(x, subject, select = select)
         }
         if (select == "arbitrary") {
-          queryHits <- seq_len(length(x))
-          subjectHits <- x_nearest
+            queryHits <- seq_along(x)[!is.na(x_nearest)]
+            subjectHits <- x_nearest[!is.na(x_nearest)]
         } else {
-          queryHits <- queryHits(x_nearest) 
-          subjectHits <- subjectHits(x_nearest)
+            queryHits <- queryHits(x_nearest)
+            subjectHits <- subjectHits(x_nearest)
         }
 
         if (!length(subjectHits) || all(is.na(subjectHits))) {
