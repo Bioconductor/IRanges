@@ -185,26 +185,37 @@ setGeneric("distanceToNearest",
            function(x, subject = x, ...) standardGeneric("distanceToNearest"))
 
 setMethod("distanceToNearest", c("Ranges", "RangesORmissing"),
-          function(x, subject, select = c("arbitrary", "all"))
-          {
-            select <- match.arg(select)
-            if (missing(subject)) {
-              subject <- x
-              x_nearest <- nearest(x, select = select)
-            } else {
-              x_nearest <- nearest(x, subject, select = select)
-            }
-            if (select == "arbitrary") {
-              x_nearest <- cbind(queryHits = seq_len(length(x)),
-                                 subjectHits = x_nearest)
-            } else {
-              x_nearest <- as.matrix(x_nearest)
-            }
-            distance = distance(x[x_nearest[,1]], subject[x_nearest[,2]])
-            new("Hits", queryHits=x_nearest[,1],
-                        subjectHits=x_nearest[,2],
-                        queryLength=length(x), 
-                        subjectLength=length(subject),
-                        elementMetadata=DataFrame(distance=distance))
-          })
+    function(x, subject, select = c("arbitrary", "all"))
+    {
+        select <- match.arg(select)
+        if (missing(subject)) {
+          subject <- x
+          x_nearest <- nearest(x, select = select)
+        } else {
+          x_nearest <- nearest(x, subject, select = select)
+        }
+        if (select == "arbitrary") {
+          queryHits <- seq_len(length(x))
+          subjectHits <- x_nearest
+        } else {
+          queryHits <- queryHits(x_nearest) 
+          subjectHits <- subjectHits(x_nearest)
+        }
+
+        if (!length(subjectHits) || all(is.na(subjectHits))) {
+            new("Hits", 
+                queryLength=length(x), 
+                subjectLength=length(subject),
+                elementMetadata=DataFrame(distance=NULL))
+        } else {
+            distance = distance(x[queryHits], subject[subjectHits])
+            new("Hits", 
+                queryHits=queryHits,
+                subjectHits=subjectHits,
+                queryLength=length(x), 
+                subjectLength=length(subject),
+                elementMetadata=DataFrame(distance=distance))
+        }
+    }
+)
 
