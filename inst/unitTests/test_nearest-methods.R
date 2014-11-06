@@ -129,5 +129,10 @@ test_Ranges_distanceToNearest <- function()
 
   current <- quiet(distanceToNearest(query, rev(subject), select="all"))
   checkIdentical(subjectHits(current), c(1L, 2L))
+
+  current <- distanceToNearest(query, IRanges())
+  checkIdentical(length(current), 0L)
+  checkIdentical(queryLength(current), 1L)
+  checkIdentical(subjectLength(current), 0L)
 }
 
