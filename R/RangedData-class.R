@@ -636,7 +636,8 @@ setMethod("as.data.frame", "RangedData",as.data.frame.RangedData)
 setAs("RangedData", "DataFrame",
       function(from)
       {
-        DataFrame(as.data.frame(ranges(from)), values(from))
+        DataFrame(as.data.frame(ranges(from)),
+                  unlist(values(from), use.names=FALSE))
       })
 
 setAs("Rle", "RangedData",
