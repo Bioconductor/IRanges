@@ -62,6 +62,9 @@ findOverlaps_NCList <- function(query, subject,
                            type=c("any", "start", "end", "within", "equal"),
                            select=c("all", "first", "last", "arbitrary"))
 {
+    if (!(is(query, "NCList") || is(subject, "NCList")))
+        stop("'query' or 'subject' must be an NCList object")
+
     ## Check and normalize 'maxgap'.
     if (!isSingleNumber(maxgap))
         stop("'maxgap' must be a single integer")
@@ -82,13 +85,17 @@ findOverlaps_NCList <- function(query, subject,
     select <- match.arg(select)
 
     if (maxgap != 0L)
-        stop("support for 'maxgap' != 0 is not ready yet")
+        stop("support for 'maxgap' != 0 is not ready yet ",
+             "when 'query' or 'subject' is an NCList object")
     if (minoverlap != 1)
-        stop("support for 'minoverlap' != 1 is not ready yet")
+        stop("support for 'minoverlap' != 1 is not ready yet ",
+             "when 'query' or 'subject' is an NCList object")
     if (type != "any")
-        stop("support for 'type' != \"any\" is not ready yet")
+        stop("support for 'type' != \"any\" is not ready yet ",
+             "when 'query' or 'subject' is an NCList object")
     if (select != "all")
-        stop("support for 'select' != \"all\" is not ready yet")
+        stop("support for 'select' != \"all\" is not ready yet ",
+             "when 'query' or 'subject' is an NCList object")
 
     if (is(subject, "NCList")) {
         if (!is(query, "Ranges"))
@@ -98,7 +105,7 @@ findOverlaps_NCList <- function(query, subject,
                       subject@nclist,
                       start(subject@ranges), end(subject@ranges),
                       PACKAGE="IRanges")
-    } else if (is(query, "NCList")) {
+    } else {
         if (!is(subject, "Ranges"))
             stop("'subject' must be a Ranges object")
         hits <- .Call("NCList_find_overlaps",
@@ -107,11 +114,33 @@ findOverlaps_NCList <- function(query, subject,
                       start(query@ranges), end(query@ranges),
                       PACKAGE="IRanges")
         hits <- S4Vectors:::Hits_revmap(hits)
-    } else {
-        stop("'query' or 'subject' must be an NCList object")
     }
     hits
 }
+
+### NOT exported.
+NCList_which_to_preprocess <- function(query, subject)
+{
+    if (!(is(query, "Ranges") && is(subject, "Ranges")))
+        stop("'query' and 'subject' must be Ranges objects")
+    if (is(query, "NCList") || is(subject, "NCList"))
+        stop("'query' or 'subject' is already an NCList object")
+
+    ## Preprocessing the query instead of the subject is tempting when
+    ## the query is shorter than the subject but then the Hits object
+    ## returned by .Call entry point NCList_find_overlaps() needs to be
+    ## reversed with S4Vectors:::Hits_revmap(). The cost of this
+    ## operation is in the order of NH * log(NH) where NH is the nb of
+    ## hits. Because this extra cost cannot be known in advance and
+    ## could possibly defeat the purpose of preprocessing the query
+    ## instead of the subject, the empirical criteria for doing so
+    ## is more conservative than just q_len <= s_len.
+    q_len <- length(query)
+    s_len <- length(subject)
+    preprocess_q <- q_len == 0L || q_len * (log10(q_len))^2 <= s_len
+    ifelse(preprocess_q, "query", "subject")
+}
+
 
 if (FALSE) {  #     <<<--- begin testing findOverlaps_NCList() --->>>
 

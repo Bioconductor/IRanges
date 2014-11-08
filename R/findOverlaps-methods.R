@@ -13,7 +13,8 @@
 setGeneric("findOverlaps", signature=c("query", "subject"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
-             select=c("all", "first", "last", "arbitrary"), ...)
+             select=c("all", "first", "last", "arbitrary"),
+             algorithm=c("intervaltree", "nclist"), ...)
         standardGeneric("findOverlaps")
 )
 
@@ -130,7 +131,8 @@ setGeneric("findOverlaps", signature=c("query", "subject"),
 setMethod("findOverlaps", c("Ranges", "IntervalTree"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
-                   select = c("all", "first", "last", "arbitrary"))
+                   select = c("all", "first", "last", "arbitrary"),
+                   algorithm = c("intervaltree", "nclist"))
           {
             # verify inputs
             if (!isSingleNumber(maxgap) || maxgap < 0L)
@@ -139,7 +141,10 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
               stop("'minoverlap' must be a single, positive integer")
             type <- match.arg(type)
             select <- match.arg(select)
-
+            algorithm <- match.arg(algorithm)
+            if (algorithm != "intervaltree")
+              warning("'algorithm' is ignored when 'subject' ",
+                      "is an IntervalTree object")
 
             origSelect <- select
             if (type != "any" || minoverlap > 1L)
@@ -166,8 +171,13 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
 setMethods("findOverlaps", list(c("NCList", "Ranges"), c("Ranges", "NCList")),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
-             select=c("all", "first", "last", "arbitrary"))
+             select=c("all", "first", "last", "arbitrary"),
+             algorithm=c("intervaltree", "nclist"))
     {
+        algorithm <- match.arg(algorithm)
+        if (algorithm != "intervaltree")
+            warning("'algorithm' is ignored when 'query' or 'subject' ",
+                    "is an NCList object")
         findOverlaps_NCList(query, subject,
                             maxgap=maxgap, minoverlap=minoverlap,
                             type=type, select=select)
@@ -178,25 +188,14 @@ setMethod("findOverlaps", c("Ranges", "Ranges"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
-             algorithm=c("IntervalTree", "NCList"))
+             algorithm=c("intervaltree", "nclist"))
     {
         algorithm <- match.arg(algorithm)
-        if (algorithm == "IntervalTree") {
+        if (algorithm == "intervaltree") {
             subject <- IntervalTree(subject)
         } else {
-            ## Preprocessing the query instead of the subject is tempting when
-            ## the query is shorter than the subject but then the Hits object
-            ## returned by .Call entry point NCList_find_overlaps() needs to be
-            ## reversed with S4Vectors:::Hits_revmap(). The cost of this
-            ## operation is in the order of NH * log(NH) where NH is the nb of
-            ## hits. Because this extra cost cannot be known in advance and
-            ## could possibly defeat the purpose of preprocessing the query
-            ## instead of the subject, the empirical criteria for doing so
-            ## is more conservative than just q_len <= s_len.
-            q_len <- length(query)
-            s_len <- length(subject)
-            preprocess_q <- q_len == 0L || q_len * (log10(q_len))^2 <= s_len
-            if (preprocess_q)
+            which_to_preprocess <- NCList_which_to_preprocess(query, subject)
+            if (which_to_preprocess == "query")
                 query <- NCList(query)
             else
                 subject <- NCList(subject)
@@ -210,12 +209,14 @@ setMethod("findOverlaps", c("Vector", "missing"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
+             algorithm=c("intervaltree", "nclist"),
              ignoreSelf=FALSE, ignoreRedundant=FALSE)
     {
         select <- match.arg(select)
         result <- findOverlaps(query, query,
                                maxgap=maxgap, minoverlap=minoverlap,
-                               type=match.arg(type), select="all")
+                               type=match.arg(type), select="all",
+                               algorithm=match.arg(algorithm))
         processSelfMatching(result, select, ignoreSelf, ignoreRedundant)
     }
 )
@@ -224,7 +225,7 @@ setMethod("findOverlaps", c("integer", "Ranges"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
-             algorithm=c("IntervalTree", "NCList"))
+             algorithm=c("intervaltree", "nclist"))
     {
         findOverlaps(IRanges(query, query), subject,
                      maxgap=maxgap, minoverlap=minoverlap,
@@ -237,7 +238,7 @@ setMethod("findOverlaps", c("Views", "Views"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
-             algorithm=c("IntervalTree", "NCList"))
+             algorithm=c("intervaltree", "nclist"))
     {
         findOverlaps(ranges(query), ranges(subject),
                      maxgap=maxgap, minoverlap=minoverlap,
@@ -250,7 +251,7 @@ setMethod("findOverlaps", c("Views", "Vector"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
-             algorithm=c("IntervalTree", "NCList"))
+             algorithm=c("intervaltree", "nclist"))
     {
         findOverlaps(ranges(query), subject,
                      maxgap=maxgap, minoverlap=minoverlap,
@@ -263,7 +264,7 @@ setMethod("findOverlaps", c("Vector", "Views"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
-             algorithm=c("IntervalTree", "NCList"))
+             algorithm=c("intervaltree", "nclist"))
     {
         findOverlaps(query, ranges(subject),
                      maxgap=maxgap, minoverlap=minoverlap,
@@ -276,7 +277,9 @@ setMethod("findOverlaps", c("Vector", "Views"),
 setMethod("findOverlaps", c("RangesList", "IntervalForest"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
-                   select = c("all", "first", "last", "arbitrary"), drop=FALSE)
+                   select = c("all", "first", "last", "arbitrary"),
+                   algorithm = c("intervaltree", "nclist"),
+                   drop=FALSE)
           {
             # verify inputs
             if (!isSingleNumber(maxgap) || maxgap < 0L)
@@ -286,6 +289,11 @@ setMethod("findOverlaps", c("RangesList", "IntervalForest"),
 
             type <- match.arg(type)
             select <- match.arg(select)
+            algorithm <- match.arg(algorithm)
+            if (algorithm != "intervaltree")
+              stop("'algorithm' must be \"intervaltree\" when 'subject' ",
+                   "is an IntervalForest object")
+
             origSelect <- select
             if (type != "any" || minoverlap > 1L)
               select <- "all"
@@ -345,10 +353,12 @@ setMethod("findOverlaps", c("RangesList", "RangesList"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
                    select = c("all", "first", "last", "arbitrary"),
+                   algorithm = c("intervaltree", "nclist"),
                    drop = FALSE)
           {
             type <- match.arg(type)
             select <- match.arg(select)
+            algorithm <- match.arg(algorithm)
 
             query <- as.list(query)
             subject <- as.list(subject)
@@ -364,9 +374,10 @@ setMethod("findOverlaps", c("RangesList", "RangesList"),
             subject[sapply(subject, is.null)] <- IRanges()
 
             ans <- lapply(seq_len(length(subject)), function(i) {
-              findOverlaps(query[[i]], subject[[i]], maxgap = maxgap,
-                           minoverlap = minoverlap, type = type,
-                           select = select)
+              findOverlaps(query[[i]], subject[[i]],
+                           maxgap = maxgap, minoverlap = minoverlap,
+                           type = type, select = select,
+                           algorithm = algorithm)
             })
             names(ans) <- names(subject)
             if (select == "all") {
@@ -392,11 +403,14 @@ setMethod("findOverlaps", c("ViewsList", "ViewsList"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
+             algorithm=c("intervaltree", "nclist"),
              drop=FALSE)
     {
         findOverlaps(ranges(query), ranges(subject),
                      maxgap=maxgap, minoverlap=minoverlap,
-                     type=type, select=select, drop=drop)
+                     type=match.arg(type), select=match.arg(select),
+                     algorithm=match.arg(algorithm),
+                     drop=drop)
     }
 )
 
@@ -404,11 +418,14 @@ setMethod("findOverlaps", c("ViewsList", "Vector"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
+             algorithm=c("intervaltree", "nclist"),
              drop=FALSE)
     {
         findOverlaps(ranges(query), subject,
                      maxgap=maxgap, minoverlap=minoverlap,
-                     type=type, select=select, drop=drop)
+                     type=match.arg(type), select=match.arg(select),
+                     algorithm=match.arg(algorithm),
+                     drop=drop)
     }
 )
 
@@ -416,11 +433,14 @@ setMethod("findOverlaps", c("Vector", "ViewsList"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
+             algorithm=c("intervaltree", "nclist"),
              drop=FALSE)
     {
         findOverlaps(query, ranges(subject),
                      maxgap=maxgap, minoverlap=minoverlap,
-                     type=type, select=select, drop=drop)
+                     type=match.arg(type), select=match.arg(select),
+                     algorithm=match.arg(algorithm),
+                     drop=drop)
     }
 )
 
@@ -428,33 +448,42 @@ setMethod("findOverlaps", c("RangedData", "RangedData"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
                    select = c("all", "first", "last", "arbitrary"),
+                   algorithm = c("intervaltree", "nclist"),
                    drop = FALSE)
           {
-            findOverlaps(ranges(query), ranges(subject), maxgap = maxgap,
-                         minoverlap = minoverlap, type = match.arg(type),
-                         select = match.arg(select), drop = drop)
+            findOverlaps(ranges(query), ranges(subject),
+                         maxgap = maxgap, minoverlap = minoverlap,
+                         type = match.arg(type), select = match.arg(select),
+                         algorithm = match.arg(algorithm),
+                         drop = drop)
           })
 
 setMethod("findOverlaps", c("RangedData", "RangesList"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
                    select = c("all", "first", "last", "arbitrary"),
+                   algorithm = c("intervaltree", "nclist"),
                    drop = FALSE)
           {
-            findOverlaps(ranges(query), subject, maxgap = maxgap,
-                         minoverlap = minoverlap, type = match.arg(type),
-                         select = match.arg(select), drop = drop)
+            findOverlaps(ranges(query), subject,
+                         maxgap = maxgap, minoverlap = minoverlap,
+                         type = match.arg(type), select = match.arg(select),
+                         algorithm = match.arg(algorithm),
+                         drop = drop)
           })
 
 setMethod("findOverlaps", c("RangesList", "RangedData"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
                    type = c("any", "start", "end", "within", "equal"),
                    select = c("all", "first", "last", "arbitrary"),
+                   algorithm = c("intervaltree", "nclist"),
                    drop = FALSE)
           {
-            findOverlaps(query, ranges(subject), maxgap = maxgap,
-                         minoverlap = minoverlap, type = match.arg(type),
-                         select = match.arg(select), drop = drop)
+            findOverlaps(query, ranges(subject),
+                         maxgap = maxgap, minoverlap = minoverlap,
+                         type = match.arg(type), select = match.arg(select),
+                         algorithm = match.arg(algorithm),
+                         drop = drop)
           })
 
 
