@@ -49,18 +49,17 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
     ans <- DataFrame()
     ans@nrows <- sum(unlist(lapply(args, nrow), use.names=FALSE))
   } else {
-    cn <- colnames(df)
-    cl <- unlist(lapply(as.list(df, use.names = FALSE), class))
-    factors <- unlist(lapply(as.list(df, use.names = FALSE), is.factor))
-    cols <- lapply(seq_len(length(df)), function(i) {
-      cols <- lapply(args, `[[`, cn[i])
-      if (factors[i]) { # combine factor levels, coerce to character
+    cols <- lapply(colnames(df), function(cn) {
+      cols <- lapply(args, `[[`, cn)
+      isRle <- vapply(cols, is, logical(1L), "Rle")
+      if (any(isRle) && !all(isRle)) { # would fail dispatch to c,Rle
+        cols <- lapply(cols, as, class(cols[[which(isRle)[1]]]))
+      }
+      isFactor <- vapply(cols, is.factor, logical(1L))
+      if (any(isFactor)) {
+        cols <- lapply(cols, as.factor)
         levs <- unique(unlist(lapply(cols, levels), use.names=FALSE))
-        cols <- lapply(cols, as.character)
-      } else {
-        isRle <- sapply(cols, is, "Rle")
-        if (any(isRle) && !all(isRle)) # would fail dispatch to c,Rle
-          cols <- lapply(cols, as.vector)
+        cols <- lapply(cols, factor, levs)
       }
       rectangular <- length(dim(cols[[1]])) == 2L
       if (rectangular) {
@@ -68,8 +67,8 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
       } else {
         combined <- do.call(c, unname(cols))
       }
-      if (factors[i])
-        combined <- factor(combined, levs)
+      if (any(isFactor))
+        combined <- structure(combined, class="factor", levels=levs)
       combined
     })
     names(cols) <- colnames(df)
