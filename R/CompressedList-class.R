@@ -230,11 +230,19 @@ setMethod("extractROWS", "CompressedList",
     function(x, i)
     {
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
-        ir <- IRanges(end=extractROWS(end(x@partitioning), i),
-                      width=extractROWS(width(x@partitioning), i))
-        ans_unlistData <- extractROWS(x@unlistData, ir)
+        ans_eltlens <- extractROWS(width(x@partitioning), i)
+        ans_breakpoints <- suppressWarnings(cumsum(ans_eltlens))
+        if (is.na(ans_breakpoints[[length(i)]]))
+            stop(wmsg("Subsetting operation on ", class(x), " object 'x' ",
+                      "produces a result that is too big to be ",
+                      "represented as a CompressedList object. ",
+                      "Please try to coerce 'x' to a SimpleList object ",
+                      "first (with 'as(x, \"SimpleList\")')."))
+        idx_on_unlisted_x <- IRanges(end=extractROWS(end(x@partitioning), i),
+                                     width=ans_eltlens)
+        ans_unlistData <- extractROWS(x@unlistData, idx_on_unlisted_x)
         ans_partitioning <- new2("PartitioningByEnd",
-                                 end=cumsum(width(ir)),
+                                 end=ans_breakpoints,
                                  NAMES=extractROWS(names(x), i),
                                  check=FALSE)
         ans_elementMetadata <- extractROWS(x@elementMetadata, i)
