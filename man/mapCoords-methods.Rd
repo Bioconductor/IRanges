@@ -11,7 +11,7 @@
 \description{
   The \code{mapCoords} generic converts a set of ranges to the equivalent
   ranges on another sequence through some sort of alignment between
-  sequences. The output is an object of the same class as \code{x}
+  sequences. The output is an object of the same class as \code{from}
   and in general will contain the mapped ranges with the matching data
   as metadata. Matching data are the result of calling \code{findOverlaps} 
   with \code{type = "within"}. This operation matches each input range to a 
@@ -24,21 +24,21 @@
 }
 
 \usage{
-mapCoords(x, to, ...)
-pmapCoords(x, to, ...)
+mapCoords(from, to, ...)
+pmapCoords(from, to, ...)
 }
 
 \arguments{
-  \item{x}{Typically an object containing ranges to map.}
+  \item{from}{Typically an object containing ranges to map.}
   \item{to}{Typically an object representing an alignment.}
   \item{...}{Arguments to pass to methods}
 }
 
 \value{
-  An object the same class as \code{x}. 
+  An object the same class as \code{from}. 
 
   In the case of \code{mapCoords}, the result of \code{findOverlaps} 
-  with type = ``within`` are inlcuded as metadata columns (`queryHits` 
+  with type = ``within`` are included as metadata columns (`queryHits` 
   and `subjectHits`).
 }
 
