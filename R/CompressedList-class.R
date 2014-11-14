@@ -232,7 +232,8 @@ setMethod("extractROWS", "CompressedList",
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         ans_eltlens <- extractROWS(width(x@partitioning), i)
         ans_breakpoints <- suppressWarnings(cumsum(ans_eltlens))
-        if (is.na(ans_breakpoints[[length(i)]]))
+        nbreakpoints <- length(ans_breakpoints)
+        if (nbreakpoints != 0L && is.na(ans_breakpoints[[nbreakpoints]]))
             stop(wmsg("Subsetting operation on ", class(x), " object 'x' ",
                       "produces a result that is too big to be ",
                       "represented as a CompressedList object. ",
