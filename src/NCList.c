@@ -384,6 +384,18 @@ SEXP NCList_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
 #define SELECT_LAST		3
 #define SELECT_ARBITRARY	4
 
+static int get_min_overlap_score(SEXP min_score)
+{
+	int min_overlap_score;
+
+	if (!IS_INTEGER(min_score) || LENGTH(min_score) != 1)
+		error("'min_score' must be a single integer");
+	min_overlap_score = INTEGER(min_score)[0];
+	if (min_overlap_score == NA_INTEGER)
+		error("'min_score' cannot be NA");
+	return min_overlap_score;
+}
+
 static int get_overlap_type(SEXP type)
 {
 	const char *type0;
@@ -532,10 +544,12 @@ static int bsearch_n1(int q_start, const int *nclist, const int *s_end_p)
 static void NCList_overlap(int q_start, int q_end,
 			   const int *nclist,
 			   const int *s_start_p, const int *s_end_p,
+			   int min_overlap_score,
 			   int overlap_type, int select_mode,
 			   IntAE *sh_buf)
 {
-	int nelt, n, i, s_start, is_hit, i1, tmp, offset;
+	int nelt, n, i, s_start, s_end,
+	    ov_start, ov_end, score, score_is_ok, type_is_ok, i1, tmp, offset;
 
 	nelt = NCLIST_NELT(nclist);
 	n = bsearch_n1(q_start, nclist, s_end_p);
@@ -545,23 +559,32 @@ static void NCList_overlap(int q_start, int q_end,
 		if (s_start > q_end)
 			break;
 		/* Do we have a hit? */
+		s_end = s_end_p[i];
+		if (min_overlap_score == 1) {
+			score_is_ok = 1;
+		} else {
+			ov_start = q_start > s_start ? q_start : s_start;
+			ov_end = q_end < s_end ? q_end : s_end;
+			score = ov_end - ov_start + 1;
+			score_is_ok = score >= min_overlap_score;
+		}
 		switch (overlap_type) {
 		    case TYPE_START:
-			is_hit = q_start == s_start;
+			type_is_ok = q_start == s_start;
 			break;
 		    case TYPE_END:
-			is_hit = q_end == s_end_p[i];
+			type_is_ok = q_end == s_end;
 			break;
 		    case TYPE_WITHIN:
-			is_hit = q_start >= s_start && q_end <= s_end_p[i];
+			type_is_ok = q_start >= s_start && q_end <= s_end;
 			break;
 		    case TYPE_EQUAL:
-			is_hit = q_start == s_start && q_end == s_end_p[i];
+			type_is_ok = q_start == s_start && q_end == s_end;
 			break;
 		    default:
-			is_hit = 1;
+			type_is_ok = 1;
 		}
-		if (is_hit) {
+		if (score_is_ok && type_is_ok) {
 			/* Report the hit. */
 			i1 = i + 1;
 			if (select_mode != SELECT_ALL) {
@@ -581,6 +604,7 @@ static void NCList_overlap(int q_start, int q_end,
 			NCList_overlap(q_start, q_end,
 				       nclist + offset,
 				       s_start_p, s_end_p,
+				       min_overlap_score,
 				       overlap_type, select_mode,
 				       sh_buf);
 	}
@@ -590,10 +614,12 @@ static void NCList_overlap(int q_start, int q_end,
 /* --- .Call ENTRY POINT --- */
 SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 			  SEXP s_nclist, SEXP s_start, SEXP s_end,
-			  SEXP type, SEXP select)
+			  SEXP min_score, SEXP type, SEXP select)
 {
 	const int *top_nclist;
-	int q_len, s_len, overlap_type, select_mode, i, old_nhit, new_nhit, k;
+	int q_len, s_len,
+	    min_overlap_score, query_extension, overlap_type, select_mode,
+	    i, ext_q_start, ext_q_end, old_nhit, new_nhit, k;
 	const int *q_start_p, *q_end_p, *s_start_p, *s_end_p;
 	IntPairAE hits_buf;
 	IntAE *qh_buf, *sh_buf;
@@ -607,6 +633,13 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 	s_len = check_integer_pairs(s_start, s_end,
 				    &s_start_p, &s_end_p,
 				    "start(subject)", "end(subject)");
+	min_overlap_score = get_min_overlap_score(min_score);
+	if (min_overlap_score >= 1) {
+		query_extension = 0;
+	} else {
+		query_extension = 1 - min_overlap_score;
+		min_overlap_score = 1;
+	}
 	overlap_type = get_overlap_type(type);
 	select_mode = get_select_mode(select);
 	hits_buf = new_IntPairAE(0, 0);
@@ -618,11 +651,15 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 		ans_elt_p = INTEGER(ans);
 	}
 	for (i = 1; i <= q_len; i++, q_start_p++, q_end_p++) {
-		if (s_len != 0)
-			NCList_overlap(*q_start_p, *q_end_p,
+		if (s_len != 0) {
+			ext_q_start = *q_start_p - query_extension;
+			ext_q_end = *q_end_p + query_extension;
+			NCList_overlap(ext_q_start, ext_q_end,
 				       top_nclist, s_start_p, s_end_p,
+				       min_overlap_score,
 				       overlap_type, select_mode,
 				       sh_buf);
+		}
 		if (select_mode != SELECT_ALL) {
 			*(ans_elt_p++) = sh_buf->elts[0];
 			sh_buf->elts[0] = NA_INTEGER;
