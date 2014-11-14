@@ -371,6 +371,35 @@ SEXP NCList_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
  * NCList_find_overlaps()
  */
 
+/* The 4 supported select modes. */
+#define SELECT_ALL		1
+#define SELECT_FIRST		2
+#define SELECT_LAST		3
+#define SELECT_ARBITRARY	4
+
+static int get_select_mode(SEXP select)
+{
+	const char *select0;
+
+	if (!IS_CHARACTER(select) || LENGTH(select) != 1)
+		error("'select' must be a single string");
+	select = STRING_ELT(select, 0);
+	if (select == NA_STRING)
+		error("'select' cannot be NA");
+	select0 = CHAR(select);
+	if (strcmp(select0, "all") == 0)
+		return SELECT_ALL;
+	if (strcmp(select0, "first") == 0)
+		return SELECT_FIRST;
+	if (strcmp(select0, "last") == 0)
+		return SELECT_LAST;
+	if (strcmp(select0, "arbitrary") == 0)
+		return SELECT_ARBITRARY;
+	error("'select' must be \"all\", \"first\", "
+	      "\"last\", or \"arbitrary\"");
+	return 0;
+}
+
 static SEXP new_Hits_from_IntAEAE(const IntAEAE *x, int s_len)
 {
 	SEXP classdef, ans, ans_queryHits, ans_subjectHits,
@@ -471,7 +500,7 @@ static int bsearch_n1(int q_start, const int *nclist, const int *s_end)
 static void NCList_overlap(int q_start, int q_end,
 			   const int *nclist,
 			   const int *s_start, const int *s_end,
-			   IntAE *sh_buf)
+			   IntAE *sh_buf, int only_one_hit)
 {
 	int nelt, n, i, start, offset;
 
@@ -483,22 +512,25 @@ static void NCList_overlap(int q_start, int q_end,
 		if (start > q_end)
 			break;
 		IntAE_insert_at(sh_buf, IntAE_get_nelt(sh_buf), i + 1);
+		if (only_one_hit)
+			return;
 		offset = NCSUBLIST_OFFSET(nclist, n);
 		if (offset != -1)
 			NCList_overlap(q_start, q_end,
 				       nclist + offset,
 				       s_start, s_end,
-				       sh_buf);
+				       sh_buf, only_one_hit);
 	}
 	return;
 }
 
 /* --- .Call ENTRY POINT --- */
 SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
-			  SEXP s_nclist, SEXP s_start, SEXP s_end)
+			  SEXP s_nclist, SEXP s_start, SEXP s_end,
+			  SEXP select)
 {
 	const int *top_nclist;
-	int q_len, s_len, m, i;
+	int q_len, s_len, select_mode, m, old_nhit, new_nhit, delta_nhit, i;
 	const int *q_start_p, *q_end_p, *s_start_p, *s_end_p;
 	IntPairAE hits_buf;
 	IntAE *qh_buf, *sh_buf;
@@ -510,20 +542,27 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 	s_len = check_integer_pairs(s_start, s_end,
 				    &s_start_p, &s_end_p,
 				    "start(subject)", "end(subject)");
+	select_mode = get_select_mode(select);
 	hits_buf = new_IntPairAE(0, 0);
 	qh_buf = &(hits_buf.a);
 	sh_buf = &(hits_buf.b);
 	if (s_len != 0) {
 		for (m = 0; m < q_len; m++, q_start_p++, q_end_p++) {
+			old_nhit = IntAE_get_nelt(sh_buf);
 			NCList_overlap(*q_start_p, *q_end_p,
 				       top_nclist, s_start_p, s_end_p,
-				       sh_buf);
-			for (i = IntAE_get_nelt(qh_buf);
-			     i < IntAE_get_nelt(sh_buf);
-			     i++)
-			{
-				IntAE_insert_at(qh_buf, i, m + 1);
+				       sh_buf, select_mode == SELECT_ARBITRARY);
+			new_nhit = IntAE_get_nelt(sh_buf);
+			delta_nhit = new_nhit - old_nhit;
+			if (select_mode != SELECT_ALL && delta_nhit > 1) {
+				sort_int_array(sh_buf->elts + old_nhit,
+					       delta_nhit,
+					       select_mode == SELECT_LAST);
+				new_nhit = old_nhit + 1;
+				IntAE_set_nelt(sh_buf, new_nhit);
 			}
+			for (i = old_nhit; i < new_nhit; i++)
+				IntAE_insert_at(qh_buf, i, m + 1);
 		}
 	}
 	return new_Hits_from_IntPairAE(&hits_buf, q_len, s_len);

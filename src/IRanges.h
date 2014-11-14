@@ -380,6 +380,7 @@ SEXP NCList_find_overlaps(
 	SEXP q_end,
 	SEXP s_nclist,
 	SEXP s_start,
-	SEXP s_end
+	SEXP s_end,
+	SEXP select
 );
 
