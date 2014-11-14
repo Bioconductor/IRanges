@@ -90,9 +90,6 @@ findOverlaps_NCList <- function(query, subject,
     if (minoverlap != 1)
         stop("support for 'minoverlap' != 1 is not ready yet ",
              "when 'query' or 'subject' is an NCList object")
-    if (type != "any")
-        stop("support for 'type' != \"any\" is not ready yet ",
-             "when 'query' or 'subject' is an NCList object")
 
     if (is(subject, "NCList")) {
         if (!is(query, "Ranges"))
@@ -101,11 +98,14 @@ findOverlaps_NCList <- function(query, subject,
                       start(query), end(query),
                       subject@nclist,
                       start(subject@ranges), end(subject@ranges),
-                      select,
+                      type, select,
                       PACKAGE="IRanges")
     } else {
         if (!is(subject, "Ranges"))
             stop("'subject' must be a Ranges object")
+        if (type != "any")
+            stop("support for 'type' != \"any\" is not ready yet ",
+                 "when 'query' is an NCList object")
         if (select != "all")
             stop("support for 'select' != \"all\" is not ready yet ",
                  "when 'query' is an NCList object")
@@ -113,7 +113,7 @@ findOverlaps_NCList <- function(query, subject,
                       start(subject), end(subject),
                       query@nclist,
                       start(query@ranges), end(query@ranges),
-                      "all",
+                      "any", "all",
                       PACKAGE="IRanges")
         hits <- S4Vectors:::Hits_revmap(hits)
     }
