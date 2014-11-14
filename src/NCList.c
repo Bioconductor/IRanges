@@ -542,6 +542,7 @@ static int bsearch_n1(int q_start, const int *nclist, const int *s_end_p)
 }
 
 static void NCList_overlap(int q_start, int q_end,
+			   int ext_q_start, int ext_q_end,
 			   const int *nclist,
 			   const int *s_start_p, const int *s_end_p,
 			   int min_overlap_score,
@@ -552,11 +553,11 @@ static void NCList_overlap(int q_start, int q_end,
 	    ov_start, ov_end, score, score_is_ok, type_is_ok, i1, tmp, offset;
 
 	nelt = NCLIST_NELT(nclist);
-	n = bsearch_n1(q_start, nclist, s_end_p);
+	n = bsearch_n1(ext_q_start, nclist, s_end_p);
 	for ( ; n < nelt; n++) {
 		i = NCLIST_I(nclist, n);
 		s_start = s_start_p[i];
-		if (s_start > q_end)
+		if (ext_q_end < s_start)
 			break;
 		/* Do we have a hit? */
 		s_end = s_end_p[i];
@@ -602,6 +603,7 @@ static void NCList_overlap(int q_start, int q_end,
 		offset = NCSUBLIST_OFFSET(nclist, n);
 		if (offset != -1)
 			NCList_overlap(q_start, q_end,
+				       ext_q_start, ext_q_end,
 				       nclist + offset,
 				       s_start_p, s_end_p,
 				       min_overlap_score,
@@ -654,7 +656,8 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 		if (s_len != 0) {
 			ext_q_start = *q_start_p - query_extension;
 			ext_q_end = *q_end_p + query_extension;
-			NCList_overlap(ext_q_start, ext_q_end,
+			NCList_overlap(*q_start_p, *q_end_p,
+				       ext_q_start, ext_q_end,
 				       top_nclist, s_start_p, s_end_p,
 				       min_overlap_score,
 				       overlap_type, select_mode,

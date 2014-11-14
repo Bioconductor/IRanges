@@ -1,24 +1,36 @@
 ###
 
+.compareHits <- function(target, current) identical(t(target), t(current))
+
 findOverlaps_NCList <- IRanges:::findOverlaps_NCList
 
+.overlap_score <- function(query, subject)
+{
+    pmin(end(query), end(subject)) - pmax(start(query), start(subject)) + 1L
+}
+
 .findOverlaps_naive <- function(query, subject,
+                           maxgap=0L, minoverlap=1L,
                            type=c("any", "start", "end", "within", "equal"),
                            select=c("all", "first", "last"))
 {
+    min_score <- IRanges:::.min_overlap_score(maxgap, minoverlap)
     type <- match.arg(type)
     select <- match.arg(select)
     type_codes <- switch(type,
-        "any"=c("c", "d", "e", "f", "g", "h", "i", "j", "k"),
-        "start"=c("f", "g", "h"),
-        "end"=c("d", "g", "j"),
-        "within"=c("f", "g", "i", "j"),
-        "equal"="g"
+        "start"  = c("f", "g", "h"),
+        "end"    = c("d", "g", "j"),
+        "within" = c("f", "g", "i", "j"),
+        "equal"  = "g"
     )
     hits_per_query <- lapply(seq_along(query),
         function(i) {
-            codes <- rangeComparisonCodeToLetter(compare(query[i], subject))
-            which(codes %in% type_codes)
+            query_i <- query[i]
+            score_is_ok <- .overlap_score(query_i, subject) >= min_score
+            if (type == "any")
+                return(which(score_is_ok))
+            codes <- rangeComparisonCodeToLetter(compare(query_i, subject))
+            which(score_is_ok & codes %in% type_codes)
         })
     if (select == "all") {
         q_hits <- rep.int(seq_along(query), elementLengths(hits_per_query))
@@ -31,12 +43,12 @@ findOverlaps_NCList <- IRanges:::findOverlaps_NCList
     ans <- integer(length(query))
     ans[] <- NA_integer_
     idx1 <- which(elementLengths(hits_per_query) != 0L)
-    select_FUN <- switch(select, "first"=min, "last"=max)
-    ans[idx1] <- sapply(hits_per_query[idx1], select_FUN)
+    if (length(idx1) != 0L) {
+        select_FUN <- switch(select, "first"=min, "last"=max)
+        ans[idx1] <- sapply(hits_per_query[idx1], select_FUN)
+    }
     ans
 }
-
-.compareHits <- function(target, current) identical(t(target), t(current))
 
 test_findOverlaps_NCList <- function()
 {
@@ -65,19 +77,31 @@ test_findOverlaps_NCList <- function()
         permute_subject(sample(length(subject)))
 }
 
-test_findOverlaps_NCList_type_select <- function()
+test_findOverlaps_NCList_with_filtering <- function()
 {
     query <- IRanges(-3:7, width=3)
     subject <- IRanges(rep.int(1:5, 5:1), c(1:5, 2:5, 3:5, 4:5, 5))
 
     pp_subject <- NCList(subject)
-    for (type in c("any", "start", "end", "within", "equal")) {
-        for (select in c("all", "first", "last")) {
-            current <- findOverlaps_NCList(query, pp_subject,
-                                           type=type, select=select)
-            target <- .findOverlaps_naive(query, subject,
-                                         type=type, select=select)
-            checkTrue(.compareHits(target, current))
+    maxgap_minoverlap <- list(c(0,1), c(0,2), c(0,3), c(0,4),
+                              c(1,1), c(2,1), c(3,1), c(4,1))
+    for (m in maxgap_minoverlap) {
+        maxgap <- m[[1L]]
+        minoverlap <- m[[2L]]
+        for (type in c("any", "start", "end", "within", "equal")) {
+            for (select in c("all", "first", "last")) {
+                #cat("maxgap=", maxgap, " minoverlap=", minoverlap,
+                #    " type=", type, " select=", select, "\n", sep="")
+                current <- findOverlaps_NCList(query, pp_subject,
+                                               maxgap=maxgap,
+                                               minoverlap=minoverlap,
+                                               type=type, select=select)
+                target <- .findOverlaps_naive(query, subject,
+                                              maxgap=maxgap,
+                                              minoverlap=minoverlap,
+                                              type=type, select=select)
+                checkTrue(.compareHits(target, current))
+            }
         }
     }
 }
