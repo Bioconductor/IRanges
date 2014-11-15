@@ -53,7 +53,12 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "breakInChunks" function.
+### breakInChunks()
+###
+### TODO: Should not be in IRanges-utils.R because it returns a
+### PartitioningByEnd object, not an IRanges object. So move it to another
+### file, e.g. to Partitioning-class.R. breakInChunks() is actually a
+### specialized PartitioningByEnd constructor.
 ###
 
 .normarg_totalsize <- function(totalsize)
@@ -67,31 +72,54 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
     totalsize
 }
 
-.normarg_chunksize <- function(chunksize, totalsize)
+.normarg_chunksize_or_nchunk <- function(chunksize, totalsize, what)
 {
     if (!isSingleNumber(chunksize))
-        stop("'chunksize' must be a single integer")
+        stop("'", what, "' must be a single integer")
     if (!is.integer(chunksize))
         chunksize <- as.integer(chunksize)
     if (chunksize < 0L)
-        stop("'chunksize' cannot be negative")
+        stop("'", what, "' cannot be negative")
     if (chunksize == 0L && totalsize != 0L)
-        stop("'chunksize' can be 0 only if 'totalsize' is 0")
+        stop("'", what, "' can be 0 only if 'totalsize' is 0")
     chunksize
 }
 
-breakInChunks <- function(totalsize, chunksize)
+### TODO: Argument names and order is inconsistent with tileGenome().
+### Reconcile them!
+breakInChunks <- function(totalsize, chunksize, nchunk)
 {
     totalsize <- .normarg_totalsize(totalsize)
-    chunksize <- .normarg_chunksize(chunksize, totalsize)
-    if (totalsize == 0L)
-        return(PartitioningByWidth())
-    quot <- totalsize %/% chunksize
-    ans_width <- rep.int(chunksize, quot)
-    rem <- totalsize %% chunksize
-    if (rem > 0L)
-        ans_width <- c(ans_width, rem)
-    PartitioningByWidth(ans_width)
+    if (!missing(chunksize)) {
+        if (!missing(nchunk)) 
+            stop("only one of 'chunksize' and 'nchunk' can be specified")
+        ## All chunks will have the requested size, except maybe the last one.
+        chunksize <- .normarg_chunksize_or_nchunk(chunksize, totalsize,
+                                                  "chunksize")
+        if (totalsize == 0L)
+            return(PartitioningByEnd())
+        quot <- totalsize %/% chunksize  # integer division
+        ans_end <- cumsum(rep.int(chunksize, quot))
+        if (quot == 0L || ans_end[[quot]] != totalsize)
+            ans_end <- c(ans_end, totalsize)
+    } else {
+        if (missing(nchunk))   
+            stop("one of 'chunksize' and 'nchunk' must be specified")
+        ## All chunks will have more or less the same size, with the difference
+        ## between smallest and biggest chunks guaranteed to be <= 1.
+        nchunk <- .normarg_chunksize_or_nchunk(nchunk, totalsize,
+                                               "nchunk")
+        if (nchunk == 0L)
+            return(PartitioningByEnd())
+        chunksize <- totalsize / nchunk  # floating point division
+        ans_end <- as.integer(cumsum(rep.int(chunksize, nchunk)))
+        ## The last value in 'ans_end' *should* be 'totalsize' but there is
+        ## always some uncertainty about what coercing the result of a floating
+        ## point operation to integer will produce. So we set this value
+        ## manually to 'totalsize' just in case.
+        ans_end[[nchunk]] <- totalsize
+    }
+    PartitioningByEnd(ans_end)
 }
 
 
