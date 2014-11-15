@@ -288,15 +288,14 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL, universe = NULL)
   universe(ranges) <- universe
 
   if (hasDots) {
-    args <- lapply(list(...), function(arg) {
-      if (is(arg, "SplitDataFrameList")) {
-        unlist(arg, use.names=FALSE)
-      } else {
-        arg
-      }
-    })
-    values <- DataFrame(args)
-  } else
+    args <- list(...)
+    if (length(args) == 1L && is(args[[1L]], "SplitDataFrame")) {
+      values <- unlist(args[[1L]], use.names=FALSE)
+    } else {
+      values <- DataFrame(...)
+    }
+  }
+  else
     values <- new2("DataFrame", nrows = N, check=FALSE)
   if (N != nrow(values)) {
     if (nrow(values) > N)
