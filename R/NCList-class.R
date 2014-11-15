@@ -56,68 +56,59 @@ print_NCList <- function(x)
     invisible(NULL)
 }
 
-.min_overlap_score <- function(maxgap=0L, minoverlap=1L)
-{
-    ## Check and normalize 'maxgap'.
-    if (!isSingleNumber(maxgap))
-        stop("'maxgap' must be a single integer")
-    if (!is.integer(maxgap))
-        maxgap <- as.integer(maxgap)
 
-    ## Check and normalize 'minoverlap'.
-    if (!isSingleNumber(minoverlap))
-        stop("'minoverlap' must be a single integer")
-    if (!is.integer(minoverlap))
-        minoverlap <- as.integer(minoverlap)
-
-    if (maxgap != 0L && minoverlap != 1L)
-        stop("either 'maxgap' or 'minoverlap' can be specified but not both")
-    if (maxgap < 0L)
-        stop("'maxgap' cannot be negative")
-    if (minoverlap < 0L)
-        stop("'minoverlap' cannot be negative")
-    minoverlap - maxgap
-}
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### findOverlaps_NCList()
+###
 
 ### NOT exported.
-findOverlaps_NCList <- function(query, subject,
-                           maxgap=0L, minoverlap=1L,
-                           type=c("any", "start", "end", "within", "equal"),
-                           select=c("all", "first", "last", "arbitrary"))
+findOverlaps_NCList <- function(query, subject, min.score=1L,
+                                type=c("any", "start", "end",
+                                       "within", "extend", "equal"),
+                                select=c("all", "first", "last", "arbitrary"))
 {
     if (!(is(query, "NCList") || is(subject, "NCList")))
         stop("'query' or 'subject' must be an NCList object")
-    min_score <- .min_overlap_score(maxgap, minoverlap)
+    if (!isSingleNumber(min.score))
+        stop("'min.score' must be a single integer")
+    if (!is.integer(min.score))
+        min.score <- as.integer(min.score)
     type <- match.arg(type)
     select <- match.arg(select)
 
     if (is(subject, "NCList")) {
         if (!is(query, "Ranges"))
             stop("'query' must be a Ranges object")
-        hits <- .Call("NCList_find_overlaps",
-                      start(query), end(query),
-                      subject@nclist,
-                      start(subject@ranges), end(subject@ranges),
-                      min_score, type, select,
-                      PACKAGE="IRanges")
+        ans <- .Call("NCList_find_overlaps",
+                     start(query), end(query),
+                     subject@nclist,
+                     start(subject@ranges), end(subject@ranges),
+                     min.score, type, select,
+                     PACKAGE="IRanges")
     } else {
         if (!is(subject, "Ranges"))
             stop("'subject' must be a Ranges object")
-        if (type != "any")
-            stop("support for 'type' != \"any\" is not ready yet ",
-                 "when 'query' is an NCList object")
-        if (select != "all")
-            stop("support for 'select' != \"all\" is not ready yet ",
-                 "when 'query' is an NCList object")
+        if (type == "within")
+            type <- "extend"
+        else if (type == "extend")
+            type <- "within"
         hits <- .Call("NCList_find_overlaps",
                       start(subject), end(subject),
                       query@nclist,
                       start(query@ranges), end(query@ranges),
-                      min_score, "any", "all",
+                      min.score, type, "all",
                       PACKAGE="IRanges")
-        hits <- S4Vectors:::Hits_revmap(hits)
+        ans <- S4Vectors:::Hits_revmap(hits)
+        if (select != "all") {
+            ans <- as(ans, "CompressedIntegerList")
+            if (select == "first")
+                ans <- phead(ans, 1L)
+            else
+                ans <- ptail(ans, 1L)
+            ans <- as.integer(ans)
+        }
     }
-    hits
+    ans
 }
 
 ### NOT exported.
@@ -141,6 +132,30 @@ NCList_which_to_preprocess <- function(query, subject)
     s_len <- length(subject)
     preprocess_q <- q_len == 0L || q_len * (log10(q_len))^2 <= s_len
     ifelse(preprocess_q, "query", "subject")
+}
+
+### NOT exported.
+min_overlap_score <- function(maxgap=0L, minoverlap=1L)
+{
+    ## Check and normalize 'maxgap'.
+    if (!isSingleNumber(maxgap))
+        stop("'maxgap' must be a single integer")
+    if (!is.integer(maxgap))
+        maxgap <- as.integer(maxgap)
+
+    ## Check and normalize 'minoverlap'.
+    if (!isSingleNumber(minoverlap))
+        stop("'minoverlap' must be a single integer")
+    if (!is.integer(minoverlap))
+        minoverlap <- as.integer(minoverlap)
+
+    if (maxgap != 0L && minoverlap != 1L)
+        stop("either 'maxgap' or 'minoverlap' can be specified but not both")
+    if (maxgap < 0L)
+        stop("'maxgap' cannot be negative")
+    if (minoverlap < 0L)
+        stop("'minoverlap' cannot be negative")
+    minoverlap - maxgap
 }
 
 

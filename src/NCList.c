@@ -371,12 +371,13 @@ SEXP NCList_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
  * NCList_find_overlaps()
  */
 
-/* The 5 supported types of overlap. */
+/* The 6 supported types of overlap. */
 #define TYPE_ANY		1
 #define TYPE_START		2
 #define TYPE_END		3
 #define TYPE_WITHIN		4
-#define TYPE_EQUAL		5
+#define TYPE_EXTEND		5
+#define TYPE_EQUAL		6
 
 /* The 4 supported select modes. */
 #define SELECT_ALL		1
@@ -414,10 +415,12 @@ static int get_overlap_type(SEXP type)
 		return TYPE_END;
 	if (strcmp(type0, "within") == 0)
 		return TYPE_WITHIN;
+	if (strcmp(type0, "extend") == 0)
+		return TYPE_EXTEND;
 	if (strcmp(type0, "equal") == 0)
 		return TYPE_EQUAL;
 	error("'type' must be \"any\", \"start\", \"end\", "
-	      "\"within\", or \"equal\"");
+	      "\"within\", \"extend\", or \"equal\"");
 	return 0;
 }
 
@@ -549,6 +552,10 @@ static void get_query_overlaps(const int *nclist, Backpack *backpack)
 		    case TYPE_WITHIN:
 			type_is_ok = backpack->q_start >= s_start &&
 				     backpack->q_end <= s_end;
+			break;
+		    case TYPE_EXTEND:
+			type_is_ok = backpack->q_start <= s_start &&
+				     backpack->q_end >= s_end;
 			break;
 		    case TYPE_EQUAL:
 			type_is_ok = backpack->q_start == s_start &&
