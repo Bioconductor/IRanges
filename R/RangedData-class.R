@@ -287,9 +287,16 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL, universe = NULL)
   }
   universe(ranges) <- universe
 
-  if (hasDots) 
-    values <- DataFrame(...) ## at least one column specified
-  else
+  if (hasDots) {
+    args <- lapply(list(...), function(arg) {
+      if (is(arg, "SplitDataFrameList")) {
+        unlist(arg, use.names=FALSE)
+      } else {
+        arg
+      }
+    })
+    values <- DataFrame(args)
+  } else
     values <- new2("DataFrame", nrows = N, check=FALSE)
   if (N != nrow(values)) {
     if (nrow(values) > N)

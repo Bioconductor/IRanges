@@ -1011,6 +1011,29 @@ setMethod("ranges", "CompressedRleList",
     }
 )
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Factor methods
+###
+
+setMethod("levels", "FactorList", function(x) {
+  CharacterList(lapply(x, levels))
+})
+
+setMethod("levels", "CompressedFactorList", function(x) {
+  setNames(rep(CharacterList(levels(x@unlistData)), length(x)), names(x))
+})
+
+setMethod("unlist", "SimpleFactorList",
+          function(x, recursive = TRUE, use.names = TRUE) {
+            levs <- levels(x)
+            if (length(x) > 1L &&
+                !all(vapply(levs[-1L], identical, logical(1L), levs[[1L]]))) {
+              stop("inconsistent level sets")
+            }
+            structure(callNextMethod(),
+                      levels=as.character(levs[[1L]]),
+                      class="factor")
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.

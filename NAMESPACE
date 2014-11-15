@@ -36,6 +36,7 @@ exportClasses(
     CharacterList, CompressedCharacterList, SimpleCharacterList,
     RawList, CompressedRawList, SimpleRawList,
     RleList, CompressedRleList, SimpleRleList,
+    FactorList, CompressedFactorList, SimpleFactorList,
     RangesList, SimpleRangesList,
     IRangesList, CompressedIRangesList, SimpleIRangesList,
     NormalIRangesList, CompressedNormalIRangesList, SimpleNormalIRangesList,
@@ -236,7 +237,7 @@ export(
     ##read.chain,
     newViews, successiveViews,
     LogicalList, IntegerList, NumericList, ComplexList,
-    CharacterList, RawList, RleList,
+    CharacterList, RawList, RleList, FactorList, 
     DataFrameList, SplitDataFrameList
 )
 
