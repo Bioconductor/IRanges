@@ -1,12 +1,22 @@
 ###
 
-.compareHits <- function(target, current) identical(t(target), t(current))
-
 findOverlaps_NCList <- IRanges:::findOverlaps_NCList
+
+.compareHits <- function(target, current) identical(t(target), t(current))
 
 .overlap_score <- function(query, subject)
 {
     pmin(end(query), end(subject)) - pmax(start(query), start(subject)) + 1L
+}
+
+.get_query_overlaps <- function(query, subject, min_score, type_codes)
+{
+    is_hit <- .overlap_score(query, subject) >= min_score
+    if (!is.null(type_codes)) {
+        codes <- rangeComparisonCodeToLetter(compare(query, subject))
+        is_hit <- is_hit & codes %in% type_codes
+    }
+    which(is_hit)
 }
 
 .findOverlaps_naive <- function(query, subject,
@@ -18,20 +28,15 @@ findOverlaps_NCList <- IRanges:::findOverlaps_NCList
     type <- match.arg(type)
     select <- match.arg(select)
     type_codes <- switch(type,
+        "any"    = NULL,
         "start"  = c("f", "g", "h"),
         "end"    = c("d", "g", "j"),
         "within" = c("f", "g", "i", "j"),
         "equal"  = "g"
     )
     hits_per_query <- lapply(seq_along(query),
-        function(i) {
-            query_i <- query[i]
-            score_is_ok <- .overlap_score(query_i, subject) >= min_score
-            if (type == "any")
-                return(which(score_is_ok))
-            codes <- rangeComparisonCodeToLetter(compare(query_i, subject))
-            which(score_is_ok & codes %in% type_codes)
-        })
+        function(i) .get_query_overlaps(query[i], subject,
+                                        min_score, type_codes))
     if (select == "all") {
         q_hits <- rep.int(seq_along(query), elementLengths(hits_per_query))
         s_hits <- unlist(hits_per_query, use.names=FALSE)
