@@ -63,7 +63,11 @@ test_Ranges_nearest <- function()
   query <- IRanges(c(1, 3, 9), c(2, 7, 10))
   subject <- IRanges(c(3, 5, 12), c(3, 6, 12))
 
-  checkIdentical(nearest(query, subject), c(1L, 1L, 3L))
+  ## 2 possible results
+  current <- nearest(query, subject)
+  target1 <- c(1L, 1L, 3L)
+  target2 <- c(1L, 2L, 3L)
+  checkTrue(identical(target1, current) || identical(target2, current))
   checkIdentical(nearest(query), c(2L, 1L, 2L))
   checkIdentical(nearest(query, subject[c(2,3,1)]), c(3L, 3L, 2L))
 
