@@ -224,6 +224,7 @@ static void build_preNCList(preNCList *top_pnclist,
 	return;
 }
 
+/* --- .Call ENTRY POINT --- */
 SEXP preNCList_build(SEXP pnclist, SEXP x_start, SEXP x_end)
 {
 	preNCList *top_pnclist;

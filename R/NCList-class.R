@@ -1,7 +1,9 @@
 ### =========================================================================
-### NCList objects
+### NCList and NCLists objects
 ### -------------------------------------------------------------------------
-###
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### An S4 implementation of Nested Containment List (NCList).
 ###
 
@@ -13,23 +15,32 @@ setClass("NCList",
     )
 )
 
-setMethod("length", "NCList", function(x) length(x@ranges))
+setMethod("ranges", "NCList", function(x, ...) x@ranges)
+setMethod("length", "NCList", function(x) length(ranges(x)))
+setMethod("names", "NCList", function(x) names(ranges(x)))
+setMethod("start", "NCList", function(x, ...) start(ranges(x)))
+setMethod("end", "NCList", function(x, ...) end(ranges(x)))
+setMethod("width", "NCList", function(x) width(ranges(x)))
 
-setMethod("start", "NCList", function(x, ...) start(x@ranges))
-setMethod("end", "NCList", function(x, ...) end(x@ranges))
-setMethod("width", "NCList", function(x) width(x@ranges))
-setMethod("names", "NCList", function(x) names(x@ranges))
+setAs("NCList", "IRanges", function(from) ranges(x))
 
 ### Returns an external pointer to the pre-NCList.
-.preNCList <- function(x)
+.preNCList <- function(x_start, x_end)
 {
     ans <- .Call("preNCList_new", PACKAGE="IRanges")
     reg.finalizer(ans,
         function(e) .Call("preNCList_free", e, PACKAGE="IRanges")
     )
-    .Call("preNCList_build", ans, start(x), end(x), PACKAGE="IRanges")
+    .Call("preNCList_build", ans, x_start, x_end, PACKAGE="IRanges")
 }
 
+.nclist <- function(x_start, x_end)
+{
+    pnclist <- .preNCList(x_start, x_end)
+    .Call("new_NCList_from_preNCList", pnclist, PACKAGE="IRanges")
+}
+
+### NCList constructor.
 ### Usage:
 ###   x <- IRanges(c(11, 10, 13, 10, 14,  8, 10, 11),
 ###                c(15, 12, 18, 13, 14, 12, 15, 15))
@@ -40,11 +51,11 @@ NCList <- function(x)
         stop("'x' must be a Ranges object")
     if (!is(x, "IRanges"))
         x <- as(x, "IRanges")
-    pnclist <- .preNCList(x)
-    ans_nclist <- .Call("new_NCList_from_preNCList", pnclist,
-                                                     PACKAGE="IRanges")
+    ans_nclist <- .nclist(start(x), end(x))
     new2("NCList", nclist=ans_nclist, ranges=x, check=FALSE)
 }
+
+setAs("Ranges", "NCList", function(from) NCList(from))
 
 ### NOT exported.
 print_NCList <- function(x)
@@ -55,6 +66,62 @@ print_NCList <- function(x)
                           PACKAGE="IRanges")
     invisible(NULL)
 }
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Representation of a list of NCList objects
+###
+
+setClass("NCLists",
+    contains="RangesList",
+    representation(
+        nclists="list",
+        rglist="CompressedIRangesList"
+    ),
+    prototype(
+        elementType="NCList"
+    )
+)
+
+setMethod("parallelSlotNames", "NCLists",
+    function(x) c("nclists", "rglist", callNextMethod())
+)
+
+### TODO: Move rglist() generic from GenomicRanges to IRanges
+#setMethod("rglist", "NCLists", function(x, ...) x@ranges)
+setMethod("ranges", "NCLists", function(x, ...) x@rglist)
+setMethod("length", "NCLists", function(x) length(ranges(x)))
+setMethod("names", "NCLists", function(x) names(ranges(x)))
+setMethod("start", "NCLists", function(x, ...) start(ranges(x)))
+setMethod("end", "NCLists", function(x, ...) end(ranges(x)))
+setMethod("width", "NCLists", function(x) width(ranges(x)))
+
+setMethod("elementLengths", "NCLists", function(x) elementLengths(ranges(x)))
+setMethod("getListElement", "NCLists",
+    function (x, i, exact=TRUE)
+    {
+        i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
+                                             error.if.nomatch=TRUE)
+        new2("NCList", nclist=x@nclists[[i]], ranges=x@rglist[[i]],
+                       check=FALSE)
+    }
+)
+
+setAs("NCLists", "CompressedIRangesList", function(from) ranges(x))
+setAs("NCLists", "IRangesList", function(from) ranges(x))
+
+### NCLists constructor.
+NCLists <- function(x)
+{
+    if (!is(x, "RangesList"))
+        stop("'x' must be a RangesList object")
+    if (!is(x, "CompressedIRangesList"))
+        x <- as(x, "CompressedIRangesList")
+    ans_nclists <- mapply(.nclist, start(x), end(x))
+    new2("NCLists", nclists=ans_nclists, rglist=x, check=FALSE)
+}
+
+setAs("RangesList", "NCLists", function(from) NCLists(from))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -158,6 +225,37 @@ min_overlap_score <- function(maxgap=0L, minoverlap=1L)
     minoverlap - maxgap
 }
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### findOverlaps_NCLists()
+###
+
+### NOT exported.
+findOverlaps_NCLists <- function(query, subject, min.score=1L,
+                                 type=c("any", "start", "end",
+                                        "within", "extend", "equal"),
+                                 select=c("all", "first", "last", "arbitrary"))
+{
+    if (!(is(query, "RangesList") && is(subject, "RangesList")))
+        stop("'query' and 'subject' must be RangesList objects")
+    if (!(is(query, "NCLists") || is(subject, "NCLists")))
+        stop("'query' or 'subject' must be an NCLists object")
+    if (length(query) != length(subject))
+        stop("'query' and 'subject' must have the same length")
+    if (!isSingleNumber(min.score))
+        stop("'min.score' must be a single integer")
+    if (!is.integer(min.score))
+        min.score <- as.integer(min.score)
+    type <- match.arg(type)
+    select <- match.arg(select)
+
+    more_args <- list(min.score=min.score, type=type, select=select)
+    ans <- mapply(findOverlaps_NCList, query, subject, MoreArgs=more_args)
+    ans
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if (FALSE) {  #     <<<--- begin testing findOverlaps_NCList() --->>>
 
