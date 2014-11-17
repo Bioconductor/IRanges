@@ -22,7 +22,7 @@ setMethod("start", "NCList", function(x, ...) start(ranges(x)))
 setMethod("end", "NCList", function(x, ...) end(ranges(x)))
 setMethod("width", "NCList", function(x) width(ranges(x)))
 
-setAs("NCList", "IRanges", function(from) ranges(x))
+setAs("NCList", "IRanges", function(from) ranges(from))
 
 ### Returns an external pointer to the pre-NCList.
 .preNCList <- function(x_start, x_end)
@@ -107,8 +107,8 @@ setMethod("getListElement", "NCLists",
     }
 )
 
-setAs("NCLists", "CompressedIRangesList", function(from) ranges(x))
-setAs("NCLists", "IRangesList", function(from) ranges(x))
+setAs("NCLists", "CompressedIRangesList", function(from) ranges(from))
+setAs("NCLists", "IRangesList", function(from) ranges(from))
 
 ### NCLists constructor.
 NCLists <- function(x)
