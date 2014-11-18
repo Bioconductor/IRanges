@@ -174,11 +174,13 @@ setMethods("findOverlaps", list(c("NCList", "Ranges"), c("Ranges", "NCList")),
              select=c("all", "first", "last", "arbitrary"),
              algorithm=c("intervaltree", "nclist"))
     {
+        min.score <- min_overlap_score(maxgap, minoverlap)
+        type <- match.arg(type)
+        select <- match.arg(select)
         algorithm <- match.arg(algorithm)
         if (algorithm != "intervaltree")
             warning("'algorithm' is ignored when 'query' or 'subject' ",
                     "is an NCList object")
-        min.score <- min_overlap_score(maxgap, minoverlap)
         findOverlaps_NCList(query, subject, min.score=min.score,
                             type=type, select=select)
     }
