@@ -291,8 +291,8 @@ setMethod("findOverlaps", c("RangesList", "IntervalForest"),
             select <- match.arg(select)
             algorithm <- match.arg(algorithm)
             if (algorithm != "intervaltree")
-              stop("'algorithm' must be \"intervaltree\" when 'subject' ",
-                   "is an IntervalForest object")
+              warning("'algorithm' is ignored when 'subject' ",
+                      "is an IntervalForest object")
 
             origSelect <- select
             if (type != "any" || minoverlap > 1L)
