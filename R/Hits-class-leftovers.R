@@ -67,3 +67,23 @@ setMethod("show", "Hits", function(object) {
   cat(paste(tail(df_show, -1), "\n"))
 })
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### selectHits()
+###
+
+selectHits <- function(x, select=c("all", "first", "last", "arbitrary"))
+{
+    if (!is(x, "Hits"))
+        stop("'x' must be a Hits object")
+    select <- match.arg(select)
+    if (select == "all")
+        return(x)
+    ans <- .from_Hits_to_CompressedIntegerList(x)
+    if (select == "first")
+        ans <- phead(ans, 1L)
+    else
+        ans <- ptail(ans, 1L)
+    as.integer(ans)
+}
+

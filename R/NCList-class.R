@@ -232,15 +232,8 @@ findOverlaps_NCList <- function(query, subject, min.score=1L,
                       start(query@ranges), end(query@ranges),
                       min.score, type, "all", circle.length,
                       PACKAGE="IRanges")
-        ans <- S4Vectors:::Hits_revmap(hits)
-        if (select != "all") {
-            ans <- as(ans, "CompressedIntegerList")
-            if (select == "first")
-                ans <- phead(ans, 1L)
-            else
-                ans <- ptail(ans, 1L)
-            ans <- as.integer(ans)
-        }
+        hits <- S4Vectors:::Hits_revmap(hits)
+        ans <- selectHits(hits, select=select)
     }
     ans
 }
