@@ -231,6 +231,9 @@ min_overlap_score <- function(maxgap=0L, minoverlap=1L)
 ###
 
 ### NOT exported.
+### Return a list of Hits if 'select' is "all". Otherwise return a list of
+### integer vectors. The returned list is parallel to 'query', and, if 'select'
+### is not "all", also has the same shape as 'query'.
 findOverlaps_NCLists <- function(query, subject, min.score=1L,
                                  type=c("any", "start", "end",
                                         "within", "extend", "equal"),
@@ -240,8 +243,6 @@ findOverlaps_NCLists <- function(query, subject, min.score=1L,
         stop("'query' and 'subject' must be RangesList objects")
     if (!(is(query, "NCLists") || is(subject, "NCLists")))
         stop("'query' or 'subject' must be an NCLists object")
-    if (length(query) != length(subject))
-        stop("'query' and 'subject' must have the same length")
     if (!isSingleNumber(min.score))
         stop("'min.score' must be a single integer")
     if (!is.integer(min.score))
@@ -249,9 +250,18 @@ findOverlaps_NCLists <- function(query, subject, min.score=1L,
     type <- match.arg(type)
     select <- match.arg(select)
 
-    more_args <- list(min.score=min.score, type=type, select=select)
-    ans <- mapply(findOverlaps_NCList, query, subject, MoreArgs=more_args)
-    ans
+    subject_len <- length(subject)
+    subject0 <- IRanges()
+    if (is(subject, "NCLists"))
+        subject0 <- NCList(subject0)
+    lapply(seq_along(query),
+           function(i) {
+               query_i <- query[[i]]
+               subject_i <- if (i <= subject_len) subject[[i]] else subject0
+               findOverlaps_NCList(query_i, subject_i,
+                                   min.score=min.score,
+                                   type=type, select=select)
+           })
 }
 
 
