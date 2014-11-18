@@ -383,6 +383,7 @@ SEXP NCList_find_overlaps(
 	SEXP s_end,
 	SEXP min_score,
 	SEXP type,
-	SEXP select
+	SEXP select,
+	SEXP circle_length
 );
 

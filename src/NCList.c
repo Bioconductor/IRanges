@@ -448,6 +448,19 @@ static int get_select_mode(SEXP select)
 	return 0;
 }
 
+static int get_circle_length(SEXP circle_length)
+{
+	int circle_len;
+
+	if (!IS_INTEGER(circle_length) || LENGTH(circle_length) != 1)
+		error("'circle_length' must be a single integer");
+	circle_len = INTEGER(circle_length)[0];
+	if (circle_len != NA_INTEGER && circle_len <= 0)
+		error("'circle_length' must be a single "
+                      "positive integer or NA");
+	return circle_len;
+}
+
 typedef struct backpack {
 	int q_start;
 	int q_end;
@@ -620,10 +633,11 @@ static SEXP new_Hits_from_IntPairAE(const IntPairAE *x, int q_len, int s_len)
 /* --- .Call ENTRY POINT --- */
 SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 			  SEXP s_nclist, SEXP s_start, SEXP s_end,
-			  SEXP min_score, SEXP type, SEXP select)
+			  SEXP min_score, SEXP type, SEXP select,
+			  SEXP circle_length)
 {
 	const int *top_nclist;
-	int q_len, s_len, i, old_nhit, new_nhit, k;
+	int q_len, s_len, circle_len, i, old_nhit, new_nhit, k;
 	const int *q_start_p, *q_end_p, *s_start_p, *s_end_p;
 	IntPairAE hits_buf;
 	IntAE *qh_buf, *sh_buf;
@@ -638,6 +652,9 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 	s_len = check_integer_pairs(s_start, s_end,
 				    &s_start_p, &s_end_p,
 				    "start(subject)", "end(subject)");
+	circle_len = get_circle_length(circle_length);
+	if (circle_len != NA_INTEGER)
+		error("non-NA 'circle_length' not ready yet");
 	hits_buf = new_IntPairAE(0, 0);
 	qh_buf = &(hits_buf.a);
 	sh_buf = &(hits_buf.b);

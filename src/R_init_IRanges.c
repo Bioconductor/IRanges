@@ -70,7 +70,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(preNCList_build, 3),
 	CALLMETHOD_DEF(new_NCList_from_preNCList, 1),
 	CALLMETHOD_DEF(NCList_print, 3),
-	CALLMETHOD_DEF(NCList_find_overlaps, 8),
+	CALLMETHOD_DEF(NCList_find_overlaps, 9),
 
 	{NULL, NULL, 0}
 };

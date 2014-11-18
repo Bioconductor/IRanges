@@ -24,6 +24,70 @@ setMethod("width", "NCList", function(x) width(ranges(x)))
 
 setAs("NCList", "IRanges", function(from) ranges(from))
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### .shift_ranges_to_first_circle()
+###
+### TODO: Move to intra-range-methods.R, rename (e.g. shiftToFirstCircle()),
+### make it a generic with methods for IRanges and IRangesList, export, and
+### document.
+###
+
+.normarg_circle.length1 <- function(circle.length)
+{
+    msg <- "'circle.length' must be a single positive integer or NA"
+    if (!isSingleNumberOrNA(circle.length))
+        stop(msg)
+    if (!is.integer(circle.length))
+        circle.length <- as.integer(circle.length)
+    if (!is.na(circle.length) && circle.length <= 0L)
+        stop(msg)
+    circle.length
+}
+
+.normarg_circle.length2 <- function(circle.length, x_len, what)
+{
+    msg <- c("'circle.length' must be an integer vector ",
+             "with positive or NA values")
+    if (!is.atomic(circle.length))
+        stop(msg)
+    if (!(is.numeric(circle.length) || all(is.na(circle.length))))
+        stop(msg)
+    if (!is.integer(circle.length))
+        circle.length <- as.integer(circle.length)
+    min_circle.length <- suppressWarnings(min(circle.length, na.rm=TRUE))
+    if (is.finite(min_circle.length) && min_circle.length <= 0L)
+        stop(msg)
+    if (length(circle.length) == x_len)
+        return(circle.length)
+    if (length(circle.length) != 1L)
+        stop("'circle.length' must have length 1 or length of ", what)
+    rep.int(circle.length, x_len)
+}
+
+.shift_ranges_to_first_circle <- function(x, circle.length)
+{
+    circle.length <- .normarg_circle.length2(circle.length, length(x), "'x'")
+    x_start0 <- start(x) - 1L  # 0-based start
+    x_shift0 <- x_start0 %% circle.length - x_start0
+    x_shift0[is.na(x_shift0)] <- 0L
+    shift(x, x_shift0)
+}
+
+.shift_rglist_to_first_circle <- function(x, circle.length)
+{
+    circle.length <- .normarg_circle.length2(circle.length, length(x), "'x'")
+    circle.length <- rep.int(circle.length, elementLengths(x))
+    unlisted_x <- unlist(x, use.names=FALSE)
+    unlisted_ans <- .shift_ranges_to_first_circle(unlisted_x, circle.length)
+    relist(unlisted_ans, x)
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### NCList constructor
+###
+
 ### Returns an external pointer to the pre-NCList.
 .preNCList <- function(x_start, x_end)
 {
@@ -40,17 +104,17 @@ setAs("NCList", "IRanges", function(from) ranges(from))
     .Call("new_NCList_from_preNCList", pnclist, PACKAGE="IRanges")
 }
 
-### NCList constructor.
 ### Usage:
 ###   x <- IRanges(c(11, 10, 13, 10, 14,  8, 10, 11),
 ###                c(15, 12, 18, 13, 14, 12, 15, 15))
 ###   subject <- NCList(x)
-NCList <- function(x)
+NCList <- function(x, circle.length=NA_integer_)
 {
     if (!is(x, "Ranges"))
         stop("'x' must be a Ranges object")
     if (!is(x, "IRanges"))
         x <- as(x, "IRanges")
+    x <- .shift_ranges_to_first_circle(x, circle.length)
     ans_nclist <- .nclist(start(x), end(x))
     new2("NCList", nclist=ans_nclist, ranges=x, check=FALSE)
 }
@@ -111,12 +175,13 @@ setAs("NCLists", "CompressedIRangesList", function(from) ranges(from))
 setAs("NCLists", "IRangesList", function(from) ranges(from))
 
 ### NCLists constructor.
-NCLists <- function(x)
+NCLists <- function(x, circle.length=NA_integer_)
 {
     if (!is(x, "RangesList"))
         stop("'x' must be a RangesList object")
     if (!is(x, "CompressedIRangesList"))
         x <- as(x, "CompressedIRangesList")
+    x <- .shift_rglist_to_first_circle(x, circle.length)
     ans_nclists <- mapply(.nclist, start(x), end(x))
     new2("NCLists", nclists=ans_nclists, rglist=x, check=FALSE)
 }
@@ -132,7 +197,8 @@ setAs("RangesList", "NCLists", function(from) NCLists(from))
 findOverlaps_NCList <- function(query, subject, min.score=1L,
                                 type=c("any", "start", "end",
                                        "within", "extend", "equal"),
-                                select=c("all", "first", "last", "arbitrary"))
+                                select=c("all", "first", "last", "arbitrary"),
+                                circle.length=NA_integer_)
 {
     if (!(is(query, "NCList") || is(subject, "NCList")))
         stop("'query' or 'subject' must be an NCList object")
@@ -142,6 +208,7 @@ findOverlaps_NCList <- function(query, subject, min.score=1L,
         min.score <- as.integer(min.score)
     type <- match.arg(type)
     select <- match.arg(select)
+    circle.length <- .normarg_circle.length1(circle.length)
 
     if (is(subject, "NCList")) {
         if (!is(query, "Ranges"))
@@ -150,7 +217,7 @@ findOverlaps_NCList <- function(query, subject, min.score=1L,
                      start(query), end(query),
                      subject@nclist,
                      start(subject@ranges), end(subject@ranges),
-                     min.score, type, select,
+                     min.score, type, select, circle.length,
                      PACKAGE="IRanges")
     } else {
         if (!is(subject, "Ranges"))
@@ -163,7 +230,7 @@ findOverlaps_NCList <- function(query, subject, min.score=1L,
                       start(subject), end(subject),
                       query@nclist,
                       start(query@ranges), end(query@ranges),
-                      min.score, type, "all",
+                      min.score, type, "all", circle.length,
                       PACKAGE="IRanges")
         ans <- S4Vectors:::Hits_revmap(hits)
         if (select != "all") {
@@ -189,11 +256,11 @@ NCList_which_to_preprocess <- function(query, subject)
     ## Preprocessing the query instead of the subject is tempting when
     ## the query is shorter than the subject but then the Hits object
     ## returned by .Call entry point NCList_find_overlaps() needs to be
-    ## reversed with S4Vectors:::Hits_revmap(). The cost of this
-    ## operation is in the order of NH * log(NH) where NH is the nb of
-    ## hits. Because this extra cost cannot be known in advance and
-    ## could possibly defeat the purpose of preprocessing the query
-    ## instead of the subject, the empirical criteria for doing so
+    ## reversed with S4Vectors:::Hits_revmap(). This operation requires
+    ## sorting the this so its cost is in the order of NH * log(NH) where
+    ## NH is the nb of hits. Because this extra cost cannot be known in
+    ## advance and could possibly defeat the purpose of preprocessing the
+    ## query instead of the subject, the empirical criteria for doing so
     ## is more conservative than just q_len <= s_len.
     q_len <- length(query)
     s_len <- length(subject)
@@ -237,30 +304,34 @@ min_overlap_score <- function(maxgap=0L, minoverlap=1L)
 findOverlaps_NCLists <- function(query, subject, min.score=1L,
                                  type=c("any", "start", "end",
                                         "within", "extend", "equal"),
-                                 select=c("all", "first", "last", "arbitrary"))
+                                 select=c("all", "first", "last", "arbitrary"),
+                                 circle.length=NA_integer_)
 {
-    if (!(is(query, "RangesList") && is(subject, "RangesList")))
-        stop("'query' and 'subject' must be RangesList objects")
     if (!(is(query, "NCLists") || is(subject, "NCLists")))
         stop("'query' or 'subject' must be an NCLists object")
+    if (!(is(query, "RangesList") && is(subject, "RangesList")))
+        stop("'query' and 'subject' must be RangesList objects")
+    query_len <- length(query)
+    subject_len <- length(subject)
     if (!isSingleNumber(min.score))
         stop("'min.score' must be a single integer")
     if (!is.integer(min.score))
         min.score <- as.integer(min.score)
     type <- match.arg(type)
     select <- match.arg(select)
+    circle.length <- .normarg_circle.length2(circle.length, query_len,
+                                             "'query'")
 
-    subject_len <- length(subject)
     subject0 <- IRanges()
     if (is(subject, "NCLists"))
         subject0 <- NCList(subject0)
-    lapply(seq_along(query),
+    lapply(seq_len(query_len),
            function(i) {
-               query_i <- query[[i]]
                subject_i <- if (i <= subject_len) subject[[i]] else subject0
-               findOverlaps_NCList(query_i, subject_i,
+               findOverlaps_NCList(query[[i]], subject_i,
                                    min.score=min.score,
-                                   type=type, select=select)
+                                   type=type, select=select,
+                                   circle.length[[i]])
            })
 }
 
