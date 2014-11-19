@@ -182,7 +182,7 @@ NCLists <- function(x, circle.length=NA_integer_)
     if (!is(x, "CompressedIRangesList"))
         x <- as(x, "CompressedIRangesList")
     x <- .shift_rglist_to_first_circle(x, circle.length)
-    ans_nclists <- mapply(.nclist, start(x), end(x))
+    ans_nclists <- mapply(.nclist, start(x), end(x), SIMPLIFY=FALSE)
     new2("NCLists", nclists=ans_nclists, rglist=x, check=FALSE)
 }
 
