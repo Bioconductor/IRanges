@@ -1,5 +1,5 @@
 /****************************************************************************
- *                An Nested Containment List implementation                 *
+ *                 A Nested Containment List implementation                 *
  *                                                                          *
  *                           Author: Herve Pages                            *
  ****************************************************************************/
@@ -102,7 +102,7 @@ static void extend_preNCList(preNCList *pnclist)
 	elt_size = sizeof(preNCListElt);
 	if (old_buflength == 0) {
 		new_buflength = 4;
-		new_elts = (preNCListElt *) malloc(new_buflength * elt_size);
+		new_elts = (preNCListElt *) malloc(elt_size * new_buflength);
 	} else {
 		if (old_buflength < 16384)
 			new_buflength = 8 * old_buflength;
@@ -151,7 +151,7 @@ static int qsort_compar(const void *p1, const void *p2)
 
 /*
  * Setting a hard limit on the max depth of NCList objects to prevent C stack
- * overflows when running recursive code like get_query_overlaps(). A better
+ * overflows when running recursive code like get_overlaps(). A better
  * solution would be to not use recursive code at all when traversing an
  * NCList object. Then NCList objects of arbitrary depth could be supported
  * and it wouldn't be necessary to set the limit below.
@@ -167,8 +167,8 @@ static void extend_stack()
 
 	if (stack_length == 0) {
 		new_length = 1000;
-		new_stack = (preNCListElt **) malloc(new_length *
-						     sizeof(preNCListElt *));
+		new_stack = (preNCListElt **) malloc(sizeof(preNCListElt *) *
+						     new_length);
 	} else {
 		if (stack_length == NCLIST_MAX_DEPTH)
 			error("extend_stack: cannot build an NCList object "
@@ -178,8 +178,8 @@ static void extend_stack()
 		else
 			new_length = NCLIST_MAX_DEPTH;
 		new_stack = (preNCListElt **) realloc(stack,
-						      new_length *
-						      sizeof(preNCListElt *));
+						      sizeof(preNCListElt *) *
+						      new_length);
 	}
 	if (new_stack == NULL)
 		error("extend_stack: memory allocation failed");
@@ -398,7 +398,7 @@ static int get_min_overlap_score(SEXP min_score)
 	return min_overlap_score;
 }
 
-static int get_overlap_type(SEXP type)
+static int get_overlap_type(SEXP type, int y_is_q)
 {
 	const char *type0;
 
@@ -415,9 +415,9 @@ static int get_overlap_type(SEXP type)
 	if (strcmp(type0, "end") == 0)
 		return TYPE_END;
 	if (strcmp(type0, "within") == 0)
-		return TYPE_WITHIN;
+		return y_is_q ? TYPE_EXTEND : TYPE_WITHIN;
 	if (strcmp(type0, "extend") == 0)
-		return TYPE_EXTEND;
+		return y_is_q ? TYPE_WITHIN : TYPE_EXTEND;
 	if (strcmp(type0, "equal") == 0)
 		return TYPE_EQUAL;
 	error("'type' must be \"any\", \"start\", \"end\", "
@@ -462,68 +462,72 @@ static int get_circle_length(SEXP circle_length)
 }
 
 typedef struct backpack {
-	int q_start;
-	int q_end;
-	int ext_q_start;
-	int ext_q_end;
-	const int *s_start_p;
-	const int *s_end_p;
+	int x_start;
+	int x_end;
+	int ext_x_start;
+	int ext_x_end;
+	const int *y_start_p;
+	const int *y_end_p;
+	int y_is_q;
 	int min_overlap_score;
-	int query_extension;
+	int x_extension;
 	int overlap_type;
 	int select_mode;
-	IntAE *sh_buf;
+	IntAE *yh_buf;
 } Backpack;
 
-static Backpack prepare_backpack(const int *s_start_p, const int *s_end_p,
-				 SEXP min_score, SEXP type, SEXP select,
-				 IntAE *sh_buf)
+static Backpack prepare_backpack(const int *y_start_p, const int *y_end_p,
+				 SEXP y_is_query,
+				 SEXP min_score, SEXP type, int select_mode,
+				 IntAE *yh_buf)
 {
 	Backpack backpack;
-	int min_overlap_score, query_extension;
+	int y_is_q, min_overlap_score, x_extension;
 
+	y_is_q = LOGICAL(y_is_query)[0];
 	min_overlap_score = get_min_overlap_score(min_score);
 	if (min_overlap_score >= 1) {
-		query_extension = 0;
+		x_extension = 0;
 	} else {
-		query_extension = 1 - min_overlap_score;
+		x_extension = 1 - min_overlap_score;
 		min_overlap_score = 1;
 	}
-	backpack.s_start_p = s_start_p;
-	backpack.s_end_p = s_end_p;
+	backpack.y_start_p = y_start_p;
+	backpack.y_end_p = y_end_p;
+	backpack.y_is_q = y_is_q;
 	backpack.min_overlap_score = min_overlap_score;
-	backpack.query_extension = query_extension;
-	backpack.overlap_type = get_overlap_type(type);
-	backpack.select_mode = get_select_mode(select);
-	backpack.sh_buf = sh_buf;
+	backpack.x_extension = x_extension;
+	backpack.overlap_type = get_overlap_type(type, y_is_q);
+	backpack.select_mode = y_is_q ? SELECT_ALL : select_mode;
+	backpack.yh_buf = yh_buf;
 	return backpack;
 }
 
-static int bsearch_n1(int q_start, const int *nclist, const int *s_end_p)
+static int bsearch_n1(int x_start, const int *nclist, const int *y_end_p)
 {
 	int n1, n2, nelt, n, end;
 
 	/* Check first element. */
 	n1 = 0;
-	end = s_end_p[NCLIST_I(nclist, n1)];
-	if (end >= q_start)
+	end = y_end_p[NCLIST_I(nclist, n1)];
+	if (end >= x_start)
 		return n1;
 
 	/* Check last element. */
 	nelt = NCLIST_NELT(nclist);
 	n2 = nelt - 1;
-	end = s_end_p[NCLIST_I(nclist, n2)];
-	if (end < q_start)
+	end = y_end_p[NCLIST_I(nclist, n2)];
+	if (end < x_start)
 		return nelt;
-	if (end == q_start)
+	if (end == x_start)
 		return n2;
 
 	/* Binary search. */
 	while ((n = (n1 + n2) / 2) != n1) {
-		end = s_end_p[NCLIST_I(nclist, n)];
-		if (end == q_start)
+		end = y_end_p[NCLIST_I(nclist, n)];
+		if (end == x_start)
 			return n;
-		if (end < q_start)
+		if (end < x_start)
 			n1 = n;
 		else
 			n2 = n;
@@ -532,76 +536,82 @@ static int bsearch_n1(int q_start, const int *nclist, const int *s_end_p)
 }
 
 /* Recursive! */
-static void get_query_overlaps(const int *nclist, Backpack *backpack)
+static void get_overlaps(const int *nclist, Backpack *backpack)
 {
-	int nelt, n, i, s_start, s_end,
-	    ov_start, ov_end, score, score_is_ok, type_is_ok, i1, tmp, offset;
+	int nelt, n, i, y_start, y_end,
+	    ov_start, ov_end, score, score_is_ok, type_is_ok,
+	    i1, current_sel, update_sel,
+	    offset;
 
 	nelt = NCLIST_NELT(nclist);
-	n = bsearch_n1(backpack->ext_q_start, nclist, backpack->s_end_p);
+	n = bsearch_n1(backpack->ext_x_start, nclist, backpack->y_end_p);
 	for ( ; n < nelt; n++) {
 		i = NCLIST_I(nclist, n);
-		s_start = backpack->s_start_p[i];
-		if (backpack->ext_q_end < s_start)
+		y_start = backpack->y_start_p[i];
+		if (backpack->ext_x_end < y_start)
 			break;
 		/* Do we have a hit? */
-		s_end = backpack->s_end_p[i];
+		y_end = backpack->y_end_p[i];
 		if (backpack->min_overlap_score == 1) {
 			score_is_ok = 1;
 		} else {
-			ov_start = backpack->q_start > s_start ?
-				   backpack->q_start : s_start;
-			ov_end   = backpack->q_end < s_end ?
-				   backpack->q_end : s_end;
+			ov_start = backpack->x_start > y_start ?
+				   backpack->x_start : y_start;
+			ov_end   = backpack->x_end < y_end ?
+				   backpack->x_end : y_end;
 			score = ov_end - ov_start + 1;
 			score_is_ok = score >= backpack->min_overlap_score;
 		}
 		switch (backpack->overlap_type) {
 		    case TYPE_START:
-			type_is_ok = backpack->q_start == s_start;
+			type_is_ok = backpack->x_start == y_start;
 			break;
 		    case TYPE_END:
-			type_is_ok = backpack->q_end == s_end;
+			type_is_ok = backpack->x_end == y_end;
 			break;
 		    case TYPE_WITHIN:
-			type_is_ok = backpack->q_start >= s_start &&
-				     backpack->q_end <= s_end;
+			type_is_ok = backpack->x_start >= y_start &&
+				     backpack->x_end <= y_end;
 			break;
 		    case TYPE_EXTEND:
-			type_is_ok = backpack->q_start <= s_start &&
-				     backpack->q_end >= s_end;
+			type_is_ok = backpack->x_start <= y_start &&
+				     backpack->x_end >= y_end;
 			break;
 		    case TYPE_EQUAL:
-			type_is_ok = backpack->q_start == s_start &&
-				     backpack->q_end == s_end;
+			type_is_ok = backpack->x_start == y_start &&
+				     backpack->x_end == y_end;
 			break;
 		    default:
 			type_is_ok = 1;
 		}
 		if (score_is_ok && type_is_ok) {
-			/* Report the hit. */
 			i1 = i + 1;
-			if (backpack->select_mode != SELECT_ALL) {
-				tmp = backpack->sh_buf->elts[0];
-				if (tmp == NA_INTEGER
-				 || (backpack->select_mode == SELECT_FIRST)
-				     == (i1 < tmp))
-					backpack->sh_buf->elts[0] = i1;
-				if (backpack->select_mode == SELECT_ARBITRARY)
-					break;
+			if (backpack->select_mode == SELECT_ALL) {
+			    /* Report the hit. */
+			    IntAE_insert_at(backpack->yh_buf,
+					    IntAE_get_nelt(backpack->yh_buf),
+					    i1);
 			} else {
-				IntAE_insert_at(backpack->sh_buf,
-					IntAE_get_nelt(backpack->sh_buf), i1);
+			    /* Update current selection if necessary. */
+			    current_sel = backpack->yh_buf->elts[0];
+			    update_sel = current_sel == NA_INTEGER ||
+				(backpack->select_mode == SELECT_FIRST) ==
+				(i1 < current_sel);
+			    if (update_sel)
+				backpack->yh_buf->elts[0] = i1;
+			    if (backpack->select_mode == SELECT_ARBITRARY)
+				break;
 			}
 		}
 		offset = NCSUBLIST_OFFSET(nclist, n);
 		if (offset != -1)
-			get_query_overlaps(nclist + offset, backpack);
+			get_overlaps(nclist + offset, backpack);
 	}
 	return;
 }
 
-static SEXP new_Hits_from_IntPairAE(const IntPairAE *x, int q_len, int s_len)
+static SEXP new_Hits_from_IntAEs(const IntAE *qh_buf, const IntAE *sh_buf,
+				 int q_len, int s_len)
 {
 	SEXP classdef, ans,
 	     ans_queryHits, ans_subjectHits,
@@ -610,11 +620,11 @@ static SEXP new_Hits_from_IntPairAE(const IntPairAE *x, int q_len, int s_len)
 	PROTECT(classdef = MAKE_CLASS("Hits"));
 	PROTECT(ans = NEW_OBJECT(classdef));
 
-	PROTECT(ans_queryHits = new_INTEGER_from_IntAE(&(x->a)));
+	PROTECT(ans_queryHits = new_INTEGER_from_IntAE(qh_buf));
 	SET_SLOT(ans, install("queryHits"), ans_queryHits);
 	UNPROTECT(1);
 
-	PROTECT(ans_subjectHits = new_INTEGER_from_IntAE(&(x->b)));
+	PROTECT(ans_subjectHits = new_INTEGER_from_IntAE(sh_buf));
 	SET_SLOT(ans, install("subjectHits"), ans_subjectHits);
 	UNPROTECT(1);
 
@@ -630,67 +640,118 @@ static SEXP new_Hits_from_IntPairAE(const IntPairAE *x, int q_len, int s_len)
 	return ans;
 }
 
+static void sort_hits(int *q_hits, int *s_hits, int n)
+{
+	int *out, *tmp, i;
+
+	out = (int *) malloc(sizeof(int) * n * 2);
+	if (out == NULL)
+		error("sort_hits: memory allocation failed");
+	get_order_of_int_array(q_hits, n, 0, out, 0);
+	tmp = out + n;
+	for (i = 0; i < n; i++)
+		tmp[i] = q_hits[out[i]];
+	memcpy(q_hits, tmp, sizeof(int) * n);
+	for (i = 0; i < n; i++)
+		tmp[i] = s_hits[out[i]];
+	memcpy(s_hits, tmp, sizeof(int) * n);
+	free(out);
+	return;
+}
+
+static SEXP select_hits_from_IntAEs(const IntAE *qh_buf, const IntAE *sh_buf,
+				    int q_len, int select_mode)
+{
+	SEXP ans;
+	int i, nelt, i0, i1, current_sel, update_sel;
+
+	PROTECT(ans = NEW_INTEGER(q_len));
+	for (i = 0; i < q_len; i++)
+		INTEGER(ans)[i] = NA_INTEGER;
+	nelt = IntAE_get_nelt(qh_buf);
+	for (i = 0; i < nelt; i++) {
+		i0 = qh_buf->elts[i] - 1L;
+		i1 = sh_buf->elts[i];
+		current_sel = INTEGER(ans)[i0];
+		update_sel = current_sel == NA_INTEGER ||
+			select_mode != SELECT_ARBITRARY &&
+			(select_mode == SELECT_FIRST) == (i1 < current_sel);
+		if (update_sel)
+			INTEGER(ans)[i0] = i1;
+	}
+	UNPROTECT(1);
+	return ans;
+}
+
 /* --- .Call ENTRY POINT --- */
-SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
-			  SEXP s_nclist, SEXP s_start, SEXP s_end,
+SEXP NCList_find_overlaps(SEXP x_start, SEXP x_end,
+			  SEXP y_nclist, SEXP y_start, SEXP y_end,
+			  SEXP y_is_query,
 			  SEXP min_score, SEXP type, SEXP select,
 			  SEXP circle_length)
 {
 	const int *top_nclist;
-	int q_len, s_len, circle_len, i, old_nhit, new_nhit, k;
-	const int *q_start_p, *q_end_p, *s_start_p, *s_end_p;
+	int x_len, y_len, select_mode, circle_len, i, old_nhit, new_nhit, k;
+	const int *x_start_p, *x_end_p, *y_start_p, *y_end_p;
 	IntPairAE hits_buf;
-	IntAE *qh_buf, *sh_buf;
+	IntAE *xh_buf, *yh_buf;
 	Backpack backpack;
 	SEXP ans;
 	int *ans_elt_p;
 
-	top_nclist = INTEGER(s_nclist);
-	q_len = check_integer_pairs(q_start, q_end,
-				    &q_start_p, &q_end_p,
-				    "start(query)", "end(query)");
-	s_len = check_integer_pairs(s_start, s_end,
-				    &s_start_p, &s_end_p,
-				    "start(subject)", "end(subject)");
+	top_nclist = INTEGER(y_nclist);
+	x_len = check_integer_pairs(x_start, x_end,
+				    &x_start_p, &x_end_p,
+				    "start(x)", "end(x)");
+	y_len = check_integer_pairs(y_start, y_end,
+				    &y_start_p, &y_end_p,
+				    "start(y)", "end(y)");
+	select_mode = get_select_mode(select);
 	circle_len = get_circle_length(circle_length);
 	if (circle_len != NA_INTEGER)
 		error("non-NA 'circle_length' not ready yet");
 	hits_buf = new_IntPairAE(0, 0);
-	qh_buf = &(hits_buf.a);
-	sh_buf = &(hits_buf.b);
-	backpack = prepare_backpack(s_start_p, s_end_p,
-				    min_score, type, select,
-				    sh_buf);
+	xh_buf = &(hits_buf.a);
+	yh_buf = &(hits_buf.b);
+	backpack = prepare_backpack(y_start_p, y_end_p, y_is_query,
+				    min_score, type, select_mode,
+				    yh_buf);
 	if (backpack.select_mode != SELECT_ALL) {
-		IntAE_insert_at(sh_buf, 0, NA_INTEGER);
-		PROTECT(ans = NEW_INTEGER(q_len));
+		IntAE_insert_at(yh_buf, 0, NA_INTEGER);
+		PROTECT(ans = NEW_INTEGER(x_len));
 		ans_elt_p = INTEGER(ans);
 	}
-	for (i = 1; i <= q_len; i++, q_start_p++, q_end_p++) {
-		if (s_len != 0) {
+	for (i = 1; i <= x_len; i++, x_start_p++, x_end_p++) {
+		if (y_len != 0) {
 			/* Update backpack. */
-			backpack.q_start = *q_start_p;
-			backpack.q_end = *q_end_p;
-			backpack.ext_q_start = *q_start_p -
-						backpack.query_extension;
-			backpack.ext_q_end = *q_end_p +
-						backpack.query_extension;
-			get_query_overlaps(top_nclist, &backpack);
+			backpack.x_start = *x_start_p;
+			backpack.x_end = *x_end_p;
+			backpack.ext_x_start = *x_start_p -
+						backpack.x_extension;
+			backpack.ext_x_end = *x_end_p +
+						backpack.x_extension;
+			get_overlaps(top_nclist, &backpack);
 		}
 		if (backpack.select_mode != SELECT_ALL) {
-			*(ans_elt_p++) = sh_buf->elts[0];
-			sh_buf->elts[0] = NA_INTEGER;
+			*(ans_elt_p++) = yh_buf->elts[0];
+			yh_buf->elts[0] = NA_INTEGER;
 		} else {
-			old_nhit = IntAE_get_nelt(qh_buf);
-			new_nhit = IntAE_get_nelt(sh_buf);
+			old_nhit = IntAE_get_nelt(xh_buf);
+			new_nhit = IntAE_get_nelt(yh_buf);
 			for (k = old_nhit; k < new_nhit; k++)
-				IntAE_insert_at(qh_buf, k, i);
+				IntAE_insert_at(xh_buf, k, i);
 		}
 	}
 	if (backpack.select_mode != SELECT_ALL) {
 		UNPROTECT(1);
 		return ans;
 	}
-	return new_Hits_from_IntPairAE(&hits_buf, q_len, s_len);
+	if (!backpack.y_is_q)
+		return new_Hits_from_IntAEs(xh_buf, yh_buf, x_len, y_len);
+	if (select_mode != SELECT_ALL)
+		return select_hits_from_IntAEs(yh_buf, xh_buf, y_len,
+					       select_mode);
+	sort_hits(yh_buf->elts, xh_buf->elts, IntAE_get_nelt(yh_buf));
+	return new_Hits_from_IntAEs(yh_buf, xh_buf, y_len, x_len);
 }
 

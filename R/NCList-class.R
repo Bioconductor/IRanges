@@ -224,29 +224,22 @@ findOverlaps_NCList <- function(query, subject, min.score=1L,
     if (is(subject, "NCList")) {
         if (!is(query, "Ranges"))
             stop("'query' must be a Ranges object")
-        ans <- .Call("NCList_find_overlaps",
-                     start(query), end(query),
-                     subject@nclist,
-                     start(subject@ranges), end(subject@ranges),
-                     min.score, type, select, circle.length,
-                     PACKAGE="IRanges")
+        x <- query
+        y <- subject
+        y_is_query <- FALSE
     } else {
         if (!is(subject, "Ranges"))
             stop("'subject' must be a Ranges object")
-        if (type == "within")
-            type <- "extend"
-        else if (type == "extend")
-            type <- "within"
-        hits <- .Call("NCList_find_overlaps",
-                      start(subject), end(subject),
-                      query@nclist,
-                      start(query@ranges), end(query@ranges),
-                      min.score, type, "all", circle.length,
-                      PACKAGE="IRanges")
-        hits <- S4Vectors:::Hits_revmap(hits)
-        ans <- selectHits(hits, select=select)
+        x <- subject
+        y <- query
+        y_is_query <- TRUE
     }
-    ans
+    .Call("NCList_find_overlaps",
+          start(x), end(x),
+          y@nclist, start(y@ranges), end(y@ranges),
+          y_is_query,
+          min.score, type, select, circle.length,
+          PACKAGE="IRanges")
 }
 
 ### NOT exported.

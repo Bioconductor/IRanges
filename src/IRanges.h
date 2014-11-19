@@ -376,11 +376,12 @@ SEXP NCList_print(
 );
 
 SEXP NCList_find_overlaps(
-	SEXP q_start,
-	SEXP q_end,
-	SEXP s_nclist,
-	SEXP s_start,
-	SEXP s_end,
+	SEXP x_start,
+	SEXP x_end,
+	SEXP y_nclist,
+	SEXP y_start,
+	SEXP y_end,
+	SEXP y_is_query,
 	SEXP min_score,
 	SEXP type,
 	SEXP select,
