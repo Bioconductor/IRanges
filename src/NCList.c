@@ -369,7 +369,7 @@ SEXP NCList_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
 
 
 /****************************************************************************
- * NCList_find_overlaps()
+ * find_overlaps()
  */
 
 /* The 6 supported types of overlap. */
@@ -683,36 +683,20 @@ static SEXP select_hits_from_IntAEs(const IntAE *qh_buf, const IntAE *sh_buf,
 	return ans;
 }
 
-/* --- .Call ENTRY POINT --- */
-SEXP NCList_find_overlaps(SEXP x_start, SEXP x_end,
-			  SEXP y_nclist, SEXP y_start, SEXP y_end,
-			  SEXP y_is_query,
-			  SEXP min_score, SEXP type, SEXP select,
-			  SEXP circle_length)
+static SEXP find_overlaps(const int *x_start_p, const int *x_end_p, int x_len,
+			  const int *y_start_p, const int *y_end_p, int y_len,
+			  const int *y_nclist, SEXP y_is_query,
+			  SEXP min_score, SEXP type, int select_mode,
+			  int circle_len,
+			  IntAE *xh_buf, IntAE *yh_buf)
 {
-	const int *top_nclist;
-	int x_len, y_len, select_mode, circle_len, i, old_nhit, new_nhit, k;
-	const int *x_start_p, *x_end_p, *y_start_p, *y_end_p;
-	IntPairAE hits_buf;
-	IntAE *xh_buf, *yh_buf;
+	int i, old_nhit, new_nhit, k;
 	Backpack backpack;
 	SEXP ans;
 	int *ans_elt_p;
 
-	top_nclist = INTEGER(y_nclist);
-	x_len = check_integer_pairs(x_start, x_end,
-				    &x_start_p, &x_end_p,
-				    "start(x)", "end(x)");
-	y_len = check_integer_pairs(y_start, y_end,
-				    &y_start_p, &y_end_p,
-				    "start(y)", "end(y)");
-	select_mode = get_select_mode(select);
-	circle_len = get_circle_length(circle_length);
 	if (circle_len != NA_INTEGER)
 		error("non-NA 'circle_length' not ready yet");
-	hits_buf = new_IntPairAE(0, 0);
-	xh_buf = &(hits_buf.a);
-	yh_buf = &(hits_buf.b);
 	backpack = prepare_backpack(y_start_p, y_end_p, y_is_query,
 				    min_score, type, select_mode,
 				    yh_buf);
@@ -730,7 +714,7 @@ SEXP NCList_find_overlaps(SEXP x_start, SEXP x_end,
 						backpack.x_extension;
 			backpack.ext_x_end = *x_end_p +
 						backpack.x_extension;
-			get_overlaps(top_nclist, &backpack);
+			get_overlaps(y_nclist, &backpack);
 		}
 		if (backpack.select_mode != SELECT_ALL) {
 			*(ans_elt_p++) = yh_buf->elts[0];
@@ -753,5 +737,163 @@ SEXP NCList_find_overlaps(SEXP x_start, SEXP x_end,
 					       select_mode);
 	sort_hits(yh_buf->elts, xh_buf->elts, IntAE_get_nelt(yh_buf));
 	return new_Hits_from_IntAEs(yh_buf, xh_buf, y_len, x_len);
+}
+
+
+/****************************************************************************
+ * NCList_find_overlaps() and NCLists_find_overlaps()
+ */
+
+/* --- .Call ENTRY POINT ---
+ * Args:
+ *   x_start, x_end: Integer vectors of length M.
+ *   y_start, y_end: Integer vectors of length N.
+ *   y_nclist:       An integer vector representing the Nested Containment
+ *                   List for 'y'.
+ *   y_is_query:     TRUE or FALSE.
+ *   min_score:      See get_min_overlap_score() C function.
+ *   type:           See get_overlap_type() C function.
+ *   select:         See get_select_mode() C function.
+ *   circle_length:  A single positive integer or NA_INTEGER.
+ */
+SEXP NCList_find_overlaps(SEXP x_start, SEXP x_end,
+			  SEXP y_start, SEXP y_end,
+			  SEXP y_nclist, SEXP y_is_query,
+			  SEXP min_score, SEXP type, SEXP select,
+			  SEXP circle_length)
+{
+	int x_len, y_len, select_mode, circle_len;
+	const int *x_start_p, *x_end_p, *y_start_p, *y_end_p;
+	IntAE xh_buf, yh_buf;
+
+	x_len = check_integer_pairs(x_start, x_end,
+				    &x_start_p, &x_end_p,
+				    "start(x)", "end(x)");
+	y_len = check_integer_pairs(y_start, y_end,
+				    &y_start_p, &y_end_p,
+				    "start(y)", "end(y)");
+	select_mode = get_select_mode(select);
+	circle_len = get_circle_length(circle_length);
+	xh_buf = new_IntAE(0, 0, 0);
+	yh_buf = new_IntAE(0, 0, 0);
+	return find_overlaps(x_start_p, x_end_p, x_len,
+			     y_start_p, y_end_p, y_len,
+			     INTEGER(y_nclist), y_is_query,
+			     min_score, type, select_mode, circle_len,
+			     &xh_buf, &yh_buf);
+}
+
+static void fill_with_val(SEXP x, int val)
+{
+	int x_len, i;
+
+	x_len = LENGTH(x);
+	for (i = 0; i < x_len; i++)
+		INTEGER(x)[i] = val;
+	return;
+}
+
+static void set_end_buf(IntAE *end_buf,
+		const int *start_p, const int *width_p, int len)
+{
+	int i;
+
+	IntAE_set_nelt(end_buf, 0);
+	for (i = 0; i < len; i++, start_p++, width_p++)
+		IntAE_insert_at(end_buf, i, *start_p + *width_p - 1);
+	return;
+}
+
+/* --- .Call ENTRY POINT ---
+ * Args:
+ *   x, y:          CompressedIRangesList objects.
+ *   y_nclists:     A list of integer vectors. Each integer vector represents
+ *                  a Nested Containment List, one per list element in 'y'.
+ *   y_is_query:    TRUE or FALSE.
+ *   min_score:     See get_min_overlap_score() C function.
+ *   type:          See get_overlap_type() C function.
+ *   select:        See get_select_mode() C function.
+ *   circle_length: An integer vector with positive or NA values.
+ */
+SEXP NCLists_find_overlaps(SEXP x, SEXP y,
+			   SEXP y_nclists, SEXP y_is_query,
+			   SEXP min_score, SEXP type, SEXP select,
+			   SEXP circle_length)
+{
+	CompressedIRangesList_holder x_holder, y_holder;
+	int x_len, y_len, select_mode, ans_len,
+	    i, xi_len, yi_len, ans_elt_len, circle_len;
+	SEXP ans, ans_elt, yi_nclist;
+	IRanges_holder xi_holder, yi_holder;
+	const int *xi_start_p, *xi_width_p, *yi_start_p, *yi_width_p;
+	IntAE xh_buf, yh_buf, xi_end_buf, yi_end_buf;
+
+	x_holder = _hold_CompressedIRangesList(x);
+	y_holder = _hold_CompressedIRangesList(y);
+	x_len = _get_length_from_CompressedIRangesList_holder(&x_holder);
+	y_len = _get_length_from_CompressedIRangesList_holder(&y_holder);
+	select_mode = get_select_mode(select);
+	ans_len = select_mode == SELECT_ALL && x_len <= y_len ||
+		  select_mode != SELECT_ALL && !y_is_query ?
+		  x_len : y_len;
+	xh_buf = new_IntAE(0, 0, 0);
+	yh_buf = new_IntAE(0, 0, 0);
+	xi_end_buf = new_IntAE(0, 0, 0);
+	yi_end_buf = new_IntAE(0, 0, 0);
+	PROTECT(ans = NEW_LIST(x_len));
+	for (i = 0; i < ans_len; i++) {
+		if (i < x_len) {
+			xi_holder = _get_elt_from_CompressedIRangesList_holder(
+						&x_holder, i);
+			xi_len = _get_length_from_IRanges_holder(&xi_holder);
+		} else {
+			xi_len = 0;
+		}
+		if (i < y_len) {
+			yi_holder = _get_elt_from_CompressedIRangesList_holder(
+						&y_holder, i);
+			yi_len = _get_length_from_IRanges_holder(&yi_holder);
+		} else {
+			yi_len = 0;
+		}
+		if (i >= x_len || i >= y_len) {
+			ans_elt_len = y_is_query ? yi_len : xi_len;
+			PROTECT(ans_elt = NEW_INTEGER(ans_elt_len));
+			fill_with_val(ans_elt, NA_INTEGER);
+			SET_VECTOR_ELT(ans, i, ans_elt);
+			UNPROTECT(1);
+			continue;
+		}
+		yi_nclist = VECTOR_ELT(y_nclists, i);
+
+		/* UGLY HACK! IRanges_holder should always be handled as an
+		   opaque struct so we should not access its members. We do it
+		   here because we know it's safe. However, future changes to
+		   the IRanges_holder struct and/or to the behavior of
+		   _get_elt_from_CompressedIRangesList_holder() could break
+		   our ugly hack. */
+		xi_start_p = xi_holder.start;
+		xi_width_p = xi_holder.width;
+		yi_start_p = yi_holder.start;
+		yi_width_p = yi_holder.width;
+		set_end_buf(&xi_end_buf, xi_start_p, xi_width_p, xi_len);
+		set_end_buf(&yi_end_buf, yi_start_p, yi_width_p, yi_len);
+
+		circle_len = NA_INTEGER;
+
+		IntAE_set_nelt(&xh_buf, 0);
+		IntAE_set_nelt(&yh_buf, 0);
+		PROTECT(ans_elt = find_overlaps(
+					xi_start_p, xi_end_buf.elts, xi_len,
+					yi_start_p, yi_end_buf.elts, yi_len,
+					INTEGER(yi_nclist), y_is_query,
+					min_score, type, select_mode,
+					circle_len,
+					&xh_buf, &yh_buf));
+		SET_VECTOR_ELT(ans, i, ans_elt);
+		UNPROTECT(1);
+	}
+	UNPROTECT(1);
+	return ans;
 }
 

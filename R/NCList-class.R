@@ -102,17 +102,17 @@ setAs("NCList", "IRanges", function(from) ranges(from))
 ### Returns an external pointer to the pre-NCList.
 .preNCList <- function(x_start, x_end)
 {
-    ans <- .Call("preNCList_new", PACKAGE="IRanges")
+    ans <- .Call2("preNCList_new", PACKAGE="IRanges")
     reg.finalizer(ans,
         function(e) .Call("preNCList_free", e, PACKAGE="IRanges")
     )
-    .Call("preNCList_build", ans, x_start, x_end, PACKAGE="IRanges")
+    .Call2("preNCList_build", ans, x_start, x_end, PACKAGE="IRanges")
 }
 
 .nclist <- function(x_start, x_end)
 {
     pnclist <- .preNCList(x_start, x_end)
-    .Call("new_NCList_from_preNCList", pnclist, PACKAGE="IRanges")
+    .Call2("new_NCList_from_preNCList", pnclist, PACKAGE="IRanges")
 }
 
 ### Usage:
@@ -137,8 +137,8 @@ print_NCList <- function(x)
 {
     if (!is(x, "NCList"))
         stop("'x' must be an NCList object")
-    .Call("NCList_print", x@nclist, start(x@ranges), end(x@ranges),
-                          PACKAGE="IRanges")
+    .Call2("NCList_print", x@nclist, start(x@ranges), end(x@ranges),
+                           PACKAGE="IRanges")
     invisible(NULL)
 }
 
@@ -234,12 +234,12 @@ findOverlaps_NCList <- function(query, subject, min.score=1L,
         y <- query
         y_is_query <- TRUE
     }
-    .Call("NCList_find_overlaps",
-          start(x), end(x),
-          y@nclist, start(y@ranges), end(y@ranges),
-          y_is_query,
-          min.score, type, select, circle.length,
-          PACKAGE="IRanges")
+    .Call2("NCList_find_overlaps",
+           start(x), end(x),
+           start(y@ranges), end(y@ranges),
+           y@nclist, y_is_query,
+           min.score, type, select, circle.length,
+           PACKAGE="IRanges")
 }
 
 ### NOT exported.
@@ -295,9 +295,11 @@ min_overlap_score <- function(maxgap=0L, minoverlap=1L)
 ###
 
 ### NOT exported.
-### Return a list of Hits if 'select' is "all". Otherwise return a list of
-### integer vectors. The returned list is parallel to 'query', and, if 'select'
-### is not "all", also has the same shape as 'query'.
+### Return an ordinary list of:
+###   (a) Hits objects if 'select' is "all". In that case the list has the
+###       length of the shortest of 'query' and 'subject'.
+###   (b) integer vectors if 'select' is not "all". In that case the list is
+###       parallel to and has the same shape as 'query'.
 findOverlaps_NCLists <- function(query, subject, min.score=1L,
                                  type=c("any", "start", "end",
                                         "within", "extend", "equal"),
@@ -306,10 +308,6 @@ findOverlaps_NCLists <- function(query, subject, min.score=1L,
 {
     if (!(is(query, "NCLists") || is(subject, "NCLists")))
         stop("'query' or 'subject' must be an NCLists object")
-    if (!(is(query, "RangesList") && is(subject, "RangesList")))
-        stop("'query' and 'subject' must be RangesList objects")
-    query_len <- length(query)
-    subject_len <- length(subject)
     if (!isSingleNumber(min.score))
         stop("'min.score' must be a single integer")
     if (!is.integer(min.score))
@@ -318,18 +316,23 @@ findOverlaps_NCLists <- function(query, subject, min.score=1L,
     select <- match.arg(select)
     circle.length <- .normarg_circle.length2(circle.length, query_len,
                                              "'query'")
-
-    subject0 <- IRanges()
-    if (is(subject, "NCLists"))
-        subject0 <- NCList(subject0)
-    lapply(seq_len(query_len),
-           function(i) {
-               subject_i <- if (i <= subject_len) subject[[i]] else subject0
-               findOverlaps_NCList(query[[i]], subject_i,
-                                   min.score=min.score,
-                                   type=type, select=select,
-                                   circle.length[[i]])
-           })
+    if (is(subject, "NCLists")) {
+        if (!is(query, "RangesList"))
+            stop("'query' must be a RangesList object")
+        x <- query
+        y <- subject
+        y_is_query <- FALSE
+    } else {
+        if (!is(subject, "RangesList"))
+            stop("'subject' must be a RangesList object")
+        x <- subject
+        y <- query
+        y_is_query <- TRUE
+    }
+    .Call2("NCLists_find_overlaps",
+           x, y@rglist, y@nclists, y_is_query,
+           min.score, type, select, circle.length,
+           PACKAGE="IRanges")
 }
 
 
