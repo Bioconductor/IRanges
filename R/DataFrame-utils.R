@@ -53,7 +53,7 @@ setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
       cols <- lapply(args, `[[`, cn)
       isRle <- vapply(cols, is, logical(1L), "Rle")
       if (any(isRle) && !all(isRle)) { # would fail dispatch to c,Rle
-        cols <- lapply(cols, as, class(cols[[which(isRle)[1]]]))
+        cols[isRle] <- lapply(cols[isRle], S4Vectors:::decodeRle)
       }
       isFactor <- vapply(cols, is.factor, logical(1L))
       if (any(isFactor)) {
