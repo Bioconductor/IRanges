@@ -73,6 +73,24 @@ as(overlaps, "List")  # same as as(overlaps, "IntegerList")
 as(overlaps, "PartitioningByEnd")
 as(overlaps, "Partitioning")  # same as as(overlaps, "PartitioningByEnd")
 
+## ---------------------------------------------------------------------
+## selectHits()
+## ---------------------------------------------------------------------
+
+x <- new("Hits", queryHits=c(1L, 1L, 1L, 3L, 3L),
+                 subjectHits=c(9L, 4L, 5L, 1L, 4L),
+                 queryLength=5L, subjectLength=9L)
+x
+
+selectHits(x, select="all")  # no-op
+selectHits(x, select="first")
+selectHits(x, select="last")
+selectHits(x, select="arbitrary")
+
+## ---------------------------------------------------------------------
+## remapHits()
+## ---------------------------------------------------------------------
+
 hits1 <- remapHits(overlaps, subject.map=factor(c("e", "e", "d"), letters[1:5]))
 hits1
 hits2 <- remapHits(overlaps, subject.map=c(5, 5, 4), new.subjectLength=5)

@@ -79,7 +79,19 @@ selectHits <- function(x, select=c("all", "first", "last", "arbitrary"))
     select <- match.arg(select)
     if (select == "all")
         return(x)
+    q_hits <- queryHits(x)
+    s_hits <- subjectHits(x)
+    sort_hits <- select != "arbitrary" &&
+                 !S4Vectors:::sortedIntegerPairs(q_hits, s_hits)
+    if (sort_hits) {
+        oo <- S4Vectors:::orderIntegerPairs(q_hits, s_hits)
+        x <- extractROWS(x, oo)
+    }
     ans <- .from_Hits_to_CompressedIntegerList(x)
+    ## Note that if we had fast "min" and "max" methods for
+    ## CompressedIntegerList objects, then we could just do 'min(ans)'
+    ## when 'select' is "first" and 'max(ans)' when 'select' is "last".
+    ## Hence the above sorting would not be necessary anymore.
     if (select == "first")
         ans <- phead(ans, 1L)
     else
