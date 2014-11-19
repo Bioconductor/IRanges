@@ -840,7 +840,7 @@ SEXP NCLists_find_overlaps(SEXP x, SEXP y,
 	yh_buf = new_IntAE(0, 0, 0);
 	xi_end_buf = new_IntAE(0, 0, 0);
 	yi_end_buf = new_IntAE(0, 0, 0);
-	PROTECT(ans = NEW_LIST(x_len));
+	PROTECT(ans = NEW_LIST(ans_len));
 	for (i = 0; i < ans_len; i++) {
 		if (i < x_len) {
 			xi_holder = _get_elt_from_CompressedIRangesList_holder(
