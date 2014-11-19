@@ -45,16 +45,21 @@ setAs("NCList", "IRanges", function(from) ranges(from))
     circle.length
 }
 
-.normarg_circle.length2 <- function(circle.length, x_len, what)
+### Return an unnamed integer vector.
+.normarg_circle.length2 <- function(circle.length, x_len, what,
+                                    return.single.na=FALSE)
 {
     msg <- c("'circle.length' must be an integer vector ",
              "with positive or NA values")
     if (!is.atomic(circle.length))
         stop(msg)
+    names(circle.length) <- NULL
     if (!(is.numeric(circle.length) || all(is.na(circle.length))))
         stop(msg)
     if (!is.integer(circle.length))
         circle.length <- as.integer(circle.length)
+    if (return.single.na && identical(circle.length, NA_integer_))
+        return(circle.length)
     min_circle.length <- suppressWarnings(min(circle.length, na.rm=TRUE))
     if (is.finite(min_circle.length) && min_circle.length <= 0L)
         stop(msg)
@@ -67,7 +72,10 @@ setAs("NCList", "IRanges", function(from) ranges(from))
 
 .shift_ranges_to_first_circle <- function(x, circle.length)
 {
-    circle.length <- .normarg_circle.length2(circle.length, length(x), "'x'")
+    circle.length <- .normarg_circle.length2(circle.length, length(x), "'x'",
+                                             return.single.na=TRUE)
+    if (identical(circle.length, NA_integer_))
+        return(x)
     x_start0 <- start(x) - 1L  # 0-based start
     x_shift0 <- x_start0 %% circle.length - x_start0
     x_shift0[is.na(x_shift0)] <- 0L
@@ -76,7 +84,10 @@ setAs("NCList", "IRanges", function(from) ranges(from))
 
 .shift_rglist_to_first_circle <- function(x, circle.length)
 {
-    circle.length <- .normarg_circle.length2(circle.length, length(x), "'x'")
+    circle.length <- .normarg_circle.length2(circle.length, length(x), "'x'",
+                                             return.single.na=TRUE)
+    if (identical(circle.length, NA_integer_))
+        return(x)
     circle.length <- rep.int(circle.length, elementLengths(x))
     unlisted_x <- unlist(x, use.names=FALSE)
     unlisted_ans <- .shift_ranges_to_first_circle(unlisted_x, circle.length)
