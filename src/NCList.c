@@ -580,6 +580,15 @@ static void get_overlaps(const int *nclist, Backpack *backpack)
 	return;
 }
 
+static void fill_with_val(int *x, int x_len, int val)
+{
+	int i;
+
+	for (i = 0; i < x_len; i++)
+		*(x++) = val;
+	return;
+}
+
 /* TODO: Maybe move this to S4Vectors/src/AEbufs.c. */
 static void IntAE_delete_duplicates(IntAE *int_ae, int at1, int at2)
 {
@@ -612,30 +621,34 @@ static void find_overlaps(const int *x_start_p, const int *x_end_p, int x_len,
 	Backpack backpack;
 	int i, old_nhit, new_nhit, k;
 
+	if (y_len == 0) {
+		if (backpack_select_mode != SELECT_ALL)
+			fill_with_val(yh, x_len, NA_INTEGER);
+		return;
+	}
 	backpack = prepare_backpack(y_start_p, y_end_p, y_is_q,
 				    min_overlap_score, overlap_type,
 				    backpack_select_mode, yh_buf);
 	for (i = 1; i <= x_len; i++, x_start_p++, x_end_p++) {
-		if (y_len != 0) {
-			update_backpack(&backpack, *x_start_p, *x_end_p,
-					circle_len, 0);
-			get_overlaps(y_nclist, &backpack);
-			if (circle_len == NA_INTEGER)
-				goto nomore;
-			if (backpack_select_mode == SELECT_ARBITRARY
-			 && backpack.yh != NA_INTEGER)
-				goto nomore;
-			update_backpack(&backpack, *x_start_p, *x_end_p,
-					circle_len, 1);
-			get_overlaps(y_nclist, &backpack);
-			if (backpack_select_mode == SELECT_ARBITRARY
-			 && backpack.yh != NA_INTEGER)
-				goto nomore;
-			update_backpack(&backpack, *x_start_p, *x_end_p,
-					circle_len, 2);
-			get_overlaps(y_nclist, &backpack);
-		}
-		nomore:
+		update_backpack(&backpack, *x_start_p, *x_end_p,
+				circle_len, 0);
+		get_overlaps(y_nclist, &backpack);
+		if (circle_len == NA_INTEGER)
+			goto life_is_good;
+		if (backpack_select_mode == SELECT_ARBITRARY
+		 && backpack.yh != NA_INTEGER)
+			goto life_is_good;
+		update_backpack(&backpack, *x_start_p, *x_end_p,
+				circle_len, 1);
+		get_overlaps(y_nclist, &backpack);
+		if (backpack_select_mode == SELECT_ARBITRARY
+		 && backpack.yh != NA_INTEGER)
+			goto life_is_good;
+		update_backpack(&backpack, *x_start_p, *x_end_p,
+				circle_len, 2);
+		get_overlaps(y_nclist, &backpack);
+
+		life_is_good:
 		if (backpack_select_mode == SELECT_ALL) {
 			old_nhit = IntAE_get_nelt(xh_buf);
 			new_nhit = IntAE_get_nelt(yh_buf);
@@ -896,16 +909,6 @@ SEXP NCList_find_overlaps(SEXP x_start, SEXP x_end,
 				    y_is_q, select_mode, y_is_q);
 }
 
-static void fill_with_val(SEXP x, int val)
-{
-	int x_len, i;
-
-	x_len = LENGTH(x);
-	for (i = 0; i < x_len; i++)
-		INTEGER(x)[i] = val;
-	return;
-}
-
 static void set_end_buf(IntAE *end_buf,
 		const int *start_p, const int *width_p, int len)
 {
@@ -952,7 +955,7 @@ static SEXP make_ans_elt(int i,
 	if (i >= min_len) {
 		ans_len = y_is_q ? yi_len : xi_len;
 		PROTECT(ans = NEW_INTEGER(ans_len));
-		fill_with_val(ans, NA_INTEGER);
+		fill_with_val(INTEGER(ans), LENGTH(ans), NA_INTEGER);
 		UNPROTECT(1);
 		return ans;
 	}
