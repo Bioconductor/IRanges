@@ -462,10 +462,7 @@ static int get_circle_length(SEXP circle_length)
 }
 
 typedef struct backpack {
-	int x_start;
-	int x_end;
-	int ext_x_start;
-	int ext_x_end;
+	/* Members initialized by prepare_backpack(). */
 	const int *y_start_p;
 	const int *y_end_p;
 	int y_is_q;
@@ -474,6 +471,13 @@ typedef struct backpack {
 	int overlap_type;
 	int select_mode;
 	IntAE *yh_buf;
+
+	/* Members initialized by update_backpack(). */
+	int x_start;
+	int x_end;
+	int ext_x_start;
+	int ext_x_end;
+	int yh;
 } Backpack;
 
 static Backpack prepare_backpack(const int *y_start_p, const int *y_end_p,
@@ -501,6 +505,16 @@ static Backpack prepare_backpack(const int *y_start_p, const int *y_end_p,
 	backpack.select_mode = y_is_q ? SELECT_ALL : select_mode;
 	backpack.yh_buf = yh_buf;
 	return backpack;
+}
+
+static void update_backpack(Backpack *backpack, int x_start, int x_end)
+{
+	backpack->x_start = x_start;
+	backpack->x_end = x_end;
+	backpack->ext_x_start = x_start - backpack->x_extension;
+	backpack->ext_x_end = x_end + backpack->x_extension;
+	backpack->yh = NA_INTEGER;
+	return;
 }
 
 static int bsearch_n1(int x_start, const int *nclist, const int *y_end_p)
@@ -593,12 +607,12 @@ static void get_overlaps(const int *nclist, Backpack *backpack)
 					    i1);
 			} else {
 			    /* Update current selection if necessary. */
-			    current_sel = backpack->yh_buf->elts[0];
+			    current_sel = backpack->yh;
 			    update_sel = current_sel == NA_INTEGER ||
 				(backpack->select_mode == SELECT_FIRST) ==
 				(i1 < current_sel);
 			    if (update_sel)
-				backpack->yh_buf->elts[0] = i1;
+				backpack->yh = i1;
 			    if (backpack->select_mode == SELECT_ARBITRARY)
 				break;
 			}
@@ -701,24 +715,16 @@ static SEXP find_overlaps(const int *x_start_p, const int *x_end_p, int x_len,
 				    min_score, type, select_mode,
 				    yh_buf);
 	if (backpack.select_mode != SELECT_ALL) {
-		IntAE_insert_at(yh_buf, 0, NA_INTEGER);
 		PROTECT(ans = NEW_INTEGER(x_len));
 		ans_elt_p = INTEGER(ans);
 	}
 	for (i = 1; i <= x_len; i++, x_start_p++, x_end_p++) {
 		if (y_len != 0) {
-			/* Update backpack. */
-			backpack.x_start = *x_start_p;
-			backpack.x_end = *x_end_p;
-			backpack.ext_x_start = *x_start_p -
-						backpack.x_extension;
-			backpack.ext_x_end = *x_end_p +
-						backpack.x_extension;
+			update_backpack(&backpack, *x_start_p, *x_end_p);
 			get_overlaps(y_nclist, &backpack);
 		}
 		if (backpack.select_mode != SELECT_ALL) {
-			*(ans_elt_p++) = yh_buf->elts[0];
-			yh_buf->elts[0] = NA_INTEGER;
+			*(ans_elt_p++) = backpack.yh;
 		} else {
 			old_nhit = IntAE_get_nelt(xh_buf);
 			new_nhit = IntAE_get_nelt(yh_buf);
@@ -806,19 +812,21 @@ static void set_end_buf(IntAE *end_buf,
 
 /* --- .Call ENTRY POINT ---
  * Args:
- *   x, y:          CompressedIRangesList objects.
- *   y_nclists:     A list of integer vectors. Each integer vector represents
- *                  a Nested Containment List, one per list element in 'y'.
- *   y_is_query:    TRUE or FALSE.
- *   min_score:     See get_min_overlap_score() C function.
- *   type:          See get_overlap_type() C function.
- *   select:        See get_select_mode() C function.
- *   circle_length: An integer vector with positive or NA values.
+ *   x, y:           CompressedIRangesList objects.
+ *   y_nclists:      A list of integer vectors. Each integer vector represents
+ *                   a Nested Containment List, one per list element in 'y'.
+ *   y_is_query:     TRUE or FALSE.
+ *   min_score:      See get_min_overlap_score() C function.
+ *   type:           See get_overlap_type() C function.
+ *   select:         See get_select_mode() C function.
+ *   circle_length:  An integer vector with positive or NA values.
+ *   x_maps, y_maps: NULL or CompressedIntegerList objects.
  */
 SEXP NCLists_find_overlaps(SEXP x, SEXP y,
 			   SEXP y_nclists, SEXP y_is_query,
 			   SEXP min_score, SEXP type, SEXP select,
-			   SEXP circle_length)
+			   SEXP circle_length,
+			   SEXP x_maps, SEXP y_maps)
 {
 	CompressedIRangesList_holder x_holder, y_holder;
 	int x_len, y_len, select_mode, ans_len,

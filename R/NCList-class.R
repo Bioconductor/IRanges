@@ -295,6 +295,29 @@ min_overlap_score <- function(maxgap=0L, minoverlap=1L)
 ###
 
 ### NOT exported.
+NCLists_find_overlaps <- function(query, subject, min.score,
+                                  type, select, circle.length,
+                                  x.maps=NULL, y.maps=NULL)
+{
+    if (is(subject, "NCLists")) {
+        x <- query
+        y <- subject
+        y_is_query <- FALSE
+    } else {
+        x <- subject
+        y <- query
+        y_is_query <- TRUE
+    }
+    if (!is(x, "CompressedIRangesList"))
+        x <- as(x, "CompressedIRangesList")
+    .Call2("NCLists_find_overlaps",
+           x, y@rglist, y@nclists, y_is_query,
+           min.score, type, select, circle.length,
+           x.maps, y.maps,
+           PACKAGE="IRanges")
+}
+
+### NOT exported.
 ### Return an ordinary list of:
 ###   (a) Hits objects if 'select' is "all". In that case the list has the
 ###       length of the shortest of 'query' or 'subject'.
@@ -317,25 +340,8 @@ findOverlaps_NCLists <- function(query, subject, min.score=1L,
     circle.length <- .normarg_circle.length2(circle.length,
                               min(length(query), length(subject)),
                               "shortest of 'query' or 'subject'")
-    if (is(subject, "NCLists")) {
-        if (!is(query, "RangesList"))
-            stop("'query' must be a RangesList object")
-        x <- query
-        y <- subject
-        y_is_query <- FALSE
-    } else {
-        if (!is(subject, "RangesList"))
-            stop("'subject' must be a RangesList object")
-        x <- subject
-        y <- query
-        y_is_query <- TRUE
-    }
-    if (!is(x, "CompressedIRangesList"))
-        x <- as(x, "CompressedIRangesList")
-    .Call2("NCLists_find_overlaps",
-           x, y@rglist, y@nclists, y_is_query,
-           min.score, type, select, circle.length,
-           PACKAGE="IRanges")
+    NCLists_find_overlaps(query, subject, min.score,
+                          type, select, circle.length)
 }
 
 
