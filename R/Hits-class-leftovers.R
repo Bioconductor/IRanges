@@ -56,19 +56,6 @@ setAs("Hits", "list", function(from) as.list(from))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Displaying
-###
-
-setMethod("show", "Hits", function(object) {
-  cat("Hits of length ", length(object), "\n", sep = "")
-  cat("queryLength: ", queryLength(object), "\n", sep = "")
-  cat("subjectLength: ", subjectLength(object), "\n", sep = "")
-  df_show <- capture.output(show(as(object, "DataFrame")))
-  cat(paste(tail(df_show, -1), "\n"))
-})
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### selectHits()
 ###
 
