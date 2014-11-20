@@ -45,35 +45,38 @@ setAs("NCList", "IRanges", function(from) ranges(from))
     circle.length
 }
 
-### Return an unnamed integer vector.
 .normarg_circle.length2 <- function(circle.length, x_len, what,
-                                    return.single.na=FALSE)
+                                    all.NAs.in.one=FALSE)
 {
     msg <- c("'circle.length' must be an integer vector ",
              "with positive or NA values")
     if (!is.atomic(circle.length))
         stop(msg)
-    names(circle.length) <- NULL
-    if (!(is.numeric(circle.length) || all(is.na(circle.length))))
-        stop(msg)
-    if (!is.integer(circle.length))
+    all_NAs <- all(is.na(circle.length))
+    if (all_NAs) {
         circle.length <- as.integer(circle.length)
-    if (return.single.na && identical(circle.length, NA_integer_))
-        return(circle.length)
-    min_circle.length <- suppressWarnings(min(circle.length, na.rm=TRUE))
-    if (is.finite(min_circle.length) && min_circle.length <= 0L)
-        stop(msg)
+    } else {
+        if (!is.numeric(circle.length))
+            stop(msg)
+        if (!is.integer(circle.length))
+            circle.length <- as.integer(circle.length)
+        min_circle.length <- min(circle.length, na.rm=TRUE)
+        if (min_circle.length <= 0L)
+            stop(msg)
+    }
+    if (!(length(circle.length) == 1L || length(circle.length) == x_len))
+        stop("'circle.length' must have length 1 or length of ", what)
+    if (all_NAs && all.NAs.in.one)
+        return(NA_integer_)
     if (length(circle.length) == x_len)
         return(circle.length)
-    if (length(circle.length) != 1L)
-        stop("'circle.length' must have length 1 or length of ", what)
     rep.int(circle.length, x_len)
 }
 
 .shift_ranges_to_first_circle <- function(x, circle.length)
 {
     circle.length <- .normarg_circle.length2(circle.length, length(x), "'x'",
-                                             return.single.na=TRUE)
+                                             all.NAs.in.one=TRUE)
     if (identical(circle.length, NA_integer_))
         return(x)
     x_start0 <- start(x) - 1L  # 0-based start
@@ -85,7 +88,7 @@ setAs("NCList", "IRanges", function(from) ranges(from))
 .shift_rglist_to_first_circle <- function(x, circle.length)
 {
     circle.length <- .normarg_circle.length2(circle.length, length(x), "'x'",
-                                             return.single.na=TRUE)
+                                             all.NAs.in.one=TRUE)
     if (identical(circle.length, NA_integer_))
         return(x)
     circle.length <- rep.int(circle.length, elementLengths(x))
@@ -315,8 +318,8 @@ findOverlaps_NCLists <- function(query, subject, min.score=1L,
     type <- match.arg(type)
     select <- match.arg(select)
     circle.length <- .normarg_circle.length2(circle.length,
-                              min(length(query), length(subject)),
-                              "shortest of 'query' or 'subject'")
+                              max(length(query), length(subject)),
+                              "longest of 'query' or 'subject'")
     if (is(subject, "NCLists")) {
         x <- query
         y <- subject
