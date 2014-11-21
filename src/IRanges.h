@@ -410,6 +410,8 @@ SEXP NCLists_find_overlaps_and_combine(
 	SEXP x_maps,
 	SEXP y_maps,
 	SEXP x_unlisted_len,
-	SEXP y_unlisted_len
+	SEXP y_unlisted_len,
+	SEXP x_space,
+	SEXP y_space
 );
 
