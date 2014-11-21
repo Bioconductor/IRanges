@@ -132,46 +132,58 @@ test_findOverlaps_NCList_with_circular_space <- function()
     query0 <- IRanges(-2:17, width=3)
     subject0 <- IRanges(c(4, -1, 599), c(7, 0, 999))
     circle_length <- 10L
-    x1 <- x2 <- x3 <- integer(length(query0))
-    x1[c(5:10, 15:20L)] <- 1L
-    x2[c(1:3, 10:13, 20L)] <- 1L
-    x3[] <- 1L
-    target1 <- findMatches(x1, 1L)
-    target2 <- findMatches(x2, 1L)
-    target3 <- findMatches(x3, 1L)
-    target1 <- remapHits(target1, subject.map=1L, new.subjectLength=3L)
-    target2 <- remapHits(target2, subject.map=2L, new.subjectLength=3L)
-    target3 <- remapHits(target3, subject.map=3L, new.subjectLength=3L)
-    target0 <- union(union(target1, target2), target3)
 
-    for (i in -2:2) {
-        query <- shift(query0, shift=i*circle_length)
-        pp_query <- NCList(query, circle.length=circle_length)
-        for (j in -2:2) {
-            subject <- shift(subject0, shift=j*circle_length)
-            pp_subject <- NCList(subject, circle.length=circle_length)
-            for (select in c("all", "first", "last")) {
-                target <- selectHits(target0, select=select)
-                current <- findOverlaps_NCList(query, pp_subject,
-                                               select=select,
-                                               circle.length=circle_length)
-                checkTrue(.compareHits(target, current))
-                current <- findOverlaps_NCList(pp_query, subject,
-                                               select=select,
-                                               circle.length=circle_length)
-                checkTrue(.compareHits(target, current))
+    do_test <- function(s2q, type) {
+        q_hits <- unlist(s2q)
+        s_hits <- rep.int(seq_along(s2q), elementLengths(s2q))
+        target0 <- t(new("Hits", queryHits=s_hits, subjectHits=q_hits,
+                                 queryLength=length(subject0),
+                                 subjectLength=length(query0)))
+        for (i in -2:2) {
+            query <- shift(query0, shift=i*circle_length)
+            pp_query <- NCList(query, circle.length=circle_length)
+            for (j in -2:2) {
+                subject <- shift(subject0, shift=j*circle_length)
+                pp_subject <- NCList(subject, circle.length=circle_length)
+                for (select in c("all", "first", "last")) {
+                    target <- selectHits(target0, select=select)
+                    current <- findOverlaps_NCList(query, pp_subject,
+                                                   type=type, select=select,
+                                                   circle.length=circle_length)
+                    checkTrue(.compareHits(target, current))
+                    current <- findOverlaps_NCList(pp_query, subject,
+                                                   type=type, select=select,
+                                                   circle.length=circle_length)
+                    checkTrue(.compareHits(target, current))
 
-                target <- selectHits(t(target0), select=select)
-                current <- findOverlaps_NCList(pp_subject, query,
-                                               select=select,
-                                               circle.length=circle_length)
-                checkTrue(.compareHits(target, current))
-                current <- findOverlaps_NCList(subject, pp_query,
-                                               select=select,
-                                               circle.length=circle_length)
-                checkTrue(.compareHits(target, current))
+                    target <- selectHits(t(target0), select=select)
+                    current <- findOverlaps_NCList(pp_subject, query,
+                                                   type=type, select=select,
+                                                   circle.length=circle_length)
+                    checkTrue(.compareHits(target, current))
+                    current <- findOverlaps_NCList(subject, pp_query,
+                                                   type=type, select=select,
+                                                   circle.length=circle_length)
+                    checkTrue(.compareHits(target, current))
+                }
             }
         }
     }
+
+    ## type "any"
+    s2q <- list(c(5:10, 15:20L), c(1:3, 10:13, 20L), 1:20)
+    do_test(s2q, "any")
+
+    ## type "start"
+    s2q <- lapply(start(subject0),
+                  function(s)
+                      which((start(query0) - s) %% circle_length == 0L))
+    do_test(s2q, "start")
+
+    ## type "end"
+    s2q <- lapply(end(subject0),
+                  function(e)
+                      which((end(query0) - e) %% circle_length == 0L))
+    do_test(s2q, "end")
 }
 

@@ -400,6 +400,7 @@ typedef struct backpack {
 	int x_extension;
 	int overlap_type;
 	int select_mode;
+	int circle_len;
 	IntAE *hits;
 
 	/* Members set by update_backpack(). */
@@ -413,7 +414,7 @@ typedef struct backpack {
 static Backpack prepare_backpack(const int *y_start_p, const int *y_end_p,
 				 int y_is_q,
 				 int min_overlap_score, int overlap_type,
-				 int backpack_select_mode,
+				 int backpack_select_mode, int circle_len,
 				 IntAE *hits)
 {
 	Backpack backpack;
@@ -432,20 +433,21 @@ static Backpack prepare_backpack(const int *y_start_p, const int *y_end_p,
 	backpack.x_extension = x_extension;
 	backpack.overlap_type = overlap_type;
 	backpack.select_mode = backpack_select_mode;
+	backpack.circle_len = circle_len;
 	backpack.hits = hits;
 	return backpack;
 }
 
 static void update_backpack(Backpack *backpack, int x_start, int x_end,
-			    int *hit, int circle_len)
+			    int *hit)
 {
 	int x_start0;
 
-	if (circle_len != NA_INTEGER) {
+	if (backpack->circle_len != NA_INTEGER) {
 		x_start0 = x_start;
-		x_start %= circle_len;
+		x_start %= backpack->circle_len;
 		if (x_start <= 0)
-			x_start += circle_len;
+			x_start += backpack->circle_len;
 		x_end += x_start - x_start0;
 	}
 	backpack->x_start = x_start;
@@ -501,7 +503,7 @@ static int bsearch_n1(int x_start, const int *nclist, const int *y_end_p)
 static void get_overlaps(const int *nclist, Backpack *backpack)
 {
 	int nelt, n, i, y_start, y_end,
-	    ov_start, ov_end, score, score_is_ok, type_is_ok,
+	    ov_start, ov_end, score, score_is_ok, type_is_ok, d,
 	    i1, current_sel, update_sel,
 	    offset;
 
@@ -529,7 +531,10 @@ static void get_overlaps(const int *nclist, Backpack *backpack)
 			type_is_ok = backpack->x_start == y_start;
 			break;
 		    case TYPE_END:
-			type_is_ok = backpack->x_end == y_end;
+			d = backpack->x_end - y_end;
+			if (backpack->circle_len != NA_INTEGER)
+				d %= backpack->circle_len;
+			type_is_ok = d == 0;
 			break;
 		    case TYPE_WITHIN:
 			type_is_ok = backpack->x_start >= y_start &&
@@ -620,11 +625,11 @@ static void find_overlaps(const int *x_start_p, const int *x_end_p, int x_len,
 
 	backpack = prepare_backpack(y_start_p, y_end_p, y_is_q,
 				    min_overlap_score, overlap_type,
-				    backpack_select_mode, yh_buf);
+				    backpack_select_mode, circle_len,
+				    yh_buf);
 
 	for (i = 1; i <= x_len; i++, x_start_p++, x_end_p++, yh++) {
-		update_backpack(&backpack, *x_start_p, *x_end_p,
-				yh, circle_len);
+		update_backpack(&backpack, *x_start_p, *x_end_p, yh);
 		/* pass 0 */
 		get_overlaps(y_nclist, &backpack);
 		if (circle_len == NA_INTEGER)
