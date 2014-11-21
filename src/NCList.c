@@ -392,7 +392,7 @@ static int get_backpack_select_mode(int select_mode, int y_is_q)
 }
 
 typedef struct backpack {
-	/* Members initialized by prepare_backpack(). */
+	/* Members set by prepare_backpack(). */
 	const int *y_start_p;
 	const int *y_end_p;
 	int y_is_q;
@@ -400,21 +400,21 @@ typedef struct backpack {
 	int x_extension;
 	int overlap_type;
 	int select_mode;
-	IntAE *yh_buf;
+	IntAE *hits;
 
-	/* Members initialized by update_backpack(). */
+	/* Members set by update_backpack(). */
 	int x_start;
 	int x_end;
 	int ext_x_start;
 	int ext_x_end;
-	int yh;
+	int *hit;
 } Backpack;
 
 static Backpack prepare_backpack(const int *y_start_p, const int *y_end_p,
 				 int y_is_q,
 				 int min_overlap_score, int overlap_type,
 				 int backpack_select_mode,
-				 IntAE *yh_buf)
+				 IntAE *hits)
 {
 	Backpack backpack;
 	int x_extension;
@@ -432,44 +432,36 @@ static Backpack prepare_backpack(const int *y_start_p, const int *y_end_p,
 	backpack.x_extension = x_extension;
 	backpack.overlap_type = overlap_type;
 	backpack.select_mode = backpack_select_mode;
-	backpack.yh_buf = yh_buf;
+	backpack.hits = hits;
 	return backpack;
 }
 
 static void update_backpack(Backpack *backpack, int x_start, int x_end,
-			    int circle_len, int pass)
+			    int *hit, int circle_len)
 {
-	int x_start0, shift;
+	int x_start0;
 
 	if (circle_len != NA_INTEGER) {
-		switch (pass) {
-		    case 0:
-			x_start0 = x_start - 1;
-			shift = x_start0 % circle_len - x_start0;
-			x_start += shift;
-			x_end += shift;
-			break;
-		    case 1:
-			/* Ignore values passed to 'x_start' and 'x_end'
-			   arguments. */
-			x_start = backpack->x_start + circle_len;
-			x_end = backpack->x_end + circle_len;
-			break;
-		    case 2:
-			/* Ignore values passed to 'x_start' and 'x_end'
-			   arguments. */
-			shift = 2 * circle_len;
-			x_start = backpack->x_start - shift;
-			x_end = backpack->x_end - shift;
-			break;
-		}
+		x_start0 = x_start;
+		x_start %= circle_len;
+		if (x_start <= 0)
+			x_start += circle_len;
+		x_end += x_start - x_start0;
 	}
 	backpack->x_start = x_start;
 	backpack->x_end = x_end;
 	backpack->ext_x_start = x_start - backpack->x_extension;
 	backpack->ext_x_end = x_end + backpack->x_extension;
-	if (pass == 0)
-		backpack->yh = NA_INTEGER;
+	backpack->hit = hit;
+	return;
+}
+
+static void shift_x(Backpack *backpack, int shift)
+{
+	backpack->x_start += shift;
+	backpack->x_end += shift;
+	backpack->ext_x_start += shift;
+	backpack->ext_x_end += shift;
 	return;
 }
 
@@ -558,17 +550,17 @@ static void get_overlaps(const int *nclist, Backpack *backpack)
 			i1 = i + 1;
 			if (backpack->select_mode == SELECT_ALL) {
 			    /* Report the hit. */
-			    IntAE_insert_at(backpack->yh_buf,
-					    IntAE_get_nelt(backpack->yh_buf),
+			    IntAE_insert_at(backpack->hits,
+					    IntAE_get_nelt(backpack->hits),
 					    i1);
 			} else {
 			    /* Update current selection if necessary. */
-			    current_sel = backpack->yh;
+			    current_sel = *backpack->hit;
 			    update_sel = current_sel == NA_INTEGER ||
 				(backpack->select_mode == SELECT_FIRST) ==
 				(i1 < current_sel);
 			    if (update_sel)
-				backpack->yh = i1;
+				*backpack->hit = i1;
 			    if (backpack->select_mode == SELECT_ARBITRARY)
 				break;
 			}
@@ -621,31 +613,33 @@ static void find_overlaps(const int *x_start_p, const int *x_end_p, int x_len,
 	Backpack backpack;
 	int i, old_nhit, new_nhit, k;
 
-	if (y_len == 0) {
-		if (backpack_select_mode != SELECT_ALL)
-			fill_with_val(yh, x_len, NA_INTEGER);
+	if (backpack_select_mode != SELECT_ALL)
+		fill_with_val(yh, x_len, NA_INTEGER);
+	if (y_len == 0)
 		return;
-	}
+
 	backpack = prepare_backpack(y_start_p, y_end_p, y_is_q,
 				    min_overlap_score, overlap_type,
 				    backpack_select_mode, yh_buf);
-	for (i = 1; i <= x_len; i++, x_start_p++, x_end_p++) {
+
+	for (i = 1; i <= x_len; i++, x_start_p++, x_end_p++, yh++) {
 		update_backpack(&backpack, *x_start_p, *x_end_p,
-				circle_len, 0);
+				yh, circle_len);
+		/* pass 0 */
 		get_overlaps(y_nclist, &backpack);
 		if (circle_len == NA_INTEGER)
 			goto life_is_good;
 		if (backpack_select_mode == SELECT_ARBITRARY
-		 && backpack.yh != NA_INTEGER)
+		 && *yh != NA_INTEGER)
 			goto life_is_good;
-		update_backpack(&backpack, *x_start_p, *x_end_p,
-				circle_len, 1);
+		/* pass 1 */
+		shift_x(&backpack, - circle_len);
 		get_overlaps(y_nclist, &backpack);
 		if (backpack_select_mode == SELECT_ARBITRARY
-		 && backpack.yh != NA_INTEGER)
+		 && *yh != NA_INTEGER)
 			goto life_is_good;
-		update_backpack(&backpack, *x_start_p, *x_end_p,
-				circle_len, 2);
+		/* pass 2 */
+		shift_x(&backpack, 2 * circle_len);
 		get_overlaps(y_nclist, &backpack);
 
 		life_is_good:
@@ -659,8 +653,6 @@ static void find_overlaps(const int *x_start_p, const int *x_end_p, int x_len,
 			}
 			for (k = old_nhit; k < new_nhit; k++)
 				IntAE_insert_at(xh_buf, k, i);
-		} else {
-			*(yh++) = backpack.yh;
 		}
 	}
 	return;
@@ -807,8 +799,7 @@ static SEXP select_hits_from_IntAEs(const IntAE *qh_buf, const IntAE *sh_buf,
 	int i, nelt, i0, i1, current_sel, update_sel;
 
 	PROTECT(ans = NEW_INTEGER(q_len));
-	for (i = 0; i < q_len; i++)
-		INTEGER(ans)[i] = NA_INTEGER;
+	fill_with_val(INTEGER(ans), LENGTH(ans), NA_INTEGER);
 	nelt = IntAE_get_nelt(qh_buf);
 	for (i = 0; i < nelt; i++) {
 		i0 = qh_buf->elts[i] - 1L;
@@ -930,14 +921,13 @@ static SEXP make_ans_elt(int i,
 		IntAE *xi_end_buf, IntAE *yi_end_buf,
 		IntAE *xh_buf, IntAE *yh_buf, int append)
 {
-	int x_len, y_len, min_len, xi_len, yi_len, ans_len, circle_len, *yh;
+	int x_len, y_len, xi_len, yi_len, circle_len, *yh;
 	IRanges_holder xi_holder, yi_holder;
 	SEXP ans, yi_nclist;
 	const int *xi_start_p, *xi_width_p, *yi_start_p, *yi_width_p;
 
 	x_len = _get_length_from_CompressedIRangesList_holder(x_holder);
 	y_len = _get_length_from_CompressedIRangesList_holder(y_holder);
-	min_len = x_len <= y_len ? x_len : y_len;
 	if (i < x_len) {
 		xi_holder = _get_elt_from_CompressedIRangesList_holder(
 					x_holder, i);
@@ -951,13 +941,6 @@ static SEXP make_ans_elt(int i,
 		yi_len = _get_length_from_IRanges_holder(&yi_holder);
 	} else {
 		yi_len = 0;
-	}
-	if (i >= min_len) {
-		ans_len = y_is_q ? yi_len : xi_len;
-		PROTECT(ans = NEW_INTEGER(ans_len));
-		fill_with_val(INTEGER(ans), LENGTH(ans), NA_INTEGER);
-		UNPROTECT(1);
-		return ans;
 	}
 	yi_nclist = VECTOR_ELT(y_nclists, i);
 
