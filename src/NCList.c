@@ -1098,12 +1098,12 @@ SEXP NCLists_find_overlaps(SEXP x, SEXP y,
 	return ans;
 }
 
-static void remap_hits(IntAE *xh_buf, int old_nhit, SEXP x_maps, int i)
+static void remap_hits(IntAE *xh_buf, int old_nhit, SEXP x_remap, int i)
 {
 	const int *map;
 	int new_nhit, k;
 
-	map = get_elt_from_CompressedIntegerList(x_maps, i) - 1;
+	map = get_elt_from_CompressedIntegerList(x_remap, i) - 1;
 	new_nhit = IntAE_get_nelt(xh_buf);
 	for (k = old_nhit; k < new_nhit; k++)
 		xh_buf->elts[k] = map[xh_buf->elts[k]];
@@ -1122,9 +1122,9 @@ static void remap_hits(IntAE *xh_buf, int old_nhit, SEXP x_maps, int i)
  *   select:         See get_select_mode() C function.
  *   circle_length:  An integer vector parallel to 'x' and 'y' with positive
  *                   or NA values.
- *   x_maps, y_maps: 2 CompressedIntegerList objects with the same shape
+ *   x_remap, y_remap: 2 CompressedIntegerList objects with the same shape
  *                   as 'x' and 'y', respectively.
- *   x_unlisted_len, y_unlisted_len: Single integers.
+ *   x_relen, y_relen: Single integers.
  *   x_space, y_space: 2 CompressedIntegerList objects with the same shape
  *                   as 'x' and 'y', respectively.
  */
@@ -1133,8 +1133,8 @@ SEXP NCLists_find_overlaps_and_combine(
 		SEXP y_nclists, SEXP y_is_query,
 		SEXP min_score, SEXP type, SEXP select,
 		SEXP circle_length,
-		SEXP x_maps, SEXP y_maps,
-		SEXP x_unlisted_len, SEXP y_unlisted_len,
+		SEXP x_remap, SEXP y_remap,
+		SEXP x_relen, SEXP y_relen,
 		SEXP x_space, SEXP y_space)
 {
 	CompressedIRangesList_holder x_holder, y_holder;
@@ -1165,12 +1165,12 @@ SEXP NCLists_find_overlaps_and_combine(
 				circle_length,
 				&xi_end_buf, &yi_end_buf,
 				&xh_buf, &yh_buf, 1);
-		remap_hits(&xh_buf, old_nhit, x_maps, i);
-		remap_hits(&yh_buf, old_nhit, y_maps, i);
+		remap_hits(&xh_buf, old_nhit, x_remap, i);
+		remap_hits(&yh_buf, old_nhit, y_remap, i);
 	}
 	return new_SEXP_from_IntAEs(&xh_buf, &yh_buf,
-				    INTEGER(x_unlisted_len)[0],
-				    INTEGER(y_unlisted_len)[0],
+				    INTEGER(x_relen)[0],
+				    INTEGER(y_relen)[0],
 				    y_is_q, select_mode, 1);
 }
 

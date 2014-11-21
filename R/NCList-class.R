@@ -241,13 +241,8 @@ findOverlaps_NCList <- function(query, subject, min.score=1L,
 }
 
 ### NOT exported.
-NCList_which_to_preprocess <- function(query, subject)
+NCList_which_to_preprocess <- function(query, subject, select)
 {
-    if (!(is(query, "Ranges") && is(subject, "Ranges")))
-        stop("'query' and 'subject' must be Ranges objects")
-    if (is(query, "NCList") || is(subject, "NCList"))
-        stop("'query' or 'subject' is already an NCList object")
-
     ## Preprocessing the query instead of the subject is tempting when
     ## the query is shorter than the subject but then the Hits object
     ## returned by .Call entry point NCList_find_overlaps() needs to be
@@ -340,7 +335,8 @@ findOverlaps_NCLists <- function(query, subject, min.score=1L,
 ### NOT exported. Used by GenomicRanges:::findOverlaps_GNCList().
 NCLists_find_overlaps_and_combine <- function(query, subject, min.score,
                                               type, select, circle.length,
-                                              query.maps, subject.maps,
+                                              query.remap, subject.remap,
+                                              query.relength, subject.relength,
                                               query.strand=NULL,
                                               subject.strand=NULL)
 {
@@ -348,16 +344,20 @@ NCLists_find_overlaps_and_combine <- function(query, subject, min.score,
         x <- query
         y <- subject
         y_is_query <- FALSE
-        x_maps <- query.maps
-        y_maps <- subject.maps
+        x_remap <- query.remap
+        y_remap <- subject.remap
+        x_relen <- query.relength
+        y_relen <- subject.relength
         x_strand <- query.strand
         y_strand <- subject.strand
     } else {
         x <- subject
         y <- query
         y_is_query <- TRUE
-        x_maps <- subject.maps
-        y_maps <- query.maps
+        x_remap <- subject.remap
+        y_remap <- query.remap
+        x_relen <- subject.relength
+        y_relen <- query.relength
         x_strand <- subject.strand
         y_strand <- query.strand
     }
@@ -366,8 +366,8 @@ NCLists_find_overlaps_and_combine <- function(query, subject, min.score,
     .Call2("NCLists_find_overlaps_and_combine",
            x, y@rglist, y@nclists, y_is_query,
            min.score, type, select, circle.length,
-           x_maps, y_maps,
-           length(x_maps@unlistData), length(y_maps@unlistData),
+           x_remap, y_remap,
+           x_relen, y_relen,
            x_strand, y_strand,
            PACKAGE="IRanges")
 }

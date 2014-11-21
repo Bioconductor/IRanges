@@ -192,18 +192,22 @@ setMethod("findOverlaps", c("Ranges", "Ranges"),
              select=c("all", "first", "last", "arbitrary"),
              algorithm=c("intervaltree", "nclist"))
     {
+        type <- match.arg(type)
+        select <- match.arg(select)
         algorithm <- match.arg(algorithm)
         if (algorithm == "intervaltree") {
             subject <- IntervalTree(subject)
         } else {
-            which_to_preprocess <- NCList_which_to_preprocess(query, subject)
+            which_to_preprocess <- NCList_which_to_preprocess(query, subject,
+                                                              select)
             if (which_to_preprocess == "query")
                 query <- NCList(query)
             else
                 subject <- NCList(subject)
         }
-        findOverlaps(query, subject, maxgap=maxgap, minoverlap=minoverlap,
-                     type=match.arg(type), select=match.arg(select))
+        findOverlaps(query, subject,
+                     maxgap=maxgap, minoverlap=minoverlap,
+                     type=type, select=select)
     }
 )
 
