@@ -406,6 +406,7 @@ SEXP NCLists_find_overlaps_and_combine(
 	SEXP y_is_query,
 	SEXP min_score,
 	SEXP type,
+	SEXP select,
 	SEXP circle_length,
 	SEXP x_maps,
 	SEXP y_maps,

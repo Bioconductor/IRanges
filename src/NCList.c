@@ -1119,6 +1119,7 @@ static void remap_hits(IntAE *xh_buf, int old_nhit, SEXP x_maps, int i)
  *   y_is_query:     TRUE or FALSE.
  *   min_score:      See get_min_overlap_score() C function.
  *   type:           See get_overlap_type() C function.
+ *   select:         See get_select_mode() C function.
  *   circle_length:  An integer vector parallel to 'x' and 'y' with positive
  *                   or NA values.
  *   x_maps, y_maps: 2 CompressedIntegerList objects with the same shape
@@ -1130,7 +1131,7 @@ static void remap_hits(IntAE *xh_buf, int old_nhit, SEXP x_maps, int i)
 SEXP NCLists_find_overlaps_and_combine(
 		SEXP x, SEXP y,
 		SEXP y_nclists, SEXP y_is_query,
-		SEXP min_score, SEXP type,
+		SEXP min_score, SEXP type, SEXP select,
 		SEXP circle_length,
 		SEXP x_maps, SEXP y_maps,
 		SEXP x_unlisted_len, SEXP y_unlisted_len,
@@ -1138,7 +1139,7 @@ SEXP NCLists_find_overlaps_and_combine(
 {
 	CompressedIRangesList_holder x_holder, y_holder;
 	int x_len, y_len, min_len, y_is_q, min_overlap_score, overlap_type,
-	    i, old_nhit;
+	    select_mode, i, old_nhit;
 	IntAE xi_end_buf, yi_end_buf, xh_buf, yh_buf;
 
 	x_holder = _hold_CompressedIRangesList(x);
@@ -1149,6 +1150,7 @@ SEXP NCLists_find_overlaps_and_combine(
 	y_is_q = LOGICAL(y_is_query)[0];
 	min_overlap_score = get_min_overlap_score(min_score);
 	overlap_type = get_overlap_type(type, y_is_q);
+	select_mode = get_select_mode(select);
 	xi_end_buf = new_IntAE(0, 0, 0);
 	yi_end_buf = new_IntAE(0, 0, 0);
 	xh_buf = new_IntAE(0, 0, 0);
@@ -1169,6 +1171,6 @@ SEXP NCLists_find_overlaps_and_combine(
 	return new_SEXP_from_IntAEs(&xh_buf, &yh_buf,
 				    INTEGER(x_unlisted_len)[0],
 				    INTEGER(y_unlisted_len)[0],
-				    y_is_q, SELECT_ALL, 1);
+				    y_is_q, select_mode, 1);
 }
 

@@ -339,7 +339,7 @@ findOverlaps_NCLists <- function(query, subject, min.score=1L,
 
 ### NOT exported. Used by GenomicRanges:::findOverlaps_GNCList().
 NCLists_find_overlaps_and_combine <- function(query, subject, min.score,
-                                              type, circle.length,
+                                              type, select, circle.length,
                                               query.maps, subject.maps,
                                               query.strand=NULL,
                                               subject.strand=NULL)
@@ -365,7 +365,7 @@ NCLists_find_overlaps_and_combine <- function(query, subject, min.score,
         x <- as(x, "CompressedIRangesList")
     .Call2("NCLists_find_overlaps_and_combine",
            x, y@rglist, y@nclists, y_is_query,
-           min.score, type, circle.length,
+           min.score, type, select, circle.length,
            x_maps, y_maps,
            length(x_maps@unlistData), length(y_maps@unlistData),
            x_strand, y_strand,
