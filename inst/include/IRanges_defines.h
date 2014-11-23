@@ -25,6 +25,24 @@
  * *_holder structs.
  */
 
+typedef struct compressed_chars_list_holder {
+	int length;
+	const char *unlisted;
+	const int *breakpoints;
+} CompressedCharsList_holder;
+
+typedef struct compressed_ints_list_holder {
+	int length;
+	const int *unlisted;
+	const int *breakpoints;
+} CompressedIntsList_holder;
+
+typedef struct compressed_doubles_list_holder {
+	int length;
+	const double *unlisted;
+	const int *breakpoints;
+} CompressedDoublesList_holder;
+
 typedef struct iranges_holder {
 	const char *classname;
 	int is_constant_width;

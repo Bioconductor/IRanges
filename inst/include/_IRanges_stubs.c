@@ -197,6 +197,21 @@ DEFINE_CCALLABLE_STUB(SEXP, new_CompressedList,
 	(            classname,      unlistData,      partitioning)
 )
 
+DEFINE_CCALLABLE_STUB(CompressedIntsList_holder, hold_CompressedIntegerList,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(int, get_length_from_CompressedIntsList_holder,
+	(const CompressedIntsList_holder *x_holder),
+	(                                 x_holder)
+)
+
+DEFINE_CCALLABLE_STUB(Ints_holder, get_elt_from_CompressedIntsList_holder,
+	(const CompressedIntsList_holder *x_holder, int i),
+	(                                 x_holder,     i)
+)
+
 /*
  * Stubs for callables defined in CompressedIRangesList_class.c
  */

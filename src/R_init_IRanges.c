@@ -121,6 +121,9 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_get_CompressedList_length);
 	REGISTER_CCALLABLE(_get_CompressedList_names);
 	REGISTER_CCALLABLE(_new_CompressedList);
+	REGISTER_CCALLABLE(_hold_CompressedIntegerList);
+	REGISTER_CCALLABLE(_get_length_from_CompressedIntsList_holder);
+	REGISTER_CCALLABLE(_get_elt_from_CompressedIntsList_holder);
 
 /* CompressedIRangesList_class.c */
 	REGISTER_CCALLABLE(_hold_CompressedIRangesList);

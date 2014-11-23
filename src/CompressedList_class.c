@@ -84,3 +84,44 @@ SEXP _new_CompressedList(const char *classname,
 	return ans;
 }
 
+
+/****************************************************************************
+ * C-level abstract getters for CompressedIntegerList objects.
+ */
+
+CompressedIntsList_holder _hold_CompressedIntegerList(SEXP x)
+{
+	SEXP partitioning_end;
+	CompressedIntsList_holder x_holder;
+
+	partitioning_end = _get_PartitioningByEnd_end(
+				_get_CompressedList_partitioning(x));
+	x_holder.length = LENGTH(partitioning_end);
+	x_holder.breakpoints = INTEGER(partitioning_end);
+	x_holder.unlisted = INTEGER(_get_CompressedList_unlistData(x));
+	return x_holder;
+}
+
+int _get_length_from_CompressedIntsList_holder(
+		const CompressedIntsList_holder *x_holder)
+{
+	return x_holder->length;
+}
+
+Ints_holder _get_elt_from_CompressedIntsList_holder(
+		const CompressedIntsList_holder *x_holder,
+		int i)
+{
+	Ints_holder x_elt_holder;
+	int offset;
+
+	if (i == 0) {
+		offset = 0;
+	} else {
+		offset = x_holder->breakpoints[i - 1];
+	}
+	x_elt_holder.ptr = x_holder->unlisted + offset;
+	x_elt_holder.length = x_holder->breakpoints[i] - offset;
+        return x_elt_holder;
+}
+

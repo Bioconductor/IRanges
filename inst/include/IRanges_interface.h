@@ -102,6 +102,12 @@ SEXP get_CompressedList_names(SEXP x);
 
 SEXP new_CompressedList(const char *classname, SEXP unlistData, SEXP partitioning);
 
+CompressedIntsList_holder hold_CompressedIntegerList(SEXP x);
+
+int get_length_from_CompressedIntsList_holder(const CompressedIntsList_holder *x_holder);
+
+Ints_holder get_elt_from_CompressedIntsList_holder(const CompressedIntsList_holder *x_holder, int i);
+
 /*
  * Low-level manipulation of CompressedIRangesList objects.
  * (see CompressedIRangesList_class.c)

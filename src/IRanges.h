@@ -205,6 +205,19 @@ SEXP _new_CompressedList(
 	SEXP partitioning
 );
 
+CompressedIntsList_holder _hold_CompressedIntegerList(
+	SEXP x
+);
+
+int _get_length_from_CompressedIntsList_holder(
+	const CompressedIntsList_holder *x_holder
+);
+
+Ints_holder _get_elt_from_CompressedIntsList_holder(
+	const CompressedIntsList_holder *x_holder,
+	int i
+);
+
 
 /* RleViews_utils.c */
 
