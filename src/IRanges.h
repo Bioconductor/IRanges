@@ -376,12 +376,12 @@ SEXP NCList_print(
 );
 
 SEXP NCList_find_overlaps(
-	SEXP x_start,
-	SEXP x_end,
-	SEXP y_start,
-	SEXP y_end,
-	SEXP y_nclist,
-	SEXP y_is_query,
+	SEXP q_start,
+	SEXP q_end,
+	SEXP s_start,
+	SEXP s_end,
+	SEXP nclist,
+	SEXP nclist_is_q,
 	SEXP min_score,
 	SEXP type,
 	SEXP select,
@@ -389,10 +389,10 @@ SEXP NCList_find_overlaps(
 );
 
 SEXP NCLists_find_overlaps(
-	SEXP x,
-	SEXP y,
-	SEXP y_nclists,
-	SEXP y_is_query,
+	SEXP q,
+	SEXP s,
+	SEXP nclists,
+	SEXP nclists_is_q,
 	SEXP min_score,
 	SEXP type,
 	SEXP select,
@@ -400,19 +400,19 @@ SEXP NCLists_find_overlaps(
 );
 
 SEXP NCLists_find_overlaps_and_combine(
-	SEXP x,
-	SEXP y,
-	SEXP y_nclists,
-	SEXP y_is_query,
+	SEXP q,
+	SEXP s,
+	SEXP nclists,
+	SEXP nclists_is_q,
 	SEXP min_score,
 	SEXP type,
 	SEXP select,
 	SEXP circle_length,
-	SEXP x_remap,
-	SEXP y_remap,
-	SEXP x_relen,
-	SEXP y_relen,
-	SEXP x_space,
-	SEXP y_space
+	SEXP q_remap,
+	SEXP s_remap,
+	SEXP q_relen,
+	SEXP s_relen,
+	SEXP q_space,
+	SEXP s_space
 );
 

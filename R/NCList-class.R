@@ -222,20 +222,18 @@ findOverlaps_NCList <- function(query, subject, min.score=1L,
     if (is(subject, "NCList")) {
         if (!is(query, "Ranges"))
             stop("'query' must be a Ranges object")
-        x <- query
-        y <- subject
-        y_is_query <- FALSE
+        nclist <- subject@nclist
+        nclist_is_query <- FALSE
     } else {
         if (!is(subject, "Ranges"))
             stop("'subject' must be a Ranges object")
-        x <- subject
-        y <- query
-        y_is_query <- TRUE
+        nclist <- query@nclist
+        nclist_is_query <- TRUE
     }
     .Call2("NCList_find_overlaps",
-           start(x), end(x),
-           start(y@ranges), end(y@ranges),
-           y@nclist, y_is_query,
+           start(query), end(query),
+           start(subject), end(subject),
+           nclist, nclist_is_query,
            min.score, type, select, circle.length,
            PACKAGE="IRanges")
 }
@@ -311,18 +309,20 @@ findOverlaps_NCLists <- function(query, subject, min.score=1L,
                               max(length(query), length(subject)),
                               "longest of 'query' or 'subject'")
     if (is(subject, "NCLists")) {
-        x <- query
-        y <- subject
-        y_is_query <- FALSE
+        if (!is(query, "CompressedIRangesList"))
+            query <- as(query, "CompressedIRangesList")
+        nclists <- subject@nclists
+        subject <- subject@rglist
+        nclists_is_query <- FALSE
     } else {
-        x <- subject
-        y <- query
-        y_is_query <- TRUE
+        nclists <- query@nclists
+        query <- query@rglist
+        if (!is(subject, "CompressedIRangesList"))
+            subject <- as(subject, "CompressedIRangesList")
+        nclists_is_query <- TRUE
     }
-    if (!is(x, "CompressedIRangesList"))
-        x <- as(x, "CompressedIRangesList")
     .Call2("NCLists_find_overlaps",
-           x, y@rglist, y@nclists, y_is_query,
+           query, subject, nclists, nclists_is_query,
            min.score, type, select, circle.length,
            PACKAGE="IRanges")
 }
@@ -341,34 +341,24 @@ NCLists_find_overlaps_and_combine <- function(query, subject, min.score,
                                               subject.strand=NULL)
 {
     if (is(subject, "NCLists")) {
-        x <- query
-        y <- subject
-        y_is_query <- FALSE
-        x_remap <- query.remap
-        y_remap <- subject.remap
-        x_relen <- query.relength
-        y_relen <- subject.relength
-        x_strand <- query.strand
-        y_strand <- subject.strand
+        if (!is(query, "CompressedIRangesList"))
+            query <- as(query, "CompressedIRangesList")
+        nclists <- subject@nclists
+        subject <- subject@rglist
+        nclists_is_query <- FALSE
     } else {
-        x <- subject
-        y <- query
-        y_is_query <- TRUE
-        x_remap <- subject.remap
-        y_remap <- query.remap
-        x_relen <- subject.relength
-        y_relen <- query.relength
-        x_strand <- subject.strand
-        y_strand <- query.strand
+        nclists <- query@nclists
+        query <- query@rglist
+        if (!is(subject, "CompressedIRangesList"))
+            subject <- as(subject, "CompressedIRangesList")
+        nclists_is_query <- TRUE
     }
-    if (!is(x, "CompressedIRangesList"))
-        x <- as(x, "CompressedIRangesList")
     .Call2("NCLists_find_overlaps_and_combine",
-           x, y@rglist, y@nclists, y_is_query,
+           query, subject, nclists, nclists_is_query,
            min.score, type, select, circle.length,
-           x_remap, y_remap,
-           x_relen, y_relen,
-           x_strand, y_strand,
+           query.remap, subject.remap,
+           query.relength, subject.relength,
+           query.strand, subject.strand,
            PACKAGE="IRanges")
 }
 
