@@ -865,57 +865,9 @@ static SEXP new_Hits_from_IntAEs(const IntAE *qh_buf, const IntAE *sh_buf,
 
 
 /****************************************************************************
- * subset1() and subset2()
- */
-
-static void subset1(const int *in, const int *idx, int idx_len, int *out)
-{
-	int i;
-
-	in--;
-	for (i = 0; i < idx_len; i++, idx++, out++)
-		*out = in[*idx];
-	return;
-}
-
-static void subset2(const int *in, const int *idx, int idx_len, IntAE *out)
-{
-	int i;
-
-	in--;
-	for (i = 0; i < idx_len; i++, idx++)
-		IntAE_insert_at(out, i, in[*idx]);
-	return;
-}
-
-static void extract_group(const Ints_holder *group_holder,
-			  const int *start_p, IntAE *start_buf,
-			  const int *width_p, IntAE *end_buf,
-			  const int *space_p, IntAE *space_buf)
-{
-	int i;
-
-	IntAE_set_nelt(start_buf, 0);
-	subset2(start_p, group_holder->ptr, group_holder->length, start_buf);
-	IntAE_set_nelt(end_buf, 0);
-	subset2(width_p, group_holder->ptr, group_holder->length, end_buf);
-	for (i = 0; i < group_holder->length; i++)
-		end_buf->elts[i] += start_buf->elts[i] - 1L;
-	if (space_p != NULL) {
-		IntAE_set_nelt(space_buf, 0);
-		subset2(space_p, group_holder->ptr,
-				 group_holder->length,
-				 space_buf);
-	}
-	return;
-}
-
-
-/****************************************************************************
- * NCList_find_overlaps() and NCLists_find_overlaps()
- */
-
-/* --- .Call ENTRY POINT ---
+ * NCList_find_overlaps()
+ *
+ * --- .Call ENTRY POINT ---
  * Args:
  *   q_start, q_end: Integer vectors of length M.
  *   s_start, s_end: Integer vectors of length N.
@@ -971,6 +923,11 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 		sort_hits(qh_buf.elts, sh_buf.elts, IntAE_get_nelt(&sh_buf));
 	return new_Hits_from_IntAEs(&qh_buf, &sh_buf, q_len, s_len);
 }
+
+
+/****************************************************************************
+ * NCLists_find_overlaps()
+ */
 
 static void set_end_buf(IntAE *end_buf,
 		const int *start_p, const int *width_p, int len)
@@ -1108,6 +1065,53 @@ SEXP NCLists_find_overlaps(SEXP q, SEXP s,
 	return ans;
 }
 
+
+/****************************************************************************
+ * NCList_find_overlaps_by_group_and_combine()
+ */
+
+static void subset1(const int *in, const int *idx, int idx_len, int *out)
+{
+	int i;
+
+	in--;
+	for (i = 0; i < idx_len; i++, idx++, out++)
+		*out = in[*idx];
+	return;
+}
+
+static void subset2(const int *in, const int *idx, int idx_len, IntAE *out)
+{
+	int i;
+
+	in--;
+	for (i = 0; i < idx_len; i++, idx++)
+		IntAE_insert_at(out, i, in[*idx]);
+	return;
+}
+
+static void extract_group(const Ints_holder *group_holder,
+			  const int *start_p, IntAE *start_buf,
+			  const int *width_p, IntAE *end_buf,
+			  const int *space_p, IntAE *space_buf)
+{
+	int i;
+
+	IntAE_set_nelt(start_buf, 0);
+	subset2(start_p, group_holder->ptr, group_holder->length, start_buf);
+	IntAE_set_nelt(end_buf, 0);
+	subset2(width_p, group_holder->ptr, group_holder->length, end_buf);
+	for (i = 0; i < group_holder->length; i++)
+		end_buf->elts[i] += start_buf->elts[i] - 1L;
+	if (space_p != NULL) {
+		IntAE_set_nelt(space_buf, 0);
+		subset2(space_p, group_holder->ptr,
+				 group_holder->length,
+				 space_buf);
+	}
+	return;
+}
+
 /* --- .Call ENTRY POINT ---
  * Args:
  *   q_start, q_width, q_space: Integer vectors of length M (or NULL for
@@ -1224,7 +1228,7 @@ SEXP NCList_find_overlaps_by_group_and_combine(
 			      &qh_buf, &sh_buf, NULL);
 		nhit = IntAE_get_nelt(&qh_buf) - old_nhit;
 
-		/* Remap hits. */
+		/* Remap new hits. */
 		subset1(qi_group_holder.ptr, qh_buf.elts + old_nhit, nhit,
 					qh_buf.elts + old_nhit);
 		subset1(si_group_holder.ptr, sh_buf.elts + old_nhit, nhit,
