@@ -412,20 +412,20 @@ SEXP NCLists_find_overlaps(
 	SEXP circle_length
 );
 
-SEXP NCLists_find_overlaps_and_combine(
-	SEXP q,
-	SEXP s,
+SEXP NCList_find_overlaps_by_group_and_combine(
+	SEXP q_start,
+	SEXP q_width,
+	SEXP q_space,
+	SEXP q_groups,
+	SEXP s_start,
+	SEXP s_width,
+	SEXP s_space,
+	SEXP s_groups,
 	SEXP nclists,
-	SEXP nclists_is_q,
+	SEXP nclist_is_q,
 	SEXP min_score,
 	SEXP type,
 	SEXP select,
-	SEXP circle_length,
-	SEXP q_remap,
-	SEXP s_remap,
-	SEXP q_relen,
-	SEXP s_relen,
-	SEXP q_space,
-	SEXP s_space
+	SEXP circle_length
 );
 

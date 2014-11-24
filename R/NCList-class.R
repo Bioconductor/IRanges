@@ -329,36 +329,23 @@ findOverlaps_NCLists <- function(query, subject, min.score=1L,
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### NCLists_find_overlaps_and_combine()
+### NCList_find_overlaps_by_group_and_combine()
 ###
 
 ### NOT exported. Used by GenomicRanges:::findOverlaps_GNCList().
-NCLists_find_overlaps_and_combine <- function(query, subject, min.score,
-                                              type, select, circle.length,
-                                              query.remap, subject.remap,
-                                              query.relength, subject.relength,
-                                              query.strand=NULL,
-                                              subject.strand=NULL)
+NCList_find_overlaps_by_group_and_combine <- function(
+                        query, query.space, query.groups,
+                        subject, subject.space, subject.groups,
+                        nclists, nclist_is_query,
+                        min.score, type, select, circle.length)
 {
-    if (is(subject, "NCLists")) {
-        if (!is(query, "CompressedIRangesList"))
-            query <- as(query, "CompressedIRangesList")
-        nclists <- subject@nclists
-        subject <- subject@rglist
-        nclists_is_query <- FALSE
-    } else {
-        nclists <- query@nclists
-        query <- query@rglist
-        if (!is(subject, "CompressedIRangesList"))
-            subject <- as(subject, "CompressedIRangesList")
-        nclists_is_query <- TRUE
-    }
-    .Call2("NCLists_find_overlaps_and_combine",
-           query, subject, nclists, nclists_is_query,
+    if (!(is(query, "Ranges") || is(subject, "Ranges")))
+        stop("'query' and 'subject' must be Ranges object")
+    .Call2("NCList_find_overlaps_by_group_and_combine",
+           start(query), width(query), query.space, query.groups,
+           start(subject), width(subject), subject.space, subject.groups,
+           nclists, nclist_is_query,
            min.score, type, select, circle.length,
-           query.remap, subject.remap,
-           query.relength, subject.relength,
-           query.strand, subject.strand,
            PACKAGE="IRanges")
 }
 
