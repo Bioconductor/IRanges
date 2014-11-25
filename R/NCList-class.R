@@ -109,8 +109,8 @@ setAs("NCList", "IRanges", function(from) ranges(from))
 
 .nclist <- function(x_start, x_end)
 {
-    pnclist <- .preNCList(x_start, x_end)
-    .Call2("new_NCList_from_preNCList", pnclist, PACKAGE="IRanges")
+    x_pnclist <- .preNCList(x_start, x_end)
+    .Call2("new_NCList_from_preNCList", x_pnclist, PACKAGE="IRanges")
 }
 
 ### Usage:
@@ -124,8 +124,8 @@ NCList <- function(x, circle.length=NA_integer_)
     if (!is(x, "IRanges"))
         x <- as(x, "IRanges")
     x <- .shift_ranges_to_first_circle(x, circle.length)
-    ans_nclist <- .nclist(start(x), end(x))
-    new2("NCList", nclist=ans_nclist, ranges=x, check=FALSE)
+    x_nclist <- .nclist(start(x), end(x))
+    new2("NCList", nclist=x_nclist, ranges=x, check=FALSE)
 }
 
 setAs("Ranges", "NCList", function(from) NCList(from))
