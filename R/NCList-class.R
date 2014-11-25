@@ -98,18 +98,18 @@ setAs("NCList", "IRanges", function(from) ranges(from))
 ###
 
 ### Returns an external pointer to the pre-NCList.
-.preNCList <- function(x_start, x_end)
+.preNCList <- function(x_start, x_end, x_subset)
 {
     ans <- .Call2("preNCList_new", PACKAGE="IRanges")
     reg.finalizer(ans,
         function(e) .Call("preNCList_free", e, PACKAGE="IRanges")
     )
-    .Call2("preNCList_build", ans, x_start, x_end, PACKAGE="IRanges")
+    .Call2("preNCList_build", ans, x_start, x_end, x_subset, PACKAGE="IRanges")
 }
 
-.nclist <- function(x_start, x_end)
+.nclist <- function(x_start, x_end, x_subset=NULL)
 {
-    x_pnclist <- .preNCList(x_start, x_end)
+    x_pnclist <- .preNCList(x_start, x_end, x_subset)
     .Call2("new_NCList_from_preNCList", x_pnclist, PACKAGE="IRanges")
 }
 
@@ -332,6 +332,22 @@ findOverlaps_NCLists <- function(query, subject, min.score=1L,
 ### NCList_find_overlaps_by_group_and_combine()
 ###
 
+NCList_by_group <- function(x, x.groups, circle.length)
+{
+    if (!(is(x, "Ranges")))
+        stop("'x' must be a Ranges object")
+    x_len <- length(x)
+    x_start <- start(x)
+    x_end <- end(x)
+    circle_len <- integer(x_len)
+    if (x_len != 0L) {
+        circle_len[unlist(x.groups, use.names=FALSE) + 1L] <-
+            rep.int(circle.length, elementLengths(x.groups))
+    }
+    x <- .shift_ranges_to_first_circle(x, circle_len)
+    lapply(x.groups, function(group) .nclist(x_start, x_end, x_subset=group))
+}
+
 ### NOT exported. Used by GenomicRanges:::findOverlaps_GNCList().
 NCList_find_overlaps_by_group_and_combine <- function(
                         query, query.space, query.groups,
@@ -342,8 +358,8 @@ NCList_find_overlaps_by_group_and_combine <- function(
     if (!(is(query, "Ranges") || is(subject, "Ranges")))
         stop("'query' and 'subject' must be Ranges object")
     .Call2("NCList_find_overlaps_by_group_and_combine",
-           start(query), width(query), query.space, query.groups,
-           start(subject), width(subject), subject.space, subject.groups,
+           start(query), end(query), query.space, query.groups,
+           start(subject), end(subject), subject.space, subject.groups,
            nclists, nclist_is_query,
            min.score, type, select, circle.length,
            PACKAGE="IRanges")

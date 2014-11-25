@@ -190,17 +190,20 @@ static void extend_stack()
 
 static void build_preNCList(preNCList *top_pnclist,
 			    const int *x_start_p, const int *x_end_p,
-			    int x_len)
+			    const int *x_subset_p, int x_len)
 {
 	preNCListElt *new_elt;
-
 	int *oo, k, d, i, current_end;
 
 	/* Determine order of 'x'. 'oo' will be such that 'x[oo]' is sorted
 	   first by ascending start then by descending end. */
 	oo = (int *) R_alloc(sizeof(int), x_len);
-	for (i = 0; i < x_len; i++)
-		oo[i] = i;
+	if (x_subset_p == NULL)
+		for (i = 0; i < x_len; i++)
+			oo[i] = i;
+	else
+		for (i = 0; i < x_len; i++)
+			oo[i] = x_subset_p[i];
 	aa = x_start_p;
 	bb = x_end_p;
 	qsort(oo, x_len, sizeof(int), qsort_compar);
@@ -226,11 +229,11 @@ static void build_preNCList(preNCList *top_pnclist,
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP preNCList_build(SEXP pnclist, SEXP x_start, SEXP x_end)
+SEXP preNCList_build(SEXP pnclist, SEXP x_start, SEXP x_end, SEXP x_subset)
 {
 	preNCList *top_pnclist;
 	int x_len;
-	const int *x_start_p, *x_end_p;
+	const int *x_start_p, *x_end_p, *x_subset_p;
 
 	top_pnclist = (preNCList *) R_ExternalPtrAddr(pnclist);
 	if (top_pnclist == NULL)
@@ -238,7 +241,13 @@ SEXP preNCList_build(SEXP pnclist, SEXP x_start, SEXP x_end)
 	x_len = check_integer_pairs(x_start, x_end,
 				    &x_start_p, &x_end_p,
 				    "start(x)", "end(x)");
-	build_preNCList(top_pnclist, x_start_p, x_end_p, x_len);
+	if (x_subset == R_NilValue) {
+		x_subset_p = NULL;
+	} else {
+		x_subset_p = INTEGER(x_subset);
+		x_len = LENGTH(x_subset);
+	}
+	build_preNCList(top_pnclist, x_start_p, x_end_p, x_subset_p, x_len);
 	return pnclist;
 }
 
@@ -398,7 +407,9 @@ typedef struct backpack {
 	int overlap_type;
 	int select_mode;
 	int circle_len;
+	int pp_is_q;
 	IntAE *hits;
+	int *selected_hits;
 
 	/* Members set by update_backpack(). */
 	int y_start;
@@ -406,21 +417,21 @@ typedef struct backpack {
 	int y_space;
 	int ext_y_start;
 	int ext_y_end;
-	int *hit;
+	int y_idx;
 } Backpack;
 
 /* Return 1 if hit is valid and 0 otherwise. */
-static int process_hit(int n2x, const Backpack *backpack)
+static int process_hit(int x_idx, const Backpack *backpack)
 {
 	int x_start, x_end, x_space, ok, ov_start, ov_end, score, d,
-	    i1, current_sel;
+	    i1, q_idx, s_idx1, *selection_p;
 
-	x_start = backpack->x_start_p[n2x];
-	x_end = backpack->x_end_p[n2x];
+	x_start = backpack->x_start_p[x_idx];
+	x_end = backpack->x_end_p[x_idx];
 
 	/* Check the space */
 	if (backpack->x_space_p != NULL) {
-		x_space = backpack->x_space_p[n2x];
+		x_space = backpack->x_space_p[x_idx];
 		ok = x_space == 0 ||
 		     backpack->y_space == 0 ||
 		     backpack->y_space == x_space;
@@ -471,7 +482,7 @@ static int process_hit(int n2x, const Backpack *backpack)
 			return 0;
 	}
 
-	i1 = n2x + 1;  /* 1-based */
+	i1 = x_idx + 1;  /* 1-based */
 	if (backpack->select_mode == SELECT_ALL) {
 		/* Report the hit. */
 		IntAE_insert_at(backpack->hits,
@@ -479,18 +490,26 @@ static int process_hit(int n2x, const Backpack *backpack)
 		return 1;
 	}
 	/* Update current selection if necessary. */
-	current_sel = *backpack->hit;
-	if (current_sel == NA_INTEGER
-	 || (backpack->select_mode == SELECT_FIRST) == (i1 < current_sel))
-		*backpack->hit = i1;
+	if (backpack->pp_is_q) {
+		q_idx = x_idx;
+		s_idx1 = backpack->y_idx + 1;
+	} else {
+		q_idx = backpack->y_idx;
+		s_idx1 = i1;
+	}
+	selection_p = backpack->selected_hits + q_idx;
+	if (*selection_p == NA_INTEGER
+	 || (backpack->select_mode == SELECT_FIRST) ==
+	    (s_idx1 < *selection_p))
+		*selection_p = s_idx1;
 	return 1;
 }
 
 static Backpack prepare_backpack(const int *x_start_p, const int *x_end_p,
 				 const int *x_space_p, 
 				 int min_overlap_score, int overlap_type,
-				 int backpack_select_mode, int circle_len,
-				 IntAE *hits)
+				 int select_mode, int circle_len, int pp_is_q,
+				 IntAE *hits, int *selected_hits)
 {
 	Backpack backpack;
 	int y_extension;
@@ -507,14 +526,16 @@ static Backpack prepare_backpack(const int *x_start_p, const int *x_end_p,
 	backpack.min_overlap_score = min_overlap_score;
 	backpack.y_extension = y_extension;
 	backpack.overlap_type = overlap_type;
-	backpack.select_mode = backpack_select_mode;
+	backpack.select_mode = select_mode;
 	backpack.circle_len = circle_len;
+	backpack.pp_is_q = pp_is_q;
 	backpack.hits = hits;
+	backpack.selected_hits = selected_hits;
 	return backpack;
 }
 
 static void update_backpack(Backpack *backpack, int y_start, int y_end,
-			    int y_space, int *hit)
+						int y_space, int y_idx)
 {
 	int y_start0;
 
@@ -530,7 +551,7 @@ static void update_backpack(Backpack *backpack, int y_start, int y_end,
 	backpack->y_space = y_space;
 	backpack->ext_y_start = y_start - backpack->y_extension;
 	backpack->ext_y_end = y_end + backpack->y_extension;
-	backpack->hit = hit;
+	backpack->y_idx = y_idx;
 	return;
 }
 
@@ -565,41 +586,22 @@ static void IntAE_delete_duplicates(IntAE *int_ae, int at1, int at2)
 	return;
 }
 
-static void select_hits(int *sh, const IntAE *qh_buf, const IntAE *sh_buf,
-			int select_mode)
-{
-	int nelt, i, i0, i1, current_sel, update_sel;
-
-	nelt = IntAE_get_nelt(qh_buf);
-	for (i = 0; i < nelt; i++) {
-		i0 = qh_buf->elts[i] - 1L;
-		current_sel = sh[i0];
-		i1 = sh_buf->elts[i];
-		update_sel = current_sel == NA_INTEGER ||
-			select_mode != SELECT_ARBITRARY &&
-			(select_mode == SELECT_FIRST) == (i1 < current_sel);
-		if (update_sel)
-			sh[i0] = i1;
-	}
-	return;
-}
-
-typedef void (*get_y_overlaps_funtype)(const void *, const Backpack *);
+typedef void (*GetYOverlapsFunType)(const void *, const Backpack *);
 
 static void pp_find_overlaps(
 		const int *q_start_p, const int *q_end_p,
-		const int *q_space_p, int q_len,
+		const int *q_space_p, const int *q_subset_p, int q_len,
 		const int *s_start_p, const int *s_end_p,
-		const int *s_space_p, int s_len,
+		const int *s_space_p, const int *s_subset_p, int s_len,
 		int min_overlap_score, int overlap_type,
 		int select_mode, int circle_len,
 		const void *pp, int pp_is_q,
-		get_y_overlaps_funtype get_y_overlaps,
-		IntAE *qh_buf, IntAE *sh_buf, int *sh)
+		GetYOverlapsFunType get_y_overlaps,
+		IntAE *qh_buf, IntAE *sh_buf, int *selected_hits)
 {
 	const int *x_start_p, *x_end_p, *x_space_p,
-		  *y_start_p, *y_end_p, *y_space_p;
-	int y_len, backpack_select_mode, j, *xh, old_nhit, new_nhit, k;
+		  *y_start_p, *y_end_p, *y_space_p, *y_subset_p;
+	int y_len, i, j, old_nhit, new_nhit, k;
 	IntAE *xh_buf, *yh_buf;
 	Backpack backpack;
 
@@ -613,13 +615,13 @@ static void pp_find_overlaps(
 		y_start_p = s_start_p;
 		y_end_p = s_end_p;
 		y_space_p = s_space_p;
+		y_subset_p = s_subset_p;
 		y_len = s_len;
 		yh_buf = sh_buf;
 		if (overlap_type == TYPE_WITHIN)
 			overlap_type = TYPE_EXTEND;
 		else if (overlap_type == TYPE_EXTEND)
 			overlap_type = TYPE_WITHIN;
-		backpack_select_mode = SELECT_ALL;
 	} else {
 		x_start_p = s_start_p;
 		x_end_p = s_end_p;
@@ -628,53 +630,48 @@ static void pp_find_overlaps(
 		y_start_p = q_start_p;
 		y_end_p = q_end_p;
 		y_space_p = q_space_p;
+		y_subset_p = q_subset_p;
 		y_len = q_len;
 		yh_buf = qh_buf;
-		backpack_select_mode = select_mode;
 	}
 	backpack = prepare_backpack(x_start_p, x_end_p, x_space_p,
 				    min_overlap_score, overlap_type,
-				    backpack_select_mode, circle_len,
-				    xh_buf);
-	for (j = 1, xh = sh;
-	     j <= y_len;
-	     j++, y_start_p++, y_end_p++, y_space_p++, xh++)
-	{
-		update_backpack(&backpack, *y_start_p, *y_end_p,
-				x_space_p == NULL ? 0 : *y_space_p,
-				xh);
+				    select_mode, circle_len, pp_is_q,
+				    xh_buf, selected_hits);
+	for (i = 0; i < y_len; i++) {
+		j = y_subset_p == NULL ? i : y_subset_p[i];
+		update_backpack(&backpack, y_start_p[j], y_end_p[j],
+				y_space_p == NULL ? 0 : y_space_p[j], j);
 		/* pass 0 */
 		get_y_overlaps(pp, &backpack);
 		if (circle_len == NA_INTEGER)
 			goto life_is_good;
-		if (backpack_select_mode == SELECT_ARBITRARY
-		 && *xh != NA_INTEGER)
+		if (select_mode == SELECT_ARBITRARY
+		 && !pp_is_q && selected_hits[j] != NA_INTEGER)
 			goto life_is_good;
 		/* pass 1 */
 		shift_y(&backpack, - circle_len);
 		get_y_overlaps(pp, &backpack);
-		if (backpack_select_mode == SELECT_ARBITRARY
-		 && *xh != NA_INTEGER)
+		if (select_mode == SELECT_ARBITRARY
+		 && !pp_is_q && selected_hits[j] != NA_INTEGER)
 			goto life_is_good;
 		/* pass 2 */
 		shift_y(&backpack, 2 * circle_len);
 		get_y_overlaps(pp, &backpack);
 
 		life_is_good:
-		if (backpack_select_mode == SELECT_ALL) {
-			old_nhit = IntAE_get_nelt(yh_buf);
+		if (select_mode != SELECT_ALL)
+			continue;
+		old_nhit = IntAE_get_nelt(yh_buf);
+		new_nhit = IntAE_get_nelt(xh_buf);
+		if (circle_len != NA_INTEGER) {
+			IntAE_delete_duplicates(xh_buf, old_nhit, new_nhit);
 			new_nhit = IntAE_get_nelt(xh_buf);
-			if (circle_len != NA_INTEGER) {
-				IntAE_delete_duplicates(xh_buf,
-							old_nhit, new_nhit);
-				new_nhit = IntAE_get_nelt(xh_buf);
-			}
-			for (k = old_nhit; k < new_nhit; k++)
-				IntAE_insert_at(yh_buf, k, j);
 		}
+		j++;  /* 1-based */
+		for (k = old_nhit; k < new_nhit; k++)
+			IntAE_insert_at(yh_buf, k, j);
 	}
-	if (pp_is_q && select_mode != SELECT_ALL)
-		select_hits(sh, qh_buf, sh_buf, select_mode);
 	return;
 }
 
@@ -739,22 +736,22 @@ static void nclist_get_y_overlaps(const int *x_nclist, const Backpack *backpack)
 
 static void nclist_find_overlaps(
 		const int *q_start_p, const int *q_end_p,
-		const int *q_space_p, int q_len,
+		const int *q_space_p, const int *q_subset_p, int q_len,
 		const int *s_start_p, const int *s_end_p,
-		const int *s_space_p, int s_len,
+		const int *s_space_p, const int *s_subset_p, int s_len,
 		int min_overlap_score, int overlap_type,
 		int select_mode, int circle_len,
 		const int *nclist, int nclist_is_q,
-		IntAE *qh_buf, IntAE *sh_buf, int *sh)
+		IntAE *qh_buf, IntAE *sh_buf, int *selected_hits)
 {
 	pp_find_overlaps(
-		q_start_p, q_end_p, q_space_p, q_len,
-		s_start_p, s_end_p, s_space_p, s_len,
+		q_start_p, q_end_p, q_space_p, q_subset_p, q_len,
+		s_start_p, s_end_p, s_space_p, s_subset_p, s_len,
 		min_overlap_score, overlap_type,
 		select_mode, circle_len,
 		nclist, nclist_is_q,
-		(get_y_overlaps_funtype) nclist_get_y_overlaps,
-		qh_buf, sh_buf, sh);
+		(GetYOverlapsFunType) nclist_get_y_overlaps,
+		qh_buf, sh_buf, selected_hits);
 }
 
 
@@ -819,22 +816,22 @@ static void pnclist_get_y_overlaps(const preNCList *x_pnclist,
 
 static void pnclist_find_overlaps(
 		const int *q_start_p, const int *q_end_p,
-		const int *q_space_p, int q_len,
+		const int *q_space_p, const int *q_subset_p, int q_len,
 		const int *s_start_p, const int *s_end_p,
-		const int *s_space_p, int s_len,
+		const int *s_space_p, const int *s_subset_p, int s_len,
 		int min_overlap_score, int overlap_type,
 		int select_mode, int circle_len,
 		const preNCList *pnclist, int pnclist_is_q,
-		IntAE *qh_buf, IntAE *sh_buf, int *sh)
+		IntAE *qh_buf, IntAE *sh_buf, int *selected_hits)
 {
 	pp_find_overlaps(
-		q_start_p, q_end_p, q_space_p, q_len,
-		s_start_p, s_end_p, s_space_p, s_len,
+		q_start_p, q_end_p, q_space_p, q_subset_p, q_len,
+		s_start_p, s_end_p, s_space_p, s_subset_p, s_len,
 		min_overlap_score, overlap_type,
 		select_mode, circle_len,
 		pnclist, pnclist_is_q,
-		(get_y_overlaps_funtype) pnclist_get_y_overlaps,
-		qh_buf, sh_buf, sh);
+		(GetYOverlapsFunType) pnclist_get_y_overlaps,
+		qh_buf, sh_buf, selected_hits);
 }
 
 
@@ -844,12 +841,12 @@ static void pnclist_find_overlaps(
 
 static void find_overlaps(
 		const int *q_start_p, const int *q_end_p,
-		const int *q_space_p, int q_len,
+		const int *q_space_p, const int *q_subset_p, int q_len,
 		const int *s_start_p, const int *s_end_p,
-		const int *s_space_p, int s_len,
+		const int *s_space_p, const int *s_subset_p, int s_len,
 		int min_overlap_score, int overlap_type,
 		int select_mode, int circle_len,
-		IntAE *qh_buf, IntAE *sh_buf, int *sh)
+		IntAE *qh_buf, IntAE *sh_buf, int *selected_hits)
 {
 	preNCList pnclist;
 	int pnclist_is_q;
@@ -857,19 +854,21 @@ static void find_overlaps(
 	if (q_len < s_len) {
 		/* Preprocess query. */
 		pnclist_is_q = TRUE;
-		build_preNCList(&pnclist, q_start_p, q_end_p, q_len);
+		build_preNCList(&pnclist, q_start_p, q_end_p,
+					  q_subset_p, q_len);
 	} else {
 		/* Preprocess subject. */
 		pnclist_is_q = FALSE;
-		build_preNCList(&pnclist, s_start_p, s_end_p, s_len);
+		build_preNCList(&pnclist, s_start_p, s_end_p,
+					  s_subset_p, s_len);
 	}
 	pnclist_find_overlaps(
-		q_start_p, q_end_p, q_space_p, q_len,
-		s_start_p, s_end_p, s_space_p, s_len,
+		q_start_p, q_end_p, q_space_p, q_subset_p, q_len,
+		s_start_p, s_end_p, s_space_p, s_subset_p, s_len,
 		min_overlap_score, overlap_type,
 		select_mode, circle_len,
 		&pnclist, pnclist_is_q,
-		qh_buf, sh_buf, sh);
+		qh_buf, sh_buf, selected_hits);
 
 	/* Don't do free_preNCList(&pnclist) here because it will try to call
 	   free on &pnclist itself as the last step! The code below is doing
@@ -1052,7 +1051,8 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 			  SEXP circle_length)
 {
 	int q_len, s_len, nclist_is_q0,
-	    min_overlap_score, overlap_type, select_mode, circle_len, *sh;
+	    min_overlap_score, overlap_type, select_mode, circle_len,
+	    *selected_hits;
 	const int *q_start_p, *q_end_p, *s_start_p, *s_end_p;
 	IntAE qh_buf, sh_buf;
 	SEXP ans;
@@ -1072,15 +1072,15 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 	sh_buf = new_IntAE(0, 0, 0);
 	if (select_mode != SELECT_ALL) {
 		PROTECT(ans = NEW_INTEGER(q_len));
-		sh = INTEGER(ans);
-		fill_with_val(sh, q_len, NA_INTEGER);
+		selected_hits = INTEGER(ans);
+		fill_with_val(selected_hits, q_len, NA_INTEGER);
 	}
-	nclist_find_overlaps(q_start_p, q_end_p, NULL, q_len,
-			     s_start_p, s_end_p, NULL, s_len,
+	nclist_find_overlaps(q_start_p, q_end_p, NULL, NULL, q_len,
+			     s_start_p, s_end_p, NULL, NULL, s_len,
 			     min_overlap_score, overlap_type,
 			     select_mode, circle_len,
 			     INTEGER(nclist), nclist_is_q0,
-			     &qh_buf, &sh_buf, sh);
+			     &qh_buf, &sh_buf, selected_hits);
 	if (select_mode != SELECT_ALL) {
 		UNPROTECT(1);
 		return ans;
@@ -1115,7 +1115,7 @@ static SEXP make_ans_elt(int i,
 		IntAE *qi_end_buf, IntAE *si_end_buf,
 		IntAE *qh_buf, IntAE *sh_buf)
 {
-	int q_len, s_len, qi_len, si_len, circle_len, *sh;
+	int q_len, s_len, qi_len, si_len, circle_len, *selected_hits;
 	IRanges_holder qi_holder, si_holder;
 	SEXP ans, nclist;
 	const int *qi_start_p, *qi_width_p, *si_start_p, *si_width_p;
@@ -1157,15 +1157,15 @@ static SEXP make_ans_elt(int i,
 	IntAE_set_nelt(sh_buf, 0);
 	if (select_mode != SELECT_ALL) {
 		PROTECT(ans = NEW_INTEGER(qi_len));
-		sh = INTEGER(ans);
-		fill_with_val(sh, qi_len, NA_INTEGER);
+		selected_hits = INTEGER(ans);
+		fill_with_val(selected_hits, qi_len, NA_INTEGER);
 	}
-	nclist_find_overlaps(qi_start_p, qi_end_buf->elts, NULL, qi_len,
-			     si_start_p, si_end_buf->elts, NULL, si_len,
+	nclist_find_overlaps(qi_start_p, qi_end_buf->elts, NULL, NULL, qi_len,
+			     si_start_p, si_end_buf->elts, NULL, NULL, si_len,
 			     min_overlap_score, overlap_type,
 			     select_mode, circle_len,
 			     INTEGER(nclist), nclists_is_q,
-			     qh_buf, sh_buf, sh);
+			     qh_buf, sh_buf, selected_hits);
 	if (select_mode != SELECT_ALL) {
 		UNPROTECT(1);
 		return ans;
@@ -1234,58 +1234,15 @@ SEXP NCLists_find_overlaps(SEXP q, SEXP s,
 
 /****************************************************************************
  * NCList_find_overlaps_by_group_and_combine()
- */
-
-static void subset1(const int *in, const int *idx, int idx_len, int *out)
-{
-	int i;
-
-	in--;
-	for (i = 0; i < idx_len; i++, idx++, out++)
-		*out = in[*idx];
-	return;
-}
-
-static void subset2(const int *in, const int *idx, int idx_len, IntAE *out)
-{
-	int i;
-
-	in--;
-	for (i = 0; i < idx_len; i++, idx++)
-		IntAE_insert_at(out, i, in[*idx]);
-	return;
-}
-
-static void extract_group(const Ints_holder *group_holder,
-			  const int *start_p, IntAE *start_buf,
-			  const int *width_p, IntAE *end_buf,
-			  const int *space_p, IntAE *space_buf)
-{
-	int i;
-
-	IntAE_set_nelt(start_buf, 0);
-	subset2(start_p, group_holder->ptr, group_holder->length, start_buf);
-	IntAE_set_nelt(end_buf, 0);
-	subset2(width_p, group_holder->ptr, group_holder->length, end_buf);
-	for (i = 0; i < group_holder->length; i++)
-		end_buf->elts[i] += start_buf->elts[i] - 1L;
-	if (space_p != NULL) {
-		IntAE_set_nelt(space_buf, 0);
-		subset2(space_p, group_holder->ptr,
-				 group_holder->length,
-				 space_buf);
-	}
-	return;
-}
-
-/* --- .Call ENTRY POINT ---
+ *
+ * --- .Call ENTRY POINT ---
  * Args:
- *   q_start, q_width, q_space: Integer vectors of length M (or NULL for
+ *   q_start, q_end, q_space: Integer vectors of length M (or NULL for
  *                   'q_space').
  *   q_groups:       A CompressedIntegerList object of length NG1. Each list
  *                   element (integer vector) represents a group of indices in
  *                   'q_start'.
- *   s_start, s_width, s_space: Integer vectors of length N (or NULL for
+ *   s_start, s_end, s_space: Integer vectors of length N (or NULL for
  *                   's_space').
  *   s_groups:       A CompressedIntegerList object of length NG2. Each list
  *                   element (integer vector) represents a group of indices in
@@ -1301,54 +1258,48 @@ static void extract_group(const Ints_holder *group_holder,
  *                   or NA values.
  */
 SEXP NCList_find_overlaps_by_group_and_combine(
-		SEXP q_start, SEXP q_width, SEXP q_space, SEXP q_groups,
-		SEXP s_start, SEXP s_width, SEXP s_space, SEXP s_groups,
+		SEXP q_start, SEXP q_end, SEXP q_space, SEXP q_groups,
+		SEXP s_start, SEXP s_end, SEXP s_space, SEXP s_groups,
 		SEXP nclists, SEXP nclist_is_q,
 		SEXP min_score, SEXP type, SEXP select,
 		SEXP circle_length)
 {
 	int q_len, s_len, NG1, NG2,
 	    min_overlap_score, overlap_type, select_mode,
-	    NG, i, qi_len, si_len, old_nhit, nhit;
-	const int *q_start_p, *q_width_p, *q_space_p,
-		  *s_start_p, *s_width_p, *s_space_p;
+	    NG, i, qi_len, si_len, *selected_hits;
+	const int *q_start_p, *q_end_p, *q_space_p,
+		  *s_start_p, *s_end_p, *s_space_p;
 	CompressedIntsList_holder q_groups_holder, s_groups_holder;
 	Ints_holder qi_group_holder, si_group_holder;
-	IntAE qi_start_buf, qi_end_buf, qi_space_buf,
-	      si_start_buf, si_end_buf, si_space_buf,
-	      qh_buf, sh_buf;
+	IntAE qh_buf, sh_buf;
 	SEXP ans, nclist;
 
 	/* Check query. */
-	q_len = check_integer_pairs(q_start, q_width,
-				    &q_start_p, &q_width_p,
-				    "start(query)", "width(query)");
+	q_len = check_integer_pairs(q_start, q_end,
+				    &q_start_p, &q_end_p,
+				    "start(query)", "end(query)");
 	if (q_space == R_NilValue) {
 		q_space_p = NULL;
-		qi_space_buf.elts = NULL;
 	} else {
 		if (LENGTH(q_space) != q_len)
 			error("'query.space' must have the length "
 			      "of 'query'");
 		q_space_p = INTEGER(q_space);
-		qi_space_buf = new_IntAE(0, 0, 0);
 	}
 	q_groups_holder = _hold_CompressedIntegerList(q_groups);
 	NG1 = _get_length_from_CompressedIntsList_holder(&q_groups_holder);
 
 	/* Check subject. */
-	s_len = check_integer_pairs(s_start, s_width,
-				    &s_start_p, &s_width_p,
-				    "start(s)", "width(s)");
+	s_len = check_integer_pairs(s_start, s_end,
+				    &s_start_p, &s_end_p,
+				    "start(s)", "end(s)");
 	if (s_space == R_NilValue) {
 		s_space_p = NULL;
-		si_space_buf.elts = NULL;
 	} else {
 		if (LENGTH(s_space) != s_len)
 			error("'subject.space' must have the length "
 			      "of 'subject'");
 		s_space_p = INTEGER(s_space);
-		si_space_buf = new_IntAE(0, 0, 0);
 	}
 	s_groups_holder = _hold_CompressedIntegerList(s_groups);
 	NG2 = _get_length_from_CompressedIntsList_holder(&s_groups_holder);
@@ -1357,13 +1308,13 @@ SEXP NCList_find_overlaps_by_group_and_combine(
 	overlap_type = get_overlap_type(type);
 	select_mode = get_select_mode(select);
 
-	qi_start_buf = new_IntAE(0, 0, 0);
-	qi_end_buf = new_IntAE(0, 0, 0);
-	si_start_buf = new_IntAE(0, 0, 0);
-	si_end_buf = new_IntAE(0, 0, 0);
 	qh_buf = new_IntAE(0, 0, 0);
 	sh_buf = new_IntAE(0, 0, 0);
-
+	if (select_mode != SELECT_ALL) {
+		PROTECT(ans = NEW_INTEGER(q_len));
+		selected_hits = INTEGER(ans);
+		fill_with_val(selected_hits, q_len, NA_INTEGER);
+	}
 	NG = NG1 <= NG2 ? NG1 : NG2;
 	for (i = 0; i < NG; i++) {
 		qi_group_holder = _get_elt_from_CompressedIntsList_holder(
@@ -1375,53 +1326,31 @@ SEXP NCList_find_overlaps_by_group_and_combine(
 		if (qi_len == 0 || si_len == 0)
 			continue;
 
-		/* Extract i-th group from query and subject. */
-		extract_group(&qi_group_holder,
-					q_start_p, &qi_start_buf,
-					q_width_p, &qi_end_buf,
-					q_space_p, &qi_space_buf);
-		extract_group(&si_group_holder,
-					s_start_p, &si_start_buf,
-					s_width_p, &si_end_buf,
-					s_space_p, &si_space_buf);
-
-		old_nhit = IntAE_get_nelt(&qh_buf);
 		nclist = VECTOR_ELT(nclists, i);
 		if (nclist == R_NilValue) {
 			find_overlaps(
-				qi_start_buf.elts, qi_end_buf.elts,
-				qi_space_buf.elts, qi_len,
-				si_start_buf.elts, si_end_buf.elts,
-				si_space_buf.elts, si_len,
+				q_start_p, q_end_p, q_space_p,
+				qi_group_holder.ptr, qi_len,
+				s_start_p, s_end_p, s_space_p,
+				si_group_holder.ptr, si_len,
 				min_overlap_score, overlap_type,
-				SELECT_ALL, INTEGER(circle_length)[i],
-				&qh_buf, &sh_buf, NULL);
+				select_mode, INTEGER(circle_length)[i],
+				&qh_buf, &sh_buf, selected_hits);
 		} else {
 			nclist_find_overlaps(
-				qi_start_buf.elts, qi_end_buf.elts,
-				qi_space_buf.elts, qi_len,
-				si_start_buf.elts, si_end_buf.elts,
-				si_space_buf.elts, si_len,
+				q_start_p, q_end_p, q_space_p,
+				qi_group_holder.ptr, qi_len,
+				s_start_p, s_end_p, s_space_p,
+				si_group_holder.ptr, si_len,
 				min_overlap_score, overlap_type,
-				SELECT_ALL, INTEGER(circle_length)[i],
+				select_mode, INTEGER(circle_length)[i],
 				INTEGER(nclist), LOGICAL(nclist_is_q)[i],
-				&qh_buf, &sh_buf, NULL);
+				&qh_buf, &sh_buf, selected_hits);
 		}
-		nhit = IntAE_get_nelt(&qh_buf) - old_nhit;
-
-		/* Remap new hits. */
-		subset1(qi_group_holder.ptr, qh_buf.elts + old_nhit, nhit,
-					qh_buf.elts + old_nhit);
-		subset1(si_group_holder.ptr, sh_buf.elts + old_nhit, nhit,
-					sh_buf.elts + old_nhit);
 	}
 	if (select_mode != SELECT_ALL) {
-		PROTECT(ans = NEW_INTEGER(q_len));
-		fill_with_val(INTEGER(ans), q_len, NA_INTEGER);
-		select_hits(INTEGER(ans), &qh_buf, &sh_buf, select_mode);
 		UNPROTECT(1);
 		return ans;
-		
 	}
 	sort_hits(qh_buf.elts, sh_buf.elts, IntAE_get_nelt(&qh_buf));
 	return new_Hits_from_IntAEs(&qh_buf, &sh_buf, q_len, s_len);

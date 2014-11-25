@@ -375,7 +375,8 @@ SEXP preNCList_free(SEXP x);
 SEXP preNCList_build(
 	SEXP pnclist,
 	SEXP x_start,
-	SEXP x_end
+	SEXP x_end,
+	SEXP x_subset
 );
 
 SEXP new_NCList_from_preNCList(
@@ -414,11 +415,11 @@ SEXP NCLists_find_overlaps(
 
 SEXP NCList_find_overlaps_by_group_and_combine(
 	SEXP q_start,
-	SEXP q_width,
+	SEXP q_end,
 	SEXP q_space,
 	SEXP q_groups,
 	SEXP s_start,
-	SEXP s_width,
+	SEXP s_end,
 	SEXP s_space,
 	SEXP s_groups,
 	SEXP nclists,
