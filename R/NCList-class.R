@@ -183,24 +183,6 @@ findOverlaps_NCList <- function(query, subject, min.score=1L,
 }
 
 ### NOT exported.
-NCList_which_to_preprocess <- function(query, subject, select)
-{
-    ## Preprocessing the query instead of the subject is tempting when
-    ## the query is shorter than the subject but then the Hits object
-    ## returned by .Call entry point NCList_find_overlaps() needs to be
-    ## reversed with S4Vectors:::Hits_revmap(). This operation requires
-    ## sorting the this so its cost is in the order of NH * log(NH) where
-    ## NH is the nb of hits. Because this extra cost cannot be known in
-    ## advance and could possibly defeat the purpose of preprocessing the
-    ## query instead of the subject, the empirical criteria for doing so
-    ## is more conservative than just q_len <= s_len.
-    q_len <- length(query)
-    s_len <- length(subject)
-    preprocess_q <- q_len == 0L || q_len * (log10(q_len))^2 <= s_len
-    ifelse(preprocess_q, "query", "subject")
-}
-
-### NOT exported.
 min_overlap_score <- function(maxgap=0L, minoverlap=1L)
 {
     ## Check and normalize 'maxgap'.

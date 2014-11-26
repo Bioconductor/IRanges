@@ -167,24 +167,22 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
             .postProcess_findOverlaps_result(result, unsortedQuery, origQuery, subject, type, minoverlap, maxgap, origSelect)
           })
 
-### findOverlaps methods for NCList
-setMethods("findOverlaps", list(c("NCList", "Ranges"), c("Ranges", "NCList")),
-    function(query, subject, maxgap=0L, minoverlap=1L,
+findOverlaps_Ranges <- function(query, subject,
+             maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
              algorithm=c("intervaltree", "nclist"))
-    {
-        min.score <- min_overlap_score(maxgap, minoverlap)
-        type <- match.arg(type)
-        select <- match.arg(select)
-        algorithm <- match.arg(algorithm)
-        if (algorithm != "intervaltree")
-            warning("'algorithm' is ignored when 'query' or 'subject' ",
-                    "is an NCList object")
-        findOverlaps_NCList(query, subject, min.score=min.score,
-                            type=type, select=select)
-    }
-)
+{
+    min.score <- min_overlap_score(maxgap, minoverlap)
+    type <- match.arg(type)
+    select <- match.arg(select)
+    algorithm <- match.arg(algorithm)
+    if (algorithm != "intervaltree")
+        warning("'algorithm' is ignored when 'query' or 'subject' ",
+                "is an NCList object")
+    findOverlaps_NCList(query, subject, min.score=min.score,
+                        type=type, select=select)
+}
 
 setMethod("findOverlaps", c("Ranges", "Ranges"),
     function(query, subject, maxgap=0L, minoverlap=1L,
@@ -197,19 +195,19 @@ setMethod("findOverlaps", c("Ranges", "Ranges"),
         algorithm <- match.arg(algorithm)
         if (algorithm == "intervaltree") {
             subject <- IntervalTree(subject)
+            findOverlaps(query, subject,
+                         maxgap=maxgap, minoverlap=minoverlap,
+                         type=type, select=select)
         } else {
-            which_to_preprocess <- NCList_which_to_preprocess(query, subject,
-                                                              select)
-            if (which_to_preprocess == "query")
-                query <- NCList(query)
-            else
-                subject <- NCList(subject)
+            findOverlaps_Ranges(query, subject,
+                                maxgap=maxgap, minoverlap=minoverlap,
+                                type=type, select=select)
         }
-        findOverlaps(query, subject,
-                     maxgap=maxgap, minoverlap=minoverlap,
-                     type=type, select=select)
     }
 )
+
+setMethod("findOverlaps", c("NCList", "Ranges"), findOverlaps_Ranges)
+setMethod("findOverlaps", c("Ranges", "NCList"), findOverlaps_Ranges)
 
 setMethod("findOverlaps", c("Vector", "missing"),
     function(query, subject, maxgap=0L, minoverlap=1L,
