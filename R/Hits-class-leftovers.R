@@ -59,13 +59,16 @@ setAs("Hits", "list", function(from) as.list(from))
 ### selectHits()
 ###
 
-selectHits <- function(x, select=c("all", "first", "last", "arbitrary"))
+selectHits <- function(x, select=c("all", "first", "last", "arbitrary",
+                                   "count"))
 {
     if (!is(x, "Hits"))
         stop("'x' must be a Hits object")
     select <- match.arg(select)
     if (select == "all")
         return(x)
+    if (select == "count")
+        return(width(.from_Hits_to_PartitioningByEnd(x)))
     q_hits <- queryHits(x)
     s_hits <- subjectHits(x)
     sort_hits <- select != "arbitrary" &&

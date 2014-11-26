@@ -383,7 +383,7 @@ SEXP NCList_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
  * pp_find_overlaps()
  */
 
-/* The 6 supported types of overlap. */
+/* 6 supported types of overlap. */
 #define TYPE_ANY		1
 #define TYPE_START		2
 #define TYPE_END		3
@@ -391,11 +391,12 @@ SEXP NCList_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
 #define TYPE_EXTEND		5
 #define TYPE_EQUAL		6
 
-/* The 4 supported select modes. */
+/* 4 supported select modes + count mode */
 #define SELECT_ALL		1
 #define SELECT_FIRST		2
 #define SELECT_LAST		3
 #define SELECT_ARBITRARY	4
+#define COUNT			5
 
 typedef struct backpack {
 	/* Members set by prepare_backpack(). */
@@ -498,6 +499,10 @@ static int process_hit(int x_idx, const Backpack *backpack)
 		s_idx1 = i1;
 	}
 	selection_p = backpack->direct_out + q_idx;
+	if (backpack->select_mode == COUNT) {
+		(*selection_p)++;
+		return 1;
+	}
 	if (*selection_p == NA_INTEGER
 	 || (backpack->select_mode == SELECT_FIRST) ==
 	    (s_idx1 < *selection_p))
@@ -601,7 +606,7 @@ static void pp_find_overlaps(
 {
 	const int *x_start_p, *x_end_p, *x_space_p,
 		  *y_start_p, *y_end_p, *y_space_p, *y_subset_p;
-	int y_len, i, j, old_nhit, new_nhit, k;
+	int y_len, backpack_select_mode, i, j, old_nhit, new_nhit, k;
 	IntAE *xh_buf, *yh_buf;
 	Backpack backpack;
 
@@ -634,9 +639,13 @@ static void pp_find_overlaps(
 		y_len = q_len;
 		yh_buf = qh_buf;
 	}
+	if (circle_len != NA_INTEGER && select_mode == COUNT)
+		backpack_select_mode = SELECT_ALL;
+	else
+		backpack_select_mode = select_mode;
 	backpack = prepare_backpack(x_start_p, x_end_p, x_space_p,
 				    min_overlap_score, overlap_type,
-				    select_mode, circle_len, pp_is_q,
+				    backpack_select_mode, circle_len, pp_is_q,
 				    xh_buf, direct_out);
 	for (i = 0; i < y_len; i++) {
 		j = y_subset_p == NULL ? i : y_subset_p[i];
@@ -660,7 +669,7 @@ static void pp_find_overlaps(
 		get_y_overlaps(pp, &backpack);
 
 		life_is_good:
-		if (select_mode != SELECT_ALL)
+		if (backpack_select_mode != SELECT_ALL)
 			continue;
 		old_nhit = IntAE_get_nelt(yh_buf);
 		new_nhit = IntAE_get_nelt(xh_buf);
@@ -668,9 +677,19 @@ static void pp_find_overlaps(
 			IntAE_delete_duplicates(xh_buf, old_nhit, new_nhit);
 			new_nhit = IntAE_get_nelt(xh_buf);
 		}
-		j++;  /* 1-based */
-		for (k = old_nhit; k < new_nhit; k++)
-			IntAE_insert_at(yh_buf, k, j);
+		if (select_mode != COUNT) {
+			j++;  /* 1-based */
+			for (k = old_nhit; k < new_nhit; k++)
+				IntAE_insert_at(yh_buf, k, j);
+			continue;
+		}
+		if (pp_is_q) {
+			for (k = old_nhit; k < new_nhit; k++)
+				direct_out[xh_buf->elts[k] - 1]++;
+		} else {
+			direct_out[j] += new_nhit - old_nhit;
+		}
+		IntAE_set_nelt(xh_buf, old_nhit);
 	}
 	return;
 }
@@ -906,8 +925,10 @@ static int get_select_mode(SEXP select)
 		return SELECT_LAST;
 	if (strcmp(select0, "arbitrary") == 0)
 		return SELECT_ARBITRARY;
+	if (strcmp(select0, "count") == 0)
+		return COUNT;
 	error("'select' must be \"all\", \"first\", "
-	      "\"last\", or \"arbitrary\"");
+	      "\"last\", \"arbitrary\", or \"count\"");
 	return 0;
 }
 
@@ -929,14 +950,15 @@ static int get_circle_length(SEXP circle_length)
  * Move raw hits from buffers to Hits object or integer vector
  */
 
-static SEXP new_direct_out(int q_len)
+static SEXP new_direct_out(int q_len, int select_mode)
 {
 	SEXP ans;
-	int i, *ans_elt;
+	int init_val, i, *ans_elt;
 
 	PROTECT(ans = NEW_INTEGER(q_len));
+	init_val = select_mode == COUNT ? 0 : NA_INTEGER;
 	for (i = 0, ans_elt = INTEGER(ans); i < q_len; i++, ans_elt++)
-		*ans_elt = NA_INTEGER;
+		*ans_elt = init_val;
 	UNPROTECT(1);
 	return ans;
 }
@@ -1030,11 +1052,12 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 	overlap_type = get_overlap_type(type);
 	select_mode = get_select_mode(select);
 	circle_len = get_circle_length(circle_length);
+
 	qh_buf = new_IntAE(0, 0, 0);
 	sh_buf = new_IntAE(0, 0, 0);
 	direct_out = NULL;
 	if (select_mode != SELECT_ALL) {
-		PROTECT(ans = new_direct_out(q_len));
+		PROTECT(ans = new_direct_out(q_len, select_mode));
 		direct_out = INTEGER(ans);
 	}
 	if (nclist == R_NilValue) {
@@ -1150,7 +1173,7 @@ SEXP NCList_find_overlaps_in_groups(
 	sh_buf = new_IntAE(0, 0, 0);
 	direct_out = NULL;
 	if (select_mode != SELECT_ALL) {
-		PROTECT(ans = new_direct_out(q_len));
+		PROTECT(ans = new_direct_out(q_len, select_mode));
 		direct_out = INTEGER(ans);
 	}
 	NG = NG1 <= NG2 ? NG1 : NG2;

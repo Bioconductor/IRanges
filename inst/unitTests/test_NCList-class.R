@@ -26,7 +26,7 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
 .findOverlaps_naive <- function(query, subject, min.score=1L,
                                 type=c("any", "start", "end",
                                        "within", "extend", "equal"),
-                                select=c("all", "first", "last"))
+                                select=c("all", "first", "last", "count"))
 {
     type <- match.arg(type)
     select <- match.arg(select)
@@ -49,6 +49,8 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
                            subjectLength=length(subject))
         return(ans)
     }
+    if (select == "count")
+        return(elementLengths(hits_per_query))
     ans <- integer(length(query))
     ans[] <- NA_integer_
     idx1 <- which(elementLengths(hits_per_query) != 0L)
@@ -112,7 +114,7 @@ test_findOverlaps_NCList_with_filtering <- function()
     pp_subject <- NCList(subject)
     for (min.score in -3:4) {
         for (type in c("any", "start", "end", "within", "extend", "equal")) {
-            for (select in c("all", "first", "last")) {
+            for (select in c("all", "first", "last", "count")) {
                 #cat("min.score=", min.score,
                 #    " type=", type, " select=", select, "\n", sep="")
                 target <- .findOverlaps_naive(query, subject,
@@ -149,7 +151,7 @@ test_findOverlaps_NCList_with_circular_space <- function()
             for (j in -2:2) {
                 subject <- shift(subject0, shift=j*circle_length)
                 pp_subject <- NCList(subject, circle.length=circle_length)
-                for (select in c("all", "first", "last")) {
+                for (select in c("all", "first", "last", "count")) {
                     target <- selectHits(target0, select=select)
                     current <- findOverlaps_NCList(query, pp_subject,
                                                    type=type, select=select,
