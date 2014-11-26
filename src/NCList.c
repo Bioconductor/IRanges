@@ -18,22 +18,44 @@ typedef struct pnclist {
 
 typedef struct pnclist_elt {
 	int n2x;		/* 0-based back index into 'x' (Ranges) */
-	struct pnclist *nested_list;
+	struct pnclist nested_list;
 } preNCListElt;
 
-
-/****************************************************************************
- * preNCList_new()
- */
 
 static void init_preNCList(preNCList *pnclist)
 {
 	pnclist->buflength = pnclist->nelt = 0;
-	pnclist->elts = NULL;
 	return;
 }
 
+static void init_preNCListElt(preNCListElt *elt, int n2x)
+{
+	elt->n2x = n2x;
+	init_preNCList(&(elt->nested_list));
+	return;
+}
+
+static void free_preNCList(const preNCList *pnclist)
+{
+	int n;
+	const preNCListElt *elt;
+
+	if (pnclist->buflength == 0)
+		return;
+	for (n = 0, elt = pnclist->elts; n < pnclist->nelt; n++, elt++)
+		free_preNCList(&(elt->nested_list));
+	free(pnclist->elts);
+	return;
+}
+
+
+/****************************************************************************
+ * preNCList_new() and preNCList_free()
+ */
+
+
 /* --- .Call ENTRY POINT --- */
+
 SEXP preNCList_new()
 {
 	preNCList *top_pnclist;
@@ -45,25 +67,6 @@ SEXP preNCList_new()
 	return R_MakeExternalPtr(top_pnclist, R_NilValue, R_NilValue);
 }
 
-
-/****************************************************************************
- * preNCList_free()
- */
-
-static void free_preNCList(preNCList *pnclist)
-{
-	int n;
-	const preNCListElt *elt;
-
-	if (pnclist->buflength != 0) {
-		for (n = 0, elt = pnclist->elts; n < pnclist->nelt; n++, elt++)
-			free_preNCList(elt->nested_list);
-		free(pnclist->elts);
-	}
-	free(pnclist);
-	return;
-}
-
 /* --- .Call ENTRY POINT --- */
 SEXP preNCList_free(SEXP pnclist)
 {
@@ -73,6 +76,7 @@ SEXP preNCList_free(SEXP pnclist)
 	if (top_pnclist == NULL)
 		error("preNCList_free: pointer to preNCList struct is NULL");
 	free_preNCList(top_pnclist);
+	free(top_pnclist);
 	R_SetExternalPtrAddr(pnclist, NULL);
 	return R_NilValue;
 }
@@ -81,16 +85,6 @@ SEXP preNCList_free(SEXP pnclist)
 /****************************************************************************
  * preNCList_build()
  */
-
-static void init_preNCListElt(preNCListElt *elt, int n2x)
-{
-	elt->n2x = n2x;
-	elt->nested_list = (preNCList *) malloc(sizeof(preNCList));
-	if (elt->nested_list == NULL)
-		error("init_preNCListElt: memory allocation failed");
-	init_preNCList(elt->nested_list);
-	return;
-}
 
 static void extend_preNCList(preNCList *pnclist)
 {
@@ -122,15 +116,15 @@ static void extend_preNCList(preNCList *pnclist)
 	return;
 }
 
-static preNCListElt *add_preNCList_elt(preNCList *pnclist, int n2x)
+static preNCListElt *append_preNCList_elt(preNCList *host, int n2x)
 {
 	preNCListElt *new_elt;
 
-	if (pnclist->nelt == pnclist->buflength)
-		extend_preNCList(pnclist);
-	new_elt = pnclist->elts + pnclist->nelt;
+	if (host->nelt == host->buflength)
+		extend_preNCList(host);
+	new_elt = host->elts + host->nelt;
 	init_preNCListElt(new_elt, n2x);
-	pnclist->nelt++;
+	host->nelt++;
 	return new_elt;
 }
 
@@ -192,8 +186,9 @@ static void build_preNCList(preNCList *top_pnclist,
 			    const int *x_start_p, const int *x_end_p,
 			    const int *x_subset_p, int x_len)
 {
-	preNCListElt *new_elt;
 	int *oo, k, d, i, current_end;
+	preNCList *host;
+	preNCListElt *new_elt;
 
 	/* Determine order of 'x'. 'oo' will be such that 'x[oo]' is sorted
 	   first by ascending start then by descending end. */
@@ -214,13 +209,9 @@ static void build_preNCList(preNCList *top_pnclist,
 		current_end = x_end_p[i];
 		while (d >= 0 && x_end_p[stack[d]->n2x] < current_end)
 			d--;  // unstack
-		if (d == -1) {
-			// append range i to top-level
-			new_elt = add_preNCList_elt(top_pnclist, i);
-		} else {
-			// append range i to list nested in stack[d]
-			new_elt = add_preNCList_elt(stack[d]->nested_list, i);
-		}
+		host = d == -1 ? top_pnclist: &(stack[d]->nested_list);
+		// append range i to host
+		new_elt = append_preNCList_elt(host, i);
 		if (++d == stack_length)
 			extend_stack();
 		stack[d] = new_elt;  // stack
@@ -272,7 +263,7 @@ static int compute_length_of_preNCList_as_INTEGER(const preNCList *pnclist)
 	ans_len = 1U + 2U * (unsigned int) nelt;
 	for (n = 0, elt = pnclist->elts; n < nelt; n++, elt++) {
 		dump_len = compute_length_of_preNCList_as_INTEGER(
-					elt->nested_list);
+					&(elt->nested_list));
 		ans_len += dump_len;
 		if (ans_len < dump_len)
 			goto too_big;
@@ -296,7 +287,7 @@ static int dump_preNCList_as_int_array(const preNCList *pnclist, int *out)
 	NCLIST_NELT(out) = nelt;
 	for (n = 0, elt = pnclist->elts; n < nelt; n++, elt++) {
 		NCLIST_N2X(out, n) = elt->n2x;
-		dump_len = dump_preNCList_as_int_array(elt->nested_list,
+		dump_len = dump_preNCList_as_int_array(&(elt->nested_list),
 						       out + offset);
 		NCSUBLIST_OFFSET(out, n) = dump_len != 0 ? offset : -1;
 		offset += dump_len;
@@ -807,8 +798,8 @@ static void pnclist_get_y_overlaps(const preNCList *x_pnclist,
 		 || (process_hit(n2x, backpack) != 0 &&
 		     backpack->select_mode == SELECT_ARBITRARY))
 			break;
-		if (elt->nested_list->nelt != 0)
-			pnclist_get_y_overlaps(elt->nested_list, backpack);
+		if (elt->nested_list.nelt != 0)
+			pnclist_get_y_overlaps(&(elt->nested_list), backpack);
 	}
 	return;
 }
@@ -825,41 +816,37 @@ static void find_overlaps(
 		const int *s_space_p, const int *s_subset_p, int s_len,
 		int min_overlap_score, int overlap_type,
 		int select_mode, int circle_len,
-		int preprocess_q,
+		SEXP nclist, int preprocess_q,
 		IntAE *qh_buf, IntAE *sh_buf, int *direct_out)
 {
 	preNCList pnclist;
+	const void *pp;
+	GetYOverlapsFunType get_y_overlaps;
 
-	if (preprocess_q) {
-		/* Preprocess query. */
-		build_preNCList(&pnclist, q_start_p, q_end_p,
-					  q_subset_p, q_len);
+	if (nclist == R_NilValue) {
+		/* On-the-fly preprocessing. */
+		if (preprocess_q) {
+			build_preNCList(&pnclist, q_start_p, q_end_p,
+						  q_subset_p, q_len);
+		} else {
+			build_preNCList(&pnclist, s_start_p, s_end_p,
+						  s_subset_p, s_len);
+		}
+		pp = &pnclist;
+		get_y_overlaps = (GetYOverlapsFunType) pnclist_get_y_overlaps;
 	} else {
-		/* Preprocess subject. */
-		build_preNCList(&pnclist, s_start_p, s_end_p,
-					  s_subset_p, s_len);
+		pp = INTEGER(nclist);
+		get_y_overlaps = (GetYOverlapsFunType) nclist_get_y_overlaps;
 	}
 	pp_find_overlaps(
 		q_start_p, q_end_p, q_space_p, q_subset_p, q_len,
 		s_start_p, s_end_p, s_space_p, s_subset_p, s_len,
 		min_overlap_score, overlap_type,
 		select_mode, circle_len,
-		&pnclist, preprocess_q,
-		(GetYOverlapsFunType) pnclist_get_y_overlaps,
+		pp, preprocess_q, get_y_overlaps,
 		qh_buf, sh_buf, direct_out);
-
-	/* Don't do free_preNCList(&pnclist) here because it will try to call
-	   free on &pnclist itself as the last step! The code below is doing
-	   the same as free_preNCList() *except* for that last step.
-	   TODO: Avoid this code duplication. */
-	int n;
-	const preNCListElt *elt;
-
-	if (pnclist.buflength != 0) {
-		for (n = 0, elt = pnclist.elts; n < pnclist.nelt; n++, elt++)
-			free_preNCList(elt->nested_list);
-		free(pnclist.elts);
-	}
+	if (nclist == R_NilValue)
+		free_preNCList(&pnclist);
 	return;
 }
 
@@ -1034,9 +1021,9 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 			  SEXP min_score, SEXP type, SEXP select,
 			  SEXP circle_length)
 {
-	int q_len, s_len, pp_is_q,
+	int q_len, s_len,
 	    min_overlap_score, overlap_type, select_mode, circle_len,
-	    *direct_out;
+	    *direct_out, preprocess_q;
 	const int *q_start_p, *q_end_p, *s_start_p, *s_end_p;
 	IntAE qh_buf, sh_buf;
 	SEXP ans;
@@ -1047,7 +1034,6 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 	s_len = check_integer_pairs(s_start, s_end,
 				    &s_start_p, &s_end_p,
 				    "start(s)", "end(s)");
-	pp_is_q = LOGICAL(nclist_is_q)[0];
 	min_overlap_score = get_min_overlap_score(min_score);
 	overlap_type = get_overlap_type(type);
 	select_mode = get_select_mode(select);
@@ -1065,29 +1051,23 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 		   additional cost of sorting the hits when using a
 		   preprocessed query. Note that this cost will depend on the
 		   number of hits and cannot be known in advance. */	
-		pp_is_q = q_len == 0 || q_len * log10((double) q_len) <= s_len;
-		find_overlaps(
-			q_start_p, q_end_p, NULL, NULL, q_len,
-			s_start_p, s_end_p, NULL, NULL, s_len,
-			min_overlap_score, overlap_type,
-			select_mode, circle_len,
-			pp_is_q,
-			&qh_buf, &sh_buf, direct_out);
+		preprocess_q = q_len == 0 ||
+			       q_len * log10((double) q_len) <= s_len;
 	} else {
-		pp_find_overlaps(
-			q_start_p, q_end_p, NULL, NULL, q_len,
-			s_start_p, s_end_p, NULL, NULL, s_len,
-			min_overlap_score, overlap_type,
-			select_mode, circle_len,
-			INTEGER(nclist), pp_is_q,
-			(GetYOverlapsFunType) nclist_get_y_overlaps,
-			&qh_buf, &sh_buf, direct_out);
+		preprocess_q = LOGICAL(nclist_is_q)[0];
 	}
+	find_overlaps(
+		q_start_p, q_end_p, NULL, NULL, q_len,
+		s_start_p, s_end_p, NULL, NULL, s_len,
+		min_overlap_score, overlap_type,
+		select_mode, circle_len,
+		nclist, preprocess_q,
+		&qh_buf, &sh_buf, direct_out);
 	if (select_mode != SELECT_ALL) {
 		UNPROTECT(1);
 		return ans;
 	}
-	if (pp_is_q)
+	if (preprocess_q)
 		sort_hits(qh_buf.elts, sh_buf.elts, IntAE_get_nelt(&sh_buf));
 	return new_Hits_from_IntAEs(&qh_buf, &sh_buf, q_len, s_len);
 }
@@ -1127,7 +1107,7 @@ SEXP NCList_find_overlaps_in_groups(
 {
 	int q_len, s_len, NG1, NG2,
 	    min_overlap_score, overlap_type, select_mode,
-	    NG, i, qi_len, si_len, *direct_out;
+	    NG, i, qi_len, si_len, *direct_out, preprocess_q;
 	const int *q_start_p, *q_end_p, *q_space_p,
 		  *s_start_p, *s_end_p, *s_space_p;
 	CompressedIntsList_holder q_groups_holder, s_groups_holder;
@@ -1189,27 +1169,19 @@ SEXP NCList_find_overlaps_in_groups(
 
 		nclist = VECTOR_ELT(nclists, i);
 		if (nclist == R_NilValue) {
-			find_overlaps(
-				q_start_p, q_end_p, q_space_p,
-				qi_group_holder.ptr, qi_len,
-				s_start_p, s_end_p, s_space_p,
-				si_group_holder.ptr, si_len,
-				min_overlap_score, overlap_type,
-				select_mode, INTEGER(circle_length)[i],
-				qi_len < si_len,
-				&qh_buf, &sh_buf, direct_out);
+			preprocess_q = qi_len < si_len;
 		} else {
-			pp_find_overlaps(
-				q_start_p, q_end_p, q_space_p,
-				qi_group_holder.ptr, qi_len,
-				s_start_p, s_end_p, s_space_p,
-				si_group_holder.ptr, si_len,
-				min_overlap_score, overlap_type,
-				select_mode, INTEGER(circle_length)[i],
-				INTEGER(nclist), LOGICAL(nclist_is_q)[i],
-				(GetYOverlapsFunType) nclist_get_y_overlaps,
-				&qh_buf, &sh_buf, direct_out);
+			preprocess_q = LOGICAL(nclist_is_q)[i];
 		}
+		find_overlaps(
+			q_start_p, q_end_p, q_space_p,
+			qi_group_holder.ptr, qi_len,
+			s_start_p, s_end_p, s_space_p,
+			si_group_holder.ptr, si_len,
+			min_overlap_score, overlap_type,
+			select_mode, INTEGER(circle_length)[i],
+			nclist, preprocess_q,
+			&qh_buf, &sh_buf, direct_out);
 	}
 	if (select_mode != SELECT_ALL) {
 		UNPROTECT(1);

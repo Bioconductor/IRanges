@@ -169,6 +169,7 @@ findOverlaps_NCList <- function(query, subject,
         nclist <- query@nclist
         nclist_is_q <- TRUE
     } else {
+        ## We'll do "on-the-fly preprocessing".
         nclist <- NULL
         nclist_is_q <- NA
     }
@@ -362,6 +363,7 @@ findOverlaps_NCLists <- function(query, subject,
         nclist_is_q <- rep.int(TRUE, length(nclists))
         query <- query@rglist
     } else {
+        ## We'll do "on-the-fly preprocessing".
         NG <- min(length(query), length(subject))
         nclists <- vector(mode="list", length=NG)
         nclist_is_q <- rep.int(NA, length(nclists))
