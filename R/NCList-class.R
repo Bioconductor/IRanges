@@ -142,63 +142,6 @@ print_NCList <- function(x)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Representation of a list of NCList objects
-###
-
-setClass("NCLists",
-    contains="RangesList",
-    representation(
-        nclists="list",
-        rglist="CompressedIRangesList"
-    ),
-    prototype(
-        elementType="NCList"
-    )
-)
-
-setMethod("parallelSlotNames", "NCLists",
-    function(x) c("nclists", "rglist", callNextMethod())
-)
-
-### TODO: Move rglist() generic from GenomicRanges to IRanges
-#setMethod("rglist", "NCLists", function(x, ...) x@ranges)
-setMethod("ranges", "NCLists", function(x, ...) x@rglist)
-setMethod("length", "NCLists", function(x) length(ranges(x)))
-setMethod("names", "NCLists", function(x) names(ranges(x)))
-setMethod("start", "NCLists", function(x, ...) start(ranges(x)))
-setMethod("end", "NCLists", function(x, ...) end(ranges(x)))
-setMethod("width", "NCLists", function(x) width(ranges(x)))
-
-setMethod("elementLengths", "NCLists", function(x) elementLengths(ranges(x)))
-setMethod("getListElement", "NCLists",
-    function (x, i, exact=TRUE)
-    {
-        i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
-                                             error.if.nomatch=TRUE)
-        new2("NCList", nclist=x@nclists[[i]], ranges=x@rglist[[i]],
-                       check=FALSE)
-    }
-)
-
-setAs("NCLists", "CompressedIRangesList", function(from) ranges(from))
-setAs("NCLists", "IRangesList", function(from) ranges(from))
-
-### NCLists constructor.
-NCLists <- function(x, circle.length=NA_integer_)
-{
-    if (!is(x, "RangesList"))
-        stop("'x' must be a RangesList object")
-    if (!is(x, "CompressedIRangesList"))
-        x <- as(x, "CompressedIRangesList")
-    x <- .shift_rglist_to_first_circle(x, circle.length)
-    ans_nclists <- mapply(.nclist, start(x), end(x), SIMPLIFY=FALSE)
-    new2("NCLists", nclists=ans_nclists, rglist=x, check=FALSE)
-}
-
-setAs("RangesList", "NCLists", function(from) NCLists(from))
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### findOverlaps_NCList()
 ###
 
@@ -209,8 +152,8 @@ findOverlaps_NCList <- function(query, subject, min.score=1L,
                                 select=c("all", "first", "last", "arbitrary"),
                                 circle.length=NA_integer_)
 {
-    if (!(is(query, "NCList") || is(subject, "NCList")))
-        stop("'query' or 'subject' must be an NCList object")
+    if (!(is(query, "Ranges") || is(subject, "Ranges")))
+        stop("'query' and 'subject' must be Ranges objects")
     if (!isSingleNumber(min.score))
         stop("'min.score' must be a single integer")
     if (!is.integer(min.score))
@@ -220,20 +163,21 @@ findOverlaps_NCList <- function(query, subject, min.score=1L,
     circle.length <- .normarg_circle.length1(circle.length)
 
     if (is(subject, "NCList")) {
-        if (!is(query, "Ranges"))
-            stop("'query' must be a Ranges object")
         nclist <- subject@nclist
-        nclist_is_query <- FALSE
-    } else {
-        if (!is(subject, "Ranges"))
-            stop("'subject' must be a Ranges object")
+        nclist_is_q <- FALSE
+        subject <- subject@ranges
+    } else if (is(query, "NCList")) {
         nclist <- query@nclist
-        nclist_is_query <- TRUE
+        nclist_is_q <- TRUE
+        query <- query@ranges
+    } else {
+        nclist <- NULL
+        nclist_is_q <- NA
     }
     .Call2("NCList_find_overlaps",
            start(query), end(query),
            start(subject), end(subject),
-           nclist, nclist_is_query,
+           nclist, nclist_is_q,
            min.score, type, select, circle.length,
            PACKAGE="IRanges")
 }
@@ -282,8 +226,129 @@ min_overlap_score <- function(maxgap=0L, minoverlap=1L)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Representation of a list of NCList objects
+###
+
+setClass("NCLists",
+    contains="RangesList",
+    representation(
+        nclists="list",
+        rglist="CompressedIRangesList"
+    ),
+    prototype(
+        elementType="NCList"
+    )
+)
+
+setMethod("parallelSlotNames", "NCLists",
+    function(x) c("nclists", "rglist", callNextMethod())
+)
+
+### TODO: Move rglist() generic from GenomicRanges to IRanges
+#setMethod("rglist", "NCLists", function(x, ...) x@ranges)
+setMethod("ranges", "NCLists", function(x, ...) x@rglist)
+setMethod("length", "NCLists", function(x) length(ranges(x)))
+setMethod("names", "NCLists", function(x) names(ranges(x)))
+setMethod("start", "NCLists", function(x, ...) start(ranges(x)))
+setMethod("end", "NCLists", function(x, ...) end(ranges(x)))
+setMethod("width", "NCLists", function(x) width(ranges(x)))
+
+setMethod("elementLengths", "NCLists", function(x) elementLengths(ranges(x)))
+setMethod("getListElement", "NCLists",
+    function (x, i, exact=TRUE)
+    {
+        i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
+                                             error.if.nomatch=TRUE)
+        new2("NCList", nclist=x@nclists[[i]], ranges=x@rglist[[i]],
+                       check=FALSE)
+    }
+)
+
+setAs("NCLists", "CompressedIRangesList", function(from) ranges(from))
+setAs("NCLists", "IRangesList", function(from) ranges(from))
+
+.extract_groups_from_RangesList <- function(x)
+{
+    x_partitioning <- PartitioningByEnd(x)
+    relist(as.integer(x_partitioning) - 1L, x_partitioning)
+}
+
+.nclists <- function(x, x_groups)
+{
+    x_start <- start(x)
+    x_end <- end(x)
+    lapply(x_groups, function(group) .nclist(x_start, x_end, x_subset=group))
+}
+
+### NCLists constructor.
+NCLists <- function(x, circle.length=NA_integer_)
+{
+    if (!is(x, "RangesList"))
+        stop("'x' must be a RangesList object")
+    if (!is(x, "CompressedIRangesList"))
+        x <- as(x, "CompressedIRangesList")
+    x <- .shift_rglist_to_first_circle(x, circle.length)
+    x_groups <- .extract_groups_from_RangesList(x)
+    x_nclists <- .nclists(unlist(x, use.names=FALSE), x_groups)
+    new2("NCLists", nclists=x_nclists, rglist=x, check=FALSE)
+}
+
+setAs("RangesList", "NCLists", function(from) NCLists(from))
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### NCList_find_overlaps_in_groups()
+###
+
+### NOT exported. Workhorse behind findOverlaps_NCLists() below and behind
+### GenomicRanges:::findOverlaps_GNCList().
+NCList_find_overlaps_in_groups <- function(
+                        q, q.space, q.groups,
+                        s, s.space, s.groups,
+                        nclists, nclist_is_q,
+                        min.score, type, select, circle.length)
+{
+    if (!(is(q, "Ranges") || is(s, "Ranges")))
+        stop("'q' and 's' must be Ranges object")
+    .Call2("NCList_find_overlaps_in_groups",
+           start(q), end(q), q.space, q.groups,
+           start(s), end(s), s.space, s.groups,
+           nclists, nclist_is_q,
+           min.score, type, select, circle.length,
+           PACKAGE="IRanges")
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### findOverlaps_NCLists()
 ###
+
+.split_and_remap_hits <- function(all_hits, query, subject)
+{
+    q_hits <- queryHits(all_hits)
+    query_breakpoints <- end(PartitioningByEnd(query))
+    h_skeleton <- PartitioningByEnd(findInterval(query_breakpoints, q_hits))
+
+    ## Compute list element lengths and offsets for 'query'.
+    query_partitioning <- PartitioningByEnd(query)
+    query_eltlens <- width(query_partitioning)
+    query_offsets <- start(query_partitioning) - 1L
+
+    ## Compute list element lengths and offsets for 'subject'.
+    subject_partitioning <- PartitioningByEnd(subject)
+    subject_eltlens <- width(subject_partitioning)
+    subject_offsets <- start(subject_partitioning) - 1L
+
+    lapply(seq_along(h_skeleton),
+           function(i) {
+               hits <- all_hits[h_skeleton[[i]]]
+               hits@queryHits <- hits@queryHits - query_offsets[[i]]
+               hits@subjectHits <- hits@subjectHits - subject_offsets[[i]]
+               hits@queryLength <- query_eltlens[[i]]
+               hits@subjectLength <- subject_eltlens[[i]]
+               hits
+           })
+}
 
 ### NOT exported.
 ### Return an ordinary list of:
@@ -297,8 +362,8 @@ findOverlaps_NCLists <- function(query, subject, min.score=1L,
                                  select=c("all", "first", "last", "arbitrary"),
                                  circle.length=NA_integer_)
 {
-    if (!(is(query, "NCLists") || is(subject, "NCLists")))
-        stop("'query' or 'subject' must be an NCLists object")
+    if (!(is(query, "RangesList") || is(subject, "RangesList")))
+        stop("'query' and 'subject' must be RangesList objects")
     if (!isSingleNumber(min.score))
         stop("'min.score' must be a single integer")
     if (!is.integer(min.score))
@@ -309,60 +374,35 @@ findOverlaps_NCLists <- function(query, subject, min.score=1L,
                               max(length(query), length(subject)),
                               "longest of 'query' or 'subject'")
     if (is(subject, "NCLists")) {
-        if (!is(query, "CompressedIRangesList"))
-            query <- as(query, "CompressedIRangesList")
         nclists <- subject@nclists
+        nclist_is_q <- rep.int(FALSE, length(nclists))
         subject <- subject@rglist
-        nclists_is_query <- FALSE
-    } else {
+    } else if (is(query, "NCLists")) {
         nclists <- query@nclists
+        nclist_is_q <- rep.int(TRUE, length(nclists))
         query <- query@rglist
-        if (!is(subject, "CompressedIRangesList"))
-            subject <- as(subject, "CompressedIRangesList")
-        nclists_is_query <- TRUE
+    } else {
+        NG <- min(length(query), length(subject))
+        nclists <- vector(mode="list", length=NG)
+        nclist_is_q <- rep.int(NA, length(nclists))
     }
-    .Call2("NCLists_find_overlaps",
-           query, subject, nclists, nclists_is_query,
-           min.score, type, select, circle.length,
-           PACKAGE="IRanges")
-}
 
+    if (!is(query, "CompressedIRangesList"))
+        query <- as(query, "CompressedIRangesList")
+    q <- unlist(query, use.names=FALSE)
+    q_groups <- .extract_groups_from_RangesList(query)
 
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### NCList_find_overlaps_by_group_and_combine()
-###
+    if (!is(subject, "CompressedIRangesList"))
+        subject <- as(subject, "CompressedIRangesList")
+    s <- unlist(subject, use.names=FALSE)
+    s_groups <- .extract_groups_from_RangesList(subject)
 
-NCList_by_group <- function(x, x.groups, circle.length)
-{
-    if (!(is(x, "Ranges")))
-        stop("'x' must be a Ranges object")
-    x_len <- length(x)
-    x_start <- start(x)
-    x_end <- end(x)
-    circle_len <- integer(x_len)
-    if (x_len != 0L) {
-        circle_len[unlist(x.groups, use.names=FALSE) + 1L] <-
-            rep.int(circle.length, elementLengths(x.groups))
-    }
-    x <- .shift_ranges_to_first_circle(x, circle_len)
-    lapply(x.groups, function(group) .nclist(x_start, x_end, x_subset=group))
-}
-
-### NOT exported. Used by GenomicRanges:::findOverlaps_GNCList().
-NCList_find_overlaps_by_group_and_combine <- function(
-                        query, query.space, query.groups,
-                        subject, subject.space, subject.groups,
-                        nclists, nclist_is_query,
+    all_hits <- NCList_find_overlaps_in_groups(
+                        q, NULL, q_groups,
+                        s, NULL, s_groups,
+                        nclists, nclist_is_q,
                         min.score, type, select, circle.length)
-{
-    if (!(is(query, "Ranges") || is(subject, "Ranges")))
-        stop("'query' and 'subject' must be Ranges object")
-    .Call2("NCList_find_overlaps_by_group_and_combine",
-           start(query), end(query), query.space, query.groups,
-           start(subject), end(subject), subject.space, subject.groups,
-           nclists, nclist_is_query,
-           min.score, type, select, circle.length,
-           PACKAGE="IRanges")
+    .split_and_remap_hits(all_hits, query, subject)
 }
 
 

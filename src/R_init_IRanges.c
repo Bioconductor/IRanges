@@ -71,8 +71,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(new_NCList_from_preNCList, 1),
 	CALLMETHOD_DEF(NCList_print, 3),
 	CALLMETHOD_DEF(NCList_find_overlaps, 10),
-	CALLMETHOD_DEF(NCLists_find_overlaps, 8),
-	CALLMETHOD_DEF(NCList_find_overlaps_by_group_and_combine, 14),
+	CALLMETHOD_DEF(NCList_find_overlaps_in_groups, 14),
 
 	{NULL, NULL, 0}
 };

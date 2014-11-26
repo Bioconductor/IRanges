@@ -402,18 +402,7 @@ SEXP NCList_find_overlaps(
 	SEXP circle_length
 );
 
-SEXP NCLists_find_overlaps(
-	SEXP q,
-	SEXP s,
-	SEXP nclists,
-	SEXP nclists_is_q,
-	SEXP min_score,
-	SEXP type,
-	SEXP select,
-	SEXP circle_length
-);
-
-SEXP NCList_find_overlaps_by_group_and_combine(
+SEXP NCList_find_overlaps_in_groups(
 	SEXP q_start,
 	SEXP q_end,
 	SEXP q_space,
