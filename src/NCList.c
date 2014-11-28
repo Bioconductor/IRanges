@@ -824,6 +824,29 @@ static void pnclist_get_y_overlaps(const preNCList *x_pnclist,
  * find_overlaps()
  */
 
+static void shift_to_first_circle(
+		const int *x_start_p, const int *x_end_p,
+		const int *x_subset_p, int x_len,
+		int circle_len,
+		IntAE *out_start_buf, IntAE *out_end_buf)
+{
+	int i, j, x_start, out_start, out_end;
+
+	IntAE_set_nelt(out_start_buf, 0);
+	IntAE_set_nelt(out_end_buf, 0);
+	for (i = 0; i < x_len; i++) {
+		j = x_subset_p == NULL ? i : x_subset_p[i];
+		x_start = x_start_p[j];
+		out_start = x_start % circle_len;
+		if (out_start <= 0)
+			out_start += circle_len;
+		out_end = x_end_p[j] + out_start - x_start;
+		IntAE_insert_at(out_start_buf, i, out_start);
+		IntAE_insert_at(out_end_buf, i, out_end);
+	}
+	return;
+}
+
 static void find_overlaps(
 		const int *q_start_p, const int *q_end_p,
 		const int *q_space_p, const int *q_subset_p, int q_len,
@@ -834,6 +857,9 @@ static void find_overlaps(
 		SEXP nclist, int preprocess_q,
 		IntAE *qh_buf, IntAE *sh_buf, int *direct_out)
 {
+	static IntAE start_buf, end_buf;
+	static int used_bufs_before = 0;
+
 	preNCList pnclist;
 	const void *pp;
 	GetYOverlapsFunType get_y_overlaps;
@@ -841,9 +867,37 @@ static void find_overlaps(
 	if (nclist == R_NilValue) {
 		/* On-the-fly preprocessing. */
 		if (preprocess_q) {
+			if (circle_len != NA_INTEGER) {
+				if (!used_bufs_before) {
+					start_buf = new_IntAE(0, 0, 0);
+					end_buf = new_IntAE(0, 0, 0);
+					used_bufs_before = 1;
+				}
+				shift_to_first_circle(q_start_p, q_end_p,
+						      q_subset_p, q_len,
+						      circle_len,
+						      &start_buf, &end_buf);
+				q_start_p = start_buf.elts;
+				q_end_p = end_buf.elts;
+				q_subset_p = NULL;
+			}
 			build_preNCList(&pnclist, q_start_p, q_end_p,
 						  q_subset_p, q_len);
 		} else {
+			if (circle_len != NA_INTEGER) {
+				if (!used_bufs_before) {
+					start_buf = new_IntAE(0, 0, 0);
+					end_buf = new_IntAE(0, 0, 0);
+					used_bufs_before = 1;
+				}
+				shift_to_first_circle(s_start_p, s_end_p,
+						      s_subset_p, s_len,
+						      circle_len,
+						      &start_buf, &end_buf);
+				s_start_p = start_buf.elts;
+				s_end_p = end_buf.elts;
+				s_subset_p = NULL;
+			}
 			build_preNCList(&pnclist, s_start_p, s_end_p,
 						  s_subset_p, s_len);
 		}

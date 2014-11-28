@@ -71,6 +71,8 @@ test_findOverlaps_NCList <- function()
     checkTrue(.compare_Hits(target0, current))
     current <- findOverlaps_NCList(NCList(query), subject)
     checkTrue(.compare_Hits(target0, current))
+    current <- findOverlaps_NCList(query, subject)
+    checkTrue(.compare_Hits(target0, current))
 
     ## Shuffle query and/or subject elements.
     permute_input <- function(q_perm, s_perm) {
@@ -85,6 +87,8 @@ test_findOverlaps_NCList <- function()
         current <- findOverlaps_NCList(query[q_perm], NCList(subject[s_perm]))
         checkTrue(.compare_Hits(target, current))
         current <- findOverlaps_NCList(NCList(query[q_perm]), subject[s_perm])
+        checkTrue(.compare_Hits(target, current))
+        current <- findOverlaps_NCList(query[q_perm], subject[s_perm])
         checkTrue(.compare_Hits(target, current))
     }
 
@@ -128,6 +132,10 @@ test_findOverlaps_NCList_with_filtering <- function()
                                                min.score=min.score,
                                                type=type, select=select)
                 checkTrue(.compare_Hits(target, current))
+                current <- findOverlaps_NCList(query, subject,
+                                               min.score=min.score,
+                                               type=type, select=select)
+                checkTrue(.compare_Hits(target, current))
             }
         }
     }
@@ -161,6 +169,10 @@ test_findOverlaps_NCList_with_circular_space <- function()
                                                    type=type, select=select,
                                                    circle.length=circle_length)
                     checkTrue(.compare_Hits(target, current))
+                    current <- findOverlaps_NCList(query, subject,
+                                                   type=type, select=select,
+                                                   circle.length=circle_length)
+                    checkTrue(.compare_Hits(target, current))
 
                     target <- selectHits(t(target0), select=select)
                     current <- findOverlaps_NCList(pp_subject, query,
@@ -168,6 +180,10 @@ test_findOverlaps_NCList_with_circular_space <- function()
                                                    circle.length=circle_length)
                     checkTrue(.compare_Hits(target, current))
                     current <- findOverlaps_NCList(subject, pp_query,
+                                                   type=type, select=select,
+                                                   circle.length=circle_length)
+                    checkTrue(.compare_Hits(target, current))
+                    current <- findOverlaps_NCList(subject, query,
                                                    type=type, select=select,
                                                    circle.length=circle_length)
                     checkTrue(.compare_Hits(target, current))
