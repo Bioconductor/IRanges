@@ -26,13 +26,15 @@ setAs("NCList", "IRanges", function(from) ranges(from))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### .shift_ranges_to_first_circle()
+### .shift_ranges_to_first_circle() and
+### .shift_ranges_in_groups_to_first_circle()
 ###
 ### TODO: Move to intra-range-methods.R, rename (e.g. shiftToFirstCircle()),
 ### make it a generic with methods for IRanges and IRangesList, export, and
 ### document.
 ###
 
+### Returns a single integer.
 .normarg_circle.length1 <- function(circle.length)
 {
     msg <- "'circle.length' must be a single positive integer or NA"
@@ -45,8 +47,8 @@ setAs("NCList", "IRanges", function(from) ranges(from))
     circle.length
 }
 
-.normarg_circle.length2 <- function(circle.length, x_len, what,
-                                    all.NAs.in.one=FALSE)
+### Returns an integer vector of length 'x_len'.
+.normarg_circle.length2 <- function(circle.length, x_len, what)
 {
     msg <- c("'circle.length' must be an integer vector ",
              "with positive or NA values")
@@ -55,8 +57,6 @@ setAs("NCList", "IRanges", function(from) ranges(from))
     if (!(length(circle.length) == 1L || length(circle.length) == x_len))
         stop("'circle.length' must have length 1 or length of ", what)
     all_NAs <- all(is.na(circle.length))
-    if (all_NAs && all.NAs.in.one)
-        return(NA_integer_)
     if (!(all_NAs || is.numeric(circle.length)))
         stop(msg)
     if (!is.integer(circle.length))
@@ -68,11 +68,10 @@ setAs("NCList", "IRanges", function(from) ranges(from))
     rep.int(circle.length, x_len)
 }
 
+### 'circle.length' assumed to have length 1 or length of 'x'.
 .shift_ranges_to_first_circle <- function(x, circle.length)
 {
-    circle.length <- .normarg_circle.length2(circle.length, length(x), "'x'",
-                                             all.NAs.in.one=TRUE)
-    if (identical(circle.length, NA_integer_))
+    if (all(is.na(circle.length)))
         return(x)
     x_start0 <- start(x) - 1L  # 0-based start
     x_shift0 <- x_start0 %% circle.length - x_start0
@@ -80,16 +79,17 @@ setAs("NCList", "IRanges", function(from) ranges(from))
     shift(x, x_shift0)
 }
 
-.shift_rglist_to_first_circle <- function(x, circle.length)
+### 'length(circle.length)' assumed to be >= 'length(x_groups)'.
+.shift_ranges_in_groups_to_first_circle <- function(x, x_groups, circle.length)
 {
-    circle.length <- .normarg_circle.length2(circle.length, length(x), "'x'",
-                                             all.NAs.in.one=TRUE)
-    if (identical(circle.length, NA_integer_))
+    circle.length <- head(circle.length, n=length(x_groups))
+    if (all(is.na(circle.length)))
         return(x)
-    circle.length <- rep.int(circle.length, elementLengths(x))
-    unlisted_x <- unlist(x, use.names=FALSE)
-    unlisted_ans <- .shift_ranges_to_first_circle(unlisted_x, circle.length)
-    relist(unlisted_ans, x)
+    unlisted_groups <- unlist(x_groups, use.names=FALSE)
+    circle_len <- rep.int(NA_integer_, length(x))
+    circle_len[unlisted_groups + 1L] <-
+        rep.int(circle.length, elementLengths(x_groups))
+    .shift_ranges_to_first_circle(x, circle_len)
 }
 
 
@@ -123,6 +123,7 @@ NCList <- function(x, circle.length=NA_integer_)
         stop("'x' must be a Ranges object")
     if (!is(x, "IRanges"))
         x <- as(x, "IRanges")
+    circle.length <- .normarg_circle.length1(circle.length)
     x <- .shift_ranges_to_first_circle(x, circle.length)
     x_nclist <- .nclist(start(x), end(x))
     new2("NCList", nclist=x_nclist, ranges=x, check=FALSE)
@@ -165,13 +166,17 @@ findOverlaps_NCList <- function(query, subject,
     if (is(subject, "NCList")) {
         nclist <- subject@nclist
         nclist_is_q <- FALSE
+        query <- .shift_ranges_to_first_circle(query, circle.length)
     } else if (is(query, "NCList")) {
         nclist <- query@nclist
         nclist_is_q <- TRUE
+        subject <- .shift_ranges_to_first_circle(subject, circle.length)
     } else {
         ## We'll do "on-the-fly preprocessing".
         nclist <- NULL
         nclist_is_q <- NA
+        query <- .shift_ranges_to_first_circle(query, circle.length)
+        subject <- .shift_ranges_to_first_circle(subject, circle.length)
     }
     .Call2("NCList_find_overlaps",
            start(query), end(query),
@@ -268,9 +273,16 @@ NCLists <- function(x, circle.length=NA_integer_)
         stop("'x' must be a RangesList object")
     if (!is(x, "CompressedIRangesList"))
         x <- as(x, "CompressedIRangesList")
-    x <- .shift_rglist_to_first_circle(x, circle.length)
+    unlisted_x <- unlist(x, use.names=FALSE)
     x_groups <- .extract_groups_from_RangesList(x)
-    x_nclists <- .nclists(unlist(x, use.names=FALSE), x_groups)
+    circle.length <- .normarg_circle.length2(circle.length, length(x_groups),
+                                             "'x'")
+    unlisted_x <- .shift_ranges_in_groups_to_first_circle(
+                                   unlisted_x,
+                                   x_groups,
+                                   circle.length)
+    x <- relist(unlisted_x, x)
+    x_nclists <- .nclists(unlisted_x, x_groups)
     new2("NCLists", nclists=x_nclists, rglist=x, check=FALSE)
 }
 
@@ -284,16 +296,26 @@ setAs("RangesList", "NCLists", function(from) NCLists(from))
 ### NOT exported. Workhorse behind findOverlaps_NCLists() below and behind
 ### GenomicRanges:::findOverlaps_GNCList().
 NCList_find_overlaps_in_groups <- function(
-                        q, q.space, q.groups,
-                        s, s.space, s.groups,
+                        q, q_space, q_groups,
+                        s, s_space, s_groups,
                         nclists, nclist_is_q,
                         min.score, type, select, circle.length)
 {
     if (!(is(q, "Ranges") || is(s, "Ranges")))
         stop("'q' and 's' must be Ranges object")
+    if (!is(q_groups, "CompressedIntegerList"))
+        stop("'q_groups' must be a CompressedIntegerList object")
+    if (!is(s_groups, "CompressedIntegerList"))
+        stop("'s_groups' must be a CompressedIntegerList object")
+    q_circle_len <- circle.length
+    q_circle_len[which(nclist_is_q)] <- NA_integer_
+    q <- .shift_ranges_in_groups_to_first_circle(q, q_groups, q_circle_len)
+    s_circle_len <- circle.length
+    s_circle_len[which(!nclist_is_q)] <- NA_integer_
+    s <- .shift_ranges_in_groups_to_first_circle(s, s_groups, s_circle_len)
     .Call2("NCList_find_overlaps_in_groups",
-           start(q), end(q), q.space, q.groups,
-           start(s), end(s), s.space, s.groups,
+           start(q), end(q), q_space, q_groups,
+           start(s), end(s), s_space, s_groups,
            nclists, nclist_is_q,
            min.score, type, select, circle.length,
            PACKAGE="IRanges")
@@ -304,12 +326,8 @@ NCList_find_overlaps_in_groups <- function(
 ### findOverlaps_NCLists()
 ###
 
-.split_and_remap_hits <- function(all_hits, query, subject)
+.split_and_remap_hits <- function(all_hits, query, subject, select)
 {
-    q_hits <- queryHits(all_hits)
-    query_breakpoints <- end(PartitioningByEnd(query))
-    h_skeleton <- PartitioningByEnd(findInterval(query_breakpoints, q_hits))
-
     ## Compute list element lengths and offsets for 'query'.
     query_partitioning <- PartitioningByEnd(query)
     query_eltlens <- width(query_partitioning)
@@ -320,7 +338,17 @@ NCList_find_overlaps_in_groups <- function(
     subject_eltlens <- width(subject_partitioning)
     subject_offsets <- start(subject_partitioning) - 1L
 
-    lapply(seq_along(h_skeleton),
+    if (select != "all") {
+        ans <- head(relist(all_hits, query), n=length(subject))
+        if (select != "count")
+            ans <- ans - head(subject_offsets, n=length(ans))
+        return(ans)
+    }
+
+    q_hits <- queryHits(all_hits)
+    query_breakpoints <- end(query_partitioning)
+    h_skeleton <- PartitioningByEnd(findInterval(query_breakpoints, q_hits))
+    lapply(seq_len(min(length(query), length(subject))),
            function(i) {
                hits <- all_hits[h_skeleton[[i]]]
                hits@queryHits <- hits@queryHits - query_offsets[[i]]
@@ -384,6 +412,6 @@ findOverlaps_NCLists <- function(query, subject,
                         s, NULL, s_groups,
                         nclists, nclist_is_q,
                         min.score, type, select, circle.length)
-    .split_and_remap_hits(all_hits, query, subject)
+    .split_and_remap_hits(all_hits, query, subject, select)
 }
 
