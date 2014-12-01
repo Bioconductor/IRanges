@@ -55,7 +55,8 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
 .findOverlaps_naive <- function(query, subject, min.score=1L,
                                 type=c("any", "start", "end",
                                        "within", "extend", "equal"),
-                                select=c("all", "first", "last", "count"))
+                                select=c("all", "first", "last", "arbitrary",
+                                         "count"))
 {
     type <- match.arg(type)
     select <- match.arg(select)
@@ -70,18 +71,8 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
     hits_per_query <- lapply(seq_along(query),
         function(i) .get_query_overlaps(query[i], subject,
                                         min.score, type_codes))
-    if (select == "all")
-        return(.make_Hits_from_q2s(hits_per_query, length(subject)))
-    if (select == "count")
-        return(elementLengths(hits_per_query))
-    ans <- integer(length(query))
-    ans[] <- NA_integer_
-    idx1 <- which(elementLengths(hits_per_query) != 0L)
-    if (length(idx1) != 0L) {
-        select_FUN <- switch(select, "first"=min, "last"=max)
-        ans[idx1] <- sapply(hits_per_query[idx1], select_FUN)
-    }
-    ans
+    hits <- .make_Hits_from_q2s(hits_per_query, length(subject))
+    selectHits(hits, select=select)
 }
 
 test_findOverlaps_NCList <- function()
@@ -162,6 +153,49 @@ test_findOverlaps_NCList_with_filtering <- function()
             }
         }
     }
+}
+
+.test_arbitrary_selection <- function(query, subject)
+{
+    pp_query <- NCList(query)
+    pp_subject <- NCList(subject)
+    for (min.score in -3:4) {
+        for (type in c("any", "start", "end", "within", "extend", "equal")) {
+            target <- as(.findOverlaps_naive(query, subject,
+                                             min.score=min.score,
+                                             type=type, select="all"),
+                         "CompressedIntegerList")
+            target_idx0 <- elementLengths(target) == 0L
+            check_arbitrary_hits <- function(current) {
+                current_idx0 <- is.na(current)
+                checkIdentical(target_idx0, current_idx0)
+                current <- as(current, "CompressedIntegerList")
+                checkTrue(all(current_idx0 | as.logical(current %in% target)))
+            }
+            current <- findOverlaps_NCList(query, pp_subject,
+                                           min.score=min.score,
+                                           type=type, select="arbitrary")
+            check_arbitrary_hits(current)
+            current <- findOverlaps_NCList(pp_query, subject,
+                                           min.score=min.score,
+                                           type=type, select="arbitrary")
+            check_arbitrary_hits(current)
+            current <- findOverlaps_NCList(query, subject,
+                                           min.score=min.score,
+                                           type=type, select="arbitrary")
+            check_arbitrary_hits(current)
+        }
+    }
+}
+
+test_findOverlaps_NCList_arbitrary <- function()
+{
+    query <- IRanges(4:3, 6)
+    subject <- IRanges(2:4, 10)
+    .test_arbitrary_selection(query, subject)
+    query <- IRanges(-3:7, width=3)
+    subject <- IRanges(rep.int(1:5, 5:1), c(1:5, 2:5, 3:5, 4:5, 5))
+    .test_arbitrary_selection(query, subject)
 }
 
 .test_circularity <- function(query0, subject0, circle_length, target0,

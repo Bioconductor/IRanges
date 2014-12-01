@@ -425,11 +425,9 @@ typedef struct backpack {
 	int y_idx;
 } Backpack;
 
-/* Return 1 if hit is valid and 0 otherwise. */
-static int process_hit(int x_idx, const Backpack *backpack)
+static int is_hit(int x_idx, const Backpack *backpack)
 {
-	int x_start, x_end, x_space, ok, ov_start, ov_end, score, d,
-	    i1, q_idx, s_idx1, *selection_p;
+	int x_start, x_end, x_space, ok, ov_start, ov_end, score, d;
 
 	x_start = backpack->x_start_p[x_idx];
 	x_end = backpack->x_end_p[x_idx];
@@ -486,13 +484,19 @@ static int process_hit(int x_idx, const Backpack *backpack)
 		if (!ok)
 			return 0;
 	}
+	return 1;
+}
+
+static void report_hit(int x_idx, const Backpack *backpack)
+{
+	int i1, q_idx, s_idx1, *selection_p;
 
 	i1 = x_idx + 1;  /* 1-based */
 	if (backpack->select_mode == SELECT_ALL) {
 		/* Report the hit. */
 		IntAE_insert_at(backpack->hits,
 				IntAE_get_nelt(backpack->hits), i1);
-		return 1;
+		return;
 	}
 	/* Update current selection if necessary. */
 	if (backpack->pp_is_q) {
@@ -505,13 +509,13 @@ static int process_hit(int x_idx, const Backpack *backpack)
 	selection_p = backpack->direct_out + q_idx;
 	if (backpack->select_mode == COUNT) {
 		(*selection_p)++;
-		return 1;
+		return;
 	}
 	if (*selection_p == NA_INTEGER
 	 || (backpack->select_mode == SELECT_FIRST) ==
 	    (s_idx1 < *selection_p))
 		*selection_p = s_idx1;
-	return 1;
+	return;
 }
 
 static Backpack prepare_backpack(const int *x_start_p, const int *x_end_p,
@@ -605,7 +609,7 @@ static void pp_find_overlaps(
 	IntAE *xh_buf, *yh_buf;
 	Backpack backpack;
 
-	if (s_len == 0 || q_len == 0)
+	if (q_len == 0 || s_len == 0)
 		return;
 	if (pp_is_q) {
 		x_start_p = q_start_p;
@@ -737,10 +741,14 @@ static void nclist_get_y_overlaps(const int *x_nclist, const Backpack *backpack)
 				     backpack->ext_y_start);
 	for ( ; n < nelt; n++) {
 		n2x = NCLIST_N2X(x_nclist, n);
-		if (backpack->x_start_p[n2x] > backpack->ext_y_end
-		 || (process_hit(n2x, backpack) != 0 &&
-		     backpack->select_mode == SELECT_ARBITRARY))
+		if (backpack->x_start_p[n2x] > backpack->ext_y_end)
 			break;
+		if (is_hit(n2x, backpack)) {
+			report_hit(n2x, backpack);
+			if (backpack->select_mode == SELECT_ARBITRARY
+			 && !backpack->pp_is_q)
+				break;
+		}
 		offset = NCSUBLIST_OFFSET(x_nclist, n);
 		if (offset != -1)
 			nclist_get_y_overlaps(x_nclist + offset, backpack);
@@ -798,10 +806,14 @@ static void pnclist_get_y_overlaps(const preNCList *x_pnclist,
 				       backpack->ext_y_start);
 	for (elt = x_pnclist->elts + n; n < nelt; n++, elt++) {
 		n2x = elt->n2x;
-		if (backpack->x_start_p[n2x] > backpack->ext_y_end
-		 || (process_hit(n2x, backpack) != 0 &&
-		     backpack->select_mode == SELECT_ARBITRARY))
+		if (backpack->x_start_p[n2x] > backpack->ext_y_end)
 			break;
+		if (is_hit(n2x, backpack)) {
+			report_hit(n2x, backpack);
+			if (backpack->select_mode == SELECT_ARBITRARY
+			 && !backpack->pp_is_q)
+				break;
+		}
 		if (elt->nested_list.nelt != 0)
 			pnclist_get_y_overlaps(&(elt->nested_list), backpack);
 	}
