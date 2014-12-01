@@ -10,6 +10,14 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
     t(hits)
 }
 
+.compare_hits <- function(target, current)
+{
+    if (is.list(target) || is(target, "List")
+     && is.list(current) || is(current, "List"))
+        return(all(mapply(.compare_hits, target, current)))
+    identical(.transpose_hits(target), .transpose_hits(current))
+}
+
 .make_Hits_from_q2s <- function(q2s, s_len)
 {
     q_hits <- rep.int(seq_along(q2s), elementLengths(q2s))
@@ -21,14 +29,6 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
 
 .make_Hits_from_s2q <- function(s2q, q_len)
     .transpose_hits(.make_Hits_from_q2s(s2q, q_len))
-
-.compare_hits <- function(target, current)
-{
-    if (is.list(target) || is(target, "List")
-     && is.list(current) || is(current, "List"))
-        return(all(mapply(.compare_hits, target, current)))
-    identical(.transpose_hits(target), .transpose_hits(current))
-}
 
 .select_hits <- function(x, select)
 {

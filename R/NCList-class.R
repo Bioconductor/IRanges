@@ -153,7 +153,7 @@ findOverlaps_NCList <- function(query, subject,
              select=c("all", "first", "last", "arbitrary", "count"),
              circle.length=NA_integer_)
 {
-    if (!(is(query, "Ranges") || is(subject, "Ranges")))
+    if (!(is(query, "Ranges") && is(subject, "Ranges")))
         stop("'query' and 'subject' must be Ranges objects")
     if (!isSingleNumber(min.score))
         stop("'min.score' must be a single integer")
@@ -301,7 +301,7 @@ NCList_find_overlaps_in_groups <- function(
                         nclists, nclist_is_q,
                         min.score, type, select, circle.length)
 {
-    if (!(is(q, "Ranges") || is(s, "Ranges")))
+    if (!(is(q, "Ranges") && is(s, "Ranges")))
         stop("'q' and 's' must be Ranges object")
     if (!is(q_groups, "CompressedIntegerList"))
         stop("'q_groups' must be a CompressedIntegerList object")
@@ -371,7 +371,7 @@ findOverlaps_NCLists <- function(query, subject,
              select=c("all", "first", "last", "arbitrary", "count"),
              circle.length=NA_integer_)
 {
-    if (!(is(query, "RangesList") || is(subject, "RangesList")))
+    if (!(is(query, "RangesList") && is(subject, "RangesList")))
         stop("'query' and 'subject' must be RangesList objects")
     if (!isSingleNumber(min.score))
         stop("'min.score' must be a single integer")

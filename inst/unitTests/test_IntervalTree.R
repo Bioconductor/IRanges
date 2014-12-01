@@ -91,12 +91,12 @@ test_IntervalTree_findOverlaps <- function() {
   result <- findOverlaps(query, tree)
   checkOverlap(result, c(1, 1, 2, 2), c(1, 2, 1, 2), 3, 2)
 
-  result <- findOverlaps(subject, query)
+  result <- findOverlaps(subject, IntervalTree(query))
   checkOverlap(result, c(1, 1, 2, 2), c(1, 2, 1, 2), 2, 3)
   
   query <- IRanges(c(1, 4, 9, 11), c(5, 7, 10, 11))
 
-  result <- findOverlaps(query)
+  result <- findOverlaps(query, algorithm="intervaltree")
   checkOverlap(result, c(1, 1, 2, 2, 3, 4), c(1, 2, 1, 2, 3, 4), 4, 4)
 
   ## check case of identical subjects
@@ -163,7 +163,7 @@ test_IntervalTree_findOverlaps <- function() {
   checkOverlap(result, c(2, 3, 4, 4), c(2, 2, 3, 4), 4, 4)
 
   ## ensure inverse is same as transpose
-  inverse <- findOverlaps(subject, query, type = "end")
+  inverse <- findOverlaps(subject, IntervalTree(query), type = "end")
   tr <- as.matrix(t(result))
   checkIdentical(as.matrix(inverse), tr[order(tr[,1]),])
 
