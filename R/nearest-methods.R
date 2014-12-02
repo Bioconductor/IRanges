@@ -122,8 +122,7 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
             left[is.na(left)] <- is.na(after)[is.na(left)]
             if (select == "all") {
               filterHits <- function(hits, i) {
-                hits <- hits[as(hits, "IRanges")[i]]
-                m <- as.matrix(hits)
+                m <- as.matrix(hits[as(hits, "IRanges")[i]])
                 m[,1L] <- map[m[,1L]]
                 m
               }
