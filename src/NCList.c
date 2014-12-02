@@ -395,13 +395,6 @@ SEXP NCList_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
 #define TYPE_EXTEND		5
 #define TYPE_EQUAL		6
 
-/* 4 supported select modes + count mode */
-#define SELECT_ALL		1
-#define SELECT_FIRST		2
-#define SELECT_LAST		3
-#define SELECT_ARBITRARY	4
-#define COUNT			5
-
 typedef struct backpack {
 	/* Members set by prepare_backpack(). */
 	const int *x_start_p;
@@ -492,7 +485,7 @@ static void report_hit(int x_idx, const Backpack *backpack)
 	int i1, q_idx, s_idx1, *selection_p;
 
 	i1 = x_idx + 1;  /* 1-based */
-	if (backpack->select_mode == SELECT_ALL) {
+	if (backpack->select_mode == ALL_HITS) {
 		/* Report the hit. */
 		IntAE_insert_at(backpack->hits,
 				IntAE_get_nelt(backpack->hits), i1);
@@ -507,12 +500,12 @@ static void report_hit(int x_idx, const Backpack *backpack)
 		s_idx1 = i1;
 	}
 	selection_p = backpack->direct_out + q_idx;
-	if (backpack->select_mode == COUNT) {
+	if (backpack->select_mode == COUNT_HITS) {
 		(*selection_p)++;
 		return;
 	}
 	if (*selection_p == NA_INTEGER
-	 || (backpack->select_mode == SELECT_FIRST) ==
+	 || (backpack->select_mode == FIRST_HIT) ==
 	    (s_idx1 < *selection_p))
 		*selection_p = s_idx1;
 	return;
@@ -638,8 +631,8 @@ static void pp_find_overlaps(
 		y_len = q_len;
 		yh_buf = qh_buf;
 	}
-	if (circle_len != NA_INTEGER && select_mode == COUNT)
-		backpack_select_mode = SELECT_ALL;
+	if (circle_len != NA_INTEGER && select_mode == COUNT_HITS)
+		backpack_select_mode = ALL_HITS;
 	else
 		backpack_select_mode = select_mode;
 	backpack = prepare_backpack(x_start_p, x_end_p, x_space_p,
@@ -654,13 +647,13 @@ static void pp_find_overlaps(
 		get_y_overlaps(pp, &backpack);
 		if (circle_len == NA_INTEGER)
 			goto life_is_good;
-		if (select_mode == SELECT_ARBITRARY
+		if (select_mode == ARBITRARY_HIT
 		 && !pp_is_q && direct_out[j] != NA_INTEGER)
 			goto life_is_good;
 		/* pass 1 */
 		shift_y(&backpack, - circle_len);
 		get_y_overlaps(pp, &backpack);
-		if (select_mode == SELECT_ARBITRARY
+		if (select_mode == ARBITRARY_HIT
 		 && !pp_is_q && direct_out[j] != NA_INTEGER)
 			goto life_is_good;
 		/* pass 2 */
@@ -668,7 +661,7 @@ static void pp_find_overlaps(
 		get_y_overlaps(pp, &backpack);
 
 		life_is_good:
-		if (backpack_select_mode != SELECT_ALL)
+		if (backpack_select_mode != ALL_HITS)
 			continue;
 		old_nhit = IntAE_get_nelt(yh_buf);
 		new_nhit = IntAE_get_nelt(xh_buf);
@@ -676,7 +669,7 @@ static void pp_find_overlaps(
 			IntAE_delete_duplicates(xh_buf, old_nhit, new_nhit);
 			new_nhit = IntAE_get_nelt(xh_buf);
 		}
-		if (select_mode != COUNT) {
+		if (select_mode != COUNT_HITS) {
 			j++;  /* 1-based */
 			for (k = old_nhit; k < new_nhit; k++)
 				IntAE_insert_at(yh_buf, k, j);
@@ -745,7 +738,7 @@ static void nclist_get_y_overlaps(const int *x_nclist, const Backpack *backpack)
 			break;
 		if (is_hit(n2x, backpack)) {
 			report_hit(n2x, backpack);
-			if (backpack->select_mode == SELECT_ARBITRARY
+			if (backpack->select_mode == ARBITRARY_HIT
 			 && !backpack->pp_is_q)
 				break;
 		}
@@ -810,7 +803,7 @@ static void pnclist_get_y_overlaps(const preNCList *x_pnclist,
 			break;
 		if (is_hit(n2x, backpack)) {
 			report_hit(n2x, backpack);
-			if (backpack->select_mode == SELECT_ARBITRARY
+			if (backpack->select_mode == ARBITRARY_HIT
 			 && !backpack->pp_is_q)
 				break;
 		}
@@ -909,31 +902,6 @@ static int get_overlap_type(SEXP type)
 	return 0;
 }
 
-static int get_select_mode(SEXP select)
-{
-	const char *select0;
-
-	if (!IS_CHARACTER(select) || LENGTH(select) != 1)
-		error("'select' must be a single string");
-	select = STRING_ELT(select, 0);
-	if (select == NA_STRING)
-		error("'select' cannot be NA");
-	select0 = CHAR(select);
-	if (strcmp(select0, "all") == 0)
-		return SELECT_ALL;
-	if (strcmp(select0, "first") == 0)
-		return SELECT_FIRST;
-	if (strcmp(select0, "last") == 0)
-		return SELECT_LAST;
-	if (strcmp(select0, "arbitrary") == 0)
-		return SELECT_ARBITRARY;
-	if (strcmp(select0, "count") == 0)
-		return COUNT;
-	error("'select' must be \"all\", \"first\", "
-	      "\"last\", \"arbitrary\", or \"count\"");
-	return 0;
-}
-
 static int get_circle_length(SEXP circle_length)
 {
 	int circle_len;
@@ -958,7 +926,7 @@ static SEXP new_direct_out(int q_len, int select_mode)
 	int init_val, i, *ans_elt;
 
 	PROTECT(ans = NEW_INTEGER(q_len));
-	init_val = select_mode == COUNT ? 0 : NA_INTEGER;
+	init_val = select_mode == COUNT_HITS ? 0 : NA_INTEGER;
 	for (i = 0, ans_elt = INTEGER(ans); i < q_len; i++, ans_elt++)
 		*ans_elt = init_val;
 	UNPROTECT(1);
@@ -1083,7 +1051,7 @@ static SEXP new_Hits_from_IntAEs(const IntAE *qh_buf, const IntAE *sh_buf,
  *   nclist_is_q:    TRUE or FALSE.
  *   min_score:      See get_min_overlap_score() C function.
  *   type:           See get_overlap_type() C function.
- *   select:         See get_select_mode() C function.
+ *   select:         See _get_select_mode() C function in S4Vectors.
  *   circle_length:  A single positive integer or NA_INTEGER.
  */
 SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
@@ -1113,7 +1081,7 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 	qh_buf = new_IntAE(0, 0, 0);
 	sh_buf = new_IntAE(0, 0, 0);
 	direct_out = NULL;
-	if (select_mode != SELECT_ALL) {
+	if (select_mode != ALL_HITS) {
 		PROTECT(ans = new_direct_out(q_len, select_mode));
 		direct_out = INTEGER(ans);
 	}
@@ -1131,7 +1099,7 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 		nclist, preprocess_q,
 		&qh_buf, &sh_buf, direct_out);
 	//print_elapsed_time();
-	if (select_mode != SELECT_ALL) {
+	if (select_mode != ALL_HITS) {
 		UNPROTECT(1);
 		return ans;
 	}
@@ -1161,7 +1129,7 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
  *   nclist_is_q:    A logical vector parallel to 'nclists'.
  *   min_score:      See get_min_overlap_score() C function.
  *   type:           See get_overlap_type() C function.
- *   select:         See get_select_mode() C function.
+ *   select:         See _get_select_mode() C function in S4Vectors.
  *   circle_length:  An integer vector of length >= min(NG1, NG2) with positive
  *                   or NA values.
  */
@@ -1219,7 +1187,7 @@ SEXP NCList_find_overlaps_in_groups(
 	qh_buf = new_IntAE(0, 0, 0);
 	sh_buf = new_IntAE(0, 0, 0);
 	direct_out = NULL;
-	if (select_mode != SELECT_ALL) {
+	if (select_mode != ALL_HITS) {
 		PROTECT(ans = new_direct_out(q_len, select_mode));
 		direct_out = INTEGER(ans);
 	}
@@ -1250,7 +1218,7 @@ SEXP NCList_find_overlaps_in_groups(
 			nclist, preprocess_q,
 			&qh_buf, &sh_buf, direct_out);
 	}
-	if (select_mode != SELECT_ALL) {
+	if (select_mode != ALL_HITS) {
 		UNPROTECT(1);
 		return ans;
 	}
