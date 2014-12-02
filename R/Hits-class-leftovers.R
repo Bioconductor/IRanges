@@ -35,6 +35,10 @@ setMethod("as.data.frame", "Hits", as.data.frame.Hits)
     PartitioningByEnd(queryHits(from), NG=queryLength(from))
 setAs("Hits", "PartitioningByEnd", .from_Hits_to_PartitioningByEnd)
 setAs("Hits", "Partitioning", .from_Hits_to_PartitioningByEnd)
+setAs("Hits", "Ranges", .from_Hits_to_PartitioningByEnd)
+setAs("Hits", "IRanges",
+    function(from) as(.from_Hits_to_PartitioningByEnd(from), "IRanges")
+)
 
 ### Turn Hits object 'from' into a CompressedIntegerList object with one list
 ### element per element in the original query.

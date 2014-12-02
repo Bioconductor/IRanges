@@ -74,17 +74,6 @@ setMethod("follow", c("Ranges", "RangesORmissing"),
 
 ### Used in GenomicRanges.
 ### TODO: Move to Hits-class.R
-hitsMatrixToVector <- function(hitsMatrix, queryLength) {
-  hitsMatrix <-
-    hitsMatrix[S4Vectors:::diffWithInitialZero(hitsMatrix[,1L,drop=TRUE]) != 0L,,
-                drop=FALSE]
-  ans <- rep.int(NA_integer_, queryLength)
-  ans[hitsMatrix[,1L,drop=TRUE]] <- hitsMatrix[,2L,drop=TRUE]
-  ans
-}
-
-### Used in GenomicRanges.
-### TODO: Move to Hits-class.R
 vectorToHits <- function(i, srle, ord) {
   lx <- length(i)
   v <- !is.na(i)
@@ -114,8 +103,7 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
               ol <- findOverlaps(x, select = select, ignoreSelf = TRUE)
             }
             if (select == "all") {
-              m <- as.matrix(ol)
-              olv <- hitsMatrixToVector(m, length(x))
+              olv <- selectHits(ol, select="first")
             } else olv <- ol
             x <- x[is.na(olv)]
             before <- precede(x, subject,
@@ -123,31 +111,27 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
             after <- follow(x, subject,
                             if (select == "all") "all" else "last")
             if (select == "all") {
-              before_m <- as.matrix(before)
-              before <- hitsMatrixToVector(before_m, length(x))
-              after_m <- as.matrix(after)
-              after <- hitsMatrixToVector(after_m, length(x))
+              before0 <- before
+              before <- selectHits(before, select="first")
+              after0 <- after
+              after <- selectHits(after, select="first")
             }
             leftdist <- (start(subject)[before] - end(x))
             rightdist <- (start(x) - end(subject)[after])
             left <- leftdist < rightdist
             left[is.na(left)] <- is.na(after)[is.na(left)]
             if (select == "all") {
-              filterMatchMatrix <- function(m, i) {
-                qrle <- Rle(m[,1L])
-                qstart <- qend <- integer(length(i))
-                qstart[runValue(qrle)] <- start(qrle)
-                qend[runValue(qrle)] <- end(qrle)
-                rows <- as.integer(IRanges(qstart[i], qend[i]))
-                m <- m[rows,,drop=FALSE]
+              filterHits <- function(hits, i) {
+                hits <- hits[as(hits, "IRanges")[i]]
+                m <- as.matrix(hits)
                 m[,1L] <- map[m[,1L]]
                 m
               }
               map <- which(is.na(olv))
               right <- !left
               left[leftdist == rightdist] <- TRUE
-              m <- rbind(m, filterMatchMatrix(before_m, left),
-                         filterMatchMatrix(after_m, right))
+              m <- rbind(as.matrix(ol), filterHits(before0, left),
+                                        filterHits(after0, right))
               m <- m[S4Vectors:::orderIntegerPairs(m[,1L], m[,2L]),, drop=FALSE]
               ## unname() required because in case 'm' has only 1 row
               ## 'm[ , 1L]' and 'm[ , 2L]' will return a named atomic vector

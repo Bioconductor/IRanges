@@ -12,25 +12,19 @@ setMethod("processSelfMatching", "Hits",
           function(x, select = c("all", "first", "last", "arbitrary"),
                    ignoreSelf = FALSE, ignoreRedundant = FALSE)
           {
-            mat <- as.matrix(x)
-            if (ignoreSelf)
-              mat <- mat[mat[,1L] != mat[,2L],,drop=FALSE]
+            if (ignoreSelf) {
+              self_idx <- which(queryHits(x) == subjectHits(x))
+              if (length(self_idx) != 0L)
+                  x <- x[-self_idx]
+            }
             if (ignoreRedundant) {
-              norm_mat <- cbind(pmin.int(mat[,1L], mat[,2L]),
-                                pmax.int(mat[,1L], mat[,2L]))
-              mat <- mat[!duplicated(norm_mat),,drop=FALSE]
+              redundant_idx <- which(S4Vectors:::duplicatedIntegerPairs(
+                                       pmin.int(queryHits(x), subjectHits(x)),
+                                       pmax.int(queryHits(x), subjectHits(x))))
+              if (length(redundant_idx) != 0L)
+                  x <- x[-redundant_idx]
             }
-            if (select != "all") { # relies on 'mat' sorted by subject
-              if (select == "last")
-                mat <- mat[seq(nrow(mat), 1),,drop=FALSE]
-              hitsMatrixToVector(mat, queryLength(x))
-            } else {
-              ## unname() required because in case 'm' has only 1 row
-              ## 'm[ , 1L]' and 'm[ , 2L]' will return a named atomic vector
-              x@queryHits <- unname(mat[ , 1L])
-              x@subjectHits <- unname(mat[ , 2L])
-              x
-            }
+            selectHits(x, select=select)
           })
 
 setMethod("processSelfMatching", "HitsList",
