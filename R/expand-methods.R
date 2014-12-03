@@ -51,7 +51,7 @@ setMethod("expand", "DataFrame",
     emptyRows <- elementLengths(col) == 0L
     x[emptyRows, colnames] <- rep(NA, sum(emptyRows))
   }
-  ans <- x[togroup(x[[colnames[1L]]]),]
+  ans <- x[togroup(x[[colnames[1L]]]),,drop=FALSE]
   ans[colnames] <- lapply(x[colnames], unlist, use.names = FALSE)
   ans
 }
