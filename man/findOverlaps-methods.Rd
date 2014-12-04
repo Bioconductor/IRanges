@@ -88,19 +88,23 @@
 \usage{
 findOverlaps(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
-             select=c("all", "first", "last", "arbitrary"), ...)
+             select=c("all", "first", "last", "arbitrary"),
+             algorithm=c("nclist", "intervaltree"), ...)
 
 countOverlaps(query, subject, maxgap=0L, minoverlap=1L,
-              type=c("any", "start", "end", "within", "equal"), ...)
+              type=c("any", "start", "end", "within", "equal"),
+              algorithm=c("nclist", "intervaltree"), ...)
 
 overlapsAny(query, subject, maxgap=0L, minoverlap=1L,
-            type=c("any", "start", "end", "within", "equal"), ...)
+            type=c("any", "start", "end", "within", "equal"),
+            algorithm=c("nclist", "intervaltree"), ...)
 query \%over\% subject
 query \%within\% subject
 query \%outside\% subject
 
 subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
-                 type=c("any", "start", "end", "within", "equal"), ...)
+                 type=c("any", "start", "end", "within", "equal"),
+                 algorithm=c("nclist", "intervaltree"), ...)
 
 mergeByOverlaps(query, subject, ...)
 
