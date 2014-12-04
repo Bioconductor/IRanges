@@ -70,13 +70,7 @@ setMethod("union", c("Hits", "Hits"),
         y <- y[is.na(m)]
         q_hits <- c(queryHits(x), queryHits(y))
         s_hits <- c(subjectHits(x), subjectHits(y))
-        oo <- S4Vectors:::orderIntegerPairs(q_hits, s_hits)
-        q_hits <- q_hits[oo]
-        s_hits <- s_hits[oo]
-        new2("Hits",
-             queryHits=q_hits, subjectHits=s_hits,
-             queryLength=queryLength(x), subjectLength=subjectLength(x),
-             check=FALSE)
+        Hits(q_hits, s_hits, queryLength(x), subjectLength(x))
     }
 )
 

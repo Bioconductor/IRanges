@@ -933,111 +933,6 @@ static SEXP new_direct_out(int q_len, int select_mode)
 	return ans;
 }
 
-/* Based on qsort(). Time is O(nhit*log(nhit)). */
-static void qsort_hits(int *qh_in, const int *sh_in,
-		       int *qh_out, int *sh_out, int nhit)
-{
-	int k;
-
-	//init_clock("qsort_hits: T3 = ");
-	get_order_of_int_array(qh_in, nhit, 0, sh_out, 0);
-	for (k = 0; k < nhit; k++)
-		qh_out[k] = qh_in[sh_out[k]];
-	memcpy(qh_in, sh_out, sizeof(int) * nhit);
-	for (k = 0; k < nhit; k++)
-		sh_out[k] = sh_in[qh_in[k]];
-	//print_elapsed_time();
-	return;
-}
-
-/* Tabulated sorting. Time is O(nhit). WARNING: 'nhit' MUST be >= 'q_len'. */
-static void tsort_hits(int *qh_in, const int *sh_in,
-		       int *qh_out, int *sh_out, int nhit, int q_len)
-{
-	int i, k, offset, count, prev_offset, j;
-
-	//init_clock("tsort_hits: T3 = ");
-	/* Compute nb of hits per query. We need a place for this so we
-	   temporarily use 'qh_out' which is assumed to have at least 'q_len'
-	   elements. */
-	for (i = 0; i < q_len; i++)
-		qh_out[i] = 0;
-	for (k = 0; k < nhit; k++)
-		qh_out[--qh_in[k]]++;  /* make 'qh_in[k]' 0-based */
-	/* Replace counts with offsets. */
-	offset = 0;
-	for (i = 0; i < q_len; i++) {
-		count = qh_out[i];
-		qh_out[i] = offset;
-		offset += count;
-	}
-	/* Fill 'sh_out'. */
-	for (k = 0; k < nhit; k++) {
-		offset = qh_out[qh_in[k]]++;
-		sh_out[offset] = sh_in[k];
-	}
-	/* Fill 'qh_out'. */
-	memcpy(qh_in, qh_out, sizeof(int) * nhit);
-	k = offset = 0;
-	for (i = 1; i <= q_len; i++) {
-		prev_offset = offset;
-		offset = qh_in[i - 1];
-		for (j = prev_offset; j < offset; j++)
-			qh_out[k++] = i;
-	}
-	//print_elapsed_time();
-	return;
-}
-
-/* TODO: Move this to S4Vectors and make it available from R via a .Call entry
-   point. Then use it for sorting the hits in S4Vectors:::Hits_revmap(). */
-static void sort_hits(int *qh_in, const int *sh_in,
-		      int *qh_out, int *sh_out, int nhit, int q_len)
-{
-	if (nhit >= q_len)
-		tsort_hits(qh_in, sh_in, qh_out, sh_out, nhit, q_len);
-	else
-		qsort_hits(qh_in, sh_in, qh_out, sh_out, nhit);
-	return;
-}
-
-static SEXP new_Hits_from_IntAEs(const IntAE *qh_buf, const IntAE *sh_buf,
-				 int q_len, int s_len, int sort)
-{
-	int nhit;
-	SEXP classdef, ans,
-	     ans_queryHits, ans_subjectHits,
-	     ans_queryLength, ans_subjectLength;
-
-	if (sort && q_len > 1) {
-		nhit = IntAE_get_nelt(qh_buf);
-		PROTECT(ans_queryHits = NEW_INTEGER(nhit));
-		PROTECT(ans_subjectHits = NEW_INTEGER(nhit));
-		sort_hits(qh_buf->elts, sh_buf->elts,
-			  INTEGER(ans_queryHits), INTEGER(ans_subjectHits),
-			  nhit, q_len);
-	} else {
-		PROTECT(ans_queryHits = new_INTEGER_from_IntAE(qh_buf));
-		PROTECT(ans_subjectHits = new_INTEGER_from_IntAE(sh_buf));
-	}
-
-	PROTECT(classdef = MAKE_CLASS("Hits"));
-	PROTECT(ans = NEW_OBJECT(classdef));
-	SET_SLOT(ans, install("queryHits"), ans_queryHits);
-	SET_SLOT(ans, install("subjectHits"), ans_subjectHits);
-
-	PROTECT(ans_queryLength = ScalarInteger(q_len));
-	SET_SLOT(ans, install("queryLength"), ans_queryLength);
-	UNPROTECT(1);
-
-	PROTECT(ans_subjectLength = ScalarInteger(s_len));
-	SET_SLOT(ans, install("subjectLength"), ans_subjectLength);
-	UNPROTECT(1);
-
-	UNPROTECT(4);
-	return ans;
-}
-
 
 /****************************************************************************
  * NCList_find_overlaps()
@@ -1103,8 +998,8 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 		UNPROTECT(1);
 		return ans;
 	}
-	return new_Hits_from_IntAEs(&qh_buf, &sh_buf, q_len, s_len,
-				    preprocess_q);
+	return new_Hits(qh_buf.elts, sh_buf.elts, IntAE_get_nelt(&qh_buf),
+			q_len, s_len, !preprocess_q);
 }
 
 
@@ -1222,7 +1117,8 @@ SEXP NCList_find_overlaps_in_groups(
 		UNPROTECT(1);
 		return ans;
 	}
-	return new_Hits_from_IntAEs(&qh_buf, &sh_buf, q_len, s_len, 1);
+	return new_Hits(qh_buf.elts, sh_buf.elts, IntAE_get_nelt(&qh_buf),
+			q_len, s_len, 0);
 }
 
 

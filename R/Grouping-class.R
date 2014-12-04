@@ -958,7 +958,6 @@ findOverlaps_Ranges_Partitioning <- function(query, subject,
         s_hits <- s_idx[s_hits]
 
     ## Make and return Hits object.
-    new2("Hits", queryHits=q_hits, subjectHits=s_hits,
-                 queryLength=q_len, subjectLength=s_len)
+    Hits(q_hits, s_hits, q_len, s_len)
 }   
 

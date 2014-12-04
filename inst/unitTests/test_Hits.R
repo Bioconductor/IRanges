@@ -43,9 +43,7 @@ test_remapHits <- function()
 {
     query_hits0 <- c(1L, 1L, 2L, 3L, 3L)
     subject_hits0 <- c(1L, 2L, 5L, 2L, 4L)
-    hits0 <- new("Hits", queryHits=query_hits0,
-                         subjectHits=subject_hits0,
-                         queryLength=3L, subjectLength=6L)
+    hits0 <- Hits(query_hits0, subject_hits0, 3L, 6L)
 
     ## No remapping (i.e. map is missing or is the identity function).
     checkIdentical(remapHits(hits0), hits0)
@@ -78,25 +76,19 @@ test_remapHits <- function()
 
     hits20 <- remapHits(hits0, query.map=query.map2,
                                new.queryLength=new.queryLength2)
-    expected_hits20 <- new("Hits", queryHits=query_hits0 + 20L,
-                                   subjectHits=subject_hits0,
-                                   queryLength=23L, subjectLength=6L)
+    expected_hits20 <- Hits(query_hits0 + 20L, subject_hits0, 23, 6)
     checkIdentical(hits20, expected_hits20)
 
     hits02 <- remapHits(hits0, subject.map=subject.map2,
                                new.subjectLength=new.subjectLength2)
-    expected_hits02 <- new("Hits", queryHits=query_hits0,
-                                   subjectHits=subject_hits0 + 30L,
-                                   queryLength=3L, subjectLength=36L)
+    expected_hits02 <- Hits(query_hits0, subject_hits0 + 30L, 3, 36)
     checkIdentical(hits02, expected_hits02)
 
     hits22 <- remapHits(hits0, query.map=query.map2,
                                new.queryLength=new.queryLength2,
                                subject.map=subject.map2,
                                new.subjectLength=new.subjectLength2)
-    expected_hits22 <- new("Hits", queryHits=query_hits0 + 20L,
-                                   subjectHits=subject_hits0 + 30L,
-                                   queryLength=23L, subjectLength=36L)
+    expected_hits22 <- Hits(query_hits0 + 20L, subject_hits0 + 30L, 23, 36)
     checkIdentical(hits22, expected_hits22)
 
     ## With injective and non-ascending maps.
@@ -107,25 +99,21 @@ test_remapHits <- function()
     
     hits30 <- remapHits(hits0, query.map=query.map3,
                                new.queryLength=new.queryLength3)
-    expected_hits30 <- new("Hits", queryHits=c(103L, 103L, 202L, 301L, 301L),
-                                   subjectHits=c(2L, 4L, 5L, 1L, 2L),
-                                   queryLength=400L, subjectLength=6L)
+    expected_hits30 <- Hits(c(103, 103, 202, 301, 301),
+                            c(  2,   4,   5,   1,   2), 400, 6)
     checkIdentical(hits30, expected_hits30)
 
     hits03 <- remapHits(hits0, subject.map=subject.map3,
                                new.subjectLength=new.subjectLength3)
-    expected_hits03 <- new("Hits", queryHits=query_hits0,
-                                   subjectHits=c(502L, 601L, 205L, 304L, 502L),
-                                   queryLength=3L, subjectLength=700L)
-    checkIdentical(hits03, expected_hits03)
+    expected_hits03 <- Hits(query_hits0, c(502, 601, 205, 304, 502), 3, 700)
+    checkIdentical(t(hits03), t(expected_hits03))
 
     hits33 <- remapHits(hits0, query.map=query.map3,
                                new.queryLength=new.queryLength3,
                                subject.map=subject.map3,
                                new.subjectLength=new.subjectLength3)
-    expected_hits33 <- new("Hits", queryHits=c(103L, 103L, 202L, 301L, 301L),
-                                   subjectHits=c(304L, 502L, 205L, 502L, 601L),
-                                   queryLength=400L, subjectLength=700L)
+    expected_hits33 <- Hits(c(103, 103, 202, 301, 301),
+                            c(304, 502, 205, 502, 601), 400, 700)
     checkIdentical(hits33, expected_hits33)
 
     ## With non-injective maps (as factors).
@@ -133,21 +121,15 @@ test_remapHits <- function()
     subject.map4 <- factor(c("a", "b", "a", "b", "a", "b"), levels=c("a", "b"))
 
     hits40 <- remapHits(hits0, query.map=query.map4)
-    expected_hits40 <- new("Hits", queryHits=c(1L, 2L, 2L, 2L),
-                                   subjectHits=c(5L, 1L, 2L, 4L),
-                                   queryLength=2L, subjectLength=6L)
+    expected_hits40 <- Hits(c(1, 2, 2, 2), c(5, 1, 2, 4), 2, 6)
     checkIdentical(hits40, expected_hits40)
 
     hits04 <- remapHits(hits0, subject.map=subject.map4)
-    expected_hits04 <- new("Hits", queryHits=c(1L, 1L, 2L, 3L),
-                                   subjectHits=c(1L, 2L, 1L, 2L),
-                                   queryLength=3L, subjectLength=2L)
+    expected_hits04 <- Hits(c(1, 1, 2, 3), c(1, 2, 1, 2), 3, 2)
     checkIdentical(hits04, expected_hits04)
 
     hits44 <- remapHits(hits0, query.map=query.map4, subject.map=subject.map4)
-    expected_hits44 <- new("Hits", queryHits=c(1L, 2L, 2L),
-                                   subjectHits=c(1L, 1L, 2L),
-                                   queryLength=2L, subjectLength=2L)
+    expected_hits44 <- Hits(c(1, 2, 2), c(1, 1, 2), 2, 2)
     checkIdentical(hits44, expected_hits44)
 }
 

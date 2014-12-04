@@ -122,9 +122,7 @@ test_IntervalTree_findOverlaps <- function() {
   checkIdentical(findOverlaps(c(3L, 7L, 10L), subject, select = "arbitrary"),
                  c(1L, 2L, NA))
   checkIdentical(findOverlaps(IRanges(c(2,1),c(3,4)), subject),
-                 new("Hits",
-                     queryHits = 1:2, subjectHits = c(1L,1L),
-                     queryLength = 2L, subjectLength = 3L))
+                 Hits(1:2, c(1L,1L), 2, 3))
 
   ## check other types of matching
 

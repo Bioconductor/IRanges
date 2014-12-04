@@ -48,8 +48,8 @@ test_CompressedHitsList <- function() {
   olaps <- findOverlaps(ql, sl)
   rngs1 <- as(ranges(olaps, ql, sl),"CompressedIRangesList")
 
-  hits <- new2("Hits", queryHits=queryHits(olaps), subjectHits=subjectHits(olaps),
-                queryLength=nobj(ql@partitioning), subjectLength=nobj(sl@partitioning))
+  hits <- Hits(queryHits(olaps), subjectHits(olaps),
+               nobj(ql@partitioning), nobj(sl@partitioning))
 
   hl <- CompressedHitsList(hits, sl)
   rngs2 <- ranges(hl@unlistData, ql@unlistData, sl@unlistData)

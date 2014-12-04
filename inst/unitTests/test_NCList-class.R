@@ -22,9 +22,7 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
 {
     q_hits <- rep.int(seq_along(q2s), elementLengths(q2s))
     s_hits <- as.integer(unlist(q2s, use.names=FALSE))
-    new("Hits", queryHits=q_hits, subjectHits=s_hits,
-                queryLength=length(q2s),
-                subjectLength=as.integer(s_len))
+    Hits(q_hits, s_hits, length(q2s), s_len)
 }
 
 .make_Hits_from_s2q <- function(s2q, q_len)

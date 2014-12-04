@@ -119,8 +119,7 @@ test_Ranges_distance <- function()
 
 test_Ranges_distanceToNearest <- function() 
 {
-  target <- new("Hits", queryHits=integer(), subjectHits=integer(),
-                queryLength=0L, subjectLength=0L)
+  target <- Hits()
   current <- quiet(distanceToNearest(IRanges(), IRanges())) 
   checkIdentical(queryHits(current), queryHits(target))
   checkIdentical(subjectHits(current), subjectHits(target))

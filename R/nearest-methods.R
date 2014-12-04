@@ -84,10 +84,7 @@ vectorToHits <- function(i, srle, ord) {
              subjectHits = if (!is.null(ord)) ord[subj] else subj)
   if (!is.null(ord))
     m <- m[S4Vectors:::orderIntegerPairs(m[,1L], m[,2L]),,drop=FALSE]
-  ## unname() required because in case 'm' has only 1 row
-  ## 'm[ , 1L]' and 'm[ , 2L]' will return a named atomic vector
-  new("Hits", queryHits = unname(m[ , 1L]), subjectHits = unname(m[ , 2L]),
-              queryLength = lx, subjectLength = length(srle))
+  Hits(m[ , 1L], m[ , 2L], lx, length(srle))
 }
 
 setGeneric("nearest", function(x, subject, ...) standardGeneric("nearest"))
@@ -186,18 +183,12 @@ setMethod("distanceToNearest", c("Ranges", "RangesORmissing"),
         }
 
         if (!length(subjectHits) || all(is.na(subjectHits))) {
-            new("Hits", 
-                queryLength=length(x), 
-                subjectLength=length(subject),
-                elementMetadata=DataFrame(distance=NULL))
+            Hits(queryLength=length(x), 
+                 subjectLength=length(subject),
+                 distance=integer(0))
         } else {
             distance = distance(x[queryHits], subject[subjectHits])
-            new("Hits", 
-                queryHits=queryHits,
-                subjectHits=subjectHits,
-                queryLength=length(x), 
-                subjectLength=length(subject),
-                elementMetadata=DataFrame(distance=distance))
+            Hits(queryHits, subjectHits, length(x), length(subject), distance)
         }
     }
 )
