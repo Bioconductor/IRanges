@@ -90,14 +90,18 @@ vectorToHits <- function(i, srle, ord) {
 setGeneric("nearest", function(x, subject, ...) standardGeneric("nearest"))
 
 setMethod("nearest", c("Ranges", "RangesORmissing"),
-          function(x, subject, select = c("arbitrary", "all"))
+          function(x, subject, select = c("arbitrary", "all"),
+                   algorithm = c("nclist", "intervaltree"))
           {
             select <- match.arg(select)
             if (!missing(subject)) {
-              ol <- findOverlaps(x, subject, select = select)
+              ol <- findOverlaps(x, subject, select = select,
+                                 algorithm = match.arg(algorithm))
             } else {
               subject <- x
-              ol <- findOverlaps(x, select = select, ignoreSelf = TRUE)
+              ol <- findOverlaps(x, select = select,
+                                 algorithm = match.arg(algorithm),
+                                 ignoreSelf = TRUE)
             }
             if (select == "all") {
               olv <- selectHits(ol, select="first")
@@ -165,14 +169,17 @@ setGeneric("distanceToNearest",
            function(x, subject = x, ...) standardGeneric("distanceToNearest"))
 
 setMethod("distanceToNearest", c("Ranges", "RangesORmissing"),
-    function(x, subject, select = c("arbitrary", "all"))
+    function(x, subject, select = c("arbitrary", "all"),
+             algorithm = c("nclist", "intervaltree"))
     {
         select <- match.arg(select)
         if (missing(subject)) {
             subject <- x
-            x_nearest <- nearest(x, select = select)
+            x_nearest <- nearest(x, select = select,
+                                 algorithm = match.arg(algorithm))
         } else {
-            x_nearest <- nearest(x, subject, select = select)
+            x_nearest <- nearest(x, subject, select = select,
+                                 algorithm = match.arg(algorithm))
         }
         if (select == "arbitrary") {
             queryHits <- seq_along(x)[!is.na(x_nearest)]

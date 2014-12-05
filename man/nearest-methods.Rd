@@ -26,13 +26,15 @@
 }
 
 \usage{
-\S4method{nearest}{Ranges,RangesORmissing}(x, subject, select = c("arbitrary", "all"))
+\S4method{nearest}{Ranges,RangesORmissing}(x, subject, select = c("arbitrary", "all"),
+        algorithm = c("nclist", "intervaltree"))
 
 \S4method{precede}{Ranges,RangesORmissing}(x, subject, select = c("first", "all"))
 
 \S4method{follow}{Ranges,RangesORmissing}(x, subject, select = c("last", "all"))
 
-\S4method{distanceToNearest}{Ranges,RangesORmissing}(x, subject, select = c("arbitrary", "all"))
+\S4method{distanceToNearest}{Ranges,RangesORmissing}(x, subject, select = c("arbitrary", "all"),
+                  algorithm = c("nclist", "intervaltree"))
 
 \S4method{distance}{Ranges,Ranges}(x, y)
 }
@@ -66,7 +68,7 @@
       for each range in \code{x}. If there is no nearest neighbor 
       (if \code{subject} is empty), NA's are returned.
 
-      The algorithm is roughly as follows, for a range \code{xi} in \code{x}:
+      Here is roughly how it proceeds, for a range \code{xi} in \code{x}:
       \enumerate{
         \item Find the ranges in \code{subject} that overlap \code{xi}. If a
           single range \code{si} in \code{subject} overlaps \code{xi}, 
