@@ -436,16 +436,14 @@ static int is_hit(int x_idx, const Backpack *backpack)
 	}
 
 	/* Check the score */
-	if (backpack->min_overlap_score != 1) {
-		ov_start = backpack->y_start > x_start ?
-			   backpack->y_start : x_start;
-		ov_end   = backpack->y_end < x_end ?
-			   backpack->y_end : x_end;
-		score = ov_end - ov_start + 1;
-		ok = score >= backpack->min_overlap_score;
-		if (!ok)
-			return 0;
-	}
+	ov_start = backpack->y_start > x_start ?
+		   backpack->y_start : x_start;
+	ov_end   = backpack->y_end < x_end ?
+		   backpack->y_end : x_end;
+	score = ov_end - ov_start + 1;
+	ok = score >= backpack->min_overlap_score;
+	if (!ok)
+		return 0;
 
 	/* Check the type */
 	if (backpack->overlap_type != TYPE_ANY) {
@@ -520,12 +518,7 @@ static Backpack prepare_backpack(const int *x_start_p, const int *x_end_p,
 	Backpack backpack;
 	int y_extension;
 
-	if (min_overlap_score >= 1) {
-		y_extension = 0;
-	} else {
-		y_extension = 1 - min_overlap_score;
-		min_overlap_score = 1;
-	}
+	y_extension = min_overlap_score >= 1 ? 0 : 1 - min_overlap_score;
 	backpack.x_start_p = x_start_p;
 	backpack.x_end_p = x_end_p;
 	backpack.x_space_p = x_space_p;

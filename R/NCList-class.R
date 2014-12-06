@@ -201,12 +201,12 @@ min_overlap_score <- function(maxgap=0L, minoverlap=1L)
     if (!is.integer(minoverlap))
         minoverlap <- as.integer(minoverlap)
 
-    if (maxgap != 0L && minoverlap != 1L)
-        stop("either 'maxgap' or 'minoverlap' can be specified but not both")
     if (maxgap < 0L)
         stop("'maxgap' cannot be negative")
     if (minoverlap < 0L)
         stop("'minoverlap' cannot be negative")
+    if (maxgap != 0L && minoverlap > 1L)
+        stop("'minoverlap' must be <= 1 when 'maxgap' is not 0")
     minoverlap - maxgap
 }
 

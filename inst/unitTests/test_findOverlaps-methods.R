@@ -45,13 +45,17 @@ test_findOverlaps_Ranges <- function()
   ## zero-width ranges
   query <- IRanges(9:14, 8:13)
   result <- findOverlaps(query, subject)
-  checkOverlap(result, 3:4, c(3, 3), 6, 3)
-  result <- findOverlaps(query, subject, maxgap=1L)
+  checkOverlap(result, integer(0), integer(0), 6, 3)
+  result <- findOverlaps(query, subject, minoverlap = 0L)
   checkOverlap(result, 2:5, c(3, 3, 3, 3), 6, 3)
+  result <- findOverlaps(query, subject, maxgap=1L, minoverlap = 0L)
+  checkOverlap(result, 1:6, c(3, 3, 3, 3, 3, 3), 6, 3)
   result <- findOverlaps(subject, query)
-  checkOverlap(result, c(3, 3), 3:4, 3, 6)
-  result <- findOverlaps(subject, query, maxgap=1L)
+  checkOverlap(result, integer(0), integer(0), 3, 6)
+  result <- findOverlaps(subject, query, minoverlap = 0L)
   checkOverlap(result, c(3, 3, 3, 3), 2:5, 3, 6)
+  result <- findOverlaps(subject, query, maxgap=1L, minoverlap = 0L)
+  checkOverlap(result, c(3, 3, 3, 3, 3, 3), 1:6, 3, 6)
 
   ## .....
   ##    ....
