@@ -400,7 +400,7 @@ typedef struct backpack {
 	const int *x_start_p;
 	const int *x_end_p;
 	const int *x_space_p;
-	int min_overlap_score;
+	int min_overlap_score0;
 	int y_extension;
 	int overlap_type;
 	int select_mode;
@@ -420,62 +420,43 @@ typedef struct backpack {
 
 static int is_hit(int x_idx, const Backpack *backpack)
 {
-	int x_start, x_end, x_space, ok, ov_start, ov_end, score, d;
-
-	x_start = backpack->x_start_p[x_idx];
-	x_end = backpack->x_end_p[x_idx];
+	static int x_space, x_start, x_end, ov_start, ov_end, d;
 
 	/* Check the space */
-	if (backpack->x_space_p != NULL) {
+	if (backpack->x_space_p != NULL && backpack->y_space != 0) {
 		x_space = backpack->x_space_p[x_idx];
-		ok = x_space == 0 ||
-		     backpack->y_space == 0 ||
-		     backpack->y_space == x_space;
-		if (!ok)
+		if (x_space != 0 && x_space != backpack->y_space)
 			return 0;
 	}
-
 	/* Check the score */
+	x_start = backpack->x_start_p[x_idx];
+	x_end = backpack->x_end_p[x_idx];
 	ov_start = backpack->y_start > x_start ?
 		   backpack->y_start : x_start;
 	ov_end   = backpack->y_end < x_end ?
 		   backpack->y_end : x_end;
-	score = ov_end - ov_start + 1;
-	ok = score >= backpack->min_overlap_score;
-	if (!ok)
+	if (ov_end - ov_start < backpack->min_overlap_score0)
 		return 0;
-
 	/* Check the type */
-	if (backpack->overlap_type != TYPE_ANY) {
-		switch (backpack->overlap_type) {
-		    case TYPE_START:
-			ok = backpack->y_start == x_start;
-			break;
-		    case TYPE_END:
-			d = backpack->y_end - x_end;
-			if (backpack->circle_len != NA_INTEGER)
-				d %= backpack->circle_len;
-			ok = d == 0;
-			break;
-		    case TYPE_WITHIN:
-			ok = backpack->y_start >= x_start &&
-			     backpack->y_end <= x_end;
-			break;
-		    case TYPE_EXTEND:
-			ok = backpack->y_start <= x_start &&
-			     backpack->y_end >= x_end;
-			break;
-		    case TYPE_EQUAL:
-			ok = backpack->y_start == x_start &&
-			     backpack->y_end == x_end;
-			break;
-		    default:
-			ok = 1;
-		}
-		if (!ok)
-			return 0;
+	if (backpack->overlap_type == TYPE_ANY)
+		return 1;
+	if (backpack->overlap_type == TYPE_WITHIN)
+		return backpack->y_start >= x_start &&
+		       backpack->y_end <= x_end;
+	if (backpack->overlap_type == TYPE_EXTEND)
+		return backpack->y_start <= x_start &&
+		       backpack->y_end >= x_end;
+	if (backpack->overlap_type == TYPE_START)
+		return backpack->y_start == x_start;
+	if (backpack->overlap_type == TYPE_END) {
+		d = backpack->y_end - x_end;
+		if (backpack->circle_len != NA_INTEGER)
+			d %= backpack->circle_len;
+		return d == 0;
 	}
-	return 1;
+	/* TYPE_EQUAL */
+	return backpack->y_start == x_start &&
+	       backpack->y_end == x_end;
 }
 
 static void report_hit(int x_idx, const Backpack *backpack)
@@ -522,7 +503,7 @@ static Backpack prepare_backpack(const int *x_start_p, const int *x_end_p,
 	backpack.x_start_p = x_start_p;
 	backpack.x_end_p = x_end_p;
 	backpack.x_space_p = x_space_p;
-	backpack.min_overlap_score = min_overlap_score;
+	backpack.min_overlap_score0 = min_overlap_score - 1;
 	backpack.y_extension = y_extension;
 	backpack.overlap_type = overlap_type;
 	backpack.select_mode = select_mode;
