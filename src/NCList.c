@@ -401,7 +401,6 @@ typedef struct backpack {
 	const int *x_end_p;
 	const int *x_space_p;
 	int min_overlap_score0;
-	int y_extension;
 	int overlap_type;
 	int select_mode;
 	int circle_len;
@@ -420,7 +419,7 @@ typedef struct backpack {
 
 static int is_hit(int x_idx, const Backpack *backpack)
 {
-	static int x_space, x_start, x_end, ov_start, ov_end, d;
+	static int x_space, x_start, x_end, d;
 
 	/* Check the space */
 	if (backpack->x_space_p != NULL && backpack->y_space != 0) {
@@ -431,11 +430,7 @@ static int is_hit(int x_idx, const Backpack *backpack)
 	/* Check the score */
 	x_start = backpack->x_start_p[x_idx];
 	x_end = backpack->x_end_p[x_idx];
-	ov_start = backpack->y_start > x_start ?
-		   backpack->y_start : x_start;
-	ov_end   = backpack->y_end < x_end ?
-		   backpack->y_end : x_end;
-	if (ov_end - ov_start < backpack->min_overlap_score0)
+	if (x_end - x_start < backpack->min_overlap_score0)
 		return 0;
 	/* Check the type */
 	if (backpack->overlap_type == TYPE_ANY)
@@ -497,14 +492,11 @@ static Backpack prepare_backpack(const int *x_start_p, const int *x_end_p,
 				 IntAE *hits, int *direct_out)
 {
 	Backpack backpack;
-	int y_extension;
 
-	y_extension = min_overlap_score >= 1 ? 0 : 1 - min_overlap_score;
 	backpack.x_start_p = x_start_p;
 	backpack.x_end_p = x_end_p;
 	backpack.x_space_p = x_space_p;
 	backpack.min_overlap_score0 = min_overlap_score - 1;
-	backpack.y_extension = y_extension;
 	backpack.overlap_type = overlap_type;
 	backpack.select_mode = select_mode;
 	backpack.circle_len = circle_len;
@@ -520,8 +512,8 @@ static void update_backpack(Backpack *backpack, int y_start, int y_end,
 	backpack->y_start = y_start;
 	backpack->y_end = y_end;
 	backpack->y_space = y_space;
-	backpack->ext_y_start = y_start - backpack->y_extension;
-	backpack->ext_y_end = y_end + backpack->y_extension;
+	backpack->ext_y_start = y_start + backpack->min_overlap_score0;
+	backpack->ext_y_end = y_end - backpack->min_overlap_score0;
 	backpack->y_idx = y_idx;
 	return;
 }
@@ -572,7 +564,8 @@ static void pp_find_overlaps(
 {
 	const int *x_start_p, *x_end_p, *x_space_p,
 		  *y_start_p, *y_end_p, *y_space_p, *y_subset_p;
-	int y_len, backpack_select_mode, i, j, old_nhit, new_nhit, k;
+	int y_len, backpack_select_mode,
+	    i, j, y_start, y_end, old_nhit, new_nhit, k;
 	IntAE *xh_buf, *yh_buf;
 	Backpack backpack;
 
@@ -615,7 +608,11 @@ static void pp_find_overlaps(
 				    xh_buf, direct_out);
 	for (i = 0; i < y_len; i++) {
 		j = y_subset_p == NULL ? i : y_subset_p[i];
-		update_backpack(&backpack, y_start_p[j], y_end_p[j],
+		y_start = y_start_p[j];
+		y_end = y_end_p[j];
+		if (y_end - y_start < backpack.min_overlap_score0)
+			continue;
+		update_backpack(&backpack, y_start, y_end,
 				y_space_p == NULL ? 0 : y_space_p[j], j);
 		/* pass 0 */
 		get_y_overlaps(pp, &backpack);
@@ -912,8 +909,8 @@ static SEXP new_direct_out(int q_len, int select_mode)
  *
  * --- .Call ENTRY POINT ---
  * Args:
- *   q_start, q_end: Integer vectors of length M.
- *   s_start, s_end: Integer vectors of length N.
+ *   q_start, q_end: Integer vectors of same length.
+ *   s_start, s_end: Integer vectors of same length.
  *   nclist:         An integer vector representing the Nested Containment
  *                   List for 'y'.
  *   nclist_is_q:    TRUE or FALSE.
@@ -976,12 +973,12 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
  *
  * --- .Call ENTRY POINT ---
  * Args:
- *   q_start, q_end, q_space: Integer vectors of length M (or NULL for
+ *   q_start, q_end, q_space: Integer vectors of same length (or NULL for
  *                   'q_space').
  *   q_groups:       A CompressedIntegerList object of length NG1. Each list
  *                   element (integer vector) represents a group of 0-based
  *                   indices into 'q_start', 'q_end', and 'q_space'.
- *   s_start, s_end, s_space: Integer vectors of length N (or NULL for
+ *   s_start, s_end, s_space: Integer vectors of same length (or NULL for
  *                   's_space').
  *   s_groups:       A CompressedIntegerList object of length NG2. Each list
  *                   element (integer vector) represents a group of 0-based
@@ -1016,13 +1013,12 @@ SEXP NCList_find_overlaps_in_groups(
 	/* Check query. */
 	q_len = check_integer_pairs(q_start, q_end,
 				    &q_start_p, &q_end_p,
-				    "start(query)", "end(query)");
+				    "q_start", "q_end");
 	if (q_space == R_NilValue) {
 		q_space_p = NULL;
 	} else {
 		if (LENGTH(q_space) != q_len)
-			error("'query.space' must have the length "
-			      "of 'query'");
+			error("'q_space' must have the length of 'q_start'");
 		q_space_p = INTEGER(q_space);
 	}
 	q_groups_holder = _hold_CompressedIntegerList(q_groups);
@@ -1031,13 +1027,12 @@ SEXP NCList_find_overlaps_in_groups(
 	/* Check subject. */
 	s_len = check_integer_pairs(s_start, s_end,
 				    &s_start_p, &s_end_p,
-				    "start(s)", "end(s)");
+				    "s_start", "s_end");
 	if (s_space == R_NilValue) {
 		s_space_p = NULL;
 	} else {
 		if (LENGTH(s_space) != s_len)
-			error("'subject.space' must have the length "
-			      "of 'subject'");
+			error("'s_space' must have the length of 's_start'");
 		s_space_p = INTEGER(s_space);
 	}
 	s_groups_holder = _hold_CompressedIntegerList(s_groups);
