@@ -662,69 +662,6 @@ static void pp_find_overlaps(
 
 
 /****************************************************************************
- * nclist_get_y_overlaps()
- */
-
-static int nclist_bsearch(const int *x_nclist, const int *x_end_p,
-			  int y_start)
-{
-	int n1, n2, nelt, n, x_end;
-
-	/* Check first element. */
-	n1 = 0;
-	x_end = x_end_p[NCLIST_N2X(x_nclist, n1)];
-	if (x_end >= y_start)
-		return n1;
-
-	/* Check last element. */
-	nelt = NCLIST_NELT(x_nclist);
-	n2 = nelt - 1;
-	x_end = x_end_p[NCLIST_N2X(x_nclist, n2)];
-	if (x_end < y_start)
-		return nelt;
-	if (x_end == y_start)
-		return n2;
-
-	/* Binary search. */
-	while ((n = (n1 + n2) / 2) != n1) {
-		x_end = x_end_p[NCLIST_N2X(x_nclist, n)];
-		if (x_end == y_start)
-			return n;
-		if (x_end < y_start)
-			n1 = n;
-		else
-			n2 = n;
-	}
-	return n2;
-}
-
-/* Recursive! */
-static void nclist_get_y_overlaps(const int *x_nclist, const Backpack *backpack)
-{
-	int nelt, n, n2x, offset;
-
-	nelt = NCLIST_NELT(x_nclist);
-	n = nclist_bsearch(x_nclist, backpack->x_end_p,
-				     backpack->ext_y_start);
-	for ( ; n < nelt; n++) {
-		n2x = NCLIST_N2X(x_nclist, n);
-		if (backpack->x_start_p[n2x] > backpack->ext_y_end)
-			break;
-		if (is_hit(n2x, backpack)) {
-			report_hit(n2x, backpack);
-			if (backpack->select_mode == ARBITRARY_HIT
-			 && !backpack->pp_is_q)
-				break;
-		}
-		offset = NCSUBLIST_OFFSET(x_nclist, n);
-		if (offset != -1)
-			nclist_get_y_overlaps(x_nclist + offset, backpack);
-	}
-	return;
-}
-
-
-/****************************************************************************
  * pnclist_get_y_overlaps()
  */
 
@@ -789,6 +726,69 @@ static void pnclist_get_y_overlaps(const preNCList *x_pnclist,
 
 
 /****************************************************************************
+ * nclist_get_y_overlaps()
+ */
+
+static int nclist_bsearch(const int *x_nclist, const int *x_end_p,
+			  int y_start)
+{
+	int n1, n2, nelt, n, x_end;
+
+	/* Check first element. */
+	n1 = 0;
+	x_end = x_end_p[NCLIST_N2X(x_nclist, n1)];
+	if (x_end >= y_start)
+		return n1;
+
+	/* Check last element. */
+	nelt = NCLIST_NELT(x_nclist);
+	n2 = nelt - 1;
+	x_end = x_end_p[NCLIST_N2X(x_nclist, n2)];
+	if (x_end < y_start)
+		return nelt;
+	if (x_end == y_start)
+		return n2;
+
+	/* Binary search. */
+	while ((n = (n1 + n2) / 2) != n1) {
+		x_end = x_end_p[NCLIST_N2X(x_nclist, n)];
+		if (x_end == y_start)
+			return n;
+		if (x_end < y_start)
+			n1 = n;
+		else
+			n2 = n;
+	}
+	return n2;
+}
+
+/* Recursive! */
+static void nclist_get_y_overlaps(const int *x_nclist, const Backpack *backpack)
+{
+	int nelt, n, n2x, offset;
+
+	nelt = NCLIST_NELT(x_nclist);
+	n = nclist_bsearch(x_nclist, backpack->x_end_p,
+				     backpack->ext_y_start);
+	for ( ; n < nelt; n++) {
+		n2x = NCLIST_N2X(x_nclist, n);
+		if (backpack->x_start_p[n2x] > backpack->ext_y_end)
+			break;
+		if (is_hit(n2x, backpack)) {
+			report_hit(n2x, backpack);
+			if (backpack->select_mode == ARBITRARY_HIT
+			 && !backpack->pp_is_q)
+				break;
+		}
+		offset = NCSUBLIST_OFFSET(x_nclist, n);
+		if (offset != -1)
+			nclist_get_y_overlaps(x_nclist + offset, backpack);
+	}
+	return;
+}
+
+
+/****************************************************************************
  * find_overlaps()
  */
 
@@ -837,7 +837,8 @@ static int find_overlaps(
 
 
 /****************************************************************************
- * Check user-supplied input.
+ * Helper functions shared by NCList_find_overlaps() and
+ * NCList_find_overlaps_in_groups()
  */
 
 static int get_min_overlap_score(SEXP min_score)
@@ -891,11 +892,6 @@ static int get_circle_length(SEXP circle_length)
                       "positive integer or NA");
 	return circle_len;
 }
-
-
-/****************************************************************************
- * Move raw hits from buffers to Hits object or integer vector
- */
 
 static SEXP new_direct_out(int q_len, int select_mode)
 {
