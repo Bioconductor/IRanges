@@ -131,8 +131,7 @@ test_findOverlaps_NCList_with_filtering <- function()
     for (min.score in -3:4) {
         for (type in c("any", "start", "end", "within", "extend", "equal")) {
             for (select in c("all", "first", "last", "count")) {
-                #cat("min.score=", min.score,
-                #    " type=", type, " select=", select, "\n", sep="")
+                ## query - subject
                 target <- .findOverlaps_naive(query, subject,
                                               min.score=min.score,
                                               type=type, select=select)
@@ -145,6 +144,38 @@ test_findOverlaps_NCList_with_filtering <- function()
                                                type=type, select=select)
                 checkTrue(.compare_hits(target, current))
                 current <- findOverlaps_NCList(query, subject,
+                                               min.score=min.score,
+                                               type=type, select=select)
+                checkTrue(.compare_hits(target, current))
+                ## subject - query
+                target <- .findOverlaps_naive(subject, query,
+                                              min.score=min.score,
+                                              type=type, select=select)
+                current <- findOverlaps_NCList(pp_subject, query,
+                                               min.score=min.score,
+                                               type=type, select=select)
+                checkTrue(.compare_hits(target, current))
+                current <- findOverlaps_NCList(subject, pp_query,
+                                               min.score=min.score,
+                                               type=type, select=select)
+                checkTrue(.compare_hits(target, current))
+                current <- findOverlaps_NCList(subject, query,
+                                               min.score=min.score,
+                                               type=type, select=select)
+                checkTrue(.compare_hits(target, current))
+                ## subject - subject
+                target <- .findOverlaps_naive(subject, subject,
+                                              min.score=min.score,
+                                              type=type, select=select)
+                current <- findOverlaps_NCList(pp_subject, subject,
+                                               min.score=min.score,
+                                               type=type, select=select)
+                checkTrue(.compare_hits(target, current))
+                current <- findOverlaps_NCList(subject, pp_subject,
+                                               min.score=min.score,
+                                               type=type, select=select)
+                checkTrue(.compare_hits(target, current))
+                current <- findOverlaps_NCList(subject, subject,
                                                min.score=min.score,
                                                type=type, select=select)
                 checkTrue(.compare_hits(target, current))
