@@ -309,7 +309,7 @@ static int dump_NCList_to_int_array(const NCList *nclist, int *out)
 	{
 		NCListSXP_REVMAP(out)[n] = *revmap_p;
 		dump_len = dump_NCList_to_int_array(contained_list_p,
-						       out + offset);
+						    out + offset);
 		NCListSXP_OFFSETS(out)[n] = dump_len != 0 ? offset : -1;
 		offset += dump_len;
 	}
@@ -669,7 +669,9 @@ static void pp_find_overlaps(
 
 /****************************************************************************
  * int_bsearch()
- *
+ */
+
+/* 'x_len' is assumed to be > 0. 
  * TODO: Maybe move this to int_utils.c or sort_utils.c in S4Vectors/src/
  */
 
@@ -691,8 +693,11 @@ static int int_bsearch(const int *x, const int *x_subset, int x_len, int min)
 	if (xi == min)
 		return n2;
 
-	/* Binary search. */
-	while ((n = (n1 + n2) / 2) != n1) {
+	/* Binary search.
+	   Seems that using >> 1 instead of / 2 is faster, even when compiling
+	   with 'gcc -O2' (one would hope that the optimizer is able to do that
+	   kind of optimization). */
+	while ((n = (n1 + n2) >> 1) != n1) {
 		xi = x[x_subset[n]];
 		if (xi == min)
 			return n;
