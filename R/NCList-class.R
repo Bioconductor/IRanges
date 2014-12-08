@@ -97,20 +97,20 @@ setAs("NCList", "IRanges", function(from) ranges(from))
 ### NCList constructor
 ###
 
-### Returns an external pointer to the pre-NCList.
-.preNCList <- function(x_start, x_end, x_subset)
+### Returns an external pointer to the NCList C struct.
+.NCList_xp <- function(x_start, x_end, x_subset)
 {
-    ans <- .Call2("preNCList_new", PACKAGE="IRanges")
+    ans <- .Call2("NCList_new", PACKAGE="IRanges")
     reg.finalizer(ans,
-        function(e) .Call("preNCList_free", e, PACKAGE="IRanges")
+        function(e) .Call("NCList_free", e, PACKAGE="IRanges")
     )
-    .Call2("preNCList_build", ans, x_start, x_end, x_subset, PACKAGE="IRanges")
+    .Call2("NCList_build", ans, x_start, x_end, x_subset, PACKAGE="IRanges")
 }
 
 .nclist <- function(x_start, x_end, x_subset=NULL)
 {
-    x_pnclist <- .preNCList(x_start, x_end, x_subset)
-    .Call2("new_NCList_from_preNCList", x_pnclist, PACKAGE="IRanges")
+    nclist_xp <- .NCList_xp(x_start, x_end, x_subset)
+    .Call2("new_NCListSXP_from_NCList", nclist_xp, PACKAGE="IRanges")
 }
 
 ### Usage:
@@ -136,8 +136,8 @@ print_NCList <- function(x)
 {
     if (!is(x, "NCList"))
         stop("'x' must be an NCList object")
-    .Call2("NCList_print", x@nclist, start(x@ranges), end(x@ranges),
-                           PACKAGE="IRanges")
+    .Call2("NCListSXP_print", x@nclist, start(x@ranges), end(x@ranges),
+                              PACKAGE="IRanges")
     invisible(NULL)
 }
 

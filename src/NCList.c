@@ -23,92 +23,85 @@ static void print_elapsed_time()
 }
 */
 
-typedef struct pnclist {
-	int buflength;           /* always >= 0 */
-	int nelt;                /* always >= 0 and <= buflength */
-	struct pnclist_elt *elts;
-} preNCList;
+typedef struct nclist_t {
+	int buflength;  /* >= 0 */
+	int nelt;       /* >= 0 and <= buflength */
+	int *revmap;    /* Of length 'nelt'. Reverse mapping into Ranges
+			   object 'x'. Contains 0-based indices */
+	struct nclist_t *contained_list;  /* Of length 'nelt' */
+} NCList;
 
-typedef struct pnclist_elt {
-	int n2x;		/* 0-based back index into 'x' (Ranges) */
-	struct pnclist nested_list;
-} preNCListElt;
-
-
-static void init_preNCList(preNCList *pnclist)
+static void init_NCList(NCList *nclist)
 {
-	pnclist->buflength = pnclist->nelt = 0;
+	nclist->buflength = nclist->nelt = 0;
 	return;
 }
 
-static void init_preNCListElt(preNCListElt *elt, int n2x)
-{
-	elt->n2x = n2x;
-	init_preNCList(&(elt->nested_list));
-	return;
-}
-
-static void free_preNCList(const preNCList *pnclist)
+static void free_NCList(const NCList *nclist)
 {
 	int n;
-	const preNCListElt *elt;
+	const NCList *contained_list_p;
 
-	if (pnclist->buflength == 0)
+	if (nclist->buflength == 0)
 		return;
-	for (n = 0, elt = pnclist->elts; n < pnclist->nelt; n++, elt++)
-		free_preNCList(&(elt->nested_list));
-	free(pnclist->elts);
+	for (n = 0, contained_list_p = nclist->contained_list;
+	     n < nclist->nelt;
+	     n++, contained_list_p++)
+		free_NCList(contained_list_p);
+	free(nclist->revmap);
+	free(nclist->contained_list);
 	return;
 }
 
 
 /****************************************************************************
- * preNCList_new() and preNCList_free()
+ * NCList_new() and NCList_free()
  */
 
 /* --- .Call ENTRY POINT --- */
-SEXP preNCList_new()
+SEXP NCList_new()
 {
-	preNCList *top_pnclist;
+	NCList *top_nclist;
 
 	//init_clock("preprocessing: T1 = ");
-	top_pnclist = (preNCList *) malloc(sizeof(preNCList));
-	if (top_pnclist == NULL)
-		error("preNCList_new: memory allocation failed");
-	init_preNCList(top_pnclist);
-	return R_MakeExternalPtr(top_pnclist, R_NilValue, R_NilValue);
+	top_nclist = (NCList *) malloc(sizeof(NCList));
+	if (top_nclist == NULL)
+		error("NCList_new: memory allocation failed");
+	init_NCList(top_nclist);
+	return R_MakeExternalPtr(top_nclist, R_NilValue, R_NilValue);
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP preNCList_free(SEXP pnclist)
+SEXP NCList_free(SEXP nclist_xp)
 {
-	preNCList *top_pnclist;
+	NCList *top_nclist;
 
-	top_pnclist = (preNCList *) R_ExternalPtrAddr(pnclist);
-	if (top_pnclist == NULL)
-		error("preNCList_free: pointer to preNCList struct is NULL");
-	free_preNCList(top_pnclist);
-	free(top_pnclist);
-	R_SetExternalPtrAddr(pnclist, NULL);
+	top_nclist = (NCList *) R_ExternalPtrAddr(nclist_xp);
+	if (top_nclist == NULL)
+		error("NCList_free: pointer to NCList struct is NULL");
+	free_NCList(top_nclist);
+	free(top_nclist);
+	R_SetExternalPtrAddr(nclist_xp, NULL);
 	return R_NilValue;
 }
 
 
 /****************************************************************************
- * preNCList_build()
+ * NCList_build()
  */
 
-static void extend_preNCList(preNCList *pnclist)
+static void extend_NCList(NCList *nclist)
 {
 	int old_buflength, new_buflength;
-	size_t elt_size;
-	preNCListElt *new_elts;
+	int *new_revmap;
+	NCList *new_contained_list;
 
-	old_buflength = pnclist->buflength;
-	elt_size = sizeof(preNCListElt);
+	old_buflength = nclist->buflength;
 	if (old_buflength == 0) {
 		new_buflength = 4;
-		new_elts = (preNCListElt *) malloc(elt_size * new_buflength);
+		new_revmap = (int *) malloc(sizeof(int) * new_buflength);
+		new_contained_list = (NCList *) malloc(sizeof(NCList) *
+							  new_buflength);
 	} else {
 		if (old_buflength < 16384)
 			new_buflength = 8 * old_buflength;
@@ -118,26 +111,18 @@ static void extend_preNCList(preNCList *pnclist)
 			new_buflength = 2 * old_buflength;
 		else
 			new_buflength = old_buflength + 33554432;
-		new_elts = (preNCListElt *) realloc(pnclist->elts,
-						    new_buflength * elt_size);
+		new_revmap = (int *) realloc(nclist->revmap,
+					     sizeof(int) * new_buflength);
+		new_contained_list = (NCList *)
+				     realloc(nclist->contained_list,
+					     sizeof(NCList) * new_buflength);
 	}
-	if (new_elts == NULL)
-		error("extend_preNCList: memory allocation failed");
-	pnclist->buflength = new_buflength;
-	pnclist->elts = new_elts;
+	if (new_revmap == NULL || new_contained_list == NULL)
+		error("extend_NCList: memory allocation failed");
+	nclist->buflength = new_buflength;
+	nclist->revmap = new_revmap;
+	nclist->contained_list = new_contained_list;
 	return;
-}
-
-static preNCListElt *append_preNCList_elt(preNCList *host, int n2x)
-{
-	preNCListElt *new_elt;
-
-	if (host->nelt == host->buflength)
-		extend_preNCList(host);
-	new_elt = host->elts + host->nelt;
-	init_preNCListElt(new_elt, n2x);
-	host->nelt++;
-	return new_elt;
 }
 
 static const int *aa, *bb;
@@ -157,24 +142,42 @@ static int qsort_compar(const void *p1, const void *p2)
 
 /*
  * Setting a hard limit on the max depth of NCList objects to prevent C stack
- * overflows when running recursive code like nclist_get_y_overlaps().
+ * overflows when running recursive code like NCList_get_y_overlaps().
  * A better solution would be to not use recursive code at all when traversing
  * an NCList object. Then NCList objects of arbitrary depth could be supported
  * and it wouldn't be necessary to set the limit below.
  */
 #define NCLIST_MAX_DEPTH 25000
-static preNCListElt **stack = NULL;
+typedef struct stack_elt_t {
+	int revidx;
+	NCList *contained_list;
+} StackElt;
+
+static StackElt *stack = NULL;
 static int stack_length = 0;
+
+static StackElt append_NCList_elt(NCList *host, int revidx)
+{
+	StackElt stack_elt;
+
+	if (host->nelt == host->buflength)
+		extend_NCList(host);
+	stack_elt.revidx = host->revmap[host->nelt] = revidx;
+	stack_elt.contained_list = host->contained_list + host->nelt;
+	init_NCList(stack_elt.contained_list);
+	host->nelt++;
+	return stack_elt;
+}
 
 static void extend_stack()
 {
 	int new_length;
-	preNCListElt **new_stack;
+	StackElt *new_stack;
 
 	if (stack_length == 0) {
 		new_length = 1000;
-		new_stack = (preNCListElt **) malloc(sizeof(preNCListElt *) *
-						     new_length);
+		new_stack = (StackElt *) malloc(sizeof(StackElt) *
+						new_length);
 	} else {
 		if (stack_length == NCLIST_MAX_DEPTH)
 			error("extend_stack: cannot build an NCList object "
@@ -183,9 +186,8 @@ static void extend_stack()
 			new_length = 2 * stack_length;
 		else
 			new_length = NCLIST_MAX_DEPTH;
-		new_stack = (preNCListElt **) realloc(stack,
-						      sizeof(preNCListElt *) *
-						      new_length);
+		new_stack = (StackElt *) realloc(stack, sizeof(StackElt) *
+							new_length);
 	}
 	if (new_stack == NULL)
 		error("extend_stack: memory allocation failed");
@@ -194,13 +196,13 @@ static void extend_stack()
 	return;
 }
 
-static void build_preNCList(preNCList *top_pnclist,
-			    const int *x_start_p, const int *x_end_p,
-			    const int *x_subset_p, int x_len)
+static void build_NCList(NCList *top_nclist,
+			 const int *x_start_p, const int *x_end_p,
+			 const int *x_subset_p, int x_len)
 {
 	int *oo, k, d, i, current_end;
-	preNCList *host;
-	preNCListElt *new_elt;
+	NCList *host;
+	StackElt stack_elt;
 
 	/* Determine order of 'x'. 'oo' will be such that 'x[oo]' is sorted
 	   first by ascending start then by descending end. */
@@ -215,32 +217,32 @@ static void build_preNCList(preNCList *top_pnclist,
 	bb = x_end_p;
 	qsort(oo, x_len, sizeof(int), qsort_compar);
 
-	init_preNCList(top_pnclist);
+	init_NCList(top_nclist);
 	for (k = 0, d = -1; k < x_len; k++) {
 		i = oo[k];
 		current_end = x_end_p[i];
-		while (d >= 0 && x_end_p[stack[d]->n2x] < current_end)
+		while (d >= 0 && x_end_p[stack[d].revidx] < current_end)
 			d--;  // unstack
-		host = d == -1 ? top_pnclist: &(stack[d]->nested_list);
+		host = d == -1 ? top_nclist: stack[d].contained_list;
 		// append range i to host
-		new_elt = append_preNCList_elt(host, i);
+		stack_elt = append_NCList_elt(host, i);
 		if (++d == stack_length)
 			extend_stack();
-		stack[d] = new_elt;  // stack
+		stack[d] = stack_elt;  // stack
 	}
 	return;
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP preNCList_build(SEXP pnclist, SEXP x_start, SEXP x_end, SEXP x_subset)
+SEXP NCList_build(SEXP nclist_xp, SEXP x_start, SEXP x_end, SEXP x_subset)
 {
-	preNCList *top_pnclist;
+	NCList *top_nclist;
 	int x_len;
 	const int *x_start_p, *x_end_p, *x_subset_p;
 
-	top_pnclist = (preNCList *) R_ExternalPtrAddr(pnclist);
-	if (top_pnclist == NULL)
-		error("preNCList_build: pointer to preNCList struct is NULL");
+	top_nclist = (NCList *) R_ExternalPtrAddr(nclist_xp);
+	if (top_nclist == NULL)
+		error("NCList_build: pointer to NCList struct is NULL");
 	x_len = check_integer_pairs(x_start, x_end,
 				    &x_start_p, &x_end_p,
 				    "start(x)", "end(x)");
@@ -250,77 +252,84 @@ SEXP preNCList_build(SEXP pnclist, SEXP x_start, SEXP x_end, SEXP x_subset)
 		x_subset_p = INTEGER(x_subset);
 		x_len = LENGTH(x_subset);
 	}
-	build_preNCList(top_pnclist, x_start_p, x_end_p, x_subset_p, x_len);
-	return pnclist;
+	build_NCList(top_nclist, x_start_p, x_end_p, x_subset_p, x_len);
+	return nclist_xp;
 }
 
 
 /****************************************************************************
- * new_NCList_from_preNCList()
+ * new_NCListSXP_from_NCList()
  */
 
-#define NCLIST_NELT(nclist) ((nclist)[0])
-#define NCLIST_N2X(nclist, n) ((nclist)[((n)<<1)+1])
-#define NCSUBLIST_OFFSET(nclist, n) ((nclist)[((n)<<1)+2])
+#define NCListSXP_NELT(nclist) ((nclist)[0])
+#define NCListSXP_REVMAP(nclist) ((nclist)+1)
+#define NCListSXP_OFFSETS(nclist) ((nclist)+1+NCListSXP_NELT(nclist))
 
-static int compute_length_of_preNCList_as_INTEGER(const preNCList *pnclist)
+static int compute_length_of_NCListSXP(const NCList *nclist)
 {
 	int nelt, n;
 	unsigned int ans_len, dump_len;
-	const preNCListElt *elt;
+	const NCList *contained_list_p;
 
-	nelt = pnclist->nelt;
+	nelt = nclist->nelt;
 	if (nelt == 0)
 		return 0;
 	ans_len = 1U + 2U * (unsigned int) nelt;
-	for (n = 0, elt = pnclist->elts; n < nelt; n++, elt++) {
-		dump_len = compute_length_of_preNCList_as_INTEGER(
-					&(elt->nested_list));
+	for (n = 0, contained_list_p = nclist->contained_list;
+	     n < nelt;
+	     n++, contained_list_p++)
+	{
+		dump_len = compute_length_of_NCListSXP(contained_list_p);
 		ans_len += dump_len;
-		if (ans_len < dump_len)
+		if (dump_len > ans_len)
 			goto too_big;
 	}
 	if (ans_len <= INT_MAX)
 		return (int) ans_len;
 too_big:
-	error("compute_length_of_preNCList_as_INTEGER: "
-	      "preNCList object is too big to fit in an integer vector");
+	error("compute_length_of_NCListSXP: "
+	      "NCList object is too big to fit in an integer vector");
 }
 
-static int dump_preNCList_as_int_array(const preNCList *pnclist, int *out)
+static int dump_NCList_to_int_array(const NCList *nclist, int *out)
 {
 	int nelt, offset, dump_len, n;
-	const preNCListElt *elt;
+	const int *revmap_p;
+	const NCList *contained_list_p;
 
-	nelt = pnclist->nelt;
+	nelt = nclist->nelt;
 	if (nelt == 0)
 		return 0;
 	offset = 1 + 2 * nelt;
-	NCLIST_NELT(out) = nelt;
-	for (n = 0, elt = pnclist->elts; n < nelt; n++, elt++) {
-		NCLIST_N2X(out, n) = elt->n2x;
-		dump_len = dump_preNCList_as_int_array(&(elt->nested_list),
+	NCListSXP_NELT(out) = nelt;
+	for (n = 0, revmap_p = nclist->revmap,
+		    contained_list_p = nclist->contained_list;
+	     n < nelt;
+	     n++, revmap_p++, contained_list_p++)
+	{
+		NCListSXP_REVMAP(out)[n] = *revmap_p;
+		dump_len = dump_NCList_to_int_array(contained_list_p,
 						       out + offset);
-		NCSUBLIST_OFFSET(out, n) = dump_len != 0 ? offset : -1;
+		NCListSXP_OFFSETS(out)[n] = dump_len != 0 ? offset : -1;
 		offset += dump_len;
 	}
 	return offset;
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP new_NCList_from_preNCList(SEXP pnclist)
+SEXP new_NCListSXP_from_NCList(SEXP nclist_xp)
 {
 	SEXP ans;
-	const preNCList *top_pnclist;
+	const NCList *top_nclist;
 	int ans_len;
 
-	top_pnclist = (preNCList *) R_ExternalPtrAddr(pnclist);
-	if (top_pnclist == NULL)
-		error("new_NCList_from_preNCList: "
-		      "pointer to preNCList struct is NULL");
-	ans_len = compute_length_of_preNCList_as_INTEGER(top_pnclist);
+	top_nclist = (NCList *) R_ExternalPtrAddr(nclist_xp);
+	if (top_nclist == NULL)
+		error("new_NCListSXP_from_NCList: "
+		      "pointer to NCList struct is NULL");
+	ans_len = compute_length_of_NCListSXP(top_nclist);
 	PROTECT(ans = NEW_INTEGER(ans_len));
-	dump_preNCList_as_int_array(top_pnclist, INTEGER(ans));
+	dump_NCList_to_int_array(top_nclist, INTEGER(ans));
 	UNPROTECT(1);
 	//print_elapsed_time();
 	return ans;
@@ -328,29 +337,29 @@ SEXP new_NCList_from_preNCList(SEXP pnclist)
 
 
 /****************************************************************************
- * NCList_print()
+ * NCListSXP_print()
  */
 
 /* Print 1 line per range in 'nclist'. Return max depth. */
-static int print_NCList(const int *nclist,
-			const int *x_start_p, const int *x_end_p,
-			int depth, const char *format)
+static int print_NCListSXP(const int *nclist,
+			   const int *x_start_p, const int *x_end_p,
+			   int depth, const char *format)
 {
-	int max_depth, nelt, n, d, n2x, offset, tmp;
+	int max_depth, nelt, n, d, revidx, offset, tmp;
 
 	max_depth = depth;
-	nelt = NCLIST_NELT(nclist);
+	nelt = NCListSXP_NELT(nclist);
 	for (n = 0; n < nelt; n++) {
 		for (d = 1; d < depth; d++)
 			Rprintf("|");
-		n2x = NCLIST_N2X(nclist, n);
-		Rprintf(format, n2x + 1);
-		Rprintf(": [%d, %d]\n", x_start_p[n2x], x_end_p[n2x]);
-		offset = NCSUBLIST_OFFSET(nclist, n);
+		revidx = NCListSXP_REVMAP(nclist)[n];
+		Rprintf(format, revidx + 1);
+		Rprintf(": [%d, %d]\n", x_start_p[revidx], x_end_p[revidx]);
+		offset = NCListSXP_OFFSETS(nclist)[n];
 		if (offset != -1) {
-			tmp = print_NCList(nclist + offset,
-					   x_start_p, x_end_p, depth + 1,
-					   format);
+			tmp = print_NCListSXP(nclist + offset,
+					      x_start_p, x_end_p, depth + 1,
+					      format);
 			if (tmp > max_depth)
 				max_depth = tmp;
 		}
@@ -359,7 +368,7 @@ static int print_NCList(const int *nclist,
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP NCList_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
+SEXP NCListSXP_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
 {
 	const int *top_nclist;
 	int x_len, max_digits, max_depth;
@@ -375,8 +384,8 @@ SEXP NCList_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
 	} else {
 		max_digits = (int) log10((double) x_len) + 1;
 		sprintf(format, "%c0%d%c", '%', max_digits, 'd');
-		max_depth = print_NCList(top_nclist, x_start_p, x_end_p,
-					 1, format);
+		max_depth = print_NCListSXP(top_nclist, x_start_p, x_end_p,
+					    1, format);
 	}
 	Rprintf("max depth = %d\n", max_depth);
 	return R_NilValue;
@@ -395,7 +404,7 @@ SEXP NCList_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
 #define TYPE_EXTEND		5
 #define TYPE_EQUAL		6
 
-typedef struct backpack {
+typedef struct backpack_t {
 	/* Members set by prepare_backpack(). */
 	const int *x_start_p;
 	const int *x_end_p;
@@ -659,35 +668,35 @@ static void pp_find_overlaps(
 
 
 /****************************************************************************
- * pnclist_get_y_overlaps()
+ * int_bsearch()
+ *
+ * TODO: Maybe move this to int_utils.c or sort_utils.c in S4Vectors/src/
  */
 
-static int pnclist_bsearch(const preNCList *x_pnclist, const int *x_end_p,
-			   int y_start)
+static int int_bsearch(const int *x, const int *x_subset, int x_len, int min)
 {
-	int n1, n2, nelt, n, x_end;
+	int n1, n2, n, xi;
 
 	/* Check first element. */
 	n1 = 0;
-	x_end = x_end_p[x_pnclist->elts[n1].n2x];
-	if (x_end >= y_start)
+	xi = x[x_subset[n1]];
+	if (xi >= min)
 		return n1;
 
 	/* Check last element. */
-	nelt = x_pnclist->nelt;
-	n2 = nelt - 1;
-	x_end = x_end_p[x_pnclist->elts[n2].n2x];
-	if (x_end < y_start)
-		return nelt;
-	if (x_end == y_start)
+	n2 = x_len - 1;
+	xi = x[x_subset[n2]];
+	if (xi < min)
+		return x_len;
+	if (xi == min)
 		return n2;
 
 	/* Binary search. */
 	while ((n = (n1 + n2) / 2) != n1) {
-		x_end = x_end_p[x_pnclist->elts[n].n2x];
-		if (x_end == y_start)
+		xi = x[x_subset[n]];
+		if (xi == min)
 			return n;
-		if (x_end < y_start)
+		if (xi < min)
 			n1 = n;
 		else
 			n2 = n;
@@ -695,91 +704,69 @@ static int pnclist_bsearch(const preNCList *x_pnclist, const int *x_end_p,
 	return n2;
 }
 
-/* Recursive! */
-static void pnclist_get_y_overlaps(const preNCList *x_pnclist,
-				   const Backpack *backpack)
-{
-	int nelt, n, n2x;
-	const preNCListElt *elt;
 
-	nelt = x_pnclist->nelt;
-	n = pnclist_bsearch(x_pnclist, backpack->x_end_p,
-				       backpack->ext_y_start);
-	for (elt = x_pnclist->elts + n; n < nelt; n++, elt++) {
-		n2x = elt->n2x;
-		if (backpack->x_start_p[n2x] > backpack->ext_y_end)
+/****************************************************************************
+ * NCList_get_y_overlaps()
+ */
+
+/* Recursive! */
+static void NCList_get_y_overlaps(const NCList *x_nclist,
+				  const Backpack *backpack)
+{
+	int nelt, n, revidx;
+	const int *revmap_p;
+	const NCList *contained_list_p;
+
+	nelt = x_nclist->nelt;
+	n = int_bsearch(backpack->x_end_p, x_nclist->revmap, x_nclist->nelt,
+			backpack->ext_y_start);
+	for (revmap_p = x_nclist->revmap + n,
+	     contained_list_p = x_nclist->contained_list + n;
+	     n < nelt;
+	     n++, revmap_p++, contained_list_p++)
+	{
+		revidx = *revmap_p;
+		if (backpack->x_start_p[revidx] > backpack->ext_y_end)
 			break;
-		if (is_hit(n2x, backpack)) {
-			report_hit(n2x, backpack);
+		if (is_hit(revidx, backpack)) {
+			report_hit(revidx, backpack);
 			if (backpack->select_mode == ARBITRARY_HIT
 			 && !backpack->pp_is_q)
 				break;
 		}
-		if (elt->nested_list.nelt != 0)
-			pnclist_get_y_overlaps(&(elt->nested_list), backpack);
+		if (contained_list_p->nelt != 0)
+			NCList_get_y_overlaps(contained_list_p, backpack);
 	}
 	return;
 }
 
 
 /****************************************************************************
- * nclist_get_y_overlaps()
+ * NCListSXP_get_y_overlaps()
  */
 
-static int nclist_bsearch(const int *x_nclist, const int *x_end_p,
-			  int y_start)
-{
-	int n1, n2, nelt, n, x_end;
-
-	/* Check first element. */
-	n1 = 0;
-	x_end = x_end_p[NCLIST_N2X(x_nclist, n1)];
-	if (x_end >= y_start)
-		return n1;
-
-	/* Check last element. */
-	nelt = NCLIST_NELT(x_nclist);
-	n2 = nelt - 1;
-	x_end = x_end_p[NCLIST_N2X(x_nclist, n2)];
-	if (x_end < y_start)
-		return nelt;
-	if (x_end == y_start)
-		return n2;
-
-	/* Binary search. */
-	while ((n = (n1 + n2) / 2) != n1) {
-		x_end = x_end_p[NCLIST_N2X(x_nclist, n)];
-		if (x_end == y_start)
-			return n;
-		if (x_end < y_start)
-			n1 = n;
-		else
-			n2 = n;
-	}
-	return n2;
-}
-
 /* Recursive! */
-static void nclist_get_y_overlaps(const int *x_nclist, const Backpack *backpack)
+static void NCListSXP_get_y_overlaps(const int *x_nclist,
+				     const Backpack *backpack)
 {
-	int nelt, n, n2x, offset;
+	int nelt, n, revidx, offset;
 
-	nelt = NCLIST_NELT(x_nclist);
-	n = nclist_bsearch(x_nclist, backpack->x_end_p,
-				     backpack->ext_y_start);
+	nelt = NCListSXP_NELT(x_nclist);
+	n = int_bsearch(backpack->x_end_p, x_nclist + 1, nelt,
+			backpack->ext_y_start);
 	for ( ; n < nelt; n++) {
-		n2x = NCLIST_N2X(x_nclist, n);
-		if (backpack->x_start_p[n2x] > backpack->ext_y_end)
+		revidx = NCListSXP_REVMAP(x_nclist)[n];
+		if (backpack->x_start_p[revidx] > backpack->ext_y_end)
 			break;
-		if (is_hit(n2x, backpack)) {
-			report_hit(n2x, backpack);
+		if (is_hit(revidx, backpack)) {
+			report_hit(revidx, backpack);
 			if (backpack->select_mode == ARBITRARY_HIT
 			 && !backpack->pp_is_q)
 				break;
 		}
-		offset = NCSUBLIST_OFFSET(x_nclist, n);
+		offset = NCListSXP_OFFSETS(x_nclist)[n];
 		if (offset != -1)
-			nclist_get_y_overlaps(x_nclist + offset, backpack);
+			NCListSXP_get_y_overlaps(x_nclist + offset, backpack);
 	}
 	return;
 }
@@ -796,29 +783,29 @@ static int find_overlaps(
 		const int *s_space_p, const int *s_subset_p, int s_len,
 		int min_overlap_score, int overlap_type,
 		int select_mode, int circle_len,
-		SEXP nclist, int pp_is_q,
+		SEXP nclist_sxp, int pp_is_q,
 		IntAE *qh_buf, IntAE *sh_buf, int *direct_out)
 {
-	preNCList pnclist;
+	NCList nclist;
 	const void *pp;
 	GetYOverlapsFunType get_y_overlaps;
 
 	if (q_len == 0 || s_len == 0)
 		return 0;
-	if (nclist == R_NilValue) {
+	if (nclist_sxp == R_NilValue) {
 		/* On-the-fly preprocessing. */
 		pp_is_q = q_len < s_len;
 		if (pp_is_q)
-			build_preNCList(&pnclist, q_start_p, q_end_p,
-						  q_subset_p, q_len);
+			build_NCList(&nclist, q_start_p, q_end_p,
+					      q_subset_p, q_len);
 		else 
-			build_preNCList(&pnclist, s_start_p, s_end_p,
-						  s_subset_p, s_len);
-		pp = &pnclist;
-		get_y_overlaps = (GetYOverlapsFunType) pnclist_get_y_overlaps;
+			build_NCList(&nclist, s_start_p, s_end_p,
+					      s_subset_p, s_len);
+		pp = &nclist;
+		get_y_overlaps = (GetYOverlapsFunType) NCList_get_y_overlaps;
 	} else {
-		pp = INTEGER(nclist);
-		get_y_overlaps = (GetYOverlapsFunType) nclist_get_y_overlaps;
+		pp = INTEGER(nclist_sxp);
+		get_y_overlaps = (GetYOverlapsFunType) NCListSXP_get_y_overlaps;
 	}
 	pp_find_overlaps(
 		q_start_p, q_end_p, q_space_p, q_subset_p, q_len,
@@ -827,8 +814,8 @@ static int find_overlaps(
 		select_mode, circle_len,
 		pp, pp_is_q, get_y_overlaps,
 		qh_buf, sh_buf, direct_out);
-	if (nclist == R_NilValue)
-		free_preNCList(&pnclist);
+	if (nclist_sxp == R_NilValue)
+		free_NCList(&nclist);
 	return pp_is_q;
 }
 
