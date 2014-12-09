@@ -426,27 +426,25 @@ typedef struct backpack_t {
 	int y_idx;
 } Backpack;
 
-static int is_hit(int x_idx, const Backpack *backpack)
+static int is_hit(int revidx, const Backpack *backpack)
 {
 	static int x_space, x_start, x_end, d;
 
 	/* Check the space */
 	if (backpack->x_space_p != NULL && backpack->y_space != 0) {
-		x_space = backpack->x_space_p[x_idx];
+		x_space = backpack->x_space_p[revidx];
 		if (x_space != 0 && x_space != backpack->y_space)
 			return 0;
 	}
 	/* Check the score */
-	x_start = backpack->x_start_p[x_idx];
-	x_end = backpack->x_end_p[x_idx];
+	x_start = backpack->x_start_p[revidx];
+	x_end = backpack->x_end_p[revidx];
 	if (x_end - x_start < backpack->min_overlap_score0)
 		return 0;
 	/* Check the type */
-	if (backpack->overlap_type == TYPE_ANY)
+	if (backpack->overlap_type == TYPE_ANY
+	 || backpack->overlap_type == TYPE_WITHIN)
 		return 1;
-	if (backpack->overlap_type == TYPE_WITHIN)
-		return backpack->y_start >= x_start &&
-		       backpack->y_end <= x_end;
 	if (backpack->overlap_type == TYPE_EXTEND)
 		return backpack->y_start <= x_start &&
 		       backpack->y_end >= x_end;
@@ -463,11 +461,11 @@ static int is_hit(int x_idx, const Backpack *backpack)
 	       backpack->y_end == x_end;
 }
 
-static void report_hit(int x_idx, const Backpack *backpack)
+static void report_hit(int revidx, const Backpack *backpack)
 {
 	int i1, q_idx, s_idx1, *selection_p;
 
-	i1 = x_idx + 1;  /* 1-based */
+	i1 = revidx + 1;  /* 1-based */
 	if (backpack->select_mode == ALL_HITS) {
 		/* Report the hit. */
 		IntAE_insert_at(backpack->hits,
@@ -476,7 +474,7 @@ static void report_hit(int x_idx, const Backpack *backpack)
 	}
 	/* Update current selection if necessary. */
 	if (backpack->pp_is_q) {
-		q_idx = x_idx;
+		q_idx = revidx;
 		s_idx1 = backpack->y_idx + 1;
 	} else {
 		q_idx = backpack->y_idx;
@@ -668,29 +666,32 @@ static void pp_find_overlaps(
 
 
 /****************************************************************************
- * int_bsearch()
+ * bsearch_revmap()
  */
 
-/* 'x_len' is assumed to be > 0. 
+/*
+ * 'subset_len' is assumed to be > 0.
+ * Return the first index 'n' for which 'base[subset[n]] >= min', or
+ * 'subset_len' if there is no such index.
  * TODO: Maybe move this to int_utils.c or sort_utils.c in S4Vectors/src/
  */
-
-static int int_bsearch(const int *x, const int *x_subset, int x_len, int min)
+static int int_bsearch(const int *subset, int subset_len,
+		       const int *base, int min)
 {
-	int n1, n2, n, xi;
+	int n1, n2, n, b;
 
 	/* Check first element. */
 	n1 = 0;
-	xi = x[x_subset[n1]];
-	if (xi >= min)
+	b = base[subset[n1]];
+	if (b >= min)
 		return n1;
 
 	/* Check last element. */
-	n2 = x_len - 1;
-	xi = x[x_subset[n2]];
-	if (xi < min)
-		return x_len;
-	if (xi == min)
+	n2 = subset_len - 1;
+	b = base[subset[n2]];
+	if (b < min)
+		return subset_len;
+	if (b == min)
 		return n2;
 
 	/* Binary search.
@@ -698,15 +699,31 @@ static int int_bsearch(const int *x, const int *x_subset, int x_len, int min)
 	   with 'gcc -O2' (one would hope that the optimizer is able to do that
 	   kind of optimization). */
 	while ((n = (n1 + n2) >> 1) != n1) {
-		xi = x[x_subset[n]];
-		if (xi == min)
+		b = base[subset[n]];
+		if (b == min)
 			return n;
-		if (xi < min)
+		if (b < min)
 			n1 = n;
 		else
 			n2 = n;
 	}
 	return n2;
+}
+
+static int bsearch_revmap(const int *revmap, int revmap_len,
+			  const Backpack *backpack)
+{
+	const int *base;
+	int min;
+
+	if (backpack->overlap_type == TYPE_WITHIN) {
+		base = backpack->x_end_p;
+		min = backpack->y_end;
+	} else {
+		base = backpack->x_end_p;
+		min = backpack->ext_y_start;
+	}
+	return int_bsearch(revmap, revmap_len, base, min);
 }
 
 
@@ -718,20 +735,27 @@ static int int_bsearch(const int *x, const int *x_subset, int x_len, int min)
 static void NCList_get_y_overlaps(const NCList *x_nclist,
 				  const Backpack *backpack)
 {
-	int nelt, n, revidx;
-	const int *revmap_p;
+	const int *revmap_p, *base;
+	int nelt, n, revidx, max;
 	const NCList *contained_list_p;
 
+	revmap_p = x_nclist->revmap;
 	nelt = x_nclist->nelt;
-	n = int_bsearch(backpack->x_end_p, x_nclist->revmap, x_nclist->nelt,
-			backpack->ext_y_start);
-	for (revmap_p = x_nclist->revmap + n,
+	n = bsearch_revmap(revmap_p, nelt, backpack);
+	for (revmap_p = revmap_p + n,
 	     contained_list_p = x_nclist->contained_list + n;
 	     n < nelt;
 	     n++, revmap_p++, contained_list_p++)
 	{
 		revidx = *revmap_p;
-		if (backpack->x_start_p[revidx] > backpack->ext_y_end)
+		if (backpack->overlap_type == TYPE_WITHIN:) {
+			base = backpack->x_start_p;
+			max = backpack->y_start;
+		} else {
+			base = backpack->x_start_p;
+			max = backpack->ext_y_end;
+		}
+		if (base[revidx] > max)
 			break;
 		if (is_hit(revidx, backpack)) {
 			report_hit(revidx, backpack);
@@ -754,14 +778,26 @@ static void NCList_get_y_overlaps(const NCList *x_nclist,
 static void NCListSXP_get_y_overlaps(const int *x_nclist,
 				     const Backpack *backpack)
 {
-	int nelt, n, revidx, offset;
+	const int *revmap_p, *base, *offset_p;
+	int nelt, n, revidx, max, offset;
 
+	revmap_p = NCListSXP_REVMAP(x_nclist);
 	nelt = NCListSXP_NELT(x_nclist);
-	n = int_bsearch(backpack->x_end_p, x_nclist + 1, nelt,
-			backpack->ext_y_start);
-	for ( ; n < nelt; n++) {
-		revidx = NCListSXP_REVMAP(x_nclist)[n];
-		if (backpack->x_start_p[revidx] > backpack->ext_y_end)
+	n = bsearch_revmap(revmap_p, nelt, backpack);
+	for (revmap_p = revmap_p + n,
+	     offset_p = NCListSXP_OFFSETS(x_nclist) + n;
+	     n < nelt;
+	     n++, revmap_p++, offset_p++)
+	{
+		revidx = *revmap_p;
+		if (backpack->overlap_type == TYPE_WITHIN:) {
+			base = backpack->x_start_p;
+			max = backpack->y_start;
+		} else {
+			base = backpack->x_start_p;
+			max = backpack->ext_y_end;
+		}
+		if (base[revidx] > max)
 			break;
 		if (is_hit(revidx, backpack)) {
 			report_hit(revidx, backpack);
@@ -769,7 +805,7 @@ static void NCListSXP_get_y_overlaps(const int *x_nclist,
 			 && !backpack->pp_is_q)
 				break;
 		}
-		offset = NCListSXP_OFFSETS(x_nclist)[n];
+		offset = *offset_p;
 		if (offset != -1)
 			NCListSXP_get_y_overlaps(x_nclist + offset, backpack);
 	}
