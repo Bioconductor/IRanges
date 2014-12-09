@@ -748,7 +748,7 @@ static void NCList_get_y_overlaps(const NCList *x_nclist,
 	     n++, revmap_p++, contained_list_p++)
 	{
 		revidx = *revmap_p;
-		if (backpack->overlap_type == TYPE_WITHIN:) {
+		if (backpack->overlap_type == TYPE_WITHIN) {
 			base = backpack->x_start_p;
 			max = backpack->y_start;
 		} else {
@@ -790,7 +790,7 @@ static void NCListSXP_get_y_overlaps(const int *x_nclist,
 	     n++, revmap_p++, offset_p++)
 	{
 		revidx = *revmap_p;
-		if (backpack->overlap_type == TYPE_WITHIN:) {
+		if (backpack->overlap_type == TYPE_WITHIN) {
 			base = backpack->x_start_p;
 			max = backpack->y_start;
 		} else {
