@@ -137,7 +137,10 @@ static int qsort_compar(const void *p1, const void *p2)
 	if (ret != 0)
 		return ret;
 	ret = bb[i2] - bb[i1];
-	return ret;
+	if (ret != 0)
+		return ret;
+	/* Break tie by position so the ordering is "stable". */
+	return i1 - i2;
 }
 
 /*
