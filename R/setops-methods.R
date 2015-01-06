@@ -63,17 +63,6 @@ setMethod("union", c("CompressedIRangesList", "CompressedIRangesList"),
             reduce(xy_list, drop.empty.ranges=TRUE)
           })
 
-setMethod("union", c("Hits", "Hits"),
-    function(x, y)
-    {
-        m <- match(y, x)
-        y <- y[is.na(m)]
-        q_hits <- c(queryHits(x), queryHits(y))
-        s_hits <- c(subjectHits(x), subjectHits(y))
-        Hits(q_hits, s_hits, queryLength(x), subjectLength(x))
-    }
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### intersect()
@@ -104,12 +93,6 @@ setMethod("intersect", c("CompressedIRangesList", "CompressedIRangesList"),
             setdiff(x, gaps(y, start = startx, end = endx))
           })
 
-setMethod("intersect", c("Hits", "Hits"), function(x, y) {
-  if (!S4Vectors:::.compatible_Hits(x, y))
-    stop("'x' and 'y' are incompatible by subject and query length")
-  x[x %in% y]
-})
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### setdiff()
@@ -139,12 +122,6 @@ setMethod("setdiff", c("CompressedIRangesList", "CompressedIRangesList"),
             endx[nonempty] <- end(rx)
             gaps(union(gaps(x), y), start = startx, end = endx)
           })
-
-setMethod("setdiff", c("Hits", "Hits"), function(x, y) {
-  if (!S4Vectors:::.compatible_Hits(x, y))
-    stop("'x' and 'y' are incompatible by subject and query length")
-  x[!(x %in% y)]
-})
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

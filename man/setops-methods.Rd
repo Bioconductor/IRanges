@@ -5,17 +5,14 @@
 \alias{union,IRanges,IRanges-method}
 \alias{union,RangesList,RangesList-method}
 \alias{union,CompressedIRangesList,CompressedIRangesList-method}
-\alias{union,Hits,Hits-method}
 
 \alias{intersect,IRanges,IRanges-method}
 \alias{intersect,RangesList,RangesList-method}
 \alias{intersect,CompressedIRangesList,CompressedIRangesList-method}
-\alias{intersect,Hits,Hits-method}
 
 \alias{setdiff,IRanges,IRanges-method}
 \alias{setdiff,RangesList,RangesList-method}
 \alias{setdiff,CompressedIRangesList,CompressedIRangesList-method}
-\alias{setdiff,Hits,Hits-method}
 
 \alias{punion}
 \alias{punion,IRanges,IRanges-method}
@@ -26,7 +23,7 @@
 \alias{pgap}
 \alias{pgap,IRanges,IRanges-method}
 
-\title{Set operations on IRanges, RangesList, and Hits objects}
+\title{Set operations on IRanges and RangesList objects}
 
 \description{
   Performs set operations on \link{IRanges} objects.
