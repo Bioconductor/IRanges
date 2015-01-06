@@ -110,8 +110,8 @@ int _invert_overlap_code(int code)
 	return code < 0 ? code + 4 : code - 4;
 }
 
-/* "Parallel" generalized comparison of 2 Ranges objects. */
-static void ranges_pcompar(
+/* Vectorized comparison of 2 vectors of ranges. */
+static void compare_ranges(
 		const int *x_start, const int *x_width, int x_len,
 		const int *y_start, const int *y_width, int y_len,
 		int *out, int out_len, int with_warning)
@@ -126,8 +126,9 @@ static void ranges_pcompar(
 		out[k] = _overlap_code(x_start[i], x_width[i],
 				       y_start[j], y_width[j]);
 	}
-	/* Warning message appropriate only when 'out_len' is
-           'max(x_len, y_len)' */
+	/* This warning message is meaningful only when 'out_len' is
+           'max(x_len, y_len)' and is consistent with the warning we get from
+	   binary arithmetic/comparison operations on numeric vectors. */
 	if (with_warning && out_len != 0 && (i != x_len || j != y_len))
 		warning("longer object length is not a multiple "
 			"of shorter object length");
@@ -137,12 +138,12 @@ static void ranges_pcompar(
 /* --- .Call ENTRY POINT ---
  * 'x_start' and 'x_width': integer vectors of the same length M.
  * 'y_start' and 'y_width': integer vectors of the same length N.
- * If M != N then the shorter object is recycled to the length of the longer
- * object, except if M or N is 0 in which case the object with length != 0 is
- * truncated to length 0.
  * The 4 integer vectors are assumed to be NA free and 'x_width' and
  * 'y_width' are assumed to contain non-negative values. For efficiency
  * reasons, those assumptions are not checked.
+ * If M != N then the shorter object is recycled to the length of the longer
+ * object, except if M or N is 0 in which case the object with length != 0 is
+ * truncated to length 0.
  */
 SEXP Ranges_compare(SEXP x_start, SEXP x_width,
 		    SEXP y_start, SEXP y_width)
@@ -162,7 +163,7 @@ SEXP Ranges_compare(SEXP x_start, SEXP x_width,
 	else
 		ans_len = x_len >= y_len ? x_len : y_len;
 	PROTECT(ans = NEW_INTEGER(ans_len));
-	ranges_pcompar(x_start_p, x_width_p, x_len,
+	compare_ranges(x_start_p, x_width_p, x_len,
 		       y_start_p, y_width_p, y_len,
 		       INTEGER(ans), ans_len, 1);
 	UNPROTECT(1);

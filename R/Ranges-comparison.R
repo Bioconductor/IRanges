@@ -45,16 +45,12 @@ setMethod("match", c("Ranges", "Ranges"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL,
                        method=c("auto", "quick", "hash"))
     {
-        if (!isSingleNumberOrNA(nomatch))
-            stop("'nomatch' must be a single number or NA")
-        if (!is.integer(nomatch))
-            nomatch <- as.integer(nomatch)
         if (!is.null(incomparables))
             stop("\"match\" method for Ranges objects ",
                  "only accepts 'incomparables=NULL'")
         ## Equivalent to (but faster than):
         ##     findOverlaps(x, table, type="equal", select="first")
-        ## except when 'x' and 'table' both contain empty ranges.
+        ## except when 'x' or 'table' contain empty ranges.
         S4Vectors:::matchIntegerPairs(start(x), width(x),
                                       start(table), width(table),
                                       nomatch=nomatch, method=method)
@@ -73,12 +69,13 @@ setMethod("selfmatch", "Ranges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### order() and related methods.
+### Ordering ranges
 ###
-### The "order" and "rank" methods for Ranges objects are consistent with
-### the order implied by compare().
+### order(), sort(), rank() on Ranges objects are consistent with the order
+### on ranges implied by compare().
 ###
 
+### 'na.last' is pointless (Ranges objects don't contain NAs) so is ignored.
 setMethod("order", "Ranges",
     function(..., na.last=TRUE, decreasing=FALSE)
     {
@@ -91,12 +88,11 @@ setMethod("order", "Ranges",
             return(S4Vectors:::orderIntegerPairs(start(x), width(x),
                                                  decreasing=decreasing))
         }
-        order_args <- vector("list", 2L*length(args))
-        idx <- 2L*seq_len(length(args))
+        order_args <- vector("list", 2L * length(args))
+        idx <- 2L * seq_along(args)
         order_args[idx - 1L] <- lapply(args, start)
         order_args[idx] <- lapply(args, width)
-        do.call(order, c(order_args,
-                         list(na.last=na.last, decreasing=decreasing)))
+        do.call(order, c(order_args, list(decreasing=decreasing)))
     }
 )
 

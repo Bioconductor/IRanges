@@ -10,7 +10,6 @@
 \alias{selfmatch,Ranges-method}
 
 \alias{order,Ranges-method}
-\alias{rank,Ranges-method}
 
 
 \title{Comparing and ordering ranges}
@@ -39,18 +38,18 @@ rangeComparisonCodeToLetter(code)
 \S4method{selfmatch}{Ranges}(x,
           method=c("auto", "quick", "hash"))
 
-## order() and related methods
-## ----------------------------
+## order()
+## -------
 
 \S4method{order}{Ranges}(..., na.last=TRUE, decreasing=FALSE)
-
-\S4method{rank}{Ranges}(x, na.last=TRUE,
-     ties.method=c("average", "first", "random", "max", "min"))
 }
 
 \arguments{
   \item{x, y, table}{
     \link{Ranges} objects.
+  }
+  \item{code}{
+    A vector of codes as returned by \code{compare}.
   }
   \item{nomatch}{
     The value to be returned in the case when no match is found.
@@ -79,13 +78,6 @@ rangeComparisonCodeToLetter(code)
   \item{decreasing}{
     \code{TRUE} or \code{FALSE}.
   }
-  \item{ties.method}{
-    A character string specifying how ties are treated. Only \code{"first"}
-    is supported for now.
-  }
-  \item{code}{
-    A vector of codes as returned by \code{compare}.
-  }
 }
 
 \details{
@@ -105,10 +97,10 @@ rangeComparisonCodeToLetter(code)
   \describe{
     \item{}{
       \code{compare(x, y)}:
-      Performs "generalized range-wise comparison" of \code{x} and \code{y},
-      that is, returns an integer vector where the i-th element is a code
-      describing how the i-th element in \code{x} is qualitatively positioned
-      relatively to the i-th element in \code{y}.
+      Performs element-wise (aka "parallel") comparison of 2 \link{Ranges}
+      objects of \code{x} and \code{y}, that is, returns an integer vector
+      where the i-th element is a code describing how \code{x[i]} is
+      qualitatively positioned with respect to \code{y[i]}.
 
       Here is a summary of the 13 predefined codes (and their letter
       equivalents) and their meanings:
@@ -206,11 +198,9 @@ rangeComparisonCodeToLetter(code)
     }
     \item{}{
       \code{order(...)}:
-      Returns a permutation which rearranges its first argument (a \link{Ranges}
-      object) into ascending order, breaking ties by further arguments (also
-      \link{Ranges} objects).
-      See \code{\link[BiocGenerics]{order}} in the \pkg{BiocGenerics} package
-      for more information.
+      Returns a permutation which rearranges its first argument (a
+      \link{Ranges} object) into ascending order, breaking ties by further
+      arguments (also \link{Ranges} objects).
     }
     \item{}{
       \code{sort(x)}:
@@ -231,6 +221,10 @@ rangeComparisonCodeToLetter(code)
   \itemize{
     \item The \link{Ranges} class.
 
+    \item \link[S4Vectors]{Vector-comparison} in the \pkg{S4Vectors}
+          package for general information about comparing, ordering, and
+          tabulating vector-like objects.
+
     \item \link[GenomicRanges]{GenomicRanges-comparison} in the
           \pkg{GenomicRanges} package for comparing and ordering genomic
           ranges.
@@ -242,9 +236,6 @@ rangeComparisonCodeToLetter(code)
           objects.
 
     \item \code{\link{findOverlaps}} for finding overlapping ranges.
-
-    \item \link{Vector-comparison} for comparing, ordering, and
-          tabulating vector-like objects.
   }
 }
 
