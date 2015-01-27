@@ -153,10 +153,8 @@
 \alias{sum,CompressedLogicalList-method}
 \alias{sum,CompressedNumericList-method}
 
-\alias{unique,CompressedRleList-method}
-\alias{unique.CompressedRleList}
-\alias{unique,SimpleRleList-method}
-\alias{unique.SimpleRleList}
+\alias{unique.RleList}
+\alias{unique,RleList-method}
 \alias{unique.CompressedList}
 \alias{unique,CompressedList-method}
 \alias{table,AtomicList-method}

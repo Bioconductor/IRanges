@@ -621,27 +621,12 @@ setAtomicListMethod <- function(f,
 ### General methods
 ###
 
-### S3/S4 combo for unique.CompressedRleList
-unique.CompressedRleList <- function(x, incomparables=FALSE, ...)
-{
-    if (is.factor(runValue(x@unlistData)))
-        runValue(x@unlistData) <- as.character(runValue(x@unlistData))
-    as(lapply(x, unique, incomparables = incomparables, ...), "CompressedList")
-}
-setMethod("unique", "CompressedRleList", unique.CompressedRleList)
+### S3/S4 combo for unique.RleList
+unique.RleList <- function(x, incomparables=FALSE, ...)
+    unique(runValue(x), incomparables=incomparables, ...)
+setMethod("unique", "RleList", unique.RleList)
 
-### S3/S4 combo for unique.SimpleRleList
-unique.SimpleRleList <- function(x, incomparables=FALSE, ...)
-{
-    as(lapply(x,
-        function(y) {
-            if (is.factor(runValue(y)))
-                runValue(y) <- as.character(runValue(y))
-            unique(y, incomparables = incomparables, ...)
-        }), "List")
-}
-setMethod("unique", "SimpleRleList", unique.SimpleRleList)
-
+### S3/S4 combo for duplicated.CompressedIntegerList
 duplicated.CompressedIntegerList <- function(x, incomparables=FALSE,
                                              fromLast=FALSE)
 {
@@ -655,7 +640,6 @@ duplicated.CompressedIntegerList <- function(x, incomparables=FALSE,
                                        fromLast=fromLast)
   relist(ans_unlistData, x)
 }
-
 setMethod("duplicated", "CompressedIntegerList",
           duplicated.CompressedIntegerList)
 

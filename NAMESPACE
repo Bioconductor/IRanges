@@ -75,9 +75,8 @@ S3method(sort, List)
 
 S3method(tail, Vector)
 
+S3method(unique, RleList)
 S3method(unique, CompressedList)
-S3method(unique, CompressedRleList)
-S3method(unique, SimpleRleList)
 
 S3method(window, Vector)
 S3method(window, vector)
@@ -111,9 +110,8 @@ export(
 
     tail.Vector,
     
+    unique.RleList,
     unique.CompressedList,
-    unique.CompressedRleList,
-    unique.SimpleRleList,
 
     window.Vector,
     window.vector,
