@@ -14,12 +14,17 @@ setMethod("relistToClass", "DataFrame",
     function(x) "CompressedSplitDataFrameList"
 )
 
-setMethod("cbind", "DataFrame",
-          function(..., deparse.level=1) {
-            ans <- DataFrame(...)
-            mcols(ans) <- rbind.mcols(...)
-            ans
-          })
+cbind.DataFrame <- function(..., deparse.level = 1) {
+  ans <- DataFrame(...)
+  mcols(ans) <- rbind.mcols(...)
+  ans
+}
+
+setMethod("cbind", "DataFrame", cbind.DataFrame)
+
+rbind.DataFrame <- function(..., deparse.level = 1) {
+  do.call(rbind, lapply(list(...), as, "DataFrame"))
+}
 
 setMethod("rbind", "DataFrame", function(..., deparse.level=1) {
   args <- list(...)
