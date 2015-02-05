@@ -170,16 +170,6 @@ SEXP H2LGrouping_vmembers(
 );
 
 
-/* DataFrame_class.c */
-
-SEXP _new_DataFrame(
-	const char *classname,
-	SEXP vars,
-	SEXP rownames,
-	SEXP nrows
-);
-
-
 /* SimpleIRangesList_class.c */
 
 SEXP SimpleIRangesList_isNormal(SEXP x);

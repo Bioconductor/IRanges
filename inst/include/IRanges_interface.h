@@ -81,13 +81,6 @@ SEXP get_PartitioningByEnd_end(SEXP x);
 SEXP new_PartitioningByEnd(const char *classname, SEXP end, SEXP names);
 
 /*
- * Low-level manipulation of DataFrame objects.
- * (see DataFrame_class.c)
- */
-
-SEXP new_DataFrame(const char *classname, SEXP vars, SEXP rownames, SEXP nrows);
-
-/*
  * Low-level manipulation of CompressedList objects.
  * (see CompressedList_class.c)
  */

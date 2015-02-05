@@ -160,15 +160,6 @@ DEFINE_CCALLABLE_STUB(SEXP, new_PartitioningByEnd,
 )
 
 /*
- * Stubs for callables defined in DataFrame_class.c
- */
-
-DEFINE_CCALLABLE_STUB(SEXP, new_DataFrame,
-	(const char *classname, SEXP vars, SEXP rownames, SEXP nrows),
-	(            classname,      vars,      rownames,      nrows)
-)
-
-/*
  * Stubs for callables defined in CompressedList_class.c
  */
 
