@@ -3,14 +3,6 @@
 
 \alias{showAsCell,list-method}
 
-\alias{window,Vector-method}
-\alias{window.Vector}
-\alias{window,vector-method}
-\alias{window.vector}
-\alias{window,factor-method}
-\alias{window.factor}
-\alias{window,NULL-method}
-\alias{window.NULL}
 \alias{window<-,Vector-method}
 \alias{window<-.Vector}
 \alias{window<-,vector-method}
@@ -85,15 +77,12 @@
 
   \describe{
     \item{}{
-      \code{window(x, start=NA, end=NA, width=NA, frequency=NULL, delta=NULL, ...)}:
+      \code{window(x, start=NA, end=NA, width=NA)}:
       Extract the subsequence window from the Vector object using:
       \describe{
         \item{\code{start}, \code{end}, \code{width}}{The start, end, or width
           of the window. Two of the three are required.}
-        \item{\code{frequency}, \code{delta}}{Optional arguments that specify
-          the sampling frequency and increment within the window.}
       }
-      In general, this is more efficient than using \code{"["} operator.
     }
     \item{}{
       \code{window(x, start=NA, end=NA, width=NA) <- value}:

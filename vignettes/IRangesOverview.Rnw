@@ -75,14 +75,13 @@ In \R{}, atomic sequences are typically stored in atomic vectors. The
 \Rclass{Rle}, which compresses an atomic sequence through run-length
 encoding.
 
-We begin our discussion of atomic sequences using two \R{} 
-\Rclass{integer} vectors.
+We begin our discussion of atomic sequences using two \Rclass{Rle} vectors.
 <<initialize>>=
 set.seed(0)
 lambda <- c(rep(0.001, 4500), seq(0.001, 10, length = 500), 
             seq(10, 0.001, length = 500))
-xVector <- rpois(1e7, lambda)
-yVector <- rpois(1e7, lambda[c(251:length(lambda), 1:250)])
+xVector <- Rle(rpois(1e7, lambda))
+yVector <- Rle(rpois(1e7, lambda[c(251:length(lambda), 1:250)]))
 @
 
 All atomic sequences in \R{} have three main properties: (1) a
@@ -113,8 +112,7 @@ this, the \IRanges{} package supports seven additional functions for
 sequence extraction:
 
 \begin{enumerate}
-\item \Rfunction{window} - Produces a subsequence over a specified region
-  with or without regular interval subsampling.
+\item \Rfunction{window} - Extracts a subsequence over a specified region.
 \item \Rfunction{subset} - Extracts the subsequence specified by a logical
   vector.
 \item \Rfunction{head} - Extracts a consecutive subsequence containing the
@@ -131,13 +129,12 @@ The following code illustrates how these functions are used on an
 ordinary \R{} \Rclass{integer} vector:
 
 <<seq-extraction>>=
-xSnippet <- window(xVector, start = 4751, end = 4760)
+xSnippet <- xVector[IRanges(4751, 4760)]
 xSnippet
 head(xSnippet)
 tail(xSnippet)
 rev(xSnippet)
 rep(xSnippet, 2)
-window(xSnippet, delta = 2)
 subset(xSnippet, xSnippet >= 5L)
 @
 
@@ -440,7 +437,7 @@ ignoring the underlying sequence values. A list of indices would be a
 simple way to select a subsequence. However, a sparser representation
 for consecutive subsequences would be a range, a pairing of a start
 position and a width, as used when extracting sequences with
-\Rfunction{window} above.
+\Rfunction{window}.
 
 When analyzing subsequences in \IRanges{}, each range is treated as an
 observation. The virtual \Rclass{Ranges} class represents lists of

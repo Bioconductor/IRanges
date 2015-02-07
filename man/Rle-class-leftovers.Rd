@@ -45,13 +45,11 @@
 
   \describe{
     \item{}{
-      \code{window(x, start=NA, end=NA, width=NA, frequency=NULL, delta=NULL, ...)}:
+      \code{window(x, start=NA, end=NA, width=NA)}:
       Extract the subsequence window from \code{x} specified by:
       \describe{
         \item{\code{start}, \code{end}, \code{width}}{The start, end, or width
           of the window. Two of the three are required.}
-        \item{\code{frequency}, \code{delta}}{Optional arguments that specify
-          the sampling frequency and increment within the window.}
       }
     }
     \item{}{

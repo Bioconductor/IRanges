@@ -78,10 +78,6 @@ S3method(tail, Vector)
 S3method(unique, RleList)
 S3method(unique, CompressedList)
 
-S3method(window, Vector)
-S3method(window, vector)
-S3method(window, factor)
-S3method(window, NULL)
 S3method(window, Rle)
 
 S3method(`window<-`, Vector)
@@ -113,10 +109,6 @@ export(
     unique.RleList,
     unique.CompressedList,
 
-    window.Vector,
-    window.vector,
-    window.factor,
-    window.NULL,
     window.Rle,
 
     "window<-.Vector",

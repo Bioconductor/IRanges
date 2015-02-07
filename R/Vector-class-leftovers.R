@@ -54,39 +54,6 @@ tail.Vector <- function(x, n=6L, ...)
 }
 setMethod("tail", "Vector", tail.Vector)
 
-### S3/S4 combo for window.Vector
-window.Vector <- function(x, start=NA, end=NA, width=NA,
-                             frequency=NULL, delta=NULL, ...)
-{
-    i <- solveUserSEWForSingleSeq(NROW(x), start, end, width)
-    if (!is.null(frequency) || !is.null(delta)) {
-        i <- stats:::window.default(seq_len(NROW(x)),
-                                    start=start(i),
-                                    end=end(i),
-                                    frequency=frequency,
-                                    deltat=delta, ...)
-        attributes(i) <- NULL
-    }
-    extractROWS(x, i)
-}
-setMethod("window", "Vector", window.Vector)
-
-### S3/S4 combo for window.vector
-### FIXME: This method alters the semantic of stats::window() on ordinary
-### vectors (the result has no 'tsp' attribute). Not really acceptable.
-window.vector <- window.Vector
-setMethod("window", "vector", window.vector)
-
-### S3/S4 combo for window.factor
-### FIXME: This method alters the semantic of stats::window() on factors
-### (the result has no 'tsp' attribute). Not really acceptable.
-window.factor <- window.Vector
-setMethod("window", "factor", window.factor)
-
-### S3/S4 combo for window.NULL
-window.NULL <- function(x, ...) NULL
-setMethod("window", "NULL", window.NULL)
-
 ### S3/S4 combo for window<-.Vector
 `window<-.Vector` <- function(x, start=NA, end=NA, width=NA, ..., value)
 {

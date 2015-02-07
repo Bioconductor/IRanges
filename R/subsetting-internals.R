@@ -78,7 +78,8 @@ setClass("RangesNSBS",  # not exported
 setMethod("NSBS", "Ranges",
     function(i, x, exact=TRUE, upperBoundIsStrict=TRUE)
     {
-        if (length(i) == 0L) {
+        i_len <- length(i)
+        if (i_len == 0L) {
             i <- NULL
             return(callGeneric())
         }
@@ -86,6 +87,12 @@ setMethod("NSBS", "Ranges",
         if (min(start(i)) < 1L ||
             upperBoundIsStrict && max(end(i)) > x_NROW)
             stop("subscript contains out-of-bounds ranges")
+        if (i_len == 1L) {
+            ans <- new("WindowNSBS", subscript=c(start(i), end(i)),
+                                     upper_bound=x_NROW,
+                                     upper_bound_is_strict=upperBoundIsStrict)
+            return(ans)
+        }
         new("RangesNSBS", subscript=i,
                           upper_bound=x_NROW,
                           upper_bound_is_strict=upperBoundIsStrict)
