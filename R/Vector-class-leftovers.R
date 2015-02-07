@@ -20,40 +20,6 @@ setMethod("showAsCell", "list", function(object)
 ### Convenience wrappers for common subsetting operations.
 ###
 
-### S3/S4 combo for head.Vector
-head.Vector <- function(x, n=6L, ...)
-{
-    if (!isSingleNumber(n))
-        stop("'n' must be a single integer")
-    if (!is.integer(n))
-        n <- as.integer(n)
-    x_NROW <- NROW(x)
-    if (n >= 0L) {
-        n <- min(n, x_NROW)
-    } else {
-        n <- max(x_NROW + n, 0L)
-    }
-    extractROWS(x, IRanges(start=1L, width=n))
-}
-setMethod("head", "Vector", head.Vector)
-
-## S3/S4 combo for tail.Vector
-tail.Vector <- function(x, n=6L, ...)
-{
-    if (!isSingleNumber(n))
-        stop("'n' must be a single integer")
-    if (!is.integer(n))
-        n <- as.integer(n)
-    x_NROW <- NROW(x)
-    if (n >= 0L) {
-        n <- min(n, x_NROW)
-    } else {
-        n <- max(x_NROW + n, 0L)
-    }
-    extractROWS(x, IRanges(end=x_NROW, width=n))
-}
-setMethod("tail", "Vector", tail.Vector)
-
 ### S3/S4 combo for window<-.Vector
 `window<-.Vector` <- function(x, start=NA, end=NA, width=NA, ..., value)
 {

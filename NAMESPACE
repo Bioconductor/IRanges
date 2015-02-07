@@ -1,7 +1,7 @@
 useDynLib(IRanges)
 
 import(methods)
-importFrom(utils, head, tail, stack, read.table)
+importFrom(utils, stack, read.table)
 importFrom(stats, var, cov, cor, sd, median, quantile, mad,
            IQR, smoothEnds, runmed, window, "window<-", aggregate,
            setNames)
@@ -69,11 +69,7 @@ S3method(duplicated, Dups)
 S3method(duplicated, CompressedList)
 S3method(duplicated, CompressedIntegerList)
 
-S3method(head, Vector)
-
 S3method(sort, List)
-
-S3method(tail, Vector)
 
 S3method(unique, RleList)
 S3method(unique, CompressedList)
@@ -100,12 +96,8 @@ export(
     duplicated.Dups,
     duplicated.CompressedList,
 
-    head.Vector,
-
     sort.List,
 
-    tail.Vector,
-    
     unique.RleList,
     unique.CompressedList,
 
@@ -147,7 +139,6 @@ exportMethods(
     summary,
     rev,
     rep,
-    head, tail,
     drop,
     start, "start<-", end, "end<-", width, "width<-",
     min, max, range, which.max, which.min,

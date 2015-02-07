@@ -10,10 +10,6 @@
 \alias{window<-,factor-method}
 \alias{window<-.factor}
 
-\alias{head,Vector-method}
-\alias{head.Vector}
-\alias{tail,Vector-method}
-\alias{tail.Vector}
 \alias{rev,Vector-method}
 \alias{rep,Vector-method}
 \alias{rep.int,Vector-method}
