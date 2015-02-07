@@ -16,7 +16,7 @@ setMethod("c", "SimpleList",
               slot(x, "listData") <-
                 do.call(c, lapply(unname(list(x, ...)), as.list))
               if (!is.null(mcols(x)))
-                mcols(x) <- rbind.mcols(x, ...)
+                mcols(x) <- S4Vectors:::rbind_mcols(x, ...)
               x
           })
 

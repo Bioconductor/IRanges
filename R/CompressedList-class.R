@@ -331,7 +331,7 @@ unlist_list_of_CompressedList <- function(x)
     ans_unlistData <- do.call(.bindROWS, lapply(x, slot, "unlistData"))
     ans_eltlens <- unlist(lapply(x, elementLengths))
     ans <- relist(ans_unlistData, PartitioningByEnd(cumsum(ans_eltlens)))
-    ans_mcols <- do.call(rbind.mcols, x)
+    ans_mcols <- do.call(S4Vectors:::rbind_mcols, x)
     rownames(ans_mcols) <- NULL
     mcols(ans) <- ans_mcols
     ans

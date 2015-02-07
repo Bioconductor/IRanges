@@ -88,32 +88,6 @@ setMethod("subset", "Vector",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Combining.
-###
-
-rbind.mcols <- function(x, ...)
-{
-    args <- list(x, ...)
-    mcols_list <- lapply(args, mcols)
-    if (length(mcols_list) == 1L)
-        return(mcols_list[[1L]])
-    mcols_is_null <- sapply(mcols_list, is.null)
-    if (all(mcols_is_null))
-        return(NULL)
-    makeZeroColDataFrame <- function(xi) new("DataFrame", nrows=length(xi))
-    mcols_list[mcols_is_null] <- lapply(args[mcols_is_null],
-                                        makeZeroColDataFrame)
-    colnames_list <- lapply(mcols_list, colnames)
-    allCols <- unique(unlist(colnames_list, use.names=FALSE))
-    fillCols <- function(df) {
-        if (nrow(df))
-            df[setdiff(allCols, colnames(df))] <- DataFrame(NA)
-        df
-    }
-    do.call(rbind, lapply(mcols_list, fillCols))
-}
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
 

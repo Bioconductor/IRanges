@@ -2,9 +2,7 @@
 
 \alias{DataFrame-utils}
 
-% splitting and combining
-\alias{cbind,DataFrame-method}
-\alias{rbind,DataFrame-method}
+% splitting
 \alias{mstack,DataFrame-method}
 
 
@@ -14,7 +12,7 @@
   Common operations on \link{DataFrame} objects.
 }
 
-\section{Splitting and Combining}{
+\section{Splitting}{
   In the following code snippets, \code{x} is a \code{DataFrame}.
   
   \describe{
@@ -22,23 +20,6 @@
       Splits \code{x} into a \code{\linkS4class{CompressedSplitDataFrameList}},
       according to \code{f}, dropping elements corresponding to
       unrepresented levels if \code{drop} is \code{TRUE}.
-    }
-    \item{}{
-      \code{rbind(...)}: Creates a new \code{DataFrame} by
-      combining the rows of the \code{DataFrame} objects in
-      \code{...}. Very similar to \code{\link{rbind.data.frame}}, except
-      in the handling of row names. If all elements have row names, they
-      are concatenated and made unique. Otherwise, the result does not
-      have row names. Currently, factors are not handled well (their
-      levels are dropped). This is not a high priority until there is an
-      \code{XFactor} class.
-    }
-    \item{}{
-      \code{cbind(...)}: Creates a new \code{DataFrame} by
-      combining the columns of the \code{DataFrame} objects in
-      \code{...}. Very similar to \code{\link{cbind.data.frame}}, except
-      row names, if any, are dropped. Consider the \code{DataFrame}
-      as an alternative that allows one to specify row names.
     }
     \item{}{
       \code{mstack(..., .index.var = "name")}: Stacks the data frames

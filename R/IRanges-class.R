@@ -502,7 +502,7 @@ setMethod("c", "IRanges",
         if (ignore.mcols) {
           mcols(ans) <- NULL
         } else  {
-          mcols(ans) <- do.call(rbind.mcols, args)
+          mcols(ans) <- do.call(S4Vectors:::rbind_mcols, args)
         }
         
         validObject(ans)
