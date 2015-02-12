@@ -207,7 +207,37 @@ setGeneric("splitAsList",
            function(x, f, drop=FALSE, ...) standardGeneric("splitAsList"),
            signature = c("x", "f"))
 
+
+### Took this out of the still-in-incubation LazyList package
+factorsToTableIndices <- function(factors) {
+  nI <- length(factors)
+  nx <- length(factors[[1L]])
+  useRle <- any(vapply(factors, is, logical(1), "Rle"))
+  if (useRle) {
+    group <- as(factors[[1L]], "Rle")
+    runValue(group) <- as.integer(runValue(group))
+  } else {
+    group <- as.integer(factors[[1L]])
+  }
+  ngroup <- nlevels(factors[[1L]])
+  for (i in tail(seq_len(nI), -1L)) {
+    index <- factors[[i]]
+    if (useRle) {
+      offset <- as(index, "Rle")
+      runValue(offset) <- ngroup * (as.integer(runValue(offset)) - 1L)
+    } else {
+      offset <- ngroup * (as.integer(index) - 1L)
+    }
+    group <- group + offset
+    ngroup <- ngroup * nlevels(index)
+  }
+  as.vector(group)
+}
+
 normSplitFactor <- function(f, x_NROW) {
+  if (is.list(f) || is(f, "List")) {
+    f <- factorsToTableIndices(f)
+  }
   f_len <- length(f)
   if (f_len < x_NROW) {
     if (f_len == 0L)
@@ -252,6 +282,8 @@ splitAsList_default <- function(x, f, drop=FALSE)
 setMethod("splitAsList", c("ANY", "vectorORfactor"),
           function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop))
 setMethod("splitAsList", c("ANY", "Rle"),
+          function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop))
+setMethod("splitAsList", c("ANY", "List"),
           function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop))
 
 setMethod("split", c("Vector", "ANY"),
