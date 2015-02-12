@@ -913,6 +913,23 @@ setMethod("unstrsplit", "CharacterList",
 ### Rle methods
 ###
 
+setMethod("unlist", "SimpleRleList",
+    function (x, recursive=TRUE, use.names=TRUE)
+    {
+        if (!identical(recursive, TRUE))
+            stop("\"unlist\" method for SimpleRleList objects ",
+                 "does not support the 'recursive' argument")
+        if (!identical(use.names, TRUE))
+            stop("\"unlist\" method for SimpleRleList objects ",
+                 "does not support the 'use.names' argument")
+        ans_values <- unlist(lapply(x@listData, slot, "values"),
+                             use.names=FALSE)
+        ans_lengths <- unlist(lapply(x@listData, slot, "lengths"),
+                              use.names=FALSE)
+        Rle(ans_values, ans_lengths)
+    }
+)
+
 setMethod("runValue", "RleList", function(x) {
   as(lapply(x, runValue), "List")
 })
