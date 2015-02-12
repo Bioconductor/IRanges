@@ -262,8 +262,9 @@ setMethod("getListElement", "CompressedList",
             return(NULL)
         unlisted_x <- unlist(x, use.names=FALSE)
         x_partitioning <- PartitioningByEnd(x)
-        i <- IRanges(start(x_partitioning)[i], end(x_partitioning)[i])
-        extractROWS(unlisted_x, i)
+        window_start <- start(x_partitioning)[i]
+        window_end <- end(x_partitioning)[i]
+        window(unlisted_x, start=window_start, end=window_end)
     }
 )
 
