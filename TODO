@@ -21,26 +21,11 @@ Immediate TODO list
   Once this is done, adapt R/reverse.R file in Biostrings to use reflect()
   instead of reverse() wherever needed.
 
-- Herve or Michael: Provide a way to reduce ranges with a min overlap
-  (Michael's suggestion).
-
-- Alignment data structure and lift-over functionality.
-
 - Clean up endomorphisms.
 
 
 Long term TODO list
 -------------------
-
-o Ranges:
-  - "match" for exact matching
-  - operator aliases
-    - ranges & ranges (pintersect)
-    - ranges | ranges (punion)
-    - !ranges (gaps)
-    - ranges - ranges (psetdiff)
-    - ranges +/- x (expand both sides)
-  - permute or something to create a random mimic
 
 o RangesList:
   - parallel rbind
@@ -48,17 +33,10 @@ o RangesList:
     - 'y' omitted: become n-ary ops on items in collection
     - 'y' specified: performed element-wise
   - unary ops: "coverage" etc are vectorized
-  * as a subset specification for BSGenome objects (get sequences out)
-    - as XStringSet?
     
 o DataTable:
   - group generics (Math, Ops, Summary)
   
-o RangedData:
-  - 'merge' for SQL-type join operations based on range overlap
-  - "rangeQuantiles", "rangeMins", "rangeMaxs", "rangeSums"
-    - could support radius for smoothing
-
 o SplitDataFrameList:
   - rbind
 
@@ -66,23 +44,13 @@ o FilterRules:
   - refactor, using ShortRead filter framework (becomes FilterList)
   - support subsetting DataFrame/RangedData directly
 
-o rdapply:
-  - probably need to add 'excludePattern' parameter
-
 o IO:
   - xscan() - read data directly into XVector objects
-  - move chain reading to rtracklayer
 
 
 -------------------------------------
 Conceptual framework (by Michael)
 -------------------------------------
-
-[Herve: This might be slightly out-of-sync. Would be good to revisit/update.]
-
-We need to construct a conceptual framework around the current
-functionality in IRanges, so that we can eliminate redundancies and
-better plan for the future.
 
 Basic problem: We have lots of (long) data series and need a way to
 efficiently represent and manipulate them.
@@ -112,20 +80,18 @@ want to manipulate specific regions of the series. We can use the
 window() function to select a particular region from a Vector, and a
 logical Rle can represent a selection of multiple regions. A slightly
 more general representation, that supports overlapping regions, is the
-Ranges class. (Is there a function for converting a logical Rle to a
-Ranges? Would be a quick way to reimplement slice().)
+Ranges class.
 
 A Ranges object holds any number of start,width pairs that describe
 closed intervals representing the set of integers that fall within the
 endpoints. The primary implementation is IRanges, which stores the
-information as two integer vectors. The IntervalTree class is a
-tree representation of Ranges.
+information as two integer vectors.
 
 Often the endpoints of the intervals are interesting independent of
 the underlying sequence. Many utilities are implemented for
 manipulating and analyzing Ranges. These include:
 
-1) overlap detection, using an interval tree
+1) overlap detection
 2) nearest neighbors: precede, follow, nearest
 3) set operations: (p)union, (p)intersect, (p)setdiff, gaps
 4) coverage, too bio specific? rename to 'table'?
@@ -146,36 +112,23 @@ and an XIntegerViews (is this one currently used at all?).
 
 Views are limited to subsequences derived from a single sequence. For
 more general lists of sequences, we have a separate framework, based
-on the TypedList class (rename to List?). The TypedList optionally
-ensures that all of its elements are derived from a specified type,
-and it also aims to efficiently represent a major use case of lists:
-splitting a vector by a factor. The indices of the elements with each
-factor level are stored, but there is no physical split of the vector
-into separate list elements. It may be that (Typed)List and general
-derivatives like AnnotatedList, which adds metadata on the elements,
-belong in the "Vector" package proposed above.
+on the List class. The List optionally ensures that all of its elements
+are derived from a specified type, and it also aims to efficiently
+represent a major use case of lists: splitting a vector by a factor.
+The indices of the elements with each factor level are stored, but
+there is no physical split of the vector into separate list elements.
 
 A special case that often occurs in data analysis is a list containing
 a set of variables in the same dataset. This problem is solved by
 'data.frame' in base R, and we have an equivalent DataFrame class
-(rename to DataFrame?) that can hold any type of R object, as long as
-it has a vector semantic. This probably also belongs in the Vector
-package.
+that can hold any type of R object, as long as it has a vector semantic.
 
-Many of the important data structures have TypedList analogs. These
+Many of the important data structures have List analogs. These
 include all atomic types, as well as:
 
   * SplitDataFrameList: a list of DataFrames that have the same
-    columns (usually the result of a split), could be in Vector
+    columns (usually the result of a split)
     
   * RangesList: Essentially just a list of Ranges objects, but often
     used for splitting Ranges by their "space" (e.g. chromosome)
 
-Note that MaskCollection (a set of Ranges used to mask the same
-series) is not a TypedList, but probably should be.
-
-When working with series, the records correspond to subseries of some
-larger series. The RangedData class associates variables with a set of
-subseries encoded by a RangesList object. Thus, it stores data on
-intervals across multiple spaces. It can be said that RangedData sits at
-the top of the IRanges infrastructure.
