@@ -114,7 +114,6 @@ setReplaceMethod("universe", "RangedData",
                    x
                  })
 
-setGeneric("score", function(x, ...) standardGeneric("score"))
 setMethod("score", "RangedData",
           function(x) {
               score <- x[["score"]]
@@ -123,7 +122,6 @@ setMethod("score", "RangedData",
               score
           })
 
-setGeneric("score<-", function(x, ..., value) standardGeneric("score<-"))
 setReplaceMethod("score", "RangedData",
                  function(x, value) {
                      if (!is.numeric(value))

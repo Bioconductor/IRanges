@@ -9,11 +9,11 @@ Description: The package provides efficient low-level and highly reusable S4
 	collections of instances of the basic classes. All classes in
 	the package use consistent naming and share the same rich and
 	consistent "Vector API" as much as possible.
-Version: 2.1.40
+Version: 2.1.41
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Infrastructure, DataRepresentation
-Depends: R (>= 3.1.0), methods, utils, stats, BiocGenerics (>= 0.11.3),
+Depends: R (>= 3.1.0), methods, utils, stats, BiocGenerics (>= 0.13.6),
 	S4Vectors (>= 0.5.19)
 Imports: stats4
 LinkingTo: S4Vectors
