@@ -507,16 +507,6 @@ setMethod("[", "RangedData",
             x
           })
 
-### Dummy "extractROWS" method.
-setMethod("extractROWS", "RangedData",
-    function(x, i)
-    {
-        if (is(i, "Ranges"))
-            i <- as.integer(i)
-        x[i, , drop=FALSE]
-    }
-)
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining and splitting.
 ###
