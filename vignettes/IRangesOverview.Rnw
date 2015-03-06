@@ -655,7 +655,35 @@ we shift all ranges forward 10 positions.
 shift(ir, 10)
 @
 
-The arithmetic functions \Rfunction{+}, \Rfunction{-} and
+There are several other ways to transform ranges.  These include
+\Rfunction{narrow}, \Rfunction{resize}, \Rfunction{flank},
+\Rfunction{reflect}, \Rfunction{restrict}, and \Rfunction{threebands}.
+For example \Rfunction{narrow} supports the adjustment of start, end
+and width values, which should be relative to each range. These adjustments
+are vectorized over the ranges. As its name suggests, the ranges can only be
+narrowed.
+% 
+<<ranges-narrow>>=
+narrow(ir, start=1:5, width=2)
+@
+
+The \Rfunction{restrict} function ensures every range falls within a
+set of bounds. Ranges are contracted as necessary, and the ranges that
+fall completely outside of but not adjacent to the bounds are dropped,
+by default.
+% 
+<<ranges-restrict>>=
+restrict(ir, start=2, end=3)
+@
+The \Rfunction{threebands} function extends \Rfunction{narrow} so that
+the remaining left and right regions adjacent to the narrowed region
+are also returned in separate \Rclass{Ranges} objects.
+% 
+<<ranges-threebands>>=
+threebands(ir, start=1:5, width=2)
+@
+
+The arithmetic operators \Rfunction{+}, \Rfunction{-} and
 \Rfunction{*} change both the start and the end/width by symmetrically
 expanding or contracting each range.  Adding or subtracting a numeric
 (integer) vector to a \Rclass{Ranges} causes each range to be expanded
@@ -670,34 +698,13 @@ object by a factor, where positive contracts (zooms in) and negative
 expands (zooms out).
 %
 <<ranges-asterisk>>=
-ir * -2 # half the width
+ir * -2 # double the width
 @
 
-There are several other ways to form subranges, besides symmetric
-contraction.  These include \Rfunction{narrow}, \Rfunction{threebands}
-and \Rfunction{restrict}.  \Rfunction{narrow} supports the adjustment
-of start, end and width values, which should be relative to each
-range. Unlike \Rfunction{shift}, these adjustments are vectorized over
-the ranges. As its name suggests, the ranges can only be narrowed.
-% 
-<<ranges-narrow>>=
-narrow(ir, start=1:5, width=2)
-@
-% 
-The \Rfunction{threebands} function extends \Rfunction{narrow} so that
-the remaining left and right regions adjacent to the narrowed region
-are also returned in separate \Rclass{Ranges} objects.
-<<ranges-threebands>>=
-threebands(ir, start=1:5, width=2)
-@
-
-The \Rfunction{restrict} function ensures every range falls within a
-set of bounds. Ranges are contracted as necessary, and the ranges that
-fall completely outside of but not adjacent to the bounds are dropped,
-by default.
-<<ranges-restrict>>=
-restrict(ir, start=2, end=3)
-@
+WARNING: The semantic of these arithmetic operators might be revisited
+at some point. Please restrict their use to the context of interactive
+visualization (where they arguably provide some convenience) but avoid
+to use them programmatically.
 
 \subsubsection{Making ranges disjoint}
 
