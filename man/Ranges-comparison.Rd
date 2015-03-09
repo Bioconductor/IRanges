@@ -2,6 +2,7 @@
 
 \alias{Ranges-comparison}
 
+\alias{compare}
 \alias{compare,Ranges,Ranges-method}
 \alias{rangeComparisonCodeToLetter}
 
