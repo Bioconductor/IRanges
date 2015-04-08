@@ -29,7 +29,6 @@
 \alias{columnMetadata,CompressedSplitDataFrameList-method}
 \alias{columnMetadata<-,CompressedSplitDataFrameList-method}
 
-
 % constructor
 \alias{DataFrameList}
 \alias{SplitDataFrameList}
@@ -39,13 +38,21 @@
 \alias{[,CompressedSplitDataFrameList-method}
 \alias{[<-,SplitDataFrameList-method}
 
+% transformation
+\alias{transform,SplitDataFrameList-method}
+
 % coercion
 \alias{coerce,DataFrameList,DataFrame-method}
 \alias{coerce,SplitDataFrameList,DataFrame-method}
 \alias{coerce,ANY,CompressedSplitDataFrameList-method}
 \alias{coerce,ANY,SimpleSplitDataFrameList-method}
 \alias{coerce,List,CompressedSplitDataFrameList-method}
+\alias{coerce,list,SplitDataFrameList-method}
 \alias{coerce,List,SimpleSplitDataFrameList-method}
+\alias{coerce,ANY,SplitDataFrameList-method}
+\alias{coerce,SimpleList,SplitDataFrameList-method}
+\alias{coerce,list,SplitDataFrameList-method}
+\alias{coerce,DataFrame,SplitDataFrameList-method}
 \alias{stack,DataFrameList-method}
 
 % splitting and combining
@@ -54,6 +61,11 @@
 
 % show
 \alias{show,SplitDataFrameList-method}
+
+% SDFLWrapperForTransform (internal)
+\alias{[[,SDFLWrapperForTransform-method}
+\alias{[[<-,SDFLWrapperForTransform-method}
+\alias{as.env,SDFLWrapperForTransform-method}
 
 \title{List of DataFrames}
 \description{Represents a list of \code{\linkS4class{DataFrame}} objects.
@@ -139,19 +151,31 @@
   }
 }
 
+\section{Transformation}{
+\describe{
+    \item{}{\code{transform(`_data`, ...)}: Transforms a
+    \code{SplitDataFrame} in a manner analogous to the
+    base \code{\link{transform}}, where the columns are \code{List}
+    objects adhering to the structure of \code{_data}.
+  }
+ }
+}
+
 \section{Coercion}{
   In the following code snippets, \code{x} is a \code{DataFrameList}.
   \describe{
     \item{}{\code{as(from, "DataFrame")}: Coerces a
-      \code{DataFrameList} to an \code{DataFrame} by combining the
-      rows of the elements. This essentially unsplits the
-      \code{DataFrame}. Every element of \code{x} must have the same columns.
+      \code{SplitDataFrameList} to a \code{DataFrame}, which has a column
+      for every column in \code{from}, except each column is a
+      \code{List} with the same structure as \code{from}.
     }
     \item{}{\code{as(from, "SplitDataFrameList")}: By default, simply
       calls the \code{SplitDataFrameList} constructor
       on \code{from}. If \code{from} is a \code{List}, each element
       of \code{from} is passed as an argument
-      to \code{SplitDataFrameList}, like calling \code{as.list} on a vector.}
+      to \code{SplitDataFrameList}, like calling \code{as.list} on a
+      vector. If \code{from} is a \code{DataFrame}, each row becomes an
+      element in the list.}
     \item{}{\code{stack(x, index.var = "name")}: Unlists \code{x} and
       adds a column named \code{index.var} to the result, indicating the
       element of \code{x} from which each row was obtained.

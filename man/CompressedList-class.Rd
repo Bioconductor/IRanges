@@ -10,9 +10,12 @@
 \alias{names,CompressedList-method}
 \alias{names<-,CompressedList-method}
 \alias{elementLengths,CompressedList-method}
+\alias{$<-,CompressedList-method}
+\alias{[[<-,CompressedList-method}
 
 % coercion
 \alias{unlist,CompressedList-method}
+\alias{coerce,ANY,CompressedList-method}
 
 % combining
 \alias{c,CompressedList-method}
@@ -26,6 +29,8 @@
 % displaying
 \alias{classNameForDisplay,CompressedList-method}
 
+% ops
+\alias{!,CompressedList-method}
 
 \title{CompressedList objects}
 

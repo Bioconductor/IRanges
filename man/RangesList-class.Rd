@@ -48,6 +48,8 @@
 \alias{coerce,RleList,CompressedNormalIRangesList-method}
 \alias{coerce,RleList,SimpleNormalIRangesList-method}
 
+\alias{coerce,list,RangesList-method}
+
 \alias{merge,RangesList,missing-method}
 \alias{merge,missing,RangesList-method}
 \alias{merge,RangesList,RangesList-method}

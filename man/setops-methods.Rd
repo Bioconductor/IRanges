@@ -2,26 +2,26 @@
 
 \alias{setops-methods}
 
-\alias{union,IRanges,IRanges-method}
+\alias{union,Ranges,Ranges-method}
 \alias{union,RangesList,RangesList-method}
 \alias{union,CompressedIRangesList,CompressedIRangesList-method}
 
-\alias{intersect,IRanges,IRanges-method}
+\alias{intersect,Ranges,Ranges-method}
 \alias{intersect,RangesList,RangesList-method}
 \alias{intersect,CompressedIRangesList,CompressedIRangesList-method}
 
-\alias{setdiff,IRanges,IRanges-method}
+\alias{setdiff,Ranges,Ranges-method}
 \alias{setdiff,RangesList,RangesList-method}
 \alias{setdiff,CompressedIRangesList,CompressedIRangesList-method}
 
 \alias{punion}
-\alias{punion,IRanges,IRanges-method}
+\alias{punion,Ranges,Ranges-method}
 \alias{pintersect}
-\alias{pintersect,IRanges,IRanges-method}
+\alias{pintersect,Ranges,Ranges-method}
 \alias{psetdiff}
-\alias{psetdiff,IRanges,IRanges-method}
+\alias{psetdiff,Ranges,Ranges-method}
 \alias{pgap}
-\alias{pgap,IRanges,IRanges-method}
+\alias{pgap,Ranges,Ranges-method}
 
 \title{Set operations on IRanges and RangesList objects}
 

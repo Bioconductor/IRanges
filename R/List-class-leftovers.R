@@ -37,9 +37,15 @@ setMethod("c", "SimpleList",
 setMethod("stack", "List",
           function(x, index.var = "name", value.var = "value", name.var = NULL)
           {
-            df <- DataFrame(.stack.ind(x, index.var),
-                            as(unlist(x, use.names=FALSE), "DataFrame"))
-            colnames(df)[2] <- value.var
+            value <- unlist(x, use.names=FALSE)
+            index <- .stack.ind(x, index.var)
+            unlistsToList <- extends(x@elementType, "List")
+            if (unlistsToList) {
+              df <- cbind(S4Vectors:::ensureMcols(value), index)
+            } else {
+              df <- DataFrame(index, as(value, "DataFrame"))
+              colnames(df)[2] <- value.var
+            }
             if (!is.null(name.var)) {
               nms <- as.character(unlist(lapply(x, names)))
               if (length(nms) == 0L) {
@@ -51,7 +57,12 @@ setMethod("stack", "List",
             if (!is.null(mcols(x))) {
               df <- cbind(df, mcols(x))
             }
-            df
+            if (unlistsToList) {
+              mcols(value) <- df
+              value
+            } else {
+              df
+            }
           })
 
 setMethod("aggregate", "List",

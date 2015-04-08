@@ -2,12 +2,18 @@
 
 \alias{relistToClass}
 \alias{relistToClass,ANY-method}
+\alias{relistToClass,DataFrame-method}
+\alias{relistToClass,data.frame-method}
 
 \alias{relist,ANY,PartitioningByEnd-method}
 \alias{relist,ANY,List-method}
 \alias{relist,Vector,list-method}
+\alias{relist,ANY,PartitioningByEnd-method}
 
 \alias{splitAsList}
+\alias{splitAsList,ANY,List}
+\alias{splitAsList,ANY,Rle}
+\alias{splitAsList,ANY,vectorORfactor}
 \alias{split,Vector,ANY-method}
 \alias{split,ANY,Vector-method}
 \alias{split,Vector,Vector-method}
@@ -56,7 +62,7 @@ splitAsList(x, f, drop=FALSE)
 ## extractList()
 ## -------------
 
-extractList(x, i)
+extractList(x, i, ...)
 
 ## relistToClass()
 ## --------------------------
@@ -85,6 +91,9 @@ relistToClass(x)
     Note that \code{i} can be a \link{Ranges} object (a particular type of
     list-like object), and, in that case, \code{extractList} is particularly
     fast (this is a common use case).
+  }
+  \item{...}{
+    Arguments to pass to methods.
   }
 }
 

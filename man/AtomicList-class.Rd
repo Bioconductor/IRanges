@@ -131,6 +131,9 @@
 \alias{RleList,AtomicList,RleList-method}
 \alias{coerce,CompressedRleList,CompressedIRangesList-method}
 
+\alias{unlist,SimpleFactorList}
+\alias{unlist,SimpleRleList}
+
 \alias{Ops,CompressedAtomicList,CompressedAtomicList-method}
 \alias{Ops,SimpleAtomicList,SimpleAtomicList-method}
 \alias{Ops,SimpleAtomicList,CompressedAtomicList-method}
