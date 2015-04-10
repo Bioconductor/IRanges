@@ -318,16 +318,16 @@ tree <- IntervalTree(subject)
 ## ---------------------------------------------------------------------
 
 ## at most one hit per query
-findOverlaps(query, tree, select = "first")
-findOverlaps(query, tree, select = "last")
-findOverlaps(query, tree, select = "arbitrary")
+findOverlaps(query, tree, select="first")
+findOverlaps(query, tree, select="last")
+findOverlaps(query, tree, select="arbitrary")
 
 ## overlap even if adjacent only
 ## (FIXME: the gap between 2 adjacent ranges should be still considered
 ## 0. So either we have an argument naming problem, or we should modify
 ## the handling of the 'maxgap' argument so that the user would need to
-## specify maxgap = 0L to obtain the result below.)
-findOverlaps(query, tree, maxgap = 1L)
+## specify maxgap=0L to obtain the result below.)
+findOverlaps(query, tree, maxgap=1L)
 
 ## shortcut
 findOverlaps(query, subject)
@@ -341,16 +341,16 @@ findOverlaps(query)
 
 ## single points as query
 subject <- IRanges(c(1, 6, 13), c(4, 9, 14))
-findOverlaps(c(3L, 7L, 10L), subject, select = "first")
+findOverlaps(c(3L, 7L, 10L), subject, select="first")
 
 ## alternative overlap types
 query <- IRanges(c(1, 5, 3, 4), width=c(2, 2, 4, 6))
 subject <- IRanges(c(1, 3, 5, 6), width=c(4, 4, 5, 4))
 
-findOverlaps(query, subject, type = "start")
-findOverlaps(query, subject, type = "start", maxgap = 1L)
-findOverlaps(query, subject, type = "end", select = "first")
-ov <- findOverlaps(query, subject, type = "within", maxgap = 1L)
+findOverlaps(query, subject, type="start")
+findOverlaps(query, subject, type="start", maxgap=1L)
+findOverlaps(query, subject, type="end", select="first")
+ov <- findOverlaps(query, subject, type="within", maxgap=1L)
 ov
 
 ## ---------------------------------------------------------------------
@@ -384,9 +384,9 @@ slist <- split(subject, spartition)
 forest <- IntervalForest(slist)
 
 ## at most one hit per query
-findOverlaps(qlist, forest, select = "first")
-findOverlaps(qlist, forest, select = "last")
-findOverlaps(qlist, forest, select = "arbitrary")
+findOverlaps(qlist, forest, select="first")
+findOverlaps(qlist, forest, select="last")
+findOverlaps(qlist, forest, select="arbitrary")
 
 query <- IRanges(c(1, 5, 3, 4), width=c(2, 2, 4, 6))
 qpartition <- factor(c("a","a","b","b"))
