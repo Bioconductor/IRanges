@@ -31,15 +31,15 @@
 
 \usage{
 ## Vector-wise operations:
-\S4method{union}{IRanges,IRanges}(x, y,...)
-\S4method{intersect}{IRanges,IRanges}(x, y,...)
-\S4method{setdiff}{IRanges,IRanges}(x, y,...)
+\S4method{union}{Ranges,Ranges}(x, y,...)
+\S4method{intersect}{Ranges,Ranges}(x, y,...)
+\S4method{setdiff}{Ranges,Ranges}(x, y,...)
 
 ## Element-wise (aka "parallel") operations:
-\S4method{punion}{IRanges,IRanges}(x, y, fill.gap=FALSE, ...)
-\S4method{pintersect}{IRanges,IRanges}(x, y, resolve.empty=c("none", "max.start", "start.x"), ...)
-\S4method{psetdiff}{IRanges,IRanges}(x, y, ...)
-\S4method{pgap}{IRanges,IRanges}(x, y, ...)
+\S4method{punion}{Ranges,Ranges}(x, y, fill.gap=FALSE, ...)
+\S4method{pintersect}{Ranges,Ranges}(x, y, resolve.empty=c("none", "max.start", "start.x"), ...)
+\S4method{psetdiff}{Ranges,Ranges}(x, y, ...)
+\S4method{pgap}{Ranges,Ranges}(x, y, ...)
 }
 
 \arguments{

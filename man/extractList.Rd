@@ -55,14 +55,14 @@
 ## splitAsList() and split()
 ## -------------------------
 
-splitAsList(x, f, drop=FALSE)
+splitAsList(x, f, drop=FALSE, ...)
 
 \S4method{split}{Vector,ANY}(x, f, drop=FALSE)
 
 ## extractList()
 ## -------------
 
-extractList(x, i, ...)
+extractList(x, i)
 
 ## relistToClass()
 ## --------------------------

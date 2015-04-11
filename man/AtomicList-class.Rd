@@ -99,6 +99,18 @@
 \alias{SimpleRleList-class}
 \alias{SimpleRleList}
 
+\alias{class:FactorList}
+\alias{FactorList-class}
+\alias{FactorList}
+
+\alias{class:CompressedFactorList}
+\alias{CompressedFactorList-class}
+\alias{CompressedFactorList}
+
+\alias{class:SimpleFactorList}
+\alias{SimpleFactorList-class}
+\alias{SimpleFactorList}
+
 % coercion
 \alias{as.list,CompressedAtomicList-method}
 \alias{coerce,CompressedAtomicList,list-method}
@@ -303,6 +315,9 @@
     \item{}{\code{RleList(..., compress = TRUE)}: Concatenates the
       run-length encoded atomic vectors in \code{...} into a new
       \code{RleList}.
+      If \code{compress}, the internal storage of the data is compressed.}
+    \item{}{\code{FactorList(..., compress = TRUE)}: Concatenates the
+      \code{factor} objects in \code{...} into a new \code{FactorList}.
       If \code{compress}, the internal storage of the data is compressed.}
   }
 }
