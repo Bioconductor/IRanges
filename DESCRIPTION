@@ -23,8 +23,7 @@ ExtraLicenses: The following files in the 'src' directory are licensed for all
   use by Jim Kent, in a manner compatible with the Artistic 2.0 license:
   common.c/h, memalloc.c/h, localmem.c/h, hash.c/h, errabort.c/h, rbTree.c/h,
   dlist.c/h, errCatch.h
-Collate: subsetting-internals.R
-	Vector-class-leftovers.R
+Collate: Vector-class-leftovers.R
 	Hits-class-leftovers.R
 	List-class-leftovers.R
 	List-comparison.R
@@ -76,6 +75,7 @@ Collate: subsetting-internals.R
 	updateObject-methods.R
 	tile-methods.R
 	mapCoords-methods.R
+        subsetting-internals.R
 	test_IRanges_package.R
 	debug.R
 	zzz.R

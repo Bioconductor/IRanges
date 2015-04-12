@@ -420,17 +420,17 @@ setMethod("cumsum", "CompressedAtomicList",
 
 setMethod("cumprod", "CompressedAtomicList",
           function(x) {
-              as(lapply(lst, .Generic), "CompressedList")
+              as(lapply(x, .Generic), "CompressedList")
           })
 
 setMethod("cummin", "CompressedAtomicList",
           function(x) {
-              as(lapply(lst, .Generic), "CompressedList")
+              as(lapply(x, .Generic), "CompressedList")
           })
 
 setMethod("cummax", "CompressedAtomicList",
           function(x) {
-              as(lapply(lst, .Generic), "CompressedList")
+              as(lapply(x, .Generic), "CompressedList")
           })
 
 setMethod("Math", "SimpleAtomicList",
@@ -628,11 +628,14 @@ setMethod("unique", "RleList", unique.RleList)
 
 ### S3/S4 combo for duplicated.CompressedIntegerList
 duplicated.CompressedIntegerList <- function(x, incomparables=FALSE,
-                                             fromLast=FALSE)
+                                             fromLast=FALSE, ...)
 {
   if (!identical(incomparables, FALSE))
     stop("\"duplicated\" method for CompressedList objects ",
          "does not support the 'incomparables' argument")
+  if (length(list(...)) > 0L) {
+    stop("arguments in '...' are not supported")
+  }
   x_unlistData <- x@unlistData
   x_group <- rep.int(seq_along(x), elementLengths(x))
   ans_unlistData <-
