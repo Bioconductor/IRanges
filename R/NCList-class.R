@@ -7,6 +7,7 @@
 ### An S4 implementation of Nested Containment List (NCList).
 ###
 
+### We deliberately do NOT extend IRanges.
 setClass("NCList",
     contains="Ranges",
     representation(

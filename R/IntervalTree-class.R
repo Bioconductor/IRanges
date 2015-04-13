@@ -32,6 +32,11 @@ setAs("IntervalTree", "IRanges", function(from) {
 })
 
 setAs("IRanges", "IntervalTree", function(from) {
+  msg <- c("IntervalTree objects and the \"intervaltree\" algorithm used ",
+           "in findOverlaps() and family are deprecated. Please use the ",
+           "\"nclist\" algorithm isntead. See the 'algorithm' argument ",
+           "in ?findOverlaps for more information.")
+  .Deprecated(msg=wmsg(msg))
   validObject(from)
   ptr <- .Call2("IntegerIntervalTree_new", from, PACKAGE="IRanges")
   new2("IntervalTree", ptr = ptr, mode = "integer", check=FALSE)

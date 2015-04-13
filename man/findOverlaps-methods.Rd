@@ -311,30 +311,30 @@ mergeByOverlaps(query, subject, ...)
 \examples{
 query <- IRanges(c(1, 4, 9), c(5, 7, 10))
 subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
-tree <- IntervalTree(subject)
+#tree <- IntervalTree(subject)  # deprecated
 
 ## ---------------------------------------------------------------------
 ## findOverlaps()
 ## ---------------------------------------------------------------------
 
 ## at most one hit per query
-findOverlaps(query, tree, select="first")
-findOverlaps(query, tree, select="last")
-findOverlaps(query, tree, select="arbitrary")
+findOverlaps(query, subject, select="first")
+findOverlaps(query, subject, select="last")
+findOverlaps(query, subject, select="arbitrary")
 
 ## overlap even if adjacent only
 ## (FIXME: the gap between 2 adjacent ranges should be still considered
 ## 0. So either we have an argument naming problem, or we should modify
 ## the handling of the 'maxgap' argument so that the user would need to
 ## specify maxgap=0L to obtain the result below.)
-findOverlaps(query, tree, maxgap=1L)
+findOverlaps(query, subject, maxgap=1L)
 
 ## shortcut
 findOverlaps(query, subject)
 
 query <- IRanges(c(1, 4, 9), c(5, 7, 10))
 subject <- IRanges(c(2, 2), c(5, 4))
-tree <- IntervalTree(subject)
+#tree <- IntervalTree(subject)  # deprecated
 
 ## one Ranges with itself
 findOverlaps(query)

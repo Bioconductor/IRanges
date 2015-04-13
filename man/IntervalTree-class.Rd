@@ -18,6 +18,9 @@
 \title{Interval Search Trees}
 \description{
   Efficiently perform overlap queries with an interval tree.
+
+  WARNING: IntervalTree objects are deprecated. Please use NCList objects
+  instead. See \code{?\link{NCList}} for more information.
 }
 \details{
   A common type of query that arises when working with intervals is
@@ -127,6 +130,9 @@
   \code{\linkS4class{Hits}}, set of hits between 2 vector-like objects.
 }
 \examples{
+if (interactive()) {
+  ## IntervalTree objects are deprecated. Please use NCList objects instead.
+  ## See ?NCList for more information.
   query <- IRanges(c(1, 4, 9), c(5, 7, 10))
   subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
   tree <- IntervalTree(subject)
@@ -141,6 +147,7 @@
   t(findOverlaps(query, tree))
   # the same as:
   findOverlaps(subject, query)
+}
 }
 
 \keyword{classes}
