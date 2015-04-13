@@ -373,37 +373,40 @@ ranges(ov, query, subject)
 ## ---------------------------------------------------------------------
 ## using IntervalForest objects
 ## ---------------------------------------------------------------------
-query <- IRanges(c(1, 4, 9), c(5, 7, 10))
-qpartition <- factor(c("a","a","b"))
-qlist <- split(query, qpartition)
+if (interactive()) {
+  ## IntervalForest objects are deprecated. Please use NCLists objects
+  ## instead. See ?NCLists for more information.
+  query <- IRanges(c(1, 4, 9), c(5, 7, 10))
+  qpartition <- factor(c("a","a","b"))
+  qlist <- split(query, qpartition)
 
-subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
-spartition <- factor(c("a","a","b"))
-slist <- split(subject, spartition)
+  subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
+  spartition <- factor(c("a","a","b"))
+  slist <- split(subject, spartition)
 
-forest <- IntervalForest(slist)
+  forest <- IntervalForest(slist)
 
-## at most one hit per query
-findOverlaps(qlist, forest, select="first")
-findOverlaps(qlist, forest, select="last")
-findOverlaps(qlist, forest, select="arbitrary")
+  ## at most one hit per query
+  findOverlaps(qlist, forest, select="first")
+  findOverlaps(qlist, forest, select="last")
+  findOverlaps(qlist, forest, select="arbitrary")
 
-query <- IRanges(c(1, 5, 3, 4), width=c(2, 2, 4, 6))
-qpartition <- factor(c("a","a","b","b"))
-qlist <- split(query, qpartition)
+  query <- IRanges(c(1, 5, 3, 4), width=c(2, 2, 4, 6))
+  qpartition <- factor(c("a","a","b","b"))
+  qlist <- split(query, qpartition)
 
-subject <- IRanges(c(1, 3, 5, 6), width=c(4, 4, 5, 4))
-spartition <- factor(c("a","a","b","b"))
-slist <- split(subject, spartition)
-forest <- IntervalForest(slist)
+  subject <- IRanges(c(1, 3, 5, 6), width=c(4, 4, 5, 4))
+  spartition <- factor(c("a","a","b","b"))
+  slist <- split(subject, spartition)
+  forest <- IntervalForest(slist)
 
-overlapsAny(qlist, forest, type="start")
-overlapsAny(qlist, forest, type="end")
-qlist %over% forest
+  overlapsAny(qlist, forest, type="start")
+  overlapsAny(qlist, forest, type="end")
+  qlist %over% forest
 
-subsetByOverlaps(qlist, forest)
-countOverlaps(qlist, forest)
-
+  subsetByOverlaps(qlist, forest)
+  countOverlaps(qlist, forest)
+}
 }
 
 \keyword{methods}

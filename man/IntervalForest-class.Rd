@@ -26,6 +26,9 @@
 \title{Interval Search Forests}
 \description{
   Efficiently perform overlap queries with a set of interval trees.
+
+  WARNING: IntervalForest objects are deprecated. Please use \link{NCLists}
+  objects instead. See \code{?\link{NCLists}} for more information.
 }
 \details{
   A common type of query that arises when working with intervals is
@@ -80,11 +83,15 @@
   \code{\link[GenomicRanges]{GIntervalTree}}, which uses \code{IntervalForest} objects.
 }
 \examples{
+if (interactive()) {
+  ## IntervalForest objects are deprecated. Please use NCLists objects
+  ## instead. See ?NCLists for more information.
   query <- IRangesList(a=IRanges(c(1,4),c(5,7)),b=IRanges(9,10))
   subject <- IRangesList(a=IRanges(c(2,2),c(2,3)),b=IRanges(10,12))
   forest <- IntervalForest(subject)
 
   findOverlaps(query, forest)
+}
 }
 
 \keyword{classes}
