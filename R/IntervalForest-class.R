@@ -64,7 +64,7 @@ setAs("IntervalForest", "IRanges",
 setAs("CompressedIRangesList", "IntervalForest", function(from) {
   msg <- c("IntervalForest objects and the \"intervaltree\" algorithm used ",
            "in findOverlaps() and family are deprecated. Please use the ",
-           "\"nclist\" algorithm isntead. See the 'algorithm' argument ",
+           "\"nclist\" algorithm instead. See the 'algorithm' argument ",
            "in ?findOverlaps for more information.")
   .Deprecated(msg=wmsg(msg))
 

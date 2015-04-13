@@ -34,7 +34,7 @@ setAs("IntervalTree", "IRanges", function(from) {
 setAs("IRanges", "IntervalTree", function(from) {
   msg <- c("IntervalTree objects and the \"intervaltree\" algorithm used ",
            "in findOverlaps() and family are deprecated. Please use the ",
-           "\"nclist\" algorithm isntead. See the 'algorithm' argument ",
+           "\"nclist\" algorithm instead. See the 'algorithm' argument ",
            "in ?findOverlaps for more information.")
   .Deprecated(msg=wmsg(msg))
 
