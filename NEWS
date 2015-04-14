@@ -61,8 +61,8 @@ SIGNIFICANT USER-VISIBLE CHANGES
         though so maybe the new algorithm should also support it? Anyway,
         this is the 3rd situation where using 'algorithm="nclist"' or
         'algorithm="intervaltree"' produces different output.
-
-- Objects preprocessed with NCList() or GNCList() are serializable.
+      - Objects preprocessed with NCList(), NCLists(), and GNCList() are
+        serializable.
 
     o The RleViewsList() constructor function now reorders its 'rleList'
       argument so that its names match the names on the 'rangesList' argument.
