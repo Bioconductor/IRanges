@@ -9,6 +9,11 @@
 \title{Mapping of ranges to another sequence}
 
 \description{
+  DEPRECATED! Use \code{\link[GenomicFeatures]{mapToTranscripts}} from the
+  \pkg{GenomicFeatures} package or
+  \code{\link[GenomicAlignments]{mapToAlignments}} from the
+  \pkg{GenomicAlignments} package instead.
+
   The \code{mapCoords} generic converts a set of ranges to the equivalent
   ranges on another sequence through some sort of alignment between
   sequences. The output is an object of the same class as \code{from}
@@ -56,7 +61,8 @@ pmapCoords(from, to, ...)
 }
 
 \examples{
-## See mapCoords methods in GenomicRanges and GAlignmentsPackages.
+## DEPRECATED! See ?mapToTranscripts in the GenomicFeatures package and
+## ?mapToAlignments in the GenomicAlignments package.
 }
 
 \keyword{methods}
