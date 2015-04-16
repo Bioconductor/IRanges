@@ -75,10 +75,12 @@ NCLists(x, circle.length=NA_integer_)
 \author{H. Pages}
 
 \seealso{
-  \item \link{Ranges} and \link{RangesList} objects.
+  \itemize{
+    \item \link{Ranges} and \link{RangesList} objects.
 
-  \item \code{\link{findOverlaps}} for finding/counting interval overlaps
-        between two \emph{range-based} objects.
+    \item \code{\link{findOverlaps}} for finding/counting interval overlaps
+          between two \emph{range-based} objects.
+  }
 }
 
 \examples{
