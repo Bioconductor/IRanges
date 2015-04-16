@@ -40,14 +40,14 @@
   object as a Nested Containment List allows efficient overlap-based
   operations like \code{\link{findOverlaps}}.
 
-  The NCLists class allows the storage of a collection of NCList objects.
-  It is typically obtained by preprocessing each list element of a
-  \link{RangesList} object as a Nested Containment List. Like with NCList,
-  the resulting NCLists object can then be used for efficient overlap-based
-  operations.
+  The NCLists class is a container for storing a collection of NCList objects.
+  An NCLists object is typically the result of preprocessing each list
+  element of a \link{RangesList} object as a Nested Containment List.
+  Like with NCList, the NCLists object can then be used for efficient
+  overlap-based operations.
 
-  To preprocess a \link{Ranges} or \link{RangesList}, simply call the
-  \code{NCList} or \code{NCLists} constructor functions on them.
+  To preprocess a \link{Ranges} or \link{RangesList} object, simply call
+  the \code{NCList} or \code{NCLists} constructor functions on them.
 }
 
 \usage{
@@ -60,15 +60,82 @@ NCLists(x, circle.length=NA_integer_)
     The \link{Ranges} or \link{RangesList} object to preprocess.
   }
   \item{circle.length}{
-    Use only if the space on top of which the ranges in \code{x} are defined
-    needs to be considered circular.
-    If that's the case, then use \code{circle.length} to specify the
-    length of the circular space.
+    Use only if the space (or spaces if \code{x} is a \link{RangesList}
+    object) on top of which the ranges in \code{x} are defined needs (need)
+    to be considered circular. If that's the case, then use
+    \code{circle.length} to specify the length(s) of the circular space(s).
 
-    \code{circle.length} must be a single positive integer (or NA if the
-    space is linear) for \code{NCList}. It must be an integer vector
-    parallel to \code{x} (i.e. same length) and with positive or NA values
-    for \code{NCLists}.
+    For \code{NCList}, \code{circle.length} must be a single positive
+    integer (or NA if the space is linear).
+
+    For \code{NCLists}, it must be an integer vector parallel to \code{x}
+    (i.e. same length) and with positive or NA values (NAs indicate linear
+    spaces). 
+  }
+}
+
+\details{
+  The \pkg{GenomicRanges} package also defines the
+  \code{\link[GenomicRanges]{GNCList}} constructor and class for
+  preprocessing and representing a vector of genomic ranges as a
+  data structure based on Nested Containment Lists.
+
+  Note that NCList, NCLists, and \link[GenomicRanges]{GNCList} objects,
+  are replacements for \link{IntervalTree}, \link{IntervalForest}, and
+  \link[GenomicRanges]{GIntervalTree} objects, respectively. The latter
+  are deprecated starting with BioC 3.1.
+
+  Some important differences between the new algorithm based on Nested
+  Containment Lists and the old algorithm based on interval trees:
+  \itemize{
+    \item With the new algorithm, the hits returned by
+          \code{\link{findOverlap}} are not \emph{fully} ordered (i.e. ordered
+          by queryHits and subject Hits) anymore, but only \emph{partially}
+          ordered (i.e. ordered by queryHits only). Other than that, and
+          except for the 3 particular situations mentioned below, the 2
+          algorithms produce the same output. However, the new algorithm is
+          faster and more memory efficient.
+    \item With the new algorithm, either the query or the subject can be
+          preprocessed with \code{NCList} for a \link{Ranges} object
+          (replacement for \code{\link{IntervalTree}}), \code{NCLists}
+          for a \link{RangesList} object (replacement for
+          \code{\link{IntervalForest}}), and
+          \code{\link[GenomicRanges]{GNCList}} for a
+          \link[GenomicRanges]{GenomicRanges} object (replacement for
+          \code{\link[GenomicRanges]{GIntervalTree}}).
+          However, for a one time use, it is NOT advised to explicitely
+          preprocess the input. This is because \code{\link{findOverlaps}}
+          or \code{\link{countOverlaps}} will take care of it and do a better
+          job at it (by preprocessing only what's needed when it's needed,
+          and release memory as they go).
+    \item With the new algorithm, \code{\link{countOverlaps}} on \link{Ranges}
+          or \link[GenomicRanges]{GenomicRanges} objects doesn't call
+          \code{\link{findOverlaps}} in order to collect all the hits in a
+          growing \link{Hits} object and count them only at the end. Instead,
+          the counting happens at the C level and the hits are not kept. This
+          reduces memory usage considerably when there is a lot of hits.
+    \item When \code{minoverlap=0}, zero-width ranges are now interpreted
+          as insertion points and considered to overlap with ranges that
+          contain them. With the old alogrithm, zero-width ranges were always
+          ignored. This is the 1st situation where the new and old algorithms
+          produce different outputs.
+    \item When using \code{select="arbitrary"}, the new algorithm will
+          generally not select the same hits as the old algorithm. This is
+          the 2nd situation where the new and old algorithms produce different
+          outputs.
+    \item With the old interval tree algorithm, \code{maxgap} had a special
+          meaning if \code{type} is \code{"start"}, \code{"end"}, or
+          \code{"within"}. This is not yet the case with the new algorithm.
+          That feature seems somewhat useful though so maybe the new algorithm
+          should also support it? Please say hello on our support site
+          (\url{https://support.bioconductor.org/}) or on the bioc-devel
+          mailing list if you think so. Anyway, this is the 3rd situation
+          where the new and old algorithms produce different outputs.
+    \item Objects preprocessed with \code{NCList}, \code{NCLists}, and
+          \code{\link[GenomicRanges]{GNCList}} are serializable (with
+          \code{save}) for later use. Not a typical thing to do though,
+          because preprocessing is very cheap (i.e. very fast and memory
+          efficient).
   }
 }
 
@@ -89,17 +156,28 @@ NCLists(x, circle.length=NA_integer_)
 
 \seealso{
   \itemize{
-    \item \link{Ranges} and \link{RangesList} objects.
+    \item The \code{\link[GenomicRanges]{GNCList}} constructor and class
+          defined in the \pkg{GenomicRanges} package.
 
     \item \code{\link{findOverlaps}} for finding/counting interval overlaps
           between two \emph{range-based} objects.
+
+    \item \link{Ranges} and \link{RangesList} objects.
   }
 }
 
 \examples{
-## Either the query or the subject of findOverlaps() can be preprocessed:
+## The example nelow is for illustration purpose only and does NOT
+## reflect typical usage. This is because, for a one time use, it is
+## NOT advised to explicitely preprocess the input for findOverlaps()
+## or countOverlaps(). These functions will take care of it and do a
+## better job at it (by preprocessing only what's needed when it's
+## needed, and release memory as they go).
+
 query <- IRanges(c(1, 4, 9), c(5, 7, 10))
 subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
+
+## Either the query or the subject of findOverlaps() can be preprocessed:
 
 ppsubject <- NCList(subject)
 hits1 <- findOverlaps(query, ppsubject)
