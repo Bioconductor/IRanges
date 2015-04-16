@@ -37,8 +37,8 @@
 \description{
   The NCList class is a container for storing the Nested Containment List
   representation of a \link{Ranges} object. Preprocessing a \link{Ranges}
-  as a Nested Containment List allows efficient overlap-based operations
-  like \code{\link{findOverlaps}}.
+  object as a Nested Containment List allows efficient overlap-based
+  operations like \code{\link{findOverlaps}}.
 
   The NCLists class allows the storage of a collection of NCList objects.
   It is typically obtained by preprocessing each list element of a
@@ -72,7 +72,20 @@ NCLists(x, circle.length=NA_integer_)
   }
 }
 
+\value{
+  An NCList object for the \code{NCList} constructor and an NCLists object
+  for the \code{NCLists} constructor.
+}
+
 \author{H. Pages}
+
+\references{
+  Alexander V. Alekseyenko and Christopher J. Lee --
+  Nested Containment List (NCList): a new algorithm for accelerating interval
+  query of genome alignment and interval databases.
+  Bioinformatics (2007) 23 (11): 1386-1393.
+  doi: 10.1093/bioinformatics/btl647
+}
 
 \seealso{
   \itemize{
