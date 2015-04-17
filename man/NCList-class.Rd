@@ -89,7 +89,7 @@ NCLists(x, circle.length=NA_integer_)
   Containment Lists and the old algorithm based on interval trees:
   \itemize{
     \item With the new algorithm, the hits returned by
-          \code{\link{findOverlap}} are not \emph{fully} ordered (i.e. ordered
+          \code{\link{findOverlaps}} are not \emph{fully} ordered (i.e. ordered
           by queryHits and subject Hits) anymore, but only \emph{partially}
           ordered (i.e. ordered by queryHits only). Other than that, and
           except for the 3 particular situations mentioned below, the 2

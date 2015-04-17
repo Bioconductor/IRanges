@@ -306,7 +306,7 @@ BUG FIXES
       produce hits ever (regardless of 'maxgap' and 'minoverlap' values).
 
     o Correctly free memory allocated for linked list of results compiled for
-      findOverlap(select="all").
+      findOverlaps(select="all").
 
     o Various fixes for AsIs and DataFrames.
 
