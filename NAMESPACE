@@ -188,7 +188,6 @@ exportMethods(
 
 export(
     splitAsList,
-    seqapply, mseqapply, tseqapply, seqsplit, seqby,
     multisplit,
     solveUserSEW0, IRanges, solveUserSEW,
     successiveIRanges,

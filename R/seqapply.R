@@ -1,29 +1,8 @@
 ### =========================================================================
-### seqapply() and family
+### The stuff in this file should go somewhere else, probably close to
+### splitAsList() (currently extractList.R)
 ### -------------------------------------------------------------------------
 ###
-
-seqapply <- function(X, FUN, ...) {
-  .Defunct("as(lapply(X, FUN, ...), 'List')")
-}
-
-mseqapply <- function(FUN, ..., MoreArgs = NULL, USE.NAMES = TRUE) {
-  .Defunct("as(mapply(FUN, ...), 'List')")
-}
-
-tseqapply <- function(X, INDEX, FUN = NULL, ...) {
-  .Defunct("as(tapply(X, INDEX, FUN, ...), 'List')")
-}
-
-seqsplit <- function(x, f, drop=FALSE) {
-  .Defunct("splitAsList")
-}
-
-seqby <- function(data, INDICES, FUN, ...) {
-  .Defunct("as(by(X, INDICES, FUN, ...), 'List')")
-}
-
-### These are excluded from the deprecation
 
 ## NOT exported.
 `splitAsList<-` <- function(x, f, drop = FALSE, ..., value) {
@@ -37,8 +16,6 @@ seqby <- function(data, INDICES, FUN, ...) {
   x[unlist(ind, use.names=FALSE)] <- unlist(value, use.names = FALSE)
   x
 }
-
-## 2 wrappers to `seqsplit<-`.
 
 setMethod("unsplit", "List", function(value, f, drop = FALSE) {
   value_flat <- unlist(value, use.names = FALSE)
