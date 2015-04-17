@@ -1,7 +1,13 @@
 \name{HitsList-class}
 \docType{class}
+
+\alias{class:HitsList}
 \alias{HitsList-class}
+\alias{HitsList}
+
+\alias{class:CompressedHitsList}
 \alias{CompressedHitsList-class}
+\alias{CompressedHitsList}
 
 % coercion
 \alias{as.matrix,HitsList-method}
@@ -20,8 +26,6 @@
 \alias{queryLength,CompressedHitsList-method}
 \alias{subjectLength,CompressedHitsList-method}
 
-% constructor
-\alias{CompressedHitsList}
 
 \title{List of Hits objects}
 \description{The \code{HitsList} class stores a set of Hits objects.
