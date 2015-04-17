@@ -16,14 +16,25 @@ setClass("NCList",
     )
 )
 
-setMethod("ranges", "NCList", function(x, ...) x@ranges)
+setMethod("ranges", "NCList",
+    function(x, use.mcols=FALSE)
+    {
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
+        ans <- x@ranges
+        if (use.mcols)
+            mcols(ans) <- mcols(x)
+        ans
+    }
+)
+
 setMethod("length", "NCList", function(x) length(ranges(x)))
 setMethod("names", "NCList", function(x) names(ranges(x)))
 setMethod("start", "NCList", function(x, ...) start(ranges(x)))
 setMethod("end", "NCList", function(x, ...) end(ranges(x)))
 setMethod("width", "NCList", function(x) width(ranges(x)))
 
-setAs("NCList", "IRanges", function(from) ranges(from))
+setAs("NCList", "IRanges", function(from) ranges(from, use.mcols=TRUE))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -124,10 +135,15 @@ NCList <- function(x, circle.length=NA_integer_)
         stop("'x' must be a Ranges object")
     if (!is(x, "IRanges"))
         x <- as(x, "IRanges")
+    ans_mcols <- mcols(x)
+    mcols(x) <- NULL
     circle.length <- .normarg_circle.length1(circle.length)
     x <- .shift_ranges_to_first_circle(x, circle.length)
     x_nclist <- .nclist(start(x), end(x))
-    new2("NCList", nclist=x_nclist, ranges=x, check=FALSE)
+    new2("NCList", nclist=x_nclist,
+                   ranges=x,
+                   elementMetadata=ans_mcols,
+                   check=FALSE)
 }
 
 setAs("Ranges", "NCList", function(from) NCList(from))
