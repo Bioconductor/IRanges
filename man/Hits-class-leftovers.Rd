@@ -54,34 +54,33 @@
 \examples{
 query <- IRanges(c(1, 4, 9), c(5, 7, 10))
 subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
-tree <- IntervalTree(subject)
-overlaps <- findOverlaps(query, tree)
+hits <- findOverlaps(query, subject)
 
-as.matrix(overlaps)
-as.data.frame(overlaps)
+as.matrix(hits)
+as.data.frame(hits)
 
-as.table(overlaps) # hits per query
-as.table(t(overlaps)) # hits per subject
+as.table(hits) # hits per query
+as.table(t(hits)) # hits per subject
 
 ## Turn a Hits object into an IntegerList object with one list element
 ## per element in the original query.
-as(overlaps, "IntegerList")
-as(overlaps, "List")  # same as as(overlaps, "IntegerList")
+as(hits, "IntegerList")
+as(hits, "List")  # same as as(hits, "IntegerList")
 
 ## Turn a Hits object into a PartitioningByEnd object that describes
 ## the grouping of hits by query.
-as(overlaps, "PartitioningByEnd")
-as(overlaps, "Partitioning")  # same as as(overlaps, "PartitioningByEnd")
+as(hits, "PartitioningByEnd")
+as(hits, "Partitioning")  # same as as(hits, "PartitioningByEnd")
 
 ## ---------------------------------------------------------------------
 ## remapHits()
 ## ---------------------------------------------------------------------
 
-hits1 <- remapHits(overlaps, subject.map=factor(c("e", "e", "d"), letters[1:5]))
-hits1
-hits2 <- remapHits(overlaps, subject.map=c(5, 5, 4), new.subjectLength=5)
+hits2 <- remapHits(hits, subject.map=factor(c("e", "e", "d"), letters[1:5]))
 hits2
-stopifnot(identical(hits1, hits2))
+hits3 <- remapHits(hits, subject.map=c(5, 5, 4), new.subjectLength=5)
+hits3
+stopifnot(identical(hits2, hits3))
 }
 \keyword{methods}
 \keyword{classes}

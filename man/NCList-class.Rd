@@ -131,6 +131,11 @@ NCLists(x, circle.length=NA_integer_)
           (\url{https://support.bioconductor.org/}) or on the bioc-devel
           mailing list if you think so. Anyway, this is the 3rd situation
           where the new and old algorithms produce different outputs.
+    \item The new algorithm supports preprocessing of a
+          \link[GenomicRanges]{GenomicRanges} object with ranges defined
+          on circular sequences (e.g. on the mitochnodrial chromosome).
+          See \link[GenomicRanges]{GNCList} in the \pkg{GenomicRanges}
+          package for some examples.
     \item Objects preprocessed with \code{NCList}, \code{NCLists}, and
           \code{\link[GenomicRanges]{GNCList}} are serializable (with
           \code{save}) for later use. Not a typical thing to do though,

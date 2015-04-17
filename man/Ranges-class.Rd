@@ -80,7 +80,8 @@
   can be subsetted by row and by column).
 
   The Ranges class itself is a virtual class. The following classes derive
-  directly from the Ranges class: \link{IRanges} and \link{IntervalTree}.
+  directly from the Ranges class: \link{IRanges}, \link{NCList},
+  \link{PartitioningByEnd}.
 }
 
 \section{Methods}{
@@ -327,7 +328,8 @@
   \link{IRanges-utils},
   \link{setops-methods},
   \link{RangedData-class},
-  \link{IntervalTree-class},
+  \link{NCList-class},
+  \link{PartitioningByEnd-class},
   \code{\link{update}},
   \code{\link{as.matrix}},
   \code{\link{as.data.frame}},
