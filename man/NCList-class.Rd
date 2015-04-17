@@ -107,7 +107,7 @@ NCLists(x, circle.length=NA_integer_)
           preprocess the input. This is because \code{\link{findOverlaps}}
           or \code{\link{countOverlaps}} will take care of it and do a better
           job at it (by preprocessing only what's needed when it's needed,
-          and release memory as they go).
+          and releasing memory as they go).
     \item With the new algorithm, \code{\link{countOverlaps}} on \link{Ranges}
           or \link[GenomicRanges]{GenomicRanges} objects doesn't call
           \code{\link{findOverlaps}} in order to collect all the hits in a

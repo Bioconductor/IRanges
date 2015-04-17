@@ -46,16 +46,23 @@
     nearest neighbors are found. Can be missing, in which case
     \code{x} is also the subject.
   }
-  \item{y}{For the \code{distance} method, a \code{Ranges} instance.
-    Cannot be missing. If \code{x} and \code{y} are not the same
-    length, the shortest will be recycled to match the length of the 
-    longest.
-  }
   \item{select}{Logic for handling ties. By default, all the methods
     select a single interval (arbitrary for \code{nearest},the first 
     by order in \code{subject} for \code{precede}, and the last for 
     \code{follow}). To get all matchings, as a \code{Hits} object, 
     use \dQuote{all}.
+  }
+  \item{algorithm}{
+    This argument is passed to \code{\link{findOverlaps}}, which
+    \code{nearest} and \code{distance} use internally.
+    See \code{?\link{findOverlaps}} for more information.
+    Note that it will be removed in BioC 3.3 so please don't use it unless
+    you have a good reason to do so (e.g. troubleshooting).
+  }
+  \item{y}{For the \code{distance} method, a \code{Ranges} instance.
+    Cannot be missing. If \code{x} and \code{y} are not the same
+    length, the shortest will be recycled to match the length of the 
+    longest.
   }
   \item{...}{Additional arguments for methods}
 }
