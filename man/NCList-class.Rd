@@ -47,7 +47,7 @@
   overlap-based operations.
 
   To preprocess a \link{Ranges} or \link{RangesList} object, simply call
-  the \code{NCList} or \code{NCLists} constructor functions on them.
+  the \code{NCList} or \code{NCLists} constructor function on it.
 }
 
 \usage{
