@@ -172,7 +172,7 @@ NCLists(x, circle.length=NA_integer_)
 }
 
 \examples{
-## The example nelow is for illustration purpose only and does NOT
+## The example below is for illustration purpose only and does NOT
 ## reflect typical usage. This is because, for a one time use, it is
 ## NOT advised to explicitely preprocess the input for findOverlaps()
 ## or countOverlaps(). These functions will take care of it and do a
