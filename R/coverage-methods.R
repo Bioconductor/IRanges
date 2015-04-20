@@ -31,6 +31,8 @@
         stop("'x' must be an IRanges object")
 
     ## 'shift' will be checked at the C level.
+    if (is(shift, "Rle"))
+        shift <- S4Vectors:::decodeRle(shift)
 
     ## Check 'width'.
     if (is.null(width)) {
@@ -64,6 +66,24 @@
     if (is.na(circle.length))
         return(ans)
     .fold_and_truncate_coverage(ans, circle.length, width)
+}
+
+.normarg_shift_or_weight <- function(arg, arg.label)
+{
+    if (!is.list(arg)) {
+        if (!(is.numeric(arg) ||
+              (is(arg, "Rle") && is.numeric(runValue(arg))) ||
+              is(arg, "List")))
+            stop("'", arg.label, "' must be a numeric vector ",
+                 "or a list-like object")
+        arg <- as.list(arg)
+    }
+    if (length(arg) != 0L) {
+        idx <- which(sapply(arg, is, "Rle"))
+        if (length(idx) != 0L)
+            arg[idx] <- lapply(arg[idx], S4Vectors:::decodeRle)
+    }
+    arg
 }
 
 .check_arg_names <- function(arg, arg.label, x_names, x_names.label)
@@ -112,11 +132,7 @@
     x_names <- names(x)
 
     ## Check and normalize 'shift'.
-    if (!is.list(shift)) {
-        if (!(is.numeric(shift) || is(shift, "List")))
-            stop("'shift' must be a numeric vector or list-like object")
-        shift <- as.list(shift)
-    }
+    shift <- .normarg_shift_or_weight(shift, "shift")
     .check_arg_names(shift, "shift", x_names, x_names.label)
 
     ## Check and normalize 'width'.
@@ -138,18 +154,7 @@
     }
 
     ## Check and normalize 'weight'.
-    if (!is.list(weight)) {
-        if (!(is.numeric(weight) ||
-              (is(weight, "Rle") && is.numeric(runValue(weight))) ||
-              is(weight, "List")))
-            stop("'weight' must be a numeric vector or list-like object")
-        weight <- as.list(weight)
-    }
-    if (length(weight) != 0L) {
-        idx <- which(sapply(weight, is, "Rle"))
-        if (length(idx) != 0L)
-            weight[idx] <- lapply(weight[idx], S4Vectors:::decodeRle)
-    }
+    weight <- .normarg_shift_or_weight(weight, "weight")
     .check_arg_names(weight, "weight", x_names, x_names.label)
 
     ## Check and normalize 'circle.length'.
@@ -168,10 +173,10 @@
 
     ## Ready to go...
     ans_listData <- .Call2("CompressedIRangesList_coverage", x,
-                              shift, width,
-                              weight, circle.length,
-                              method,
-                              PACKAGE="IRanges")
+                           shift, width,
+                           weight, circle.length,
+                           method,
+                           PACKAGE="IRanges")
 
     ## "Fold" the coverage vectors in 'ans_listData' associated with a
     ## circular sequence.
