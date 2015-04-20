@@ -68,6 +68,7 @@
     .fold_and_truncate_coverage(ans, circle.length, width)
 }
 
+### Returns an ordinary list.
 .normarg_shift_or_weight <- function(arg, arg.label)
 {
     if (!is.list(arg)) {
