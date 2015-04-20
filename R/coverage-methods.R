@@ -42,6 +42,8 @@
     }
 
     ## 'weight' will be checked at the C level.
+    if (is(weight, "Rle"))
+        weight <- S4Vectors:::decodeRle(weight)
 
     ## Check 'circle.length'.
     if (!isSingleNumberOrNA(circle.length))
@@ -137,9 +139,16 @@
 
     ## Check and normalize 'weight'.
     if (!is.list(weight)) {
-        if (!(is.numeric(weight) || is(weight, "List")))
+        if (!(is.numeric(weight) ||
+              (is(weight, "Rle") && is.numeric(runValue(weight))) ||
+              is(weight, "List")))
             stop("'weight' must be a numeric vector or list-like object")
         weight <- as.list(weight)
+    }
+    if (length(weight) != 0L) {
+        idx <- which(sapply(weight, is, "Rle"))
+        if (length(idx) != 0L)
+            weight[idx] <- lapply(weight[idx], S4Vectors:::decodeRle)
     }
     .check_arg_names(weight, "weight", x_names, x_names.label)
 
