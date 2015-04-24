@@ -73,6 +73,25 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
     selectHits(hits, select=select)
 }
 
+test_NCList <- function()
+{
+    x <- IRanges(rep.int(1:5, 5:1), c(1:5, 2:5, 3:5, 4:5, 5),
+                 names=LETTERS[1:15])
+    mcols(x) <- DataFrame(score=seq(0.7, by=0.045, length.out=15))
+    nclist <- NCList(x)
+
+    checkTrue(is(nclist, "NCList"))
+    checkTrue(validObject(nclist, complete=TRUE))
+    checkIdentical(x, ranges(nclist, use.mcols=TRUE))
+    checkIdentical(length(x), length(nclist))
+    checkIdentical(names(x), names(nclist))
+    checkIdentical(start(x), start(nclist))
+    checkIdentical(end(x), end(nclist))
+    checkIdentical(width(x), width(nclist))
+    checkIdentical(x, as(nclist, "IRanges"))
+    checkIdentical(x[-6], as(nclist[-6], "IRanges"))
+}
+
 test_findOverlaps_NCList <- function()
 {
     query <- IRanges(-3:7, width=3)
@@ -296,6 +315,33 @@ test_findOverlaps_NCList_with_circular_space <- function()
     target <- .make_Hits_from_s2q(s2q, length(query))
     .test_circularity(query, subject, circle_length, target,
                       NCList, findOverlaps_NCList, "end")
+}
+
+test_NCLists <- function()
+{
+    x1 <- IRanges(-3:7, width=3)
+    x2 <- IRanges()
+    x3 <- IRanges(rep.int(1:5, 5:1), c(1:5, 2:5, 3:5, 4:5, 5))
+    x <- IRangesList(x1=x1, x2=x2, x3=x3)
+    mcols(x) <- DataFrame(label=c("first", "second", "third"))
+    nclists <- NCLists(x)
+
+    checkTrue(is(nclists, "NCLists"))
+    checkTrue(validObject(nclists, complete=TRUE))
+    checkIdentical(x, ranges(nclists, use.mcols=TRUE))
+    checkIdentical(length(x), length(nclists))
+    checkIdentical(names(x), names(nclists))
+    checkIdentical(start(x), start(nclists))
+    checkIdentical(end(x), end(nclists))
+    checkIdentical(width(x), width(nclists))
+    checkIdentical(x, as(nclists, "IRangesList"))
+    checkIdentical(x[-1], as(nclists[-1], "IRangesList"))
+    checkIdentical(elementLengths(x), elementLengths(nclists))
+
+    nclist <- nclists[[3]]
+    checkTrue(is(nclist, "NCList"))
+    checkTrue(validObject(nclist, complete=TRUE))
+    checkIdentical(x3, as(nclist, "IRanges"))
 }
 
 test_findOverlaps_NCLists <- function()

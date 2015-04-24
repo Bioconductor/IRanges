@@ -125,10 +125,6 @@ setAs("NCList", "IRanges", function(from) ranges(from, use.mcols=TRUE))
     .Call2("new_NCListSXP_from_NCList", nclist_xp, PACKAGE="IRanges")
 }
 
-### Usage:
-###   x <- IRanges(c(11, 10, 13, 10, 14,  8, 10, 11),
-###                c(15, 12, 18, 13, 14, 12, 15, 15))
-###   subject <- NCList(x)
 NCList <- function(x, circle.length=NA_integer_)
 {
     if (!is(x, "Ranges"))
@@ -249,7 +245,19 @@ setMethod("parallelSlotNames", "NCLists",
 
 ### TODO: Move rglist() generic from GenomicRanges to IRanges
 #setMethod("rglist", "NCLists", function(x, ...) x@ranges)
-setMethod("ranges", "NCLists", function(x, ...) x@rglist)
+
+setMethod("ranges", "NCLists",
+    function(x, use.mcols=FALSE)
+    {
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
+        ans <- x@rglist
+        if (use.mcols)
+            mcols(ans) <- mcols(x)
+        ans
+    }
+)
+
 setMethod("length", "NCLists", function(x) length(ranges(x)))
 setMethod("names", "NCLists", function(x) names(ranges(x)))
 setMethod("start", "NCLists", function(x, ...) start(ranges(x)))
@@ -267,8 +275,12 @@ setMethod("getListElement", "NCLists",
     }
 )
 
-setAs("NCLists", "CompressedIRangesList", function(from) ranges(from))
-setAs("NCLists", "IRangesList", function(from) ranges(from))
+setAs("NCLists", "CompressedIRangesList",
+    function(from) ranges(from, use.mcols=TRUE)
+)
+setAs("NCLists", "IRangesList",
+    function(from) ranges(from, use.mcols=TRUE)
+)
 
 .extract_groups_from_RangesList <- function(x)
 {
@@ -290,6 +302,8 @@ NCLists <- function(x, circle.length=NA_integer_)
         stop("'x' must be a RangesList object")
     if (!is(x, "CompressedIRangesList"))
         x <- as(x, "CompressedIRangesList")
+    ans_mcols <- mcols(x)
+    mcols(x) <- NULL
     unlisted_x <- unlist(x, use.names=FALSE)
     x_groups <- .extract_groups_from_RangesList(x)
     circle.length <- .normarg_circle.length2(circle.length, length(x_groups),
@@ -300,7 +314,10 @@ NCLists <- function(x, circle.length=NA_integer_)
                                    circle.length)
     x <- relist(unlisted_x, x)
     x_nclists <- .nclists(unlisted_x, x_groups)
-    new2("NCLists", nclists=x_nclists, rglist=x, check=FALSE)
+    new2("NCLists", nclists=x_nclists,
+                    rglist=x,
+                    elementMetadata=ans_mcols,
+                    check=FALSE)
 }
 
 setAs("RangesList", "NCLists", function(from) NCLists(from))
