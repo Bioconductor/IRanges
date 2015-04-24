@@ -10,6 +10,7 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
     t(hits)
 }
 
+### Used in the unit tests for GNCList located in GenomicRanges.
 .compare_hits <- function(target, current)
 {
     if (is.list(target) || is(target, "List")
@@ -18,6 +19,7 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
     identical(.transpose_hits(target), .transpose_hits(current))
 }
 
+### Used in the unit tests for GNCList located in GenomicRanges.
 .make_Hits_from_q2s <- function(q2s, s_len)
 {
     q_hits <- rep.int(seq_along(q2s), elementLengths(q2s))
@@ -35,6 +37,7 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
     selectHits(x, select)
 }
 
+### Used in the unit tests for GNCList located in GenomicRanges.
 .overlap_score <- function(query, subject)
 {
     pmin(end(query), end(subject)) - pmax(start(query), start(subject)) + 1L
@@ -47,7 +50,6 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
     which(ok1 & ok2)
 }
 
-### Used in unit tests for GNCList defined in GenomicRanges.
 .findOverlaps_naive <- function(query, subject, min.score=1L,
                                 type=c("any", "start", "end",
                                        "within", "extend", "equal"),
