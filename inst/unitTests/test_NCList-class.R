@@ -42,14 +42,12 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
 
 .get_query_overlaps <- function(query, subject, min.score, type_codes)
 {
-    is_hit <- .overlap_score(query, subject) >= min.score
-    if (!is.null(type_codes)) {
-        codes <- rangeComparisonCodeToLetter(compare(query, subject))
-        is_hit <- is_hit & codes %in% type_codes
-    }
-    which(is_hit)
+    ok1 <- .overlap_score(query, subject) >= min.score
+    ok2 <- rangeComparisonCodeToLetter(compare(query, subject)) %in% type_codes
+    which(ok1 & ok2)
 }
 
+### Used in unit tests for GNCList defined in GenomicRanges.
 .findOverlaps_naive <- function(query, subject, min.score=1L,
                                 type=c("any", "start", "end",
                                        "within", "extend", "equal"),
@@ -59,7 +57,7 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
     type <- match.arg(type)
     select <- match.arg(select)
     type_codes <- switch(type,
-        "any"    = NULL,
+        "any"    = letters[1:13],
         "start"  = c("f", "g", "h"),
         "end"    = c("d", "g", "j"),
         "within" = c("f", "g", "i", "j"),
