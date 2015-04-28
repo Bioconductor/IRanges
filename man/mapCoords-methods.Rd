@@ -9,7 +9,7 @@
 \title{Mapping of ranges to another sequence}
 
 \description{
-  DEPRECATED! Use \code{\link[GenomicFeatures]{mapToTranscripts}} from the
+  DEFUNCT! Use \code{\link[GenomicFeatures]{mapToTranscripts}} from the
   \pkg{GenomicFeatures} package or
   \code{\link[GenomicAlignments]{mapToAlignments}} from the
   \pkg{GenomicAlignments} package instead.
@@ -61,7 +61,7 @@ pmapCoords(from, to, ...)
 }
 
 \examples{
-## DEPRECATED! See ?mapToTranscripts in the GenomicFeatures package and
+## DEFUNCT! See ?mapToTranscripts in the GenomicFeatures package and
 ## ?mapToAlignments in the GenomicAlignments package.
 }
 
