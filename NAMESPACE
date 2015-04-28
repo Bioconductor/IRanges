@@ -290,9 +290,6 @@ export(
     reducerParams, "reducerParams<-",
     iteratorFun, "iteratorFun<-",
 
-    ## mapCoords.R:
-    mapCoords, pmapCoords,
-
     ## intra-range-methods.R:
     shift, narrow, resize, flank, reflect, promoters, restrict, threebands,
 
