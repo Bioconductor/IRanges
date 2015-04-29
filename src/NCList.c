@@ -960,7 +960,7 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 	    min_overlap_score, overlap_type, select_mode, circle_len,
 	    *direct_out, pp_is_q;
 	const int *q_start_p, *q_end_p, *s_start_p, *s_end_p;
-	IntAE qh_buf, sh_buf;
+	IntAE *qh_buf, *sh_buf;
 	SEXP ans;
 
 	q_len = check_integer_pairs(q_start, q_end,
@@ -988,13 +988,13 @@ SEXP NCList_find_overlaps(SEXP q_start, SEXP q_end,
 		min_overlap_score, overlap_type,
 		select_mode, circle_len,
 		nclist, LOGICAL(nclist_is_q)[0],
-		&qh_buf, &sh_buf, direct_out);
+		qh_buf, sh_buf, direct_out);
 	//print_elapsed_time();
 	if (select_mode != ALL_HITS) {
 		UNPROTECT(1);
 		return ans;
 	}
-	return new_Hits(qh_buf.elts, sh_buf.elts, IntAE_get_nelt(&qh_buf),
+	return new_Hits(qh_buf->elts, sh_buf->elts, IntAE_get_nelt(qh_buf),
 			q_len, s_len, !pp_is_q);
 }
 
@@ -1038,7 +1038,7 @@ SEXP NCList_find_overlaps_in_groups(
 		  *s_start_p, *s_end_p, *s_space_p;
 	CompressedIntsList_holder q_groups_holder, s_groups_holder;
 	Ints_holder qi_group_holder, si_group_holder;
-	IntAE qh_buf, sh_buf;
+	IntAE *qh_buf, *sh_buf;
 	SEXP ans;
 
 	/* Check query. */
@@ -1096,13 +1096,13 @@ SEXP NCList_find_overlaps_in_groups(
 			min_overlap_score, overlap_type,
 			select_mode, INTEGER(circle_length)[i],
 			VECTOR_ELT(nclists, i), LOGICAL(nclist_is_q)[i],
-			&qh_buf, &sh_buf, direct_out);
+			qh_buf, sh_buf, direct_out);
 	}
 	if (select_mode != ALL_HITS) {
 		UNPROTECT(1);
 		return ans;
 	}
-	return new_Hits(qh_buf.elts, sh_buf.elts, IntAE_get_nelt(&qh_buf),
+	return new_Hits(qh_buf->elts, sh_buf->elts, IntAE_get_nelt(qh_buf),
 			q_len, s_len, 0);
 }
 

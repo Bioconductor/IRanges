@@ -223,8 +223,8 @@ SEXP _new_IRanges_from_IntPairAE(const char *classname,
 {
 	SEXP ans, start, width;
 
-	PROTECT(start = new_INTEGER_from_IntAE(&(intpair_ae->a)));
-	PROTECT(width = new_INTEGER_from_IntAE(&(intpair_ae->b)));
+	PROTECT(start = new_INTEGER_from_IntAE(intpair_ae->a));
+	PROTECT(width = new_INTEGER_from_IntAE(intpair_ae->b));
 	PROTECT(ans = _new_IRanges(classname, start, width, R_NilValue));
 	UNPROTECT(3);
 	return ans;
@@ -238,13 +238,14 @@ SEXP _new_list_of_IRanges_from_IntPairAEAE(const char *element_type,
 {
 	SEXP ans, ans_elt;
 	int nelt, i;
-	const IntPairAE *elt;
+	const IntPairAE *ae;
 
 	nelt = IntPairAEAE_get_nelt(intpair_aeae);
 	PROTECT(ans = NEW_LIST(nelt));
-	for (i = 0, elt = intpair_aeae->elts; i < nelt; i++, elt++) {
+	for (i = 0; i < nelt; i++) {
+		ae = intpair_aeae->elts[i];
 		PROTECT(ans_elt = _new_IRanges_from_IntPairAE(element_type,
-							      elt));
+							      ae));
 		SET_VECTOR_ELT(ans, i, ans_elt);
 		UNPROTECT(1);
 	}

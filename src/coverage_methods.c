@@ -531,8 +531,8 @@ static SEXP compute_coverage_from_IRanges_holder(
 	x_len = _get_length_from_IRanges_holder(x_holder);
 	cvg_len = shift_and_clip_ranges(x_holder, shift, width, circle_len,
 					ranges_buf, &out_ranges_are_tiles);
-	x_start = ranges_buf->a.elts;
-	x_width = ranges_buf->b.elts;
+	x_start = ranges_buf->a->elts;
+	x_width = ranges_buf->b->elts;
 
 	/* Check 'weight'. */
 	check_arg_is_numeric(weight, weight_label);
@@ -607,7 +607,7 @@ SEXP IRanges_coverage(SEXP x, SEXP shift, SEXP width, SEXP weight,
 {
 	IRanges_holder x_holder;
 	int x_len;
-	IntPairAE ranges_buf;
+	IntPairAE *ranges_buf;
 
 	x_holder = _hold_IRanges(x);
 	x_len = _get_length_from_IRanges_holder(&x_holder);
@@ -630,7 +630,7 @@ SEXP IRanges_coverage(SEXP x, SEXP shift, SEXP width, SEXP weight,
 	return compute_coverage_from_IRanges_holder(&x_holder,
 				shift, INTEGER(width)[0],
 				weight, INTEGER(circle_len)[0],
-				method, &ranges_buf);
+				method, ranges_buf);
 }
 
 /* --- .Call ENTRY POINT ---
@@ -659,7 +659,7 @@ SEXP CompressedIRangesList_coverage(SEXP x,
 	CompressedIRangesList_holder x_holder;
 	int x_len, shift_len, width_len, weight_len, circle_lens_len,
 	    i, j, k, l, m;
-	IntPairAE ranges_buf;
+	IntPairAE *ranges_buf;
 	SEXP ans, ans_elt, shift_elt, weight_elt;
 	IRanges_holder x_elt_holder;
 	char x_label_buf[40], shift_label_buf[40],
@@ -721,7 +721,7 @@ SEXP CompressedIRangesList_coverage(SEXP x,
 						INTEGER(width)[k],
 						weight_elt,
 						INTEGER(circle_lens)[m],
-						method, &ranges_buf));
+						method, ranges_buf));
 		SET_VECTOR_ELT(ans, i, ans_elt);
 		UNPROTECT(1);
 	}
