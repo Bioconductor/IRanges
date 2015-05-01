@@ -63,23 +63,10 @@ setAs("IntervalForest", "IRanges",
 
 setAs("CompressedIRangesList", "IntervalForest", function(from) {
   msg <- c("IntervalForest objects and the \"intervaltree\" algorithm used ",
-           "in findOverlaps() and family are deprecated. Please use the ",
+           "in findOverlaps() and family are defunct. Please use the ",
            "\"nclist\" algorithm instead. See the 'algorithm' argument ",
            "in ?findOverlaps for more information.")
-  .Deprecated(msg=wmsg(msg))
-
-  validObject(from)
-    
-  npartitions <- length(from@partitioning)
-  partitionLengths <- elementLengths(from)
-  
-  ptr <- .Call2("IntegerIntervalForest_new", from@unlistData, partitionLengths,
-                npartitions, PACKAGE="IRanges")
-  new2("IntervalForest", 
-       ptr = ptr, 
-       mode="integer", 
-       partitioning=from@partitioning, 
-       check=FALSE)
+  .Defunct(msg=wmsg(msg))
 })
 
 setAs("RangesList", "IntervalForest",

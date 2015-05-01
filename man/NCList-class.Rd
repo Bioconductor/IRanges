@@ -83,7 +83,7 @@ NCLists(x, circle.length=NA_integer_)
   Note that NCList, NCLists, and \link[GenomicRanges]{GNCList} objects,
   are replacements for \link{IntervalTree}, \link{IntervalForest}, and
   \link[GenomicRanges]{GIntervalTree} objects, respectively. The latter
-  are deprecated starting with BioC 3.1.
+  are defunct starting with BioC 3.2.
 
   Some important differences between the new algorithm based on Nested
   Containment Lists and the old algorithm based on interval trees:

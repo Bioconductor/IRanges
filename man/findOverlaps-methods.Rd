@@ -182,9 +182,8 @@ mergeByOverlaps(query, subject, ...)
     old algorithm based on interval trees.
     See \code{?\link{NCList}} and \code{?\link{IntervalTree}} for more
     information about these algorithms.
-    Note that using interval trees is deprecated starting with BioC 3.1
-    and will become defunct in BioC 3.2. The \code{algorithm} argument will
-    be removed in BioC 3.3.
+    Note that using interval trees is defunct starting with BioC 3.2.
+    The \code{algorithm} argument will be removed in BioC 3.3.
   }
   \item{...}{
     Further arguments to be passed to or from other methods:
@@ -276,7 +275,7 @@ mergeByOverlaps(query, subject, ...)
     \item The \link{NCList} class and constructor.
 
     \item The \link{IntervalTree} and \link{IntervalForest} classes and
-          constructors (deprecated).
+          constructors (defunct).
 
     \item The \link{Ranges}, \link{Views}, \link{RangesList},
           \link{ViewsList}, and \link{RangedData} classes.
