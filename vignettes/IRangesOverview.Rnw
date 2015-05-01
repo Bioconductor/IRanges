@@ -811,6 +811,8 @@ respectively. These are relatively self-explanatory.
 
 % \subsection{Mapping Ranges Between Vectors}
 
+% \Rfunction{mapCoords}
+
 \section{Vector Views}
 
 The \IRanges{} package provides the virtual \Rclass{Views} class, which
