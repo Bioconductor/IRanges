@@ -678,6 +678,18 @@ setMethod("overlapsAny", c("Vector", "missing"),
     }
 )
 
+setMethod("overlapsAny", c("integer", "Ranges"),
+          function(query, subject, maxgap=0L, minoverlap=1L,
+                   type=c("any", "start", "end", "within", "equal"),
+                   algorithm=c("nclist", "intervaltree"), ...)
+    {
+        !is.na(findOverlaps(query, subject,
+                            maxgap=maxgap, minoverlap=minoverlap,
+                            type=match.arg(type), select="arbitrary",
+                            algorithm=match.arg(algorithm), ...))
+    }
+)
+
 setMethod("overlapsAny", c("Views", "Views"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
