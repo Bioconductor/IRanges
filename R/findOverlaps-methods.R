@@ -167,6 +167,13 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
             .postProcess_findOverlaps_result(result, unsortedQuery, origQuery, subject, type, minoverlap, maxgap, origSelect)
           })
 
+maxgap_special_meaning_msg <- wmsg(
+    "With the new NCList algorithm (i.e. when 'algorithm=\"nclist\"', ",
+    "or when 'query' or 'subject' is an NCList object), 'maxgap' has ",
+    "no special meaning when 'type' is \"start\", \"end\", \"within\", ",
+    "or \"equal\". See ?NCList for more information about this."
+)
+
 findOverlaps_Ranges <- function(query, subject,
              maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
@@ -175,6 +182,8 @@ findOverlaps_Ranges <- function(query, subject,
 {
     min.score <- min_overlap_score(maxgap, minoverlap)
     type <- match.arg(type)
+    if (!identical(maxgap, 0L) && type != "any")
+        warning(maxgap_special_meaning_msg)
     select <- match.arg(select)
     algorithm <- match.arg(algorithm)
     if (algorithm != "nclist")
@@ -509,6 +518,8 @@ countOverlaps_Ranges <- function(query, subject,
 {
     min.score <- min_overlap_score(maxgap, minoverlap)
     type <- match.arg(type)
+    if (!identical(maxgap, 0L) && type != "any")
+        warning(maxgap_special_meaning_msg)
     algorithm <- match.arg(algorithm)
     if (algorithm != "nclist")
         warning("'algorithm' is ignored when 'query' or 'subject' ",

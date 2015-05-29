@@ -124,13 +124,13 @@ NCLists(x, circle.length=NA_integer_)
           the 2nd situation where the new and old algorithms produce different
           outputs.
     \item With the old interval tree algorithm, \code{maxgap} had a special
-          meaning if \code{type} is \code{"start"}, \code{"end"}, or
-          \code{"within"}. This is not yet the case with the new algorithm.
-          That feature seems somewhat useful though so maybe the new algorithm
-          should also support it? Please say hello on our support site
-          (\url{https://support.bioconductor.org/}) or on the bioc-devel
-          mailing list if you think so. Anyway, this is the 3rd situation
-          where the new and old algorithms produce different outputs.
+          meaning if \code{type} is \code{"start"}, \code{"end"},
+          \code{"within"}, or \code{"equal"}. This is not yet the case with
+          the new algorithm. That feature seems somewhat useful though so
+          maybe the new algorithm should also support it? Please say hello on
+          our support site (\url{https://support.bioconductor.org/}) or on the
+          bioc-devel mailing list if you think so. Anyway, this is the 3rd
+          situation where the new and old algorithms produce different outputs.
     \item The new algorithm supports preprocessing of a
           \link[GenomicRanges]{GenomicRanges} object with ranges defined
           on circular sequences (e.g. on the mitochnodrial chromosome).
