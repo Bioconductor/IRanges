@@ -168,10 +168,12 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
           })
 
 maxgap_special_meaning_msg <- wmsg(
-    "With the new NCList algorithm (i.e. when 'algorithm=\"nclist\"', ",
-    "or when 'query' or 'subject' is an NCList object), 'maxgap' has ",
-    "no special meaning when 'type' is \"start\", \"end\", \"within\", ",
-    "or \"equal\". See ?NCList for more information about this."
+    "With the new findOverlaps implementation based on Nested Containment ",
+    "Lists, 'maxgap' has no special meaning when 'type' is \"start\", ",
+    "\"end\", \"within\", or \"equal\". Note that this is a change with ",
+    "respect to the old findOverlaps implementation based on Interval Trees. ",
+    "See ?NCList for more information about this change and other ",
+    "differences between the new and old algorithms."
 )
 
 findOverlaps_Ranges <- function(query, subject,
