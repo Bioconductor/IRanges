@@ -150,7 +150,7 @@ static int qsort_compar(const void *p1, const void *p2)
  * an NCList object. Then NCList objects of arbitrary depth could be supported
  * and it wouldn't be necessary to set the limit below.
  */
-#define NCLIST_MAX_DEPTH 25000
+#define NCLIST_MAX_DEPTH 100000
 typedef struct stack_elt_t {
 	int revidx;
 	NCList *contained_list;
