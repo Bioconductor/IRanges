@@ -85,18 +85,19 @@ NCLists(x, circle.length=NA_integer_)
   \link[GenomicRanges]{GIntervalTree} objects, respectively. The latter
   are defunct starting with BioC 3.2.
 
-  Some important differences between the new algorithm based on Nested
-  Containment Lists and the old algorithm based on interval trees:
+  Some important differences between the new findOverlaps/countOverlaps
+  implementation based on Nested Containment Lists and the old implementation
+  based on Interval Trees:
   \itemize{
-    \item With the new algorithm, the hits returned by
+    \item With the new implementation, the hits returned by
           \code{\link{findOverlaps}} are not \emph{fully} ordered (i.e. ordered
           by queryHits and subject Hits) anymore, but only \emph{partially}
           ordered (i.e. ordered by queryHits only). Other than that, and
           except for the 3 particular situations mentioned below, the 2
-          algorithms produce the same output. However, the new algorithm is
-          faster and more memory efficient.
-    \item With the new algorithm, either the query or the subject can be
-          preprocessed with \code{NCList} for a \link{Ranges} object
+          implementations produce the same output. However, the new
+          implementation is faster and more memory efficient.
+    \item With the new implementation, either the query or the subject can
+          be preprocessed with \code{NCList} for a \link{Ranges} object
           (replacement for \code{\link{IntervalTree}}), \code{NCLists}
           for a \link{RangesList} object (replacement for
           \code{\link{IntervalForest}}), and
@@ -108,30 +109,32 @@ NCLists(x, circle.length=NA_integer_)
           or \code{\link{countOverlaps}} will take care of it and do a better
           job at it (by preprocessing only what's needed when it's needed,
           and releasing memory as they go).
-    \item With the new algorithm, \code{\link{countOverlaps}} on \link{Ranges}
-          or \link[GenomicRanges]{GenomicRanges} objects doesn't call
-          \code{\link{findOverlaps}} in order to collect all the hits in a
-          growing \link{Hits} object and count them only at the end. Instead,
+    \item With the new implementation, \code{\link{countOverlaps}} on
+          \link{Ranges} or \link[GenomicRanges]{GenomicRanges} objects doesn't
+          call \code{\link{findOverlaps}} in order to collect all the hits in
+          a growing \link{Hits} object and count them only at the end. Instead,
           the counting happens at the C level and the hits are not kept. This
           reduces memory usage considerably when there is a lot of hits.
     \item When \code{minoverlap=0}, zero-width ranges are now interpreted
           as insertion points and considered to overlap with ranges that
           contain them. With the old alogrithm, zero-width ranges were always
-          ignored. This is the 1st situation where the new and old algorithms
-          produce different outputs.
-    \item When using \code{select="arbitrary"}, the new algorithm will
-          generally not select the same hits as the old algorithm. This is
-          the 2nd situation where the new and old algorithms produce different
-          outputs.
-    \item With the old interval tree algorithm, \code{maxgap} had a special
-          meaning if \code{type} is \code{"start"}, \code{"end"},
-          \code{"within"}, or \code{"equal"}. This is not yet the case with
-          the new algorithm. That feature seems somewhat useful though so
-          maybe the new algorithm should also support it? Please say hello on
-          our support site (\url{https://support.bioconductor.org/}) or on the
-          bioc-devel mailing list if you think so. Anyway, this is the 3rd
-          situation where the new and old algorithms produce different outputs.
-    \item The new algorithm supports preprocessing of a
+          ignored. This is the 1st situation where the new and old
+          implementations produce different outputs.
+    \item When using \code{select="arbitrary"}, the new implementation will
+          generally not select the same hits as the old implementation. This is
+          the 2nd situation where the new and old implementations produce
+          different outputs.
+    \item With the old implementation, \code{maxgap} had a special
+          meaning when \code{type} was set to \code{"start"}, \code{"end"},
+          \code{"within"}, or \code{"equal"}. With the new implementation,
+          this special meaning is still being used but only when \code{type} is
+          set to \code{"start"} or \code{"end"}. If \code{maxgap}'s special
+          meaning when \code{type} is \code{"within"} or \code{"equal"} seems
+          useful to you, please say hello on our support site
+          (\url{https://support.bioconductor.org/}) or on the bioc-devel
+          mailing list. Anyway, this is the 3rd situation where the new and
+          old implementations produce different outputs.
+    \item The new implementation supports preprocessing of a
           \link[GenomicRanges]{GenomicRanges} object with ranges defined
           on circular sequences (e.g. on the mitochnodrial chromosome).
           See \link[GenomicRanges]{GNCList} in the \pkg{GenomicRanges}

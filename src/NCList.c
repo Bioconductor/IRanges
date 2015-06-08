@@ -421,12 +421,12 @@ typedef struct backpack_t {
 	int *direct_out;
 
 	/* Members set by update_backpack(). */
+	int y_idx;
 	int y_start;
 	int y_end;
 	int y_space;
-	int ext_y_start;
-	int ext_y_end;
-	int y_idx;
+	int wide_y_start;
+	int wide_y_end;
 } Backpack;
 
 static int is_hit(int revidx, const Backpack *backpack)
@@ -451,13 +451,23 @@ static int is_hit(int revidx, const Backpack *backpack)
 	if (backpack->overlap_type == TYPE_EXTEND)
 		return backpack->y_start <= x_start &&
 		       backpack->y_end >= x_end;
-	if (backpack->overlap_type == TYPE_START)
-		return backpack->y_start == x_start;
+	if (backpack->overlap_type == TYPE_START) {
+		d = backpack->y_start - x_start;
+		if (backpack->min_overlap_score0 >= 0)
+			return d == 0;
+		if (d > 0)
+			d = -d;
+		return d >= backpack->min_overlap_score0;
+	}
 	if (backpack->overlap_type == TYPE_END) {
 		d = backpack->y_end - x_end;
 		if (backpack->circle_len != NA_INTEGER)
 			d %= backpack->circle_len;
-		return d == 0;
+		if (backpack->min_overlap_score0 >= 0)
+			return d == 0;
+		if (d > 0)
+			d = -d;
+		return d >= backpack->min_overlap_score0;
 	}
 	/* TYPE_EQUAL */
 	return backpack->y_start == x_start &&
@@ -516,15 +526,15 @@ static Backpack prepare_backpack(const int *x_start_p, const int *x_end_p,
 	return backpack;
 }
 
-static void update_backpack(Backpack *backpack, int y_start, int y_end,
-						int y_space, int y_idx)
+static void update_backpack(Backpack *backpack, int y_idx,
+			    int y_start, int y_end, int y_space)
 {
+	backpack->y_idx = y_idx;
 	backpack->y_start = y_start;
 	backpack->y_end = y_end;
 	backpack->y_space = y_space;
-	backpack->ext_y_start = y_start + backpack->min_overlap_score0;
-	backpack->ext_y_end = y_end - backpack->min_overlap_score0;
-	backpack->y_idx = y_idx;
+	backpack->wide_y_start = y_start + backpack->min_overlap_score0;
+	backpack->wide_y_end = y_end - backpack->min_overlap_score0;
 	return;
 }
 
@@ -532,8 +542,8 @@ static void shift_y(Backpack *backpack, int shift)
 {
 	backpack->y_start += shift;
 	backpack->y_end += shift;
-	backpack->ext_y_start += shift;
-	backpack->ext_y_end += shift;
+	backpack->wide_y_start += shift;
+	backpack->wide_y_end += shift;
 	return;
 }
 
@@ -622,8 +632,8 @@ static void pp_find_overlaps(
 		y_end = y_end_p[j];
 		if (y_end - y_start < backpack.min_overlap_score0)
 			continue;
-		update_backpack(&backpack, y_start, y_end,
-				y_space_p == NULL ? 0 : y_space_p[j], j);
+		update_backpack(&backpack, j, y_start, y_end,
+				y_space_p == NULL ? 0 : y_space_p[j]);
 		/* pass 0 */
 		get_y_overlaps(pp, &backpack);
 		if (circle_len == NA_INTEGER)
@@ -724,7 +734,7 @@ static int bsearch_revmap(const int *revmap, int revmap_len,
 		min = backpack->y_end;
 	} else {
 		base = backpack->x_end_p;
-		min = backpack->ext_y_start;
+		min = backpack->wide_y_start;
 	}
 	return int_bsearch(revmap, revmap_len, base, min);
 }
@@ -756,7 +766,7 @@ static void NCList_get_y_overlaps(const NCList *x_nclist,
 			max = backpack->y_start;
 		} else {
 			base = backpack->x_start_p;
-			max = backpack->ext_y_end;
+			max = backpack->wide_y_end;
 		}
 		if (base[revidx] > max)
 			break;
@@ -798,7 +808,7 @@ static void NCListSXP_get_y_overlaps(const int *x_nclist,
 			max = backpack->y_start;
 		} else {
 			base = backpack->x_start_p;
-			max = backpack->ext_y_end;
+			max = backpack->wide_y_end;
 		}
 		if (base[revidx] > max)
 			break;

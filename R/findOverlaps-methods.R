@@ -167,25 +167,14 @@ setMethod("findOverlaps", c("Ranges", "IntervalTree"),
             .postProcess_findOverlaps_result(result, unsortedQuery, origQuery, subject, type, minoverlap, maxgap, origSelect)
           })
 
-maxgap_special_meaning_msg <- wmsg(
-    "With the new findOverlaps implementation based on Nested Containment ",
-    "Lists, 'maxgap' has no special meaning when 'type' is \"start\", ",
-    "\"end\", \"within\", or \"equal\". Note that this is a change with ",
-    "respect to the old findOverlaps implementation based on Interval Trees. ",
-    "See ?NCList for more information about this change and other ",
-    "differences between the new and old algorithms."
-)
-
 findOverlaps_Ranges <- function(query, subject,
              maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
              algorithm=c("nclist", "intervaltree"))
 {
-    min.score <- min_overlap_score(maxgap, minoverlap)
     type <- match.arg(type)
-    if (!identical(maxgap, 0L) && type != "any")
-        warning(maxgap_special_meaning_msg)
+    min.score <- min_overlap_score(maxgap, minoverlap, type)
     select <- match.arg(select)
     algorithm <- match.arg(algorithm)
     if (algorithm != "nclist")
@@ -518,10 +507,8 @@ countOverlaps_Ranges <- function(query, subject,
               type=c("any", "start", "end", "within", "equal"),
               algorithm=c("nclist", "intervaltree"))
 {
-    min.score <- min_overlap_score(maxgap, minoverlap)
     type <- match.arg(type)
-    if (!identical(maxgap, 0L) && type != "any")
-        warning(maxgap_special_meaning_msg)
+    min.score <- min_overlap_score(maxgap, minoverlap, type)
     algorithm <- match.arg(algorithm)
     if (algorithm != "nclist")
         warning("'algorithm' is ignored when 'query' or 'subject' ",

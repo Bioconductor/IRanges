@@ -43,11 +43,32 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
     pmin(end(query), end(subject)) - pmax(start(query), start(subject)) + 1L
 }
 
-.get_query_overlaps <- function(query, subject, min.score, type_codes)
+.get_query_overlaps <- function(query, subject, min.score, type)
 {
-    ok1 <- .overlap_score(query, subject) >= min.score
-    ok2 <- rangeComparisonCodeToLetter(compare(query, subject)) %in% type_codes
-    which(ok1 & ok2)
+    ok <- .overlap_score(query, subject) >= min.score
+    if (type %in% c("start", "end")) {
+        if (type == "start")
+            d <- abs(start(subject) - start(query))
+        if (type == "end") 
+            d <- abs(end(subject) - end(query))
+        if (min.score >= 1L) {
+            dmax <- 0L
+        } else {
+            dmax <- 1L - min.score
+        }
+        ok <- ok & (d <= dmax)
+    } else if (type != "any") {
+        codes <- rangeComparisonCodeToLetter(compare(query, subject))
+        type_codes <- switch(type,
+            #"start"  = c("f", "g", "h"),
+            #"end"    = c("d", "g", "j"),
+            "within" = c("f", "g", "i", "j"),
+            "extend" = c("d", "e", "g", "h"),
+            "equal"  = "g"
+        )
+        ok <- ok & (codes %in% type_codes)
+    }
+    which(ok)
 }
 
 .findOverlaps_naive <- function(query, subject, min.score=1L,
@@ -58,17 +79,8 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
 {
     type <- match.arg(type)
     select <- match.arg(select)
-    type_codes <- switch(type,
-        "any"    = letters[1:13],
-        "start"  = c("f", "g", "h"),
-        "end"    = c("d", "g", "j"),
-        "within" = c("f", "g", "i", "j"),
-        "extend" = c("d", "e", "g", "h"),
-        "equal"  = "g"
-    )
     hits_per_query <- lapply(seq_along(query),
-        function(i) .get_query_overlaps(query[i], subject,
-                                        min.score, type_codes))
+        function(i) .get_query_overlaps(query[i], subject, min.score, type))
     hits <- .make_Hits_from_q2s(hits_per_query, length(subject))
     selectHits(hits, select=select)
 }

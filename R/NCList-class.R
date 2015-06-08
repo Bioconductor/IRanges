@@ -200,7 +200,7 @@ findOverlaps_NCList <- function(query, subject,
 }
 
 ### NOT exported.
-min_overlap_score <- function(maxgap=0L, minoverlap=1L)
+min_overlap_score <- function(maxgap=0L, minoverlap=1L, type="any")
 {
     ## Check and normalize 'maxgap'.
     if (!isSingleNumber(maxgap))
@@ -218,8 +218,22 @@ min_overlap_score <- function(maxgap=0L, minoverlap=1L)
         stop("'maxgap' cannot be negative")
     if (minoverlap < 0L)
         stop("'minoverlap' cannot be negative")
-    if (maxgap != 0L && minoverlap > 1L)
-        stop("'minoverlap' must be <= 1 when 'maxgap' is not 0")
+    if (maxgap != 0L) {
+        if (minoverlap > 1L)
+            stop("'minoverlap' must be <= 1 when 'maxgap' is not 0")
+        if (type %in% c("within", "equal")) {
+            warning(wmsg(
+                "With the new findOverlaps/countOverlaps implementation based ",
+                "on Nested Containment Lists, 'maxgap' has no special meaning ",
+                "when 'type' is set to \"within\" or \"equal\". Note that ",
+                "this is a change with respect to the old implementation ",
+                "based on Interval Trees. See ?NCList for more information ",
+                "about this change and other differences between the new and ",
+                "old implementations. Use the 'algorithm' argument to switch ",
+                "between the 2 implementations."
+            ))
+        }
+    }
     minoverlap - maxgap
 }
 
