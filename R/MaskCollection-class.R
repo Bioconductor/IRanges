@@ -66,11 +66,10 @@ setReplaceMethod("names", "MaskCollection",
     function(x, value)
     {
         if (is.null(value)) {
-            x@NAMES <- as.character(NA)
+            x@NAMES <- NA_character_
             return(x)
-        } else {
-            value <- as.character(value)
         }
+        value <- as.character(value)
         ii <- is.na(value)
         if (any(ii))
             value[ii] <- ""

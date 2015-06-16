@@ -545,15 +545,7 @@ setMethod("grouplength", "Partitioning",
 
 setMethod("names", "Partitioning", function(x) x@NAMES)
 
-setReplaceMethod("names", "Partitioning",
-    function(x, value)
-    {
-        if (!is.null(value))
-            value <- as.character(value)
-        unsafe.names(x) <- value
-        x
-    }
-)
+setReplaceMethod("names", "Partitioning", set_IRanges_names)
 
 .valid.Partitioning <- function(x)
 {

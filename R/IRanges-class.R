@@ -164,63 +164,86 @@ setAs("numeric", "IRanges", function(from) as(as.integer(from), "IRanges"))
 setAs("numeric", "NormalIRanges", 
     function(from) newNormalIRangesFromIRanges(as(as.integer(from), "IRanges")))
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Low-level (i.e. non-exported and unsafe) replacement functions for
-### IRanges objects.
+### Low-level setters for IRanges objects.
 ###
 ### The choice was made to implement a "resizing" semantic:
 ###   (1) changing the start preserves the end (so it changes the width)
 ###   (2) changing the end preserves the start (so it changes the width)
 ###   (3) changing the width preserves the start (so it changes the end)
 ###
-### IMPORTANT: They do NOT check their arguments ('x' and 'value'). In
-### particular they do not check that 'value' is of the expected type (integer
-### for "unsafe.start<-", "unsafe.width<-", "unsafe.end<-", and character for
-### "unsafe.names<-"). Also they don't check that the resulting IRanges object
-### is valid!
-###
 
-### 'value' is recycled.
-`unsafe.start<-` <- function(x, value)
+.set_IRanges_start <- function(x, value, check=TRUE)
 {
+    if (!isTRUEorFALSE(check))
+        stop("'check' must be TRUE or FALSE")
     old_start <- start(x)
-    ## Use 'x@start[]' instead of just 'x@start' so the right value is recycled
+    ## Use 'x@start[]' instead of 'x@start' so the right value is recycled.
     x@start[] <- S4Vectors:::numeric2integer(value)
     x@width <- width(x) - start(x) + old_start
+    if (check)
+        validObject(x)
     x
 }
 
-### 'value' is recycled.
-`unsafe.end<-` <- function(x, value)
+setReplaceMethod("start", "IRanges",
+    function(x, ..., value) .set_IRanges_start(x, value)
+)
+
+.set_IRanges_end <- function(x, value, check=TRUE)
 {
-    ## Use 'x@width[]' instead of just 'x@width' so the right value is recycled
+    if (!isTRUEorFALSE(check))
+        stop("'check' must be TRUE or FALSE")
+    ## Use 'x@width[]' instead of 'x@width' so the right value is recycled.
     x@width[] <- width(x) + S4Vectors:::numeric2integer(value) - end(x)
+    if (check)
+        validObject(x)
     x
 }
 
-### 'value' is recycled.
-`unsafe.width<-` <- function(x, value)
+setReplaceMethod("end", "IRanges",
+    function(x, ..., value) .set_IRanges_end(x, value)
+)
+
+.set_IRanges_width <- function(x, value, check=TRUE)
 {
-    ## Use 'x@width[]' instead of just 'x@width' so the right value is recycled
+    if (!isTRUEorFALSE(check))
+        stop("'check' must be TRUE or FALSE")
+    ## Use 'x@width[]' instead of 'x@width' so the right value is recycled.
     x@width[] <- S4Vectors:::numeric2integer(value)
+    if (check)
+        validObject(x)
     x
 }
 
-### 'value' is NOT recycled so we stay close to what the standard R "names<-"
-### methods generally do
-`unsafe.names<-` <- function(x, value)
+setReplaceMethod("width", "IRanges",
+    function(x, ..., value) .set_IRanges_width(x, value)
+)
+
+set_IRanges_names <- function(x, value)
 {
-    if (is.null(value))
-        x@NAMES <- NULL
-    else {
-        if (length(value) > length(x))
-            stop("too many names")
-        if (length(value) < length(x))
-            value <- c(value, rep.int(NA, length(x) - length(value)))
-        x@NAMES <- value
-    }
+    x@NAMES <- S4Vectors:::normalize_names_replacement_value(value, x)
+    ## No need to validate an IRanges object after setting its names so this
+    ## should be safe.
     x
 }
+
+setReplaceMethod("names", "IRanges", set_IRanges_names)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "update" method.
+###
+### This is a convenience method for combining multiple modifications in one
+### single call.
+###
+### It must verify 2 important properties:
+###   (1) update(x) must be identical to x (doesn't touch x at all)
+###   (2) update(x, start=start(x), width=width(x), names=names(x))
+###       must be identical to x too (but this time it updates x with its own
+###       content)
+###
 
 unsafe.update <- function(object, ...)
 {
@@ -254,96 +277,15 @@ unsafe.update <- function(object, ...)
         return(object)
     }
     if ("start" %in% argnames)
-        unsafe.start(object) <- args$start
+        object <- .set_IRanges_start(object, args$start, check=FALSE)
     if ("end" %in% argnames)
-        unsafe.end(object) <- args$end
+        object <- .set_IRanges_end(object, args$end, check=FALSE)
     if ("width" %in% argnames)
-        unsafe.width(object) <- args$width
+        object <- .set_IRanges_width(object, args$width, check=FALSE)
     if ("names" %in% argnames)
-        unsafe.names(object) <- args$names
+        object <- set_IRanges_names(object, args$names)
     object
 }
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Exported (and safe) replacement methods.
-###
-### See the unsafe replacement functions for IRanges objects above for the
-### "sliding rules".
-###
-### Note that we don't call validObject(x) after 'x' has been modified because
-### we don't need to revalidate the entire object: validating the bits that
-### have been touched is enough (and faster). However, because of this, when
-### defining a new class that contains the IRanges class, if objects of
-### the new class must satisfy additional constraints, then some of the
-### replacement methods below need to be overridden for this new class.
-###
-
-.IRanges.replace_start <- function(x, check=TRUE, value)
-{
-    if (!isTRUEorFALSE(check))
-        stop("'check' must be TRUE or FALSE")
-    unsafe.start(x) <- value
-    if (check)
-        validObject(x)
-    x
-}
-
-setReplaceMethod("start", "IRanges",
-    function(x, ..., value) .IRanges.replace_start(x, ..., value=value)
-)
-
-.IRanges.replace_end <- function(x, check=TRUE, value)
-{
-    if (!isTRUEorFALSE(check))
-        stop("'check' must be TRUE or FALSE")
-    unsafe.end(x) <- value
-    if (check)
-        validObject(x)
-    x
-}
-
-setReplaceMethod("end", "IRanges",
-    function(x, ..., value) .IRanges.replace_end(x, ..., value=value)
-)
-
-.IRanges.replace_width <- function(x, check=TRUE, value)
-{
-    if (!isTRUEorFALSE(check))
-        stop("'check' must be TRUE or FALSE")
-    unsafe.width(x) <- value
-    if (check)
-        validObject(x)
-    x
-}
-
-setReplaceMethod("width", "IRanges",
-    function(x, ..., value) .IRanges.replace_width(x, ..., value=value)
-)
-
-setReplaceMethod("names", "IRanges",
-    function(x, value)
-    {
-        if (!is.null(value))
-            value <- as.character(value)
-        unsafe.names(x) <- value
-        x
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "update" method.
-###
-### This is a convenience method for combining multiple modifications in one
-### single call.
-###
-### It must verify 2 important properties:
-###   (1) update(x) must be identical to x (doesn't touch x at all)
-###   (2) update(x, start=start(x), width=width(x), names=names(x))
-###       must be identical to x too (but this time it updates x with its own
-###       content)
-###
 
 ### FIXME: need some way of specifying the extent of validity
 ### checking, like giving the class up to which the object is

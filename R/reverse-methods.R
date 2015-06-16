@@ -45,7 +45,7 @@ setMethod("reverse", "character",
             stop("'end' contains NAs")
     }
     if (!is.na(n2p[3L]) && !S4Vectors:::normargUseNames(args[[n2p[3L]]]))
-        unsafe.names(x) <- NULL
+        x <- set_IRanges_names(x, NULL)
     ## WARNING: -end(x) *must* appear first in this expression if we want
     ## the supplied 'start' and 'end' to be recycled properly.
     ## Remember that in R, because of the recycling, addition of numeric
