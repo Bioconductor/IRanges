@@ -25,11 +25,6 @@
 \alias{shiftApply}
 \alias{shiftApply,Vector,Vector-method}
 \alias{shiftApply,vector,vector-method}
-\alias{aggregate,Vector-method}
-\alias{aggregate,vector-method}
-\alias{aggregate,matrix-method}
-\alias{aggregate,data.frame-method}
-\alias{aggregate,ts-method}
 
 \alias{with,Vector-method}
 \alias{eval}
@@ -175,26 +170,6 @@
           result should be simplified to a vector or matrix if possible.}
         \item{\code{verbose}}{A logical value specifying whether or not to
           print the \code{i} indices to track the iterations.}
-      }
-    }
-    \item{}{
-      \code{aggregate(x, by, FUN, start = NULL, end = NULL, width = NULL,
-                      frequency = NULL, delta = NULL, ..., simplify = TRUE))}:
-      Generates summaries on the specified windows and returns the result in a
-      convenient form:
-      \describe{
-        \item{\code{by}}{An object with \code{start}, \code{end}, and
-          \code{width} methods.}
-        \item{\code{FUN}}{The function, found via \code{match.fun}, to be
-          applied to each window of \code{x}.}
-        \item{\code{start}, \code{end}, \code{width}}{the start, end, or width
-          of the window. If \code{by} is missing, then must supply two of the
-          three.}
-        \item{\code{frequency}, \code{delta}}{Optional arguments that specify
-          the sampling frequency and increment within the window.}
-        \item{\dots}{Further arguments for \code{FUN}.}
-        \item{\code{simplify}}{A logical value specifying whether or not the
-          result should be simplified to a vector or matrix if possible.}
       }
     }
   }

@@ -65,27 +65,3 @@ setMethod("stack", "List",
             }
           })
 
-setMethod("aggregate", "List",
-          function(x, by, FUN, start = NULL, end = NULL, width = NULL,
-                   frequency = NULL, delta = NULL, ..., simplify = TRUE)
-          {
-              if (!missing(by) && is(by, "RangesList")) {
-                  if (length(x) != length(by))
-                      stop("for Ranges 'by', 'length(x) != length(by)'")
-                  y <- as.list(x)
-                  result <-
-                    lapply(structure(seq_len(length(x)), names = names(x)),
-                           function(i)
-                               aggregate(y[[i]], by = by[[i]], FUN = FUN,
-                                         frequency = frequency, delta = delta,
-                                         ..., simplify = simplify))
-                  ans <- try(SimpleAtomicList(result), silent = TRUE)
-                  if (inherits(ans, "try-error"))
-                      ans <- S4Vectors:::new_SimpleList_from_list("SimpleList",
-                                                                  result)
-              } else {
-                  ans <- callNextMethod()
-              }
-              ans
-          })
-

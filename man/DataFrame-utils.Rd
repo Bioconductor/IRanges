@@ -29,19 +29,6 @@
   }
 }
 
-\section{Aggregation}{
-  In the following code snippets, \code{data} is a \code{DataFrame}.
-  \describe{
-    \item{}{\code{aggregate(x, data, FUN, ..., subset, na.action =
-        na.omit)}:
-      Aggregates the \code{DataFrame} \code{data} according to the
-      formula \code{x} and the aggregating
-      function \code{FUN}. See \code{\link{aggregate}} and its method
-      for \code{formula}.
-    }
-  }
-}
-
 \author{ Michael Lawrence }
 \seealso{
   \code{\linkS4class{DataTable}},
