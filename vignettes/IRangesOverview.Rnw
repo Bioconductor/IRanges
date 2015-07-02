@@ -853,6 +853,11 @@ viewMaxs(xViewsList)
 
 \section{Data on Ranges}
 
+IMPORTANT NOTE: Starting with BioC 2.12, the use of \Rclass{RangedData} and
+\Rclass{RangedDataList} objects is discouraged in favor of \Rclass{GRanges}
+and \Rclass{GRangesList} objects (those classes are defined in the
+\Rpackage{GenomicRanges} package).
+
 When analyzing ranges, there are often additional variables of
 interest, besides the geometry (starts, ends and widths). To formally
 represent a dataset where the ranges are the observations, \IRanges{}
@@ -956,7 +961,7 @@ sequence analysis concepts are represented in the \IRanges{} class system.
 \hline
 Biological Entity                        & \Rclass{Vector} Subclass \\
 \hline
-Genome browser track(s)                  & \Rclass{RangedData}/\Rclass{RangedDataList} \\
+Genome browser track(s)                  & \Rclass{GRanges}/\Rclass{GRangesList} \\
 Coverage across chromosomes/contigs      & \Rclass{RleList} \\
 Mapped ranges to genome                  & \Rclass{CompressedIRangesList} \\
 Data (sans ranges) across chroms/contigs & \Rclass{SplitDataFrameList} \\
