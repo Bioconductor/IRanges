@@ -40,10 +40,6 @@ o DataTable:
 o SplitDataFrameList:
   - rbind
 
-o FilterRules:
-  - refactor, using ShortRead filter framework (becomes FilterList)
-  - support subsetting DataFrame/RangedData directly
-
 o IO:
   - xscan() - read data directly into XVector objects
 

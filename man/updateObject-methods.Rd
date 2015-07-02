@@ -3,7 +3,6 @@
 
 \alias{updateObject,CharacterList-method}
 \alias{updateObject,ComplexList-method}
-\alias{updateObject,FilterRules-method}
 \alias{updateObject,IntegerList-method}
 \alias{updateObject,IntervalTree-method}
 \alias{updateObject,IRanges-method}

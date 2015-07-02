@@ -944,11 +944,6 @@ rows are indexed globally, independent of space.
 rd[1:3, "name"]
 @
 
-% \subsection{Applying Over Spaces}
-
-% \Rclass{RDApplyParams}
-% \Rclass{FilterRules}
-
 \section{IRanges in Biological Sequence Analysis}
 
 The \IRanges{} packages was primarily designed with biological sequence

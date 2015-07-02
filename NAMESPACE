@@ -45,10 +45,9 @@ exportClasses(
     RleViewsList, SimpleRleViewsList,
     DataFrameList, SimpleDataFrameList,
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
-    RangedData, RangedDataList, FilterRules, FilterMatrix, RDApplyParams,
+    RangedData, RangedDataList, RDApplyParams,
     HitsList, CompressedHitsList, 
-    RangedSelection,
-    expressionORfunction
+    RangedSelection
 )
 
 
@@ -178,7 +177,8 @@ exportMethods(
     runsum, runmean, runwtsum, runq,
     elementLengths, isEmpty, revElements,
     endoapply, mendoapply,
-    as.env
+    as.env,
+    active, "active<-", filterRules
 )
 
 
@@ -201,7 +201,7 @@ export(
     PartitioningByEnd, PartitioningByWidth, PartitioningMap,
     RangedData, RangedDataList,
     RangedSelection,
-    FilterRules, FilterMatrix, RDApplyParams,
+    RDApplyParams,
     RangesList,
     IRangesList,
     RleViewsList,
@@ -265,7 +265,6 @@ export(
 
     ## MaskCollection-class.R:
     nir_list,
-    active, "active<-",
     desc, "desc<-",
     maskedwidth, maskedratio,
     collapse,
@@ -276,15 +275,12 @@ export(
     ## RangedData-utils.R:
     rdapply,
 
-    ## FilterRules-class.R:
-    evalSeparately, subsetByFilter, params,
-
     ## RDApplyParams-class.R:
     rangedData, "rangedData<-",
     applyFun, "applyFun<-",
     applyParams, "applyParams<-",
     ##excludePattern, "excludePattern<-",
-    filterRules, "filterRules<-",
+    "filterRules<-",
     simplify, "simplify<-",
     reducerFun, "reducerFun<-",
     reducerParams, "reducerParams<-",
@@ -346,18 +342,16 @@ exportMethods(
     universe, "universe<-", space,
     ngap,
     nir_list,
-    active, "active<-",
     desc, "desc<-",
     maskedwidth, maskedratio,
     collapse,
     score, "score<-",
     rdapply,
-    evalSeparately, subsetByFilter, params,
     rangedData, "rangedData<-",
     applyFun, "applyFun<-",
     applyParams, "applyParams<-",
     ##excludePattern, "excludePattern<-",
-    filterRules, "filterRules<-",
+    "filterRules<-",
     simplify, "simplify<-",
     reducerFun, "reducerFun<-",
     reducerParams, "reducerParams<-",

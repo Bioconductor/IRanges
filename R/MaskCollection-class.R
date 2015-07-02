@@ -33,8 +33,6 @@ setMethod("length", "MaskCollection", function(x) length(nir_list(x)))
 
 setMethod("width", "MaskCollection", function(x) x@width)
 
-setGeneric("active", function(x) standardGeneric("active"))
-
 setMethod("active", "MaskCollection",
     function(x)
     {
@@ -42,10 +40,6 @@ setMethod("active", "MaskCollection",
         names(ans) <- names(x)
         ans
     }
-)
-
-setGeneric("active<-", signature="x",
-    function(x, value) standardGeneric("active<-")
 )
 
 setReplaceMethod("active", "MaskCollection",

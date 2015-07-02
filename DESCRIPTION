@@ -9,12 +9,12 @@ Description: The package provides efficient low-level and highly reusable S4
 	collections of instances of the basic classes. All classes in
 	the package use consistent naming and share the same rich and
 	consistent "Vector API" as much as possible.
-Version: 2.3.13
+Version: 2.3.14
 Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Infrastructure, DataRepresentation
 Depends: R (>= 3.1.0), methods, utils, stats, BiocGenerics (>= 0.13.6),
-	S4Vectors (>= 0.7.8)
+	S4Vectors (>= 0.7.10)
 Imports: stats4
 LinkingTo: S4Vectors
 Suggests: XVector, GenomicRanges, BSgenome.Celegans.UCSC.ce2, RUnit
@@ -49,7 +49,6 @@ Collate: Vector-class-leftovers.R
 	RleViewsList-utils.R
 	MaskCollection-class.R
 	RangedData-class.R
-	FilterRules-class.R
 	RDApplyParams-class.R
 	RangedData-utils.R
 	HitsList-class.R

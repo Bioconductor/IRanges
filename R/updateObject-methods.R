@@ -140,19 +140,6 @@ setMethod("updateObject", signature(object="RleList"),
               object
           })
 
-## "FilterRules" -> "FilterRules"
-setMethod("updateObject", signature(object="FilterRules"),
-          function(object, ..., verbose=FALSE) {
-              if (verbose) message("updateObject(object = 'FilterRules')")
-              if (!("metadata" %in% names(attributes(object)))) {
-                  object <-
-                    toSimpleList(asS4(object), "FilterRules",
-                                 "expressionORfunction",
-                                 active = slot(object, "active"))
-              }
-              object
-          })
-
 ## "IRanges" -> "IRanges"
 setMethod("updateObject", signature(object="IRanges"),
           function(object, ..., verbose=FALSE) {

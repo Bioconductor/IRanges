@@ -3,8 +3,6 @@
 \alias{class:functionORNULL}
 \alias{functionORNULL-class}
 \alias{functionORNULL}
-\alias{class:expressionORfunction}
-\alias{expressionORfunction-class}
 \alias{coerce,ANY,vector-method}
 
 
