@@ -157,7 +157,6 @@ exportMethods(
     is.na,
     by, 
     cbind, rbind,
-    eval,
     lapply,
     pmax, pmin, pmax.int, pmin.int,
     paste,
