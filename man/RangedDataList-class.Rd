@@ -9,6 +9,12 @@
 
 \title{Lists of RangedData}
 \description{
+  IMPORTANT NOTE: Starting with BioC 2.12, the use of \code{RangedData}
+  and \code{RangedDataList} objects is discouraged in favor of
+  \code{\link[GenomicRanges]{GRanges}} and
+  \code{\link[GenomicRanges]{GRangesList}} objects (those classes
+  are defined in the \pkg{GenomicRanges} package).
+
   A formal list of \code{\linkS4class{RangedData}}
   objects. Extends and inherits all its methods from
   \code{\linkS4class{List}}. One use case is to group together

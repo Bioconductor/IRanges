@@ -75,6 +75,12 @@
 
 \title{Data on ranges}
 \description{
+  IMPORTANT NOTE: Starting with BioC 2.12, the use of \code{RangedData}
+  and \code{RangedDataList} objects is discouraged in favor of
+  \code{\link[GenomicRanges]{GRanges}} and
+  \code{\link[GenomicRanges]{GRangesList}} objects (those classes
+  are defined in the \pkg{GenomicRanges} package).
+
   \code{RangedData} supports storing data, i.e. a set of variables, on a
   set of ranges spanning multiple spaces (e.g. chromosomes). Although
   the data is split across spaces, it can still be treated as one
