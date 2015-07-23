@@ -35,11 +35,18 @@ setGeneric("expand", signature="x",
   x
 }
 
+### FIXME: should make is.recursive a generic in base R
+isRecursive <- function(x) is.recursive(x) || is(x, "List")
+
 setMethod("expand", "DataFrame",
-    function(x, colnames, keepEmptyRows, ...){
-      .expand(x, colnames, keepEmptyRows)
-    }
-)
+          function(x, colnames, keepEmptyRows = FALSE){
+              stopifnot(isTRUEorFALSE(keepEmptyRows))
+              if (missing(colnames)) {
+                  colnames <- which(vapply(x, isRecursive, logical(1L)))
+              }
+              .expand(x, colnames, keepEmptyRows)
+          }
+          )
 
 ## Assume that the named columns have the same geometry and expand
 ## them simultaneously; this is different from the cartesian product

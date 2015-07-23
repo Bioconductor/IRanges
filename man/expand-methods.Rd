@@ -10,7 +10,7 @@
 }
 
 \usage{
-\S4method{expand}{DataFrame}(x, colnames, keepEmptyRows, ...)
+\S4method{expand}{DataFrame}(x, colnames, keepEmptyRows = FALSE)
 }
 
 \arguments{
@@ -21,15 +21,14 @@
   \item{colnames}{
     A \code{character} or \code{numeric} vector containing the names 
     or indices of the compressed columns to expand. The order of expansion 
-    is controlled by the column order in this vector.
+    is controlled by the column order in this vector. This defaults to
+    all of the recursive (list-like) columns in \code{x}.
   }
   \item{keepEmptyRows}{
     A \code{logical} indicating if rows containing empty values in the 
     specified \code{colnames} should be retained or dropped. When \code{TRUE},
     empty values are set to NA and all rows are kept. When \code{FALSE},
     rows with empty values in the \code{colnames} columns are dropped.
-  }
-  \item{\dots}{Arguments passed to other methods.
   }
 }
 
@@ -48,6 +47,9 @@
 aa <- CharacterList("a", paste0("d", 1:2), paste0("b", 1:3), c(), "c")
 bb <- CharacterList(paste0("sna", 1:2),"foo", paste0("bar",1:3),c(),"hica")
 df <- DataFrame(aa=aa, bb=bb, cc=11:15)
+
+## expand by all list-like columns (aa, bb), dropping empty rows
+expand(df)
 
 ## expand the aa column only, and keep rows adjacent to empty values
 expand(df, colnames="aa", keepEmptyRows=TRUE)
