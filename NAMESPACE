@@ -3,7 +3,7 @@ useDynLib(IRanges)
 import(methods)
 importFrom(utils, stack, read.table)
 importFrom(stats, var, cov, cor, sd, median, quantile, mad,
-           IQR, smoothEnds, runmed, window, "window<-", aggregate,
+           smoothEnds, runmed, window, "window<-", aggregate,
            setNames)
 
 import(BiocGenerics)
