@@ -1056,8 +1056,8 @@ setMethod("unlist", "SimpleFactorList",
             cat(label, " ", sep = "")
             print(object[[i]])
         } else {
-            cat(BiocGenerics:::labeledLine(label, object[[i]], labelSep = "",
-                                           count = FALSE))
+            cat(S4Vectors:::labeledLine(label, object[[i]], labelSep = "",
+                                        count = FALSE))
         }
     }
     if (d > 0)
