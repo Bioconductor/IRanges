@@ -912,6 +912,20 @@ setMethod("unstrsplit", "CharacterList",
     function(x, sep="") unstrsplit(as.list(x), sep=sep)
 )
 
+setMethod("paste", "CompressedAtomicList",
+          function(..., sep=" ", collapse=NULL) {
+              args <- lapply(list(...), as, "CharacterList")
+              lens <- do.call(pmax, lapply(args, elementLengths))
+              args <- lapply(args, recycleListElements, lens)
+              unlisted <- lapply(args, unlist, use.names=FALSE)
+              ans <- relist(do.call(paste, c(unlisted, sep=sep)),
+                            PartitioningByWidth(lens))
+              if (!is.null(collapse)) {
+                  ans <- unstrsplit(ans, collapse)
+              }
+              ans
+          })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Rle methods
 ###
