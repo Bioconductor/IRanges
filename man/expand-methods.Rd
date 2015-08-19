@@ -2,6 +2,7 @@
 
 \alias{expand}
 \alias{expand,DataFrame-method}
+\alias{expand,Vector-method}
 
 \title{The expand method for uncompressing compressed data columns}
 \description{
@@ -16,13 +17,14 @@
 \arguments{
   \item{x}{
     A \code{DataFrame} containing some columns that are compressed (e.g.,
-    \code{CompressedCharacterList}).
+    \code{CompressedCharacterList}), or a \code{Vector} with compressed
+    columns in \code{mcols(x)}.
   }
   \item{colnames}{
     A \code{character} or \code{numeric} vector containing the names 
     or indices of the compressed columns to expand. The order of expansion 
     is controlled by the column order in this vector. This defaults to
-    all of the recursive (list-like) columns in \code{x}.
+    all of the recursive (list-like) columns in \code{x} (or \code{mcols(x)}).
   }
   \item{keepEmptyRows}{
     A \code{logical} indicating if rows containing empty values in the 

@@ -11,17 +11,17 @@ setGeneric("expand", signature="x",
 ## A helper function to do the work
 .expandOneCol <- function(x, colname, keepEmptyRows)
 {
-  if(keepEmptyRows==TRUE){
-    x[[colname]][elementLengths(x[[colname]])==0] <- NA
-  }
     if (!is(x, "DataFrame"))
         stop("'x' must be a DataFrame object")
     if (!isSingleString(colname) && !isSingleNumber(colname))
-        stop("'x' must be a single string or number")
+        stop("'colname' must be a single string or number")
     col <- x[[colname]]
     if (is.null(col))
         stop("'colname' must be a valid colname name or index")
-    idx <- rep.int(seq_len(nrow(x)), elementLengths(col))
+    if(keepEmptyRows){
+        col[elementLengths(col)==0] <- NA
+    }
+    idx <- rep(seq_len(nrow(x)), elementLengths(col))
     ans <- x[idx, ]
     ans[[colname]] <- unlist(col, use.names=FALSE)
     ans
@@ -29,8 +29,8 @@ setGeneric("expand", signature="x",
 
 ## A better helper
 .expand <- function(x, colnames, keepEmptyRows){
-  for(i in seq_len(length(colnames))){
-    x <- .expandOneCol(x, colnames[i], keepEmptyRows)
+  for(colname in colnames) {
+    x <- .expandOneCol(x, colname, keepEmptyRows)
   }
   x
 }
@@ -38,13 +38,34 @@ setGeneric("expand", signature="x",
 ### FIXME: should make is.recursive a generic in base R
 isRecursive <- function(x) is.recursive(x) || is(x, "List")
 
+defaultIndices <- function(x) {
+    which(vapply(x, isRecursive, logical(1L)))
+}
+
 setMethod("expand", "DataFrame",
           function(x, colnames, keepEmptyRows = FALSE){
               stopifnot(isTRUEorFALSE(keepEmptyRows))
               if (missing(colnames)) {
-                  colnames <- which(vapply(x, isRecursive, logical(1L)))
+                  colnames <- defaultIndices(x)
               }
               .expand(x, colnames, keepEmptyRows)
+          }
+          )
+
+setMethod("expand", "Vector",
+          function(x, colnames, keepEmptyRows = FALSE){
+              stopifnot(isTRUEorFALSE(keepEmptyRows))
+              if (missing(colnames)) {
+                  colnames <- defaultIndices(mcols(x))
+              }
+              df <- mcols(x)
+              df[["__index__"]] <- seq_along(x)
+              ex <- .expand(df, colnames, keepEmptyRows)
+              mcols(x) <- NULL
+              ans <- x[ex[["__index__"]]]
+              ex[["__index__"]] <- NULL
+              mcols(ans) <- ex
+              ans
           }
           )
 
