@@ -4,8 +4,6 @@
 
 ## Possible optimizations for compressed lists:
 ## - order/sort: unlist, order by split factor first
-## - sum/mean: unlist, rowsum() with split factor
-##   - or probably faster would be a rangeSums function
 ## - cumsum: unlist, cumsum and subtract offsets
 
 .ATOMIC_TYPES <- c("logical", "integer", "numeric", "complex",
@@ -455,6 +453,24 @@ setMethod("Math2", "SimpleAtomicList",
 setMethod("Summary", "AtomicList",
           function(x, ..., na.rm = FALSE) {
             sapply(x, .Generic, na.rm = na.rm)
+        })
+
+setMethod("any", "CompressedAtomicList", function(x, na.rm = FALSE) {
+              stopifnot(isTRUEorFALSE(na.rm))
+              ans <- sum(x, na.rm=TRUE) > 0L
+              if (!na.rm) {
+                  ans[!ans & any(is.na(x), na.rm=TRUE)] <- NA
+              }
+              ans
+          })
+
+setMethod("all", "CompressedAtomicList", function(x, na.rm = FALSE) {
+              stopifnot(isTRUEorFALSE(na.rm))
+              ans <- !any(!x, na.rm=TRUE)
+              if (!na.rm) {
+                  ans[ans & any(is.na(x), na.rm=TRUE)] <- NA
+              }
+              ans
           })
 
 rowsumCompressedList <- function(x, ..., na.rm = FALSE) {
@@ -468,9 +484,30 @@ rowsumCompressedList <- function(x, ..., na.rm = FALSE) {
   setNames(ans, names(x))
 }
 
-setMethod("sum", "CompressedNumericList", rowsumCompressedList)
-setMethod("sum", "CompressedIntegerList", rowsumCompressedList)
-setMethod("sum", "CompressedLogicalList", rowsumCompressedList)
+setCompressedListSummaryMethod <- function(fun, where=topenv(parent.frame()))
+{
+    types <- c("Logical", "Integer", "Numeric")
+    classNames <- paste0("Compressed", types, "List")
+    lapply(classNames, function(className) {
+               setMethod(fun, className, function(x, na.rm = FALSE) {
+                             stopifnot(isTRUEorFALSE(na.rm))
+                             .Call(paste0(className, "_", fun), x, na.rm)
+                         }, where=where)
+           })
+}
+
+setCompressedListSummaryMethod("sum")
+setCompressedListSummaryMethod("min")
+setCompressedListSummaryMethod("max")
+
+setMethods("range",
+           list("CompressedLogicalList",
+                "CompressedIntegerList",
+                "CompressedNumericList"),
+           function(x, na.rm=FALSE) {
+               stopifnot(isTRUEorFALSE(na.rm))
+               cbind(min(x, na.rm=na.rm), max(x, na.rm=na.rm))
+           })
 
 setMethod("Summary", "CompressedRleList",
           function(x, ..., na.rm = FALSE) {
@@ -756,6 +793,20 @@ for (i in c("IntegerList", "NumericList", "RleList")) {
 setMethod("mean", "AtomicList",
     function(x, ...) sapply(x, mean, ...)
 )
+
+setMethods("mean",
+           list("CompressedLogicalList",
+                "CompressedIntegerList",
+                "CompressedNumericList"),
+           function(x, trim = 0, na.rm = FALSE) {
+               stopifnot(isTRUEorFALSE(na.rm))
+               stopifnot(isSingleNumber(trim))
+               if (trim > 0) {
+                   return(callNextMethod())
+               }
+               lens <- if (na.rm) sum(!is.na(x)) else elementLengths(x)
+               sum(x, na.rm=na.rm) / lens
+           })
 
 setMethod("var", c("AtomicList", "missing"),
     function(x, y=NULL, na.rm=FALSE, use)

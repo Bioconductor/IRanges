@@ -409,3 +409,40 @@ SEXP NCList_find_overlaps_in_groups(
 	SEXP circle_length
 );
 
+/* CompressedAtomicList_utils.c */
+
+SEXP CompressedLogicalList_sum(
+  SEXP x,
+  SEXP na_rm);
+
+SEXP CompressedIntegerList_sum(
+  SEXP x,
+  SEXP na_rm);
+
+SEXP CompressedNumericList_sum(
+  SEXP x,
+  SEXP na_rm);
+
+SEXP CompressedLogicalList_min(
+  SEXP x,
+  SEXP na_rm);
+
+SEXP CompressedIntegerList_min(
+  SEXP x,
+  SEXP na_rm);
+
+SEXP CompressedNumericList_min(
+  SEXP x,
+  SEXP na_rm);
+
+SEXP CompressedLogicalList_max(
+  SEXP x,
+  SEXP na_rm);
+
+SEXP CompressedIntegerList_max(
+  SEXP x,
+  SEXP na_rm);
+
+SEXP CompressedNumericList_max(
+  SEXP x,
+  SEXP na_rm);

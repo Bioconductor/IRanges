@@ -73,6 +73,17 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(NCList_find_overlaps, 10),
 	CALLMETHOD_DEF(NCList_find_overlaps_in_groups, 14),
 
+/* CompressedAtomicList_utils.c */
+	CALLMETHOD_DEF(CompressedLogicalList_sum, 2),
+  CALLMETHOD_DEF(CompressedIntegerList_sum, 2),
+  CALLMETHOD_DEF(CompressedNumericList_sum, 2),
+	CALLMETHOD_DEF(CompressedLogicalList_min, 2),
+  CALLMETHOD_DEF(CompressedIntegerList_min, 2),
+  CALLMETHOD_DEF(CompressedNumericList_min, 2),
+	CALLMETHOD_DEF(CompressedLogicalList_max, 2),
+  CALLMETHOD_DEF(CompressedIntegerList_max, 2),
+  CALLMETHOD_DEF(CompressedNumericList_max, 2),
+
 	{NULL, NULL, 0}
 };
 
