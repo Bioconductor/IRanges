@@ -80,7 +80,7 @@ setMethod("members", "ManyToOneGrouping",
     function(x, i)
     {
         if (!is.numeric(i))
-            stop("subscript 'i' must be a vector of integers")
+            stop(wmsg("subscript 'i' must be a vector of integers"))
         if (!is.integer(i))
             i <- as.integer(i)
         sort(unlist(sapply(i, function(ii) x[[ii]])))
@@ -95,7 +95,7 @@ setMethod("vmembers", "ManyToOneGrouping",
     function(x, L)
     {
         if (!is.list(L))
-            stop("'L' must be a list of integer vectors") 
+            stop(wmsg("'L' must be a list of integer vectors"))
         lapply(L, function(i) members(x, i))
     }
 )
@@ -114,12 +114,12 @@ setMethod("togroup", "ANY",
         if (is.null(j))
             return(to_group)
         if (!is.numeric(j))
-            stop("subscript 'j' must be a vector of integers or NULL")
+            stop(wmsg("subscript 'j' must be a vector of integers or NULL"))
         if (!is.integer(j))
             j <- as.integer(j)
         bound <- length(to_group)
         if (S4Vectors:::anyMissingOrOutside(j, -bound, bound))
-            stop("subscript 'j' contains NAs or out of bounds indices")
+            stop(wmsg("subscript 'j' contains NAs or out of bounds indices"))
         to_group[j]
     }
 )
@@ -203,12 +203,12 @@ setMethod("grouplength", "H2LGrouping",
         if (is.null(i))
             return(group_length)
         if (!is.numeric(i))
-            stop("subscript 'i' must be a vector of integers or NULL")
+            stop(wmsg("subscript 'i' must be a vector of integers or NULL"))
         if (!is.integer(i))
             i <- as.integer(i)
         bound <- length(group_length)
         if (S4Vectors:::anyMissingOrOutside(i, -bound, bound))
-            stop("subscript 'i' contains NAs or out of bounds indices")
+            stop(wmsg("subscript 'i' contains NAs or out of bounds indices"))
         group_length[i]
     }
 )
@@ -217,7 +217,7 @@ setMethod("members", "H2LGrouping",
     function(x, i)
     {
         if (!is.numeric(i))
-            stop("subscript 'i' must be a vector of integers")
+            stop(wmsg("subscript 'i' must be a vector of integers"))
         if (!is.integer(i))
             i <- as.integer(i)
         ## NAs and "subscript out of bounds" are checked at the C level
@@ -229,7 +229,7 @@ setMethod("vmembers", "H2LGrouping",
     function(x, L)
     {
         if (!is.list(L))
-            stop("'L' must be a list of integer vectors") 
+            stop(wmsg("'L' must be a list of integer vectors"))
         .Call2("H2LGrouping_vmembers", x, L, PACKAGE="IRanges")
     }
 )
@@ -242,12 +242,12 @@ setMethod("togroup", "H2LGrouping",
         if (is.null(j))
             return(to_group)
         if (!is.numeric(j))
-            stop("subscript 'j' must be a vector of integers or NULL")
+            stop(wmsg("subscript 'j' must be a vector of integers or NULL"))
         if (!is.integer(j))
             j <- as.integer(j)
         bound <- length(to_group)
         if (S4Vectors:::anyMissingOrOutside(j, -bound, bound))
-            stop("subscript 'j' contains NAs or out of bounds indices")
+            stop(wmsg("subscript 'j' contains NAs or out of bounds indices"))
         to_group[j]
     }
 )
@@ -315,13 +315,13 @@ setReplaceMethod("length", "H2LGrouping",
     function(x, value)
     {
         if (!isSingleNumber(value))
-            stop("length must be a single integer")
+            stop(wmsg("length must be a single integer"))
         if (!is.integer(value))
             value <- as.integer(value)
         if (value < 0L)
-            stop("length cannot be negative")
+            stop(wmsg("length cannot be negative"))
         if (value > length(x))
-            stop("cannot make a ", class(x), " instance longer")
+            stop(wmsg("cannot make a ", class(x), " instance longer"))
         length(x@high2low) <- value
         x@low2high <- S4Vectors:::reverseSelfmatchMapping(x@high2low)
         x
@@ -375,8 +375,8 @@ setValidity("H2LGrouping",
 .duplicated.Dups <- function(x, incomparables=FALSE)
 {
     if (!identical(incomparables, FALSE))
-        stop("\"duplicated\" method for Dups objects ",
-             "only accepts 'incomparables=FALSE'")
+        stop(wmsg("\"duplicated\" method for Dups objects ",
+                  "only accepts 'incomparables=FALSE'"))
     !is.na(high2low(x))
 }
 ### S3/S4 combo for duplicated.Dups
@@ -402,7 +402,7 @@ setMethod("show", "Dups",
 .newH2LGrouping <- function(Class, high2low)
 {
     if (!is.numeric(high2low))
-        stop("'high2low' must be a vector of integers")
+        stop(wmsg("'high2low' must be a vector of integers"))
     if (!is.integer(high2low))
         high2low <- as.integer(high2low)
     new2(Class, high2low=high2low,
@@ -533,12 +533,12 @@ setMethod("grouplength", "Partitioning",
         if (is.null(i))
             return(x_width)
         if (!is.numeric(i))
-            stop("subscript 'i' must be a vector of integers or NULL")
+            stop(wmsg("subscript 'i' must be a vector of integers or NULL"))
         if (!is.integer(i))
             i <- as.integer(i)
         bound <- length(x_width)
         if (S4Vectors:::anyMissingOrOutside(i, -bound, bound))
-            stop("subscript 'i' contains NAs or out of bounds indices")
+            stop(wmsg("subscript 'i' contains NAs or out of bounds indices"))
         x_width[i]
     }
 )
@@ -624,73 +624,89 @@ setMethod("width", "PartitioningByEnd",
 
 setValidity2("PartitioningByEnd", .valid.PartitioningByEnd)
 
-PartitioningByEnd <- function(x=integer(), NG=NULL, names=NULL)
+.numeric2end <- function(x=integer(0), NG=NULL)
 {
-    if (is(x, "CompressedList")) {
-        ## Behaves like a getter for the 'partitioning' slot.
-        if (!is.null(NG))
-            warning("'NG' argument is ignored when 'x' ",
-                    "is a list-like object")
-        if (!is.null(names))
-            warning("'names' argument is ignored when 'x' ",
-                    "is a CompressedList object")
-        return(x@partitioning)
+    if (!is.integer(x))
+        x <- as.integer(x)
+    if (S4Vectors:::anyMissingOrOutside(x, 0L))
+        stop(wmsg("when 'x' is an integer vector, ",
+                  "it cannot contain NAs or negative values"))
+    if (S4Vectors:::isNotSorted(x))
+        stop(wmsg("when 'x' is an integer vector, ",
+                  "it must be sorted"))
+    if (is.null(NG))
+        return(x)
+    ## When 'NG' (number of groups) is supplied, then 'x' is considered
+    ## to represent the group assignment of a collection of 'length(x)'
+    ## objects. Therefore the values in 'x' must be >= 1 and <= 'NG'.
+    ## ADDITIONALLY, 'x' must be *sorted* (not strictly) so it can be
+    ## reconstructed from the object returned by PartitioningByEnd()
+    ## by doing togroup() on that object.
+    if (!isSingleNumber(NG))
+        stop(wmsg("'NG' must be either NULL or a single integer"))
+    if (!is.integer(NG))
+        NG <- as.integer(NG)
+    NO <- length(x)  # nb of objects
+    if (NG == 0L) {
+        if (NO != 0L)
+            stop(wmsg("when 'NG' is 0, 'x' must be of length 0"))
+    } else {
+        ## 'x' is expected to be non-decreasing and with values >= 1
+        ## and <= 'NG'.
+        x <- cumsum(tabulate(x, nbins=NG))
+        ## 'x[NG]' is guaranteed to be <= 'NO'.
+        if (x[NG] != NO)
+            stop(wmsg("when 'NG' is supplied, values in 'x' must ",
+                      "be >= 1 and <= 'NG'"))
     }
-    if (is.list(x) || is(x, "List")) {
+    x
+}
+
+.prepare_Partitioning_names <- function(names, ans_len, NG, x_names)
+{
+    if (!is.null(names)) {
+        if (!is.character(names) || length(names) != ans_len)
+            stop(wmsg("'names' must be either NULL or a character vector ",
+                      "of length 'NG' (if supplied) or 'length(x)' ",
+                      "(if 'NG' is not supplied)"))
+        return(names)
+    }
+    if (is.null(NG))
+        return(x_names)  # should be of length 'ans_len'
+    NULL
+}
+
+PartitioningByEnd <- function(x=integer(0), NG=NULL, names=NULL)
+{
+    if (is(x, "List") || is.list(x)) {
         if (!is.null(NG))
-            warning("'NG' argument is ignored when 'x' ",
-                    "is a list-like object")
-        x <- cumsum(elementLengths(x))
+            warning(wmsg("'NG' argument is ignored when 'x' ",
+                         "is a list-like object"))
+        if (is(x, "CompressedList")) {
+            ## Behaves like a getter for the 'partitioning' slot.
+            ans <- x@partitioning
+            if (!is.null(names))
+                names(ans) <- names
+            return(ans)
+        }
+        if (is(x, "PartitioningByEnd")) {
+            if (!is.null(names))
+                names(x) <- names
+            return(x)
+        }
+        x_names <- names(x)
+        ans_end <- cumsum(elementLengths(x))
     } else {
         if (!is.numeric(x))
-            stop("'x' must be either a list-like object or ",
-                 "a sorted vector of non-NA non-negative integers")
-        if (!is.integer(x))
-            x <- as.integer(x)
-        if (any(is.na(x)))
-            stop("when 'x' is an integer vector, ",
-                 "it cannot contain NAs")
-        if (length(x) != 0L && min(x) < 0L)
-            stop("when 'x' is an integer vector, ",
-                 "it cannot contain negative values")
-        if (S4Vectors:::isNotSorted(x))
-            stop("when 'x' is an integer vector, ",
-                 "it must be sorted")
-        if (!is.null(NG)) {
-            ## When 'NG' (number of groups) is supplied, then 'x' is considered
-            ## to represent the group assignment of a collection of 'length(x)'
-            ## objects. Therefore the values in 'x' must be >= 1 and <= 'NG'.
-            ## ADDITIONALLY, 'x' must be *sorted* (not strictly) so it can be
-            ## reconstructed from the object returned by PartitioningByEnd()
-            ## by doing togroup() on that object.
-            if (!isSingleNumber(NG))
-                stop("'NG' must be either NULL or a single integer")
-            if (!is.integer(NG))
-                NG <- as.integer(NG)
-            NO <- length(x)  # nb of objects
-            if (NG == 0L) {
-                if (NO != 0L)
-                    stop("when 'NG' is 0, 'x' must be of length 0")
-            } else {
-                ## 'x' is expected to be non-decreasing and with values >= 1
-                ## and <= 'NG'.
-                x <- cumsum(tabulate(x, nbins=NG))
-                ## 'x[NG]' is guaranteed to be <= 'NO'.
-                if (x[NG] != NO)
-                    stop("when 'NG' is supplied, values in 'x' must ",
-                         "be >= 1 and <= 'NG'")
-            }
-        }
+            stop(wmsg("'x' must be either a list-like object or ",
+                      "a sorted vector of non-NA non-negative integers"))
+        x_names <- names(x)
+        ans_end <- .numeric2end(x, NG)
     }
-    if (is.null(names)) {
-        ans_names <- names(x)
-    } else {
-        if (!is.character(names) || length(names) != length(x))
-            stop("'names' must be either NULL or a character vector of length ",
-                 "'NG' (if supplied) or 'length(x)' (if 'NG' is not supplied)")
-        ans_names <- names
-    }
-    new2("PartitioningByEnd", end=unname(x), NAMES=ans_names, check=FALSE)
+    ans_names <- .prepare_Partitioning_names(names, length(ans_end),
+                                             NG, x_names)
+    new2("PartitioningByEnd", end=unname(ans_end), NAMES=ans_names,
+                              check=FALSE)
 }
 
 setAs("Ranges", "PartitioningByEnd",
@@ -698,7 +714,8 @@ setAs("Ranges", "PartitioningByEnd",
     {
         ans <- PartitioningByEnd(end(from), names(from))
         if (!identical(start(ans), start(from)))
-            stop("the Ranges object to coerce does not represent a partitioning")
+            stop(wmsg("the Ranges object to coerce does not represent ",
+                      "a partitioning"))
         ans
     }
 )
@@ -753,10 +770,8 @@ setMethod("start", "PartitioningByWidth",
         return("the widths must be integers")
     if (length(x) == 0L)
         return(NULL)
-    if (S4Vectors:::anyMissing(width(x)))
-        return("the widths cannot be NAs")
-    if (any(width(x) < 0L))
-        return("the widths cannot be negative")
+    if (S4Vectors:::anyMissingOrOutside(width(x), 0L))
+        return("the widths cannot be NAs or negative")
     if (!is.null(names(width(x))))
         return("the widths should not be named")
     NULL
@@ -764,62 +779,67 @@ setMethod("start", "PartitioningByWidth",
 
 setValidity2("PartitioningByWidth", .valid.PartitioningByWidth)
 
-PartitioningByWidth <- function(x=integer(), NG=NULL, names=NULL)
+.numeric2width <- function(x=integer(0), NG=NULL)
 {
-    if (is.list(x) || is(x, "List")) {
+    if (!is.integer(x))
+        x <- as.integer(x)
+    if (S4Vectors:::anyMissingOrOutside(x, 0L))
+        stop(wmsg("when 'x' is an integer vector, ",
+                  "it cannot contain NAs or negative values"))
+    if (is.null(NG))
+        return(x)
+    ## When 'NG' (number of groups) is supplied, then 'x' is considered
+    ## to represent the group assignment of a collection of 'length(x)'
+    ## objects. Therefore the values in 'x' must be >= 1 and <= 'NG'.
+    ## ADDITIONALLY, 'x' must be *sorted* (not strictly) so it can be
+    ## reconstructed from the object returned by PartitioningByWidth()
+    ## by doing togroup() on that object.
+    if (S4Vectors:::isNotSorted(x))
+        stop(wmsg("when 'x' is an integer vector, it must be sorted"))
+    if (!isSingleNumber(NG))
+        stop(wmsg("'NG' must be either NULL or a single integer"))
+    if (!is.integer(NG))
+        NG <- as.integer(NG)
+    NO <- length(x)  # nb of objects
+    if (NG == 0L) {
+        if (NO != 0L)
+            stop(wmsg("when 'NG' is 0, 'x' must be of length 0"))
+    } else {
+        ## 'x' is expected to be non-decreasing and with values >= 1
+        ## and <= 'NG'.
+        x <- tabulate(x, nbins=NG)
+        ## 'sum(x)' is guaranteed to be <= 'NO'.
+        if (sum(x) != NO)
+            stop(wmsg("when 'NG' is supplied, values in 'x' must ",
+                      "be >= 1 and <= 'NG'"))
+    }
+    x
+}
+
+PartitioningByWidth <- function(x=integer(0), NG=NULL, names=NULL)
+{
+    if (is(x, "List") || is.list(x)) {
         if (!is.null(NG))
-            warning("'NG' argument is ignored when 'x' ",
-                    "is a list-like object")
-        x <- elementLengths(x)
+            warning(wmsg("'NG' argument is ignored when 'x' ",
+                         "is a list-like object"))
+        if (is(x, "PartitioningByWidth")) {
+            if (!is.null(names))
+                names(x) <- names
+            return(x)
+        }
+        x_names <- names(x)
+        ans_width <- elementLengths(x)
     } else {
         if (!is.numeric(x))
-            stop("'x' must be either a list-like object or ",
-                 "a vector of non-NA non-negative integers")
-        if (!is.integer(x))
-            x <- as.integer(x)
-        if (any(is.na(x)))
-            stop("when 'x' is an integer vector, ",
-                 "it cannot contain NAs")
-        if (length(x) != 0L && min(x) < 0L)
-            stop("when 'x' is an integer vector, ",
-                 "it cannot contain negative values")
-        if (!is.null(NG)) {
-            ## When 'NG' (number of groups) is supplied, then 'x' is considered
-            ## to represent the group assignment of a collection of 'length(x)'
-            ## objects. Therefore the values in 'x' must be >= 1 and <= 'NG'.
-            ## ADDITIONALLY, 'x' must be *sorted* (not strictly) so it can be
-            ## reconstructed from the object returned by PartitioningByWidth()
-            ## by doing togroup() on that object.
-            if (S4Vectors:::isNotSorted(x))
-                stop("when 'x' is an integer vector, it must be sorted")
-            if (!isSingleNumber(NG))
-                stop("'NG' must be either NULL or a single integer")
-            if (!is.integer(NG))
-                NG <- as.integer(NG)
-            NO <- length(x)  # nb of objects
-            if (NG == 0L) {
-                if (NO != 0L)
-                    stop("when 'NG' is 0, 'x' must be of length 0")
-            } else {
-                ## 'x' is expected to be non-decreasing and with values >= 1
-                ## and <= 'NG'.
-                x <- tabulate(x, nbins=NG)
-                ## 'sum(x)' is guaranteed to be <= 'NO'.
-                if (sum(x) != NO)
-                    stop("when 'NG' is supplied, values in 'x' must ",
-                         "be >= 1 and <= 'NG'")
-            }
-        }
+            stop(wmsg("'x' must be either a list-like object or ",
+                      "a vector of non-NA non-negative integers"))
+        x_names <- names(x)
+        ans_width <- .numeric2width(x, NG)
     }
-    if (is.null(names)) {
-        ans_names <- names(x)
-    } else {
-        if (!is.character(names) || length(names) != length(x))
-            stop("'names' must be either NULL or a character vector of length ",
-                 "'NG' (if supplied) or 'length(x)' (if 'NG' is not supplied)")
-        ans_names <- names
-    }
-    new2("PartitioningByWidth", width=unname(x), NAMES=ans_names, check=FALSE)
+    ans_names <- .prepare_Partitioning_names(names, length(ans_width),
+                                             NG, x_names)
+    new2("PartitioningByWidth", width=unname(ans_width), NAMES=ans_names,
+                                check=FALSE)
 }
 
 setAs("Ranges", "PartitioningByWidth",
@@ -827,7 +847,8 @@ setAs("Ranges", "PartitioningByWidth",
     {
         ans <- PartitioningByWidth(width(from), names(from))
         if (!identical(start(ans), start(from)))
-            stop("the Ranges object to coerce does not represent a partitioning")
+            stop(wmsg("the Ranges object to coerce does not represent ",
+                      "a partitioning"))
         ans
     }
 )
@@ -908,13 +929,13 @@ findOverlaps_Ranges_Partitioning <- function(query, subject,
                                              hit.empty.subject.ranges=FALSE)
 {
     if (!is(query, "Ranges"))
-        stop("'query' must be a Ranges object")
+        stop(wmsg("'query' must be a Ranges object"))
     if (!is(subject, "Partitioning"))
-        stop("'subject' must be a Partitioning object")
+        stop(wmsg("'subject' must be a Partitioning object"))
     if (!isTRUEorFALSE(hit.empty.query.ranges) ||
         !isTRUEorFALSE(hit.empty.subject.ranges))
-        stop("'hit.empty.query.ranges' and 'hit.empty.subject.ranges' ",
-             "must be TRUE or FALSE")
+        stop(wmsg("'hit.empty.query.ranges' and 'hit.empty.subject.ranges' ",
+                  "must be TRUE or FALSE"))
     q_len <- length(query)
     q_start <- start(query)
     q_end <- end(query)
