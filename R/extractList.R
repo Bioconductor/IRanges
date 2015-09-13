@@ -340,7 +340,7 @@ setMethod("extractList", c("ANY", "ANY"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### mergeGroupsInSupergroups()
+### regroupBySupergroup()
 ###
 ### A very efficient way to concatenate groups of successive list elements
 ### in 'x'.
@@ -354,21 +354,26 @@ setMethod("extractList", c("ANY", "ANY"),
 ### Return a list-like object of the same elementType() as 'x' and parallel
 ### to 'supergroups'. The names on 'supergroups' are propagated but not the
 ### metadata columns.
-### Notes:
+###
+### Some properties:
 ### - Behaves as an endomorphism on a CompressedList or PartitioningByEnd
 ###   object.
 ### - This
-###       mergeGroupsInSupergroups(x, length(x))[[1L]]
+###       regroupBySupergroup(x, length(x))[[1L]]
 ###   is equivalent to
 ###       unlist(x, use.names=FALSE)
+###
+### Other possible names for regroupBySupergroup: regroup,
+### mergeGroupsInSupergroups, combineGroupsOfListElements,
+### unlistGroupsOfListElements, unlistBySupergroup.
 ###
 ### TODO:
 ### - GenomicFeatures/R/transcripts.R and SplicingGraphs/R/utils.R contain old
 ###   versions of this helper (called "regroup"). Remove them and use
-###   IRanges:::mergeGroupsInSupergroups() instead.
+###   IRanges:::regroupBySupergroup() instead.
 ### - Maybe export and document this?
 
-mergeGroupsInSupergroups <- function(x, supergroups)
+regroupBySupergroup <- function(x, supergroups)
 {
     supergroups <- PartitioningByEnd(supergroups)
     x_breakpoints <- end(PartitioningByEnd(x))
