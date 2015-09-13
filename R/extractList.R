@@ -337,3 +337,49 @@ setMethod("extractList", c("ANY", "ANY"),
         relist(extractROWS(x, unlisted_i), i)
     }
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### mergeGroupsInSupergroups()
+###
+### A very efficient way to concatenate groups of successive list elements
+### in 'x'.
+### 'x' must be a list-like object (typically a CompressedList object).
+### 'supergroups' must be an object that defines a partitioning of
+### 'seq_along(x)' (i.e. it could be used to do
+### 'relist(seq_along(x), supergroups)'). It will be immediately replaced with
+### 'PartitioningByEnd(supergroups)' so it should be an object that is
+### accepted by the PartitioningByEnd() constructor (note that this constructor
+### is a no-op if 'supergroups' is already a PartitioningByEnd object).
+### Return a list-like object of the same elementType() as 'x' and parallel
+### to 'supergroups'. The names on 'supergroups' are propagated but not the
+### metadata columns.
+### Notes:
+### - Behaves as an endomorphism on a CompressedList or PartitioningByEnd
+###   object.
+### - This
+###       mergeGroupsInSupergroups(x, length(x))[[1L]]
+###   is equivalent to
+###       unlist(x, use.names=FALSE)
+###
+### TODO:
+### - GenomicFeatures/R/transcripts.R and SplicingGraphs/R/utils.R contain old
+###   versions of this helper (called "regroup"). Remove them and use
+###   IRanges:::mergeGroupsInSupergroups() instead.
+### - Maybe export and document this?
+
+mergeGroupsInSupergroups <- function(x, supergroups)
+{
+    supergroups <- PartitioningByEnd(supergroups)
+    x_breakpoints <- end(PartitioningByEnd(x))
+    ans_breakpoints <- x_breakpoints[end(supergroups)]
+    nleading0s <- length(supergroups) - length(ans_breakpoints)
+    if (nleading0s != 0L)
+        ans_breakpoints <- c(rep.int(0L, nleading0s), ans_breakpoints)
+    ans_partitioning <- PartitioningByEnd(ans_breakpoints,
+                                          names=names(supergroups))
+    if (is(x, "PartitioningByEnd"))
+        return(ans_partitioning)
+    relist(unlist(x, use.names=FALSE), ans_partitioning)
+}
+
