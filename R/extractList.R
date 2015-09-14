@@ -367,11 +367,7 @@ setMethod("extractList", c("ANY", "ANY"),
 ### mergeGroupsInSupergroups, combineGroupsOfListElements,
 ### unlistGroupsOfListElements, unlistBySupergroup.
 ###
-### TODO:
-### - GenomicFeatures/R/transcripts.R and SplicingGraphs/R/utils.R contain old
-###   versions of this helper (called "regroup"). Remove them and use
-###   IRanges:::regroupBySupergroup() instead.
-### - Maybe export and document this?
+### TODO: Maybe export and document this?
 
 regroupBySupergroup <- function(x, supergroups)
 {
