@@ -326,39 +326,81 @@ setReplaceMethod("$", "CompressedList",
     rbind(...)
 }
 
-### Not exported. 'x' *must* be an unnamed list of length >= 1 (not checked).
-unlist_list_of_CompressedList <- function(x)
+### Not exported.
+combine_CompressedList_objects <- function(Class, objects,
+                                           use.names=TRUE, ignore.mcols=FALSE)
 {
-    ans_unlistData <- do.call(.bindROWS, lapply(x, slot, "unlistData"))
-    ans_eltlens <- unlist(lapply(x, elementLengths))
-    ans <- relist(ans_unlistData, PartitioningByEnd(cumsum(ans_eltlens)))
-    ans_mcols <- do.call(S4Vectors:::rbind_mcols, x)
-    rownames(ans_mcols) <- NULL
-    mcols(ans) <- ans_mcols
+    if (!isSingleString(Class))
+        stop("'Class' must be a single character string")
+    if (!extends(Class, "CompressedList"))
+        stop("'Class' must be the name of a class that extends CompressedList")
+    if (!is.list(objects))
+        stop("'objects' must be a list")
+    if (!isTRUEorFALSE(use.names))
+        stop("'use.names' must be TRUE or FALSE")
+    ### TODO: Support 'use.names=TRUE'.
+    if (use.names)
+        stop("'use.names=TRUE' is not supported yet")
+    if (!isTRUEorFALSE(ignore.mcols))
+        stop("'ignore.mcols' must be TRUE or FALSE")
+
+    if (length(objects) != 0L) {
+        ## TODO: Implement (in C) fast 'elementIsNull(objects)' in S4Vectors
+        ## that does 'sapply(objects, is.null, USE.NAMES=FALSE)', and use it
+        ## here.
+        null_idx <- which(sapply(objects, is.null, USE.NAMES=FALSE))
+        if (length(null_idx) != 0L)
+            objects <- objects[-null_idx]
+    }
+    if (length(objects) == 0L)
+        return(new(Class))
+
+    ## TODO: Implement (in C) fast 'elementIs(objects, class)' in S4Vectors
+    ## that does 'sapply(objects, is, class, USE.NAMES=FALSE)', and use it
+    ## here. 'elementIs(objects, "NULL")' should work and be equivalent to
+    ## 'elementIsNull(objects)'.
+    if (!all(sapply(objects, is, Class, USE.NAMES=FALSE)))
+        stop("the objects to combine must be ", Class, " objects (or NULLs)")
+    objects_names <- names(objects)
+    names(objects) <- NULL  # so lapply(objects, ...) below returns an
+                            # unnamed list
+
+    ## Combine "unlistData" slots.
+    unlistData_slots <- lapply(objects, function(x) x@unlistData)
+    ans_unlistData <- do.call(.bindROWS, unlistData_slots)
+
+    ## Combine "partitioning" slots.
+    ans_breakpoints <- cumsum(unlist(lapply(objects, elementLengths)))
+    ans_partitioning <- PartitioningByEnd(ans_breakpoints)
+
+    ans <- newCompressedList0(Class, ans_unlistData, ans_partitioning)
+
+    ## Combine "mcols" slots.
+    if (!ignore.mcols) {
+        ans_mcols <- do.call(S4Vectors:::rbind_mcols, objects)
+        rownames(ans_mcols) <- NULL
+        mcols(ans) <- ans_mcols
+    }
     ans
 }
 
-## NOTE: while the 'c' function does not have an 'x', the generic does.
-## c() is a primitive, so 'x' can be missing; dispatch is by position,
-## although sometimes this does not work so well, so it's best to keep
-## names off the parameters whenever feasible.
 setMethod("c", "CompressedList",
-          function(x, ..., recursive = FALSE) {
-              if (!identical(recursive, FALSE))
-                  stop("\"c\" method for CompressedList objects ",
-                       "does not support the 'recursive' argument")
-              if (missing(x))
-                  tls <- unname(list(...))
-              else
-                  tls <- unname(list(x, ...))
-              if (!all(sapply(tls, is, "CompressedList")))
-                  stop("all arguments in '...' must be CompressedList objects")
-              ecs <- sapply(tls, elementType)
-              if (!all(sapply(ecs, extends, ecs[[1L]])))
-                  stop("all arguments in '...' must have an element class ",
-                       "that extends that of the first argument")
-              unlist_list_of_CompressedList(tls)
-          })
+    function (x, ..., ignore.mcols=FALSE, recursive=FALSE)
+    {
+        if (!identical(recursive, FALSE))
+            stop("\"c\" method for CompressedList objects ",
+                 "does not support the 'recursive' argument")
+        if (missing(x)) {
+            objects <- list(...)
+            x <- objects[[1L]]
+        } else {
+            objects <- list(x, ...)
+        }
+        combine_CompressedList_objects(class(x), objects,
+                                       use.names=FALSE,
+                                       ignore.mcols=ignore.mcols)
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
