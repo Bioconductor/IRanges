@@ -321,9 +321,13 @@ setReplaceMethod("$", "CompressedList",
 .bindROWS <- function(...)
 {
     args <- list(...)
-    if (length(dim(args[[1L]])) < 2L)
+    if (length(dim(args[[1L]])) >= 2L)
+        return(rbind(...))
+    if (!is.factor(args[[1L]]))
         return(c(...))
-    rbind(...)
+    ans_levels <- unique(unlist(lapply(args, levels)))
+    x <- unlist(lapply(args, as.character))
+    factor(x, levels=ans_levels)
 }
 
 ### Not exported.
