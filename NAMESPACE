@@ -151,7 +151,6 @@ exportMethods(
     append,
     "!", which,
     merge,
-    split,
     with, within,
     t,
     is.na,

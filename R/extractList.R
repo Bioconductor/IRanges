@@ -5,7 +5,7 @@
 ### What should go in this file?
 ###
 ### - relistToClass() generic and default method.
-### - All "relist" and "split" methods defined in IRanges should be here.
+### - All "relist" methods defined in IRanges should go here.
 ### - extractList() generic and default method.
 ###
 ### TODO: Maybe put the default methods for the reverse transformations here
@@ -94,7 +94,7 @@ setMethod("relist", c("Vector", "list"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### splitAsList() and split()
+### splitAsList()
 ###
 
 ### 'f' is assumed to be an integer vector with no NAs.
@@ -203,10 +203,9 @@ setMethod("relist", c("Vector", "list"),
     relist(x, f)
 }
 
-setGeneric("splitAsList",
-           function(x, f, drop=FALSE, ...) standardGeneric("splitAsList"),
-           signature = c("x", "f"))
-
+setGeneric("splitAsList", signature=c("x", "f"),
+    function(x, f, drop=FALSE, ...) standardGeneric("splitAsList")
+)
 
 ### Took this out of the still-in-incubation LazyList package
 factorsToTableIndices <- function(factors) {
@@ -285,22 +284,6 @@ setMethod("splitAsList", c("ANY", "Rle"),
           function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop))
 setMethod("splitAsList", c("ANY", "List"),
           function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop))
-
-setMethod("split", c("Vector", "ANY"),
-    function(x, f, drop=FALSE) splitAsList(x, f, drop=drop)
-)
-
-setMethod("split", c("ANY", "Vector"),
-    function(x, f, drop=FALSE) splitAsList(x, f, drop=drop)
-)
-
-setMethod("split", c("Vector", "Vector"),
-    function(x, f, drop=FALSE) splitAsList(x, f, drop=drop)
-)
-
-setMethod("split", c("list", "Vector"),
-    function(x, f, drop=FALSE, ...) split(x, as.vector(f), drop=drop, ...)
-)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

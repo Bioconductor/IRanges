@@ -679,13 +679,3 @@ setMethod("summary", "CompressedIRangesList",
           function(object)
           .Call2("CompressedIRangesList_summary", object, PACKAGE="IRanges"))
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Splitting.
-###
-
-### Seems broken to me. We probably don't need this anyway!
-#setMethod("split", "Ranges",
-#          function(x, f, drop = FALSE, ...)
-#          do.call(RangesList, callNextMethod()))
-
