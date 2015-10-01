@@ -158,9 +158,11 @@ relistToClass(x)
     \item The \code{\link[S4Vectors]{split}} methods defined in the
           \pkg{S4Vectors} package.
 
-    \item \link{Vector} and \link{List} objects.
+    \item \link[S4Vectors]{Vector}, \link[S4Vectors]{List},
+          \link[S4Vectors]{Rle}, and \link[S4Vectors]{DataFrame} objects
+          in the \pkg{S4Vectors} package.
 
-    \item \link{Ranges}, \link{Rle}, and \link{DataFrame} objects.
+    \item \link{Ranges} objects.
   }
 }
 
