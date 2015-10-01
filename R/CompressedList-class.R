@@ -359,8 +359,8 @@ combine_CompressedList_objects <- function(Class, objects,
     ## that does 'sapply(objects, is, class, USE.NAMES=FALSE)', and use it
     ## here. 'elementIs(objects, "NULL")' should work and be equivalent to
     ## 'elementIsNull(objects)'.
-    if (!all(sapply(objects, is, Class, USE.NAMES=FALSE)))
-        stop("the objects to combine must be ", Class, " objects (or NULLs)")
+    if (!all(sapply(objects, is, "CompressedList", USE.NAMES=FALSE)))
+        stop("the objects to combine must be CompressedList objects (or NULLs)")
     objects_names <- names(objects)
     names(objects) <- NULL  # so lapply(objects, ...) below returns an
                             # unnamed list
