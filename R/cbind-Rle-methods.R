@@ -3,8 +3,8 @@
 ### -------------------------------------------------------------------------
 
 
-### Return an ordinary data frame with 1 row per run. The first column is
-### "runLength" and is followed by 1 column per argument.
+### Return a DataFrame object with 1 row per run. Its first column is
+### "runLength" and is followed by 1 column per supplied Rle object.
 setMethod("cbind", "Rle",
     function(...)
     {
@@ -20,42 +20,28 @@ setMethod("cbind", "Rle",
         ## TODO: Add 'with.revmap' arg to disjoin method for Ranges object.
         ## Then use that feature to avoid the call to findOverlaps() below.
         ans_runs <- disjoin(do.call(c, unname(lapply(args, ranges))))
-        cbind(
+        DataFrame(
             runLength=width(ans_runs),
-            as.data.frame(
+            DataFrame(
                 lapply(args, function(x) {
                     run_idx <- findOverlaps(ans_runs, ranges(x), type="within",
                                             select="arbitrary")
                     runValue(x)[run_idx]
-                }),
-                stringsAsFactors=FALSE
+                })
             )
         )
     }
 )
 
-### Arguments are recycled the "mapply way" if necessary.
-### Return an ordinary data frame with 1 row per run. The first 2 columns are
-### "group" and "group_name", like in the data frame returned by the
-### "as.data.frame" method for List objects. The remaining columns are the
-### same as in the data frame returned by the above "cbind" method for Rle
-### objects. The names on the first argument are used to populate the
-### 'group_name' column.
+### The supplied RleList objects are recycled the "mapply way" if necessary.
+### Return a CompressedSplitDataFrameList object parallel to the longest
+### supplied RleList object.
 setMethod("cbind", "RleList",
     function(...)
     {
         args <- list(...)
-        df_list <- do.call(mapply, c(list(cbind), args, list(SIMPLIFY=FALSE)))
-        df0 <- do.call(rbind, unname(df_list))
-        elt_NROWS <- elementLengths(df_list)
-        group <- rep.int(seq_along(df_list), elt_NROWS)
-        df_list_names <- names(df_list)
-        if (is.null(df_list_names)) {
-            group_name <- rep.int(NA_character_, nrow(df0))
-        } else {
-            group_name <- rep.int(df_list_names, elt_NROWS)
-        }
-        cbind(group=group, group_name=group_name, df0, stringsAsFactors=FALSE)
+        DF_list <- do.call(mapply, c(list(cbind), args, list(SIMPLIFY=FALSE)))
+        as(DF_list, "CompressedSplitDataFrameList")
     }
 )
 
