@@ -636,6 +636,10 @@ setAs("list", "RangesList", function(from) {
   S4Vectors:::coerceToSimpleList(from, "Ranges")
 })
 
+setAs("Ranges", "RangesList", function(from) {
+          relist(from, PartitioningByEnd(seq_along(from), names=names(from)))
+      })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "max" and "min" methods for NormalIRangesList objects.
 ###
