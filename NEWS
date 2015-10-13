@@ -1,3 +1,62 @@
+CHANGES IN VERSION 2.4.0
+------------------------
+
+NEW FEATURES
+
+    o Add "cbind" methods for binding Rle or RleList objects together.
+
+    o Add coercion from Ranges to RangesList.
+
+    o Add "paste" method for CompressedAtomicList objects.
+
+    o Add "expand" method for Vector objects for expanding a Vector object
+      'x' based on a column in mcols(x).
+
+    o Add overlapsAny,integer,Ranges method.
+
+    o coverage" methods now accept 'shift' and 'weight' supplied as an Rle.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o The following was moved to S4Vectors:
+      - The FilterRules stuff.
+      - The "aggregate" methods.
+      - The "split" methods.
+
+    o The "sum", "min", "max", "mean", "any", and "all" methods on
+      CompressedAtomicList objects are 100X faster on lists with 500k elements,
+      80X faster for 50k elements.
+
+    o Tweak "c" method for CompressedList objects to make sure it always
+      returns an object of the same class as its 1st argument.
+
+    o NCList() constructor now propagates the metadata columns.
+
+DEPRECATED AND DEFUNCT
+
+    o RangedData/RangedDataList are not formally deprecated yet but the
+      documentation now officially declares them as superseded by
+      GRanges/GRangesList and discourage their use.
+
+    o After being deprecated in BioC 3.1, IntervalTree and IntervalForest
+      objects and the "intervaltree" algorithm in findOverlaps() are now
+      defunct.
+
+    o After being deprecated in BioC 3.1, mapCoords() and pmapCoords() are
+      now defunct.
+
+    o Remove seqapply(), mseqapply(), tseqapply(), seqsplit(), and seqby()
+      (were defunct in BioC 3.1).
+
+BUG FIXES
+
+    o Fix FactorList() constructor when 'compress=TRUE' (note that the levels
+      are combined during compression).
+
+    o Fix c() on CompressedFactorList objects (was returning a
+      CompressedIntegerList object).
+
+
 CHANGES IN VERSION 2.2.0
 ------------------------
 
