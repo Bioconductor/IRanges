@@ -36,7 +36,7 @@ DEPRECATED AND DEFUNCT
 
     o RangedData/RangedDataList are not formally deprecated yet but the
       documentation now officially declares them as superseded by
-      GRanges/GRangesList and discourage their use.
+      GRanges/GRangesList and discourages their use.
 
     o After being deprecated in BioC 3.1, IntervalTree and IntervalForest
       objects and the "intervaltree" algorithm in findOverlaps() are now
