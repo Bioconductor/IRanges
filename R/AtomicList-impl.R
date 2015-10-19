@@ -1109,14 +1109,21 @@ setMethod("unlist", "SimpleFactorList",
 .showAtomicList <- function(object, minLines, ...)
 {
     len <- length(object)
+    object_names <- names(object)
     k <- min(minLines, len)
-    d <- len - minLines 
+    d <- len - minLines
     for (i in seq_len(k)) {
-        nm <- names(object)[i]
-        if (length(nm) > 0 && nchar(nm) > 0)
-            label <- paste("[[\"", nm, "\"]]", sep = "")
-        else
-            label <- paste("[[", i, "]]", sep = "")
+        if (is.null(object_names)) {
+            label <- i
+        } else {
+            nm <- object_names[[i]]
+            if (is.na(nm)) {
+                label <- "NA"
+            } else {
+                label <- paste0("\"", nm, "\"")
+            }
+        }
+        label <- paste0("[[", label, "]]")
         if (length(object[[i]]) == 0) {
             cat(label, " ", sep = "")
             print(object[[i]])
