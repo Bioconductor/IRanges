@@ -4,7 +4,6 @@
 \alias{updateObject,CharacterList-method}
 \alias{updateObject,ComplexList-method}
 \alias{updateObject,IntegerList-method}
-\alias{updateObject,IntervalTree-method}
 \alias{updateObject,IRanges-method}
 \alias{updateObject,IRangesList-method}
 \alias{updateObject,LogicalList-method}

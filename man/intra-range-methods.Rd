@@ -7,13 +7,11 @@
 \alias{shift,Views-method}
 \alias{shift,RangesList-method}
 \alias{shift,CompressedIRangesList-method}
-\alias{shift,IntervalForest-method}
 
 \alias{narrow}
 \alias{narrow,Ranges-method}
 \alias{narrow,Views-method}
 \alias{narrow,RangesList-method}
-\alias{narrow,IntervalForest-method}
 \alias{narrow,CompressedIRangesList-method}
 \alias{narrow,MaskCollection-method}
 
@@ -22,12 +20,10 @@
 \alias{resize,RangesList-method}
 \alias{resize,IntervalList-method}
 \alias{resize,CompressedIRangesList-method}
-\alias{resize,IntervalForest-method}
 
 \alias{flank}
 \alias{flank,Ranges-method}
 \alias{flank,RangesList-method}
-\alias{flank,IntervalForest-method}
 \alias{flank,CompressedIRangesList-method}
 
 \alias{promoters}
@@ -35,7 +31,6 @@
 \alias{promoters,Views-method}
 \alias{promoters,RangesList-method}
 \alias{promoters,CompressedIRangesList-method}
-\alias{promoters,IntervalForest-method}
 
 \alias{reflect}
 \alias{reflect,Ranges-method}
@@ -43,7 +38,6 @@
 \alias{restrict}
 \alias{restrict,Ranges-method}
 \alias{restrict,RangesList-method}
-\alias{restrict,IntervalForest-method}
 \alias{restrict,CompressedIRangesList-method}
 
 \alias{threebands}

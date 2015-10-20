@@ -80,14 +80,9 @@ NCLists(x, circle.length=NA_integer_)
   preprocessing and representing a vector of genomic ranges as a
   data structure based on Nested Containment Lists.
 
-  Note that NCList, NCLists, and \link[GenomicRanges]{GNCList} objects,
-  are replacements for \link{IntervalTree}, \link{IntervalForest}, and
-  \link[GenomicRanges]{GIntervalTree} objects, respectively. The latter
-  are defunct starting with BioC 3.2.
-
   Some important differences between the new findOverlaps/countOverlaps
-  implementation based on Nested Containment Lists and the old implementation
-  based on Interval Trees:
+  implementation based on Nested Containment Lists (BioC >= 3.1) and the
+  old implementation based on Interval Trees (BioC < 3.1):
   \itemize{
     \item With the new implementation, the hits returned by
           \code{\link{findOverlaps}} are not \emph{fully} ordered (i.e. ordered
@@ -98,12 +93,12 @@ NCLists(x, circle.length=NA_integer_)
           implementation is faster and more memory efficient.
     \item With the new implementation, either the query or the subject can
           be preprocessed with \code{NCList} for a \link{Ranges} object
-          (replacement for \code{\link{IntervalTree}}), \code{NCLists}
+          (replacement for \code{IntervalTree}), \code{NCLists}
           for a \link{RangesList} object (replacement for
-          \code{\link{IntervalForest}}), and
+          \code{IntervalForest}), and
           \code{\link[GenomicRanges]{GNCList}} for a
           \link[GenomicRanges]{GenomicRanges} object (replacement for
-          \code{\link[GenomicRanges]{GIntervalTree}}).
+          \code{GIntervalTree}).
           However, for a one time use, it is NOT advised to explicitely
           preprocess the input. This is because \code{\link{findOverlaps}}
           or \code{\link{countOverlaps}} will take care of it and do a better

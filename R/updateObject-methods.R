@@ -168,19 +168,6 @@ setMethod("updateObject", signature(object="NormalIRanges"),
               object
           })
 
-## "IntervalTree" -> "IntervalTree"
-setMethod("updateObject", signature(object="IntervalTree"),
-        function(object, ..., verbose=FALSE) {
-            if (verbose) message("updateObject(object = 'IntervalTree')")
-            if (!("metadata" %in% names(attributes(object)))) {
-                object <-
-                  new("IntervalTree",
-                      ptr = slot(object, "ptr"),
-                      mode = slot(object, "mode"))
-            }
-            object
-        })
-
 ## "MaskCollection" -> "MaskCollection"
 setMethod("updateObject", signature(object="MaskCollection"),
           function(object, ..., verbose=FALSE) {

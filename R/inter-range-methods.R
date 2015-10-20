@@ -70,11 +70,6 @@ setMethod("range", "CompressedIRangesList",
     }
 )
 
-setMethod("range", "IntervalForest",
-          function(x, ..., na.rm=FALSE)
-            as(range(as(x, "CompressedIRangesList"), ..., na.rm = na.rm),
-               "IntervalForest"))
-
 setMethod("range", "RangedData", function(x, ..., na.rm) {
   args <- list(x, ...)
   rangeLists <- lapply(args, ranges)
@@ -200,19 +195,6 @@ setMethod("reduce", "CompressedIRangesList",
         relist(ans_unlistData, ans_partitioning)
     }
 )
-
-setMethod("reduce", "IntervalForest",
-          function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                      with.inframe.attrib=FALSE)
-          {
-            if (!drop.empty.ranges)
-              stop("'drop.empty.ranges' must be TRUE in ",
-                   "'reduce,IntervalForest'")
-            as(reduce(as(x, "CompressedIRangesList"),
-                      min.gapwidth = min.gapwidth,
-                      with.inframe.attrib = with.inframe.attrib),
-               "IntervalForest")
-            })
 
 setMethod("reduce", "RangedData",
           function(x, by = character(), drop.empty.ranges=FALSE,
@@ -360,11 +342,6 @@ setMethod("gaps", "CompressedIRangesList",
                     PACKAGE="IRanges")
           })
 
-setMethod("gaps", "IntervalForest",
-          function(x, start = NA, end = NA)
-            as(gaps(as(x, "CompressedIRangesList"), start = start, end = end),
-               "IntervalForest"))
-
 ### 'start' and 'end' are ignored.
 setMethod("gaps", "MaskCollection",
     function(x, start=NA, end=NA)
@@ -439,10 +416,6 @@ setMethod("disjoin", "CompressedIRangesList",
               ## globalize coordinates
               shift(d, -offset)
           })
-
-setMethod("disjoin", "IntervalForest",
-          function(x, ...)
-            as(disjoin(as(x, "CompressedIRangesList"), ...), "IntervalForest"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

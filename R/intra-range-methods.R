@@ -90,11 +90,6 @@ setMethod("shift", "CompressedIRangesList",
               x
           })
 
-setMethod("shift", "IntervalForest",
-          function(x, shift=0L, use.names = TRUE)
-            as(shift(as(x, "CompressedIRangesList"), 
-                     shift = shift, use.names = use.names), 
-               "IntervalForest"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### narrow()
@@ -153,13 +148,6 @@ setMethod("narrow", "CompressedIRangesList",
                        use.names = use.names)
               x
           })
-
-setMethod("narrow", "IntervalForest",
-          function(x, start = NA, end = NA, width = NA, use.names = TRUE)
-            as(narrow(as(x, "CompressedIRangesList"), 
-                     start = start, end = end, width = width,
-                       use.names = use.names), 
-               "IntervalForest"))
 
 ### FIXME: This is a quick and dirty implementation that is TOTALLY
 ### inefficient. It needs to be improved a lot!
@@ -281,12 +269,6 @@ setMethod("resize", "CompressedIRangesList",
               x
           })
 
-setMethod("resize", "IntervalForest",
-          function(x, width, fix = "start", use.names = TRUE)
-            as(resize(as(x, "CompressedIRangesList"),
-                      width = width, fix = fix, use.names = use.names),
-               "IntervalForest"))
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### flank()
@@ -357,12 +339,6 @@ setMethod("flank", "CompressedIRangesList",
               x
           })
 
-setMethod("flank", "IntervalForest",
-          function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
-            as(flank(as(x, "CompressedIRangesList"),
-                     width = width, start = start, both = both,
-                      use.names = use.names),
-               "IntervalForest"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### promoters() 
@@ -421,11 +397,6 @@ setMethod("promoters", "CompressedIRangesList",
           }
 )
 
-setMethod("promoters", "IntervalForest",
-          function(x, upstream=2000, downstream=200, ...)
-            as(promoters(as(x, "CompressedIRangesList"),
-                         upstream = upstream, downstream = downstream),
-               "IntervalForest"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### reflect()
@@ -609,22 +580,6 @@ setMethod("restrict", "CompressedIRangesList",
               } else
                   x <- callNextMethod()
               x
-          })
-
-
-setMethod("restrict", "IntervalForest",
-          function(x, start = NA, end = NA, keep.all.ranges = FALSE,
-                   use.names = TRUE)
-          {
-            if (keep.all.ranges)
-              stop("'keep.all.ranges' must be FALSE in ",
-                   "'restrict,IntervalForest'")
-              
-            as(restrict(as(x, "CompressedIRangesList"),
-                        start = start, end = end,
-                        keep.all.ranges = keep.all.ranges,
-                        use.names = use.names),
-               "IntervalForest")
           })
 
 

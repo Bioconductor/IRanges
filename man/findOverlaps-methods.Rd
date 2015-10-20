@@ -3,7 +3,6 @@
 \alias{findOverlaps-methods}
 
 \alias{findOverlaps}
-\alias{findOverlaps,Ranges,IntervalTree-method}
 \alias{findOverlaps,NCList,Ranges-method}
 \alias{findOverlaps,Ranges,NCList-method}
 \alias{findOverlaps,Ranges,Ranges-method}
@@ -12,7 +11,6 @@
 \alias{findOverlaps,Views,Views-method}
 \alias{findOverlaps,Views,Vector-method}
 \alias{findOverlaps,Vector,Views-method}
-\alias{findOverlaps,RangesList,IntervalForest-method}
 \alias{findOverlaps,RangesList,RangesList-method}
 \alias{findOverlaps,ViewsList,ViewsList-method}
 \alias{findOverlaps,ViewsList,Vector-method}
@@ -27,7 +25,6 @@
 \alias{countOverlaps,ANY,Vector-method}
 \alias{countOverlaps,ANY,missing-method}
 \alias{countOverlaps,RangesList,RangesList-method}
-\alias{countOverlaps,RangesList,IntervalForest-method}
 \alias{countOverlaps,ViewsList,ViewsList-method}
 \alias{countOverlaps,ViewsList,Vector-method}
 \alias{countOverlaps,Vector,ViewsList-method}
@@ -41,7 +38,6 @@
 \alias{overlapsAny,Views,Vector-method}
 \alias{overlapsAny,Vector,Views-method}
 \alias{overlapsAny,RangesList,RangesList-method}
-\alias{overlapsAny,RangesList,IntervalForest-method}
 \alias{overlapsAny,ViewsList,ViewsList-method}
 \alias{overlapsAny,ViewsList,Vector-method}
 \alias{overlapsAny,Vector,ViewsList-method}
@@ -150,19 +146,17 @@ mergeByOverlaps(query, subject, ...)
     additionally satisfy the \code{minoverlap} constraint described above.
 
     With the old findOverlaps/countOverlaps implementation based on Interval
-    Trees (\code{algorithm="intervaltree"}), the \code{maxgap} parameter has
+    Trees (BioC < 3.1), the \code{maxgap} parameter had
     special meaning with the special overlap types. For \code{start},
-    \code{end}, and \code{equal}, it specifies the maximum difference in
-    the starts, ends or both, respectively. For \code{within}, it is the
+    \code{end}, and \code{equal}, it used to specify the maximum difference in
+    the starts, ends or both, respectively. For \code{within}, it was the
     maximum amount by which the query may be wider than the subject.
-    With the new implementation based on Nested Containment Lists
-    (\code{algorithm="nclist"}), this special meaning is still being used but
-    only when \code{type} is set to \code{start} or \code{end}.
+    With the new implementation based on Nested Containment Lists (BioC >=
+    3.1), this special meaning is still being used but only when \code{type}
+    is set to \code{start} or \code{end}.
     See \code{?NCList} for more information about this change and other
     differences between the new and old findOverlaps/countOverlaps
     implementations.
-    See the \code{algorithm} argument below for how to switch between the
-    2 implementations.
   }
   \item{select}{
     If \code{query} is a \link{Ranges} or \link{Views} object:
@@ -184,14 +178,7 @@ mergeByOverlaps(query, subject, ...)
     containing indices that are offset to align with the unlisted \code{query}.
   }
   \item{algorithm}{
-    Can be \code{"nclist"} (the default) or \code{"intervaltree"}.
-    This argument was added in BioC 3.1 to facilitate the transition
-    between the new findOverlaps/countOverlaps implementation based on Nested
-    Containment Lists and the old implementation based on Interval Trees.
-    See \code{?\link{NCList}} and \code{?\link{IntervalTree}} for more
-    information about these implementations..
-    Note that the old implementation is defunct starting with BioC 3.2.
-    The \code{algorithm} argument will be removed in BioC 3.3.
+    This argument is defunct.
   }
   \item{...}{
     Further arguments to be passed to or from other methods:
@@ -281,9 +268,6 @@ mergeByOverlaps(query, subject, ...)
           objects.
 
     \item The \link{NCList} class and constructor.
-
-    \item The \link{IntervalTree} and \link{IntervalForest} classes and
-          constructors (defunct).
 
     \item The \link{Ranges}, \link{Views}, \link{RangesList},
           \link{ViewsList}, and \link{RangedData} classes.

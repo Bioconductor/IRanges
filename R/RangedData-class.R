@@ -12,7 +12,7 @@
 ## a SplitDataFrameList. The RangesList is uncompressed, because
 ## users will likely want to apply over each Ranges separately, as
 ## they are usually in separate spaces. Also, it is difficult to
-## compress RangesLists, as lists containing Views or IntervalTrees
+## compress RangesLists, as lists containing Views or NCLists
 ## are uncompressible. The SplitDataFrameList should be compressed,
 ## because it's cheap to create from a split factor and, more
 ## importantly, cheap to get and set columns along the entire dataset,

@@ -916,9 +916,9 @@ setMethod("show", "PartitioningMap",
 ### findOverlaps()
 ###
 
-### A simple findOverlaps method that doesn't use IntervalTree but works only
+### A simple findOverlaps method that doesn't use NCList but works only
 ### on a subject with *adjacent* ranges sorted non-decreasingly.
-### Can be 30% faster or more than the real findOverlaps() (IntervalTree-based)
+### Can be 30% faster or more than the real findOverlaps() (NCList-based)
 ### when 'query' is such that 'start(query)' and 'end(query)' are also sorted
 ### non-decreasingly (which is the case if for example 'query' is a
 ### Partitioning object).

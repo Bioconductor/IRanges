@@ -6,7 +6,6 @@
 \alias{range,Ranges-method}
 \alias{range,RangesList-method}
 \alias{range,CompressedIRangesList-method}
-\alias{range,IntervalForest-method}
 \alias{range,RangedData-method}
 
 \alias{reduce}
@@ -15,7 +14,6 @@
 \alias{reduce,Views-method}
 \alias{reduce,RangesList-method}
 \alias{reduce,CompressedIRangesList-method}
-\alias{reduce,IntervalForest-method}
 \alias{reduce,RangedData-method}
 
 \alias{gaps}
@@ -23,14 +21,12 @@
 \alias{gaps,Ranges-method}
 \alias{gaps,Views-method}
 \alias{gaps,RangesList-method}
-\alias{gaps,IntervalForest-method}
 \alias{gaps,CompressedIRangesList-method}
 \alias{gaps,MaskCollection-method}
 
 \alias{disjoin}
 \alias{disjoin,Ranges-method}
 \alias{disjoin,RangesList-method}
-\alias{disjoin,IntervalForest-method}
 \alias{disjoin,CompressedIRangesList-method}
 
 \alias{disjointBins}
