@@ -84,32 +84,15 @@ findOverlaps_Ranges <- function(query, subject,
     min.score <- min_overlap_score(maxgap, minoverlap, type)
     select <- match.arg(select)
     algorithm <- match.arg(algorithm)
-    if (algorithm != "nclist")
-        warning("'algorithm' is ignored when 'query' or 'subject' ",
-                "is an NCList object")
+    if (!identical(algorithm, "nclist"))
+        stop("the 'algorithm' argument is defunct")
     findOverlaps_NCList(query, subject, min.score=min.score,
                         type=type, select=select)
 }
 
 setMethod("findOverlaps", c("NCList", "Ranges"), findOverlaps_Ranges)
 setMethod("findOverlaps", c("Ranges", "NCList"), findOverlaps_Ranges)
-
-setMethod("findOverlaps", c("Ranges", "Ranges"),
-    function(query, subject, maxgap=0L, minoverlap=1L,
-             type=c("any", "start", "end", "within", "equal"),
-             select=c("all", "first", "last", "arbitrary"),
-             algorithm=c("nclist", "intervaltree"))
-    {
-        type <- match.arg(type)
-        select <- match.arg(select)
-        algorithm <- match.arg(algorithm)
-        if (!identical(algorithm, "nclist"))
-            stop("the 'algorithm' argument is defunct")
-        findOverlaps_Ranges(query, subject,
-                            maxgap=maxgap, minoverlap=minoverlap,
-                            type=type, select=select)
-    }
-)
+setMethod("findOverlaps", c("Ranges", "Ranges"), findOverlaps_Ranges)
 
 setMethod("findOverlaps", c("Vector", "missing"),
     function(query, subject, maxgap=0L, minoverlap=1L,
