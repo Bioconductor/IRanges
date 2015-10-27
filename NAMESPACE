@@ -202,7 +202,7 @@ export(
     IRangesList,
     RleViewsList,
     CompressedHitsList, 
-    "%over%", "%within%", "%outside%",
+    "%over%", "%within%", "%outside%", "%pover%", "%pwithin%", "%poutside%",
     MaskCollection.show_frame,
     Mask,
     read.gapMask,
@@ -305,6 +305,7 @@ export(
 
     ## findOverlaps-methods.R:
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps, mergeByOverlaps,
+    poverlaps,
 
     ## nearest-methods.R:
     precede, follow, nearest, distance, distanceToNearest,

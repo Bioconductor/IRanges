@@ -642,6 +642,72 @@ setMethod("overlapsAny", c("RangesList", "RangedData"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### poverlaps()
+###
+
+setGeneric("poverlaps", signature=c("query", "subject"),
+           function(query, subject, maxgap=0L, minoverlap=1L,
+                    type=c("any", "start", "end", "within", "equal"))
+               standardGeneric("poverlaps")
+           )
+
+setMethod("poverlaps", c("Ranges", "Ranges"),
+          function(query, subject, maxgap=0L, minoverlap=1L,
+                   type=c("any", "start", "end", "within", "equal"))
+          {
+              stopifnot(isSingleNumber(maxgap))
+              stopifnot(isSingleNumber(minoverlap))
+              type <- match.arg(type)
+              if (type == "any") {
+                  query <- query + maxgap
+              } else if (type == "within") {
+                  if (maxgap > 0L) {
+                      warning("'maxgap' is ignored when type=='within'")
+                  }
+                  return(start(query) >= start(subject) &
+                             end(query) <= end(subject) &
+                                 width(query) >= minoverlap)
+              }
+              amount <- pmin(end(query), end(subject)) -
+                  pmax(start(query), start(subject)) + 1L
+              overlaps <- amount >= minoverlap
+              samePos <- function(x, y) {
+                  x <= (y + maxgap) & x >= (y - maxgap)
+              }
+              keep <- switch(type,
+                             any = TRUE,
+                             start = samePos(start(query), start(subject)),
+                             end = samePos(end(query), end(subject)),
+                             equal = samePos(start(query), start(subject)) &
+                                 samePos(end(query), end(subject)))
+             overlaps & keep
+          }
+          )
+
+setMethod("poverlaps", c("integer", "Ranges"),
+          function(query, subject, maxgap=0L, minoverlap=1L,
+                   type=c("any", "start", "end", "within", "equal"))
+          {
+              poverlaps(IRanges(query, width=1L), subject,
+                        maxgap=maxgap, minoverlap=minoverlap,
+                        type=match.arg(type))
+          })
+
+setMethod("poverlaps", c("Ranges", "integer"),
+          function(query, subject, maxgap=0L, minoverlap=1L,
+                   type=c("any", "start", "end", "within", "equal"))
+          {
+              poverlaps(query, IRanges(subject, width=1L),
+                        maxgap=maxgap, minoverlap=minoverlap,
+                        type=match.arg(type))
+          })
+
+### Convenience operators for poverlaps()
+`%pover%` <- function(query, subject) poverlaps(query, subject)
+`%pwithin%` <- function(query, subject) poverlaps(query, subject, type="within")
+`%poutside%` <- function(query, subject) !poverlaps(query, subject)
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### subsetByOverlaps()
 ###
 
