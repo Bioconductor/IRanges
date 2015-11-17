@@ -35,6 +35,17 @@ setClass("NormalIRanges", contains="IRanges")
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### parallelSlotNames()
+###
+
+### Combine the new parallel slots with those of the parent class. Make sure
+### to put the new parallel slots *first*.
+setMethod("parallelSlotNames", "IRanges",
+    function(x) c("start", "width", "NAMES", callNextMethod())
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
@@ -49,9 +60,10 @@ setMethod("names", "IRanges", function(x) x@NAMES)
 ### isEmpty(), isNormal(), isDisjoint()
 ###
 
-setMethod("isNormal", "IRanges",
-    function(x) .Call2("IRanges_isNormal", x, PACKAGE="IRanges")
-)
+.isNormal_IRanges <- function(x)
+    .Call2("IRanges_isNormal", x, PACKAGE="IRanges")
+
+setMethod("isNormal", "IRanges", .isNormal_IRanges)
 
 ### Fast methods for NormalIRanges objects.
 setMethod("isEmpty", "NormalIRanges", function(x) length(x) == 0L)
@@ -106,7 +118,7 @@ setMethod("min", "NormalIRanges",
 ### NormalIRanges objects
 .valid.NormalIRanges <- function(x)
 {
-    if (!isNormal(x))
+    if (!.isNormal_IRanges(x))
         return("object is not normal")
     NULL
 }
@@ -137,8 +149,8 @@ newNormalIRangesFromIRanges <- function(x, check=TRUE)
     ## Check only what needs to be checked.
     if (check)
         S4Vectors:::stopIfProblems(.valid.NormalIRanges(x))
-    ## Make a "hard copy" of the slots. No need to check anything!
-    new2("NormalIRanges", start=x@start, width=x@width, NAMES=x@NAMES, check=FALSE)
+    class(x) <- "NormalIRanges"
+    x
 }
 
 ### The returned IRanges instance is guaranteed to be normal.
@@ -307,7 +319,7 @@ setMethod("update", "IRanges",
 ### Subsetting.
 ###
 
-setMethod("extractROWS", "IRanges",
+setMethod("extractROWS", "NormalIRanges",
     function(x, i)
     {
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
@@ -316,12 +328,7 @@ setMethod("extractROWS", "IRanges",
                 stop("subscript must extract elements at strictly sorted ",
                      "positions when\n  subsetting a ", class(x), " object")
         }
-        ans_start <- extractROWS(start(x), i)
-        ans_width <- extractROWS(width(x), i)
-        ans_names <- extractROWS(names(x), i)
-        ans_mcols <- extractROWS(mcols(x), i)
-        initialize(x, start=ans_start, width=ans_width, NAMES=ans_names,
-                      elementMetadata=ans_mcols)
+        callNextMethod()
     }
 )
 
@@ -331,9 +338,20 @@ setMethod("replaceROWS", "IRanges",
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         ans_start <- replaceROWS(start(x), i, start(value))
         ans_width <- replaceROWS(width(x), i, width(value))
-        ans <- initialize(x, start=ans_start, width=ans_width)
-        if (is(x, "NormalIRanges"))
-            validObject(ans)
+        ans_mcols <- replaceROWS(mcols(x), i, mcols(value))
+        BiocGenerics:::replaceSlots(x,
+            start=ans_start,
+            width=ans_width,
+            elementMetadata=ans_mcols,
+            check=FALSE)
+    }
+)
+
+setMethod("replaceROWS", "NormalIRanges",
+    function(x, i, value)
+    {
+        ans <- callNextMethod()
+        validObject(ans)
         ans
     }
 )

@@ -255,9 +255,6 @@ setMethod("isDisjoint", "Ranges",
 ### efficient so not a general, long-term solution.
 
 setMethod("extractROWS", "Ranges",
-    function(x, i)
-    {
-        as(callGeneric(as(x, "IRanges"), i), class(x))
-    }
+    function(x, i) as(callNextMethod(as(x, "IRanges"), i), class(x))
 )
 
