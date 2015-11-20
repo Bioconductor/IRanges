@@ -134,7 +134,9 @@ void R_init_IRanges(DllInfo *info)
 
 /* CompressedIRangesList_class.c */
 	REGISTER_CCALLABLE(_hold_CompressedIRangesList);
+	REGISTER_CCALLABLE(_get_length_from_CompressedIRangesList_holder);
 	REGISTER_CCALLABLE(_get_elt_from_CompressedIRangesList_holder);
+	REGISTER_CCALLABLE(_get_eltlens_from_CompressedIRangesList_holder);
 
 /* RangedData_class.c */
 	REGISTER_CCALLABLE(_new_RangedData);
