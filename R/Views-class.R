@@ -369,3 +369,10 @@ setMethod("which.min", "Views", function(x) {
   viewWhichMins(x, na.rm = TRUE)
 })
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Show
+###
+
+setMethod("showAsCell", "Views", function(object) {
+              showAsCell(as(object, relistToClass(subject(object))))
+          })
