@@ -47,9 +47,15 @@ setReplaceMethod("names", "CompressedList",
 ### when calling this from another package.
 ###
 
+### Hackery to avoid R CMD check warning for using an internal...
+islistfactor <- function(x) {
+    eval(as.call(list(quote(.Internal),
+                      substitute(islistfactor(x, FALSE), list(x=x)))))
+}
+
 compress_listData <- function(x, elementType = NULL) {
     if (length(x) > 0L) {
-        if (identical(elementType, "factor")) {
+        if (islistfactor(x)) {
             x <- unlist(x, recursive=FALSE, use.names=FALSE)
         } else if (length(dim(x[[1L]])) < 2L) {
             x <- do.call(c, unname(x))

@@ -658,14 +658,12 @@ setAtomicListMethod <- function(f,
 ### General methods
 ###
 
-### S3/S4 combo for unique.RleList
-unique.RleList <- function(x, incomparables=FALSE, ...)
+.unique.RleList <- function(x, incomparables=FALSE, ...)
     unique(runValue(x), incomparables=incomparables, ...)
-setMethod("unique", "RleList", unique.RleList)
+setMethod("unique", "RleList", .unique.RleList)
 
-### S3/S4 combo for duplicated.CompressedIntegerList
-duplicated.CompressedIntegerList <- function(x, incomparables=FALSE,
-                                             fromLast=FALSE, ...)
+.duplicated.CompressedIntegerList <- function(x, incomparables=FALSE,
+                                              fromLast=FALSE, ...)
 {
   if (!identical(incomparables, FALSE))
     stop("\"duplicated\" method for CompressedList objects ",
@@ -681,7 +679,7 @@ duplicated.CompressedIntegerList <- function(x, incomparables=FALSE,
   relist(ans_unlistData, x)
 }
 setMethod("duplicated", "CompressedIntegerList",
-          duplicated.CompressedIntegerList)
+          .duplicated.CompressedIntegerList)
 
 ### Could actually be made the "table" method for List objects. Will work on
 ### any List object 'x' for which 'as.factor(unlist(x))' works.
@@ -873,6 +871,18 @@ setMethod("which.min", "CompressedRleList",
             viewWhichMins(as(x, "RleViews"), na.rm=TRUE) -
               c(0L, head(cumsum(elementLengths(x)), -1))
           })
+
+setMethods("diff",
+           c("CompressedIntegerList", "CompressedNumericList",
+             "CompressedRleList"),
+           function(x, lag = 1L, differences = 1L) {
+               stopifnot(isSingleNumber(lag))
+               stopifnot(isSingleNumber(differences))
+               r <- x
+               for (i in seq_len(differences))
+                   r <- ptail(r, -lag) - phead(r, -lag)
+               r
+           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Running window statistic methods

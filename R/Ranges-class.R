@@ -74,8 +74,7 @@ setMethod("as.matrix", "Ranges",
                dimnames=list(names(x), NULL))
 )
 
-### S3/S4 combo for as.data.frame.Ranges
-as.data.frame.Ranges <- function(x, row.names=NULL, optional=FALSE, ...)
+.as.data.frame.Ranges <- function(x, row.names=NULL, optional=FALSE, ...)
 {
     if (!(is.null(row.names) || is.character(row.names)))
         stop("'row.names' must be NULL or a character vector")
@@ -89,7 +88,7 @@ as.data.frame.Ranges <- function(x, row.names=NULL, optional=FALSE, ...)
     ans$names <- names(x)
     ans
 }
-setMethod("as.data.frame", "Ranges", as.data.frame.Ranges)
+setMethod("as.data.frame", "Ranges", .as.data.frame.Ranges)
 
 setMethod("as.integer", "Ranges",
     function(x, ...) S4Vectors:::fancy_mseq(width(x), offset=start(x)-1L)

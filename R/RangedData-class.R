@@ -613,8 +613,7 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
     as.data.frame(stacked, row.names = row.names, optional = optional)
 }
 
-### S3/S4 combo for as.data.frame.RangedData
-as.data.frame.RangedData <- function(x, row.names=NULL, optional=FALSE, ...)
+.as.data.frame.RangedData <- function(x, row.names=NULL, optional=FALSE, ...)
 {
     if (!(is.null(row.names) || is.character(row.names)))
         stop("'row.names'  must be NULL or a character vector")
@@ -625,7 +624,7 @@ as.data.frame.RangedData <- function(x, row.names=NULL, optional=FALSE, ...)
                row.names = row.names,
                stringsAsFactors = FALSE)
 }
-setMethod("as.data.frame", "RangedData",as.data.frame.RangedData)
+setMethod("as.data.frame", "RangedData", .as.data.frame.RangedData)
 
 setAs("RangedData", "DataFrame",
       function(from)

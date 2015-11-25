@@ -40,8 +40,7 @@ setAs("Rle", "NormalIRanges",
 ### General methods
 ###
 
-### S3/S4 combo for window.Rle
-window.Rle <- function(x, start=NA, end=NA, width=NA,
+.window.Rle <- function(x, start=NA, end=NA, width=NA,
                           frequency=NULL, delta=NULL, ...)
 {
     solved_SEW <- solveUserSEWForSingleSeq(length(x), start, end, width)
@@ -69,7 +68,7 @@ window.Rle <- function(x, start=NA, end=NA, width=NA,
         x[idx]
     }
 }
-setMethod("window", "Rle", window.Rle)
+setMethod("window", "Rle", .window.Rle)
 
 setGeneric("findRange", signature = "vec",
            function(x, vec) standardGeneric("findRange"))

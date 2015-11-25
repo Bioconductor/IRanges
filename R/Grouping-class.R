@@ -379,10 +379,9 @@ setValidity("H2LGrouping",
                   "only accepts 'incomparables=FALSE'"))
     !is.na(high2low(x))
 }
-### S3/S4 combo for duplicated.Dups
-duplicated.Dups <- function(x, incomparables=FALSE, ...)
+.duplicated.Dups <- function(x, incomparables=FALSE, ...)
     .duplicated.Dups(x, incomparables=incomparables, ...)
-setMethod("duplicated", "Dups", duplicated.Dups)
+setMethod("duplicated", "Dups", .duplicated.Dups)
 
 ### For Dups objects only.
 setMethod("show", "Dups",

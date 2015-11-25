@@ -18,8 +18,7 @@ setAs("Hits", "DataFrame", function(from) {
             else new("DataFrame", nrows = length(from)))
 })
 
-### S3/S4 combo for as.data.frame.Hits
-as.data.frame.Hits <- function(x, row.names=NULL, optional=FALSE, ...)
+.as.data.frame.Hits <- function(x, row.names=NULL, optional=FALSE, ...)
 {
     if (!(is.null(row.names) || is.character(row.names)))
         stop("'row.names' must be NULL or a character vector")
@@ -27,7 +26,7 @@ as.data.frame.Hits <- function(x, row.names=NULL, optional=FALSE, ...)
         warning("'optional' and arguments in '...' are ignored")
     as.data.frame(as(x, "DataFrame"), row.names = row.names)
 }
-setMethod("as.data.frame", "Hits", as.data.frame.Hits)
+setMethod("as.data.frame", "Hits", .as.data.frame.Hits)
 
 ### Turn Hits object 'from' into a PartitioningByEnd object that describes
 ### the grouping of hits by query.
@@ -51,9 +50,7 @@ setAs("Hits", "CompressedIntegerList", .from_Hits_to_CompressedIntegerList)
 setAs("Hits", "IntegerList", .from_Hits_to_CompressedIntegerList)
 setAs("Hits", "List", .from_Hits_to_CompressedIntegerList)
 
-### S3/S4 combo for as.list.Hits
 .as.list.Hits <- function(x) as.list(.from_Hits_to_CompressedIntegerList(x))
-as.list.Hits <- function(x, ...) .as.list.Hits(x, ...)
 setMethod("as.list", "Hits", .as.list.Hits)
 
 setAs("Hits", "list", function(from) as.list(from))

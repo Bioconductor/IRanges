@@ -174,17 +174,15 @@ setMethod("match", c("CompressedList", "vector"),
 ### duplicated() & unique()
 ###
 
-### S3/S4 combo for duplicated.List
-duplicated.List <- function(x, incomparables=FALSE,
+.duplicated.List <- function(x, incomparables=FALSE,
                                fromLast=FALSE, ...)
 {
     .op1_apply(duplicated, x,
                incomparables=incomparables, fromLast=fromLast, ...,
                ANS_CONSTRUCTOR=LogicalList)
 }
-setMethod("duplicated", "List", duplicated.List)
+setMethod("duplicated", "List", .duplicated.List)
 
-### S3/S4 combo for duplicated.CompressedList
 .duplicated.CompressedList <- function(x, incomparables=FALSE,
                                           fromLast=FALSE)
 {
@@ -198,29 +196,22 @@ setMethod("duplicated", "List", duplicated.List)
                                                          fromLast=fromLast)
     relist(ans_unlistData, x)
 }
-duplicated.CompressedList <- function(x, incomparables=FALSE,
-                                         fromLast=FALSE, ...)
-    .duplicated.CompressedList(x, incomparables=incomparables,
-                                  fromLast=fromLast, ...)
-setMethod("duplicated", "CompressedList", duplicated.CompressedList)
+setMethod("duplicated", "CompressedList", .duplicated.CompressedList)
 
-### S3/S4 combo for unique.List
-unique.List <- function(x, incomparables=FALSE, ...)
+.unique.List <- function(x, incomparables=FALSE, ...)
 {
     if (!compareRecursively(x))
         return(unique.Vector(x, incomparables=incomparables, ...))
     i <- !duplicated(x, incomparables=incomparables, ...)  # LogicalList
     x[i]
 }
-setMethod("unique", "List", unique.List)
+setMethod("unique", "List", .unique.List)
 
-### S3/S4 combo for unique.SimpleList
-unique.SimpleList <- function(x, incomparables=FALSE, ...) {
+.unique.SimpleList <- function(x, incomparables=FALSE, ...) {
     as(lapply(x, unique, incomparables=incomparables, ...), class(x))
 }
-setMethod("unique", "SimpleList", unique.SimpleList)
+setMethod("unique", "SimpleList", .unique.SimpleList)
 
-### S3/S4 combo for unique.CompressedList
 .unique.CompressedList <- function(x, incomparables=FALSE,
                                       fromLast=FALSE)
 {
@@ -237,9 +228,7 @@ setMethod("unique", "SimpleList", unique.SimpleList)
                                           names=names(x))
     relist(ans_unlistData, ans_partitioning)
 }
-unique.CompressedList <- function(x, incomparables=FALSE, ...)
-    .unique.CompressedList(x, incomparables=incomparables, ...)
-setMethod("unique", "CompressedList", unique.CompressedList)
+setMethod("unique", "CompressedList", .unique.CompressedList)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -283,17 +272,14 @@ setMethod("order", "List",
     }
 )
 
-### S3/S4 combo for sort.List
 .sort.List <- function(x, decreasing=FALSE, na.last=NA)
 {
     if (!compareRecursively(x))
-        return(sort.Vector(x, decreasing=decreasing, na.last=na.last))
+        return(callNextMethod())
     i <- order(x, na.last=na.last, decreasing=decreasing)  # IntegerList
     x[i]
 }
-sort.List <- function(x, decreasing=FALSE, ...)
-    .sort.List(x, decreasing=decreasing, ...)
-setMethod("sort", "List", sort.List)
+setMethod("sort", "List", .sort.List)
 
 setMethod("rank", "List",
     function(x, na.last=TRUE,

@@ -21,7 +21,11 @@ setMethod("showAsCell", "list", function(object)
 ###
 
 ### S3/S4 combo for window<-.Vector
-`window<-.Vector` <- function(x, start=NA, end=NA, width=NA, ..., value)
+`window<-.Vector` <- function(x, start=NA, end=NA, width=NA, ..., value) {
+    window(x, start, end, width, ...) <- value
+    x
+}
+`.window<-.Vector` <- function(x, start=NA, end=NA, width=NA, ..., value)
 {
     i <- solveUserSEWForSingleSeq(NROW(x), start, end, width)
     li <- width(i)
@@ -44,7 +48,7 @@ setMethod("showAsCell", "list", function(object)
       value,
       window(x, start=end(i)+1L))
 }
-setReplaceMethod("window", "Vector", `window<-.Vector`)
+setReplaceMethod("window", "Vector", `.window<-.Vector`)
 
 ### S3/S4 combo for window<-.vector
 `window<-.vector` <- `window<-.Vector`
@@ -85,16 +89,6 @@ setMethod("subset", "Vector",
             }
             x[i, drop=drop]
           })
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion.
-###
-
-### S3/S4 combo for as.list.Vector
-as.list.Vector <- function(x, ...) as.list(as(x, "List"), ...)
-setMethod("as.list", "Vector", as.list.Vector)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### mstack()
@@ -151,7 +145,7 @@ function(X, INDEX, FUN = NULL, ..., simplify = TRUE)
     namelist <- vector("list", nI)
     names(namelist) <- names(INDEX)
     extent <- integer(nI)
-    nx <- length(X)
+    nx <- NROW(X)
     one <- 1L
     group <- Rle(one, nx)
     ngroup <- one

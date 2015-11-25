@@ -393,7 +393,6 @@ setMethod("showAsCell", "RangesList",
 ### Coercion.
 ###
 
-### S3/S4 combo for as.list.CompressedNormalIRangesList
 .as.list.CompressedNormalIRangesList <- function(x, use.names=TRUE)
 {
     if (!isTRUEorFALSE(use.names))
@@ -403,10 +402,8 @@ setMethod("showAsCell", "RangesList",
         names(ans) <- names(x)
     ans
 }
-as.list.CompressedNormalIRangesList <- function(x, ...)
-    .as.list.CompressedNormalIRangesList(x, ...)
 setMethod("as.list", "CompressedNormalIRangesList",
-    as.list.CompressedNormalIRangesList)
+    .as.list.CompressedNormalIRangesList)
 
 setMethod("unlist", "SimpleNormalIRangesList",
           function(x, recursive = TRUE, use.names = TRUE)
