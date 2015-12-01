@@ -201,7 +201,7 @@ setMethod("duplicated", "CompressedList", .duplicated.CompressedList)
 .unique.List <- function(x, incomparables=FALSE, ...)
 {
     if (!compareRecursively(x))
-        return(unique.Vector(x, incomparables=incomparables, ...))
+        return(callNextMethod())
     i <- !duplicated(x, incomparables=incomparables, ...)  # LogicalList
     x[i]
 }

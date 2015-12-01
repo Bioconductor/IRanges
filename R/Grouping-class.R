@@ -379,8 +379,6 @@ setValidity("H2LGrouping",
                   "only accepts 'incomparables=FALSE'"))
     !is.na(high2low(x))
 }
-.duplicated.Dups <- function(x, incomparables=FALSE, ...)
-    .duplicated.Dups(x, incomparables=incomparables, ...)
 setMethod("duplicated", "Dups", .duplicated.Dups)
 
 ### For Dups objects only.

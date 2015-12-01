@@ -872,6 +872,10 @@ setMethod("which.min", "CompressedRleList",
               c(0L, head(cumsum(elementLengths(x)), -1))
           })
 
+diff.IntegerList <- function(x, ...) diff(x, ...)
+diff.NumericList <- function(x, ...) diff(x, ...)
+diff.RleList <- function(x, ...) diff(x, ...)
+
 setMethods("diff",
            c("CompressedIntegerList", "CompressedNumericList",
              "CompressedRleList"),
