@@ -31,9 +31,6 @@
 \alias{eval,expression,Vector-method}
 \alias{eval,language,Vector-method}
 
-\alias{as.list.Vector}
-\alias{as.list,Vector-method}
-
 \title{Vector objects (old man page)}
 
 \description{
