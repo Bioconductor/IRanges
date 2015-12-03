@@ -6,7 +6,6 @@
 \alias{coerce,Rle,IRanges-method}
 \alias{coerce,Rle,NormalIRanges-method}
 
-\alias{window.Rle}
 \alias{window,Rle-method}
 
 \alias{findRange}

@@ -168,19 +168,14 @@
 \alias{sum,CompressedLogicalList-method}
 \alias{sum,CompressedNumericList-method}
 
-\alias{unique.RleList}
 \alias{unique,RleList-method}
-\alias{unique.CompressedList}
 \alias{unique,CompressedList-method}
 \alias{table,AtomicList-method}
 \alias{drop,AtomicList-method}
-\alias{duplicated.CompressedList}
 \alias{duplicated,CompressedList-method}
-\alias{duplicated.CompressedIntegerList}
 \alias{duplicated,CompressedIntegerList-method}
 
 \alias{sort,List-method}
-\alias{sort.List}
 \alias{order,List-method}
 \alias{rank,List-method}
 

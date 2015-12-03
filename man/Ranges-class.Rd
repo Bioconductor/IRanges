@@ -19,7 +19,6 @@
 \alias{width<-}
 \alias{end<-}
 \alias{as.matrix,Ranges-method}
-\alias{as.data.frame.Ranges}
 \alias{as.data.frame,Ranges-method}
 \alias{as.integer,Ranges-method}
 \alias{unlist,Ranges-method}

@@ -4,10 +4,8 @@
 \alias{Hits-examples}
 
 % coercion
-\alias{as.data.frame.Hits}
 \alias{as.data.frame,Hits-method}
 \alias{as.list,Hits-method}
-\alias{as.list.Hits}
 \alias{coerce,Hits,list-method}
 \alias{coerce,Hits,List-method}
 \alias{coerce,Hits,DataFrame-method}

@@ -47,7 +47,6 @@
 \alias{coerce,CompressedIRangesList,CompressedNormalIRangesList-method}
 \alias{coerce,SimpleIRangesList,SimpleNormalIRangesList-method}
 \alias{as.list,CompressedNormalIRangesList-method}
-\alias{as.list.CompressedNormalIRangesList}
 
 \title{List of IRanges and NormalIRanges}
 \description{\code{\linkS4class{IRangesList}} and
