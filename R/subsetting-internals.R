@@ -4,61 +4,6 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### RleNSBS objects.
-###
-
-setClass("RleNSBS",  # not exported
-    contains="NSBS",
-    representation(
-        subscript="Rle"
-    )
-    #prototype(
-    #    subscript=Rle(integer(0))
-    #)
-)
-
-### Construction methods.
-### Supplied arguments are trusted so we don't check them!
-
-setMethod("NSBS", "Rle",
-    function(i, x, exact=TRUE, upperBoundIsStrict=TRUE)
-    {
-        x_NROW <- NROW(x)
-        i_vals <- runValue(i)
-        if (is.logical(i_vals) && length(i_vals) != 0L) {
-            if (S4Vectors:::anyMissing(i_vals))
-                stop("subscript contains NAs")
-            if (length(i) < x_NROW)
-                i <- rep(i, length.out=x_NROW)
-            i <- as(i, "NormalIRanges")
-            return(callGeneric())
-        }
-        i_vals <- as.integer(NSBS(i_vals, x,
-                                  exact=exact,
-                                  upperBoundIsStrict=upperBoundIsStrict))
-        runValue(i) <- i_vals
-        new("RleNSBS", subscript=i,
-                       upper_bound=x_NROW,
-                       upper_bound_is_strict=upperBoundIsStrict)
-    }
-)
-
-### Other methods.
-
-setMethod("as.integer", "RleNSBS", function(x) S4Vectors:::decodeRle(x@subscript))
-
-setMethod("length", "RleNSBS", function(x) length(x@subscript))
-
-setMethod("anyDuplicated", "RleNSBS",
-    function(x, incomparables=FALSE, ...) anyDuplicated(x@subscript)
-)
-
-setMethod("isStrictlySorted", "RleNSBS",
-    function(x) isStrictlySorted(x@subscript)
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### RangesNSBS objects.
 ###
 

@@ -3,7 +3,7 @@ useDynLib(IRanges)
 import(methods)
 importFrom(utils, stack, read.table)
 importFrom(stats, var, cov, cor, sd, median, quantile,
-           smoothEnds, runmed, window, "window<-", aggregate,
+           smoothEnds, runmed, "window<-", aggregate,
            setNames)
 
 import(BiocGenerics)
@@ -69,6 +69,7 @@ export(
     diff.IntegerList,
     diff.NumericList,
     diff.RleList,
+
     "window<-.Vector",
     "window<-.vector",
     "window<-.factor"
@@ -110,7 +111,7 @@ exportMethods(
     min, max, range, which.max, which.min,
     diff,
     mean, var, cov, cor, sd, median, quantile, mad, IQR, smoothEnds, runmed,
-    subset, window, "window<-", transform,
+    subset, "window<-", transform,
     nchar, chartr, tolower, toupper, sub, gsub,
     unlist, stack, "split<-", unsplit,
     relist,

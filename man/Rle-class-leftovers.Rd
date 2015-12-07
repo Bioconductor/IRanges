@@ -6,8 +6,6 @@
 \alias{coerce,Rle,IRanges-method}
 \alias{coerce,Rle,NormalIRanges-method}
 
-\alias{window,Rle-method}
-
 \alias{findRange}
 \alias{findRange,Rle-method}
 
@@ -44,26 +42,6 @@
 
   \describe{
     \item{}{
-      \code{window(x, start=NA, end=NA, width=NA)}:
-      Extract the subsequence window from \code{x} specified by:
-      \describe{
-        \item{\code{start}, \code{end}, \code{width}}{The start, end, or width
-          of the window. Two of the three are required.}
-      }
-    }
-    \item{}{
-      \code{window(x, start=NA, end=NA, width=NA) <- value}:
-      Replace the subsequence window specified on the left (i.e. the
-      subsequence in \code{x} specified by \code{start}, \code{end} and
-      \code{width}) by \code{value}.
-      \code{value} must either be of class Rle, belong to a
-      subclass of Rle, or be coercible to Rle or a
-      subclass of Rle.
-      The elements of \code{value} are repeated to create an Rle with the
-      same number of elements as the width of the subsequence window it is
-      replacing.
-    }
-    \item{}{
       \code{split(x, f, drop=FALSE)}:
       Splits \code{x} according to \code{f} to create a
       \link{CompressedRleList} object.
@@ -97,8 +75,6 @@
 \examples{
 x <- Rle(10:1, 1:10)
 x
-
-window(x, 4, 14)
 }
 
 \keyword{methods}
