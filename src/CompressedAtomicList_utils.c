@@ -11,9 +11,9 @@
                     summary += val);                                          \
 }
 
-#define PARTITIONED_PROD(C_TYPE, ACCESSOR, ANS_TYPE, ANS_ACCESSOR, NA_CHECK) { \
-    PARTITIONED_AGG(C_TYPE, ACCESSOR, ANS_TYPE, ANS_ACCESSOR, NA_CHECK, 1,     \
-                    summary *= val);					       \
+#define PARTITIONED_PROD(ACCESSOR, NA_CHECK) {                            \
+        PARTITIONED_AGG(double, ACCESSOR, REALSXP, REAL, NA_CHECK, 1,     \
+                    summary *= val);                                      \
 }
 
 #define PARTITIONED_MIN(C_TYPE, ACCESSOR, ANS_TYPE, NA_CHECK, INIT) {         \
@@ -86,7 +86,7 @@ SEXP CompressedNumericList_sum(SEXP x, SEXP na_rm)
  */
 SEXP CompressedLogicalList_prod(SEXP x, SEXP na_rm)
 {
-  PARTITIONED_PROD(Rboolean, LOGICAL, INTSXP, INTEGER, val == NA_LOGICAL);
+  PARTITIONED_PROD(LOGICAL, val == NA_LOGICAL);
 }
 
 /*
@@ -94,7 +94,7 @@ SEXP CompressedLogicalList_prod(SEXP x, SEXP na_rm)
  */
 SEXP CompressedIntegerList_prod(SEXP x, SEXP na_rm)
 {
-  PARTITIONED_PROD(int, INTEGER, INTSXP, INTEGER, val == NA_INTEGER);
+  PARTITIONED_PROD(INTEGER, val == NA_INTEGER);
 }
 
 /*
@@ -102,7 +102,7 @@ SEXP CompressedIntegerList_prod(SEXP x, SEXP na_rm)
  */
 SEXP CompressedNumericList_prod(SEXP x, SEXP na_rm)
 {
-  PARTITIONED_PROD(double, REAL, REALSXP, REAL, ISNA(val));
+  PARTITIONED_PROD(REAL, ISNA(val));
 }
 
 /*
@@ -154,11 +154,16 @@ SEXP CompressedNumericList_max(SEXP x, SEXP na_rm)
 }
 
 #define PARTITIONED_IS_UNSORTED(C_TYPE, ACCESSOR, NA_CHECK) {		\
-    PARTITIONED_BREAK(C_TYPE, ACCESSOR, NA_CHECK,			\
-		      j > 0 && val < ACCESSOR(unlistData)[j-1]);	\
+        if (asLogical(strictly)) {                                      \
+            PARTITIONED_BREAK(C_TYPE, ACCESSOR, NA_CHECK,               \
+                              val <= ACCESSOR(unlistData)[j-1], 1);     \
+        } else {                                                        \
+            PARTITIONED_BREAK(C_TYPE, ACCESSOR, NA_CHECK,               \
+                              val < ACCESSOR(unlistData)[j-1], 1);      \
+        }                                                               \
 }
 
-#define PARTITIONED_BREAK(C_TYPE, ACCESSOR, NA_CHECK, BREAK_CHECK) {	\
+#define PARTITIONED_BREAK(C_TYPE, ACCESSOR, NA_CHECK, BREAK_CHECK, OFFSET) { \
     SEXP unlistData = _get_CompressedList_unlistData(x);                \
     SEXP ends =                                                         \
       _get_PartitioningByEnd_end(_get_CompressedList_partitioning(x));  \
@@ -168,7 +173,7 @@ SEXP CompressedNumericList_max(SEXP x, SEXP na_rm)
     for (int i = 0; i < length(ends); i++) {                            \
       int end = INTEGER(ends)[i];                                       \
       Rboolean summary = FALSE;						\
-      for (int j = prev_end; j < end; j++) {                            \
+      for (int j = prev_end + OFFSET; j < end; j++) {                   \
         C_TYPE val = ACCESSOR(unlistData)[j];                           \
         if (NA_CHECK) {                                                 \
           if (_na_rm) {                                                 \
@@ -193,7 +198,7 @@ SEXP CompressedNumericList_max(SEXP x, SEXP na_rm)
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP CompressedLogicalList_is_unsorted(SEXP x, SEXP na_rm)
+SEXP CompressedLogicalList_is_unsorted(SEXP x, SEXP na_rm, SEXP strictly)
 {
   PARTITIONED_IS_UNSORTED(Rboolean, LOGICAL, val == NA_LOGICAL);
 }
@@ -201,7 +206,7 @@ SEXP CompressedLogicalList_is_unsorted(SEXP x, SEXP na_rm)
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP CompressedIntegerList_is_unsorted(SEXP x, SEXP na_rm)
+SEXP CompressedIntegerList_is_unsorted(SEXP x, SEXP na_rm, SEXP strictly)
 {
   PARTITIONED_IS_UNSORTED(int, INTEGER, val == NA_INTEGER);
 }
@@ -209,7 +214,7 @@ SEXP CompressedIntegerList_is_unsorted(SEXP x, SEXP na_rm)
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP CompressedNumericList_is_unsorted(SEXP x, SEXP na_rm)
+SEXP CompressedNumericList_is_unsorted(SEXP x, SEXP na_rm, SEXP strictly)
 {
   PARTITIONED_IS_UNSORTED(double, REAL, ISNA(val));
 }

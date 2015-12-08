@@ -75,14 +75,20 @@ static const R_CallMethodDef callMethods[] = {
 
 /* CompressedAtomicList_utils.c */
 	CALLMETHOD_DEF(CompressedLogicalList_sum, 2),
-  CALLMETHOD_DEF(CompressedIntegerList_sum, 2),
-  CALLMETHOD_DEF(CompressedNumericList_sum, 2),
+	CALLMETHOD_DEF(CompressedIntegerList_sum, 2),
+	CALLMETHOD_DEF(CompressedNumericList_sum, 2),
+	CALLMETHOD_DEF(CompressedLogicalList_prod, 2),
+	CALLMETHOD_DEF(CompressedIntegerList_prod, 2),
+	CALLMETHOD_DEF(CompressedNumericList_prod, 2),
 	CALLMETHOD_DEF(CompressedLogicalList_min, 2),
-  CALLMETHOD_DEF(CompressedIntegerList_min, 2),
-  CALLMETHOD_DEF(CompressedNumericList_min, 2),
+	CALLMETHOD_DEF(CompressedIntegerList_min, 2),
+	CALLMETHOD_DEF(CompressedNumericList_min, 2),
 	CALLMETHOD_DEF(CompressedLogicalList_max, 2),
-  CALLMETHOD_DEF(CompressedIntegerList_max, 2),
-  CALLMETHOD_DEF(CompressedNumericList_max, 2),
+	CALLMETHOD_DEF(CompressedIntegerList_max, 2),
+	CALLMETHOD_DEF(CompressedNumericList_max, 2),
+	CALLMETHOD_DEF(CompressedLogicalList_is_unsorted, 3),
+	CALLMETHOD_DEF(CompressedIntegerList_is_unsorted, 3),
+	CALLMETHOD_DEF(CompressedNumericList_is_unsorted, 3),
 
 	{NULL, NULL, 0}
 };

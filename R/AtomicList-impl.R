@@ -484,21 +484,35 @@ rowsumCompressedList <- function(x, ..., na.rm = FALSE) {
   setNames(ans, names(x))
 }
 
-setCompressedListSummaryMethod <- function(fun, where=topenv(parent.frame()))
-{
+setNumericalListMethod <- function(fun, def, where=topenv(parent.frame())) {
     types <- c("Logical", "Integer", "Numeric")
     classNames <- paste0("Compressed", types, "List")
     lapply(classNames, function(className) {
-               setMethod(fun, className, function(x, na.rm = FALSE) {
-                             stopifnot(isTRUEorFALSE(na.rm))
-                             .Call(paste0(className, "_", fun), x, na.rm)
-                         }, where=where)
+               C_fun <- paste0(className, "_", sub(".", "_", fun, fixed=TRUE))
+               body(def) <- eval(call("substitute", body(def)))
+               setMethod(fun, className, def, where=where)
            })
 }
 
+setCompressedListSummaryMethod <- function(fun, where=topenv(parent.frame()))
+{
+    setNumericalListMethod(fun, function(x, na.rm = FALSE) {
+        stopifnot(isTRUEorFALSE(na.rm))
+        .Call(C_fun, x, na.rm)
+    }, where)
+}
+
 setCompressedListSummaryMethod("sum")
+setCompressedListSummaryMethod("prod")
 setCompressedListSummaryMethod("min")
 setCompressedListSummaryMethod("max")
+
+setNumericalListMethod("is.unsorted",
+                       function(x, na.rm = FALSE, strictly=FALSE) {
+                           stopifnot(isTRUEorFALSE(na.rm))
+                           stopifnot(isTRUEorFALSE(strictly))
+                           .Call(C_fun, x, na.rm, strictly)
+                       })
 
 setMethods("range",
            list("CompressedLogicalList",

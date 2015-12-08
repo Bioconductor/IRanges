@@ -423,6 +423,18 @@ SEXP CompressedNumericList_sum(
   SEXP x,
   SEXP na_rm);
 
+SEXP CompressedLogicalList_prod(
+  SEXP x,
+  SEXP na_rm);
+
+SEXP CompressedIntegerList_prod(
+  SEXP x,
+  SEXP na_rm);
+
+SEXP CompressedNumericList_prod(
+  SEXP x,
+  SEXP na_rm);
+
 SEXP CompressedLogicalList_min(
   SEXP x,
   SEXP na_rm);
@@ -446,3 +458,19 @@ SEXP CompressedIntegerList_max(
 SEXP CompressedNumericList_max(
   SEXP x,
   SEXP na_rm);
+
+SEXP CompressedLogicalList_is_unsorted(
+  SEXP x,
+  SEXP na_rm,
+  SEXP strictly);
+
+SEXP CompressedIntegerList_is_unsorted(
+  SEXP x,
+  SEXP na_rm,
+  SEXP strictly);
+
+SEXP CompressedNumericList_is_unsorted(
+  SEXP x,
+  SEXP na_rm,
+  SEXP strictly);
+
