@@ -139,7 +139,6 @@ exportMethods(
     compare,
     selfmatch,
     runLength, "runValue<-",
-    shiftApply,
     runsum, runmean, runwtsum, runq,
     elementLengths, isEmpty, revElements,
     endoapply, mendoapply,

@@ -272,9 +272,9 @@ setMethod("getListElement", "CompressedList",
         x_partitioning <- PartitioningByEnd(x)
         window_start <- start(x_partitioning)[i]
         window_end <- end(x_partitioning)[i]
-        S4Vectors:::.window.Vector(unlisted_x,
-                                   start=window_start,
-                                   end=window_end)
+        S4Vectors:::Vector_window(unlisted_x,
+                                  start=window_start,
+                                  end=window_end)
     }
 )
 
