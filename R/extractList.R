@@ -233,17 +233,20 @@ factorsToTableIndices <- function(factors) {
   as.vector(group)
 }
 
-normSplitFactor <- function(f, x_NROW) {
+normSplitFactor <- function(f, x) {
+  if (is(f, "formula")) {
+    f <- S4Vectors:::formulaValues(x, f)
+  }
   if (is.list(f) || is(f, "List")) {
     f <- factorsToTableIndices(f)
   }
   f_len <- length(f)
-  if (f_len < x_NROW) {
+  if (f_len < NROW(x)) {
     if (f_len == 0L)
       stop("split factor has length 0 but 'NROW(x)' is > 0")
-    if (x_NROW %% f_len != 0L)
+    if (NROW(x) %% f_len != 0L)
       warning("'NROW(x)' is not a multiple of split factor length")
-    f <- rep(f, length.out=x_NROW)
+    f <- rep(f, length.out=NROW(x))
   }
   f
 }
@@ -252,13 +255,12 @@ splitAsList_default <- function(x, f, drop=FALSE)
 {
     if (!isTRUEorFALSE(drop))
         stop("'drop' must be TRUE or FALSE")
-    x_NROW <- NROW(x)
 
-    f <- normSplitFactor(f, x_NROW)
+    f <- normSplitFactor(f, x)
     is_na <- is.na(f)
     na_idx <- which(is_na)
     if (length(na_idx) != 0L) {
-        keep_idx <- seq_len(x_NROW)[-na_idx]
+        keep_idx <- seq_len(NROW(x))[-na_idx]
         x <- extractROWS(x, keep_idx)
         f <- f[keep_idx]
     }
@@ -283,6 +285,8 @@ setMethod("splitAsList", c("ANY", "vectorORfactor"),
 setMethod("splitAsList", c("ANY", "Rle"),
           function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop))
 setMethod("splitAsList", c("ANY", "List"),
+          function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop))
+setMethod("splitAsList", c("ANY", "formula"),
           function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop))
 
 
