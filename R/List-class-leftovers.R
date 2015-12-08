@@ -39,7 +39,8 @@ setMethod("stack", "List",
           {
             value <- unlist(x, use.names=FALSE)
             index <- .stack.ind(x, index.var)
-            unlistsToList <- extends(x@elementType, "List")
+            unlistsToList <- extends(x@elementType, "List") &&
+                !extends(x@elementType, "Ranges")
             if (unlistsToList) {
               df <- cbind(S4Vectors:::ensureMcols(value), index)
             } else {
