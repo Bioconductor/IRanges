@@ -291,3 +291,7 @@ setMethod("rank", "List",
     }
 )
 
+setMethod("is.unsorted", "List", function(x, na.rm = FALSE, strictly = FALSE) {
+              vapply(x, is.unsorted, logical(1L), na.rm=na.rm,
+                     strictly=strictly)
+          })

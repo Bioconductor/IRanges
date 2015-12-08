@@ -484,7 +484,9 @@ rowsumCompressedList <- function(x, ..., na.rm = FALSE) {
   setNames(ans, names(x))
 }
 
-setNumericalListMethod <- function(fun, def, where=topenv(parent.frame())) {
+setCompressedNumericalListMethod <-
+    function(fun, def, where=topenv(parent.frame()))
+{
     types <- c("Logical", "Integer", "Numeric")
     classNames <- paste0("Compressed", types, "List")
     lapply(classNames, function(className) {
@@ -496,7 +498,7 @@ setNumericalListMethod <- function(fun, def, where=topenv(parent.frame())) {
 
 setCompressedListSummaryMethod <- function(fun, where=topenv(parent.frame()))
 {
-    setNumericalListMethod(fun, function(x, na.rm = FALSE) {
+    setCompressedNumericalListMethod(fun, function(x, na.rm = FALSE) {
         stopifnot(isTRUEorFALSE(na.rm))
         .Call(C_fun, x, na.rm)
     }, where)
@@ -506,13 +508,6 @@ setCompressedListSummaryMethod("sum")
 setCompressedListSummaryMethod("prod")
 setCompressedListSummaryMethod("min")
 setCompressedListSummaryMethod("max")
-
-setNumericalListMethod("is.unsorted",
-                       function(x, na.rm = FALSE, strictly=FALSE) {
-                           stopifnot(isTRUEorFALSE(na.rm))
-                           stopifnot(isTRUEorFALSE(strictly))
-                           .Call(C_fun, x, na.rm, strictly)
-                       })
 
 setMethods("range",
            list("CompressedLogicalList",
@@ -718,6 +713,12 @@ setMethod("table", "AtomicList",
     }
 )
 
+setCompressedNumericalListMethod("is.unsorted",
+                                 function(x, na.rm = FALSE, strictly=FALSE) {
+                                     stopifnot(isTRUEorFALSE(na.rm))
+                                     stopifnot(isTRUEorFALSE(strictly))
+                                     .Call(C_fun, x, na.rm, strictly)
+                                 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Logical methods
