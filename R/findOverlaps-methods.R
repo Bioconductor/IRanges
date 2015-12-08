@@ -739,8 +739,8 @@ setMethod("subsetByOverlaps", c("RangedData", "RangedData"),
                                                maxgap = maxgap,
                                                minoverlap = minoverlap,
                                                type = match.arg(type),
-                                               select = "arbitrary"),
-                                               algorithm=match.arg(algorithm)),
+                                               select = "arbitrary",
+                                               algorithm=match.arg(algorithm))),
                            use.names=FALSE),]
           })
 
@@ -753,8 +753,8 @@ setMethod("subsetByOverlaps", c("RangedData", "RangesList"),
                                                maxgap = maxgap,
                                                minoverlap = minoverlap,
                                                type = match.arg(type),
-                                               select = "arbitrary"),
-                                               algorithm=match.arg(algorithm)),
+                                               select = "arbitrary",
+                                               algorithm=match.arg(algorithm))),
                            use.names=FALSE),]
           })
 
@@ -767,8 +767,8 @@ setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
                                         maxgap = maxgap,
                                         minoverlap = minoverlap,
                                         type = match.arg(type),
-                                        select = "arbitrary"),
-                                        algorithm=match.arg(algorithm))]
+                                        select = "arbitrary",
+                                        algorithm=match.arg(algorithm)))]
           })
 
 
