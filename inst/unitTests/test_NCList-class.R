@@ -38,6 +38,21 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
 }
 
 ### Used in the unit tests for GNCList located in GenomicRanges.
+.min_overlap_score <- function(maxgap=0L, minoverlap=1L, type="any")
+{
+    maxgap <- IRanges:::.normarg_maxgap(maxgap, type)
+    if (!isSingleNumber(minoverlap))
+        stop("'minoverlap' must be a single integer")
+    if (!is.integer(minoverlap))
+        minoverlap <- as.integer(minoverlap)
+    if (minoverlap < 0L)
+        stop("'minoverlap' cannot be negative")
+    if (maxgap != 0L && minoverlap > 1L)
+        stop("'minoverlap' must be <= 1 when 'maxgap' is not 0")
+    minoverlap - maxgap
+}
+
+### Used in the unit tests for GNCList located in GenomicRanges.
 .overlap_score <- function(query, subject)
 {
     pmin(end(query), end(subject)) - pmax(start(query), start(subject)) + 1L
@@ -71,16 +86,18 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
     which(ok)
 }
 
-.findOverlaps_naive <- function(query, subject, min.score=1L,
+.findOverlaps_naive <- function(query, subject,
+                                maxgap=0L, minoverlap=1L,
                                 type=c("any", "start", "end",
                                        "within", "extend", "equal"),
                                 select=c("all", "first", "last", "arbitrary",
                                          "count"))
 {
+    min_score <- .min_overlap_score(maxgap, minoverlap)
     type <- match.arg(type)
     select <- match.arg(select)
     hits_per_query <- lapply(seq_along(query),
-        function(i) .get_query_overlaps(query[i], subject, min.score, type))
+        function(i) .get_query_overlaps(query[i], subject, min_score, type))
     hits <- .make_Hits_from_q2s(hits_per_query, length(subject))
     selectHits(hits, select=select)
 }
@@ -159,59 +176,62 @@ test_findOverlaps_NCList_with_filtering <- function()
 
     pp_query <- NCList(query)
     pp_subject <- NCList(subject)
-    for (min.score in -3:4) {
+    for (maxgap in 0:3) {
+      max_minoverlap <- if (maxgap == 0L) 4L else 1L
+      for (minoverlap in 0:max_minoverlap) {
         for (type in c("any", "start", "end", "within", "extend", "equal")) {
-            for (select in c("all", "first", "last", "count")) {
-                ## query - subject
-                target <- .findOverlaps_naive(query, subject,
-                                              min.score=min.score,
-                                              type=type, select=select)
-                current <- findOverlaps_NCList(query, pp_subject,
-                                               min.score=min.score,
-                                               type=type, select=select)
-                checkTrue(.compare_hits(target, current))
-                current <- findOverlaps_NCList(pp_query, subject,
-                                               min.score=min.score,
-                                               type=type, select=select)
-                checkTrue(.compare_hits(target, current))
-                current <- findOverlaps_NCList(query, subject,
-                                               min.score=min.score,
-                                               type=type, select=select)
-                checkTrue(.compare_hits(target, current))
-                ## subject - query
-                target <- .findOverlaps_naive(subject, query,
-                                              min.score=min.score,
-                                              type=type, select=select)
-                current <- findOverlaps_NCList(pp_subject, query,
-                                               min.score=min.score,
-                                               type=type, select=select)
-                checkTrue(.compare_hits(target, current))
-                current <- findOverlaps_NCList(subject, pp_query,
-                                               min.score=min.score,
-                                               type=type, select=select)
-                checkTrue(.compare_hits(target, current))
-                current <- findOverlaps_NCList(subject, query,
-                                               min.score=min.score,
-                                               type=type, select=select)
-                checkTrue(.compare_hits(target, current))
-                ## subject - subject
-                target <- .findOverlaps_naive(subject, subject,
-                                              min.score=min.score,
-                                              type=type, select=select)
-                current <- findOverlaps_NCList(pp_subject, subject,
-                                               min.score=min.score,
-                                               type=type, select=select)
-                checkTrue(.compare_hits(target, current))
-                current <- findOverlaps_NCList(subject, pp_subject,
-                                               min.score=min.score,
-                                               type=type, select=select)
-                checkTrue(.compare_hits(target, current))
-                current <- findOverlaps_NCList(subject, subject,
-                                               min.score=min.score,
-                                               type=type, select=select)
-                checkTrue(.compare_hits(target, current))
-            }
+          for (select in c("all", "first", "last", "count")) {
+            ## query - subject
+            target <- .findOverlaps_naive(query, subject,
+                                          maxgap=maxgap, minoverlap=minoverlap,
+                                          type=type, select=select)
+            current <- findOverlaps_NCList(query, pp_subject,
+                                           maxgap=maxgap, minoverlap=minoverlap,
+                                           type=type, select=select)
+            checkTrue(.compare_hits(target, current))
+            current <- findOverlaps_NCList(pp_query, subject,
+                                           maxgap=maxgap, minoverlap=minoverlap,
+                                           type=type, select=select)
+            checkTrue(.compare_hits(target, current))
+            current <- findOverlaps_NCList(query, subject,
+                                           maxgap=maxgap, minoverlap=minoverlap,
+                                           type=type, select=select)
+            checkTrue(.compare_hits(target, current))
+            ## subject - query
+            target <- .findOverlaps_naive(subject, query,
+                                          maxgap=maxgap, minoverlap=minoverlap,
+                                          type=type, select=select)
+            current <- findOverlaps_NCList(pp_subject, query,
+                                           maxgap=maxgap, minoverlap=minoverlap,
+                                           type=type, select=select)
+            checkTrue(.compare_hits(target, current))
+            current <- findOverlaps_NCList(subject, pp_query,
+                                           maxgap=maxgap, minoverlap=minoverlap,
+                                           type=type, select=select)
+            checkTrue(.compare_hits(target, current))
+            current <- findOverlaps_NCList(subject, query,
+                                           maxgap=maxgap, minoverlap=minoverlap,
+                                           type=type, select=select)
+            checkTrue(.compare_hits(target, current))
+            ## subject - subject
+            target <- .findOverlaps_naive(subject, subject,
+                                          maxgap=maxgap, minoverlap=minoverlap,
+                                          type=type, select=select)
+            current <- findOverlaps_NCList(pp_subject, subject,
+                                           maxgap=maxgap, minoverlap=minoverlap,
+                                           type=type, select=select)
+            checkTrue(.compare_hits(target, current))
+            current <- findOverlaps_NCList(subject, pp_subject,
+                                           maxgap=maxgap, minoverlap=minoverlap,
+                                           type=type, select=select)
+            checkTrue(.compare_hits(target, current))
+            current <- findOverlaps_NCList(subject, subject,
+                                           maxgap=maxgap, minoverlap=minoverlap,
+                                           type=type, select=select)
+            checkTrue(.compare_hits(target, current))
+          }
         }
+      }
     }
 }
 
@@ -219,32 +239,35 @@ test_findOverlaps_NCList_with_filtering <- function()
 {
     pp_query <- NCList(query)
     pp_subject <- NCList(subject)
-    for (min.score in -3:4) {
+    for (maxgap in 0:3) {
+      max_minoverlap <- if (maxgap == 0L) 4L else 1L
+      for (minoverlap in 0:max_minoverlap) {
         for (type in c("any", "start", "end", "within", "extend", "equal")) {
-            target <- as(.findOverlaps_naive(query, subject,
-                                             min.score=min.score,
-                                             type=type, select="all"),
-                         "CompressedIntegerList")
-            target_idx0 <- elementLengths(target) == 0L
-            check_arbitrary_hits <- function(current) {
-                current_idx0 <- is.na(current)
-                checkIdentical(target_idx0, current_idx0)
-                current <- as(current, "CompressedIntegerList")
-                checkTrue(all(current_idx0 | as.logical(current %in% target)))
-            }
-            current <- findOverlaps_NCList(query, pp_subject,
-                                           min.score=min.score,
-                                           type=type, select="arbitrary")
-            check_arbitrary_hits(current)
-            current <- findOverlaps_NCList(pp_query, subject,
-                                           min.score=min.score,
-                                           type=type, select="arbitrary")
-            check_arbitrary_hits(current)
-            current <- findOverlaps_NCList(query, subject,
-                                           min.score=min.score,
-                                           type=type, select="arbitrary")
-            check_arbitrary_hits(current)
+          target <- as(.findOverlaps_naive(query, subject,
+                                           maxgap=maxgap, minoverlap=minoverlap,
+                                           type=type, select="all"),
+                       "CompressedIntegerList")
+          target_idx0 <- elementLengths(target) == 0L
+          check_arbitrary_hits <- function(current) {
+              current_idx0 <- is.na(current)
+              checkIdentical(target_idx0, current_idx0)
+              current <- as(current, "CompressedIntegerList")
+              checkTrue(all(current_idx0 | as.logical(current %in% target)))
+          }
+          current <- findOverlaps_NCList(query, pp_subject,
+                                         maxgap=maxgap, minoverlap=minoverlap,
+                                         type=type, select="arbitrary")
+          check_arbitrary_hits(current)
+          current <- findOverlaps_NCList(pp_query, subject,
+                                         maxgap=maxgap, minoverlap=minoverlap,
+                                         type=type, select="arbitrary")
+          check_arbitrary_hits(current)
+          current <- findOverlaps_NCList(query, subject,
+                                         maxgap=maxgap, minoverlap=minoverlap,
+                                         type=type, select="arbitrary")
+          check_arbitrary_hits(current)
         }
+      }
     }
 }
 

@@ -386,7 +386,8 @@ SEXP NCList_find_overlaps(
 	SEXP s_end,
 	SEXP nclist,
 	SEXP nclist_is_q,
-	SEXP min_score,
+	SEXP maxgap,
+	SEXP minoverlap,
 	SEXP type,
 	SEXP select,
 	SEXP circle_length
@@ -403,7 +404,8 @@ SEXP NCList_find_overlaps_in_groups(
 	SEXP s_groups,
 	SEXP nclists,
 	SEXP nclist_is_q,
-	SEXP min_score,
+	SEXP maxgap,
+	SEXP minoverlap,
 	SEXP type,
 	SEXP select,
 	SEXP circle_length

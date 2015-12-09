@@ -159,20 +159,43 @@ print_NCList <- function(x)
 ### findOverlaps_NCList()
 ###
 
+.normarg_maxgap <- function(maxgap, type)
+{
+    if (!isSingleNumber(maxgap))
+        stop("'maxgap' must be a single integer")
+    if (!is.integer(maxgap))
+        maxgap <- as.integer(maxgap)
+    if (maxgap < 0L)
+        stop("'maxgap' cannot be negative")
+    if (maxgap > 0L && type %in% c("within", "equal"))
+        warning(wmsg(
+            "With the new findOverlaps/countOverlaps implementation based ",
+            "on Nested Containment Lists, 'maxgap' has no special meaning ",
+            "when 'type' is set to \"within\" or \"equal\". Note that ",
+            "this is a change with respect to the old implementation ",
+            "based on Interval Trees. See ?NCList for more information ",
+            "about this change and other differences between the new and ",
+            "old implementations. Use the 'algorithm' argument to switch ",
+            "between the 2 implementations."
+        ))
+    maxgap
+}
+
 ### NOT exported.
 findOverlaps_NCList <- function(query, subject,
-             min.score=1L,
+             maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "extend", "equal"),
              select=c("all", "first", "last", "arbitrary", "count"),
              circle.length=NA_integer_)
 {
     if (!(is(query, "Ranges") && is(subject, "Ranges")))
         stop("'query' and 'subject' must be Ranges objects")
-    if (!isSingleNumber(min.score))
-        stop("'min.score' must be a single integer")
-    if (!is.integer(min.score))
-        min.score <- as.integer(min.score)
+    if (!isSingleNumber(minoverlap))
+        stop("'minoverlap' must be a single integer")
+    if (!is.integer(minoverlap))
+        minoverlap <- as.integer(minoverlap)
     type <- match.arg(type)
+    maxgap <- .normarg_maxgap(maxgap, type)
     select <- match.arg(select)
     circle.length <- .normarg_circle.length1(circle.length)
 
@@ -195,46 +218,8 @@ findOverlaps_NCList <- function(query, subject,
            start(query), end(query),
            start(subject), end(subject),
            nclist, nclist_is_q,
-           min.score, type, select, circle.length,
+           maxgap, minoverlap, type, select, circle.length,
            PACKAGE="IRanges")
-}
-
-### NOT exported.
-min_overlap_score <- function(maxgap=0L, minoverlap=1L, type="any")
-{
-    ## Check and normalize 'maxgap'.
-    if (!isSingleNumber(maxgap))
-        stop("'maxgap' must be a single integer")
-    if (!is.integer(maxgap))
-        maxgap <- as.integer(maxgap)
-
-    ## Check and normalize 'minoverlap'.
-    if (!isSingleNumber(minoverlap))
-        stop("'minoverlap' must be a single integer")
-    if (!is.integer(minoverlap))
-        minoverlap <- as.integer(minoverlap)
-
-    if (maxgap < 0L)
-        stop("'maxgap' cannot be negative")
-    if (minoverlap < 0L)
-        stop("'minoverlap' cannot be negative")
-    if (maxgap != 0L) {
-        if (minoverlap > 1L)
-            stop("'minoverlap' must be <= 1 when 'maxgap' is not 0")
-        if (type %in% c("within", "equal")) {
-            warning(wmsg(
-                "With the new findOverlaps/countOverlaps implementation based ",
-                "on Nested Containment Lists, 'maxgap' has no special meaning ",
-                "when 'type' is set to \"within\" or \"equal\". Note that ",
-                "this is a change with respect to the old implementation ",
-                "based on Interval Trees. See ?NCList for more information ",
-                "about this change and other differences between the new and ",
-                "old implementations. Use the 'algorithm' argument to switch ",
-                "between the 2 implementations."
-            ))
-        }
-    }
-    minoverlap - maxgap
 }
 
 
@@ -344,10 +329,13 @@ setAs("RangesList", "NCLists", function(from) NCLists(from))
 ### NOT exported. Workhorse behind findOverlaps_NCLists() below and behind
 ### GenomicRanges:::findOverlaps_GNCList().
 NCList_find_overlaps_in_groups <- function(
-                        q, q_space, q_groups,
-                        s, s_space, s_groups,
-                        nclists, nclist_is_q,
-                        min.score, type, select, circle.length)
+             q, q_space, q_groups,
+             s, s_space, s_groups,
+             nclists, nclist_is_q,
+             maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "extend", "equal"),
+             select=c("all", "first", "last", "arbitrary", "count"),
+             circle.length)
 {
     if (!(is(q, "Ranges") && is(s, "Ranges")))
         stop("'q' and 's' must be Ranges object")
@@ -355,6 +343,15 @@ NCList_find_overlaps_in_groups <- function(
         stop("'q_groups' must be a CompressedIntegerList object")
     if (!is(s_groups, "CompressedIntegerList"))
         stop("'s_groups' must be a CompressedIntegerList object")
+
+    if (!isSingleNumber(minoverlap))
+        stop("'minoverlap' must be a single integer")
+    if (!is.integer(minoverlap))
+        minoverlap <- as.integer(minoverlap)
+    type <- match.arg(type)
+    maxgap <- .normarg_maxgap(maxgap, type)
+    select <- match.arg(select)
+
     q_circle_len <- circle.length
     q_circle_len[which(nclist_is_q)] <- NA_integer_
     q <- .shift_ranges_in_groups_to_first_circle(q, q_groups, q_circle_len)
@@ -365,7 +362,7 @@ NCList_find_overlaps_in_groups <- function(
            start(q), end(q), q_space, q_groups,
            start(s), end(s), s_space, s_groups,
            nclists, nclist_is_q,
-           min.score, type, select, circle.length,
+           maxgap, minoverlap, type, select, circle.length,
            PACKAGE="IRanges")
 }
 
@@ -414,17 +411,13 @@ NCList_find_overlaps_in_groups <- function(
 ###   (b) integer vectors if 'select' is not "all". In that case the list is
 ###       parallel to and has the same shape as 'query'.
 findOverlaps_NCLists <- function(query, subject,
-             min.score=1L,
+             maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "extend", "equal"),
              select=c("all", "first", "last", "arbitrary", "count"),
              circle.length=NA_integer_)
 {
     if (!(is(query, "RangesList") && is(subject, "RangesList")))
         stop("'query' and 'subject' must be RangesList objects")
-    if (!isSingleNumber(min.score))
-        stop("'min.score' must be a single integer")
-    if (!is.integer(min.score))
-        min.score <- as.integer(min.score)
     type <- match.arg(type)
     select <- match.arg(select)
     circle.length <- .normarg_circle.length2(circle.length,
@@ -459,7 +452,7 @@ findOverlaps_NCLists <- function(query, subject,
                         q, NULL, q_groups,
                         s, NULL, s_groups,
                         nclists, nclist_is_q,
-                        min.score, type, select, circle.length)
+                        maxgap, minoverlap, type, select, circle.length)
     .split_and_remap_hits(all_hits, query, subject, select)
 }
 

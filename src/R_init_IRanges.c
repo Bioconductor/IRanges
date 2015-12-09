@@ -70,8 +70,8 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(NCList_build, 4),
 	CALLMETHOD_DEF(new_NCListSXP_from_NCList, 1),
 	CALLMETHOD_DEF(NCListSXP_print, 3),
-	CALLMETHOD_DEF(NCList_find_overlaps, 10),
-	CALLMETHOD_DEF(NCList_find_overlaps_in_groups, 14),
+	CALLMETHOD_DEF(NCList_find_overlaps, 11),
+	CALLMETHOD_DEF(NCList_find_overlaps_in_groups, 15),
 
 /* CompressedAtomicList_utils.c */
 	CALLMETHOD_DEF(CompressedLogicalList_sum, 2),
