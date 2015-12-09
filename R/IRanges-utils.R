@@ -51,6 +51,15 @@ successiveIRanges <- function(width, gapwidth=0, from=1)
     new2("IRanges", start=ans_start, width=width, check=TRUE)
 }
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### slidingIRanges()
+###
+
+slidingIRanges <- function(len, width, shift = 1L) {
+    start <- seq(1L, len-width, by=shift)
+    end <- seq(width, len, by=shift)
+    IRanges(start, end)
+}
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### breakInChunks()

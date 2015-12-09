@@ -298,6 +298,16 @@ successiveViews <- function(subject, width, gapwidth=0, from=1)
     Views(subject, ranges)
 }
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### The "slidingViews" function.
+###
+
+slidingViews <- function(subject, width, shift = 1L)
+{
+    ranges <- slidingIRanges(length(subject), width, shift)
+    Views(subject, ranges)
+}
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "viewApply" function.
