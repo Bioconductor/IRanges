@@ -153,7 +153,7 @@ mergeByOverlaps(query, subject, ...)
     maximum amount by which the query may be wider than the subject.
     With the new implementation based on Nested Containment Lists (BioC >=
     3.1), this special meaning is still being used but only when \code{type}
-    is set to \code{start} or \code{end}.
+    is set to \code{start}, \code{end}, or \code{equal}.
     See \code{?NCList} for more information about this change and other
     differences between the new and old findOverlaps/countOverlaps
     implementations.

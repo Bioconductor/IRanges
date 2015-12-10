@@ -167,16 +167,15 @@ print_NCList <- function(x)
         maxgap <- as.integer(maxgap)
     if (maxgap < 0L)
         stop("'maxgap' cannot be negative")
-    if (maxgap > 0L && type %in% c("within", "equal"))
+    if (maxgap > 0L && type == "within")
         warning(wmsg(
             "With the new findOverlaps/countOverlaps implementation based ",
             "on Nested Containment Lists, 'maxgap' has no special meaning ",
-            "when 'type' is set to \"within\" or \"equal\". Note that ",
-            "this is a change with respect to the old implementation ",
-            "based on Interval Trees. See ?NCList for more information ",
-            "about this change and other differences between the new and ",
-            "old implementations. Use the 'algorithm' argument to switch ",
-            "between the 2 implementations."
+            "when 'type' is set to \"within\". Note that this is a ",
+            "change with respect to the old implementation based on ",
+            "Interval Trees. See '?NCList' for more information about ",
+            "this change and other differences between the new and old ",
+            "implementations."
         ))
     maxgap
 }

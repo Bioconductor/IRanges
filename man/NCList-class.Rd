@@ -122,11 +122,11 @@ NCLists(x, circle.length=NA_integer_)
     \item With the old implementation, \code{maxgap} had a special
           meaning when \code{type} was set to \code{"start"}, \code{"end"},
           \code{"within"}, or \code{"equal"}. With the new implementation,
-          this special meaning is still being used but only when \code{type} is
-          set to \code{"start"} or \code{"end"}. If \code{maxgap}'s special
-          meaning when \code{type} is \code{"within"} or \code{"equal"} seems
-          useful to you, please say hello on our support site
-          (\url{https://support.bioconductor.org/}) or on the bioc-devel
+          this special meaning is still being used but only when \code{type}
+          is set to \code{"start"}, \code{"end"}, or \code{"equal"}.
+          If \code{maxgap}'s special meaning when \code{type} is
+          \code{"within"} seems useful to you, please say hello on our support
+          site (\url{https://support.bioconductor.org/}) or on the bioc-devel
           mailing list. Anyway, this is the 3rd situation where the new and
           old implementations produce different outputs.
     \item The new implementation supports preprocessing of a
