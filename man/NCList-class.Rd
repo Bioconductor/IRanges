@@ -88,7 +88,7 @@ NCLists(x, circle.length=NA_integer_)
           \code{\link{findOverlaps}} are not \emph{fully} ordered (i.e. ordered
           by queryHits and subject Hits) anymore, but only \emph{partially}
           ordered (i.e. ordered by queryHits only). Other than that, and
-          except for the 3 particular situations mentioned below, the 2
+          except for the 2 particular situations mentioned below, the 2
           implementations produce the same output. However, the new
           implementation is faster and more memory efficient.
     \item With the new implementation, either the query or the subject can
@@ -119,16 +119,6 @@ NCLists(x, circle.length=NA_integer_)
           generally not select the same hits as the old implementation. This is
           the 2nd situation where the new and old implementations produce
           different outputs.
-    \item With the old implementation, \code{maxgap} had a special
-          meaning when \code{type} was set to \code{"start"}, \code{"end"},
-          \code{"within"}, or \code{"equal"}. With the new implementation,
-          this special meaning is still being used but only when \code{type}
-          is set to \code{"start"}, \code{"end"}, or \code{"equal"}.
-          If \code{maxgap}'s special meaning when \code{type} is
-          \code{"within"} seems useful to you, please say hello on our support
-          site (\url{https://support.bioconductor.org/}) or on the bioc-devel
-          mailing list. Anyway, this is the 3rd situation where the new and
-          old implementations produce different outputs.
     \item The new implementation supports preprocessing of a
           \link[GenomicRanges]{GenomicRanges} object with ranges defined
           on circular sequences (e.g. on the mitochnodrial chromosome).

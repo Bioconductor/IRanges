@@ -145,18 +145,11 @@ mergeByOverlaps(query, subject, ...)
     contained within the subject interval. Note that all matches must
     additionally satisfy the \code{minoverlap} constraint described above.
 
-    With the old findOverlaps/countOverlaps implementation based on Interval
-    Trees (BioC < 3.1), the \code{maxgap} parameter had
-    special meaning with the special overlap types. For \code{start},
-    \code{end}, and \code{equal}, it used to specify the maximum difference in
-    the starts, ends or both, respectively. For \code{within}, it was the
-    maximum amount by which the query may be wider than the subject.
-    With the new implementation based on Nested Containment Lists (BioC >=
-    3.1), this special meaning is still being used but only when \code{type}
-    is set to \code{start}, \code{end}, or \code{equal}.
-    See \code{?NCList} for more information about this change and other
-    differences between the new and old findOverlaps/countOverlaps
-    implementations.
+    The \code{maxgap} parameter has special meaning with the special
+    overlap types. For \code{start}, \code{end}, and \code{equal},
+    it specifies the maximum difference in the starts, ends or both,
+    respectively. For \code{within}, it is the maximum amount by which
+    the query may be wider than the subject.
   }
   \item{select}{
     If \code{query} is a \link{Ranges} or \link{Views} object:

@@ -416,7 +416,6 @@ typedef struct backpack_t {
 	int maxgap;
 	int minoverlap;
 	int overlap_type;
-	int is_special_type;
 	int min_overlap_score0;
 	int (*is_hit_fun)(int revidx, const struct backpack_t *backpack);
 
@@ -441,7 +440,6 @@ static int overlap_score0(int x_start, int x_end, int y_start, int y_end)
 	       (x_start >= y_start ? x_start : y_start);
 }
 
-/* Also works for overlaps of type TYPE_WITHIN. */
 static int is_TYPE_ANY_hit(int revidx, const Backpack *backpack)
 {
 	int x_start, x_end;
@@ -490,17 +488,35 @@ static int is_TYPE_END_hit(int revidx, const Backpack *backpack)
 	return score0 >= backpack->min_overlap_score0;
 }
 
-static int is_TYPE_EXTEND_hit(int revidx, const Backpack *backpack)
+static int is_TYPE_WITHIN_hit(int revidx, const Backpack *backpack)
 {
-	int x_start, x_end;
+	int x_start, x_end, d;
 
-	/* Check the score */
+	if (backpack->maxgap == 0)
+		return 1;
 	x_start = backpack->x_start_p[revidx];
 	x_end = backpack->x_end_p[revidx];
+	d = backpack->y_start - x_start + x_end - backpack->y_end;
+	return d <= backpack->maxgap;
+}
+
+static int is_TYPE_EXTEND_hit(int revidx, const Backpack *backpack)
+{
+	int x_start, x_end, d1, d2;
+
+	x_start = backpack->x_start_p[revidx];
+	d1 = x_start - backpack->y_start;
+	if (d1 < 0)
+		return 0;
+	x_end = backpack->x_end_p[revidx];
+	d2 = backpack->y_end - x_end;
+	if (d2 < 0)
+		return 0;
 	if (x_end - x_start < backpack->min_overlap_score0)
 		return 0;
-	return backpack->y_start <= x_start &&
-	       backpack->y_end >= x_end;
+	if (backpack->maxgap == 0)
+		return 1;
+	return d1 + d2 <= backpack->maxgap;
 }
 
 static int is_TYPE_EQUAL_hit(int revidx, const Backpack *backpack)
@@ -590,18 +606,14 @@ static Backpack prepare_backpack(const int *x_start_p, const int *x_end_p,
 	backpack.maxgap = maxgap;
 	backpack.minoverlap = minoverlap;
 	backpack.overlap_type = overlap_type;
-	backpack.is_special_type = overlap_type == TYPE_START ||
-				   overlap_type == TYPE_END ||
-				   overlap_type == TYPE_EQUAL;
-	if (backpack.is_special_type)
-		backpack.min_overlap_score0 = minoverlap - 1;
-	else
+	if (overlap_type == TYPE_ANY)
 		backpack.min_overlap_score0 = minoverlap - maxgap - 1;
+	else
+		backpack.min_overlap_score0 = minoverlap - 1;
 
 	/* set callback function for the current type of overlaps */
 	switch (overlap_type) {
 		case TYPE_ANY:
-		case TYPE_WITHIN:
 			backpack.is_hit_fun = is_TYPE_ANY_hit;
 			break;
 		case TYPE_START:
@@ -609,6 +621,9 @@ static Backpack prepare_backpack(const int *x_start_p, const int *x_end_p,
 			break;
 		case TYPE_END:
 			backpack.is_hit_fun = is_TYPE_END_hit;
+			break;
+		case TYPE_WITHIN:
+			backpack.is_hit_fun = is_TYPE_WITHIN_hit;
 			break;
 		case TYPE_EXTEND:
 			backpack.is_hit_fun = is_TYPE_EXTEND_hit;
@@ -637,7 +652,13 @@ static void update_backpack(Backpack *backpack, int y_idx,
 	backpack->y_space = y_space;
 
 	/* set 'min_x_end' and 'max_x_start' */
-	if (!backpack->is_special_type
+	if (backpack->overlap_type == TYPE_WITHIN) {
+		backpack->min_x_end = backpack->y_end;
+		backpack->max_x_start = backpack->y_start;
+		return;
+	}
+	if (backpack->overlap_type == TYPE_ANY
+	 || backpack->overlap_type == TYPE_EXTEND
 	 || backpack->minoverlap != 0
 	 || backpack->circle_len != NA_INTEGER)
 	{
@@ -645,34 +666,35 @@ static void update_backpack(Backpack *backpack, int y_idx,
 		backpack->min_x_end = y_start + min_overlap_score0;
 		backpack->max_x_start = y_end - min_overlap_score0;
 	}
-	if (backpack->is_special_type) {
-		/* min_x_end */
-		if (backpack->overlap_type == TYPE_START) {
-			/* TYPE_START */
-			if (backpack->minoverlap == 0)
-				backpack->min_x_end =
-					y_start - backpack->maxgap - 1;
-		} else if (backpack->circle_len == NA_INTEGER) {
-			/* TYPE_END or TYPE_EQUAL */
-			min_x_end = y_end - backpack->maxgap;
-			if (backpack->minoverlap == 0
-			 || min_x_end > backpack->min_x_end)
-				backpack->min_x_end = min_x_end;
-		}
-		/* max_x_start */
-		if (backpack->overlap_type == TYPE_END) {
-			/* TYPE_END */
-			if (backpack->minoverlap == 0)
-				backpack->max_x_start =
-					y_end + backpack->maxgap + 1;
-		//} else if (backpack->circle_len == NA_INTEGER) {
-		} else {
-			/* TYPE_START or TYPE_EQUAL */
-			max_x_start = y_start + backpack->maxgap;
-			if (backpack->minoverlap == 0
-			 || max_x_start < backpack->max_x_start)
-				backpack->max_x_start = max_x_start;
-		}
+	if (backpack->overlap_type == TYPE_ANY
+	 || backpack->overlap_type == TYPE_EXTEND)
+		return;
+
+	/* TYPE_START, TYPE_END, or TYPE_EQUAL */
+	/* min_x_end */
+	if (backpack->overlap_type == TYPE_START) {
+		/* TYPE_START */
+		if (backpack->minoverlap == 0)
+			backpack->min_x_end = y_start - backpack->maxgap - 1;
+	} else if (backpack->circle_len == NA_INTEGER) {
+		/* TYPE_END or TYPE_EQUAL */
+		min_x_end = y_end - backpack->maxgap;
+		if (backpack->minoverlap == 0
+		 || min_x_end > backpack->min_x_end)
+			backpack->min_x_end = min_x_end;
+	}
+	/* max_x_start */
+	if (backpack->overlap_type == TYPE_END) {
+		/* TYPE_END */
+		if (backpack->minoverlap == 0)
+			backpack->max_x_start = y_end + backpack->maxgap + 1;
+	//} else if (backpack->circle_len == NA_INTEGER) {
+	} else {
+		/* TYPE_START or TYPE_EQUAL */
+		max_x_start = y_start + backpack->maxgap;
+		if (backpack->minoverlap == 0
+		 || max_x_start < backpack->max_x_start)
+			backpack->max_x_start = max_x_start;
 	}
 	//printf("y_start=%d y_end=%d min_x_end=%d max_x_start=%d\n",
 	//       y_start, y_end, backpack->min_x_end, backpack->max_x_start);
@@ -823,7 +845,7 @@ static void pp_find_overlaps(
 
 
 /****************************************************************************
- * bsearch_revmap()
+ * int_bsearch()
  */
 
 /*
@@ -867,22 +889,6 @@ static int int_bsearch(const int *subset, int subset_len,
 	return n2;
 }
 
-static int bsearch_revmap(const int *revmap, int revmap_len,
-			  const Backpack *backpack)
-{
-	const int *base;
-	int min;
-
-	if (backpack->overlap_type == TYPE_WITHIN) {
-		base = backpack->x_end_p;
-		min = backpack->y_end;
-	} else {
-		base = backpack->x_end_p;
-		min = backpack->min_x_end;
-	}
-	return int_bsearch(revmap, revmap_len, base, min);
-}
-
 
 /****************************************************************************
  * NCList_get_y_overlaps()
@@ -892,27 +898,21 @@ static int bsearch_revmap(const int *revmap, int revmap_len,
 static void NCList_get_y_overlaps(const NCList *x_nclist,
 				  const Backpack *backpack)
 {
-	const int *revmap_p, *base;
-	int nelt, n, revidx, max;
+	const int *revmap_p;
+	int nelt, n, revidx;
 	const NCList *contained_list_p;
 
 	revmap_p = x_nclist->revmap;
 	nelt = x_nclist->nelt;
-	n = bsearch_revmap(revmap_p, nelt, backpack);
+	n = int_bsearch(revmap_p, nelt,
+			backpack->x_end_p, backpack->min_x_end);
 	for (revmap_p = revmap_p + n,
 	     contained_list_p = x_nclist->contained_list + n;
 	     n < nelt;
 	     n++, revmap_p++, contained_list_p++)
 	{
 		revidx = *revmap_p;
-		if (backpack->overlap_type == TYPE_WITHIN) {
-			base = backpack->x_start_p;
-			max = backpack->y_start;
-		} else {
-			base = backpack->x_start_p;
-			max = backpack->max_x_start;
-		}
-		if (base[revidx] > max)
+		if (backpack->x_start_p[revidx] > backpack->max_x_start)
 			break;
 		if (is_hit(revidx, backpack)) {
 			report_hit(revidx, backpack);
@@ -935,26 +935,20 @@ static void NCList_get_y_overlaps(const NCList *x_nclist,
 static void NCListSXP_get_y_overlaps(const int *x_nclist,
 				     const Backpack *backpack)
 {
-	const int *revmap_p, *base, *offset_p;
-	int nelt, n, revidx, max, offset;
+	const int *revmap_p, *offset_p;
+	int nelt, n, revidx, offset;
 
 	revmap_p = NCListSXP_REVMAP(x_nclist);
 	nelt = NCListSXP_NELT(x_nclist);
-	n = bsearch_revmap(revmap_p, nelt, backpack);
+	n = int_bsearch(revmap_p, nelt,
+			backpack->x_end_p, backpack->min_x_end);
 	for (revmap_p = revmap_p + n,
 	     offset_p = NCListSXP_OFFSETS(x_nclist) + n;
 	     n < nelt;
 	     n++, revmap_p++, offset_p++)
 	{
 		revidx = *revmap_p;
-		if (backpack->overlap_type == TYPE_WITHIN) {
-			base = backpack->x_start_p;
-			max = backpack->y_start;
-		} else {
-			base = backpack->x_start_p;
-			max = backpack->max_x_start;
-		}
-		if (base[revidx] > max)
+		if (backpack->x_start_p[revidx] > backpack->max_x_start)
 			break;
 		if (is_hit(revidx, backpack)) {
 			report_hit(revidx, backpack);
@@ -1041,22 +1035,6 @@ static int get_maxgap0(SEXP maxgap)
 	return maxgap0;
 }
 
-static int get_minoverlap0(SEXP minoverlap, int maxgap)
-{
-	int minoverlap0;
-
-	if (!IS_INTEGER(minoverlap) || LENGTH(minoverlap) != 1)
-		error("'minoverlap' must be a single integer");
-	minoverlap0 = INTEGER(minoverlap)[0];
-	if (minoverlap0 == NA_INTEGER)
-		error("'minoverlap' cannot be NA");
-	if (minoverlap0 < 0)
-		error("'minoverlap' cannot be negative");
-	if (maxgap != 0 && minoverlap0 > 1)
-		error("'minoverlap' must be <= 1 when 'maxgap' is not 0");
-	return minoverlap0;
-}
-
 static int get_overlap_type(SEXP type)
 {
 	const char *type0;
@@ -1082,6 +1060,22 @@ static int get_overlap_type(SEXP type)
 	error("'type' must be \"any\", \"start\", \"end\", "
 	      "\"within\", \"extend\", or \"equal\"");
 	return 0;
+}
+
+static int get_minoverlap0(SEXP minoverlap, int maxgap, int overlap_type)
+{
+	int minoverlap0;
+
+	if (!IS_INTEGER(minoverlap) || LENGTH(minoverlap) != 1)
+		error("'minoverlap' must be a single integer");
+	minoverlap0 = INTEGER(minoverlap)[0];
+	if (minoverlap0 == NA_INTEGER)
+		error("'minoverlap' cannot be NA");
+	if (minoverlap0 < 0)
+		error("'minoverlap' cannot be negative");
+	if (overlap_type == TYPE_ANY && maxgap != 0 && minoverlap0 > 1)
+		error("'minoverlap' must be <= 1 when 'maxgap' is not 0");
+	return minoverlap0;
 }
 
 static int get_circle_length(SEXP circle_length)
@@ -1148,8 +1142,8 @@ SEXP NCList_find_overlaps(
 				    &s_start_p, &s_end_p,
 				    "start(s)", "end(s)");
 	maxgap0 = get_maxgap0(maxgap);
-	minoverlap0 = get_minoverlap0(minoverlap, maxgap0);
 	overlap_type = get_overlap_type(type);
+	minoverlap0 = get_minoverlap0(minoverlap, maxgap0, overlap_type);
 	select_mode = get_select_mode(select);
 	circle_len = get_circle_length(circle_length);
 
@@ -1250,8 +1244,8 @@ SEXP NCList_find_overlaps_in_groups(
 	NG2 = _get_length_from_CompressedIntsList_holder(&s_groups_holder);
 
 	maxgap0 = get_maxgap0(maxgap);
-	minoverlap0 = get_minoverlap0(minoverlap, maxgap0);
 	overlap_type = get_overlap_type(type);
+	minoverlap0 = get_minoverlap0(minoverlap, maxgap0, overlap_type);
 	select_mode = get_select_mode(select);
 
 	qh_buf = new_IntAE(0, 0, 0);

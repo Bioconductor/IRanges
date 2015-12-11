@@ -159,27 +159,6 @@ print_NCList <- function(x)
 ### findOverlaps_NCList()
 ###
 
-.normarg_maxgap <- function(maxgap, type)
-{
-    if (!isSingleNumber(maxgap))
-        stop("'maxgap' must be a single integer")
-    if (!is.integer(maxgap))
-        maxgap <- as.integer(maxgap)
-    if (maxgap < 0L)
-        stop("'maxgap' cannot be negative")
-    if (maxgap > 0L && type == "within")
-        warning(wmsg(
-            "With the new findOverlaps/countOverlaps implementation based ",
-            "on Nested Containment Lists, 'maxgap' has no special meaning ",
-            "when 'type' is set to \"within\". Note that this is a ",
-            "change with respect to the old implementation based on ",
-            "Interval Trees. See '?NCList' for more information about ",
-            "this change and other differences between the new and old ",
-            "implementations."
-        ))
-    maxgap
-}
-
 ### NOT exported.
 findOverlaps_NCList <- function(query, subject,
              maxgap=0L, minoverlap=1L,
@@ -189,12 +168,18 @@ findOverlaps_NCList <- function(query, subject,
 {
     if (!(is(query, "Ranges") && is(subject, "Ranges")))
         stop("'query' and 'subject' must be Ranges objects")
+
+    if (!isSingleNumber(maxgap))
+        stop("'maxgap' must be a single integer")
+    if (!is.integer(maxgap))
+        maxgap <- as.integer(maxgap)
+
     if (!isSingleNumber(minoverlap))
         stop("'minoverlap' must be a single integer")
     if (!is.integer(minoverlap))
         minoverlap <- as.integer(minoverlap)
+
     type <- match.arg(type)
-    maxgap <- .normarg_maxgap(maxgap, type)
     select <- match.arg(select)
     circle.length <- .normarg_circle.length1(circle.length)
 
@@ -343,12 +328,17 @@ NCList_find_overlaps_in_groups <- function(
     if (!is(s_groups, "CompressedIntegerList"))
         stop("'s_groups' must be a CompressedIntegerList object")
 
+    if (!isSingleNumber(maxgap))
+        stop("'maxgap' must be a single integer")
+    if (!is.integer(maxgap))
+        maxgap <- as.integer(maxgap)
+
     if (!isSingleNumber(minoverlap))
         stop("'minoverlap' must be a single integer")
     if (!is.integer(minoverlap))
         minoverlap <- as.integer(minoverlap)
+
     type <- match.arg(type)
-    maxgap <- .normarg_maxgap(maxgap, type)
     select <- match.arg(select)
 
     q_circle_len <- circle.length
