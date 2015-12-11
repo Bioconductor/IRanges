@@ -55,33 +55,32 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
     overlap_score
 }
 
-.get_query_overlaps <- function(query, subject, maxgap, min_overlap_score, type)
+### Used in the unit tests for GNCList located in GenomicRanges.
+.get_query_overlaps <- function(query, subject,
+                                maxgap, min_overlap_score, type)
 {
     ok <- .overlap_score(query, subject, type) >= min_overlap_score
-    if (type != "any") {
-        if (type != "end") 
-            d1 <- abs(start(subject) - start(query))
-        if (type != "start")
-            d2 <- abs(end(subject) - end(query))
-        if (type == "start") {
-            ok <- ok & d1 <= maxgap
-        } else if (type == "end") {
-            ok <- ok & d2 <= maxgap
-        } else if (type == "equal") {
-            ok <- ok & d1 <= maxgap & d2 <= maxgap
-        } else if (type == "within") {
-            ok <- ok & start(query) >= start(subject) &
-                       end(query) <= end(subject)
-            if (maxgap > 0L)
-                ok <- ok & (d1 + d2) <= maxgap
-        } else {  # type == "extend"
-            ok <- ok & start(query) <= start(subject) &
-                       end(query) >= end(subject)
-            if (maxgap > 0L)
-                ok <- ok & (d1 + d2) <= maxgap
-        }
+    if (type == "any")
+        return(ok)
+    if (type != "end") 
+        d1 <- abs(start(subject) - start(query))
+    if (type != "start")
+        d2 <- abs(end(subject) - end(query))
+    if (type == "start")
+        return(ok & d1 <= maxgap)
+    if (type == "end")
+        return(ok & d2 <= maxgap)
+    if (type == "equal")
+        return(ok & d1 <= maxgap & d2 <= maxgap)
+    if (type == "within") {
+        ok2 <- start(query) >= start(subject) & end(query) <= end(subject)
+    } else {  # type == "extend"
+        ok2 <- start(query) <= start(subject) & end(query) >= end(subject)
     }
-    which(ok)
+    ok <- ok & ok2
+    if (maxgap > 0L)
+        ok <- ok & (d1 + d2) <= maxgap
+    ok
 }
 
 .findOverlaps_naive <- function(query, subject,
@@ -100,8 +99,8 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
     select <- match.arg(select)
     hits_per_query <- lapply(seq_along(query),
         function(i)
-            .get_query_overlaps(query[i], subject, maxgap, min_overlap_score,
-                                type))
+            which(.get_query_overlaps(query[i], subject,
+                                      maxgap, min_overlap_score, type)))
     hits <- .make_Hits_from_q2s(hits_per_query, length(subject))
     selectHits(hits, select=select)
 }
