@@ -3,8 +3,6 @@
 \alias{findOverlaps-methods}
 
 \alias{findOverlaps}
-\alias{findOverlaps,NCList,Ranges-method}
-\alias{findOverlaps,Ranges,NCList-method}
 \alias{findOverlaps,Ranges,Ranges-method}
 \alias{findOverlaps,Vector,missing-method}
 \alias{findOverlaps,integer,Ranges-method}
@@ -20,8 +18,7 @@
 \alias{findOverlaps,RangesList,RangedData-method}
 
 \alias{countOverlaps}
-\alias{countOverlaps,Ranges,NCList-method}
-\alias{countOverlaps,NCList,Ranges-method}
+\alias{countOverlaps,Ranges,Ranges-method}
 \alias{countOverlaps,ANY,Vector-method}
 \alias{countOverlaps,ANY,missing-method}
 \alias{countOverlaps,RangesList,RangesList-method}
@@ -79,22 +76,22 @@
 findOverlaps(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
-             algorithm=c("nclist", "intervaltree"), ...)
+             ...)
 
 countOverlaps(query, subject, maxgap=0L, minoverlap=1L,
               type=c("any", "start", "end", "within", "equal"),
-              algorithm=c("nclist", "intervaltree"), ...)
+              ...)
 
 overlapsAny(query, subject, maxgap=0L, minoverlap=1L,
             type=c("any", "start", "end", "within", "equal"),
-            algorithm=c("nclist", "intervaltree"), ...)
+            ...)
 query \%over\% subject
 query \%within\% subject
 query \%outside\% subject
 
 subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
                  type=c("any", "start", "end", "within", "equal"),
-                 algorithm=c("nclist", "intervaltree"), ...)
+                 ...)
 
 mergeByOverlaps(query, subject, ...)
 
@@ -169,9 +166,6 @@ mergeByOverlaps(query, subject, ...)
     where each element of the result corresponds to a space in \code{query}.
     When \code{select != "all" && drop}, an integer vector is returned
     containing indices that are offset to align with the unlisted \code{query}.
-  }
-  \item{algorithm}{
-    This argument is defunct.
   }
   \item{...}{
     Further arguments to be passed to or from other methods:

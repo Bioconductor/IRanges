@@ -26,15 +26,13 @@
 }
 
 \usage{
-\S4method{nearest}{Ranges,RangesORmissing}(x, subject, select = c("arbitrary", "all"),
-        algorithm = c("nclist", "intervaltree"))
+\S4method{nearest}{Ranges,RangesORmissing}(x, subject, select = c("arbitrary", "all"))
 
 \S4method{precede}{Ranges,RangesORmissing}(x, subject, select = c("first", "all"))
 
 \S4method{follow}{Ranges,RangesORmissing}(x, subject, select = c("last", "all"))
 
-\S4method{distanceToNearest}{Ranges,RangesORmissing}(x, subject, select = c("arbitrary", "all"),
-                  algorithm = c("nclist", "intervaltree"))
+\S4method{distanceToNearest}{Ranges,RangesORmissing}(x, subject, select = c("arbitrary", "all"))
 
 \S4method{distance}{Ranges,Ranges}(x, y)
 }
@@ -51,13 +49,6 @@
     by order in \code{subject} for \code{precede}, and the last for 
     \code{follow}). To get all matchings, as a \code{Hits} object, 
     use \dQuote{all}.
-  }
-  \item{algorithm}{
-    This argument is passed to \code{\link{findOverlaps}}, which
-    \code{nearest} and \code{distanceToNearest} use internally.
-    See \code{?\link{findOverlaps}} for more information.
-    Note that it will be removed in BioC 3.3 so please don't use it unless
-    you have a good reason to do so (e.g. troubleshooting).
   }
   \item{y}{For the \code{distance} method, a \code{Ranges} instance.
     Cannot be missing. If \code{x} and \code{y} are not the same
