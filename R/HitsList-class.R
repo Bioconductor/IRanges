@@ -3,7 +3,8 @@
 ### -------------------------------------------------------------------------
 
 ### FIXME: Rename this class SimpleHitsList and make HitsList a virtual
-### class that SimpleHitsList and CompressedHitsList extend directly.
+### class that SimpleHitsList (and possibly CompressedHitsList, defined in
+### IRanges) extend directly.
 setClass("HitsList",
     contains="SimpleList",
     representation(
@@ -12,10 +13,6 @@ setClass("HitsList",
     prototype(elementType="Hits")
 )
 
-setClass("CompressedHitsList",
-    prototype = prototype(elementType = "Hits",
-                          unlistData = new("Hits")),
-    contains="CompressedList")
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessors
@@ -34,15 +31,10 @@ setMethod("subjectHits", "HitsList", function(x) {
   as.matrix(x)[,2L,drop=TRUE]
 })
 
-setMethod("subjectHits", "CompressedHitsList", function(x) subjectHits(x@unlistData))
-
 setMethod("queryHits", "HitsList", function(x) {
   as.matrix(x)[,1L,drop=TRUE]
 })
-setMethod("queryHits", "CompressedHitsList", function(x) queryHits(x@unlistData))
 
-setMethod("queryLength", "CompressedHitsList", function(x) queryLength(x@unlistData))
-setMethod("subjectLength", "CompressedHitsList", function(x) subjectLength(x@unlistData))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor
@@ -59,18 +51,6 @@ HitsList <- function(list_of_hits, subject)
                                        subjectOffsets = subjectOffsets)
 }
 
-CompressedHitsList <- function(hits, query)
-{
-  if (!(is(query, "CompressedIRangesList")))
-    stop("'query' must be a 'CompressedIRangesList' object")
-  if (!is(hits, "Hits"))
-    stop("'hits' must be a 'Hits' object")
-
-  qspace <- space(query)
-  hspace <- as.integer(qspace[queryHits(hits)])
-  partitioning <- PartitioningByEnd(hspace, names=names(query@partitioning), NG=length(names(query@partitioning)))
-  newCompressedList0("CompressedHitsList", unlistData=hits, partitioning=partitioning)
-}
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Going from Hits to HitsList with extractList() and family.
@@ -91,10 +71,6 @@ setMethod("as.matrix", "HitsList", function(x) {
   rows <- c(0L, head(cumsum(sapply(x, queryLength)), -1))
   nr <- sapply(mats, nrow)
   mat + cbind(rep.int(rows, nr), rep.int(x@subjectOffsets, nr))
-})
-
-setMethod("as.matrix", "CompressedHitsList", function(x) {
-  cbind(queryHits=queryHits(x), subjectHits=subjectHits(x))
 })
 
 ## count up the matches for each query in every matching
@@ -125,3 +101,4 @@ setMethod("ranges", "HitsList", function(x, query, subject) {
 })
 
 ### TODO: many convenience methods
+

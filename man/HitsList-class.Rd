@@ -5,26 +5,16 @@
 \alias{HitsList-class}
 \alias{HitsList}
 
-\alias{class:CompressedHitsList}
-\alias{CompressedHitsList-class}
-\alias{CompressedHitsList}
-
 % coercion
 \alias{as.matrix,HitsList-method}
-\alias{as.matrix,CompressedHitsList-method}
 \alias{as.table,HitsList-method}
 \alias{t,HitsList-method}
 
 % accessors
 \alias{space,HitsList-method}
-\alias{space,CompressedHitsList-method}
 \alias{ranges,HitsList-method}
 \alias{subjectHits,HitsList-method}
-\alias{subjectHits,CompressedHitsList-method}
 \alias{queryHits,HitsList-method}
-\alias{queryHits,CompressedHitsList-method}
-\alias{queryLength,CompressedHitsList-method}
-\alias{subjectLength,CompressedHitsList-method}
 
 
 \title{List of Hits objects}

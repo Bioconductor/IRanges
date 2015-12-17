@@ -52,6 +52,7 @@ Collate: Vector-class-leftovers.R
 	RDApplyParams-class.R
 	RangedData-utils.R
 	HitsList-class.R
+	CompressedHitsList-class.R
 	NCList-class.R
 	RangedSelection-class.R
 	read.Mask.R
