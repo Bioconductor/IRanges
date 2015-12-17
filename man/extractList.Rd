@@ -1,10 +1,5 @@
 \name{extractList}
 
-\alias{relistToClass}
-\alias{relistToClass,ANY-method}
-\alias{relistToClass,DataFrame-method}
-\alias{relistToClass,data.frame-method}
-
 \alias{relist,ANY,PartitioningByEnd-method}
 \alias{relist,ANY,List-method}
 \alias{relist,Vector,list-method}
@@ -54,11 +49,6 @@ splitAsList(x, f, drop=FALSE, ...)
 ## -------------
 
 extractList(x, i)
-
-## relistToClass()
-## ---------------
-
-relistToClass(x)
 }
 
 \arguments{
@@ -90,11 +80,11 @@ relistToClass(x)
 
 \details{
   \code{relist}, \code{split}, and \code{extractList} have in common that
-  they return a list-like value where each list element has the same class
+  they return a list-like object where each list element has the same class
   as the original vector-like object. Thus they need to be able to select
   the appropriate \link{List} concrete subclass to use for this returned
-  value. This selection is performed by \code{relistToClass} and
-  is based only on the class of the original object.
+  value. This selection is performed by \code{\link[S4Vectors]{relistToClass}}
+  and is based only on the class of the original object.
 
   By default, \code{extractList(x, i)} is equivalent to:
 \preformatted{    relist(x[unlist(i)], i)
@@ -138,9 +128,9 @@ relistToClass(x)
   the same "shape" as \code{i} (i.e. same element lengths).
   If \code{i} has names, then they are propagated to the returned value.
 
-  All these functions (except \code{relistToClass}) return a
-  list-like object where the list elements have the same class as \code{x}.
-  \code{relistToClass} gives the exact class of the returned object.
+  All these functions return a list-like object where the list elements have
+  the same class as \code{x}. \code{\link[S4Vectors]{relistToClass}} gives
+  the exact class of the returned object.
 }
 
 \author{
@@ -161,6 +151,8 @@ relistToClass(x)
     \item \link[S4Vectors]{Vector}, \link[S4Vectors]{List},
           \link[S4Vectors]{Rle}, and \link[S4Vectors]{DataFrame} objects
           in the \pkg{S4Vectors} package.
+          \code{\link[S4Vectors]{relistToClass}} is documented in the man
+          page for \link[S4Vectors]{List} objects.
 
     \item \link{Ranges} objects.
   }

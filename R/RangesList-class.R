@@ -161,7 +161,6 @@ setMethod(".replaceSEW", "CompressedIRangesList",
     }
 )
 
-setGeneric("space", function(x, ...) standardGeneric("space"))
 setMethod("space", "RangesList",
           function(x)
           {

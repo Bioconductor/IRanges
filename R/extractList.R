@@ -4,29 +4,12 @@
 ###
 ### What should go in this file?
 ###
-### - relistToClass() generic and default method.
 ### - All "relist" methods defined in IRanges should go here.
 ### - extractList() generic and default method.
 ###
 ### TODO: Maybe put the default methods for the reverse transformations here
 ### (unlist, unsplit, and unsplit<-).
 ###
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### relistToClass()
-###
-
-setGeneric("relistToClass", function(x) standardGeneric("relistToClass"))
-
-.selectListClassName <- function(x) {
-  cn <- S4Vectors:::listClassName("Compressed", x)
-  if (cn == "CompressedList")
-    cn <- S4Vectors:::listClassName("Simple", x)
-  cn
-}
-
-setMethod("relistToClass", "ANY", function(x) .selectListClassName(class(x)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

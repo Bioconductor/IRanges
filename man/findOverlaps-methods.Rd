@@ -56,6 +56,7 @@
 \alias{mergeByOverlaps}
 
 \alias{ranges,Hits-method}
+\alias{ranges,HitsList-method}
 
 
 \title{Finding overlapping ranges}
@@ -96,6 +97,7 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
 mergeByOverlaps(query, subject, ...)
 
 \S4method{ranges}{Hits}(x, query, subject)
+\S4method{ranges}{HitsList}(x, query, subject)
 }
 
 \arguments{
@@ -151,7 +153,7 @@ mergeByOverlaps(query, subject, ...)
   \item{select}{
     If \code{query} is a \link{Ranges} or \link{Views} object:
     When \code{select} is \code{"all"} (the default), the results are
-    returned as a \link{Hits} object.
+    returned as a \link[S4Vectors]{Hits} object.
     Otherwise the returned value is an integer vector parallel to \code{query}
     (i.e. same length) containing the first, last, or arbitrary overlapping
     interval in \code{subject}, with \code{NA} indicating intervals that did
@@ -160,7 +162,7 @@ mergeByOverlaps(query, subject, ...)
     If \code{query} is a \link{RangesList}, \link{ViewsList}, or
     \link{RangedData} object:
     When \code{select} is \code{"all"} (the default), the results are
-    returned as a \link{HitsList} object.
+    returned as a \link[S4Vectors]{HitsList} object.
     Otherwise the returned value depends on the \code{drop} argument.
     When \code{select != "all" && !drop}, an \link{IntegerList} is returned,
     where each element of the result corresponds to a space in \code{query}.
@@ -182,7 +184,8 @@ mergeByOverlaps(query, subject, ...)
     }
   }
   \item{x}{
-    \link{Hits} object returned by \code{findOverlaps}.
+    \link[S4Vectors]{Hits} or \link[S4Vectors]{HitsList} object returned
+    by \code{findOverlaps}.
   }
 }
 
@@ -228,12 +231,17 @@ mergeByOverlaps(query, subject, ...)
   as any \code{mcols} that were present on either object. The query and
   subject columns are named by quoting and deparsing the corresponding
   argument.
-  
-  \code{ranges(x, query, subject)} returns a \code{Ranges} of the same
-  length as \link{Hits} object \code{x} holding the regions of intersection
-  between the overlapping ranges in objects \code{query} and \code{subject},
-  which should be the same query and subject used in the call to
-  \code{findOverlaps} that generated \code{x}.
+
+  When \code{x} is a \link[S4Vectors]{Hits} (or \link[S4Vectors]{HitsList})
+  object, \code{ranges(x, query, subject)} returns a \link{Ranges}
+  (or \link{RangesList}) object of the \emph{same shape} as \code{x}
+  holding the regions of intersection between the overlapping ranges
+  in objects \code{query} and \code{subject}, which should be the same
+  query and subject used in the call to \code{findOverlaps} that generated
+  \code{x}.
+  \emph{Same shape} means same length when \code{x} is a
+  \link[S4Vectors]{Hits} object, and same length and elementLengths
+  when \code{x} is a \link[S4Vectors]{HitsList} object.
 }
 
 \references{
@@ -246,8 +254,9 @@ mergeByOverlaps(query, subject, ...)
 
 \seealso{
   \itemize{
-    \item The \link{Hits} and \link{HitsList} classes for representing a set
-          of hits between 2 vector-like objects.
+    \item \link[S4Vectors]{Hits} and \link[S4Vectors]{HitsList} objects
+          in the \pkg{S4Vectors} package for representing a set of hits
+          between 2 vector-like or list-like objects.
 
     \item \link[GenomicRanges]{findOverlaps,GenomicRanges,GenomicRanges-method}
           in the \pkg{GenomicRanges} package for methods that operate on
@@ -317,7 +326,7 @@ query \%within\% subject  # same as overlapsAny(query, subject,
                         #                     type="within")
 
 ## ---------------------------------------------------------------------
-## "ranges" METHOD FOR Hits OBJECTS
+## "ranges" METHODS FOR Hits OR HitsList OBJECTS
 ## ---------------------------------------------------------------------
 
 ## extract the regions of intersection between the overlapping ranges

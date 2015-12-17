@@ -2,6 +2,9 @@
 
 \alias{DataFrame-utils}
 
+\alias{relistToClass,DataFrame-method}
+\alias{relistToClass,data.frame-method}
+
 % splitting
 \alias{mstack,DataFrame-method}
 

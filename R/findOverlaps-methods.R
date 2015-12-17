@@ -725,13 +725,12 @@ mergeByOverlaps <- function(query, subject, ...) {
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### "ranges" method for Hits objects
+### "ranges" methods for Hits and HitsList objects
 ###
+
 ### Extracts the actual regions of intersection between the overlapping ranges.
 ### Not much value. Could be replaced by 1-liner:
 ###   pintersect(query[queryHits(x)], subject[subjectHits(x)])
-###
-
 setMethod("ranges", "Hits", function(x, query, subject) {
   if (!is(query, "Ranges") || length(query) != queryLength(x))
     stop("'query' must be a Ranges of length equal to number of queries")
@@ -744,3 +743,19 @@ setMethod("ranges", "Hits", function(x, query, subject) {
   send <- end(subject)[m[,2L]]
   IRanges(pmax.int(qstart, sstart), pmin.int(send, qend))
 })
+
+setMethod("ranges", "HitsList", function(x, query, subject) {
+  if (!is(query, "RangesList") || length(query) != length(x))
+    stop("'query' must be a RangesList of length equal to that of 'x'")
+  if (!is(subject, "RangesList") || length(subject) != length(x))
+    stop("'subject' must be a RangesList of length equal to that of 'x'")
+  els <- as.list(x, use.names = FALSE)
+  queries <- as.list(query, use.names = FALSE)
+  subjects <- as.list(subject, use.names = FALSE)
+  ans <- do.call(RangesList, lapply(seq_len(length(x)), function(i) {
+    ranges(els[[i]], queries[[i]], subjects[[i]])
+  }))
+  names(ans) <- names(x)
+  ans
+})
+

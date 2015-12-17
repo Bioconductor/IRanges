@@ -45,7 +45,7 @@ exportClasses(
     DataFrameList, SimpleDataFrameList,
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
     RangedData, RangedDataList, RDApplyParams,
-    HitsList, CompressedHitsList, 
+    CompressedHitsList, 
     RangedSelection
 )
 
@@ -95,7 +95,6 @@ exportMethods(
     as.matrix,
     as.data.frame,
     as.list,
-    as.table,
     coerce,
     c,
     show,
@@ -120,7 +119,6 @@ exportMethods(
     "!", which,
     merge,
     with, within,
-    t,
     is.na,
     by, 
     cbind, rbind,
@@ -140,8 +138,10 @@ exportMethods(
     selfmatch,
     runLength, "runValue<-",
     runsum, runmean, runwtsum, runq,
-    elementLengths, isEmpty, revElements,
+    elementLengths, isEmpty,
+    relistToClass,
     endoapply, mendoapply,
+    revElements,
     as.env,
     active, "active<-", filterRules
 )
@@ -216,7 +216,6 @@ export(
     findRange, splitRanges,
 
     ## extractList.R:
-    relistToClass,
     extractList,
 
     ## DataFrameList-class.R:
@@ -302,7 +301,6 @@ exportMethods(
     nobj, grouplength, members, vmembers, togroup, togrouplength,
     high2low, low2high, grouprank, togrouprank, mapOrder,
     findRange, splitRanges,
-    relistToClass,
     extractList,
     columnMetadata, "columnMetadata<-",
     universe, "universe<-", space,
