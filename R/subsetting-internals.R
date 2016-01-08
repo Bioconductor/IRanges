@@ -31,7 +31,8 @@ setMethod("NSBS", "Ranges",
         x_NROW <- NROW(x)
         if (min(start(i)) < 1L ||
             upperBoundIsStrict && max(end(i)) > x_NROW)
-            stop("subscript contains out-of-bounds ranges")
+            S4Vectors:::.subscript_error("subscript contains out-of-bounds ",
+                                         "ranges")
         if (i_len == 1L) {
             ans <- new("WindowNSBS", subscript=c(start(i), end(i)),
                                      upper_bound=x_NROW,
