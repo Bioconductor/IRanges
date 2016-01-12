@@ -309,7 +309,7 @@ countOverlaps_Ranges <- function(query, subject,
 
 setMethod("countOverlaps", c("Ranges", "Ranges"), countOverlaps_Ranges)
 
-setMethod("countOverlaps", c("ANY", "Vector"),
+setMethod("countOverlaps", c("Vector", "Vector"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within", "equal"),
              ...)
@@ -323,7 +323,7 @@ setMethod("countOverlaps", c("ANY", "Vector"),
     }
 )
 
-setMethod("countOverlaps", c("ANY", "missing"),
+setMethod("countOverlaps", c("Vector", "missing"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within", "equal"))
     {

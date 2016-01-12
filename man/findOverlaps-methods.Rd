@@ -19,8 +19,8 @@
 
 \alias{countOverlaps}
 \alias{countOverlaps,Ranges,Ranges-method}
-\alias{countOverlaps,ANY,Vector-method}
-\alias{countOverlaps,ANY,missing-method}
+\alias{countOverlaps,Vector,Vector-method}
+\alias{countOverlaps,Vector,missing-method}
 \alias{countOverlaps,RangesList,RangesList-method}
 \alias{countOverlaps,ViewsList,ViewsList-method}
 \alias{countOverlaps,ViewsList,Vector-method}
