@@ -30,10 +30,8 @@
 \alias{countOverlaps,RangesList,RangedData-method}
 
 \alias{overlapsAny}
-\alias{overlapsAny,Ranges,Ranges-method}
-\alias{overlapsAny,Views,Views-method}
-\alias{overlapsAny,Views,Vector-method}
-\alias{overlapsAny,Vector,Views-method}
+\alias{overlapsAny,Vector,Vector-method}
+\alias{overlapsAny,Vector,missing-method}
 \alias{overlapsAny,RangesList,RangesList-method}
 \alias{overlapsAny,ViewsList,ViewsList-method}
 \alias{overlapsAny,ViewsList,Vector-method}
@@ -41,7 +39,6 @@
 \alias{overlapsAny,RangedData,RangedData-method}
 \alias{overlapsAny,RangedData,RangesList-method}
 \alias{overlapsAny,RangesList,RangedData-method}
-\alias{overlapsAny,Vector,missing-method}
 
 \alias{\%over\%}
 \alias{\%within\%}

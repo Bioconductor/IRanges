@@ -408,14 +408,15 @@ setGeneric("overlapsAny", signature=c("query", "subject"),
         standardGeneric("overlapsAny")
 )
 
-setMethod("overlapsAny", c("Ranges", "Ranges"),
+setMethod("overlapsAny", c("Vector", "Vector"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              ...)
     {
+        type <- match.arg(type)
         !is.na(findOverlaps(query, subject,
                             maxgap=maxgap, minoverlap=minoverlap,
-                            type=match.arg(type), select="arbitrary",
+                            type=type, select="arbitrary",
                             ...))
     }
 )
@@ -425,58 +426,11 @@ setMethod("overlapsAny", c("Vector", "missing"),
              type=c("any", "start", "end", "within", "equal"),
              ...)
     {
+        type <- match.arg(type)
         !is.na(findOverlaps(query,
                             maxgap=maxgap, minoverlap=minoverlap,
-                            type=match.arg(type), select="arbitrary",
+                            type=type, select="arbitrary",
                             ...))
-    }
-)
-
-setMethod("overlapsAny", c("integer", "Ranges"),
-          function(query, subject, maxgap=0L, minoverlap=1L,
-                   type=c("any", "start", "end", "within", "equal"),
-                   ...)
-    {
-        !is.na(findOverlaps(query, subject,
-                            maxgap=maxgap, minoverlap=minoverlap,
-                            type=match.arg(type), select="arbitrary",
-                            ...))
-    }
-)
-
-setMethod("overlapsAny", c("Views", "Views"),
-    function(query, subject, maxgap=0L, minoverlap=1L,
-             type=c("any", "start", "end", "within", "equal"),
-             ...)
-    {
-        overlapsAny(ranges(query), ranges(subject),
-                    maxgap=maxgap, minoverlap=minoverlap,
-                    type=match.arg(type),
-                    ...)
-    }
-)
-
-setMethod("overlapsAny", c("Views", "Vector"),
-    function(query, subject, maxgap=0L, minoverlap=1L,
-             type=c("any", "start", "end", "within", "equal"),
-             ...)
-    {
-        overlapsAny(ranges(query), subject,
-                    maxgap=maxgap, minoverlap=minoverlap,
-                    type=match.arg(type),
-                    ...)
-    }
-)
-
-setMethod("overlapsAny", c("Vector", "Views"),
-    function(query, subject, maxgap=0L, minoverlap=1L,
-             type=c("any", "start", "end", "within", "equal"),
-             ...)
-    {
-        overlapsAny(query, ranges(subject),
-                    maxgap=maxgap, minoverlap=minoverlap,
-                    type=match.arg(type),
-                    ...)
     }
 )
 
