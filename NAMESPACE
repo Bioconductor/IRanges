@@ -129,7 +129,6 @@ exportMethods(
     table,
     tapply,
     union, intersect, setdiff,
-    updateObject,
     values, "values<-",
     classNameForDisplay,
     queryHits, subjectHits,
