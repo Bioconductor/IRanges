@@ -18,7 +18,10 @@ setClass("RDApplyParams",
 ###
 
 setGeneric("rangedData", function(x, ...) standardGeneric("rangedData"))
-setMethod("rangedData", "RDApplyParams", function(x) x@rangedData)
+setMethod("rangedData", "RDApplyParams", function(x) {
+  .Deprecated(msg="RDApplyParams objects and rdapply() are deprecated")
+  x@rangedData
+})
 
 setGeneric("rangedData<-",
            function(x, ..., value) standardGeneric("rangedData<-"))
@@ -29,7 +32,10 @@ setReplaceMethod("rangedData", "RDApplyParams", function(x, value) {
 })
 
 setGeneric("applyFun", function(x, ...) standardGeneric("applyFun"))
-setMethod("applyFun", "RDApplyParams", function(x) x@applyFun)
+setMethod("applyFun", "RDApplyParams", function(x) {
+  .Deprecated(msg="RDApplyParams objects and rdapply() are deprecated")
+  x@applyFun
+})
 
 setGeneric("applyFun<-", function(x, ..., value) standardGeneric("applyFun<-"))
 setReplaceMethod("applyFun", "RDApplyParams", function(x, value) {
@@ -39,7 +45,10 @@ setReplaceMethod("applyFun", "RDApplyParams", function(x, value) {
 })
 
 setGeneric("applyParams", function(x, ...) standardGeneric("applyParams"))
-setMethod("applyParams", "RDApplyParams", function(x) x@applyParams)
+setMethod("applyParams", "RDApplyParams", function(x) {
+  .Deprecated(msg="RDApplyParams objects and rdapply() are deprecated")
+  x@applyParams
+})
 
 setGeneric("applyParams<-",
            function(x, ..., value) standardGeneric("applyParams<-"))
@@ -61,7 +70,10 @@ setReplaceMethod("applyParams", "RDApplyParams", function(x, value) {
 ##   x
 ## })
 
-setMethod("filterRules", "RDApplyParams", function(x) x@filterRules)
+setMethod("filterRules", "RDApplyParams", function(x) {
+  .Deprecated(msg="RDApplyParams objects and rdapply() are deprecated")
+  x@filterRules
+})
 
 setGeneric("filterRules<-",
            function(x, ..., value) standardGeneric("filterRules<-"))
@@ -72,7 +84,10 @@ setReplaceMethod("filterRules", "RDApplyParams", function(x, value) {
 })
 
 setGeneric("simplify", function(x, ...) standardGeneric("simplify"))
-setMethod("simplify", "RDApplyParams", function(x) x@simplify)
+setMethod("simplify", "RDApplyParams", function(x) {
+  .Deprecated(msg="RDApplyParams objects and rdapply() are deprecated")
+  x@simplify
+})
 
 setGeneric("simplify<-", function(x, ..., value) standardGeneric("simplify<-"))
 setReplaceMethod("simplify", "RDApplyParams", function(x, value) {
@@ -82,7 +97,10 @@ setReplaceMethod("simplify", "RDApplyParams", function(x, value) {
 })
 
 setGeneric("reducerFun", function(x, ...) standardGeneric("reducerFun"))
-setMethod("reducerFun", "RDApplyParams", function(x) x@reducerFun)
+setMethod("reducerFun", "RDApplyParams", function(x) {
+  .Deprecated(msg="RDApplyParams objects and rdapply() are deprecated")
+  x@reducerFun
+})
 
 setGeneric("reducerFun<-",
            function(x, ..., value) standardGeneric("reducerFun<-"))
@@ -93,7 +111,10 @@ setReplaceMethod("reducerFun", "RDApplyParams", function(x, value) {
 })
 
 setGeneric("reducerParams", function(x, ...) standardGeneric("reducerParams"))
-setMethod("reducerParams", "RDApplyParams", function(x) x@reducerParams)
+setMethod("reducerParams", "RDApplyParams", function(x) {
+  .Deprecated(msg="RDApplyParams objects and rdapply() are deprecated")
+  x@reducerParams
+})
 
 setGeneric("reducerParams<-", function(x, ..., value)
            standardGeneric("reducerParams<-"))
@@ -104,7 +125,10 @@ setReplaceMethod("reducerParams", "RDApplyParams", function(x, value) {
 })
 
 setGeneric("iteratorFun", function(x, ...) standardGeneric("iteratorFun"))
-setMethod("iteratorFun", "RDApplyParams", function(x) x@iteratorFun)
+setMethod("iteratorFun", "RDApplyParams", function(x) {
+  .Deprecated(msg="RDApplyParams objects and rdapply() are deprecated")
+  x@iteratorFun
+})
 
 setGeneric("iteratorFun<-", function(x, ..., value)
            standardGeneric("iteratorFun<-"))
@@ -123,6 +147,7 @@ RDApplyParams <- function(rangedData, applyFun, applyParams, #excludePattern,
                           filterRules, simplify, reducerFun, reducerParams,
                           iteratorFun)
 {
+  .Deprecated(msg="RDApplyParams objects and rdapply() are deprecated")
   params <- new("RDApplyParams", applyFun = applyFun,
                 applyParams = applyParams, filterRules = filterRules,
                 simplify = simplify, reducerFun = reducerFun,
@@ -203,11 +228,13 @@ formals(RDApplyParams) <- structure(lapply(slotNames("RDApplyParams"),
   else NULL
 }
 
-.valid.RDApplyParams <- function(x)
+.valid.RDApplyParams <- function(x) {
+  .Deprecated(msg="RDApplyParams objects and rdapply() are deprecated")
   c(##.valid.RDApplyParams.rangedData(x),
     .valid.RDApplyParams.applyFun(x),
     ##.valid.RDApplyParams.excludePattern(x),
     .valid.RDApplyParams.simplify(x), .valid.RDApplyParams.reducerParams(x),
     .valid.RDApplyParams.iteratorFun(x))
+}
 
 setValidity2("RDApplyParams", .valid.RDApplyParams)

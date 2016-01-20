@@ -41,7 +41,11 @@
 \alias{iteratorFun<-,RDApplyParams-method}
 
 \title{Applying over spaces}
-\description{The \code{rdapply} function applies a user function over
+\description{
+  WARNING: RDApplyParams objects and the \code{rdapply()} function are
+  deprecated.
+
+  The \code{rdapply} function applies a user function over
   the spaces of a \code{\linkS4class{RangedData}}. The parameters to
   \code{rdapply} are collected into an instance of \code{RDApplyParams},
   which is passed as the sole parameter to \code{rdapply}.}
@@ -184,6 +188,9 @@ rdapply(x, ...)
   \code{\linkS4class{RangedData}}, \code{\linkS4class{FilterRules}}
 }
 \examples{
+## WARNING: RDApplyParams objects and the rdapply() function are
+## deprecated.
+\dontrun{
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   score <- c(2L, 0L, 1L)
   rd <- RangedData(ranges, score, space = c("chr1","chr2","chr1"))
@@ -217,6 +224,7 @@ rdapply(x, ...)
   params <- RDApplyParams(rd, countrows, reducerFun = unlist,
                           reducerParams = list(use.names = FALSE))
   rdapply(params) ## c(2L, 1L)
+}
 }
 \keyword{classes}
 \keyword{methods}

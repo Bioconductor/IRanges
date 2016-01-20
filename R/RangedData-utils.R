@@ -26,6 +26,7 @@ setMethod("endoapply", "RangedData",
 setGeneric("rdapply", function(x, ...) standardGeneric("rdapply"))
 
 setMethod("rdapply", "RDApplyParams", function(x) {
+  .Deprecated(msg="RDApplyParams objects and rdapply() are deprecated")
   rd <- rangedData(x)
   applyFun <- applyFun(x)
   applyParams <- applyParams(x)

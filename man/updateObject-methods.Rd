@@ -10,11 +10,8 @@
 \alias{updateObject,MaskCollection-method}
 \alias{updateObject,NormalIRanges-method}
 \alias{updateObject,NumericList-method}
-\alias{updateObject,RangedData-method}
-\alias{updateObject,RangedDataList-method}
 \alias{updateObject,RangesList-method}
 \alias{updateObject,RawList-method}
-\alias{updateObject,RDApplyParams-method}
 \alias{updateObject,Rle-method}
 \alias{updateObject,RleList-method}
 \alias{updateObject,RleViews-method}

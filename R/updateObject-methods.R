@@ -184,53 +184,6 @@ setMethod("updateObject", signature(object="MaskCollection"),
               object
           })
 
-## "RDApplyParams" -> "RDApplyParams"
-setMethod("updateObject", signature(object="RDApplyParams"),
-          function(object, ..., verbose=FALSE) {
-              if (verbose) message("updateObject(object = 'RDApplyParams')")
-              if (!("metadata" %in% names(attributes(object)))) {
-                  object <-
-                    new("RDApplyParams",
-                        rangedData = updateObject(slot(object, "rangedData")),
-                        applyFun = slot(object, "applyFun"),
-                        applyParams = slot(object, "applyParams"),
-                        filterRules = updateObject(slot(object, "filterRules")),
-                        simplify = slot(object, "simplify"),
-                        reducerFun = slot(object, "reducerFun"),
-                        reducerParams = slot(object, "reducerParams"))
-              }
-              object
-          })
-
-## "RangedData" -> "RangedData"
-setMethod("updateObject", signature(object="RangedData"),
-          function(object, ..., verbose=FALSE) {
-              if (verbose) message("updateObject(object = 'RangedData')")
-              if (!("metadata" %in% names(attributes(object)))) {
-                  ranges <- updateObject(slot(object, "ranges"))
-                  values <- updateObject(slot(object, "values"))
-                  if (is.null(names(ranges))) {
-                      names(ranges) <- as.character(seq_len(length(ranges)))
-                  }
-                  if (is.null(names(values))) {
-                      names(values) <- as.character(seq_len(length(values)))
-                  }
-                  object <- new("RangedData", ranges = ranges, values = values)
-              }
-              object
-          })
-
-## "RangedDataList" -> "RangedDataList"
-setMethod("updateObject", signature(object="RangedDataList"),
-          function(object, ..., verbose=FALSE) {
-              if (verbose) message("updateObject(object = 'RangedDataList')")
-              if (!("metadata" %in% names(attributes(object)))) {
-                  object <-
-                    toSimpleList(asS4(object), "RangedDataList", "RangedData")
-              }
-              object
-          })
-
 ## "RangesList" -> "SimpleRangesList"
 setMethod("updateObject", signature(object="RangesList"),
           function(object, ..., verbose=FALSE) {

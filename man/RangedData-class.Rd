@@ -83,10 +83,7 @@
   \code{RangedData} supports storing data, i.e. a set of variables, on a
   set of ranges spanning multiple spaces (e.g. chromosomes). Although
   the data is split across spaces, it can still be treated as one
-  cohesive dataset when desired and extends \code{\linkS4class{DataTable}}. In
-  order to handle large datasets, the data values are stored externally
-  to avoid copying, and the \code{\link{rdapply}} function facilitates
-  the processing of each space separately (divide and conquer).
+  cohesive dataset when desired and extends \code{\linkS4class{DataTable}}.
 }
 
 \details{
@@ -115,11 +112,7 @@
   pair) for each space. The length of the object is defined as the number
   of spaces and the value returned by the \code{names} accessor gives the
   names of the spaces. The list-style \code{[} subset function behaves
-  analogously. The \code{rdapply} function provides a convenient and
-  formal means of applying an operation over the spaces separately. This
-  mode is helpful when ranges from different spaces must be treated
-  separately or when the data is too large to process over all spaces at
-  once.
+  analogously.
 }
 
 \section{Accessor methods}{
@@ -428,10 +421,8 @@
 }
 
 \section{Applying}{
-  There are two ways explicitly supported ways to apply a function over
-  the spaces of a \code{RangedData}. The richest interface is
-  \code{\link{rdapply}}, which is described in its own man page. The
-  simpler interface is an \code{lapply} method:
+  An \code{lapply} method is provided to apply a function over the spaces
+  of a \code{RangedData}:
   \describe{
     \item{}{\code{lapply(X, FUN, ...)}:
       Applies \code{FUN} to each space in \code{X} with extra parameters
@@ -444,8 +435,6 @@
 
 \seealso{
   \linkS4class{DataTable}, the parent of this class, with more utilities.
-  The \code{\link{rdapply}} function for applying a function to each space
-  separately.
 }
 
 \examples{
