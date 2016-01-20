@@ -17,7 +17,8 @@ Depends: R (>= 3.1.0), methods, utils, stats, BiocGenerics (>= 0.15.10),
 	S4Vectors (>= 0.9.18)
 Imports: stats4
 LinkingTo: S4Vectors
-Suggests: XVector, GenomicRanges, BSgenome.Celegans.UCSC.ce2, RUnit
+Suggests: XVector, GenomicRanges, GenomicFeatures, GenomicAlignments,
+	BSgenome.Celegans.UCSC.ce2, RUnit
 License: Artistic-2.0
 Collate: Vector-class-leftovers.R
 	List-class-leftovers.R

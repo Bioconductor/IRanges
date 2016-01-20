@@ -51,12 +51,10 @@ pmapCoords(from, to, ...)
 
 \seealso{
   \itemize{
-    \item See \code{?`\link[GenomicRanges]{mapCoords-methods}`} in the
-      \pkg{GenomicRanges} package for the \code{mapCoords} method on 
-      GRanges objects
-    \item See \code{?`\link[GenomicAlignments]{mapCoords-methods}`} in the
-      \pkg{GenomicAlignments} package for the \code{mapCoords} method on
-      GAlignments objects
+    \item See \code{?`\link[GenomicFeatures]{mapToTranscripts}`}
+      in the \pkg{GenomicFeatures} package and
+      \code{?`\link[GenomicAlignments]{mapToAlignments}`}
+      in the \pkg{GenomicAlignments} package for a replacement.
   }
 }
 
