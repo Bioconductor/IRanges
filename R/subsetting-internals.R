@@ -62,13 +62,6 @@ setMethod("isStrictlySorted", "RangesNSBS", function(x) isNormal(x@subscript))
 ### "extractROWS" methods for vectorORfactor objects.
 ###
 
-setMethod("extractROWS", c("vectorORfactor", "Rle"),
-    function(x, i)
-    {
-        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
-        callGeneric()
-    }
-)
 setMethod("extractROWS", c("vectorORfactor", "RangesNSBS"),
     function(x, i)
     {
@@ -78,16 +71,7 @@ setMethod("extractROWS", c("vectorORfactor", "RangesNSBS"),
 )
 setMethod("extractROWS", c("vectorORfactor", "Ranges"),
     function(x, i)
-    {
-        ## Which one is faster, vector_seqselect or vector_subsetByRanges?
-        ans <- .Call2("vector_seqselect", x, start(i), width(i),
-                      PACKAGE="S4Vectors")
-        #ans <- .Call2("vector_subsetByRanges", x, start(i), width(i),
-        #              PACKAGE="S4Vectors")
-        if (is.factor(x))
-            attributes(ans) <- list(levels=levels(x), class="factor")
-        ans
-    }
+        S4Vectors:::extract_ranges_from_vectorORfactor(x, start(i), width(i))
 )
 
 setMethod("extractROWS", c("matrix", "Ranges"),
