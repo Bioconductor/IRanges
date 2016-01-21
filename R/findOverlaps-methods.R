@@ -181,7 +181,7 @@ setMethod("findOverlaps", c("RangesList", "RangesList"),
             }
             ## NULL's are introduced where they do not match
             ## We replace those with empty IRanges
-            subject[sapply(subject, is.null)] <- IRanges()
+            subject[sapply(subject, is.null)] <- list(IRanges())
 
             ans <- lapply(seq_len(length(subject)), function(i) {
               findOverlaps(query[[i]], subject[[i]],
@@ -450,7 +450,7 @@ setMethod("overlapsAny", c("RangesList", "RangesList"),
         }
         ## NULL's are introduced where they do not match
         ## We replace those with empty IRanges
-        subject[sapply(subject, is.null)] <- IRanges()
+        subject[sapply(subject, is.null)] <- list(IRanges())
         LogicalList(lapply(structure(seq_len(length(query)),
                                      names = names(query)),
                            function(i)
