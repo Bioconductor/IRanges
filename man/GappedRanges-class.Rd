@@ -162,6 +162,7 @@
 
 \examples{
 ## WARNING: GappedRanges objects are deprecated!
+
 \dontrun{
   ## The 3 following IRanges objects are normal. Each of them will be
   ## stored as a "gapped range" in the GappedRanges object 'gr'.

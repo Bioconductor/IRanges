@@ -190,6 +190,7 @@ rdapply(x, ...)
 \examples{
 ## WARNING: RDApplyParams objects and the rdapply() function are
 ## deprecated!
+
 \dontrun{
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   score <- c(2L, 0L, 1L)
