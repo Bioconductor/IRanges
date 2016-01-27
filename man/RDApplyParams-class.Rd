@@ -43,7 +43,7 @@
 \title{Applying over spaces}
 \description{
   WARNING: RDApplyParams objects and the \code{rdapply()} function are
-  deprecated.
+  deprecated!
 
   The \code{rdapply} function applies a user function over
   the spaces of a \code{\linkS4class{RangedData}}. The parameters to
@@ -189,7 +189,7 @@ rdapply(x, ...)
 }
 \examples{
 ## WARNING: RDApplyParams objects and the rdapply() function are
-## deprecated.
+## deprecated!
 \dontrun{
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   score <- c(2L, 0L, 1L)

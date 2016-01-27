@@ -30,6 +30,8 @@
 \title{GappedRanges objects}
 
 \description{
+  WARNING: GappedRanges objects are deprecated!
+
   The GappedRanges class is a vector-like container for storing a set
   of "gapped ranges".
 }
@@ -159,6 +161,8 @@
 }
 
 \examples{
+## WARNING: GappedRanges objects are deprecated!
+\dontrun{
   ## The 3 following IRanges objects are normal. Each of them will be
   ## stored as a "gapped range" in the GappedRanges object 'gr'.
   ir1 <- IRanges(start=c(11, 21, 23), end=c(15, 21, 30))
@@ -182,6 +186,7 @@
   as.integer(gr[[2]])
   as(gr, "RangesList")
   start(as(gr, "RangesList"))  # not the same as 'start(gr)'
+}
 }
 
 \keyword{methods}

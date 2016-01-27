@@ -25,24 +25,51 @@ setClass("GappedRanges",
 ### Accessor-like methods.
 ###
 
-setMethod("length", "GappedRanges", function(x) length(x@cnirl))
+setMethod("length", "GappedRanges",
+    function(x)
+    {
+        .Deprecated(msg="GappedRanges objects are deprecated")
+        length(x@cnirl)
+    }
+)
 
 setMethod("start", "GappedRanges",
-    function(x, ...) CompressedNormalIRangesList.min(x@cnirl, FALSE)
+    function(x, ...)
+    {
+        .Deprecated(msg="GappedRanges objects are deprecated")
+        CompressedNormalIRangesList.min(x@cnirl, FALSE)
+    }
 )
 
 setMethod("end", "GappedRanges",
-    function(x, ...) CompressedNormalIRangesList.max(x@cnirl, FALSE)
+    function(x, ...)
+    {
+        .Deprecated(msg="GappedRanges objects are deprecated")
+        CompressedNormalIRangesList.max(x@cnirl, FALSE)
+    }
 )
 
 setGeneric("ngap", function(x) standardGeneric("ngap"))
-setMethod("ngap", "GappedRanges", function(x) {elementLengths(x) - 1L})
+setMethod("ngap", "GappedRanges",
+    function(x)
+    {
+        .Deprecated(msg="GappedRanges objects are deprecated")
+        elementLengths(x) - 1L
+    }
+)
 
-setMethod("names", "GappedRanges", function(x) names(x@cnirl))
+setMethod("names", "GappedRanges",
+    function(x)
+    {
+        .Deprecated(msg="GappedRanges objects are deprecated")
+        names(x@cnirl)
+    }
+)
 
 setReplaceMethod("names", "GappedRanges",
     function(x, value)
     {
+        .Deprecated(msg="GappedRanges objects are deprecated")
         names(x@cnirl) <- value
         x
     }
@@ -54,7 +81,10 @@ setReplaceMethod("names", "GappedRanges",
 ###
 
 .valid.GappedRanges <- function(x)
+{
+    .Deprecated(msg="GappedRanges objects are deprecated")
     .Call2("valid_GappedRanges", x, 0L, PACKAGE="IRanges")
+}
 
 setValidity2("GappedRanges", .valid.GappedRanges)
 
@@ -93,6 +123,7 @@ setMethod("as.data.frame", "GappedRanges", .as.data.frame.GappedRanges)
 setMethod("show", "GappedRanges",
     function(object)
     {
+        .Deprecated(msg="GappedRanges objects are deprecated")
         lo <- length(object)
         cat(class(object), " of length ", lo, "\n", sep="")
         if (lo == 0L) {
@@ -131,6 +162,7 @@ setMethod("show", "GappedRanges",
 setMethod("getListElement", "GappedRanges",
     function(x, i, exact=TRUE)
     {
+        .Deprecated(msg="GappedRanges objects are deprecated")
         i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
                                              error.if.nomatch=TRUE)
         newNormalIRangesFromIRanges(x@cnirl[[i]], check=FALSE)
@@ -140,12 +172,17 @@ setMethod("getListElement", "GappedRanges",
 ### WARNING: We override the *semantic* of the "elementLengths" method for
 ### Ranges objects.
 setMethod("elementLengths", "GappedRanges",
-    function(x) elementLengths(x@cnirl)
+    function(x)
+    {
+        .Deprecated(msg="GappedRanges objects are deprecated")
+        elementLengths(x@cnirl)
+    }
 )
 
 setMethod("extractROWS", "GappedRanges",
     function(x, i)
     {
+        .Deprecated(msg="GappedRanges objects are deprecated")
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         x@cnirl <- extractROWS(x@cnirl, i)
         x@elementMetadata <- extractROWS(x@elementMetadata, i)
@@ -161,6 +198,7 @@ setMethod("extractROWS", "GappedRanges",
 setMethod("c", "GappedRanges",
     function(x, ..., recursive=FALSE)
     {
+        .Deprecated(msg="GappedRanges objects are deprecated")
         if (!identical(recursive, FALSE))
             stop("\"c\" method for GappedRanges objects ",
                  "does not support the 'recursive' argument")
