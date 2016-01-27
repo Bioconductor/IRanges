@@ -128,56 +128,66 @@ setMethod("getListElement", "Ranges",
     }
 )
 
+.make_naked_matrix_from_Ranges <- function(x)
+{
+    x_len <- length(x)
+    x_mcols <- mcols(x)
+    x_nmc <- if (is.null(x_mcols)) 0L else ncol(x_mcols)
+    ans <- cbind(start=as.character(start(x)),
+                 end=as.character(end(x)),
+                 width=as.character(width(x)))
+    if (x_nmc > 0L) {
+        tmp <- do.call(data.frame, c(lapply(x_mcols, showAsCell),
+                                     list(check.names=FALSE)))
+        ans <- cbind(ans, `|`=rep.int("|", x_len), as.matrix(tmp))
+    }
+    ans
+}
+
+showRanges <- function(x, margin="", print.classinfo=FALSE)
+{
+    x_class <- class(x)
+    x_len <- length(x)
+    x_mcols <- mcols(x)
+    x_nmc <- if (is.null(x_mcols)) 0L else ncol(x_mcols)
+    cat(x_class, " object with ",
+        x_len, " ", ifelse(x_len == 1L, "range", "ranges"),
+        " and ",
+        x_nmc, " metadata ", ifelse(x_nmc == 1L, "column", "columns"),
+        ":\n", sep="")
+    ## S4Vectors:::makePrettyMatrixForCompactPrinting() assumes that 'x' is
+    ## subsettable but not all Ranges objects are (and if they are,
+    ## subsetting them could be costly). However IRanges objects are assumed
+    ## to be subsettable so if 'x' is not one then we turn it into one (this
+    ## coercion is expected to work on any Ranges object).
+    if (!is(x, "IRanges"))
+        x <- as(x, "IRanges", strict=FALSE)
+    out <- S4Vectors:::makePrettyMatrixForCompactPrinting(x,
+               .make_naked_matrix_from_Ranges)
+    if (print.classinfo) {
+        .COL2CLASS <- c(
+            start="integer",
+            end="integer",
+            width="integer"
+        )
+        classinfo <-
+            S4Vectors:::makeClassinfoRowForCompactPrinting(x, .COL2CLASS)
+        ## A sanity check, but this should never happen!
+        stopifnot(identical(colnames(classinfo), colnames(out)))
+        out <- rbind(classinfo, out)
+    }
+    if (nrow(out) != 0L)
+        rownames(out) <- paste0(margin, rownames(out))
+    ## We set 'max' to 'length(out)' to avoid the getOption("max.print")
+    ## limit that would typically be reached when 'showHeadLines' global
+    ## option is set to Inf.
+    print(out, quote=FALSE, right=TRUE, max=length(out))
+}
+
 setMethod("show", "Ranges",
     function(object)
-    {
-        nhead <- get_showHeadLines()
-        ntail <- get_showTailLines()
-        lo <- length(object)
-        cat(class(object), " of length ", lo, "\n", sep="")
-        if (lo == 0L)
-            return(NULL)
-        if (lo < (nhead + ntail + 1L)) {
-            showme <-
-              as.data.frame(object,
-                            row.names=paste0("[", seq_len(lo), "]"))
-        } else {
-            showme <-
-              data.frame(start=.sketch(start(object), nhead, ntail),
-                         end=.sketch(end(object), nhead, ntail),
-                         width=.sketch(width(object), nhead, ntail),
-                         row.names=.sketch(start(object), nhead, ntail, TRUE),
-                         check.rows=TRUE,
-                         check.names=FALSE,
-                         stringsAsFactors=FALSE)
-            NAMES <- names(object)
-            if (!is.null(NAMES))
-                showme$names <- .sketch(NAMES, nhead, ntail)
-        }
-        show(showme)
-    }
+        showRanges(object, margin="  ", print.classinfo=TRUE)
 )
-
-.sketch <- function(x, nhead, ntail, rownames=FALSE)
-{
-    len <- length(x)
-    p1 <- ifelse (nhead == 0, 0L, 1L)
-    p2 <- ifelse (ntail == 0, 0L, ntail-1L)
-    s1 <- s2 <- character(0) 
- 
-    if (rownames) {
-        if (nhead > 0) 
-            s1 <- paste0("[", p1:nhead, "]")
-        if (ntail > 0) 
-            s2 <- paste0("[", (len-p2):len, "]")
-    } else { 
-        if (nhead > 0) 
-            s1 <- paste0(as.character(x[p1:nhead])) 
-        if (ntail > 0) 
-            s2 <- paste0(as.character(x[(len-p2):len])) 
-    }
-    c(s1, "...", s2)
-}
 
 setMethod("showAsCell", "Ranges",
     function(object)
