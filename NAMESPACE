@@ -277,9 +277,6 @@ export(
     ## nearest-methods.R:
     precede, follow, nearest, distance, distanceToNearest,
 
-    ## expand-methods.R:
-    expand,
-
     ## tile-methods.R:
     tile
 )
@@ -327,6 +324,5 @@ exportMethods(
     punion, pintersect, psetdiff, pgap,
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
     precede, follow, nearest, distance, distanceToNearest,
-    expand,
     tile
 )

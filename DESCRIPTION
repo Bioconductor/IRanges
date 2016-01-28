@@ -14,7 +14,7 @@ Author: H. Pages, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Infrastructure, DataRepresentation
 Depends: R (>= 3.1.0), methods, utils, stats, BiocGenerics (>= 0.15.10),
-	S4Vectors (>= 0.9.24)
+	S4Vectors (>= 0.9.25)
 Imports: stats4
 LinkingTo: S4Vectors
 Suggests: XVector, GenomicRanges, GenomicFeatures, GenomicAlignments,
@@ -65,10 +65,9 @@ Collate: Vector-class-leftovers.R
 	findOverlaps-methods.R
 	nearest-methods.R
 	cbind-Rle-methods.R
-	expand-methods.R
 	tile-methods.R
 	mapCoords-methods.R
-        subsetting-internals.R
+	subsetting-internals.R
 	test_IRanges_package.R
 	debug.R
 	zzz.R
