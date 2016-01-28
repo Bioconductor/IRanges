@@ -9,7 +9,7 @@
 \alias{length,CompressedList-method}
 \alias{names,CompressedList-method}
 \alias{names<-,CompressedList-method}
-\alias{elementLengths,CompressedList-method}
+\alias{elementNROWS,CompressedList-method}
 \alias{$<-,CompressedList-method}
 \alias{[[<-,CompressedList-method}
 

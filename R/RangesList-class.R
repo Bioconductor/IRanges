@@ -93,10 +93,10 @@ setMethod(".replaceSEW", "RangesList",
     {
         if (extends(class(value), "IntegerList")) {
             if (!identical(lapply(x, names), lapply(value, names)) &&
-                !all(elementLengths(x) == elementLengths(value)))
+                !all(elementNROWS(x) == elementNROWS(value)))
                 stop("'value' must have same length and names as current 'ranges'")
         } else if (is.numeric(value)) {
-            lelts <- sum(elementLengths(x))
+            lelts <- sum(elementNROWS(x))
             if (lelts != length(value))
                 value <- rep(value, length.out = lelts)
             if (!is.integer(value))
@@ -142,11 +142,11 @@ setMethod(".replaceSEW", "CompressedIRangesList",
     {
         if (extends(class(value), "IntegerList")) {
             if (!identical(lapply(x, names), lapply(value, names)) &&
-                !all(elementLengths(x) == elementLengths(value)))
+                !all(elementNROWS(x) == elementNROWS(value)))
                 stop("'value' must have same length and names as current 'ranges'")
             value <- unlist(value)
         } else if (is.numeric(value)) {
-            lelts <- sum(elementLengths(x))
+            lelts <- sum(elementNROWS(x))
             if (lelts != length(value))
                 value <- rep(value, length.out = lelts)
             if (!is.integer(value))
@@ -166,7 +166,7 @@ setMethod("space", "RangesList",
           {
             space <- names(x)
             if (!is.null(space))
-              space <- factor(rep.int(space, elementLengths(x)), space)
+              space <- factor(rep.int(space, elementNROWS(x)), space)
             space
           })
 

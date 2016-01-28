@@ -100,7 +100,7 @@ setAs("NCList", "IRanges", function(from) ranges(from, use.mcols=TRUE))
     unlisted_groups <- unlist(x_groups, use.names=FALSE)
     circle_len <- rep.int(NA_integer_, length(x))
     circle_len[unlisted_groups + 1L] <-
-        rep.int(circle.length, elementLengths(x_groups))
+        rep.int(circle.length, elementNROWS(x_groups))
     .shift_ranges_to_first_circle(x, circle_len)
 }
 
@@ -247,7 +247,7 @@ setMethod("start", "NCLists", function(x, ...) start(ranges(x)))
 setMethod("end", "NCLists", function(x, ...) end(ranges(x)))
 setMethod("width", "NCLists", function(x) width(ranges(x)))
 
-setMethod("elementLengths", "NCLists", function(x) elementLengths(ranges(x)))
+setMethod("elementNROWS", "NCLists", function(x) elementNROWS(ranges(x)))
 setMethod("getListElement", "NCLists",
     function (x, i, exact=TRUE)
     {
@@ -364,12 +364,12 @@ NCList_find_overlaps_in_groups <- function(
 {
     ## Compute list element lengths and offsets for 'query'.
     query_partitioning <- PartitioningByEnd(query)
-    query_eltlens <- width(query_partitioning)
+    query_eltNROWS <- width(query_partitioning)
     query_offsets <- start(query_partitioning) - 1L
 
     ## Compute list element lengths and offsets for 'subject'.
     subject_partitioning <- PartitioningByEnd(subject)
-    subject_eltlens <- width(subject_partitioning)
+    subject_eltNROWS <- width(subject_partitioning)
     subject_offsets <- start(subject_partitioning) - 1L
 
     if (select != "all") {
@@ -387,8 +387,8 @@ NCList_find_overlaps_in_groups <- function(
                hits <- all_hits[h_skeleton[[i]]]
                hits@queryHits <- hits@queryHits - query_offsets[[i]]
                hits@subjectHits <- hits@subjectHits - subject_offsets[[i]]
-               hits@queryLength <- query_eltlens[[i]]
-               hits@subjectLength <- subject_eltlens[[i]]
+               hits@queryLength <- query_eltNROWS[[i]]
+               hits@subjectLength <- subject_eltNROWS[[i]]
                hits
            })
 }

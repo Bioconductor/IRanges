@@ -112,7 +112,7 @@ int get_length_from_CompressedIRangesList_holder(const CompressedIRangesList_hol
 
 IRanges_holder get_elt_from_CompressedIRangesList_holder(const CompressedIRangesList_holder *x_holder, int i);
 
-int get_eltlens_from_CompressedIRangesList_holder(const CompressedIRangesList_holder *x_holder, int i);
+int get_eltNROWS_from_CompressedIRangesList_holder(const CompressedIRangesList_holder *x_holder, int i);
 
 /*
  * Low-level manipulation of RangedData objects.

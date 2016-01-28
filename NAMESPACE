@@ -137,7 +137,7 @@ exportMethods(
     selfmatch,
     runLength, "runValue<-",
     runsum, runmean, runwtsum, runq,
-    elementLengths, isEmpty,
+    elementNROWS, isEmpty,
     relistToClass,
     endoapply, mendoapply,
     revElements,

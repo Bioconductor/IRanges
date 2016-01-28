@@ -27,7 +27,7 @@ setMethod("c", "SimpleList",
     spaceLabels <- seq_len(length(x))
   }
   ind <- Rle(factor(spaceLabels, levels = unique(spaceLabels)),
-             elementLengths(x))
+             elementNROWS(x))
   do.call(DataFrame, structure(list(ind), names = index.var))
 }
 
@@ -50,7 +50,7 @@ setMethod("stack", "List",
             if (!is.null(name.var)) {
               nms <- as.character(unlist(lapply(x, names)))
               if (length(nms) == 0L) {
-                rngs <- IRanges(1L, width=elementLengths(x))
+                rngs <- IRanges(1L, width=elementNROWS(x))
                 nms <- as.character(as.integer(rngs))
               }
               df[[name.var]] <- factor(nms, unique(nms))

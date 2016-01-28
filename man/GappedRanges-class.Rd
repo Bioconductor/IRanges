@@ -23,7 +23,7 @@
 \alias{coerce,GappedRanges,RangesList-method}
 \alias{as.data.frame,GappedRanges-method}
 \alias{show,GappedRanges-method}
-\alias{elementLengths,GappedRanges-method}
+\alias{elementNROWS,GappedRanges-method}
 \alias{c,GappedRanges-method}
 
 
@@ -93,7 +93,7 @@
       Returns an integer vector of length \code{length(x)}
       containing the number of gaps for each "gapped range"
       in \code{x}.
-      Equivalent to \code{elementLengths(x) - 1L}.
+      Equivalent to \code{elementNROWS(x) - 1L}.
     }
     \item{}{
       \code{names(x)}:
@@ -127,16 +127,6 @@
       Note that the semantic of the \code{[[} method for GappedRanges
       objects is different from the semantic of the method for
       \link{Ranges} objects (the latter returns an integer vector).
-    }
-    \item{}{
-      \code{elementLengths(x)}:
-      Semantically equivalent to
-      \preformatted{sapply(seq_len(length(x)), function(i) length(x[[i]]))}
-      but much faster.
-      Note that the semantic of the \code{elementLengths} method for
-      GappedRanges objects is different from the semantic of the method
-      for \link{Ranges} objects (the latter returns the \code{width} of
-      the \link{Ranges} object).
     }
   }
 }

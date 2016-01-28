@@ -149,7 +149,7 @@ setMethod("as.list", "CompressedAtomicList",
                   codes <- seq_len(length(x))
                   ans <-
                     split(x@unlistData,
-                          structure(rep.int(codes, elementLengths(x)),
+                          structure(rep.int(codes, elementNROWS(x)),
                                     levels = as.character(codes),
                                     class = "factor"))
                   if (use.names) {
@@ -172,23 +172,24 @@ setMethod("as.vector", "AtomicList",
         mode <- match.arg(mode, valid_modes)
         if (mode %in% c("any", "list"))
             return(as.list(x))
-        elt_lens <- elementLengths(x)
-        if (any(elt_lens > 1L))
+        x_eltNROWS <- elementNROWS(x)
+        if (any(x_eltNROWS > 1L))
             stop("coercing an AtomicList object to an atomic vector ",
                  "is supported only for\n",
                  "  objects with top-level elements of length <= 1")
         ans <- base::rep.int(as.vector(NA, mode=mode), length(x))
-        ans[elt_lens == 1L] <- as.vector(unlist(x, use.names=FALSE), mode=mode)
+        ans[x_eltNROWS == 1L] <- as.vector(unlist(x, use.names=FALSE),
+                                           mode=mode)
         ans
     }
 )
 
 setMethod("drop", "AtomicList", function(x) {
-  lens <- elementLengths(x)
-  if (any(lens > 1))
+  x_eltNROWS <- elementNROWS(x)
+  if (any(x_eltNROWS > 1))
     stop("All element lengths must be <= 1")
-  x_dropped <- rep.int(NA, sum(lens))
-  x_dropped[lens > 0] <- unlist(x, use.names = FALSE)
+  x_dropped <- rep.int(NA, sum(x_eltNROWS))
+  x_dropped[x_eltNROWS > 0] <- unlist(x, use.names = FALSE)
   names(x_dropped) <- names(x)
   x_dropped
 })
@@ -262,14 +263,14 @@ repLengthOneElements <- function(x, times) {
 }
 
 recycleListElements <- function(x, newlen) {
-  len <- elementLengths(x)
-  if (identical(len, newlen)) {
+  x_eltNROWS <- elementNROWS(x)
+  if (identical(x_eltNROWS, newlen)) {
     return(x)
   }
-  if (all(len == 1L)) {
+  if (all(x_eltNROWS == 1L)) {
     ans <- repLengthOneElements(x, newlen)
   } else {
-    ans <- rep(x, newlen / len)
+    ans <- rep(x, newlen / x_eltNROWS)
     if (length(unlist(ans, use.names=FALSE)) != sum(newlen)) {
       stop("Some element lengths are not multiples of their corresponding ",
            "element length in ", deparse(substitute(x)))
@@ -287,8 +288,8 @@ doBinaryCompressedListOp <- function(OP, e1, e2, skeleton) {
   e1 <- recycleList(e1, n)
   e2 <- recycleList(e2, n)
   if (missing(skeleton)) {
-    n1 <- elementLengths(e1)
-    n2 <- elementLengths(e2)
+    n1 <- elementNROWS(e1)
+    n2 <- elementNROWS(e2)
     if (any(n1 != n2)) {
       en <- ifelse(n1 == 0L | n2 == 0L, 0L, pmax.int(n1, n2))
     } else {
@@ -298,7 +299,7 @@ doBinaryCompressedListOp <- function(OP, e1, e2, skeleton) {
     if (is.null(nms))
       nms <- names(e2)
   } else {
-    en <- elementLengths(skeleton)
+    en <- elementNROWS(skeleton)
     nms <- names(skeleton)
   }
   if (!is.null(en)) {
@@ -328,7 +329,7 @@ setMethod("Ops",
           signature(e1 = "SimpleAtomicList", e2 = "CompressedAtomicList"),
           function(e1, e2)
           {
-              if (sum(as.numeric(elementLengths(e1))) < .Machine$integer.max)
+              if (sum(as.numeric(elementNROWS(e1))) < .Machine$integer.max)
                   e1 <- as(e1, "CompressedList")
               else
                   e2 <- as(e2, "SimpleList")
@@ -340,7 +341,7 @@ setMethod("Ops",
           signature(e1 = "CompressedAtomicList", e2 = "SimpleAtomicList"),
           function(e1, e2)
           {
-              if (sum(as.numeric(elementLengths(e2))) < .Machine$integer.max)
+              if (sum(as.numeric(elementNROWS(e2))) < .Machine$integer.max)
                   e2 <- as(e2, "CompressedList")
               else
                   e1 <- as(e1, "SimpleList")
@@ -385,7 +386,7 @@ setMethod("Ops",
           {
               if (length(e2) > 1) {
                   e2 <- S4Vectors:::recycleVector(e2, length(e1))
-                  e2 <- rep(e2, elementLengths(e1))
+                  e2 <- rep(e2, elementNROWS(e1))
               }
               relist(callGeneric(e1@unlistData, e2), e1)
           })
@@ -396,7 +397,7 @@ setMethod("Ops",
           {
               if (length(e1) > 1) {
                   e1 <- S4Vectors:::recycleVector(e1, length(e2))
-                  e1 <- rep(e1, elementLengths(e2))
+                  e1 <- rep(e1, elementNROWS(e2))
               }
               relist(callGeneric(e1, e2@unlistData), e2)
           })
@@ -476,7 +477,7 @@ setMethod("all", "CompressedAtomicList", function(x, na.rm = FALSE) {
 rowsumCompressedList <- function(x, ..., na.rm = FALSE) {
   x_flat <- unlist(x, use.names = FALSE)
   ans <- vector(class(x_flat), length(x))
-  non_empty <- elementLengths(x) > 0
+  non_empty <- elementNROWS(x) > 0
   if (is.logical(x_flat))
     x_flat <- as.integer(x_flat)
   ans[non_empty] <- rowsum(x_flat, togroup(x), reorder = FALSE,
@@ -538,9 +539,9 @@ setMethod("all", "CompressedRleList", function(x, ..., na.rm = FALSE) {
   rv <- runValue(x)
   if (na.rm)
     rv <- rv[!is.na(rv)]
-  elen <- elementLengths(rv)
-  ans <- elen == 0L
-  singletons <- elen == 1L
+  rv_eltNROWS <- elementNROWS(rv)
+  ans <- rv_eltNROWS == 0L
+  singletons <- rv_eltNROWS == 1L
   ans[singletons] <- unlist(rv, use.names = FALSE)[singletons[togroup(rv)]]
   ans
 })
@@ -681,7 +682,7 @@ setMethod("unique", "RleList", .unique.RleList)
     stop("arguments in '...' are not supported")
   }
   x_unlistData <- x@unlistData
-  x_group <- rep.int(seq_along(x), elementLengths(x))
+  x_group <- rep.int(seq_along(x), elementNROWS(x))
   ans_unlistData <-
     S4Vectors:::duplicatedIntegerPairs(x_group, x_unlistData,
                                        fromLast=fromLast)
@@ -817,8 +818,8 @@ setMethods("mean",
                if (trim > 0) {
                    return(callNextMethod())
                }
-               lens <- if (na.rm) sum(!is.na(x)) else elementLengths(x)
-               sum(x, na.rm=na.rm) / lens
+               x_eltNROWS <- if (na.rm) sum(!is.na(x)) else elementNROWS(x)
+               sum(x, na.rm=na.rm) / x_eltNROWS
            })
 
 setMethod("var", c("AtomicList", "missing"),
@@ -879,12 +880,12 @@ setMethod("IQR", "AtomicList",
 setMethod("which.max", "CompressedRleList",
           function(x) {
             viewWhichMaxs(as(x, "RleViews"), na.rm=TRUE) -
-              c(0L, head(cumsum(elementLengths(x)), -1))
+              c(0L, head(cumsum(elementNROWS(x)), -1))
           })
 setMethod("which.min", "CompressedRleList",
           function(x) {
             viewWhichMins(as(x, "RleViews"), na.rm=TRUE) -
-              c(0L, head(cumsum(elementLengths(x)), -1))
+              c(0L, head(cumsum(elementNROWS(x)), -1))
           })
 
 diff.IntegerList <- function(x, ...) diff(x, ...)
@@ -995,11 +996,11 @@ setMethod("unstrsplit", "CharacterList",
 setMethod("paste", "CompressedAtomicList",
           function(..., sep=" ", collapse=NULL) {
               args <- lapply(list(...), as, "CharacterList")
-              lens <- do.call(pmax, lapply(args, elementLengths))
-              args <- lapply(args, recycleListElements, lens)
+              x_eltNROWS <- do.call(pmax, lapply(args, elementNROWS))
+              args <- lapply(args, recycleListElements, x_eltNROWS)
               unlisted <- lapply(args, unlist, use.names=FALSE)
               ans <- relist(do.call(paste, c(unlisted, sep=sep)),
-                            PartitioningByWidth(lens))
+                            PartitioningByWidth(x_eltNROWS))
               if (!is.null(collapse)) {
                   ans <- unstrsplit(ans, collapse)
               }
@@ -1051,18 +1052,18 @@ setMethod("runValue", "CompressedRleList",
 
 setReplaceMethod("runValue", "CompressedRleList",
                  function(x, value) {
-                   if (!identical(elementLengths(ranges(x)),
-                                  elementLengths(value)))
-                     stop("elementLengths() of 'x' and 'value' must match")
+                   if (!identical(elementNROWS(ranges(x)),
+                                  elementNROWS(value)))
+                     stop("elementNROWS() of 'x' and 'value' must match")
                    runValue(x@unlistData) <- unlist(value, use.names=FALSE)
                    x
                  })
 
 setReplaceMethod("runValue", "SimpleRleList",
                  function(x, value) {
-                   if (!identical(elementLengths(ranges(x)),
-                                  elementLengths(value)))
-                     stop("elementLengths() of 'x' and 'value' must match")
+                   if (!identical(elementNROWS(ranges(x)),
+                                  elementNROWS(value)))
+                     stop("elementNROWS() of 'x' and 'value' must match")
                    x@listData <- mapply(function(rle, v) {
                      runValue(rle) <- v
                      rle

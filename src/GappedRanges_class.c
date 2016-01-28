@@ -19,7 +19,7 @@ static const char *is_valid_GappedRanges_elt(const IRanges_holder *ir_holder)
  * CompressedNormalIRangesList object (instead of just a CompressedIRangesList
  * object for the old slot). Hence the validity method for GappedRanges
  * should just check that all the elements in 'x@cnirl' are of length >= 1
- * (which can be done in R with elementLengths()).
+ * (which can be done in R with elementNROWS()).
  *
  * We assume that 'x@cnirl' is already a valid CompressedIRangesList object.
  * Here we only check that its elements are normal and of length >= 1.

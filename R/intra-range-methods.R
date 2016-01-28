@@ -13,18 +13,20 @@ normargAtomicList1 <- function(arg, List, lx, argname = deparse(substitute(arg))
     arg
 }
 
-normargAtomicList2 <- function(arg, List, lx, eln, argname = deparse(substitute(arg)))
+normargAtomicList2 <- function(arg, List, lx, x_eltNROWS,
+                               argname = deparse(substitute(arg)))
 {
     if (!(is.vector(arg) && length(arg) == 1L)) {
         if (is.vector(arg))
-          arg <- as(rep(S4Vectors:::recycleVector(arg, lx), eln),
+          arg <- as(rep(S4Vectors:::recycleVector(arg, lx), x_eltNROWS),
                     class(unlist(List())))
         else {
           if (!is(arg, "AtomicList"))
             stop("'arg' must be a vector or AtomicList object")
-          if (!isTRUE(all.equal(elementLengths(arg), eln,
+          if (!isTRUE(all.equal(elementNROWS(arg), x_eltNROWS,
                                 check.attributes=FALSE)))
-            arg <- mapply(S4Vectors:::recycleVector, arg, List(as.list(eln)))
+            arg <- mapply(S4Vectors:::recycleVector,
+                          arg, List(as.list(x_eltNROWS)))
           arg <- unlist(arg, use.names=FALSE)
         }
     } else if (is.list(arg)){
@@ -83,8 +85,8 @@ setMethod("shift", "CompressedIRangesList",
           function(x, shift=0L, use.names = TRUE)
           {
               lx <- length(x)
-              eln <- elementLengths(x)
-              shift <- normargAtomicList2(shift, IntegerList, lx, eln)
+              x_eltNROWS <- elementNROWS(x)
+              shift <- normargAtomicList2(shift, IntegerList, lx, x_eltNROWS)
               slot(x, "unlistData", check=FALSE) <-
                 shift(x@unlistData, shift = shift, use.names = use.names)
               x
@@ -139,35 +141,15 @@ setMethod("narrow", "CompressedIRangesList",
           function(x, start = NA, end = NA, width = NA, use.names = TRUE)
           {
               lx <- length(x)
-              eln <- elementLengths(x)
-              start <- normargAtomicList2(start, IntegerList, lx, eln)
-              end <- normargAtomicList2(end, IntegerList, lx, eln)
-              width <- normargAtomicList2(width, IntegerList, lx, eln)
+              x_eltNROWS <- elementNROWS(x)
+              start <- normargAtomicList2(start, IntegerList, lx, x_eltNROWS)
+              end <- normargAtomicList2(end, IntegerList, lx, x_eltNROWS)
+              width <- normargAtomicList2(width, IntegerList, lx, x_eltNROWS)
               slot(x, "unlistData", check=FALSE) <-
                 narrow(x@unlistData, start = start, end = end, width = width,
                        use.names = use.names)
               x
           })
-
-### FIXME: This is a quick and dirty implementation that is TOTALLY
-### inefficient. It needs to be improved a lot!
-### FIXME: It's also broken because it can return a GappedRanges object with
-### empty elements (not allowed).
-#setMethod("narrow", "GappedRanges",
-#    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-#    {
-#        solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
-#        start2 <- start(x) + start(solved_SEW) - 1L
-#        end2 <- start2 + width(solved_SEW) - 1L
-
-#        for (i in seq_len(length(x))) {
-#            x@cnirl[[i]] <- restrict(x[[i]], start=start2[i], end=end2[i])
-#        }
-#        if (!S4Vectors:::normargUseNames(use.names))
-#            names(x) <- NULL
-#        x
-#    }
-#)
 
 setMethod("narrow", "MaskCollection",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
@@ -260,9 +242,9 @@ setMethod("resize", "CompressedIRangesList",
           function(x, width, fix = "start", use.names = TRUE)
           {
               lx <- length(x)
-              eln <- elementLengths(x)
-              width <- normargAtomicList2(width, IntegerList, lx, eln)
-              fix <- normargAtomicList2(fix, CharacterList, lx, eln)
+              x_eltNROWS <- elementNROWS(x)
+              width <- normargAtomicList2(width, IntegerList, lx, x_eltNROWS)
+              fix <- normargAtomicList2(fix, CharacterList, lx, x_eltNROWS)
               slot(x, "unlistData", check=FALSE) <-
                 resize(x@unlistData, width = width, fix = fix,
                        use.names = use.names)
@@ -330,9 +312,9 @@ setMethod("flank", "CompressedIRangesList",
           function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
           {
               lx <- length(x)
-              eln <- elementLengths(x)
-              width <- normargAtomicList2(width, IntegerList, lx, eln)
-              start <- normargAtomicList2(start, LogicalList, lx, eln)
+              x_eltNROWS <- elementNROWS(x)
+              width <- normargAtomicList2(width, IntegerList, lx, x_eltNROWS)
+              start <- normargAtomicList2(start, LogicalList, lx, x_eltNROWS)
               slot(x, "unlistData", check=FALSE) <-
                 flank(x@unlistData, width = width, start = start, both = both,
                       use.names = use.names)
@@ -570,9 +552,10 @@ setMethod("restrict", "CompressedIRangesList",
                   stop("'keep.all.ranges' must be TRUE or FALSE")
               if (keep.all.ranges) {
                   lx <- length(x)
-                  eln <- elementLengths(x)
-                  start <- normargAtomicList2(start, IntegerList, lx, eln)
-                  end <- normargAtomicList2(end, IntegerList, lx, eln)
+                  x_eltNROWS <- elementNROWS(x)
+                  start <- normargAtomicList2(start, IntegerList,
+                                              lx, x_eltNROWS)
+                  end <- normargAtomicList2(end, IntegerList, lx, x_eltNROWS)
                   slot(x, "unlistData", check=FALSE) <-
                     restrict(x@unlistData, start = start, end = end,
                              keep.all.ranges = keep.all.ranges,

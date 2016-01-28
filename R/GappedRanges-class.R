@@ -54,7 +54,7 @@ setMethod("ngap", "GappedRanges",
     function(x)
     {
         .Deprecated(msg="GappedRanges objects are deprecated")
-        elementLengths(x) - 1L
+        elementNROWS(x) - 1L
     }
 )
 
@@ -169,13 +169,13 @@ setMethod("getListElement", "GappedRanges",
     }
 )
 
-### WARNING: We override the *semantic* of the "elementLengths" method for
+### WARNING: We override the *semantic* of the "elementNROWS" method for
 ### Ranges objects.
-setMethod("elementLengths", "GappedRanges",
+setMethod("elementNROWS", "GappedRanges",
     function(x)
     {
         .Deprecated(msg="GappedRanges objects are deprecated")
-        elementLengths(x@cnirl)
+        elementNROWS(x@cnirl)
     }
 )
 

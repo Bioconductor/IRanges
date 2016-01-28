@@ -237,7 +237,7 @@ mergeByOverlaps(query, subject, ...)
   query and subject used in the call to \code{findOverlaps} that generated
   \code{x}.
   \emph{Same shape} means same length when \code{x} is a
-  \link[S4Vectors]{Hits} object, and same length and elementLengths
+  \link[S4Vectors]{Hits} object, and same length and same elementNROWS
   when \code{x} is a \link[S4Vectors]{HitsList} object.
 }
 

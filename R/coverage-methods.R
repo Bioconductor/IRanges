@@ -112,11 +112,11 @@
     if (!identical(names(width), x_names))
         stop("when 'width' is a list-like object, it must be named ",
              "and its names must be identical to ", x_names.label)
-    width_eltlens <- elementLengths(width)
-    if (!all(width_eltlens <= 1L))
+    width_eltNROWS <- elementNROWS(width)
+    if (!all(width_eltNROWS <= 1L))
         stop("when 'width' is a list-like object, each list element ",
              "should contain at most 1 element or be NULL")
-    width[width_eltlens == 0L] <- NA_integer_
+    width[width_eltNROWS == 0L] <- NA_integer_
     setNames(unlist(width, use.names=FALSE), x_names)
 }
 

@@ -26,7 +26,7 @@
 \alias{start,NCLists-method}
 \alias{end,NCLists-method}
 \alias{width,NCLists-method}
-\alias{elementLengths,NCLists-method}
+\alias{elementNROWS,NCLists-method}
 \alias{coerce,NCLists,CompressedIRangesList-method}
 \alias{coerce,NCLists,IRangesList-method}
 \alias{coerce,RangesList,NCLists-method}

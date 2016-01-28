@@ -28,7 +28,7 @@ setMethod("nrow", "DataFrameList",
             if (length(x) == 0L)
               0L
             else
-              elementLengths(x)
+              elementNROWS(x)
           })
 
 setMethod("ncol", "DataFrameList",
@@ -347,12 +347,12 @@ setReplaceMethod("[", "SplitDataFrameList",
             y <- rep(y, length.out=length(x))
         }
         if (is(x, "CompressedList")) {
-            xels <- elementLengths(x)
-            yels <- elementLengths(y)
-            if (any(xels != yels)) {
-                indices <- IRanges(start(y@partitioning), width=yels)
-                indices <- rep(indices, xels / yels)
-                if (sum(width(indices)) != sum(xels)) {
+            x_eltNROWS <- elementNROWS(x)
+            y_eltNROWS <- elementNROWS(y)
+            if (any(x_eltNROWS != y_eltNROWS)) {
+                indices <- IRanges(start(y@partitioning), width=y_eltNROWS)
+                indices <- rep(indices, x_eltNROWS / y_eltNROWS)
+                if (sum(width(indices)) != sum(x_eltNROWS)) {
                     stop("some element lengths of 'x' are not multiples of the ",
                          "corresponding element lengths of 'value'")
                 }
@@ -429,7 +429,7 @@ setListCoercions("DataFrame")
 setMethod("show", "SplitDataFrameList", function(object)
           {
             k <- length(object)
-            cumsumN <- cumsum(elementLengths(object))
+            cumsumN <- cumsum(elementNROWS(object))
             N <- tail(cumsumN, 1)
             cat(classNameForDisplay(object), " of length ", k, "\n",
                 sep = "")

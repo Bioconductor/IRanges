@@ -241,9 +241,9 @@ setMethod("reduce", "RangedData",
                        drop.empty.ranges = drop.empty.ranges,
                        min.gapwidth = min.gapwidth,
                        with.inframe.attrib = with.inframe.attrib)
-              listData <- new2("DataFrame", nrows=sum(elementLengths(ranges)),
+              listData <- new2("DataFrame", nrows=sum(elementNROWS(ranges)),
                                check=FALSE)
-              end <- cumsum(elementLengths(ranges))
+              end <- cumsum(elementNROWS(ranges))
               names(end) <- names(ranges)
               partitioning <- PartitioningByEnd(end)
               initialize(x,
@@ -388,7 +388,7 @@ setMethod("disjoin", "CompressedIRangesList",
                   ## unlist CompressedIntegerList, with integer(0) as 0
               {
                   w <- integer(length(x))
-                  w[elementLengths(x) != 0L] <- unlist(x, use.names=FALSE)
+                  w[elementNROWS(x) != 0L] <- unlist(x, use.names=FALSE)
                   w
               }
 
@@ -407,7 +407,7 @@ setMethod("disjoin", "CompressedIRangesList",
                   lvls <- seq_along(x)
               d <- disjoin(local, ...)
               vec <- unlist(start(shift(rng, offset)), use.names=FALSE)
-              lvls0 <- lvls[elementLengths(rng) != 0]
+              lvls0 <- lvls[elementNROWS(rng) != 0]
               f <- lvls0[findInterval(start(d), vec)]
               d <- split(d, factor(f, levels=lvls))
               if (is.null(names(x)))

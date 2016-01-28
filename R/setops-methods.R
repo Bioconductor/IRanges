@@ -84,7 +84,7 @@ setMethod("intersect", c("RangesList", "RangesList"),
 
 setMethod("intersect", c("CompressedIRangesList", "CompressedIRangesList"),
           function(x, y) {
-            nonempty <- elementLengths(x) != 0L
+            nonempty <- elementNROWS(x) != 0L
             rx <- unlist(range(x), use.names = FALSE)
             startx <- integer()
             startx[nonempty] <- start(rx)
@@ -114,7 +114,7 @@ setMethod("setdiff", c("RangesList", "RangesList"),
 
 setMethod("setdiff", c("CompressedIRangesList", "CompressedIRangesList"),
           function(x, y) {
-            nonempty <- elementLengths(x) != 0L
+            nonempty <- elementNROWS(x) != 0L
             rx <- unlist(range(x), use.names = FALSE)
             startx <- integer()
             startx[nonempty] <- start(rx)

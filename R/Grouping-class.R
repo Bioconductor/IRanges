@@ -104,13 +104,13 @@ setGeneric("togroup", signature="x",
     function(x, j=NULL) standardGeneric("togroup")
 )
 
-### The default method works on any object 'x' for which 'elementLengths(x)'
+### The default method works on any object 'x' for which 'elementNROWS(x)'
 ### works (e.g. Partitioning, List, list). Not very efficient.
 setMethod("togroup", "ANY",
     function(x, j=NULL)
     {
-        elt_len <- elementLengths(x)
-        to_group <- rep.int(seq_len(length(elt_len)), elt_len)
+        x_eltNROWS <- elementNROWS(x)
+        to_group <- rep.int(seq_len(length(x_eltNROWS)), x_eltNROWS)
         if (is.null(j))
             return(to_group)
         if (!is.numeric(j))
@@ -198,7 +198,7 @@ setMethod("getListElement", "H2LGrouping",
 setMethod("grouplength", "H2LGrouping",
     function(x, i=NULL)
     {
-        group_length <- elementLengths(x@low2high) + 1L
+        group_length <- elementNROWS(x@low2high) + 1L
         group_length[!is.na(x@high2low)] <- 0L
         if (is.null(i))
             return(group_length)
@@ -692,7 +692,7 @@ PartitioningByEnd <- function(x=integer(0), NG=NULL, names=NULL)
             return(x)
         }
         x_names <- names(x)
-        ans_end <- cumsum(elementLengths(x))
+        ans_end <- cumsum(elementNROWS(x))
     } else {
         if (!is.numeric(x))
             stop(wmsg("'x' must be either a list-like object or ",
@@ -825,7 +825,7 @@ PartitioningByWidth <- function(x=integer(0), NG=NULL, names=NULL)
             return(x)
         }
         x_names <- names(x)
-        ans_width <- elementLengths(x)
+        ans_width <- elementNROWS(x)
     } else {
         if (!is.numeric(x))
             stop(wmsg("'x' must be either a list-like object or ",

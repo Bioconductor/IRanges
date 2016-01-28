@@ -222,7 +222,7 @@ DEFINE_CCALLABLE_STUB(IRanges_holder, get_elt_from_CompressedIRangesList_holder,
 	(                                    x_holder,     i)
 )
 
-DEFINE_CCALLABLE_STUB(int, get_eltlens_from_CompressedIRangesList_holder,
+DEFINE_CCALLABLE_STUB(int, get_eltNROWS_from_CompressedIRangesList_holder,
 	(const CompressedIRangesList_holder *x_holder, int i),
 	(                                    x_holder,     i)
 )

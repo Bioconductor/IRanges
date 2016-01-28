@@ -11,7 +11,7 @@
 \alias{colnames,RangedData-method}
 \alias{rownames<-,RangedData-method}
 \alias{colnames<-,RangedData-method}
-\alias{elementLengths,RangedData-method}
+\alias{elementNROWS,RangedData-method}
 \alias{end,RangedData-method}
 \alias{end<-,RangedData-method}
 \alias{length,RangedData-method}
@@ -177,21 +177,21 @@
         \item{}{
           \code{start(x), start(x) <- value}: Get or set the starts of the
            ranges. When setting the starts, \code{value} can be an integer
-           vector of \code{length(sum(elementLengths(ranges(x))))} or an
+           vector of \code{length(sum(elementNROWS(ranges(x))))} or an
            IntegerList object of length \code{length(ranges(x))} and names
            \code{names(ranges(x))}.
         }
         \item{}{
           \code{end(x), end(x) <- value}: Get or set the ends of the
            ranges. When setting the ends, \code{value} can be an integer
-           vector of \code{length(sum(elementLengths(ranges(x))))} or an
+           vector of \code{length(sum(elementNROWS(ranges(x))))} or an
            IntegerList object of length \code{length(ranges(x))} and names
            \code{names(ranges(x))}.
         }
         \item{}{
           \code{width(x), width(x) <- value}: Get or set the widths of the
            ranges. When setting the widths, \code{value} can be an integer
-           vector of \code{length(sum(elementLengths(ranges(x))))} or an
+           vector of \code{length(sum(elementNROWS(ranges(x))))} or an
            IntegerList object of length \code{length(ranges(x))} and names
            \code{names(ranges(x))}.
         }

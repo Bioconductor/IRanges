@@ -176,7 +176,7 @@
   are expected to work on any Grouping object, those objects can be seen as
   \link{List} objects. More precisely, the Grouping class actually extends
   the \link{IntegerList} class. In particular, many other "list" operations
-  like \code{as.list}, \code{elementLengths}, and \code{unlist}, etc...
+  like \code{as.list}, \code{elementNROWS}, and \code{unlist}, etc...
   should work out-of-the-box on any Grouping object.
 }
 
@@ -288,7 +288,7 @@
       \itemize{
         \item If \code{x} is a list-like object, then the returned object
               \code{y} has the same length as \code{x} and is such that
-              \code{width(y)} is identical to \code{elementLengths(x)}.
+              \code{width(y)} is identical to \code{elementNROWS(x)}.
         \item If \code{x} is an integer vector and \code{NG} is not supplied,
               then \code{x} must be sorted (checked) and contain non-NA
               non-negative values (NOT checked).
@@ -315,7 +315,7 @@
       \itemize{
         \item If \code{x} is a list-like object, then the returned object
               \code{y} has the same length as \code{x} and is such that
-              \code{width(y)} is identical to \code{elementLengths(x)}.
+              \code{width(y)} is identical to \code{elementNROWS(x)}.
         \item If \code{x} is an integer vector and \code{NG} is not supplied,
               then \code{x} must contain non-NA non-negative values (NOT
               checked).

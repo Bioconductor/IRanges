@@ -90,7 +90,7 @@ setMethod("extractROWS", "Views",
     }
 )
 
-setMethod("elementLengths", "Views", function(x) width(x))
+setMethod("elementNROWS", "Views", function(x) width(x))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

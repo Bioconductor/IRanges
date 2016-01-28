@@ -22,7 +22,7 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
 ### Used in the unit tests for GNCList located in GenomicRanges.
 .make_Hits_from_q2s <- function(q2s, s_len)
 {
-    q_hits <- rep.int(seq_along(q2s), elementLengths(q2s))
+    q_hits <- rep.int(seq_along(q2s), elementNROWS(q2s))
     s_hits <- as.integer(unlist(q2s, use.names=FALSE))
     Hits(q_hits, s_hits, length(q2s), s_len)
 }
@@ -311,7 +311,7 @@ test_findOverlaps_NCList_special_types <- function()
                                            maxgap=maxgap, minoverlap=minoverlap,
                                            type=type, select="all"),
                        "CompressedIntegerList")
-          target_idx0 <- elementLengths(target) == 0L
+          target_idx0 <- elementNROWS(target) == 0L
           check_arbitrary_hits <- function(current) {
               current_idx0 <- is.na(current)
               checkIdentical(target_idx0, current_idx0)
@@ -435,7 +435,7 @@ test_NCLists <- function()
     checkIdentical(width(x), width(nclists))
     checkIdentical(x, as(nclists, "IRangesList"))
     checkIdentical(x[-1], as(nclists[-1], "IRangesList"))
-    checkIdentical(elementLengths(x), elementLengths(nclists))
+    checkIdentical(elementNROWS(x), elementNROWS(nclists))
 
     nclist <- nclists[[3]]
     checkTrue(is(nclist, "NCList"))

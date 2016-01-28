@@ -17,10 +17,10 @@ setClass("CompressedList",
 ### Accessor methods.
 ###
 
-setMethod("elementLengths", "CompressedList",
+setMethod("elementNROWS", "CompressedList",
     function(x)
     {
-        ans <- elementLengths(x@partitioning)
+        ans <- elementNROWS(x@partitioning)
         names(ans) <- names(x)
         ans
     }
@@ -177,7 +177,7 @@ setUnlistDataNames <- function(unlisted_x, grouping, use.names, x_class)
         } else {
             ans_ROWNAMES <- rownames(unlisted_x)
         }
-        nms <- rep.int(x_names, elementLengths(grouping))
+        nms <- rep.int(x_names, elementNROWS(grouping))
         ans_ROWNAMES <- S4Vectors:::make_unlist_result_names(nms, ans_ROWNAMES)
         if (length(dim(unlisted_x)) < 2L) {
             res <- try(names(unlisted_x) <- ans_ROWNAMES, silent=TRUE)
@@ -238,8 +238,8 @@ setMethod("extractROWS", "CompressedList",
     function(x, i)
     {
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
-        ans_eltlens <- extractROWS(width(x@partitioning), i)
-        ans_breakpoints <- suppressWarnings(cumsum(ans_eltlens))
+        ans_eltNROWS <- extractROWS(width(x@partitioning), i)
+        ans_breakpoints <- suppressWarnings(cumsum(ans_eltNROWS))
         nbreakpoints <- length(ans_breakpoints)
         if (nbreakpoints != 0L && is.na(ans_breakpoints[[nbreakpoints]]))
             stop(wmsg("Subsetting operation on ", class(x), " object 'x' ",
@@ -248,7 +248,7 @@ setMethod("extractROWS", "CompressedList",
                       "Please try to coerce 'x' to a SimpleList object ",
                       "first (with 'as(x, \"SimpleList\")')."))
         idx_on_unlisted_x <- IRanges(end=extractROWS(end(x@partitioning), i),
-                                     width=ans_eltlens)
+                                     width=ans_eltNROWS)
         ans_unlistData <- extractROWS(x@unlistData, idx_on_unlisted_x)
         ans_partitioning <- new2("PartitioningByEnd",
                                  end=ans_breakpoints,
@@ -294,7 +294,7 @@ setReplaceMethod("[[", "CompressedList",
                                   " instance")
                          listData <- as.list(x, use.names = FALSE)
                          listData[[i]] <- value
-                         widths <- elementLengths(x)
+                         widths <- elementNROWS(x)
                          names(widths) <- NULL
                          widths[i] <- NROW(value)
                          if ((i == length(x) + 1L) &&
@@ -384,7 +384,7 @@ combine_CompressedList_objects <- function(Class, objects,
     ans_unlistData <- do.call(.bindROWS, unlistData_slots)
 
     ## Combine "partitioning" slots.
-    ans_breakpoints <- cumsum(unlist(lapply(objects, elementLengths)))
+    ans_breakpoints <- cumsum(unlist(lapply(objects, elementNROWS)))
     ans_partitioning <- PartitioningByEnd(ans_breakpoints)
 
     ans <- newCompressedList0(Class, ans_unlistData, ans_partitioning)
@@ -509,11 +509,11 @@ setMethod("revElements", "CompressedList",
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         if (length(i) == 0L)
             return(x)
-        elt_lens <- elementLengths(x)
-        offset <- cumsum(c(0L, elt_lens[-length(elt_lens)]))
+        x_eltNROWS <- elementNROWS(x)
+        offset <- cumsum(c(0L, x_eltNROWS[-length(x_eltNROWS)]))
         rev <- logical(length(x))
         rev <- replaceROWS(rev, i, TRUE)
-        ii <- S4Vectors:::fancy_mseq(elt_lens, offset=offset, rev=rev)
+        ii <- S4Vectors:::fancy_mseq(x_eltNROWS, offset=offset, rev=rev)
         x@unlistData <- extractROWS(x@unlistData, ii)
         x
     }

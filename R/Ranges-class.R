@@ -18,7 +18,7 @@ setMethod("length", "Ranges", function(x) length(start(x)))
 
 ### Without this definition, we inherit the method for Vector objects
 ### which is very inefficient on Ranges objects!
-setMethod("elementLengths", "Ranges", function(x) setNames(width(x), names(x)))
+setMethod("elementNROWS", "Ranges", function(x) setNames(width(x), names(x)))
 
 ### The 3 default methods below provide a formalization of the relationship
 ### between the starts/widths/ends of a Ranges object. Of course Ranges
@@ -112,7 +112,7 @@ setMethod("unlist", "Ranges",
         ans <- as.integer(x)  # 'ans' should have no names
         stopifnot(is.null(names(ans)))  # sanity check
         if (use.names && !is.null(names(x)))
-            names(ans) <- rep.int(names(x), elementLengths(x))
+            names(ans) <- rep.int(names(x), elementNROWS(x))
         ans
     }
 )

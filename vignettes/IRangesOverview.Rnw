@@ -345,13 +345,13 @@ object.size(sIntList2)
 
 The \Rfunction{length} function returns the number of elements in a
 \Rclass{Vector}-derived object and, for a \Rclass{List}-derived object
-like ``simple list" or ``compressed list", the \Rfunction{elementLengths}
+like ``simple list" or ``compressed list", the \Rfunction{elementNROWS}
 function returns an integer vector containing the lengths of each of the
 elements:
 
 <<list-length>>=
 length(cIntList2)
-Rle(elementLengths(cIntList2))
+Rle(elementNROWS(cIntList2))
 @
 
 Just as with ordinary \R{} \Rclass{list} objects, \Rclass{List}-derived

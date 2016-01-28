@@ -283,7 +283,7 @@ setMethod("splitAsList", c("ANY", "formula"),
 
 ### 'x' must be a vector-like object and 'i' a list-like object.
 ### Must return a list-like object parallel to 'i' and with same "shape" as
-### 'i' (i.e. same elementLengths). If 'i' has names, they should be
+### 'i' (i.e. same elementNROWS). If 'i' has names, they should be
 ### propagated to the returned value. The list elements of the returned value
 ### must have the class of 'x'.
 setGeneric("extractList", function(x, i) standardGeneric("extractList"))

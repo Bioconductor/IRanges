@@ -18,7 +18,7 @@
 \alias{end<-,Views-method}
 \alias{width<-,Views-method}
 \alias{names<-,Views-method}
-\alias{elementLengths,Views-method}
+\alias{elementNROWS,Views-method}
 \alias{newViews}
 \alias{Views}
 \alias{coerce,Vector,Views-method}

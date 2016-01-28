@@ -75,15 +75,15 @@
   \describe{
     \item{}{\code{start(x), start(x) <- value}: Get or set the starts of the
       ranges. When setting the starts, \code{value} can be an integer vector
-      of \code{length(sum(elementLengths(x)))} or an IntegerList object of
+      of length \code{sum(elementNROWS(x))} or an IntegerList object of
       length \code{length(x)} and names \code{names(x)}.}
     \item{}{\code{end(x), end(x) <- value}: Get or set the ends of the
-      ranges. When setting the starts, \code{value} can be an integer vector
-      of \code{length(sum(elementLengths(x)))} or an IntegerList object of
+      ranges. When setting the ends, \code{value} can be an integer vector
+      of length \code{sum(elementNROWS(x))} or an IntegerList object of
       length \code{length(x)} and names \code{names(x)}.}
     \item{}{\code{width(x), width(x) <- value}: Get or set the widths of the
-      ranges. When setting the starts, \code{value} can be an integer vector
-      of \code{length(sum(elementLengths(x)))} or an IntegerList object of
+      ranges. When setting the widths, \code{value} can be an integer vector
+      of length \code{sum(elementNROWS(x))} or an IntegerList object of
       length \code{length(x)} and names \code{names(x)}.}
     \item{}{\code{space(x)}: Gets the spaces of the ranges as a
       character vector. This is equivalent to \code{names(x)}, except each
@@ -183,7 +183,7 @@ names(unnamed) # NULL
 
 # edit the width of the ranges in the list
 edited <- named
-width(edited) <- rep(c(3,2), elementLengths(named))
+width(edited) <- rep(c(3,2), elementNROWS(named))
 edited
 
 # same as list(range1, range2)

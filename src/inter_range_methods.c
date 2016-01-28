@@ -28,7 +28,7 @@ SEXP debug_inter_range_methods()
  * Low-level helper functions.
  */
 
-static int get_elt_from_CompressedIRangesList_holderlens_max(
+static int get_maxNROWS_from_CompressedIRangesList_holder(
 		const CompressedIRangesList_holder *x_holder)
 {
 	int x_len, ir_len_max, i, ir_len;
@@ -36,7 +36,7 @@ static int get_elt_from_CompressedIRangesList_holderlens_max(
 	x_len = _get_length_from_CompressedIRangesList_holder(x_holder);
 	ir_len_max = 0;
 	for (i = 0; i < x_len; i++) {
-		ir_len = _get_eltlens_from_CompressedIRangesList_holder(
+		ir_len = _get_eltNROWS_from_CompressedIRangesList_holder(
 				x_holder, i);
 		if (ir_len > ir_len_max)
 			ir_len_max = ir_len;
@@ -262,7 +262,7 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 	} else {
 		revmap = NULL;
 	}
-	in_len_max = get_elt_from_CompressedIRangesList_holderlens_max(&x_holder);
+	in_len_max = get_maxNROWS_from_CompressedIRangesList_holder(&x_holder);
 	order_buf = new_IntAE(in_len_max, 0, 0);
 	in_ranges = new_IntPairAE(0, 0);
 	out_ranges = new_IntPairAE(0, 0);
@@ -416,7 +416,7 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 
 	x_holder = _hold_CompressedIRangesList(x);
 	x_len = _get_length_from_CompressedIRangesList_holder(&x_holder);
-	in_len_max = get_elt_from_CompressedIRangesList_holderlens_max(&x_holder);
+	in_len_max = get_maxNROWS_from_CompressedIRangesList_holder(&x_holder);
 	order_buf = new_IntAE(in_len_max, 0, 0);
 	in_ranges = new_IntPairAE(0, 0);
 	out_ranges = new_IntPairAE(0, 0);

@@ -34,8 +34,10 @@ setMethod("values", "RangedData", function(x) x@values)
 setReplaceMethod("values", "RangedData",
                  function(x, value) {
                    if (extends(class(value), "SplitDataFrameList")) {
-                     if (!identical(elementLengths(values(x)), elementLengths(value)))
-                       stop("'value' must have same elementLengths as current 'values'")
+                     if (!identical(elementNROWS(values(x)),
+                                    elementNROWS(value)))
+                       stop("'value' must have same elementNROWS ",
+                            "as current 'values'")
                    } else if (extends(class(value), "DataFrame")) {
                      value <- split(value, space(x))
                    } else {
@@ -104,7 +106,7 @@ setReplaceMethod("names", "RangedData",
                    names(x@values) <- value
                    x
                  })
-setMethod("elementLengths", "RangedData", function(x) elementLengths(ranges(x)))
+setMethod("elementNROWS", "RangedData", function(x) elementNROWS(ranges(x)))
 
 setMethod("space", "RangedData", function(x) space(ranges(x)))
 setMethod("universe", "RangedData", function(x) universe(ranges(x)))
@@ -165,7 +167,7 @@ setReplaceMethod("rownames", "RangedData",
                      } else {
                        if (!is.character(value))
                          value <- as.character(value)
-                       ends <- cumsum(elementLengths(x))
+                       ends <- cumsum(elementNROWS(x))
                        value <-
                          new("CompressedCharacterList",
                              unlistData = value,
@@ -244,8 +246,8 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL, universe = NULL)
       names(ranges) <- as.character(seq_len(length(ranges)))
     space <-
       Rle(factor(names(ranges), levels = names(ranges)),
-          elementLengths(ranges))
-    N <- sum(elementLengths(ranges))
+          elementNROWS(ranges))
+    N <- sum(elementNROWS(ranges))
     NAMES <- unlist(lapply(ranges, names), use.names=FALSE)
   } else {
     if (!is(ranges, "Ranges")) {
@@ -372,7 +374,7 @@ setReplaceMethod("[[", "RangedData",
                        else
                          value <- rep(value, length.out = nrx)
                      }
-                     nrows <- elementLengths(values(x))
+                     nrows <- elementNROWS(values(x))
                      inds <- seq_len(length(x))
                      spaces <- factor(rep.int(inds, nrows), inds)
                      values <- unlist(values(x), use.names=FALSE)
@@ -440,14 +442,14 @@ setMethod("[", "RangedData",
                   stop("subsetting a RangedData object ",
                        "by a RangesList subscript is not supported")
                 if (is(i, "LogicalList")) {
-                  xeltlen <- elementLengths(ranges(x))
-                  whichRep <- which(xeltlen != elementLengths(i))
+                  x_eltNROWS <- elementNROWS(ranges(x))
+                  whichRep <- which(x_eltNROWS != elementNROWS(i))
                   for (k in whichRep)
-                    i[[k]] <- rep(i[[k]], length.out = xeltlen[k])
+                    i[[k]] <- rep(i[[k]], length.out = x_eltNROWS[k])
                   i <- unlist(i, use.names=FALSE)
                 } else if (is(i, "IntegerList")) {
                   itemp <-
-                    LogicalList(lapply(elementLengths(ranges(x)), rep,
+                    LogicalList(lapply(elementNROWS(ranges(x)), rep,
                                        x = FALSE))
                   for (k in seq_len(length(itemp)))
                     itemp[[k]][i[[k]]] <- TRUE
@@ -460,7 +462,7 @@ setMethod("[", "RangedData",
                   i <- setdiff(seq(nrow(x)), -i)
                 if (is.logical(i)) {
                   igroup <-
-                    factor(rep.int(seq_len(length(x)), elementLengths(x)),
+                    factor(rep.int(seq_len(length(x)), elementNROWS(x)),
                            levels = seq_len(length(x)))
                   if (length(i) < nrow(x))
                     i <- rep(i, length.out = nrow(x))
@@ -476,7 +478,7 @@ setMethod("[", "RangedData",
                     if (S4Vectors:::anyMissing(i)) ## cannot subset by NAs yet
                       stop("invalid rownames specified")
                   }
-                  starts <- cumsum(c(1L, head(elementLengths(x), -1)))
+                  starts <- cumsum(c(1L, head(elementNROWS(x), -1)))
                   igroup <-
                     factor(findInterval(i, starts), levels = seq_len(length(x)))
                   if (anyDuplicated(runValue(Rle(igroup))))
@@ -488,7 +490,7 @@ setMethod("[", "RangedData",
                 ranges <- S4Vectors:::subset_List_by_List(ranges, isplit)
                 values <- S4Vectors:::subset_List_by_List(values, isplit)
                 if (drop) {
-                  ok <- (elementLengths(ranges) > 0)
+                  ok <- (elementNROWS(ranges) > 0)
                   ranges <- ranges[ok]
                   values <- values[ok]
                 }
@@ -592,7 +594,7 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
         spaceLabels <- as.character(spaceLevels)
     }
     data.frame(space =
-               factor(rep.int(seq_len(length(x)), elementLengths(x)),
+               factor(rep.int(seq_len(length(x)), elementNROWS(x)),
                       levels = spaceLevels,
                       labels = spaceLabels),
                as.data.frame(unlist(x, use.names = FALSE)),
@@ -667,7 +669,7 @@ setAs("RleList", "RangedData",
 
 setAs("RleViewsList", "RangedData", function(from) {
   subject <- subject(from)
-  from_ranges <- restrict(ranges(from), 1L, elementLengths(subject),
+  from_ranges <- restrict(ranges(from), 1L, elementNROWS(subject),
                           keep.all.ranges = TRUE)
 ### FIXME: do we want to insert NAs for out of bounds views?
   score <- subject[from_ranges]

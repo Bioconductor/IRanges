@@ -19,9 +19,9 @@ setGeneric("expand", signature="x",
     if (is.null(col))
         stop("'colname' must be a valid colname name or index")
     if(keepEmptyRows){
-        col[elementLengths(col)==0] <- NA
+        col[elementNROWS(col)==0] <- NA
     }
-    idx <- rep(seq_len(nrow(x)), elementLengths(col))
+    idx <- rep(seq_len(nrow(x)), elementNROWS(col))
     ans <- x[idx, ]
     ans[[colname]] <- unlist(col, use.names=FALSE)
     ans
@@ -76,7 +76,7 @@ setMethod("expand", "Vector",
   if (length(colnames) == 0L)
     return(x)
   if(keepEmptyRows) {
-    emptyRows <- elementLengths(col) == 0L
+    emptyRows <- elementNROWS(col) == 0L
     x[emptyRows, colnames] <- rep(NA, sum(emptyRows))
   }
   ans <- x[togroup(x[[colnames[1L]]]),,drop=FALSE]

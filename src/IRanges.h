@@ -255,7 +255,7 @@ IRanges_holder _get_elt_from_CompressedIRangesList_holder(
 	int i
 );
 
-int _get_eltlens_from_CompressedIRangesList_holder(
+int _get_eltNROWS_from_CompressedIRangesList_holder(
 	const CompressedIRangesList_holder *x_holder,
 	int i
 );

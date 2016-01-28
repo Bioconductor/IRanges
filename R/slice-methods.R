@@ -64,7 +64,7 @@ setMethod("slice", "RleList",
                   stop("'rangesOnly' must be TRUE or FALSE")
               if (lower == -Inf) {
                   ranges <-
-                    RleList(lapply(elementLengths(x),
+                    RleList(lapply(elementNROWS(x),
                                    function(len) Rle(TRUE, len)),
                             compress=FALSE)
               } else if (includeLower) {

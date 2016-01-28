@@ -9,6 +9,6 @@ multisplit <- function(x, f) {
     stop("'f' must be a list")
   if (length(x) != length(f))
     stop("Length of 'f' must equal length of 'x'")
-  splitAsList(rep(x, elementLengths(f)), unlist(f, use.names = FALSE))
+  splitAsList(rep(x, elementNROWS(f)), unlist(f, use.names = FALSE))
 }
 
