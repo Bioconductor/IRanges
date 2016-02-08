@@ -172,7 +172,7 @@ SEXP H2LGrouping_vmembers(
 
 /* SimpleIRangesList_class.c */
 
-SEXP SimpleIRangesList_isNormal(SEXP x);
+SEXP SimpleIRangesList_isNormal(SEXP x, SEXP use_names);
 
 SEXP SimpleNormalIRangesList_min(SEXP x);
 

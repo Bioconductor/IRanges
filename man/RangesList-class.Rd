@@ -31,7 +31,11 @@
 \alias{coerce,RangesList,SimpleIRangesList-method}
 \alias{coerce,SimpleRangesList,SimpleIRangesList-method}
 \alias{coerce,RangesList,SimpleRangesList-method}
+
 \alias{coerce,RangesList,SimpleNormalIRangesList-method}
+\alias{coerce,SimpleIRangesList,SimpleNormalIRangesList-method}
+\alias{coerce,NormalIRangesList,CompressedNormalIRangesList-method}
+\alias{coerce,CompressedIRangesList,CompressedNormalIRangesList-method}
 \alias{coerce,RangesList,CompressedNormalIRangesList-method}
 \alias{coerce,RangesList,NormalIRangesList-method}
 

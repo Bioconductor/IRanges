@@ -9,7 +9,7 @@
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP SimpleIRangesList_isNormal(SEXP x)
+SEXP SimpleIRangesList_isNormal(SEXP x, SEXP use_names)
 {
 	SEXP list_ir, ans, ans_names;
 	IRanges_holder ir_holder;
@@ -22,9 +22,12 @@ SEXP SimpleIRangesList_isNormal(SEXP x)
 		ir_holder = _hold_IRanges(VECTOR_ELT(list_ir, i));
 		LOGICAL(ans)[i] = _is_normal_IRanges_holder(&ir_holder);
 	}
-	PROTECT(ans_names = duplicate(GET_NAMES(list_ir)));
-	SET_NAMES(ans, ans_names);
-	UNPROTECT(2);
+	if (LOGICAL(use_names)[0]) {
+		PROTECT(ans_names = duplicate(GET_NAMES(list_ir)));
+		SET_NAMES(ans, ans_names);
+		UNPROTECT(1);
+	}
+	UNPROTECT(1);
 	return ans;
 }
 

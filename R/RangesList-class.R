@@ -197,15 +197,21 @@ setReplaceMethod("universe", "RangesList",
 ###
 
 setMethod("isNormal", "RangesList",
-          function(x) unlist(lapply(x, isNormal)))
-
-setMethod("isNormal", "CompressedIRangesList",
-          function(x)
-          .Call2("CompressedIRangesList_isNormal", x, TRUE, PACKAGE = "IRanges"))
+    function(x, use.names=FALSE)
+        vapply(x, isNormal, logical(1), USE.NAMES=use.names)
+)
 
 setMethod("isNormal", "SimpleIRangesList",
-          function(x)
-          .Call2("SimpleIRangesList_isNormal", x, PACKAGE = "IRanges"))
+    function(x, use.names=FALSE)
+        .Call2("SimpleIRangesList_isNormal", x, use.names,
+               PACKAGE="IRanges")
+)
+
+setMethod("isNormal", "CompressedIRangesList",
+    function(x, use.names=FALSE)
+        .Call2("CompressedIRangesList_isNormal", x, use.names,
+               PACKAGE="IRanges")
+)
 
 setMethod("whichFirstNotNormal", "RangesList",
           function(x) unlist(lapply(x, whichFirstNotNormal)))
@@ -448,33 +454,62 @@ setAs("RangesList", "SimpleRangesList",
                                            metadata = metadata(from),
                                            mcols = mcols(from)))
 
+### Coercion from RangesList to NormalIRangesList.
+
+.from_RangesList_to_SimpleNormalIRangesList <- function(from)
+{
+    S4Vectors:::new_SimpleList_from_list("SimpleNormalIRangesList",
+        lapply(from, as, "NormalIRanges"),
+        mcols=mcols(from),
+        metadata=metadata(from))
+}
+
 setAs("RangesList", "SimpleNormalIRangesList",
-      function(from)
-      {
+    .from_RangesList_to_SimpleNormalIRangesList
+)
+
+setAs("SimpleIRangesList", "SimpleNormalIRangesList",
+    .from_RangesList_to_SimpleNormalIRangesList
+)
+
+setAs("NormalIRangesList", "CompressedNormalIRangesList",
+    function(from)
+    {
+        ans <- as(from, "CompressedIRangesList", strict=FALSE)
+        class(ans) <- "CompressedNormalIRangesList"
+        ans
+    }
+)
+
+setAs("CompressedIRangesList", "CompressedNormalIRangesList",
+    function(from)
+    {
         if (!all(isNormal(from)))
-          from <- reduce(from, drop.empty.ranges=TRUE)
-        S4Vectors:::new_SimpleList_from_list("SimpleNormalIRangesList",
-                                             as.list(from),
-                                             metadata=metadata(from),
-                                             mcols=mcols(from))
-      })
+            from <- reduce(from, drop.empty.ranges=TRUE)
+        class(from) <- "CompressedNormalIRangesList"
+        from
+    }
+)
 
 setAs("RangesList", "CompressedNormalIRangesList",
-      function(from)
-      {
-        if (!all(isNormal(from)))
-          from <- reduce(from, drop.empty.ranges=TRUE)
-        new2("CompressedNormalIRangesList", from, check=FALSE)
-      })
+    function(from)
+    {
+        as(as(from, "CompressedIRangesList", strict=FALSE),
+           "CompressedNormalIRangesList")
+    }
+)
 
 setAs("RangesList", "NormalIRangesList",
-      function(from)
-      {
+    function(from)
+    {
         if (is(from, "SimpleRangesList"))
-          as(from, "SimpleNormalIRangesList")
+            as(from, "SimpleNormalIRangesList")
         else
-          as(from, "CompressedNormalIRangesList")
-      })
+            as(from, "CompressedNormalIRangesList")
+    }
+)
+
+### Coercion from LogicalList to IRangesList.
 
 setAs("LogicalList", "IRangesList",
       function(from)
@@ -499,6 +534,8 @@ setAs("LogicalList", "SimpleIRangesList",
                                            metadata = metadata(from),
                                            mcols = mcols(from)))
 
+### Coercion from LogicalList to NormalIRangesList.
+
 setAs("LogicalList", "NormalIRangesList",
       function(from)
       {
@@ -521,6 +558,8 @@ setAs("LogicalList", "SimpleNormalIRangesList",
                                            lapply(from, as, "NormalIRanges"),
                                            metadata = metadata(from),
                                            mcols = mcols(from)))
+
+### Coercion from RleList to IRangesList.
 
 setAs("RleList", "IRangesList",
       function(from)
@@ -576,6 +615,8 @@ setAs("RleList", "SimpleIRangesList",
       })
 
 
+### Coercion from RleList to NormalIRangesList.
+
 setAs("RleList", "NormalIRangesList",
         function(from)
         {
@@ -613,6 +654,8 @@ setAs("RleList", "SimpleNormalIRangesList",
                                              mcols = mcols(from))
       })
 
+### Other coercions.
+
 setAs("list", "RangesList", function(from) {
   S4Vectors:::coerceToSimpleList(from, "Ranges")
 })
@@ -620,6 +663,7 @@ setAs("list", "RangesList", function(from) {
 setAs("Ranges", "RangesList", function(from) {
           relist(from, PartitioningByEnd(seq_along(from), names=names(from)))
       })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "max" and "min" methods for NormalIRangesList objects.

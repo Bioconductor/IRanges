@@ -38,7 +38,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(RleViews_viewWhichMaxs, 2),
 
 /* SimpleIRangesList_class.c */
-	CALLMETHOD_DEF(SimpleIRangesList_isNormal, 1),
+	CALLMETHOD_DEF(SimpleIRangesList_isNormal, 2),
 	CALLMETHOD_DEF(SimpleNormalIRangesList_min, 1),
 	CALLMETHOD_DEF(SimpleNormalIRangesList_max, 1),
 

@@ -38,8 +38,8 @@
 \alias{CompressedNormalIRangesList}
 \alias{SimpleNormalIRangesList}
 
-\alias{isNormal,CompressedIRangesList-method}
 \alias{isNormal,SimpleIRangesList-method}
+\alias{isNormal,CompressedIRangesList-method}
 
 \alias{unlist,SimpleNormalIRangesList-method}
 

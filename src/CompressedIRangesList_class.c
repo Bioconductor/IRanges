@@ -78,7 +78,8 @@ SEXP CompressedIRangesList_isNormal(SEXP x, SEXP use_names)
 	x_len = _get_length_from_CompressedIRangesList_holder(&x_holder);
 	PROTECT(ans = NEW_LOGICAL(x_len));
 	for (i = 0; i < x_len; i++) {
-		ir_holder = _get_elt_from_CompressedIRangesList_holder(&x_holder, i);
+		ir_holder = _get_elt_from_CompressedIRangesList_holder(
+					&x_holder, i);
 		LOGICAL(ans)[i] = _is_normal_IRanges_holder(&ir_holder);
 	}
 	if (LOGICAL(use_names)[0]) {
