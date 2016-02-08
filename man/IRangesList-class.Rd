@@ -44,8 +44,6 @@
 \alias{unlist,SimpleNormalIRangesList-method}
 
 % coercion
-\alias{coerce,CompressedIRangesList,CompressedNormalIRangesList-method}
-\alias{coerce,SimpleIRangesList,SimpleNormalIRangesList-method}
 \alias{as.list,CompressedNormalIRangesList-method}
 
 \title{List of IRanges and NormalIRanges}

@@ -448,30 +448,18 @@ setAs("RangesList", "SimpleRangesList",
                                            metadata = metadata(from),
                                            mcols = mcols(from)))
 
-setAs("RangesList", "NormalIRangesList",
+setAs("RangesList", "SimpleNormalIRangesList",
       function(from)
       {
-        if (is(from, "CompressedList"))
-          as(from, "CompressedNormalIRangesList")
-        else
-          as(from, "SimpleNormalIRangesList")
+        if (!all(isNormal(from)))
+          from <- reduce(from, drop.empty.ranges=TRUE)
+        S4Vectors:::new_SimpleList_from_list("SimpleNormalIRangesList",
+                                             as.list(from),
+                                             metadata=metadata(from),
+                                             mcols=mcols(from))
       })
 
 setAs("RangesList", "CompressedNormalIRangesList",
-      function(from)
-      new_CompressedList_from_list("CompressedNormalIRangesList",
-                                   lapply(from, as, "NormalIRanges"),
-                                   metadata = metadata(from),
-                                   mcols = mcols(from)))
-
-setAs("RangesList", "SimpleNormalIRangesList",
-      function(from)
-      S4Vectors:::new_SimpleList_from_list("SimpleNormalIRangesList",
-                                           lapply(from, as, "NormalIRanges"),
-                                           metadata = metadata(from),
-                                           mcols = mcols(from)))
-
-setAs("CompressedIRangesList", "CompressedNormalIRangesList",
       function(from)
       {
         if (!all(isNormal(from)))
@@ -479,16 +467,13 @@ setAs("CompressedIRangesList", "CompressedNormalIRangesList",
         new2("CompressedNormalIRangesList", from, check=FALSE)
       })
 
-setAs("SimpleIRangesList", "SimpleNormalIRangesList",
+setAs("RangesList", "NormalIRangesList",
       function(from)
       {
-        if (!all(isNormal(from))) 
-          from <- reduce(from, drop.empty.ranges=TRUE)
-        new2("SimpleNormalIRangesList",
-             listData = lapply(from@listData, newNormalIRangesFromIRanges,
-               check = FALSE),
-             metadata = from@metadata,
-             elementMetadata = from@elementMetadata, check=FALSE)
+        if (is(from, "SimpleRangesList"))
+          as(from, "SimpleNormalIRangesList")
+        else
+          as(from, "CompressedNormalIRangesList")
       })
 
 setAs("LogicalList", "IRangesList",
