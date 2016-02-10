@@ -111,7 +111,7 @@ int _invert_overlap_code(int code)
 }
 
 /* Vectorized comparison of 2 vectors of ranges. */
-static void compare_ranges(
+static void pcompare_ranges(
 		const int *x_start, const int *x_width, int x_len,
 		const int *y_start, const int *y_width, int y_len,
 		int *out, int out_len, int with_warning)
@@ -145,7 +145,7 @@ static void compare_ranges(
  * object, except if M or N is 0 in which case the object with length != 0 is
  * truncated to length 0.
  */
-SEXP Ranges_compare(SEXP x_start, SEXP x_width,
+SEXP Ranges_pcompare(SEXP x_start, SEXP x_width,
 		    SEXP y_start, SEXP y_width)
 {
 	int x_len, y_len, ans_len;
@@ -163,7 +163,7 @@ SEXP Ranges_compare(SEXP x_start, SEXP x_width,
 	else
 		ans_len = x_len >= y_len ? x_len : y_len;
 	PROTECT(ans = NEW_INTEGER(ans_len));
-	compare_ranges(x_start_p, x_width_p, x_len,
+	pcompare_ranges(x_start_p, x_width_p, x_len,
 		       y_start_p, y_width_p, y_len,
 		       INTEGER(ans), ans_len, 1);
 	UNPROTECT(1);

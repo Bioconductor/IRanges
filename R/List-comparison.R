@@ -13,21 +13,21 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### compareRecursively()
+### pcompareRecursively()
 ###
 ### NOT exported!
 ###
-### By default, List objects compare recursively. Exceptions to the rule
-### (e.g. Ranges, XString, etc...) must define a "compareRecursively" method
+### By default, List objects pcompare recursively. Exceptions to the rule
+### (e.g. Ranges, XString, etc...) must define a "pcompareRecursively" method
 ### that returns FALSE.
 ###
 
-setGeneric("compareRecursively",
-    function(x) standardGeneric("compareRecursively")
+setGeneric("pcompareRecursively",
+    function(x) standardGeneric("pcompareRecursively")
 )
 
-setMethod("compareRecursively", "List", function(x) TRUE)
-setMethod("compareRecursively", "list", function(x) TRUE)
+setMethod("pcompareRecursively", "List", function(x) TRUE)
+setMethod("pcompareRecursively", "list", function(x) TRUE)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -37,7 +37,7 @@ setMethod("compareRecursively", "list", function(x) TRUE)
 ### Apply a unary operator.
 .op1_apply <- function(OP1, x, ..., ANS_CONSTRUCTOR)
 {
-    comp_rec_x <- compareRecursively(x)
+    comp_rec_x <- pcompareRecursively(x)
     if (!comp_rec_x) {
         OP1_Vector_method <- selectMethod(OP1, "Vector")
         return(OP1_Vector_method(x, ...))
@@ -49,8 +49,8 @@ setMethod("compareRecursively", "list", function(x) TRUE)
 ### Apply a binary operator.
 .op2_apply <- function(OP2, x, y, ..., ANS_CONSTRUCTOR)
 {
-    comp_rec_x <- compareRecursively(x)
-    comp_rec_y <- compareRecursively(y)
+    comp_rec_x <- pcompareRecursively(x)
+    comp_rec_y <- pcompareRecursively(y)
     if (!(comp_rec_x || comp_rec_y)) {
         OP2_Vector_method <- selectMethod(OP2, c("Vector", "Vector"))
         return(OP2_Vector_method(x, y, ...))
@@ -98,8 +98,8 @@ setMethod("compareRecursively", "list", function(x) TRUE)
 ### Element-wise (aka "parallel") comparison of 2 List objects.
 ###
 
-setMethods("compare", .OP2_SIGNATURES,
-    function(x, y) .op2_apply(compare, x, y, ANS_CONSTRUCTOR=IntegerList)
+setMethods("pcompare", .OP2_SIGNATURES,
+    function(x, y) .op2_apply(pcompare, x, y, ANS_CONSTRUCTOR=IntegerList)
 )
 
 ### TODO: Add fast "==" and "<=" methods for CompressedList objects.
@@ -200,7 +200,7 @@ setMethod("duplicated", "CompressedList", .duplicated.CompressedList)
 
 .unique.List <- function(x, incomparables=FALSE, ...)
 {
-    if (!compareRecursively(x))
+    if (!pcompareRecursively(x))
         return(callNextMethod())
     i <- !duplicated(x, incomparables=incomparables, ...)  # LogicalList
     x[i]
@@ -274,7 +274,7 @@ setMethod("order", "List",
 
 .sort.List <- function(x, decreasing=FALSE, na.last=NA)
 {
-    if (!compareRecursively(x))
+    if (!pcompareRecursively(x))
         return(callNextMethod())
     i <- order(x, na.last=na.last, decreasing=decreasing)  # IntegerList
     x[i]

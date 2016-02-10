@@ -1,20 +1,20 @@
-test_Ranges_compare <- function()
+test_Ranges_pcompare <- function()
 {
     x1 <- IRanges(6:16, width=4)
     y <- IRanges(11, 14)
     target <- c(-6:-4, -4L, -4L, 0L, 4L, 4L, 4:6)
-    checkIdentical(target, compare(x1, y))
-    checkIdentical(-target, compare(y, x1))
+    checkIdentical(target, pcompare(x1, y))
+    checkIdentical(-target, pcompare(y, x1))
 
     x2 <- IRanges(4:16, width=6)
     target <- c(-6:-4, -4L, -4L, -3L, -2L, 1L, 4L, 4L, 4:6)
-    checkIdentical(target, compare(x2, y))
-    checkIdentical(-target, compare(y, x2))
+    checkIdentical(target, pcompare(x2, y))
+    checkIdentical(-target, pcompare(y, x2))
 
     x3 <- IRanges(8:16, width=2)
     target <- c(-6:-4, -1L, 2L, 3L, 4:6)
-    checkIdentical(target, compare(x3, y))
-    checkIdentical(-target, compare(y, x3))
+    checkIdentical(target, pcompare(x3, y))
+    checkIdentical(-target, pcompare(y, x3))
 
     ## Moving a 0-width range over a non 0-width range.
     ## Note that when the end of the 0-width range is equal to the start of
@@ -28,14 +28,14 @@ test_Ranges_compare <- function()
     ## It's an arbitrary choice and we chose the former.
     x0 <- IRanges(10:16, width=0)
     target <- c(-6:-5, 2L, 2L, 2L, 5:6)
-    checkIdentical(target, compare(x0, y))
-    checkIdentical(-target, compare(y, x0))
+    checkIdentical(target, pcompare(x0, y))
+    checkIdentical(-target, pcompare(y, x0))
 
     ## Moving a 0-width range over a 0-width range.
     y0 <- IRanges(13, 12)
     target <- c(-6L, -6L, -6L, 0L, 6L, 6L, 6L)
-    checkIdentical(target, compare(x0, y0))
-    checkIdentical(-target, compare(y0, x0))
+    checkIdentical(target, pcompare(x0, y0))
+    checkIdentical(-target, pcompare(y0, x0))
 }
 
 test_Ranges_order <- function()

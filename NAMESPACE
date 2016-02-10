@@ -133,7 +133,7 @@ exportMethods(
     classNameForDisplay,
     queryHits, subjectHits,
     queryLength, subjectLength,
-    compare,
+    pcompare,
     selfmatch,
     runLength, "runValue<-",
     runsum, runmean, runwtsum, runq,

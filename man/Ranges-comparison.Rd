@@ -2,8 +2,8 @@
 
 \alias{Ranges-comparison}
 
-\alias{compare}
-\alias{compare,Ranges,Ranges-method}
+\alias{pcompare}
+\alias{pcompare,Ranges,Ranges-method}
 \alias{rangeComparisonCodeToLetter}
 
 \alias{match,Ranges,Ranges-method}
@@ -23,7 +23,7 @@
 ## Element-wise (aka "parallel") comparison of 2 Ranges objects
 ## ------------------------------------------------------------
 
-\S4method{compare}{Ranges,Ranges}(x, y)
+\S4method{pcompare}{Ranges,Ranges}(x, y)
 
 rangeComparisonCodeToLetter(code)
 
@@ -50,7 +50,7 @@ rangeComparisonCodeToLetter(code)
     \link{Ranges} objects.
   }
   \item{code}{
-    A vector of codes as returned by \code{compare}.
+    A vector of codes as returned by \code{pcompare}.
   }
   \item{nomatch}{
     The value to be returned in the case when no match is found.
@@ -97,7 +97,7 @@ rangeComparisonCodeToLetter(code)
 
   \describe{
     \item{}{
-      \code{compare(x, y)}:
+      \code{pcompare(x, y)}:
       Performs element-wise (aka "parallel") comparison of 2 \link{Ranges}
       objects of \code{x} and \code{y}, that is, returns an integer vector
       where the i-th element is a code describing how \code{x[i]} is
@@ -135,7 +135,7 @@ rangeComparisonCodeToLetter(code)
       \code{x[i] < y[i]}, \code{x[i] == y[i]}, or \code{x[i] > y[i]},
       respectively.
 
-      The \code{compare} method for \link{Ranges} objects is guaranteed
+      The \code{pcompare} method for \link{Ranges} objects is guaranteed
       to return predefined codes only but methods for other objects (e.g.
       for \link[GenomicRanges]{GenomicRanges} objects) can return
       non-predefined codes. Like for the predefined codes, the sign of any
@@ -144,7 +144,7 @@ rangeComparisonCodeToLetter(code)
     }
     \item{}{
       \code{rangeComparisonCodeToLetter(x)}:
-      Translate the codes returned by \code{compare}. The 13 predefined
+      Translate the codes returned by \code{pcompare}. The 13 predefined
       codes are translated as follow: -6 -> a; -5 -> b; -4 -> c; -3 -> d;
       -2 -> e; -1 -> f; 0 -> g; 1 -> h; 2 -> i; 3 -> j; 4 -> k; 5-> l; 6 -> m.
       Any non-predefined code is translated to X.
@@ -247,29 +247,29 @@ rangeComparisonCodeToLetter(code)
 x0 <- IRanges(1:11, width=4)
 x0
 y0 <- IRanges(6, 9)
-compare(x0, y0)
-compare(IRanges(4:6, width=6), y0)
-compare(IRanges(6:8, width=2), y0)
-compare(x0, y0) < 0   # equivalent to 'x0 < y0'
-compare(x0, y0) == 0  # equivalent to 'x0 == y0'
-compare(x0, y0) > 0   # equivalent to 'x0 > y0'
+pcompare(x0, y0)
+pcompare(IRanges(4:6, width=6), y0)
+pcompare(IRanges(6:8, width=2), y0)
+pcompare(x0, y0) < 0   # equivalent to 'x0 < y0'
+pcompare(x0, y0) == 0  # equivalent to 'x0 == y0'
+pcompare(x0, y0) > 0   # equivalent to 'x0 > y0'
 
 rangeComparisonCodeToLetter(-10:10)
-rangeComparisonCodeToLetter(compare(x0, y0))
+rangeComparisonCodeToLetter(pcompare(x0, y0))
 
 ## Handling of zero-width ranges (a.k.a. empty ranges):
 x1 <- IRanges(11:17, width=0)
 x1
-compare(x1, x1[4])
-compare(x1, IRanges(12, 15))
+pcompare(x1, x1[4])
+pcompare(x1, IRanges(12, 15))
 
 ## Note that x1[2] and x1[6] are empty ranges on the edge of non-empty
 ## range IRanges(12, 15). Even though -1 and 3 could also be considered
-## valid codes for describing these configurations, compare()
+## valid codes for describing these configurations, pcompare()
 ## considers x1[2] and x1[6] to be *adjacent* to IRanges(12, 15), and
 ## thus returns codes -5 and 5:
-compare(x1[2], IRanges(12, 15))  # -5
-compare(x1[6], IRanges(12, 15))  #  5
+pcompare(x1[2], IRanges(12, 15))  # -5
+pcompare(x1[6], IRanges(12, 15))  #  5
 
 x2 <- IRanges(start=c(20L, 8L, 20L, 22L, 25L, 20L, 22L, 22L),
               width=c( 4L, 0L, 11L,  5L,  0L,  9L,  5L,  0L))

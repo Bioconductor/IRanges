@@ -11,7 +11,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(valid_Ranges, 3),
 
 /* Ranges_comparison.c */
-	CALLMETHOD_DEF(Ranges_compare, 4),
+	CALLMETHOD_DEF(Ranges_pcompare, 4),
 
 /* IRanges_class.c */
 	CALLMETHOD_DEF(debug_IRanges_class, 0),

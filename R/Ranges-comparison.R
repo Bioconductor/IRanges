@@ -4,23 +4,23 @@
 ###
 
 
-setMethod("compareRecursively", "Ranges", function(x) FALSE)
+setMethod("pcompareRecursively", "Ranges", function(x) FALSE)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### compare()
+### pcompare()
 ###
 ### Ranges are ordered by starting position first and then by width.
 ### This way, the space of ranges is totally ordered.
-### This "compare" method returns one of the 13 predefined codes (>= -6 and
+### This "pcompare" method returns one of the 13 predefined codes (>= -6 and
 ### <= 6) described in the man page. The signs of those codes reflect this
 ### order.
 ###
 
-setMethod("compare", c("Ranges", "Ranges"),
+setMethod("pcompare", c("Ranges", "Ranges"),
     function(x, y)
     {
-        .Call2("Ranges_compare",
+        .Call2("Ranges_pcompare",
                start(x), width(x), start(y), width(y),
                PACKAGE="IRanges")
     }
@@ -72,7 +72,7 @@ setMethod("selfmatch", "Ranges",
 ### Ordering ranges
 ###
 ### order(), sort(), rank() on Ranges objects are consistent with the order
-### on ranges implied by compare().
+### on ranges implied by pcompare().
 ###
 
 ### 'na.last' is pointless (Ranges objects don't contain NAs) so is ignored.

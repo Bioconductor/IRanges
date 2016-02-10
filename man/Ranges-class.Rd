@@ -307,9 +307,9 @@
       and also equivalent to:
       \preformatted{    start(B) <= end(A) < end(B)}
       Finally, it is also equivalent to:
-      \preformatted{    compare(A, B) == 2}
+      \preformatted{    pcompare(A, B) == 2}
       See \code{?`\link{Ranges-comparison}`} for the meaning of the codes
-      returned by the \code{\link{compare}} function.
+      returned by the \code{\link{pcompare}} function.
     }
   }
 
@@ -393,7 +393,7 @@ stopifnot(isDisjoint(x))
 
 ## Sliding an empty range along a non-empty range:
 sapply(11:17,
-       function(i) compare(IRanges(i, width=0), IRanges(12, 15)))
+       function(i) pcompare(IRanges(i, width=0), IRanges(12, 15)))
 
 sapply(11:17,
        function(i) isDisjoint(c(IRanges(i, width=0), IRanges(12, 15))))

@@ -32,7 +32,7 @@ int _invert_overlap_code(
 	int code
 );
 
-SEXP Ranges_compare(
+SEXP Ranges_pcompare(
 	SEXP x_start,
 	SEXP x_width,
 	SEXP y_start,
