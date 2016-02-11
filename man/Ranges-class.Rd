@@ -29,8 +29,6 @@
 \alias{isNormal,Ranges-method}
 \alias{whichFirstNotNormal}
 \alias{whichFirstNotNormal,Ranges-method}
-\alias{isDisjoint}
-\alias{isDisjoint,Ranges-method}
 \alias{update,Ranges-method}
 \alias{tile}
 \alias{tile,Ranges-method}
@@ -282,57 +280,27 @@
   }
 }
 
-\section{Disjoint ranges}{
-  A Ranges object \code{x} is considered to be "disjoint" if its ranges are
-  disjoint (i.e. non-overlapping).
-
-  The \code{isDisjoint} function is provided for testing whether a Ranges
-  object is "disjoint" or not:
-
-  \describe{
-    \item{}{
-      \code{isDisjoint(x)}:
-      Return TRUE or FALSE indicating whether \code{x} is "disjoint" or not.
-
-      \code{isDisjoint} handles empty ranges (a.k.a. zero-width ranges) as
-      follow: single empty range A is considered to overlap with single range B
-      iff it's contained in B without being on the edge of B (in which case it
-      would be ambiguous whether A is contained in or adjacent to B). In other
-      words, single empty range A is considered to overlap with single range B
-      iff
-      \preformatted{    start(B) < start(A) and end(A) < end(B)}
-      Because A is an empty range it verifies \code{end(A) = start(A) - 1}
-      so the above is equivalent to:
-      \preformatted{    start(B) < start(A) <= end(B)}
-      and also equivalent to:
-      \preformatted{    start(B) <= end(A) < end(B)}
-      Finally, it is also equivalent to:
-      \preformatted{    pcompare(A, B) == 2}
-      See \code{?`\link{Ranges-comparison}`} for the meaning of the codes
-      returned by the \code{\link{pcompare}} function.
-    }
-  }
-
-  Note that a "normal" Ranges object is always "disjoint" but the opposite
-  is not true.
-}
-
 \author{H. Pages and M. Lawrence}
 
 \seealso{
-  \link{IRanges-class},
-  \link{Ranges-comparison},
-  \link{intra-range-methods},
-  \link{inter-range-methods},
-  \link{IRanges-utils},
-  \link{setops-methods},
-  \link{RangedData-class},
-  \link{NCList-class},
-  \link{PartitioningByEnd-class},
-  \code{\link{update}},
-  \code{\link{as.matrix}},
-  \code{\link{as.data.frame}},
-  \code{\link{rep}}
+  \itemize{
+    \item \link{IRanges} objects.
+
+    \item \link{Ranges-comparison} for comparing and ordering ranges.
+
+    \item \link{intra-range-methods} and
+          \link{inter-range-methods} for intra range and
+          inter range transformations of a Ranges object.
+
+    \item \link{coverage-methods} for computing the coverage
+          of a set of ranges.
+
+    \item \link{setops-methods} for set operations on ranges.
+
+    \item \link{findOverlaps-methods} for finding overlapping ranges.
+
+    \item \link{nearest-methods} for finding the nearest range neighbor.
+  }
 }
 
 \examples{
@@ -377,26 +345,6 @@ ir <- IRanges(c(1,5), c(3,10))
 ir*1 # no change
 ir*c(1,2) # zoom second range by 2X
 ir*-2 # zoom out 2X
-
-## ---------------------------------------------------------------------
-## isDisjoint()
-## ---------------------------------------------------------------------
-
-## On a Ranges object:
-isDisjoint(IRanges(c(2,5,1), c(3,7,3)))  # FALSE
-isDisjoint(IRanges(c(2,9,5), c(3,9,6)))  # TRUE
-isDisjoint(IRanges(1, 5))  # TRUE
-
-## Handling of empty ranges:
-x <- IRanges(c(11, 16, 11, -2, 11), c(15, 29, 10, 10, 10))
-stopifnot(isDisjoint(x))
-
-## Sliding an empty range along a non-empty range:
-sapply(11:17,
-       function(i) pcompare(IRanges(i, width=0), IRanges(12, 15)))
-
-sapply(11:17,
-       function(i) isDisjoint(c(IRanges(i, width=0), IRanges(12, 15))))
 }
 
 \keyword{methods}

@@ -53,25 +53,27 @@
        or MaskCollection object}
 
 \description{
-  Except for \code{threebands()},
-  all the transformations described in this man page are \emph{endomorphisms}
-  that operate on a single "range-based" object, that is, they transform the
-  ranges contained in the input object and return them in an object of the
-  \emph{same class} as the input object.
-
-  Range-based endomorphisms are grouped in 2 categories:
+  Range-based transformations are grouped in 2 categories:
   \enumerate{
-    \item Intra range transformations like \code{shift()} that
+    \item \emph{Intra range transformations} like \code{shift()} that
           transform each range individually (and independently of the other
-          ranges) and return an object of the \emph{same length} as the
-          input object. Those transformations are described in this man page.
-    \item Inter range transformations like \code{\link{reduce}()} that
+          ranges). They return an object \emph{parallel} to the input object,
+          that is, where the i-th range corresponds to the i-th range in the
+          input.
+          Those transformations are described below.
+
+    \item \emph{Inter range transformations} like \code{\link{reduce}()} that
           transform all the ranges together as a set to produce a new set
-          of ranges and return an object not necessarily of the same length
-          as the input object.
+          of ranges. They return an object that is generally \emph{NOT}
+          parallel to the input object.
           Those transformations are described in the \link{inter-range-methods}
           man page (see \code{?`\link{inter-range-methods}`}).
   }
+
+  Except for \code{threebands()}, all the transformations described in this
+  man page are \emph{endomorphisms} that operate on a single "range-based"
+  object, that is, they transform the ranges contained in the input object
+  and return them in an object of the \emph{same class} as the input object.
 }
 
 \usage{

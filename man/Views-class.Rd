@@ -19,7 +19,6 @@
 \alias{width<-,Views-method}
 \alias{names<-,Views-method}
 \alias{elementNROWS,Views-method}
-\alias{newViews}
 \alias{Views}
 \alias{coerce,Vector,Views-method}
 \alias{coerce,Views,Ranges-method}

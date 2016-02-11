@@ -201,7 +201,7 @@ setMethod("showAsCell", "Ranges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### isEmpty(), isNormal(), isDisjoint()
+### isEmpty() and isNormal()
 ###
 ### All of them test a Ranges object as a whole and return a single TRUE or
 ### FALSE.
@@ -236,26 +236,9 @@ setMethod("whichFirstNotNormal", "Ranges",
     }
 )
 
-setGeneric("isDisjoint", function(x, ...) standardGeneric("isDisjoint"))
-
-setMethod("isDisjoint", "Ranges",
-    function(x)
-    {
-        x_len <- length(x)
-        if (x_len < 2L)
-            return(TRUE)
-        x_start <- start(x)
-        x_end <- end(x)
-        oo <- order(x)
-        start2 <- x_start[oo]
-        end2 <- x_end[oo]
-        all(start2[-1L] > end2[-x_len])
-    }
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Core endomorphisms.
+### Subsetting
 ###
 ### TODO: "extractROWS" and most of the Ranges endomorphisms are only
 ### defined for IRanges objects. Need to fix up the update mechanism, so that

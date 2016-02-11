@@ -23,7 +23,6 @@
 
 \alias{isEmpty,NormalIRanges-method}
 \alias{isNormal,NormalIRanges-method}
-\alias{isDisjoint,NormalIRanges-method}
 \alias{max,NormalIRanges-method}
 \alias{min,NormalIRanges-method}
 

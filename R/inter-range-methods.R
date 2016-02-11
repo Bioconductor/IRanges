@@ -4,23 +4,39 @@
 ###
 
 
+### TODO: We need a ranges() setter for Views objects that provides this
+### functionality. Once we have it, use it instead of this.
+.set_Views_ranges <- function(x, new_ranges)
+{
+    new_mcols <- mcols(new_ranges)
+    mcols(new_ranges) <- NULL
+    BiocGenerics:::replaceSlots(x, ranges=new_ranges,
+                                   elementMetadata=new_mcols,
+                                   check=FALSE)
+}
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### range()
 ###
 
+### Always return an IRanges instance (whatever Ranges derivative 'x' is),
+### so is NOT an endomorphism. 
 setMethod("range", "Ranges",
     function(x, ..., na.rm=FALSE)
     {
         if (!identical(na.rm, FALSE))
-            warning("'na.rm' argument is ignored")
+            warning("\"range\" method for Ranges objects ",
+                    "ignores the 'na.rm' argument")
         args <- unname(list(x, ...))
-        if (length(args) == 0L)  # should never happen
-            return(IRanges())
-        if (!all(sapply(args, is, "Ranges")))
-            stop("all arguments in '...' must be Ranges objects")
-        xx <- do.call(c, lapply(args, as, "IRanges"))
-        y <- .Call2("IRanges_range", xx, PACKAGE="IRanges")
-        as(y, class(args[[1L]]))
+        ## TODO: Replace line below with
+        ##     args <- lapply(args, ranges)
+        ## when ranges() works on Ranges objects.
+        args <- lapply(args,
+                       function(arg) IRanges(start(arg), width=width(arg)))
+        x <- do.call(c, args)
+
+        .Call2("IRanges_range", x, PACKAGE="IRanges")
     }
 )
 
@@ -51,11 +67,11 @@ setMethod("range", "RangesList",
     ans_unlistData <- IRanges(viewMins(sv)[is_not_empty_view],
                               viewMaxs(ev)[is_not_empty_view])
     ans_partitioning <- new2("PartitioningByEnd",
-                             end=cumsum(is_not_empty_view), check=FALSE)
-    ans <- new2("CompressedIRangesList",
-                unlistData=ans_unlistData,
-                partitioning=ans_partitioning,
-                check=FALSE)
+                                         end=cumsum(is_not_empty_view),
+                                         check=FALSE)
+    ans <- new2("CompressedIRangesList", unlistData=ans_unlistData,
+                                         partitioning=ans_partitioning,
+                                         check=FALSE)
     names(ans) <- names(x)
     mcols(ans) <- mcols(x)
     ans
@@ -85,7 +101,9 @@ setGeneric("reduce", signature="x",
     function(x, ...) standardGeneric("reduce")
 )
 
-setMethod("reduce", "IRanges",
+### Always return an IRanges instance (whatever Ranges derivative 'x' is),
+### so is NOT an endomorphism. 
+setMethod("reduce", "Ranges",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
                 with.revmap=FALSE,
                 with.inframe.attrib=FALSE)
@@ -108,32 +126,20 @@ setMethod("reduce", "IRanges",
                         with.revmap,
                         with.inframe.attrib,
                         PACKAGE="IRanges")
-        ans <- unsafe.update(x, start=C_ans$start, width=C_ans$width,
-                                names=NULL)
+        ans <- new2("IRanges", start=C_ans$start,
+                               width=C_ans$width,
+                               check=FALSE)
         if (with.revmap) {
             revmap <- IntegerList(C_ans$revmap)
             mcols(ans) <- DataFrame(revmap=revmap)
         }
         if (with.inframe.attrib) {
             inframe <- new2("IRanges", start=C_ans$inframe.start,
-                                       width=width(x), check=FALSE)
+                                       width=width(x),
+                                       check=FALSE)
             attr(ans, "inframe") <- inframe
         }
         ans
-    }
-)
-
-setMethod("reduce", "Ranges",
-    function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                with.revmap=FALSE, 
-                with.inframe.attrib=FALSE)
-    {
-        ir <- as(x, "IRanges")
-        y <- reduce(ir, drop.empty.ranges=drop.empty.ranges,
-                        min.gapwidth=min.gapwidth,
-                        with.revmap=with.revmap,
-                        with.inframe.attrib=with.inframe.attrib)
-        as(y, class(x))
     }
 )
 
@@ -142,12 +148,12 @@ setMethod("reduce", "Views",
                 with.revmap=FALSE,
                 with.inframe.attrib=FALSE)
     {
-        x@ranges <- reduce(ranges(x),
-                           drop.empty.ranges=drop.empty.ranges,
-                           min.gapwidth=min.gapwidth,
-                           with.revmap=with.revmap,
-                           with.inframe.attrib=with.inframe.attrib)
-        x
+        new_ranges <- callGeneric(x@ranges,
+                                  drop.empty.ranges=drop.empty.ranges,
+                                  min.gapwidth=min.gapwidth,
+                                  with.revmap=with.revmap,
+                                  with.inframe.attrib=with.inframe.attrib)
+        .set_Views_ranges(x, new_ranges)
     }
 )
 
@@ -155,10 +161,13 @@ setMethod("reduce", "RangesList",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
                 with.revmap=FALSE,
                 with.inframe.attrib=FALSE)
+    {
         endoapply(x, reduce, drop.empty.ranges = drop.empty.ranges,
-                     min.gapwidth = min.gapwidth,
-                     with.revmap=with.revmap,
-                     with.inframe.attrib = with.inframe.attrib))
+                             min.gapwidth = min.gapwidth,
+                             with.revmap=with.revmap,
+                             with.inframe.attrib = with.inframe.attrib)
+    }
+)
 
 ### 'with.inframe.attrib' is ignored for now.
 ### TODO: Support 'with.inframe.attrib=TRUE'.
@@ -184,7 +193,8 @@ setMethod("reduce", "CompressedIRangesList",
                         x, drop.empty.ranges, min.gapwidth,
                         with.revmap,
                         PACKAGE="IRanges")
-        ans_unlistData <- new2("IRanges", start=C_ans$start, width=C_ans$width,
+        ans_unlistData <- new2("IRanges", start=C_ans$start,
+                                          width=C_ans$width,
                                           check=FALSE)
         if (with.revmap) {
             revmap <- IntegerList(C_ans$revmap)
@@ -200,6 +210,8 @@ setMethod("reduce", "RangedData",
           function(x, by = character(), drop.empty.ranges=FALSE,
                    min.gapwidth=1L, with.inframe.attrib=FALSE)
           {
+            .Deprecated(msg=c("the \"reduce\" method for RangedData object ",
+                              "is deprecated"))
             if (!isTRUEorFALSE(drop.empty.ranges))
                 stop("'drop.empty.ranges' must be TRUE or FALSE")
             if (!isSingleNumber(min.gapwidth))
@@ -242,7 +254,7 @@ setMethod("reduce", "RangedData",
                        min.gapwidth = min.gapwidth,
                        with.inframe.attrib = with.inframe.attrib)
               listData <- new2("DataFrame", nrows=sum(elementNROWS(ranges)),
-                               check=FALSE)
+                                            check=FALSE)
               end <- cumsum(elementNROWS(ranges))
               names(end) <- names(ranges)
               partitioning <- PartitioningByEnd(end)
@@ -263,7 +275,9 @@ setGeneric("gaps", signature="x",
     function(x, start=NA, end=NA) standardGeneric("gaps")
 )
 
-setMethod("gaps", "IRanges",
+### Always return an IRanges instance (whatever Ranges derivative 'x' is),
+### so is NOT an endomorphism. 
+setMethod("gaps", "Ranges",
     function(x, start=NA, end=NA)
     {
         start <- S4Vectors:::normargSingleStartOrNA(start)
@@ -271,17 +285,9 @@ setMethod("gaps", "IRanges",
         C_ans <- .Call2("IRanges_gaps",
                         start(x), width(x), start, end,
                         PACKAGE="IRanges")
-        initialize(x, start=C_ans$start, width=C_ans$width, NAMES=NULL,
-                      elementMetadata=NULL)
-    }
-)
-
-setMethod("gaps", "Ranges",
-    function(x, start=NA, end=NA)
-    {
-        ir <- as(x, "IRanges")
-        y <- gaps(ir, start=start, end=end)
-        as(y, class(x))
+        new2("IRanges", start=C_ans$start,
+                        width=C_ans$width,
+                        check=FALSE)
     }
 )
 
@@ -300,47 +306,49 @@ setMethod("gaps", "Views",
             start <- 1L
         if (is.na(end))
             end <- length(subject(x))
-        x@ranges <- gaps(ranges(x), start=start, end=end)
-        x
+        new_ranges <- gaps(x@ranges, start=start, end=end)
+        .set_Views_ranges(x, new_ranges)
     }
 )
 
 setMethod("gaps", "RangesList",
-          function(x, start = NA, end = NA)
-          {
-              lx <- length(x)
-              if (!S4Vectors:::isNumericOrNAs(start))
-                  stop("'start' must be an integer vector or NA")
-              if (!is.integer(start))
-                  start <- as.integer(start)
-              if (!S4Vectors:::isNumericOrNAs(end))
-                  stop("'end' must be an integer vector or NA")
-              if (!is.integer(end))
-                  end <- as.integer(end)
-              start <- IntegerList(as.list(S4Vectors:::recycleVector(start, lx)))
-              end <- IntegerList(as.list(S4Vectors:::recycleVector(end, lx)))
-              mendoapply(gaps, x, start = start, end = end)
-          })
+    function(x, start = NA, end = NA)
+    {
+        lx <- length(x)
+        if (!S4Vectors:::isNumericOrNAs(start))
+            stop("'start' must be an integer vector or NA")
+        if (!is.integer(start))
+            start <- as.integer(start)
+        if (!S4Vectors:::isNumericOrNAs(end))
+            stop("'end' must be an integer vector or NA")
+        if (!is.integer(end))
+            end <- as.integer(end)
+        start <- IntegerList(as.list(S4Vectors:::recycleVector(start, lx)))
+        end <- IntegerList(as.list(S4Vectors:::recycleVector(end, lx)))
+        mendoapply(gaps, x, start = start, end = end)
+    }
+)
 
 setMethod("gaps", "CompressedIRangesList",
-          function(x, start = NA, end = NA)
-          {
-              lx <- length(x)
-              if (!S4Vectors:::isNumericOrNAs(start))
-                  stop("'start' must be an integer vector or NA")
-              if (!is.integer(start))
-                  start <- as.integer(start)
-              if (!S4Vectors:::isNumericOrNAs(end))
-                  stop("'end' must be an integer vector or NA")
-              if (!is.integer(end))
-                  end <- as.integer(end)
-              if ((length(start) != 1) || (length(end) != 1)) {
-                  start <- S4Vectors:::recycleVector(start, lx)
-                  end <- S4Vectors:::recycleVector(end, lx)
-              }
-              .Call2("CompressedIRangesList_gaps", x, start, end,
-                    PACKAGE="IRanges")
-          })
+    function(x, start = NA, end = NA)
+    {
+        lx <- length(x)
+        if (!S4Vectors:::isNumericOrNAs(start))
+            stop("'start' must be an integer vector or NA")
+        if (!is.integer(start))
+            start <- as.integer(start)
+        if (!S4Vectors:::isNumericOrNAs(end))
+            stop("'end' must be an integer vector or NA")
+        if (!is.integer(end))
+            end <- as.integer(end)
+        if ((length(start) != 1) || (length(end) != 1)) {
+            start <- S4Vectors:::recycleVector(start, lx)
+            end <- S4Vectors:::recycleVector(end, lx)
+        }
+        .Call2("CompressedIRangesList_gaps", x, start, end,
+               PACKAGE="IRanges")
+    }
+)
 
 ### 'start' and 'end' are ignored.
 setMethod("gaps", "MaskCollection",
@@ -364,6 +372,8 @@ setMethod("gaps", "MaskCollection",
 
 setGeneric("disjoin", function(x, ...) standardGeneric("disjoin"))
 
+### Always return an IRanges instance (whatever Ranges derivative 'x' is),
+### so is NOT an endomorphism. 
 setMethod("disjoin", "Ranges",
     function(x)
     {
@@ -371,10 +381,12 @@ setMethod("disjoin", "Ranges",
         ## ends: original ends and start-1 when inside another interval
         starts <- unique(start(x))
         ends <- unique(end(x))
-        adj_start <- sort(unique(c(starts, ends + 1L)))
-        adj_end <- sort(unique(c(ends, starts - 1L)))
-        adj <- update(x, start=head(adj_start, -1L), end=tail(adj_end, -1L),
-                      names=NULL, check=FALSE)
+        adj_start <- head(sort(unique(c(starts, ends + 1L))), -1L)
+        adj_end <- tail(sort(unique(c(ends, starts - 1L))), -1L)
+        adj_width <- adj_end - adj_start + 1L
+        adj <- new2("IRanges", start=adj_start,
+                               width=adj_width,
+                               check=FALSE)
         subsetByOverlaps(adj,  x)
     }
 )
@@ -419,6 +431,34 @@ setMethod("disjoin", "CompressedIRangesList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### isDisjoint()
+###
+
+setGeneric("isDisjoint", function(x, ...) standardGeneric("isDisjoint"))
+
+setMethod("isDisjoint", "Ranges",
+    function(x)
+    {
+        x_len <- length(x)
+        if (x_len < 2L)
+            return(TRUE)
+        x_start <- start(x)
+        x_end <- end(x)
+        oo <- order(x)
+        start2 <- x_start[oo]
+        end2 <- x_end[oo]
+        all(start2[-1L] > end2[-x_len])
+    }
+)
+
+setMethod("isDisjoint", "NormalIRanges", function(x) TRUE)
+
+setMethod("isDisjoint", "RangesList",
+    function(x) unlist(lapply(x, isDisjoint))
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### disjointBins()
 ###
 
@@ -446,5 +486,6 @@ setMethod("disjointBins", "Ranges",
 )
 
 setMethod("disjointBins", "RangesList",
-          function(x) as(lapply(x, disjointBins), "IntegerList"))
+    function(x) as(lapply(x, disjointBins), "IntegerList")
+)
 

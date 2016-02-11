@@ -23,7 +23,6 @@
 
 \alias{isNormal,RangesList-method}
 \alias{whichFirstNotNormal,RangesList-method}
-\alias{isDisjoint,RangesList-method}
 
 % coercion
 \alias{coerce,RangesList,IRangesList-method}
@@ -204,15 +203,6 @@ RangesList(range1, range2, universe = "hg18")
 ## zoom in 2X
 collection <- RangesList(one = range1, range2)
 collection * 2
-
-## ---------------------------------------------------------------------
-## isDisjoint()
-## ---------------------------------------------------------------------
-
-range3 <- IRanges(start=c(-2, 6, 7), width=c(8, 0, 0))  # with empty ranges
-collection <- IRangesList(one=range1, range2, range3)
-
-isDisjoint(collection)
 }
 \keyword{methods}
 \keyword{classes}

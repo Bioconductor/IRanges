@@ -108,40 +108,43 @@ setValidity2("Views", .valid.Views.width)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The low-level "Views" constructor.
-###
-### TODO: - add a 'check.limits' arg (default to TRUE) for raising an error if
-###         some views are "out of limits".
+### Constructor
 ###
 
-newViews <- function(subject, start=NULL, end=NULL, width=NULL, names=NULL,
-                     Class=NULL)
+### The low-level "Views" constructor.
+### NOT exported but used in XVector, Biostrings, and triplex packages.
+### TODO: - add a 'check.limits' arg (default to TRUE) for raising an error if
+###         some views are "out of limits".
+new_Views <- function(subject, start=NULL, end=NULL, width=NULL, names=NULL,
+                      Class=NULL)
 {
     if (is(start, "Ranges")) {
         if (!is.null(end) || !is.null(width))
-            stop("'end' and 'width' must be NULLs when 'start' is a Ranges object")
-        ranges <- start
-        if (class(ranges) != "IRanges")
-            ranges <- as(ranges, "IRanges")
+            stop(wmsg("'end' and 'width' must be NULLs when ",
+                      "'start' is a Ranges object"))
+        ans_ranges <- start
+        if (class(ans_ranges) != "IRanges")
+            ans_ranges <- as(ans_ranges, "IRanges")
         ## Keep the names that are already in 'ranges' unless the 'names' arg
         ## was specified.
         if (!is.null(names))
-            names(ranges) <- names
+            names(ans_ranges) <- names
+        ans_mcols <- mcols(ans_ranges)
+        mcols(ans_ranges) <- NULL
     } else {
-        ranges <- IRanges(start=start, end=end, width=width, names=names)
+        ans_ranges <- IRanges(start=start, end=end, width=width, names=names)
+        ans_mcols <- NULL
     }
     if (is.null(Class))
         Class <- paste(class(subject), "Views", sep="")
-    new2(Class, subject=subject, ranges=ranges, check=FALSE)
+    new2(Class, subject=subject,
+                ranges=ans_ranges,
+                elementMetadata=ans_mcols,
+                check=FALSE)
 }
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The user-friendly "Views" constructor.
-###
-### TODO: Same as for the newViews() function above.
-###
-
+### TODO: Same as for the new_Views() function above.
 setGeneric("Views", signature="subject",
     function(subject, start=NULL, end=NULL, width=NULL, names=NULL)
         standardGeneric("Views")

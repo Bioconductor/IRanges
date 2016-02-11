@@ -57,7 +57,7 @@ setMethod("names", "IRanges", function(x) x@NAMES)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### isEmpty(), isNormal(), isDisjoint()
+### isEmpty() and isNormal()
 ###
 
 .isNormal_IRanges <- function(x)
@@ -68,7 +68,6 @@ setMethod("isNormal", "IRanges", .isNormal_IRanges)
 ### Fast methods for NormalIRanges objects.
 setMethod("isEmpty", "NormalIRanges", function(x) length(x) == 0L)
 setMethod("isNormal", "NormalIRanges", function(x) TRUE)
-setMethod("isDisjoint", "NormalIRanges", function(x) TRUE)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -21,9 +21,9 @@ setClass("RleViews",
 
 setMethod("Views", "Rle",
     function(subject, start=NULL, end=NULL, width=NULL, names=NULL)
-        newViews(subject,
-                 start=start, end=end, width=width, names=names,
-                 Class="RleViews")
+        new_Views(subject,
+                  start=start, end=end, width=width, names=names,
+                  Class="RleViews")
 )
 
 

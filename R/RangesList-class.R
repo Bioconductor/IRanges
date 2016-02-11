@@ -189,11 +189,11 @@ setReplaceMethod("universe", "RangesList",
                  })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### isNormal(), isDisjoint()
+### isNormal()
 ###
 ### Test the list elements of a RangesList object 'x' individually and return
-### a vector of TRUE's or FALSE's parallel to 'x'. More precisely, they're
-### equivalent to 'sapply(x, FUN)', when FUN is 'isNormal' or 'isDisjoint'.
+### a vector of TRUE's or FALSE's parallel to 'x'. More precisely, is
+### equivalent to 'sapply(x, FUN)', when FUN is 'isNormal'.
 ###
 
 setMethod("isNormal", "RangesList",
@@ -215,9 +215,6 @@ setMethod("isNormal", "CompressedIRangesList",
 
 setMethod("whichFirstNotNormal", "RangesList",
           function(x) unlist(lapply(x, whichFirstNotNormal)))
-
-setMethod("isDisjoint", "RangesList",
-          function(x) unlist(lapply(x, isDisjoint)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -179,7 +179,7 @@ export(
     read.rmMask,
     read.trfMask,
     ##read.chain,
-    newViews, successiveViews, slidingViews,
+    successiveViews, slidingViews,
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList, FactorList, 
     DataFrameList, SplitDataFrameList
