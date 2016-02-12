@@ -55,14 +55,14 @@
 \description{
   Range-based transformations are grouped in 2 categories:
   \enumerate{
-    \item \emph{Intra range transformations} like \code{shift()} that
+    \item \emph{Intra range transformations} (e.g. \code{shift()})
           transform each range individually (and independently of the other
           ranges). They return an object \emph{parallel} to the input object,
           that is, where the i-th range corresponds to the i-th range in the
           input.
           Those transformations are described below.
 
-    \item \emph{Inter range transformations} like \code{\link{reduce}()} that
+    \item \emph{Inter range transformations} (e.g. \code{\link{reduce}()})
           transform all the ranges together as a set to produce a new set
           of ranges. They return an object that is generally \emph{NOT}
           parallel to the input object.
@@ -165,15 +165,6 @@ threebands(x, start=NA, end=NA, width=NA)
             (Start/End/Width) interface for the details (\code{?solveUserSEW}).
     }
   }
-  \item{both}{
-    If \code{TRUE}, extends the flanking region \code{width} positions
-    \emph{into} the range. The resulting range thus straddles the end
-    point, with \code{width} positions on either side.
-  }
-  \item{bounds}{
-    An \link{IRanges} object to serve as the reference bounds for the
-    reflection, see below.
-  }
   \item{fix}{
     \itemize{
       \item If \code{x} is a \link{Ranges} or \link{Views} object:
@@ -188,6 +179,14 @@ threebands(x, start=NA, end=NA, width=NA)
             to use as an anchor for each element in \code{x}.
     }
   }
+  \item{...}{
+    Additional arguments for methods.
+  }
+  \item{both}{
+    If \code{TRUE}, extends the flanking region \code{width} positions
+    \emph{into} the range. The resulting range thus straddles the end
+    point, with \code{width} positions on either side.
+  }
   \item{upstream, downstream}{
     Single \code{integer} values >= 0L. \code{upstream} defines the number 
     of nucleotides toward the 5' end and \code{downstream} defines the number
@@ -199,6 +198,10 @@ threebands(x, start=NA, end=NA, width=NA)
     regions in the mammalian genome are 5000 bp upstream and downstream of the 
     transcription start site.
   }
+  \item{bounds}{
+    An \link{IRanges} object to serve as the reference bounds for the
+    reflection, see below.
+  }
   \item{keep.all.ranges}{
     \code{TRUE} or \code{FALSE}. Should ranges that don't overlap with
     the restriction interval(s) be kept?
@@ -208,108 +211,110 @@ threebands(x, start=NA, end=NA, width=NA)
     are always kept and their width is set to zero in the returned
     \link{IRanges} object.
   }
-  \item{...}{
-    Additional arguments for methods.
-  }
 }
 
 \details{
-  Here we start by describing how each transformation operates on a
-  \link{Ranges} object \code{x}.
+  Unless specified otherwise, when \code{x} is a \link{RangesList} object,
+  any transformation described here is equivalent to applying the
+  transformation to each \link{RangesList} top-level element separately.
 
-  \code{shift} shifts all the ranges in \code{x} by the amount specified
-  by the \code{shift} argument.
+  \subsection{shift}{
 
-  \code{narrow} narrows the ranges in \code{x} i.e. each range in the
-  returned \link{Ranges} object is a subrange of the corresponding
-  range in \code{x}.
-  The supplied start/end/width values are solved by a call to
-  \code{solveUserSEW(width(x), start=start, end=end, width=width)}
-  and therefore must be compliant with the rules of the SEW
-  (Start/End/Width) interface (see \code{?\link{solveUserSEW}}
-  for the details).
-  Then each subrange is derived from the original range according
-  to the solved start/end/width values for this range. Note that those
-  solved values are interpreted relatively to the original range.
+    \code{shift} shifts all the ranges in \code{x} by the amount specified
+    by the \code{shift} argument.
 
-  \code{resize} resizes the ranges to the specified width where either the
-  start, end, or center is used as an anchor.
+  }\subsection{narrow}{
 
-  \code{flank} generates flanking ranges for each range in \code{x}. If
-  \code{start} is \code{TRUE} for a given range, the flanking occurs at
-  the start, otherwise the end. The widths of the flanks are given by
-  the \code{width} parameter. The widths can be negative, in which case
-  the flanking region is reversed so that it represents a prefix or
-  suffix of the range in \code{x}. The \code{flank} operation is
-  illustrated below for a call of the form \code{flank(x, 3, TRUE)},
-  where \code{x} indicates a range in \code{x} and \code{-} indicates
-  the resulting flanking region:
-  \preformatted{
-    ---xxxxxxx
+    \code{narrow} narrows the ranges in \code{x} i.e. each range in the
+    returned \link{Ranges} object is a subrange of the corresponding
+    range in \code{x}.
+    The supplied start/end/width values are solved by a call to
+    \code{solveUserSEW(width(x), start=start, end=end, width=width)}
+    and therefore must be compliant with the rules of the SEW
+    (Start/End/Width) interface (see \code{?\link{solveUserSEW}}
+    for the details).
+    Then each subrange is derived from the original range according
+    to the solved start/end/width values for this range. Note that those
+    solved values are interpreted relatively to the original range.
+
+  }\subsection{resize}{
+
+    \code{resize} resizes the ranges to the specified width where either
+    the start, end, or center is used as an anchor.
+
+  }\subsection{flank}{
+
+    \code{flank} generates flanking ranges for each range in \code{x}. If
+    \code{start} is \code{TRUE} for a given range, the flanking occurs at
+    the start, otherwise the end. The widths of the flanks are given by
+    the \code{width} parameter. The widths can be negative, in which case
+    the flanking region is reversed so that it represents a prefix or
+    suffix of the range in \code{x}. The \code{flank} operation is
+    illustrated below for a call of the form \code{flank(x, 3, TRUE)},
+    where \code{x} indicates a range in \code{x} and \code{-} indicates
+    the resulting flanking region:
+    \preformatted{    ---xxxxxxx}
+    If \code{start} were \code{FALSE}:
+    \preformatted{       xxxxxxx---}
+    For negative width, i.e. \code{flank(x, -3, FALSE)}, where \code{*}
+    indicates the overlap between \code{x} and the result:
+    \preformatted{       xxxx***}
+    If \code{both} is \code{TRUE}, then, for all ranges in \code{x}, the
+    flanking regions are extended \emph{into} (or out of, if width is
+    negative) the range, so that the result straddles the given endpoint
+    and has twice the width given by \code{width}. This is illustrated below
+    for \code{flank(x, 3, both=TRUE)}:
+    \preformatted{    ---***xxxx}
+
+  }\subsection{promoters}{
+
+    \code{promoters} generates promoter ranges for each range in \code{x}
+    relative to the transcription start site (TSS), where TSS is 
+    \code{start(x)}. The promoter range is expanded around the TSS 
+    according to the \code{upsteam} and \code{downstream} arguments.
+    \code{upstream} represents the number of nucleotides in the 5' 
+    direction and \code{downstream} the number in the 3' direction. 
+    The full range is defined as, 
+    (start(x) - upstream) to (start(x) + downstream - 1). 
+    For documentation for using \code{promoters} on a
+    \link[GenomicRanges]{GRanges} object see
+    \code{?`\link[GenomicRanges]{promoters,GenomicRanges-method}`} in
+    the \pkg{GenomicRanges} package.
+
+  }\subsection{reflect}{
+
+    \code{reflect} "reflects" or reverses each range in \code{x} relative to
+    the corresponding range in \code{bounds}, which is recycled as
+    necessary. Reflection preserves the width of a range, but shifts it
+    such the distance from the left bound to the start of the range
+    becomes the distance from the end of the range to the right
+    bound. This is illustrated below, where \code{x} represents
+    a range in \code{x} and \code{[} and \code{]} indicate the bounds:
+    \preformatted{      [..xxx.....]
+      becomes
+      [.....xxx..]}
+
+  }\subsection{restrict}{
+
+    \code{restrict} restricts the ranges in \code{x} to the interval(s)
+    specified by the \code{start} and \code{end} arguments.
+
+  }\subsection{threebands}{
+
+    \code{threebands} extends the capability of \code{narrow} by returning
+    the 3 ranges objects associated to the narrowing operation.
+    The returned value \code{y} is a list of 3 ranges objects named
+    \code{"left"}, \code{"middle"} and \code{"right"}.
+    The middle component is obtained by calling \code{narrow} with the
+    same arguments (except that names are dropped). The left and right
+    components are also instances of the same class as \code{x} and they
+    contain what has been removed on the left and right sides (respectively)
+    of the original ranges during the narrowing.
+
+    Note that original object \code{x} can be reconstructed from the
+    left and right bands with \code{punion(y$left, y$right, fill.gap=TRUE)}.
+
   }
-  If \code{start} were \code{FALSE}:
-  \preformatted{
-       xxxxxxx---
-  }
-  For negative width, i.e. \code{flank(x, -3, FALSE)}, where \code{*}
-  indicates the overlap between \code{x} and the result:
-  \preformatted{
-       xxxx***
-  }
-  If \code{both} is \code{TRUE}, then, for
-  all ranges in \code{x}, the flanking regions are extended \emph{into}
-  (or out of, if width is negative)
-  the range, so that the result straddles the given endpoint and has
-  twice the width given by \code{width}. This is illustrated below for
-  \code{flank(x, 3, both=TRUE)}:
-  \preformatted{
-    ---***xxxx
-  }
-
-  \code{promoters} generates promoter ranges for each range in \code{x}
-  relative to the transcription start site (TSS), where TSS is 
-  \code{start(x)}. The promoter range is expanded around the TSS 
-  according to the \code{upsteam} and \code{downstream} arguments.
-  \code{upstream} represents the number of nucleotides in the 5' 
-  direction and \code{downstream} the number in the 3' direction. 
-  The full range is defined as, 
-  (start(x) - upstream) to (start(x) + downstream - 1). 
-  For documentation for using \code{promoters} on \code{GenomicRanges}
-  objects see ?\code{"promoters,GRanges-method"}.
-
-  \code{reflect} "reflects" or reverses each range in \code{x} relative to
-  the corresponding range in \code{bounds}, which is recycled as
-  necessary. Reflection preserves the width of a range, but shifts it
-  such the distance from the left bound to the start of the range
-  becomes the distance from the end of the range to the right
-  bound. This is illustrated below, where \code{x} represents
-  a range in \code{x} and \code{[} and \code{]} indicate the bounds:
-  \preformatted{
-    [..xxx.....]
-    becomes
-    [.....xxx..]
-  }
-
-  \code{restrict} restricts the ranges in \code{x} to the interval(s)
-  specified by the \code{start} and \code{end} arguments.
-
-  \code{threebands} extends the capability of \code{narrow} by returning
-  the 3 ranges objects associated to the narrowing operation.
-  The returned value \code{y} is a list of 3 ranges objects named
-  \code{"left"}, \code{"middle"} and \code{"right"}.
-  The middle component is obtained by calling \code{narrow} with the
-  same arguments (except that names are dropped). The left and right
-  components are also instances of the same class as \code{x} and they
-  contain what has been removed on the left and right sides (respectively)
-  of the original ranges during the narrowing.
-
-  Note that original object \code{x} can be reconstructed from the
-  left and right bands with \code{punion(y$left, y$right,
-    fill.gap=TRUE)}.
-
-  When \code{x} in a \link{RangesList} object, doing any of the transformation
-  above is equivalent to applying the transformation to each \link{RangesList}
-  top-level element separately.
 }
 
 \author{H. Pagès, M. Lawrence, and P. Aboyoun}
@@ -317,18 +322,18 @@ threebands(x, start=NA, end=NA, width=NA)
 \seealso{
   \itemize{
     \item \link{inter-range-methods} for inter range transformations.
+
     \item The \link{Ranges}, \link{Views}, \link{RangesList},
           and \link{MaskCollection} classes.
-    \item The \link[XVector]{intra-range-methods} man page in the
-          XVector package for methods that operate on
-          \link[XVector]{XVectorList} objects.
+
     \item The \link[GenomicRanges]{intra-range-methods} man page in the
-          GenomicRanges package for methods that operate on
-          \link[GenomicRanges]{GenomicRanges} and other objects.
+          \pkg{GenomicRanges} package for \emph{intra range transformations}
+          of genomic ranges.
+
     \item \link{setops-methods} for set operations on \link{IRanges}
           objects.
-    \item \code{\link{solveUserSEW}} for the SEW (Start/End/Width)
-          interface.
+
+    \item \code{\link[S4Vectors]{endoapply}} in the \pkg{S4Vectors} package.
   }
 }
 
@@ -337,34 +342,39 @@ threebands(x, start=NA, end=NA, width=NA)
 ## shift()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object
+## On a Ranges object:
 ir1 <- successiveIRanges(c(19, 5, 0, 8, 5))
 ir1
 shift(ir1, shift=-3)
 
-## On a RangesList object
+## On a RangesList object:
 range1 <- IRanges(start=c(1, 2, 3), end=c(5, 2, 8))
 range2 <- IRanges(start=c(15, 45, 20, 1), end=c(15, 100, 80, 5))
 range3 <- IRanges(start=c(-2, 6, 7), width=c(8, 0, 0))  # with empty ranges
 collection <- IRangesList(one=range1, range2, range3)
-shift(collection, shift=5)
+shift(collection, shift=5)  # same as endoapply(collection, shift, shift=5)
+
+## Sanity check:
+res1 <- shift(collection, shift=5)
+res2 <- endoapply(collection, shift, shift=5)
+stopifnot(identical(res1, res2))
 
 ## ---------------------------------------------------------------------
 ## narrow()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object
+## On a Ranges object:
 ir2 <- ir1[width(ir1) != 0]
 narrow(ir2, start=4, end=-2)
 narrow(ir2, start=-4, end=-2)
 narrow(ir2, end=5, width=3)
 narrow(ir2, start=c(3, 4, 2, 3), end=c(12, 5, 7, 4))
 
-## On a RangesList object
+## On a RangesList object:
 narrow(collection[-3], start=2)
 narrow(collection[-3], end=-2)
 
-## On a MaskCollection object
+## On a MaskCollection object:
 mask1 <- Mask(mask.width=29, start=c(11, 25, 28), width=c(5, 2, 2))
 mask2 <- Mask(mask.width=29, start=c(3, 10, 27), width=c(5, 8, 1))
 mask3 <- Mask(mask.width=29, start=c(7, 12), width=c(2, 4))
@@ -376,18 +386,18 @@ narrow(mymasks, start=8)
 ## resize()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object
+## On a Ranges object:
 resize(ir2, 200)
 resize(ir2, 2, fix="end")
 
-## On a RangesList object
+## On a RangesList object:
 resize(collection, width=200)
 
 ## ---------------------------------------------------------------------
 ## flank()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object
+## On a Ranges object:
 ir3 <- IRanges(c(2,5,1), c(3,7,3))
 flank(ir3, 2)
 flank(ir3, 2, start=FALSE)
@@ -397,27 +407,27 @@ flank(ir3, 2, both = TRUE)
 flank(ir3, 2, start=FALSE, both=TRUE)
 flank(ir3, -2, start=FALSE, both=TRUE)
 
-## On a RangesList object
+## On a RangesList object:
 flank(collection, width=10)
 
 ## ---------------------------------------------------------------------
 ## promoters()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object
+## On a Ranges object:
 ir4 <- IRanges(20:23, width=3)
 promoters(ir4, upstream=0, downstream=0) ## no change
 promoters(ir4, upstream=0, downstream=1) ## start value only
 promoters(ir4, upstream=1, downstream=0) ## single upstream nucleotide 
 
-## On a RangesList object
+## On a RangesList object:
 promoters(collection, upstream=5, downstream=2)
 
 ## ---------------------------------------------------------------------
 ## reflect()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object
+## On a Ranges object:
 bounds <- IRanges(c(0, 5, 3), c(10, 6, 9))
 reflect(ir3, bounds)
 
@@ -427,20 +437,20 @@ reflect(ir3, bounds)
 ## restrict()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object
+## On a Ranges object:
 restrict(ir1, start=12, end=34)
 restrict(ir1, start=20)
 restrict(ir1, start=21)
 restrict(ir1, start=21, keep.all.ranges=TRUE)
 
-## On a RangesList object
+## On a RangesList object:
 restrict(collection, start=2, end=8)
 
 ## ---------------------------------------------------------------------
 ## threebands()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object
+## On a Ranges object:
 z <- threebands(ir2, start=4, end=-2)
 ir2b <- punion(z$left, z$right, fill.gap=TRUE)
 stopifnot(identical(ir2, ir2b))

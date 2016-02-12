@@ -43,7 +43,7 @@
 \description{
   Range-based transformations are grouped in 2 categories:
   \enumerate{
-    \item \emph{Intra range transformations} like \code{\link{shift}()} that
+    \item \emph{Intra range transformations} (e.g. \code{\link{shift}()})
           transform each range individually (and independently of the other
           ranges). They return an object \emph{parallel} to the input object,
           that is, where the i-th range corresponds to the i-th range in the
@@ -51,7 +51,7 @@
           Those transformations are described in the \link{intra-range-methods}
           man page (see \code{?`\link{intra-range-methods}`}).
 
-    \item \emph{Inter range transformations} like \code{reduce()} that
+    \item \emph{Inter range transformations} (e.g. \code{reduce()})
           transform all the ranges together as a set to produce a new set
           of ranges. They return an object that is generally \emph{NOT}
           parallel to the input object.
@@ -99,10 +99,12 @@ disjointBins(x, ...)
     \code{reduce} and \code{gaps}.
   }
   \item{...}{
-    For \code{range}, additional \code{Ranges} or \code{RangesList}
-    to consider.
+    For \code{range}, additional \link{Ranges} or \link{RangesList}
+    object to consider.
   }
-  \item{na.rm}{Ignored.}
+  \item{na.rm}{
+    Ignored.
+  }
   \item{drop.empty.ranges}{
     \code{TRUE} or \code{FALSE}. Should empty ranges be dropped?
   }
@@ -121,12 +123,12 @@ disjointBins(x, ...)
   \item{start, end}{
     \itemize{
       \item If \code{x} is a \link{Ranges} or \link{Views} object:
-      A single integer or \code{NA}. Use these arguments to specify the
-      interval of reference i.e. which interval the returned gaps
-      should be relative to.
+            A single integer or \code{NA}. Use these arguments to specify
+            the interval of reference i.e. which interval the returned gaps
+            should be relative to.
       \item If \code{x} is a \link{RangesList} object:
-      Integer vectors containing the coordinate bounds for each
-      \link{RangesList} top-level element.
+            Integer vectors containing the coordinate bounds for each
+            \link{RangesList} top-level element.
     }
   }
 }
@@ -136,109 +138,113 @@ disjointBins(x, ...)
   any transformation described here is equivalent to applying the
   transformation to each \link{RangesList} top-level element separately.
 
-  \describe{
-    \item{}{
-      \code{range}:
-      First combines \code{x} and the arguments in \code{...}.
-      If the combined \link{IRanges} object contains at least 1 range,
-      then \code{range} returns an \code{IRanges} instance with a single
-      range, from the minimum start to the maximum end of the combined object.
-      Otherwise (i.e. if the combined object contains no range),
-      \code{IRanges()} is returned (i.e. an \link{IRanges} instance of
-      length 0).
+  \subsection{reduce}{
 
-      When passing more than 1 \code{RangesList} object to \code{range()},
-      they are first merged into a single \code{RangesList} object: by name
-      if all objects have names, otherwise, if they are all of the same
-      length, by position. Else, an exception is thrown.
+    \code{reduce} first orders the ranges in \code{x} from left to right,
+    then merges the overlapping or adjacent ones.
 
-      If \code{x} is a \link{RangedData} object, then \code{range} returns
-      a \code{RangesList} object resulting from calling \code{range(ranges(x))},
-      i.e. the bounds of the ranges in each space.
-    }
-    \item{}{
-      \code{reduce}:
-      First orders the ranges in \code{x} from left to right,
-      then merges the overlapping or adjacent ones.
-    }
-    \item{}{
-      \code{gaps}:
-      Returns the "normal" \link{Ranges} object representing
-      the set of integers that remain after the set of integers represented
-      by \code{x} has been removed from the interval specified by the
-      \code{start} and \code{end} arguments.
+  }\subsection{range}{
 
-      If \code{x} is a \link{Views} object, then \code{start=NA} and
-      \code{end=NA} are interpreted as \code{start=1} and
-      \code{end=length(subject(x))}, respectively, so, if \code{start}
-      and \code{end} are not specified, then gaps are extracted with respect
-      to the entire subject.
-    }
-    \item{}{
-      \code{isDisjoint}:
-      A \link{Ranges} object \code{x} is considered to be "disjoint" if its
-      ranges are non-overlapping. \code{isDisjoint} tests whether the
-      object is "disjoint" or not.
+    \code{range} first combines \code{x} and the arguments in \code{...}.
+    If the combined \link{IRanges} object contains at least 1 range,
+    then \code{range} returns an \link{IRanges} instance with a single
+    range, from the minimum start to the maximum end of the combined object.
+    Otherwise (i.e. if the combined object contains no range),
+    \code{IRanges()} is returned (i.e. an \link{IRanges} instance of
+    length 0).
 
-      Note that a "normal" \link{Ranges} object is always "disjoint" but the
-      opposite is not true. See \code{?isNormal} for more information about
-      normal \link{Ranges} objects.
+    When passing more than 1 \link{RangesList} object to \code{range()},
+    they are first merged into a single \link{RangesList} object: by name
+    if all objects have names, otherwise, if they are all of the same
+    length, by position. Else, an exception is thrown.
 
-      About empty ranges. \code{isDisjoint} handles empty ranges (a.k.a.
-      zero-width ranges) as follow: single empty range A is considered to
-      overlap with single range B iff it's contained in B without being on
-      the edge of B (in which case it would be ambiguous whether A is
-      contained in or adjacent to B). More precisely, single empty range A
-      is considered to overlap with single range B iff
-      \preformatted{    start(B) < start(A) and end(A) < end(B)}
-      Because A is an empty range it verifies \code{end(A) = start(A) - 1}
-      so the above is equivalent to:
-      \preformatted{    start(B) < start(A) <= end(B)}
-      and also equivalent to:
-      \preformatted{    start(B) <= end(A) < end(B)}
-      Finally, it is also equivalent to:
-      \preformatted{    pcompare(A, B) == 2}
-      See \code{?`\link{Ranges-comparison}`} for the meaning of the codes
-      returned by the \code{\link{pcompare}} function.
-    }
-    \item{}{
-      \code{disjoin}:
-      Returns a disjoint object, by finding the union of the end points in
-      \code{x}. In other words, the result consists of a range for every
-      interval, of maximal length, over which the set of overlapping ranges
-      in \code{x} is the same and at least of size 1.
-    }
-    \item{}{
-      \code{disjointBins}:
-      Segregates \code{x} into a set of bins so that the ranges in each bin
-      are disjoint. Lower-indexed bins are filled first. The method returns
-      an integer vector indicating the bin index for each range.
-    }
+    If \code{x} is a \link{RangedData} object, then \code{range} returns
+    a \link{RangesList} object resulting from calling \code{range(ranges(x))},
+    i.e. the bounds of the ranges in each space.
+
+  }\subsection{gaps}{
+
+    \code{gaps} returns the "normal" \link{Ranges} object representing
+    the set of integers that remain after the set of integers represented
+    by \code{x} has been removed from the interval specified by the
+    \code{start} and \code{end} arguments.
+
+    If \code{x} is a \link{Views} object, then \code{start=NA} and
+    \code{end=NA} are interpreted as \code{start=1} and
+    \code{end=length(subject(x))}, respectively, so, if \code{start}
+    and \code{end} are not specified, then gaps are extracted with respect
+    to the entire subject.
+
+  }\subsection{isDisjoint}{
+
+    A \link{Ranges} object \code{x} is considered to be "disjoint" if its
+    ranges are non-overlapping. \code{isDisjoint} tests whether the object
+    is "disjoint" or not.
+
+    Note that a "normal" \link{Ranges} object is always "disjoint" but the
+    opposite is not true. See \code{?isNormal} for more information about
+    normal \link{Ranges} objects.
+
+    About empty ranges. \code{isDisjoint} handles empty ranges (a.k.a.
+    zero-width ranges) as follow: single empty range A is considered to
+    overlap with single range B iff it's contained in B without being on
+    the edge of B (in which case it would be ambiguous whether A is
+    contained in or adjacent to B). More precisely, single empty range A
+    is considered to overlap with single range B iff
+    \preformatted{    start(B) < start(A) and end(A) < end(B)}
+    Because A is an empty range it verifies \code{end(A) = start(A) - 1}
+    so the above is equivalent to:
+    \preformatted{    start(B) < start(A) <= end(B)}
+    and also equivalent to:
+    \preformatted{    start(B) <= end(A) < end(B)}
+    Finally, it is also equivalent to:
+    \preformatted{    pcompare(A, B) == 2}
+    See \code{?`\link{Ranges-comparison}`} for the meaning of the codes
+    returned by the \code{\link{pcompare}} function.
+
+  }\subsection{disjoin}{
+
+    \code{disjoin} returns a disjoint object, by finding the union of the
+    end points in \code{x}. In other words, the result consists of a range
+    for every interval, of maximal length, over which the set of overlapping
+    ranges in \code{x} is the same and at least of size 1.
+
+  }\subsection{disjointBins}{
+
+    \code{disjointBins} segregates \code{x} into a set of bins so that the
+    ranges in each bin are disjoint. Lower-indexed bins are filled first.
+    The method returns an integer vector indicating the bin index for each
+    range.
   }
 }
 
 \value{
   If \code{x} is a \link{Ranges} object:
-  \code{range}, \code{reduce}, \code{gaps}, and \code{disjoin} return
-  an \link{IRanges} instance;
-  \code{isDisjoint} returns \code{TRUE} or \code{FALSE};
-  and \code{disjointBins} returns an integer vector \emph{parallel} to
-  \code{x}, that is, where the i-th element corresponds to the i-th element
-  in \code{x}.
+  \itemize{
+    \item \code{range}, \code{reduce}, \code{gaps}, and \code{disjoin}
+          return an \link{IRanges} instance.
+    \item \code{isDisjoint} returns \code{TRUE} or \code{FALSE}.
+    \item \code{disjointBins} returns an integer vector \emph{parallel} to
+          \code{x}, that is, where the i-th element corresponds to the i-th
+          element in \code{x}.
+  }
 
-  If \code{x} is a \link{Views} object:
-  \code{reduce} and \code{gaps} return a \link{Views} object on the same
-  subject as \code{x} but with modified views.
+  If \code{x} is a \link{Views} object: \code{reduce} and \code{gaps}
+  return a \link{Views} object on the same subject as \code{x} but with
+  modified views.
 
   If \code{x} is a \link{RangesList} object:
-  \code{range}, \code{reduce}, \code{gaps}, and \code{disjoin} return a
-  \link{RangesList} object \emph{parallel} to \code{x};
-  \code{isDisjoint} returns a logical vector \emph{parallel} to \code{x};
-  and \code{disjointBins} returns an \link{IntegerList} object \emph{parallel}
-  to \code{x}.
+  \itemize{
+    \item \code{range}, \code{reduce}, \code{gaps}, and \code{disjoin}
+          return a \link{RangesList} object \emph{parallel} to \code{x}.
+    \item \code{isDisjoint} returns a logical vector \emph{parallel} to
+          \code{x}.
+    \item \code{disjointBins} returns an \link{IntegerList} object
+          \emph{parallel} to \code{x}.
+  }
 }
 
-\author{H. Pagès, M. Lawrence, P. Aboyoun}
+\author{H. Pagès, M. Lawrence, and P. Aboyoun}
 
 \seealso{
   \itemize{
@@ -248,8 +254,8 @@ disjointBins(x, ...)
           and \link{MaskCollection} classes.
 
     \item The \link[GenomicRanges]{inter-range-methods} man page in the
-          GenomicRanges package for methods that operate on
-          \link[GenomicRanges]{GenomicRanges} and other objects.
+          \pkg{GenomicRanges} package for \emph{inter range transformations}
+          of genomic ranges.
 
     \item \link{setops-methods} for set operations on \link{IRanges}
           objects.
@@ -277,19 +283,11 @@ if (require(XVector)) {
     range(collection)
 }
 
-irl1 <- IRangesList(a=IRanges(c(1,2),c(4,3)), b=IRanges(c(4,6),c(10,7)))
-irl2 <- IRangesList(c=IRanges(c(0,2),c(4,5)), a=IRanges(c(4,5),c(6,7)))
+irl1 <- IRangesList(a=IRanges(c(1, 2),c(4, 3)), b=IRanges(c(4, 6),c(10, 7)))
+irl2 <- IRangesList(c=IRanges(c(0, 2),c(4, 5)), a=IRanges(c(4, 5),c(6, 7)))
 range(irl1, irl2)  # matched by names
 names(irl2) <- NULL
 range(irl1, irl2)  # now by position
-
-## On a RangedData object:
-ranges <- IRanges(c(1,2,3),c(4,5,6))
-score <- c(10L, 2L, NA)
-rd <- RangedData(ranges, score)
-range(rd)
-rd2 <- RangedData(IRanges(c(5,2,0), c(6,3,1)))
-range(rd, rd2)
 
 ## ---------------------------------------------------------------------
 ## reduce()

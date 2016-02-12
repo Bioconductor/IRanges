@@ -288,6 +288,8 @@
 
     \item \link{Ranges-comparison} for comparing and ordering ranges.
 
+    \item \link{findOverlaps-methods} for finding overlapping ranges.
+
     \item \link{intra-range-methods} and
           \link{inter-range-methods} for intra range and
           inter range transformations of a Ranges object.
@@ -296,8 +298,6 @@
           of a set of ranges.
 
     \item \link{setops-methods} for set operations on ranges.
-
-    \item \link{findOverlaps-methods} for finding overlapping ranges.
 
     \item \link{nearest-methods} for finding the nearest range neighbor.
   }

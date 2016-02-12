@@ -230,13 +230,13 @@ rangeComparisonCodeToLetter(code)
           \pkg{GenomicRanges} package for comparing and ordering genomic
           ranges.
 
+    \item \code{\link{findOverlaps}} for finding overlapping ranges.
+
     \item \link{intra-range-methods} and \link{inter-range-methods} for
           intra and inter range transformations.
 
     \item \link{setops-methods} for set operations on \link{IRanges}
           objects.
-
-    \item \code{\link{findOverlaps}} for finding overlapping ranges.
   }
 }
 

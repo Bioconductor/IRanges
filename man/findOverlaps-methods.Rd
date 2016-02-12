@@ -262,8 +262,8 @@ mergeByOverlaps(query, subject, ...)
 
     \item The \link{NCList} class and constructor.
 
-    \item The \link{Ranges}, \link{Views}, \link{RangesList},
-          \link{ViewsList}, and \link{RangedData} classes.
+    \item The \link{Ranges}, \link{Views}, \link{RangesList}, and
+          \link{ViewsList} classes.
 
     \item The \link{IntegerList} and \link{LogicalList} classes.
   }
