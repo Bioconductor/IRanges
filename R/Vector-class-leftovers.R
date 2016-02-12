@@ -77,7 +77,19 @@ setMethod("rep", "Vector", function(x, ...)
           x[rep(seq_len(length(x)), ...)])
 
 setMethod("rep.int", "Vector",
-    function(x, times) x[rep.int(seq_len(length(x)), times)]
+    function(x, times)
+    {
+        x_len <- length(x)
+        times_len <- length(times)
+        if (times_len == 1L) {
+            i <- IRanges(rep.int(1L, times), rep.int(x_len, times))
+        } else if (times_len == x_len) {
+            i <- Rle(seq_len(x_len), times)
+        } else {
+            stop("invalid 'times' value")
+        }
+        x[i]
+    }
 )
 
 setMethod("subset", "Vector",
