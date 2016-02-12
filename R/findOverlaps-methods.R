@@ -5,26 +5,26 @@
 
 
 ## internal generic
-setGeneric("processSelfMatching",  signature="x", # not exported
+setGeneric("process_self_hits",  signature="x", # not exported
     function(x, select=c("all", "first", "last", "arbitrary"),
-                ignoreSelf=FALSE, ignoreRedundant=FALSE)
-        standardGeneric("processSelfMatching"))
+                drop.self=FALSE, drop.redundant=FALSE)
+        standardGeneric("process_self_hits"))
 
-setMethod("processSelfMatching", "Hits",
+setMethod("process_self_hits", "Hits",
     function(x, select=c("all", "first", "last", "arbitrary"),
-                ignoreSelf=FALSE, ignoreRedundant=FALSE)
+                drop.self=FALSE, drop.redundant=FALSE)
     {
         select <- match.arg(select)
-        if (!isTRUEorFALSE(ignoreSelf))
-            stop("'ignoreSelf' must be TRUE or FALSE")
-        if (!isTRUEorFALSE(ignoreRedundant))
-            stop("'ignoreRedundant' must be TRUE or FALSE")
-        if (ignoreSelf) {
+        if (!isTRUEorFALSE(drop.self))
+            stop("'drop.self' must be TRUE or FALSE")
+        if (!isTRUEorFALSE(drop.redundant))
+            stop("'drop.redundant' must be TRUE or FALSE")
+        if (drop.self) {
             self_idx <- which(isSelfHit(x))
             if (length(self_idx) != 0L)
                 x <- x[-self_idx]
         }
-        if (ignoreRedundant) {
+        if (drop.redundant) {
             redundant_idx <- which(isRedundantHit(x))
             if (length(redundant_idx) != 0L)
                 x <- x[-redundant_idx]
@@ -33,13 +33,13 @@ setMethod("processSelfMatching", "Hits",
     }
 )
 
-setMethod("processSelfMatching", "HitsList",
+setMethod("process_self_hits", "HitsList",
     function(x, select=c("all", "first", "last", "arbitrary"),
-                ignoreSelf=FALSE, ignoreRedundant=FALSE)
+                drop.self=FALSE, drop.redundant=FALSE)
     {
         select <- match.arg(select)
-        ans <- lapply(x, processSelfMatching,
-                         select, ignoreSelf,  ignoreRedundant)
+        ans <- lapply(x, process_self_hits,
+                         select, drop.self,  drop.redundant)
         if (select != "all")
             return(IntegerList(ans))
         S4Vectors:::new_SimpleList_from_list("HitsList",
@@ -48,13 +48,13 @@ setMethod("processSelfMatching", "HitsList",
     }
 )
 
-setMethod("processSelfMatching", "CompressedHitsList",
+setMethod("process_self_hits", "CompressedHitsList",
     function(x, select=c("all", "first", "last", "arbitrary"),
-                ignoreSelf=FALSE, ignoreRedundant=FALSE)
+                drop.self=FALSE, drop.redundant=FALSE)
     {
         select <- match.arg(select)
-        ans <- processSelfMatching(x@unlistData,
-                                   select, ignoreSelf, ignoreRedundant)
+        ans <- process_self_hits(x@unlistData,
+                                 select, drop.self, drop.redundant)
         relist(ans, x)
     }
 )
@@ -93,14 +93,34 @@ setMethod("findOverlaps", c("Vector", "missing"),
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
              ...,
+             drop.self=FALSE, drop.redundant=FALSE,
              ignoreSelf=FALSE, ignoreRedundant=FALSE)
     {
+        if (!identical(ignoreSelf, FALSE) ||
+            !identical(ignoreRedundant, FALSE)) {
+            .Deprecated(msg=wmsg(
+                "Please use 'drop.self' and/or 'drop.redundant' instead ",
+                "of the 'ignoreSelf' and/or 'ignoreRedundant' arguments."
+            ))
+            if (!identical(ignoreSelf, FALSE)) {
+                if (!identical(drop.self, FALSE))
+                    stop(wmsg("either 'drop.self' or 'ignoreSelf' ",
+                              "can be specified, but not both"))
+                drop.self <- ignoreSelf
+            }
+            if (!identical(ignoreRedundant, FALSE)) {
+                if (!identical(drop.redundant, FALSE))
+                    stop(wmsg("either 'drop.redundant' or 'ignoreRedundant' ",
+                              "can be specified, but not both"))
+                drop.redundant <- ignoreRedundant
+            }
+        }
         select <- match.arg(select)
         result <- findOverlaps(query, query,
                                maxgap=maxgap, minoverlap=minoverlap,
                                type=match.arg(type), select="all",
                                ...)
-        processSelfMatching(result, select, ignoreSelf, ignoreRedundant)
+        process_self_hits(result, select, drop.self, drop.redundant)
     }
 )
 
@@ -323,6 +343,7 @@ setMethod("countOverlaps", c("Vector", "Vector"),
     }
 )
 
+## TODO: Support the 'drop.self' and 'drop.redundant' arguments.
 setMethod("countOverlaps", c("Vector", "missing"),
     function(query, subject, maxgap = 0L, minoverlap = 1L,
              type = c("any", "start", "end", "within", "equal"))

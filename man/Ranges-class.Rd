@@ -280,7 +280,7 @@
   }
 }
 
-\author{H. Pages and M. Lawrence}
+\author{H. Pagès and M. Lawrence}
 
 \seealso{
   \itemize{

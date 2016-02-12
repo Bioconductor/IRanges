@@ -312,7 +312,7 @@ threebands(x, start=NA, end=NA, width=NA)
   top-level element separately.
 }
 
-\author{H. Pages, M. Lawrence, P. Aboyoun}
+\author{H. Pagès, M. Lawrence, and P. Aboyoun}
 
 \seealso{
   \itemize{

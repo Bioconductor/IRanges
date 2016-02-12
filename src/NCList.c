@@ -1,7 +1,6 @@
 /****************************************************************************
  *                 A Nested Containment List implementation                 *
- *                                                                          *
- *                           Author: Herve Pages                            *
+ *                            Author: H. Pag\`es                            *
  ****************************************************************************/
 #include "IRanges.h"
 #include "S4Vectors_interface.h"

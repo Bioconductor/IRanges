@@ -238,7 +238,7 @@ disjointBins(x, ...)
   to \code{x}.
 }
 
-\author{H. Pages, M. Lawrence, P. Aboyoun}
+\author{H. Pagès, M. Lawrence, P. Aboyoun}
 
 \seealso{
   \itemize{

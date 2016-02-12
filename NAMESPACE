@@ -235,9 +235,6 @@ export(
     ## RangedData-class.R:
     score, "score<-",
 
-    ## RangedData-utils.R:
-    rdapply,
-
     ## RDApplyParams-class.R:
     rangedData, "rangedData<-",
     applyFun, "applyFun<-",
@@ -249,8 +246,12 @@ export(
     reducerParams, "reducerParams<-",
     iteratorFun, "iteratorFun<-",
 
-    ## mapCoords.R:
-    mapCoords, pmapCoords,
+    ## RangedData-utils.R:
+    rdapply,
+
+    ## findOverlaps-methods.R:
+    findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps, mergeByOverlaps,
+    poverlaps,
 
     ## intra-range-methods.R:
     shift, narrow, resize, flank, reflect, promoters, restrict, threebands,
@@ -269,10 +270,6 @@ export(
 
     ## setops-methods.R:
     punion, pintersect, psetdiff, pgap,
-
-    ## findOverlaps-methods.R:
-    findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps, mergeByOverlaps,
-    poverlaps,
 
     ## nearest-methods.R:
     precede, follow, nearest, distance, distanceToNearest,
@@ -306,7 +303,6 @@ exportMethods(
     maskedwidth, maskedratio,
     collapse,
     score, "score<-",
-    rdapply,
     rangedData, "rangedData<-",
     applyFun, "applyFun<-",
     applyParams, "applyParams<-",
@@ -316,13 +312,15 @@ exportMethods(
     reducerFun, "reducerFun<-",
     reducerParams, "reducerParams<-",
     iteratorFun, "iteratorFun<-",
+    rdapply,
+    findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
+    poverlaps,
     shift, narrow, resize, flank, reflect, promoters, restrict, threebands,
     reduce, gaps, disjoin, isDisjoint, disjointBins,
     reverse,
     coverage,
     slice,
     punion, pintersect, psetdiff, pgap,
-    findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
     precede, follow, nearest, distance, distanceToNearest,
     tile
 )

@@ -97,7 +97,7 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
               ol <- findOverlaps(x, subject, select = select)
             } else {
               subject <- x
-              ol <- findOverlaps(x, select = select, ignoreSelf = TRUE)
+              ol <- findOverlaps(x, select = select, drop.self = TRUE)
             }
             if (select == "all") {
               olv <- selectHits(ol, select="first")

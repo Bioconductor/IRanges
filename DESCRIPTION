@@ -10,7 +10,8 @@ Description: The package provides efficient low-level and highly reusable S4
 	the package use consistent naming and share the same rich and
 	consistent "Vector API" as much as possible.
 Version: 2.5.27
-Author: H. Pages, P. Aboyoun and M. Lawrence
+Encoding: UTF-8
+Author: H. Pagès, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Infrastructure, DataRepresentation
 Depends: R (>= 3.1.0), methods, utils, stats, BiocGenerics (>= 0.15.10),
@@ -56,18 +57,15 @@ Collate: Vector-class-leftovers.R
 	NCList-class.R
 	RangedSelection-class.R
 	read.Mask.R
+	findOverlaps-methods.R
 	intra-range-methods.R
 	inter-range-methods.R
 	reverse-methods.R
 	coverage-methods.R
 	slice-methods.R
 	setops-methods.R
-	findOverlaps-methods.R
 	nearest-methods.R
 	cbind-Rle-methods.R
 	tile-methods.R
-	mapCoords-methods.R
 	subsetting-internals.R
-	test_IRanges_package.R
-	debug.R
 	zzz.R

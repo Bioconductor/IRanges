@@ -344,7 +344,7 @@
   vectors).
 }
 
-\author{H. Pages}
+\author{Hervé Pagès}
 
 \seealso{
   \link{IntegerList-class},

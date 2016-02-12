@@ -109,7 +109,7 @@
   }
 }
 
-\author{H. Pages}
+\author{Hervé Pagès}
 
 \seealso{
   \link{Ranges-class},

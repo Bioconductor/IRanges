@@ -137,7 +137,7 @@ NCLists(x, circle.length=NA_integer_)
   for the \code{NCLists} constructor.
 }
 
-\author{H. Pages}
+\author{Hervé Pagès}
 
 \references{
   Alexander V. Alekseyenko and Christopher J. Lee --

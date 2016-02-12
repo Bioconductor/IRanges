@@ -85,7 +85,7 @@ asNormalIRanges(x, force=TRUE)
   \code{as(x, "NormalIRanges")} is equivalent to \code{asNormalIRanges(x, force=TRUE)}.
 }
 
-\author{H. Pages}
+\author{Hervé Pagès}
 
 \seealso{
   \link{Ranges-class},

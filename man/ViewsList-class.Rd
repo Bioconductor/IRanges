@@ -38,7 +38,7 @@
   vectorized over the elements and generally return lists.
 }
 
-\author{P. Aboyoun and H. Pages}
+\author{P. Aboyoun and H. Pagès}
 
 \seealso{
   \link{List-class},

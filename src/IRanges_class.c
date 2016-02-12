@@ -1,23 +1,9 @@
 /****************************************************************************
  *                Low-level manipulation of IRanges objects                 *
- *                           Author: Herve Pages                            *
+ *                            Author: H. Pag\`es                            *
  ****************************************************************************/
 #include "IRanges.h"
 #include "S4Vectors_interface.h"
-
-static int debug = 0;
-
-SEXP debug_IRanges_class()
-{
-#ifdef DEBUG_IRANGES
-	debug = !debug;
-	Rprintf("Debug mode turned %s in file %s\n",
-		debug ? "on" : "off", __FILE__);
-#else
-	Rprintf("Debug mode not available in file %s\n", __FILE__);
-#endif
-	return R_NilValue;
-}
 
 
 /****************************************************************************

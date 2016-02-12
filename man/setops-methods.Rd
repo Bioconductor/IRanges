@@ -95,7 +95,7 @@
   changed using the \code{resolve.empty} argument.
 }
 
-\author{H. Pages and M. Lawrence}
+\author{H. Pagès and M. Lawrence}
 
 \seealso{
   \code{pintersect} is similar to \code{\link{narrow}}, except the

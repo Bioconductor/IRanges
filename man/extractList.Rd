@@ -133,9 +133,7 @@ extractList(x, i)
   the exact class of the returned object.
 }
 
-\author{
-  H. Pages
-}
+\author{Hervé Pagès}
 
 \seealso{
   \itemize{

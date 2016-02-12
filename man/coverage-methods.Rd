@@ -143,7 +143,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
   \code{as.list} and recycling, like described previously).
 }
 
-\author{H. Pages and P. Aboyoun}
+\author{H. Pagès and P. Aboyoun}
 
 \seealso{
   \itemize{

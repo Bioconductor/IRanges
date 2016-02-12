@@ -112,12 +112,12 @@ mergeByOverlaps(query, subject, ...)
     computed between the pairs as described below.
 
     If \code{subject} is omitted, \code{query} is queried against
-    itself. In this case, and only this case, the \code{ignoreSelf}
-    and \code{ignoreRedundant} arguments are allowed. By default,
+    itself. In this case, and only this case, the \code{drop.self}
+    and \code{drop.redundant} arguments are allowed. By default,
     the result will contain hits for each range against itself, and if
     there is a hit from A to B, there is also a hit for B to A. If
-    \code{ignoreSelf} is \code{TRUE}, all self matches are dropped. If
-    \code{ignoreRedundant} is \code{TRUE}, only one of A->B and B->A
+    \code{drop.self} is \code{TRUE}, all self matches are dropped. If
+    \code{drop.redundant} is \code{TRUE}, only one of A->B and B->A
     is returned.
   }
   \item{maxgap, minoverlap}{
@@ -173,8 +173,8 @@ mergeByOverlaps(query, subject, ...)
             \link{RangesList}, \link{ViewsList}, or \link{RangedData} object.
             \code{FALSE} by default. See \code{select} argument above for the
             details.
-      \item \code{ignoreSelf}, \code{ignoreRedundant}: When \code{subject}
-            is omitted, the \code{ignoreSelf} and \code{ignoreRedundant}
+      \item \code{drop.self}, \code{drop.redundant}: When \code{subject}
+            is omitted, the \code{drop.self} and \code{drop.redundant}
             arguments (both \code{FALSE} by default) are allowed.
             See \code{query} and \code{subject} arguments above for the
             details.
@@ -247,7 +247,7 @@ mergeByOverlaps(query, subject, ...)
   Communications of the ACM. 26/11/1983. ACM Press. S. 832-843, ISSN 0001-0782
 }
 
-\author{Michael Lawrence and H. Pages}
+\author{Michael Lawrence and Hervé Pagès}
 
 \seealso{
   \itemize{

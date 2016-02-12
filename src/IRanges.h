@@ -1,8 +1,6 @@
 #include "../inst/include/IRanges_defines.h"
 #include <string.h>
 
-#define DEBUG_IRANGES 1
-
 #define INIT_STATIC_SYMBOL(NAME) \
 { \
 	if (NAME ## _symbol == NULL) \
@@ -41,8 +39,6 @@ SEXP Ranges_pcompare(
 
 
 /* IRanges_class.c */
-
-SEXP debug_IRanges_class();
 
 SEXP _get_IRanges_start(SEXP x);
 
@@ -142,8 +138,6 @@ SEXP solve_user_SEW(
 
 
 /* Grouping_class.c */
-
-SEXP debug_Grouping_class();
 
 SEXP _get_H2LGrouping_high2low(SEXP x);
 
@@ -295,8 +289,6 @@ SEXP _new_RangedData(
 
 
 /* inter_range_methods.c */
-
-SEXP debug_inter_range_methods();
 
 SEXP IRanges_range(SEXP x);
 

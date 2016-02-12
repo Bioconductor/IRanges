@@ -1,6 +1,6 @@
 /****************************************************************************
  *                         Fast inter-range methods                         *
- *                           Author: Herve Pages                            *
+ *                            Author: H. Pag\`es                            *
  ****************************************************************************/
 #include "IRanges.h"
 #include "S4Vectors_interface.h"
@@ -8,20 +8,6 @@
 #include <limits.h>
 
 #define R_INT_MIN	(1+INT_MIN)
-
-static int debug = 0;
-
-SEXP debug_inter_range_methods()
-{
-#ifdef DEBUG_IRANGES
-	debug = !debug;
-	Rprintf("Debug mode turned %s in file %s\n",
-		debug ? "on" : "off", __FILE__);
-#else
-	Rprintf("Debug mode not available in file %s\n", __FILE__);
-#endif
-	return R_NilValue;
-}
 
 
 /****************************************************************************

@@ -141,7 +141,7 @@ solveUserSEW(refwidths, start=NA, end=NA, width=NA,
   }
 }
 
-\author{H. Pages}
+\author{Hervé Pagès}
 
 \seealso{
   \link{IRanges-class},

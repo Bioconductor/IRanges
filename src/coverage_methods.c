@@ -3,7 +3,7 @@
  *               Weighted coverage of a set of integer ranges               *
  *               --------------------------------------------               *
  *                                                                          *
- *                 Authors: Herve Pages and Patrick Aboyoun                 *
+ *                    Authors: H. Pag\`es and P. Aboyoun                    *
  *            Code for "sort" method based on timing enhancements           *
  *                  by Charles C. Berry <ccberry@ucsd.edu>                  *
  *                                                                          *
