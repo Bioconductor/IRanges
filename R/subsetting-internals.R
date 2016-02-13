@@ -25,6 +25,7 @@ setMethod("NSBS", "Ranges",
     {
         i_len <- length(i)
         if (i_len == 0L) {
+            ## Return a NativeNSBS object of length 0.
             i <- NULL
             return(callGeneric())
         }
@@ -59,22 +60,26 @@ setMethod("isStrictlySorted", "RangesNSBS", function(x) isNormal(x@subscript))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### "extractROWS" methods for vectorORfactor objects.
+### "extractROWS" methods for subsetting *by* a Ranges object.
 ###
 
 setMethod("extractROWS", c("vectorORfactor", "RangesNSBS"),
     function(x, i)
     {
-        i <- i@subscript
-        callGeneric()
+        start <- start(i@subscript)
+        width <- width(i@subscript)
+        S4Vectors:::extract_ranges_from_vectorORfactor(x, start, width)
     }
 )
-setMethod("extractROWS", c("vectorORfactor", "Ranges"),
-    function(x, i)
-        S4Vectors:::extract_ranges_from_vectorORfactor(x, start(i), width(i))
-)
 
-setMethod("extractROWS", c("matrix", "Ranges"),
-    S4Vectors:::extractROWSWithBracket
+setMethod("extractROWS", c("Rle", "RangesNSBS"),
+    function(x, i)
+    {
+        start <- start(i@subscript)
+        width <- width(i@subscript)
+        ans <- S4Vectors:::extract_ranges_from_Rle(x, start, width)
+        mcols(ans) <- extractROWS(mcols(x), i)
+        ans
+    }
 )
 
