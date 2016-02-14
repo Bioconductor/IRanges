@@ -250,10 +250,10 @@ splitAsList_default <- function(x, f, drop=FALSE)
     
     if (is.integer(f))
         return(.splitAsList_by_integer(x, f, drop))
-    if (is.vector(f) && is.atomic(f))
+    if (!is(f, "Rle")) {
         f <- as.factor(f)
-    if (is.factor(f))
         return(.splitAsList_by_factor(x, f, drop))
+    }
     ## From now on, 'f' is guaranteed to be an Rle.
     f_vals <- runValue(f)
     if (!((is.vector(f_vals) && is.atomic(f_vals)) || is.factor(f_vals)))
@@ -354,3 +354,24 @@ regroupBySupergroup <- function(x, supergroups)
     relist(unlist(x, use.names=FALSE), ans_partitioning)
 }
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### resplit() and regroup()
+###
+### Similar to regroupBySupergroup() but there is no assumption that
+### the new grouping is a super-grouping of the current grouping. For
+### resplit(), the grouping is expressed as a factor, although it is
+### effectively a synonym of regroup(), since the latter coerces the
+### input to a Grouping.
+###
+
+resplit <- function(x, f) {
+    regroup(x, f)
+}
+
+regroup <- function(x, g) {
+    g <- as(g, "Grouping")
+    ends <- end(PartitioningByEnd(g))
+    ix <- unlist(g, use.names=FALSE)
+    p <- PartitioningByEnd(end(PartitioningByEnd(x))[ix][ends])
+    relist(unlist(x[ix], use.names=FALSE), p)
+}
