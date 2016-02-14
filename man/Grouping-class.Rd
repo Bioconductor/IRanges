@@ -94,6 +94,14 @@
 \alias{mapOrder,PartitioningMap-method}
 \alias{show,PartitioningMap-method}
 
+\alias{class:SimpleGrouping}
+\alias{SimpleGrouping-class}
+\alias{SimpleGrouping}
+
+\alias{class:SimpleManyToOneGrouping}
+\alias{SimpleManyToOneGrouping-class}
+\alias{SimpleManyToOneGrouping}
+
 \title{Grouping objects}
 
 \description{
@@ -233,7 +241,8 @@
   one.
 }
 
-\section{2 ManyToOneGrouping concrete subclasses: H2LGrouping and Dups}{
+\section{2 ManyToOneGrouping concrete subclasses: H2LGrouping, Dups and
+  SimpleManyToOneGrouping}{
   [DOCUMENT ME]
 
   Constructors:
@@ -245,6 +254,13 @@
     \item{}{
       \code{Dups(high2low=integer())}:
       [DOCUMENT ME]
+    }
+    \item{}{
+      \code{SimpleManyToOneGrouping(x)}: Cast \code{x} to a
+      \code{Grouping}, where \code{x} is an integer list with a
+      structure analogous to that of \code{Grouping} itself: each
+      element represents a group in terms of the subscripts of the
+      members.
     }
   }
 }

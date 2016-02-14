@@ -46,7 +46,8 @@ exportClasses(
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
     RangedData, RangedDataList, RDApplyParams,
     CompressedHitsList, 
-    RangedSelection
+    RangedSelection,
+    SimpleGrouping, SimpleManyToOneGrouping
 )
 
 
@@ -182,7 +183,8 @@ export(
     successiveViews, slidingViews,
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList, FactorList, 
-    DataFrameList, SplitDataFrameList
+    DataFrameList, SplitDataFrameList,
+    SimpleManyToOneGrouping
 )
 
 
