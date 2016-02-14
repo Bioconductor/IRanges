@@ -303,6 +303,42 @@ setMethod("findOverlaps", c("RangesList", "RangedData"),
                          drop = drop)
           })
 
+setMethod("findOverlaps", c("Pairs", "missing"),
+          function (query, subject, maxgap = 0L,
+                    minoverlap = 1L,
+                    type = c("any",  "start", "end", "within", "equal"),
+                    select = c("all", "first", "last", "arbitrary"), ...) {
+              findOverlaps(zipup(query), maxgap=maxgap,
+                           minoverlap=minoverlap, type=type, select=select, ...)
+          })
+
+setMethod("findOverlaps", c("Pairs", "ANY"),
+          function (query, subject, maxgap = 0L,
+                    minoverlap = 1L,
+                    type = c("any",  "start", "end", "within", "equal"),
+                    select = c("all", "first", "last", "arbitrary"), ...) {
+              findOverlaps(zipup(query), subject, maxgap=maxgap,
+                           minoverlap=minoverlap, type=type, select=select, ...)
+          })
+
+setMethod("findOverlaps", c("ANY", "Pairs"),
+          function (query, subject, maxgap = 0L,
+                    minoverlap = 1L,
+                    type = c("any",  "start", "end", "within", "equal"),
+                    select = c("all", "first", "last", "arbitrary"), ...) {
+              findOverlaps(query, zipup(subject), maxgap=maxgap,
+                           minoverlap=minoverlap, type=type, select=select, ...)
+          })
+
+setMethod("findOverlaps", c("Pairs", "Pairs"),
+          function (query, subject, maxgap = 0L,
+                    minoverlap = 1L,
+                    type = c("any",  "start", "end", "within", "equal"),
+                    select = c("all", "first", "last", "arbitrary"), ...) {
+              findOverlaps(zipup(query), zipup(subject),
+                           maxgap=maxgap, minoverlap=minoverlap, type=type,
+                           select=select, ...)
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### countOverlaps()
@@ -734,3 +770,11 @@ setMethod("ranges", "HitsList", function(x, query, subject) {
   ans
 })
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Convenience for dereferencing overlap hits to a Pairs
+###
+
+findOverlapPairs <- function(query, subject, ...) {
+    hits <- findOverlaps(query, subject, ...)
+    Pairs(query, subject, hits=hits)
+}

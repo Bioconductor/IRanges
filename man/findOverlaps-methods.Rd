@@ -16,6 +16,10 @@
 \alias{findOverlaps,RangedData,RangedData-method}
 \alias{findOverlaps,RangedData,RangesList-method}
 \alias{findOverlaps,RangesList,RangedData-method}
+\alias{findOverlaps,Pairs,missing-method}
+\alias{findOverlaps,Pairs,ANY-method}
+\alias{findOverlaps,ANY,Pairs-method}
+\alias{findOverlaps,Pairs,Pairs-method}
 
 \alias{countOverlaps}
 \alias{countOverlaps,Ranges,Ranges-method}
@@ -55,6 +59,7 @@
 \alias{ranges,Hits-method}
 \alias{ranges,HitsList-method}
 
+\alias{findOverlapPairs}
 
 \title{Finding overlapping ranges}
 
@@ -92,6 +97,7 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
                  ...)
 
 mergeByOverlaps(query, subject, ...)
+findOverlapPairs(query, subject, ...)
 
 \S4method{ranges}{Hits}(x, query, subject)
 \S4method{ranges}{HitsList}(x, query, subject)
@@ -229,6 +235,11 @@ mergeByOverlaps(query, subject, ...)
   subject columns are named by quoting and deparsing the corresponding
   argument.
 
+  \code{findOverlapPairs} is like \code{mergeByOverlaps}, except it
+  returns a formal \code{\link[S4Vectors:Pairs-class]{Pairs}} object
+  that provides useful downstream conveniences, such as finding the
+  intersection of the overlapping ranges with \code{\link{pintersect}}.
+
   When \code{x} is a \link[S4Vectors]{Hits} (or \link[S4Vectors]{HitsList})
   object, \code{ranges(x, query, subject)} returns a \link{Ranges}
   (or \link{RangesList}) object of the \emph{same shape} as \code{x}
@@ -311,6 +322,15 @@ findOverlaps(query, subject, type="start", maxgap=1L)
 findOverlaps(query, subject, type="end", select="first")
 ov <- findOverlaps(query, subject, type="within", maxgap=1L)
 ov
+
+## Using pairs to find intersection of overlapping ranges
+hits <- findOverlaps(query, subject)
+p <- Pairs(query, subject, hits=hits)
+pintersect(p)
+
+## Shortcut
+p <- findOverlapPairs(query, subject)
+pintersect(p)
 
 ## ---------------------------------------------------------------------
 ## overlapsAny()

@@ -157,6 +157,9 @@ setMethod("punion", c("Ranges", "Ranges"),
     }
 )
 
+setMethod("punion", c("Pairs", "missing"), function(x, y, ...) {
+              punion(first(x), last(x), ...)
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### pintersect()
@@ -217,6 +220,9 @@ setMethod("pintersect", c("Ranges", "Ranges"),
     }
 )
 
+setMethod("pintersect", c("Pairs", "missing"), function(x, y, ...) {
+              pintersect(first(x), last(x), ...)
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### psetdiff()
@@ -252,6 +258,9 @@ setMethod("psetdiff", c("Ranges", "Ranges"),
     }
 )
 
+setMethod("psetdiff", c("Pairs", "missing"), function(x, y, ...) {
+              psetdiff(first(x), last(x), ...)
+          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### pgap()

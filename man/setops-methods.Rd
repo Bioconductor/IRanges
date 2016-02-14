@@ -16,10 +16,13 @@
 
 \alias{punion}
 \alias{punion,Ranges,Ranges-method}
+\alias{punion,Pairs,missing-method}
 \alias{pintersect}
 \alias{pintersect,Ranges,Ranges-method}
+\alias{pintersect,Pairs,missing-method}
 \alias{psetdiff}
 \alias{psetdiff,Ranges,Ranges-method}
+\alias{psetdiff,Pairs,missing-method}
 \alias{pgap}
 \alias{pgap,Ranges,Ranges-method}
 
@@ -37,14 +40,17 @@
 
 ## Element-wise (aka "parallel") operations:
 \S4method{punion}{Ranges,Ranges}(x, y, fill.gap=FALSE, ...)
+\S4method{punion}{Pairs,missing}(x, y, ...)
 \S4method{pintersect}{Ranges,Ranges}(x, y, resolve.empty=c("none", "max.start", "start.x"), ...)
+\S4method{pintersect}{Pairs,missing}(x, y, ...)
 \S4method{psetdiff}{Ranges,Ranges}(x, y, ...)
+\S4method{psetdiff}{Pairs,missing}(x, y, ...)
 \S4method{pgap}{Ranges,Ranges}(x, y, ...)
 }
 
 \arguments{
   \item{x, y}{
-    \link{IRanges} objects.
+    Objects representing ranges.
   }
   \item{fill.gap}{
     Logical indicating whether or not to force a union by using the rule
@@ -80,7 +86,10 @@
   of ranges) and they return an \link{IRanges} instance of the
   same length as \code{x} and \code{y} where each range represents
   the union/intersection/difference/gap of/between the corresponding
-  ranges in \code{x} and \code{y}.
+  ranges in \code{x} and \code{y}. If \code{x} is a
+  \code{\link[S4Vectors:Pairs-class]{Pairs}} object, then \code{y}
+  should be missing, and the operation is performed between the members
+  of each pair.
 
   By default, \code{pintersect} will throw an error when an "ambiguous
   empty range" is formed. An ambiguous empty range can occur three
