@@ -47,7 +47,8 @@ exportClasses(
     RangedData, RangedDataList, RDApplyParams,
     CompressedHitsList, 
     RangedSelection,
-    SimpleGrouping, SimpleManyToOneGrouping
+    ListGrouping, SimpleGrouping,
+    ListManyToOneGrouping, SimpleManyToOneGrouping
 )
 
 

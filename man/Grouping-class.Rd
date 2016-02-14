@@ -94,9 +94,15 @@
 \alias{mapOrder,PartitioningMap-method}
 \alias{show,PartitioningMap-method}
 
+\alias{class:ListGrouping}
+\alias{ListGrouping-class}
+
 \alias{class:SimpleGrouping}
 \alias{SimpleGrouping-class}
 \alias{SimpleGrouping}
+
+\alias{class:ListManyToOneGrouping}
+\alias{ListManyToOneGrouping-class}
 
 \alias{class:SimpleManyToOneGrouping}
 \alias{SimpleManyToOneGrouping-class}
