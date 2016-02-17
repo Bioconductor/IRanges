@@ -1,31 +1,18 @@
 ### =========================================================================
-### ListGrouping objects
+### Grouping objects implemented with an IntegerList
 ### -------------------------------------------------------------------------
-###
-### Groupings implemented with a List
-###
-
-setClass("ListGrouping", contains="Grouping")
-
-setClass("ListManyToOneGrouping",
-         contains=c("ListGrouping", "ManyToOneGrouping"))
-
-### -------------------------------------------------------------------------
-### Simple(ManyToOne)Grouping and Compressed(ManyToOne)Grouping
-### ----------------------------
-###
 
 setClass("SimpleGrouping",
-         contains=c("ListGrouping", "SimpleIntegerList"))
+         contains=c("Grouping", "SimpleIntegerList"))
 
 setClass("CompressedGrouping",
-         contains=c("ListGrouping", "CompressedIntegerList"))
+         contains=c("Grouping", "CompressedIntegerList"))
 
 setClass("SimpleManyToOneGrouping",
-         contains=c("ListManyToOneGrouping", "SimpleGrouping"))
+         contains=c("ManyToOneGrouping", "SimpleGrouping"))
 
 setClass("CompressedManyToOneGrouping",
-         contains=c("ListManyToOneGrouping", "CompressedGrouping"))
+         contains=c("ManyToOneGrouping", "CompressedGrouping"))
 
 ### -------------------------------------------------------------------------
 ### Grouping API implementation
@@ -38,7 +25,8 @@ setMethod("grouplength", "CompressedGrouping",
 setMethod("nobj", "CompressedManyToOneGrouping",
           function(x) nobj(PartitioningByEnd(x)))
 
-setMethod("togroup", "ListGrouping",
+setMethods("togroup",
+           list("SimpleGrouping", "CompressedGrouping"),
            function(x, j=NULL) {
                g <- callNextMethod(x)
                ans <- unlist(x, use.names=FALSE)
