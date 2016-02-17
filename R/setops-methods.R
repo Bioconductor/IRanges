@@ -57,7 +57,8 @@ setMethod("union", c("CompressedIRangesList", "CompressedIRangesList"),
             if (length(y) != len)
               y <- y[S4Vectors:::recycleVector(seq_len(length(y)), len)]
             xy <- c(unlist(x, use.names = FALSE), unlist(y, use.names = FALSE))
-            xy_list <- split(xy, factor(c(togroup(x), togroup(y)),
+            xy_list <- split(xy, factor(c(togroup(PartitioningByWidth(x)),
+                                          togroup(PartitioningByWidth(y))),
                                         seq_len(length(x))))
             names(xy_list) <- names(x)
             reduce(xy_list, drop.empty.ranges=TRUE)

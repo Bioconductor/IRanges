@@ -480,7 +480,8 @@ rowsumCompressedList <- function(x, ..., na.rm = FALSE) {
   non_empty <- elementNROWS(x) > 0
   if (is.logical(x_flat))
     x_flat <- as.integer(x_flat)
-  ans[non_empty] <- rowsum(x_flat, togroup(x), reorder = FALSE,
+  ans[non_empty] <- rowsum(x_flat, togroup(PartitioningByWidth(x)),
+                           reorder = FALSE,
                            na.rm = na.rm)[,1]
   setNames(ans, names(x))
 }
@@ -542,7 +543,7 @@ setMethod("all", "CompressedRleList", function(x, ..., na.rm = FALSE) {
   rv_eltNROWS <- elementNROWS(rv)
   ans <- rv_eltNROWS == 0L
   singletons <- rv_eltNROWS == 1L
-  ans[singletons] <- unlist(rv, use.names = FALSE)[singletons[togroup(rv)]]
+  ans[singletons] <- unlist(rv, use.names = FALSE)[singletons[togroup(PartitioningByWidth(rv))]]
   ans
 })
 
@@ -701,7 +702,7 @@ setMethod("table", "AtomicList",
             stop("\"table\" method for AtomicList objects ",
                  "can only take one input object")
         x <- args[[1L]]
-        y1 <- togroup(x)
+        y1 <- togroup(PartitioningByWidth(x))
         attributes(y1) <- list(levels=as.character(seq_along(x)),
                                class="factor")
         y2 <- as.factor(unlist(x, use.names=FALSE))

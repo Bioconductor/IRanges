@@ -25,18 +25,6 @@ setMethod("grouplength", "CompressedGrouping",
 setMethod("nobj", "CompressedManyToOneGrouping",
           function(x) nobj(PartitioningByEnd(x)))
 
-setMethods("togroup",
-           list("SimpleGrouping", "CompressedGrouping"),
-           function(x, j=NULL) {
-               g <- callNextMethod(x)
-               ans <- unlist(x, use.names=FALSE)
-               ans[ans] <- g
-               if (!is.null(j)) {
-                   ans <- ans[j]
-               }
-               ans
-           })
-
 ### -------------------------------------------------------------------------
 ### Constructors
 ### ----------------------------

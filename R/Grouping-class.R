@@ -109,23 +109,29 @@ setGeneric("togroup", signature="x",
     function(x, j=NULL) standardGeneric("togroup")
 )
 
-### The default method works on any object 'x' for which 'elementNROWS(x)'
-### works (e.g. Partitioning, List, list). Not very efficient.
-setMethod("togroup", "ANY",
+.subset_togroup_by_integer <- function(x_togroup, j=NULL)
+{
+    if (is.null(j))
+        return(x_togroup)
+    if (!is.numeric(j))
+        stop(wmsg("subscript 'j' must be NULL or an integer vector"))
+    if (!is.integer(j))
+        j <- as.integer(j)
+    x_nobj <- length(x_togroup)
+    if (S4Vectors:::anyMissingOrOutside(j, -x_nobj, x_nobj))
+        stop(wmsg("subscript 'j' contains NAs or out of bounds indices"))
+    x_togroup[j]
+}
+
+### Works on any ManyToOneGrouping object 'x' for which unlist() and
+### elementNROWS() work.
+setMethod("togroup", "ManyToOneGrouping",
     function(x, j=NULL)
     {
+        x_togroup <- unlist(x, use.names=FALSE)
         x_eltNROWS <- elementNROWS(x)
-        to_group <- rep.int(seq_len(length(x_eltNROWS)), x_eltNROWS)
-        if (is.null(j))
-            return(to_group)
-        if (!is.numeric(j))
-            stop(wmsg("subscript 'j' must be a vector of integers or NULL"))
-        if (!is.integer(j))
-            j <- as.integer(j)
-        bound <- length(to_group)
-        if (S4Vectors:::anyMissingOrOutside(j, -bound, bound))
-            stop(wmsg("subscript 'j' contains NAs or out of bounds indices"))
-        to_group[j]
+        x_togroup[x_togroup] <- rep.int(seq_along(x_eltNROWS), x_eltNROWS)
+        .subset_togroup_by_integer(x_togroup, j)
     }
 )
 
@@ -211,8 +217,8 @@ setMethod("grouplength", "H2LGrouping",
             stop(wmsg("subscript 'i' must be a vector of integers or NULL"))
         if (!is.integer(i))
             i <- as.integer(i)
-        bound <- length(group_length)
-        if (S4Vectors:::anyMissingOrOutside(i, -bound, bound))
+        x_len <- length(group_length)
+        if (S4Vectors:::anyMissingOrOutside(i, -x_len, x_len))
             stop(wmsg("subscript 'i' contains NAs or out of bounds indices"))
         group_length[i]
     }
@@ -242,18 +248,9 @@ setMethod("vmembers", "H2LGrouping",
 setMethod("togroup", "H2LGrouping",
     function(x, j=NULL)
     {
-        to_group <- x@high2low
-        to_group[is.na(to_group)] <- which(is.na(to_group))
-        if (is.null(j))
-            return(to_group)
-        if (!is.numeric(j))
-            stop(wmsg("subscript 'j' must be a vector of integers or NULL"))
-        if (!is.integer(j))
-            j <- as.integer(j)
-        bound <- length(to_group)
-        if (S4Vectors:::anyMissingOrOutside(j, -bound, bound))
-            stop(wmsg("subscript 'j' contains NAs or out of bounds indices"))
-        to_group[j]
+        x_togroup <- x@high2low
+        x_togroup[is.na(x_togroup)] <- which(is.na(x_togroup))
+        .subset_togroup_by_integer(x_togroup, j)
     }
 )
 
@@ -526,8 +523,19 @@ setMethod("getListElement", "Partitioning",
     }
 )
 
-### Should be more efficient than the default method for ManyToOneGrouping
-### objects.
+### Overwrite method for ManyToOneGrouping objects with optimized method for
+### Partitioning objects.
+setMethod("togroup", "Partitioning",
+    function(x, j=NULL)
+    {
+        x_width <- width(x)
+        x_togroup <- rep.int(seq_along(x_width), x_width)
+        .subset_togroup_by_integer(x_togroup, j)
+    }
+)
+
+### Overwrite method for ManyToOneGrouping objects with optimized method for
+### Partitioning objects.
 setMethod("grouplength", "Partitioning",
     function(x, i=NULL)
     {
@@ -538,8 +546,8 @@ setMethod("grouplength", "Partitioning",
             stop(wmsg("subscript 'i' must be a vector of integers or NULL"))
         if (!is.integer(i))
             i <- as.integer(i)
-        bound <- length(x_width)
-        if (S4Vectors:::anyMissingOrOutside(i, -bound, bound))
+        x_len <- length(x_width)
+        if (S4Vectors:::anyMissingOrOutside(i, -x_len, x_len))
             stop(wmsg("subscript 'i' contains NAs or out of bounds indices"))
         x_width[i]
     }
@@ -974,4 +982,22 @@ findOverlaps_Ranges_Partitioning <- function(query, subject,
 
     ## Make and return Hits object.
     Hits(q_hits, s_hits, q_len, s_len)
-}   
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Old stuff (deprecated & defunct)
+###
+
+setMethod("togroup", "ANY",
+    function(x, j=NULL)
+    {
+        msg <- wmsg(
+            "Using togroup() on a ", class(x), " object is deprecated. ",
+            "Please use togroup(PartitioningByWidth(...)) instead."
+        )
+        .Deprecated(msg=msg)
+        togroup(PartitioningByWidth(x), j=j)
+    }
+)
+ 

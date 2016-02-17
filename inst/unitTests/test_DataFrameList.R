@@ -105,8 +105,8 @@ test_SplitDataFrameList_subset <- function() {
 test_SplitDataFrameList_as_data.frame <- function() {
     checkDFL2dfl <- function(DFL, dfl, compress) {
         df <- 
-          data.frame(group = togroup(dfl), 
-                     group_name = names(dfl)[togroup(dfl)],
+          data.frame(group = togroup(PartitioningByWidth(dfl)),
+                     group_name = names(dfl)[togroup(PartitioningByWidth(dfl))],
                      do.call(rbind, dfl),
                      stringsAsFactors=FALSE, row.names=NULL)
         if (compress)

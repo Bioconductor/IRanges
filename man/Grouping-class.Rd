@@ -1,7 +1,7 @@
 \name{Grouping-class}
 \docType{class}
 
-% Grouping objects:
+% Grouping objects
 \alias{class:Grouping}
 \alias{Grouping-class}
 \alias{Grouping}
@@ -11,7 +11,7 @@
 \alias{grouplength,Grouping-method}
 \alias{show,Grouping-method}
 
-% ManyToOneGrouping objects:
+% ManyToOneGrouping objects
 \alias{class:ManyToOneGrouping}
 \alias{ManyToOneGrouping-class}
 \alias{ManyToOneGrouping}
@@ -21,11 +21,11 @@
 \alias{vmembers}
 \alias{vmembers,ManyToOneGrouping-method}
 \alias{togroup}
-\alias{togroup,ANY-method}
+\alias{togroup,ManyToOneGrouping-method}
 \alias{togrouplength}
 \alias{togrouplength,ManyToOneGrouping-method}
 
-% H2LGrouping and Dups objects:
+% H2LGrouping and Dups objects
 \alias{class:H2LGrouping}
 \alias{H2LGrouping-class}
 \alias{H2LGrouping}
@@ -55,11 +55,12 @@
 \alias{duplicated,Dups-method}
 \alias{show,Dups-method}
 
-% Partitioning objects:
+% Partitioning objects
 \alias{class:Partitioning}
 \alias{Partitioning-class}
 \alias{Partitioning}
 
+\alias{togroup,Partitioning-method}
 \alias{grouplength,Partitioning-method}
 \alias{names,Partitioning-method}
 \alias{names<-,Partitioning-method}
@@ -86,6 +87,7 @@
 \alias{start,PartitioningByWidth-method}
 \alias{coerce,Ranges,PartitioningByWidth-method}
 
+% PartitioningMap objects
 \alias{class:PartitioningMap}
 \alias{PartitioningMap-class}
 \alias{PartitioningMap}
@@ -94,6 +96,7 @@
 \alias{mapOrder,PartitioningMap-method}
 \alias{show,PartitioningMap-method}
 
+% SimpleGrouping & CompressedGrouping objects
 \alias{class:SimpleGrouping}
 \alias{SimpleGrouping-class}
 \alias{SimpleGrouping}
@@ -101,6 +104,9 @@
 \alias{class:SimpleManyToOneGrouping}
 \alias{SimpleManyToOneGrouping-class}
 \alias{SimpleManyToOneGrouping}
+
+% old stuff (deprecated & defunct)
+\alias{togroup,ANY-method}
 
 \title{Grouping objects}
 

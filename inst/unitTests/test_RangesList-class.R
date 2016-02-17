@@ -53,11 +53,12 @@ test_RangesList_as_data_frame <- function() {
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   rl <- RangesList(range1, range2)
-  df <- data.frame(group=togroup(rl), group_name=NA_character_,
+  df <- data.frame(group=togroup(PartitioningByWidth(rl)),
+                   group_name=NA_character_,
                    as.data.frame(c(range1,range2)), stringsAsFactors=FALSE)
   checkIdentical(df, as.data.frame(rl))
   names(rl) <- c("a", "b")
-  df$group_name <- c("a", "b")[togroup(rl)] 
+  df$group_name <- c("a", "b")[togroup(PartitioningByWidth(rl))] 
   checkIdentical(df, as.data.frame(rl))
 }
 
