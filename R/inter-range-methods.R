@@ -20,8 +20,8 @@
 ### range()
 ###
 
-### Always return an IRanges instance (whatever Ranges derivative 'x' is),
-### so is NOT an endomorphism. 
+### Always return an IRanges (or NormalIRanges) *instance* whatever Ranges
+### derivative the input is, so does NOT act like an endomorphism in general. 
 setMethod("range", "Ranges",
     function(x, ..., na.rm=FALSE)
     {
@@ -34,9 +34,12 @@ setMethod("range", "Ranges",
         ## when ranges() works on Ranges objects.
         args <- lapply(args,
                        function(arg) IRanges(start(arg), width=width(arg)))
-        x <- do.call(c, args)
+        ir <- do.call(c, args)
 
-        .Call2("IRanges_range", x, PACKAGE="IRanges")
+        ans <- .Call2("IRanges_range", ir, PACKAGE="IRanges")
+        if (is(x, "NormalIRanges"))
+            ans <- as(ans, "NormalIRanges")
+        ans
     }
 )
 
@@ -101,8 +104,8 @@ setGeneric("reduce", signature="x",
     function(x, ...) standardGeneric("reduce")
 )
 
-### Always return an IRanges instance (whatever Ranges derivative 'x' is),
-### so is NOT an endomorphism. 
+### Always return an IRanges (or NormalIRanges) *instance* whatever Ranges
+### derivative the input is, so does NOT act like an endomorphism in general. 
 setMethod("reduce", "Ranges",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
                 with.revmap=FALSE,
@@ -129,6 +132,8 @@ setMethod("reduce", "Ranges",
         ans <- new2("IRanges", start=C_ans$start,
                                width=C_ans$width,
                                check=FALSE)
+        if (is(x, "NormalIRanges"))
+            ans <- as(ans, "NormalIRanges")
         if (with.revmap) {
             revmap <- IntegerList(C_ans$revmap)
             mcols(ans) <- DataFrame(revmap=revmap)
@@ -275,8 +280,8 @@ setGeneric("gaps", signature="x",
     function(x, start=NA, end=NA) standardGeneric("gaps")
 )
 
-### Always return an IRanges instance (whatever Ranges derivative 'x' is),
-### so is NOT an endomorphism. 
+### Always return an IRanges (or NormalIRanges) *instance* whatever Ranges
+### derivative the input is, so does NOT act like an endomorphism in general. 
 setMethod("gaps", "Ranges",
     function(x, start=NA, end=NA)
     {
@@ -285,9 +290,12 @@ setMethod("gaps", "Ranges",
         C_ans <- .Call2("IRanges_gaps",
                         start(x), width(x), start, end,
                         PACKAGE="IRanges")
-        new2("IRanges", start=C_ans$start,
-                        width=C_ans$width,
-                        check=FALSE)
+        ans <- new2("IRanges", start=C_ans$start,
+                               width=C_ans$width,
+                               check=FALSE)
+        if (is(x, "NormalIRanges"))
+            ans <- as(ans, "NormalIRanges")
+        ans
     }
 )
 
@@ -372,8 +380,8 @@ setMethod("gaps", "MaskCollection",
 
 setGeneric("disjoin", function(x, ...) standardGeneric("disjoin"))
 
-### Always return an IRanges instance (whatever Ranges derivative 'x' is),
-### so is NOT an endomorphism. 
+### Always return an IRanges *instance* whatever Ranges derivative the input
+### is, so does NOT act like an endomorphism in general. 
 setMethod("disjoin", "Ranges",
     function(x)
     {
@@ -390,6 +398,11 @@ setMethod("disjoin", "Ranges",
         subsetByOverlaps(adj,  x)
     }
 )
+
+### Basically a no-op but returns a NormalIRanges *instance* for consistency
+### with how the other inter-range transformations (ranges(), reduce(), gaps())
+### behave on a NormalIRanges object.
+setMethod("disjoin", "NormalIRanges", function(x) as(x, "NormalIRanges"))
 
 setMethod("disjoin", "RangesList", function(x) endoapply(x, disjoin))
 
@@ -484,6 +497,8 @@ setMethod("disjointBins", "Ranges",
         bins
     }
 )
+
+setMethod("disjointBins", "NormalIRanges", function(x) rep.int(1L, length(x)))
 
 setMethod("disjointBins", "RangesList",
     function(x) as(lapply(x, disjointBins), "IntegerList")

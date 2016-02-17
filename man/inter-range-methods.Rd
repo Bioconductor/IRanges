@@ -24,6 +24,7 @@
 
 \alias{disjoin}
 \alias{disjoin,Ranges-method}
+\alias{disjoin,NormalIRanges-method}
 \alias{disjoin,RangesList-method}
 \alias{disjoin,CompressedIRangesList-method}
 
@@ -34,6 +35,7 @@
 
 \alias{disjointBins}
 \alias{disjointBins,Ranges-method}
+\alias{disjointBins,NormalIRanges-method}
 \alias{disjointBins,RangesList-method}
 
 

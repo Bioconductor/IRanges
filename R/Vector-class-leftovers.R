@@ -9,7 +9,7 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Internal utility.
+### Internal utility
 ###
 
 setMethod("showAsCell", "list", function(object)
@@ -17,7 +17,7 @@ setMethod("showAsCell", "list", function(object)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Convenience wrappers for common subsetting operations.
+### Other subsetting-related operations
 ###
 
 ### S3/S4 combo for window<-.Vector
@@ -136,7 +136,7 @@ setMethod("mstack", "vector",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Looping methods.
+### Looping methods
 ###
 
 #.tapplyDefault <- base::tapply
