@@ -33,9 +33,6 @@ setClass("Grouping", contains="IntegerList", representation("VIRTUAL"))
 
 setGeneric("nobj", function(x) standardGeneric("nobj"))
 
-setMethod("nobj", "Grouping",
-          function(x) length(unique(unlist(x, use.names=FALSE))))
-
 setGeneric("grouplength", signature="x",
     function(x, i=NULL) standardGeneric("grouplength")
 )
