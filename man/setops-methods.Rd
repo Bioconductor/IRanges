@@ -126,21 +126,21 @@
 \author{H. Pagès and M. Lawrence}
 
 \seealso{
-  \code{pintersect} is similar to \code{\link{narrow}}, except the
-  end points are absolute, not relative. \code{pintersect} is also
-  similar to \code{\link{restrict}}, except ranges outside of the
-  restriction become empty and are not discarded.
+  \itemize{
+    \item \code{pintersect} is similar to \code{\link{narrow}}, except the
+          end points are absolute, not relative. \code{pintersect} is also
+          similar to \code{\link{restrict}}, except ranges outside of the
+          restriction become empty and are not discarded.
 
-  \link[BiocGenerics]{union},
+    \item \link[GenomicRanges]{setops-methods} in the \pkg{GenomicRanges}
+          package for set operations on genomic ranges.
 
-  \link{Ranges-class},
+    \item \link{Ranges} objects.
 
-  \link{intra-range-methods} for intra range transformations,
-
-  \link{inter-range-methods} for inter range transformations,
-
-  \link{IRanges-class},
-  \link{IRanges-utils}
+    \item \link{intra-range-methods} and
+          \link{inter-range-methods} for intra range and
+          inter range transformations.
+  }
 }
 
 \examples{
