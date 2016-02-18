@@ -141,7 +141,9 @@
           \link{inter-range-methods} for intra range and
           inter range transformations.
 
-    \item \link{Ranges} and \link{RangesList} objects.
+    \item \link{Ranges} and \link{RangesList} objects. In particular,
+          \emph{normality} of a \link{Ranges} object is discussed in
+          the man page for \link{Ranges} objects.
 
     \item \code{\link[S4Vectors]{mendoapply}} in the \pkg{S4Vectors} package.
   }

@@ -284,7 +284,8 @@
 
 \seealso{
   \itemize{
-    \item \link{IRanges} objects.
+    \item \link{IRanges} objects (\link{NormalIRanges} objects are documented
+          in the same man page).
 
     \item \link{Ranges-comparison} for comparing and ordering ranges.
 
