@@ -57,7 +57,15 @@
 \alias{show,Dups-method}
 
 % GroupingRanges objects
+\alias{class:GroupingRanges}
+\alias{GroupingRanges-class}
+\alias{GroupingRanges}
+
 \alias{grouplength,GroupingRanges-method}
+
+\alias{class:GroupingIRanges}
+\alias{GroupingIRanges-class}
+\alias{GroupingIRanges}
 
 % Partitioning objects
 \alias{class:Partitioning}
