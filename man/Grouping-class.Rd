@@ -288,7 +288,7 @@
   adjacent elements in the original collection of objects. GroupingRanges
   objects support the Ranges API (e.g. \code{\link{start}}, \code{\link{end}},
   \code{\link{width}}, etc...) in addition to the Grouping API.
-  See \code{?\llink{Ranges}} for a description of the \link{Ranges} API.
+  See \code{?\link{Ranges}} for a description of the \link{Ranges} API.
 }
 
 \section{Partitioning objects}{
