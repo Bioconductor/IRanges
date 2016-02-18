@@ -498,6 +498,7 @@ setMethod("disjointBins", "Ranges",
     }
 )
 
+### Overwrite above method with trivial method for NormalIRanges objects.
 setMethod("disjointBins", "NormalIRanges", function(x) rep.int(1L, length(x)))
 
 setMethod("disjointBins", "RangesList",
