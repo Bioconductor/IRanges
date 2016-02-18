@@ -39,8 +39,8 @@
 }
 
 \usage{
-## Vector-wise operations
-## ----------------------
+## Vector-wise set operations
+## --------------------------
 
 \S4method{union}{Ranges,Ranges}(x, y)
 
@@ -48,8 +48,8 @@
 
 \S4method{setdiff}{Ranges,Ranges}(x, y)
 
-## Element-wise (aka "parallel") operations
-## ----------------------------------------
+## Element-wise (aka "parallel") set operations
+## --------------------------------------------
 
 \S4method{punion}{Ranges,Ranges}(x, y, fill.gap=FALSE)
 \S4method{punion}{Pairs,missing}(x, y, ...)
@@ -135,11 +135,15 @@
     \item \link[GenomicRanges]{setops-methods} in the \pkg{GenomicRanges}
           package for set operations on genomic ranges.
 
-    \item \link{Ranges} objects.
+    \item \link{findOverlaps-methods} for finding/counting overlapping ranges.
 
     \item \link{intra-range-methods} and
           \link{inter-range-methods} for intra range and
           inter range transformations.
+
+    \item \link{Ranges} and \link{RangesList} objects.
+
+    \item \code{\link[S4Vectors]{mendoapply}} in the \pkg{S4Vectors} package.
   }
 }
 

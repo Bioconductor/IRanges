@@ -288,7 +288,7 @@
 
     \item \link{Ranges-comparison} for comparing and ordering ranges.
 
-    \item \link{findOverlaps-methods} for finding overlapping ranges.
+    \item \link{findOverlaps-methods} for finding/counting overlapping ranges.
 
     \item \link{intra-range-methods} and
           \link{inter-range-methods} for intra range and
