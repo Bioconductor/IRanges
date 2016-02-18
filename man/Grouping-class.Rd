@@ -144,12 +144,12 @@
   some or all the groups can be empty.
 
   The Grouping class is a virtual class that formalizes the most general
-  kind of grouping. More specific groupings (e.g. many-to-one mappings)
-  are formalized via specific Grouping subclasses.
+  kind of grouping. More specific groupings (e.g. \emph{many-to-one groupings}
+  or \emph{block-groupings}) are formalized via specific Grouping subclasses.
 
-  This man page documents the core Grouping API, and 2 important Grouping
-  subclasses: ManyToOneGrouping and Partitioning (the latter being a
-  particular case of the former).
+  This man page documents the core Grouping API, and 3 important Grouping
+  subclasses: ManyToOneGrouping, GroupingRanges, and Partitioning (the last
+  one deriving from the 2 first).
 }
 
 \section{The core Grouping API}{
@@ -204,10 +204,12 @@
 }
 
 \section{ManyToOneGrouping objects}{
-  The ManyToOneGrouping class is a virtual class for representing groupings
-  where every object belongs to one group and only one.
+  The ManyToOneGrouping class is a virtual subclass of Grouping for
+  representing \emph{many-to-one groupings}, that is, groupings where each
+  object in the original collection of objects belongs to exactly one group.
+
   The grouping of an empty collection of objects in an arbitrary number of
-  groups is a valid ManyToOneGrouping object.
+  (necessarily empty) groups is a valid ManyToOneGrouping object.
 
   Note that, for a ManyToOneGrouping object, if NG is 0 then NO must also
   be 0.
@@ -280,25 +282,25 @@
   }
 }
 
+\section{GroupingRanges objects}{
+  The GroupingRanges class is a virtual subclass of Grouping for representing
+  \emph{block-groupings}, that is, groupings where each group is a block of
+  adjacent elements in the original collection of objects. GroupingRanges
+  objects support the Ranges API (e.g. \code{\link{start}}, \code{\link{end}},
+  \code{\link{width}}, etc...) in addition to the Grouping API.
+  See \code{?\llink{Ranges}} for a description of the \link{Ranges} API.
+}
+
 \section{Partitioning objects}{
-  The Partitioning class is a virtual subclass of ManyToOneGrouping
-  for representing \emph{block-groupings} i.e. groupings where each
-  group contains objects that are neighbors in the original collection
-  of objects.
-  More formally, a grouping \code{x} is a block-grouping iff \code{togroup(x)}
-  is sorted in increasing order (not necessarily strictly increasing).
+  The Partitioning class is a virtual subclass of GroupingRanges for
+  representing \emph{block-groupings} where the blocks fully cover the
+  original collection of objects and don't overlap. Since this makes them
+  \emph{many-to-one groupings}, the Partitioning class is also a subclass
+  of ManyToOneGrouping. An additional constraint of Partitioning objects
+  is that the blocks must be ordered by ascending position with respect to
+  the original collection of objects.
 
-  A Partitioning object can also be seen (and manipulated) as a
-  \link{Ranges} object where all the ranges are adjacent starting at 1
-  (i.e. it covers the 1:NO interval with no overlap between the ranges).
-
-  Note that a Partitioning object is both: a particular type of
-  ManyToOneGrouping object and a particular type of \link{Ranges} object.
-  Therefore all the methods that are defined for ManyToOneGrouping and
-  \link{Ranges} objects can also be used on a Partitioning object.
-  See \code{?Ranges} for a description of the \link{Ranges} API.
-
-  The Partitioning virtual class has 3 concrete subclasses:
+  The Partitioning virtual class itself has 3 concrete subclasses:
   PartitioningByEnd (only stores the end of the groups, allowing fast
   mapping from groups to objects), and PartitioningByWidth (only stores
   the width of the groups), and PartitioningMap which contains

@@ -6,8 +6,8 @@
 ### to a collection of NG groups, or, more formally, a bipartite graph
 ### between integer sets [1, NO] and [1, NG]. Objects mapped to a given group
 ### are said to belong to, or to be assigned to, or to be in that group.
-### Additionally, the objects in each group are ordered. So for example
-### the 2 following groupings are considered different:
+### Additionally, the objects in each group are ordered. So for example the
+### 2 following groupings are considered different:
 ###
 ###   Grouping 1: NG = 3, NO = 5
 ###               group   objects
@@ -460,10 +460,10 @@ setMethod("high2low", "Vector",
 ### GroupingRanges objects
 ### ----------------------
 ###
-### A GroupingRanges object represents a grouping where each group is a block
-### of adjacent elements in the original collection of objects. GroupingRanges
-### objects support the Ranges API (e.g. start/end/width) in addition to the
-### Grouping API.
+### A GroupingRanges object represents a "block-grouping", that is, a
+### grouping where each group is a block of adjacent elements in the original
+### collection of objects. GroupingRanges objects support the Ranges API (e.g.
+### start/end/width) in addition to the Grouping API.
 ###
 
 setClass("GroupingRanges",
