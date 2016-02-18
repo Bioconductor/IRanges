@@ -2,14 +2,17 @@
 
 \alias{setops-methods}
 
+\alias{union}
 \alias{union,Ranges,Ranges-method}
 \alias{union,RangesList,RangesList-method}
 \alias{union,CompressedIRangesList,CompressedIRangesList-method}
 
+\alias{intersect}
 \alias{intersect,Ranges,Ranges-method}
 \alias{intersect,RangesList,RangesList-method}
 \alias{intersect,CompressedIRangesList,CompressedIRangesList-method}
 
+\alias{setdiff}
 \alias{setdiff,Ranges,Ranges-method}
 \alias{setdiff,RangesList,RangesList-method}
 \alias{setdiff,CompressedIRangesList,CompressedIRangesList-method}
@@ -17,35 +20,47 @@
 \alias{punion}
 \alias{punion,Ranges,Ranges-method}
 \alias{punion,Pairs,missing-method}
+
 \alias{pintersect}
 \alias{pintersect,Ranges,Ranges-method}
 \alias{pintersect,Pairs,missing-method}
+
 \alias{psetdiff}
 \alias{psetdiff,Ranges,Ranges-method}
 \alias{psetdiff,Pairs,missing-method}
+
 \alias{pgap}
 \alias{pgap,Ranges,Ranges-method}
 
-\title{Set operations on IRanges and RangesList objects}
+\title{Set operations on Ranges and RangesList objects}
 
 \description{
-  Performs set operations on \link{IRanges} objects.
+  Performs set operations on \link{Ranges} and \link{RangesList} objects.
 }
 
 \usage{
-## Vector-wise operations:
-\S4method{union}{Ranges,Ranges}(x, y,...)
-\S4method{intersect}{Ranges,Ranges}(x, y,...)
-\S4method{setdiff}{Ranges,Ranges}(x, y,...)
+## Vector-wise operations
+## ----------------------
 
-## Element-wise (aka "parallel") operations:
-\S4method{punion}{Ranges,Ranges}(x, y, fill.gap=FALSE, ...)
+\S4method{union}{Ranges,Ranges}(x, y)
+
+\S4method{intersect}{Ranges,Ranges}(x, y)
+
+\S4method{setdiff}{Ranges,Ranges}(x, y)
+
+## Element-wise (aka "parallel") operations
+## ----------------------------------------
+
+\S4method{punion}{Ranges,Ranges}(x, y, fill.gap=FALSE)
 \S4method{punion}{Pairs,missing}(x, y, ...)
-\S4method{pintersect}{Ranges,Ranges}(x, y, resolve.empty=c("none", "max.start", "start.x"), ...)
+
+\S4method{pintersect}{Ranges,Ranges}(x, y, resolve.empty=c("none", "max.start", "start.x"))
 \S4method{pintersect}{Pairs,missing}(x, y, ...)
-\S4method{psetdiff}{Ranges,Ranges}(x, y, ...)
+
+\S4method{psetdiff}{Ranges,Ranges}(x, y)
 \S4method{psetdiff}{Pairs,missing}(x, y, ...)
-\S4method{pgap}{Ranges,Ranges}(x, y, ...)
+
+\S4method{pgap}{Ranges,Ranges}(x, y)
 }
 
 \arguments{
@@ -66,28 +81,32 @@
     below for the definition of an ambiguous range.)
   }
   \item{...}{
-    Further arguments to be passed to or from other methods.
+    The methods for \link[S4Vectors]{Pairs} objects pass any extra argument
+    to the internal call to \code{punion(first(x), last(x), ...)},
+    \code{pintersect(first(x), last(x), ...)}, etc...
   }
 }
 
 \details{
   The \code{union}, \code{intersect} and \code{setdiff} methods
-  for \link{IRanges} objects return a "normal" \link{IRanges}
-  object (of the same class as \code{x}) representing the union,
-  intersection and (asymmetric!) difference of the sets of integers
-  represented by \code{x} and \code{y}.
+  for \link{Ranges} objects return a "normal" \link{Ranges}
+  object representing the union, intersection and (asymmetric!)
+  difference of the sets of integers represented by \code{x} and
+  \code{y}.
 
   \code{punion}, \code{pintersect}, \code{psetdiff} and \code{pgap}
   are generic functions that compute the element-wise (aka "parallel")
   union, intersection, (asymmetric!) difference and gap between
   each element in \code{x} and its corresponding element in \code{y}.
-  Methods for \link{IRanges} objects are defined. For these methods,
+  Methods for \link{Ranges} objects are defined. For these methods,
   \code{x} and \code{y} must have the same length (i.e. same number
-  of ranges) and they return an \link{IRanges} instance of the
-  same length as \code{x} and \code{y} where each range represents
+  of ranges). They return a \link{Ranges} object \emph{parallel}
+  to \code{x} and \code{y} i.e. where the i-th range corresponds
+  to the i-th range in \code{x} and in\code{y}) and represents
   the union/intersection/difference/gap of/between the corresponding
-  ranges in \code{x} and \code{y}. If \code{x} is a
-  \code{\link[S4Vectors:Pairs-class]{Pairs}} object, then \code{y}
+  \code{x[i]} and \code{y[i]}.
+
+  If \code{x} is a \code{\link[S4Vectors]{Pairs}} object, then \code{y}
   should be missing, and the operation is performed between the members
   of each pair.
 
@@ -125,40 +144,40 @@
 }
 
 \examples{
-  x <- IRanges(c(1, 5, -2, 0, 14), c(10, 9, 3, 11, 17))
-  subject <- Rle(1:-3, 6:2)
-  y <- Views(subject, start=c(14, 0, -5, 6, 18), end=c(20, 2, 2, 8, 20))
+x <- IRanges(c(1, 5, -2, 0, 14), c(10, 9, 3, 11, 17))
+subject <- Rle(1:-3, 6:2)
+y <- Views(subject, start=c(14, 0, -5, 6, 18), end=c(20, 2, 2, 8, 20))
 
-  ## Vector-wise operations:
-  union(x, ranges(y))
-  union(ranges(y), x)
+## Vector-wise operations:
+union(x, ranges(y))
+union(ranges(y), x)
 
-  intersect(x, ranges(y))
-  intersect(ranges(y), x)
+intersect(x, ranges(y))
+intersect(ranges(y), x)
 
-  setdiff(x, ranges(y))
-  setdiff(ranges(y), x)
+setdiff(x, ranges(y))
+setdiff(ranges(y), x)
 
-  ## Element-wise (aka "parallel") operations:
-  try(punion(x, ranges(y)))
-  punion(x[3:5], ranges(y)[3:5])
-  punion(x, ranges(y), fill.gap=TRUE)
-  try(pintersect(x, ranges(y)))
-  pintersect(x[3:4], ranges(y)[3:4])
-  pintersect(x, ranges(y), resolve.empty="max.start")
-  psetdiff(ranges(y), x)
-  try(psetdiff(x, ranges(y)))
-  start(x)[4] <- -99
-  end(y)[4] <- 99
-  psetdiff(x, ranges(y))
-  pgap(x, ranges(y))
+## Element-wise (aka "parallel") operations:
+try(punion(x, ranges(y)))
+punion(x[3:5], ranges(y)[3:5])
+punion(x, ranges(y), fill.gap=TRUE)
+try(pintersect(x, ranges(y)))
+pintersect(x[3:4], ranges(y)[3:4])
+pintersect(x, ranges(y), resolve.empty="max.start")
+psetdiff(ranges(y), x)
+try(psetdiff(x, ranges(y)))
+start(x)[4] <- -99
+end(y)[4] <- 99
+psetdiff(x, ranges(y))
+pgap(x, ranges(y))
 
-  ## On RangesList objects:
-  irl1 <- IRangesList(a = IRanges(c(1,2),c(4,3)), b = IRanges(c(4,6),c(10,7)))
-  irl2 <- IRangesList(c = IRanges(c(0,2),c(4,5)), a = IRanges(c(4,5),c(6,7)))
-  union(irl1, irl2)
-  intersect(irl1, irl2)
-  setdiff(irl1, irl2)
+## On RangesList objects:
+irl1 <- IRangesList(a=IRanges(c(1,2),c(4,3)), b=IRanges(c(4,6),c(10,7)))
+irl2 <- IRangesList(c=IRanges(c(0,2),c(4,5)), a=IRanges(c(4,5),c(6,7)))
+union(irl1, irl2)
+intersect(irl1, irl2)
+setdiff(irl1, irl2)
 }
 
 \keyword{utilities}

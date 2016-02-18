@@ -29,7 +29,7 @@
 ###
 
 setMethod("union", c("Ranges", "Ranges"),
-    function(x, y, ...)
+    function(x, y)
     {
         ## We need to downgrade 'x' to an IRanges instance 'x0' so 'c(x0, y)'
         ## is guaranteed to work (even e.g. if 'x' is a NormalIRanges object).
@@ -70,7 +70,7 @@ setMethod("union", c("CompressedIRangesList", "CompressedIRangesList"),
 ###
 
 setMethod("intersect", c("Ranges", "Ranges"),
-    function(x, y, ...)
+    function(x, y)
     {
         if (length(x) == 0L)
             return(x)
@@ -100,7 +100,7 @@ setMethod("intersect", c("CompressedIRangesList", "CompressedIRangesList"),
 ###
 
 setMethod("setdiff", c("Ranges", "Ranges"),
-    function(x, y, ...)
+    function(x, y)
     {
         if (length(x) == 0L)
             return(x)
@@ -134,7 +134,7 @@ setGeneric("punion", signature=c("x", "y"),
 )
 
 setMethod("punion", c("Ranges", "Ranges"),
-    function(x, y, fill.gap=FALSE, ...)
+    function(x, y, fill.gap=FALSE)
     {
         if (length(x) != length(y))
             stop("'x' and 'y' must have the same length")
@@ -159,7 +159,7 @@ setMethod("punion", c("Ranges", "Ranges"),
 )
 
 setMethod("punion", c("Pairs", "missing"), function(x, y, ...) {
-              punion(first(x), last(x), ...)
+              callGeneric(first(x), last(x), ...)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -171,7 +171,7 @@ setGeneric("pintersect", signature=c("x", "y"),
 )
 
 setMethod("pintersect", c("Ranges", "Ranges"),
-    function(x, y, resolve.empty=c("none", "max.start", "start.x"), ...)
+    function(x, y, resolve.empty=c("none", "max.start", "start.x"))
     {
         if (length(x) != length(y))
             stop("'x' and 'y' must have the same length")
@@ -222,7 +222,7 @@ setMethod("pintersect", c("Ranges", "Ranges"),
 )
 
 setMethod("pintersect", c("Pairs", "missing"), function(x, y, ...) {
-              pintersect(first(x), last(x), ...)
+              callGeneric(first(x), last(x), ...)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -234,7 +234,7 @@ setGeneric("psetdiff", signature=c("x", "y"),
 )
 
 setMethod("psetdiff", c("Ranges", "Ranges"),
-    function(x, y, ...)
+    function(x, y)
     {
         if (length(x) != length(y))
             stop("'x' and 'y' must have the same length")
@@ -260,7 +260,7 @@ setMethod("psetdiff", c("Ranges", "Ranges"),
 )
 
 setMethod("psetdiff", c("Pairs", "missing"), function(x, y, ...) {
-              psetdiff(first(x), last(x), ...)
+              callGeneric(first(x), last(x), ...)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -272,7 +272,7 @@ setGeneric("pgap", signature=c("x", "y"),
 )
 
 setMethod("pgap", c("Ranges", "Ranges"),
-    function(x, y, ...)
+    function(x, y)
     {
         if (length(x) != length(y))
             stop("'x' and 'y' must have the same length")
