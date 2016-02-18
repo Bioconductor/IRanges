@@ -19,8 +19,8 @@ setClass("CompressedManyToOneGrouping",
 ### ----------------------------
 ###
 
-setMethod("grouplength", "CompressedGrouping",
-          function(x, i=NULL) grouplength(PartitioningByEnd(x), i))
+setMethod("grouplengths", "CompressedGrouping",
+          function(x, i=NULL) grouplengths(PartitioningByEnd(x), i))
 
 setMethod("nobj", "CompressedManyToOneGrouping",
           function(x) nobj(PartitioningByEnd(x)))
@@ -61,7 +61,7 @@ setMethod("relist", c("grouping", "missing"), function(flesh, skeleton) {
 setMethod("split", c("ANY", "ManyToOneGrouping"), function(x, f, drop=FALSE) {
               stopifnot(isTRUEorFALSE(drop))
               if (drop) {
-                  f <- f[grouplength(f) > 0L]
+                  f <- f[grouplengths(f) > 0L]
               }
               extractList(x, f)
           })

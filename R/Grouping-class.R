@@ -33,9 +33,8 @@ setClass("Grouping", contains="IntegerList", representation("VIRTUAL"))
 
 setGeneric("nobj", function(x) standardGeneric("nobj"))
 
-### TODO: Rename this grouplengths() (with an "s").
-setGeneric("grouplength", signature="x",
-    function(x, i=NULL) standardGeneric("grouplength")
+setGeneric("grouplengths", signature="x",
+    function(x, i=NULL) standardGeneric("grouplengths")
 )
 
 .subset_by_integer <- function(x, i=NULL)
@@ -52,7 +51,7 @@ setGeneric("grouplength", signature="x",
     x[i]
 }
 
-setMethod("grouplength", "Grouping",
+setMethod("grouplengths", "Grouping",
     function(x, i=NULL)
     {
         x_grouplens <- elementNROWS(x)
@@ -71,7 +70,7 @@ setMethod("show", "Grouping",
             sep="")
         if (NG == 0L)
             return(invisible(NULL))
-        empty_groups <- which(grouplength(object) == 0L)
+        empty_groups <- which(grouplengths(object) == 0L)
         cat("Nb of empty groups: ", length(empty_groups),
             " (", 100.00 * length(empty_groups) / NG, "%)\n", sep="")
     }
@@ -86,7 +85,7 @@ setMethod("show", "Grouping",
 ### the collection belongs to exactly one group.
 setClass("ManyToOneGrouping", contains="Grouping", representation("VIRTUAL"))
 
-setMethod("nobj", "ManyToOneGrouping", function(x) sum(grouplength(x)))
+setMethod("nobj", "ManyToOneGrouping", function(x) sum(grouplengths(x)))
 
 setGeneric("members", signature="x",
     function(x, i) standardGeneric("members")
@@ -137,7 +136,7 @@ setGeneric("togrouplength", signature="x",
 )
 
 setMethod("togrouplength", "ManyToOneGrouping",
-    function(x, j=NULL) grouplength(x, togroup(x, j))
+    function(x, j=NULL) grouplengths(x, togroup(x, j))
 )
 
 
@@ -202,7 +201,7 @@ setMethod("getListElement", "H2LGrouping",
 
 ### Should be more efficient than the default method for ManyToOneGrouping
 ### objects.
-setMethod("grouplength", "H2LGrouping",
+setMethod("grouplengths", "H2LGrouping",
     function(x, i=NULL)
     {
         x_grouplens <- elementNROWS(x@low2high) + 1L
@@ -284,7 +283,7 @@ setMethod("grouprank", "H2LGrouping",
 ###   seq_along(neg_idx)
 ### are identical, where 'neg_idx' is the vector of the indices of
 ### the non-empty groups i.e.
-###   neg_idx <- which(grouplength(x) != 0L)
+###   neg_idx <- which(grouplengths(x) != 0L)
 setGeneric("togrouprank", signature="x",
      function(x, j=NULL) standardGeneric("togrouprank")
 )
@@ -475,7 +474,7 @@ setClass("GroupingRanges",
 )
 
 ### Overwrite default method with optimized method for GroupingRanges objects.
-setMethod("grouplength", "GroupingRanges",
+setMethod("grouplengths", "GroupingRanges",
     function(x, i=NULL)
     {
         x_width <- width(x)
@@ -985,4 +984,6 @@ setMethod("togroup", "ANY",
         togroup(PartitioningByWidth(x), j=j)
     }
 )
- 
+
+grouplength <- function(...) {.Deprecated("grouplengths"); grouplengths(...)}
+

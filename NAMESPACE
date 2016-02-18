@@ -165,6 +165,7 @@ export(
     NCList, NCLists,
     H2LGrouping, Dups,
     PartitioningByEnd, PartitioningByWidth, PartitioningMap,
+    grouplength,
     RangedData, RangedDataList,
     RangedSelection,
     RDApplyParams,
@@ -211,7 +212,7 @@ export(
     viewWhichMins, viewWhichMaxs, viewRangeMins, viewRangeMaxs,
 
     ## Grouping-class.R:
-    nobj, grouplength, members, vmembers, togroup, togrouplength,
+    nobj, grouplengths, members, vmembers, togroup, togrouplength,
     high2low, low2high, grouprank, togrouprank, mapOrder,
 
     ## Rle-class-leftovers.R:
@@ -294,7 +295,7 @@ exportMethods(
     trim, subviews,
     viewApply, viewMins, viewMaxs, viewSums, viewMeans,
     viewWhichMins, viewWhichMaxs, viewRangeMins, viewRangeMaxs,
-    nobj, grouplength, members, vmembers, togroup, togrouplength,
+    nobj, grouplengths, members, vmembers, togroup, togrouplength,
     high2low, low2high, grouprank, togrouprank, mapOrder,
     findRange, splitRanges,
     extractList,

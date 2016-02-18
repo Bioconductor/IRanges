@@ -7,8 +7,8 @@
 \alias{Grouping}
 
 \alias{nobj}
-\alias{grouplength}
-\alias{grouplength,Grouping-method}
+\alias{grouplengths}
+\alias{grouplengths,Grouping-method}
 \alias{show,Grouping-method}
 
 % ManyToOneGrouping objects
@@ -39,7 +39,7 @@
 \alias{low2high,H2LGrouping-method}
 \alias{length,H2LGrouping-method}
 \alias{nobj,H2LGrouping-method}
-\alias{grouplength,H2LGrouping-method}
+\alias{grouplengths,H2LGrouping-method}
 \alias{members,H2LGrouping-method}
 \alias{vmembers,H2LGrouping-method}
 \alias{togroup,H2LGrouping-method}
@@ -61,7 +61,7 @@
 \alias{GroupingRanges-class}
 \alias{GroupingRanges}
 
-\alias{grouplength,GroupingRanges-method}
+\alias{grouplengths,GroupingRanges-method}
 
 \alias{class:GroupingIRanges}
 \alias{GroupingIRanges-class}
@@ -116,6 +116,7 @@
 
 % old stuff (deprecated & defunct)
 \alias{togroup,ANY-method}
+\alias{grouplength}
 
 \title{Grouping objects}
 
@@ -185,12 +186,12 @@
       This provides the mapping from groups to objects.
     }
     \item{}{
-      \code{grouplength(x, i=NULL)}:
+      \code{grouplengths(x, i=NULL)}:
       Returns the number of objects in G_i.
       Works in a vectorized fashion (unlike \code{x[[i]]}).
-      \code{grouplength(x)} is equivalent to
-      \code{grouplength(x, seq_len(length(x)))}.
-      If \code{i} is not NULL, \code{grouplength(x, i)} is equivalent to
+      \code{grouplengths(x)} is equivalent to
+      \code{grouplengths(x, seq_len(length(x)))}.
+      If \code{i} is not NULL, \code{grouplengths(x, i)} is equivalent to
       \code{sapply(i, function(ii) length(x[[ii]]))}.
     }
   }
@@ -247,7 +248,7 @@
       \code{togrouplength(x, j=NULL)}:
       Returns the number of objects that belong to the same group as O_j
       (including O_j itself).
-      Equivalent to \code{grouplength(x, togroup(x, j))}.
+      Equivalent to \code{grouplengths(x, togroup(x, j))}.
     }
   }
 
@@ -406,12 +407,12 @@ h2l[[2]]
 h2l[[3]]
 h2l[[4]]
 h2l[[5]]
-grouplength(h2l)  # same as 'unname(sapply(h2l, length))'
-grouplength(h2l, 5:2)
+grouplengths(h2l)  # same as 'unname(sapply(h2l, length))'
+grouplengths(h2l, 5:2)
 members(h2l, 5:2)  # all the members are put together and sorted
 togroup(h2l)
 togroup(h2l, 5:2)
-togrouplength(h2l)  # same as 'grouplength(h2l, togroup(h2l))'
+togrouplength(h2l)  # same as 'grouplengths(h2l, togroup(h2l))'
 togrouplength(h2l, 5:2)
 
 ## The List API:
@@ -449,9 +450,10 @@ nobj(pbe1)
 pbe1[[1]]
 pbe1[[2]]
 pbe1[[3]]
-grouplength(pbe1)  # same as 'unname(sapply(pbe1, length))' and 'width(pbe1)'
+grouplengths(pbe1)  # same as 'unname(sapply(pbe1, length))'
+                    # and 'width(pbe1)'
 togroup(pbe1)
-togrouplength(pbe1)  # same as 'grouplength(pbe1, togroup(pbe1))'
+togrouplength(pbe1)  # same as 'grouplengths(pbe1, togroup(pbe1))'
 names(pbe1)
 
 ## The Ranges core API:
