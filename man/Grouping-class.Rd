@@ -16,6 +16,7 @@
 \alias{ManyToOneGrouping-class}
 \alias{ManyToOneGrouping}
 
+\alias{nobj,ManyToOneGrouping-method}
 \alias{members}
 \alias{members,ManyToOneGrouping-method}
 \alias{vmembers}
@@ -55,13 +56,15 @@
 \alias{duplicated,Dups-method}
 \alias{show,Dups-method}
 
+% GroupingRanges objects
+\alias{grouplength,GroupingRanges-method}
+
 % Partitioning objects
 \alias{class:Partitioning}
 \alias{Partitioning-class}
 \alias{Partitioning}
 
 \alias{togroup,Partitioning-method}
-\alias{grouplength,Partitioning-method}
 \alias{names,Partitioning-method}
 \alias{names<-,Partitioning-method}
 
@@ -81,9 +84,7 @@
 \alias{PartitioningByWidth}
 
 \alias{width,PartitioningByWidth-method}
-\alias{length,PartitioningByWidth-method}
 \alias{end,PartitioningByWidth-method}
-\alias{nobj,PartitioningByWidth-method}
 \alias{start,PartitioningByWidth-method}
 \alias{coerce,Ranges,PartitioningByWidth-method}
 

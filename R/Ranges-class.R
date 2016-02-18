@@ -14,7 +14,7 @@ setClass("Ranges", contains="IntegerList", representation("VIRTUAL"))
 ### Getters/setters.
 ###
 
-setMethod("length", "Ranges", function(x) length(start(x)))
+setMethod("length", "Ranges", function(x) length(width(x)))
 
 ### Without this definition, we inherit the method for Vector objects
 ### which is very inefficient on Ranges objects!

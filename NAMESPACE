@@ -17,13 +17,14 @@ importFrom(stats4, summary, update)
 
 exportClasses(
     functionORNULL,
-    CompressedList,
     Ranges, RangesORmissing,
     IRanges, NormalIRanges,
     NCList, NCLists,
     Grouping, ManyToOneGrouping,
     H2LGrouping, Dups,
+    GroupingRanges, GroupingIRanges,
     Partitioning, PartitioningByEnd, PartitioningByWidth, PartitioningMap,
+    CompressedList,
     Views,
     RleViews,
     MaskCollection,

@@ -33,16 +33,30 @@ setClass("Grouping", contains="IntegerList", representation("VIRTUAL"))
 
 setGeneric("nobj", function(x) standardGeneric("nobj"))
 
+### TODO: Rename this grouplengths() (with an "s").
 setGeneric("grouplength", signature="x",
     function(x, i=NULL) standardGeneric("grouplength")
 )
 
+.subset_by_integer <- function(x, i=NULL)
+{
+    if (is.null(i))
+        return(x)
+    if (!is.numeric(i))
+        stop(wmsg("subscript must be NULL or an integer vector"))
+    if (!is.integer(i))
+        i <- as.integer(i)
+    x_len <- length(x)
+    if (S4Vectors:::anyMissingOrOutside(i, -x_len, x_len))
+        stop(wmsg("subscript contains NAs or out of bounds indices"))
+    x[i]
+}
+
 setMethod("grouplength", "Grouping",
     function(x, i=NULL)
     {
-        if (is.null(i))
-            lengths(x)
-        else vapply(i, function(ii) length(x[[i]]), integer(1L))
+        x_grouplens <- elementNROWS(x)
+        .subset_by_integer(x_grouplens, i)
     }
 )
 
@@ -69,7 +83,7 @@ setMethod("show", "Grouping",
 ### -------------------------
 
 ### A ManyToOneGrouping object represents a grouping where every object in
-### the collection is mapped to one group and only one.
+### the collection belongs to exactly one group.
 setClass("ManyToOneGrouping", contains="Grouping", representation("VIRTUAL"))
 
 setMethod("nobj", "ManyToOneGrouping", function(x) sum(grouplength(x)))
@@ -106,20 +120,6 @@ setGeneric("togroup", signature="x",
     function(x, j=NULL) standardGeneric("togroup")
 )
 
-.subset_togroup_by_integer <- function(x_togroup, j=NULL)
-{
-    if (is.null(j))
-        return(x_togroup)
-    if (!is.numeric(j))
-        stop(wmsg("subscript 'j' must be NULL or an integer vector"))
-    if (!is.integer(j))
-        j <- as.integer(j)
-    x_nobj <- length(x_togroup)
-    if (S4Vectors:::anyMissingOrOutside(j, -x_nobj, x_nobj))
-        stop(wmsg("subscript 'j' contains NAs or out of bounds indices"))
-    x_togroup[j]
-}
-
 ### Works on any ManyToOneGrouping object 'x' for which unlist() and
 ### elementNROWS() work.
 setMethod("togroup", "ManyToOneGrouping",
@@ -128,7 +128,7 @@ setMethod("togroup", "ManyToOneGrouping",
         x_togroup <- unlist(x, use.names=FALSE)
         x_eltNROWS <- elementNROWS(x)
         x_togroup[x_togroup] <- rep.int(seq_along(x_eltNROWS), x_eltNROWS)
-        .subset_togroup_by_integer(x_togroup, j)
+        .subset_by_integer(x_togroup, j)
     }
 )
 
@@ -137,8 +137,7 @@ setGeneric("togrouplength", signature="x",
 )
 
 setMethod("togrouplength", "ManyToOneGrouping",
-    function(x, j=NULL)
-        grouplength(x, togroup(x, j))
+    function(x, j=NULL) grouplength(x, togroup(x, j))
 )
 
 
@@ -206,18 +205,9 @@ setMethod("getListElement", "H2LGrouping",
 setMethod("grouplength", "H2LGrouping",
     function(x, i=NULL)
     {
-        group_length <- elementNROWS(x@low2high) + 1L
-        group_length[!is.na(x@high2low)] <- 0L
-        if (is.null(i))
-            return(group_length)
-        if (!is.numeric(i))
-            stop(wmsg("subscript 'i' must be a vector of integers or NULL"))
-        if (!is.integer(i))
-            i <- as.integer(i)
-        x_len <- length(group_length)
-        if (S4Vectors:::anyMissingOrOutside(i, -x_len, x_len))
-            stop(wmsg("subscript 'i' contains NAs or out of bounds indices"))
-        group_length[i]
+        x_grouplens <- elementNROWS(x@low2high) + 1L
+        x_grouplens[!is.na(x@high2low)] <- 0L
+        .subset_by_integer(x_grouplens, i)
     }
 )
 
@@ -247,7 +237,7 @@ setMethod("togroup", "H2LGrouping",
     {
         x_togroup <- x@high2low
         x_togroup[is.na(x_togroup)] <- which(is.na(x_togroup))
-        .subset_togroup_by_integer(x_togroup, j)
+        .subset_by_integer(x_togroup, j)
     }
 )
 
@@ -291,7 +281,7 @@ setMethod("grouprank", "H2LGrouping",
 ### An important property of togrouprank() is that:
 ###   togrouprank(x, neg_idx)
 ### and
-###   seq_len(length(neg_idx))
+###   seq_along(neg_idx)
 ### are identical, where 'neg_idx' is the vector of the indices of
 ### the non-empty groups i.e.
 ###   neg_idx <- which(grouplength(x) != 0L)
@@ -416,7 +406,7 @@ Dups <- function(high2low=integer())
 ### 'high2low(x)' can be *conceptually* defined with:
 ###
 ###   high2low <- function(x)
-###       sapply(seq_len(length(x)),
+###       sapply(seq_along(x),
 ###              function(i) match(x[i], x[seq_len(i-1L)]))
 ###
 ### Of course this is *very* inefficient (quadratic in time), its only value
@@ -435,7 +425,7 @@ setMethod("high2low", "vector",
     {
         ## Author: Harris A. Jaffee
         ans <- match(x, x)
-        ans[ans == seq_len(length(x))] <- NA_integer_
+        ans[ans == seq_along(x)] <- NA_integer_
         return(ans)
     }
 )
@@ -467,27 +457,52 @@ setMethod("high2low", "Vector",
 
 
 ### -------------------------------------------------------------------------
+### GroupingRanges objects
+### ----------------------
+###
+### A GroupingRanges object represents a grouping where each group is a block
+### of adjacent elements in the original collection of objects. GroupingRanges
+### objects support the Ranges API (e.g. start/end/width) in addition to the
+### Grouping API.
+###
+
+setClass("GroupingRanges",
+    ## We put Ranges before Grouping so GroupingRanges objects inherit the
+    ## "show" method for Ranges objects instead of the method for Grouping
+    ## objects.
+    contains=c("Ranges", "Grouping"),
+    representation("VIRTUAL")
+)
+
+### Overwrite default method with optimized method for GroupingRanges objects.
+setMethod("grouplength", "GroupingRanges",
+    function(x, i=NULL)
+    {
+        x_width <- width(x)
+        .subset_by_integer(x_width, i)
+    }
+)
+
+setClass("GroupingIRanges", contains=c("IRanges", "GroupingRanges"))
+
+
+### -------------------------------------------------------------------------
 ### Partitioning objects
 ### --------------------
 ###
-### A Partitioning container represents a block-grouping i.e. a grouping
-### where each group contains objects that are neighbors in the original
-### collection of objects. More formally, a grouping 'x' is a block-grouping
-### iff 'togroup(x)' is sorted in increasing order (not necessarily strictly
-### increasing). In addition, a Partitioning object can be seen (and
-### manipulated) as a Ranges object where all the ranges are adjacent
-### starting at 1 (i.e. it covers an integer interval starting at 1
-### and with no overlap between the ranges). Therefore the "start/end/width"
-### API is implemented on Partitioning objects (in addition to the Grouping
-### and ManyToOneGrouping APIs).
+### A Partitioning object is a GroupingRanges object where the blocks fully
+### cover the original collection of objects and don't overlap. This makes
+### them many-to-one groupings. Furthermore, the blocks must be ordered by
+### ascending position on the original collection of objects.
+### Note that for a Partitioning object 'x', 'togroup(x)' is sorted in
+### increasing order (not necessarily strictly increasing).
 ###
-### The Partitioning class is virtual with 3 concrete subclasses:
-### PartitioningByEnd and PartitioningByWidth and PartitioningMap.
-### Note that we put Ranges before ManyToOneGrouping in order to have
-### Partitioning objects inherit the "show" method for Ranges objects.
+### The Partitioning class is virtual with 2 concrete direct subclasses:
+### PartitioningByEnd and PartitioningByWidth.
+###
 
 setClass("Partitioning",
-    contains=c("Ranges", "ManyToOneGrouping"),
+    contains=c("GroupingRanges", "ManyToOneGrouping"),
     representation(
         "VIRTUAL",
         NAMES="characterORNULL"  # R doesn't like @names !!
@@ -506,17 +521,17 @@ setMethod("getListElement", "Partitioning",
         i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
                                              error.if.nomatch=TRUE)
         ## The purpose of the code below is to extract 'start(x)[i] - 1'
-        ## (stored in 'ans_shift') and 'width(x)[i]' (stored in 'ans_length')
+        ## (stored in 'ans_shift') and 'width(x)[i]' (stored in 'ans_len')
         ## in the fastest possible way. Looks like a convoluted way to
         ## extract those 2 values but it is actually 1000x faster than the
         ## naive way.
         ans_shift <- 0L
-        ans_length <- end(x)[i]
+        ans_len <- end(x)[i]
         if (i >= 2L) {
             ans_shift <- end(x)[i - 1L]
-            ans_length <- ans_length - ans_shift
+            ans_len <- ans_len - ans_shift
         }
-        seq_len(ans_length) + ans_shift
+        seq_len(ans_len) + ans_shift
     }
 )
 
@@ -527,26 +542,7 @@ setMethod("togroup", "Partitioning",
     {
         x_width <- width(x)
         x_togroup <- rep.int(seq_along(x_width), x_width)
-        .subset_togroup_by_integer(x_togroup, j)
-    }
-)
-
-### Overwrite method for ManyToOneGrouping objects with optimized method for
-### Partitioning objects.
-setMethod("grouplength", "Partitioning",
-    function(x, i=NULL)
-    {
-        x_width <- width(x)
-        if (is.null(i))
-            return(x_width)
-        if (!is.numeric(i))
-            stop(wmsg("subscript 'i' must be a vector of integers or NULL"))
-        if (!is.integer(i))
-            i <- as.integer(i)
-        x_len <- length(x_width)
-        if (S4Vectors:::anyMissingOrOutside(i, -x_len, x_len))
-            stop(wmsg("subscript 'i' contains NAs or out of bounds indices"))
-        x_width[i]
+        .subset_by_integer(x_togroup, j)
     }
 )
 
@@ -586,15 +582,19 @@ setClass("PartitioningByEnd",
 
 setMethod("end", "PartitioningByEnd", function(x) x@end)
 
+### Overwrite method for Ranges objects with optimized method for
+### PartitioningByEnd objects.
 setMethod("length", "PartitioningByEnd", function(x) length(end(x)))
 
+### Overwrite method for ManyToOneGrouping objects with optimized method for
+### PartitioningByEnd objects.
 setMethod("nobj", "PartitioningByEnd",
     function(x)
     {
         x_end <- end(x)
         if (length(x_end) == 0L)
             return(0L)
-        x_end[length(x_end)]
+        x_end[[length(x_end)]]
     }
 )
 
@@ -747,19 +747,7 @@ setClass("PartitioningByWidth",
 
 setMethod("width", "PartitioningByWidth", function(x) x@width)
 
-setMethod("length", "PartitioningByWidth", function(x) length(width(x)))
-
 setMethod("end", "PartitioningByWidth", function(x) cumsum(width(x)))
-
-setMethod("nobj", "PartitioningByWidth",
-    function(x)
-    {
-        x_end <- end(x)
-        if (length(x_end) == 0L)
-            return(0L)
-        x_end[length(x_end)]
-    }
-)
 
 setMethod("start", "PartitioningByWidth",
     function(x)
@@ -960,7 +948,7 @@ findOverlaps_Ranges_Partitioning <- function(query, subject,
     vec <- c(0L, s_end) + 0.5
     q_start2subject <- findInterval(q_start, vec)
     q_end2subject <- findInterval(q_end, vec)
-    q_hits <- rep.int(seq_len(length(q_start)),
+    q_hits <- rep.int(seq_along(q_start),
                       q_end2subject - q_start2subject + 1L)
     s_hits <- S4Vectors:::mseq(q_start2subject, q_end2subject)
     ## If 'query' is a Partitioning object, all hits are guaranteed to be
