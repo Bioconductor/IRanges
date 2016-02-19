@@ -588,13 +588,7 @@ setMethod("length", "PartitioningByEnd", function(x) length(end(x)))
 ### Overwrite method for ManyToOneGrouping objects with optimized method for
 ### PartitioningByEnd objects.
 setMethod("nobj", "PartitioningByEnd",
-    function(x)
-    {
-        x_end <- end(x)
-        if (length(x_end) == 0L)
-            return(0L)
-        x_end[[length(x_end)]]
-    }
+    function(x) S4Vectors:::last_or(end(x), 0L)
 )
 
 setMethod("start", "PartitioningByEnd",

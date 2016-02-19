@@ -296,7 +296,7 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL, universe = NULL)
     }
   }
   else
-    values <- new2("DataFrame", nrows = N, check=FALSE)
+    values <- S4Vectors:::make_zero_col_DataFrame(N)
   if (N != nrow(values)) {
     if (nrow(values) > N)
       stop("length of value(s) in '...' greater than length of 'ranges'")
@@ -713,9 +713,8 @@ setAs("RangesList", "RangedData",
                         "'from' (accessed with 'mcols(unlist(from))') ",
                         "to the data columns (aka values) of the returned ",
                         "RangedData object")
-            unlisted_values <- new2("DataFrame",
-                                    nrows=length(unlisted_from),
-                                    check=FALSE)
+            unlisted_values <-
+                S4Vectors:::make_zero_col_DataFrame(length(unlisted_from))
         }
         ans_values <- newCompressedList0("CompressedSplitDataFrameList",
                                          unlisted_values,

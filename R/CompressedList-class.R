@@ -73,7 +73,7 @@ compress_listData <- function(x, elementType = NULL) {
   if (is(x_mcols, "DataFrame") &&
       nrow(x_mcols) == 0L && ncol(x_mcols) == 0L)
     {
-      x_mcols <- new("DataFrame", nrows=length(x))
+      x_mcols <- S4Vectors:::make_zero_col_DataFrame(length(x))
       mcols(x) <- x_mcols
     }
   x

@@ -258,8 +258,8 @@ setMethod("reduce", "RangedData",
                        drop.empty.ranges = drop.empty.ranges,
                        min.gapwidth = min.gapwidth,
                        with.inframe.attrib = with.inframe.attrib)
-              listData <- new2("DataFrame", nrows=sum(elementNROWS(ranges)),
-                                            check=FALSE)
+              listData <-
+                S4Vectors:::make_zero_col_DataFrame(sum(elementNROWS(ranges)))
               end <- cumsum(elementNROWS(ranges))
               names(end) <- names(ranges)
               partitioning <- PartitioningByEnd(end)
