@@ -108,11 +108,17 @@
 % SimpleGrouping & CompressedGrouping objects
 \alias{class:SimpleGrouping}
 \alias{SimpleGrouping-class}
-\alias{SimpleGrouping}
+
+\alias{class:CompressedGrouping}
+\alias{CompressedGrouping-class}
 
 \alias{class:SimpleManyToOneGrouping}
 \alias{SimpleManyToOneGrouping-class}
-\alias{SimpleManyToOneGrouping}
+
+\alias{class:CompressedManyToOneGrouping}
+\alias{CompressedManyToOneGrouping-class}
+
+\alias{ManyToOneGrouping}
 
 % old stuff (deprecated & defunct)
 \alias{togroup,ANY-method}
@@ -274,11 +280,12 @@
       [DOCUMENT ME]
     }
     \item{}{
-      \code{SimpleManyToOneGrouping(x)}: Cast \code{x} to a
-      \code{Grouping}, where \code{x} is an integer list with a
+      \code{ManyToOneGrouping(x, compress=TRUE)}: Cast \code{x} to a
+      \code{ManyToOneGrouping}, where \code{x} is an integer list with a
       structure analogous to that of \code{Grouping} itself: each
       element represents a group in terms of the subscripts of the
-      members.
+      members. If \code{compress} is \code{TRUE}, the representation
+      uses a \code{CompressedList}, otherwise a \code{SimpleList}.
     }
   }
 }

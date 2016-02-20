@@ -3,10 +3,10 @@
 ### -------------------------------------------------------------------------
 
 setClass("SimpleGrouping",
-         contains=c("Grouping", "SimpleIntegerList"))
+         contains=c("Grouping", "SimpleIntegerList", "VIRTUAL"))
 
 setClass("CompressedGrouping",
-         contains=c("Grouping", "CompressedIntegerList"))
+         contains=c("Grouping", "CompressedIntegerList", "VIRTUAL"))
 
 setClass("SimpleManyToOneGrouping",
          contains=c("ManyToOneGrouping", "SimpleGrouping"))
@@ -30,20 +30,10 @@ setMethod("nobj", "CompressedManyToOneGrouping",
 ### ----------------------------
 ###
 
-SimpleGrouping <- function(x) {
-    new("SimpleGrouping", IntegerList(x, compress=FALSE))
-}
-
-CompressedGrouping <- function(x) {
-    new("CompressedGrouping", IntegerList(x, compress=TRUE))
-}
-
-SimpleManyToOneGrouping <- function(x) {
-    new("SimpleManyToOneGrouping", IntegerList(x, compress=FALSE))
-}
-
-CompressedManyToOneGrouping <- function(x) {
-    new("CompressedManyToOneGrouping", IntegerList(x, compress=TRUE))
+ManyToOneGrouping <- function(x, compress=TRUE) {
+    CompressedOrSimple <- if (compress) "Compressed" else "Simple"
+    Class <- paste0(CompressedOrSimple, "ManyToOneGrouping")
+    new(Class, IntegerList(x, compress=compress))
 }
 
 ### -------------------------------------------------------------------------
@@ -60,14 +50,15 @@ setMethod("relist", c("grouping", "missing"), function(flesh, skeleton) {
 
 setMethod("split", c("ANY", "ManyToOneGrouping"), function(x, f, drop=FALSE) {
               stopifnot(isTRUEorFALSE(drop))
+              ans <- extractList(x, f)
               if (drop) {
-                  f <- f[grouplengths(f) > 0L]
+                  ans <- ans[lengths(ans) > 0L]
               }
-              extractList(x, f)
+              ans
           })
 
 setAs("grouping", "Grouping", function(from) {
-          CompressedGrouping(relist(from))
+          as(from, "ManyToOneGrouping")
       })
 
 setAs("grouping", "ManyToOneGrouping", function(from) {
@@ -75,6 +66,10 @@ setAs("grouping", "ManyToOneGrouping", function(from) {
       })
 
 setAs("factor", "Grouping", function(from) {
+          as(from, "ManyToOneGrouping")
+      })
+
+setAs("factor", "ManyToOneGrouping", function(from) {
           as(grouping(from), "Grouping")
       })
 
