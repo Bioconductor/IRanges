@@ -25,30 +25,44 @@ setAs("Hits", "DataFrame", function(from) {
 }
 setMethod("as.data.frame", "Hits", .as.data.frame.Hits)
 
-### Turn Hits object 'from' into a PartitioningByEnd object that describes
-### the grouping of hits by query.
-.from_Hits_to_PartitioningByEnd <- function(from)
+### Turn SortedByQueryHits object 'from' into a PartitioningByEnd object that
+### describes the grouping of hits by query.
+.from_SortedByQueryHits_to_PartitioningByEnd <- function(from)
     PartitioningByEnd(queryHits(from), NG=queryLength(from))
-setAs("Hits", "PartitioningByEnd", .from_Hits_to_PartitioningByEnd)
-setAs("Hits", "Partitioning", .from_Hits_to_PartitioningByEnd)
-setAs("Hits", "Ranges", .from_Hits_to_PartitioningByEnd)
-setAs("Hits", "IRanges",
-    function(from) as(.from_Hits_to_PartitioningByEnd(from), "IRanges")
+setAs("SortedByQueryHits", "PartitioningByEnd",
+    .from_SortedByQueryHits_to_PartitioningByEnd
+)
+setAs("SortedByQueryHits", "Partitioning",
+    .from_SortedByQueryHits_to_PartitioningByEnd
+)
+setAs("SortedByQueryHits", "Ranges",
+    .from_SortedByQueryHits_to_PartitioningByEnd
+)
+setAs("SortedByQueryHits", "IRanges",
+    function(from)
+        as(.from_SortedByQueryHits_to_PartitioningByEnd(from), "IRanges")
 )
 
-### Turn Hits object 'from' into a CompressedIntegerList object with one list
-### element per element in the original query.
-.from_Hits_to_CompressedIntegerList <- function(from)
+### Turn SortedByQueryHits object 'from' into a CompressedIntegerList object
+### with one list element per element in the original query.
+.from_SortedByQueryHits_to_CompressedIntegerList <- function(from)
 {
-    ans_partitioning <- .from_Hits_to_PartitioningByEnd(from)
+    ans_partitioning <- .from_SortedByQueryHits_to_PartitioningByEnd(from)
     relist(subjectHits(from), ans_partitioning)
 }
-setAs("Hits", "CompressedIntegerList", .from_Hits_to_CompressedIntegerList)
-setAs("Hits", "IntegerList", .from_Hits_to_CompressedIntegerList)
-setAs("Hits", "List", .from_Hits_to_CompressedIntegerList)
+setAs("SortedByQueryHits", "CompressedIntegerList",
+    .from_SortedByQueryHits_to_CompressedIntegerList
+)
+setAs("SortedByQueryHits", "IntegerList",
+    .from_SortedByQueryHits_to_CompressedIntegerList
+)
+setAs("SortedByQueryHits", "List",
+    .from_SortedByQueryHits_to_CompressedIntegerList
+)
 
-.as.list.Hits <- function(x) as.list(.from_Hits_to_CompressedIntegerList(x))
-setMethod("as.list", "Hits", .as.list.Hits)
+.as.list.SortedByQueryHits <- function(x)
+    as.list(.from_SortedByQueryHits_to_CompressedIntegerList(x))
+setMethod("as.list", "SortedByQueryHits", .as.list.SortedByQueryHits)
 
-setAs("Hits", "list", function(from) as.list(from))
+setAs("SortedByQueryHits", "list", function(from) as.list(from))
 

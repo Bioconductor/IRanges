@@ -395,8 +395,8 @@ NCList_find_overlaps_in_groups <- function(
 
 ### NOT exported.
 ### Return an ordinary list of:
-###   (a) Hits objects if 'select' is "all". In that case the list has the
-###       length of the shortest of 'query' or 'subject'.
+###   (a) SortedByQueryHits objects if 'select' is "all". In that case the
+###       list has the length of the shortest of 'query' or 'subject'.
 ###   (b) integer vectors if 'select' is not "all". In that case the list is
 ###       parallel to and has the same shape as 'query'.
 findOverlaps_NCLists <- function(query, subject,

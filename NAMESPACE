@@ -46,7 +46,6 @@ exportClasses(
     DataFrameList, SimpleDataFrameList,
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
     RangedData, RangedDataList, RDApplyParams,
-    CompressedHitsList, 
     RangedSelection,
     SimpleGrouping,
     SimpleManyToOneGrouping
@@ -172,7 +171,6 @@ export(
     RangesList,
     IRangesList,
     RleViewsList,
-    CompressedHitsList, 
     "%over%", "%within%", "%outside%", "%pover%", "%pwithin%", "%poutside%",
     MaskCollection.show_frame,
     Mask,

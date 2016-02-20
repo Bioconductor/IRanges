@@ -2,13 +2,7 @@
 ### CompressedHitsList objects
 ### -------------------------------------------------------------------------
 
-### [H.P. - 2015/12/17] Why do we need this? Where is it used? Note that the
-### CompressedHitsList representation is possible only in the rare situation
-### where the concatenation of all the list elements results in a Hits object
-### that is sorted by queryHits (this is a constraint for any Hits object).
-### This relies so much on luck that I wonder if it makes sense to use the
-### CompressedList trick to represent a list of Hits objects.
-### TODO: Maybe deprecate this.
+### [H.P. - 2015/12/17] Why do we need this? Where is it used?
 
 setClass("CompressedHitsList",
     prototype = prototype(elementType = "Hits",

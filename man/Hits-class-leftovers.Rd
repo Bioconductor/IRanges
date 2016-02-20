@@ -4,11 +4,19 @@
 \alias{Hits-examples}
 
 % coercion
-\alias{as.data.frame,Hits-method}
-\alias{as.list,Hits-method}
-\alias{coerce,Hits,list-method}
-\alias{coerce,Hits,List-method}
 \alias{coerce,Hits,DataFrame-method}
+\alias{as.data.frame,Hits-method}
+
+\alias{coerce,SortedByQueryHits,PartitioningByEnd-method}
+\alias{coerce,SortedByQueryHits,Partitioning-method}
+\alias{coerce,SortedByQueryHits,Ranges-method}
+\alias{coerce,SortedByQueryHits,IRanges-method}
+
+\alias{coerce,SortedByQueryHits,CompressedIntegerList-method}
+\alias{coerce,SortedByQueryHits,IntegerList-method}
+\alias{coerce,SortedByQueryHits,List-method}
+\alias{as.list,SortedByQueryHits-method}
+\alias{coerce,SortedByQueryHits,list-method}
 
 
 \title{Examples of basic manipulation of Hits objects}

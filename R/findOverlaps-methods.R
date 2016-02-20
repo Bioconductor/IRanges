@@ -48,17 +48,6 @@ setMethod("process_self_hits", "HitsList",
     }
 )
 
-setMethod("process_self_hits", "CompressedHitsList",
-    function(x, select=c("all", "first", "last", "arbitrary"),
-                drop.self=FALSE, drop.redundant=FALSE)
-    {
-        select <- match.arg(select)
-        ans <- process_self_hits(x@unlistData,
-                                 select, drop.self, drop.redundant)
-        relist(ans, x)
-    }
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### findOverlaps()
