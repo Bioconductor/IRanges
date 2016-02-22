@@ -24,7 +24,7 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
 {
     q_hits <- rep.int(seq_along(q2s), elementNROWS(q2s))
     s_hits <- as.integer(unlist(q2s, use.names=FALSE))
-    Hits(q_hits, s_hits, length(q2s), s_len)
+    Hits(q_hits, s_hits, length(q2s), s_len, sort.by.query=TRUE)
 }
 
 .make_Hits_from_s2q <- function(s2q, q_len)

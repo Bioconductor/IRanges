@@ -19,7 +19,7 @@ test_findOverlaps_Ranges <- function()
   checkIdentical(result, c(2L, NA, 3L))
 
   checkOverlap <- function(a, q, s, r, c) {
-    target <- Hits(q, s, r, c)
+    target <- Hits(q, s, r, c, sort.by.query=TRUE)
     checkIdentical(t(a), t(target))
   }
 
@@ -98,7 +98,7 @@ test_findOverlaps_Ranges <- function()
   checkIdentical(findOverlaps(c(3L, 7L, 10L), subject, select = "arbitrary"),
                  c(1L, 2L, NA))
   checkIdentical(findOverlaps(IRanges(c(2,1),c(3,4)), subject),
-                 Hits(1:2, c(1, 1), 2, 3))
+                 Hits(1:2, c(1, 1), 2, 3, sort.by.query=TRUE))
 
   ## check other types of matching
 

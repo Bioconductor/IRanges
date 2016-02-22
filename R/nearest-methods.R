@@ -84,7 +84,7 @@ vectorToHits <- function(i, srle, ord) {
              subjectHits = if (!is.null(ord)) ord[subj] else subj)
   if (!is.null(ord))
     m <- m[S4Vectors:::orderIntegerPairs(m[,1L], m[,2L]),,drop=FALSE]
-  Hits(m[ , 1L], m[ , 2L], lx, length(srle))
+  Hits(m[ , 1L], m[ , 2L], lx, length(srle), sort.by.query=TRUE)
 }
 
 setGeneric("nearest", function(x, subject, ...) standardGeneric("nearest"))
@@ -185,10 +185,12 @@ setMethod("distanceToNearest", c("Ranges", "RangesORmissing"),
         if (!length(subjectHits) || all(is.na(subjectHits))) {
             Hits(nLnode=length(x), 
                  nRnode=length(subject),
-                 distance=integer(0))
+                 distance=integer(0),
+                 sort.by.query=TRUE)
         } else {
             distance = distance(x[queryHits], subject[subjectHits])
-            Hits(queryHits, subjectHits, length(x), length(subject), distance)
+            Hits(queryHits, subjectHits, length(x), length(subject), distance,
+                 sort.by.query=TRUE)
         }
     }
 )
