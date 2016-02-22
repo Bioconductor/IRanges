@@ -10,10 +10,11 @@ setGeneric("process_self_hits",  signature="x", # not exported
                 drop.self=FALSE, drop.redundant=FALSE)
         standardGeneric("process_self_hits"))
 
-setMethod("process_self_hits", "Hits",
+setMethod("process_self_hits", "SortedByQueryHits",
     function(x, select=c("all", "first", "last", "arbitrary"),
                 drop.self=FALSE, drop.redundant=FALSE)
     {
+        x <- as(x, "SortedByQuerySelfHits")
         select <- match.arg(select)
         if (!isTRUEorFALSE(drop.self))
             stop("'drop.self' must be TRUE or FALSE")
@@ -33,10 +34,11 @@ setMethod("process_self_hits", "Hits",
     }
 )
 
-setMethod("process_self_hits", "HitsList",
+setMethod("process_self_hits", "SortedByQueryHitsList",
     function(x, select=c("all", "first", "last", "arbitrary"),
                 drop.self=FALSE, drop.redundant=FALSE)
     {
+        x <- as(x, "SortedByQuerySelfHitsList")
         select <- match.arg(select)
         ans <- lapply(x, process_self_hits,
                          select, drop.self,  drop.redundant)
