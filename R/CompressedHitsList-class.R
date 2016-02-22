@@ -14,12 +14,11 @@ setClass("CompressedHitsList",
 ### Accessors
 ###
 
-setMethod("subjectHits", "CompressedHitsList", function(x) subjectHits(x@unlistData))
+setMethod("from", "CompressedHitsList", function(x) from(x@unlistData))
+setMethod("to", "CompressedHitsList", function(x) to(x@unlistData))
 
-setMethod("queryHits", "CompressedHitsList", function(x) queryHits(x@unlistData))
-
-setMethod("queryLength", "CompressedHitsList", function(x) queryLength(x@unlistData))
-setMethod("subjectLength", "CompressedHitsList", function(x) subjectLength(x@unlistData))
+setMethod("nLnode", "CompressedHitsList", function(x) nLnode(x@unlistData))
+setMethod("nRnode", "CompressedHitsList", function(x) nRnode(x@unlistData))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

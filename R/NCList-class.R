@@ -385,10 +385,10 @@ NCList_find_overlaps_in_groups <- function(
     lapply(seq_len(min(length(query), length(subject))),
            function(i) {
                hits <- all_hits[h_skeleton[[i]]]
-               hits@queryHits <- hits@queryHits - query_offsets[[i]]
-               hits@subjectHits <- hits@subjectHits - subject_offsets[[i]]
-               hits@queryLength <- query_eltNROWS[[i]]
-               hits@subjectLength <- subject_eltNROWS[[i]]
+               hits@from <- hits@from - query_offsets[[i]]
+               hits@to <- hits@to - subject_offsets[[i]]
+               hits@nLnode <- query_eltNROWS[[i]]
+               hits@nRnode <- subject_eltNROWS[[i]]
                hits
            })
 }

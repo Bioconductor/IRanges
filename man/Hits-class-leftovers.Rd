@@ -82,9 +82,12 @@ as(hits, "Partitioning")  # same as as(hits, "PartitioningByEnd")
 ## remapHits()
 ## ---------------------------------------------------------------------
 
-hits2 <- remapHits(hits, subject.map=factor(c("e", "e", "d"), letters[1:5]))
+hits2 <- remapHits(hits,
+                   Rnodes.remapping=factor(c("e", "e", "d"), letters[1:5]))
 hits2
-hits3 <- remapHits(hits, subject.map=c(5, 5, 4), new.subjectLength=5)
+
+hits3 <- remapHits(hits,
+                   Rnodes.remapping=c(5, 5, 4), new.nRnode=5)
 hits3
 stopifnot(identical(hits2, hits3))
 }

@@ -10,10 +10,10 @@
 
 % accessors
 \alias{space,CompressedHitsList-method}
-\alias{subjectHits,CompressedHitsList-method}
-\alias{queryHits,CompressedHitsList-method}
-\alias{queryLength,CompressedHitsList-method}
-\alias{subjectLength,CompressedHitsList-method}
+\alias{from,CompressedHitsList-method}
+\alias{to,CompressedHitsList-method}
+\alias{nLnode,CompressedHitsList-method}
+\alias{nRnode,CompressedHitsList-method}
 
 
 \title{CompressedHitsList objects}

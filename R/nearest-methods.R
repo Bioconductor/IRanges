@@ -131,8 +131,8 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
               m <- m[S4Vectors:::orderIntegerPairs(m[,1L], m[,2L]),, drop=FALSE]
               ## unname() required because in case 'm' has only 1 row
               ## 'm[ , 1L]' and 'm[ , 2L]' will return a named atomic vector
-              ol@queryHits <- unname(m[ , 1L])
-              ol@subjectHits <- unname(m[ , 2L])
+              ol@from <- unname(m[ , 1L])
+              ol@to <- unname(m[ , 2L])
             } else {
               olv[is.na(olv)] <- ifelse(left, before, after)
               ol <- olv
@@ -183,8 +183,8 @@ setMethod("distanceToNearest", c("Ranges", "RangesORmissing"),
         }
 
         if (!length(subjectHits) || all(is.na(subjectHits))) {
-            Hits(queryLength=length(x), 
-                 subjectLength=length(subject),
+            Hits(nLnode=length(x), 
+                 nRnode=length(subject),
                  distance=integer(0))
         } else {
             distance = distance(x[queryHits], subject[subjectHits])
