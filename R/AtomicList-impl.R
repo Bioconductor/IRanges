@@ -786,15 +786,32 @@ setMethods("ifelse", list(c("SimpleLogicalList", "ANY", "ANY"),
              as(mapply(ifelse, test, yes, no, SIMPLIFY=FALSE), "List")
            })
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Numerical methods
 ###
 
+### which.min() and which.max()
+setMethods("which.min", list("IntegerList", "NumericList", "RleList"),
+    function(x) setNames(as.integer(lapply(x, which.min)), names(x))
+)
+setMethods("which.max", list("IntegerList", "NumericList", "RleList"),
+    function(x) setNames(as.integer(lapply(x, which.max)), names(x))
+)
+
+setMethod("which.min", "CompressedRleList",
+          function(x) {
+            viewWhichMins(as(x, "RleViews"), na.rm=TRUE) -
+              c(0L, head(cumsum(elementNROWS(x)), -1))
+          })
+setMethod("which.max", "CompressedRleList",
+          function(x) {
+            viewWhichMaxs(as(x, "RleViews"), na.rm=TRUE) -
+              c(0L, head(cumsum(elementNROWS(x)), -1))
+          })
 
 for (i in c("IntegerList", "NumericList", "RleList")) {
     setAtomicListMethod("diff", inputBaseClass = i, endoapply = TRUE)
-    setAtomicListMethod("which.max", inputBaseClass = i)
-    setAtomicListMethod("which.min", inputBaseClass = i)
     setMethod("pmax", i, function(..., na.rm = FALSE)
                   mendoapply(pmax, ..., MoreArgs = list(na.rm = na.rm)))
     setMethod("pmin", i, function(..., na.rm = FALSE)
@@ -877,17 +894,6 @@ setMethod("mad", "AtomicList",
 setMethod("IQR", "AtomicList",
     function(x, na.rm=FALSE, type=7) sapply(x, IQR, na.rm=na.rm, type=type)
 )
-
-setMethod("which.max", "CompressedRleList",
-          function(x) {
-            viewWhichMaxs(as(x, "RleViews"), na.rm=TRUE) -
-              c(0L, head(cumsum(elementNROWS(x)), -1))
-          })
-setMethod("which.min", "CompressedRleList",
-          function(x) {
-            viewWhichMins(as(x, "RleViews"), na.rm=TRUE) -
-              c(0L, head(cumsum(elementNROWS(x)), -1))
-          })
 
 diff.IntegerList <- function(x, ...) diff(x, ...)
 diff.NumericList <- function(x, ...) diff(x, ...)
