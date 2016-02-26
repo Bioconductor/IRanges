@@ -9,7 +9,7 @@ Description: The package provides efficient low-level and highly reusable S4
 	collections of instances of the basic classes. All classes in
 	the package use consistent naming and share the same rich and
 	consistent "Vector API" as much as possible.
-Version: 2.5.37
+Version: 2.5.38
 Encoding: UTF-8
 Author: H. Pagès, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
@@ -40,7 +40,8 @@ Collate: Vector-class-leftovers.R
 	seqapply.R
 	multisplit.R
 	AtomicList-impl.R
-        ListGrouping-class.R
+	AtomicList-utils.R
+	ListGrouping-class.R
 	Hits-class-leftovers.R
 	DataFrame-utils.R
 	DataFrameList-class.R
