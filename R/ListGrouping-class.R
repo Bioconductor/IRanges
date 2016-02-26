@@ -62,7 +62,7 @@ setAs("grouping", "Grouping", function(from) {
       })
 
 setAs("grouping", "ManyToOneGrouping", function(from) {
-          CompressedManyToOneGrouping(relist(from))
+          ManyToOneGrouping(relist(from), compress=TRUE)
       })
 
 setAs("factor", "Grouping", function(from) {
