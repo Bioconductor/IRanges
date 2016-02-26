@@ -159,7 +159,7 @@ setMethod("punion", c("Ranges", "Ranges"),
 )
 
 setMethod("punion", c("Pairs", "missing"), function(x, y, ...) {
-              callGeneric(first(x), last(x), ...)
+              callGeneric(first(x), second(x), ...)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -222,7 +222,7 @@ setMethod("pintersect", c("Ranges", "Ranges"),
 )
 
 setMethod("pintersect", c("Pairs", "missing"), function(x, y, ...) {
-              callGeneric(first(x), last(x), ...)
+              callGeneric(first(x), second(x), ...)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -260,7 +260,7 @@ setMethod("psetdiff", c("Ranges", "Ranges"),
 )
 
 setMethod("psetdiff", c("Pairs", "missing"), function(x, y, ...) {
-              callGeneric(first(x), last(x), ...)
+              callGeneric(first(x), second(x), ...)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
