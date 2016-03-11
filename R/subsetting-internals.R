@@ -35,9 +35,9 @@ setMethod("NSBS", "Ranges",
             S4Vectors:::.subscript_error("subscript contains out-of-bounds ",
                                          "ranges")
         if (i_len == 1L) {
-            ans <- new("WindowNSBS", subscript=c(start(i), end(i)),
-                                     upper_bound=x_NROW,
-                                     upper_bound_is_strict=upperBoundIsStrict)
+            ans <- new("RangeNSBS", subscript=c(start(i), end(i)),
+                                    upper_bound=x_NROW,
+                                    upper_bound_is_strict=upperBoundIsStrict)
             return(ans)
         }
         new("RangesNSBS", subscript=i,
