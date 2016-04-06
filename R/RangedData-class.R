@@ -537,7 +537,16 @@ setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
   rd
 })
 
+.split_RangedData_deprecation_msg <- wmsg(
+    "The \"split\" method for RangedData objects is deprecated. ",
+    "Please replace the RangedData object with a GRanges object ",
+    "and split it. This will produce a GRangesList instead of a ",
+    "RangedDataList object. (The GRanges and GRangesList classes ",
+    "are defined in the GenomicRanges package.)"
+)
+
 setMethod("split", "RangedData", function(x, f, drop = FALSE) {
+  .Deprecated(msg=.split_RangedData_deprecation_msg)
   if (length(f) > nrow(x) || nrow(x) %% length(f) > 0)
     stop("nrow(x) is not a multiple of length(f)")
   splitInd <- split(seq_len(nrow(x)), f, drop)
@@ -860,13 +869,26 @@ setClass("RangedDataList",
          prototype = prototype(elementType = "RangedData"),
          contains = "SimpleList")
 
+.RangedDataList_deprecation_msg <- wmsg(
+    "RangedDataList objects are deprecated in favor of GRangesList objects ",
+    "(the GRangesList class is defined in the GenomicRanges package)."
+)
+
 RangedDataList <- function(...)
 {
+
+  .Deprecated(msg=.RangedDataList_deprecation_msg)
   listData <- list(...)
   if (length(listData) == 1 && is.list(listData[[1L]]))
     listData <- listData[[1L]]
   S4Vectors:::new_SimpleList_from_list("RangedDataList", listData)
 }
+
+setMethod("show", "RangedDataList",
+          function(object) {
+            .Deprecated(msg=.RangedDataList_deprecation_msg)
+            callNextMethod()
+          })
 
 setMethod("unlist", "RangedDataList",
           function(x, recursive = TRUE, use.names = TRUE) {
