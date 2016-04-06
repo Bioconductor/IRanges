@@ -140,9 +140,6 @@ void R_init_IRanges(DllInfo *info)
 	REGISTER_CCALLABLE(_get_elt_from_CompressedIRangesList_holder);
 	REGISTER_CCALLABLE(_get_eltNROWS_from_CompressedIRangesList_holder);
 
-/* RangedData_class.c */
-	REGISTER_CCALLABLE(_new_RangedData);
-
 	return;
 }
 

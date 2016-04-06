@@ -279,15 +279,6 @@ SEXP CompressedNormalIRangesList_max(
 SEXP valid_GappedRanges(SEXP x, SEXP ans_type);
 
 
-/* RangedData_class.c */
-
-SEXP _new_RangedData(
-	const char *classname,
-	SEXP ranges,
-	SEXP values
-);
-
-
 /* inter_range_methods.c */
 
 SEXP IRanges_range(SEXP x);

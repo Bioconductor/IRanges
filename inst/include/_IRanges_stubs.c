@@ -227,12 +227,3 @@ DEFINE_CCALLABLE_STUB(int, get_eltNROWS_from_CompressedIRangesList_holder,
 	(                                    x_holder,     i)
 )
 
-/*
- * Stubs for callables defined in RangedData_class.c
- */
-
-DEFINE_CCALLABLE_STUB(SEXP, new_RangedData,
-	(const char *classname, SEXP ranges, SEXP values),
-	(            classname,      ranges,      values)
-)
-

@@ -114,10 +114,3 @@ IRanges_holder get_elt_from_CompressedIRangesList_holder(const CompressedIRanges
 
 int get_eltNROWS_from_CompressedIRangesList_holder(const CompressedIRangesList_holder *x_holder, int i);
 
-/*
- * Low-level manipulation of RangedData objects.
- * (see RangedData_class.c)
- */
-
-SEXP new_RangedData(const char *classname, SEXP ranges, SEXP values);
-
