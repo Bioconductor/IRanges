@@ -42,7 +42,7 @@ rangeComparisonCodeToLetter(code)
 ## order()
 ## -------
 
-\S4method{order}{Ranges}(..., na.last=TRUE, decreasing=FALSE)
+\S4method{order}{Ranges}(..., na.last=TRUE, decreasing=FALSE, method=c("shell", "radix"))
 }
 
 \arguments{
@@ -60,14 +60,15 @@ rangeComparisonCodeToLetter(code)
     Not supported.
   }
   \item{method}{
-    Use a Quicksort-based (\code{method="quick"}) or a
-    hash-based (\code{method="hash"}) algorithm.
+    For \code{match} and \code{selfmatch}: Use a Quicksort-based
+    (\code{method="quick"}) or a hash-based (\code{method="hash"}) algorithm.
     The latter tends to give better performance, except maybe for some
-    pathological input that we've not been able to determine so far.
-
+    pathological input that we've not encountered so far.
     When \code{method="auto"} is specified, the most efficient algorithm will
     be used, that is, the hash-based algorithm if \code{length(x) <= 2^29},
     otherwise the Quicksort-based algorithm.
+
+    For \code{order}: The \code{method} argument is ignored.
   }
   \item{...}{
     One or more \link{Ranges} objects. The additional \link{Ranges} objects

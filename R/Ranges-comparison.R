@@ -76,8 +76,9 @@ setMethod("selfmatch", "Ranges",
 ###
 
 ### 'na.last' is pointless (Ranges objects don't contain NAs) so is ignored.
+### 'method' is also ignored at the moment.
 setMethod("order", "Ranges",
-    function(..., na.last=TRUE, decreasing=FALSE)
+    function(..., na.last=TRUE, decreasing=FALSE, method=c("shell", "radix"))
     {
         if (!isTRUEorFALSE(decreasing))
             stop("'decreasing' must be TRUE or FALSE")
