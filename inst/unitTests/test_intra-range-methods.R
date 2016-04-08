@@ -205,7 +205,7 @@ test_restrict_RangesList <- function() {
   }
 }
 
-test_zoon_Ranges <- function() {
+test_zoom_Ranges <- function() {
   ir <- IRanges(c(1,5), c(3,10))
   checkIdentical(ir*1, ir)
   checkIdentical(ir*c(1,2), IRanges(c(1,6), c(3, 8)))
