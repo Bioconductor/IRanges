@@ -47,16 +47,17 @@ static void *realloc2(void *ptr, int new_nmemb, int old_nmemb, size_t size)
 	return new_ptr;
 }
 
-static int get_new_stack_length(int stack_length)
+static int get_new_maxdepth(int maxdepth)
 {
-	return stack_length == 0 ? 1000 : 2 * stack_length;
+	return maxdepth == 0 ? 1000 : 2 * maxdepth;
 }
 
 
 /****************************************************************************
- * NCList data structure
+ * NCList structure
  */
 
+/* sizeof(NCList) is 24 bytes (0x18 bytes) */
 typedef struct nclist_t {
 	int buflength;  /* >= 0 */
 	int nelt;       /* >= 0 and <= buflength */
@@ -65,14 +66,126 @@ typedef struct nclist_t {
 	struct nclist_t *sub_nclists;  /* Of length 'nelt' */
 } NCList;
 
+/*
+static void print_NCList_node(const NCList *nclist, int depth)
+{
+	int d, n;
+
+	for (d = 0; d < depth; d++) printf("-"); printf(" ");
+	printf("NCList node at address %p:\n", nclist);
+
+	for (d = 0; d < depth; d++) printf("-"); printf(" ");
+	printf("  buflength=%d; nelt=%d\n", nclist->buflength, nclist->nelt);
+
+	for (d = 0; d < depth; d++) printf("-"); printf(" ");
+	printf("  revmap:");
+	for (n = 0; n < nclist->nelt; n++)
+		printf(" %d", nclist->revmap[n]);
+	printf("\n");
+	return;
+}
+
+static void print_NCList_rec(const NCList *nclist, int depth)
+{
+	int n;
+
+	print_NCList_node(nclist, depth);
+	for (n = 0; n < nclist->nelt; n++)
+		print_NCList_rec(nclist->sub_nclists + n, depth + 1);
+	return;
+}
+*/
+
 static void init_NCList(NCList *nclist)
 {
 	nclist->buflength = nclist->nelt = 0;
 	return;
 }
 
-/* Recursive! */
-static void free_NCList(const NCList *nclist)
+
+/****************************************************************************
+ * Utilities to walk on an NCList structure non-recursively.
+ *
+ * Bottom-up walk: the children are processed before their parent.
+ * Top-down walk: the parent is processed before its children.
+ */
+
+typedef struct NCList_stack_elt_t {
+	const NCList *nclist;
+	int n;
+} NCListStackElt;
+
+static NCListStackElt *NCList_stack = NULL;
+static int NCList_stack_maxdepth = 0;
+static int NCList_stack_depth = 0;
+
+/*
+static void print_NCList_stack()
+{
+	int d;
+
+	printf("NCList_stack:");
+	for (d = 0; d < NCList_stack_depth; d++)
+		printf(" %d", NCList_stack[d].n);
+	printf("\n");
+	return;
+}
+*/
+
+static void extend_NCList_stack()
+{
+	int new_maxdepth;
+
+	new_maxdepth = get_new_maxdepth(NCList_stack_maxdepth);
+	NCList_stack = (NCListStackElt *) realloc2(NCList_stack,
+						   new_maxdepth,
+						   NCList_stack_maxdepth,
+						   sizeof(NCListStackElt));
+	NCList_stack_maxdepth = new_maxdepth;
+	return;
+}
+
+static const NCList *move_down(const NCList *nclist)
+{
+	NCListStackElt *stack_elt;
+
+	while (nclist->nelt != 0) {
+		if (NCList_stack_depth == NCList_stack_maxdepth)
+			extend_NCList_stack();
+		stack_elt = NCList_stack + NCList_stack_depth++;
+		stack_elt->nclist = nclist;
+		stack_elt->n = 0;
+		nclist = nclist->sub_nclists;
+	}
+	return nclist;
+}
+
+static const NCList *next_bottom_up()
+{
+	NCListStackElt *stack_elt;
+	const NCList *nclist;
+
+	/* Move up (i.e. pop stack element). */
+	if (--NCList_stack_depth < 0)
+		return NULL;
+	stack_elt = NCList_stack + NCList_stack_depth;
+	nclist = stack_elt->nclist;
+	if (++(stack_elt->n) == nclist->nelt)
+		return nclist;
+	/* Move right. */
+	NCList_stack_depth++;
+	nclist = nclist->sub_nclists + stack_elt->n;
+	/* Move all the way down (i.e. push stack elements). */
+	return move_down(nclist);
+}
+
+
+/****************************************************************************
+ * free_NCList()
+ */
+
+/* Recursive!
+static void free_NCList_rec(const NCList *nclist)
 {
 	int n;
 	const NCList *sub_nclist;
@@ -82,9 +195,39 @@ static void free_NCList(const NCList *nclist)
 	for (n = 0, sub_nclist = nclist->sub_nclists;
 	     n < nclist->nelt;
 	     n++, sub_nclist++)
-		free_NCList(sub_nclist);
+		free_NCList_rec(sub_nclist);
 	free(nclist->revmap);
 	free(nclist->sub_nclists);
+	return;
+}
+*/
+
+/* Non-recursive version of free_NCList_rec(). */
+static void free_NCList(const NCList *top_nclist)
+{
+	const NCList *nclist;
+
+	//printf("START free_NCList:\n");
+	//print_NCList_rec(top_nclist, 0);
+	//printf("\n"); fflush(stdout);
+
+	NCList_stack_depth = 0;
+	for (nclist = move_down(top_nclist);
+	     nclist != NULL;
+	     nclist = next_bottom_up())
+	{
+		//print_NCList_stack();
+		//print_NCList_node(nclist, NCList_stack_depth);
+		//printf("\n"); fflush(stdout);
+
+		if (nclist->buflength != 0) {
+			free(nclist->revmap);
+			free(nclist->sub_nclists);
+		}
+		
+	}
+
+	//printf("END free_NCList.\n");
 	return;
 }
 
@@ -134,9 +277,6 @@ static void extend_NCList(NCList *nclist)
 	old_buflength = nclist->buflength;
 	if (old_buflength == 0) {
 		new_buflength = 1;
-		new_revmap = (int *) malloc(sizeof(int) * new_buflength);
-		new_sub_nclists = (NCList *) malloc(sizeof(NCList) *
-						    new_buflength);
 	} else {
 		if (old_buflength < 256)
 			new_buflength = 16 * old_buflength;
@@ -148,14 +288,15 @@ static void extend_NCList(NCList *nclist)
 			new_buflength = 2 * old_buflength;
 		else
 			new_buflength = old_buflength + 67108864;
-		new_revmap = (int *) realloc(nclist->revmap,
-					     sizeof(int) * new_buflength);
-		new_sub_nclists = (NCList *)
-				  realloc(nclist->sub_nclists,
-					  sizeof(NCList) * new_buflength);
 	}
-	if (new_revmap == NULL || new_sub_nclists == NULL)
-		error("extend_NCList: memory allocation failed");
+	new_revmap = (int *) realloc2(nclist->revmap,
+				      new_buflength,
+				      old_buflength,
+				      sizeof(int));
+	new_sub_nclists = (NCList *) realloc2(nclist->sub_nclists,
+					      new_buflength,
+					      old_buflength,
+					      sizeof(NCList));
 	nclist->buflength = new_buflength;
 	nclist->revmap = new_revmap;
 	nclist->sub_nclists = new_sub_nclists;
@@ -182,7 +323,7 @@ static int qsort_compar(const void *p1, const void *p2)
 
 /*
  * Setting a hard limit on the max depth of NCList objects to prevent C stack
- * overflows when running recursive code like NCList_get_y_overlaps().
+ * overflows when running recursive code like NCList_get_y_overlaps_rec().
  * A better solution would be to not use recursive code at all when traversing
  * an NCList object. Then NCList objects of arbitrary depth could be supported
  * and it wouldn't be necessary to set the limit below.
@@ -194,7 +335,7 @@ typedef struct stack_elt_t {
 } StackElt;
 
 static StackElt *stack = NULL;
-static int stack_length = 0;
+static int stack_maxdepth = 0;
 
 static StackElt append_NCList_elt(NCList *landing_nclist, int revidx)
 {
@@ -213,17 +354,17 @@ static StackElt append_NCList_elt(NCList *landing_nclist, int revidx)
 
 static void extend_stack()
 {
-	int new_stack_length;
+	int new_maxdepth;
 
-	if (stack_length == NCLIST_MAX_DEPTH)
+	if (stack_maxdepth == NCLIST_MAX_DEPTH)
 		error("extend_stack: cannot build an NCList object "
 		      "of depth > %d", NCLIST_MAX_DEPTH);
-	new_stack_length = get_new_stack_length(stack_length);
-	if (new_stack_length > NCLIST_MAX_DEPTH)
-		new_stack_length = NCLIST_MAX_DEPTH;
-	stack = (StackElt *) realloc2(stack, new_stack_length, stack_length,
+	new_maxdepth = get_new_maxdepth(stack_maxdepth);
+	if (new_maxdepth > NCLIST_MAX_DEPTH)
+		new_maxdepth = NCLIST_MAX_DEPTH;
+	stack = (StackElt *) realloc2(stack, new_maxdepth, stack_maxdepth,
 				      sizeof(StackElt));
-	stack_length = new_stack_length;
+	stack_maxdepth = new_maxdepth;
 	return;
 }
 
@@ -258,10 +399,11 @@ static void build_NCList(NCList *top_nclist,
 		// append range i to landing_nclist
 		stack_elt = append_NCList_elt(landing_nclist, i);
 		// put stack_elt on stack
-		if (++d == stack_length)
+		if (++d == stack_maxdepth)
 			extend_stack();
 		stack[d] = stack_elt;
 	}
+	//print_NCList_rec(top_nclist, 0);
 	return;
 }
 
@@ -297,8 +439,8 @@ SEXP NCList_build(SEXP nclist_xp, SEXP x_start, SEXP x_end, SEXP x_subset)
 #define NCListAsINTSXP_REVMAP(nclist) ((nclist)+1)
 #define NCListAsINTSXP_OFFSETS(nclist) ((nclist)+1+NCListAsINTSXP_NELT(nclist))
 
-/* Recursive! */
-static int compute_length_of_NCListAsINTSXP(const NCList *nclist)
+/* Recursive!
+static int compute_length_of_NCListAsINTSXP_rec(const NCList *nclist)
 {
 	int nelt, n;
 	unsigned int ans_len, dump_len;
@@ -312,7 +454,7 @@ static int compute_length_of_NCListAsINTSXP(const NCList *nclist)
 	     n < nelt;
 	     n++, sub_nclist++)
 	{
-		dump_len = compute_length_of_NCListAsINTSXP(sub_nclist);
+		dump_len = compute_length_of_NCListAsINTSXP_rec(sub_nclist);
 		ans_len += dump_len;
 		if (dump_len > ans_len)
 			goto too_big;
@@ -320,12 +462,38 @@ static int compute_length_of_NCListAsINTSXP(const NCList *nclist)
 	if (ans_len <= INT_MAX)
 		return (int) ans_len;
 too_big:
-	error("compute_length_of_NCListAsINTSXP: "
+	error("compute_length_of_NCListAsINTSXP_rec: "
 	      "NCList object is too big to fit in an integer vector");
+}
+*/
+
+/* Non-recursive version of compute_length_of_NCListAsINTSXP_rec(). */
+static int compute_length_of_NCListAsINTSXP(const NCList *top_nclist)
+{
+	unsigned int ans_len;
+	const NCList *nclist;
+	int nelt;
+
+	ans_len = 0U;
+	NCList_stack_depth = 0;
+	for (nclist = move_down(top_nclist);
+	     nclist != NULL;
+	     nclist = next_bottom_up())
+	{
+		nelt = nclist->nelt;
+		if (nelt == 0)
+			continue;
+		ans_len += 1U + 2U * (unsigned int) nelt;
+		if (ans_len > INT_MAX)
+			error("compute_length_of_NCListAsINTSXP: "
+			      "NCList object is too big to fit in "
+			      "an integer vector");
+	}
+	return (int) ans_len;
 }
 
 /* Recursive! */
-static int dump_NCList_to_int_array(const NCList *nclist, int *out)
+static int dump_NCList_to_int_array_rec(const NCList *nclist, int *out)
 {
 	int nelt, offset, dump_len, n;
 	const int *revidx_p;
@@ -342,7 +510,8 @@ static int dump_NCList_to_int_array(const NCList *nclist, int *out)
 	     n++, revidx_p++, sub_nclist++)
 	{
 		NCListAsINTSXP_REVMAP(out)[n] = *revidx_p;
-		dump_len = dump_NCList_to_int_array(sub_nclist, out + offset);
+		dump_len = dump_NCList_to_int_array_rec(sub_nclist,
+							out + offset);
 		NCListAsINTSXP_OFFSETS(out)[n] = dump_len != 0 ? offset : -1;
 		offset += dump_len;
 	}
@@ -362,7 +531,7 @@ SEXP new_NCListAsINTSXP_from_NCList(SEXP nclist_xp)
 		      "pointer to NCList struct is NULL");
 	ans_len = compute_length_of_NCListAsINTSXP(top_nclist);
 	PROTECT(ans = NEW_INTEGER(ans_len));
-	dump_NCList_to_int_array(top_nclist, INTEGER(ans));
+	dump_NCList_to_int_array_rec(top_nclist, INTEGER(ans));
 	UNPROTECT(1);
 	//print_elapsed_time();
 	return ans;
@@ -375,13 +544,13 @@ SEXP new_NCListAsINTSXP_from_NCList(SEXP nclist_xp)
 
 /* Recursive! 
    Print 1 line per range in 'nclist'. Return max depth. */
-static int print_NCListAsINTSXP(const int *nclist,
-				const int *x_start_p, const int *x_end_p,
-				int depth, const char *format)
+static int print_NCListAsINTSXP_rec(const int *nclist,
+				    const int *x_start_p, const int *x_end_p,
+				    int depth, const char *format)
 {
-	int max_depth, nelt, n, d, revidx, offset, tmp;
+	int maxdepth, nelt, n, d, revidx, offset, tmp;
 
-	max_depth = depth;
+	maxdepth = depth;
 	nelt = NCListAsINTSXP_NELT(nclist);
 	for (n = 0; n < nelt; n++) {
 		for (d = 1; d < depth; d++)
@@ -391,21 +560,21 @@ static int print_NCListAsINTSXP(const int *nclist,
 		Rprintf(": [%d, %d]\n", x_start_p[revidx], x_end_p[revidx]);
 		offset = NCListAsINTSXP_OFFSETS(nclist)[n];
 		if (offset != -1) {
-			tmp = print_NCListAsINTSXP(nclist + offset,
-						   x_start_p, x_end_p,
-						   depth + 1, format);
-			if (tmp > max_depth)
-				max_depth = tmp;
+			tmp = print_NCListAsINTSXP_rec(nclist + offset,
+						       x_start_p, x_end_p,
+						       depth + 1, format);
+			if (tmp > maxdepth)
+				maxdepth = tmp;
 		}
 	}
-	return max_depth;
+	return maxdepth;
 }
 
 /* --- .Call ENTRY POINT --- */
 SEXP NCListAsINTSXP_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
 {
 	const int *top_nclist;
-	int x_len, max_digits, max_depth;
+	int x_len, max_digits, maxdepth;
 	const int *x_start_p, *x_end_p;
 	char format[10];
 
@@ -414,14 +583,15 @@ SEXP NCListAsINTSXP_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
 				    &x_start_p, &x_end_p,
 				    "start(x)", "end(x)");
 	if (x_len == 0) {
-		max_depth = 0;
+		maxdepth = 0;
 	} else {
 		max_digits = (int) log10((double) x_len) + 1;
 		sprintf(format, "%c0%d%c", '%', max_digits, 'd');
-		max_depth = print_NCListAsINTSXP(top_nclist, x_start_p, x_end_p,
-					    1, format);
+		maxdepth = print_NCListAsINTSXP_rec(top_nclist,
+						    x_start_p, x_end_p,
+						    1, format);
 	}
-	Rprintf("max depth = %d\n", max_depth);
+	Rprintf("max depth = %d\n", maxdepth);
 	return R_NilValue;
 }
 
@@ -925,30 +1095,9 @@ static int int_bsearch(const int *subset, int subset_len,
  * NCList_get_y_overlaps()
  */
 
-/*
-static const NCList **nclist_stack;
-static int nclist_stack_length = 0;
-
-static void extend_nclist_stack()
-{
-	int new_stack_length;
-
-	if (stack_length == NCLIST_MAX_DEPTH)
-		error("extend_stack: cannot build an NCList object "
-		      "of depth > %d", NCLIST_MAX_DEPTH);
-	new_stack_length = get_new_stack_length(stack_length);
-	if (new_stack_length > NCLIST_MAX_DEPTH)
-		new_stack_length = NCLIST_MAX_DEPTH;
-	stack = (StackElt *) realloc2(stack, new_stack_length, stack_length,
-				      sizeof(StackElt));
-	stack_length = new_stack_length;
-	return;
-}
-*/
-
 /* Recursive! */
-static void NCList_get_y_overlaps(const NCList *x_nclist,
-				  const Backpack *backpack)
+static void NCList_get_y_overlaps_rec(const NCList *x_nclist,
+				      const Backpack *backpack)
 {
 	const int *revmap;
 	int nelt, n, revidx;
@@ -973,7 +1122,7 @@ static void NCList_get_y_overlaps(const NCList *x_nclist,
 				break;
 		}
 		if (sub_nclist->nelt != 0)
-			NCList_get_y_overlaps(sub_nclist, backpack);
+			NCList_get_y_overlaps_rec(sub_nclist, backpack);
 	}
 	return;
 }
@@ -984,8 +1133,8 @@ static void NCList_get_y_overlaps(const NCList *x_nclist,
  */
 
 /* Recursive! */
-static void NCListAsINTSXP_get_y_overlaps(const int *x_nclist,
-					  const Backpack *backpack)
+static void NCListAsINTSXP_get_y_overlaps_rec(const int *x_nclist,
+					      const Backpack *backpack)
 {
 	const int *revmap, *offset_p;
 	int nelt, n, revidx, offset;
@@ -1010,8 +1159,8 @@ static void NCListAsINTSXP_get_y_overlaps(const int *x_nclist,
 		}
 		offset = *offset_p;
 		if (offset != -1)
-			NCListAsINTSXP_get_y_overlaps(x_nclist + offset,
-						      backpack);
+			NCListAsINTSXP_get_y_overlaps_rec(x_nclist + offset,
+							  backpack);
 	}
 	return;
 }
@@ -1049,11 +1198,11 @@ static int find_overlaps(
 					      s_subset_p, s_len);
 		pp = &nclist;
 		get_y_overlaps_fun =
-			(GetYOverlapsFunType) NCList_get_y_overlaps;
+		    (GetYOverlapsFunType) NCList_get_y_overlaps_rec;
 	} else {
 		pp = INTEGER(nclist_sxp);
 		get_y_overlaps_fun =
-			(GetYOverlapsFunType) NCListAsINTSXP_get_y_overlaps;
+		    (GetYOverlapsFunType) NCListAsINTSXP_get_y_overlaps_rec;
 	}
 	pp_find_overlaps(
 		q_start_p, q_end_p, q_space_p, q_subset_p, q_len,
