@@ -22,6 +22,41 @@ static void print_elapsed_time()
 }
 */
 
+
+/****************************************************************************
+ * A simple wrapper to realloc()
+ */
+
+/* 'new_nmemb' must be > 'old_nmemb'. */
+static void *realloc2(void *ptr, int new_nmemb, int old_nmemb, size_t size)
+{
+	void *new_ptr;
+
+	if (new_nmemb <= old_nmemb)
+		error("IRanges internal error in realloc2(): "
+		      "'new_nmemb' <= 'old_nmemb'");
+	size *= new_nmemb;
+	if (old_nmemb == 0) {
+		new_ptr = malloc(size);
+	} else {
+		new_ptr = realloc(ptr, size);
+	}
+	if (new_ptr == NULL)
+		error("IRanges internal error in realloc2(): "
+		      "memory (re)allocation failed");
+	return new_ptr;
+}
+
+static int get_new_stack_length(int stack_length)
+{
+	return stack_length == 0 ? 1000 : 2 * stack_length;
+}
+
+
+/****************************************************************************
+ * NCList data structure
+ */
+
 typedef struct nclist_t {
 	int buflength;  /* >= 0 */
 	int nelt;       /* >= 0 and <= buflength */
@@ -36,17 +71,18 @@ static void init_NCList(NCList *nclist)
 	return;
 }
 
+/* Recursive! */
 static void free_NCList(const NCList *nclist)
 {
 	int n;
-	const NCList *sub_nclists;
+	const NCList *sub_nclist;
 
 	if (nclist->buflength == 0)
 		return;
-	for (n = 0, sub_nclists = nclist->sub_nclists;
+	for (n = 0, sub_nclist = nclist->sub_nclists;
 	     n < nclist->nelt;
-	     n++, sub_nclists++)
-		free_NCList(sub_nclists);
+	     n++, sub_nclist++)
+		free_NCList(sub_nclist);
 	free(nclist->revmap);
 	free(nclist->sub_nclists);
 	return;
@@ -154,7 +190,7 @@ static int qsort_compar(const void *p1, const void *p2)
 #define NCLIST_MAX_DEPTH 100000
 typedef struct stack_elt_t {
 	int revidx;
-	NCList *sub_nclists;
+	NCList *nclist;
 } StackElt;
 
 static StackElt *stack = NULL;
@@ -169,36 +205,25 @@ static StackElt append_NCList_elt(NCList *landing_nclist, int revidx)
 	if (nelt == landing_nclist->buflength)
 		extend_NCList(landing_nclist);
 	stack_elt.revidx = landing_nclist->revmap[nelt] = revidx;
-	stack_elt.sub_nclists = landing_nclist->sub_nclists + nelt;
-	init_NCList(stack_elt.sub_nclists);
+	stack_elt.nclist = landing_nclist->sub_nclists + nelt;
+	init_NCList(stack_elt.nclist);
 	landing_nclist->nelt++;
 	return stack_elt;
 }
 
 static void extend_stack()
 {
-	int new_length;
-	StackElt *new_stack;
+	int new_stack_length;
 
-	if (stack_length == 0) {
-		new_length = 1000;
-		new_stack = (StackElt *) malloc(sizeof(StackElt) *
-						new_length);
-	} else {
-		if (stack_length == NCLIST_MAX_DEPTH)
-			error("extend_stack: cannot build an NCList object "
-			      "of depth >= %d", NCLIST_MAX_DEPTH);
-		if (stack_length <= NCLIST_MAX_DEPTH / 2)
-			new_length = 2 * stack_length;
-		else
-			new_length = NCLIST_MAX_DEPTH;
-		new_stack = (StackElt *) realloc(stack, sizeof(StackElt) *
-							new_length);
-	}
-	if (new_stack == NULL)
-		error("extend_stack: memory allocation failed");
-	stack_length = new_length;
-	stack = new_stack;
+	if (stack_length == NCLIST_MAX_DEPTH)
+		error("extend_stack: cannot build an NCList object "
+		      "of depth > %d", NCLIST_MAX_DEPTH);
+	new_stack_length = get_new_stack_length(stack_length);
+	if (new_stack_length > NCLIST_MAX_DEPTH)
+		new_stack_length = NCLIST_MAX_DEPTH;
+	stack = (StackElt *) realloc2(stack, new_stack_length, stack_length,
+				      sizeof(StackElt));
+	stack_length = new_stack_length;
 	return;
 }
 
@@ -229,7 +254,7 @@ static void build_NCList(NCList *top_nclist,
 		current_end = x_end_p[i];
 		while (d >= 0 && x_end_p[stack[d].revidx] < current_end)
 			d--;  // unstack
-		landing_nclist = d == -1 ? top_nclist: stack[d].sub_nclists;
+		landing_nclist = d == -1 ? top_nclist: stack[d].nclist;
 		// append range i to landing_nclist
 		stack_elt = append_NCList_elt(landing_nclist, i);
 		// put stack_elt on stack
@@ -272,21 +297,22 @@ SEXP NCList_build(SEXP nclist_xp, SEXP x_start, SEXP x_end, SEXP x_subset)
 #define NCListAsINTSXP_REVMAP(nclist) ((nclist)+1)
 #define NCListAsINTSXP_OFFSETS(nclist) ((nclist)+1+NCListAsINTSXP_NELT(nclist))
 
+/* Recursive! */
 static int compute_length_of_NCListAsINTSXP(const NCList *nclist)
 {
 	int nelt, n;
 	unsigned int ans_len, dump_len;
-	const NCList *sub_nclists;
+	const NCList *sub_nclist;
 
 	nelt = nclist->nelt;
 	if (nelt == 0)
 		return 0;
 	ans_len = 1U + 2U * (unsigned int) nelt;
-	for (n = 0, sub_nclists = nclist->sub_nclists;
+	for (n = 0, sub_nclist = nclist->sub_nclists;
 	     n < nelt;
-	     n++, sub_nclists++)
+	     n++, sub_nclist++)
 	{
-		dump_len = compute_length_of_NCListAsINTSXP(sub_nclists);
+		dump_len = compute_length_of_NCListAsINTSXP(sub_nclist);
 		ans_len += dump_len;
 		if (dump_len > ans_len)
 			goto too_big;
@@ -298,11 +324,12 @@ too_big:
 	      "NCList object is too big to fit in an integer vector");
 }
 
+/* Recursive! */
 static int dump_NCList_to_int_array(const NCList *nclist, int *out)
 {
 	int nelt, offset, dump_len, n;
 	const int *revidx_p;
-	const NCList *sub_nclists;
+	const NCList *sub_nclist;
 
 	nelt = nclist->nelt;
 	if (nelt == 0)
@@ -310,12 +337,12 @@ static int dump_NCList_to_int_array(const NCList *nclist, int *out)
 	offset = 1 + 2 * nelt;
 	NCListAsINTSXP_NELT(out) = nelt;
 	for (n = 0, revidx_p = nclist->revmap,
-		    sub_nclists = nclist->sub_nclists;
+		    sub_nclist = nclist->sub_nclists;
 	     n < nelt;
-	     n++, revidx_p++, sub_nclists++)
+	     n++, revidx_p++, sub_nclist++)
 	{
 		NCListAsINTSXP_REVMAP(out)[n] = *revidx_p;
-		dump_len = dump_NCList_to_int_array(sub_nclists, out + offset);
+		dump_len = dump_NCList_to_int_array(sub_nclist, out + offset);
 		NCListAsINTSXP_OFFSETS(out)[n] = dump_len != 0 ? offset : -1;
 		offset += dump_len;
 	}
@@ -346,7 +373,8 @@ SEXP new_NCListAsINTSXP_from_NCList(SEXP nclist_xp)
  * NCListAsINTSXP_print()
  */
 
-/* Print 1 line per range in 'nclist'. Return max depth. */
+/* Recursive! 
+   Print 1 line per range in 'nclist'. Return max depth. */
 static int print_NCListAsINTSXP(const int *nclist,
 				const int *x_start_p, const int *x_end_p,
 				int depth, const char *format)
@@ -557,7 +585,7 @@ static int is_hit(int revidx, const Backpack *backpack)
 			return 0;
 	}
 	/* 2nd: perform checks specific to the current type of overlaps
-           (by calling the callback function for this type) */
+	   (by calling the callback function for this type) */
 	return backpack->is_hit_fun(revidx, backpack);
 }
 
@@ -897,22 +925,43 @@ static int int_bsearch(const int *subset, int subset_len,
  * NCList_get_y_overlaps()
  */
 
+/*
+static const NCList **nclist_stack;
+static int nclist_stack_length = 0;
+
+static void extend_nclist_stack()
+{
+	int new_stack_length;
+
+	if (stack_length == NCLIST_MAX_DEPTH)
+		error("extend_stack: cannot build an NCList object "
+		      "of depth > %d", NCLIST_MAX_DEPTH);
+	new_stack_length = get_new_stack_length(stack_length);
+	if (new_stack_length > NCLIST_MAX_DEPTH)
+		new_stack_length = NCLIST_MAX_DEPTH;
+	stack = (StackElt *) realloc2(stack, new_stack_length, stack_length,
+				      sizeof(StackElt));
+	stack_length = new_stack_length;
+	return;
+}
+*/
+
 /* Recursive! */
 static void NCList_get_y_overlaps(const NCList *x_nclist,
 				  const Backpack *backpack)
 {
 	const int *revmap;
 	int nelt, n, revidx;
-	const NCList *sub_nclists;
+	const NCList *sub_nclist;
 
 	revmap = x_nclist->revmap;
 	nelt = x_nclist->nelt;
 	n = int_bsearch(revmap, nelt,
 			backpack->x_end_p, backpack->min_x_end);
 	for (revmap = revmap + n,
-	     sub_nclists = x_nclist->sub_nclists + n;
+	     sub_nclist = x_nclist->sub_nclists + n;
 	     n < nelt;
-	     n++, revmap++, sub_nclists++)
+	     n++, revmap++, sub_nclist++)
 	{
 		revidx = *revmap;
 		if (backpack->x_start_p[revidx] > backpack->max_x_start)
@@ -923,8 +972,8 @@ static void NCList_get_y_overlaps(const NCList *x_nclist,
 			 && !backpack->pp_is_q)
 				break;
 		}
-		if (sub_nclists->nelt != 0)
-			NCList_get_y_overlaps(sub_nclists, backpack);
+		if (sub_nclist->nelt != 0)
+			NCList_get_y_overlaps(sub_nclist, backpack);
 	}
 	return;
 }
