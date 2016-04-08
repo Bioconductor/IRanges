@@ -352,11 +352,11 @@ SEXP NCList_build(
 	SEXP x_subset
 );
 
-SEXP new_NCListSXP_from_NCList(
+SEXP new_NCListAsINTSXP_from_NCList(
 	SEXP nclist_xp
 );
 
-SEXP NCListSXP_print(
+SEXP NCListAsINTSXP_print(
 	SEXP x_nclist,
 	SEXP x_start,
 	SEXP x_end

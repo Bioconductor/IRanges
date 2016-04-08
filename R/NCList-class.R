@@ -122,7 +122,7 @@ setAs("NCList", "IRanges", function(from) ranges(from, use.mcols=TRUE))
 .nclist <- function(x_start, x_end, x_subset=NULL)
 {
     nclist_xp <- .NCList_xp(x_start, x_end, x_subset)
-    .Call2("new_NCListSXP_from_NCList", nclist_xp, PACKAGE="IRanges")
+    .Call2("new_NCListAsINTSXP_from_NCList", nclist_xp, PACKAGE="IRanges")
 }
 
 NCList <- function(x, circle.length=NA_integer_)
@@ -149,8 +149,8 @@ print_NCList <- function(x)
 {
     if (!is(x, "NCList"))
         stop("'x' must be an NCList object")
-    .Call2("NCListSXP_print", x@nclist, start(x@ranges), end(x@ranges),
-                              PACKAGE="IRanges")
+    .Call2("NCListAsINTSXP_print", x@nclist, start(x@ranges), end(x@ranges),
+                                   PACKAGE="IRanges")
     invisible(NULL)
 }
 
