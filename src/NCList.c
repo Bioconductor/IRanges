@@ -10,15 +10,27 @@
 
 /*
 #include <time.h>
+static double cumulated_time = 0.0;
 static clock_t clock0;
+
+static void start_clock()
+{
+	clock0 = clock();
+}
+static void stop_clock()
+{
+	cumulated_time += ((double) clock() - clock0) / CLOCKS_PER_SEC;
+}
 static void init_clock(const char *msg)
 {
 	printf("%s", msg);
+	cumulated_time = 0.0;
 	clock0 = clock();
 }
 static void print_elapsed_time()
 {
-	printf("%8.6f s\n", ((double) clock() - clock0) / CLOCKS_PER_SEC);
+	stop_clock();
+	printf("%8.6f s\n", cumulated_time);
 }
 */
 
@@ -136,19 +148,30 @@ static const NCList *move_to_child(const NCList *parent_nclist, int n)
 	return GET_NCLIST(stack_elt);
 }
 
-static const NCList *move_right()
+/* Must NOT be called when 'NCList_stack_depth' is 0 (i.e. empty stack). */
+static const NCList *move_to_right_sibling_or_uncle(const NCList *nclist)
 {
 	NCListStackElt *stack_elt;
 
-	while (NCList_stack_depth != 0) {
-		stack_elt = pop_NCListStackElt();
-		stack_elt->n++;
-		if (stack_elt->n < stack_elt->parent_nclist->nchildren) {
-			NCList_stack_depth++;
-			return GET_NCLIST(stack_elt);
-		}
-	}
+	stack_elt = NCList_stack + NCList_stack_depth;
+	do {
+		stack_elt--;
+		if (++(stack_elt->n) < stack_elt->parent_nclist->nchildren)
+			return ++nclist;
+		nclist = stack_elt->parent_nclist;
+	} while (--NCList_stack_depth != 0);
 	return NULL;
+}
+
+/* Must NOT be called when 'NCList_stack_depth' is 0 (i.e. empty stack). */
+static const NCList *move_to_right_uncle()
+{
+	const NCList *parent_nclist;
+
+	parent_nclist = pop_NCListStackElt()->parent_nclist;
+	if (NCList_stack_depth == 0)
+		return NULL;
+	return move_to_right_sibling_or_uncle(parent_nclist);
 }
 
 static const NCList *move_down(const NCList *nclist)
@@ -176,8 +199,9 @@ static const NCList *next_top_down(const NCList *nclist)
 	/* Try to move to first child, if any. */
 	if (nclist->nchildren != 0)
 		return move_to_child(nclist, 0);
-	/* Move up (i.e. pop stack elements). */
-	return move_right();
+	if (NCList_stack_depth == 0)
+		return NULL;
+	return move_to_right_sibling_or_uncle(nclist);
 }
 
 /*
@@ -1154,6 +1178,37 @@ static int int_bsearch(const int *subset, int subset_len, const int *base,
  * NCList_get_y_overlaps()
  */
 
+/* Recursive! */
+static void NCList_get_y_overlaps_rec(const NCList *x_nclist,
+				      const Backpack *backpack)
+{
+	const int *rgidbuf;
+	int nchildren, n, rgid;
+	const NCList *child_nclist;
+
+	rgidbuf = x_nclist->rgidbuf;
+	nchildren = x_nclist->nchildren;
+	n = int_bsearch(rgidbuf, nchildren, backpack->x_end_p,
+			backpack->min_x_end);
+	for (child_nclist = x_nclist->childrenbuf + n, rgidbuf = rgidbuf + n;
+	     n < nchildren;
+	     n++, child_nclist++, rgidbuf++)
+	{
+		rgid = *rgidbuf;
+		if (backpack->x_start_p[rgid] > backpack->max_x_start)
+			break;
+		if (is_hit(rgid, backpack)) {
+			report_hit(rgid, backpack);
+			if (backpack->select_mode == ARBITRARY_HIT
+			 && !backpack->pp_is_q)
+				break;
+		}
+		if (child_nclist->nchildren != 0)
+			NCList_get_y_overlaps_rec(child_nclist, backpack);
+	}
+	return;
+}
+
 static int find_landing_child(const NCList *nclist, const Backpack *backpack)
 {
 	int nchildren, n;
@@ -1168,6 +1223,7 @@ static int find_landing_child(const NCList *nclist, const Backpack *backpack)
 	return n;
 }
 
+/* Non-recursive version of NCList_get_y_overlaps_rec(). */
 static void NCList_get_y_overlaps(const NCList *top_nclist,
 				  const Backpack *backpack)
 {
@@ -1179,25 +1235,27 @@ static void NCList_get_y_overlaps(const NCList *top_nclist,
 	   (i.e. a subtree starting at the same top node) will be visited. */
 	RESET_NCLIST_STACK();
 	n = find_landing_child(top_nclist, backpack);
-	/* Skip first 'n' or all children of 'nclist'. */
-	nclist = n >= 0 ? move_to_child(top_nclist, n) : move_right();
+	if (n < 0)
+		return;
+	nclist = move_to_child(top_nclist, n);
 	while (nclist != NULL) {
 		stack_elt = peek_NCListStackElt();
 		rgid = GET_RGID(stack_elt);
 		if (backpack->x_start_p[rgid] > backpack->max_x_start) {
 			/* Skip all further siblings of 'nclist'. */
-			pop_NCListStackElt();
-			nclist = move_right();
+			nclist = move_to_right_uncle();
 			continue;
 		}
 		if (is_hit(rgid, backpack)) {
 			report_hit(rgid, backpack);
 			if (backpack->select_mode == ARBITRARY_HIT
 			 && !backpack->pp_is_q)
-				break;  /* we're done! */
+				return;  /* we're done! */
 		}
 		n = find_landing_child(nclist, backpack);
-		nclist = n >= 0 ? move_to_child(nclist, n) : move_right();
+		/* Skip first 'n' or all children of 'nclist'. */
+		nclist = n >= 0 ? move_to_child(nclist, n) :
+				  move_to_right_sibling_or_uncle(nclist);
 	}
 	return;
 }
