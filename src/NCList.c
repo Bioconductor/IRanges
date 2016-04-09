@@ -92,10 +92,10 @@ static void init_NCList(NCList *nclist)
  * Utilities to walk on an NCList structure non-recursively
  */
 
-typedef struct NCList_stack_elt_t {
+typedef struct NCList_walking_stack_elt_t {
 	const NCList *parent_nclist;
 	int n;  /* point to n-th child of 'parent_nclist' */
-} NCListStackElt;
+} NCListWalkingStackElt;
 
 #define	GET_NCLIST(stack_elt) \
 	((stack_elt)->parent_nclist->childrenbuf + (stack_elt)->n)
@@ -103,73 +103,78 @@ typedef struct NCList_stack_elt_t {
 #define	GET_RGID(stack_elt) \
 	((stack_elt)->parent_nclist->rgidbuf[(stack_elt)->n])
 
-static NCListStackElt *NCList_stack = NULL;
-static int NCList_stack_maxdepth = 0;
-static int NCList_stack_depth = 0;
+static NCListWalkingStackElt *NCList_walking_stack = NULL;
+static int NCList_walking_stack_maxdepth = 0;
+static int NCList_walking_stack_depth = 0;
 
-#define	RESET_NCLIST_STACK() NCList_stack_depth = 0
+#define	RESET_NCLIST_WALKING_STACK() NCList_walking_stack_depth = 0
 
-/* Must NOT be called when 'NCList_stack_depth' is 0 (i.e. empty stack). */
-static NCListStackElt *pop_NCListStackElt()
+/* Must NOT be called when 'NCList_walking_stack_depth' is 0 (i.e. when stack
+   in empty). */
+static NCListWalkingStackElt *pop_NCListWalkingStackElt()
 {
-	NCList_stack_depth--;
-	return NCList_stack + NCList_stack_depth;
+	NCList_walking_stack_depth--;
+	return NCList_walking_stack + NCList_walking_stack_depth;
 }
 
-/* Must NOT be called when 'NCList_stack_depth' is 0 (i.e. empty stack). */
-static NCListStackElt *peek_NCListStackElt()
+/* Must NOT be called when 'NCList_walking_stack_depth' is 0 (i.e. when stack
+   in empty). */
+static NCListWalkingStackElt *peek_NCListWalkingStackElt()
 {
-	return NCList_stack + NCList_stack_depth - 1;
+	return NCList_walking_stack + NCList_walking_stack_depth - 1;
 }
 
-static void extend_NCList_stack()
+static void extend_NCList_walking_stack()
 {
 	int new_maxdepth;
 
-	new_maxdepth = get_new_maxdepth(NCList_stack_maxdepth);
-	NCList_stack = (NCListStackElt *) realloc2(NCList_stack,
-						   new_maxdepth,
-						   NCList_stack_maxdepth,
-						   sizeof(NCListStackElt));
-	NCList_stack_maxdepth = new_maxdepth;
+	new_maxdepth = get_new_maxdepth(NCList_walking_stack_maxdepth);
+	NCList_walking_stack = (NCListWalkingStackElt *)
+			realloc2(NCList_walking_stack,
+				 new_maxdepth,
+				 NCList_walking_stack_maxdepth,
+				 sizeof(NCListWalkingStackElt));
+	NCList_walking_stack_maxdepth = new_maxdepth;
 	return;
 }
 
 /* Return a pointer to n-th child. */
 static const NCList *move_to_child(const NCList *parent_nclist, int n)
 {
-	NCListStackElt *stack_elt;
+	NCListWalkingStackElt *stack_elt;
 
-	if (NCList_stack_depth == NCList_stack_maxdepth)
-		extend_NCList_stack();
-	stack_elt = NCList_stack + NCList_stack_depth++;
+	if (NCList_walking_stack_depth == NCList_walking_stack_maxdepth)
+		extend_NCList_walking_stack();
+	stack_elt = NCList_walking_stack + NCList_walking_stack_depth++;
 	stack_elt->parent_nclist = parent_nclist;
 	stack_elt->n = n;
 	return GET_NCLIST(stack_elt);
 }
 
-/* Must NOT be called when 'NCList_stack_depth' is 0 (i.e. empty stack). */
+/* Must NOT be called when 'NCList_walking_stack_depth' is 0 (i.e. when stack
+   in empty). */
 static const NCList *move_to_right_sibling_or_uncle(const NCList *nclist)
 {
-	NCListStackElt *stack_elt;
+	NCListWalkingStackElt *stack_elt;
 
-	stack_elt = NCList_stack + NCList_stack_depth;
+	stack_elt = NCList_walking_stack + NCList_walking_stack_depth;
 	do {
 		stack_elt--;
 		if (++(stack_elt->n) < stack_elt->parent_nclist->nchildren)
 			return ++nclist;
 		nclist = stack_elt->parent_nclist;
-	} while (--NCList_stack_depth != 0);
+	} while (--NCList_walking_stack_depth != 0);
 	return NULL;
 }
 
-/* Must NOT be called when 'NCList_stack_depth' is 0 (i.e. empty stack). */
+/* Must NOT be called when 'NCList_walking_stack_depth' is 0 (i.e. when stack
+   in empty). */
 static const NCList *move_to_right_uncle()
 {
 	const NCList *parent_nclist;
 
-	parent_nclist = pop_NCListStackElt()->parent_nclist;
-	if (NCList_stack_depth == 0)
+	parent_nclist = pop_NCListWalkingStackElt()->parent_nclist;
+	if (NCList_walking_stack_depth == 0)
 		return NULL;
 	return move_to_right_sibling_or_uncle(parent_nclist);
 }
@@ -186,7 +191,7 @@ static const NCList *move_down(const NCList *nclist)
    from left to right. For a top-down walk that visits the entire tree (i.e.
    "complete walk") do:
 
-	RESET_NCLIST_STACK();
+	RESET_NCLIST_WALKING_STACK();
 	for (nclist = top_nclist;
 	     nclist != NULL;
 	     nclist = next_top_down(nclist))
@@ -199,7 +204,7 @@ static const NCList *next_top_down(const NCList *nclist)
 	/* Try to move to first child, if any. */
 	if (nclist->nchildren != 0)
 		return move_to_child(nclist, 0);
-	if (NCList_stack_depth == 0)
+	if (NCList_walking_stack_depth == 0)
 		return NULL;
 	return move_to_right_sibling_or_uncle(nclist);
 }
@@ -209,7 +214,7 @@ static const NCList *next_top_down(const NCList *nclist)
    For a bottom-up walk that visits the entire tree (i.e. "complete walk"),
    do:
 
-	RESET_NCLIST_STACK();
+	RESET_NCLIST_WALKING_STACK();
 	for (nclist = move_down(top_nclist);
 	     nclist != NULL;
 	     nclist = next_bottom_up())
@@ -219,12 +224,12 @@ static const NCList *next_top_down(const NCList *nclist)
 */
 static const NCList *next_bottom_up()
 {
-	NCListStackElt *stack_elt;
+	NCListWalkingStackElt *stack_elt;
 	const NCList *parent_nclist;
 
-	if (NCList_stack_depth == 0)
+	if (NCList_walking_stack_depth == 0)
 		return NULL;
-	stack_elt = peek_NCListStackElt();
+	stack_elt = peek_NCListWalkingStackElt();
 	stack_elt->n++;
 	parent_nclist = stack_elt->parent_nclist;
 	if (stack_elt->n < parent_nclist->nchildren) {
@@ -232,7 +237,7 @@ static const NCList *next_bottom_up()
 		return move_down(GET_NCLIST(stack_elt));
 	}
 	/* All children have been treated --> move 1 level up. */
-	NCList_stack_depth--;
+	NCList_walking_stack_depth--;
 	return parent_nclist;
 }
 
@@ -242,13 +247,13 @@ static const NCList *next_bottom_up()
  */
 
 /*
-static void print_NCList_stack()
+static void print_NCList_walking_stack()
 {
 	int d;
 
-	printf("NCList_stack:");
-	for (d = 0; d < NCList_stack_depth; d++)
-		printf(" %d", NCList_stack[d].n);
+	printf("NCList_walking_stack:");
+	for (d = 0; d < NCList_walking_stack_depth; d++)
+		printf(" %d", NCList_walking_stack[d].n);
 	printf("\n");
 	return;
 }
@@ -287,13 +292,13 @@ static void test_complete_top_down_walk(const NCList *top_nclist)
 	const NCList *nclist;
 
 	printf("======= START complete top-down walk ========\n");
-	RESET_NCLIST_STACK();
+	RESET_NCLIST_WALKING_STACK();
 	for (nclist = top_nclist;
 	     nclist != NULL;
 	     nclist = next_top_down(nclist))
 	{
-		print_NCList_stack();
-		print_NCList_node(nclist, NCList_stack_depth);
+		print_NCList_walking_stack();
+		print_NCList_node(nclist, NCList_walking_stack_depth);
 		printf("\n"); fflush(stdout);
 	}
 	printf("======== END complete top-down walk =========\n");
@@ -305,13 +310,13 @@ static void test_complete_bottom_up_walk(const NCList *top_nclist)
 	const NCList *nclist;
 
 	printf("======= START complete bottom-up walk =======\n");
-	RESET_NCLIST_STACK();
+	RESET_NCLIST_WALKING_STACK();
 	for (nclist = move_down(top_nclist);
 	     nclist != NULL;
 	     nclist = next_bottom_up())
 	{
-		print_NCList_stack();
-		print_NCList_node(nclist, NCList_stack_depth);
+		print_NCList_walking_stack();
+		print_NCList_node(nclist, NCList_walking_stack_depth);
 		printf("\n"); fflush(stdout);
 	}
 	printf("======== END complete bottom-up walk ========\n");
@@ -329,7 +334,7 @@ static void free_NCList(const NCList *top_nclist)
 	const NCList *nclist;
 
 	/* Complete bottom-up walk. */
-	RESET_NCLIST_STACK();
+	RESET_NCLIST_WALKING_STACK();
 	for (nclist = move_down(top_nclist);
 	     nclist != NULL;
 	     nclist = next_bottom_up())
@@ -432,26 +437,19 @@ static int qsort_compar(const void *p1, const void *p2)
 	return i1 - i2;
 }
 
-/*
- * Setting a hard limit on the max depth of NCList objects to prevent C stack
- * overflows when running recursive code like NCList_get_y_overlaps_rec().
- * A better solution would be to not use recursive code at all when traversing
- * an NCList object. Then NCList objects of arbitrary depth could be supported
- * and it wouldn't be necessary to set the limit below.
- */
-#define NCLIST_MAX_DEPTH 100000
-typedef struct stack_elt_t {
+typedef struct NCList_building_stack_elt_t {
 	NCList *nclist;
 	int rgid;  /* range ID */
-} StackElt;
+} NCListBuildingStackElt;
 
-static StackElt *stack = NULL;
-static int stack_maxdepth = 0;
+static NCListBuildingStackElt *NCList_building_stack = NULL;
+static int NCList_building_stack_maxdepth = 0;
 
-static StackElt append_NCList_elt(NCList *landing_nclist, int rgid)
+static NCListBuildingStackElt append_NCList_elt(NCList *landing_nclist,
+						int rgid)
 {
 	int nchildren;
-	StackElt stack_elt;
+	NCListBuildingStackElt stack_elt;
 
 	nchildren = landing_nclist->nchildren;
 	if (nchildren == landing_nclist->buflength)
@@ -463,19 +461,17 @@ static StackElt append_NCList_elt(NCList *landing_nclist, int rgid)
 	return stack_elt;
 }
 
-static void extend_stack()
+static void extend_NCList_building_stack()
 {
 	int new_maxdepth;
 
-	if (stack_maxdepth == NCLIST_MAX_DEPTH)
-		error("extend_stack: cannot build an NCList object "
-		      "of depth > %d", NCLIST_MAX_DEPTH);
-	new_maxdepth = get_new_maxdepth(stack_maxdepth);
-	if (new_maxdepth > NCLIST_MAX_DEPTH)
-		new_maxdepth = NCLIST_MAX_DEPTH;
-	stack = (StackElt *) realloc2(stack, new_maxdepth, stack_maxdepth,
-				      sizeof(StackElt));
-	stack_maxdepth = new_maxdepth;
+	new_maxdepth = get_new_maxdepth(NCList_building_stack_maxdepth);
+	NCList_building_stack = (NCListBuildingStackElt *)
+			realloc2(NCList_building_stack,
+				 new_maxdepth,
+				 NCList_building_stack_maxdepth,
+				 sizeof(NCListBuildingStackElt));
+	NCList_building_stack_maxdepth = new_maxdepth;
 	return;
 }
 
@@ -485,7 +481,7 @@ static void build_NCList(NCList *top_nclist,
 {
 	int *oo, k, d, rgid, current_end;
 	NCList *landing_nclist;
-	StackElt stack_elt;
+	NCListBuildingStackElt stack_elt;
 
 	/* Determine order of 'x'. 'oo' will be such that 'x[oo]' is sorted
 	   first by ascending start then by descending end. */
@@ -504,15 +500,17 @@ static void build_NCList(NCList *top_nclist,
 	for (k = 0, d = -1; k < x_len; k++) {
 		rgid = oo[k];
 		current_end = x_end_p[rgid];
-		while (d >= 0 && x_end_p[stack[d].rgid] < current_end)
+		while (d >= 0 &&
+		       x_end_p[NCList_building_stack[d].rgid] < current_end)
 			d--;  // unstack
-		landing_nclist = d == -1 ? top_nclist: stack[d].nclist;
+		landing_nclist = d == -1 ? top_nclist :
+					   NCList_building_stack[d].nclist;
 		// append 'rgid' to landing_nclist
 		stack_elt = append_NCList_elt(landing_nclist, rgid);
 		// put stack_elt on stack
-		if (++d == stack_maxdepth)
-			extend_stack();
-		stack[d] = stack_elt;
+		if (++d == NCList_building_stack_maxdepth)
+			extend_NCList_building_stack();
+		NCList_building_stack[d] = stack_elt;
 	}
 	return;
 }
@@ -545,12 +543,22 @@ SEXP NCList_build(SEXP nclist_xp, SEXP x_start, SEXP x_end, SEXP x_subset)
  * new_NCListAsINTSXP_from_NCList()
  */
 
+/*
+ * Setting an arbitrary hard limit on the max depth of NCListAsINTSXP objects
+ * to prevent C stack overflows when walking on them recursively (e.g. with
+ * print_NCListAsINTSXP_rec() or NCListAsINTSXP_get_y_overlaps_rec()).
+ * A better solution would be to not use recursive code at all when traversing
+ * an NCListAsINTSXP object. Then NCListAsINTSXP objects of arbitrary depth
+ * could be supported and it wouldn't be necessary to set the limit below.
+ */
+#define NCListAsINTSXP_MAX_DEPTH 100000
+
 #define NCListAsINTSXP_NCHILDREN(nclist) ((nclist)[0])
 #define NCListAsINTSXP_RGIDS(nclist) ((nclist) + 1)
 #define NCListAsINTSXP_OFFSETS(nclist) \
 	((nclist) + 1 + NCListAsINTSXP_NCHILDREN(nclist))
 
-static int compute_length_of_NCListAsINTSXP(const NCList *top_nclist)
+static int compute_NCListAsINTSXP_length(const NCList *top_nclist)
 {
 	unsigned int ans_len;
 	const NCList *nclist;
@@ -558,17 +566,22 @@ static int compute_length_of_NCListAsINTSXP(const NCList *top_nclist)
 
 	ans_len = 0U;
 	/* Complete bottom-up walk (top-down walk would also work). */
-	RESET_NCLIST_STACK();
+	RESET_NCLIST_WALKING_STACK();
 	for (nclist = move_down(top_nclist);
 	     nclist != NULL;
 	     nclist = next_bottom_up())
 	{
+		if (NCList_walking_stack_depth > NCListAsINTSXP_MAX_DEPTH)
+			error("compute_NCListAsINTSXP_length: "
+			      "NCList object is too deep (has more "
+			      "than\n  %d levels of nested ranges)",
+			      NCListAsINTSXP_MAX_DEPTH);
 		nchildren = nclist->nchildren;
 		if (nchildren == 0)
 			continue;
 		ans_len += 1U + 2U * (unsigned int) nchildren;
 		if (ans_len > INT_MAX)
-			error("compute_length_of_NCListAsINTSXP: "
+			error("compute_NCListAsINTSXP_length: "
 			      "NCList object is too big to fit in "
 			      "an integer vector");
 	}
@@ -612,7 +625,7 @@ SEXP new_NCListAsINTSXP_from_NCList(SEXP nclist_xp)
 	if (top_nclist == NULL)
 		error("new_NCListAsINTSXP_from_NCList: "
 		      "pointer to NCList struct is NULL");
-	ans_len = compute_length_of_NCListAsINTSXP(top_nclist);
+	ans_len = compute_NCListAsINTSXP_length(top_nclist);
 	PROTECT(ans = NEW_INTEGER(ans_len));
 	dump_NCList_to_int_array_rec(top_nclist, INTEGER(ans));
 	UNPROTECT(1);
@@ -1229,17 +1242,17 @@ static void NCList_get_y_overlaps(const NCList *top_nclist,
 {
 	int n, rgid;
 	const NCList *nclist;
-	NCListStackElt *stack_elt;
+	NCListWalkingStackElt *stack_elt;
 
 	/* Incomplete top-down walk: only a pruned version of the full tree
 	   (i.e. a subtree starting at the same top node) will be visited. */
-	RESET_NCLIST_STACK();
+	RESET_NCLIST_WALKING_STACK();
 	n = find_landing_child(top_nclist, backpack);
 	if (n < 0)
 		return;
 	nclist = move_to_child(top_nclist, n);
 	while (nclist != NULL) {
-		stack_elt = peek_NCListStackElt();
+		stack_elt = peek_NCListWalkingStackElt();
 		rgid = GET_RGID(stack_elt);
 		if (backpack->x_start_p[rgid] > backpack->max_x_start) {
 			/* Skip all further siblings of 'nclist'. */
