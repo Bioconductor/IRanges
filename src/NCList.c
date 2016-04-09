@@ -61,9 +61,12 @@ static int get_new_maxdepth(int maxdepth)
 typedef struct nclist_t {
 	int buflength;	/* >= 0 */
 	int nchildren;	/* >= 0 and <= buflength */
-	int *revmap;	/* Of length 'nchildren'. Reverse mapping into Ranges
-			   object 'x'. Contains 0-based indices */
 	struct nclist_t *childrenbuf;  /* Of length 'buflength'. */
+	int *rgidbuf;	/* Of length 'nchildren'. The IDs of the ranges asso-
+			   ciated with the children. The ID of a range is just
+			   its 0-based position in original Ranges object 'x'.
+			   Allows reverse mapping of the children into 'x'
+			   (e.g. to find their start, end, or width). */
 } NCList;
 
 static void init_NCList(NCList *nclist)
@@ -82,11 +85,11 @@ typedef struct NCList_stack_elt_t {
 	int n;  /* point to n-th child of 'parent_nclist' */
 } NCListStackElt;
 
-#define	GET_REVIDX(stack_elt) \
-	((stack_elt)->parent_nclist->revmap[(stack_elt)->n])
-
 #define	GET_NCLIST(stack_elt) \
 	((stack_elt)->parent_nclist->childrenbuf + (stack_elt)->n)
+
+#define	GET_RGID(stack_elt) \
+	((stack_elt)->parent_nclist->rgidbuf[(stack_elt)->n])
 
 static NCListStackElt *NCList_stack = NULL;
 static int NCList_stack_maxdepth = 0;
@@ -156,15 +159,16 @@ static const NCList *move_down(const NCList *nclist)
 }
 
 /*
-   Top-down walk: parent is processed before children.
-   For a full (i.e. on all nodes) top-down walk, do:
+   Top-down walk: parent is treated before children and children are treated
+   from left to right. For a top-down walk that visits the entire tree (i.e.
+   "complete walk") do:
 
 	RESET_NCLIST_STACK();
 	for (nclist = top_nclist;
 	     nclist != NULL;
 	     nclist = next_top_down(nclist))
 	{
-		process nclist
+		treat nclist
 	}
  */
 static const NCList *next_top_down(const NCList *nclist)
@@ -177,15 +181,16 @@ static const NCList *next_top_down(const NCList *nclist)
 }
 
 /*
-   Bottom-up walk: children are processed before parent.
-   For a full (i.e. on all nodes) bottom-up walk, do:
+   Bottom-up walk: children are treated from left to right and before parent.
+   For a bottom-up walk that visits the entire tree (i.e. "complete walk"),
+   do:
 
 	RESET_NCLIST_STACK();
 	for (nclist = move_down(top_nclist);
 	     nclist != NULL;
 	     nclist = next_bottom_up())
 	{
-		process nclist
+		treat nclist
 	}
 */
 static const NCList *next_bottom_up()
@@ -202,7 +207,7 @@ static const NCList *next_bottom_up()
 		/* Move down thru the next children. */
 		return move_down(GET_NCLIST(stack_elt));
 	}
-	/* All children have been processed --> move 1 level up. */
+	/* All children have been treated --> move 1 level up. */
 	NCList_stack_depth--;
 	return parent_nclist;
 }
@@ -236,9 +241,9 @@ static void print_NCList_node(const NCList *nclist, int depth)
 	       nclist->buflength, nclist->nchildren);
 
 	for (d = 0; d < depth; d++) printf("-"); printf(" ");
-	printf("  revmap:");
+	printf("  rgidbuf:");
 	for (n = 0; n < nclist->nchildren; n++)
-		printf(" %d", nclist->revmap[n]);
+		printf(" %d", nclist->rgidbuf[n]);
 	printf("\n");
 	return;
 }
@@ -253,11 +258,11 @@ static void print_NCList_rec(const NCList *nclist, int depth)
 	return;
 }
 
-static void test_full_top_down_walk(const NCList *top_nclist)
+static void test_complete_top_down_walk(const NCList *top_nclist)
 {
 	const NCList *nclist;
 
-	printf("======= START full top-down walk ========\n");
+	printf("======= START complete top-down walk ========\n");
 	RESET_NCLIST_STACK();
 	for (nclist = top_nclist;
 	     nclist != NULL;
@@ -267,15 +272,15 @@ static void test_full_top_down_walk(const NCList *top_nclist)
 		print_NCList_node(nclist, NCList_stack_depth);
 		printf("\n"); fflush(stdout);
 	}
-	printf("======== END full top-down walk =========\n");
+	printf("======== END complete top-down walk =========\n");
 	return;
 }
 
-static void test_full_bottom_up_walk(const NCList *top_nclist)
+static void test_complete_bottom_up_walk(const NCList *top_nclist)
 {
 	const NCList *nclist;
 
-	printf("======= START full bottom-up walk =======\n");
+	printf("======= START complete bottom-up walk =======\n");
 	RESET_NCLIST_STACK();
 	for (nclist = move_down(top_nclist);
 	     nclist != NULL;
@@ -285,7 +290,7 @@ static void test_full_bottom_up_walk(const NCList *top_nclist)
 		print_NCList_node(nclist, NCList_stack_depth);
 		printf("\n"); fflush(stdout);
 	}
-	printf("======== END full bottom-up walk ========\n");
+	printf("======== END complete bottom-up walk ========\n");
 	return;
 }
 */
@@ -299,15 +304,15 @@ static void free_NCList(const NCList *top_nclist)
 {
 	const NCList *nclist;
 
+	/* Complete bottom-up walk. */
 	RESET_NCLIST_STACK();
-	/* Full bottom-up walk. */
 	for (nclist = move_down(top_nclist);
 	     nclist != NULL;
 	     nclist = next_bottom_up())
 	{
 		if (nclist->buflength != 0) {
-			free(nclist->revmap);
 			free(nclist->childrenbuf);
+			free(nclist->rgidbuf);
 		}
 	}
 	return;
@@ -353,8 +358,8 @@ SEXP NCList_free(SEXP nclist_xp)
 static void extend_NCList(NCList *nclist)
 {
 	int old_buflength, new_buflength;
-	int *new_revmap;
 	NCList *new_childrenbuf;
+	int *new_rgidbuf;
 
 	old_buflength = nclist->buflength;
 	if (old_buflength == 0) {
@@ -371,17 +376,17 @@ static void extend_NCList(NCList *nclist)
 		else
 			new_buflength = old_buflength + 67108864;
 	}
-	new_revmap = (int *) realloc2(nclist->revmap,
-				      new_buflength,
-				      old_buflength,
-				      sizeof(int));
 	new_childrenbuf = (NCList *) realloc2(nclist->childrenbuf,
 					      new_buflength,
 					      old_buflength,
 					      sizeof(NCList));
+	new_rgidbuf = (int *) realloc2(nclist->rgidbuf,
+				       new_buflength,
+				       old_buflength,
+				       sizeof(int));
 	nclist->buflength = new_buflength;
-	nclist->revmap = new_revmap;
 	nclist->childrenbuf = new_childrenbuf;
+	nclist->rgidbuf = new_rgidbuf;
 	return;
 }
 
@@ -412,14 +417,14 @@ static int qsort_compar(const void *p1, const void *p2)
  */
 #define NCLIST_MAX_DEPTH 100000
 typedef struct stack_elt_t {
-	int revidx;
 	NCList *nclist;
+	int rgid;  /* range ID */
 } StackElt;
 
 static StackElt *stack = NULL;
 static int stack_maxdepth = 0;
 
-static StackElt append_NCList_elt(NCList *landing_nclist, int revidx)
+static StackElt append_NCList_elt(NCList *landing_nclist, int rgid)
 {
 	int nchildren;
 	StackElt stack_elt;
@@ -427,8 +432,8 @@ static StackElt append_NCList_elt(NCList *landing_nclist, int revidx)
 	nchildren = landing_nclist->nchildren;
 	if (nchildren == landing_nclist->buflength)
 		extend_NCList(landing_nclist);
-	stack_elt.revidx = landing_nclist->revmap[nchildren] = revidx;
 	stack_elt.nclist = landing_nclist->childrenbuf + nchildren;
+	stack_elt.rgid = landing_nclist->rgidbuf[nchildren] = rgid;
 	init_NCList(stack_elt.nclist);
 	landing_nclist->nchildren++;
 	return stack_elt;
@@ -454,7 +459,7 @@ static void build_NCList(NCList *top_nclist,
 			 const int *x_start_p, const int *x_end_p,
 			 const int *x_subset_p, int x_len)
 {
-	int *oo, k, d, i, current_end;
+	int *oo, k, d, rgid, current_end;
 	NCList *landing_nclist;
 	StackElt stack_elt;
 
@@ -462,24 +467,24 @@ static void build_NCList(NCList *top_nclist,
 	   first by ascending start then by descending end. */
 	oo = (int *) R_alloc(sizeof(int), x_len);
 	if (x_subset_p == NULL)
-		for (i = 0; i < x_len; i++)
-			oo[i] = i;
+		for (rgid = 0; rgid < x_len; rgid++)
+			oo[rgid] = rgid;
 	else
-		for (i = 0; i < x_len; i++)
-			oo[i] = x_subset_p[i];
+		for (rgid = 0; rgid < x_len; rgid++)
+			oo[rgid] = x_subset_p[rgid];
 	aa = x_start_p;
 	bb = x_end_p;
 	qsort(oo, x_len, sizeof(int), qsort_compar);
 
 	init_NCList(top_nclist);
 	for (k = 0, d = -1; k < x_len; k++) {
-		i = oo[k];
-		current_end = x_end_p[i];
-		while (d >= 0 && x_end_p[stack[d].revidx] < current_end)
+		rgid = oo[k];
+		current_end = x_end_p[rgid];
+		while (d >= 0 && x_end_p[stack[d].rgid] < current_end)
 			d--;  // unstack
 		landing_nclist = d == -1 ? top_nclist: stack[d].nclist;
-		// append range i to landing_nclist
-		stack_elt = append_NCList_elt(landing_nclist, i);
+		// append 'rgid' to landing_nclist
+		stack_elt = append_NCList_elt(landing_nclist, rgid);
 		// put stack_elt on stack
 		if (++d == stack_maxdepth)
 			extend_stack();
@@ -517,7 +522,7 @@ SEXP NCList_build(SEXP nclist_xp, SEXP x_start, SEXP x_end, SEXP x_subset)
  */
 
 #define NCListAsINTSXP_NCHILDREN(nclist) ((nclist)[0])
-#define NCListAsINTSXP_REVMAP(nclist) ((nclist) + 1)
+#define NCListAsINTSXP_RGIDS(nclist) ((nclist) + 1)
 #define NCListAsINTSXP_OFFSETS(nclist) \
 	((nclist) + 1 + NCListAsINTSXP_NCHILDREN(nclist))
 
@@ -528,8 +533,8 @@ static int compute_length_of_NCListAsINTSXP(const NCList *top_nclist)
 	int nchildren;
 
 	ans_len = 0U;
+	/* Complete bottom-up walk (top-down walk would also work). */
 	RESET_NCLIST_STACK();
-	/* Full bottom-up walk (top-down walk would also work). */
 	for (nclist = move_down(top_nclist);
 	     nclist != NULL;
 	     nclist = next_bottom_up())
@@ -550,20 +555,20 @@ static int compute_length_of_NCListAsINTSXP(const NCList *top_nclist)
 static int dump_NCList_to_int_array_rec(const NCList *nclist, int *out)
 {
 	int nchildren, offset, dump_len, n;
-	const int *revidx_p;
 	const NCList *child_nclist;
+	const int *rgid_p;
 
 	nchildren = nclist->nchildren;
 	if (nchildren == 0)
 		return 0;
 	offset = 1 + 2 * nchildren;
 	NCListAsINTSXP_NCHILDREN(out) = nchildren;
-	for (n = 0, revidx_p = nclist->revmap,
-		    child_nclist = nclist->childrenbuf;
+	for (n = 0, child_nclist = nclist->childrenbuf,
+		    rgid_p = nclist->rgidbuf;
 	     n < nchildren;
-	     n++, revidx_p++, child_nclist++)
+	     n++, child_nclist++, rgid_p++)
 	{
-		NCListAsINTSXP_REVMAP(out)[n] = *revidx_p;
+		NCListAsINTSXP_RGIDS(out)[n] = *rgid_p;
 		dump_len = dump_NCList_to_int_array_rec(child_nclist,
 							out + offset);
 		NCListAsINTSXP_OFFSETS(out)[n] = dump_len != 0 ? offset : -1;
@@ -602,16 +607,16 @@ static int print_NCListAsINTSXP_rec(const int *nclist,
 				    const int *x_start_p, const int *x_end_p,
 				    int depth, const char *format)
 {
-	int maxdepth, nchildren, n, d, revidx, offset, tmp;
+	int maxdepth, nchildren, n, d, rgid, offset, tmp;
 
 	maxdepth = depth;
 	nchildren = NCListAsINTSXP_NCHILDREN(nclist);
 	for (n = 0; n < nchildren; n++) {
 		for (d = 1; d < depth; d++)
 			Rprintf("|");
-		revidx = NCListAsINTSXP_REVMAP(nclist)[n];
-		Rprintf(format, revidx + 1);
-		Rprintf(": [%d, %d]\n", x_start_p[revidx], x_end_p[revidx]);
+		rgid = NCListAsINTSXP_RGIDS(nclist)[n];
+		Rprintf(format, rgid + 1);
+		Rprintf(": [%d, %d]\n", x_start_p[rgid], x_end_p[rgid]);
 		offset = NCListAsINTSXP_OFFSETS(nclist)[n];
 		if (offset != -1) {
 			tmp = print_NCListAsINTSXP_rec(nclist + offset,
@@ -672,7 +677,7 @@ typedef struct backpack_t {
 	int minoverlap;
 	int overlap_type;
 	int min_overlap_score0;
-	int (*is_hit_fun)(int revidx, const struct backpack_t *backpack);
+	int (*is_hit_fun)(int rgid, const struct backpack_t *backpack);
 
 	int select_mode;
 	int circle_len;
@@ -681,7 +686,7 @@ typedef struct backpack_t {
 	int *direct_out;
 
 	/* Members set by update_backpack(). */
-	int y_idx;
+	int y_rgid;
 	int y_start;
 	int y_end;
 	int y_space;
@@ -695,40 +700,40 @@ static int overlap_score0(int x_start, int x_end, int y_start, int y_end)
 	       (x_start >= y_start ? x_start : y_start);
 }
 
-static int is_TYPE_ANY_hit(int revidx, const Backpack *backpack)
+static int is_TYPE_ANY_hit(int rgid, const Backpack *backpack)
 {
 	int x_start, x_end;
 
 	/* Check the score */
-	x_start = backpack->x_start_p[revidx];
-	x_end = backpack->x_end_p[revidx];
+	x_start = backpack->x_start_p[rgid];
+	x_end = backpack->x_end_p[rgid];
 	return x_end - x_start >= backpack->min_overlap_score0;
 }
 
-static int is_TYPE_START_hit(int revidx, const Backpack *backpack)
+static int is_TYPE_START_hit(int rgid, const Backpack *backpack)
 {
 	int x_start, x_end, d, score0;
 
 	/* Check the distance between the starts. */
-	x_start = backpack->x_start_p[revidx];
+	x_start = backpack->x_start_p[rgid];
 	d = abs(backpack->y_start - x_start);
 	if (d > backpack->maxgap)
 		return 0;
 	/* Check the score, but only if minoverlap != 0. */
 	if (backpack->minoverlap == 0)
 		return 1;
-	x_end = backpack->x_end_p[revidx];
+	x_end = backpack->x_end_p[rgid];
 	score0 = overlap_score0(x_start, x_end,
 				backpack->y_start, backpack->y_end);
 	return score0 >= backpack->min_overlap_score0;
 }
 
-static int is_TYPE_END_hit(int revidx, const Backpack *backpack)
+static int is_TYPE_END_hit(int rgid, const Backpack *backpack)
 {
 	int x_start, x_end, d, score0;
 
 	/* Check the distance between the ends. */
-	x_end = backpack->x_end_p[revidx];
+	x_end = backpack->x_end_p[rgid];
 	d = abs(backpack->y_end - x_end);
 	if (backpack->circle_len != NA_INTEGER)
 		d %= backpack->circle_len;
@@ -737,33 +742,33 @@ static int is_TYPE_END_hit(int revidx, const Backpack *backpack)
 	/* Check the score, but only if minoverlap != 0. */
 	if (backpack->minoverlap == 0)
 		return 1;
-	x_start = backpack->x_start_p[revidx];
+	x_start = backpack->x_start_p[rgid];
 	score0 = overlap_score0(x_start, x_end,
 				backpack->y_start, backpack->y_end);
 	return score0 >= backpack->min_overlap_score0;
 }
 
-static int is_TYPE_WITHIN_hit(int revidx, const Backpack *backpack)
+static int is_TYPE_WITHIN_hit(int rgid, const Backpack *backpack)
 {
 	int x_start, x_end, d;
 
 	if (backpack->maxgap == 0)
 		return 1;
-	x_start = backpack->x_start_p[revidx];
-	x_end = backpack->x_end_p[revidx];
+	x_start = backpack->x_start_p[rgid];
+	x_end = backpack->x_end_p[rgid];
 	d = backpack->y_start - x_start + x_end - backpack->y_end;
 	return d <= backpack->maxgap;
 }
 
-static int is_TYPE_EXTEND_hit(int revidx, const Backpack *backpack)
+static int is_TYPE_EXTEND_hit(int rgid, const Backpack *backpack)
 {
 	int x_start, x_end, d1, d2;
 
-	x_start = backpack->x_start_p[revidx];
+	x_start = backpack->x_start_p[rgid];
 	d1 = x_start - backpack->y_start;
 	if (d1 < 0)
 		return 0;
-	x_end = backpack->x_end_p[revidx];
+	x_end = backpack->x_end_p[rgid];
 	d2 = backpack->y_end - x_end;
 	if (d2 < 0)
 		return 0;
@@ -774,17 +779,17 @@ static int is_TYPE_EXTEND_hit(int revidx, const Backpack *backpack)
 	return d1 + d2 <= backpack->maxgap;
 }
 
-static int is_TYPE_EQUAL_hit(int revidx, const Backpack *backpack)
+static int is_TYPE_EQUAL_hit(int rgid, const Backpack *backpack)
 {
 	int x_start, x_end, d, score0;
 
 	/* Check the distance between the starts. */
-	x_start = backpack->x_start_p[revidx];
+	x_start = backpack->x_start_p[rgid];
 	d = abs(backpack->y_start - x_start);
 	if (d > backpack->maxgap)
 		return 0;
 	/* Check the distance between the ends. */
-	x_end = backpack->x_end_p[revidx];
+	x_end = backpack->x_end_p[rgid];
 	d = abs(backpack->y_end - x_end);
 	if (backpack->circle_len != NA_INTEGER)
 		d %= backpack->circle_len;
@@ -798,49 +803,49 @@ static int is_TYPE_EQUAL_hit(int revidx, const Backpack *backpack)
 	return score0 >= backpack->min_overlap_score0;
 }
 
-static int is_hit(int revidx, const Backpack *backpack)
+static int is_hit(int rgid, const Backpack *backpack)
 {
 	int x_space;
 
 	/* 1st: perform checks common to all types of overlaps */
 	if (backpack->x_space_p != NULL && backpack->y_space != 0) {
-		x_space = backpack->x_space_p[revidx];
+		x_space = backpack->x_space_p[rgid];
 		if (x_space != 0 && x_space != backpack->y_space)
 			return 0;
 	}
 	/* 2nd: perform checks specific to the current type of overlaps
 	   (by calling the callback function for this type) */
-	return backpack->is_hit_fun(revidx, backpack);
+	return backpack->is_hit_fun(rgid, backpack);
 }
 
-static void report_hit(int revidx, const Backpack *backpack)
+static void report_hit(int rgid, const Backpack *backpack)
 {
-	int i1, q_idx, s_idx1, *selection_p;
+	int rgid1, q_rgid, s_rgid1, *selection_p;
 
-	i1 = revidx + 1;  /* 1-based */
+	rgid1 = rgid + 1;  /* 1-based */
 	if (backpack->select_mode == ALL_HITS) {
 		/* Report the hit. */
 		IntAE_insert_at(backpack->hits,
-				IntAE_get_nelt(backpack->hits), i1);
+				IntAE_get_nelt(backpack->hits), rgid1);
 		return;
 	}
 	/* Update current selection if necessary. */
 	if (backpack->pp_is_q) {
-		q_idx = revidx;
-		s_idx1 = backpack->y_idx + 1;
+		q_rgid = rgid;
+		s_rgid1 = backpack->y_rgid + 1;
 	} else {
-		q_idx = backpack->y_idx;
-		s_idx1 = i1;
+		q_rgid = backpack->y_rgid;
+		s_rgid1 = rgid1;
 	}
-	selection_p = backpack->direct_out + q_idx;
+	selection_p = backpack->direct_out + q_rgid;
 	if (backpack->select_mode == COUNT_HITS) {
 		(*selection_p)++;
 		return;
 	}
 	if (*selection_p == NA_INTEGER
 	 || (backpack->select_mode == FIRST_HIT) ==
-	    (s_idx1 < *selection_p))
-		*selection_p = s_idx1;
+	    (s_rgid1 < *selection_p))
+		*selection_p = s_rgid1;
 	return;
 }
 
@@ -896,12 +901,12 @@ static Backpack prepare_backpack(const int *x_start_p, const int *x_end_p,
 	return backpack;
 }
 
-static void update_backpack(Backpack *backpack, int y_idx,
+static void update_backpack(Backpack *backpack, int y_rgid,
 			    int y_start, int y_end, int y_space)
 {
 	int min_x_end, max_x_start, min_overlap_score0;
 
-	backpack->y_idx = y_idx;
+	backpack->y_rgid = y_rgid;
 	backpack->y_start = y_start;
 	backpack->y_end = y_end;
 	backpack->y_space = y_space;
@@ -1149,50 +1154,50 @@ static int int_bsearch(const int *subset, int subset_len, const int *base,
  * NCList_get_y_overlaps()
  */
 
-static const NCList *move0(const NCList *nclist, const Backpack *backpack)
+static int find_landing_child(const NCList *nclist, const Backpack *backpack)
 {
 	int nchildren, n;
-	const int *revmap;
 
 	nchildren = nclist->nchildren;
 	if (nchildren == 0)
-		return move_right();
-	revmap = nclist->revmap;
-	n = int_bsearch(revmap, nchildren, backpack->x_end_p,
+		return -1;
+	n = int_bsearch(nclist->rgidbuf, nchildren, backpack->x_end_p,
 			backpack->min_x_end);
 	if (n >= nchildren)
-		return move_right();  /* skip all children of 'nclist' */
-	/* Skip first 'n' children of 'nclist'. */
-	return move_to_child(nclist, n);
+		return -1;
+	return n;
 }
 
 static void NCList_get_y_overlaps(const NCList *top_nclist,
 				  const Backpack *backpack)
 {
+	int n, rgid;
 	const NCList *nclist;
 	NCListStackElt *stack_elt;
-	int revidx;
 
+	/* Incomplete top-down walk: only a pruned version of the full tree
+	   (i.e. a subtree starting at the same top node) will be visited. */
 	RESET_NCLIST_STACK();
-	/* Partial top-down walk: only a pruned version of the full tree
-	   is visited. */
-	nclist = move0(top_nclist, backpack);
+	n = find_landing_child(top_nclist, backpack);
+	/* Skip first 'n' or all children of 'nclist'. */
+	nclist = n >= 0 ? move_to_child(top_nclist, n) : move_right();
 	while (nclist != NULL) {
 		stack_elt = peek_NCListStackElt();
-		revidx = GET_REVIDX(stack_elt);
-		if (backpack->x_start_p[revidx] > backpack->max_x_start) {
+		rgid = GET_RGID(stack_elt);
+		if (backpack->x_start_p[rgid] > backpack->max_x_start) {
 			/* Skip all further siblings of 'nclist'. */
 			pop_NCListStackElt();
 			nclist = move_right();
 			continue;
 		}
-		if (is_hit(revidx, backpack)) {
-			report_hit(revidx, backpack);
+		if (is_hit(rgid, backpack)) {
+			report_hit(rgid, backpack);
 			if (backpack->select_mode == ARBITRARY_HIT
 			 && !backpack->pp_is_q)
 				break;  /* we're done! */
 		}
-		nclist = move0(nclist, backpack);
+		n = find_landing_child(nclist, backpack);
+		nclist = n >= 0 ? move_to_child(nclist, n) : move_right();
 	}
 	return;
 }
@@ -1206,23 +1211,23 @@ static void NCList_get_y_overlaps(const NCList *top_nclist,
 static void NCListAsINTSXP_get_y_overlaps_rec(const int *x_nclist,
 					      const Backpack *backpack)
 {
-	const int *revmap, *offset_p;
-	int nchildren, n, revidx, offset;
+	const int *rgid_p, *offset_p;
+	int nchildren, n, rgid, offset;
 
-	revmap = NCListAsINTSXP_REVMAP(x_nclist);
+	rgid_p = NCListAsINTSXP_RGIDS(x_nclist);
 	nchildren = NCListAsINTSXP_NCHILDREN(x_nclist);
-	n = int_bsearch(revmap, nchildren, backpack->x_end_p,
+	n = int_bsearch(rgid_p, nchildren, backpack->x_end_p,
 			backpack->min_x_end);
-	for (revmap = revmap + n,
+	for (rgid_p = rgid_p + n,
 	     offset_p = NCListAsINTSXP_OFFSETS(x_nclist) + n;
 	     n < nchildren;
-	     n++, revmap++, offset_p++)
+	     n++, rgid_p++, offset_p++)
 	{
-		revidx = *revmap;
-		if (backpack->x_start_p[revidx] > backpack->max_x_start)
+		rgid = *rgid_p;
+		if (backpack->x_start_p[rgid] > backpack->max_x_start)
 			break;
-		if (is_hit(revidx, backpack)) {
-			report_hit(revidx, backpack);
+		if (is_hit(rgid, backpack)) {
+			report_hit(rgid, backpack);
 			if (backpack->select_mode == ARBITRARY_HIT
 			 && !backpack->pp_is_q)
 				break;
