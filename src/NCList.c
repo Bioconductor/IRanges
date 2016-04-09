@@ -49,7 +49,7 @@ static void *realloc2(void *ptr, int new_nmemb, int old_nmemb, size_t size)
 
 static int get_new_maxdepth(int maxdepth)
 {
-	return maxdepth == 0 ? 1000 : 2 * maxdepth;
+	return maxdepth == 0 ? 16384 : 4 * maxdepth;
 }
 
 
@@ -116,6 +116,7 @@ typedef struct NCList_stack_elt_t {
 
 #define	GET_REVIDX(stack_elt) \
 	((stack_elt)->parent_nclist->revmap[(stack_elt)->n])
+
 #define	GET_NCLIST(stack_elt) \
 	((stack_elt)->parent_nclist->childrenbuf + (stack_elt)->n)
 
@@ -151,15 +152,6 @@ static NCListStackElt *peek_NCListStackElt()
 	return NCList_stack + NCList_stack_depth - 1;
 }
 
-/* Must NOT be called when 'NCList_stack_depth' is 0 (i.e. empty stack). */
-static int get_current_revidx()
-{
-	NCListStackElt *stack_elt;
-
-	stack_elt = peek_NCListStackElt();
-	return GET_REVIDX(stack_elt);
-}
-
 static void extend_NCList_stack()
 {
 	int new_maxdepth;
@@ -189,16 +181,16 @@ static const NCList *move_to_child(const NCList *parent_nclist, int n)
 static const NCList *move_right()
 {
 	NCListStackElt *stack_elt;
-	const NCList *parent_nclist;
 
-	do {
-		if (NCList_stack_depth == 0)
-			return NULL;
+	while (NCList_stack_depth != 0) {
 		stack_elt = pop_NCListStackElt();
-		parent_nclist = stack_elt->parent_nclist;
-	} while (++(stack_elt->n) == parent_nclist->nchildren);
-	NCList_stack_depth++;
-	return GET_NCLIST(stack_elt);
+		stack_elt->n++;
+		if (stack_elt->n < stack_elt->parent_nclist->nchildren) {
+			NCList_stack_depth++;
+			return GET_NCLIST(stack_elt);
+		}
+	}
+	return NULL;
 }
 
 static const NCList *move_down(const NCList *nclist)
@@ -249,8 +241,9 @@ static const NCList *next_bottom_up()
 	if (NCList_stack_depth == 0)
 		return NULL;
 	stack_elt = peek_NCListStackElt();
+	stack_elt->n++;
 	parent_nclist = stack_elt->parent_nclist;
-	if (++(stack_elt->n) < parent_nclist->nchildren) {
+	if (stack_elt->n < parent_nclist->nchildren) {
 		/* Move down thru the next children. */
 		return move_down(GET_NCLIST(stack_elt));
 	}
@@ -1233,47 +1226,48 @@ static void NCList_get_y_overlaps_rec(const NCList *x_nclist,
 	return;
 }
 
+static const NCList *move0(const NCList *nclist, const Backpack *backpack)
+{
+	int nchildren, n;
+	const int *revmap;
+
+	nchildren = nclist->nchildren;
+	if (nchildren == 0)
+		return move_right();
+	revmap = nclist->revmap;
+	n = int_bsearch(revmap, nchildren, backpack->x_end_p,
+			backpack->min_x_end);
+	if (n >= nchildren)
+		return move_right();
+	return move_to_child(nclist, n);
+}
+
 /* Non-recursive version of NCList_get_y_overlaps_rec(). */
 static void NCList_get_y_overlaps(const NCList *top_nclist,
 				  const Backpack *backpack)
 {
 	const NCList *nclist;
-	const int *revmap;
-	int revidx, nchildren, n;
+	NCListStackElt *stack_elt;
+	int revidx;
 
 	RESET_NCLIST_STACK();
-	nclist = top_nclist;
-	do {
-		if (nclist != top_nclist) {
-			revidx = get_current_revidx();
-			if (backpack->x_start_p[revidx] >
-			    backpack->max_x_start)
-			{
-				pop_NCListStackElt();
-				nclist = move_right();
-				continue;
-			}
-			if (is_hit(revidx, backpack)) {
-				report_hit(revidx, backpack);
-				if (backpack->select_mode == ARBITRARY_HIT
-				 && !backpack->pp_is_q)
-					break;
-			}
-		}
-		nchildren = nclist->nchildren;
-		if (nchildren == 0) {
+	nclist = move0(top_nclist, backpack);
+	while (nclist != NULL) {
+		stack_elt = peek_NCListStackElt();
+		revidx = GET_REVIDX(stack_elt);
+		if (backpack->x_start_p[revidx] > backpack->max_x_start) {
+			pop_NCListStackElt();
 			nclist = move_right();
 			continue;
 		}
-		revmap = nclist->revmap;
-		n = int_bsearch(revmap, nchildren, backpack->x_end_p,
-				backpack->min_x_end);
-		if (n >= nchildren) {
-			nclist = move_right();
-			continue;
+		if (is_hit(revidx, backpack)) {
+			report_hit(revidx, backpack);
+			if (backpack->select_mode == ARBITRARY_HIT
+			 && !backpack->pp_is_q)
+				break;
 		}
-		nclist = move_to_child(nclist, n);
-	} while (nclist != NULL);
+		nclist = move0(nclist, backpack);
+	}
 	return;
 }
 
@@ -1348,7 +1342,7 @@ static int find_overlaps(
 					      s_subset_p, s_len);
 		pp = &nclist;
 		get_y_overlaps_fun =
-		    (GetYOverlapsFunType) NCList_get_y_overlaps_rec;
+		    (GetYOverlapsFunType) NCList_get_y_overlaps;
 	} else {
 		pp = INTEGER(nclist_sxp);
 		get_y_overlaps_fun =
