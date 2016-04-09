@@ -66,37 +66,6 @@ typedef struct nclist_t {
 	struct nclist_t *childrenbuf;  /* Of length 'buflength'. */
 } NCList;
 
-/*
-static void print_NCList_node(const NCList *nclist, int depth)
-{
-	int d, n;
-
-	for (d = 0; d < depth; d++) printf("-"); printf(" ");
-	printf("NCList node at address %p:\n", nclist);
-
-	for (d = 0; d < depth; d++) printf("-"); printf(" ");
-	printf("  buflength=%d; nchildren=%d\n",
-	       nclist->buflength, nclist->nchildren);
-
-	for (d = 0; d < depth; d++) printf("-"); printf(" ");
-	printf("  revmap:");
-	for (n = 0; n < nclist->nchildren; n++)
-		printf(" %d", nclist->revmap[n]);
-	printf("\n");
-	return;
-}
-
-static void print_NCList_rec(const NCList *nclist, int depth)
-{
-	int n;
-
-	print_NCList_node(nclist, depth);
-	for (n = 0; n < nclist->nchildren; n++)
-		print_NCList_rec(nclist->childrenbuf + n, depth + 1);
-	return;
-}
-*/
-
 static void init_NCList(NCList *nclist)
 {
 	nclist->buflength = nclist->nchildren = 0;
@@ -105,8 +74,7 @@ static void init_NCList(NCList *nclist)
 
 
 /****************************************************************************
- * Utilities to walk on an NCList structure non-recursively.
- *
+ * Utilities to walk on an NCList structure non-recursively
  */
 
 typedef struct NCList_stack_elt_t {
@@ -125,19 +93,6 @@ static int NCList_stack_maxdepth = 0;
 static int NCList_stack_depth = 0;
 
 #define	RESET_NCLIST_STACK() NCList_stack_depth = 0
-
-/*
-static void print_NCList_stack()
-{
-	int d;
-
-	printf("NCList_stack:");
-	for (d = 0; d < NCList_stack_depth; d++)
-		printf(" %d", NCList_stack[d].n);
-	printf("\n");
-	return;
-}
-*/
 
 /* Must NOT be called when 'NCList_stack_depth' is 0 (i.e. empty stack). */
 static NCListStackElt *pop_NCListStackElt()
@@ -252,12 +207,57 @@ static const NCList *next_bottom_up()
 	return parent_nclist;
 }
 
+
+/****************************************************************************
+ * Test the top-down and bottom-up non-recursive walks on an NCList structure
+ */
+
 /*
-static void test_top_down_walk(const NCList *top_nclist)
+static void print_NCList_stack()
+{
+	int d;
+
+	printf("NCList_stack:");
+	for (d = 0; d < NCList_stack_depth; d++)
+		printf(" %d", NCList_stack[d].n);
+	printf("\n");
+	return;
+}
+
+static void print_NCList_node(const NCList *nclist, int depth)
+{
+	int d, n;
+
+	for (d = 0; d < depth; d++) printf("-"); printf(" ");
+	printf("NCList node at address %p:\n", nclist);
+
+	for (d = 0; d < depth; d++) printf("-"); printf(" ");
+	printf("  buflength=%d; nchildren=%d\n",
+	       nclist->buflength, nclist->nchildren);
+
+	for (d = 0; d < depth; d++) printf("-"); printf(" ");
+	printf("  revmap:");
+	for (n = 0; n < nclist->nchildren; n++)
+		printf(" %d", nclist->revmap[n]);
+	printf("\n");
+	return;
+}
+
+static void print_NCList_rec(const NCList *nclist, int depth)
+{
+	int n;
+
+	print_NCList_node(nclist, depth);
+	for (n = 0; n < nclist->nchildren; n++)
+		print_NCList_rec(nclist->childrenbuf + n, depth + 1);
+	return;
+}
+
+static void test_full_top_down_walk(const NCList *top_nclist)
 {
 	const NCList *nclist;
 
-	printf("======= START top-down walk ========\n");
+	printf("======= START full top-down walk ========\n");
 	RESET_NCLIST_STACK();
 	for (nclist = top_nclist;
 	     nclist != NULL;
@@ -267,15 +267,15 @@ static void test_top_down_walk(const NCList *top_nclist)
 		print_NCList_node(nclist, NCList_stack_depth);
 		printf("\n"); fflush(stdout);
 	}
-	printf("======== END top-down walk =========\n");
+	printf("======== END full top-down walk =========\n");
 	return;
 }
 
-static void test_bottom_up_walk(const NCList *top_nclist)
+static void test_full_bottom_up_walk(const NCList *top_nclist)
 {
 	const NCList *nclist;
 
-	printf("======= START bottom-up walk =======\n");
+	printf("======= START full bottom-up walk =======\n");
 	RESET_NCLIST_STACK();
 	for (nclist = move_down(top_nclist);
 	     nclist != NULL;
@@ -285,7 +285,7 @@ static void test_bottom_up_walk(const NCList *top_nclist)
 		print_NCList_node(nclist, NCList_stack_depth);
 		printf("\n"); fflush(stdout);
 	}
-	printf("======== END bottom-up walk ========\n");
+	printf("======== END full bottom-up walk ========\n");
 	return;
 }
 */
@@ -295,30 +295,12 @@ static void test_bottom_up_walk(const NCList *top_nclist)
  * free_NCList()
  */
 
-/* Recursive!
-static void free_NCList_rec(const NCList *nclist)
-{
-	int n;
-	const NCList *child_nclist;
-
-	if (nclist->buflength == 0)
-		return;
-	for (n = 0, child_nclist = nclist->childrenbuf;
-	     n < nclist->nchildren;
-	     n++, child_nclist++)
-		free_NCList_rec(child_nclist);
-	free(nclist->revmap);
-	free(nclist->childrenbuf);
-	return;
-}
-*/
-
-/* Non-recursive version of free_NCList_rec(). */
 static void free_NCList(const NCList *top_nclist)
 {
 	const NCList *nclist;
 
 	RESET_NCLIST_STACK();
+	/* Full bottom-up walk. */
 	for (nclist = move_down(top_nclist);
 	     nclist != NULL;
 	     nclist = next_bottom_up())
@@ -539,35 +521,6 @@ SEXP NCList_build(SEXP nclist_xp, SEXP x_start, SEXP x_end, SEXP x_subset)
 #define NCListAsINTSXP_OFFSETS(nclist) \
 	((nclist) + 1 + NCListAsINTSXP_NCHILDREN(nclist))
 
-/* Recursive!
-static int compute_length_of_NCListAsINTSXP_rec(const NCList *nclist)
-{
-	int nchildren, n;
-	unsigned int ans_len, dump_len;
-	const NCList *child_nclist;
-
-	nchildren = nclist->nchildren;
-	if (nchildren == 0)
-		return 0;
-	ans_len = 1U + 2U * (unsigned int) nchildren;
-	for (n = 0, child_nclist = nclist->childrenbuf;
-	     n < nchildren;
-	     n++, child_nclist++)
-	{
-		dump_len = compute_length_of_NCListAsINTSXP_rec(child_nclist);
-		ans_len += dump_len;
-		if (dump_len > ans_len)
-			goto too_big;
-	}
-	if (ans_len <= INT_MAX)
-		return (int) ans_len;
-too_big:
-	error("compute_length_of_NCListAsINTSXP_rec: "
-	      "NCList object is too big to fit in an integer vector");
-}
-*/
-
-/* Non-recursive version of compute_length_of_NCListAsINTSXP_rec(). */
 static int compute_length_of_NCListAsINTSXP(const NCList *top_nclist)
 {
 	unsigned int ans_len;
@@ -576,6 +529,7 @@ static int compute_length_of_NCListAsINTSXP(const NCList *top_nclist)
 
 	ans_len = 0U;
 	RESET_NCLIST_STACK();
+	/* Full bottom-up walk (top-down walk would also work). */
 	for (nclist = move_down(top_nclist);
 	     nclist != NULL;
 	     nclist = next_bottom_up())
@@ -1195,37 +1149,6 @@ static int int_bsearch(const int *subset, int subset_len, const int *base,
  * NCList_get_y_overlaps()
  */
 
-/* Recursive! */
-static void NCList_get_y_overlaps_rec(const NCList *x_nclist,
-				      const Backpack *backpack)
-{
-	const int *revmap;
-	int nchildren, n, revidx;
-	const NCList *child_nclist;
-
-	revmap = x_nclist->revmap;
-	nchildren = x_nclist->nchildren;
-	n = int_bsearch(revmap, nchildren, backpack->x_end_p,
-			backpack->min_x_end);
-	for (revmap = revmap + n, child_nclist = x_nclist->childrenbuf + n;
-	     n < nchildren;
-	     n++, revmap++, child_nclist++)
-	{
-		revidx = *revmap;
-		if (backpack->x_start_p[revidx] > backpack->max_x_start)
-			break;
-		if (is_hit(revidx, backpack)) {
-			report_hit(revidx, backpack);
-			if (backpack->select_mode == ARBITRARY_HIT
-			 && !backpack->pp_is_q)
-				break;
-		}
-		if (child_nclist->nchildren != 0)
-			NCList_get_y_overlaps_rec(child_nclist, backpack);
-	}
-	return;
-}
-
 static const NCList *move0(const NCList *nclist, const Backpack *backpack)
 {
 	int nchildren, n;
@@ -1238,11 +1161,11 @@ static const NCList *move0(const NCList *nclist, const Backpack *backpack)
 	n = int_bsearch(revmap, nchildren, backpack->x_end_p,
 			backpack->min_x_end);
 	if (n >= nchildren)
-		return move_right();
+		return move_right();  /* skip all children of 'nclist' */
+	/* Skip first 'n' children of 'nclist'. */
 	return move_to_child(nclist, n);
 }
 
-/* Non-recursive version of NCList_get_y_overlaps_rec(). */
 static void NCList_get_y_overlaps(const NCList *top_nclist,
 				  const Backpack *backpack)
 {
@@ -1251,11 +1174,14 @@ static void NCList_get_y_overlaps(const NCList *top_nclist,
 	int revidx;
 
 	RESET_NCLIST_STACK();
+	/* Partial top-down walk: only a pruned version of the full tree
+	   is visited. */
 	nclist = move0(top_nclist, backpack);
 	while (nclist != NULL) {
 		stack_elt = peek_NCListStackElt();
 		revidx = GET_REVIDX(stack_elt);
 		if (backpack->x_start_p[revidx] > backpack->max_x_start) {
+			/* Skip all further siblings of 'nclist'. */
 			pop_NCListStackElt();
 			nclist = move_right();
 			continue;
@@ -1264,7 +1190,7 @@ static void NCList_get_y_overlaps(const NCList *top_nclist,
 			report_hit(revidx, backpack);
 			if (backpack->select_mode == ARBITRARY_HIT
 			 && !backpack->pp_is_q)
-				break;
+				break;  /* we're done! */
 		}
 		nclist = move0(nclist, backpack);
 	}
