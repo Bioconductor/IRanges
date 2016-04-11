@@ -20,7 +20,7 @@ setMethod("precede", c("Ranges", "RangesORmissing"),
       s <- start(subject)
       ord <- NULL
       if (S4Vectors:::isNotSorted(s)) {
-        ord <- S4Vectors:::orderInteger(s)
+        ord <- base::order(s)
         s <- s[ord]
       }
       if (select == "all") {
@@ -48,7 +48,7 @@ setMethod("follow", c("Ranges", "RangesORmissing"),
       e <- end(subject)
       ord <- NULL
       if (S4Vectors:::isNotSorted(e)) {
-        ord <- S4Vectors:::orderInteger(e)
+        ord <- base::order(e)
         e <- e[ord]
       }
       if (select == "all") {
@@ -83,7 +83,7 @@ vectorToHits <- function(i, srle, ord) {
   m <- cbind(queryHits = rep(seq(lx)[v], w),
              subjectHits = if (!is.null(ord)) ord[subj] else subj)
   if (!is.null(ord))
-    m <- m[S4Vectors:::orderIntegerPairs(m[,1L], m[,2L]),,drop=FALSE]
+    m <- m[orderIntegerPairs(m[,1L], m[,2L]),,drop=FALSE]
   Hits(m[ , 1L], m[ , 2L], lx, length(srle), sort.by.query=TRUE)
 }
 
@@ -128,7 +128,7 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
               left[leftdist == rightdist] <- TRUE
               m <- rbind(as.matrix(ol), filterHits(before0, left),
                                         filterHits(after0, right))
-              m <- m[S4Vectors:::orderIntegerPairs(m[,1L], m[,2L]),, drop=FALSE]
+              m <- m[orderIntegerPairs(m[,1L], m[,2L]),, drop=FALSE]
               ## unname() required because in case 'm' has only 1 row
               ## 'm[ , 1L]' and 'm[ , 2L]' will return a named atomic vector
               ol@from <- unname(m[ , 1L])

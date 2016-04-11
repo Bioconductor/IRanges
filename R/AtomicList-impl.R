@@ -235,9 +235,8 @@ setMethod("unique", "RleList", .unique.RleList)
   }
   x_unlistData <- x@unlistData
   x_group <- rep.int(seq_along(x), elementNROWS(x))
-  ans_unlistData <-
-    S4Vectors:::duplicatedIntegerPairs(x_group, x_unlistData,
-                                       fromLast=fromLast)
+  ans_unlistData <- duplicatedIntegerPairs(x_group, x_unlistData,
+                                           fromLast=fromLast)
   relist(ans_unlistData, x)
 }
 setMethod("duplicated", "CompressedIntegerList",

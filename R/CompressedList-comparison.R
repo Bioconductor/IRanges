@@ -45,8 +45,7 @@ setMethod("match", c("CompressedList", "vector"),
     x_unlistData <- x@unlistData
     sm <- match(x_unlistData, x_unlistData)  # doesn't work on an Rle
     x_group <- rep.int(seq_along(x), elementNROWS(x))
-    ans_unlistData <- S4Vectors:::duplicatedIntegerPairs(x_group, sm,
-                                                         fromLast=fromLast)
+    ans_unlistData <- duplicatedIntegerPairs(x_group, sm, fromLast=fromLast)
     relist(ans_unlistData, x)
 }
 setMethod("duplicated", "CompressedList", .duplicated.CompressedList)

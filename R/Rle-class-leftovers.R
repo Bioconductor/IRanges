@@ -59,8 +59,8 @@ setGeneric("orderAsRanges", signature = c("x"),  # not exported
 setMethod("orderAsRanges", "Rle",
            function(x, na.last = TRUE, decreasing = FALSE)
            {
-               ord <- S4Vectors:::orderInteger(runValue(x), na.last = na.last,
-                                               decreasing = decreasing)
+               ord <- base::order(runValue(x), na.last = na.last,
+                                  decreasing = decreasing)
                new2("IRanges", start = start(x)[ord], width = runLength(x)[ord],
                     check = FALSE)
            })
