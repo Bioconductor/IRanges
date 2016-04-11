@@ -7,7 +7,6 @@
 \alias{rangeComparisonCodeToLetter}
 
 \alias{match,Ranges,Ranges-method}
-
 \alias{selfmatch,Ranges-method}
 
 \alias{order,Ranges-method}
@@ -20,37 +19,30 @@
 }
 
 \usage{
-## Element-wise (aka "parallel") comparison of 2 Ranges objects
-## ------------------------------------------------------------
-
-\S4method{pcompare}{Ranges,Ranges}(x, y)
-
-rangeComparisonCodeToLetter(code)
-
-## match()
-## -------
+## match() & selfmatch()
+## ---------------------
 
 \S4method{match}{Ranges,Ranges}(x, table, nomatch=NA_integer_, incomparables=NULL,
       method=c("auto", "quick", "hash"))
 
-## selfmatch()
-## -----------
-
-\S4method{selfmatch}{Ranges}(x,
-          method=c("auto", "quick", "hash"))
+\S4method{selfmatch}{Ranges}(x, method=c("auto", "quick", "hash"))
 
 ## order()
 ## -------
 
 \S4method{order}{Ranges}(..., na.last=TRUE, decreasing=FALSE, method=c("shell", "radix"))
+
+## Generalized parallel comparison of 2 Ranges objects
+## ---------------------------------------------------
+
+\S4method{pcompare}{Ranges,Ranges}(x, y)
+
+rangeComparisonCodeToLetter(code)
 }
 
 \arguments{
-  \item{x, y, table}{
+  \item{x, table, y}{
     \link{Ranges} objects.
-  }
-  \item{code}{
-    A vector of codes as returned by \code{pcompare}.
   }
   \item{nomatch}{
     The value to be returned in the case when no match is found.
@@ -71,14 +63,17 @@ rangeComparisonCodeToLetter(code)
     For \code{order}: The \code{method} argument is ignored.
   }
   \item{...}{
-    One or more \link{Ranges} objects. The additional \link{Ranges} objects
-    are used to break ties.
+    One or more \link{Ranges} objects. The \link{Ranges} objects 
+    after the first one are used to break ties.
   }
   \item{na.last}{
     Ignored.
   }
   \item{decreasing}{
     \code{TRUE} or \code{FALSE}.
+  }
+  \item{code}{
+    A vector of codes as returned by \code{pcompare}.
   }
 }
 
