@@ -342,6 +342,31 @@ setGeneric("countOverlaps", signature = c("query", "subject"),
         standardGeneric("countOverlaps")
 )
 
+.countOverlaps_default <-
+    function(query, subject, maxgap=0L, minoverlap=1L,
+             type=c("any", "start", "end", "within", "equal"),
+             ...)
+{
+    type <- match.arg(type)
+    if (missing(subject)) {
+        hits <- findOverlaps(query,
+                             maxgap=maxgap, minoverlap=minoverlap, 
+                             type=type,
+                             ...)
+    } else {
+        hits <- findOverlaps(query, subject,
+                             maxgap=maxgap, minoverlap=minoverlap, 
+                             type=type,
+                             ...)
+    }
+    ans <- countQueryHits(hits)
+    names(ans) <- names(query)
+    ans
+}
+
+setMethod("countOverlaps", c("Vector", "Vector"), .countOverlaps_default)
+setMethod("countOverlaps", c("Vector", "missing"), .countOverlaps_default)
+
 countOverlaps_Ranges <- function(query, subject,
               maxgap=0L, minoverlap=1L,
               type=c("any", "start", "end", "within", "equal"))
@@ -355,30 +380,6 @@ countOverlaps_Ranges <- function(query, subject,
 }
 
 setMethod("countOverlaps", c("Ranges", "Ranges"), countOverlaps_Ranges)
-
-setMethod("countOverlaps", c("Vector", "Vector"),
-    function(query, subject, maxgap = 0L, minoverlap = 1L,
-             type = c("any", "start", "end", "within", "equal"),
-             ...)
-    {
-        type <- match.arg(type)
-        ov <- findOverlaps(query, subject, maxgap = maxgap,
-                           minoverlap = minoverlap, type = type, ...)
-        ans <- countQueryHits(ov)
-        names(ans) <- names(query)
-        ans
-    }
-)
-
-## TODO: Support the 'drop.self' and 'drop.redundant' arguments.
-setMethod("countOverlaps", c("Vector", "missing"),
-    function(query, subject, maxgap = 0L, minoverlap = 1L,
-             type = c("any", "start", "end", "within", "equal"))
-    {
-        countOverlaps(query, query, maxgap = maxgap,
-                      minoverlap = minoverlap, type = type)
-    }
-)
 
 setMethod("countOverlaps", c("RangesList", "RangesList"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
@@ -456,31 +457,28 @@ setGeneric("overlapsAny", signature=c("query", "subject"),
         standardGeneric("overlapsAny")
 )
 
-setMethod("overlapsAny", c("Vector", "Vector"),
+.overlapsAny_default <-
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
              ...)
-    {
-        type <- match.arg(type)
-        !is.na(findOverlaps(query, subject,
-                            maxgap=maxgap, minoverlap=minoverlap,
-                            type=type, select="arbitrary",
-                            ...))
+{
+    type <- match.arg(type)
+    if (missing(subject)) {
+        ahit <- findOverlaps(query,
+                             maxgap=maxgap, minoverlap=minoverlap,
+                             type=type, select="arbitrary",
+                             ...)
+    } else {
+        ahit <- findOverlaps(query, subject,
+                             maxgap=maxgap, minoverlap=minoverlap,
+                             type=type, select="arbitrary",
+                             ...)
     }
-)
+    !is.na(ahit)
+}
 
-setMethod("overlapsAny", c("Vector", "missing"),
-    function(query, subject, maxgap=0L, minoverlap=1L,
-             type=c("any", "start", "end", "within", "equal"),
-             ...)
-    {
-        type <- match.arg(type)
-        !is.na(findOverlaps(query,
-                            maxgap=maxgap, minoverlap=minoverlap,
-                            type=type, select="arbitrary",
-                            ...))
-    }
-)
+setMethod("overlapsAny", c("Vector", "Vector"), .overlapsAny_default)
+setMethod("overlapsAny", c("Vector", "missing"), .overlapsAny_default)
 
 setMethod("overlapsAny", c("RangesList", "RangesList"),
     function(query, subject, maxgap=0L, minoverlap=1L,

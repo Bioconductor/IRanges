@@ -22,9 +22,9 @@
 \alias{findOverlaps,Pairs,Pairs-method}
 
 \alias{countOverlaps}
-\alias{countOverlaps,Ranges,Ranges-method}
 \alias{countOverlaps,Vector,Vector-method}
 \alias{countOverlaps,Vector,missing-method}
+\alias{countOverlaps,Ranges,Ranges-method}
 \alias{countOverlaps,RangesList,RangesList-method}
 \alias{countOverlaps,ViewsList,ViewsList-method}
 \alias{countOverlaps,ViewsList,Vector-method}
