@@ -105,7 +105,7 @@ static int reduce_ranges(const int *x_start, const int *x_width, int x_len,
 	if (min_gapwidth < 0)
 		error("IRanges internal error in reduce_ranges(): "
 		      "negative min_gapwidth not supported");
-	get_order_of_int_pairs(x_start, x_width, x_len, 0, order_buf, 0);
+	get_order_of_int_pairs(x_start, x_width, x_len, 0, 0, order_buf, 0);
 	out_len = out_len0 = IntPairAE_get_nelt(out_ranges);
 	for (i = 0; i < x_len; i++) {
 		j = order_buf[i];
@@ -314,7 +314,7 @@ static int gaps_ranges(const int *x_start, const int *x_width, int x_len,
 		max_end = restrict_start - 1;
 	else
 		max_end = NA_INTEGER;
-	get_order_of_int_pairs(x_start, x_width, x_len, 0, order_buf, 0);
+	get_order_of_int_pairs(x_start, x_width, x_len, 0, 0, order_buf, 0);
 	out_len = out_len0 = IntPairAE_get_nelt(out_ranges);
 	for (i = 0; i < x_len; i++) {
 		j = order_buf[i];
