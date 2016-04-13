@@ -5,7 +5,7 @@
 #include "IRanges.h"
 #include "S4Vectors_interface.h"
 
-#include <stdlib.h>  /* for malloc, realloc, free, qsort, abs */
+#include <stdlib.h>  /* for malloc, realloc, free, abs */
 #include <math.h>    /* for log10 */
 
 /*
@@ -419,24 +419,6 @@ static void extend_NCList(NCList *nclist)
 	return;
 }
 
-static const int *aa, *bb;
-
-static int qsort_compar(const void *p1, const void *p2)
-{
-	int i1, i2, ret;
-
-	i1 = *((const int *) p1);
-	i2 = *((const int *) p2);
-	ret = aa[i1] - aa[i2];
-	if (ret != 0)
-		return ret;
-	ret = bb[i2] - bb[i1];
-	if (ret != 0)
-		return ret;
-	/* Break tie by position so the ordering is "stable". */
-	return i1 - i2;
-}
-
 typedef struct NCList_building_stack_elt_t {
 	NCList *nclist;
 	int rgid;  /* range ID */
@@ -479,26 +461,32 @@ static void build_NCList(NCList *top_nclist,
 			 const int *x_start_p, const int *x_end_p,
 			 const int *x_subset_p, int x_len)
 {
-	int *oo, k, d, rgid, current_end;
+	int *base, rgid, retcode, i, d, current_end;
 	NCList *landing_nclist;
 	NCListBuildingStackElt stack_elt;
 
-	/* Determine order of 'x'. 'oo' will be such that 'x[oo]' is sorted
-	   first by ascending start then by descending end. */
-	oo = (int *) R_alloc(sizeof(int), x_len);
-	if (x_subset_p == NULL)
+	/* Compute the order of 'x' (or its subset) in 'base'.
+	   The sorting is first by ascending start then by descending end. */
+	base = (int *) malloc(sizeof(int) * x_len);
+	if (base == NULL)
+		error("build_NCList: memory allocation failed");
+	if (x_subset_p == NULL) {
 		for (rgid = 0; rgid < x_len; rgid++)
-			oo[rgid] = rgid;
-	else
-		for (rgid = 0; rgid < x_len; rgid++)
-			oo[rgid] = x_subset_p[rgid];
-	aa = x_start_p;
-	bb = x_end_p;
-	qsort(oo, x_len, sizeof(int), qsort_compar);
-
+			base[rgid] = rgid;
+	} else {
+		memcpy(base, x_subset_p, sizeof(int) * x_len);
+	}
+	retcode = sort_int_pairs(base, x_len,
+				 x_start_p, x_end_p,
+				 0, 1,
+				 1, NULL, NULL);
+	if (retcode != 0) {
+		free(base);
+		error("build_NCList: memory allocation failed");
+	}
 	init_NCList(top_nclist);
-	for (k = 0, d = -1; k < x_len; k++) {
-		rgid = oo[k];
+	for (i = 0, d = -1; i < x_len; i++) {
+		rgid = base[i];
 		current_end = x_end_p[rgid];
 		while (d >= 0 &&
 		       x_end_p[NCList_building_stack[d].rgid] < current_end)
@@ -512,6 +500,7 @@ static void build_NCList(NCList *top_nclist,
 			extend_NCList_building_stack();
 		NCList_building_stack[d] = stack_elt;
 	}
+	free(base);
 	return;
 }
 
