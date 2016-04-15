@@ -166,7 +166,7 @@ setMethod("space", "RangesList",
           {
             space <- names(x)
             if (!is.null(space))
-              space <- factor(rep.int(space, elementNROWS(x)), space)
+              space <- factor(rep.int(space, elementNROWS(x)), unique(space))
             space
           })
 
