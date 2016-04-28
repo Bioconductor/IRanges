@@ -562,7 +562,6 @@ setReplaceMethod("names", "Partitioning", set_IRanges_names)
 
 setValidity2("Partitioning", .valid.Partitioning)
 
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### PartitioningByEnd uses a compact internal representation that allows
 ### fast mapping from groups to objects. However, it is not efficient for

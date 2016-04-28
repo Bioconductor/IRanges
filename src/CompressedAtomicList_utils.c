@@ -8,26 +8,45 @@
 
 #define PARTITIONED_SUM(C_TYPE, ACCESSOR, ANS_TYPE, ANS_ACCESSOR, NA_CHECK) { \
     PARTITIONED_AGG(C_TYPE, ACCESSOR, ANS_TYPE, ANS_ACCESSOR, NA_CHECK, 0,    \
-                    summary += val);                                          \
+                    summary += val,);					\
 }
 
 #define PARTITIONED_PROD(ACCESSOR, NA_CHECK) {                            \
         PARTITIONED_AGG(double, ACCESSOR, REALSXP, REAL, NA_CHECK, 1,     \
-                    summary *= val);                                      \
+			summary *= val,);				\
 }
+
+#define PARTITIONED_EX(C_TYPE, ACCESSOR, ANS_TYPE, NA_CHECK, INIT, RELOP) { \
+    PARTITIONED_AGG(C_TYPE, ACCESSOR, ANS_TYPE, ACCESSOR, NA_CHECK, INIT,   \
+                    if (val RELOP summary) summary = val,);          	    \
+  }
 
 #define PARTITIONED_MIN(C_TYPE, ACCESSOR, ANS_TYPE, NA_CHECK, INIT) {         \
-    PARTITIONED_AGG(C_TYPE, ACCESSOR, ANS_TYPE, ACCESSOR, NA_CHECK, INIT,     \
-                    if (val < summary) summary = val);                        \
+    PARTITIONED_EX(C_TYPE, ACCESSOR, ANS_TYPE, NA_CHECK, INIT, <);  \
 }
 
-#define PARTITIONED_MAX(C_TYPE, ACCESSOR, ANS_TYPE, NA_CHECK, INIT) {         \
-    PARTITIONED_AGG(C_TYPE, ACCESSOR, ANS_TYPE, ACCESSOR, NA_CHECK, INIT,     \
-                    if (val > summary) summary = val);                        \
-}
+#define PARTITIONED_MAX(C_TYPE, ACCESSOR, ANS_TYPE, NA_CHECK, INIT) {	     \
+    PARTITIONED_EX(C_TYPE, ACCESSOR, ANS_TYPE, NA_CHECK, INIT, >); \
+  }
+
+#define PARTITIONED_WHICH_AGG(C_TYPE, ACCESSOR, NA_CHECK, INIT, RELOP) {  \
+    SEXP na_rm = ScalarLogical(TRUE);					  \
+    PARTITIONED_AGG(int, ACCESSOR, INTSXP, INTEGER, NA_CHECK, NA_INTEGER, \
+                    if (val RELOP summary_val)				  \
+		      (summary_val = val, summary = j - prev_end + 1),	  \
+		    C_TYPE summary_val = INIT)				  \
+  }
+
+#define PARTITIONED_WHICH_MAX(C_TYPE, ACCESSOR, NA_CHECK, INIT) {       \
+    PARTITIONED_WHICH_AGG(C_TYPE, ACCESSOR, NA_CHECK, INIT, >)		\
+  }
+
+#define PARTITIONED_WHICH_MIN(C_TYPE, ACCESSOR, NA_CHECK, INIT) {       \
+    PARTITIONED_WHICH_AGG(C_TYPE, ACCESSOR, NA_CHECK, INIT, <)		\
+  }
 
 #define PARTITIONED_AGG(C_TYPE, ACCESSOR, ANS_TYPE, ANS_ACCESSOR, NA_CHECK, \
-                        INIT, UPDATE) {                                 \
+                        INIT, UPDATE, EXTRA_INIT) {			\
     SEXP unlistData = _get_CompressedList_unlistData(x);                \
     SEXP ends =                                                         \
       _get_PartitioningByEnd_end(_get_CompressedList_partitioning(x));  \
@@ -36,7 +55,8 @@
     SEXP ans = allocVector(ANS_TYPE, length(ends));                     \
     for (int i = 0; i < length(ends); i++) {                            \
       int end = INTEGER(ends)[i];                                       \
-      C_TYPE summary = INIT;                                               \
+      C_TYPE summary = INIT;                                            \
+      EXTRA_INIT;							\
       for (int j = prev_end; j < end; j++) {                            \
         C_TYPE val = ACCESSOR(unlistData)[j];                           \
         if (NA_CHECK) {                                                 \
@@ -116,9 +136,25 @@ SEXP CompressedLogicalList_min(SEXP x, SEXP na_rm)
 /*
  * --- .Call ENTRY POINT ---
  */
+SEXP CompressedLogicalList_which_min(SEXP x)
+{
+  PARTITIONED_WHICH_MIN(Rboolean, LOGICAL, val == NA_LOGICAL, TRUE);
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
 SEXP CompressedIntegerList_min(SEXP x, SEXP na_rm)
 {
   PARTITIONED_MIN(int, INTEGER, INTSXP, val == NA_INTEGER, INT_MAX);
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP CompressedIntegerList_which_min(SEXP x)
+{
+  PARTITIONED_WHICH_MIN(int, INTEGER, val == NA_INTEGER, INT_MAX);
 }
 
 /*
@@ -132,9 +168,25 @@ SEXP CompressedNumericList_min(SEXP x, SEXP na_rm)
 /*
  * --- .Call ENTRY POINT ---
  */
+SEXP CompressedNumericList_which_min(SEXP x)
+{
+  PARTITIONED_WHICH_MIN(double, REAL, ISNA(val), R_PosInf);
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
 SEXP CompressedLogicalList_max(SEXP x, SEXP na_rm)
 {
   PARTITIONED_MAX(Rboolean, LOGICAL, LGLSXP, val == NA_LOGICAL, TRUE);
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP CompressedLogicalList_which_max(SEXP x)
+{
+  PARTITIONED_WHICH_MAX(Rboolean, LOGICAL, val == NA_LOGICAL, TRUE);
 }
 
 /*
@@ -148,9 +200,25 @@ SEXP CompressedIntegerList_max(SEXP x, SEXP na_rm)
 /*
  * --- .Call ENTRY POINT ---
  */
+SEXP CompressedIntegerList_which_max(SEXP x)
+{
+  PARTITIONED_WHICH_MAX(int, INTEGER, val == NA_INTEGER, R_INT_MIN);
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
 SEXP CompressedNumericList_max(SEXP x, SEXP na_rm)
 {
   PARTITIONED_MAX(double, REAL, REALSXP, ISNA(val), R_NegInf);
+}
+
+/*
+ * --- .Call ENTRY POINT ---
+ */
+SEXP CompressedNumericList_which_max(SEXP x)
+{
+  PARTITIONED_WHICH_MAX(double, REAL, ISNA(val), R_NegInf);
 }
 
 #define PARTITIONED_IS_UNSORTED(C_TYPE, ACCESSOR, NA_CHECK) {		\
