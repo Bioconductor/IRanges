@@ -14,6 +14,8 @@
 \alias{extractList,ANY,ANY-method}
 \alias{extractList,ANY-method}
 
+\alias{regroup}
+
 \title{Group elements of a vector-like object into a list-like object}
 
 \description{
@@ -49,6 +51,11 @@ splitAsList(x, f, drop=FALSE, ...)
 ## -------------
 
 extractList(x, i)
+
+## regroup()
+## -------------
+
+regroup(x, g)
 }
 
 \arguments{
@@ -72,6 +79,10 @@ extractList(x, i)
     Note that \code{i} can be a \link{Ranges} object (a particular type of
     list-like object), and, in that case, \code{extractList} is particularly
     fast (this is a common use case).
+  }
+  \item{g}{
+    A \linkS4class{Grouping} or an object coercible to one. For
+    \code{regroup}, \code{g} groups the elements of \code{x}.
   }
   \item{...}{
     Arguments to pass to methods.
@@ -114,6 +125,14 @@ extractList(x, i)
   Note that the transformation performed by \code{relist} or \code{split}
   is always reversible (via \code{unlist} and \code{unsplit}, respectively),
   but the not the transformation performed by \code{extractList} (in general).
+
+  The \code{regroup} function splits the elements of \code{unlist(x)}
+  into a list according to the grouping \code{g}. Each element of
+  \code{unlist(x)} inherits its group from its parent element of
+  \code{x}. \code{regroup} is different from \code{relist} and
+  \code{split}, because \code{x} is already grouped, and the goal is to
+  combine groups.
+
 }
 
 \value{
