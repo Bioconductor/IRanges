@@ -211,7 +211,7 @@ export(
 
     ## Grouping-class.R:
     nobj, grouplengths, members, vmembers, togroup, togrouplength,
-    high2low, low2high, grouprank, togrouprank, mapOrder, toglobal,
+    high2low, low2high, grouprank, togrouprank, mapOrder,
 
     ## Rle-class-leftovers.R:
     findRange, splitRanges,

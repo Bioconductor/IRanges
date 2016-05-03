@@ -525,10 +525,7 @@ setMethods("which.max", list("IntegerList", "NumericList", "RleList"),
 setCompressedListWhichSummaryMethod <-
     function(fun, where=topenv(parent.frame()))
     {
-        def <- function(x) {
-            ans <- .Call(C_fun, x)
-            new("LocalSubscript", ans, partitioning=PartitioningByEnd(x))
-        }
+        def <- function(x) .Call(C_fun, x)
         setCompressedNumericalListMethod(fun, def, where)
     }
 setCompressedListWhichSummaryMethod("which.min")
@@ -544,27 +541,6 @@ setMethod("which.max", "CompressedRleList",
             viewWhichMaxs(as(x, "RleViews"), na.rm=TRUE) -
               c(0L, head(cumsum(elementNROWS(x)), -1))
           })
-
-
-## so we can convert the output of which.* to global subscripts
-setClass("LocalSubscript",
-         slots=c(partitioning="Partitioning"),
-         contains="integer")
-setMethod("show", "LocalSubscript", function(object) {
-    cat("A", class(object), "object\n")
-    cat(S4Vectors:::.ellipsize(as.integer(object)), "\n", sep="")
-})
-
-setGeneric("toglobal", function(x, map, ...) standardGeneric("toglobal"))
-
-setMethod("toglobal", c("LocalSubscript", "missing"), function(x, map) {
-    as.integer(x) + start(x@partitioning) - 1L
-})
-setMethod("toglobal", c("IntegerList", "missing"), function(x, map) {
-    part <- PartitioningByEnd(x)
-    unlist(x, use.names=FALSE) + start(part)[togroup(part)] - 1L
-})
-
 
 for (i in c("IntegerList", "NumericList", "RleList")) {
     setAtomicListMethod("diff", inputBaseClass = i, endoapply = TRUE)
