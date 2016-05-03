@@ -1,3 +1,98 @@
+CHANGES IN VERSION 2.6.0
+------------------------
+
+NEW FEATURES
+
+    o Add regroup() function.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Remove 'algorithm' argument from findOverlaps(), countOverlaps(),
+      overlapsAny(), subsetByOverlaps(), nearest(), distanceToNearest(),
+      findCompatibleOverlaps(), countCompatibleOverlaps(), findSpliceOverlaps(),
+      summarizeOverlaps(), Union(), IntersectionStrict(), and
+      IntersectionNotEmpty(). The argument was added in BioC 3.1 to facilitate
+      the transition from an Interval Tree to a Nested Containment Lists
+      implementation of findOverlaps() and family. The transition is over.
+
+    o Restore 'maxgap' special meaning (from BioC < 3.1) when calling
+      findOverlaps() (or other member of the family) with 'type' set to
+      "within".
+
+    o No more limit on the max depth of *on-the-fly* NCList objects. Note that
+      the limit remains and is still 100000 when the user explicitely calls the
+      NCList() or GNCList() constructor.
+
+    o Rename 'ignoreSelf' and 'ignoreRedundant' argument of the
+      findOverlaps,Vector,missing method -> 'drop.self' and 'drop.redundant'.
+      The old names are still working but deprecated.
+
+    o Rename grouplength() -> grouplengths() (old name still available but
+      deprecated).
+
+    o Modify "replaceROWS" method for IRanges objects so that the replaced
+      elements in 'x' get their metadata columns from 'value'. See this thread
+      on bioc-devel:
+        https://stat.ethz.ch/pipermail/bioc-devel/2015-November/008319.html
+
+    o Optimized which.min() and which.max() for atomic lists.
+
+    o Remove the ellipsis (...) from all the setops methods, except the methods
+      for Pairs objects.
+
+    o Add "togroup" method for ManyToOneGrouping objects and deprecate default
+      method.
+
+    o Modernize "show" method for Ranges objects: now they're displayed more
+      like GRanges objects.
+
+    o Coercion from IRanges to NormalIRanges now propagates the metadata
+      columns when the object to coerce is already normal.
+
+    o Don't export CompressedHitsList anymore from the IRanges package. This
+      doesn't seem to be used at all and it's not clear that we need it.    
+
+DEPRECATED AND DEFUNCT
+
+    o Deprecate RDApplyParams objects and rdapply().
+
+    o Deprecate RangedDataList objects.
+
+    o Deprecate the "reduce" method for RangedData objects.
+
+    o Deprecate GappedRanges objects.
+
+    o Deprecate the 'ignoreSelf' and 'ignoreRedundant' arguments of the
+      findOverlaps,Vector,missing method in favor of the new 'drop.self' and
+      'drop.redundant' arguments.
+
+    o Deprecate grouplength() in favor of grouplengths().
+
+    o Default "togroup" method is deprecated.
+
+    o Remove IntervalTree and IntervalForest classes and methods (were defunct
+      in BioC 3.2).
+
+    o Remove mapCoords() and pmapCoords() generics (were defunct in BioC 3.2).
+
+    o Remove all "updateObject" methods (they were all obsolete).
+
+BUG FIXES
+
+    o Fix segfault when calling window() on an Rle object of length 0.
+
+    o Fix "which.min" and "which.max" methods for IntegerList, NumericList,
+      and RleList objects when 'x' is empty or contains empty list elements.
+
+    o Fix mishandling of zero-width ranges when calling findOverlaps() (or
+      other member of the family) with 'type' set to "within".
+
+    o Various fixes to "countOverlaps" method for Vector#missing. See svn
+      commit message for commit 116112 for the details.
+
+    o Fix validity method for NormalIRanges objects (was not checking anything).
+
+
 CHANGES IN VERSION 2.4.0
 ------------------------
 
