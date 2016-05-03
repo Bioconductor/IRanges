@@ -94,6 +94,19 @@ setMethod("intersect", c("CompressedIRangesList", "CompressedIRangesList"),
             setdiff(x, gaps(y, start = startx, end = endx))
           })
 
+setMethod("intersect", c("CompressedAtomicList", "CompressedAtomicList"),
+          function(x, y) {
+              fx <- if (!is(x, "IntegerList")) as(x, "FactorList") else x
+              fy <- if (!is(y, "IntegerList")) as(y, "FactorList") else y
+              m <- S4Vectors:::matchIntegerPairs(togroup(PartitioningByEnd(x)),
+                                                 unlist(fx, use.names=FALSE),
+                                                 togroup(PartitioningByEnd(y)),
+                                                 unlist(fy, use.names=FALSE),
+                                                 nomatch=0L)
+              m[duplicated(m)] <- 0L
+              x[relist(m > 0L, x)]
+          })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### setdiff()
@@ -162,6 +175,7 @@ setMethod("punion", c("Pairs", "missing"), function(x, y, ...) {
               callGeneric(first(x), second(x), ...)
           })
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### pintersect()
 ###
@@ -225,18 +239,6 @@ setMethod("pintersect", c("Pairs", "missing"), function(x, y, ...) {
               callGeneric(first(x), second(x), ...)
           })
 
-setMethod("pintersect", c("CompressedAtomicList", "CompressedAtomicList"),
-          function(x, y) {
-              fx <- if (!is(x, "IntegerList")) as(x, "FactorList") else x
-              fy <- if (!is(y, "IntegerList")) as(y, "FactorList") else y
-              m <- S4Vectors:::matchIntegerPairs(togroup(PartitioningByEnd(x)),
-                                                 unlist(fx, use.names=FALSE),
-                                                 togroup(PartitioningByEnd(y)),
-                                                 unlist(fy, use.names=FALSE),
-                                                 nomatch=0L)
-              m[duplicated(m)] <- 0L
-              x[relist(m > 0L, x)]
-          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### psetdiff()
