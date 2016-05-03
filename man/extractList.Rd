@@ -53,7 +53,7 @@ splitAsList(x, f, drop=FALSE, ...)
 extractList(x, i)
 
 ## regroup()
-## -------------
+## ---------
 
 regroup(x, g)
 }
@@ -124,7 +124,7 @@ regroup(x, g)
 
   Note that the transformation performed by \code{relist} or \code{split}
   is always reversible (via \code{unlist} and \code{unsplit}, respectively),
-  but the not the transformation performed by \code{extractList} (in general).
+  but not the transformation performed by \code{extractList} (in general).
 
   The \code{regroup} function splits the elements of \code{unlist(x)}
   into a list according to the grouping \code{g}. Each element of
