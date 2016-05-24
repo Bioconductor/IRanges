@@ -21,7 +21,7 @@ setClass("RangesNSBS",  # not exported
 ### Supplied arguments are trusted so we don't check them!
 
 setMethod("NSBS", "Ranges",
-    function(i, x, exact=TRUE, upperBoundIsStrict=TRUE)
+    function(i, x, exact=TRUE, strict.upper.bound=TRUE, allow.NAs=FALSE)
     {
         i_len <- length(i)
         if (i_len == 0L) {
@@ -31,24 +31,24 @@ setMethod("NSBS", "Ranges",
         }
         x_NROW <- NROW(x)
         if (min(start(i)) < 1L ||
-            upperBoundIsStrict && max(end(i)) > x_NROW)
+            strict.upper.bound && max(end(i)) > x_NROW)
             S4Vectors:::.subscript_error("subscript contains out-of-bounds ",
                                          "ranges")
         if (i_len == 1L) {
-            ans <- new("RangeNSBS", subscript=c(start(i), end(i)),
-                                    upper_bound=x_NROW,
-                                    upper_bound_is_strict=upperBoundIsStrict)
+            ans <- new2("RangeNSBS", subscript=c(start(i), end(i)),
+                                     upper_bound=x_NROW,
+                                     upper_bound_is_strict=strict.upper.bound,
+                                     check=FALSE)
             return(ans)
         }
-        new("RangesNSBS", subscript=i,
-                          upper_bound=x_NROW,
-                          upper_bound_is_strict=upperBoundIsStrict)
+        new2("RangesNSBS", subscript=i,
+                           upper_bound=x_NROW,
+                           upper_bound_is_strict=strict.upper.bound,
+                           check=FALSE)
     }
 )
 
 ### Other methods.
-
-setMethod("as.integer", "RangesNSBS", function(x) as.integer(x@subscript))
 
 setMethod("length", "RangesNSBS", function(x) sum(width(x@subscript)))
 

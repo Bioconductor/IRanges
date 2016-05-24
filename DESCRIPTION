@@ -9,13 +9,13 @@ Description: The package provides efficient low-level and highly reusable S4
 	collections of instances of the basic classes. All classes in
 	the package use consistent naming and share the same rich and
 	consistent "Vector API" as much as possible.
-Version: 2.7.0
+Version: 2.7.1
 Encoding: UTF-8
 Author: H. Pagès, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Infrastructure, DataRepresentation
 Depends: R (>= 3.1.0), methods, utils, stats, BiocGenerics (>= 0.15.10),
-	S4Vectors (>= 0.9.48)
+	S4Vectors (>= 0.11.2)
 Imports: stats4
 LinkingTo: S4Vectors
 Suggests: XVector, GenomicRanges, GenomicFeatures, GenomicAlignments,
@@ -25,6 +25,7 @@ Collate: Vector-class-leftovers.R
 	List-class-leftovers.R
 	AtomicList-class.R
 	Ranges-class.R
+	subsetting-utils.R
 	Ranges-comparison.R
 	IRanges-class.R
 	IRanges-constructor.R
@@ -69,5 +70,4 @@ Collate: Vector-class-leftovers.R
 	nearest-methods.R
 	cbind-Rle-methods.R
 	tile-methods.R
-	subsetting-internals.R
 	zzz.R
