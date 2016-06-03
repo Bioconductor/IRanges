@@ -6,6 +6,45 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Combine the dimnames of a list of array-like objects
+###
+
+### Assume all the arrays in 'objects' have the same number of dimensions.
+### NOT exported but used in the HDF5Array package.
+combine_dimnames <- function(objects)
+{
+    lapply(seq_along(dim(objects[[1L]])),
+        function(n) {
+            for (x in objects) {
+                dn <- dimnames(x)[[n]]
+                if (!is.null(dn))
+                    return(dn)
+            }
+            NULL
+        })
+}
+
+### Combine the dimnames the rbind/cbind way.
+### NOT exported but used in the HDF5Array package.
+combine_dimnames_along <- function(objects, dims, along)
+{
+    dimnames <- combine_dimnames(objects)
+    along_names <- lapply(objects, function(x) dimnames(x)[[along]])
+    along_names_lens <- lengths(along_names)
+    if (any(along_names_lens != 0L)) {
+        fix_idx <- which(along_names_lens != dims[along, ])
+        along_names[fix_idx] <- lapply(dims[along, fix_idx], character)
+    }
+    along_names <- unlist(along_names, use.names=FALSE)
+    if (!is.null(along_names))
+        dimnames[[along]] <- along_names
+    if (all(S4Vectors:::sapply_isNULL(dimnames)))
+        dimnames <- NULL
+    dimnames
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### .simple_abind()
 ###
 ### A stripped-down version of abind::abind().
@@ -65,32 +104,6 @@
     extractROWS(data, ranges[i])
 }
 
-.combine_dimnames <- function(objects, dims, along)
-{
-    ndim <- nrow(dims)
-    dimnames <- lapply(seq_len(ndim),
-        function(n) {
-            for (x in objects) {
-                dn <- dimnames(x)[[n]]
-                if (!is.null(dn))
-                    return(dn)
-            }
-            NULL
-        })
-    along_names <- lapply(objects, function(x) dimnames(x)[[along]])
-    along_names_lens <- lengths(along_names)
-    if (any(along_names_lens != 0L)) {
-        fix_idx <- which(along_names_lens != dims[along, ])
-        along_names[fix_idx] <- lapply(dims[along, fix_idx], character)
-    }
-    along_names <- unlist(along_names, use.names=FALSE)
-    if (!is.null(along_names))
-        dimnames[[along]] <- along_names
-    if (all(S4Vectors:::sapply_isNULL(dimnames)))
-        dimnames <- NULL
-    dimnames
-}
-
 .simple_abind <- function(..., along)
 {
     objects <- list(...)
@@ -117,7 +130,7 @@
     dim(ans) <- ans_dim
 
     ## Combine and set the dimnames.
-    dimnames(ans) <- .combine_dimnames(objects, dims, along=along)
+    dimnames(ans) <- combine_dimnames_along(objects, dims, along)
     ans
 }
 
