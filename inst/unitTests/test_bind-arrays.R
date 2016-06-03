@@ -16,7 +16,6 @@
            dimnames=list(paste0("M3x", 1:5), NULL, paste0("M3z", 1:4)))
 )
 
-
 test_arbind <- function()
 {
     ## on matrices
@@ -42,10 +41,12 @@ test_arbind <- function()
 
     ## on arrays
     current <- do.call(arbind, .TEST_arrays)
-    for (k in 1:4) {
-        target <- do.call(rbind, lapply(.TEST_arrays, `[`, , , k))
-        checkIdentical(target, current[ , , k])
+    check_2D_slice <- function(k) {
+        slices <- lapply(.TEST_arrays, `[`, , , k)
+        target_slice <- do.call(rbind, slices)
+        checkIdentical(target_slice, current[ , , k])
     }
+    for (k in seq_len(dim(current)[[3L]])) check_2D_slice(k)
 }
 
 test_acbind <- function()
@@ -83,10 +84,13 @@ test_acbind <- function()
             dimnames(a) <- a_dimnames
             a
     })
+
     current <- do.call(acbind, arrays)
-    for (k in 1:4) {
-        target <- do.call(cbind, lapply(arrays, `[`, , , k))
-        checkIdentical(target, current[ , , k])
+    check_2D_slice <- function(k) {
+        slices <- lapply(arrays, `[`, , , k)
+        target_slice <- do.call(cbind, slices)
+        checkIdentical(target_slice, current[ , , k])
     }
+    for (k in seq_len(dim(current)[[3L]])) check_2D_slice(k)
 }
 

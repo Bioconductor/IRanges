@@ -5,6 +5,38 @@
 ###
 
 
+### Return a matrix with one row per dim and one column per object if the
+### objects are bindable. Otherwise return a character vector describing why
+### the objects are not bindable. This design allows the function to be used
+### in the context of a validity method.
+### NOT exported but used in the HDF5Array package.
+get_dims_to_bind <- function(objects, no.check.along)
+{
+    dims <- lapply(objects, dim)
+    ndims <- lengths(dims)
+    ndim <- ndims[[1L]]
+    if (!all(ndims == ndim))
+        return(c("all the objects to bind must have ",
+                 "the same number of dimensions"))
+    tmp <- unlist(dims, use.names=FALSE)
+    if (is.null(tmp))
+        return("the objects to bind have no dimensions")
+    dims <- matrix(tmp, nrow=ndim)
+    tmp <- dims[-no.check.along, , drop=FALSE]
+    if (!all(tmp == tmp[ , 1L]))
+        return("the objects to bind have incompatible dimensions")
+    dims
+}
+
+### Combine the dims the rbind/cbind way.
+combine_dims_along <- function(dims, along)
+{
+    ans_dim <- dims[ , 1L]
+    ans_dim[[along]] <- sum(dims[along, ])
+    ans_dim
+}
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combine the dimnames of a list of array-like objects
 ###
@@ -45,35 +77,8 @@ combine_dimnames_along <- function(objects, dims, along)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### .simple_abind()
+### simple_abind()
 ###
-### A stripped-down version of abind::abind().
-### Some differences:
-###   (a) Treatment of dimnames: .simple_abind() treatment of dimnames is
-###       consistent with base::rbind() and base::cbind(). This is not the
-###       case for abind::abind() which does some strange things with the
-###       dimnames.
-###   (b) Performance: .simple_abind() has a little bit more overhead than
-###       abind::abind(). This makes it slower on small objects. However it
-###       tends to be slightly faster on big objects.
-
-### Return a matrix with one row per dim and one column per object.
-.get_and_check_objects_dims <- function(objects, no.check.along)
-{
-    dims <- lapply(objects, dim)
-    ndims <- lengths(dims)
-    ndim <- ndims[[1L]]
-    if (!all(ndims == ndim))
-        stop("all the objects to bind must have the same nb of dimensions")
-    tmp <- unlist(dims, use.names=FALSE)
-    if (is.null(tmp))
-        stop("the objects to bind have no dimensions")
-    dims <- matrix(tmp, nrow=ndim)
-    tmp <- dims[-no.check.along, , drop=FALSE]
-    if (!all(tmp == tmp[ , 1L]))
-        stop("objects to bind have incompatible dimensions")
-    dims
-}
 
 ### 'objects' is assumed to be a list of vector-like objects.
 ### 'block_lens' is assumed to be an integer vector parallel to 'objects'
@@ -104,7 +109,17 @@ combine_dimnames_along <- function(objects, dims, along)
     extractROWS(data, ranges[i])
 }
 
-.simple_abind <- function(..., along)
+### A stripped-down version of abind::abind().
+### Some differences:
+###   (a) Treatment of dimnames: simple_abind() treatment of dimnames is
+###       consistent with base::rbind() and base::cbind(). This is not the
+###       case for abind::abind() which does some strange things with the
+###       dimnames.
+###   (b) Performance: simple_abind() has a little bit more overhead than
+###       abind::abind(). This makes it slower on small objects. However it
+###       tends to be slightly faster on big objects.
+### NOT exported but used in the HDF5Array package.
+simple_abind <- function(..., along)
 {
     objects <- list(...)
     object_is_NULL <- S4Vectors:::sapply_isNULL(objects)
@@ -116,7 +131,9 @@ combine_dimnames_along <- function(objects, dims, along)
         return(objects[[1L]])
 
     ## Check dim compatibility.
-    dims <- .get_and_check_objects_dims(objects, no.check.along=along)
+    dims <- get_dims_to_bind(objects, no.check.along=along)
+    if (is.character(dims))
+        stop(wmsg(dims))
 
     ## Perform the binding.
     block_lens <- dims[along, ]
@@ -125,9 +142,7 @@ combine_dimnames_along <- function(objects, dims, along)
     ans <- .intertwine_blocks(objects, block_lens)
 
     ## Set the dim.
-    ans_dim <- dims[ , 1L]
-    ans_dim[[along]] <- sum(dims[along, ])
-    dim(ans) <- ans_dim
+    dim(ans) <- combine_dims_along(dims, along)
 
     ## Combine and set the dimnames.
     dimnames(ans) <- combine_dimnames_along(objects, dims, along)
@@ -142,6 +157,6 @@ combine_dimnames_along <- function(objects, dims, along)
 setGeneric("arbind", function(...) standardGeneric("arbind"))
 setGeneric("acbind", function(...) standardGeneric("acbind"))
 
-setMethod("arbind", "array", function(...) .simple_abind(..., along=1L))
-setMethod("acbind", "array", function(...) .simple_abind(..., along=2L))
+setMethod("arbind", "array", function(...) simple_abind(..., along=1L))
+setMethod("acbind", "array", function(...) simple_abind(..., along=2L))
 
