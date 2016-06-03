@@ -277,7 +277,10 @@ export(
     precede, follow, nearest, distance, distanceToNearest,
 
     ## tile-methods.R:
-    tile
+    tile,
+
+    ## bind-arrays.R:
+    arbind, acbind
 )
 
 ### Exactly the same list as above.
@@ -324,5 +327,6 @@ exportMethods(
     slice,
     punion, pintersect, psetdiff, pgap,
     precede, follow, nearest, distance, distanceToNearest,
-    tile
+    tile,
+    arbind, acbind
 )
