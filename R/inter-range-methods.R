@@ -381,9 +381,9 @@ setMethod("gaps", "MaskCollection",
 setGeneric("disjoin", function(x, ...) standardGeneric("disjoin"))
 
 ### Always return an IRanges *instance* whatever Ranges derivative the input
-### is, so does NOT act like an endomorphism in general. 
+### is, so does NOT act like an endomorphism in general.
 setMethod("disjoin", "Ranges",
-    function(x)
+    function(x, with.revmap=FALSE)
     {
         ## starts: original starts and end+1 when inside another interval
         ## ends: original ends and start-1 when inside another interval
@@ -395,7 +395,10 @@ setMethod("disjoin", "Ranges",
         adj <- new2("IRanges", start=adj_start,
                                width=adj_width,
                                check=FALSE)
-        subsetByOverlaps(adj,  x)
+        adj <- subsetByOverlaps(adj, x)
+        if (with.revmap)
+             mcols(adj)$revmap <- as(sort(findOverlaps(adj, x)),"List")
+        adj
     }
 )
 
@@ -404,10 +407,10 @@ setMethod("disjoin", "Ranges",
 ### behave on a NormalIRanges object.
 setMethod("disjoin", "NormalIRanges", function(x) as(x, "NormalIRanges"))
 
-setMethod("disjoin", "RangesList", function(x) endoapply(x, disjoin))
+setMethod("disjoin", "RangesList", function(x, with.revmap=FALSE) endoapply(x, disjoin, with.revmap))
 
 setMethod("disjoin", "CompressedIRangesList",
-          function(x, ...)
+          function(x, with.revmap=FALSE, ...)
           {
               .wunlist <- function(x)
                   ## unlist CompressedIntegerList, with integer(0) as 0
@@ -416,10 +419,18 @@ setMethod("disjoin", "CompressedIRangesList",
                   w[elementNROWS(x) != 0L] <- unlist(x, use.names=FALSE)
                   w
               }
+              
+              .global2local_revmap <- function(revmap, x, f)
+              {
+                  ## convert global to local index in revmap
+                  offsets <- rep.int(start(PartitioningByEnd(x)) - 1L,
+                                     tabulate(f, length(levels(f))))
+                  revmap - offsets
+              }
 
               rng <- range(x)
               if (sum(.wunlist(width(rng) + 1)) > .Machine$integer.max)
-                  return(endoapply(x, disjoin,  ...))
+                  return(endoapply(x, disjoin, with.revmap=with.revmap, ...))
 
               ## localize coordinates
               off0 <- head(.wunlist(width(rng) + 1L), -1L)
@@ -427,11 +438,13 @@ setMethod("disjoin", "CompressedIRangesList",
               local <- unlist(shift(x, offset), use.names=FALSE)
 
               ## disjoin
-              d <- disjoin(local, ...)
+              d <- disjoin(local, with.revmap=with.revmap, ...)
               vec <- unlist(start(shift(rng, offset)), use.names=FALSE)
               lvls <- factor(seq_along(x))
               lvls0 <- lvls[elementNROWS(rng) != 0]
               f <- lvls0[findInterval(start(d), vec)]
+              if (with.revmap) 
+                  mcols(d)$revmap <- .global2local_revmap(mcols(d)$revmap, x, f)
               d <- split(d, f)
               names(d) <- names(x)
 

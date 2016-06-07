@@ -88,6 +88,11 @@ gaps(x, start=NA, end=NA)
 ## disjoin(), isDisjoint(), and disjointBins()
 ## -------------------------------------------
 disjoin(x, ...)
+
+\S4method{disjoin}{Ranges}(x, with.revmap=FALSE)
+\S4method{disjoin}{RangesList}(x, with.revmap=FALSE)
+\S4method{disjoin}{CompressedIRangesList}(x, with.revmap=FALSE, ...)
+
 isDisjoint(x, ...)
 disjointBins(x, ...)
 }
@@ -366,9 +371,12 @@ gaps(mymasks)
 ## On a Ranges object:
 ir <- IRanges(c(1, 1, 4, 10), c(6, 3, 8, 10))
 disjoin(ir)  # IRanges(c(1, 4, 7, 10), c(3, 6, 8, 10))
+disjoin(ir, with.revmap=TRUE)
+
 
 ## On a RangesList object:
 disjoin(collection)
+disjoin(collection, with.revmap=TRUE)
 
 ## ---------------------------------------------------------------------
 ## isDisjoint()
