@@ -211,6 +211,11 @@ test_CompressedIRangesList_disjoin <- function()
     checkIdentical(disjoin(r0), disjoin(irl)[[1]])
     irl <- IRangesList(IRanges(), r0)
     checkIdentical(disjoin(r0), disjoin(irl)[[2]])
+
+    ## check don't collapse levels
+    irl <- IRangesList(IRanges(1, 5), IRanges(3, 7))
+    names(irl) = character(2)
+    checkIdentical(irl, disjoin(irl))
 }
 
 test_Ranges_disjointBins <- function()

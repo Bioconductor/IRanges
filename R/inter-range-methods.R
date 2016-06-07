@@ -427,16 +427,13 @@ setMethod("disjoin", "CompressedIRangesList",
               local <- unlist(shift(x, offset), use.names=FALSE)
 
               ## disjoin
-              lvls <- names(x)
-              if (is.null(lvls))
-                  lvls <- seq_along(x)
               d <- disjoin(local, ...)
               vec <- unlist(start(shift(rng, offset)), use.names=FALSE)
+              lvls <- factor(seq_along(x))
               lvls0 <- lvls[elementNROWS(rng) != 0]
               f <- lvls0[findInterval(start(d), vec)]
-              d <- split(d, factor(f, levels=lvls))
-              if (is.null(names(x)))
-                  names(d) <- NULL
+              d <- split(d, f)
+              names(d) <- names(x)
 
               ## globalize coordinates
               shift(d, -offset)
