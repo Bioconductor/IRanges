@@ -1,4 +1,4 @@
-test_Ranges_range <- function() {
+test_range_Ranges <- function() {
   ir1 <- IRanges(c(2,5,1), c(3,7,3))
   ir2 <- IRanges(c(5,2,0), c(6,3,1))
   checkIdentical(range(ir1), IRanges(1, 7))
@@ -7,7 +7,7 @@ test_Ranges_range <- function() {
   checkException(range(ir1, c(2,3)), silent = TRUE)
 }
 
-test_RangesList_range <- function() {
+test_range_RangesList <- function() {
   for (compress in c(TRUE, FALSE)) {
     rl1 <- IRangesList(a = IRanges(c(1,2),c(4,3)), b = IRanges(c(4,6),c(10,7)),
                        compress = compress)
@@ -24,7 +24,7 @@ test_RangesList_range <- function() {
   }
 }
 
-test_IRanges_reduce <- function() {
+test_reduce_Ranges <- function() {
   x <- IRanges()
   current <- reduce(x)
   checkIdentical(x, current)
@@ -111,7 +111,7 @@ test_IRanges_reduce <- function() {
   checkIdentical(y9, IRanges(start=-10, end=9))
 }
 
-test_RangesList_reduce <- function() {
+test_reduce_RangesList <- function() {
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   range3 <- IRanges(start=c(3,-2,6,7,-10,-2,3), width=c(1,0,0,0,0,8,0))
@@ -145,7 +145,7 @@ test_RangesList_reduce <- function() {
   }
 }
 
-test_IRanges_gaps <- function() {
+test_gaps_Ranges <- function() {
   checkIdentical(gaps(IRanges()), IRanges())
   checkIdentical(gaps(IRanges(), start=1, end=4),
                  IRanges(start=1, end=4))
@@ -161,7 +161,7 @@ test_IRanges_gaps <- function() {
   checkIdentical(gaps(x, start=0, end=5), IRanges(start=c(0,4), end=c(1,5)))
 }
 
-test_RangesList_gaps <- function() {
+test_gaps_RangesList <- function() {
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   for (compress in c(TRUE, FALSE)) {
@@ -172,58 +172,111 @@ test_RangesList_gaps <- function() {
   }
 }
 
-test_Ranges_disjoin <- function()
+test_disjoin_Ranges <- function()
 {
   checkIdentical(disjoin(IRanges()), IRanges())
-  ir <- IRanges(c(1, 1, 4, 10), c(6, 3, 8, 10))
-  checkIdentical(disjoin(ir), IRanges(c(1, 4, 7, 10), c(3, 6, 8, 10)))
-  revmap <- mcols(disjoin(ir, with.revmap=TRUE))$revmap
-  checkIdentical(unlist(revmap), c(1L,2L,1L,3L,3L,4L))
+  ir <- IRanges(c(1, 21, 10, 1, 15, 5, 20, 20), c(6, 20, 9, 3, 14, 11, 20, 19))
+  current <- disjoin(ir)
+  checkTrue(validObject(current, complete=TRUE))
+
+  ## The result of disjoin(x) must verify the following properties:
+  check_disjoin_general_properties <- function(y, x) {
+      checkTrue(isDisjoint(y))
+      checkTrue(isStrictlySorted(y))
+      checkIdentical(reduce(x, drop.empty.ranges=TRUE), reduce(y))
+      checkTrue(all(start(y) %in% c(start(x), end(x) + 1L)))
+      checkTrue(all(end(y) %in% c(end(x), start(x) - 1L)))
+  }
+
+  check_disjoin_general_properties(current, ir)
+
+  target <- IRanges(c(1, 4, 5, 7, 10, 20), c(3, 4, 6, 9, 11, 20))
+  checkIdentical(target, current)
+
+  ## Check 'revmap'.
+  mcols(ir)$label <- LETTERS[seq_along(ir)]
+  current <- disjoin(ir, with.revmap=TRUE)
+  revmap <- IntegerList(c(1, 4), 1, c(1, 6), 6, 6, 7)
+  mcols(target)$revmap <- revmap
+  checkIdentical(target, current)
+
+  ## With many randomly generated ranges.
+  set.seed(2009L)
+  ir <- IRanges(start=sample(580L, 500L, replace=TRUE),
+                width=sample(10L, 500L, replace=TRUE) - 1L)
+  check_disjoin_general_properties(disjoin(ir), ir)
+  ir <- IRanges(start=sample(4900L, 500L, replace=TRUE),
+                width=sample(35L, 500L, replace=TRUE) - 1L)
+  check_disjoin_general_properties(disjoin(ir), ir)
 }
 
-test_CompressedIRangesList_disjoin <- function()
+test_disjoin_RangesList <- function()
 {
-    r0 <- IRanges(10, 20)
+    ir0 <- IRanges(10, 20)
     checkTrue(validObject(disjoin(IRangesList())))
     ## unnamed; incl. 0-length
     irl <- IRangesList(IRanges())
     checkIdentical(irl, disjoin(irl))
-    irl <- IRangesList(r0, IRanges(), r0)
+    irl <- IRangesList(ir0, IRanges(), ir0)
     checkIdentical(irl, disjoin(irl))
-    irl <- IRangesList(r0, IRanges(), IRanges(), r0)
+    irl <- IRangesList(ir0, IRanges(), IRanges(), ir0)
     checkIdentical(irl, disjoin(irl))
     ## named; incl. 0-length
     irl <- IRangesList(a=IRanges())
     checkIdentical(irl, disjoin(irl))
-    irl <- IRangesList(a=r0, b=IRanges(), c=r0)
+    irl <- IRangesList(a=ir0, b=IRanges(), c=ir0)
     checkIdentical(irl, disjoin(irl))
-    irl <- IRangesList(a=r0, b=IRanges(), c=IRanges(), d=r0)
+    irl <- IRangesList(a=ir0, b=IRanges(), c=IRanges(), d=ir0)
     checkIdentical(irl, disjoin(irl))
     ## no interference between separate elements
-    r0 <- IRanges(10, c(15, 20))
-    dr0 <- disjoin(r0)
-    irl <- IRangesList(r0, r0)
+    ir0 <- IRanges(10, c(15, 20))
+    dr0 <- disjoin(ir0)
+    irl <- IRangesList(ir0, ir0)
     checkIdentical(IRangesList(dr0, dr0), disjoin(irl))
-    irl <- IRangesList(r0, IRanges(), r0)
+    irl <- IRangesList(ir0, IRanges(), ir0)
     checkIdentical(IRangesList(dr0, IRanges(), dr0), disjoin(irl))
     ## 0-width
     ## 1-width
-    r0 <- IRanges(c(1, 10), 10)
-    irl <- IRangesList(r0, IRanges())
-    checkIdentical(disjoin(r0), disjoin(irl)[[1]])
-    irl <- IRangesList(IRanges(), r0)
-    checkIdentical(disjoin(r0), disjoin(irl)[[2]])
+    ir0 <- IRanges(c(1, 10), 10)
+    irl <- IRangesList(ir0, IRanges())
+    checkIdentical(disjoin(ir0), disjoin(irl)[[1]])
+    irl <- IRangesList(IRanges(), ir0)
+    checkIdentical(disjoin(ir0), disjoin(irl)[[2]])
 
     ## check don't collapse levels
     irl <- IRangesList(IRanges(1, 5), IRanges(3, 7))
-    names(irl) = character(2)
+    names(irl) <- character(2)
     checkIdentical(irl, disjoin(irl))
-    irl = IRangesList(r0, r0)
-    revmap = mcols(unlist(disjoin(irl, with.revmap=TRUE)))$revmap
-    checkIdentical(unlist(revmap), c(1L,1L,2L,1L,1L,2L))
+
+    ## check 'revmap' on many randomly generated ranges
+    set.seed(2009L)
+    ir1 <- IRanges(start=sample(580L, 500L, replace=TRUE),
+                   width=sample(10L, 500L, replace=TRUE) - 1L)
+    ir2 <- IRanges(start=sample(4900L, 500L, replace=TRUE),
+                   width=sample(35L, 500L, replace=TRUE) - 1L)
+    for (compress in c(TRUE, FALSE)) {
+      collection <- IRangesList(one=ir1,
+                                IRanges(),
+                                ir0,
+                                ir0,
+                                ir2,
+                                IRanges(),
+                                compress=compress)
+      for (with.revmap in c(FALSE, TRUE)) {
+        current <- disjoin(collection, with.revmap=with.revmap)
+        target <- IRangesList(one=disjoin(ir1, with.revmap=with.revmap),
+                              disjoin(IRanges(), with.revmap=with.revmap),
+                              disjoin(ir0, with.revmap=with.revmap),
+                              disjoin(ir0, with.revmap=with.revmap),
+                              disjoin(ir2, with.revmap=with.revmap),
+                              disjoin(IRanges(), with.revmap=with.revmap),
+                              compress=compress)
+        checkIdentical(target, current)
+      }
+    }
 }
 
-test_Ranges_disjointBins <- function()
+test_disjointBins_Ranges <- function()
 {
   checkIdentical(disjointBins(IRanges()), integer())
   checkIdentical(disjointBins(IRanges(1, 5)), 1L)

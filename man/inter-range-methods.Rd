@@ -91,7 +91,6 @@ disjoin(x, ...)
 
 \S4method{disjoin}{Ranges}(x, with.revmap=FALSE)
 \S4method{disjoin}{RangesList}(x, with.revmap=FALSE)
-\S4method{disjoin}{CompressedIRangesList}(x, with.revmap=FALSE, ...)
 
 isDisjoint(x, ...)
 disjointBins(x, ...)
@@ -120,9 +119,9 @@ disjointBins(x, ...)
     are not merged.
   }
   \item{with.revmap}{
-    \code{TRUE} or \code{FALSE}. Should the mapping from reduced to original
+    \code{TRUE} or \code{FALSE}. Should the mapping from output to input
     ranges be stored in the returned object? If yes, then it is stored as
-    metadata column \code{"revmap"} of type \link{IntegerList}.
+    metadata column \code{revmap} of type \link{IntegerList}.
   }
   \item{with.inframe.attrib}{
     \code{TRUE} or \code{FALSE}. For internal use.
@@ -372,7 +371,6 @@ gaps(mymasks)
 ir <- IRanges(c(1, 1, 4, 10), c(6, 3, 8, 10))
 disjoin(ir)  # IRanges(c(1, 4, 7, 10), c(3, 6, 8, 10))
 disjoin(ir, with.revmap=TRUE)
-
 
 ## On a RangesList object:
 disjoin(collection)

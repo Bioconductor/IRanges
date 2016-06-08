@@ -15,6 +15,14 @@
                                    check=FALSE)
 }
 
+### NOT exported but used in the GenomicRanges package
+global2local_revmap <- function(unlisted_revmap, y, x)
+{
+    offsets <- rep.int(start(PartitioningByEnd(x)) - 1L, lengths(y))
+    unlisted_revmap - offsets
+}
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### range()
 ###
@@ -402,19 +410,14 @@ setMethod("disjoin", "Ranges",
 )
 
 ### Basically a no-op but returns a NormalIRanges *instance* for consistency
-### with how the other inter-range transformations (ranges(), reduce(), gaps())
+### with how the other inter-range transformations (range(), reduce(), gaps())
 ### behave on a NormalIRanges object.
 setMethod("disjoin", "NormalIRanges", function(x) as(x, "NormalIRanges"))
 
-setMethod("disjoin", "RangesList", function(x, with.revmap=FALSE) 
-                                            endoapply(x, disjoin, with.revmap))
-
-### NOT exported but used in the GenomicRanges package
-global2local_revmap <- function(unlisted_revmap, y, x)
-{
-    offsets <- rep.int(start(PartitioningByEnd(x)) - 1L, lengths(y))
-    unlisted_revmap - offsets
-}
+setMethod("disjoin", "RangesList",
+    function(x, with.revmap=FALSE)
+        endoapply(x, disjoin, with.revmap=with.revmap)
+)
 
 setMethod("disjoin", "CompressedIRangesList",
           function(x, with.revmap=FALSE, ...)
@@ -442,19 +445,21 @@ setMethod("disjoin", "CompressedIRangesList",
               lvls <- factor(seq_along(x))
               lvls0 <- lvls[elementNROWS(rng) != 0]
               f <- lvls0[findInterval(start(d), vec)]
-              d <- split(d, f)
-              names(d) <- names(x)
+              ans <- split(d, f)
 
               ## globalize coordinates
-              d <- shift(d, -offset)
+              ans <- shift(ans, -offset)
+
+              ## localize 'revmap'
               if (with.revmap) {
-                  unlisted_ans <- unlist(d, use.names=FALSE)
-                  mcols(unlisted_ans)$revmap <- global2local_revmap(mcols(
-                                                unlisted_ans)$revmap, d, x)
-                  d <- relist(unlisted_ans, d)
-                  names(d) <- names(x)
+                  unlisted_ans <- unlist(ans, use.names=FALSE)
+                  mcols(unlisted_ans)$revmap <-
+                      global2local_revmap(mcols(unlisted_ans)$revmap, ans, x)
+                  ans <- relist(unlisted_ans, ans)
               }
-              d
+
+              names(ans) <- names(x)
+              ans
           })
 
 
