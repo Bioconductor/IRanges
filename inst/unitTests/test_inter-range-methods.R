@@ -179,7 +179,6 @@ test_Ranges_disjoin <- function()
   checkIdentical(disjoin(ir), IRanges(c(1, 4, 7, 10), c(3, 6, 8, 10)))
   revmap <- mcols(disjoin(ir, with.revmap=TRUE))$revmap
   checkIdentical(unlist(revmap), c(1L,2L,1L,3L,3L,4L))
-
 }
 
 test_CompressedIRangesList_disjoin <- function()
@@ -219,7 +218,6 @@ test_CompressedIRangesList_disjoin <- function()
     irl <- IRangesList(IRanges(1, 5), IRanges(3, 7))
     names(irl) = character(2)
     checkIdentical(irl, disjoin(irl))
-    
     irl = IRangesList(r0, r0)
     revmap = mcols(unlist(disjoin(irl, with.revmap=TRUE)))$revmap
     checkIdentical(unlist(revmap), c(1L,1L,2L,1L,1L,2L))
