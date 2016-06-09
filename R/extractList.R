@@ -263,14 +263,9 @@ splitAsList_default <- function(x, f, drop=FALSE)
     return(.splitAsList_by_Rle(x, f, drop))
 }
 
-setMethod("splitAsList", c("ANY", "vectorORfactor"),
-          function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop))
-setMethod("splitAsList", c("ANY", "Rle"),
-          function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop))
-setMethod("splitAsList", c("ANY", "List"),
-          function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop))
-setMethod("splitAsList", c("ANY", "formula"),
-          function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop))
+setMethod("splitAsList", c("ANY", "ANY"),
+    function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop)
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

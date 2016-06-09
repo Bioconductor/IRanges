@@ -6,9 +6,7 @@
 \alias{relist,ANY,PartitioningByEnd-method}
 
 \alias{splitAsList}
-\alias{splitAsList,ANY,List}
-\alias{splitAsList,ANY,Rle}
-\alias{splitAsList,ANY,vectorORfactor}
+\alias{splitAsList,ANY,ANY}
 
 \alias{extractList}
 \alias{extractList,ANY,ANY-method}
