@@ -522,10 +522,21 @@ setMethods("which.max", list("IntegerList", "NumericList", "RleList"),
     function(x) setNames(as.integer(lapply(x, which.max)), names(x))
 )
 
+toglobal <- function(i, x) {
+    start(PartitioningByEnd(x)) + i - 1L
+}
+
 setCompressedListWhichSummaryMethod <-
     function(fun, where=topenv(parent.frame()))
     {
-        def <- function(x) .Call(C_fun, x)
+        def <- function(x, global = FALSE) {
+            stopifnot(isTRUEorFALSE(global))
+            ans <- .Call(C_fun, x)
+            if (global) {
+                ans <- toglobal(ans, x)
+            }
+            ans
+        }
         setCompressedNumericalListMethod(fun, def, where)
     }
 setCompressedListWhichSummaryMethod("which.min")
