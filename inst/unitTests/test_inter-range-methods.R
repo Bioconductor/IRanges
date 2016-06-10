@@ -38,7 +38,8 @@ test_reduce_Ranges <- function() {
 
   current <- reduce(x, drop.empty.ranges=TRUE, with.revmap=TRUE)
   target <- IRanges()
-  mcols(target) <- DataFrame(revmap=as(seq_along(target), "ManyToOneGrouping"))
+  mcols(target) <- DataFrame(revmap=ManyToManyGrouping(seq_along(target),
+                                                       nobj=length(x)))
   checkIdentical(target, current)
 
   x <- IRanges(c(1:4, 10:11, 11), width=c(0,1,1,0,0,0,1))
@@ -50,7 +51,7 @@ test_reduce_Ranges <- function() {
 
   current <- reduce(x, drop.empty.ranges=TRUE, with.revmap=TRUE)
   target <- IRanges(c(2, 11), width=c(2,1))
-  mcols(target) <- DataFrame(revmap=ManyToOneGrouping(2:3,7))
+  mcols(target) <- DataFrame(revmap=ManyToManyGrouping(2:3,7, nobj=length(x)))
   checkIdentical(target, current)
 
   x <- IRanges(start=c(1,2,3), end=c(5,2,8))
