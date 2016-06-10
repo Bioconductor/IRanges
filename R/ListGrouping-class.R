@@ -47,7 +47,7 @@ setOldClass("grouping")
 
 ## utils::relist dipatches only on 'skeleton' so this is here instead of in R
 setMethod("relist", c("grouping", "missing"), function(flesh, skeleton) {
-              relist(flesh, PartitioningByEnd(attr(flesh, "ends")))
+              relist(unclass(flesh), PartitioningByEnd(attr(flesh, "ends")))
           })
 
 setMethod("split", c("ANY", "ManyToOneGrouping"), function(x, f, drop=FALSE) {
