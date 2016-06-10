@@ -757,3 +757,86 @@ setMethod("paste", "CompressedAtomicList",
               ans
           })
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Sorting
+###
+
+setMethod("rank", "CompressedAtomicList",
+          function (x, na.last = TRUE,
+                    ties.method = c("average", "first",
+                                    "last", "random", "max", "min"))
+          {
+              stopifnot(isTRUE(na.last))
+              ties.method <- match.arg(ties.method)
+              if (ties.method == "last" || ties.method == "random")
+                  stop("'ties.method' last/random not yet supported")
+              p <- PartitioningByEnd(x)
+              o <- order(togroup(p), unlist(x, use.names=FALSE))
+              r <- integer(length(o))
+              gp <- PartitioningByEnd(end(Rle(unlist(x, use.names=FALSE)[o])))
+              v <- switch(ties.method,
+                          average=(r[start(gp)] + r[end(gp)])/2,
+                          first=r,
+                          ## last=,
+                          ## random=,
+                          max=r[end(gp)],
+                          min=r[start(gp)])
+              if (ties.method != "first")
+                  v <- rep(v, width(gp))
+              r[o] <- v
+              r
+          })
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Set/comparison methods
+###
+
+subgrouping <- function(x) {
+    g <- grouping(togroup(PartitioningByEnd(x)), unlist(x, use.names=FALSE))
+    as(g, "ManyToOneGrouping")
+}
+
+.unique.RleList <- function(x, incomparables=FALSE, ...)
+    unique(runValue(x), incomparables=incomparables, ...)
+setMethod("unique", "RleList", .unique.RleList)
+
+.duplicated.CompressedAtomicList <- function(x, incomparables=FALSE,
+                                             fromLast=FALSE, ...)
+{
+    if (!identical(incomparables, FALSE))
+        stop("\"duplicated\" method for CompressedList objects ",
+             "does not support the 'incomparables' argument")
+    if (length(list(...)) > 0L) {
+        stop("arguments in '...' are not supported")
+    }
+    g <- subgrouping(x)
+    first <- unlist(g)[start(PartitioningByEnd(g))]
+    v <- rep(TRUE, length(unlist(g)))
+    v[first] <- FALSE
+    if (fromLast)
+        ans <- rev(ans)
+    relist(v, x)
+    
+    ## sm <- selfmatch(x, global=TRUE)
+    ## ans <- relist(unlist(sm) != seq_along(unlist(sm)), sm)
+    ## ## if 'sm' is local:
+    ## ## ans <- sm != as(PartitioningByEnd(sm), "CompressedIntegerList")
+    ## if (fromLast)
+    ##     ans <- rev(ans)
+    ## ans
+}
+setMethod("duplicated", "CompressedAtomicList",
+          .duplicated.CompressedAtomicList)
+
+setMethod("selfmatch", "CompressedAtomicList", function(x, global=FALSE) {
+    g <- subgrouping(x)
+    first <- unlist(g)[start(PartitioningByEnd(g))]
+    ux <- unlist(x, use.names=FALSE)
+    ux[unlist(g)] <- rep(first, lengths(g))
+    ans <- relist(ux, x)
+    if (!global) {
+        ans <- ans - start(ans) + 1L
+    }
+    ans
+})
+

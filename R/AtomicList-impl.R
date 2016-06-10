@@ -220,28 +220,6 @@ setListCoercions("factor")
 ### General methods
 ###
 
-.unique.RleList <- function(x, incomparables=FALSE, ...)
-    unique(runValue(x), incomparables=incomparables, ...)
-setMethod("unique", "RleList", .unique.RleList)
-
-.duplicated.CompressedIntegerList <- function(x, incomparables=FALSE,
-                                              fromLast=FALSE, ...)
-{
-  if (!identical(incomparables, FALSE))
-    stop("\"duplicated\" method for CompressedList objects ",
-         "does not support the 'incomparables' argument")
-  if (length(list(...)) > 0L) {
-    stop("arguments in '...' are not supported")
-  }
-  x_unlistData <- x@unlistData
-  x_group <- rep.int(seq_along(x), elementNROWS(x))
-  ans_unlistData <- duplicatedIntegerPairs(x_group, x_unlistData,
-                                           fromLast=fromLast)
-  relist(ans_unlistData, x)
-}
-setMethod("duplicated", "CompressedIntegerList",
-          .duplicated.CompressedIntegerList)
-
 ### Could actually be made the "table" method for List objects. Will work on
 ### any List object 'x' for which 'as.factor(unlist(x))' works.
 setMethod("table", "AtomicList",
