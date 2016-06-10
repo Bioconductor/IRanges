@@ -39,10 +39,9 @@ setMethod("stack", "List",
           {
             value <- unlist(x, use.names=FALSE)
             index <- .stack.ind(x, index.var)
-            unlistsToList <- extends(x@elementType, "List") &&
-                !extends(x@elementType, "Ranges")
-            if (unlistsToList) {
-              df <- cbind(S4Vectors:::ensureMcols(value), index)
+            unlistsToVector <- is(value, "Vector")
+            if (unlistsToVector) {
+              df <- cbind(S4Vectors:::ensureMcols(unname(value)), index)
             } else {
               df <- DataFrame(index, as(value, "DataFrame"))
               colnames(df)[2] <- value.var
@@ -51,14 +50,18 @@ setMethod("stack", "List",
               nms <- as.character(unlist(lapply(x, names)))
               if (length(nms) == 0L) {
                 rngs <- IRanges(1L, width=elementNROWS(x))
-                nms <- as.character(as.integer(rngs))
+                nms <- as.integer(rngs)
+              } else {
+                nms <- factor(nms, unique(nms))
               }
-              df[[name.var]] <- factor(nms, unique(nms))
+              df[[name.var]] <- nms
+              df <- df[c(index.var, name.var, value.var)]
             }
             if (!is.null(mcols(x))) {
-              df <- cbind(df, mcols(x))
+                df <- cbind(df,
+                            mcols(x)[togroup(PartitioningByEnd(x)),,drop=FALSE])
             }
-            if (unlistsToList) {
+            if (unlistsToVector) {
               mcols(value) <- df
               value
             } else {
