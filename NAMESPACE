@@ -277,7 +277,7 @@ export(
     precede, follow, nearest, distance, distanceToNearest,
 
     ## tile-methods.R:
-    tile, slidingWindows
+    tile, slidingWindows,
 
     ## bind-arrays.R:
     arbind, acbind
