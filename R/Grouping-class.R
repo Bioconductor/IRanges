@@ -141,6 +141,14 @@ setMethod("togrouplength", "ManyToOneGrouping",
 
 
 ### -------------------------------------------------------------------------
+### ManyToManyGrouping objects
+### -------------------------
+
+### A ManyToManyGrouping object represents a grouping where objects
+### can map to any number of groups.
+setClass("ManyToManyGrouping", contains="Grouping", representation("VIRTUAL"))
+
+### -------------------------------------------------------------------------
 ### BiIndexGrouping objects
 ### -----------------------
 

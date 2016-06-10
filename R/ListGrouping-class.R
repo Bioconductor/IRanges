@@ -16,6 +16,20 @@ setClass("SimpleManyToOneGrouping",
 setClass("CompressedManyToOneGrouping",
          contains=c("ManyToOneGrouping", "CompressedGrouping"))
 
+setClass("BaseManyToManyGrouping",
+         representation(nobj="integer"),
+         contains="ManyToManyGrouping",
+         validity=function(object) {
+             if (!isSingleNumber(object@nobj))
+                 "'nobj' must be a single, non-NA number"
+         })
+
+setClass("SimpleManyToManyGrouping",
+         contains=c("BaseManyToManyGrouping", "SimpleGrouping"))
+
+setClass("CompressedManyToManyGrouping",
+         contains=c("BaseManyToManyGrouping", "CompressedGrouping"))
+
 ### -------------------------------------------------------------------------
 ### Grouping API implementation
 ### ----------------------------
@@ -27,6 +41,8 @@ setMethod("grouplengths", "CompressedGrouping",
 setMethod("nobj", "CompressedManyToOneGrouping",
           function(x) nobj(PartitioningByEnd(x)))
 
+setMethod("nobj", "BaseManyToManyGrouping", function(x) x@nobj)
+
 ### -------------------------------------------------------------------------
 ### Constructors
 ### ----------------------------
@@ -36,6 +52,12 @@ ManyToOneGrouping <- function(..., compress=TRUE) {
     CompressedOrSimple <- if (compress) "Compressed" else "Simple"
     Class <- paste0(CompressedOrSimple, "ManyToOneGrouping")
     new(Class, IntegerList(..., compress=compress))
+}
+
+ManyToManyGrouping <- function(..., nobj, compress=TRUE) {
+    CompressedOrSimple <- if (compress) "Compressed" else "Simple"
+    Class <- paste0(CompressedOrSimple, "ManyToManyGrouping")
+    new(Class, IntegerList(..., compress=compress), nobj=nobj)
 }
 
 ### -------------------------------------------------------------------------
@@ -79,3 +101,33 @@ setAs("ManyToOneGrouping", "factor", function(from) {
           structure(togroup(from), levels=seq_along(from),
                     class="factor")
       })
+
+makeGroupNames <- function(x) {
+    if (is.null(x)) {
+        x <- character(length(x))
+    }
+    ind <- which(x == "")
+    x[ind] <- paste("Group", ind, sep = ".")
+    x
+}
+
+levelCols <- function(by) {
+    DataFrame(expand.grid(lapply(by, levels)))
+}
+
+setAs("FactorList", "Grouping", function(from) {
+    l <- as.list(from)
+    names(l) <- makeGroupNames(names(from))
+    as(DataFrame(l), "Grouping")
+})
+
+setAs("DataFrame", "Grouping", function(from) {
+    factors <- lapply(from, as.factor)
+    l <- splitAsList(seq_len(nrow(from)), factors)
+    mcols(l) <- levelCols(factors)
+    if (anyNA(from, recursive=TRUE)) {
+        ManyToManyGrouping(l, nobj=nrow(from))
+    } else {
+        ManyToOneGrouping(l)
+    }
+})
