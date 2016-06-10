@@ -200,3 +200,14 @@ setMethod("distanceToNearest", c("Ranges", "RangesORmissing"),
     }
 )
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### selectNearest()
+###
+
+selectNearest <- function(hits, x, subject) {
+    hits <- as(hits, "SortedByQueryHits")
+    hitsByQuery <- relist(hits, as(hits, "Partitioning"))
+    dist <- distance(x[queryHits(hits)], subject[subjectHits(hits)])
+    distByQuery <- relist(dist, hitsByQuery)
+    unlist(hitsByQuery[distByQuery == min(distByQuery)])
+}
