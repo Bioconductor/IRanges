@@ -190,10 +190,18 @@ setGeneric("splitAsList", signature=c("x", "f"),
     function(x, f, drop=FALSE, ...) standardGeneric("splitAsList")
 )
 
+toFactor <- function(x) {
+    if (is(x, "Rle")) {
+        runValue(x) <- as.factor(runValue(x))
+        x
+    } else as.factor(x)
+}
+
 ### Took this out of the still-in-incubation LazyList package
-factorsToTableIndices <- function(factors) {
+interaction2 <- function(factors) {
   nI <- length(factors)
   nx <- length(factors[[1L]])
+  factors <- lapply(factors, toFactor)
   useRle <- any(vapply(factors, is, logical(1), "Rle"))
   if (useRle) {
     group <- as(factors[[1L]], "Rle")
@@ -213,15 +221,28 @@ factorsToTableIndices <- function(factors) {
     group <- group + offset
     ngroup <- ngroup * nlevels(index)
   }
-  as.vector(group)
+  if (useRle) {
+      runValue(group) <- structure(runValue(group),
+                                   levels=as.character(seq_len(ngroup)),
+                                   class="factor")
+      group
+  } else {
+      structure(group, levels=as.character(seq_len(ngroup)), class="factor")
+  }
 }
 
 normSplitFactor <- function(f, x) {
   if (is(f, "formula")) {
+    if (length(f) == 3L)
+      stop("formula 'f' should not have a left hand side")
     f <- S4Vectors:::formulaValues(x, f)
   }
   if (is.list(f) || is(f, "List")) {
-    f <- factorsToTableIndices(f)
+      if (length(f) == 1L) {
+          f <- f[[1L]]
+      } else {
+          f <- interaction2(f)
+      }
   }
   f_len <- length(f)
   if (f_len < NROW(x)) {
