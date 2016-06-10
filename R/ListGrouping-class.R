@@ -90,11 +90,20 @@ setAs("grouping", "ManyToOneGrouping", function(from) {
       })
 
 setAs("vector", "Grouping", function(from) {
-          as(from, "ManyToOneGrouping")
+          if (anyNA(from))
+              as(from, "ManyToManyGrouping")
+          else as(from, "ManyToOneGrouping")
       })
 
 setAs("vector", "ManyToOneGrouping", function(from) {
           as(grouping(from), "Grouping")
+      })
+
+setAs("vector", "ManyToManyGrouping", function(from) {
+         g <- as(from, "ManyToOneGrouping")
+         if (anyNA(from))
+             g <- g[-length(g)]
+         ManyToManyGrouping(g, nobj=length(from))
       })
 
 setAs("ManyToOneGrouping", "factor", function(from) {
