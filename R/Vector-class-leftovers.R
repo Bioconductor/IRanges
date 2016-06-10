@@ -116,7 +116,7 @@ setMethod("mstack", "Vector", function(..., .index.var = "name") {
   combined <- compress_listData(args)
   df <- .stack.ind(args, .index.var)
   if (!is.null(mcols(combined)))
-    df <- cbind(mcols(combined), df)
+    df <- cbind(df, mcols(combined))
   mcols(combined) <- df
   combined
 })
