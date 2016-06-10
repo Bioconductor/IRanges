@@ -11,10 +11,12 @@
 \alias{follow}
 \alias{distance}
 \alias{distanceToNearest}
+\alias{selectNearest}
 \alias{nearest,Ranges,RangesORmissing-method}
 \alias{precede,Ranges,RangesORmissing-method}
 \alias{follow,Ranges,RangesORmissing-method}
 \alias{distance,Ranges,Ranges-method}
+\alias{distance,Pairs,missing-method}
 \alias{distanceToNearest,Ranges,RangesORmissing-method}
 
 \title{Finding the nearest range neighbor}
@@ -35,10 +37,13 @@
 \S4method{distanceToNearest}{Ranges,RangesORmissing}(x, subject, select = c("arbitrary", "all"))
 
 \S4method{distance}{Ranges,Ranges}(x, y)
+\S4method{distance}{Pairs,missing}(x, y)
 }
 
 \arguments{
-  \item{x}{The query \code{\linkS4class{Ranges}} instance.
+  \item{x}{The query \code{\linkS4class{Ranges}} instance, or (for
+    \code{distance()}) a \code{\linkS4class{Pairs}} containing both the
+    query (first) and subject (second).
   }
   \item{subject}{The subject \code{Ranges} instance, within which the
     nearest neighbors are found. Can be missing, in which case
@@ -55,6 +60,7 @@
     length, the shortest will be recycled to match the length of the 
     longest.
   }
+  \item{hits}{The hits between \code{x} and \code{subject}}
   \item{...}{Additional arguments for methods}
 }
 
@@ -135,6 +141,11 @@
 
       x and y overlap or are adjacent   <=>   distance(x, y) == 0
     }
+    \item{selectNearest: }{
+      Selects the hits that have the minimum distance within those for
+      each query range. Ties are possible and can be broken with
+      \code{\link[S4Vectors]{breakTies}}.
+    }
   }
 }
 
@@ -149,6 +160,9 @@
 
   For \code{distance}, an integer vector of distances between the ranges
   in \code{x} and \code{y}.
+
+  For \code{selectNearest}, a \code{\linkS4class{Hits}} object, sorted
+  by query.
 }
 
 \author{M. Lawrence}
