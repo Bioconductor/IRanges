@@ -3,10 +3,12 @@
 ### -------------------------------------------------------------------------
 
 setClass("SimpleGrouping",
-         contains=c("Grouping", "SimpleIntegerList", "VIRTUAL"))
+### TODO: contain VIRTUAL after R 3.3.1 release
+         contains=c("Grouping", "SimpleIntegerList"))
 
 setClass("CompressedGrouping",
-         contains=c("Grouping", "CompressedIntegerList", "VIRTUAL"))
+### TODO: contain VIRTUAL after R 3.3.1 release
+         contains=c("Grouping", "CompressedIntegerList"))
 
 setClass("SimpleManyToOneGrouping",
          contains=c("ManyToOneGrouping", "SimpleGrouping"))
