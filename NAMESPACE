@@ -20,7 +20,7 @@ exportClasses(
     Ranges, RangesORmissing,
     IRanges, NormalIRanges,
     NCList, NCLists,
-    Grouping, ManyToOneGrouping,
+    Grouping, ManyToOneGrouping, ManyToManyGrouping,
     H2LGrouping, Dups,
     GroupingRanges, GroupingIRanges,
     Partitioning, PartitioningByEnd, PartitioningByWidth, PartitioningMap,
@@ -48,7 +48,8 @@ exportClasses(
     RangedData, RangedDataList, RDApplyParams,
     RangedSelection,
     SimpleGrouping, CompressedGrouping,
-    SimpleManyToOneGrouping, CompressedManyToOneGrouping
+    SimpleManyToOneGrouping, CompressedManyToOneGrouping,
+    SimpleManyToManyGrouping, CompressedManyToManyGrouping
 )
 
 
@@ -184,7 +185,8 @@ export(
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList, FactorList, 
     DataFrameList, SplitDataFrameList,
-    ManyToOneGrouping, findOverlapPairs, regroup, selectNearest
+    ManyToOneGrouping, ManyToManyGrouping, findOverlapPairs, regroup,
+    selectNearest
 )
 
 
