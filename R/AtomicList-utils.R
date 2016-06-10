@@ -265,6 +265,10 @@ setMethod("all", "CompressedAtomicList", function(x, na.rm = FALSE) {
               ans
           })
 
+setMethod("anyNA", "CompressedAtomicList", function(x, recursive=FALSE) {
+    callNextMethod(x, recursive=FALSE) ## recursion will just slow us down
+})
+
 rowsumCompressedList <- function(x, ..., na.rm = FALSE) {
   x_flat <- unlist(x, use.names = FALSE)
   ans <- vector(class(x_flat), length(x))
