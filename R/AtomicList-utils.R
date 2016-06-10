@@ -743,6 +743,11 @@ setMethod("unstrsplit", "CharacterList",
     function(x, sep="") unstrsplit(as.list(x), sep=sep)
 )
 
+setMethod("unstrsplit", "RleList",
+          function(x, sep="") unstrsplit(CharacterList(x, compress=FALSE),
+                                         sep=sep)
+          )
+
 setMethod("paste", "CompressedAtomicList",
           function(..., sep=" ", collapse=NULL) {
               args <- lapply(list(...), as, "CharacterList")
