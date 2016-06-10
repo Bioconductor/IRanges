@@ -64,6 +64,9 @@ setMethod("union", c("CompressedIRangesList", "CompressedIRangesList"),
             reduce(xy_list, drop.empty.ranges=TRUE)
           })
 
+setMethod("union", c("Pairs", "missing"), function(x, y, ...) {
+    callGeneric(first(x), second(x), ...)
+})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### intersect()
@@ -93,6 +96,10 @@ setMethod("intersect", c("CompressedIRangesList", "CompressedIRangesList"),
             endx[nonempty] <- end(rx)
             setdiff(x, gaps(y, start = startx, end = endx))
           })
+
+setMethod("intersect", c("Pairs", "missing"), function(x, y, ...) {
+    callGeneric(first(x), second(x), ...)
+})
 
 setMethod("intersect", c("CompressedAtomicList", "CompressedAtomicList"),
           function(x, y) {
@@ -137,6 +144,9 @@ setMethod("setdiff", c("CompressedIRangesList", "CompressedIRangesList"),
             gaps(union(gaps(x), y), start = startx, end = endx)
           })
 
+setMethod("setdiff", c("Pairs", "missing"), function(x, y, ...) {
+    callGeneric(first(x), second(x), ...)
+})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### punion()

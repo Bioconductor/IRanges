@@ -6,16 +6,19 @@
 \alias{union,Ranges,Ranges-method}
 \alias{union,RangesList,RangesList-method}
 \alias{union,CompressedIRangesList,CompressedIRangesList-method}
+\alias{union,Pairs,missing-method}
 
 \alias{intersect}
 \alias{intersect,Ranges,Ranges-method}
 \alias{intersect,RangesList,RangesList-method}
 \alias{intersect,CompressedIRangesList,CompressedIRangesList-method}
+\alias{intersect,Pairs,missing-method}
 
 \alias{setdiff}
 \alias{setdiff,Ranges,Ranges-method}
 \alias{setdiff,RangesList,RangesList-method}
 \alias{setdiff,CompressedIRangesList,CompressedIRangesList-method}
+\alias{setdiff,Pairs,missing-method}
 
 \alias{punion}
 \alias{punion,Ranges,Ranges-method}
@@ -43,10 +46,13 @@
 ## --------------------------
 
 \S4method{union}{Ranges,Ranges}(x, y)
+\S4method{union}{Pairs,missing}(x, y, ...)
 
 \S4method{intersect}{Ranges,Ranges}(x, y)
+\S4method{intersect}{Pairs,missing}(x, y, ...)
 
 \S4method{setdiff}{Ranges,Ranges}(x, y)
+\S4method{setdiff}{Pairs,missing}(x, y, ...)
 
 ## Element-wise (aka "parallel") set operations
 ## --------------------------------------------
