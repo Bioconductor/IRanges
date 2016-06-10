@@ -452,6 +452,10 @@
       Equivalent Grouping representation of the base R
       \code{\link{grouping}} object.
     }
+    \item{Hits}{
+      Returns roughly the same object as \code{as(x, "List")}, except it
+      is a ManyToManyGrouping, i.e., it knows the number of right nodes.
+    }
   }
 }
 

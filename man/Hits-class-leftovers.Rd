@@ -16,8 +16,12 @@
 \alias{coerce,SortedByQueryHits,IntegerList-method}
 \alias{coerce,SortedByQueryHits,List-method}
 \alias{as.list,SortedByQueryHits-method}
-\alias{coerce,SortedByQueryHits,list-method}
 
+\alias{coerce,Hits,CompressedIntegerList-method}
+\alias{coerce,Hits,IntegerList-method}
+\alias{coerce,Hits,List-method}
+\alias{as.list,Hits-method}
+\alias{coerce,Hits,Grouping}
 
 \title{Examples of basic manipulation of Hits objects}
 
@@ -41,14 +45,21 @@
   
   \describe{
     \item{}{
-      \code{as(from, "DataFrame")}: Creates a \code{DataFrame} by
-      combining the result of \code{as.matrix(from)}
+      \code{as(x, "DataFrame")}: Creates a \code{DataFrame} by
+      combining the result of \code{as.matrix(x)}
       with \code{mcols(from)}.
     }
     \item{}{\code{as.data.frame(x)}: Attempts to coerce the result of
       \code{as(from, "DataFrame")} to a \code{data.frame}.
     }
-    \item{}{\code{as(x, "List")}: Like \code{as.list}, above.
+    \item{}{\code{as.list(x)}: Coerces \code{x} to a list of integers,
+      grouping the the right node hits for each left node.
+    }
+    \item{}{\code{as(x, "List")}: Analogous to \code{as.list(x)}.
+    }
+    \item{}{\code{as(x, "Grouping")}: Returns roughly the same object as
+      \code{as(x, "List")}, except it is a ManyToManyGrouping, i.e., it
+      knows the number of right nodes.
     }
   }
 }

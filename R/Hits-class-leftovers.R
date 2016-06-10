@@ -64,5 +64,16 @@ setAs("SortedByQueryHits", "List",
     as.list(.from_SortedByQueryHits_to_CompressedIntegerList(x))
 setMethod("as.list", "SortedByQueryHits", .as.list.SortedByQueryHits)
 
-setAs("SortedByQueryHits", "list", function(from) as.list(from))
+.from_Hits_to_CompressedIntegerList <- function(from)
+{
+    as(as(x, "SortedByQueryHits"), "CompressedIntegerList")
+}
 
+setAs("Hits", "List", .from_Hits_to_CompressedIntegerList)
+setAs("Hits", "IntegerList", .from_Hits_to_CompressedIntegerList)
+setAs("Hits", "CompressedIntegerList", .from_Hits_to_CompressedIntegerList)
+
+setMethod("as.list", "Hits", function(x) as.list(as(x, "SortedByQueryHits")))
+
+setAs("Hits", "Grouping",
+      function(from) ManyToManyGrouping(as(from, "List"), nobj=nRnode(from)))
