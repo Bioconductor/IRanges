@@ -31,6 +31,7 @@
 \alias{which.max,CompressedRleList-method}
 \alias{which.min,CompressedRleList-method}
 \alias{all,CompressedRleList-method}
+\alias{anyNA,CompressedAtomicList-method}
 
 \alias{diff,IntegerList-method}
 \alias{diff,NumericList-method}
@@ -102,7 +103,10 @@
 \alias{gsub,ANY,ANY,CompressedRleList-method}
 \alias{gsub,ANY,ANY,SimpleRleList-method}
 \alias{unstrsplit,CharacterList-method}
+\alias{unstrsplit,RleList-method}
 
+\alias{rank,CompressedAtomicList}
+\alias{selfmatch,CompressedAtomicList}
 
 \title{Common operations on AtomicList objects}
 
@@ -153,6 +157,14 @@
     \item{Character}{\code{nchar}, \code{chartr}, \code{tolower},
                      \code{toupper}, \code{sub}, \code{gsub}}
   }
+
+  The \code{which.min} and \code{which.max} functions have an extra
+  argument, \code{global=FALSE}, which controls whether the returned
+  subscripts are global (compatible with the unlisted form of the input)
+  or local (compatible with the corresponding list element).
+
+  The \code{rank} method only supports tie methods \dQuote{average},
+  \dQuote{first}, \dQuote{min} and \dQuote{max}.
 }
 
 \section{Specialized Methods}{

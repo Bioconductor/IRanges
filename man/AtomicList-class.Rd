@@ -151,7 +151,7 @@
 \alias{table,AtomicList-method}
 \alias{drop,AtomicList-method}
 \alias{duplicated,CompressedList-method}
-\alias{duplicated,CompressedIntegerList-method}
+\alias{duplicated,CompressedAtomicList-method}
 
 \alias{sort,List-method}
 \alias{order,List-method}
