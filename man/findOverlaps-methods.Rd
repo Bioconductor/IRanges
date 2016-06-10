@@ -94,6 +94,7 @@ query \%outside\% subject
 
 subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
                  type=c("any", "start", "end", "within", "equal"),
+                 invert=FALSE,
                  ...)
 
 mergeByOverlaps(query, subject, ...)
@@ -171,6 +172,10 @@ findOverlapPairs(query, subject, ...)
     where each element of the result corresponds to a space in \code{query}.
     When \code{select != "all" && drop}, an integer vector is returned
     containing indices that are offset to align with the unlisted \code{query}.
+  }
+  \item{invert}{
+    If \code{TRUE}, keep only the query ranges that do \emph{not}
+    overlap the subject.
   }
   \item{...}{
     Further arguments to be passed to or from other methods:

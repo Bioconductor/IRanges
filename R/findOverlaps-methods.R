@@ -665,13 +665,14 @@ setGeneric("subsetByOverlaps", signature=c("query", "subject"),
 
 setMethod("subsetByOverlaps", c("Vector", "Vector"),
     function(query, subject, maxgap=0L, minoverlap=1L,
-             type=c("any", "start", "end", "within", "equal"),
+             type=c("any", "start", "end", "within", "equal"), invert=FALSE,
              ...)
     {
-        query[overlapsAny(query, subject,
-                          maxgap=maxgap, minoverlap=minoverlap,
-                          type=match.arg(type),
-                          ...)]
+        o <- overlapsAny(query, subject,
+                         maxgap=maxgap, minoverlap=minoverlap,
+                         type=match.arg(type),
+                         ...)
+        if (invert) query[!o] else query[o]
     }
 )
 
