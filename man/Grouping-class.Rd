@@ -26,6 +26,12 @@
 \alias{togrouplength}
 \alias{togrouplength,ManyToOneGrouping-method}
 
+\alias{coerce,grouping,Grouping-method}
+\alias{coerce,grouping,ManyToOneGrouping-method}
+\alias{coerce,vector,Grouping-method}
+\alias{coerce,vector,ManyToOneGrouping-method}
+\alias{coerce,ManyToOneGrouping,factor-method}
+
 % H2LGrouping and Dups objects
 \alias{class:H2LGrouping}
 \alias{H2LGrouping-class}
@@ -55,6 +61,12 @@
 
 \alias{duplicated,Dups-method}
 \alias{show,Dups-method}
+
+% ManyToManyGrouping objects
+\alias{class:ManyToManyGrouping}
+\alias{ManyToManyGrouping-class}
+\alias{ManyToManyGrouping}
+\alias{nobj,ManyToManyGrouping-method}
 
 % GroupingRanges objects
 \alias{class:GroupingRanges}
@@ -118,7 +130,11 @@
 \alias{class:CompressedManyToOneGrouping}
 \alias{CompressedManyToOneGrouping-class}
 
-\alias{ManyToOneGrouping}
+\alias{class:SimpleManyToManyGrouping}
+\alias{SimpleManyToManyGrouping-class}
+
+\alias{class:CompressedManyToManyGrouping}
+\alias{CompressedManyToManyGrouping-class}
 
 % old stuff (deprecated & defunct)
 \alias{togroup,ANY-method}
@@ -280,12 +296,37 @@
       [DOCUMENT ME]
     }
     \item{}{
-      \code{ManyToOneGrouping(x, compress=TRUE)}: Cast \code{x} to a
-      \code{ManyToOneGrouping}, where \code{x} is an integer list with a
-      structure analogous to that of \code{Grouping} itself: each
-      element represents a group in terms of the subscripts of the
-      members. If \code{compress} is \code{TRUE}, the representation
-      uses a \code{CompressedList}, otherwise a \code{SimpleList}.
+      \code{ManyToOneGrouping(..., compress=TRUE)}: Collect \code{\dots}
+      into a \code{ManyToOneGrouping}. The arguments will be coerced to
+      integer vectors and combined into a list, unless there is a single
+      list argument, which is taken to be an integer list. The resulting
+      integer list should have a structure analogous to that of
+      \code{Grouping} itself: each element represents a group in terms
+      of the subscripts of the members. If \code{compress} is
+      \code{TRUE}, the representation uses a \code{CompressedList},
+      otherwise a \code{SimpleList}.
+    }
+  }
+}
+
+\section{ManyToManyGrouping objects}{
+  The ManyToManyGrouping class is a virtual subclass of Grouping for
+  representing \emph{many-to-many groupings}, that is, groupings where
+  each object in the original collection of objects belongs to any
+  number of groups.
+
+  Constructors:
+  \describe{
+    \item{}{
+      \code{ManyToManyGrouping(x, compress=TRUE)}: Collect \code{\dots}
+      into a \code{ManyToManyGrouping}. The arguments will be coerced to
+      integer vectors and combined into a list, unless there is a single
+      list argument, which is taken to be an integer list. The resulting
+      integer list should have a structure analogous to that of
+      \code{Grouping} itself: each element represents a group in terms
+      of the subscripts of the members. If \code{compress} is
+      \code{TRUE}, the representation uses a \code{CompressedList},
+      otherwise a \code{SimpleList}.
     }
   }
 }
@@ -385,7 +426,36 @@
   vectors).
 }
 
-\author{Hervé Pagès}
+\section{Coercions to Grouping objects}{
+  These types can be coerced to different derivatives of Grouping objects:
+  \describe{
+    \item{factor}{
+      Analogous to calling \code{split} with the factor. Returns a
+      ManyToOneGrouping if there are no NAs, otherwise a
+      ManyToManyGrouping. If a factor is explicitly converted to
+      a ManytoOneGrouping, then any NAs are placed in the last group.
+    }
+    \item{vector}{
+      A vector is effectively treated as a factor, but more
+      efficiently. The order of the groups is not defined.
+    }
+    \item{FactorList}{
+      Same as the factor coercion, except using the interaction of every
+      factor in the list. The interaction has an NA wherever any of the
+      elements has one. Every element must have the same length.
+    }
+    \item{DataFrame}{
+      Effectively converted via a FactorList by coercing each column to a
+      factor.
+    }
+    \item{grouping}{
+      Equivalent Grouping representation of the base R
+      \code{\link{grouping}} object.
+    }
+  }
+}
+
+\author{Hervé Pagès, Michael Lawrence}
 
 \seealso{
   \link{IntegerList-class},
