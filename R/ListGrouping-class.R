@@ -67,11 +67,11 @@ setAs("grouping", "ManyToOneGrouping", function(from) {
           ManyToOneGrouping(relist(from), compress=TRUE)
       })
 
-setAs("factor", "Grouping", function(from) {
+setAs("vector", "Grouping", function(from) {
           as(from, "ManyToOneGrouping")
       })
 
-setAs("factor", "ManyToOneGrouping", function(from) {
+setAs("vector", "ManyToOneGrouping", function(from) {
           as(grouping(from), "Grouping")
       })
 
