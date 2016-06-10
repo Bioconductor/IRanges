@@ -781,7 +781,7 @@ setMethod("rank", "CompressedAtomicList",
                   stop("'ties.method' last/random not yet supported")
               p <- PartitioningByEnd(x)
               o <- order(togroup(p), unlist(x, use.names=FALSE))
-              r <- integer(length(o))
+              r <- as.integer(IRanges(1L, width=width(p)))
               gp <- PartitioningByEnd(end(Rle(unlist(x, use.names=FALSE)[o])))
               v <- switch(ties.method,
                           average=(r[start(gp)] + r[end(gp)])/2,
@@ -793,7 +793,7 @@ setMethod("rank", "CompressedAtomicList",
               if (ties.method != "first")
                   v <- rep(v, width(gp))
               r[o] <- v
-              r
+              relist(r, x)
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -825,14 +825,6 @@ setMethod("unique", "RleList", .unique.RleList)
     if (fromLast)
         ans <- rev(ans)
     relist(v, x)
-    
-    ## sm <- selfmatch(x, global=TRUE)
-    ## ans <- relist(unlist(sm) != seq_along(unlist(sm)), sm)
-    ## ## if 'sm' is local:
-    ## ## ans <- sm != as(PartitioningByEnd(sm), "CompressedIntegerList")
-    ## if (fromLast)
-    ##     ans <- rev(ans)
-    ## ans
 }
 setMethod("duplicated", "CompressedAtomicList",
           .duplicated.CompressedAtomicList)
