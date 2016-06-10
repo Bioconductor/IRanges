@@ -172,15 +172,19 @@ setMethod("relist", c("Vector", "list"),
         idx <- base::order(f_vals)
         xranges <- successiveIRanges(f_lens)[idx]
         x <- extractROWS(x, xranges)
+        f <- S4Vectors:::tabulate2(f_vals, nbins=length(f_levels),
+                                   weight=f_lens)
+        if (drop) {
+            f <- f[f != 0L]
+            f_levels <- f_levels[f != 0L]
+        }
+    } else if (length(f_vals) == length(f_levels) || drop) {
+        f <- f_lens
+    } else {
+        f <- integer(length(f_levels))
+        f[f_vals] <- f_lens
     }
-    ## Using S4Vectors:::tabulate2() is 5x faster than doing:
-    ##   f <- integer(length(f_levels))
-    ##   tmp <- Rle(f_vals[idx], f_lens[idx])
-    ##   f[runValue(tmp)] <- runLength(tmp)
-    f <- S4Vectors:::tabulate2(f_vals, nbins=length(f_levels), weight=f_lens)
     names(f) <- f_levels
-    if (drop)
-        f <- f[f != 0L]
     f <- cumsum(f)
     f <- PartitioningByEnd(f)
     relist(x, f)
