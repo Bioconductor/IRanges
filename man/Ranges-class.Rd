@@ -32,6 +32,8 @@
 \alias{update,Ranges-method}
 \alias{tile}
 \alias{tile,Ranges-method}
+\alias{slidingWindows}
+\alias{slidingWindows,Ranges-method}
 
 
 \title{Ranges objects}
@@ -140,6 +142,15 @@
       can be specified. The return value is a \code{IRangesList} the same 
       length as \code{x}. Ranges with a width less than the \code{width}
       argument are returned unchanged.
+    }
+    \item{}{
+      \code{slidingWindows(x, width, step=1L)}: Generates sliding
+      windows within each range of \code{x}, of width \code{width}, and
+      starting every \code{step} positions. The return value is a
+      \code{IRangesList} the same length as \code{x}. Ranges with a
+      width less than the \code{width} argument are returned
+      unchanged. If the sliding windows do not exactly cover \code{x},
+      the last window is partial.
     }
     \item{}{
       \code{isEmpty(x)}:

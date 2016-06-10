@@ -34,3 +34,30 @@ setMethod("tile", "Ranges", function(x, n, width, ...) {
   tile.width[start(p)] <- tile.end[start(p)]
   relist(IRanges(width=tile.width, end=tile.end.abs), p)
 })
+
+### =========================================================================
+### "slidingWindows" methods
+### -------------------------------------------------------------------------
+###
+
+setGeneric("slidingWindows",
+           function(x, width, step = 1L, ...) standardGeneric("slidingWindows"),
+           signature="x")
+
+setMethod("slidingWindows", "Ranges", function(x, width, step = 1L) {
+    if (!isSingleNumber(width))
+        stop("'width' must be a single, non-NA number")
+    if (!isSingleNumber(step))
+        stop("'step' must be a single, non-NA number")
+    if (any(width < 0L))
+        stop("some 'width' are negative")
+    if (any(step < 0L))
+        stop("some 'step' are negative")
+    n <- ceiling(pmax(width(x) - width, 0L) / step) + 1L
+    window.starts <- as.integer(IRanges(rep(0L, length(n)), width=n)) *
+        step + 1L
+    windows <- restrict(IRanges(window.starts, width=width),
+                        end=rep(width(x), n))
+    windows.abs <- shift(windows, rep(start(x), n) - 1L)
+    relist(windows.abs, PartitioningByWidth(n))
+})
