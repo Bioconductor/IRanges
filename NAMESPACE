@@ -184,7 +184,7 @@ export(
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList, FactorList, 
     DataFrameList, SplitDataFrameList,
-    ManyToOneGrouping, findOverlapPairs, regroup
+    ManyToOneGrouping, findOverlapPairs, regroup, selectNearest
 )
 
 
@@ -277,7 +277,7 @@ export(
     precede, follow, nearest, distance, distanceToNearest,
 
     ## tile-methods.R:
-    tile,
+    tile, slidingWindows
 
     ## bind-arrays.R:
     arbind, acbind
