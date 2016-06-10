@@ -157,6 +157,11 @@ setMethod("distance", c("Ranges", "Ranges"),
     }
 )
 
+setMethod("distance", c("Pairs", "missing"),
+          function(x, y) {
+              distance(first(x), second(x))
+          })
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### distanceToNearest()
 ###
