@@ -32,10 +32,10 @@ setMethod("nobj", "CompressedManyToOneGrouping",
 ### ----------------------------
 ###
 
-ManyToOneGrouping <- function(x, compress=TRUE) {
+ManyToOneGrouping <- function(..., compress=TRUE) {
     CompressedOrSimple <- if (compress) "Compressed" else "Simple"
     Class <- paste0(CompressedOrSimple, "ManyToOneGrouping")
-    new(Class, IntegerList(x, compress=compress))
+    new(Class, IntegerList(..., compress=compress))
 }
 
 ### -------------------------------------------------------------------------
