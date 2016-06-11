@@ -172,6 +172,15 @@ setMethod("as.vector", "AtomicList",
     }
 )
 
+as.matrix.AtomicList <- function(x, ...) {
+    p <- PartitioningByEnd(x)
+    m <- matrix(nrow=length(x), ncol=max(width(p)))
+    ind <- cbind(togroup(p), as.integer(IRanges(1, width(p))))
+    m[ind] <- unlist(x, use.names=FALSE)
+    m
+}
+setMethod("as.matrix", "AtomicList", function(x) as.matrix.AtomicList(x))
+
 setMethod("drop", "AtomicList", function(x) {
   x_eltNROWS <- elementNROWS(x)
   if (any(x_eltNROWS > 1))

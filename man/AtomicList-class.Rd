@@ -116,6 +116,7 @@
 \alias{coerce,CompressedAtomicList,list-method}
 \alias{as.vector,AtomicList-method}
 \alias{coerce,vector,AtomicList-method}
+\alias{as.matrix,CompressedAtomicList-method}
 \alias{lapply,CompressedAtomicList-method}
 
 \alias{coerce,vector,CompressedLogicalList-method}
