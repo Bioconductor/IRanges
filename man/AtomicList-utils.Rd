@@ -106,6 +106,7 @@
 \alias{unstrsplit,RleList-method}
 
 \alias{rank,CompressedAtomicList}
+\alias{order,CompressedAtomicList}
 \alias{selfmatch,CompressedAtomicList}
 
 \title{Common operations on AtomicList objects}

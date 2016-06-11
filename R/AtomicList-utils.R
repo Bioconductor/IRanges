@@ -796,6 +796,21 @@ setMethod("rank", "CompressedAtomicList",
               relist(r, x)
           })
 
+setMethod("order", "CompressedAtomicList",
+          function (..., na.last = TRUE, decreasing = FALSE,
+                    method = c("shell", "radix"))
+{
+    args <- list(...)
+    if (length(args) != 1L) 
+        stop("\"order\" method for CompressedAtomicList objects ",
+             "can only take one input object")
+    x <- args[[1L]]
+    o <- order(togroup(PartitioningByEnd(x)),
+               unlist(x, use.names=FALSE), na.last=na.last,
+               decreasing=decreasing, method=method)
+    relist(o, x) - start(PartitioningByEnd(x)) + 1L
+})
+    
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Set/comparison methods
 ###
