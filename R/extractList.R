@@ -175,10 +175,11 @@ setMethod("relist", c("Vector", "list"),
         f <- S4Vectors:::tabulate2(f_vals, nbins=length(f_levels),
                                    weight=f_lens)
         if (drop) {
-            f <- f[f != 0L]
             f_levels <- f_levels[f != 0L]
+            f <- f[f != 0L]
         }
     } else if (length(f_vals) == length(f_levels) || drop) {
+        if (drop) f_levels <- as.character(runValue(f))
         f <- f_lens
     } else {
         f <- integer(length(f_levels))
