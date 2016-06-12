@@ -142,10 +142,7 @@ setMethod("reduce", "Ranges",
         if (is(x, "NormalIRanges"))
             ans <- as(ans, "NormalIRanges")
         if (with.revmap) {
-            revmap <- ManyToOneGrouping(C_ans$revmap)
-            if (nobj(revmap) != length(x))
-                revmap <- ManyToManyGrouping(revmap, nobj=length(x))
-            mcols(ans) <- DataFrame(revmap=revmap)
+            mcols(ans) <- DataFrame(revmap=IntegerList(C_ans$revmap))
         }
         if (with.inframe.attrib) {
             inframe <- new2("IRanges", start=C_ans$inframe.start,
@@ -211,10 +208,7 @@ setMethod("reduce", "CompressedIRangesList",
                                           width=C_ans$width,
                                           check=FALSE)
         if (with.revmap) {
-            revmap <- ManyToOneGrouping(C_ans$revmap)
-            if (nobj(revmap) != length(x))
-                revmap <- ManyToManyGrouping(revmap, nobj=length(x))
-            mcols(ans_unlistData) <- DataFrame(revmap=revmap)
+            mcols(ans_unlistData) <- DataFrame(revmap=IntegerList(C_ans$revmap))
         }
         ans_partitioning <- PartitioningByEnd(C_ans$partitioning_by_end)
         names(ans_partitioning) <- names(x)
