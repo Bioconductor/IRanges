@@ -805,10 +805,14 @@ setMethod("order", "CompressedAtomicList",
         stop("\"order\" method for CompressedAtomicList objects ",
              "can only take one input object")
     x <- args[[1L]]
-    o <- order(togroup(PartitioningByEnd(x)),
+    p <- PartitioningByEnd(x)
+    o <- order(togroup(p),
                unlist(x, use.names=FALSE), na.last=na.last,
                decreasing=decreasing, method=method)
-    relist(o, x) - start(PartitioningByEnd(x)) + 1L
+    if (is.na(na.last) && anyNA(x)) {
+        x <- x[!is.na(x)]
+    }
+    relist(o, x) - start(p) + 1L
 })
     
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
