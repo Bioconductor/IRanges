@@ -4,18 +4,22 @@
 
 
 setClass("CompressedList",
-         contains="List",
-         representation(
-                        "VIRTUAL",
-                        partitioning="PartitioningByEnd",
-                        unlistData="ANY"
-                       )
-         )
+    contains="List",
+    representation(
+        "VIRTUAL",
+        unlistData="ANY",
+        partitioning="PartitioningByEnd"
+    )
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Accessor methods.
+### Getters and setters
 ###
+
+setMethod("length", "CompressedList", function(x) length(x@partitioning))
+
+setMethod("names", "CompressedList", function(x) names(x@partitioning))
 
 setMethod("elementNROWS", "CompressedList",
     function(x)
@@ -26,20 +30,17 @@ setMethod("elementNROWS", "CompressedList",
     }
 )
 
-setMethod("length", "CompressedList", function(x) length(x@partitioning))
-
-setMethod("names", "CompressedList", function(x) names(x@partitioning))
-
 setReplaceMethod("names", "CompressedList",
-                 function(x, value)
-                 {
-                     names(x@partitioning) <- value
-                     x
-                 })
+    function(x, value)
+    {
+        names(x@partitioning) <- value
+        x
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Constructor.
+### Constructor
 ###
 ### Use
 ###     IRanges:::newCompressedList0(getClass("MyClass"),
@@ -107,18 +108,18 @@ new_CompressedList_from_list <- function(Class, x, ..., mcols)
         if (missing(mcols))
             return(new2(Class, partitioning=ans_partitioning, ..., check=FALSE))
         return(new2(Class, partitioning=ans_partitioning, ...,
-                    elementMetadata=mcols, check=FALSE))
+                           elementMetadata=mcols, check=FALSE))
     }
     ans_unlistData <- compress_listData(x, ans_elementType)
     if (missing(mcols)) {
         ans <- new2(Class, unlistData=ans_unlistData,
-                    partitioning=ans_partitioning, ...,
-                    check=FALSE)
+                           partitioning=ans_partitioning, ...,
+                           check=FALSE)
     } else {
         ans <- new2(Class, unlistData=ans_unlistData,
-                    partitioning=ans_partitioning, ...,
-                    elementMetadata=mcols,
-                    check=FALSE)
+                           partitioning=ans_partitioning, ...,
+                           elementMetadata=mcols,
+                           check=FALSE)
     }
     .reconcileMetadatacols(ans)
 }

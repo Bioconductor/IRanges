@@ -220,8 +220,8 @@ setMethod("reduce", "RangedData",
           function(x, by = character(), drop.empty.ranges=FALSE,
                    min.gapwidth=1L, with.inframe.attrib=FALSE)
           {
-            .Deprecated(msg=c("the \"reduce\" method for RangedData object ",
-                              "is deprecated"))
+            .Defunct(msg=c("the \"reduce\" method for RangedData object ",
+                           "is defunct"))
             if (!isTRUEorFALSE(drop.empty.ranges))
                 stop("'drop.empty.ranges' must be TRUE or FALSE")
             if (!isSingleNumber(min.gapwidth))

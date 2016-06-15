@@ -993,5 +993,5 @@ setMethod("togroup", "ANY",
     }
 )
 
-grouplength <- function(...) {.Deprecated("grouplengths"); grouplengths(...)}
+grouplength <- function(...) .Defunct("grouplengths")
 

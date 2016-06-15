@@ -45,9 +45,6 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(CompressedNormalIRangesList_min, 2),
 	CALLMETHOD_DEF(CompressedNormalIRangesList_max, 2),
 
-/* GappedRanges_class.c */
-	CALLMETHOD_DEF(valid_GappedRanges, 2),
-
 /* inter_range_methods.c */
 	CALLMETHOD_DEF(IRanges_range, 1),
 	CALLMETHOD_DEF(Ranges_reduce, 6),

@@ -89,7 +89,7 @@ setMethod("findOverlaps", c("Vector", "missing"),
     {
         if (!identical(ignoreSelf, FALSE) ||
             !identical(ignoreRedundant, FALSE)) {
-            .Deprecated(msg=wmsg(
+            .Defunct(msg=wmsg(
                 "Please use 'drop.self' and/or 'drop.redundant' instead ",
                 "of the 'ignoreSelf' and/or 'ignoreRedundant' arguments."
             ))

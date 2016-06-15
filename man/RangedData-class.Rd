@@ -74,13 +74,16 @@
 
 \title{Data on ranges}
 \description{
-  IMPORTANT NOTE: Starting with BioC 3.3, \code{RangedDataList} objects are
-  deprecated in favor of \code{\link[GenomicRanges]{GRangesList}} objects
+  IMPORTANT NOTE: Starting with BioC 3.4, \code{RangedDataList} objects are
+  defunct in favor of \code{\link[GenomicRanges]{GRangesList}} objects
   (the \code{\link[GenomicRanges]{GRangesList}} class is defined in the
   \pkg{GenomicRanges} package).
+
   Note that the use of \code{RangedData} and \code{RangedDataList} objects
   has been discouraged in favor of \code{\link[GenomicRanges]{GRanges}} and
   \code{\link[GenomicRanges]{GRangesList}} objects since BioC 2.12.
+
+  \code{RangedData} objects will be deprecated soon.
 
   \code{RangedData} supports storing data, i.e. a set of variables, on a
   set of ranges spanning multiple spaces (e.g. chromosomes). Although
@@ -540,7 +543,6 @@
   rd <- RangedData(ranges, score, space = c(1, 2, 1))
   c(rd[1], rd[2]) # equal to 'rd'
   rd2 <- RangedData(ranges, score)
-  unlist(split(rd2, c(1, 2, 1))) # same as 'rd'
 
   ## applying
 
