@@ -659,7 +659,7 @@ setMethod("poverlaps", c("Ranges", "integer"),
 setGeneric("subsetByOverlaps", signature=c("query", "subject"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
-             ...)
+             invert=FALSE, ...)
         standardGeneric("subsetByOverlaps")
 )
 
@@ -678,37 +678,43 @@ setMethod("subsetByOverlaps", c("Vector", "Vector"),
 
 setMethod("subsetByOverlaps", c("RangedData", "RangedData"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
-                   type = c("any", "start", "end", "within", "equal"))
+                   type = c("any", "start", "end", "within", "equal"),
+                   invert = FALSE)
           {
-              query[unlist(!is.na(findOverlaps(ranges(query), ranges(subject),
-                                               maxgap = maxgap,
-                                               minoverlap = minoverlap,
-                                               type = match.arg(type),
-                                               select = "arbitrary")),
-                           use.names=FALSE),]
+              o <- unlist(!is.na(findOverlaps(ranges(query), ranges(subject),
+                                              maxgap = maxgap,
+                                              minoverlap = minoverlap,
+                                              type = match.arg(type),
+                                              select = "arbitrary")),
+                          use.names=FALSE)
+              if (invert) query[!o,] else query[o,]
           })
 
 setMethod("subsetByOverlaps", c("RangedData", "RangesList"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
-                   type = c("any", "start", "end", "within", "equal"))
+                   type = c("any", "start", "end", "within", "equal"),
+                   invert = FALSE)
           {
-              query[unlist(!is.na(findOverlaps(ranges(query), subject,
-                                               maxgap = maxgap,
-                                               minoverlap = minoverlap,
-                                               type = match.arg(type),
-                                               select = "arbitrary")),
-                           use.names=FALSE),]
+              o <- unlist(!is.na(findOverlaps(ranges(query), subject,
+                                              maxgap = maxgap,
+                                              minoverlap = minoverlap,
+                                              type = match.arg(type),
+                                              select = "arbitrary")),
+                          use.names=FALSE)
+              if (invert) query[!o,] else query[o,]
           })
 
 setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
           function(query, subject, maxgap = 0L, minoverlap = 1L,
-                   type = c("any", "start", "end", "within", "equal"))
+                   type = c("any", "start", "end", "within", "equal"),
+                   invert = FALSE)
           {
-              query[!is.na(findOverlaps(query, ranges(subject),
-                                        maxgap = maxgap,
-                                        minoverlap = minoverlap,
-                                        type = match.arg(type),
-                                        select = "arbitrary"))]
+              o <- !is.na(findOverlaps(query, ranges(subject),
+                                       maxgap = maxgap,
+                                       minoverlap = minoverlap,
+                                       type = match.arg(type),
+                                       select = "arbitrary"))
+              if (invert) query[!o] else query[o]
           })
 
 
