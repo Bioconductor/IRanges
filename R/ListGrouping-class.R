@@ -3,11 +3,11 @@
 ### -------------------------------------------------------------------------
 
 setClass("SimpleGrouping",
-### TODO: contain VIRTUAL after R 3.3.1 release
+### TODO: contain VIRTUAL after R 3.4 release
          contains=c("Grouping", "SimpleIntegerList"))
 
 setClass("CompressedGrouping",
-### TODO: contain VIRTUAL after R 3.3.1 release
+### TODO: contain VIRTUAL after R 3.4 release
          contains=c("Grouping", "CompressedIntegerList"))
 
 setClass("SimpleManyToOneGrouping",
@@ -18,6 +18,7 @@ setClass("CompressedManyToOneGrouping",
 
 setClass("BaseManyToManyGrouping",
          representation(nobj="integer"),
+### TODO: contain VIRTUAL after R 3.4 release
          contains="ManyToManyGrouping",
          validity=function(object) {
              if (!isSingleNumber(object@nobj))
